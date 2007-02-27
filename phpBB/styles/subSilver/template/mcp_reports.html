@@ -21,10 +21,10 @@
 	<!-- IF postrow.S_ROW_ is even --><tr class="row1"><!-- ELSE --><tr class="row2"><!-- ENDIF -->
 		<td style="padding: 4px;"><p class="topictitle"><a href="{postrow.U_VIEWPOST}">{postrow.POST_SUBJECT}</a></p>
 			<span class="gensmall"><!-- IF postrow.U_VIEWFORUM -->{L_FORUM}: <a href="{postrow.U_VIEWFORUM}">{postrow.FORUM_NAME}</a><!-- ELSE -->{postrow.FORUM_NAME}<!-- ENDIF --></span></td>
-		<td style="padding: 4px;" align="left" valign="top" nowrap="nowrap"><span class="gen">{postrow.POST_AUTHOR_FULL}</span><br />
+		<td style="padding: 4px;" align="{S_CONTENT_FLOW_BEGIN}" valign="top" nowrap="nowrap"><span class="gen">{postrow.POST_AUTHOR_FULL}</span><br />
 			<span class="gensmall">{postrow.POST_TIME}</span></td>
-		<td style="padding: 4px;" align="left" valign="top" nowrap="nowrap"><span class="gen">{postrow.REPORTER_FULL}</span></td>
-		<td style="padding: 4px;" align="left" valign="top" nowrap="nowrap"><span class="gen">{postrow.REPORT_TIME}</span><br />
+		<td style="padding: 4px;" align="{S_CONTENT_FLOW_BEGIN}" valign="top" nowrap="nowrap"><span class="gen">{postrow.REPORTER_FULL}</span></td>
+		<td style="padding: 4px;" align="{S_CONTENT_FLOW_BEGIN}" valign="top" nowrap="nowrap"><span class="gen">{postrow.REPORT_TIME}</span><br />
 			<span class="gensmall">[ <a href="{postrow.U_VIEW_DETAILS}">{L_VIEW_DETAILS}</a> ]</span></td>
 		<td align="center"><input type="checkbox" class="radio" name="post_id_list[]" value="{postrow.POST_ID}" /></td>
 	</tr>
@@ -48,7 +48,7 @@
 
 <table width="100%" cellspacing="2" cellpadding="2" border="0" align="center">
 <tr>
-	<td align="right" valign="top" nowrap="nowrap"><b class="gensmall"><a href="#" onclick="marklist('mcp', '', true); return false;">{L_MARK_ALL}</a> :: <a href="#" onclick="marklist('mcp', '', false); return false;">{L_UNMARK_ALL}</a></b></td>
+	<td align="{S_CONTENT_FLOW_END}" valign="top" nowrap="nowrap"><b class="gensmall"><a href="#" onclick="marklist('mcp', '', true); return false;">{L_MARK_ALL}</a> :: <a href="#" onclick="marklist('mcp', '', false); return false;">{L_UNMARK_ALL}</a></b></td>
 </tr>
 </table>
 

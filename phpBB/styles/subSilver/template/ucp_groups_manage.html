@@ -187,11 +187,11 @@
 		</tr>
 	<!-- END member -->
 	<tr>
-		<td class="cat" colspan="5" align="center"><div style="float: right;"><span class="small"><a href="#" onclick="marklist('ucp', 'mark', true); return false;">{L_MARK_ALL}</a> :: <a href="#" onclick="marklist('ucp', 'mark', false); return false;">{L_UNMARK_ALL}</a></span></div><div style="float: left"><select name="action"><option class="sep" value="">{L_SELECT_OPTION}</option>{S_ACTION_OPTIONS}</select> <input class="button2" type="submit" name="update" value="{L_SUBMIT}" /></div></td>
+		<td class="cat" colspan="5" align="center"><div style="float: {S_CONTENT_FLOW_END};"><span class="small"><a href="#" onclick="marklist('ucp', 'mark', true); return false;">{L_MARK_ALL}</a> :: <a href="#" onclick="marklist('ucp', 'mark', false); return false;">{L_UNMARK_ALL}</a></span></div><div style="float: {S_CONTENT_FLOW_BEGIN};"><select name="action"><option class="sep" value="">{L_SELECT_OPTION}</option>{S_ACTION_OPTIONS}</select> <input class="button2" type="submit" name="update" value="{L_SUBMIT}" /></div></td>
 	</tr>
 	</table>
 
-	<div class="pagination" style="float: left;">
+	<div class="pagination" style="float: {S_CONTENT_FLOW_BEGIN};">
 		<!-- IF PAGINATION -->
 			<!-- INCLUDE pagination.html -->
 		<!-- ELSE -->
@@ -255,7 +255,7 @@
 	<!-- END leader -->
 
 	<tr>
-		<td class="cat" align="right" colspan="3">&nbsp;</td>
+		<td class="cat" align="{S_CONTENT_FLOW_END}" colspan="3">&nbsp;</td>
 	</tr>
 	</table>
 

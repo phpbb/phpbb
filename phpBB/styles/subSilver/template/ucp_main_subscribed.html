@@ -36,7 +36,7 @@
 			<tr>
 				<td class="nav" valign="middle" nowrap="nowrap">&nbsp;{PAGE_NUMBER}<br /></td>
 				<td class="gensmall" nowrap="nowrap">&nbsp;[ {TOTAL_TOPICS} ]&nbsp;</td>
-				<td class="gensmall" width="100%" align="right" nowrap="nowrap"><!-- INCLUDE pagination.html --></td>
+				<td class="gensmall" width="100%" align="{S_CONTENT_FLOW_END}" nowrap="nowrap"><!-- INCLUDE pagination.html --></td>
 			</tr>
 			</table>
 		</td>
@@ -53,7 +53,7 @@
 				<p class="gensmall"> [ {GOTO_PAGE_IMG}{L_GOTO_PAGE}: {topicrow.PAGINATION} ] </p>
 			<!-- ENDIF -->
 		</td>
-		<td style="padding: 4px;" align="left" valign="top" nowrap="nowrap">
+		<td style="padding: 4px;" align="{S_CONTENT_FLOW_BEGIN}" valign="top" nowrap="nowrap">
 			<p class="topicdetails">{topicrow.LAST_POST_TIME}</p>
 			<p class="topicdetails">{topicrow.LAST_POST_AUTHOR_FULL}
 				<a href="{topicrow.U_LAST_POST}">{topicrow.LAST_POST_IMG}</a>
@@ -68,10 +68,10 @@
 <!-- END topicrow -->
 
 <tr>
-	<td class="cat" colspan="4" align="right"><input class="btnlite" type="submit" name="unwatch" value="{L_UNWATCH_MARKED}" />&nbsp;</td>
+	<td class="cat" colspan="4" align="{S_CONTENT_FLOW_END}"><input class="btnlite" type="submit" name="unwatch" value="{L_UNWATCH_MARKED}" />&nbsp;</td>
 </tr>
 </table>
 
-<div class="gensmall" style="float: right; padding-top: 2px;"><b><a href="#" onclick="marklist('ucp', 't', true); return false;">{L_MARK_ALL}</a> :: <a href="#" onclick="marklist('ucp', 't', false); return false;">{L_UNMARK_ALL}</a></b></div>
+<div class="gensmall" style="float: {S_CONTENT_FLOW_END}; padding-top: 2px;"><b><a href="#" onclick="marklist('ucp', 't', true); return false;">{L_MARK_ALL}</a> :: <a href="#" onclick="marklist('ucp', 't', false); return false;">{L_UNMARK_ALL}</a></b></div>
 
 <!-- INCLUDE ucp_footer.html -->

@@ -59,30 +59,30 @@
 		<td class="row1">
 			<table width="100%" cellspacing="1" cellpadding="2" border="0">
 			<tr>
-				<td class="gen" align="right" nowrap="nowrap">{L_JOINED}: </td>
+				<td class="gen" align="{S_CONTENT_FLOW_END}" nowrap="nowrap">{L_JOINED}: </td>
 				<td width="100%"><b class="gen">{JOINED}</b></td>
 			</tr>
 			<tr>
-				<td class="gen" align="right" nowrap="nowrap">{L_VISITED}: </td>
+				<td class="gen" align="{S_CONTENT_FLOW_END}" nowrap="nowrap">{L_VISITED}: </td>
 				<td width="100%"><b class="gen">{VISITED}</b></td>
 			</tr>
 			<!-- IF U_NOTES or U_WARN -->
 				<tr>
-					<td class="gen" align="right" valign="top" nowrap="nowrap">{L_WARNINGS}: </td>
+					<td class="gen" align="{S_CONTENT_FLOW_END}" valign="top" nowrap="nowrap">{L_WARNINGS}: </td>
 					<td width="100%"><b class="gen">{WARNINGS}</b><br /><span class="genmed">[ <a href="{U_NOTES}">{L_VIEW_NOTES}</a> <!-- IF U_WARN --> | <a href="{U_WARN}">{L_WARN_USER}</a> <!-- ENDIF -->]</span></td>
 				</tr>
 			<!-- ENDIF -->
 			<tr>
-				<td class="gen" align="right" valign="top" nowrap="nowrap">{L_TOTAL_POSTS}: </td>
+				<td class="gen" align="{S_CONTENT_FLOW_END}" valign="top" nowrap="nowrap">{L_TOTAL_POSTS}: </td>
 				<td><b class="gen">{POSTS}</b><span class="genmed"><!-- IF POSTS_PCT neq 0 --><br />[{POSTS_PCT} / {POSTS_DAY}]<!-- ENDIF --><br /><a href="{U_SEARCH_USER}">{L_SEARCH_USER_POSTS}</a></span></td>
 			</tr>
 			<!-- IF S_SHOW_ACTIVITY -->
 				<tr>
-					<td class="gen" align="right" valign="top" nowrap="nowrap">{L_ACTIVE_IN_FORUM}: </td>
+					<td class="gen" align="{S_CONTENT_FLOW_END}" valign="top" nowrap="nowrap">{L_ACTIVE_IN_FORUM}: </td>
 					<td><!-- IF ACTIVE_FORUM_PCT neq 0 --><b><a class="gen" href="{U_ACTIVE_FORUM}">{ACTIVE_FORUM}</a></b><br /><span class="genmed">[ {ACTIVE_FORUM_POSTS} / {ACTIVE_FORUM_PCT} ]</span><!-- ELSE --><span class="gen">-</span><!-- ENDIF --></td>
 				</tr>
 				<tr>
-					<td class="gen" align="right" valign="top" nowrap="nowrap">{L_ACTIVE_IN_TOPIC}: </td>
+					<td class="gen" align="{S_CONTENT_FLOW_END}" valign="top" nowrap="nowrap">{L_ACTIVE_IN_TOPIC}: </td>
 					<td><!-- IF ACTIVE_TOPIC_PCT neq 0 --><b><a class="gen" href="{U_ACTIVE_TOPIC}">{ACTIVE_TOPIC}</a></b><br /><span class="genmed">[ {ACTIVE_TOPIC_POSTS} / {ACTIVE_TOPIC_PCT} ]</span><!-- ELSE --><span class="gen">-</span><!-- ENDIF --></td>
 				</tr>
 			<!-- ENDIF -->
@@ -97,33 +97,33 @@
 		<td class="row1">
 			<table width="100%" cellspacing="1" cellpadding="2" border="0">
 			<tr>
-				<td class="gen" align="right" nowrap="nowrap">{L_EMAIL_ADDRESS}: </td>
+				<td class="gen" align="{S_CONTENT_FLOW_END}" nowrap="nowrap">{L_EMAIL_ADDRESS}: </td>
 				<td width="100%"><!-- IF U_EMAIL --><a href="{U_EMAIL}">{EMAIL_IMG}</a><!-- ENDIF --></td>
 			</tr>
 			<!-- IF U_PM -->
 				<tr>
-					<td class="gen" nowrap="nowrap" align="right">{L_PM}: </td>
+					<td class="gen" nowrap="nowrap" align="{S_CONTENT_FLOW_END}">{L_PM}: </td>
 					<td><a href="{U_PM}">{PM_IMG}</a></td>
 				</tr>
 			<!-- ENDIF -->
 			<tr>
-				<td class="gen" nowrap="nowrap" align="right">{L_MSNM}: </td>
+				<td class="gen" nowrap="nowrap" align="{S_CONTENT_FLOW_END}">{L_MSNM}: </td>
 				<td><!-- IF U_MSN --><a href="{U_MSN}" onclick="popup('{U_MSN}', 550, 320); return false">{MSN_IMG}</a><!-- ENDIF --></td>
 			</tr>
 			<tr>
-				<td class="gen" nowrap="nowrap" align="right">{L_YIM}: </td>
+				<td class="gen" nowrap="nowrap" align="{S_CONTENT_FLOW_END}">{L_YIM}: </td>
 				<td><!-- IF U_YIM --><a href="{U_YIM}" onclick="popup('{U_YIM}', 780, 550); return false">{YIM_IMG}</a><!-- ENDIF --></td>
 			</tr>
 			<tr>
-				<td class="gen" nowrap="nowrap" align="right">{L_AIM}: </td>
+				<td class="gen" nowrap="nowrap" align="{S_CONTENT_FLOW_END}">{L_AIM}: </td>
 				<td><!-- IF U_AIM --><a href="{U_AIM}" onclick="popup('{U_AIM}', 550, 320); return false">{AIM_IMG}</a><!-- ENDIF --></td>
 			</tr>
 			<tr>
-				<td class="gen" nowrap="nowrap" align="right">{L_ICQ}: </td>
+				<td class="gen" nowrap="nowrap" align="{S_CONTENT_FLOW_END}">{L_ICQ}: </td>
 				<td><!-- IF U_ICQ --><a href="{U_ICQ}" onclick="popup('{U_ICQ}', 550, 320); return false">{ICQ_IMG}</a><!-- ENDIF --></td>
 			</tr>
 			<tr>
-				<td class="gen" nowrap="nowrap" align="right">{L_JABBER}: </td>
+				<td class="gen" nowrap="nowrap" align="{S_CONTENT_FLOW_END}">{L_JABBER}: </td>
 				<td><!-- IF U_JABBER and S_JABBER_ENABLED --><a href="{U_JABBER}" onclick="popup('{U_JABBER}', 550, 320); return false">{JABBER_IMG}</a><!-- ELSEIF U_JABBER -->{JABBER_IMG}<!-- ENDIF --></td>
 			</tr>
 			</table>
@@ -131,39 +131,39 @@
 		<td class="row1">
 			<table cellspacing="1" cellpadding="2" border="0">
 			<tr>
-				<td class="gen" align="right" nowrap="nowrap">{L_USERGROUPS}: </td>
+				<td class="gen" align="{S_CONTENT_FLOW_END}" nowrap="nowrap">{L_USERGROUPS}: </td>
 				<td><select name="g">{S_GROUP_OPTIONS}</select> <input class="btnlite" type="submit" name="submit" value="{L_GO}" /></td>
 			</tr>
 			<tr>
-				<td class="gen" align="right" nowrap="nowrap">{L_LOCATION}: </td>
+				<td class="gen" align="{S_CONTENT_FLOW_END}" nowrap="nowrap">{L_LOCATION}: </td>
 				<td><!-- IF LOCATION --><b class="genmed">{LOCATION}</b><!-- ENDIF --></td>
 			</tr>
 			<tr>
-				<td class="gen" align="right" nowrap="nowrap">{L_AGE}: </td>
+				<td class="gen" align="{S_CONTENT_FLOW_END}" nowrap="nowrap">{L_AGE}: </td>
 				<td><!-- IF AGE --><b class="genmed">{AGE}</b><!-- ENDIF --></td>
 			</tr>
 			<tr>
-				<td class="gen" align="right" nowrap="nowrap">{L_OCCUPATION}: </td>
+				<td class="gen" align="{S_CONTENT_FLOW_END}" nowrap="nowrap">{L_OCCUPATION}: </td>
 				<td><!-- IF OCCUPATION --><b class="genmed">{OCCUPATION}</b><!-- ENDIF --></td>
 			</tr>
 			<tr>
-				<td class="gen" align="right" nowrap="nowrap">{L_INTERESTS}: </td>
+				<td class="gen" align="{S_CONTENT_FLOW_END}" nowrap="nowrap">{L_INTERESTS}: </td>
 				<td><!-- IF INTERESTS --><b class="genmed">{INTERESTS}</b><!-- ENDIF --></td>
 			</tr>
 			<tr>
-				<td class="gen" align="right" nowrap="nowrap">{L_WEBSITE}: </td>
+				<td class="gen" align="{S_CONTENT_FLOW_END}" nowrap="nowrap">{L_WEBSITE}: </td>
 				<td><!-- IF U_WWW --><b><a class="genmed" href="{U_WWW}">{U_WWW}</a></b><!-- ENDIF --></td>
 			</tr>
 			<!-- IF S_PROFILE_FIELD1 -->
 				<!-- Use a construct like this to include admin defined profile fields. Replace FIELD1 with the name of your field. -->
 				<tr>
-					<td class="gen" align="right" nowrap="nowrap">{PROFILE_FIELD1_NAME}: </td>
+					<td class="gen" align="{S_CONTENT_FLOW_END}" nowrap="nowrap">{PROFILE_FIELD1_NAME}: </td>
 					<td><b class="genmed">{PROFILE_FIELD1_VALUE}</b></td>
 				</tr>
 			<!-- ENDIF -->
 			<!-- BEGIN custom_fields -->
 				<tr>
-					<td class="gen" align="right" nowrap="nowrap">{custom_fields.PROFILE_FIELD_NAME}: </td>
+					<td class="gen" align="{S_CONTENT_FLOW_END}" nowrap="nowrap">{custom_fields.PROFILE_FIELD_NAME}: </td>
 					<td><b class="genmed">{custom_fields.PROFILE_FIELD_VALUE}</b></td>
 				</tr>
 			<!-- END custom_fields -->
@@ -190,6 +190,6 @@
 
 <br clear="all" />
 
-<div style="float: right;"><!-- INCLUDE jumpbox.html --></div>
+<div style="float: {S_CONTENT_FLOW_END};"><!-- INCLUDE jumpbox.html --></div>
 
 <!-- INCLUDE overall_footer.html -->

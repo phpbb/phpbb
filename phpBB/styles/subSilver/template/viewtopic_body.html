@@ -31,11 +31,11 @@
 
 	<table width="100%" cellspacing="1">
 	<tr>
-		<td align="left" valign="middle" nowrap="nowrap"><!-- IF not S_IS_BOT --><a href="{U_POST_NEW_TOPIC}">{POST_IMG}</a>&nbsp;<a href="{U_POST_REPLY_TOPIC}">{REPLY_IMG}</a><!-- ENDIF --></td>
+		<td align="{S_CONTENT_FLOW_BEGIN}" valign="middle" nowrap="nowrap"><!-- IF not S_IS_BOT --><a href="{U_POST_NEW_TOPIC}">{POST_IMG}</a>&nbsp;<a href="{U_POST_REPLY_TOPIC}">{REPLY_IMG}</a><!-- ENDIF --></td>
 		<!-- IF TOTAL_POSTS -->
 			<td class="nav" valign="middle" nowrap="nowrap">&nbsp;{PAGE_NUMBER}<br /></td>
 			<td class="gensmall" nowrap="nowrap">&nbsp;[ {TOTAL_POSTS} ]&nbsp;</td>
-			<td class="gensmall" width="100%" align="right" nowrap="nowrap"><!-- INCLUDE pagination.html --></td>
+			<td class="gensmall" width="100%" align="{S_CONTENT_FLOW_END}" nowrap="nowrap"><!-- INCLUDE pagination.html --></td>
 		<!-- ENDIF -->
 	</tr>
 	</table>
@@ -54,7 +54,7 @@
 					<!-- IF U_BUMP_TOPIC --><a href="{U_BUMP_TOPIC}" title="{L_BUMP_TOPIC}">{L_BUMP_TOPIC}</a><!-- ENDIF -->
 				<!-- ENDIF -->
 				</td>
-				<td class="nav" align="right" nowrap="nowrap"><a href="{U_VIEW_OLDER_TOPIC}">{L_VIEW_PREVIOUS_TOPIC}</a><!-- IF U_VIEW_UNREAD_POST and not S_IS_BOT --> | <a href="{U_VIEW_UNREAD_POST}">{L_VIEW_UNREAD_POST}</a><!-- ENDIF --> | <a href="{U_VIEW_NEWER_TOPIC}">{L_VIEW_NEXT_TOPIC}</a>&nbsp;</td>
+				<td class="nav" align="{S_CONTENT_FLOW_END}" nowrap="nowrap"><a href="{U_VIEW_OLDER_TOPIC}">{L_VIEW_PREVIOUS_TOPIC}</a><!-- IF U_VIEW_UNREAD_POST and not S_IS_BOT --> | <a href="{U_VIEW_UNREAD_POST}">{L_VIEW_UNREAD_POST}</a><!-- ENDIF --> | <a href="{U_VIEW_NEWER_TOPIC}">{L_VIEW_NEXT_TOPIC}</a>&nbsp;</td>
 			</tr>
 			</table>
 		</td>
@@ -70,7 +70,7 @@
 				<td align="center"><span class="gen"><b>{POLL_QUESTION}</b></span><br /><span class="gensmall">{L_POLL_LENGTH}</span></td>
 			</tr>
 			<tr>
-				<td align="left">
+				<td align="{S_CONTENT_FLOW_BEGIN}">
 					<table cellspacing="0" cellpadding="2" border="0">
 				<!-- BEGIN poll_option -->
 					<tr>
@@ -86,7 +86,7 @@
 						<td><span class="gen">{poll_option.POLL_OPTION_CAPTION}</span></td>
 						<!-- IF S_DISPLAY_RESULTS -->
 							<td dir="ltr">{POLL_LEFT_CAP_IMG}{poll_option.POLL_OPTION_IMG}{POLL_RIGHT_CAP_IMG}</td>
-							<td class="gen" align="right"><b>&nbsp;{poll_option.POLL_OPTION_PERCENT}&nbsp;</b></td>
+							<td class="gen" align="{S_CONTENT_FLOW_END}"><b>&nbsp;{poll_option.POLL_OPTION_PERCENT}&nbsp;</b></td>
 							<td class="gen" align="center">[ {poll_option.POLL_OPTION_RESULT} ]</td>
 							<!-- IF poll_option.POLL_OPTION_VOTED -->
 								<td class="gensmall" valign="top"><b title="{L_POLL_VOTED_OPTION}">x</b></td>
@@ -145,7 +145,7 @@
 				<!-- IF postrow.POST_ICON_IMG -->
 					<td><img src="{T_ICONS_PATH}{postrow.POST_ICON_IMG}" width="{postrow.POST_ICON_IMG_WIDTH}" height="{postrow.POST_ICON_IMG_HEIGHT}" alt="" title="" /></td>
 				<!-- ENDIF -->
-					<td class="gensmall" width="100%"><div style="float:left">&nbsp;<b>{L_POST_SUBJECT}:</b> {postrow.POST_SUBJECT}</div><div style="float:right"><a href="{postrow.U_MINI_POST}">{postrow.MINI_POST_IMG}</a><b>{L_POSTED}:</b> {postrow.POST_DATE}&nbsp;</div></td>
+					<td class="gensmall" width="100%"><div style="float: {S_CONTENT_FLOW_BEGIN};">&nbsp;<b>{L_POST_SUBJECT}:</b> {postrow.POST_SUBJECT}</div><div style="float: {S_CONTENT_FLOW_END};"><a href="{postrow.U_MINI_POST}">{postrow.MINI_POST_IMG}</a><b>{L_POSTED}:</b> {postrow.POST_DATE}&nbsp;</div></td>
 				</tr>
 				</table>
 			</td>
@@ -256,7 +256,7 @@
 
 						<table width="100%" cellspacing="0">
 						<tr valign="middle">
-							<td class="gensmall" align="right">
+							<td class="gensmall" align="{S_CONTENT_FLOW_END}">
 							<!-- IF not S_IS_BOT -->
 								<!-- IF postrow.U_REPORT --><a href="{postrow.U_REPORT}">{REPORT_IMG}</a> <!-- ENDIF --> 
 								<!-- IF postrow.U_INFO --><a href="{postrow.U_INFO}">{INFO_IMG}</a> <!-- ENDIF --> 
@@ -275,7 +275,7 @@
 		<!-- IF postrow.S_ROW_COUNT is even --><tr class="row1"><!-- ELSE --><tr class="row2"><!-- ENDIF -->
 
 			<td class="profile"><strong><a href="#wrapheader">{L_BACK_TO_TOP}</a></strong></td>
-			<td><div class="gensmall" style="float: left;">&nbsp;<!-- IF postrow.U_PROFILE --><a href="{postrow.U_PROFILE}">{PROFILE_IMG}</a> <!-- ENDIF --> <!-- IF postrow.U_PM --><a href="{postrow.U_PM}">{PM_IMG}</a> <!-- ENDIF --> <!-- IF postrow.U_EMAIL --><a href="{postrow.U_EMAIL}">{EMAIL_IMG}</a> <!-- ENDIF -->&nbsp;</div> <div class="gensmall" style="float:right"><!-- IF not S_IS_BOT --><!-- IF postrow.U_EDIT --><a href="{postrow.U_EDIT}">{EDIT_IMG}</a> <!-- ENDIF --> <!-- IF postrow.U_QUOTE --><a href="{postrow.U_QUOTE}">{QUOTE_IMG}</a> <!-- ENDIF --> <!-- ENDIF -->&nbsp;</div></td>
+			<td><div class="gensmall" style="float: {S_CONTENT_FLOW_BEGIN};">&nbsp;<!-- IF postrow.U_PROFILE --><a href="{postrow.U_PROFILE}">{PROFILE_IMG}</a> <!-- ENDIF --> <!-- IF postrow.U_PM --><a href="{postrow.U_PM}">{PM_IMG}</a> <!-- ENDIF --> <!-- IF postrow.U_EMAIL --><a href="{postrow.U_EMAIL}">{EMAIL_IMG}</a> <!-- ENDIF -->&nbsp;</div> <div class="gensmall" style="float: {S_CONTENT_FLOW_END};"><!-- IF not S_IS_BOT --><!-- IF postrow.U_EDIT --><a href="{postrow.U_EDIT}">{EDIT_IMG}</a> <!-- ENDIF --> <!-- IF postrow.U_QUOTE --><a href="{postrow.U_QUOTE}">{QUOTE_IMG}</a> <!-- ENDIF --> <!-- ENDIF -->&nbsp;</div></td>
 		</tr>
 
 	<!-- ENDIF -->
@@ -294,11 +294,11 @@
 
 	<table width="100%" cellspacing="1">
 	<tr>
-		<td align="left" valign="middle" nowrap="nowrap"><!-- IF not S_IS_BOT --><a href="{U_POST_NEW_TOPIC}">{POST_IMG}</a>&nbsp;<a href="{U_POST_REPLY_TOPIC}">{REPLY_IMG}</a><!-- ENDIF --></td>
+		<td align="{S_CONTENT_FLOW_BEGIN}" valign="middle" nowrap="nowrap"><!-- IF not S_IS_BOT --><a href="{U_POST_NEW_TOPIC}">{POST_IMG}</a>&nbsp;<a href="{U_POST_REPLY_TOPIC}">{REPLY_IMG}</a><!-- ENDIF --></td>
 		<!-- IF TOTAL_POSTS -->
 			<td class="nav" valign="middle" nowrap="nowrap">&nbsp;{PAGE_NUMBER}<br /></td>
 			<td class="gensmall" nowrap="nowrap">&nbsp;[ {TOTAL_POSTS} ]&nbsp;</td>
-			<td class="gensmall" width="100%" align="right" nowrap="nowrap"><!-- INCLUDE pagination.html --></td>
+			<td class="gensmall" width="100%" align="{S_CONTENT_FLOW_END}" nowrap="nowrap"><!-- INCLUDE pagination.html --></td>
 		<!-- ENDIF -->
 	</tr>
 	</table>
@@ -328,8 +328,8 @@
 
 <table width="100%" cellspacing="1">
 <tr>
-	<td width="40%" valign="top" nowrap="nowrap" align="left"><!-- IF S_TOPIC_MOD --><form method="post" action="{S_MOD_ACTION}"><span class="gensmall">{L_QUICK_MOD}:</span> {S_TOPIC_MOD} <input class="btnlite" type="submit" value="{L_GO}" /></form><!-- ENDIF --></td>
-	<td align="right" valign="top" nowrap="nowrap"><span class="gensmall"><!-- BEGIN rules -->{rules.RULE}<br /><!-- END rules --></span></td>
+	<td width="40%" valign="top" nowrap="nowrap" align="{S_CONTENT_FLOW_BEGIN}"><!-- IF S_TOPIC_MOD --><form method="post" action="{S_MOD_ACTION}"><span class="gensmall">{L_QUICK_MOD}:</span> {S_TOPIC_MOD} <input class="btnlite" type="submit" value="{L_GO}" /></form><!-- ENDIF --></td>
+	<td align="{S_CONTENT_FLOW_END}" valign="top" nowrap="nowrap"><span class="gensmall"><!-- BEGIN rules -->{rules.RULE}<br /><!-- END rules --></span></td>
 </tr>
 </table>
 
@@ -338,7 +338,7 @@
 <table width="100%" cellspacing="0">
 <tr>
 	<td><!-- IF S_DISPLAY_SEARCHBOX --><!-- INCLUDE searchbox.html --><!-- ENDIF --></td>
-	<td align="right"><!-- INCLUDE jumpbox.html --></td>
+	<td align="{S_CONTENT_FLOW_END}"><!-- INCLUDE jumpbox.html --></td>
 </tr>
 </table>
 

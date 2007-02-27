@@ -67,7 +67,7 @@
 
 		<!-- IF messagerow.S_PM_DELETED --><td class="row3"><!-- ELSE --><td class="row1"><!-- ENDIF -->
 			<!-- IF not messagerow.PM_IMG and messagerow.PM_CLASS -->
-				<span class="{messagerow.PM_CLASS}" style="float: left;"><img src="images/spacer.gif" width="10" height="10" alt="" /></span>&nbsp;
+				<span class="{messagerow.PM_CLASS}" style="float: {S_CONTENT_FLOW_BEGIN};"><img src="images/spacer.gif" width="10" height="10" alt="" /></span>&nbsp;
 			<!-- ELSEIF messagerow.PM_IMG -->
 				{messagerow.PM_IMG}&nbsp;
 			<!-- ENDIF -->
@@ -76,7 +76,7 @@
 				{messagerow.ATTACH_ICON_IMG} 
 				<!-- IF messagerow.S_PM_DELETED -->
 					{L_MESSAGE_REMOVED_FROM_OUTBOX}<br />
-					<a href="{messagerow.U_REMOVE_PM}" style="float:right;">{L_DELETE_MESSAGE}</a>
+					<a href="{messagerow.U_REMOVE_PM}" style="float: {S_CONTENT_FLOW_END};">{L_DELETE_MESSAGE}</a>
 				<!-- ELSE -->
 					<a href="{messagerow.U_VIEW_PM}">{messagerow.SUBJECT}</a>
 				<!-- ENDIF -->
@@ -102,8 +102,8 @@
 <tr>
 	<td class="cat">
 <!-- IF .messagerow -->
-	<div style="float: left;"><select name="export_option"><option value="CSV">{L_EXPORT_AS_CSV}</option><option value="CSV_EXCEL">{L_EXPORT_AS_CSV_EXCEL}</option><option value="XML">{L_EXPORT_AS_XML}</option></select>&nbsp;<input class="btnlite" type="submit" name="submit_export" value="{L_EXPORT_FOLDER}" /></div>
-	<div style="float: right;"><select name="mark_option">{S_MARK_OPTIONS}{S_MOVE_MARKED_OPTIONS}</select>&nbsp;<input class="btnlite" type="submit" name="submit_mark" value="{L_GO}" />&nbsp;</div>
+	<div style="float: {S_CONTENT_FLOW_BEGIN};"><select name="export_option"><option value="CSV">{L_EXPORT_AS_CSV}</option><option value="CSV_EXCEL">{L_EXPORT_AS_CSV_EXCEL}</option><option value="XML">{L_EXPORT_AS_XML}</option></select>&nbsp;<input class="btnlite" type="submit" name="submit_export" value="{L_EXPORT_FOLDER}" /></div>
+	<div style="float: {S_CONTENT_FLOW_END};"><select name="mark_option">{S_MARK_OPTIONS}{S_MOVE_MARKED_OPTIONS}</select>&nbsp;<input class="btnlite" type="submit" name="submit_mark" value="{L_GO}" />&nbsp;</div>
 <!-- ENDIF -->
 	</td>
 </tr>

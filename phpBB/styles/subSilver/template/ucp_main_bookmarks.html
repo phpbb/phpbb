@@ -32,7 +32,7 @@
 					<p class="gensmall"> [ {GOTO_PAGE_IMG}{L_GOTO_PAGE}: {topicrow.PAGINATION} ] </p>
 				<!-- ENDIF -->
 			</td>
-			<td style="padding: 4px;" align="left" valign="top" nowrap="nowrap">
+			<td style="padding: 4px;" align="{S_CONTENT_FLOW_BEGIN}" valign="top" nowrap="nowrap">
 				<p class="topicdetails">{topicrow.LAST_POST_TIME}</p>
 				<p class="topicdetails">{topicrow.LAST_POST_AUTHOR_FULL}
 					<a href="{topicrow.U_LAST_POST}">{topicrow.LAST_POST_IMG}</a>
@@ -49,13 +49,13 @@
 	<!-- END topicrow -->
 
 	<tr>
-		<td class="cat" colspan="5" align="right"><input class="btnlite" type="submit" name="unbookmark" value="{L_REMOVE_BOOKMARK_MARKED}" />&nbsp;</td>
+		<td class="cat" colspan="5" align="{S_CONTENT_FLOW_END}"><input class="btnlite" type="submit" name="unbookmark" value="{L_REMOVE_BOOKMARK_MARKED}" />&nbsp;</td>
 	</tr>
 <!-- ENDIF -->
 </table>
 
 <!-- IF not S_NO_DISPLAY_BOOKMARKS -->
-	<div class="gensmall" style="float: right; padding-top: 2px;"><b><a href="#" onclick="marklist('ucp', 't', true); return false;">{L_MARK_ALL}</a> :: <a href="#" onclick="marklist('ucp', 't', false); return false;">{L_UNMARK_ALL}</a></b></div>
+	<div class="gensmall" style="float: {S_CONTENT_FLOW_END}; padding-top: 2px;"><b><a href="#" onclick="marklist('ucp', 't', true); return false;">{L_MARK_ALL}</a> :: <a href="#" onclick="marklist('ucp', 't', false); return false;">{L_UNMARK_ALL}</a></b></div>
 <!-- ENDIF -->
 
 <!-- INCLUDE ucp_footer.html -->

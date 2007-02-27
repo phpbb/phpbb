@@ -8,7 +8,7 @@
 	<td class="row1">
 		<table border="0" cellspacing="0" cellpadding="0" width="100%">
 		<tr>
-			<td align="left"><!-- INCLUDE pagination.html -->
+			<td align="{S_CONTENT_FLOW_BEGIN}"><!-- INCLUDE pagination.html -->
 				<!-- IF S_VIEW_MESSAGE -->
 					<span class="gensmall">
 						<!-- IF U_PRINT_PM --><a href="{U_PRINT_PM}" title="{L_PRINT_PM}">{L_PRINT_PM}</a><!-- IF U_FORWARD_PM --> | <!-- ENDIF --><!-- ENDIF -->
@@ -16,7 +16,7 @@
 					</span>
 				<!-- ENDIF -->
 			</td>
-			<td align="right" nowrap="nowrap">
+			<td align="{S_CONTENT_FLOW_END}" nowrap="nowrap">
 				<!-- IF S_VIEW_MESSAGE -->
 					<form name="movepm" method="post" action="{S_PM_ACTION}" style="margin:0px">
 						<input type="hidden" name="marked_msg_id[]" value="{MSG_ID}" />
@@ -37,5 +37,5 @@
 </table>
 
 <!-- IF not S_VIEW_MESSAGE -->
-	<div style="float:right"><b class="gensmall"><a href="#" onclick="marklist('viewfolder', 'marked_msg_id', true); return false;">{L_MARK_ALL}</a> :: <a href="#" onclick="marklist('viewfolder', 'marked_msg_id', false); return false;">{L_UNMARK_ALL}</a></b></div>
+	<div style="float: {S_CONTENT_FLOW_END};"><b class="gensmall"><a href="#" onclick="marklist('viewfolder', 'marked_msg_id', true); return false;">{L_MARK_ALL}</a> :: <a href="#" onclick="marklist('viewfolder', 'marked_msg_id', false); return false;">{L_UNMARK_ALL}</a></b></div>
 <!-- ENDIF -->

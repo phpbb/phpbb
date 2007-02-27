@@ -20,23 +20,23 @@
 </tr>
 <!-- IF S_CHECK_DEFINED -->
 	<tr>
-		<td class="row1" width="50" align="left" valign="top"><b class="gen">{L_IF}:</b></td>
+		<td class="row1" width="50" align="{S_CONTENT_FLOW_BEGIN}" valign="top"><b class="gen">{L_IF}:</b></td>
 		<td class="row2" align="center" valign="top"><!-- IF S_CHECK_SELECT --><select name="check_option">{S_CHECK_OPTIONS}</select><!-- ELSE --><b class="gen">{CHECK_CURRENT}</b><input type="hidden" name="check_option" value="{CHECK_OPTION}" /><!-- ENDIF --></td>
-		<td class="row1" width="50" align="right" valign="top"><!-- IF S_CHECK_SELECT --><input type="submit" name="next" value="{L_NEXT}" class="btnlite" /><!-- ELSE -->&nbsp;<!-- ENDIF --></td>
+		<td class="row1" width="50" align="{S_CONTENT_FLOW_END}" valign="top"><!-- IF S_CHECK_SELECT --><input type="submit" name="next" value="{L_NEXT}" class="btnlite" /><!-- ELSE -->&nbsp;<!-- ENDIF --></td>
 	</tr>
 <!-- ENDIF -->
 <!-- IF S_RULE_DEFINED -->
 	<tr>
-		<td class="row1" width="50" align="left" valign="top"><!-- IF S_RULE_SELECT --><input type="submit" name="back[rule]" value="{L_PREVIOUS}" class="btnlite" /><!-- ELSE -->&nbsp;<!-- ENDIF --></td>
+		<td class="row1" width="50" align="{S_CONTENT_FLOW_BEGIN}" valign="top"><!-- IF S_RULE_SELECT --><input type="submit" name="back[rule]" value="{L_PREVIOUS}" class="btnlite" /><!-- ELSE -->&nbsp;<!-- ENDIF --></td>
 		<td class="row2" align="center" valign="top"><!-- IF S_RULE_SELECT --><select name="rule_option">{S_RULE_OPTIONS}</select><!-- ELSE --><b class="gen">{RULE_CURRENT}</b><input type="hidden" name="rule_option" value="{RULE_OPTION}" /><!-- ENDIF --></td>
-		<td class="row1" width="50" align="right" valign="top"><!-- IF S_RULE_SELECT --><input type="submit" name="next" value="{L_NEXT}" class="btnlite" /><!-- ELSE -->&nbsp;<!-- ENDIF --></td>
+		<td class="row1" width="50" align="{S_CONTENT_FLOW_END}" valign="top"><!-- IF S_RULE_SELECT --><input type="submit" name="next" value="{L_NEXT}" class="btnlite" /><!-- ELSE -->&nbsp;<!-- ENDIF --></td>
 	</tr>
 <!-- ENDIF -->
 	
 <!-- IF S_COND_DEFINED -->
 	<!-- IF S_COND_SELECT or COND_CURRENT -->
 		<tr>
-			<td class="row1" width="50" align="left" valign="top"><!-- IF S_COND_SELECT --><input type="submit" name="back[cond]" value="{L_PREVIOUS}" class="btnlite" /><!-- ELSE -->&nbsp;<!-- ENDIF --></td>
+			<td class="row1" width="50" align="{S_CONTENT_FLOW_BEGIN}" valign="top"><!-- IF S_COND_SELECT --><input type="submit" name="back[cond]" value="{L_PREVIOUS}" class="btnlite" /><!-- ELSE -->&nbsp;<!-- ENDIF --></td>
 			<td class="row2" align="center" valign="top">
 				<!-- IF S_COND_SELECT -->
 					<!-- IF S_TEXT_CONDITION -->
@@ -51,7 +51,7 @@
 						<input type="hidden" name="rule_string" value="{CURRENT_STRING}" /><input type="hidden" name="rule_user_id" value="{CURRENT_USER_ID}" /><input type="hidden" name="rule_group_id" value="{CURRENT_GROUP_ID}" />
 				<!-- ENDIF -->
 			</td>
-			<td class="row1" width="50" align="right" valign="top"><!-- IF S_COND_SELECT --><input type="submit" name="next" value="{L_NEXT}" class="btnlite" /><!-- ELSE -->&nbsp;<!-- ENDIF --></td>
+			<td class="row1" width="50" align="{S_CONTENT_FLOW_END}" valign="top"><!-- IF S_COND_SELECT --><input type="submit" name="next" value="{L_NEXT}" class="btnlite" /><!-- ELSE -->&nbsp;<!-- ENDIF --></td>
 		</tr>
 	<!-- ENDIF -->
 	<input type="hidden" name="cond_option" value="{COND_OPTION}" />
@@ -61,9 +61,9 @@
 
 <!-- IF S_ACTION_DEFINED -->
 	<tr>
-		<td class="row1" width="50" align="left" valign="top"><!-- IF S_ACTION_SELECT --><input type="submit" name="back[action]" value="{L_PREVIOUS}" class="btnlite" /><!-- ELSE -->&nbsp;<!-- ENDIF --></td>
+		<td class="row1" width="50" align="{S_CONTENT_FLOW_BEGIN}" valign="top"><!-- IF S_ACTION_SELECT --><input type="submit" name="back[action]" value="{L_PREVIOUS}" class="btnlite" /><!-- ELSE -->&nbsp;<!-- ENDIF --></td>
 		<td class="row2" align="center" valign="top"><!-- IF S_ACTION_SELECT --><select name="action_option">{S_ACTION_OPTIONS}</select><!-- ELSE --><b class="gen">{ACTION_CURRENT}</b><input type="hidden" name="action_option" value="{ACTION_OPTION}" /><!-- ENDIF --></td>
-		<td class="row1" width="50" align="right" valign="top"><!-- IF S_ACTION_SELECT --><input type="submit" name="add_rule" value="{L_ADD_RULE}" class="btnlite" /><!-- ELSE -->&nbsp;<!-- ENDIF --></td>
+		<td class="row1" width="50" align="{S_CONTENT_FLOW_END}" valign="top"><!-- IF S_ACTION_SELECT --><input type="submit" name="add_rule" value="{L_ADD_RULE}" class="btnlite" /><!-- ELSE -->&nbsp;<!-- ENDIF --></td>
 	</tr>
 <!-- ENDIF -->
 </table>
@@ -106,7 +106,7 @@
 		<td class="row1"><input type="text" class="post" name="new_folder_name" size="30" maxlength="30" /></td>
 	</tr>
 	<tr>
-		<td class="row1" align="right" colspan="2"><input class="btnlite" style="width:150px" type="submit" name="rename_folder" value="{L_RENAME}" /></td>
+		<td class="row1" align="{S_CONTENT_FLOW_END}" colspan="2"><input class="btnlite" style="width:150px" type="submit" name="rename_folder" value="{L_RENAME}" /></td>
 	</tr>
 	</table>
 
@@ -128,7 +128,7 @@
 		<td class="row1"><input type="text" class="post" name="foldername" size="30" maxlength="30" /></td>
 	</tr>
 	<tr>
-		<td class="row1" align="right" colspan="2"><input class="btnlite" style="width:150px" type="submit" name="addfolder" value="{L_ADD}" /></td>
+		<td class="row1" align="{S_CONTENT_FLOW_END}" colspan="2"><input class="btnlite" style="width:150px" type="submit" name="addfolder" value="{L_ADD}" /></td>
 	</tr>
 <!-- ENDIF -->
 </table>
@@ -156,7 +156,7 @@
 	</tr>
 	<tr>
 		<td class="row2" width="200">&nbsp;</td>
-		<td class="row2" colspan="2" align="right"><input class="btnlite" style="width:150px" type="submit" name="remove_folder" value="{L_REMOVE}" /></td>
+		<td class="row2" colspan="2" align="{S_CONTENT_FLOW_END}"><input class="btnlite" style="width:150px" type="submit" name="remove_folder" value="{L_REMOVE}" /></td>
 	</tr>
 	</table>
 
@@ -184,7 +184,7 @@
 	<td class="row2"><span class="genmed">{DEFAULT_ACTION}</span></td>
 </tr>
 <tr>
-	<td class="row1" colspan="2" align="right"><input class="btnlite" style="width:150px" type="submit" name="fullfolder" value="{L_CHANGE}" /></td>
+	<td class="row1" colspan="2" align="{S_CONTENT_FLOW_END}"><input class="btnlite" style="width:150px" type="submit" name="fullfolder" value="{L_CHANGE}" /></td>
 </tr>
 </table>
 </form>
