@@ -871,7 +871,7 @@ switch ($mode)
 
 		// Additional sorting options for user search ... if search is enabled, if not
 		// then only admins can make use of this (for ACP functionality)
-		$sql_select = $sql_from = $sql_where = $order_by = '';
+		$sql_select = $sql_where_data = $sql_from = $sql_where = $order_by = '';
 
 		$form			= request_var('form', '');
 		$field			= request_var('field', '');
@@ -1112,6 +1112,7 @@ switch ($mode)
 			$order_by = 'ug.group_leader DESC, ';
 
 			$sql_where .= " AND ug.user_pending = 0 AND u.user_id = ug.user_id AND ug.group_id = $group_id";
+			$sql_where_data = ' AND u.user_id = ug.user_id';
 		}
 		
 		// Sorting and order
@@ -1224,92 +1225,112 @@ switch ($mode)
 			);
 		}
 
-		$sql = 'SELECT session_user_id, MAX(session_time) AS session_time
-			FROM ' . SESSIONS_TABLE . '
-			WHERE session_time >= ' . (time() - $config['session_length']) . '
-				AND session_user_id <> ' . ANONYMOUS . '
-			GROUP BY session_user_id';
-		$result = $db->sql_query($sql);
-
-		$session_times = array();
-		while ($row = $db->sql_fetchrow($result))
-		{
-			$session_times[$row['session_user_id']] = $row['session_time'];
-		}
-		$db->sql_freeresult($result);
-
-		// Do the SQL thang
-		$sql = "SELECT u.*
-				$sql_select
+		// Get us some users :D
+		$sql = "SELECT u.user_id
 			FROM " . USERS_TABLE . " u
 				$sql_from
 			WHERE u.user_type IN (" . USER_NORMAL . ', ' . USER_FOUNDER . ")
-				$sql_where
-			ORDER BY $order_by";
+				$sql_where";
 		$result = $db->sql_query_limit($sql, $config['topics_per_page'], $start);
 
-		$id_cache = array();
+		$user_list = array();
 		while ($row = $db->sql_fetchrow($result))
 		{
-			$row['session_time'] = (!empty($session_times[$row['user_id']])) ? $session_times[$row['user_id']] : 0;
-			$row['last_visit'] = (!empty($row['session_time'])) ? $row['session_time'] : $row['user_lastvisit'];
-
-			$id_cache[$row['user_id']] = $row;
+			$user_list[] = (int) $row['user_id'];
 		}
 		$db->sql_freeresult($result);
-			
-		// Load custom profile fields
-		if ($config['load_cpf_memberlist'])
-		{
-			include_once($phpbb_root_path . 'includes/functions_profile_fields.' . $phpEx);
-			$cp = new custom_profile();
 
-			// Grab all profile fields from users in id cache for later use - similar to the poster cache
-			$profile_fields_cache = $cp->generate_profile_fields_template('grab', array_keys($id_cache));
-		}
-
-		// If we sort by last active date we need to adjust the id cache due to user_lastvisit not being the last active date...
-		if ($sort_key == 'l')
+		// So, did we get any users?
+		if (sizeof($user_list))
 		{
-			$lesser_than = ($sort_dir == 'a') ? -1 : 1;
-			uasort($id_cache, create_function('$first, $second', "return (\$first['last_visit'] == \$second['last_visit']) ? 0 : ((\$first['last_visit'] < \$second['last_visit']) ? $lesser_than : ($lesser_than * -1));"));
-		}
+			// Session time?! Session time...
+			$sql = 'SELECT session_user_id, MAX(session_time) AS session_time
+				FROM ' . SESSIONS_TABLE . '
+				WHERE session_time >= ' . (time() - $config['session_length']) . '
+					AND ' . $db->sql_in_set('session_user_id', $user_list) . '
+				GROUP BY session_user_id';
+			$result = $db->sql_query($sql);
 
-		$i = 0;
-		foreach ($id_cache as $user_id => $row)
-		{
-			$cp_row = array();
+			$session_times = array();
+			while ($row = $db->sql_fetchrow($result))
+			{
+				$session_times[$row['session_user_id']] = $row['session_time'];
+			}
+			$db->sql_freeresult($result);
+
+			// Do the SQL thang
+			$sql = "SELECT u.*
+					$sql_select
+				FROM " . USERS_TABLE . " u
+					$sql_from
+				WHERE " . $db->sql_in_set('u.user_id', $user_list) . "
+					$sql_where_data
+				ORDER BY $order_by";
+			$result = $db->sql_query($sql);
+
+			$id_cache = array();
+			while ($row = $db->sql_fetchrow($result))
+			{
+				$row['session_time'] = (!empty($session_times[$row['user_id']])) ? $session_times[$row['user_id']] : 0;
+				$row['last_visit'] = (!empty($row['session_time'])) ? $row['session_time'] : $row['user_lastvisit'];
+
+				$id_cache[$row['user_id']] = $row;
+			}
+			$db->sql_freeresult($result);
+				
+			// Load custom profile fields
 			if ($config['load_cpf_memberlist'])
 			{
-				$cp_row = (isset($profile_fields_cache[$user_id])) ? $cp->generate_profile_fields_template('show', false, $profile_fields_cache[$user_id]) : array();
+				include_once($phpbb_root_path . 'includes/functions_profile_fields.' . $phpEx);
+				$cp = new custom_profile();
+
+				// Grab all profile fields from users in id cache for later use - similar to the poster cache
+				$profile_fields_cache = $cp->generate_profile_fields_template('grab', $user_list);
 			}
 
-			$memberrow = array_merge(show_profile($row), array(
-				'ROW_NUMBER'		=> $i + ($start + 1),
-
-				'S_CUSTOM_PROFILE'	=> (isset($cp_row['row']) && sizeof($cp_row['row'])) ? true : false,
-				'S_GROUP_LEADER'	=> (isset($row['group_leader']) && $row['group_leader']) ? true : false,
-
-				'U_VIEW_PROFILE'	=> append_sid("{$phpbb_root_path}memberlist.$phpEx", 'mode=viewprofile&amp;u=' . $user_id))
-			);
-
-			if (isset($cp_row['row']) && sizeof($cp_row['row']))
+			// If we sort by last active date we need to adjust the id cache due to user_lastvisit not being the last active date...
+			if ($sort_key == 'l')
 			{
-				$memberrow = array_merge($memberrow, $cp_row['row']);
+				$lesser_than = ($sort_dir == 'a') ? -1 : 1;
+				uasort($id_cache, create_function('$first, $second', "return (\$first['last_visit'] == \$second['last_visit']) ? 0 : ((\$first['last_visit'] < \$second['last_visit']) ? $lesser_than : ($lesser_than * -1));"));
 			}
 
-			$template->assign_block_vars('memberrow', $memberrow);
-
-			if (isset($cp_row['blockrow']) && sizeof($cp_row['blockrow']))
+			$i = 0;
+			foreach ($id_cache as $user_id => $row)
 			{
-				foreach ($cp_row['blockrow'] as $field_data)
+				$cp_row = array();
+				if ($config['load_cpf_memberlist'])
 				{
-					$template->assign_block_vars('memberrow.custom_fields', $field_data);
+					$cp_row = (isset($profile_fields_cache[$user_id])) ? $cp->generate_profile_fields_template('show', false, $profile_fields_cache[$user_id]) : array();
 				}
-			}
 
-			$i++;
-			unset($id_cache[$user_id]);
+				$memberrow = array_merge(show_profile($row), array(
+					'ROW_NUMBER'		=> $i + ($start + 1),
+
+					'S_CUSTOM_PROFILE'	=> (isset($cp_row['row']) && sizeof($cp_row['row'])) ? true : false,
+					'S_GROUP_LEADER'	=> (isset($row['group_leader']) && $row['group_leader']) ? true : false,
+
+					'U_VIEW_PROFILE'	=> append_sid("{$phpbb_root_path}memberlist.$phpEx", 'mode=viewprofile&amp;u=' . $user_id))
+				);
+
+				if (isset($cp_row['row']) && sizeof($cp_row['row']))
+				{
+					$memberrow = array_merge($memberrow, $cp_row['row']);
+				}
+
+				$template->assign_block_vars('memberrow', $memberrow);
+
+				if (isset($cp_row['blockrow']) && sizeof($cp_row['blockrow']))
+				{
+					foreach ($cp_row['blockrow'] as $field_data)
+					{
+						$template->assign_block_vars('memberrow.custom_fields', $field_data);
+					}
+				}
+
+				$i++;
+				unset($id_cache[$user_id]);
+			}
 		}
 	
 		// Generate page
