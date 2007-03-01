@@ -114,13 +114,6 @@ class session
 			'page'				=> $page
 		);
 
-/*
-		if (!file_exists($page_name))
-		{
-			trigger_error('You are on a page that does not exist!', E_USER_ERROR);
-		}
-*/
-
 		return $page_array;
 	}
 
@@ -573,7 +566,7 @@ class session
 			WHERE session_id = \'' . $db->sql_escape($this->session_id) . '\'
 				AND session_user_id = ' . ANONYMOUS;
 
-		if (!$this->session_id || !$db->sql_query($sql) || !$db->sql_affectedrows())
+		if (!defined('IN_ERROR_HANDLER') && (!$this->session_id || !$db->sql_query($sql) || !$db->sql_affectedrows()))
 		{
 			// Limit new sessions in 1 minute period (if required)
 			if ((!isset($this->data['session_time']) || !$this->data['session_time']) && $config['active_sessions'])
@@ -1360,6 +1353,12 @@ class user extends session
 
 		$this->img_lang = (file_exists($phpbb_root_path . 'styles/' . $this->theme['imageset_path'] . '/imageset/' . $this->lang_name)) ? $this->lang_name : $config['default_lang'];
 
+		// If this function got called from the error handler we are finished here.
+		if (defined('IN_ERROR_HANDLER'))
+		{
+			return;
+		}
+
 		// Disable board if the install/ directory is still present
 		// For the brave development army we do not care about this, else we need to comment out this everytime we develop locally
 		if (!defined('DEBUG_EXTRA') && !defined('ADMIN_START') && !defined('IN_INSTALL') && !defined('IN_LOGIN') && file_exists($phpbb_root_path . 'install'))
@@ -1373,7 +1372,6 @@ class user extends session
 			{
 				$message = (!empty($config['board_disable_msg'])) ? $config['board_disable_msg'] : 'BOARD_DISABLE';
 			}
-
 			trigger_error($message);
 		}
 
