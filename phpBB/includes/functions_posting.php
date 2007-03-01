@@ -903,7 +903,7 @@ function topic_review($topic_id, $forum_id, $mode = 'topic_review', $cur_post_id
 	$rowset = array();
 	while ($row = $db->sql_fetchrow($result))
 	{
-		$rowset[] = $row;
+		$rowset[$row['post_id']] = $row;
 		$bbcode_bitfield = $bbcode_bitfield | base64_decode($row['bbcode_bitfield']);
 	}
 	$db->sql_freeresult($result);
@@ -915,8 +915,17 @@ function topic_review($topic_id, $forum_id, $mode = 'topic_review', $cur_post_id
 		$bbcode = new bbcode(base64_encode($bbcode_bitfield));
 	}
 
-	foreach ($rowset as $i => $row)
+	for ($i = 0, $end = sizeof($post_list); $i < $end; ++$i)
 	{
+		// A non-existing rowset only happens if there was no user present for the entered poster_id
+		// This could be a broken posts table.
+		if (!isset($rowset[$post_list[$i]]))
+		{
+			continue;
+		}
+
+		$row =& $rowset[$post_list[$i]];
+
 		$poster_id		= $row['user_id'];
 		$post_subject	= $row['post_subject'];
 		$message		= censor_text($row['post_text']);
