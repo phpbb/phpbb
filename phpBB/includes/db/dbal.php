@@ -299,11 +299,12 @@ class dbal
 	/**
 	* Build IN or NOT IN sql comparison string, uses <> or = on single element
 	* arrays to improve comparison speed
+	*
 	* @access public
 	* @param	string	$field				name of the sql column that shall be compared
 	* @param	array	$array				array of values that are allowed (IN) or not allowed (NOT IN)
-	* @param	bool	$negate				true for IN (), false for NOT IN ()
-	* @param	bool	$allow_empty_set	Allow $array to be empty, this function will return 1=1 or 1=0 then
+	* @param	bool	$negate				true for NOT IN (), false for IN () (default)
+	* @param	bool	$allow_empty_set	If true, allow $array to be empty, this function will return 1=1 or 1=0 then. Default to false.
 	*/
 	function sql_in_set($field, $array, $negate = false, $allow_empty_set = false)
 	{
