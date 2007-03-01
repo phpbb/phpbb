@@ -836,7 +836,7 @@ if (!$get_info)
 				array('user_email_hash',		'users.user_email',					'gen_email_hash'),
 				array('user_birthday',			((defined('MOD_BIRTHDAY')) ? 'users.user_birthday' : ''),	'phpbb_get_birthday'),
 				array('user_lastvisit',			'users.user_lastvisit',				''),
-				array('user_lastmark',			'users.user_lastmark',				''),
+				array('user_lastmark',			'users.user_lastvisit',				''),
 				array('user_lang',				$config['default_lang'],			''),
 				array('',						'users.user_lang',					''),
 				array('user_timezone',			'users.user_timezone',				''),
