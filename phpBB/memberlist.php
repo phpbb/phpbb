@@ -1230,7 +1230,8 @@ switch ($mode)
 			FROM " . USERS_TABLE . " u
 				$sql_from
 			WHERE u.user_type IN (" . USER_NORMAL . ', ' . USER_FOUNDER . ")
-				$sql_where";
+				$sql_where
+			ORDER BY $order_by";
 		$result = $db->sql_query_limit($sql, $config['topics_per_page'], $start);
 
 		$user_list = array();
@@ -1264,8 +1265,7 @@ switch ($mode)
 				FROM " . USERS_TABLE . " u
 					$sql_from
 				WHERE " . $db->sql_in_set('u.user_id', $user_list) . "
-					$sql_where_data
-				ORDER BY $order_by";
+					$sql_where_data";
 			$result = $db->sql_query($sql);
 
 			$id_cache = array();
@@ -1295,9 +1295,11 @@ switch ($mode)
 				uasort($id_cache, create_function('$first, $second', "return (\$first['last_visit'] == \$second['last_visit']) ? 0 : ((\$first['last_visit'] < \$second['last_visit']) ? $lesser_than : ($lesser_than * -1));"));
 			}
 
-			$i = 0;
-			foreach ($id_cache as $user_id => $row)
+			for ($i = 0, $end = sizeof($user_list); $i < $end; ++$i)
 			{
+				$user_id = $user_list[$i];
+				$row =& $id_cache[$user_id];
+
 				$cp_row = array();
 				if ($config['load_cpf_memberlist'])
 				{
