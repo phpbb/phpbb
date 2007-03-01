@@ -172,7 +172,7 @@ if (!$get_info)
 		WHERE config_name = 'upload_dir'";
 	$result = $src_db->sql_query($sql);
 
-	if ($result && $row = $db->sql_fetchrow($result))
+	if ($result && $row = $src_db->sql_fetchrow($result))
 	{
 		// Here the constant is defined
 		define('MOD_ATTACHMENT', true);
@@ -184,9 +184,8 @@ if (!$get_info)
 			'extensions',
 			'extension_groups'
 		);
-
-		$db->sql_freeresult($result);
 	}
+	$src_db->sql_freeresult($result);
 
 	/**
 	* Tests for further MODs can be included here.
