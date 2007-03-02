@@ -2401,10 +2401,98 @@ function view_log($mode, &$log, &$log_count, $limit = 0, $offset = 0, $forum_id 
 /**
 * Update foes - remove moderators and administrators from foe lists...
 */
-function update_foes()
+function update_foes($group_id = false, $user_id = false)
 {
 	global $db, $auth;
 
+	// update foes for some user
+	if (is_array($user_id) && sizeof($user_id))
+	{
+		$sql = 'DELETE FROM ' . ZEBRA_TABLE . ' 
+			WHERE ' . $db->sql_in_set('zebra_id', $user_id) . '
+				AND foe = 1';
+		$db->sql_query($sql);
+		return;
+	}
+
+	// update foes for some group
+	if (is_array($group_id) && sizeof($group_id))
+	{
+		// Grab group settings... 
+		$sql = $db->sql_build_query('SELECT', array(
+			'SELECT'	=> 'a.group_id',
+
+			'FROM'		=> array(
+				ACL_OPTIONS_TABLE	=> 'ao',
+				ACL_GROUPS_TABLE	=> 'a'
+			),
+
+			'LEFT_JOIN'	=> array(
+				array(
+					'FROM'	=> array(ACL_ROLES_DATA_TABLE => 'r'),
+					'ON'	=> 'a.auth_role_id = r.role_id'
+				),
+			),
+
+			'WHERE'		=> '(ao.auth_option_id = a.auth_option_id OR ao.auth_option_id = r.auth_option_id)
+				AND ' . $db->sql_in_set('a.group_id', $group_id) . "
+				AND ao.auth_option IN ('a_', 'm_')",
+
+			'GROUP_BY'	=> 'a.group_id'
+		));
+		$result = $db->sql_query($sql);
+
+		$groups = array();
+		while ($row = $db->sql_fetchrow($result))
+		{
+			$groups[] = (int) $row['group_id'];
+		}
+		$db->sql_freeresult($result);
+
+		if (!sizeof($groups))
+		{
+			return;
+		}
+
+		switch ($db->sql_layer)
+		{
+			case 'mysqli':
+			case 'mysql4':
+				$sql = 'DELETE z.*
+					FROM ' . ZEBRA_TABLE . ' z, ' . USER_GROUP_TABLE . ' ug
+					WHERE z.zebra_id = ug.user_id
+						AND z.foe = 1
+						AND ' . $db->sql_in_set('ug.group_id', $groups);
+				$db->sql_query($sql);
+			break;
+
+			default:
+				$sql = 'SELECT user_id
+					FROM ' . USER_GROUP_TABLE . '
+					WHERE ' . $db->sql_in_set('group_id', $groups);
+				$result = $db->sql_query($sql);
+
+				$users = array();
+				while ($row = $db->sql_fetchrow($result))
+				{
+					$users[] = (int) $row['user_id'];
+				}
+				$db->sql_freeresult($result);
+
+				if (sizeof($users))
+				{				
+					$sql = 'DELETE FROM ' . ZEBRA_TABLE . ' 
+						WHERE ' . $db->sql_in_set('zebra_id', $users) . '
+							AND foe = 1';
+					$db->sql_query($sql);
+				}
+			break;
+		}
+
+		return;
+	}
+
+	// update foes for everyone
 	$perms = array();
 	foreach ($auth->acl_get_list(false, array('a_', 'm_'), false) as $forum_id => $forum_ary)
 	{
