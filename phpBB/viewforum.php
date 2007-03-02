@@ -372,13 +372,27 @@ else
 	$sql_start = $start;
 }
 
+if ($forum_data['forum_type'] == FORUM_POST || !sizeof($active_forum_ary))
+{
+	$sql_where = 't.forum_id = ' . $forum_id;
+}
+else if (empty($active_forum_ary['exclude_forum_id']))
+{
+	$sql_where = $db->sql_in_set('t.forum_id', $active_forum_ary['forum_id']);
+}
+else
+{
+	$get_forum_ids = array_diff($active_forum_ary['forum_id'], $active_forum_ary['exclude_forum_id']);
+	$sql_where = (sizeof($get_forum_ids)) ? $db->sql_in_set('t.forum_id', $get_forum_ids) : 't.forum_id = ' . $forum_id;
+}
+
 // SQL array for obtaining topics/stickies
 $sql_array = array(
 	'SELECT'		=> $sql_array['SELECT'],
 	'FROM'			=> $sql_array['FROM'],
 	'LEFT_JOIN'		=> $sql_array['LEFT_JOIN'],
 
-	'WHERE'			=> (($forum_data['forum_type'] == FORUM_POST || !sizeof($active_forum_ary)) ? 't.forum_id = ' . $forum_id : $db->sql_in_set('t.forum_id', $active_forum_ary['forum_id'])) . "
+	'WHERE'			=> $sql_where . "
 		AND t.topic_type = {SQL_TOPIC_TYPE}
 		$sql_approved
 		$sql_limit_time",

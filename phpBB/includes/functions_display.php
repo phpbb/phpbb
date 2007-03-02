@@ -18,7 +18,7 @@ function display_forums($root_data = '', $display_moderators = true, $return_mod
 
 	$forum_rows = $subforums = $forum_ids = $forum_ids_moderator = $forum_moderators = $active_forum_ary = array();
 	$parent_id = $visible_forums = 0;
-	$sql_from = $lastread_select = '';
+	$sql_from = '';
 	
 	// Mark forums read?
 	$mark_read = request_var('mark', '');
@@ -40,19 +40,24 @@ function display_forums($root_data = '', $display_moderators = true, $return_mod
 	}
 	else
 	{
-		$sql_where = ' WHERE left_id > ' . $root_data['left_id'] . ' AND left_id < ' . $root_data['right_id'];
+		$sql_where = 'left_id > ' . $root_data['left_id'] . ' AND left_id < ' . $root_data['right_id'];
 	}
 
 	// Display list of active topics for this category?
 	$show_active = (isset($root_data['forum_flags']) && ($root_data['forum_flags'] & FORUM_FLAG_ACTIVE_TOPICS)) ? true : false;
 
-	$sql_from = FORUMS_TABLE . ' f ';
-	$lastread_select = '';
+	$sql_array = array(
+		'SELECT'	=> 'f.*',
+		'FROM'		=> array(
+			FORUMS_TABLE		=> 'f'
+		),
+		'LEFT_JOIN'	=> array(),
+	);
 
 	if ($config['load_db_lastread'] && $user->data['is_registered'])
 	{
-		$sql_from = FORUMS_TABLE . ' f LEFT JOIN ' . FORUMS_TRACK_TABLE . ' ft ON (ft.user_id = ' . $user->data['user_id'] . ' AND ft.forum_id = f.forum_id)';
-		$lastread_select = ', ft.mark_time ';
+		$sql_array['LEFT_JOIN'][] = array('FROM' => array(FORUMS_TRACK_TABLE => 'ft'), 'ON' => 'ft.user_id = ' . $user->data['user_id'] . ' AND ft.forum_id = f.forum_id');
+		$sql_array['SELECT'] .= ', ft.mark_time';
 	}
 	else if ($config['load_anon_lastread'] || $user->data['is_registered'])
 	{
@@ -65,10 +70,26 @@ function display_forums($root_data = '', $display_moderators = true, $return_mod
 		}
 	}
 
-	$sql = "SELECT f.* $lastread_select
-		FROM $sql_from
-		$sql_where
-		ORDER BY f.left_id";
+	if ($show_active)
+	{
+		$sql_array['LEFT_JOIN'][] = array(
+			'FROM'	=> array(FORUMS_ACCESS_TABLE => 'fa'),
+			'ON'	=> "fa.forum_id = f.forum_id AND fa.session_id = '" . $db->sql_escape($user->session_id) . "'"
+		);
+
+		$sql_array['SELECT'] .= ', fa.user_id';
+	}
+
+	$sql = $db->sql_build_query('SELECT', array(
+		'SELECT'	=> $sql_array['SELECT'],
+		'FROM'		=> $sql_array['FROM'],
+		'LEFT_JOIN'	=> $sql_array['LEFT_JOIN'],
+
+		'WHERE'		=> $sql_where,
+
+		'ORDER_BY'	=> 'f.left_id',
+	));
+
 	$result = $db->sql_query($sql);
 
 	$forum_tracking_info = array();
@@ -142,6 +163,12 @@ function display_forums($root_data = '', $display_moderators = true, $return_mod
 			$active_forum_ary['enable_icons'][]	= $row['enable_icons'];
 			$active_forum_ary['forum_topics']	+= ($auth->acl_get('m_approve', $forum_id)) ? $row['forum_topics_real'] : $row['forum_topics'];
 			$active_forum_ary['forum_posts']	+= $row['forum_posts'];
+
+			// If this is a passworded forum we do not show active topics from it if the user is not authorized to view it...
+			if ($row['forum_password'] && $row['user_id'] != $user->data['user_id'])
+			{
+				$active_forum_ary['exclude_forum_id'][] = $forum_id;
+			}
 		}
 
 		//
