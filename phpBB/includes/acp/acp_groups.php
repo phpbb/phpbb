@@ -692,11 +692,30 @@ class acp_groups
 			'S_GROUP_ADD'	=> ($auth->acl_get('a_groupadd')) ? true : false)
 		);
 
-		$sql = 'SELECT g.group_id, g.group_name, g.group_type, COUNT(ug.user_id) AS total_members 
+		// Get us all the groups
+		$sql = 'SELECT g.group_id, g.group_name, g.group_type
 			FROM ' . GROUPS_TABLE . ' g
-			LEFT JOIN ' . USER_GROUP_TABLE . ' ug ON (g.group_id = ug.group_id)
-			GROUP BY g.group_id, g.group_name, g.group_type
 			ORDER BY g.group_type ASC, g.group_name';
+		$result = $db->sql_query($sql);
+
+		$iterate = $lookup = $cached_group_data = array();
+		while ($row = $db->sql_fetchrow($result))
+		{
+			$type = ($row['group_type'] == GROUP_SPECIAL) ? 'special' : 'normal';
+			// used to determine what type a group is
+			$lookup[$row['group_id']] = $type;
+			// used for easy access to the data within a group
+			$cached_group_data[$type][$row['group_id']] = $row;
+			// this array holds the properly sorted information
+			$iterate[$type][] = $row['group_id'];
+		}
+		$db->sql_freeresult($result);
+
+		// How many people are in which group?
+		$sql = 'SELECT COUNT(ug.user_id) AS total_members, ug.group_id
+			FROM ' . USER_GROUP_TABLE . ' ug
+			WHERE ' . $db->sql_in_set('ug.group_id', array_keys($lookup)) . '
+			GROUP BY ug.group_id';
 		$result = $db->sql_query($sql);
 
 		$special = $normal = 0;
@@ -704,21 +723,38 @@ class acp_groups
 
 		while ($row = $db->sql_fetchrow($result))
 		{
-			$type = ($row['group_type'] == GROUP_SPECIAL) ? 'special' : 'normal';
+			$type = $lookup[$row['group_id']];
+			$data = &$cached_group_data[$type][$row['group_id']];
 
 			$group_ary[$type][$$type]['group_id'] = $row['group_id'];
-			$group_ary[$type][$$type]['group_name'] = $row['group_name'];
-			$group_ary[$type][$$type]['group_type'] = $row['group_type'];
+			$group_ary[$type][$$type]['group_name'] = $data['group_name'];
+			$group_ary[$type][$$type]['group_type'] = $data['group_type'];
 			$group_ary[$type][$$type]['total_members'] = $row['total_members'];
+			unset($cached_group_data[$type][$row['group_id']], $lookup[$row['group_id']]);
 
 			$$type++;
 		}
 		$db->sql_freeresult($result);
 
+		// SQL query ignores empty groups, lets fill in the details ;)
+		foreach ($lookup as $group_id => $type)
+		{
+			$data = &$cached_group_data[$type][$group_id];
+
+			$group_ary[$type][$$type]['group_id'] = (string) $group_id;
+			$group_ary[$type][$$type]['group_name'] = $data['group_name'];
+			$group_ary[$type][$$type]['group_type'] = $data['group_type'];
+			$group_ary[$type][$$type]['total_members'] = '0';
+
+			$$type++;
+		}
+
+		unset($cached_group_data);
+
 		ksort($group_ary);
 
 		$special_toggle = false;
-		foreach ($group_ary as $type => $row_ary)
+		foreach ($iterate as $type => $row_ary)
 		{
 			if ($type == 'special')
 			{
@@ -727,9 +763,9 @@ class acp_groups
 				);
 			}
 
-			foreach ($row_ary as $row)
+			foreach ($row_ary as $key => $group_id)
 			{
-				$group_id = $row['group_id'];
+				$row = &$group_ary[$type][$key];
 				$group_name = (!empty($user->lang['G_' . $row['group_name']]))? $user->lang['G_' . $row['group_name']] : $row['group_name'];
 				
 				$template->assign_block_vars('groups', array(
