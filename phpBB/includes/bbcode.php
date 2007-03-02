@@ -176,7 +176,7 @@ class bbcode
 							'[/quote:$uid]'	=> $this->bbcode_tpl('quote_close', $bbcode_id)
 						),
 						'preg' => array(
-							'#\[quote(?:=&quot;(.*?)&quot;)?:$uid\](.)#ise'	=> "\$this->bbcode_second_pass_quote('\$1', '\$2')"
+							'#\[quote(?:=&quot;(.*?)&quot;)?:$uid\]((?!\[quote(?:=&quot;(.*?)&quot;)?:$uid\]).)?#ise'	=> "\$this->bbcode_second_pass_quote('\$1', '\$2')"
 						)
 					);
 				break;
@@ -523,9 +523,9 @@ class bbcode
 		$username = str_replace('\"', '"', $username);
 
 		// remove newline at the beginning
-		if ($quote[0] == "\n")
+		if ($quote == "\n")
 		{
-			$quote = substr($quote, 1);
+			$quote = '';
 		}
 
 		$quote = (($username) ? str_replace('$1', $username, $this->bbcode_tpl('quote_username_open')) : $this->bbcode_tpl('quote_open')) . $quote;
