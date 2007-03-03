@@ -231,7 +231,10 @@ class acm
 
 		if ($var_name == 'sql' && !empty($table))
 		{
-			$regex = '(' . ((is_array($table)) ? implode('|', $table) : $table) . ')';
+			if (!is_array($table))
+			{
+				$table = array($table);
+			}
 
 			$dir = @opendir($this->cache_dir);
 
@@ -247,11 +250,25 @@ class acm
 					continue;
 				}
 
-				$fp = fopen($this->cache_dir . $entry, 'rb');
-				$file = fread($fp, filesize($this->cache_dir . $entry));
-				@fclose($fp);
+				// The following method is more failproof than simply assuming the query is on line 3 (which it should be)
 
-				if (preg_match('#/\*.*?\W' . $regex . '\W.*?\*/#s', $file, $m))
+				// Get 1 KiB, we do not expect a query string to be any larger...
+				$check_line = file_get_contents($this->cache_dir . $entry, false, NULL, 5, 1024);
+
+				// Now get the contents between /* and */
+				$check_line = substr($check_line, strpos($check_line, '/* ') + 3, strpos($check_line, ' */') - strpos($check_line, '/* ') - 3);
+
+				$found = false;
+				foreach ($table as $check_table)
+				{
+					if (strpos($check_line, $check_table . ' ') !== false)
+					{
+						$found = true;
+						break;
+					}
+				}
+
+				if ($found)
 				{
 					@unlink($this->cache_dir . $entry);
 				}
@@ -364,7 +381,7 @@ class acm
 			}
 			$db->sql_freeresult($query_result);
 
-			$file = "<?php\n\n/*\n" . str_replace('*/', '*\/', $query) . "\n*/\n";
+			$file = "<?php\n\n/* " . str_replace('*/', '*\/', $query) . " */\n";
 			$file .= "\n\$expired = (time() > " . (time() + $ttl) . ") ? true : false;\nif (\$expired) { return; }\n";
 
 			fwrite($fp, $file . "\n\$this->sql_rowset[\$query_id] = " . var_export($this->sql_rowset[$query_id], true) . ";\n?>");
