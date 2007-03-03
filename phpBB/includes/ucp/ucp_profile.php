@@ -534,7 +534,7 @@ class ucp_profile
 					'AVATAR'		=> $avatar_img,
 					'AVATAR_SIZE'	=> $config['avatar_filesize'],
 					
-					'U_GALLERY'	=> append_sid("{$phpbb_root_path}ucp.$phpEx", 'i=profile&amp;mode=avatar&amp;display_gallery=1'),
+					'U_GALLERY'		=> append_sid("{$phpbb_root_path}ucp.$phpEx", 'i=profile&amp;mode=avatar&amp;display_gallery=1'),
 					
 					'S_FORM_ENCTYPE'	=> ($can_upload) ? ' enctype="multipart/form-data"' : '',
 
@@ -550,13 +550,13 @@ class ucp_profile
 					$template->assign_vars(array(
 						'AVATAR'		=> $avatar_img,
 						'AVATAR_SIZE'	=> $config['avatar_filesize'],
-						'WIDTH'			=> request_var('width', $user->data['user_avatar_width']),
-						'HEIGHT'		=> request_var('height', $user->data['user_avatar_height']),
+						'AVATAR_WIDTH'	=> request_var('width', $user->data['user_avatar_width']),
+						'AVATAR_HEIGHT'	=> request_var('height', $user->data['user_avatar_height']),
 
 						'S_UPLOAD_AVATAR_FILE'	=> $can_upload,
 						'S_UPLOAD_AVATAR_URL'	=> $can_upload,
 						'S_LINK_AVATAR'			=> ($auth->acl_get('u_chgavatar') && $config['allow_avatar_remote']) ? true : false,
-						'S_GALLERY_AVATAR'		=> ($auth->acl_get('u_chgavatar') && $config['allow_avatar_local']) ? true : false)
+						'S_DISPLAY_GALLERY'		=> ($auth->acl_get('u_chgavatar') && $config['allow_avatar_local']) ? true : false)
 					);
 				}
 

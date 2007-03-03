@@ -445,10 +445,6 @@ class ucp_groups
 							$allow_desc_urls	= request_var('desc_parse_urls', false);
 							$allow_desc_smilies	= request_var('desc_parse_smilies', false);
 
-							$data['uploadurl']	= request_var('uploadurl', '');
-							$data['remotelink'] = request_var('remotelink', '');
-							$delete				= request_var('delete', '');
-
 							$submit_ary = array(
 								'colour'		=> request_var('group_colour', ''),
 								'rank'			=> request_var('group_rank', 0),
@@ -456,11 +452,14 @@ class ucp_groups
 								'message_limit'	=> request_var('group_message_limit', 0)
 							);
 
+							$data['uploadurl']	= request_var('uploadurl', '');
+							$data['remotelink'] = request_var('remotelink', '');
+							$data['width']		= request_var('width', '');
+							$data['height']		= request_var('height', '');
+							$delete				= request_var('delete', '');
+
 							if (!empty($_FILES['uploadfile']['tmp_name']) || $data['uploadurl'] || $data['remotelink'])
 							{
-								$data['width']		= request_var('width', '');
-								$data['height']		= request_var('height', '');
-
 								// Avatar stuff
 								$var_ary = array(
 									'uploadurl'		=> array('string', true, 5, 255), 
@@ -667,8 +666,8 @@ class ucp_groups
 							'S_RANK_OPTIONS'		=> $rank_options,
 							'AVATAR_IMAGE'			=> $avatar_img,
 							'AVATAR_MAX_FILESIZE'	=> $config['avatar_filesize'],
-							'GROUP_AVATAR_WIDTH'	=> (isset($group_row['group_avatar_width'])) ? $group_row['group_avatar_width'] : '',
-							'GROUP_AVATAR_HEIGHT'	=> (isset($group_row['group_avatar_height'])) ? $group_row['group_avatar_height'] : '',
+							'AVATAR_WIDTH'			=> (isset($group_row['group_avatar_width'])) ? $group_row['group_avatar_width'] : '',
+							'AVATAR_HEIGHT'			=> (isset($group_row['group_avatar_height'])) ? $group_row['group_avatar_height'] : '',
 
 							'GROUP_TYPE_FREE'		=> GROUP_FREE,
 							'GROUP_TYPE_OPEN'		=> GROUP_OPEN,

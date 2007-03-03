@@ -1563,7 +1563,7 @@ class acp_users
 							'i'				=> $id,
 							'mode'			=> $mode,
 							'action'		=> $action,
-							'deletemark'	=> true,
+							'delmarked'		=> true,
 							'mark'			=> $marked))
 						);
 					}

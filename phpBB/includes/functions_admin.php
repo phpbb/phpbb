@@ -508,14 +508,7 @@ function delete_topics($where_type, $where_ids, $auto_sync = true, $post_count_s
 	}
 	else
 	{
-		if (is_array($where_ids))
-		{
-			$where_ids = array_unique($where_ids);
-		}
-		else
-		{
-			$where_ids = array($where_ids);
-		}
+		$where_ids = (is_array($where_ids)) ? array_unique($where_ids) : array($where_ids);
 
 		if (!sizeof($where_ids))
 		{
@@ -735,7 +728,7 @@ function delete_posts($where_type, $where_ids, $auto_sync = true, $posted_sync =
 	// We actually remove topics now to not be inconsistent (the delete_topics function calls this function too)
 	if (sizeof($remove_topics))
 	{
-		delete_topics('topic_id', $remove_topics);
+		delete_topics('topic_id', $remove_topics, $auto_sync, $post_count_sync);
 	}
 
 	return sizeof($post_ids);

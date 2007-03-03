@@ -35,10 +35,10 @@
 	</tr>
 	<tr> 
 		<td class="row1" width="35%"><b class="genmed">{L_LINK_REMOTE_SIZE}: </b><br /><span class="gensmall">{L_LINK_REMOTE_SIZE_EXPLAIN}</span></td>
-		<td class="row2"><input class="post" type="text" name="width" size="3" value="{WIDTH}" /> <span class="gen">px X </span> <input class="post" type="text" name="height" size="3" value="{HEIGHT}" /> <span class="gen">px</span></td>
+		<td class="row2"><input class="post" type="text" name="width" size="3" value="{AVATAR_WIDTH}" /> <span class="gen">px X </span> <input class="post" type="text" name="height" size="3" value="{AVATAR_HEIGHT}" /> <span class="gen">px</span></td>
 	</tr>
 <!-- ENDIF -->
-<!-- IF S_GALLERY_AVATAR -->
+<!-- IF S_DISPLAY_GALLERY -->
 	<tr> 
 		<td class="row1" width="35%"><b class="genmed">{L_AVATAR_GALLERY}: </b></td>
 		<td class="row2"><strong><a href="{U_GALLERY}">{L_DISPLAY_GALLERY}</a></strong></td>
@@ -72,7 +72,7 @@
 	</tr>
 <!-- ENDIF -->
 
-<!-- IF S_GALLERY_AVATAR or S_IN_AVATAR_GALLERY or S_LINK_AVATAR or S_UPLOAD_AVATAR_URL or S_UPLOAD_AVATAR_FILE or AVATAR -->
+<!-- IF S_DISPLAY_GALLERY or S_IN_AVATAR_GALLERY or S_LINK_AVATAR or S_UPLOAD_AVATAR_URL or S_UPLOAD_AVATAR_FILE or AVATAR -->
 	<tr>
 		<td class="cat" colspan="2" align="center">{S_HIDDEN_FIELDS}<input class="btnmain" type="submit" name="submit" value="{L_SUBMIT}" />&nbsp;&nbsp;<!-- IF S_IN_AVATAR_GALLERY --><input class="btnlite" type="submit" name="cancel" value="{L_CANCEL}" /><!-- ELSE --><input class="btnlite" type="reset" value="{L_RESET}" name="reset" /><!-- ENDIF --></td>
 	</tr>

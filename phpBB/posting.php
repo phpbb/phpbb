@@ -907,6 +907,7 @@ if ($submit || $preview || $refresh)
 				'topic_first_post_id'	=> (isset($post_data['topic_first_post_id'])) ? (int) $post_data['topic_first_post_id'] : 0,
 				'topic_last_post_id'	=> (isset($post_data['topic_last_post_id'])) ? (int) $post_data['topic_last_post_id'] : 0,
 				'topic_time_limit'		=> (int) $post_data['topic_time_limit'],
+				'topic_attachment'		=> (isset($post_data['topic_attachment'])) ? (int) $post_data['topic_attachment'] : 0,
 				'post_id'				=> (int) $post_id,
 				'topic_id'				=> (int) $topic_id,
 				'forum_id'				=> (int) $forum_id,

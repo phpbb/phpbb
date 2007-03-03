@@ -559,8 +559,8 @@ class acp_groups
 					'S_GROUP_OPTIONS'		=> group_select_options(false, false, (($user->data['user_type'] == USER_FOUNDER) ? false : 0)),
 					'AVATAR_IMAGE'			=> $avatar_img,
 					'AVATAR_MAX_FILESIZE'	=> $config['avatar_filesize'],
-					'GROUP_AVATAR_WIDTH'	=> (isset($group_row['group_avatar_width'])) ? $group_row['group_avatar_width'] : '',
-					'GROUP_AVATAR_HEIGHT'	=> (isset($group_row['group_avatar_height'])) ? $group_row['group_avatar_height'] : '',
+					'AVATAR_WIDTH'			=> (isset($group_row['group_avatar_width'])) ? $group_row['group_avatar_width'] : '',
+					'AVATAR_HEIGHT'			=> (isset($group_row['group_avatar_height'])) ? $group_row['group_avatar_height'] : '',
 
 					'GROUP_TYPE_FREE'		=> GROUP_FREE,
 					'GROUP_TYPE_OPEN'		=> GROUP_OPEN,

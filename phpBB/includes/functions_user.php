@@ -2519,7 +2519,7 @@ function group_update_listings($group_id)
 			global $phpbb_root_path, $phpEx;
 			include($phpbb_root_path . 'includes/functions_admin.' . $phpEx);
 		}
-		update_foes(array($group_id));
+//		update_foes(array($group_id));
 	}
 }
 
