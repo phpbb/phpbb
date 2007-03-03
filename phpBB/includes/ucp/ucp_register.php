@@ -62,7 +62,7 @@ class ucp_register
 		$error = $cp_data = $cp_error = array();
 
 		//
-		if (!$agreed)
+		if (!$agreed || ($coppa === false && $config['coppa_enable']) || ($coppa && !$config['coppa_enable']))
 		{
 			$add_lang = ($change_lang) ? '&amp;change_lang=' . urlencode($change_lang) : '';
 			$add_coppa = ($coppa) ? '&amp;coppa=1' : '';
@@ -387,11 +387,16 @@ class ucp_register
 			}
 		}
 
-		$s_hidden_fields = build_hidden_fields(array(
+		$s_hidden_fields = array(
 			'agreed'		=> 'true', 
-			'coppa'			=> $coppa,
-			'change_lang'	=> 0)
+			'change_lang'	=> 0,
 		);
+
+		if ($config['coppa_enable'])
+		{
+			$s_hidden_fields['coppa'] = $coppa;
+		}
+		$s_hidden_fields = build_hidden_fields($s_hidden_fields);
 
 		$confirm_image = '';
 
