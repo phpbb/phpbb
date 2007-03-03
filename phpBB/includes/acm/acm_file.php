@@ -251,9 +251,7 @@ class acm
 				}
 
 				// The following method is more failproof than simply assuming the query is on line 3 (which it should be)
-
-				// Get 1 KiB, we do not expect a query string to be any larger...
-				$check_line = file_get_contents($this->cache_dir . $entry, false, NULL, 5, 1024);
+				$check_line = file_get_contents($this->cache_dir . $entry);
 
 				// Now get the contents between /* and */
 				$check_line = substr($check_line, strpos($check_line, '/* ') + 3, strpos($check_line, ' */') - strpos($check_line, '/* ') - 3);
