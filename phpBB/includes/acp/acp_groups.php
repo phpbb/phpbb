@@ -698,7 +698,7 @@ class acp_groups
 			ORDER BY g.group_type ASC, g.group_name';
 		$result = $db->sql_query($sql);
 
-		$iterate = $lookup = $cached_group_data = array();
+		$lookup = $cached_group_data = array();
 		while ($row = $db->sql_fetchrow($result))
 		{
 			$type = ($row['group_type'] == GROUP_SPECIAL) ? 'special' : 'normal';
@@ -706,8 +706,7 @@ class acp_groups
 			$lookup[$row['group_id']] = $type;
 			// used for easy access to the data within a group
 			$cached_group_data[$type][$row['group_id']] = $row;
-			// this array holds the properly sorted information
-			$iterate[$type][] = $row['group_id'];
+			$cached_group_data[$type][$row['group_id']]['total_members'] = '0';
 		}
 		$db->sql_freeresult($result);
 
@@ -718,43 +717,14 @@ class acp_groups
 			GROUP BY ug.group_id';
 		$result = $db->sql_query($sql);
 
-		$special = $normal = 0;
-		$group_ary = array();
-
 		while ($row = $db->sql_fetchrow($result))
 		{
 			$type = $lookup[$row['group_id']];
-			$data = &$cached_group_data[$type][$row['group_id']];
-
-			$group_ary[$type][$$type]['group_id'] = $row['group_id'];
-			$group_ary[$type][$$type]['group_name'] = $data['group_name'];
-			$group_ary[$type][$$type]['group_type'] = $data['group_type'];
-			$group_ary[$type][$$type]['total_members'] = $row['total_members'];
-			unset($cached_group_data[$type][$row['group_id']], $lookup[$row['group_id']]);
-
-			$$type++;
+			$cached_group_data[$type][$row['group_id']]['total_members'] = $row['total_members'];
 		}
 		$db->sql_freeresult($result);
 
-		// SQL query ignores empty groups, lets fill in the details ;)
-		foreach ($lookup as $group_id => $type)
-		{
-			$data = &$cached_group_data[$type][$group_id];
-
-			$group_ary[$type][$$type]['group_id'] = (string) $group_id;
-			$group_ary[$type][$$type]['group_name'] = $data['group_name'];
-			$group_ary[$type][$$type]['group_type'] = $data['group_type'];
-			$group_ary[$type][$$type]['total_members'] = '0';
-
-			$$type++;
-		}
-
-		unset($cached_group_data);
-
-		ksort($group_ary);
-
-		$special_toggle = false;
-		foreach ($iterate as $type => $row_ary)
+		foreach ($cached_group_data as $type => $row_ary)
 		{
 			if ($type == 'special')
 			{
@@ -763,9 +733,8 @@ class acp_groups
 				);
 			}
 
-			foreach ($row_ary as $key => $group_id)
+			foreach ($row_ary as $group_id => $row)
 			{
-				$row = &$group_ary[$type][$key];
 				$group_name = (!empty($user->lang['G_' . $row['group_name']]))? $user->lang['G_' . $row['group_name']] : $row['group_name'];
 				
 				$template->assign_block_vars('groups', array(
