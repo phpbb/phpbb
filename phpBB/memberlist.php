@@ -1330,7 +1330,6 @@ switch ($mode)
 					}
 				}
 
-				$i++;
 				unset($id_cache[$user_id]);
 			}
 		}
