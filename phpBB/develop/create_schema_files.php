@@ -373,7 +373,7 @@ foreach ($supported_dbms as $dbms)
 					$line .= "\t{$column_name} {$column_type} ";
 
 					// For hexadecimal values do not use single quotes
-					if (!is_null($column_data[1]) && substr($column_type, -4) !== 'text')
+					if (!is_null($column_data[1]) && substr($column_type, -4) !== 'text' && substr($column_type, -4) !== 'blob')
 					{
 						$line .= (strpos($column_data[1], '0x') === 0) ? "DEFAULT {$column_data[1]} " : "DEFAULT '{$column_data[1]}' ";
 					}
@@ -616,6 +616,7 @@ foreach ($supported_dbms as $dbms)
 								switch ($modded_array[$col_name])
 								{
 									case 'text':
+									case 'blob':
 										$key_data[1][$key] = $col_name . '(255)';
 									break;
 								}
