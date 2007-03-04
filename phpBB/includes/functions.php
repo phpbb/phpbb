@@ -1344,7 +1344,7 @@ function tracking_unserialize($string, $max_depth = 3)
 	$key = '';
 	$mode = 0;
 	$level = &$data;
-	for ($i = 0, ; $i < $n; ++$i)
+	for ($i = 0; $i < $n; ++$i)
 	{
 		switch ($mode)
 		{
