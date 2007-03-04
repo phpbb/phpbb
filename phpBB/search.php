@@ -546,7 +546,7 @@ if ($keywords || $author || $author_id || $search_id || $submit)
 			if ($config['load_anon_lastread'] || ($user->data['is_registered'] && !$config['load_db_lastread']))
 			{
 				$tracking_topics = (isset($_COOKIE[$config['cookie_name'] . '_track'])) ? ((STRIP) ? stripslashes($_COOKIE[$config['cookie_name'] . '_track']) : $_COOKIE[$config['cookie_name'] . '_track']) : '';
-				$tracking_topics = ($tracking_topics) ? unserialize($tracking_topics) : array();
+				$tracking_topics = ($tracking_topics) ? tracking_unserialize($tracking_topics) : array();
 			}
 
 			$sql = "SELECT $sql_select

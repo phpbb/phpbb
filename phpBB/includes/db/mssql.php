@@ -313,7 +313,7 @@ class dbal_mssql extends dbal
 	function _sql_error()
 	{
 		$error = array(
-			'message'	=> @mssql_get_last_message($this->db_connect_id),
+			'message'	=> @mssql_get_last_message(),
 			'code'		=> ''
 		);
 

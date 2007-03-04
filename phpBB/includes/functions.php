@@ -764,14 +764,14 @@ function markread($mode, $forum_id = false, $topic_id = false, $post_time = 0, $
 			else if ($config['load_anon_lastread'] || $user->data['is_registered'])
 			{
 				$tracking_topics = (isset($_COOKIE[$config['cookie_name'] . '_track'])) ? ((STRIP) ? stripslashes($_COOKIE[$config['cookie_name'] . '_track']) : $_COOKIE[$config['cookie_name'] . '_track']) : '';
-				$tracking_topics = ($tracking_topics) ? unserialize($tracking_topics) : array();
+				$tracking_topics = ($tracking_topics) ? tracking_unserialize($tracking_topics) : array();
 
 				unset($tracking_topics['tf']);
 				unset($tracking_topics['t']);
 				unset($tracking_topics['f']);
 				$tracking_topics['l'] = base_convert(time() - $config['board_startdate'], 10, 36);
 	
-				$user->set_cookie('track', serialize($tracking_topics), time() + 31536000);
+				$user->set_cookie('track', tracking_serialize($tracking_topics), time() + 31536000);
 				unset($tracking_topics);
 
 				if ($user->data['is_registered'])
@@ -841,7 +841,7 @@ function markread($mode, $forum_id = false, $topic_id = false, $post_time = 0, $
 		else if ($config['load_anon_lastread'] || $user->data['is_registered'])
 		{
 			$tracking = (isset($_COOKIE[$config['cookie_name'] . '_track'])) ? ((STRIP) ? stripslashes($_COOKIE[$config['cookie_name'] . '_track']) : $_COOKIE[$config['cookie_name'] . '_track']) : '';
-			$tracking = ($tracking) ? unserialize($tracking) : array();
+			$tracking = ($tracking) ? tracking_unserialize($tracking) : array();
 
 			foreach ($forum_id as $f_id)
 			{
@@ -865,7 +865,7 @@ function markread($mode, $forum_id = false, $topic_id = false, $post_time = 0, $
 				$tracking['f'][$f_id] = base_convert(time() - $config['board_startdate'], 10, 36);
 			}
 
-			$user->set_cookie('track', serialize($tracking), time() + 31536000);
+			$user->set_cookie('track', tracking_serialize($tracking), time() + 31536000);
 			unset($tracking);
 		}
 
@@ -906,7 +906,7 @@ function markread($mode, $forum_id = false, $topic_id = false, $post_time = 0, $
 		else if ($config['load_anon_lastread'] || $user->data['is_registered'])
 		{
 			$tracking = (isset($_COOKIE[$config['cookie_name'] . '_track'])) ? ((STRIP) ? stripslashes($_COOKIE[$config['cookie_name'] . '_track']) : $_COOKIE[$config['cookie_name'] . '_track']) : '';
-			$tracking = ($tracking) ? unserialize($tracking) : array();
+			$tracking = ($tracking) ? tracking_unserialize($tracking) : array();
 
 			$topic_id36 = base_convert($topic_id, 10, 36);
 
@@ -959,7 +959,7 @@ function markread($mode, $forum_id = false, $topic_id = false, $post_time = 0, $
 				}
 			}
 
-			$user->set_cookie('track', serialize($tracking), time() + 31536000);
+			$user->set_cookie('track', tracking_serialize($tracking), time() + 31536000);
 		}
 
 		return;
@@ -1142,7 +1142,7 @@ function get_complete_topic_tracking($forum_id, $topic_ids, $global_announce_lis
 		if (!isset($tracking_topics) || !sizeof($tracking_topics))
 		{
 			$tracking_topics = (isset($_COOKIE[$config['cookie_name'] . '_track'])) ? ((STRIP) ? stripslashes($_COOKIE[$config['cookie_name'] . '_track']) : $_COOKIE[$config['cookie_name'] . '_track']) : '';
-			$tracking_topics = ($tracking_topics) ? unserialize($tracking_topics) : array();
+			$tracking_topics = ($tracking_topics) ? tracking_unserialize($tracking_topics) : array();
 		}
 
 		if (!$user->data['is_registered'])
@@ -1227,7 +1227,7 @@ function update_forum_tracking_info($forum_id, $forum_last_post_time, $f_mark_ti
 			if (!isset($tracking_topics) || !sizeof($tracking_topics))
 			{
 				$tracking_topics = (isset($_COOKIE[$config['cookie_name'] . '_track'])) ? ((STRIP) ? stripslashes($_COOKIE[$config['cookie_name'] . '_track']) : $_COOKIE[$config['cookie_name'] . '_track']) : '';
-				$tracking_topics = ($tracking_topics) ? unserialize($tracking_topics) : array();
+				$tracking_topics = ($tracking_topics) ? tracking_unserialize($tracking_topics) : array();
 			}
 
 			if (!$user->data['is_registered'])
@@ -1308,6 +1308,127 @@ function update_forum_tracking_info($forum_id, $forum_last_post_time, $f_mark_ti
 	}
 
 	return false;
+}
+
+/**
+* Transform an array into a serialized format
+*/
+function tracking_serialize($input)
+{
+	$out = '';
+	foreach ($input as $key => $value)
+	{
+		if (is_array($value))
+		{
+			$out .= $key . ':(' . tracking_serializer($value) . ');';
+		}
+		else
+		{
+			$out .= $key . ':' . $value . ';';
+		}
+	}
+	return $out;
+}
+
+/**
+* Transform a serialized array into an actual array
+*/
+function tracking_unserialize($string, $max_depth = 3)
+{
+	$n = strlen($string);
+	if ($n > 10010)
+	{
+		die('Invalid data supplied');
+	}
+	$data = $stack = array();
+	$key = '';
+	$mode = 0;
+	$level = &$data;
+	for ($i = 0, ; $i < $n; ++$i)
+	{
+		switch ($mode)
+		{
+			case 0:
+				switch ($string[$i])
+				{
+					case ':':
+						$level[$key] = 0;
+						$mode = 1;
+					break;
+					case ')':
+						unset($level);
+						$level = array_pop($stack);
+						$mode = 3;
+					break;
+					default:
+						$key .= $string[$i];
+				}
+			break;
+
+			case 1:
+				switch ($string[$i])
+				{
+					case '(':
+						if (sizeof($stack) >= $max_depth)
+						{
+							die('Invalid data supplied');
+						}
+						$stack[] = &$level;
+						$level[$key] = array();
+						$level = &$level[$key];
+						$key = '';
+						$mode = 0;
+					break;
+					default:
+						$level[$key] = $string[$i];
+						$mode = 2;
+					break;
+				}
+			break;
+			
+			case 2:
+				switch ($string[$i])
+				{
+					case ')':
+						unset($level);
+						$level = array_pop($stack);
+						$mode = 3;
+					break;
+					case ';':
+						$key = '';
+						$mode = 0;
+					break;
+					default:
+						$level[$key] .= $string[$i];
+					break;
+				}
+			break;
+			
+			case 3:
+				switch ($string[$i])
+				{
+					case ')':
+						unset($level);
+						$level = array_pop($stack);
+					break;
+					case ';':
+						$key = '';
+						$mode = 0;
+					break;
+					default:
+						die('Invalid data supplied');
+					break;
+				}
+			break;
+		}
+	}
+
+	if (sizeof($stack) != 0 || ($mode != 0 && $mode != 3))
+	{
+		die('Invalid data supplied');
+	}
+	
+	return $level;
 }
 
 // Pagination functions

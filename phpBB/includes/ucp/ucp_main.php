@@ -254,7 +254,7 @@ class ucp_main
 				else
 				{
 					$tracking_topics = (isset($_COOKIE[$config['cookie_name'] . '_track'])) ? ((STRIP) ? stripslashes($_COOKIE[$config['cookie_name'] . '_track']) : $_COOKIE[$config['cookie_name'] . '_track']) : '';
-					$tracking_topics = ($tracking_topics) ? unserialize($tracking_topics) : array();
+					$tracking_topics = ($tracking_topics) ? tracking_unserialize($tracking_topics) : array();
 				}
 
 				$sql = $db->sql_build_query('SELECT', $sql_array);
