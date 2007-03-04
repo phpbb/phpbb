@@ -67,6 +67,22 @@ class ucp_register
 			$add_lang = ($change_lang) ? '&amp;change_lang=' . urlencode($change_lang) : '';
 			$add_coppa = ($coppa) ? '&amp;coppa=1' : '';
 
+			$s_hidden_fields = ($confirm_id) ? array('confirm_id' => $confirm_id) : array();
+
+			// If we change the language, we want to pass on some more possible parameter.
+			if ($change_lang)
+			{
+				// We do not include the password!
+				$s_hidden_fields = array_merge($s_hidden_fields, array(
+					'username'			=> request_var('username', '', true),
+					'email'				=> strtolower(request_var('email', '')),
+					'email_confirm'		=> strtolower(request_var('email_confirm', '')),
+					'confirm_code'		=> request_var('confirm_code', ''),
+					'lang'				=> $user->lang_name,
+					'tz'				=> request_var('tz', (float) $config['board_timezone']),
+				));
+			}
+
 			if ($coppa === false && $config['coppa_enable'])
 			{
 				$now = getdate();
@@ -81,7 +97,7 @@ class ucp_register
 					'U_COPPA_YES'		=> append_sid("{$phpbb_root_path}ucp.$phpEx", 'mode=register&amp;coppa=1' . $add_lang),
 
 					'S_SHOW_COPPA'		=> true,
-					'S_HIDDEN_FIELDS'	=> ($confirm_id) ? '<input type="hidden" name="confirm_id" value="' . $confirm_id . '" />' : '',
+					'S_HIDDEN_FIELDS'	=> build_hidden_fields($s_hidden_fields),
 					'S_UCP_ACTION'		=> append_sid("{$phpbb_root_path}ucp.$phpEx", 'mode=register' . $add_lang))
 				);
 			}
@@ -92,7 +108,7 @@ class ucp_register
 
 					'S_SHOW_COPPA'		=> false,
 					'S_REGISTRATION'	=> true,
-					'S_HIDDEN_FIELDS'	=> ($confirm_id) ? '<input type="hidden" name="confirm_id" value="' . $confirm_id . '" />' : '',
+					'S_HIDDEN_FIELDS'	=> build_hidden_fields($s_hidden_fields),
 					'S_UCP_ACTION'		=> append_sid("{$phpbb_root_path}ucp.$phpEx", 'mode=register' . $add_lang . $add_coppa))
 				);
 			}

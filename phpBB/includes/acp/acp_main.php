@@ -249,7 +249,10 @@ class acp_main
 							}
 							unset($posted);
 
-							$db->sql_multi_insert(TOPICS_POSTED_TABLE, $sql_ary);
+							if (sizeof($sql_ary))
+							{
+								$db->sql_multi_insert(TOPICS_POSTED_TABLE, $sql_ary);
+							}
 						}
 			
 						add_log('admin', 'LOG_RESYNC_POST_MARKING');

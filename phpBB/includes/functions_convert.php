@@ -1934,7 +1934,10 @@ function update_topics_posted()
 		}
 		unset($posted);
 
-		$db->sql_multi_insert(TOPICS_POSTED_TABLE, $sql_ary);
+		if (sizeof($sql_ary))
+		{
+			$db->sql_multi_insert(TOPICS_POSTED_TABLE, $sql_ary);
+		}
 	}
 }
 

@@ -184,23 +184,23 @@ class install_convert extends module
 						'L_CONTINUE'	=> $lang['CONTINUE_OLD_CONVERSION'],
 						'S_CONTINUE'	=> true,
 
-						'U_NEW_ACTION'		=> $this->p_master->module_url . "?mode=$mode&amp;sub=intro&amp;new_conv=1",
-						'U_CONTINUE_ACTION'	=> $this->p_master->module_url . "?mode=$mode&amp;sub=in_progress&amp;tag={$options['tag']}{$options['step']}",
+						'U_NEW_ACTION'		=> $this->p_master->module_url . "?mode={$this->mode}&amp;sub=intro&amp;new_conv=1",
+						'U_CONTINUE_ACTION'	=> $this->p_master->module_url . "?mode={$this->mode}&amp;sub=in_progress&amp;tag={$options['tag']}{$options['step']}",
 					));
 
 					return;
 				}
 
-				$this->list_convertors($mode, $sub);
+				$this->list_convertors($sub);
 
 			break;
 
 			case 'settings':
-				$this->get_convert_settings($mode, $sub);
+				$this->get_convert_settings($sub);
 			break;
 
 			case 'in_progress':
-				$this->convert_data($mode, $sub);
+				$this->convert_data($sub);
 			break;
 
 			case 'final':
@@ -245,7 +245,7 @@ class install_convert extends module
 	/**
 	* Generate a list of all available conversion modules
 	*/
-	function list_convertors($mode, $sub)
+	function list_convertors($sub)
 	{
 		global $lang, $template, $phpbb_root_path, $phpEx;
 
@@ -313,14 +313,14 @@ class install_convert extends module
 				'SOFTWARE'	=> $convertors[$index]['forum_name'],
 				'VERSION'	=> $convertors[$index]['version'],
 
-				'U_CONVERT'	=> $this->p_master->module_url . "?mode=$mode&amp;sub=settings&amp;tag=" . $convertors[$index]['tag'],
+				'U_CONVERT'	=> $this->p_master->module_url . "?mode={$this->mode}&amp;sub=settings&amp;tag=" . $convertors[$index]['tag'],
 			));
 		}
 	}
 
 	/**
 	*/
-	function get_convert_settings($mode, $sub)
+	function get_convert_settings($sub)
 	{
 		global $lang, $template, $db, $phpbb_root_path, $phpEx, $config, $cache;
 
@@ -510,7 +510,7 @@ class install_convert extends module
 				$template->assign_vars(array(
 					'L_SUBMIT'	=> $lang['BEGIN_CONVERT'],
 //					'S_HIDDEN'	=> $s_hidden_fields,
-					'U_ACTION'	=> $this->p_master->module_url . "?mode=$mode&amp;sub=in_progress&amp;tag=$convertor_tag",
+					'U_ACTION'	=> $this->p_master->module_url . "?mode={$this->mode}&amp;sub=in_progress&amp;tag=$convertor_tag",
 				));
 
 				return;
@@ -556,14 +556,14 @@ class install_convert extends module
 
 		$template->assign_vars(array(
 			'L_SUBMIT'	=> $lang['BEGIN_CONVERT'],
-			'U_ACTION'	=> $this->p_master->module_url . "?mode=$mode&amp;sub=settings&amp;tag=$convertor_tag",
+			'U_ACTION'	=> $this->p_master->module_url . "?mode={$this->mode}&amp;sub=settings&amp;tag=$convertor_tag",
 		));
 	}
 
 	/**
 	* The function which does the actual work (or dispatches it to the relevant places)
 	*/
-	function convert_data($mode, $sub)
+	function convert_data($sub)
 	{
 		global $template, $user, $phpbb_root_path, $phpEx, $db, $lang, $config, $cache;
 		global $convert, $convert_row, $message_parser, $skip_rows;
@@ -757,6 +757,7 @@ class install_convert extends module
 		$message_parser = new parse_message();
 
 		$jump = request_var('jump', 0);
+		$final_jump = request_var('final_jump', 0);
 		$sync_batch = request_var('sync_batch', -1);
 		$last_statement = request_var('last', 0);
 
@@ -770,6 +771,12 @@ class install_convert extends module
 		if ($jump)
 		{
 			$this->jump($jump, $last_statement);
+			return;
+		}
+
+		if ($final_jump)
+		{
+			$this->final_jump($final_jump);
 			return;
 		}
 
@@ -824,7 +831,7 @@ class install_convert extends module
 
 					$template->assign_vars(array(
 						'L_SUBMIT'	=> $user->lang['INSTALL_TEST'],
-						'U_ACTION'	=> $this->p_master->module_url . "?mode=$mode&amp;sub=in_progress&amp;tag={$convert->convertor_tag}",
+						'U_ACTION'	=> $this->p_master->module_url . "?mode={$this->mode}&amp;sub=in_progress&amp;tag={$convert->convertor_tag}",
 					));
 					return;
 				}
@@ -925,30 +932,13 @@ class install_convert extends module
 					$this->p_master->error(sprintf($user->lang['TABLES_MISSING'], implode(', ', $missing_tables)) . '<br /><br />' . $user->lang['CHECK_TABLE_PREFIX'], __LINE__, __FILE__);
 				}
 
-				$step = '&amp;confirm=1';
-				set_config('convert_progress', serialize(array(
-					'step'			=> $step,
-					'table_prefix'	=> $convert->src_table_prefix,
-					'tag'			=> $convert->convertor_tag,
-				)), true);
-				set_config('convert_db_server', serialize(array(
-					'dbms'			=> $convert->src_dbms,
-					'dbhost'		=> $convert->src_dbhost,
-					'dbport'		=> $convert->src_dbport,
-					'dbname'		=> $convert->src_dbname,
-				)), true);
-				set_config('convert_db_user', serialize(array(
-					'dbuser'		=> $convert->src_dbuser,
-					'dbpasswd'		=> $convert->src_dbpasswd,
-				)), true);
-
+				$url = $this->save_convert_progress('&amp;confirm=1');
 				$msg = $user->lang['PRE_CONVERT_COMPLETE'];
 
 				if ($convert->convertor_data['author_notes'])
 				{
 					$msg .= '</p><p>' . sprintf($user->lang['AUTHOR_NOTES'], $convert->convertor_data['author_notes']);
 				}
-				$url = $this->p_master->module_url . "?mode=$mode&amp;sub=in_progress&amp;tag={$convert->convertor_tag}$step";
 
 				$template->assign_vars(array(
 					'L_SUBMIT'		=> $user->lang['CONTINUE_CONVERT'],
@@ -1354,32 +1344,13 @@ class install_convert extends module
 				}*/
 
 				// Looks like we ran out of time.
-				$step = '&amp;current_table=' . $current_table . '&amp;skip_rows=' . $skip_rows;
-
-				// Save convertor Status
-				set_config('convert_progress', serialize(array(
-					'step'			=> $step,
-					'table_prefix'	=> $convert->src_table_prefix,
-					'tag'			=> $convert->convertor_tag,
-				)), true);
-				set_config('convert_db_server', serialize(array(
-					'dbms'			=> $convert->src_dbms,
-					'dbhost'		=> $convert->src_dbhost,
-					'dbport'		=> $convert->src_dbport,
-					'dbname'		=> $convert->src_dbname,
-				)), true);
-				set_config('convert_db_user', serialize(array(
-					'dbuser'		=> $convert->src_dbuser,
-					'dbpasswd'		=> $convert->src_dbpasswd,
-				)), true);
+				$url = $this->save_convert_progress('&amp;current_table=' . $current_table . '&amp;skip_rows=' . $skip_rows);
 
 				$current_table++;
 //				$percentage = ($skip_rows == 0) ? 0 : floor(100 / ($total_rows / $skip_rows));
 
 				$msg = sprintf($user->lang['STEP_PERCENT_COMPLETED'], $current_table, sizeof($convert->convertor['schema']));
 
-				$url = $this->p_master->module_url . "?mode=$mode&amp;sub=in_progress&amp;tag={$convert->convertor_tag}$step";
-			
 				$template->assign_vars(array(
 					'L_MESSAGE'		=> $msg,
 					'L_SUBMIT'		=> $user->lang['CONTINUE_CONVERT'],
@@ -1392,27 +1363,8 @@ class install_convert extends module
 		}
 
 		// Process execute_last then we'll be done
-		$step = '&amp;jump=1';
+		$url = $this->save_convert_progress('&amp;jump=1');
 
-		// Save convertor Status
-		set_config('convert_progress', serialize(array(
-			'step'			=> $step,
-			'table_prefix'	=> $convert->src_table_prefix,
-			'tag'			=> $convert->convertor_tag,
-		)), true);
-		set_config('convert_db_server', serialize(array(
-			'dbms'			=> $convert->src_dbms,
-			'dbhost'		=> $convert->src_dbhost,
-			'dbport'		=> $convert->src_dbport,
-			'dbname'		=> $convert->src_dbname,
-		)), true);
-		set_config('convert_db_user', serialize(array(
-			'dbuser'		=> $convert->src_dbuser,
-			'dbpasswd'		=> $convert->src_dbpasswd,
-		)), true);
-
-		$url = $this->p_master->module_url . "?mode=$mode&amp;sub=in_progress&amp;tag={$convert->convertor_tag}$step";
-	
 		$template->assign_vars(array(
 			'L_SUBMIT'		=> $user->lang['FINAL_STEP'],
 			'U_ACTION'		=> $url,
@@ -1423,7 +1375,7 @@ class install_convert extends module
 	}
 
 	/**
-	* Sync function being executed at the very end...
+	* Sync function being executed at the middle, some functions need to be executed after a successful sync.
 	*/
 	function sync_forums($sync_batch)
 	{
@@ -1476,25 +1428,10 @@ class install_convert extends module
 
 		if ($sync_batch >= $primary_max)
 		{
-			$sync_batch = -1;
-
-			$db->sql_query('DELETE FROM ' . CONFIG_TABLE . " 
-				WHERE config_name = 'convert_progress'
-					OR config_name = 'convert_options'
-					OR config_name = 'convert_db_server'
-					OR config_name = 'convert_db_user'");
-			$db->sql_query('DELETE FROM ' . SESSIONS_TABLE);
-
-			@unlink($phpbb_root_path . 'cache/data_global.php');
-			cache_moderators();
-
-			// And finally, add a note to the log
-			add_log('admin', 'LOG_INSTALL_CONVERTED', $convert->convertor_data['forum_name'], $config['version']);
-
-			$url = $this->p_master->module_url . "?mode={$this->mode}&amp;sub=final";
+			$url = $this->save_convert_progress('&amp;final_jump=1');
 
 			$template->assign_vars(array(
-				'L_SUBMIT'		=> $user->lang['FINAL_STEP'],
+				'L_SUBMIT'		=> $user->lang['CONTINUE_CONVERT'],
 				'U_ACTION'		=> $url,
 			));
 
@@ -1506,26 +1443,7 @@ class install_convert extends module
 			$sync_batch -= $batch_size;
 		}
 
-		$step = '&amp;sync_batch=' . $sync_batch;
-
-		// Save convertor Status
-		set_config('convert_progress', serialize(array(
-			'step'			=> $step,
-			'table_prefix'	=> $convert->src_table_prefix,
-			'tag'			=> $convert->convertor_tag,
-		)), true);
-		set_config('convert_db_server', serialize(array(
-			'dbms'			=> $convert->src_dbms,
-			'dbhost'		=> $convert->src_dbhost,
-			'dbport'		=> $convert->src_dbport,
-			'dbname'		=> $convert->src_dbname,
-		)), true);
-		set_config('convert_db_user', serialize(array(
-			'dbuser'		=> $convert->src_dbuser,
-			'dbpasswd'		=> $convert->src_dbpasswd,
-		)), true);
-
-		$url = $this->p_master->module_url . "?mode=$this->mode&amp;sub=in_progress&amp;tag={$convert->convertor_tag}$step";
+		$url = $this->save_convert_progress('&amp;sync_batch=' . $sync_batch);
 
 		$template->assign_vars(array(
 			'L_SUBMIT'		=> $user->lang['CONTINUE_CONVERT'],
@@ -1537,7 +1455,94 @@ class install_convert extends module
 	}
 
 	/**
-	* This function marks the end of conversion (jump=1)
+	* Save the convertor status
+	*/
+	function save_convert_progress($step)
+	{
+		global $convert;
+
+		// Save convertor Status
+		set_config('convert_progress', serialize(array(
+			'step'			=> $step,
+			'table_prefix'	=> $convert->src_table_prefix,
+			'tag'			=> $convert->convertor_tag,
+		)), true);
+
+		set_config('convert_db_server', serialize(array(
+			'dbms'			=> $convert->src_dbms,
+			'dbhost'		=> $convert->src_dbhost,
+			'dbport'		=> $convert->src_dbport,
+			'dbname'		=> $convert->src_dbname,
+		)), true);
+
+		set_config('convert_db_user', serialize(array(
+			'dbuser'		=> $convert->src_dbuser,
+			'dbpasswd'		=> $convert->src_dbpasswd,
+		)), true);
+
+		return $this->p_master->module_url . "?mode={$this->mode}&amp;sub=in_progress&amp;tag={$convert->convertor_tag}$step";
+	}
+
+	/**
+	* Finish conversion, the last function to be called.
+	*/
+	function finish_conversion()
+	{
+		global $db, $phpbb_root_path, $convert, $config, $user, $template;
+
+		$db->sql_query('DELETE FROM ' . CONFIG_TABLE . " 
+			WHERE config_name = 'convert_progress'
+				OR config_name = 'convert_options'
+				OR config_name = 'convert_db_server'
+				OR config_name = 'convert_db_user'");
+		$db->sql_query('DELETE FROM ' . SESSIONS_TABLE);
+
+		@unlink($phpbb_root_path . 'cache/data_global.php');
+		cache_moderators();
+
+		// And finally, add a note to the log
+		add_log('admin', 'LOG_INSTALL_CONVERTED', $convert->convertor_data['forum_name'], $config['version']);
+
+		$url = $this->p_master->module_url . "?mode={$this->mode}&amp;sub=final";
+
+		$template->assign_vars(array(
+			'L_SUBMIT'		=> $user->lang['FINAL_STEP'],
+			'U_ACTION'		=> $url,
+		));
+
+		$this->meta_refresh($url);
+		return;
+	}
+
+	/**
+	* This function marks the steps after syncing
+	*/
+	function final_jump($final_jump)
+	{
+		global $template, $user, $src_db, $same_db, $db, $phpbb_root_path, $phpEx, $config, $cache;
+		global $convert;
+
+		$template->assign_block_vars('checks', array(
+			'S_LEGEND'	=> true,
+			'LEGEND'	=> $user->lang['PROCESS_LAST'],
+		));
+
+		if ($final_jump == 1)
+		{
+			update_topics_posted();
+
+			$template->assign_block_vars('checks', array(
+				'TITLE'		=> $user->lang['UPDATE_TOPICS_POSTED'],
+				'RESULT'	=> $user->lang['DONE'],
+			));
+
+			$this->finish_conversion();
+			return;
+		}
+	}
+
+	/**
+	* This function marks the steps before syncing (jump=1)
 	*/
 	function jump($jump, $last_statement)
 	{
@@ -1570,28 +1575,10 @@ class install_convert extends module
 						));
 
 						$last_statement++;
-						$step = '&amp;jump=1&amp;last=' . $last_statement;
-
-						// Save convertor Status
-						set_config('convert_progress', serialize(array(
-							'step'			=> $step,
-							'table_prefix'	=> $convert->src_table_prefix,
-							'tag'			=> $convert->convertor_tag,
-						)), true);
-						set_config('convert_db_server', serialize(array(
-							'dbms'			=> $convert->src_dbms,
-							'dbhost'		=> $convert->src_dbhost,
-							'dbport'		=> $convert->src_dbport,
-							'dbname'		=> $convert->src_dbname,
-						)), true);
-						set_config('convert_db_user', serialize(array(
-							'dbuser'		=> $convert->src_dbuser,
-							'dbpasswd'		=> $convert->src_dbpasswd,
-						)), true);
+						$url = $this->save_convert_progress('&amp;jump=1&amp;last=' . $last_statement);
 
 						$percentage = ($last_statement == 0) ? 0 : floor(100 / (sizeof($convert->convertor['execute_last']) / $last_statement));
 						$msg = sprintf($user->lang['STEP_PERCENT_COMPLETED'], $last_statement, sizeof($convert->convertor['execute_last']), $percentage);
-						$url = $this->p_master->module_url . "?mode={$this->mode}&amp;sub=in_progress&amp;tag={$convert->convertor_tag}$step";
 
 						$template->assign_vars(array(
 							'L_SUBMIT'		=> $user->lang['CONTINUE_LAST'],
@@ -1667,26 +1654,7 @@ class install_convert extends module
 				'RESULT'	=> $user->lang['DONE'],
 			));
 
-			$step = '&amp;jump=2';
-
-			// Save convertor Status
-			set_config('convert_progress', serialize(array(
-				'step'			=> $step,
-				'table_prefix'	=> $convert->src_table_prefix,
-				'tag'			=> $convert->convertor_tag,
-			)), true);
-			set_config('convert_db_server', serialize(array(
-				'dbms'			=> $convert->src_dbms,
-				'dbhost'		=> $convert->src_dbhost,
-				'dbport'		=> $convert->src_dbport,
-				'dbname'		=> $convert->src_dbname,
-			)), true);
-			set_config('convert_db_user', serialize(array(
-				'dbuser'		=> $convert->src_dbuser,
-				'dbpasswd'		=> $convert->src_dbpasswd,
-			)), true);
-
-			$url = $this->p_master->module_url . "?mode={$this->mode}&amp;sub=in_progress&amp;tag={$convert->convertor_tag}$step";
+			$url = $this->save_convert_progress('&amp;jump=2');
 
 			$template->assign_vars(array(
 				'L_SUBMIT'		=> $user->lang['CONTINUE_CONVERT'],
@@ -1711,66 +1679,8 @@ class install_convert extends module
 				'RESULT'	=> $user->lang['DONE'],
 			));
 
-			$step = '&amp;jump=3';
-
-			// Save convertor Status
-			set_config('convert_progress', serialize(array(
-				'step'			=> $step,
-				'table_prefix'	=> $convert->src_table_prefix,
-				'tag'			=> $convert->convertor_tag,
-			)), true);
-			set_config('convert_db_server', serialize(array(
-				'dbms'			=> $convert->src_dbms,
-				'dbhost'		=> $convert->src_dbhost,
-				'dbport'		=> $convert->src_dbport,
-				'dbname'		=> $convert->src_dbname,
-			)), true);
-			set_config('convert_db_user', serialize(array(
-				'dbuser'		=> $convert->src_dbuser,
-				'dbpasswd'		=> $convert->src_dbpasswd,
-			)), true);
-
-			$url = $this->p_master->module_url . "?mode={$this->mode}&amp;sub=in_progress&amp;tag={$convert->convertor_tag}$step";
-
-			$template->assign_vars(array(
-				'L_SUBMIT'		=> $user->lang['CONTINUE_CONVERT'],
-				'U_ACTION'		=> $url,
-			));
-
-			$this->meta_refresh($url);
-			return;
-		}
-
-		if ($jump == 3)
-		{
-			update_topics_posted();
-
-			$template->assign_block_vars('checks', array(
-				'TITLE'		=> $user->lang['UPDATE_TOPICS_POSTED'],
-				'RESULT'	=> $user->lang['DONE'],
-			));
-
 			// Continue with synchronizing the forums...
-			$step = '&amp;sync_batch=0';
-
-			// Save convertor Status
-			set_config('convert_progress', serialize(array(
-				'step'			=> $step,
-				'table_prefix'	=> $convert->src_table_prefix,
-				'tag'			=> $convert->convertor_tag,
-			)), true);
-			set_config('convert_db_server', serialize(array(
-				'dbms'			=> $convert->src_dbms,
-				'dbhost'		=> $convert->src_dbhost,
-				'dbport'		=> $convert->src_dbport,
-				'dbname'		=> $convert->src_dbname,
-			)), true);
-			set_config('convert_db_user', serialize(array(
-				'dbuser'		=> $convert->src_dbuser,
-				'dbpasswd'		=> $convert->src_dbpasswd,
-			)), true);
-
-			$url = $this->p_master->module_url . "?mode={$this->mode}&amp;sub=in_progress&amp;tag={$convert->convertor_tag}$step";
+			$url = $this->save_convert_progress('&amp;sync_batch=0');
 
 			$template->assign_vars(array(
 				'L_SUBMIT'		=> $user->lang['CONTINUE_CONVERT'],
