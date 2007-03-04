@@ -369,7 +369,10 @@ $database_update_info = array(
 		),
 		// Add the following unique indexes
 		'add_unique_index'	=> array(
-			USERS_TABLE			=> array(
+			SEARCH_WORDMATCH_TABLE	=> array(
+				'unique_match'	=> array('word_id', 'post_id', 'title_match'),
+			),
+			USERS_TABLE				=> array(
 				'username_clean'	=> array('username_clean'),
 			),
 		),

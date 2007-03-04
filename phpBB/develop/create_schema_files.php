@@ -1474,6 +1474,7 @@ function get_schema_struct()
 			'title_match'		=> array('BOOL', 0),
 		),
 		'KEYS'			=> array(
+			'unique_match'		=> array('UNIQUE', array('word_id', 'post_id', 'title_match')),
 			'word_id'			=> array('INDEX', 'word_id'),
 			'post_id'			=> array('INDEX', 'post_id'),
 		),

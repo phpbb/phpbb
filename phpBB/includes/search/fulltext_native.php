@@ -1110,7 +1110,6 @@ class fulltext_native extends search_backend
 				$word_ids[$row['word_text']] = $row['word_id'];
 			}
 			$db->sql_freeresult($result);
-
 			$new_words = array_diff($unique_add_words, array_keys($word_ids));
 
 			if (sizeof($new_words))
@@ -1121,8 +1120,9 @@ class fulltext_native extends search_backend
 				{
 					$sql_ary[] = array('word_text' => $word);
 				}
-
+				$db->return_on_error = true;
 				$db->sql_multi_insert(SEARCH_WORDLIST_TABLE, $sql_ary);
+				$db->return_on_error = false;
 			}
 			unset($new_words, $sql_ary);
 		}
@@ -1149,6 +1149,7 @@ class fulltext_native extends search_backend
 			}
 		}
 
+		$db->return_on_error = true;
 		foreach ($words['add'] as $word_in => $word_ary)
 		{
 			$title_match = ($word_in == 'title') ? 1 : 0;
@@ -1162,6 +1163,7 @@ class fulltext_native extends search_backend
 				$db->sql_query($sql);
 			}
 		}
+		$db->return_on_error = false;
 
 		// destroy cached search results containing any of the words removed or added
 		$this->destroy_cache(array_unique(array_merge($words['add']['post'], $words['add']['title'], $words['del']['post'], $words['del']['title'])), array($poster_id));

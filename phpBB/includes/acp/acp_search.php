@@ -9,16 +9,6 @@
 */
 
 /**
-* @ignore
-*/
-if (!defined('IN_PHPBB'))
-{
-	exit;
-}
-// make sure, a start time is saved
-still_on_time();
-
-/**
 * @package acp
 */
 class acp_search
@@ -27,7 +17,7 @@ class acp_search
 	var $state;
 	var $search;
 	var $max_post_id;
-	var $batch_size = 1000;
+	var $batch_size = 100;
 
 	function main($id, $mode)
 	{
@@ -260,6 +250,7 @@ class acp_search
 			{
 				trigger_error($error . adm_back_link($this->u_action), E_USER_WARNING);
 			}
+			$name = ucfirst(strtolower(str_replace('_', ' ', $this->state[0])));
 
 			$action = &$this->state[1];
 
@@ -284,12 +275,15 @@ class acp_search
 					}
 					else
 					{
+						$starttime = explode(' ', microtime());
+						$starttime = $starttime[1] + $starttime[0];
+						$row_count = 0;
 						while (still_on_time() && $post_counter <= $this->max_post_id)
 						{
 							$sql = 'SELECT post_id, poster_id, forum_id
 								FROM ' . POSTS_TABLE . '
 								WHERE post_id >= ' . (int) ($post_counter + 1) . '
-									AND post_id < ' . (int) ($post_counter + $this->batch_size);
+									AND post_id <= ' . (int) ($post_counter + $this->batch_size);
 							$result = $db->sql_query($sql);
 
 							$ids = $posters = $forum_ids = array();
@@ -300,6 +294,7 @@ class acp_search
 								$forum_ids[] = $row['forum_id'];
 							}
 							$db->sql_freeresult($result);
+							$row_count += sizeof($ids);
 
 							if (sizeof($ids))
 							{
@@ -307,15 +302,17 @@ class acp_search
 							}
 
 							$post_counter += $this->batch_size;
-
-							// save the current state
-							$this->save_state();
 						}
+						// save the current state
+						$this->save_state();
 
 						if ($post_counter <= $this->max_post_id)
 						{
+							$mtime = explode(' ', microtime());
+							$totaltime = $mtime[0] + $mtime[1] - $starttime;
+							$rows_per_second = $row_count / $totaltime;
 							meta_refresh(1, $this->u_action . '&amp;action=delete&amp;skip_rows=' . $post_counter);
-							trigger_error(sprintf($user->lang['SEARCH_INDEX_DELETE_REDIRECT'], $post_counter));
+							trigger_error(sprintf($user->lang['SEARCH_INDEX_DELETE_REDIRECT'], $post_counter, $row_count, $rows_per_second));
 						}
 					}
 
@@ -324,6 +321,7 @@ class acp_search
 					$this->state = array('');
 					$this->save_state();
 
+					add_log('admin', 'LOG_SEARCH_INDEX_REMOVED', $name);
 					trigger_error($user->lang['SEARCH_INDEX_REMOVED'] . adm_back_link($this->u_action) . $this->close_popup_js());
 				break;
 
@@ -350,12 +348,15 @@ class acp_search
 						}
 						$db->sql_freeresult($result);
 
+						$starttime = explode(' ', microtime());
+						$starttime = $starttime[1] + $starttime[0];
+						$row_count = 0;
 						while (still_on_time() && $post_counter <= $this->max_post_id)
 						{
 							$sql = 'SELECT post_id, post_subject, post_text, poster_id, forum_id
 								FROM ' . POSTS_TABLE . '
 								WHERE post_id >= ' . (int) ($post_counter + 1) . '
-									AND post_id < ' . (int) ($post_counter + $this->batch_size);
+									AND post_id <= ' . (int) ($post_counter + $this->batch_size);
 							$result = $db->sql_query($sql);
 
 							while ($row = $db->sql_fetchrow($result))
@@ -366,19 +367,29 @@ class acp_search
 								{
 									$this->search->index('post', $row['post_id'], $row['post_text'], $row['post_subject'], $row['poster_id'], $row['forum_id']);
 								}
+								$row_count++;
 							}
 							$db->sql_freeresult($result);
 
 							$post_counter += $this->batch_size;
-
-							// save the current state
-							$this->save_state();
 						}
+						// save the current state
+						$this->save_state();
+
+						// pretend the number of posts was as big as the number of ids we indexed so far
+						// just an estimation as it includes deleted posts
+						$num_posts = $config['num_posts'];
+						$config['num_posts'] = min($config['num_posts'], $post_counter);
+						$this->search->tidy();
+						$config['num_posts'] = $num_posts;
 
 						if ($post_counter <= $this->max_post_id)
 						{
+							$mtime = explode(' ', microtime());
+							$totaltime = $mtime[0] + $mtime[1] - $starttime;
+							$rows_per_second = $row_count / $totaltime;
 							meta_refresh(1, $this->u_action . '&amp;action=create&amp;skip_rows=' . $post_counter);
-							trigger_error(sprintf($user->lang['SEARCH_INDEX_CREATE_REDIRECT'], $post_counter));
+							trigger_error(sprintf($user->lang['SEARCH_INDEX_CREATE_REDIRECT'], $post_counter, $row_count, $rows_per_second));
 						}
 					}
 
@@ -387,6 +398,7 @@ class acp_search
 					$this->state = array('');
 					$this->save_state();
 
+					add_log('admin', 'LOG_SEARCH_INDEX_CREATED', $name);
 					trigger_error($user->lang['SEARCH_INDEX_CREATED'] . adm_back_link($this->u_action) . $this->close_popup_js());
 				break;
 			}

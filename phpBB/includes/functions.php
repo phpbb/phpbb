@@ -180,7 +180,7 @@ function unique_id($extra = 'c')
 * @return	bool	Either true if the maximum execution time is nearly reached, or false
 *					if some time is still left.
 */
-function still_on_time()
+function still_on_time($extra_time = 15)
 {
 	static $max_execution_time, $start_time;
 
@@ -194,10 +194,10 @@ function still_on_time()
 		// If zero, then set to something higher to not let the user catch the ten seconds barrier.
 		if ($max_execution_time === 0)
 		{
-			$max_execution_time = 65;
+			$max_execution_time = 50 + $extra_time;
 		}
 
-		$max_execution_time = min(max(10, ($max_execution_time - 15)), 50);
+		$max_execution_time = min(max(10, ($max_execution_time - $extra_time)), 50);
 
 		// For debugging purposes
 		// $max_execution_time = 10;

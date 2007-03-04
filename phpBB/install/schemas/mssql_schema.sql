@@ -1123,6 +1123,9 @@ CREATE TABLE [phpbb_search_wordmatch] (
 ) ON [PRIMARY]
 GO
 
+CREATE  UNIQUE  INDEX [unique_match] ON [phpbb_search_wordmatch]([word_id], [post_id], [title_match]) ON [PRIMARY]
+GO
+
 CREATE  INDEX [word_id] ON [phpbb_search_wordmatch]([word_id]) ON [PRIMARY]
 GO
 

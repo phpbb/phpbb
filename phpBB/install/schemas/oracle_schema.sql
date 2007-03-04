@@ -1260,7 +1260,8 @@ END;
 CREATE TABLE phpbb_search_wordmatch (
 	post_id number(8) DEFAULT '0' NOT NULL,
 	word_id number(8) DEFAULT '0' NOT NULL,
-	title_match number(1) DEFAULT '0' NOT NULL
+	title_match number(1) DEFAULT '0' NOT NULL,
+	CONSTRAINT u_phpbb_unique_match UNIQUE (word_id, post_id, title_match)
 )
 /
 

@@ -648,6 +648,7 @@ CREATE TABLE phpbb_search_wordmatch (
 	post_id mediumint(8) UNSIGNED DEFAULT '0' NOT NULL,
 	word_id mediumint(8) UNSIGNED DEFAULT '0' NOT NULL,
 	title_match tinyint(1) UNSIGNED DEFAULT '0' NOT NULL,
+	UNIQUE unique_match (word_id, post_id, title_match),
 	KEY word_id (word_id),
 	KEY post_id (post_id)
 ) CHARACTER SET `utf8` COLLATE `utf8_bin`;

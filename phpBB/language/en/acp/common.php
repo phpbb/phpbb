@@ -587,6 +587,8 @@ $lang = array_merge($lang, array(
 	'LOG_RESYNC_POST_MARKING'	=> '<strong>Dotted topics resynchronised</strong>',
 	'LOG_RESYNC_STATS'			=> '<strong>Post, topic and user statistics resynchronised</strong>',
 
+	'LOG_SEARCH_INDEX_CREATED'	=> '<strong>Created search index for</strong><br />» %s',
+	'LOG_SEARCH_INDEX_REMOVED'	=> '<strong>Removed search index for</strong><br />» %s',
 	'LOG_STYLE_ADD'				=> '<strong>Added new style</strong><br />» %s',
 	'LOG_STYLE_DELETE'			=> '<strong>Deleted style</strong><br />» %s',
 	'LOG_STYLE_EDIT_DETAILS'	=> '<strong>Edited style</strong><br />» %s',
