@@ -659,7 +659,7 @@ dd textarea {
 	width: 100%;
 }
 
-input.radio, input.perm_cb {
+input.radio, input.permissions-checkbox {
 	width: auto !important;
 	background-color: transparent;
 	border: none;
@@ -1051,66 +1051,66 @@ input.disabled {
 /* Permission interface
 ---------------------------------------- */
 
-fieldset.perm legend {
+fieldset.permissions legend {
 	text-transform: none;
 }
-fieldset.perm legend input{
+fieldset.permissions legend input{
 	height: 1.1em;
 }
 
 /* Permission sections */ 
-fieldset.perm .perm_simple {
+fieldset.permissions .permissions-simple {
 	text-align: left;
 	padding-top: 3px;
 }
 
-.rtl fieldset.perm .perm_simple {
+.rtl fieldset.permissions .permissions-simple {
 	text-align: right;
 }
 
-fieldset.perm .perm_advanced {
+fieldset.permissions .permissions-advanced {
 	padding: 10px 0 0 5px;
 	vertical-align: top;
 	clear: right;
 }
 
-.rtl fieldset.perm .perm_advanced {
+.rtl fieldset.permissions .permissions-advanced {
 	padding: 10px 5px 0 0;
 	clear: left;
 }
 
-fieldset.perm .perm_switch {
+fieldset.permissions .permissions-switch {
 	float: right;
 	font-size: 1.1em;
 }
 
-.rtl fieldset.perm .perm_switch {
+.rtl fieldset.permissions .permissions-switch {
 	float: left;
 }
 
-.perm_switch a {
+.permissions-switch a {
 	text-decoration: underline;
 }
 
 /* Tabbed menu */
-.perm_cat {
+.permissions-category {
 	line-height: normal;
 	margin: 0 0 0 7px;
 	min-width: 570px;
 	font-size: 1em;
 }
 
-.rtl .perm_cat {
+.rtl .permissions-category {
 	margin: 0 7px 0 0;
 }
 
-.perm_cat ul {
+.permissions-category ul {
 	margin: 0;
 	padding: 0;
 	list-style: none;
 }
 
-.perm_cat li {
+.permissions-category li {
 	display: inline;
 	margin: 0;
 	padding: 0;
@@ -1118,7 +1118,7 @@ fieldset.perm .perm_switch {
 	font-weight: bold;
 }
 
-.perm_cat a {
+.permissions-category a {
 	float: left;
 	background: url("../images/bg_tabs1.gif") no-repeat 0% -35px;
 	margin: 0 1px 0 0;
@@ -1127,11 +1127,11 @@ fieldset.perm .perm_switch {
 	position: relative;
 }
 
-.rtl .perm_cat a {
+.rtl .permissions-category a {
 	float: right;
 }
 
-.perm_cat a span.tabbg {
+.permissions-category a span.tabbg {
 	float: left;
 	display: block;
 	background: url("../images/bg_tabs2.gif") no-repeat 100% -35px;
@@ -1140,46 +1140,46 @@ fieldset.perm .perm_switch {
 	white-space: nowrap;
 }
 
-.rtl .perm_cat a span.tabbg {
+.rtl .permissions-category a span.tabbg {
 	float: right;
 }
 
 /* Commented Backslash Hack hides rule from IE5-Mac \*/
-.perm_cat a span.tabbg, .rtl .perm_cat a span.tabbg { float: none;}
+.permissions-category a span.tabbg, .rtl .permissions-category a span.tabbg { float: none;}
 /* End hack */
 
-.perm_cat a:hover span.tabbg {
+.permissions-category a:hover span.tabbg {
 	color: #DD6900;
 }
 
-.perm_cat .activetab a {
+.permissions-category .activetab a {
 	background-position: 0 0px;
 }
 
-.perm_cat .activetab a span.tabbg {
+.permissions-category .activetab a span.tabbg {
 	background-position: 100% 0px;
 	padding-bottom: 7px;
 	color: #333333;
 }
 
-.perm_cat a:hover {
+.permissions-category a:hover {
 	background-position: 0 -70px;
 }
 
-.perm_cat a:hover span.tabbg {
+.permissions-category a:hover span.tabbg {
 	background-position: 100% -70px;
 }
 
-.perm_cat .activetab a:hover span.tabbg {
+.permissions-category .activetab a:hover span.tabbg {
 	color: #333333;
 	background-position: 100% 0px;
 }
 
-.perm_cat .activetab a:hover {
+.permissions-category .activetab a:hover {
 	background-position: 0 0px;
 }
 
-.perm_cat a span.colour {
+.permissions-category a span.colour {
 	border: 1px solid #536482;
 	display: block;
 	float: left;
@@ -1189,46 +1189,46 @@ fieldset.perm .perm_switch {
 }
 
 /* Most browsers will have to live with a left aligned icon in RTL mode, as (currently) only Firefox 3.0 Alpha 3 renders it correctly without destroying it
-.rtl .perm_cat a span.colour {
+.rtl .permissions-category a span.colour {
 	float: right;
 	margin: 0 0 0 5px;
 }
 */
 
-.perm_cat .activetab span.colour {
+.permissions-category .activetab span.colour {
 	border-color: #333333;
 }
 
-.perm_cat a:hover span.colour {
+.permissions-category a:hover span.colour {
 	border-color: #DD6900;
 }
 
-.perm_cat .activetab a:hover span.colour {
+.permissions-category .activetab a:hover span.colour {
 	border-color: #333333;
 }
 
 /* Permission preset colours */
-.perm_preset_yes span.colour,
+.permissions-preset-yes span.colour,
 .yes {
 	background-color: #86F786;
 }
 
-.perm_preset_custom span.colour {
+.permissions-preset-custom span.colour {
 	background-color: #B2BBDD;
 }
 
-.perm_preset_never span.colour {
+.permissions-preset-never span.colour {
 	background-color: #DD0000;
 }
 
-.perm_preset_no span.colour,
+.permissions-preset-no span.colour,
 .never {
 	background-color: #EFB0B2;
 }
 
 /* Permission panel
 ---------------------------------------- */
-.perm_panel {
+.permissions-panel {
 	float: left;
 	background-color: #FFF;
 	width: 100%;
@@ -1236,28 +1236,28 @@ fieldset.perm .perm_switch {
 	margin-top: -1px;
 }
 
-.rtl .perm_panel {
+.rtl .permissions-panel {
 	float: right;
 }
 
-.perm_panel span.corners-top {
+.permissions-panel span.corners-top {
 	background-image: url("../images/corners_left2.gif");
 }
 
-.perm_panel span.corners-top span {
+.permissions-panel span.corners-top span {
 	background-image: url("../images/corners_right2.gif");
 }
 
-.perm_panel span.corners-bottom {
+.permissions-panel span.corners-bottom {
 	background-image: url("../images/corners_left2.gif");
 }
 
-.perm_panel span.corners-bottom span {
+.permissions-panel span.corners-bottom span {
 	background-image: url("../images/corners_right2.gif");
 }
 
-.perm_panel span.corners-top, .perm_panel span.corners-bottom, 
-.perm_panel span.corners-top span, .perm_panel span.corners-bottom span {
+.permissions-panel span.corners-top, .permissions-panel span.corners-bottom, 
+.permissions-panel span.corners-top span, .permissions-panel span.corners-bottom span {
 	font-size: 1px;
 	line-height: 1px;
 	display: block;
@@ -1265,88 +1265,88 @@ fieldset.perm .perm_switch {
 	background-repeat: no-repeat;
 }
 
-.perm_panel span.corners-top {
+.permissions-panel span.corners-top {
 	background-image: url("../images/corners_left2.gif");
 	background-position: 0 0;
 	margin: 0 0;
 }
 
-.perm_panel span.corners-top span {
+.permissions-panel span.corners-top span {
 	background-image: url("../images/corners_right2.gif");
 	background-position: 100% 0;
 }
 
-.perm_panel span.corners-bottom {
+.permissions-panel span.corners-bottom {
 	background-image: url("../images/corners_left2.gif");
 	background-position: 0 100%;
 	margin: 0 0;
 	clear: both;
 }
 
-.perm_panel span.corners-bottom span {
+.permissions-panel span.corners-bottom span {
 	background-image: url("../images/corners_right2.gif");
 	background-position: 100% 100%;
 }
 
 /* Permission table
 ---------------------------------------- */
-.perm_panel .tablewrap {
+.permissions-panel .tablewrap {
 	margin: 0 10px;
 }
 
-.perm_panel table {
+.permissions-panel table {
 	width: 100%;
 }
 
-.perm_panel th {
+.permissions-panel th {
 	text-transform: none;
 }
 
-.perm_panel th.value {
+.permissions-panel th.value {
 	text-align: center;
 }
 
-.perm_panel th.name {
+.permissions-panel th.name {
 	text-align: left;
 	width: auto;
 	text-transform: none;
 }
 
-.rtl .perm_panel th.name {
+.rtl .permissions-panel th.name {
 	text-align: right;
 }
 
-.perm_panel th.permission_name {
+.permissions-panel th.permission-name {
 	border: none;
 	color: #536482;
 	font-weight: normal;
 }
 
-.perm_panel th.permission_name a.trace {
+.permissions-panel th.permission-name a.trace {
 	display: inline;
 }
 
-.perm_panel th.row3 {
+.permissions-panel th.row3 {
 	background-image: none;
 	background-color: #D1D7DC; 
 }
 
-.perm_panel th.row4 {
+.permissions-panel th.row4 {
 	background-image: none;	
 	background-color: #E4E8EB; 
 }
 
-.perm_panel th a:link, .perm_panel th a:hover, .perm_panel th a:visited {
+.permissions-panel th a:link, .permissions-panel th a:hover, .permissions-panel th a:visited {
 	display: block;
 	color: #FFA34F; 
 	text-decoration: underline; 
 }
 
-.perm_panel td {
+.permissions-panel td {
 	padding: 0;
 	text-align: center;
 }
 
-.perm_panel td label {
+.permissions-panel td label {
 	display: block;
 }

@@ -325,11 +325,11 @@
 	<script type="text/javascript" src="style/tooltip.js"></script>
 	<script type="text/javascript">
 	<!--
-		window.onload = function(){enable_tooltips_select('set_permissions', '{LA_ROLE_DESCRIPTION}', 'role')};
+		window.onload = function(){enable_tooltips_select('set-permissions', '{LA_ROLE_DESCRIPTION}', 'role')};
 	//-->
 	</script>
 
-	<form id="set_permissions" method="post" action="{U_ACTION}">
+	<form id="set-permissions" method="post" action="{U_ACTION}">
 
 	{S_HIDDEN_FIELDS}
 
@@ -339,7 +339,7 @@
 
 	<fieldset class="quick" style="float: right;">
 		<input class="button1" type="submit" name="action[apply_all_permissions]" value="{L_APPLY_ALL_PERMISSIONS}" />
-		<input class="button2" type="button" name="cancel" value="{L_RESET}" onclick="document.forms['set_permissions'].reset(); init_colours(active_pmask + active_fmask);" />
+		<input class="button2" type="button" name="cancel" value="{L_RESET}" onclick="document.forms['set-permissions'].reset(); init_colours(active_pmask + active_fmask);" />
 	</fieldset>
 
 	<br /><br />
