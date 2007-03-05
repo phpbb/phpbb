@@ -128,6 +128,10 @@ a:hover {
 	font-size: 1.1em;
 }
 
+#page-header p#skip {
+	display: none;
+}
+
 #page-body {
 	clear: both;
 }
