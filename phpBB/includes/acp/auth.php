@@ -559,7 +559,7 @@ class auth_admin extends auth
 					{
 						if ($forum_names_ary[$forum_id]['forum_status'] == ITEM_LOCKED)
 						{
-							$folder_image = '<img src="images/icon_folder_lock_small.gif" width="19" height="18" alt="' . $user->lang['FORUM_LOCKED'] . '" />';
+							$folder_image = '<img src="images/icon_folder_lock_small.gif" alt="' . $user->lang['FORUM_LOCKED'] . '" />';
 						}
 						else
 						{
@@ -570,7 +570,7 @@ class auth_admin extends auth
 								break;
 
 								default:
-									$folder_image = ($forum_names_ary[$forum_id]['left_id'] + 1 != $forum_names_ary[$forum_id]['right_id']) ? '<img src="images/icon_folder_sub_small.gif" width="22" height="18" alt="' . $user->lang['SUBFORUM'] . '" />' : '<img src="images/icon_folder_small.gif" width="19" height="18" alt="' . $user->lang['FOLDER'] . '" />';
+									$folder_image = ($forum_names_ary[$forum_id]['left_id'] + 1 != $forum_names_ary[$forum_id]['right_id']) ? '<img src="images/icon_folder_sub_small.gif" width="22" height="18" alt="' . $user->lang['SUBFORUM'] . '" />' : '<img src="images/icon_folder_small.gif" alt="' . $user->lang['FOLDER'] . '" />';
 								break;
 							}
 						}

@@ -396,11 +396,11 @@ class acp_modules
 
 				if (!$row['module_enabled'])
 				{
-					$module_image = '<img src="images/icon_folder_lock.gif" width="46" height="25" alt="' . $user->lang['DEACTIVATED_MODULE'] .'" />';
+					$module_image = '<img src="images/icon_folder_lock.gif" alt="' . $user->lang['DEACTIVATED_MODULE'] .'" />';
 				}
 				else
 				{
-					$module_image = (!$row['module_basename'] || $row['left_id'] + 1 != $row['right_id']) ? '<img src="images/icon_subfolder.gif" width="46" height="25" alt="' . $user->lang['CATEGORY'] . '" />' : '<img src="images/icon_folder.gif" width="46" height="25" alt="' . $user->lang['MODULE'] . '" />';
+					$module_image = (!$row['module_basename'] || $row['left_id'] + 1 != $row['right_id']) ? '<img src="images/icon_subfolder.gif" alt="' . $user->lang['CATEGORY'] . '" />' : '<img src="images/icon_folder.gif" alt="' . $user->lang['MODULE'] . '" />';
 				}
 
 				$url = $this->u_action . '&amp;parent_id=' . $this->parent_id . '&amp;m=' . $row['module_id'];
