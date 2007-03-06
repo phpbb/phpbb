@@ -708,7 +708,7 @@ if ($submit || $preview || $refresh)
 	{
 		include($phpbb_root_path . 'includes/functions_user.' . $phpEx);
 
-		if (($result = validate_username($post_data['username'], $post_data['post_username'])) !== false)
+		if (($result = validate_username($post_data['username'], (!empty($post_data['post_username'])) ? $post_data['post_username'] : '')) !== false)
 		{
 			$user->add_lang('ucp');
 			$error[] = $user->lang[$result . '_USERNAME'];
@@ -1221,7 +1221,7 @@ $template->assign_vars(array(
 	'S_CLOSE_PROGRESS_WINDOW'	=> (isset($_POST['add_file'])) ? true : false,
 	'S_EDIT_POST'				=> ($mode == 'edit') ? true : false,
 	'S_EDIT_REASON'				=> ($mode == 'edit' && $auth->acl_get('m_edit', $forum_id)) ? true : false,
-	'S_DISPLAY_USERNAME'		=> (!$user->data['is_registered'] || ($mode == 'edit' && $post_data['post_username'])) ? true : false,
+	'S_DISPLAY_USERNAME'		=> (!$user->data['is_registered'] || ($mode == 'edit' && $post_data['poster_id'] == ANONYMOUS)) ? true : false,
 	'S_SHOW_TOPIC_ICONS'		=> $s_topic_icons,
 	'S_DELETE_ALLOWED'			=> ($mode == 'edit' && (($post_id == $post_data['topic_last_post_id'] && $post_data['poster_id'] == $user->data['user_id'] && $auth->acl_get('f_delete', $forum_id)) || $auth->acl_get('m_delete', $forum_id))) ? true : false,
 	'S_BBCODE_ALLOWED'			=> $bbcode_status,
