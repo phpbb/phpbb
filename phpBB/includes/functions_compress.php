@@ -419,15 +419,20 @@ class compress_zip extends compress
 	/**
 	* Download archive
 	*/
-	function download($filename)
+	function download($filename, $download_name = false)
 	{
 		global $phpbb_root_path;
+
+		if ($download_name === false)
+		{
+			$download_name = $filename;
+		}
 
 		$mimetype = 'application/zip';
 
 		header('Pragma: no-cache');
-		header("Content-Type: $mimetype; name=\"$filename.zip\"");
-		header("Content-disposition: attachment; filename=$filename.zip");
+		header("Content-Type: $mimetype; name=\"$download_name.zip\"");
+		header("Content-disposition: attachment; filename=$download_name.zip");
 
 		$fp = fopen("{$phpbb_root_path}store/$filename.zip", 'rb');
 		while ($buffer = fread($fp, 1024))
@@ -611,9 +616,14 @@ class compress_tar extends compress
 	/**
 	* Download archive
 	*/
-	function download($filename)
+	function download($filename, $download_name = false)
 	{
 		global $phpbb_root_path;
+
+		if ($download_name === false)
+		{
+			$download_name = $filename;
+		}
 
 		switch ($this->type)
 		{
@@ -635,8 +645,8 @@ class compress_tar extends compress
 		}
 
 		header('Pragma: no-cache');
-		header("Content-Type: $mimetype; name=\"$filename$this->type\"");
-		header("Content-disposition: attachment; filename=$filename$this->type");
+		header("Content-Type: $mimetype; name=\"$download_name$this->type\"");
+		header("Content-disposition: attachment; filename=$download_name$this->type");
 
 		$fp = fopen("{$phpbb_root_path}store/$filename$this->type", 'rb');
 		while ($buffer = fread($fp, 1024))

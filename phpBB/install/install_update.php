@@ -590,7 +590,9 @@ class install_update extends module
 				}
 
 				// Now update the installation or download the archive...
-				$archive_filename = 'update_' . $this->update_info['version']['from'] . '_to_' . $this->update_info['version']['to'];
+				$download_filename = 'update_' . $this->update_info['version']['from'] . '_to_' . $this->update_info['version']['to'];
+				$archive_filename = $download_filename . '_' . time() . '_' . unique_id();
+
 				$update_list = $cache->get('_update_list');
 				$conflicts = request_var('conflict', array('' => 0));
 
@@ -749,7 +751,7 @@ class install_update extends module
 				{
 					$compress->close();
 
-					$compress->download($archive_filename);
+					$compress->download($archive_filename, $download_filename);
 					@unlink($phpbb_root_path . 'store/' . $archive_filename . $use_method);
 
 					exit;
