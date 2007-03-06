@@ -1316,13 +1316,13 @@ fieldset.permissions .permissions-switch {
 	text-align: right;
 }
 
-.permissions-panel th.permission-name {
+.permissions-panel th.permissions-name {
 	border: none;
 	color: #536482;
 	font-weight: normal;
 }
 
-.permissions-panel th.permission-name a.trace {
+.permissions-panel th.permissions-name a.trace {
 	display: inline;
 }
 
