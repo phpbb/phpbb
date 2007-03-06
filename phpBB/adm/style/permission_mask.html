@@ -16,9 +16,7 @@
 </script>
 <script type="text/javascript" src="style/permissions.js"></script>
 
-
 <!-- BEGIN p_mask -->
-
 <div class="clearfix"></div>
 <h3>{p_mask.NAME}<!-- IF p_mask.S_LOCAL --> <span class="small"> [{p_mask.L_ACL_TYPE}]</span><!-- ENDIF --></h3>
 
@@ -117,7 +115,9 @@
 			<fieldset class="quick" style="margin-right: 11px;">
 				<p class="small">{L_APPLY_PERMISSIONS_EXPLAIN}</p>
 				<input class="button1" type="submit" name="psubmit[{p_mask.f_mask.UG_ID}][{p_mask.f_mask.FORUM_ID}]" value="{L_APPLY_PERMISSIONS}" />
-				<p class="small"><a href="#" onclick="reset_opacity(0, '{p_mask.S_ROW_COUNT}{p_mask.f_mask.S_ROW_COUNT}'); return false;">{L_MARK_ALL}</a> &bull; <a href="#" onclick="reset_opacity(1, '{p_mask.S_ROW_COUNT}{p_mask.f_mask.S_ROW_COUNT}'); return false;">{L_UNMARK_ALL}</a></p>	
+				<!-- IF .p_mask.f_mask gt 1 or .p_mask gt 1 -->
+					<p class="small"><a href="#" onclick="reset_opacity(0, '{p_mask.S_ROW_COUNT}{p_mask.f_mask.S_ROW_COUNT}'); return false;">{L_MARK_ALL}</a> &bull; <a href="#" onclick="reset_opacity(1, '{p_mask.S_ROW_COUNT}{p_mask.f_mask.S_ROW_COUNT}'); return false;">{L_UNMARK_ALL}</a></p>
+				<!-- ENDIF -->
 			</fieldset>
 		
 			<!-- ENDIF -->
