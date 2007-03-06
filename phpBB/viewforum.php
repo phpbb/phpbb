@@ -405,7 +405,8 @@ $sql_array = array(
 // the number of stickies are not known
 $sql = $db->sql_build_query('SELECT', $sql_array);
 $sql = str_replace('{SQL_TOPIC_TYPE}', ($store_reverse) ? POST_NORMAL : POST_STICKY, $sql);
-$result = $db->sql_query_limit($sql, $sql_limit);
+
+$result = ($store_reverse) ? $db->sql_query_limit($sql, $sql_limit, $sql_start) : $db->sql_query_limit($sql, $sql_limit);
 
 $shadow_topic_list = array();
 
@@ -419,7 +420,7 @@ while ($row = $db->sql_fetchrow($result))
 {
 	$start_count++;
 
-	if ($start_count >= $sql_start)
+	if ((!$store_reverse && $start_count >= $sql_start) || $store_reverse)
 	{
 		if ($row['topic_status'] == ITEM_MOVED)
 		{
@@ -439,8 +440,15 @@ if ($num_rows < $sql_limit)
 	$sql = $db->sql_build_query('SELECT', $sql_array);
 	$sql = str_replace('{SQL_TOPIC_TYPE}', ($store_reverse) ? POST_STICKY : POST_NORMAL, $sql);
 
-	// Start at $sql_start - number of sticky topics on the previous page ($start_count - $num_rows)
-	$result = $db->sql_query_limit($sql, $sql_limit - $num_rows, $sql_start - ($start_count - $num_rows));
+	if (!$store_reverse)
+	{
+		// Start at $sql_start - number of sticky topics on the previous page ($start_count - $num_rows)
+		$result = $db->sql_query_limit($sql, $sql_limit - $num_rows, $sql_start - ($start_count - $num_rows));
+	}
+	else
+	{
+		$result = $db->sql_query_limit($sql, $sql_limit - $num_rows, $sql_start);
+	}
 
 	while ($row = $db->sql_fetchrow($result))
 	{
