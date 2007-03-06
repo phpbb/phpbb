@@ -86,8 +86,8 @@
 				<tr>
 					<th class="name" scope="col"><strong>{L_ACL_SETTING}</strong></th>
 				<!-- IF p_mask.S_VIEW -->
-					<th style="width: 40px;" class="value" scope="col">{L_ACL_YES}</th>
-					<th style="width: 40px;" class="value" scope="col">{L_ACL_NEVER}</th>
+					<th class="value" scope="col">{L_ACL_YES}</th>
+					<th class="value" scope="col">{L_ACL_NEVER}</th>
 				<!-- ELSE -->
 					<th class="value" scope="col"><a href="#" onclick="mark_options('options{p_mask.S_ROW_COUNT}{p_mask.f_mask.S_ROW_COUNT}{p_mask.f_mask.category.S_ROW_COUNT}', 'y'); reset_role('role{p_mask.S_ROW_COUNT}{p_mask.f_mask.S_ROW_COUNT}'); set_colours('{p_mask.S_ROW_COUNT}{p_mask.f_mask.S_ROW_COUNT}{p_mask.f_mask.category.S_ROW_COUNT}', false, 'yes'); return false;">{L_ACL_YES}</a></th>
 					<th class="value" scope="col"><a href="#" onclick="mark_options('options{p_mask.S_ROW_COUNT}{p_mask.f_mask.S_ROW_COUNT}{p_mask.f_mask.category.S_ROW_COUNT}', 'u'); reset_role('role{p_mask.S_ROW_COUNT}{p_mask.f_mask.S_ROW_COUNT}'); set_colours('{p_mask.S_ROW_COUNT}{p_mask.f_mask.S_ROW_COUNT}{p_mask.f_mask.category.S_ROW_COUNT}', false, 'no'); return false;">{L_ACL_NO}</a></th>
@@ -98,7 +98,7 @@
 				<tbody>
 				<!-- BEGIN mask -->
 					<!-- IF p_mask.f_mask.category.mask.S_ROW_COUNT is even --><tr class="row4"><!-- ELSE --><tr class="row3"><!-- ENDIF -->
-					<th class="permission-name<!-- IF p_mask.f_mask.category.mask.S_ROW_COUNT is even --> row4<!-- ELSE --> row3<!-- ENDIF -->"><!-- IF p_mask.f_mask.category.mask.U_TRACE --><a href="#" class="trace" onclick="trace('{p_mask.f_mask.category.mask.U_TRACE}'); return false;" title="{L_TRACE_SETTING}"><img src="images/icon_trace.gif" alt="{L_TRACE_SETTING}" /></a> <!-- ENDIF -->{p_mask.f_mask.category.mask.PERMISSION}</th>
+					<th class="permissions-name<!-- IF p_mask.f_mask.category.mask.S_ROW_COUNT is even --> row4<!-- ELSE --> row3<!-- ENDIF -->"><!-- IF p_mask.f_mask.category.mask.U_TRACE --><a href="#" class="trace" onclick="trace('{p_mask.f_mask.category.mask.U_TRACE}'); return false;" title="{L_TRACE_SETTING}"><img src="images/icon_trace.gif" alt="{L_TRACE_SETTING}" /></a> <!-- ENDIF -->{p_mask.f_mask.category.mask.PERMISSION}</th>
 					<!-- IF p_mask.S_VIEW -->
 						<td<!-- IF p_mask.f_mask.category.mask.S_YES --> class="yes"<!-- ENDIF -->>&nbsp;</td>
 						<td<!-- IF p_mask.f_mask.category.mask.S_NEVER --> class="never"<!-- ENDIF -->></td>

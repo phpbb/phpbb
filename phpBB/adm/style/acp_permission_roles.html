@@ -101,19 +101,19 @@
 					<thead>
 					<tr>
 						<th class="name" scope="col"><strong>{L_ACL_SETTING}</strong></th>
-						<th class="value" scope="col"><a href="#" onclick="mark_options('options00{auth.S_ROW_COUNT}', 'y'); set_colours('00{auth.S_ROW_COUNT}', false, 'yes'); return false;">{L_ACL_YES}</a></th>
-						<th class="value" scope="col"><a href="#" onclick="mark_options('options00{auth.S_ROW_COUNT}', 'u'); set_colours('00{auth.S_ROW_COUNT}', false, 'no'); return false;">{L_ACL_NO}</a></th>
-						<th class="value" scope="col"><a href="#" onclick="mark_options('options00{auth.S_ROW_COUNT}', 'n'); set_colours('00{auth.S_ROW_COUNT}', false, 'never'); return false;">{L_ACL_NEVER}</a></th>
+						<th class="value permissions-yes" scope="col"><a href="#" onclick="mark_options('options00{auth.S_ROW_COUNT}', 'y'); set_colours('00{auth.S_ROW_COUNT}', false, 'yes'); return false;">{L_ACL_YES}</a></th>
+						<th class="value permissions-no" scope="col"><a href="#" onclick="mark_options('options00{auth.S_ROW_COUNT}', 'u'); set_colours('00{auth.S_ROW_COUNT}', false, 'no'); return false;">{L_ACL_NO}</a></th>
+						<th class="value permissions-never" scope="col"><a href="#" onclick="mark_options('options00{auth.S_ROW_COUNT}', 'n'); set_colours('00{auth.S_ROW_COUNT}', false, 'never'); return false;">{L_ACL_NEVER}</a></th>
 					</tr>
 					</thead>
 					<tbody>
 					<!-- BEGIN mask -->
 						<!-- IF auth.mask.S_ROW_COUNT is even --><tr class="row4"><!-- ELSE --><tr class="row3"><!-- ENDIF -->
-						<th class="permission-name<!-- IF auth.mask.S_ROW_COUNT is even --> row4<!-- ELSE --> row3<!-- ENDIF -->">{auth.mask.PERMISSION}</th>
+						<th class="permissions-name<!-- IF auth.mask.S_ROW_COUNT is even --> row4<!-- ELSE --> row3<!-- ENDIF -->">{auth.mask.PERMISSION}</th>
 							
-						<td><label for="{auth.mask.FIELD_NAME}_y"><input onchange="set_colours('00{auth.S_ROW_COUNT}', false)" id="setting[{auth.mask.FIELD_NAME}]_y" name="setting[{auth.mask.FIELD_NAME}]" class="radio" type="radio"<!-- IF auth.mask.S_YES --> checked="checked"<!-- ENDIF --> value="1" /></label></td>
-						<td><label for="{auth.mask.FIELD_NAME}_u"><input onchange="set_colours('00{auth.S_ROW_COUNT}', false)" id="setting[{auth.mask.FIELD_NAME}]_u" name="setting[{auth.mask.FIELD_NAME}]" class="radio" type="radio"<!-- IF auth.mask.S_NO --> checked="checked"<!-- ENDIF --> value="-1" /></label></td>
-						<td><label for="{auth.mask.FIELD_NAME}_n"><input onchange="set_colours('00{auth.S_ROW_COUNT}', false)" id="setting[{auth.mask.FIELD_NAME}]_n" name="setting[{auth.mask.FIELD_NAME}]" class="radio" type="radio"<!-- IF auth.mask.S_NEVER --> checked="checked"<!-- ENDIF --> value="0" /></label></td>
+						<td class="permissions-yes"><label for="{auth.mask.FIELD_NAME}_y"><input onchange="set_colours('00{auth.S_ROW_COUNT}', false)" id="setting[{auth.mask.FIELD_NAME}]_y" name="setting[{auth.mask.FIELD_NAME}]" class="radio" type="radio"<!-- IF auth.mask.S_YES --> checked="checked"<!-- ENDIF --> value="1" /></label></td>
+						<td class="permissions-no"><label for="{auth.mask.FIELD_NAME}_u"><input onchange="set_colours('00{auth.S_ROW_COUNT}', false)" id="setting[{auth.mask.FIELD_NAME}]_u" name="setting[{auth.mask.FIELD_NAME}]" class="radio" type="radio"<!-- IF auth.mask.S_NO --> checked="checked"<!-- ENDIF --> value="-1" /></label></td>
+						<td class="permissions-never"><label for="{auth.mask.FIELD_NAME}_n"><input onchange="set_colours('00{auth.S_ROW_COUNT}', false)" id="setting[{auth.mask.FIELD_NAME}]_n" name="setting[{auth.mask.FIELD_NAME}]" class="radio" type="radio"<!-- IF auth.mask.S_NEVER --> checked="checked"<!-- ENDIF --> value="0" /></label></td>
 					</tr>
 					<!-- END mask -->
 					</tbody>
