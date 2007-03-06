@@ -392,63 +392,42 @@ $sql_array = array(
 	'FROM'			=> $sql_array['FROM'],
 	'LEFT_JOIN'		=> $sql_array['LEFT_JOIN'],
 
-	'WHERE'			=> $sql_where . "
-		AND t.topic_type = {SQL_TOPIC_TYPE}
+	'WHERE'			=> $sql_where . '
+		AND t.topic_type IN (' . POST_NORMAL . ', ' . POST_STICKY . ")
 		$sql_approved
 		$sql_limit_time",
 
-	'ORDER_BY'		=> $sql_sort_order,
+	'ORDER_BY'		=> 't.topic_type ' . ((!$store_reverse) ? 'DESC' : 'ASC') . ', ' . $sql_sort_order,
 );
 
 // If store_reverse, then first obtain topics, then stickies, else the other way around...
 // Funnily enough you typically save one query if going from the last page to the middle (store_reverse) because
 // the number of stickies are not known
 $sql = $db->sql_build_query('SELECT', $sql_array);
-$sql = str_replace('{SQL_TOPIC_TYPE}', ($store_reverse) ? POST_NORMAL : POST_STICKY, $sql);
-
-$result = ($store_reverse) ? $db->sql_query_limit($sql, $sql_limit, $sql_start) : $db->sql_query_limit($sql, $sql_limit);
+//$sql = str_replace('{SQL_TOPIC_TYPE}', ($store_reverse) ? POST_NORMAL : POST_STICKY, $sql);
+$result = $db->sql_query_limit($sql, $sql_limit, $sql_start);
 
 $shadow_topic_list = array();
-
-// Total number of normal or sticky topics that have been retrieved
-$start_count = 0;
-
-// Number of normal or sticky topics that have been placed
-$num_rows = 0;
-
+//$num_rows = 0;
 while ($row = $db->sql_fetchrow($result))
 {
-	$start_count++;
-
-	if ((!$store_reverse && $start_count >= $sql_start) || $store_reverse)
+	if ($row['topic_status'] == ITEM_MOVED)
 	{
-		if ($row['topic_status'] == ITEM_MOVED)
-		{
-			$shadow_topic_list[$row['topic_moved_id']] = $row['topic_id'];
-		}
-
-		$rowset[$row['topic_id']] = $row;
-		$topic_list[] = $row['topic_id'];
-		$num_rows++;
+		$shadow_topic_list[$row['topic_moved_id']] = $row['topic_id'];
 	}
+
+	$rowset[$row['topic_id']] = $row;
+	$topic_list[] = $row['topic_id'];
+//	$num_rows++;
 }
 $db->sql_freeresult($result);
 
-// If the number of topics exceeds the sql limit then we do not need to retrieve the remaining topic type
+/* If the number of topics exceeds the sql limit then we do not need to retrieve the remaining topic type
 if ($num_rows < $sql_limit)
 {
 	$sql = $db->sql_build_query('SELECT', $sql_array);
 	$sql = str_replace('{SQL_TOPIC_TYPE}', ($store_reverse) ? POST_STICKY : POST_NORMAL, $sql);
-
-	if (!$store_reverse)
-	{
-		// Start at $sql_start - number of sticky topics on the previous page ($start_count - $num_rows)
-		$result = $db->sql_query_limit($sql, $sql_limit - $num_rows, $sql_start - ($start_count - $num_rows));
-	}
-	else
-	{
-		$result = $db->sql_query_limit($sql, $sql_limit - $num_rows, $sql_start);
-	}
+	$result = $db->sql_query_limit($sql, $sql_limit - $num_rows, $sql_start);
 
 	while ($row = $db->sql_fetchrow($result))
 	{
@@ -462,7 +441,7 @@ if ($num_rows < $sql_limit)
 	}
 	$db->sql_freeresult($result);
 }
-
+*/
 // If we have some shadow topics, update the rowset to reflect their topic information
 if (sizeof($shadow_topic_list))
 {
@@ -615,8 +594,8 @@ if (sizeof($topic_list))
 			'TOPIC_TYPE'		=> $topic_type,
 
 			'TOPIC_FOLDER_IMG'		=> $user->img($folder_img, $folder_alt),
-			'TOPIC_FOLDER_IMG_ALT'		=> $user->lang[$folder_alt],
 			'TOPIC_FOLDER_IMG_SRC'	=> $user->img($folder_img, $folder_alt, false, '', 'src'),
+			'TOPIC_FOLDER_IMG_ALT'	=> $user->lang[$folder_alt],
 			'TOPIC_ICON_IMG'		=> (!empty($icons[$row['icon_id']])) ? $icons[$row['icon_id']]['img'] : '',
 			'TOPIC_ICON_IMG_WIDTH'	=> (!empty($icons[$row['icon_id']])) ? $icons[$row['icon_id']]['width'] : '',
 			'TOPIC_ICON_IMG_HEIGHT'	=> (!empty($icons[$row['icon_id']])) ? $icons[$row['icon_id']]['height'] : '',
