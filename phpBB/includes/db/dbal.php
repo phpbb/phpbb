@@ -584,6 +584,7 @@ class dbal
 							<a href="' . build_url('explain') . '">Return to previous page</a>
 						</div>
 						<div id="page-body">
+							<div id="acp">
 							<div class="panel">
 								<span class="corners-top"><span></span></span>
 								<div id="content">
@@ -597,6 +598,7 @@ class dbal
 									' . $this->sql_report . '
 								</div>
 								<span class="corners-bottom"><span></span></span>
+							</div>
 							</div>
 						</div>
 						<div id="page-footer">
