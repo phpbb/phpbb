@@ -31,10 +31,11 @@ if (empty($lang) || !is_array($lang))
 // in a url you again do not need to specify an order e.g., 'Click %sHERE%s' is fine
 
 $lang = array_merge($lang, array(
-	'ALREADY_DEFAULT_GROUP'	=> 'The selected group is already your default group',
-	'ALREADY_IN_GROUP'		=> 'You are already a member of the selected group',
+	'ALREADY_DEFAULT_GROUP'		=> 'The selected group is already your default group.',
+	'ALREADY_IN_GROUP'			=> 'You are already a member of the selected group.',
+	'ALREADY_IN_GROUP_PENDING'	=> 'You already requested joining the selected group.',
 
-	'CHANGED_DEFAULT_GROUP'	=> 'Successfully changed default group',
+	'CHANGED_DEFAULT_GROUP'	=> 'Successfully changed default group.',
 	
 	'GROUP_AVATAR'						=> 'Group avatar', 
 	'GROUP_CHANGE_DEFAULT'				=> 'Are you sure you want to change your default membership to the group “%s”?',

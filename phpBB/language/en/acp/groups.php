@@ -81,6 +81,7 @@ $lang = array_merge($lang, array(
 	'GROUP_PROMOTE'					=> 'Promote to group leader',
 	'GROUP_RANK'					=> 'Group rank',
 	'GROUP_RECEIVE_PM'				=> 'Group able to receive private messages',
+	'GROUP_RECEIVE_PM_EXPLAIN'		=> 'Please note that hidden groups are not able to be messaged, regardless of this setting.',
 	'GROUP_REQUEST'					=> 'Request',
 	'GROUP_SETTINGS'				=> 'Set user preferences',
 	'GROUP_SETTINGS_EXPLAIN'		=> 'Here you can force changes in users current preferences. Please note these settings are not saved for the group itself. They are intended as a quick method of altering the preferences of all users in this group.',

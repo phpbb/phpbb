@@ -2390,7 +2390,7 @@ function get_group_name($group_id)
 
 /**
 * Obtain either the members of a specified group, the groups the specified user is subscribed to
-* or checking if a specified user is in a specified group
+* or checking if a specified user is in a specified group. This function does not return pending memberships.
 *
 * Note: Never use this more than once... first group your users/groups
 */

@@ -202,13 +202,14 @@ switch ($mode)
 				}
 			}
 
-			// If the mod is only moderating non-viewable forums let us display this circumstance
-			// instead of saying they are moderating all forums
+			// If the mod is only moderating non-viewable forums we skip the user. There is no gain in displaying the person then...
 			if (!$s_forum_select && $undisclosed_forum)
 			{
-				$s_forum_select = '<option value="">' . $user->lang['FORUM_UNDISCLOSED'] . '</option>';
+//				$s_forum_select = '<option value="">' . $user->lang['FORUM_UNDISCLOSED'] . '</option>';
+				continue;
 			}
 
+			// The person is moderating several "public" forums, therefore the person should be listed, but not giving the real group name if hidden.
 			if ($row['group_type'] == GROUP_HIDDEN && !$auth->acl_gets('a_group', 'a_groupadd', 'a_groupdel') && $row['ug_user_id'] != $user->data['user_id'])
 			{
 				$group_name = $user->lang['GROUP_UNDISCLOSED'];

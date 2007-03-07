@@ -143,8 +143,22 @@ class ucp_groups
 
 						case 'join':
 
-							if (group_memberships($group_id, $user->data['user_id'], true))
+							$sql = 'SELECT ug.*, u.username, u.username_clean, u.user_email
+								FROM ' . USER_GROUP_TABLE . ' ug, ' . USERS_TABLE . ' u
+								WHERE ug.user_id = u.user_id
+									AND ug.group_id = ' . $group_id . '
+									AND ug.user_id = ' . $user->data['user_id'];
+							$result = $db->sql_query($sql);
+							$row = $db->sql_fetchrow($result);
+							$db->sql_freeresult($result);
+
+							if ($row)
 							{
+								if ($row['user_pending'])
+								{
+									trigger_error($user->lang['ALREADY_IN_GROUP_PENDING'] . $return_page);
+								}
+
 								trigger_error($user->lang['ALREADY_IN_GROUP'] . $return_page);
 							}
 
@@ -817,7 +831,7 @@ class ucp_groups
 						// Approve, demote or promote
 						group_user_attributes('approve', $group_id, $mark_ary, false, ($group_id) ? $group_row['group_name'] : false);
 
-						trigger_error($user->lang['USERS_APPROVED'] . $return_page);
+						trigger_error($user->lang['USERS_APPROVED'] . '<br /><br />' . sprintf($user->lang['RETURN_PAGE'], '<a href="' . $this->u_action . '&amp;action=list&amp;g=' . $group_id . '">', '</a>'));
 
 					break;
 
@@ -881,7 +895,7 @@ class ucp_groups
 
 							$user->add_lang('acp/groups');
 
-							trigger_error($user->lang['GROUP_DEFS_UPDATED'] . $return_page);
+							trigger_error($user->lang['GROUP_DEFS_UPDATED'] . '<br /><br />' . sprintf($user->lang['RETURN_PAGE'], '<a href="' . $this->u_action . '&amp;action=list&amp;g=' . $group_id . '">', '</a>'));
 						}
 						else
 						{
@@ -924,10 +938,10 @@ class ucp_groups
 
 							if ($error)
 							{
-								trigger_error($user->lang[$error] . $return_page);
+								trigger_error($user->lang[$error] . '<br /><br />' . sprintf($user->lang['RETURN_PAGE'], '<a href="' . $this->u_action . '&amp;action=list&amp;g=' . $group_id . '">', '</a>'));
 							}
 
-							trigger_error($user->lang['GROUP_USERS_REMOVE'] . $return_page);
+							trigger_error($user->lang['GROUP_USERS_REMOVE'] . '<br /><br />' . sprintf($user->lang['RETURN_PAGE'], '<a href="' . $this->u_action . '&amp;action=list&amp;g=' . $group_id . '">', '</a>'));
 						}
 						else
 						{
@@ -980,7 +994,7 @@ class ucp_groups
 							trigger_error($user->lang[$error] . $return_page);
 						}
 
-						trigger_error($user->lang['GROUP_USERS_ADDED'] . $return_page);
+						trigger_error($user->lang['GROUP_USERS_ADDED'] . '<br /><br />' . sprintf($user->lang['RETURN_PAGE'], '<a href="' . $this->u_action . '&amp;action=list&amp;g=' . $group_id . '">', '</a>'));
 
 					break;
 

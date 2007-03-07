@@ -3151,8 +3151,15 @@ function get_backtrace()
 		}
 
 		// Strip the current directory from path
-		$trace['file'] = str_replace(array($path, '\\'), array('', '/'), $trace['file']);
-		$trace['file'] = substr($trace['file'], 1);
+		if (empty($trace['file']))
+		{
+			$trace['file'] = '';
+		}
+		else
+		{
+			$trace['file'] = str_replace(array($path, '\\'), array('', '/'), $trace['file']);
+			$trace['file'] = substr($trace['file'], 1);
+		}
 		$args = array();
 
 		// If include/require/include_once is not called, do not show arguments - they may contain sensible information
@@ -3177,7 +3184,7 @@ function get_backtrace()
 
 		$output .= '<br />';
 		$output .= '<b>FILE:</b> ' . htmlspecialchars($trace['file']) . '<br />';
-		$output .= '<b>LINE:</b> ' . $trace['line'] . '<br />';
+		$output .= '<b>LINE:</b> ' . ((!empty($trace['line'])) ? $trace['line'] : '') . '<br />';
 
 		$output .= '<b>CALL:</b> ' . htmlspecialchars($trace['class'] . $trace['type'] . $trace['function']) . '(' . ((sizeof($args)) ? implode(', ', $args) : '') . ')<br />';
 	}

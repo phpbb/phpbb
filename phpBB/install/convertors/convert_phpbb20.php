@@ -158,7 +158,7 @@ if (!$get_info)
 	}
 
 	// TerraFrost's validated birthday mod
-	if (get_config_value('bday_required') !== false)
+	if (get_config_value('bday_require') !== false)
 	{
 		define('MOD_BIRTHDAY_TERRA', true);
 	}

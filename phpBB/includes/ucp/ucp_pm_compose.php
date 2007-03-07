@@ -74,7 +74,7 @@ function compose_pm($id, $mode, $action)
 		{
 			$sql = 'SELECT group_id, group_name, group_type
 				FROM ' . GROUPS_TABLE . '
-				WHERE group_type NOT IN (' . GROUP_HIDDEN . ', ' . GROUP_CLOSED . ')
+				WHERE group_type <> ' . GROUP_HIDDEN . '
 					AND group_receive_pm = 1
 				ORDER BY group_type DESC';
 			$result = $db->sql_query($sql);
@@ -730,6 +730,7 @@ function compose_pm($id, $mode, $action)
 			$sql = 'SELECT group_id as id, group_name as name, group_colour as colour, group_type
 				FROM ' . GROUPS_TABLE . '
 				WHERE group_receive_pm = 1
+					AND group_type <> ' . GROUP_HIDDEN . '
 					AND ' . $db->sql_in_set('group_id', array_map('intval', array_keys($address_list['g'])));
 			$result['g'] = $db->sql_query($sql);
 		}
