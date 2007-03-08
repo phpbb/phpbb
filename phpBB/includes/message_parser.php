@@ -656,7 +656,6 @@ class bbcode_firstpass extends bbcode
 					$this->parsed_items['quote']++;
 
 					// the buffer holds a valid opening tag
-					$config['max_quote_depth'] = 0;
 					if ($config['max_quote_depth'] && sizeof($close_tags) >= $config['max_quote_depth'])
 					{
 						// there are too many nested quotes
