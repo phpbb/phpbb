@@ -230,7 +230,7 @@ class bbcode
 				case 5:
 					$this->bbcode_cache[$bbcode_id] = array(
 						'preg' => array(
-							'#\[size=([\-\+]?[1-2]?[0-9]):$uid\](.*?)\[/size:$uid\]#s'	=> $this->bbcode_tpl('size', $bbcode_id),
+							'#\[size=([\-\+]?\d+):$uid\](.*?)\[/size:$uid\]#s'	=> $this->bbcode_tpl('size', $bbcode_id),
 						)
 					);
 				break;
