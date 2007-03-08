@@ -850,7 +850,7 @@ if ($submit || $preview || $refresh)
 					include_once($phpbb_root_path . 'includes/functions_admin.' . $phpEx);
 
 					$template->assign_vars(array(
-						'S_FORUM_SELECT'	=> make_forum_select(false, false, false, true, true),
+						'S_FORUM_SELECT'	=> make_forum_select(false, false, false, true, true, true),
 						'S_UNGLOBALISE'		=> true)
 					);
 
@@ -859,6 +859,12 @@ if ($submit || $preview || $refresh)
 				}
 				else
 				{
+					if (!$auth->acl_get('f_post', $to_forum_id))
+					{
+						// This will only be triggered if the user tried to trick the forum.
+						trigger_error('NOT_AUTHORIZED');
+					}
+
 					$forum_id = $to_forum_id;
 				}
 			}

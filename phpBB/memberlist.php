@@ -359,14 +359,6 @@ switch ($mode)
 		$sql = 'SELECT *
 			FROM ' . USERS_TABLE . '
 			WHERE ' . (($username) ? "username_clean = '" . $db->sql_escape(utf8_clean_string($username)) . "'" : "user_id = $user_id");
-
-		// a_user admins and founder are able to view inactive users and bots to be able to
-		// manage them more easily
-		if (!$auth->acl_get('a_user') && $user->data['user_type'] != USER_FOUNDER)
-		{
-			$sql .= ' AND user_type IN (' . USER_NORMAL . ', ' . USER_FOUNDER . ')';
-		}
-
 		$result = $db->sql_query($sql);
 		$member = $db->sql_fetchrow($result);
 		$db->sql_freeresult($result);
@@ -374,6 +366,20 @@ switch ($mode)
 		if (!$member)
 		{
 			trigger_error('NO_USER');
+		}
+
+		// a_user admins and founder are able to view inactive users and bots to be able to manage them more easily
+		// Normal users are able to see at least users having only changed their profile settings but not yet re-activated.
+		if (!$auth->acl_get('a_user') && $user->data['user_type'] != USER_FOUNDER)
+		{
+			if ($row['user_type'] == USER_IGNORE)
+			{
+				trigger_error('NO_USER');
+			}
+			else if ($row['user_type'] == USER_INACTIVE && $row['user_inactive_reason'] != INACTIVE_PROFILE)
+			{
+				trigger_error('NO_USER');
+			}
 		}
 
 		$user_id = (int) $member['user_id'];

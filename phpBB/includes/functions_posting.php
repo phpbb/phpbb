@@ -552,9 +552,16 @@ function create_thumbnail($source, $destination, $mimetype)
 		return false;
 	}
 
-	list($width, $height, $type, ) = getimagesize($source);
+	$dimension = getimagesize($source);
 
-	if (!$width || !$height)
+	if ($dimension === false)
+	{
+		return false;
+	}
+
+	list($width, $height, $type, ) = $dimension;
+
+	if ($width < 2 || $height < 2)
 	{
 		return false;
 	}
@@ -1578,6 +1585,19 @@ function submit_post($mode, $subject, $username, $topic_type, &$poll, &$data, $u
 
 				'topic_attachment'			=> (!empty($data['attachment_data'])) ? 1 : (isset($data['topic_attachment']) ? $data['topic_attachment'] : 0),
 			);
+
+		// no break;
+
+		case 'edit':
+		case 'edit_last_post':
+
+			// Correctly set back the topic replies and forum posts...
+			if (!$auth->acl_get('f_noapprove', $data['forum_id']) && !$auth->acl_get('m_approve', $data['forum_id']))
+			{
+				$sql_data[TOPICS_TABLE]['stat'][] = 'topic_replies = topic_replies - 1';
+				$sql_data[FORUMS_TABLE]['stat'][] = 'forum_posts = forum_posts - 1';
+			}
+
 		break;
 	}
 

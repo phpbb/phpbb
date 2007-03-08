@@ -437,9 +437,12 @@ class auth_admin extends auth
 			$hold_ary = array();
 			foreach ($hold_ary_temp as $ug_id => $row)
 			{
-				foreach ($row as $forum_id => $auth_row)
+				foreach ($forum_names_ary as $forum_id => $forum_row)
 				{
-					$hold_ary[$forum_id][$ug_id] = $auth_row;
+					if (isset($row[$forum_id]))
+					{
+						$hold_ary[$forum_id][$ug_id] = $row[$forum_id];
+					}
 				}
 			}
 			unset($hold_ary_temp);
@@ -451,6 +454,8 @@ class auth_admin extends auth
 
 				$template->assign_block_vars($tpl_pmask, array(
 					'NAME'			=> ($forum_id == 0) ? $forum_names_ary[0] : $forum_names_ary[$forum_id]['forum_name'],
+					'PADDING'		=> ($forum_id == 0) ? '' : $forum_names_ary[$forum_id]['padding'],
+
 					'CATEGORIES'	=> implode('</th><th>', $categories),
 
 					'L_ACL_TYPE'	=> $l_acl_type,

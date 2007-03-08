@@ -780,6 +780,7 @@ if (!$get_info)
 				array('group_id',				'groups.group_id',					''),
 				array('group_type',				'groups.group_type',				'phpbb_convert_group_type'),
 				array('group_display',			0,									''),
+				array('group_legend',			0,									''),
 				array('group_name',				'groups.group_name',				'phpbb_convert_group_name'), // phpbb_set_encoding called in phpbb_convert_group_name
 				array('group_desc',				'groups.group_description',			'phpbb_set_encoding'),
 

@@ -337,6 +337,12 @@ class filespec
 						$this->error[] = sprintf($user->lang['IMAGE_FILETYPE_MISMATCH'], $types[$this->image_info[2]][0], $this->extension);
 					}
 				}
+
+				// Make sure the dimensions match a valid image
+				if ($this->width < 2 || $this->height < 2)
+				{
+					$this->error[] = $user->lang['ATTACHED_IMAGE_NOT_IMAGE'];
+				}
 			}
 			else
 			{

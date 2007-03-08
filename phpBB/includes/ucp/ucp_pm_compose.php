@@ -326,7 +326,7 @@ function compose_pm($id, $mode, $action)
 	}
 
 	// Handle User/Group adding/removing
-	handle_message_list_actions($address_list, $remove_u, $remove_g, $add_to, $add_bcc);
+	handle_message_list_actions($address_list, $error, $remove_u, $remove_g, $add_to, $add_bcc);
 
 	// Check for too many recipients
 	if ((!$config['allow_mass_pm'] || !$auth->acl_get('u_masspm')) && num_recipients($address_list) > 1)
@@ -907,9 +907,9 @@ function compose_pm($id, $mode, $action)
 /**
 * For composing messages, handle list actions
 */
-function handle_message_list_actions(&$address_list, $remove_u, $remove_g, $add_to, $add_bcc)
+function handle_message_list_actions(&$address_list, &$error, $remove_u, $remove_g, $add_to, $add_bcc)
 {
-	global $auth, $db;
+	global $auth, $db, $user;
 
 	// Delete User [TO/BCC]
 	if ($remove_u)
@@ -956,7 +956,13 @@ function handle_message_list_actions(&$address_list, $remove_u, $remove_g, $add_
 		if (sizeof($usernames))
 		{
 			$user_id_ary = array();
-			user_get_id_name($user_id_ary, $usernames);
+			user_get_id_name($user_id_ary, $usernames, array(USER_NORMAL, USER_FOUNDER, USER_INACTIVE));
+
+			// If there are users not existing, we will at least print a notice...
+			if (!sizeof($user_id_ary))
+			{
+				$error[] = $user->lang['PM_NO_USERS'];
+			}
 		}
 
 		// Add Friends if specified
@@ -987,11 +993,19 @@ function handle_message_list_actions(&$address_list, $remove_u, $remove_g, $add_
 					AND user_allow_pm = 0';
 			$result = $db->sql_query($sql);
 
+			$removed = false;
 			while ($row = $db->sql_fetchrow($result))
 			{
+				$removed = true;
 				unset($address_list['u'][$row['user_id']]);
 			}
 			$db->sql_freeresult($result);
+
+			// print a notice about users not being added who do not want to receive pms
+			if ($removed)
+			{
+				$error[] = $user->lang['PM_USERS_REMOVED_NO_PM'];
+			}
 		}
 	}
 }

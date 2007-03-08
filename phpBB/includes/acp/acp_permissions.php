@@ -422,7 +422,7 @@ class acp_permissions
 				$sql = 'SELECT forum_name
 					FROM ' . FORUMS_TABLE . '
 					WHERE ' . $db->sql_in_set('forum_id', $forum_id) . '
-					ORDER BY forum_name ASC';
+					ORDER BY left_id ASC';
 				$result = $db->sql_query($sql);
 
 				$forum_names = array();

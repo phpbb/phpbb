@@ -11,8 +11,12 @@
 /**
 * Obtain user_ids from usernames or vice versa. Returns false on
 * success else the error string
+*
+* @param array &$user_id_ary The user ids to check or empty if usernames used
+* @param array &$username_ary The usernames to check or empty if user ids used
+* @param mixed $user_type Array of user types to check, false if not restricting by user type
 */
-function user_get_id_name(&$user_id_ary, &$username_ary, $only_active = false)
+function user_get_id_name(&$user_id_ary, &$username_ary, $user_type = false)
 {
 	global $db;
 
@@ -45,9 +49,9 @@ function user_get_id_name(&$user_id_ary, &$username_ary, $only_active = false)
 		FROM ' . USERS_TABLE . '
 		WHERE ' . $db->sql_in_set($sql_where, $sql_in);
 
-	if ($only_active)
+	if ($user_type !== false && !empty($user_type))
 	{
-		$sql .= ' AND user_type IN (' . USER_NORMAL . ', ' . USER_FOUNDER . ')';
+		$sql .= ' AND ' . $db->sql_in_set('user_type', $user_type);
 	}
 
 	$result = $db->sql_query($sql);
@@ -1410,10 +1414,16 @@ function avatar_remote($data, &$error)
 		return false;
 	}
 
+	if ($image_data[0] < 2 || $image_data[1] < 2)
+	{
+		$error[] = $user->lang['AVATAR_NO_SIZE'];
+		return false;
+	}
+
 	$width = ($data['width'] && $data['height']) ? $data['width'] : $image_data[0];
 	$height = ($data['width'] && $data['height']) ? $data['height'] : $image_data[1];
 
-	if (!$width || !$height)
+	if ($width < 2 || $height < 2)
 	{
 		$error[] = $user->lang['AVATAR_NO_SIZE'];
 		return false;
@@ -1630,7 +1640,17 @@ function avatar_process_user(&$error, $custom_userdata = false)
 	}
 
 	$sql_ary = array();
-	$data['user_id'] = ($custom_userdata === false) ? $user->data['user_id'] : $custom_userdata['user_id'];
+
+	if ($custom_userdata === false)
+	{
+		$userdata = &$user->data;
+	}
+	else
+	{
+		$userdata = &$custom_userdata;
+	}
+
+	$data['user_id'] = $userdata['user_id'];
 	$change_avatar = ($custom_userdata === false) ? $auth->acl_get('u_chgavatar') : true;
 	$avatar_select = basename(request_var('avatar_select', ''));
 
@@ -1669,7 +1689,7 @@ function avatar_process_user(&$error, $custom_userdata = false)
 		$sql_ary['user_avatar'] = '';
 		$sql_ary['user_avatar_type'] = $sql_ary['user_avatar_width'] = $sql_ary['user_avatar_height'] = 0;
 	}
-	else if ($data['width'] && $data['height'])
+	else if ($data['width'] && $data['height'] && ($userdata['user_avatar_type'] != AVATAR_GALLERY))
 	{
 		// Only update the dimensions?
 		if ($config['avatar_max_width'] || $config['avatar_max_height'])

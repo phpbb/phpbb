@@ -104,6 +104,7 @@ class acp_groups
 				if (confirm_box(true))
 				{
 					$group_name = ($group_row['group_type'] == GROUP_SPECIAL) ? $user->lang['G_' . $group_row['group_name']] : $group_row['group_name'];
+
 					if (!sizeof($mark_ary))
 					{
 						$start = 0;

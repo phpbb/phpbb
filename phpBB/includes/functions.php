@@ -2013,7 +2013,7 @@ function login_box($redirect = '', $l_explain = '', $l_success = '', $admin = fa
 		$username	= request_var('username', '', true);
 		$password	= request_var('password', '', true);
 		$autologin	= (!empty($_POST['autologin'])) ? true : false;
-		$viewonline = (!empty($_POST['viewonline'])) ? 0 : 1;
+		$viewonline = (!empty($_POST['viewonline']) && $auth->acl_get('u_hideonline')) ? 0 : 1;
 		$admin 		= ($admin) ? 1 : 0;
 		$viewonline = ($admin) ? $user->data['session_viewonline'] : $viewonline;
 
@@ -2169,6 +2169,7 @@ function login_box($redirect = '', $l_explain = '', $l_success = '', $admin = fa
 
 		'S_DISPLAY_FULL_LOGIN'	=> ($s_display) ? true : false,
 		'S_AUTOLOGIN_ENABLED'	=> ($config['allow_autologin']) ? true : false,
+		'S_ALLOW_HIDE_ONLINE'	=> ($auth->acl_get('u_hideonline')) ? true : false,
 		'S_LOGIN_ACTION'		=> (!$admin) ? append_sid("{$phpbb_root_path}ucp.$phpEx", 'mode=login') : append_sid("index.$phpEx", false, true, $user->session_id), // Needs to stay index.$phpEx because we are within the admin directory
 		'S_HIDDEN_FIELDS' 		=> $s_hidden_fields,
 
@@ -2794,9 +2795,17 @@ function parse_attachments($forum_id, &$message, &$attachments, &$update_count, 
 					{
 						if ($config['img_link_width'] || $config['img_link_height'])
 						{
-							list($width, $height) = getimagesize($filename);
+							$dimension = getimagesize($filename);
 
-							$display_cat = (!$width && !$height) ? ATTACHMENT_CATEGORY_IMAGE : (($width <= $config['img_link_width'] && $height <= $config['img_link_height']) ? ATTACHMENT_CATEGORY_IMAGE : ATTACHMENT_CATEGORY_NONE);
+							// If the dimensions could not be determined or the image being too small we display it as a link for safety purposes
+							if ($dimension === false || $dimension[0] < 2 || $dimension[1] < 2)
+							{
+								$display_cat = ATTACHMENT_CATEGORY_NONE;
+							}
+							else
+							{
+								$display_cat = ($dimension[0] <= $config['img_link_width'] && $dimension[1] <= $config['img_link_height']) ? ATTACHMENT_CATEGORY_IMAGE : ATTACHMENT_CATEGORY_NONE;
+							}
 						}
 					}
 					else

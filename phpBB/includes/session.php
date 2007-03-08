@@ -915,6 +915,12 @@ class session
 
 		if ($banned && !$return)
 		{
+			// If the session is empty we need to create a valid one...
+			if (empty($this->session_id))
+			{
+				$this->session_create(ANONYMOUS);
+			}
+
 			// Initiate environment ... since it won't be set at this stage
 			$this->setup();
 
@@ -939,6 +945,13 @@ class session
 
 				// The false here is needed, else the user is able to circumvent the ban.
 				$this->session_kill(false);
+			}
+
+			// Ok, we catch the case of an empty session id for the anonymous user...
+			// This can happen if the user is logging in, banned by username and the login_box() being called "again".
+			if (empty($this->session_id))
+			{
+				$this->session_create(ANONYMOUS);
 			}
 
 			// Determine which message to output
