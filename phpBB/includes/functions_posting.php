@@ -1873,15 +1873,6 @@ function submit_post($mode, $subject, $username, $topic_type, &$poll, &$data, $u
 		}
 	}
 
-	if ($post_mode == 'edit_topic')
-	{
-		$update_sql = update_post_information('topic', $data['topic_id'], true);
-		if (sizeof($update_sql))
-		{
-			$sql_data[TOPICS_TABLE]['stat'][] = implode(', ', $update_sql[$data['topic_id']]);
-		}
-	}
-
 	// Update total post count, do not consider moderated posts/topics
 	if ($auth->acl_get('f_noapprove', $data['forum_id']) || $auth->acl_get('m_approve', $data['forum_id']))
 	{
