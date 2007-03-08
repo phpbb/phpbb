@@ -411,12 +411,14 @@ class install_update extends module
 
 				if ($all_up_to_date)
 				{
-					$db->sql_query('DELETE FROM ' . CONFIG_TABLE . " WHERE config_name = 'version_update_from'");
-
 					// Add database update to log
 					add_log('admin', 'LOG_UPDATE_PHPBB', $this->current_version, $this->latest_version);
 
 					$cache->purge();
+
+					$db->sql_return_on_error(true);
+					$db->sql_query('DELETE FROM ' . CONFIG_TABLE . " WHERE config_name = 'version_update_from'");
+					$db->sql_return_on_error(false);
 				}
 
 			break;

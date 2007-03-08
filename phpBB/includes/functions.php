@@ -2013,7 +2013,7 @@ function login_box($redirect = '', $l_explain = '', $l_success = '', $admin = fa
 		$username	= request_var('username', '', true);
 		$password	= request_var('password', '', true);
 		$autologin	= (!empty($_POST['autologin'])) ? true : false;
-		$viewonline = (!empty($_POST['viewonline']) && $auth->acl_get('u_hideonline')) ? 0 : 1;
+		$viewonline = (!empty($_POST['viewonline'])) ? 0 : 1;
 		$admin 		= ($admin) ? 1 : 0;
 		$viewonline = ($admin) ? $user->data['session_viewonline'] : $viewonline;
 
@@ -2062,6 +2062,24 @@ function login_box($redirect = '', $l_explain = '', $l_success = '', $admin = fa
 
 			// append/replace SID (may change during the session for AOL users)
 			$redirect = reapply_sid($redirect);
+
+			// Make sure the user is able to hide his session
+			if (!$viewonline)
+			{
+				$check_auth = new auth();
+				$check_auth->acl($user->data);
+
+				// Reset online status if not allowed to hide the session...
+				if (!$check_auth->acl_get('u_hideonline'))
+				{
+					$sql = 'UPDATE ' . SESSIONS_TABLE . '
+						SET session_viewonline = 1
+						WHERE session_user_id = ' . $user->data['user_id'];
+					$db->sql_query($sql);
+				}
+
+				unset($check_auth);
+			}
 
 			// Special case... the user is effectively banned, but we allow founders to login
 			if (defined('IN_CHECK_BAN') && $result['user_row']['user_type'] != USER_FOUNDER)
@@ -2169,7 +2187,6 @@ function login_box($redirect = '', $l_explain = '', $l_success = '', $admin = fa
 
 		'S_DISPLAY_FULL_LOGIN'	=> ($s_display) ? true : false,
 		'S_AUTOLOGIN_ENABLED'	=> ($config['allow_autologin']) ? true : false,
-		'S_ALLOW_HIDE_ONLINE'	=> ($auth->acl_get('u_hideonline')) ? true : false,
 		'S_LOGIN_ACTION'		=> (!$admin) ? append_sid("{$phpbb_root_path}ucp.$phpEx", 'mode=login') : append_sid("index.$phpEx", false, true, $user->session_id), // Needs to stay index.$phpEx because we are within the admin directory
 		'S_HIDDEN_FIELDS' 		=> $s_hidden_fields,
 
