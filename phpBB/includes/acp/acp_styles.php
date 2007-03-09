@@ -2993,9 +2993,20 @@ parse_css_file = {PARSE_CSS_FILE}
 		switch ($mode)
 		{
 			case 'template':
+				// We check if the template author defined a different bitfield
+				$cfg_data = parse_cfg_file("$root_path$mode/template.cfg");
+
+				if (!empty($cfg_data['template_bitfield']))
+				{
+					$sql_ary['bbcode_bitfield'] = $cfg_data['template_bitfield'];
+				}
+				else
+				{
+					$sql_ary['bbcode_bitfield'] = TEMPLATE_BITFIELD;
+				}
+
 				// We set a pre-defined bitfield here which we may use further in 3.2
 				$sql_ary += array(
-					'bbcode_bitfield'	=> TEMPLATE_BITFIELD,
 					'template_storedb'	=> $store_db
 				);
 			break;
