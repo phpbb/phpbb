@@ -372,11 +372,11 @@ switch ($mode)
 		// Normal users are able to see at least users having only changed their profile settings but not yet re-activated.
 		if (!$auth->acl_get('a_user') && $user->data['user_type'] != USER_FOUNDER)
 		{
-			if ($row['user_type'] == USER_IGNORE)
+			if ($member['user_type'] == USER_IGNORE)
 			{
 				trigger_error('NO_USER');
 			}
-			else if ($row['user_type'] == USER_INACTIVE && $row['user_inactive_reason'] != INACTIVE_PROFILE)
+			else if ($member['user_type'] == USER_INACTIVE && $member['user_inactive_reason'] != INACTIVE_PROFILE)
 			{
 				trigger_error('NO_USER');
 			}
