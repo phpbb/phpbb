@@ -392,7 +392,7 @@ class bbcode
 				'u_open'	=> '<span style="text-decoration: underline">',
 				'u_close'	=> '</span>',
 				'img'		=> '<img src="$1" alt="' . $user->lang['IMAGE'] . '" />',
-				'size'		=> '<span style="font-size: $1px; line-height: normal">$2</span>',
+				'size'		=> '<span style="font-size: $1%; line-height: normal">$2</span>',
 				'color'		=> '<span style="color: $1">$2</span>',
 				'email'		=> '<a href="mailto:$1">$2</a>'
 			);
