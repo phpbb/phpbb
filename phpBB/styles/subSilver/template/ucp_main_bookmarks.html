@@ -7,9 +7,11 @@
 <tr>
 	<td class="row1" colspan="5" align="center"><span class="genmed">{L_BOOKMARKS_EXPLAIN}</span></td>
 </tr>
+<!-- IF .topicrow -->
 <tr>
 	<th colspan="5">{L_BOOKMARKS}</th>
 </tr>
+<!-- ENDIF -->
 
 <!-- IF S_NO_DISPLAY_BOOKMARKS -->
 	<tr class="row1">
@@ -48,13 +50,15 @@
 		</tr>
 	<!-- END topicrow -->
 
-	<tr>
-		<td class="cat" colspan="5" align="{S_CONTENT_FLOW_END}"><input class="btnlite" type="submit" name="unbookmark" value="{L_REMOVE_BOOKMARK_MARKED}" />&nbsp;</td>
-	</tr>
-<!-- ENDIF -->
+		<!-- IF .topicrow -->
+			<tr>
+				<td class="cat" colspan="5" align="{S_CONTENT_FLOW_END}"><input class="btnlite" type="submit" name="unbookmark" value="{L_REMOVE_BOOKMARK_MARKED}" />&nbsp;</td>
+			</tr>
+		<!-- ENDIF -->
+	<!-- ENDIF -->
 </table>
 
-<!-- IF not S_NO_DISPLAY_BOOKMARKS -->
+<!-- IF not S_NO_DISPLAY_BOOKMARKS and .topicrow -->
 	<div class="gensmall" style="float: {S_CONTENT_FLOW_END}; padding-top: 2px;"><b><a href="#" onclick="marklist('ucp', 't', true); return false;">{L_MARK_ALL}</a> :: <a href="#" onclick="marklist('ucp', 't', false); return false;">{L_UNMARK_ALL}</a></b></div>
 <!-- ENDIF -->
 

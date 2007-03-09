@@ -67,11 +67,14 @@
 	</tr>
 <!-- END topicrow -->
 
+<!-- IF .topicrow or .forumrow -->
 <tr>
 	<td class="cat" colspan="4" align="{S_CONTENT_FLOW_END}"><input class="btnlite" type="submit" name="unwatch" value="{L_UNWATCH_MARKED}" />&nbsp;</td>
 </tr>
+<!-- ENDIF -->
 </table>
-
+<!-- IF .topicrow or .forumrow -->
 <div class="gensmall" style="float: {S_CONTENT_FLOW_END}; padding-top: 2px;"><b><a href="#" onclick="marklist('ucp', 't', true); return false;">{L_MARK_ALL}</a> :: <a href="#" onclick="marklist('ucp', 't', false); return false;">{L_UNMARK_ALL}</a></b></div>
+<!-- ENDIF -->
 
 <!-- INCLUDE ucp_footer.html -->
