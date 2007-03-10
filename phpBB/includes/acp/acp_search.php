@@ -25,6 +25,9 @@ class acp_search
 
 		$user->add_lang('acp/search');
 
+		// For some this may be of help...
+		@ini_set('memory_limit', '128M');
+
 		switch ($mode)
 		{
 			case 'settings':
