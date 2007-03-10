@@ -1322,7 +1322,7 @@ function tracking_serialize($input)
 	{
 		if (is_array($value))
 		{
-			$out .= $key . ':(' . tracking_serializer($value) . ');';
+			$out .= $key . ':(' . tracking_serialize($value) . ');';
 		}
 		else
 		{
