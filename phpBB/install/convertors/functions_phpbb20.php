@@ -1148,21 +1148,21 @@ function phpbb_prepare_message($message)
 	// Decode phpBB 2.0.x Message
 	if (isset($convert->row['old_bbcode_uid']) && $convert->row['old_bbcode_uid'] != '')
 	{
+		// Adjust size...
+		if (strpos($message, '[size=') !== false)
+		{
+			// Doing it with a map.
+			$match_size = array('/\[size=[0-7]:' . $convert->row['old_bbcode_uid'] . '\]/', '/\[size=[8-9]:' . $convert->row['old_bbcode_uid'] . '\]/', '/\[size=[10-12]:' . $convert->row['old_bbcode_uid'] . '\]/', '/\[size=[13-18]:' . $convert->row['old_bbcode_uid'] . '\]/', '/\[size=[19-99]:' . $convert->row['old_bbcode_uid'] . '\]/');
+			$replace_size = array('[size=50:' . $convert->row['old_bbcode_uid'] . ']', '[size=85:' . $convert->row['old_bbcode_uid'] . ']', '[size=100:' . $convert->row['old_bbcode_uid'] . ']', '[size=150:' . $convert->row['old_bbcode_uid'] . ']', '[size=200:' . $convert->row['old_bbcode_uid'] . ']');
+			$message = preg_replace($match_size, $replace_size, $message);
+		}
+
 		$message = preg_replace('/\:(([a-z0-9]:)?)' . $convert->row['old_bbcode_uid'] . '/s', '', $message);
 	}
 
 	if (strpos($message, '[quote=') !== false)
 	{
 		$message = preg_replace('/\[quote="(.*?)"\]/s', '[quote=&quot;\1&quot;]', $message);
-	}
-
-	// Adjust size...
-	if (strpos($message, '[size=') !== false)
-	{
-		// Doing it with a map.
-		$match_size = array('/\[size=[0-7]\]/', '/\[size=[8-9]\]/', '/\[size=[10-12]\]/', '/\[size=[13-18]\]/', '/\[size=[19-99]\]/');
-		$replace_size = array('[size=50]', '[size=85]', '[size=100]', '[size=150]', '[size=200]');
-		$message = preg_replace($match_size, $replace_size, $message);
 	}
 
 	// Already the new user id ;)
