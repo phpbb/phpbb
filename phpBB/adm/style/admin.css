@@ -270,6 +270,10 @@ span.corners-top span, span.corners-bottom span {
 
 /* Sub-navigation Menu
 ---------------------------------------- */
+#toggle {
+	display: none;
+}
+
 #menu {
 	float: left;
 	width: 20%;
