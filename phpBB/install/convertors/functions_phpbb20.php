@@ -1156,6 +1156,15 @@ function phpbb_prepare_message($message)
 		$message = preg_replace('/\[quote="(.*?)"\]/s', '[quote=&quot;\1&quot;]', $message);
 	}
 
+	// Adjust size...
+	if (strpos($message, '[size=') !== false)
+	{
+		// Doing it with a map.
+		$match_size = array('/\[size=[0-7]\]/', '/\[size=[8-9]\]/', '/\[size=[10-12]\]/', '/\[size=[13-18]\]/', '/\[size=[19-99]\]/');
+		$replace_size = array('[size=50]', '[size=85]', '[size=100]', '[size=150]', '[size=200]');
+		$message = preg_replace($match_size, $replace_size, $message);
+	}
+
 	// Already the new user id ;)
 	$user_id = $convert->row['poster_id'];
 
