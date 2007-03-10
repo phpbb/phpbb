@@ -1152,7 +1152,7 @@ function phpbb_prepare_message($message)
 		if (strpos($message, '[size=') !== false)
 		{
 			// Doing it with a map.
-			$match_size = array('/\[size=[0-7]:' . $convert->row['old_bbcode_uid'] . '\]/', '/\[size=[8-9]:' . $convert->row['old_bbcode_uid'] . '\]/', '/\[size=[10-12]:' . $convert->row['old_bbcode_uid'] . '\]/', '/\[size=[13-18]:' . $convert->row['old_bbcode_uid'] . '\]/', '/\[size=[19-99]:' . $convert->row['old_bbcode_uid'] . '\]/');
+			$match_size = array('/\[size=[0-7]:' . $convert->row['old_bbcode_uid'] . '\]/', '/\[size=[8-9]:' . $convert->row['old_bbcode_uid'] . '\]/', '/\[size=1[0-2]:' . $convert->row['old_bbcode_uid'] . '\]/', '/\[size=1[3-8]:' . $convert->row['old_bbcode_uid'] . '\]/', '/\[size=(?:[2-9][1-9]|19):' . $convert->row['old_bbcode_uid'] . '\]/');
 			$replace_size = array('[size=50:' . $convert->row['old_bbcode_uid'] . ']', '[size=85:' . $convert->row['old_bbcode_uid'] . ']', '[size=100:' . $convert->row['old_bbcode_uid'] . ']', '[size=150:' . $convert->row['old_bbcode_uid'] . ']', '[size=200:' . $convert->row['old_bbcode_uid'] . ']');
 			$message = preg_replace($match_size, $replace_size, $message);
 		}
