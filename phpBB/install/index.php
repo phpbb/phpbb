@@ -255,11 +255,21 @@ class module
 			$this->error('No installation modules found', __LINE__, __FILE__);
 		}
 
+		// Order to use and count further if modules get assigned to the same position or not having an order
+		$max_module_order = 1000;
+
 		foreach ($module as $row)
 		{
 			// Check any module pre-reqs
 			if ($row['module_reqs'] != '')
 			{
+			}
+
+			// Module order not specified or module already assigned at this position?
+			if (!isset($row['module_order']) || isset($this->module_ary[$row['module_order']]))
+			{
+				$row['module_order'] = $max_module_order;
+				$max_module_order++;
 			}
 
 			$this->module_ary[$row['module_order']]['name'] = $row['module_title'];

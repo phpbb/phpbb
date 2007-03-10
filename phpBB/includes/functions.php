@@ -302,7 +302,9 @@ function make_jumpbox($action, $forum_id = false, $select_all = false, $acl_list
 		}
 		else if ($row['left_id'] > $right + 1)
 		{
-			$padding = $padding_store[$row['parent_id']];
+			// Ok, if the $padding_store for this parent is empty there is something wrong. For now we will skip over it.
+			// @todo digging deep to find out "how" this can happen.
+			$padding = (isset($padding_store[$row['parent_id']])) ? $padding_store[$row['parent_id']] : $padding;
 		}
 
 		$right = $row['right_id'];
