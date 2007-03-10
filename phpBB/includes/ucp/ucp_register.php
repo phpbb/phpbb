@@ -65,7 +65,7 @@ class ucp_register
 		if (!$agreed || ($coppa === false && $config['coppa_enable']) || ($coppa && !$config['coppa_enable']))
 		{
 			$add_lang = ($change_lang) ? '&amp;change_lang=' . urlencode($change_lang) : '';
-			$add_coppa = ($coppa) ? '&amp;coppa=1' : '';
+			$add_coppa = ($coppa !== false) ? '&amp;coppa=' . $coppa : '';
 
 			$s_hidden_fields = ($confirm_id) ? array('confirm_id' => $confirm_id) : array();
 
