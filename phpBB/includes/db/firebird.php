@@ -323,7 +323,7 @@ class dbal_firebird extends dbal
 	*/
 	function sql_escape($msg)
 	{
-		return (@ini_get('magic_quotes_sybase') == 1 || strtolower(@ini_get('magic_quotes_sybase')) == 'on') ? str_replace('\\\'', '\'', addslashes($msg)) : str_replace('\'', '\'\'', stripslashes($msg));
+		return str_replace("'", "''", $msg);
 	}
 
 	/**
