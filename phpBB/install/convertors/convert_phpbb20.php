@@ -821,7 +821,11 @@ if (!$get_info)
 					array('target', 'DELETE FROM ' . USERS_TABLE . ' WHERE user_id <> ' . ANONYMOUS),
 					array('target', $convert->truncate_statement . BOTS_TABLE)
 				),
-				
+
+				'execute_last'	=> '
+					remove_invalid_users();
+				',
+
 				array('user_id',				'users.user_id',					'phpbb_user_id'),
 				array('',						'users.user_id AS poster_id',		'phpbb_user_id'),
 				array('user_type',				'users.user_active',				'set_user_type'),

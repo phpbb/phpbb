@@ -2002,6 +2002,32 @@ function fix_empty_primary_groups()
 	$db->sql_freeresult($result);
 }
 
+/**
+* Cleanly remove invalid user entries after converting the users table...
+*/
+function remove_invalid_users()
+{
+	global $convert, $db;
+
+	// username_clean is UNIQUE
+	$sql = 'SELECT user_id
+		FROM ' . USERS_TABLE . "
+		WHERE username_clean = ''";
+	$result = $db->sql_query($sql);
+	$row = $db->sql_fetchrow($result);
+	$db->sql_freeresult($result);
+
+	if ($row)
+	{
+		if (!function_exists('user_delete'))
+		{
+			include($phpbb_root_path . 'includes/functions_user.' . $phpEx);
+		}
+
+		user_delete('remove', $row['user_id']);
+	}
+}
+
 function convert_bbcode($message, $convert_size = true, $extended_bbcodes = false)
 {
 	static $orig, $repl, $origx, $replx, $str_from, $str_to;

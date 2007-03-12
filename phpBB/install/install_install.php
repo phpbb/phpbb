@@ -1669,7 +1669,7 @@ class install_install extends module
 
 		if (!function_exists('user_add'))
 		{
-			include_once($phpbb_root_path . 'includes/functions_user.' . $phpEx);
+			include($phpbb_root_path . 'includes/functions_user.' . $phpEx);
 		}
 
 		foreach ($this->bot_list as $bot_name => $bot_ary)
