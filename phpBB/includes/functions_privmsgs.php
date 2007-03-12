@@ -330,6 +330,7 @@ function place_pm_into_folder(&$global_privmsgs_rules, $release = false)
 
 	$action_ary = $move_into_folder = array();
 
+	// Newly processing on-hold messages
 	if ($release)
 	{
 		$sql = 'UPDATE ' . PRIVMSGS_TO_TABLE . ' 
@@ -337,6 +338,51 @@ function place_pm_into_folder(&$global_privmsgs_rules, $release = false)
 			WHERE folder_id = ' . PRIVMSGS_HOLD_BOX . "
 				AND user_id = $user_id";
 		$db->sql_query($sql);
+
+		// If there are no rows affected there is something wrong with the new and unread message count.
+		// We try to fix this on our way down...
+		if (!$db->sql_affectedrows())
+		{
+			// Update unread count
+			$sql = 'SELECT COUNT(msg_id) as num_messages
+				FROM ' . PRIVMSGS_TO_TABLE . '
+				WHERE pm_unread = 1
+					AND folder_id <> ' . PRIVMSGS_OUTBOX . '
+					AND user_id = ' . $user_id;
+			$result = $db->sql_query($sql);
+			$num_messages = (int) $db->sql_fetchfield('num_messages');
+			$db->sql_freeresult($result);
+
+			$db->sql_query('UPDATE ' . USERS_TABLE . ' SET user_unread_privmsg = ' . $num_messages . ' WHERE user_id = ' . $user_id);
+			$user->data['user_unread_privmsg'] = $num_messages;
+
+			// Update new pm count
+			$sql = 'SELECT COUNT(msg_id) as num_messages
+				FROM ' . PRIVMSGS_TO_TABLE . '
+				WHERE pm_new = 1
+					AND folder_id IN (' . PRIVMSGS_NO_BOX . ', ' . PRIVMSGS_HOLD_BOX . ')
+					AND user_id = ' . $user_id;
+			$result = $db->sql_query($sql);
+			$num_messages = (int) $db->sql_fetchfield('num_messages');
+			$db->sql_freeresult($result);
+
+			$db->sql_query('UPDATE ' . USERS_TABLE . ' SET user_new_privmsg = ' . $num_messages . ' WHERE user_id = ' . $user_id);
+			$user->data['user_new_privmsg'] = $num_messages;
+
+			// Ok, here we need to repair something, other boxes than privmsgs_no_box and privmsgs_hold_box should not carry the pm_new flag.
+			if (!$num_messages)
+			{
+				$sql = 'UPDATE ' . PRIVMSGS_TO_TABLE . '
+					SET pm_new = 0
+					WHERE pm_new = 1
+						AND folder_id NOT IN (' . PRIVMSGS_NO_BOX . ', ' . PRIVMSGS_HOLD_BOX . ')
+						AND user_id = ' . $user_id;
+				$db->sql_query($sql);
+			}
+
+			// The function needs this value to be up-to-date
+			$user_new_privmsg = (int) $user->data['user_new_privmsg'];
+		}
 	}
 
 	// Get those messages not yet placed into any box
