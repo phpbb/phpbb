@@ -1131,6 +1131,11 @@ function phpbb_convert_topic_type($topic_type)
 	return POST_NORMAL;
 }
 
+function phpbb_replace_size($matches)
+{
+	return '[size=' . ceil(100.0 * (((double) $matches[1])/12.0)) . ':' . $matches[2] . ']';
+}
+
 /**
 * Reparse the message stripping out the bbcode_uid values and adding new ones and setting the bitfield
 * @todo What do we want to do about HTML in messages - currently it gets converted to the entities, but there may be some objections to this
@@ -1151,10 +1156,7 @@ function phpbb_prepare_message($message)
 		// Adjust size...
 		if (strpos($message, '[size=') !== false)
 		{
-			// Doing it with a map.
-			$match_size = array('/\[size=[0-7]:' . $convert->row['old_bbcode_uid'] . '\]/', '/\[size=[8-9]:' . $convert->row['old_bbcode_uid'] . '\]/', '/\[size=1[0-2]:' . $convert->row['old_bbcode_uid'] . '\]/', '/\[size=1[3-8]:' . $convert->row['old_bbcode_uid'] . '\]/', '/\[size=(?:[2-9][0-9]|19):' . $convert->row['old_bbcode_uid'] . '\]/');
-			$replace_size = array('[size=50:' . $convert->row['old_bbcode_uid'] . ']', '[size=85:' . $convert->row['old_bbcode_uid'] . ']', '[size=100:' . $convert->row['old_bbcode_uid'] . ']', '[size=150:' . $convert->row['old_bbcode_uid'] . ']', '[size=200:' . $convert->row['old_bbcode_uid'] . ']');
-			$message = preg_replace($match_size, $replace_size, $message);
+			$message = preg_replace_callback('/\[size=(\d*):' . $bbcode_uid . '\]/', 'replace_size', $message);
 		}
 
 		$message = preg_replace('/\:(([a-z0-9]:)?)' . $convert->row['old_bbcode_uid'] . '/s', '', $message);

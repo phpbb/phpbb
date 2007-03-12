@@ -24,6 +24,11 @@ $user->setup();
 
 $echos = 0;
 
+function replace_size($matches)
+{
+	return '[size=' . ceil(100.0 * (((double) $matches[1])/12.0)) . ':' . $matches[2] . ']';
+}
+
 // Adjust user signatures
 $sql = 'SELECT user_id, user_sig, user_sig_bbcode_uid
 	FROM ' . USERS_TABLE;
@@ -36,9 +41,8 @@ while ($row = $db->sql_fetchrow($result))
 	// Only if a bbcode uid is present, the signature present and a size tag used...
 	if ($bbcode_uid && $row['user_sig'] && strpos($row['user_sig'], '[size=') !== false)
 	{
-		$match_size = array('/\[size=[0-7]:' . $bbcode_uid . '\]/', '/\[size=[8-9]:' . $bbcode_uid . '\]/', '/\[size=1[0-2]:' . $bbcode_uid . '\]/', '/\[size=1[3-8]:' . $bbcode_uid . '\]/', '/\[size=(?:[2][0-9]|19):' . $bbcode_uid . '\]/');
-		$replace_size = array('[size=50:' . $bbcode_uid . ']', '[size=85:' . $bbcode_uid . ']', '[size=100:' . $bbcode_uid . ']', '[size=150:' . $bbcode_uid . ']', '[size=200:' . $bbcode_uid . ']');
-		$row['user_sig'] = preg_replace($match_size, $replace_size, $row['user_sig']);
+
+		$row['user_sig'] = preg_replace_callback('/\[size=(\d*):' . $bbcode_uid . '\]/', 'replace_size', $row['user_sig']);
 
 		$sql = 'UPDATE ' . USERS_TABLE . " SET user_sig = '" . $db->sql_escape($row['user_sig']) . "'
 			WHERE user_id = " . $row['user_id'];
@@ -71,9 +75,7 @@ while ($row = $db->sql_fetchrow($result))
 	// Only if a bbcode uid is present, bbcode enabled and a size tag used...
 	if ($row['enable_bbcode'] && $bbcode_uid && strpos($row['post_text'], '[size=') !== false)
 	{
-		$match_size = array('/\[size=[0-7]:' . $bbcode_uid . '\]/', '/\[size=[8-9]:' . $bbcode_uid . '\]/', '/\[size=1[0-2]:' . $bbcode_uid . '\]/', '/\[size=1[3-8]:' . $bbcode_uid . '\]/', '/\[size=(?:[2][0-9]|19):' . $bbcode_uid . '\]/');
-		$replace_size = array('[size=50:' . $bbcode_uid . ']', '[size=85:' . $bbcode_uid . ']', '[size=100:' . $bbcode_uid . ']', '[size=150:' . $bbcode_uid . ']', '[size=200:' . $bbcode_uid . ']');
-		$row['post_text'] = preg_replace($match_size, $replace_size, $row['post_text']);
+		$row['post_text'] = preg_replace_callback('/\[size=(\d*):' . $bbcode_uid . '\]/', 'replace_size', $row['post_text']);
 
 		$sql = 'UPDATE ' . POSTS_TABLE . " SET post_text = '" . $db->sql_escape($row['post_text']) . "'
 			WHERE post_id = " . $row['post_id'];
@@ -105,9 +107,7 @@ while ($row = $db->sql_fetchrow($result))
 	// Only if a bbcode uid is present, bbcode enabled and a size tag used...
 	if ($row['enable_bbcode'] && $bbcode_uid && strpos($row['message_text'], '[size=') !== false)
 	{
-		$match_size = array('/\[size=[0-7]:' . $bbcode_uid . '\]/', '/\[size=[8-9]:' . $bbcode_uid . '\]/', '/\[size=1[0-2]:' . $bbcode_uid . '\]/', '/\[size=1[3-8]:' . $bbcode_uid . '\]/', '/\[size=(?:[2][0-9]|19):' . $bbcode_uid . '\]/');
-		$replace_size = array('[size=50:' . $bbcode_uid . ']', '[size=85:' . $bbcode_uid . ']', '[size=100:' . $bbcode_uid . ']', '[size=150:' . $bbcode_uid . ']', '[size=200:' . $bbcode_uid . ']');
-		$row['message_text'] = preg_replace($match_size, $replace_size, $row['message_text']);
+		$row['message_text'] = preg_replace_callback('/\[size=(\d*):' . $bbcode_uid . '\]/', 'replace_size', $row['message_text']);
 
 		$sql = 'UPDATE ' . PRIVMSGS_TABLE . " SET message_text = '" . $db->sql_escape($row['message_text']) . "'
 			WHERE msg_id = " . $row['msg_id'];
