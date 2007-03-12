@@ -400,17 +400,15 @@ function phpbb_set_default_encoding($text)
 */
 function phpbb_get_birthday($birthday = '')
 {
-	$birthday = (int) $birthday;
-
 	if (defined('MOD_BIRTHDAY_TERRA'))
 	{
+		$birthday = (string) $birthday;
+
 		// stored as month, day, year
 		if (!$birthday)
 		{
 			return ' 0- 0-   0';
 		}
-
-		$birthday = (string) $birthday;
 
 		$month = substr($birthday, 0, 2);
 		$day = substr($birthday, 2, 2);
@@ -420,6 +418,8 @@ function phpbb_get_birthday($birthday = '')
 	}
 	else
 	{
+		$birthday = (int) $birthday;
+
 		if (!$birthday || $birthday == 999999 || $birthday < 0)
 		{
 			return ' 0- 0-   0';
