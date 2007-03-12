@@ -46,6 +46,8 @@ function mcp_post_details($id, $mode, $action)
 
 			$template->assign_vars(array(
 				'RETURN_POST'	=> sprintf($user->lang['RETURN_POST'], '<a href="' . append_sid("{$phpbb_root_path}mcp.$phpEx", "i=$id&amp;mode=$mode&amp;p=$post_id") . '">', '</a>'),
+				'U_RETURN_POST'	=> append_sid("{$phpbb_root_path}mcp.$phpEx", "i=$id&amp;mode=$mode&amp;p=$post_id"),
+				'L_RETURN_POST'	=> sprintf($user->lang['RETURN_POST'], '', ''),
 				'WHOIS'			=> trim($whois))
 			);
 
