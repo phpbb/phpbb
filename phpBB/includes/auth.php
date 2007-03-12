@@ -537,26 +537,28 @@ class auth
 			'SELECT'	=> 'ug.user_id, ao.auth_option, a.forum_id, a.auth_setting, a.auth_role_id, r.auth_setting as role_auth_setting',
 
 			'FROM'		=> array(
-				USER_GROUP_TABLE	=> 'ug',
-				ACL_OPTIONS_TABLE	=> 'ao',
-				ACL_GROUPS_TABLE	=> 'a'
+				ACL_GROUPS_TABLE	=> 'a',
 			),
 
 			'LEFT_JOIN'	=> array(
 				array(
+					'FROM'	=> array(USER_GROUP_TABLE	=> 'ug'),
+					'ON'	=> 'a.group_id = ug.group_id'
+				),
+				array(
 					'FROM'	=> array(ACL_ROLES_DATA_TABLE => 'r'),
 					'ON'	=> 'a.auth_role_id = r.role_id'
-				)
+				),
+				array(
+					'FROM'	=> array(ACL_OPTIONS_TABLE => 'ao'),
+					'ON'	=> '(ao.auth_option_id = a.auth_option_id OR ao.auth_option_id = r.auth_option_id)'
+				),
 			),
 
-			'WHERE'		=> '(ao.auth_option_id = a.auth_option_id OR ao.auth_option_id = r.auth_option_id)
-				AND a.group_id = ug.group_id
-				AND ug.user_pending = 0
+			'WHERE'		=> 'ug.user_pending = 0
 				' . (($sql_user) ? 'AND ug.' . $sql_user : '') . "
 				$sql_forum
 				$sql_opts",
-
-			'ORDER_BY'	=> 'a.forum_id, ao.auth_option'
 		));
 		$result = $db->sql_query($sql);
 
