@@ -1156,7 +1156,7 @@ function phpbb_prepare_message($message)
 		// Adjust size...
 		if (strpos($message, '[size=') !== false)
 		{
-			$message = preg_replace_callback('/\[size=(\d*):' . $convert->row['old_bbcode_uid'] . '\]/', 'phpbb_replace_size', $message);
+			$message = preg_replace_callback('/\[size=(\d*):(' . $convert->row['old_bbcode_uid'] . ')\]/', 'phpbb_replace_size', $message);
 		}
 
 		$message = preg_replace('/\:(([a-z0-9]:)?)' . $convert->row['old_bbcode_uid'] . '/s', '', $message);

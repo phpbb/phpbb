@@ -41,7 +41,7 @@ while ($row = $db->sql_fetchrow($result))
 	// Only if a bbcode uid is present, the signature present and a size tag used...
 	if ($bbcode_uid && $row['user_sig'] && strpos($row['user_sig'], '[size=') !== false)
 	{
-		$row['user_sig'] = preg_replace_callback('/\[size=(\d*):' . $bbcode_uid . '\]/', 'replace_size', $row['user_sig']);
+		$row['user_sig'] = preg_replace_callback('/\[size=(\d*):(' . $bbcode_uid . ')\]/', 'replace_size', $row['user_sig']);
 
 		$sql = 'UPDATE ' . USERS_TABLE . " SET user_sig = '" . $db->sql_escape($row['user_sig']) . "'
 			WHERE user_id = " . $row['user_id'];
