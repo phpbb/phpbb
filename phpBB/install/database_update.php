@@ -320,6 +320,7 @@ $database_update_info = array(
 				'session_forwarded_for'	=> array('VCHAR:255', ''),
 			),
 		),
+		// Change the following columns...
 		'change_columns'	=> array(
 			USERS_TABLE		=> array(
 				'user_options'		=> array('UINT:11', 895),
@@ -353,6 +354,13 @@ $database_update_info = array(
 	),
 	// Changes from 3.0.b5 to the next version
 	'3.0.b5'			=> array(
+		// Add the following columns
+		'add_columns'		=> array(
+			SEARCH_WORDLIST_TABLE	=> array(
+				'word_count'			=> array('UINT', 0),
+			),
+		),
+		// Change the following columns...
 		'change_columns'	=> array(
 			TOPICS_TABLE		=> array(
 				'poll_title'		=> array('STEXT_UNI', ''),
@@ -367,10 +375,24 @@ $database_update_info = array(
 				'username_clean',
 			),
 		),
+		'add_index'			=> array(
+			SEARCH_WORDLIST_TABLE	=> array(
+				'wrd_cnt'			=> array('word_count'),
+			),
+			ACL_GROUPS_TABLE		=> array(
+				'auth_role_id'		=> array('auth_role_id'),
+			),
+			ACL_USERS_TABLE			=> array(
+				'auth_role_id'		=> array('auth_role_id'),
+			),
+			ACL_ROLES_DATA_TABLE	=> array(
+				'auth_option_id'	=> array('auth_option_id'),
+			),
+		),
 		// Add the following unique indexes
 		'add_unique_index'	=> array(
 			SEARCH_WORDMATCH_TABLE	=> array(
-				'unique_match'	=> array('word_id', 'post_id', 'title_match'),
+				'unique_match'		=> array('word_id', 'post_id', 'title_match'),
 			),
 			USERS_TABLE				=> array(
 				'username_clean'	=> array('username_clean'),
@@ -573,6 +595,18 @@ foreach ($database_update_info as $version => $schema_changes)
 			}
 		}
 	}
+
+	// Add indexes?
+	if (!empty($schema_changes['add_index']))
+	{
+		foreach ($schema_changes['add_index'] as $table => $index_array)
+		{
+			foreach ($index_array as $index_name => $column)
+			{
+				sql_create_index($dbms, $index_name, $table, $column);
+			}
+		}
+	}
 }
 
 _write_result($no_updates, $errored, $error_ary);
@@ -700,6 +734,48 @@ if (version_compare($current_version, '3.0.b4', '<='))
 	}
 	$db->sql_freeresult($result);
 
+	$no_updates = false;
+}
+
+if (version_compare($current_version, '3.0.b6', '<='))
+{
+	if ($config['fulltext_native_common_thres'] == 20)
+	{
+		set_config('fulltext_native_common_thres', '5');
+	}
+
+	$sql = 'SELECT m.word_id, COUNT(m.word_id) as word_count
+		FROM ' . SEARCH_WORDMATCH_TABLE . ' m, ' . SEARCH_WORDLIST_TABLE . ' w
+		WHERE m.word_id = w.word_id
+			AND w.word_common = 0
+		GROUP BY m.word_id
+		ORDER BY word_count ASC';
+	$result = $db->sql_query($sql);
+
+	$value = 0;
+	$sql_in = array();
+	while ($row = $db->sql_fetchrow($result))
+	{
+		if ($value != $row['word_count'] && $value != 0 || sizeof($sql_in) > 500)
+		{
+			$sql = 'UPDATE ' . SEARCH_WORDLIST_TABLE . '
+				SET word_count = ' . $value . '
+				WHERE ' . $db->sql_in_set('word_id', $sql_in);
+			$db->sql_query($sql);
+			$sql_in = array();
+		}
+		$value = $row['word_count'];
+		$sql_in[] = $row['word_id'];
+	}
+
+	if (sizeof($sql_in))
+	{
+		$sql = 'UPDATE ' . SEARCH_WORDLIST_TABLE . '
+			SET word_count = ' . $value . '
+			WHERE ' . $db->sql_in_set('word_id', $sql_in);
+		$db->sql_query($sql);
+	}
+	unset($sql_in);
 	$no_updates = false;
 }
 
@@ -1265,6 +1341,30 @@ function sql_create_unique_index($dbms, $index_name, $table_name, $column)
 
 		case 'mssql':
 			$sql = 'CREATE UNIQUE INDEX ' . $index_name . ' ON ' . $table_name . '(' . implode(', ', $column) . ') ON [PRIMARY]';
+			_sql($sql, $errored, $error_ary);
+		break;
+	}
+}
+
+function sql_create_index($dbms, $index_name, $table_name, $column)
+{
+	global $dbms_type_map, $db;
+	global $errored, $error_ary;
+
+	switch ($dbms)
+	{
+		case 'firebird':
+		case 'postgres':
+		case 'mysql_40':
+		case 'mysql_41':
+		case 'oracle':
+		case 'sqlite':
+			$sql = 'CREATE INDEX ' . $index_name . ' ON ' . $table_name . '(' . implode(', ', $column) . ')';
+			_sql($sql, $errored, $error_ary);
+		break;
+
+		case 'mssql':
+			$sql = 'CREATE INDEX ' . $index_name . ' ON ' . $table_name . '(' . implode(', ', $column) . ') ON [PRIMARY]';
 			_sql($sql, $errored, $error_ary);
 		break;
 	}

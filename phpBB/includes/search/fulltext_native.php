@@ -1092,7 +1092,7 @@ class fulltext_native extends search_backend
 
 		// Get unique words from the above arrays
 		$unique_add_words = array_unique(array_merge($words['add']['post'], $words['add']['title']));
-
+		
 		// We now have unique arrays of all words to be added and removed and
 		// individual arrays of added and removed words for text and title. What
 		// we need to do now is add the new words (if they don't already exist)
@@ -1112,19 +1112,24 @@ class fulltext_native extends search_backend
 			$db->sql_freeresult($result);
 			$new_words = array_diff($unique_add_words, array_keys($word_ids));
 
+			$db->sql_transaction('begin');
 			if (sizeof($new_words))
 			{
 				$sql_ary = array();
 
 				foreach ($new_words as $word)
 				{
-					$sql_ary[] = array('word_text' => $word);
+					$sql_ary[] = array('word_text' => $word, 'word_count' => 0);
 				}
 				$db->return_on_error = true;
 				$db->sql_multi_insert(SEARCH_WORDLIST_TABLE, $sql_ary);
 				$db->return_on_error = false;
 			}
 			unset($new_words, $sql_ary);
+		}
+		else
+		{
+			$db->sql_transaction('begin');
 		}
 
 		// now update the search match table, remove links to removed words and add links to new words
@@ -1145,6 +1150,12 @@ class fulltext_native extends search_backend
 						AND post_id = ' . intval($post_id) . "
 						AND title_match = $title_match";
 				$db->sql_query($sql);
+
+				$sql = 'UPDATE ' . SEARCH_WORDLIST_TABLE . '
+					SET word_count = word_count - 1
+					WHERE ' . $db->sql_in_set('word_id', $sql_in);
+				$db->sql_query($sql);
+
 				unset($sql_in);
 			}
 		}
@@ -1161,9 +1172,16 @@ class fulltext_native extends search_backend
 					FROM " . SEARCH_WORDLIST_TABLE . '
 					WHERE ' . $db->sql_in_set('word_text', $word_ary);
 				$db->sql_query($sql);
+
+				$sql = 'UPDATE ' . SEARCH_WORDLIST_TABLE . '
+					SET word_count = word_count + 1
+					WHERE ' . $db->sql_in_set('word_text', $word_ary);
+				$db->sql_query($sql);
 			}
 		}
 		$db->return_on_error = false;
+
+		$db->sql_transaction('commit');
 
 		// destroy cached search results containing any of the words removed or added
 		$this->destroy_cache(array_unique(array_merge($words['add']['post'], $words['add']['title'], $words['del']['post'], $words['del']['title'])), array($poster_id));
@@ -1182,13 +1200,45 @@ class fulltext_native extends search_backend
 
 		if (sizeof($post_ids))
 		{
+			$sql = 'SELECT w.word_id, m.title_match
+				FROM ' . SEARCH_WORDMATCH_TABLE . ' m, ' . SEARCH_WORDLIST_TABLE . ' w
+				WHERE ' . $db->sql_in_set('m.post_id', $post_ids) . '
+					AND w.word_id = m.word_id';
+			$result = $db->sql_query($sql);
+
+			$message_word_ids = $title_word_ids = $word_texts = array();
+			while ($row = $db->sql_fetchrow($result))
+			{
+				if ($row['title_match'])
+				{
+					$title_word_ids[] = $row['word_id'];
+				}
+				else
+				{
+					$message_word_ids[] = $row['word_id'];
+				}
+				$word_texts[] = $row['word_text'];
+			}
+			$db->sql_freeresult($result);
+
+			$sql = 'UPDATE ' . SEARCH_WORDLIST_TABLE . '
+				SET word_count = word_count - 1
+				WHERE ' . $db->sql_in_set('word_id', $title_word_ids);
+			$db->sql_query($sql);
+			$sql = 'UPDATE ' . SEARCH_WORDLIST_TABLE . '
+				SET word_count = word_count - 1
+				WHERE ' . $db->sql_in_set('word_id', $message_word_ids);
+			$db->sql_query($sql);
+
+			unset($title_word_ids);
+			unset($message_word_ids);
+
 			$sql = 'DELETE FROM ' . SEARCH_WORDMATCH_TABLE . '
 				WHERE ' . $db->sql_in_set('post_id', $post_ids);
 			$db->sql_query($sql);
 		}
 
-		// SEARCH_WORDLIST_TABLE will be updated by tidy()
-		$this->destroy_cache(array(), $author_ids);
+		$this->destroy_cache(array_unique($word_texts), $author_ids);
 	}
 
 	/**
@@ -1214,38 +1264,31 @@ class fulltext_native extends search_backend
 		{
 			$common_threshold = ((double) $config['fulltext_native_common_thres']) / 100.0;
 			// First, get the IDs of common words
-			$sql = 'SELECT word_id
-				FROM ' . SEARCH_WORDMATCH_TABLE . '
-				GROUP BY word_id
-				HAVING COUNT(word_id) > ' . floor($config['num_posts'] * $common_threshold);
+			$sql = 'SELECT word_id, word_text
+				FROM ' . SEARCH_WORDLIST_TABLE . '
+				WHERE word_count > ' . floor($config['num_posts'] * $common_threshold) . '
+					OR word_common = 1';
 			$result = $db->sql_query($sql);
 
 			$sql_in = array();
 			while ($row = $db->sql_fetchrow($result))
 			{
 				$sql_in[] = $row['word_id'];
+				$destroy_cache_words[] = $row['word_text'];
 			}
 			$db->sql_freeresult($result);
 
 			if (sizeof($sql_in))
 			{
-				// Get the text of those new common words
-				$sql = 'SELECT word_text
-					FROM ' . SEARCH_WORDLIST_TABLE . '
-					WHERE ' . $db->sql_in_set('word_id', $sql_in);
-				$result = $db->sql_query($sql);
-
-				while ($row = $db->sql_fetchrow($result))
-				{
-					$destroy_cache_words[] = $row['word_text'];
-				}
-				$db->sql_freeresult($result);
-
 				// Flag the words
 				$sql = 'UPDATE ' . SEARCH_WORDLIST_TABLE . '
 					SET word_common = 1
 					WHERE ' . $db->sql_in_set('word_id', $sql_in);
 				$db->sql_query($sql);
+
+				// by setting search_last_gc to the new time here we make sure that if a user reloads because the
+				// following query takes too long, he won't run into it again
+				set_config('search_last_gc', time(), true);
 
 				// Delete the matches
 				$sql = 'DELETE FROM ' . SEARCH_WORDMATCH_TABLE . '
@@ -1255,8 +1298,11 @@ class fulltext_native extends search_backend
 			unset($sql_in);
 		}
 
-		// destroy cached search results containing any of the words that are now common or were removed
-		$this->destroy_cache(array_unique($destroy_cache_words));
+		if (sizeof($destroy_cache_words))
+		{
+			// destroy cached search results containing any of the words that are now common or were removed
+			$this->destroy_cache(array_unique($destroy_cache_words));
+		}
 
 		set_config('search_last_gc', time(), true);
 	}

@@ -42,6 +42,7 @@ CREATE TABLE phpbb_acl_groups (
 
 CREATE INDEX phpbb_acl_groups_group_id ON phpbb_acl_groups (group_id);
 CREATE INDEX phpbb_acl_groups_auth_opt_id ON phpbb_acl_groups (auth_option_id);
+CREATE INDEX phpbb_acl_groups_auth_role_id ON phpbb_acl_groups (auth_role_id);
 
 # Table: 'phpbb_acl_options'
 CREATE TABLE phpbb_acl_options (
@@ -74,6 +75,7 @@ CREATE TABLE phpbb_acl_roles_data (
 	PRIMARY KEY (role_id, auth_option_id)
 );
 
+CREATE INDEX phpbb_acl_roles_data_auth_option_id ON phpbb_acl_roles_data (auth_option_id);
 
 # Table: 'phpbb_acl_users'
 CREATE TABLE phpbb_acl_users (
@@ -86,6 +88,7 @@ CREATE TABLE phpbb_acl_users (
 
 CREATE INDEX phpbb_acl_users_user_id ON phpbb_acl_users (user_id);
 CREATE INDEX phpbb_acl_users_auth_option_id ON phpbb_acl_users (auth_option_id);
+CREATE INDEX phpbb_acl_users_auth_role_id ON phpbb_acl_users (auth_role_id);
 
 # Table: 'phpbb_banlist'
 CREATE TABLE phpbb_banlist (
@@ -616,10 +619,12 @@ CREATE TABLE phpbb_search_results (
 CREATE TABLE phpbb_search_wordlist (
 	word_id INTEGER PRIMARY KEY NOT NULL ,
 	word_text varchar(255) NOT NULL DEFAULT '',
-	word_common INTEGER UNSIGNED NOT NULL DEFAULT '0'
+	word_common INTEGER UNSIGNED NOT NULL DEFAULT '0',
+	word_count INTEGER UNSIGNED NOT NULL DEFAULT '0'
 );
 
 CREATE UNIQUE INDEX phpbb_search_wordlist_wrd_txt ON phpbb_search_wordlist (word_text);
+CREATE INDEX phpbb_search_wordlist_wrd_cnt ON phpbb_search_wordlist (word_count);
 
 # Table: 'phpbb_search_wordmatch'
 CREATE TABLE phpbb_search_wordmatch (

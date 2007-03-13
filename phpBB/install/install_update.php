@@ -202,7 +202,12 @@ class install_update extends module
 			{
 				$lang = array();
 				include($this->new_location . 'language/en/install.php');
-				$user->lang = array_merge($user->lang, $lang);
+				// only add new keys to user's language in english
+				$new_keys = array_diff(array_keys($lang), array_keys($user->lang));
+				foreach ($new_keys as $i => $new_key)
+				{
+					$user->lang[$new_key] = $lang[$new_key];
+				}
 			}
 		}
 

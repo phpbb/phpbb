@@ -108,6 +108,8 @@ CREATE INDEX phpbb_acl_groups_group_id ON phpbb_acl_groups (group_id)
 /
 CREATE INDEX phpbb_acl_groups_auth_opt_id ON phpbb_acl_groups (auth_option_id)
 /
+CREATE INDEX phpbb_acl_groups_auth_role_id ON phpbb_acl_groups (auth_role_id)
+/
 
 /*
 	Table: 'phpbb_acl_options'
@@ -186,6 +188,8 @@ CREATE TABLE phpbb_acl_roles_data (
 )
 /
 
+CREATE INDEX phpbb_acl_roles_data_auth_option_id ON phpbb_acl_roles_data (auth_option_id)
+/
 
 /*
 	Table: 'phpbb_acl_users'
@@ -202,6 +206,8 @@ CREATE TABLE phpbb_acl_users (
 CREATE INDEX phpbb_acl_users_user_id ON phpbb_acl_users (user_id)
 /
 CREATE INDEX phpbb_acl_users_auth_option_id ON phpbb_acl_users (auth_option_id)
+/
+CREATE INDEX phpbb_acl_users_auth_role_id ON phpbb_acl_users (auth_role_id)
 /
 
 /*
@@ -1232,11 +1238,14 @@ CREATE TABLE phpbb_search_wordlist (
 	word_id number(8) NOT NULL,
 	word_text varchar2(765) DEFAULT '' ,
 	word_common number(1) DEFAULT '0' NOT NULL,
+	word_count number(8) DEFAULT '0' NOT NULL,
 	CONSTRAINT pk_phpbb_search_wordlist PRIMARY KEY (word_id),
 	CONSTRAINT u_phpbb_wrd_txt UNIQUE (word_text)
 )
 /
 
+CREATE INDEX phpbb_search_wordlist_wrd_cnt ON phpbb_search_wordlist (word_count)
+/
 
 CREATE SEQUENCE phpbb_search_wordlist_seq
 /

@@ -71,6 +71,9 @@ GO
 CREATE  INDEX [auth_opt_id] ON [phpbb_acl_groups]([auth_option_id]) ON [PRIMARY]
 GO
 
+CREATE  INDEX [auth_role_id] ON [phpbb_acl_groups]([auth_role_id]) ON [PRIMARY]
+GO
+
 
 /*
 	Table: 'phpbb_acl_options'
@@ -139,6 +142,9 @@ ALTER TABLE [phpbb_acl_roles_data] WITH NOCHECK ADD
 	)  ON [PRIMARY] 
 GO
 
+CREATE  INDEX [auth_option_id] ON [phpbb_acl_roles_data]([auth_option_id]) ON [PRIMARY]
+GO
+
 
 /*
 	Table: 'phpbb_acl_users'
@@ -156,6 +162,9 @@ CREATE  INDEX [user_id] ON [phpbb_acl_users]([user_id]) ON [PRIMARY]
 GO
 
 CREATE  INDEX [auth_option_id] ON [phpbb_acl_users]([auth_option_id]) ON [PRIMARY]
+GO
+
+CREATE  INDEX [auth_role_id] ON [phpbb_acl_users]([auth_role_id]) ON [PRIMARY]
 GO
 
 
@@ -1098,7 +1107,8 @@ GO
 CREATE TABLE [phpbb_search_wordlist] (
 	[word_id] [int] IDENTITY (1, 1) NOT NULL ,
 	[word_text] [varchar] (255) DEFAULT ('') NOT NULL ,
-	[word_common] [int] DEFAULT (0) NOT NULL 
+	[word_common] [int] DEFAULT (0) NOT NULL ,
+	[word_count] [int] DEFAULT (0) NOT NULL 
 ) ON [PRIMARY]
 GO
 
@@ -1110,6 +1120,9 @@ ALTER TABLE [phpbb_search_wordlist] WITH NOCHECK ADD
 GO
 
 CREATE  UNIQUE  INDEX [wrd_txt] ON [phpbb_search_wordlist]([word_text]) ON [PRIMARY]
+GO
+
+CREATE  INDEX [wrd_cnt] ON [phpbb_search_wordlist]([word_count]) ON [PRIMARY]
 GO
 
 

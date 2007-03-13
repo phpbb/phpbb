@@ -810,6 +810,7 @@ function get_schema_struct()
 		'KEYS'			=> array(
 			'group_id'		=> array('INDEX', 'group_id'),
 			'auth_opt_id'	=> array('INDEX', 'auth_option_id'),
+			'auth_role_id'	=> array('INDEX', 'auth_role_id'),
 		),
 	);
 
@@ -849,6 +850,9 @@ function get_schema_struct()
 			'auth_setting'		=> array('TINT:2', 0),
 		),
 		'PRIMARY_KEY'	=> array('role_id', 'auth_option_id'),
+		'KEYS'			=> array(
+			'auth_option_id'	=> array('INDEX', 'auth_option_id'),
+		),
 	);
 
 	$schema_data['phpbb_acl_users'] = array(
@@ -862,6 +866,7 @@ function get_schema_struct()
 		'KEYS'			=> array(
 			'user_id'			=> array('INDEX', 'user_id'),
 			'auth_option_id'	=> array('INDEX', 'auth_option_id'),
+			'auth_role_id'		=> array('INDEX', 'auth_role_id'),
 		),
 	);
 
@@ -1461,10 +1466,12 @@ function get_schema_struct()
 			'word_id'			=> array('UINT', NULL, 'auto_increment'),
 			'word_text'			=> array('VCHAR_UNI', ''),
 			'word_common'		=> array('BOOL', 0),
+			'word_count'		=> array('UINT', 0),
 		),
 		'PRIMARY_KEY'	=> 'word_id',
 		'KEYS'			=> array(
 			'wrd_txt'			=> array('UNIQUE', 'word_text'),
+			'wrd_cnt'			=> array('INDEX', 'word_count'),
 		),
 	);
 

@@ -38,7 +38,8 @@ CREATE TABLE phpbb_acl_groups (
 	auth_role_id mediumint(8) UNSIGNED DEFAULT '0' NOT NULL,
 	auth_setting tinyint(2) DEFAULT '0' NOT NULL,
 	KEY group_id (group_id),
-	KEY auth_opt_id (auth_option_id)
+	KEY auth_opt_id (auth_option_id),
+	KEY auth_role_id (auth_role_id)
 );
 
 
@@ -72,7 +73,8 @@ CREATE TABLE phpbb_acl_roles_data (
 	role_id mediumint(8) UNSIGNED DEFAULT '0' NOT NULL,
 	auth_option_id mediumint(8) UNSIGNED DEFAULT '0' NOT NULL,
 	auth_setting tinyint(2) DEFAULT '0' NOT NULL,
-	PRIMARY KEY (role_id, auth_option_id)
+	PRIMARY KEY (role_id, auth_option_id),
+	KEY auth_option_id (auth_option_id)
 );
 
 
@@ -84,7 +86,8 @@ CREATE TABLE phpbb_acl_users (
 	auth_role_id mediumint(8) UNSIGNED DEFAULT '0' NOT NULL,
 	auth_setting tinyint(2) DEFAULT '0' NOT NULL,
 	KEY user_id (user_id),
-	KEY auth_option_id (auth_option_id)
+	KEY auth_option_id (auth_option_id),
+	KEY auth_role_id (auth_role_id)
 );
 
 
@@ -638,8 +641,10 @@ CREATE TABLE phpbb_search_wordlist (
 	word_id mediumint(8) UNSIGNED NOT NULL auto_increment,
 	word_text blob NOT NULL,
 	word_common tinyint(1) UNSIGNED DEFAULT '0' NOT NULL,
+	word_count mediumint(8) UNSIGNED DEFAULT '0' NOT NULL,
 	PRIMARY KEY (word_id),
-	UNIQUE wrd_txt (word_text(255))
+	UNIQUE wrd_txt (word_text(255)),
+	KEY wrd_cnt (word_count)
 );
 
 

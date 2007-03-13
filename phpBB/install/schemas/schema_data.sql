@@ -90,7 +90,7 @@ INSERT INTO phpbb_config (config_name, config_value) VALUES ('forwarded_for_chec
 INSERT INTO phpbb_config (config_name, config_value) VALUES ('full_folder_action', '2');
 INSERT INTO phpbb_config (config_name, config_value) VALUES ('fulltext_mysql_max_word_len', '254');
 INSERT INTO phpbb_config (config_name, config_value) VALUES ('fulltext_mysql_min_word_len', '4');
-INSERT INTO phpbb_config (config_name, config_value) VALUES ('fulltext_native_common_thres', '20');
+INSERT INTO phpbb_config (config_name, config_value) VALUES ('fulltext_native_common_thres', '5');
 INSERT INTO phpbb_config (config_name, config_value) VALUES ('fulltext_native_load_upd', '1');
 INSERT INTO phpbb_config (config_name, config_value) VALUES ('fulltext_native_max_chars', '14');
 INSERT INTO phpbb_config (config_name, config_value) VALUES ('fulltext_native_min_chars', '3');
