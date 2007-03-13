@@ -1133,7 +1133,7 @@ function phpbb_convert_topic_type($topic_type)
 
 function phpbb_replace_size($matches)
 {
-	return '[size=' . ceil(100.0 * (((double) $matches[1])/12.0)) . ':' . $matches[2] . ']';
+	return '[size=' . min(200, ceil(100.0 * (((double) $matches[1])/12.0))) . ':' . $matches[2] . ']';
 }
 
 /**
