@@ -1091,7 +1091,9 @@ class auth_admin extends auth
 				'CAT_NAME'	=> $user->lang['permission_cat'][$cat])
 			);
 
-			// Sort array
+			/*	Sort permissions by name (more naturaly and user friendly than sorting by a primary key)
+			*	Commented out due to it's memory consumption and time needed
+			*
 			$key_array = array_intersect(array_keys($user->lang), array_map(create_function('$a', 'return "acl_" . $a;'), array_keys($cat_array['permissions'])));
 			$values_array = $cat_array['permissions'];
 
@@ -1103,7 +1105,7 @@ class auth_admin extends auth
 				$cat_array['permissions'][$key] = $values_array[$key];
 			}
 			unset($key_array, $values_array);
-
+*/
 			@reset($cat_array['permissions']);
 			while (list($permission, $allowed) = each($cat_array['permissions']))
 			{
