@@ -325,8 +325,6 @@ class acp_forums
 
 			case 'sync_topic':
 
-			case 'sync_topic':
-
 				@set_time_limit(0);
 
 				$sql = 'SELECT forum_name, forum_topics_real
