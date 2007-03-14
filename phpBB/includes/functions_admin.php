@@ -1481,18 +1481,22 @@ function sync($mode, $where_type = '', $where_ids = '', $resync_parents = false,
 			// 3: Get post count and last_post_id for each forum
 			if (sizeof($forum_ids) == 1)
 			{
-				$sql = 'SELECT COUNT(post_id) AS forum_posts, MAX(post_id) AS last_post_id
-					FROM ' . POSTS_TABLE . '
-					WHERE ' . $db->sql_in_set('forum_id', $forum_ids) . '
-						AND post_approved = 1';
+				$sql = 'SELECT COUNT(p.post_id) AS forum_posts, MAX(p.post_id) AS last_post_id
+					FROM ' . POSTS_TABLE . ' p, ' . TOPICS_TABLE . ' t
+					WHERE ' . $db->sql_in_set('p.forum_id', $forum_ids) . '
+						AND p.topic_id = t.topic_id
+						AND t.topic_approved = 1
+						AND p.post_approved = 1';
 			}
 			else
 			{
-				$sql = 'SELECT forum_id, COUNT(post_id) AS forum_posts, MAX(post_id) AS last_post_id
-					FROM ' . POSTS_TABLE . '
-					WHERE ' . $db->sql_in_set('forum_id', $forum_ids) . '
-						AND post_approved = 1
-					GROUP BY forum_id';
+				$sql = 'SELECT forum_id, COUNT(p.post_id) AS forum_posts, MAX(p.post_id) AS last_post_id
+					FROM ' . POSTS_TABLE . ' p, ' . TOPICS_TABLE . ' t
+					WHERE ' . $db->sql_in_set('p.forum_id', $forum_ids) . '
+						AND p.topic_id = t.topic_id
+						AND t.topic_approved = 1
+						AND p.post_approved = 1
+					GROUP BY p.forum_id';
 			}
 
 			$result = $db->sql_query($sql);

@@ -113,20 +113,33 @@ function update_post_information($type, $ids, $return_update_sql = false)
 
 	$update_sql = $empty_forums = $not_empty_forums = array();
 
-	if (sizeof($ids) == 1)
+	if ($type != 'topic')
 	{
-		$sql = 'SELECT MAX(post_id) as last_post_id
-			FROM ' . POSTS_TABLE . '
-			WHERE ' . $db->sql_in_set($type . '_id', $ids) . '
-				AND post_approved = 1';
+		$topic_join = ', ' . TOPICS_TABLE . ' t';
+		$topic_condition = 'AND t.topic_id = p.topic_id AND t.topic_approved = 1';
 	}
 	else
 	{
-		$sql = 'SELECT ' . $type . '_id, MAX(post_id) as last_post_id
-			FROM ' . POSTS_TABLE . '
-			WHERE ' . $db->sql_in_set($type . '_id', $ids) . "
-				AND post_approved = 1
-			GROUP BY {$type}_id";
+		$topic_join = '';
+		$topic_condition = '';
+	}
+
+	if (sizeof($ids) == 1)
+	{
+		$sql = 'SELECT MAX(p.post_id) as last_post_id
+			FROM ' . POSTS_TABLE . " p $topic_join
+			WHERE " . $db->sql_in_set('p.' . $type . '_id', $ids) . "
+				$topic_condition
+				AND p.post_approved = 1";
+	}
+	else
+	{
+		$sql = 'SELECT p.' . $type . '_id, MAX(p.post_id) as last_post_id
+			FROM ' . POSTS_TABLE . " p $topic_join
+			WHERE " . $db->sql_in_set('p.' . $type . '_id', $ids) . "
+				$topic_condition
+				AND p.post_approved = 1
+			GROUP BY p.{$type}_id";
 	}
 	$result = $db->sql_query($sql);
 
