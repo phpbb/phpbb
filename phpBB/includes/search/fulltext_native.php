@@ -1200,7 +1200,7 @@ class fulltext_native extends search_backend
 
 		if (sizeof($post_ids))
 		{
-			$sql = 'SELECT w.word_id, m.title_match
+			$sql = 'SELECT w.word_id, w.word_text, m.title_match
 				FROM ' . SEARCH_WORDMATCH_TABLE . ' m, ' . SEARCH_WORDLIST_TABLE . ' w
 				WHERE ' . $db->sql_in_set('m.post_id', $post_ids) . '
 					AND w.word_id = m.word_id';
