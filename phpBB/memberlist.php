@@ -1272,6 +1272,7 @@ switch ($mode)
 				FROM " . USERS_TABLE . " u
 					$sql_from
 				WHERE " . $db->sql_in_set('u.user_id', $user_list) . "
+					$sql_where
 					$sql_where_data";
 			$result = $db->sql_query($sql);
 
