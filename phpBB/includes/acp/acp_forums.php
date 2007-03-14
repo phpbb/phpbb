@@ -325,6 +325,8 @@ class acp_forums
 
 			case 'sync_topic':
 
+			case 'sync_topic':
+
 				@set_time_limit(0);
 
 				$sql = 'SELECT forum_name, forum_topics_real
@@ -336,7 +338,14 @@ class acp_forums
 
 				if ($row['forum_topics_real'])
 				{
-					$start = request_var('start', 0);
+					$sql = 'SELECT MIN(topic_id) as min_topic_id, MAX(topic_id) as max_topic_id
+						FROM ' . TOPICS_TABLE . '
+						WHERE forum_id = ' . $forum_id;
+					$result = $db->sql_query($sql);
+					$row2 = $db->sql_fetchrow($result);
+					$db->sql_freeresult($result);
+
+					$start = request_var('start', $row2['min_topic_id']);
 
 					$batch_size = 3000;
 					$end = $start + $batch_size;
@@ -345,11 +354,20 @@ class acp_forums
 					sync('topic_approved', 'range', 'topic_id BETWEEN ' . $start . ' AND ' . $end, true, false);
 					sync('topic', 'range', 'topic_id BETWEEN ' . $start . ' AND ' . $end, true, true);
 
-					if ($end < $row['forum_topics_real'])
+					if ($end < $row2['max_topic_id'])
 					{
+						// We really need to find a way of showing statistics... no progress here
+						$sql = 'SELECT COUNT(topic_id) as num_topics
+							FROM ' . TOPICS_TABLE . '
+							WHERE forum_id = ' . $forum_id . '
+								AND topic_id BETWEEN ' . $start . ' AND ' . $end;
+						$result = $db->sql_query($sql);
+						$topics_done = request_var('topics_done', 0) + (int) $db->sql_fetchfield('num_topics');
+						$db->sql_freeresult($result);
+
 						$start += $batch_size;
 
-						$url = $this->u_action . "&amp;parent_id={$this->parent_id}&amp;f=$forum_id&amp;action=sync_topic&amp;start=$start&amp;total={$row['forum_topics_real']}";
+						$url = $this->u_action . "&amp;parent_id={$this->parent_id}&amp;f=$forum_id&amp;action=sync_topic&amp;start=$start&amp;topics_done=$topics_done&amp;total={$row['forum_topics_real']}";
 
 						meta_refresh(0, $url);
 
@@ -357,7 +375,7 @@ class acp_forums
 							'U_PROGRESS_BAR'		=> $this->u_action . "&amp;action=progress_bar&amp;start=$start&amp;total={$row['forum_topics_real']}",
 							'UA_PROGRESS_BAR'		=> str_replace('&amp;', '&', $this->u_action) . "&action=progress_bar&start=$start&total={$row['forum_topics_real']}",
 							'S_CONTINUE_SYNC'		=> true,
-							'L_PROGRESS_EXPLAIN'	=> sprintf($user->lang['SYNC_IN_PROGRESS_EXPLAIN'], $start, $row['forum_topics_real']))
+							'L_PROGRESS_EXPLAIN'	=> sprintf($user->lang['SYNC_IN_PROGRESS_EXPLAIN'], $topics_done, $row['forum_topics_real']))
 						);
 
 						return;

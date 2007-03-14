@@ -1691,31 +1691,6 @@ function sync($mode, $where_type = '', $where_ids = '', $resync_parents = false,
 				unset($delete_topics, $delete_topic_ids);
 			}
 
-			// Make sure shadow topics do link to existing topics
-			if (sizeof($moved_topics))
-			{
-				$delete_topics = array();
-
-				$sql = 'SELECT t1.topic_id, t1.topic_moved_id
-					FROM ' . TOPICS_TABLE . ' t1
-					LEFT JOIN ' . TOPICS_TABLE . ' t2 ON (t2.topic_id = t1.topic_moved_id)
-					WHERE ' . $db->sql_in_set('t1.topic_id', $moved_topics) . '
-						AND t2.topic_id IS NULL';
-				$result = $db->sql_query($sql);
-
-				while ($row = $db->sql_fetchrow($result))
-				{
-					$delete_topics[] = $row['topic_id'];
-				}
-				$db->sql_freeresult($result);
-
-				if (sizeof($delete_topics))
-				{
-					delete_topics('topic_id', $delete_topics, false);
-				}
-				unset($delete_topics);
-			}
-
 			$sql = 'SELECT p.post_id, p.topic_id, p.post_approved, p.poster_id, p.post_subject, p.post_username, p.post_time, u.username, u.user_colour
 				FROM ' . POSTS_TABLE . ' p, ' . USERS_TABLE . ' u
 				WHERE ' . $db->sql_in_set('p.post_id', $post_ids) . '
@@ -1749,6 +1724,111 @@ function sync($mode, $where_type = '', $where_ids = '', $resync_parents = false,
 				}
 			}
 			$db->sql_freeresult($result);
+
+			// Make sure shadow topics do link to existing topics
+			if (sizeof($moved_topics))
+			{
+				$delete_topics = array();
+
+				$sql = 'SELECT t1.topic_id, t1.topic_moved_id
+					FROM ' . TOPICS_TABLE . ' t1
+					LEFT JOIN ' . TOPICS_TABLE . ' t2 ON (t2.topic_id = t1.topic_moved_id)
+					WHERE ' . $db->sql_in_set('t1.topic_id', $moved_topics) . '
+						AND t2.topic_id IS NULL';
+				$result = $db->sql_query($sql);
+
+				while ($row = $db->sql_fetchrow($result))
+				{
+					$delete_topics[] = $row['topic_id'];
+				}
+				$db->sql_freeresult($result);
+
+				if (sizeof($delete_topics))
+				{
+					delete_topics('topic_id', $delete_topics, false);
+				}
+				unset($delete_topics);
+
+				// Make sure shadow topics having no last post data being updated (this only rarely happens...)
+				$sql = 'SELECT topic_id, topic_moved_id, topic_last_post_id, topic_first_post_id
+					FROM ' . TOPICS_TABLE . '
+					WHERE ' . $db->sql_in_set('topic_id', $moved_topics) . '
+						AND topic_last_post_time = 0';
+				$result = $db->sql_query($sql);
+
+				$shadow_topic_data = $post_ids = array();
+				while ($row = $db->sql_fetchrow($result))
+				{
+					$shadow_topic_data[$row['topic_moved_id']] = $row;
+					$post_ids[] = $row['topic_last_post_id'];
+					$post_ids[] = $row['topic_first_post_id'];
+				}
+				$db->sql_freeresult($result);
+
+				$sync_shadow_topics = array();
+				if (sizeof($post_ids))
+				{
+					$sql = 'SELECT p.post_id, p.topic_id, p.post_approved, p.poster_id, p.post_subject, p.post_username, p.post_time, u.username, u.user_colour
+						FROM ' . POSTS_TABLE . ' p, ' . USERS_TABLE . ' u
+						WHERE ' . $db->sql_in_set('p.post_id', $post_ids) . '
+							AND u.user_id = p.poster_id';
+					$result = $db->sql_query($sql);
+
+					$post_ids = array();
+					while ($row = $db->sql_fetchrow($result))
+					{
+						$topic_id = (int) $row['topic_id'];
+
+						if ($row['post_id'] == $shadow_topic_data[$topic_id]['topic_first_post_id'])
+						{
+							$orig_topic_id = $shadow_topic_data[$topic_id]['topic_id'];
+
+							if (!isset($sync_shadow_topics[$orig_topic_id]))
+							{
+								$sync_shadow_topics[$orig_topic_id] = array();
+							}
+
+							$sync_shadow_topics[$orig_topic_id]['topic_time'] = $row['post_time'];
+							$sync_shadow_topics[$orig_topic_id]['topic_poster'] = $row['poster_id'];
+							$sync_shadow_topics[$orig_topic_id]['topic_first_poster_name'] = ($row['poster_id'] == ANONYMOUS) ? $row['post_username'] : $row['username'];
+							$sync_shadow_topics[$orig_topic_id]['topic_first_poster_colour'] = $row['user_colour'];
+						}
+
+						if ($row['post_id'] == $shadow_topic_data[$topic_id]['topic_last_post_id'])
+						{
+							$orig_topic_id = $shadow_topic_data[$topic_id]['topic_id'];
+
+							if (!isset($sync_shadow_topics[$orig_topic_id]))
+							{
+								$sync_shadow_topics[$orig_topic_id] = array();
+							}
+
+							$sync_shadow_topics[$orig_topic_id]['topic_last_poster_id'] = $row['poster_id'];
+							$sync_shadow_topics[$orig_topic_id]['topic_last_post_subject'] = $row['post_subject'];
+							$sync_shadow_topics[$orig_topic_id]['topic_last_post_time'] = $row['post_time'];
+							$sync_shadow_topics[$orig_topic_id]['topic_last_poster_name'] = ($row['poster_id'] == ANONYMOUS) ? $row['post_username'] : $row['username'];
+							$sync_shadow_topics[$orig_topic_id]['topic_last_poster_colour'] = $row['user_colour'];
+						}
+					}
+					$db->sql_freeresult($result);
+
+					$shadow_topic_data = array();
+
+					// Update the information we collected
+					if (sizeof($sync_shadow_topics))
+					{
+						foreach ($sync_shadow_topics as $sync_topic_id => $sql_ary)
+						{
+							$sql = 'UPDATE ' . TOPICS_TABLE . '
+								SET ' . $db->sql_build_array('UPDATE', $sql_ary) . '
+								WHERE topic_id = ' . $sync_topic_id;
+							$db->sql_query($sql);
+						}
+					}
+				}
+
+				unset($sync_shadow_topics, $shadow_topic_data);
+			}
 
 			// approved becomes unapproved, and vice-versa
 			if (sizeof($approved_unapproved_ids))
