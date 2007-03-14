@@ -3370,7 +3370,7 @@ function get_username_string($mode, $user_id, $username, $username_colour = '', 
 			}
 			else if (!$profile_url && $username_colour)
 			{
-				$tpl = '<span style="color: {USERNAME_COLOUR}; font-weight: bold;">{USERNAME}</span>';
+				$tpl = '<span style="color: {USERNAME_COLOUR};" class="username-coloured">{USERNAME}</span>';
 			}
 			else if ($profile_url && !$username_colour)
 			{
@@ -3378,7 +3378,7 @@ function get_username_string($mode, $user_id, $username, $username_colour = '', 
 			}
 			else if ($profile_url && $username_colour)
 			{
-				$tpl = '<a href="{PROFILE_URL}" style="color: {USERNAME_COLOUR}; font-weight: bold;">{USERNAME}</a>';
+				$tpl = '<a href="{PROFILE_URL}" style="color: {USERNAME_COLOUR};" class="username-coloured">{USERNAME}</a>';
 			}
 
 			return str_replace(array('{PROFILE_URL}', '{USERNAME_COLOUR}', '{USERNAME}'), array($profile_url, $username_colour, $username), $tpl);
