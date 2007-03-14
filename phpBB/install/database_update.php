@@ -459,6 +459,7 @@ header('Content-type: text/html; charset=UTF-8');
 	<div id="page-header">&nbsp;</div>
 
 	<div id="page-body">
+		<div id="acp">
 		<div class="panel">
 			<span class="corners-top"><span></span></span>
 				<div id="content">
@@ -865,6 +866,7 @@ $cache->purge();
 					</div>
 				</div>
 			<span class="corners-bottom"><span></span></span>
+		</div>
 		</div>
 	</div>
 	
