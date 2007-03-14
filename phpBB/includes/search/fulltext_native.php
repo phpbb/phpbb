@@ -1221,14 +1221,21 @@ class fulltext_native extends search_backend
 			}
 			$db->sql_freeresult($result);
 
-			$sql = 'UPDATE ' . SEARCH_WORDLIST_TABLE . '
-				SET word_count = word_count - 1
-				WHERE ' . $db->sql_in_set('word_id', $title_word_ids);
-			$db->sql_query($sql);
-			$sql = 'UPDATE ' . SEARCH_WORDLIST_TABLE . '
-				SET word_count = word_count - 1
-				WHERE ' . $db->sql_in_set('word_id', $message_word_ids);
-			$db->sql_query($sql);
+			if (sizeof($title_word_ids))
+			{
+				$sql = 'UPDATE ' . SEARCH_WORDLIST_TABLE . '
+					SET word_count = word_count - 1
+					WHERE ' . $db->sql_in_set('word_id', $title_word_ids);
+				$db->sql_query($sql);
+			}
+
+			if (sizeof($message_word_ids))
+			{
+				$sql = 'UPDATE ' . SEARCH_WORDLIST_TABLE . '
+					SET word_count = word_count - 1
+					WHERE ' . $db->sql_in_set('word_id', $message_word_ids);
+				$db->sql_query($sql);
+			}
 
 			unset($title_word_ids);
 			unset($message_word_ids);
