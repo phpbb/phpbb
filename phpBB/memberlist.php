@@ -1119,7 +1119,7 @@ switch ($mode)
 			$order_by = 'ug.group_leader DESC, ';
 
 			$sql_where .= " AND ug.user_pending = 0 AND u.user_id = ug.user_id AND ug.group_id = $group_id";
-			$sql_where_data = ' AND u.user_id = ug.user_id';
+			$sql_where_data = " AND u.user_id = ug.user_id AND ug.group_id = $group_id";
 		}
 		
 		// Sorting and order
@@ -1272,7 +1272,6 @@ switch ($mode)
 				FROM " . USERS_TABLE . " u
 					$sql_from
 				WHERE " . $db->sql_in_set('u.user_id', $user_list) . "
-					$sql_where
 					$sql_where_data";
 			$result = $db->sql_query($sql);
 
