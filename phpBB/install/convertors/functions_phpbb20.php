@@ -410,9 +410,12 @@ function phpbb_get_birthday($birthday = '')
 			return ' 0- 0-   0';
 		}
 
-		$month = substr($birthday, 0, 2);
-		$day = substr($birthday, 2, 2);
-		$year = substr($birthday, -4);
+		// We use the original mod code to retrieve the birthday (not ideal)
+		preg_match('/(..)(..)(....)/', sprintf('%08d', $birthday), $birthday_parts);
+
+		$month = $birthday_parts[1];
+		$day = $birthday_parts[2];
+		$year =  $birthday_parts[3];
 
 		return sprintf('%2d-%2d-%4d', $day, $month, $year);
 	}
