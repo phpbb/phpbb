@@ -1241,6 +1241,11 @@ function update_folder_pm_count()
 
 function path($path, $path_relative = true)
 {
+	if ($path === false)
+	{
+		return '';
+	}
+
 	if (substr($path, -1) != '/')
 	{
 		$path .= '/';
