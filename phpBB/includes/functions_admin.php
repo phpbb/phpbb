@@ -1490,7 +1490,7 @@ function sync($mode, $where_type = '', $where_ids = '', $resync_parents = false,
 			}
 			else
 			{
-				$sql = 'SELECT forum_id, COUNT(p.post_id) AS forum_posts, MAX(p.post_id) AS last_post_id
+				$sql = 'SELECT p.forum_id, COUNT(p.post_id) AS forum_posts, MAX(p.post_id) AS last_post_id
 					FROM ' . POSTS_TABLE . ' p, ' . TOPICS_TABLE . ' t
 					WHERE ' . $db->sql_in_set('p.forum_id', $forum_ids) . '
 						AND p.topic_id = t.topic_id
