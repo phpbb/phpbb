@@ -67,8 +67,10 @@ switch ($mode)
 {
 	case 'leaders':
 		// Display a listing of board admins, moderators
+		include($phpbb_root_path . 'includes/functions_user.' . $phpEx);
+
 		$user->add_lang('groups');
-		
+	
 		$page_title = $user->lang['THE_TEAM'];
 		$template_html = 'memberlist_leaders.html';
 
@@ -120,6 +122,17 @@ switch ($mode)
 		$admin_group_id = (int) $db->sql_fetchfield('group_id');
 		$db->sql_freeresult($result);
 
+		// Get group memberships for the admin id ary...
+		$admin_memberships = group_memberships($admin_group_id, $admin_id_ary);
+		$admin_user_ids = array();
+
+		// ok, we only need the user ids...
+		foreach ($admin_memberships as $row)
+		{
+			$admin_user_ids[$row['user_id']] = true;
+		}
+		unset($admin_memberships);
+
 		$sql = 'SELECT forum_id, forum_name 
 			FROM ' . FORUMS_TABLE . '
 			WHERE forum_type = ' . FORUM_POST;
@@ -152,18 +165,15 @@ switch ($mode)
 
 			'ORDER_BY'	=> 'g.group_name ASC, u.username_clean ASC'
 		));
-
 		$result = $db->sql_query($sql);
 
 		while ($row = $db->sql_fetchrow($result))
 		{
 			$which_row = (in_array($row['user_id'], $admin_id_ary)) ? 'admin' : 'mod';
 
-			// We sort out admins not having the admin group as default
-			// The drawback is that only those admins are displayed which are within
-			// the special group 'Administrators' and also having it assigned as their default group.
-			// - might change
-			if ($which_row == 'admin' && $row['default_group'] != $admin_group_id)
+			// We sort out admins not within the 'Administrators' group.
+			// Else, we will list those as admin only having the permission to view logs for example.
+			if ($which_row == 'admin' && empty($admin_user_ids[$row['user_id']]))
 			{
 				// Remove from admin_id_ary, because the user may be a mod instead
 				unset($admin_id_ary[array_search($row['user_id'], $admin_id_ary)]);
