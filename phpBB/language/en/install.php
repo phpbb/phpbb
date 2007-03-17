@@ -57,6 +57,9 @@ $lang = array_merge($lang, array(
 	'CHANGE'					=> 'Change',
 	'CHECK_TABLE_PREFIX'		=> 'Please check your table prefix and try again.',
 	'CLEAN_VERIFY'				=> 'Cleaning up and verifying the final structure',
+	'COLLIDING_CLEAN_USERNAME'	=> '<strong>%s</strong> is the clean username for:',
+	'COLLIDING_USERNAMES_FOUND'	=> 'Colliding usernames were found on your old board. In order to complete the conversion please delete or rename these users so that there is only one user on your old board for each clean username.',
+	'COLLIDING_USER'			=> '» user id: <strong>%d</strong> username: <strong>%s</strong> (%d posts)',
 	'CONFIG_CONVERT'			=> 'Converting the configuration',
 	'CONFIG_FILE_UNABLE_WRITE'	=> 'It was not possible to write the configuration file. Alternative methods for this file to be created are presented below',
 	'CONFIG_FILE_WRITTEN'		=> 'The configuration file has been written. You may now proceed to the next step of the installation',
@@ -75,6 +78,7 @@ $lang = array_merge($lang, array(
 	'CONVERT_NEW_CONVERSION'	=> 'New conversion',
 	'CONVERT_NOT_EXIST'			=> 'The specified convertor does not exist',
 	'CONVERT_SETTINGS_VERIFIED'	=> 'The information you entered has been verified. To start the conversion process, push the button below to begin.',
+	'CONV_ERR_FATAL'					=> 'Fatal conversion error',
 
 	'CONV_ERROR_ATTACH_FTP_DIR'			=> 'FTP upload for attachments is enabled at the old board. Please disable the FTP upload option and make sure a valid upload directory is specified, then copy all attachment files to this new web accessible directory. Once you have done this, restart the convertor.',
 	'CONV_ERROR_CONFIG_EMPTY'			=> 'There is no configuration information available for the conversion.',

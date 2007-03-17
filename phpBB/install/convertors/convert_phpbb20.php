@@ -306,7 +306,11 @@ if (!$get_info)
 //	Instead every file gets copied while processing the corresponding attachment entry.
 //		if (defined("MOD_ATTACHMENT")) { import_attachment_files(); phpbb_copy_thumbnails(); }
 
+		// phpBB2 allowed some similar usernames to coexist which would have the same
+		// username_clean in phpBB3 which is not possible, so we'll give the admin a list
+		// of user ids and usernames and let him deicde what he wants to do with them
 		'execute_first'	=> '
+			phpbb_check_username_collisions();
 			import_avatar_gallery();
 			if (defined("MOD_ATTACHMENT")) phpbb_import_attach_config();
 			phpbb_insert_forums();

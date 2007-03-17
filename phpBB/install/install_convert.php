@@ -90,7 +90,7 @@ class install_convert extends module
 
 	function main($mode, $sub)
 	{
-		global $lang, $template, $phpbb_root_path, $phpEx, $cache, $config, $language;
+		global $lang, $template, $phpbb_root_path, $phpEx, $cache, $config, $language, $table_prefix;
 		global $convert;
 
 		$this->tpl_name = 'install_convert';
