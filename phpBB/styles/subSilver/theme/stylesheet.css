@@ -667,3 +667,7 @@ pre {
 .nowrap {
 	white-space: nowrap;
 }
+
+.username-coloured {
+	font-weight: bold;
+}
