@@ -379,9 +379,16 @@ foreach ($supported_dbms as $dbms)
 					}
 					$line .= 'NOT NULL';
 
-					if (isset($column_data[2]) && $column_data[2] == 'auto_increment')
+					if (isset($column_data[2]))
 					{
-						$line .= ' auto_increment';
+						if ($column_data[2] == 'auto_increment')
+						{
+							$line .= ' auto_increment';
+						}
+						else if ($dbms === 'mysql_41' && $column_data[2] == 'true_sort')
+						{
+							$line .= ' COLLATE utf8_general_ci';
+						}
 					}
 
 					$line .= ",\n";
@@ -1744,7 +1751,7 @@ function get_schema_struct()
 			'topic_attachment'			=> array('BOOL', 0),
 			'topic_approved'			=> array('BOOL', 1),
 			'topic_reported'			=> array('BOOL', 0),
-			'topic_title'				=> array('XSTEXT_UNI', ''),
+			'topic_title'				=> array('XSTEXT_UNI', '', 'true_sort'),
 			'topic_poster'				=> array('UINT', 0),
 			'topic_time'				=> array('TIMESTAMP', 0),
 			'topic_time_limit'			=> array('TIMESTAMP', 0),
