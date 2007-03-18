@@ -884,7 +884,7 @@ CREATE TABLE phpbb_topics (
 	topic_attachment tinyint(1) UNSIGNED DEFAULT '0' NOT NULL,
 	topic_approved tinyint(1) UNSIGNED DEFAULT '1' NOT NULL,
 	topic_reported tinyint(1) UNSIGNED DEFAULT '0' NOT NULL,
-	topic_title varchar(100) DEFAULT '' NOT NULL COLLATE utf8_general_ci,
+	topic_title varchar(100) DEFAULT '' NOT NULL COLLATE utf8_unicode_ci,
 	topic_poster mediumint(8) UNSIGNED DEFAULT '0' NOT NULL,
 	topic_time int(11) UNSIGNED DEFAULT '0' NOT NULL,
 	topic_time_limit int(11) UNSIGNED DEFAULT '0' NOT NULL,

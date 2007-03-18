@@ -743,7 +743,7 @@ if (version_compare($current_version, '3.0.b6', '<='))
 	// sorting thang
 	if ($map_dbms === 'mysql_41')
 	{
-		sql_column_change($dbms, TOPICS_TABLE, 'topic_title', 'varchar(100) DEFAULT \'\' NOT NULL COLLATE utf8_general_ci');
+		sql_column_change($dbms, TOPICS_TABLE, 'topic_title', 'varchar(100) DEFAULT \'\' NOT NULL COLLATE utf8_unicode_ci');
 	}
 
 	if ($config['fulltext_native_common_thres'] == 20)

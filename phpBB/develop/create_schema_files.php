@@ -387,7 +387,7 @@ foreach ($supported_dbms as $dbms)
 						}
 						else if ($dbms === 'mysql_41' && $column_data[2] == 'true_sort')
 						{
-							$line .= ' COLLATE utf8_general_ci';
+							$line .= ' COLLATE utf8_unicode_ci';
 						}
 					}
 
