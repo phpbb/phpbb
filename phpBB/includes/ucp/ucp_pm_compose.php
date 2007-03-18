@@ -407,7 +407,7 @@ function compose_pm($id, $mode, $action)
 		$subject = utf8_normalize_nfc(request_var('subject', '', true));
 		$subject = (!$subject && $action != 'post') ? $user->lang['NEW_MESSAGE'] : $subject;
 		$message = utf8_normalize_nfc(request_var('message', '', true));
-		
+
 		if ($subject && $message)
 		{
 			if (confirm_box(true))
@@ -484,7 +484,7 @@ function compose_pm($id, $mode, $action)
 	{
 		$subject = utf8_normalize_nfc(request_var('subject', '', true));
 		$message_parser->message = utf8_normalize_nfc(request_var('message', '', true));
-		
+
 		$icon_id			= request_var('icon', 0);
 
 		$enable_bbcode 		= (!$bbcode_status || isset($_POST['disable_bbcode'])) ? false : true;
@@ -663,7 +663,7 @@ function compose_pm($id, $mode, $action)
 				$message_link = $user->lang['SUBJECT'] . ': ' . $message_subject . " (" . generate_board_url() . "/viewtopic.$phpEx?p={$post_id}#p{$post_id})\n\n";
 			}
 		}
-		else 
+		else
 		{
 			$message_link = '';
 		}
@@ -755,7 +755,7 @@ function compose_pm($id, $mode, $action)
 					{
 						$row['name'] = ($row['group_type'] == GROUP_SPECIAL) ? $user->lang['G_' . $row['name']] : $row['name'];
 					}
-					
+
 					${$type}[$row['id']] = array('name' => $row['name'], 'colour' => $row['colour']);
 				}
 				$db->sql_freeresult($result[$type]);
@@ -873,6 +873,7 @@ function compose_pm($id, $mode, $action)
 		'MINI_POST_IMG'			=> $user->img('icon_post_target', $user->lang['PM']),
 		'ERROR'					=> (sizeof($error)) ? implode('<br />', $error) : '',
 
+		'S_COMPOSE_PM'			=> true,
 		'S_EDIT_POST'			=> ($action == 'edit'),
 		'S_SHOW_PM_ICONS'		=> $s_pm_icons,
 		'S_BBCODE_ALLOWED'		=> $bbcode_status,
