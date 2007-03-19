@@ -1699,7 +1699,14 @@ function redirect($url, $return = false)
 			}
 			else
 			{
-				$url = generate_board_url() . '/' . str_replace('./', '', $url);
+				$url = str_replace('./', '', $url);
+
+				if ($url && substr($url, -1, 1) == '/')
+				{
+					$url = substr($url, 0, -1);
+				}
+
+				$url = generate_board_url() . '/' . $url;
 			}
 		}
 		else
