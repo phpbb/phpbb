@@ -1760,9 +1760,9 @@ parse_css_file = {PARSE_CSS_FILE}
 			{
 				$style_cfg = str_replace(array('{MODE}', '{NAME}', '{COPYRIGHT}', '{VERSION}'), array($mode, $style_row['style_name'], $style_row['style_copyright'], $config['version']), $this->style_cfg);
 
-				$style_cfg .= (!$inc_template) ? "\ntemplate = {$style_row['template_name']}" : '';
-				$style_cfg .= (!$inc_theme) ? "\ntheme = {$style_row['theme_name']}" : '';
-				$style_cfg .= (!$inc_imageset) ? "\nimageset = {$style_row['imageset_name']}" : '';
+				$style_cfg .= (!$inc_template) ? "\nrequired_template = {$style_row['template_name']}" : '';
+				$style_cfg .= (!$inc_theme) ? "\nrequired_theme = {$style_row['theme_name']}" : '';
+				$style_cfg .= (!$inc_imageset) ? "\nrequired_imageset = {$style_row['imageset_name']}" : '';
 
 				$data[] = array(
 					'src'		=> $style_cfg,
@@ -2522,9 +2522,9 @@ parse_css_file = {PARSE_CSS_FILE}
 						'style_copyright'	=> $installcfg['copyright']
 					);
 
-					$reqd_template = (isset($installcfg['required_template'])) ? $installcfg['required_template'] : '';
-					$reqd_theme = (isset($installcfg['required_theme'])) ? $installcfg['required_theme'] : '';
-					$reqd_imageset = (isset($installcfg['required_imageset'])) ? $installcfg['required_imageset'] : '';
+					$reqd_template = (isset($installcfg['required_template'])) ? $installcfg['required_template'] : false;
+					$reqd_theme = (isset($installcfg['required_theme'])) ? $installcfg['required_theme'] : false;
+					$reqd_imageset = (isset($installcfg['required_imageset'])) ? $installcfg['required_imageset'] : false;
 
 					// Check to see if each element is already installed, if it is grab the id
 					foreach ($element_ary as $element => $table)
@@ -2535,7 +2535,12 @@ parse_css_file = {PARSE_CSS_FILE}
 							$element . '_copyright'		=> '')
 						);
 
-			 			$this->test_installed($element, $error, $root_path, ${'reqd_' . $element}, $style_row[$element . '_id'], $style_row[$element . '_name'], $style_row[$element . '_copyright']);
+			 			$this->test_installed($element, $error, (${'reqd_' . $element}) ? $phpbb_root_path . 'styles/' . $reqd_template . '/' : $root_path, ${'reqd_' . $element}, $style_row[$element . '_id'], $style_row[$element . '_name'], $style_row[$element . '_copyright']);
+
+						if (!$style_row[$element . '_name'])
+						{
+							$style_row[$element . '_name'] = $reqd_template;
+						}
 					}
 
 				break;
@@ -2567,7 +2572,12 @@ parse_css_file = {PARSE_CSS_FILE}
 		{
 			if ($mode == 'style')
 			{
-				$this->install_style($error, 'install', $root_path, $style_row['style_id'], $style_row['style_name'], $install_path, $style_row['style_copyright'], $style_row['style_active'], $style_row['style_default'], $style_row);
+				foreach ($element_ary as $element => $table)
+				{
+					${$element . '_root_path'} = (${'reqd_' . $element}) ? $phpbb_root_path . 'styles/' . ${'reqd_' . $element} . '/' : false;
+					${$element . '_path'} = (${'reqd_' . $element}) ? ${'reqd_' . $element} : false;
+				}
+				$this->install_style($error, 'install', $root_path, $style_row['style_id'], $style_row['style_name'], $install_path, $style_row['style_copyright'], $style_row['style_active'], $style_row['style_default'], $style_row, $template_root_path, $template_path, $theme_root_path, $theme_path, $imageset_root_path, $imageset_path);
 			}
 			else
 			{
@@ -2770,6 +2780,21 @@ parse_css_file = {PARSE_CSS_FILE}
 	}
 
 	/**
+
+					$reqd_template = (isset($installcfg['required_template'])) ? $installcfg['required_template'] : false;
+					$reqd_theme = (isset($installcfg['required_theme'])) ? $installcfg['required_theme'] : false;
+					$reqd_imageset = (isset($installcfg['required_imageset'])) ? $installcfg['required_imageset'] : false;
+
+					// Check to see if each element is already installed, if it is grab the id
+					foreach ($element_ary as $element => $table)
+					{
+						$style_row = array_merge($style_row, array(
+							$element . '_id'			=> 0,
+							$element . '_name'			=> '',
+							$element . '_copyright'		=> '')
+						);
+
+			 			$this->test_installed($element, $error, $root_path, ${'reqd_' . $element}, $style_row[$element . '_id'], $style_row[$element . '_name'], $style_row[$element . '_copyright']);
 	* Is this element installed? If not, grab its cfg details
 	*/
 	function test_installed($element, &$error, $root_path, $reqd_name, &$id, &$name, &$copyright)
@@ -2827,7 +2852,7 @@ parse_css_file = {PARSE_CSS_FILE}
 	/**
 	* Install/Add style
 	*/
-	function install_style(&$error, $action, $root_path, &$id, $name, $path, $copyright, $active, $default, &$style_row)
+	function install_style(&$error, $action, $root_path, &$id, $name, $path, $copyright, $active, $default, &$style_row, $template_root_path = false, $template_path = false, $theme_root_path = false, $theme_path = false, $imageset_root_path = false, $imageset_path = false)
 	{
 		global $config, $db, $user;
 
@@ -2873,7 +2898,7 @@ parse_css_file = {PARSE_CSS_FILE}
 			// and do the install if necessary
 			if (!$style_row[$element . '_id'])
 			{
-				$this->install_element($element, $error, $action, $root_path, $style_row[$element . '_id'], $style_row[$element . '_name'], $path, $style_row[$element . '_copyright']);
+				$this->install_element($element, $error, $action, (${$element . '_root_path'}) ? ${$element . '_root_path'} : $root_path, $style_row[$element . '_id'], $style_row[$element . '_name'], (${$element . '_path'}) ? ${$element . '_path'} : $path, $style_row[$element . '_copyright']);
 			}
 		}
 
