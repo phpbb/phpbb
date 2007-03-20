@@ -1307,7 +1307,7 @@ function get_path($src_path, $src_url, $test_file)
 		$url_parts = explode('/', $m[2]);
 		if (substr($src_url, -1) != '/')
 		{
-			if (preg_match('/.*\.([a-z0-9]{3,4})$/i', $url_parts[count($url_parts) - 1]))
+			if (preg_match('/.*\.([a-z0-9]{3,4})$/i', $url_parts[sizeof($url_parts) - 1]))
 			{
 				$url_parts[sizeof($url_parts) - 1] = '';
 			}

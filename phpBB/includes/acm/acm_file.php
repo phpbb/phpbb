@@ -20,6 +20,7 @@ class acm
 
 	var $sql_rowset = array();
 	var $sql_row_pointer = array();
+	var $cache_dir = '';
 
 	/**
 	* Set cache path
