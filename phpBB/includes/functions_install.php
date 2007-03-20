@@ -193,7 +193,7 @@ function get_tables($db)
 		case 'mysql4':
 		case 'mysqli':
 			$sql = 'SHOW TABLES';
-			$field = 'Tables_in_' . $db->dbname;
+			$field = 'Tables_in_' . strtolower($db->dbname);
 		break;
 
 		case 'sqlite':
