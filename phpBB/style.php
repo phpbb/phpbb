@@ -16,7 +16,10 @@ $phpbb_root_path = './';
 $phpEx = substr(strrchr(__FILE__, '.'), 1);
 require($phpbb_root_path . 'config.' . $phpEx);
 
-set_magic_quotes_runtime(0);
+if (version_compare(PHP_VERSION, '6.0.0-dev', '<'))
+{
+	set_magic_quotes_runtime(0);
+}
 
 // Load Extensions
 if (!empty($load_extensions))
