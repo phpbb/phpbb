@@ -131,6 +131,7 @@ function switch_menu()
 			menu_state = 'hidden';
 			toggle.style.left = '0';
 			toggle.style.width = '20px';
+			handle.style.backgroundImage = 'url(images/toggle_inverse.gif)';			
 			break;
 		//show
 		case 'hidden':
@@ -138,7 +139,8 @@ function switch_menu()
 			menu.style.display = 'block';			
 			menu_state = 'shown';
 			toggle.style.left = '15%';
-			toggle.style.width = '5%'			
+			toggle.style.width = '5%';
+			handle.style.backgroundImage = 'url(images/toggle.gif)';						
 			break;
 	}
 }
