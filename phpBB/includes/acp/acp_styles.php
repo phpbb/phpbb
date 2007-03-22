@@ -1383,7 +1383,7 @@ parse_css_file = {PARSE_CSS_FILE}
 				}
 			}
 
-			if ($update && $imgpath)
+			if ($update && isset($_POST['imgpath']))
 			{
 				if ($valid_name)
 				{
