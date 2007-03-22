@@ -112,20 +112,6 @@ class install_update extends module
 		$user->session_begin();
 		$auth->acl($user->data);
 
-		// Beta4 and below are having a bug displaying an error if the install directory is present.
-		// This bug got fixed, but we need to get around it by using a tiny 'hack'.
-		if (!defined('DEBUG_EXTRA'))
-		{
-			if (version_compare(strtolower($config['version']), '3.0.b4', '<='))
-			{
-				@define('DEBUG_EXTRA', true);
-			}
-			else if (!empty($config['version_update_from']) && version_compare(strtolower($config['version_update_from']), '3.0.b4', '<='))
-			{
-				@define('DEBUG_EXTRA', true);
-			}
-		}
-
 		$user->setup('install');
 
 		// If we are within the intro page we need to make sure we get up-to-date version info
@@ -281,7 +267,7 @@ class install_update extends module
 				$template->assign_vars(array(
 					'S_DB_UPDATE'			=> true,
 					'S_DB_UPDATE_FINISHED'	=> ($config['version'] == $this->latest_version) ? true : false,
-					'U_DB_UPDATE'			=> $phpbb_root_path . 'install/database_update.' . $phpEx . '?type=1',
+					'U_DB_UPDATE'			=> append_sid($phpbb_root_path . 'install/database_update.' . $phpEx, 'type=1&amp;language=' . $language),
 					'U_DB_UPDATE_ACTION'	=> append_sid($this->p_master->module_url, "mode=$mode&amp;sub=update_db"),
 					'U_ACTION'				=> append_sid($this->p_master->module_url, "mode=$mode&amp;sub=file_check"),
 				));
@@ -1190,7 +1176,7 @@ class install_update extends module
 					/* Get custom installed styles...
 					$sql = 'SELECT template_name, template_path
 						FROM ' . STYLES_TEMPLATE_TABLE . "
-						WHERE template_name NOT IN ('subSilver', 'BLABLA')";
+						WHERE LOWER(template_name) NOT IN ('subsilver', 'prosilver')";
 					$result = $db->sql_query($sql);
 
 					$templates = array();
@@ -1205,7 +1191,7 @@ class install_update extends module
 						foreach ($info['files'] as $filename)
 						{
 							// Template update?
-							if (strpos($filename, 'styles/subSilver/template/') === 0)
+							if (strpos(strtolower($filename), 'styles/subsilver/template/') === 0)
 							{
 								foreach ($templates as $row)
 								{

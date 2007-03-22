@@ -1693,19 +1693,20 @@ function redirect($url, $return = false)
 		// Is the uri pointing to the current directory?
 		if ($pathinfo['dirname'] == '.')
 		{
+			$url = str_replace('./', '', $url);
+
+			// Strip / from the beginning
+			if ($url && substr($url, 0, 1) == '/')
+			{
+				$url = substr($url, 1);
+			}
+
 			if ($user->page['page_dir'])
 			{
-				$url = generate_board_url() . '/' . $user->page['page_dir'] . '/' . str_replace('./', '', $url);
+				$url = generate_board_url() . '/' . $user->page['page_dir'] . '/' . $url;
 			}
 			else
 			{
-				$url = str_replace('./', '', $url);
-
-				if ($url && substr($url, -1, 1) == '/')
-				{
-					$url = substr($url, 0, -1);
-				}
-
 				$url = generate_board_url() . '/' . $url;
 			}
 		}
@@ -1721,12 +1722,27 @@ function redirect($url, $return = false)
 
 			$dir = str_repeat('../', sizeof($root_dirs)) . implode('/', $page_dirs);
 
+			// Strip / from the end
 			if ($dir && substr($dir, -1, 1) == '/')
 			{
 				$dir = substr($dir, 0, -1);
 			}
 
-			$url = $dir . '/' . str_replace($pathinfo['dirname'] . '/', '', $url);
+			// Strip / from the beginning
+			if ($dir && substr($dir, 0, 1) == '/')
+			{
+				$dir = substr($dir, 1);
+			}
+
+			$url = str_replace($pathinfo['dirname'] . '/', '', $url);
+
+			// Strip / from the beginning
+			if (substr($url, 0, 1) == '/')
+			{
+				$url = substr($url, 1);
+			}
+
+			$url = $dir . '/' . $url;
 			$url = generate_board_url() . '/' . $url;
 		}
 	}
@@ -3591,6 +3607,10 @@ function msg_handler($errno, $msg_text, $errfile, $errline)
 			}
 
 			exit;
+		break;
+
+		case E_RECOVERABLE_ERROR:
+			return false;
 		break;
 	}
 }

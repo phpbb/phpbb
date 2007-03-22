@@ -340,7 +340,7 @@ $lang = array_merge($lang, array(
 	'COLLECTED_INFORMATION'			=> 'Information on collected files',
 	'COLLECTED_INFORMATION_EXPLAIN'	=> 'The list below shows information about the files needing an update. Please read the information in front of every status block to see what they mean and what you may need to do to perform a successful update.',
 	'COMPLETE_LOGIN_TO_BOARD'		=> 'You should now <a href="../ucp.php?mode=login">login to your board</a> and check if everything is working fine. Do not forget to delete, rename or move your install directory!',
-	'CONTINUE_INLINE_UPDATE'		=> 'The database update was successful. Now please close this window and continue the update process as explained.',
+	'CONTINUE_UPDATE_NOW'			=> 'Continue the update process now',
 	'CURRENT_FILE'					=> 'Current original file',
 	'CURRENT_VERSION'				=> 'Current version',
 
@@ -381,6 +381,7 @@ $lang = array_merge($lang, array(
 
 	'INCOMPATIBLE_UPDATE_FILES'		=> 'The update files found are incompatible with your installed version. Your installed version is %1$s and the update file is for updating phpBB %2$s to %3$s.',
 	'INCOMPLETE_UPDATE_FILES'		=> 'The update files are incomplete',
+	'INLINE_UPDATE_SUCCESSFUL'		=> 'The database update was successful. Now you need to continue the update process.',
 
 	'LATEST_VERSION'		=> 'Latest version',
 	'LINE'					=> 'Line',

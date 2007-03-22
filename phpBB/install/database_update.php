@@ -77,10 +77,22 @@ $result = $db->sql_query($sql);
 $row = $db->sql_fetchrow($result);
 $db->sql_freeresult($result);
 
+$language = basename(request_var('language', ''));
+
+if (!$language)
+{
+	$language = $row['config_value'];
+}
+
+if (!file_exists($phpbb_root_path . 'language/' . $language))
+{
+	die('No language found!');
+}
+
 // And finally, load the relevant language files
-include($phpbb_root_path . 'language/' . $row['config_value'] . '/common.' . $phpEx);
-include($phpbb_root_path . 'language/' . $row['config_value'] . '/acp/common.' . $phpEx);
-include($phpbb_root_path . 'language/' . $row['config_value'] . '/install.' . $phpEx);
+include($phpbb_root_path . 'language/' . $language . '/common.' . $phpEx);
+include($phpbb_root_path . 'language/' . $language . '/acp/common.' . $phpEx);
+include($phpbb_root_path . 'language/' . $language . '/install.' . $phpEx);
 
 // Set PHP error handler to ours
 //set_error_handler('msg_handler');
@@ -285,73 +297,6 @@ $unsigned_types = array('UINT', 'UINT:', 'USINT', 'BOOL', 'TIMESTAMP');
 
 // Only an example, but also commented out
 $database_update_info = array(
-	// Changes from 3.0.b3 to the next version
-	'3.0.b3'		=> array(
-		// Change the following columns...
-		'change_columns'	=> array(
-			BBCODES_TABLE		=> array(
-				'bbcode_helpline'		=> array('VCHAR_UNI', ''),
-			),
-			USERS_TABLE			=> array(
-				'user_occ'				=> array('TEXT_UNI', ''),
-			),
-			CONFIG_TABLE		=> array(
-				'config_value'			=> array('VCHAR_UNI', ''),
-			),
-		),
-		// Add the following columns
-		'add_columns'		=> array(
-			GROUPS_TABLE		=> array(
-				'group_founder_manage'	=> array('BOOL', 0),
-			),
-			USERS_TABLE			=> array(
-				'user_pass_convert'		=> array('BOOL', 0),
-			),
-		),
-	),
-	// Changes from 3.0.b4 to the next version
-	'3.0.b4'			=> array(
-		// Add the following columns
-		'add_columns'		=> array(
-			CONFIRM_TABLE		=> array(
-				'seed'					=> array('UINT:10', 0),
-			),
-			SESSIONS_TABLE		=> array(
-				'session_forwarded_for'	=> array('VCHAR:255', ''),
-			),
-		),
-		// Change the following columns...
-		'change_columns'	=> array(
-			USERS_TABLE		=> array(
-				'user_options'		=> array('UINT:11', 895),
-			),
-			FORUMS_TABLE	=> array(
-				'prune_days'			=> array('UINT', 0),
-				'prune_viewed'			=> array('UINT', 0),
-				'prune_freq'			=> array('UINT', 0),
-			),
-			PRIVMSGS_RULES_TABLE	=> array(
-				'rule_folder_id'		=> array('INT:11', 0),
-			),
-			PRIVMSGS_TO_TABLE		=> array(
-				'folder_id'				=> array('INT:11', 0),
-			),
-		),
-		// Remove the following keys
-		'drop_keys'		=> array(
-			ZEBRA_TABLE		=> array(
-				'user_id',
-				'zebra_id',
-			),
-		),
-		// Add the following primary keys
-		'add_primary_keys'	=> array(
-			ZEBRA_TABLE			=> array(
-				'user_id',
-				'zebra_id',
-			),
-		),
-	),
 	// Changes from 3.0.b5 to the next version
 	'3.0.b5'			=> array(
 		// Add the following columns
@@ -630,115 +575,7 @@ flush();
 $no_updates = true;
 
 // some code magic
-if (version_compare($current_version, '3.0.b3', '<='))
-{
-	// Set group_founder_manage for administrators group
-	$sql = 'SELECT group_id
-		FROM ' . GROUPS_TABLE . "
-		WHERE group_name = 'ADMINISTRATORS'
-			AND group_type = " . GROUP_SPECIAL;
-	$result = $db->sql_query($sql);
-	$group_id = (int) $db->sql_fetchfield('group_id');
-	$db->sql_freeresult($result);
-
-	if ($group_id)
-	{
-		$sql = 'UPDATE ' . GROUPS_TABLE . ' SET group_founder_manage = 1 WHERE group_id = ' . $group_id;
-		_sql($sql, $errored, $error_ary);
-	}
-
-	add_bots();
-
-	$no_updates = false;
-}
-
-if (version_compare($current_version, '3.0.b4', '<='))
-{
-	// Add config values
-	set_config('script_path', '/');
-	set_config('forwarded_for_check', '0');
-	set_config('ldap_password', '');
-	set_config('ldap_user', '');
-	set_config('fulltext_native_common_thres', '20');
-
-	// Remove config variables
-	$sql = 'DELETE FROM ' . CONFIG_TABLE . " WHERE config_name = 'send_encoding'";
-	_sql($sql, $errored, $error_ary);
-
-	$sql = 'SELECT user_colour
-		FROM ' . USERS_TABLE . '
-		WHERE user_type IN (' . USER_NORMAL . ', ' . USER_FOUNDER . ')
-		ORDER BY user_id DESC';
-	$result = $db->sql_query_limit($sql, 1);
-	$row = $db->sql_fetchrow($result);
-	$db->sql_freeresult($result);
-
-	set_config('newest_user_colour', $row['user_colour'], true);
-
-	switch ($config['allow_name_chars'])
-	{
-		case '[\w]+':
-			set_config('allow_name_chars', '[a-z]+');
-		break;
-
-		case '[\w_\+\. \-\[\]]+':
-			set_config('allow_name_chars', '[-\]_+ [a-z]+');
-		break;
-	}
-
-	switch ($config['pass_complex'])
-	{
-		case '.*':
-			set_config('pass_complex', 'PASS_TYPE_ANY');
-		break;
-
-		case '[a-zA-Z]':
-			set_config('pass_complex', 'PASS_TYPE_CASE');
-		break;
-
-		case '[a-zA-Z0-9]':
-			set_config('pass_complex', 'PASS_TYPE_ALPHA');
-		break;
-
-		case '[a-zA-Z\W]':
-			set_config('pass_complex', 'PASS_TYPE_SYMBOL');
-		break;
-	}
-
-	$sql = 'UPDATE ' . USERS_TABLE . ' SET user_options = 895 WHERE user_options = 893';
-	_sql($sql, $errored, $error_ary);
-
-	$sql = 'UPDATE ' . MODULES_TABLE . " SET module_auth = 'acl_a_board'
-		WHERE module_class = 'acp' AND module_mode = 'version_check' AND module_auth = 'acl_a_'";
-	_sql($sql, $errored, $error_ary);
-
-	// Because the email hash could have been calculated wrongly as well as the clean string function changed, 
-	// we will update it for every user.
-
-	// Since this is not used in a live environment there are not much... not used in a live environment, yes!
-	$sql = 'SELECT user_id, user_email, username
-		FROM ' . USERS_TABLE;
-	$result = $db->sql_query($sql);
-
-	while ($row = $db->sql_fetchrow($result))
-	{
-		$sql = 'UPDATE ' . USERS_TABLE . "
-			SET username_clean = '" . $db->sql_escape(utf8_clean_string($row['username'])) . "'";
-		
-		if ($row['user_email'])
-		{
-			$sql .= ', user_email_hash = ' . (crc32($row['user_email']) . strlen($row['user_email']));
-		}
-
-		$sql .= ' WHERE user_id = ' . $row['user_id'];
-		_sql($sql, $errored, $error_ary);
-	}
-	$db->sql_freeresult($result);
-
-	$no_updates = false;
-}
-
-if (version_compare($current_version, '3.0.b6', '<='))
+if (version_compare($current_version, '3.0.b5', '<='))
 {
 	// sorting thang
 	if ($map_dbms === 'mysql_41')
@@ -852,9 +689,9 @@ else
 {
 ?>
 
-	<p><?php echo ((isset($lang['CONTINUE_INLINE_UPDATE'])) ? $lang['CONTINUE_INLINE_UPDATE'] : 'The database update was successful. Now please close this window and continue the update process as explained.'); ?></p>
+	<p><?php echo ((isset($lang['INLINE_UPDATE_SUCCESSFUL'])) ? $lang['INLINE_UPDATE_SUCCESSFUL'] : 'The database update was successful. Now you need to continue the update process.'); ?></p>
 
-	<p><a href="#" onclick="window.close();">&raquo; <?php echo $lang['CLOSE_WINDOW']; ?></a></p>
+	<p><a href="<?php echo append_sid("{$phpbb_root_path}install/index.{$phpEx}", "mode=update&amp;sub=file_check&amp;lang=$language"); ?>">&raquo; <?php echo (isset($lang['CONTINUE_UPDATE_NOW'])) ? $lang['CONTINUE_UPDATE_NOW'] : 'Continue the update process now'; ?></a></p>
 
 <?php
 }

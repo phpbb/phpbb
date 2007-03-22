@@ -118,7 +118,7 @@ include($phpbb_root_path . 'includes/utf/utf_tools.' . $phpEx);
 require($phpbb_root_path . 'includes/functions_install.' . $phpEx);
 
 // Try and load an appropriate language if required
-$language = request_var('language', '');
+$language = basename(request_var('language', ''));
 
 if (!empty($_SERVER['HTTP_ACCEPT_LANGUAGE']) && !$language)
 {
@@ -169,6 +169,11 @@ if (!$language)
 		}
 	}
 	closedir($dir);
+}
+
+if (!file_exists($phpbb_root_path . 'language/' . $language))
+{
+	die('No language found!');
 }
 
 // And finally, load the relevant language files
