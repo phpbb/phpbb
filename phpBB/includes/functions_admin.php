@@ -495,7 +495,7 @@ function move_posts($post_ids, $topic_id, $auto_sync = true)
 /**
 * Remove topic(s)
 */
-function delete_topics($where_type, $where_ids, $auto_sync = true, $post_count_sync = true)
+function delete_topics($where_type, $where_ids, $auto_sync = true, $post_count_sync = true, $call_delete_posts = true)
 {
 	global $db, $config;
 
@@ -518,8 +518,9 @@ function delete_topics($where_type, $where_ids, $auto_sync = true, $post_count_s
 		$where_clause = $db->sql_in_set($where_type, $where_ids);
 	}
 
+	// Making sure that delete_posts does not call delete_topics again...
 	$return = array(
-		'posts'	=>	delete_posts($where_type, $where_ids, false, true, $post_count_sync)
+		'posts' => ($call_delete_posts) ? delete_posts($where_type, $where_ids, false, true, $post_count_sync, false) : 0,
 	);
 
 	$sql = 'SELECT topic_id, forum_id, topic_approved
@@ -581,7 +582,7 @@ function delete_topics($where_type, $where_ids, $auto_sync = true, $post_count_s
 /**
 * Remove post(s)
 */
-function delete_posts($where_type, $where_ids, $auto_sync = true, $posted_sync = true, $post_count_sync = true)
+function delete_posts($where_type, $where_ids, $auto_sync = true, $posted_sync = true, $post_count_sync = true, $call_delete_topics = true)
 {
 	global $db, $config, $phpbb_root_path, $phpEx;
 
@@ -726,9 +727,9 @@ function delete_posts($where_type, $where_ids, $auto_sync = true, $posted_sync =
 	}
 
 	// We actually remove topics now to not be inconsistent (the delete_topics function calls this function too)
-	if (sizeof($remove_topics))
+	if (sizeof($remove_topics) && $call_delete_topics)
 	{
-		delete_topics('topic_id', $remove_topics, $auto_sync, $post_count_sync);
+		delete_topics('topic_id', $remove_topics, $auto_sync, $post_count_sync, false);
 	}
 
 	return sizeof($post_ids);
