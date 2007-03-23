@@ -120,27 +120,31 @@ function switch_menu()
 	var menu = document.getElementById('menu');
 	var main = document.getElementById('main');
 	var toggle = document.getElementById('toggle');
-	var handle = document.getElementById('toggle_handle');	
+	var handle = document.getElementById('toggle-handle');	
 
 	switch(menu_state)
 	{	
-		//hide
+		//hidden
 		case 'shown':
 			main.style.width = 'auto';
 			menu.style.display = 'none';
 			menu_state = 'hidden';
 			toggle.style.left = '0';
 			toggle.style.width = '20px';
-			handle.style.backgroundImage = 'url(images/toggle_inverse.gif)';			
+			handle.style.backgroundImage = 'url(images/toggle.gif)';
+			handle.style.backgroundPosition = '100% 50%';
+			handle.style.backgroundRepeat = 'no-repeat';
 			break;
-		//show
+		//shown
 		case 'hidden':
 			main.style.width = '76%';
 			menu.style.display = 'block';			
 			menu_state = 'shown';
 			toggle.style.left = '15%';
 			toggle.style.width = '5%';
-			handle.style.backgroundImage = 'url(images/toggle.gif)';						
+			handle.style.backgroundImage = 'url(images/toggle.gif)';
+			handle.style.backgroundPosition = '0% 50%';
+			handle.style.backgroundRepeat = 'no-repeat';			
 			break;
 	}
 }
@@ -172,7 +176,7 @@ function switch_menu()
 			<span class="corners-top"><span></span></span>
 				<div id="content">
 					<div id="toggle">						
-						<a id="toggle_handle" accesskey="m" title="{L_MENU_TOGGLE}" onclick="switch_menu(); return false;" href="#"></a></div>
+						<a id="toggle-handle" accesskey="m" title="{L_MENU_TOGGLE}" onclick="switch_menu(); return false;" href="#"></a></div>
 					<div id="menu">
 						<p>{L_LOGGED_IN_AS}<br /><strong>{USERNAME}</strong> [&nbsp;<a href="{U_LOGOUT}">{L_LOGOUT}</a>&nbsp;]</p>						
 						<ul>
