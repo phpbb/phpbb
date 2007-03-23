@@ -237,7 +237,7 @@ class acp_board
 					'title'	=> 'ACP_LOAD_SETTINGS',
 					'vars'	=> array(
 						'legend1'			=> 'GENERAL_SETTINGS',
-						'limit_load'		=> array('lang' => 'LIMIT_LOAD',		'validate' => 'int',	'type' => 'text:4:4', 'explain' => true),
+						'limit_load'		=> array('lang' => 'LIMIT_LOAD',		'validate' => 'string',	'type' => 'text:4:4', 'explain' => true),
 						'session_length'	=> array('lang' => 'SESSION_LENGTH',	'validate' => 'int',	'type' => 'text:5:5', 'explain' => true, 'append' => ' ' . $user->lang['SECONDS']),
 						'active_sessions'	=> array('lang' => 'LIMIT_SESSIONS',	'validate' => 'int',	'type' => 'text:4:4', 'explain' => true),
 						'load_online_time'	=> array('lang' => 'ONLINE_LENGTH',		'validate' => 'int',	'type' => 'text:4:3', 'explain' => true, 'append' => ' ' . $user->lang['MINUTES']),

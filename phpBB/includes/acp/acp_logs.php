@@ -41,27 +41,46 @@ class acp_logs
 		// Delete entries if requested and able
 		if (($deletemark || $deleteall) && $auth->acl_get('a_clearlogs'))
 		{
-			$where_sql = '';
-
-			if ($deletemark && sizeof($marked))
+			if (confirm_box(true))
 			{
-				$sql_in = array();
-				foreach ($marked as $mark)
+				$where_sql = '';
+
+				if ($deletemark && sizeof($marked))
 				{
-					$sql_in[] = $mark;
+					$sql_in = array();
+					foreach ($marked as $mark)
+					{
+						$sql_in[] = $mark;
+					}
+					$where_sql = ' AND ' . $db->sql_in_set('log_id', $sql_in);
+					unset($sql_in);
 				}
-				$where_sql = ' AND ' . $db->sql_in_set('log_id', $sql_in);
-				unset($sql_in);
+
+				if ($where_sql || $deleteall)
+				{
+					$sql = 'DELETE FROM ' . LOG_TABLE . "
+						WHERE log_type = {$this->log_type}
+						$where_sql";
+					$db->sql_query($sql);
+
+					add_log('admin', 'LOG_CLEAR_' . strtoupper($mode));
+				}
 			}
-
-			if ($where_sql || $deleteall)
+			else
 			{
-				$sql = 'DELETE FROM ' . LOG_TABLE . "
-					WHERE log_type = {$this->log_type}
-					$where_sql";
-				$db->sql_query($sql);
-
-				add_log('admin', 'LOG_CLEAR_' . strtoupper($mode));
+				confirm_box(false, $user->lang['CONFIRM_OPERATION'], build_hidden_fields(array(
+					'f'			=> $forum_id,
+					'start'		=> $start,
+					'delmarked'	=> $deletemark,
+					'delall'	=> $deleteall,
+					'mark'		=> $marked,
+					'st'		=> $sort_days,
+					'sk'		=> $sort_key,
+					'sd'		=> $sort_dir,
+					'i'			=> $id,
+					'mode'		=> $mode,
+					'action'	=> $action))
+				);
 			}
 		}
 

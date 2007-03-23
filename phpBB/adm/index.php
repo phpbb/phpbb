@@ -10,8 +10,8 @@
 
 /**
 */
-define('IN_PHPBB', 1);
-define('ADMIN_START', 1);
+define('IN_PHPBB', true);
+define('ADMIN_START', true);
 define('NEED_SID', true);
 
 // Include files

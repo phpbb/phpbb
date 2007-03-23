@@ -3608,11 +3608,11 @@ function msg_handler($errno, $msg_text, $errfile, $errline)
 
 			exit;
 		break;
-
-		case E_RECOVERABLE_ERROR:
-			return false;
-		break;
 	}
+
+	// If we notice an error not handled here we pass this back to PHP by returning false
+	// This may not work for all php versions
+	return false;
 }
 
 /**
