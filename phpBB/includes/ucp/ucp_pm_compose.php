@@ -347,7 +347,7 @@ function compose_pm($id, $mode, $action)
 	// Further down (especially in submit_post()) we do not check this again.
 	$message_parser->get_submitted_attachment_data();
 
-	if ($message_attachment && !$submit && !$refresh && !$preview && $action == 'edit')
+	if ($message_attachment && !$submit && !$refresh && !$	 && $action == 'edit')
 	{
 		// Do not change to SELECT *
 		$sql = 'SELECT attach_id, is_orphan, attach_comment, real_filename
@@ -633,6 +633,8 @@ function compose_pm($id, $mode, $action)
 
 		if (!sizeof($error))
 		{
+			$user->add_lang('viewtopic');
+
 			$template->assign_vars(array(
 				'PREVIEW_SUBJECT'		=> $preview_subject,
 				'PREVIEW_MESSAGE'		=> $preview_message,
