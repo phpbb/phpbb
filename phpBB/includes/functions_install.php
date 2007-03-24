@@ -193,14 +193,12 @@ function get_tables($db)
 		case 'mysql4':
 		case 'mysqli':
 			$sql = 'SHOW TABLES';
-			$field = 'Tables_in_' . strtolower($db->dbname);
 		break;
 
 		case 'sqlite':
 			$sql = 'SELECT name
 				FROM sqlite_master
 				WHERE type = "table"';
-			$field = 'name';
 		break;
 
 		case 'mssql':
@@ -208,13 +206,11 @@ function get_tables($db)
 			$sql = "SELECT name 
 				FROM sysobjects 
 				WHERE type='U'";
-			$field = 'name';
 		break;
 
 		case 'postgres':
 			$sql = 'SELECT relname
 				FROM pg_stat_user_tables';
-			$field = 'relname';
 		break;
 
 		case 'firebird':
@@ -222,13 +218,11 @@ function get_tables($db)
 				FROM rdb$relations
 				WHERE rdb$view_source is null
 					AND rdb$system_flag = 0';
-			$field = 'rdb$relation_name';
 		break;
 
 		case 'oracle':
 			$sql = 'SELECT table_name
 				FROM USER_TABLES';
-			$field = 'table_name';
 		break;
 	}
 
@@ -238,7 +232,7 @@ function get_tables($db)
 
 	while ($row = $db->sql_fetchrow($result))
 	{
-		$tables[] = $row[$field];
+		$tables[] = current($row);
 	}
 
 	$db->sql_freeresult($result);
