@@ -163,7 +163,7 @@ class messenger
 				}
 			}
 
-			if (($data = @file_get_contents($tpl_file)) !== false)
+			if (($data = @file_get_contents($tpl_file)) === false)
 			{
 				trigger_error("Failed opening template file [ $tpl_file ]", E_USER_ERROR);
 			}
