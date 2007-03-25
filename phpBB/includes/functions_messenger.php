@@ -163,13 +163,12 @@ class messenger
 				}
 			}
 
-			if (!($fd = @fopen($tpl_file, 'r')))
+			if (($data = @file_get_contents($tpl_file)) !== false)
 			{
 				trigger_error("Failed opening template file [ $tpl_file ]", E_USER_ERROR);
 			}
 
-			$this->tpl_msg[$template_lang . $template_file] = fread($fd, filesize($tpl_file));
-			fclose($fd);
+			$this->tpl_msg[$template_lang . $template_file] = $data;
 		}
 
 		$this->msg = $this->tpl_msg[$template_lang . $template_file];
