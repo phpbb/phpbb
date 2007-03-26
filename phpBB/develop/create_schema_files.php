@@ -1543,6 +1543,7 @@ function get_schema_struct()
 	$schema_data['phpbb_smilies'] = array(
 		'COLUMNS'		=> array(
 			'smiley_id'			=> array('UINT', NULL, 'auto_increment'),
+			// We may want to set 'code' to VCHAR:50 or check if unicode support is possible... at the moment only ASCII characters are allowed.
 			'code'				=> array('VCHAR_UNI:50', ''),
 			'emotion'			=> array('VCHAR_UNI:50', ''),
 			'smiley_url'		=> array('VCHAR:50', ''),

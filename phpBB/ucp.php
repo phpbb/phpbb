@@ -245,9 +245,7 @@ if (!$user->data['is_registered'])
 $module->list_modules('ucp');
 
 // Check if the zebra module is set
-$zebra_enabled = $module->is_active('zebra') ? true : false;
-
-if ($zebra_enabled)
+if ($module->is_active('zebra', 'friends'))
 {
 	// Output listing of friends online
 	$update_time = $config['load_online_time'] * 60;
@@ -314,6 +312,16 @@ function _module_zebra($mode, &$module_row)
 	global $template;
 
 	$template->assign_var('S_ZEBRA_ENABLED', true);
+
+	if ($mode == 'friends')
+	{
+		$template->assign_var('S_ZEBRA_FRIENDS_ENABLED', true);
+	}
+
+	if ($mode == 'foes')
+	{
+		$template->assign_var('S_ZEBRA_FOES_ENABLED', true);
+	}
 }
 
 ?>

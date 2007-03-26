@@ -467,39 +467,21 @@ class p_master
 	/**
 	* Check if a module is active
 	*/
-	function is_active($id = false)
+	function is_active($id, $mode = false)
 	{
-		$icat = false;
-
-		$category = false;
+		// If we find a name by this id and being enabled we have our active one...
 		foreach ($this->module_ary as $row_id => $item_ary)
 		{
-			// If this is a module and it's selected, active
-			// If this is a category and the module is the first within it, active
-			// If this is a module and no mode selected, select first mode
-			// If no category or module selected, go active for first module in first category
-			if (
-				(($item_ary['name'] === $id || $item_ary['id'] === (int) $id) && (($item_ary['mode'] == false && !$item_ary['cat']) || ($icat && $item_ary['cat']))) ||
-				($item_ary['parent'] === $category && !$item_ary['cat'] && !$icat && $item_ary['display']) ||
-				(($item_ary['name'] === $id || $item_ary['id'] === (int) $id) && !$item_ary['cat']) ||
-				(!$id && !$item_ary['cat'] && $item_ary['display'])
-				)
+			if (($item_ary['name'] === $id || $item_ary['id'] === (int) $id) && $item_ary['display'])
 			{
-				if ($item_ary['cat'])
+				if ($mode === false || $mode === $item_ary['mode'])
 				{
-					$id = $icat;
-					$icat = false;
-
-					continue;
+					return true;
 				}
-
-				return $item_ary['id'];
-			}
-			else if (($item_ary['cat'] && $item_ary['id'] === (int) $id) || ($item_ary['parent'] === $category && $item_ary['cat']))
-			{
-				$category = $item_ary['id'];
 			}
 		}
+
+		return false;
 	}
 
 	/**
