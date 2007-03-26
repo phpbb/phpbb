@@ -3499,6 +3499,8 @@ function msg_handler($errno, $msg_text, $errfile, $errline)
 				echo '<b>[phpBB Debug] PHP Notice</b>: in file <b>' . $errfile . '</b> on line <b>' . $errline . '</b>: <b>' . $msg_text . '</b><br />' . "\n";
 			}
 
+			return;
+
 		break;
 
 		case E_USER_ERROR:
