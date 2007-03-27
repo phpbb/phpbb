@@ -642,7 +642,7 @@ function utf8_str_split($str, $split_len = 1)
 
 /**
 * UTF-8 aware alternative to strcspn
-* Find length of initial segment not matching mask
+* Find length of initial segment matching the mask
 * 
 * @author Harry Fuecks
 */
@@ -739,6 +739,7 @@ function utf8_recode($string, $encoding)
 			case 'iso-8859-15':
 			case 'windows-1251':
 			case 'windows-1252':
+			case 'cp1252':
 			case 'shift_jis':
 			case 'euc-kr':
 			case 'big5':
