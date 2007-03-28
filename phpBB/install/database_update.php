@@ -580,7 +580,7 @@ if (version_compare($current_version, '3.0.b5', '<='))
 	// sorting thang
 	if ($map_dbms === 'mysql_41')
 	{
-		sql_column_change($map_dbms, TOPICS_TABLE, 'topic_title', 'varchar(100) DEFAULT \'\' NOT NULL COLLATE utf8_unicode_ci');
+		sql_column_change($map_dbms, TOPICS_TABLE, 'topic_title', array('XSTEXT_UNI', '', 'true_sort'));
 	}
 
 	if ($config['fulltext_native_common_thres'] == 20)
@@ -917,11 +917,24 @@ function prepare_column_data($dbms, $column_data)
 			$sql .= " {$column_type} ";
 
 			// For hexadecimal values do not use single quotes
-			if (!is_null($column_data[1]) && substr($column_type, -4) !== 'text')
+			if (!is_null($column_data[1]) && substr($column_type, -4) !== 'text' && substr($column_type, -4) !== 'blob')
 			{
 				$sql .= (strpos($column_data[1], '0x') === 0) ? "DEFAULT {$column_data[1]} " : "DEFAULT '{$column_data[1]}' ";
 			}
 			$sql .= 'NOT NULL';
+
+			if (isset($column_data[2]))
+			{
+				if ($column_data[2] == 'auto_increment')
+				{
+					$sql .= ' auto_increment';
+				}
+				else if ($dbms === 'mysql_41' && $column_data[2] == 'true_sort')
+				{
+					$sql .= ' COLLATE utf8_unicode_ci';
+				}
+			}
+
 		break;
 
 		case 'oracle':
@@ -947,7 +960,18 @@ function prepare_column_data($dbms, $column_data)
 		break;
 
 		case 'sqlite':
-			$sql .= ' ' . $column_type . ' NOT NULL ';
+/*			if (isset($column_data[2]) && $column_data[2] == 'auto_increment')
+			{
+				$sql .= ' INTEGER PRIMARY KEY';
+			}
+			else
+			{
+				$sql .= ' ' . $column_type;
+			}
+*/
+			$sql .= ' ' . $column_type;
+
+			$sql .= ' NOT NULL ';
 			$sql .= (!is_null($column_data[1])) ? "DEFAULT '{$column_data[1]}'" : '';
 		break;
 	}
@@ -1304,184 +1328,6 @@ function sql_column_change($dbms, $table_name, $column_name, $column_data)
 			$db->sql_transaction('commit');
 
 		break;
-	}
-}
-
-/**
-* Add search robots to the database
-* @ignore
-*/
-function add_bots()
-{
-	global $db, $config, $phpbb_root_path, $phpEx;
-
-	$sql = 'SELECT *
-		FROM ' . CONFIG_TABLE;
-	$result = $db->sql_query($sql);
-
-	$config = array();
-	while ($row = $db->sql_fetchrow($result))
-	{
-		$config[$row['config_name']] = $row['config_value'];
-	}
-	$db->sql_freeresult($result);
-
-	// Obtain any submitted data
-	$sql = 'SELECT group_id
-		FROM ' . GROUPS_TABLE . "
-		WHERE group_name = 'BOTS'";
-	$result = $db->sql_query($sql);
-	$group_id = (int) $db->sql_fetchfield('group_id');
-	$db->sql_freeresult($result);
-
-	if (!$group_id)
-	{
-		return;
-	}
-
-	// First of all, remove the old bots...
-	$sql = 'SELECT bot_id
-		FROM ' . BOTS_TABLE . "
-		WHERE bot_name IN ('Alexa', 'Fastcrawler', 'Googlebot', 'Inktomi')";
-	$result = $db->sql_query($sql);
-
-	$bot_ids = array();
-	while ($row = $db->sql_fetchrow($result))
-	{
-		$bot_ids[] = $row['bot_id'];
-	}
-	$db->sql_freeresult($result);
-
-	if (sizeof($bot_ids))
-	{
-		// We need to delete the relevant user, usergroup and bot entries ...
-		$sql_id = ' IN (' . implode(', ', $bot_ids) . ')';
-
-		$sql = 'SELECT bot_name, user_id 
-			FROM ' . BOTS_TABLE . " 
-			WHERE bot_id $sql_id";
-		$result = $db->sql_query($sql);
-
-		$user_id_ary = array();
-		while ($row = $db->sql_fetchrow($result))
-		{
-			$user_id_ary[] = (int) $row['user_id'];
-		}
-		$db->sql_freeresult($result);
-
-		$sql = 'DELETE FROM ' . BOTS_TABLE . " 
-			WHERE bot_id $sql_id";
-		$db->sql_query($sql);
-
-		if (sizeof($user_id_ary))
-		{
-			$_tables = array(USERS_TABLE, USER_GROUP_TABLE);
-			foreach ($_tables as $table)
-			{
-				$sql = "DELETE FROM $table
-					WHERE " . $db->sql_in_set('user_id', $user_id_ary);
-				$db->sql_query($sql);
-			}
-		}
-	}
-	else
-	{
-		// If the old bots are missing we can safely assume the user tries to execute the database update twice and
-		// fiddled around...
-		return;
-	}
-
-	if (!function_exists('user_add'))
-	{
-		include($phpbb_root_path . 'includes/functions_user.' . $phpEx);
-	}
-
-	global $errored, $error_ary;
-
-	$bot_list = array(
-		'AdsBot [Google]'			=> array('AdsBot-Google', ''),
-		'Alexa [Bot]'				=> array('ia_archiver', ''),
-		'Alta Vista [Bot]'			=> array('Scooter/', ''),
-		'Ask Jeeves [Bot]'			=> array('Ask Jeeves', ''),
-		'Baidu [Spider]'			=> array('Baiduspider+(', ''),
-		'Exabot [Bot]'				=> array('Exabot/', ''),
-		'FAST Enterprise [Crawler]'	=> array('FAST Enterprise Crawler', ''),
-		'FAST WebCrawler [Crawler]'	=> array('FAST-WebCrawler/', ''),
-		'Francis [Bot]'				=> array('http://www.neomo.de/', ''),
-		'Gigabot [Bot]'				=> array('Gigabot/', ''),
-		'Google Adsense [Bot]'		=> array('Mediapartners-Google/', ''),
-		'Google Desktop'			=> array('Google Desktop', ''),
-		'Google Feedfetcher'		=> array('Feedfetcher-Google', ''),
-		'Google [Bot]'				=> array('Googlebot', ''),
-		'Heise IT-Markt [Crawler]'	=> array('heise-IT-Markt-Crawler', ''),
-		'Heritrix [Crawler]'		=> array('heritrix/1.', ''),
-		'IBM Research [Bot]'		=> array('ibm.com/cs/crawler', ''),
-		'ICCrawler - ICjobs'		=> array('ICCrawler - ICjobs', ''),
-		'ichiro [Crawler]'			=> array('ichiro/2', ''),
-		'Majestic-12 [Bot]'			=> array('MJ12bot/', ''),
-		'Metager [Bot]'				=> array('MetagerBot/', ''),
-		'MSN NewsBlogs'				=> array('msnbot-NewsBlogs/', ''),
-		'MSN [Bot]'					=> array('msnbot/', ''),
-		'MSNbot Media'				=> array('msnbot-media/', ''),
-		'NG-Search [Bot]'			=> array('NG-Search/', ''),
-		'Nutch [Bot]'				=> array('http://lucene.apache.org/nutch/', ''),
-		'Nutch/CVS [Bot]'			=> array('NutchCVS/', ''),
-		'OmniExplorer [Bot]'		=> array('OmniExplorer_Bot/', ''),
-		'Online link [Validator]'	=> array('online link validator', ''),
-		'psbot [Picsearch]'			=> array('psbot/0', ''),
-		'Seekport [Bot]'			=> array('Seekbot/', ''),
-		'Sensis [Crawler]'			=> array('Sensis Web Crawler', ''),
-		'SEO Crawler'				=> array('SEO search Crawler/', ''),
-		'Seoma [Crawler]'			=> array('Seoma [SEO Crawler]', ''),
-		'SEOSearch [Crawler]'		=> array('SEOsearch/', ''),
-		'Snappy [Bot]'				=> array('Snappy/1.1 ( http://www.urltrends.com/ )', ''),
-		'Steeler [Crawler]'			=> array('http://www.tkl.iis.u-tokyo.ac.jp/~crawler/', ''),
-		'Synoo [Bot]'				=> array('SynooBot/', ''),
-		'Telekom [Bot]'				=> array('crawleradmin.t-info@telekom.de', ''),
-		'TurnitinBot [Bot]'			=> array('TurnitinBot/', ''),
-		'Voyager [Bot]'				=> array('voyager/1.0', ''),
-		'W3 [Sitesearch]'			=> array('W3 SiteSearch Crawler', ''),
-		'W3C [Linkcheck]'			=> array('W3C-checklink/', ''),
-		'W3C [Validator]'			=> array('W3C_*Validator', ''),
-		'WiseNut [Bot]'				=> array('http://www.WISEnutbot.com', ''),
-		'YaCy [Bot]'				=> array('yacybot', ''),
-		'Yahoo MMCrawler [Bot]'		=> array('Yahoo-MMCrawler/', ''),
-		'Yahoo Slurp [Bot]'			=> array('Yahoo! DE Slurp', ''),
-		'Yahoo [Bot]'				=> array('Yahoo! Slurp', ''),
-		'YahooSeeker [Bot]'			=> array('YahooSeeker/', ''),
-	);
-
-	foreach ($bot_list as $bot_name => $bot_ary)
-	{
-		$user_row = array(
-			'user_type'				=> USER_IGNORE,
-			'group_id'				=> $group_id,
-			'username'				=> $bot_name,
-			'user_regdate'			=> time(),
-			'user_password'			=> '',
-			'user_colour'			=> '9E8DA7',
-			'user_email'			=> '',
-			'user_lang'				=> $config['default_lang'],
-			'user_style'			=> 1,
-			'user_timezone'			=> 0,
-			'user_dateformat'		=> $config['default_dateformat'],
-			'user_allow_massemail'	=> 0,
-		);
-
-		$user_id = user_add($user_row);
-
-		if ($user_id)
-		{
-			$sql = 'INSERT INTO ' . BOTS_TABLE . ' ' . $db->sql_build_array('INSERT', array(
-				'bot_active'	=> 1,
-				'bot_name'		=> $bot_name,
-				'user_id'		=> $user_id,
-				'bot_agent'		=> $bot_ary[0],
-				'bot_ip'		=> $bot_ary[1],
-			));
-
-			_sql($sql, $errored, $error_ary);
-		}
 	}
 }
 
