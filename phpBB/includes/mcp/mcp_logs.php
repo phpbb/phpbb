@@ -76,16 +76,23 @@ class mcp_logs
 		// Delete entries if requested and able
 		if (($deletemark || $deleteall) && $auth->acl_get('a_clearlogs'))
 		{
-			if ($deletemark && $marked)
+			if ($deletemark)
 			{
-				$sql_in = array();
-				foreach ($marked as $mark)
+				if (!sizeof($marked))
 				{
-					$sql_in[] = $mark;
+					$where_sql = '';
 				}
+				else
+				{
+					$sql_in = array();
+					foreach ($marked as $mark)
+					{
+						$sql_in[] = $mark;
+					}
 
-				$where_sql = ' AND ' . $db->sql_in_set('log_id', $sql_in);
-				unset($sql_in);
+					$where_sql = ' AND ' . $db->sql_in_set('log_id', $sql_in);
+					unset($sql_in);
+				}
 			}
 
 			if ($where_sql || $deleteall)
