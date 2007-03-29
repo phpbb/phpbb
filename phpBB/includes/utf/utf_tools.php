@@ -641,7 +641,7 @@ function utf8_str_split($str, $split_len = 1)
 }
 
 /**
-* UTF-8 aware alternative to strcspn
+* UTF-8 aware alternative to strspn
 * Find length of initial segment matching the mask
 * 
 * @author Harry Fuecks
@@ -933,7 +933,7 @@ function utf8_encode_ncr_callback($m)
 }
 
 /**
-* Enter description here...
+* Converts a UTF-8 char to an NCR
 *
 * @param string $chr UTF-8 char
 * @return integer UNICODE code point
