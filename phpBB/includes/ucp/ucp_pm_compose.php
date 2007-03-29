@@ -505,8 +505,20 @@ function compose_pm($id, $mode, $action)
 		// Parse Attachments - before checksum is calculated
 		$message_parser->parse_attachments('fileupload', $action, 0, $submit, $preview, $refresh, true);
 
+		if (sizeof($message_parser->warn_msg) && !($remove_u || $remove_g || $add_to || $add_bcc))
+		{
+			$error[] = implode('<br />', $message_parser->warn_msg);
+			$message_parser->warn_msg = array();
+		}
+
 		// Parse message
 		$message_parser->parse($enable_bbcode, ($config['allow_post_links']) ? $enable_urls : false, $enable_smilies, $img_status, $flash_status, true, $config['allow_sig_links']);
+
+		// On a refresh we do not care about message parsing errors
+		if (sizeof($message_parser->warn_msg) && !$refresh)
+		{
+			$error[] = implode('<br />', $message_parser->warn_msg);
+		}
 
 		if ($action != 'edit' && !$preview && !$refresh && $config['flood_interval'] && !$auth->acl_get('u_ignoreflood'))
 		{
@@ -534,17 +546,6 @@ function compose_pm($id, $mode, $action)
 			{
 				$error[] = $user->lang['NO_RECIPIENT'];
 			}
-		}
-
-		// On a refresh we do not care about message parsing errors
-		if (sizeof($message_parser->warn_msg) && $refresh)
-		{
-			$message_parser->warn_msg = array();
-		}
-
-		if (sizeof($message_parser->warn_msg) && !($remove_u || $remove_g || $add_to || $add_bcc))
-		{
-			$error[] = implode('<br />', $message_parser->warn_msg);
 		}
 
 		// Store message, sync counters
