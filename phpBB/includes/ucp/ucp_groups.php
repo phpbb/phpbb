@@ -75,7 +75,7 @@ class ucp_groups
 
 							if (!$auth->acl_get('u_chggrp'))
 							{
-								trigger_error($user->lang['NOT_AUTHORIZED'] . $return_page);
+								trigger_error($user->lang['NOT_AUTHORISED'] . $return_page);
 							}
 
 							// User needs to be member of the group in order to make it default
@@ -326,7 +326,7 @@ class ucp_groups
 				// Hide hidden groups unless user is an admin with group privileges
 				$sql_and = ($auth->acl_gets('a_group', 'a_groupadd', 'a_groupdel')) ? '<> ' . GROUP_SPECIAL : 'NOT IN (' . GROUP_SPECIAL . ', ' . GROUP_HIDDEN . ')';
 
-				$sql = 'SELECT group_id, group_name, group_desc, group_desc_uid, group_desc_bitfield, group_desc_options, group_type, group_founder_manage
+				$sql = 'SELECT group_id, group_name, group_colour, group_desc, group_desc_uid, group_desc_bitfield, group_desc_options, group_type, group_founder_manage
 					FROM ' . GROUPS_TABLE . '
 					WHERE ' . ((sizeof($group_id_ary)) ? $db->sql_in_set('group_id', $group_id_ary, true) . ' AND ' : '') . "
 						group_type $sql_and
@@ -367,6 +367,7 @@ class ucp_groups
 						'GROUP_CLOSED'	=> ($row['group_type'] <> GROUP_CLOSED || $auth->acl_gets('a_group', 'a_groupadd', 'a_groupdel')) ? false : true,
 						'GROUP_STATUS'	=> $user->lang['GROUP_IS_' . $group_status],
 						'S_CAN_JOIN'	=> ($row['group_type'] == GROUP_OPEN || $row['group_type'] == GROUP_FREE) ? true : false,
+						'GROUP_COLOUR'	=> $row['group_colour'],
 
 						'U_VIEW_GROUP'	=> append_sid("{$phpbb_root_path}memberlist.$phpEx", 'mode=group&amp;g=' . $row['group_id']),
 
@@ -1001,7 +1002,7 @@ class ucp_groups
 					default:
 						$user->add_lang('acp/common');
 
-						$sql = 'SELECT g.group_id, g.group_name, g.group_desc, g.group_desc_uid, g.group_desc_bitfield, g.group_desc_options, g.group_type, ug.group_leader
+						$sql = 'SELECT g.group_id, g.group_name, g.group_colour, g.group_desc, g.group_desc_uid, g.group_desc_bitfield, g.group_desc_options, g.group_type, ug.group_leader
 							FROM ' . GROUPS_TABLE . ' g, ' . USER_GROUP_TABLE . ' ug
 							WHERE ug.user_id = ' . $user->data['user_id'] . '
 								AND g.group_id = ug.group_id
@@ -1016,6 +1017,7 @@ class ucp_groups
 								'GROUP_DESC'	=> generate_text_for_display($value['group_desc'], $value['group_desc_uid'], $value['group_desc_bitfield'], $value['group_desc_options']),
 								'GROUP_TYPE'	=> $value['group_type'],
 								'GROUP_ID'		=> $value['group_id'],
+								'GROUP_COLOUR'	=> $value['group_colour'],
 
 								'U_LIST'	=> $this->u_action . "&amp;action=list&amp;g={$value['group_id']}",
 								'U_EDIT'	=> $this->u_action . "&amp;action=edit&amp;g={$value['group_id']}")

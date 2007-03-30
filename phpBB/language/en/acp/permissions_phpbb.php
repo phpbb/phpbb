@@ -120,7 +120,7 @@ $lang = array_merge($lang, array(
 	'acl_u_sendim'		=> array('lang' => 'Can send instant messages', 'cat' => 'misc'),
 	'acl_u_ignoreflood'	=> array('lang' => 'Can ignore flood limit', 'cat' => 'misc'),
 	'acl_u_hideonline'	=> array('lang' => 'Can hide online status', 'cat' => 'misc'),
-	'acl_u_viewonline'	=> array('lang' => 'Can view all online', 'cat' => 'misc'),
+	'acl_u_viewonline'	=> array('lang' => 'Can view hidden online users', 'cat' => 'misc'),
 	'acl_u_search'		=> array('lang' => 'Can search board', 'cat' => 'misc'),
 ));
 

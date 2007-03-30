@@ -778,7 +778,7 @@ function move_pm($user_id, $message_limit, $move_msg_ids, $dest_folder, $cur_fol
 
 			if (!$row)
 			{
-				trigger_error('NOT_AUTHORIZED');
+				trigger_error('NOT_AUTHORISED');
 			}
 
 			if ($row['pm_count'] + sizeof($move_msg_ids) > $message_limit)

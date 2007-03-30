@@ -1201,7 +1201,7 @@ function user_notification($mode, $subject, $topic_title, $forum_name, $forum_id
 		$db->sql_query($sql);
 	}
 
-	// Now delete the user_ids not authorized to receive notifications on this topic/forum
+	// Now delete the user_ids not authorised to receive notifications on this topic/forum
 	if (!empty($delete_ids['topic']))
 	{
 		$sql = 'DELETE FROM ' . TOPICS_WATCH_TABLE . "

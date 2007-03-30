@@ -164,7 +164,7 @@ function display_forums($root_data = '', $display_moderators = true, $return_mod
 			$active_forum_ary['forum_topics']	+= ($auth->acl_get('m_approve', $forum_id)) ? $row['forum_topics_real'] : $row['forum_topics'];
 			$active_forum_ary['forum_posts']	+= $row['forum_posts'];
 
-			// If this is a passworded forum we do not show active topics from it if the user is not authorized to view it...
+			// If this is a passworded forum we do not show active topics from it if the user is not authorised to view it...
 			if ($row['forum_password'] && $row['user_id'] != $user->data['user_id'])
 			{
 				$active_forum_ary['exclude_forum_id'][] = $forum_id;

@@ -401,7 +401,7 @@ function approve_post($post_id_list, $id, $mode)
 
 	if (!check_ids($post_id_list, POSTS_TABLE, 'post_id', array('m_approve')))
 	{
-		trigger_error('NOT_AUTHORIZED');
+		trigger_error('NOT_AUTHORISED');
 	}
 
 	$redirect = request_var('redirect', build_url(array('_f_', 'quickmod')));
@@ -645,7 +645,7 @@ function disapprove_post($post_id_list, $id, $mode)
 
 	if (!check_ids($post_id_list, POSTS_TABLE, 'post_id', array('m_approve')))
 	{
-		trigger_error('NOT_AUTHORIZED');
+		trigger_error('NOT_AUTHORISED');
 	}
 
 	$redirect = request_var('redirect', build_url(array('t', 'mode', '_f_', 'quickmod')) . '&amp;mode=unapproved_topics');

@@ -377,7 +377,7 @@ function close_report($post_id_list, $mode, $action)
 
 	if (!check_ids($post_id_list, POSTS_TABLE, 'post_id', array('m_report')))
 	{
-		trigger_error('NOT_AUTHORIZED');
+		trigger_error('NOT_AUTHORISED');
 	}
 
 	if ($action == 'delete' && strpos($user->data['session_page'], 'mode=report_details') !== false)

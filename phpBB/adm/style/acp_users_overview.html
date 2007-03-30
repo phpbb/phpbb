@@ -56,27 +56,39 @@
 		<dt><label for="password_confirm">{L_CONFIRM_PASSWORD}:</label><br /><span>{L_CONFIRM_PASSWORD_EXPLAIN}</span></dt>
 		<dd><input type="password" id="password_confirm" name="password_confirm" value="" /></dd>
 	</dl>
-	<!-- IF not S_USER_FOUNDER or S_FOUNDER -->
-	</fieldset>
 
-	<fieldset>
-		<legend>{L_USER_TOOLS}</legend>
-	<dl>
-		<dt><label for="quicktools">{L_QUICK_TOOLS}:</label></dt>
-		<dd><select id="quicktools" name="action">{S_ACTION_OPTIONS}</select></dd>
-	</dl>
-		<!-- IF not S_OWN_ACCOUNT -->
-			<dl>
-				<dt><label for="delete_user">{L_DELETE_USER}:</label><br /><span>{L_DELETE_USER_EXPLAIN}</span></dt>
-				<dd><input type="checkbox" class="radio" name="delete" value="1" /></dd>
-				<dd><select id="delete_user" name="delete_type"><option value="retain">{L_RETAIN_POSTS}</option><option value="remove">{L_DELETE_POSTS}</option></select></dd>
-			</dl>
-		<!-- ENDIF -->
-	<!-- ENDIF -->
-	</fieldset>
-
-	<fieldset class="quick">
+	<p class="quick">
 		<input class="button1" type="submit" name="update" value="{L_SUBMIT}" />
+		<input type="hidden" name="action" value="" />
+	</p>
+
 	</fieldset>
 
 	</form>
+
+	<!-- IF not S_USER_FOUNDER or S_FOUNDER -->
+		<form id="user_quick_tools" method="post" action="{U_ACTION}">
+
+		<fieldset>
+			<legend>{L_USER_TOOLS}</legend>
+		<dl>
+			<dt><label for="quicktools">{L_QUICK_TOOLS}:</label></dt>
+			<dd><select id="quicktools" name="action">{S_ACTION_OPTIONS}</select></dd>
+		</dl>
+			<!-- IF not S_OWN_ACCOUNT -->
+				<dl>
+					<dt><label for="delete_user">{L_DELETE_USER}:</label><br /><span>{L_DELETE_USER_EXPLAIN}</span></dt>
+					<dd><input type="checkbox" class="radio" name="delete" value="1" /></dd>
+					<dd><select id="delete_user" name="delete_type"><option value="retain">{L_RETAIN_POSTS}</option><option value="remove">{L_DELETE_POSTS}</option></select></dd>
+				</dl>
+			<!-- ENDIF -->
+
+		<p class="quick">
+			<input class="button1" type="submit" name="update" value="{L_SUBMIT}" />
+		</p>
+
+		</fieldset>
+
+	</form>
+
+	<!-- ENDIF -->

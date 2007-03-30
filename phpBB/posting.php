@@ -863,7 +863,7 @@ if ($submit || $preview || $refresh)
 					if (!$auth->acl_get('f_post', $to_forum_id))
 					{
 						// This will only be triggered if the user tried to trick the forum.
-						trigger_error('NOT_AUTHORIZED');
+						trigger_error('NOT_AUTHORISED');
 					}
 
 					$forum_id = $to_forum_id;

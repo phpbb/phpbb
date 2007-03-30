@@ -264,6 +264,11 @@ switch ($mode)
 		$page_title = $user->lang['IM_USER'];
 		$template_html = 'memberlist_im.html';
 
+		if (!$auth->acl_get('u_sendim'))
+		{
+			trigger_error('NOT_AUTHORISED');
+		}
+
 		$presence_img = '';
 		switch ($action)
 		{
@@ -1496,12 +1501,19 @@ function show_profile($data)
 		'U_EMAIL'		=> $email,
 		'U_WWW'			=> (!empty($data['user_website'])) ? $data['user_website'] : '',
 		'U_ICQ'			=> ($data['user_icq']) ? 'http://www.icq.com/people/webmsg.php?to=' . $data['user_icq'] : '',
-		'U_AIM'			=> ($data['user_aim']) ? append_sid("{$phpbb_root_path}memberlist.$phpEx", 'mode=contact&amp;action=aim&amp;u=' . $user_id) : '',
+		'U_AIM'			=> ($data['user_aim'] && $auth->acl_get('u_sendim')) ? append_sid("{$phpbb_root_path}memberlist.$phpEx", 'mode=contact&amp;action=aim&amp;u=' . $user_id) : '',
 		'U_YIM'			=> ($data['user_yim']) ? 'http://edit.yahoo.com/config/send_webmesg?.target=' . $data['user_yim'] . '&amp;.src=pg' : '',
-		'U_MSN'			=> ($data['user_msnm']) ? append_sid("{$phpbb_root_path}memberlist.$phpEx", 'mode=contact&amp;action=msnm&amp;u=' . $user_id) : '',
-		'U_JABBER'		=> ($data['user_jabber']) ? append_sid("{$phpbb_root_path}memberlist.$phpEx", 'mode=contact&amp;action=jabber&amp;u=' . $user_id) : '',
+		'U_MSN'			=> ($data['user_msnm'] && $auth->acl_get('u_sendim')) ? append_sid("{$phpbb_root_path}memberlist.$phpEx", 'mode=contact&amp;action=msnm&amp;u=' . $user_id) : '',
+		'U_JABBER'		=> ($data['user_jabber'] && $auth->acl_get('u_sendim')) ? append_sid("{$phpbb_root_path}memberlist.$phpEx", 'mode=contact&amp;action=jabber&amp;u=' . $user_id) : '',
 		'LOCATION'		=> ($data['user_from']) ? $data['user_from'] : '',
-		
+
+		'USER_ICQ'			=> $data['user_icq'],
+		'USER_AIM'			=> $data['user_aim'],
+		'USER_YIM'			=> $data['user_yim'],
+		'USER_MSN'			=> $data['user_msnm'],
+		'USER_JABBER'		=> $data['user_jabber'],
+		'USER_JABBER_IMG'	=> ($data['user_jabber']) ? $user->img('icon_contact_jabber', $data['user_jabber']) : '',
+
 		'L_VIEWING_PROFILE'	=> sprintf($user->lang['VIEWING_PROFILE'], $username),
 	);
 }

@@ -37,14 +37,15 @@
 					/**
 					 * Check whether the browser supports this and whether MSNM is connected
 					 */
-					function msn_supported() {						
+					function msn_supported()
+					{
 						//Does the browser support the MSNM object?
 						if (app.MyStatus) 
 						{
 							//Is MSNM connected?
 							if (app.MyStatus == 1)
-							{									
-									alert('{L_IM_MSNM_CONNECT}');										
+							{
+									alert('{L_IM_MSNM_CONNECT}');
 									return false;
 							}
 						}
@@ -63,7 +64,7 @@
 					{
 						if (msn_supported()) 
 						{
-							//Could return an error while MSNM is connecting, don't want that
+							// Could return an error while MSNM is connecting, don't want that
 							try
 							{
 								app.AddContact(0, address);
@@ -83,7 +84,7 @@
 					{
 						if (msn_supported()) 
 						{
-							//Could return an error while MSNM is connecting, don't want that						
+							// Could return an error while MSNM is connecting, don't want that						
 							try
 							{
 								app.InstantMessage(address);

@@ -54,6 +54,7 @@ $lang = array_merge($lang, array(
 	'CAT_CONVERT'				=> 'Convert',
 	'CAT_INSTALL'				=> 'Install',
 	'CAT_OVERVIEW'				=> 'Overview',
+	'CAT_UPDATE'				=> 'Update',
 	'CHANGE'					=> 'Change',
 	'CHECK_TABLE_PREFIX'		=> 'Please check your table prefix and try again.',
 	'CLEAN_VERIFY'				=> 'Cleaning up and verifying the final structure',
@@ -399,7 +400,7 @@ $lang = array_merge($lang, array(
 	'MERGE_SELECT_ERROR'		=> 'Conflicting file merge modes are not correctly selected.',
 
 	'NEW_FILE'						=> 'New updated file',
-	'NO_AUTH_UPDATE'				=> 'Not authorized to update',
+	'NO_AUTH_UPDATE'				=> 'Not authorised to update',
 	'NO_ERRORS'						=> 'No errors',
 	'NO_UPDATE_FILES'				=> 'Not updating the following files',
 	'NO_UPDATE_FILES_EXPLAIN'		=> 'The following files are new or modified but the directory they normally reside in could not be found on your installation. If this list contains files to other directories than language/ or styles/ than you may have modified your directory structure and the update may be incomplete.',

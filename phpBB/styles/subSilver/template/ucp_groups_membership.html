@@ -23,7 +23,7 @@
 	<!-- IF leader.S_ROW_COUNT is even --><tr class="row1"><!-- ELSE --><tr class="row2"><!-- ENDIF -->
 		<td width="6%" align="center" nowrap="nowrap"><!-- IF S_CHANGE_DEFAULT --><input type="radio" class="radio" name="default"<!-- IF leader.S_GROUP_DEFAULT --> checked="checked"<!-- ENDIF --> value="{leader.GROUP_ID}" /><!-- ENDIF --></td>
 		<td>
-			<b class="genmed"><a href="{leader.U_VIEW_GROUP}"<!-- IF leader.GROUP_COLOUR --> style="color:#{leader.GROUP_COLOUR}"<!-- ENDIF -->>{leader.GROUP_NAME}</a></b>
+			<b class="genmed"><a href="{leader.U_VIEW_GROUP}"<!-- IF leader.GROUP_COLOUR --> style="color: #{leader.GROUP_COLOUR};"<!-- ENDIF -->>{leader.GROUP_NAME}</a></b>
 			<!-- IF leader.GROUP_DESC --><br /><span class="genmed">{leader.GROUP_DESC}</span><!-- ENDIF -->
 			<!-- IF not leader.GROUP_SPECIAL --><br /><i class="gensmall">{leader.GROUP_STATUS}</i><!-- ENDIF -->
 		</td>
@@ -41,7 +41,7 @@
 	<!-- IF member.S_ROW_COUNT is even --><tr class="row1"><!-- ELSE --><tr class="row2"><!-- ENDIF -->
 		<td width="6%" align="center" nowrap="nowrap"><!-- IF S_CHANGE_DEFAULT --><input type="radio" class="radio" name="default"<!-- IF member.S_GROUP_DEFAULT --> checked="checked"<!-- ENDIF --> value="{member.GROUP_ID}" /><!-- ENDIF --></td>
 		<td>
-			<b class="genmed"><a href="{member.U_VIEW_GROUP}"<!-- IF member.GROUP_COLOUR --> style="color:#{member.GROUP_COLOUR}"<!-- ENDIF -->>{member.GROUP_NAME}</a></b>
+			<b class="genmed"><a href="{member.U_VIEW_GROUP}"<!-- IF member.GROUP_COLOUR --> style="color: #{member.GROUP_COLOUR};"<!-- ENDIF -->>{member.GROUP_NAME}</a></b>
 			<!-- IF member.GROUP_DESC --><br /><span class="genmed">{member.GROUP_DESC}</span><!-- ENDIF -->
 			<!-- IF not member.GROUP_SPECIAL --><br /><i class="gensmall">{member.GROUP_STATUS}</i><!-- ENDIF -->
 		</td>
@@ -59,7 +59,7 @@
 	<!-- IF pending.S_ROW_COUNT is even --><tr class="row1"><!-- ELSE --><tr class="row2"><!-- ENDIF -->
 		<td width="6%" align="center" nowrap="nowrap">&nbsp;</td>
 		<td>
-			<b class="genmed"><a href="{pending.U_VIEW_GROUP}"<!-- IF pending.GROUP_COLOUR --> style="color:#{pending.GROUP_COLOUR}"<!-- ENDIF -->>{pending.GROUP_NAME}</a></b>
+			<b class="genmed"><a href="{pending.U_VIEW_GROUP}"<!-- IF pending.GROUP_COLOUR --> style="color: #{pending.GROUP_COLOUR};"<!-- ENDIF -->>{pending.GROUP_NAME}</a></b>
 			<!-- IF pending.GROUP_DESC --><br /><span class="genmed">{pending.GROUP_DESC}</span><!-- ENDIF -->
 			<!-- IF not pending.GROUP_SPECIAL --><br /><i class="gensmall">{pending.GROUP_STATUS}</i><!-- ENDIF -->
 		</td>
@@ -77,7 +77,7 @@
 	<!-- IF nonmember.S_ROW_COUNT is even --><tr class="row1"><!-- ELSE --><tr class="row2"><!-- ENDIF -->
 		<td width="6%" align="center" nowrap="nowrap">&nbsp;</td>
 		<td>
-			<b class="genmed"><a href="{nonmember.U_VIEW_GROUP}"<!-- IF nonmember.GROUP_COLOUR --> style="color:#{nonmember.GROUP_COLOUR}"<!-- ENDIF -->>{nonmember.GROUP_NAME}</a></b>
+			<b class="genmed"><a href="{nonmember.U_VIEW_GROUP}"<!-- IF nonmember.GROUP_COLOUR --> style="color: #{nonmember.GROUP_COLOUR};"<!-- ENDIF -->>{nonmember.GROUP_NAME}</a></b>
 			<!-- IF nonmember.GROUP_DESC --><br /><span class="genmed">{nonmember.GROUP_DESC}</span><!-- ENDIF -->
 			<!-- IF not nonmember.GROUP_SPECIAL --><br /><i class="gensmall">{nonmember.GROUP_STATUS}</i><!-- ENDIF -->
 		</td>

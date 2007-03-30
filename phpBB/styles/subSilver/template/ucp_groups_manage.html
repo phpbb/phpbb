@@ -35,7 +35,7 @@
 	</tr>
 	<tr>
 		<td class="row1" width="35%"><label<!-- IF not S_SPECIAL_GROUP --> for="group_name"<!-- ENDIF -->>{L_GROUP_NAME}:</label></td>
-		<td class="row2"><!-- IF S_SPECIAL_GROUP --><b>{GROUP_NAME}</b><!-- ENDIF --><input name="group_name" type="<!-- IF S_SPECIAL_GROUP -->hidden<!-- ELSE -->text<!-- ENDIF -->" id="group_name" value="{GROUP_INTERNAL_NAME}" /></td>
+		<td class="row2"><!-- IF S_SPECIAL_GROUP --><b<!-- IF GROUP_COLOUR --> style="color: #{GROUP_COLOUR};"<!-- ENDIF -->>{GROUP_NAME}</b><!-- ENDIF --><input name="group_name" type="<!-- IF S_SPECIAL_GROUP -->hidden<!-- ELSE -->text<!-- ENDIF -->" id="group_name" value="{GROUP_INTERNAL_NAME}" /></td>
 	</tr>
 	<tr>
 		<td class="row1" width="35%"><label for="group_desc">{L_GROUP_DESC}:</label></td>
@@ -243,7 +243,7 @@
 	<!-- BEGIN leader -->
 		<!-- IF leader.S_ROW_COUNT is odd --><tr class="row1"><!-- ELSE --><tr class="row2"><!-- ENDIF -->
 
-		<td><b class="genmed">{leader.GROUP_NAME}</b><!-- IF leader.GROUP_DESC --><p class="forumdesc">{leader.GROUP_DESC}</p><!-- ENDIF --></td>
+		<td><b class="genmed"<!-- IF leader.GROUP_COLOUR --> style="color: #{leader.GROUP_COLOUR};"<!-- ENDIF -->>{leader.GROUP_NAME}</b><!-- IF leader.GROUP_DESC --><p class="forumdesc">{leader.GROUP_DESC}</p><!-- ENDIF --></td>
 		<td style="text-align: center;"><a href="{leader.U_EDIT}">{L_EDIT}</a></td>
 		<td style="text-align: center;"><a href="{leader.U_LIST}">{L_GROUP_LIST}</a></td>
 

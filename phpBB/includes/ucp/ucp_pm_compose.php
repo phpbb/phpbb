@@ -207,7 +207,7 @@ function compose_pm($id, $mode, $action)
 		{
 			if (($post['forum_id'] && !$auth->acl_get('f_read', $post['forum_id'])) || (!$post['forum_id'] && !$auth->acl_getf_global('f_read')))
 			{
-				trigger_error('NOT_AUTHORIZED');
+				trigger_error('NOT_AUTHORISED');
 			}
 		}
 
