@@ -136,7 +136,7 @@ class acp_icons
 						}
 
 						$after_txt = ($mode == 'smilies') ? $row['code'] : $row['icons_url'];
-						$order_list = '<option value="' . ($row[$fields . '_order'] + 1) . '"' . $selected . '>' . sprintf($user->lang['AFTER_' . $lang], ' -&gt; ' . htmlspecialchars($after_txt)) . '</option>' . $order_list;
+						$order_list = '<option value="' . ($row[$fields . '_order'] + 1) . '"' . $selected . '>' . sprintf($user->lang['AFTER_' . $lang], ' -&gt; ' . $after_txt) . '</option>' . $order_list;
 					}
 				}
 				$db->sql_freeresult($result);

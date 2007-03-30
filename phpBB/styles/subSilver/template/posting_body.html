@@ -212,6 +212,7 @@
 		<!-- INCLUDE posting_buttons.html -->
 		<tr>
 			<td valign="top" style="width: 100%;"><textarea name="message" rows="15" cols="76" tabindex="3" onselect="storeCaret(this);" onclick="storeCaret(this);" onkeyup="storeCaret(this);" style="width: 98%;">{MESSAGE}</textarea></td>
+			<!-- IF S_BBCODE_ALLOWED -->
 			<td width="80" align="center" valign="top">
 				<script type="text/javascript">
 				<!--
@@ -219,6 +220,7 @@
 				//-->
 				</script>
 			</td>
+			<!-- ENDIF -->
 	 	</tr>
 		</table>
 	</td>
@@ -238,6 +240,7 @@
 		<tr>
 			<td class="gensmall">{BBCODE_STATUS}</td>
 		</tr>
+		<!-- IF S_BBCODE_ALLOWED -->
 		<tr>
 			<td class="gensmall">{IMG_STATUS}</td>
 		</tr>
@@ -250,6 +253,7 @@
 		<tr>
 			<td class="gensmall">{SMILIES_STATUS}</td>
 		</tr>
+		<!-- ENDIF -->
 		</table>
 	</td>
 	<td class="row2">

@@ -2874,7 +2874,7 @@ function parse_attachments($forum_id, &$message, &$attachments, &$update_count, 
 			{
 				// Images
 				case ATTACHMENT_CATEGORY_IMAGE:
-					$l_downloaded_viewed = $user->lang['VIEWED'];
+					$l_downloaded_viewed = 'VIEWED_COUNT';
 
 					$block_array += array(
 						'S_IMAGE'		=> true,
@@ -2885,7 +2885,7 @@ function parse_attachments($forum_id, &$message, &$attachments, &$update_count, 
 
 				// Images, but display Thumbnail
 				case ATTACHMENT_CATEGORY_THUMB:
-					$l_downloaded_viewed = $user->lang['VIEWED'];
+					$l_downloaded_viewed = 'VIEWED_COUNT';
 					$thumbnail_link = append_sid("{$phpbb_root_path}download.$phpEx", 'id=' . $attachment['attach_id'] . '&amp;t=1&amp;f=' . (int) $forum_id);
 
 					$block_array += array(
@@ -2896,7 +2896,7 @@ function parse_attachments($forum_id, &$message, &$attachments, &$update_count, 
 
 				// Windows Media Streams
 				case ATTACHMENT_CATEGORY_WM:
-					$l_downloaded_viewed = $user->lang['VIEWED'];
+					$l_downloaded_viewed = 'VIEWED_COUNT';
 
 					// Giving the filename directly because within the wm object all variables are in local context making it impossible
 					// to validate against a valid session (all params can differ)
@@ -2915,7 +2915,7 @@ function parse_attachments($forum_id, &$message, &$attachments, &$update_count, 
 				// Real Media Streams
 				case ATTACHMENT_CATEGORY_RM:
 				case ATTACHMENT_CATEGORY_QUICKTIME:
-					$l_downloaded_viewed = $user->lang['VIEWED'];
+					$l_downloaded_viewed = 'VIEWED_COUNT';
 
 					$block_array += array(
 						'S_RM_FILE'			=> ($display_cat == ATTACHMENT_CATEGORY_RM) ? true : false,
@@ -2932,7 +2932,7 @@ function parse_attachments($forum_id, &$message, &$attachments, &$update_count, 
 				case ATTACHMENT_CATEGORY_FLASH:
 					list($width, $height) = getimagesize($filename);
 
-					$l_downloaded_viewed = $user->lang['VIEWED'];
+					$l_downloaded_viewed = 'VIEWED_COUNT';
 
 					$block_array += array(
 						'S_FLASH_FILE'	=> true,
@@ -2945,7 +2945,7 @@ function parse_attachments($forum_id, &$message, &$attachments, &$update_count, 
 				break;
 
 				default:
-					$l_downloaded_viewed = $user->lang['DOWNLOADED'];
+					$l_downloaded_viewed = 'DOWNLOAD_COUNT';
 
 					$block_array += array(
 						'S_FILE'		=> true,
@@ -2953,11 +2953,10 @@ function parse_attachments($forum_id, &$message, &$attachments, &$update_count, 
 				break;
 			}
 
-			$l_download_count = (!isset($attachment['download_count']) || $attachment['download_count'] == 0) ? $user->lang['DOWNLOAD_NONE'] : (($attachment['download_count'] == 1) ? sprintf($user->lang['DOWNLOAD_COUNT'], $attachment['download_count']) : sprintf($user->lang['DOWNLOAD_COUNTS'], $attachment['download_count']));
+			$l_download_count = (!isset($attachment['download_count']) || $attachment['download_count'] == 0) ? $user->lang[$l_downloaded_viewed . '_NONE'] : (($attachment['download_count'] == 1) ? sprintf($user->lang[$l_downloaded_viewed], $attachment['download_count']) : sprintf($user->lang[$l_downloaded_viewed . 'S'], $attachment['download_count']));
 
 			$block_array += array(
 				'U_DOWNLOAD_LINK'		=> $download_link,
-				'L_DOWNLOADED_VIEWED'	=> $l_downloaded_viewed,
 				'L_DOWNLOAD_COUNT'		=> $l_download_count
 			);
 		}

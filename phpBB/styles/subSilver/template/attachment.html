@@ -11,12 +11,12 @@
 
 		<!-- IF _file.S_THUMBNAIL -->
 			<a href="{_file.U_DOWNLOAD_LINK}"><img src="{_file.THUMB_IMAGE}" alt="{_file.DOWNLOAD_NAME}" /></a><br />
-			<span class="gensmall">{_file.DOWNLOAD_NAME} [ {_file.FILESIZE} {_file.SIZE_LANG} | {_file.L_DOWNLOADED_VIEWED} {_file.L_DOWNLOAD_COUNT} ]</span>
+			<span class="gensmall">{_file.DOWNLOAD_NAME} [ {_file.FILESIZE} {_file.SIZE_LANG} | {_file.L_DOWNLOAD_COUNT} ]</span>
 		<!-- ENDIF -->
 
 		<!-- IF _file.S_IMAGE -->
 			<img src="{_file.U_DOWNLOAD_LINK}" alt="{_file.DOWNLOAD_NAME}" /><br />
-			<span class="gensmall">{_file.DOWNLOAD_NAME} [ {_file.FILESIZE} {_file.SIZE_LANG} | {_file.L_DOWNLOADED_VIEWED} {_file.L_DOWNLOAD_COUNT} ]</span>
+			<span class="gensmall">{_file.DOWNLOAD_NAME} [ {_file.FILESIZE} {_file.SIZE_LANG} | {_file.L_DOWNLOAD_COUNT} ]</span>
 		<!-- ENDIF -->
 
 		<!-- IF _file.S_FILE -->
@@ -24,7 +24,7 @@
 				<!-- IF _file.UPLOAD_ICON -->{_file.UPLOAD_ICON} <!-- ENDIF -->
 				<a href="{_file.U_DOWNLOAD_LINK}">{_file.DOWNLOAD_NAME}</a> [{_file.FILESIZE} {_file.SIZE_LANG}]
 			</span><br />
-			<span class="gensmall">{_file.L_DOWNLOADED_VIEWED} {_file.L_DOWNLOAD_COUNT}</span>
+			<span class="gensmall">{_file.L_DOWNLOAD_COUNT}</span>
 		<!-- ENDIF -->
 
 		<!-- IF _file.S_WM_FILE -->
@@ -111,7 +111,7 @@
 		<!-- IF _file.S_WM_FILE or _file.S_RM_FILE or _file.S_FLASH_FILE or _file.S_QUICKTIME_FILE -->
 			<br />
 			<!-- IF _file.S_QUICKTIME_FILE --><a href="javascript:play_qt_file(document.qtstream_{_file.ATTACH_ID});">[ {L_PLAY_QUICKTIME_FILE} ]</a> <!-- ENDIF -->
-			<span class="gensmall"><a href="{_file.U_DOWNLOAD_LINK}">{_file.DOWNLOAD_NAME}</a> [ {_file.FILESIZE} {_file.SIZE_LANG} | {_file.L_DOWNLOADED_VIEWED} {_file.L_DOWNLOAD_COUNT} ]</span>
+			<span class="gensmall"><a href="{_file.U_DOWNLOAD_LINK}">{_file.DOWNLOAD_NAME}</a> [ {_file.FILESIZE} {_file.SIZE_LANG} | {_file.L_DOWNLOAD_COUNT} ]</span>
 		<!-- ENDIF -->
 
 		<br />

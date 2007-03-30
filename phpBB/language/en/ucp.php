@@ -53,13 +53,16 @@ $lang = array_merge($lang, array(
 
 // Common language entries
 $lang = array_merge($lang, array(
-	'ACCOUNT_ACTIVE'				=> 'Your account has now been activated. Thank you for registering',
-	'ACCOUNT_ACTIVE_ADMIN'			=> 'The account has now been activated',
-	'ACCOUNT_ADDED'					=> 'Thank you for registering, your account has been created. You may now login with your username and password',
+	'ACCOUNT_ACTIVE'				=> 'Your account has now been activated. Thank you for registering.',
+	'ACCOUNT_ACTIVE_ADMIN'			=> 'The account has now been activated.',
+	'ACCOUNT_ACTIVE_PROFILE'		=> 'Your account has now been successfully reactivated.',
+	'ACCOUNT_ADDED'					=> 'Thank you for registering, your account has been created. You may now login with your username and password.',
 	'ACCOUNT_COPPA'					=> 'Your account has been created but has to be approved, please check your email for details.',
-	'ACCOUNT_INACTIVE'				=> 'Your account has been created. However, this forum requires account activation, an activation key has been sent to the email address you provided. Please check your email for further information',
-	'ACCOUNT_INACTIVE_ADMIN'		=> 'Your account has been created. However, this forum requires account activation by the administrator. An email has been sent to them and you will be informed when your account has been activated',
-	'ACTIVATION_EMAIL_SENT'			=> 'The activation email has been sent to your email address',
+	'ACCOUNT_EMAIL_CHANGED'			=> 'Your account has been updated. However, this forum requires account reactivation on email changes. An activation key has been sent to the new email address you provided. Please check your email for further information.',
+	'ACCOUNT_EMAIL_CHANGED_ADMIN'	=> 'Your account has been updated. However, this forum requires account reactivation by the administrators on email changes. An email has been sent to them and you will be informed when your account has been reactivated.',
+	'ACCOUNT_INACTIVE'				=> 'Your account has been created. However, this forum requires account activation, an activation key has been sent to the email address you provided. Please check your email for further information.',
+	'ACCOUNT_INACTIVE_ADMIN'		=> 'Your account has been created. However, this forum requires account activation by the administrator. An email has been sent to them and you will be informed when your account has been activated.',
+	'ACTIVATION_EMAIL_SENT'			=> 'The activation email has been sent to your email address.',
 	'ADD'							=> 'Add',
 	'ADD_BCC'						=> 'Add [BCC]',
 	'ADD_FOES'						=> 'Add new foes',

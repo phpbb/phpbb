@@ -880,7 +880,7 @@ if (!$get_info)
 				array('user_allow_viewonline',	'users.user_allow_viewonline',		''),
 				array('user_allow_viewemail',	'users.user_viewemail',				''),
 				array('user_actkey',			'users.user_actkey',				''),
-				array('user_newpasswd',			'users.user_newpasswd',				''),
+				array('user_newpasswd',			'',									''), // Users need to re-request their password...
 				array('user_style',				$config['default_style'],			''),
 
 				array('user_options',			'',									'set_user_options'),

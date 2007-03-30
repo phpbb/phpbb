@@ -48,7 +48,7 @@
 		</script>
 		<script type="text/javascript" src="{T_TEMPLATE_PATH}/editor.js"></script>
 
-	
+<!-- IF S_BBCODE_ALLOWED -->
 		<input type="button" class="btnbbcode" accesskey="b" name="addbbcode0" value=" B " style="font-weight:bold; width: 30px;" onclick="bbstyle(0)" onmouseover="helpline('b')" onmouseout="helpline('tip')" />
 		<input type="button" class="btnbbcode" accesskey="i" name="addbbcode2" value=" i " style="font-style:italic; width: 30px;" onclick="bbstyle(2)" onmouseover="helpline('i')" onmouseout="helpline('tip')" />
 		<input type="button" class="btnbbcode" accesskey="u" name="addbbcode4" value=" u " style="text-decoration: underline; width: 30px;" onclick="bbstyle(4)" onmouseover="helpline('u')" onmouseout="helpline('tip')" />
@@ -75,9 +75,10 @@
 			<option value="150">{L_FONT_LARGE}</option>
 			<option value="200">{L_FONT_HUGE}</option>
 		</select></span>
+<!-- ENDIF -->
 	</td>
 </tr>
-<!-- IF .custom_tags -->
+<!-- IF S_BBCODE_ALLOWED and .custom_tags -->
 	<tr valign="middle" align="{S_CONTENT_FLOW_BEGIN}">
 		<td colspan="2">
 		<!-- BEGIN custom_tags -->
@@ -86,9 +87,11 @@
 		</td>
 	</tr>
 <!-- ENDIF -->
+<!-- IF S_BBCODE_ALLOWED -->
 <tr>
 	<td<!-- IF $S_SIGNATURE or S_EDIT_DRAFT --> colspan="2"<!-- ENDIF -->><input type="text" readonly="readonly" name="helpbox" style="width:100%" maxlength="100" class="helpline" value="{L_STYLES_TIP}" /></td>
 	<!-- IF not $S_SIGNATURE and not S_EDIT_DRAFT -->
 		<td class="genmed" align="center">{L_FONT_COLOR}</td>
 	<!-- ENDIF -->
 </tr>
+<!-- ENDIF -->

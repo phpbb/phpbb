@@ -116,7 +116,7 @@ class acm
 			}
 
 			$expired = true;
-			include($this->cache_dir . $entry);
+			@include($this->cache_dir . $entry);
 			if ($expired)
 			{
 				@unlink($this->cache_dir . $entry);

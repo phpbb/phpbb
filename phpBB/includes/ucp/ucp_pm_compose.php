@@ -923,17 +923,25 @@ function handle_message_list_actions(&$address_list, &$error, $remove_u, $remove
 	global $auth, $db, $user;
 
 	// Delete User [TO/BCC]
-	if ($remove_u)
+	if ($remove_u && !empty($_REQUEST['remove_u']) && is_array($_REQUEST['remove_u']))
 	{
 		$remove_user_id = array_keys($_REQUEST['remove_u']);
-		unset($address_list['u'][(int) $remove_user_id[0]]);
+
+		if (isset($remove_user_id[0]))
+		{
+			unset($address_list['u'][(int) $remove_user_id[0]]);
+		}
 	}
 
 	// Delete Group [TO/BCC]
-	if ($remove_g)
+	if ($remove_g && !empty($_REQUEST['remove_g']) && is_array($_REQUEST['remove_g']))
 	{
 		$remove_group_id = array_keys($_REQUEST['remove_g']);
-		unset($address_list['g'][(int) $remove_group_id[0]]);
+
+		if (isset($remove_group_id[0]))
+		{
+			unset($address_list['g'][(int) $remove_group_id[0]]);
+		}
 	}
 
 	// Add User/Group [TO]

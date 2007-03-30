@@ -116,8 +116,12 @@ class ucp_profile
 							add_log('user', $user->data['user_id'], 'LOG_USER_UPDATE_EMAIL', $data['username'], $user->data['user_email'], $data['email']);
 						}
 
+						$message = 'PROFILE_UPDATED';
+
 						if ($config['email_enable'] && $data['email'] != $user->data['user_email'] && $user->data['user_type'] != USER_FOUNDER && ($config['require_activation'] == USER_ACTIVATION_SELF || $config['require_activation'] == USER_ACTIVATION_ADMIN))
 						{
+							$message = ($config['require_activation'] == USER_ACTIVATION_SELF) ? 'ACCOUNT_EMAIL_CHANGED' : 'ACCOUNT_EMAIL_CHANGED_ADMIN';
+
 							include_once($phpbb_root_path . 'includes/functions_messenger.' . $phpEx);
 
 							$server_url = generate_board_url();
@@ -184,9 +188,9 @@ class ucp_profile
 
 							user_active_flip('deactivate', $user->data['user_id'], INACTIVE_PROFILE);
 
-							$sql_ary += array(
-								'user_actkey'			=> $user_actkey,
-							);
+							// Because we want the profile to be reactivated we set user_newpasswd to empty (else the reactivation will fail)
+							$sql_ary['user_actkey'] = $user_actkey;
+							$sql_ary['user_newpasswd'] = '';
 						}
 
 						if (sizeof($sql_ary))
@@ -203,8 +207,21 @@ class ucp_profile
 							user_update_name($user->data['username'], $data['username']);
 						}
 
-						meta_refresh(3, $this->u_action);
-						$message = $user->lang['PROFILE_UPDATED'] . '<br /><br />' . sprintf($user->lang['RETURN_UCP'], '<a href="' . $this->u_action . '">', '</a>');
+						// Now, we can remove the user completely (kill the session) - NOT BEFORE!!!
+						if (!empty($sql_ary['user_actkey']))
+						{
+							meta_refresh(5, append_sid($phpbb_root_path . 'index.' . $phpEx));
+							$message = $user->lang[$message] . '<br /><br />' . sprintf($user->lang['RETURN_INDEX'], '<a href="' . append_sid($phpbb_root_path . 'index.' . $phpEx) . '">', '</a>');
+
+							// Because the user gets deactivated we log him out too, killing his session
+							$user->session_kill();
+						}
+						else
+						{
+							meta_refresh(3, $this->u_action);
+							$message = $user->lang[$message] . '<br /><br />' . sprintf($user->lang['RETURN_UCP'], '<a href="' . $this->u_action . '">', '</a>');
+						}
+
 						trigger_error($message);
 					}
 	

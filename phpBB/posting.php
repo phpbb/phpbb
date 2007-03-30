@@ -403,7 +403,7 @@ if ($mode != 'edit')
 $post_data['enable_magic_url'] = $post_data['drafts'] = false;
 
 // User own some drafts?
-if ($user->data['is_registered'] && $auth->acl_get('u_savedrafts'))
+if ($user->data['is_registered'] && $auth->acl_get('u_savedrafts') && ($mode == 'reply' || $mode == 'post'))
 {
 	$sql = 'SELECT draft_id
 		FROM ' . DRAFTS_TABLE . '
@@ -442,10 +442,10 @@ if ($mode == 'edit' && $post_data['bbcode_uid'])
 
 // HTML, BBCode, Smilies, Images and Flash status
 $bbcode_status	= ($config['allow_bbcode'] && $auth->acl_get('f_bbcode', $forum_id)) ? true : false;
-$smilies_status	= ($config['allow_smilies'] && $auth->acl_get('f_smilies', $forum_id)) ? true : false;
-$img_status		= ($auth->acl_get('f_img', $forum_id)) ? true : false;
+$smilies_status	= ($bbcode_status && $config['allow_smilies'] && $auth->acl_get('f_smilies', $forum_id)) ? true : false;
+$img_status		= ($bbcode_status && $auth->acl_get('f_img', $forum_id)) ? true : false;
 $url_status		= ($config['allow_post_links']) ? true : false;
-$flash_status	= ($auth->acl_get('f_flash', $forum_id)) ? true : false;
+$flash_status	= ($bbcode_status && $auth->acl_get('f_flash', $forum_id)) ? true : false;
 $quote_status	= ($auth->acl_get('f_reply', $forum_id)) ? true : false;
 
 // Save Draft
@@ -511,7 +511,7 @@ if ($save && $user->data['is_registered'] && $auth->acl_get('u_savedrafts'))
 }
 
 // Load requested Draft
-if ($draft_id && $user->data['is_registered'] && $auth->acl_get('u_savedrafts'))
+if ($draft_id && ($mode == 'reply' || $mode == 'post') && $user->data['is_registered'] && $auth->acl_get('u_savedrafts'))
 {
 	$sql = 'SELECT draft_subject, draft_message
 		FROM ' . DRAFTS_TABLE . "
@@ -535,7 +535,7 @@ if ($draft_id && $user->data['is_registered'] && $auth->acl_get('u_savedrafts'))
 }
 
 // Load draft overview
-if ($load && $post_data['drafts'])
+if ($load && ($mode == 'reply' || $mode == 'post') && $post_data['drafts'])
 {
 	load_drafts($topic_id, $forum_id);
 }
@@ -801,8 +801,9 @@ if ($submit || $preview || $refresh)
 
 		if (!$auth->acl_get($auth_option, $forum_id))
 		{
-			// There is a special case where a user edits his post whereby the topic type got changed by an admin/mod
-			if ($mode == 'edit' && $post_data['poster_id'] == $user->data['user_id'])
+			// There is a special case where a user edits his post whereby the topic type got changed by an admin/mod.
+			// Another case would be a mod not having sticky permissions for example but edit permissions.
+			if ($mode == 'edit')
 			{
 				// To prevent non-authed users messing around with the topic type we reset it to the original one.
 				$post_data['topic_type'] = $post_data['orig_topic_type'];
@@ -1212,7 +1213,7 @@ $template->assign_vars(array(
 	'IMG_STATUS'			=> ($img_status) ? $user->lang['IMAGES_ARE_ON'] : $user->lang['IMAGES_ARE_OFF'],
 	'FLASH_STATUS'			=> ($flash_status) ? $user->lang['FLASH_IS_ON'] : $user->lang['FLASH_IS_OFF'],
 	'SMILIES_STATUS'		=> ($smilies_status) ? $user->lang['SMILIES_ARE_ON'] : $user->lang['SMILIES_ARE_OFF'],
-	'URL_STATUS'			=> ($url_status) ? $user->lang['URL_IS_ON'] : $user->lang['URL_IS_OFF'],
+	'URL_STATUS'			=> ($bbcode_status && $url_status) ? $user->lang['URL_IS_ON'] : $user->lang['URL_IS_OFF'],
 	'MINI_POST_IMG'			=> $user->img('icon_post_target', $user->lang['POST']),
 	'POST_DATE'				=> ($post_data['post_time']) ? $user->format_date($post_data['post_time']) : '',
 	'ERROR'					=> (sizeof($error)) ? implode('<br />', $error) : '',

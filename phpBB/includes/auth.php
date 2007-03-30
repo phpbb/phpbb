@@ -121,7 +121,7 @@ class auth
 			// But if we check for a global option only, we won't combine the options...
 			if ($f != 0 && isset($this->acl_options['local'][$opt]))
 			{
-				if (isset($this->acl[$f]))
+				if (isset($this->acl[$f]) && isset($this->acl[$f][$this->acl_options['local'][$opt]]))
 				{
 					$this->cache[$f][$opt] |= $this->acl[$f][$this->acl_options['local'][$opt]];
 				}

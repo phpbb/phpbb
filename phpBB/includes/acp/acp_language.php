@@ -105,9 +105,10 @@ class acp_language
 				}
 
 				$hidden_data = build_hidden_fields(array(
-					'file'		=> $this->language_file,
-					'dir'		=> $this->language_directory,
-					'method'	=> $method)
+					'file'			=> $this->language_file,
+					'dir'			=> $this->language_directory,
+					'language_file'	=> $selected_lang_file,
+					'method'		=> $method)
 				);
 
 				$hidden_data .= build_hidden_fields(array('entry' => $_POST['entry']), true, STRIP);
@@ -301,20 +302,12 @@ class acp_language
 					include_once($phpbb_root_path . 'includes/functions_transfer.' . $phpEx);
 					$method = request_var('method', '');
 
-					switch ($method)
+					if ($method != 'ftp' && $method != 'ftp_fsock')
 					{
-						case 'ftp':
-							$transfer = new ftp(request_var('host', ''), request_var('username', ''), request_var('password', ''), request_var('root_path', ''), request_var('port', ''), request_var('timeout', ''));
-						break;
-
-						case 'ftp_fsock':
-							$transfer = new ftp_fsock(request_var('host', ''), request_var('username', ''), request_var('password', ''), request_var('root_path', ''), request_var('port', ''), request_var('timeout', ''));
-						break;
-
-						default:
-							trigger_error($user->lang['INVALID_UPLOAD_METHOD'], E_USER_ERROR);
-						break;
+						trigger_error($user->lang['INVALID_UPLOAD_METHOD'], E_USER_ERROR);
 					}
+
+					$transfer = new $method(request_var('host', ''), request_var('username', ''), request_var('password', ''), request_var('root_path', ''), request_var('port', ''), request_var('timeout', ''));
 
 					if (($result = $transfer->open_session()) !== true)
 					{
