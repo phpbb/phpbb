@@ -1254,6 +1254,8 @@ function validate_password($password)
 		return false;
 	}
 
+	$pcre = $mbstring = false;
+
 	// generic UTF-8 character types supported?
 	if (version_compare(PHP_VERSION, '5.1.0', '>=') || (version_compare(PHP_VERSION, '5.0.0-dev', '<=') && version_compare(PHP_VERSION, '4.4.0', '>=')))
 	{
@@ -1261,6 +1263,16 @@ function validate_password($password)
 		$low = '\p{Ll}';
 		$num = '\p{N}';
 		$sym = '[^\p{Lu}\p{Ll}\p{N}]';
+		$pcre = true;
+	}
+	else if (function_exists('mb_ereg_match'))
+	{
+		mb_regex_encoding('UTF-8');
+		$upp = '[[:upper:]]';
+		$low = '[[:lower:]]';
+		$num = '[[:digit:]]';
+		$sym = '[^[:upper:][:lower:][:digit:]]';
+		$mbstring = true;
 	}
 	else
 	{
@@ -1268,6 +1280,7 @@ function validate_password($password)
 		$low = '[a-z]';
 		$num = '[0-9]';
 		$sym = '[^A-Za-z0-9]';
+		$pcre = true;
 	}
 
 	$chars = array();
@@ -1293,11 +1306,24 @@ function validate_password($password)
 		break;
 	}
 
-	foreach ($chars as $char)
+	if ($pcre)
 	{
-		if (!preg_match('#' . $char . '#u', $password))
+		foreach ($chars as $char)
 		{
-			return 'INVALID_CHARS';
+			if (!preg_match('#' . $char . '#u', $password))
+			{
+				return 'INVALID_CHARS';
+			}
+		}
+	}
+	else if ($mbstring)
+	{
+		foreach ($chars as $char)
+		{
+			if (!mb_ereg_match($char, $password))
+			{
+				return 'INVALID_CHARS';
+			}
 		}
 	}
 
