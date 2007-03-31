@@ -33,6 +33,7 @@ class fulltext_mysql extends search_backend
 	var $search_query;
 	var $common_words = array();
 	var $pcre_properties = false;
+	var $mbstring_regex = false;
 
 	function fulltext_mysql(&$error)
 	{
@@ -45,6 +46,11 @@ class fulltext_mysql extends search_backend
 			$this->pcre_properties = true;
 		}
 
+		if (function_exists('mb_ereg'))
+		{
+			$this->mbstring_regex = true;
+		}
+$this->pcre_properties = false;
 		$error = false;
 	}
 
@@ -129,10 +135,42 @@ class fulltext_mysql extends search_backend
 		$keywords = preg_replace($match, ' ', trim($keywords));
 
 		// Split words
-		$split_keywords = preg_replace(($this->pcre_properties) ? '#([^\p{L}\p{N}\'*])#u' : '#([^\w\'*])#u', '$1$1', str_replace('\'\'', '\' \'', trim($keywords)));
-		$matches = array();
-		preg_match_all(($this->pcre_properties) ? '#(?:[^\p{L}\p{N}*]|^)([+\-|]?(?:[\p{L}\p{N}*]+\'?)*[\p{L}\p{N}*])(?:[^\p{L}\p{N}*]|$)#u' : '#(?:[^\w*]|^)([+\-|]?(?:[\w*]+\'?)*[\w*])(?:[^\w*]|$)#u', $split_keywords, $matches);
-		$this->split_words = $matches[1];
+		if ($this->pcre_properties)
+		{
+			$split_keywords = preg_replace('#([^\p{L}\p{N}\'*])#u', '$1$1', str_replace('\'\'', '\' \'', trim($keywords)));
+		}
+		else if ($this->mbstring_regex)
+		{
+			$split_keywords = mb_ereg_replace('([^\w\'*])', '\\1\\1', str_replace('\'\'', '\' \'', trim($keywords)));
+		}
+		else
+		{
+			$split_keywords = preg_replace('#([^\w\'*])#u', '$1$1', str_replace('\'\'', '\' \'', trim($keywords)));
+		}
+
+		if ($this->pcre_properties)
+		{
+			$matches = array();
+			preg_match_all('#(?:[^\p{L}\p{N}*]|^)([+\-|]?(?:[\p{L}\p{N}*]+\'?)*[\p{L}\p{N}*])(?:[^\p{L}\p{N}*]|$)#u', $split_keywords, $matches);
+			$this->split_words = $matches[1];
+		}
+		else if ($this->mbstring_regex)
+		{
+			mb_regex_encoding('UTF-8');
+			mb_ereg_search_init($split_keywords, '(?:[^\w*]|^)([+\-|]?(?:[\w*]+\'?)*[\w*])(?:[^\w*]|$)');
+
+			while (($word = mb_ereg_search_regs()))
+			{
+				$this->split_words[] = $word[1];
+			}
+		}
+		else
+		{
+			$matches = array();
+			preg_match_all('#(?:[^\w*]|^)([+\-|]?(?:[\w*]+\'?)*[\w*])(?:[^\w*]|$)#u', $split_keywords, $matches);
+			$this->split_words = $matches[1];
+		}
+
 
 		if (sizeof($this->ignore_words))
 		{
@@ -180,10 +218,41 @@ class fulltext_mysql extends search_backend
 		$this->get_synonyms();
 
 		// Split words
-		$text = preg_replace(($this->pcre_properties) ? '#([^\p{L}\p{N}\'*])#u' : '#([^\w\'*])#u', '$1$1', str_replace('\'\'', '\' \'', trim($text)));
-		$matches = array();
-		preg_match_all(($this->pcre_properties) ? '#(?:[^\p{L}\p{N}*]|^)([+\-|]?(?:[\p{L}\p{N}*]+\'?)*[\p{L}\p{N}*])(?:[^\p{L}\p{N}*]|$)#u' : '#(?:[^\w*]|^)([+\-|]?(?:[\w*]+\'?)*[\w*])(?:[^\w*]|$)#u', $text, $matches);
-		$text = $matches[1];
+		if ($this->pcre_properties)
+		{
+			$text = preg_replace('#([^\p{L}\p{N}\'*])#u', '$1$1', str_replace('\'\'', '\' \'', trim($text)));
+		}
+		else if ($this->mbstring_regex)
+		{
+			$text = mb_ereg_replace('([^\w\'*])', '\\1\\1', str_replace('\'\'', '\' \'', trim($text)));
+		}
+		else
+		{
+			$text = preg_replace('#([^\w\'*])#u', '$1$1', str_replace('\'\'', '\' \'', trim($text)));
+		}
+
+		if ($this->pcre_properties)
+		{
+			$matches = array();
+			preg_match_all('#(?:[^\p{L}\p{N}*]|^)([+\-|]?(?:[\p{L}\p{N}*]+\'?)*[\p{L}\p{N}*])(?:[^\p{L}\p{N}*]|$)#u', $text, $matches);
+			$text = $matches[1];
+		}
+		else if ($this->mbstring_regex)
+		{
+			mb_regex_encoding('UTF-8');
+			mb_ereg_search_init($text, '(?:[^\w*]|^)([+\-|]?(?:[\w*]+\'?)*[\w*])(?:[^\w*]|$)');
+
+			while (($word = mb_ereg_search_regs()))
+			{
+				$text[] = $word[1];
+			}
+		}
+		else
+		{
+			$matches = array();
+			preg_match_all('#(?:[^\w*]|^)([+\-|]?(?:[\w*]+\'?)*[\w*])(?:[^\w*]|$)#u', $text, $matches);
+			$text = $matches[1];
+		}
 
 		if (sizeof($this->ignore_words))
 		{
@@ -794,11 +863,14 @@ class fulltext_mysql extends search_backend
 	{
 		global $user, $config;
 
-
 		$tpl = '
 		<dl>
-			<dt><label>' . $user->lang['FULLTEXT_MYSQL_UNICODE'] . '</label><br /><span>' . $user->lang['FULLTEXT_MYSQL_UNICODE_EXPLAIN'] . '</span></dt>
+			<dt><label>' . $user->lang['FULLTEXT_MYSQL_PCRE'] . '</label><br /><span>' . $user->lang['FULLTEXT_MYSQL_PCRE_EXPLAIN'] . '</span></dt>
 			<dd>' . (($this->pcre_properties) ? $user->lang['YES'] : $user->lang['NO']) . ' (PHP ' . PHP_VERSION . ')</dd>
+		</dl>
+		<dl>
+			<dt><label>' . $user->lang['FULLTEXT_MYSQL_MBSTRING'] . '</label><br /><span>' . $user->lang['FULLTEXT_MYSQL_MBSTRING_EXPLAIN'] . '</span></dt>
+			<dd>' . (($this->mbstring_regex) ? $user->lang['YES'] : $user->lang['NO']). '</dd>
 		</dl>
 		';
 
