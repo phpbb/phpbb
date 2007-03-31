@@ -50,7 +50,7 @@ class fulltext_mysql extends search_backend
 		{
 			$this->mbstring_regex = true;
 		}
-$this->pcre_properties = false;
+
 		$error = false;
 	}
 
