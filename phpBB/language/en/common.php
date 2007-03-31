@@ -242,7 +242,7 @@ $lang = array_merge($lang, array(
 
 	'ICQ'						=> 'ICQ',
 	'ICQ_STATUS'				=> 'ICQ status',	
-	'IF'						=> 'if',
+	'IF'						=> 'If',
 	'IMAGE'						=> 'Image',
 	'IMAGE_FILETYPE_INVALID'	=> 'Image filetype %d for mimetype %s not supported.',
 	'IMAGE_FILETYPE_MISMATCH'	=> 'Image filetype mismatch: expected extension %1$s but extension %2$s given.',
