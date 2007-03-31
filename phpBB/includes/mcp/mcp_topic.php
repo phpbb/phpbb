@@ -504,13 +504,23 @@ function merge_posts($topic_id, $to_topic_id)
 			FROM ' . TOPICS_TABLE . '
 			WHERE topic_id = ' . $topic_id;
 		$result = $db->sql_query_limit($sql, 1);
+		$row = $db->sql_fetchrow($result);
+		$db->sql_freeresult($result);
 
-		if ($row = $db->sql_fetchrow($result))
+		if ($row)
 		{
 			$return_link .= sprintf($user->lang['RETURN_TOPIC'], '<a href="' . append_sid("{$phpbb_root_path}viewtopic.$phpEx", 'f=' . $row['forum_id'] . '&amp;t=' . $topic_id) . '">', '</a>');
 		}
+		else
+		{
+			// If the topic no longer exist, we will update the topic watch table.
+			// To not let it error out on users watching both topics, we just return on an error...
+			$db->sql_return_on_error(true);
+			$db->sql_query('UPDATE ' . TOPICS_WATCH_TABLE . ' SET topic_id = ' . $to_topic_id . ' WHERE topic_id = ' . $topic_id);
+			$db->sql_return_on_error(false);
 
-		$db->sql_freeresult($result);
+			$db->sql_query('DELETE FROM ' . TOPICS_WATCH_TABLE . ' WHERE topic_id = ' . $topic_id);
+		}
 
 		// Link to the new topic
 		$return_link .= (($return_link) ? '<br /><br />' : '') . sprintf($user->lang['RETURN_NEW_TOPIC'], '<a href="' . append_sid("{$phpbb_root_path}viewtopic.$phpEx", 'f=' . $to_forum_id . '&amp;t=' . $to_topic_id) . '">', '</a>');

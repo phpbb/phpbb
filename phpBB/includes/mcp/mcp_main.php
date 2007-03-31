@@ -854,6 +854,7 @@ function mcp_fork_topic($topic_ids)
 
 		$total_posts = 0;
 		$new_topic_id_list = array();
+
 		foreach ($topic_data as $topic_id => $topic_row)
 		{
 			$sql_ary = array(
@@ -970,9 +971,10 @@ function mcp_fork_topic($topic_ids)
 							AND in_message = 0";
 					$result = $db->sql_query($sql);
 
+					$sql_ary = array();
 					while ($attach_row = $db->sql_fetchrow($result))
 					{
-						$sql_ary = array(
+						$sql_ary[] = array(
 							'post_msg_id'		=> (int) $new_post_id,
 							'topic_id'			=> (int) $new_topic_id,
 							'in_message'		=> 0,
@@ -988,11 +990,35 @@ function mcp_fork_topic($topic_ids)
 							'filetime'			=> (int) $attach_row['filetime'],
 							'thumbnail'			=> (int) $attach_row['thumbnail']
 						);
-
-						$db->sql_query('INSERT INTO ' . ATTACHMENTS_TABLE . ' ' . $db->sql_build_array('INSERT', $sql_ary));
 					}
 					$db->sql_freeresult($result);
+
+					if (sizeof($sql_ary))
+					{
+						$db->sql_multi_insert(ATTACHMENTS_TABLE, $sql_ary);
+					}
 				}
+			}
+
+			$sql = 'SELECT user_id, notify_status
+				FROM ' . TOPICS_WATCH_TABLE . '
+				WHERE topic_id = ' . $topic_id;
+			$result = $db->sql_query($sql);
+
+			$sql_ary = array();
+			while ($row = $db->sql_fetchrow($result))
+			{
+				$sql_ary[] = array(
+					'topic_id'		=> $new_topic_id,
+					'user_id'		=> $row['user_id'],
+					'notify_status'	=> $row['notify_status'],
+				);
+			}
+			$db->sql_freeresult($result);
+
+			if (sizeof($sql_ary))
+			{
+				$db->sql_multi_insert(TOPICS_WATCH_TABLE, $sql_ary);
 			}
 		}
 

@@ -703,11 +703,13 @@ class acp_groups
 		while ($row = $db->sql_fetchrow($result))
 		{
 			$type = ($row['group_type'] == GROUP_SPECIAL) ? 'special' : 'normal';
+
 			// used to determine what type a group is
 			$lookup[$row['group_id']] = $type;
+
 			// used for easy access to the data within a group
 			$cached_group_data[$type][$row['group_id']] = $row;
-			$cached_group_data[$type][$row['group_id']]['total_members'] = '0';
+			$cached_group_data[$type][$row['group_id']]['total_members'] = 0;
 		}
 		$db->sql_freeresult($result);
 
@@ -724,6 +726,9 @@ class acp_groups
 			$cached_group_data[$type][$row['group_id']]['total_members'] = $row['total_members'];
 		}
 		$db->sql_freeresult($result);
+
+		// The order is... normal, then special
+		asort($cached_group_data);
 
 		foreach ($cached_group_data as $type => $row_ary)
 		{

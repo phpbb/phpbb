@@ -162,6 +162,8 @@ $lang = array_merge($lang, array(
 	'MCP_NOTES_FRONT'				=> 'Front page',
 	'MCP_NOTES_USER'				=> 'User details',
 
+	'MCP_POST_REPORTS'				=> 'Reports issued on this post',
+
 	'MCP_REPORTS'					=> 'Reported posts',
 	'MCP_REPORT_DETAILS'			=> 'Report details',
 	'MCP_REPORTS_CLOSED'			=> 'Closed reports',
