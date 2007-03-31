@@ -285,6 +285,7 @@ $lang = array_merge($lang, array(
 	'NO_CLASS'					=> 'Cannot find class in stylesheet.',
 	'NO_IMAGESET'				=> 'Cannot find imageset on filesystem.',
 	'NO_IMAGE'					=> 'No image',
+	'NO_IMAGE_ERROR'			=> 'Cannot find image on filesystem.',
 	'NO_STYLE'					=> 'Cannot find style on filesystem.',
 	'NO_TEMPLATE'				=> 'Cannot find template on filesystem.',
 	'NO_THEME'					=> 'Cannot find theme on filesystem.',

@@ -1391,7 +1391,13 @@ parse_css_file = {PARSE_CSS_FILE}
 					// from the image itself ... we ignore width settings for the poll center
 					// image
 					$imgwidth = $imgheight = '';
-					if ($imgsize)
+
+					if ($imageset_path && !file_exists("{$phpbb_root_path}styles/$imageset_path/imageset/$imgpath"))
+					{
+						trigger_error($user->lang['NO_IMAGE_ERROR'] . adm_back_link($this->u_action), E_USER_WARNING);
+					}
+
+					if ($imgsize && $imageset_path)
 					{
 						list($imgwidth, $imgheight) = getimagesize("{$phpbb_root_path}styles/$imageset_path/imageset/$imgpath");
 						$imgheight = '*' . $imgheight;

@@ -114,7 +114,7 @@ function login_db(&$username, &$password)
 			}
 
 			// cp1252 is phpBB2's default encoding, characters outside ASCII range might work when converted into that encoding
-			if (md5($password_old_format) == $row['user_password'] || utf8_to_cp1252(md5($password_old_format)) == $row['user_password'])
+			if (md5($password_old_format) == $row['user_password'] || md5(utf8_to_cp1252($password_old_format)) == $row['user_password'])
 			{
 				// Update the password in the users table to the new format and remove user_pass_convert flag
 				$sql = 'UPDATE ' . USERS_TABLE . '
@@ -147,11 +147,14 @@ function login_db(&$username, &$password)
 	// Check password ...
 	if (!$row['user_pass_convert'] && md5($password) == $row['user_password'])
 	{
-		// Successful, reset login attempts (the user passed all stages)
-		$sql = 'UPDATE ' . USERS_TABLE . '
-			SET user_login_attempts = 0
-			WHERE user_id = ' . $row['user_id'];
-		$db->sql_query($sql);
+		if ($row['user_login_attempts'] != 0)
+		{
+			// Successful, reset login attempts (the user passed all stages)
+			$sql = 'UPDATE ' . USERS_TABLE . '
+				SET user_login_attempts = 0
+				WHERE user_id = ' . $row['user_id'];
+			$db->sql_query($sql);
+		}
 
 		// User inactive...
 		if ($row['user_type'] == USER_INACTIVE || $row['user_type'] == USER_IGNORE)

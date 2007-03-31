@@ -304,10 +304,10 @@ $lang = array_merge($lang, array(
 	'NO_WATCHED_FORUMS'			=> 'You are not watching any forums.',
 	'NO_WATCHED_TOPICS'			=> 'You are not watching any topics.',
 
-	'PASS_TYPE_ALPHA_EXPLAIN'	=> 'Password must be between %1$d and %2$d chars long, must be mixed case and must contain numbers',
+	'PASS_TYPE_ALPHA_EXPLAIN'	=> 'Password must be between %1$d and %2$d characters long, must contain letters in mixed case and must contain numbers',
 	'PASS_TYPE_ANY_EXPLAIN'		=> 'Must be between %1$d and %2$d characters.',
-	'PASS_TYPE_CASE_EXPLAIN'	=> 'Password must be between %1$d and %2$d chars long and must be mixed case',
-	'PASS_TYPE_SYMBOL_EXPLAIN'	=> 'Password must be between %1$d and %2$d chars long, must be mixed case, must contain numbers and must contain symbols',
+	'PASS_TYPE_CASE_EXPLAIN'	=> 'Password must be between %1$d and %2$d characters long and must contain letters in mixed case',
+	'PASS_TYPE_SYMBOL_EXPLAIN'	=> 'Password must be between %1$d and %2$d characters long, must contain letters in mixed case, must contain numbers and must contain symbols',
 	'PASSWORD'					=> 'Password',
 	'PASSWORD_ACTIVATED'		=> 'Your new password has been activated',
 	'PASSWORD_UPDATED'			=> 'Your password has been sent successfully to your original email address.',
