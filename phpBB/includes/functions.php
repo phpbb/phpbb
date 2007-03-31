@@ -3893,6 +3893,9 @@ function page_header($page_title = '', $display_online_list = true)
 		'PRIVATE_MESSAGE_INFO'			=> $l_privmsgs_text,
 		'PRIVATE_MESSAGE_INFO_UNREAD'	=> $l_privmsgs_text_unread,
 
+		'S_USER_NEW_PRIVMSG'			=> $user->data['user_new_privmsg'],
+		'S_USER_UNREAD_PRIVMSG'			=> $user->data['user_unread_privmsg'],
+
 		'SID'				=> $SID,
 		'_SID'				=> $_SID,
 		'SESSION_ID'		=> $user->session_id,
