@@ -242,6 +242,7 @@ class fulltext_mysql extends search_backend
 			mb_regex_encoding('UTF-8');
 			mb_ereg_search_init($text, '(?:[^\w*]|^)([+\-|]?(?:[\w*]+\'?)*[\w*])(?:[^\w*]|$)');
 
+			$text = array();
 			while (($word = mb_ereg_search_regs()))
 			{
 				$text[] = $word[1];
