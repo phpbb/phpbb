@@ -1647,14 +1647,14 @@ function phpbb_check_username_collisions()
 
 		case 'mysql_40':
 			$create_sql = 'CREATE TABLE ' . $table_prefix . 'userconv (
-				user_id mediumint(8) UNSIGNED NOT NULL,
+				user_id mediumint(8) NOT NULL,
 				username_clean blob NOT NULL
 			)';
 		break;
 
 		case 'mysql_41':
 			$create_sql = 'CREATE TABLE ' . $table_prefix . 'userconv (
-				user_id mediumint(8) UNSIGNED NOT NULL,
+				user_id mediumint(8) NOT NULL,
 				username_clean varchar(255) DEFAULT \'\' NOT NULL
 			) CHARACTER SET `utf8` COLLATE `utf8_bin`';
 		break;
