@@ -1176,7 +1176,7 @@ class install_update extends module
 					/* Get custom installed styles...
 					$sql = 'SELECT template_name, template_path
 						FROM ' . STYLES_TEMPLATE_TABLE . "
-						WHERE LOWER(template_name) NOT IN ('subsilver', 'prosilver')";
+						WHERE LOWER(template_name) NOT IN ('subsilver2', 'prosilver')";
 					$result = $db->sql_query($sql);
 
 					$templates = array();
@@ -1191,11 +1191,11 @@ class install_update extends module
 						foreach ($info['files'] as $filename)
 						{
 							// Template update?
-							if (strpos(strtolower($filename), 'styles/subsilver/template/') === 0)
+							if (strpos(strtolower($filename), 'styles/subsilver2/template/') === 0)
 							{
 								foreach ($templates as $row)
 								{
-									$info['custom'][$filename][] = str_replace('/subSilver/', '/' . $row['template_path'] . '/', $filename);
+									$info['custom'][$filename][] = str_replace('/subsilver2/', '/' . $row['template_path'] . '/', $filename);
 								}
 							}
 						}

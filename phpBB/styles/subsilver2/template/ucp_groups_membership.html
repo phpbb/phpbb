@@ -1,0 +1,93 @@
+<!-- INCLUDE ucp_header.html -->
+
+<table class="tablebg" width="100%" cellspacing="1">
+<tr>
+	<th colspan="3">{L_USERGROUPS}</th>
+</tr>
+<tr>
+	<td class="row1" colspan="3"><span class="genmed">{L_GROUPS_EXPLAIN}</span></td>
+</tr>
+
+<tr>
+	<th colspan="2">{L_GROUP_DETAILS}</th>
+	<th>{L_SELECT}</th>
+</tr>
+
+<!-- BEGIN leader -->
+	<!-- IF leader.S_FIRST_ROW -->
+		<tr>
+			<td class="row3" colspan="3"><b class="gensmall">{L_GROUP_LEADER}</b></td>
+		</tr>
+	<!-- ENDIF -->
+
+	<!-- IF leader.S_ROW_COUNT is even --><tr class="row1"><!-- ELSE --><tr class="row2"><!-- ENDIF -->
+		<td width="6%" align="center" nowrap="nowrap"><!-- IF S_CHANGE_DEFAULT --><input type="radio" class="radio" name="default"<!-- IF leader.S_GROUP_DEFAULT --> checked="checked"<!-- ENDIF --> value="{leader.GROUP_ID}" /><!-- ENDIF --></td>
+		<td>
+			<b class="genmed"><a href="{leader.U_VIEW_GROUP}"<!-- IF leader.GROUP_COLOUR --> style="color: #{leader.GROUP_COLOUR};"<!-- ENDIF -->>{leader.GROUP_NAME}</a></b>
+			<!-- IF leader.GROUP_DESC --><br /><span class="genmed">{leader.GROUP_DESC}</span><!-- ENDIF -->
+			<!-- IF not leader.GROUP_SPECIAL --><br /><i class="gensmall">{leader.GROUP_STATUS}</i><!-- ENDIF -->
+		</td>
+		<td width="6%" align="center" nowrap="nowrap"><!-- IF not leader.GROUP_SPECIAL --><input type="radio" class="radio" name="selected" value="{leader.GROUP_ID}" /><!-- ENDIF --></td>
+	</tr>
+<!-- END leader -->
+
+<!-- BEGIN member -->
+	<!-- IF member.S_FIRST_ROW -->
+		<tr>
+			<td class="row3" colspan="3"><b class="gensmall">{L_GROUP_MEMBER}</b></td>
+		</tr>
+	<!-- ENDIF -->
+
+	<!-- IF member.S_ROW_COUNT is even --><tr class="row1"><!-- ELSE --><tr class="row2"><!-- ENDIF -->
+		<td width="6%" align="center" nowrap="nowrap"><!-- IF S_CHANGE_DEFAULT --><input type="radio" class="radio" name="default"<!-- IF member.S_GROUP_DEFAULT --> checked="checked"<!-- ENDIF --> value="{member.GROUP_ID}" /><!-- ENDIF --></td>
+		<td>
+			<b class="genmed"><a href="{member.U_VIEW_GROUP}"<!-- IF member.GROUP_COLOUR --> style="color: #{member.GROUP_COLOUR};"<!-- ENDIF -->>{member.GROUP_NAME}</a></b>
+			<!-- IF member.GROUP_DESC --><br /><span class="genmed">{member.GROUP_DESC}</span><!-- ENDIF -->
+			<!-- IF not member.GROUP_SPECIAL --><br /><i class="gensmall">{member.GROUP_STATUS}</i><!-- ENDIF -->
+		</td>
+		<td width="6%" align="center" nowrap="nowrap"><!-- IF not member.GROUP_SPECIAL --><input type="radio" class="radio" name="selected" value="{member.GROUP_ID}" /><!-- ENDIF --></td>
+	</tr>
+<!-- END member -->
+
+<!-- BEGIN pending -->
+	<!-- IF pending.S_FIRST_ROW -->
+		<tr>
+			<td class="row3" colspan="3"><b class="gensmall">{L_GROUP_PENDING}</b></td>
+		</tr>
+	<!-- ENDIF -->
+
+	<!-- IF pending.S_ROW_COUNT is even --><tr class="row1"><!-- ELSE --><tr class="row2"><!-- ENDIF -->
+		<td width="6%" align="center" nowrap="nowrap">&nbsp;</td>
+		<td>
+			<b class="genmed"><a href="{pending.U_VIEW_GROUP}"<!-- IF pending.GROUP_COLOUR --> style="color: #{pending.GROUP_COLOUR};"<!-- ENDIF -->>{pending.GROUP_NAME}</a></b>
+			<!-- IF pending.GROUP_DESC --><br /><span class="genmed">{pending.GROUP_DESC}</span><!-- ENDIF -->
+			<!-- IF not pending.GROUP_SPECIAL --><br /><i class="gensmall">{pending.GROUP_STATUS}</i><!-- ENDIF -->
+		</td>
+		<td width="6%" align="center" nowrap="nowrap"><!-- IF not pending.GROUP_SPECIAL --><input type="radio" class="radio" name="selected" value="{pending.GROUP_ID}" /><!-- ENDIF --></td>
+	</tr>
+<!-- END pending -->
+
+<!-- BEGIN nonmember -->
+	<!-- IF nonmember.S_FIRST_ROW -->
+		<tr>
+			<td class="row3" colspan="3"><b class="gensmall">{L_GROUP_NONMEMBER}</b></td>
+		</tr>
+	<!-- ENDIF -->
+
+	<!-- IF nonmember.S_ROW_COUNT is even --><tr class="row1"><!-- ELSE --><tr class="row2"><!-- ENDIF -->
+		<td width="6%" align="center" nowrap="nowrap">&nbsp;</td>
+		<td>
+			<b class="genmed"><a href="{nonmember.U_VIEW_GROUP}"<!-- IF nonmember.GROUP_COLOUR --> style="color: #{nonmember.GROUP_COLOUR};"<!-- ENDIF -->>{nonmember.GROUP_NAME}</a></b>
+			<!-- IF nonmember.GROUP_DESC --><br /><span class="genmed">{nonmember.GROUP_DESC}</span><!-- ENDIF -->
+			<!-- IF not nonmember.GROUP_SPECIAL --><br /><i class="gensmall">{nonmember.GROUP_STATUS}</i><!-- ENDIF -->
+		</td>
+		<td width="6%" align="center" nowrap="nowrap"><!-- IF nonmember.S_CAN_JOIN --><input type="radio" class="radio" name="selected" value="{nonmember.GROUP_ID}" /><!-- ENDIF --></td>
+	</tr>
+<!-- END nonmember -->
+
+<tr>
+	<td class="cat" colspan="3"><!-- IF S_CHANGE_DEFAULT --><div style="float: {S_CONTENT_FLOW_BEGIN};"><input class="btnlite" type="submit" name="change_default" value="{L_CHANGE_DEFAULT_GROUP}" /></div><!-- ENDIF --><div style="float: {S_CONTENT_FLOW_END};"><span class="genmed">{L_SELECT}: </span><select name="action"><option value="join">{L_JOIN_SELECTED}</option><option value="resign">{L_RESIGN_SELECTED}</option><option value="demote">{L_DEMOTE_SELECTED}</option></select>&nbsp;<input class="btnmain" type="submit" name="submit" value="{L_SUBMIT}" />&nbsp;</div></td>
+</tr>
+</table>
+
+<!-- INCLUDE ucp_footer.html -->
