@@ -728,7 +728,7 @@ class acp_groups
 		$db->sql_freeresult($result);
 
 		// The order is... normal, then special
-		asort($cached_group_data);
+		ksort($cached_group_data);
 
 		foreach ($cached_group_data as $type => $row_ary)
 		{
