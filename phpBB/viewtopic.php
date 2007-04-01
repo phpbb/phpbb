@@ -993,7 +993,8 @@ while ($row = $db->sql_fetchrow($result))
 		{
 			$user_sig = '';
 
-			if ($row['enable_sig'] && $config['allow_sig'] && $user->optionget('viewsigs'))
+			// We add the signature to every posters entry because enable_sig is post dependant
+			if ($row['user_sig'] && $config['allow_sig'] && $user->optionget('viewsigs'))
 			{
 				$user_sig = $row['user_sig'];
 			}
@@ -1227,7 +1228,7 @@ for ($i = 0, $end = sizeof($post_list); $i < $end; ++$i)
 	$poster_id = $row['user_id'];
 
 	// End signature parsing, only if needed
-	if ($user_cache[$poster_id]['sig'] && empty($user_cache[$poster_id]['sig_parsed']))
+	if ($user_cache[$poster_id]['sig'] && $row['enable_sig'] && empty($user_cache[$poster_id]['sig_parsed']))
 	{
 		$user_cache[$poster_id]['sig'] = censor_text($user_cache[$poster_id]['sig']);
 		$user_cache[$poster_id]['sig'] = str_replace("\n", '<br />', $user_cache[$poster_id]['sig']);
