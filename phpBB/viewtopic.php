@@ -271,7 +271,7 @@ if ($post_id)
 		$row = $db->sql_fetchrow($result);
 		$db->sql_freeresult($result);
 
-		$topic_data['prev_posts'] = $row['prev_posts'];
+		$topic_data['prev_posts'] = $row['prev_posts'] + 1;
 	}
 }
 
@@ -1490,8 +1490,8 @@ if (isset($user->data['session_page']) && strpos($user->data['session_page'], '&
 	}
 }
 
-// Only mark topic if it's currently unread
-if (isset($topic_tracking_info[$topic_id]) && $topic_data['topic_last_post_time'] > $topic_tracking_info[$topic_id])
+// Only mark topic if it's currently unread. Also make sure we do not set topic tracking back if earlier pages are viewed.
+if (isset($topic_tracking_info[$topic_id]) && $topic_data['topic_last_post_time'] > $topic_tracking_info[$topic_id] && $max_post_time > $topic_tracking_info[$topic_id])
 {
 	markread('topic', $forum_id, $topic_id, $max_post_time);
 
