@@ -62,9 +62,15 @@ class dbal_postgres extends dbal
 			}
 		}
 
+		$schema = '';
+
 		if ($database)
 		{
 			$this->dbname = $database;
+			if (strpos($database, '.') !== false)
+			{
+				list($database, $schema) = explode('.', $database);
+			}
 			$connect_string .= "dbname=$database";
 		}
 
@@ -72,7 +78,16 @@ class dbal_postgres extends dbal
 
 		$this->db_connect_id = ($this->persistency) ? @pg_pconnect($connect_string, $new_link) : @pg_connect($connect_string, $new_link);
 
-		return ($this->db_connect_id) ? $this->db_connect_id : $this->sql_error('');
+		if ($this->db_connect_id)
+		{
+			if ($schema !== '')
+			{
+				@pg_query($this->db_connect_id, 'SET search_path TO ' . $schema);
+			}
+			return $this->db_connect_id;
+		}
+
+		return $this->sql_error('');
 	}
 
 	/**
@@ -80,7 +95,7 @@ class dbal_postgres extends dbal
 	*/
 	function sql_server_info()
 	{
-		if (version_compare(phpversion(), '5.0.0', '>='))
+		if (version_compare(PHP_VERSION, '5.0.0', '>='))
 		{
 			$version = @pg_version($this->db_connect_id);
 			return 'PostgreSQL' . ((!empty($version)) ? ' ' . $version['client'] : '');

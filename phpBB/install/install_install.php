@@ -138,7 +138,7 @@ class install_install extends module
 		));
 
 		// Test the minimum PHP version
-		$php_version = phpversion();
+		$php_version = PHP_VERSION;
 
 		if (version_compare($php_version, '4.3.3') < 0)
 		{

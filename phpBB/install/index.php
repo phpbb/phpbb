@@ -22,7 +22,7 @@ $phpEx = substr(strrchr(__FILE__, '.'), 1);
 error_reporting(E_ALL ^ E_NOTICE);
 
 // @todo Review this test and see if we can find out what it is which prevents PHP 4.2.x from even displaying the page with requirements on it
-if (version_compare(phpversion(), '4.3.3') < 0)
+if (version_compare(PHP_VERSION, '4.3.3') < 0)
 {
 	die('You are running an unsupported PHP version. Please upgrade to PHP 4.3.3 or higher before trying to install phpBB 3.0');
 }
@@ -82,7 +82,7 @@ function deregister_globals()
 }
 
 // If we are on PHP >= 6.0.0 we do not need some code
-if (version_compare(phpversion(), '6.0.0-dev', '>='))
+if (version_compare(PHP_VERSION, '6.0.0-dev', '>='))
 {
 	/**
 	* @ignore

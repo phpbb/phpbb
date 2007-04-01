@@ -116,7 +116,7 @@ if (extension_loaded('mbstring'))
 	* Notes:
 	* - offset for mb_strrpos was added in 5.2.0, we emulate if it is lower
 	*/
-	if (version_compare(phpversion(), '5.2.0', '>='))
+	if (version_compare(PHP_VERSION, '5.2.0', '>='))
 	{
 		/**
 		* UTF-8 aware alternative to strrpos

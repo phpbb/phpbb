@@ -950,7 +950,7 @@ class sqlite_extractor extends base_extractor
 
 		if (is_null($proper))
 		{
-			$proper = version_compare(phpversion(), '5.1.3', '>=');
+			$proper = version_compare(PHP_VERSION, '5.1.3', '>=');
 		}
 
 		if ($proper)
