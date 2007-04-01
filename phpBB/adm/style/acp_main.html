@@ -95,41 +95,36 @@
 			<form id="action_online_form" method="post" action="{U_ACTION}">
 				<dl>
 					<dt><label for="action_online">{L_RESET_ONLINE}</label></dt>
-					<dd><input class="button2" type="submit" id="action_online" name="action_online" value="{L_RUN}" /></dd>
+					<dd><input type="hidden" name="action" value="online" /><input class="button2" type="submit" id="action_online" name="action_online" value="{L_RUN}" /></dd>
 				</dl>
-				<input type="hidden" name="action" value="online"/>
 			</form>
 
 			<form id="action_date_form" method="post" action="{U_ACTION}">
 				<dl>
 					<dt><label for="action_date">{L_RESET_DATE}</label></dt>
-					<dd><input class="button2" type="submit" id="action_date" name="action_date" value="{L_RUN}" /></dd>
+					<dd><input type="hidden" name="action" value="date" /><input class="button2" type="submit" id="action_date" name="action_date" value="{L_RUN}" /></dd>
 				</dl>
-				<input type="hidden" name="action" value="date"/>
 			</form>
 
 			<form id="action_stats_form" method="post" action="{U_ACTION}">
 				<dl>
 					<dt><label for="action_stats">{L_RESYNC_STATS}</label><br /><span>{L_RESYNC_STATS_EXPLAIN}</span></dt>
-					<dd><input class="button2" type="submit" id="action_stats" name="action_stats" value="{L_RUN}" /></dd>
+					<dd><input type="hidden" name="action" value="stats" /><input class="button2" type="submit" id="action_stats" name="action_stats" value="{L_RUN}" /></dd>
 				</dl>
-				<input type="hidden" name="action" value="stats"/>
 			</form>
 
 			<form id="action_user_form" method="post" action="{U_ACTION}">
 				<dl>
 					<dt><label for="action_user">{L_RESYNC_POSTCOUNTS}</label><br /><span>{L_RESYNC_POSTCOUNTS_EXPLAIN}</span></dt>
-					<dd><input class="button2" type="submit" id="action_user" name="action_user" value="{L_RUN}" /></dd>
+					<dd><input type="hidden" name="action" value="user" /><input class="button2" type="submit" id="action_user" name="action_user" value="{L_RUN}" /></dd>
 				</dl>
-				<input type="hidden" name="action" value="user"/>
 			</form>
 
 			<form id="action_db_track_form" method="post" action="{U_ACTION}">
 				<dl>
 					<dt><label for="action_db_track">{L_RESYNC_POST_MARKING}</label><br /><span>{L_RESYNC_POST_MARKING_EXPLAIN}</span></dt>
-					<dd><input class="button2" type="submit" id="action_db_track" name="action_db_track" value="{L_RUN}" /></dd>
+					<dd><input type="hidden" name="action" value="db_track" /><input class="button2" type="submit" id="action_db_track" name="action_db_track" value="{L_RUN}" /></dd>
 				</dl>
-				<input type="hidden" name="action" value="db_track"/>
 			</form>
 		</fieldset>
 	<!-- ENDIF -->
