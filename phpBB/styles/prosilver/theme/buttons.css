@@ -1,0 +1,184 @@
+/* proSilver Button Styles
+---------------------------------------- */
+
+/* Rollover buttons
+   Based on: http://wellstyled.com/css-nopreload-rollovers.html
+----------------------------------------*/
+.buttons {
+	float: left;
+	width: auto;
+	height: 25px;		/* Set to height of button */
+}
+
+/* Rollover state */
+.buttons div {
+	float: left;
+	margin: 0 5px 0 0;
+	background-position: 0 100%;
+	/* Button dimensions */
+	width: 96px;
+	height: 25px;
+}
+
+/* Rolloff state */
+.buttons div a {
+	display: block;
+	width: 100%;
+	height: 100%;
+	background-position: 0 0;
+}
+
+/* Hide <a> text and hide off-state image when rolling over (prevents flicker in IE) */
+.buttons div span		{ display: none; }
+.buttons div a:hover	{ background-image: none; }
+
+/* Big button images */
+.reply-icon, .reply-icon a				{ background: transparent none 0 0 no-repeat; }
+.post-icon, .post-icon a				{ background: transparent none 0 0 no-repeat; }
+.locked-icon, .locked-icon a				{ background: transparent none 0 0 no-repeat; }
+.pmreply-icon, .pmreply-icon a		{ background: none 0 0 no-repeat; }
+.newpm-icon, .newpm-icon a			{ background: none 0 0 no-repeat; }
+.forwardpm-icon, .forwardpm-icon a 	{ background: none 0 0 no-repeat; }
+
+/* Sub-header (navigation bar)
+--------------------------------------------- */
+a.print, a.sendemail, a.fontsize {
+	display: block;
+	overflow: hidden;
+	height: 18px;
+	text-indent: -5000px;
+	text-align: left;
+	background-repeat: no-repeat;
+}
+
+a.print {
+	background-image: none;
+	width: 22px;
+}
+
+a.sendemail {
+	background-image: none;
+	width: 22px;
+}
+
+a.sendemail:hover {
+	background-position: 0px -18px;
+}
+
+a.fontsize {
+	background-image: none;
+	background-position: 0 -1px;
+	width: 29px;
+}
+
+a.fontsize:hover {
+	background-position: 0px -20px;
+	text-decoration: none;
+}
+
+/* Icon images
+---------------------------------------- */
+.icon-faq, .icon-members, .icon-home, .icon-ucp, .icon-register, .icon-logout, .icon-bookmark, .icon-bump, .icon-subscribe, .icon-unsubscribe, .icon-pages, .icon-search, .sitehome {
+	background-position: 0 50%;
+	background-repeat: no-repeat;
+	padding-left: 17px;
+	padding-top: 1px;
+}
+
+.sitehome			{ background-image: none; }
+.icon-faq			{ background-image: none; }
+.icon-members		{ background-image: none; }
+.icon-home			{ background-image: none; }
+.icon-ucp			{ background-image: none; }
+.icon-register		{ background-image: none; }
+.icon-logout			{ background-image: none; }
+.icon-bookmark		{ background-image: none; }
+.icon-bump			{ background-image: none; }
+.icon-subscribe		{ background-image: none; }
+.icon-unsubscribe	{ background-image: none; }
+.icon-pages			{ background-image: none; }
+
+/* Poster profile icons
+----------------------------------------*/
+ul.profile-icons {
+	padding-top: 10px;
+	height: 20px;
+	list-style: none;
+}
+
+/* Rollover state */
+ul.profile-icons li {
+	float: left;
+	width: 23px;
+	height: 20px;
+	margin: 0 3px 3px 0;
+	background-position: 0 100%;
+}
+
+/* Rolloff state */
+ul.profile-icons li a {
+	display: block;
+	width: 100%;
+	height: 100%;
+	background-position: 0 0;
+}
+
+/* Hide <a> text and hide off-state image when rolling over (prevents flicker in IE) */
+ul.profile-icons li span { display:none; }
+ul.profile-icons li a:hover { background: none; }
+
+/* Positioning of moderator icons */
+.postbody ul.profile-icons {
+	float: right;
+	width: auto;
+	padding: 0;
+}
+
+.postbody ul.profile-icons li {
+	margin: 0 0 0 3px;
+}
+
+/* Profile & navigation icons */
+.email-icon, .email-icon a			{ background: none top left no-repeat; }
+.aim-icon, .aim-icon a			{ background: none top left no-repeat; }
+.yahoo-icon, .yahoo-icon a		{ background: none top left no-repeat; }
+.web-icon, .web-icon a			{ background: none top left no-repeat; }
+.msnm-icon, .msnm-icon a		{ background: none top left no-repeat; }
+.icq-icon, .icq-icon a				{ background: none top left no-repeat; }
+.pm-icon, .pm-icon a				{ background: none top left no-repeat; }
+.jabber-icon, .jabber-icon a		{ background: none top left no-repeat; }
+.quote-icon, .quote-icon a			{ background: none top left no-repeat; }
+
+ul.profile-icons li.pm-icon {
+	width: 28px;
+}
+
+ul.profile-icons li.quote-icon {
+	width: 54px;
+	margin-left: 10px;
+}
+
+div.rank-image {
+	width: auto;
+	height: 10px;
+	position: absolute;
+	top: 0;
+	right: 0;
+	text-align: right;
+}
+
+/* Moderator icons */
+.report-icon, .report-icon a		{ background: none top left no-repeat; }
+.warn-icon, .warn-icon a			{ background: none top left no-repeat; }
+.edit-icon, .edit-icon a			{ background: none top left no-repeat; }
+
+ul.profile-icons li.edit-icon {
+	width: 41px;
+}
+
+.delete-icon, .delete-icon a		{ background: none top left no-repeat; }
+.info-icon, .info-icon a			{ background: none top left no-repeat; }
+
+ul.profile-icons li.info-icon, ul.profile-icons li.report-icon {
+	margin-left: 0;
+}

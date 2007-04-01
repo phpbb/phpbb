@@ -1,0 +1,76 @@
+<!-- INCLUDE ucp_header.html -->
+
+<form id="ucp" method="post" action="{S_UCP_ACTION}"{S_FORM_ENCTYPE}>
+
+<h2>{L_TITLE}</h2>
+
+<div class="panel">
+	<div class="inner"><span class="corners-top"><span></span></span>
+	
+	<p>{L_BOOKMARKS_EXPLAIN}</p>
+	
+<!-- IF S_NO_DISPLAY_BOOKMARKS -->
+	<p class="error">{L_BOOKMARKS_DISABLED}</p>
+<!-- ELSE -->
+
+	<!-- IF .topicrow -->
+		<ul class="topiclist">
+			<li class="header">
+				<dl class="icon">
+					<dt>{L_BOOKMARKS}</dt>
+					<dd class="lastpost"><span>{L_LAST_POST}</span></dd>
+					<dd class="mark">{L_MARK}</dd>
+					<dd class="mark">{L_MOVE}</dd>
+				</dl>
+			</li>
+		</ul>
+		<ul class="topiclist cplist">
+
+		<!-- BEGIN topicrow -->
+			<li class="row<!-- IF topicrow.S_ROW_COUNT is odd --> bg1<!-- ELSE --> bg2<!-- ENDIF -->">
+			<!-- IF topicrow.S_DELETED_TOPIC -->
+				<dl><dt><strong>{L_DELETED_TOPIC}</strong></dt></dl>
+			<!-- ELSE -->
+				<dl class="icon" style="background-image: url({topicrow.TOPIC_FOLDER_IMG_SRC});">
+					<dt <!-- IF topicrow.TOPIC_ICON_IMG -->style="background-image: url({T_ICONS_PATH}{topicrow.TOPIC_ICON_IMG});"<!-- ENDIF -->>
+						<a href="{topicrow.U_VIEW_TOPIC}" class="topictitle">{topicrow.TOPIC_TITLE}</a>
+						<!-- IF topicrow.S_TOPIC_UNAPPROVED or topicrow.S_POSTS_UNAPPROVED --><a href="{topicrow.U_MCP_QUEUE}">{topicrow.UNAPPROVED_IMG}</a> <!-- ENDIF -->
+						<!-- IF topicrow.S_TOPIC_REPORTED --><a href="{topicrow.U_MCP_REPORT}">{REPORTED_IMG}</a><!-- ENDIF --><br />
+						<!-- IF topicrow.PAGINATION --><strong class="pagination"><span>{topicrow.PAGINATION}</span></strong><!-- ENDIF -->
+						{L_POST_BY_AUTHOR} {topicrow.TOPIC_AUTHOR_FULL} {L_POSTED_ON_DATE} {topicrow.FIRST_POST_TIME} {topicrow.NEWEST_POST_IMG}
+					</dt>
+					<dd class="lastpost"><span><dfn>{L_LAST_POST} </dfn>{L_POST_BY_AUTHOR} {topicrow.LAST_POST_AUTHOR_FULL} <a href="{topicrow.U_LAST_POST}">{topicrow.LAST_POST_IMG}</a><br />
+						 {L_POSTED_ON_DATE} {topicrow.LAST_POST_TIME}</span>
+					</dd>
+					<dd class="mark"><input type="checkbox" name="t[{topicrow.TOPIC_ID}]" id="t{topicrow.TOPIC_ID}" /></dd>
+					<!-- IF topicrow.U_MOVE_UP or topicrow.U_MOVE_DOWN -->
+						<dd class="mark">
+							<!-- IF topicrow.U_MOVE_UP --><a href="{topicrow.U_MOVE_UP}" title="{L_MOVE_UP}"><img src="{T_THEME_PATH}/images/arrow_up.gif" style="padding:3px;" alt="{L_MOVE_UP}" /></a><!-- ENDIF -->
+							<!-- IF topicrow.U_MOVE_DOWN --><a href="{topicrow.U_MOVE_DOWN}" title="{L_MOVE_DOWN}"><img src="{T_THEME_PATH}/images/arrow_down.gif" style="padding:3px;" alt="{L_MOVE_DOWN}" /></a><!-- ENDIF -->
+						</dd>
+					<!-- ENDIF -->
+				</dl>
+				<!-- ENDIF -->
+			</li>
+		<!-- END topicrow -->
+	
+		</ul>
+	<!-- ELSE -->
+		<p><strong>{L_NO_BOOKMARKS}</strong></p>
+	<!-- ENDIF -->
+
+<!-- ENDIF -->
+
+	<span class="corners-bottom"><span></span></span></div>
+</div>
+
+<!-- IF .topicrow and not S_NO_DISPLAY_BOOKMARKS -->
+	<fieldset class="display-actions">		
+		<input type="submit" name="unbookmark" value="{L_REMOVE_BOOKMARK_MARKED}" class="button2" />
+		<div><a href="#" onclick="marklist('ucp', '', true); return false;">{L_MARK_ALL}</a> &bull; <a href="#" onclick="marklist('ucp', '', false); return false;">{L_UNMARK_ALL}</a></div>
+	</fieldset>
+<!-- ENDIF -->
+
+</form>
+
+<!-- INCLUDE ucp_footer.html -->
