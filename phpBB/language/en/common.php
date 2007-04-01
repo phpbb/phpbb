@@ -44,8 +44,9 @@ $lang = array_merge($lang, array(
 	'6_MONTHS'		=> '6 months',
 	'7_DAYS'		=> '7 days',
 
-	'ACCOUNT_ALREADY_ACTIVATED'		=> 'Your account is already activated',
-	'ACCOUNT_NOT_ACTIVATED'			=> 'Your account has not been activated yet',
+	'ACCOUNT_ALREADY_ACTIVATED'		=> 'Your account is already activated.',
+	'ACCOUNT_DEACTIVATED'			=> 'Your account has been manually deactivated and is only able to be reactivated by an administrator.',
+	'ACCOUNT_NOT_ACTIVATED'			=> 'Your account has not been activated yet.',
 	'ACP'							=> 'Administration Control Panel',
 	'ACTIVE'						=> 'active',
 	'ACTIVE_ERROR'					=> 'You have specified an inactive username. Please activate your account and try again. If you continue to have problems please contact a board administrator.',

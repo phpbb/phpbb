@@ -194,6 +194,11 @@ $auth = new auth();
 $cache = new cache();
 $template = new template();
 
+// Set some standard variables we want to force
+$config = array(
+	'load_tplcompile'	=> '1'
+);
+
 $template->set_custom_template('../adm/style', 'admin');
 $template->assign_var('T_TEMPLATE_PATH', '../adm/style');
 
@@ -645,8 +650,8 @@ class module
 			break;
 
 			case 'radio':
-				$key_yes	= ($value) ? ' checked="checked"' : '';
-				$key_no		= (!$value) ? ' checked="checked"' : '';
+				$key_yes	= ($value) ? ' checked="checked" id="' . $name . '"' : '';
+				$key_no		= (!$value) ? ' checked="checked" id="' . $name . '"' : '';
 
 				$tpl_type_cond = explode('_', $tpl_type[1]);
 				$type_no = ($tpl_type_cond[0] == 'disabled' || $tpl_type_cond[0] == 'enabled') ? false : true;

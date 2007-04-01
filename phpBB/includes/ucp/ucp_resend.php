@@ -28,7 +28,7 @@ class ucp_resend
 
 		if ($submit)
 		{
-			$sql = 'SELECT user_id, group_id, username, user_email, user_type, user_lang, user_actkey
+			$sql = 'SELECT user_id, group_id, username, user_email, user_type, user_lang, user_actkey, user_inactive_reason
 				FROM ' . USERS_TABLE . "
 				WHERE user_email = '" . $db->sql_escape($email) . "'
 					AND username_clean = '" . $db->sql_escape(utf8_clean_string($username)) . "'";
@@ -41,9 +41,19 @@ class ucp_resend
 				trigger_error('NO_EMAIL_USER');
 			}
 
-			if (!$user_row['user_actkey'])
+			if ($user_row['user_type'] == USER_IGNORE)
+			{
+				trigger_error('NO_USER');
+			}
+
+			if (!$user_row['user_actkey'] && $user_row['user_type'] != USER_INACTIVE)
 			{
 				trigger_error('ACCOUNT_ALREADY_ACTIVATED');
+			}
+
+			if (!$user_row['user_actkey'] || ($user_row['user_type'] == USER_INACTIVE && $user_row['user_inactive_reason'] == INACTIVE_MANUAL))
+			{
+				trigger_error('ACCOUNT_DEACTIVATED');
 			}
 
 			// Determine coppa status on group (REGISTERED(_COPPA))
