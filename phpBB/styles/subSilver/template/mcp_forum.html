@@ -27,7 +27,7 @@
 		<!-- ENDIF -->
 		<td class="row1">
 			<!-- IF topicrow.S_SELECT_TOPIC -->
-				<span class="genmed">[ <a href="{topicrow.U_SELECT_TOPIC}">{L_SELECT}</a> ]&nbsp;</span>
+				<span class="genmed">[ <a href="{topicrow.U_SELECT_TOPIC}">{L_SELECT_MERGE}</a> ]&nbsp;</span>
 			<!-- ENDIF -->
 			<p class="topictitle">{topicrow.NEWEST_POST_IMG} {topicrow.ATTACH_ICON_IMG} <a href="{topicrow.U_VIEW_TOPIC}">{topicrow.TOPIC_TITLE}</a>
 			<!-- IF topicrow.S_TOPIC_UNAPPROVED or topicrow.S_POSTS_UNAPPROVED -->
@@ -57,6 +57,7 @@
 		<select name="action">
 			<option value="" selected="selected">{L_SELECT_ACTION}</option>
 			<!-- IF S_CAN_DELETE --><option value="delete_topic">{L_DELETE}</option><!-- ENDIF -->
+			<!-- IF S_CAN_MERGE --><option value="merge_topics">{L_MERGE}</option><!-- ENDIF -->
 			<!-- IF S_CAN_MOVE --><option value="move">{L_MOVE}</option><!-- ENDIF -->
 			<!-- IF S_CAN_FORK --><option value="fork">{L_FORK}</option><!-- ENDIF -->
 			<!-- IF S_CAN_LOCK --><option value="lock">{L_LOCK}</option><option value="unlock">{L_UNLOCK}</option><!-- ENDIF -->

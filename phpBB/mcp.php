@@ -168,6 +168,10 @@ if ($quickmod)
 			$module->set_active('logs', 'topic_logs');
 		break;
 
+		case 'merge_topic':
+			$module->set_active('main', 'forum_view');
+		break;
+
 		case 'split':
 		case 'merge':
 			$module->set_active('main', 'topic_view');

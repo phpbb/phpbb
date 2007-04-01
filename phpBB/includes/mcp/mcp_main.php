@@ -953,7 +953,8 @@ function mcp_fork_topic($topic_ids)
 					'bbcode_uid'		=> (string) $row['bbcode_uid'],
 					'post_edit_time'	=> (int) $row['post_edit_time'],
 					'post_edit_count'	=> (int) $row['post_edit_count'],
-					'post_edit_locked'	=> (int) $row['post_edit_locked']
+					'post_edit_locked'	=> (int) $row['post_edit_locked'],
+					'post_postcount'	=> 0,
 				);
 
 				$db->sql_query('INSERT INTO ' . POSTS_TABLE . ' ' . $db->sql_build_array('INSERT', $sql_ary));

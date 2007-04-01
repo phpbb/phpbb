@@ -462,7 +462,7 @@ if ($keywords || $author || $author_id || $search_id || $submit)
 	$u_search .= ($search_id) ? '&amp;search_id=' . $search_id : '';
 	$u_search .= ($u_hilit) ? '&amp;keywords=' . $u_hilit : '';
 	$u_search .= ($topic_id) ? '&amp;t=' . $topic_id : '';
-	$u_search .= ($author) ? '&amp;author=' . urlencode($author) : '';
+	$u_search .= ($author) ? '&amp;author=' . urlencode(htmlspecialchars_decode($author)) : '';
 	$u_search .= ($author_id) ? '&amp;author_id=' . $author_id : '';
 	$u_search .= ($u_search_forum) ? '&amp;fid%5B%5D=' . $u_search_forum : '';
 	$u_search .= (!$search_child) ? '&amp;sc=0' : '';
@@ -1048,8 +1048,8 @@ while ($row = $db->sql_fetchrow($result))
 		'KEYWORDS'	=> $keywords,
 		'TIME'		=> $user->format_date($row['search_time']),
 
-		'U_KEYWORDS'	=> append_sid("{$phpbb_root_path}search.$phpEx", 'keywords=' . urlencode($keywords)))
-	);
+		'U_KEYWORDS'	=> append_sid("{$phpbb_root_path}search.$phpEx", 'keywords=' . urlencode(htmlspecialchars_decode($keywords)))
+	));
 }
 $db->sql_freeresult($result);
 

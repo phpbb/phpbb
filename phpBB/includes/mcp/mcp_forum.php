@@ -22,7 +22,10 @@ function mcp_forum_view($id, $mode, $action, $forum_info)
 
 	$url = append_sid("{$phpbb_root_path}mcp.$phpEx?" . extra_url());
 
-	if ($action == 'merge_select')
+	// merge_topic is the quickmod action, merge_topics is the mcp_forum action, and merge_select is the mcp_topic action
+	$merge_select = ($action == 'merge_select' || $action == 'merge_topic' || $action == 'merge_topics') ? true : false;
+
+	if ($merge_select)
 	{
 		// Fixes a "bug" that makes forum_view use the same ordering as topic_view
 		unset($_POST['sk'], $_POST['sd'], $_REQUEST['sk'], $_REQUEST['sd']);
@@ -32,14 +35,25 @@ function mcp_forum_view($id, $mode, $action, $forum_info)
 	$start				= request_var('start', 0);
 	$topic_id_list		= request_var('topic_id_list', array(0));
 	$post_id_list		= request_var('post_id_list', array(0));
-	$source_topic_id	= request_var('t', 0);
+	$source_topic_ids	= array(request_var('t', 0));
+	$to_topic_id		= request_var('to_topic_id', 0);
 
 	// Resync Topics
-	if ($action == 'resync')
+	switch ($action)
 	{
-		$topic_ids = request_var('topic_id_list', array(0));
+		case 'resync':
+			$topic_ids = request_var('topic_id_list', array(0));
+			mcp_resync_topics($topic_ids);
+		break;
 
-		mcp_resync_topics($topic_ids);
+		case 'merge_topics':
+			$source_topic_ids = $topic_id_list;
+		case 'merge_topic':
+			if ($to_topic_id)
+			{
+				merge_topics($forum_id, $source_topic_ids, $to_topic_id);
+			}
+		break;
 	}
 
 	$selected_ids = '';
@@ -50,8 +64,15 @@ function mcp_forum_view($id, $mode, $action, $forum_info)
 			$selected_ids .= '&amp;post_id_list[' . $num . ']=' . $post_id;
 		}
 	}
+	else if (sizeof($topic_id_list) && $action == 'merge_topics')
+	{
+		foreach ($topic_id_list as $num => $topic_id)
+		{
+			$selected_ids .= '&amp;topic_id_list[' . $num . ']=' . $topic_id;
+		}
+	}
 
-	make_jumpbox($url . "&amp;i=$id&amp;action=$action&amp;mode=$mode", $forum_id . (($action == 'merge_select') ? $selected_ids : ''), false, 'm_');
+	make_jumpbox($url . "&amp;i=$id&amp;action=$action&amp;mode=$mode", $forum_id . (($merge_select) ? $selected_ids : ''), false, 'm_');
 
 	$topics_per_page = ($forum_info['forum_topics_per_page']) ? $forum_info['forum_topics_per_page'] : $config['topics_per_page'];
 
@@ -64,6 +85,7 @@ function mcp_forum_view($id, $mode, $action, $forum_info)
 	$limit_time_sql = ($sort_days) ? 'AND t.topic_last_post_time >= ' . (time() - ($sort_days * 86400)) : '';
 
 	$template->assign_vars(array(
+		'ACTION'				=> $action,
 		'FORUM_NAME'			=> $forum_info['forum_name'],
 		'FORUM_DESCRIPTION'		=> generate_text_for_display($forum_info['forum_desc'], $forum_info['forum_desc_uid'], $forum_info['forum_desc_bitfield'], $forum_info['forum_desc_options']),
 
@@ -74,12 +96,13 @@ function mcp_forum_view($id, $mode, $action, $forum_info)
 
 		'S_CAN_REPORT'			=> $auth->acl_get('m_report', $forum_id),
 		'S_CAN_DELETE'			=> $auth->acl_get('m_delete', $forum_id),
+		'S_CAN_MERGE'			=> $auth->acl_get('m_merge', $forum_id),
 		'S_CAN_MOVE'			=> $auth->acl_get('m_move', $forum_id),
 		'S_CAN_FORK'			=> $auth->acl_get('m_', $forum_id),
 		'S_CAN_LOCK'			=> $auth->acl_get('m_lock', $forum_id),
 		'S_CAN_SYNC'			=> $auth->acl_get('m_', $forum_id),
 		'S_CAN_APPROVE'			=> $auth->acl_get('m_approve', $forum_id),
-		'S_MERGE_SELECT'		=> ($action == 'merge_select') ? true : false,
+		'S_MERGE_SELECT'		=> ($merge_select) ? true : false,
 		'S_CAN_MAKE_NORMAL'		=> $auth->acl_gets('f_sticky', 'f_announce', $forum_id),
 		'S_CAN_MAKE_STICKY'		=> $auth->acl_get('f_sticky', $forum_id),
 		'S_CAN_MAKE_ANNOUNCE'	=> $auth->acl_get('f_announce', $forum_id),
@@ -87,9 +110,9 @@ function mcp_forum_view($id, $mode, $action, $forum_info)
 		'U_VIEW_FORUM'			=> append_sid("{$phpbb_root_path}viewforum.$phpEx", 'f=' . $forum_id),
 		'U_VIEW_FORUM_LOGS'		=> ($auth->acl_gets('a_', 'm_', $forum_id) && $module->loaded('logs')) ? append_sid("{$phpbb_root_path}mcp.$phpEx", 'i=logs&amp;mode=forum_logs&amp;f=' . $forum_id) : '',
 
-		'S_MCP_ACTION'			=> $url . "&amp;i=$id&amp;mode=$mode&amp;start=$start" . (($action == 'merge_select') ? $selected_ids : ''),
+		'S_MCP_ACTION'			=> $url . "&amp;i=$id&amp;mode=$mode&amp;start=$start" . (($merge_select) ? $selected_ids : ''),
 
-		'PAGINATION'			=> generate_pagination($url . "&amp;i=$id&amp;action=$action&amp;mode=$mode" . (($action == 'merge_select') ? $selected_ids : ''), $forum_topics, $topics_per_page, $start),
+		'PAGINATION'			=> generate_pagination($url . "&amp;i=$id&amp;action=$action&amp;mode=$mode" . (($merge_select) ? $selected_ids : ''), $forum_topics, $topics_per_page, $start),
 		'PAGE_NUMBER'			=> on_page($forum_topics, $topics_per_page, $start),
 		'TOTAL'					=> $forum_topics)
 	);
@@ -213,11 +236,19 @@ function mcp_forum_view($id, $mode, $action, $forum_info)
 		}
 		else
 		{
+			if ($action == 'merge_topic' || $action == 'merge_topics')
+			{
+				$u_select_topic = $url . "&amp;i=$id&amp;mode=forum_view&amp;action=$action&amp;to_topic_id=" . $row['topic_id'] . $selected_ids;
+			}
+			else
+			{
+				$u_select_topic = $url . "&amp;i=$id&amp;mode=topic_view&amp;action=merge&amp;to_topic_id=" . $row['topic_id'] . $selected_ids;
+			}
 			$topic_row = array_merge($topic_row, array(
 				'U_VIEW_TOPIC'		=> append_sid("{$phpbb_root_path}mcp.$phpEx", "i=$id&amp;f=$forum_id&amp;t={$row['topic_id']}&amp;mode=topic_view"),
 
-				'S_SELECT_TOPIC'	=> ($action == 'merge_select' && $row['topic_id'] != $source_topic_id) ? true : false,
-				'U_SELECT_TOPIC'	=> $url . "&amp;i=$id&amp;mode=topic_view&amp;action=merge&amp;to_topic_id=" . $row['topic_id'] . $selected_ids,
+				'S_SELECT_TOPIC'	=> ($merge_select && !in_array($row['topic_id'], $source_topic_ids)) ? true : false,
+				'U_SELECT_TOPIC'	=> $u_select_topic,
 				'U_MCP_QUEUE'		=> $u_mcp_queue,
 				'U_MCP_REPORT'		=> ($auth->acl_get('m_report', $forum_id)) ? append_sid("{$phpbb_root_path}mcp.$phpEx", 'i=main&amp;mode=topic_view&amp;t=' . $row['topic_id'] . '&amp;action=reports') : '',
 				'TOPIC_ID'			=> $row['topic_id'],
@@ -272,6 +303,113 @@ function mcp_resync_topics($topic_ids)
 	trigger_error($msg . '<br /><br />' . sprintf($user->lang['RETURN_PAGE'], '<a href="' . $redirect . '">', '</a>'));
 
 	return;
+}
+
+/**
+* Merge selected topics into selected topic
+*/
+function merge_topics($forum_id, $topic_ids, $to_topic_id)
+{
+	global $db, $template, $user, $phpEx, $phpbb_root_path, $auth;
+
+	if (!$to_topic_id)
+	{
+		$template->assign_var('MESSAGE', $user->lang['NO_FINAL_TOPIC_SELECTED']);
+		return;
+	}
+
+	$topic_data = get_topic_data(array($to_topic_id), 'm_merge');
+
+	if (!sizeof($topic_data))
+	{
+		$template->assign_var('MESSAGE', $user->lang['NO_FINAL_TOPIC_SELECTED']);
+		return;
+	}
+
+	$topic_data = $topic_data[$to_topic_id];
+
+	$post_id_list	= request_var('post_id_list', array(0));
+	$start			= request_var('start', 0);
+
+	if (!sizeof($post_id_list) && sizeof($topic_ids))
+	{
+		$sql = 'SELECT post_id
+			FROM ' . POSTS_TABLE . '
+			WHERE ' . $db->sql_in_set('topic_id', $topic_ids);
+		$result = $db->sql_query($sql);
+
+		$post_id_list = array();
+		while ($row = $db->sql_fetchrow($result))
+		{
+			$post_id_list[] = $row['post_id'];
+		}
+		$db->sql_freeresult($result);
+	}
+
+	if (!sizeof($post_id_list))
+	{
+		$template->assign_var('MESSAGE', $user->lang['NO_POST_SELECTED']);
+		return;
+	}
+
+	if (!check_ids($post_id_list, POSTS_TABLE, 'post_id', array('m_merge')))
+	{
+		return;
+	}
+
+	$redirect = request_var('redirect', build_url(array('_f_', 'quickmod')));
+
+	$s_hidden_fields = build_hidden_fields(array(
+		'i'				=> 'main',
+		'f'				=> $forum_id,
+		'post_id_list'	=> $post_id_list,
+		'to_topic_id'	=> $to_topic_id,
+		'mode'			=> 'forum_view',
+		'action'		=> 'merge_topics',
+		'start'			=> $start,
+		'redirect'		=> $redirect,
+		'topic_id_list'	=> $topic_ids)
+	);
+	$success_msg = $return_link = '';
+
+	if (confirm_box(true))
+	{
+		$to_forum_id = $topic_data['forum_id'];
+
+		move_posts($post_id_list, $to_topic_id);
+		add_log('mod', $to_forum_id, $to_topic_id, 'LOG_MERGE', $topic_data['topic_title']);
+
+		// Message and return links
+		$success_msg = 'POSTS_MERGED_SUCCESS';
+
+		// If the topic no longer exist, we will update the topic watch table.
+		// To not let it error out on users watching both topics, we just return on an error...
+		$db->sql_return_on_error(true);
+		$db->sql_query('UPDATE ' . TOPICS_WATCH_TABLE . ' SET topic_id = ' . $to_topic_id . ' WHERE ' . $db->sql_in_set('topic_id', $topic_ids));
+		$db->sql_return_on_error(false);
+
+		$db->sql_query('DELETE FROM ' . TOPICS_WATCH_TABLE . ' WHERE ' . $db->sql_in_set('topic_id', $topic_ids));
+
+		// Link to the new topic
+		$return_link .= (($return_link) ? '<br /><br />' : '') . sprintf($user->lang['RETURN_NEW_TOPIC'], '<a href="' . append_sid("{$phpbb_root_path}viewtopic.$phpEx", 'f=' . $to_forum_id . '&amp;t=' . $to_topic_id) . '">', '</a>');
+	}
+	else
+	{
+		confirm_box(false, 'MERGE_TOPICS', $s_hidden_fields);
+	}
+
+	$redirect = request_var('redirect', "index.$phpEx");
+	$redirect = reapply_sid($redirect);
+
+	if (!$success_msg)
+	{
+		return;
+	}
+	else
+	{
+		meta_refresh(3, append_sid("{$phpbb_root_path}viewtopic.$phpEx", "f=$to_forum_id&amp;t=$to_topic_id"));
+		trigger_error($user->lang[$success_msg] . '<br /><br />' . $return_link);
+	}
 }
 
 ?>

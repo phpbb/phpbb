@@ -114,9 +114,6 @@ class fulltext_mysql extends search_backend
 	{
 		global $config;
 
-		$this->get_ignore_words();
-		$this->get_synonyms();
-
 		if ($terms == 'all')
 		{
 			$match		= array('#\sand\s#iu', '#\sor\s#iu', '#\snot\s#iu', '#\+#', '#-#', '#\|#');
@@ -171,18 +168,6 @@ class fulltext_mysql extends search_backend
 			$this->split_words = $matches[1];
 		}
 
-
-		if (sizeof($this->ignore_words))
-		{
-			$this->common_words = array_intersect($this->split_words, $this->ignore_words);
-			$this->split_words = array_diff($this->split_words, $this->ignore_words);
-		}
-
-		if (sizeof($this->replace_synonym))
-		{
-			$this->split_words = str_replace($this->replace_synonym, $this->match_synonym, $this->split_words);
-		}
-
 		foreach ($this->split_words as $i => $word)
 		{
 			$clean_word = preg_replace('#^[+\-|]#', '', $word);
@@ -213,9 +198,6 @@ class fulltext_mysql extends search_backend
 	function split_message($text)
 	{
 		global $config;
-
-		$this->get_ignore_words();
-		$this->get_synonyms();
 
 		// Split words
 		if ($this->pcre_properties)
@@ -253,16 +235,6 @@ class fulltext_mysql extends search_backend
 			$matches = array();
 			preg_match_all('#(?:[^\w*]|^)([+\-|]?(?:[\w*]+\'?)*[\w*])(?:[^\w*]|$)#u', $text, $matches);
 			$text = $matches[1];
-		}
-
-		if (sizeof($this->ignore_words))
-		{
-			$text = array_diff($text, $this->ignore_words);
-		}
-
-		if (sizeof($this->replace_synonym))
-		{
-			$text = str_replace($this->replace_synonym, $this->match_synonym, $text);
 		}
 
 		// remove too short or too long words
