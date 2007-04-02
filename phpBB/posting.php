@@ -770,10 +770,11 @@ if ($submit || $preview || $refresh)
 		$post_data['poll_options'] = (isset($poll['poll_options'])) ? $poll['poll_options'] : '';
 		$post_data['poll_title'] = (isset($poll['poll_title'])) ? $poll['poll_title'] : '';
 
+		/* We reset votes, therefore also allow removing options
 		if ($post_data['poll_last_vote'] && ($poll['poll_options_size'] < $orig_poll_options_size))
 		{
 			$message_parser->warn_msg[] = $user->lang['NO_DELETE_POLL_OPTIONS'];
-		}
+		}*/
 	}
 	else
 	{

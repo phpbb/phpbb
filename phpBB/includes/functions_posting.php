@@ -1731,7 +1731,8 @@ function submit_post($mode, $subject, $username, $topic_type, &$poll, &$data, $u
 
 		if ($poll['poll_start'] && $mode == 'edit')
 		{
-			$sql = 'SELECT * FROM ' . POLL_OPTIONS_TABLE . '
+			$sql = 'SELECT *
+				FROM ' . POLL_OPTIONS_TABLE . '
 				WHERE topic_id = ' . $data['topic_id'] . '
 				ORDER BY poll_option_id';
 			$result = $db->sql_query($sql);
@@ -1751,18 +1752,19 @@ function submit_post($mode, $subject, $username, $topic_type, &$poll, &$data, $u
 			{
 				if (empty($cur_poll_options[$i]))
 				{
+					// If we add options we need to put them to the end to be able to preserve votes...
 					$sql_insert_ary[] = array(
-						'poll_option_id'	=> (int) $i,
+						'poll_option_id'	=> (int) sizeof($cur_poll_options) + 1 + sizeof($sql_insert_ary),
 						'topic_id'			=> (int) $data['topic_id'],
 						'poll_option_text'	=> (string) $poll['poll_options'][$i]
 					);
 				}
 				else if ($poll['poll_options'][$i] != $cur_poll_options[$i])
 				{
-					$sql = "UPDATE " . POLL_OPTIONS_TABLE . "
+					$sql = 'UPDATE ' . POLL_OPTIONS_TABLE . "
 						SET poll_option_text = '" . $db->sql_escape($poll['poll_options'][$i]) . "'
-						WHERE poll_option_id = " . $cur_poll_options[$i]['poll_option_id'] . "
-							AND topic_id = " . $data['topic_id'];
+						WHERE poll_option_id = " . $cur_poll_options[$i]['poll_option_id'] . '
+							AND topic_id = ' . $data['topic_id'];
 					$db->sql_query($sql);
 				}
 			}
@@ -1776,6 +1778,13 @@ function submit_post($mode, $subject, $username, $topic_type, &$poll, &$data, $u
 				WHERE poll_option_id >= ' . sizeof($poll['poll_options']) . '
 					AND topic_id = ' . $data['topic_id'];
 			$db->sql_query($sql);
+		}
+
+		// If edited, we would need to reset votes (since options can be re-ordered above, you can't be sure if the change is for changing the text or adding an option
+		if ($mode == 'edit' && sizeof($poll['poll_options']) != sizeof($cur_poll_options))
+		{
+			$db->sql_query('DELETE FROM ' . POLL_VOTES_TABLE . ' WHERE topic_id = ' . $data['topic_id']);
+			$db->sql_query('UPDATE ' . POLL_OPTIONS_TABLE . ' SET poll_option_total = 0 WHERE topic_id = ' . $data['topic_id']);
 		}
 	}
 
