@@ -296,8 +296,9 @@ function display_forums($root_data = '', $display_moderators = true, $return_mod
 				if ($subforum_row['display'] && $subforum_row['name'])
 				{
 					$subforums_list[] = array(
-						'link'	=> append_sid("{$phpbb_root_path}viewforum.$phpEx", 'f=' . $subforum_id),
-						'name'	=> $subforum_row['name']
+						'link'		=> append_sid("{$phpbb_root_path}viewforum.$phpEx", 'f=' . $subforum_id),
+						'name'		=> $subforum_row['name'],
+						'unread'	=> $forum_unread,
 					);
 				}
 				else
@@ -360,7 +361,7 @@ function display_forums($root_data = '', $display_moderators = true, $return_mod
 		$s_subforums_list = array();
 		foreach ($subforums_list as $subforum)
 		{
-			$s_subforums_list[] = '<a href="' . $subforum['link'] . '">' . $subforum['name'] . '</a>';
+			$s_subforums_list[] = '<a href="' . $subforum['link'] . '"' . (($subforum['unread']) ? ' class="subforum-unread"' : '') . '>' . $subforum['name'] . '</a>';
 		}
 		$s_subforums_list = (string) implode(', ', $s_subforums_list);
 
@@ -402,7 +403,8 @@ function display_forums($root_data = '', $display_moderators = true, $return_mod
 		{
 			$template->assign_block_vars('forumrow.subforum', array(
 				'U_SUBFORUM'	=> $subforum['link'],
-				'SUBFORUM_NAME'	=> $subforum['name'])
+				'SUBFORUM_NAME'	=> $subforum['name'],
+				'S_UNREAD'		=> $subforum['unread'])
 			);
 		}
 	}

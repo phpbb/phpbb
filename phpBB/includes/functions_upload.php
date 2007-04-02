@@ -406,7 +406,7 @@ class fileerror extends filespec
 
 /**
 * File upload class
-* Init class (all parameters optional and able to be set/overwritten seperatly) - scope is global and valid for all uploads
+* Init class (all parameters optional and able to be set/overwritten separately) - scope is global and valid for all uploads
 *
 * @package phpBB3
 */

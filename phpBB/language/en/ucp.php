@@ -334,7 +334,7 @@ $lang = array_merge($lang, array(
 	'POST_REPLY_PM'				=> 'Reply to message',
 	'PRINT_PM'					=> 'Print view',
 	'PREFERENCES_UPDATED'		=> 'Your preferences have been updated.',
-	'PROFILE_INFO_NOTICE'		=> 'Please note that this information will be viewable to other members. Be careful when including any personal details. Any fields marked with a * must be completed.',
+	'PROFILE_INFO_NOTICE'		=> 'Please note that this information may be viewable to other members. Be careful when including any personal details. Any fields marked with a * must be completed.',
 	'PROFILE_UPDATED'			=> 'Your profile has been updated.',
 
 	'RECIPIENT'							=> 'Recipient',

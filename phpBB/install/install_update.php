@@ -929,7 +929,7 @@ class install_update extends module
 				}
 
 				// If the file exists within the old directory the file got removed and we will write it back
-				// not a biggie, but we might want to state this circumstance seperatly later.
+				// not a biggie, but we might want to state this circumstance separately later.
 				//	if (file_exists($this->old_location . $file))
 				//	{
 				//		$update_list['removed'][] = $file;

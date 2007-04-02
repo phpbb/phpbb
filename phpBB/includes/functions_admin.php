@@ -2370,7 +2370,16 @@ function view_log($mode, &$log, &$log_count, $limit = 0, $offset = 0, $forum_id 
 			if (isset($user->lang[$row['log_operation']]))
 			{
 				$log[$i]['action'] = vsprintf($log[$i]['action'], $log_data_ary);
-				$log[$i]['action'] = str_replace("\n", '<br />', censor_text($log[$i]['action']));
+
+				// If within the admin panel we do not censor text out
+				if (defined('IN_ADMIN'))
+				{
+					$log[$i]['action'] = str_replace("\n", '<br />', $log[$i]['action']);
+				}
+				else
+				{
+					$log[$i]['action'] = str_replace("\n", '<br />', censor_text($log[$i]['action']));
+				}
 			}
 			else
 			{
