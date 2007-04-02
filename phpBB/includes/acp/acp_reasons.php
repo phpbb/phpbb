@@ -61,11 +61,12 @@ class acp_reasons
 						$row = $db->sql_fetchrow($result);
 						$db->sql_freeresult($result);
 
-						if (strtolower($row['reason_title']) == 'other')
+						if (strtolower($row['reason_title']) == 'other' || strtolower($reason_row['reason_title']) == 'other')
 						{
 							$reason_row['reason_title'] = 'other';
 						}
-						else if ($row['reason_title'] != $reason_row['reason_title'])
+
+						if ($row['reason_title'] != $reason_row['reason_title'])
 						{
 							$check_double = true;
 						}
