@@ -61,6 +61,36 @@ h3 {
 	margin-left: 20px;
 }
 
+.paragraph table  {
+	font-size:	8pt;
+	border-collapse: collapse;
+	border: 1px solid #006699;
+}
+
+.paragraph table caption  {
+	display: none;
+}
+
+.paragraph table thead  {
+	background-color: #D1D7DC;
+}
+
+.paragraph table td, .paragraph table th {
+	border: 1px solid #006699;
+	padding: 0.5em;
+}
+
+.paragraph table td dl {
+	margin: 0;
+	padding: 0;
+}
+
+.paragraph table td dl dt {
+	float: left;
+	clear: both;
+	margin-right: 1em;
+}
+
 /* Structure */
 #logo {
 	background: #fff url(header_bg.jpg) repeat-x top right;
@@ -186,6 +216,13 @@ p a {
 	</li>
 	<li><a href="#styling">Styling</a></li>
 	<li><a href="#templating">Templating</a></li>
+	<li><a href="#translation">Translation (<abbr title="Internationalisation">i18n</abbr>/<abbr title="Localisation">L10n</abbr>) Guidelines</a>
+	<ol type="i">
+		<li><a href="#standardisation">Standardisation</a></li>
+		<li><a href="#otherconsiderations">Other considerations</a></li>
+		<li><a href="#writingstyle">Writing Style</a></li>
+	</ol>
+	</li>
 	<li><a href="#changes">Guidelines Changelog</a></li>
 </ol>
 
@@ -1505,8 +1542,687 @@ div
 
 <hr />
 
-<a name="changes"></a><h1>5. Guidelines Changelog</h1>
+<a name="translation"></a><h1>5. Translation (<abbr title="Internationalisation">i18n</abbr>/<abbr title="Localisation">L10n</abbr>) Guidelines</h1>
+
+	<a name="standardisation"></a><b>5.i. Standardisation</b>
+	<br /><br />
+	<div class="paragraph">
+	
+	<h3>Reason:</h3>
+	
+	<p>phpBB is one of the most translated OpenSource projects, with the current stable version being available in over 60 localisations. Whilst the ad hoc approach to the naming of language packs has worked, for phpBB3 and beyond we hope to make this process saner which will allow for better interoperation with current and future web browsers.</p>
+	
+	<h3>Encoding:</h3>
+	
+	<p>With phpBB3, the output encoding for the forum in now UTF-8, a Universal Character Encoding by the Unicode Consortium that is by design a superset to US-ASCII and ISO-8859-1. By using one character set which simultaenously supports all scripts which previously would have required different encodings (eg: ISO-8859-1 to ISO-8859-15 (Latin, Greek, Cyrillic, Thai, Hebrew, Arabic); GB2312 (Simplified Chinese); Big5 (Traditional Chinese), EUC-JP (Japanese), EUC-KR (Korean), VISCII (Vietnamese); et cetera), this removes the need to convert between encodings and improves the accessibility of multilingual forums.</p>
+
+	<p>The impact is that the language files for phpBB must now also be encoded as UTF-8, with a caveat that the files must <strong>not contain</strong> a <acronym title="Byte-Order-Mark">BOM</acronym> for compatibility reasons with non-Unicode aware versions of PHP. For those with forums using the Latin character set (ie: most European languages), this change is transparent since UTF-8 is superset to US-ASCII and ISO-8859-1.</p>
+
+	<h3>Language Tag:</h3>
+
+	<p>The <abbr title="Internet Engineering Task Force">IETF</abbr> recently published <a href="http://tools.ietf.org/html/rfc4646">RFC 4646</a> for tags used to identify languages, which in combination with <a href="http://tools.ietf.org/html/rfc4647">RFC 4647</a> obseletes the older <a href="http://tools.ietf.org/html/rfc3066">RFC 3006</a> and older-still <a href="http://tools.ietf.org/html/rfc1766">RFC 1766</a>. <a href="http://tools.ietf.org/html/rfc4646">RFC 4646</a> uses <a href="http://www.loc.gov/standards/iso639-2/php/English_list.php">ISO 639-1/ISO 639-2</a>, <a href="http://www.iso.ch/iso/en/prods-services/iso3166ma/02iso-3166-code-lists/list-en1.html">ISO 3166-1 alpha-2</a>, <a href="http://www.unicode.org/iso15924/iso15924-codes.html">ISO 15924</a> and <a href="http://unstats.un.org/unsd/methods/m49/m49.htm">UN M.49</a> to define a language tag. Each complete tag is composed of subtags which are not case sensitive and can also be empty.</p>
+
+	<p>Ordering of the subtags in the case that they are all non-empty is: <code>language</code>-<code>script</code>-<code>region</code>-<code>variant</code>-<code>extension</code>-<code>privateuse</code>. Should any subtag be empty, its corresponding hyphen would also be ommited. Thus, the language tag for English will be <code>en</code> <strong>and not</strong> <code>en-----</code>.</p>
+
+	<p>Most language tags consist of a two- or three-letter language subtag (from <a href="http://www.loc.gov/standards/iso639-2/php/English_list.php">ISO 639-1/ISO 639-2</a>). Sometimes, this is followed by a two-letter or three-digit region subtag (from <a href="http://www.iso.ch/iso/en/prods-services/iso3166ma/02iso-3166-code-lists/list-en1.html">ISO 3166-1 alpha-2</a> or <a href="http://unstats.un.org/unsd/methods/m49/m49.htm">UN M.49</a>). Some examples are:</p>
+
+	<table summary="Examples of various possible language tags as described by RFC 4646 and RFC 4647">
+	<caption>Language tag examples</caption>
+	<thead>
+	<tr>
+		<th scope="col">Language tag</th>
+		<th scope="col">Description</th>
+		<th scope="col">Component subtags</th>
+	</tr>
+	</thead>
+	<tbody>
+	<tr>
+		<td><code>en</code></td>
+		<td>English</td>
+		<td><code>language</code></td>
+	</tr>
+	<tr>
+		<td><code>mas</code></td>
+		<td>Masai</td>
+		<td><code>language</code></td>
+	</tr>
+	<tr>
+		<td><code>fr-CA</code></td>
+		<td>French as used in Canada</td>
+		<td><code>language</code>+<code>region</code></td>
+	</tr>
+	<tr>
+		<td><code>en-833</code></td>
+		<td>English as used in the Isle of Man</td>
+		<td><code>language</code>+<code>region</code></td>
+	</tr>
+	<tr>
+		<td><code>zh-Hans</code></td>
+		<td>Chinese written with Simplified script</td>
+		<td><code>language</code>+<code>script</code></td>
+	</tr>
+	<tr>
+		<td><code>zh-Hant-HK</code></td>
+		<td>Chinese written with Traditional script as used in Hong Kong</td>
+		<td><code>language</code>+<code>script</code>+<code>region</code></td>
+	</tr>
+	<tr>
+		<td><code>de-AT-1996</code></td>
+		<td>German as used in Austria with 1996 orthography</td>
+		<td><code>language</code>+<code>region</code>+<code>variant</code></td>
+	</tr>
+	</tbody>
+	</table>
+
+	<p>The ultimate aim of a language tag is to convey the needed <strong>useful distingushing information</strong>, whilst keeping it as <strong>short as possible</strong>. So for example, use <code>en</code>, <code>fr</code> and <code>ja</code> as opposed to <code>en-GB</code>, <code>fr-FR</code> and <code>ja-JP</code>, since we know English, French and Japanese are the native language of Great Britain, France and Japan respectively.</p>
+
+	<p>Next is the <a href="http://www.unicode.org/iso15924/iso15924-codes.html">ISO 15924</a> language script code and when one should or shouldn't use it. For example, whilst <code>en-Latn</code> is syntaxically correct for describing English written with Latin script, real world English writing is <strong>more-or-less exclusively in the Latin script</strong>. For such languages like English that are written in a single script, the <a href="http://www.iana.org/assignments/language-subtag-registry"><abbr title="Internet Assigned Numbers Authority">IANA</abbr> Language Subtag Registry</a> has a "Suppress-Script" field meaning the script code <strong>should be ommitted</strong> unless a specific language tag requires a specific script code. Some languages are <strong>written in more than one script</strong> and in such cases, the script code <strong>is encouraged</strong> since an end-user may be able to read their language in one script, but not the other. Some examples are:</p>
+
+	<table summary="Examples of using a language subtag in combination with a script subtag">
+	<caption>Language subtag + script subtag examples</caption>
+	<thead>
+	<tr>
+		<th scope="col">Language tag</th>
+		<th scope="col">Description</th>
+		<th scope="col">Component subtags</th>
+	</tr>
+	</thead>
+	<tbody>
+	<tr>
+		<td><code>en-Brai</code></td>
+		<td>English written in Braille script</td>
+		<td><code>language</code>+<code>script</code></td>
+	</tr>
+	<tr>
+		<td><code>en-Dsrt</code></td>
+		<td>English written in Deseret (Mormon) script</td>
+		<td><code>language</code>+<code>script</code></td>
+	</tr>
+	<tr>
+		<td><code>sr-Latn</code></td>
+		<td>Serbian written in Latin script</td>
+		<td><code>language</code>+<code>script</code></td>
+	</tr>
+	<tr>
+		<td><code>sr-Cyrl</code></td>
+		<td>Serbian written in Cyrillic script</td>
+		<td><code>language</code>+<code>script</code></td>
+	</tr>
+	<tr>
+		<td><code>mn-Mong</code></td>
+		<td>Mongolian written in Mongolian script</td>
+		<td><code>language</code>+<code>script</code></td>
+	</tr>
+	<tr>
+		<td><code>mn-Cyrl</code></td>
+		<td>Mongolian written in Cyrillic script</td>
+		<td><code>language</code>+<code>script</code></td>
+	</tr>
+	<tr>
+		<td><code>mn-Phag</code></td>
+		<td>Mongolian written in Phags-pa script</td>
+		<td><code>language</code>+<code>script</code></td>
+	</tr>
+	<tr>
+		<td><code>az-Cyrl-AZ</code></td>
+		<td>Azerbaijani written in Cyrillic script as used in Azerbaijan</td>
+		<td><code>language</code>+<code>script</code>+<code>region</code></td>
+	</tr>
+		<td><code>az-Latn-AZ</code></td>
+		<td>Azerbaijani written in Latin script as used in Azerbaijan</td>
+		<td><code>language</code>+<code>script</code>+<code>region</code></td>
+	</tr>
+	<tr>
+		<td><code>az-Arab-IR</code></td>
+		<td>Azerbaijani written in Arabic script as used in Iran</td>
+		<td><code>language</code>+<code>script</code>+<code>region</code></td>
+	</tr>
+	</tbody>
+	</table>
+
+	<p>Usage of the three-digit <a href="http://unstats.un.org/unsd/methods/m49/m49.htm">UN M.49</a> code over the two-letter <a href="http://www.iso.ch/iso/en/prods-services/iso3166ma/02iso-3166-code-lists/list-en1.html">ISO 3166-1 alpha-2</a> code should hapen if a macro-geographical entity is required and/or the <a href="http://www.iso.ch/iso/en/prods-services/iso3166ma/02iso-3166-code-lists/list-en1.html">ISO 3166-1 alpha-2</a> is ambiguous.</p>
+
+	<p>Examples of English using marco-geographical regions:</p>
+
+	<table summary="Examples for English of ISO 3166-1 alpha-2 vs. UN M.49 code">
+	<caption>Coding for English using macro-geographical regions</caption>
+	<thead>
+	<tr>
+		<th scope="col">ISO 639-1/ISO 639-2 + ISO 3166-1 alpha-2</th>
+		<th scope="col" colspan="2">ISO 639-1/ISO 639-2 + UN M.49 (Example macro regions)</th>
+	</tr>
+	</thead>
+	<tbody>
+	<tr>
+		<td><dl><dt><code>en-AU</code></dt><dd>English as used in <strong>Australia</strong></dd></dl></td>
+		<td rowspan="2"><dl><dt><code>en-053</code></dt><dd>English as used in <strong>Australia &amp; New Zealand</strong></dd></dl></td>
+		<td rowspan="3"><dl><dt><code>en-009</code></dt><dd>English as used in <strong>Oceania</strong></dd></dl></td>
+	</tr>
+	<tr>
+		<td><dl><dt><code>en-NZ</code></dt><dd>English as used in <strong>New Zealand</strong></dd></dl></td>
+	</tr>
+	<tr>
+		<td><dl><dt><code>en-FJ</code></dt><dd>English as used in <strong>Fiji</strong></dd></dl></td>
+		<td><dl><dt><code>en-054 </code></dt><dd>English as used in <strong>Melanesia</strong></dd></dl></td>
+	</tr>
+	</tbody>
+	</table>
+
+	<p>Examples of Spanish using marco-geographical regions:</p>
+
+	<table summary="Examples for Spanish of ISO 3166-1 alpha-2 vs. UN M.49 code">
+	<caption>Coding for Spanish macro-geographical regions</caption>
+	<thead>
+	<tr>
+		<th scope="col">ISO 639-1/ISO 639-2 + ISO 3166-1 alpha-2</th>
+		<th scope="col" colspan="2">ISO 639-1/ISO 639-2 + UN M.49 (Example macro regions)</th>
+	</tr>
+	</thead>
+	<tbody>
+	<tr>
+		<td><dl><dt><code>es-PR</code></dt><dd>Spanish as used in <strong>Puerto Rico</strong></dd></dl></td>
+		<td rowspan="3"><dl><dt><code>es-419</code></dt><dd>Spanish as used in <strong>Latin America &amp; the Caribbean</strong></dd></dl></td>
+		<td rowspan="4"><dl><dt><code>es-019</code></dt><dd>Spanish as used in <strong>the Americas</strong></dd></dl></td>
+	</tr>
+	<tr>
+		<td><dl><dt><code>es-HN</code></dt><dd>Spanish as used in <strong>Honduras</strong></dd></dl></td>
+	</tr>
+	<tr>
+		<td><dl><dt><code>es-AR</code></dt><dd>Spanish as used in <strong>Argentina</strong></dd></dl></td>
+	</tr>
+	<tr>
+		<td><dl><dt><code>es-US</code></dt><dd>Spanish as used in <strong>United States of America</strong></dd></dl></td>
+		<td><dl><dt><code>es-021</code></dt><dd>Spanish as used in <strong>North America</strong></dd></dl></td>
+	</tr>
+	</tbody>
+	</table>
+
+	<p>Example of where the <a href="http://www.iso.ch/iso/en/prods-services/iso3166ma/02iso-3166-code-lists/list-en1.html">ISO 3166-1 alpha-2</a> is ambiguous and why <a href="http://unstats.un.org/unsd/methods/m49/m49.htm">UN M.49</a> might be preferred:</p>
+
+	<table summary="Example where the ISO 3166-1 alpha-2 is ambiguous">
+	<caption>Coding for ambiguous ISO 3166-1 alpha-2 regions</caption>
+	<thead>
+	<tr>
+		<th scope="col" colspan="2"><code>CS</code> assignment pre-1994</th>
+		<th scope="col" colspan="2"><code>CS</code> assignment post-1994</th>
+	</tr>
+	</thead>
+	<tbody>
+	<tr>
+		<td colspan="2">
+		<dl>
+		<dt><code>CS</code></dt><dd><strong>Czechoslovakia</strong> (ISO 3166-1)</dd>
+		<dt><code>200</code></dt><dd><strong>Czechoslovakia</strong> (UN M.49)</dd>
+		</dl>
+		</td>
+		<td colspan="2">
+		<dl>
+		<dt><code>CS</code></dt><dd><strong>Serbian &amp; Montenegro</strong> (ISO 3166-1)</dd>
+		<dt><code>891</code></dt><dd><strong>Serbian &amp; Montenegro</strong> (UN M.49)</dd>
+		</dl>
+		</td>
+	</tr>
+	<tr>
+		<td>
+		<dl>
+		<dt><code>CZ</code></dt><dd><strong>Czech Republic</strong> (ISO 3166-1)</dd>
+		<dt><code>203</code></dt><dd><strong>Czech Republic</strong> (UN M.49)</dd>
+		</dl>
+		</td>
+		<td>
+		<dl>
+		<dt><code>SK</code></dt><dd><strong>Slovakia</strong> (ISO 3166-1)</dd>
+		<dt><code>703</code></dt><dd><strong>Slovakia</strong> (UN M.49)</dd>
+		</dl>
+		</td>
+		<td>
+		<dl>
+		<dt><code>RS</code></dt><dd><strong>Serbia</strong> (ISO 3166-1)</dd>
+		<dt><code>688</code></dt><dd><strong>Serbia</strong> (UN M.49)</dd>
+		</dl>
+		</td>
+		<td>
+		<dl>
+		<dt><code>ME</code></dt><dd><strong>Montenegro</strong> (ISO 3166-1)</dd>
+		<dt><code>499</code></dt><dd><strong>Montenegro</strong> (UN M.49)</dd>
+		</dl>
+		</td>
+	</tr>
+	</tbody>
+	</table>
+
+	<h3>Macro-languages &amp; Topolects:</h3>
+
+	<p><a href="http://tools.ietf.org/html/rfc4646">RFC 4646</a> anticipates features which shall be available in (currently draft) <a href="http://www.sil.org/iso639-3/">ISO 639-3</a> which aims to provide as complete enumeration of languages as possible, including living, extinct, ancient and constructed languages, whether majour, minor or unwritten. A new feature of <a href="http://www.sil.org/iso639-3/">ISO 639-3</a> compared to the previous two revisions is the concept of <a href="http://www.sil.org/iso639-3/macrolanguages.asp">macrolanguages</a> where Arabic and Chinese are two such examples. In such cases, their respective codes of <code>ar</code> and <code>zh</code> is very vague as to which dialect/topolect is used or perhaps some terse classical variant which may be difficult for all but very educated users. For such macrolanguages, it is recommended that the sub-language tag is used as a suffix to the macrolanguage tag, eg:</p>
+
+	<table summary="Examples of macrolanguages used with sub-language subtags">
+	<caption>Macrolanguage subtag + sub-language subtag examples</caption>
+	<thead>
+	<tr>
+		<th scope="col">Language tag</th>
+		<th scope="col">Description</th>
+		<th scope="col">Component subtags</th>
+	</tr>
+	</thead>
+	<tbody>
+	<tr>
+		<td><code>zh-cmn</code></td>
+		<td>Mandarin (Putonghau/Guoyu) Chinese</td>
+		<td><code>macrolanguage</code>+<code>sublanguage</code></td>
+	</tr>
+	<tr>
+		<td><code>zh-yue</code></td>
+		<td>Yue (Cantonese) Chinese</td>
+		<td><code>macrolanguage</code>+<code>sublanguage</code></td>
+	</tr>
+	<tr>
+		<td><code>zh-cmn-Hans</code></td>
+		<td>Mandarin (Putonghau/Guoyu) Chinese written in Simplified script</td>
+		<td><code>macrolanguage</code>+<code>sublanguage</code>+<code>script</code></td>
+	</tr>
+	<tr>
+		<td><code>zh-cmn-Hant</code></td>
+		<td>Mandarin (Putonghau/Guoyu) Chinese written in Traditional script</td>
+		<td><code>macrolanguage</code>+<code>sublanguage</code>+<code>script</code></td>
+	</tr>
+	<tr>
+		<td><code>zh-nan-Latn-TW</code></td>
+		<td>Minnan (Hoklo) Chinese written in Latin script (POJ Romanisation) as used in Taiwan</td>
+		<td><code>macrolanguage</code>+<code>sublanguage</code>+<code>script</code>+<code>region</code></td>
+	</tr>
+	</tbody>
+	</table>
+
+	</div>
+	<a href="#top">Top</a>
+	<br /><br />
+
+	<a name="otherconsiderations"></a><b>5.ii. Other considerations</b>
+	<br /><br />
+	<div class="paragraph">
+
+	<h3>Normalisation of language tags for phpBB:</h3>
+
+	<p>For phpBB, the language tags are <strong>not</strong> used in their raw form and instead converted to all lower-case and have the hyphen <code>-</code> replaced with an underscore <code>_</code> where appropiate, with some examples below:</p>
+
+	<table summary="Normalisation of language tags for usage in phpBB">
+	<caption>Language tag normalisation examples</caption>
+	<thead>
+	<tr>
+		<th scope="col">Raw language tag</th>
+		<th scope="col">Description</th>
+		<th scope="col">Value of <code>USER_LANG</code><br />in <code>./common.php</code></th>
+		<th scope="col">Language pack directory<br />name in <code>/language/</code></th>
+	</tr>
+	</thead>
+	<tbody>
+	<tr>
+		<td><code>en</code></td>
+		<td>British English</td>
+		<td><code>en</code></td>
+		<td><code>en</code></td>
+	</tr>
+	<tr>
+		<td><code>de-AT</code></td>
+		<td>German as used in Austria</td>
+		<td><code>de-at</code></td>
+		<td><code>de_at</code></td>
+	</tr>
+	<tr>
+		<td><code>es-419</code></td>
+		<td>Spanish as used in Latin America &amp; Caribbean</td>
+		<td><code>en-419</code></td>
+		<td><code>en_419</code></td>
+	</tr>
+	<tr>
+		<td><code>zh-yue-Hant-HK</code></td>
+		<td>Cantonese written in Traditional script as used in Hong Kong</td>
+		<td><code>zh-yue-hant-hk</code></td>
+		<td><code>zh_yue_hant_hk</code></td>
+	</tr>
+	</tbody>
+	</table>
+
+	<h3>How to use <code>iso.txt</code>:</h3>
+
+	<p>The <code>iso.txt</code> file is a small UTF-8 encoded plain-text file which consists of three lines:</p>
+
+	<ol class="menu">
+		<li><code>Language's English name</code></li>
+		<li><code>Language's local name</code></li>
+		<li><code>Authors information</code></li>
+	</ol>
+
+	<p>Because language tags themselves are meant to be machine read, they can be rather obtuse to humans and why descriptive strings as provided by <code>iso.txt</code> are needed. Whilst <code>en-US</code> could be fairly easily deduced to be "English as used in the United States", <code>de-CH</code> is more difficult less one happens to know that <code>de</code> is from "<span lang="de">Deutsch</span>", German for "German" and <code>CH</code> is the abbreviation of the official Latin name for Switzerland, "<span lang="la">Confoederatio Helvetica</span>".</p>
+
+	<p>For the English language description, the language name is always first and any additional attributes required to describe the subtags within the language code are then listed in order separated with commas and enclosed within parentheses, eg:</p>
+
+	<table summary="English language description examples of iso.txt for usage in phpBB">
+	<caption>English language description examples for iso.txt</caption>
+	<thead>
+	<tr>
+		<th scope="col">Raw language tag</th>
+		<th scope="col">English description within <code>iso.txt</code></th>
+	</tr>
+	</thead>
+	<tbody>
+	<tr>
+		<td><code>en</code></td>
+		<td>British English</td>
+	</tr>
+	<tr>
+		<td><code>en-US</code></td>
+		<td>English (United States)</td>
+	</tr>
+	<tr>
+		<td><code>en-053</code></td>
+		<td>English (Australia &amp; New Zealand)</td>
+	</tr>
+	<tr>
+		<td><code>de</code></td>
+		<td>German</td>
+	</tr>
+	<tr>
+		<td><code>de-CH-1996</code></td>
+		<td>German (Switzerland, 1996 orthography)</td>
+	</tr>
+	<tr>
+		<td><code>gws-1996</code></td>
+		<td>Swiss German (1996 orthography)</td>
+	</tr>
+	<tr>
+		<td><code>zh-cmn-Hans-CN</code></td>
+		<td>Mandarin Chinese (Simplified, Mainland China)</td>
+	</tr>
+	<tr>
+		<td><code>zh-yue-Hant-HK</code></td>
+		<td>Cantonese Chinese (Traditional, Hong Kong)</td>
+	</tr>
+	</tbody>
+	</table>
+
+	<p>For the localised language description, just translate the English version though use whatever appropiate punctuation typical for your own locale, assuming the language uses punctuation at all.</p>
+
+	<h3>Unicode bi-directional considerations:</h3>
+	
+	<p>Because phpBB is now UTF-8, all translators must take into account that certain strings may be shown when the directionality of the document is either opposite to normal or is ambiguous.</p>
+		
+	<p>The various Unicode control characters for bi-directional text and their HTML enquivalents where appropiate are as follows:</p>
+	
+	<table summary="Table of the various Unicode bidirectional control characters">
+	<caption>Unicode bidirectional control characters &amp; HTML elements/entities</caption>
+	<thead>
+	<tr>
+		<th scope="col">Unicode character<br />abbreviation</th>
+		<th scope="col">Unicode<br />code-point</th>
+		<th scope="col">Unicode character<br />name</th>
+		<th scope="col">Equivalent HTML<br />markup/entity</th>
+		<th scope="col">Raw character<br />(enclosed between '')</th>
+	</tr>
+	</thead>
+	<tbody>
+	<tr>
+		<td><code>LRM</code></td>
+		<td><code>U+200E</code></td>
+		<td>Left-to-Right Mark</td>
+		<td><code>&amp;lrm;</code></td>
+		<td>'&#x200E;'</td>
+	</tr>
+	<tr>
+		<td><code>RLM</code></td>
+		<td><code>U+200F</code></td>
+		<td>Right-to-Left Mark</td>
+		<td><code>&amp;rlm;</code></td>
+		<td>'&#x200F;'</td>
+	</tr>
+	<tr>
+		<td><code>LRE</code></td>
+		<td><code>U+202A</code></td>
+		<td>Left-to-Right Embedding</td>
+		<td><code>dir=&quot;ltr&quot;</code></td>
+		<td>'&#x202A;'</td>
+	</tr>
+	<tr>
+		<td><code>RLE</code></td>
+		<td><code>U+202B</code></td>
+		<td>Right-to-Left Embedding</td>
+		<td><code>dir=&quot;rtl&quot;</code></td>
+		<td>'&#x202B;'</td>
+	</tr>
+	<tr>
+		<td><code>PDF</code></td>
+		<td><code>U+202C</code></td>
+		<td>Pop Directional Formatting</td>
+		<td><code>&lt;/bdo&gt;</code></td>
+		<td>'&#x202C;'</td>
+	</tr>
+		<td><code>LRO</code></td>
+		<td><code>U+202D</code></td>
+		<td>Left-to-Right Override</td>
+		<td><code>&lt;bdo dir=&quot;ltr&quot;&gt;</code></td>
+		<td>'&#x202D;'</td>
+	</tr>
+	<tr>
+		<td><code>RLO</code></td>
+		<td><code>U+202E</code></td>
+		<td>Right-to-Left Override</td>
+		<td><code>&lt;bdo dir=&quot;rtl&quot;&gt;</code></td>
+		<td>'&#x202E;'</td>
+	</tr>
+	</tbody>
+	</table>
+	
+	<p>For <code>iso.txt</code>, the directionality of the text can be explicitly set using special Unicode characters via any of the three methods provided by left-to-right/right-to-left markers/embeds/overrides, as without them, the ordering of characters will be incorrect, eg:</p>
+	
+	<table summary="Effect of using Unicode bidirectional control characters within iso.txt">
+	<caption>Unicode bidirectional control characters iso.txt</caption>
+	<thead>
+	<tr>
+		<th scope="col">Directionality</th>
+		<th scope="col">Raw character view</th>
+		<th scope="col">Display of localised<br />description in <code>iso.txt</code></th>
+		<th scope="col">Ordering</th>
+	</tr>
+	</thead>
+	<tbody>
+	<tr>
+		<td><code>dir=&quot;ltr&quot;</code></td>
+		<td>English (Australia &amp; New Zealand)</td>
+		<td dir="ltr">English (Australia &amp; New Zealand)</td>
+		<td class="good">Correct</td>
+	</tr>
+	<tr>
+		<td><code>dir=&quot;rtl&quot;</code></td>
+		<td>English (Australia &amp; New Zealand)</td>
+		<td dir="rtl">English (Australia &amp; New Zealand)</td>
+		<td class="bad">Incorrect</td>
+	</tr>
+	<tr>
+		<td><code>dir=&quot;rtl&quot;</code> with <code>LRM</code></td>
+		<td>English (Australia &amp; New Zealand)<code>U+200E</code></td>
+		<td dir="rtl">English (Australia &amp; New Zealand)&#x200E;</td>
+		<td class="good">Correct</td>
+	</tr>
+	<tr>
+		<td><code>dir=&quot;rtl&quot;</code> with <code>LRE</code> &amp; <code>PDF</code></td>
+		<td><code>U+202A</code>English (Australia &amp; New Zealand)<code>U+202C</code></td>
+		<td dir="rtl">&#x202A;English (Australia &amp; New Zealand)&#x202C;</td>
+		<td class="good">Correct</td>
+	</tr>
+	<tr>
+		<td><code>dir=&quot;rtl&quot;</code> with <code>LRO</code> &amp; <code>PDF</code></td>
+		<td><code>U+202D</code>English (Australia &amp; New Zealand)<code>U+202C</code></td>
+		<td dir="rtl">&#x202D;English (Australia &amp; New Zealand)&#x202C;</td>
+		<td class="good">Correct</td>
+	</tr>
+	</tbody>
+	</table>
+	
+	<p>In choosing which of the three methods to use, in the majority of cases, the <code>LRM</code> or <code>RLM</code> to put a &quot;strong&quot; character to fully enclose an ambiguous punctuation character and thus make it inherit the correct directionality is sufficient.</p>
+	<p>Within some cases, there may be mixed scripts of a left-to-right and right-to-left direction, so using <code>LRE</code> &amp; <code>RLE</code> with <code>PDF</code> may be more appropiate. Lastly, in very rare instances where directionality must be forced, then use <code>LRO</code> &amp; <code>RLO</code> with <code>PDF</code>.</p>
+	<p>For further information on authoring techniques of bi-directional text, please see the W3C tutorial on <a href="http://www.w3.org/International/tutorials/bidi-xhtml/">authoring techniques for XHTML pages with bi-directional text</a>.</p>
+	
+	<h3>Working with placeholders:</h3>
+	
+	<p>As phpBB is translated into languages with different ordering rules to that of English, it is possible to show specific values in any order deemed appropiate. Take for example the extremely simple &quot;Page <em>X</em> of <em>Y</em>&quot;, whilst in English this could just be coded as:</p>
+	
+	<blockquote><pre>
+	...
+'PAGE_OF'	=>	'Page %s of %s',
+		/* Just grabbing the replacements as they
+		come and hope they are in the right order */
+	...
+	</pre></blockquote>
+	
+	<p>&hellip; a clearer way to show explicit replacement ordering is to do:</p>
+	
+	<blockquote><pre>
+	...
+'PAGE_OF'	=>	'Page %1$s of %2$s',
+		/* Explicit ordering of the replacements,
+		even if they are the same order as English */
+	...
+	</pre></blockquote>
+	
+	<p>Why bother at all? Because some languages, the string transliterated back to English might read something like:</p>
+	
+	<blockquote><pre>
+	...
+'PAGE_OF'	=>	'Total of %2$s pages, currently on page %1$s',
+		/* Explicit ordering of the replacements,
+		reversed compared to English as the total comes first */
+	...
+	</pre></blockquote>
+	
+	</div>
+	<a href="#top">Top</a>
+	<br /><br />
+
+	<a name="writingstyle"></a><b>5.iii. Writing Style</b>
+	<br /><br />
+	<div class="paragraph">
+	
+	<h3>Miscellaneous tips &amp; hints:</h3>
+	
+	<p>As the language files are PHP files, where the various strings for phpBB are stored within an array which in turn are used for display within an HTML page, rules of syntax for both must be considered. Potentially problematic characters are: <code>'</code> (straight quote/apostrophe), <code>&quot;</code> (straight double quote), <code>&lt;</code> (less-than sign), <code>&gt;</code> (greater-than sign) and <code>&amp;</code> (ampersand).</p>
+	
+	<p class="bad">// Bad - The un-escapsed straight-quote/apostrophe will throw a PHP parse error
+	
+	<blockquote><pre>
+	...
+'CONV_ERROR_NO_AVATAR_PATH'
+	=>	'Note to developer: you must specify $convertor['avatar_path'] to use %s.',
+	...
+	</pre></blockquote>
+	
+	<p class="good">// Good - Literal straight quotes should be escaped with a backslash, ie: \
+	
+	<blockquote><pre>
+	...
+'CONV_ERROR_NO_AVATAR_PATH'
+	=>	'Note to developer: you must specify $convertor[\'avatar_path\'] to use %s.',
+	...
+	</pre></blockquote>
+	
+	<p>However, because phpBB3 now uses UTF-8 as its sole encoding, we can actually use this to our advantage and not have to remember to escape a straight quote when we don't have to:</p>
+	
+	<p class="bad">// Bad - The un-escapsed straight-quote/apostrophe will throw a PHP parse error
+	
+	<blockquote><pre>
+	...
+'USE_PERMISSIONS'	=>	'Test out user's permissions',
+	...
+	</pre></blockquote>
+	
+	<p class="good">// Okay - However, non-programmers wouldn't type "user\'s" automatically
+	
+	<blockquote><pre>
+	...
+'USE_PERMISSIONS'	=>	'Test out user\'s permissions',
+	...
+	</pre></blockquote>
+	
+	<p class="good">// Best - Use the Unicode Right-Single-Quotation-Mark character
+	
+	<blockquote><pre>
+	...
+'USE_PERMISSIONS'	=>	'Test out user&rsquo;s permissions',
+	...
+	</pre></blockquote>
+	
+	<p>The <code>&quot;</code> (straight double quote), <code>&lt;</code> (less-than sign) and <code>&gt;</code> (greater-than sign) characters can all be used as displayed glyphs or as part of HTML markup, for example:</p>
+	
+	<p class="bad">// Bad - Invalid HTML, as segments not part of elements are not entitised
+	
+	<blockquote><pre>
+	...
+'FOO_BAR'	=>	'PHP version &lt; 4.3.3.&lt;br /&gt;
+	Visit &quot;Downloads&quot; at &lt;a href=&quot;http://www.php.net/&quot;&gt;www.php.net&lt;/a&gt;.',
+	...
+	</pre></blockquote>
+	
+	<p class="good">// Okay - No more invalid HTML, but &quot;&amp;quot;&quot; is rather clumsy
+	
+	<blockquote><pre>
+	...
+'FOO_BAR'	=>	'PHP version &amp;lt; 4.3.3.&lt;br /&gt;
+	Visit &amp;quot;Downloads&amp;quot; at &lt;a href=&quot;http://www.php.net/&quot;&gt;www.php.net&lt;/a&gt;.',
+	...
+	</pre></blockquote>
+	
+	<p class="good">// Best - No more invalid HTML, and usage of correct typographical quotation marks
+	
+	<blockquote><pre>
+	...
+'FOO_BAR'	=>	'PHP version &amp;lt; 4.3.3.&lt;br /&gt;
+	Visit &ldquo;Downloads&rdquo; at &lt;a href=&quot;http://www.php.net/&quot;&gt;www.php.net&lt;/a&gt;.',
+	...
+	</pre></blockquote>
+	
+	<p>Lastly, the <code>&amp;</code> (ampersand) must always be entitised regardless of where it is used:</p>
+	
+	<p class="bad">// Bad - Invalid HTML, none of the ampersands are entitised
+	
+	<blockquote><pre>
+	...
+'FOO_BAR'	=>	'&lt;a href=&quot;http://somedomain.tld/?foo=1&amp;bar=2&quot;&gt;Foo &amp; Bar&lt;/a&gt;.',
+	...
+	</pre></blockquote>
+	
+	<p class="good">// Good - Valid HTML, amperands are correctly entitised in all cases
+	
+	<blockquote><pre>
+	...
+'FOO_BAR'	=>	'&lt;a href=&quot;http://somedomain.tld/?foo=1&amp;amp;bar=2&quot;&gt;Foo &amp;amp; Bar&lt;/a&gt;.',
+	...
+	</pre></blockquote>
+	
+	<p>As for how these charcters are entered depends very much on choice of Operating System, current language locale/keyboard configuration and native abilities of the text editor used to edit phpBB language files. Please see <a href="http://en.wikipedia.org/wiki/Unicode#Input_methods">http://en.wikipedia.org/wiki/Unicode#Input_methods</a> for more information.</p>
+
+	<h3>Spelling, punctuation, grammar, et cetera:</h3>
+
+	<p>The default language pack bundled with phpBB is <strong>British English</strong> using <a href="http://www.cambridge.org/">Cambridge University Press</a> spelling and is assigned the language code <code>en</code>. The style and tone of writing tends towards formal and translations <strong>should</strong> emulate this style, at least for the variant using the most compact language code. Less formal translations or those with colloquialisms <strong>must</strong> be denoted as such via either an <code>extension</code> or <code>privateuse</code> tag within its language code.</p>
+
+	</div>
+<a href="#top">Top</a>
+<br /><br />
+
+<hr />
+
+<a name="changes"></a><h1>6. Guidelines Changelog</h1>
 <div class="paragraph">
+
+<h2>Revision 1.16</h2>
+
+<ul class="menu">
+	<li>Added <a href="#translation">5. Translation (<abbr title="Internationalisation">i18n</abbr>/<abbr title="Localisation">L10n</abbr>) Guidelines</a> section to explain expected format and authoring considerations for language packs that are to be created for phpBB.</li>
+</ul>
+
+<h2>Revision 1.11-1.15</h2>
+
+<ul class="menu">
+	<li>Various document formatting, spelling, punctuation, grammar bugs.</li>
+</ul>
 
 <h2>Revision 1.9-1.10</h2>
 
