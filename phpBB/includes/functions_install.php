@@ -246,7 +246,7 @@ function get_tables($db)
 * @param	array	$dbms should be of the format of an element of the array returned by {@link get_available_dbms get_available_dbms()}
 *					necessary extensions should be loaded already
 */
-function connect_check_db($error_connect, &$error, $dbms, $table_prefix, $dbhost, $dbuser, $dbpasswd, $dbname, $dbport, $prefix_may_exist = false, $load_dbal = true)
+function connect_check_db($error_connect, &$error, $dbms, $table_prefix, $dbhost, $dbuser, $dbpasswd, $dbname, $dbport, $prefix_may_exist = false, $load_dbal = true, $unicode_check = true)
 {
 	global $phpbb_root_path, $phpEx, $config, $lang;
 
@@ -435,33 +435,39 @@ function connect_check_db($error_connect, &$error, $dbms, $table_prefix, $dbhost
 			break;
 			
 			case 'oracle':
-				$sql = "SELECT *
-					FROM NLS_DATABASE_PARAMETERS
-					WHERE PARAMETER = 'NLS_RDBMS_VERSION'
-						OR PARAMETER = 'NLS_CHARACTERSET'";
-				$result = $db->sql_query($sql);
-
-				while ($row = $db->sql_fetchrow($result))
+				if ($unicode_check)
 				{
-					$stats[$row['parameter']] = $row['value'];
-				}
-				$db->sql_freeresult($result);
+					$sql = "SELECT *
+						FROM NLS_DATABASE_PARAMETERS
+						WHERE PARAMETER = 'NLS_RDBMS_VERSION'
+							OR PARAMETER = 'NLS_CHARACTERSET'";
+					$result = $db->sql_query($sql);
 
-				if (version_compare($stats['NLS_RDBMS_VERSION'], '9.2', '<') && $stats['NLS_CHARACTERSET'] !== 'UTF8')
-				{
-					$error[] = $lang['INST_ERR_DB_NO_ORACLE'];
+					while ($row = $db->sql_fetchrow($result))
+					{
+						$stats[$row['parameter']] = $row['value'];
+					}
+					$db->sql_freeresult($result);
+
+					if (version_compare($stats['NLS_RDBMS_VERSION'], '9.2', '<') && $stats['NLS_CHARACTERSET'] !== 'UTF8')
+					{
+						$error[] = $lang['INST_ERR_DB_NO_ORACLE'];
+					}
 				}
 			break;
 			
 			case 'postgres':
-				$sql = "SHOW server_encoding;";
-				$result = $db->sql_query($sql);
-				$row = $db->sql_fetchrow($result);
-				$db->sql_freeresult($result);
-
-				if ($row['server_encoding'] !== 'UNICODE' && $row['server_encoding'] !== 'UTF8')
+				if ($unicode_check)
 				{
-					$error[] = $lang['INST_ERR_DB_NO_POSTGRES'];
+					$sql = "SHOW server_encoding;";
+					$result = $db->sql_query($sql);
+					$row = $db->sql_fetchrow($result);
+					$db->sql_freeresult($result);
+
+					if ($row['server_encoding'] !== 'UNICODE' && $row['server_encoding'] !== 'UTF8')
+					{
+						$error[] = $lang['INST_ERR_DB_NO_POSTGRES'];
+					}
 				}
 			break;
 		}
