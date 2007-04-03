@@ -190,7 +190,7 @@ function selectCode(a)
 		// Safari
 		if (s.setBaseAndExtent)
 		{
-			s.setBaseAndExtent(e, 0, e, 1);
+			s.setBaseAndExtent(e, 0, e, e.innerText.length - 1);
 		}
 		// Firefox and Opera
 		else
