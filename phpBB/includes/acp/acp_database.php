@@ -209,10 +209,14 @@ class acp_database
 						$delete = request_var('delete', '');
 						$file = request_var('file', '');
 
-						preg_match('#^backup_\d{10,}_[a-z\d]{16}\.(sql(?:\.(?:gz|bz2))?)$#', $file, $matches);
+						if (!preg_match('#^backup_\d{10,}_[a-z\d]{16}\.(sql(?:\.(?:gz|bz2))?)$#', $file, $matches))
+						{
+							trigger_error($user->lang['BACKUP_INVALID'] . adm_back_link($this->u_action), E_USER_WARNING);
+						}
+
 						$file_name = $phpbb_root_path . 'store/' . $matches[0];
 
-						if (!(file_exists($file_name) && is_readable($file_name)))
+						if (!file_exists($file_name) || !is_readable($file_name)))
 						{
 							trigger_error($user->lang['BACKUP_INVALID'] . adm_back_link($this->u_action), E_USER_WARNING);
 						}
