@@ -677,8 +677,7 @@ input, textarea {
 	border-top: 1px solid #AFAEAA;
 	border-right: 1px solid #D5D5C8;
 	border-bottom: 1px solid #D5D5C8;
-/*	background-color: #E3DFD8;*/
-	background-color: #F9F9F9;
+	background-color: #E3DFD8;
 }
 
 .rtl input, .rtl textarea {
@@ -693,8 +692,7 @@ input:hover, textarea:hover {
 	border-top: 1px solid #AFAEAA;
 	border-right: 1px solid #AFAEAA;
 	border-bottom: 1px solid #AFAEAA;
-/*	background-color: #E9E9E2; */
-	background-color: #DCEBFE;
+	background-color: #E9E9E2; 
 }
 
 input.langvalue, textarea.langvalue {
@@ -947,8 +945,7 @@ fieldset dl dd label:hover {
 
 input:focus, textarea:focus {
 	border: 1px solid #BC2A4D;
-/*	background-color: #E9E9E2;*/
-	background-color: #F9F9F9;
+	background-color: #E9E9E2;
 	color: #BC2A4D;
 }
 
