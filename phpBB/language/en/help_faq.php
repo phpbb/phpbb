@@ -188,7 +188,7 @@ $help = array(
 	),
 	array(
 		0 => 'What are sticky topics?',
-		1 => 'Sticky topics appear below any announcements in viewforum and only on the first page. They are often quite important so you should read them where possible. As with announcements the board administrator determines what permissions are required to post sticky topics in each forum.'
+		1 => 'Sticky topics appear below any announcements within the forum and only on the first page. They are often quite important so you should read them where possible. As with announcements the board administrator determines what permissions are required to post sticky topics in each forum.'
 	),
 	array(
 		0 => 'What are locked topics?',
