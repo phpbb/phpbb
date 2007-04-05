@@ -299,6 +299,7 @@ function colorPalette(dir, width, height)
 {
 	var r = 0, g = 0, b = 0;
 	var numberList = new Array(6);
+	var color = '';
 
 	numberList[0] = '00';
 	numberList[1] = '40';
