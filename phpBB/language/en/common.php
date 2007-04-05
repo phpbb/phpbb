@@ -107,6 +107,7 @@ $lang = array_merge($lang, array(
 	'CHANGING_PREFERENCES'	=> 'Changing forum preferences',
 	'CHANGING_PROFILE'		=> 'Changing forum profile settings',
 	'CLICK_VIEW_PRIVMSG'	=> '%sGo to your inbox%s',
+	'COLLAPSE_VIEW'			=> 'Collapse view',
 	'CLOSE_WINDOW'			=> 'Close window',
 	'COLOUR_SWATCH'			=> 'Colour swatch',
 	'COMMA_SEPARATOR'		=> ', ',	// Used in pagination and secret yet-to-be-release style, use localised comma if appropriate, eg: Ideographic or Arabic
