@@ -1,4 +1,13 @@
 <?php
+//
+// Security message:
+//
+// This script is potentially dangerous.
+// Remove or comment the next line (die(".... ) to enable this script.
+// Do NOT FORGET to either remove this script or disable it after you have used it.
+//
+die("Please read the first lines of this script for instructions on how to enable it");
+
 
 // IP regular expressions
 
