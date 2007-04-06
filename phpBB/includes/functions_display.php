@@ -287,23 +287,25 @@ function display_forums($root_data = '', $display_moderators = true, $return_mod
 		{
 			foreach ($subforums[$forum_id] as $subforum_id => $subforum_row)
 			{
-				// Update unread information if needed
-				if (!$forum_unread)
-				{
-					$forum_unread = (isset($forum_tracking_info[$subforum_id]) && $subforum_row['orig_forum_last_post_time'] > $forum_tracking_info[$subforum_id]) ? true : false;
-				}
+				$subforum_unread = (isset($forum_tracking_info[$subforum_id]) && $subforum_row['orig_forum_last_post_time'] > $forum_tracking_info[$subforum_id]) ? true : false;
 
 				if ($subforum_row['display'] && $subforum_row['name'])
 				{
 					$subforums_list[] = array(
 						'link'		=> append_sid("{$phpbb_root_path}viewforum.$phpEx", 'f=' . $subforum_id),
 						'name'		=> $subforum_row['name'],
-						'unread'	=> $forum_unread,
+						'unread'	=> $subforum_unread,
 					);
 				}
 				else
 				{
 					unset($subforums[$forum_id][$subforum_id]);
+				}
+
+				// If one subforum is unread the forum gets unread too...
+				if ($subforum_unread)
+				{
+					$forum_unread = true;
 				}
 			}
 

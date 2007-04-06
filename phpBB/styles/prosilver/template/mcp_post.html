@@ -138,11 +138,12 @@
 	</div>
 <!-- ENDIF -->
 
-<!-- IF S_MCP_QUEUE or S_MCP_REPORTS or RETURN_TOPIC -->
+
+<!-- IF S_MCP_QUEUE or S_MCP_REPORT or RETURN_TOPIC -->
 	<div class="panel">
 		<div class="inner"><span class="corners-top"><span></span></span>
 
-		<p><!-- IF S_MCP_QUEUE -->{RETURN_QUEUE} | {RETURN_TOPIC_SIMPLE} | {RETURN_POST}<!-- ELSEIF S_MCP_REPORTS -->{RETURN_REPORTS}<!-- ELSE -->{RETURN_TOPIC}<!-- ENDIF --></p>
+		<p><!-- IF S_MCP_QUEUE -->{RETURN_QUEUE} | {RETURN_TOPIC_SIMPLE} | {RETURN_POST}<!-- ELSEIF S_MCP_REPORT -->{RETURN_REPORTS} | <a href="{U_VIEW_TOPIC}">{L_VIEW_TOPIC}</a><!-- ELSE -->{RETURN_TOPIC}<!-- ENDIF --></p>
 
 		<span class="corners-bottom"><span></span></span></div>
 	</div>

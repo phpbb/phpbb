@@ -679,6 +679,7 @@ class ucp_groups
 							'S_DESC_SMILIES_CHECKED'=> $group_desc_data['allow_smilies'],
 
 							'S_RANK_OPTIONS'		=> $rank_options,
+							'AVATAR'				=> $avatar_img,
 							'AVATAR_IMAGE'			=> $avatar_img,
 							'AVATAR_MAX_FILESIZE'	=> $config['avatar_filesize'],
 							'AVATAR_WIDTH'			=> (isset($group_row['group_avatar_width'])) ? $group_row['group_avatar_width'] : '',
