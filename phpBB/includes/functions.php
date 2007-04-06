@@ -2616,11 +2616,7 @@ function make_clickable($text, $server_url = false)
 
 		// relative urls for this board
 		$magic_url_match[] = '#(^|[\n\t (])(' . preg_quote($server_url, '#') . ')/(' . get_preg_expression('relative_url_inline') . ')#ie';
-
-//		$magic_url_replace[] = "'\$1<!-- l --><a href=\"' . append_sid('\$2/' . preg_replace('/(&amp;|\?)sid=[0-9a-f]{32}$/', '', preg_replace('/(&amp;|\?)sid=[0-9a-f]{32}&amp;/', '\\\\1', '\$3'))) . '\">' . ((strlen('\$3')) ? preg_replace('/(&amp;|\?)sid=[0-9a-f]{32}$/', '', preg_replace('/(&amp;|\?)sid=[0-9a-f]{32}&amp;/', '\\\\1', '\$3')) : '\$2/') . '</a><!-- l -->'";
-
-		// Instead of the above, we do not call append_sid to not let the sid and the _extra_url being appended...
-		$magic_url_replace[] = "'\$1<!-- l --><a href=\"$2/' . preg_replace('/(&amp;|\?)sid=[0-9a-f]{32}$/', '', preg_replace('/(&amp;|\?)sid=[0-9a-f]{32}&amp;/', '\\\\1', '\$3')) . '\">' . ((strlen('\$3')) ? preg_replace('/(&amp;|\?)sid=[0-9a-f]{32}$/', '', preg_replace('/(&amp;|\?)sid=[0-9a-f]{32}&amp;/', '\\\\1', '\$3')) : '\$2/') . '</a><!-- l -->'";
+		$magic_url_replace[] = "'\$1<!-- l --><a href=\"' . append_sid('\$2/' . preg_replace('/(&amp;|\?)sid=[0-9a-f]{32}$/', '', preg_replace('/(&amp;|\?)sid=[0-9a-f]{32}&amp;/', '\\\\1', '\$3'))) . '\">' . ((strlen('\$3')) ? preg_replace('/(&amp;|\?)sid=[0-9a-f]{32}$/', '', preg_replace('/(&amp;|\?)sid=[0-9a-f]{32}&amp;/', '\\\\1', '\$3')) : '\$2/') . '</a><!-- l -->'";
 
 		// matches a xxxx://aaaaa.bbb.cccc. ...
 		$magic_url_match[] = '#(^|[\n\t (])(' . get_preg_expression('url_inline') . ')#ie';
