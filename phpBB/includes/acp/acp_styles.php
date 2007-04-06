@@ -1452,7 +1452,7 @@ parse_css_file = {PARSE_CSS_FILE}
 		{
 			while (($file = readdir($dp)) !== false)
 			{
-				if (!is_file($dir . '/' . $file) && !is_link($dir . '/' . $file) && $file[0] != '.' && strtoupper($file) != 'CVS' && !sizeof($imagesetlist['lang']))
+				if (!is_file($dir . '/' . $file) && !is_link($dir . '/' . $file) && $file[0] != '.' && strtoupper($file) != 'CVS')
 				{
 					$dp2 = @opendir("$dir/$file");
 
@@ -1463,10 +1463,9 @@ parse_css_file = {PARSE_CSS_FILE}
 
 					while (($file2 = readdir($dp2)) !== false)
 					{
-						$imglang = $file;
 						if (preg_match('#\.(?:gif|jpg|png)$#', $file2))
 						{
-							$imagesetlist['lang'][] = "$file/$file2";
+							$imagesetlist['all_lang'][$file][] = "$file/$file2";
 						}
 					}
 					closedir($dp2);
@@ -1481,7 +1480,29 @@ parse_css_file = {PARSE_CSS_FILE}
 
 		// Make sure the list of possible images is sorted alphabetically
 		sort($imagesetlist['nolang']);
-		sort($imagesetlist['lang']);
+		foreach ($imagesetlist['all_lang'] as $lang => $data)
+		{
+			sort($imagesetlist['all_lang'][$lang]);
+		}
+
+		if (isset($imagesetlist['all_lang'][$user->img_lang]) && sizeof($imagesetlist['all_lang'][$user->img_lang]))
+		{
+			$imglang = $lang;
+			$imagesetlist['lang'] = $imagesetlist['all_lang'][$user->img_lang];
+		}
+		else
+		{
+			foreach ($imagesetlist['all_lang'] as $lang => $data)
+			{
+				if (sizeof($imagesetlist['all_lang'][$user->img_lang]))
+				{
+					$imglang = $lang;
+					$imagesetlist['lang'] = $imagesetlist['all_lang'][$lang];
+					break;
+				}
+			}
+		}
+		unset($imagesetlist['all_lang']);
 
 		$imagesetlist_options = '';
 		foreach ($imagesetlist as $type => $img_ary)
