@@ -59,13 +59,14 @@
 						<!-- IF searchresults.S_TOPIC_UNAPPROVED or searchresults.S_POSTS_UNAPPROVED --><a href="{searchresults.U_MCP_QUEUE}">{searchresults.UNAPPROVED_IMG}</a> <!-- ENDIF -->
 						<!-- IF searchresults.S_TOPIC_REPORTED --><a href="{searchresults.U_MCP_REPORT}">{REPORTED_IMG}</a><!-- ENDIF --><br />
 						<!-- IF searchresults.PAGINATION --><strong class="pagination"><span>{searchresults.PAGINATION}</span></strong><!-- ENDIF -->
-						{L_POST_BY_AUTHOR} {searchresults.TOPIC_AUTHOR_FULL} {L_POSTED_ON_DATE} {searchresults.FIRST_POST_TIME} {searchresults.NEWEST_POST_IMG}
+						{L_POST_BY_AUTHOR} {searchresults.TOPIC_AUTHOR_FULL} {L_POSTED_ON_DATE} {searchresults.FIRST_POST_TIME} {searchresults.NEWEST_POST_IMG} 
+						<!-- IF not searchresults.S_TOPIC_GLOBAL -->{L_IN} <a href="{searchresults.U_VIEW_FORUM}">{searchresults.FORUM_TITLE}</a><!-- ELSE --> ({L_GLOBAL})<!-- ENDIF -->
 					</dt>
 					<dd class="posts">{searchresults.TOPIC_REPLIES}</dd>
 					<dd class="views">{searchresults.TOPIC_VIEWS}</dd>
 					<dd class="lastpost"><span>
 						{L_POST_BY_AUTHOR} {searchresults.LAST_POST_AUTHOR_FULL}
-						<a href="{searchresults.U_LAST_POST}">{searchresults.LAST_POST_IMG}</a> <br />{L_POSTED_ON_DATE} {searchresults.LAST_POST_TIME}</span>
+						<a href="{searchresults.U_LAST_POST}">{searchresults.LAST_POST_IMG}</a> <br />{L_POSTED_ON_DATE} {searchresults.LAST_POST_TIME}<br /> </span>
 					</dd>
 				</dl>
 			</li>

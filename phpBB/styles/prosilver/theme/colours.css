@@ -851,7 +851,7 @@ pmlist li.pm_foe_colour, .pm_foe_colour {
 
 /* Avatar gallery */
 #gallery label {
-	background: #FFFFFF;
+	background-color: #FFFFFF;
 	border-color: #CCC;
 }
 
@@ -944,6 +944,13 @@ a.button2, input.button2, input.button3 {
 /* <a> button in the style of the form buttons */
 a.button1, a.button1:link, a.button1:visited, a.button1:active, a.button2, a.button2:link, a.button2:visited, a.button2:active {
 	color: #000000;
+}
+
+/* Hover states */
+a.button1:hover, input.button1:hover, a.button2:hover, input.button2:hover, input.button3:hover {
+	border: 1px solid #BC2A4D;
+	background-position: 0 100%;
+	color: #BC2A4D;
 }
 
 input.search {

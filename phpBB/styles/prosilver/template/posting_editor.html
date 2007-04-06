@@ -14,7 +14,14 @@
 					<!-- END to_recipient -->
 				</dd>
 			<!-- ENDIF -->
-			<dd><input class="inputbox" type="text" name="username" id="username_list" size="20" maxlength="40" value="" /> <input type="submit" name="add_to" value="{L_ADD}" class="button2" /><!-- IF S_ALLOW_MASS_PM --> <input type="submit" name="add_bcc" value="{L_ADD_BCC}" class="button2" /><!-- ENDIF --></dd>
+			<dd>
+			
+			<!-- IF S_ALLOW_MASS_PM -->
+			<textarea id="username_list" name="username_list"></textarea> <input type="submit" name="add_to" value="{L_ADD}" class="button2" />
+ 			<input type="submit" name="add_bcc" value="{L_ADD_BCC}" class="button2" />
+			<!-- ELSE -->
+			<input class="inputbox" type="text" name="username" id="username" size="20" maxlength="40" value="" /> <input type="submit" name="add_to" value="{L_ADD}" class="button2" />
+			<!-- ENDIF --></dd>
 		</dl>
 
 		<!-- IF S_ALLOW_MASS_PM and .bcc_recipient -->
@@ -104,9 +111,11 @@
 			{URL_STATUS}<br />
 			{SMILIES_STATUS}
 		<!-- ENDIF -->
-		<hr />
-		<!-- IF S_EDIT_DRAFT --><strong><a href="{S_UCP_ACTION}">{L_BACK_TO_DRAFTS}</a></strong><!-- ENDIF -->
-		<!-- IF S_DISPLAY_REVIEW --><strong><a href="#review">{L_TOPIC_REVIEW}</a></strong><!-- ENDIF -->
+		<!-- IF S_EDIT_DRAFT || S_DISPLAY_REVIEW -->
+			<hr />
+			<!-- IF S_EDIT_DRAFT --><strong><a href="{S_UCP_ACTION}">{L_BACK_TO_DRAFTS}</a></strong><!-- ENDIF -->
+			<!-- IF S_DISPLAY_REVIEW --><strong><a href="#review">{L_TOPIC_REVIEW}</a></strong><!-- ENDIF -->
+		<!-- ENDIF -->
 	</div>
 
 	<div id="message-box">

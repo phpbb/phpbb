@@ -429,14 +429,14 @@ dl.details {
 
 dl.details dt {
 	float: left;
-	width: 11em;
+	width: 16em;
 	text-align: right;
 	color: #000000;
 	display: block;
 }
 
 dl.details dd {
-	margin-left: 11em;
+	margin-left: 16em;
 	padding-left: 5px;
 	margin-bottom: 5px;
 	color: #828282;

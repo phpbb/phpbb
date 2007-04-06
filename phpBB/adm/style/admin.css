@@ -1206,11 +1206,13 @@ input.disabled {
 	width: 200px;
 	color: #000;
 	text-align: center;
+	border: 1px solid #AAA;
 }
 
 .tooltip span.top {
 	background: #EFEFEF;
 	font-weight: bold;
+	padding: 2px;
 }
 
 .tooltip span.bottom {
