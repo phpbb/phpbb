@@ -285,26 +285,15 @@ a:active {
 ---------------------------------------- */
 #acp {
 	margin: 4px 0;
-	padding: 1px;
+	padding: 3px 1px;
 	min-width: 550px;
 	background-color: #FFFFFF;
 	border: 1px #999999 solid;
 }
 
-/* WinIE tweaks \*/
-* html .box .corner1 { width: 6px; background-position: 2px  0px; }
-* html .box .corner3 { width: 6px; background-position: 2px -7px; }
-* html .box .corner2, * html .box .corner4 { width: 7px; }
-/* End tweaks */
-
-/* Moz tweak to fix occasional 1px vertical rounding error with the
-bottom corners.
-  The corner image is 1px taller so we make the container a bit taller too */
-html>body .box .corner3, html>body .box .corner4 { height: 6px; }
-
 .panel {
 	background: #F3F3F3 url("../images/innerbox_bg.gif") repeat-x top;
-	padding: 2px 0;
+	padding: 0;
 }
 
 span.corners-top, span.corners-bottom, 
@@ -338,6 +327,11 @@ span.corners-bottom span {
 	background-image: url("../images/corners_right.gif");
 	background-position: 100% 100%;
 }
+
+/* WinIE tweaks \*/
+* html span.corners-top, * html span.corners-bottom { background-image: url("../images/corners_left.gif"); }
+* html span.corners-top span, * html span.corners-bottom span { background-image: url("../images/corners_right.gif"); }
+/* End tweaks */
 
 /* Sub-navigation Menu
 ---------------------------------------- */
