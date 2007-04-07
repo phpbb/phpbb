@@ -30,7 +30,7 @@ html {
 	background: #DBD7D1;
 	/* Always show a scrollbar for short pages - stops the jump when the scrollbar appears. non-ie browsers */
 	height: 100%;
-	margin-bottom: 1px;
+	margin-bottom: 0.1px;
 }
 
 body {
