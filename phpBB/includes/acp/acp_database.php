@@ -216,7 +216,7 @@ class acp_database
 
 						$file_name = $phpbb_root_path . 'store/' . $matches[0];
 
-						if (!file_exists($file_name) || !is_readable($file_name)))
+						if (!file_exists($file_name) || !is_readable($file_name))
 						{
 							trigger_error($user->lang['BACKUP_INVALID'] . adm_back_link($this->u_action), E_USER_WARNING);
 						}
