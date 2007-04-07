@@ -11,7 +11,7 @@ html {
 	font-size: 100%;
 	/* Always show a scrollbar for short pages - stops the jump when the scrollbar appears. non-IE browsers */
 	height: 100%;
-	margin-bottom: 0.1px;
+	margin-bottom: 1px;
 }
 
 body {
