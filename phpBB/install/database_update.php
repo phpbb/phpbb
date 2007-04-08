@@ -319,6 +319,9 @@ $database_update_info = array(
 			USERS_TABLE		=> array(
 				'username_clean',
 			),
+			STYLES_IMAGESET_TABLE	=> array(
+				'imgset_nm',
+			),
 		),
 		'add_index'			=> array(
 			SEARCH_WORDLIST_TABLE	=> array(
@@ -341,6 +344,105 @@ $database_update_info = array(
 			),
 			USERS_TABLE				=> array(
 				'username_clean'	=> array('username_clean'),
+			),
+		),
+		// Add the following columns
+		'drop_columns'		=> array(
+			STYLES_IMAGESET_TABLE	=> array(
+				'site_logo',
+				'upload_bar',
+				'poll_left',
+				'poll_center',
+				'poll_right',
+				'icon_friend',
+				'icon_foe',
+				'forum_link',
+				'forum_read',
+				'forum_read_locked',
+				'forum_read_subforum',
+				'forum_unread',
+				'forum_unread_locked',
+				'forum_unread_subforum',
+				'topic_moved',
+				'topic_read',
+				'topic_read_mine',
+				'topic_read_hot',
+				'topic_read_hot_mine',
+				'topic_read_locked',
+				'topic_read_locked_mine',
+				'topic_unread',
+				'topic_unread_mine',
+				'topic_unread_hot',
+				'topic_unread_hot_mine',
+				'topic_unread_locked',
+				'topic_unread_locked_mine',
+				'sticky_read',
+				'sticky_read_mine',
+				'sticky_read_locked',
+				'sticky_read_locked_mine',
+				'sticky_unread',
+				'sticky_unread_mine',
+				'sticky_unread_locked',
+				'sticky_unread_locked_mine',
+				'announce_read',
+				'announce_read_mine',
+				'announce_read_locked',
+				'announce_read_locked_mine',
+				'announce_unread',
+				'announce_unread_mine',
+				'announce_unread_locked',
+				'announce_unread_locked_mine',
+				'global_read',
+				'global_read_mine',
+				'global_read_locked',
+				'global_read_locked_mine',
+				'global_unread',
+				'global_unread_mine',
+				'global_unread_locked',
+				'global_unread_locked_mine',
+				'pm_read',
+				'pm_unread',
+				'icon_contact_aim',
+				'icon_contact_email',
+				'icon_contact_icq',
+				'icon_contact_jabber',
+				'icon_contact_msnm',
+				'icon_contact_pm',
+				'icon_contact_yahoo',
+				'icon_contact_www',
+				'icon_post_delete',
+				'icon_post_edit',
+				'icon_post_info',
+				'icon_post_quote',
+				'icon_post_report',
+				'icon_post_target',
+				'icon_post_target_unread',
+				'icon_topic_attach',
+				'icon_topic_latest',
+				'icon_topic_newest',
+				'icon_topic_reported',
+				'icon_topic_unapproved',
+				'icon_user_online',
+				'icon_user_offline',
+				'icon_user_profile',
+				'icon_user_search',
+				'icon_user_warn',
+				'button_pm_forward',
+				'button_pm_new',
+				'button_pm_reply',
+				'button_topic_locked',
+				'button_topic_new',
+				'button_topic_reply',
+				'user_icon1',
+				'user_icon2',
+				'user_icon3',
+				'user_icon4',
+				'user_icon5',
+				'user_icon6',
+				'user_icon7',
+				'user_icon8',
+				'user_icon9',
+				'user_icon10'
 			),
 		),
 	),
@@ -521,6 +623,18 @@ foreach ($database_update_info as $version => $schema_changes)
 		}
 	}
 
+	// Drop columns?
+	if (!empty($schema_changes['drop_columns']))
+	{
+		foreach ($schema_changes['drop_columns'] as $table => $columns)
+		{
+			foreach ($columns as $column)
+			{
+				sql_column_remove($map_dbms, $table, $column);
+			}
+		}
+	}
+
 	// Add primary keys?
 	if (!empty($schema_changes['add_primary_keys']))
 	{
@@ -577,6 +691,353 @@ $no_updates = true;
 // some code magic
 if (version_compare($current_version, '3.0.b5', '<='))
 {
+	$tablename = $table_prefix . 'styles_imageset_data';
+	switch ($map_dbms)
+	{
+		case 'mysql_41':
+			$sql_ary = array(
+				"CREATE TABLE $tablename (
+					image_id smallint(4) UNSIGNED NOT NULL auto_increment,
+					image_name varchar(200) DEFAULT '' NOT NULL,
+					image_filename varchar(200) DEFAULT '' NOT NULL,
+					image_lang varchar(30) DEFAULT '' NOT NULL,
+					image_height smallint(4) UNSIGNED DEFAULT '0' NOT NULL,
+					image_width smallint(4) UNSIGNED DEFAULT '0' NOT NULL,
+					imageset_id tinyint(4) DEFAULT '0' NOT NULL,
+					PRIMARY KEY (image_id),
+					KEY imgset_id (imageset_id)
+				) CHARACTER SET `utf8` COLLATE `utf8_bin`");
+		break;
+
+		case 'mysql_40':
+			$sql_ary = array(
+				"CREATE TABLE $tablename (
+					image_id smallint(4) UNSIGNED NOT NULL auto_increment,
+					image_name varbinary(200) DEFAULT '' NOT NULL,
+					image_filename varbinary(200) DEFAULT '' NOT NULL,
+					image_lang varbinary(30) DEFAULT '' NOT NULL,
+					image_height smallint(4) UNSIGNED DEFAULT '0' NOT NULL,
+					image_width smallint(4) UNSIGNED DEFAULT '0' NOT NULL,
+					imageset_id tinyint(4) DEFAULT '0' NOT NULL,
+					PRIMARY KEY (image_id),
+					KEY imgset_id (imageset_id)
+				);");
+		break;
+
+		case 'mssql':
+			$sql_ary = array(
+				"CREATE TABLE [$tablename] (
+					[image_id] [int] IDENTITY (1, 1) NOT NULL ,
+					[image_name] [varchar] (200) DEFAULT ('') NOT NULL ,
+					[image_filename] [varchar] (200) DEFAULT ('') NOT NULL ,
+					[image_lang] [varchar] (30) DEFAULT ('') NOT NULL ,
+					[image_height] [int] DEFAULT (0) NOT NULL ,
+					[image_width] [int] DEFAULT (0) NOT NULL ,
+					[imageset_id] [int] DEFAULT (0) NOT NULL 
+				) ON [PRIMARY]",
+
+				"ALTER TABLE [$tablename] WITH NOCHECK ADD 
+					CONSTRAINT [PK_$tablename] PRIMARY KEY  CLUSTERED 
+					(
+						[image_id]
+					)  ON [PRIMARY]",
+
+				"CREATE  INDEX [imgset_id] ON [$tablename]([imageset_id]) ON [PRIMARY]",
+			);
+		break;
+
+		case 'oracle':
+			$sql_ary = array(
+				"CREATE TABLE $tablename (
+					image_id number(4) NOT NULL,
+					image_name varchar2(200) DEFAULT '' ,
+					image_filename varchar2(200) DEFAULT '' ,
+					image_lang varchar2(30) DEFAULT '' ,
+					image_height number(4) DEFAULT '0' NOT NULL,
+					image_width number(4) DEFAULT '0' NOT NULL,
+					imageset_id number(4) DEFAULT '0' NOT NULL,
+					CONSTRAINT pk_phpbb_styles_imageset_data PRIMARY KEY (image_id)
+				)",
+
+				"CREATE INDEX {$tablename}_imgset_id ON $tablename (imageset_id)",
+
+				"CREATE SEQUENCE {$tablename}_imgset_id_seq",
+
+				"CREATE OR REPLACE TRIGGER t_$tablename
+				BEFORE INSERT ON $tablename
+				FOR EACH ROW WHEN (
+					new.image_id IS NULL OR new.image_id = 0
+				)
+				BEGIN
+					SELECT {$tablename}_seq.nextval
+					INTO :new.image_id
+					FROM dual;
+				END",
+			);
+		break;
+
+		case 'postgres':
+			$sql_ary = array(
+				"CREATE SEQUENCE {$tablename}_seq;",
+
+				"CREATE TABLE $tablename (
+					image_id INT2 DEFAULT nextval('{$tablename}_seq'),
+					image_name varchar(200) DEFAULT '' NOT NULL,
+					image_filename varchar(200) DEFAULT '' NOT NULL,
+					image_lang varchar(30) DEFAULT '' NOT NULL,
+					image_height INT2 DEFAULT '0' NOT NULL CHECK (image_height >= 0),
+					image_width INT2 DEFAULT '0' NOT NULL CHECK (image_width >= 0),
+					imageset_id INT2 DEFAULT '0' NOT NULL,
+					PRIMARY KEY (image_id)
+				);",
+
+				"CREATE INDEX {$tablename}_imgset_id ON $tablename (imageset_id);"
+			);
+		break;
+
+		case 'sqlite':
+			$sql_ary = array(
+				"CREATE TABLE $tablename (
+					image_id INTEGER PRIMARY KEY NOT NULL ,
+					image_name varchar(200) NOT NULL DEFAULT '',
+					image_filename varchar(200) NOT NULL DEFAULT '',
+					image_lang varchar(30) NOT NULL DEFAULT '',
+					image_height INTEGER UNSIGNED NOT NULL DEFAULT '0',
+					image_width INTEGER UNSIGNED NOT NULL DEFAULT '0',
+					imageset_id tinyint(4) NOT NULL DEFAULT '0'
+				);",
+
+				"CREATE INDEX  {$tablename}_imgset_id ON  $tablename (imageset_id);"
+			);
+		break;
+
+		case 'firebird':
+			$sql_ary = array(
+				"CREATE TABLE $tablename (
+					image_id INTEGER NOT NULL,
+					image_name VARCHAR(200) CHARACTER SET NONE DEFAULT '' NOT NULL,
+					image_filename VARCHAR(200) CHARACTER SET NONE DEFAULT '' NOT NULL,
+					image_lang VARCHAR(30) CHARACTER SET NONE DEFAULT '' NOT NULL,
+					image_height INTEGER DEFAULT 0 NOT NULL,
+					image_width INTEGER DEFAULT 0 NOT NULL,
+					imageset_id INTEGER DEFAULT 0 NOT NULL
+				);",
+
+				"ALTER TABLE $tablename ADD PRIMARY KEY (image_id);",
+
+				"CREATE INDEX {$tablename}_imgset_id ON $tablename(imageset_id);",
+
+				"CREATE GENERATOR {$tablename}_gen;",
+
+				"SET GENERATOR {$tablename}_gen TO 0;",
+
+				"CREATE TRIGGER t_$tablename FOR $tablename
+				BEFORE INSERT
+				AS
+				BEGIN
+					NEW.image_id = GEN_ID({$tablename}_gen, 1);
+				END"
+			);
+		break;
+	}
+
+	// add the various statements
+	foreach ($sql_ary as $sql)
+	{
+		$db->sql_query($sql);
+	}
+
+	$data = "INSERT INTO phpbb_styles_imageset_data (image_name, image_filename, image_lang, image_height, image_width, imageset_id) VALUES ('site_logo', 'site_logo.gif', '', 94, 170, 2);
+	INSERT INTO phpbb_styles_imageset_data (image_name, image_filename, image_lang, image_height, image_width, imageset_id) VALUES ('upload_bar', 'upload_bar.gif', '', 16, 280, 2);
+	INSERT INTO phpbb_styles_imageset_data (image_name, image_filename, image_lang, image_height, image_width, imageset_id) VALUES ('poll_left', 'poll_left.gif', '', 12, 4, 2);
+	INSERT INTO phpbb_styles_imageset_data (image_name, image_filename, image_lang, image_height, image_width, imageset_id) VALUES ('poll_center', 'poll_center.gif', '', 12, 0, 2);
+	INSERT INTO phpbb_styles_imageset_data (image_name, image_filename, image_lang, image_height, image_width, imageset_id) VALUES ('poll_right', 'poll_right.gif', '', 12, 4, 2);
+	INSERT INTO phpbb_styles_imageset_data (image_name, image_filename, image_lang, image_height, image_width, imageset_id) VALUES ('forum_link', 'forum_link.gif', '', 25, 46, 2);
+	INSERT INTO phpbb_styles_imageset_data (image_name, image_filename, image_lang, image_height, image_width, imageset_id) VALUES ('forum_read', 'forum_read.gif', '', 25, 46, 2);
+	INSERT INTO phpbb_styles_imageset_data (image_name, image_filename, image_lang, image_height, image_width, imageset_id) VALUES ('forum_read_locked', 'forum_read_locked.gif', '', 25, 46, 2);
+	INSERT INTO phpbb_styles_imageset_data (image_name, image_filename, image_lang, image_height, image_width, imageset_id) VALUES ('forum_read_subforum', 'forum_read_subforum.gif', '', 25, 46, 2);
+	INSERT INTO phpbb_styles_imageset_data (image_name, image_filename, image_lang, image_height, image_width, imageset_id) VALUES ('forum_unread', 'forum_unread.gif', '', 25, 46, 2);
+	INSERT INTO phpbb_styles_imageset_data (image_name, image_filename, image_lang, image_height, image_width, imageset_id) VALUES ('forum_unread_locked', 'forum_unread_locked.gif', '', 25, 46, 2);
+	INSERT INTO phpbb_styles_imageset_data (image_name, image_filename, image_lang, image_height, image_width, imageset_id) VALUES ('forum_unread_subforum', 'forum_unread_subforum.gif', '', 25, 46, 2);
+	INSERT INTO phpbb_styles_imageset_data (image_name, image_filename, image_lang, image_height, image_width, imageset_id) VALUES ('topic_moved', 'topic_moved.gif', '', 18, 19, 2);
+	INSERT INTO phpbb_styles_imageset_data (image_name, image_filename, image_lang, image_height, image_width, imageset_id) VALUES ('topic_read', 'topic_read.gif', '', 18, 19, 2);
+	INSERT INTO phpbb_styles_imageset_data (image_name, image_filename, image_lang, image_height, image_width, imageset_id) VALUES ('topic_read_mine', 'topic_read_mine.gif', '', 18, 19, 2);
+	INSERT INTO phpbb_styles_imageset_data (image_name, image_filename, image_lang, image_height, image_width, imageset_id) VALUES ('topic_read_hot', 'topic_read_hot.gif', '', 18, 19, 2);
+	INSERT INTO phpbb_styles_imageset_data (image_name, image_filename, image_lang, image_height, image_width, imageset_id) VALUES ('topic_read_hot_mine', 'topic_read_hot_mine.gif', '', 18, 19, 2);
+	INSERT INTO phpbb_styles_imageset_data (image_name, image_filename, image_lang, image_height, image_width, imageset_id) VALUES ('topic_read_locked', 'topic_read_locked.gif', '', 18, 19, 2);
+	INSERT INTO phpbb_styles_imageset_data (image_name, image_filename, image_lang, image_height, image_width, imageset_id) VALUES ('topic_read_locked_mine', 'topic_read_locked_mine.gif', '', 18, 19, 2);
+	INSERT INTO phpbb_styles_imageset_data (image_name, image_filename, image_lang, image_height, image_width, imageset_id) VALUES ('topic_unread', 'topic_unread.gif', '', 18, 19, 2);
+	INSERT INTO phpbb_styles_imageset_data (image_name, image_filename, image_lang, image_height, image_width, imageset_id) VALUES ('topic_unread_mine', 'topic_unread_mine.gif', '', 18, 19, 2);
+	INSERT INTO phpbb_styles_imageset_data (image_name, image_filename, image_lang, image_height, image_width, imageset_id) VALUES ('topic_unread_hot', 'topic_unread_hot.gif', '', 18, 19, 2);
+	INSERT INTO phpbb_styles_imageset_data (image_name, image_filename, image_lang, image_height, image_width, imageset_id) VALUES ('topic_unread_hot_mine', 'topic_unread_hot_mine.gif', '', 18, 19, 2);
+	INSERT INTO phpbb_styles_imageset_data (image_name, image_filename, image_lang, image_height, image_width, imageset_id) VALUES ('topic_unread_locked', 'topic_unread_locked.gif', '', 18, 19, 2);
+	INSERT INTO phpbb_styles_imageset_data (image_name, image_filename, image_lang, image_height, image_width, imageset_id) VALUES ('topic_unread_locked_mine', 'topic_unread_locked_mine.gif', '', 18, 19, 2);
+	INSERT INTO phpbb_styles_imageset_data (image_name, image_filename, image_lang, image_height, image_width, imageset_id) VALUES ('sticky_read', 'sticky_read.gif', '', 18, 19, 2);
+	INSERT INTO phpbb_styles_imageset_data (image_name, image_filename, image_lang, image_height, image_width, imageset_id) VALUES ('sticky_read_mine', 'sticky_read_mine.gif', '', 18, 19, 2);
+	INSERT INTO phpbb_styles_imageset_data (image_name, image_filename, image_lang, image_height, image_width, imageset_id) VALUES ('sticky_read_locked', 'sticky_read_locked.gif', '', 18, 19, 2);
+	INSERT INTO phpbb_styles_imageset_data (image_name, image_filename, image_lang, image_height, image_width, imageset_id) VALUES ('sticky_read_locked_mine', 'sticky_read_locked_mine.gif', '', 18, 19, 2);
+	INSERT INTO phpbb_styles_imageset_data (image_name, image_filename, image_lang, image_height, image_width, imageset_id) VALUES ('sticky_unread', 'sticky_unread.gif', '', 18, 19, 2);
+	INSERT INTO phpbb_styles_imageset_data (image_name, image_filename, image_lang, image_height, image_width, imageset_id) VALUES ('sticky_unread_mine', 'sticky_unread_mine.gif', '', 18, 19, 2);
+	INSERT INTO phpbb_styles_imageset_data (image_name, image_filename, image_lang, image_height, image_width, imageset_id) VALUES ('sticky_unread_locked', 'sticky_unread_locked.gif', '', 18, 19, 2);
+	INSERT INTO phpbb_styles_imageset_data (image_name, image_filename, image_lang, image_height, image_width, imageset_id) VALUES ('sticky_unread_locked_mine', 'sticky_unread_locked_mine.gif', '', 18, 19, 2);
+	INSERT INTO phpbb_styles_imageset_data (image_name, image_filename, image_lang, image_height, image_width, imageset_id) VALUES ('announce_read', 'announce_read.gif', '', 18, 19, 2);
+	INSERT INTO phpbb_styles_imageset_data (image_name, image_filename, image_lang, image_height, image_width, imageset_id) VALUES ('announce_read_mine', 'announce_read_mine.gif', '', 18, 19, 2);
+	INSERT INTO phpbb_styles_imageset_data (image_name, image_filename, image_lang, image_height, image_width, imageset_id) VALUES ('announce_read_locked', 'announce_read_locked.gif', '', 18, 19, 2);
+	INSERT INTO phpbb_styles_imageset_data (image_name, image_filename, image_lang, image_height, image_width, imageset_id) VALUES ('announce_read_locked_mine', 'announce_read_locked_mine.gif', '', 18, 19, 2);
+	INSERT INTO phpbb_styles_imageset_data (image_name, image_filename, image_lang, image_height, image_width, imageset_id) VALUES ('announce_unread', 'announce_unread.gif', '', 18, 19, 2);
+	INSERT INTO phpbb_styles_imageset_data (image_name, image_filename, image_lang, image_height, image_width, imageset_id) VALUES ('announce_unread_mine', 'announce_unread_mine.gif', '', 18, 19, 2);
+	INSERT INTO phpbb_styles_imageset_data (image_name, image_filename, image_lang, image_height, image_width, imageset_id) VALUES ('announce_unread_locked', 'announce_unread_locked.gif', '', 18, 19, 2);
+	INSERT INTO phpbb_styles_imageset_data (image_name, image_filename, image_lang, image_height, image_width, imageset_id) VALUES ('announce_unread_locked_mine', 'announce_unread_locked_mine.gif', '', 18, 19, 2);
+	INSERT INTO phpbb_styles_imageset_data (image_name, image_filename, image_lang, image_height, image_width, imageset_id) VALUES ('global_read', 'announce_read.gif', '', 18, 19, 2);
+	INSERT INTO phpbb_styles_imageset_data (image_name, image_filename, image_lang, image_height, image_width, imageset_id) VALUES ('global_read_mine', 'announce_read_mine.gif', '', 18, 19, 2);
+	INSERT INTO phpbb_styles_imageset_data (image_name, image_filename, image_lang, image_height, image_width, imageset_id) VALUES ('global_read_locked', 'announce_read_locked.gif', '', 18, 19, 2);
+	INSERT INTO phpbb_styles_imageset_data (image_name, image_filename, image_lang, image_height, image_width, imageset_id) VALUES ('global_read_locked_mine', 'announce_read_locked_mine.gif', '', 18, 19, 2);
+	INSERT INTO phpbb_styles_imageset_data (image_name, image_filename, image_lang, image_height, image_width, imageset_id) VALUES ('global_unread', 'announce_unread.gif', '', 18, 19, 2);
+	INSERT INTO phpbb_styles_imageset_data (image_name, image_filename, image_lang, image_height, image_width, imageset_id) VALUES ('global_unread_mine', 'announce_unread_mine.gif', '', 18, 19, 2);
+	INSERT INTO phpbb_styles_imageset_data (image_name, image_filename, image_lang, image_height, image_width, imageset_id) VALUES ('global_unread_locked', 'announce_unread_locked.gif', '', 18, 19, 2);
+	INSERT INTO phpbb_styles_imageset_data (image_name, image_filename, image_lang, image_height, image_width, imageset_id) VALUES ('global_unread_locked_mine', 'announce_unread_locked_mine.gif', '', 18, 19, 2);
+	INSERT INTO phpbb_styles_imageset_data (image_name, image_filename, image_lang, image_height, image_width, imageset_id) VALUES ('pm_read', 'topic_read.gif', '', 18, 19, 2);
+	INSERT INTO phpbb_styles_imageset_data (image_name, image_filename, image_lang, image_height, image_width, imageset_id) VALUES ('pm_unread', 'topic_unread.gif', '', 18, 19, 2);
+	INSERT INTO phpbb_styles_imageset_data (image_name, image_filename, image_lang, image_height, image_width, imageset_id) VALUES ('icon_post_target', 'icon_post_target.gif', '', 9, 12, 2);
+	INSERT INTO phpbb_styles_imageset_data (image_name, image_filename, image_lang, image_height, image_width, imageset_id) VALUES ('icon_post_target_unread', 'icon_post_target_unread.gif', '', 9, 12, 2);
+	INSERT INTO phpbb_styles_imageset_data (image_name, image_filename, image_lang, image_height, image_width, imageset_id) VALUES ('icon_topic_attach', 'icon_topic_attach.gif', '', 18, 14, 2);
+	INSERT INTO phpbb_styles_imageset_data (image_name, image_filename, image_lang, image_height, image_width, imageset_id) VALUES ('icon_topic_latest', 'icon_topic_latest.gif', '', 9, 18, 2);
+	INSERT INTO phpbb_styles_imageset_data (image_name, image_filename, image_lang, image_height, image_width, imageset_id) VALUES ('icon_topic_newest', 'icon_topic_newest.gif', '', 9, 18, 2);
+	INSERT INTO phpbb_styles_imageset_data (image_name, image_filename, image_lang, image_height, image_width, imageset_id) VALUES ('icon_topic_reported', 'icon_topic_reported.gif', '', 18, 19, 2);
+	INSERT INTO phpbb_styles_imageset_data (image_name, image_filename, image_lang, image_height, image_width, imageset_id) VALUES ('icon_topic_unapproved', 'icon_topic_unapproved.gif', '', 18, 19, 2);
+	INSERT INTO phpbb_styles_imageset_data (image_name, image_filename, image_lang, image_height, image_width, imageset_id) VALUES ('icon_contact_aim', 'icon_contact_aim.gif', 'en', 0, 0, 2);
+	INSERT INTO phpbb_styles_imageset_data (image_name, image_filename, image_lang, image_height, image_width, imageset_id) VALUES ('icon_contact_email', 'icon_contact_email.gif', 'en', 0, 0, 2);
+	INSERT INTO phpbb_styles_imageset_data (image_name, image_filename, image_lang, image_height, image_width, imageset_id) VALUES ('icon_contact_icq', 'icon_contact_icq.gif', 'en', 0, 0, 2);
+	INSERT INTO phpbb_styles_imageset_data (image_name, image_filename, image_lang, image_height, image_width, imageset_id) VALUES ('icon_contact_jabber', 'icon_contact_jabber.gif', 'en', 0, 0, 2);
+	INSERT INTO phpbb_styles_imageset_data (image_name, image_filename, image_lang, image_height, image_width, imageset_id) VALUES ('icon_contact_msnm', 'icon_contact_msnm.gif', 'en', 0, 0, 2);
+	INSERT INTO phpbb_styles_imageset_data (image_name, image_filename, image_lang, image_height, image_width, imageset_id) VALUES ('icon_contact_pm', 'icon_contact_pm.gif', 'en', 0, 0, 2);
+	INSERT INTO phpbb_styles_imageset_data (image_name, image_filename, image_lang, image_height, image_width, imageset_id) VALUES ('icon_contact_yahoo', 'icon_contact_yahoo.gif', 'en', 0, 0, 2);
+	INSERT INTO phpbb_styles_imageset_data (image_name, image_filename, image_lang, image_height, image_width, imageset_id) VALUES ('icon_contact_www', 'icon_contact_www.gif', 'en', 0, 0, 2);
+	INSERT INTO phpbb_styles_imageset_data (image_name, image_filename, image_lang, image_height, image_width, imageset_id) VALUES ('icon_post_delete', 'icon_post_delete.gif', 'en', 0, 0, 2);
+	INSERT INTO phpbb_styles_imageset_data (image_name, image_filename, image_lang, image_height, image_width, imageset_id) VALUES ('icon_post_edit', 'icon_post_edit.gif', 'en', 0, 0, 2);
+	INSERT INTO phpbb_styles_imageset_data (image_name, image_filename, image_lang, image_height, image_width, imageset_id) VALUES ('icon_post_info', 'icon_post_info.gif', 'en', 0, 0, 2);
+	INSERT INTO phpbb_styles_imageset_data (image_name, image_filename, image_lang, image_height, image_width, imageset_id) VALUES ('icon_post_quote', 'icon_post_quote.gif', 'en', 0, 0, 2);
+	INSERT INTO phpbb_styles_imageset_data (image_name, image_filename, image_lang, image_height, image_width, imageset_id) VALUES ('icon_post_report', 'icon_post_report.gif', 'en', 0, 0, 2);
+	INSERT INTO phpbb_styles_imageset_data (image_name, image_filename, image_lang, image_height, image_width, imageset_id) VALUES ('icon_user_online', 'icon_user_online.gif', 'en', 0, 0, 2);
+	INSERT INTO phpbb_styles_imageset_data (image_name, image_filename, image_lang, image_height, image_width, imageset_id) VALUES ('icon_user_offline', 'icon_user_offline.gif', 'en', 0, 0, 2);
+	INSERT INTO phpbb_styles_imageset_data (image_name, image_filename, image_lang, image_height, image_width, imageset_id) VALUES ('icon_user_profile', 'icon_user_profile.gif', 'en', 0, 0, 2);
+	INSERT INTO phpbb_styles_imageset_data (image_name, image_filename, image_lang, image_height, image_width, imageset_id) VALUES ('icon_user_search', 'icon_user_search.gif', 'en', 0, 0, 2);
+	INSERT INTO phpbb_styles_imageset_data (image_name, image_filename, image_lang, image_height, image_width, imageset_id) VALUES ('icon_user_warn', 'icon_user_warn.gif', 'en', 0, 0, 2);
+	INSERT INTO phpbb_styles_imageset_data (image_name, image_filename, image_lang, image_height, image_width, imageset_id) VALUES ('button_pm_new', 'button_pm_new.gif', 'en', 0, 0, 2);
+	INSERT INTO phpbb_styles_imageset_data (image_name, image_filename, image_lang, image_height, image_width, imageset_id) VALUES ('button_pm_reply', 'button_pm_reply.gif', 'en', 0, 0, 2);
+	INSERT INTO phpbb_styles_imageset_data (image_name, image_filename, image_lang, image_height, image_width, imageset_id) VALUES ('button_topic_locked', 'button_topic_locked.gif', 'en', 0, 0, 2);
+	INSERT INTO phpbb_styles_imageset_data (image_name, image_filename, image_lang, image_height, image_width, imageset_id) VALUES ('button_topic_new', 'button_topic_new.gif', 'en', 0, 0, 2);
+	INSERT INTO phpbb_styles_imageset_data (image_name, image_filename, image_lang, image_height, image_width, imageset_id) VALUES ('button_topic_reply', 'button_topic_reply.gif', 'en', 0, 0, 2);
+	INSERT INTO phpbb_styles_imageset_data (image_name, image_filename, image_lang, image_height, image_width, imageset_id) VALUES ('icon_contact_aim', 'icon_contact_aim.gif', 'nl', 0, 0, 2);
+	INSERT INTO phpbb_styles_imageset_data (image_name, image_filename, image_lang, image_height, image_width, imageset_id) VALUES ('icon_contact_email', 'icon_contact_email.gif', 'nl', 0, 0, 2);
+	INSERT INTO phpbb_styles_imageset_data (image_name, image_filename, image_lang, image_height, image_width, imageset_id) VALUES ('icon_contact_icq', 'icon_contact_icq.gif', 'nl', 0, 0, 2);
+	INSERT INTO phpbb_styles_imageset_data (image_name, image_filename, image_lang, image_height, image_width, imageset_id) VALUES ('icon_contact_jabber', 'icon_contact_jabber.gif', 'nl', 0, 0, 2);
+	INSERT INTO phpbb_styles_imageset_data (image_name, image_filename, image_lang, image_height, image_width, imageset_id) VALUES ('icon_contact_msnm', 'icon_contact_msnm.gif', 'nl', 0, 0, 2);
+	INSERT INTO phpbb_styles_imageset_data (image_name, image_filename, image_lang, image_height, image_width, imageset_id) VALUES ('icon_contact_pm', 'icon_contact_pm.gif', 'nl', 0, 0, 2);
+	INSERT INTO phpbb_styles_imageset_data (image_name, image_filename, image_lang, image_height, image_width, imageset_id) VALUES ('icon_contact_yahoo', 'icon_contact_yahoo.gif', 'nl', 0, 0, 2);
+	INSERT INTO phpbb_styles_imageset_data (image_name, image_filename, image_lang, image_height, image_width, imageset_id) VALUES ('icon_contact_www', 'icon_contact_www.gif', 'nl', 0, 0, 2);
+	INSERT INTO phpbb_styles_imageset_data (image_name, image_filename, image_lang, image_height, image_width, imageset_id) VALUES ('icon_post_delete', 'icon_post_delete.gif', 'nl', 0, 0, 2);
+	INSERT INTO phpbb_styles_imageset_data (image_name, image_filename, image_lang, image_height, image_width, imageset_id) VALUES ('icon_post_edit', 'icon_post_edit.gif', 'nl', 0, 0, 2);
+	INSERT INTO phpbb_styles_imageset_data (image_name, image_filename, image_lang, image_height, image_width, imageset_id) VALUES ('icon_post_info', 'icon_post_info.gif', 'nl', 0, 0, 2);
+	INSERT INTO phpbb_styles_imageset_data (image_name, image_filename, image_lang, image_height, image_width, imageset_id) VALUES ('icon_post_quote', 'icon_post_quote.gif', 'nl', 0, 0, 2);
+	INSERT INTO phpbb_styles_imageset_data (image_name, image_filename, image_lang, image_height, image_width, imageset_id) VALUES ('icon_post_report', 'icon_post_report.gif', 'nl', 0, 0, 2);
+	INSERT INTO phpbb_styles_imageset_data (image_name, image_filename, image_lang, image_height, image_width, imageset_id) VALUES ('icon_user_online', 'icon_user_online.gif', 'nl', 0, 0, 2);
+	INSERT INTO phpbb_styles_imageset_data (image_name, image_filename, image_lang, image_height, image_width, imageset_id) VALUES ('icon_user_offline', 'icon_user_offline.gif', 'nl', 0, 0, 2);
+	INSERT INTO phpbb_styles_imageset_data (image_name, image_filename, image_lang, image_height, image_width, imageset_id) VALUES ('icon_user_profile', 'icon_user_profile.gif', 'nl', 0, 0, 2);
+	INSERT INTO phpbb_styles_imageset_data (image_name, image_filename, image_lang, image_height, image_width, imageset_id) VALUES ('icon_user_search', 'icon_user_search.gif', 'nl', 0, 0, 2);
+	INSERT INTO phpbb_styles_imageset_data (image_name, image_filename, image_lang, image_height, image_width, imageset_id) VALUES ('icon_user_warn', 'icon_user_warn.gif', 'nl', 0, 0, 2);
+	INSERT INTO phpbb_styles_imageset_data (image_name, image_filename, image_lang, image_height, image_width, imageset_id) VALUES ('button_pm_new', 'button_pm_new.gif', 'nl', 0, 0, 2);
+	INSERT INTO phpbb_styles_imageset_data (image_name, image_filename, image_lang, image_height, image_width, imageset_id) VALUES ('button_pm_reply', 'button_pm_reply.gif', 'nl', 0, 0, 2);
+	INSERT INTO phpbb_styles_imageset_data (image_name, image_filename, image_lang, image_height, image_width, imageset_id) VALUES ('button_topic_locked', 'button_topic_locked.gif', 'nl', 0, 0, 2);
+	INSERT INTO phpbb_styles_imageset_data (image_name, image_filename, image_lang, image_height, image_width, imageset_id) VALUES ('button_topic_new', 'button_topic_new.gif', 'nl', 0, 0, 2);
+	INSERT INTO phpbb_styles_imageset_data (image_name, image_filename, image_lang, image_height, image_width, imageset_id) VALUES ('button_topic_reply', 'button_topic_reply.gif', 'nl', 0, 0, 2);
+	INSERT INTO phpbb_styles_imageset_data (image_name, image_filename, image_lang, image_height, image_width, imageset_id) VALUES ('site_logo', 'site_logo.gif', '', 52, 139, 1);
+	INSERT INTO phpbb_styles_imageset_data (image_name, image_filename, image_lang, image_height, image_width, imageset_id) VALUES ('upload_bar', 'progress_bar.gif', '', 16, 280, 1);
+	INSERT INTO phpbb_styles_imageset_data (image_name, image_filename, image_lang, image_height, image_width, imageset_id) VALUES ('forum_link', 'forum_link.gif', '', 27, 27, 1);
+	INSERT INTO phpbb_styles_imageset_data (image_name, image_filename, image_lang, image_height, image_width, imageset_id) VALUES ('forum_read', 'forum_read.gif', '', 27, 27, 1);
+	INSERT INTO phpbb_styles_imageset_data (image_name, image_filename, image_lang, image_height, image_width, imageset_id) VALUES ('forum_read_locked', 'forum_read_locked.gif', '', 27, 27, 1);
+	INSERT INTO phpbb_styles_imageset_data (image_name, image_filename, image_lang, image_height, image_width, imageset_id) VALUES ('forum_read_subforum', 'forum_read_subforum.gif', '', 27, 27, 1);
+	INSERT INTO phpbb_styles_imageset_data (image_name, image_filename, image_lang, image_height, image_width, imageset_id) VALUES ('forum_unread', 'forum_unread.gif', '', 27, 27, 1);
+	INSERT INTO phpbb_styles_imageset_data (image_name, image_filename, image_lang, image_height, image_width, imageset_id) VALUES ('forum_unread_locked', 'forum_read_locked.gif', '', 27, 27, 1);
+	INSERT INTO phpbb_styles_imageset_data (image_name, image_filename, image_lang, image_height, image_width, imageset_id) VALUES ('forum_unread_subforum', 'forum_unread_subforum.gif', '', 27, 27, 1);
+	INSERT INTO phpbb_styles_imageset_data (image_name, image_filename, image_lang, image_height, image_width, imageset_id) VALUES ('topic_moved', 'topic_moved.gif', '', 27, 27, 1);
+	INSERT INTO phpbb_styles_imageset_data (image_name, image_filename, image_lang, image_height, image_width, imageset_id) VALUES ('topic_read', 'topic_read.gif', '', 27, 27, 1);
+	INSERT INTO phpbb_styles_imageset_data (image_name, image_filename, image_lang, image_height, image_width, imageset_id) VALUES ('topic_read_mine', 'topic_read_mine.gif', '', 27, 27, 1);
+	INSERT INTO phpbb_styles_imageset_data (image_name, image_filename, image_lang, image_height, image_width, imageset_id) VALUES ('topic_read_hot', 'topic_read_hot.gif', '', 27, 27, 1);
+	INSERT INTO phpbb_styles_imageset_data (image_name, image_filename, image_lang, image_height, image_width, imageset_id) VALUES ('topic_read_hot_mine', 'topic_read_hot_mine.gif', '', 27, 27, 1);
+	INSERT INTO phpbb_styles_imageset_data (image_name, image_filename, image_lang, image_height, image_width, imageset_id) VALUES ('topic_read_locked', 'topic_read_locked.gif', '', 27, 27, 1);
+	INSERT INTO phpbb_styles_imageset_data (image_name, image_filename, image_lang, image_height, image_width, imageset_id) VALUES ('topic_read_locked_mine', 'topic_read_locked_mine.gif', '', 27, 27, 1);
+	INSERT INTO phpbb_styles_imageset_data (image_name, image_filename, image_lang, image_height, image_width, imageset_id) VALUES ('topic_unread', 'topic_unread.gif', '', 27, 27, 1);
+	INSERT INTO phpbb_styles_imageset_data (image_name, image_filename, image_lang, image_height, image_width, imageset_id) VALUES ('topic_unread_mine', 'topic_unread_mine.gif', '', 27, 27, 1);
+	INSERT INTO phpbb_styles_imageset_data (image_name, image_filename, image_lang, image_height, image_width, imageset_id) VALUES ('topic_unread_hot', 'topic_unread_hot.gif', '', 27, 27, 1);
+	INSERT INTO phpbb_styles_imageset_data (image_name, image_filename, image_lang, image_height, image_width, imageset_id) VALUES ('topic_unread_hot_mine', 'topic_unread_hot_mine.gif', '', 27, 27, 1);
+	INSERT INTO phpbb_styles_imageset_data (image_name, image_filename, image_lang, image_height, image_width, imageset_id) VALUES ('topic_unread_locked', 'topic_unread_locked.gif', '', 27, 27, 1);
+	INSERT INTO phpbb_styles_imageset_data (image_name, image_filename, image_lang, image_height, image_width, imageset_id) VALUES ('topic_unread_locked_mine', 'topic_unread_locked_mine.gif', '', 27, 27, 1);
+	INSERT INTO phpbb_styles_imageset_data (image_name, image_filename, image_lang, image_height, image_width, imageset_id) VALUES ('sticky_read', 'sticky_read.gif', '', 27, 27, 1);
+	INSERT INTO phpbb_styles_imageset_data (image_name, image_filename, image_lang, image_height, image_width, imageset_id) VALUES ('sticky_read_mine', 'sticky_read_mine.gif', '', 27, 27, 1);
+	INSERT INTO phpbb_styles_imageset_data (image_name, image_filename, image_lang, image_height, image_width, imageset_id) VALUES ('sticky_read_locked', 'sticky_read.gif', '', 27, 27, 1);
+	INSERT INTO phpbb_styles_imageset_data (image_name, image_filename, image_lang, image_height, image_width, imageset_id) VALUES ('sticky_read_locked_mine', 'sticky_read_mine.gif', '', 27, 27, 1);
+	INSERT INTO phpbb_styles_imageset_data (image_name, image_filename, image_lang, image_height, image_width, imageset_id) VALUES ('sticky_unread', 'sticky_unread.gif', '', 27, 27, 1);
+	INSERT INTO phpbb_styles_imageset_data (image_name, image_filename, image_lang, image_height, image_width, imageset_id) VALUES ('sticky_unread_mine', 'sticky_unread_mine.gif', '', 27, 27, 1);
+	INSERT INTO phpbb_styles_imageset_data (image_name, image_filename, image_lang, image_height, image_width, imageset_id) VALUES ('sticky_unread_locked', 'sticky_unread.gif', '', 27, 27, 1);
+	INSERT INTO phpbb_styles_imageset_data (image_name, image_filename, image_lang, image_height, image_width, imageset_id) VALUES ('sticky_unread_locked_mine', 'sticky_unread_locked_mine.gif', '', 27, 27, 1);
+	INSERT INTO phpbb_styles_imageset_data (image_name, image_filename, image_lang, image_height, image_width, imageset_id) VALUES ('announce_read', 'announce_read.gif', '', 27, 27, 1);
+	INSERT INTO phpbb_styles_imageset_data (image_name, image_filename, image_lang, image_height, image_width, imageset_id) VALUES ('announce_read_mine', 'announce_read_mine.gif', '', 27, 27, 1);
+	INSERT INTO phpbb_styles_imageset_data (image_name, image_filename, image_lang, image_height, image_width, imageset_id) VALUES ('announce_read_locked', 'announce_read_locked.gif', '', 27, 27, 1);
+	INSERT INTO phpbb_styles_imageset_data (image_name, image_filename, image_lang, image_height, image_width, imageset_id) VALUES ('announce_read_locked_mine', 'announce_read_locked_mine.gif', '', 27, 27, 1);
+	INSERT INTO phpbb_styles_imageset_data (image_name, image_filename, image_lang, image_height, image_width, imageset_id) VALUES ('announce_unread', 'announce_unread.gif', '', 27, 27, 1);
+	INSERT INTO phpbb_styles_imageset_data (image_name, image_filename, image_lang, image_height, image_width, imageset_id) VALUES ('announce_unread_mine', 'announce_unread_mine.gif', '', 27, 27, 1);
+	INSERT INTO phpbb_styles_imageset_data (image_name, image_filename, image_lang, image_height, image_width, imageset_id) VALUES ('announce_unread_locked', 'announce_unread.gif', '', 27, 27, 1);
+	INSERT INTO phpbb_styles_imageset_data (image_name, image_filename, image_lang, image_height, image_width, imageset_id) VALUES ('announce_unread_locked_mine', 'announce_unread_locked_mine.gif', '', 27, 27, 1);
+	INSERT INTO phpbb_styles_imageset_data (image_name, image_filename, image_lang, image_height, image_width, imageset_id) VALUES ('global_read', 'announce_read.gif', '', 27, 27, 1);
+	INSERT INTO phpbb_styles_imageset_data (image_name, image_filename, image_lang, image_height, image_width, imageset_id) VALUES ('global_read_mine', 'announce_read_mine.gif', '', 27, 27, 1);
+	INSERT INTO phpbb_styles_imageset_data (image_name, image_filename, image_lang, image_height, image_width, imageset_id) VALUES ('global_read_locked', 'announce_read_locked.gif', '', 27, 27, 1);
+	INSERT INTO phpbb_styles_imageset_data (image_name, image_filename, image_lang, image_height, image_width, imageset_id) VALUES ('global_read_locked_mine', 'announce_read_locked_mine.gif', '', 27, 27, 1);
+	INSERT INTO phpbb_styles_imageset_data (image_name, image_filename, image_lang, image_height, image_width, imageset_id) VALUES ('global_unread', 'announce_unread.gif', '', 27, 27, 1);
+	INSERT INTO phpbb_styles_imageset_data (image_name, image_filename, image_lang, image_height, image_width, imageset_id) VALUES ('global_unread_mine', 'announce_unread_mine.gif', '', 27, 27, 1);
+	INSERT INTO phpbb_styles_imageset_data (image_name, image_filename, image_lang, image_height, image_width, imageset_id) VALUES ('global_unread_locked', 'announce_unread_locked_mine.gif', '', 27, 27, 1);
+	INSERT INTO phpbb_styles_imageset_data (image_name, image_filename, image_lang, image_height, image_width, imageset_id) VALUES ('global_unread_locked_mine', 'announce_unread_locked_mine.gif', '', 27, 27, 1);
+	INSERT INTO phpbb_styles_imageset_data (image_name, image_filename, image_lang, image_height, image_width, imageset_id) VALUES ('pm_read', 'topic_read.gif', '', 27, 27, 1);
+	INSERT INTO phpbb_styles_imageset_data (image_name, image_filename, image_lang, image_height, image_width, imageset_id) VALUES ('pm_unread', 'topic_unread.gif', '', 27, 27, 1);
+	INSERT INTO phpbb_styles_imageset_data (image_name, image_filename, image_lang, image_height, image_width, imageset_id) VALUES ('icon_contact_aim', 'icon_contact_aim.gif', '', 20, 72, 1);
+	INSERT INTO phpbb_styles_imageset_data (image_name, image_filename, image_lang, image_height, image_width, imageset_id) VALUES ('icon_contact_email', 'icon_contact_email.gif', '', 20, 72, 1);
+	INSERT INTO phpbb_styles_imageset_data (image_name, image_filename, image_lang, image_height, image_width, imageset_id) VALUES ('icon_contact_icq', 'icon_contact_icq.gif', '', 20, 72, 1);
+	INSERT INTO phpbb_styles_imageset_data (image_name, image_filename, image_lang, image_height, image_width, imageset_id) VALUES ('icon_contact_jabber', 'icon_contact_jabber.gif', '', 20, 72, 1);
+	INSERT INTO phpbb_styles_imageset_data (image_name, image_filename, image_lang, image_height, image_width, imageset_id) VALUES ('icon_contact_msnm', 'icon_contact_msnm.gif', '', 20, 72, 1);
+	INSERT INTO phpbb_styles_imageset_data (image_name, image_filename, image_lang, image_height, image_width, imageset_id) VALUES ('icon_contact_www', 'icon_contact_www.gif', '', 20, 72, 1);
+	INSERT INTO phpbb_styles_imageset_data (image_name, image_filename, image_lang, image_height, image_width, imageset_id) VALUES ('icon_contact_yahoo', 'icon_contact_yahoo.gif', '', 20, 72, 1);
+	INSERT INTO phpbb_styles_imageset_data (image_name, image_filename, image_lang, image_height, image_width, imageset_id) VALUES ('icon_post_delete', 'icon_post_delete.gif', '', 20, 20, 1);
+	INSERT INTO phpbb_styles_imageset_data (image_name, image_filename, image_lang, image_height, image_width, imageset_id) VALUES ('icon_post_info', 'icon_post_info.gif', '', 20, 20, 1);
+	INSERT INTO phpbb_styles_imageset_data (image_name, image_filename, image_lang, image_height, image_width, imageset_id) VALUES ('icon_post_report', 'icon_post_report.gif', '', 20, 20, 1);
+	INSERT INTO phpbb_styles_imageset_data (image_name, image_filename, image_lang, image_height, image_width, imageset_id) VALUES ('icon_post_target', 'icon_post_target.gif', '', 9, 12, 1);
+	INSERT INTO phpbb_styles_imageset_data (image_name, image_filename, image_lang, image_height, image_width, imageset_id) VALUES ('icon_post_target_unread', 'icon_post_target_unread.gif', '', 9, 12, 1);
+	INSERT INTO phpbb_styles_imageset_data (image_name, image_filename, image_lang, image_height, image_width, imageset_id) VALUES ('icon_topic_attach', 'icon_topic_attach.gif', '', 10, 7, 1);
+	INSERT INTO phpbb_styles_imageset_data (image_name, image_filename, image_lang, image_height, image_width, imageset_id) VALUES ('icon_topic_latest', 'icon_topic_latest.gif', '', 9, 12, 1);
+	INSERT INTO phpbb_styles_imageset_data (image_name, image_filename, image_lang, image_height, image_width, imageset_id) VALUES ('icon_topic_newest', 'icon_topic_newest.gif', '', 9, 12, 1);
+	INSERT INTO phpbb_styles_imageset_data (image_name, image_filename, image_lang, image_height, image_width, imageset_id) VALUES ('icon_topic_reported', 'icon_topic_reported.gif', '', 14, 16, 1);
+	INSERT INTO phpbb_styles_imageset_data (image_name, image_filename, image_lang, image_height, image_width, imageset_id) VALUES ('icon_topic_unapproved', 'icon_topic_unapproved.gif', '', 14, 16, 1);
+	INSERT INTO phpbb_styles_imageset_data (image_name, image_filename, image_lang, image_height, image_width, imageset_id) VALUES ('icon_user_profile', 'icon_user_profile.gif', '', 11, 11, 1);
+	INSERT INTO phpbb_styles_imageset_data (image_name, image_filename, image_lang, image_height, image_width, imageset_id) VALUES ('icon_user_warn', 'icon_post_report.gif', '', 20, 20, 1);
+	INSERT INTO phpbb_styles_imageset_data (image_name, image_filename, image_lang, image_height, image_width, imageset_id) VALUES ('icon_contact_pm', 'icon_contact_pm.gif', 'en', 40, 28, 1);
+	INSERT INTO phpbb_styles_imageset_data (image_name, image_filename, image_lang, image_height, image_width, imageset_id) VALUES ('icon_post_edit', 'icon_post_edit.gif', 'en', 40, 42, 1);
+	INSERT INTO phpbb_styles_imageset_data (image_name, image_filename, image_lang, image_height, image_width, imageset_id) VALUES ('icon_post_quote', 'icon_post_quote.gif', 'en', 40, 54, 1);
+	INSERT INTO phpbb_styles_imageset_data (image_name, image_filename, image_lang, image_height, image_width, imageset_id) VALUES ('icon_user_online', 'icon_user_online.gif', 'en', 0, 0, 1);
+	INSERT INTO phpbb_styles_imageset_data (image_name, image_filename, image_lang, image_height, image_width, imageset_id) VALUES ('icon_user_offline', 'icon_user_offline.gif', 'en', 0, 0, 1);
+	INSERT INTO phpbb_styles_imageset_data (image_name, image_filename, image_lang, image_height, image_width, imageset_id) VALUES ('icon_user_search', 'icon_user_search.gif', 'en', 0, 0, 1);
+	INSERT INTO phpbb_styles_imageset_data (image_name, image_filename, image_lang, image_height, image_width, imageset_id) VALUES ('button_pm_forward', 'button_pm_forward.gif', 'en', 0, 0, 1);
+	INSERT INTO phpbb_styles_imageset_data (image_name, image_filename, image_lang, image_height, image_width, imageset_id) VALUES ('button_pm_new', 'button_pm_new.gif', 'en', 0, 0, 1);
+	INSERT INTO phpbb_styles_imageset_data (image_name, image_filename, image_lang, image_height, image_width, imageset_id) VALUES ('button_pm_reply', 'button_pm_reply.gif', 'en', 0, 0, 1);
+	INSERT INTO phpbb_styles_imageset_data (image_name, image_filename, image_lang, image_height, image_width, imageset_id) VALUES ('button_topic_locked', 'button_topic_locked.gif', 'en', 0, 0, 1);
+	INSERT INTO phpbb_styles_imageset_data (image_name, image_filename, image_lang, image_height, image_width, imageset_id) VALUES ('button_topic_new', 'button_topic_new.gif', 'en', 0, 0, 1);
+	INSERT INTO phpbb_styles_imageset_data (image_name, image_filename, image_lang, image_height, image_width, imageset_id) VALUES ('button_topic_reply', 'button_topic_reply.gif', 'en', 0, 0, 1);";
+	$data = str_replace('phpbb_', $table_prefix, $data);
+	$sql_ary = explode("\n", $data);
+
+	foreach ($sql_ary as $sql)
+	{
+		$db->sql_query($sql);
+	}
+
 	// sorting thang
 	if ($map_dbms === 'mysql_41')
 	{
@@ -1074,6 +1535,103 @@ function sql_column_add($dbms, $table_name, $column_name, $column_data)
 			else
 			{
 				$sql = 'ALTER TABLE ' . $table_name . ' ADD ' . $column_name . ' [' . $column_data['column_type_sql'] . ']';
+				_sql($sql, $errored, $error_ary);
+			}
+		break;
+	}
+}
+
+/**
+* Drop column
+*/
+function sql_column_remove($dbms, $table_name, $column_name)
+{
+	global $errored, $error_ary;
+
+	switch ($dbms)
+	{
+		case 'firebird':
+			$sql = 'ALTER TABLE "' . $table_name . '" DROP "' . $column_name . '"';
+			_sql($sql, $errored, $error_ary);
+		break;
+
+		case 'mssql':
+			$sql = 'ALTER TABLE [' . $table_name . '] DROP COLUMN [' . $column_name . ']';
+			_sql($sql, $errored, $error_ary);
+		break;
+
+		case 'mysql_40':
+		case 'mysql_41':
+			$sql = 'ALTER TABLE `' . $table_name . '` DROP COLUMN `' . $column_name . '`';
+			_sql($sql, $errored, $error_ary);
+		break;
+
+		case 'oracle':
+			$sql = 'ALTER TABLE ' . $table_name . ' DROP ' . $column_name;
+			_sql($sql, $errored, $error_ary);
+		break;
+
+		case 'postgres':
+			$sql = 'ALTER TABLE ' . $table_name . ' DROP COLUMN "' . $column_name . '"';
+			_sql($sql, $errored, $error_ary);
+		break;
+
+		case 'sqlite':
+			if (version_compare(sqlite_libversion(), '3.0') == -1)
+			{
+				global $db;
+				$sql = "SELECT sql
+					FROM sqlite_master 
+					WHERE type = 'table' 
+						AND name = '{$table_name}'
+					ORDER BY type DESC, name;";
+				$result = $db->sql_query($sql);
+
+				if (!$result)
+				{
+					break;
+				}
+
+				$row = $db->sql_fetchrow($result);
+				$db->sql_freeresult($result);
+
+				$db->sql_transaction('begin');
+
+				// Create a backup table and populate it, destroy the existing one
+				$db->sql_query(preg_replace('#CREATE\s+TABLE\s+"?' . $table_name . '"?#i', 'CREATE TEMPORARY TABLE ' . $table_name . '_temp', $row['sql']));
+				$db->sql_query('INSERT INTO ' . $table_name . '_temp SELECT * FROM ' . $table_name);
+				$db->sql_query('DROP TABLE ' . $table_name);
+
+				preg_match('#\((.*)\)#s', $row['sql'], $matches);
+
+				$new_table_cols = trim($matches[1]);
+				$old_table_cols = preg_split('/,(?![\s\w]+\))/m', $new_table_cols);
+				$column_list = array();
+
+				foreach ($old_table_cols as $declaration)
+				{
+					$entities = preg_split('#\s+#', trim($declaration));
+					if ($entities[0] == 'PRIMARY' || $entities[0] === '$column_name')
+					{
+						continue;
+					}
+					$column_list[] = $entities[0];
+				}
+
+				$columns = implode(',', $column_list);
+
+				$new_table_cols = $new_table_cols = preg_replace('/' . $column_name . '[^,]+(?:,|$)/m', '', $new_table_cols);
+
+				// create a new table and fill it up. destroy the temp one
+				$db->sql_query('CREATE TABLE ' . $table_name . ' (' . $new_table_cols . ');');
+				$db->sql_query('INSERT INTO ' . $table_name . ' (' . $columns . ') SELECT ' . $columns . ' FROM ' . $table_name . '_temp;');
+				$db->sql_query('DROP TABLE ' . $table_name . '_temp');
+
+				$db->sql_transaction('commit');
+			}
+			else
+			{
+				$sql = 'ALTER TABLE ' . $table_name . ' DROP COLUMN ' . $column_name;
 				_sql($sql, $errored, $error_ary);
 			}
 		break;

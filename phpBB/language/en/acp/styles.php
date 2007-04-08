@@ -212,6 +212,8 @@ $lang = array_merge($lang, array(
 	'IMG_PM_READ'		=> 'Read private message',
 	'IMG_PM_UNREAD'		=> 'Unread private message',
 
+	'IMG_ICON_BACK_TOP'		=> 'Top',
+
 	'IMG_ICON_CONTACT_AIM'		=> 'AIM',
 	'IMG_ICON_CONTACT_EMAIL'	=> 'Send email',
 	'IMG_ICON_CONTACT_ICQ'		=> 'ICQ',

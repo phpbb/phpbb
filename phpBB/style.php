@@ -90,6 +90,19 @@ if ($id && $sid)
 		$theme = $db->sql_fetchrow($result);
 		$db->sql_freeresult($result);
 
+		$sql = 'SELECT *
+			FROM ' . STYLES_IMAGESET_DATA_TABLE . '
+			WHERE imageset_id = ' . $id . "
+			AND image_lang IN('" . $db->sql_escape($user['user_lang']) . "', '')";
+		$result = $db->sql_query($sql, 3600);
+
+		$img_array = array();
+
+		while ($row = $db->sql_fetchrow($result))
+		{
+			$img_array[$row['image_name']] = $row;
+		}
+
 		if (!$theme)
 		{
 			exit;
@@ -140,49 +153,40 @@ if ($id && $sid)
 			foreach ($matches[1] as $i => $img)
 			{
 				$img = strtolower($img);
-				if (!isset($theme[$img]))
+				if (!isset($img_array[$img]))
 				{
 					continue;
 				}
 
 				if (!isset($imgs[$img]))
 				{
-					// Do not include dimensions?
-					if (strpos($theme[$img], '*') === false)
-					{
-						$imgsrc = trim($theme[$img]);
-						$width = $height = null;
-					}
-					else
-					{
-						list($imgsrc, $height, $width) = explode('*', $theme[$img]);
-					}
-		
+					$img_data = &$img_array[$img];
+					$imgsrc = ($img_data['image_lang'] ? $img_data['image_lang'] . '/' : '') . $img_data['image_filename'];
 					$imgs[$img] = array(
-						'src'		=> $phpbb_root_path . 'styles/' . $theme['imageset_path'] . '/imageset/' . str_replace('{LANG}', $user['user_lang'], $imgsrc),
-						'width'		=> $width,
-						'height'	=> $height,
+						'src'		=> $phpbb_root_path . 'styles/' . $theme['imageset_path'] . '/imageset/' . $imgsrc,
+						'width'		=> $img_data['image_width'],
+						'height'	=> $img_data['image_height'],
 					);
 				}
 
 				switch ($matches[2][$i])
 				{
 					case 'SRC':
-						$replace = $imgs[$img]['src'];
+						$replace[] = $imgs[$img]['src'];
 					break;
 					
 					case 'WIDTH':
-						$replace = $imgs[$img]['width'];
+						$replace[] = $imgs[$img]['width'];
 					break;
 		
 					case 'HEIGHT':
-						$replace = $imgs[$img]['height'];
+						$replace[] = $imgs[$img]['height'];
 					break;
 
 					default:
 						continue;
 				}
-				$find = $matches[0][$i];
+				$find[] = $matches[0][$i];
 			}
 
 			if (sizeof($find))

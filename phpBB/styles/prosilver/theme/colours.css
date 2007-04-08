@@ -598,12 +598,12 @@ Colours and backgrounds for buttons.css
 -------------------------------------------------------------- */
 
 /* Big button images */
-.reply-icon, .reply-icon a				{ background-image: url("{T_IMAGESET_LANG_PATH}/button_topic_reply.gif"); }
-.post-icon, .post-icon a				{ background-image: url("{T_IMAGESET_LANG_PATH}/button_topic_new.gif") ;}
-.locked-icon, .locked-icon a			{ background-image: url("{T_IMAGESET_LANG_PATH}/button_topic_locked.gif"); }
-.pmreply-icon, .pmreply-icon a		{ background-image: url("{T_IMAGESET_LANG_PATH}/button_pm_reply.gif") ;}
-.newpm-icon, .newpm-icon a			{ background-image: url("{T_IMAGESET_LANG_PATH}/button_pm_new.gif") ;}
-.forwardpm-icon, .forwardpm-icon a 	{ background-image: url("{T_IMAGESET_LANG_PATH}/button_pm_forward.gif") ;}
+.reply-icon, .reply-icon a				{ background-image: url("{IMG_BUTTON_TOPIC_REPLY_SRC}"); }
+.post-icon, .post-icon a				{ background-image: url("{IMG_BUTTON_TOPIC_NEW_SRC}") ;}
+.locked-icon, .locked-icon a			{ background-image: url("{IMG_BUTTON_TOPIC_LOCKED_SRC}"); }
+.pmreply-icon, .pmreply-icon a		{ background-image: url("{IMG_BUTTON_PM_REPLY_SRC}") ;}
+.newpm-icon, .newpm-icon a			{ background-image: url("{IMG_BUTTON_PM_NEW_SRC}") ;}
+.forwardpm-icon, .forwardpm-icon a 	{ background-image: url("{IMG_BUTTON_PM_FORWARD_SRC}") ;}
 
 a.print {
 	background-image: url("{T_THEME_PATH}/images/icon_print.gif");
@@ -634,34 +634,23 @@ a.fontsize {
 .icon-search						{ background-image: url("{T_THEME_PATH}/images/icon_search.gif"); }
 
 /* Profile & navigation icons */
-.email-icon, .email-icon a			{ background-image: url("{T_IMAGESET_PATH}/icon_contact_email.gif"); }
-.aim-icon, .aim-icon a			{ background-image: url("{T_IMAGESET_PATH}/icon_contact_aim.gif"); }
-.yahoo-icon, .yahoo-icon a		{ background-image: url("{T_IMAGESET_PATH}/icon_contact_yahoo.gif"); }
-.web-icon, .web-icon a			{ background-image: url("{T_IMAGESET_PATH}/icon_contact_www.gif"); }
-.msnm-icon, .msnm-icon a		{ background-image: url("{T_IMAGESET_PATH}/icon_contact_msnm.gif"); }
-.icq-icon, .icq-icon a				{ background-image: url("{T_IMAGESET_PATH}/icon_contact_icq.gif"); }
-.pm-icon, .pm-icon a				{ background-image: url("{T_IMAGESET_LANG_PATH}/icon_contact_pm.gif"); }
-.jabber-icon, .jabber-icon a		{ background-image: url("{T_IMAGESET_PATH}/icon_contact_jabber.gif"); }
-.quote-icon, .quote-icon a			{ background-image: url("{T_IMAGESET_LANG_PATH}/icon_post_quote.gif"); }
-
-/* Profile & navigation icons */
-.email-icon, .email-icon a			{ background-image: url("{T_IMAGESET_PATH}/icon_contact_email.gif"); }
-.aim-icon, .aim-icon a			{ background-image: url("{T_IMAGESET_PATH}/icon_contact_aim.gif"); }
-.yahoo-icon, .yahoo-icon a		{ background-image: url("{T_IMAGESET_PATH}/icon_contact_yahoo.gif"); }
-.web-icon, .web-icon a			{ background-image: url("{T_IMAGESET_PATH}/icon_contact_www.gif"); }
-.msnm-icon, .msnm-icon a		{ background-image: url("{T_IMAGESET_PATH}/icon_contact_msnm.gif"); }
-.icq-icon, .icq-icon a				{ background-image: url("{T_IMAGESET_PATH}/icon_contact_icq.gif"); }
-.pm-icon, .pm-icon a				{ background-image: url("{T_IMAGESET_LANG_PATH}/icon_contact_pm.gif"); }
-.jabber-icon, .jabber-icon a		{ background-image: url("{T_IMAGESET_PATH}/icon_contact_jabber.gif"); }
-.quote-icon, .quote-icon a			{ background-image: url("{T_IMAGESET_LANG_PATH}/icon_post_quote.gif"); }
+.email-icon, .email-icon a			{ background-image: url("{IMG_ICON_CONTACT_EMAIL_SRC}"); }
+.aim-icon, .aim-icon a			{ background-image: url("{IMG_ICON_CONTACT_AIM_SRC}"); }
+.yahoo-icon, .yahoo-icon a		{ background-image: url("{IMG_ICON_CONTACT_YAHOO_SRC}"); }
+.web-icon, .web-icon a			{ background-image: url("{IMG_ICON_CONTACT_WWW_SRC}"); }
+.msnm-icon, .msnm-icon a		{ background-image: url("{IMG_ICON_CONTACT_MSNM_SRC}"); }
+.icq-icon, .icq-icon a				{ background-image: url("{IMG_ICON_CONTACT_ICQ_SRC}"); }
+.pm-icon, .pm-icon a				{ background-image: url("{IMG_ICON_CONTACT_PM_SRC}"); }
+.jabber-icon, .jabber-icon a		{ background-image: url("{IMG_ICON_CONTACT_JABBER_SRC}"); }
+.quote-icon, .quote-icon a			{ background-image: url("{IMG_ICON_POST_QUOTE_SRC}"); }
 
 /* Moderator icons */
-.report-icon, .report-icon a		{ background-image: url("{T_IMAGESET_PATH}/icon_post_report.gif"); }
-.warn-icon, .warn-icon a			{ background-image: url("{T_IMAGESET_PATH}/icon_post_report.gif"); }
-.edit-icon, .edit-icon a			{ background-image: url("{T_IMAGESET_LANG_PATH}/icon_post_edit.gif"); }
+.report-icon, .report-icon a		{ background-image: url("{IMG_ICON_POST_REPORT_SRC}"); }
+.warn-icon, .warn-icon a			{ background-image: url("{IMG_ICON_POST_REPORT_SRC}"); }
+.edit-icon, .edit-icon a			{ background-image: url("{IMG_ICON_POST_EDIT_SRC}"); }
 
-.delete-icon, .delete-icon a		{ background-image: url("{T_IMAGESET_PATH}/icon_post_delete.gif"); }
-.info-icon, .info-icon a			{ background-image: url("{T_IMAGESET_PATH}/icon_post_info.gif"); }
+.delete-icon, .delete-icon a		{ background-image: url("{IMG_ICON_POST_DELETE_SRC}"); }
+.info-icon, .info-icon a			{ background-image: url("{IMG_ICON_POST_INFO_SRC}"); }
 
 /*  	
 --------------------------------------------------------------

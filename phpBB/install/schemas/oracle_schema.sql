@@ -1528,100 +1528,6 @@ CREATE TABLE phpbb_styles_imageset (
 	imageset_name varchar2(765) DEFAULT '' ,
 	imageset_copyright varchar2(765) DEFAULT '' ,
 	imageset_path varchar2(100) DEFAULT '' ,
-	site_logo varchar2(200) DEFAULT '' ,
-	upload_bar varchar2(200) DEFAULT '' ,
-	poll_left varchar2(200) DEFAULT '' ,
-	poll_center varchar2(200) DEFAULT '' ,
-	poll_right varchar2(200) DEFAULT '' ,
-	icon_friend varchar2(200) DEFAULT '' ,
-	icon_foe varchar2(200) DEFAULT '' ,
-	forum_link varchar2(200) DEFAULT '' ,
-	forum_read varchar2(200) DEFAULT '' ,
-	forum_read_locked varchar2(200) DEFAULT '' ,
-	forum_read_subforum varchar2(200) DEFAULT '' ,
-	forum_unread varchar2(200) DEFAULT '' ,
-	forum_unread_locked varchar2(200) DEFAULT '' ,
-	forum_unread_subforum varchar2(200) DEFAULT '' ,
-	topic_moved varchar2(200) DEFAULT '' ,
-	topic_read varchar2(200) DEFAULT '' ,
-	topic_read_mine varchar2(200) DEFAULT '' ,
-	topic_read_hot varchar2(200) DEFAULT '' ,
-	topic_read_hot_mine varchar2(200) DEFAULT '' ,
-	topic_read_locked varchar2(200) DEFAULT '' ,
-	topic_read_locked_mine varchar2(200) DEFAULT '' ,
-	topic_unread varchar2(200) DEFAULT '' ,
-	topic_unread_mine varchar2(200) DEFAULT '' ,
-	topic_unread_hot varchar2(200) DEFAULT '' ,
-	topic_unread_hot_mine varchar2(200) DEFAULT '' ,
-	topic_unread_locked varchar2(200) DEFAULT '' ,
-	topic_unread_locked_mine varchar2(200) DEFAULT '' ,
-	sticky_read varchar2(200) DEFAULT '' ,
-	sticky_read_mine varchar2(200) DEFAULT '' ,
-	sticky_read_locked varchar2(200) DEFAULT '' ,
-	sticky_read_locked_mine varchar2(200) DEFAULT '' ,
-	sticky_unread varchar2(200) DEFAULT '' ,
-	sticky_unread_mine varchar2(200) DEFAULT '' ,
-	sticky_unread_locked varchar2(200) DEFAULT '' ,
-	sticky_unread_locked_mine varchar2(200) DEFAULT '' ,
-	announce_read varchar2(200) DEFAULT '' ,
-	announce_read_mine varchar2(200) DEFAULT '' ,
-	announce_read_locked varchar2(200) DEFAULT '' ,
-	announce_read_locked_mine varchar2(200) DEFAULT '' ,
-	announce_unread varchar2(200) DEFAULT '' ,
-	announce_unread_mine varchar2(200) DEFAULT '' ,
-	announce_unread_locked varchar2(200) DEFAULT '' ,
-	announce_unread_locked_mine varchar2(200) DEFAULT '' ,
-	global_read varchar2(200) DEFAULT '' ,
-	global_read_mine varchar2(200) DEFAULT '' ,
-	global_read_locked varchar2(200) DEFAULT '' ,
-	global_read_locked_mine varchar2(200) DEFAULT '' ,
-	global_unread varchar2(200) DEFAULT '' ,
-	global_unread_mine varchar2(200) DEFAULT '' ,
-	global_unread_locked varchar2(200) DEFAULT '' ,
-	global_unread_locked_mine varchar2(200) DEFAULT '' ,
-	pm_read varchar2(200) DEFAULT '' ,
-	pm_unread varchar2(200) DEFAULT '' ,
-	icon_contact_aim varchar2(200) DEFAULT '' ,
-	icon_contact_email varchar2(200) DEFAULT '' ,
-	icon_contact_icq varchar2(200) DEFAULT '' ,
-	icon_contact_jabber varchar2(200) DEFAULT '' ,
-	icon_contact_msnm varchar2(200) DEFAULT '' ,
-	icon_contact_pm varchar2(200) DEFAULT '' ,
-	icon_contact_yahoo varchar2(200) DEFAULT '' ,
-	icon_contact_www varchar2(200) DEFAULT '' ,
-	icon_post_delete varchar2(200) DEFAULT '' ,
-	icon_post_edit varchar2(200) DEFAULT '' ,
-	icon_post_info varchar2(200) DEFAULT '' ,
-	icon_post_quote varchar2(200) DEFAULT '' ,
-	icon_post_report varchar2(200) DEFAULT '' ,
-	icon_post_target varchar2(200) DEFAULT '' ,
-	icon_post_target_unread varchar2(200) DEFAULT '' ,
-	icon_topic_attach varchar2(200) DEFAULT '' ,
-	icon_topic_latest varchar2(200) DEFAULT '' ,
-	icon_topic_newest varchar2(200) DEFAULT '' ,
-	icon_topic_reported varchar2(200) DEFAULT '' ,
-	icon_topic_unapproved varchar2(200) DEFAULT '' ,
-	icon_user_online varchar2(200) DEFAULT '' ,
-	icon_user_offline varchar2(200) DEFAULT '' ,
-	icon_user_profile varchar2(200) DEFAULT '' ,
-	icon_user_search varchar2(200) DEFAULT '' ,
-	icon_user_warn varchar2(200) DEFAULT '' ,
-	button_pm_forward varchar2(200) DEFAULT '' ,
-	button_pm_new varchar2(200) DEFAULT '' ,
-	button_pm_reply varchar2(200) DEFAULT '' ,
-	button_topic_locked varchar2(200) DEFAULT '' ,
-	button_topic_new varchar2(200) DEFAULT '' ,
-	button_topic_reply varchar2(200) DEFAULT '' ,
-	user_icon1 varchar2(200) DEFAULT '' ,
-	user_icon2 varchar2(200) DEFAULT '' ,
-	user_icon3 varchar2(200) DEFAULT '' ,
-	user_icon4 varchar2(200) DEFAULT '' ,
-	user_icon5 varchar2(200) DEFAULT '' ,
-	user_icon6 varchar2(200) DEFAULT '' ,
-	user_icon7 varchar2(200) DEFAULT '' ,
-	user_icon8 varchar2(200) DEFAULT '' ,
-	user_icon9 varchar2(200) DEFAULT '' ,
-	user_icon10 varchar2(200) DEFAULT '' ,
 	CONSTRAINT pk_phpbb_styles_imageset PRIMARY KEY (imageset_id),
 	CONSTRAINT u_phpbb_imgset_nm UNIQUE (imageset_name)
 )
@@ -1639,6 +1545,40 @@ FOR EACH ROW WHEN (
 BEGIN
 	SELECT phpbb_styles_imageset_seq.nextval
 	INTO :new.imageset_id
+	FROM dual;
+END;
+/
+
+
+/*
+	Table: 'phpbb_styles_imageset_data'
+*/
+CREATE TABLE phpbb_styles_imageset_data (
+	image_id number(4) NOT NULL,
+	image_name varchar2(200) DEFAULT '' ,
+	image_filename varchar2(200) DEFAULT '' ,
+	image_lang varchar2(30) DEFAULT '' ,
+	image_height number(4) DEFAULT '0' NOT NULL,
+	image_width number(4) DEFAULT '0' NOT NULL,
+	imageset_id number(4) DEFAULT '0' NOT NULL,
+	CONSTRAINT pk_phpbb_styles_imageset_data PRIMARY KEY (image_id)
+)
+/
+
+CREATE INDEX phpbb_styles_imageset_data_imgset_id ON phpbb_styles_imageset_data (imageset_id)
+/
+
+CREATE SEQUENCE phpbb_styles_imageset_data_seq
+/
+
+CREATE OR REPLACE TRIGGER t_phpbb_styles_imageset_data
+BEFORE INSERT ON phpbb_styles_imageset_data
+FOR EACH ROW WHEN (
+	new.image_id IS NULL OR new.image_id = 0
+)
+BEGIN
+	SELECT phpbb_styles_imageset_data_seq.nextval
+	INTO :new.image_id
 	FROM dual;
 END;
 /

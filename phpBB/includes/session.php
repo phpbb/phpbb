@@ -1166,6 +1166,7 @@ class user extends session
 	var $lang_name;
 	var $lang_path;
 	var $img_lang;
+	var $img_array = array();
 
 	// Able to add new option (id 7)
 	var $keyoptions = array('viewimg' => 0, 'viewflash' => 1, 'viewsmilies' => 2, 'viewsigs' => 3, 'viewavatars' => 4, 'viewcensors' => 5, 'attachsig' => 6, 'bbcode' => 8, 'smilies' => 9, 'popuppm' => 10);
@@ -1365,6 +1366,17 @@ class user extends session
 		$template->set_template();
 
 		$this->img_lang = (file_exists($phpbb_root_path . 'styles/' . $this->theme['imageset_path'] . '/imageset/' . $this->lang_name)) ? $this->lang_name : $config['default_lang'];
+
+		$sql = 'SELECT *
+			FROM ' . STYLES_IMAGESET_DATA_TABLE . '
+			WHERE imageset_id = ' . $this->theme['imageset_id'] . "
+			AND image_lang IN('" . $db->sql_escape($this->img_lang) . "', '')";
+		$result = $db->sql_query($sql, 3600);
+
+		while ($row = $db->sql_fetchrow($result))
+		{
+			$this->img_array[$row['image_name']] = $row;
+		}
 
 		// If this function got called from the error handler we are finished here.
 		if (defined('IN_ERROR_HANDLER'))
@@ -1610,43 +1622,20 @@ class user extends session
 		static $imgs;
 		global $phpbb_root_path;
 
-		$img_data = &$imgs[$img . $suffix];
+		$img_data = &$imgs[$img];
 
 		if (empty($img_data) || $width !== false)
 		{
-			if (!isset($this->theme[$img]) || !$this->theme[$img])
+			if (!isset($this->img_array[$img]))
 			{
 				// Do not fill the image to let designers decide what to do if the image is empty
 				$img_data = '';
 				return $img_data;
 			}
 
-			// Do not include dimensions?
-			if (strpos($this->theme[$img], '*') === false)
-			{
-				$imgsrc = trim($this->theme[$img]);
-				$width = $height = false;
-			}
-			else
-			{
-				if ($width === false)
-				{
-					list($imgsrc, $height, $width) = explode('*', $this->theme[$img]);
-				}
-				else
-				{
-					list($imgsrc, $height) = explode('*', $this->theme[$img]);
-				}
-			}
-
-			if ($suffix !== '')
-			{
-				$imgsrc = str_replace('{SUFFIX}', $suffix, $imgsrc);
-			}
-
-			$img_data['src'] = $phpbb_root_path . 'styles/' . $this->theme['imageset_path'] . '/imageset/' . str_replace('{LANG}', $this->img_lang, $imgsrc);
-			$img_data['width'] = $width;
-			$img_data['height'] = $height;
+			$img_data['src'] = $phpbb_root_path . 'styles/' . $this->theme['imageset_path'] . '/imageset/' . ($this->img_array[$img]['image_lang'] ? $this->img_array[$img]['image_lang'] .'/' : '') . $this->img_array[$img]['image_filename'];
+			$img_data['width'] = $this->img_array[$img]['image_width'];
+			$img_data['height'] = $this->img_array[$img]['image_height'];
 		}
 
 		$alt = (!empty($this->lang[$alt])) ? $this->lang[$alt] : $alt;

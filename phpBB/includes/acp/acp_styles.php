@@ -90,7 +90,7 @@ parse_css_file = {PARSE_CSS_FILE}
 				'site_logo',
 			),
 			'buttons'	=> array(
-				'icon_contact_aim', 'icon_contact_email', 'icon_contact_icq', 'icon_contact_jabber', 'icon_contact_msnm', 'icon_contact_pm', 'icon_contact_yahoo', 'icon_contact_www', 'icon_post_delete', 'icon_post_edit', 'icon_post_info', 'icon_post_quote', 'icon_post_report', 'icon_user_online', 'icon_user_offline', 'icon_user_profile', 'icon_user_search', 'icon_user_warn', 'button_pm_forward', 'button_pm_new', 'button_pm_reply', 'button_topic_locked', 'button_topic_new', 'button_topic_reply',
+				'icon_back_top', 'icon_contact_aim', 'icon_contact_email', 'icon_contact_icq', 'icon_contact_jabber', 'icon_contact_msnm', 'icon_contact_pm', 'icon_contact_yahoo', 'icon_contact_www', 'icon_post_delete', 'icon_post_edit', 'icon_post_info', 'icon_post_quote', 'icon_post_report', 'icon_user_online', 'icon_user_offline', 'icon_user_profile', 'icon_user_search', 'icon_user_warn', 'button_pm_forward', 'button_pm_new', 'button_pm_reply', 'button_topic_locked', 'button_topic_new', 'button_topic_reply',
 			),
 			'icons'		=> array(
 				'icon_post_target', 'icon_post_target_unread', 'icon_topic_attach', 'icon_topic_latest', 'icon_topic_newest', 'icon_topic_reported', 'icon_topic_unapproved', 'icon_friend', 'icon_foe',
@@ -372,35 +372,111 @@ parse_css_file = {PARSE_CSS_FILE}
 						{
 							$sql_ary = array();
 
-							$cfg_data = parse_cfg_file("{$phpbb_root_path}styles/{$imageset_row['imageset_path']}/imageset/imageset.cfg");
-					
 							$imageset_definitions = array();
 							foreach ($this->imageset_keys as $topic => $key_array)
 							{
 								$imageset_definitions = array_merge($imageset_definitions, $key_array);
 							}
-				
-							foreach ($cfg_data as $key => $value)
+
+							$cfg_data_imageset = parse_cfg_file("{$phpbb_root_path}styles/{$imageset_row['imageset_path']}/imageset/imageset.cfg");
+
+							$db->sql_transaction('begin');
+
+							$sql = 'DELETE FROM ' . STYLES_IMAGESET_DATA_TABLE . '
+								WHERE imageset_id = ' . $style_id;
+							$result = $db->sql_query($sql);
+
+							foreach ($cfg_data_imageset as $image_name => $value)
 							{
-								if (strpos($key, 'img_') === 0)
+								if (strpos($value, '*') !== false)
 								{
-									$key = substr($key, 4);
-									if (in_array($key, $imageset_definitions))
+									if (substr($value, -1, 1) === '*')
 									{
-										$sql_ary[$key] = str_replace('{PATH}', "styles/{$imageset_row['imageset_path']}/imageset/", trim($value));
+										list($image_filename, $image_height) = explode('*', $value);
+										$image_width = 0;
+									}
+									else
+									{
+										list($image_filename, $image_height, $image_width) = explode('*', $value);
+									}
+								}
+								else
+								{
+									$image_filename = $value;
+									$image_height = $image_width = 0;
+								}
+
+								if (strpos($image_name, 'img_') === 0 && $image_filename)
+								{
+									$image_name = substr($image_name, 4);
+									if (in_array($image_name, $imageset_definitions))
+									{
+										$sql_ary = array(
+											'image_name'		=> $image_name,
+											'image_filename'	=> $image_filename,
+											'image_height'		=> (int) $image_height,
+											'image_width'		=> (int) $image_width,
+											'imageset_id'		=> $style_id,
+											'image_lang'		=> '',
+										);
+										$db->sql_query('INSERT INTO ' . STYLES_IMAGESET_DATA_TABLE . ' ' . $db->sql_build_array('INSERT', $sql_ary));
 									}
 								}
 							}
-							unset($cfg_data);
 
-							if (sizeof($sql_ary))
+							$sql = 'SELECT lang_dir
+								FROM ' . LANG_TABLE;
+							$result = $db->sql_query($sql);
+
+							while ($row = $db->sql_fetchrow($result))
 							{
-								$sql = 'UPDATE ' . STYLES_IMAGESET_TABLE . ' SET ' . $db->sql_build_array('UPDATE', $sql_ary) . "
-									WHERE imageset_id = $style_id";
-								$db->sql_query($sql);
-							}
+								if (@file_exists("{$phpbb_root_path}styles/{$imageset_row['imageset_path']}/imageset/{$row['lang_dir']}/imageset.cfg"))
+								{
+									$cfg_data_imageset_data = parse_cfg_file("{$phpbb_root_path}styles/{$imageset_row['imageset_path']}/imageset/{$row['lang_dir']}/imageset.cfg");
+									foreach ($cfg_data_imageset_data as $image_name => $value)
+									{
+										if (strpos($value, '*') !== false)
+										{
+											if (substr($value, -1, 1) === '*')
+											{
+												list($image_filename, $image_height) = explode('*', $value);
+												$image_width = 0;
+											}
+											else
+											{
+												list($image_filename, $image_height, $image_width) = explode('*', $value);
+											}
+										}
+										else
+										{
+											$image_filename = $value;
+											$image_height = $image_width = 0;
+										}
 
-							$cache->destroy('sql', STYLES_IMAGESET_TABLE);
+										if (strpos($image_name, 'img_') === 0 && $image_filename)
+										{
+											$image_name = substr($image_name, 4);
+											if (in_array($image_name, $imageset_definitions))
+											{
+												$sql_ary = array(
+													'image_name'		=> $image_name,
+													'image_filename'	=> $image_filename,
+													'image_height'		=> $image_height,
+													'image_width'		=> $image_width,
+													'imageset_id'		=> $style_id,
+													'image_lang'		=> $row['lang_dir'],
+												);
+												$db->sql_query('INSERT INTO ' . STYLES_IMAGESET_DATA_TABLE . ' ' . $db->sql_build_array('INSERT', $sql_ary));
+											}
+										}
+									}
+								}
+							}
+							$db->sql_freeresult($result);
+
+							$db->sql_transaction('commit');
+
+							$cache->destroy('sql', STYLES_IMAGESET_DATA_TABLE);
 
 							add_log('admin', 'LOG_IMAGESET_REFRESHED', $imageset_row['imageset_name']);
 							trigger_error($user->lang['IMAGESET_REFRESHED'] . adm_back_link($this->u_action));
@@ -1356,20 +1432,40 @@ parse_css_file = {PARSE_CSS_FILE}
 
 		if ($imageset_id)
 		{
-			$sql_select = ($imgname) ? ", $imgname" : '';
-
-			$sql = "SELECT imageset_path, imageset_name, imageset_copyright$sql_select
-				FROM " . STYLES_IMAGESET_TABLE . "
+			$sql = 'SELECT imageset_path, imageset_name
+				FROM ' . STYLES_IMAGESET_TABLE . "
 				WHERE imageset_id = $imageset_id";
 			$result = $db->sql_query($sql);
 			$imageset_row = $db->sql_fetchrow($result);
+			$db->sql_freeresult($result);
+
+			$imageset_path		= $imageset_row['imageset_path'];
+			$imageset_name		= $imageset_row['imageset_name'];
+
+			$sql_extra = '';
+			if (strpos($imgname, '-') !== false)
+			{
+				list($imgname, $imgnamelang) = explode('-', $imgname);
+				$sql_extra = " AND image_lang IN('" . $db->sql_escape($imgnamelang) . "', '')";
+			}
+
+			$sql = 'SELECT image_filename, image_width, image_height, image_lang, image_id
+				FROM ' . STYLES_IMAGESET_DATA_TABLE . "
+				WHERE imageset_id = $imageset_id
+					AND image_name = '" . $db->sql_escape($imgname) . "'$sql_extra";
+			$result = $db->sql_query($sql);
+			$imageset_data_row = $db->sql_fetchrow($result);
+			$image_filename	= $imageset_data_row['image_filename'];
+			$image_width	= $imageset_data_row['image_width'];
+			$image_height	= $imageset_data_row['image_height'];
+			$image_lang		= $imageset_data_row['image_lang'];
+			$image_id		= $imageset_data_row['image_id'];
 			$db->sql_freeresult($result);
 
 			if (!$imageset_row)
 			{
 				trigger_error($user->lang['NO_IMAGESET'] . adm_back_link($this->u_action), E_USER_WARNING);
 			}
-			extract($imageset_row);
 
 			// Check to see whether the selected image exists in the table
 			$valid_name = ($update) ? false : true;
@@ -1390,7 +1486,8 @@ parse_css_file = {PARSE_CSS_FILE}
 					// If imgwidth and imgheight are non-zero grab the actual size
 					// from the image itself ... we ignore width settings for the poll center
 					// image
-					$imgwidth = $imgheight = '';
+					$imgwidth = $imgheight = 0;
+					$imglang = '';
 
 					if ($imageset_path && !file_exists("{$phpbb_root_path}styles/$imageset_path/imageset/$imgpath"))
 					{
@@ -1400,25 +1497,91 @@ parse_css_file = {PARSE_CSS_FILE}
 					if ($imgsize && $imageset_path)
 					{
 						list($imgwidth, $imgheight) = getimagesize("{$phpbb_root_path}styles/$imageset_path/imageset/$imgpath");
-						$imgheight = '*' . $imgheight;
-						$imgwidth = ($imgname != 'poll_center') ? '*' . $imgwidth : '';
+						$imgwidth	= ($imgname != 'poll_center') ? (int) $imgwidth : 0;
+						$imgheight	= (int) $imgheight;
 					}
 
-					$imgpath = preg_replace('/^([^\/]+\/)/', '{LANG}/', $imgpath) . $imgheight . $imgwidth;
+					if (strpos($imgpath, '/') !== false)
+					{
+						list($imglang, $imgfilename) = explode('/', $imgpath);
+					}
+					else
+					{
+						$imgfilename = $imgpath;
+					}
 
-					$sql = 'UPDATE ' . STYLES_IMAGESET_TABLE . "
-						SET $imgname = '" . $db->sql_escape($imgpath) . "'
-						WHERE imageset_id = $imageset_id";
-					$db->sql_query($sql);
+					$sql_ary = array(
+						'image_filename'	=> $imgfilename,
+						'image_width'		=> $imgwidth,
+						'image_height'		=> $imgheight,
+						'image_lang'		=> $imglang,
+					);
 
-					$cache->destroy('sql', STYLES_IMAGESET_TABLE);
+					// already exists
+					if ($imageset_data_row)
+					{
+						$sql = 'UPDATE ' . STYLES_IMAGESET_DATA_TABLE . '
+							SET ' . $db->sql_build_array('UPDATE', $sql_ary) . "
+							WHERE image_id = $image_id";
+						$db->sql_query($sql);
+					}
+					// does not exist
+					else if (!$imageset_data_row)
+					{
+						$sql_ary['image_name']	= $image_name;
+						$sql_ary['imageset_id']	= $imageset_id;
+						$db->sql_query('INSERT INTO ' . STYLES_IMAGESET_DATA_TABLE . ' ' . $db->sql_build_array('INSERT', $sql_ary));
+					}
+
+					$cache->destroy('sql', STYLES_IMAGESET_DATA_TABLE);
 
 					add_log('admin', 'LOG_IMAGESET_EDIT', $imageset_name);
 
 					$template->assign_var('SUCCESS', true);
-					$$imgname = $imgpath;
 				}
 			}
+		}
+
+		$imglang = '';
+		$imagesetlist = array('nolang' => array(), 'lang' => array());
+		$langs = array();
+
+		$dir = "{$phpbb_root_path}styles/$imageset_path/imageset";
+		$dp = @opendir($dir);
+
+		if ($dp)
+		{
+			while (($file = readdir($dp)) !== false)
+			{
+				if (!is_file($dir . '/' . $file) && !is_link($dir . '/' . $file) && $file[0] != '.' && strtoupper($file) != 'CVS')
+				{
+					$langs[] = $file;
+				}
+				else if (preg_match('#\.(?:gif|jpg|png)$#', $file))
+				{
+					$imagesetlist['nolang'][] = $file;
+				}
+			}
+
+			if ($sql_extra)
+			{
+				$dp2 = @opendir("$dir/$imgnamelang");
+
+				if (!$dp2)
+				{
+					continue;
+				}
+
+				while (($file2 = readdir($dp2)) !== false)
+				{
+					if (preg_match('#\.(?:gif|jpg|png)$#', $file2))
+					{
+						$imagesetlist['lang'][] = "$imgnamelang/$file2";
+					}
+				}
+				closedir($dp2);
+			}
+			closedir($dp);
 		}
 
 		// Generate list of image options
@@ -1431,89 +1594,46 @@ parse_css_file = {PARSE_CSS_FILE}
 
 			foreach ($img_ary as $img)
 			{
-				$template->assign_block_vars('category.images', array(
-					'SELECTED'			=> ($img == $imgname),
-					'VALUE'				=> $img,
-					'TEXT'				=> (($category == 'custom') ? $img : $user->lang['IMG_' . strtoupper($img)])
-				));
-			}
-		}
-
-		// TODO
-		// Check whether localised buttons exist in admins language first
-		// Clean up this code
-		$imglang = '';
-		$imagesetlist = array('nolang' => array(), 'lang' => array());
-
-		$dir = "{$phpbb_root_path}styles/$imageset_path/imageset";
-		$dp = @opendir($dir);
-
-		if ($dp)
-		{
-			while (($file = readdir($dp)) !== false)
-			{
-				if (!is_file($dir . '/' . $file) && !is_link($dir . '/' . $file) && $file[0] != '.' && strtoupper($file) != 'CVS')
+				if ($category == 'buttons')
 				{
-					$dp2 = @opendir("$dir/$file");
-
-					if (!$dp2)
+					foreach ($langs as $language)
 					{
-						continue;
+						$template->assign_block_vars('category.images', array(
+							'SELECTED'			=> ($img == $imgname),
+							'VALUE'				=> $img . '-' . $language,
+							'TEXT'				=> $user->lang['IMG_' . strtoupper($img)] . ' [ ' . $language . ' ]'
+						));
 					}
-
-					while (($file2 = readdir($dp2)) !== false)
-					{
-						if (preg_match('#\.(?:gif|jpg|png)$#', $file2))
-						{
-							$imagesetlist['all_lang'][$file][] = "$file/$file2";
-						}
-					}
-					closedir($dp2);
 				}
-				else if (preg_match('#\.(?:gif|jpg|png)$#', $file))
+				else
 				{
-					$imagesetlist['nolang'][] = $file;
+					$template->assign_block_vars('category.images', array(
+						'SELECTED'			=> ($img == $imgname),
+						'VALUE'				=> $img,
+						'TEXT'				=> (($category == 'custom') ? $img : $user->lang['IMG_' . strtoupper($img)])
+					));
 				}
 			}
-			closedir($dp);
 		}
 
 		// Make sure the list of possible images is sorted alphabetically
+		sort($imagesetlist['lang']);
 		sort($imagesetlist['nolang']);
-		foreach ($imagesetlist['all_lang'] as $lang => $data)
-		{
-			sort($imagesetlist['all_lang'][$lang]);
-		}
-
-		if (isset($imagesetlist['all_lang'][$user->img_lang]) && sizeof($imagesetlist['all_lang'][$user->img_lang]))
-		{
-			$imglang = $lang;
-			$imagesetlist['lang'] = $imagesetlist['all_lang'][$user->img_lang];
-		}
-		else
-		{
-			foreach ($imagesetlist['all_lang'] as $lang => $data)
-			{
-				if (sizeof($imagesetlist['all_lang'][$user->img_lang]))
-				{
-					$imglang = $lang;
-					$imagesetlist['lang'] = $imagesetlist['all_lang'][$lang];
-					break;
-				}
-			}
-		}
-		unset($imagesetlist['all_lang']);
 
 		$imagesetlist_options = '';
 		foreach ($imagesetlist as $type => $img_ary)
 		{
-			$template->assign_block_vars('imagesetlist', array(
-				'TYPE'	=> ($type == 'lang')
-			));
+			if ($type !== 'lang' || $sql_extra)
+			{
+				$template->assign_block_vars('imagesetlist', array(
+					'TYPE'	=> ($type == 'lang')
+				));
+			}
+
 			foreach ($img_ary as $img)
 			{
 				$imgtext = preg_replace('/^([^\/]+\/)/', '', $img);
-				$selected = (!empty($imgname) && strpos($$imgname, $imgtext) !== false);
+				$selected = (!empty($imgname) && strpos($image_filename, $imgtext) !== false);
 				if ($selected)
 				{
 					$template->assign_var('IMAGE_SELECT', true);
@@ -1526,9 +1646,9 @@ parse_css_file = {PARSE_CSS_FILE}
 			}
 		}
 
-		$imgsize_bool = (!empty($imgname) && ($imgsize || preg_match('#\*\d+#', $$imgname))) ? true : false;
+		$imgsize_bool = (!empty($imgname) && $image_width && $image_height) ? true : false;
 
-		$img_info = (!empty($imgname)) ? explode('*', $$imgname) : array();
+		$image_request = '../styles/' . $imageset_path . '/imageset/' . ($image_lang ? $imgnamelang . '/' : '') . $image_filename;
 
 		$template->assign_vars(array(
 			'S_EDIT_IMAGESET'	=> true,
@@ -1537,7 +1657,7 @@ parse_css_file = {PARSE_CSS_FILE}
 			'IMAGE_OPTIONS'		=> $img_options,
 			'IMAGELIST_OPTIONS'	=> $imagesetlist_options,
 			'IMAGE_SIZE'		=> $imgsize_bool,
-			'IMAGE_REQUEST'		=> (!empty($img_info[0])) ? '../styles/' . $imageset_path . '/imageset/' . str_replace('{LANG}', $imglang, $img_info[0]) : '',
+			'IMAGE_REQUEST'		=> $image_request,
 			'U_ACTION'			=> $this->u_action . "&amp;action=edit&amp;id=$imageset_id",
 			'U_BACK'			=> $this->u_action,
 			'NAME'				=> $imageset_name,
@@ -1636,6 +1756,12 @@ parse_css_file = {PARSE_CSS_FILE}
 				{
 					set_config('default_style', $new_id);
 				}
+			}
+			else if ($mode == 'imageset')
+			{
+				$sql = 'DELETE FROM ' . STYLES_IMAGESET_DATA_TABLE . "
+					WHERE imageset_id = $style_id";
+				$db->sql_query($sql);
 			}
 			else
 			{
@@ -1883,11 +2009,27 @@ parse_css_file = {PARSE_CSS_FILE}
 			{
 				$imageset_cfg = str_replace(array('{MODE}', '{NAME}', '{COPYRIGHT}', '{VERSION}'), array($mode, $style_row['imageset_name'], $style_row['imageset_copyright'], $config['version']), $this->imageset_cfg);
 
+				$imageset_main = array();
+
+				$sql = 'SELECT image_filename, image_name, image_height, image_width
+					FROM ' . STYLES_IMAGESET_DATA_TABLE . "
+					WHERE imageset_id = $style_id
+						AND image_lang = ''";
+				$result = $db->sql_query($sql);
+				while ($row = $db->sql_fetchrow($result))
+				{
+					$imageset_main[$row['image_name']] = $row['image_filename'] . ($row['image_height'] ? '*' . $row['image_height']: '') . ($row['image_width'] ? '*' . $row['image_width']: '');
+				}
+				$db->sql_freeresult($result);
+
 				foreach ($this->imageset_keys as $topic => $key_array)
 				{
 					foreach ($key_array as $key)
 					{
-						$imageset_cfg .= "\nimg_" . $key . ' = ' . str_replace("styles/{$style_row['imageset_path']}/imageset/", '{PATH}', $style_row[$key]);
+						if (isset($imageset_main[$key]))
+						{
+							$imageset_cfg .= "\nimg_" . $key . ' = ' . str_replace("styles/{$style_row['imageset_path']}/imageset/", '{PATH}', $imageset_main[$key]);
+						}
 					}
 				}
 
@@ -3021,7 +3163,7 @@ parse_css_file = {PARSE_CSS_FILE}
 
 		if ($row)
 		{
-			// If it exist, we just use the stlye on installation
+			// If it exist, we just use the style on installation
 			if ($action == 'install')
 			{
 				$id = $row[$mode . '_id'];
@@ -3079,27 +3221,8 @@ parse_css_file = {PARSE_CSS_FILE}
 				);
 			break;
 
+			// all the heavy lifting is done later
 			case 'imageset':
-				$cfg_data = parse_cfg_file("$root_path$mode/imageset.cfg");
-	
-				$imageset_definitions = array();
-				foreach ($this->imageset_keys as $topic => $key_array)
-				{
-					$imageset_definitions = array_merge($imageset_definitions, $key_array);
-				}
-	
-				foreach ($cfg_data as $key => $value)
-				{
-					if (strpos($key, 'img_') === 0)
-					{
-						$key = substr($key, 4);
-						if (in_array($key, $imageset_definitions))
-						{
-							$sql_ary[$key] = str_replace('{PATH}', "styles/$path/imageset/", trim($value));
-						}
-					}
-				}
-				unset($cfg_data);
 			break;
 		}
 
@@ -3115,6 +3238,106 @@ parse_css_file = {PARSE_CSS_FILE}
 		{
 			$filelist = filelist("{$root_path}template", '', 'html');
 			$this->store_templates('insert', $id, $path, $filelist);
+		}
+		else if ($mode == 'imageset')
+		{
+			$cfg_data = parse_cfg_file("$root_path$mode/imageset.cfg");
+
+			$imageset_definitions = array();
+			foreach ($this->imageset_keys as $topic => $key_array)
+			{
+				$imageset_definitions = array_merge($imageset_definitions, $key_array);
+			}
+
+			foreach ($cfg_data as $key => $value)
+			{
+				if (strpos($value, '*') !== false)
+				{
+					if (substr($value, -1, 1) === '*')
+					{
+						list($image_filename, $image_height) = explode('*', $value);
+						$image_width = 0;
+					}
+					else
+					{
+						list($image_filename, $image_height, $image_width) = explode('*', $value);
+					}
+				}
+				else
+				{
+					$image_filename = $value;
+					$image_height = $image_width = 0;
+				}
+
+				if (strpos($key, 'img_') === 0&& $image_filename)
+				{
+					$key = substr($key, 4);
+					if (in_array($key, $imageset_definitions))
+					{
+						$sql_ary = array(
+							'image_name'		=> $key,
+							'image_filename'	=> str_replace('{PATH}', "styles/$path/imageset/", trim($image_filename)),
+							'image_height'		=> $image_height,
+							'image_width'		=> $image_width,
+							'imageset_id'		=> $id,
+							'image_lang'		=> '',
+						);
+						$db->sql_query('INSERT INTO ' . STYLES_IMAGESET_DATA_TABLE . ' ' . $db->sql_build_array('INSERT', $sql_ary));
+					}
+				}
+			}
+			unset($cfg_data);
+
+			$sql = 'SELECT lang_dir
+				FROM ' . LANG_TABLE;
+			$result = $db->sql_query($sql);
+
+			while ($row = $db->sql_fetchrow($result))
+			{
+				if (@file_exists("$root_path$mode/{$row['lang_dir']}/imageset.cfg"))
+				{
+					$cfg_data_imageset_data = parse_cfg_file("$root_path$mode/{$row['lang_dir']}/imageset.cfg");
+					foreach ($cfg_data_imageset_data as $image_name => $value)
+					{
+						if (strpos($value, '*') !== false)
+						{
+							if (substr($value, -1, 1) === '*')
+							{
+								list($image_filename, $image_height) = explode('*', $value);
+								$image_width = 0;
+							}
+							else
+							{
+								list($image_filename, $image_height, $image_width) = explode('*', $value);
+							}
+						}
+						else
+						{
+							$image_filename = $value;
+							$image_height = $image_width = 0;
+						}
+
+						if (strpos($image_name, 'img_') === 0 && $image_filename)
+						{
+							$image_name = substr($image_name, 4);
+							if (in_array($image_name, $imageset_definitions))
+							{
+								$sql_ary = array(
+									'image_name'		=> $image_name,
+									'image_filename'	=> $image_filename,
+									'image_height'		=> $image_height,
+									'image_width'		=> $image_width,
+									'imageset_id'		=> $id,
+									'image_lang'		=> $row['lang_dir'],
+								);
+								$db->sql_query('INSERT INTO ' . STYLES_IMAGESET_DATA_TABLE . ' ' . $db->sql_build_array('INSERT', $sql_ary));
+							}
+						}
+					}
+					unset($cfg_data_imageset_data);
+				}
+			}
+			$db->sql_freeresult($result);
 		}
 
 		$db->sql_transaction('commit');
