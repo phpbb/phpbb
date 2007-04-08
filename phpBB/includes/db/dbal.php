@@ -626,6 +626,7 @@ class dbal
 					<tr>
 						<td class="row3"><textarea style="font-family:\'Courier New\',monospace;width:99%" rows="5" cols="10">' . preg_replace('/\t(AND|OR)(\W)/', "\$1\$2", htmlspecialchars(preg_replace('/[\s]*[\n\r\t]+[\n\r\s\t]*/', "\n", $query))) . '</textarea></td>
 					</tr>
+					</tbody>
 					</table>
 					
 					' . $this->html_hold . '

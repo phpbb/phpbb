@@ -326,6 +326,22 @@ class dbal_mysql extends dbal
 	*/
 	function _sql_report($mode, $query = '')
 	{
+		static $test_prof;
+
+		// current detection method, might just switch to see the existance of INFORMATION_SCHEMA.PROFILING
+		if ($test_prof === null)
+		{
+			$test_prof = false;
+			if (strpos($this->mysql_version, 'community') !== false)
+			{
+				$ver = substr($this->mysql_version, 0, strpos($this->mysql_version, '-'));
+				if (version_compare($ver, '5.0.37', '>=') && version_compare($ver, '5.1', '<'))
+				{
+					$test_prof = true;
+				}
+			}
+		}
+
 		switch ($mode)
 		{
 			case 'start':
@@ -344,6 +360,12 @@ class dbal_mysql extends dbal
 				{
 					$html_table = false;
 
+					// begin profiling
+					if ($test_prof)
+					{
+						@mysql_query('SET profiling = 1;', $this->db_connect_id);
+					}
+
 					if ($result = @mysql_query("EXPLAIN $explain_query", $this->db_connect_id))
 					{
 						while ($row = @mysql_fetch_assoc($result))
@@ -356,6 +378,43 @@ class dbal_mysql extends dbal
 					if ($html_table)
 					{
 						$this->html_hold .= '</table>';
+					}
+
+					if ($test_prof)
+					{
+						$html_table = false;
+
+						// get the last profile
+						if ($result = @mysql_query('SHOW PROFILE ALL;', $this->db_connect_id))
+						{
+							$this->html_hold .= '<br />';
+							while ($row = @mysql_fetch_assoc($result))
+							{
+								// make <unknown> HTML safe
+								if (!empty($row['Source_function']))
+								{
+									$row['Source_function'] = str_replace(array('<', '>'), array('&lt;', '&gt;'), $row['Source_function']);
+								}
+
+								// remove unsupported features
+								foreach ($row as $key => $val)
+								{
+									if ($val === null)
+									{
+										unset($row[$key]);
+									}
+								}
+								$html_table = $this->sql_report('add_select_row', $query, $html_table, $row);
+							}
+						}
+						@mysql_free_result($result);
+
+						if ($html_table)
+						{
+							$this->html_hold .= '</table>';
+						}
+
+						@mysql_query('SET profiling = 0;', $this->db_connect_id);
 					}
 				}
 

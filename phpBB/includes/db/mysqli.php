@@ -294,6 +294,22 @@ class dbal_mysqli extends dbal
 	*/
 	function _sql_report($mode, $query = '')
 	{
+		static $test_prof;
+
+		// current detection method, might just switch to see the existance of INFORMATION_SCHEMA.PROFILING
+		if ($test_prof === null)
+		{
+			$test_prof = false;
+			if (strpos(mysqli_get_server_info($this->db_connect_id), 'community') !== false)
+			{
+				$ver = mysqli_get_server_version($this->db_connect_id);
+				if ($ver >= 50037 && $ver < 51000)
+				{
+					$test_prof = true;
+				}
+			}
+		}
+
 		switch ($mode)
 		{
 			case 'start':
@@ -312,6 +328,12 @@ class dbal_mysqli extends dbal
 				{
 					$html_table = false;
 
+					// begin profiling
+					if ($test_prof)
+					{
+						@mysqli_query($this->db_connect_id, 'SET profiling = 1;');
+					}
+
 					if ($result = @mysqli_query($this->db_connect_id, "EXPLAIN $explain_query"))
 					{
 						while ($row = @mysqli_fetch_assoc($result))
@@ -324,6 +346,43 @@ class dbal_mysqli extends dbal
 					if ($html_table)
 					{
 						$this->html_hold .= '</table>';
+					}
+
+					if ($test_prof)
+					{
+						$html_table = false;
+
+						// get the last profile
+						if ($result = @mysqli_query($this->db_connect_id, 'SHOW PROFILE ALL;'))
+						{
+							$this->html_hold .= '<br />';
+							while ($row = @mysqli_fetch_assoc($result))
+							{
+								// make <unknown> HTML safe
+								if (!empty($row['Source_function']))
+								{
+									$row['Source_function'] = str_replace(array('<', '>'), array('&lt;', '&gt;'), $row['Source_function']);
+								}
+
+								// remove unsupported features
+								foreach ($row as $key => $val)
+								{
+									if ($val === null)
+									{
+										unset($row[$key]);
+									}
+								}
+								$html_table = $this->sql_report('add_select_row', $query, $html_table, $row);
+							}
+						}
+						@mysqli_free_result($result);
+
+						if ($html_table)
+						{
+							$this->html_hold .= '</table>';
+						}
+
+						@mysqli_query($this->db_connect_id, 'SET profiling = 0;');
 					}
 				}
 
@@ -347,6 +406,7 @@ class dbal_mysqli extends dbal
 
 			break;
 		}
+		@mysqli_query($this->db_connect_id, "SET profiling = 0;");
 	}
 }
 
