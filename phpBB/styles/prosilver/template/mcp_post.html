@@ -46,19 +46,19 @@
 	<div class="postbody">
 		<!-- IF U_EDIT -->
 		<ul class="profile-icons">
-			<li class="edit-icon"><a href="{U_EDIT}" title="{L_EDIT_POST}"><span>{L_EDIT}</span></a></li>
+			<li class="edit-icon"><a href="{U_EDIT}" title="{L_EDIT_POST}"><span>{L_EDIT_POST}</span></a></li>
 		</ul>
 		<!-- ENDIF -->
 
 		<h3>{POST_SUBJECT}</h3>
 		<p class="author">{MINI_POST_IMG} {L_POSTED} {L_POST_BY_AUTHOR} {POST_AUTHOR_FULL} {L_POSTED_ON_DATE}  {POST_DATE}</p>
-		
+
 		<!-- IF S_POST_UNAPPROVED -->
-			<form method="post" id="mcp_approve" action="{U_APPROVE_ACTION}">
+			<form method="post" id="mcp_approve" action="{S_APPROVE_ACTION}">
 
 			<p class="rules">
-				<input class="button1" type="submit" value="{L_APPROVE}" name="mode[approve]" /> &nbsp; 
-				<input class="button2" type="submit" value="{L_DISAPPROVE}" name="mode[disapprove]" />
+				<input class="button1" type="submit" value="{L_APPROVE}" name="action[approve]" /> &nbsp; 
+				<input class="button2" type="submit" value="{L_DISAPPROVE}" name="action[disapprove]" />
 				<input type="hidden" name="post_id_list[]" value="{POST_ID}" />
 			</p>
 
