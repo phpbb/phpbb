@@ -721,7 +721,6 @@ class acp_modules
 		if (!isset($module_data['module_id']))
 		{
 			// no module_id means we're creating a new category/module
-
 			if ($module_data['parent_id'])
 			{
 				$sql = 'SELECT left_id, right_id
@@ -754,8 +753,8 @@ class acp_modules
 						AND {$row['left_id']} BETWEEN left_id AND right_id";
 				$db->sql_query($sql);
 
-				$module_data['left_id'] = $row['right_id'];
-				$module_data['right_id'] = $row['right_id'] + 1;
+				$module_data['left_id'] = (int) $row['right_id'];
+				$module_data['right_id'] = (int) $row['right_id'] + 1;
 			}
 			else
 			{
@@ -766,8 +765,8 @@ class acp_modules
 				$row = $db->sql_fetchrow($result);
 				$db->sql_freeresult($result);
 
-				$module_data['left_id'] = $row['right_id'] + 1;
-				$module_data['right_id'] = $row['right_id'] + 2;
+				$module_data['left_id'] = (int) $row['right_id'] + 1;
+				$module_data['right_id'] = (int) $row['right_id'] + 2;
 			}
 
 			$sql = 'INSERT INTO ' . MODULES_TABLE . ' ' . $db->sql_build_array('INSERT', $module_data);

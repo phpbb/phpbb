@@ -1415,7 +1415,7 @@ class install_install extends module
 					$this->p_master->db_error($error['message'], $db->sql_error_sql, __LINE__, __FILE__);
 				}
 
-				$categories[$cat_name]['id'] = $module_data['module_id'];
+				$categories[$cat_name]['id'] = (int) $module_data['module_id'];
 				$categories[$cat_name]['parent_id'] = 0;
 
 				// Create sub-categories...
@@ -1427,7 +1427,7 @@ class install_install extends module
 							'module_basename'	=> '',
 							'module_enabled'	=> 1,
 							'module_display'	=> 1,
-							'parent_id'			=> $categories[$cat_name]['id'],
+							'parent_id'			=> (int) $categories[$cat_name]['id'],
 							'module_class'		=> $module_class,
 							'module_langname'	=> $level2_name,
 							'module_mode'		=> '',
@@ -1443,8 +1443,8 @@ class install_install extends module
 							$this->p_master->db_error($error['message'], $db->sql_error_sql, __LINE__, __FILE__);
 						}
 
-						$categories[$level2_name]['id'] = $module_data['module_id'];
-						$categories[$level2_name]['parent_id'] = $categories[$cat_name]['id'];
+						$categories[$level2_name]['id'] = (int) $module_data['module_id'];
+						$categories[$level2_name]['parent_id'] = (int) $categories[$cat_name]['id'];
 					}
 				}
 			}
@@ -1466,7 +1466,7 @@ class install_install extends module
 							'module_basename'	=> $module_basename,
 							'module_enabled'	=> 1,
 							'module_display'	=> (isset($row['display'])) ? $row['display'] : 1,
-							'parent_id'			=> $categories[$cat_name]['id'],
+							'parent_id'			=> (int) $categories[$cat_name]['id'],
 							'module_class'		=> $module_class,
 							'module_langname'	=> $row['title'],
 							'module_mode'		=> $module_mode,
@@ -1569,7 +1569,7 @@ class install_install extends module
 						unset($module_data['left_id']);
 						unset($module_data['right_id']);
 
-						$module_data['parent_id'] = $row2['module_id'];
+						$module_data['parent_id'] = (int) $row2['module_id'];
 
 						$_module->update_module_data($module_data, true);
 
