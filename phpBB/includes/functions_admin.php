@@ -2545,7 +2545,7 @@ function update_foes($group_id = false, $user_id = false)
 		{
 			case 'mysqli':
 			case 'mysql4':
-				$sql = 'DELETE z.*
+				$sql = 'DELETE ' . ($db->sql_layer === 'mysqli' || version_compare($db->mysql_version, '4.1', '>=')) ? ZEBRA_TABLE : 'z.*' . '
 					FROM ' . ZEBRA_TABLE . ' z, ' . USER_GROUP_TABLE . ' ug
 					WHERE z.zebra_id = ug.user_id
 						AND z.foe = 1
