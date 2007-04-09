@@ -1505,11 +1505,20 @@ else
 }
 
 // If there are absolutely no more unread posts in this forum and unread posts shown, we can savely show the #unread link
-if ($all_marked_read && $post_unread)
+if ($all_marked_read)
 {
-	$template->assign_vars(array(
-		'U_VIEW_UNREAD_POST'	=> '#unread',
-	));
+	if ($post_unread)
+	{
+		$template->assign_vars(array(
+			'U_VIEW_UNREAD_POST'	=> '#unread',
+		));
+	}
+	else if (isset($topic_tracking_info[$topic_id]) && $topic_data['topic_last_post_time'] > $topic_tracking_info[$topic_id])
+	{
+		$template->assign_vars(array(
+			'U_VIEW_UNREAD_POST'	=> append_sid("{$phpbb_root_path}viewtopic.$phpEx", "f=$forum_id&amp;t=$topic_id&amp;view=unread") . '#unread',
+		));
+	}
 }
 else if (!$all_marked_read)
 {
