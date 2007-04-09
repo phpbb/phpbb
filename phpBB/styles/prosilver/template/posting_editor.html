@@ -2,7 +2,7 @@
 	<!-- IF ERROR --><p class="error">{ERROR}</p><!-- ENDIF -->
 
 	<!-- IF S_PRIVMSGS and not S_SHOW_DRAFTS -->
-		
+
 		<div class="column1">
 		<dl>
 			<dt><label for="username_list">{L_TO}:</label><br /><span><a href="{U_FIND_USERNAME}" onclick="find_username(); return false">{L_FIND_USERNAME}</a></span></dt>
@@ -15,7 +15,7 @@
 				</dd>
 			<!-- ENDIF -->
 			<dd>
-			
+
 			<!-- IF S_ALLOW_MASS_PM -->
 			<textarea id="username_list" name="username_list"></textarea> <input type="submit" name="add_to" value="{L_ADD}" class="button2" />
  			<input type="submit" name="add_bcc" value="{L_ADD_BCC}" class="button2" />
@@ -48,7 +48,7 @@
 			</div>
 		<!-- ENDIF -->
 
-		<div style="clear:both;">&nbsp;</div>
+		<div class="clear"></div>
 
 	<!-- ENDIF -->
 
@@ -89,7 +89,7 @@
 		</dl>
 		<!-- ENDIF -->
 	<!-- ENDIF -->
-	
+
 	<!-- INCLUDE posting_buttons.html -->
 
 	<div id="smiley-box">
@@ -132,7 +132,7 @@
 		<div class="panel bg2">
 			<div class="inner"><span class="corners-top"><span></span></span>
 			<h3>{L_POSTED_ATTACHMENTS}</h3>
-	
+
 			<fieldset class="fields2">
 
 			<!-- BEGIN attach_row -->
@@ -157,15 +157,15 @@
 
 	<!-- IF not S_SHOW_DRAFTS and not $SIG_EDIT eq 1 -->
 	<div class="panel bg2">
-		<div class="inner"><span class="corners-top"><span></span></span>	
+		<div class="inner"><span class="corners-top"><span></span></span>
 		<fieldset class="submit-buttons">
 			{S_HIDDEN_ADDRESS_FIELD}
-			{S_HIDDEN_FIELDS}<input type="submit" tabindex="5" name="preview" value="{L_PREVIEW}" class="button1"<!-- IF not S_PRIVMSGS --> onclick="document.getElementById('postform').action += '#preview';"<!-- ENDIF --> />&nbsp; 
-			<input type="submit" accesskey="s" tabindex="6" name="post" value="{L_SUBMIT}" class="button1" />&nbsp; 
+			{S_HIDDEN_FIELDS}<input type="submit" tabindex="5" name="preview" value="{L_PREVIEW}" class="button1"<!-- IF not S_PRIVMSGS --> onclick="document.getElementById('postform').action += '#preview';"<!-- ENDIF --> />&nbsp;
+			<input type="submit" accesskey="s" tabindex="6" name="post" value="{L_SUBMIT}" class="button1" />&nbsp;
 			<!-- IF S_SAVE_ALLOWED --><input type="submit" accesskey="k" tabindex="8" name="save" value="{L_SAVE}" class="button2" />&nbsp; <!-- ENDIF -->
 			<!-- IF S_HAS_DRAFTS --><input type="submit" accesskey="d" tabindex="9" name="load" value="{L_LOAD}" class="button2" onclick="load_draft = true;" />&nbsp; <!-- ENDIF -->
 		</fieldset>
-	
+
 		<span class="corners-bottom"><span></span></span></div>
 	</div>
 	<!-- ENDIF -->
@@ -183,7 +183,7 @@
 	<!-- IF not S_SHOW_DRAFTS and not $SIG_EDIT eq 1 -->
 	<div class="panel bg3" id="options-panel">
 		<div class="inner"><span class="corners-top"><span></span></span>
-		
+
 		<fieldset class="fields1">
 			<!-- IF S_BBCODE_ALLOWED -->
 				<div><label for="disable_bbcode"><input type="checkbox" name="disable_bbcode" id="disable_bbcode"{S_BBCODE_CHECKED} /> {L_DISABLE_BBCODE}</label></div>
@@ -217,7 +217,7 @@
 				<dd><!-- BEGIN topic_type --><label for="topic_type-{topic_type.VALUE}"><input type="radio" name="topic_type" id="topic_type-{topic_type.VALUE}" value="{topic_type.VALUE}"{topic_type.S_CHECKED} />{topic_type.L_TOPIC_TYPE}</label> <!-- END topic_type --></dd>
 			</dl>
 			<!-- ENDIF -->
-			
+
 			<!-- IF S_TOPIC_TYPE_ANNOUNCE or S_TOPIC_TYPE_STICKY -->
 			<dl>
 				<dt><label for="topic_time_limit">{L_STICK_TOPIC_FOR}:</label></dt>
@@ -225,7 +225,7 @@
 				<dd>{L_STICK_TOPIC_FOR_EXPLAIN}</dd>
 			</dl>
 			<!-- ENDIF -->
-	
+
 			<!-- IF S_EDIT_REASON -->
 			<dl>
 				<dt><label for="edit_reason">{L_EDIT_REASON}:</label></dt>
