@@ -142,7 +142,7 @@ ALTER TABLE [phpbb_acl_roles_data] WITH NOCHECK ADD
 	)  ON [PRIMARY] 
 GO
 
-CREATE  INDEX [auth_option_id] ON [phpbb_acl_roles_data]([auth_option_id]) ON [PRIMARY]
+CREATE  INDEX [ath_opt_id] ON [phpbb_acl_roles_data]([auth_option_id]) ON [PRIMARY]
 GO
 
 
@@ -1136,7 +1136,7 @@ CREATE TABLE [phpbb_search_wordmatch] (
 ) ON [PRIMARY]
 GO
 
-CREATE  UNIQUE  INDEX [unique_match] ON [phpbb_search_wordmatch]([word_id], [post_id], [title_match]) ON [PRIMARY]
+CREATE  UNIQUE  INDEX [unq_mtch] ON [phpbb_search_wordmatch]([word_id], [post_id], [title_match]) ON [PRIMARY]
 GO
 
 CREATE  INDEX [word_id] ON [phpbb_search_wordmatch]([word_id]) ON [PRIMARY]
@@ -1392,7 +1392,7 @@ ALTER TABLE [phpbb_styles_imageset_data] WITH NOCHECK ADD
 	)  ON [PRIMARY] 
 GO
 
-CREATE  INDEX [imgset_id] ON [phpbb_styles_imageset_data]([imageset_id]) ON [PRIMARY]
+CREATE  INDEX [i_id] ON [phpbb_styles_imageset_data]([imageset_id]) ON [PRIMARY]
 GO
 
 

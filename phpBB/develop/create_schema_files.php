@@ -858,7 +858,7 @@ function get_schema_struct()
 		),
 		'PRIMARY_KEY'	=> array('role_id', 'auth_option_id'),
 		'KEYS'			=> array(
-			'auth_option_id'	=> array('INDEX', 'auth_option_id'),
+			'ath_opt_id'	=> array('INDEX', 'auth_option_id'),
 		),
 	);
 
@@ -1489,7 +1489,7 @@ function get_schema_struct()
 			'title_match'		=> array('BOOL', 0),
 		),
 		'KEYS'			=> array(
-			'unique_match'		=> array('UNIQUE', array('word_id', 'post_id', 'title_match')),
+			'unq_mtch'			=> array('UNIQUE', array('word_id', 'post_id', 'title_match')),
 			'word_id'			=> array('INDEX', 'word_id'),
 			'post_id'			=> array('INDEX', 'post_id'),
 		),
@@ -1647,7 +1647,7 @@ function get_schema_struct()
 		),
 		'PRIMARY_KEY'		=> 'image_id',
 		'KEYS'				=> array(
-			'imgset_id'			=> array('INDEX', 'imageset_id'),
+			'i_id'			=> array('INDEX', 'imageset_id'),
 		),
 	);
 

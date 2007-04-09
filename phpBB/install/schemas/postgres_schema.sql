@@ -170,7 +170,7 @@ CREATE TABLE phpbb_acl_roles_data (
 	PRIMARY KEY (role_id, auth_option_id)
 );
 
-CREATE INDEX phpbb_acl_roles_data_auth_option_id ON phpbb_acl_roles_data (auth_option_id);
+CREATE INDEX phpbb_acl_roles_data_ath_opt_id ON phpbb_acl_roles_data (auth_option_id);
 
 /*
 	Table: 'phpbb_acl_users'
@@ -867,7 +867,7 @@ CREATE TABLE phpbb_search_wordmatch (
 	title_match INT2 DEFAULT '0' NOT NULL CHECK (title_match >= 0)
 );
 
-CREATE UNIQUE INDEX phpbb_search_wordmatch_unique_match ON phpbb_search_wordmatch (word_id, post_id, title_match);
+CREATE UNIQUE INDEX phpbb_search_wordmatch_unq_mtch ON phpbb_search_wordmatch (word_id, post_id, title_match);
 CREATE INDEX phpbb_search_wordmatch_word_id ON phpbb_search_wordmatch (word_id);
 CREATE INDEX phpbb_search_wordmatch_post_id ON phpbb_search_wordmatch (post_id);
 
@@ -1042,7 +1042,7 @@ CREATE TABLE phpbb_styles_imageset_data (
 	PRIMARY KEY (image_id)
 );
 
-CREATE INDEX phpbb_styles_imageset_data_imgset_id ON phpbb_styles_imageset_data (imageset_id);
+CREATE INDEX phpbb_styles_imageset_data_i_id ON phpbb_styles_imageset_data (imageset_id);
 
 /*
 	Table: 'phpbb_topics'

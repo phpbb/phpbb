@@ -334,13 +334,13 @@ $database_update_info = array(
 				'auth_role_id'		=> array('auth_role_id'),
 			),
 			ACL_ROLES_DATA_TABLE	=> array(
-				'auth_option_id'	=> array('auth_option_id'),
+				'ath_opt_id'		=> array('auth_option_id'),
 			),
 		),
 		// Add the following unique indexes
 		'add_unique_index'	=> array(
 			SEARCH_WORDMATCH_TABLE	=> array(
-				'unique_match'		=> array('word_id', 'post_id', 'title_match'),
+				'unq_mtch'		=> array('word_id', 'post_id', 'title_match'),
 			),
 			USERS_TABLE				=> array(
 				'username_clean'	=> array('username_clean'),
@@ -705,7 +705,7 @@ if (version_compare($current_version, '3.0.b5', '<='))
 					image_width smallint(4) UNSIGNED DEFAULT '0' NOT NULL,
 					imageset_id tinyint(4) DEFAULT '0' NOT NULL,
 					PRIMARY KEY (image_id),
-					KEY imgset_id (imageset_id)
+					KEY i_id (imageset_id)
 				) CHARACTER SET `utf8` COLLATE `utf8_bin`");
 		break;
 
@@ -720,7 +720,7 @@ if (version_compare($current_version, '3.0.b5', '<='))
 					image_width smallint(4) UNSIGNED DEFAULT '0' NOT NULL,
 					imageset_id tinyint(4) DEFAULT '0' NOT NULL,
 					PRIMARY KEY (image_id),
-					KEY imgset_id (imageset_id)
+					KEY i_id (imageset_id)
 				);");
 		break;
 
@@ -742,7 +742,7 @@ if (version_compare($current_version, '3.0.b5', '<='))
 						[image_id]
 					)  ON [PRIMARY]",
 
-				"CREATE  INDEX [imgset_id] ON [$tablename]([imageset_id]) ON [PRIMARY]",
+				"CREATE  INDEX [i_id] ON [$tablename]([imageset_id]) ON [PRIMARY]",
 			);
 		break;
 
@@ -759,7 +759,7 @@ if (version_compare($current_version, '3.0.b5', '<='))
 					CONSTRAINT pk_phpbb_styles_imageset_data PRIMARY KEY (image_id)
 				)",
 
-				"CREATE INDEX {$tablename}_imgset_id ON $tablename (imageset_id)",
+				"CREATE INDEX {$tablename}_i_id ON $tablename (imageset_id)",
 
 				"CREATE SEQUENCE {$tablename}_imgset_id_seq",
 
@@ -791,7 +791,7 @@ if (version_compare($current_version, '3.0.b5', '<='))
 					PRIMARY KEY (image_id)
 				);",
 
-				"CREATE INDEX {$tablename}_imgset_id ON $tablename (imageset_id);"
+				"CREATE INDEX {$tablename}_i_id ON $tablename (imageset_id);"
 			);
 		break;
 
@@ -807,7 +807,7 @@ if (version_compare($current_version, '3.0.b5', '<='))
 					imageset_id tinyint(4) NOT NULL DEFAULT '0'
 				);",
 
-				"CREATE INDEX  {$tablename}_imgset_id ON  $tablename (imageset_id);"
+				"CREATE INDEX  {$tablename}_i_id ON  $tablename (imageset_id);"
 			);
 		break;
 
@@ -825,7 +825,7 @@ if (version_compare($current_version, '3.0.b5', '<='))
 
 				"ALTER TABLE $tablename ADD PRIMARY KEY (image_id);",
 
-				"CREATE INDEX {$tablename}_imgset_id ON $tablename(imageset_id);",
+				"CREATE INDEX {$tablename}_i_id ON $tablename(imageset_id);",
 
 				"CREATE GENERATOR {$tablename}_gen;",
 

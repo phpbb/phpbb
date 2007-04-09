@@ -188,7 +188,7 @@ CREATE TABLE phpbb_acl_roles_data (
 )
 /
 
-CREATE INDEX phpbb_acl_roles_data_auth_option_id ON phpbb_acl_roles_data (auth_option_id)
+CREATE INDEX phpbb_acl_roles_data_ath_opt_id ON phpbb_acl_roles_data (auth_option_id)
 /
 
 /*
@@ -1270,7 +1270,7 @@ CREATE TABLE phpbb_search_wordmatch (
 	post_id number(8) DEFAULT '0' NOT NULL,
 	word_id number(8) DEFAULT '0' NOT NULL,
 	title_match number(1) DEFAULT '0' NOT NULL,
-	CONSTRAINT u_phpbb_unique_match UNIQUE (word_id, post_id, title_match)
+	CONSTRAINT u_phpbb_unq_mtch UNIQUE (word_id, post_id, title_match)
 )
 /
 
@@ -1565,7 +1565,7 @@ CREATE TABLE phpbb_styles_imageset_data (
 )
 /
 
-CREATE INDEX phpbb_styles_imageset_data_imgset_id ON phpbb_styles_imageset_data (imageset_id)
+CREATE INDEX phpbb_styles_imageset_data_i_id ON phpbb_styles_imageset_data (imageset_id)
 /
 
 CREATE SEQUENCE phpbb_styles_imageset_data_seq

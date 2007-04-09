@@ -74,7 +74,7 @@ CREATE TABLE phpbb_acl_roles_data (
 	auth_option_id mediumint(8) UNSIGNED DEFAULT '0' NOT NULL,
 	auth_setting tinyint(2) DEFAULT '0' NOT NULL,
 	PRIMARY KEY (role_id, auth_option_id),
-	KEY auth_option_id (auth_option_id)
+	KEY ath_opt_id (auth_option_id)
 );
 
 
@@ -653,7 +653,7 @@ CREATE TABLE phpbb_search_wordmatch (
 	post_id mediumint(8) UNSIGNED DEFAULT '0' NOT NULL,
 	word_id mediumint(8) UNSIGNED DEFAULT '0' NOT NULL,
 	title_match tinyint(1) UNSIGNED DEFAULT '0' NOT NULL,
-	UNIQUE unique_match (word_id, post_id, title_match),
+	UNIQUE unq_mtch (word_id, post_id, title_match),
 	KEY word_id (word_id),
 	KEY post_id (post_id)
 );
@@ -792,7 +792,7 @@ CREATE TABLE phpbb_styles_imageset_data (
 	image_width smallint(4) UNSIGNED DEFAULT '0' NOT NULL,
 	imageset_id tinyint(4) DEFAULT '0' NOT NULL,
 	PRIMARY KEY (image_id),
-	KEY imgset_id (imageset_id)
+	KEY i_id (imageset_id)
 );
 
 
