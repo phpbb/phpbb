@@ -187,7 +187,7 @@ class fulltext_native extends search_backend
 		preg_match_all('#([^\\s+\\-|*()]+)(?:$|[\\s+\\-|()])#u', $keywords, $exact_words);
 		$exact_words = $exact_words[1];
 
-		$common_ids = array();
+		$common_ids = $words = array();
 
 		if (sizeof($exact_words))
 		{
@@ -287,6 +287,14 @@ class fulltext_native extends search_backend
 						$id_words[] = $words[$word_part];
 						$non_common_words[] = $word_part;
 					}
+					else
+					{
+						$len = utf8_strlen($word_part);
+						if ($len < $this->word_length['min'] || $len > $this->word_length['max'])
+						{
+							$this->common_words[] = $word_part;
+						}
+					}
 				}
 				if (sizeof($id_words))
 				{
@@ -311,7 +319,6 @@ class fulltext_native extends search_backend
 			// else we only need one id
 			else if (($wildcard = strpos($word, '*') !== false) || isset($words[$word]))
 			{
-
 				if ($wildcard)
 				{
 					$len = utf8_strlen(str_replace('*', '', $word));

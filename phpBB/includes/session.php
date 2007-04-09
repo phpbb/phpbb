@@ -301,7 +301,7 @@ class session
 					// Added logging temporarly to help debug bugs...
 					if (defined('DEBUG_EXTRA'))
 					{
-						add_log('critical', 'LOG_IP_BROWSER_FORWARDED_CHECK', $u_ip, $s_ip, $u_browser, $s_browser, $u_forwarded_for, $s_forwarded_for);
+						add_log('critical', 'LOG_IP_BROWSER_FORWARDED_CHECK', $u_ip, $s_ip, $u_browser, $s_browser, htmlspecialchars($u_forwarded_for), htmlspecialchars($s_forwarded_for));
 					}
 				}
 			}
