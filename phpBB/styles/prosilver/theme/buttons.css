@@ -46,7 +46,7 @@
 .newpm-icon, .newpm-icon a			{ background: none 0 0 no-repeat; }
 .forwardpm-icon, .forwardpm-icon a 	{ background: none 0 0 no-repeat; }
 
-/* Set bug button dimensions */
+/* Set big button dimensions */
 .buttons div.reply-icon		{ width: {IMG_BUTTON_TOPIC_REPLY_WIDTH}px; height: {IMG_BUTTON_TOPIC_REPLY_HEIGHT}px; }
 .buttons div.post-icon		{ width: {IMG_BUTTON_TOPIC_NEW_WIDTH}px; height: {IMG_BUTTON_TOPIC_NEW_HEIGHT}px; }
 .buttons div.locked-icon	{ width: {IMG_BUTTON_TOPIC_LOCKED_WIDTH}px; height: {IMG_BUTTON_TOPIC_LOCKED_HEIGHT}px; }
