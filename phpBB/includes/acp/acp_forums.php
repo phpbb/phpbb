@@ -1123,6 +1123,19 @@ class acp_forums
 					$db->sql_query($sql);
 				}
 			}
+			else if ($row['forum_type'] == FORUM_CAT && $forum_data_sql['forum_type'] == FORUM_POST)
+			{
+				// Changing a category to a forum? Reset the data (you can't post directly in a cat, you must use a forum)
+				$forum_data_sql['forum_posts'] = 0;
+				$forum_data_sql['forum_topics'] = 0;
+				$forum_data_sql['forum_topics_real'] = 0;
+				$forum_data_sql['forum_last_post_id'] = 0;
+				$forum_data_sql['forum_last_post_subject'] = '';
+				$forum_data_sql['forum_last_post_time'] = 0;
+				$forum_data_sql['forum_last_poster_id'] = 0;
+				$forum_data_sql['forum_last_poster_name'] = '';
+				$forum_data_sql['forum_last_poster_colour'] = '';
+			}
 
 			if (sizeof($errors))
 			{
