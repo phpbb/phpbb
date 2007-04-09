@@ -103,6 +103,7 @@
 			<br /><a href="{U_MORE_SMILIES}" onclick="window.open('{U_MORE_SMILIES}', '_phpbbsmilies', 'HEIGHT=350,resizable=yes,scrollbars=yes,WIDTH=300'); return false;">{L_MORE_SMILIES}</a>
 		<!-- ENDIF -->
 
+		<!-- IF BBCODE_STATUS -->
 		<hr />
 		{BBCODE_STATUS}<br />
 		<!-- IF S_BBCODE_ALLOWED -->
@@ -111,8 +112,9 @@
 			{URL_STATUS}<br />
 			{SMILIES_STATUS}
 		<!-- ENDIF -->
+		<!-- ENDIF -->
 		<!-- IF S_EDIT_DRAFT || S_DISPLAY_REVIEW -->
-			<hr />
+			<!-- IF S_DISPLAY_REVIEW --><hr /><!-- ENDIF -->
 			<!-- IF S_EDIT_DRAFT --><strong><a href="{S_UCP_ACTION}">{L_BACK_TO_DRAFTS}</a></strong><!-- ENDIF -->
 			<!-- IF S_DISPLAY_REVIEW --><strong><a href="#review">{L_TOPIC_REVIEW}</a></strong><!-- ENDIF -->
 		<!-- ENDIF -->
@@ -137,6 +139,7 @@
 
 			<!-- BEGIN attach_row -->
 			<dl>
+
 				<dt><label for="comment_list[{attach_row.ASSOC_INDEX}]">{L_FILE_COMMENT}:</label><br />
 				<span><br /><a href="{attach_row.U_VIEW_ATTACHMENT}" class="right">{attach_row.FILENAME}</a></span></dt>
 				<dd><textarea name="comment_list[{attach_row.ASSOC_INDEX}]" id="comment_list[{attach_row.ASSOC_INDEX}]" rows="1" cols="35" class="inputbox">{attach_row.FILE_COMMENT}</textarea></dd>

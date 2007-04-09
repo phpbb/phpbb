@@ -1,7 +1,7 @@
 <script type="text/javascript">
 <!--
-	var form_name = <!-- IF S_EDIT_DRAFT or S_PRIVMSGS -->'post'<!-- ELSE -->'postform'<!-- ENDIF -->;
-	var text_name = <!-- IF $SIG_EDIT eq 1 -->'signature'<!-- ELSE -->'message'<!-- ENDIF -->;
+	var form_name = 'postform';
+	var text_name = 'message';
 	var load_draft = false;
 	var upload = false;
 
@@ -36,7 +36,7 @@
 		if (document.getElementById(text_name).value.length < 2 && load_draft == false)
 		{
 			if (!upload)
-			{	
+			{
 				alert('{L_EMPTY_MESSAGE}');
 				return false;
 			}
