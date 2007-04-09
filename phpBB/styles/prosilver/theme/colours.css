@@ -598,7 +598,7 @@ Colours and backgrounds for buttons.css
 -------------------------------------------------------------- */
 
 /* Big button images */
-.reply-icon, .reply-icon a				{ background-image: url("{IMG_BUTTON_TOPIC_REPLY_SRC}"); }
+.reply-icon, .reply-icon a			{ background-image: url("{IMG_BUTTON_TOPIC_REPLY_SRC}"); }
 .post-icon, .post-icon a				{ background-image: url("{IMG_BUTTON_TOPIC_NEW_SRC}") ;}
 .locked-icon, .locked-icon a			{ background-image: url("{IMG_BUTTON_TOPIC_LOCKED_SRC}"); }
 .pmreply-icon, .pmreply-icon a		{ background-image: url("{IMG_BUTTON_PM_REPLY_SRC}") ;}
@@ -625,32 +625,31 @@ a.fontsize {
 .icon-home						{ background-image: url("{T_THEME_PATH}/images/icon_home.gif"); }
 .icon-ucp						{ background-image: url("{T_THEME_PATH}/images/icon_ucp.gif"); }
 .icon-register					{ background-image: url("{T_THEME_PATH}/images/icon_register.gif"); }
-.icon-logout						{ background-image: url("{T_THEME_PATH}/images/icon_logout.gif"); }
+.icon-logout					{ background-image: url("{T_THEME_PATH}/images/icon_logout.gif"); }
 .icon-bookmark					{ background-image: url("{T_THEME_PATH}/images/icon_bookmark.gif"); }
 .icon-bump						{ background-image: url("{T_THEME_PATH}/images/icon_bump.gif"); }
 .icon-subscribe					{ background-image: url("{T_THEME_PATH}/images/icon_subscribe.gif"); }
 .icon-unsubscribe				{ background-image: url("{T_THEME_PATH}/images/icon_unsubscribe.gif"); }
 .icon-pages						{ background-image: url("{T_THEME_PATH}/images/icon_pages.gif"); }
-.icon-search						{ background-image: url("{T_THEME_PATH}/images/icon_search.gif"); }
+.icon-search					{ background-image: url("{T_THEME_PATH}/images/icon_search.gif"); }
 
 /* Profile & navigation icons */
-.email-icon, .email-icon a			{ background-image: url("{IMG_ICON_CONTACT_EMAIL_SRC}"); }
+.email-icon, .email-icon a		{ background-image: url("{IMG_ICON_CONTACT_EMAIL_SRC}"); }
 .aim-icon, .aim-icon a			{ background-image: url("{IMG_ICON_CONTACT_AIM_SRC}"); }
 .yahoo-icon, .yahoo-icon a		{ background-image: url("{IMG_ICON_CONTACT_YAHOO_SRC}"); }
 .web-icon, .web-icon a			{ background-image: url("{IMG_ICON_CONTACT_WWW_SRC}"); }
-.msnm-icon, .msnm-icon a		{ background-image: url("{IMG_ICON_CONTACT_MSNM_SRC}"); }
-.icq-icon, .icq-icon a				{ background-image: url("{IMG_ICON_CONTACT_ICQ_SRC}"); }
-.pm-icon, .pm-icon a				{ background-image: url("{IMG_ICON_CONTACT_PM_SRC}"); }
+.msnm-icon, .msnm-icon a			{ background-image: url("{IMG_ICON_CONTACT_MSNM_SRC}"); }
+.icq-icon, .icq-icon a			{ background-image: url("{IMG_ICON_CONTACT_ICQ_SRC}"); }
 .jabber-icon, .jabber-icon a		{ background-image: url("{IMG_ICON_CONTACT_JABBER_SRC}"); }
-.quote-icon, .quote-icon a			{ background-image: url("{IMG_ICON_POST_QUOTE_SRC}"); }
+.pm-icon, .pm-icon a				{ background-image: url("{IMG_ICON_CONTACT_PM_SRC}"); }
+.quote-icon, .quote-icon a		{ background-image: url("{IMG_ICON_POST_QUOTE_SRC}"); }
 
 /* Moderator icons */
 .report-icon, .report-icon a		{ background-image: url("{IMG_ICON_POST_REPORT_SRC}"); }
-.warn-icon, .warn-icon a			{ background-image: url("{IMG_ICON_POST_REPORT_SRC}"); }
 .edit-icon, .edit-icon a			{ background-image: url("{IMG_ICON_POST_EDIT_SRC}"); }
-
 .delete-icon, .delete-icon a		{ background-image: url("{IMG_ICON_POST_DELETE_SRC}"); }
 .info-icon, .info-icon a			{ background-image: url("{IMG_ICON_POST_INFO_SRC}"); }
+.warn-icon, .warn-icon a			{ background-image: url("{IMG_ICON_USER_WARN_SRC}"); } /* Need updated warn icon */
 
 /*  	
 --------------------------------------------------------------

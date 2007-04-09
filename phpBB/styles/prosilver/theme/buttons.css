@@ -7,7 +7,11 @@
 .buttons {
 	float: left;
 	width: auto;
-	height: 25px;		/* Set to height of button */
+	height: auto;
+}
+
+.rtl .button {
+	float: right;
 }
 
 /* Rollover state */
@@ -15,9 +19,11 @@
 	float: left;
 	margin: 0 5px 0 0;
 	background-position: 0 100%;
-	/* Button dimensions */
-	width: 96px;
-	height: 25px;
+}
+
+.rtl .button div {
+	float: right;
+	margin: 0 0 0 5px;
 }
 
 /* Rolloff state */
@@ -33,12 +39,20 @@
 .buttons div a:hover	{ background-image: none; }
 
 /* Big button images */
-.reply-icon, .reply-icon a				{ background: transparent none 0 0 no-repeat; }
+.reply-icon, .reply-icon a			{ background: transparent none 0 0 no-repeat; }
 .post-icon, .post-icon a				{ background: transparent none 0 0 no-repeat; }
-.locked-icon, .locked-icon a				{ background: transparent none 0 0 no-repeat; }
+.locked-icon, .locked-icon a			{ background: transparent none 0 0 no-repeat; }
 .pmreply-icon, .pmreply-icon a		{ background: none 0 0 no-repeat; }
 .newpm-icon, .newpm-icon a			{ background: none 0 0 no-repeat; }
 .forwardpm-icon, .forwardpm-icon a 	{ background: none 0 0 no-repeat; }
+
+/* Set bug button dimensions */
+.buttons div.reply-icon		{ width: {IMG_BUTTON_TOPIC_REPLY_WIDTH}px; height: {IMG_BUTTON_TOPIC_REPLY_HEIGHT}px; }
+.buttons div.post-icon		{ width: {IMG_BUTTON_TOPIC_NEW_WIDTH}px; height: {IMG_BUTTON_TOPIC_NEW_HEIGHT}px; }
+.buttons div.locked-icon	{ width: {IMG_BUTTON_TOPIC_LOCKED_WIDTH}px; height: {IMG_BUTTON_TOPIC_LOCKED_HEIGHT}px; }
+.buttons div.pmreply-icon	{ width: {IMG_BUTTON_PM_REPLY_WIDTH}px; height: {IMG_BUTTON_PM_REPLY_HEIGHT}px; }
+.buttons div.newpm-icon		{ width: {IMG_BUTTON_PM_NEW_WIDTH}px; height: {IMG_BUTTON_PM_NEW_HEIGHT}px; }
+.buttons div.forwardpm-icon	{ width: {IMG_BUTTON_PM_FORWARD_WIDTH}px; height: {IMG_BUTTON_PM_FORWARD_HEIGHT}px; }
 
 /* Sub-header (navigation bar)
 --------------------------------------------- */
@@ -78,41 +92,36 @@ a.fontsize:hover {
 
 /* Icon images
 ---------------------------------------- */
-.icon-faq, .icon-members, .icon-home, .icon-ucp, .icon-register, .icon-logout, .icon-bookmark, .icon-bump, .icon-subscribe, .icon-unsubscribe, .icon-pages, .icon-search, .sitehome {
+.sitehome, .icon-faq, .icon-members, .icon-home, .icon-ucp, .icon-register, .icon-logout,
+.icon-bookmark, .icon-bump, .icon-subscribe, .icon-unsubscribe, .icon-pages, .icon-search{
 	background-position: 0 50%;
 	background-repeat: no-repeat;
-	padding-left: 17px;
-	padding-top: 1px;
+	background-image: none;
+	padding: 1px 0 0 17px;
 }
 
-.sitehome			{ background-image: none; }
-.icon-faq			{ background-image: none; }
-.icon-members		{ background-image: none; }
-.icon-home			{ background-image: none; }
-.icon-ucp			{ background-image: none; }
-.icon-register		{ background-image: none; }
-.icon-logout			{ background-image: none; }
-.icon-bookmark		{ background-image: none; }
-.icon-bump			{ background-image: none; }
-.icon-subscribe		{ background-image: none; }
-.icon-unsubscribe	{ background-image: none; }
-.icon-pages			{ background-image: none; }
+.rtl .sitehome, .rtl .icon-faq, .rtl .icon-members, .rtl .icon-home, .rtl .icon-ucp, .rtl .icon-register, .rtl .icon-logout,
+.rtl .icon-bookmark, .rtl .icon-bump, .rtl .icon-subscribe, .rtl .icon-unsubscribe, .rtl .icon-pages, .rtl .icon-search{
+	background-position: 100% 50%;
+	padding: 1px 17px 0 0;
+}
 
 /* Poster profile icons
 ----------------------------------------*/
 ul.profile-icons {
 	padding-top: 10px;
-	height: 20px;
 	list-style: none;
 }
 
 /* Rollover state */
 ul.profile-icons li {
 	float: left;
-	width: 23px;
-	height: 20px;
-	margin: 0 3px 3px 0;
+	margin: 0 6px 3px 0;
 	background-position: 0 100%;
+}
+
+.rtl ul.profile-icons li {
+	margin: 0 0 3px 6px;
 }
 
 /* Rolloff state */
@@ -135,50 +144,48 @@ ul.profile-icons li a:hover { background: none; }
 }
 
 .postbody ul.profile-icons li {
-	margin: 0 0 0 3px;
+	margin: 0 3px;
 }
 
 /* Profile & navigation icons */
-.email-icon, .email-icon a			{ background: none top left no-repeat; }
+.email-icon, .email-icon a		{ background: none top left no-repeat; }
 .aim-icon, .aim-icon a			{ background: none top left no-repeat; }
 .yahoo-icon, .yahoo-icon a		{ background: none top left no-repeat; }
 .web-icon, .web-icon a			{ background: none top left no-repeat; }
-.msnm-icon, .msnm-icon a		{ background: none top left no-repeat; }
-.icq-icon, .icq-icon a				{ background: none top left no-repeat; }
-.pm-icon, .pm-icon a				{ background: none top left no-repeat; }
+.msnm-icon, .msnm-icon a			{ background: none top left no-repeat; }
+.icq-icon, .icq-icon a			{ background: none top left no-repeat; }
 .jabber-icon, .jabber-icon a		{ background: none top left no-repeat; }
-.quote-icon, .quote-icon a			{ background: none top left no-repeat; }
-
-ul.profile-icons li.pm-icon {
-	width: {IMG_ICON_CONTACT_PM_WIDTH}px;
-}
-
-ul.profile-icons li.quote-icon {
-	width: {IMG_ICON_POST_QUOTE_WIDTH}px;
-	margin-left: 10px;
-}
-
-div.rank-image {
-	width: auto;
-	height: 10px;
-	position: absolute;
-	top: 0;
-	right: 0;
-	text-align: right;
-}
+.pm-icon, .pm-icon a				{ background: none top left no-repeat; }
+.quote-icon, .quote-icon a		{ background: none top left no-repeat; }
 
 /* Moderator icons */
 .report-icon, .report-icon a		{ background: none top left no-repeat; }
 .warn-icon, .warn-icon a			{ background: none top left no-repeat; }
 .edit-icon, .edit-icon a			{ background: none top left no-repeat; }
-
-ul.profile-icons li.edit-icon {
-	width: {IMG_ICON_POST_EDIT_WIDTH}px;
-}
-
 .delete-icon, .delete-icon a		{ background: none top left no-repeat; }
 .info-icon, .info-icon a			{ background: none top left no-repeat; }
 
-ul.profile-icons li.info-icon, ul.profile-icons li.report-icon {
-	margin-left: 0;
-}
+/* Set profile icon dimensions */
+ul.profile-icons li.email-icon		{ width: {IMG_ICON_CONTACT_EMAIL_WIDTH}px; height: {IMG_ICON_CONTACT_EMAIL_HEIGHT}px; }
+ul.profile-icons li.aim-icon	{ width: {IMG_ICON_CONTACT_AIM_WIDTH}px; height: {IMG_ICON_CONTACT_AIM_HEIGHT}px; }
+ul.profile-icons li.yahoo-icon	{ width: {IMG_ICON_CONTACT_YAHOO_WIDTH}px; height: {IMG_ICON_CONTACT_YAHOO_HEIGHT}px; }
+ul.profile-icons li.web-icon	{ width: {IMG_ICON_CONTACT_WWW_WIDTH}px; height: {IMG_ICON_CONTACT_WWW_HEIGHT}px; }
+ul.profile-icons li.msnm-icon	{ width: {IMG_ICON_CONTACT_MSNM_WIDTH}px; height: {IMG_ICON_CONTACT_MSNM_HEIGHT}px; }
+ul.profile-icons li.icq-icon	{ width: {IMG_ICON_CONTACT_ICQ_WIDTH}px; height: {IMG_ICON_CONTACT_ICQ_HEIGHT}px; }
+ul.profile-icons li.jabber-icon	{ width: {IMG_ICON_CONTACT_JABBER_WIDTH}px; height: {IMG_ICON_CONTACT_JABBER_HEIGHT}px; }
+ul.profile-icons li.pm-icon		{ width: {IMG_ICON_CONTACT_PM_WIDTH}px; height: {IMG_ICON_CONTACT_PM_HEIGHT}px; }
+ul.profile-icons li.quote-icon	{ width: {IMG_ICON_POST_QUOTE_WIDTH}px; height: {IMG_ICON_POST_QUOTE_HEIGHT}px; }
+ul.profile-icons li.report-icon	{ width: {IMG_ICON_POST_REPORT_WIDTH}px; height: {IMG_ICON_POST_REPORT_HEIGHT}px; }
+ul.profile-icons li.edit-icon	{ width: {IMG_ICON_POST_EDIT_WIDTH}px; height: {IMG_ICON_POST_EDIT_HEIGHT}px; }
+ul.profile-icons li.delete-icon	{ width: {IMG_ICON_POST_DELETE_WIDTH}px; height: {IMG_ICON_POST_DELETE_HEIGHT}px; }
+ul.profile-icons li.info-icon	{ width: {IMG_ICON_POST_INFO_WIDTH}px; height: {IMG_ICON_POST_INFO_HEIGHT}px; }
+ul.profile-icons li.warn-icon	{ width: {IMG_ICON_USER_WARN_WIDTH}px; height: {IMG_ICON_USER_WARN_HEIGHT}px; }
+
+/* Fix profile icon default margins */
+ul.profile-icons li.edit-icon	{ margin: 0 0 0 3px; }
+ul.profile-icons li.quote-icon	{ margin: 0 0 0 10px; }
+ul.profile-icons li.info-icon, ul.profile-icons li.report-icon	{ margin: 0 3px 0 0; }
+
+.rtl ul.profile-icons li.edit-icon	{ margin: 0 3px 0 0; }
+.rtl ul.profile-icons li.quote-icon	{ margin: 0 10px 0 0; }
+.rtl ul.profile-icons li.info-icon, .rtl ul.profile-icons li.report-icon	{ margin: 0 0 0 3px; }
