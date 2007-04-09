@@ -691,6 +691,26 @@ $no_updates = true;
 // some code magic
 if (version_compare($current_version, '3.0.b5', '<='))
 {
+	switch ($map_dbms)
+	{
+		case 'sqlite':
+		case 'firebird':
+			$db->sql_query('DELETE FROM ' . STYLES_IMAGESET_TABLE);
+			$db->sql_query('DELETE FROM ' . STYLES_TEMPLATE_TABLE);
+			$db->sql_query('DELETE FROM ' . STYLES_TABLE);
+			$db->sql_query('DELETE FROM ' . STYLES_IMAGESET_DATA_TABLE);
+			$db->sql_query('DELETE FROM ' . STYLES_THEME_TABLE);
+		break;
+
+		default:
+			$db->sql_query('TRUNCATE TABLE ' . STYLES_IMAGESET_TABLE);
+			$db->sql_query('TRUNCATE TABLE ' . STYLES_TEMPLATE_TABLE);
+			$db->sql_query('TRUNCATE TABLE ' . STYLES_TABLE);
+			$db->sql_query('TRUNCATE TABLE ' . STYLES_IMAGESET_DATA_TABLE);
+			$db->sql_query('TRUNCATE TABLE ' . STYLES_THEME_TABLE);
+		break;
+	}
+
 	$tablename = $table_prefix . 'styles_imageset_data';
 	switch ($map_dbms)
 	{
@@ -847,7 +867,9 @@ if (version_compare($current_version, '3.0.b5', '<='))
 		$db->sql_query($sql);
 	}
 
-	$data = "INSERT INTO phpbb_styles_imageset_data (image_name, image_filename, image_lang, image_height, image_width, imageset_id) VALUES ('site_logo', 'site_logo.gif', '', 94, 170, 2);
+	$data = "INSERT INTO phpbb_styles (style_name, style_copyright, style_active, template_id, theme_id, imageset_id) VALUES ('prosilver', '&copy; phpBB Group', 1, 1, 1, 1);
+	INSERT INTO phpbb_styles (style_name, style_copyright, style_active, template_id, theme_id, imageset_id) VALUES ('subsilver2', '&copy; phpBB Group', 1, 2, 2, 2);
+	INSERT INTO phpbb_styles_imageset_data (image_name, image_filename, image_lang, image_height, image_width, imageset_id) VALUES ('site_logo', 'site_logo.gif', '', 94, 170, 2);
 	INSERT INTO phpbb_styles_imageset_data (image_name, image_filename, image_lang, image_height, image_width, imageset_id) VALUES ('upload_bar', 'upload_bar.gif', '', 16, 280, 2);
 	INSERT INTO phpbb_styles_imageset_data (image_name, image_filename, image_lang, image_height, image_width, imageset_id) VALUES ('poll_left', 'poll_left.gif', '', 12, 4, 2);
 	INSERT INTO phpbb_styles_imageset_data (image_name, image_filename, image_lang, image_height, image_width, imageset_id) VALUES ('poll_center', 'poll_center.gif', '', 12, 0, 2);
@@ -1006,7 +1028,13 @@ if (version_compare($current_version, '3.0.b5', '<='))
 	INSERT INTO phpbb_styles_imageset_data (image_name, image_filename, image_lang, image_height, image_width, imageset_id) VALUES ('button_pm_reply', 'button_pm_reply.gif', 'en', 25, 96, 1);
 	INSERT INTO phpbb_styles_imageset_data (image_name, image_filename, image_lang, image_height, image_width, imageset_id) VALUES ('button_topic_locked', 'button_topic_locked.gif', 'en', 25, 88, 1);
 	INSERT INTO phpbb_styles_imageset_data (image_name, image_filename, image_lang, image_height, image_width, imageset_id) VALUES ('button_topic_new', 'button_topic_new.gif', 'en', 25, 96, 1);
-	INSERT INTO phpbb_styles_imageset_data (image_name, image_filename, image_lang, image_height, image_width, imageset_id) VALUES ('button_topic_reply', 'button_topic_reply.gif', 'en', 25, 96, 1);";
+	INSERT INTO phpbb_styles_imageset_data (image_name, image_filename, image_lang, image_height, image_width, imageset_id) VALUES ('button_topic_reply', 'button_topic_reply.gif', 'en', 25, 96, 1);
+	INSERT INTO phpbb_styles_imageset (imageset_name, imageset_copyright, imageset_path) VALUES ('prosilver', '&copy; phpBB Group', 'prosilver');
+	INSERT INTO phpbb_styles_imageset (imageset_name, imageset_copyright, imageset_path) VALUES ('subsilver2', '&copy; phpBB Group', 'subsilver2');
+	INSERT INTO phpbb_styles_template (template_name, template_copyright, template_path, bbcode_bitfield, template_storedb) VALUES ('prosilver', '&copy; phpBB Group', 'prosilver', 'lNg=', 0);
+	INSERT INTO phpbb_styles_template (template_name, template_copyright, template_path, bbcode_bitfield, template_storedb) VALUES ('subsilver2', '&copy; phpBB Group', 'subsilver2', 'kNg=', 0);
+	INSERT INTO phpbb_styles_theme (theme_name, theme_copyright, theme_path, theme_storedb, theme_data) VALUES ('prosilver', '&copy; phpBB Group', 'prosilver', 1, '');
+	INSERT INTO phpbb_styles_theme (theme_name, theme_copyright, theme_path, theme_storedb, theme_data) VALUES ('subsilver2', '&copy; phpBB Group', 'subsilver2', 0, '');";
 	$data = str_replace('phpbb_', $table_prefix, $data);
 	$sql_ary = explode("\n", $data);
 
@@ -1025,6 +1053,8 @@ if (version_compare($current_version, '3.0.b5', '<='))
 	{
 		set_config('fulltext_native_common_thres', '5');
 	}
+
+	set_config('default_style', '1');
 
 	$sql = 'SELECT m.word_id, COUNT(m.word_id) as word_count
 		FROM ' . SEARCH_WORDMATCH_TABLE . ' m, ' . SEARCH_WORDLIST_TABLE . ' w
