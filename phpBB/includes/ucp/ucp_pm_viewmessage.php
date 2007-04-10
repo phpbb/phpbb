@@ -250,9 +250,7 @@ function message_history($msg_id, $user_id, $message_row, $folder)
 	{
 		$sql .= " AND (p.root_level = " . $message_row['root_level'] . ' OR p.msg_id = ' . $message_row['root_level'] . ')';
 	}
-	$sql .= ' ORDER BY p.message_time ';
-	$sort_dir = (!empty($user->data['user_sortby_dir'])) ? $user->data['user_sortby_dir'] : 'd';
-	$sql .= ($sort_dir == 'd') ? 'ASC' : 'DESC';
+	$sql .= ' ORDER BY p.message_time DESC';
 
 	$result = $db->sql_query($sql);
 	$row = $db->sql_fetchrow($result);
@@ -267,7 +265,6 @@ function message_history($msg_id, $user_id, $message_row, $folder)
 	$bbcode_bitfield = '';
 	$folder_url = append_sid("{$phpbb_root_path}ucp.$phpEx", 'i=pm') . '&amp;folder=';
 
-	$title = ($sort_dir == 'd') ? $row['message_subject'] : '';
 	do
 	{
 		$folder_id = (int) $row['folder_id'];
@@ -287,7 +284,7 @@ function message_history($msg_id, $user_id, $message_row, $folder)
 	while ($row = $db->sql_fetchrow($result));
 	$db->sql_freeresult($result);
 
-	$title = ($sort_dir == 'a') ? $row['message_subject'] : $title;
+	$title = $row['message_subject'];
 
 	if (sizeof($rowset) == 1)
 	{

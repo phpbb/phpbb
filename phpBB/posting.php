@@ -1391,7 +1391,7 @@ function handle_post_delete($forum_id, $topic_id, $post_id, &$post_data)
 	}
 
 	// If we are here the user is not able to delete - present the correct error message
-	if ($post_data['poster_id'] != $user->data['user_id'] && !$auth->acl_get('f_delete', $forum_id))
+	if ($post_data['poster_id'] != $user->data['user_id'] && $auth->acl_get('f_delete', $forum_id))
 	{
 		trigger_error('DELETE_OWN_POSTS');
 	}

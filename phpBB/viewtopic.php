@@ -531,6 +531,12 @@ $template->assign_vars(array(
 	'FORUM_DESC'	=> generate_text_for_display($topic_data['forum_desc'], $topic_data['forum_desc_uid'], $topic_data['forum_desc_bitfield'], $topic_data['forum_desc_options']),
 	'TOPIC_ID' 		=> $topic_id,
 	'TOPIC_TITLE' 	=> $topic_data['topic_title'],
+	'TOPIC_POSTER'	=> $topic_data['topic_poster'],
+
+	'TOPIC_AUTHOR_FULL'		=> get_username_string('full', $topic_data['topic_poster'], $topic_data['topic_first_poster_name'], $topic_data['topic_first_poster_colour']),
+	'TOPIC_AUTHOR_COLOUR'	=> get_username_string('colour', $topic_data['topic_poster'], $topic_data['topic_first_poster_name'], $topic_data['topic_first_poster_colour']),
+	'TOPIC_AUTHOR'			=> get_username_string('username', $topic_data['topic_poster'], $topic_data['topic_first_poster_name'], $topic_data['topic_first_poster_colour']),
+
 	'PAGINATION' 	=> $pagination,
 	'PAGE_NUMBER' 	=> on_page($total_posts, $config['posts_per_page'], $start),
 	'TOTAL_POSTS'	=> ($total_posts == 1) ? $user->lang['VIEW_TOPIC_POST'] : sprintf($user->lang['VIEW_TOPIC_POSTS'], $total_posts),
@@ -1425,6 +1431,7 @@ for ($i = 0, $end = sizeof($post_list); $i < $end; ++$i)
 		'U_WARN'			=> ($auth->acl_getf_global('m_warn') && $poster_id != $user->data['user_id'] && $poster_id != ANONYMOUS) ? append_sid("{$phpbb_root_path}mcp.$phpEx", 'i=warn&amp;mode=warn_post&amp;f=' . $forum_id . '&amp;p=' . $row['post_id'], true, $user->session_id) : '',
 
 		'POST_ID'			=> $row['post_id'],
+		'POSTER_ID'			=> $poster_id,
 
 		'S_HAS_ATTACHMENTS'	=> (!empty($attachments[$row['post_id']])) ? true : false,
 		'S_POST_UNAPPROVED'	=> ($row['post_approved']) ? false : true,

@@ -155,12 +155,10 @@ $lang = array_merge($lang, array(
 	'POST_GLOBAL'				=> 'Global',
 	'POST_ICON'					=> 'Post icon',
 	'POST_NORMAL'				=> 'Normal',
-	'POST_REPLY'				=> 'Post a reply',
 	'POST_REVIEW'				=> 'Post review',
 	'POST_REVIEW_EXPLAIN'		=> 'At least one new post has been made to this topic. You may wish to review your post in light of this.',
 	'POST_STORED'				=> 'This message has been posted successfully',
 	'POST_STORED_MOD'			=> 'This message has been saved but requires approval',
-	'POST_TOPIC'				=> 'Post a new topic',
 	'POST_TOPIC_AS'				=> 'Post topic as',
 	'PROGRESS_BAR'				=> 'Progress bar',
 

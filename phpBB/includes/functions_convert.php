@@ -1194,7 +1194,7 @@ function restore_config($schema)
 	{
 		if (preg_match('/(.*)\((.*)\)/', $src, $m))
 		{
-			$var = (empty($m[2]) || empty($convert_config[$m[2]])) ? '' : "'" . addslashes($convert_config[$m[2]]) . "'";
+			$var = (empty($m[2]) || empty($convert_config[$m[2]])) ? "''" : "'" . addslashes($convert_config[$m[2]]) . "'";
 			$exec = '$config_value = ' . $m[1] . '(' . $var . ');';
 			eval($exec);
 		}

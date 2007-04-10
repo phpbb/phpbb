@@ -114,7 +114,7 @@ class acp_board
 						'pm_max_boxes'			=> array('lang' => 'BOXES_MAX',				'validate' => 'int',	'type' => 'text:4:4', 'explain' => true),
 						'pm_max_msgs'			=> array('lang' => 'BOXES_LIMIT',			'validate' => 'int',	'type' => 'text:4:4', 'explain' => true),
 						'full_folder_action'	=> array('lang' => 'FULL_FOLDER_ACTION',	'validate' => 'int',	'type' => 'select', 'method' => 'full_folder_select', 'explain' => true),
-						'pm_edit_time'			=> array('lang' => 'PM_EDIT_TIME',			'validate' => 'int',	'type' => 'text:3:3', 'explain' => true, 'append' => ' ' . $user->lang['SECONDS']),
+						'pm_edit_time'			=> array('lang' => 'PM_EDIT_TIME',			'validate' => 'int',	'type' => 'text:3:3', 'explain' => true, 'append' => ' ' . $user->lang['MINUTES']),
 						
 						'legend2'				=> 'GENERAL_OPTIONS',
 						'allow_mass_pm'			=> array('lang' => 'ALLOW_MASS_PM',			'validate' => 'bool',	'type' => 'radio:yes_no', 'explain' => false),
@@ -147,9 +147,9 @@ class acp_board
 
 						'legend2'				=> 'POSTING',
 						'bump_type'				=> false,
-						'edit_time'				=> array('lang' => 'EDIT_TIME',				'validate' => 'int',	'type' => 'text:3:3', 'explain' => true, 'append' => ' ' . $user->lang['SECONDS']),
+						'edit_time'				=> array('lang' => 'EDIT_TIME',				'validate' => 'int',	'type' => 'text:3:3', 'explain' => true, 'append' => ' ' . $user->lang['MINUTES']),
 						'display_last_edited'	=> array('lang' => 'DISPLAY_LAST_EDITED',	'validate' => 'bool',	'type' => 'radio:yes_no', 'explain' => true),
-						'flood_interval'		=> array('lang' => 'FLOOD_INTERVAL',		'validate' => 'int',	'type' => 'text:3:4', 'explain' => true, 'append' => ' ' . $user->lang['SECONDS']),
+						'flood_interval'		=> array('lang' => 'FLOOD_INTERVAL',		'validate' => 'int',	'type' => 'text:3:10', 'explain' => true, 'append' => ' ' . $user->lang['SECONDS']),
 						'bump_interval'			=> array('lang' => 'BUMP_INTERVAL',			'validate' => 'int',	'type' => 'custom', 'method' => 'bump_interval', 'explain' => true),
 						'topics_per_page'		=> array('lang' => 'TOPICS_PER_PAGE',		'validate' => 'int',	'type' => 'text:3:4', 'explain' => false),
 						'posts_per_page'		=> array('lang' => 'POSTS_PER_PAGE',		'validate' => 'int',	'type' => 'text:3:4', 'explain' => false),
@@ -238,7 +238,7 @@ class acp_board
 					'vars'	=> array(
 						'legend1'			=> 'GENERAL_SETTINGS',
 						'limit_load'		=> array('lang' => 'LIMIT_LOAD',		'validate' => 'string',	'type' => 'text:4:4', 'explain' => true),
-						'session_length'	=> array('lang' => 'SESSION_LENGTH',	'validate' => 'int',	'type' => 'text:5:5', 'explain' => true, 'append' => ' ' . $user->lang['SECONDS']),
+						'session_length'	=> array('lang' => 'SESSION_LENGTH',	'validate' => 'int',	'type' => 'text:5:10', 'explain' => true, 'append' => ' ' . $user->lang['SECONDS']),
 						'active_sessions'	=> array('lang' => 'LIMIT_SESSIONS',	'validate' => 'int',	'type' => 'text:4:4', 'explain' => true),
 						'load_online_time'	=> array('lang' => 'ONLINE_LENGTH',		'validate' => 'int',	'type' => 'text:4:3', 'explain' => true, 'append' => ' ' . $user->lang['MINUTES']),
 

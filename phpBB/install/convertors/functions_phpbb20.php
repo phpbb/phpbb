@@ -1104,7 +1104,8 @@ function phpbb_convert_group_type($group_type)
 		break;
 	}
 
-	return GROUP_SPECIAL;
+	// Never return GROUP_SPECIAL here, because only phpBB3's default groups are allowed to have this type set.
+	return GROUP_HIDDEN;
 }
 
 /**

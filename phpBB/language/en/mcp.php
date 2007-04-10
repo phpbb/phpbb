@@ -219,6 +219,7 @@ $lang = array_merge($lang, array(
 	'NO_REPORTS'					=> 'No reports',	
 	'NO_TOPIC_ICON'					=> 'None',
 	'NO_TOPIC_SELECTED'				=> 'You must select at least one topic to perform this action',
+	'NO_TOPICS_QUEUE'				=> 'No topics',
 
 	'ONLY_TOPIC'			=> 'Only topic "%s"',
 	'OTHER_USERS'			=> 'Users posting from this IP',

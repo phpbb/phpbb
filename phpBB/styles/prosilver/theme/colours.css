@@ -822,7 +822,7 @@ dl.mini dt {
 }
 
 .pmlist li.pm_marked_colour, .pm_marked_colour {
-	border-left-color: #FF6600;
+	border-color: #FF6600;
 }
 
 .pmlist li.pm_replied_colour, .pm_replied_colour {

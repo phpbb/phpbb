@@ -76,15 +76,12 @@
 	<!-- ENDIF -->
 	
 	<!-- IF FOLDER_CUR_MESSAGES neq 0 -->
-	<fieldset class="display-options">
-		<!-- IF PREVIOUS_PAGE --><a href="{PREVIOUS_PAGE}" class="left-box left">{L_PREVIOUS}</a><!-- ENDIF -->
-		<!-- IF NEXT_PAGE --><a href="{NEXT_PAGE}" class="right-box right">{L_NEXT}</a><!-- ENDIF -->
-		<label>{L_DISPLAY}: {S_SELECT_SORT_DAYS}</label> 
-		<label>{L_SORT_BY} {S_SELECT_SORT_KEY}</label> 
-		<label>{S_SELECT_SORT_DIR} <input type="submit" name="sort" value="{L_GO}" class="button2" /></label>
-		<input type="hidden" name="cur_folder_id" value="{CUR_FOLDER_ID}" />
+	<fieldset class="display-actions">
+		<div class="left-box"><label for="export_option">{L_EXPORT_FOLDER}: <select name="export_option" id="export_option"><option value="CSV">{L_EXPORT_AS_CSV}</option><option value="CSV_EXCEL">{L_EXPORT_AS_CSV_EXCEL}</option><option value="XML">{L_EXPORT_AS_XML}</option></select></label> <input class="button2" type="submit" name="submit_export" value="{L_GO}" /><br /></div>
+		<select name="mark_option">{S_MARK_OPTIONS}{S_MOVE_MARKED_OPTIONS}</select> <input class="button2" type="submit" name="submit_mark" value="{L_GO}" />
+		<div><a href="#" onclick="marklist('viewfolder', 'marked_msg', true); return false;">{L_MARK_ALL}</a> &bull; <a href="#" onclick="marklist('viewfolder', 'marked_msg', false); return false;">{L_UNMARK_ALL}</a></div>			
 	</fieldset>
-	
+
 	<hr />
 	
 	<ul class="linklist">
@@ -99,15 +96,18 @@
 	
 		<span class="corners-bottom"><span></span></span></div>	
 	</div>
-	
-	<!-- IF .messagerow -->
-		<fieldset class="display-actions">
-			<div class="left-box"><label for="export_option">{L_EXPORT_FOLDER}: <select name="export_option" id="export_option"><option value="CSV">{L_EXPORT_AS_CSV}</option><option value="CSV_EXCEL">{L_EXPORT_AS_CSV_EXCEL}</option><option value="XML">{L_EXPORT_AS_XML}</option></select></label> <input class="button2" type="submit" name="submit_export" value="{L_GO}" /><br /></div>
-			<select name="mark_option">{S_MARK_OPTIONS}{S_MOVE_MARKED_OPTIONS}</select> <input class="button2" type="submit" name="submit_mark" value="{L_GO}" />
-			<div><a href="#" onclick="marklist('viewfolder', 'marked_msg', true); return false;">{L_MARK_ALL}</a> &bull; <a href="#" onclick="marklist('viewfolder', 'marked_msg', false); return false;">{L_UNMARK_ALL}</a></div>			
-		</fieldset>
+
+	<!-- IF FOLDER_CUR_MESSAGES neq 0 -->
+	<fieldset class="display-options">
+		<!-- IF PREVIOUS_PAGE --><a href="{PREVIOUS_PAGE}" class="left-box left">{L_PREVIOUS}</a><!-- ENDIF -->
+		<!-- IF NEXT_PAGE --><a href="{NEXT_PAGE}" class="right-box right">{L_NEXT}</a><!-- ENDIF -->
+		<label>{L_DISPLAY}: {S_SELECT_SORT_DAYS}</label> 
+		<label>{L_SORT_BY} {S_SELECT_SORT_KEY}</label> 
+		<label>{S_SELECT_SORT_DIR} <input type="submit" name="sort" value="{L_GO}" class="button2" /></label>
+		<input type="hidden" name="cur_folder_id" value="{CUR_FOLDER_ID}" />
+	</fieldset>
 	<!-- ENDIF -->
-	
+
 	<!-- INCLUDE ucp_pm_message_footer.html -->
 <!-- ENDIF -->
 <!-- INCLUDE ucp_footer.html -->
