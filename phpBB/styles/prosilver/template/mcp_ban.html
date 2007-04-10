@@ -23,9 +23,9 @@
 
 	function display_details(option)
 	{
-		document.getElementById('mcp_ban').unbangivereason.value = ban_give_reason[option];
-		document.getElementById('mcp_ban').unbanreason.value = ban_reason[option];
-		document.getElementById('mcp_ban').unbanlength.value = ban_length[option];
+		document.getElementById('unbangivereason').textContent = ban_give_reason[option];
+		document.getElementById('unbanreason').textContent = ban_reason[option];
+		document.getElementById('unbanlength').textContent = ban_length[option];
 	}
 
 //-->
@@ -44,13 +44,13 @@
 	<fieldset>
 	<dl>
 		<dt><label for="ban">{L_BAN_CELL}: </label></dt>
-		<dd><label for="ban"><textarea name="ban" id="ban" class="inputbox" cols="40" rows="3" class="post">{USERNAMES}</textarea></label></dd>
+		<dd><label for="ban"><textarea name="ban" id="ban" class="inputbox" cols="40" rows="3">{USERNAMES}</textarea></label></dd>
 		<!-- IF S_USERNAME_BAN --><dd><strong><a href="#" onclick="window.open('{U_FIND_USER}', '_phpbbsearch', 'height=500, resizable=yes, scrollbars=yes, width=740'); return false;">{L_FIND_USERNAME}</a></strong></dd><!-- ENDIF -->
 	</dl>
 	<dl>
 		<dt><label for="banlength">{L_BAN_LENGTH}:</label></dt>
 		<dd><label for="banlength"><select name="banlength" id="banlength" onchange="if(this.value==-1){document.getElementById('banlengthother').style.display = 'block';}else{document.getElementById('banlengthother').style.display='none';}">{S_BAN_END_OPTIONS}</select></label></dd>
-		<dd id="banlengthother" style="display: none;"><label><input type="text" name="banlengthother" class="inputbox" /><br /><span>(YYYY-MM-DD)</span></dd>
+		<dd id="banlengthother" style="display: none;"><label><input type="text" name="banlengthother" class="inputbox" /><br /><span>(YYYY-MM-DD)</span></label></dd>
 	</dl>
 	<dl>
 		<dt><label for="banreason">{L_BAN_REASON}:</label></dt>
@@ -89,7 +89,7 @@
 	<!-- IF S_BANNED_OPTIONS -->
 		<fieldset>
 		<dl>
-			<dt><label for="unban[]">{L_BAN_CELL}:</label></dt>
+			<dt><label for="unban">{L_BAN_CELL}:</label></dt>
 			<dd><select name="unban[]" id="unban" multiple="multiple" size="5" onchange="if (this.selectedIndex != -1) {display_details(this.options[this.selectedIndex].value);}">{BANNED_OPTIONS}</select></dd>
 		</dl>
 		<dl>
