@@ -109,7 +109,80 @@ class dbal_firebird extends dbal
 
 			if ($this->query_result === false)
 			{
-				if (($this->query_result = @ibase_query($this->db_connect_id, $query)) === false)
+				$prepared = false;
+				// We overcome Firebird's 32767 char limit by binding vars
+				if (strlen($query) > 32767)
+				{
+					$array = array();
+
+					if (preg_match('/^(INSERT INTO[^(]+)\\(([^()]+)\\) VALUES[^(]+\\((.*?)\\)$/s', $query, $regs))
+					{
+						if (strlen($regs[3]) > 32767)
+						{
+							preg_match_all('/\'(?:[^\']++|\'\')*+\'|\\d+/', $regs[3], $vals, PREG_PATTERN_ORDER);
+
+							$inserts = $vals[0];
+							unset($vals);
+
+							foreach ($inserts as $key => $value)
+							{
+								if (!empty($value) && $value[0] === "'" && strlen($value) > 32769) // check to see if this thing is greater than the max + 'x2
+								{
+									$inserts[$key] = '?';
+									$array[] = str_replace("''", "'", substr($value, 1, -1));
+								}
+							}
+
+							$query = $regs[1] . '(' . $regs[2] . ') VALUES (' . implode(', ', $inserts) . ')';
+							unset($art);
+
+							$prepared = true;
+						}
+					}
+					else if (preg_match_all('/^(UPDATE ([\\w_]++)\\s+SET )(\\w+ = (?:\'(?:[^\']++|\'\')*+\'|\\d+)(?:, \\w+ = (?:\'(?:[^\']++|\'\')*+\'|\\d+))*+)\\s+(WHERE.*)$/s', $query, $data, PREG_SET_ORDER))
+					{
+						if (strlen($data[0][3]) > 32767)
+						{
+							$update = $data[0][1];
+							$where = $data[0][4];
+							preg_match_all('/(\\w++) = (\'(?:[^\']++|\'\')*+\'|\\d++)/', $data[0][3], $temp, PREG_SET_ORDER);
+							unset($data);
+
+							$art = array();
+							foreach ($temp as $value)
+							{
+								if (!empty($value[2]) && $value[2][0] === "'" && strlen($value[2]) > 32769) // check to see if this thing is greater than the max + 'x2
+								{
+									$array[] = str_replace("''", "'", substr($value[2], 1, -1));
+									$art[] = $value[1] . '=?';
+								}
+								else
+								{
+									$art[] = $value[1] . '=' . $value[2];
+								}
+							}
+
+							$query = $update . implode(', ', $art) . ' ' . $where;
+							unset($art);
+
+							$prepared = true;
+						}
+					}
+				}
+
+				if ($prepared)
+				{
+					$p_query = ibase_prepare($this->db_connect_id, $query);
+					array_unshift($array, $p_query);
+					$this->query_result = call_user_func_array('ibase_execute', $array);
+					unset($array);
+
+					if ($this->query_result === false)
+					{
+						$this->sql_error($query);
+					}
+				}
+				else if (($this->query_result = @ibase_query($this->db_connect_id, $query)) === false)
 				{
 					$this->sql_error($query);
 				}
