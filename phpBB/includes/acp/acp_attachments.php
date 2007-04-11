@@ -730,7 +730,7 @@ class acp_attachments
 						$sql = 'SELECT forum_id, forum_name, parent_id, forum_type, left_id, right_id
 							FROM ' . FORUMS_TABLE . '
 							ORDER BY left_id ASC';
-						$result = $db->sql_query($sql);
+						$result = $db->sql_query($sql, 600);
 
 						$right = $cat_right = $padding_inc = 0;
 						$padding = $forum_list = $holding = '';
