@@ -725,7 +725,7 @@ function define_cond_option($hardcoded, $cond_option, $rule_option, $global_rule
 				$sql .= 'WHERE';
 			}
 			
-			$sql .= " NOT (g.group_name IN ('GUESTS', 'BOTS') AND g.group_type = " . GROUP_SPECIAL . ')	
+			$sql .= " (g.group_name NOT IN ('GUESTS', 'BOTS') OR g.group_type <> " . GROUP_SPECIAL . ')	
 				ORDER BY g.group_type DESC, g.group_name ASC';
 			
 			$result = $db->sql_query($sql);
