@@ -547,8 +547,6 @@ class ucp_profile
 				else
 				{
 					$template->assign_vars(array(
-						'AVATAR'		=> $avatar_img,
-						'AVATAR_SIZE'	=> $config['avatar_filesize'],
 						'AVATAR_WIDTH'	=> request_var('width', $user->data['user_avatar_width']),
 						'AVATAR_HEIGHT'	=> request_var('height', $user->data['user_avatar_height']),
 
