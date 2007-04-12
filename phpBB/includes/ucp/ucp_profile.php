@@ -507,6 +507,8 @@ class ucp_profile
 
 			case 'avatar':
 
+				include($phpbb_root_path . 'includes/functions_display.' . $phpEx);
+
 				$display_gallery = request_var('display_gallery', '0');
 				$avatar_select = basename(request_var('avatar_select', ''));
 				$category = basename(request_var('category', ''));
@@ -526,29 +528,9 @@ class ucp_profile
 					$error = preg_replace('#^([A-Z_]+)$#e', "(!empty(\$user->lang['\\1'])) ? \$user->lang['\\1'] : '\\1'", $error);
 				}
 
-				// Generate users avatar
-				$avatar_img = '';
-
-				if ($user->data['user_avatar'])
-				{
-					switch ($user->data['user_avatar_type'])
-					{
-						case AVATAR_UPLOAD:
-							$avatar_img = $phpbb_root_path . $config['avatar_path'] . '/';
-						break;
-				
-						case AVATAR_GALLERY:
-							$avatar_img = $phpbb_root_path . $config['avatar_gallery_path'] . '/';
-						break;
-					}
-
-					$avatar_img .= $user->data['user_avatar'];
-					$avatar_img = '<img src="' . $avatar_img . '" width="' . $user->data['user_avatar_width'] . '" height="' . $user->data['user_avatar_height'] . '" alt="" />';
-				}
-
 				$template->assign_vars(array(
 					'ERROR'			=> (sizeof($error)) ? implode('<br />', $error) : '',
-					'AVATAR'		=> $avatar_img,
+					'AVATAR'		=> get_user_avatar($user->data['user_avatar'], $user->data['user_avatar_type'], $user->data['user_avatar_width'], $user->data['user_avatar_height']),
 					'AVATAR_SIZE'	=> $config['avatar_filesize'],
 					
 					'U_GALLERY'		=> append_sid("{$phpbb_root_path}ucp.$phpEx", 'i=profile&amp;mode=avatar&amp;display_gallery=1'),

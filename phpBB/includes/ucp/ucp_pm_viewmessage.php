@@ -390,8 +390,9 @@ function get_user_information($user_id, $user_row)
 		$db->sql_freeresult($result);
 	}
 
-	// Grab ranks
-	$ranks = $cache->obtain_ranks();
+	// Some standard values
+	$user_row['online'] = false;
+	$user_row['rank_title'] = $user_row['rank_image'] = $user_row['rank_image_src'] = $user_row['email'] = '';
 
 	// Generate online information for user
 	if ($config['load_onlinetrack'])
@@ -410,60 +411,19 @@ function get_user_information($user_id, $user_row)
 			$user_row['online'] = (time() - $update_time < $row['online_time'] && ($row['viewonline'] && $user_row['user_allow_viewonline'])) ? true : false;
 		}
 	}
-	else
+
+	if (!function_exists('get_user_avatar'))
 	{
-		$user_row['online'] = false;
+		include($phpbb_root_path . 'includes/functions_display.' . $phpEx);
 	}
 
-	if ($user_row['user_avatar'] && $user->optionget('viewavatars'))
-	{
-		$avatar_img = '';
+	$user_row['avatar'] = ($user->optionget('viewavatars')) ? get_user_avatar($user_row['user_avatar'], $user_row['user_avatar_type'], $user_row['user_avatar_width'], $user_row['user_avatar_height']) : '';
 
-		switch ($user_row['user_avatar_type'])
-		{
-			case AVATAR_UPLOAD:
-				$avatar_img = $config['avatar_path'] . '/';
-			break;
-
-			case AVATAR_GALLERY:
-				$avatar_img = $config['avatar_gallery_path'] . '/';
-			break;
-		}
-
-		$avatar_img .= $user_row['user_avatar'];
-		$user_row['avatar'] = '<img src="' . $avatar_img . '" width="' . $user_row['user_avatar_width'] . '" height="' . $user_row['user_avatar_height'] . '" alt="' . $user->lang['USER_AVATAR'] . '" />';
-	}
-
-	$user_row['rank_title'] = $user_row['rank_image'] = '';
-
-	if (!empty($user_row['user_rank']))
-	{
-		$user_row['rank_title'] = (isset($ranks['special'][$user_row['user_rank']])) ? $ranks['special'][$user_row['user_rank']]['rank_title'] : '';
-		$user_row['rank_image'] = (!empty($ranks['special'][$user_row['user_rank']]['rank_image'])) ? '<img src="' . $config['ranks_path'] . '/' . $ranks['special'][$user_row['user_rank']]['rank_image'] . '" alt="' . $ranks['special'][$user_row['user_rank']]['rank_title'] . '" title="' . $ranks['special'][$user_row['user_rank']]['rank_title'] . '" /><br />' : '';
-	}
-	else
-	{
-		if (isset($ranks['normal']))
-		{
-			foreach ($ranks['normal'] as $rank)
-			{
-				if ($user_row['user_posts'] >= $rank['rank_min'])
-				{
-					$user_row['rank_title'] = $rank['rank_title'];
-					$user_row['rank_image'] = (!empty($rank['rank_image'])) ? '<img src="' . $config['ranks_path'] . '/' . $rank['rank_image'] . '" alt="' . $rank['rank_title'] . '" title="' . $rank['rank_title'] . '" /><br />' : '';
-					break;
-				}
-			}
-		}
-	}
+	get_user_rank($user_row['user_rank'], $user_row['user_posts'], $user_row['rank_title'], $user_row['rank_image'], $user_row['rank_image_src']);
 
 	if (!empty($user_row['user_allow_viewemail']) || $auth->acl_get('a_email'))
 	{
 		$user_row['email'] = ($config['board_email_form'] && $config['email_enable']) ? append_sid("{$phpbb_root_path}memberlist.$phpEx", "mode=email&amp;u=$user_id") : ((($config['board_hide_emails'] && !$auth->acl_get('a_email')) || empty($user_row['user_email'])) ? '' : 'mailto:' . $user_row['user_email']);
-	}
-	else
-	{
-		$user_row['email'] = '';
 	}
 
 	return $user_row;

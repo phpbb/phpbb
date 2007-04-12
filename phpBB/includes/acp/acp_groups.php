@@ -235,6 +235,8 @@ class acp_groups
 			case 'edit':
 			case 'add':
 
+				include($phpbb_root_path . 'includes/functions_display.' . $phpEx);
+
 				$data = $submit_ary = array();
 
 				if ($action == 'edit' && !$group_id)
@@ -486,28 +488,7 @@ class acp_groups
 				$type_closed	= ($group_type == GROUP_CLOSED) ? ' checked="checked"' : '';
 				$type_hidden	= ($group_type == GROUP_HIDDEN) ? ' checked="checked"' : '';
 
-				if (isset($group_row['group_avatar']) && $group_row['group_avatar'])
-				{
-					$avatar_img = '';
-
-					switch ($group_row['group_avatar_type'])
-					{
-						case AVATAR_UPLOAD:
-							$avatar_img = $phpbb_root_path . $config['avatar_path'] . '/';
-						break;
-
-						case AVATAR_GALLERY:
-							$avatar_img = $phpbb_root_path . $config['avatar_gallery_path'] . '/';
-						break;
-					}
-
-					$avatar_img .= $group_row['group_avatar'];
-					$avatar_img = '<img src="' . $avatar_img . '" width="' . $group_row['group_avatar_width'] . '" height="' . $group_row['group_avatar_height'] . '" alt="" />';
-				}
-				else
-				{
-					$avatar_img = '<img src="' . $phpbb_admin_path . 'images/no_avatar.gif" alt="" />';
-				}
+				$avatar_img = (!empty($group_row['group_avatar'])) ? get_user_avatar($group_row['group_avatar'], $group_row['group_avatar_type'], $group_row['group_avatar_width'], $group_row['group_avatar_height'], 'GROUP_AVATAR') : '<img src="' . $phpbb_admin_path . 'images/no_avatar.gif" alt="" />';
 
 				$display_gallery = (isset($_POST['display_gallery'])) ? true : false;
 

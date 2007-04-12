@@ -1336,6 +1336,8 @@ class acp_users
 
 			case 'avatar':
 
+				include($phpbb_root_path . 'includes/functions_display.' . $phpEx);
+
 				$can_upload = (file_exists($phpbb_root_path . $config['avatar_path']) && is_writeable($phpbb_root_path . $config['avatar_path']) && $file_uploads) ? true : false;
 
 				if ($submit)
@@ -1350,28 +1352,7 @@ class acp_users
 				}
 
 				// Generate users avatar
-				if ($user_row['user_avatar'])
-				{
-					$avatar_img = '';
-
-					switch ($user_row['user_avatar_type'])
-					{
-						case AVATAR_UPLOAD:
-							$avatar_img = $phpbb_root_path . $config['avatar_path'] . '/';
-						break;
-				
-						case AVATAR_GALLERY:
-							$avatar_img = $phpbb_root_path . $config['avatar_gallery_path'] . '/';
-						break;
-					}
-
-					$avatar_img .= $user_row['user_avatar'];
-					$avatar_img = '<img src="' . $avatar_img . '" width="' . $user_row['user_avatar_width'] . '" height="' . $user_row['user_avatar_height'] . '" alt="" />';
-				}
-				else
-				{
-					$avatar_img = '<img src="' . $phpbb_admin_path . 'images/no_avatar.gif" alt="" />';
-				}
+				$avatar_img = ($user_row['user_avatar']) ? get_user_avatar($user_row['user_avatar'], $user_row['user_avatar_type'], $user_row['user_avatar_width'], $user_row['user_avatar_height']) : '<img src="' . $phpbb_admin_path . 'images/no_avatar.gif" alt="" />';
 
 				$display_gallery = (isset($_POST['display_gallery'])) ? true : false;
 				$avatar_select = basename(request_var('avatar_select', ''));

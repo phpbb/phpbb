@@ -42,7 +42,6 @@ $lang = array_merge($lang, array(
 	'LOGIN_NOTIFY_FORUM'	=> 'You have been notified about this forum, please login to view it.',
 
 	'MARK_TOPICS_READ'		=> 'Mark topics read',
-	'MOVED_TOPIC'			=> 'Moved topic',
 
 	'NEW_POSTS_HOT'			=> 'New posts [ Popular ]',
 	'NEW_POSTS_LOCKED'		=> 'New posts [ Locked ]',

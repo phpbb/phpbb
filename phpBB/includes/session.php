@@ -55,7 +55,6 @@ class session
 			if (strpos($argument, 'sid=') === 0 || strpos($argument, '_f_=') === 0)
 			{
 				unset($args[$key]);
-				break;
 			}
 		}
 

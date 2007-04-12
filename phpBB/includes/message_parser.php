@@ -200,6 +200,8 @@ class bbcode_firstpass extends bbcode
 		if ($config['max_' . $this->mode . '_font_size'] && $config['max_' . $this->mode . '_font_size'] < $stx)
 		{
 			$this->warn_msg[] = sprintf($user->lang['MAX_FONT_SIZE_EXCEEDED'], $config['max_' . $this->mode . '_font_size']);
+
+			return '[size=' . $stx . ']' . $in . '[/size]';
 		}
 
 		return '[size=' . $stx . ':' . $this->bbcode_uid . ']' . $in . '[/size:' . $this->bbcode_uid . ']';
@@ -270,6 +272,7 @@ class bbcode_firstpass extends bbcode
 		}
 
 		$in = trim($in);
+		$error = false;
 
 		if ($config['max_' . $this->mode . '_img_height'] || $config['max_' . $this->mode . '_img_width'])
 		{
@@ -277,23 +280,26 @@ class bbcode_firstpass extends bbcode
 
 			if ($stats === false)
 			{
+				$error = true;
 				$this->warn_msg[] = $user->lang['UNABLE_GET_IMAGE_SIZE'];
 			}
 			else
 			{
 				if ($config['max_' . $this->mode . '_img_height'] && $config['max_' . $this->mode . '_img_height'] < $stats[1])
 				{
+					$error = true;
 					$this->warn_msg[] = sprintf($user->lang['MAX_IMG_HEIGHT_EXCEEDED'], $config['max_' . $this->mode . '_img_height']);
 				}
 
 				if ($config['max_' . $this->mode . '_img_width'] && $config['max_' . $this->mode . '_img_width'] < $stats[0])
 				{
+					$error = true;
 					$this->warn_msg[] = sprintf($user->lang['MAX_IMG_WIDTH_EXCEEDED'], $config['max_' . $this->mode . '_img_width']);
 				}
 			}
 		}
 
-		if ($this->path_in_domain($in))
+		if ($error || $this->path_in_domain($in))
 		{
 			return '[img]' . $in . '[/img]';
 		}
@@ -314,22 +320,25 @@ class bbcode_firstpass extends bbcode
 		}
 
 		$in = trim($in);
+		$error = false;
 
 		// Apply the same size checks on flash files as on images
 		if ($config['max_' . $this->mode . '_img_height'] || $config['max_' . $this->mode . '_img_width'])
 		{
 			if ($config['max_' . $this->mode . '_img_height'] && $config['max_' . $this->mode . '_img_height'] < $height)
 			{
+				$error = true;
 				$this->warn_msg[] = sprintf($user->lang['MAX_FLASH_HEIGHT_EXCEEDED'], $config['max_' . $this->mode . '_img_height']);
 			}
 
 			if ($config['max_' . $this->mode . '_img_width'] && $config['max_' . $this->mode . '_img_width'] < $width)
 			{
+				$error = true;
 				$this->warn_msg[] = sprintf($user->lang['MAX_FLASH_WIDTH_EXCEEDED'], $config['max_' . $this->mode . '_img_width']);
 			}
 		}
 
-		if ($this->path_in_domain($in))
+		if ($error || $this->path_in_domain($in))
 		{
 			return '[flash=' . $width . ',' . $height . ']' . $in . '[/flash]';
 		}

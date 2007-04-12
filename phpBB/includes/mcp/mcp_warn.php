@@ -272,27 +272,13 @@ function mcp_warn_post_view($id, $mode, $action)
 	$message = smiley_text($message);
 
 	// Generate the appropriate user information for the user we are looking at
-	$rank_title = $rank_img = '';
-//	get_user_rank($user_row['user_rank'], $user_row['user_posts'], $rank_title, $rank_img);
-
-	$avatar_img = '';
-
-	if (!empty($user_row['user_avatar']))
+	if (!function_exists('get_user_avatar'))
 	{
-		switch ($user_row['user_avatar_type'])
-		{
-			case AVATAR_UPLOAD:
-				$avatar_img = $config['avatar_path'] . '/';
-			break;
-
-			case AVATAR_GALLERY:
-				$avatar_img = $config['avatar_gallery_path'] . '/';
-			break;
-		}
-
-		$avatar_img .= $user_row['user_avatar'];
-		$avatar_img = '<img src="' . $avatar_img . '" width="' . $user_row['user_avatar_width'] . '" height="' . $user_row['user_avatar_height'] . '" alt="" />';
+		include($phpbb_root_path . 'includes/functions_display.' . $phpEx);
 	}
+
+	$rank_title = $rank_img = '';
+	$avatar_img = get_user_avatar($user_row['user_avatar'], $user_row['user_avatar_type'], $user_row['user_avatar_width'], $user_row['user_avatar_height']);
 
 	$template->assign_vars(array(
 		'U_POST_ACTION'		=> append_sid("{$phpbb_root_path}mcp.$phpEx", "i=$id&amp;mode=$mode&amp;p=$post_id"),
@@ -357,27 +343,13 @@ function mcp_warn_user_view($id, $mode, $action)
 	}
 
 	// Generate the appropriate user information for the user we are looking at
-	$rank_title = $rank_img = '';
-//	get_user_rank($user_row['user_rank'], $user_row['user_posts'], $rank_title, $rank_img);
-
-	$avatar_img = '';
-
-	if (!empty($user_row['user_avatar']))
+	if (!function_exists('get_user_avatar'))
 	{
-		switch ($user_row['user_avatar_type'])
-		{
-			case AVATAR_UPLOAD:
-				$avatar_img = $config['avatar_path'] . '/';
-			break;
-
-			case AVATAR_GALLERY:
-				$avatar_img = $config['avatar_gallery_path'] . '/';
-			break;
-		}
-
-		$avatar_img .= $user_row['user_avatar'];
-		$avatar_img = '<img src="' . $avatar_img . '" width="' . $user_row['user_avatar_width'] . '" height="' . $user_row['user_avatar_height'] . '" alt="" />';
+		include($phpbb_root_path . 'includes/functions_display.' . $phpEx);
 	}
+
+	$rank_title = $rank_img = '';
+	$avatar_img = get_user_avatar($user_row['user_avatar'], $user_row['user_avatar_type'], $user_row['user_avatar_width'], $user_row['user_avatar_height']);
 
 	// OK, they didn't submit a warning so lets build the page for them to do so
 	$template->assign_vars(array(

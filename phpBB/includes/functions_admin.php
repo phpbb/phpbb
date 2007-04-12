@@ -1352,13 +1352,13 @@ function sync($mode, $where_type = '', $where_ids = '', $resync_parents = false,
 			$post_ids = array();
 			while ($row = $db->sql_fetchrow($result))
 			{
-				if (!isset($post_attachment[$row['post_id']]))
+				if (!isset($post_attachment[$row['post_msg_id']]))
 				{
-					$post_ids[] = $row['post_id'];
+					$post_ids[] = $row['post_msg_id'];
 				}
 				else
 				{
-					unset($post_attachment[$row['post_id']]);
+					unset($post_attachment[$row['post_msg_id']]);
 				}
 			}
 			$db->sql_freeresult($result);

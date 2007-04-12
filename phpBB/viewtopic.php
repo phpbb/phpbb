@@ -1021,7 +1021,7 @@ while ($row = $db->sql_fetchrow($result))
 				'viewonline'	=> $row['user_allow_viewonline'],
 				'allow_pm'		=> $row['user_allow_pm'],
 
-				'avatar'		=> '',
+				'avatar'		=> ($user->optionget('viewavatars')) ? get_user_avatar($row['user_avatar'], $row['user_avatar_type'], $row['user_avatar_width'], $row['user_avatar_height']) : '',
 				'age'			=> '',
 
 				'rank_title'		=> '',
@@ -1040,25 +1040,6 @@ while ($row = $db->sql_fetchrow($result))
 				'jabber'		=> ($row['user_jabber'] && $auth->acl_get('u_sendim')) ? append_sid("{$phpbb_root_path}memberlist.$phpEx", "mode=contact&amp;action=jabber&amp;u=$poster_id") : '',
 				'search'		=> ($auth->acl_get('u_search')) ? append_sid("{$phpbb_root_path}search.$phpEx", 'search_author=' . urlencode($row['username']) .'&amp;showresults=posts') : '',
 			);
-
-			if ($row['user_avatar'] && $user->optionget('viewavatars'))
-			{
-				$avatar_img = '';
-
-				switch ($row['user_avatar_type'])
-				{
-					case AVATAR_UPLOAD:
-						$avatar_img = $config['avatar_path'] . '/';
-					break;
-
-					case AVATAR_GALLERY:
-						$avatar_img = $config['avatar_gallery_path'] . '/';
-					break;
-				}
-
-				$avatar_img .= $row['user_avatar'];
-				$user_cache[$poster_id]['avatar'] = '<img src="' . $avatar_img . '" width="' . $row['user_avatar_width'] . '" height="' . $row['user_avatar_height'] . '" alt="" />';
-			}
 
 			get_user_rank($row['user_rank'], $row['user_posts'], $user_cache[$poster_id]['rank_title'], $user_cache[$poster_id]['rank_image'], $user_cache[$poster_id]['rank_image_src']);
 

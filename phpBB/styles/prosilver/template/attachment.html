@@ -6,7 +6,7 @@
 
 		<!-- IF _file.S_THUMBNAIL -->
 		<dl class="thumbnail">
-			<dt><a href="{_file.U_DOWNLOAD_LINK}"><img src="{_file.THUMB_IMAGE}" alt="{_file.DOWNLOAD_NAME}" title="{_file.DOWNLOAD_NAME} ({_file.FILESIZE} {_file.SIZE_LANG}) [ {_file.L_DOWNLOAD_COUNT} ]" /></a></dt>
+			<dt><a href="{_file.U_DOWNLOAD_LINK}"><img src="{_file.THUMB_IMAGE}" alt="{_file.DOWNLOAD_NAME}" title="{_file.DOWNLOAD_NAME} ({_file.FILESIZE} {_file.SIZE_LANG}) {_file.L_DOWNLOAD_COUNT}" /></a></dt>
 			
 			<!-- IF _file.COMMENT --><dd> {_file.COMMENT}</dd><!-- ENDIF -->
 		</dl>
@@ -17,7 +17,7 @@
 		
 			<img src="{_file.U_DOWNLOAD_LINK}" alt="{_file.DOWNLOAD_NAME}" onclick="viewableArea(this);" />
 
-		<p>{_file.DOWNLOAD_NAME} ({_file.FILESIZE} {_file.SIZE_LANG}) {_file.L_DOWNLOAD_COUNT} ]</p>
+		<p>{_file.DOWNLOAD_NAME} ({_file.FILESIZE} {_file.SIZE_LANG}) {_file.L_DOWNLOAD_COUNT}</p>
 		<!-- ENDIF -->
 
 		<!-- IF _file.S_FILE -->

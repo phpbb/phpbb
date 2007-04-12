@@ -467,23 +467,7 @@ switch ($mode)
 			$member['user_sig'] = smiley_text($member['user_sig']);
 		}
 
-		$poster_avatar = '';
-		if (!empty($member['user_avatar']))
-		{
-			switch ($member['user_avatar_type'])
-			{
-				case AVATAR_UPLOAD:
-					$poster_avatar = $config['avatar_path'] . '/';
-				break;
-
-				case AVATAR_GALLERY:
-					$poster_avatar = $config['avatar_gallery_path'] . '/';
-				break;
-			}
-			$poster_avatar .= $member['user_avatar'];
-
-			$poster_avatar = '<img src="' . $poster_avatar . '" width="' . $member['user_avatar_width'] . '" height="' . $member['user_avatar_height'] . '" alt="" />';
-		}
+		$poster_avatar = get_user_avatar($member['user_avatar'], $member['user_avatar_type'], $member['user_avatar_width'], $member['user_avatar_height']);
 
 		$template->assign_vars(show_profile($member));
 
@@ -1079,24 +1063,8 @@ switch ($mode)
 				break;
 			}
 
-			$avatar_img = '';
-
-			if ($group_row['group_avatar'])
-			{
-				switch ($group_row['group_avatar_type'])
-				{
-					case AVATAR_UPLOAD:
-						$avatar_img = $phpbb_root_path . $config['avatar_path'] . '/';
-					break;
-
-					case AVATAR_GALLERY:
-						$avatar_img = $phpbb_root_path . $config['avatar_gallery_path'] . '/';
-					break;
-				}
-
-				$avatar_img .= $group_row['group_avatar'];
-				$avatar_img = '<img src="' . $avatar_img . '" width="' . $group_row['group_avatar_width'] . '" height="' . $group_row['group_avatar_height'] . '" alt="" />';
-			}
+			// Misusing the avatar function for displaying group avatars...
+			$avatar_img = get_user_avatar($group_row['group_avatar'], $group_row['group_avatar_type'], $group_row['group_avatar_width'], $group_row['group_avatar_height'], 'GROUP_AVATAR');
 
 			$rank_title = $rank_img = $rank_img_src = '';
 			if ($group_row['group_rank'])

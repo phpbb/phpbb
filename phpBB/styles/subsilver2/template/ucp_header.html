@@ -2,7 +2,7 @@
 
 
 <!-- IF S_SHOW_PM_BOX and S_POST_ACTION -->
-	<form action="{S_POST_ACTION}" method="post" name="post"{S_FORM_ENCTYPE}>
+	<form action="{S_POST_ACTION}" method="post" name="postform"{S_FORM_ENCTYPE}>
 <!-- ENDIF -->
 <table width="100%" cellspacing="0" cellpadding="0" border="0">
 <tr>
@@ -15,7 +15,7 @@
 	</tr>
 	<!-- IF not S_ALLOW_MASS_PM -->
 	<tr>
-		<td class="row1"><b class="genmed">{L_USERNAME}:</b><br />[ <a href="{U_FIND_USERNAME}" onclick="find_username(); return false">{L_FIND_USERNAME}</a> ]</td>
+		<td class="row1"><b class="genmed">{L_USERNAME}:</b><br />[ <a href="{U_FIND_USERNAME}" onclick="find_username(); return false;">{L_FIND_USERNAME}</a> ]</td>
 	</tr>
 	
 	<tr>
@@ -27,7 +27,7 @@
 		</tr>
 		<tr>
 			<td class="row2"><textarea name="username_list" rows="5" cols="22"></textarea><br />
-				[ <a href="{U_FIND_USERNAME}" onclick="find_username(); return false">{L_FIND_USERNAME}</a> ]
+				[ <a href="{U_FIND_USERNAME}" onclick="find_username(); return false;">{L_FIND_USERNAME}</a> ]
 			</td>
 		</tr>
 	<!-- ENDIF -->

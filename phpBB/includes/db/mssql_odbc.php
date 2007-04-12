@@ -22,6 +22,11 @@ include_once($phpbb_root_path . 'includes/db/dbal.' . $phpEx);
 * Unified ODBC functions
 * Unified ODBC functions support any database having ODBC driver, for example Adabas D, IBM DB2, iODBC, Solid, Sybase SQL Anywhere...
 * Here we only support MSSQL Server 2000+ because of the provided schema
+*
+* @note number of bytes returned for returning data depends on odbc.defaultlrl php.ini setting.
+* If it is limited to 4K for example only 4K of data is returned max, resulting in incomplete theme data for example.
+* @note odbc.defaultbinmode may affect UTF8 characters
+*
 * @package dbal
 */
 class dbal_mssql_odbc extends dbal
@@ -195,8 +200,9 @@ class dbal_mssql_odbc extends dbal
 
 	/**
 	* Fetch current row
+	* @note number of bytes returned depends on odbc.defaultlrl php.ini setting. If it is limited to 4K for example only 4K of data is returned max.
 	*/
-	function sql_fetchrow($query_id = false)
+	function sql_fetchrow($query_id = false, $debug = false)
 	{
 		global $cache;
 

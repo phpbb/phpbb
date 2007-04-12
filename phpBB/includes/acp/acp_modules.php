@@ -741,6 +741,10 @@ class acp_modules
 					trigger_error($user->lang['PARENT_NO_EXIST'] . adm_back_link($this->u_action . '&amp;parent_id=' . $this->parent_id), E_USER_WARNING);
 				}
 
+				// Workaround
+				$row['left_id'] = (int) $row['left_id'];
+				$row['right_id'] = (int) $row['right_id'];
+
 				$sql = 'UPDATE ' . MODULES_TABLE . "
 					SET left_id = left_id + 2, right_id = right_id + 2
 					WHERE module_class = '" . $db->sql_escape($module_data['module_class']) . "'

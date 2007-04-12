@@ -182,7 +182,7 @@ $lang = array_merge($lang, array(
 	'FIELD_INVALID_DATE'				=> 'The field “%s” has an invalid date.',
 
 	'FOE_MESSAGE'				=> 'Message from foe',
-	'FOES_EXPLAIN'				=> 'Foes are users which will be ignored by default. Posts by these users will not be fully visible and personal messages will not be permitted. Please note that you cannot ignore moderators or administrators.',
+	'FOES_EXPLAIN'				=> 'Foes are users which will be ignored by default. Posts by these users will not be fully visible. Personal messages from foes are still permitted. Please note that you cannot ignore moderators or administrators.',
 	'FOES_UPDATED'				=> 'Your foes list has been updated successfully',
 	'FOLDER_ADDED'				=> 'Folder successfully added',
 	'FOLDER_MESSAGE_STATUS'		=> '%1$d from %2$d messages stored',

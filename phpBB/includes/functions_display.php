@@ -706,7 +706,7 @@ function topic_status(&$topic_row, $replies, $unread_topic, &$folder_img, &$fold
 	{
 		$topic_type = $user->lang['VIEW_TOPIC_MOVED'];
 		$folder_img = 'topic_moved';
-		$folder_alt = 'VIEW_TOPIC_MOVED';
+		$folder_alt = 'TOPIC_MOVED';
 	}
 	else
 	{
@@ -1094,6 +1094,43 @@ function get_user_rank($user_rank, $user_posts, &$rank_title, &$rank_img, &$rank
 			}
 		}
 	}
+}
+
+/**
+* Get user avatar
+*
+* @param string $avatar Users assigned avatar name
+* @param int $avatar_type Type of avatar
+* @param string $avatar_width Width of users avatar
+* @param string $avatar_height Height of users avatar
+* @param string $alt Optional language string for alt tag within image, can be a language key or text
+*
+* @return string Avatar image
+*/
+function get_user_avatar($avatar, $avatar_type, $avatar_width, $avatar_height, $alt = 'USER_AVATAR')
+{
+	global $user, $config, $phpbb_root_path;
+
+	if (empty($avatar) || !$avatar_type)
+	{
+		return '';
+	}
+
+	$avatar_img = '';
+
+	switch ($avatar_type)
+	{
+		case AVATAR_UPLOAD:
+			$avatar_img = $phpbb_root_path . $config['avatar_path'] . '/';
+		break;
+
+		case AVATAR_GALLERY:
+			$avatar_img = $phpbb_root_path . $config['avatar_gallery_path'] . '/';
+		break;
+	}
+
+	$avatar_img .= $avatar;
+	return '<img src="' . $avatar_img . '" width="' . $avatar_width . '" height="' . $avatar_height . '" alt="' . ((!empty($user->lang[$alt])) ? $user->lang[$alt] : $alt) . '" />';
 }
 
 ?>
