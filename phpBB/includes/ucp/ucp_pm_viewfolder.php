@@ -72,7 +72,7 @@ function view_folder($id, $mode, $folder_id, $folder)
 				continue;
 			}
 
-			$s_folder_move_options .= '<option' . (($f_id != PRIVMSGS_INBOX) ? ' class="blue"' : '') . ' value="' . $f_id . '">';
+			$s_folder_move_options .= '<option' . (($f_id != PRIVMSGS_INBOX) ? ' class="sep"' : '') . ' value="' . $f_id . '">';
 			$s_folder_move_options .= sprintf($user->lang['MOVE_MARKED_TO_FOLDER'], $folder_ary['folder_name']);
 			$s_folder_move_options .= (($folder_ary['unread_messages']) ? ' [' . $folder_ary['unread_messages'] . '] ' : '') . '</option>';
 		}

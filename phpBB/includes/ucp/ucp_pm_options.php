@@ -623,7 +623,7 @@ function define_rule_option($hardcoded, $rule_option, $rule_lang, $check_ary)
 */
 function define_cond_option($hardcoded, $cond_option, $rule_option, $global_rule_conditions)
 {
-	global $db, $template, $auth;
+	global $db, $template, $auth, $user;
 	
 	$template->assign_vars(array(
 		'S_COND_DEFINED'	=> true,
@@ -706,11 +706,28 @@ function define_cond_option($hardcoded, $cond_option, $rule_option, $global_rule
 			$rule_group_id = request_var('rule_group_id', 0);
 			$rule_string = utf8_normalize_nfc(request_var('rule_string', '', true));
 			
-			$sql_and = ($auth->acl_gets('a_group', 'a_groupadd', 'a_groupdel')) ? '<> ' . GROUP_SPECIAL : 'NOT IN (' . GROUP_SPECIAL . ', ' . GROUP_HIDDEN . ')';
-			$sql = 'SELECT group_id, group_name, group_type
-				FROM ' . GROUPS_TABLE . "
-				WHERE group_type $sql_and
-				ORDER BY group_type DESC, group_name";
+			$sql = 'SELECT g.group_id, g.group_name, g.group_type
+					FROM ' . GROUPS_TABLE . ' g ';
+			 
+			if (!$auth->acl_gets('a_group', 'a_groupadd', 'a_groupdel'))
+			{
+				$sql .= 'LEFT JOIN ' . USER_GROUP_TABLE . ' ug
+					ON (
+						g.group_id = ug.group_id
+						AND ug.user_id = ' . $user->data['user_id'] . '
+						AND ug.user_pending = 0
+					)
+				WHERE (ug.user_id = ' . $user->data['user_id'] . ' OR g.group_type <> ' . GROUP_HIDDEN . ')
+					AND';
+			}
+			else
+			{
+				$sql .= 'WHERE';
+			}
+			
+			$sql .= " NOT (g.group_name IN ('GUESTS', 'BOTS') AND g.group_type = " . GROUP_SPECIAL . ')	
+				ORDER BY g.group_type DESC, g.group_name ASC';
+			
 			$result = $db->sql_query($sql);
 
 			$s_group_options = '';
@@ -721,8 +738,10 @@ function define_cond_option($hardcoded, $cond_option, $rule_option, $global_rule
 					$rule_string = (($row['group_type'] == GROUP_SPECIAL) ? $user->lang['G_' . $row['group_name']] : $row['group_name']);
 				}
 
-				$s_selected = ($row['group_id'] == $rule_group_id) ? ' selected="selected"' : '';
-				$s_group_options .= '<option value="' . $row['group_id'] . '"' . $s_selected . '>' . (($row['group_type'] == GROUP_SPECIAL) ? $user->lang['G_' . $row['group_name']] : $row['group_name']) . '</option>';
+				$s_class	= ($row['group_type'] == GROUP_SPECIAL) ? ' class="sep"' : ''; 
+				$s_selected	= ($row['group_id'] == $rule_group_id) ? ' selected="selected"' : '';
+				
+				$s_group_options .= '<option value="' . $row['group_id'] . '"' . $s_class . $s_selected . '>' . (($row['group_type'] == GROUP_SPECIAL) ? $user->lang['G_' . $row['group_name']] : $row['group_name']) . '</option>';
 			}
 			$db->sql_freeresult($result);
 
