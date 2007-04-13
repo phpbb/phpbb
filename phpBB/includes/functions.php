@@ -3295,6 +3295,8 @@ function get_preg_expression($mode)
 */
 function truncate_string($string, $max_length = 60, $allow_reply = true, $append = '')
 {
+	global $user;
+
 	$chars = array();
 
 	$strip_reply = false;
