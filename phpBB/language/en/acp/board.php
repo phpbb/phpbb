@@ -45,7 +45,7 @@ $lang = array_merge($lang, array(
 	'RELATIVE_DAYS'					=> 'Relative days',
 	'SITE_DESC'						=> 'Site description',
 	'SITE_NAME'						=> 'Site name',
-	'SYSTEM_DST'					=> 'Enable Daylight Savings Time',
+	'SYSTEM_DST'					=> 'Enable Summer Time/<abbr title="Daylight Saving Time">DST</abbr>',
 	'SYSTEM_TIMEZONE'				=> 'System timezone',
 	'WARNINGS_EXPIRE'				=> 'Warning duration',
 	'WARNINGS_EXPIRE_EXPLAIN'		=> 'Number of days that will elapse before the warning will automatically expire from a user’s record',

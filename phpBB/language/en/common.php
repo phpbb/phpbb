@@ -730,7 +730,7 @@ $lang = array_merge($lang, array(
 		'12.75'	=> 'UTC + 12:45 hours',
 		'13'	=> 'UTC + 13 hours',
 		'14'	=> 'UTC + 14 hours',
-		'dst'	=> '[ DST ]',
+		'dst'	=> '[ <abbr title="Daylight Saving Time">DST</abbr> ]',
 	),
 
 	'tz_zones'	=> array(

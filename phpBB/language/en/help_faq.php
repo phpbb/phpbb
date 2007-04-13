@@ -84,7 +84,7 @@ $help = array(
 	),
 	array(
 		0 => 'I changed the timezone and the time is still wrong!',
-		1 => 'If you are sure you have set the timezone correctly and the time is still different the most likely answer is daylight savings time (or summer time as it is known in the UK and other places). The board is not designed to handle the changeovers between standard and daylight time so during summer months the time may be an hour different from the real local time.'
+		1 => 'If you are sure you have set the timezone and Summer Time/<abbr title="Daylight Saving Time">DST</abbr> correctly and the time is still different, then the time as stored on the servers clock is incorrect and the Administrators will need to make the correction.'
 	),
 	array(
 		0 => 'My language is not in the list!',

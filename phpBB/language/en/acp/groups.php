@@ -56,7 +56,6 @@ $lang = array_merge($lang, array(
 	'GROUP_DEMOTE'					=> 'Demote group leader',
 	'GROUP_DESC'					=> 'Group description',
 	'GROUP_DETAILS'					=> 'Group details',
-	'GROUP_DST'						=> 'Group daylight savings',
 	'GROUP_EDIT_EXPLAIN'			=> 'Here you can edit an existing group. You can change its name, description and type (open, closed, etc.). You can also set certain groupwide options such as colouration, rank, etc. Changes made here override users current settings. Please note that group members can alter their avatar unless you set appropriate user permissions.',
 	'GROUP_ERR_USERS_EXIST'			=> 'The specified users are already members of this group',
 	'GROUP_FOUNDER_MANAGE'			=> 'Founder manage only',
