@@ -169,7 +169,6 @@ $lang = array_merge($lang, array(
 	'SAVE_DATE'					=> 'Saved at',
 	'SAVE_DRAFT'				=> 'Save draft',
 	'SAVE_DRAFT_CONFIRM'		=> 'Please note that saved drafts only include the subject and the message, any other element will be removed. Do you want to save your draft now?',
-	'SUBJECT_CONCERNING_PREFIX'	=> 'Re: ', // This is Latin or "concerning" or "about", most Latin influenced languages  (id est: those with Latin script) can use this "as is". Localise phrase and punctuation if required.
 	'SMILIES'					=> 'Smilies',
 	'SMILIES_ARE_OFF'			=> 'Smilies are <em>OFF</em>',
 	'SMILIES_ARE_ON'			=> 'Smilies are <em>ON</em>',
