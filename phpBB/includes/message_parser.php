@@ -543,7 +543,7 @@ class bbcode_firstpass extends bbcode
 					{
 						array_push($list_end_tags, '/list:o:' . $this->bbcode_uid);
 					}
-					$out .= $buffer . ':' . $this->bbcode_uid . ']';
+					$out .= 'list' . substr($buffer, 4) . ':' . $this->bbcode_uid . ']';
 					$tok = '[';
 				}
 				else
