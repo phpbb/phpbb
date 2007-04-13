@@ -674,7 +674,7 @@ function compose_pm($id, $mode, $action)
 
 	if (($action == 'reply' || $action == 'quote' || $action == 'quotepost') && !$preview && !$refresh)
 	{
-		$message_subject = ((strpos($message_subject, $user->lang['SUBJECT_CONCERNING_PREFIX']) !== 0) ? $user->lang['SUBJECT_CONCERNING_PREFIX'] : '') . censor_text($message_subject);
+		$message_subject = ((!preg_match('/^Re:/', $message_subject)) ? 'Re: ' : '') . censor_text($message_subject);
 	}
 
 	if ($action == 'forward' && !$preview && !$refresh && !$submit)

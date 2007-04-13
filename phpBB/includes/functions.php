@@ -3295,13 +3295,11 @@ function get_preg_expression($mode)
 */
 function truncate_string($string, $max_length = 60, $allow_reply = true, $append = '')
 {
-	global $user;
-
 	$chars = array();
 
 	$strip_reply = false;
 	$stripped = false;
-	if ($allow_reply && strpos($string, $user->lang['SUBJECT_CONCERNING_PREFIX']) === 0)
+	if ($allow_reply && strpos($string, 'Re: ') === 0)
 	{
 		$strip_reply = true;
 		$string = substr($string, 4);
@@ -3320,7 +3318,7 @@ function truncate_string($string, $max_length = 60, $allow_reply = true, $append
 
 	if ($strip_reply)
 	{
-		$string = $user->lang['SUBJECT_CONCERNING_PREFIX'] . $string;
+		$string = 'Re: ' . $string;
 	}
 	
 	if ($append != '' && $stripped)
