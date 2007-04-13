@@ -504,7 +504,6 @@ $lang = array_merge($lang, array(
 	'SUBFORUM'					=> 'Subforum',
 	'SUBFORUMS'					=> 'Subforums',
 	'SUBJECT'					=> 'Subject',
-	'SUBJECT_CONCERNING_PREFIX'	=> 'Re: ', // This is Latin or "concerning" or "about", most Latin influenced languages  (id est: those with Latin script) can use this "as is". Localise phrase and punctuation if required.
 	'SUBMIT'					=> 'Submit',
 
 	'TERMS_USE'			=> 'Terms of use',

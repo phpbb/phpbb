@@ -40,6 +40,7 @@ $lang = array_merge($lang, array(
 	'ATTACH_QUOTA_REACHED'		=> 'Sorry, the board attachment quota has been reached.',
 	'ATTACH_SIG'				=> 'Attach a signature (signatures can be altered via the UCP)',
 
+	'BBCODE_A_HELP'				=> 'Inline uploaded attachment: [attachment=]filename.ext[/attachment]',
 	'BBCODE_B_HELP'				=> 'Bold text: [b]text[/b]',
 	'BBCODE_C_HELP'				=> 'Code display: [code]code[/code]',
 	'BBCODE_E_HELP'				=> 'List: Add list element',
@@ -168,6 +169,7 @@ $lang = array_merge($lang, array(
 	'SAVE_DATE'					=> 'Saved at',
 	'SAVE_DRAFT'				=> 'Save draft',
 	'SAVE_DRAFT_CONFIRM'		=> 'Please note that saved drafts only include the subject and the message, any other element will be removed. Do you want to save your draft now?',
+	'SUBJECT_CONCERNING_PREFIX'	=> 'Re: ', // This is Latin or "concerning" or "about", most Latin influenced languages  (id est: those with Latin script) can use this "as is". Localise phrase and punctuation if required.
 	'SMILIES'					=> 'Smilies',
 	'SMILIES_ARE_OFF'			=> 'Smilies are <em>OFF</em>',
 	'SMILIES_ARE_ON'			=> 'Smilies are <em>ON</em>',
