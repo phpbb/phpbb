@@ -82,11 +82,11 @@ $lang = array_merge($lang, array(
 	'EXCLUDE_FROM_ALLOWED_IP'		=> 'Exclude IP from allowed IPs/hostnames',
 	'EXCLUDE_FROM_DISALLOWED_IP'	=> 'Exclude IP from disallowed IPs/hostnames',
 	'EXTENSIONS_UPDATED'			=> 'Extensions successfully updated',
-	'EXTENSION_EXIST'				=> 'The extension %s already exist',
+	'EXTENSION_EXIST'				=> 'The extension %s already exists',
 	'EXTENSION_GROUP'				=> 'Extension group',
 	'EXTENSION_GROUPS'				=> 'Extension groups',
 	'EXTENSION_GROUP_DELETED'		=> 'Extension group successfully deleted.',
-	'EXTENSION_GROUP_EXIST'			=> 'The extension group %s already exist',
+	'EXTENSION_GROUP_EXIST'			=> 'The extension group %s already exists',
 
 	'GO_TO_EXTENSIONS'		=> 'Go to extension management screen',
 	'GROUP_NAME'			=> 'Group name',
