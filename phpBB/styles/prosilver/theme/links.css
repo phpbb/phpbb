@@ -136,8 +136,8 @@ a.topictitle:active {
 a.top {
 	background: none no-repeat 50% 50%;
 	text-decoration: none;
-	width: 11px;
-	height: 11px;
+	width: {IMG_ICON_BACK_TOP_WIDTH}px;
+	height: {IMG_ICON_BACK_TOP_HEIGHT}px;
 	display: block;
 	float: right;
 	overflow: hidden;

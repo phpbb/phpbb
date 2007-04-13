@@ -328,11 +328,11 @@ a.topictitle:active {
 
 /* Back to top of page */
 a.top {
-	background-image: url("{T_IMAGESET_PATH}/images/top.gif");
+	background-image: url("{IMG_ICON_BACK_TOP_SRC}");
 }
 
 a.top2 {
-	background-image: url("{T_IMAGESET_PATH}/images/top.gif");
+	background-image: url("{IMG_ICON_BACK_TOP_SRC}");
 }
 
 /* Arrow links  */
