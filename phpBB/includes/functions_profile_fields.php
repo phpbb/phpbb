@@ -62,10 +62,14 @@ class custom_profile
 			// Return templated field
 			$tpl_snippet = $this->process_field_row('change', $row);
 
+			// Some types are multivalue, we can't give them a field_id as we would not know which to pick
+			$type = (int) $row['field_type'];
+
 			$template->assign_block_vars('profile_fields', array(
 				'LANG_NAME'		=> $row['lang_name'],
 				'LANG_EXPLAIN'	=> $row['lang_explain'],
 				'FIELD'			=> $tpl_snippet,
+				'FIELD_ID'		=> ($type == 6 || ($type == 4 && $row['field_length'] == '1')) ? '' : 'pf_' . $row['field_ident'],
 				'S_REQUIRED'	=> ($row['field_required']) ? true : false)
 			);
 		}
