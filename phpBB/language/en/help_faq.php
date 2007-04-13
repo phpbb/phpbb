@@ -120,7 +120,7 @@ $help = array(
 	),
 	array(
 		0 => 'How do I create a poll?',
-		1 => 'Creating a poll is easy, when you post a new topic (or edit the first post of a topic, if you have permission) you should see an <em>Add Poll</em> form below the main posting box (if you cannot see this then you probably do not have rights to create polls). You should enter a title for the poll and then at least two options (to set an option type in the poll question and click the <em>Add option</em> button. You can also set a time limit for the poll, 0 is an infinite poll. There will be a limit to the number of options you can list, this is set by the board administrator.'
+		1 => 'Creating a poll is easy, when you post a new topic (or edit the first post of a topic, if you have permission) you should see the “Poll creation” tab below the main posting form (if you cannot see this then you do not have appropriate permissions to create polls). You should enter a title for the poll in “Poll question” and then at least two options in the “Poll options” textarea (limit is set by the board administrator), with each option separated by a new line. You can also set the number of options user may select during voting under “Options per user”, setting a time limit in days for the poll (0 is a poll of infinite duration) and lastly the option if users are allowed to amend their votes.'
 	),
 	array(
 		0 => 'How do I edit or delete a poll?',
