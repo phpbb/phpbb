@@ -72,25 +72,25 @@
 			</object>
 		<!-- ELSEIF _file.S_QUICKTIME_FILE -->
 			<object id="qtstream_{_file.ATTACH_ID}" classid="clsid:02BF25D5-8C17-4B23-BC80-D3488ABDDC6B" codebase="http://www.apple.com/qtactivex/qtplugin.cab#version=6,0,2,0" width="0" height="16">
-				<param name="src" value="{_file.U_DOWNLOAD_LINK}">
-				<param name="controller" value="true">
+				<param name="src" value="{_file.U_DOWNLOAD_LINK}" />
+				<param name="controller" value="true" />
 				<param name="autoplay" value="false" />
-				<param name="type" value="video/quicktime">
-				<embed name="qtstream_{_file.ATTACH_ID}" src="{_file.U_DOWNLOAD_LINK}" pluginspage="http://www.apple.com/quicktime/download/" enablejavascript="true" controller="true" width="0" height="16" type="video/quicktime" autoplay="false"> 
+				<param name="type" value="video/quicktime" />
+				<embed name="qtstream_{_file.ATTACH_ID}" src="{_file.U_DOWNLOAD_LINK}" pluginspage="http://www.apple.com/quicktime/download/" enablejavascript="true" controller="true" width="0" height="16" type="video/quicktime" autoplay="false"></embed>
 			</object>
 		<!-- ELSEIF _file.S_RM_FILE -->
 			<object id="rmstream_{_file.ATTACH_ID}" classid="clsid:CFCDAA03-8BE4-11cf-B84B-0020AFBBCCFA" width="200" height="50">
-				<param name="src" value="{_file.U_DOWNLOAD_LINK}">
-				<param name="autostart" value="false">
-				<param name="controls" value="ImageWindow">
-				<param name="console" value="ctrls_{_file.ATTACH_ID}">
-				<param name="prefetch" value="false">
+				<param name="src" value="{_file.U_DOWNLOAD_LINK}" />
+				<param name="autostart" value="false" />
+				<param name="controls" value="ImageWindow" />
+				<param name="console" value="ctrls_{_file.ATTACH_ID}" />
+				<param name="prefetch" value="false" />
 				<embed name="rmstream_{_file.ATTACH_ID}" type="audio/x-pn-realaudio-plugin" src="{_file.U_DOWNLOAD_LINK}" width="0" height="0" autostart="false" controls="ImageWindow" console="ctrls_{_file.ATTACH_ID}" prefetch="false"></embed>
 			</object>
 			<br />
 			<object id="ctrls_{_file.ATTACH_ID}" classid="clsid:CFCDAA03-8BE4-11cf-B84B-0020AFBBCCFA" width="0" height="36">
-				<param name="controls" value="ControlPanel">
-				<param name="console" value="ctrls_{_file.ATTACH_ID}">
+				<param name="controls" value="ControlPanel" />
+				<param name="console" value="ctrls_{_file.ATTACH_ID}" />
 				<embed name="ctrls_{_file.ATTACH_ID}" type="audio/x-pn-realaudio-plugin" width="200" height="36" controls="ControlPanel" console="ctrls_{_file.ATTACH_ID}"></embed>
 			</object>
 
