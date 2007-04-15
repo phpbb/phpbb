@@ -984,7 +984,7 @@ class acp_users
 						'msn'			=> array('string', true, 5, 255),
 						'jabber'		=> array(
 							array('string', true, 5, 255),
-							array('match', true, '#^[a-z0-9\.\-_\+]+?@(.*?\.)*?[a-z0-9\-_]+?\.[a-z]{2,4}(/.*)?$#i')),
+							array('match', true, '#^[^@:\'"<>&\x00-\x1F\x7F\t\r\n]+@(.*?\.)*?[a-z0-9\-_]+?\.[a-z]{2,4}(/.*)?$#iu')),
 						'yim'			=> array('string', true, 5, 255),
 						'website'		=> array(
 							array('string', true, 12, 255),
