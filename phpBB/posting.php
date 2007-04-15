@@ -85,6 +85,7 @@ switch ($mode)
 	case 'delete':
 		if (!$post_id)
 		{
+			$user->setup('posting');
 			trigger_error('NO_POST');
 		}
 
@@ -123,7 +124,7 @@ switch ($mode)
 
 if (!$sql)
 {
-	$user->setup(array('posting', 'mcp', 'viewtopic'));
+	$user->setup('posting');
 	trigger_error('NO_POST_MODE');
 }
 
@@ -133,6 +134,10 @@ $db->sql_freeresult($result);
 
 if (!$post_data)
 {
+	if (!($mode == 'post' || $mode == 'bump' || $mode == 'reply'))
+	{
+		$user->setup('posting');
+	}
 	trigger_error(($mode == 'post' || $mode == 'bump' || $mode == 'reply') ? 'NO_TOPIC' : 'NO_POST');
 }
 
