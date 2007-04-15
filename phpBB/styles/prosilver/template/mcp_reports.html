@@ -43,7 +43,7 @@
 						<span>{postrow.REPORTER_FULL} {L_REPORTED_ON_DATE} {postrow.REPORT_TIME}<br />
 						{L_FORUM}: <a href="{postrow.U_VIEWFORUM}">{postrow.FORUM_NAME}</a></span>
 					</dd>
-					<dd class="mark"><input type="checkbox" name="post_id_list[]" value="{postrow.POST_ID}" /></dd>
+					<dd class="mark"><input type="checkbox" name="report_id_list[]" value="{postrow.REPORT_ID}" /></dd>
 				</dl>
 			</li>
 		<!-- END postrow -->
@@ -75,7 +75,7 @@
 	<fieldset class="display-actions">		
 		<input class="button2" type="submit" value="{L_DELETE_REPORTS}" name="action[delete]" />
 		<!-- IF not S_CLOSED -->&nbsp;<input class="button1" type="submit" name="action[close]" value="{L_CLOSE_REPORTS}" /><!-- ENDIF -->
-		<div><a href="#" onclick="marklist('mcp', 'post_id_list', true); return false;">{L_MARK_ALL}</a> :: <a href="#" onclick="marklist('mcp', 'post_id_list', false); return false;">{L_UNMARK_ALL}</a></div>
+		<div><a href="#" onclick="marklist('mcp', 'report_id_list', true); return false;">{L_MARK_ALL}</a> :: <a href="#" onclick="marklist('mcp', 'report_id_list', false); return false;">{L_UNMARK_ALL}</a></div>
 	</fieldset>
 <!-- ENDIF -->
 
