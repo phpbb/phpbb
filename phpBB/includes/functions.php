@@ -2620,11 +2620,11 @@ function make_clickable($text, $server_url = false)
 
 		// matches a xxxx://aaaaa.bbb.cccc. ...
 		$magic_url_match[] = '#(^|[\n\t (])(' . get_preg_expression('url_inline') . ')#ie';
-		$magic_url_replace[] = "'\$1<!-- m --><a href=\"\$2\">' . ((strlen('\$2') > 55) ? substr(str_replace('&amp;', '&', '\$2'), 0, 39) . ' ... ' . substr(str_replace('&amp;', '&', '\$2'), -10) : '\$2') . '</a><!-- m -->'";
+		$magic_url_replace[] = "'\$1<!-- m --><a href=\"\$2\">' . ((strlen('\$2') > 55) ? str_replace('&', '&amp;', substr(str_replace('&amp;', '&', '\$2'), 0, 39)) . ' ... ' . str_replace('&', '&amp;', substr(str_replace('&amp;', '&', '\$2'), -10)) : '\$2') . '</a><!-- m -->'";
 
 		// matches a "www.xxxx.yyyy[/zzzz]" kinda lazy URL thing
 		$magic_url_match[] = '#(^|[\n\t (])(' . get_preg_expression('www_url_inline') . ')#ie';
-		$magic_url_replace[] = "'\$1<!-- w --><a href=\"http://\$2\">' . ((strlen('\$2') > 55) ? substr(str_replace('&amp;', '&', '\$2'), 0, 39) . ' ... ' . substr(str_replace('&amp;', '&', '\$2'), -10) : '\$2') . '</a><!-- w -->'";
+		$magic_url_replace[] = "'\$1<!-- w --><a href=\"http://\$2\">' . ((strlen('\$2') > 55) ? str_replace('&', '&amp;', substr(str_replace('&amp;', '&', '\$2'), 0, 39)) . ' ... ' . str_replace('&', '&amp;', substr(str_replace('&amp;', '&', '\$2'), -10)) : '\$2') . '</a><!-- w -->'";
 
 		// matches an email@domain type address at the start of a line, or after a space or after what might be a BBCode.
 		$magic_url_match[] = '/(^|[\n\t )])(' . get_preg_expression('email') . ')/ie';

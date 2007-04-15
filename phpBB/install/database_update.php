@@ -1082,6 +1082,12 @@ if (version_compare($current_version, '3.0.b5', '<='))
 		$db->sql_query($sql);
 	}
 	unset($sql_in);
+
+	$sql = 'UPDATE ' . ACL_OPTIONS_TABLE . ' SET is_local = 0 WHERE auth_option = \'m_warn\'';
+	$db->sql_query($sql);
+
+	$sql = 'UPDATE ' . MODULES_TABLE . ' SET module_auth = \'acl_m_warn && acl_f_read,$id\' WHERE module_basename = \'warn\' AND module_mode = \'warn_post\'';
+	$db->sql_query($sql);
 	$no_updates = false;
 }
 

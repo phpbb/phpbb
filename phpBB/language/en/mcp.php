@@ -222,7 +222,7 @@ $lang = array_merge($lang, array(
 	'NO_TOPICS_QUEUE'				=> 'No topics',
 
 	'ONLY_TOPIC'			=> 'Only topic "%s"',
-	'OTHER_USERS'			=> 'Users posting from this IP',
+	'OTHER_USERS'			=> 'Other users posting from this IP',
 
 	'POSTER'					=> 'Poster',
 	'POSTS_APPROVED_SUCCESS'	=> 'The selected posts have been approved',

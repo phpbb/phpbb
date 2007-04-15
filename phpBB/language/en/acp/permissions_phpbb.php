@@ -175,7 +175,7 @@ $lang = array_merge($lang, array(
 	'acl_m_merge'	=> array('lang' => 'Can merge topics', 'cat' => 'topic_actions'),
 
 	'acl_m_info'	=> array('lang' => 'Can view post details', 'cat' => 'misc'),
-	'acl_m_warn'	=> array('lang' => 'Can issue warnings', 'cat' => 'misc'),
+	'acl_m_warn'	=> array('lang' => 'Can issue warnings', 'cat' => 'misc'), // This moderator setting is only global (and not local)
 	'acl_m_ban'		=> array('lang' => 'Can manage bans', 'cat' => 'misc'), // This moderator setting is only global (and not local)
 ));
 

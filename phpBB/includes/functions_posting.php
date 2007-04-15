@@ -99,10 +99,12 @@ function generate_smilies($mode, $forum_id)
 * Update last post information
 * Should be used instead of sync() if only the last post information are out of sync... faster
 *
-* @param string $type Can be forum|topic
-* @param mixed $ids topic/forum ids
+* @param	string	$type				Can be forum|topic
+* @param	mixed	$ids				topic/forum ids
+* @param	bool	$return_update_sql	true: SQL query shall be returned, false: execute SQL
+* @param	int		$min_post_id		0: no bottom limit known, 1..n: MAX(post_id) >= n
 */
-function update_post_information($type, $ids, $return_update_sql = false)
+function update_post_information($type, $ids, $return_update_sql = false, $min_post_id = 0)
 {
 	global $db;
 
@@ -112,6 +114,8 @@ function update_post_information($type, $ids, $return_update_sql = false)
 	}
 
 	$update_sql = $empty_forums = $not_empty_forums = array();
+
+	$min_post_id_sql = ($min_post_id) ? ' AND p.post_id >= ' . $min_post_id : '';
 
 	if ($type != 'topic')
 	{
@@ -130,7 +134,8 @@ function update_post_information($type, $ids, $return_update_sql = false)
 			FROM ' . POSTS_TABLE . " p $topic_join
 			WHERE " . $db->sql_in_set('p.' . $type . '_id', $ids) . "
 				$topic_condition
-				AND p.post_approved = 1";
+				AND p.post_approved = 1
+				$min_post_id_sql";
 	}
 	else
 	{
@@ -139,6 +144,7 @@ function update_post_information($type, $ids, $return_update_sql = false)
 			WHERE " . $db->sql_in_set('p.' . $type . '_id', $ids) . "
 				$topic_condition
 				AND p.post_approved = 1
+				$min_post_id_sql
 			GROUP BY p.{$type}_id";
 	}
 	$result = $db->sql_query($sql);
@@ -1872,14 +1878,14 @@ function submit_post($mode, $subject, $username, $topic_type, &$poll, &$data, $u
 	{
 		if ($topic_type != POST_GLOBAL)
 		{
-			$update_sql = update_post_information('forum', $data['forum_id'], true);
+			$update_sql = update_post_information('forum', $data['forum_id'], true, $data['post_id']);
 			if (sizeof($update_sql))
 			{
 				$sql_data[FORUMS_TABLE]['stat'][] = implode(', ', $update_sql[$data['forum_id']]);
 			}
 		}
 
-		$update_sql = update_post_information('topic', $data['topic_id'], true);
+		$update_sql = update_post_information('topic', $data['topic_id'], true, $data['post_id']);
 		if (sizeof($update_sql))
 		{
 			$sql_data[TOPICS_TABLE]['stat'][] = implode(', ', $update_sql[$data['topic_id']]);
@@ -1888,7 +1894,7 @@ function submit_post($mode, $subject, $username, $topic_type, &$poll, &$data, $u
 
 	if ($make_global)
 	{
-		$update_sql = update_post_information('forum', $data['forum_id'], true);
+		$update_sql = update_post_information('forum', $data['forum_id'], true, $data['post_id']);
 		if (sizeof($update_sql))
 		{
 			$sql_data[FORUMS_TABLE]['stat'][] = implode(', ', $update_sql[$data['forum_id']]);
