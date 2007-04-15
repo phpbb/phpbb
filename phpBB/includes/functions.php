@@ -2196,7 +2196,7 @@ function login_box($redirect = '', $l_explain = '', $l_success = '', $admin = fa
 			$redirect .= ($user->page['page_dir']) ? $user->page['page_dir'] . '/' : '';
 		}
 
-		$redirect .= $user->page['page_name'] . (($user->page['query_stringquery_string']) ? '?' . htmlspecialchars($user->page['query_string']) : '');
+		$redirect .= $user->page['page_name'] . (($user->page['query_string']) ? '?' . htmlspecialchars($user->page['query_string']) : '');
 	}
 
 	$s_hidden_fields = build_hidden_fields(array('redirect' => $redirect, 'sid' => $user->session_id));
