@@ -36,7 +36,7 @@ if (!empty($load_extensions))
 $sid = (isset($_GET['sid'])) ? htmlspecialchars($_GET['sid']) : '';
 $id = (isset($_GET['id'])) ? intval($_GET['id']) : 0;
 
-if (strspn($str, 'abcdefABCDEF0123456789') !== strlen($str))
+if (strspn($sid, 'abcdefABCDEF0123456789') !== strlen($sid))
 {
 	$sid = '';
 }
