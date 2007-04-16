@@ -129,7 +129,7 @@ if ($id && $sid)
 			$cache->destroy('sql', STYLES_THEME_TABLE);
 		}
 
-		//header('Expires: ' . gmdate('D, d M Y H:i:s \G\M\T', time() + 3600));
+		header('Expires: ' . gmdate('D, d M Y H:i:s \G\M\T', time() + 3600));
 		header('Content-type: text/css');
 
 		// Parse Theme Data
