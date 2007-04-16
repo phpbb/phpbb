@@ -362,7 +362,7 @@ $lang = array_merge($lang, array(
 	'PASS_TYPE_CASE'				=> 'Must be mixed case',
 	'PASS_TYPE_SYMBOL'				=> 'Must contain symbols',
 	'TPL_ALLOW_PHP'					=> 'Allow php in templates',
-	'TPL_ALLOW_PHP_EXPLAIN'			=> 'If this option is enabled, <code>PHP</code> and <code>INCLUDEPHP</code> statements will be recognized and parsed in templates.',
+	'TPL_ALLOW_PHP_EXPLAIN'			=> 'If this option is enabled, <code>PHP</code> and <code>INCLUDEPHP</code> statements will be recognised and parsed in templates.',
 ));
 
 // Email Settings

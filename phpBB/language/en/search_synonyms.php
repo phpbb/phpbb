@@ -119,8 +119,8 @@ $synonyms = array(
 	'offense'	=> 'offence',
 	'ommision'	=> 'omission',
 	'ommission'	=> 'omission',
-	'optimize'	=> 'optimize',
-	'organise'	=> 'organize',
+	'optimize'	=> 'optimise',
+	'organize'	=> 'organise',
 
 	'pajamas'			=> 'pyjamas',
 	'paleography'		=> 'palaeography',
