@@ -36,7 +36,7 @@ if (!empty($load_extensions))
 $sid = (isset($_GET['sid'])) ? htmlspecialchars($_GET['sid']) : '';
 $id = (isset($_GET['id'])) ? intval($_GET['id']) : 0;
 
-if (!ctype_alnum($sid))
+if (strspn($str, 'abcdefABCDEF0123456789') !== strlen($str))
 {
 	$sid = '';
 }
@@ -129,7 +129,7 @@ if ($id && $sid)
 			$cache->destroy('sql', STYLES_THEME_TABLE);
 		}
 
-		header('Expires: ' . gmdate('D, d M Y H:i:s \G\M\T', time() + 3600));
+		//header('Expires: ' . gmdate('D, d M Y H:i:s \G\M\T', time() + 3600));
 		header('Content-type: text/css');
 
 		// Parse Theme Data
