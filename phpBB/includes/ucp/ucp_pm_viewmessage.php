@@ -86,8 +86,6 @@ function view_message($id, $mode, $folder_id, $msg_id, $folder, $message_row)
 	{
 		if ($auth->acl_get('u_pm_download'))
 		{
-			include($phpbb_root_path . 'includes/functions_display.' . $phpEx);
-
 			$sql = 'SELECT *
 				FROM ' . ATTACHMENTS_TABLE . "
 				WHERE post_msg_id = $msg_id
