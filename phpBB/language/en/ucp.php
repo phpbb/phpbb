@@ -169,7 +169,7 @@ $lang = array_merge($lang, array(
 	'EXPORT_AS_CSV_EXCEL'		=> 'Export as CSV (Excel)',
 	'EXPORT_AS_TXT'				=> 'Export as TXT',
 	'EXPORT_AS_MSG'				=> 'Export as MSG',
-	'EXPORT_FOLDER'				=> 'Export folder',
+	'EXPORT_FOLDER'				=> 'Export this view',
 
 	'FIELD_REQUIRED'					=> 'The field “%s” must be completed.',
 	'FIELD_TOO_SHORT'					=> 'The field “%1$s” is too short, a minimum of %2$d characters is required.',
