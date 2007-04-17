@@ -2761,9 +2761,15 @@ function get_database_size()
 
 			if ($row['proname'] == 'pg_database_size')
 			{
+				$database = $db->dbname;
+				if (strpos($database, '.') !== false)
+				{
+					list($database, ) = explode('.', $database);
+				}
+
 				$sql = "SELECT oid
 					FROM pg_database
-					WHERE datname = '" . $db->dbname . "'";
+					WHERE datname = '$database'";
 				$result = $db->sql_query($sql);
 				$row = $db->sql_fetchrow($result);
 				$db->sql_freeresult($result);
