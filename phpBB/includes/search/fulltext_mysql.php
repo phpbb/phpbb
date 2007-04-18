@@ -697,7 +697,7 @@ class fulltext_mysql extends search_backend
 			}
 			else
 			{
-				$alter[] = 'MODIFY post_subject blob NOT NULL';
+				$alter[] = 'MODIFY post_subject text NOT NULL';
 			}
 			$alter[] = 'ADD FULLTEXT (post_subject)';
 		}
@@ -710,7 +710,7 @@ class fulltext_mysql extends search_backend
 			}
 			else
 			{
-				$alter[] = 'MODIFY post_text blob NOT NULL';
+				$alter[] = 'MODIFY post_text mediumtext NOT NULL';
 			}
 			$alter[] = 'ADD FULLTEXT (post_text)';
 		}
