@@ -2507,7 +2507,7 @@ function generate_text_for_display($text, $uid, $bitfield, $flags)
 		return '';
 	}
 
-	$text = str_replace("\n", '<br />', censor_text($text));
+	$text = censor_text($text);
 
 	// Parse bbcode if bbcode uid stored and bbcode enabled
 	if ($uid && ($flags & OPTION_FLAG_BBCODE))
@@ -2529,6 +2529,8 @@ function generate_text_for_display($text, $uid, $bitfield, $flags)
 		
 		$bbcode->bbcode_second_pass($text, $uid);
 	}
+
+	$text = str_replace("\n", '<br />', $text);
 
 	$text = smiley_text($text, !($flags & OPTION_FLAG_SMILIES));
 
