@@ -679,13 +679,12 @@ class acp_board
 	{
 		global $user;
 
-		$user_char_ary = array('USERNAME_CHARS_ANY' => '.*', 'USERNAME_ALPHA_ONLY' => '[a-z]+', 'USERNAME_ALPHA_SPACERS' => '[-\]_+ [a-z]+', 'USERNAME_LETTER_NUM' => '\w+', 'USERNAME_LETTER_NUM_SPACERS' => '[-\]_+ [\w]+', 'USERNAME_ASCII' => '[\x01-\x7F]+');
-
+		$user_char_ary = array('USERNAME_CHARS_ANY', 'USERNAME_ALPHA_ONLY', 'USERNAME_ALPHA_SPACERS', 'USERNAME_LETTER_NUM', 'USERNAME_LETTER_NUM_SPACERS', 'USERNAME_ASCII');
 		$user_char_options = '';
-		foreach ($user_char_ary as $lang => $value)
+		foreach ($user_char_ary as $user_type)
 		{
-			$selected = ($selected_value == $value) ? ' selected="selected"' : '';
-			$user_char_options .= '<option value="' . $value . '"' . $selected . '>' . $user->lang[$lang] . '</option>';
+			$selected = ($selected_value == $user_type) ? ' selected="selected"' : '';
+			$user_char_options .= '<option value="' . $user_type . '"' . $selected . '>' . $user->lang[$user_type] . '</option>';
 		}
 
 		return $user_char_options;

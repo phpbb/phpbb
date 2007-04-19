@@ -18,7 +18,7 @@ INSERT INTO phpbb_config (config_name, config_value) VALUES ('allow_bookmarks', 
 INSERT INTO phpbb_config (config_name, config_value) VALUES ('allow_emailreuse', '0');
 INSERT INTO phpbb_config (config_name, config_value) VALUES ('allow_forum_notify', '1');
 INSERT INTO phpbb_config (config_name, config_value) VALUES ('allow_mass_pm', '1');
-INSERT INTO phpbb_config (config_name, config_value) VALUES ('allow_name_chars', '.*');
+INSERT INTO phpbb_config (config_name, config_value) VALUES ('allow_name_chars', 'USERNAME_CHARS_ANY');
 INSERT INTO phpbb_config (config_name, config_value) VALUES ('allow_namechange', '0');
 INSERT INTO phpbb_config (config_name, config_value) VALUES ('allow_nocensors', '0');
 INSERT INTO phpbb_config (config_name, config_value) VALUES ('allow_pm_attach', '0');

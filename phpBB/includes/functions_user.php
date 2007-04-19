@@ -1184,7 +1184,92 @@ function validate_username($username, $allowed_username = false)
 		return false;
 	}
 
-	if (!preg_match('#^' . str_replace('\\\\', '\\', $config['allow_name_chars']) . '$#ui', $username) || strpos($username, '&quot;') !== false || strpos($username, '"') !== false)
+	$mbstring = $pcre = false;
+
+	// generic UTF-8 character types supported?
+	if (version_compare(PHP_VERSION, '5.1.0', '>=') || (version_compare(PHP_VERSION, '5.0.0-dev', '<=') && version_compare(PHP_VERSION, '4.4.0', '>=')))
+	{
+		$pcre = true;
+	}
+	else if (function_exists('mb_ereg_match'))
+	{
+		mb_regex_encoding('UTF-8');
+		$mbstring = true;
+	}
+
+	switch ($config['allow_name_chars'])
+	{
+		case 'USERNAME_CHARS_ANY':
+			$pcre = true;
+			$regex = '.+';
+		break;
+
+		case 'USERNAME_ALPHA_ONLY':
+			$pcre = true;
+			$regex = '[A-Za-z]+';
+		break;
+
+		case 'USERNAME_ALPHA_SPACERS':
+			$pcre = true;
+			$regex = '[-\]_+ ]+';
+		break;
+
+		case 'USERNAME_LETTER_NUM':
+			if ($pcre)
+			{
+				$regex = '[\p{Lu}\p{Ll}\p{N}]+';
+			}
+			else if ($mbstring)
+			{
+				$regex = '[[:upper:][:lower:][:digit:]]+';
+			}
+			else
+			{
+				$pcre = true;
+				$regex = '[a-zA-Z0-9]+';
+			}
+		break;
+
+		case 'USERNAME_LETTER_NUM_SPACERS':
+			if ($pcre)
+			{
+				$regex = '[-\]_+ [\p{Lu}\p{Ll}\p{N}]+';
+			}
+			else if ($mbstring)
+			{
+				$regex = '[-\]_+ [[:upper:][:lower:][:digit:]]+';
+			}
+			else
+			{
+				$pcre = true;
+				$regex = '[-\]_+ [a-zA-Z0-9]+';
+			}
+		break;
+
+		case 'USERNAME_ASCII':
+			$pcre = true;
+			$regex = '[\x01-\x7F]+';
+		break;
+	}
+
+	if ($pcre)
+	{
+		if (!preg_match('#^' . $regex . '$#u', $username))
+		{
+			return 'INVALID_CHARS';
+		}
+	}
+	else if ($mbstring)
+	{
+		$matches = array();
+		mb_ereg_search_init('^' . $username . '$', $regex, $matches);
+		if (!mb_ereg_search())
+		{
+			return 'INVALID_CHARS';
+		}
+	}
+
+	if (strpos($username, '&quot;') !== false || strpos($username, '"') !== false)
 	{
 		return 'INVALID_CHARS';
 	}
