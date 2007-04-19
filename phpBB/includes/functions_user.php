@@ -1211,7 +1211,7 @@ function validate_username($username, $allowed_username = false)
 
 		case 'USERNAME_ALPHA_SPACERS':
 			$pcre = true;
-			$regex = '[-\]_+ ]+';
+			$regex = '[A-Za-z-\]_+ ]+';
 		break;
 
 		case 'USERNAME_LETTER_NUM':
