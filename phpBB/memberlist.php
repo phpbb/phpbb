@@ -68,8 +68,6 @@ switch ($mode)
 	case 'leaders':
 		// Display a listing of board admins, moderators
 		include($phpbb_root_path . 'includes/functions_user.' . $phpEx);
-
-		$user->add_lang('groups');
 	
 		$page_title = $user->lang['THE_TEAM'];
 		$template_html = 'memberlist_leaders.html';
