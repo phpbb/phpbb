@@ -1160,7 +1160,8 @@ class fulltext_native extends search_backend
 
 				$sql = 'UPDATE ' . SEARCH_WORDLIST_TABLE . '
 					SET word_count = word_count - 1
-					WHERE ' . $db->sql_in_set('word_id', $sql_in);
+					WHERE ' . $db->sql_in_set('word_id', $sql_in) . '
+						AND word_count > 0';
 				$db->sql_query($sql);
 
 				unset($sql_in);
@@ -1232,7 +1233,8 @@ class fulltext_native extends search_backend
 			{
 				$sql = 'UPDATE ' . SEARCH_WORDLIST_TABLE . '
 					SET word_count = word_count - 1
-					WHERE ' . $db->sql_in_set('word_id', $title_word_ids);
+					WHERE ' . $db->sql_in_set('word_id', $title_word_ids) . '
+						AND word_count > 0';
 				$db->sql_query($sql);
 			}
 
@@ -1240,7 +1242,8 @@ class fulltext_native extends search_backend
 			{
 				$sql = 'UPDATE ' . SEARCH_WORDLIST_TABLE . '
 					SET word_count = word_count - 1
-					WHERE ' . $db->sql_in_set('word_id', $message_word_ids);
+					WHERE ' . $db->sql_in_set('word_id', $message_word_ids) . '
+						AND word_count > 0';
 				$db->sql_query($sql);
 			}
 
