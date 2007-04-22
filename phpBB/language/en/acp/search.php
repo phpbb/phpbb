@@ -51,6 +51,7 @@ $lang = array_merge($lang, array(
 	'FULLTEXT_MYSQL_NOT_MYISAM'				=> 'MySQL fulltext indexes can only be used with MyISAM tables.',
 	'FULLTEXT_MYSQL_SUBJECT_CARDINALITY'	=> 'Cardinality of the post_subject fulltext index (estimate of unique values)',
 	'FULLTEXT_MYSQL_TEXT_CARDINALITY'		=> 'Cardinality of the post_text fulltext index (estimate of unique values)',
+	'FULLTEXT_MYSQL_COMBINED_CARDINALITY'	=> 'Cardinality of the post_content fulltext index (estimate of unique values)',
 	'FULLTEXT_MYSQL_TOTAL_POSTS'			=> 'Total number of indexed posts',
 	'FULLTEXT_MYSQL_MBSTRING'				=> 'Support for non-latin UTF-8 characters using mbstring:',
 	'FULLTEXT_MYSQL_PCRE'					=> 'Support for non-latin UTF-8 characters using PCRE:',
