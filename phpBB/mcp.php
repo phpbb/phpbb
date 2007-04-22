@@ -227,9 +227,9 @@ $module->assign_tpl_vars(append_sid("{$phpbb_root_path}mcp.$phpEx"));
 // Generate urls for letting the moderation control panel being accessed in different modes
 $template->assign_vars(array(
 	'U_MCP'			=> append_sid("{$phpbb_root_path}mcp.$phpEx", 'i=main'),
-	'U_MCP_FORUM'   => ($forum_id) ? append_sid("{$phpbb_root_path}mcp.$phpEx", "i=main&amp;mode=forum_view&amp;f=$forum_id") : '',
-	'U_MCP_TOPIC'   => ($forum_id && $topic_id) ? append_sid("{$phpbb_root_path}mcp.$phpEx", "i=main&amp;mode=topic_view&amp;t=$topic_id") : '',
-	'U_MCP_POST'    => ($forum_id && $topic_id && $post_id) ? append_sid("{$phpbb_root_path}mcp.$phpEx", "i=main&amp;mode=post_details&amp;t=$topic_id&amp;p=$post_id") : '',
+	'U_MCP_FORUM'	=> ($forum_id) ? append_sid("{$phpbb_root_path}mcp.$phpEx", "i=main&amp;mode=forum_view&amp;f=$forum_id") : '',
+	'U_MCP_TOPIC'	=> ($forum_id && $topic_id) ? append_sid("{$phpbb_root_path}mcp.$phpEx", "i=main&amp;mode=topic_view&amp;t=$topic_id") : '',
+	'U_MCP_POST'	=> ($forum_id && $topic_id && $post_id) ? append_sid("{$phpbb_root_path}mcp.$phpEx", "i=main&amp;mode=post_details&amp;t=$topic_id&amp;p=$post_id") : '',
 ));
 
 // Generate the page, do not display/query online list
@@ -241,6 +241,41 @@ $module->display($module->get_page_title(), false);
 function _module__url($mode, &$module_row)
 {
 	return extra_url();
+}
+
+function _module_notes_url($mode, &$module_row)
+{
+	if ($mode == 'front')
+	{
+		return '';
+	}
+
+	global $user_id;
+	return ($user_id) ? "&amp;u=$user_id" : '';
+}
+
+function _module_warn_url($mode, &$module_row)
+{
+	if ($mode == 'front' || $mode == 'list')
+	{
+		return '';
+	}
+
+	if ($mode == 'warn_post')
+	{
+		global $forum_id, $post_id;
+
+		$url_extra = ($forum_id) ? "&amp;f=$forum_id" : '';
+		$url_extra .= ($post_id) ? "&amp;p=$post_id" : '';
+
+		return $url_extra;
+	}
+	else
+	{
+		global $user_id;
+
+		return ($user_id) ? "&amp;u=$user_id" : '';
+	}
 }
 
 function _module_main_url($mode, &$module_row)

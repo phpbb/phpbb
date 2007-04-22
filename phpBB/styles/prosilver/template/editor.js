@@ -16,7 +16,7 @@ var is_ie = ((clientPC.indexOf('msie') != -1) && (clientPC.indexOf('opera') == -
 var is_win = ((clientPC.indexOf('win') != -1) || (clientPC.indexOf('16bit') != -1));
 
 var baseHeight;
-window.onload = initInsertions;
+onload_functions.push('initInsertions()');
 
 /**
 * Shows the help messages in the helpline window
@@ -33,18 +33,20 @@ function helpline(help)
 function initInsertions() 
 {
 	var doc;
-	if(document.forms[form_name])
+
+	if( document.forms[form_name])
 	{
-	    doc = document;
-	}  
+		doc = document;
+	}
 	else 
 	{
 		doc = opener.document;
 	}
+
 	var textarea = doc.forms[form_name].elements[text_name];
 	if (is_ie && typeof(baseHeight) != 'number')
-	{	
-		textarea.focus();		
+	{
+		textarea.focus();
 		baseHeight = doc.selection.createRange().duplicate().boundingHeight;
 		document.body.focus();
 	}

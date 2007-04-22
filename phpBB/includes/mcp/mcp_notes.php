@@ -18,7 +18,7 @@ class mcp_notes
 	var $p_master;
 	var $u_action;
 
-	function mcp_main(&$p_master)
+	function mcp_notes(&$p_master)
 	{
 		$this->p_master = &$p_master;
 	}
@@ -90,6 +90,11 @@ class mcp_notes
 		}
 
 		$user_id = $userrow['user_id'];
+
+		// Populate user id to the currently active module (this module)
+		// The following method is another way of adjusting module urls. It is the easy variant if we want
+		// to directly adjust the current module url based on data retrieved within the same module.
+		$this->p_master->adjust_url('&amp;u=' . $user_id);
 
 		$deletemark = ($action == 'del_marked') ? true : false;
 		$deleteall	= ($action == 'del_all') ? true : false;

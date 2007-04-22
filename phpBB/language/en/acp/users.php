@@ -54,7 +54,7 @@ $lang = array_merge($lang, array(
 	'DELETE_USER'			=> 'Delete user',
 	'DELETE_USER_EXPLAIN'	=> 'Please note that deleting a user is final, they cannot be recovered',
 
-	'FORCE_REACTIVATION_SUCCESS'	=> 'Successfully forced re-activation.',
+	'FORCE_REACTIVATION_SUCCESS'	=> 'Successfully forced reactivation.',
 	'FOUNDER'						=> 'Founder',
 	'FOUNDER_EXPLAIN'				=> 'Founders have all admin permissions and can never be banned, deleted or altered by non-founder members',
 
@@ -99,7 +99,7 @@ $lang = array_merge($lang, array(
 	'USER_ADMIN_DEL_POSTS'			=> 'Delete all posts',
 	'USER_ADMIN_DEL_SIG'			=> 'Delete signature',
 	'USER_ADMIN_EXPLAIN'			=> 'Here you can change your users information and certain specific options. To modify the users permissions please use the user and group permissions system.',
-	'USER_ADMIN_FORCE'				=> 'Force re-activation',
+	'USER_ADMIN_FORCE'				=> 'Force reactivation',
 	'USER_ADMIN_MOVE_POSTS'			=> 'Move all posts',
 	'USER_ADMIN_SIG_REMOVED'		=> 'Successfully removed signature from user account.',
 	'USER_ATTACHMENTS_REMOVED'		=> 'Successfully removed all attachments made by this user.',

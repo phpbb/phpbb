@@ -1421,7 +1421,9 @@ parse_css_file = {PARSE_CSS_FILE}
 		global $db, $user, $phpbb_root_path, $cache, $template;
 
 		$this->page_title = 'EDIT_IMAGESET';
+
 		$update		= (isset($_POST['update'])) ? true : false;
+
 		$imgname	= request_var('imgname', '');
 		$imgpath	= request_var('imgpath', '');
 		$imgsize	= request_var('imgsize', false);
@@ -1446,7 +1448,7 @@ parse_css_file = {PARSE_CSS_FILE}
 			if (strpos($imgname, '-') !== false)
 			{
 				list($imgname, $imgnamelang) = explode('-', $imgname);
-				$sql_extra = " AND image_lang IN('" . $db->sql_escape($imgnamelang) . "', '')";
+				$sql_extra = " AND image_lang IN ('" . $db->sql_escape($imgnamelang) . "', '')";
 			}
 
 			$sql = 'SELECT image_filename, image_width, image_height, image_lang, image_id
@@ -1455,12 +1457,13 @@ parse_css_file = {PARSE_CSS_FILE}
 					AND image_name = '" . $db->sql_escape($imgname) . "'$sql_extra";
 			$result = $db->sql_query($sql);
 			$imageset_data_row = $db->sql_fetchrow($result);
+			$db->sql_freeresult($result);
+
 			$image_filename	= $imageset_data_row['image_filename'];
 			$image_width	= $imageset_data_row['image_width'];
 			$image_height	= $imageset_data_row['image_height'];
 			$image_lang		= $imageset_data_row['image_lang'];
 			$image_id		= $imageset_data_row['image_id'];
-			$db->sql_freeresult($result);
 
 			if (!$imageset_row)
 			{
@@ -1484,17 +1487,16 @@ parse_css_file = {PARSE_CSS_FILE}
 				if ($valid_name)
 				{
 					// If imgwidth and imgheight are non-zero grab the actual size
-					// from the image itself ... we ignore width settings for the poll center
-					// image
+					// from the image itself ... we ignore width settings for the poll center image
 					$imgwidth = $imgheight = 0;
 					$imglang = '';
 
-					if ($imageset_path && !file_exists("{$phpbb_root_path}styles/$imageset_path/imageset/$imgpath"))
+					if ($imgpath && !file_exists("{$phpbb_root_path}styles/$imageset_path/imageset/$imgpath"))
 					{
 						trigger_error($user->lang['NO_IMAGE_ERROR'] . adm_back_link($this->u_action), E_USER_WARNING);
 					}
 
-					if ($imgsize && $imageset_path)
+					if ($imgsize && $imgpath)
 					{
 						list($imgwidth, $imgheight) = getimagesize("{$phpbb_root_path}styles/$imageset_path/imageset/$imgpath");
 						$imgwidth	= ($imgname != 'poll_center') ? (int) $imgwidth : 0;
@@ -1538,6 +1540,11 @@ parse_css_file = {PARSE_CSS_FILE}
 					add_log('admin', 'LOG_IMAGESET_EDIT', $imageset_name);
 
 					$template->assign_var('SUCCESS', true);
+
+					$image_filename = $imgfilename;
+					$image_width	= $imgwidth;
+					$image_height	= $imgheight;
+					$image_lang		= $imglang;
 				}
 			}
 		}
@@ -1647,7 +1654,6 @@ parse_css_file = {PARSE_CSS_FILE}
 		}
 
 		$imgsize_bool = (!empty($imgname) && $image_width && $image_height) ? true : false;
-
 		$image_request = '../styles/' . $imageset_path . '/imageset/' . ($image_lang ? $imgnamelang . '/' : '') . $image_filename;
 
 		$template->assign_vars(array(

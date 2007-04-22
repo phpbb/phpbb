@@ -138,18 +138,21 @@ function readCookie(name)
 	return null;
 }
 
-window.onload = function(e)
+function load_cookie()
 {
 	var cookie = readCookie('style_cookie');
 	var title = cookie ? cookie : getPreferredStyleSheet();
 	setActiveStyleSheet(title);
 }
 
-window.onunload = function(e)
+function unload_cookie()
 {
 	var title = getActiveStyleSheet();
 	createCookie('style_cookie', title, 365);
 }
+
+onload_functions.push('load_cookie()');
+onunload_functions.push('unload_cookie()');
 
 /*
 var cookie = readCookie("style");

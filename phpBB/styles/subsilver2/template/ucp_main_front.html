@@ -16,12 +16,12 @@
 	<!-- IF topicrow.S_ROW_COUNT is even --><tr class="row1"><!-- ELSE --><tr class="row2"><!-- ENDIF -->
 		<td class="row1" width="25" align="center">{topicrow.TOPIC_FOLDER_IMG}</td>
 		<td class="row1" width="100%">
-			<p class="topictitle"><!-- IF topicrow.S_UNREAD --><a href="{topicrow.U_NEWEST_POST}">{topicrow.NEWEST_POST_IMG}</a> <!-- ENDIF -->{topicrow.ATTACH_ICON_IMG} <a href="{topicrow.U_VIEW_TOPIC}">{topicrow.TOPIC_TITLE}</a></p><p class="gensmall">{topicrow.GOTO_PAGE}</p>
+			<p class="topictitle"><!-- IF topicrow.S_UNREAD --><a href="{topicrow.U_NEWEST_POST}">{NEWEST_POST_IMG}</a> <!-- ENDIF -->{topicrow.ATTACH_ICON_IMG} <a href="{topicrow.U_VIEW_TOPIC}">{topicrow.TOPIC_TITLE}</a></p><p class="gensmall">{topicrow.GOTO_PAGE}</p>
 		</td>
 		<td class="row1" width="120" align="center" nowrap="nowrap">
 			<p class="topicdetails">{topicrow.LAST_POST_TIME}</p>
 			<p class="topicdetails">{topicrow.LAST_POST_AUTHOR_FULL}
-				<a href="{topicrow.U_LAST_POST}">{topicrow.LAST_POST_IMG}</a>
+				<a href="{topicrow.U_LAST_POST}">{LAST_POST_IMG}</a>
 			</p>
 		</td>
 	</tr>

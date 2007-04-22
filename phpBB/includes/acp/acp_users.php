@@ -282,6 +282,7 @@ class acp_users
 								$key_len = 54 - (strlen($server_url));
 								$key_len = ($key_len > 6) ? $key_len : 6;
 								$user_actkey = substr($user_actkey, 0, $key_len);
+								$email_template = ($user_row['user_type'] == USER_NORMAL) ? 'user_reactivate_account' : 'user_resend_inactive';
 
 								if ($user_row['user_type'] == USER_NORMAL)
 								{
@@ -295,7 +296,7 @@ class acp_users
 
 								$messenger = new messenger(false);
 
-								$messenger->template('user_resend_inactive', $user_row['user_lang']);
+								$messenger->template($email_template, $user_row['user_lang']);
 
 								$messenger->to($user_row['user_email'], $user_row['username']);
 
@@ -1168,7 +1169,7 @@ class acp_users
 				if ($submit)
 				{
 					$error = validate_data($data, array(
-						'dateformat'	=> array('string', false, 3, 30),
+						'dateformat'	=> array('string', false, 1, 30),
 						'lang'			=> array('match', false, '#^[a-z_\-]{2,}$#i'),
 						'tz'			=> array('num', false, -14, 14),
 

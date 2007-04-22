@@ -133,6 +133,7 @@ ul.cplist {
 	padding: 0 0 0 5px;
 	text-decoration: none;
 	position: relative;
+	cursor: pointer;
 }
 
 #tabs a span {

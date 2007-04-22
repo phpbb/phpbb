@@ -32,6 +32,8 @@
 	var per_page = '{PER_PAGE}';
 	var base_url = '{BASE_URL}';
 	var style_cookie = 'phpBBstyle';
+	var onload_functions = new Array();
+	var onunload_functions = new Array();
 
 	<!-- IF S_USER_PM_POPUP -->
 		if ({S_NEW_PM})
@@ -49,6 +51,25 @@
 		window.open('{UA_FIND_USERNAME}', '_usersearch', 'height=500, resizable=yes, scrollbars=yes, width=740');
 		<!-- ENDIF -->
 		return false;
+	}
+
+	/**
+	* New function for handling multiple calls to window.onload and window.unload by pentapenguin
+	*/
+	window.onload = function()
+	{
+		for (i = 0; i <= onload_functions.length; i++)
+		{
+			eval(onload_functions[i]);
+		}
+	}
+
+	window.onunload = function()
+	{
+		for (i = 0; i <= onunload_functions.length; i++)
+		{
+			eval(onunload_functions[i]);
+		}
 	}
 
 // ]]>

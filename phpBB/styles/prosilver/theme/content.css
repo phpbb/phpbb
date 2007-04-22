@@ -513,6 +513,7 @@ dl.codebox code {
 	font-weight: normal;
 	clear: left;
 }
+
 .attachbox p.stats
 {
 	line-height: 110%;
@@ -537,6 +538,10 @@ dl.codebox code {
 div.inline-attachment dl.thumbnail, div.inline-attachment dl.file {
 	display: block;
 	margin-bottom: 4px;
+}
+
+div.inline-attachment p {
+	font-size: 100%;
 }
 
 dl.file {
@@ -710,4 +715,18 @@ fieldset.polls dd div {
 /* Poster profile used by search*/
 .search .postprofile {
 	width: 30%;
+}
+
+/* pm list in compose message if mass pm is enabled */
+dl.pmlist dt {
+	width: 60% !important;
+}
+
+dl.pmlist dt textarea {
+	width: 95%;
+}
+
+dl.pmlist dd {
+	margin-left: 61% !important;
+	margin-bottom: 2px;
 }

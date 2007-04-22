@@ -6,6 +6,7 @@
 <ul class="linklist">
 	<li class="rightside pagination"><a href="#" onclick="jumpto(); return false;" title="{L_JUMP_TO_PAGE}">{PAGE_NUMBER}</a> <!-- IF PAGINATION --> &bull; <span>{PAGINATION}</span><!-- ENDIF --></li>
 </ul>
+
 <div class="forumbg">
 	<div class="inner"><span class="corners-top"><span></span></span>
 	
@@ -38,7 +39,15 @@
 	
 	<span class="corners-bottom"><span></span></span></div>
 </div>
+
+<!-- IF PREVIOUS_PAGE or NEXT_PAGE -->
+<fieldset class="display-options right-box">
+	<!-- IF PREVIOUS_PAGE --><a href="{PREVIOUS_PAGE}" class="left">{L_PREVIOUS}</a><!-- ELSE -->{L_PREVIOUS}<!-- ENDIF --> &bull; <!-- IF NEXT_PAGE --><a href="{NEXT_PAGE}" class="right">{L_NEXT}</a><!-- ELSE -->{L_NEXT}<!-- ENDIF -->
+</fieldset>
+<!-- ENDIF -->
+
 <!-- IF LEGEND --><p><em>{L_LEGEND}: {LEGEND}</em></p><!-- ENDIF -->
+
 <ul class="linklist">
 	<li class="rightside pagination"><a href="#" onclick="jumpto(); return false;" title="{L_JUMP_TO_PAGE}">{PAGE_NUMBER}</a> <!-- IF PAGINATION --> &bull; <span>{PAGINATION}</span><!-- ENDIF --></li>
 </ul>

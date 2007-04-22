@@ -465,6 +465,33 @@ class p_master
 	}
 
 	/**
+	* Appending url parameter to the currently active module.
+	*
+	* This function is called for adding specific url parameters while executing the current module.
+	* It is doing the same as the _module_{name}_url() function, apart from being able to be called after
+	* having dynamically parsed specific parameters. This allows more freedom in choosing additional parameters.
+	* One example can be seen in /includes/mcp/mcp_notes.php - $this->p_master->adjust_url() call.
+	*
+	* @param string $url_extra Extra url parameters, e.g.: &amp;u=$user_id
+	*
+	*/
+	function adjust_url($url_extra)
+	{
+		if (empty($this->module_ary[$this->active_module_row_id]))
+		{
+			return;
+		}
+
+		$row = &$this->module_ary[$this->active_module_row_id];
+
+		// We check for the same url_extra in $row['url_extra'] to overcome doubled additions...
+		if (strpos($row['url_extra'], $url_extra) === false)
+		{
+			$row['url_extra'] .= $url_extra;
+		}
+	}
+
+	/**
 	* Check if a module is active
 	*/
 	function is_active($id, $mode = false)

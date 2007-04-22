@@ -347,6 +347,10 @@ if ($forum_data['forum_type'] == FORUM_POST)
 		{
 			$global_announce_list[$row['topic_id']] = true;
 		}
+		else
+		{
+			$topics_count--;
+		}
 	}
 	$db->sql_freeresult($result);
 }

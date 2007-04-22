@@ -216,6 +216,7 @@ $lang = array_merge($lang, array(
 	'NO_POST_REPORT'				=> 'This post was not reported.',
 	'NO_POST_SELECTED'				=> 'You must select at least one post to perform this action',
 	'NO_REASON_DISAPPROVAL'			=> 'Please give an appropriate reason for disapproval',
+	'NO_REPORT'						=> 'No report found',
 	'NO_REPORTS'					=> 'No reports',	
 	'NO_REPORT_SELECTED'			=> 'You must select at least one report to perform this action',
 	'NO_TOPIC_ICON'					=> 'None',

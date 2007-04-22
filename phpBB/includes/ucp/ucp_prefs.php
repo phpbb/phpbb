@@ -50,7 +50,7 @@ class ucp_prefs
 					$data['style'] = ($config['override_user_style']) ? $config['default_style'] : $data['style'];
 
 					$error = validate_data($data, array(
-						'dateformat'	=> array('string', false, 3, 30),
+						'dateformat'	=> array('string', false, 1, 30),
 						'lang'			=> array('match', false, '#^[a-z0-9_\-]{2,}$#i'),
 						'tz'			=> array('num', false, -14, 14),
 					));

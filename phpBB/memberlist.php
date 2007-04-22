@@ -30,6 +30,12 @@ $username	= request_var('un', '', true);
 $group_id	= request_var('g', 0);
 $topic_id	= request_var('t', 0);
 
+// Check our mode...
+if (!in_array($mode, array('', 'group', 'viewprofile', 'email', 'contact', 'searchuser', 'leaders')))
+{
+	trigger_error('NO_MODE');
+}
+
 switch ($mode)
 {
 	case 'email':
@@ -48,7 +54,6 @@ switch ($mode)
 		}
 	break;
 }
-
 
 $start	= request_var('start', 0);
 $submit = (isset($_POST['submit'])) ? true : false;
@@ -382,7 +387,7 @@ switch ($mode)
 		}
 
 		// a_user admins and founder are able to view inactive users and bots to be able to manage them more easily
-		// Normal users are able to see at least users having only changed their profile settings but not yet re-activated.
+		// Normal users are able to see at least users having only changed their profile settings but not yet reactivated.
 		if (!$auth->acl_get('a_user') && $user->data['user_type'] != USER_FOUNDER)
 		{
 			if ($member['user_type'] == USER_IGNORE)

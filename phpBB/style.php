@@ -70,8 +70,8 @@ if ($id && $sid)
 
 	$config = $cache->obtain_config();
 
-	$sql = "SELECT s.session_id, u.user_lang
-		FROM {$table_prefix}sessions s, {$table_prefix}users u
+	$sql = 'SELECT s.session_id, u.user_lang
+		FROM ' . SESSIONS_TABLE . ' s, ' . USERS_TABLE . " u
 		WHERE s.session_id = '" . $db->sql_escape($sid) . "'
 			AND s.session_user_id = u.user_id";
 	$result = $db->sql_query($sql);
@@ -80,12 +80,12 @@ if ($id && $sid)
 
 	if ($user)
 	{
-		$sql = "SELECT s.style_id, c.theme_data, c.theme_path, c.theme_name, c.theme_mtime, i.*, t.template_path
-			FROM {$table_prefix}styles s, {$table_prefix}styles_template t, {$table_prefix}styles_theme c, {$table_prefix}styles_imageset i
-			WHERE s.style_id = $id
+		$sql = 'SELECT s.style_id, c.theme_data, c.theme_path, c.theme_name, c.theme_mtime, i.*, t.template_path
+			FROM ' . STYLES_TABLE . ' s, ' . STYLES_TEMPLATE_TABLE . ' t, ' . STYLES_THEME_TABLE . ' c, ' . STYLES_IMAGESET_TABLE . ' i
+			WHERE s.style_id = ' . $id . '
 				AND t.template_id = s.template_id
 				AND c.theme_id = s.theme_id
-				AND i.imageset_id = s.imageset_id";
+				AND i.imageset_id = s.imageset_id';
 		$result = $db->sql_query($sql, 300);
 		$theme = $db->sql_fetchrow($result);
 		$db->sql_freeresult($result);

@@ -4,28 +4,33 @@
 
 <script type="text/javascript">
 <!--
+
 var panels = new Array('display-panel', 'split-panel', 'merge-panel');
 <!-- IF S_MERGE_VIEW -->
 	var show_panel = 'merge-panel';
+<!-- ELSEIF S_SPLIT_VIEW -->
+	var show_panel = 'split-panel';
 <!-- ELSE -->
 	var show_panel = 'display-panel';
 <!-- ENDIF -->
-window.onload = subPanels;
+
+onload_functions.push('subPanels()');
+
 //-->
 </script>
 
 <div id="minitabs">
 	<ul>
 		<li id="display-panel-tab"<!-- IF not S_MERGE_VIEW --> class="activetab"<!-- ENDIF -->>
-			<div class="inner"><span class="corners-top"><span></span></span>
+			<span class="corners-top"><span></span></span>
 			<a href="#minitabs" onclick="subPanels('display-panel'); return false;"><span>{L_DISPLAY_OPTIONS}</span></a>
 		</li>
 		<li id="split-panel-tab">
-			<div class="inner"><span class="corners-top"><span></span></span>
+			<span class="corners-top"><span></span></span>
 			<a href="#minitabs" onclick="subPanels('split-panel'); return false;"><span>{L_SPLIT_TOPIC}</span></a>
 		</li>
 		<li id="merge-panel-tab"<!-- IF S_MERGE_VIEW --> class="activetab"<!-- ENDIF -->>
-			<div class="inner"><span class="corners-top"><span></span></span>
+			<span class="corners-top"><span></span></span>
 			<a href="#minitabs" onclick="subPanels('merge-panel'); return false;"><span>{L_MERGE_TOPIC}</span></a>
 		</li>
 	</ul>
@@ -141,8 +146,8 @@ window.onload = subPanels;
 		<!-- IF S_CAN_APPROVE --><option value="approve">{L_APPROVE_POSTS}</option><!-- ENDIF -->
 		<!-- IF S_CAN_LOCK --><option value="lock_post">{L_LOCK_POST_POSTS} [ {L_LOCK_POST_EXPLAIN} ]</option><option value="unlock_post">{L_UNLOCK_POST_POSTS}</option><!-- ENDIF -->
 		<!-- IF S_CAN_DELETE --><option value="delete_post">{L_DELETE_POSTS}</option><!-- ENDIF -->
-		<!-- IF S_CAN_MERGE --><option value="merge_posts"<!-- IF ACTION eq 'merge' --> selected="selected"<!-- ENDIF -->>{L_MERGE_POSTS}</option><!-- ENDIF -->
-		<!-- IF S_CAN_SPLIT --><option value="split_all"<!-- IF ACTION eq 'split' --> selected="selected"<!-- ENDIF -->>{L_SPLIT_POSTS}</option><option value="split_beyond">{L_SPLIT_AFTER}</option><!-- ENDIF -->
+		<!-- IF S_CAN_MERGE --><option value="merge_posts"<!-- IF S_MERGE_VIEW --> selected="selected"<!-- ENDIF -->>{L_MERGE_POSTS}</option><!-- ENDIF -->
+		<!-- IF S_CAN_SPLIT --><option value="split_all"<!-- IF S_SPLIT_VIEW --> selected="selected"<!-- ENDIF -->>{L_SPLIT_POSTS}</option><option value="split_beyond">{L_SPLIT_AFTER}</option><!-- ENDIF -->
 	</select>&nbsp;
 	<input class="button1" type="submit" name="mcp_topic_submit" value="{L_SUBMIT}" />
 	<div><a href="#" onclick="marklist('mcp', '', true); return false;">{L_MARK_ALL}</a> :: <a href="#" onclick="marklist('mcp', '', false); return false;">{L_UNMARK_ALL}</a></div>

@@ -4,38 +4,52 @@
 	<!-- IF S_PRIVMSGS and not S_SHOW_DRAFTS -->
 
 		<div class="column1">
-		<dl>
-			<dt><label for="username_list">{L_TO}:</label><br /><span><a href="{U_FIND_USERNAME}" onclick="find_username(); return false">{L_FIND_USERNAME}</a></span></dt>
+		<!-- IF S_ALLOW_MASS_PM -->
 			<!-- IF .to_recipient -->
-				<dd>
-					<!-- BEGIN to_recipient -->
-						<!-- IF to_recipient.IS_GROUP --><a href="{to_recipient.U_VIEW}"><strong>{to_recipient.NAME}</strong></a><!-- ELSE -->{to_recipient.NAME_FULL}&nbsp;<!-- ENDIF -->
-						<!-- IF not S_EDIT_POST --><input type="submit" name="remove_{to_recipient.TYPE}[{to_recipient.UG_ID}]" value="x" class="button2" />&nbsp;<!-- ENDIF -->
-					<!-- END to_recipient -->
-				</dd>
+				<dl>
+					<dt><label>{L_TO}:</label></dt>
+					<dd>
+						<!-- BEGIN to_recipient -->
+							<!-- IF not to_recipient.S_FIRST_ROW and to_recipient.S_ROW_COUNT mod 2 eq 0 --></dd><dd><!-- ENDIF -->
+							<!-- IF to_recipient.IS_GROUP --><a href="{to_recipient.U_VIEW}"><strong>{to_recipient.NAME}</strong></a><!-- ELSE -->{to_recipient.NAME_FULL}&nbsp;<!-- ENDIF -->
+							<!-- IF not S_EDIT_POST --><input type="submit" name="remove_{to_recipient.TYPE}[{to_recipient.UG_ID}]" value="x" class="button2" />&nbsp;<!-- ENDIF -->
+						<!-- END to_recipient -->
+					</dd>
+				</dl>
 			<!-- ENDIF -->
-			<dd>
-
-			<!-- IF S_ALLOW_MASS_PM -->
-			<textarea id="username_list" name="username_list"></textarea> <input type="submit" name="add_to" value="{L_ADD}" class="button2" />
- 			<input type="submit" name="add_bcc" value="{L_ADD_BCC}" class="button2" />
-			<!-- ELSE -->
-			<input class="inputbox" type="text" name="username" id="username" size="20" maxlength="40" value="" /> <input type="submit" name="add_to" value="{L_ADD}" class="button2" />
-			<!-- ENDIF --></dd>
-		</dl>
-
-		<!-- IF S_ALLOW_MASS_PM and .bcc_recipient -->
-		<dl>
-			<dt><label for="username_list_bcc">{L_BCC}:</label></dt>
 			<!-- IF .bcc_recipient -->
-				<dd>
-					<!-- BEGIN bcc_recipient -->
-						<!-- IF bcc_recipient.IS_GROUP --><a href="{bcc_recipient.U_VIEW}"><strong>{bcc_recipient.NAME}</strong></a><!-- ELSE -->{bcc_recipient.NAME_FULL}&nbsp;<!-- ENDIF -->
-						<!-- IF not S_EDIT_POST --><input type="submit" name="remove_{bcc_recipient.TYPE}[{bcc_recipient.UG_ID}]" value="x" class="button2" />&nbsp;<!-- ENDIF -->
-					<!-- END bcc_recipient -->
-				</dd>
+				<dl>
+					<dt><label>{L_BCC}:</label></dt>
+					<dd>
+						<!-- BEGIN bcc_recipient -->
+							<!-- IF not bcc_recipient.S_FIRST_ROW and bcc_recipient.S_ROW_COUNT mod 2 eq 0 --></dd><dd><!-- ENDIF -->
+							<!-- IF bcc_recipient.IS_GROUP --><a href="{bcc_recipient.U_VIEW}"><strong>{bcc_recipient.NAME}</strong></a><!-- ELSE -->{bcc_recipient.NAME_FULL}&nbsp;<!-- ENDIF -->
+							<!-- IF not S_EDIT_POST --><input type="submit" name="remove_{bcc_recipient.TYPE}[{bcc_recipient.UG_ID}]" value="x" class="button2" />&nbsp;<!-- ENDIF -->
+						<!-- END bcc_recipient -->
+					</dd>
+				</dl>
 			<!-- ENDIF -->
-		</dl>
+			<dl class="pmlist">
+				<dt><textarea id="username_list" name="username_list"></textarea></dt>
+				<dd><span><a href="{U_FIND_USERNAME}" onclick="find_username(); return false">{L_FIND_USERNAME}</a></span></dd>
+				<dd><input type="submit" name="add_to" value="{L_ADD}" class="button2" /></dd>
+				<dd><input type="submit" name="add_bcc" value="{L_ADD_BCC}" class="button2" /></dd>
+			</dl>
+		<!-- ELSE -->
+			<dl>
+				<dt><label for="username_list">{L_TO}:</label><br /><span><a href="{U_FIND_USERNAME}" onclick="find_username(); return false">{L_FIND_USERNAME}</a></span></dt>
+				<!-- IF .to_recipient -->
+					<dd>
+						<!-- BEGIN to_recipient -->
+							<!-- IF not to_recipient.S_FIRST_ROW and to_recipient.S_ROW_COUNT mod 2 eq 0 --></dd><dd><!-- ENDIF -->
+							<!-- IF to_recipient.IS_GROUP --><a href="{to_recipient.U_VIEW}"><strong>{to_recipient.NAME}</strong></a><!-- ELSE -->{to_recipient.NAME_FULL}&nbsp;<!-- ENDIF -->
+							<!-- IF not S_EDIT_POST --><input type="submit" name="remove_{to_recipient.TYPE}[{to_recipient.UG_ID}]" value="x" class="button2" />&nbsp;<!-- ENDIF -->
+						<!-- END to_recipient -->
+					</dd>
+				<!-- ENDIF -->
+
+				<dd><input class="inputbox" type="text" name="username_list" id="username_list" size="20" maxlength="40" value="" /> <input type="submit" name="add_to" value="{L_ADD}" class="button2" /></dd>
+			</dl>
 		<!-- ENDIF -->
 
 		</div>

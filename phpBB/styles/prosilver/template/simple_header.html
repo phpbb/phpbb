@@ -14,6 +14,33 @@
 {META}
 <title>{SITENAME} &bull; {PAGE_TITLE}</title>
 
+<script type="text/javascript">
+// <![CDATA[
+
+	var onload_functions = new Array();
+	var onunload_functions = new Array();
+
+	/**
+	* New function for handling multiple calls to window.onload and window.unload by pentapenguin
+	*/
+	window.onload = function()
+	{
+		for (i = 0; i <= onload_functions.length; i++)
+		{
+			eval(onload_functions[i]);
+		}
+	}
+
+	window.onunload = function()
+	{
+		for (i = 0; i <= onunload_functions.length; i++)
+		{
+			eval(onunload_functions[i]);
+		}
+	}
+
+// ]]>
+</script>
 <script type="text/javascript" src="{T_TEMPLATE_PATH}/styleswitcher.js"></script>
 
 <!-- IF T_STYLESHEET_LINK -->

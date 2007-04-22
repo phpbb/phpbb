@@ -567,9 +567,11 @@ function topic_generate_pagination($replies, $url)
 		for ($j = 0; $j < $replies + 1; $j += $per_page)
 		{
 			$pagination .= '<a href="' . $url . '&amp;start=' . $j . '">' . $times . '</a>';
-			if ($times == 1 && $total_pages > 4)
+			if ($times == 1 && $total_pages > 5)
 			{
 				$pagination .= ' ... ';
+
+				// Display the last three pages
 				$times = $total_pages - 3;
 				$j += ($total_pages - 4) * $per_page;
 			}

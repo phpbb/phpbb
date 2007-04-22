@@ -43,6 +43,9 @@ class dbal_mssql_odbc extends dbal
 		$this->server = $sqlserver . (($port) ? ':' . $port : '');
 		$this->dbname = $database;
 
+		//
+		// @ini_set('odbc.defaultlrl', '32M');
+
 		$this->db_connect_id = ($this->persistency) ? @odbc_pconnect($this->server, $this->user, $sqlpassword) : @odbc_connect($this->server, $this->user, $sqlpassword);
 
 		return ($this->db_connect_id) ? $this->db_connect_id : $this->sql_error('');

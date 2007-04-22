@@ -1184,6 +1184,12 @@ function validate_username($username, $allowed_username = false)
 		return false;
 	}
 
+	// ... fast checks first.
+	if (strpos($username, '&quot;') !== false || strpos($username, '"') !== false)
+	{
+		return 'INVALID_CHARS';
+	}
+
 	$mbstring = $pcre = false;
 
 	// generic UTF-8 character types supported?
@@ -1247,6 +1253,7 @@ function validate_username($username, $allowed_username = false)
 		break;
 
 		case 'USERNAME_ASCII':
+		default:
 			$pcre = true;
 			$regex = '[\x01-\x7F]+';
 		break;
@@ -1267,11 +1274,6 @@ function validate_username($username, $allowed_username = false)
 		{
 			return 'INVALID_CHARS';
 		}
-	}
-
-	if (strpos($username, '&quot;') !== false || strpos($username, '"') !== false)
-	{
-		return 'INVALID_CHARS';
 	}
 
 	$sql = 'SELECT username

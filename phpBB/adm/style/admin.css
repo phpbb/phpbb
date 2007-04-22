@@ -701,6 +701,7 @@ optgroup, select {
 	cursor: pointer;
 	vertical-align: middle;
 	width: auto;
+	color: #000;
 }
 
 optgroup {
@@ -710,6 +711,7 @@ optgroup {
 
 option {
 	padding: 0 1em 0 0;
+	color: #000;
 }
 
 .rtl option {
@@ -801,8 +803,8 @@ fieldset.display-options select, fieldset.display-options input, fieldset.displa
 }
 
 select option.disabled {
-	background-color: #BBBBBB;
-	color: #FFFFFF;
+	background-color: #bbb;
+	color: #fff;
 }
 
 /* Special case inputs */
