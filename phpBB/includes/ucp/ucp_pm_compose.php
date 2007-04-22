@@ -683,11 +683,11 @@ function compose_pm($id, $mode, $action)
 
 		if ($config['allow_post_links'])
 		{
-			$quote_username_text = '[url=' . generate_board_url() . "/memberlist.$phpEx?mode=viewprofile&u={$post['author_id']}]{$quote_username}[/url]";
+			$quote_username_text = '[url=' . generate_board_url() . "/memberlist.$phpEx?mode=viewprofile&amp;u={$post['author_id']}]{$quote_username}[/url]";
 		}
 		else
 		{
-			$quote_username_text = $quote_username . ' (' . generate_board_url() . "/memberlist.$phpEx?mode=viewprofile&u={$post['author_id']})";
+			$quote_username_text = $quote_username . ' (' . generate_board_url() . "/memberlist.$phpEx?mode=viewprofile&amp;u={$post['author_id']})";
 		}
 
 		$forward_text = array();
