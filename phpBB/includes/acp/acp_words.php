@@ -91,7 +91,7 @@ class acp_words
 					$db->sql_query('INSERT INTO ' . WORDS_TABLE . ' ' . $db->sql_build_array('INSERT', $sql_ary));
 				}
 
-				$cache->destroy('word_censors');
+				$cache->destroy('_word_censors');
 
 				$log_action = ($word_id) ? 'LOG_WORD_EDIT' : 'LOG_WORD_ADD';
 				add_log('admin', $log_action, $word);
@@ -123,7 +123,7 @@ class acp_words
 						WHERE word_id = $word_id";
 					$db->sql_query($sql);
 
-					$cache->destroy('word_censors');
+					$cache->destroy('_word_censors');
 
 					add_log('admin', 'LOG_WORD_DELETE', $deleted_word);
 

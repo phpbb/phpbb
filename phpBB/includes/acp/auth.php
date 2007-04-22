@@ -30,7 +30,7 @@ class auth_admin extends auth
 	{
 		global $db, $cache;
 
-		if (($this->acl_options = $cache->get('acl_options')) === false)
+		if (($this->acl_options = $cache->get('_acl_options')) === false)
 		{
 			$sql = 'SELECT auth_option, is_global, is_local
 				FROM ' . ACL_OPTIONS_TABLE . '
@@ -53,7 +53,7 @@ class auth_admin extends auth
 			}
 			$db->sql_freeresult($result);
 
-			$cache->put('acl_options', $this->acl_options);
+			$cache->put('_acl_options', $this->acl_options);
 		}
 
 		if (!sizeof($this->option_ids))
@@ -761,7 +761,7 @@ class auth_admin extends auth
 
 		$db->sql_multi_insert(ACL_OPTIONS_TABLE, $sql_ary);
 
-		$cache->destroy('acl_options');
+		$cache->destroy('_acl_options');
 		$this->acl_clear_prefetch();
 
 		return true;

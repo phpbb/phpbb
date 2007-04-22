@@ -74,7 +74,7 @@ class acp_ranks
 				}
 				$db->sql_query($sql);
 
-				$cache->destroy('ranks');
+				$cache->destroy('_ranks');
 
 				trigger_error($message . adm_back_link($this->u_action));
 
@@ -105,7 +105,7 @@ class acp_ranks
 						WHERE user_rank = $rank_id";
 					$db->sql_query($sql);
 
-					$cache->destroy('ranks');
+					$cache->destroy('_ranks');
 
 					add_log('admin', 'LOG_RANK_REMOVED', $rank_title);
 				}

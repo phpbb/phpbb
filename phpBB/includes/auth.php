@@ -29,7 +29,7 @@ class auth
 		$this->acl = $this->cache = $this->acl_options = array();
 		$this->acl_forum_ids = false;
 
-		if (($this->acl_options = $cache->get('acl_options')) === false)
+		if (($this->acl_options = $cache->get('_acl_options')) === false)
 		{
 			$sql = 'SELECT auth_option, is_global, is_local
 				FROM ' . ACL_OPTIONS_TABLE . '
@@ -52,7 +52,7 @@ class auth
 			}
 			$db->sql_freeresult($result);
 
-			$cache->put('acl_options', $this->acl_options);
+			$cache->put('_acl_options', $this->acl_options);
 			$this->acl_cache($userdata);
 		}
 		else if (!trim($userdata['user_permissions']))
