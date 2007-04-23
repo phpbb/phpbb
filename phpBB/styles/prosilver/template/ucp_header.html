@@ -24,7 +24,7 @@
 
 		<!-- IF S_PRIVMSGS -->
 			<!-- BEGIN t_block2 -->
-				<!-- IF S_PRIVMSGS and t_block2.S_FIRST_ROW -->
+				<!-- IF S_PRIVMSGS and not t_block2.S_LAST_ROW -->
 				<ul>
 					<!-- IF t_block2.S_SELECTED -->
 						<li id="active-subsection"><a href="{t_block2.U_TITLE}"><span>{t_block2.L_TITLE}</span></a></li>
@@ -32,10 +32,10 @@
 						<li><a href="{t_block2.U_TITLE}"><span>{t_block2.L_TITLE}</span></a></li>
 					<!-- ENDIF -->
 				</ul>
-				<hr />
 				<!-- ENDIF -->
 			<!-- END t_block2 -->
 
+			<hr />
 			<!-- BEGIN folder -->
 				<!-- IF folder.S_FIRST_ROW --><ul><!-- ENDIF -->
 				<!-- IF folder.S_CUR_FOLDER -->
@@ -50,7 +50,7 @@
 
 			<ul>
 		<!-- BEGIN t_block2 -->
-			<!-- IF (S_PRIVMSGS and t_block2.S_ROW_COUNT) or not S_PRIVMSGS -->
+			<!-- IF (S_PRIVMSGS and t_block2.S_LAST_ROW) or not S_PRIVMSGS -->
 				<!-- IF t_block2.S_SELECTED -->
 					<li id="active-subsection"><a href="{t_block2.U_TITLE}"><span>{t_block2.L_TITLE}</span></a></li>
 				<!-- ELSE -->
