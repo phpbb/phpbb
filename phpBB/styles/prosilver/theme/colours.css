@@ -3,7 +3,7 @@
 Colours and backgrounds for common.css
 -------------------------------------------------------------- */
 
-body {
+html, body {
 	color: #536482;
 	background-color: #FFFFFF;
 }
