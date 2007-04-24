@@ -526,7 +526,8 @@ function _import_check($config_var, $source, $use_target)
 		'relative_path'	=> (empty($convert->convertor['source_path_absolute'])) ? true : false,
 	);
 
-	$target = '../' . $config[$config_var] . '/' . basename(($use_target === false) ? $source : $use_target);
+	// copy file will prepend $phpBB_root_path
+	$target = $config[$config_var] . '/' . basename(($use_target === false) ? $source : $use_target); 
 
 	if (!empty($convert->convertor[$config_var]) && strpos($source, $convert->convertor[$config_var]) !== 0)
 	{
@@ -2149,7 +2150,6 @@ function convert_bbcode($message, $convert_size = true, $extended_bbcodes = fals
 function copy_file($src, $trg, $overwrite = false, $die_on_failure = true, $source_relative_path = true)
 {
 	global $convert, $phpbb_root_path, $config, $user, $db;
-
 	if (substr($trg, -1) == '/')
 	{
 		$trg .= basename($src);
@@ -2161,7 +2161,6 @@ function copy_file($src, $trg, $overwrite = false, $die_on_failure = true, $sour
 	{
 		return true;
 	}
-
 	if (!@file_exists($src_path))
 	{
 		return;
@@ -2188,7 +2187,7 @@ function copy_file($src, $trg, $overwrite = false, $die_on_failure = true, $sour
 
 	if (!@copy($src_path, $phpbb_root_path . $trg_path))
 	{
-		$convert->p_master->error(sprintf($user->lang['COULD_NOT_COPY'], $src_path, $phpbb_root_path . $trg), __LINE__, __FILE__, !$die_on_failure);
+		$convert->p_master->error(sprintf($user->lang['COULD_NOT_COPY'], $src_path, $phpbb_root_path . $trg_path), __LINE__, __FILE__, !$die_on_failure);
 		return;
 	}
 
