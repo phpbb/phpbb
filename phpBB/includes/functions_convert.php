@@ -2150,6 +2150,7 @@ function convert_bbcode($message, $convert_size = true, $extended_bbcodes = fals
 function copy_file($src, $trg, $overwrite = false, $die_on_failure = true, $source_relative_path = true)
 {
 	global $convert, $phpbb_root_path, $config, $user, $db;
+
 	if (substr($trg, -1) == '/')
 	{
 		$trg .= basename($src);
@@ -2161,6 +2162,7 @@ function copy_file($src, $trg, $overwrite = false, $die_on_failure = true, $sour
 	{
 		return true;
 	}
+
 	if (!@file_exists($src_path))
 	{
 		return;
