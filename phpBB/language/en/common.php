@@ -777,12 +777,12 @@ $lang = array_merge($lang, array(
 
 	// The value is only an example and will get replaced by the current time on view
 	'dateformats'	=> array(
-		'|d M Y|, H:i'			=> 'Today, 13:37 / 01 Jan 2007, 13:37',
 		'd M Y, H:i'			=> '01 Jan 2007, 13:37',
 		'd M Y H:i'				=> '01 Jan 2007 13:37',
 		'M jS, \'y, H:i'		=> 'Jan 1st, \'07, 13:37',
 		'D M d, Y g:i a'		=> 'Mon Jan 01, 2007 1:37 pm',
 		'F jS, Y, g:i a'		=> 'January 1st, 2007, 1:37 pm',
+		'|d M Y|, H:i'			=> 'Today, 13:37 / 01 Jan 2007, 13:37',
 		'|F jS, Y|, g:i a'		=> 'Today, 1:37 pm / January 1st, 2007, 1:37 pm'
 	),
 
