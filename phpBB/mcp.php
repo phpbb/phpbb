@@ -87,8 +87,7 @@ if ($post_id)
 	$topic_id = (int) $row['topic_id'];
 	$forum_id = (int) ($row['forum_id']) ? $row['forum_id'] : $forum_id;
 }
-
-if ($topic_id && !$forum_id)
+else if ($topic_id)
 {
 	$sql = 'SELECT forum_id
 		FROM ' . TOPICS_TABLE . "
