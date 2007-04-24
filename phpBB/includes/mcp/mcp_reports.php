@@ -66,7 +66,7 @@ class mcp_reports
 
 				$sql = 'SELECT r.post_id, r.user_id, r.report_id, r.report_closed, report_time, r.report_text, rr.reason_title, rr.reason_description, u.username, u.username_clean, u.user_colour
 					FROM ' . REPORTS_TABLE . ' r, ' . REPORTS_REASONS_TABLE . ' rr, ' . USERS_TABLE . ' u
-					WHERE ' . (($report_id) ? 'r.report_id = ' . $report_id : "r.post_id = $post_id") . '
+					WHERE ' . (($report_id) ? 'r.report_id = ' . $report_id : "r.post_id = $post_id AND r.report_closed = 0") . '
 						AND rr.reason_id = r.reason_id
 						AND r.user_id = u.user_id';
 				$result = $db->sql_query($sql);
@@ -76,11 +76,6 @@ class mcp_reports
 				if (!$report)
 				{
 					trigger_error('NO_REPORT');
-				}
-
-				if ($report_id && $report['report_closed'])
-				{
-					trigger_error('REPORT_CLOSED');
 				}
 
 				$post_id = $report['post_id'];
