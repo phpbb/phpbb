@@ -340,7 +340,6 @@ $lang = array_merge($lang, array(
 	'RECIPIENT'							=> 'Recipient',
 	'RECIPIENTS'						=> 'Recipients',
 	'REGISTRATION'						=> 'Registration',
-	'RELATIVE_DAYS'						=> 'Relative days',
 	'RELEASE_MESSAGES'					=> '%sRelease all on-hold messages%s… they will be re-sorted into the appropriate folder if enough space is made available.',
 	'REMOVE_ADDRESS'					=> 'Remove address',
 	'REMOVE_SELECTED_BOOKMARKS'			=> 'Remove selected bookmarks',

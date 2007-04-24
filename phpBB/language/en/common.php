@@ -593,6 +593,7 @@ $lang = array_merge($lang, array(
 	'USERS'					=> 'Users',
 	'USE_PERMISSIONS'		=> 'Test out user’s permissions',
 
+	'VARIANT_DATE_SEPARATOR'	=> ' / ',	// Used in date format dropdown, eg: "Today, 13:37 / 01 Jan 2007, 13:37" ... to join a relative date with calendar date
 	'VIEWED'					=> 'Viewed',
 	'VIEWING_FAQ'				=> 'Viewing FAQ',
 	'VIEWING_MEMBERS'			=> 'Viewing member details',
@@ -642,9 +643,9 @@ $lang = array_merge($lang, array(
 	'YOU_NO_NEW_PM'		=> 'No new private messages are waiting for you',
 
 	'datetime'			=> array(
-		'TODAY'		=> 'Today, ',
-		'TOMORROW'	=> 'Tomorrow, ',
-		'YESTERDAY'	=> 'Yesterday, ',
+		'TODAY'		=> 'Today',
+		'TOMORROW'	=> 'Tomorrow',
+		'YESTERDAY'	=> 'Yesterday',
 
 		'Sunday'	=> 'Sunday',
 		'Monday'	=> 'Monday',
@@ -776,12 +777,13 @@ $lang = array_merge($lang, array(
 
 	// The value is only an example and will get replaced by the current time on view
 	'dateformats'	=> array(
-		'|d M Y| H:i'			=> '01 Jan 2007 13:37 [Relative days]',
+		'|d M Y|, H:i'			=> 'Today, 13:37 / 01 Jan 2007, 13:37',
 		'd M Y, H:i'			=> '01 Jan 2007, 13:37',
 		'd M Y H:i'				=> '01 Jan 2007 13:37',
+		'M jS, \'y, H:i'		=> 'Jan 1st, \'07, 13:37',
 		'D M d, Y g:i a'		=> 'Mon Jan 01, 2007 1:37 pm',
-		'M jS, y, H:i'			=> 'Jan 1st, 07, 1:37 pm',
-		'F jS, Y, g:i a'			=> 'January 1st, 2007, 1:37 pm'
+		'F jS, Y, g:i a'		=> 'January 1st, 2007, 1:37 pm',
+		'|F jS, Y|, g:i a'		=> 'Today, 1:37 pm / January 1st, 2007, 1:37 pm'
 	),
 
 	// The default dateformat which will be used on new installs in this language

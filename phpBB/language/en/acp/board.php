@@ -42,7 +42,6 @@ $lang = array_merge($lang, array(
 	'DISABLE_BOARD_EXPLAIN'			=> 'This will make the board unavailable to users. You can also enter a short (255 character) message to display if you wish.',
 	'OVERRIDE_STYLE'				=> 'Override user style',
 	'OVERRIDE_STYLE_EXPLAIN'		=> 'Replaces user’s style with the default.',
-	'RELATIVE_DAYS'					=> 'Relative days',
 	'SITE_DESC'						=> 'Site description',
 	'SITE_NAME'						=> 'Site name',
 	'SYSTEM_DST'					=> 'Enable Summer Time/<abbr title="Daylight Saving Time">DST</abbr>',
