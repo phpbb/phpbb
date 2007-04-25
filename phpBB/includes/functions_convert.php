@@ -912,9 +912,37 @@ function get_remote_avatar_dim($src,$axis)
 		return $avatar_cache[$src][$axis];
 	}
 	
+	$url_info = parse_url($src);
+	$host = $url_info['host'];
+	$port = (isset($url_info['port'])) ? $url_info['port'] : 0;
+	$protocol = $url_info['scheme'];
+	if (empty($port))
+	{
+		switch(strtolower($protocol))
+		{
+			case 'ftp':
+				$port = 21;
+				break;
+				
+			case 'https':
+				$port = 443;
+				break;
+			
+			default:
+				$port = 80;
+		}
+	}
+	
 	$timeout = @ini_get('default_socket_timeout');
 	@ini_set('default_socket_timeout', 5);
-	$avatar_cache[$src] = @getimagesize($src);
+	
+	// We're just trying to reach the server to avoid timeouts
+	$fp = @fsockopen($host, $port, $errno, $errstr, 3);
+	if ($fp)
+	{
+		$avatar_cache[$src] = @getimagesize($src);
+		fclose($fp);
+	}
 	
 	$default_x 	= (defined('DEFAULT_AVATAR_X_CUSTOM')) ? DEFAULT_AVATAR_X_CUSTOM : DEFAULT_AVATAR_X;
 	$default_y 	= (defined('DEFAULT_AVATAR_Y_CUSTOM')) ? DEFAULT_AVATAR_Y_CUSTOM : DEFAULT_AVATAR_Y;
