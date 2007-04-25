@@ -912,8 +912,8 @@ function get_remote_avatar_dim($src,$axis)
 		return $avatar_cache[$src][$axis];
 	}
 	
-	$timeout = ini_get('default_socket_timeout');
-	ini_set('default_socket_timeout', 5);
+	$timeout = @ini_get('default_socket_timeout');
+	@ini_set('default_socket_timeout', 5);
 	$avatar_cache[$src] = @getimagesize($src);
 	
 	$default_x 	= (defined('DEFAULT_AVATAR_X_CUSTOM')) ? DEFAULT_AVATAR_X_CUSTOM : DEFAULT_AVATAR_X;
@@ -936,7 +936,7 @@ function get_remote_avatar_dim($src,$axis)
 		}
 	}
 	
-	ini_set('default_socket_timeout', $timeout);
+	@ini_set('default_socket_timeout', $timeout);
 	return $avatar_cache[$src][$axis];
 }
 
