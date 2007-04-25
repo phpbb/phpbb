@@ -1530,7 +1530,7 @@ parse_css_file = {PARSE_CSS_FILE}
 					// does not exist
 					else if (!$imageset_data_row)
 					{
-						$sql_ary['image_name']	= $image_name;
+						$sql_ary['image_name']	= $imgname;
 						$sql_ary['imageset_id']	= $imageset_id;
 						$db->sql_query('INSERT INTO ' . STYLES_IMAGESET_DATA_TABLE . ' ' . $db->sql_build_array('INSERT', $sql_ary));
 					}
