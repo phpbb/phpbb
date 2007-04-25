@@ -411,7 +411,7 @@ parse_css_file = {PARSE_CSS_FILE}
 									$image_name = substr($image_name, 4);
 									if (in_array($image_name, $imageset_definitions))
 									{
-										$sql_ary = array(
+										$sql_ary[] = array(
 											'image_name'		=> $image_name,
 											'image_filename'	=> $image_filename,
 											'image_height'		=> (int) $image_height,
@@ -419,7 +419,6 @@ parse_css_file = {PARSE_CSS_FILE}
 											'imageset_id'		=> $style_id,
 											'image_lang'		=> '',
 										);
-										$db->sql_query('INSERT INTO ' . STYLES_IMAGESET_DATA_TABLE . ' ' . $db->sql_build_array('INSERT', $sql_ary));
 									}
 								}
 							}
@@ -458,7 +457,7 @@ parse_css_file = {PARSE_CSS_FILE}
 											$image_name = substr($image_name, 4);
 											if (in_array($image_name, $imageset_definitions))
 											{
-												$sql_ary = array(
+												$sql_ary[] = array(
 													'image_name'		=> $image_name,
 													'image_filename'	=> $image_filename,
 													'image_height'		=> $image_height,
@@ -466,13 +465,14 @@ parse_css_file = {PARSE_CSS_FILE}
 													'imageset_id'		=> $style_id,
 													'image_lang'		=> $row['lang_dir'],
 												);
-												$db->sql_query('INSERT INTO ' . STYLES_IMAGESET_DATA_TABLE . ' ' . $db->sql_build_array('INSERT', $sql_ary));
 											}
 										}
 									}
 								}
 							}
 							$db->sql_freeresult($result);
+
+							$db->sql_multi_insert(STYLES_IMAGESET_DATA_TABLE, $sql_ary);
 
 							$db->sql_transaction('commit');
 
@@ -1606,7 +1606,7 @@ parse_css_file = {PARSE_CSS_FILE}
 					foreach ($langs as $language)
 					{
 						$template->assign_block_vars('category.images', array(
-							'SELECTED'			=> ($img == $imgname),
+							'SELECTED'			=> ($img == $imgname && $language == $imgnamelang),
 							'VALUE'				=> $img . '-' . $language,
 							'TEXT'				=> $user->lang['IMG_' . strtoupper($img)] . ' [ ' . $language . ' ]'
 						));
