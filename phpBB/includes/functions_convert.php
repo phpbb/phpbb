@@ -911,17 +911,32 @@ function get_remote_avatar_dim($src,$axis)
 	{
 		return $avatar_cache[$src][$axis];
 	}
-
-	$avatar_cache[$src] = getimagesize($src);
-
+	
+	$timeout = ini_get('default_socket_timeout');
+	ini_set('default_socket_timeout', 5);
+	$avatar_cache[$src] = @getimagesize($src);
+	
+	$default_x 	= (defined('DEFAULT_AVATAR_X_CUSTOM')) ? DEFAULT_AVATAR_X_CUSTOM : DEFAULT_AVATAR_X;
+	$default_y 	= (defined('DEFAULT_AVATAR_Y_CUSTOM')) ? DEFAULT_AVATAR_Y_CUSTOM : DEFAULT_AVATAR_Y;
+	$default 	= array($default_x, $default_y);
+	
 	if (empty($avatar_cache[$src]) || empty($avatar_cache[$src][0]) || empty($avatar_cache[$src][1]))
 	{
-		$default_x = (defined('DEFAULT_AVATAR_X_CUSTOM')) ? DEFAULT_AVATAR_X_CUSTOM : DEFAULT_AVATAR_X;
-		$default_y = (defined('DEFAULT_AVATAR_Y_CUSTOM')) ? DEFAULT_AVATAR_Y_CUSTOM : DEFAULT_AVATAR_Y;
-
-		$avatar_cache[$src] = array($default_x, $default_y);
+		$avatar_cache[$src] = $default;
 	}
-
+	else
+	{
+		// We trust gallery and uploaded avatars to conform to the size settings; we might have to adjust here
+		if ($avatar_cache[$src][0] > $default_x || $avatar_cache[$src][1] > $default_y)
+		{
+			$bigger = ($avatar_cache[$src][0] > $avatar_cache[$src][1]) ? 0 : 1;
+			$ratio = $default[$bigger] / $avatar_cache[$src][$bigger];
+			$avatar_cache[$src][0] = (int)($avatar_cache[$src][0] * $ratio);
+			$avatar_cache[$src][1] = (int)($avatar_cache[$src][1] * $ratio);
+		}
+	}
+	
+	ini_set('default_socket_timeout', $timeout);
 	return $avatar_cache[$src][$axis];
 }
 

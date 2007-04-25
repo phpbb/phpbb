@@ -866,8 +866,8 @@ if (!$get_info)
 
 				array('user_avatar',			'users.user_avatar',				'phpbb_import_avatar'),
 				array('user_avatar_type',		'users.user_avatar_type',			'phpbb_avatar_type'),
-				array('user_avatar_width',		'users.user_avatar',				'get_avatar_width'),
-				array('user_avatar_height',		'users.user_avatar',				'get_avatar_height'),
+				array('user_avatar_width',		'users.user_avatar',				'phpbb_get_avatar_width'),
+				array('user_avatar_height',		'users.user_avatar',				'phpbb_get_avatar_height'),
 
 				array('user_new_privmsg',		'users.user_new_privmsg',			''),
 				array('user_unread_privmsg',	0,									''), //'users.user_unread_privmsg'
