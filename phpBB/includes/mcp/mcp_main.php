@@ -595,6 +595,7 @@ function mcp_move_topic($topic_ids)
 					'topic_first_poster_name'=>	(string) $row['topic_first_poster_name'],
 					'topic_last_post_id'	=>	(int) $row['topic_last_post_id'],
 					'topic_last_poster_id'	=>	(int) $row['topic_last_poster_id'],
+					'topic_last_poster_colour'=>(string) $row['topic_last_poster_colour'],
 					'topic_last_poster_name'=>	(string) $row['topic_last_poster_name'],
 					'topic_last_post_time'	=>	(int) $row['topic_last_post_time'],
 					'topic_last_view_time'	=>	(int) $row['topic_last_view_time'],
