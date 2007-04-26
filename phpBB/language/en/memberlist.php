@@ -36,7 +36,9 @@ $lang = array_merge($lang, array(
 	'ACTIVE_IN_TOPIC'		=> 'Most active topic',
 	'ADD_FOE'				=> 'Add foe',
 	'ADD_FRIEND'			=> 'Add friend',
-	'AFTER'					=> 'After',	
+	'AFTER'					=> 'After',
+
+	'ALL'					=> 'All',
 
 	'BEFORE'				=> 'Before',
 
