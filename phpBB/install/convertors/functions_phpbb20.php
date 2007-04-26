@@ -1442,7 +1442,11 @@ function phpbb_import_avatar($user_avatar)
 function phpbb_get_avatar_height($user_avatar)
 {
 	global $convert_row;
-
+	
+	if (empty($convert_row['user_avatar_type']))
+	{
+		return 0;
+	}
 	return get_avatar_height($user_avatar, 'phpbb_avatar_type', $convert_row['user_avatar_type']);
 }
 
@@ -1454,6 +1458,11 @@ function phpbb_get_avatar_width($user_avatar)
 {
 	global $convert_row;
 
+	if (empty($convert_row['user_avatar_type']))
+	{
+		return 0;
+	}
+	
 	return get_avatar_width($user_avatar, 'phpbb_avatar_type', $convert_row['user_avatar_type']);
 }
 
