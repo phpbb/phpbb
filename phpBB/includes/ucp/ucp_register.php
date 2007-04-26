@@ -1,10 +1,10 @@
 <?php
-/** 
+/**
 *
 * @package ucp
 * @version $Id$
-* @copyright (c) 2005 phpBB Group 
-* @license http://opensource.org/licenses/gpl-license.php GNU Public License 
+* @copyright (c) 2005 phpBB Group
+* @license http://opensource.org/licenses/gpl-license.php GNU Public License
 *
 */
 
@@ -153,7 +153,7 @@ class ucp_register
 			$error = validate_data($data, array(
 				'username'			=> array(
 					array('string', false, $config['min_name_chars'], $config['max_name_chars']),
-					array('username')),
+					array('username', '')),
 				'new_password'		=> array(
 					array('string', false, $config['min_pass_chars'], $config['max_pass_chars']),
 					array('password')),
@@ -404,7 +404,7 @@ class ucp_register
 		}
 
 		$s_hidden_fields = array(
-			'agreed'		=> 'true', 
+			'agreed'		=> 'true',
 			'change_lang'	=> 0,
 		);
 
