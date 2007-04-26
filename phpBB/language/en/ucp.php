@@ -83,6 +83,7 @@ $lang = array_merge($lang, array(
 	'ATTACHMENT_DELETED'			=> 'Attachment successfully deleted.',
 	'AVATAR_CATEGORY'				=> 'Category',
 	'AVATAR_EXPLAIN'				=> 'Maximum dimensions; width %1$d pixels, height %2$d pixels, filesize %3$dkB.',
+	'AVATAR_FEATURES_DISABLED'		=> 'The avatar functionality is currently disabled.',
 	'AVATAR_GALLERY'				=> 'Local gallery',
 	'AVATAR_GENERAL_UPLOAD_ERROR'	=> 'Could not upload avatar to %s',
 	'AVATAR_PAGE'					=> 'Page',
@@ -229,7 +230,7 @@ $lang = array_merge($lang, array(
 	'LOGIN_REDIRECT'			=> 'You have been successfully logged in.',
 	'LOGOUT_REDIRECT'			=> 'You have been successfully logged out.',
 
-	'MARK_IMPORTANT'				=> 'Mark as important',
+	'MARK_IMPORTANT'				=> 'Mark/Unmark as important',
 	'MARKED_MESSAGE'				=> 'Marked message',
 	'MAX_FOLDER_REACHED'			=> 'Maximum number of allowed user defined folders reached',
 	'MESSAGE_BY_AUTHOR'				=> 'by',

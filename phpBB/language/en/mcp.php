@@ -32,6 +32,7 @@ if (empty($lang) || !is_array($lang))
 
 $lang = array_merge($lang, array(
 	'ACTION'				=> 'Action',
+	'ACTION_NOTE'			=> 'Action/Note',
 	'ADD_FEEDBACK'			=> 'Add feedback',
 	'ADD_FEEDBACK_EXPLAIN'	=> 'If you would like to add a report on this please fill out the following form. Only use plain text; HTML, BBCode, etc. are not permitted.',
 	'ADD_WARNING'			=> 'Add warning',
@@ -100,7 +101,7 @@ $lang = array_merge($lang, array(
 
 	'LATEST_LOGS'				=> 'Latest 5 logged actions',
 	'LATEST_REPORTED'			=> 'Latest 5 reports',
-	'LATEST_UNAPPROVED'			=> 'Latest 5 posts awaiting for approval',
+	'LATEST_UNAPPROVED'			=> 'Latest 5 posts awaiting approval',
 	'LATEST_WARNING_TIME'		=> 'Latest warning issued',
 	'LATEST_WARNINGS'			=> 'Latest 5 warnings',
 	'LEAVE_SHADOW'				=> 'Leave shadow topic in place',
@@ -278,7 +279,7 @@ $lang = array_merge($lang, array(
 	'SELECT_ACTION'						=> 'Select desired action',
 	'SELECT_FORUM_GLOBAL_ANNOUNCEMENT'	=> 'Please select the forum you wish this global announcement to be displayed.',
 	'SELECT_FORUM_GLOBAL_ANNOUNCEMENTS'	=> 'One or more of the selected topics are global announcements. Please select the forum you wish these to be displayed.',
-	'SELECT_MERGE'						=> 'Select for merging',
+	'SELECT_MERGE'						=> 'Select for merge',
 	'SELECT_TOPICS_FROM'				=> 'Select topics from',
 	'SELECT_TOPIC'						=> 'Select topic',
 	'SELECT_USER'						=> 'Select user',

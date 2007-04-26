@@ -651,7 +651,7 @@ function compose_pm($id, $mode, $action)
 
 	$message_parser->decode_message($bbcode_uid);
 
-	if (($action == 'quote' || $action == 'quotepost') && !$preview && !$refresh)
+	if (($action == 'quote' || $action == 'quotepost') && !$preview && !$refresh && !$submit)
 	{
 		if ($action == 'quotepost')
 		{

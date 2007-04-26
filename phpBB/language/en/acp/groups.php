@@ -102,14 +102,14 @@ $lang = array_merge($lang, array(
 	'NO_USERS'					=> 'You haven’t entered any users.',
 
 	'SPECIAL_GROUPS'			=> 'Predefined groups',
-	'SPECIAL_GROUPS_EXPLAIN'	=> 'Pre-defined groups are special groups, they cannot be deleted or directly modified. However you can still add users and alter basic settings. By clicking “Default” you can set the relevant group to the default for all its members.',
+	'SPECIAL_GROUPS_EXPLAIN'	=> 'Pre-defined groups are special groups, they cannot be deleted or directly modified. However you can still add users and alter basic settings.',
 
 	'TOTAL_MEMBERS'				=> 'Members',
 
 	'USERS_APPROVED'				=> 'Users approved successfully.',
 	'USER_DEFAULT'					=> 'User default',
 	'USER_DEF_GROUPS'				=> 'User defined groups',
-	'USER_DEF_GROUPS_EXPLAIN'		=> 'These are groups created by you or another admin on this board. You can manage memberships as well as edit group properties or even delete the group. By clicking “Default” you can set the relevant group to the default for all its members.',
+	'USER_DEF_GROUPS_EXPLAIN'		=> 'These are groups created by you or another admin on this board. You can manage memberships as well as edit group properties or even delete the group.',
 	'USER_GROUP_DEFAULT'			=> 'Set as default group',
 	'USER_GROUP_DEFAULT_EXPLAIN'	=> 'Saying yes here will set this group as the default group for the added users',
 	'USER_GROUP_LEADER'				=> 'Set as group leader',

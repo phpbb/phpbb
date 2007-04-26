@@ -43,7 +43,7 @@ $lang = array_merge($lang, array(
 		<h2>Permission Roles</h2>
 		<p>These are used to create different sets of permissions for the different permission types later being able to be assigned on a role-based basis. The default roles should cover the administration of bulletin boards large and small, though within each of the four divisions, you can add/edit/delete roles as you see fit.</p>
 
-		<h2>Permission Mask</h2>
+		<h2>Permission Masks</h2>
 		<p>These are used to view the effective permissions assigned to Users, Moderators (Local and Global), Administrators or Forums.</p>
 	
 		<br />

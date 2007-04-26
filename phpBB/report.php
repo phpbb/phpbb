@@ -26,8 +26,8 @@ $forum_id		= request_var('f', 0);
 $post_id		= request_var('p', 0);
 $reason_id		= request_var('reason_id', 0);
 $report_text	= utf8_normalize_nfc(request_var('report_text', '', true));
+$user_notify	= ($user->data['is_registered']) ? request_var('notify', 0) : false;
 
-$user_notify = (isset($_POST['notify']) && $user->data['is_registered']) ? true : false;
 $submit = (isset($_POST['submit'])) ? true : false;
 
 if (!$post_id)

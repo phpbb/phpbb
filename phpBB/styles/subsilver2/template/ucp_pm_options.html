@@ -76,8 +76,8 @@
 </tr>
 <!-- BEGIN rule -->
 	<tr>
-		<td class="row1" width="25" align="center"><span class="gen">{rule.COUNT}</span></td>
-		<td class="row2" width="120"><span class="gen">{rule.CHECK}</span></td>
+		<td class="row1" width="25" align="center"><span class="gen">#{rule.COUNT}</span></td>
+		<td class="row2" width="120"><span class="gen"><strong>{L_IF}</strong> {rule.CHECK}</span></td>
 		<td class="row1" width="120"><span class="gen">{rule.RULE}</span></td>
 		<td class="row2" width="120"><span class="gen"><!-- IF rule.STRING -->{rule.STRING}<!-- ENDIF --></span></td>
 		<td class="row1"><span class="gen">{rule.ACTION}<!-- IF rule.FOLDER --> -&gt; {rule.FOLDER}<!-- ENDIF --></span></td>

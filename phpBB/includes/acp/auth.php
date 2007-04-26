@@ -556,35 +556,9 @@ class auth_admin extends auth
 						$s_role_options = '<option value="0"' . ((!$current_role_id) ? ' selected="selected"' : '') . ' title="' . htmlspecialchars($user->lang['NO_ROLE_ASSIGNED_EXPLAIN']) . '">' . $user->lang['NO_ROLE_ASSIGNED'] . '</option>' . $s_role_options;
 					}
 
-					if (!$forum_id)
-					{
-						$folder_image = '';
-					}
-					else
-					{
-						if ($forum_names_ary[$forum_id]['forum_status'] == ITEM_LOCKED)
-						{
-							$folder_image = '<img src="images/icon_folder_lock_small.gif" alt="' . $user->lang['FORUM_LOCKED'] . '" />';
-						}
-						else
-						{
-							switch ($forum_names_ary[$forum_id]['forum_type'])
-							{
-								case FORUM_LINK:
-									$folder_image = '<img src="images/icon_folder_link_small.gif" width="22" height="18" alt="' . $user->lang['FORUM_LINK'] . '" />';
-								break;
-
-								default:
-									$folder_image = ($forum_names_ary[$forum_id]['left_id'] + 1 != $forum_names_ary[$forum_id]['right_id']) ? '<img src="images/icon_folder_sub_small.gif" width="22" height="18" alt="' . $user->lang['SUBFORUM'] . '" />' : '<img src="images/icon_folder_small.gif" alt="' . $user->lang['FOLDER'] . '" />';
-								break;
-							}
-						}
-					}
-
 					$template->assign_block_vars($tpl_pmask . '.' . $tpl_fmask, array(
 						'NAME'				=> ($forum_id == 0) ? $forum_names_ary[0] : $forum_names_ary[$forum_id]['forum_name'],
 						'PADDING'			=> ($forum_id == 0) ? '' : $forum_names_ary[$forum_id]['padding'],
-						'FOLDER_IMAGE'		=> $folder_image,
 						'S_ROLE_OPTIONS'	=> $s_role_options,
 						'UG_ID'				=> $ug_id,
 						'FORUM_ID'			=> $forum_id)

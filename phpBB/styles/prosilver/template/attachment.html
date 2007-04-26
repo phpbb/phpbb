@@ -7,25 +7,23 @@
 		<!-- IF _file.S_THUMBNAIL -->
 		<dl class="thumbnail">
 			<dt><a href="{_file.U_DOWNLOAD_LINK}"><img src="{_file.THUMB_IMAGE}" alt="{_file.DOWNLOAD_NAME}" title="{_file.DOWNLOAD_NAME} ({_file.FILESIZE} {_file.SIZE_LANG}) {_file.L_DOWNLOAD_COUNT}" /></a></dt>
-			
 			<!-- IF _file.COMMENT --><dd> {_file.COMMENT}</dd><!-- ENDIF -->
 		</dl>
 		<!-- ENDIF -->
 
 
 		<!-- IF _file.S_IMAGE -->
-		
-			<img src="{_file.U_DOWNLOAD_LINK}" alt="{_file.DOWNLOAD_NAME}" onclick="viewableArea(this);" />
-
-		<p>{_file.DOWNLOAD_NAME} ({_file.FILESIZE} {_file.SIZE_LANG}) {_file.L_DOWNLOAD_COUNT}</p>
+		<dl class="file">
+			<dt><img src="{_file.U_DOWNLOAD_LINK}" alt="{_file.DOWNLOAD_NAME}" onclick="viewableArea(this);" /></dt>
+			<!-- IF _file.COMMENT --><dd><em>{_file.COMMENT}</em></dd><!-- ENDIF -->
+			<dd>{_file.DOWNLOAD_NAME} ({_file.FILESIZE} {_file.SIZE_LANG}) {_file.L_DOWNLOAD_COUNT}</dd>
+		</dl>
 		<!-- ENDIF -->
 
 		<!-- IF _file.S_FILE -->
 		<dl class="file">
 			<dt><!-- IF _file.UPLOAD_ICON -->{_file.UPLOAD_ICON} <!-- ENDIF --><a class="postlink" href="{_file.U_DOWNLOAD_LINK}">{_file.DOWNLOAD_NAME}</a></dt> 
-			<!-- IF not _file.S_THUMBNAIL and _file.COMMENT -->
-				<dd><em>{_file.COMMENT}</em></dd>
-			<!-- ENDIF -->
+			<!-- IF _file.COMMENT --><dd><em>{_file.COMMENT}</em></dd><!-- ENDIF -->
 			<dd>({_file.FILESIZE} {_file.SIZE_LANG}) {_file.L_DOWNLOAD_COUNT}</dd>
 		</dl>			
 		<!-- ENDIF -->
