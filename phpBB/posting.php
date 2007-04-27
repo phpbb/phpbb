@@ -550,7 +550,7 @@ $solved_captcha = false;
 if ($submit || $preview || $refresh)
 {
 	$post_data['topic_cur_post_id']	= request_var('topic_cur_post_id', 0);
-	$post_data['post_subject']		= utf8_normalize_nfc(request_var('subject', '', true));
+	$post_data['post_subject']		= trim(utf8_normalize_nfc(request_var('subject', '', true)));
 	$message_parser->message		= utf8_normalize_nfc(request_var('message', '', true));
 
 	$post_data['username']			= utf8_normalize_nfc(request_var('username', $post_data['username'], true));
