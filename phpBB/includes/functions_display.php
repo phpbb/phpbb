@@ -254,6 +254,8 @@ function display_forums($root_data = '', $display_moderators = true, $return_mod
 		get_moderators($forum_moderators, $forum_ids_moderator);
 	}
 
+	// Used to tell whatever we have to create a dummy category or not.
+	$last_catless = true;
 	foreach ($forum_rows as $row)
 	{
 		// Empty category
@@ -366,9 +368,11 @@ function display_forums($root_data = '', $display_moderators = true, $return_mod
 			$s_subforums_list[] = '<a href="' . $subforum['link'] . '"' . (($subforum['unread']) ? ' class="subforum-unread"' : '') . '>' . $subforum['name'] . '</a>';
 		}
 		$s_subforums_list = (string) implode(', ', $s_subforums_list);
+		$catless = ($row['parent_id'] == $root_data['forum_id']) ? true : false;
 
 		$template->assign_block_vars('forumrow', array(
 			'S_IS_CAT'			=> false,
+			'S_NO_CAT'			=> $catless && !$last_catless,
 			'S_IS_LINK'			=> ($row['forum_type'] == FORUM_LINK) ? true : false,
 			'S_UNREAD_FORUM'	=> $forum_unread,
 			'S_LOCKED_FORUM'	=> ($row['forum_status'] == ITEM_LOCKED) ? true : false,
@@ -409,6 +413,8 @@ function display_forums($root_data = '', $display_moderators = true, $return_mod
 				'S_UNREAD'		=> $subforum['unread'])
 			);
 		}
+		
+		$last_catless = $catless;
 	}
 
 	$template->assign_vars(array(
