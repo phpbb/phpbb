@@ -234,7 +234,11 @@ class mcp_warn
 
 		$user_id = $user_row['user_id'];
 
-		$this->p_master->adjust_url('&amp;f=' . $forum_id . '&amp;p=' . $post_id);
+		if (strpos($this->u_action, "&amp;f=$forum_id&amp;p=$post_id") === false)
+		{
+			$this->p_master->adjust_url("&amp;f=$forum_id&amp;p=$post_id");
+			$this->u_action .= "&amp;f=$forum_id&amp;p=$post_id";
+		}
 
 		if ($warning && $action == 'add_warning')
 		{
@@ -274,7 +278,7 @@ class mcp_warn
 		$avatar_img = get_user_avatar($user_row['user_avatar'], $user_row['user_avatar_type'], $user_row['user_avatar_width'], $user_row['user_avatar_height']);
 
 		$template->assign_vars(array(
-			'U_POST_ACTION'		=> $this->u_action . "p=$post_id",
+			'U_POST_ACTION'		=> $this->u_action,
 
 			'POST'				=> $message,
 			'USERNAME'			=> $user_row['username'],
@@ -326,7 +330,11 @@ class mcp_warn
 
 		$user_id = $user_row['user_id'];
 
-		$this->p_master->adjust_url('&amp;u=' . $user_id);
+		if (strpos($this->u_action, "&amp;u=$user_id") === false)
+		{
+			$this->p_master->adjust_url('&amp;u=' . $user_id);
+			$this->u_action .= "&amp;u=$user_id";
+		}
 
 		if ($warning && $action == 'add_warning')
 		{
@@ -348,7 +356,7 @@ class mcp_warn
 
 		// OK, they didn't submit a warning so lets build the page for them to do so
 		$template->assign_vars(array(
-			'U_POST_ACTION'		=> $this->u_action . "u=$user_id",
+			'U_POST_ACTION'		=> $this->u_action,
 
 			'USERNAME'			=> $user_row['username'],
 			'USER_COLOR'		=> (!empty($user_row['user_colour'])) ? $user_row['user_colour'] : '',

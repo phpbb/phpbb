@@ -94,7 +94,11 @@ class mcp_notes
 		// Populate user id to the currently active module (this module)
 		// The following method is another way of adjusting module urls. It is the easy variant if we want
 		// to directly adjust the current module url based on data retrieved within the same module.
-		$this->p_master->adjust_url('&amp;u=' . $user_id);
+		if (strpos($this->u_action, "&amp;u=$user_id") === false)
+		{
+			$this->p_master->adjust_url('&amp;u=' . $user_id);
+			$this->u_action .= "&amp;u=$user_id";
+		}
 
 		$deletemark = ($action == 'del_marked') ? true : false;
 		$deleteall	= ($action == 'del_all') ? true : false;
@@ -140,8 +144,9 @@ class mcp_notes
 
 			add_log('user', $user_id, 'LOG_USER_GENERAL', $usernote);
 
-			$redirect = $this->u_action . '&amp;u=' . $user_id;
+			$redirect = $this->u_action;
 			meta_refresh(3, $redirect);
+
 			trigger_error($user->lang['USER_FEEDBACK_ADDED'] . '<br /><br />' . sprintf($user->lang['RETURN_PAGE'], '<a href="' . $redirect . '">', '</a>'));
 		}
 
@@ -186,7 +191,7 @@ class mcp_notes
 		}
 
 		$template->assign_vars(array(
-			'U_POST_ACTION'			=> $this->u_action . '&amp;u=' . $user_id,
+			'U_POST_ACTION'			=> $this->u_action,
 			'S_CLEAR_ALLOWED'		=> ($auth->acl_get('a_clearlogs')) ? true : false,
 			'S_SELECT_SORT_DIR'		=> $s_sort_dir,
 			'S_SELECT_SORT_KEY'		=> $s_sort_key,
@@ -195,7 +200,7 @@ class mcp_notes
 			'L_TITLE'			=> $user->lang['MCP_NOTES_USER'],
 
 			'PAGE_NUMBER'		=> on_page($log_count, $config['posts_per_page'], $start),
-			'PAGINATION'		=> generate_pagination($this->u_action . "&amp;u=$user_id&amp;st=$st&amp;sk=$sk&amp;sd=$sd", $log_count, $config['posts_per_page'], $start),
+			'PAGINATION'		=> generate_pagination($this->u_action . "&amp;st=$st&amp;sk=$sk&amp;sd=$sd", $log_count, $config['posts_per_page'], $start),
 			'TOTAL_REPORTS'		=> ($log_count == 1) ? $user->lang['LIST_REPORT'] : sprintf($user->lang['LIST_REPORTS'], $log_count),
 
 			'USERNAME'			=> $userrow['username'],
