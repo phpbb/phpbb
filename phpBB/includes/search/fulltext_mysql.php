@@ -807,9 +807,6 @@ class fulltext_mysql extends search_backend
 
 		return array(
 			$user->lang['FULLTEXT_MYSQL_TOTAL_POSTS']			=> ($this->index_created()) ? $this->stats['total_posts'] : 0,
-			$user->lang['FULLTEXT_MYSQL_TEXT_CARDINALITY']		=> isset($this->stats['post_text']['Cardinality']) ? $this->stats['post_text']['Cardinality'] : 0,
-			$user->lang['FULLTEXT_MYSQL_SUBJECT_CARDINALITY']	=> isset($this->stats['post_subject']['Cardinality']) ? $this->stats['post_subject']['Cardinality'] : 0,
-			$user->lang['FULLTEXT_MYSQL_COMBINED_CARDINALITY']	=> isset($this->stats['post_content']['Cardinality']) ? $this->stats['post_content']['Cardinality'] : 0,
 		);
 	}
 
@@ -834,15 +831,15 @@ class fulltext_mysql extends search_backend
 
 			if ($index_type == 'FULLTEXT')
 			{
-				if ($row['Column_name'] == 'post_text')
+				if ($row['Key_name'] == 'post_text')
 				{
 					$this->stats['post_text'] = $row;
 				}
-				else if ($row['Column_name'] == 'post_subject')
+				else if ($row['Key_name'] == 'post_subject')
 				{
 					$this->stats['post_subject'] = $row;
 				}
-				else if ($row['Column_name'] == 'post_content')
+				else if ($row['Key_name'] == 'post_content')
 				{
 					$this->stats['post_content'] = $row;
 				}

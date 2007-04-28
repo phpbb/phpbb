@@ -2601,7 +2601,7 @@ function generate_text_for_edit($text, $uid, $flags)
 * Cuts down displayed size of link if over 50 chars, turns absolute links
 * into relative versions when the server/script path matches the link
 */
-function make_clickable($text, $server_url = false)
+function make_clickable($text, $server_url = false, $class = 'postlink')
 {
 	if ($server_url === false)
 	{
@@ -2610,23 +2610,28 @@ function make_clickable($text, $server_url = false)
 
 	static $magic_url_match;
 	static $magic_url_replace;
+	static $static_class;
 
-	if (!is_array($magic_url_match))
+	if (!is_array($magic_url_match) || $static_class != $class)
 	{
+		$static_class = $class;
+		$class = ($static_class) ? ' class="' . $static_class . '"' : '';
+		$local_class = ($static_class) ? ' class="' . $static_class . '-local"' : '';
+
 		$magic_url_match = $magic_url_replace = array();
 		// Be sure to not let the matches cross over. ;)
 
 		// relative urls for this board
 		$magic_url_match[] = '#(^|[\n\t (])(' . preg_quote($server_url, '#') . ')/(' . get_preg_expression('relative_url_inline') . ')#ie';
-		$magic_url_replace[] = "'\$1<!-- l --><a href=\"' . append_sid('\$2/' . preg_replace('/(&amp;|\?)sid=[0-9a-f]{32}$/', '', preg_replace('/(&amp;|\?)sid=[0-9a-f]{32}&amp;/', '\\\\1', '\$3'))) . '\">' . ((strlen('\$3')) ? preg_replace('/(&amp;|\?)sid=[0-9a-f]{32}$/', '', preg_replace('/(&amp;|\?)sid=[0-9a-f]{32}&amp;/', '\\\\1', '\$3')) : '\$2/') . '</a><!-- l -->'";
+		$magic_url_replace[] = "'\$1<!-- l --><a$local_class href=\"' . append_sid('\$2/' . preg_replace('/(&amp;|\?)sid=[0-9a-f]{32}$/', '', preg_replace('/(&amp;|\?)sid=[0-9a-f]{32}&amp;/', '\\\\1', '\$3'))) . '\">' . ((strlen('\$3')) ? preg_replace('/(&amp;|\?)sid=[0-9a-f]{32}$/', '', preg_replace('/(&amp;|\?)sid=[0-9a-f]{32}&amp;/', '\\\\1', '\$3')) : '\$2/') . '</a><!-- l -->'";
 
 		// matches a xxxx://aaaaa.bbb.cccc. ...
 		$magic_url_match[] = '#(^|[\n\t (])(' . get_preg_expression('url_inline') . ')#ie';
-		$magic_url_replace[] = "'\$1<!-- m --><a href=\"\$2\">' . ((strlen('\$2') > 55) ? str_replace('&', '&amp;', substr(str_replace('&amp;', '&', '\$2'), 0, 39)) . ' ... ' . str_replace('&', '&amp;', substr(str_replace('&amp;', '&', '\$2'), -10)) : '\$2') . '</a><!-- m -->'";
+		$magic_url_replace[] = "'\$1<!-- m --><a$class href=\"\$2\">' . ((strlen('\$2') > 55) ? str_replace('&', '&amp;', substr(str_replace('&amp;', '&', '\$2'), 0, 39)) . ' ... ' . str_replace('&', '&amp;', substr(str_replace('&amp;', '&', '\$2'), -10)) : '\$2') . '</a><!-- m -->'";
 
 		// matches a "www.xxxx.yyyy[/zzzz]" kinda lazy URL thing
 		$magic_url_match[] = '#(^|[\n\t (])(' . get_preg_expression('www_url_inline') . ')#ie';
-		$magic_url_replace[] = "'\$1<!-- w --><a href=\"http://\$2\">' . ((strlen('\$2') > 55) ? str_replace('&', '&amp;', substr(str_replace('&amp;', '&', '\$2'), 0, 39)) . ' ... ' . str_replace('&', '&amp;', substr(str_replace('&amp;', '&', '\$2'), -10)) : '\$2') . '</a><!-- w -->'";
+		$magic_url_replace[] = "'\$1<!-- w --><a$class href=\"http://\$2\">' . ((strlen('\$2') > 55) ? str_replace('&', '&amp;', substr(str_replace('&amp;', '&', '\$2'), 0, 39)) . ' ... ' . str_replace('&', '&amp;', substr(str_replace('&amp;', '&', '\$2'), -10)) : '\$2') . '</a><!-- w -->'";
 
 		// matches an email@domain type address at the start of a line, or after a space or after what might be a BBCode.
 		$magic_url_match[] = '/(^|[\n\t )])(' . get_preg_expression('email') . ')/ie';
@@ -3260,7 +3265,7 @@ function get_preg_expression($mode)
 		case 'bbcode_htm':
 			return array(
 				'#<!\-\- e \-\-><a href="mailto:(.*?)">.*?</a><!\-\- e \-\->#',
-				'#<!\-\- l \-\-><a href="(.*?)(?:(&amp;|\?)sid=[0-9a-f]{32})?">.*?</a><!\-\- l \-\->#',
+				'#<!\-\- l \-\-><a (?:class="[\w-]+" )?href="(.*?)(?:(&amp;|\?)sid=[0-9a-f]{32})?">.*?</a><!\-\- l \-\->#',
 				'#<!\-\- ([mw]) \-\-><a href="(.*?)">.*?</a><!\-\- \1 \-\->#',
 				'#<!\-\- s(.*?) \-\-><img src="\{SMILIES_PATH\}\/.*? \/><!\-\- s\1 \-\->#',
 				'#<!\-\- .*? \-\->#s',
