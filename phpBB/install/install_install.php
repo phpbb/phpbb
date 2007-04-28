@@ -697,7 +697,6 @@ class install_install extends module
 			{
 				$error[] = $lang['INST_ERR_EMAIL_INVALID'];
 			}
-		$error = array();
 
 			$template->assign_block_vars('checks', array(
 				'S_LEGEND'			=> true,
