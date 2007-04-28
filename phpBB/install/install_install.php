@@ -1607,22 +1607,86 @@ class install_install extends module
 
 			if (is_dir($path) && !is_link($path) && file_exists($path . '/iso.txt'))
 			{
-				$lang_pack = file("{$phpbb_root_path}language/$path/iso.txt");
+				$lang_file = file("{$phpbb_root_path}language/$path/iso.txt");
 
-				$sql_ary = array(
+				$lang_pack = array(
 					'lang_iso'			=> basename($path),
 					'lang_dir'			=> basename($path),
-					'lang_english_name'	=> trim(htmlspecialchars($lang_pack[0])),
-					'lang_local_name'	=> trim(htmlspecialchars($lang_pack[1], ENT_COMPAT, 'UTF-8')),
-					'lang_author'		=> trim(htmlspecialchars($lang_pack[2], ENT_COMPAT, 'UTF-8')),
+					'lang_english_name'	=> trim(htmlspecialchars($lang_file[0])),
+					'lang_local_name'	=> trim(htmlspecialchars($lang_file[1], ENT_COMPAT, 'UTF-8')),
+					'lang_author'		=> trim(htmlspecialchars($lang_file[2], ENT_COMPAT, 'UTF-8')),
 				);
 
-				$db->sql_query('INSERT INTO ' . LANG_TABLE . ' ' . $db->sql_build_array('INSERT', $sql_ary));
+				$db->sql_query('INSERT INTO ' . LANG_TABLE . ' ' . $db->sql_build_array('INSERT', $lang_pack));
 
 				if ($db->sql_error_triggered)
 				{
 					$error = $db->sql_error($db->sql_error_sql);
 					$this->p_master->db_error($error['message'], $db->sql_error_sql, __LINE__, __FILE__);
+				}
+
+				$sql_ary = array();
+
+				$sql = 'SELECT *
+					FROM ' . STYLES_IMAGESET_TABLE;
+				$result = $db->sql_query($sql);
+
+				while ($imageset_row = $db->sql_fetchrow($result))
+				{
+					if (@file_exists("{$phpbb_root_path}styles/{$imageset_row['imageset_path']}/imageset/{$lang_pack['iso']}/imageset.cfg"))
+					{
+						$cfg_data_imageset_data = parse_cfg_file("{$phpbb_root_path}styles/{$imageset_row['imageset_path']}/imageset/{$lang_pack['iso']}/imageset.cfg");
+						foreach ($cfg_data_imageset_data as $image_name => $value)
+						{
+							if (strpos($value, '*') !== false)
+							{
+								if (substr($value, -1, 1) === '*')
+								{
+									list($image_filename, $image_height) = explode('*', $value);
+									$image_width = 0;
+								}
+								else
+								{
+									list($image_filename, $image_height, $image_width) = explode('*', $value);
+								}
+							}
+							else
+							{
+								$image_filename = $value;
+								$image_height = $image_width = 0;
+							}
+
+							if (strpos($image_name, 'img_') === 0 && $image_filename)
+							{
+								$image_name = substr($image_name, 4);
+								if (in_array($image_name, $valid_localized))
+								{
+									$sql_ary[] = array(
+										'image_name'		=> $image_name,
+										'image_filename'	=> $image_filename,
+										'image_height'		=> $image_height,
+										'image_width'		=> $image_width,
+										'imageset_id'		=> $imageset_row['imageset_id'],
+										'image_lang'		=> $lang_pack['iso'],
+									);
+								}
+							}
+						}
+					}
+				}
+				$db->sql_freeresult($result);
+
+				if (sizeof($sql_ary))
+				{
+					$db->sql_multi_insert(STYLES_IMAGESET_DATA_TABLE, $sql_ary);
+
+					if ($db->sql_error_triggered)
+					{
+						$error = $db->sql_error($db->sql_error_sql);
+						$this->p_master->db_error($error['message'], $db->sql_error_sql, __LINE__, __FILE__);
+					}
+
+					$cache->destroy('sql', STYLES_IMAGESET_DATA_TABLE);
 				}
 			}
 		}
