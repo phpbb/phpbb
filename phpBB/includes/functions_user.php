@@ -1400,7 +1400,7 @@ function validate_password($password)
 		foreach ($chars as $char)
 		{
 			if (!preg_match('#' . $char . '#u', $password))
-			{var_dump($char, $password);
+			{
 				return 'INVALID_CHARS';
 			}
 		}
