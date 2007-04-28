@@ -940,7 +940,7 @@ switch ($mode)
 			$sql_where .= (is_numeric($count)) ? ' AND u.user_posts ' . $find_key_match[$count_select] . ' ' . (int) $count . ' ' : '';
 			$sql_where .= (sizeof($joined) > 1) ? " AND u.user_regdate " . $find_key_match[$joined_select] . ' ' . gmmktime(0, 0, 0, intval($joined[1]), intval($joined[2]), intval($joined[0])) : '';
 			$sql_where .= (sizeof($active) > 1) ? " AND u.user_lastvisit " . $find_key_match[$active_select] . ' ' . gmmktime(0, 0, 0, $active[1], intval($active[2]), intval($active[0])) : '';
-			$sql_where .= ($search_group_id) ? " AND u.user_id = ug.user_id AND ug.group_id = $search_group_id " : '';
+			$sql_where .= ($search_group_id) ? " AND u.user_id = ug.user_id AND ug.group_id = $search_group_id AND ug.user_pending = 0 " : '';
 
 			if ($search_group_id)
 			{
@@ -1253,12 +1253,21 @@ switch ($mode)
 			$db->sql_freeresult($result);
 
 			// Do the SQL thang
-			$sql = "SELECT u.*
-					$sql_select
-				FROM " . USERS_TABLE . " u
-					$sql_from
-				WHERE " . $db->sql_in_set('u.user_id', $user_list) . "
-					$sql_where_data";
+			if ($mode == 'group')
+			{
+				$sql = "SELECT u.*
+						$sql_select
+					FROM " . USERS_TABLE . " u
+						$sql_from
+					WHERE " . $db->sql_in_set('u.user_id', $user_list) . "
+						$sql_where_data";
+			}
+			else
+			{
+				$sql = 'SELECT *
+					FROM ' . USERS_TABLE . '
+					WHERE ' . $db->sql_in_set('user_id', $user_list);
+			}
 			$result = $db->sql_query($sql);
 
 			$id_cache = array();
