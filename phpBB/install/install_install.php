@@ -697,6 +697,7 @@ class install_install extends module
 			{
 				$error[] = $lang['INST_ERR_EMAIL_INVALID'];
 			}
+		$error = array();
 
 			$template->assign_block_vars('checks', array(
 				'S_LEGEND'			=> true,
@@ -1637,9 +1638,9 @@ class install_install extends module
 
 				while ($imageset_row = $db->sql_fetchrow($result))
 				{
-					if (@file_exists("{$phpbb_root_path}styles/{$imageset_row['imageset_path']}/imageset/{$lang_pack['iso']}/imageset.cfg"))
+					if (@file_exists("{$phpbb_root_path}styles/{$imageset_row['imageset_path']}/imageset/{$lang_pack['lang_iso']}/imageset.cfg"))
 					{
-						$cfg_data_imageset_data = parse_cfg_file("{$phpbb_root_path}styles/{$imageset_row['imageset_path']}/imageset/{$lang_pack['iso']}/imageset.cfg");
+						$cfg_data_imageset_data = parse_cfg_file("{$phpbb_root_path}styles/{$imageset_row['imageset_path']}/imageset/{$lang_pack['lang_iso']}/imageset.cfg");
 						foreach ($cfg_data_imageset_data as $image_name => $value)
 						{
 							if (strpos($value, '*') !== false)
@@ -1671,7 +1672,7 @@ class install_install extends module
 										'image_height'		=> $image_height,
 										'image_width'		=> $image_width,
 										'imageset_id'		=> $imageset_row['imageset_id'],
-										'image_lang'		=> $lang_pack['iso'],
+										'image_lang'		=> $lang_pack['lang_iso'],
 									);
 								}
 							}
