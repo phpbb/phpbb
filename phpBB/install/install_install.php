@@ -1625,6 +1625,10 @@ class install_install extends module
 					$this->p_master->db_error($error['message'], $db->sql_error_sql, __LINE__, __FILE__);
 				}
 
+				$valid_localized = array(
+					'icon_back_top', 'icon_contact_aim', 'icon_contact_email', 'icon_contact_icq', 'icon_contact_jabber', 'icon_contact_msnm', 'icon_contact_pm', 'icon_contact_yahoo', 'icon_contact_www', 'icon_post_delete', 'icon_post_edit', 'icon_post_info', 'icon_post_quote', 'icon_post_report', 'icon_user_online', 'icon_user_offline', 'icon_user_profile', 'icon_user_search', 'icon_user_warn', 'button_pm_forward', 'button_pm_new', 'button_pm_reply', 'button_topic_locked', 'button_topic_new', 'button_topic_reply',
+				);
+
 				$sql_ary = array();
 
 				$sql = 'SELECT *
