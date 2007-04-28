@@ -585,13 +585,13 @@ class acp_users
 						'user_founder'		=> request_var('user_founder', ($user_row['user_type'] == USER_FOUNDER) ? 1 : 0),
 						'email'				=> strtolower(request_var('user_email', $user_row['user_email'])),
 						'email_confirm'		=> strtolower(request_var('email_confirm', '')),
-						'user_password'		=> request_var('user_password', '', true),
+						'new_password'		=> request_var('user_password', '', true),
 						'password_confirm'	=> request_var('password_confirm', '', true),
 					);
 
 					// Validation data - we do not check the password complexity setting here
 					$check_ary = array(
-						'user_password'		=> array(
+						'new_password'		=> array(
 							array('string', true, $config['min_pass_chars'], $config['max_pass_chars']),
 							array('password')),
 						'password_confirm'	=> array('string', true, $config['min_pass_chars'], $config['max_pass_chars']),
@@ -622,7 +622,7 @@ class acp_users
 
 					$error = validate_data($data, $check_ary);
 
-					if ($data['user_password'] && $data['password_confirm'] != $data['user_password'])
+					if ($data['new_password'] && $data['password_confirm'] != $data['new_password'])
 					{
 						$error[] = 'NEW_PASSWORD_ERROR';
 					}
@@ -634,7 +634,7 @@ class acp_users
 
 					// Which updates do we need to do?
 					$update_username = ($user_row['username'] != $data['username']) ? $data['username'] : false;
-					$update_password = ($data['user_password'] && $user_row['user_password'] != md5($data['user_password'])) ? true : false;
+					$update_password = ($data['new_password'] && $user_row['user_password'] != md5($data['new_password'])) ? true : false;
 					$update_email = ($data['email'] != $user_row['user_email']) ? $data['email'] : false;
 
 					if (!sizeof($error))
@@ -706,7 +706,7 @@ class acp_users
 						if ($update_password)
 						{
 							$sql_ary += array(
-								'user_password' => md5($data['user_password']),
+								'user_password' => md5($data['new_password']),
 								'user_passchg'	=> time(),
 							);
 

@@ -1348,6 +1348,7 @@ function validate_password($password)
 	{
 		$upp = '\p{Lu}';
 		$low = '\p{Ll}';
+		$let = '\p{L}';
 		$num = '\p{N}';
 		$sym = '[^\p{Lu}\p{Ll}\p{N}]';
 		$pcre = true;
@@ -1357,6 +1358,7 @@ function validate_password($password)
 		mb_regex_encoding('UTF-8');
 		$upp = '[[:upper:]]';
 		$low = '[[:lower:]]';
+		$let = '[[:lower:][:upper:]]';
 		$num = '[[:digit:]]';
 		$sym = '[^[:upper:][:lower:][:digit:]]';
 		$mbstring = true;
@@ -1365,6 +1367,7 @@ function validate_password($password)
 	{
 		$upp = '[A-Z]';
 		$low = '[a-z]';
+		$let = '[a-zA-Z]';
 		$num = '[0-9]';
 		$sym = '[^A-Za-z0-9]';
 		$pcre = true;
@@ -1380,8 +1383,7 @@ function validate_password($password)
 		break;
 
 		case 'PASS_TYPE_ALPHA':
-			$chars[] = $low;
-			$chars[] = $upp;
+			$chars[] = $let;
 			$chars[] = $num;
 		break;
 
@@ -1398,7 +1400,7 @@ function validate_password($password)
 		foreach ($chars as $char)
 		{
 			if (!preg_match('#' . $char . '#u', $password))
-			{
+			{var_dump($char, $password);
 				return 'INVALID_CHARS';
 			}
 		}
