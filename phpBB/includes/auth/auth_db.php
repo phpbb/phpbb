@@ -38,7 +38,7 @@ function login_db(&$username, &$password)
 
 	// If there are too much login attempts, we need to check for an confirm image
 	// Every auth module is able to define what to do by itself...
-	if ($config['max_login_attempts'] && $row['user_login_attempts'] > $config['max_login_attempts'])
+	if ($config['max_login_attempts'] && $row['user_login_attempts'] >= $config['max_login_attempts'])
 	{
 		$confirm_id = request_var('confirm_id', '');
 		$confirm_code = request_var('confirm_code', '');
