@@ -1685,8 +1685,6 @@ class install_install extends module
 						$error = $db->sql_error($db->sql_error_sql);
 						$this->p_master->db_error($error['message'], $db->sql_error_sql, __LINE__, __FILE__);
 					}
-
-					$cache->destroy('sql', STYLES_IMAGESET_DATA_TABLE);
 				}
 			}
 		}
