@@ -955,7 +955,6 @@ function topic_review($topic_id, $forum_id, $mode = 'topic_review', $cur_post_id
 		$poster_id		= $row['user_id'];
 		$post_subject	= $row['post_subject'];
 		$message		= censor_text($row['post_text']);
-		$message		= str_replace("\n", '<br />', $message);
 
 		$decoded_message = false;
 
@@ -972,6 +971,8 @@ function topic_review($topic_id, $forum_id, $mode = 'topic_review', $cur_post_id
 		{
 			$bbcode->bbcode_second_pass($message, $row['bbcode_uid'], $row['bbcode_bitfield']);
 		}
+
+		$message = str_replace("\n", '<br />', $message);
 
 		$message = smiley_text($message, !$row['enable_smilies']);
 
