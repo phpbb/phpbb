@@ -224,6 +224,20 @@ class install_convert extends module
 				$db->sql_connect($dbhost, $dbuser, $dbpasswd, $dbname, $dbport, false, true);
 				unset($dbpasswd);
 
+				$sql = 'SELECT config_value
+					FROM ' . CONFIG_TABLE . '
+					WHERE config_name = \'search_type\'';
+				$result = $db->sql_query($sql);
+
+				if ($db->sql_fetchfield('config_value') != 'fulltext_mysql')
+				{
+					$template->assign_vars(array(
+						'S_ERROR_BOX'	=> true,
+						'ERROR_TITLE'	=> $lang['SEARCH_INDEX_UNCONVERTED'],
+						'ERROR_MSG'		=> $lang['SEARCH_INDEX_UNCONVERTED_EXPLAIN'],
+					));
+				}
+
 				switch ($db->sql_layer)
 				{
 					case 'sqlite':
@@ -386,6 +400,9 @@ class install_convert extends module
 		// @todo Are we going to use this for attempting to convert URL references in posts, or should we remove it?
 		//		-> We should convert old urls to the new relative urls format
 		// $src_url = request_var('src_url', 'Not in use at the moment');
+
+		// strip trailing slash from old forum path
+		$forum_path = (strlen($forum_path) && $forum_path[strlen($forum_path) - 1] == '/') ? substr($forum_path, 0, -1) : $forum_path;
 
 		$error = array();
 		if ($submit)

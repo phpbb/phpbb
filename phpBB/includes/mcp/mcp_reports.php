@@ -66,16 +66,22 @@ class mcp_reports
 
 				$sql = 'SELECT r.post_id, r.user_id, r.report_id, r.report_closed, report_time, r.report_text, rr.reason_title, rr.reason_description, u.username, u.username_clean, u.user_colour
 					FROM ' . REPORTS_TABLE . ' r, ' . REPORTS_REASONS_TABLE . ' rr, ' . USERS_TABLE . ' u
-					WHERE ' . (($report_id) ? 'r.report_id = ' . $report_id : "r.post_id = $post_id AND r.report_closed = 0") . '
+					WHERE ' . (($report_id) ? 'r.report_id = ' . $report_id : "r.post_id = $post_id") . '
 						AND rr.reason_id = r.reason_id
-						AND r.user_id = u.user_id';
-				$result = $db->sql_query($sql);
+						AND r.user_id = u.user_id
+					ORDER BY report_closed ASC';
+				$result = $db->sql_query_limit($sql, 1);
 				$report = $db->sql_fetchrow($result);
 				$db->sql_freeresult($result);
 
 				if (!$report)
 				{
 					trigger_error('NO_REPORT');
+				}
+
+				if (!$report_id && $report['report_closed'])
+				{
+					trigger_error('REPORT_CLOSED');
 				}
 
 				$post_id = $report['post_id'];
@@ -303,7 +309,8 @@ class mcp_reports
 							AND t.topic_id = p.topic_id
 							AND r.post_id = p.post_id
 							AND u.user_id = p.poster_id
-							AND ru.user_id = r.user_id';
+							AND ru.user_id = r.user_id
+						ORDER BY ' . $sort_order_sql;
 					$result = $db->sql_query($sql);
 
 					$report_data = $rowset = array();

@@ -407,7 +407,7 @@ if ($hilit_words)
 	{
 		if (trim($word))
 		{
-			$highlight_match .= (($highlight_match != '') ? '|' : '') . str_replace('*', '\w*?', preg_quote($word, '#'));
+			$highlight_match .= (($highlight_match != '') ? '|' : '') . str_replace('\*', '\w+?', preg_quote($word, '#'));
 		}
 	}
 

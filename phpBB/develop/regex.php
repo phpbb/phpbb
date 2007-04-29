@@ -55,7 +55,7 @@ $sub_delims = '!$&\'()*+,;=';
 $pchar = "(?:[$unreserved$sub_delims:@|]+|$pct_encoded)"; // rfc: no "|"
 
 $scheme = '[a-z][a-z\d+\-.]*';
-$reg_name = "(?:[$unreserved$sub_delims|@]+|$pct_encoded)+"; // rfc: * instead of + and no "|" and no "@" (included instead of userinfo
+$reg_name = "(?:[$unreserved$sub_delims:@|]+|$pct_encoded)+"; // rfc: * instead of + and no "|" and no "@" and no ":" (included instead of userinfo)
 //$userinfo = "(?:(?:[$unreserved$sub_delims:]+|$pct_encoded))*";
 $ipv4_simple = '[0-9.]+';
 $ipv6_simple = '\[[a-z0-9.]+:[a-z0-9.]+:[a-z0-9.:]+\]';

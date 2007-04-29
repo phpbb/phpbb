@@ -711,7 +711,7 @@ if ($keywords || $author || $author_id || $search_id || $submit)
 			$hilit_array = array_filter(explode('|', $hilit), 'strlen');
 			foreach ($hilit_array as $key => $value)
 			{
-				$hilit_array[$key] = str_replace('\*', '\w*?', preg_quote($value, '#'));
+				$hilit_array[$key] = str_replace('\*', '\w+?', preg_quote($value, '#'));
 			}
 			$hilit = implode('|', $hilit_array);
 		}

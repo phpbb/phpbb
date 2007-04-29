@@ -2359,12 +2359,15 @@ function get_context($text, $words, $length = 400)
 		// find the starting indizes of all words
 		foreach ($words as $word)
 		{
-			if (preg_match('#(?:[^\w]|^)(' . $word . ')(?:[^\w]|$)#i', $text, $match))
+			if ($word)
 			{
-				$pos = strpos($text, $match[1]);
-				if ($pos !== false)
+				if (preg_match('#(?:[^\w]|^)(' . $word . ')(?:[^\w]|$)#i', $text, $match))
 				{
-					$word_indizes[] = $pos;
+					$pos = strpos($text, $match[1]);
+					if ($pos !== false)
+					{
+						$word_indizes[] = $pos;
+					}
 				}
 			}
 		}
@@ -2622,19 +2625,19 @@ function make_clickable($text, $server_url = false, $class = 'postlink')
 		// Be sure to not let the matches cross over. ;)
 
 		// relative urls for this board
-		$magic_url_match[] = '#(^|[\n\t (])(' . preg_quote($server_url, '#') . ')/(' . get_preg_expression('relative_url_inline') . ')#ie';
+		$magic_url_match[] = '#(^|[\n\t (>])(' . preg_quote($server_url, '#') . ')/(' . get_preg_expression('relative_url_inline') . ')#ie';
 		$magic_url_replace[] = "'\$1<!-- l --><a$local_class href=\"' . append_sid('\$2/' . preg_replace('/(&amp;|\?)sid=[0-9a-f]{32}$/', '', preg_replace('/(&amp;|\?)sid=[0-9a-f]{32}&amp;/', '\\\\1', '\$3'))) . '\">' . ((strlen('\$3')) ? preg_replace('/(&amp;|\?)sid=[0-9a-f]{32}$/', '', preg_replace('/(&amp;|\?)sid=[0-9a-f]{32}&amp;/', '\\\\1', '\$3')) : '\$2/') . '</a><!-- l -->'";
 
 		// matches a xxxx://aaaaa.bbb.cccc. ...
-		$magic_url_match[] = '#(^|[\n\t (])(' . get_preg_expression('url_inline') . ')#ie';
+		$magic_url_match[] = '#(^|[\n\t (>])(' . get_preg_expression('url_inline') . ')#ie';
 		$magic_url_replace[] = "'\$1<!-- m --><a$class href=\"\$2\">' . ((strlen('\$2') > 55) ? str_replace('&', '&amp;', substr(str_replace('&amp;', '&', '\$2'), 0, 39)) . ' ... ' . str_replace('&', '&amp;', substr(str_replace('&amp;', '&', '\$2'), -10)) : '\$2') . '</a><!-- m -->'";
 
 		// matches a "www.xxxx.yyyy[/zzzz]" kinda lazy URL thing
-		$magic_url_match[] = '#(^|[\n\t (])(' . get_preg_expression('www_url_inline') . ')#ie';
+		$magic_url_match[] = '#(^|[\n\t (>])(' . get_preg_expression('www_url_inline') . ')#ie';
 		$magic_url_replace[] = "'\$1<!-- w --><a$class href=\"http://\$2\">' . ((strlen('\$2') > 55) ? str_replace('&', '&amp;', substr(str_replace('&amp;', '&', '\$2'), 0, 39)) . ' ... ' . str_replace('&', '&amp;', substr(str_replace('&amp;', '&', '\$2'), -10)) : '\$2') . '</a><!-- w -->'";
 
 		// matches an email@domain type address at the start of a line, or after a space or after what might be a BBCode.
-		$magic_url_match[] = '/(^|[\n\t )])(' . get_preg_expression('email') . ')/ie';
+		$magic_url_match[] = '/(^|[\n\t )>])(' . get_preg_expression('email') . ')/ie';
 		$magic_url_replace[] = "'\$1<!-- e --><a href=\"mailto:\$2\">' . ((strlen('\$2') > 55) ? substr('\$2', 0, 39) . ' ... ' . substr('\$2', -10) : '\$2') . '</a><!-- e -->'";
 	}
 
@@ -3277,13 +3280,13 @@ function get_preg_expression($mode)
 		case 'url_inline':
 			$inline = ($mode == 'url') ? ')' : '';
 			// generated with regex generation file in the develop folder
-			return "[a-z][a-z\d+\-.]*:/{2}(?:(?:[a-z0-9\-._~!$&'($inline*+,;=|@]+|%[\dA-F]{2})+|[0-9.]+|\[[a-z0-9.]+:[a-z0-9.]+:[a-z0-9.:]+\])(?::\d*)?(?:/(?:[a-z0-9\-._~!$&'($inline*+,;=:@|]+|%[\dA-F]{2})*)*(?:\?(?:[a-z0-9\-._~!$&'($inline*+,;=:@/?|]+|%[\dA-F]{2})*)?(?:\#(?:[a-z0-9\-._~!$&'($inline*+,;=:@/?|]+|%[\dA-F]{2})*)?";
+			return "[a-z][a-z\d+\-.]*:/{2}(?:(?:[a-z0-9\-._~!$&'($inline*+,;=:@|]+|%[\dA-F]{2})+|[0-9.]+|\[[a-z0-9.]+:[a-z0-9.]+:[a-z0-9.:]+\])(?::\d*)?(?:/(?:[a-z0-9\-._~!$&'($inline*+,;=:@|]+|%[\dA-F]{2})*)*(?:\?(?:[a-z0-9\-._~!$&'($inline*+,;=:@/?|]+|%[\dA-F]{2})*)?(?:\#(?:[a-z0-9\-._~!$&'($inline*+,;=:@/?|]+|%[\dA-F]{2})*)?";
 		break;
 
 		case 'www_url':
 		case 'www_url_inline':
 			$inline = ($mode == 'www_url') ? ')' : '';
-			return "www\.(?:[a-z0-9\-._~!$&'($inline*+,;=|@]+|%[\dA-F]{2})+(?::\d*)?(?:/(?:[a-z0-9\-._~!$&'($inline*+,;=:@|]+|%[\dA-F]{2})*)*(?:\?(?:[a-z0-9\-._~!$&'($inline*+,;=:@/?|]+|%[\dA-F]{2})*)?(?:\#(?:[a-z0-9\-._~!$&'($inline*+,;=:@/?|]+|%[\dA-F]{2})*)?";
+			return "www\.(?:[a-z0-9\-._~!$&'($inline*+,;=:@|]+|%[\dA-F]{2})+(?::\d*)?(?:/(?:[a-z0-9\-._~!$&'($inline*+,;=:@|]+|%[\dA-F]{2})*)*(?:\?(?:[a-z0-9\-._~!$&'($inline*+,;=:@/?|]+|%[\dA-F]{2})*)?(?:\#(?:[a-z0-9\-._~!$&'($inline*+,;=:@/?|]+|%[\dA-F]{2})*)?";
 		break;
 
 		case 'relative_url':

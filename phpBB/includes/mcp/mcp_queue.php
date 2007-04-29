@@ -274,7 +274,8 @@ class mcp_queue
 							FROM ' . POSTS_TABLE . ' p, ' . TOPICS_TABLE . ' t, ' . USERS_TABLE . ' u
 							WHERE ' . $db->sql_in_set('p.post_id', $post_ids) . '
 								AND t.topic_id = p.topic_id
-								AND u.user_id = p.poster_id';
+								AND u.user_id = p.poster_id
+							ORDER BY ' . $sort_order_sql;
 						$result = $db->sql_query($sql);
 
 						$post_data = $rowset = array();

@@ -1,5 +1,4 @@
 /*
- PostgreSQL Schema for phpBB 3.x - (c) phpBB Group, 2005
 
  $Id$
 
