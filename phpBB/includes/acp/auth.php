@@ -969,10 +969,19 @@ class auth_admin extends auth
 		if ($permission_type !== false)
 		{
 			// Get permission type
-			$sql = 'SELECT auth_option, auth_option_id
-				FROM ' . ACL_OPTIONS_TABLE . "
-				WHERE auth_option LIKE '" . $db->sql_escape(str_replace('_', "\_", $permission_type)) . "%'";
-			$sql .= ($db->sql_layer == 'mssql' || $db->sql_layer == 'mssql_odbc') ? " ESCAPE '\\'" : '';
+			if ($db->sql_layer == 'sqlite')
+			{
+				$sql = 'SELECT auth_option, auth_option_id
+					FROM ' . ACL_OPTIONS_TABLE . "
+					WHERE auth_option LIKE '" . $db->sql_escape($permission_type) . "%'";
+			}
+			else
+			{
+				$sql = 'SELECT auth_option, auth_option_id
+					FROM ' . ACL_OPTIONS_TABLE . "
+					WHERE auth_option LIKE '" . $db->sql_escape(str_replace('_', "\_", $permission_type)) . "%'";
+				$sql .= ($db->sql_layer == 'mssql' || $db->sql_layer == 'mssql_odbc') ? " ESCAPE '\\'" : '';
+			}
 
 			$result = $db->sql_query($sql);
 
