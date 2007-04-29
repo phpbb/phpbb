@@ -147,7 +147,9 @@ class acp_users
 		switch ($mode)
 		{
 			case 'overview':
-				
+
+				$user->add_lang('acp/ban');
+
 				$delete			= request_var('delete', 0);
 				$delete_type	= request_var('delete_type', '');
 				$ip				= request_var('ip', 'ip');
@@ -246,10 +248,11 @@ class acp_users
 								break;
 							}
 
-							user_ban(substr($action, 3), $ban, 0, 0, 0, $user->lang[$reason]);
+							$ban_reason = request_var('ban_reason', $user->lang[$reason], true);
+							$ban_give_reason = request_var('ban_give_reason', '', true);
 
-							add_log('admin', $log, $user->lang[$reason], implode(', ', $ban));
-							add_log('user', $user_id, $log, $user->lang[$reason], implode(', ', $ban));
+							// Log not used at the moment, we simply utilize the ban function.
+							user_ban(substr($action, 3), $ban, 0, 0, 0, $ban_reason, $ban_give_reason);
 
 							trigger_error($user->lang['BAN_SUCCESSFUL'] . adm_back_link($this->u_action . '&amp;u=' . $user_id));
 
@@ -837,8 +840,7 @@ class acp_users
 					'USER_WARNINGS'		=> $user_row['user_warnings'],
 					'USER_POSTS'		=> $user_row['user_posts'],
 					'USER_INACTIVE_REASON'	=> $inactive_reason,
-					)
-				);
+				));
 
 			break;
 

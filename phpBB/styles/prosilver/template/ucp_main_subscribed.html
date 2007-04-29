@@ -32,7 +32,7 @@
 		</li>
 	<!-- END forumrow -->
 	</ul>
-<!-- ELSE -->
+<!-- ELSEIF S_FORUM_NOTIFY -->
 	<p><strong>{L_NO_WATCHED_FORUMS}</strong></p>
 <!-- ENDIF -->
 
@@ -72,7 +72,7 @@
 			<!-- IF PAGE_NUMBER --><!-- IF PAGINATION --> &bull; <a href="#" onclick="jumpto(); return false;" title="{L_JUMP_TO_PAGE}">{PAGE_NUMBER}</a> &bull; <span>{PAGINATION}</span><!-- ELSE --> &bull; {PAGE_NUMBER}<!-- ENDIF --><!-- ENDIF -->
 		</li>
 	</ul>
-<!-- ELSE -->
+<!-- ELSEIF S_TOPIC_NOTIFY -->
 	<p><strong>{L_NO_WATCHED_TOPICS}</strong></p>
 <!-- ENDIF -->
 	

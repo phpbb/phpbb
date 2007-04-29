@@ -292,6 +292,12 @@ if ($module->is_active('zebra', 'friends'))
 	$db->sql_freeresult($result);
 }
 
+// Do not display subscribed topics/forums if not allowed
+if (!$config['allow_topic_notify'] && !$config['allow_forum_notify'])
+{
+	$module->set_display('main', 'subscribed', false);
+}
+
 // Select the active module
 $module->set_active($id, $mode);
 

@@ -946,7 +946,10 @@ function user_ban($mode, $ban, $ban_len, $ban_len_other, $ban_exclude, $ban_reas
 
 		// Update log
 		$log_entry = ($ban_exclude) ? 'LOG_BAN_EXCLUDE_' : 'LOG_BAN_';
+
+		// Add to moderator and admin log
 		add_log('admin', $log_entry . strtoupper($mode), $ban_reason, $ban_list_log);
+		add_log('mod', 0, 0, $log_entry . strtoupper($mode), $ban_reason, $ban_list_log);
 
 		return true;
 	}
@@ -1012,7 +1015,9 @@ function user_unban($mode, $ban)
 			WHERE ' . $db->sql_in_set('ban_id', $unban_sql);
 		$db->sql_query($sql);
 
+		// Add to moderator and admin log
 		add_log('admin', 'LOG_UNBAN_' . strtoupper($mode), $l_unban_list);
+		add_log('mod', 0, 0, 'LOG_UNBAN_' . strtoupper($mode), $l_unban_list);
 	}
 
 	return false;
@@ -1147,9 +1152,14 @@ function validate_num($num, $optional = false, $min = 0, $max = 1E99)
 *
 * @return	boolean|string	Either false if validation succeeded or a string which will be used as the error message (with the variable name appended)
 */
-function validate_match($string, $optional = false, $match)
+function validate_match($string, $optional = false, $match = '')
 {
 	if (empty($string) && $optional)
+	{
+		return false;
+	}
+
+	if (empty($match))
 	{
 		return false;
 	}
