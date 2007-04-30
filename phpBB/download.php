@@ -31,6 +31,7 @@ if (isset($_GET['avatar']))
 	{
 		exit;
 	}
+	unset($dbpasswd)
 
 	$config = $cache->obtain_config();
 	$filename = $_GET['avatar'];

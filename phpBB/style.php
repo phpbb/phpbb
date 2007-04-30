@@ -67,6 +67,7 @@ if ($id && $sid)
 	{
 		exit;
 	}
+	unset($dbpasswd);
 
 	$config = $cache->obtain_config();
 
