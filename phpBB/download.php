@@ -31,7 +31,7 @@ if (isset($_GET['avatar']))
 	{
 		exit;
 	}
-	unset($dbpasswd)
+	unset($dbpasswd);
 
 	$config = $cache->obtain_config();
 	$filename = $_GET['avatar'];
@@ -272,7 +272,8 @@ function send_avatar_to_browser($file)
 	global $config, $phpbb_root_path;
 	$prefix = $config['avatar_salt'] . '_'; 
 	$img_dir = $config['avatar_path'];
-	$browser = $_SERVER['HTTP_USER_AGENT'];
+	// worst-case default
+	$browser = (!empty($_SERVER['HTTP_USER_AGENT'])) ? htmlspecialchars((string) $_SERVER['HTTP_USER_AGENT']) : 'msie 6.0';
 
 	// Adjust img_dir path (no trailing slash)
 	if (substr($img_dir, -1, 1) == '/' || substr($img_dir, -1, 1) == '\\')
@@ -411,10 +412,10 @@ function send_file_to_browser($attachment, $upload_dir, $category)
 	// Send out the Headers. Do not set Content-Disposition to inline please, it is a security measure for users using the Internet Explorer.
 	header('Content-Type: ' . $attachment['mimetype']);
  
-	if (strpos(strtolower($user->browser), 'msie') !== false)
+	if (empty($user->browser) || (strpos(strtolower($user->browser), 'msie') !== false))
 	{
 		header('Content-Disposition: attachment; ' . header_filename(htmlspecialchars_decode($attachment['real_filename'])));
-		if (strpos(strtolower($user->browser), 'msie 6.0') !== false)
+		if (empty($user->browser) || (strpos(strtolower($user->browser), 'msie 6.0') !== false))
 		{
 			header('expires: -1');
 		}
@@ -452,7 +453,7 @@ function send_file_to_browser($attachment, $upload_dir, $category)
 */
 function header_filename($file)
 {
-	$user_agent = $_SERVER['HTTP_USER_AGENT'];
+	$user_agent = (!empty($_SERVER['HTTP_USER_AGENT'])) ? htmlspecialchars((string) $_SERVER['HTTP_USER_AGENT']) : '';
 
 	// There be dragons here.
 	// Not many follows the RFC...
