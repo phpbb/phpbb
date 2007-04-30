@@ -622,7 +622,7 @@ function mcp_move_topic($topic_ids)
 		$success_msg = (sizeof($topic_ids) == 1) ? 'TOPIC_MOVED_SUCCESS' : 'TOPICS_MOVED_SUCCESS';
 
 		// we must update the info, this post is being moved and is not the newest anymore
-		if ($forum_sync_data[$forum_id]['forum_last_post_id'] == $row_data['last_post_id'] && $row_data[''])
+		if ($forum_sync_data[$forum_id]['forum_last_post_id'] == $row_data['last_post_id'])
 		{
 			$forum_sync_data[$forum_id]['forum_last_post_id'] = 0;
 			$forum_sync_data[$forum_id]['forum_last_post_subject'] = '';
