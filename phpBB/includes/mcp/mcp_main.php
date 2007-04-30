@@ -546,11 +546,12 @@ function mcp_move_topic($topic_ids)
 		$db->sql_freeresult($result);
 
 		$forum_sync_data[$forum_id]['forum_posts'] -= (int) $row_data['topic_posts'];
+		$forum_sync_data[$forum_id]['forum_topics'] -= (int) $topics_authed_moved;
+		$forum_sync_data[$forum_id]['forum_topics_real'] -= (int) $topics_moved;
+
 		$forum_sync_data[$to_forum_id]['forum_posts'] += (int) $row_data['topic_posts'];
-		$forum_sync_data[$forum_id]['forum_topics'] -= (int) $topics_moved;
-		$forum_sync_data[$to_forum_id]['forum_topics'] += (int) $topics_moved;
-		$forum_sync_data[$forum_id]['forum_topics_real'] -= (int) $topics_authed_moved;
-		$forum_sync_data[$to_forum_id]['forum_topics_real'] += (int) $topics_authed_moved;
+		$forum_sync_data[$to_forum_id]['forum_topics'] += (int) $topics_authed_moved;
+		$forum_sync_data[$to_forum_id]['forum_topics_real'] += (int) $topics_moved;
 
 		$db->sql_transaction('begin');
 
@@ -613,6 +614,7 @@ function mcp_move_topic($topic_ids)
 				$db->sql_query('INSERT INTO ' . TOPICS_TABLE . $db->sql_build_array('INSERT', $shadow));
 
 				$forum_sync_data[(int) $row['forum_id']]['forum_topics']++;
+				$forum_sync_data[(int) $row['forum_id']]['forum_topics_real']++;
 			}
 		}
 		unset($topic_data);
@@ -620,7 +622,7 @@ function mcp_move_topic($topic_ids)
 		$success_msg = (sizeof($topic_ids) == 1) ? 'TOPIC_MOVED_SUCCESS' : 'TOPICS_MOVED_SUCCESS';
 
 		// we must update the info, this post is being moved and is not the newest anymore
-		if ($forum_sync_data[$forum_id]['forum_last_post_id'] == $row_data['last_post_id'])
+		if ($forum_sync_data[$forum_id]['forum_last_post_id'] == $row_data['last_post_id'] && $row_data[''])
 		{
 			$forum_sync_data[$forum_id]['forum_last_post_id'] = 0;
 			$forum_sync_data[$forum_id]['forum_last_post_subject'] = '';

@@ -1534,6 +1534,8 @@ function submit_post($mode, $subject, $username, $topic_type, &$poll, &$data, $u
 		break;
 	}
 
+	$post_approved = $sql_data[POSTS_TABLE]['sql']['post_approved'];
+
 	// And the topic ladies and gentlemen
 	switch ($post_mode)
 	{
@@ -1879,14 +1881,22 @@ function submit_post($mode, $subject, $username, $topic_type, &$poll, &$data, $u
 	{
 		if ($topic_type != POST_GLOBAL)
 		{
-			$update_sql = update_post_information('forum', $data['forum_id'], true, $data['post_id']);
+			if ($post_approved)
+			{
+				$update_sql = update_post_information('forum', $data['forum_id'], true, $data['post_id']);
+			}
+
 			if (sizeof($update_sql))
 			{
 				$sql_data[FORUMS_TABLE]['stat'][] = implode(', ', $update_sql[$data['forum_id']]);
 			}
 		}
 
-		$update_sql = update_post_information('topic', $data['topic_id'], true, $data['post_id']);
+		if ($post_approved)
+		{
+			$update_sql = update_post_information('topic', $data['topic_id'], true, $data['post_id']);
+		}
+
 		if (sizeof($update_sql))
 		{
 			$sql_data[TOPICS_TABLE]['stat'][] = implode(', ', $update_sql[$data['topic_id']]);
