@@ -914,6 +914,8 @@ class session
 
 		if ($banned && !$return)
 		{
+			global $template;
+
 			// If the session is empty we need to create a valid one...
 			if (empty($this->session_id))
 			{
@@ -934,11 +936,11 @@ class session
 			{
 				global $phpEx;
 
-				// Set as a precaution to allow login_box() handling this case correctly as well as this function not being executed again.
-				define('IN_CHECK_BAN', 1);
-
 				$this->setup('ucp');
 				$this->data['is_registered'] = $this->data['is_bot'] = false;
+
+				// Set as a precaution to allow login_box() handling this case correctly as well as this function not being executed again.
+				define('IN_CHECK_BAN', 1);
 
 				login_box("index.$phpEx");
 
@@ -948,10 +950,13 @@ class session
 
 			// Ok, we catch the case of an empty session id for the anonymous user...
 			// This can happen if the user is logging in, banned by username and the login_box() being called "again".
-			if (empty($this->session_id))
+			if (empty($this->session_id) && defined('IN_CHECK_BAN'))
 			{
 				$this->session_create(ANONYMOUS);
 			}
+
+			// Because we never have a fully working session we need to embed the style
+			$template->assign_var('S_FORCE_EMBED_STYLE', true);
 
 			// Determine which message to output
 			$till_date = ($ban_row['ban_end']) ? $this->format_date($ban_row['ban_end']) : '';
