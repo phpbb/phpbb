@@ -72,11 +72,24 @@ function compose_pm($id, $mode, $action)
 	{
 		if ($config['allow_mass_pm'] && $auth->acl_get('u_masspm'))
 		{
-			$sql = 'SELECT group_id, group_name, group_type
-				FROM ' . GROUPS_TABLE . '
-				WHERE group_type <> ' . GROUP_HIDDEN . '
-					AND group_receive_pm = 1
-				ORDER BY group_type DESC';
+			$sql = 'SELECT g.group_id, g.group_name, g.group_type
+				FROM ' . GROUPS_TABLE . ' g';
+
+			if (!$auth->acl_gets('a_group', 'a_groupadd', 'a_groupdel'))
+			{
+				$sql .= ' LEFT JOIN ' . USER_GROUP_TABLE . ' ug
+					ON (
+						g.group_id = ug.group_id
+						AND ug.user_id = ' . $user->data['user_id'] . '
+						AND ug.user_pending = 0
+					)
+					WHERE (g.group_type <> ' . GROUP_HIDDEN . ' OR ug.user_id = ' . $user->data['user_id'] . ')';
+			}
+
+			$sql .= ($auth->acl_gets('a_group', 'a_groupadd', 'a_groupdel')) ? ' WHERE ' : ' AND ';
+
+			$sql .= 'g.group_receive_pm = 1
+				ORDER BY g.group_type DESC, g.group_name ASC';
 			$result = $db->sql_query($sql);
 
 			$group_options = '';
@@ -731,17 +744,33 @@ function compose_pm($id, $mode, $action)
 		{
 			$sql = 'SELECT user_id as id, username as name, user_colour as colour
 				FROM ' . USERS_TABLE . '
-				WHERE ' . $db->sql_in_set('user_id', array_map('intval', array_keys($address_list['u'])));
+				WHERE ' . $db->sql_in_set('user_id', array_map('intval', array_keys($address_list['u']))) . '
+				ORDER BY username_clean ASC';
 			$result['u'] = $db->sql_query($sql);
 		}
 
 		if (!empty($address_list['g']))
 		{
-			$sql = 'SELECT group_id as id, group_name as name, group_colour as colour, group_type
-				FROM ' . GROUPS_TABLE . '
-				WHERE group_receive_pm = 1
-					AND group_type <> ' . GROUP_HIDDEN . '
-					AND ' . $db->sql_in_set('group_id', array_map('intval', array_keys($address_list['g'])));
+			$sql = 'SELECT g.group_id AS id, g.group_name AS name, g.group_colour AS colour, g.group_type
+				FROM ' . GROUPS_TABLE . ' g';
+
+			if (!$auth->acl_gets('a_group', 'a_groupadd', 'a_groupdel'))
+			{
+				$sql .= ' LEFT JOIN ' . USER_GROUP_TABLE . ' ug
+					ON (
+						g.group_id = ug.group_id
+						AND ug.user_id = ' . $user->data['user_id'] . '
+						AND ug.user_pending = 0
+					)
+					WHERE (g.group_type <> ' . GROUP_HIDDEN . ' OR ug.user_id = ' . $user->data['user_id'] . ')';
+			}
+
+			$sql .= ($auth->acl_gets('a_group', 'a_groupadd', 'a_groupdel')) ? ' WHERE ' : ' AND ';
+
+			$sql .= 'g.group_receive_pm = 1
+				AND ' . $db->sql_in_set('g.group_id', array_map('intval', array_keys($address_list['g']))) . '
+				ORDER BY g.group_name ASC';
+
 			$result['g'] = $db->sql_query($sql);
 		}
 

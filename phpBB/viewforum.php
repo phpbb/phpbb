@@ -410,11 +410,9 @@ $sql_array = array(
 // Funnily enough you typically save one query if going from the last page to the middle (store_reverse) because
 // the number of stickies are not known
 $sql = $db->sql_build_query('SELECT', $sql_array);
-//$sql = str_replace('{SQL_TOPIC_TYPE}', ($store_reverse) ? POST_NORMAL : POST_STICKY, $sql);
 $result = $db->sql_query_limit($sql, $sql_limit, $sql_start);
 
 $shadow_topic_list = array();
-//$num_rows = 0;
 while ($row = $db->sql_fetchrow($result))
 {
 	if ($row['topic_status'] == ITEM_MOVED)
@@ -424,30 +422,9 @@ while ($row = $db->sql_fetchrow($result))
 
 	$rowset[$row['topic_id']] = $row;
 	$topic_list[] = $row['topic_id'];
-//	$num_rows++;
 }
 $db->sql_freeresult($result);
 
-/* If the number of topics exceeds the sql limit then we do not need to retrieve the remaining topic type
-if ($num_rows < $sql_limit)
-{
-	$sql = $db->sql_build_query('SELECT', $sql_array);
-	$sql = str_replace('{SQL_TOPIC_TYPE}', ($store_reverse) ? POST_STICKY : POST_NORMAL, $sql);
-	$result = $db->sql_query_limit($sql, $sql_limit - $num_rows, $sql_start);
-
-	while ($row = $db->sql_fetchrow($result))
-	{
-		if ($row['topic_status'] == ITEM_MOVED)
-		{
-			$shadow_topic_list[$row['topic_moved_id']] = $row['topic_id'];
-		}
-
-		$rowset[$row['topic_id']] = $row;
-		$topic_list[] = $row['topic_id'];
-	}
-	$db->sql_freeresult($result);
-}
-*/
 // If we have some shadow topics, update the rowset to reflect their topic information
 if (sizeof($shadow_topic_list))
 {
@@ -459,6 +436,17 @@ if (sizeof($shadow_topic_list))
 	while ($row = $db->sql_fetchrow($result))
 	{
 		$orig_topic_id = $shadow_topic_list[$row['topic_id']];
+
+		// If the shadow topic is already listed within the rowset (happens for active topics for example), then do not include it...
+		if (isset($rowset[$row['topic_id']]))
+		{
+			// We need to remove any trace regarding this topic. :)
+			unset($rowset[$orig_topic_id]);
+			unset($topic_list[array_search($orig_topic_id, $topic_list)]);
+			$topics_count--;
+
+			continue;
+		}
 
 		// Do not include those topics the user has no permission to access
 		if (!$auth->acl_get('f_read', $row['forum_id']))
@@ -482,6 +470,12 @@ if (sizeof($shadow_topic_list))
 	$db->sql_freeresult($result);
 }
 unset($shadow_topic_list);
+
+// Ok, adjust topics count for active topics list
+if ($s_display_active)
+{
+	$topics_count = 1;
+}
 
 $template->assign_vars(array(
 	'PAGINATION'	=> generate_pagination(append_sid("{$phpbb_root_path}viewforum.$phpEx", "f=$forum_id&amp;$u_sort_param"), $topics_count, $config['topics_per_page'], $start),

@@ -406,7 +406,7 @@ switch ($mode)
 		$sql = 'SELECT g.group_id, g.group_name, g.group_type
 			FROM ' . GROUPS_TABLE . ' g, ' . USER_GROUP_TABLE . " ug
 			WHERE ug.user_id = $user_id
-				AND g.group_id = ug.group_id" . ((!$auth->acl_get('a_group')) ? ' AND g.group_type <> ' . GROUP_HIDDEN : '') . '
+				AND g.group_id = ug.group_id" . ((!$auth->acl_gets('a_group', 'a_groupadd', 'a_groupdel')) ? ' AND g.group_type <> ' . GROUP_HIDDEN : '') . '
 				AND ug.user_pending = 0
 			ORDER BY g.group_type, g.group_name';
 		$result = $db->sql_query($sql);
@@ -1180,10 +1180,25 @@ switch ($mode)
 			$group_selected = request_var('search_group_id', 0);
 			$s_group_select = '<option value="0"' . ((!$group_selected) ? ' selected="selected"' : '') . '>&nbsp;</option>';
 
-			$sql = 'SELECT group_id, group_name, group_type
-				FROM ' . GROUPS_TABLE . '
-				WHERE group_type <> ' . GROUP_HIDDEN . '
-				ORDER BY group_name ASC';
+			if ($auth->acl_gets('a_group', 'a_groupadd', 'a_groupdel'))
+			{
+				$sql = 'SELECT group_id, group_name, group_type
+					FROM ' . GROUPS_TABLE . '
+					ORDER BY group_name ASC';
+			}
+			else
+			{
+				$sql = 'SELECT g.group_id, g.group_name, g.group_type
+					FROM ' . GROUPS_TABLE . ' g
+					LEFT JOIN ' . USER_GROUP_TABLE . ' ug
+						ON (
+							g.group_id = ug.group_id
+							AND ug.user_id = ' . $user->data['user_id'] . '
+							AND ug.user_pending = 0
+						)
+					WHERE (g.group_type <> ' . GROUP_HIDDEN . ' OR ug.user_id = ' . $user->data['user_id'] . ')
+					ORDER BY g.group_name ASC';
+			}
 			$result = $db->sql_query($sql);
 
 			while ($row = $db->sql_fetchrow($result))

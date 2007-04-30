@@ -11,7 +11,7 @@
 					<dd>
 						<!-- BEGIN to_recipient -->
 							<!-- IF not to_recipient.S_FIRST_ROW and to_recipient.S_ROW_COUNT mod 2 eq 0 --></dd><dd><!-- ENDIF -->
-							<!-- IF to_recipient.IS_GROUP --><a href="{to_recipient.U_VIEW}"><strong>{to_recipient.NAME}</strong></a><!-- ELSE -->{to_recipient.NAME_FULL}&nbsp;<!-- ENDIF -->
+							<!-- IF to_recipient.IS_GROUP --><a href="{to_recipient.U_VIEW}"><strong>{to_recipient.NAME}</strong></a>&nbsp;<!-- ELSE -->{to_recipient.NAME_FULL}&nbsp;<!-- ENDIF -->
 							<!-- IF not S_EDIT_POST --><input type="submit" name="remove_{to_recipient.TYPE}[{to_recipient.UG_ID}]" value="x" class="button2" />&nbsp;<!-- ENDIF -->
 						<!-- END to_recipient -->
 					</dd>

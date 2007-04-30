@@ -36,17 +36,27 @@ $l_total_post_s = ($total_posts == 0) ? 'TOTAL_POSTS_ZERO' : 'TOTAL_POSTS_OTHER'
 $l_total_topic_s = ($total_topics == 0) ? 'TOTAL_TOPICS_ZERO' : 'TOTAL_TOPICS_OTHER';
 
 // Grab group details for legend display
-$sql = 'SELECT g.group_id, g.group_name, g.group_colour, g.group_type
-	FROM ' . GROUPS_TABLE . ' g
-	LEFT JOIN ' . USER_GROUP_TABLE . ' ug
-		ON (
-			g.group_id = ug.group_id
-			AND ug.user_id = ' . $user->data['user_id'] . '
-			AND ug.user_pending = 0
-		)
-	WHERE g.group_legend = 1
-		AND (g.group_type <> ' . GROUP_HIDDEN . ' OR ug.user_id = ' . $user->data['user_id'] . ')
-	ORDER BY g.group_name ASC';
+if ($auth->acl_gets('a_group', 'a_groupadd', 'a_groupdel'))
+{
+	$sql = 'SELECT group_id, group_name, group_colour, group_type
+		FROM ' . GROUPS_TABLE . '
+		WHERE group_legend = 1
+		ORDER BY group_name ASC';
+}
+else
+{
+	$sql = 'SELECT g.group_id, g.group_name, g.group_colour, g.group_type
+		FROM ' . GROUPS_TABLE . ' g
+		LEFT JOIN ' . USER_GROUP_TABLE . ' ug
+			ON (
+				g.group_id = ug.group_id
+				AND ug.user_id = ' . $user->data['user_id'] . '
+				AND ug.user_pending = 0
+			)
+		WHERE g.group_legend = 1
+			AND (g.group_type <> ' . GROUP_HIDDEN . ' OR ug.user_id = ' . $user->data['user_id'] . ')
+		ORDER BY g.group_name ASC';
+}
 $result = $db->sql_query($sql);
 
 $legend = '';

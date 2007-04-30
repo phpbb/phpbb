@@ -717,7 +717,7 @@ function define_cond_option($hardcoded, $cond_option, $rule_option, $global_rule
 						AND ug.user_id = ' . $user->data['user_id'] . '
 						AND ug.user_pending = 0
 					)
-				WHERE (ug.user_id = ' . $user->data['user_id'] . ' OR g.group_type <> ' . GROUP_HIDDEN . ')
+					WHERE (ug.user_id = ' . $user->data['user_id'] . ' OR g.group_type <> ' . GROUP_HIDDEN . ')
 					AND';
 			}
 			else

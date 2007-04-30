@@ -363,11 +363,27 @@ unset($vars_online);
 $pagination = generate_pagination(append_sid("{$phpbb_root_path}viewonline.$phpEx", "sg=$show_guests&amp;sk=$sort_key&amp;sd=$sort_dir"), $counter, $config['topics_per_page'], $start);
 
 // Grab group details for legend display
-$sql = 'SELECT group_id, group_name, group_colour, group_type
-	FROM ' . GROUPS_TABLE . '
-	WHERE group_legend = 1
-		AND group_type <> ' . GROUP_HIDDEN . '
-	ORDER BY group_name ASC';
+if ($auth->acl_gets('a_group', 'a_groupadd', 'a_groupdel'))
+{
+	$sql = 'SELECT group_id, group_name, group_colour, group_type
+		FROM ' . GROUPS_TABLE . '
+		WHERE group_legend = 1
+		ORDER BY group_name ASC';
+}
+else
+{
+	$sql = 'SELECT g.group_id, g.group_name, g.group_colour, g.group_type
+		FROM ' . GROUPS_TABLE . ' g
+		LEFT JOIN ' . USER_GROUP_TABLE . ' ug
+			ON (
+				g.group_id = ug.group_id
+				AND ug.user_id = ' . $user->data['user_id'] . '
+				AND ug.user_pending = 0
+			)
+		WHERE g.group_legend = 1
+			AND (g.group_type <> ' . GROUP_HIDDEN . ' OR ug.user_id = ' . $user->data['user_id'] . ')
+		ORDER BY g.group_name ASC';
+}
 $result = $db->sql_query($sql);
 
 $legend = '';
