@@ -189,14 +189,18 @@ else
 // Hide some of the options if we don't have the relevant information to use them
 if (!$post_id)
 {
-	$module->set_display('reports', 'report_details', false);
 	$module->set_display('main', 'post_details', false);
 	$module->set_display('warn', 'warn_post', false);
+}
 
-	if (!$topic_id || $mode == 'unapproved_posts')
-	{
-		$module->set_display('queue', 'approve_details', false);
-	}
+if ($mode == '' || $mode == 'unapproved_topics' || $mode == 'unapproved_posts')
+{
+	$module->set_display('queue', 'approve_details', false);
+}
+
+if ($mode == '' || $mode == 'reports' || $mode == 'reports_closed')
+{
+	$module->set_display('reports', 'report_details', false);
 }
 
 if (!$topic_id)

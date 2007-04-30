@@ -132,7 +132,8 @@ if ($submit && $reason_id)
 	{
 		$sql = 'UPDATE ' . TOPICS_TABLE . '
 			SET topic_reported = 1
-			WHERE topic_id = ' . $report_data['topic_id'];
+			WHERE topic_id = ' . $report_data['topic_id'] . '
+				OR topic_moved_id = ' . $report_data['topic_id'];
 		$db->sql_query($sql);
 	}
 
