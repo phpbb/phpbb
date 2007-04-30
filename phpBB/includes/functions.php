@@ -2637,7 +2637,7 @@ function make_clickable($text, $server_url = false, $class = 'postlink')
 		$magic_url_replace[] = "'\$1<!-- w --><a$class href=\"http://\$2\">' . ((strlen('\$2') > 55) ? str_replace('&', '&amp;', substr(str_replace('&amp;', '&', '\$2'), 0, 39)) . ' ... ' . str_replace('&', '&amp;', substr(str_replace('&amp;', '&', '\$2'), -10)) : '\$2') . '</a><!-- w -->'";
 
 		// matches an email@domain type address at the start of a line, or after a space or after what might be a BBCode.
-		$magic_url_match[] = '/(^|[\n\t )>])(' . get_preg_expression('email') . ')/ie';
+		$magic_url_match[] = '/(^|[\n\t (>])(' . get_preg_expression('email') . ')/ie';
 		$magic_url_replace[] = "'\$1<!-- e --><a href=\"mailto:\$2\">' . ((strlen('\$2') > 55) ? substr('\$2', 0, 39) . ' ... ' . substr('\$2', -10) : '\$2') . '</a><!-- e -->'";
 	}
 
@@ -3271,7 +3271,7 @@ function get_preg_expression($mode)
 			return array(
 				'#<!\-\- e \-\-><a href="mailto:(.*?)">.*?</a><!\-\- e \-\->#',
 				'#<!\-\- l \-\-><a (?:class="[\w-]+" )?href="(.*?)(?:(&amp;|\?)sid=[0-9a-f]{32})?">.*?</a><!\-\- l \-\->#',
-				'#<!\-\- ([mw]) \-\-><a href="(.*?)">.*?</a><!\-\- \1 \-\->#',
+				'#<!\-\- ([mw]) \-\-><a (?:class="[\w-]+" )?href="(.*?)">.*?</a><!\-\- \1 \-\->#',
 				'#<!\-\- s(.*?) \-\-><img src="\{SMILIES_PATH\}\/.*? \/><!\-\- s\1 \-\->#',
 				'#<!\-\- .*? \-\->#s',
 				'#<.*?>#s',
