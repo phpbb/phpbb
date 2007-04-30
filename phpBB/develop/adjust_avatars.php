@@ -83,7 +83,7 @@ $db->sql_freeresult($result);
 $sql = 'SELECT user_id, username, user_avatar, user_avatar_type
 	FROM ' . USERS_TABLE . ' 
 	WHERE user_avatar_type = ' . AVATAR_UPLOAD . ' 
-	AND ' . $db->sql_in_set('user_avatar', $group_avatars, true);
+	AND ' . $db->sql_in_set('user_avatar', $group_avatars, true, true);
 	
 $result = $db->sql_query($sql);
  
