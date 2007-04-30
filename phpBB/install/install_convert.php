@@ -1457,7 +1457,7 @@ class install_convert extends module
 		}
 		else
 		{
-			$sync_batch -= $batch_size;
+			$sync_batch--;
 		}
 
 		$url = $this->save_convert_progress('&amp;sync_batch=' . $sync_batch);

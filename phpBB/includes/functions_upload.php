@@ -81,7 +81,7 @@ class filespec
 	* @param string $prefix Prefix applied to filename
 	* @access public
 	*/
-	function clean_filename($mode = 'unique', $prefix = '')
+	function clean_filename($mode = 'unique', $prefix = '', $user_id = '')
 	{
 		if ($this->init_error)
 		{
@@ -110,6 +110,10 @@ class filespec
 				$this->realname = $prefix . md5(unique_id());
 			break;
 
+			case 'avatar':
+				$this->realname = $prefix . $user_id . '.' . $this->extension;
+			break;
+			
 			case 'unique_ext':
 			default:
 				$this->realname = $prefix . md5(unique_id()) . '.' . $this->extension;

@@ -1269,7 +1269,11 @@ class install_install extends module
 			'UPDATE ' . $table_prefix . "config
 				SET config_value = '" . $db->sql_escape($admin_name) . "'
 				WHERE config_name = 'newest_username'",
-
+			
+			'UPDATE ' . $table_prefix . "config
+				SET config_value = '" . md5(mt_rand()) . "'
+				WHERE config_name = 'avatar_salt'",
+				
 			'UPDATE ' . $table_prefix . "users
 				SET username = '" . $db->sql_escape($admin_name) . "', user_password='" . $db->sql_escape(md5($admin_pass1)) . "', user_ip = '" . $db->sql_escape($user_ip) . "', user_lang = '" . $db->sql_escape($default_lang) . "', user_email='" . $db->sql_escape($board_email1) . "', user_dateformat='" . $db->sql_escape($lang['default_dateformat']) . "', user_email_hash = " . (crc32($board_email1) . strlen($board_email1)) . ", username_clean = '" . $db->sql_escape(utf8_clean_string($admin_name)) . "'
 				WHERE username = 'Admin'",

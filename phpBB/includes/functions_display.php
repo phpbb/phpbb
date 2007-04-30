@@ -1117,7 +1117,7 @@ function get_user_rank($user_rank, $user_posts, &$rank_title, &$rank_img, &$rank
 */
 function get_user_avatar($avatar, $avatar_type, $avatar_width, $avatar_height, $alt = 'USER_AVATAR')
 {
-	global $user, $config, $phpbb_root_path;
+	global $user, $config, $phpbb_root_path, $phpEx;
 
 	if (empty($avatar) || !$avatar_type)
 	{
@@ -1129,7 +1129,7 @@ function get_user_avatar($avatar, $avatar_type, $avatar_width, $avatar_height, $
 	switch ($avatar_type)
 	{
 		case AVATAR_UPLOAD:
-			$avatar_img = $phpbb_root_path . $config['avatar_path'] . '/';
+			$avatar_img = $phpbb_root_path . "download.$phpEx?avatar=";
 		break;
 
 		case AVATAR_GALLERY:

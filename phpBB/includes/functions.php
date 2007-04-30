@@ -2878,16 +2878,18 @@ function parse_attachments($forum_id, &$message, &$attachments, &$update_count, 
 				$display_cat = ATTACHMENT_CATEGORY_NONE;
 			}
 
-			$download_link = append_sid("{$phpbb_root_path}download.$phpEx", 'id=' . $attachment['attach_id'] . '&amp;f=' . (int) $forum_id);
+			$download_link = append_sid("{$phpbb_root_path}download.$phpEx", 'id=' . $attachment['attach_id'] . '&amp;f=' . (int) $forum_id . '&amp;mode=view');
 
 			switch ($display_cat)
 			{
 				// Images
 				case ATTACHMENT_CATEGORY_IMAGE:
 					$l_downloaded_viewed = 'VIEWED_COUNT';
+					$inline_link = append_sid("{$phpbb_root_path}download.$phpEx", 'id=' . $attachment['attach_id'] . '&amp;f=' . (int) $forum_id);
 
 					$block_array += array(
 						'S_IMAGE'		=> true,
+						'U_INLINE_LINK'		=> $inline_link,
 					);
 
 					$update_count[] = $attachment['attach_id'];

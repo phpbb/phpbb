@@ -1419,7 +1419,7 @@ function phpbb_import_avatar($user_avatar)
 	else if ($convert_row['user_avatar_type'] == 1)
 	{
 		// Uploaded avatar
-		return import_avatar($user_avatar);
+		return import_avatar($user_avatar, false, $convert_row['user_id']);
 	}
 	else if ($convert_row['user_avatar_type'] == 2)
 	{

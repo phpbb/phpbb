@@ -1489,6 +1489,8 @@ function validate_email($email, $allowed_email = false)
 	return false;
 }
 
+
+
 /**
 * Remove avatar
 */
@@ -1499,15 +1501,16 @@ function avatar_delete($mode, $row)
 	// Check if the users avatar is actually *not* a group avatar
 	if ($mode == 'user')
 	{
-		if (strpos($row['user_avatar'], 'g' . $row['group_id'] . '_') === 0 || strpos($row['user_avatar'], $row['user_id'] . '_') !== 0)
+		if (strpos($row['user_avatar'], 'g') === 0 || (((int)$row['user_avatar'] !== 0) && ((int)$row['user_avatar'] !== (int)$row['user_id'])))
 		{
 			return false;
 		}
 	}
-
-	if (file_exists($phpbb_root_path . $config['avatar_path'] . '/' . basename($row[$mode . '_avatar'])))
+	
+	$filename = get_avatar_filename($row[$mode . '_avatar']);
+	if (file_exists($phpbb_root_path . $config['avatar_path'] . '/' . $filename))
 	{
-		@unlink($phpbb_root_path . $config['avatar_path'] . '/' . basename($row[$mode . '_avatar']));
+		@unlink($phpbb_root_path . $config['avatar_path'] . '/' . $filename);
 		return true;
 	}
 
@@ -1612,8 +1615,9 @@ function avatar_upload($data, &$error)
 	{
 		$file = $upload->remote_upload($data['uploadurl']);
 	}
-
-	$file->clean_filename('real', $data['user_id'] . '_');
+	
+	$prefix = $config['avatar_salt'] . '_';
+	$file->clean_filename('avatar', $prefix, $data['user_id']);
 
 	$destination = $config['avatar_path'];
 
@@ -1638,7 +1642,29 @@ function avatar_upload($data, &$error)
 		$error = array_merge($error, $file->error);
 	}
 
-	return array(AVATAR_UPLOAD, $file->get('realname'), $file->get('width'), $file->get('height'));
+	return array(AVATAR_UPLOAD, $data['user_id'] . '_' . substr(time(), -5) . '.' . $file->get('extension'), $file->get('width'), $file->get('height'));
+}
+
+/**
+* Generates avatar filename from the database entry
+*/
+function get_avatar_filename($avatar_entry)
+{
+	global $config;
+
+	
+	if ($avatar_entry[0] === 'g')
+	{
+		$avatar_group = true;
+		$avatar_entry = substr($avatar_entry, 1);
+	}
+	else
+	{
+		$avatar_group = false;
+	}
+	$ext 			= substr(strrchr($avatar_entry, '.'), 1);
+	$avatar_entry	= intval($avatar_entry);
+	return $config['avatar_salt'] . '_' . (($avatar_group) ? 'g' : '') . $avatar_entry . '.' . $ext;
 }
 
 /**
@@ -1858,7 +1884,7 @@ function avatar_process_user(&$error, $custom_userdata = false)
 				$userdata = ($custom_userdata === false) ? $user->data : $custom_userdata;
 
 				// Delete old avatar if present
-				if ($userdata['user_avatar'] && $sql_ary['user_avatar'] != $userdata['user_avatar'] && $userdata['user_avatar_type'] != AVATAR_GALLERY)
+				if ($userdata['user_avatar'] && empty($sql_ary['user_avatar']) && $userdata['user_avatar_type'] != AVATAR_GALLERY)
 				{
 					avatar_delete('user', $userdata);
 				}
@@ -1966,6 +1992,10 @@ function group_create(&$group_id, $type, $name, $desc, $group_attributes, $allow
 		if (!$group_id)
 		{
 			$group_id = $db->sql_nextid();
+			if ($sql_ary['group_avatar_type'] == AVATAR_UPLOAD)
+			{
+				group_correct_avatar($group_id, $sql_ary['group_avatar']);
+			}
 		}
 
 		// Set user attributes
@@ -2014,6 +2044,30 @@ function group_create(&$group_id, $type, $name, $desc, $group_attributes, $allow
 	}
 
 	return (sizeof($error)) ? $error : false;
+}
+
+
+/**
+* Changes a group avatar's filename to conform to the naming scheme
+*/
+function group_correct_avatar($group_id, $old_entry)
+{
+	global $config, $db, $phpbb_root_path;
+
+	$group_id		= (int)$group_id;
+	$ext 			= substr(strrchr($old_entry, '.'), 1);
+	$old_filename 	= get_avatar_filename($old_entry);
+	$new_filename 	= $config['avatar_salt'] . "_g$group_id.$ext";
+	$new_entry 		= 'g' . $group_id . '_' . substr(time(), -5) . ".$ext";
+	
+	$avatar_path = $phpbb_root_path . $config['avatar_path'];
+	if (@rename($avatar_path . '/'. $old_filename, $avatar_path . '/' . $new_filename))
+	{
+		$sql = 'UPDATE ' . GROUPS_TABLE . '
+			SET group_avatar = \'' . $db->sql_escape($new_entry) . "'
+			WHERE group_id = $group_id";
+		$db->sql_query($sql);
+	}
 }
 
 /**

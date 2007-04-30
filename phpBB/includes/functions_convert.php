@@ -630,7 +630,10 @@ function import_smiley($source, $use_target = false)
 	return $result['target'];
 }
 
-function import_avatar($source, $use_target = false)
+/*
+* 
+*/
+function import_avatar($source, $use_target = false, $user_id = false)
 {
 	if (empty($source) || preg_match('#^https?:#i', $source) || preg_match('#blank\.(gif|png)$#i', $source))
 	{
@@ -643,9 +646,15 @@ function import_avatar($source, $use_target = false)
 	{
 		$convert->p_master->error(sprintf($user->lang['CONV_ERROR_NO_AVATAR_PATH'], 'import_avatar()'), __LINE__, __FILE__);
 	}
-
+	
+	if ($use_target === false && $user_id !== false)
+	{
+		$use_target = $config['avatar_salt'] . '_' . $user_id . '.' . substr(strrchr($source, '.'), 1);
+	}
+	
 	$result = _import_check('avatar_path', $source, $use_target);
-	return $result['target'];
+
+	return ((!empty($user_id)) ? $user_id : $use_target) . '.' . substr(strrchr($source, '.'), 1);
 }
 
 /**

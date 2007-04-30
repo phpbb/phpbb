@@ -14,9 +14,87 @@
 define('IN_PHPBB', true);
 $phpbb_root_path = './';
 $phpEx = substr(strrchr(__FILE__, '.'), 1);
+
+if (isset($_GET['avatar']))
+{
+	require($phpbb_root_path . 'config.' . $phpEx);
+	require($phpbb_root_path . 'includes/acm/acm_' . $acm_type . '.' . $phpEx);
+	require($phpbb_root_path . 'includes/cache.' . $phpEx);
+	require($phpbb_root_path . 'includes/db/' . $dbms . '.' . $phpEx);
+	require($phpbb_root_path . 'includes/constants.' . $phpEx);
+
+	$db = new $sql_db();
+	$cache = new cache();
+
+	// Connect to DB
+	if (!@$db->sql_connect($dbhost, $dbuser, $dbpasswd, $dbname, $dbport, false, false))
+	{
+		exit;
+	}
+
+	$config = $cache->obtain_config();
+	$filename = $_GET['avatar'];
+	$avatar_group = false;
+	if ($filename[0] === 'g')
+	{
+		$avatar_group = true;
+		$filename = substr($filename, 1);
+	}
+	
+	// '==' is not a bug - . as the first char is as bad as no dot at all
+	if (strpos($filename, '.') == false)
+	{
+		header('HTTP/1.0 403 forbidden');
+		if (!empty($cache))
+		{
+			$cache->unload();
+		}
+		$db->sql_close();
+		exit;
+	}
+  
+	$ext 		= substr(strrchr($filename, '.'), 1);
+	$filename	= intval($filename);
+	
+	if (!in_array($ext, array('png', 'gif', 'jpg', 'jpeg')))
+	{
+		// no way such an avatar could exist. They are not following the rules, stop the show.
+		header("HTTP/1.0 403 forbidden");
+		if (!empty($cache))
+		{
+			$cache->unload();
+		}
+		$db->sql_close();
+		exit;
+	}
+
+	if (!$filename)
+	{
+		// no way such an avatar could exist. They are not following the rules, stop the show.
+		header("HTTP/1.0 403 forbidden");
+		if (!empty($cache))
+		{
+			$cache->unload();
+		}
+		$db->sql_close();
+		exit;
+	}
+ 
+	send_avatar_to_browser(($avatar_group ? 'g' : '') . $filename . '.' . $ext);
+ 
+	if (!empty($cache))
+	{
+		$cache->unload();
+	}
+	$db->sql_close();
+	exit;
+}
+
+// implicit else: we are not in avatar mode
 include($phpbb_root_path . 'common.' . $phpEx);
 
 $download_id = request_var('id', 0);
+$mode = request_var('mode', '');
 $thumbnail = request_var('t', false);
 
 // Start session management, do not update session page.
@@ -158,24 +236,115 @@ else if (($display_cat == ATTACHMENT_CATEGORY_NONE || $display_cat == ATTACHMENT
 	$db->sql_query($sql);
 }
 
-// Determine the 'presenting'-method
-if ($download_mode == PHYSICAL_LINK)
+if ($mode === 'view' && (strpos($attachment['mimetype'], 'image') === 0) && strpos(strtolower($user->browser), 'msie') !== false)
 {
-	// This presenting method should no longer be used
-	if (!@is_dir($phpbb_root_path . $config['upload_path']))
-	{
-		trigger_error($user->lang['PHYSICAL_DOWNLOAD_NOT_POSSIBLE']);
-	}
-
-	redirect($phpbb_root_path . $config['upload_path'] . '/' . $attachment['physical_filename']);
-	exit;
+	wrap_img_in_html(append_sid('./download.' . $phpEx, 'id=' . $attachment['attach_id']), $attachment['real_filename']);
 }
 else
 {
-	send_file_to_browser($attachment, $config['upload_path'], $extensions[$attachment['extension']]['display_cat']);
-	exit;
+	// Determine the 'presenting'-method
+	if ($download_mode == PHYSICAL_LINK)
+	{
+		// This presenting method should no longer be used
+		if (!@is_dir($phpbb_root_path . $config['upload_path']))
+		{
+			trigger_error($user->lang['PHYSICAL_DOWNLOAD_NOT_POSSIBLE']);
+		}
+		
+			redirect($phpbb_root_path . $config['upload_path'] . '/' . $attachment['physical_filename']);
+			exit;
+	}
+	else
+	{
+		send_file_to_browser($attachment, $config['upload_path'], $extensions[$attachment['extension']]['display_cat']);
+		exit;
+	}
 }
 
+
+/**
+* A simplified function to deliver avatars
+* The argument needs to be checked before calling this function.
+*/
+function send_avatar_to_browser($file)
+{
+	global $config, $phpbb_root_path;
+	$prefix = $config['avatar_salt'] . '_'; 
+	$img_dir = $config['avatar_path'];
+	$browser = $_SERVER['HTTP_USER_AGENT'];
+
+	// Adjust img_dir path (no trailing slash)
+	if (substr($img_dir, -1, 1) == '/' || substr($img_dir, -1, 1) == '\\')
+	{
+		$img_dir = substr($img_dir, 0, -1) . '/';
+	}
+	$img_dir = str_replace(array('../', '..\\', './', '.\\'), '', $img_dir);
+	if ($img_dir && ($img_dir[0] == '/' || $img_dir[0] == '\\'))
+	{
+		$img_dir = '';
+	}
+	$file_path = $phpbb_root_path . $img_dir . '/' . $prefix . $file;
+
+	if ((@file_exists($file_path) && @is_readable($file_path)) || headers_sent())
+	{
+		header('Pragma: public');
+
+		$image_data = (getimagesize($file_path));
+		header('Content-Type: ' . image_type_to_mime_type($image_data[2]));
+
+		if (strpos(strtolower($browser), 'msie') !== false)
+		{
+			header('Content-Disposition: attachment; ' . header_filename($file));
+			if (strpos(strtolower($browser), 'msie 6.0') !== false)
+			{
+				header('Expires: -1');
+			}
+			else
+			{
+				header('Expires: ' . gmdate('D, d M Y H:i:s \G\M\T', time() + 31536000));
+			}
+		}
+		else
+		{
+			header('Content-Disposition: inline; ' . header_filename($file));
+			header('Expires: ' . gmdate('D, d M Y H:i:s \G\M\T', time() + 31536000));
+		}
+
+		$size = @filesize($file_path);
+		if ($size)
+		{
+			header("Content-Length: $size");
+		}
+
+		readfile($file_path);
+		flush();
+	}
+	else
+	{
+		header('HTTP/1.0 404 not found');
+	}
+}
+
+/**
+* Wraps an url into a simple html page. Used to display attachments in IE.
+* this is a workaround for now; might be moved to template system later
+* direct any complaints to 1 Microsoft Way, Redmond
+*/
+function wrap_img_in_html($src, $title)
+{
+	echo '<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-Strict.dtd">';
+	echo '<html>';
+	echo '<head>';
+	echo '<meta http-equiv="content-type" content="text/html; charset=UTF-8" />';
+	echo '<title>' . $title . '</title>';
+	echo '</head>';
+	echo '<body>';
+	echo '<div>';
+	echo '<img src="' . $src . '" alt="' . $title . '" />';
+	echo '</div>';
+	echo '</body>';
+	echo '</html>';
+}
 
 /**
 * Send file to browser
@@ -240,8 +409,20 @@ function send_file_to_browser($attachment, $upload_dir, $category)
 
 	// Send out the Headers. Do not set Content-Disposition to inline please, it is a security measure for users using the Internet Explorer.
 	header('Content-Type: ' . $attachment['mimetype']);
-	header('Content-Disposition: ' . ((strpos($attachment['mimetype'], 'image') === 0) ? 'inline' : 'attachment') . '; ' . header_filename(htmlspecialchars_decode($attachment['real_filename'])));
-
+ 
+	if (strpos(strtolower($user->browser), 'msie') !== false)
+	{
+		header('Content-Disposition: attachment; ' . header_filename(htmlspecialchars_decode($attachment['real_filename'])));
+		if (strpos(strtolower($user->browser), 'msie 6.0') !== false)
+		{
+			header('expires: -1');
+		}
+	}
+	else
+	{
+		header('Content-Disposition: ' . ((strpos($attachment['mimetype'], 'image') === 0) ? 'inline' : 'attachment') . '; ' . header_filename(htmlspecialchars_decode($attachment['real_filename'])));
+	}
+	
 	if ($size)
 	{
 		header("Content-Length: $size");

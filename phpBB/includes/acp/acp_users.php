@@ -1620,7 +1620,7 @@ class acp_users
 				
 						'S_IN_MESSAGE'		=> $row['in_message'],
 
-						'U_DOWNLOAD'		=> append_sid("{$phpbb_root_path}download.$phpEx", 'id=' . $row['attach_id']),
+						'U_DOWNLOAD'		=> append_sid("{$phpbb_root_path}download.$phpEx", 'mode=view&amp;id=' . $row['attach_id']),
 						'U_VIEW_TOPIC'		=> $view_topic)
 					);
 				}

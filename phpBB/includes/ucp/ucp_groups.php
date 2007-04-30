@@ -544,7 +544,7 @@ class ucp_groups
 								}
 							}
 
-							if ((isset($submit_ary['avatar']) && $submit_ary['avatar'] && (!isset($group_row['group_avatar']) || $group_row['group_avatar'] != $submit_ary['avatar'])) || $delete)
+							if ((isset($submit_ary['avatar']) && $submit_ary['avatar'] && (!isset($group_row['group_avatar']))) || $delete)
 							{
 								if (isset($group_row['group_avatar']) && $group_row['group_avatar'])
 								{
