@@ -588,7 +588,7 @@ class acp_users
 						'user_founder'		=> request_var('user_founder', ($user_row['user_type'] == USER_FOUNDER) ? 1 : 0),
 						'email'				=> strtolower(request_var('user_email', $user_row['user_email'])),
 						'email_confirm'		=> strtolower(request_var('email_confirm', '')),
-						'new_password'		=> request_var('user_password', '', true),
+						'new_password'		=> request_var('new_password', '', true),
 						'password_confirm'	=> request_var('password_confirm', '', true),
 					);
 
