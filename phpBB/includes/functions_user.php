@@ -1992,7 +1992,7 @@ function group_create(&$group_id, $type, $name, $desc, $group_attributes, $allow
 		if (!$group_id)
 		{
 			$group_id = $db->sql_nextid();
-			if ($sql_ary['group_avatar_type'] == AVATAR_UPLOAD)
+			if (isset($sql_ary['group_avatar_type']) && $sql_ary['group_avatar_type'] == AVATAR_UPLOAD)
 			{
 				group_correct_avatar($group_id, $sql_ary['group_avatar']);
 			}
