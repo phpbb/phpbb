@@ -2468,27 +2468,32 @@ function group_user_attributes($action, $group_id, $user_id_ary = false, $userna
 	return true;
 }
 
-
 /**
 * A small version of validate_username to check for a group name's existence. To be called directly.
 */
-function group_validate_groupname($group_id, $groupname)
+function group_validate_groupname($group_id, $group_name)
 {
 	global $config, $db;
 
-	$groupname =  utf8_clean_string($groupname); 
+	$group_name =  utf8_clean_string($group_name); 
 
 	if (!empty($group_id))
 	{
 		$sql = 'SELECT group_name
-				FROM ' . GROUPS_TABLE . '
-				WHERE group_id = ' . (int)$group_id;
+			FROM ' . GROUPS_TABLE . '
+			WHERE group_id = ' . (int) $group_id;
 		$result = $db->sql_query($sql);
 		$row = $db->sql_fetchrow($result);
 		$db->sql_freeresult($result);
-		
-		$allowed_groupname = utf8_clean_string($row['group_name']);  
-		if ($allowed_groupname == $groupname)
+
+		if (!$row)
+		{
+			return false;
+		}
+
+		$allowed_groupname = utf8_clean_string($row['group_name']);
+
+		if ($allowed_groupname == $group_name)
 		{
 			return false;
 		}
@@ -2496,7 +2501,7 @@ function group_validate_groupname($group_id, $groupname)
 
 	$sql = 'SELECT group_name
 		FROM ' . GROUPS_TABLE . "
-		WHERE LOWER(group_name) = '" . $db->sql_escape(utf8_strtolower($groupname)) . "'";
+		WHERE LOWER(group_name) = '" . $db->sql_escape(utf8_strtolower($group_name)) . "'";
 	$result = $db->sql_query($sql);
 	$row = $db->sql_fetchrow($result);
 	$db->sql_freeresult($result);
@@ -2505,10 +2510,9 @@ function group_validate_groupname($group_id, $groupname)
 	{
 		return 'GROUP_NAME_TAKEN';
 	}
+
 	return false;
 }
-
-
 
 /**
 * Set users default group

@@ -486,8 +486,8 @@ class auth
 	{
 		global $db;
 
-		$sql_user = ($user_id !== false) ? ((!is_array($user_id)) ? "user_id = $user_id" : $db->sql_in_set('user_id', $user_id)) : '';
-		$sql_forum = ($forum_id !== false) ? ((!is_array($forum_id)) ? "AND a.forum_id = $forum_id" : 'AND ' . $db->sql_in_set('a.forum_id', $forum_id)) : '';
+		$sql_user = ($user_id !== false) ? ((!is_array($user_id)) ? 'user_id = ' . (int) $user_id : $db->sql_in_set('user_id', array_map('intval', $user_id))) : '';
+		$sql_forum = ($forum_id !== false) ? ((!is_array($forum_id)) ? 'AND a.forum_id = ' . (int) $forum_id : 'AND ' . $db->sql_in_set('a.forum_id', array_map('intval', $forum_id))) : '';
 
 		$sql_opts = '';
 
@@ -628,8 +628,8 @@ class auth
 	{
 		global $db;
 
-		$sql_user = ($user_id !== false) ? ((!is_array($user_id)) ? "user_id = $user_id" : $db->sql_in_set('user_id', $user_id)) : '';
-		$sql_forum = ($forum_id !== false) ? ((!is_array($forum_id)) ? "AND a.forum_id = $forum_id" : 'AND ' . $db->sql_in_set('a.forum_id', $forum_id)) : '';
+		$sql_user = ($user_id !== false) ? ((!is_array($user_id)) ? 'user_id = ' . (int) $user_id : $db->sql_in_set('user_id', array_map('intval', $user_id))) : '';
+		$sql_forum = ($forum_id !== false) ? ((!is_array($forum_id)) ? 'AND a.forum_id = ' . (int) $forum_id : 'AND ' . $db->sql_in_set('a.forum_id', array_map('intval', $forum_id))) : '';
 
 		$sql_opts = '';
 
@@ -682,8 +682,8 @@ class auth
 	{
 		global $db;
 
-		$sql_group = ($group_id !== false) ? ((!is_array($group_id)) ? "group_id = $group_id" : $db->sql_in_set('group_id', $group_id)) : '';
-		$sql_forum = ($forum_id !== false) ? ((!is_array($forum_id)) ? "AND a.forum_id = $forum_id" : 'AND ' . $db->sql_in_set('a.forum_id', $forum_id)) : '';
+		$sql_group = ($group_id !== false) ? ((!is_array($group_id)) ? 'group_id = ' . (int) $group_id : $db->sql_in_set('group_id', array_map('intval', $group_id))) : '';
+		$sql_forum = ($forum_id !== false) ? ((!is_array($forum_id)) ? 'AND a.forum_id = ' . (int) $forum_id : 'AND ' . $db->sql_in_set('a.forum_id', array_map('intval', $forum_id))) : '';
 
 		$sql_opts = '';
 

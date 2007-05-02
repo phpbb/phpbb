@@ -60,6 +60,20 @@ require($phpbb_root_path . 'includes/constants.' . $phpEx);
 require($phpbb_root_path . 'includes/db/' . $dbms . '.' . $phpEx);
 require($phpbb_root_path . 'includes/utf/utf_tools.' . $phpEx);
 
+// If we are on PHP >= 6.0.0 we do not need some code
+if (version_compare(PHP_VERSION, '6.0.0-dev', '>='))
+{
+	/**
+	* @ignore
+	*/
+	define('STRIP', false);
+}
+else
+{
+	set_magic_quotes_runtime(0);
+	define('STRIP', (get_magic_quotes_gpc()) ? true : false);
+}
+
 $user = new user();
 $cache = new cache();
 $db = new $sql_db();
@@ -698,16 +712,19 @@ if (version_compare($current_version, '3.0.b5', '<='))
 			$db->sql_query('DELETE FROM ' . STYLES_IMAGESET_TABLE);
 			$db->sql_query('DELETE FROM ' . STYLES_TEMPLATE_TABLE);
 			$db->sql_query('DELETE FROM ' . STYLES_TABLE);
-			$db->sql_query('DELETE FROM ' . STYLES_IMAGESET_DATA_TABLE);
 			$db->sql_query('DELETE FROM ' . STYLES_THEME_TABLE);
+
+//			$db->sql_query('DELETE FROM ' . STYLES_IMAGESET_DATA_TABLE);
 		break;
 
 		default:
 			$db->sql_query('TRUNCATE TABLE ' . STYLES_IMAGESET_TABLE);
 			$db->sql_query('TRUNCATE TABLE ' . STYLES_TEMPLATE_TABLE);
 			$db->sql_query('TRUNCATE TABLE ' . STYLES_TABLE);
-			$db->sql_query('TRUNCATE TABLE ' . STYLES_IMAGESET_DATA_TABLE);
 			$db->sql_query('TRUNCATE TABLE ' . STYLES_THEME_TABLE);
+
+//			This table does not exist, as well as the constant not exist...
+//			$db->sql_query('TRUNCATE TABLE ' . STYLES_IMAGESET_DATA_TABLE);
 		break;
 	}
 
@@ -869,6 +886,8 @@ if (version_compare($current_version, '3.0.b5', '<='))
 
 	$data = "INSERT INTO phpbb_styles (style_name, style_copyright, style_active, template_id, theme_id, imageset_id) VALUES ('prosilver', '&copy; phpBB Group', 1, 1, 1, 1);
 	INSERT INTO phpbb_styles (style_name, style_copyright, style_active, template_id, theme_id, imageset_id) VALUES ('subsilver2', '&copy; phpBB Group', 1, 2, 2, 2);
+	INSERT INTO phpbb_styles_imageset (imageset_name, imageset_copyright, imageset_path) VALUES ('prosilver', '&copy; phpBB Group', 'prosilver');
+	INSERT INTO phpbb_styles_imageset (imageset_name, imageset_copyright, imageset_path) VALUES ('subsilver2', '&copy; phpBB Group', 'subsilver2');
 	INSERT INTO phpbb_styles_imageset_data (image_name, image_filename, image_lang, image_height, image_width, imageset_id) VALUES ('site_logo', 'site_logo.gif', '', 94, 170, 2);
 	INSERT INTO phpbb_styles_imageset_data (image_name, image_filename, image_lang, image_height, image_width, imageset_id) VALUES ('upload_bar', 'upload_bar.gif', '', 16, 280, 2);
 	INSERT INTO phpbb_styles_imageset_data (image_name, image_filename, image_lang, image_height, image_width, imageset_id) VALUES ('poll_left', 'poll_left.gif', '', 12, 4, 2);
@@ -1089,10 +1108,23 @@ if (version_compare($current_version, '3.0.b5', '<='))
 
 	set_config('avatar_salt', md5(mt_rand()));
 
-	$sql = 'UPDATE ' . ACL_OPTIONS_TABLE . ' SET is_local = 0 WHERE auth_option = \'m_warn\'';
+	$sql = 'UPDATE ' . ACL_OPTIONS_TABLE . "
+		SET is_local = 0
+		WHERE auth_option = 'm_warn'";
 	$db->sql_query($sql);
 
-	$sql = 'UPDATE ' . MODULES_TABLE . ' SET module_auth = \'acl_m_warn && acl_f_read,$id\' WHERE module_basename = \'warn\' AND module_mode = \'warn_post\'';
+	$cache->destroy('_acl_options');
+
+	$sql = 'UPDATE ' . MODULES_TABLE . '
+		SET module_auth = \'acl_m_warn && acl_f_read,$id\'
+		WHERE module_basename = \'warn\'
+			AND module_mode = \'warn_post\'
+			AND module_class = \'mcp\'';
+	$db->sql_query($sql);
+
+	$cache->destroy('_modules_mcp');
+
+	$sql = 'UPDATE ' . USERS_TABLE . " SET user_permissions = ''";
 	$db->sql_query($sql);
 
 	$no_updates = false;

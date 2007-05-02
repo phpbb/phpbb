@@ -128,9 +128,14 @@ if ($id && $sid)
 			$db->sql_query($sql);
 
 			$cache->destroy('sql', STYLES_THEME_TABLE);
+
+			header('Expires: 0');
+		}
+		else
+		{
+			header('Expires: ' . gmdate('D, d M Y H:i:s \G\M\T', time() + 3600));
 		}
 
-		header('Expires: ' . gmdate('D, d M Y H:i:s \G\M\T', time() + 3600));
 		header('Content-type: text/css');
 
 		// Parse Theme Data

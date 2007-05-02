@@ -32,8 +32,8 @@ if (!isset($config['avatar_salt']))
 
 // let's start with the users using a group_avatar.
 $sql = 'SELECT group_id, group_avatar
-	FROM ' . GROUPS_TABLE . 
-	' WHERE group_avatar_type = ' . AVATAR_UPLOAD;
+	FROM ' . GROUPS_TABLE . '
+	WHERE group_avatar_type = ' . AVATAR_UPLOAD;
 
 // We'll skip these, so remember them
 $group_avatars = array();
@@ -44,21 +44,20 @@ $result = $db->sql_query($sql);
 
 while ($row = $db->sql_fetchrow($result))
 {
-	
 	$new_avatar_name = adjust_avatar($row['group_avatar'], 'g' . $row['group_id']);
 	$group_avatars[] = $new_avatar_name;
 	
 	// failure is probably due to the avatar name already being adjusted
-	if ($new_avatar_name  !== false)
+	if ($new_avatar_name !== false)
 	{
 		$sql = 'UPDATE ' . USERS_TABLE . "
-			SET user_avatar = '$new_avatar_name'
-			WHERE user_avatar = '{$row['group_avatar']}' 
+			SET user_avatar = '" . $db->sql_escape($new_avatar_name) . "'
+			WHERE user_avatar = '" . $db->sql_escape($row['group_avatar']) . "' 
 			AND user_avatar_type = " . AVATAR_UPLOAD;
 		$db->sql_query($sql);
 		
 		$sql = 'UPDATE ' . GROUPS_TABLE . "
-			SET group_avatar = '$new_avatar_name'
+			SET group_avatar = '" . $db->sql_escape($new_avatar_name) . "'
 			WHERE group_id = {$row['group_id']}";
 		$db->sql_query($sql);
 	}
@@ -66,7 +65,7 @@ while ($row = $db->sql_fetchrow($result))
 	{
 		echo '<br /> Failed updating group ' . $row['group_id'] . "\n";
 	}
-	
+
 	if ($echos > 200)
 	{
 		echo '<br />' . "\n";
@@ -84,21 +83,19 @@ $sql = 'SELECT user_id, username, user_avatar, user_avatar_type
 	FROM ' . USERS_TABLE . ' 
 	WHERE user_avatar_type = ' . AVATAR_UPLOAD . ' 
 	AND ' . $db->sql_in_set('user_avatar', $group_avatars, true, true);
-	
 $result = $db->sql_query($sql);
- 
+
 echo '<br /> Updating users' . "\n";
 
 while ($row = $db->sql_fetchrow($result))
 {
-	 
 	$new_avatar_name = adjust_avatar($row['user_avatar'], $row['user_id']);
-	
+
 	// failure is probably due to the avatar name already being adjusted
-	if ($new_avatar_name  !== false)
+	if ($new_avatar_name !== false)
 	{
 		$sql = 'UPDATE ' . USERS_TABLE . "
-			SET user_avatar = '$new_avatar_name'
+			SET user_avatar = '" . $db->sql_escape($new_avatar_name) . "'
 			WHERE user_id = {$row['user_id']}";
 		$db->sql_query($sql);
 	}
@@ -139,4 +136,5 @@ function adjust_avatar($old_name, $midfix)
 	}
 	return false;
 }
+
 ?>
