@@ -75,6 +75,7 @@ $lang = array_merge($lang, array(
 	'GROUP_MODS_DEMOTED'			=> 'Group leaders demoted successfully.',
 	'GROUP_MODS_PROMOTED'			=> 'Group members promoted successfully.',
 	'GROUP_NAME'					=> 'Group name',
+	'GROUP_NAME_TAKEN'				=> 'The group name you entered is already in use, please select an alternative.',
 	'GROUP_OPEN'					=> 'Open',
 	'GROUP_PENDING'					=> 'Pending members',
 	'GROUP_PROMOTE'					=> 'Promote to group leader',

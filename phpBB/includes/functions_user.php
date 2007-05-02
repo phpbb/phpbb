@@ -1931,7 +1931,13 @@ function group_create(&$group_id, $type, $name, $desc, $group_attributes, $allow
 	{
 		$error[] = (!utf8_strlen($name)) ? $user->lang['GROUP_ERR_USERNAME'] : $user->lang['GROUP_ERR_USER_LONG'];
 	}
-
+	
+	$err = group_validate_groupname($group_id, $name);
+	if (!empty($err))
+	{
+		$error[] = $user->lang[$err];
+	}
+	 
 	if (!in_array($type, array(GROUP_OPEN, GROUP_CLOSED, GROUP_HIDDEN, GROUP_SPECIAL, GROUP_FREE)))
 	{
 		$error[] = $user->lang['GROUP_ERR_TYPE'];
@@ -2461,6 +2467,47 @@ function group_user_attributes($action, $group_id, $user_id_ary = false, $userna
 
 	return true;
 }
+
+
+/**
+* A small version of validate_username to check for a group name's existence. To be called directly, 
+*/
+function group_validate_groupname($group_id, $groupname)
+{
+	global $config, $db;
+
+	$groupname =  utf8_clean_string($groupname); 
+
+	if (!empty($group_id))
+	{
+		$sql = 'SELECT group_name
+				FROM ' . GROUPS_TABLE . '
+				WHERE group_id = ' . (int)$group_id;
+		$result = $db->sql_query($sql);
+		$row = $db->sql_fetchrow($result);
+		$db->sql_freeresult($result);
+		
+		$allowed_groupname = utf8_clean_string($row['group_name']);  
+		if ($allowed_groupname == $groupname)
+		{
+			return false;
+		}
+	}
+
+	$sql = 'SELECT group_name
+		FROM ' . GROUPS_TABLE . "
+		WHERE LOWER(group_name) = '" . $db->sql_escape(utf8_strtolower($groupname)) . "'";
+	$result = $db->sql_query($sql);
+	$row = $db->sql_fetchrow($result);
+	$db->sql_freeresult($result);
+	
+	if ($row)
+	{
+		return 'GROUP_NAME_TAKEN';
+	}
+}
+
+
 
 /**
 * Set users default group
