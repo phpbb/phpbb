@@ -251,11 +251,11 @@ if ($post_id)
 
 		if ($sort_dir == $check_sort)
 		{
-			$topic_data['prev_posts'] = ($auth->acl_get('m_approve', $forum_id)) ? $topic_data['topic_replies_real'] + 1 : $topic_data['topic_replies'] + 1;
+			$topic_data['prev_posts'] = ($auth->acl_get('m_approve', $forum_id)) ? $topic_data['topic_replies_real'] : $topic_data['topic_replies'];
 		}
 		else
 		{
-			$topic_data['prev_posts'] = 1;
+			$topic_data['prev_posts'] = 0;
 		}
 	}
 	else
@@ -271,7 +271,7 @@ if ($post_id)
 		$row = $db->sql_fetchrow($result);
 		$db->sql_freeresult($result);
 
-		$topic_data['prev_posts'] = $row['prev_posts'] + 1;
+		$topic_data['prev_posts'] = $row['prev_posts'] - 1;
 	}
 }
 
@@ -341,7 +341,7 @@ if (isset($_GET['e']))
 // What is start equal to?
 if ($post_id)
 {
-	$start = floor(($topic_data['prev_posts'] - 1) / $config['posts_per_page']) * $config['posts_per_page'];
+	$start = floor(($topic_data['prev_posts']) / $config['posts_per_page']) * $config['posts_per_page'];
 }
 
 // Get topic tracking info
