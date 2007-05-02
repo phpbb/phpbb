@@ -500,7 +500,7 @@ class ucp_profile
 			
 				// Build custom bbcodes array
 				display_custom_bbcodes();
-			
+
 			break;
 
 			case 'avatar':

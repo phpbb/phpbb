@@ -1,3 +1,4 @@
+
 <script type="text/javascript">
 <!--
 	var form_name = 'postform';
@@ -58,6 +59,33 @@
 <script type="text/javascript" src="{T_TEMPLATE_PATH}/editor.js"></script>
 
 <!-- IF S_BBCODE_ALLOWED -->
+<div id="colour_palette" style="display: none;">
+	<dl style="clear: left;">
+		<dt><label>{L_FONT_COLOR}:</label></dt>
+		<dd><script type="text/javascript">
+		<!--
+			function change_palette()
+			{
+				dE('colour_palette');
+				e = document.getElementById('colour_palette');
+				
+				if (e.style.display == 'block')
+				{
+					document.getElementById('bbpalette').value = '{LA_FONT_COLOR_HIDE}';
+				}
+				else
+				{
+					document.getElementById('bbpalette').value = '{LA_FONT_COLOR}';
+				}
+			}
+
+			colorPalette('h', 15, 5);
+		//-->
+		</script>
+		</dd>
+	</dl>
+</div>
+
 <div id="format-buttons">
 	<input type="button" class="button2" accesskey="b" name="addbbcode0" value=" B " style="font-weight:bold; width: 30px" onclick="bbstyle(0)" title="{L_BBCODE_B_HELP}" />
 	<input type="button" class="button2" accesskey="i" name="addbbcode2" value=" i " style="font-style:italic; width: 30px" onclick="bbstyle(2)" title="{L_BBCODE_I_HELP}" />
@@ -85,6 +113,7 @@
 		<option value="150">{L_FONT_LARGE}</option>
 		<option value="200">{L_FONT_HUGE}</option>
 	</select>
+	<input type="button" class="button2" name="bbpalette" id="bbpalette" value="{L_FONT_COLOR}" onclick="change_palette();" title="{L_BBCODE_S_HELP}" />
 	<!-- BEGIN custom_tags -->
 		<input type="button" class="button2" name="addbbcode{custom_tags.BBCODE_ID}" value="{custom_tags.BBCODE_TAG}" onclick="bbstyle({custom_tags.BBCODE_ID})" title="{custom_tags.BBCODE_HELPLINE}" />
 	<!-- END custom_tags -->

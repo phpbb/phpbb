@@ -64,7 +64,7 @@ function bbstyle(bbnumber)
 	else 
 	{
 		insert_text('[*]');
-		document.forms[form_name].elements[text_name].focus();		
+		document.forms[form_name].elements[text_name].focus();
 	}
 }
 
@@ -103,7 +103,7 @@ function bbfontstyle(bbopen, bbclose)
 	
 	//The new position for the cursor after adding the bbcode
 	var caret_pos = getCaretPosition(textarea).start;
-	var new_pos = caret_pos + bbopen.length;		
+	var new_pos = caret_pos + bbopen.length;
 
 	// Open tag
 	insert_text(bbopen + bbclose);
@@ -118,9 +118,8 @@ function bbfontstyle(bbopen, bbclose)
 	// IE
 	else if (document.selection)
 	{
-		
 		var range = textarea.createTextRange(); 
-       	range.move("character", new_pos); 
+		range.move("character", new_pos); 
 		range.select();
 		storeCaret(textarea);
 	}
@@ -230,7 +229,7 @@ function addquote(post_id, username)
 			theSelection = theSelection.replace(/<br\/>/ig, '\n');
 			theSelection = theSelection.replace(/&lt\;/ig, '<');
 			theSelection = theSelection.replace(/&gt\;/ig, '>');
-			theSelection = theSelection.replace(/&amp\;/ig, '&');			
+			theSelection = theSelection.replace(/&amp\;/ig, '&');
 		}
 		else if (document.all)
 		{
@@ -374,7 +373,6 @@ function getCaretPosition(txtarea)
 	// dirty and slow IE way
 	else if(document.selection)
 	{
-	
 		// get current selection
 		var range = document.selection.createRange();
 
@@ -393,7 +391,7 @@ function getCaretPosition(txtarea)
 	
 		// we ignore the end value for IE, this is already dirty enough and we don't need it
 		caretPos.start = txtarea.sel_start;
-		caretPos.end = txtarea.sel_start;			
+		caretPos.end = txtarea.sel_start;
 	}
 
 	return caretPos;

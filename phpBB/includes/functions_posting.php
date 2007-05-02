@@ -1478,24 +1478,22 @@ function submit_post($mode, $subject, $username, $topic_type, &$poll, &$data, $u
 		case 'edit_first_post':
 		case 'edit':
 
-			if (!$auth->acl_get('m_edit', $data['forum_id']) || $data['post_edit_reason'])
-			{
-				$sql_data[POSTS_TABLE]['sql'] = array(
-					'post_edit_time'	=> $current_time
-				);
-
-				$sql_data[POSTS_TABLE]['stat'][] = 'post_edit_count = post_edit_count + 1';
-			}
-
-		// no break
-
 		case 'edit_last_post':
 		case 'edit_topic':
 
-			if (($post_mode == 'edit_last_post' || $post_mode == 'edit_topic') && $data['post_edit_reason'])
+			// If edit reason is given always display edit info
+
+			// If editing last post then display no edit info
+			// If m_edit permission then display no edit info
+			// If normal edit display edit info
+
+			// Display edit info if edit reason given or user is editing his post, which is not the last within the topic.
+			if ($data['post_edit_reason'] || (!$auth->acl_get('m_edit', $data['forum_id']) && ($post_mode == 'edit' || $post_mode == 'edit_first_post')))
 			{
 				$sql_data[POSTS_TABLE]['sql'] = array(
-					'post_edit_time'	=> $current_time
+					'post_edit_time'	=> $current_time,
+					'post_edit_reason'	=> $data['post_edit_reason'],
+					'post_edit_user'	=> (int) $data['post_edit_user'],
 				);
 
 				$sql_data[POSTS_TABLE]['stat'][] = 'post_edit_count = post_edit_count + 1';
@@ -1517,8 +1515,6 @@ function submit_post($mode, $subject, $username, $topic_type, &$poll, &$data, $u
 				'enable_sig'		=> $data['enable_sig'],
 				'post_username'		=> ($username && $data['poster_id'] == ANONYMOUS) ? $username : '',
 				'post_subject'		=> $subject,
-				'post_edit_reason'	=> $data['post_edit_reason'],
-				'post_edit_user'	=> (int) $data['post_edit_user'],
 				'post_checksum'		=> $data['message_md5'],
 				'post_attachment'	=> (!empty($data['attachment_data'])) ? 1 : 0,
 				'bbcode_bitfield'	=> $data['bbcode_bitfield'],

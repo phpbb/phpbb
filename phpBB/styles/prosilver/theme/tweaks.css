@@ -53,3 +53,12 @@ dl.icon {
 	height: auto !important;
 	height: 35px;
 }
+
+* html #search-box {
+	margin-right: 35px;
+}
+
+* html .rtl #search-box {
+	margin-right: 0;
+	margin-left: 35px;
+}

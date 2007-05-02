@@ -91,6 +91,7 @@ $lang = array_merge($lang, array(
 	'FLASH_IS_ON'				=> '[flash] is <em>ON</em>',
 	'FLOOD_ERROR'				=> 'You cannot make another post so soon after your last.',
 	'FONT_COLOR'				=> 'Font color',
+	'FONT_COLOR_HIDE'			=> 'Hide font color',
 	'FONT_HUGE'					=> 'Huge',
 	'FONT_LARGE'				=> 'Large',
 	'FONT_NORMAL'				=> 'Normal',
@@ -179,7 +180,7 @@ $lang = array_merge($lang, array(
 
 	'TOO_FEW_CHARS'				=> 'Your message contains too few characters.',
 	'TOO_FEW_POLL_OPTIONS'		=> 'You must enter at least two poll options',
-	'TOO_MANY_ATTACHMENTS'		=> 'Cannot add another attachment, %d is the maxmimum.',
+	'TOO_MANY_ATTACHMENTS'		=> 'Cannot add another attachment, %d is the maximum.',
 	'TOO_MANY_CHARS'			=> 'Your message contains too many characters.',
 	'TOO_MANY_POLL_OPTIONS'		=> 'You have tried to enter too many poll options',
 	'TOO_MANY_SMILIES'			=> 'Your message contains too many smilies. The maximum number of smilies allowed is %d.',

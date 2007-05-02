@@ -1010,8 +1010,9 @@ $template->assign_vars(array(
 	'S_FORUM_OPTIONS'		=> $s_forums,
 	'S_SELECT_SORT_DIR'		=> $s_sort_dir,
 	'S_SELECT_SORT_KEY'		=> $s_sort_key,
-	'S_SELECT_SORT_DAYS'	=> $s_limit_days)
-);
+	'S_SELECT_SORT_DAYS'	=> $s_limit_days,
+	'S_IN_SEARCH'			=> true,
+));
 
 // Handle large objects differently for Oracle and MSSQL
 switch ($db->sql_layer)

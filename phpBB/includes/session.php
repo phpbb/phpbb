@@ -198,7 +198,7 @@ class session
 		$this->load = false;
 
 		// Load limit check (if applicable)
-		if ($config['limit_load'])
+		if ($config['limit_load'] || $config['limit_search_load'])
 		{
 			if ($load = @file_get_contents('/proc/loadavg'))
 			{
@@ -208,6 +208,7 @@ class session
 			else
 			{
 				set_config('limit_load', '0');
+				set_config('limit_search_load', '0');
 			}
 		}
 

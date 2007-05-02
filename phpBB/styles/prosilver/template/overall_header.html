@@ -99,10 +99,24 @@
 		<div class="headerbar">
 			<div class="inner"><span class="corners-top"><span></span></span>
 
-			<a href="{U_INDEX}" title="{L_INDEX}" id="logo">{SITE_LOGO_IMG}</a>
-			<h1>{SITENAME}</h1>
-			<p>{SITE_DESCRIPTION}</p>
-			<p style="display: none;"><a href="#start_here">{L_SKIP}</a></p>
+			<div id="site-description">
+				<a href="{U_INDEX}" title="{L_INDEX}" id="logo">{SITE_LOGO_IMG}</a>
+				<h1>{SITENAME}</h1>
+				<p>{SITE_DESCRIPTION}</p>
+				<p style="display: none;"><a href="#start_here">{L_SKIP}</a></p>
+			</div>
+
+		<!-- IF not S_IN_SEARCH -->
+			<div id="search-box">
+				<form action="{U_SEARCH}" method="get" id="search">
+				<fieldset>
+					<input name="keywords" id="keywords" type="text" maxlength="128" title="{L_SEARCH_KEYWORDS}" class="inputbox search" value="<!-- IF SEARCH_WORDS-->{SEARCH_WORDS}<!-- ELSE -->{L_SEARCH_MINI}<!-- ENDIF -->" onclick="if(this.value=='{LA_SEARCH_MINI}')this.value='';" onblur="if(this.value=='')this.value='{LA_SEARCH_MINI}';" accesskey="s" /> 
+					<input class="button2" value="{L_SEARCH}" type="submit" /><br />
+					<a href="{U_SEARCH}" title="{L_SEARCH_ADV_EXPLAIN}">{L_SEARCH_ADV}</a> {S_HIDDEN_FIELDS}
+				</fieldset>
+				</form>
+			</div>
+		<!-- ENDIF -->
 
 			<span class="corners-bottom"><span></span></span></div>
 		</div>
@@ -145,16 +159,6 @@
 			</ul>
 
 			<span class="corners-bottom"><span></span></span></div>
-		</div>
-
-		<div id="search-box">
-			<form action="{U_SEARCH}" method="get" id="search">
-			<fieldset>
-				<input name="keywords" id="keywords" type="text" maxlength="128" title="{L_SEARCH_KEYWORDS}" class="inputbox search" value="<!-- IF SEARCH_WORDS-->{SEARCH_WORDS}<!-- ELSE -->{L_SEARCH_MINI}<!-- ENDIF -->" onclick="if(this.value=='{LA_SEARCH_MINI}')this.value='';" onblur="if(this.value=='')this.value='{LA_SEARCH_MINI}';" accesskey="s" /> 
-				<input class="button2" value="{L_SEARCH}" type="submit" /><br />
-				<a href="{U_SEARCH}" title="{L_SEARCH_ADV_EXPLAIN}">{L_SEARCH_ADV}</a> {S_HIDDEN_FIELDS}
-			</fieldset>
-			</form>
 		</div>
 
 	</div>

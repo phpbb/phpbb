@@ -64,7 +64,7 @@ function bbstyle(bbnumber)
 	else 
 	{
 		insert_text('[*]');
-		document.forms[form_name].elements[text_name].focus();		
+		document.forms[form_name].elements[text_name].focus();
 	}
 }
 
@@ -118,9 +118,8 @@ function bbfontstyle(bbopen, bbclose)
 	// IE
 	else if (document.selection)
 	{
-		
 		var range = textarea.createTextRange(); 
-       	range.move("character", new_pos); 
+		range.move("character", new_pos); 
 		range.select();
 		storeCaret(textarea);
 	}
@@ -157,18 +156,17 @@ function insert_text(text, spaces, popup)
 		mozWrap(textarea, text, '')
 		textarea.selectionStart = sel_start + text.length;
 		textarea.selectionEnd = sel_end + text.length;
-	}	
-	
+	}
 	else if (textarea.createTextRange && textarea.caretPos)
 	{
 		if (baseHeight != textarea.caretPos.boundingHeight) 
 		{
 			textarea.focus();
 			storeCaret(textarea);
-		}		
+		}
+
 		var caret_pos = textarea.caretPos;
 		caret_pos.text = caret_pos.text.charAt(caret_pos.text.length - 1) == ' ' ? caret_pos.text + text + ' ' : caret_pos.text + text;
-		
 	}
 	else
 	{
@@ -177,8 +175,7 @@ function insert_text(text, spaces, popup)
 	if (!popup) 
 	{
 		textarea.focus();
-	} 	
-
+	}
 }
 
 /**
@@ -329,7 +326,7 @@ function colorPalette(dir, width, height)
 			{
 				color = String(numberList[r]) + String(numberList[g]) + String(numberList[b]);
 				document.write('<td bgcolor="#' + color + '">');
-				document.write('<a href="#" onclick="bbfontstyle(\'[color=#' + color + ']\', \'[/color]\'); return false;" onmouseover="helpline(\'s\');"  onmouseout="helpline(\'tip\');"><img src="images/spacer.gif" width="' + width + '" height="' + height + '" alt="#' + color + '" title="#' + color + '" /></a>');
+				document.write('<a href="#" onclick="bbfontstyle(\'[color=#' + color + ']\', \'[/color]\'); return false;"><img src="images/spacer.gif" width="' + width + '" height="' + height + '" alt="#' + color + '" title="#' + color + '" /></a>');
 				document.writeln('</td>');
 			}
 

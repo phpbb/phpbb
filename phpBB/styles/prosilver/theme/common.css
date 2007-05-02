@@ -128,6 +128,7 @@ p.right {
 	float: left;
 	width: auto;
 	padding: 10px 13px 0 10px;
+	height: auto;
 }
 
 a#logo:hover {
@@ -138,12 +139,20 @@ a#logo:hover {
 --------------------------------------------- */
 #search-box {
 	color: #FFFFFF;
-	position: absolute;
-	right: 35px;
-	top: 35px;
-	width: 17em;
+	position: relative;
+	margin-top: 30px;
+	margin-right: 5px;
+	display: block;
+	float: right;
 	text-align: right;
 	white-space: nowrap; /* For Opera */
+}
+
+.rtl #search-box {
+	float: left;
+	text-align: left;
+	margin-right: 0;
+	margin-left: 5px;
 }
 
 #search-box #keywords {
@@ -168,6 +177,16 @@ a#logo:hover {
 #search-box img {
 	vertical-align: middle;
 	margin-right: 3px;
+}
+
+/* Site description and logo */
+#site-description {
+	float: left;
+	width: 70%;
+}
+
+.rtl #site-description {
+	float: right;
 }
 
 /* Round cornered boxes and backgrounds
