@@ -2470,7 +2470,7 @@ function group_user_attributes($action, $group_id, $user_id_ary = false, $userna
 
 
 /**
-* A small version of validate_username to check for a group name's existence. To be called directly, 
+* A small version of validate_username to check for a group name's existence. To be called directly.
 */
 function group_validate_groupname($group_id, $groupname)
 {
@@ -2505,6 +2505,7 @@ function group_validate_groupname($group_id, $groupname)
 	{
 		return 'GROUP_NAME_TAKEN';
 	}
+	return false;
 }
 
 
