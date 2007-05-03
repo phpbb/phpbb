@@ -34,6 +34,7 @@ $lang = array_merge($lang, array(
 	'ADMIN_SIG_PREVIEW'		=> 'Signature preview',
 	'AT_LEAST_ONE_FOUNDER'	=> 'You are not able to change this founder to a normal user. There needs to be at least one founder enabled for this board. If you want to change this users founder status, promote another user to be a founder first.',
 
+	'BAN_ALREADY_ENTERED'	=> 'The ban had been previously entered successfully. The ban list has not been updated.',
 	'BAN_SUCCESSFUL'		=> 'Ban entered successfully.',
 
 	'CANNOT_BAN_FOUNDER'			=> 'You are not allowed to ban founder accounts.',
@@ -48,7 +49,7 @@ $lang = array_merge($lang, array(
 	'CANNOT_REMOVE_YOURSELF'		=> 'You are not allowed to remove your own user account.',
 	'CANNOT_SET_FOUNDER_BOT'		=> 'You are not able to promote ignored users to be founders.',
 	'CANNOT_SET_FOUNDER_INACTIVE'	=> 'You need to activate users before you promote them to founders, only activated users are able to be promoted.',
-	'CONFIRM_EMAIL_EXPLAIN'			=> 'You only need to specify this if you are changing the users email address.',
+	'CONFIRM_EMAIL_EXPLAIN'			=> 'You only need to specify this if you are changing the users e-mail address.',
 
 	'DELETE_POSTS'			=> 'Delete posts',
 	'DELETE_USER'			=> 'Delete user',
@@ -86,8 +87,8 @@ $lang = array_merge($lang, array(
 	'USER_ADMIN_ACTIVATE'			=> 'Activate account',
 	'USER_ADMIN_ACTIVATED'			=> 'User activated successfully.',
 	'USER_ADMIN_AVATAR_REMOVED'		=> 'Successfully removed avatar from user account.',
-	'USER_ADMIN_BAN_EMAIL'			=> 'Ban by email',
-	'USER_ADMIN_BAN_EMAIL_REASON'	=> 'Email address banned via user management',
+	'USER_ADMIN_BAN_EMAIL'			=> 'Ban by e-mail',
+	'USER_ADMIN_BAN_EMAIL_REASON'	=> 'E-mail address banned via user management',
 	'USER_ADMIN_BAN_IP'				=> 'Ban by IP',
 	'USER_ADMIN_BAN_IP_REASON'		=> 'IP banned via user management',
 	'USER_ADMIN_BAN_NAME_REASON'	=> 'Username banned via user management',

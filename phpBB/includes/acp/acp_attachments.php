@@ -1145,7 +1145,7 @@ class acp_attachments
 	{
 		global $user, $phpbb_root_path;
 
-		// Does the target directory exist, is it a directory and writeable.
+		// Does the target directory exist, is it a directory and writable.
 		if ($create_directory)
 		{
 			if (!file_exists($phpbb_root_path . $upload_dir))

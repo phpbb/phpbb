@@ -159,21 +159,11 @@ else
 		$db->sql_freeresult($result);
 
 		// Global announcement?
-		if (!$row)
-		{
-			$forum_id = request_var('f', 0);
+		$f_download = (!$row) ? $auth->acl_getf_global('f_download') : $auth->acl_get('f_download', $row['forum_id']);
 
-			$sql = 'SELECT forum_id, forum_password, parent_id
-				FROM ' . FORUMS_TABLE . '
-				WHERE forum_id = ' . $forum_id;
-			$result = $db->sql_query($sql);
-			$row = $db->sql_fetchrow($result);
-			$db->sql_freeresult($result);
-		}
-
-		if ($auth->acl_get('u_download') && $auth->acl_get('f_download', $row['forum_id']))
+		if ($auth->acl_get('u_download') && $f_download)
 		{
-			if ($row['forum_password'])
+			if ($row && $row['forum_password'])
 			{
 				// Do something else ... ?
 				login_forum_box($row);
@@ -270,33 +260,37 @@ else
 function send_avatar_to_browser($file)
 {
 	global $config, $phpbb_root_path;
+
 	$prefix = $config['avatar_salt'] . '_'; 
-	$img_dir = $config['avatar_path'];
+	$image_dir = $config['avatar_path'];
+
 	// worst-case default
 	$browser = (!empty($_SERVER['HTTP_USER_AGENT'])) ? htmlspecialchars((string) $_SERVER['HTTP_USER_AGENT']) : 'msie 6.0';
 
-	// Adjust img_dir path (no trailing slash)
-	if (substr($img_dir, -1, 1) == '/' || substr($img_dir, -1, 1) == '\\')
+	// Adjust image_dir path (no trailing slash)
+	if (substr($image_dir, -1, 1) == '/' || substr($image_dir, -1, 1) == '\\')
 	{
-		$img_dir = substr($img_dir, 0, -1) . '/';
+		$image_dir = substr($image_dir, 0, -1) . '/';
 	}
-	$img_dir = str_replace(array('../', '..\\', './', '.\\'), '', $img_dir);
-	if ($img_dir && ($img_dir[0] == '/' || $img_dir[0] == '\\'))
+	$image_dir = str_replace(array('../', '..\\', './', '.\\'), '', $image_dir);
+
+	if ($image_dir && ($image_dir[0] == '/' || $image_dir[0] == '\\'))
 	{
-		$img_dir = '';
+		$image_dir = '';
 	}
-	$file_path = $phpbb_root_path . $img_dir . '/' . $prefix . $file;
+	$file_path = $phpbb_root_path . $image_dir . '/' . $prefix . $file;
 
 	if ((@file_exists($file_path) && @is_readable($file_path)) || headers_sent())
 	{
 		header('Pragma: public');
 
-		$image_data = (getimagesize($file_path));
+		$image_data = getimagesize($file_path);
 		header('Content-Type: ' . image_type_to_mime_type($image_data[2]));
 
 		if (strpos(strtolower($browser), 'msie') !== false)
 		{
 			header('Content-Disposition: attachment; ' . header_filename($file));
+
 			if (strpos(strtolower($browser), 'msie 6.0') !== false)
 			{
 				header('Expires: -1');

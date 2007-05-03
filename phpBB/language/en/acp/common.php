@@ -43,7 +43,7 @@ $lang = array_merge($lang, array(
 
 	'ACP_BACKUP'				=> 'Backup',
 	'ACP_BAN'					=> 'Banning',
-	'ACP_BAN_EMAILS'			=> 'Ban emails',
+	'ACP_BAN_EMAILS'			=> 'Ban e-mails',
 	'ACP_BAN_IPS'				=> 'Ban IPs',
 	'ACP_BAN_USERNAMES'			=> 'Ban usernames',
 	'ACP_BASIC_PERMISSIONS'		=> 'Basic permissions',
@@ -77,7 +77,7 @@ $lang = array_merge($lang, array(
 	'ACP_DISALLOW'				=> 'Disallow',
 	'ACP_DISALLOW_USERNAMES'	=> 'Disallow usernames',
 	
-	'ACP_EMAIL_SETTINGS'		=> 'Email settings',
+	'ACP_EMAIL_SETTINGS'		=> 'E-mail settings',
 	'ACP_EXTENSION_GROUPS'		=> 'Manage extension groups',
 	
 	'ACP_FORUM_BASED_PERMISSIONS'	=> 'Forum based permissions',
@@ -116,7 +116,7 @@ $lang = array_merge($lang, array(
 	'ACP_MANAGE_RANKS'			=> 'Manage ranks',
 	'ACP_MANAGE_REASONS'		=> 'Manage report/denial reasons',
 	'ACP_MANAGE_USERS'			=> 'Manage users',
-	'ACP_MASS_EMAIL'			=> 'Mass email',
+	'ACP_MASS_EMAIL'			=> 'Mass e-mail',
 	'ACP_MESSAGES'				=> 'Messages',
 	'ACP_MESSAGE_SETTINGS'		=> 'Private message settings',
 	'ACP_MODULE_MANAGEMENT'		=> 'Module management',
@@ -207,7 +207,7 @@ $lang = array_merge($lang, array(
 	'DIMENSIONS'				=> 'Dimensions',
 	'DIRECTORY_DOES_NOT_EXIST'	=> 'The entered path “%s” does not exist.',
 	'DIRECTORY_NOT_DIR'			=> 'The entered path “%s” is not a directory.',
-	'DIRECTORY_NOT_WRITEABLE'	=> 'The entered path “%s” is not writeable.',
+	'DIRECTORY_NOT_WRITABLE'	=> 'The entered path “%s” is not writable.',
 	'DISABLE'					=> 'Disable',
 	'DOWNLOAD'					=> 'Download',
 	'DOWNLOAD_AS'				=> 'Download as',
@@ -241,7 +241,7 @@ $lang = array_merge($lang, array(
 
 	'NOTIFY'				=> 'Notification',
 	'NO_ADMIN'				=> 'You are not authorised to administrate this board.',
-	'NO_EMAILS_DEFINED'		=> 'No valid email addresses found',
+	'NO_EMAILS_DEFINED'		=> 'No valid e-mail addresses found',
 	'NO_PASSWORD_SUPPLIED'	=> 'You need to enter your password to access the Administration Control Panel.',	
 
 	'OFF'					=> 'Off',
@@ -280,7 +280,7 @@ $lang = array_merge($lang, array(
 // Logs
 $lang = array_merge($lang, array(
 	'ACP_ADMIN_LOGS_EXPLAIN'	=> 'This lists all the actions carried out by board administrators. You can sort by username, date, IP or action. If you have appropriate permissions you can also clear individual operations or the log as a whole.',
-	'ACP_CRITICAL_LOGS_EXPLAIN'	=> 'This lists the actions carried out by the board itself. This log provides you with information you are able to use for solving specific problems, for example non-delivery of emails. You can sort by username, date, IP or action. If you have appropriate permissions you can also clear individual operations or the log as a whole.',
+	'ACP_CRITICAL_LOGS_EXPLAIN'	=> 'This lists the actions carried out by the board itself. This log provides you with information you are able to use for solving specific problems, for example non-delivery of e-mails. You can sort by username, date, IP or action. If you have appropriate permissions you can also clear individual operations or the log as a whole.',
 	'ACP_MOD_LOGS_EXPLAIN'		=> 'This lists all actions done on forums, topics and posts as well as actions carried out on users by moderators, including banning. You can sort by username, date, IP or action. If you have appropriate permissions you can also clear individual operations or the log as a whole.',
 	'ACP_USERS_LOGS_EXPLAIN'	=> 'This lists all actions carried out by users or on users (warnings and user notes).',
 	'ALL_ENTRIES'				=> 'All entries',
@@ -360,8 +360,8 @@ $lang = array_merge($lang, array(
 	'INACTIVE_REASON_REMIND'		=> 'Forced user account reactivation',
 	'INACTIVE_REASON_UNKNOWN'		=> 'Unknown',
 	'INACTIVE_USERS'				=> 'Inactive users',
-	'INACTIVE_USERS_EXPLAIN'		=> 'This is a list of users who have registered but whose accounts are inactive. You can activate, delete or remind (by sending an email) these users if you wish.',
-	'INACTIVE_USERS_EXPLAIN_INDEX'	=> 'This is a list of the last 10 registered users who have inactive accounts. A full list is available from the appropriate menu item or by following the link below from where you can activate, delete or remind (by sending an email) these users if you wish.',
+	'INACTIVE_USERS_EXPLAIN'		=> 'This is a list of users who have registered but whose accounts are inactive. You can activate, delete or remind (by sending an e-mail) these users if you wish.',
+	'INACTIVE_USERS_EXPLAIN_INDEX'	=> 'This is a list of the last 10 registered users who have inactive accounts. A full list is available from the appropriate menu item or by following the link below from where you can activate, delete or remind (by sending an e-mail) these users if you wish.',
 
 	'NO_INACTIVE_USERS'	=> 'No inactive users',
 
@@ -415,13 +415,13 @@ $lang = array_merge($lang, array(
 
 	'LOG_BAN_EXCLUDE_USER'	=> '<strong>Excluded user from ban</strong> for reason “<em>%1$s</em>”<br />» %2$s',
 	'LOG_BAN_EXCLUDE_IP'	=> '<strong>Excluded IP from ban</strong> for reason “<em>%1$s</em>”<br />» %2$s',
-	'LOG_BAN_EXCLUDE_EMAIL' => '<strong>Excluded email from ban</strong> for reason “<em>%1$s</em>”<br />» %2$s',
+	'LOG_BAN_EXCLUDE_EMAIL' => '<strong>Excluded e-mail from ban</strong> for reason “<em>%1$s</em>”<br />» %2$s',
 	'LOG_BAN_USER'			=> '<strong>Banned user</strong> for reason “<em>%1$s</em>”<br />» %2$s',
 	'LOG_BAN_IP'			=> '<strong>Banned IP</strong> for reason “<em>%1$s</em>”<br />» %2$s',
-	'LOG_BAN_EMAIL'			=> '<strong>Banned email</strong> for reason “<em>%1$s</em>”<br />» %2$s',
+	'LOG_BAN_EMAIL'			=> '<strong>Banned e-mail</strong> for reason “<em>%1$s</em>”<br />» %2$s',
 	'LOG_UNBAN_USER'		=> '<strong>Unbanned user</strong><br />» %s',
 	'LOG_UNBAN_IP'			=> '<strong>Unbanned IP</strong><br />» %s',
-	'LOG_UNBAN_EMAIL'		=> '<strong>Unbanned email</strong><br />» %s',
+	'LOG_UNBAN_EMAIL'		=> '<strong>Unbanned e-mail</strong><br />» %s',
 
 	'LOG_BBCODE_ADD'		=> '<strong>Added new BBCode</strong><br />» %s',
 	'LOG_BBCODE_EDIT'		=> '<strong>Edited BBCode</strong><br />» %s',
@@ -441,7 +441,7 @@ $lang = array_merge($lang, array(
 	'LOG_CONFIG_AUTH'			=> '<strong>Altered authentication settings</strong>',
 	'LOG_CONFIG_AVATAR'			=> '<strong>Altered avatar settings</strong>',
 	'LOG_CONFIG_COOKIE'			=> '<strong>Altered cookie settings</strong>',
-	'LOG_CONFIG_EMAIL'			=> '<strong>Altered email settings</strong>',
+	'LOG_CONFIG_EMAIL'			=> '<strong>Altered e-mail settings</strong>',
 	'LOG_CONFIG_FEATURES'		=> '<strong>Altered board features</strong>',
 	'LOG_CONFIG_LOAD'			=> '<strong>Altered load settings</strong>',
 	'LOG_CONFIG_MESSAGE'		=> '<strong>Altered private message settings</strong>',
@@ -483,7 +483,7 @@ $lang = array_merge($lang, array(
 	'LOG_DOWNLOAD_REMOVE_IP'	=> '<strong>Removed IP/hostname from download list</strong><br />» %s',
 
 	'LOG_ERROR_JABBER'		=> '<strong>Jabber error</strong><br />» %s',
-	'LOG_ERROR_EMAIL'		=> '<strong>Email error</strong><br />» %s',
+	'LOG_ERROR_EMAIL'		=> '<strong>E-mail error</strong><br />» %s',
 	
 	'LOG_FORUM_ADD'							=> '<strong>Created new forum</strong><br />» %s',
 	'LOG_FORUM_DEL_FORUM'					=> '<strong>Deleted forum</strong><br />» %s',
@@ -521,7 +521,7 @@ $lang = array_merge($lang, array(
 
 	'LOG_INACTIVE_ACTIVATE'	=> '<strong>Activated inactive users</strong><br />» %s',
 	'LOG_INACTIVE_DELETE'	=> '<strong>Deleted inactive users</strong><br />» %s',
-	'LOG_INACTIVE_REMIND'	=> '<strong>Sent reminder emails to inactive users</strong><br />» %s',
+	'LOG_INACTIVE_REMIND'	=> '<strong>Sent reminder e-mails to inactive users</strong><br />» %s',
 	'LOG_INSTALL_CONVERTED'	=> '<strong>Converted from %1$s to phpBB %2$s</strong>',
 	'LOG_INSTALL_INSTALLED'	=> '<strong>Installed phpBB %s</strong>',
 
@@ -538,7 +538,7 @@ $lang = array_merge($lang, array(
 	'LOG_LANGUAGE_FILE_REPLACED'	=> '<strong>Replaced language file</strong><br />» %s',
 	'LOG_LANGUAGE_FILE_SUBMITTED'	=> '<strong>Submitted language file and placed in store folder</strong><br />» %s',
 
-	'LOG_MASS_EMAIL'		=> '<strong>Sent mass email</strong><br />» %s',
+	'LOG_MASS_EMAIL'		=> '<strong>Sent mass e-mail</strong><br />» %s',
 
 	'LOG_MCP_CHANGE_POSTER'	=> '<strong>Changed poster in topic “%1$s”</strong><br />» from %2$s to %3$s',
 
@@ -620,7 +620,7 @@ $lang = array_merge($lang, array(
 	'LOG_USER_ACTIVE'		=> '<strong>User activated</strong><br />» %s',
 	'LOG_USER_BAN_USER'		=> '<strong>Banned User via user management</strong> for reason “<em>%1$s</em>”<br />» %2$s',
 	'LOG_USER_BAN_IP'		=> '<strong>Banned IP via user management</strong> for reason “<em>%1$s</em>”<br />» %2$s',
-	'LOG_USER_BAN_EMAIL'	=> '<strong>Banned email via user management</strong> for reason “<em>%1$s</em>”<br />» %2$s',
+	'LOG_USER_BAN_EMAIL'	=> '<strong>Banned e-mail via user management</strong> for reason “<em>%1$s</em>”<br />» %2$s',
 	'LOG_USER_DELETED'		=> '<strong>Deleted user</strong><br />» %s',
 	'LOG_USER_DEL_ATTACH'	=> '<strong>Removed all attachments made by the user</strong><br />» %s',
 	'LOG_USER_DEL_AVATAR'	=> '<strong>Removed user avatar</strong><br />» %s',
@@ -630,7 +630,7 @@ $lang = array_merge($lang, array(
 	'LOG_USER_MOVE_POSTS'	=> '<strong>Moved user posts</strong><br />» posts by “%1$s” to forum “%2$s”',
 	'LOG_USER_NEW_PASSWORD'	=> '<strong>Changed user password</strong><br />» %s',
 	'LOG_USER_REACTIVATE'	=> '<strong>Forced user account reactivation</strong><br />» %s',
-	'LOG_USER_UPDATE_EMAIL'	=> '<strong>User “%1$s” changed email</strong><br />» from “%2$s” to “%3$s”',
+	'LOG_USER_UPDATE_EMAIL'	=> '<strong>User “%1$s” changed e-mail</strong><br />» from “%2$s” to “%3$s”',
 	'LOG_USER_UPDATE_NAME'	=> '<strong>Changed username</strong><br />» from “%1$s” to “%2$s”',
 	'LOG_USER_USER_UPDATE'	=> '<strong>Updated user details</strong><br />» %s',
 

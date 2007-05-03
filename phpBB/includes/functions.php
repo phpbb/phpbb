@@ -2878,14 +2878,14 @@ function parse_attachments($forum_id, &$message, &$attachments, &$update_count, 
 				$display_cat = ATTACHMENT_CATEGORY_NONE;
 			}
 
-			$download_link = append_sid("{$phpbb_root_path}download.$phpEx", 'id=' . $attachment['attach_id'] . '&amp;f=' . (int) $forum_id . '&amp;mode=view');
+			$download_link = append_sid("{$phpbb_root_path}download.$phpEx", 'id=' . $attachment['attach_id'] . '&amp;mode=view');
 
 			switch ($display_cat)
 			{
 				// Images
 				case ATTACHMENT_CATEGORY_IMAGE:
 					$l_downloaded_viewed = 'VIEWED_COUNT';
-					$inline_link = append_sid("{$phpbb_root_path}download.$phpEx", 'id=' . $attachment['attach_id'] . '&amp;f=' . (int) $forum_id);
+					$inline_link = append_sid("{$phpbb_root_path}download.$phpEx", 'id=' . $attachment['attach_id']);
 
 					$block_array += array(
 						'S_IMAGE'		=> true,
@@ -2898,7 +2898,7 @@ function parse_attachments($forum_id, &$message, &$attachments, &$update_count, 
 				// Images, but display Thumbnail
 				case ATTACHMENT_CATEGORY_THUMB:
 					$l_downloaded_viewed = 'VIEWED_COUNT';
-					$thumbnail_link = append_sid("{$phpbb_root_path}download.$phpEx", 'id=' . $attachment['attach_id'] . '&amp;t=1&amp;f=' . (int) $forum_id);
+					$thumbnail_link = append_sid("{$phpbb_root_path}download.$phpEx", 'id=' . $attachment['attach_id'] . '&amp;t=1');
 
 					$block_array += array(
 						'S_THUMBNAIL'		=> true,

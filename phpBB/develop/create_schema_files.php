@@ -18,9 +18,9 @@ set_time_limit(0);
 
 $schema_path = './../install/schemas/';
 
-if (!is_writeable($schema_path))
+if (!is_writable($schema_path))
 {
-	die('Schema path not writeable');
+	die('Schema path not writable');
 }
 
 $schema_data = get_schema_struct();

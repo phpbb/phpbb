@@ -483,12 +483,12 @@ function validate_config_vars($config_vars, &$cfg_array, &$error)
 					$error[] = sprintf($user->lang['DIRECTORY_NOT_DIR'], $cfg_array[$config_name]);
 				}
 
-				// Check if the path is writeable
+				// Check if the path is writable
 				if ($config_definition['validate'] == 'wpath' || $config_definition['validate'] == 'rwpath')
 				{
-					if (file_exists($phpbb_root_path . $cfg_array[$config_name]) && !is_writeable($phpbb_root_path . $cfg_array[$config_name]))
+					if (file_exists($phpbb_root_path . $cfg_array[$config_name]) && !@is_writable($phpbb_root_path . $cfg_array[$config_name]))
 					{
-						$error[] = sprintf($user->lang['DIRECTORY_NOT_WRITEABLE'], $cfg_array[$config_name]);
+						$error[] = sprintf($user->lang['DIRECTORY_NOT_WRITABLE'], $cfg_array[$config_name]);
 					}
 				}
 

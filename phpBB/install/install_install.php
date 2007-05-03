@@ -402,14 +402,14 @@ class install_install extends module
 			// Now really check
 			if (file_exists($phpbb_root_path . $dir) && is_dir($phpbb_root_path . $dir))
 			{
-				if (!is_writeable($phpbb_root_path . $dir))
+				if (!@is_writable($phpbb_root_path . $dir))
 				{
 					@chmod($phpbb_root_path . $dir, 0777);
 				}
 				$exists = true;
 			}
 
-			// Now check if it is writeable by storing a simple file
+			// Now check if it is writable by storing a simple file
 			$fp = @fopen($phpbb_root_path . $dir . 'test_lock', 'wb');
 			if ($fp !== false)
 			{
@@ -422,7 +422,7 @@ class install_install extends module
 			$passed['files'] = ($exists && $write && $passed['files']) ? true : false;
 
 			$exists = ($exists) ? '<b style="color:green">' . $lang['FOUND'] . '</b>' : '<b style="color:red">' . $lang['NOT_FOUND'] . '</b>';
-			$write = ($write) ? ', <b style="color:green">' . $lang['WRITEABLE'] . '</b>' : (($exists) ? ', <b style="color:red">' . $lang['UNWRITEABLE'] . '</b>' : '');
+			$write = ($write) ? ', <b style="color:green">' . $lang['WRITABLE'] . '</b>' : (($exists) ? ', <b style="color:red">' . $lang['UNWRITABLE'] . '</b>' : '');
 
 			$template->assign_block_vars('checks', array(
 				'TITLE'		=> $dir,
@@ -447,7 +447,7 @@ class install_install extends module
 			$write = $exists = true;
 			if (file_exists($phpbb_root_path . $dir))
 			{
-				if (!is_writeable($phpbb_root_path . $dir))
+				if (!@is_writable($phpbb_root_path . $dir))
 				{
 					$write = false;
 				}
@@ -458,7 +458,7 @@ class install_install extends module
 			}
 
 			$exists_str = ($exists) ? '<b style="color:green">' . $lang['FOUND'] . '</b>' : '<b style="color:red">' . $lang['NOT_FOUND'] . '</b>';
-			$write_str = ($write) ? ', <b style="color:green">' . $lang['WRITEABLE'] . '</b>' : (($exists) ? ', <b style="color:red">' . $lang['UNWRITEABLE'] . '</b>' : '');
+			$write_str = ($write) ? ', <b style="color:green">' . $lang['WRITABLE'] . '</b>' : (($exists) ? ', <b style="color:red">' . $lang['UNWRITABLE'] . '</b>' : '');
 
 			$template->assign_block_vars('checks', array(
 				'TITLE'		=> $dir,
@@ -872,7 +872,7 @@ class install_install extends module
 		$config_data .= '?' . '>'; // Done this to prevent highlighting editors getting confused!
 	
 		// Attempt to write out the config file directly. If it works, this is the easiest way to do it ...
-		if ((file_exists($phpbb_root_path . 'config.' . $phpEx) && is_writeable($phpbb_root_path . 'config.' . $phpEx)) || is_writable($phpbb_root_path))
+		if ((file_exists($phpbb_root_path . 'config.' . $phpEx) && is_writable($phpbb_root_path . 'config.' . $phpEx)) || is_writable($phpbb_root_path))
 		{
 			// Assume it will work ... if nothing goes wrong below
 			$written = true;

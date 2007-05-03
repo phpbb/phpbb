@@ -17,7 +17,7 @@
 	<p>{L_EXPLAIN}</p>
 	
 	<!-- IF S_FORUM_NAMES -->
-		<p><b>{L_FORUMS}:</b> {FORUM_NAMES}</p>
+		<p><strong>{L_FORUMS}:</strong> {FORUM_NAMES}</p>
 	<!-- ENDIF -->
 
 	<!-- IF S_SELECT_FORUM -->
@@ -32,11 +32,12 @@
 			<dd><select id="forum" name="forum_id[]"<!-- IF S_FORUM_MULTIPLE --> multiple="multiple"<!-- ENDIF --> size="10">{S_FORUM_OPTIONS}</select></dd>
 			<!-- IF S_FORUM_ALL --><dd><input type="checkbox" class="radio" name="all_forums" value="1" />&nbsp; {L_ALL_FORUMS}</dd><!-- ENDIF -->
 		</dl>
-		</fieldset>
 
-		<fieldset class="quick">
+		<p class="quick">
 			{S_HIDDEN_FIELDS}
 			<input type="submit" name="submit" value="{L_SUBMIT}" class="button1" />
+		</p>
+
 		</fieldset>
 
 		</form>
@@ -52,11 +53,12 @@
 				<dt><label for="sforum">{L_LOOK_UP_FORUM}:</label></dt>
 				<dd><select id="sforum" name="subforum_id">{S_SUBFORUM_OPTIONS}</select></dd>
 			</dl>
-			</fieldset>
 
-			<fieldset class="quick">
+			<p class="quick">
 				{S_HIDDEN_FIELDS}
 				<input type="submit" name="submit" value="{L_SUBMIT}" class="button1" />
+			</p>
+
 			</fieldset>
 
 			</form>
@@ -75,11 +77,11 @@
 			<dd>[ <a href="{U_FIND_USERNAME}" onclick="find_username(); return false;">{L_FIND_USERNAME}</a> ]</dd>
 			<dd class="full" style="text-align: left;"><input type="checkbox" class="radio" id="anonymous" name="user_id[]" value="{ANONYMOUS_USER_ID}" /> &nbsp;{L_SELECT_ANONYMOUS}</dd>
 		</dl>
-		</fieldset>
 
-		<fieldset class="quick">
+		<p class="quick">
 			{S_HIDDEN_FIELDS}
 			<input type="submit" name="submit" value="{L_SUBMIT}" class="button1" />
+		</p>
 		</fieldset>
 
 		</form>
@@ -94,11 +96,12 @@
 			<dt><label for="group">{L_LOOK_UP_GROUP}:</label></dt>
 			<dd><select name="group_id[]" id="group">{S_GROUP_OPTIONS}</select></dd>
 		</dl>
-		</fieldset>
 
-		<fieldset class="quick">
+		<p class="quick">
 			{S_HIDDEN_FIELDS}
 			<input type="submit" name="submit" value="{L_SUBMIT}" class="button1" />
+		</p>
+
 		</fieldset>
 
 		</form>
@@ -106,7 +109,7 @@
 		<!-- ELSEIF S_SELECT_USERGROUP -->
 
 		<div style="float: left; width: 48%;">
-		
+
 		<!-- IF S_CAN_SELECT_USER -->
 
 			<h1>{L_USERS}</h1>

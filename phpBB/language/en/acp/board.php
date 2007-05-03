@@ -78,7 +78,7 @@ $lang = array_merge($lang, array(
 
 // Avatar Settings
 $lang = array_merge($lang, array(
-	'ACP_AVATAR_SETTINGS_EXPLAIN'	=> 'Avatars are generally small, unique images a user can associate with themselves. Depending on the style they are usually displayed below the username when viewing topics. Here you can determine how users can define their avatars. Please note that in order to upload avatars you need to have created the directory you name below and ensure it can be written to by the web server. Please also note that filesize limits are only imposed on uploaded avatars, they do not apply to remotely linked images.',
+	'ACP_AVATAR_SETTINGS_EXPLAIN'	=> 'Avatars are generally small, unique images a user can associate with themselves. Depending on the style they are usually displayed below the username when viewing topics. Here you can determine how users can define their avatars. Please note that in order to upload avatars you need to have created the directory you name below and ensure it can be written to by the web server. Please also note that file size limits are only imposed on uploaded avatars, they do not apply to remotely linked images.',
 
 	'ALLOW_LOCAL'					=> 'Enable gallery avatars',
 	'ALLOW_REMOTE'					=> 'Enable remote avatars',
@@ -186,8 +186,8 @@ $lang = array_merge($lang, array(
 	'ACC_NONE'					=> 'None',
 	'ACC_USER'					=> 'User',
 //	'ACC_USER_ADMIN'			=> 'User + Admin',
-	'ALLOW_EMAIL_REUSE'			=> 'Allow email address re-use',
-	'ALLOW_EMAIL_REUSE_EXPLAIN'	=> 'Different users can register with the same email address.',
+	'ALLOW_EMAIL_REUSE'			=> 'Allow e-mail address re-use',
+	'ALLOW_EMAIL_REUSE_EXPLAIN'	=> 'Different users can register with the same e-mail address.',
 	'COPPA'						=> 'COPPA',
 	'COPPA_FAX'					=> 'COPPA fax number',
 	'COPPA_MAIL'				=> 'COPPA mailing address',
@@ -285,10 +285,10 @@ $lang = array_merge($lang, array(
 
 	'LDAP_DN'						=> 'LDAP base <var>dn</var>',
 	'LDAP_DN_EXPLAIN'				=> 'This is the Distinguished Name, locating the user information, e.g. <samp>o=My Company,c=US</samp>',
-	'LDAP_EMAIL'					=> 'LDAP email attribute',
-	'LDAP_EMAIL_EXPLAIN'			=> 'Set this to the name of your user entry email attribute (if one exists) in order to automatically set the email address for new users. Leaving this empty results in empty email address for users who log in for the first time.',
+	'LDAP_EMAIL'					=> 'LDAP e-mail attribute',
+	'LDAP_EMAIL_EXPLAIN'			=> 'Set this to the name of your user entry e-mail attribute (if one exists) in order to automatically set the e-mail address for new users. Leaving this empty results in empty e-mail address for users who log in for the first time.',
 	'LDAP_INCORRECT_USER_PASSWORD'	=> 'Binding to LDAP server failed with specified user/password.',
-	'LDAP_NO_EMAIL'					=> 'The specified email attribute does not exist.',
+	'LDAP_NO_EMAIL'					=> 'The specified e-mail attribute does not exist.',
 	'LDAP_NO_IDENTITY'				=> 'Could not find a login identity for %s',
 	'LDAP_PASSWORD'					=> 'LDAP password',
 	'LDAP_PASSWORD_EXPLAIN'			=> 'Leave blank to use anonymous access. Else fill in the password for the above user. <strong>WARNING:</strong> This password will be stored as plain text in the database visible to everybody who can access your database.',
@@ -302,7 +302,7 @@ $lang = array_merge($lang, array(
 
 // Server Settings
 $lang = array_merge($lang, array(
-	'ACP_SERVER_SETTINGS_EXPLAIN'	=> 'Here you define server and domain dependant settings. Please ensure the data you enter is accurate, errors will result in emails containing incorrect information. When entering the domain name remember it does include http:// or other protocol term. Only alter the port number if you know your server uses a different value, port 80 is correct in most cases.',
+	'ACP_SERVER_SETTINGS_EXPLAIN'	=> 'Here you define server and domain dependant settings. Please ensure the data you enter is accurate, errors will result in e-mails containing incorrect information. When entering the domain name remember it does include http:// or other protocol term. Only alter the port number if you know your server uses a different value, port 80 is correct in most cases.',
 
 	'ENABLE_GZIP'				=> 'Enable GZip compression',
 	'ENABLE_GZIP_EXPLAIN'		=> 'Generated content will be compressed prior to sending it to the user if his browser supports it. This can reduce network traffic but will also increase CPU usage on both server and client side.',
@@ -343,8 +343,8 @@ $lang = array_merge($lang, array(
 	'CHECK_DNSBL_EXPLAIN'			=> 'If enabled the user’s IP address is checked against the following DNSBL services on registration and posting: <a href="http://spamcop.net">spamcop.net</a>, <a href="http://dsbl.org">dsbl.org</a> and <a href="http://spamhaus.org">spamhaus.org</a>. This lookup may take a while, depending on the server’s configuration. If slowdowns are experienced or too many false positives reported it is recommended to disable this check.',
 	'CLASS_B'						=> 'A.B',
 	'CLASS_C'						=> 'A.B.C',
-	'EMAIL_CHECK_MX'				=> 'Check email domain for valid MX record',
-	'EMAIL_CHECK_MX_EXPLAIN'		=> 'If enabled, the email domain provided on registration and profile changes is checked for a valid MX record.',
+	'EMAIL_CHECK_MX'				=> 'Check e-mail domain for valid MX record',
+	'EMAIL_CHECK_MX_EXPLAIN'		=> 'If enabled, the e-mail domain provided on registration and profile changes is checked for a valid MX record.',
 	'FORCE_PASS_CHANGE'				=> 'Force password change',
 	'FORCE_PASS_CHANGE_EXPLAIN'		=> 'Require user to change their password after a set number of days. Set this value to 0 disables this behaviour.',
 	'FORWARDED_FOR_VALID'			=> 'Validated <var>X_FORWARDED_FOR</var> header',
@@ -366,24 +366,24 @@ $lang = array_merge($lang, array(
 
 // Email Settings
 $lang = array_merge($lang, array(
-	'ACP_EMAIL_SETTINGS_EXPLAIN'	=> 'This information is used when the board sends emails to your users. Please ensure the email address you specify is valid, any bounced or undeliverable messages will likely be sent to that address. If your host does not provide a native (PHP based) email service you can instead send messages directly using SMTP. This requires the address of an appropriate server (ask your provider if necessary), do not specify any old name here! If the server requires authentication (and only if it does) enter the necessary username and password. Please note only basic authentication is offered, different authentication implementations are not currently supported.',
+	'ACP_EMAIL_SETTINGS_EXPLAIN'	=> 'This information is used when the board sends e-mails to your users. Please ensure the e-mail address you specify is valid, any bounced or undeliverable messages will likely be sent to that address. If your host does not provide a native (PHP based) e-mail service you can instead send messages directly using SMTP. This requires the address of an appropriate server (ask your provider if necessary), do not specify any old name here! If the server requires authentication (and only if it does) enter the necessary username and password. Please note only basic authentication is offered, different authentication implementations are not currently supported.',
 
-	'ADMIN_EMAIL'					=> 'Return email address',
-	'ADMIN_EMAIL_EXPLAIN'			=> 'This will be used as the return address on all emails, the technical contact email address. It will always be used as the <samp>Return-Path</samp> and <samp>Sender</samp> address in emails.',
-	'BOARD_EMAIL_FORM'				=> 'Users send email via board',
-	'BOARD_EMAIL_FORM_EXPLAIN'		=> 'Instead of showing the users email address users are able to send emails via the board.',
-	'BOARD_HIDE_EMAILS'				=> 'Hide email addresses',
-	'BOARD_HIDE_EMAILS_EXPLAIN'		=> 'This function keeps email addresses completely private.',
-	'CONTACT_EMAIL'					=> 'Contact email address',
-	'CONTACT_EMAIL_EXPLAIN'			=> 'This address will be used whenever a specific contact point is needed, e.g. spam, error output, etc. It will always be used as the <samp>From</samp> and <samp>Reply-To</samp> address in emails.',
-	'EMAIL_FUNCTION_NAME'			=> 'Email function name',
-	'EMAIL_FUNCTION_NAME_EXPLAIN'	=> 'The email function used to send mails through PHP.',
-	'EMAIL_PACKAGE_SIZE'			=> 'Email package size',
-	'EMAIL_PACKAGE_SIZE_EXPLAIN'	=> 'This is the number of emails sent in one package.',
-	'EMAIL_SIG'						=> 'Email signature',
-	'EMAIL_SIG_EXPLAIN'				=> 'This text will be attached to all emails the board sends.',
-	'ENABLE_EMAIL'					=> 'Enable board-wide emails',
-	'ENABLE_EMAIL_EXPLAIN'			=> 'If this is set to disabled no emails will be sent by the board at all.',
+	'ADMIN_EMAIL'					=> 'Return e-mail address',
+	'ADMIN_EMAIL_EXPLAIN'			=> 'This will be used as the return address on all e-mails, the technical contact e-mail address. It will always be used as the <samp>Return-Path</samp> and <samp>Sender</samp> address in e-mails.',
+	'BOARD_EMAIL_FORM'				=> 'Users send e-mail via board',
+	'BOARD_EMAIL_FORM_EXPLAIN'		=> 'Instead of showing the users e-mail address users are able to send e-mails via the board.',
+	'BOARD_HIDE_EMAILS'				=> 'Hide e-mail addresses',
+	'BOARD_HIDE_EMAILS_EXPLAIN'		=> 'This function keeps e-mail addresses completely private.',
+	'CONTACT_EMAIL'					=> 'Contact e-mail address',
+	'CONTACT_EMAIL_EXPLAIN'			=> 'This address will be used whenever a specific contact point is needed, e.g. spam, error output, etc. It will always be used as the <samp>From</samp> and <samp>Reply-To</samp> address in e-mails.',
+	'EMAIL_FUNCTION_NAME'			=> 'E-mail function name',
+	'EMAIL_FUNCTION_NAME_EXPLAIN'	=> 'The e-mail function used to send mails through PHP.',
+	'EMAIL_PACKAGE_SIZE'			=> 'E-mail package size',
+	'EMAIL_PACKAGE_SIZE_EXPLAIN'	=> 'This is the number of e-mails sent in one package.',
+	'EMAIL_SIG'						=> 'E-mail signature',
+	'EMAIL_SIG_EXPLAIN'				=> 'This text will be attached to all e-mails the board sends.',
+	'ENABLE_EMAIL'					=> 'Enable board-wide e-mails',
+	'ENABLE_EMAIL_EXPLAIN'			=> 'If this is set to disabled no e-mails will be sent by the board at all.',
 	'SMTP_AUTH_METHOD'				=> 'Authentication method for SMTP',
 	'SMTP_AUTH_METHOD_EXPLAIN'		=> 'Only used if a username/password is set, ask your provider if you are unsure which method to use.',
 	'SMTP_CRAM_MD5'					=> 'CRAM-MD5',
@@ -399,8 +399,8 @@ $lang = array_merge($lang, array(
 	'SMTP_SETTINGS'					=> 'SMTP settings',
 	'SMTP_USERNAME'					=> 'SMTP username',
 	'SMTP_USERNAME_EXPLAIN'			=> 'Only enter a username if your SMTP server requires it.',
-	'USE_SMTP'						=> 'Use SMTP server for email',
-	'USE_SMTP_EXPLAIN'				=> 'Select “Yes” if you want or have to send email via a named server instead of the local mail function.',
+	'USE_SMTP'						=> 'Use SMTP server for e-mail',
+	'USE_SMTP_EXPLAIN'				=> 'Select “Yes” if you want or have to send e-mail via a named server instead of the local mail function.',
 ));
 
 // Jabber settings

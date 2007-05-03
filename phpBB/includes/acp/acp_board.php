@@ -31,7 +31,7 @@ class acp_board
 		*	Validation types are:
 		*		string, int, bool,
 		*		script_path (absolute path in url - beginning with / and no trailing slash),
-		*		rpath (relative), rwpath (realtive, writeable), path (relative path, but able to escape the root), wpath (writeable)
+		*		rpath (relative), rwpath (realtive, writable), path (relative path, but able to escape the root), wpath (writable)
 		*/
 		switch ($mode)
 		{

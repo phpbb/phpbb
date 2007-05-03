@@ -120,32 +120,33 @@ function switch_menu()
 	var menu = document.getElementById('menu');
 	var main = document.getElementById('main');
 	var toggle = document.getElementById('toggle');
-	var handle = document.getElementById('toggle-handle');	
+	var handle = document.getElementById('toggle-handle');
 
-	switch(menu_state)
-	{	
-		//hidden
+	switch (menu_state)
+	{
+		// hide
 		case 'shown':
-			main.style.width = 'auto';
-			menu.style.display = 'none';
+			main.style.width = '93%';
 			menu_state = 'hidden';
+			menu.style.display = 'none';
 			toggle.style.left = '0';
 			toggle.style.width = '20px';
 			handle.style.backgroundImage = 'url(images/toggle.gif)';
 			handle.style.backgroundPosition = '100% 50%';
 			handle.style.backgroundRepeat = 'no-repeat';
-			break;
-		//shown
+		break;
+
+		// show
 		case 'hidden':
 			main.style.width = '76%';
-			menu.style.display = 'block';			
 			menu_state = 'shown';
+			menu.style.display = 'block';
 			toggle.style.left = '15%';
 			toggle.style.width = '5%';
 			handle.style.backgroundImage = 'url(images/toggle.gif)';
 			handle.style.backgroundPosition = '0% 50%';
-			handle.style.backgroundRepeat = 'no-repeat';			
-			break;
+			handle.style.backgroundRepeat = 'no-repeat';
+		break;
 	}
 }
 

@@ -144,13 +144,13 @@ function mcp_front_view($id, $mode, $action)
 				$global_id = $forum_list[0];
 
 				$sql = $db->sql_build_query('SELECT', array(
-					'SELECT'	=> 'r.report_time, p.post_id, p.post_subject, u.username, u.username_clean, u.user_colour, u.user_id, t.topic_id, t.topic_title, f.forum_id, f.forum_name',
+					'SELECT'	=> 'r.report_time, p.post_id, p.post_subject, p.post_time, u.username, u.username_clean, u.user_colour, u.user_id, u2.username as author_name, u2.username_clean as author_name_clean, u2.user_colour as author_colour, u2.user_id as author_id, t.topic_id, t.topic_title, f.forum_id, f.forum_name',
 
 					'FROM'		=> array(
 						REPORTS_TABLE			=> 'r',
 						REPORTS_REASONS_TABLE	=> 'rr',
 						TOPICS_TABLE			=> 't',
-						USERS_TABLE				=> 'u',
+						USERS_TABLE				=> array('u', 'u2'),
 						POSTS_TABLE				=> 'p'
 					),
 
@@ -166,6 +166,7 @@ function mcp_front_view($id, $mode, $action)
 						AND r.reason_id = rr.reason_id
 						AND p.topic_id = t.topic_id
 						AND r.user_id = u.user_id
+						AND p.poster_id = u2.user_id
 						AND p.forum_id IN (0, ' . implode(', ', $forum_list) . ')',
 
 					'ORDER_BY'	=> 'p.post_time DESC'
@@ -192,11 +193,17 @@ function mcp_front_view($id, $mode, $action)
 						'REPORTER_COLOUR'	=> get_username_string('colour', $row['user_id'], $row['username'], $row['user_colour']),
 						'U_REPORTER'		=> get_username_string('profile', $row['user_id'], $row['username'], $row['user_colour']),
 
+						'AUTHOR_FULL'		=> get_username_string('full', $row['author_id'], $row['author_name'], $row['author_colour']),
+						'AUTHOR'			=> get_username_string('username', $row['author_id'], $row['author_name'], $row['author_colour']),
+						'AUTHOR_COLOUR'		=> get_username_string('colour', $row['author_id'], $row['author_name'], $row['author_colour']),
+						'U_AUTHOR'			=> get_username_string('profile', $row['author_id'], $row['author_name'], $row['author_colour']),
+
 						'FORUM_NAME'	=> (!$global_topic) ? $row['forum_name'] : $user->lang['GLOBAL_ANNOUNCEMENT'],
 						'TOPIC_TITLE'	=> $row['topic_title'],
 						'SUBJECT'		=> ($row['post_subject']) ? $row['post_subject'] : $user->lang['NO_SUBJECT'],
-						'REPORT_TIME'	=> $user->format_date($row['report_time']))
-					);
+						'REPORT_TIME'	=> $user->format_date($row['report_time']),
+						'POST_TIME'		=> $user->format_date($row['post_time']),
+					));
 				}
 			}
 

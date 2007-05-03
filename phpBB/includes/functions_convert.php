@@ -2269,7 +2269,7 @@ function copy_dir($src, $trg, $copy_subdirs = true, $overwrite = false, $die_on_
 		@chmod($trg_path, 0777);
 	}
 
-	if (!is_writeable($trg_path))
+	if (!@is_writable($trg_path))
 	{
 		$bad_dirs[] = path($config['script_path']) . $trg;
 	}
@@ -2336,7 +2336,7 @@ function copy_dir($src, $trg, $copy_subdirs = true, $overwrite = false, $die_on_
 				@chmod($trg_path . $dir, 0777);
 			}
 
-			if (!is_writeable($trg_path . $dir))
+			if (!@is_writable($trg_path . $dir))
 			{
 				$bad_dirs[] = $trg . $dir;
 				$bad_dirs[] = $trg_path . $dir;

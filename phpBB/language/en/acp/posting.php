@@ -33,15 +33,15 @@ if (empty($lang) || !is_array($lang))
 // BBCodes 
 // Note to translators: you can translate everything but what's between { and }
 $lang = array_merge($lang, array(
-	'ACP_BBCODES_EXPLAIN'		=> 'BBCode is a special implementation of HTML offering greater control over what and how something is displayed. From this page you can add, remove and edit custom BBCodes',
+	'ACP_BBCODES_EXPLAIN'		=> 'BBCode is a special implementation of HTML offering greater control over what and how something is displayed. From this page you can add, remove and edit custom BBCodes.',
 	'ADD_BBCODE'				=> 'Add a new BBCode',
 
 	'BBCODE_ADDED'				=> 'BBCode added successfully.',
 	'BBCODE_EDITED'				=> 'BBCode edited successfully.',
 	'BBCODE_NOT_EXIST'			=> 'The BBCode you selected does not exist.',
-	'BBCODE_HELPLINE'			=> 'Helpline',
-	'BBCODE_HELPLINE_EXPLAIN'	=> 'This field contains the mouseover text of the BBCode',
-	'BBCODE_HELPLINE_TEXT'		=> 'Helpline text',
+	'BBCODE_HELPLINE'			=> 'Help line',
+	'BBCODE_HELPLINE_EXPLAIN'	=> 'This field contains the mouse over text of the BBCode',
+	'BBCODE_HELPLINE_TEXT'		=> 'Help line text',
 	'BBCODE_INVALID_TAG_NAME'	=> 'The BBCode tag name that you selected already exists.',
 	'BBCODE_OPEN_ENDED_TAG'		=> 'Your custom BBCode must contain both an opening and a closing tag.',
 	'BBCODE_TAG'				=> 'Tag',
@@ -60,17 +60,17 @@ $lang = array_merge($lang, array(
 
 	'TOKEN'					=> 'Token',
 	'TOKENS'				=> 'Tokens',
-	'TOKENS_EXPLAIN'		=> 'Tokens are placeholders for user input. The input will be validated only if it matches the corresponding definition. If needed, you can number them by adding a number as the last character between the braces, e.g. {USERNAME1}, {USERNAME2}.<br /><br />In addition to these tokens you can use any of lang string present in your language/ directory like this: {L_<em>&lt;stringname&gt;</em>} where <em>&lt;stringname&gt;</em> is the name of the translated string you want to add. For example, {L_WROTE} will be displayed as "wrote" or its translation according to user’s locale',
+	'TOKENS_EXPLAIN'		=> 'Tokens are placeholders for user input. The input will be validated only if it matches the corresponding definition. If needed, you can number them by adding a number as the last character between the braces, e.g. {USERNAME1}, {USERNAME2}.<br /><br />In addition to these tokens you can use any language string present in your language/ directory like this: {L_<em>&lt;STRINGNAME&gt;</em>} where <em>&lt;STRINGNAME&gt;</em> is the name of the translated string you want to add. For example, {L_WROTE} will be displayed as &quot;wrote&quot; or its translation according to user’s locale',
 	'TOKEN_DEFINITION'		=> 'What can it be?',
 	'TOO_MANY_BBCODES'		=> 'You cannot create any more BBCodes. Please remove one or more BBCodes then try again.',
 
 	'tokens'	=>	array(
 		'TEXT'			=> 'Any text, including foreign characters, numbers, etc…',
 		'NUMBER'		=> 'Any series of digits',
-		'EMAIL'			=> 'A valid email address',
-		'URL'			=> 'A valid URL using any protocol (http, ftp, etc… cannot be used for javascript exploits). If none is given, "http://" is prepended to the string',
+		'EMAIL'			=> 'A valid e-mail address',
+		'URL'			=> 'A valid URL using any protocol (http, ftp, etc… cannot be used for javascript exploits). If none is given, "http://" is prefixed to the string',
 		'LOCAL_URL'		=> 'A local URL. The URL must be relative to the topic page and cannot contain a server name or protocol',
-		'COLOR'			=> 'A HTML color, can be either in the numeric form <samp>#FF1234</samp> or a <a href="http://www.w3.org/TR/CSS21/syndata.html#value-def-color">CSS colour keyword</a> such as <samp>fuchsia</samp> or <samp>InactiveBorder</samp>'
+		'COLOR'			=> 'A HTML colour, can be either in the numeric form <samp>#FF1234</samp> or a <a href="http://www.w3.org/TR/CSS21/syndata.html#value-def-color">CSS colour keyword</a> such as <samp>fuchsia</samp> or <samp>InactiveBorder</samp>'
 	)
 ));
 

@@ -34,7 +34,7 @@ $lang = array_merge($lang, array(
 	'ACP_FILES'						=> 'Admin language files',
 	'ACP_LANGUAGE_PACKS_EXPLAIN'	=> 'Here you are able to install/remove language packs',
 
-	'EMAIL_FILES'			=> 'Email templates',
+	'EMAIL_FILES'			=> 'E-mail templates',
 
 	'FILE_CONTENTS'				=> 'File contents',
 	'FILE_FROM_STORAGE'			=> 'File from storage folder',

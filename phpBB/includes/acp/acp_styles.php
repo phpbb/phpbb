@@ -698,7 +698,7 @@ parse_css_file = {PARSE_CSS_FILE}
 			$additional = '';
 
 			// If the template is stored on the filesystem try to write the file else store it in the database
-			if (!$safe_mode && !$template_info['template_storedb'] && file_exists($file) && is_writeable($file))
+			if (!$safe_mode && !$template_info['template_storedb'] && file_exists($file) && @is_writable($file))
 			{
 				if (!($fp = fopen($file, 'wb')))
 				{
@@ -1358,7 +1358,7 @@ parse_css_file = {PARSE_CSS_FILE}
 			}
 
 			// where should we store the CSS?
-			if (!$safe_mode && !$theme_info['theme_storedb'] && file_exists($stylesheet_path) && is_writeable($stylesheet_path))
+			if (!$safe_mode && !$theme_info['theme_storedb'] && file_exists($stylesheet_path) && @is_writable($stylesheet_path))
 			{
 				// write stylesheet to file
 				if (!($fp = fopen($stylesheet_path, 'wb')))
@@ -2307,7 +2307,7 @@ parse_css_file = {PARSE_CSS_FILE}
 						{
 							$theme_data = $this->db_theme_data($style_row);
 						}
-						else if (!$store_db && !$safe_mode && is_writeable("{$phpbb_root_path}styles/{$style_row['theme_path']}/theme/stylesheet.css"))
+						else if (!$store_db && !$safe_mode && @is_writable("{$phpbb_root_path}styles/{$style_row['theme_path']}/theme/stylesheet.css"))
 						{
 							$store_db = 1;
 							$theme_data = $style_row['theme_data'];
@@ -2331,7 +2331,7 @@ parse_css_file = {PARSE_CSS_FILE}
 
 					if ($style_row['template_storedb'] != $store_db)
 					{
-						if (!$store_db && !$safe_mode && is_writeable("{$phpbb_root_path}styles/{$style_row['template_path']}/template"))
+						if (!$store_db && !$safe_mode && @is_writable("{$phpbb_root_path}styles/{$style_row['template_path']}/template"))
 						{
 							$sql = 'SELECT *
 								FROM ' . STYLES_TEMPLATE_DATA_TABLE . "

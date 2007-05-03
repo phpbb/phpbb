@@ -6,7 +6,7 @@
 * @copyright (c) 2006 phpBB Group 
 * @license http://opensource.org/licenses/gpl-license.php GNU Public License 
 *
-* @todo check for writeable cache/store/files directory
+* @todo check for writable cache/store/files directory
 */
 
 /**

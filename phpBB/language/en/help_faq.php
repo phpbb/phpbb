@@ -52,11 +52,11 @@ $help = array(
 	),
 	array(
 		0 => 'I registered but cannot login!',
-		1 => 'Firstly check your are entering the correct username and password. If they are okay then one of two things may have happened. If COPPA support is enabled and you clicked the <em>I am under 13 years old</em> link while registering then you will have to follow the instructions you received. If this is not the case then does your account need activating? Some boards will require all new registrations be activated, either by yourself or by the administrator before you can logon. When you registered it would have told you whether activation was required. If you were sent an email then follow the instructions, if you did not receive the email then are you sure your email address is valid? One reason activation is used is to reduce the possibility of <em>rogue</em> users abusing the board anonymously. If you are sure the email address you used is valid then try contacting the board administrator.'
+		1 => 'Firstly check your are entering the correct username and password. If they are okay then one of two things may have happened. If COPPA support is enabled and you clicked the <em>I am under 13 years old</em> link while registering then you will have to follow the instructions you received. If this is not the case then does your account need activating? Some boards will require all new registrations be activated, either by yourself or by the administrator before you can logon. When you registered it would have told you whether activation was required. If you were sent an e-mail then follow the instructions, if you did not receive the e-mail then are you sure your e-mail address is valid? One reason activation is used is to reduce the possibility of <em>rogue</em> users abusing the board anonymously. If you are sure the e-mail address you used is valid then try contacting the board administrator.'
 	),
 	array(
 		0 => 'I registered in the past but cannot login any more?!',
-		1 => 'The most likely reasons for this are; you entered an incorrect username or password (check the email you were sent when you first registered) or the administrator has deleted your account for some reason. If it is the later case then perhaps you did not post anything? It is usual for boards to periodically remove users who have not posted anything so as to reduce the size of the database. Try registering again and get involved in discussions.'
+		1 => 'The most likely reasons for this are; you entered an incorrect username or password (check the e-mail you were sent when you first registered) or the administrator has deleted your account for some reason. If it is the later case then perhaps you did not post anything? It is usual for boards to periodically remove users who have not posted anything so as to reduce the size of the database. Try registering again and get involved in discussions.'
 	),
 	array(
 		0 => 'What is COPPA?',
@@ -99,8 +99,8 @@ $help = array(
 		1 => 'In general you cannot directly change the wording of any rank (ranks appear below your username in topics and on your profile depending on the style used). Most boards use ranks to indicate the number of posts you have made and to identify certain users, e.g. moderators and administrators may have a special rank. Please do not abuse the board by posting unnecessarily just to increase your rank, you will probably find the moderator or administrator will simply lower your post count.'
 	),
 	array(
-		0 => 'When I click the email link for a user it asks me to login?',
-		1 => 'Sorry but only registered users can send email to people via the built-in email form (if the admin has enabled this feature). This is to prevent malicious use of the email system by anonymous users.'
+		0 => 'When I click the e-mail link for a user it asks me to login?',
+		1 => 'Sorry but only registered users can send e-mail to people via the built-in e-mail form (if the admin has enabled this feature). This is to prevent malicious use of the e-mail system by anonymous users.'
 	),
 	array(
 		0 => '--',
@@ -112,7 +112,7 @@ $help = array(
 	),
 	array(
 		0 => 'How do I edit or delete a post?',
-		1 => 'Unless you are the board admin or forum moderator you can only edit or delete your own posts. You can edit a post (sometimes for only a limited time after it was made) by clicking the <em>edit</em> button for the relevant post. If someone has already replied to the post you will find a small piece of text output below the post when you return to the topic, which lists the number of times you edited it along with when. This will not appear if no one has replied, nor will not appear if moderators or administrators edit the post though they may leave a note as to why they’ve edited the post at their own disgression. Please note that normal users cannot delete a post once someone has replied.'
+		1 => 'Unless you are the board admin or forum moderator you can only edit or delete your own posts. You can edit a post (sometimes for only a limited time after it was made) by clicking the <em>edit</em> button for the relevant post. If someone has already replied to the post you will find a small piece of text output below the post when you return to the topic, which lists the number of times you edited it along with when. This will not appear if no one has replied, nor will not appear if moderators or administrators edit the post though they may leave a note as to why they’ve edited the post at their own digression. Please note that normal users cannot delete a post once someone has replied.'
 	),
 	array(
 		0 => 'How do I add a signature to my post?',
@@ -247,8 +247,8 @@ $help = array(
 		1 => 'You may block a user from sending you private messages by using message rules within your User Control Panel. If you are receiving abusive private messages from someone inform the board admin, they have the power to prevent a user from sending private messages at all.'
 	),
 	array(
-		0 => 'I have received a spamming or abusive email from someone on this board!',
-		1 => 'We are sorry to hear that. The email form feature of this board includes safeguards to try and track users who send such posts. You should email the board administrator with a full copy of the email you received, it is very important this include the headers (these list details of the user that sent the email). They can then take action.'
+		0 => 'I have received a spamming or abusive e-mail from someone on this board!',
+		1 => 'We are sorry to hear that. The e-mail form feature of this board includes safeguards to try and track users who send such posts. You should e-mail the board administrator with a full copy of the e-mail you received, it is very important this include the headers (these list details of the user that sent the e-mail). They can then take action.'
 	),
 	array(
 		0 => '--',
@@ -320,7 +320,7 @@ $help = array(
 	),
 	array(
 		0 => 'Who wrote this bulletin board?',
-		1 => 'This software (in its unmodified form) is produced, released and is copyright <a href="http://www.phpbb.com/">phpBB Group</a>. It is made available under the GNU General Public Licence and may be freely distributed, see link for more details'
+		1 => 'This software (in its unmodified form) is produced, released and is copyright <a href="http://www.phpbb.com/">phpBB Group</a>. It is made available under the GNU General Public License and may be freely distributed, see link for more details'
 	),
 	array(
 		0 => 'Why isn’t X feature available?',
@@ -328,7 +328,7 @@ $help = array(
 	),
 	array(
 		0 => 'Who do I contact about abusive and/or legal matters related to this board?',
-		1 => 'Any of the administrators listed on the “The team” page should be an appropriate point of contact for your complaints. If this still gets no response then you should contact the owner of the domain (do a <a href="http://www.google.com/search?q=whois">whois lookup</a>) or, if this is running on a free service (e.g. Yahoo!, free.fr, f2s.com, etc.), the management or abuse department of that service. Please note that the phpBB Group has <strong>absolutely no jurisdiction</strong> and cannot in any way be held liable over how, where or by whom this board is used. Do not contact the phpBB Group in relation to any legal (cease and desist, liable, defamatory comment, etc.) matter <strong>not directly related</strong> to the phpBB.com website or the discrete software of phpBB itself. If you do email phpBB Group <strong>about any third party</strong> use of this software then you should expect a terse response or no response at all.'
+		1 => 'Any of the administrators listed on the “The team” page should be an appropriate point of contact for your complaints. If this still gets no response then you should contact the owner of the domain (do a <a href="http://www.google.com/search?q=whois">whois lookup</a>) or, if this is running on a free service (e.g. Yahoo!, free.fr, f2s.com, etc.), the management or abuse department of that service. Please note that the phpBB Group has <strong>absolutely no jurisdiction</strong> and cannot in any way be held liable over how, where or by whom this board is used. Do not contact the phpBB Group in relation to any legal (cease and desist, liable, defamatory comment, etc.) matter <strong>not directly related</strong> to the phpBB.com website or the discrete software of phpBB itself. If you do e-mail phpBB Group <strong>about any third party</strong> use of this software then you should expect a terse response or no response at all.'
 	)
 );
 

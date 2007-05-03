@@ -252,9 +252,9 @@ class acp_users
 							$ban_give_reason = request_var('ban_give_reason', '', true);
 
 							// Log not used at the moment, we simply utilize the ban function.
-							user_ban(substr($action, 3), $ban, 0, 0, 0, $ban_reason, $ban_give_reason);
+							$result = user_ban(substr($action, 3), $ban, 0, 0, 0, $ban_reason, $ban_give_reason);
 
-							trigger_error($user->lang['BAN_SUCCESSFUL'] . adm_back_link($this->u_action . '&amp;u=' . $user_id));
+							trigger_error((($result === false) ? $user->lang['BAN_ALREADY_ENTERED'] : $user->lang['BAN_SUCCESSFUL']) . adm_back_link($this->u_action . '&amp;u=' . $user_id));
 
 						break;
 
@@ -1339,7 +1339,7 @@ class acp_users
 
 				include($phpbb_root_path . 'includes/functions_display.' . $phpEx);
 
-				$can_upload = (file_exists($phpbb_root_path . $config['avatar_path']) && is_writeable($phpbb_root_path . $config['avatar_path']) && $file_uploads) ? true : false;
+				$can_upload = (file_exists($phpbb_root_path . $config['avatar_path']) && @is_writable($phpbb_root_path . $config['avatar_path']) && $file_uploads) ? true : false;
 
 				if ($submit)
 				{

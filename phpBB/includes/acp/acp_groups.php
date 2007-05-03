@@ -37,7 +37,7 @@ class acp_groups
 		$update		= (isset($_POST['update'])) ? true : false;
 
 		// Clear some vars
-		$can_upload = (file_exists($phpbb_root_path . $config['avatar_path']) && is_writeable($phpbb_root_path . $config['avatar_path']) && $file_uploads) ? true : false;
+		$can_upload = (file_exists($phpbb_root_path . $config['avatar_path']) && @is_writable($phpbb_root_path . $config['avatar_path']) && $file_uploads) ? true : false;
 		$group_row = array();
 
 		// Grab basic data for group, if group_id is set and exists

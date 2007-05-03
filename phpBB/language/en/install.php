@@ -66,7 +66,7 @@ $lang = array_merge($lang, array(
 	'CONFIG_FILE_WRITTEN'		=> 'The configuration file has been written. You may now proceed to the next step of the installation',
 	'CONFIG_PHPBB_EMPTY'		=> 'The phpBB3 config variable for "%s" is empty.',
 	'CONFIG_RETRY'				=> 'Retry',
-	'CONTACT_EMAIL_CONFIRM'		=> 'Confirm contact email',
+	'CONTACT_EMAIL_CONFIRM'		=> 'Confirm contact e-mail',
 	'CONTINUE_CONVERT'			=> 'Continue conversion',
 	'CONTINUE_CONVERT_BODY'		=> 'A previous conversion attempt has been determined. You are now able to choose between starting a new conversion or continuing the conversion.',
 	'CONTINUE_LAST'				=> 'Continue last statements',
@@ -155,7 +155,7 @@ $lang = array_merge($lang, array(
 	'FILES_OPTIONAL'			=> 'Optional files and directories',
 	'FILES_OPTIONAL_EXPLAIN'	=> '<strong>Optional</strong> - These files, directories or permission settings are not required. The installation system will attempt to use various techniques to create them if they do not exist or cannot be written to. However, the presence of these will speed installation.',
 	'FILES_REQUIRED'			=> 'Files and Directories',
-	'FILES_REQUIRED_EXPLAIN'	=> '<strong>Required</strong> - In order to function correctly phpBB needs to be able to access or write to certain files or directories. If you see “Not Found” you need to create the relevant file or directory. If you see “Unwriteable” you need to change the permissions on the file or directory to allow phpBB to write to it.',
+	'FILES_REQUIRED_EXPLAIN'	=> '<strong>Required</strong> - In order to function correctly phpBB needs to be able to access or write to certain files or directories. If you see “Not Found” you need to create the relevant file or directory. If you see “Unwritable” you need to change the permissions on the file or directory to allow phpBB to write to it.',
 	'FILLING_TABLE'				=> 'Filling table <strong>%s</strong>',
 	'FILLING_TABLES'			=> 'Filling tables',
 	'FINAL_STEP'				=> 'Processing final step',
@@ -195,7 +195,7 @@ $lang = array_merge($lang, array(
 	'INSTALL_NEXT_FAIL'			=> 'Some tests failed and you should correct these problems before proceeding to the next stage. Failure to do so may result in an incomplete installation.',
 	'INSTALL_NEXT_PASS'			=> 'All the basic tests have been passed and you may proceed to the next stage of installation. If you have changed any permissions, modules, etc. and wish to re-test you can do so if you wish.',
 	'INSTALL_PANEL'				=> 'Installation Panel',
-	'INSTALL_SEND_CONFIG'		=> 'Unfortunately phpBB could not write the configuration information directly to your config.php. This may be because the file does not exist or is not writeable. A number of options will be listed below enabling you to complete installation of config.php.',
+	'INSTALL_SEND_CONFIG'		=> 'Unfortunately phpBB could not write the configuration information directly to your config.php. This may be because the file does not exist or is not writable. A number of options will be listed below enabling you to complete installation of config.php.',
 	'INSTALL_START'				=> 'Start install',
 	'INSTALL_TEST'				=> 'Test again',
 	'INST_ERR'					=> 'Installation error',
@@ -209,8 +209,8 @@ $lang = array_merge($lang, array(
 	'INST_ERR_DB_NO_FIREBIRD_PS'=> 'The database you selected for Firebird has a page size less than 8192, it must be at least 8192.',
 	'INST_ERR_DB_NO_POSTGRES'	=> 'The database you have selected was not created in <var>UNICODE</var> or <var>UTF8</var> encoding. Try installing with a database in <var>UNICODE</var> or <var>UTF8</var> encoding',
 	'INST_ERR_DB_NO_NAME'		=> 'No database name specified',
-	'INST_ERR_EMAIL_INVALID'	=> 'The email address you entered is invalid',
-	'INST_ERR_EMAIL_MISMATCH'	=> 'The emails you entered did not match.',
+	'INST_ERR_EMAIL_INVALID'	=> 'The e-mail address you entered is invalid',
+	'INST_ERR_EMAIL_MISMATCH'	=> 'The e-mails you entered did not match.',
 	'INST_ERR_FATAL'			=> 'Fatal installation error',
 	'INST_ERR_FATAL_DB'			=> 'A fatal and unrecoverable database error has occurred. This may be because the specified user does not have appropriate rights to <code>CREATE TABLES</code> or <code>INSERT</code> data, etc. Further information may be given below. Please contact your hosting provider in the first instance or the support forums of phpBB for further assistance.',
 	'INST_ERR_FTP_PATH'			=> 'Could not change to the given directory, please check the path.',
@@ -318,13 +318,13 @@ $lang = array_merge($lang, array(
 
 	'UNABLE_WRITE_LOCK'			=> 'Unable to write lock file',
 	'UNAVAILABLE'				=> 'Unavailable',
-	'UNWRITEABLE'				=> 'Unwriteable',
-	'UPDATE_TOPICS_POSTED'		=> 'Generating topics posted informations',
+	'UNWRITABLE'				=> 'Unwritable',
+	'UPDATE_TOPICS_POSTED'		=> 'Generating topics posted information',
 
 	'VERSION'					=> 'Version',
 
 	'WELCOME_INSTALL'			=> 'Welcome to phpBB 3 Installation',
-	'WRITEABLE'					=> 'Writeable',
+	'WRITABLE'					=> 'Writable',
 ));
 
 // Updater
@@ -483,7 +483,7 @@ $lang = array_merge($lang, array(
 	'UPDATE_METHOD_EXPLAIN'			=> 'You are now able to choose your preferred update method. Using the FTP upload will present you with a form you need to enter your FTP account details into. With this method the files will be automatically moved to the new location and backups of the old files being created by appending .bak to the filename. If you choose to download the modified files you are able to unpack and upload them to their correct location manually later.',
 	'UPDATE_SUCCESS'				=> 'Update was successful',
 	'UPDATE_SUCCESS_EXPLAIN'		=> 'Successfully updated all files. The next step involves checking all files again to make sure the files got updated correctly.',
-	'UPDATE_VERSION_OPTIMIZE'		=> 'Updating version and optimizing tables',
+	'UPDATE_VERSION_OPTIMIZE'		=> 'Updating version and optimising tables',
 	'UPDATING_DATA'					=> 'Updating data',
 	'UPDATING_TO_LATEST_STABLE'		=> 'Updating database to latest stable release',
 	'UPDATED_VERSION'				=> 'Updated version',
