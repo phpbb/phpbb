@@ -1642,7 +1642,7 @@ function avatar_upload($data, &$error)
 		$error = array_merge($error, $file->error);
 	}
 
-	return array(AVATAR_UPLOAD, $data['user_id'] . '_' . substr(time(), -5) . '.' . $file->get('extension'), $file->get('width'), $file->get('height'));
+	return array(AVATAR_UPLOAD, $data['user_id'] . '_' . time() . '.' . $file->get('extension'), $file->get('width'), $file->get('height'));
 }
 
 /**

@@ -111,7 +111,9 @@ class filespec
 			break;
 
 			case 'avatar':
+				$this->extension = strtolower($this->extension);
 				$this->realname = $prefix . $user_id . '.' . $this->extension;
+				
 			break;
 			
 			case 'unique_ext':
