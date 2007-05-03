@@ -101,6 +101,11 @@ while ($row = $db->sql_fetchrow($result))
 	}
 	else
 	{
+		// nuke this avatar
+		$sql = 'UPDATE ' . USERS_TABLE . "
+			SET user_avatar = '', user_avatar_type = 0
+			WHERE user_id = {$row['user_id']}";
+		$db->sql_query($sql);
 		echo '<br /> Failed updating user ' . $row['user_id'] . "\n";
 	}
 	
@@ -128,11 +133,13 @@ function adjust_avatar($old_name, $midfix)
 	global $config, $phpbb_root_path;
 	
 	$avatar_path = $phpbb_root_path . $config['avatar_path'];
-	if (@file_exists($avatar_path . '/' . $old_name) && @is_writable($avatar_path . '/' . $old_name))
+	$extension = strtolower(substr(strrchr($old_name, '.'), 1));
+	$new_name = $config['avatar_salt'] . '_' . $midfix . '.' . $extension;
+
+	if (@file_exists($avatar_path . '/' . $old_name) && @is_writable($avatar_path . '/' . $old_name) && @is_writable($avatar_path . '/' . $new_name))
 	{
-		$new_name = $config['avatar_salt'] . '_' . $midfix . '.' . substr(strrchr($old_name, '.'), 1);
 		@rename($avatar_path . '/' . $old_name, $avatar_path . '/' . $new_name);
-		return $midfix . '.' . substr(strrchr($old_name, '.'), 1);
+		return $midfix . '.' . $extension;
 	}
 	return false;
 }
