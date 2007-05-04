@@ -85,10 +85,10 @@ class session
 		// Current page from phpBB root (for example: adm/index.php?i=10&b=2)
 		$page = (($page_dir) ? $page_dir . '/' : '') . $page_name . (($query_string) ? "?$query_string" : '');
 
-		// The script path from the webroot to the current directory (for example: /phpBB2/adm/) : always prefixed with / and ends in /
+		// The script path from the webroot to the current directory (for example: /phpBB3/adm/) : always prefixed with / and ends in /
 		$script_path = trim(str_replace('\\', '/', dirname($script_name)));
 
-		// The script path from the webroot to the phpBB root (for example: /phpBB2/)
+		// The script path from the webroot to the phpBB root (for example: /phpBB3/)
 		$script_dirs = explode('/', $script_path);
 		array_splice($script_dirs, -sizeof($page_dirs));
 		$root_script_path = implode('/', $script_dirs) . (sizeof($root_dirs) ? '/' . implode('/', $root_dirs) : '');

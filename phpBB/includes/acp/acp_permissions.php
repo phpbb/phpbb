@@ -305,7 +305,7 @@ class acp_permissions
 					$s_forum_options = '';
 					foreach ($forum_list as $f_id => $f_row)
 					{
-						$s_forum_options .= '<option value="' . $f_id . '"' . (($f_row['selected']) ? ' selected="selected"' : '') . (($f_row['disabled']) ? ' disabled="disabled"' : '') . '>' . $f_row['padding'] . $f_row['forum_name'] . '</option>';
+						$s_forum_options .= '<option value="' . $f_id . '"' . (($f_row['selected']) ? ' selected="selected"' : '') . (($f_row['disabled']) ? ' disabled="disabled" class="disabled-option"' : '') . '>' . $f_row['padding'] . $f_row['forum_name'] . '</option>';
 					}
 
 					// Build subforum options

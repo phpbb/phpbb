@@ -714,6 +714,10 @@ option {
 	color: #000;
 }
 
+option.disabled-option {
+	color: #aaa;
+}
+
 .rtl option {
 	padding: 0 0 0 1em;
 }

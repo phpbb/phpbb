@@ -445,7 +445,9 @@ class acp_users
 						break;
 						
 						case 'moveposts':
-								
+
+							$user->add_lang('acp/forums');
+
 							$new_forum_id = request_var('new_f', 0);
 
 							if (!$new_forum_id)
@@ -460,6 +462,24 @@ class acp_users
 								);
 
 								return;
+							}
+
+							// Is the new forum postable to?
+							$sql = 'SELECT forum_name, forum_type
+								FROM ' . FORUMS_TABLE . "
+								WHERE forum_id = $new_forum_id";
+							$result = $db->sql_query($sql);
+							$forum_info = $db->sql_fetchrow($result);
+							$db->sql_freeresult($result);
+
+							if (!$forum_info)
+							{
+								trigger_error($user->lang['NO_FORUM'] . adm_back_link($this->u_action . '&amp;u=' . $user_id), E_USER_WARNING);
+							}
+
+							if ($forum_info['forum_type'] != FORUM_POST)
+							{
+								trigger_error($user->lang['MOVE_POSTS_NO_POSTABLE_FORUM'] . adm_back_link($this->u_action . '&amp;u=' . $user_id), E_USER_WARNING);
 							}
 
 							// Two stage?
@@ -482,7 +502,7 @@ class acp_users
 
 							if (sizeof($topic_id_ary))
 							{
-								$sql = 'SELECT topic_id, forum_id, topic_title, topic_replies, topic_replies_real
+								$sql = 'SELECT topic_id, forum_id, topic_title, topic_replies, topic_replies_real, topic_attachment
 									FROM ' . TOPICS_TABLE . '
 									WHERE ' . $db->sql_in_set('topic_id', array_keys($topic_id_ary));
 								$result = $db->sql_query($sql);
@@ -496,7 +516,7 @@ class acp_users
 									else
 									{
 										$move_post_ary[$row['topic_id']]['title'] = $row['topic_title'];
-										$move_post_ary[$row['topic_id']]['attach'] = ($row['attach']) ? 1 : 0;
+										$move_post_ary[$row['topic_id']]['attach'] = ($row['topic_attachment']) ? 1 : 0;
 									}
 
 									$forum_id_ary[] = $row['forum_id'];
@@ -567,12 +587,6 @@ class acp_users
 								sync('forum', 'forum_id', $forum_id_ary);
 							}
 
-							$sql = 'SELECT forum_name
-								FROM ' . FORUMS_TABLE . "
-								WHERE forum_id = $new_forum_id";
-							$result = $db->sql_query($sql, 3600);
-							$forum_info = $db->sql_fetchrow($result);
-							$db->sql_freeresult($result);
 
 							add_log('admin', 'LOG_USER_MOVE_POSTS', $user_row['username'], $forum_info['forum_name']);
 							add_log('user', $user_id, 'LOG_USER_MOVE_POSTS_USER', $forum_info['forum_name']);

@@ -297,7 +297,7 @@ switch ($mode)
 			break;
 
 			default:
-				trigger_error('This contact option is not supported', E_USER_ERROR);
+				trigger_error('NO_MODE', E_USER_ERROR);
 			break;
 		}
 

@@ -109,8 +109,9 @@ $lang = array_merge($lang, array(
 	'LIST_INDEX_EXPLAIN'	=> 'Displays this forum on the index and elsewhere as a link within the legend of its parent-forum.',
 	'LOCKED'				=> 'Locked',
 
-	'MOVE_POSTS_TO'		=> 'Move posts to',
-	'MOVE_SUBFORUMS_TO'	=> 'Move subforums to',
+	'MOVE_POSTS_NO_POSTABLE_FORUM'	=> 'The forum you selected for moving the posts to is not postable. Please select a postable forum.',
+	'MOVE_POSTS_TO'					=> 'Move posts to',
+	'MOVE_SUBFORUMS_TO'				=> 'Move subforums to',
 
 	'NO_DESTINATION_FORUM'			=> 'You have not specified a forum to move content to',
 	'NO_FORUM_ACTION'				=> 'No action defined for what happens with the forum content',
@@ -119,6 +120,7 @@ $lang = array_merge($lang, array(
 	'NO_PERMISSION_FORUM_ADD'		=> 'You do not have the necessary permissions to add forums.',
 	'NO_PERMISSION_FORUM_DELETE'	=> 'You do not have the necessary permissions to delete forums.',
 
+	'PARENT_IS_LINK_FORUM'		=> 'The parent you specified is a forum link. Link forums are not able to hold other forums, please specify a category or forum as the parent forum.',
 	'PARENT_NOT_EXIST'			=> 'Parent does not exist.',
 	'PRUNE_ANNOUNCEMENTS'		=> 'Prune announcements',
 	'PRUNE_STICKY'				=> 'Prune stickies',

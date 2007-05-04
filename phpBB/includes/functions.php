@@ -3516,6 +3516,31 @@ function msg_handler($errno, $msg_text, $errfile, $errline)
 
 		case E_USER_ERROR:
 
+			if (!empty($user) && !empty($user->lang))
+			{
+				$msg_text = (!empty($user->lang[$msg_text])) ? $user->lang[$msg_text] : $msg_text;
+				$msg_title = (!isset($msg_title)) ? $user->lang['GENERAL_ERROR'] : ((!empty($user->lang[$msg_title])) ? $user->lang[$msg_title] : $msg_title);
+
+				$l_return_index = sprintf($user->lang['RETURN_INDEX'], '<a href="' . $phpbb_root_path . '">', '</a>');
+				$l_notify = '';
+
+				if (!empty($config['board_contact']))
+				{
+					$l_notify = '<p>' . sprintf($user->lang['NOTIFY_ADMIN_EMAIL'], $config['board_contact']) . '</p>';
+				}
+			}
+			else
+			{
+				$msg_title = 'General Error';
+				$l_return_index = '<a href="' . $phpbb_root_path . '">Return to index page</a>';
+				$l_notify = '';
+
+				if (!empty($config['board_contact']))
+				{
+					$l_notify = '<p>Please notify the board administrator or webmaster: <a href="mailto:' . $config['board_contact'] . '">' . $config['board_contact'] . '</a></p>';
+				}
+			}
+
 			garbage_collection();
 
 			// Try to not call the adm page data...
@@ -3538,19 +3563,16 @@ function msg_handler($errno, $msg_text, $errfile, $errline)
 			echo '<body id="errorpage">';
 			echo '<div id="wrap">';
 			echo '	<div id="page-header">';
-			echo '		<a href="' . $phpbb_root_path . '">Return to forum index</a>';
+			echo '		' . $l_return_index;
 			echo '	</div>';
 			echo '	<div class="panel">';
 			echo '		<div id="content">';
-			echo '			<h1>General Error</h1>';
+			echo '			<h1>' . $msg_title . '</h1>';
 			
 			echo '			<div>' . $msg_text . '</div>';
 			
-			if (!empty($config['board_contact']))
-			{
-				echo '				<p>Please notify the board administrator or webmaster: <a href="mailto:' . $config['board_contact'] . '">' . $config['board_contact'] . '</a></p>';
-			}
-			
+			echo $l_notify;
+
 			echo '		</div>';
 			echo '	</div>';
 			echo '	<div id="page-footer">';

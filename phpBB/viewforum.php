@@ -238,6 +238,12 @@ else
 	$sql_limit_time = '';
 }
 
+// Make sure $start is set to the last page if it exceeds the amount
+if ($start < 0 || $start > $topics_count)
+{
+	$start = ($start < 0) ? 0 : floor(($topics_count - 1) / $config['topics_per_page']) * $config['topics_per_page'];
+}
+
 // Basic pagewide vars
 $post_alt = ($forum_data['forum_status'] == ITEM_LOCKED) ? $user->lang['FORUM_LOCKED'] : $user->lang['POST_NEW_TOPIC'];
 

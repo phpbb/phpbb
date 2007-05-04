@@ -345,7 +345,7 @@ class acp_forums
 
 					$start = request_var('start', $row2['min_topic_id']);
 
-					$batch_size = 3000;
+					$batch_size = 2000;
 					$end = $start + $batch_size;
 
 					// Sync all topics in batch mode...
@@ -370,8 +370,8 @@ class acp_forums
 						meta_refresh(0, $url);
 
 						$template->assign_vars(array(
-							'U_PROGRESS_BAR'		=> $this->u_action . "&amp;action=progress_bar&amp;start=$start&amp;total={$row['forum_topics_real']}",
-							'UA_PROGRESS_BAR'		=> str_replace('&amp;', '&', $this->u_action) . "&action=progress_bar&start=$start&total={$row['forum_topics_real']}",
+							'U_PROGRESS_BAR'		=> $this->u_action . "&amp;action=progress_bar&amp;start=$topics_done&amp;total={$row['forum_topics_real']}",
+							'UA_PROGRESS_BAR'		=> str_replace('&amp;', '&', $this->u_action) . "&action=progress_bar&start=$topics_done&total={$row['forum_topics_real']}",
 							'S_CONTINUE_SYNC'		=> true,
 							'L_PROGRESS_EXPLAIN'	=> sprintf($user->lang['SYNC_IN_PROGRESS_EXPLAIN'], $topics_done, $row['forum_topics_real']))
 						);
@@ -933,7 +933,7 @@ class acp_forums
 
 			if ($forum_data_sql['parent_id'])
 			{
-				$sql = 'SELECT left_id, right_id
+				$sql = 'SELECT left_id, right_id, forum_type
 					FROM ' . FORUMS_TABLE . '
 					WHERE forum_id = ' . $forum_data_sql['parent_id'];
 				$result = $db->sql_query($sql);
@@ -943,6 +943,12 @@ class acp_forums
 				if (!$row)
 				{
 					trigger_error($user->lang['PARENT_NOT_EXIST'] . adm_back_link($this->u_action . '&amp;' . $this->parent_id), E_USER_WARNING);
+				}
+
+				if ($row['forum_type'] == FORUM_LINK)
+				{
+					$errors[] = $user->lang['PARENT_IS_LINK_FORUM'];
+					return $errors;
 				}
 
 				$sql = 'UPDATE ' . FORUMS_TABLE . '
@@ -1185,7 +1191,21 @@ class acp_forums
 	*/
 	function move_forum($from_id, $to_id)
 	{
-		global $db;
+		global $db, $user;
+
+		$to_data = $moved_ids = $errors = array();
+
+		// Check if we want to move to a parent with link type
+		if ($to_id > 0)
+		{
+			$to_data = $this->get_forum_info($to_id);
+
+			if ($to_data['forum_type'] == FORUM_LINK)
+			{
+				$errors[] = $user->lang['PARENT_IS_LINK_FORUM'];
+				return $errors;
+			}
+		}
 
 		$moved_forums = get_forum_branch($from_id, 'children', 'descending');
 		$from_data = $moved_forums[0];
@@ -1212,8 +1232,6 @@ class acp_forums
 
 		if ($to_id > 0)
 		{
-			$to_data = $this->get_forum_info($to_id);
-
 			// Resync new parents
 			$sql = 'UPDATE ' . FORUMS_TABLE . "
 				SET right_id = right_id + $diff, forum_parents = ''
@@ -1256,6 +1274,8 @@ class acp_forums
 			SET left_id = left_id $diff, right_id = right_id $diff, forum_parents = ''
 			WHERE " . $db->sql_in_set('forum_id', $moved_ids);
 		$db->sql_query($sql);
+
+		return $errors;
 	}
 
 	/**

@@ -172,7 +172,7 @@ function make_forum_select($select_id = false, $ignore_id = false, $ignore_acl =
 		else
 		{
 			$selected = (is_array($select_id)) ? ((in_array($row['forum_id'], $select_id)) ? ' selected="selected"' : '') : (($row['forum_id'] == $select_id) ? ' selected="selected"' : '');
-			$forum_list .= '<option value="' . $row['forum_id'] . '"' . (($disabled) ? ' disabled="disabled"' : $selected) . '>' . $padding . $row['forum_name'] . '</option>';
+			$forum_list .= '<option value="' . $row['forum_id'] . '"' . (($disabled) ? ' disabled="disabled" class="disabled-option"' : $selected) . '>' . $padding . $row['forum_name'] . '</option>';
 		}
 	}
 	$db->sql_freeresult($result);

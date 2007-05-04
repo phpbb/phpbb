@@ -180,7 +180,8 @@ class mcp_main
 			break;
 
 			default:
-				trigger_error("Unknown mode: $mode", E_USER_ERROR);
+				trigger_error('NO_MODE', E_USER_ERROR);
+			break;
 		}
 	}
 }

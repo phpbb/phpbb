@@ -193,6 +193,7 @@ function compose_pm($id, $mode, $action)
 
 		default:
 			trigger_error('NO_ACTION_MODE', E_USER_ERROR);
+		break;
 	}
 
 	if ($action == 'forward' && (!$config['forward_pm'] || !$auth->acl_get('u_pm_forward')))
@@ -880,6 +881,7 @@ function compose_pm($id, $mode, $action)
 
 		default:
 			trigger_error('NO_ACTION_MODE', E_USER_ERROR);
+		break;
 	}
 
 	$s_hidden_fields = '<input type="hidden" name="lastclick" value="' . $current_time . '" />';

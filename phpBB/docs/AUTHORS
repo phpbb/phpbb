@@ -9,21 +9,30 @@
 Please see: http://www.phpbb.com/about/team/ for a list of all the people currently
 involved in phpBB.
 
-phpBB Project Manager : theFinn (James Atkinson)
+phpBB Project Manager : SHS` (Jonathan Stanley)
 
-phpBB Lead Developers : Acyd Burn (Meik Sievertsen)
-                        psoTFX (Paul S. Owen) [2001 - 09/2005]
+phpBB Lead Developer  : Acyd Burn (Meik Sievertsen)
 
 phpBB Developers      : DavidMJ (David M.)
+                        dhn (Dominik Dröscher)
                         kellanved (Henry Sudhof)
                         naderman (Nils Adermann)
                         subBlue (Tom Beddard)
                         Vic (Vic D'elfant)
 
-                        BartVB (Bart van Bragt) - [11/2000 - 03/2006]
-                        Ashe (Ludovic Arnaud) - [10/2002 - 11/2003, 06/2006 - 10/2006]
-                        GrahamJE (Graham Eames) - [09/2005 - 11/2006]
 
+-- Previous Contributors --
+
+phpBB Project Manager : theFinn (James Atkinson) [Founder - 04/2007]
+
+phpBB Lead Developer  : psoTFX (Paul S. Owen) [2001 - 09/2005]
+
+phpBB Developers      : Ashe (Ludovic Arnaud)   [10/2002 - 11/2003, 06/2006 - 10/2006]
+                        BartVB (Bart van Bragt) [11/2000 - 03/2006]
+                        GrahamJE (Graham Eames) [09/2005 - 11/2006]
+
+
+-- Copyrights --
 
 Original subSilver by subBlue Design, Tom Beddard, (c) 2001 phpBB Group
 prosilver by subBlue Design, Tom Beddard, (c) 2004 phpBB Group

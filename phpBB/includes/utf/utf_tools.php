@@ -163,7 +163,7 @@ if (extension_loaded('mbstring'))
 			{
 				if (!is_int($offset))
 				{
-					trigger_error('utf8_strrpos expects parameter 3 to be long', E_USER_WARNING);
+					trigger_error('utf8_strrpos expects parameter 3 to be long', E_USER_ERROR);
 					return false;
 				}
 
@@ -270,7 +270,7 @@ else
 		{
 			if (!is_int($offset))
 			{
-				trigger_error('utf8_strrpos	expects	parameter 3	to be long', E_USER_WARNING);
+				trigger_error('utf8_strrpos	expects	parameter 3	to be long', E_USER_ERROR);
 				return false;
 			}
 
