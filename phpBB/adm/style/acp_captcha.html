@@ -12,20 +12,24 @@
 	<legend>{L_GENERAL_OPTIONS}</legend>
 <dl>
 	<dt><label for="enable_confirm">{L_VISUAL_CONFIRM_REG}:</label><br /><span>{L_VISUAL_CONFIRM_REG_EXPLAIN}</span></dt>
-	<dd><input type="radio" class="radio" id="enable_confirm" name="enable_confirm" value="1"<!-- IF REG_ENABLE --> checked="checked"<!-- ENDIF --> />&nbsp;{L_ENABLED}&nbsp; &nbsp;<input type="radio" class="radio" name="enable_confirm" value="0"<!-- IF not REG_ENABLE --> checked="checked"<!-- ENDIF --> />&nbsp;{L_DISABLED}</dd>
+	<dd><label><input type="radio" class="radio" id="enable_confirm" name="enable_confirm" value="1"<!-- IF REG_ENABLE --> checked="checked"<!-- ENDIF --> /> {L_ENABLED}</label>
+		<label><input type="radio" class="radio" name="enable_confirm" value="0"<!-- IF not REG_ENABLE --> checked="checked"<!-- ENDIF --> /> {L_DISABLED}</label></dd>
 </dl>
 <dl>
 	<dt><label for="enable_post_confirm">{L_VISUAL_CONFIRM_POST}:</label><br /><span>{L_VISUAL_CONFIRM_POST_EXPLAIN}</span></dt>
-	<dd><input type="radio" class="radio" id="enable_post_confirm" name="enable_post_confirm" value="1"<!-- IF POST_ENABLE --> checked="checked"<!-- ENDIF --> />&nbsp;{L_ENABLED}&nbsp; &nbsp;<input type="radio" class="radio" name="enable_post_confirm" value="0"<!-- IF not POST_ENABLE --> checked="checked"<!-- ENDIF --> />&nbsp;{L_DISABLED}</dd>
+	<dd><label><input type="radio" class="radio" id="enable_post_confirm" name="enable_post_confirm" value="1"<!-- IF POST_ENABLE --> checked="checked"<!-- ENDIF --> /> {L_ENABLED}</label>
+		<label><input type="radio" class="radio" name="enable_post_confirm" value="0"<!-- IF not POST_ENABLE --> checked="checked"<!-- ENDIF --> /> {L_DISABLED}</label></dd>
 </dl>
 <!-- IF GD -->
 <dl>
 	<dt><label for="captcha_gd">{L_CAPTCHA_GD}:</label><br /><span>{L_CAPTCHA_GD_EXPLAIN}</span></dt>
-	<dd><input id="captcha_gd" name="captcha_gd" value="1" class="radio" type="radio"<!-- IF CAPTCHA_GD --> checked="checked"<!-- ENDIF --> />&nbsp;{L_YES}&nbsp;&nbsp;<input name="captcha_gd" value="0" class="radio" type="radio"<!-- IF not CAPTCHA_GD --> checked="checked"<!-- ENDIF --> />&nbsp;{L_NO}</dd>
+	<dd><label><input id="captcha_gd" name="captcha_gd" value="1" class="radio" type="radio"<!-- IF CAPTCHA_GD --> checked="checked"<!-- ENDIF --> /> {L_YES}</label>
+		<label><input name="captcha_gd" value="0" class="radio" type="radio"<!-- IF not CAPTCHA_GD --> checked="checked"<!-- ENDIF --> /> {L_NO}</label></dd>
 </dl>
 <dl>
 	<dt><label for="captcha_gd_noise">{L_CAPTCHA_GD_NOISE}:</label><br /><span>{L_CAPTCHA_GD_NOISE_EXPLAIN}</span></dt>
-	<dd><input id="captcha_gd_noise" name="captcha_gd_noise" value="1" class="radio" type="radio"<!-- IF CAPTCHA_GD_NOISE --> checked="checked"<!-- ENDIF --> />&nbsp;{L_YES}&nbsp;&nbsp;<input name="captcha_gd_noise" value="0" class="radio" type="radio"<!-- IF not CAPTCHA_GD_NOISE --> checked="checked"<!-- ENDIF --> />&nbsp;{L_NO}</dd>
+	<dd><label><input id="captcha_gd_noise" name="captcha_gd_noise" value="1" class="radio" type="radio"<!-- IF CAPTCHA_GD_NOISE --> checked="checked"<!-- ENDIF --> /> {L_YES}</label>
+		<label><input name="captcha_gd_noise" value="0" class="radio" type="radio"<!-- IF not CAPTCHA_GD_NOISE --> checked="checked"<!-- ENDIF --> /> {L_NO}</label></dd>
 </dl>
 <!-- ENDIF -->
 

@@ -13,7 +13,8 @@
 		<legend>{L_GENERAL_SEARCH_SETTINGS}</legend>
 	<dl>
 		<dt><label for="load_search">{L_YES_SEARCH}:</label><br /><span>{L_YES_SEARCH_EXPLAIN}</span></dt>
-		<dd><input type="radio" class="radio" id="load_search" name="config[load_search]" value="1"<!-- IF S_YES_SEARCH --> checked="checked"<!-- ENDIF --> />&nbsp;{L_YES}&nbsp;&nbsp;<input type="radio" class="radio" name="config[load_search]" value="0"<!-- IF not S_YES_SEARCH --> checked="checked"<!-- ENDIF --> />&nbsp;{L_NO}</dd>
+		<dd><label><input type="radio" class="radio" id="load_search" name="config[load_search]" value="1"<!-- IF S_YES_SEARCH --> checked="checked"<!-- ENDIF --> /> {L_YES}</label>
+			<label><input type="radio" class="radio" name="config[load_search]" value="0"<!-- IF not S_YES_SEARCH --> checked="checked"<!-- ENDIF --> /> {L_NO}</label></dd>
 	</dl>
 	<dl>
 		<dt><label for="search_interval">{L_SEARCH_INTERVAL}:</label><br /><span>{L_SEARCH_INTERVAL_EXPLAIN}</span></dt>

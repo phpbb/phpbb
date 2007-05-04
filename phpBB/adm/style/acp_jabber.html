@@ -19,7 +19,8 @@
 	<legend>{L_ACP_JABBER_SETTINGS}</legend>
 <dl>
 	<dt><label for="jab_enable">{L_JAB_ENABLE}:</label><br /><span>{L_JAB_ENABLE_EXPLAIN}</span></dt>
-	<dd><input type="radio" class="radio" id="jab_enable" name="jab_enable" value="1"<!-- IF JAB_ENABLE --> checked="checked"<!-- ENDIF --> />&nbsp;{L_ENABLED}&nbsp; &nbsp;<input type="radio" class="radio" name="jab_enable" value="0"<!-- IF not JAB_ENABLE --> checked="checked"<!-- ENDIF --> />&nbsp;{L_DISABLED}</dd>
+	<dd><label><input type="radio" class="radio" id="jab_enable" name="jab_enable" value="1"<!-- IF JAB_ENABLE --> checked="checked"<!-- ENDIF --> /> {L_ENABLED}</label>
+		<label><input type="radio" class="radio" name="jab_enable" value="0"<!-- IF not JAB_ENABLE --> checked="checked"<!-- ENDIF --> /> {L_DISABLED}</label></dd>
 </dl>
 <dl>
 	<dt><label for="jab_host">{L_JAB_SERVER}:</label><br /><span>{L_JAB_SERVER_EXPLAIN}</span></dt>

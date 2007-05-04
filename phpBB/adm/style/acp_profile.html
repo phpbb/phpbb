@@ -40,7 +40,8 @@
 		<!-- ENDIF -->
 		<dl>
 			<dt><label for="field_no_view">{L_DISPLAY_PROFILE_FIELD}:</label><br /><span>{L_DISPLAY_PROFILE_FIELD_EXPLAIN}</span></dt>
-			<dd><input type="radio" class="radio" id="field_no_view" name="field_no_view" value="0"<!-- IF not S_FIELD_NO_VIEW --> checked="checked"<!-- ENDIF --> /> {L_YES} <input type="radio" class="radio" name="field_no_view" value="1"<!-- IF S_FIELD_NO_VIEW --> checked="checked"<!-- ENDIF --> /> {L_NO}</dd>
+			<dd><label><input type="radio" class="radio" id="field_no_view" name="field_no_view" value="0"<!-- IF not S_FIELD_NO_VIEW --> checked="checked"<!-- ENDIF --> /> {L_YES}</label>
+				<label><input type="radio" class="radio" name="field_no_view" value="1"<!-- IF S_FIELD_NO_VIEW --> checked="checked"<!-- ENDIF --> /> {L_NO}</label></dd>
 		</dl>
 		</fieldset>
 

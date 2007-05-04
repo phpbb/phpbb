@@ -54,17 +54,21 @@
 		<legend>{L_BACKUP_OPTIONS}</legend>
 	<dl>
 		<dt><label for="type">{L_BACKUP_TYPE}:</label></dt>
-		<dd><input type="radio" class="radio" name="type" value="full" id="type" checked="checked" />&nbsp;{L_FULL_BACKUP}&nbsp;&nbsp;<input type="radio" name="type" class="radio" value="structure" />&nbsp;{L_STRUCTURE_ONLY}&nbsp;&nbsp;<input type="radio" class="radio" name="type" value="data" />&nbsp;{L_DATA_ONLY}</dd>
+		<dd><label><input type="radio" class="radio" name="type" value="full" id="type" checked="checked" /> {L_FULL_BACKUP}</label>
+			<label><input type="radio" name="type" class="radio" value="structure" /> {L_STRUCTURE_ONLY}</label>
+			<label><input type="radio" class="radio" name="type" value="data" /> {L_DATA_ONLY}</label></dd>
 	</dl>
 	<dl>
 		<dt><label for="method">{L_FILE_TYPE}:</label></dt>
 		<dd><!-- BEGIN methods -->
-		<input name="method"<!-- IF methods.S_FIRST_ROW --> id="method" checked="checked"<!-- ENDIF --> type="radio" class="radio" value="{methods.TYPE}" />&nbsp;{methods.TYPE}
+		<label><input name="method"<!-- IF methods.S_FIRST_ROW --> id="method" checked="checked"<!-- ENDIF --> type="radio" class="radio" value="{methods.TYPE}" /> {methods.TYPE}</label>
 		<!-- END methods --></dd>
 	</dl>
 	<dl>
 		<dt><label for="where">{L_ACTION}:</label></dt>
-		<dd><input type="radio" class="radio" name="where" value="store_and_download" id="where" checked="checked" />&nbsp;{L_STORE_AND_DOWNLOAD}&nbsp;&nbsp;<input type="radio" class="radio" name="where" value="store" />&nbsp;{L_STORE_LOCAL}&nbsp;&nbsp;<input type="radio" class="radio" name="where" value="download" />&nbsp;{L_DOWNLOAD}</dd>
+		<dd><label><input type="radio" class="radio" name="where" value="store_and_download" id="where" checked="checked" /> {L_STORE_AND_DOWNLOAD}</label>
+			<label><input type="radio" class="radio" name="where" value="store" /> {L_STORE_LOCAL}</label>
+			<label><input type="radio" class="radio" name="where" value="download" /> {L_DOWNLOAD}</label></dd>
 	</dl>
 	<dl>
 		<dt><label for="table">{L_TABLE_SELECT}:</label></dt>

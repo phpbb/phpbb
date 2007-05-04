@@ -38,7 +38,8 @@
 </dl>
 <dl>
 	<dt><label for="user_founder">{L_FOUNDER}:</label><br /><span>{L_FOUNDER_EXPLAIN}</span></dt>
-	<dd><input type="radio" class="radio" name="user_founder" value="1"<!-- IF S_USER_FOUNDER --> id="user_founder" checked="checked"<!-- ENDIF --><!-- IF not S_FOUNDER --> disabled="disabled"<!-- ENDIF --> />&nbsp;{L_YES}&nbsp; <input type="radio" class="radio" name="user_founder" value="0"<!-- IF not S_USER_FOUNDER --> id="user_founder" checked="checked"<!-- ENDIF --><!-- IF not S_FOUNDER --> disabled="disabled"<!-- ENDIF --> />&nbsp;{L_NO}&nbsp;</dd>
+	<dd><label><input type="radio" class="radio" name="user_founder" value="1"<!-- IF S_USER_FOUNDER --> id="user_founder" checked="checked"<!-- ENDIF --><!-- IF not S_FOUNDER --> disabled="disabled"<!-- ENDIF --> /> {L_YES}</label>
+		<label><input type="radio" class="radio" name="user_founder" value="0"<!-- IF not S_USER_FOUNDER --> id="user_founder" checked="checked"<!-- ENDIF --><!-- IF not S_FOUNDER --> disabled="disabled"<!-- ENDIF --> /> {L_NO}</label></dd>
 </dl>
 <dl>
 	<dt><label for="user_email">{L_EMAIL}:</label></dt>

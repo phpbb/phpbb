@@ -83,7 +83,8 @@
 	</dl>
 	<dl>
 		<dt><label for="exclude">{L_IP_EXCLUDE}:</label><br /><span>{L_EXCLUDE_ENTERED_IP}</span></dt>
-		<dd><input type="radio" id="exclude" name="ipexclude" value="1" class="radio" /> {L_YES} &nbsp; <input type="radio" name="ipexclude" value="0" checked="checked" class="radio" /> {L_NO}</dd>
+		<dd><label><input type="radio" id="exclude" name="ipexclude" value="1" class="radio" /> {L_YES}</label>
+			<label><input type="radio" name="ipexclude" value="0" checked="checked" class="radio" /> {L_NO}</label></dd>
 	</dl>
 
 	<p class="quick">
@@ -205,7 +206,8 @@
 		</dl>
 		<dl>
 			<dt><label for="allowed_forums">{L_ALLOWED_FORUMS}:</label><br /><span>{L_ALLOWED_FORUMS_EXPLAIN}</span></dt>
-			<dd><input type="radio" id="allowed_forums" class="radio" name="forum_select" value="0"<!-- IF not S_FORUM_IDS --> checked="checked"<!-- ENDIF --> />&nbsp;{L_ALLOW_ALL_FORUMS}&nbsp;&nbsp;<input type="radio" class="radio" name="forum_select" value="1"<!-- IF S_FORUM_IDS --> checked="checked"<!-- ENDIF --> />&nbsp;{L_ALLOW_SELECTED_FORUMS}</dd>
+			<dd><label><input type="radio" id="allowed_forums" class="radio" name="forum_select" value="0"<!-- IF not S_FORUM_IDS --> checked="checked"<!-- ENDIF --> /> {L_ALLOW_ALL_FORUMS}</label>
+				<label><input type="radio" class="radio" name="forum_select" value="1"<!-- IF S_FORUM_IDS --> checked="checked"<!-- ENDIF --> /> {L_ALLOW_SELECTED_FORUMS}</label></dd>
 			<dd><select name="allowed_forums[]" multiple="multiple" size="8">{S_FORUM_ID_OPTIONS}</select></dd>
 		</dl>
 
