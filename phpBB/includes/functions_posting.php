@@ -1880,28 +1880,28 @@ function submit_post($mode, $subject, $username, $topic_type, &$poll, &$data, $u
 			if ($post_approved)
 			{
 				$update_sql = update_post_information('forum', $data['forum_id'], true, $data['post_id']);
-			}
 
-			if (sizeof($update_sql))
-			{
-				$sql_data[FORUMS_TABLE]['stat'][] = implode(', ', $update_sql[$data['forum_id']]);
+				if (sizeof($update_sql))
+				{
+					$sql_data[FORUMS_TABLE]['stat'][] = implode(', ', $update_sql[$data['forum_id']]);
+				}
 			}
 		}
 
 		if ($post_approved)
 		{
 			$update_sql = update_post_information('topic', $data['topic_id'], true, $data['post_id']);
-		}
 
-		if (sizeof($update_sql))
-		{
-			$sql_data[TOPICS_TABLE]['stat'][] = implode(', ', $update_sql[$data['topic_id']]);
+			if (sizeof($update_sql))
+			{
+				$sql_data[TOPICS_TABLE]['stat'][] = implode(', ', $update_sql[$data['topic_id']]);
+			}
 		}
 	}
 
 	if ($make_global)
 	{
-		$update_sql = update_post_information('forum', $data['forum_id'], true, $data['post_id']);
+		$update_sql = update_post_information('forum', $data['forum_id'], true);
 		if (sizeof($update_sql))
 		{
 			$sql_data[FORUMS_TABLE]['stat'][] = implode(', ', $update_sql[$data['forum_id']]);
