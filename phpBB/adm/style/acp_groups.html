@@ -70,11 +70,11 @@
 	</dl>
 	<dl>
 		<dt><label for="group_message_limit">{L_GROUP_MESSAGE_LIMIT}:</label><br /><span>{L_GROUP_MESSAGE_LIMIT_EXPLAIN}</span></dt>
-		<dd><input name="group_message_limit" type="text" id="group_message_limit" maxlength="4" size="4" value="{GROUP_MESSAGE_LIMIT}" /></dd>
+		<dd><input name="group_message_limit" type="text" class="text" id="group_message_limit" maxlength="4" size="4" value="{GROUP_MESSAGE_LIMIT}" /></dd>
 	</dl>
 	<dl>
 		<dt><label for="group_colour">{L_GROUP_COLOR}:</label><br /><span>{L_GROUP_COLOR_EXPLAIN}</span></dt>
-		<dd><input name="group_colour" type="text" id="group_colour" value="{GROUP_COLOUR}" size="6" maxlength="6" />&nbsp;&nbsp;<span>[ <a href="#" onclick="swatch(); return false">{L_COLOUR_SWATCH}</a> ]</span></dd>
+		<dd><input name="group_colour" type="text" class="text" id="group_colour" value="{GROUP_COLOUR}" size="6" maxlength="6" />&nbsp;&nbsp;<span>[ <a href="#" onclick="swatch(); return false">{L_COLOUR_SWATCH}</a> ]</span></dd>
 	</dl>
 	<dl>
 		<dt><label for="group_rank">{L_GROUP_RANK}:</label></dt>
@@ -97,16 +97,16 @@
 			</dl>
 			<dl>
 				<dt><label for="uploadurl">{L_UPLOAD_AVATAR_URL}:</label><br /><span>{L_UPLOAD_AVATAR_URL_EXPLAIN}</span></dt>
-				<dd><input name="uploadurl" type="text" id="uploadurl" value="" /></dd>
+				<dd><input name="uploadurl" type="text" class="text" id="uploadurl" value="" /></dd>
 			</dl>
 		<!-- ENDIF -->
 		<dl>
 			<dt><label for="remotelink">{L_LINK_REMOTE_AVATAR}:</label><br /><span>{L_LINK_REMOTE_AVATAR_EXPLAIN}</span></dt>
-			<dd><input name="remotelink" type="text" id="remotelink" value="" /></dd>
+			<dd><input name="remotelink" type="text" class="text" id="remotelink" value="" /></dd>
 		</dl>
 		<dl>
 			<dt><label for="width">{L_LINK_REMOTE_SIZE}:</label><br /><span>{L_LINK_REMOTE_SIZE_EXPLAIN}</span></dt>
-			<dd><input name="width" type="text" id="width" size="3" value="{AVATAR_WIDTH}" /> <span>px X </span> <input type="text" name="height" size="3" value="{AVATAR_HEIGHT}" /> <span>px</span></dd>
+			<dd><input name="width" type="text" class="text text" id="width" size="3" value="{AVATAR_WIDTH}" /> <span>px X </span> <input type="text" name="height" size="3" value="{AVATAR_HEIGHT}" /> <span>px</span></dd>
 		</dl>
 		<!-- IF S_DISPLAY_GALLERY -->
 			<dl> 
@@ -302,7 +302,7 @@
 
 	<fieldset class="quick">
 		<!-- IF S_GROUP_ADD -->
-			{L_CREATE_GROUP}: <input type="text" name="group_name" value="" /> <input class="button2" type="submit" name="submit" value="{L_SUBMIT}" />
+			{L_CREATE_GROUP}: <input type="text" class="text" name="group_name" value="" /> <input class="button2" type="submit" name="submit" value="{L_SUBMIT}" />
 			<input type="hidden" name="add" value="1" />
 		<!-- ENDIF -->
 	</fieldset>

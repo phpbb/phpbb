@@ -35,7 +35,7 @@
 		<!-- ELSE -->
 		<dl>
 			<dt><label for="field_ident">{L_FIELD_IDENT}:</label><br /><span>{L_FIELD_IDENT_EXPLAIN}</span></dt>
-			<dd><input class="medium" type="text" id="field_ident" name="field_ident" value="{FIELD_IDENT}" /></dd>
+			<dd><input class="text medium" type="text" id="field_ident" name="field_ident" value="{FIELD_IDENT}" /></dd>
 		</dl>
 		<!-- ENDIF -->
 		<dl>
@@ -74,7 +74,7 @@
 			<legend>{L_LANG_SPECIFIC}</legend>
 		<dl>
 			<dt><label for="lang_name">{L_USER_FIELD_NAME}:</label></dt>
-			<dd><input class="medium" type="text" id="lang_name" name="lang_name" value="{LANG_NAME}" /></dd>
+			<dd><input class="text medium" type="text" id="lang_name" name="lang_name" value="{LANG_NAME}" /></dd>
 		</dl>
 		<dl>
 			<dt><label for="lang_explain">{L_FIELD_DESCRIPTION}:</label><br /><span>{L_FIELD_DESCRIPTION_EXPLAIN}</span></dt>
@@ -83,7 +83,7 @@
 		<!-- IF S_TEXT or S_STRING -->
 			<dl>
 				<dt><label for="lang_default_value">{L_DEFAULT_VALUE}:</label><br /><span>{L_DEFAULT_VALUE_EXPLAIN}</span></dt>
-				<dd><!-- IF S_STRING --><input class="medium" type="text" id="lang_default_value" name="lang_default_value" value="{LANG_DEFAULT_VALUE}" /><!-- ELSE --><textarea id="lang_default_value" name="lang_default_value" rows="5" cols="80">{LANG_DEFAULT_VALUE}</textarea><!-- ENDIF --></dd>
+				<dd><!-- IF S_STRING --><input class="text medium" type="text" id="lang_default_value" name="lang_default_value" value="{LANG_DEFAULT_VALUE}" /><!-- ELSE --><textarea id="lang_default_value" name="lang_default_value" rows="5" cols="80">{LANG_DEFAULT_VALUE}</textarea><!-- ENDIF --></dd>
 			</dl>
 		<!-- ENDIF -->
 		<!-- IF S_BOOL or S_DROPDOWN -->
@@ -212,7 +212,7 @@
 	<form id="profile_fields" method="post" action="{U_ACTION}">
 	
 	<fieldset class="quick">
-		<input class="small" type="text" name="field_ident" /> <select name="field_type">{S_TYPE_OPTIONS}</select>
+		<input class="text small" type="text" name="field_ident" /> <select name="field_type">{S_TYPE_OPTIONS}</select>
 		<input class="button1" type="submit" name="submit" value="{L_CREATE_NEW_FIELD}" />
 		<input type="hidden" name="create" value="1" />
 	</fieldset>

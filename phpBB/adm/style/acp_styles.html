@@ -210,7 +210,7 @@
 			</dl>
 			<dl>
 				<dt><label for="text_rows">{L_TEMPLATE_EDITOR_HEIGHT}:</label></dt>
-				<dd><input id="text_rows" type="text" maxlength="3" value="{TEXT_ROWS}" /> <input class="button2" type="button" name="update" onclick="change_editor_height(this.form.text_rows.value);" value="{L_UPDATE}" /></dd>
+				<dd><input id="text_rows" type="text" class="text" maxlength="3" value="{TEXT_ROWS}" /> <input class="button2" type="button" name="update" onclick="change_editor_height(this.form.text_rows.value);" value="{L_UPDATE}" /></dd>
 			</dl>
 			<textarea id="template_data" name="template_data" style="font-family:'Courier New', monospace;font-size:9pt;line-height:125%;width:100%;" cols="80" rows="{TEXT_ROWS}">{TEMPLATE_DATA}</textarea>
 			</fieldset>
@@ -283,7 +283,7 @@
 					<legend>{L_THEME_EDITOR}</legend>
 				<dl>
 					<dt><label for="text_rows">{L_THEME_EDITOR_HEIGHT}:</label></dt>
-					<dd><input id="text_rows" type="text" maxlength="3" value="{TEXT_ROWS}" /> <input class="button1" type="button" name="update" onclick="change_editor_height(this.form.text_rows.value);" value="{L_UPDATE}" /></dd>
+					<dd><input id="text_rows" type="text" class="text" maxlength="3" value="{TEXT_ROWS}" /> <input class="button1" type="button" name="update" onclick="change_editor_height(this.form.text_rows.value);" value="{L_UPDATE}" /></dd>
 				</dl>
 				<textarea id="css_data" name="css_data" style="font-family:'Courier New', monospace;font-size:9pt;line-height:125%;width:100%;" cols="80" rows="{TEXT_ROWS}">{CSS_DATA}</textarea>
 				</fieldset>
@@ -294,7 +294,7 @@
 					<legend>{L_BACKGROUND}</legend>
 				<dl>
 					<dt><label for="background_color">{L_BACKGROUND_COLOUR}:</label><br /><span>{L_CSS_COLOUR_EXPLAIN}</span></dt>
-					<dd><input id="background_color" name="background_color" type="text" value="{BACKGROUND_COLOR}" size="6" />&nbsp;&nbsp;<span>[ <a href="#" onclick="swatch('background_color'); return false">{L_COLOUR_SWATCH}</a> ]</span></dd>
+					<dd><input id="background_color" name="background_color" type="text" class="text" value="{BACKGROUND_COLOR}" size="6" />&nbsp;&nbsp;<span>[ <a href="#" onclick="swatch('background_color'); return false">{L_COLOUR_SWATCH}</a> ]</span></dd>
 				</dl>
 				<dl>
 					<dt><label for="backround_image">{L_BACKGROUND_IMAGE}:</label></dt>
@@ -310,15 +310,15 @@
 					<legend>{L_FOREGROUND}</legend>
 				<dl>
 					<dt><label for="color">{L_FONT_COLOUR}:</label><br /><span>{L_CSS_COLOUR_EXPLAIN}</span></dt>
-					<dd><input id="color" name="color" type="text" value="{COLOR}" size="6" />&nbsp;&nbsp;<span>[ <a href="#" onclick="swatch('color'); return false">{L_COLOUR_SWATCH}</a> ]</span></dd>
+					<dd><input id="color" name="color" type="text" class="text" value="{COLOR}" size="6" />&nbsp;&nbsp;<span>[ <a href="#" onclick="swatch('color'); return false">{L_COLOUR_SWATCH}</a> ]</span></dd>
 				</dl>
 				<dl>
 					<dt><label for="font_family">{L_FONT_FACE}:</label><br /><span>{L_FONT_FACE_EXPLAIN}</span></dt>
-					<dd><input id="font_family" name="font_family" type="text" value="{FONT_FAMILY}" size="40" maxlength="255" /></dd>
+					<dd><input id="font_family" name="font_family" type="text" class="text" value="{FONT_FAMILY}" size="40" maxlength="255" /></dd>
 				</dl>
 				<dl>
 					<dt><label for="font_size">{L_FONT_SIZE}:</label></dt>
-					<dd><input id="font_size" name="font_size" type="text" value="{FONT_SIZE}" size="5" maxlength="5" /> <select id="font_size_unit" name="font_size_unit">{S_FONT_SIZE_UNITS}</select></dd>
+					<dd><input id="font_size" name="font_size" type="text" class="text" value="{FONT_SIZE}" size="5" maxlength="5" /> <select id="font_size_unit" name="font_size_unit">{S_FONT_SIZE_UNITS}</select></dd>
 				</dl>
 				<dl>
 					<dt><label for="font_weight">{L_BOLD}:</label></dt>
@@ -334,7 +334,7 @@
 				</dl>
 				<dl>
 					<dt><label for="line_height">{L_LINE_SPACING}</label></dt>
-					<dd><input id="line_height" name="line_height" type="text" value="{LINE_HEIGHT}" size="3" maxlength="3" /> <select id="line_height_unit" name="line_height_unit">{S_LINE_HEIGHT_UNITS}</select></dd>
+					<dd><input id="line_height" name="line_height" type="text" class="text" value="{LINE_HEIGHT}" size="3" maxlength="3" /> <select id="line_height_unit" name="line_height_unit">{S_LINE_HEIGHT_UNITS}</select></dd>
 				</dl>
 				</fieldset>
 
@@ -367,7 +367,7 @@
 			<legend>{L_CUSTOM_CLASS}</legend>
 		<dl>
 			<dt><label for="custom_class">{L_CSS_CLASS_NAME}:</label></dt>
-			<dd><input id="custom_class" name="custom_class" type="text" value="" maxlength="200" size="40" /></dd>
+			<dd><input id="custom_class" name="custom_class" type="text" class="text" value="" maxlength="200" size="40" /></dd>
 		</dl>
 
 		<p class="quick">
@@ -555,7 +555,7 @@
 
 		<fieldset class="quick">
 			<legend>{L_CREATE}</legend>
-			{L_CREATE}: <input type="text" name="name" value="" /> {L_FROM} <select name="basis">{S_BASIS_OPTIONS}</select> <input class="button2" type="submit" name="add" value="{L_SUBMIT}" />
+			{L_CREATE}: <input type="text" class="text" name="name" value="" /> {L_FROM} <select name="basis">{S_BASIS_OPTIONS}</select> <input class="button2" type="submit" name="add" value="{L_SUBMIT}" />
 		</fieldset>
 
 		</form>
@@ -582,11 +582,11 @@
 		<legend>{L_TITLE}</legend>
 	<dl>
 		<dt><label for="name">{L_NAME}:</label></dt>
-		<dd><!-- IF S_INSTALL --><b id="name">{NAME}</b><!-- ELSE --><input type="text" id="name" name="name" value="{NAME}" /><!-- ENDIF --></dd>
+		<dd><!-- IF S_INSTALL --><b id="name">{NAME}</b><!-- ELSE --><input type="text" class="text" id="name" name="name" value="{NAME}" /><!-- ENDIF --></dd>
 	</dl>
 	<dl>
 		<dt><label for="copyright">{L_COPYRIGHT}:</label></dt>
-		<dd><!-- IF S_INSTALL --><b id="name">{COPYRIGHT}</b><!-- ELSE --><input type="text" id="copyright" name="copyright" value="{COPYRIGHT}" /><!-- ENDIF --></dd>
+		<dd><!-- IF S_INSTALL --><b id="name">{COPYRIGHT}</b><!-- ELSE --><input type="text" class="text" id="copyright" name="copyright" value="{COPYRIGHT}" /><!-- ENDIF --></dd>
 	</dl>
 	<!-- IF S_STYLE and not S_BASIS -->
 		<dl>

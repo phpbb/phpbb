@@ -4,7 +4,7 @@
 	<legend>{L_ACP_USER_OVERVIEW}</legend>
 <dl>
 	<dt><label for="user">{L_USERNAME}:</label><br /><span>{L_NAME_CHARS_EXPLAIN}</span></dt>
-	<dd><input type="text" id="user" name="user" value="{USER}" /></dd>
+	<dd><input type="text" class="text" id="user" name="user" value="{USER}" /></dd>
 	<!-- IF U_SWITCH_PERMISSIONS --><dd>[ <a href="{U_SWITCH_PERMISSIONS}">{L_USE_PERMISSIONS}</a> ]</dd><!-- ENDIF -->
 </dl>
 <!-- IF S_USER_INACTIVE -->
@@ -42,11 +42,11 @@
 </dl>
 <dl>
 	<dt><label for="user_email">{L_EMAIL}:</label></dt>
-	<dd><input class="medium" type="text" id="user_email" name="user_email" value="{USER_EMAIL}" /></dd>
+	<dd><input class="text medium" type="text" id="user_email" name="user_email" value="{USER_EMAIL}" /></dd>
 </dl>
 <dl>
 	<dt><label for="email_confirm">{L_CONFIRM_EMAIL}:</label><br /><span>{L_CONFIRM_EMAIL_EXPLAIN}</span></dt>
-	<dd><input class="medium" type="text" id="email_confirm" name="email_confirm" value="" /></dd>
+	<dd><input class="text medium" type="text" id="email_confirm" name="email_confirm" value="" /></dd>
 </dl>
 <dl>
 	<dt><label for="new_password">{L_NEW_PASSWORD}:</label><br /><span>{L_CHANGE_PASSWORD_EXPLAIN}</span></dt>
@@ -116,11 +116,11 @@
 	<div style="display: none;" id="reasons">
 		<dl>
 			<dt><label for="ban_reason">{L_BAN_REASON}:</label></dt>
-			<dd><input name="ban_reason" type="text" id="ban_reason" class="medium" maxlength="3000" /></dd>
+			<dd><input name="ban_reason" type="text" class="text medium" maxlength="3000" id="ban_reason" /></dd>
 		</dl>
 		<dl>
 			<dt><label for="ban_give_reason">{L_BAN_GIVE_REASON}:</label></dt>
-			<dd><input name="ban_give_reason" type="text" id="ban_give_reason" class="medium" maxlength="3000" /></dd>
+			<dd><input name="ban_give_reason" type="text" class="text medium" maxlength="3000" id="ban_give_reason" /></dd>
 		</dl>
 	</div>
 		<!-- IF not S_OWN_ACCOUNT -->

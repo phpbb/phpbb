@@ -143,7 +143,7 @@
 	</dl>
 	<dl>
 		<dt><label for="forum_name">{L_FORUM_NAME}:</label></dt>
-		<dd><input class="medium" type="text" id="forum_name" name="forum_name" value="{FORUM_NAME}" maxlength="255" /></dd>
+		<dd><input class="text medium" type="text" id="forum_name" name="forum_name" value="{FORUM_NAME}" maxlength="255" /></dd>
 	</dl>
 	<dl>
 		<dt><label for="forum_desc">{L_FORUM_DESC}:</label><br /><span>{L_FORUM_DESC_EXPLAIN}</span></dt>
@@ -152,7 +152,7 @@
 	</dl>
 	<dl>
 		<dt><label for="forum_image">{L_FORUM_IMAGE}:</label><br /><span>{L_FORUM_IMAGE_EXPLAIN}</span></dt>
-		<dd><input class="medium" type="text" id="forum_image" name="forum_image" value="{FORUM_IMAGE}" maxlength="255" /></dd>
+		<dd><input class="text medium" type="text" id="forum_image" name="forum_image" value="{FORUM_IMAGE}" maxlength="255" /></dd>
 		<!-- IF FORUM_IMAGE_SRC -->
 			<dd><img src="{FORUM_IMAGE_SRC}" alt="{L_FORUM_IMAGE}" /></dd>
 		<!-- ENDIF -->
@@ -214,7 +214,7 @@
 		</dl>
 		<dl>
 			<dt><label for="topics_per_page">{L_FORUM_TOPICS_PAGE}:</label><br /><span>{L_FORUM_TOPICS_PAGE_EXPLAIN}</span></dt>
-			<dd><input type="text" id="topics_per_page" name="topics_per_page" value="{TOPICS_PER_PAGE}" size="4" maxlength="4" /></dd>
+			<dd><input type="text" class="text" id="topics_per_page" name="topics_per_page" value="{TOPICS_PER_PAGE}" size="4" maxlength="4" /></dd>
 		</dl>
 		</fieldset>
 
@@ -226,15 +226,15 @@
 		</dl>
 		<dl>
 			<dt><label for="prune_freq">{L_AUTO_PRUNE_FREQ}:</label><br /><span>{L_AUTO_PRUNE_FREQ_EXPLAIN}</span></dt>
-			<dd><input type="text" id="prune_freq" name="prune_freq" value="{PRUNE_FREQ}" maxlength="4" size="4" /> {L_DAYS}</dd>
+			<dd><input type="text" class="text" id="prune_freq" name="prune_freq" value="{PRUNE_FREQ}" maxlength="4" size="4" /> {L_DAYS}</dd>
 		</dl>
 		<dl>
 			<dt><label for="prune_days">{L_AUTO_PRUNE_DAYS}:</label><br /><span>{L_AUTO_PRUNE_DAYS_EXPLAIN}</span></dt>
-			<dd><input type="text" id="prune_days" name="prune_days" value="{PRUNE_DAYS}" maxlength="4" size="4" /> {L_DAYS}</dd>
+			<dd><input type="text" class="text" id="prune_days" name="prune_days" value="{PRUNE_DAYS}" maxlength="4" size="4" /> {L_DAYS}</dd>
 		</dl>
 		<dl>
 			<dt><label for="prune_viewed">{L_AUTO_PRUNE_VIEWED}:</label><br /><span>{L_AUTO_PRUNE_VIEWED_EXPLAIN}</span></dt>
-			<dd><input type="text" id="prune_viewed" name="prune_viewed" value="{PRUNE_VIEWED}" maxlength="4" size="4" /> {L_DAYS}</dd>
+			<dd><input type="text" class="text" id="prune_viewed" name="prune_viewed" value="{PRUNE_VIEWED}" maxlength="4" size="4" /> {L_DAYS}</dd>
 		</dl>
 		<dl>
 			<dt><label for="prune_old_polls">{L_PRUNE_OLD_POLLS}:</label><br /><span>{L_PRUNE_OLD_POLLS_EXPLAIN}</span></dt>
@@ -260,7 +260,7 @@
 		</dl>
 		<dl>
 			<dt><label for="forum_link">{L_FORUM_LINK}:</label><br /><span>{L_FORUM_LINK_EXPLAIN}</span></dt>
-			<dd><input class="medium" type="text" id="forum_link" name="forum_link" value="{FORUM_DATA_LINK}" maxlength="255" /></dd>
+			<dd><input class="text medium" type="text" id="forum_link" name="forum_link" value="{FORUM_DATA_LINK}" maxlength="255" /></dd>
 		</dl>
 		<dl>
 			<dt><label for="forum_link_track">{L_FORUM_LINK_TRACK}:</label><br /><span>{L_FORUM_LINK_TRACK_EXPLAIN}</span></dt>
@@ -274,7 +274,7 @@
 			<legend>{L_FORUM_RULES}</legend>
 		<dl>
 			<dt><label for="forum_rules_link">{L_FORUM_RULES_LINK}:</label><br /><span>{L_FORUM_RULES_LINK_EXPLAIN}</span></dt>
-			<dd><input class="medium" type="text" id="forum_rules_link" name="forum_rules_link" value="{FORUM_RULES_LINK}" maxlength="255" /></dd>
+			<dd><input class="text medium" type="text" id="forum_rules_link" name="forum_rules_link" value="{FORUM_RULES_LINK}" maxlength="255" /></dd>
 		</dl>
 	<!-- IF FORUM_RULES_PREVIEW -->
 		<dl>
@@ -463,7 +463,7 @@
 	<fieldset class="quick">
 		<input type="hidden" name="action" value="add" />
 
-		<input type="text" name="forum_name" value="" maxlength="255" />
+		<input type="text" class="text" name="forum_name" value="" maxlength="255" />
 		<input class="button2" name="addforum" type="submit" value="{L_CREATE_FORUM}" />
 	</fieldset>
 

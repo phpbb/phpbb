@@ -75,7 +75,7 @@
 	<dl>
 		<dt><label for="module_langname">{L_MODULE_LANGNAME}:</label><br />
 		<span>{L_MODULE_LANGNAME_EXPLAIN}</span></dt>
-		<dd><input name="module_langname" type="text" id="module_langname" value="{MODULE_LANGNAME}" class="medium" /></dd>
+		<dd><input name="module_langname" type="text" class="text medium" id="module_langname" value="{MODULE_LANGNAME}" /></dd>
 	</dl>
 	<dl>
 		<dt><label for="module_type">{L_MODULE_TYPE}:</label></dt>
@@ -192,7 +192,7 @@
 		<input type="hidden" name="action" value="add" />
 		<input type="hidden" name="module_parent_id" value="{PARENT_ID}" />
 
-		<input type="text" name="module_langname" maxlength="255" /> 
+		<input type="text" class="text" name="module_langname" maxlength="255" /> 
 		<input class="button2" name="addmodule" type="submit" value="{L_CREATE_MODULE}" />
 	</fieldset>
 
