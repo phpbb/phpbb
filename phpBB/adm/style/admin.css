@@ -663,7 +663,7 @@ input, textarea {
 	font-family: Verdana, Helvetica, Arial, sans-serif;
 	font-size: 0.90em;
 	font-weight: normal;
-	cursor: pointer;
+	cursor: default;
 	vertical-align: middle;
 	padding: 2px;
 	color: #111111;
@@ -969,6 +969,7 @@ p.submit-buttons {
 
 fieldset.submit-buttons input, p.submit-buttons input {
 	padding: 3px 2px;
+	cursor: pointer;
 }
 
 fieldset.submit-buttons legend {
@@ -1007,6 +1008,7 @@ a.button2, input.button2  {
 	color: #000000;
 	font-size: 0.85em;
 	background: #EFEFEF url("../images/bg_button.gif") repeat-x top;
+	cursor: pointer;
 }
 
 a.button1, input.button1 {
