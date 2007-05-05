@@ -1080,12 +1080,12 @@ class acp_users
 							{
 								$cp_data['user_id'] = (int) $user_id;
 
-								$db->return_on_error = true;
+								$db->sql_return_on_error(true);
 
 								$sql = 'INSERT INTO ' . PROFILE_FIELDS_DATA_TABLE . ' ' . $db->sql_build_array('INSERT', $cp_data);
 								$db->sql_query($sql);
 
-								$db->return_on_error = false;
+								$db->sql_return_on_error(false);
 							}
 						}
 

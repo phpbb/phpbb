@@ -702,9 +702,9 @@ function mcp_move_topic($topic_ids)
 			$db->sql_query($sql);
 		}
 
-		sync('forum', 'forum_id', array($forum_id, $to_forum_id));
-
 		$db->sql_transaction('commit');
+
+		sync('forum', 'forum_id', array($forum_id, $to_forum_id));
 	}
 	else
 	{

@@ -1356,6 +1356,8 @@ function submit_pm($mode, $subject, &$data, $put_in_outbox = true)
 		}
 	}
 
+	$db->sql_transaction('begin');
+
 	$sql = '';
 
 	switch ($mode)
@@ -1432,8 +1434,6 @@ function submit_pm($mode, $subject, &$data, $put_in_outbox = true)
 
 	if ($mode != 'edit')
 	{
-		$db->sql_transaction('begin');
-
 		if ($sql)
 		{
 			$db->sql_query($sql);
@@ -1474,8 +1474,6 @@ function submit_pm($mode, $subject, &$data, $put_in_outbox = true)
 				'pm_forwarded'	=> ($mode == 'forward') ? 1 : 0))
 			);
 		}
-
-		$db->sql_transaction('commit');
 	}
 
 	// Set user last post time
@@ -1486,8 +1484,6 @@ function submit_pm($mode, $subject, &$data, $put_in_outbox = true)
 			WHERE user_id = " . $data['from_user_id'];
 		$db->sql_query($sql);
 	}
-
-	$db->sql_transaction('begin');
 
 	// Submit Attachments
 	if (!empty($data['attachment_data']) && $data['msg_id'] && in_array($mode, array('post', 'reply', 'quote', 'quotepost', 'edit', 'forward')))
@@ -1568,8 +1564,6 @@ function submit_pm($mode, $subject, &$data, $put_in_outbox = true)
 		}
 	}
 
-	$db->sql_transaction('commit');
-
 	// Delete draft if post was loaded...
 	$draft_id = request_var('draft_loaded', 0);
 	if ($draft_id)
@@ -1579,6 +1573,8 @@ function submit_pm($mode, $subject, &$data, $put_in_outbox = true)
 				AND user_id = " . $data['from_user_id'];
 		$db->sql_query($sql);
 	}
+
+	$db->sql_transaction('commit');
 
 	// Send Notifications
 	if ($mode != 'edit')

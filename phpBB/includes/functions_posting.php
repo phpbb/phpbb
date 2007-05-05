@@ -1377,8 +1377,6 @@ function delete_post($forum_id, $topic_id, $post_id, &$data)
 		}
 	}
 
-	$db->sql_transaction('commit');
-
 	// Adjust posted info for this user by looking for a post by him/her within this topic...
 	if ($post_mode != 'delete_topic' && $config['load_db_track'] && $data['poster_id'] != ANONYMOUS)
 	{
@@ -1399,6 +1397,8 @@ function delete_post($forum_id, $topic_id, $post_id, &$data)
 			$db->sql_query($sql);
 		}
 	}
+
+	$db->sql_transaction('commit');
 
 	if ($data['post_reported'] && ($post_mode != 'delete_topic'))
 	{
@@ -1871,8 +1871,6 @@ function submit_post($mode, $subject, $username, $topic_type, &$poll, &$data, $u
 		}
 	}
 
-	$db->sql_transaction('commit');
-
 	if ($post_mode == 'post' || $post_mode == 'reply' || $post_mode == 'edit_last_post' || $post_mode == 'edit_topic')
 	{
 		if ($topic_type != POST_GLOBAL)
@@ -1924,8 +1922,6 @@ function submit_post($mode, $subject, $username, $topic_type, &$poll, &$data, $u
 	}
 
 	// Update forum stats
-	$db->sql_transaction('begin');
-
 	$where_sql = array(POSTS_TABLE => 'post_id = ' . $data['post_id'], TOPICS_TABLE => 'topic_id = ' . $data['topic_id'], FORUMS_TABLE => 'forum_id = ' . $data['forum_id'], USERS_TABLE => 'user_id = ' . $user->data['user_id']);
 
 	foreach ($sql_data as $table => $update_ary)
@@ -1968,8 +1964,6 @@ function submit_post($mode, $subject, $username, $topic_type, &$poll, &$data, $u
 		$search->index($mode, $data['post_id'], $data['message'], $subject, $poster_id, ($topic_type == POST_GLOBAL) ? 0 : $data['forum_id']);
 	}
 
-	$db->sql_transaction('commit');
-
 	// Delete draft if post was loaded...
 	$draft_id = request_var('draft_loaded', 0);
 	if ($draft_id)
@@ -1997,6 +1991,8 @@ function submit_post($mode, $subject, $username, $topic_type, &$poll, &$data, $u
 			$db->sql_query($sql);
 		}
 	}
+
+	$db->sql_transaction('commit');
 
 	if ($mode == 'post' || $mode == 'reply' || $mode == 'quote')
 	{

@@ -1128,9 +1128,9 @@ class fulltext_native extends search_backend
 				{
 					$sql_ary[] = array('word_text' => $word, 'word_count' => 0);
 				}
-				$db->return_on_error = true;
+				$db->sql_return_on_error(true);
 				$db->sql_multi_insert(SEARCH_WORDLIST_TABLE, $sql_ary);
-				$db->return_on_error = false;
+				$db->sql_return_on_error(false);
 			}
 			unset($new_words, $sql_ary);
 		}
@@ -1168,7 +1168,7 @@ class fulltext_native extends search_backend
 			}
 		}
 
-		$db->return_on_error = true;
+		$db->sql_return_on_error(true);
 		foreach ($words['add'] as $word_in => $word_ary)
 		{
 			$title_match = ($word_in == 'title') ? 1 : 0;
@@ -1187,7 +1187,7 @@ class fulltext_native extends search_backend
 				$db->sql_query($sql);
 			}
 		}
-		$db->return_on_error = false;
+		$db->sql_return_on_error(false);
 
 		$db->sql_transaction('commit');
 

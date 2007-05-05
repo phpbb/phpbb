@@ -38,6 +38,9 @@ class dbal
 	// Holding the last sql query on sql error
 	var $sql_error_sql = '';
 
+	// Holding transaction count
+	var $transactions = 0;
+
 	// Supports multi inserts?
 	var $multi_insert = false;
 
@@ -197,29 +200,46 @@ class dbal
 		switch ($status)
 		{
 			case 'begin':
-				// Commit previously opened transaction before opening another transaction
+				// If we are within a transaction we will not open another one, but enclose the current one to not loose data (prevening auto commit)
 				if ($this->transaction)
 				{
-					$this->_sql_transaction('commit');
+					$this->transactions++;
+					return true;
 				}
 
 				$result = $this->_sql_transaction('begin');
+
+				if (!$result)
+				{
+					$this->sql_error();
+				}
+
 				$this->transaction = true;
 			break;
 
 			case 'commit':
+				// If there was a previously opened transaction we do not commit yet... but count back the number of inner transactions
+				if ($this->transaction && $this->transactions)
+				{
+					$this->transactions--;
+					return true;
+				}
+
 				$result = $this->_sql_transaction('commit');
-				$this->transaction = false;
 
 				if (!$result)
 				{
-					$this->_sql_transaction('rollback');
+					$this->sql_error();
 				}
+
+				$this->transaction = false;
+				$this->transactions = 0;
 			break;
 
 			case 'rollback':
 				$result = $this->_sql_transaction('rollback');
 				$this->transaction = false;
+				$this->transactions = 0;
 			break;
 
 			default:

@@ -2151,7 +2151,7 @@ parse_css_file = {PARSE_CSS_FILE}
 		$format_buttons = '';
 		foreach ($methods as $method)
 		{
-			$format_buttons .= '<input type="radio"' . ((!$format_buttons) ? ' id="format"' : '') . ' class="radio" value="' . $method . '" name="format"' . (($method == $format) ? ' checked="checked"' : '') . ' />&nbsp;' . $method . '&nbsp;';
+			$format_buttons .= '<label><input type="radio"' . ((!$format_buttons) ? ' id="format"' : '') . ' class="radio" value="' . $method . '" name="format"' . (($method == $format) ? ' checked="checked"' : '') . ' /> ' . $method . '</label>';
 		}
 
 		$template->assign_vars(array(

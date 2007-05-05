@@ -1095,7 +1095,7 @@ class install_install extends module
 		$db->sql_connect($dbhost, $dbuser, $dbpasswd, $dbname, $dbport, false, false);
 
 		// NOTE: trigger_error does not work here.
-		$db->return_on_error = true;
+		$db->sql_return_on_error(true);
 
 		// If mysql is chosen, we need to adjust the schema filename slightly to reflect the correct version. ;)
 		if ($dbms == 'mysql')
@@ -1380,7 +1380,7 @@ class install_install extends module
 		$db->sql_connect($dbhost, $dbuser, $dbpasswd, $dbname, $dbport, false, false);
 
 		// NOTE: trigger_error does not work here.
-		$db->return_on_error = true;
+		$db->sql_return_on_error(true);
 
 		include_once($phpbb_root_path . 'includes/constants.' . $phpEx);
 		include_once($phpbb_root_path . 'includes/acp/acp_modules.' . $phpEx);

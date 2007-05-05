@@ -1714,10 +1714,10 @@ function phpbb_check_username_collisions()
 		break;
 	}
 
-	$db->return_on_error = true;
+	$db->sql_return_on_error(true);
 	$db->sql_query($drop_sql);
 	$db->sql_query($create_sql);
-	$db->return_on_error = false;
+	$db->sql_return_on_error(false);
 
 	// now select all user_ids and usernames and then convert the username (this can take quite a while!)
 	$sql = 'SELECT user_id, username
