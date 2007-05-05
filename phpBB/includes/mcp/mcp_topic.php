@@ -81,7 +81,7 @@ function mcp_topic_view($id, $mode, $action)
 	$sort_by_sql = $sort_order_sql = array();
 	mcp_sorting('viewtopic', $sort_days, $sort_key, $sort_dir, $sort_by_sql, $sort_order_sql, $total, $topic_info['forum_id'], $topic_id, $where_sql);
 
-	$limit_time_sql = ($sort_days) ? 'AND t.topic_last_post_time >= ' . (time() - ($sort_days * 86400)) : '';
+	$limit_time_sql = ($sort_days) ? 'AND p.post_time >= ' . (time() - ($sort_days * 86400)) : '';
 
 	if ($total == -1)
 	{
@@ -99,7 +99,8 @@ function mcp_topic_view($id, $mode, $action)
 		WHERE ' . (($action == 'reports') ? 'p.post_reported = 1 AND ' : '') . '
 			p.topic_id = ' . $topic_id . ' ' .
 			((!$auth->acl_get('m_approve', $topic_info['forum_id'])) ? ' AND p.post_approved = 1 ' : '') . '
-			AND p.poster_id = u.user_id
+			AND p.poster_id = u.user_id ' .
+			$limit_time_sql . '
 		ORDER BY ' . $sort_order_sql;
 	$result = $db->sql_query_limit($sql, $posts_per_page, $start);
 
@@ -132,9 +133,10 @@ function mcp_topic_view($id, $mode, $action)
 		$topic_tracking_info = get_complete_topic_tracking($topic_info['forum_id'], $topic_id);
 	}
 
+	$has_unapproved_posts = false;
+
 	foreach ($rowset as $i => $row)
 	{
-		$has_unapproved_posts = false;
 
 		$message = $row['post_text'];
 		$post_subject = ($row['post_subject'] != '') ? $row['post_subject'] : $topic_info['topic_title'];
