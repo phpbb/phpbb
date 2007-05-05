@@ -20,7 +20,6 @@ phpBB Developers      : DavidMJ (David M.)
                         subBlue (Tom Beddard)
                         Vic (Vic D'elfant)
 
-
 -- Previous Contributors --
 
 phpBB Project Manager : theFinn (James Atkinson) [Founder - 04/2007]
@@ -34,6 +33,8 @@ phpBB Developers      : Ashe (Ludovic Arnaud)   [10/2002 - 11/2003, 06/2006 - 10
 
 -- Copyrights --
 
+Visual Confirmation   : Xore (Robert Hetzler)
+
 Original subSilver by subBlue Design, Tom Beddard, (c) 2001 phpBB Group
 prosilver by subBlue Design, Tom Beddard, (c) 2004 phpBB Group
 subsilver2 by subBlue Design, Tom Beddard, (c) 2004 phpBB Group
@@ -44,7 +45,7 @@ LGPL licenced:
 Smarty (c) 2001, 2002 by ispi of Lincoln, Inc, http://smarty.php.net/
 
 GPL licenced:
-phpMyAdmin (c) 2001,2003 phpMyAdmin Devel team, http://www.phpmyadmin.net/ 
+phpMyAdmin (c) 2001,2003 phpMyAdmin Devel team, http://www.phpmyadmin.net/
 Jabber Class (c) 2004 Nathan Fritz, http://cjphp.netflint.net
 Chora (c) 2000-2006, The Horde Project. http://horde.org/chora/
 Horde Project (c) 2000-2006, The Horde Project. http://horde.org/

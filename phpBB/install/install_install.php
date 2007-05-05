@@ -1307,11 +1307,6 @@ class install_install extends module
 		if (!@extension_loaded('gd'))
 		{
 			can_load_dll('gd');
-		}
-
-		// This is for people who have TTF and GD
-		if (@extension_loaded('gd') && function_exists('imagettfbbox') && function_exists('imagettftext'))
-		{
 			$sql_ary[] = 'UPDATE ' . $table_prefix . "config
 					SET config_value = '1'
 					WHERE config_name = 'captcha_gd'";

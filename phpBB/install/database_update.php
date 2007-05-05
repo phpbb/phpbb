@@ -1110,6 +1110,9 @@ if (version_compare($current_version, '3.0.b5', '<='))
 	unset($sql_in);
 
 	set_config('avatar_salt', md5(mt_rand()));
+	set_config('captcha_gd_x_grid', 25);
+	set_config('captcha_gd_y_grid', 25);
+	set_config('captcha_gd_foreground_noise', 1);
 
 	$sql = 'UPDATE ' . ACL_OPTIONS_TABLE . "
 		SET is_local = 0
