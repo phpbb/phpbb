@@ -223,8 +223,15 @@ class acp_database
 
 						if ($delete)
 						{
-							unlink($file_name);
-							trigger_error($user->lang['BACKUP_DELETE'] . adm_back_link($this->u_action));
+							if (confirm_box(true))
+							{
+								unlink($file_name);
+								trigger_error($user->lang['BACKUP_DELETE'] . adm_back_link($this->u_action));
+							}
+							else
+							{
+								confirm_box(false, 'DELETE_SELECTED_BACKUP', build_hidden_fields(array('delete' => $delete, 'file' => $file)));
+							}
 						}
 
 						$download = request_var('download', '');

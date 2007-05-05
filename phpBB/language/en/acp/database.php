@@ -44,6 +44,7 @@ $lang = array_merge($lang, array(
 	'DATABASE'			=> 'Database utilities',
 	'DATA_ONLY'			=> 'Data only',
 	'DELETE_BACKUP'		=> 'Delete backup',
+	'DELETE_SELECTED_BACKUP'	=> 'Are you sure you want to deletee the selected backup?',
 	'DESELECT_ALL'		=> 'Deselect all',
 	'DOWNLOAD_BACKUP'	=> 'Download backup',
 
