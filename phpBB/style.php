@@ -71,7 +71,7 @@ if ($id && $sid)
 
 	$config = $cache->obtain_config();
 
-	$sql = 'SELECT s.session_id, u.user_lang
+	$sql = 'SELECT u.user_id, u.user_lang
 		FROM ' . SESSIONS_TABLE . ' s, ' . USERS_TABLE . " u
 		WHERE s.session_id = '" . $db->sql_escape($sid) . "'
 			AND s.session_user_id = u.user_id";
@@ -90,6 +90,11 @@ if ($id && $sid)
 		$result = $db->sql_query($sql, 300);
 		$theme = $db->sql_fetchrow($result);
 		$db->sql_freeresult($result);
+
+		if ($user['user_id'] == ANONYMOUS)
+		{
+			$user['user_lang'] = $config['default_lang'];
+		}
 
 		$sql = 'SELECT *
 			FROM ' . STYLES_IMAGESET_DATA_TABLE . '
