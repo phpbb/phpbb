@@ -38,6 +38,9 @@ class dbal
 	// Holding the last sql query on sql error
 	var $sql_error_sql = '';
 
+	// Supports multi inserts?
+	var $multi_insert = false;
+
 	/**
 	* Current sql layer
 	*/
@@ -364,25 +367,21 @@ class dbal
 			return false;
 		}
 
-		switch ($this->sql_layer)
+		if ($this->multi_insert)
 		{
-			case 'mysql':
-			case 'mysql4':
-			case 'mysqli':
-				$this->sql_query('INSERT INTO ' . $table . ' ' . $this->sql_build_array('MULTI_INSERT', $sql_ary));
-			break;
-
-			default:
-				foreach ($sql_ary as $ary)
+			$this->sql_query('INSERT INTO ' . $table . ' ' . $this->sql_build_array('MULTI_INSERT', $sql_ary));
+		}
+		else
+		{
+			foreach ($sql_ary as $ary)
+			{
+				if (!is_array($ary))
 				{
-					if (!is_array($ary))
-					{
-						return false;
-					}
-
-					$this->sql_query('INSERT INTO ' . $table . ' ' . $this->sql_build_array('INSERT', $ary));
+					return false;
 				}
-			break;
+
+				$this->sql_query('INSERT INTO ' . $table . ' ' . $this->sql_build_array('INSERT', $ary));
+			}
 		}
 
 		return true;

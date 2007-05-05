@@ -1688,7 +1688,7 @@ class install_convert extends module
 
 			// TODO: sync() is likely going to bomb out on forums with a considerable amount of topics.
 			// TODO: the sync function is able to handle FROM-TO values, we should use them here (batch processing)
-			sync('forum');
+			sync('forum', '', '', false, true);
 			$cache->destroy('sql', FORUMS_TABLE);
 
 			$template->assign_block_vars('checks', array(

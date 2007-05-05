@@ -351,6 +351,37 @@ function change_topic_type($action, $topic_ids)
 						AND forum_id = 0';
 				$db->sql_query($sql);
 
+				// Do a little forum sync stuff
+				$sql = 'SELECT t.topic_replies + 1 as topic_posts, COUNT(t.topic_approved) as topics_authed
+					FROM ' . TOPICS_TABLE . ' t
+					WHERE ' . $db->sql_in_set('t.topic_id', $topic_ids) . '
+					GROUP BY t.topic_posts';
+				$result = $db->sql_query($sql);
+				$row_data = $db->sql_fetchrow($result);
+				$db->sql_freeresult($result);
+
+				$sync_sql = array();
+
+				if ($row_data['topic_posts'])
+				{
+					$sync_sql[$to_forum_id][]	= 'forum_posts = forum_posts + ' . (int) $row_data['topic_posts'];
+				}
+
+				if ($row_data['topics_authed'])
+				{
+					$sync_sql[$to_forum_id][]	= 'forum_topics = forum_topics + ' . (int) $row_data['topics_authed'];
+				}
+
+				$sync_sql[$to_forum_id][]	= 'forum_topics_real = forum_topics_real + ' . (int) sizeof($topic_ids);
+
+				foreach ($sync_sql as $forum_id_key => $array)
+				{
+					$sql = 'UPDATE ' . FORUMS_TABLE . '
+						SET ' . implode(', ', $array) . '
+						WHERE forum_id = ' . $forum_id_key;
+					$db->sql_query($sql);
+				}
+
 				sync('forum', 'forum_id', $to_forum_id);
 			}
 		}
@@ -387,6 +418,37 @@ function change_topic_type($action, $topic_ids)
 					SET forum_id = 0
 					WHERE ' . $db->sql_in_set('topic_id', $topic_ids);
 				$db->sql_query($sql);
+
+				// Do a little forum sync stuff
+				$sql = 'SELECT t.topic_replies + 1 as topic_posts, COUNT(t.topic_approved) as topics_authed
+					FROM ' . TOPICS_TABLE . ' t
+					WHERE ' . $db->sql_in_set('t.topic_id', $topic_ids) . '
+					GROUP BY t.topic_posts';
+				$result = $db->sql_query($sql);
+				$row_data = $db->sql_fetchrow($result);
+				$db->sql_freeresult($result);
+
+				$sync_sql = array();
+
+				if ($row_data['topic_posts'])
+				{
+					$sync_sql[$forum_id][]	= 'forum_posts = forum_posts - ' . (int) $row_data['topic_posts'];
+				}
+
+				if ($row_data['topics_authed'])
+				{
+					$sync_sql[$forum_id][]	= 'forum_topics = forum_topics - ' . (int) $row_data['topics_authed'];
+				}
+
+				$sync_sql[$forum_id][]	= 'forum_topics_real = forum_topics_real - ' . (int) sizeof($topic_ids);
+
+				foreach ($sync_sql as $forum_id_key => $array)
+				{
+					$sql = 'UPDATE ' . FORUMS_TABLE . '
+						SET ' . implode(', ', $array) . '
+						WHERE forum_id = ' . $forum_id_key;
+					$db->sql_query($sql);
+				}
 
 				sync('forum', 'forum_id', $forum_id);
 			}
@@ -536,25 +598,30 @@ function mcp_move_topic($topic_ids)
 			}
 		}
 
-		$sql = 'SELECT COUNT(p.post_id) AS topic_posts, MAX(p.post_id) AS last_post_id
-			FROM ' . POSTS_TABLE . ' p, ' . TOPICS_TABLE . ' t
+		$db->sql_transaction('begin');
+
+		$sql = 'SELECT topic_replies + 1 as topic_posts
+			FROM ' . TOPICS_TABLE . ' t
 			WHERE ' . $db->sql_in_set('t.topic_id', $topic_ids) . '
-				AND p.topic_id = t.topic_id
-				AND t.topic_approved = 1
-				AND p.post_approved = 1';
+			GROUP BY topic_posts';
 		$result = $db->sql_query($sql);
 		$row_data = $db->sql_fetchrow($result);
 		$db->sql_freeresult($result);
 
-		$forum_sync_data[$forum_id]['forum_posts'] -= (int) $row_data['topic_posts'];
-		$forum_sync_data[$forum_id]['forum_topics'] -= (int) $topics_authed_moved;
-		$forum_sync_data[$forum_id]['forum_topics_real'] -= (int) $topics_moved;
+		$sync_sql = array();
 
-		$forum_sync_data[$to_forum_id]['forum_posts'] += (int) $row_data['topic_posts'];
-		$forum_sync_data[$to_forum_id]['forum_topics'] += (int) $topics_authed_moved;
-		$forum_sync_data[$to_forum_id]['forum_topics_real'] += (int) $topics_moved;
+		if ($row_data['topic_posts'])
+		{
+			$sync_sql[$forum_id][]		= 'forum_posts = forum_posts - ' . (int) $row_data['topic_posts'];
+			$sync_sql[$to_forum_id][]	= 'forum_posts = forum_posts + ' . (int) $row_data['topic_posts'];
+		}
 
-		$db->sql_transaction('begin');
+		if ($topics_authed_moved)
+		{
+			$sync_sql[$to_forum_id][]	= 'forum_topics = forum_topics + ' . (int) $topics_authed_moved;
+		}
+
+		$sync_sql[$to_forum_id][]	= 'forum_topics_real = forum_topics_real + ' . (int) $topics_moved;
 
 		// Move topics, but do not resync yet
 		move_topics($topic_ids, $to_forum_id, false);
@@ -614,113 +681,30 @@ function mcp_move_topic($topic_ids)
 
 				$db->sql_query('INSERT INTO ' . TOPICS_TABLE . $db->sql_build_array('INSERT', $shadow));
 
-				$forum_sync_data[(int) $row['forum_id']]['forum_topics']++;
-				$forum_sync_data[(int) $row['forum_id']]['forum_topics_real']++;
+				$topics_authed_moved--;
+				$topics_moved--;
 			}
 		}
 		unset($topic_data);
 
+		$sync_sql[$forum_id][]	= 'forum_topics_real = forum_topics_real - ' . (int) $topics_moved;
+
+		if ($topics_authed_moved)
+		{
+			$sync_sql[$forum_id][]	= 'forum_topics = forum_topics - ' . (int) $topics_authed_moved;
+		}
+
 		$success_msg = (sizeof($topic_ids) == 1) ? 'TOPIC_MOVED_SUCCESS' : 'TOPICS_MOVED_SUCCESS';
 
-		// we must update the info, this post is being moved and is not the newest anymore
-		if ($forum_sync_data[$forum_id]['forum_last_post_id'] == $row_data['last_post_id'])
+		foreach ($sync_sql as $forum_id_key => $array)
 		{
-			$forum_sync_data[$forum_id]['forum_last_post_id'] = 0;
-			$forum_sync_data[$forum_id]['forum_last_post_subject'] = '';
-			$forum_sync_data[$forum_id]['forum_last_post_time'] = 0;
-			$forum_sync_data[$forum_id]['forum_last_poster_id'] = 0;
-			$forum_sync_data[$forum_id]['forum_last_poster_name'] = '';
-			$forum_sync_data[$forum_id]['forum_last_poster_colour'] = '';
-
-			// I want the newest post that is not in the collection
-			// TODO: this is the last trouble maker
-			$sql = 'SELECT MAX(p.post_id) AS last_post_id
-			FROM ' . POSTS_TABLE . ' p, ' . TOPICS_TABLE . ' t
-			WHERE p.topic_id = t.topic_id
-				AND t.topic_approved = 1
-				AND p.post_approved = 1
-				AND t.forum_id = ' . $forum_id;
-			$result = $db->sql_query($sql);
-
-			if ($last_post_id = $db->sql_fetchfield('last_post_id', false, $result))
-			{
-				$sql = 'SELECT p.post_subject, p.post_time, p.post_username, p.poster_id, u.username as poster_name, u.user_colour as poster_colour
-					FROM ' . POSTS_TABLE . ' p, ' . USERS_TABLE . ' u
-					WHERE p.post_id = ' . $last_post_id . '
-						AND p.poster_id = u.user_id';
-				$result2 = $db->sql_query($sql);
-				$post_data = $db->sql_fetchrow($result2);
-				$db->sql_freeresult($result2);
-
-				$post_data['post_id'] = $last_post_id;
-
-				if ($post_data['poster_id'] == ANONYMOUS)
-				{
-					$post_data['poster_name'] = $post_data['post_username'];
-				}
-				unset($post_data['post_username']);
-
-				foreach ($post_data as $row => $val)
-				{
-					$forum_sync_data[$forum_id]['forum_last_' . $row] = $val;
-				}
-			}
-
-			$db->sql_freeresult($result);
-		}
-
-		// we must update the info, this post is being moved and is not the newest anymore
-		if ($forum_sync_data[$to_forum_id]['forum_last_post_id'] < $row_data['last_post_id'])
-		{
-			$forum_sync_data[$to_forum_id]['forum_last_post_id'] = 0;
-			$forum_sync_data[$to_forum_id]['forum_last_post_subject'] = '';
-			$forum_sync_data[$to_forum_id]['forum_last_post_time'] = 0;
-			$forum_sync_data[$to_forum_id]['forum_last_poster_id'] = 0;
-			$forum_sync_data[$to_forum_id]['forum_last_poster_name'] = '';
-			$forum_sync_data[$to_forum_id]['forum_last_poster_colour'] = '';
-
-			// mod just moved all the posts out of the forum!
-			$sql = 'SELECT p.post_subject, p.post_time, p.post_username, p.poster_id, u.username as poster_name, u.user_colour as poster_colour
-				FROM ' . POSTS_TABLE . ' p, ' . USERS_TABLE . ' u
-				WHERE p.post_id = ' . $row_data['last_post_id'] . '
-					AND p.poster_id = u.user_id';
-			$result2 = $db->sql_query($sql);
-			$post_data = $db->sql_fetchrow($result2);
-			$db->sql_freeresult($result2);
-
-			if ($post_data)
-			{
-				$post_data['post_id'] = $row_data['last_post_id'];
-
-				if ($post_data['poster_id'] == ANONYMOUS)
-				{
-					$post_data['poster_name'] = $post_data['post_username'];
-				}
-				unset($post_data['post_username']);
-
-				foreach ($post_data as $row => $val)
-				{
-					$forum_sync_data[$to_forum_id]['forum_last_' . $row] = $val;
-				}
-			}
-		}
-
-		foreach ($forum_sync_data as $forum_id_key => $sql_ary)
-		{
-			foreach ($sql_ary as $key => $value)
-			{
-				if (strpos($key, 'forum_last_') === 0 || $key === 'forum_posts' || $key === 'forum_topics' || $key === 'forum_topics_real')
-				{
-					continue;
-				}
-				unset($sql_ary[$key]);
-			}
-
 			$sql = 'UPDATE ' . FORUMS_TABLE . '
-				SET ' . $db->sql_build_array('UPDATE', $sql_ary) . '
+				SET ' . implode(', ', $array) . '
 				WHERE forum_id = ' . $forum_id_key;
 			$db->sql_query($sql);
 		}
+
+		sync('forum', 'forum_id', array($forum_id, $to_forum_id));
 
 		$db->sql_transaction('commit');
 	}
@@ -1165,6 +1149,21 @@ function mcp_fork_topic($topic_ids)
 
 		// Sync new topics, parent forums and board stats
 		sync('topic', 'topic_id', $new_topic_id_list, true);
+
+		$sync_sql = array();
+
+		$sync_sql[$to_forum_id][]	= 'forum_posts = forum_posts + ' . $total_posts;
+		$sync_sql[$to_forum_id][]	= 'forum_topics = forum_topics + ' . sizeof($new_topic_id_list);
+		$sync_sql[$to_forum_id][]	= 'forum_topics_real = forum_topics_real + ' . sizeof($new_topic_id_list);
+
+		foreach ($sync_sql as $forum_id_key => $array)
+		{
+			$sql = 'UPDATE ' . FORUMS_TABLE . '
+				SET ' . implode(', ', $array) . '
+				WHERE forum_id = ' . $forum_id_key;
+			$db->sql_query($sql);
+		}
+
 		sync('forum', 'forum_id', $to_forum_id, true);
 		set_config('num_topics', $config['num_topics'] + sizeof($new_topic_id_list), true);
 		set_config('num_posts', $config['num_posts'] + $total_posts, true);

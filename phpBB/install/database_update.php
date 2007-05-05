@@ -350,6 +350,9 @@ $database_update_info = array(
 			ACL_ROLES_DATA_TABLE	=> array(
 				'ath_opt_id'		=> array('auth_option_id'),
 			),
+			TOPICS_TABLE			=> array(
+				'forum_appr_last'	=> array('forum_id', 'topic_approved', 'topic_last_post_id'),
+			),
 		),
 		// Add the following unique indexes
 		'add_unique_index'	=> array(

@@ -584,7 +584,7 @@ class acp_users
 
 							if (sizeof($forum_id_ary))
 							{
-								sync('forum', 'forum_id', $forum_id_ary);
+								sync('forum', 'forum_id', $forum_id_ary, false, true);
 							}
 
 

@@ -26,6 +26,8 @@ include_once($phpbb_root_path . 'includes/db/dbal.' . $phpEx);
 */
 class dbal_mysqli extends dbal
 {
+	var $multi_insert = true;
+
 	/**
 	* Connect to server
 	*/

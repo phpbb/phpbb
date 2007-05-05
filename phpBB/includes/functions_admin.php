@@ -424,7 +424,7 @@ function move_topics($topic_ids, $forum_id, $auto_sync = true)
 
 	if ($auto_sync)
 	{
-		sync('forum', 'forum_id', $forum_ids, true);
+		sync('forum', 'forum_id', $forum_ids, true, true);
 		unset($forum_ids);
 	}
 }
@@ -485,7 +485,7 @@ function move_posts($post_ids, $topic_id, $auto_sync = true)
 		sync('topic_reported', 'topic_id', $topic_ids);
 		sync('topic_attachment', 'topic_id', $topic_ids);
 		sync('topic', 'topic_id', $topic_ids, true);
-		sync('forum', 'forum_id', $forum_ids, true);
+		sync('forum', 'forum_id', $forum_ids, true, true);
 	}
 
 	// Update posted information
@@ -567,7 +567,7 @@ function delete_topics($where_type, $where_ids, $auto_sync = true, $post_count_s
 
 	if ($auto_sync)
 	{
-		sync('forum', 'forum_id', $forum_ids, true);
+		sync('forum', 'forum_id', $forum_ids, true, true);
 		sync('topic_reported', $where_type, $where_ids);
 	}
 
@@ -718,7 +718,7 @@ function delete_posts($where_type, $where_ids, $auto_sync = true, $posted_sync =
 	{
 		sync('topic_reported', 'topic_id', $topic_ids);
 		sync('topic', 'topic_id', $topic_ids, true);
-		sync('forum', 'forum_id', $forum_ids, true);
+		sync('forum', 'forum_id', $forum_ids, true, true);
 	}
 
 	if ($approved_posts)
@@ -991,7 +991,7 @@ function delete_topic_shadows($max_age, $forum_id = '', $auto_sync = true)
 	if ($auto_sync)
 	{
 		$where_type = ($forum_id) ? 'forum_id' : '';
-		sync('forum', $where_type, $forum_id, true);
+		sync('forum', $where_type, $forum_id, true, true);
 	}
 }
 
@@ -1441,9 +1441,12 @@ function sync($mode, $where_type = '', $where_ids = '', $resync_parents = false,
 				$forum_ids[$forum_id] = $forum_id;
 
 				$forum_data[$forum_id] = $row;
-				$forum_data[$forum_id]['posts'] = 0;
-				$forum_data[$forum_id]['topics'] = 0;
-				$forum_data[$forum_id]['topics_real'] = 0;
+				if ($sync_extra)
+				{
+					$forum_data[$forum_id]['posts'] = 0;
+					$forum_data[$forum_id]['topics'] = 0;
+					$forum_data[$forum_id]['topics_real'] = 0;
+				}
 				$forum_data[$forum_id]['last_post_id'] = 0;
 				$forum_data[$forum_id]['last_post_subject'] = '';
 				$forum_data[$forum_id]['last_post_time'] = 0;
@@ -1460,43 +1463,72 @@ function sync($mode, $where_type = '', $where_ids = '', $resync_parents = false,
 
 			$forum_ids = array_values($forum_ids);
 
-			// 2: Get topic counts for each forum
-			$sql = 'SELECT forum_id, topic_approved, COUNT(topic_id) AS forum_topics
-				FROM ' . TOPICS_TABLE . '
-				WHERE ' . $db->sql_in_set('forum_id', $forum_ids) . '
-				GROUP BY forum_id, topic_approved';
-			$result = $db->sql_query($sql);
-
-			while ($row = $db->sql_fetchrow($result))
+			// 2: Get topic counts for each forum (optional)
+			if ($sync_extra)
 			{
-				$forum_id = (int) $row['forum_id'];
-				$forum_data[$forum_id]['topics_real'] += $row['forum_topics'];
+				$sql = 'SELECT forum_id, topic_approved, COUNT(topic_id) AS forum_topics
+					FROM ' . TOPICS_TABLE . '
+					WHERE ' . $db->sql_in_set('forum_id', $forum_ids) . '
+					GROUP BY forum_id, topic_approved';
+				$result = $db->sql_query($sql);
 
-				if ($row['topic_approved'])
+				while ($row = $db->sql_fetchrow($result))
 				{
-					$forum_data[$forum_id]['topics'] = $row['forum_topics'];
-				}
-			}
-			$db->sql_freeresult($result);
+					$forum_id = (int) $row['forum_id'];
+					$forum_data[$forum_id]['topics_real'] += $row['forum_topics'];
 
-			// 3: Get post count and last_post_id for each forum
+					if ($row['topic_approved'])
+					{
+						$forum_data[$forum_id]['topics'] = $row['forum_topics'];
+					}
+				}
+				$db->sql_freeresult($result);
+			}
+
+			// 3: Get post count for each forum (optional)
+			if ($sync_extra)
+			{
+				if (sizeof($forum_ids) == 1)
+				{
+					$sql = 'SELECT SUM(topic_replies + 1) AS forum_posts
+						FROM ' . TOPICS_TABLE . ' t
+						WHERE ' . $db->sql_in_set('t.forum_id', $forum_ids) . '
+							AND t.topic_approved = 1';
+				}
+				else
+				{
+					$sql = 'SELECT p.forum_id, SUM(topic_replies + 1) AS forum_posts
+						FROM ' . TOPICS_TABLE . ' t
+						WHERE ' . $db->sql_in_set('t.forum_id', $forum_ids) . '
+							AND t.topic_approved = 1
+						GROUP BY p.forum_id';
+				}
+
+				$result = $db->sql_query($sql);
+
+				while ($row = $db->sql_fetchrow($result))
+				{
+					$forum_id = (sizeof($forum_ids) == 1) ? (int) $forum_ids[0] : (int) $row['forum_id'];
+
+					$forum_data[$forum_id]['posts'] = (int) $row['forum_posts'];
+				}
+				$db->sql_freeresult($result);
+			}
+
+			// 4: Get last_post_id for each forum
 			if (sizeof($forum_ids) == 1)
 			{
-				$sql = 'SELECT COUNT(p.post_id) AS forum_posts, MAX(p.post_id) AS last_post_id
-					FROM ' . POSTS_TABLE . ' p, ' . TOPICS_TABLE . ' t
-					WHERE ' . $db->sql_in_set('p.forum_id', $forum_ids) . '
-						AND p.topic_id = t.topic_id
-						AND t.topic_approved = 1
-						AND p.post_approved = 1';
+				$sql = 'SELECT MAX(t.topic_last_post_id) as last_post_id
+					FROM ' . TOPICS_TABLE . ' t
+					WHERE ' . $db->sql_in_set('t.forum_id', $forum_ids) . '
+						AND t.topic_approved = 1';
 			}
 			else
 			{
-				$sql = 'SELECT p.forum_id, COUNT(p.post_id) AS forum_posts, MAX(p.post_id) AS last_post_id
-					FROM ' . POSTS_TABLE . ' p, ' . TOPICS_TABLE . ' t
-					WHERE ' . $db->sql_in_set('p.forum_id', $forum_ids) . '
-						AND p.topic_id = t.topic_id
+				$sql = 'SELECT t.forum_id, MAX(t.topic_last_post_id) as last_post_id
+					FROM ' . TOPICS_TABLE . ' t
+					WHERE ' . $db->sql_in_set('t.forum_id', $forum_ids) . '
 						AND t.topic_approved = 1
-						AND p.post_approved = 1
 					GROUP BY p.forum_id';
 			}
 
@@ -1506,14 +1538,13 @@ function sync($mode, $where_type = '', $where_ids = '', $resync_parents = false,
 			{
 				$forum_id = (sizeof($forum_ids) == 1) ? (int) $forum_ids[0] : (int) $row['forum_id'];
 
-				$forum_data[$forum_id]['posts'] = (int) $row['forum_posts'];
 				$forum_data[$forum_id]['last_post_id'] = (int) $row['last_post_id'];
 
 				$post_ids[] = $row['last_post_id'];
 			}
 			$db->sql_freeresult($result);
 
-			// 4: Retrieve last_post infos
+			// 5: Retrieve last_post infos
 			if (sizeof($post_ids))
 			{
 				$sql = 'SELECT p.post_id, p.poster_id, p.post_subject, p.post_time, p.post_username, u.username, u.user_colour
@@ -1555,8 +1586,13 @@ function sync($mode, $where_type = '', $where_ids = '', $resync_parents = false,
 				unset($post_info);
 			}
 
-			// 5: Now do that thing
-			$fieldnames = array('posts', 'topics', 'topics_real', 'last_post_id', 'last_post_subject', 'last_post_time', 'last_poster_id', 'last_poster_name', 'last_poster_colour');
+			// 6: Now do that thing
+			$fieldnames = array('last_post_id', 'last_post_subject', 'last_post_time', 'last_poster_id', 'last_poster_name', 'last_poster_colour');
+
+			if ($sync_extra)
+			{
+				array_push($fieldnames, 'posts', 'topics', 'topics_real');
+			}
 
 			foreach ($forum_data as $forum_id => $row)
 			{
@@ -1912,7 +1948,7 @@ function sync($mode, $where_type = '', $where_ids = '', $resync_parents = false,
 			// batch processing.
 			if ($resync_parents && sizeof($resync_forums) && $where_type != 'range')
 			{
-				sync('forum', 'forum_id', array_values($resync_forums), true);
+				sync('forum', 'forum_id', array_values($resync_forums), true, true);
 			}
 		break;
 	}

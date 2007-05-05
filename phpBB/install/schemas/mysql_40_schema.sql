@@ -835,6 +835,7 @@ CREATE TABLE phpbb_topics (
 	KEY forum_id_type (forum_id, topic_type),
 	KEY last_post_time (topic_last_post_time),
 	KEY topic_approved (topic_approved),
+	KEY forum_appr_last (forum_id, topic_approved, topic_last_post_id),
 	KEY fid_time_moved (forum_id, topic_last_post_time, topic_moved_id)
 );
 

@@ -142,7 +142,7 @@ class acp_prune
 				while ($row = $db->sql_fetchrow($result));
 	
 				// Sync all pruned forums at once
-				sync('forum', 'forum_id', $prune_ids, true);
+				sync('forum', 'forum_id', $prune_ids, true, true);
 				add_log('admin', 'LOG_PRUNE', $log_data);
 			}
 			$db->sql_freeresult($result);

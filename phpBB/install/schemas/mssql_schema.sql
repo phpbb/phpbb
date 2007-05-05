@@ -1455,6 +1455,9 @@ GO
 CREATE  INDEX [topic_approved] ON [phpbb_topics]([topic_approved]) ON [PRIMARY]
 GO
 
+CREATE  INDEX [forum_appr_last] ON [phpbb_topics]([forum_id], [topic_approved], [topic_last_post_id]) ON [PRIMARY]
+GO
+
 CREATE  INDEX [fid_time_moved] ON [phpbb_topics]([forum_id], [topic_last_post_time], [topic_moved_id]) ON [PRIMARY]
 GO
 

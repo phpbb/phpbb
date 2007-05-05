@@ -30,6 +30,7 @@ include_once($phpbb_root_path . 'includes/db/dbal.' . $phpEx);
 class dbal_mysql extends dbal
 {
 	var $mysql_version;
+	var $multi_insert = true;
 
 	/**
 	* Connect to server
