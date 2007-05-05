@@ -352,10 +352,9 @@ function change_topic_type($action, $topic_ids)
 				$db->sql_query($sql);
 
 				// Do a little forum sync stuff
-				$sql = 'SELECT t.topic_replies + 1 as topic_posts, COUNT(t.topic_approved) as topics_authed
+				$sql = 'SELECT SUM(t.topic_replies + 1) as topic_posts, COUNT(t.topic_approved) as topics_authed
 					FROM ' . TOPICS_TABLE . ' t
-					WHERE ' . $db->sql_in_set('t.topic_id', $topic_ids) . '
-					GROUP BY t.topic_posts';
+					WHERE ' . $db->sql_in_set('t.topic_id', $topic_ids);
 				$result = $db->sql_query($sql);
 				$row_data = $db->sql_fetchrow($result);
 				$db->sql_freeresult($result);
@@ -420,10 +419,9 @@ function change_topic_type($action, $topic_ids)
 				$db->sql_query($sql);
 
 				// Do a little forum sync stuff
-				$sql = 'SELECT t.topic_replies + 1 as topic_posts, COUNT(t.topic_approved) as topics_authed
+				$sql = 'SELECT SUM(t.topic_replies + 1) as topic_posts, COUNT(t.topic_approved) as topics_authed
 					FROM ' . TOPICS_TABLE . ' t
-					WHERE ' . $db->sql_in_set('t.topic_id', $topic_ids) . '
-					GROUP BY t.topic_posts';
+					WHERE ' . $db->sql_in_set('t.topic_id', $topic_ids);
 				$result = $db->sql_query($sql);
 				$row_data = $db->sql_fetchrow($result);
 				$db->sql_freeresult($result);
