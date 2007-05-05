@@ -444,15 +444,16 @@ function get_pm_from($folder_id, $folder, $user_id)
 	$limit_days = array(0 => $user->lang['ALL_MESSAGES'], 1 => $user->lang['1_DAY'], 7 => $user->lang['7_DAYS'], 14 => $user->lang['2_WEEKS'], 30 => $user->lang['1_MONTH'], 90 => $user->lang['3_MONTHS'], 180 => $user->lang['6_MONTHS'], 365 => $user->lang['1_YEAR']);
 
 	// No sort by Author for sentbox/outbox (already only author available)
+	// Also, sort by msg_id for the time - private messages are not as prone to errors as posts are.
 	if ($folder_id == PRIVMSGS_OUTBOX || $folder_id == PRIVMSGS_SENTBOX)
 	{
 		$sort_by_text = array('t' => $user->lang['POST_TIME'], 's' => $user->lang['SUBJECT']);
-		$sort_by_sql = array('t' => 'p.message_time', 's' => 'p.message_subject');
+		$sort_by_sql = array('t' => 'p.msg_id', 's' => 'p.message_subject');
 	}
 	else
 	{
 		$sort_by_text = array('a' => $user->lang['AUTHOR'], 't' => $user->lang['POST_TIME'], 's' => $user->lang['SUBJECT']);
-		$sort_by_sql = array('a' => 'u.username_clean', 't' => 'p.message_time', 's' => 'p.message_subject');
+		$sort_by_sql = array('a' => 'u.username_clean', 't' => 'p.msg_id', 's' => 'p.message_subject');
 	}
 
 	$s_limit_days = $s_sort_key = $s_sort_dir = $u_sort_param = '';

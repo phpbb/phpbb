@@ -50,8 +50,8 @@
 </dl>
 <dl>
 	<dt><label for="banlength">{L_BAN_LENGTH}:</label></dt>
-	<dd><select name="banlength" id="banlength">{S_BAN_END_OPTIONS}</select></dd>
-	<dd><input type="text" class="text" name="banlengthother" maxlength="10" /> {L_YEAR_MONTH_DAY}</dd>
+	<dd><label for="banlength"><select name="banlength" id="banlength" onchange="if(this.value==-1){document.getElementById('banlengthother').style.display = 'block';}else{document.getElementById('banlengthother').style.display='none';}">{S_BAN_END_OPTIONS}</select></label></dd>
+	<dd id="banlengthother" style="display: none;"><label><input type="text" name="banlengthother" class="inputbox" /><br /><span>{L_YEAR_MONTH_DAY}</span></label></dd>
 </dl>
 <dl>
 	<dt><label for="banexclude">{L_BAN_EXCLUDE}:</label><br /><span>{L_BAN_EXCLUDE_EXPLAIN}</span></dt>
