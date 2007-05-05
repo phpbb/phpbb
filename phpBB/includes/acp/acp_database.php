@@ -230,148 +230,150 @@ class acp_database
 							}
 							else
 							{
-								confirm_box(false, 'DELETE_SELECTED_BACKUP', build_hidden_fields(array('delete' => $delete, 'file' => $file)));
+								confirm_box(false, $user->lang['DELETE_SELECTED_BACKUP'], build_hidden_fields(array('delete' => $delete, 'file' => $file)));
 							}
 						}
-
-						$download = request_var('download', '');
-
-						if ($download)
+						else
 						{
-							$name = $matches[0];
+							$download = request_var('download', '');
+
+							if ($download)
+							{
+								$name = $matches[0];
+
+								switch ($matches[1])
+								{
+									case 'sql':
+										$mimetype = 'text/x-sql';
+									break;
+									case 'sql.bz2':
+										$mimetype = 'application/x-bzip2';
+									break;
+									case 'sql.gz':
+										$mimetype = 'application/x-gzip';
+									break;
+								}
+
+								header('Pragma: no-cache');
+								header("Content-Type: $mimetype; name=\"$name\"");
+								header("Content-disposition: attachment; filename=$name");
+
+								@set_time_limit(0);
+
+								$fp = @fopen($file_name, 'rb');
+
+								if ($fp !== false)
+								{
+									while (!feof($fp))
+									{
+										echo fread($fp, 8192);
+									}
+									fclose($fp);
+								}
+
+								flush();
+								exit;
+							}
 
 							switch ($matches[1])
 							{
 								case 'sql':
-									$mimetype = 'text/x-sql';
+									$fp = fopen($file_name, 'rb');
+									$read = 'fread';
+									$seek = 'fseek';
+									$eof = 'feof';
+									$close = 'fclose';
+									$fgetd = 'fgetd';
 								break;
+
 								case 'sql.bz2':
-									$mimetype = 'application/x-bzip2';
+									$fp = bzopen($file_name, 'r');
+									$read = 'bzread';
+									$seek = '';
+									$eof = 'feof';
+									$close = 'bzclose';
+									$fgetd = 'fgetd_seekless';
 								break;
+
 								case 'sql.gz':
-									$mimetype = 'application/x-gzip';
+									$fp = gzopen($file_name, 'rb');
+									$read = 'gzread';
+									$seek = 'gzseek';
+									$eof = 'gzeof';
+									$close = 'gzclose';
+									$fgetd = 'fgetd';
 								break;
 							}
 
-							header('Pragma: no-cache');
-							header("Content-Type: $mimetype; name=\"$name\"");
-							header("Content-disposition: attachment; filename=$name");
-
-							@set_time_limit(0);
-
-							$fp = @fopen($file_name, 'rb');
-
-							if ($fp !== false)
+							switch ($db->sql_layer)
 							{
-								while (!feof($fp))
-								{
-									echo fread($fp, 8192);
-								}
-								fclose($fp);
+								case 'mysql':
+								case 'mysql4':
+								case 'mysqli':
+								case 'sqlite':
+									while (($sql = $fgetd($fp, ";\n", $read, $seek, $eof)) !== false)
+									{
+										$db->sql_query($sql);
+									}
+								break;
+
+								case 'firebird':
+									$delim = ";\n";
+									while (($sql = $fgetd($fp, $delim, $read, $seek, $eof)) !== false)
+									{
+										$query = trim($sql);
+										if (substr($query, 0, 8) === 'SET TERM')
+										{
+											$delim = $query[9] . "\n";
+											continue;
+										}
+										$db->sql_query($query);
+									}
+								break;
+
+								case 'postgres':
+									while (($sql = $fgetd($fp, $delim, $read, $seek, $eof)) !== false)
+									{
+										$query = trim($sql);
+										$db->sql_query($query);
+										if (substr($query, 0, 4) == 'COPY')
+										{
+											while (($sub = $fgetd($fp, "\n", $read, $seek, $eof)) !== '\.')
+											{
+												if ($sub === false)
+												{
+													trigger_error($user->lang['RESTORE_FAILURE'] . adm_back_link($this->u_action));
+												}
+												pg_put_line($db->db_connect_id, $sub . "\n");
+											}
+											pg_put_line($db->db_connect_id, "\\.\n");
+											pg_end_copy($db->db_connect_id);
+										}
+									}
+								break;
+
+								case 'oracle':
+									while (($sql = $fgetd($fp, "/\n", $read, $seek, $eof)) !== false)
+									{
+										$db->sql_query($sql);
+									}
+								break;
+
+								case 'mssql':
+								case 'mssql_odbc':
+									while (($sql = $fgetd($fp, "GO\n", $read, $seek, $eof)) !== false)
+									{
+										$db->sql_query($sql);
+									}
+								break;
 							}
 
-							flush();
-							exit;
-						}
+							$close($fp);
 
-						switch ($matches[1])
-						{
-							case 'sql':
-								$fp = fopen($file_name, 'rb');
-								$read = 'fread';
-								$seek = 'fseek';
-								$eof = 'feof';
-								$close = 'fclose';
-								$fgetd = 'fgetd';
-							break;
-
-							case 'sql.bz2':
-								$fp = bzopen($file_name, 'r');
-								$read = 'bzread';
-								$seek = '';
-								$eof = 'feof';
-								$close = 'bzclose';
-								$fgetd = 'fgetd_seekless';
-							break;
-
-							case 'sql.gz':
-								$fp = gzopen($file_name, 'rb');
-								$read = 'gzread';
-								$seek = 'gzseek';
-								$eof = 'gzeof';
-								$close = 'gzclose';
-								$fgetd = 'fgetd';
+							add_log('admin', 'LOG_DB_RESTORE');
+							trigger_error($user->lang['RESTORE_SUCCESS'] . adm_back_link($this->u_action));
 							break;
 						}
-
-						switch ($db->sql_layer)
-						{
-							case 'mysql':
-							case 'mysql4':
-							case 'mysqli':
-							case 'sqlite':
-								while (($sql = $fgetd($fp, ";\n", $read, $seek, $eof)) !== false)
-								{
-									$db->sql_query($sql);
-								}
-							break;
-
-							case 'firebird':
-								$delim = ";\n";
-								while (($sql = $fgetd($fp, $delim, $read, $seek, $eof)) !== false)
-								{
-									$query = trim($sql);
-									if (substr($query, 0, 8) === 'SET TERM')
-									{
-										$delim = $query[9] . "\n";
-										continue;
-									}
-									$db->sql_query($query);
-								}
-							break;
-
-							case 'postgres':
-								while (($sql = $fgetd($fp, $delim, $read, $seek, $eof)) !== false)
-								{
-									$query = trim($sql);
-									$db->sql_query($query);
-									if (substr($query, 0, 4) == 'COPY')
-									{
-										while (($sub = $fgetd($fp, "\n", $read, $seek, $eof)) !== '\.')
-										{
-											if ($sub === false)
-											{
-												trigger_error($user->lang['RESTORE_FAILURE'] . adm_back_link($this->u_action));
-											}
-											pg_put_line($db->db_connect_id, $sub . "\n");
-										}
-										pg_put_line($db->db_connect_id, "\\.\n");
-										pg_end_copy($db->db_connect_id);
-									}
-								}
-							break;
-
-							case 'oracle':
-								while (($sql = $fgetd($fp, "/\n", $read, $seek, $eof)) !== false)
-								{
-									$db->sql_query($sql);
-								}
-							break;
-
-							case 'mssql':
-							case 'mssql_odbc':
-								while (($sql = $fgetd($fp, "GO\n", $read, $seek, $eof)) !== false)
-								{
-									$db->sql_query($sql);
-								}
-							break;
-						}
-
-						$close($fp);
-
-						add_log('admin', 'LOG_DB_RESTORE');
-						trigger_error($user->lang['RESTORE_SUCCESS'] . adm_back_link($this->u_action));
-					break;
 
 					default:
 						$methods = array('sql');
