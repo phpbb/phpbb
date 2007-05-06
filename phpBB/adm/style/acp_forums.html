@@ -148,7 +148,9 @@
 	<dl>
 		<dt><label for="forum_desc">{L_FORUM_DESC}:</label><br /><span>{L_FORUM_DESC_EXPLAIN}</span></dt>
 		<dd><textarea id="forum_desc" name="forum_desc" rows="5" cols="45">{FORUM_DESC}</textarea></dd>
-		<dd><input type="checkbox" class="radio" name="desc_parse_bbcode"<!-- IF S_DESC_BBCODE_CHECKED --> checked="checked"<!-- ENDIF --> /> {L_PARSE_BBCODE} &nbsp; <input type="checkbox" class="radio" name="desc_parse_smilies"<!-- IF S_DESC_SMILIES_CHECKED --> checked="checked"<!-- ENDIF --> /> {L_PARSE_SMILIES} &nbsp; <input type="checkbox" class="radio" name="desc_parse_urls"<!-- IF S_DESC_URLS_CHECKED --> checked="checked"<!-- ENDIF --> /> {L_PARSE_URLS}</dd>
+		<dd><label><input type="checkbox" class="radio" name="desc_parse_bbcode"<!-- IF S_DESC_BBCODE_CHECKED --> checked="checked"<!-- ENDIF --> /> {L_PARSE_BBCODE}</label>
+			<label><input type="checkbox" class="radio" name="desc_parse_smilies"<!-- IF S_DESC_SMILIES_CHECKED --> checked="checked"<!-- ENDIF --> /> {L_PARSE_SMILIES}</label>
+			<label><input type="checkbox" class="radio" name="desc_parse_urls"<!-- IF S_DESC_URLS_CHECKED --> checked="checked"<!-- ENDIF --> /> {L_PARSE_URLS}</label></dd>
 	</dl>
 	<dl>
 		<dt><label for="forum_image">{L_FORUM_IMAGE}:</label><br /><span>{L_FORUM_IMAGE_EXPLAIN}</span></dt>
@@ -159,11 +161,11 @@
 	</dl>
 	<dl>
 		<dt><label for="forum_password">{L_FORUM_PASSWORD}:</label><br /><span>{L_FORUM_PASSWORD_EXPLAIN}</span></dt>
-		<dd><input type="password" class="text" id="forum_password" name="forum_password" value="{FORUM_PASSWORD}" maxlength="40" /></dd>
+		<dd><input type="password" id="forum_password" name="forum_password" value="{FORUM_PASSWORD}" maxlength="40" /></dd>
 	</dl>
 	<dl>
 		<dt><label for="forum_password_confirm">{L_FORUM_PASSWORD_CONFIRM}:</label><br /><span>{L_FORUM_PASSWORD_CONFIRM_EXPLAIN}</span></dt>
-		<dd><input type="password" class="text" id="forum_password_confirm" name="forum_password_confirm" value="{FORUM_PASSWORD_CONFIRM}" /></dd>
+		<dd><input type="password" id="forum_password_confirm" name="forum_password_confirm" value="{FORUM_PASSWORD_CONFIRM}" /></dd>
 	</dl>
 	<dl>
 		<dt><label for="forum_style">{L_FORUM_STYLE}:</label></dt>
@@ -220,7 +222,7 @@
 		</dl>
 		<dl>
 			<dt><label for="topics_per_page">{L_FORUM_TOPICS_PAGE}:</label><br /><span>{L_FORUM_TOPICS_PAGE_EXPLAIN}</span></dt>
-			<dd><input type="text" class="text" id="topics_per_page" name="topics_per_page" value="{TOPICS_PER_PAGE}" size="4" maxlength="4" /></dd>
+			<dd><input type="text" id="topics_per_page" name="topics_per_page" value="{TOPICS_PER_PAGE}" size="4" maxlength="4" /></dd>
 		</dl>
 		</fieldset>
 
@@ -233,15 +235,15 @@
 		</dl>
 		<dl>
 			<dt><label for="prune_freq">{L_AUTO_PRUNE_FREQ}:</label><br /><span>{L_AUTO_PRUNE_FREQ_EXPLAIN}</span></dt>
-			<dd><input type="text" class="text" id="prune_freq" name="prune_freq" value="{PRUNE_FREQ}" maxlength="4" size="4" /> {L_DAYS}</dd>
+			<dd><input type="text" id="prune_freq" name="prune_freq" value="{PRUNE_FREQ}" maxlength="4" size="4" /> {L_DAYS}</dd>
 		</dl>
 		<dl>
 			<dt><label for="prune_days">{L_AUTO_PRUNE_DAYS}:</label><br /><span>{L_AUTO_PRUNE_DAYS_EXPLAIN}</span></dt>
-			<dd><input type="text" class="text" id="prune_days" name="prune_days" value="{PRUNE_DAYS}" maxlength="4" size="4" /> {L_DAYS}</dd>
+			<dd><input type="text" id="prune_days" name="prune_days" value="{PRUNE_DAYS}" maxlength="4" size="4" /> {L_DAYS}</dd>
 		</dl>
 		<dl>
 			<dt><label for="prune_viewed">{L_AUTO_PRUNE_VIEWED}:</label><br /><span>{L_AUTO_PRUNE_VIEWED_EXPLAIN}</span></dt>
-			<dd><input type="text" class="text" id="prune_viewed" name="prune_viewed" value="{PRUNE_VIEWED}" maxlength="4" size="4" /> {L_DAYS}</dd>
+			<dd><input type="text" id="prune_viewed" name="prune_viewed" value="{PRUNE_VIEWED}" maxlength="4" size="4" /> {L_DAYS}</dd>
 		</dl>
 		<dl>
 			<dt><label for="prune_old_polls">{L_PRUNE_OLD_POLLS}:</label><br /><span>{L_PRUNE_OLD_POLLS_EXPLAIN}</span></dt>
@@ -297,7 +299,9 @@
 		<dl>
 			<dt><label for="forum_rules">{L_FORUM_RULES}:</label><br /><span>{L_FORUM_RULES_EXPLAIN}</span></dt>
 			<dd><textarea id="forum_rules" name="forum_rules" rows="4" cols="70">{FORUM_RULES_PLAIN}</textarea></dd>
-			<dd><input type="checkbox" class="radio" name="rules_parse_bbcode"<!-- IF S_BBCODE_CHECKED --> checked="checked"<!-- ENDIF --> /> {L_PARSE_BBCODE} &nbsp; <input type="checkbox" class="radio" name="rules_parse_smilies"<!-- IF S_SMILIES_CHECKED --> checked="checked"<!-- ENDIF --> /> {L_PARSE_SMILIES} &nbsp; <input type="checkbox" class="radio" name="rules_parse_urls"<!-- IF S_URLS_CHECKED --> checked="checked"<!-- ENDIF --> /> {L_PARSE_URLS}</dd>
+			<dd><label><input type="checkbox" class="radio" name="rules_parse_bbcode"<!-- IF S_BBCODE_CHECKED --> checked="checked"<!-- ENDIF --> /> {L_PARSE_BBCODE}</label>
+				<label><input type="checkbox" class="radio" name="rules_parse_smilies"<!-- IF S_SMILIES_CHECKED --> checked="checked"<!-- ENDIF --> /> {L_PARSE_SMILIES}</label>
+				<label><input type="checkbox" class="radio" name="rules_parse_urls"<!-- IF S_URLS_CHECKED --> checked="checked"<!-- ENDIF --> /> {L_PARSE_URLS}</label></dd>
 		</dl>
 		</fieldset>
 	</div>
@@ -475,7 +479,7 @@
 	<fieldset class="quick">
 		<input type="hidden" name="action" value="add" />
 
-		<input type="text" class="text" name="forum_name" value="" maxlength="255" />
+		<input type="text" name="forum_name" value="" maxlength="255" />
 		<input class="button2" name="addforum" type="submit" value="{L_CREATE_FORUM}" />
 	</fieldset>
 

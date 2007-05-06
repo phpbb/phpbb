@@ -16,7 +16,7 @@
 		<dt><label for="username">{L_FIND_USERNAME}:</label></dt>
 		<dd><input class="text medium" type="text" id="username" name="username" /></dd>
 		<dd>[ <a href="{U_FIND_USERNAME}" onclick="find_username(); return false;">{L_FIND_USERNAME}</a> ]</dd>
-		<dd class="full" style="text-align: left;"><input type="checkbox" class="radio" id="anonymous" name="u" value="{ANONYMOUS_USER_ID}" /> &nbsp;{L_SELECT_ANONYMOUS}</dd>
+		<dd class="full" style="text-align: left;"><label><input type="checkbox" class="radio" id="anonymous" name="u" value="{ANONYMOUS_USER_ID}" /> {L_SELECT_ANONYMOUS}</label></dd>
 	</dl>
 
 	<p class="quick">
@@ -126,22 +126,25 @@
 	<!-- BEGIN group -->
 		<!-- IF group.S_NEW_GROUP_TYPE -->
 		<tr>
-			<td class="row3" colspan="4"><b>{group.GROUP_TYPE}</b></td>
+			<td class="row3" colspan="4"><strong>{group.GROUP_TYPE}</strong></td>
 		</tr>
 		<!-- ELSE -->
 			<!-- IF group.S_ROW_COUNT is even --><tr class="row1"><!-- ELSE --><tr class="row2"><!-- ENDIF -->
-			<td><a href="{group.U_EDIT_GROUP}">{group.GROUP_NAME}</a></td>
-			<td><!-- IF group.S_NO_DEFAULT --><a href="{group.U_DEFAULT}">{L_GROUP_DEFAULT}</a><!-- ELSE --><strong>{L_GROUP_DEFAULT}</strong><!-- ENDIF --></td>
-			<td><!-- IF not group.S_SPECIAL_GROUP --><a href="{group.U_DEMOTE_PROMOTE}">{group.L_DEMOTE_PROMOTE}</a><!-- ENDIF --></td>
-			<td><a href="{group.U_DELETE}">{L_GROUP_DELETE}</a></td>
+				<td><a href="{group.U_EDIT_GROUP}">{group.GROUP_NAME}</a></td>
+				<td><!-- IF group.S_NO_DEFAULT --><a href="{group.U_DEFAULT}">{L_GROUP_DEFAULT}</a><!-- ELSE --><strong>{L_GROUP_DEFAULT}</strong><!-- ENDIF --></td>
+				<td><!-- IF not group.S_SPECIAL_GROUP --><a href="{group.U_DEMOTE_PROMOTE}">{group.L_DEMOTE_PROMOTE}</a><!-- ELSE -->&nbsp;<!-- ENDIF --></td>
+				<td><a href="{group.U_DELETE}">{L_GROUP_DELETE}</a></td>
+			</tr>
 		<!-- ENDIF -->
 	<!-- END group -->
 	</tbody>
 	</table>
 
-	<fieldset class="quick">
-		{L_USER_GROUP_ADD}: <select name="g">{S_GROUP_OPTIONS}</select> <input class="button1" type="submit" name="update" value="{L_SUBMIT}" />
-	</fieldset>
+	<!-- IF S_GROUP_OPTIONS -->
+		<fieldset class="quick">
+			{L_USER_GROUP_ADD}: <select name="g">{S_GROUP_OPTIONS}</select> <input class="button1" type="submit" name="update" value="{L_SUBMIT}" />
+		</fieldset>
+	<!-- ENDIF -->
 
 	</form>
 

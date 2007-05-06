@@ -3355,7 +3355,7 @@ function truncate_string($string, $max_length = 60, $allow_reply = true, $append
 */
 function get_username_string($mode, $user_id, $username, $username_colour = '', $guest_username = false, $custom_profile_url = false)
 {
-	global $phpbb_root_path, $phpEx, $user;
+	global $phpbb_root_path, $phpEx, $user, $auth;
 
 	$profile_url = '';
 	$username_colour = ($username_colour) ? '#' . $username_colour : '';
@@ -3372,8 +3372,17 @@ function get_username_string($mode, $user_id, $username, $username_colour = '', 
 	// Only show the link if not anonymous
 	if ($user_id && $user_id != ANONYMOUS)
 	{
-		$profile_url = ($custom_profile_url !== false) ? $custom_profile_url : append_sid("{$phpbb_root_path}memberlist.$phpEx", 'mode=viewprofile');
-		$profile_url .= '&amp;u=' . (int) $user_id;
+		// Do not show the link if the user is already logged in but do not have u_viewprofile permissions (relevant for bots mostly).
+		// For all others the link leads to a login page or the profile.
+		if ($user->data['user_id'] != ANONYMOUS && !$auth->acl_get('u_viewprofile'))
+		{
+			$profile_url = '';
+		}
+		else
+		{
+			$profile_url = ($custom_profile_url !== false) ? $custom_profile_url : append_sid("{$phpbb_root_path}memberlist.$phpEx", 'mode=viewprofile');
+			$profile_url .= '&amp;u=' . (int) $user_id;
+		}
 	}
 	else
 	{

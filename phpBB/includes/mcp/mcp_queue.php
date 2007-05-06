@@ -18,7 +18,7 @@ class mcp_queue
 	var $p_master;
 	var $u_action;
 
-	function mcp_main(&$p_master)
+	function mcp_queue(&$p_master)
 	{
 		$this->p_master = &$p_master;
 	}

@@ -663,7 +663,7 @@ input, textarea {
 	font-family: Verdana, Helvetica, Arial, sans-serif;
 	font-size: 0.90em;
 	font-weight: normal;
-	cursor: default;
+	cursor: text;
 	vertical-align: middle;
 	padding: 2px;
 	color: #111111;
@@ -735,7 +735,6 @@ textarea {
 	font-size: 0.85em;
 	width: 60%;
 	padding: 2px;
-	cursor: text;
 }
 
 label {
@@ -969,7 +968,6 @@ p.submit-buttons {
 
 fieldset.submit-buttons input, p.submit-buttons input {
 	padding: 3px 2px;
-	cursor: pointer;
 }
 
 fieldset.submit-buttons legend {
@@ -978,10 +976,6 @@ fieldset.submit-buttons legend {
 
 /* Input field styles
 ---------------------------------------- */
-
-input.text {
-	cursor: text;
-}
 
 input.radio, input.permissions-checkbox {
 	width: auto !important;
@@ -1005,11 +999,11 @@ input.autowidth { width: auto !important;}
 /* Form button styles
 ---------------------------------------- */
 a.button1, input.button1, input.button3,
-a.button2, input.button2  {
+a.button2, input.button2 {
 	width: auto !important;
-	padding: 1px 3px;
+	padding: 1px 3px 0 3px;
 	font-family: "Lucida Grande", Verdana, Helvetica, Arial, sans-serif;
-	color: #000000;
+	color: #000;
 	font-size: 0.85em;
 	background: #EFEFEF url("../images/bg_button.gif") repeat-x top;
 	cursor: pointer;
@@ -1039,6 +1033,11 @@ a.button2:hover, input.button2:hover {
 	border: 1px solid #BC2A4D;
 	background: #EFEFEF url("../images/bg_button.gif") repeat bottom;
 	color: #BC2A4D;
+}
+
+input.disabled {
+	font-weight: normal;
+	color: #666666;
 }
 
 /* Pagination
@@ -1097,40 +1096,6 @@ a.button2:hover, input.button2:hover {
 	vertical-align: middle;
 }
 
-
-/* Form button styles
----------------------------------------- */
-a.button1, input.button1, input.button3, 
-a.button2, input.button2  {
-	width: auto !important;
-	padding: 1px 3px 0 3px;
-	font-family: "Lucida Grande", Verdana, Helvetica, Arial, sans-serif;
-	color: #000;
-	background-color: #EFEFEF;
-	cursor: pointer;
-}
-
-a.button1, input.button1 {
-	font-weight: bold;
-	border: 1px solid #666666; 
-}
-
-a.button2, input.button2 {
-	border: 1px solid #666666;
-}
-
-/* <a> button in the style of the form buttons */
-a.button1, a.button1:link, a.button1:visited, a.button1:active,
-a.button2, a.button2:link, a.button2:visited, a.button2:active {
-	text-decoration: none;
-	color: #000000;
-	padding: 4px 8px;
-}
-
-input.disabled {
-	font-weight: normal;
-	color: #666666;
-}
 
 /* Action Highlighting
 ---------------------------------------- */

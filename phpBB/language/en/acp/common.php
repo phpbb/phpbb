@@ -542,8 +542,8 @@ $lang = array_merge($lang, array(
 
 	'LOG_MCP_CHANGE_POSTER'	=> '<strong>Changed poster in topic “%1$s”</strong><br />» from %2$s to %3$s',
 
-	'LOG_MODULE_DISABLE'	=> '<strong>Module disabled</strong>',
-	'LOG_MODULE_ENABLE'		=> '<strong>Module enabled</strong>',
+	'LOG_MODULE_DISABLE'	=> '<strong>Module disabled</strong><br />» %s',
+	'LOG_MODULE_ENABLE'		=> '<strong>Module enabled</strong><br />» %s',
 	'LOG_MODULE_MOVE_DOWN'	=> '<strong>Module moved down</strong><br />» %s',
 	'LOG_MODULE_MOVE_UP'	=> '<strong>Module moved up</strong><br />» %s',
 	'LOG_MODULE_REMOVED'	=> '<strong>Module removed</strong><br />» %s',

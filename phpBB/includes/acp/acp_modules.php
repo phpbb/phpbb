@@ -106,12 +106,26 @@ class acp_modules
 					trigger_error($user->lang['NO_MODULE_ID'] . adm_back_link($this->u_action . '&amp;parent_id=' . $this->parent_id), E_USER_WARNING);
 				}
 
+				$sql = 'SELECT *
+					FROM ' . MODULES_TABLE . "
+					WHERE module_class = '" . $db->sql_escape($this->module_class) . "'
+						AND module_id = $module_id";
+				$result = $db->sql_query($sql);
+				$row = $db->sql_fetchrow($result);
+				$db->sql_freeresult($result);
+
+				if (!$row)
+				{
+					trigger_error($user->lang['NO_MODULE'] . adm_back_link($this->u_action . '&amp;parent_id=' . $this->parent_id), E_USER_WARNING);
+				}
+
 				$sql = 'UPDATE ' . MODULES_TABLE . ' 
 					SET module_enabled = ' . (($action == 'enable') ? 1 : 0) . "
-					WHERE module_id = $module_id";
+					WHERE module_class = '" . $db->sql_escape($this->module_class) . "'
+						AND module_id = $module_id";
 				$db->sql_query($sql);
 
-				add_log('admin', 'LOG_MODULE_' . strtoupper($action));
+				add_log('admin', 'LOG_MODULE_' . strtoupper($action), $this->lang_name($row['module_langname']));
 				$this->remove_cache_file();
 
 			break;

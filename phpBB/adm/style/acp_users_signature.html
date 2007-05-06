@@ -86,13 +86,13 @@
 
 		<div>
 			<!-- IF S_BBCODE_ALLOWED -->
-				<input type="checkbox" class="radio" name="disable_bbcode"{S_BBCODE_CHECKED} />&nbsp; {L_DISABLE_BBCODE} &nbsp;
+				<label><input type="checkbox" class="radio" name="disable_bbcode"{S_BBCODE_CHECKED} /> {L_DISABLE_BBCODE}</label>
 			<!-- ENDIF -->
 			<!-- IF S_SMILIES_ALLOWED -->
-				<input type="checkbox" class="radio" name="disable_smilies"{S_SMILIES_CHECKED} />&nbsp; {L_DISABLE_SMILIES} &nbsp;
+				<label><input type="checkbox" class="radio" name="disable_smilies"{S_SMILIES_CHECKED} /> {L_DISABLE_SMILIES}</label>
 			<!-- ENDIF -->
 			<!-- IF S_LINKS_ALLOWED -->
-				<input type="checkbox" class="radio" name="disable_magic_url"{S_MAGIC_URL_CHECKED} />&nbsp; {L_DISABLE_MAGIC_URL} &nbsp;
+				<label><input type="checkbox" class="radio" name="disable_magic_url"{S_MAGIC_URL_CHECKED} /> {L_DISABLE_MAGIC_URL}</label>
 			<!-- ENDIF -->
 			<br /><br /><strong>{L_OPTIONS}: </strong>{BBCODE_STATUS} :: {IMG_STATUS} :: {FLASH_STATUS} :: {URL_STATUS} :: {SMILIES_STATUS}
 		</div>

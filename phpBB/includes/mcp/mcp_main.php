@@ -598,7 +598,7 @@ function mcp_move_topic($topic_ids)
 
 		$db->sql_transaction('begin');
 
-		$sql = 'SELECT SUM(topic_replies + 1) as topic_posts
+		$sql = 'SELECT SUM(t.topic_replies + 1) as topic_posts
 			FROM ' . TOPICS_TABLE . ' t
 			WHERE ' . $db->sql_in_set('t.topic_id', $topic_ids);
 		$result = $db->sql_query($sql);

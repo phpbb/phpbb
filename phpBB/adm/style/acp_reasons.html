@@ -30,7 +30,7 @@
 		<p><!-- IF S_TRANSLATED -->{L_IS_TRANSLATED_EXPLAIN}<!-- ELSE -->{L_IS_NOT_TRANSLATED_EXPLAIN}<!-- ENDIF --></p>
 	<dl>
 		<dt><label for="reason_title">{L_REASON_TITLE}:</label></dt>
-		<dd><input name="reason_title" type="text" class="text" id="reason_title" value="{REASON_TITLE}" maxlength="255" /></dd>
+		<dd><input name="reason_title" type="text" id="reason_title" value="{REASON_TITLE}" maxlength="255" /></dd>
 	</dl>
 	<!-- IF S_TRANSLATED -->
 	<dl>
@@ -114,7 +114,7 @@
 	<p class="quick">
 		<input type="hidden" name="action" value="add" />
 
-		<input type="text" class="text" name="reason_title" /> 
+		<input type="text" name="reason_title" /> 
 		<input class="button2" name="addreason" type="submit" value="{L_ADD_NEW_REASON}" />
 	</p>
 	</fieldset>

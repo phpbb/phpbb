@@ -174,7 +174,7 @@
 			<legend>{L_LEGEND}</legend>
 		<dl>
 			<dt><label for="group_name">{L_GROUP_NAME}:</label></dt>
-			<dd><input type="text" class="text" id="group_name" size="20" maxlength="100" name="group_name" value="{GROUP_NAME}" /></dd>
+			<dd><input type="text" id="group_name" size="20" maxlength="100" name="group_name" value="{GROUP_NAME}" /></dd>
 		</dl>
 		<dl>
 			<dt><label for="category">{L_SPECIAL_CATEGORY}:</label><br /><span>{L_SPECIAL_CATEGORY_EXPLAIN}</span></dt>
@@ -197,7 +197,7 @@
 		</dl>
 		<dl>
 			<dt><label for="extgroup_filesize">{L_MAX_EXTGROUP_FILESIZE}:</label></dt>
-			<dd><input type="text" class="text" id="extgroup_filesize" size="3" maxlength="15" name="max_filesize" value="{EXTGROUP_FILESIZE}" /> <select name="size_select">{S_EXT_GROUP_SIZE_OPTIONS}</select></dd>
+			<dd><input type="text" id="extgroup_filesize" size="3" maxlength="15" name="max_filesize" value="{EXTGROUP_FILESIZE}" /> <select name="size_select">{S_EXT_GROUP_SIZE_OPTIONS}</select></dd>
 		</dl>
 		<dl>
 			<dt><label for="assigned_extensions">{L_ASSIGNED_EXTENSIONS}:</label></dt>
@@ -253,7 +253,7 @@
 		</tbody>
 		</table>
 		<p class="quick">
-				{L_CREATE_GROUP}: <input type="text" class="text" name="group_name" maxlength="30" /> 
+				{L_CREATE_GROUP}: <input type="text" name="group_name" maxlength="30" /> 
 				<input class="button2" name="add" type="submit" value="{L_SUBMIT}" />
 		</p>
 		</fieldset>
@@ -268,7 +268,7 @@
 		<legend>{L_ADD_EXTENSION}</legend>
 	<dl>
 		<dt><label for="add_extension">{L_EXTENSION}</label></dt>
-		<dd><input type="text" class="text" id="add_extension" size="20" maxlength="100" name="add_extension" value="{ADD_EXTENSION}" /></dd>
+		<dd><input type="text" id="add_extension" size="20" maxlength="100" name="add_extension" value="{ADD_EXTENSION}" /></dd>
 	</dl>
 	<dl>
 		<dt><label for="extension_group">{L_EXTENSION_GROUP}</label></dt>
@@ -346,7 +346,7 @@
 			<td><a href="{orphan.U_FILE}">{orphan.REAL_FILENAME}</a></td>
 			<td>{orphan.FILETIME}</td>
 			<td>{orphan.FILESIZE}</td>
-			<td><b>ID: </b><input type="text" class="text" name="post_id[{orphan.ATTACH_ID}]" size="7" maxlength="10" value="{orphan.POST_ID}" /></td>
+			<td><b>ID: </b><input type="text" name="post_id[{orphan.ATTACH_ID}]" size="7" maxlength="10" value="{orphan.POST_ID}" /></td>
 			<td><input type="checkbox" class="radio" name="add[{orphan.ATTACH_ID}]" /></td>
 			<td><input type="checkbox" class="radio" name="delete[{orphan.ATTACH_ID}]" /></td>
 		</tr>

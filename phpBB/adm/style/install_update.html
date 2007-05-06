@@ -187,7 +187,7 @@
 							</dt>
 							<dd style="margin-left: 60%;"><!-- IF not files.S_BINARY -->[ <a href="{files.U_SHOW_DIFF}" onclick="popup('{files.U_SHOW_DIFF}', 700, 500); return false;">{files.L_SHOW_DIFF}</a> ]<!-- ELSE -->{L_BINARY_FILE}<!-- ENDIF --></dd>
 							<!-- IF files.S_CUSTOM -->
-								<dd style="margin-left: 60%;"><input type="checkbox" name="no_update[]" value="{files.FILENAME}" class="radio" />&nbsp; {L_DO_NOT_UPDATE}</dd>
+								<dd style="margin-left: 60%;"><label><input type="checkbox" name="no_update[]" value="{files.FILENAME}" class="radio" /> {L_DO_NOT_UPDATE}</label></dd>
 							<!-- ENDIF -->
 							<!-- IF files.STATUS eq 'conflict' -->
 							</dl>

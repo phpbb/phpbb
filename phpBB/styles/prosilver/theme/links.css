@@ -9,6 +9,7 @@ a:active	{ color: #d2d2d2; text-decoration: none; }
 /* Coloured usernames */
 .username-coloured {
 	font-weight: bold;
+	display: inline !important;
 }
 
 /* Links on gradient backgrounds */
