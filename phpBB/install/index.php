@@ -554,7 +554,7 @@ class module
 		echo '	<div id="page-header">';
 		echo '	</div>';
 		echo '	<div id="page-body">';
-		echo '		<div id="acp">
+		echo '		<div id="acp">';
 		echo '		<div class="panel">';
 		echo '			<span class="corners-top"><span></span></span>';
 		echo '			<div id="content">';
