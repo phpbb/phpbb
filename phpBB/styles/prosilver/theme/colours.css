@@ -372,6 +372,14 @@ ul.topiclist dd {
 	border-left-color: #FFFFFF;
 }
 
+ul.topiclist li.row dt a.subforum.read {
+	background-image: url("{T_IMAGESET_PATH}/icon_post_target.gif.gif");
+}
+
+ul.topiclist li.row dt a.subforum.unread {
+	background-image: url("{T_IMAGESET_PATH}/icon_post_target_unread.gif");
+}
+
 li.row {
 	border-top-color:  #FFFFFF;
 	border-bottom-color: #00608F;
