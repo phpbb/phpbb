@@ -3565,6 +3565,7 @@ function msg_handler($errno, $msg_text, $errfile, $errline)
 			echo '	<div id="page-header">';
 			echo '		' . $l_return_index;
 			echo '	</div>';
+			echo '	<div id="acp">';
 			echo '	<div class="panel">';
 			echo '		<div id="content">';
 			echo '			<h1>' . $msg_title . '</h1>';
@@ -3574,6 +3575,7 @@ function msg_handler($errno, $msg_text, $errfile, $errline)
 			echo $l_notify;
 
 			echo '		</div>';
+			echo '	</div>';
 			echo '	</div>';
 			echo '	<div id="page-footer">';
 			echo '		Powered by phpBB &copy; ' . date('Y') . ' <a href="http://www.phpbb.com/">phpBB Group</a>';

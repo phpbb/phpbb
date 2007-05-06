@@ -554,6 +554,7 @@ class module
 		echo '	<div id="page-header">';
 		echo '	</div>';
 		echo '	<div id="page-body">';
+		echo '		<div id="acp">
 		echo '		<div class="panel">';
 		echo '			<span class="corners-top"><span></span></span>';
 		echo '			<div id="content">';
@@ -563,6 +564,7 @@ class module
 		echo '		<p><b>' . $error . "</b></p>\n";
 		echo '			</div>';
 		echo '			<span class="corners-bottom"><span></span></span>';
+		echo '		</div>';
 		echo '		</div>';
 		echo '	</div>';
 		echo '	<div id="page-footer">';
