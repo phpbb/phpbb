@@ -1298,6 +1298,8 @@ function delete_post($forum_id, $topic_id, $post_id, &$data)
 			}
 
 			$sql_data[TOPICS_TABLE] = 'topic_first_post_id = ' . intval($row['post_id']) . ", topic_first_poster_colour = '" . $db->sql_escape($row['user_colour']) . "', topic_first_poster_name = '" . (($row['poster_id'] == ANONYMOUS) ? $db->sql_escape($row['post_username']) : $db->sql_escape($row['username'])) . "'";
+
+			// Decrementing topic_replies here is fine because this case only happens if there is more than one post within the topic - basically removing one "reply"
 			$sql_data[TOPICS_TABLE] .= ', topic_replies_real = topic_replies_real - 1' . (($data['post_approved']) ? ', topic_replies = topic_replies - 1' : '');
 
 			$next_post_id = (int) $row['post_id'];
@@ -1499,6 +1501,14 @@ function submit_post($mode, $subject, $username, $topic_type, &$poll, &$data, $u
 				$sql_data[POSTS_TABLE]['stat'][] = 'post_edit_count = post_edit_count + 1';
 			}
 
+			// If the person editing this post is different to the one having posted then we will add a log entry stating the edit
+			// Could be simplified by only adding to the log if the edit is not tracked - but this may confuse admins/mods
+			if ($user->data['user_id'] != $poster_id)
+			{
+				$log_subject = ($subject) ? $subject : $data['topic_title'];
+				add_log('mod', $data['forum_id'], $data['topic_id'], 'LOG_POST_EDITED', $log_subject, generate_board_url() . '/viewtopic.' . $phpEx . '?t=' . $data['topic_id'] . '&amp;p=' . $data['post_id'], $username);
+			}
+
 			if (!isset($sql_data[POSTS_TABLE]['sql']))
 			{
 				$sql_data[POSTS_TABLE]['sql'] = array();
@@ -1531,6 +1541,7 @@ function submit_post($mode, $subject, $username, $topic_type, &$poll, &$data, $u
 	}
 
 	$post_approved = $sql_data[POSTS_TABLE]['sql']['post_approved'];
+	$topic_row = array();
 
 	// And the topic ladies and gentlemen
 	switch ($post_mode)
@@ -1604,7 +1615,28 @@ function submit_post($mode, $subject, $username, $topic_type, &$poll, &$data, $u
 				'topic_attachment'			=> (!empty($data['attachment_data'])) ? 1 : (isset($data['topic_attachment']) ? $data['topic_attachment'] : 0),
 			);
 
-		// no break;
+			// Correctly set back the topic replies and forum posts...
+			if (!$auth->acl_get('f_noapprove', $data['forum_id']) && !$auth->acl_get('m_approve', $data['forum_id']))
+			{
+				$sql = 'SELECT topic_type, topic_replies, topic_replies_real, topic_approved
+					FROM ' . TOPICS_TABLE . '
+					WHERE topic_id = ' . $data['topic_id'];
+				$result = $db->sql_query($sql);
+				$topic_row = $db->sql_fetchrow($result);
+				$db->sql_freeresult($result);
+
+				// If this is the only post remaining we do not need to decrement topic_replies.
+				// Also do not decrement if first post - then the topic_replies will not be adjusted if approving the topic again.
+
+				// If this is an edited topic or the first post the topic gets completely disapproved later on...
+				$sql_data[FORUMS_TABLE]['stat'][] = 'forum_topics = forum_topics - 1';
+				$sql_data[FORUMS_TABLE]['stat'][] = 'forum_posts = forum_posts - ' . ($topic_row['topic_replies'] + 1);
+
+				set_config('num_topics', $config['num_topics'] - 1, true);
+				set_config('num_posts', $config['num_posts'] - ($topic_row['topic_replies'] + 1), true);
+			}
+
+		break;
 
 		case 'edit':
 		case 'edit_last_post':
@@ -1614,6 +1646,8 @@ function submit_post($mode, $subject, $username, $topic_type, &$poll, &$data, $u
 			{
 				$sql_data[TOPICS_TABLE]['stat'][] = 'topic_replies = topic_replies - 1';
 				$sql_data[FORUMS_TABLE]['stat'][] = 'forum_posts = forum_posts - 1';
+
+				set_config('num_posts', $config['num_posts'] - 1, true);
 			}
 
 		break;
@@ -1653,11 +1687,11 @@ function submit_post($mode, $subject, $username, $topic_type, &$poll, &$data, $u
 		if ($post_mode == 'post')
 		{
 			$sql_data[TOPICS_TABLE]['sql'] = array(
-				'topic_first_post_id'	=> $data['post_id'],
-				'topic_last_post_id'	=> $data['post_id'],
-				'topic_last_post_time'	=> $current_time,
-				'topic_last_poster_id'	=> (int) $user->data['user_id'],
-				'topic_last_poster_name'=> (!$user->data['is_registered'] && $username) ? $username : (($user->data['user_id'] != ANONYMOUS) ? $user->data['username'] : ''),
+				'topic_first_post_id'		=> $data['post_id'],
+				'topic_last_post_id'		=> $data['post_id'],
+				'topic_last_post_time'		=> $current_time,
+				'topic_last_poster_id'		=> (int) $user->data['user_id'],
+				'topic_last_poster_name'	=> (!$user->data['is_registered'] && $username) ? $username : (($user->data['user_id'] != ANONYMOUS) ? $user->data['username'] : ''),
 				'topic_last_poster_colour'	=> (($user->data['user_id'] != ANONYMOUS) ? $user->data['user_colour'] : ''),
 			);
 		}
@@ -1670,22 +1704,34 @@ function submit_post($mode, $subject, $username, $topic_type, &$poll, &$data, $u
 	// Are we globalising or unglobalising?
 	if ($post_mode == 'edit_first_post' || $post_mode == 'edit_topic')
 	{
-		$sql = 'SELECT topic_type, topic_replies_real, topic_approved
-			FROM ' . TOPICS_TABLE . '
-			WHERE topic_id = ' . $data['topic_id'];
-		$result = $db->sql_query($sql);
-		$row = $db->sql_fetchrow($result);
-		$db->sql_freeresult($result);
-
-		// globalise
-		if ($row['topic_type'] != POST_GLOBAL && $topic_type == POST_GLOBAL)
+		if (!sizeof($topic_row))
 		{
-			// Decrement topic/post count
+			$sql = 'SELECT topic_type, topic_replies, topic_replies_real, topic_approved
+				FROM ' . TOPICS_TABLE . '
+				WHERE topic_id = ' . $data['topic_id'];
+			$result = $db->sql_query($sql);
+			$topic_row = $db->sql_fetchrow($result);
+			$db->sql_freeresult($result);
+		}
+
+		// globalise/unglobalise?
+		if (($topic_row['topic_type'] != POST_GLOBAL && $topic_type == POST_GLOBAL) || ($topic_row['topic_type'] == POST_GLOBAL && $topic_type != POST_GLOBAL))
+		{
+			if (!empty($sql_data[FORUMS_TABLE]['stat']) && implode('', $sql_data[FORUMS_TABLE]['stat']))
+			{
+				$db->sql_query('UPDATE ' . FORUMS_TABLE . ' SET ' . implode(', ', $sql_data[FORUMS_TABLE]['stat']) . ' WHERE forum_id = ' . $data['forum_id']);
+			}
+
 			$make_global = true;
 			$sql_data[FORUMS_TABLE]['stat'] = array();
+		}
 
-			$sql_data[FORUMS_TABLE]['stat'][] = 'forum_posts = forum_posts - ' . ($row['topic_replies_real'] + 1);
-			$sql_data[FORUMS_TABLE]['stat'][] = 'forum_topics_real = forum_topics_real - 1' . (($row['topic_approved']) ? ', forum_topics = forum_topics - 1' : '');
+		// globalise
+		if ($topic_row['topic_type'] != POST_GLOBAL && $topic_type == POST_GLOBAL)
+		{
+			// Decrement topic/post count
+			$sql_data[FORUMS_TABLE]['stat'][] = 'forum_posts = forum_posts - ' . ($topic_row['topic_replies_real'] + 1);
+			$sql_data[FORUMS_TABLE]['stat'][] = 'forum_topics_real = forum_topics_real - 1' . (($topic_row['topic_approved']) ? ', forum_topics = forum_topics - 1' : '');
 
 			// Update forum_ids for all posts
 			$sql = 'UPDATE ' . POSTS_TABLE . '
@@ -1694,14 +1740,11 @@ function submit_post($mode, $subject, $username, $topic_type, &$poll, &$data, $u
 			$db->sql_query($sql);
 		}
 		// unglobalise
-		else if ($row['topic_type'] == POST_GLOBAL && $topic_type != POST_GLOBAL)
+		else if ($topic_row['topic_type'] == POST_GLOBAL && $topic_type != POST_GLOBAL)
 		{
 			// Increment topic/post count
-			$make_global = true;
-			$sql_data[FORUMS_TABLE]['stat'] = array();
-
-			$sql_data[FORUMS_TABLE]['stat'][] = 'forum_posts = forum_posts + ' . ($row['topic_replies_real'] + 1);
-			$sql_data[FORUMS_TABLE]['stat'][] = 'forum_topics_real = forum_topics_real + 1' . (($row['topic_approved']) ? ', forum_topics = forum_topics + 1' : '');
+			$sql_data[FORUMS_TABLE]['stat'][] = 'forum_posts = forum_posts + ' . ($topic_row['topic_replies_real'] + 1);
+			$sql_data[FORUMS_TABLE]['stat'][] = 'forum_topics_real = forum_topics_real + 1' . (($topic_row['topic_approved']) ? ', forum_topics = forum_topics + 1' : '');
 
 			// Update forum_ids for all posts
 			$sql = 'UPDATE ' . POSTS_TABLE . '
@@ -1928,7 +1971,8 @@ function submit_post($mode, $subject, $username, $topic_type, &$poll, &$data, $u
 	{
 		if (isset($update_ary['stat']) && implode('', $update_ary['stat']))
 		{
-			$db->sql_query("UPDATE $table SET " . implode(', ', $update_ary['stat']) . ' WHERE ' . $where_sql[$table]);
+			$sql = "UPDATE $table SET " . implode(', ', $update_ary['stat']) . ' WHERE ' . $where_sql[$table];
+			$db->sql_query($sql);
 		}
 	}
 
@@ -2039,14 +2083,25 @@ function submit_post($mode, $subject, $username, $topic_type, &$poll, &$data, $u
 		user_notification($mode, $subject, $data['topic_title'], $data['forum_name'], $data['forum_id'], $data['topic_id'], $data['post_id']);
 	}
 
-	if ($mode == 'post')
+	$params = 'f=' . $data['forum_id'];
+	$add_anchor = '';
+
+	if ($auth->acl_get('f_noapprove', $data['forum_id']) || $auth->acl_get('m_approve', $data['forum_id']))
 	{
-		$url = ($auth->acl_get('f_noapprove', $data['forum_id']) || $auth->acl_get('m_approve', $data['forum_id'])) ? append_sid("{$phpbb_root_path}viewtopic.$phpEx", 'f=' . $data['forum_id'] . '&amp;t=' . $data['topic_id']) : append_sid("{$phpbb_root_path}viewforum.$phpEx", 'f=' . $data['forum_id']);
+		$params .= '&amp;t=' . $data['topic_id'];
+
+		if ($mode != 'post')
+		{
+			$params .= '&amp;p=' . $data['post_id'];
+			$add_anchor = '#p=' . $data['post_id'];
+		}
 	}
-	else
+	else if ($mode != 'post' && $mode != 'edit_first_post' && $mode != 'edit_topic')
 	{
-		$url = ($auth->acl_get('f_noapprove', $data['forum_id']) || $auth->acl_get('m_approve', $data['forum_id'])) ? append_sid("{$phpbb_root_path}viewtopic.$phpEx", "f={$data['forum_id']}&amp;t={$data['topic_id']}&amp;p={$data['post_id']}") . "#p{$data['post_id']}" : append_sid("{$phpbb_root_path}viewtopic.$phpEx", "f={$data['forum_id']}&amp;t={$data['topic_id']}");
+		$params .= '&amp;t=' . $data['topic_id'];
 	}
+
+	$url = append_sid("{$phpbb_root_path}viewtopic.$phpEx", $params) . $add_anchor;
 
 	return $url;
 }

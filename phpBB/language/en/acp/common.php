@@ -463,6 +463,7 @@ $lang = array_merge($lang, array(
 	'LOG_LOCK_POST'				=> '<strong>Locked post</strong><br />» %s',
 	'LOG_MERGE'					=> '<strong>Merged posts</strong> into topic<br />» %s',
 	'LOG_MOVE'					=> '<strong>Moved topic</strong><br />» from %s',
+	'LOG_POST_EDITED'			=> '<strong>Edited post “%1$s” written by “%3$s”</strong><br />» Link to post: %2$s',
 	'LOG_SPLIT_DESTINATION'		=> '<strong>Moved splitted posts</strong><br />» to %s',
 	'LOG_SPLIT_SOURCE'			=> '<strong>Splitted posts</strong><br />» from %s',
 

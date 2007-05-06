@@ -146,6 +146,8 @@ function display_forums($root_data = '', $display_moderators = true, $return_mod
 			$forum_tracking_info[$forum_id] = (isset($tracking_topics['f'][$forum_id])) ? (int) (base_convert($tracking_topics['f'][$forum_id], 36, 10) + $config['board_startdate']) : $user->data['user_lastmark'];
 		}
 
+		$row['forum_topics'] = ($auth->acl_get('m_approve', $forum_id)) ? $row['forum_topics_real'] : $row['forum_topics'];
+
 		// Display active topics from this forum?
 		if ($show_active && $row['forum_type'] == FORUM_POST && $auth->acl_get('f_read', $forum_id) && ($row['forum_flags'] & FORUM_FLAG_ACTIVE_TOPICS))
 		{
@@ -161,7 +163,7 @@ function display_forums($root_data = '', $display_moderators = true, $return_mod
 
 			$active_forum_ary['forum_id'][]		= $forum_id;
 			$active_forum_ary['enable_icons'][]	= $row['enable_icons'];
-			$active_forum_ary['forum_topics']	+= ($auth->acl_get('m_approve', $forum_id)) ? $row['forum_topics_real'] : $row['forum_topics'];
+			$active_forum_ary['forum_topics']	+= $row['forum_topics'];
 			$active_forum_ary['forum_posts']	+= $row['forum_posts'];
 
 			// If this is a passworded forum we do not show active topics from it if the user is not authorised to view it...
@@ -196,7 +198,7 @@ function display_forums($root_data = '', $display_moderators = true, $return_mod
 			$subforums[$parent_id][$forum_id]['name'] = $row['forum_name'];
 			$subforums[$parent_id][$forum_id]['orig_forum_last_post_time'] = $row['forum_last_post_time'];
 
-			$forum_rows[$parent_id]['forum_topics'] += ($auth->acl_get('m_approve', $forum_id)) ? $row['forum_topics_real'] : $row['forum_topics'];
+			$forum_rows[$parent_id]['forum_topics'] += $row['forum_topics'];
 
 			// Do not list redirects in LINK Forums as Posts.
 			if ($row['forum_type'] != FORUM_LINK)

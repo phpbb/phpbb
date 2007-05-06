@@ -479,6 +479,14 @@ function approve_post($post_id_list, $id, $mode)
 
 				$total_posts++;
 				$forum_topics_posts[$post_data['forum_id']]['forum_posts']++;
+
+				// Increment by topic_replies if we approve a topic...
+				// This works because we do not adjust the topic_replies when re-approving a topic after an edit.
+				if ($post_data['topic_first_post_id'] == $post_id && $post_data['topic_replies'])
+				{
+					$total_posts += $post_data['topic_replies'];
+					$forum_topics_posts[$post_data['forum_id']]['forum_posts'] += $post_data['topic_replies'];
+				}
 			}
 
 			$post_approve_sql[] = $post_id;
