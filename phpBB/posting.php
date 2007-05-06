@@ -1110,7 +1110,7 @@ if ($mode == 'post' || ($mode == 'edit' && $post_id == $post_data['topic_first_p
 }
 
 $s_topic_icons = false;
-if ($post_data['enable_icons'])
+if ($post_data['enable_icons'] && $auth->acl_get('f_icons', $forum_id))
 {
 	$s_topic_icons = posting_gen_topic_icons($mode, $post_data['icon_id']);
 }
