@@ -513,6 +513,11 @@ function close_report($report_id_list, $mode, $action)
 		}
 		unset($close_report_posts, $close_report_topics);
 
+		foreach ($reports as $report)
+		{
+			add_log('mod', $post_info[$report['post_id']]['forum_id'], $post_info[$report['post_id']]['topic_id'], 'LOG_REPORT_' .  strtoupper($action) . 'D', $post_info[$report['post_id']]['post_subject']);
+		}
+
 		$messenger = new messenger();
 
 		// Notify reporters

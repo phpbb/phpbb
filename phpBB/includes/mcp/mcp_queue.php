@@ -426,7 +426,7 @@ function approve_post($post_id_list, $id, $mode)
 		// If Post -> total_posts = total_posts+1, forum_posts = forum_posts+1, topic_replies = topic_replies+1
 
 		$total_topics = $total_posts = 0;
-		$forum_topics_posts = $topic_approve_sql = $topic_replies_sql = $post_approve_sql = $topic_id_list = $forum_id_list = array();
+		$forum_topics_posts = $topic_approve_sql = $topic_replies_sql = $post_approve_sql = $topic_id_list = $forum_id_list = $approve_log = array();
 
 		$update_forum_information = false;
 
@@ -455,8 +455,14 @@ function approve_post($post_id_list, $id, $mode)
 					$total_topics++;
 					$forum_topics_posts[$post_data['forum_id']]['forum_topics']++;
 				}
-
 				$topic_approve_sql[] = $post_data['topic_id'];
+
+				$approve_log[] = array(
+					'type'			=> 'topic',
+					'post_subject'	=> $post_data['post_subject'],
+					'forum_id'		=> $post_data['forum_id'],
+					'topic_id'		=> $post_data['topic_id'],
+				);
 			}
 			else
 			{
@@ -465,6 +471,13 @@ function approve_post($post_id_list, $id, $mode)
 					$topic_replies_sql[$post_data['topic_id']] = 0;
 				}
 				$topic_replies_sql[$post_data['topic_id']]++;
+
+				$approve_log[] = array(
+					'type'			=> 'post',
+					'post_subject'	=> $post_data['post_subject'],
+					'forum_id'		=> $post_data['forum_id'],
+					'topic_id'		=> $post_data['topic_id'],
+				);
 			}
 
 			if ($post_data['forum_id'])
@@ -512,6 +525,11 @@ function approve_post($post_id_list, $id, $mode)
 				SET post_approved = 1
 				WHERE ' . $db->sql_in_set('post_id', $post_approve_sql);
 			$db->sql_query($sql);
+		}
+
+		foreach ($approve_log as $log_data)
+		{
+			add_log('mod', $log_data['forum_id'], $log_data['topic_id'], ($log_data['type'] == 'topic') ? 'LOG_TOPIC_APPROVED' : 'LOG_POST_APPROVED', $log_data['post_subject']);
 		}
 
 		if (sizeof($topic_replies_sql))
@@ -703,7 +721,7 @@ function disapprove_post($post_id_list, $id, $mode)
 		// If Post -> topic_replies_real -= 1
 
 		$num_disapproved = 0;
-		$forum_topics_real = $topic_id_list = $forum_id_list = $topic_replies_real_sql = $post_disapprove_sql = array();
+		$forum_topics_real = $topic_id_list = $forum_id_list = $topic_replies_real_sql = $post_disapprove_sql = $disapprove_log = array();
 
 		foreach ($post_info as $post_id => $post_data)
 		{
@@ -715,6 +733,9 @@ function disapprove_post($post_id_list, $id, $mode)
 			}
 
 			// Topic or Post. ;)
+			/**
+			* @todo this probably is a different method than the one used by delete_posts, does this cause counter inconsistency?
+			*/
 			if ($post_data['topic_first_post_id'] == $post_id && $post_data['topic_last_post_id'] == $post_id)
 			{
 				if ($post_data['forum_id'])
@@ -726,6 +747,13 @@ function disapprove_post($post_id_list, $id, $mode)
 					$forum_topics_real[$post_data['forum_id']]++;
 					$num_disapproved++;
 				}
+
+				$disapprove_log[] = array(
+					'type'			=> 'topic',
+					'post_subject'	=> $post_data['post_subject'],
+					'forum_id'		=> $post_data['forum_id'],
+					'topic_id'		=> 0, // useless to log a topic id, as it will be deleted
+				);
 			}
 			else
 			{
@@ -734,10 +762,19 @@ function disapprove_post($post_id_list, $id, $mode)
 					$topic_replies_real_sql[$post_data['topic_id']] = 0;
 				}
 				$topic_replies_real_sql[$post_data['topic_id']]++;
+
+				$disapprove_log[] = array(
+					'type'			=> 'post',
+					'post_subject'	=> $post_data['post_subject'],
+					'forum_id'		=> $post_data['forum_id'],
+					'topic_id'		=> $post_data['topic_id'],
+				);
 			}
 
 			$post_disapprove_sql[] = $post_id;
 		}
+
+		unset($post_data);
 
 		if (sizeof($forum_topics_real))
 		{
@@ -770,6 +807,11 @@ function disapprove_post($post_id_list, $id, $mode)
 
 			// We do not check for permissions here, because the moderator allowed approval/disapproval should be allowed to delete the disapproved posts
 			delete_posts('post_id', $post_disapprove_sql);
+
+			foreach ($disapprove_log as $log_data)
+			{
+				add_log('mod', $log_data['forum_id'], $log_data['topic_id'], ($log_data['type'] == 'topic') ? 'LOG_TOPIC_DISAPPROVED' : 'LOG_POST_DISAPPROVED', $log_data['post_subject'], $disapprove_reason);
+			}
 		}
 		unset($post_disapprove_sql, $topic_replies_real_sql);
 
