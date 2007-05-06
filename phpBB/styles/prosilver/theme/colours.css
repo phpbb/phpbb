@@ -373,7 +373,7 @@ ul.topiclist dd {
 }
 
 ul.topiclist li.row dt a.subforum.read {
-	background-image: url("{T_IMAGESET_PATH}/icon_post_target.gif.gif");
+	background-image: url("{T_IMAGESET_PATH}/icon_post_target.gif");
 }
 
 ul.topiclist li.row dt a.subforum.unread {
