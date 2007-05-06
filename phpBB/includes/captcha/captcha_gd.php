@@ -42,11 +42,12 @@ class captcha
 		$scheme = $colour->colour_scheme('background', false);
 		$scheme = $colour->mono_range($scheme, 10, false);
 		shuffle($scheme);
+		 
 		$bg_colours = array_splice($scheme, mt_rand(6, 12));
 
 		// Generate code characters
 		$characters = $sizes = $bounding_boxes = array();
-		$width_avail = $this->width - 10;
+		$width_avail = $this->width - 15;
 		$code_len = strlen($code);
 
 		$captcha_bitmaps = $this->captcha_bitmaps();
@@ -157,8 +158,8 @@ class captcha
 			imagesetstyle($img, $line);
 			imageline($img, $x1, $y1, $x2, $y2, IMG_COLOR_STYLED);
 
-			$x1 += mt_rand(12, 35);
-			$x2 += mt_rand(12, 35);
+			$x1 += mt_rand(20, 35);
+			$x2 += mt_rand(20, 35);
 		}
 		while ($x1 < $max_x && $x2 < $max_x);
 		imagesetthickness($img, 1);
@@ -1116,7 +1117,7 @@ class colour_manager
 		{
 			$mode = $this->mode;
 		}
-
+		
 		if (!is_array($colour))
 		{
 			if (isset($this->named_rgb[$colour]))
@@ -1145,11 +1146,10 @@ class colour_manager
 			// everything else is params
 			return $this->random_colour($colour, $mode);
 		}
-
-		$rgb		 = colour_manager::model_convert($colour, $mode, 'rgb');
+		 
+		$rgb		= colour_manager::model_convert($colour, $mode, 'rgb');
 		$store		= ($this->mode == 'rgb') ? $rgb : colour_manager::model_convert($colour, $mode, $this->mode);
 		$resource	= imagecolorallocate($this->img, $rgb[0], $rgb[1], $rgb[2]);
-
 		$this->colours[$resource] = $store;
 
 		return $resource;
@@ -1179,9 +1179,9 @@ class colour_manager
 					'hue_bias'			=> false,	// degree / 'r'/'g'/'b'/'c'/'m'/'y'   /'o'
 					'hue_range'			=> false,	// if hue bias, then difference range +/- from bias
 					'min_saturation'	=> 30,		// 0 - 100
-					'max_saturation'	=> 100,		// 0 - 100
+					'max_saturation'	=> 80,		// 0 - 100
 					'min_value'			=> 30,		// 0 - 100
-					'max_value'			=> 100,		// 0 - 100
+					'max_value'			=> 80,		// 0 - 100
 				);
 
 				$alt = ($mode == 'ahsv') ? true : false;
@@ -1259,7 +1259,7 @@ class colour_manager
 	*/
 	function colour_scheme($resource, $include_original = true)
 	{
-		$mode = (in_array($this->mode, array('hsv', 'ahsv'), true) ? $this->mode : 'hsv');
+		$mode = 'hsv';
 
 		if (($pre = $this->get_resource($resource)) !== false)
 		{
@@ -1268,11 +1268,11 @@ class colour_manager
 
 		$colour = colour_manager::model_convert($this->colours[$resource], $this->mode, $mode);
 		$results = ($include_original) ? array($resource) : array();
-
 		$colour2 = $colour3 = $colour4 = $colour;
-		$colour2[0] += 140;
-		$colour3[0] += 220;
-		$colour4[0] += 300;
+		$colour2[0] += 150;  
+		$colour3[0] += 180;
+		$colour4[0] += 210;
+
 
 		$results[] = $this->allocate($colour2, $mode);
 		$results[] = $this->allocate($colour3, $mode);
@@ -1310,26 +1310,15 @@ class colour_manager
 			$count--;
 		}
 
-		// This is a hard problem. I chicken out and do an even triangle
-		// the problem is that it disregards the original saturation and value,
-		// and as such a generated result might come arbitrarily close to our original value.
-		$length = ceil(sqrt($count * 2));
-		for ($i = $length; $i > 0; --$i)
+		// This is a hard problem. I chicken out and try to maintain readability at the cost of less randomness.
+		
+		while ($count > 0)
 		{
-			for ($j = $i; $j > 0; --$j)
-			{
-				$colour[1] = ($i * 100) / $length;
-				$colour[2] = ($j * 100) / $i;
-				$results[] = $this->allocate($colour, $mode);
-				$count--;
-
-				if (!$count)
-				{
-					return $results;
-				}
-			}
+			$colour[1] = ($colour[1] + mt_rand(40,60)) % 99;
+			$colour[2] = ($colour[2] + mt_rand(40,60));
+			$results[] = $this->allocate($colour, $mode);
+			$count--;
 		}
-
 		return $results;
 	}
 
@@ -1394,12 +1383,15 @@ class colour_manager
 	*/
 	function hsv2rgb($hsv)
 	{
+		 
 		colour_manager::normalize_hue($hsv[0]);
+	
+
 
 		$h = $hsv[0];
 		$s = min(1, max(0, $hsv[1] / 100));
 		$v = min(1, max(0, $hsv[2] / 100));
-
+	 
 		// calculate hue sector
 		$hi = floor($hsv[0] / 60);
 
@@ -1417,7 +1409,7 @@ class colour_manager
 
 		// calculate adjacent colour
 		$q = $v * (1 - ($f * $s));
-
+		 
 		switch ($hi)
 		{
 			case 0:
@@ -1448,7 +1440,7 @@ class colour_manager
 				return array(0, 0, 0);
 			break;
 		}
-
+ 
 		return array(255 * $rgb[0], 255 * $rgb[1], 255 * $rgb[2]);
 	}
 
