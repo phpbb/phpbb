@@ -365,7 +365,7 @@ function display_forums($root_data = '', $display_moderators = true, $return_mod
 		$s_subforums_list = array();
 		foreach ($subforums_list as $subforum)
 		{
-			$s_subforums_list[] = '<a href="' . $subforum['link'] . '"' . (($subforum['unread']) ? ' class="subforum-unread"' : '') . '>' . $subforum['name'] . '</a>';
+			$s_subforums_list[] = '<a href="' . $subforum['link'] . '" class="subforum ' . (($subforum['unread']) ? 'unread' : 'read') . '">' . $subforum['name'] . '</a>';
 		}
 		$s_subforums_list = (string) implode(', ', $s_subforums_list);
 		$catless = ($row['parent_id'] == $root_data['forum_id']) ? true : false;
