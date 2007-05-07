@@ -2955,9 +2955,12 @@ function add_permission_language()
 {
 	global $user, $phpEx;
 
+	// First of all, our own file. We need to include it as the first file because it presets all relevant variables.
+	$user->add_lang('acp/permissions_phpbb');
+
 	$files_to_add = array();
 
-	// Search in acp and mods folder for permissions_ files.
+	// Now search in acp and mods folder for permissions_ files.
 	foreach (array('acp/', 'mods/') as $path)
 	{
 		$dh = @opendir($user->lang_path . $path);
@@ -2966,7 +2969,7 @@ function add_permission_language()
 		{
 			while (($file = readdir($dh)) !== false)
 			{
-				if (strpos($file, 'permissions_') === 0 && substr($file, -(strlen($phpEx) + 1)) === '.' . $phpEx)
+				if ($file !== 'permissions_phpbb.' . $phpEx && strpos($file, 'permissions_') === 0 && substr($file, -(strlen($phpEx) + 1)) === '.' . $phpEx)
 				{
 					$files_to_add[] = $path . substr($file, 0, -(strlen($phpEx) + 1));
 				}
