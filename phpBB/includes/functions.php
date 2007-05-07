@@ -2851,8 +2851,8 @@ function parse_attachments($forum_id, &$message, &$attachments, &$update_count, 
 						{
 							$dimension = getimagesize($filename);
 
-							// If the dimensions could not be determined or the image being too small we display it as a link for safety purposes
-							if ($dimension === false || $dimension[0] < 2 || $dimension[1] < 2)
+							// If the dimensions could not be determined or the image being 0x0 we display it as a link for safety purposes
+							if ($dimension === false || empty($dimension[0]) || empty($dimension[1]))
 							{
 								$display_cat = ATTACHMENT_CATEGORY_NONE;
 							}

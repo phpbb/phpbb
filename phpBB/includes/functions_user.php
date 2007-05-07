@@ -1791,7 +1791,7 @@ function avatar_get_dimensions($avatar, $avatar_type, &$error, $current_x = 0, $
 		$error[] = $user->lang['UNABLE_GET_IMAGE_SIZE'];
 		return false;
 	}
-			
+
 	if ($image_data[0] < 2 || $image_data[1] < 2)
 	{
 		$error[] = $user->lang['AVATAR_NO_SIZE'];

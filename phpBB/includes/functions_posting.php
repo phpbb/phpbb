@@ -580,7 +580,7 @@ function create_thumbnail($source, $destination, $mimetype)
 
 	list($width, $height, $type, ) = $dimension;
 
-	if ($width < 2 || $height < 2)
+	if (empty($width) || empty($height))
 	{
 		return false;
 	}
