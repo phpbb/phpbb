@@ -1778,7 +1778,6 @@ function avatar_get_dimensions($avatar, $avatar_type, &$error, $current_x = 0, $
 			break;
 
 		case AVATAR_UPLOAD :
-			// Make sure getimagesize works...
 			$avatar = $phpbb_root_path . $config['avatar_path'] . '/' . get_avatar_filename($avatar);
 			break;
 		
@@ -1814,7 +1813,6 @@ function avatar_get_dimensions($avatar, $avatar_type, &$error, $current_x = 0, $
 			$image_data[0] = min($config['avatar_max_width'], $image_data[1]);
 			$image_data[0] = max($config['avatar_min_width'], $image_data[1]);
 		}
-	
 	}
 	return array($image_data[0], $image_data[1]);
 }
