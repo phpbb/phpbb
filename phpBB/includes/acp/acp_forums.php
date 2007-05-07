@@ -1232,6 +1232,9 @@ class acp_forums
 
 		if ($to_id > 0)
 		{
+			// Retrieve $to_data again, it may have been changed...
+			$to_data = $this->get_forum_info($to_id);
+
 			// Resync new parents
 			$sql = 'UPDATE ' . FORUMS_TABLE . "
 				SET right_id = right_id + $diff, forum_parents = ''
