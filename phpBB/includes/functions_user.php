@@ -1764,6 +1764,61 @@ function avatar_gallery($category, $avatar_select, $items_per_column, $block_var
 	return $avatar_list;
 }
 
+
+/**
+* Tries to (re-)establish avatar dimensions
+*/
+function avatar_get_dimensions($avatar, $avatar_type, &$error, $current_x = 0, $current_y = 0)
+{
+	global $config, $phpbb_root_path;
+	
+	switch ($avatar_type)
+	{
+		case AVATAR_REMOTE :
+			break;
+
+		case AVATAR_UPLOAD :
+			// Make sure getimagesize works...
+			$avatar = $phpbb_root_path . $config['avatar_path'] . '/' . get_avatar_filename($avatar);
+			break;
+		
+		case AVATAR_GALLERY :
+			$avatar = $phpbb_root_path . $config['avatar_gallery_path'] . '/' . $avatar ;
+			break;
+	}
+	// Make sure getimagesize works...
+	if (($image_data = @getimagesize($avatar)) === false)
+	{
+		$error[] = $user->lang['UNABLE_GET_IMAGE_SIZE'];
+		return false;
+	}
+			
+	if ($image_data[0] < 2 || $image_data[1] < 2)
+	{
+		$error[] = $user->lang['AVATAR_NO_SIZE'];
+		return false;
+	}
+	
+	// try to maintain ratio
+	if (!(empty($current_x) && empty($current_y)))
+	{
+		if ($current_x != 0)
+		{
+			$image_data[1] = (int) floor(($current_x / $image_data[0]) * $image_data[1]);
+			$image_data[1] = min($config['avatar_max_height'], $image_data[1]);
+			$image_data[1] = max($config['avatar_min_height'], $image_data[1]);
+		}
+		if ($current_y != 0)
+		{
+			$image_data[0] = (int) floor(($current_y / $image_data[1]) * $image_data[0]);
+			$image_data[0] = min($config['avatar_max_width'], $image_data[1]);
+			$image_data[0] = max($config['avatar_min_width'], $image_data[1]);
+		}
+	
+	}
+	return array($image_data[0], $image_data[1]);
+}
+
 /**
 * Uploading/Changing user avatar
 */
@@ -1774,8 +1829,8 @@ function avatar_process_user(&$error, $custom_userdata = false)
 	$data = array(
 		'uploadurl'		=> request_var('uploadurl', ''),
 		'remotelink'	=> request_var('remotelink', ''),
-		'width'			=> request_var('width', ''),
-		'height'		=> request_var('height', ''),
+		'width'			=> request_var('width', 0),
+		'height'		=> request_var('height', 0),
 	);
 
 	$error = validate_data($data, array(
@@ -1840,9 +1895,25 @@ function avatar_process_user(&$error, $custom_userdata = false)
 		$sql_ary['user_avatar'] = '';
 		$sql_ary['user_avatar_type'] = $sql_ary['user_avatar_width'] = $sql_ary['user_avatar_height'] = 0;
 	}
-	else if ($data['width'] && $data['height'] && ($userdata['user_avatar_type'] != AVATAR_GALLERY))
+	elseif (!empty($userdata['user_avatar']))
 	{
-		// Only update the dimensions?
+		// Only update the dimensions
+		
+		if (empty($data['width']) || empty($data['height']))
+		{
+			if ($dims = avatar_get_dimensions($userdata['user_avatar'], $userdata['user_avatar_type'], $error, $data['width'], $data['height']))
+			{
+				list($guessed_x, $guessed_y) = $dims;
+				if (empty($data['width']))
+				{
+					$data['width'] = $guessed_x;
+				}
+				if (empty($data['height']))
+				{
+					$data['height'] = $guessed_y;
+				}
+			}
+		}
 		if ($config['avatar_max_width'] || $config['avatar_max_height'])
 		{
 			if ($data['width'] > $config['avatar_max_width'] || $data['height'] > $config['avatar_max_height'])
