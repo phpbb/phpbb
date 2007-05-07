@@ -208,7 +208,7 @@ $lang = array_merge($lang, array(
 	'USERNAME_LETTER_NUM_SPACERS'	=> 'Any letter, number, and spacer',
 	'USERNAME_CHARS'			=> 'Limit username chars',
 	'USERNAME_CHARS_ANY'		=> 'Any character',
-	'USERNAME_CHARS_EXPLAIN'	=> 'Restrict type of characters that may be used in usernames, spacers are; space, -, +, _, [ and ]',
+	'USERNAME_CHARS_EXPLAIN'	=> 'Restrict type of characters that may be used in usernames, spacers are: space, -, +, _, [ and ]',
 	'USERNAME_LENGTH'			=> 'Username length',
 	'USERNAME_LENGTH_EXPLAIN'	=> 'Minimum and maximum number of characters in usernames.',
 ));

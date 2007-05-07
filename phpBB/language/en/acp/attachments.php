@@ -147,7 +147,7 @@ $lang = array_merge($lang, array(
 	'UPLOADING_FILE_TO'				=> 'Uploading file “%1$s” to post number %2$d…',
 	'UPLOAD_DENIED_FORUM'			=> 'You do not have the permission to upload files to forum “%s”',
 	'UPLOAD_DIR'					=> 'Upload directory',
-	'UPLOAD_DIR_EXPLAIN'			=> 'Storage path for attachments.',
+	'UPLOAD_DIR_EXPLAIN'			=> 'Storage path for attachments. Please note that if you change this directory while already having uploaded attachments you need to manually copy the files to their new location.',
 	'UPLOAD_ICON'					=> 'Upload icon',
 	'UPLOAD_NOT_DIR'				=> 'The upload location you specified does not appear to be a directory.',
 ));
