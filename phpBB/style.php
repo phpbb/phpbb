@@ -115,26 +115,52 @@ if ($id && $sid)
 		}
 
 		// Re-cache stylesheet data if necessary
-		if ($config['load_tplcompile'] && $theme['theme_mtime'] < @filemtime("{$phpbb_root_path}styles/" . $theme['theme_path'] . '/theme/stylesheet.css'))
+		if ($config['load_tplcompile'])
 		{
-			include_once($phpbb_root_path . 'includes/acp/acp_styles.' . $phpEx);
+			$recache = false;
+			$update_time = time();
 
-			$theme['theme_data'] = acp_styles::db_theme_data($theme);
-			$theme['theme_mtime'] = @filemtime("{$phpbb_root_path}styles/" . $theme['theme_path'] . '/theme/stylesheet.css');
+			// We test for stylesheet.css because it is faster and most likely the only file changed on common themes
+			if ($theme['theme_mtime'] < @filemtime("{$phpbb_root_path}styles/" . $theme['theme_path'] . '/theme/stylesheet.css'))
+			{
+				$recache = true;
+				$update_time = @filemtime("{$phpbb_root_path}styles/" . $theme['theme_path'] . '/theme/stylesheet.css');
+			}
+			else
+			{
+				$last_change = $theme['theme_mtime'];
 
-			// Save CSS contents
-			$sql_ary = array(
-				'theme_mtime'	=> $theme['theme_mtime'],
-				'theme_data'	=> $theme['theme_data']
-			);
+				foreach (glob("{$phpbb_root_path}styles/{$theme['theme_path']}/theme/*.css", GLOB_NOSORT) as $file)
+				{
+					if ($last_change < @filemtime($file))
+					{
+						$recache = true;
+						break;
+					}
+				}
+			}
 
-			$sql = 'UPDATE ' . STYLES_THEME_TABLE . ' SET ' . $db->sql_build_array('UPDATE', $sql_ary) . "
-				WHERE theme_id = $id";
-			$db->sql_query($sql);
+			if ($recache)
+			{
+				include_once($phpbb_root_path . 'includes/acp/acp_styles.' . $phpEx);
 
-			$cache->destroy('sql', STYLES_THEME_TABLE);
+				$theme['theme_data'] = acp_styles::db_theme_data($theme);
+				$theme['theme_mtime'] = $update_time;
 
-			header('Expires: 0');
+				// Save CSS contents
+				$sql_ary = array(
+					'theme_mtime'	=> $theme['theme_mtime'],
+					'theme_data'	=> $theme['theme_data']
+				);
+
+				$sql = 'UPDATE ' . STYLES_THEME_TABLE . ' SET ' . $db->sql_build_array('UPDATE', $sql_ary) . "
+					WHERE theme_id = $id";
+				$db->sql_query($sql);
+
+				$cache->destroy('sql', STYLES_THEME_TABLE);
+
+				header('Expires: 0');
+			}
 		}
 		else
 		{
