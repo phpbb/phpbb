@@ -172,7 +172,7 @@ if ($user->data['is_registered'])
 
 	if ($config['allow_bookmarks'])
 	{
-		$sql_array['SELECT'] .= ', bm.order_id as bookmarked';
+		$sql_array['SELECT'] .= ', bm.topic_id as bookmarked';
 		$sql_array['LEFT_JOIN'][] = array(
 			'FROM'	=> array(BOOKMARKS_TABLE => 'bm'),
 			'ON'	=> 'bm.user_id = ' . $user->data['user_id'] . ' AND t.topic_id = bm.topic_id'
@@ -439,12 +439,8 @@ if ($config['allow_bookmarks'] && $user->data['is_registered'] && request_var('b
 		$sql = 'INSERT INTO ' . BOOKMARKS_TABLE . ' ' . $db->sql_build_array('INSERT', array(
 			'user_id'	=> $user->data['user_id'],
 			'topic_id'	=> $topic_id,
-			'order_id'	=> 0)
-		);
+		));
 		$db->sql_query($sql);
-
-		$where_sql = '';
-		$sign = '+';
 	}
 	else
 	{
@@ -452,18 +448,7 @@ if ($config['allow_bookmarks'] && $user->data['is_registered'] && request_var('b
 			WHERE user_id = {$user->data['user_id']}
 				AND topic_id = $topic_id";
 		$db->sql_query($sql);
-
-		// Works because of current order_id selected as bookmark value (please do not change because of simplicity)
-		$where_sql = " AND order_id > {$topic_data['bookmarked']}";
-		$sign = '-';
 	}
-
-	// Re-Sort Bookmarks
-	$sql = 'UPDATE ' . BOOKMARKS_TABLE . "
-		SET order_id = order_id $sign 1
-		WHERE user_id = {$user->data['user_id']}
-		$where_sql";
-	$db->sql_query($sql);
 
 	meta_refresh(3, $viewtopic_url);
 

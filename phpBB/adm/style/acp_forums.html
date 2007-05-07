@@ -335,7 +335,7 @@
 		<legend>{L_FORUM_DELETE}</legend>
 	<dl>
 		<dt><label>{L_FORUM_NAME}:</label></dt>
-		<dd><b>{FORUM_NAME}</b></dd>
+		<dd><strong>{FORUM_NAME}</strong></dd>
 	</dl>
 	<!-- IF S_FORUM_POST -->
 		<dl>
@@ -434,7 +434,7 @@
 					<!-- IF forums.FORUM_IMAGE --><div style="float: left; margin-right: 5px;">{forums.FORUM_IMAGE}</div><!-- ENDIF -->
 					<strong><!-- IF forums.S_FORUM_LINK -->{forums.FORUM_NAME}<!-- ELSE --><a href="{forums.U_FORUM}">{forums.FORUM_NAME}</a><!-- ENDIF --></strong>
 					<!-- IF forums.FORUM_DESCRIPTION --><br /><span>{forums.FORUM_DESCRIPTION}</span><!-- ENDIF -->
-					<!-- IF forums.S_FORUM_POST --><br /><br /><span>{L_TOPICS}: <b>{forums.FORUM_TOPICS}</b> / {L_POSTS}: <b>{forums.FORUM_POSTS}</b></span><!-- ENDIF -->
+					<!-- IF forums.S_FORUM_POST --><br /><br /><span>{L_TOPICS}: <strong>{forums.FORUM_TOPICS}</strong> / {L_POSTS}: <b>{forums.FORUM_POSTS}</b></span><!-- ENDIF -->
 				</td>
 				<td style="vertical-align: top; width: 100px; text-align: right; white-space: nowrap;">
 					<!-- IF forums.S_FIRST_ROW && not forums.S_LAST_ROW -->

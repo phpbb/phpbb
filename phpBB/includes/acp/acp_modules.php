@@ -154,7 +154,7 @@ class acp_modules
 
 				if ($move_module_name !== false)
 				{
-					add_log('admin', 'LOG_MODULE_' . strtoupper($action), $move_module_name);
+					add_log('admin', 'LOG_MODULE_' . strtoupper($action), $this->lang_name($row['module_langname']), $move_module_name);
 					$this->remove_cache_file();
 				}
 		

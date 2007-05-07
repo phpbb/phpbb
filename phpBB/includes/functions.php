@@ -1455,6 +1455,8 @@ function generate_pagination($base_url, $num_items, $per_page, $start_item, $add
 	}
 
 	$on_page = floor($start_item / $per_page) + 1;
+	$url_delim = (strpos($base_url, '?') === false) ? '?' : '&amp;';
+
 	$page_string = ($on_page == 1) ? '<strong>1</strong>' : '<a href="' . $base_url . '">1</a>';
 
 	if ($total_pages > 5)
@@ -1466,7 +1468,7 @@ function generate_pagination($base_url, $num_items, $per_page, $start_item, $add
 
 		for ($i = $start_cnt + 1; $i < $end_cnt; $i++)
 		{
-			$page_string .= ($i == $on_page) ? '<strong>' . $i . '</strong>' : '<a href="' . $base_url . "&amp;start=" . (($i - 1) * $per_page) . '">' . $i . '</a>';
+			$page_string .= ($i == $on_page) ? '<strong>' . $i . '</strong>' : '<a href="' . $base_url . "{$url_delim}start=" . (($i - 1) * $per_page) . '">' . $i . '</a>';
 			if ($i < $end_cnt - 1)
 			{
 				$page_string .= $seperator;
@@ -1481,7 +1483,7 @@ function generate_pagination($base_url, $num_items, $per_page, $start_item, $add
 
 		for ($i = 2; $i < $total_pages; $i++)
 		{
-			$page_string .= ($i == $on_page) ? '<strong>' . $i . '</strong>' : '<a href="' . $base_url . "&amp;start=" . (($i - 1) * $per_page) . '">' . $i . '</a>';
+			$page_string .= ($i == $on_page) ? '<strong>' . $i . '</strong>' : '<a href="' . $base_url . "{$url_delim}start=" . (($i - 1) * $per_page) . '">' . $i . '</a>';
 			if ($i < $total_pages)
 			{
 				$page_string .= $seperator;
@@ -1489,18 +1491,18 @@ function generate_pagination($base_url, $num_items, $per_page, $start_item, $add
 		}
 	}
 
-	$page_string .= ($on_page == $total_pages) ? '<strong>' . $total_pages . '</strong>' : '<a href="' . $base_url . '&amp;start=' . (($total_pages - 1) * $per_page) . '">' . $total_pages . '</a>';
+	$page_string .= ($on_page == $total_pages) ? '<strong>' . $total_pages . '</strong>' : '<a href="' . $base_url . "{$url_delim}start=" . (($total_pages - 1) * $per_page) . '">' . $total_pages . '</a>';
 
 	if ($add_prevnext_text)
 	{
 		if ($on_page != 1) 
 		{
-			$page_string = '<a href="' . $base_url . '&amp;start=' . (($on_page - 2) * $per_page) . '">' . $user->lang['PREVIOUS'] . '</a>&nbsp;&nbsp;' . $page_string;
+			$page_string = '<a href="' . $base_url . "{$url_delim}start=" . (($on_page - 2) * $per_page) . '">' . $user->lang['PREVIOUS'] . '</a>&nbsp;&nbsp;' . $page_string;
 		}
 
 		if ($on_page != $total_pages)
 		{
-			$page_string .= '&nbsp;&nbsp;<a href="' . $base_url . '&amp;start=' . ($on_page * $per_page) . '">' . $user->lang['NEXT'] . '</a>';
+			$page_string .= '&nbsp;&nbsp;<a href="' . $base_url . "{$url_delim}start=" . ($on_page * $per_page) . '">' . $user->lang['NEXT'] . '</a>';
 		}
 	}
 
@@ -1508,8 +1510,8 @@ function generate_pagination($base_url, $num_items, $per_page, $start_item, $add
 		$tpl_prefix . 'BASE_URL'	=> $base_url,
 		$tpl_prefix . 'PER_PAGE'	=> $per_page,
 
-		$tpl_prefix . 'PREVIOUS_PAGE'	=> ($on_page == 1) ? '' : $base_url . '&amp;start=' . (($on_page - 2) * $per_page),
-		$tpl_prefix . 'NEXT_PAGE'		=> ($on_page == $total_pages) ? '' : $base_url . '&amp;start=' . ($on_page * $per_page),
+		$tpl_prefix . 'PREVIOUS_PAGE'	=> ($on_page == 1) ? '' : $base_url . "{$url_delim}start=" . (($on_page - 2) * $per_page),
+		$tpl_prefix . 'NEXT_PAGE'		=> ($on_page == $total_pages) ? '' : $base_url . "{$url_delim}start=" . ($on_page * $per_page),
 		$tpl_prefix . 'TOTAL_PAGES'		=> $total_pages)
 	);
 

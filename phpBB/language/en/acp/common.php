@@ -551,8 +551,8 @@ $lang = array_merge($lang, array(
 
 	'LOG_MODULE_DISABLE'	=> '<strong>Module disabled</strong><br />» %s',
 	'LOG_MODULE_ENABLE'		=> '<strong>Module enabled</strong><br />» %s',
-	'LOG_MODULE_MOVE_DOWN'	=> '<strong>Module moved down</strong><br />» %s',
-	'LOG_MODULE_MOVE_UP'	=> '<strong>Module moved up</strong><br />» %s',
+	'LOG_MODULE_MOVE_DOWN'	=> '<strong>Module moved down</strong><br />» %1$s below %2$s',
+	'LOG_MODULE_MOVE_UP'	=> '<strong>Module moved up</strong><br />» %1$s above %2$s',
 	'LOG_MODULE_REMOVED'	=> '<strong>Module removed</strong><br />» %s',
 	'LOG_MODULE_ADD'		=> '<strong>Module added</strong><br />» %s',
 	'LOG_MODULE_EDIT'		=> '<strong>Module edited</strong><br />» %s',

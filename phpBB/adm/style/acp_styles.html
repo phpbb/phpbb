@@ -16,7 +16,7 @@
 		<legend>{L_TITLE}</legend>
 	<dl>
 		<dt><label>{L_NAME}:</label></dt>
-		<dd><b>{NAME}</b></dd>
+		<dd><strong>{NAME}</strong></dd>
 	</dl>
 	<dl>
 		<dt><label for="new_id">{L_REPLACE}:</label><br /><span>{L_REPLACE_EXPLAIN}</span></dt>
@@ -149,7 +149,7 @@
 
 		<p>{L_EDIT_TEMPLATE_EXPLAIN}</p>
 
-		<p>{L_SELECTED_TEMPLATE}: <b>{SELECTED_TEMPLATE}</b></p>
+		<p>{L_SELECTED_TEMPLATE}: <strong>{SELECTED_TEMPLATE}</strong></p>
 
 		<form id="acp_styles" method="post" action="{U_ACTION}">
 
@@ -467,7 +467,7 @@
 		<legend>{L_TITLE}</legend>
 	<dl>
 		<dt><label>{L_NAME}:</label></dt>
-		<dd><b>{NAME}</b></dd>
+		<dd><strong>{NAME}</strong></dd>
 	</dl>
 	<!-- IF S_STYLE -->
 		<dl>
@@ -523,7 +523,7 @@
 	</thead>
 	<tbody>
 	<tr>
-		<td class="row3" colspan="{$COLSPAN}"><b>{L_INSTALLED}</b></td>
+		<td class="row3" colspan="{$COLSPAN}"><strong>{L_INSTALLED}</strong></td>
 	</tr>
 	<!-- BEGIN installed -->
 	<tr>
@@ -545,7 +545,7 @@
 		</td>
 	<!-- END installed -->
 	<tr>
-		<td class="row3" colspan="{$COLSPAN}"><b>{L_UNINSTALLED}</b></td>
+		<td class="row3" colspan="{$COLSPAN}"><strong>{L_UNINSTALLED}</strong></td>
 	</tr>
 	<!-- IF not .uninstalled -->
 		<tr>
@@ -554,7 +554,7 @@
 	<!-- ENDIF -->
 	<!-- BEGIN uninstalled -->
 		<tr>
-			<td<!-- IF S_STYLE --> colspan="2"<!-- ENDIF -->><b>{uninstalled.NAME}</b><br /><span>{L_COPYRIGHT}: {uninstalled.COPYRIGHT}</span></td>
+			<td<!-- IF S_STYLE --> colspan="2"<!-- ENDIF -->><strong>{uninstalled.NAME}</strong><br /><span>{L_COPYRIGHT}: {uninstalled.COPYRIGHT}</span></td>
 			<td style="text-align: center;" colspan="2"><a href="{uninstalled.U_INSTALL}">{L_INSTALL}</a></td>
 		</tr>
 	<!-- END uninstalled -->

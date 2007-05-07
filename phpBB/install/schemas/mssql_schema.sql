@@ -236,15 +236,16 @@ GO
 */
 CREATE TABLE [phpbb_bookmarks] (
 	[topic_id] [int] DEFAULT (0) NOT NULL ,
-	[user_id] [int] DEFAULT (0) NOT NULL ,
-	[order_id] [int] DEFAULT (0) NOT NULL 
+	[user_id] [int] DEFAULT (0) NOT NULL 
 ) ON [PRIMARY]
 GO
 
-CREATE  INDEX [order_id] ON [phpbb_bookmarks]([order_id]) ON [PRIMARY]
-GO
-
-CREATE  INDEX [topic_user_id] ON [phpbb_bookmarks]([topic_id], [user_id]) ON [PRIMARY]
+ALTER TABLE [phpbb_bookmarks] WITH NOCHECK ADD 
+	CONSTRAINT [PK_phpbb_bookmarks] PRIMARY KEY  CLUSTERED 
+	(
+		[topic_id],
+		[user_id]
+	)  ON [PRIMARY] 
 GO
 
 

@@ -278,14 +278,10 @@ CREATE INDEX phpbb_bbcodes_display_on_post ON phpbb_bbcodes (display_on_posting)
 CREATE TABLE phpbb_bookmarks (
 	topic_id number(8) DEFAULT '0' NOT NULL,
 	user_id number(8) DEFAULT '0' NOT NULL,
-	order_id number(8) DEFAULT '0' NOT NULL
+	CONSTRAINT pk_phpbb_bookmarks PRIMARY KEY (topic_id, user_id)
 )
 /
 
-CREATE INDEX phpbb_bookmarks_order_id ON phpbb_bookmarks (order_id)
-/
-CREATE INDEX phpbb_bookmarks_topic_user_id ON phpbb_bookmarks (topic_id, user_id)
-/
 
 /*
 	Table: 'phpbb_bots'

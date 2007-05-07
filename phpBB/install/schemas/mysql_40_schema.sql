@@ -129,9 +129,7 @@ CREATE TABLE phpbb_bbcodes (
 CREATE TABLE phpbb_bookmarks (
 	topic_id mediumint(8) UNSIGNED DEFAULT '0' NOT NULL,
 	user_id mediumint(8) UNSIGNED DEFAULT '0' NOT NULL,
-	order_id mediumint(8) UNSIGNED DEFAULT '0' NOT NULL,
-	KEY order_id (order_id),
-	KEY topic_user_id (topic_id, user_id)
+	PRIMARY KEY (topic_id, user_id)
 );
 
 

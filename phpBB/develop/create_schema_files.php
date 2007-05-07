@@ -921,12 +921,8 @@ function get_schema_struct()
 		'COLUMNS'		=> array(
 			'topic_id'			=> array('UINT', 0),
 			'user_id'			=> array('UINT', 0),
-			'order_id'			=> array('UINT', 0),
 		),
-		'KEYS'			=> array(
-			'order_id'			=> array('INDEX', 'order_id'),
-			'topic_user_id'		=> array('INDEX', array('topic_id', 'user_id')),
-		),
+		'PRIMARY_KEY'			=> array('topic_id', 'user_id'),
 	);
 
 	$schema_data['phpbb_bots'] = array(

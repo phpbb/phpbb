@@ -753,7 +753,14 @@ class install_convert extends module
 			$this->p_master->error(sprintf($user->lang['COULD_NOT_FIND_PATH'], $convert->options['forum_path']), __LINE__, __FILE__);
 		}
 
-		$search_type = $config['search_type'];
+		$search_type = basename(trim($config['search_type']));
+
+		// For conversions we are a bit less strict and set to a search backend we know exist...
+		if (!file_exists($phpbb_root_path . 'includes/search/' . $search_type . '.' . $phpEx))
+		{
+			$search_type = 'fulltext_native';
+			set_config('search_type', $search_type);
+		}
 
 		if (!file_exists($phpbb_root_path . 'includes/search/' . $search_type . '.' . $phpEx))
 		{

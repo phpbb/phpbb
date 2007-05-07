@@ -179,12 +179,11 @@ CREATE INDEX phpbb_bbcodes_display_on_post ON phpbb_bbcodes(display_on_posting);
 # Table: 'phpbb_bookmarks'
 CREATE TABLE phpbb_bookmarks (
 	topic_id INTEGER DEFAULT 0 NOT NULL,
-	user_id INTEGER DEFAULT 0 NOT NULL,
-	order_id INTEGER DEFAULT 0 NOT NULL
+	user_id INTEGER DEFAULT 0 NOT NULL
 );;
 
-CREATE INDEX phpbb_bookmarks_order_id ON phpbb_bookmarks(order_id);;
-CREATE INDEX phpbb_bookmarks_topic_user_id ON phpbb_bookmarks(topic_id, user_id);;
+ALTER TABLE phpbb_bookmarks ADD PRIMARY KEY (topic_id, user_id);;
+
 
 # Table: 'phpbb_bots'
 CREATE TABLE phpbb_bots (

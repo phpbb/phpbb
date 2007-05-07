@@ -23,7 +23,7 @@
 		<legend>{L_GROUP_DETAILS}</legend>
 	<dl>
 		<dt><label<!-- IF not S_SPECIAL_GROUP --> for="group_name"<!-- ENDIF -->>{L_GROUP_NAME}:</label></dt>
-		<dd><!-- IF S_SPECIAL_GROUP --><b>{GROUP_NAME}</b><!-- ENDIF --><input name="group_name" type="<!-- IF S_SPECIAL_GROUP -->hidden<!-- ELSE -->text<!-- ENDIF -->" id="group_name" value="{GROUP_INTERNAL_NAME}" /></dd>
+		<dd><!-- IF S_SPECIAL_GROUP --><strong>{GROUP_NAME}</strong><!-- ENDIF --><input name="group_name" type="<!-- IF S_SPECIAL_GROUP -->hidden<!-- ELSE -->text<!-- ENDIF -->" id="group_name" value="{GROUP_INTERNAL_NAME}" /></dd>
 	</dl>
 	<dl>
 		<dt><label for="group_desc">{L_GROUP_DESC}:</label></dt>
@@ -184,7 +184,7 @@
 	</thead>
 	<tbody>
 	<tr>
-		<td class="row3" colspan="5"><b>{L_GROUP_LEAD}</b></td>
+		<td class="row3" colspan="5"><strong>{L_GROUP_LEAD}</strong></td>
 	</tr>
 	<!-- BEGIN leader -->
 		<!-- IF leader.S_ROW_COUNT is even --><tr class="row1"><!-- ELSE --><tr class="row2"><!-- ENDIF -->
@@ -200,12 +200,12 @@
 		</tr>
 	<!-- END leader -->
 	<tr>
-		<td class="row3" colspan="5"><b>{L_GROUP_APPROVED}</b></td>
+		<td class="row3" colspan="5"><strong>{L_GROUP_APPROVED}</strong></td>
 	</tr>
 	<!-- BEGIN member -->
 		<!-- IF member.S_PENDING -->
 		<tr>
-			<td class="row3" colspan="5"><b>{L_GROUP_PENDING}</b></td>
+			<td class="row3" colspan="5"><strong>{L_GROUP_PENDING}</strong></td>
 		</tr>
 		<!-- ELSE -->
 			<!-- IF member.S_ROW_COUNT is even --><tr class="row1"><!-- ELSE --><tr class="row2"><!-- ENDIF -->

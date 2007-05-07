@@ -336,6 +336,10 @@ $database_update_info = array(
 			STYLES_IMAGESET_TABLE	=> array(
 				'imgset_nm',
 			),
+			BOOKMARKS_TABLE		=> array(
+				'order_id',
+				'topic_user_id',
+			),
 		),
 		'add_index'			=> array(
 			SEARCH_WORDLIST_TABLE	=> array(
@@ -363,7 +367,7 @@ $database_update_info = array(
 				'username_clean'	=> array('username_clean'),
 			),
 		),
-		// Add the following columns
+		// Drop the following columns
 		'drop_columns'		=> array(
 			STYLES_IMAGESET_TABLE	=> array(
 				'site_logo',
@@ -460,6 +464,15 @@ $database_update_info = array(
 				'user_icon8',
 				'user_icon9',
 				'user_icon10'
+			),
+			BOOKMARKS_TABLE		=> array(
+				'order_id',
+			),
+		),
+		// Adding primary key
+		'add_primary_keys'		=> array(
+			BOOKMARKS_TABLE		=> array(
+				'topic_id', 'user_id',
 			),
 		),
 	),

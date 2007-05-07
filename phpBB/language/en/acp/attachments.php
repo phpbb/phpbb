@@ -49,6 +49,7 @@ $lang = array_merge($lang, array(
 	'ASSIGNED_GROUP'					=> 'Assigned extension group',
 	'ATTACH_EXTENSIONS_URL'				=> 'Extensions',
 	'ATTACH_EXT_GROUPS_URL'				=> 'Extension groups',
+	'ATTACH_ID'							=> 'ID',
 	'ATTACH_MAX_FILESIZE'				=> 'Maximum file size',
 	'ATTACH_MAX_FILESIZE_EXPLAIN'		=> 'Maximum size of each file, with 0 being unlimited.',
 	'ATTACH_MAX_PM_FILESIZE'			=> 'Maximum file size messaging',

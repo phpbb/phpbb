@@ -234,11 +234,9 @@ CREATE INDEX phpbb_bbcodes_display_on_post ON phpbb_bbcodes (display_on_posting)
 CREATE TABLE phpbb_bookmarks (
 	topic_id INT4 DEFAULT '0' NOT NULL CHECK (topic_id >= 0),
 	user_id INT4 DEFAULT '0' NOT NULL CHECK (user_id >= 0),
-	order_id INT4 DEFAULT '0' NOT NULL CHECK (order_id >= 0)
+	PRIMARY KEY (topic_id, user_id)
 );
 
-CREATE INDEX phpbb_bookmarks_order_id ON phpbb_bookmarks (order_id);
-CREATE INDEX phpbb_bookmarks_topic_user_id ON phpbb_bookmarks (topic_id, user_id);
 
 /*
 	Table: 'phpbb_bots'

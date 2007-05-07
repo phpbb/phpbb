@@ -2,33 +2,46 @@
 
 <table class="tablebg" width="100%" cellspacing="1">
 <tr>
-	<th colspan="5">{L_UCP}</th>
+	<th colspan="4">{L_UCP}</th>
 </tr>
 <tr>
-	<td class="row1" colspan="5" align="center"><span class="genmed">{L_BOOKMARKS_EXPLAIN}</span></td>
+	<td class="row1" colspan="4" align="center"><span class="genmed">{L_BOOKMARKS_EXPLAIN}</span></td>
 </tr>
 <!-- IF .topicrow -->
 <tr>
-	<th colspan="5">{L_BOOKMARKS}</th>
+	<th colspan="4">{L_BOOKMARKS}</th>
 </tr>
 <!-- ENDIF -->
 
 <!-- IF S_NO_DISPLAY_BOOKMARKS -->
 	<tr class="row1">
-		<td colspan="5" align="center"><b class="genmed">{L_BOOKMARKS_DISABLED}</b></td>
+		<td colspan="4" align="center"><b class="genmed">{L_BOOKMARKS_DISABLED}</b></td>
 	</tr>
 <!-- ELSE -->
+
+	<!-- IF TOTAL_TOPICS -->
+		<tr>
+			<td class="row3" colspan="4">
+				<table width="100%" cellspacing="1">
+				<tr>
+					<td class="nav" valign="middle" nowrap="nowrap">&nbsp;{PAGE_NUMBER}<br /></td>
+					<td class="gensmall" nowrap="nowrap">&nbsp;[ {TOTAL_TOPICS} ]&nbsp;</td>
+					<td class="gensmall" width="100%" align="{S_CONTENT_FLOW_END}" nowrap="nowrap"><!-- INCLUDE pagination.html --></td>
+				</tr>
+				</table>
+			</td>
+		</tr>
+	<!-- ENDIF -->
 
 	<!-- BEGIN topicrow -->
 
 		<!-- IF topicrow.S_ROW_COUNT is even --><tr class="row1"><!-- ELSE --><tr class="row2"><!-- ENDIF -->
-
-		<td style="padding: 4px;" width="20" align="center" valign="middle">{topicrow.TOPIC_FOLDER_IMG}</td>
+			<td style="padding: 4px;" width="20" align="center" valign="middle">{topicrow.TOPIC_FOLDER_IMG}</td>
 		<!-- IF topicrow.S_DELETED_TOPIC -->
 			<td class="postdetails" style="padding: 4px" width="100%" colspan="2">{L_DELETED_TOPIC}</td>
 		<!-- ELSE -->
 			<td style="padding: 4px;" width="100%" valign="top">
-				<p class="topictitle">{topicrow.ATTACH_ICON_IMG} <a href="{topicrow.U_VIEW_TOPIC}">{topicrow.TOPIC_TITLE}</a></p>
+				<p class="topictitle"><!-- IF topicrow.S_UNREAD_TOPIC --><a href="{topicrow.U_NEWEST_POST}">{NEWEST_POST_IMG}</a> <!-- ENDIF -->{topicrow.ATTACH_ICON_IMG} <a href="{topicrow.U_VIEW_TOPIC}">{topicrow.TOPIC_TITLE}</a></p>
 				<!-- IF topicrow.S_GLOBAL_TOPIC --><span class="gensmall">{L_GLOBAL_ANNOUNCEMENT}</span><!-- ELSE --><span class="gensmall"><b>{L_FORUM}: </b><a href="{topicrow.U_VIEW_FORUM}">{topicrow.FORUM_NAME}</a></span><!-- ENDIF -->
 				<!-- IF topicrow.PAGINATION -->
 					<p class="gensmall"> [ {GOTO_PAGE_IMG}{L_GOTO_PAGE}: {topicrow.PAGINATION} ] </p>
@@ -41,12 +54,11 @@
 				</p>
 			</td>
 		<!-- ENDIF -->
-		<td class="postdetails" style="padding: 4px;" align="center" valign="middle" nowrap="nowrap">&nbsp;<!-- IF topicrow.U_MOVE_UP --><a href="{topicrow.U_MOVE_UP}">{L_MOVE_UP}</a><!-- ENDIF --><!-- IF topicrow.U_MOVE_UP and topicrow.U_MOVE_DOWN --> | <!-- ENDIF --><!-- IF topicrow.U_MOVE_DOWN --><a href="{topicrow.U_MOVE_DOWN}">{L_MOVE_DOWN}</a><!-- ENDIF -->&nbsp;</td>
-		<td style="padding: 4px;"> <input type="checkbox" class="radio" name="t[{topicrow.TOPIC_ID}]" /> </td>
-	</tr>
+			<td style="padding: 4px;"> <input type="checkbox" class="radio" name="t[{topicrow.TOPIC_ID}]" /> </td>
+		</tr>
 	<!-- BEGINELSE -->
 		<tr class="row1">
-			<td colspan="5" align="center"><b class="genmed">{L_NO_BOOKMARKS}</b></td>
+			<td colspan="4" align="center"><b class="genmed">{L_NO_BOOKMARKS}</b></td>
 		</tr>
 	<!-- END topicrow -->
 
