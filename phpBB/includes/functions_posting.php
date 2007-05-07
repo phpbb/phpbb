@@ -2093,7 +2093,7 @@ function submit_post($mode, $subject, $username, $topic_type, &$poll, &$data, $u
 		if ($mode != 'post')
 		{
 			$params .= '&amp;p=' . $data['post_id'];
-			$add_anchor = '#p=' . $data['post_id'];
+			$add_anchor = '#p' . $data['post_id'];
 		}
 	}
 	else if ($mode != 'post' && $mode != 'edit_first_post' && $mode != 'edit_topic')
