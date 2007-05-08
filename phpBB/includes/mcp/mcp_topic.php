@@ -203,7 +203,7 @@ function mcp_topic_view($id, $mode, $action)
 			{
 				$to_topic_info = $to_topic_info[$to_topic_id];
 
-				if (!$to_topic_info['enable_icons'] || $auth->acl_get('!f_icons', $forum_id))
+				if (!$to_topic_info['enable_icons'] || $auth->acl_get('!f_icons', $topic_info['forum_id']))
 				{
 					$s_topic_icons = false;
 				}
