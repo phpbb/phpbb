@@ -1195,7 +1195,7 @@ class parse_message extends bbcode_firstpass
 			while ($row = $db->sql_fetchrow($result))
 			{
 				// (assertion)
-				$match[] = '#(?<=^|[\n .])' . preg_quote($row['code'], '#') . '#';
+				$match[] = '#(?<=^|[\n .])' . preg_quote($row['code'], '#') . '(?![^<>]*>)#';
 				$replace[] = '<!-- s' . $row['code'] . ' --><img src="{SMILIES_PATH}/' . $row['smiley_url'] . '" alt="' . $row['code'] . '" title="' . $row['emotion'] . '" /><!-- s' . $row['code'] . ' -->';
 			}
 			$db->sql_freeresult($result);
