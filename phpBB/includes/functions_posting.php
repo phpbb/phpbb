@@ -1933,7 +1933,7 @@ function submit_post($mode, $subject, $username, $topic_type, &$poll, &$data, $u
 		{
 			// edit_last_post does not _necessarily_ mean that we must update the info again,
 			// it just means that we might have to
-			$sql = 'SELECT forum_last_post_id
+			$sql = 'SELECT forum_last_post_id, forum_last_post_subject
 				FROM ' . FORUMS_TABLE . '
 				WHERE forum_id = ' . (int) $data['forum_id'];
 			$result = $db->sql_query($sql);
@@ -1941,10 +1941,10 @@ function submit_post($mode, $subject, $username, $topic_type, &$poll, &$data, $u
 			$db->sql_freeresult($result);
 
 			// this post is the last post in the forum, better update
-			if ($row['forum_last_post_id'] == $data['post_id'])
+			if ($row['forum_last_post_id'] == $data['post_id'] && $row['forum_last_post_subject'] !== $subject)
 			{
 				// the only data that can really be changed is the post's subject
-				$sql_data[FORUMS_TABLE]['stat'][] = 'forum_last_post_subject = ' . $db->sql_escape($subject);
+				$sql_data[FORUMS_TABLE]['stat'][] = 'forum_last_post_subject = \'' . $db->sql_escape($subject) . '\'';
 			}
 		}
 	}
