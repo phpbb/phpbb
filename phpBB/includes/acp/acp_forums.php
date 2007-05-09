@@ -285,7 +285,9 @@ class acp_forums
 					trigger_error($user->lang['NO_FORUM'] . adm_back_link($this->u_action . '&amp;parent_id=' . $this->parent_id), E_USER_WARNING);
 				}
 
-				$sql = 'SELECT forum_name, forum_type
+				@set_time_limit(0);
+
+				$sql = 'SELECT forum_name, forum_topics_real
 					FROM ' . FORUMS_TABLE . "
 					WHERE forum_id = $forum_id";
 				$result = $db->sql_query($sql);
@@ -297,43 +299,6 @@ class acp_forums
 					trigger_error($user->lang['NO_FORUM'] . adm_back_link($this->u_action . '&amp;parent_id=' . $this->parent_id), E_USER_WARNING);
 				}
 
-				sync('forum', 'forum_id', $forum_id, false, true);
-				$cache->destroy('sql', FORUMS_TABLE);
-
-				$url = $this->u_action . "&amp;parent_id={$this->parent_id}&amp;f=$forum_id&amp;action=sync_topic";
-				meta_refresh(0, $url);
-
-				$sql = 'SELECT forum_topics_real
-					FROM ' . FORUMS_TABLE . "
-					WHERE forum_id = $forum_id";
-				$result = $db->sql_query($sql);
-				$row = $db->sql_fetchrow($result);
-				$db->sql_freeresult($result);
-
-				$template->assign_vars(array(
-					'U_PROGRESS_BAR'		=> $this->u_action . '&amp;action=progress_bar',
-					'UA_PROGRESS_BAR'		=> str_replace('&amp;', '&', $this->u_action) . '&action=progress_bar',
-					'S_CONTINUE_SYNC'		=> true,
-					'L_PROGRESS_EXPLAIN'	=> sprintf($user->lang['SYNC_IN_PROGRESS_EXPLAIN'], 0, $row['forum_topics_real']))
-				);
-
-//				add_log('admin', 'LOG_FORUM_SYNC', $row['forum_name']);
-
-				return;
-
-			break;
-
-			case 'sync_topic':
-
-				@set_time_limit(0);
-
-				$sql = 'SELECT forum_name, forum_topics_real
-					FROM ' . FORUMS_TABLE . "
-					WHERE forum_id = $forum_id";
-				$result = $db->sql_query($sql);
-				$row = $db->sql_fetchrow($result);
-				$db->sql_freeresult($result);
-
 				if ($row['forum_topics_real'])
 				{
 					$sql = 'SELECT MIN(topic_id) as min_topic_id, MAX(topic_id) as max_topic_id
@@ -342,6 +307,10 @@ class acp_forums
 					$result = $db->sql_query($sql);
 					$row2 = $db->sql_fetchrow($result);
 					$db->sql_freeresult($result);
+
+					// Typecast to int if there is no data available
+					$row2['min_topic_id'] = (int) $row2['min_topic_id'];
+					$row2['max_topic_id'] = (int) $row2['max_topic_id'];
 
 					$start = request_var('start', $row2['min_topic_id']);
 
@@ -365,7 +334,7 @@ class acp_forums
 
 						$start += $batch_size;
 
-						$url = $this->u_action . "&amp;parent_id={$this->parent_id}&amp;f=$forum_id&amp;action=sync_topic&amp;start=$start&amp;topics_done=$topics_done&amp;total={$row['forum_topics_real']}";
+						$url = $this->u_action . "&amp;parent_id={$this->parent_id}&amp;f=$forum_id&amp;action=sync&amp;start=$start&amp;topics_done=$topics_done&amp;total={$row['forum_topics_real']}";
 
 						meta_refresh(0, $url);
 
@@ -379,6 +348,36 @@ class acp_forums
 						return;
 					}
 				}
+
+				$url = $this->u_action . "&amp;parent_id={$this->parent_id}&amp;f=$forum_id&amp;action=sync_forum";
+				meta_refresh(0, $url);
+
+				$template->assign_vars(array(
+					'U_PROGRESS_BAR'		=> $this->u_action . '&amp;action=progress_bar',
+					'UA_PROGRESS_BAR'		=> str_replace('&amp;', '&', $this->u_action) . '&action=progress_bar',
+					'S_CONTINUE_SYNC'		=> true,
+					'L_PROGRESS_EXPLAIN'	=> sprintf($user->lang['SYNC_IN_PROGRESS_EXPLAIN'], 0, $row['forum_topics_real']))
+				);
+
+				return;
+
+			break;
+
+			case 'sync_forum':
+
+				$sql = 'SELECT forum_name, forum_type
+					FROM ' . FORUMS_TABLE . "
+					WHERE forum_id = $forum_id";
+				$result = $db->sql_query($sql);
+				$row = $db->sql_fetchrow($result);
+				$db->sql_freeresult($result);
+
+				if (!$row)
+				{
+					trigger_error($user->lang['NO_FORUM'] . adm_back_link($this->u_action . '&amp;parent_id=' . $this->parent_id), E_USER_WARNING);
+				}
+
+				sync('forum', 'forum_id', $forum_id, false, true);
 
 				add_log('admin', 'LOG_FORUM_SYNC', $row['forum_name']);
 				$cache->destroy('sql', FORUMS_TABLE);
@@ -740,7 +739,7 @@ class acp_forums
 		// Jumpbox
 		$forum_box = make_forum_select($this->parent_id, false, false, false, false); //make_forum_select($this->parent_id);
 
-		if ($action == 'sync' || $action == 'sync_topic')
+		if ($action == 'sync' || $action == 'sync_forum')
 		{
 			$template->assign_var('S_RESYNCED', true);
 		}
