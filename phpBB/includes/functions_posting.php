@@ -1441,8 +1441,23 @@ function submit_post($mode, $subject, $username, $topic_type, &$poll, &$data, $u
 	$data['topic_title'] = truncate_string($data['topic_title']);
 
 	// Collect some basic information about which tables and which rows to update/insert
-	$sql_data = array();
+	$sql_data = $topic_row = array();
 	$poster_id = ($mode == 'edit') ? $data['poster_id'] : (int) $user->data['user_id'];
+
+	// Retrieve some additional information if not present
+	if ($mode == 'edit' && (!isset($data['post_approved']) || !isset($data['topic_approved']) || $data['post_approved'] === false || $data['topic_approved'] === false))
+	{
+		$sql = 'SELECT p.post_approved, t.topic_type, t.topic_replies, t.topic_replies_real, t.topic_approved
+			FROM ' . TOPICS_TABLE . ' t, ' . POSTS_TABLE . ' p
+			WHERE t.topic_id = p.topic_id
+				AND p.post_id = ' . $data['post_id'];
+		$result = $db->sql_query($sql);
+		$topic_row = $db->sql_fetchrow($result);
+		$db->sql_freeresult($result);
+
+		$data['topic_approved'] = $topic_row['topic_approved'];
+		$data['post_approved'] = $topic_row['post_approved'];
+	}
 
 	// Collect Information
 	switch ($post_mode)
@@ -1513,7 +1528,7 @@ function submit_post($mode, $subject, $username, $topic_type, &$poll, &$data, $u
 				'forum_id'			=> ($topic_type == POST_GLOBAL) ? 0 : $data['forum_id'],
 				'poster_id'			=> $data['poster_id'],
 				'icon_id'			=> $data['icon_id'],
-				'post_approved'		=> (!$auth->acl_get('f_noapprove', $data['forum_id']) && !$auth->acl_get('m_approve', $data['forum_id'])) ? 0 : 1,
+				'post_approved'		=> (!$auth->acl_get('f_noapprove', $data['forum_id']) && !$auth->acl_get('m_approve', $data['forum_id'])) ? 0 : $data['post_approved'],
 				'enable_bbcode'		=> $data['enable_bbcode'],
 				'enable_smilies'	=> $data['enable_smilies'],
 				'enable_magic_url'	=> $data['enable_urls'],
@@ -1596,7 +1611,7 @@ function submit_post($mode, $subject, $username, $topic_type, &$poll, &$data, $u
 			$sql_data[TOPICS_TABLE]['sql'] = array(
 				'forum_id'					=> ($topic_type == POST_GLOBAL) ? 0 : $data['forum_id'],
 				'icon_id'					=> $data['icon_id'],
-				'topic_approved'			=> (!$auth->acl_get('f_noapprove', $data['forum_id']) && !$auth->acl_get('m_approve', $data['forum_id'])) ? 0 : 1,
+				'topic_approved'			=> (!$auth->acl_get('f_noapprove', $data['forum_id']) && !$auth->acl_get('m_approve', $data['forum_id'])) ? 0 : $data['topic_approved'],
 				'topic_title'				=> $subject,
 				'topic_first_poster_name'	=> $username,
 				'topic_type'				=> $topic_type,
@@ -1610,15 +1625,19 @@ function submit_post($mode, $subject, $username, $topic_type, &$poll, &$data, $u
 				'topic_attachment'			=> (!empty($data['attachment_data'])) ? 1 : (isset($data['topic_attachment']) ? $data['topic_attachment'] : 0),
 			);
 
-			// Correctly set back the topic replies and forum posts...
-			if (!$auth->acl_get('f_noapprove', $data['forum_id']) && !$auth->acl_get('m_approve', $data['forum_id']))
+			// Correctly set back the topic replies and forum posts... only if the topic was approved before and now gets disapproved
+			if (!$auth->acl_get('f_noapprove', $data['forum_id']) && !$auth->acl_get('m_approve', $data['forum_id']) && $data['topic_approved'])
 			{
-				$sql = 'SELECT topic_type, topic_replies, topic_replies_real, topic_approved
-					FROM ' . TOPICS_TABLE . '
-					WHERE topic_id = ' . $data['topic_id'];
-				$result = $db->sql_query($sql);
-				$topic_row = $db->sql_fetchrow($result);
-				$db->sql_freeresult($result);
+				// Do we need to grab some topic informations?
+				if (!sizeof($topic_row))
+				{
+					$sql = 'SELECT topic_type, topic_replies, topic_replies_real, topic_approved
+						FROM ' . TOPICS_TABLE . '
+						WHERE topic_id = ' . $data['topic_id'];
+					$result = $db->sql_query($sql);
+					$topic_row = $db->sql_fetchrow($result);
+					$db->sql_freeresult($result);
+				}
 
 				// If this is the only post remaining we do not need to decrement topic_replies.
 				// Also do not decrement if first post - then the topic_replies will not be adjusted if approving the topic again.
@@ -1636,8 +1655,8 @@ function submit_post($mode, $subject, $username, $topic_type, &$poll, &$data, $u
 		case 'edit':
 		case 'edit_last_post':
 
-			// Correctly set back the topic replies and forum posts...
-			if (!$auth->acl_get('f_noapprove', $data['forum_id']) && !$auth->acl_get('m_approve', $data['forum_id']))
+			// Correctly set back the topic replies and forum posts... but only if the post was approved before.
+			if (!$auth->acl_get('f_noapprove', $data['forum_id']) && !$auth->acl_get('m_approve', $data['forum_id']) && $data['post_approved'])
 			{
 				$sql_data[TOPICS_TABLE]['stat'][] = 'topic_replies = topic_replies - 1';
 				$sql_data[FORUMS_TABLE]['stat'][] = 'forum_posts = forum_posts - 1';
@@ -2186,7 +2205,7 @@ function submit_post($mode, $subject, $username, $topic_type, &$poll, &$data, $u
 			$add_anchor = '#p' . $data['post_id'];
 		}
 	}
-	else if ($mode != 'post' && $mode != 'edit_first_post' && $mode != 'edit_topic')
+	else if ($mode != 'post' && $post_mode != 'edit_first_post' && $post_mode != 'edit_topic')
 	{
 		$params .= '&amp;t=' . $data['topic_id'];
 	}

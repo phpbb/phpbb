@@ -946,7 +946,10 @@ if ($submit || $preview || $refresh)
 				'bbcode_uid'			=> $message_parser->bbcode_uid,
 				'message'				=> $message_parser->message,
 				'attachment_data'		=> $message_parser->attachment_data,
-				'filename_data'			=> $message_parser->filename_data
+				'filename_data'			=> $message_parser->filename_data,
+
+				'topic_approved'		=> (isset($post_data['topic_approved'])) ? $post_data['topic_approved'] : false,
+				'post_approved'			=> (isset($post_data['post_approved'])) ? $post_data['post_approved'] : false,
 			);
 			unset($message_parser);
 
