@@ -627,6 +627,12 @@ function approve_post($post_id_list, $id, $mode)
 				user_notification('reply', $post_data['post_subject'], $post_data['topic_title'], $post_data['forum_name'], $post_data['forum_id'], $post_data['topic_id'], $post_id);
 			}
 		}
+
+		if (sizeof($post_id_list) == 1)
+		{
+			$post_data = $post_info[$post_id_list[0]];
+			$post_url = append_sid("{$phpbb_root_path}viewtopic.$phpEx", "f={$post_data['forum_id']}&amp;t={$post_data['topic_id']}&amp;p={$post_data['post_id']}") . '#p' . $post_data['post_id'];
+		}
 		unset($post_info);
 
 		if ($total_topics)
@@ -658,7 +664,15 @@ function approve_post($post_id_list, $id, $mode)
 	else
 	{
 		meta_refresh(3, $redirect);
-		trigger_error($user->lang[$success_msg] . '<br /><br />' . sprintf($user->lang['RETURN_PAGE'], "<a href=\"$redirect\">", '</a>'));
+
+		// If approving one post, also give links back to post...
+		$add_message = '';
+		if (sizeof($post_id_list) == 1 && !empty($post_url))
+		{
+			$add_message = '<br /><br />' . sprintf($user->lang['RETURN_POST'], '<a href="' . $post_url . '">', '</a>');
+		}
+
+		trigger_error($user->lang[$success_msg] . '<br /><br />' . sprintf($user->lang['RETURN_PAGE'], "<a href=\"$redirect\">", '</a>') . $add_message);
 	}
 }
 
