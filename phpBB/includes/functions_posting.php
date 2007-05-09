@@ -1459,6 +1459,10 @@ function submit_post($mode, $subject, $username, $topic_type, &$poll, &$data, $u
 		$data['post_approved'] = $topic_row['post_approved'];
 	}
 
+	// Start the transaction here
+	$db->sql_transaction('begin');
+
+
 	// Collect Information
 	switch ($post_mode)
 	{
@@ -1666,8 +1670,6 @@ function submit_post($mode, $subject, $username, $topic_type, &$poll, &$data, $u
 
 		break;
 	}
-
-	$db->sql_transaction('begin');
 
 	// Submit new topic
 	if ($post_mode == 'post')
@@ -1931,7 +1933,7 @@ function submit_post($mode, $subject, $username, $topic_type, &$poll, &$data, $u
 	// we need to update the last forum information
 	// only applicable if the topic is not global and it is approved
 	// we also check to make sure we are not dealing with globaling the latest topic (pretty rare but still needs to be checked)
-	if ($topic_type != POST_GLOBAL && !$make_global && $post_approved)
+	if ($topic_type != POST_GLOBAL && !$make_global && ($post_approved || $data['post_approved'] !== $post_approved))
 	{
 		// the last post makes us update the forum table. This can happen if...
 		// We make a new topic
@@ -2056,6 +2058,37 @@ function submit_post($mode, $subject, $username, $topic_type, &$poll, &$data, $u
 		{
 			// only the subject can be changed from edit
 			$sql_data[TOPICS_TABLE]['stat'][] = "topic_last_post_subject = '" . $db->sql_escape($subject) . "'";
+		}
+	}
+	else if ($data['post_approved'] !== $post_approved && $post_mode == 'edit_last_post')
+	{
+		// like having the rug pulled from under us
+		$sql = 'SELECT MAX(post_id) as last_post_id
+			FROM ' . POSTS_TABLE . '
+			WHERE topic_id = ' . (int) $data['topic_id'] . '
+				AND post_approved = 1';
+		$result = $db->sql_query($sql);
+		$row = $db->sql_fetchrow($result);
+		$db->sql_freeresult($result);
+
+		// any posts left in this forum?
+		if (!empty($row['last_post_id']))
+		{
+			$sql = 'SELECT p.post_id, p.post_subject, p.post_time, p.poster_id, p.post_username, u.user_id, u.username, u.user_colour
+				FROM ' . POSTS_TABLE . ' p, ' . USERS_TABLE . ' u
+				WHERE p.poster_id = u.user_id
+					AND p.post_id = ' . (int) $row['last_post_id'];
+			$result = $db->sql_query($sql);
+			$row = $db->sql_fetchrow($result);
+			$db->sql_freeresult($result);
+
+			// salvation, a post is found! jam it into the forums table
+			$sql_data[TOPICS_TABLE]['stat'][] = 'topic_last_post_id = ' . (int) $row['post_id'];
+			$sql_data[TOPICS_TABLE]['stat'][] = "topic_last_post_subject = '" . $db->sql_escape($row['post_subject']) . "'";
+			$sql_data[TOPICS_TABLE]['stat'][] = 'topic_last_post_time = ' . (int) $row['post_time'];
+			$sql_data[TOPICS_TABLE]['stat'][] = 'topic_last_poster_id = ' . (int) $row['poster_id'];
+			$sql_data[TOPICS_TABLE]['stat'][] = "topic_last_poster_name = '" . $db->sql_escape(($row['poster_id'] == ANONYMOUS) ? $row['post_username'] : $row['username']) . "'";
+			$sql_data[TOPICS_TABLE]['stat'][] = "topic_last_poster_colour = '" . $db->sql_escape($row['user_colour']) . "'";
 		}
 	}
 
