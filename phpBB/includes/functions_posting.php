@@ -2176,8 +2176,7 @@ function submit_post($mode, $subject, $username, $topic_type, &$poll, &$data, $u
 		user_notification($mode, $subject, $data['topic_title'], $data['forum_name'], $data['forum_id'], $data['topic_id'], $data['post_id']);
 	}
 
-	$params = 'f=' . $data['forum_id'];
-	$add_anchor = '';
+	$params = $add_anchor = '';
 
 	if ($auth->acl_get('f_noapprove', $data['forum_id']) || $auth->acl_get('m_approve', $data['forum_id']))
 	{
@@ -2194,7 +2193,8 @@ function submit_post($mode, $subject, $username, $topic_type, &$poll, &$data, $u
 		$params .= '&amp;t=' . $data['topic_id'];
 	}
 
-	$url = append_sid("{$phpbb_root_path}viewtopic.$phpEx", $params) . $add_anchor;
+	$url = (!$params) ? "{$phpbb_root_path}viewforum.$phpEx" : "{$phpbb_root_path}viewtopic.$phpEx";
+	$url = append_sid($url, 'f=' . $data['forum_id'] . $params) . $add_anchor;
 
 	return $url;
 }

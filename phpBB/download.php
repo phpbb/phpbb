@@ -53,8 +53,8 @@ if (isset($_GET['avatar']))
 		$db->sql_close();
 		exit;
 	}
-  
-	$ext 		= substr(strrchr($filename, '.'), 1);
+
+	$ext		= substr(strrchr($filename, '.'), 1);
 	$filename	= intval($filename);
 	
 	if (!in_array($ext, array('png', 'gif', 'jpg', 'jpeg')))
@@ -242,8 +242,8 @@ else
 			trigger_error($user->lang['PHYSICAL_DOWNLOAD_NOT_POSSIBLE']);
 		}
 		
-			redirect($phpbb_root_path . $config['upload_path'] . '/' . $attachment['physical_filename']);
-			exit;
+		redirect($phpbb_root_path . $config['upload_path'] . '/' . $attachment['physical_filename']);
+		exit;
 	}
 	else
 	{
