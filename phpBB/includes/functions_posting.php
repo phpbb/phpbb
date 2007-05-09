@@ -1703,7 +1703,7 @@ function submit_post($mode, $subject, $username, $topic_type, &$poll, &$data, $u
 	{
 		if (!sizeof($topic_row))
 		{
-			$sql = 'SELECT topic_type, topic_replies, topic_replies_real, topic_approved
+			$sql = 'SELECT topic_type, topic_replies, topic_replies_real, topic_approved, topic_last_post_id
 				FROM ' . TOPICS_TABLE . '
 				WHERE topic_id = ' . $data['topic_id'];
 			$result = $db->sql_query($sql);
@@ -1914,7 +1914,7 @@ function submit_post($mode, $subject, $username, $topic_type, &$poll, &$data, $u
 	// we need to update the last forum information
 	// only applicable if the topic is not global and it is approved
 	// we also check to make sure we are not dealing with globaling the latest topic (pretty rare but still needs to be checked)
-	if ($topic_type != POST_GLOBAL && $post_approved)
+	if ($topic_type != POST_GLOBAL && !$make_global && $post_approved)
 	{
 		// the last post makes us update the forum table. This can happen if...
 		// We make a new topic
@@ -1955,11 +1955,11 @@ function submit_post($mode, $subject, $username, $topic_type, &$poll, &$data, $u
 			FROM ' . FORUMS_TABLE . '
 			WHERE forum_id = ' . (int) $data['forum_id'];
 		$result = $db->sql_query($sql);
-		$row = $db->sql_fetchrow($result);
+		$forum_row = $db->sql_fetchrow($result);
 		$db->sql_freeresult($result);
 
 		// we made a topic global, go get new data
-		if ($topic_row['topic_type'] == POST_GLOBAL && $topic_type != POST_GLOBAL && $row['forum_last_post_id'] == $data['post_id'])
+		if ($topic_row['topic_type'] != POST_GLOBAL && $topic_type == POST_GLOBAL && $forum_row['forum_last_post_id'] == $topic_row['topic_last_post_id'])
 		{
 			// we need a fresh change of socks, everything has become invalidated
 			$sql = 'SELECT MAX(topic_last_post_id) as last_post_id
@@ -2000,13 +2000,13 @@ function submit_post($mode, $subject, $username, $topic_type, &$poll, &$data, $u
 				$sql_data[FORUMS_TABLE]['stat'][] = "forum_last_poster_colour = ''";
 			}
 		}
-		else if ($topic_row['topic_type'] != POST_GLOBAL && $topic_type == POST_GLOBAL && $row['forum_last_post_id'] < $data['post_id'])
+		else if ($topic_row['topic_type'] == POST_GLOBAL && $topic_type != POST_GLOBAL && $forum_row['forum_last_post_id'] < $topic_row['topic_last_post_id'])
 		{
 			// this post has a higher id, it is newer
 			$sql = 'SELECT p.post_id, p.post_subject, p.post_time, p.poster_id, p.post_username, u.user_id, u.username, u.user_colour
 				FROM ' . POSTS_TABLE . ' p, ' . USERS_TABLE . ' u
 				WHERE p.poster_id = u.user_id
-					AND p.post_id = ' . (int) $data['post_id'];
+					AND p.post_id = ' . (int) $topic_row['topic_last_post_id'];
 			$result = $db->sql_query($sql);
 			$row = $db->sql_fetchrow($result);
 			$db->sql_freeresult($result);
@@ -2033,7 +2033,7 @@ function submit_post($mode, $subject, $username, $topic_type, &$poll, &$data, $u
 			$sql_data[TOPICS_TABLE]['stat'][] = "topic_last_poster_name = '" . $db->sql_escape((!$user->data['is_registered'] && $username) ? $username : (($user->data['user_id'] != ANONYMOUS) ? $user->data['username'] : '')) . "'";
 			$sql_data[TOPICS_TABLE]['stat'][] = "topic_last_poster_colour = '" . (($user->data['user_id'] != ANONYMOUS) ? $db->sql_escape($user->data['user_colour']) : '') . "'";
 			$sql_data[TOPICS_TABLE]['stat'][] = "topic_last_post_subject = '" . $db->sql_escape($subject) . "'";
-			$sql_data[FORUMS_TABLE]['stat'][] = 'forum_last_post_time = ' . (int) $current_time;
+			$sql_data[TOPICS_TABLE]['stat'][] = 'topic_last_post_time = ' . (int) $current_time;
 		}
 		else if ($post_mode == 'edit_last_post')
 		{
