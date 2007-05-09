@@ -1933,13 +1933,13 @@ function submit_post($mode, $subject, $username, $topic_type, &$poll, &$data, $u
 	// we need to update the last forum information
 	// only applicable if the topic is not global and it is approved
 	// we also check to make sure we are not dealing with globaling the latest topic (pretty rare but still needs to be checked)
-	if ($topic_type != POST_GLOBAL && !$make_global && ($post_approved || $data['post_approved'] !== $post_approved))
+	if ($topic_type != POST_GLOBAL && !$make_global && ($post_approved || !$data['post_approved']))
 	{
 		// the last post makes us update the forum table. This can happen if...
 		// We make a new topic
 		// We reply to a topic
 		// We edit the last post in a topic and this post is the latest in the forum (maybe)
-		if ($post_mode == 'post' || $post_mode == 'reply')
+		if (($post_mode == 'post' || $post_mode == 'reply') && $post_approved)
 		{
 			$sql_data[FORUMS_TABLE]['stat'][] = 'forum_last_post_id = ' . $data['post_id'];
 			$sql_data[FORUMS_TABLE]['stat'][] = "forum_last_post_subject = '" . $db->sql_escape($subject) . "'";
@@ -1960,10 +1960,54 @@ function submit_post($mode, $subject, $username, $topic_type, &$poll, &$data, $u
 			$db->sql_freeresult($result);
 
 			// this post is the last post in the forum, better update
-			if ($row['forum_last_post_id'] == $data['post_id'] && $row['forum_last_post_subject'] !== $subject)
+			if ($row['forum_last_post_id'] == $data['post_id'])
 			{
-				// the only data that can really be changed is the post's subject
-				$sql_data[FORUMS_TABLE]['stat'][] = 'forum_last_post_subject = \'' . $db->sql_escape($subject) . '\'';
+				if ($post_approved && $row['forum_last_post_subject'] !== $subject)
+				{
+					// the only data that can really be changed is the post's subject
+					$sql_data[FORUMS_TABLE]['stat'][] = 'forum_last_post_subject = \'' . $db->sql_escape($subject) . '\'';
+				}
+				else if ($data['post_approved'] !== $post_approved)
+				{
+					// we need a fresh change of socks, everything has become invalidated
+					$sql = 'SELECT MAX(topic_last_post_id) as last_post_id
+						FROM ' . TOPICS_TABLE . '
+						WHERE forum_id = ' . (int) $data['forum_id'] . '
+							AND topic_approved = 1';
+					$result = $db->sql_query($sql);
+					$row = $db->sql_fetchrow($result);
+					$db->sql_freeresult($result);
+
+					// any posts left in this forum?
+					if (!empty($row['last_post_id']))
+					{
+						$sql = 'SELECT p.post_id, p.post_subject, p.post_time, p.poster_id, p.post_username, u.user_id, u.username, u.user_colour
+							FROM ' . POSTS_TABLE . ' p, ' . USERS_TABLE . ' u
+							WHERE p.poster_id = u.user_id
+								AND p.post_id = ' . (int) $row['last_post_id'];
+						$result = $db->sql_query($sql);
+						$row = $db->sql_fetchrow($result);
+						$db->sql_freeresult($result);
+
+						// salvation, a post is found! jam it into the forums table
+						$sql_data[FORUMS_TABLE]['stat'][] = 'forum_last_post_id = ' . (int) $row['post_id'];
+						$sql_data[FORUMS_TABLE]['stat'][] = "forum_last_post_subject = '" . $db->sql_escape($row['post_subject']) . "'";
+						$sql_data[FORUMS_TABLE]['stat'][] = 'forum_last_post_time = ' . (int) $row['post_time'];
+						$sql_data[FORUMS_TABLE]['stat'][] = 'forum_last_poster_id = ' . (int) $row['poster_id'];
+						$sql_data[FORUMS_TABLE]['stat'][] = "forum_last_poster_name = '" . $db->sql_escape(($row['poster_id'] == ANONYMOUS) ? $row['post_username'] : $row['username']) . "'";
+						$sql_data[FORUMS_TABLE]['stat'][] = "forum_last_poster_colour = '" . $db->sql_escape($row['user_colour']) . "'";
+					}
+					else
+					{
+						// just our luck, the last topic in the forum has just been globalized...
+						$sql_data[FORUMS_TABLE]['stat'][] = 'forum_last_post_id = 0';
+						$sql_data[FORUMS_TABLE]['stat'][] = "forum_last_post_subject = ''";
+						$sql_data[FORUMS_TABLE]['stat'][] = 'forum_last_post_time = 0';
+						$sql_data[FORUMS_TABLE]['stat'][] = 'forum_last_poster_id = 0';
+						$sql_data[FORUMS_TABLE]['stat'][] = "forum_last_poster_name = ''";
+						$sql_data[FORUMS_TABLE]['stat'][] = "forum_last_poster_colour = ''";
+					}
+				}
 			}
 		}
 	}
@@ -2060,7 +2104,7 @@ function submit_post($mode, $subject, $username, $topic_type, &$poll, &$data, $u
 			$sql_data[TOPICS_TABLE]['stat'][] = "topic_last_post_subject = '" . $db->sql_escape($subject) . "'";
 		}
 	}
-	else if ($data['post_approved'] !== $post_approved && $post_mode == 'edit_last_post')
+	else if (!$data['post_approved'] && $post_mode == 'edit_last_post')
 	{
 		// like having the rug pulled from under us
 		$sql = 'SELECT MAX(post_id) as last_post_id
