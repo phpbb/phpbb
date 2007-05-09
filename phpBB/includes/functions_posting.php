@@ -131,8 +131,7 @@ function update_post_information($type, $ids, $return_update_sql = false)
 			FROM ' . POSTS_TABLE . " p $topic_join
 			WHERE " . $db->sql_in_set('p.' . $type . '_id', $ids) . "
 				$topic_condition
-				AND p.post_approved = 1
-				$min_post_id_sql";
+				AND p.post_approved = 1";
 	}
 	else
 	{
@@ -141,7 +140,6 @@ function update_post_information($type, $ids, $return_update_sql = false)
 			WHERE " . $db->sql_in_set('p.' . $type . '_id', $ids) . "
 				$topic_condition
 				AND p.post_approved = 1
-				$min_post_id_sql
 			GROUP BY p.{$type}_id";
 	}
 	$result = $db->sql_query($sql);
