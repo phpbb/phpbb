@@ -1907,6 +1907,8 @@ function update_dynamic_config()
 	set_config('upload_dir_size', (int) $db->sql_fetchfield('stat'), true);
 	$db->sql_freeresult($result);
 
+	/**
+	* We do not resync users post counts - this can be done by the admin after conversion if wanted.
 	$sql = 'SELECT COUNT(post_id) AS num_posts, poster_id
 		FROM ' . POSTS_TABLE . '
 		WHERE post_postcount = 1
@@ -1918,6 +1920,7 @@ function update_dynamic_config()
 		$db->sql_query('UPDATE ' . USERS_TABLE . " SET user_posts = {$row['num_posts']} WHERE user_id = {$row['poster_id']}");
 	}
 	$db->sql_freeresult($result);
+	*/
 }
 
 /**
