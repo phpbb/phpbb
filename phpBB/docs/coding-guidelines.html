@@ -1668,6 +1668,7 @@ div
 		<td>Azerbaijani written in Cyrillic script as used in Azerbaijan</td>
 		<td><code>language</code>+<code>script</code>+<code>region</code></td>
 	</tr>
+	<tr>
 		<td><code>az-Latn-AZ</code></td>
 		<td>Azerbaijani written in Latin script as used in Azerbaijan</td>
 		<td><code>language</code>+<code>script</code>+<code>region</code></td>
@@ -1998,6 +1999,7 @@ div
 		<td><code>&lt;/bdo&gt;</code></td>
 		<td>'&#x202C;'</td>
 	</tr>
+	<tr>
 		<td><code>LRO</code></td>
 		<td><code>U+202D</code></td>
 		<td>Left-to-Right Override</td>
@@ -2070,7 +2072,7 @@ div
 	
 	<blockquote><pre>
 	...
-'PAGE_OF'	=>	'Page %s of %s',
+'PAGE_OF'	=&gt;	'Page %s of %s',
 		/* Just grabbing the replacements as they
 		come and hope they are in the right order */
 	...
@@ -2080,7 +2082,7 @@ div
 	
 	<blockquote><pre>
 	...
-'PAGE_OF'	=>	'Page %1$s of %2$s',
+'PAGE_OF'	=&gt;	'Page %1$s of %2$s',
 		/* Explicit ordering of the replacements,
 		even if they are the same order as English */
 	...
@@ -2090,7 +2092,7 @@ div
 	
 	<blockquote><pre>
 	...
-'PAGE_OF'	=>	'Total of %2$s pages, currently on page %1$s',
+'PAGE_OF'	=&gt;	'Total of %2$s pages, currently on page %1$s',
 		/* Explicit ordering of the replacements,
 		reversed compared to English as the total comes first */
 	...
@@ -2108,94 +2110,94 @@ div
 	
 	<p>As the language files are PHP files, where the various strings for phpBB are stored within an array which in turn are used for display within an HTML page, rules of syntax for both must be considered. Potentially problematic characters are: <code>'</code> (straight quote/apostrophe), <code>&quot;</code> (straight double quote), <code>&lt;</code> (less-than sign), <code>&gt;</code> (greater-than sign) and <code>&amp;</code> (ampersand).</p>
 	
-	<p class="bad">// Bad - The un-escapsed straight-quote/apostrophe will throw a PHP parse error
+	<p class="bad">// Bad - The un-escapsed straight-quote/apostrophe will throw a PHP parse error</p>
 	
 	<blockquote><pre>
 	...
 'CONV_ERROR_NO_AVATAR_PATH'
-	=>	'Note to developer: you must specify $convertor['avatar_path'] to use %s.',
+	=&gt;	'Note to developer: you must specify $convertor['avatar_path'] to use %s.',
 	...
 	</pre></blockquote>
 	
-	<p class="good">// Good - Literal straight quotes should be escaped with a backslash, ie: \
+	<p class="good">// Good - Literal straight quotes should be escaped with a backslash, ie: \</p>
 	
 	<blockquote><pre>
 	...
 'CONV_ERROR_NO_AVATAR_PATH'
-	=>	'Note to developer: you must specify $convertor[\'avatar_path\'] to use %s.',
+	=&gt;	'Note to developer: you must specify $convertor[\'avatar_path\'] to use %s.',
 	...
 	</pre></blockquote>
 	
 	<p>However, because phpBB3 now uses UTF-8 as its sole encoding, we can actually use this to our advantage and not have to remember to escape a straight quote when we don't have to:</p>
 	
-	<p class="bad">// Bad - The un-escapsed straight-quote/apostrophe will throw a PHP parse error
+	<p class="bad">// Bad - The un-escapsed straight-quote/apostrophe will throw a PHP parse error</p>
 	
 	<blockquote><pre>
 	...
-'USE_PERMISSIONS'	=>	'Test out user's permissions',
+'USE_PERMISSIONS'	=&gt;	'Test out user's permissions',
 	...
 	</pre></blockquote>
 	
-	<p class="good">// Okay - However, non-programmers wouldn't type "user\'s" automatically
+	<p class="good">// Okay - However, non-programmers wouldn't type "user\'s" automatically</p>
 	
 	<blockquote><pre>
 	...
-'USE_PERMISSIONS'	=>	'Test out user\'s permissions',
+'USE_PERMISSIONS'	=&gt;	'Test out user\'s permissions',
 	...
 	</pre></blockquote>
 	
-	<p class="good">// Best - Use the Unicode Right-Single-Quotation-Mark character
+	<p class="good">// Best - Use the Unicode Right-Single-Quotation-Mark character</p>
 	
 	<blockquote><pre>
 	...
-'USE_PERMISSIONS'	=>	'Test out user&rsquo;s permissions',
+'USE_PERMISSIONS'	=&gt;	'Test out user&rsquo;s permissions',
 	...
 	</pre></blockquote>
 	
 	<p>The <code>&quot;</code> (straight double quote), <code>&lt;</code> (less-than sign) and <code>&gt;</code> (greater-than sign) characters can all be used as displayed glyphs or as part of HTML markup, for example:</p>
 	
-	<p class="bad">// Bad - Invalid HTML, as segments not part of elements are not entitised
+	<p class="bad">// Bad - Invalid HTML, as segments not part of elements are not entitised</p>
 	
 	<blockquote><pre>
 	...
-'FOO_BAR'	=>	'PHP version &lt; 4.3.3.&lt;br /&gt;
+'FOO_BAR'	=&gt;	'PHP version &lt; 4.3.3.&lt;br /&gt;
 	Visit &quot;Downloads&quot; at &lt;a href=&quot;http://www.php.net/&quot;&gt;www.php.net&lt;/a&gt;.',
 	...
 	</pre></blockquote>
 	
-	<p class="good">// Okay - No more invalid HTML, but &quot;&amp;quot;&quot; is rather clumsy
+	<p class="good">// Okay - No more invalid HTML, but &quot;&amp;quot;&quot; is rather clumsy</p>
 	
 	<blockquote><pre>
 	...
-'FOO_BAR'	=>	'PHP version &amp;lt; 4.3.3.&lt;br /&gt;
+'FOO_BAR'	=&gt;	'PHP version &amp;lt; 4.3.3.&lt;br /&gt;
 	Visit &amp;quot;Downloads&amp;quot; at &lt;a href=&quot;http://www.php.net/&quot;&gt;www.php.net&lt;/a&gt;.',
 	...
 	</pre></blockquote>
 	
-	<p class="good">// Best - No more invalid HTML, and usage of correct typographical quotation marks
+	<p class="good">// Best - No more invalid HTML, and usage of correct typographical quotation marks</p>
 	
 	<blockquote><pre>
 	...
-'FOO_BAR'	=>	'PHP version &amp;lt; 4.3.3.&lt;br /&gt;
+'FOO_BAR'	=&gt;	'PHP version &amp;lt; 4.3.3.&lt;br /&gt;
 	Visit &ldquo;Downloads&rdquo; at &lt;a href=&quot;http://www.php.net/&quot;&gt;www.php.net&lt;/a&gt;.',
 	...
 	</pre></blockquote>
 	
 	<p>Lastly, the <code>&amp;</code> (ampersand) must always be entitised regardless of where it is used:</p>
 	
-	<p class="bad">// Bad - Invalid HTML, none of the ampersands are entitised
+	<p class="bad">// Bad - Invalid HTML, none of the ampersands are entitised</p>
 	
 	<blockquote><pre>
 	...
-'FOO_BAR'	=>	'&lt;a href=&quot;http://somedomain.tld/?foo=1&amp;bar=2&quot;&gt;Foo &amp; Bar&lt;/a&gt;.',
+'FOO_BAR'	=&gt;	'&lt;a href=&quot;http://somedomain.tld/?foo=1&amp;bar=2&quot;&gt;Foo &amp; Bar&lt;/a&gt;.',
 	...
 	</pre></blockquote>
 	
-	<p class="good">// Good - Valid HTML, amperands are correctly entitised in all cases
+	<p class="good">// Good - Valid HTML, amperands are correctly entitised in all cases</p>
 	
 	<blockquote><pre>
 	...
-'FOO_BAR'	=>	'&lt;a href=&quot;http://somedomain.tld/?foo=1&amp;amp;bar=2&quot;&gt;Foo &amp;amp; Bar&lt;/a&gt;.',
+'FOO_BAR'	=&gt;	'&lt;a href=&quot;http://somedomain.tld/?foo=1&amp;amp;bar=2&quot;&gt;Foo &amp;amp; Bar&lt;/a&gt;.',
 	...
 	</pre></blockquote>
 	
