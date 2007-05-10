@@ -115,18 +115,18 @@ if ($id && $sid)
 		}
 
 		// Re-cache stylesheet data if necessary
-		if ($config['load_tplcompile'])
+		if ($config['load_tplcompile'] || empty($theme['theme_data']))
 		{
-			$recache = false;
+			$recache = (empty($theme['theme_data'])) ? true : false;
 			$update_time = time();
 
 			// We test for stylesheet.css because it is faster and most likely the only file changed on common themes
-			if ($theme['theme_mtime'] < @filemtime("{$phpbb_root_path}styles/" . $theme['theme_path'] . '/theme/stylesheet.css'))
+			if (!$recache && $theme['theme_mtime'] < @filemtime("{$phpbb_root_path}styles/" . $theme['theme_path'] . '/theme/stylesheet.css'))
 			{
 				$recache = true;
 				$update_time = @filemtime("{$phpbb_root_path}styles/" . $theme['theme_path'] . '/theme/stylesheet.css');
 			}
-			else
+			else if (!$recache)
 			{
 				$last_change = $theme['theme_mtime'];
 
