@@ -4,7 +4,7 @@ Congratulations,
 
 You have successfully installed phpBB on your server.
 
-This e-mail contains important information on your installation that you should keep safe. The password has been encrypted in the database and cannot be recovered, although you can request a new password should you lose this one
+This e-mail contains important information on your installation that you should keep safe. The password has been encrypted in the database and cannot be recovered, although you can request a new password should you lose this one.
 
 ----------------------------
 Username: {USERNAME}

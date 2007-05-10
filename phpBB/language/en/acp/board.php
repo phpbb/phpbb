@@ -47,16 +47,16 @@ $lang = array_merge($lang, array(
 	'SYSTEM_DST'					=> 'Enable Summer Time/<abbr title="Daylight Saving Time">DST</abbr>',
 	'SYSTEM_TIMEZONE'				=> 'System timezone',
 	'WARNINGS_EXPIRE'				=> 'Warning duration',
-	'WARNINGS_EXPIRE_EXPLAIN'		=> 'Number of days that will elapse before the warning will automatically expire from a user’s record',
+	'WARNINGS_EXPIRE_EXPLAIN'		=> 'Number of days that will elapse before the warning will automatically expire from a user’s record.',
 ));
 
 // Board Features
 $lang = array_merge($lang, array(
-	'ACP_BOARD_FEATURES_EXPLAIN'	=> 'Here you can enable/disable several board features',
+	'ACP_BOARD_FEATURES_EXPLAIN'	=> 'Here you can enable/disable several board features.',
 
 	'ALLOW_ATTACHMENTS'			=> 'Allow attachments',
 	'ALLOW_BOOKMARKS'			=> 'Allow bookmarking topics',
-	'ALLOW_BOOKMARKS_EXPLAIN'	=> 'User is able to store personal bookmarks',
+	'ALLOW_BOOKMARKS_EXPLAIN'	=> 'User is able to store personal bookmarks.',
 	'ALLOW_BBCODE'				=> 'Allow BBCode',
 	'ALLOW_FORUM_NOTIFY'		=> 'Allow forum watching',
 	'ALLOW_NAME_CHANGE'			=> 'Allow username changes',
@@ -82,23 +82,23 @@ $lang = array_merge($lang, array(
 
 	'ALLOW_LOCAL'					=> 'Enable gallery avatars',
 	'ALLOW_REMOTE'					=> 'Enable remote avatars',
-	'ALLOW_REMOTE_EXPLAIN'			=> 'Avatars linked to from another website',
+	'ALLOW_REMOTE_EXPLAIN'			=> 'Avatars linked to from another website.',
 	'ALLOW_UPLOAD'					=> 'Enable avatar uploading',
 	'AVATAR_GALLERY_PATH'			=> 'Avatar gallery path',
-	'AVATAR_GALLERY_PATH_EXPLAIN'	=> 'Path under your phpBB root directory for pre-loaded images, e.g. <samp>images/avatars/gallery</samp>',
+	'AVATAR_GALLERY_PATH_EXPLAIN'	=> 'Path under your phpBB root directory for pre-loaded images, e.g. <samp>images/avatars/gallery</samp>.',
 	'AVATAR_STORAGE_PATH'			=> 'Avatar storage path',
-	'AVATAR_STORAGE_PATH_EXPLAIN'	=> 'Path under your phpBB root directory, e.g. <samp>images/avatars/upload</samp>',
+	'AVATAR_STORAGE_PATH_EXPLAIN'	=> 'Path under your phpBB root directory, e.g. <samp>images/avatars/upload</samp>.',
 	'MAX_AVATAR_SIZE'				=> 'Maximum avatar dimensions',
 	'MAX_AVATAR_SIZE_EXPLAIN'		=> '(Height x Width in pixels)',
 	'MAX_FILESIZE'					=> 'Maximum avatar file size',
-	'MAX_FILESIZE_EXPLAIN'			=> 'For uploaded avatar files',
+	'MAX_FILESIZE_EXPLAIN'			=> 'For uploaded avatar files.',
 	'MIN_AVATAR_SIZE'				=> 'Minimum avatar dimensions',
 	'MIN_AVATAR_SIZE_EXPLAIN'		=> '(Height x Width in pixels)',
 ));
 
 // Message Settings
 $lang = array_merge($lang, array(
-	'ACP_MESSAGE_SETTINGS_EXPLAIN'		=> 'Here you can set all default settings for private messaging',
+	'ACP_MESSAGE_SETTINGS_EXPLAIN'		=> 'Here you can set all default settings for private messaging.',
 
 	'ALLOW_BBCODE_PM'			=> 'Allow BBCode in private messages',
 	'ALLOW_FLASH_PM'			=> 'Allow use of <code>[FLASH]</code> BBCode tag',
@@ -123,7 +123,7 @@ $lang = array_merge($lang, array(
 
 // Post Settings
 $lang = array_merge($lang, array(
-	'ACP_POST_SETTINGS_EXPLAIN'			=> 'Here you can set all default settings for posting',
+	'ACP_POST_SETTINGS_EXPLAIN'			=> 'Here you can set all default settings for posting.',
 	'ALLOW_POST_LINKS'					=> 'Allow links in posts/private messages',
 	'ALLOW_POST_LINKS_EXPLAIN'			=> 'If disallowed the <code>[URL]</code> BBCode tag and automatic/magic URLs are disabled.',
 
@@ -132,7 +132,7 @@ $lang = array_merge($lang, array(
 	'CHAR_LIMIT'					=> 'Maximum characters per post',
 	'CHAR_LIMIT_EXPLAIN'			=> 'The number of characters allowed within a post. Set to 0 for unlimited characters.',
 	'DISPLAY_LAST_EDITED'			=> 'Display last edited time information',
-	'DISPLAY_LAST_EDITED_EXPLAIN'	=> 'Choose if the last edited by information to be displayed on posts',
+	'DISPLAY_LAST_EDITED_EXPLAIN'	=> 'Choose if the last edited by information to be displayed on posts.',
 	'EDIT_TIME'						=> 'Limit editing time',
 	'EDIT_TIME_EXPLAIN'				=> 'Limits the time available to edit a new post. Setting the value to 0 disables this behaviour.',
 	'FLOOD_INTERVAL'				=> 'Flood interval',
@@ -159,7 +159,7 @@ $lang = array_merge($lang, array(
 
 // Signature Settings
 $lang = array_merge($lang, array(
-	'ACP_SIGNATURE_SETTINGS_EXPLAIN'	=> 'Here you can set all default settings for signatures',
+	'ACP_SIGNATURE_SETTINGS_EXPLAIN'	=> 'Here you can set all default settings for signatures.',
 
 	'MAX_SIG_FONT_SIZE'				=> 'Maximum signature font size',
 	'MAX_SIG_FONT_SIZE_EXPLAIN'		=> 'Maximum font size allowed in user signatures. Set to 0 for unlimited size.',
@@ -177,7 +177,7 @@ $lang = array_merge($lang, array(
 
 // Registration Settings
 $lang = array_merge($lang, array(
-	'ACP_REGISTER_SETTINGS_EXPLAIN'		=> 'Here you are able to define registration and profile related settings',
+	'ACP_REGISTER_SETTINGS_EXPLAIN'		=> 'Here you are able to define registration and profile related settings.',
 
 	'ACC_ACTIVATION'			=> 'Account activation',
 	'ACC_ACTIVATION_EXPLAIN'	=> 'This determines whether users have immediate access to the board or if confirmation is required. You can also completely disable new registrations.',
@@ -191,7 +191,7 @@ $lang = array_merge($lang, array(
 	'COPPA'						=> 'COPPA',
 	'COPPA_FAX'					=> 'COPPA fax number',
 	'COPPA_MAIL'				=> 'COPPA mailing address',
-	'COPPA_MAIL_EXPLAIN'		=> 'This is the mailing address where parents will send COPPA registration forms',
+	'COPPA_MAIL_EXPLAIN'		=> 'This is the mailing address where parents will send COPPA registration forms.',
 	'ENABLE_COPPA'				=> 'Enable COPPA',
 	'ENABLE_COPPA_EXPLAIN'		=> 'This requires users to declare whether they are 13 or over for compliance with the U.S. COPPA Act. If this is disabled the COPPA specific groups will no longer be displayed.',
 	'MAX_CHARS'					=> 'Max',
@@ -208,7 +208,7 @@ $lang = array_merge($lang, array(
 	'USERNAME_LETTER_NUM_SPACERS'	=> 'Any letter, number, and spacer',
 	'USERNAME_CHARS'			=> 'Limit username chars',
 	'USERNAME_CHARS_ANY'		=> 'Any character',
-	'USERNAME_CHARS_EXPLAIN'	=> 'Restrict type of characters that may be used in usernames, spacers are: space, -, +, _, [ and ]',
+	'USERNAME_CHARS_EXPLAIN'	=> 'Restrict type of characters that may be used in usernames, spacers are: space, -, +, _, [ and ].',
 	'USERNAME_LENGTH'			=> 'Username length',
 	'USERNAME_LENGTH_EXPLAIN'	=> 'Minimum and maximum number of characters in usernames.',
 ));
@@ -219,8 +219,8 @@ $lang = array_merge($lang, array(
 
 	'CAPTCHA_GD'							=> 'GD CAPTCHA',
 	'CAPTCHA_GD_FOREGROUND_NOISE'			=> 'GD CAPTCHA foreground noise',
-	'CAPTCHA_GD_EXPLAIN'					=> 'Use GD to make a more advanced CAPTCHA',
-	'CAPTCHA_GD_FOREGROUND_NOISE_EXPLAIN'	=> 'Use foreground noise to make the GD based CAPTCHA harder',
+	'CAPTCHA_GD_EXPLAIN'					=> 'Use GD to make a more advanced CAPTCHA.',
+	'CAPTCHA_GD_FOREGROUND_NOISE_EXPLAIN'	=> 'Use foreground noise to make the GD based CAPTCHA harder.',
 	'CAPTCHA_GD_X_GRID'						=> 'GD CAPTCHA background noise x-axis',
 	'CAPTCHA_GD_X_GRID_EXPLAIN'				=> 'Use lower settings of this to make the GD based CAPTCHA harder. 0 will disable x-axis background noise.',
 	'CAPTCHA_GD_Y_GRID'						=> 'GD CAPTCHA background noise y-axis',
@@ -291,12 +291,12 @@ $lang = array_merge($lang, array(
 	'APACHE_SETUP_BEFORE_USE'	=> 'You have to setup apache authentication before you switch phpBB to this authentication method. Keep in mind that the username you use for apache authentication has to be the same as your phpBB username.',
 
 	'LDAP_DN'						=> 'LDAP base <var>dn</var>',
-	'LDAP_DN_EXPLAIN'				=> 'This is the Distinguished Name, locating the user information, e.g. <samp>o=My Company,c=US</samp>',
+	'LDAP_DN_EXPLAIN'				=> 'This is the Distinguished Name, locating the user information, e.g. <samp>o=My Company,c=US</samp>.',
 	'LDAP_EMAIL'					=> 'LDAP e-mail attribute',
 	'LDAP_EMAIL_EXPLAIN'			=> 'Set this to the name of your user entry e-mail attribute (if one exists) in order to automatically set the e-mail address for new users. Leaving this empty results in empty e-mail address for users who log in for the first time.',
 	'LDAP_INCORRECT_USER_PASSWORD'	=> 'Binding to LDAP server failed with specified user/password.',
 	'LDAP_NO_EMAIL'					=> 'The specified e-mail attribute does not exist.',
-	'LDAP_NO_IDENTITY'				=> 'Could not find a login identity for %s',
+	'LDAP_NO_IDENTITY'				=> 'Could not find a login identity for %s.',
 	'LDAP_PASSWORD'					=> 'LDAP password',
 	'LDAP_PASSWORD_EXPLAIN'			=> 'Leave blank to use anonymous access. Else fill in the password for the above user. <strong>WARNING:</strong> This password will be stored as plain text in the database visible to everybody who can access your database.',
 	'LDAP_SERVER'					=> 'LDAP server name',
@@ -316,28 +316,28 @@ $lang = array_merge($lang, array(
 	'FORCE_SERVER_VARS'			=> 'Force server URL settings',
 	'FORCE_SERVER_VARS_EXPLAIN'	=> 'If set to yes the server settings defined here will be used in favour of the automatically determined values.',
 	'ICONS_PATH'				=> 'Post icons storage path',
-	'ICONS_PATH_EXPLAIN'		=> 'Path under your phpBB root directory, e.g. <samp>images/icons</samp>',
+	'ICONS_PATH_EXPLAIN'		=> 'Path under your phpBB root directory, e.g. <samp>images/icons</samp>.',
 	'PATH_SETTINGS'				=> 'Path settings',
 	'RANKS_PATH'				=> 'Rank image storage path',
-	'RANKS_PATH_EXPLAIN'		=> 'Path under your phpBB root directory, e.g. <samp>images/ranks</samp>',
+	'RANKS_PATH_EXPLAIN'		=> 'Path under your phpBB root directory, e.g. <samp>images/ranks</samp>.',
 	'SCRIPT_PATH'				=> 'Script path',
-	'SCRIPT_PATH_EXPLAIN'		=> 'The path where phpBB is located relative to the domain name, e.g. <samp>/phpBB3</samp>',
+	'SCRIPT_PATH_EXPLAIN'		=> 'The path where phpBB is located relative to the domain name, e.g. <samp>/phpBB3</samp>.',
 	'SERVER_NAME'				=> 'Domain name',
-	'SERVER_NAME_EXPLAIN'		=> 'The domain name this board runs from (for example: <samp>www.foo.bar</samp>)',
+	'SERVER_NAME_EXPLAIN'		=> 'The domain name this board runs from (for example: <samp>www.foo.bar</samp>).',
 	'SERVER_PORT'				=> 'Server port',
-	'SERVER_PORT_EXPLAIN'		=> 'The port your server is running on, usually 80, only change if different',
+	'SERVER_PORT_EXPLAIN'		=> 'The port your server is running on, usually 80, only change if different.',
 	'SERVER_PROTOCOL'			=> 'Server protocol',
-	'SERVER_PROTOCOL_EXPLAIN'	=> 'This is used as the server protocol if these settings are forced. If empty or not forced the protocol is determined by the cookie secure settings (<samp>http://</samp> or <samp>https://</samp>)',
+	'SERVER_PROTOCOL_EXPLAIN'	=> 'This is used as the server protocol if these settings are forced. If empty or not forced the protocol is determined by the cookie secure settings (<samp>http://</samp> or <samp>https://</samp>).',
 	'SERVER_URL_SETTINGS'		=> 'Server URL settings',
 	'SMILIES_PATH'				=> 'Smilies storage path',
-	'SMILIES_PATH_EXPLAIN'		=> 'Path under your phpBB root directory, e.g. <samp>images/smilies</samp>',
+	'SMILIES_PATH_EXPLAIN'		=> 'Path under your phpBB root directory, e.g. <samp>images/smilies</samp>.',
 	'UPLOAD_ICONS_PATH'			=> 'Extension group icons storage path',
-	'UPLOAD_ICONS_PATH_EXPLAIN'	=> 'Path under your phpBB root directory, e.g. <samp>images/upload_icons</samp>',
+	'UPLOAD_ICONS_PATH_EXPLAIN'	=> 'Path under your phpBB root directory, e.g. <samp>images/upload_icons</samp>.',
 ));
 
 // Security Settings
 $lang = array_merge($lang, array(
-	'ACP_SECURITY_SETTINGS_EXPLAIN'		=> 'Here you are able to define session and login related settings',
+	'ACP_SECURITY_SETTINGS_EXPLAIN'		=> 'Here you are able to define session and login related settings.',
 
 	'ALL'							=> 'All',
 	'ALLOW_AUTOLOGIN'				=> 'Allow persistent logins', 
@@ -359,7 +359,7 @@ $lang = array_merge($lang, array(
 	'IP_VALID'						=> 'Session IP validation',
 	'IP_VALID_EXPLAIN'				=> 'Determines how much of the users IP is used to validate a session; <samp>All</samp> compares the complete address, <samp>A.B.C</samp> the first x.x.x, <samp>A.B</samp> the first x.x, <samp>None</samp> disables checking.',
 	'MAX_LOGIN_ATTEMPTS'			=> 'Maximum number of login attempts',
-	'MAX_LOGIN_ATTEMPTS_EXPLAIN'	=> 'After this number of failed logins the user needs to additionally confirm his login visually (visual confirmation)',
+	'MAX_LOGIN_ATTEMPTS_EXPLAIN'	=> 'After this number of failed logins the user needs to additionally confirm his login visually (visual confirmation).',
 	'NO_IP_VALIDATION'				=> 'None',
 	'PASSWORD_TYPE'					=> 'Password complexity',
 	'PASSWORD_TYPE_EXPLAIN'			=> 'Determines how complex a password needs to be when set or altered, subsequent options include the previous ones.',
@@ -423,18 +423,18 @@ $lang = array_merge($lang, array(
 
 	'JAB_CHANGED'				=> 'Jabber account changed successfully.',
 	'JAB_ENABLE'				=> 'Enable Jabber',
-	'JAB_ENABLE_EXPLAIN'		=> 'Enables use of jabber messaging and notifications',
+	'JAB_ENABLE_EXPLAIN'		=> 'Enables use of jabber messaging and notifications.',
 	'JAB_PACKAGE_SIZE'			=> 'Jabber package size',
 	'JAB_PACKAGE_SIZE_EXPLAIN'	=> 'This is the number of messages sent in one package. If set to 0 the message is sent immediately and is not queued for later sending.',
 	'JAB_PASSWORD'				=> 'Jabber password',
 	'JAB_PASS_CHANGED'			=> 'Jabber password changed successfully.',
 	'JAB_PORT'					=> 'Jabber port',
-	'JAB_PORT_EXPLAIN'			=> 'Leave blank unless you know it is not port 5222',
+	'JAB_PORT_EXPLAIN'			=> 'Leave blank unless you know it is not port 5222.',
 	'JAB_REGISTERED'			=> 'New account registered successfully.',
 	'JAB_RESOURCE'				=> 'Jabber resource',
 	'JAB_RESOURCE_EXPLAIN'		=> 'The resource locates this particular connection, e.g. board, home, etc.',
 	'JAB_SERVER'				=> 'Jabber server',
-	'JAB_SERVER_EXPLAIN'		=> 'See %sjabber.org%s for a list of servers',
+	'JAB_SERVER_EXPLAIN'		=> 'See %sjabber.org%s for a list of servers.',
 	'JAB_SETTINGS_CHANGED'		=> 'Jabber settings changed successfully.',
 	'JAB_USERNAME'				=> 'Jabber username',
 	'JAB_USERNAME_EXPLAIN'		=> 'If this user is not registered it will be created if possible.',

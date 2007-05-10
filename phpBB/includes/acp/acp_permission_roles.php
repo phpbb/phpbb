@@ -95,7 +95,8 @@ class acp_permission_roles
 					{
 						$this->remove_role($role_id, $permission_type);
 
-						add_log('admin', 'LOG_' . strtoupper($permission_type) . 'ROLE_REMOVED', $role_row['role_name']);
+						$role_name = (!empty($user->lang[$role_row['role_name']])) ? $user->lang[$role_row['role_name']] : $role_row['role_name'];
+						add_log('admin', 'LOG_' . strtoupper($permission_type) . 'ROLE_REMOVED', $role_name);
 						trigger_error($user->lang['ROLE_DELETED'] . adm_back_link($this->u_action));
 					}
 					else
@@ -196,6 +197,7 @@ class acp_permission_roles
 					// Now add the auth settings
 					$auth_admin->acl_set_role($role_id, $auth_settings);
 
+					$role_name = (!empty($user->lang[$role_name]])) ? $user->lang[$role_name] : $role_name;
 					add_log('admin', 'LOG_' . strtoupper($permission_type) . 'ROLE_' . strtoupper($action), $role_name);
 
 					trigger_error($user->lang['ROLE_' . strtoupper($action) . '_SUCCESS'] . adm_back_link($this->u_action));

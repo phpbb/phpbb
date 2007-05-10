@@ -32,13 +32,13 @@ if (empty($lang) || !is_array($lang))
 
 $lang = array_merge($lang, array(
 	'ATTACHMENT'						=> 'Attachment',
-	'ATTACHMENT_FUNCTIONALITY_DISABLED'	=> 'The attachments feature has been disabled',
+	'ATTACHMENT_FUNCTIONALITY_DISABLED'	=> 'The attachments feature has been disabled.',
 
 	'BOOKMARK_ADDED'		=> 'Bookmarked topic successfully.',
 	'BOOKMARK_REMOVED'		=> 'Removed bookmarked topic successfully.',
 	'BOOKMARK_TOPIC'		=> 'Bookmark topic',
 	'BOOKMARK_TOPIC_REMOVE'	=> 'Remove from bookmarks',
-	'BUMPED_BY'				=> 'Last bumped by %1$s on %2$s',
+	'BUMPED_BY'				=> 'Last bumped by %1$s on %2$s.',
 	'BUMP_TOPIC'			=> 'Bump topic',
 
 	'CODE'					=> 'Code',
@@ -46,17 +46,17 @@ $lang = array_merge($lang, array(
 	'DELETE_TOPIC'			=> 'Delete topic',
 	'DOWNLOAD_NOTICE'		=> 'You do not have the required permissions to view the files attached to this post.',
 
-	'EDITED_TIMES_TOTAL'	=> 'Last edited by %1$s on %2$s, edited %3$d times in total',
-	'EDITED_TIME_TOTAL'		=> 'Last edited by %1$s on %2$s, edited %3$d time in total',
+	'EDITED_TIMES_TOTAL'	=> 'Last edited by %1$s on %2$s, edited %3$d times in total.',
+	'EDITED_TIME_TOTAL'		=> 'Last edited by %1$s on %2$s, edited %3$d time in total.',
 	'EMAIL_TOPIC'			=> 'E-mail friend',
-	'ERROR_NO_ATTACHMENT'	=> 'The selected attachment does not exist anymore',
+	'ERROR_NO_ATTACHMENT'	=> 'The selected attachment does not exist anymore.',
 
 	'FILE_NOT_FOUND_404'	=> 'The file <strong>%s</strong> does not exist.',
 	'FORK_TOPIC'			=> 'Copy topic',
 
 	'LINKAGE_FORBIDDEN'		=> 'You are not authorised to view, download or link from/to this site.',
 	'LOGIN_NOTIFY_TOPIC'	=> 'You have been notified about this topic, please login to view it.',
-	'LOGIN_VIEWTOPIC'		=> 'The board administrator requires you to be registered and logged in to view this topic.',
+	'LOGIN_VIEWTOPIC'		=> 'The board requires you to be registered and logged in to view this topic.',
 
 	'MAKE_ANNOUNCE'				=> 'Change to “Announcement”',
 	'MAKE_GLOBAL'				=> 'Change to “Global”',
@@ -68,8 +68,8 @@ $lang = array_merge($lang, array(
 	'MOVE_TOPIC'				=> 'Move topic',
 
 	'NO_ATTACHMENT_SELECTED'=> 'You haven’t selected an attachment to download or view.',
-	'NO_NEWER_TOPICS'		=> 'There are no newer topics in this forum',
-	'NO_OLDER_TOPICS'		=> 'There are no older topics in this forum',
+	'NO_NEWER_TOPICS'		=> 'There are no newer topics in this forum.',
+	'NO_OLDER_TOPICS'		=> 'There are no older topics in this forum.',
 	'NO_UNREAD_POSTS'		=> 'There are no new unread posts for this topic.',
 	'NO_VOTE_OPTION'		=> 'You must specify an option when voting.',
 	'NO_VOTES'				=> 'No votes',
@@ -99,7 +99,7 @@ $lang = array_merge($lang, array(
 	'VIEW_TOPIC_POSTS'		=> '%d posts',
 	'VIEW_UNREAD_POST'		=> 'First unread post',
 	'VISIT_WEBSITE'			=> 'WWW',
-	'VOTE_SUBMITTED'		=> 'Your vote has been cast',
+	'VOTE_SUBMITTED'		=> 'Your vote has been cast.',
 
 	'WROTE'					=> 'wrote',
 ));

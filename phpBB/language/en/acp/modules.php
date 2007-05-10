@@ -49,7 +49,7 @@ $lang = array_merge($lang, array(
 	'DELETE_MODULE_CONFIRM'	=> 'Are you sure you want to remove this module?',
 
 	'EDIT_MODULE'			=> 'Edit module',
-	'EDIT_MODULE_EXPLAIN'	=> 'Here you are able to enter module specific settings',
+	'EDIT_MODULE_EXPLAIN'	=> 'Here you are able to enter module specific settings.',
 
 	'HIDDEN_MODULE'			=> 'Hidden module',
 

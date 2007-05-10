@@ -43,12 +43,12 @@ $lang = array_merge($lang, array(
 	'GLOBAL'				=> 'Global announcement',
 
 	'IGNORED_TERMS'			=> 'ignored',
-	'IGNORED_TERMS_EXPLAIN'	=> 'The following words in your search query were ignored: <strong>%s</strong>',
+	'IGNORED_TERMS_EXPLAIN'	=> 'The following words in your search query were ignored: <strong>%s</strong>.',
 
 	'JUMP_TO_POST'			=> 'Jump to post',
 
 	'NO_KEYWORDS'			=> 'You must specify at least one word to search for. Each word must consist of at least %d characters and must not contain more than %d characters excluding wildcards.',
-	'NO_RECENT_SEARCHES'	=> 'No searches have been carried out recently',
+	'NO_RECENT_SEARCHES'	=> 'No searches have been carried out recently.',
 	'NO_SEARCH'				=> 'Sorry but you are not permitted to use the search system.',
 	'NO_SEARCH_RESULTS'		=> 'No suitable matches were found.',
 	'NO_SEARCH_TIME'		=> 'Sorry but you cannot use search at this time. Please try again in a few minutes.',
@@ -68,7 +68,7 @@ $lang = array_merge($lang, array(
 	'SEARCH_ALL_TERMS'			=> 'Search for all terms or use query as entered',
 	'SEARCH_ANY_TERMS'			=> 'Search for any terms',
 	'SEARCH_AUTHOR'				=> 'Search for author',
-	'SEARCH_AUTHOR_EXPLAIN'		=> 'Use * as a wildcard for partial matches',
+	'SEARCH_AUTHOR_EXPLAIN'		=> 'Use * as a wildcard for partial matches.',
 	'SEARCH_FIRST_POST'			=> 'First post of topics only',
 	'SEARCH_FORUMS'				=> 'Search in forums',
 	'SEARCH_FORUMS_EXPLAIN'		=> 'Select the forum or forums you wish to search in. For speed all subforums can be searched by selecting the parent and setting enable search subforums below.',

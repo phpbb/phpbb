@@ -38,7 +38,7 @@ $lang = array_merge($lang, array(
 	'ALWAYS_TODAY'			=> 'Always the current date',
 
 	'BOOL_ENTRIES_EXPLAIN'	=> 'Enter your options now',
-	'BOOL_TYPE_EXPLAIN'		=> 'Define the type, either a checkbox or radio buttons',
+	'BOOL_TYPE_EXPLAIN'		=> 'Define the type, either a checkbox or radio buttons.',
 
 	'CHANGED_PROFILE_FIELD'		=> 'Successfully changed profile field.',
 	'CHARS_ANY'					=> 'Any character',
@@ -46,7 +46,7 @@ $lang = array_merge($lang, array(
 	'COLUMNS'					=> 'Columns',
 	'CP_LANG_DEFAULT_VALUE'		=> 'Default value',
 	'CP_LANG_EXPLAIN'			=> 'Field description',
-	'CP_LANG_EXPLAIN_EXPLAIN'	=> 'The explanation for this field presented to the user',
+	'CP_LANG_EXPLAIN_EXPLAIN'	=> 'The explanation for this field presented to the user.',
 	'CP_LANG_NAME'				=> 'Field name/title presented to the user',
 	'CP_LANG_OPTIONS'			=> 'Options',
 	'CREATE_NEW_FIELD'			=> 'Create new field',
@@ -63,7 +63,7 @@ $lang = array_merge($lang, array(
 	'DISPLAY_AT_REGISTER_EXPLAIN'	=> 'If this option is enabled, the field will be displayed on registration and able to be changed within the user control panel.',
 	'DISPLAY_PROFILE_FIELD'			=> 'Display profile field',
 	'DISPLAY_PROFILE_FIELD_EXPLAIN'	=> 'The profile field will be shown on viewtopic/viewprofile/memberlist, if this is enabled within the load settings. Only showing within the users profile is enabled by default.',
-	'DROPDOWN_ENTRIES_EXPLAIN'		=> 'Enter your options now, every option in one line',
+	'DROPDOWN_ENTRIES_EXPLAIN'		=> 'Enter your options now, every option in one line.',
 
 	'EDIT_DROPDOWN_LANG_EXPLAIN'	=> 'Please note that you are able to change your options text and also able to add new options to the end. It is not advised to add new options between existing options - this could result in wrong options assigned to your users. This can also happen if you remove options in-between. Removing options from the end result in users having assigned this item now reverting back to the default one.',
 	'EMPTY_FIELD_IDENT'				=> 'Empty field identification',
@@ -74,7 +74,7 @@ $lang = array_merge($lang, array(
 	'FIELD_BOOL'				=> 'Boolean (Yes/No)',
 	'FIELD_DATE'				=> 'Date',
 	'FIELD_DESCRIPTION'			=> 'Field description',
-	'FIELD_DESCRIPTION_EXPLAIN'	=> 'The explanation for this field presented to the user',
+	'FIELD_DESCRIPTION_EXPLAIN'	=> 'The explanation for this field presented to the user.',
 	'FIELD_DROPDOWN'			=> 'Dropdown box',
 	'FIELD_IDENT'				=> 'Field identification',
 	'FIELD_IDENT_ALREADY_EXIST'	=> 'The chosen field identification already exist. Please choose another name.',
@@ -107,7 +107,7 @@ $lang = array_merge($lang, array(
 	'NO_FIELD_ID'				=> 'No field id specified.',
 	'NO_FIELD_TYPE'				=> 'No Field type specified.',
 	'NO_VALUE_OPTION'			=> 'Option equal to non entered value',
-	'NO_VALUE_OPTION_EXPLAIN'	=> 'Value for a non-entry. If the field is required, the user gets an error if he choose the option selected here',
+	'NO_VALUE_OPTION_EXPLAIN'	=> 'Value for a non-entry. If the field is required, the user gets an error if he choose the option selected here.',
 	'NUMBERS_ONLY'				=> 'Only numbers (0-9)',
 
 	'PREVIEW_PROFILE_FIELD'		=> 'Preview profile field',

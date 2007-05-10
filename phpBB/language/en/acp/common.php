@@ -230,9 +230,9 @@ $lang = array_merge($lang, array(
 	'LOGGED_IN_AS'			=> 'You are logged in as:',
 	'LOGIN_ADMIN'			=> 'To administer the board you must be an authenticated user.',
 	'LOGIN_ADMIN_CONFIRM'	=> 'To administer the board you must re-authenticate yourself.',
-	'LOGIN_ADMIN_SUCCESS'	=> 'You have successfully authenticated and will now be redirected to the Administration Control Panel',
+	'LOGIN_ADMIN_SUCCESS'	=> 'You have successfully authenticated and will now be redirected to the Administration Control Panel.',
 	'LOOK_UP_FORUM'			=> 'Select a forum',
-	'LOOK_UP_FORUMS_EXPLAIN'=> 'You are able to select more than one forum',
+	'LOOK_UP_FORUMS_EXPLAIN'=> 'You are able to select more than one forum.',
 
 	'MANAGE'				=> 'Manage',
 	'MENU_TOGGLE'			=> 'Hide or display the side menu',
@@ -241,7 +241,7 @@ $lang = array_merge($lang, array(
 
 	'NOTIFY'				=> 'Notification',
 	'NO_ADMIN'				=> 'You are not authorised to administrate this board.',
-	'NO_EMAILS_DEFINED'		=> 'No valid e-mail addresses found',
+	'NO_EMAILS_DEFINED'		=> 'No valid e-mail addresses found.',
 	'NO_PASSWORD_SUPPLIED'	=> 'You need to enter your password to access the Administration Control Panel.',	
 
 	'OFF'					=> 'Off',
@@ -264,7 +264,7 @@ $lang = array_merge($lang, array(
 	'SELECT_OPTION'			=> 'Select option',
 
 	'UCP'					=> 'User Control Panel',
-	'USERNAMES_EXPLAIN'		=> 'Place each username on a separate line',
+	'USERNAMES_EXPLAIN'		=> 'Place each username on a separate line.',
 	'USER_CONTROL_PANEL'	=> 'User Control Panel',
 
 	'WARNING'				=> 'Warning',
@@ -287,7 +287,7 @@ $lang = array_merge($lang, array(
 
 	'DISPLAY_LOG'	=> 'Display entries from previous',
 
-	'NO_ENTRIES'	=> 'No log entries for this period',
+	'NO_ENTRIES'	=> 'No log entries for this period.',
 
 	'SORT_IP'		=> 'IP address',
 	'SORT_DATE'		=> 'Date',

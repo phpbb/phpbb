@@ -53,11 +53,11 @@ $lang = array_merge($lang, array(
 
 	'DELETE_POSTS'			=> 'Delete posts',
 	'DELETE_USER'			=> 'Delete user',
-	'DELETE_USER_EXPLAIN'	=> 'Please note that deleting a user is final, they cannot be recovered',
+	'DELETE_USER_EXPLAIN'	=> 'Please note that deleting a user is final, they cannot be recovered.',
 
 	'FORCE_REACTIVATION_SUCCESS'	=> 'Successfully forced reactivation.',
 	'FOUNDER'						=> 'Founder',
-	'FOUNDER_EXPLAIN'				=> 'Founders have all admin permissions and can never be banned, deleted or altered by non-founder members',
+	'FOUNDER_EXPLAIN'				=> 'Founders have all admin permissions and can never be banned, deleted or altered by non-founder members.',
 
 	'GROUP_APPROVE'					=> 'Approve member',
 	'GROUP_DEFAULT'					=> 'Make group default for member',

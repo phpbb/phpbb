@@ -42,7 +42,7 @@ $lang = array_merge($lang, array(
 
 	'BEFORE'				=> 'Before',
 
-	'CC_EMAIL'				=> 'Send a copy of this e-mail to yourself',
+	'CC_EMAIL'				=> 'Send a copy of this e-mail to yourself.',
 	'CONTACT_USER'			=> 'Contact',
 
 	'DEST_LANG'				=> 'Language',
@@ -71,7 +71,7 @@ $lang = array_merge($lang, array(
 	'IM_DOWNLOAD_APP'		=> 'Download application',
 	'IM_ICQ'				=> 'Please note that users may have selected to not receive unsolicited instant messages.',
 	'IM_JABBER'				=> 'Please note that users may have selected to not receive unsolicited instant messages.',
-	'IM_JABBER_SUBJECT'		=> 'This is an automated message please do not reply! Message from user %1$s at %2$s',
+	'IM_JABBER_SUBJECT'		=> 'This is an automated message please do not reply! Message from user %1$s at %2$s.',
 	'IM_MESSAGE'			=> 'Your message',
 	'IM_MSNM'				=> 'Please note that you need Windows Messenger installed to use this.',
 	'IM_MSNM_BROWSER'		=> 'Your browser does not support this.',
@@ -88,10 +88,10 @@ $lang = array_merge($lang, array(
 	'LESS_THAN'					=> 'Less than',
 	'LIST_USER'					=> '1 user',
 	'LIST_USERS'				=> '%d users',
-	'LOGIN_EXPLAIN_LEADERS'		=> 'The board administrator requires you to be registered and logged in to view the team listing.',
-	'LOGIN_EXPLAIN_MEMBERLIST'	=> 'The board administrator requires you to be registered and logged in to access the memberlist.',
-	'LOGIN_EXPLAIN_SEARCHUSER'	=> 'The board administrator requires you to be registered and logged in to search users.',
-	'LOGIN_EXPLAIN_VIEWPROFILE'	=> 'The board administrator requires you to be registered and logged in to view profiles.',
+	'LOGIN_EXPLAIN_LEADERS'		=> 'The board requires you to be registered and logged in to view the team listing.',
+	'LOGIN_EXPLAIN_MEMBERLIST'	=> 'The board requires you to be registered and logged in to access the memberlist.',
+	'LOGIN_EXPLAIN_SEARCHUSER'	=> 'The board requires you to be registered and logged in to search users.',
+	'LOGIN_EXPLAIN_VIEWPROFILE'	=> 'The board requires you to be registered and logged in to view profiles.',
 
 	'MORE_THAN'				=> 'More than',
 

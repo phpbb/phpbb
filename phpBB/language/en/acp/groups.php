@@ -57,7 +57,7 @@ $lang = array_merge($lang, array(
 	'GROUP_DESC'					=> 'Group description',
 	'GROUP_DETAILS'					=> 'Group details',
 	'GROUP_EDIT_EXPLAIN'			=> 'Here you can edit an existing group. You can change its name, description and type (open, closed, etc.). You can also set certain group wide options such as colouration, rank, etc. Changes made here override users current settings. Please note that group members can alter their avatar unless you set appropriate user permissions.',
-	'GROUP_ERR_USERS_EXIST'			=> 'The specified users are already members of this group',
+	'GROUP_ERR_USERS_EXIST'			=> 'The specified users are already members of this group.',
 	'GROUP_FOUNDER_MANAGE'			=> 'Founder manage only',
 	'GROUP_FOUNDER_MANAGE_EXPLAIN'	=> 'Restrict group management for this group for founders only. Users having group permissions are still able to see this group as well as this groups members.',
 	'GROUP_HIDDEN'					=> 'Hidden',
@@ -112,7 +112,7 @@ $lang = array_merge($lang, array(
 	'USER_DEF_GROUPS'				=> 'User defined groups',
 	'USER_DEF_GROUPS_EXPLAIN'		=> 'These are groups created by you or another admin on this board. You can manage memberships as well as edit group properties or even delete the group.',
 	'USER_GROUP_DEFAULT'			=> 'Set as default group',
-	'USER_GROUP_DEFAULT_EXPLAIN'	=> 'Saying yes here will set this group as the default group for the added users',
+	'USER_GROUP_DEFAULT_EXPLAIN'	=> 'Saying yes here will set this group as the default group for the added users.',
 	'USER_GROUP_LEADER'				=> 'Set as group leader',
 ));
 

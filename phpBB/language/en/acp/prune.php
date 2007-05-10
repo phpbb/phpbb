@@ -63,7 +63,7 @@ $lang = array_merge($lang, array(
 
 	'FORUM_PRUNE'		=> 'Forum prune',
 
-	'NO_PRUNE'			=> 'No forums pruned',
+	'NO_PRUNE'			=> 'No forums pruned.',
 
 	'SELECTED_FORUM'	=> 'Selected forum',
 	'SELECTED_FORUMS'	=> 'Selected forums',
@@ -77,7 +77,7 @@ $lang = array_merge($lang, array(
 	'PRUNE_OLD_POLLS'				=> 'Prune old polls',
 	'PRUNE_OLD_POLLS_EXPLAIN'		=> 'Removes topics with polls not voted in for post age days.',
 	'PRUNE_STICKY'					=> 'Prune stickies',
-	'PRUNE_SUCCESS'					=> 'Pruning of forums was successful',
+	'PRUNE_SUCCESS'					=> 'Pruning of forums was successful.',
 
 	'TOPICS_PRUNED'		=> 'Topics pruned',
 ));
