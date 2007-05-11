@@ -360,29 +360,11 @@ class bbcode_firstpass extends bbcode
 	}
 
 	/**
-	* Parse code tag
-	* Expects the argument to start right after the opening [code] tag and to end with [/code]
+	* Parse code text from code tag
+	* @private
 	*/
-	function bbcode_code($stx, $in)
+	function bbcode_parse_code($stx, $code)
 	{
-		if (!$this->check_bbcode('code', $in))
-		{
-			return '';
-		}
-
-		// We remove the hardcoded elements from the code block here because it is not used in code blocks
-		// Having it here saves us one preg_replace per message containing [code] blocks
-		// Additionally, magic url parsing should go after parsing bbcodes, but for safety those are stripped out too...
-		$htm_match = get_preg_expression('bbcode_htm');
-		unset($htm_match[4], $htm_match[5]);
-		$htm_replace = array('\1', '\1', '\2', '\1');
-
-		$out = '';
-
-		// Strip the last [/code] block from $in
-		$code = substr($in, 0, -7);
-		$code = preg_replace($htm_match, $htm_replace, $code);
-
 		switch (strtolower($stx))
 		{
 			case 'php':
@@ -434,12 +416,101 @@ class bbcode_firstpass extends bbcode
 					$code = substr($code, 0, -1);
 				}
 
-				$out .= "[code=$stx:" . $this->bbcode_uid . ']' . $code . '[/code:' . $this->bbcode_uid . ']';
+				return "[code=$stx:" . $this->bbcode_uid . ']' . $code . '[/code:' . $this->bbcode_uid . ']';
 			break;
 
 			default:
-				$out .= '[code:' . $this->bbcode_uid . ']' . $this->bbcode_specialchars($code) . '[/code:' . $this->bbcode_uid . ']';
+				return '[code:' . $this->bbcode_uid . ']' . $this->bbcode_specialchars($code) . '[/code:' . $this->bbcode_uid . ']';
 			break;
+		}
+	}
+
+	/**
+	* Parse code tag
+	* Expects the argument to start right after the opening [code] tag and to end with [/code]
+	*/
+	function bbcode_code($stx, $in)
+	{
+		if (!$this->check_bbcode('code', $in))
+		{
+			return '';
+		}
+
+		// We remove the hardcoded elements from the code block here because it is not used in code blocks
+		// Having it here saves us one preg_replace per message containing [code] blocks
+		// Additionally, magic url parsing should go after parsing bbcodes, but for safety those are stripped out too...
+		$htm_match = get_preg_expression('bbcode_htm');
+		unset($htm_match[4], $htm_match[5]);
+		$htm_replace = array('\1', '\1', '\2', '\1');
+
+		$in = preg_replace($htm_match, $htm_replace, $in);
+		$out = $code_block = '';
+		$open = 1;
+
+		while ($in)
+		{
+			// Determine position and tag length of next code block
+			preg_match('#(.*?)(\[code(?:=([a-z]+))?\])(.+)#is', $in, $buffer);
+			$pos = (isset($buffer[1])) ? strlen($buffer[1]) : false;
+			$tag_length = (isset($buffer[2])) ? strlen($buffer[2]) : false;
+
+			// Determine position of ending code tag
+			$pos2 = stripos($in, '[/code]');
+
+			// Which is the next block, ending code or code block
+			if ($pos !== false && $pos < $pos2)
+			{
+				// Open new block
+				if (!$open)
+				{
+					$out .= substr($in, 0, $pos);
+					$in = substr($in, $pos);
+					$stx = (isset($buffer[3])) ? $buffer[3] : '';
+					$code_block = '';
+				}
+				else
+				{
+					// Already opened block, just append to the current block
+					$code_block .= substr($in, 0, $pos) . ((isset($buffer[2])) ? $buffer[2] : '');
+					$in = substr($in, $pos);
+				}
+
+				$in = substr($in, $tag_length);
+				$open++;
+			}
+			else
+			{
+				// Close the block
+				if ($open == 1)
+				{
+					$code_block .= substr($in, 0, $pos2);
+
+					// Parse this code block
+					$out .= $this->bbcode_parse_code($stx, $code_block);
+					$code_block = '';
+					$open--;
+				}
+				else if ($open)
+				{
+					// Close one open tag... add to the current code block
+					$code_block .= substr($in, 0, $pos2 + 7);
+					$open--;
+				}
+				else
+				{
+					// end code without opening code... will be always outside code block
+					$out .= substr($in, 0, $pos2 + 7);
+				}
+
+				$in = substr($in, $pos2 + 7);
+			}
+		}
+
+		// if now $code_block has contents we need to parse the remaining code while removing the last closing tag to match up.
+		if ($code_block)
+		{
+			$code_block = substr($code_block, 0, -7);
+			$out .= $this->bbcode_parse_code($stx, $code_block);
 		}
 
 		return $out;
