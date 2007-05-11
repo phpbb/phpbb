@@ -67,87 +67,106 @@ class acp_prune
 
 		if ($submit)
 		{
-			$prune_posted = request_var('prune_days', 0);
-			$prune_viewed = request_var('prune_vieweddays', 0);
-			$prune_all = (!$prune_posted && !$prune_viewed) ? true : false;
-	
-			$prune_flags = 0;
-			$prune_flags += (request_var('prune_old_polls', 0)) ? 2 : 0;
-			$prune_flags += (request_var('prune_announce', 0)) ? 4 : 0;
-			$prune_flags += (request_var('prune_sticky', 0)) ? 8 : 0;
-
-			// Convert days to seconds for timestamp functions...
-			$prunedate_posted = time() - ($prune_posted * 86400);
-			$prunedate_viewed = time() - ($prune_viewed * 86400);
-
-			$template->assign_vars(array(
-				'S_PRUNED'		=> true)
-			);
-
-			$sql_forum = (sizeof($forum_id)) ? ' AND ' . $db->sql_in_set('forum_id', $forum_id) : '';
-
-			// Get a list of forum's or the data for the forum that we are pruning.
-			$sql = 'SELECT forum_id, forum_name 
-				FROM ' . FORUMS_TABLE . '
-				WHERE forum_type = ' . FORUM_POST . "
-					$sql_forum 
-				ORDER BY left_id ASC";
-			$result = $db->sql_query($sql);
-
-			if ($row = $db->sql_fetchrow($result))
+			if (confirm_box(true))
 			{
-				$prune_ids = array();
-				$p_result['topics'] = 0;
-				$p_result['posts'] = 0;
-				$log_data = '';
+				$prune_posted = request_var('prune_days', 0);
+				$prune_viewed = request_var('prune_vieweddays', 0);
+				$prune_all = (!$prune_posted && !$prune_viewed) ? true : false;
 		
-				do
+				$prune_flags = 0;
+				$prune_flags += (request_var('prune_old_polls', 0)) ? 2 : 0;
+				$prune_flags += (request_var('prune_announce', 0)) ? 4 : 0;
+				$prune_flags += (request_var('prune_sticky', 0)) ? 8 : 0;
+
+				// Convert days to seconds for timestamp functions...
+				$prunedate_posted = time() - ($prune_posted * 86400);
+				$prunedate_viewed = time() - ($prune_viewed * 86400);
+
+				$template->assign_vars(array(
+					'S_PRUNED'		=> true)
+				);
+
+				$sql_forum = (sizeof($forum_id)) ? ' AND ' . $db->sql_in_set('forum_id', $forum_id) : '';
+
+				// Get a list of forum's or the data for the forum that we are pruning.
+				$sql = 'SELECT forum_id, forum_name 
+					FROM ' . FORUMS_TABLE . '
+					WHERE forum_type = ' . FORUM_POST . "
+						$sql_forum 
+					ORDER BY left_id ASC";
+				$result = $db->sql_query($sql);
+
+				if ($row = $db->sql_fetchrow($result))
 				{
-					if (!$auth->acl_get('f_list', $row['forum_id']))
+					$prune_ids = array();
+					$p_result['topics'] = 0;
+					$p_result['posts'] = 0;
+					$log_data = '';
+			
+					do
 					{
-						continue;
-					}
-
-					if ($prune_all)
-					{
-						$p_result = prune($row['forum_id'], 'posted', time(), $prune_flags, false);
-					}
-					else
-					{
-						if ($prune_posted)
+						if (!$auth->acl_get('f_list', $row['forum_id']))
 						{
-							$return = prune($row['forum_id'], 'posted', $prunedate_posted, $prune_flags, false);
-							$p_result['topics'] += $return['topics'];
-							$p_result['posts'] += $return['posts'];
+							continue;
 						}
+
+						if ($prune_all)
+						{
+							$p_result = prune($row['forum_id'], 'posted', time(), $prune_flags, false);
+						}
+						else
+						{
+							if ($prune_posted)
+							{
+								$return = prune($row['forum_id'], 'posted', $prunedate_posted, $prune_flags, false);
+								$p_result['topics'] += $return['topics'];
+								$p_result['posts'] += $return['posts'];
+							}
+			
+							if ($prune_viewed)
+							{
+								$return = prune($row['forum_id'], 'viewed', $prunedate_viewed, $prune_flags, false);
+								$p_result['topics'] += $return['topics'];
+								$p_result['posts'] += $return['posts'];
+							}
+						}
+
+						$prune_ids[] = $row['forum_id'];
+
+						$template->assign_block_vars('pruned', array(
+							'FORUM_NAME'	=> $row['forum_name'],
+							'NUM_TOPICS'	=> $p_result['topics'],
+							'NUM_POSTS'		=> $p_result['posts'])
+						);
 		
-						if ($prune_viewed)
-						{
-							$return = prune($row['forum_id'], 'viewed', $prunedate_viewed, $prune_flags, false);
-							$p_result['topics'] += $return['topics'];
-							$p_result['posts'] += $return['posts'];
-						}
+						$log_data .= (($log_data != '') ? ', ' : '') . $row['forum_name'];
 					}
-
-					$prune_ids[] = $row['forum_id'];
-
-					$template->assign_block_vars('pruned', array(
-						'FORUM_NAME'	=> $row['forum_name'],
-						'NUM_TOPICS'	=> $p_result['topics'],
-						'NUM_POSTS'		=> $p_result['posts'])
-					);
-	
-					$log_data .= (($log_data != '') ? ', ' : '') . $row['forum_name'];
+					while ($row = $db->sql_fetchrow($result));
+		
+					// Sync all pruned forums at once
+					sync('forum', 'forum_id', $prune_ids, true, true);
+					add_log('admin', 'LOG_PRUNE', $log_data);
 				}
-				while ($row = $db->sql_fetchrow($result));
-	
-				// Sync all pruned forums at once
-				sync('forum', 'forum_id', $prune_ids, true, true);
-				add_log('admin', 'LOG_PRUNE', $log_data);
-			}
-			$db->sql_freeresult($result);
+				$db->sql_freeresult($result);
 
-			return;
+				return;
+			}
+			else
+			{
+				confirm_box(false, $user->lang['PRUNE_FORUM_CONFIRM'], build_hidden_fields(array(
+					'i'				=> $id,
+					'mode'			=> $mode,
+					'submit'		=> 1,
+					'all_forums'	=> $all_forums,
+					'f'				=> $forum_id,
+
+					'prune_days'		=> request_var('prune_days', 0),
+					'prune_vieweddays'	=> request_var('prune_vieweddays', 0),
+					'prune_old_polls'	=> request_var('prune_old_polls', 0),
+					'prune_announce'	=> request_var('prune_announce', 0),
+					'prune_sticky'		=> request_var('prune_sticky', 0),
+				)));
+			}
 		}
 
 		// If they haven't selected a forum for pruning yet then

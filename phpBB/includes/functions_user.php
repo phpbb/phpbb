@@ -293,6 +293,65 @@ function user_delete($mode, $user_id, $post_username = false)
 
 	$db->sql_transaction('begin');
 
+	// Before we begin, we will remove the reports the user issued.
+	$sql = 'SELECT r.post_id, p.topic_id
+		FROM ' . REPORTS_TABLE . ' r, ' . POSTS_TABLE . ' p
+		WHERE r.user_id = ' . $user_id . '
+			AND p.post_id = r.post_id';
+	$result = $db->sql_query($sql);
+
+	$report_posts = $report_topics = array();
+	while ($row = $db->sql_fetchrow($result))
+	{
+		$report_posts[] = $row['post_id'];
+		$report_topics[] = $row['topic_id'];
+	}
+	$db->sql_freeresult($result);
+
+	if (sizeof($report_posts))
+	{
+		$report_posts = array_unique($report_posts);
+		$report_topics = array_unique($report_topics);
+
+		// Get a list of topics that still contain reported posts
+		$sql = 'SELECT DISTINCT topic_id
+			FROM ' . POSTS_TABLE . '
+			WHERE ' . $db->sql_in_set('topic_id', $report_topics) . '
+				AND post_reported = 1
+				AND ' . $db->sql_in_set('post_id', $report_posts, true);
+		$result = $db->sql_query($sql);
+
+		$keep_report_topics = array();
+		while ($row = $db->sql_fetchrow($result))
+		{
+			$keep_report_topics[] = $row['topic_id'];
+		}
+		$db->sql_freeresult($result);
+
+		if (sizeof($keep_report_topics))
+		{
+			$report_topics = array_diff($report_topics, $keep_report_topics);
+		}
+		unset($keep_report_topics);
+
+		// Now set the flags back
+		$sql = 'UPDATE ' . POSTS_TABLE . '
+			SET post_reported = 0
+			WHERE ' . $db->sql_in_set('post_id', $report_posts);
+		$db->sql_query($sql);
+
+		if (sizeof($report_topics))
+		{
+			$sql = 'UPDATE ' . TOPICS_TABLE . '
+				SET topic_reported = 0
+				WHERE ' . $db->sql_in_set('topic_id', $report_topics);
+			$db->sql_query($sql);
+		}
+	}
+
+	// Remove reports
+	$db->sql_query('DELETE FROM ' . REPORTS_TABLE . ' WHERE user_id = ' . $user_id);
+
 	switch ($mode)
 	{
 		case 'retain':

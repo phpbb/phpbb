@@ -967,6 +967,7 @@ parse_css_file = {PARSE_CSS_FILE}
 
 		foreach ($file_ary as $file)
 		{
+			$file = str_replace('/', '.', $file);
 			$filename = "{$cache_prefix}_$file.html.$phpEx";
 
 			$template->assign_block_vars('file', array(

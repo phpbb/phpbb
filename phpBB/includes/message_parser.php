@@ -374,107 +374,73 @@ class bbcode_firstpass extends bbcode
 		// Having it here saves us one preg_replace per message containing [code] blocks
 		// Additionally, magic url parsing should go after parsing bbcodes, but for safety those are stripped out too...
 		$htm_match = get_preg_expression('bbcode_htm');
-//		$htm_match[3] = '/&#([0-9]+);/';
 		unset($htm_match[4], $htm_match[5]);
-
-		$htm_replace = array('\1', '\1', '\2', '\1'); //, '&amp;#\1;');
+		$htm_replace = array('\1', '\1', '\2', '\1');
 
 		$out = '';
 
-		do
+		// Strip the last [/code] block from $in
+		$code = substr($in, 0, -7);
+		$code = preg_replace($htm_match, $htm_replace, $code);
+
+		switch (strtolower($stx))
 		{
-			$pos = stripos($in, '[/code]') + 7;
-			$code = substr($in, 0, $pos);
-			$in = substr($in, $pos);
-			
-			// $code contains everything that was between code tags (including the ending tag) but we're trying to grab as much extra text as possible, as long as it does not contain open [code] tags
-			while ($in)
-			{
-				$pos = stripos($in, '[/code]') + 7;
-				$buffer = substr($in, 0, $pos);
+			case 'php':
 
-				if (preg_match('#\[code(?:=([a-z]+))?\]#i', $buffer))
+				$remove_tags = false;
+				$code = str_replace(array('&lt;', '&gt;'), array('<', '>'), $code);
+
+				if (!preg_match('/\<\?.*?\?\>/is', $code))
 				{
-					break;
+					$remove_tags = true;
+					$code = "<?php $code ?>";
 				}
-				else
+
+				$conf = array('highlight.bg', 'highlight.comment', 'highlight.default', 'highlight.html', 'highlight.keyword', 'highlight.string');
+				foreach ($conf as $ini_var)
 				{
-					$in = substr($in, $pos);
-					$code .= $buffer;
+					@ini_set($ini_var, str_replace('highlight.', 'syntax', $ini_var));
 				}
-			}
 
-			$code = substr($code, 0, -7);
-//			$code = preg_replace('#^[\r\n]*(.*?)[\n\r\s\t]*$#s', '$1', $code);
-			$code = preg_replace($htm_match, $htm_replace, $code);
+				// Because highlight_string is specialcharing the text (but we already did this before), we have to reverse this in order to get correct results
+				$code = htmlspecialchars_decode($code);
+				$code = highlight_string($code, true);
 
-			switch (strtolower($stx))
-			{
-				case 'php':
+				$str_from = array('<span style="color: ', '<font color="syntax', '</font>', '<code>', '</code>','[', ']', '.', ':');
+				$str_to = array('<span class="', '<span class="syntax', '</span>', '', '', '&#91;', '&#93;', '&#46;', '&#58;');
 
-					$remove_tags = false;
-					$code = str_replace(array('&lt;', '&gt;'), array('<', '>'), $code);
+				if ($remove_tags)
+				{
+					$str_from[] = '<span class="syntaxdefault">&lt;?php </span>';
+					$str_to[] = '';
+					$str_from[] = '<span class="syntaxdefault">&lt;?php&nbsp;';
+					$str_to[] = '<span class="syntaxdefault">';
+				}
 
-					if (!preg_match('/\<\?.*?\?\>/is', $code))
-					{
-						$remove_tags = true;
-						$code = "<?php $code ?>";
-					}
+				$code = str_replace($str_from, $str_to, $code);
+				$code = preg_replace('#^(<span class="[a-z_]+">)\n?(.*?)\n?(</span>)$#is', '$1$2$3', $code);
 
-					$conf = array('highlight.bg', 'highlight.comment', 'highlight.default', 'highlight.html', 'highlight.keyword', 'highlight.string');
-					foreach ($conf as $ini_var)
-					{
-						@ini_set($ini_var, str_replace('highlight.', 'syntax', $ini_var));
-					}
+				if ($remove_tags)
+				{
+					$code = preg_replace('#(<span class="[a-z]+">)?\?&gt;</span>#', '', $code);
+				}
 
-					// Because highlight_string is specialcharing the text (but we already did this before), we have to reverse this in order to get correct results
-					$code = htmlspecialchars_decode($code);
-					$code = highlight_string($code, true);
+				$code = preg_replace('#^<span class="[a-z]+"><span class="([a-z]+)">(.*)</span></span>#s', '<span class="$1">$2</span>', $code);
+				$code = preg_replace('#(?:[\n\r\s\t]|&nbsp;)*</span>$#u', '</span>', $code);
 
-					$str_from = array('<span style="color: ', '<font color="syntax', '</font>', '<code>', '</code>','[', ']', '.', ':');
-					$str_to = array('<span class="', '<span class="syntax', '</span>', '', '', '&#91;', '&#93;', '&#46;', '&#58;');
+				// remove newline at the end
+				if (!empty($code) && $code[strlen($code) - 1] == "\n")
+				{
+					$code = substr($code, 0, -1);
+				}
 
-					if ($remove_tags)
-					{
-						$str_from[] = '<span class="syntaxdefault">&lt;?php </span>';
-						$str_to[] = '';
-						$str_from[] = '<span class="syntaxdefault">&lt;?php&nbsp;';
-						$str_to[] = '<span class="syntaxdefault">';
-					}
+				$out .= "[code=$stx:" . $this->bbcode_uid . ']' . $code . '[/code:' . $this->bbcode_uid . ']';
+			break;
 
-					$code = str_replace($str_from, $str_to, $code);
-					$code = preg_replace('#^(<span class="[a-z_]+">)\n?(.*?)\n?(</span>)$#is', '$1$2$3', $code);
-
-					if ($remove_tags)
-					{
-						$code = preg_replace('#(<span class="[a-z]+">)?\?&gt;</span>#', '', $code);
-					}
-
-					$code = preg_replace('#^<span class="[a-z]+"><span class="([a-z]+)">(.*)</span></span>#s', '<span class="$1">$2</span>', $code);
-					$code = preg_replace('#(?:[\n\r\s\t]|&nbsp;)*</span>$#u', '</span>', $code);
-
-					// remove newline at the end
-					if (!empty($code) && $code[strlen($code) - 1] == "\n")
-					{
-						$code = substr($code, 0, -1);
-					}
-
-					$out .= "[code=$stx:" . $this->bbcode_uid . ']' . $code . '[/code:' . $this->bbcode_uid . ']';
-				break;
-
-				default:
-					$out .= '[code:' . $this->bbcode_uid . ']' . $this->bbcode_specialchars($code) . '[/code:' . $this->bbcode_uid . ']';
-				break;
-			}
-
-			if (preg_match('#(.*?)\[code(?:=([a-z]+))?\](.+)#is', $in, $m))
-			{
-				$out .= $m[1];
-				$stx = $m[2];
-				$in = $m[3];
-			}
+			default:
+				$out .= '[code:' . $this->bbcode_uid . ']' . $this->bbcode_specialchars($code) . '[/code:' . $this->bbcode_uid . ']';
+			break;
 		}
-		while ($in);
 
 		return $out;
 	}
@@ -979,10 +945,8 @@ class parse_message extends bbcode_firstpass
 
 		// Do some general 'cleanup' first before processing message,
 		// e.g. remove excessive newlines(?), smilies(?)
-		// Transform \r\n and \r into \n
-		// TODO: Second regex looks wrong...
-		$match = array('#\r\n?#', "#(\n\s+){3,}#u", '#(script|about|applet|activex|chrome):#i');
-		$replace = array("\n", "\n\n", "\\1&#058;");
+		$match = array('#(script|about|applet|activex|chrome):#i');
+		$replace = array("\\1&#058;");
 		$this->message = preg_replace($match, $replace, trim($this->message));
 
 		// Message length check. -1 disables this check completely.

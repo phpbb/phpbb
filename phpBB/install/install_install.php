@@ -1304,12 +1304,11 @@ class install_install extends module
 				SET forum_last_post_time = $current_time", 
 		);
 
-		if (!@extension_loaded('gd'))
+		if (@extension_loaded('gd') || can_load_dll('gd'))
 		{
-			can_load_dll('gd');
 			$sql_ary[] = 'UPDATE ' . $table_prefix . "config
-					SET config_value = '1'
-					WHERE config_name = 'captcha_gd'";
+				SET config_value = '1'
+				WHERE config_name = 'captcha_gd'";
 		}
 
 		// We set a (semi-)unique cookie name to bypass login issues related to the cookie name.

@@ -72,6 +72,7 @@ $lang = array_merge($lang, array(
 	'PRUNE_ANNOUNCEMENTS'			=> 'Prune announcements',
 	'PRUNE_FINISHED_POLLS'			=> 'Prune closed polls',
 	'PRUNE_FINISHED_POLLS_EXPLAIN'	=> 'Removes topics with polls which have ended.',
+	'PRUNE_FORUM_CONFIRM'			=> 'Are you sure you want to prune the selected forums with the settings specified? Once removed, there is no way to recover the pruned posts and topics.',
 	'PRUNE_NOT_POSTED'				=> 'Days since last posted',
 	'PRUNE_NOT_VIEWED'				=> 'Days since last viewed',
 	'PRUNE_OLD_POLLS'				=> 'Prune old polls',
