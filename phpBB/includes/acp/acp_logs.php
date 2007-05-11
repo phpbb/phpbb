@@ -26,8 +26,8 @@ class acp_logs
 		$action		= request_var('action', '');
 		$forum_id	= request_var('f', 0);
 		$start		= request_var('start', 0);
-		$deletemark = (isset($_POST['delmarked'])) ? true : false;
-		$deleteall	= (isset($_POST['delall'])) ? true : false;
+		$deletemark = (!empty($_POST['delmarked'])) ? true : false;
+		$deleteall	= (!empty($_POST['delall'])) ? true : false;
 		$marked		= request_var('mark', array(0));
 
 		// Sort keys
