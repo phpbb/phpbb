@@ -1016,7 +1016,7 @@ class sqlite_extractor extends base_extractor
 				}
 				else if (strpos($col_types[$column_name], 'text') !== false || strpos($col_types[$column_name], 'char') !== false || strpos($col_types[$column_name], 'blob') !== false)
 				{
-					$row[$column_name] = "'" . sanitize_data_generic(str_replace("'", "''", $column_data)) . "'";
+					$row[$column_name] = sanitize_data_generic(str_replace("'", "''", $column_data));
 				}
 			}
 			$this->flush($sql_insert . implode(', ', $row) . ");\n");
@@ -1517,8 +1517,8 @@ class mssql_extractor extends base_extractor
 
 				if (preg_match('#char|text|bool|varbinary#i', $ary_type[$i]))
 				{
-					$str_quote = "'";
-					$str_empty = '';
+					$str_quote = '';
+					$str_empty = "''";
 					$str_val = sanitize_data_mssql(str_replace("'", "''", $str_val));
 				}
 				else if (preg_match('#date|timestamp#i', $ary_type[$i]))
@@ -1611,8 +1611,8 @@ class mssql_extractor extends base_extractor
 
 				if (preg_match('#char|text|bool|varbinary#i', $ary_type[$i]))
 				{
-					$str_quote = "'";
-					$str_empty = '';
+					$str_quote = '';
+					$str_empty = "''";
 					$str_val = sanitize_data_mssql(str_replace("'", "''", $str_val));
 				}
 				else if (preg_match('#date|timestamp#i', $ary_type[$i]))
@@ -1813,8 +1813,8 @@ class oracle_extractor extends base_extractor
 
 				if (preg_match('#char|text|bool|raw#i', $ary_type[$i]))
 				{
-					$str_quote = "'";
-					$str_empty = '';
+					$str_quote = '';
+					$str_empty = "''";
 					$str_val = sanitize_data_oracle($str_val);
 				}
 				else if (preg_match('#date|timestamp#i', $ary_type[$i]))
@@ -1908,8 +1908,8 @@ class firebird_extractor extends base_extractor
 
 				if (preg_match('#char|text|bool|varbinary|blob#i', $ary_type[$i]))
 				{
-					$str_quote = "'";
-					$str_empty = '';
+					$str_quote = '';
+					$str_empty = "''";
 					$str_val = sanitize_data_generic(str_replace("'", "''", $str_val));
 				}
 				else if (preg_match('#date|timestamp#i', $ary_type[$i]))
@@ -2144,21 +2144,21 @@ function sanitize_data_mssql($text)
 {
 	$data = preg_split('/[\n\t\r\b\f]/', $text);
 	preg_match_all('/[\n\t\r\b\f]/', $text, $matches);
-	
+
 	$val = array();
-	
+
 	foreach ($data as $value)
 	{
 		if (strlen($value))
 		{
-			$val[] = $value;
+			$val[] = "'" . $value . "'";
 		}
 		if (sizeof($matches[0]))
 		{
 			$val[] = 'char(' . ord(array_shift($matches[0])) . ')';
 		}
 	}
-	
+
 	return implode('+', $val);
 }
 
@@ -2166,21 +2166,21 @@ function sanitize_data_oracle($text)
 {
 	$data = preg_split('/[\0\n\t\r\b\f\'"\\\]/', $text);
 	preg_match_all('/[\0\n\t\r\b\f\'"\\\]/', $text, $matches);
-	
+
 	$val = array();
-	
+
 	foreach ($data as $value)
 	{
 		if (strlen($value))
 		{
-			$val[] = $value;
+			$val[] = "'" . $value . "'";
 		}
 		if (sizeof($matches[0]))
 		{
 			$val[] = 'chr(' . ord(array_shift($matches[0])) . ')';
 		}
 	}
-	
+
 	return implode('||', $val);
 }
 
@@ -2188,21 +2188,21 @@ function sanitize_data_generic($text)
 {
 	$data = preg_split('/[\n\t\r\b\f]/', $text);
 	preg_match_all('/[\n\t\r\b\f]/', $text, $matches);
-	
+
 	$val = array();
-	
+
 	foreach ($data as $value)
 	{
 		if (strlen($value))
 		{
-			$val[] = $value;
+			$val[] = "'" . $value . "'";
 		}
 		if (sizeof($matches[0]))
 		{
 			$val[] = "'" . array_shift($matches[0]) . "'";
 		}
 	}
-	
+
 	return implode('||', $val);
 }
 
