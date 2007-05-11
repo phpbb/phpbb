@@ -951,6 +951,12 @@ if ($submit || $preview || $refresh)
 				'topic_approved'		=> (isset($post_data['topic_approved'])) ? $post_data['topic_approved'] : false,
 				'post_approved'			=> (isset($post_data['post_approved'])) ? $post_data['post_approved'] : false,
 			);
+
+			if ($mode == 'edit')
+			{
+				$data['topic_replies_real'] = $post_data['topic_replies_real'];
+			}
+
 			unset($message_parser);
 
 			$redirect_url = submit_post($mode, $post_data['post_subject'], $post_data['username'], $post_data['topic_type'], $poll, $data, $update_message);
