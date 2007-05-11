@@ -907,18 +907,21 @@ function get_gallery_avatar_dim($source, $axis)
 * Whilst it's unlikely that remote avatars will be duplicated, it is possible so caching seems the best option
 * This should only be called from a post processing step due to the possibility of network timeouts
 */
-function get_remote_avatar_dim($src,$axis)
+function get_remote_avatar_dim($src, $axis)
 {
 	if (empty($src))
 	{
 		return 0;
 	}
 
-	static $avatar_cache = array();
+	static $remote_avatar_cache = array();
 
-	if (isset($avatar_cache[$src]))
+	// an ugly hack: we assume that the dimensions of each remote avatar are accessed exactly twice (x and y)
+	if (isset($remote_avatar_cache[$src]))
 	{
-		return $avatar_cache[$src][$axis];
+		$retval = $remote_avatar_cache[$src][$axis];
+		unset($remote_avatar_cache);
+		return $retval;
 	}
 	
 	$url_info = parse_url($src);
@@ -943,13 +946,13 @@ function get_remote_avatar_dim($src,$axis)
 	}
 	
 	$timeout = @ini_get('default_socket_timeout');
-	@ini_set('default_socket_timeout', 5);
+	@ini_set('default_socket_timeout', 2);
 	
 	// We're just trying to reach the server to avoid timeouts
-	$fp = @fsockopen($host, $port, $errno, $errstr, 3);
+	$fp = @fsockopen($host, $port, $errno, $errstr, 1);
 	if ($fp)
 	{
-		$avatar_cache[$src] = @getimagesize($src);
+		$remote_avatar_cache[$src] = @getimagesize($src);
 		fclose($fp);
 	}
 	
@@ -957,24 +960,24 @@ function get_remote_avatar_dim($src,$axis)
 	$default_y 	= (defined('DEFAULT_AVATAR_Y_CUSTOM')) ? DEFAULT_AVATAR_Y_CUSTOM : DEFAULT_AVATAR_Y;
 	$default 	= array($default_x, $default_y);
 	
-	if (empty($avatar_cache[$src]) || empty($avatar_cache[$src][0]) || empty($avatar_cache[$src][1]))
+	if (empty($remote_avatar_cache[$src]) || empty($remote_avatar_cache[$src][0]) || empty($remote_avatar_cache[$src][1]))
 	{
-		$avatar_cache[$src] = $default;
+		$remote_avatar_cache[$src] = $default;
 	}
 	else
 	{
 		// We trust gallery and uploaded avatars to conform to the size settings; we might have to adjust here
-		if ($avatar_cache[$src][0] > $default_x || $avatar_cache[$src][1] > $default_y)
+		if ($remote_avatar_cache[$src][0] > $default_x || $remote_avatar_cache[$src][1] > $default_y)
 		{
-			$bigger = ($avatar_cache[$src][0] > $avatar_cache[$src][1]) ? 0 : 1;
-			$ratio = $default[$bigger] / $avatar_cache[$src][$bigger];
-			$avatar_cache[$src][0] = (int)($avatar_cache[$src][0] * $ratio);
-			$avatar_cache[$src][1] = (int)($avatar_cache[$src][1] * $ratio);
+			$bigger = ($remote_avatar_cache[$src][0] > $remote_avatar_cache[$src][1]) ? 0 : 1;
+			$ratio = $default[$bigger] / $remote_avatar_cache[$src][$bigger];
+			$remote_avatar_cache[$src][0] = (int)($remote_avatar_cache[$src][0] * $ratio);
+			$remote_avatar_cache[$src][1] = (int)($remote_avatar_cache[$src][1] * $ratio);
 		}
 	}
 	
 	@ini_set('default_socket_timeout', $timeout);
-	return $avatar_cache[$src][$axis];
+	return $remote_avatar_cache[$src][$axis];
 }
 
 function set_user_options()
