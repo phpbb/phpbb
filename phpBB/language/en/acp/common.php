@@ -483,7 +483,8 @@ $lang = array_merge($lang, array(
 	'LOG_DISALLOW_DELETE'	=> '<strong>Deleted disallowed username</strong>',
 
 	'LOG_DB_BACKUP'			=> '<strong>Database backup</strong>',
-	'LOG_DB_RESTORE'		=> '<strong>Database restore</strong>',
+	'LOG_DB_DELETE'			=> '<strong>Database restored</strong>',
+	'LOG_DB_RESTORE'		=> '<strong>Database deleted</strong>',
 
 	'LOG_DOWNLOAD_EXCLUDE_IP'	=> '<strong>Excluded IP/hostname from download list</strong><br />» %s',
 	'LOG_DOWNLOAD_IP'			=> '<strong>Added IP/hostname to download list</strong><br />» %s',

@@ -226,6 +226,7 @@ class acp_database
 							if (confirm_box(true))
 							{
 								unlink($file_name);
+								add_log('admin', 'LOG_DB_DELETE');
 								trigger_error($user->lang['BACKUP_DELETE'] . adm_back_link($this->u_action));
 							}
 							else
