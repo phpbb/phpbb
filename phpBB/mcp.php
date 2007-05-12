@@ -56,6 +56,12 @@ $quickmod = (isset($_REQUEST['quickmod'])) ? true : false;
 $action = request_var('action', '');
 $action_ary = request_var('action', array('' => 0));
 
+$forum_action = request_var('forum_action', '');
+if ($forum_action !== '' && !empty($_POST['sort']))
+{
+	$action = $forum_action;
+}
+
 if (sizeof($action_ary))
 {
 	list($action, ) = each($action_ary);

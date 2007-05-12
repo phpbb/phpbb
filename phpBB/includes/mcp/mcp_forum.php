@@ -116,7 +116,7 @@ function mcp_forum_view($id, $mode, $action, $forum_info)
 		'U_VIEW_FORUM'			=> append_sid("{$phpbb_root_path}viewforum.$phpEx", 'f=' . $forum_id),
 		'U_VIEW_FORUM_LOGS'		=> ($auth->acl_gets('a_', 'm_', $forum_id) && $module->loaded('logs')) ? append_sid("{$phpbb_root_path}mcp.$phpEx", 'i=logs&amp;mode=forum_logs&amp;f=' . $forum_id) : '',
 
-		'S_MCP_ACTION'			=> $url . "&amp;i=$id&amp;mode=$mode&amp;start=$start" . (($merge_select) ? $selected_ids : ''),
+		'S_MCP_ACTION'			=> $url . "&amp;i=$id&amp;forum_action=$action&amp;mode=$mode&amp;start=$start" . (($merge_select) ? $selected_ids : ''),
 
 		'PAGINATION'			=> generate_pagination($url . "&amp;i=$id&amp;action=$action&amp;mode=$mode" . (($merge_select) ? $selected_ids : ''), $forum_topics, $topics_per_page, $start),
 		'PAGE_NUMBER'			=> on_page($forum_topics, $topics_per_page, $start),
