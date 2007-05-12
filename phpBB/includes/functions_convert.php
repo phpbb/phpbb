@@ -924,10 +924,14 @@ function get_remote_avatar_dim($src, $axis)
 		return $retval;
 	}
 	
-	$url_info = parse_url($src);
+	$url_info = @parse_url($src);
+	if (empty($url_info['host'])
+	{
+		return 0;
+	}
 	$host = $url_info['host'];
 	$port = (isset($url_info['port'])) ? $url_info['port'] : 0;
-	$protocol = $url_info['scheme'];
+	$protocol = (isset($url_info['scheme'])) ? $url_info['scheme'] : 'http';
 	if (empty($port))
 	{
 		switch(strtolower($protocol))
