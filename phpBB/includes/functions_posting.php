@@ -1436,7 +1436,7 @@ function submit_post($mode, $subject, $username, $topic_type, &$poll, &$data, $u
 	}
 
 	// First of all make sure the subject and topic title are having the correct length.
-	// To achive this without cutting off between special chars we convert to an array and then count the elements.
+	// To achieve this without cutting off between special chars we convert to an array and then count the elements.
 	$subject = truncate_string($subject);
 	$data['topic_title'] = truncate_string($data['topic_title']);
 

@@ -430,7 +430,7 @@ class auth_admin extends auth
 
 		// If we only have one forum id to display or being in local mode and more than one user/group to display, 
 		// we switch the complete interface to group by user/usergroup instead of grouping by forum
-		// To achive this, we need to switch the array a bit
+		// To achieve this, we need to switch the array a bit
 		if (sizeof($forum_ids) == 1 || ($local && sizeof($ug_names_ary) > 1))
 		{
 			$hold_ary_temp = $hold_ary;
