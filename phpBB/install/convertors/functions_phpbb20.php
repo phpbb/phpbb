@@ -500,7 +500,7 @@ function phpbb_user_id($user_id)
 	// having mods installed (a poster id of 0 is not possible in 2.0.x). 
 	// Therefore, we return the user id "as is".
 
-	return $user_id;
+	return (int) $user_id;
 }
 
 /* Copy additional table fields from old forum to new forum if user wants this (for Mod compatibility for example)

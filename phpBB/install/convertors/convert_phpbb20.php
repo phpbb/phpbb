@@ -428,7 +428,7 @@ if (!$get_info)
 				'target'		=> BANLIST_TABLE,
 
 				array('ban_ip',					'banlist.ban_ip',	''),
-				array('ban_userid',				'0',				''),
+				array('ban_userid',				0,					''),
 				array('ban_email',				'',					''),
 				array('ban_reason',				'',					''),
 				array('ban_give_reason',		'',					''),
