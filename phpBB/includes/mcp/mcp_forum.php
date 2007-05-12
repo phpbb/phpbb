@@ -20,8 +20,6 @@ function mcp_forum_view($id, $mode, $action, $forum_info)
 
 	include_once($phpbb_root_path . 'includes/functions_display.' . $phpEx);
 
-	$url = append_sid("{$phpbb_root_path}mcp.$phpEx?" . extra_url());
-
 	// merge_topic is the quickmod action, merge_topics is the mcp_forum action, and merge_select is the mcp_topic action
 	$merge_select = ($action == 'merge_select' || $action == 'merge_topic' || $action == 'merge_topics') ? true : false;
 
@@ -37,6 +35,14 @@ function mcp_forum_view($id, $mode, $action, $forum_info)
 	$post_id_list		= request_var('post_id_list', array(0));
 	$source_topic_ids	= array(request_var('t', 0));
 	$to_topic_id		= request_var('to_topic_id', 0);
+
+	$url_extra = '';
+	$url_extra .= ($forum_id) ? "&amp;f=$forum_id" : '';
+	$url_extra .= ($GLOBALS['topic_id']) ? '&amp;t=' . $GLOBALS['topic_id'] : '';
+	$url_extra .= ($GLOBALS['post_id']) ? '&amp;p=' . $GLOBALS['post_id'] : '';
+	$url_extra .= ($GLOBALS['user_id']) ? '&amp;u=' . $GLOBALS['user_id'] : '';
+
+	$url = append_sid("{$phpbb_root_path}mcp.$phpEx?$url_extra");
 
 	// Resync Topics
 	switch ($action)
