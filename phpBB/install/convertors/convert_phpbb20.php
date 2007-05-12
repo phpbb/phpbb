@@ -431,7 +431,7 @@ if (!$get_info)
 				array('ban_userid',				'0',				''),
 				array('ban_email',				'',					''),
 				array('ban_reason',				'',					''),
-				array('ban_give_reason',		'',					'')
+				array('ban_give_reason',		'',					''),
 
 				'where'			=> "banlist.ban_ip LIKE '%.%'",
 			),
