@@ -1829,7 +1829,7 @@ function avatar_gallery($category, $avatar_select, $items_per_column, $block_var
 */
 function avatar_get_dimensions($avatar, $avatar_type, &$error, $current_x = 0, $current_y = 0)
 {
-	global $config, $phpbb_root_path;
+	global $config, $phpbb_root_path, $user;
 	
 	switch ($avatar_type)
 	{
