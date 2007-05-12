@@ -925,7 +925,7 @@ function get_remote_avatar_dim($src, $axis)
 	}
 	
 	$url_info = @parse_url($src);
-	if (empty($url_info['host'])
+	if (empty($url_info['host']))
 	{
 		return 0;
 	}
