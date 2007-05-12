@@ -419,6 +419,7 @@ if (!$get_info)
 				array('ban_userid',				'banlist.ban_userid',				'phpbb_user_id'),
 				array('ban_email',				'banlist.ban_email',				''),
 				array('ban_reason',				'',									''),
+				array('ban_give_reason',		'',									''),
 
 				'where'			=> "banlist.ban_ip NOT LIKE '%.%'",
 			),
@@ -429,7 +430,8 @@ if (!$get_info)
 				array('ban_ip',					'banlist.ban_ip',	''),
 				array('ban_userid',				'0',				''),
 				array('ban_email',				'',					''),
-				array('ban_reason',				'',									''),
+				array('ban_reason',				'',					''),
+				array('ban_give_reason',		'',					'')
 
 				'where'			=> "banlist.ban_ip LIKE '%.%'",
 			),
@@ -666,6 +668,7 @@ if (!$get_info)
 				array('',						'privmsgs_text.privmsgs_bbcode_uid AS old_bbcode_uid',			''),
 				array('bbcode_bitfield',		'',										'get_bbcode_bitfield'),
 				array('to_address',				'privmsgs.privmsgs_to_userid',			'phpbb_privmsgs_to_userid'),
+				array('bcc_address',			'',										''),
 
 				'where'			=>	'privmsgs.privmsgs_id = privmsgs_text.privmsgs_text_id'
 			),
