@@ -1220,6 +1220,7 @@ switch ($mode)
 				'COUNT'		=> $count,
 				'IP'		=> $ipdomain,
 
+				'S_IP_SEARCH_ALLOWED'	=> ($auth->acl_getf_global('m_info')) ? true : false,
 				'S_IN_SEARCH_POPUP'		=> ($form && $field) ? true : false,
 				'S_SEARCH_USER'			=> true,
 				'S_FORM_NAME'			=> $form,

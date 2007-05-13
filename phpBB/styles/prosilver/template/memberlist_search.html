@@ -85,10 +85,12 @@ function insert_single(user)
 		<dt><label for="count">{L_POSTS}:</label></dt>
 		<dd><select name="count_select">{S_COUNT_OPTIONS}</select> <input class="inputbox medium" type="text" name="count" id="count" value="{COUNT}" /></dd>
 	</dl>
+<!-- IF S_IP_SEARCH_ALLOWED -->
 	<dl>
 		<dt><label for="ip">{L_POST_IP}:</label></dt>
 		<dd><input class="inputbox medium" type="text" name="ip" id="ip" value="{IP}" /></dd>
 	</dl>
+<!-- ENDIF -->
 	<dl>
 		<dt><label for="search_group_id">{L_GROUP}:</label></dt>
 		<dd><select name="search_group_id" id="search_group_id">{S_GROUP_SELECT}</select></dd>
