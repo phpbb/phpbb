@@ -47,13 +47,6 @@ ul.topiclist dfn {
 	display: none;
 }
 
-ul.topiclist li.row dt a.subforum {
-	background-image: none;
-	background-position: 0pt 50%;
-	background-repeat: no-repeat;
-	padding: 0 0 0 12px;
-}
-
 li.row {
 	border-top: 1px solid #FFFFFF;
 	border-bottom: 1px solid #8f8f8f;
