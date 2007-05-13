@@ -2600,6 +2600,113 @@ function generate_text_for_edit($text, $uid, $flags)
 }
 
 /**
+* A subroutine of make_clickable used with preg_replace
+* It places correct HTML around an url, shortens the displayed text
+* and makes sure no entities are inside URLs
+*/
+function make_clickable_callback($type, $whitespace, $url, $relative_url, $class)
+{
+		$append			= '';
+		$url			= htmlspecialchars_decode($url);
+		$relative_url	= htmlspecialchars_decode($relative_url);
+
+		// make sure no HTML entities were matched
+		$chars = array('<', '>', '"');
+		$split = false;
+		foreach ($chars as $char)
+		{
+			$next_split = strpos($url, $char);
+			if ($next_split !== false)
+			{
+				$split = ($split !== false) ? min($split, $next_split) : $next_split;
+			}
+		}
+
+		if ($split !== false)
+		{
+			// an HTML entity was found, so the URL has to end before it
+			$append			= substr($url, $split) . $relative_url;
+			$url			= substr($url, 0, $split);
+			$relative_url	= '';
+		}
+		else if ($relative_url)
+		{
+			// same for $relative_url
+			$split = false;
+			foreach ($chars as $char)
+			{
+				$next_split = strpos($relative_url, $char);
+				if ($next_split !== false)
+				{
+					$split = ($split !== false) ? min($split, $next_split) : $next_split;
+				}
+			}
+
+			if ($split !== false)
+			{
+				$append			= substr($relative_url, $split);
+				$relative_url	= substr($relative_url, 0, $split);
+			}
+		}
+
+		// if the last character of the url is a punctuation mark, exclude it from the url
+		$last_char = ($relative_url) ? $relative_url[strlen($relative_url) - 1] : $url[strlen($url) - 1];
+
+		switch ($last_char)
+		{
+			case '.':
+			case '?':
+			case '!':
+			case ':':
+			case ',':
+				$append = $last_char;
+				if ($relative_url)
+				{
+					$relative_url = substr($relative_url, 0, -1);
+				}
+				else
+				{
+					$url = substr($url, 0, -1);
+				}
+		}
+
+		switch ($type)
+		{
+			case MAGIC_URL_LOCAL:
+				$tag			= 'l';
+				$relative_url	= preg_replace('/[&?]sid=[0-9a-f]{32}$/', '', preg_replace('/([&?])sid=[0-9a-f]{32}&/', '$1', $relative_url));
+				$url			= $url . '/' . $relative_url;
+				$text			= ($relative_url) ? $relative_url : $url . '/';
+			break;
+
+			case MAGIC_URL_FULL:
+				$tag	= 'm';
+				$text	= (strlen($url) > 55) ? substr($url, 0, 39) . ' ... ' . substr($url, -10) : $url;
+			break;
+
+			case MAGIC_URL_WWW:
+				$tag	= 'w';
+				$url	= 'http://' . $url;
+				$text	= (strlen($url) > 55) ? substr($url, 0, 39) . ' ... ' . substr($url, -10) : $url;
+			break;
+
+			case MAGIC_URL_EMAIL:
+				$tag	= 'e';
+				$url	= 'mailto:' . $url;
+				$text	= (strlen($url) > 55) ? substr($url, 0, 39) . ' ... ' . substr($url, -10) : $url;
+			break;
+		}
+
+		$url	= htmlspecialchars($url);
+		$text	= htmlspecialchars($text);
+		$append	= htmlspecialchars($append);
+
+		$html	= "$whitespace<!-- $tag --><a$class href=\"$url\">$text</a><!-- $tag -->$append";
+
+		return $html;
+}
+
+/**
 * make_clickable function
 *
 * Replace magic urls of form http://xxx.xxx., www.xxx. and xxx@xxx.xxx.
@@ -2627,20 +2734,20 @@ function make_clickable($text, $server_url = false, $class = 'postlink')
 		// Be sure to not let the matches cross over. ;)
 
 		// relative urls for this board
-		$magic_url_match[] = '#(^|[\n\t (>])(' . preg_quote($server_url, '#') . ')/(' . get_preg_expression('relative_url_inline') . ')#ie';
-		$magic_url_replace[] = "'\$1<!-- l --><a$local_class href=\"' . append_sid('\$2/' . preg_replace('/(&amp;|\?)sid=[0-9a-f]{32}$/', '', preg_replace('/(&amp;|\?)sid=[0-9a-f]{32}&amp;/', '\\\\1', '\$3'))) . '\">' . ((strlen('\$3')) ? preg_replace('/(&amp;|\?)sid=[0-9a-f]{32}$/', '', preg_replace('/(&amp;|\?)sid=[0-9a-f]{32}&amp;/', '\\\\1', '\$3')) : '\$2/') . '</a><!-- l -->'";
+		$magic_url_match[] = '#(^|[\n\t (>\]])(' . preg_quote($server_url, '#') . ')/(' . get_preg_expression('relative_url_inline') . ')#ie';
+		$magic_url_replace[] = "make_clickable_callback(MAGIC_URL_LOCAL, '\$1', '\$2', '\$3', '$local_class')";
 
 		// matches a xxxx://aaaaa.bbb.cccc. ...
-		$magic_url_match[] = '#(^|[\n\t (>])(' . get_preg_expression('url_inline') . ')#ie';
-		$magic_url_replace[] = "'\$1<!-- m --><a$class href=\"\$2\">' . ((strlen('\$2') > 55) ? str_replace('&', '&amp;', substr(str_replace('&amp;', '&', '\$2'), 0, 39)) . ' ... ' . str_replace('&', '&amp;', substr(str_replace('&amp;', '&', '\$2'), -10)) : '\$2') . '</a><!-- m -->'";
+		$magic_url_match[] = '#(^|[\n\t (>\]])(' . get_preg_expression('url_inline') . ')#ie';
+		$magic_url_replace[] = "make_clickable_callback(MAGIC_URL_FULL, '\$1', '\$2', '', '$class')";
 
 		// matches a "www.xxxx.yyyy[/zzzz]" kinda lazy URL thing
-		$magic_url_match[] = '#(^|[\n\t (>])(' . get_preg_expression('www_url_inline') . ')#ie';
-		$magic_url_replace[] = "'\$1<!-- w --><a$class href=\"http://\$2\">' . ((strlen('\$2') > 55) ? str_replace('&', '&amp;', substr(str_replace('&amp;', '&', '\$2'), 0, 39)) . ' ... ' . str_replace('&', '&amp;', substr(str_replace('&amp;', '&', '\$2'), -10)) : '\$2') . '</a><!-- w -->'";
+		$magic_url_match[] = '#(^|[\n\t (>\]])(' . get_preg_expression('www_url_inline') . ')#ie';
+		$magic_url_replace[] = "make_clickable_callback(MAGIC_URL_WWW, '\$1', '\$2', '', '$class')";
 
 		// matches an email@domain type address at the start of a line, or after a space or after what might be a BBCode.
-		$magic_url_match[] = '/(^|[\n\t (>])(' . get_preg_expression('email') . ')/ie';
-		$magic_url_replace[] = "'\$1<!-- e --><a href=\"mailto:\$2\">' . ((strlen('\$2') > 55) ? substr('\$2', 0, 39) . ' ... ' . substr('\$2', -10) : '\$2') . '</a><!-- e -->'";
+		$magic_url_match[] = '/(^|[\n\t (>\]])(' . get_preg_expression('email') . ')/ie';
+		$magic_url_replace[] = "make_clickable_callback(MAGIC_URL_EMAIL, array('\$1', '\$2'), '')";
 	}
 
 	return preg_replace($magic_url_match, $magic_url_replace, $text);
@@ -3301,6 +3408,33 @@ function get_preg_expression($mode)
 	}
 
 	return '';
+}
+
+/**
+* Returns the first 4 blocks of the specified IPv6 address and as many
+* as specified in the length paramater additional ones.
+* If length is zero, then an empty string is returned.
+*/
+function short_ipv6($ip, $length)
+{
+	if ($length < 1)
+	{
+		return '';
+	}
+
+	// extend IPv6 addresses
+	$blocks = substr_count($ip, ':') + 1;
+	if ($blocks < 9)
+	{
+		$ip = str_replace('::', ':' . str_repeat('0000:', 9 - $blocks), $ip);
+	}
+	if ($ip[0] == ':')
+	{
+		$ip = '0000' . $ip;
+	}
+	$ip = implode(':', array_slice(explode(':', $ip), 0, 4 + $length));
+
+	return $ip;
 }
 
 /**

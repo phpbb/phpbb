@@ -141,6 +141,12 @@ define('BBCODE_UID_LEN', 5);
 // Number of core BBCodes
 define('NUM_CORE_BBCODES', 12);
 
+// Magic url types
+define('MAGIC_URL_EMAIL', 1);
+define('MAGIC_URL_FULL', 2);
+define('MAGIC_URL_LOCAL', 3);
+define('MAGIC_URL_WWW', 4);
+
 // Profile Field Types
 define('FIELD_INT', 1);
 define('FIELD_STRING', 2);

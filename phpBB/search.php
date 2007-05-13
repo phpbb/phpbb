@@ -135,7 +135,7 @@ if ($keywords || $author || $author_id || $search_id || $submit)
 	}
 
 	// Which forums should not be searched? Author searches are also carried out in unindexed forums
-	if (empty($search->search_query) && sizeof($author_id_ary))
+	if (empty($keywords) && sizeof($author_id_ary))
 	{
 		$ex_fid_ary = array_keys($auth->acl_getf('!f_read', true));
 	}
@@ -460,7 +460,7 @@ if ($keywords || $author || $author_id || $search_id || $submit)
 
 	$u_search = append_sid("{$phpbb_root_path}search.$phpEx", $u_sort_param . $u_show_results);
 	$u_search .= ($search_id) ? '&amp;search_id=' . $search_id : '';
-	$u_search .= ($u_hilit) ? '&amp;keywords=' . $u_hilit : '';
+	$u_search .= ($u_hilit) ? '&amp;keywords=' . urlencode(htmlspecialchars_decode($search->search_query)) : '';
 	$u_search .= ($topic_id) ? '&amp;t=' . $topic_id : '';
 	$u_search .= ($author) ? '&amp;author=' . urlencode(htmlspecialchars_decode($author)) : '';
 	$u_search .= ($author_id) ? '&amp;author_id=' . $author_id : '';
@@ -711,7 +711,8 @@ if ($keywords || $author || $author_id || $search_id || $submit)
 			$hilit_array = array_filter(explode('|', $hilit), 'strlen');
 			foreach ($hilit_array as $key => $value)
 			{
-				$hilit_array[$key] = str_replace('\*', '\w+?', preg_quote($value, '#'));
+				$hilit_array[$key] = str_replace('\*', '\w*?', preg_quote($value, '#'));
+				$hilit_array[$key] = preg_replace('#(^|\s)\\\\w\*\?(\s|$)#', '$1\w+?$2', $hilit_array[$key]);
 			}
 			$hilit = implode('|', $hilit_array);
 		}
@@ -812,7 +813,7 @@ if ($keywords || $author || $author_id || $search_id || $submit)
 					$template->assign_block_vars('searchresults', array(
 						'S_IGNORE_POST' => true,
 
-						'L_IGNORE_POST' => sprintf($user->lang['POST_BY_FOE'], $row['username'], "<a href=\"$u_search&amp;p=" . $row['post_id'] . '&amp;view=show#p' . $row['post_id'] . '">', '</a>'))
+						'L_IGNORE_POST' => sprintf($user->lang['POST_BY_FOE'], $row['username'], "<a href=\"$u_search&amp;start=$start&amp;p=" . $row['post_id'] . '&amp;view=show#p' . $row['post_id'] . '">', '</a>'))
 					);
 
 					continue;

@@ -229,9 +229,17 @@ class session
 				// Validate IP length according to admin ... enforces an IP
 				// check on bots if admin requires this
 //				$quadcheck = ($config['ip_check_bot'] && $this->data['user_type'] & USER_BOT) ? 4 : $config['ip_check'];
-				
-				$s_ip = implode('.', array_slice(explode('.', $this->data['session_ip']), 0, $config['ip_check']));
-				$u_ip = implode('.', array_slice(explode('.', $this->ip), 0, $config['ip_check']));
+
+				if (strpos($this->ip, ':') !== false && strpos($this->data['session_ip'], ':') !== false)
+				{
+					$s_ip = short_ipv6($this->data['session_ip'], $config['ip_check']);
+					$u_ip = short_ipv6($this->ip, $config['ip_check']);
+				}
+				else
+				{
+					$s_ip = implode('.', array_slice(explode('.', $this->data['session_ip']), 0, $config['ip_check']));
+					$u_ip = implode('.', array_slice(explode('.', $this->ip), 0, $config['ip_check']));
+				}
 
 				$s_browser = ($config['browser_check']) ? strtolower(substr($this->data['session_browser'], 0, 149)) : '';
 				$u_browser = ($config['browser_check']) ? strtolower(substr($this->browser, 0, 149)) : '';
@@ -489,8 +497,16 @@ class session
 		if ($this->data['is_bot'] && $bot == $this->data['user_id'] && $this->data['session_id'])
 		{
 			// Only assign the current session if the ip, browser and forwarded_for match...
-			$s_ip = implode('.', array_slice(explode('.', $this->data['session_ip']), 0, $config['ip_check']));
-			$u_ip = implode('.', array_slice(explode('.', $this->ip), 0, $config['ip_check']));
+			if (strpos($this->ip, ':') !== false && strpos($this->data['session_ip'], ':') !== false)
+			{
+				$s_ip = short_ipv6($this->data['session_ip'], $config['ip_check']);
+				$u_ip = short_ipv6($this->ip, $config['ip_check']);
+			}
+			else
+			{
+				$s_ip = implode('.', array_slice(explode('.', $this->data['session_ip']), 0, $config['ip_check']));
+				$u_ip = implode('.', array_slice(explode('.', $this->ip), 0, $config['ip_check']));
+			}
 
 			$s_browser = ($config['browser_check']) ? strtolower(substr($this->data['session_browser'], 0, 149)) : '';
 			$u_browser = ($config['browser_check']) ? strtolower(substr($this->browser, 0, 149)) : '';

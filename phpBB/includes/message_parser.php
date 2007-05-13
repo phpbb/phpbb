@@ -1066,22 +1066,7 @@ class parse_message extends bbcode_firstpass
 		// Parse URL's
 		if ($allow_magic_url)
 		{
-			$replaced = false;
-
-			// We have the bbcode uid here, let's at least try to circumvent a specific bug...
-			if ($allow_bbcode && strpos($this->message, '[/quote:' . $this->bbcode_uid . ']') !== false && strpos($this->message, '&quot;:' . $this->bbcode_uid . ']') !== false)
-			{
-				$this->message = str_replace('&quot;:' . $this->bbcode_uid . ']', '"&amp;quot;:' . $this->bbcode_uid . ']', $this->message);
-				$replaced = true;
-			}
-
 			$this->magic_url(generate_board_url());
-
-			// Revert our change above
-			if ($replaced)
-			{
-				$this->message = str_replace('"&amp;quot;:' . $this->bbcode_uid . ']', '&quot;:' . $this->bbcode_uid . ']', $this->message);
-			}
 
 			if ($config['max_' . $mode . '_urls'])
 			{

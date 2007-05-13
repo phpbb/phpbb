@@ -124,6 +124,7 @@ class fulltext_native extends search_backend
 					break;
 					case '(':
 						$open_bracket = $i;
+						$space = false;
 					break;
 					case '|':
 						$keywords[$i] = ' ';
