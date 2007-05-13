@@ -617,8 +617,8 @@ $lang = array_merge($lang, array(
 	'LOG_THEME_ADD_FS'			=> '<strong>Add new theme on filesystem</strong><br />» %s',
 	'LOG_THEME_DELETE'			=> '<strong>Theme deleted</strong><br />» %s',
 	'LOG_THEME_EDIT_DETAILS'	=> '<strong>Edited theme details</strong><br />» %s',
-	'LOG_THEME_EDIT'			=> '<strong>Edited theme <em>%1$s</em></strong><br />» Modified class <em>%2$s</em>',
-	'LOG_THEME_EDIT_ADD'		=> '<strong>Edited theme <em>%1$s</em></strong><br />» Added class <em>%2$s</em>',
+	'LOG_THEME_EDIT'			=> '<strong>Edited theme <em>%1$s</em></strong>',
+	'LOG_THEME_EDIT_FILE'		=> '<strong>Edited theme <em>%1$s</em></strong><br />» Modified file <em>%2$s</em>',
 	'LOG_THEME_EXPORT'			=> '<strong>Exported theme</strong><br />» %s',
 	'LOG_THEME_REFRESHED'		=> '<strong>Refreshed theme</strong><br />» %s',
 

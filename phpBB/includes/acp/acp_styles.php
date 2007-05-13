@@ -820,7 +820,7 @@ parse_css_file = {PARSE_CSS_FILE}
 				// we don't need any single element categories so put them into the misc '' category
 				for ($i = 0, $n = sizeof($cats); $i < $n; $i++)
 				{
-					if (sizeof($filelist_cats[$cats[$i]]) == 1)
+					if (sizeof($filelist_cats[$cats[$i]]) == 1 && $cats[$i] !== '')
 					{
 						$filelist_cats[''][key($filelist_cats[$cats[$i]])] = current($filelist_cats[$cats[$i]]);
 						unset($filelist_cats[$cats[$i]]);
@@ -857,6 +857,15 @@ parse_css_file = {PARSE_CSS_FILE}
 
 			'U_ACTION'			=> $this->u_action . "&amp;action=edit&amp;id=$template_id&amp;text_rows=$text_rows",
 			'U_BACK'			=> $this->u_action,
+
+			'L_EDIT'			=> $user->lang['EDIT_TEMPLATE'],
+			'L_EDIT_EXPLAIN'	=> $user->lang['EDIT_TEMPLATE_EXPLAIN'],
+			'L_EDITOR'			=> $user->lang['TEMPLATE_EDITOR'],
+			'L_EDITOR_HEIGHT'	=> $user->lang['TEMPLATE_EDITOR_HEIGHT'],
+			'L_FILE'			=> $user->lang['TEMPLATE_FILE'],
+			'L_SELECT'			=> $user->lang['SELECT_TEMPLATE'],
+			'L_SELECTED'		=> $user->lang['SELECTED_TEMPLATE'],
+			'L_SELECTED_FILE'	=> $user->lang['SELECTED_TEMPLATE_FILE'],
 
 			'SELECTED_TEMPLATE'	=> $template_info['template_name'],
 			'TEMPLATE_FILE'		=> $template_file,
@@ -998,27 +1007,23 @@ parse_css_file = {PARSE_CSS_FILE}
 	*/
 	function edit_theme($theme_id)
 	{
-		global $phpbb_root_path, $phpbb_admin_path, $phpEx, $config, $db, $cache, $user, $template, $safe_mode;
+		global $phpbb_root_path, $phpEx, $config, $db, $cache, $user, $template, $safe_mode;
 
 		$this->page_title = 'EDIT_THEME';
 
+		$filelist = $filelist_cats = array();
+
 		// we want newlines no carriage returns!
-		$_POST['css_data'] = (isset($_POST['css_data']) && !empty($_POST['css_data'])) ? str_replace(array("\r\n", "\r"), array("\n", "\n"), $_POST['css_data']) : '';
+		$_POST['template_data'] = (isset($_POST['template_data']) && !empty($_POST['template_data'])) ? str_replace(array("\r\n", "\r"), array("\n", "\n"), $_POST['template_data']) : '';
 
-		// get user input
+		$theme_data	= (STRIP) ? stripslashes($_POST['template_data']) : $_POST['template_data'];
+		$theme_file	= request_var('template_file', '');
 		$text_rows		= max(5, min(999, request_var('text_rows', 20)));
-		$hide_css		= request_var('hidecss', false);
-		$show_css		= !$hide_css && request_var('showcss', false);
-		$edit_class		= request_var('css_class', '');
-		$custom_class	= request_var('custom_class', '');
-		$css_data		= (STRIP) ? stripslashes($_POST['css_data']) : $_POST['css_data'];
-		$submit			= isset($_POST['submit']) ? true : false;
-		$add_custom		= isset($_POST['add_custom']) ? true : false;
-		$matches		= array();
+		$save_changes	= (isset($_POST['save'])) ? true : false;
 
-		// no curly brackets inside a CSS block please
-		$css_data = str_replace(array('{', '}'), '', $css_data);
-
+		// make sure theme_file path doesn't go upwards
+		$theme_file = str_replace('..', '.', $theme_file);
+		
 		// Retrieve some information about the theme
 		$sql = 'SELECT theme_storedb, theme_path, theme_name, theme_data
 			FROM ' . STYLES_THEME_TABLE . "
@@ -1031,342 +1036,22 @@ parse_css_file = {PARSE_CSS_FILE}
 		}
 		$db->sql_freeresult($result);
 
-		$stylesheet_path = $phpbb_root_path . 'styles/' . $theme_info['theme_path'] . '/theme/stylesheet.css';
-		// Get the CSS data from either database or filesystem
-		if (!$theme_info['theme_storedb'])
+		// save changes to the theme if the user submitted any
+		if ($save_changes)
 		{
-			if (!file_exists($stylesheet_path) || !($stylesheet = file_get_contents($stylesheet_path)))
+			// Get the filesystem location of the current file
+			$file = "{$phpbb_root_path}styles/{$theme_info['theme_path']}/theme/$theme_file";
+			$additional = '';
+			$message = $user->lang['THEME_UPDATED'];
+
+			// If the theme is stored on the filesystem try to write the file else store it in the database
+			if (!$safe_mode && !$theme_info['theme_storedb'] && file_exists($file) && @is_writable($file))
 			{
-				trigger_error($user->lang['NO_THEME'] . adm_back_link($this->u_action), E_USER_WARNING);
-			}
-		}
-		else
-		{
-			$stylesheet = &$theme_info['theme_data'];
-		}
-
-		// Pull out a list of classes
-		$classes = array();
-		if (preg_match_all('/^([a-z0-9\.,:#_\->* \t]+?)[ \t\n]*?\{.*?\}/msi', $stylesheet, $matches))
-		{
-			$classes = $matches[1];
-		}
-
-		// Generate html for the list of classes
-		$s_hidden_fields = array();
-		$s_classes = '';
-		sort($classes);
-		foreach ($classes as $class)
-		{
-			$selected = ($class == $edit_class) ? ' selected="selected"' : '';
-			$s_classes .= '<option value="' . $class . '" title="' . $class . '"' . $selected . '>' . truncate_string($class, 40, false, '...') . '</option>';
-		}
-
-		$template->assign_vars(array(
-			'S_EDIT_THEME'		=> true,
-			'S_SHOWCSS'			=> $show_css,
-			'S_CLASSES'			=> $s_classes,
-			'S_CLASS'			=> $edit_class,
-
-			'U_ACTION'			=> $this->u_action . "&amp;action=edit&amp;id=$theme_id&amp;showcss=$show_css&amp;text_rows=$text_rows",
-			'U_BACK'			=> $this->u_action,
-
-			'SELECTED_THEME'	=> $theme_info['theme_name'],
-			'TEXT_ROWS'			=> $text_rows)
-		);
-
-		// only continue if we are really editing anything
-		if (!$edit_class && !$add_custom)
-		{
-			return;
-		}
-
-		// These are the elements for the simple view
-		$match_elements = array(
-			'colors'	=> array('background-color', 'color',),
-			'sizes'		=> array('font-size', 'line-height',),
-			'images'	=> array('background-image',),
-			'repeat'	=> array('background-repeat',),
-			'other'		=> array('font-weight', 'font-family', 'font-style', 'text-decoration',),
-		);
-
-		// Used in an sprintf statement to generate appropriate output for rawcss mode
-		$map_elements = array(
-			'colors'	=> '%s',
-			'sizes'		=> '%1.10f',
-			'images'	=> 'url(\'./%s\')',
-			'repeat'	=> '%s',
-			'other'		=> '%s',
-		);
-
-		$units = array('px', '%', 'em', 'pt');
-		$repeat_types = array(
-			''			=> $user->lang['UNSET'],
-			'none'		=> $user->lang['REPEAT_NO'],
-			'repeat-x'	=> $user->lang['REPEAT_X'],
-			'repeat-y'	=> $user->lang['REPEAT_Y'],
-			'both'		=> $user->lang['REPEAT_ALL'],
-		);
-
-		// Fill css_data with the class contents from the stylesheet
-		// in case we just selected a class and it's not filled yet
-		if (!$css_data && !$submit && !isset($_POST['hidecss']) && !isset($_POST['showcss']) && !$add_custom)
-		{
-			preg_match('#^[ \t]*?' . preg_quote($edit_class, '#') . '[ \t\n]*?\{(.*?)\}#ms', $stylesheet, $matches);
-
-			if (!isset($matches[1]))
-			{
-				trigger_error($user->lang['NO_CLASS'] . adm_back_link($this->u_action), E_USER_WARNING);
-			}
-
-			$css_data = implode(";\n", array_diff(array_map('trim', explode("\n", preg_replace("#;[\n]*#s", "\n", $matches[1]))), array('')));
-			if ($css_data)
-			{
-				$css_data .= ';';
-			}
-		}
-
-		// If we don't show raw css and the user did not submit any modification
-		// then generate a list of css elements and output them via the template
-		if (!$show_css && !$submit && !$add_custom)
-		{
-			$css_elements = array_diff(array_map('trim', explode("\n", preg_replace("#;[\n]*#s", "\n", $css_data))), array(''));
-
-			// Grab list of potential images for the "images" type
-			$img_filelist = filelist($phpbb_root_path . 'styles/' . $theme_info['theme_name'] . '/theme');
-
-			foreach ($match_elements as $type => $match_ary)
-			{
-				foreach ($match_ary as $match)
-				{
-					$var = str_replace('-', '_', $match);
-					$value = '';
-					$unit = '';
-
-					if (sizeof($css_elements))
-					{
-						// first read in the setting
-						foreach ($css_elements as $key => $element)
-						{
-							if (preg_match('#^' . preg_quote($match, '#') . ':[ \t\n]*?(.*?)$#', $element, $matches))
-							{
-								switch ($type)
-								{
-									case 'sizes':
-										$value = trim($matches[1]);
-
-										if (preg_match('#(.*?)(px|%|em|pt)#', $matches[1], $matches))
-										{
-											$unit = trim($matches[2]);
-											$value = trim($matches[1]);
-										}
-									break;
-
-									case 'images':
-										if (preg_match('#url\(\'(.*?)\'\)#', $matches[1], $matches))
-										{
-											$value = trim($matches[1]);
-										}
-									break;
-
-									case 'colors':
-										$value = trim($matches[1]);
-										if ($value[0] == '#')
-										{
-											$value = substr($value, 1);
-										}
-									break;
-
-									default:
-										$value = trim($matches[1]);
-								}
-
-								// Remove this element from array
-								unset($css_elements[$key]);
-								break;
-							}
-						}
-					}
-
-					// then display it in the template
-					switch ($type)
-					{
-						case 'sizes':
-							// generate a list of units
-							$s_units = '';
-							foreach ($units as $unit_option)
-							{
-								$selected = ($unit_option == $unit) ? ' selected="selected"' : '';
-								$s_units .= "<option value=\"$unit_option\"$selected>$unit_option</option>";
-							}
-							$s_units = '<option value=""' . (($unit == '') ? ' selected="selected"' : '') . '>' . $user->lang['NO_UNIT'] . '</option>' . $s_units;
-
-							$template->assign_vars(array(
-								strtoupper($var) => htmlspecialchars($value),
-								'S_' . strtoupper($var) . '_UNITS' => $s_units)
-							);
-						break;
-
-						case 'images':
-							// generate a list of images for this setting
-							$s_imglist = '';
-							foreach ($img_filelist as $path => $img_ary)
-							{
-								foreach ($img_ary as $img)
-								{
-									$img = htmlspecialchars(((substr($path, 0, 1) == '/') ? substr($path, 1) : $path) . $img);
-
-									$selected = (preg_match('#' . preg_quote($img) . '$#', $value)) ? ' selected="selected"' : '';
-									$s_imglist .= "<option value=\"$img\"$selected>$img</option>";
-								}
-							}
-							$s_imglist = '<option value=""' . (($value == '') ? ' selected="selected"' : '') . '>' . $user->lang['NO_IMAGE'] . '</option>' . $s_imglist;
-
-							$template->assign_vars(array(
-								'S_' . strtoupper($var) => $s_imglist)
-							);
-							unset($s_imglist);
-						break;
-
-						case 'repeat':
-							// generate a list of repeat options
-							$s_repeat_types = '';
-							foreach ($repeat_types as $repeat_type => $repeat_lang)
-							{
-								$selected = ($value == $repeat_type) ? ' selected="selected"' : '';
-								$s_repeat_types .= "<option value=\"$repeat_type\"$selected>$repeat_lang</option>";
-							}
-
-							$template->assign_vars(array(
-								'S_' . strtoupper($var) => $s_repeat_types)
-							);
-
-						default:
-							$template->assign_vars(array(
-								strtoupper($var) => htmlspecialchars($value))
-							);
-					}
-				}
-			}
-
-			// Any remaining elements must be custom data so we save that in a hidden field
-			if (sizeof($css_elements))
-			{
-				$s_hidden_fields['cssother'] = implode(' ;; ', $css_elements);
-			}
-
-			unset($img_filelist, $css_elements);
-		}
-		// else if we are showing raw css or the user submitted data from the simple view
-		// then we need to turn the given information into raw css
-		else if (!$css_data && !$add_custom)
-		{
-			foreach ($match_elements as $type => $match_ary)
-			{
-				foreach ($match_ary as $match)
-				{
-					$var = str_replace('-', '_', $match);
-					$value = '';
-					$unit = '';
-
-					// retrieve and validate data for this setting
-					switch ($type)
-					{
-						case 'sizes':
-							$value = request_var($var, 0.0);
-							$unit = request_var($var . '_unit', '');
-
-							if ((request_var($var, '') === '') || !in_array($unit, $units))
-							{
-								$value = '';
-							}
-						break;
-
-						case 'images':
-							$value = str_replace('..', '.', request_var($var, ''));
-							if (!file_exists("{$phpbb_root_path}styles/{$theme_info['theme_path']}/theme/" . $value))
-							{
-								$value = '';
-							}
-						break;
-
-						case 'colors':
-							$value = request_var($var, '');
-							if (preg_match('#^(?:[A-F0-9]{6}|[A-F0-9]{3})$#', $value))
-							{
-								$value = '#' . $value;
-							}
-						break;
-
-						case 'repeat':
-							$value = request_var($var, '');
-							if (!isset($repeat_types[$value]))
-							{
-								$value = '';
-							}
-						break;
-
-						default:
-							$value = htmlspecialchars_decode(request_var($var, ''));
-					}
-
-					// use the element mapping to create raw css code
-					if ($value !== '')
-					{
-						$css_data .= $match . ': ' . ($type == 'sizes' ? rtrim(sprintf($map_elements[$type], $value), '0') : sprintf($map_elements[$type], $value)) . $unit . ";\n";
-					}
-				}
-			}
-
-			// append additional data sent to us
-			if ($other = request_var('cssother', ''))
-			{
-				$css_data .= str_replace(' ;; ', ";\n", $other) . ';';
-				$css_data = preg_replace("#\*/;\n#", "*/\n", $css_data);
-			}
-		}
-		// make sure we have $show_css set, so we can link to the show_css page if we need to
-		else if (!$hide_css)
-		{
-			$show_css = true;
-		}
-
-		if ($submit || $add_custom)
-		{
-			if ($submit)
-			{
-				// if the user submitted a modification replace the old class definition in the stylesheet
-				// with the new one
-				if (preg_match('#^' . preg_quote($edit_class, '#') . '[ \t\n]*?\{(.*?)\}#ms', $stylesheet))
-				{
-					$stylesheet = preg_replace('#^(' . preg_quote($edit_class, '#') . '[ \t\n]*?\{).*?(\})#ms', "$1\n\t" . str_replace("\n", "\n\t", $css_data) . "\n$2", $stylesheet);
-				}
-				$message = $user->lang['THEME_UPDATED'];
-			}
-			else
-			{
-				// check whether the custom class name is valid
-				if (!preg_match('/^[a-z0-9\.,:#_\ \t->*]+$/i', $custom_class))
-				{
-					trigger_error($user->lang['THEME_ERR_CLASS_CHARS'] . adm_back_link($this->u_action . "&amp;action=edit&amp;id=$theme_id&amp;text_rows=$text_rows"), E_USER_WARNING);
-				}
-				else
-				{
-					// append an empty class definition to the stylesheet
-					$stylesheet .= "\n$custom_class {\n\t\n}";
-					$message = $user->lang['THEME_CLASS_ADDED'];
-				}
-			}
-
-			// where should we store the CSS?
-			if (!$safe_mode && !$theme_info['theme_storedb'] && file_exists($stylesheet_path) && @is_writable($stylesheet_path))
-			{
-				// write stylesheet to file
-				if (!($fp = fopen($stylesheet_path, 'wb')))
+				if (!($fp = fopen($file, 'wb')))
 				{
 					trigger_error($user->lang['NO_THEME'] . adm_back_link($this->u_action), E_USER_WARNING);
 				}
-				fwrite($fp, $stylesheet);
+				fwrite($fp, $theme_data);
 				fclose($fp);
 			}
 			else
@@ -1375,7 +1060,7 @@ parse_css_file = {PARSE_CSS_FILE}
 				$sql_ary = array(
 					'theme_mtime'		=> time(),
 					'theme_storedb'		=> 1,
-					'theme_data'		=> $this->db_theme_data($theme_info, $stylesheet),
+					'theme_data'		=> $this->db_theme_data($theme_info, $theme_data),
 				);
 				$sql = 'UPDATE ' . STYLES_THEME_TABLE . '
 					SET ' . $db->sql_build_array('UPDATE', $sql_ary) . '
@@ -1384,30 +1069,119 @@ parse_css_file = {PARSE_CSS_FILE}
 
 				$cache->destroy('sql', STYLES_THEME_TABLE);
 
-				// notify the user if the template was not stored in the db before his modification
+				// notify the user if the theme was not stored in the db before his modification
 				if (!$theme_info['theme_storedb'])
 				{
 					add_log('admin', 'LOG_THEME_EDIT_DETAILS', $theme_info['theme_name']);
 					$message .= '<br />' . $user->lang['EDIT_THEME_STORED_DB'];
 				}
 			}
-
 			$cache->destroy('sql', STYLES_THEME_TABLE);
-			add_log('admin', ($add_custom) ? 'LOG_THEME_EDIT_ADD' : 'LOG_THEME_EDIT', $theme_info['theme_name'], ($add_custom) ? $custom_class : $edit_class);
+			add_log('admin', (!$theme_info['theme_storedb']) ? 'LOG_THEME_EDIT_FILE' : 'LOG_THEME_EDIT', $theme_info['theme_name'], (!$theme_info['theme_storedb']) ? $theme_file : '');
 
-			trigger_error($message . adm_back_link($this->u_action . "&amp;action=edit&amp;id=$theme_id&amp;css_class=$edit_class&amp;showcss=$show_css&amp;text_rows=$text_rows"));
+			trigger_error($message . adm_back_link($this->u_action . "&amp;action=edit&amp;id=$theme_id&amp;template_file=$theme_file&amp;text_rows=$text_rows"));
 		}
-		unset($matches);
 
-		$s_hidden_fields['css_class'] = $edit_class;
+		// Generate a category array containing theme filenames
+		if (!$theme_info['theme_storedb'])
+		{
+			$theme_path = "{$phpbb_root_path}styles/{$theme_info['theme_path']}/theme";
+
+			$filelist = filelist($theme_path, '', 'css');
+
+			if ($theme_file)
+			{
+				if (!file_exists($theme_path . "/$theme_file") || !($theme_data = file_get_contents($theme_path . "/$theme_file")))
+				{
+					trigger_error($user->lang['NO_THEME'] . adm_back_link($this->u_action), E_USER_WARNING);
+				}
+			}
+		}
+		else
+		{
+			$theme_data = &$theme_info['theme_data'];
+		}
+
+		// Now create the categories
+		$filelist_cats[''] = array();
+		foreach ($filelist as $pathfile => $file_ary)
+		{
+			// Use the directory name as category name
+			if (!empty($pathfile))
+			{
+				$filelist_cats[$pathfile] = array();
+				foreach ($file_ary as $file)
+				{
+					$filelist_cats[$pathfile][$pathfile . $file] = $file;
+				}
+			}
+			// or if it's in the main category use the word before the first underscore to group files
+			else
+			{
+				$cats = array();
+				foreach ($file_ary as $file)
+				{
+					$cats[] = substr($file, 0, strpos($file, '_'));
+					$filelist_cats[substr($file, 0, strpos($file, '_'))][$file] = $file;
+				}
+
+				$cats = array_values(array_unique($cats));
+
+				// we don't need any single element categories so put them into the misc '' category
+				for ($i = 0, $n = sizeof($cats); $i < $n; $i++)
+				{
+					if (sizeof($filelist_cats[$cats[$i]]) == 1 && $cats[$i] !== '')
+					{
+						$filelist_cats[''][key($filelist_cats[$cats[$i]])] = current($filelist_cats[$cats[$i]]);
+						unset($filelist_cats[$cats[$i]]);
+					}
+				}
+				unset($cats);
+			}
+		}
+		unset($filelist);
+
+		// Generate list of categorised theme files
+		$tpl_options = '';
+		ksort($filelist_cats);
+		foreach ($filelist_cats as $category => $tpl_ary)
+		{
+			ksort($tpl_ary);
+
+			if (!empty($category))
+			{
+				$tpl_options .= '<option class="sep" value="">' . $category . '</option>';
+			}
+
+			foreach ($tpl_ary as $filename => $file)
+			{
+				$selected = ($theme_file == $filename) ? ' selected="selected"' : '';
+				$tpl_options .= '<option value="' . $filename . '"' . $selected . '>' . $file . '</option>';
+			}
+		}
 
 		$template->assign_vars(array(
-			'S_HIDDEN_FIELDS'	=> build_hidden_fields($s_hidden_fields),
+			'S_EDIT_THEME'		=> true,
+			'S_HIDDEN_FIELDS'	=> build_hidden_fields(array('template_file' => $theme_file)),
+			'S_THEME_IN_DB'		=> $theme_info['theme_storedb'],
+			'S_TEMPLATES'		=> $tpl_options,
 
-			'U_SWATCH'			=> append_sid("{$phpbb_admin_path}swatch.$phpEx", 'form=acp_theme') . '&amp;name=',
-			'UA_SWATCH'			=> append_sid("{$phpbb_admin_path}swatch.$phpEx", 'form=acp_theme', false) . '&name=',
+			'U_ACTION'			=> $this->u_action . "&amp;action=edit&amp;id=$theme_id&amp;text_rows=$text_rows",
+			'U_BACK'			=> $this->u_action,
 
-			'CSS_DATA'			=> htmlspecialchars($css_data))
+			'L_EDIT'			=> $user->lang['EDIT_THEME'],
+			'L_EDIT_EXPLAIN'	=> $user->lang['EDIT_THEME_EXPLAIN'],
+			'L_EDITOR'			=> $user->lang['THEME_EDITOR'],
+			'L_EDITOR_HEIGHT'	=> $user->lang['THEME_EDITOR_HEIGHT'],
+			'L_FILE'			=> $user->lang['THEME_FILE'],
+			'L_SELECT'			=> $user->lang['SELECT_THEME'],
+			'L_SELECTED'		=> $user->lang['SELECTED_THEME'],
+			'L_SELECTED_FILE'	=> $user->lang['SELECTED_THEME_FILE'],
+
+			'SELECTED_TEMPLATE'	=> $theme_info['theme_name'],
+			'TEMPLATE_FILE'		=> $theme_file,
+			'TEMPLATE_DATA'		=> htmlspecialchars($theme_data),
+			'TEXT_ROWS'			=> $text_rows)
 		);
 	}
 

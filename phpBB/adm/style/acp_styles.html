@@ -141,249 +141,90 @@
 	//-->
 	</script>
 
-	<!-- IF S_EDIT_TEMPLATE -->
+	<a href="{U_BACK}" style="float: right">&laquo; {L_BACK}</a>
 
-		<a href="{U_BACK}" style="float: right">&laquo; {L_BACK}</a>
+	<h1>{L_EDIT}</h1>
 
-		<h1>{L_EDIT_TEMPLATE}</h1>
+	<p>{L_EDIT_EXPLAIN}</p>
 
-		<p>{L_EDIT_TEMPLATE_EXPLAIN}</p>
+	<p>{L_SELECTED}: <strong>{SELECTED_TEMPLATE}</strong></p>
 
-		<p>{L_SELECTED_TEMPLATE}: <strong>{SELECTED_TEMPLATE}</strong></p>
+	<form id="acp_styles" method="post" action="{U_ACTION}">
 
-		<form id="acp_styles" method="post" action="{U_ACTION}">
+	<!-- IF S_EDIT_TEMPLATE or (S_EDIT_THEME and not S_THEME_IN_DB) -->
+	<fieldset>
+		<legend>{L_SELECT}</legend>
+	<dl>
+		<dt><label for="template_file">{L_FILE}:</label></dt>
+		<dd><select id="template_file" name="template_file" onchange="if (this.options[this.selectedIndex].value != '') this.form.submit();">{S_TEMPLATES}</select> <input class="button2" type="submit" value="{L_SELECT}" /></dd>
+	</dl>
+	</fieldset>
+	<!-- ENDIF -->
 
-		<fieldset>
-			<legend>{L_SELECT_TEMPLATE}</legend>
-		<dl>
-			<dt><label for="template_file">{L_TEMPLATE_FILE}:</label></dt>
-			<dd><select id="template_file" name="template_file" onchange="if (this.options[this.selectedIndex].value != '') this.form.submit();">{S_TEMPLATES}</select> <input class="button2" type="submit" value="{L_SELECT}" /></dd>
-		</dl>
-		</fieldset>
+	</form>
 
-		</form>
-
-		<!-- IF TEMPLATE_FILE -->
-			<script type="text/javascript" defer="defer">
-			<!--
-
-				function change_editor_height(height)
-				{
-					editor = document.getElementById('template_data');
-					editor.rows = Math.max(5, Math.min(height, 999));
-
-					append_text_rows('acp_styles', height);
-					append_text_rows('acp_template', height);
-				}
-
-				function append_text_rows(form_name, value)
-				{
-					url = document.getElementById(form_name).action;
-					var_start = url.indexOf('&text_rows=');
-					if (var_start == -1)
-					{
-						document.getElementById(form_name).action = url + "&text_rows=" + value;
-					}
-					else
-					{
-						url_start = url.substring(0, var_start + 1);
-						var_end = url.substring(var_start + 1).indexOf('&');
-						if (var_end == -1)
-						{
-							document.getElementById(form_name).action = url_start + "text_rows=" + value;
-						}
-						else
-						{
-							document.getElementById(form_name).action = url_start + url.substring(var_end + var_start + 2) + "&text_rows=" + value;
-						}
-					}
-				}
-			//-->
-			</script>
-
-			<form id="acp_template" method="post" action="{U_ACTION}">
-
-			<fieldset>
-				<legend>{L_TEMPLATE_EDITOR}</legend>
-			<dl>
-				<dt><label>{L_SELECTED_TEMPLATE_FILE}:</label></dt>
-				<dd>{TEMPLATE_FILE}</dd>
-			</dl>
-			<dl>
-				<dt><label for="text_rows">{L_TEMPLATE_EDITOR_HEIGHT}:</label></dt>
-				<dd><input id="text_rows" type="text" maxlength="3" value="{TEXT_ROWS}" /> <input class="button2" type="button" name="update" onclick="change_editor_height(this.form.text_rows.value);" value="{L_UPDATE}" /></dd>
-			</dl>
-			<textarea id="template_data" name="template_data" style="font-family:'Courier New', monospace;font-size:9pt;line-height:125%;width:100%;" cols="80" rows="{TEXT_ROWS}">{TEMPLATE_DATA}</textarea>
-			</fieldset>
-
-			<fieldset class="submit-buttons">
-				<legend>{L_SUBMIT}</legend>
-				{S_HIDDEN_FIELDS}
-				<input class="button1" id="save" type="submit" name="save" value="{L_SUBMIT}" />
-			</fieldset>
-
-			</form>
-		<!-- ENDIF -->
-
-	<!-- ELSEIF S_EDIT_THEME -->
-
-		<script type="text/javascript">
+	<!-- IF TEMPLATE_FILE or (S_EDIT_THEME and S_THEME_IN_DB) -->
+		<script type="text/javascript" defer="defer">
 		<!--
 
 			function change_editor_height(height)
 			{
-				editor = document.getElementById('css_data');
+				editor = document.getElementById('template_data');
 				editor.rows = Math.max(5, Math.min(height, 999));
 
 				append_text_rows('acp_styles', height);
-				append_text_rows('acp_theme', height);
-				append_text_rows('acp_custom_class', height);
+				append_text_rows('acp_template', height);
 			}
 
+			function append_text_rows(form_name, value)
+			{
+				url = document.getElementById(form_name).action;
+				var_start = url.indexOf('&text_rows=');
+				if (var_start == -1)
+				{
+					document.getElementById(form_name).action = url + "&text_rows=" + value;
+				}
+				else
+				{
+					url_start = url.substring(0, var_start + 1);
+					var_end = url.substring(var_start + 1).indexOf('&');
+					if (var_end == -1)
+					{
+						document.getElementById(form_name).action = url_start + "text_rows=" + value;
+					}
+					else
+					{
+						document.getElementById(form_name).action = url_start + url.substring(var_end + var_start + 2) + "&text_rows=" + value;
+					}
+				}
+			}
 		//-->
 		</script>
 
-		<a href="{U_BACK}" style="float: right">&laquo; {L_BACK}</a>
-
-		<h1>{L_EDIT_THEME}</h1>
-
-		<p>{L_EDIT_THEME_EXPLAIN}</p>
-
-		<p>{L_SELECTED_THEME}: <strong>{SELECTED_THEME}</strong></p>
-
-		<!-- IF S_SHOWCSS -->
-			<h3>{L_SHOW_CSS_NOTE}</h3>
-			<p>{L_SHOW_CSS_EXPLAIN}</p>
-		<!-- ENDIF -->
-		<form id="acp_styles" method="post" action="{U_ACTION}">
+		<form id="acp_template" method="post" action="{U_ACTION}">
 
 		<fieldset>
-			<legend>{L_SELECT_CLASS}</legend>
+			<legend>{L_EDITOR}</legend>
+		<!-- IF S_EDIT_TEMPLATE or (S_EDIT_THEME and not S_THEME_IN_DB) -->
 		<dl>
-			<dt><label for="css_class">{L_SELECT_CLASS}:</label></dt>
-			<dd><select id="css_class" name="css_class" onchange="if (this.options[this.selectedIndex].value != '') this.form.submit();">{S_CLASSES}</select></dd>
-			<dd><input class="button1" type="submit" id="select_class" name="select_class" value="{L_SELECT}" /></dd>
+			<dt><label>{L_SELECTED_FILE}:</label></dt>
+			<dd>{TEMPLATE_FILE}</dd>
 		</dl>
-		<!-- IF S_CLASS -->
-			<dl>
-				<dt><label>{L_SELECTED_CLASS}:</label></dt>
-				<dd>{S_CLASS}</dd>
-			</dl>
 		<!-- ENDIF -->
+		<dl>
+			<dt><label for="text_rows">{L_EDITOR_HEIGHT}:</label></dt>
+			<dd><input id="text_rows" type="text" maxlength="3" value="{TEXT_ROWS}" /> <input class="button2" type="button" name="update" onclick="change_editor_height(this.form.text_rows.value);" value="{L_UPDATE}" /></dd>
+		</dl>
+		<textarea id="template_data" name="template_data" style="font-family:'Courier New', monospace;font-size:9pt;line-height:125%;width:100%;" cols="80" rows="{TEXT_ROWS}">{TEMPLATE_DATA}</textarea>
 		</fieldset>
-	
-		</form>
 
-		<!-- IF S_CLASS -->
-
-			<form id="acp_theme" method="post" action="{U_ACTION}">
-
-			<!-- IF S_SHOWCSS -->
-
-				<fieldset>
-					<legend>{L_THEME_EDITOR}</legend>
-				<dl>
-					<dt><label for="text_rows">{L_THEME_EDITOR_HEIGHT}:</label></dt>
-					<dd><input id="text_rows" type="text" maxlength="3" value="{TEXT_ROWS}" /> <input class="button1" type="button" name="update" onclick="change_editor_height(this.form.text_rows.value);" value="{L_UPDATE}" /></dd>
-				</dl>
-				<textarea id="css_data" name="css_data" style="font-family:'Courier New', monospace;font-size:9pt;line-height:125%;width:100%;" cols="80" rows="{TEXT_ROWS}">{CSS_DATA}</textarea>
-				</fieldset>
-
-			<!-- ELSE -->
-
-				<fieldset>
-					<legend>{L_BACKGROUND}</legend>
-				<dl>
-					<dt><label for="background_color">{L_BACKGROUND_COLOUR}:</label><br /><span>{L_CSS_COLOUR_EXPLAIN}</span></dt>
-					<dd><input id="background_color" name="background_color" type="text" value="{BACKGROUND_COLOR}" size="6" />&nbsp;&nbsp;<span>[ <a href="#" onclick="swatch('background_color'); return false">{L_COLOUR_SWATCH}</a> ]</span></dd>
-				</dl>
-				<dl>
-					<dt><label for="backround_image">{L_BACKGROUND_IMAGE}:</label></dt>
-					<dd><select id="background_image" name="background_image">{S_BACKGROUND_IMAGE}</select></dd>
-				</dl>
-				<dl>
-					<dt><label for="background_repeat">{L_BACKGROUND_REPEAT}:</label></dt>
-					<dd><select id="background_repeat" name="background_repeat">{S_BACKGROUND_REPEAT}</select></dd>
-				</dl>
-				</fieldset>
-
-				<fieldset>
-					<legend>{L_FOREGROUND}</legend>
-				<dl>
-					<dt><label for="color">{L_FONT_COLOUR}:</label><br /><span>{L_CSS_COLOUR_EXPLAIN}</span></dt>
-					<dd><input id="color" name="color" type="text" value="{COLOR}" size="6" />&nbsp;&nbsp;<span>[ <a href="#" onclick="swatch('color'); return false">{L_COLOUR_SWATCH}</a> ]</span></dd>
-				</dl>
-				<dl>
-					<dt><label for="font_family">{L_FONT_FACE}:</label><br /><span>{L_FONT_FACE_EXPLAIN}</span></dt>
-					<dd><input id="font_family" name="font_family" type="text" value="{FONT_FAMILY}" size="40" maxlength="255" /></dd>
-				</dl>
-				<dl>
-					<dt><label for="font_size">{L_FONT_SIZE}:</label></dt>
-					<dd><input id="font_size" name="font_size" type="text" value="{FONT_SIZE}" size="5" maxlength="5" /> <select id="font_size_unit" name="font_size_unit">{S_FONT_SIZE_UNITS}</select></dd>
-				</dl>
-				<dl>
-					<dt><label for="font_weight">{L_BOLD}:</label></dt>
-					<dd><label><input id="font_weight" type="radio" class="radio" name="font_weight" value="bold"<!-- IF FONT_WEIGHT eq "bold" --> checked="checked"<!-- ENDIF --> /> {L_YES}</label>
-						<label><input type="radio" class="radio" name="font_weight" value="none"<!-- IF FONT_WEIGHT eq "none" --> checked="checked"<!-- ENDIF --> /> {L_NO}</label>
-						<label><input type="radio" class="radio" name="font_weight" value=""<!-- IF not FONT_WEIGHT --> checked="checked"<!-- ENDIF --> /> {L_UNSET}</label></dd>
-				</dl>
-				<dl>
-					<dt><label for="font_style">{L_ITALIC}:</label></dt>
-					<dd><label><input id="font_style" type="radio" class="radio" name="font_style" value="italic"<!-- IF FONT_STYLE eq "italic" --> checked="checked"<!-- ENDIF --> /> {L_YES}</label>
-						<label><input type="radio" class="radio" name="font_style" value="none"<!-- IF FONT_STYLE eq "none" --> checked="checked"<!-- ENDIF --> /> {L_NO}</label>
-						<label><input type="radio" class="radio" name="font_style" value=""<!-- IF not FONT_STYLE --> checked="checked"<!-- ENDIF --> /> {L_UNSET}</label></dd>
-				</dl>
-				<dl>
-					<dt><label for="text_decoration">{L_UNDERLINE}:</label></dt>
-					<dd><label><input id="text_decoration" type="radio" class="radio" name="text_decoration" value="underline"<!-- IF TEXT_DECORATION eq "underline" --> checked="checked"<!-- ENDIF --> /> {L_YES}</label>
-						<label><input type="radio" class="radio" name="text_decoration" value="none"<!-- IF TEXT_DECORATION eq "none" --> checked="checked"<!-- ENDIF --> /> {L_NO}</label>
-						<label><input type="radio" class="radio" name="text_decoration" value=""<!-- IF not TEXT_DECORATION --> checked="checked"<!-- ENDIF --> /> {L_UNSET}</label></dd>
-				</dl>
-				<dl>
-					<dt><label for="line_height">{L_LINE_SPACING}</label></dt>
-					<dd><input id="line_height" name="line_height" type="text" value="{LINE_HEIGHT}" size="3" maxlength="3" /> <select id="line_height_unit" name="line_height_unit">{S_LINE_HEIGHT_UNITS}</select></dd>
-				</dl>
-				</fieldset>
-
-			<!-- ENDIF -->
-
-			<fieldset class="submit-buttons">
-				<legend>{L_SUBMIT}</legend>
-				{S_HIDDEN_FIELDS}
-				<input class="button1" type="submit" id="submit" name="submit" value="{L_SUBMIT}" />&nbsp;
-				<!-- IF S_SHOWCSS -->
-					<input class="button2" type="submit" id="hidecss" name="hidecss" value="{L_HIDE_CSS}" />&nbsp;
-				<!-- ELSE -->
-					<input class="button2" type="submit" id="showcss" name="showcss" value="{L_SHOW_CSS}" />&nbsp;
-				<!-- ENDIF -->
-				<input class="button2" type="reset" id="reset" name="reset" value="{L_RESET}" />
-			</fieldset>
-
-			</form>
-
-		<!-- ENDIF -->
-
-		<br />
-		<h1>{L_CUSTOM_CLASS}</h1>
-
-		<p>{L_CUSTOM_CLASS_EXPLAIN}</p>
-
-		<form id="acp_custom_class" method="post" action="{U_ACTION}">
-
-		<fieldset>
-			<legend>{L_CUSTOM_CLASS}</legend>
-		<dl>
-			<dt><label for="custom_class">{L_CSS_CLASS_NAME}:</label></dt>
-			<dd><input id="custom_class" name="custom_class" type="text" value="" maxlength="200" size="40" /></dd>
-		</dl>
-
-		<p class="quick">
-			<input class="button1" type="submit" id="add_custom" name="add_custom" value="{L_SUBMIT}" />
-		</p>
+		<fieldset class="submit-buttons">
+			<legend>{L_SUBMIT}</legend>
+			{S_HIDDEN_FIELDS}
+			<input class="button1" id="save" type="submit" name="save" value="{L_SUBMIT}" />
 		</fieldset>
 
 		</form>
-	
 	<!-- ENDIF -->
 
 <!-- ELSEIF S_CACHE -->
