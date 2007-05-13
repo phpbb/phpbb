@@ -314,7 +314,7 @@ class acp_search
 							$mtime = explode(' ', microtime());
 							$totaltime = $mtime[0] + $mtime[1] - $starttime;
 							$rows_per_second = $row_count / $totaltime;
-							meta_refresh(1, $this->u_action . '&amp;action=delete&amp;skip_rows=' . $post_counter);
+							meta_refresh(1, append_sid($this->u_action . '&amp;action=delete&amp;skip_rows=' . $post_counter));
 							trigger_error(sprintf($user->lang['SEARCH_INDEX_DELETE_REDIRECT'], $post_counter, $row_count, $rows_per_second));
 						}
 					}
@@ -391,7 +391,7 @@ class acp_search
 							$mtime = explode(' ', microtime());
 							$totaltime = $mtime[0] + $mtime[1] - $starttime;
 							$rows_per_second = $row_count / $totaltime;
-							meta_refresh(1, $this->u_action . '&amp;action=create&amp;skip_rows=' . $post_counter);
+							meta_refresh(1, append_sid($this->u_action . '&amp;action=create&amp;skip_rows=' . $post_counter));
 							trigger_error(sprintf($user->lang['SEARCH_INDEX_CREATE_REDIRECT'], $post_counter, $row_count, $rows_per_second));
 						}
 					}
