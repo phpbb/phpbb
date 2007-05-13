@@ -135,7 +135,7 @@ a.topictitle:active {
 }
 
 a.top {
-	background: none no-repeat 50% 50%;
+	background: none no-repeat top left;
 	text-decoration: none;
 	width: {IMG_ICON_BACK_TOP_WIDTH}px;
 	height: {IMG_ICON_BACK_TOP_HEIGHT}px;
