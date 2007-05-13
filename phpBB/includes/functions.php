@@ -3411,9 +3411,10 @@ function get_preg_expression($mode)
 }
 
 /**
-* Returns the first 4 blocks of the specified IPv6 address and as many
-* as specified in the length paramater additional ones.
+* Returns the first block of the specified IPv6 address and as many additional
+* ones as specified in the length paramater.
 * If length is zero, then an empty string is returned.
+* If length is greater than 3 the complete IP will be returned
 */
 function short_ipv6($ip, $length)
 {
@@ -3432,7 +3433,10 @@ function short_ipv6($ip, $length)
 	{
 		$ip = '0000' . $ip;
 	}
-	$ip = implode(':', array_slice(explode(':', $ip), 0, 4 + $length));
+	if ($length < 4)
+	{
+		$ip = implode(':', array_slice(explode(':', $ip), 0, 1 + $length));
+	}
 
 	return $ip;
 }
