@@ -531,7 +531,8 @@ dl.codebox code {
 
 .attach-image img {
 	border: 1px solid #999999;
-	cursor: move;
+/*	cursor: move; */
+	cursor: default;
 }
 
 /* Inline image thumbnails */
