@@ -2747,7 +2747,7 @@ function make_clickable($text, $server_url = false, $class = 'postlink')
 
 		// matches an email@domain type address at the start of a line, or after a space or after what might be a BBCode.
 		$magic_url_match[] = '/(^|[\n\t (>\]])(' . get_preg_expression('email') . ')/ie';
-		$magic_url_replace[] = "make_clickable_callback(MAGIC_URL_EMAIL, array('\$1', '\$2'), '')";
+		$magic_url_replace[] = "make_clickable_callback(MAGIC_URL_EMAIL, '\$1', '\$2', '', '')";
 	}
 
 	return preg_replace($magic_url_match, $magic_url_replace, $text);
