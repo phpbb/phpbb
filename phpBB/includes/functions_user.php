@@ -2270,7 +2270,8 @@ function group_delete($group_id, $group_name = false)
 
 	add_log('admin', 'LOG_GROUP_DELETE', $group_name);
 
-	return 'GROUP_DELETED';
+	// Return false - no error
+	return false;
 }
 
 /**
