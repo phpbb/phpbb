@@ -49,7 +49,7 @@ $lang = array_merge($lang, array(
 	'BBCODE_TAG_DEF_TOO_LONG'	=> 'The tag definition that you have entered is too long, please shorten your tag definition.',
 	'BBCODE_USAGE'				=> 'BBCode usage',
 	'BBCODE_USAGE_EXAMPLE'		=> '[hilight={COLOR}]{TEXT}[/hilight]<br /><br />[font={TEXT1}]{TEXT2}[/font]',
-	'BBCODE_USAGE_EXPLAIN'		=> 'Here you define how to use the bbcode. Replace any variable input by the corresponding token (%ssee below%s).',
+	'BBCODE_USAGE_EXPLAIN'		=> 'Here you define how to use the BBCode. Replace any variable input by the corresponding token (%ssee below%s).',
 
 	'EXAMPLE'						=> 'Example:',
 	'EXAMPLES'						=> 'Examples:',
@@ -89,7 +89,7 @@ $lang = array_merge($lang, array(
 	'CURRENT_SMILIES'			=> 'Current smilies',
 	'CURRENT_SMILIES_EXPLAIN'	=> 'Choose what to do with the currently installed smilies.',
 
-	'DISPLAY_ON_POSTING'	=> 'Display on posting',
+	'DISPLAY_ON_POSTING'	=> 'Display on posting page',
 
 	'EDIT_ICONS'				=> 'Edit icons',
 	'EDIT_SMILIES'				=> 'Edit smilies',
@@ -116,8 +116,8 @@ $lang = array_merge($lang, array(
 	'ICONS_ORDER'			=> 'Icon order',
 	'ICONS_URL'				=> 'Icon image file',
 	'ICONS_WIDTH'			=> 'Icon width',
-	'IMPORT_ICONS'			=> 'Install icons pak',
-	'IMPORT_SMILIES'		=> 'Install smilies pak',
+	'IMPORT_ICONS'			=> 'Install icons package',
+	'IMPORT_SMILIES'		=> 'Install smilies package',
 
 	'KEEP_ALL'			=> 'Keep all',
 

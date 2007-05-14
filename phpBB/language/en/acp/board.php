@@ -89,11 +89,11 @@ $lang = array_merge($lang, array(
 	'AVATAR_STORAGE_PATH'			=> 'Avatar storage path',
 	'AVATAR_STORAGE_PATH_EXPLAIN'	=> 'Path under your phpBB root directory, e.g. <samp>images/avatars/upload</samp>.',
 	'MAX_AVATAR_SIZE'				=> 'Maximum avatar dimensions',
-	'MAX_AVATAR_SIZE_EXPLAIN'		=> '(Height x Width in pixels)',
+	'MAX_AVATAR_SIZE_EXPLAIN'		=> 'Height x Width in pixels.',
 	'MAX_FILESIZE'					=> 'Maximum avatar file size',
 	'MAX_FILESIZE_EXPLAIN'			=> 'For uploaded avatar files.',
 	'MIN_AVATAR_SIZE'				=> 'Minimum avatar dimensions',
-	'MIN_AVATAR_SIZE_EXPLAIN'		=> '(Height x Width in pixels)',
+	'MIN_AVATAR_SIZE_EXPLAIN'		=> 'Height x Width in pixels.',
 ));
 
 // Message Settings
@@ -215,7 +215,7 @@ $lang = array_merge($lang, array(
 
 // Visual Confirmation Settings
 $lang = array_merge($lang, array(
-	'ACP_VC_SETTINGS_EXPLAIN'		=> 'Here you are able to define visual confirmation defaults and captcha settings.',
+	'ACP_VC_SETTINGS_EXPLAIN'		=> 'Here you are able to define visual confirmation defaults and CAPTCHA settings.',
 
 	'CAPTCHA_GD'							=> 'GD CAPTCHA',
 	'CAPTCHA_GD_FOREGROUND_NOISE'			=> 'GD CAPTCHA foreground noise',
@@ -227,7 +227,7 @@ $lang = array_merge($lang, array(
 	'CAPTCHA_GD_Y_GRID_EXPLAIN'				=> 'Use lower settings of this to make the GD based CAPTCHA harder. 0 will disable y-axis background noise.',
 
 	'CAPTCHA_PREVIEW_MSG'					=> 'Your changes to the visual confirmation setting were not saved. This is just a preview.',
-	'CAPTCHA_PREVIEW_EXPLAIN'				=> 'The captcha as it will look like using the current settings. Use the preview button to refresh. Note that captchas are randomized and will differ from one view to the next.',
+	'CAPTCHA_PREVIEW_EXPLAIN'				=> 'The CAPTCHA as it will look like using the current settings. Use the preview button to refresh. Note that captchas are randomized and will differ from one view to the next.',
 	'VISUAL_CONFIRM_POST'					=> 'Enable visual confirmation for guest postings',
 	'VISUAL_CONFIRM_POST_EXPLAIN'			=> 'Requires anonymous users to enter a random code matching an image to help prevent mass postings.',
 	'VISUAL_CONFIRM_REG'					=> 'Enable visual confirmation for registrations',
@@ -260,7 +260,7 @@ $lang = array_merge($lang, array(
 	'LIMIT_SESSIONS_EXPLAIN'		=> 'If the number of sessions exceeds this value within a one minute period the board will go offline. Set to 0 for unlimited sessions.',
 	'LOAD_CPF_MEMBERLIST'			=> 'Allow styles to display custom profile fields in memberlist',
 	'LOAD_CPF_VIEWPROFILE'			=> 'Display custom profile fields in user profiles',
-	'LOAD_CPF_VIEWTOPIC'			=> 'Display custom profile fields on viewtopic',
+	'LOAD_CPF_VIEWTOPIC'			=> 'Display custom profile fields on topic pages',
 	'LOAD_USER_ACTIVITY'			=> 'Show user’s activity',
 	'LOAD_USER_ACTIVITY_EXPLAIN'	=> 'Displays active topic/forum in user profiles and user control panel. It is recommended to disable this on boards with more than one million posts.',
 	'RECOMPILE_TEMPLATES'			=> 'Recompile stale templates',
@@ -275,7 +275,7 @@ $lang = array_merge($lang, array(
 	'YES_ONLINE_GUESTS'				=> 'Enable online guest listings in viewonline',
 	'YES_ONLINE_GUESTS_EXPLAIN'		=> 'Allow display of guest user information in viewonline.',
 	'YES_ONLINE_TRACK'				=> 'Enable display of user online/offline information',
-	'YES_ONLINE_TRACK_EXPLAIN'		=> 'Display online information for user in profiles and viewtopic.',
+	'YES_ONLINE_TRACK_EXPLAIN'		=> 'Display online information for user in profiles and topic pages.',
 	'YES_POST_MARKING'				=> 'Enable dotted topics',
 	'YES_POST_MARKING_EXPLAIN'		=> 'Indicates whether user has posted to a topic.',
 	'YES_READ_MARKING'				=> 'Enable server-side topic marking',
@@ -423,7 +423,7 @@ $lang = array_merge($lang, array(
 
 	'JAB_CHANGED'				=> 'Jabber account changed successfully.',
 	'JAB_ENABLE'				=> 'Enable Jabber',
-	'JAB_ENABLE_EXPLAIN'		=> 'Enables use of jabber messaging and notifications.',
+	'JAB_ENABLE_EXPLAIN'		=> 'Enables use of Jabber messaging and notifications.',
 	'JAB_PACKAGE_SIZE'			=> 'Jabber package size',
 	'JAB_PACKAGE_SIZE_EXPLAIN'	=> 'This is the number of messages sent in one package. If set to 0 the message is sent immediately and is not queued for later sending.',
 	'JAB_PASSWORD'				=> 'Jabber password',

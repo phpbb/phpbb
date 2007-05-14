@@ -132,7 +132,7 @@ $help = array(
 	),
 	array(
 		0 => 'Why can’t I vote in polls?',
-		1 => 'Only registered users can vote in polls (so as to prevent spoofing of results). If you have registered and still cannot vote then you probably do not have appropriate access rights.'
+		1 => 'Only registered users can vote in polls (so as to prevent spoofing of results). If you have registered and still cannot vote then you probably do not have appropriate permissions.'
 	),
 	array(
 		0 => 'Why can’t I add attachments?',
@@ -212,7 +212,7 @@ $help = array(
 	),
 	array(
 		0 => 'What are Usergroups?',
-		1 => 'Usergroups are a way in which board administrators can group users. Each user can belong to several groups (this differs from most other boards) and each group can be assigned individual access rights. This makes it easy for administrators to set up several users as moderators of a forum, or to give them access to a private forum, etc.'
+		1 => 'Usergroups are a way in which board administrators can group users. Each user can belong to several groups (this differs from most other boards) and each group can be assigned individual permissions. This makes it easy for administrators to set up several users as moderators of a forum, or to give them access to a private forum, etc.'
 	),
 	array(
 		0 => 'How do I join a Usergroup?',

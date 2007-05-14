@@ -229,7 +229,7 @@ $lang = array_merge($lang, array(
 	'INST_ERR_EMAIL_INVALID'	=> 'The e-mail address you entered is invalid.',
 	'INST_ERR_EMAIL_MISMATCH'	=> 'The e-mails you entered did not match.',
 	'INST_ERR_FATAL'			=> 'Fatal installation error',
-	'INST_ERR_FATAL_DB'			=> 'A fatal and unrecoverable database error has occurred. This may be because the specified user does not have appropriate rights to <code>CREATE TABLES</code> or <code>INSERT</code> data, etc. Further information may be given below. Please contact your hosting provider in the first instance or the support forums of phpBB for further assistance.',
+	'INST_ERR_FATAL_DB'			=> 'A fatal and unrecoverable database error has occurred. This may be because the specified user does not have appropriate permissions to <code>CREATE TABLES</code> or <code>INSERT</code> data, etc. Further information may be given below. Please contact your hosting provider in the first instance or the support forums of phpBB for further assistance.',
 	'INST_ERR_FTP_PATH'			=> 'Could not change to the given directory, please check the path.',
 	'INST_ERR_FTP_LOGIN'		=> 'Could not login to FTP server, check your username and password.',
 	'INST_ERR_MISSING_DATA'		=> 'You must fill out all fields in this block.',
@@ -265,7 +265,7 @@ $lang = array_merge($lang, array(
 	'NOT_UNDERSTAND'			=> 'Could not understand %s #%d, table %s ("%s")',
 	'NO_CONVERTORS'				=> 'No convertors are available for use.',
 	'NO_CONVERT_SPECIFIED'		=> 'No convertor specified.',
-	'NO_LOCATION'				=> 'Cannot determine location. If you know Imagemagick is installed, you may specify the location later within your Administration Panel',
+	'NO_LOCATION'				=> 'Cannot determine location. If you know Imagemagick is installed, you may specify the location later within your administration control panel',
 	'NO_TABLES_FOUND'			=> 'No tables found.',
 // TODO: Write some explanatory introduction text
 	'OVERVIEW_BODY'					=> 'Welcome to our public release candidate of the next-generation of phpBB after 2.0.x, phpBB 3.0! This release is intended for wider scale use to help us identifying last bugs and problematic areas.</p><p>Please read <a href="../docs/INSTALL.html">our installation guide</a> for more information about installing phpBB3</p><p><strong style="text-transform: uppercase;">Note:</strong> This release is <strong style="text-transform: uppercase;">still not final</strong>. You may want to wait for the full final release before running it live.</p><p>This installation system will guide you through the process of installing phpBB, converting from a different software package or updating to the latest version of phpBB. For more information on each option, select it from the menu above.',

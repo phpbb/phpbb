@@ -57,7 +57,7 @@ $lang = array_merge($lang, array(
 
 	'FORCE_REACTIVATION_SUCCESS'	=> 'Successfully forced reactivation.',
 	'FOUNDER'						=> 'Founder',
-	'FOUNDER_EXPLAIN'				=> 'Founders have all admin permissions and can never be banned, deleted or altered by non-founder members.',
+	'FOUNDER_EXPLAIN'				=> 'Founders have all administrative permissions and can never be banned, deleted or altered by non-founder members.',
 
 	'GROUP_APPROVE'					=> 'Approve member',
 	'GROUP_DEFAULT'					=> 'Make group default for member',
