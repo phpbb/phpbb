@@ -200,7 +200,7 @@ $lang = array_merge($lang, array(
 	'FRIENDS_OFFLINE'			=> 'Offline',
 	'FRIENDS_ONLINE'			=> 'Online',
 	'FRIENDS_UPDATED'			=> 'Your friends list has been updated successfully.',
-	'FULL_FOLDER_OPTION_CHANGED'=> 'The action to take when a folder is full have been changed successfully.',
+	'FULL_FOLDER_OPTION_CHANGED'=> 'The action to take when a folder is full has been changed successfully.',
 	'FWD_ORIGINAL_MESSAGE'		=> '-------- Original Message --------',
 	'FWD_SUBJECT'				=> 'Subject: %s',
 	'FWD_DATE'					=> 'Date: %s',
@@ -284,7 +284,7 @@ $lang = array_merge($lang, array(
 	'NO_AUTH_SIGNATURE'				=> 'You are not authorised to define a signature.',
 
 	'NO_BCC_RECIPIENT'			=> 'None',
-	'NO_BOOKMARKS'				=> 'You have no bookmarks',
+	'NO_BOOKMARKS'				=> 'You have no bookmarks.',
 	'NO_BOOKMARKS_SELECTED'		=> 'You have selected no bookmarks.',
 	'NO_EMAIL_USER'				=> 'The e-mail/username information submitted could not be found.',
 	'NO_FOES'					=> 'No foes currently defined',
