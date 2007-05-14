@@ -35,16 +35,17 @@ function initInsertions()
 	var doc;
 	if(document.forms[form_name])
 	{
-	    doc = document;
-	}  
-	else 
+		doc = document;
+	}
+	else
 	{
 		doc = opener.document;
 	}
+
 	var textarea = doc.forms[form_name].elements[text_name];
 	if (is_ie && typeof(baseHeight) != 'number')
-	{	
-		textarea.focus();		
+	{
+		textarea.focus();
 		baseHeight = doc.selection.createRange().duplicate().boundingHeight;
 		document.body.focus();
 	}
@@ -118,7 +119,7 @@ function bbfontstyle(bbopen, bbclose)
 	{
 		
 		var range = textarea.createTextRange(); 
-       	range.move("character", new_pos); 
+		range.move("character", new_pos); 
 		range.select();
 		storeCaret(textarea);
 	}
@@ -172,10 +173,11 @@ function insert_text(text, spaces, popup)
 	{
 		textarea.value = textarea.value + text;
 	}
-	if (!popup) 
+
+	if (!popup)
 	{
 		textarea.focus();
-	} 	
+	}
 
 }
 
@@ -307,7 +309,7 @@ function colorPalette(dir, width, height)
 	numberList[3] = 'BF';
 	numberList[4] = 'FF';
 
-	document.writeln('<table cellspacing="1" cellpadding="0" border="0">');
+	document.writeln('<table class="type2">');
 
 	for (r = 0; r < 5; r++)
 	{

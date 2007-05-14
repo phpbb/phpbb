@@ -47,6 +47,7 @@
 	<fieldset>
 		<legend>{L_SIGNATURE}</legend>
 		<p>{L_SIGNATURE_EXPLAIN}</p>
+
 		<div id="format-buttons">
 			<input type="button" class="button2" accesskey="b" name="addbbcode0" value=" B " style="font-weight:bold; width: 30px;" onclick="bbstyle(0)" onmouseover="helpline('b')" onmouseout="helpline('tip')" />
 			<input type="button" class="button2" accesskey="i" name="addbbcode2" value=" i " style="font-style:italic; width: 30px;" onclick="bbstyle(2)" onmouseover="helpline('i')" onmouseout="helpline('tip')" />
@@ -81,8 +82,15 @@
 		<!-- ENDIF -->
 
 		</div>
+
 		<p><input type="text" class="text full" style="border: 0; background: none;" name="helpbox" value="{L_STYLES_TIP}" /></p>
-		<div style="text-align: left;"><textarea name="signature" rows="10" cols="60" style="width: 80%;" onselect="storeCaret(this);" onclick="storeCaret(this);" onkeyup="storeCaret(this);">{SIGNATURE}</textarea></div>
+		<div style="text-align: left;">
+			<div style="width: 10%; float: right; margin-right: 1%;"><script type="text/javascript"><!--
+				colorPalette('v', 17, 5);
+				//--></script>
+			</div>
+			<textarea name="signature" rows="10" cols="60" style="width: 86%;" onselect="storeCaret(this);" onclick="storeCaret(this);" onkeyup="storeCaret(this);">{SIGNATURE}</textarea>
+		</div>
 
 		<div>
 			<!-- IF S_BBCODE_ALLOWED -->
@@ -98,7 +106,7 @@
 		</div>
 	</fieldset>
 
-	<fieldset class="quick">
+	<fieldset class="submit-buttons">
 		<input class="button1" type="submit" name="update" value="{L_SUBMIT}" />&nbsp;
 		<input class="button2" type="submit" name="preview" value="{L_PREVIEW}" />
 	</fieldset>
