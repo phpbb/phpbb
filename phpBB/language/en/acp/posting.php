@@ -56,7 +56,7 @@ $lang = array_merge($lang, array(
 
 	'HTML_REPLACEMENT'				=> 'HTML replacement',
 	'HTML_REPLACEMENT_EXAMPLE'		=> '&lt;span style="background-color:{COLOR};"&gt;{TEXT}&lt;/span&gt;<br /><br />&lt;span style="font-family:{TEXT1};"&gt;{TEXT2}&lt;/span&gt;',
-	'HTML_REPLACEMENT_EXPLAIN'		=> 'Here you define the default HTML replacement (each template can have its own HTML replacement). Do not forget to put back tokens you used above!',
+	'HTML_REPLACEMENT_EXPLAIN'		=> 'Here you define the default HTML replacement. Do not forget to put back tokens you used above!',
 
 	'TOKEN'					=> 'Token',
 	'TOKENS'				=> 'Tokens',
