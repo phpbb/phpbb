@@ -633,12 +633,13 @@ fieldset p {
 legend {
 	padding: 1px 0;
 	font-family: Tahoma,arial,Verdana,Sans-serif;
-	font-size: 0.85em;
+	font-size: .9em;
 	font-weight: bold;
 	color: #115098;
+	margin-top: -.4em;
 	position: relative;
 	text-transform: none;
-	line-height: 1.00em;
+	line-height: 1.2em;
 	top: 0em;
 	vertical-align: middle;
 }
@@ -648,8 +649,9 @@ legend { top: -1.2em; }
 /* end */
 
 * html legend {
-	margin-bottom: -10px;
-	margin-left: -7px;
+	margin: 0 0 -10px -7px;
+	line-height: 1em;
+	font-size: .85em;
 }
 
 /* Holly hack, .rtl comes after html */
