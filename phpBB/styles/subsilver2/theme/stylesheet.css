@@ -37,13 +37,14 @@ body {
 	min-height: 120px;
 	height: auto !important;
 	height: 120px;
-	background-image: url('./images/background.gif');
-	background-repeat: repeat-x;
-	padding: 0 25px 15px 25px;
+/*	background-image: url('./images/background.gif');
+	background-repeat: repeat-x;*/
+/*	padding: 0 25px 15px 25px;*/
+	padding: 0;
 }
 
 #wrapcentre {
-	margin: 25px;
+	margin: 15px 25px 0 25px;
 }
 
 #wrapfooter {
@@ -53,7 +54,7 @@ body {
 
 #wrapnav {
 	width: 100%;
-	margin: 0px;
+	margin: 0;
 	background-color: #ECECEC;
 	border-width: 1px;
 	border-style: solid;
@@ -61,15 +62,18 @@ body {
 }
 
 #logodesc {
-	
+	margin-bottom: 5px;
+	padding: 5px 25px;
+	background: #D9DFE4;
+	border-bottom: 1px solid #4787A7;
 }
 
 #menubar {
-	
+	margin: 0 25px;
 }
 
 #datebar {
-	margin-top: 10px;
+	margin: 10px 25px 0 25px;
 }
 
 #findbar {
