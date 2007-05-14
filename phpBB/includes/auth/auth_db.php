@@ -126,7 +126,7 @@ function login_db(&$username, &$password)
 				$row['user_pass_convert'] = 0;
 				$row['user_password'] = md5($password_new_format);
 			}
-			else if (preg_match('/[\x80-\xFF]/', $password_old_format))
+			else
 			{
 				// Although we weren't able to convert this password we have to
 				// increase login attempt count to make sure this cannot be exploited
