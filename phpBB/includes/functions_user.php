@@ -1971,7 +1971,8 @@ function avatar_process_user(&$error, $custom_userdata = false)
 				}
 			}
 		}
-		if ($config['avatar_max_width'] || $config['avatar_max_height'])
+		if (($config['avatar_max_width'] || $config['avatar_max_height']) && 
+			(($data['width'] != $userdata['user_avatar_width']) || $data['height'] != $userdata['user_avatar_height']))
 		{
 			if ($data['width'] > $config['avatar_max_width'] || $data['height'] > $config['avatar_max_height'])
 			{
