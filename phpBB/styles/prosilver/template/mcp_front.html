@@ -112,6 +112,7 @@
 			<th class="name">{L_ACTION}</th>
 			<th class="name">{L_USERNAME}</th>
 			<th class="name">{L_IP}</th>
+			<th class="name">{L_VIEW_TOPIC}</th>
 			<th class="name">{L_VIEW_TOPIC_LOGS}</th>
 			<th class="name">{L_TIME}</th>
 		</tr>
@@ -119,9 +120,10 @@
 		<tbody>
 	<!-- BEGIN log -->
 		<tr class="<!-- IF log.S_ROW_COUNT is even -->bg1<!-- ELSE -->bg2<!-- ENDIF -->">
-			<td><a href="{log.U_VIEW_TOPIC}" title="{L_VIEW_TOPIC}">{log.ACTION}</a></td>
+			<td>{log.ACTION}</td>
 			<td><span>{log.USERNAME}</span></td>
 			<td><span>{log.IP}</span></td>
+			<td><a href="{log.U_VIEW_TOPIC}" title="{L_VIEW_TOPIC}">{L_VIEW_TOPIC}</a></td>
 			<td><span><!-- IF log.U_VIEWLOGS --><a href="{log.U_VIEWLOGS}">{L_VIEW_TOPIC_LOGS}</a><!-- ENDIF -->&nbsp;</span></td>
 			<td><span>{log.TIME}</span></td>
 		</tr>
