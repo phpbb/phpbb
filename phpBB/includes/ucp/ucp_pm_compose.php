@@ -553,7 +553,7 @@ function compose_pm($id, $mode, $action)
 		{
 			if (!$subject)
 			{
-				$error[] = $user->lang['EMPTY_SUBJECT'];
+				$error[] = $user->lang['NO_SUBJECT'];
 			}
 
 			if (!sizeof($address_list))
