@@ -2606,16 +2606,36 @@ function generate_text_for_edit($text, $uid, $flags)
 */
 function make_clickable_callback($type, $whitespace, $url, $relative_url, $class)
 {
-		$append			= '';
-		$url			= htmlspecialchars_decode($url);
-		$relative_url	= htmlspecialchars_decode($relative_url);
+	$append			= '';
+	$url			= htmlspecialchars_decode($url);
+	$relative_url	= htmlspecialchars_decode($relative_url);
 
-		// make sure no HTML entities were matched
-		$chars = array('<', '>', '"');
+	// make sure no HTML entities were matched
+	$chars = array('<', '>', '"');
+	$split = false;
+	foreach ($chars as $char)
+	{
+		$next_split = strpos($url, $char);
+		if ($next_split !== false)
+		{
+			$split = ($split !== false) ? min($split, $next_split) : $next_split;
+		}
+	}
+
+	if ($split !== false)
+	{
+		// an HTML entity was found, so the URL has to end before it
+		$append			= substr($url, $split) . $relative_url;
+		$url			= substr($url, 0, $split);
+		$relative_url	= '';
+	}
+	else if ($relative_url)
+	{
+		// same for $relative_url
 		$split = false;
 		foreach ($chars as $char)
 		{
-			$next_split = strpos($url, $char);
+			$next_split = strpos($relative_url, $char);
 			if ($next_split !== false)
 			{
 				$split = ($split !== false) ? min($split, $next_split) : $next_split;
@@ -2624,86 +2644,66 @@ function make_clickable_callback($type, $whitespace, $url, $relative_url, $class
 
 		if ($split !== false)
 		{
-			// an HTML entity was found, so the URL has to end before it
-			$append			= substr($url, $split) . $relative_url;
-			$url			= substr($url, 0, $split);
-			$relative_url	= '';
+			$append			= substr($relative_url, $split);
+			$relative_url	= substr($relative_url, 0, $split);
 		}
-		else if ($relative_url)
-		{
-			// same for $relative_url
-			$split = false;
-			foreach ($chars as $char)
+	}
+
+	// if the last character of the url is a punctuation mark, exclude it from the url
+	$last_char = ($relative_url) ? $relative_url[strlen($relative_url) - 1] : $url[strlen($url) - 1];
+
+	switch ($last_char)
+	{
+		case '.':
+		case '?':
+		case '!':
+		case ':':
+		case ',':
+			$append = $last_char;
+			if ($relative_url)
 			{
-				$next_split = strpos($relative_url, $char);
-				if ($next_split !== false)
-				{
-					$split = ($split !== false) ? min($split, $next_split) : $next_split;
-				}
+				$relative_url = substr($relative_url, 0, -1);
 			}
-
-			if ($split !== false)
+			else
 			{
-				$append			= substr($relative_url, $split);
-				$relative_url	= substr($relative_url, 0, $split);
+				$url = substr($url, 0, -1);
 			}
-		}
+	}
 
-		// if the last character of the url is a punctuation mark, exclude it from the url
-		$last_char = ($relative_url) ? $relative_url[strlen($relative_url) - 1] : $url[strlen($url) - 1];
+	switch ($type)
+	{
+		case MAGIC_URL_LOCAL:
+			$tag			= 'l';
+			$relative_url	= preg_replace('/[&?]sid=[0-9a-f]{32}$/', '', preg_replace('/([&?])sid=[0-9a-f]{32}&/', '$1', $relative_url));
+			$url			= $url . '/' . $relative_url;
+			$text			= ($relative_url) ? $relative_url : $url . '/';
+		break;
 
-		switch ($last_char)
-		{
-			case '.':
-			case '?':
-			case '!':
-			case ':':
-			case ',':
-				$append = $last_char;
-				if ($relative_url)
-				{
-					$relative_url = substr($relative_url, 0, -1);
-				}
-				else
-				{
-					$url = substr($url, 0, -1);
-				}
-		}
+		case MAGIC_URL_FULL:
+			$tag	= 'm';
+			$text	= (strlen($url) > 55) ? substr($url, 0, 39) . ' ... ' . substr($url, -10) : $url;
+		break;
 
-		switch ($type)
-		{
-			case MAGIC_URL_LOCAL:
-				$tag			= 'l';
-				$relative_url	= preg_replace('/[&?]sid=[0-9a-f]{32}$/', '', preg_replace('/([&?])sid=[0-9a-f]{32}&/', '$1', $relative_url));
-				$url			= $url . '/' . $relative_url;
-				$text			= ($relative_url) ? $relative_url : $url . '/';
-			break;
+		case MAGIC_URL_WWW:
+			$tag	= 'w';
+			$url	= 'http://' . $url;
+			$text	= (strlen($url) > 55) ? substr($url, 0, 39) . ' ... ' . substr($url, -10) : $url;
+		break;
 
-			case MAGIC_URL_FULL:
-				$tag	= 'm';
-				$text	= (strlen($url) > 55) ? substr($url, 0, 39) . ' ... ' . substr($url, -10) : $url;
-			break;
+		case MAGIC_URL_EMAIL:
+			$tag	= 'e';
+			$url	= 'mailto:' . $url;
+			$text	= (strlen($url) > 55) ? substr($url, 0, 39) . ' ... ' . substr($url, -10) : $url;
+		break;
+	}
 
-			case MAGIC_URL_WWW:
-				$tag	= 'w';
-				$url	= 'http://' . $url;
-				$text	= (strlen($url) > 55) ? substr($url, 0, 39) . ' ... ' . substr($url, -10) : $url;
-			break;
+	$url	= htmlspecialchars($url);
+	$text	= htmlspecialchars($text);
+	$append	= htmlspecialchars($append);
 
-			case MAGIC_URL_EMAIL:
-				$tag	= 'e';
-				$url	= 'mailto:' . $url;
-				$text	= (strlen($url) > 55) ? substr($url, 0, 39) . ' ... ' . substr($url, -10) : $url;
-			break;
-		}
+	$html	= "$whitespace<!-- $tag --><a$class href=\"$url\">$text</a><!-- $tag -->$append";
 
-		$url	= htmlspecialchars($url);
-		$text	= htmlspecialchars($text);
-		$append	= htmlspecialchars($append);
-
-		$html	= "$whitespace<!-- $tag --><a$class href=\"$url\">$text</a><!-- $tag -->$append";
-
-		return $html;
+	return $html;
 }
 
 /**
