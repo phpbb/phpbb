@@ -372,6 +372,14 @@ ul.topiclist dd {
 	border-left-color: #FFFFFF;
 }
 
+ul.topiclist li.row dt a.subforum.read {
+	background-image: url("{IMG_SUBFORUM_READ_SRC}");
+}
+
+ul.topiclist li.row dt a.subforum.unread {
+	background-image: url("{IMG_SUBFORUM_UNREAD_SRC}");
+}
+
 li.row {
 	border-top-color:  #FFFFFF;
 	border-bottom-color: #00608F;

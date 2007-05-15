@@ -47,6 +47,13 @@ ul.topiclist dfn {
 	display: none;
 }
 
+ul.topiclist li.row dt a.subforum {
+	background-image: none;
+	background-position: 0pt 50%;
+	background-repeat: no-repeat;
+	padding: 0 0 0 12px;
+}
+
 li.row {
 	border-top: 1px solid #FFFFFF;
 	border-bottom: 1px solid #8f8f8f;
@@ -105,7 +112,7 @@ dl.icon {
 dl.icon dt {
 	padding-left: 45px;					/* Space for folder icon */
 	background-repeat: no-repeat;
-	background-position: 27px 70%;		/* Position of topic icon */
+	background-position: 5px 95%;		/* Position of topic icon */
 }
 
 dd.posts, dd.topics, dd.views {

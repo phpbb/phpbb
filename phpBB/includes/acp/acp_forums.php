@@ -129,8 +129,8 @@ class acp_forums
 						'prune_old_polls'		=> request_var('prune_old_polls', false),
 						'prune_announce'		=> request_var('prune_announce', false),
 						'prune_sticky'			=> request_var('prune_sticky', false),
-						'forum_password'		=> request_var('forum_password', ''),
-						'forum_password_confirm'=> request_var('forum_password_confirm', ''),
+						'forum_password'		=> request_var('forum_password', '', true),
+						'forum_password_confirm'=> request_var('forum_password_confirm', '', true),
 					);
 
 					// Use link_display_on_index setting if forum type is link
