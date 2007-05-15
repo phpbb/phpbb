@@ -128,7 +128,7 @@ class install_install extends module
 			'BODY'		=> $lang['REQUIREMENTS_EXPLAIN'],
 		));
 
-		$passed = array('php' => false, 'db' => false, 'files' => false, 'pcre' => false);
+		$passed = array('php' => false, 'db' => false, 'files' => false, 'pcre' => false, 'imagesize' => false,);
 
 		// Test for basic PHP settings
 		$template->assign_block_vars('checks', array(
@@ -178,6 +178,47 @@ class install_install extends module
 		$template->assign_block_vars('checks', array(
 			'TITLE'			=> $lang['PHP_REGISTER_GLOBALS'],
 			'TITLE_EXPLAIN'	=> $lang['PHP_REGISTER_GLOBALS_EXPLAIN'],
+			'RESULT'		=> $result,
+
+			'S_EXPLAIN'		=> true,
+			'S_LEGEND'		=> false,
+		));
+		
+		
+		// Check for url_fopen 
+		if (@ini_get('allow_url_fopen') == '1' || strtolower(@ini_get('allow_url_fopen')) == 'on')
+		{
+			$result = '<b style="color:green">' . $lang['YES'] . '</b>';
+		}
+		else
+		{
+			$result = '<b style="color:red">' . $lang['NO'] . '</b>';
+		}
+
+		$template->assign_block_vars('checks', array(
+			'TITLE'			=> $lang['PHP_URL_FOPEN_SUPPORT'],
+			'TITLE_EXPLAIN'	=> $lang['PHP_URL_FOPEN_SUPPORT_EXPLAIN'],
+			'RESULT'		=> $result,
+
+			'S_EXPLAIN'		=> true,
+			'S_LEGEND'		=> false,
+		));
+		
+		
+		// Check for getimagesize 
+		if (@function_exists('getimagesize'))
+		{
+			$passed['imagesize'] = true;
+			$result = '<b style="color:green">' . $lang['YES'] . '</b>';
+		}
+		else
+		{
+			$result = '<b style="color:red">' . $lang['NO'] . '</b>';
+		}
+
+		$template->assign_block_vars('checks', array(
+			'TITLE'			=> $lang['PHP_GETIMAGESIZE_SUPPORT'],
+			'TITLE_EXPLAIN'	=> $lang['PHP_GETIMAGESIZE_SUPPORT_EXPLAIN'],
 			'RESULT'		=> $result,
 
 			'S_EXPLAIN'		=> true,
@@ -472,8 +513,8 @@ class install_install extends module
 		// And finally where do we want to go next (well today is taken isn't it :P)
 		$s_hidden_fields = ($img_imagick) ? '<input type="hidden" name="img_imagick" value="' . addslashes($img_imagick) . '" />' : '';
 
-		$url = ($passed['php'] && $passed['db'] && $passed['files'] && $passed['pcre'] && $passed['mbstring']) ? $this->p_master->module_url . "?mode=$mode&amp;sub=database&amp;language=$language" : $this->p_master->module_url . "?mode=$mode&amp;sub=requirements&amp;language=$language	";
-		$submit = ($passed['php'] && $passed['db'] && $passed['files'] && $passed['pcre'] && $passed['mbstring']) ? $lang['INSTALL_START'] : $lang['INSTALL_TEST'];
+		$url = (!in_array(false, $passed)) ? $this->p_master->module_url . "?mode=$mode&amp;sub=database&amp;language=$language" : $this->p_master->module_url . "?mode=$mode&amp;sub=requirements&amp;language=$language	";
+		$submit = (!in_array(false, $passed)) ? $lang['INSTALL_START'] : $lang['INSTALL_TEST'];
 
 
 		$template->assign_vars(array(
