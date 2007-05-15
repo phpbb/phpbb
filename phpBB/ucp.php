@@ -90,7 +90,7 @@ switch ($mode)
 			}
 			else
 			{
-				$message = $user->lang['LOGOUT_FAILED'];
+				$message = ($user->data['user_id'] == ANONYMOUS) ? $user->lang['LOGOUT_REDIRECT'] : $user->lang['LOGOUT_FAILED'];
 			}
 			meta_refresh(3, append_sid("{$phpbb_root_path}index.$phpEx"));
 	

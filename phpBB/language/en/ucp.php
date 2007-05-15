@@ -228,7 +228,7 @@ $lang = array_merge($lang, array(
 	'LINK_REMOTE_SIZE_EXPLAIN'	=> 'Specify the width and height of the avatar, leave blank to attempt automatic verification.',
 	'LOGIN_EXPLAIN_UCP'			=> 'Please login in order to access the User Control Panel.',
 	'LOGIN_REDIRECT'			=> 'You have been successfully logged in.',
-	'LOGOUT_FAILED'				=> 'You were not logged out, as the request did not match your session.',
+	'LOGOUT_FAILED'				=> 'You were not logged out, as the request did not match your session. Please contact the board administrator if you continue to experience problems.',
 	'LOGOUT_REDIRECT'			=> 'You have been successfully logged out.',
 
 	'MARK_IMPORTANT'				=> 'Mark/Unmark as important',
