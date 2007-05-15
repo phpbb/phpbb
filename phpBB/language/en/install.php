@@ -273,7 +273,7 @@ $lang = array_merge($lang, array(
 
 	'PCRE_UTF_SUPPORT'				=> 'PCRE UTF-8 support',
 	'PCRE_UTF_SUPPORT_EXPLAIN'		=> 'phpBB will <strong>not</strong> run if your PHP installation is not compiled with UTF-8 support in the PCRE extension.',
-	'PHP_GETIMAGESIZE_SUPPORT'			=> 'PHP function getimagsize() is available',
+	'PHP_GETIMAGESIZE_SUPPORT'			=> 'PHP function getimagesize() is available',
 	'PHP_GETIMAGESIZE_SUPPORT_EXPLAIN'	=> '<strong>Required</strong> - In order for phpBB to function correctly, the getimagesize function needs to be available.',
 	'PHP_OPTIONAL_MODULE'			=> 'Optional modules',
 	'PHP_OPTIONAL_MODULE_EXPLAIN'	=> '<strong>Optional</strong> - These modules or applications are optional. However, if they are available they will enable extra features.',
