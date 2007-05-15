@@ -657,7 +657,15 @@ function user_ban($mode, $ban, $ban_len, $ban_len_other, $ban_exclude, $ban_reas
 		else
 		{
 			$ban_other = explode('-', $ban_len_other);
-			$ban_end = max($current_time, gmmktime(0, 0, 0, $ban_other[1], $ban_other[2], $ban_other[0]));
+			if (sizeof($ban_other) == 3 && ((int)$ban_other[0] < 9999) && 
+				(strlen($ban_other[0]) == 4) && (strlen($ban_other[1]) == 2) && (strlen($ban_other[2]) == 2))
+			{
+				$ban_end = max($current_time, gmmktime(0, 0, 0, (int)$ban_other[1], (int)$ban_other[2], (int)$ban_other[0]));
+			}
+			else
+			{
+				trigger_error($user->lang['LENGTH_BAN_INVALID']);
+			}
 		}
 	}
 	else

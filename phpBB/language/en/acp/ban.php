@@ -59,6 +59,8 @@ $lang = array_merge($lang, array(
 	'IP_UNBAN'					=> 'Un-ban or un-exclude IPs',
 	'IP_UNBAN_EXPLAIN'			=> 'You can unban (or un-exclude) multiple IP addresses in one go using the appropriate combination of mouse and keyboard for your computer and browser. Excluded IPs are emphasised.',
 
+	'LENGTH_BAN_INVALID'		=> 'The date has to be formated YYYY-MM-DD',
+
 	'PERMANENT'		=> 'Permanent',
 	
 	'UNTIL'						=> 'Until',
@@ -68,6 +70,8 @@ $lang = array_merge($lang, array(
 	'USER_NO_BANNED'			=> 'No banned usernames',
 	'USER_UNBAN'				=> 'Un-ban or un-exclude usernames',
 	'USER_UNBAN_EXPLAIN'		=> 'You can unban (or un-exclude) multiple users in one go using the appropriate combination of mouse and keyboard for your computer and browser. Excluded users are emphasised.',
+	
+
 ));
 
 ?>
