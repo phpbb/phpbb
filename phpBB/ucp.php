@@ -82,16 +82,21 @@ switch ($mode)
 	break;
 
 	case 'logout':
-		if ($user->data['user_id'] != ANONYMOUS)
-		{
-			$user->session_kill();
-			$user->session_begin();
-		}
-
-		meta_refresh(3, append_sid("{$phpbb_root_path}index.$phpEx"));
-
-		$message = $user->lang['LOGOUT_REDIRECT'] . '<br /><br />' . sprintf($user->lang['RETURN_INDEX'], '<a href="' . append_sid("{$phpbb_root_path}index.$phpEx") . '">', '</a> ');
-		trigger_error($message);
+			if ($user->data['user_id'] != ANONYMOUS && (!empty($_GET['sid']) && ($_GET['sid'] == $user->session_id)))
+			{
+				$user->session_kill();
+				$user->session_begin();
+				$message = $user->lang['LOGOUT_REDIRECT'];
+			}
+			else
+			{
+				$message = $user->lang['LOGOUT_FAILED'];
+			}
+			meta_refresh(3, append_sid("{$phpbb_root_path}index.$phpEx"));
+	
+			$message = $message . '<br /><br />' . sprintf($user->lang['RETURN_INDEX'], '<a href="' . append_sid("{$phpbb_root_path}index.$phpEx") . '">', '</a> ');
+			trigger_error($message);
+		
 	break;
 
 	case 'terms':
