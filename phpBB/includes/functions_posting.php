@@ -1520,7 +1520,7 @@ function submit_post($mode, $subject, $username, $topic_type, &$poll, &$data, $u
 			if ($user->data['user_id'] != $poster_id)
 			{
 				$log_subject = ($subject) ? $subject : $data['topic_title'];
-				add_log('mod', $data['forum_id'], $data['topic_id'], 'LOG_POST_EDITED', $log_subject, generate_board_url() . '/viewtopic.' . $phpEx . '?t=' . $data['topic_id'] . '&amp;p=' . $data['post_id'], $username);
+				add_log('mod', $data['forum_id'], $data['topic_id'], 'LOG_POST_EDITED', $log_subject, (!empty($username)) ? $username : $user->lang['GUEST']);
 			}
 
 			if (!isset($sql_data[POSTS_TABLE]['sql']))

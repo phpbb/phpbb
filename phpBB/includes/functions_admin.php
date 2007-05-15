@@ -2422,8 +2422,10 @@ function view_log($mode, &$log, &$log_count, $limit = 0, $offset = 0, $forum_id 
 				$log[$i]['action'] .= '<br />' . implode('', $log_data_ary);
 			}
 
-			// Apply make_clickable... has to be seen if it is for good. :/
+			/* Apply make_clickable... has to be seen if it is for good. :/
+			// Seems to be not for the moment, reconsider later...
 			$log[$i]['action'] = make_clickable($log[$i]['action']);
+			*/
 		}
 
 		$i++;
