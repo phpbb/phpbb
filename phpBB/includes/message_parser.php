@@ -691,11 +691,13 @@ class bbcode_firstpass extends bbcode
 					$tok = '[';
 					$buffer = '';
 
-					// Add space at the end of the closing tag if not happened before to allow following urls/smilies to be parsed correctly
+					/* Add space at the end of the closing tag if not happened before to allow following urls/smilies to be parsed correctly
+					* Do not try to think for the user. :/ Do not parse urls/smilies if there is no space - is the same as with other bbcodes too.
+					* Also, we won't have any spaces within $in anyway, only adding up spaces -> #10982
 					if (!$in || $in[0] !== ' ')
 					{
 						$out .= ' ';
-					}
+					}*/
 				}
 				else if (preg_match('#^quote(?:=&quot;(.*?)&quot;)?$#is', $buffer, $m))
 				{
