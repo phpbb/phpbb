@@ -1803,6 +1803,7 @@ function avatar_gallery($category, $avatar_select, $items_per_column, $block_var
 	}
 
 	$template->assign_vars(array(
+		'S_AVATARS_ENABLED'		=> true,
 		'S_IN_AVATAR_GALLERY'	=> true,
 		'S_CAT_OPTIONS'			=> $s_category_options)
 	);
