@@ -978,6 +978,7 @@ parse_css_file = {PARSE_CSS_FILE}
 		{
 			$file = str_replace('/', '.', $file);
 			$filename = "{$cache_prefix}_$file.html.$phpEx";
+			 
 
 			$template->assign_block_vars('file', array(
 				'U_VIEWSOURCE'	=> $this->u_action . "&amp;action=cache&amp;id=$template_id&amp;source=$file",
@@ -986,7 +987,7 @@ parse_css_file = {PARSE_CSS_FILE}
 				'CACHED'		=> $user->format_date(filemtime("{$phpbb_root_path}cache/$filename")),
 				'FILENAME'		=> $file,
 				'FILESIZE'		=> sprintf('%.1f KB', filesize("{$phpbb_root_path}cache/$filename") / 1024),
-				'MODIFIED'		=> $user->format_date((!$template_row['template_storedb']) ? filemtime("{$phpbb_root_path}styles/{$template_row['template_path']}/template/$file.html") : $filemtime[$file . '.html']))
+				'MODIFIED'		=> $user->format_date((!$template_row['template_storedb']) ? filemtime("{$phpbb_root_path}styles/{$template_row['template_path']}/template/" . str_replace('.', '/', $file) . '.html') : $filemtime[$file . '.html']))
 			);
 		}
 		unset($filemtime);
