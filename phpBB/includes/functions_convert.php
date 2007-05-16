@@ -1870,8 +1870,9 @@ function update_dynamic_config()
 		set_config('newest_user_colour', $row['user_colour'], true);
 	}
 
-	set_config('record_online_users', 1, true);
-	set_config('record_online_date', time(), true);
+//	Also do not reset record online user/date. There will be old data or the fresh data from the schema.
+//	set_config('record_online_users', 1, true);
+//	set_config('record_online_date', time(), true);
 
 	$sql = 'SELECT COUNT(post_id) AS stat 
 		FROM ' . POSTS_TABLE . '
@@ -1994,8 +1995,8 @@ function update_topics_posted()
 			foreach ($topic_row as $topic_id)
 			{
 				$sql_ary[] = array(
-					'user_id'		=> $user_id,
-					'topic_id'		=> $topic_id,
+					'user_id'		=> (int) $user_id,
+					'topic_id'		=> (int) $topic_id,
 					'topic_posted'	=> 1,
 				);
 			}

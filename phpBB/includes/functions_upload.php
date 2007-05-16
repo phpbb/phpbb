@@ -685,6 +685,12 @@ class fileupload
 			return $file;
 		}
 
+		// Make sure $path not beginning with /
+		if (strpos($path, '/') === 0)
+		{
+			$path = substr($path, 1);
+		}
+
 		fputs($fsock, 'GET /' . $path . " HTTP/1.1\r\n");
 		fputs($fsock, "HOST: " . $host . "\r\n");
 		fputs($fsock, "Connection: close\r\n\r\n");

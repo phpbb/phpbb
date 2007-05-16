@@ -1554,7 +1554,9 @@ class install_convert extends module
 		if ($final_jump == 1)
 		{
 			$db->sql_return_on_error(true);
+
 			update_topics_posted();
+
 			$template->assign_block_vars('checks', array(
 				'TITLE'		=> $user->lang['UPDATE_TOPICS_POSTED'],
 				'RESULT'	=> $user->lang['DONE'],

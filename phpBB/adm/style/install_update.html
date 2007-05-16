@@ -192,20 +192,20 @@
 							<!-- IF files.STATUS eq 'conflict' -->
 							</dl>
 							<dl>
-								<dt style="width: 60%"><input type="radio" class="radio" name="conflict[{files.FILENAME}]" value="1" checked="checked" />&nbsp; {L_MERGE_NO_MERGE_NEW_OPTION}</dt>
+								<dt style="width: 60%"><label><input type="radio" class="radio" name="conflict[{files.FILENAME}]" value="1" checked="checked" /> {L_MERGE_NO_MERGE_NEW_OPTION}</label></dt>
 								<dd style="margin-left: 60%;"><!-- IF not files.S_BINARY -->[<a href="{files.U_VIEW_NO_MERGE_NEW}" onclick="popup('{files.U_VIEW_NO_MERGE_NEW}', 700, 500); return false;">{L_SHOW_DIFF_FINAL}</a>]<!-- ELSE -->&nbsp;<!-- ENDIF --></dd>
 							</dl>
 							<dl>
-								<dt style="width: 60%"><input type="radio" class="radio" name="conflict[{files.FILENAME}]" value="2" />&nbsp; {L_MERGE_NO_MERGE_MOD_OPTION}</dt>
+								<dt style="width: 60%"><label><input type="radio" class="radio" name="conflict[{files.FILENAME}]" value="2" /> {L_MERGE_NO_MERGE_MOD_OPTION}</label></dt>
 								<dd style="margin-left: 60%;"><!-- IF not files.S_BINARY -->[<a href="{files.U_VIEW_NO_MERGE_MOD}" onclick="popup('{files.U_VIEW_NO_MERGE_MOD}', 700, 500); return false;">{L_SHOW_DIFF_FINAL}</a>]<!-- ELSE -->&nbsp;<!-- ENDIF --></dd>
 							</dl>
 								<!-- IF not files.S_BINARY -->
 									<dl>
-										<dt style="width: 60%"><input type="radio" class="radio" name="conflict[{files.FILENAME}]" value="3" />&nbsp; {L_MERGE_NEW_FILE_OPTION}</dt>
+										<dt style="width: 60%"><label><input type="radio" class="radio" name="conflict[{files.FILENAME}]" value="3" /> {L_MERGE_NEW_FILE_OPTION}</label></dt>
 										<dd style="margin-left: 60%;">[<a href="{files.U_VIEW_NEW_FILE}" onclick="popup('{files.U_VIEW_NEW_FILE}', 700, 500); return false;">{L_SHOW_DIFF_FINAL}</a>]</dd>
 									</dl>
 									<dl>
-										<dt style="width: 60%"><input type="radio" class="radio" name="conflict[{files.FILENAME}]" value="4" />&nbsp; {L_MERGE_MOD_FILE_OPTION}</dt>
+										<dt style="width: 60%"><label><input type="radio" class="radio" name="conflict[{files.FILENAME}]" value="4" /> {L_MERGE_MOD_FILE_OPTION}</label></dt>
 										<dd style="margin-left: 60%;">[<a href="{files.U_VIEW_MOD_FILE}" onclick="popup('{files.U_VIEW_MOD_FILE}', 700, 500); return false;">{L_SHOW_DIFF_FINAL}</a>]</dd>
 									</dl>
 								<!-- ENDIF -->

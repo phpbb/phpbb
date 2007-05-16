@@ -48,7 +48,7 @@ $lang = array_merge($lang, array(
 	
 		<br />
 
-		<p>For further information on setting up and managing permissions on your phpBB3 forum, please see <a href="http://www.phpbb.com/support/documentation/3.0/quickstart/quick_permissions.html">Chapter 1.5 of our Quick Start Guide</a>.</p>
+		<p>For further information on setting up and managing permissions on your phpBB3 board, please see <a href="http://www.phpbb.com/support/documentation/3.0/quickstart/quick_permissions.html">Chapter 1.5 of our Quick Start Guide</a>.</p>
 	',
 
 	'ACL_NEVER'				=> 'Never',
@@ -169,7 +169,7 @@ $lang = array_merge($lang, array(
 	'ROLE_USER_STANDARD'		=> 'Standard Features',
 
 	'ROLE_DESCRIPTION_ADMIN_FORUM'			=> 'Can access the forum management and forum permission settings.',
-	'ROLE_DESCRIPTION_ADMIN_FULL'			=> 'Has access to all administrative functions of this forum.<br />Not recommended.',
+	'ROLE_DESCRIPTION_ADMIN_FULL'			=> 'Has access to all administrative functions of this board.<br />Not recommended.',
 	'ROLE_DESCRIPTION_ADMIN_STANDARD'		=> 'Has access to most administrative features but is not allowed to use server or system related tools.',
 	'ROLE_DESCRIPTION_ADMIN_USERGROUP'		=> 'Can manage groups and users: Able to change permissions, settings, manage bans, and manage ranks.',
 	'ROLE_DESCRIPTION_FORUM_BOT'			=> 'This role is recommended for bots and search spiders.',

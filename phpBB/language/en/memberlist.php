@@ -127,7 +127,7 @@ $lang = array_merge($lang, array(
 	'USER_ADMIN'			=> 'Administrate user',
 	'USER_FORUM'			=> 'User statistics',
 	'USER_ONLINE'			=> 'Online',
-	'USER_PRESENCE'			=> 'Forum presence',
+	'USER_PRESENCE'			=> 'Board presence',
 
 	'VIEWING_PROFILE'		=> 'Viewing profile - %s',
 	'VISITED'				=> 'Last visited',

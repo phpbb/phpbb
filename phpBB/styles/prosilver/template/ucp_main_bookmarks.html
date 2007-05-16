@@ -27,8 +27,9 @@
 	<!-- BEGIN topicrow -->
 		<li class="row<!-- IF topicrow.S_TOPIC_REPORTED --> reported<!-- ELSEIF topicrow.S_ROW_COUNT is odd --> bg1<!-- ELSE --> bg2<!-- ENDIF -->">
 			<!-- IF topicrow.S_DELETED_TOPIC -->
-				<dl><dt><strong>{L_DELETED_TOPIC}</strong></dt></dl>
+				<dl><dt><strong>{L_DELETED_TOPIC}</strong></dt>
 				<dd class="mark"><input type="checkbox" name="t[{topicrow.TOPIC_ID}]" id="t{topicrow.TOPIC_ID}" /></dd>
+				</dl>
 			<!-- ELSE -->
 			<dl class="icon" style="background-image: url({topicrow.TOPIC_FOLDER_IMG_SRC});">
 				<dt style="<!-- IF topicrow.TOPIC_ICON_IMG -->background-image: url({T_ICONS_PATH}{topicrow.TOPIC_ICON_IMG});<!-- ENDIF -->" title="{topicrow.TOPIC_FOLDER_IMG_ALT}">

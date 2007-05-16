@@ -457,7 +457,7 @@ class install_update extends module
 						$radio_buttons = '';
 						foreach ($methods as $method)
 						{
-							$radio_buttons .= '<input type="radio"' . ((!$radio_buttons) ? ' id="use_method"' : '') . ' class="radio" value="' . $method . '" name="use_method" />&nbsp;' . $method . '&nbsp;';
+							$radio_buttons .= '<label><input type="radio"' . ((!$radio_buttons) ? ' id="use_method"' : '') . ' class="radio" value="' . $method . '" name="use_method" /> ' . $method . '</label>';
 						}
 
 						$template->assign_vars(array(
