@@ -161,7 +161,9 @@ $lang = array_merge($lang, array(
 	'IMG_FORUM_UNREAD'			=> 'Forum new posts',
 	'IMG_FORUM_UNREAD_LOCKED'	=> 'Forum new posts locked',
 	'IMG_FORUM_UNREAD_SUBFORUM'	=> 'Subforum new posts',
-
+	'IMG_SUBFORUM_READ'			=> 'Legend subforum',
+	'IMG_SUBFORUM_UNREAD'		=> 'Legend subforum new posts',
+	
 	'IMG_TOPIC_MOVED'			=> 'Topic moved',
 
 	'IMG_TOPIC_READ'				=> 'Topic',
