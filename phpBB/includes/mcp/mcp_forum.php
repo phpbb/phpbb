@@ -140,7 +140,7 @@ function mcp_forum_view($id, $mode, $action, $forum_info)
 
 	$sql = "SELECT t.*$read_tracking_select
 		FROM " . TOPICS_TABLE . " t $read_tracking_join
-		WHERE (t.forum_id = $forum_id OR t.forum_id = 0)
+		WHERE t.forum_id IN($forum_id, 0)
 			" . (($auth->acl_get('m_approve', $forum_id)) ? '' : 'AND t.topic_approved = 1') . "
 			$limit_time_sql
 		ORDER BY t.topic_type DESC, $sort_order_sql";
