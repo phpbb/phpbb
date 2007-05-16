@@ -343,6 +343,7 @@ $lang = array_merge($lang, array(
 	'UNAVAILABLE'				=> 'Unavailable',
 	'UNWRITABLE'				=> 'Unwritable',
 	'UPDATE_TOPICS_POSTED'		=> 'Generating topics posted information',
+	'UPDATE_TOPICS_POSTED_ERR'	=> 'An error occured while generating topics posted information. You can retry this step in the ACP after the conversion process is completed.',
 	'VERSION'					=> 'Version',
 
 	'WELCOME_INSTALL'			=> 'Welcome to phpBB3 Installation',
