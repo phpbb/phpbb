@@ -934,13 +934,13 @@ parse_css_file = {PARSE_CSS_FILE}
 			$marker = 'MARKER' . time();
 			$code = highlight_string(str_replace("\n", $marker, $code), true);
 			$code = str_replace($marker, "\n", $code);
-
 			$str_from = array('<span style="color: ', '<font color="syntax', '</font>', '<code>', '</code>','[', ']', '.', ':');
 			$str_to = array('<span class="', '<span class="syntax', '</span>', '', '', '&#91;', '&#93;', '&#46;', '&#58;');
 
 			$code = str_replace($str_from, $str_to, $code);
 			$code = preg_replace('#^(<span class="[a-z_]+">)\n?(.*?)\n?(</span>)$#ism', '$1$2$3', $code);
-
+			$code = substr($code, strlen('<span class="syntaxhtml">'));
+			$code = substr($code, 0, -1 * strlen('</ span>'));
 			$code = explode("\n", $code);
 
 			foreach ($code as $key => $line)
@@ -976,9 +976,14 @@ parse_css_file = {PARSE_CSS_FILE}
 
 		foreach ($file_ary as $file)
 		{
-			$file = str_replace('/', '.', $file);
+			$file 		= str_replace('/', '.', $file);
+			
+			// perform some dirty guessing to get the path right. 
+			// We assume that three dots in a row were '../'
+			$tpl_file 	= str_replace('.', '/', $file);
+			$tpl_file 	= str_replace('///', '../', $tpl_file);
+			
 			$filename = "{$cache_prefix}_$file.html.$phpEx";
-			 
 
 			$template->assign_block_vars('file', array(
 				'U_VIEWSOURCE'	=> $this->u_action . "&amp;action=cache&amp;id=$template_id&amp;source=$file",
@@ -987,7 +992,7 @@ parse_css_file = {PARSE_CSS_FILE}
 				'CACHED'		=> $user->format_date(filemtime("{$phpbb_root_path}cache/$filename")),
 				'FILENAME'		=> $file,
 				'FILESIZE'		=> sprintf('%.1f KB', filesize("{$phpbb_root_path}cache/$filename") / 1024),
-				'MODIFIED'		=> $user->format_date((!$template_row['template_storedb']) ? filemtime("{$phpbb_root_path}styles/{$template_row['template_path']}/template/" . str_replace('.', '/', $file) . '.html') : $filemtime[$file . '.html']))
+				'MODIFIED'		=> $user->format_date((!$template_row['template_storedb']) ? filemtime("{$phpbb_root_path}styles/{$template_row['template_path']}/template/$tpl_file.html") : $filemtime[$file . '.html']))
 			);
 		}
 		unset($filemtime);
