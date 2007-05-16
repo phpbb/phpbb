@@ -126,7 +126,16 @@
 					<dd><input type="hidden" name="action" value="db_track" /><input class="button2" type="submit" id="action_db_track" name="action_db_track" value="{L_RUN}" /></dd>
 				</dl>
 			</form>
-		</fieldset>
+
+			<!-- IF S_FOUNDER -->
+			<form id="action_purge_cache_form" method="post" action="{U_ACTION}">
+				<dl>
+					<dt><label for="action_purge_cache">{L_PURGE_CACHE}</label><br /><span>{L_PURGE_CACHE_EXPLAIN}</span></dt>
+					<dd><input type="hidden" name="action" value="purge_cache" /><input class="button2" type="submit" id="action_purge_cache" name="action_purge_cache" value="{L_RUN}" /></dd>
+				</dl>
+			</form>
+			<!-- ENDIF -->
+  		</fieldset>
 	<!-- ENDIF -->
 
 	<!-- IF .log -->

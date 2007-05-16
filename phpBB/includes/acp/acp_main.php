@@ -77,6 +77,10 @@ class acp_main
 						$confirm = true;
 						$confirm_lang = 'RESYNC_POST_MARKING_CONFIRM';
 					break;
+					case 'purge_cache':
+						$confirm = true;
+						$confirm_lang = 'PURGE_CACHE_CONFIRM';
+					break;
 
 					default:
 						$confirm = true;
@@ -257,6 +261,17 @@ class acp_main
 			
 						add_log('admin', 'LOG_RESYNC_POST_MARKING');
 					break;
+
+					case 'purge_cache':
+						if ((int) $user->data['user_type'] !== USER_FOUNDER)
+						{
+							trigger_error($user->lang['NO_AUTH_OPERATION'] . adm_back_link($this->u_action), E_USER_WARNING);
+						}
+
+						global $cache;
+						$cache->purge();
+						add_log('admin', 'LOG_PURGE_CACHE');
+					break;
 				}
 			}
 		}
@@ -362,6 +377,7 @@ class acp_main
 			'U_INACTIVE_USERS'	=> append_sid("{$phpbb_admin_path}index.$phpEx", 'i=inactive&amp;mode=list'),
 
 			'S_ACTION_OPTIONS'	=> ($auth->acl_get('a_board')) ? true : false,
+			'S_FOUNDER'			=> ($user->data['user_type'] == USER_FOUNDER) ? true : false,
 			)
 		);
 

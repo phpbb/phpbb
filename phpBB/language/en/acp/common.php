@@ -320,6 +320,10 @@ $lang = array_merge($lang, array(
 
 	'POSTS_PER_DAY'		=> 'Posts per day',
 
+	'PURGE_CACHE'			=> 'Purge the cache',
+	'PURGE_CACHE_CONFIRM'	=> 'Are you sure you wish to purge the cache?',
+	'PURGE_CACHE_EXPLAIN'	=> 'Purge all cache related items, this includes any cached template files or queries.',
+
 	'RESET_DATE'					=> 'Reset board’s start date',
 	'RESET_DATE_CONFIRM'			=> 'Are you sure you wish to reset the board’s start date?',
 	'RESET_ONLINE'					=> 'Reset most users ever online',
@@ -582,6 +586,8 @@ $lang = array_merge($lang, array(
 	'LOG_PRUNE_USER_DEAC'		=> '<strong>Users deactivated</strong><br />» %s',
 	'LOG_PRUNE_USER_DEL_DEL'	=> '<strong>Users pruned and posts deleted</strong><br />» %s',
 	'LOG_PRUNE_USER_DEL_ANON'	=> '<strong>Users pruned and posts retained</strong><br />» %s',
+
+	'LOG_PURGE_CACHE'			=> '<strong>Purged cache</strong>',
 
 	'LOG_RANK_ADDED'		=> '<strong>Added new rank</strong><br />» %s',
 	'LOG_RANK_REMOVED'		=> '<strong>Removed rank</strong><br />» %s',
