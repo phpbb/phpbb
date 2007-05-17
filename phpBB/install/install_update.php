@@ -137,7 +137,7 @@ class install_update extends module
 		// For the current version we trick a bit. ;)
 		$this->current_version = (!empty($config['version_update_from'])) ? $config['version_update_from'] : $config['version'];
 
-		$up_to_date = (version_compare(strtolower($this->current_version), strtolower($this->latest_version), '<')) ? false : true;
+		$up_to_date = (version_compare(str_replace('rc', 'RC', strtolower($this->current_version)), str_replace('rc', 'RC', strtolower($this->latest_version), '<'))) ? false : true;
 
 		// Check for a valid update directory, else point the user to the phpbb.com website
 		if (!file_exists($phpbb_root_path . 'install/update') || !file_exists($phpbb_root_path . 'install/update/index.' . $phpEx) || !file_exists($this->old_location) || !file_exists($this->new_location))
@@ -154,7 +154,7 @@ class install_update extends module
 
 		// Make sure the update directory holds the correct information
 		// Since admins are able to run the update/checks more than once we only check if the current version is lower or equal than the version to which we update to.
-		if (version_compare(strtolower($this->current_version), strtolower($this->update_info['version']['to']), '>'))
+		if (version_compare(str_replace('rc', 'RC', strtolower($this->current_version)), str_replace('rc', 'RC', strtolower($this->update_info['version']['to'])), '>'))
 		{
 			$template->assign_vars(array(
 				'S_ERROR'		=> true,

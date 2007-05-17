@@ -565,8 +565,8 @@ $db->sql_freeresult($result);
 echo $lang['PREVIOUS_VERSION'] . ' :: <strong>' . $config['version'] . '</strong><br />';
 echo $lang['UPDATED_VERSION'] . ' :: <strong>' . $updates_to_version . '</strong>';
 
-$current_version = strtolower($config['version']);
-$latest_version = strtolower($updates_to_version);
+$current_version = str_replace('rc', 'RC', strtolower($config['version']));
+$latest_version = str_replace('rc', 'RC', strtolower($updates_to_version));
 $orig_version = $config['version'];
 
 // If the latest version and the current version are 'unequal', we will update the version_update_from, else we do not update anything.
