@@ -101,7 +101,49 @@ class acp_icons
 
 			case 'add':
 
-				$order_list = '';
+				$smilies = $default_row = array();
+				$smiley_options = $order_list = $add_order_list = '';
+
+				if ($action == 'add' && $mode == 'smilies')
+				{
+					$sql = 'SELECT * 
+						FROM ' . SMILIES_TABLE . '
+						ORDER BY smiley_order';
+					$result = $db->sql_query($sql);
+
+					while ($row = $db->sql_fetchrow($result))
+					{
+						if (empty($smilies[$row['smiley_url']]))
+						{
+							$smilies[$row['smiley_url']] = $row;
+						}
+					}
+					$db->sql_freeresult($result);
+
+					if (sizeof($smilies))
+					{
+						foreach ($smilies as $row)
+						{
+							$selected = false;
+
+							if (!$smiley_options)
+							{
+								$selected = true;
+								$default_row = $row;
+							}
+							$smiley_options .= '<option value="' . $row['smiley_url'] . '"' . (($selected) ? ' selected="selected"' : '') . '>' . $row['smiley_url'] . '</option>';
+
+							$template->assign_block_vars('smile', array(
+								'SMILEY_URL'	=> addslashes($row['smiley_url']),
+								'CODE'			=> addslashes($row['code']),
+								'EMOTION'		=> addslashes($row['emotion']),
+								'WIDTH'			=> $row['smiley_width'],
+								'HEIGHT'		=> $row['smiley_height'],
+								'ORDER'			=> $row['smiley_order'] + 1,
+							));
+						}
+					}
+				}
 
 				$sql = "SELECT * 
 					FROM $table 
@@ -137,6 +179,11 @@ class acp_icons
 
 						$after_txt = ($mode == 'smilies') ? $row['code'] : $row['icons_url'];
 						$order_list = '<option value="' . ($row[$fields . '_order'] + 1) . '"' . $selected . '>' . sprintf($user->lang['AFTER_' . $lang], ' -&gt; ' . $after_txt) . '</option>' . $order_list;
+
+						if (!empty($default_row))
+						{
+							$add_order_list = '<option value="' . ($row[$fields . '_order'] + 1) . '"' . (($row[$fields . '_id'] == $default_row['smiley_id']) ? ' selected="selected"' : '') . '>' . sprintf($user->lang['AFTER_' . $lang], ' -&gt; ' . $after_txt) . '</option>' . $add_order_list;
+						}
 					}
 				}
 				$db->sql_freeresult($result);
@@ -166,14 +213,14 @@ class acp_icons
 					'L_WIDTH'		=> $user->lang[$lang . '_WIDTH'],
 					'L_HEIGHT'		=> $user->lang[$lang . '_HEIGHT'],
 					'L_ORDER'		=> $user->lang[$lang . '_ORDER'],
+					'L_NO_ICONS'	=> $user->lang['NO_' . $lang . '_' . strtoupper($action)],
 
 					'COLSPAN'		=> $colspan,
 					'ID'			=> $icon_id,
 
 					'U_BACK'		=> $this->u_action,
 					'U_ACTION'		=> $this->u_action . '&amp;action=' . (($action == 'add') ? 'create' : 'modify'),
-					)
-				);
+				));
 
 				foreach ($data as $img => $img_row)
 				{
@@ -188,8 +235,28 @@ class acp_icons
 						'ID'				=> (isset($img_row[$fields . '_id'])) ? $img_row[$fields . '_id'] : 0,
 						'WIDTH'				=> (!empty($img_row[$fields .'_width'])) ? $img_row[$fields .'_width'] : $img_row['width'],
 						'HEIGHT'			=> (!empty($img_row[$fields .'_height'])) ? $img_row[$fields .'_height'] : $img_row['height'],
-						'POSTING_CHECKED'	=> (!empty($img_row['display_on_posting']) || $action == 'add') ? ' checked="checked"' : '')
-					);
+						'POSTING_CHECKED'	=> (!empty($img_row['display_on_posting']) || $action == 'add') ? ' checked="checked"' : '',
+					));
+				}
+
+				// Ok, another row for adding an addition code for a pre-existing image...
+				if ($action == 'add' && $mode == 'smilies' && sizeof($smilies))
+				{
+					$template->assign_vars(array(
+						'S_ADD_CODE'		=> true,
+
+						'S_IMG_OPTIONS'		=> $smiley_options,
+						'S_ADD_ORDER_LIST'	=> $add_order_list,
+						'IMG_SRC'			=> $phpbb_root_path . $img_path . '/' . $default_row['smiley_url'],
+						'IMG_PATH'			=> $img_path,
+						'PHPBB_ROOT_PATH'	=> $phpbb_root_path,
+
+						'CODE'				=> $default_row['code'],
+						'EMOTION'			=> $default_row['emotion'],
+
+						'WIDTH'				=> $default_row['smiley_width'],
+						'HEIGHT'			=> $default_row['smiley_height'],
+					));
 				}
 
 				return;
@@ -211,6 +278,32 @@ class acp_icons
 				$image_emotion	= request_var('emotion', array('' => ''), true);
 				$image_code		= request_var('code', array('' => ''));
 				$image_display_on_posting = (isset($_POST['display_on_posting'])) ? request_var('display_on_posting', array('' => 0)) : array();
+
+				// Ok, add the relevant bits if we are adding new codes to existing emoticons...
+				if (!empty($_POST['add_additional_code']))
+				{
+					$add_image			= request_var('add_image', '');
+					$add_code			= request_var('add_code', '');
+					$add_emotion		= request_var('add_emotion', '', true);
+
+					if ($add_image && $add_emotion && $add_code)
+					{
+						$images[] = $add_image;
+						$image_add[$add_image] = true;
+
+						$image_code[$add_image] = $add_code;
+						$image_emotion[$add_image] = $add_emotion;
+						$image_width[$add_image] = request_var('add_width', 0);
+						$image_height[$add_image] = request_var('add_height', 0);
+
+						if (!empty($_POST['add_display_on_posting']))
+						{
+							$image_display_on_posting[$add_image] = 1;
+						}
+
+						$image_order[$add_image] = request_var('add_order', 0);
+					}
+				}
 
 				foreach ($images as $image)
 				{

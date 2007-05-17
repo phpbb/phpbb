@@ -55,12 +55,12 @@ function initInsertions()
 * bbstyle
 */
 function bbstyle(bbnumber)
-{	
+{
 	if (bbnumber != -1)
 	{
 		bbfontstyle(bbtags[bbnumber], bbtags[bbnumber+1]);
-	} 
-	else 
+	}
+	else
 	{
 		insert_text('[*]');
 		document.forms[form_name].elements[text_name].focus();		
@@ -117,7 +117,6 @@ function bbfontstyle(bbopen, bbclose)
 	// IE
 	else if (document.selection)
 	{
-		
 		var range = textarea.createTextRange(); 
 		range.move("character", new_pos); 
 		range.select();
@@ -135,19 +134,20 @@ function insert_text(text, spaces, popup)
 {
 	var textarea;
 	
-	if (!popup) 
+	if (!popup)
 	{
 		textarea = document.forms[form_name].elements[text_name];
-	} 
-	else 
+	}
+	else
 	{
 		textarea = opener.document.forms[form_name].elements[text_name];
 	}
-	if (spaces) 
+
+	if (spaces)
 	{
 		text = ' ' + text + ' ';
 	}
-	
+
 	if (!isNaN(textarea.selectionStart))
 	{
 		var sel_start = textarea.selectionStart;
@@ -164,7 +164,7 @@ function insert_text(text, spaces, popup)
 		{
 			textarea.focus();
 			storeCaret(textarea);
-		}		
+		}
 		var caret_pos = textarea.caretPos;
 		caret_pos.text = caret_pos.text.charAt(caret_pos.text.length - 1) == ' ' ? caret_pos.text + text + ' ' : caret_pos.text + text;
 		
@@ -366,15 +366,14 @@ function getCaretPosition(txtarea)
 	var caretPos = new caretPosition();
 	
 	// simple Gecko/Opera way
-	if(txtarea.selectionStart || txtarea.selectionStart == 0)
+	if (txtarea.selectionStart || txtarea.selectionStart == 0)
 	{
 		caretPos.start = txtarea.selectionStart;
 		caretPos.end = txtarea.selectionEnd;
 	}
 	// dirty and slow IE way
-	else if(document.selection)
+	else if (document.selection)
 	{
-	
 		// get current selection
 		var range = document.selection.createRange();
 
@@ -385,7 +384,7 @@ function getCaretPosition(txtarea)
 		// calculate selection start point by moving beginning of range_all to beginning of range
 		var sel_start;
 		for (sel_start = 0; range_all.compareEndPoints('StartToStart', range) < 0; sel_start++)
-		{		
+		{
 			range_all.moveStart('character', 1);
 		}
 	

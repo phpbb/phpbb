@@ -79,6 +79,7 @@ $lang = array_merge($lang, array(
 	'ACP_ICONS_EXPLAIN'		=> 'From this page you can add, remove and edit the icons users may add to their topics or posts. These icons are generally displayed next to topic titles on the forum listing, or the post subjects in topic listings. You can also install and create new packages of icons.',
 	'ACP_SMILIES_EXPLAIN'	=> 'Smilies or emoticons are typically small, sometimes animated images used to convey an emotion or feeling. From this page you can add, remove and edit the emoticons users can use in their posts and private messages. You can also install and create new packages of smilies.',
 	'ADD_SMILIES'			=> 'Add multiple smilies',
+	'ADD_SMILEY_CODE'		=> 'Add additional smiley code',
 	'ADD_ICONS'				=> 'Add multiple icons',
 	'AFTER_ICONS'			=> 'After %s',
 	'AFTER_SMILIES'			=> 'After %s',
@@ -123,8 +124,12 @@ $lang = array_merge($lang, array(
 
 	'MASS_ADD_SMILIES'	=> 'Add multiple smilies',
 
+	'NO_ICONS_ADD'		=> 'There are no icons available for adding.',
+	'NO_ICONS_EDIT'		=> 'There are no icons available for modifying.',
 	'NO_ICONS_EXPORT'	=> 'You have no icons with which to create a package.',
 	'NO_ICONS_PAK'		=> 'No icon packages found.',
+	'NO_SMILIES_ADD'	=> 'There are no smilies available for adding.',
+	'NO_SMILIES_EDIT'	=> 'There are no smilies available for modifying.',
 	'NO_SMILIES_EXPORT'	=> 'You have no smilies with which to create a package.',
 	'NO_SMILIES_PAK'	=> 'No smiley packages found.',
 

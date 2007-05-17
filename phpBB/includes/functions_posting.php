@@ -64,9 +64,19 @@ function generate_smilies($mode, $forum_id)
 		ORDER BY smiley_order';
 	$result = $db->sql_query($sql, 3600);
 
+	$smilies = array();
 	while ($row = $db->sql_fetchrow($result))
 	{
-		if ($row['smiley_url'] !== $last_url)
+		if (empty($smilies[$row['smiley_url']]))
+		{
+			$smilies[$row['smiley_url']] = $row;
+		}
+	}
+	$db->sql_freeresult($result);
+
+	if (sizeof($smilies))
+	{
+		foreach ($smilies as $row)
 		{
 			$template->assign_block_vars('smiley', array(
 				'SMILEY_CODE'	=> $row['code'],
@@ -77,9 +87,7 @@ function generate_smilies($mode, $forum_id)
 				'SMILEY_DESC'	=> $row['emotion'])
 			);
 		}
-		$last_url = $row['smiley_url'];
 	}
-	$db->sql_freeresult($result);
 
 	if ($mode == 'inline' && $display_link)
 	{

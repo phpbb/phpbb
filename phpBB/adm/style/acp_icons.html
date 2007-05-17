@@ -4,6 +4,43 @@
 
 <!-- IF S_EDIT -->
 
+	<!-- IF S_ADD_CODE -->
+		<script type="text/javascript" defer="defer">
+		<!--
+
+			var smiley = Array();
+			<!-- BEGIN smile -->
+				smiley['{smile.SMILEY_URL}'] = Array();
+				smiley['{smile.SMILEY_URL}']['code'] = '{smile.CODE}';
+				smiley['{smile.SMILEY_URL}']['emotion'] = '{smile.EMOTION}';
+				smiley['{smile.SMILEY_URL}']['width'] = {smile.WIDTH};
+				smiley['{smile.SMILEY_URL}']['height'] = {smile.HEIGHT};
+				smiley['{smile.SMILEY_URL}']['order'] = {smile.ORDER};
+			<!-- END smile -->
+
+			function update_image(newimage)
+			{
+				var use_element = smiley[newimage];
+
+				document.getElementById('add_image_src').src = '{PHPBB_ROOT_PATH}{IMG_PATH}/' + newimage;
+				document.getElementById('add_code').value = use_element['code'];
+				document.getElementById('add_emotion').value = use_element['emotion'];
+				document.getElementById('add_width').value = use_element['width'];
+				document.getElementById('add_height').value = use_element['height'];
+
+				element = document.getElementById('add_order');
+				for (var i = 0; i < element.length; i++)
+				{
+					if (element.options[i].value == use_element['order'])
+					{
+						document.getElementById('add_order').options.selectedIndex = i;
+					}
+				}
+			}
+		//-->
+		</script>
+	<!-- ENDIF -->
+
 	<a href="{U_BACK}" style="float: right">&laquo; {L_BACK}</a>
 
 	<h1>{L_TITLE}</h1>
@@ -20,6 +57,7 @@
 	<tr>
 		<th colspan="{COLSPAN}">{L_CONFIG}</th>
 	</tr>
+	<!-- IF .items or S_ADD_CODE -->
 	<tr class="row3">
 		<td>{L_URL}</td>
 		<td>{L_LOCATION}</td>
@@ -64,6 +102,27 @@
 		<!-- ENDIF -->
 		</tr>
 	<!-- END items -->
+	<!-- IF S_ADD_CODE -->
+	<tr>
+		<th colspan="{COLSPAN}">{L_ADD_SMILEY_CODE}</th>
+	</tr>
+	<tr class="row1">
+		<td style="text-align: center;"><select name="add_image" id="add_image" onchange="update_image(this.options[selectedIndex].value);">{S_IMG_OPTIONS}</select></td>
+		<td style="vertical-align: top;"><img src="{IMG_SRC}" id="add_image_src" alt="" title="" /></td>
+		<td><input class="text post" type="text" name="add_code" id="add_code" value="{CODE}" size="10" maxlength="50" /></td>
+		<td><input class="text post" type="text" name="add_emotion" id="add_emotion" value="{EMOTION}" size="10" maxlength="50" /></td>
+		<td><input class="text post" type="text" size="3" name="add_width" id="add_width" value="{WIDTH}" /></td>
+		<td><input class="text post" type="text" size="3" name="add_height" id="add_height" value="{HEIGHT}" /></td>
+		<td><input type="checkbox" class="radio" name="add_display_on_posting" checked="checked" /></td>
+		<td><select name="add_order" id="add_order">{S_ADD_ORDER_LIST}</select></td>
+		<td><input type="checkbox" class="radio" name="add_additional_code" value="1" /></td>
+	</tr>
+	<!-- ENDIF -->
+	<!-- ELSE -->
+	<tr class="row3">
+		<td colspan="{COLSPAN}">{L_NO_ICONS}</td>
+	</tr>
+	<!-- ENDIF -->
 	</tbody>
 	</table>
 
@@ -71,6 +130,7 @@
 		<input class="button1" type="submit" id="submit" name="submit" value="{L_SUBMIT}" />&nbsp;
 		<input class="button2" type="reset" id="reset" name="reset" value="{L_RESET}" />
 	</p>
+
 	</fieldset>
 
 	</form>
