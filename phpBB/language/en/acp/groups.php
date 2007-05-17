@@ -31,7 +31,7 @@ if (empty($lang) || !is_array($lang))
 // in a url you again do not need to specify an order e.g., 'Click %sHERE%s' is fine
 
 $lang = array_merge($lang, array(
-	'ACP_GROUPS_MANAGE_EXPLAIN'		=> 'From this panel you can administrate all your usergroups, you can delete, create and edit existing groups. You may choose moderators, toggle open/closed group status and set the group name and description.',
+	'ACP_GROUPS_MANAGE_EXPLAIN'		=> 'From this panel you can administrate all your usergroups, you can delete, create and edit existing groups. You may choose group leaders, toggle open/closed group status and set the group name and description.',
 	'ADD_USERS'						=> 'Add users',
 	'ADD_USERS_EXPLAIN'				=> 'Here you can add new users to the group. You may select whether this group becomes the new default for the selected users. Additionally you can define them as group leaders. Please enter each username on a separate line.',
 

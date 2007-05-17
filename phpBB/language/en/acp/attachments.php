@@ -40,6 +40,7 @@ $lang = array_merge($lang, array(
 	'ADMIN_UPLOAD_ERROR'				=> 'Errors while trying to attach file: “%s”.',
 	'ALLOWED_FORUMS'					=> 'Allowed forums',
 	'ALLOWED_FORUMS_EXPLAIN'			=> 'Able to post the assigned extensions at the selected (or all if selected) forums.',
+	'ALLOWED_IN_PM_POST'				=> 'Allowed',
 	'ALLOW_ATTACHMENTS'					=> 'Allow attachments',
 	'ALLOW_ALL_FORUMS'					=> 'Allow all forums',
 	'ALLOW_IN_PM'						=> 'Allowed in private messaging',
@@ -109,7 +110,8 @@ $lang = array_merge($lang, array(
 	'MODE_INLINE'					=> 'Inline',
 	'MODE_PHYSICAL'					=> 'Physical',
 
-	'NOT_ALLOWED_IN_PM'			=> 'Not allowed in private messages',
+	'NOT_ALLOWED_IN_PM'			=> 'Only allowed in posts',
+	'NOT_ALLOWED_IN_PM_POST'	=> 'Not allowed',
 	'NOT_ASSIGNED'				=> 'Not assigned',
 	'NO_EXT_GROUP'				=> 'None',
 	'NO_EXT_GROUP_NAME'			=> 'No group name entered',

@@ -36,7 +36,7 @@ $lang = array_merge($lang, array(
 	'30_MINS'		=> '30 minutes',
 	'6_HOURS'		=> '6 hours',
 
-	'ACP_BAN_EXPLAIN'	=> 'Here you can control the banning of users by name, IP or e-mail address. These methods prevent a user reaching any part of the board. You can give a short (maximum 3000 characters) reason for the ban if you wish. This will be displayed in the admin log. The duration of a ban can also be specified. If you want the ban to end on a specific date rather than after a set time period select <span style="text-decoration: underline;">Until -&gt;</span> for the ban length and enter a date in yyyy-mm-dd format.',
+	'ACP_BAN_EXPLAIN'	=> 'Here you can control the banning of users by name, IP or e-mail address. These methods prevent a user reaching any part of the board. You can give a short (maximum 3000 characters) reason for the ban if you wish. This will be displayed in the admin log. The duration of a ban can also be specified. If you want the ban to end on a specific date rather than after a set time period select <span style="text-decoration: underline;">Until -&gt;</span> for the ban length and enter a date in <kbd>YYYY-MM-DD</kbd> format.',
 
 	'BAN_EXCLUDE'			=> 'Exclude from banning',
 	'BAN_LENGTH'			=> 'Length of ban',
@@ -59,7 +59,7 @@ $lang = array_merge($lang, array(
 	'IP_UNBAN'					=> 'Un-ban or un-exclude IPs',
 	'IP_UNBAN_EXPLAIN'			=> 'You can unban (or un-exclude) multiple IP addresses in one go using the appropriate combination of mouse and keyboard for your computer and browser. Excluded IPs are emphasised.',
 
-	'LENGTH_BAN_INVALID'		=> 'The date has to be formated YYYY-MM-DD',
+	'LENGTH_BAN_INVALID'		=> 'The date has to be formatted <kbd>YYYY-MM-DD</kbd>.',
 
 	'PERMANENT'		=> 'Permanent',
 	

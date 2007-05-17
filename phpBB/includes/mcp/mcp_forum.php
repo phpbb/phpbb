@@ -16,7 +16,7 @@ function mcp_forum_view($id, $mode, $action, $forum_info)
 	global $template, $db, $user, $auth, $cache, $module;
 	global $phpEx, $phpbb_root_path, $config;
 
-	$user->add_lang('viewtopic');
+	$user->add_lang(array('viewtopic', 'viewforum'));
 
 	include_once($phpbb_root_path . 'includes/functions_display.' . $phpEx);
 
@@ -120,8 +120,8 @@ function mcp_forum_view($id, $mode, $action, $forum_info)
 
 		'PAGINATION'			=> generate_pagination($url . "&amp;i=$id&amp;action=$action&amp;mode=$mode" . (($merge_select) ? $selected_ids : ''), $forum_topics, $topics_per_page, $start),
 		'PAGE_NUMBER'			=> on_page($forum_topics, $topics_per_page, $start),
-		'TOTAL'					=> $forum_topics)
-	);
+		'TOTAL_TOPICS'			=> ($forum_topics == 1) ? $user->lang['VIEW_FORUM_TOPIC'] : sprintf($user->lang['VIEW_FORUM_TOPICS'], $forum_topics),
+	));
 
 	// Grab icons
 	$icons = $cache->obtain_icons();

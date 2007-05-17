@@ -404,7 +404,7 @@ class bbcode_firstpass extends bbcode
 
 				if ($remove_tags)
 				{
-					$code = preg_replace('#(<span class="[a-z]+">)?\?&gt;</span>#', '', $code);
+					$code = preg_replace('#(<span class="[a-z]+">)?\?&gt;(</span>)#', '$1&nbsp;$2', $code);
 				}
 
 				$code = preg_replace('#^<span class="[a-z]+"><span class="([a-z]+)">(.*)</span></span>#s', '<span class="$1">$2</span>', $code);

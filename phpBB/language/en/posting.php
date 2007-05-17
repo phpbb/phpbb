@@ -79,6 +79,7 @@ $lang = array_merge($lang, array(
 	'DISABLE_SMILIES'			=> 'Disable smilies',
 	'DISALLOWED_EXTENSION'		=> 'The extension %s is not allowed.',
 	'DRAFT_LOADED'				=> 'Draft loaded into posting area, you may want to finish your post now.<br />Your draft will be deleted after submitting this post.',
+	'DRAFT_LOADED_PM'			=> 'Draft loaded into message area, you may want to finish your private message now.<br />Your draft will be deleted after submitting this private message.',
 	'DRAFT_SAVED'				=> 'Draft successfully saved.',
 	'DRAFT_TITLE'				=> 'Draft title',
 
