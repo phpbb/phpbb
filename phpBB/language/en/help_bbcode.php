@@ -60,7 +60,7 @@ $help = array(
 	),
 	array(
 		0 => 'Outputting code or fixed width data',
-		1 => 'If you want to output a piece of code or in fact anything that requires a fixed width, eg. Courier type font you should enclose the text in <strong>[code][/code]</strong> tags, eg.<br /><br /><strong>[code]</strong>echo &quot;This is some code&quot;;<strong>[/code]</strong><br /><br />All formatting used within <strong>[code][/code]</strong> tags is retained when you later view it.'
+		1 => 'If you want to output a piece of code or in fact anything that requires a fixed width, eg. Courier type font you should enclose the text in <strong>[code][/code]</strong> tags, eg.<br /><br /><strong>[code]</strong>echo &quot;This is some code&quot;;<strong>[/code]</strong><br /><br />All formatting used within <strong>[code][/code]</strong> tags is retained when you later view it. PHP syntax highlighting can be enabled using <strong>[code=php][/code]</strong> and is recommended when posting PHP code samples as it improves readability.'
 	),
 	array(
 		0 => '--',
