@@ -214,6 +214,16 @@ if (!$attachment)
 $attachment['physical_filename'] = basename($attachment['physical_filename']);
 $display_cat = $extensions[$attachment['extension']]['display_cat'];
 
+if (($display_cat == ATTACHMENT_CATEGORY_IMAGE || $display_cat == ATTACHMENT_CATEGORY_THUMB) && !$user->optionget('viewimg'))
+{
+	$display_cat = ATTACHMENT_CATEGORY_NONE;
+}
+
+if ($display_cat == ATTACHMENT_CATEGORY_FLASH && !$user->optionget('viewflash'))
+{
+	$display_cat = ATTACHMENT_CATEGORY_NONE;
+}
+
 if ($thumbnail)
 {
 	$attachment['physical_filename'] = 'thumb_' . $attachment['physical_filename'];
@@ -227,7 +237,7 @@ else if (($display_cat == ATTACHMENT_CATEGORY_NONE || $display_cat == ATTACHMENT
 	$db->sql_query($sql);
 }
 
-if ($mode === 'view' && (strpos($attachment['mimetype'], 'image') === 0) && strpos(strtolower($user->browser), 'msie') !== false)
+if ($display_cat == ATTACHMENT_CATEGORY_IMAGE && $mode === 'view' && (strpos($attachment['mimetype'], 'image') === 0) && strpos(strtolower($user->browser), 'msie') !== false)
 {
 	wrap_img_in_html(append_sid('./download.' . $phpEx, 'id=' . $attachment['attach_id']), $attachment['real_filename']);
 }
@@ -247,7 +257,7 @@ else
 	}
 	else
 	{
-		send_file_to_browser($attachment, $config['upload_path'], $extensions[$attachment['extension']]['display_cat']);
+		send_file_to_browser($attachment, $config['upload_path'], $display_cat);
 		exit;
 	}
 }
@@ -358,7 +368,7 @@ function send_file_to_browser($attachment, $upload_dir, $category)
 
 	// Correct the mime type - we force application/octetstream for all files, except images
 	// Please do not change this, it is a security precaution
-	if (strpos($attachment['mimetype'], 'image') !== 0)
+	if ($category != ATTACHMENT_CATEGORY_IMAGE || strpos($attachment['mimetype'], 'image') !== 0)
 	{
 		$attachment['mimetype'] = (strpos(strtolower($user->browser), 'msie') !== false || strpos(strtolower($user->browser), 'opera') !== false) ? 'application/octetstream' : 'application/octet-stream';
 	}

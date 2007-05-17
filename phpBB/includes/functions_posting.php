@@ -408,7 +408,11 @@ function upload_attachment($form_name, $forum_id, $local = false, $local_storage
 	}
 
 	$file->clean_filename('unique', $user->data['user_id'] . '_');
-	$file->move_file($config['upload_path']);
+
+	// Are we uploading an image *and* this image being within the image category? Only then perform additional image checks.
+	$no_image = ($cat_id == ATTACHMENT_CATEGORY_IMAGE) ? false : true;
+
+	$file->move_file($config['upload_path'], false, $no_image);
 
 	if (sizeof($file->error))
 	{

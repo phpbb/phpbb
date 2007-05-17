@@ -230,7 +230,7 @@ class filespec
 	* @param octal $chmod Permission mask for chmodding the file after a successful move
 	* @access public
 	*/
-	function move_file($destination, $overwrite = false, $chmod = 0666)
+	function move_file($destination, $overwrite = false, $skip_image_check = false, $chmod = 0666)
 	{
 		global $user, $phpbb_root_path;
 
@@ -315,7 +315,7 @@ class filespec
 		// Try to get real filesize from destination folder
 		$this->filesize = (@filesize($this->destination_file)) ? @filesize($this->destination_file) : $this->filesize;
 
-		if ($this->is_image())
+		if ($this->is_image() && !$skip_image_check)
 		{
 			$this->width = $this->height = 0;
 

@@ -1853,6 +1853,7 @@ function avatar_get_dimensions($avatar, $avatar_type, &$error, $current_x = 0, $
 			$avatar = $phpbb_root_path . $config['avatar_gallery_path'] . '/' . $avatar ;
 			break;
 	}
+
 	// Make sure getimagesize works...
 	if (($image_data = @getimagesize($avatar)) === false)
 	{
