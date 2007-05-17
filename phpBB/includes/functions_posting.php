@@ -844,13 +844,20 @@ function load_drafts($topic_id = 0, $forum_id = 0, $id = 0)
 		$link_topic = $link_forum = $link_pm = false;
 		$insert_url = $view_url = $title = '';
 
-		if (isset($topic_rows[$draft['topic_id']]) && $auth->acl_get('f_read', $topic_rows[$draft['topic_id']]['forum_id']))
+		if (isset($topic_rows[$draft['topic_id']])
+			&& (
+				($topic_rows[$draft['topic_id']]['forum_id'] && $auth->acl_get('f_read', $topic_rows[$draft['topic_id']]['forum_id']))
+				||
+				(!$topic_rows[$draft['topic_id']]['forum_id'] && $auth->acl_getf_global('f_read'))
+			))
 		{
+			$topic_forum_id = ($topic_rows[$draft['topic_id']]['forum_id']) ? $topic_rows[$draft['topic_id']]['forum_id'] : $forum_id;
+
 			$link_topic = true;
-			$view_url = append_sid("{$phpbb_root_path}viewtopic.$phpEx", 'f=' . $topic_rows[$draft['topic_id']]['forum_id'] . '&amp;t=' . $draft['topic_id']);
+			$view_url = append_sid("{$phpbb_root_path}viewtopic.$phpEx", 'f=' . $topic_forum_id . '&amp;t=' . $draft['topic_id']);
 			$title = $topic_rows[$draft['topic_id']]['topic_title'];
 
-			$insert_url = append_sid("{$phpbb_root_path}posting.$phpEx", 'f=' . $topic_rows[$draft['topic_id']]['forum_id'] . '&amp;t=' . $draft['topic_id'] . '&amp;mode=reply&amp;d=' . $draft['draft_id']);
+			$insert_url = append_sid("{$phpbb_root_path}posting.$phpEx", 'f=' . $topic_forum_id . '&amp;t=' . $draft['topic_id'] . '&amp;mode=reply&amp;d=' . $draft['draft_id']);
 		}
 		else if ($draft['forum_id'] && $auth->acl_get('f_read', $draft['forum_id']))
 		{

@@ -44,7 +44,7 @@
 						<!-- ELSEIF S_PRIVMSGS -->
 						<!-- ELSE -->{L_NO_TOPIC_FORUM}<!-- ENDIF -->
 					</dt>
-					<dd class="info"><span>{draftrow.DATE}<br /><!-- IF draftrow.U_INSERT and not S_PRIVMSGS --><a href="{draftrow.U_INSERT}">{L_LOAD_DRAFT}</a> &bull; <!-- ENDIF --><a href="{draftrow.U_VIEW_EDIT}">{L_VIEW_EDIT}</a></span></dd>
+					<dd class="info"><span>{draftrow.DATE}<br /><!-- IF draftrow.U_INSERT --><a href="{draftrow.U_INSERT}">{L_LOAD_DRAFT}</a> &bull; <!-- ENDIF --><a href="{draftrow.U_VIEW_EDIT}">{L_VIEW_EDIT}</a></span></dd>
 					<dd class="mark"><input type="checkbox" name="d[{draftrow.DRAFT_ID}]" id="d{draftrow.DRAFT_ID}" /></dd>
 				</dl>
 			</li>
