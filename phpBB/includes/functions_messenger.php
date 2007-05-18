@@ -956,11 +956,9 @@ class smtp_class
 
 	function smtp_class()
 	{
-		if (defined('DEBUG'))
-		{
-			$this->backtrace = true;
-			$this->backtrace_log = array();
-		}
+		// Always create a backtrace for admins to identify SMTP problems
+		$this->backtrace = true;
+		$this->backtrace_log = array();
 	}
 
 	/**
@@ -970,7 +968,7 @@ class smtp_class
 	{
 		if ($this->backtrace)
 		{
-			$this->backtrace_log[] = htmlspecialchars($message, ENT_COMPAT, 'UTF-8');
+			$this->backtrace_log[] = utf8_htmlspecialchars($message);
 		}
 	}
 

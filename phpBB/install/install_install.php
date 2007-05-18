@@ -908,7 +908,7 @@ class install_install extends module
 		$config_data .= "\$acm_type = 'file';\n";
 		$config_data .= "\$load_extensions = '$load_extensions';\n\n";
 		$config_data .= "@define('PHPBB_INSTALLED', true);\n";
-		$config_data .= "@define('DEBUG', true);\n"; // @todo Comment out when final
+		$config_data .= "// @define('DEBUG', true);\n";
 		$config_data .= "// @define('DEBUG_EXTRA', true);\n";
 		$config_data .= '?' . '>'; // Done this to prevent highlighting editors getting confused!
 	
