@@ -99,7 +99,7 @@ parse_css_file = {PARSE_CSS_FILE}
 				'forum_link', 'forum_read', 'forum_read_locked', 'forum_read_subforum', 'forum_unread', 'forum_unread_locked', 'forum_unread_subforum', 'subforum_read', 'subforum_unread'
 			),
 			'folders'	=> array(
-				'topic_moved', 'topic_read', 'topic_read_mine', 'topic_read_hot', 'topic_read_hot_mine', 'topic_read_locked', 'topic_read_locked_mine', 'topic_unread', 'topic_unread_mine', 'topic_unread_hot', 'topic_unread_hot_mine', 'topic_unread_locked', 'topic_unread_locked_mine', 'sticky_read', 'sticky_read_mine', 'sticky_read_locked', 'sticky_read_locked_mine', 'sticky_unread', 'sticky_unread_mine', 'sticky_unread_locked', 'sticky_unread_locked_mine', 'announce_read', 'announce_read_mine', 'announce_read_locked', 'announce_read_locked_mine', 'announce_unread', 'announce_unread_mine', 'announce_unread_locked', 'announce_unread_locked_mine', 'global_read', 'global_read_mine', 'global_read_locked', 'global_read_locked_mine', 'global_unread', 'global_unread_mine', 'global_unread_locked', 'global_unread_locked_mine', 'pm_read', 'pm_unread',
+				'topic_moved', 'topic_read', 'topic_read_mine', 'topic_read_hot', 'topic_read_hot_mine', 'topic_read_locked', 'topic_read_locked_mine', 'topic_unread', 'topic_unread_mine', 'topic_unread_hot', 'topic_unread_hot_mine', 'topic_unread_locked', 'topic_unread_locked_mine', 'sticky_read', 'sticky_read_mine', 'sticky_read_locked', 'sticky_read_locked_mine', 'sticky_unread', 'sticky_unread_mine', 'sticky_unread_locked', 'sticky_unread_locked_mine', 'announce_read', 'announce_read_mine', 'announce_read_locked', 'announce_read_locked_mine', 'announce_unread', 'announce_unread_mine', 'announce_unread_locked', 'announce_unread_locked_mine', 'global_read', 'global_read_mine', 'global_read_locked', 'global_read_locked_mine', 'global_unread', 'global_unread_mine', 'global_unread_locked', 'global_unread_locked_mine', 'subforum_read', 'subforum_unread', 'pm_read', 'pm_unread',
 			),
 			'polls'		=> array(
 				'poll_left', 'poll_center', 'poll_right',
@@ -1958,7 +1958,7 @@ parse_css_file = {PARSE_CSS_FILE}
 	*/
 	function details($mode, $style_id)
 	{
-		global $template, $db, $config, $user, $safe_mode, $cache, $phpbb_root_path;
+		global $template, $db, $config, $cache, $user, $safe_mode, $cache, $phpbb_root_path;
 
 		$update = (isset($_POST['update'])) ? true : false;
 		$l_type = strtoupper($mode);
@@ -2027,6 +2027,17 @@ parse_css_file = {PARSE_CSS_FILE}
 				$error[] = $user->lang[$l_type . '_ERR_STYLE_NAME'];
 			}
 
+			if ($mode === 'theme' || $mode === 'template')
+			{
+				// a rather elaborate check we have to do here once to avoid trouble later
+				$check = "{$phpbb_root_path}styles/" . $style_row["{$mode}_path"] . (($mode === 'theme') ? '/theme/stylesheet.css' : '/template');
+				if (($style_row["{$mode}_storedb"] != $store_db) && !$store_db && ($safe_mode || !@is_writable($check)))
+				{
+					$error[] = $user->lang['EDIT_' . strtoupper($mode) . '_STORED_DB'];
+					$store_db = 1;
+				}
+			}
+			
 			if (!sizeof($error))
 			{
 				// Check length settings
@@ -2054,7 +2065,7 @@ parse_css_file = {PARSE_CSS_FILE}
 				$mode . '_copyright'	=> $copyright)
 			);
 		}
-
+		
 		// User has submitted form and no errors have occurred
 		if ($update && !sizeof($error))
 		{
@@ -2124,6 +2135,7 @@ parse_css_file = {PARSE_CSS_FILE}
 								if (!($fp = @fopen("{$phpbb_root_path}styles/{$style_row['template_path']}/template/" . $row['template_filename'], 'wb')))
 								{
 									$store_db = 1;
+									$error[] = $user->lang['EDIT_TEMPLATE_STORED_DB'];
 									break;
 								}
 
@@ -2143,6 +2155,11 @@ parse_css_file = {PARSE_CSS_FILE}
 						{
 							$filelist = filelist("{$phpbb_root_path}styles/{$style_row['template_path']}/template", '', 'html');
 							$this->store_templates('insert', $style_id, $style_row['template_path'], $filelist);
+						}
+						else if (!$store_db)
+						{
+							// template files not writable or similar error - leave as is
+							$store_db = true;
 						}
 
 						$sql_ary += array(
@@ -2169,7 +2186,14 @@ parse_css_file = {PARSE_CSS_FILE}
 			$cache->destroy('sql', STYLES_TABLE);
 
 			add_log('admin', 'LOG_' . $l_type . '_EDIT_DETAILS', $name);
-			trigger_error($user->lang[$l_type . '_DETAILS_UPDATED'] . adm_back_link($this->u_action));
+			if (sizeof($error))
+			{
+				trigger_error(implode('<br />', $error) . adm_back_link($this->u_action), E_USER_WARNING);
+			}
+			else
+			{
+				trigger_error($user->lang[$l_type . '_DETAILS_UPDATED'] . adm_back_link($this->u_action));
+			}
 		}
 
 		if ($mode == 'style')
