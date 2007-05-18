@@ -3009,7 +3009,7 @@ function parse_attachments($forum_id, &$message, &$attachments, &$update_count, 
 				case ATTACHMENT_CATEGORY_THUMB:
 					$l_downloaded_viewed = 'VIEWED_COUNT';
 					$thumbnail_link = append_sid("{$phpbb_root_path}download.$phpEx", 'id=' . $attachment['attach_id'] . '&amp;t=1');
-					$download_link =  '&amp;mode=view';
+					$download_link .= '&amp;mode=view';
 
 					$block_array += array(
 						'S_THUMBNAIL'		=> true,
