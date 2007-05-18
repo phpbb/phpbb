@@ -57,7 +57,7 @@
 							<table width="100%" cellspacing="0">
 							<tr valign="middle">
 								<td width="100%" align="{S_CONTENT_FLOW_BEGIN}"><span class="gensmall"><!-- IF topic_review_row.U_MCP_DETAILS -->[ <a href="{topic_review_row.U_MCP_DETAILS}">{L_POST_DETAILS}</a> ]<!-- ENDIF --></span></td>
-								<td width="10" nowrap="nowrap"><a href="{topic_review_row.U_MINI_POST}">{topic_review_row.MINI_POST_IMG}</a></td>
+								<td width="10" nowrap="nowrap"><!-- IF S_IS_BOT -->{topic_review_row.MINI_POST_IMG}<!-- ELSE --><a href="{topic_review_row.U_MINI_POST}">{topic_review_row.MINI_POST_IMG}</a><!-- ENDIF --></td>
 								<td class="gensmall" nowrap="nowrap"><b>{L_POSTED}:</b> {topic_review_row.POST_DATE}</td>
 							</tr>
 							</table>

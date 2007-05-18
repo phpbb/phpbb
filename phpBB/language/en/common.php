@@ -31,7 +31,7 @@ if (empty($lang) || !is_array($lang))
 // in a url you again do not need to specify an order e.g., 'Click %sHERE%s' is fine
 //
 // Some characters you may want to copy&paste: 
-// ’ » “ ”
+// ’ » “ ” …
 //
 
 $lang = array_merge($lang, array(

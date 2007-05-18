@@ -188,6 +188,10 @@ a#logo:hover {
 	float: right;
 }
 
+#site-description h1 {
+	margin-right: 0;
+}
+
 /* Round cornered boxes and backgrounds
 ---------------------------------------- */
 .headerbar {

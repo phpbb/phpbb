@@ -57,7 +57,7 @@
 							<table width="100%" cellspacing="0" cellpadding="0" border="0">
 							<tr valign="middle">
 								<td width="100%">&nbsp;</td>
-								<td width="10" nowrap="nowrap"><a href="{post_review_row.U_MINI_POST}">{post_review_row.MINI_POST_IMG}</a></td>
+								<td width="10" nowrap="nowrap"><!-- IF S_IS_BOT -->{post_review_row.MINI_POST_IMG}<!-- ELSE --><a href="{post_review_row.U_MINI_POST}">{post_review_row.MINI_POST_IMG}</a><!-- ENDIF --></td>
 								<td class="gensmall" nowrap="nowrap"><b>{L_POSTED}:</b> {post_review_row.POST_DATE}</td>
 							</tr>
 							</table>
