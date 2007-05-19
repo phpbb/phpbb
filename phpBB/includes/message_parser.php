@@ -950,6 +950,12 @@ class bbcode_firstpass extends bbcode
 
 			if ($pos_domain !== false && $pos_path >= $pos_domain && $pos_ext >= $pos_path)
 			{
+				// Ok, actually we allow linking to some files (this may be able to be extended in some way later...)
+				if (strpos($url, '/' . $check_path . '/download.' . $phpEx) !== 0)
+				{
+					return false;
+				}
+
 				return true;
 			}
 		}
