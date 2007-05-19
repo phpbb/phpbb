@@ -100,6 +100,7 @@ class install_install extends module
 			break;
 
 			case 'final' :
+				$this->build_search_index($mode, $sub);
 				$this->add_modules($mode, $sub);
 				$this->add_language($mode, $sub);
 				$this->add_bots($mode, $sub);
@@ -142,19 +143,19 @@ class install_install extends module
 
 		if (version_compare($php_version, '4.3.3') < 0)
 		{
-			$result = '<b style="color:red">' . $lang['NO'] . '</b>';
+			$result = '<strong style="color:red">' . $lang['NO'] . '</strong>';
 		}
 		else
 		{
 			$passed['php'] = true;
 
 			// We also give feedback on whether we're running in safe mode
-			$result = '<b style="color:green">' . $lang['YES'];
+			$result = '<strong style="color:green">' . $lang['YES'];
 			if (@ini_get('safe_mode') || strtolower(@ini_get('safe_mode')) == 'on')
 			{
 				$result .= ', ' . $lang['PHP_SAFE_MODE'];
 			}
-			$result .= '</b>';
+			$result .= '</strong>';
 		}
 
 		$template->assign_block_vars('checks', array(
@@ -168,11 +169,11 @@ class install_install extends module
 		// Check for register_globals being enabled
 		if (@ini_get('register_globals') == '1' || strtolower(@ini_get('register_globals')) == 'on')
 		{
-			$result = '<b style="color:red">' . $lang['NO'] . '</b>';
+			$result = '<strong style="color:red">' . $lang['NO'] . '</strong>';
 		}
 		else
 		{
-			$result = '<b style="color:green">' . $lang['YES'] . '</b>';
+			$result = '<strong style="color:green">' . $lang['YES'] . '</strong>';
 		}
 
 		$template->assign_block_vars('checks', array(
@@ -188,11 +189,11 @@ class install_install extends module
 		// Check for url_fopen 
 		if (@ini_get('allow_url_fopen') == '1' || strtolower(@ini_get('allow_url_fopen')) == 'on')
 		{
-			$result = '<b style="color:green">' . $lang['YES'] . '</b>';
+			$result = '<strong style="color:green">' . $lang['YES'] . '</strong>';
 		}
 		else
 		{
-			$result = '<b style="color:red">' . $lang['NO'] . '</b>';
+			$result = '<strong style="color:red">' . $lang['NO'] . '</strong>';
 		}
 
 		$template->assign_block_vars('checks', array(
@@ -209,11 +210,11 @@ class install_install extends module
 		if (@function_exists('getimagesize'))
 		{
 			$passed['imagesize'] = true;
-			$result = '<b style="color:green">' . $lang['YES'] . '</b>';
+			$result = '<strong style="color:green">' . $lang['YES'] . '</strong>';
 		}
 		else
 		{
-			$result = '<b style="color:red">' . $lang['NO'] . '</b>';
+			$result = '<strong style="color:red">' . $lang['NO'] . '</strong>';
 		}
 
 		$template->assign_block_vars('checks', array(
@@ -229,11 +230,11 @@ class install_install extends module
 		if (@preg_match('//u', ''))
 		{
 			$passed['pcre'] = true;
-			$result = '<b style="color:green">' . $lang['YES'] . '</b>';
+			$result = '<strong style="color:green">' . $lang['YES'] . '</strong>';
 		}
 		else
 		{
-			$result = '<b style="color:red">' . $lang['NO'] . '</b>';
+			$result = '<strong style="color:red">' . $lang['NO'] . '</strong>';
 		}
 
 		$template->assign_block_vars('checks', array(
@@ -278,24 +279,24 @@ class install_install extends module
 					case '&':
 						if (intval($ini_val) & $mb_checks[2])
 						{
-							$result = '<b style="color:red">' . $lang['NO'] . '</b>';
+							$result = '<strong style="color:red">' . $lang['NO'] . '</strong>';
 							$passed['mbstring'] = false;
 						}
 						else
 						{
-							$result = '<b style="color:green">' . $lang['YES'] . '</b>';
+							$result = '<strong style="color:green">' . $lang['YES'] . '</strong>';
 						}
 					break;
 
 					case '!=':
 						if ($ini_val != $mb_checks[2])
 						{
-							$result = '<b style="color:red">' . $lang['NO'] . '</b>';
+							$result = '<strong style="color:red">' . $lang['NO'] . '</strong>';
 							$passed['mbstring'] = false;
 						}
 						else
 						{
-							$result = '<b style="color:green">' . $lang['YES'] . '</b>';
+							$result = '<strong style="color:green">' . $lang['YES'] . '</strong>';
 						}
 					break;
 				}
@@ -337,7 +338,7 @@ class install_install extends module
 			{
 				$template->assign_block_vars('checks', array(
 					'TITLE'		=> $lang['DLL_' . strtoupper($db_name)],
-					'RESULT'	=> '<b style="color:green">' . $lang['AVAILABLE'] . '</b>',
+					'RESULT'	=> '<strong style="color:green">' . $lang['AVAILABLE'] . '</strong>',
 
 					'S_EXPLAIN'	=> false,
 					'S_LEGEND'	=> false,
@@ -360,7 +361,7 @@ class install_install extends module
 				{
 					$template->assign_block_vars('checks', array(
 						'TITLE'		=> $lang['DLL_' . strtoupper($dll)],
-						'RESULT'	=> '<b style="color:red">' . $lang['UNAVAILABLE'] . '</b>',
+						'RESULT'	=> '<strong style="color:red">' . $lang['UNAVAILABLE'] . '</strong>',
 
 						'S_EXPLAIN'	=> false,
 						'S_LEGEND'	=> false,
@@ -371,7 +372,7 @@ class install_install extends module
 
 			$template->assign_block_vars('checks', array(
 				'TITLE'		=> $lang['DLL_' . strtoupper($dll)],
-				'RESULT'	=> '<b style="color:green">' . $lang['AVAILABLE'] . '</b>',
+				'RESULT'	=> '<strong style="color:green">' . $lang['AVAILABLE'] . '</strong>',
 
 				'S_EXPLAIN'	=> false,
 				'S_LEGEND'	=> false,
@@ -411,7 +412,7 @@ class install_install extends module
 
 		$template->assign_block_vars('checks', array(
 			'TITLE'		=> $lang['APP_MAGICK'],
-			'RESULT'	=> ($img_imagick) ? '<b style="color:green">' . $lang['AVAILABLE'] . ', ' . $img_imagick . '</b>' : '<b style="color:blue">' . $lang['NO_LOCATION'] . '</b>',
+			'RESULT'	=> ($img_imagick) ? '<strong style="color:green">' . $lang['AVAILABLE'] . ', ' . $img_imagick . '</strong>' : '<strong style="color:blue">' . $lang['NO_LOCATION'] . '</strong>',
 
 			'S_EXPLAIN'	=> false,
 			'S_LEGEND'	=> false,
@@ -462,8 +463,8 @@ class install_install extends module
 
 			$passed['files'] = ($exists && $write && $passed['files']) ? true : false;
 
-			$exists = ($exists) ? '<b style="color:green">' . $lang['FOUND'] . '</b>' : '<b style="color:red">' . $lang['NOT_FOUND'] . '</b>';
-			$write = ($write) ? ', <b style="color:green">' . $lang['WRITABLE'] . '</b>' : (($exists) ? ', <b style="color:red">' . $lang['UNWRITABLE'] . '</b>' : '');
+			$exists = ($exists) ? '<strong style="color:green">' . $lang['FOUND'] . '</strong>' : '<strong style="color:red">' . $lang['NOT_FOUND'] . '</strong>';
+			$write = ($write) ? ', <strong style="color:green">' . $lang['WRITABLE'] . '</strong>' : (($exists) ? ', <strong style="color:red">' . $lang['UNWRITABLE'] . '</strong>' : '');
 
 			$template->assign_block_vars('checks', array(
 				'TITLE'		=> $dir,
@@ -498,8 +499,8 @@ class install_install extends module
 				$write = $exists = false;
 			}
 
-			$exists_str = ($exists) ? '<b style="color:green">' . $lang['FOUND'] . '</b>' : '<b style="color:red">' . $lang['NOT_FOUND'] . '</b>';
-			$write_str = ($write) ? ', <b style="color:green">' . $lang['WRITABLE'] . '</b>' : (($exists) ? ', <b style="color:red">' . $lang['UNWRITABLE'] . '</b>' : '');
+			$exists_str = ($exists) ? '<strong style="color:green">' . $lang['FOUND'] . '</strong>' : '<strong style="color:red">' . $lang['NOT_FOUND'] . '</strong>';
+			$write_str = ($write) ? ', <strong style="color:green">' . $lang['WRITABLE'] . '</strong>' : (($exists) ? ', <strong style="color:red">' . $lang['UNWRITABLE'] . '</strong>' : '');
 
 			$template->assign_block_vars('checks', array(
 				'TITLE'		=> $dir,
@@ -567,7 +568,7 @@ class install_install extends module
 			{
 				$template->assign_block_vars('checks', array(
 					'TITLE'		=> $lang['DB_TEST'],
-					'RESULT'	=> '<b style="color:green">' . $lang['SUCCESSFUL_CONNECT'] . '</b>',
+					'RESULT'	=> '<strong style="color:green">' . $lang['SUCCESSFUL_CONNECT'] . '</strong>',
 
 					'S_EXPLAIN'	=> false,
 					'S_LEGEND'	=> false,
@@ -577,7 +578,7 @@ class install_install extends module
 			{
 				$template->assign_block_vars('checks', array(
 					'TITLE'		=> $lang['DB_TEST'],
-					'RESULT'	=> '<b style="color:red">' . implode('<br />', $error) . '</b>',
+					'RESULT'	=> '<strong style="color:red">' . implode('<br />', $error) . '</strong>',
 
 					'S_EXPLAIN'	=> false,
 					'S_LEGEND'	=> false,
@@ -750,7 +751,7 @@ class install_install extends module
 				$passed = true;
 				$template->assign_block_vars('checks', array(
 					'TITLE'		=> $lang['ADMIN_TEST'],
-					'RESULT'	=> '<b style="color:green">' . $lang['TESTS_PASSED'] . '</b>',
+					'RESULT'	=> '<strong style="color:green">' . $lang['TESTS_PASSED'] . '</strong>',
 
 					'S_EXPLAIN'	=> false,
 					'S_LEGEND'	=> false,
@@ -760,7 +761,7 @@ class install_install extends module
 			{
 				$template->assign_block_vars('checks', array(
 					'TITLE'		=> $lang['ADMIN_TEST'],
-					'RESULT'	=> '<b style="color:red">' . implode('<br />', $error) . '</b>',
+					'RESULT'	=> '<strong style="color:red">' . implode('<br />', $error) . '</strong>',
 
 					'S_EXPLAIN'	=> false,
 					'S_LEGEND'	=> false,
@@ -1194,7 +1195,11 @@ class install_install extends module
 			break;
 		}
 
+		// Change prefix
 		$sql_query = preg_replace('#phpbb_#i', $table_prefix, $sql_query);
+
+		// Change language strings...
+		$sql_query = preg_replace_callback('#\{L_([A-Z0-9\-_]*)\}#s', 'adjust_language_keys_callback', $sql_query);
 
 		// Since there is only one schema file we know the comment style and are able to remove it directly with remove_remarks
 		remove_remarks($sql_query);
@@ -1389,11 +1394,11 @@ class install_install extends module
 	}
 
 	/**
-	* Populate the module tables
+	* Build the search index...
 	*/
-	function add_modules($mode, $sub)
+	function build_search_index($mode, $sub)
 	{
-		global $db, $lang, $phpbb_root_path, $phpEx;
+		global $db, $lang, $phpbb_root_path, $phpEx, $config;
 
 		// Obtain any submitted data
 		foreach ($this->request_vars as $var)
@@ -1416,6 +1421,42 @@ class install_install extends module
 
 		// NOTE: trigger_error does not work here.
 		$db->sql_return_on_error(true);
+
+		include_once($phpbb_root_path . 'includes/constants.' . $phpEx);
+		include_once($phpbb_root_path . 'includes/search/fulltext_native.' . $phpEx);
+
+		// Fill the config array - it is needed by those functions we call
+		$sql = 'SELECT *
+			FROM ' . CONFIG_TABLE;
+		$result = $db->sql_query($sql);
+
+		$config = array();
+		while ($row = $db->sql_fetchrow($result))
+		{
+			$config[$row['config_name']] = $row['config_value'];
+		}
+		$db->sql_freeresult($result);
+
+		$error = false;
+		$search = new fulltext_native($error);
+
+		$sql = 'SELECT post_id, post_subject, post_text, poster_id, forum_id
+			FROM ' . POSTS_TABLE;
+		$result = $db->sql_query($sql);
+
+		while ($row = $db->sql_fetchrow($result))
+		{
+			$search->index('post', $row['post_id'], $row['post_text'], $row['post_subject'], $row['poster_id'], $row['forum_id']);
+		}
+		$db->sql_freeresult($result);
+	}
+
+	/**
+	* Populate the module tables
+	*/
+	function add_modules($mode, $sub)
+	{
+		global $db, $lang, $phpbb_root_path, $phpEx;
 
 		include_once($phpbb_root_path . 'includes/constants.' . $phpEx);
 		include_once($phpbb_root_path . 'includes/acp/acp_modules.' . $phpEx);

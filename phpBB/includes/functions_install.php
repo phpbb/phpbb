@@ -481,4 +481,47 @@ function connect_check_db($error_connect, &$error, $dbms, $table_prefix, $dbhost
 	return false;
 }
 
+/**
+* remove_remarks will strip the sql comment lines out of an uploaded sql file
+*/
+function remove_remarks(&$sql)
+{
+	$sql = preg_replace('/\n{2,}/', "\n", preg_replace('/^#.*$/m', "\n", $sql));
+}
+
+/**
+* split_sql_file will split an uploaded sql file into single sql statements.
+* Note: expects trim() to have already been run on $sql.
+*/
+function split_sql_file($sql, $delimiter)
+{
+	$sql = str_replace("\r" , '', $sql);
+	$data = preg_split('/' . preg_quote($delimiter, '/') . '$/m', $sql);
+
+	$data = array_map('trim', $data);
+
+	// The empty case
+	$end_data = end($data);
+
+	if (empty($end_data))
+	{
+		unset($data[key($data)]);
+	}
+
+	return $data;
+}
+
+/**
+* For replacing {L_*} strings with preg_replace_callback
+*/
+function adjust_language_keys_callback($matches)
+{
+	if (!empty($matches[1]))
+	{
+		global $lang, $db;
+
+		return (!empty($lang[$matches[1]])) ? $db->sql_escape($lang[$matches[1]]) : $db->sql_escape($matches[1]);
+	}
+}
+
 ?>
