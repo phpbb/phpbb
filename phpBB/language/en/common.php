@@ -486,6 +486,7 @@ $lang = array_merge($lang, array(
 	'SEARCH_UNANSWERED'			=> 'View unanswered posts',
 	'SECONDS'					=> 'Seconds',
 	'SELECT'					=> 'Select',
+	'SELECT_ALL'				=> 'Select all',
 	'SELECT_DESTINATION_FORUM'	=> 'Please select a destination forum',
 	'SELECT_FORUM'				=> 'Select a forum',
 	'SEND_EMAIL'				=> 'E-mail',

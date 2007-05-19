@@ -55,7 +55,6 @@ $lang = array_merge($lang, array(
 	'RESTORE_OPTIONS'		=> 'Restore options',
 	'RESTORE_SUCCESS'		=> 'The database has been successfully restored.<br /><br />Your board should be back to the state it was when the backup was made.',
 
-	'SELECT_ALL'			=> 'Select all',
 	'SELECT_FILE'			=> 'Select a file',
 	'START_BACKUP'			=> 'Start backup',
 	'START_RESTORE'			=> 'Start restore',
