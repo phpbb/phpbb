@@ -1820,35 +1820,40 @@ function sync($mode, $where_type = '', $where_ids = '', $resync_parents = false,
 					{
 						$topic_id = (int) $row['topic_id'];
 
-						if ($row['post_id'] == $shadow_topic_data[$topic_id]['topic_first_post_id'])
+						// Ok, there should be a shadow topic. If there isn't, then there's something wrong with the db. 
+						// However, there's not much we can do about it.
+						if (!empty($shadow_topic_data[$topic_id]))
 						{
-							$orig_topic_id = $shadow_topic_data[$topic_id]['topic_id'];
-
-							if (!isset($sync_shadow_topics[$orig_topic_id]))
+							if ($row['post_id'] == $shadow_topic_data[$topic_id]['topic_first_post_id'])
 							{
-								$sync_shadow_topics[$orig_topic_id] = array();
+								$orig_topic_id = $shadow_topic_data[$topic_id]['topic_id'];
+
+								if (!isset($sync_shadow_topics[$orig_topic_id]))
+								{
+									$sync_shadow_topics[$orig_topic_id] = array();
+								}
+
+								$sync_shadow_topics[$orig_topic_id]['topic_time'] = $row['post_time'];
+								$sync_shadow_topics[$orig_topic_id]['topic_poster'] = $row['poster_id'];
+								$sync_shadow_topics[$orig_topic_id]['topic_first_poster_name'] = ($row['poster_id'] == ANONYMOUS) ? $row['post_username'] : $row['username'];
+								$sync_shadow_topics[$orig_topic_id]['topic_first_poster_colour'] = $row['user_colour'];
 							}
 
-							$sync_shadow_topics[$orig_topic_id]['topic_time'] = $row['post_time'];
-							$sync_shadow_topics[$orig_topic_id]['topic_poster'] = $row['poster_id'];
-							$sync_shadow_topics[$orig_topic_id]['topic_first_poster_name'] = ($row['poster_id'] == ANONYMOUS) ? $row['post_username'] : $row['username'];
-							$sync_shadow_topics[$orig_topic_id]['topic_first_poster_colour'] = $row['user_colour'];
-						}
-
-						if ($row['post_id'] == $shadow_topic_data[$topic_id]['topic_last_post_id'])
-						{
-							$orig_topic_id = $shadow_topic_data[$topic_id]['topic_id'];
-
-							if (!isset($sync_shadow_topics[$orig_topic_id]))
+							if ($row['post_id'] == $shadow_topic_data[$topic_id]['topic_last_post_id'])
 							{
-								$sync_shadow_topics[$orig_topic_id] = array();
-							}
+								$orig_topic_id = $shadow_topic_data[$topic_id]['topic_id'];
 
-							$sync_shadow_topics[$orig_topic_id]['topic_last_poster_id'] = $row['poster_id'];
-							$sync_shadow_topics[$orig_topic_id]['topic_last_post_subject'] = $row['post_subject'];
-							$sync_shadow_topics[$orig_topic_id]['topic_last_post_time'] = $row['post_time'];
-							$sync_shadow_topics[$orig_topic_id]['topic_last_poster_name'] = ($row['poster_id'] == ANONYMOUS) ? $row['post_username'] : $row['username'];
-							$sync_shadow_topics[$orig_topic_id]['topic_last_poster_colour'] = $row['user_colour'];
+								if (!isset($sync_shadow_topics[$orig_topic_id]))
+								{
+									$sync_shadow_topics[$orig_topic_id] = array();
+								}
+
+								$sync_shadow_topics[$orig_topic_id]['topic_last_poster_id'] = $row['poster_id'];
+								$sync_shadow_topics[$orig_topic_id]['topic_last_post_subject'] = $row['post_subject'];
+								$sync_shadow_topics[$orig_topic_id]['topic_last_post_time'] = $row['post_time'];
+								$sync_shadow_topics[$orig_topic_id]['topic_last_poster_name'] = ($row['poster_id'] == ANONYMOUS) ? $row['post_username'] : $row['username'];
+								$sync_shadow_topics[$orig_topic_id]['topic_last_poster_colour'] = $row['user_colour'];
+							}
 						}
 					}
 					$db->sql_freeresult($result);
