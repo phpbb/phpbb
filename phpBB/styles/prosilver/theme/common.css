@@ -369,7 +369,7 @@ table.table1 tbody tr:hover, table.table1 tbody tr.hover {
 }
 
 table.table1 td {
-	color: #536482;
+	color: #6a6a6a;
 	font-size: 1.1em;
 }
 
@@ -502,11 +502,11 @@ li.pagination {
 .pagination span a, .pagination span a:link, .pagination span a:visited, .pagination span a:active {
 	font-weight: normal;
 	text-decoration: none;
-	color: #5C758C;
+	color: #747474;
 	margin: 0 2px;
 	padding: 0 2px;
 	background-color: #eeeeee;
-	border: 1px solid #B4BAC0;
+	border: 1px solid #bababa;
 	font-size: 0.9em;
 	line-height: 1.5em;
 }

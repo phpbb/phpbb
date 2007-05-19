@@ -413,14 +413,14 @@ blockquote {
 
 blockquote blockquote {
 	/* Nested quotes */
-	background-color:#EFEED9;
+	background-color:#bababa;
 	font-size:1em;
 	margin:0.5em 1px 0pt 15px;	
 }
 
 blockquote blockquote blockquote {
 	/* Nested quotes */
-	background-color: #EBEADD;
+	background-color: #e4e4e4;
 }
 
 blockquote cite {
