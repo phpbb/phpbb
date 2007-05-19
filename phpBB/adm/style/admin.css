@@ -172,7 +172,7 @@ a:active {
 #content h1 {
 	color: #115098;
 	line-height: 1.2em;
-	margin-bottom: 0px;
+	margin-bottom: 0;
 }
 
 #main {
@@ -191,6 +191,11 @@ a:active {
 	height: 350px; 
 }
 
+.simple-page-body {
+	padding: 0;
+	padding-right: 10px;
+	min-width: 0;
+}
 
 /* Tabbed menu
 	Based on: http://www.alistapart.com/articles/slidingdoors2/
@@ -257,12 +262,12 @@ a:active {
 }
 
 #tabs #activetab a {
-	background-position: 0 0px;
+	background-position: 0 0;
 	border-bottom: 1px solid #DCDEE2;
 }
 
 #tabs #activetab a span {
-	background-position: 100% 0px;
+	background-position: 100% 0;
 	padding-bottom: 5px;
 	color: #23649F;
 }
@@ -510,7 +515,7 @@ table.type2 th {
 }
 
 table.type2 td {
-	padding: 0px;
+	padding: 0;
 	font-size: 1em;
 }
 
@@ -640,7 +645,7 @@ legend {
 	position: relative;
 	text-transform: none;
 	line-height: 1.2em;
-	top: 0em;
+	top: 0;
 	vertical-align: middle;
 }
 
@@ -1229,7 +1234,7 @@ input.disabled {
 	font-weight: bold;
 	line-height: 1.20em;
 	text-align: right;
-	padding: 0px;
+	padding: 0;
 }
 
 .rtl .sourcenum {
@@ -1240,7 +1245,7 @@ input.disabled {
 	font-family: Monaco, 'Courier New', monospace;
 	font-size: 1.25em;
 	line-height: 1.20em;
-	padding: 0px;
+	padding: 0;
 }
 
 .syntaxbg {
@@ -1392,11 +1397,11 @@ fieldset.permissions .permissions-switch {
 
 .permissions-category .activetab a:hover span.tabbg {
 	color: #333333;
-	background-position: 100% 0px;
+	background-position: 100% 0;
 }
 
 .permissions-category .activetab a:hover {
-	background-position: 0 0px;
+	background-position: 0 0;
 }
 
 .permissions-category a span.colour {

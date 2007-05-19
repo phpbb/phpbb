@@ -25,7 +25,7 @@ class mcp_reports
 
 	function main($id, $mode)
 	{
-		global $auth, $db, $user, $template;
+		global $auth, $db, $user, $template, $cache;
 		global $config, $phpbb_root_path, $phpEx, $action;
 
 		include_once($phpbb_root_path . 'includes/functions_posting.' . $phpEx);
@@ -111,7 +111,7 @@ class mcp_reports
 					);
 				}
 
-				$topic_tracking_info = array();
+				$topic_tracking_info = $extensions = $attachments = array();
 				// Get topic tracking info
 				if ($config['load_db_lastread'])
 				{
@@ -137,9 +137,46 @@ class mcp_reports
 				}
 				$message = smiley_text($message);
 
+				if ($post_info['post_attachment'] && $auth->acl_get('u_download') && $auth->acl_get('f_download', $post_info['forum_id']))
+				{
+					$extensions = $cache->obtain_attach_extensions($post_info['forum_id']);
+
+					$sql = 'SELECT *
+						FROM ' . ATTACHMENTS_TABLE . '
+						WHERE post_msg_id = ' . $post_id . '
+							AND in_message = 0
+						ORDER BY filetime DESC, post_msg_id ASC';
+					$result = $db->sql_query($sql);
+
+					while ($row = $db->sql_fetchrow($result))
+					{
+						$attachments[] = $row;
+					}
+					$db->sql_freeresult($result);
+
+					if (sizeof($attachments))
+					{
+						$update_count = array();
+						parse_attachments($post_info['forum_id'], $message, $attachments, $update_count);
+					}
+
+					// Display not already displayed Attachments for this post, we already parsed them. ;)
+					if (!empty($attachments))
+					{
+						$template->assign_var('S_HAS_ATTACHMENTS', true);
+
+						foreach ($attachments as $attachment)
+						{
+							$template->assign_block_vars('attachment', array(
+								'DISPLAY_ATTACHMENT'	=> $attachment)
+							);
+						}
+					}
+				}
+
 				$template->assign_vars(array(
 					'S_MCP_REPORT'			=> true,
-					'S_CLOSE_ACTION'		=> $this->u_action . '&amp;p=' . $post_id . 'f=' . $forum_id,
+					'S_CLOSE_ACTION'		=> $this->u_action . '&amp;p=' . $post_id . '&amp;f=' . $forum_id,
 					'S_CAN_VIEWIP'			=> $auth->acl_get('m_info', $post_info['forum_id']),
 					'S_POST_REPORTED'		=> $post_info['post_reported'],
 					'S_POST_UNAPPROVED'		=> !$post_info['post_approved'],
@@ -182,9 +219,11 @@ class mcp_reports
 					'POST_SUBJECT'			=> ($post_info['post_subject']) ? $post_info['post_subject'] : $user->lang['NO_SUBJECT'],
 					'POST_DATE'				=> $user->format_date($post_info['post_time']),
 					'POST_IP'				=> $post_info['poster_ip'],
-					'POST_IPADDR'			=> @gethostbyaddr($post_info['poster_ip']),
-					'POST_ID'				=> $post_info['post_id'])
-				);
+					'POST_IPADDR'			=> ($auth->acl_get('m_info', $post_info['forum_id']) && request_var('lookup', '')) ? @gethostbyaddr($post_info['poster_ip']) : '',
+					'POST_ID'				=> $post_info['post_id'],
+
+					'U_LOOKUP_IP'			=> ($auth->acl_get('m_info', $post_info['forum_id'])) ? $this->u_action . '&amp;r=' . $report_id . '&amp;p=' . $post_id . '&amp;f=' . $forum_id . '&amp;lookup=' . $post_info['poster_ip'] . '#ip' : '',
+				));
 
 				$this->tpl_name = 'mcp_post';
 

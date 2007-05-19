@@ -92,7 +92,7 @@ ul.cplist {
 }
 
 #cp-main .buttons {
-	margin-left: 0px;
+	margin-left: 0;
 }
 
 #cp-main ul.linklist {
@@ -402,7 +402,7 @@ ol.def-rules li {
 .pm-legend {
 	border-left-width: 10px;
 	border-left-style: solid;
-	border-right-width: 0px;
+	border-right-width: 0;
 	margin-bottom: 3px;
 	padding-left: 3px;
 }

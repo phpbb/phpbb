@@ -14,7 +14,7 @@
 function mcp_topic_view($id, $mode, $action)
 {
 	global $phpEx, $phpbb_root_path, $config;
-	global $template, $db, $user, $auth;
+	global $template, $db, $user, $auth, $cache;
 
 	$url = append_sid("{$phpbb_root_path}mcp.$phpEx?" . extra_url());
 
@@ -104,11 +104,12 @@ function mcp_topic_view($id, $mode, $action)
 		ORDER BY ' . $sort_order_sql;
 	$result = $db->sql_query_limit($sql, $posts_per_page, $start);
 
-	$rowset = array();
+	$rowset = $post_id_list = array();
 	$bbcode_bitfield = '';
 	while ($row = $db->sql_fetchrow($result))
 	{
 		$rowset[] = $row;
+		$post_id_list[] = $row['post_id'];
 		$bbcode_bitfield = $bbcode_bitfield | base64_decode($row['bbcode_bitfield']);
 	}
 	$db->sql_freeresult($result);
@@ -135,6 +136,30 @@ function mcp_topic_view($id, $mode, $action)
 
 	$has_unapproved_posts = false;
 
+	// Grab extensions
+	$extensions = $attachments = array();
+	if ($topic_info['topic_attachment'] && sizeof($post_id_list))
+	{
+		$extensions = $cache->obtain_attach_extensions($topic_info['forum_id']);
+
+		// Get attachments...
+		if ($auth->acl_get('u_download') && $auth->acl_get('f_download', $topic_info['forum_id']))
+		{
+			$sql = 'SELECT *
+				FROM ' . ATTACHMENTS_TABLE . '
+				WHERE ' . $db->sql_in_set('post_msg_id', $post_id_list) . '
+					AND in_message = 0
+				ORDER BY filetime DESC, post_msg_id ASC';
+			$result = $db->sql_query($sql);
+
+			while ($row = $db->sql_fetchrow($result))
+			{
+				$attachments[$row['post_msg_id']][] = $row;
+			}
+			$db->sql_freeresult($result);
+		}
+	}
+
 	foreach ($rowset as $i => $row)
 	{
 		$message = $row['post_text'];
@@ -147,6 +172,12 @@ function mcp_topic_view($id, $mode, $action)
 		}
 
 		$message = smiley_text($message);
+
+		if (!empty($attachments[$row['post_id']]))
+		{
+			$update_count = array();
+			parse_attachments($topic_info['forum_id'], $message, $attachments[$row['post_id']], $update_count);
+		}
 
 		if (!$row['post_approved'])
 		{
@@ -172,11 +203,23 @@ function mcp_topic_view($id, $mode, $action)
 			'S_POST_REPORTED'	=> ($row['post_reported']) ? true : false,
 			'S_POST_UNAPPROVED'	=> ($row['post_approved']) ? false : true,
 			'S_CHECKED'			=> ($post_id_list && in_array(intval($row['post_id']), $post_id_list)) ? true : false,
+			'S_HAS_ATTACHMENTS'	=> (!empty($attachments[$row['post_id']])) ? true : false,
 
 			'U_POST_DETAILS'	=> "$url&amp;i=$id&amp;p={$row['post_id']}&amp;mode=post_details",
 			'U_MCP_APPROVE'		=> ($auth->acl_get('m_approve', $topic_info['forum_id'])) ? append_sid("{$phpbb_root_path}mcp.$phpEx", 'i=queue&amp;mode=approve_details&amp;f=' . $topic_info['forum_id'] . '&amp;p=' . $row['post_id']) : '',
 			'U_MCP_REPORT'		=> ($auth->acl_get('m_report', $topic_info['forum_id'])) ? append_sid("{$phpbb_root_path}mcp.$phpEx", 'i=reports&amp;mode=report_details&amp;f=' . $topic_info['forum_id'] . '&amp;p=' . $row['post_id']) : '')
 		);
+
+		// Display not already displayed Attachments for this post, we already parsed them. ;)
+		if (!empty($attachments[$row['post_id']]))
+		{
+			foreach ($attachments[$row['post_id']] as $attachment)
+			{
+				$template->assign_block_vars('postrow.attachment', array(
+					'DISPLAY_ATTACHMENT'	=> $attachment)
+				);
+			}
+		}
 
 		unset($rowset[$i]);
 	}

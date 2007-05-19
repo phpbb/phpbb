@@ -74,12 +74,12 @@ p {
 }
 
 img {
-	border-width: 0px;
+	border-width: 0;
 }
 
 hr {
 	/* Also see tweaks.css */
-	border: 0px none #FFFFFF;
+	border: 0 none #FFFFFF;
 	border-top: 1px solid #CCCCCC;
 	height: 1px;
 	margin: 5px 0;

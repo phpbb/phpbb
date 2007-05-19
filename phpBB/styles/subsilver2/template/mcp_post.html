@@ -58,7 +58,13 @@
 <!-- IF S_CAN_VIEWIP -->
 	<tr>
 		<td class="row1"><b class="gen">{L_THIS_POST_IP}: </b></td>
-		<td class="row2"><span class="gen"><!-- IF U_WHOIS --><a href="{U_WHOIS}">{POST_IP}</a><!-- ELSE -->{POST_IP}<!-- ENDIF --> [ {POST_IPADDR} ]</span></td>
+		<td class="row2"><span class="gen">
+			<!-- IF U_WHOIS -->
+				<a href="{U_WHOIS}"><!-- IF POST_IPADDR -->{POST_IPADDR}<!-- ELSE -->{POST_IP}<!-- ENDIF --></a> (<!-- IF POST_IPADDR -->{POST_IP}<!-- ELSE --><a href="{U_LOOKUP_IP}">{L_LOOKUP_IP}</a><!-- ENDIF -->)
+			<!-- ELSE -->
+				<!-- IF POST_IPADDR -->{POST_IPADDR} ({POST_IP})<!-- ELSE -->{POST_IP}<!-- IF U_LOOKUP_IP --> (<a href="{U_LOOKUP_IP}">{L_LOOKUP_IP}</a>)<!-- ENDIF --><!-- ENDIF -->
+			<!-- ENDIF -->
+		</span></td>
 	</tr>
 <!-- ENDIF -->
 <tr>
@@ -69,7 +75,27 @@
 	<th colspan="2" align="center">{L_PREVIEW}</th>
 </tr>
 <tr>
-	<td class="row1" colspan="2"><div class="gen" style="overflow: auto; width: 100%; height: 80pt; border: 1px;">{POST_PREVIEW}</div><!-- IF U_EDIT --><div class="gen" style="float: {S_CONTENT_FLOW_END};"><a href="{U_EDIT}">{EDIT_IMG}</a></div><!-- ENDIF --></td>
+	<td class="row1" colspan="2">
+	<!-- IF U_EDIT --><div class="gen" style="float: {S_CONTENT_FLOW_END};"><a href="{U_EDIT}">{EDIT_IMG}</a></div><!-- ENDIF -->
+
+	<div class="postbody">{POST_PREVIEW}</div>
+
+	<!-- IF S_HAS_ATTACHMENTS -->
+		<br clear="all" /><br />
+
+		<table class="tablebg" width="100%" cellspacing="1">
+		<tr>
+			<td class="row3"><b class="genmed">{L_ATTACHMENTS}: </b></td>
+		</tr>
+		<!-- BEGIN attachment -->
+			<tr>
+				<!-- IF attachment.S_ROW_COUNT is even --><td class="row2"><!-- ELSE --><td class="row1"><!-- ENDIF -->{attachment.DISPLAY_ATTACHMENT}</td>
+			</tr>
+		<!-- END attachment -->
+		</table>
+	<!-- ENDIF -->
+	
+	</td>
 </tr>
 <!-- IF S_POST_UNAPPROVED and S_MCP_QUEUE -->
 	<tr>

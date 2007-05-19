@@ -4,7 +4,7 @@
 /* General form styles
 ----------------------------------------*/
 fieldset {
-	border-width: 0px;
+	border-width: 0;
 	font-family: Verdana, Helvetica, Arial, sans-serif;
 	font-size: 1.1em;
 }
@@ -76,12 +76,12 @@ fieldset dd {
 /* Specific layout 1 */
 fieldset.fields1 dt {
 	width: 10em;
-	border-right-width: 0px;
+	border-right-width: 0;
 }
 
 fieldset.fields1 dd {
 	margin-left: 10em;
-	border-left-width: 0px;
+	border-left-width: 0;
 }
 
 fieldset.fields1 {
@@ -95,12 +95,12 @@ fieldset.fields1 div {
 /* Specific layout 2 */
 fieldset.fields2 dt {
 	width: 15em;
-	border-right-width: 0px;
+	border-right-width: 0;
 }
 
 fieldset.fields2 dd {
 	margin-left: 16em;
-	border-left-width: 0px;
+	border-left-width: 0;
 }
 
 /* Form elements */

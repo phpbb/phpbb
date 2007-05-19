@@ -15,7 +15,7 @@
 
 			<!-- IF topic_review_row.S_ROW_COUNT is even --><tr class="row1"><!-- ELSE --><tr class="row2"><!-- ENDIF -->
 
-				<td rowspan="2" align="{S_CONTENT_FLOW_BEGIN}" valign="top"><a id="pr{topic_review_row.U_POST_ID}"></a>
+				<td rowspan="2" align="{S_CONTENT_FLOW_BEGIN}" valign="top"><a id="pr{topic_review_row.POST_ID}"></a>
 					<table width="150" cellspacing="0">
 					<tr>
 						<td align="center"><b class="postauthor"<!-- IF topic_review_row.POST_AUTHOR_COLOUR --> style="color: {topic_review_row.POST_AUTHOR_COLOUR}"<!-- ENDIF -->>{topic_review_row.POST_AUTHOR}</b></td>
@@ -28,7 +28,7 @@
 						<td>&nbsp;</td>
 						<td class="gensmall" valign="middle" nowrap="nowrap"><b>{L_POST_SUBJECT}:</b>&nbsp;</td>
 						<td class="gensmall" width="100%" valign="middle">{topic_review_row.POST_SUBJECT}</td>
-						<td valign="top" nowrap="nowrap">&nbsp;<!-- IF topic_review_row.POSTER_QUOTE and topic_review_row.DECODED_MESSAGE --><a href="#" onclick="addquote({topic_review_row.U_POST_ID},'{topic_review_row.POSTER_QUOTE}'); return false;">{QUOTE_IMG}</a><!-- ENDIF --></td>
+						<td valign="top" nowrap="nowrap">&nbsp;<!-- IF topic_review_row.POSTER_QUOTE and topic_review_row.DECODED_MESSAGE --><a href="#" onclick="addquote({topic_review_row.POST_ID},'{topic_review_row.POSTER_QUOTE}'); return false;">{QUOTE_IMG}</a><!-- ENDIF --></td>
 					</tr>
 					</table>
 				</td>
@@ -44,8 +44,24 @@
 							<tr>
 								<td>
 									<div class="postbody">{topic_review_row.MESSAGE}</div>
+
+									<!-- IF topic_review_row.S_HAS_ATTACHMENTS -->
+										<br clear="all" /><br />
+
+										<table class="tablebg" width="100%" cellspacing="1">
+										<tr>
+											<td class="row3"><b class="genmed">{L_ATTACHMENTS}: </b></td>
+										</tr>
+										<!-- BEGIN attachment -->
+											<tr>
+												<!-- IF topic_review_row.attachment.S_ROW_COUNT is even --><td class="row2"><!-- ELSE --><td class="row1"><!-- ENDIF -->{topic_review_row.attachment.DISPLAY_ATTACHMENT}</td>
+											</tr>
+										<!-- END attachment -->
+										</table>
+									<!-- ENDIF -->
+
 									<!-- IF topic_review_row.POSTER_QUOTE and topic_review_row.DECODED_MESSAGE -->
-										<div id="message_{topic_review_row.U_POST_ID}" style="display: none;">{topic_review_row.DECODED_MESSAGE}</div>
+										<div id="message_{topic_review_row.POST_ID}" style="display: none;">{topic_review_row.DECODED_MESSAGE}</div>
 									<!-- ENDIF -->
 								</td>
 							</tr>

@@ -74,7 +74,7 @@ li.row:hover dd {
 
 li.header dt, li.header dd {
 	line-height: 1em;
-	border-left-width: 0px;
+	border-left-width: 0;
 	margin: 2px 0 4px 0;
 	color: #FFFFFF;
 	padding-top: 2px;
@@ -269,7 +269,7 @@ div[class].topic-actions {
 }
 
 #topicreview h2 {
-	border-bottom-width: 0px;
+	border-bottom-width: 0;
 }
 
 /* Content container styles
@@ -648,7 +648,7 @@ fieldset.polls dd div {
 	font-family: Arial, Helvetica, sans-serif;
 	color: #FFFFFF;
 	font-weight: bold;
-	padding: 0px 2px;
+	padding: 0 2px;
 	overflow: visible;
 	min-width: 2%;
 }

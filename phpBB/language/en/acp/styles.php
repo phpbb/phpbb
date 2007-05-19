@@ -108,11 +108,9 @@ $lang = array_merge($lang, array(
 
 	'HIDE_CSS'				=> 'Hide raw CSS',
 
-	'IMAGE_CONFIGURATION'		=> 'Image configuration',
 	'IMAGE_WIDTH'				=> 'Image width',
 	'IMAGE_HEIGHT'				=> 'Image height',
 	'IMAGE'						=> 'Image',
-	'IMAGE_LOCATION'			=> 'Image location',
 	'IMAGE_NAME'				=> 'Image name',
 	'IMAGE_PARAMETER'			=> 'Parameter',
 	'IMAGE_VALUE'				=> 'Value',
@@ -279,8 +277,6 @@ $lang = array_merge($lang, array(
 
 	'LINE_SPACING'				=> 'Line spacing',
 	'LOCALISED_IMAGES'			=> 'Localised',
-
-	'EDITED_IMAGESET'			=> 'Edited imageset',
 
 	'NO_CLASS'					=> 'Cannot find class in stylesheet.',
 	'NO_IMAGESET'				=> 'Cannot find imageset on filesystem.',

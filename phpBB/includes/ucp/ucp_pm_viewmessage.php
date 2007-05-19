@@ -345,7 +345,7 @@ function message_history($msg_id, $user_id, $message_row, $folder)
 			'S_CURRENT_MSG'		=> ($row['msg_id'] == $msg_id),
 			'S_AUTHOR_DELETED'	=> ($author_id == ANONYMOUS) ? true : false,
 
-			'U_MSG_ID'			=> $row['msg_id'],
+			'MSG_ID'			=> $row['msg_id'],
 			'U_VIEW_MESSAGE'	=> "$url&amp;f=$folder_id&amp;p=" . $row['msg_id'],
 			'U_QUOTE'			=> ($auth->acl_get('u_sendpm') && $author_id != ANONYMOUS && $author_id != $user->data['user_id']) ? "$url&amp;mode=compose&amp;action=quote&amp;f=" . $folder_id . "&amp;p=" . $row['msg_id'] : '',
 			'U_POST_REPLY_PM'	=> ($author_id != $user->data['user_id'] && $author_id != ANONYMOUS && $auth->acl_get('u_sendpm')) ? "$url&amp;mode=compose&amp;action=reply&amp;f=$folder_id&amp;p=" . $row['msg_id'] : '')

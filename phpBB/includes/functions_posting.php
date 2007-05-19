@@ -899,7 +899,7 @@ function load_drafts($topic_id = 0, $forum_id = 0, $id = 0)
 */
 function topic_review($topic_id, $forum_id, $mode = 'topic_review', $cur_post_id = 0, $show_quote_button = true)
 {
-	global $user, $auth, $db, $template, $bbcode;
+	global $user, $auth, $db, $template, $bbcode, $cache;
 	global $config, $phpbb_root_path, $phpEx;
 
 	// Go ahead and pull all data for this topic
@@ -941,10 +941,16 @@ function topic_review($topic_id, $forum_id, $mode = 'topic_review', $cur_post_id
 
 	$bbcode_bitfield = '';
 	$rowset = array();
+	$has_attachments = false;
 	while ($row = $db->sql_fetchrow($result))
 	{
 		$rowset[$row['post_id']] = $row;
 		$bbcode_bitfield = $bbcode_bitfield | base64_decode($row['bbcode_bitfield']);
+
+		if ($row['post_attachment'])
+		{
+			$has_attachments = true;
+		}
 	}
 	$db->sql_freeresult($result);
 
@@ -953,6 +959,27 @@ function topic_review($topic_id, $forum_id, $mode = 'topic_review', $cur_post_id
 	{
 		include_once($phpbb_root_path . 'includes/bbcode.' . $phpEx);
 		$bbcode = new bbcode(base64_encode($bbcode_bitfield));
+	}
+
+	// Grab extensions
+	$extensions = $attachments = array();
+	if ($has_attachments && $auth->acl_get('u_download') && $auth->acl_get('f_download', $forum_id))
+	{
+		$extensions = $cache->obtain_attach_extensions($forum_id);
+
+		// Get attachments...
+		$sql = 'SELECT *
+			FROM ' . ATTACHMENTS_TABLE . '
+			WHERE ' . $db->sql_in_set('post_msg_id', $post_list) . '
+				AND in_message = 0
+			ORDER BY filetime DESC, post_msg_id ASC';
+		$result = $db->sql_query($sql);
+
+		while ($row = $db->sql_fetchrow($result))
+		{
+			$attachments[$row['post_msg_id']][] = $row;
+		}
+		$db->sql_freeresult($result);
 	}
 
 	for ($i = 0, $end = sizeof($post_list); $i < $end; ++$i)
@@ -990,6 +1017,12 @@ function topic_review($topic_id, $forum_id, $mode = 'topic_review', $cur_post_id
 
 		$message = smiley_text($message, !$row['enable_smilies']);
 
+		if (!empty($attachments[$row['post_id']]))
+		{
+			$update_count = array();
+			parse_attachments($forum_id, $message, $attachments[$row['post_id']], $update_count);
+		}
+
 		$post_subject = censor_text($post_subject);
 
 		$template->assign_block_vars($mode . '_row', array(
@@ -998,16 +1031,30 @@ function topic_review($topic_id, $forum_id, $mode = 'topic_review', $cur_post_id
 			'POST_AUTHOR'			=> get_username_string('username', $poster_id, $row['username'], $row['user_colour'], $row['post_username']),
 			'U_POST_AUTHOR'			=> get_username_string('profile', $poster_id, $row['username'], $row['user_colour'], $row['post_username']),
 
+			'S_HAS_ATTACHMENTS'	=> (!empty($attachments[$row['post_id']])) ? true : false,
+
 			'POST_SUBJECT'		=> $post_subject,
 			'MINI_POST_IMG'		=> $user->img('icon_post_target', $user->lang['POST']),
 			'POST_DATE'			=> $user->format_date($row['post_time']),
 			'MESSAGE'			=> $message,
 			'DECODED_MESSAGE'	=> $decoded_message,
-			'U_POST_ID'			=> $row['post_id'],
+			'POST_ID'			=> $row['post_id'],
 			'U_MINI_POST'		=> append_sid("{$phpbb_root_path}viewtopic.$phpEx", 'p=' . $row['post_id']) . '#p' . $row['post_id'],
 			'U_MCP_DETAILS'		=> ($auth->acl_get('m_info', $forum_id)) ? append_sid("{$phpbb_root_path}mcp.$phpEx", 'i=main&amp;mode=post_details&amp;f=' . $forum_id . '&amp;p=' . $row['post_id'], true, $user->session_id) : '',
 			'POSTER_QUOTE'		=> ($show_quote_button && $auth->acl_get('f_reply', $forum_id)) ? addslashes(get_username_string('username', $poster_id, $row['username'], $row['user_colour'], $row['post_username'])) : '')
 		);
+
+		// Display not already displayed Attachments for this post, we already parsed them. ;)
+		if (!empty($attachments[$row['post_id']]))
+		{
+			foreach ($attachments[$row['post_id']] as $attachment)
+			{
+				$template->assign_block_vars($mode . '_row.attachment', array(
+					'DISPLAY_ATTACHMENT'	=> $attachment)
+				);
+			}
+		}
+
 		unset($rowset[$i]);
 	}
 

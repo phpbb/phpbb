@@ -78,9 +78,9 @@ body {
 
 #findbar {
 	width: 100%;
-	margin: 0px;
-	padding: 0px;
-	border: 0px;
+	margin: 0;
+	padding: 0;
+	border: 0;
 }
 
 .forumrules {
@@ -129,7 +129,7 @@ h3 {
 }
 
 h4 {
-	margin: 0px;
+	margin: 0;
 	font-size: 1.1em;
 	font-weight: bold;
 }
@@ -139,7 +139,7 @@ p {
 }
 
 p.moderators {
-	margin: 0px;
+	margin: 0;
 	float: left;
 	color: black;
 	font-weight: bold;
@@ -150,7 +150,7 @@ p.moderators {
 }
 
 p.linkmcp {
-	margin: 0px;
+	margin: 0;
 	float: right;
 	white-space: nowrap;
 }
@@ -160,7 +160,7 @@ p.linkmcp {
 }
 
 p.breadcrumbs {
-	margin: 0px;
+	margin: 0;
 	float: left;
 	color: black;
 	font-weight: bold;
@@ -173,7 +173,7 @@ p.breadcrumbs {
 }
 
 p.datetime {
-	margin: 0px;
+	margin: 0;
 	float: right;
 	white-space: nowrap;
 	font-size: 1em;
@@ -189,7 +189,7 @@ p.searchbar {
 } 
 
 p.searchbarreg {
-	margin: 0px;
+	margin: 0;
 	float: right;
 	white-space: nowrap;
 }
@@ -203,15 +203,15 @@ p.forumdesc {
 }
 
 p.topicauthor {
-	margin: 1px 0px;
+	margin: 1px 0;
 }
 
 p.topicdetails {
-	margin: 1px 0px;
+	margin: 1px 0;
 }
 
 .postreported, .postreported a:visited, .postreported a:hover, .postreported a:link, .postreported a:active {
-	margin: 1px 0px;
+	margin: 1px 0;
 	color: red;
 	font-weight:bold;
 }
@@ -252,7 +252,7 @@ p.topicdetails {
 }
 
 .nav {
-	margin: 0px;
+	margin: 0;
 	color: black;
 	font-weight: bold;
 }
@@ -326,9 +326,9 @@ td.profile {
 
 .catdiv {
 	height: 28px;
-	margin: 0px;
-	padding: 0px;
-	border: 0px;
+	margin: 0;
+	padding: 0;
+	border: 0;
 	background: white url('./images/cellpic2.jpg') repeat-y scroll top left;
 }
 .rtl .catdiv {
@@ -337,9 +337,9 @@ td.profile {
 
 .cat {
 	height: 28px;
-	margin: 0px;
-	padding: 0px;
-	border: 0px;
+	margin: 0;
+	padding: 0;
+	border: 0;
 	background-color: #C7D0D7;
 	background-image: url('./images/cellpic1.gif');
 	text-indent: 4px;
@@ -381,7 +381,7 @@ td.profile {
 
 hr {
 	height: 1px;
-	border-width: 0px;
+	border-width: 0;
 	background-color: #D1D7DC;
 	color: #D1D7DC;
 }
@@ -417,7 +417,7 @@ a.forumlink {
 }
 
 a.topictitle {
-	margin: 1px 0px;
+	margin: 1px 0;
 	font-family: "Lucida Grande", Helvetica, Arial, sans-serif;
 	font-weight: bold;
 	font-size: 1.2em;
@@ -442,9 +442,9 @@ th a:hover {
 /* Form Elements
  ------------ */
 form {
-	margin: 0px;
-	padding: 0px;
-	border: 0px;
+	margin: 0;
+	padding: 0;
+	border: 0;
 }
 
 input {
@@ -541,9 +541,9 @@ input.radio {
 /* BBCode
  ------------ */
 .quotetitle, .attachtitle {
-	margin: 10px 5px 0px 5px;
+	margin: 10px 5px 0 5px;
 	padding: 4px;
-	border-width: 1px 1px 0px 1px;
+	border-width: 1px 1px 0 1px;
 	border-style: solid;
 	border-color: #A9B8C2;
 	color: #333333;
@@ -557,10 +557,10 @@ input.radio {
 }
 
 .quotecontent, .attachcontent {
-	margin: 0px 5px 10px 5px;
+	margin: 0 5px 10px 5px;
 	padding: 5px;
 	border-color: #A9B8C2;
-	border-width: 0px 1px 1px 1px;
+	border-width: 0 1px 1px 1px;
 	border-style: solid;
 	font-weight: normal;
 	font-size: 1em;
@@ -575,9 +575,9 @@ input.radio {
 }
 
 .codetitle {
-	margin: 10px 5px 0px 5px;
+	margin: 10px 5px 0 5px;
 	padding: 2px 4px;
-	border-width: 1px 1px 0px 1px;
+	border-width: 1px 1px 0 1px;
 	border-style: solid;
 	border-color: #A9B8C2;
 	color: #333333;
@@ -588,10 +588,10 @@ input.radio {
 
 .codecontent {
 	direction: ltr;
-	margin: 0px 5px 10px 5px;
+	margin: 0 5px 10px 5px;
 	padding: 5px;
 	border-color: #A9B8C2;
-	border-width: 0px 1px 1px 1px;
+	border-width: 0 1px 1px 1px;
 	border-style: solid;
 	font-weight: normal;
 	color: #006600;

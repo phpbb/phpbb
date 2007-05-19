@@ -76,7 +76,7 @@ a.sendemail {
 }
 
 a.sendemail:hover {
-	background-position: 0px -18px;
+	background-position: 0 -18px;
 }
 
 a.fontsize {
@@ -86,7 +86,7 @@ a.fontsize {
 }
 
 a.fontsize:hover {
-	background-position: 0px -20px;
+	background-position: 0 -20px;
 	text-decoration: none;
 }
 

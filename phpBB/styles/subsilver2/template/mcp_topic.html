@@ -96,7 +96,24 @@
 		<td width="100%" valign="top">
 			<table width="100%" cellspacing="0" cellpadding="2" border="0">
 			<tr>
-				<td class="postbody" valign="top">{postrow.MESSAGE}<br /><br /></td>
+				<td valign="top">
+					<div class="postbody">{postrow.MESSAGE}</div>
+					<!-- IF postrow.S_HAS_ATTACHMENTS -->
+						<br clear="all" /><br />
+
+						<table class="tablebg" width="100%" cellspacing="1">
+						<tr>
+							<td class="row3"><b class="genmed">{L_ATTACHMENTS}: </b></td>
+						</tr>
+						<!-- BEGIN attachment -->
+							<tr>
+								<!-- IF postrow.attachment.S_ROW_COUNT is even --><td class="row2"><!-- ELSE --><td class="row1"><!-- ENDIF -->{postrow.attachment.DISPLAY_ATTACHMENT}</td>
+							</tr>
+						<!-- END attachment -->
+						</table>
+					<!-- ENDIF -->
+
+				</td>
 			</tr>
 			<tr>
 				<td valign="bottom">

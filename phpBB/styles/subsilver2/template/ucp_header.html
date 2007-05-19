@@ -63,7 +63,7 @@
 				<!-- the ! at the beginning of the loop name forces the loop to be not a nested one of l_block1 (it gets parsed separately) -->
 				<!-- BEGIN !folder -->
 					<!-- IF folder.S_FIRST_ROW -->
-						<ul class="nav" style="margin: 0px; padding: 0px; list-style-type: none; line-height: 175%;">
+						<ul class="nav" style="margin: 0; padding: 0; list-style-type: none; line-height: 175%;">
 					<!-- ENDIF -->
 
 					<!-- IF folder.S_CUR_FOLDER -->
@@ -80,7 +80,7 @@
 
 			<!-- ENDIF -->
 
-			<ul class="nav" style="margin: 0px; padding: 0px; list-style-type: none; line-height: 175%;">
+			<ul class="nav" style="margin: 0; padding: 0; list-style-type: none; line-height: 175%;">
 			<!-- BEGIN l_block2 -->
 				<li>&#187; <!-- IF l_block1.l_block2.S_SELECTED --><b>{l_block1.l_block2.L_TITLE}</b><!-- ELSE --><a href="{l_block1.l_block2.U_TITLE}">{l_block1.l_block2.L_TITLE}</a><!-- ENDIF --></li>
 			<!-- END l_block2 -->
@@ -125,7 +125,7 @@
 		
 			<b class="genmed" style="color:green">{L_FRIENDS_ONLINE}</b>
 
-			<ul class="nav" style="margin: 0px; padding: 0px; list-style-type: none; line-height: 175%;">
+			<ul class="nav" style="margin: 0; padding: 0; list-style-type: none; line-height: 175%;">
 			<!-- BEGIN friends_online -->
 				<li>{friends_online.USERNAME_FULL}
 				<!-- IF S_SHOW_PM_BOX -->
@@ -141,7 +141,7 @@
 
 			<b class="genmed" style="color:red">{L_FRIENDS_OFFLINE}</b>
 
-			<ul class="nav" style="margin: 0px; padding: 0px; list-style-type: none; line-height: 175%;">
+			<ul class="nav" style="margin: 0; padding: 0; list-style-type: none; line-height: 175%;">
 			<!-- BEGIN friends_offline -->
 				<li>{friends_offline.USERNAME_FULL}
 				<!-- IF S_SHOW_PM_BOX -->

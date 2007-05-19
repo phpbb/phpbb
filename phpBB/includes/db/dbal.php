@@ -504,7 +504,7 @@ class dbal
 
 		if (!$this->return_on_error)
 		{
-			$message = '<u>SQL ERROR</u> [ ' . $this->sql_layer . ' ]<br /><br />' . $error['message'] . ' [' . $error['code'] . ']';
+			$message = 'SQL ERROR [ ' . $this->sql_layer . ' ]<br /><br />' . $error['message'] . ' [' . $error['code'] . ']';
 
 			// Show complete SQL error and path to administrators only
 			// Additionally show complete error on installation or if extended debug mode is enabled
@@ -514,8 +514,8 @@ class dbal
 				// Print out a nice backtrace...
 				$backtrace = get_backtrace();
 
-				$message .= ($sql) ? '<br /><br /><u>SQL</u><br /><br />' . htmlspecialchars($sql) : '';
-				$message .= ($backtrace) ? '<br /><br /><u>BACKTRACE</u><br />' . $backtrace : '';
+				$message .= ($sql) ? '<br /><br />SQL<br /><br />' . htmlspecialchars($sql) : '';
+				$message .= ($backtrace) ? '<br /><br />BACKTRACE<br />' . $backtrace : '';
 				$message .= '<br />';
 			}
 			else

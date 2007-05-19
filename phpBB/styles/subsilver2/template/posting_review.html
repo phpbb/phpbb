@@ -20,7 +20,7 @@
 
 			<!-- IF post_review_row.S_ROW_COUNT is even -->	<tr class="row1"><!-- ELSE --><tr class="row2"><!-- ENDIF -->
 
-				<td rowspan="2" align="{S_CONTENT_FLOW_BEGIN}" valign="top"><a id="pr{post_review_row.U_POST_ID}"></a>
+				<td rowspan="2" align="{S_CONTENT_FLOW_BEGIN}" valign="top"><a id="pr{post_review_row.POST_ID}"></a>
 					<table width="150" cellspacing="0" cellpadding="4" border="0">
 					<tr>
 						<td align="center"><b class="postauthor">{post_review_row.POST_AUTHOR_FULL}</b></td>
@@ -47,7 +47,24 @@
 						<td valign="top">
 							<table width="100%" cellspacing="0" cellpadding="2">
 							<tr>
-								<td class="postbody">{post_review_row.MESSAGE}</td>
+								<td><div class="postbody">{post_review_row.MESSAGE}</div>
+
+								<!-- IF post_review_row.S_HAS_ATTACHMENTS -->
+									<br clear="all" /><br />
+
+									<table class="tablebg" width="100%" cellspacing="1">
+									<tr>
+										<td class="row3"><b class="genmed">{L_ATTACHMENTS}: </b></td>
+									</tr>
+									<!-- BEGIN attachment -->
+										<tr>
+											<!-- IF post_review_row.attachment.S_ROW_COUNT is even --><td class="row2"><!-- ELSE --><td class="row1"><!-- ENDIF -->{post_review_row.attachment.DISPLAY_ATTACHMENT}</td>
+										</tr>
+									<!-- END attachment -->
+									</table>
+								<!-- ENDIF -->
+								
+								</td>
 							</tr>
 							</table>
 						</td>

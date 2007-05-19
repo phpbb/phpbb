@@ -161,7 +161,7 @@ a.right		{ background: none no-repeat 95% 60%; }
 a.up, a.up:link, a.up:active, a.up:visited {
 	padding-left: 10px;
 	text-decoration: none;
-	border-bottom-width: 0px;
+	border-bottom-width: 0;
 }
 
 a.up:hover {

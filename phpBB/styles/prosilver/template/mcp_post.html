@@ -90,7 +90,11 @@
 
 		<!-- IF S_MCP_REPORT and S_CAN_VIEWIP -->
 			<hr />
-			<div>{L_THIS_POST_IP}: {POST_IP} [ {POST_IPADDR} ]</div>
+			<div>{L_THIS_POST_IP}: <!-- IF U_WHOIS -->
+				<a href="{U_WHOIS}"><!-- IF POST_IPADDR -->{POST_IPADDR}<!-- ELSE -->{POST_IP}<!-- ENDIF --></a> (<!-- IF POST_IPADDR -->{POST_IP}<!-- ELSE --><a href="{U_LOOKUP_IP}">{L_LOOKUP_IP}</a><!-- ENDIF -->)
+			<!-- ELSE -->
+				<!-- IF POST_IPADDR -->{POST_IPADDR} ({POST_IP})<!-- ELSE -->{POST_IP}<!-- IF U_LOOKUP_IP --> (<a href="{U_LOOKUP_IP}">{L_LOOKUP_IP}</a>)<!-- ENDIF --><!-- ENDIF -->
+			<!-- ENDIF --></div>
 		<!-- ENDIF -->
 
 	</div>
@@ -219,7 +223,11 @@
 		<div class="panel" id="ip">
 			<div class="inner"><span class="corners-top"><span></span></span>
 
-			<p>{L_THIS_POST_IP}: <!-- IF U_WHOIS --><a href="{U_WHOIS}"><!-- ENDIF -->{POST_IP} [ {POST_IPADDR} ]<!-- IF U_WHOIS --></a><!-- ENDIF --></p>
+			<p>{L_THIS_POST_IP}: <!-- IF U_WHOIS -->
+				<a href="{U_WHOIS}"><!-- IF POST_IPADDR -->{POST_IPADDR}<!-- ELSE -->{POST_IP}<!-- ENDIF --></a> (<!-- IF POST_IPADDR -->{POST_IP}<!-- ELSE --><a href="{U_LOOKUP_IP}">{L_LOOKUP_IP}</a><!-- ENDIF -->)
+			<!-- ELSE -->
+				<!-- IF POST_IPADDR -->{POST_IPADDR} ({POST_IP})<!-- ELSE -->{POST_IP}<!-- IF U_LOOKUP_IP --> (<a href="{U_LOOKUP_IP}">{L_LOOKUP_IP}</a>)<!-- ENDIF --><!-- ENDIF -->
+			<!-- ENDIF --></p>
 
 			<table class="table1" cellspacing="1">
 			<thead>
