@@ -459,6 +459,18 @@ function compose_pm($id, $mode, $action)
 				confirm_box(false, 'SAVE_DRAFT', $s_hidden_fields);
 			}
 		}
+		else
+		{
+			if (!$subject)
+			{
+				$error[] = $user->lang['EMPTY_MESSAGE_SUBJECT'];
+			}
+
+			if (!$message)
+			{
+				$error[] = $user->lang['TOO_FEW_CHARS'];
+			}
+		}
 
 		unset($subject, $message);
 	}

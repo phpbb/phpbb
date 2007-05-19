@@ -319,7 +319,7 @@ class filespec
 		{
 			$this->width = $this->height = 0;
 
-			if (($this->image_info = getimagesize($this->destination_file)) !== false)
+			if (($this->image_info = @getimagesize($this->destination_file)) !== false)
 			{
 				$this->width = $this->image_info[0];
 				$this->height = $this->image_info[1];

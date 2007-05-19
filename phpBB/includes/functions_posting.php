@@ -578,7 +578,7 @@ function create_thumbnail($source, $destination, $mimetype)
 		return false;
 	}
 
-	$dimension = getimagesize($source);
+	$dimension = @getimagesize($source);
 
 	if ($dimension === false)
 	{

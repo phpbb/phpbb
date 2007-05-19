@@ -2956,7 +2956,7 @@ function parse_attachments($forum_id, &$message, &$attachments, &$update_count, 
 					{
 						if ($config['img_link_width'] || $config['img_link_height'])
 						{
-							$dimension = getimagesize($filename);
+							$dimension = @getimagesize($filename);
 
 							// If the dimensions could not be determined or the image being 0x0 we display it as a link for safety purposes
 							if ($dimension === false || empty($dimension[0]) || empty($dimension[1]))
@@ -3053,7 +3053,7 @@ function parse_attachments($forum_id, &$message, &$attachments, &$update_count, 
 
 				// Macromedia Flash Files
 				case ATTACHMENT_CATEGORY_FLASH:
-					list($width, $height) = getimagesize($filename);
+					list($width, $height) = @getimagesize($filename);
 
 					$l_downloaded_viewed = 'VIEWED_COUNT';
 

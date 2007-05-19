@@ -1603,7 +1603,7 @@ function avatar_remote($data, &$error)
 	}
 
 	// Make sure getimagesize works...
-	if (($image_data = getimagesize($data['remotelink'])) === false)
+	if (($image_data = @getimagesize($data['remotelink'])) === false)
 	{
 		$error[] = $user->lang['UNABLE_GET_IMAGE_SIZE'];
 		return false;

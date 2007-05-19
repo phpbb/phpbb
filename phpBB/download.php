@@ -294,7 +294,7 @@ function send_avatar_to_browser($file)
 	{
 		header('Pragma: public');
 
-		$image_data = getimagesize($file_path);
+		$image_data = @getimagesize($file_path);
 		header('Content-Type: ' . image_type_to_mime_type($image_data[2]));
 
 		if (strpos(strtolower($browser), 'msie') !== false)

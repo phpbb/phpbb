@@ -280,7 +280,7 @@ class bbcode_firstpass extends bbcode
 
 		if ($config['max_' . $this->mode . '_img_height'] || $config['max_' . $this->mode . '_img_width'])
 		{
-			$stats = getimagesize($in);
+			$stats = @getimagesize($in);
 
 			if ($stats === false)
 			{

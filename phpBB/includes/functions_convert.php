@@ -679,7 +679,7 @@ function get_image_dim($source)
 	if (file_exists(relative_base($source, $relative_path)))
 	{
 		$image = relative_base($source, $relative_path);
-		return getimagesize($image);
+		return @getimagesize($image);
 	}
 
 	return false;
