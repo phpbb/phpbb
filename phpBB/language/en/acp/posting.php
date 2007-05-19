@@ -181,7 +181,7 @@ $lang = array_merge($lang, array(
 
 // Ranks
 $lang = array_merge($lang, array(
-	'ACP_RANKS_EXPLAIN'		=> 'Using this form you can add, edit, view and delete ranks. You can also create custom ranks which can be applied to a user via the user management facility.',
+	'ACP_RANKS_EXPLAIN'		=> 'Using this form you can add, edit, view and delete ranks. You can also create special ranks which can be applied to a user via the user management facility.',
 	'ADD_RANK'				=> 'Add new rank',
 
 	'MUST_SELECT_RANK'		=> 'You must select a rank.',
