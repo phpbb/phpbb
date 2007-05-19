@@ -35,32 +35,32 @@
 
 				<!-- IF U_FIND_MEMBER and not S_SEARCH_USER --><a href="{U_FIND_MEMBER}">{L_FIND_USERNAME}</a> &bull; <!-- ELSEIF S_SEARCH_USER and U_HIDE_FIND_MEMBER and not S_IN_SEARCH_POPUP --><a href="{U_HIDE_FIND_MEMBER}">{L_HIDE_MEMBER_SEARCH}</a> &bull; <!-- ENDIF -->
 				<strong style="font-size: 0.95em;"><a href="{S_MODE_ACTION}&amp;first_char=">{L_ALL}</a>&nbsp; 
-				<a href="{S_MODE_ACTION}&amp;first_char=a">A</a>&nbsp; 
-				<a href="{S_MODE_ACTION}&amp;first_char=b">B</a>&nbsp; 
-				<a href="{S_MODE_ACTION}&amp;first_char=c">C</a>&nbsp; 
-				<a href="{S_MODE_ACTION}&amp;first_char=d">D</a>&nbsp; 
-				<a href="{S_MODE_ACTION}&amp;first_char=e">E</a>&nbsp; 
-				<a href="{S_MODE_ACTION}&amp;first_char=f">F</a>&nbsp; 
-				<a href="{S_MODE_ACTION}&amp;first_char=g">G</a>&nbsp; 
-				<a href="{S_MODE_ACTION}&amp;first_char=h">H</a>&nbsp; 
-				<a href="{S_MODE_ACTION}&amp;first_char=i">I</a>&nbsp; 
-				<a href="{S_MODE_ACTION}&amp;first_char=j">J</a>&nbsp; 
-				<a href="{S_MODE_ACTION}&amp;first_char=k">K</a>&nbsp; 
-				<a href="{S_MODE_ACTION}&amp;first_char=l">L</a>&nbsp; 
-				<a href="{S_MODE_ACTION}&amp;first_char=m">M</a>&nbsp; 
-				<a href="{S_MODE_ACTION}&amp;first_char=n">N</a>&nbsp; 
-				<a href="{S_MODE_ACTION}&amp;first_char=o">O</a>&nbsp; 
-				<a href="{S_MODE_ACTION}&amp;first_char=p">P</a>&nbsp; 
-				<a href="{S_MODE_ACTION}&amp;first_char=q">Q</a>&nbsp; 
-				<a href="{S_MODE_ACTION}&amp;first_char=r">R</a>&nbsp; 
-				<a href="{S_MODE_ACTION}&amp;first_char=s">S</a>&nbsp; 
-				<a href="{S_MODE_ACTION}&amp;first_char=t">T</a>&nbsp; 
-				<a href="{S_MODE_ACTION}&amp;first_char=u">U</a>&nbsp; 
-				<a href="{S_MODE_ACTION}&amp;first_char=v">V</a>&nbsp; 
-				<a href="{S_MODE_ACTION}&amp;first_char=w">W</a>&nbsp; 
-				<a href="{S_MODE_ACTION}&amp;first_char=x">X</a>&nbsp; 
-				<a href="{S_MODE_ACTION}&amp;first_char=y">Y</a>&nbsp; 
-				<a href="{S_MODE_ACTION}&amp;first_char=z">Z</a>&nbsp; 
+				<a href="{S_MODE_ACTION}&amp;first_char=a#memberlist">A</a>&nbsp; 
+				<a href="{S_MODE_ACTION}&amp;first_char=b#memberlist">B</a>&nbsp; 
+				<a href="{S_MODE_ACTION}&amp;first_char=c#memberlist">C</a>&nbsp; 
+				<a href="{S_MODE_ACTION}&amp;first_char=d#memberlist">D</a>&nbsp; 
+				<a href="{S_MODE_ACTION}&amp;first_char=e#memberlist">E</a>&nbsp; 
+				<a href="{S_MODE_ACTION}&amp;first_char=f#memberlist">F</a>&nbsp; 
+				<a href="{S_MODE_ACTION}&amp;first_char=g#memberlist">G</a>&nbsp; 
+				<a href="{S_MODE_ACTION}&amp;first_char=h#memberlist">H</a>&nbsp; 
+				<a href="{S_MODE_ACTION}&amp;first_char=i#memberlist">I</a>&nbsp; 
+				<a href="{S_MODE_ACTION}&amp;first_char=j#memberlist">J</a>&nbsp; 
+				<a href="{S_MODE_ACTION}&amp;first_char=k#memberlist">K</a>&nbsp; 
+				<a href="{S_MODE_ACTION}&amp;first_char=l#memberlist">L</a>&nbsp; 
+				<a href="{S_MODE_ACTION}&amp;first_char=m#memberlist">M</a>&nbsp; 
+				<a href="{S_MODE_ACTION}&amp;first_char=n#memberlist">N</a>&nbsp; 
+				<a href="{S_MODE_ACTION}&amp;first_char=o#memberlist">O</a>&nbsp; 
+				<a href="{S_MODE_ACTION}&amp;first_char=p#memberlist">P</a>&nbsp; 
+				<a href="{S_MODE_ACTION}&amp;first_char=q#memberlist">Q</a>&nbsp; 
+				<a href="{S_MODE_ACTION}&amp;first_char=r#memberlist">R</a>&nbsp; 
+				<a href="{S_MODE_ACTION}&amp;first_char=s#memberlist">S</a>&nbsp; 
+				<a href="{S_MODE_ACTION}&amp;first_char=t#memberlist">T</a>&nbsp; 
+				<a href="{S_MODE_ACTION}&amp;first_char=u#memberlist">U</a>&nbsp; 
+				<a href="{S_MODE_ACTION}&amp;first_char=v#memberlist">V</a>&nbsp; 
+				<a href="{S_MODE_ACTION}&amp;first_char=w#memberlist">W</a>&nbsp; 
+				<a href="{S_MODE_ACTION}&amp;first_char=x#memberlist">X</a>&nbsp; 
+				<a href="{S_MODE_ACTION}&amp;first_char=y#memberlist">Y</a>&nbsp; 
+				<a href="{S_MODE_ACTION}&amp;first_char=z#memberlist">Z</a>&nbsp; 
 				<a href="{S_MODE_ACTION}&amp;first_char=other">#</a></strong>
 				</li>
 				<li class="rightside pagination">
@@ -76,14 +76,14 @@
 	<div class="forumbg forumbg-table">
 		<div class="inner"><span class="corners-top"><span></span></span>
 
-		<table class="table1" cellspacing="1">
+		<table class="table1" cellspacing="1" id="memberlist">
 		<thead>
 		<tr>
 			<th class="name"><span class="rank-img"><a href="{U_SORT_RANK}">{L_RANK}</a></span><a href="{U_SORT_USERNAME}"><!-- IF S_SHOW_GROUP -->{L_GROUP_LEADER}<!-- ELSE -->{L_USERNAME}<!-- ENDIF --></a></th>
-			<th class="posts"><a href="{U_SORT_POSTS}">{L_POSTS}</a></th>
-			<th class="info"><a href="{U_SORT_WEBSITE}">{L_WEBSITE}</a>{L_COMMA_SEPARATOR}<a href="{U_SORT_LOCATION}">{L_LOCATION}</a></th>
-			<th class="joined"><a href="{U_SORT_JOINED}">{L_JOINED}</a></th>
-			<th class="active"><a href="{U_SORT_ACTIVE}">{L_LAST_ACTIVE}</a></th>
+			<th class="posts"><a href="{U_SORT_POSTS}#memberlist">{L_POSTS}</a></th>
+			<th class="info"><a href="{U_SORT_WEBSITE}#memberlist">{L_WEBSITE}</a>{L_COMMA_SEPARATOR}<a href="{U_SORT_LOCATION}">{L_LOCATION}</a></th>
+			<th class="joined"><a href="{U_SORT_JOINED}#memberlist">{L_JOINED}</a></th>
+			<th class="active"><a href="{U_SORT_ACTIVE}#memberlist">{L_LAST_ACTIVE}</a></th>
 		</tr>
 		</thead>
 		<tbody>
