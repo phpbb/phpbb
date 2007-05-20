@@ -125,7 +125,7 @@ $lang = array_merge($lang, array(
 
 	'SAVE'							=> 'Save',
 	'SECOND_OPTION'					=> 'Second option',
-	'STEP_1_EXPLAIN_CREATE'			=> 'Here you can enter the first basic parameters of your new profile field. These information are needed for the second step where you are able to set remaining options and tweak your profile field further.',
+	'STEP_1_EXPLAIN_CREATE'			=> 'Here you can enter the first basic parameters of your new profile field. This information is needed for the second step where you’ll be able to set remaining options and tweak your profile field further.',
 	'STEP_1_EXPLAIN_EDIT'			=> 'Here you can change the basic parameters of your profile field. The relevant options are re-calculated within the second step.',
 	'STEP_1_TITLE_CREATE'			=> 'Add profile field',
 	'STEP_1_TITLE_EDIT'				=> 'Edit profile field',

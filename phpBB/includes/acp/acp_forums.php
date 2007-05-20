@@ -137,6 +137,9 @@ class acp_forums
 					if ($forum_data['forum_type'] == FORUM_LINK)
 					{
 						$forum_data['display_on_index'] = request_var('link_display_on_index', false);
+
+						// Linked forums are not able to be locked...
+						$forum_data['forum_status'] = ITEM_UNLOCKED;
 					}
 
 					$forum_data['show_active'] = ($forum_data['forum_type'] == FORUM_POST) ? request_var('display_recent', false) : request_var('display_active', false);
