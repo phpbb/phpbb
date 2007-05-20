@@ -1394,9 +1394,75 @@ class user extends session
 			AND image_lang IN('" . $db->sql_escape($this->img_lang) . "', '')";
 		$result = $db->sql_query($sql, 3600);
 
+		$localised_images = false;
 		while ($row = $db->sql_fetchrow($result))
 		{
+			if ($row['image_lang'])
+			{
+				$localised_images = true;
+			}
 			$this->img_array[$row['image_name']] = $row;
+		}
+
+		// there were no localised images, try to refresh the localised imageset for the user's language
+		if (!$localised_images)
+		{
+			// Attention: this code ignores the image definition list from acp_styles and just takes everything
+			// that the config file contains
+			$sql_ary = array();
+	
+			$db->sql_transaction('begin');
+	
+			$sql = 'DELETE FROM ' . STYLES_IMAGESET_DATA_TABLE . '
+				WHERE imageset_id = ' . $this->theme['imageset_id'] . '
+					AND image_lang = \'' . $db->sql_escape($this->img_lang) . '\'';
+			$result = $db->sql_query($sql);
+
+			if (@file_exists("{$phpbb_root_path}styles/{$this->theme['imageset_path']}/imageset/{$this->img_lang}/imageset.cfg"))
+			{
+				$cfg_data_imageset_data = parse_cfg_file("{$phpbb_root_path}styles/{$this->theme['imageset_path']}/imageset/{$this->img_lang}/imageset.cfg");
+				foreach ($cfg_data_imageset_data as $image_name => $value)
+				{
+					if (strpos($value, '*') !== false)
+					{
+						if (substr($value, -1, 1) === '*')
+						{
+							list($image_filename, $image_height) = explode('*', $value);
+							$image_width = 0;
+						}
+						else
+						{
+							list($image_filename, $image_height, $image_width) = explode('*', $value);
+						}
+					}
+					else
+					{
+						$image_filename = $value;
+						$image_height = $image_width = 0;
+					}
+
+					if (strpos($image_name, 'img_') === 0 && $image_filename)
+					{
+						$image_name = substr($image_name, 4);
+						$sql_ary[] = array(
+							'image_name'		=> $image_name,
+							'image_filename'	=> $image_filename,
+							'image_height'		=> $image_height,
+							'image_width'		=> $image_width,
+							'imageset_id'		=> $this->theme['imageset_id'],
+							'image_lang'		=> $this->img_lang,
+						);
+					}
+				}
+			}
+	
+			$db->sql_multi_insert(STYLES_IMAGESET_DATA_TABLE, $sql_ary);
+	
+			$db->sql_transaction('commit');
+	
+			$cache->destroy('sql', STYLES_IMAGESET_DATA_TABLE);
+	
+			add_log('admin', 'LOG_IMAGESET_REFRESHED', $this->theme['imageset_name'], $this->img_lang);
 		}
 
 		// If this function got called from the error handler we are finished here.

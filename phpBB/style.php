@@ -96,10 +96,12 @@ if ($id && $sid)
 			$user['user_lang'] = $config['default_lang'];
 		}
 
+		$user_image_lang = (file_exists($phpbb_root_path . 'styles/' . $theme['imageset_path'] . '/imageset/' . $user['user_lang'])) ? $user['user_lang'] : $config['default_lang'];
+
 		$sql = 'SELECT *
 			FROM ' . STYLES_IMAGESET_DATA_TABLE . '
 			WHERE imageset_id = ' . $theme['imageset_id'] . "
-			AND image_lang IN('" . $db->sql_escape($user['user_lang']) . "', '')";
+			AND image_lang IN('" . $db->sql_escape($user_image_lang) . "', '')";
 		$result = $db->sql_query($sql, 3600);
 
 		$img_array = array();
@@ -174,7 +176,7 @@ if ($id && $sid)
 			'{T_THEME_PATH}'			=> "{$phpbb_root_path}styles/" . $theme['theme_path'] . '/theme',
 			'{T_TEMPLATE_PATH}'			=> "{$phpbb_root_path}styles/" . $theme['template_path'] . '/template',
 			'{T_IMAGESET_PATH}'			=> "{$phpbb_root_path}styles/" . $theme['imageset_path'] . '/imageset',
-			'{T_IMAGESET_LANG_PATH}'	=> "{$phpbb_root_path}styles/" . $theme['imageset_path'] . '/imageset/' . $user['user_lang'],
+			'{T_IMAGESET_LANG_PATH}'	=> "{$phpbb_root_path}styles/" . $theme['imageset_path'] . '/imageset/' . $user_image_lang,
 			'{T_STYLESHEET_NAME}'		=> $theme['theme_name'],
 			'{S_USER_LANG}'				=> $user['user_lang']
 		);
@@ -190,8 +192,11 @@ if ($id && $sid)
 			foreach ($matches[1] as $i => $img)
 			{
 				$img = strtolower($img);
+				$find[] = $matches[0][$i];
+
 				if (!isset($img_array[$img]))
 				{
+					$replace[] = '';
 					continue;
 				}
 
@@ -223,7 +228,6 @@ if ($id && $sid)
 					default:
 						continue;
 				}
-				$find[] = $matches[0][$i];
 			}
 
 			if (sizeof($find))
