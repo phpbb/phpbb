@@ -1403,6 +1403,7 @@ class user extends session
 			}
 			$this->img_array[$row['image_name']] = $row;
 		}
+		$db->sql_freeresult($result);
 
 		// there were no localised images, try to refresh the localised imageset for the user's language
 		if (!$localised_images)
