@@ -8,7 +8,7 @@
 *
 */
 
-$updates_to_version = '3.0.B5';
+$updates_to_version = '3.0.RC1';
 
 if (defined('IN_PHPBB') && defined('IN_INSTALL'))
 {
