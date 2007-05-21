@@ -533,6 +533,14 @@ function phpbb_convert_authentication($mode)
 			ORDER BY user_regdate ASC";
 		$result = $src_db->sql_query($sql);
 
+		
+		$sql = 'SELECT group_id
+			FROM ' . GROUPS_TABLE . "
+			WHERE group_name = '" . $db->sql_escape('BOTS') . "'";
+		$result = $db->sql_query($sql);
+		$bot_group_id = (int) $db->sql_fetchfield('group_id');
+		$db->sql_freeresult($result);
+
 		while ($row = $src_db->sql_fetchrow($result))
 		{
 			$user_id = (int) phpbb_user_id($row['user_id']);
@@ -710,7 +718,7 @@ function phpbb_convert_authentication($mode)
 	if ($mode == 'start')
 	{
 		user_group_auth('guests', 'SELECT user_id, {GUESTS} FROM ' . USERS_TABLE . ' WHERE user_id = ' . ANONYMOUS, false);
-		user_group_auth('registered', 'SELECT user_id, {REGISTERED} FROM ' . USERS_TABLE . ' WHERE user_id <> ' . ANONYMOUS, false);
+		user_group_auth('registered', 'SELECT user_id, {REGISTERED} FROM ' . USERS_TABLE . ' WHERE user_id <> ' . ANONYMOUS . " AND group_id <> $bot_group_id", false);
 
 		// Selecting from old table
 		if (!empty($config['increment_user_id']))
