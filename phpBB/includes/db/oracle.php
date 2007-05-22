@@ -110,10 +110,11 @@ class dbal_oracle extends dbal
 					$in_transaction = true;
 				}
 
+				$array = array();
+
 				// We overcome Oracle's 4000 char limit by binding vars
 				if (strlen($query) > 4000)
 				{
-					$array = array();
 
 					if (preg_match('/^(INSERT INTO[^(]+)\\(([^()]+)\\) VALUES[^(]+\\((.*?)\\)$/s', $query, $regs))
 					{

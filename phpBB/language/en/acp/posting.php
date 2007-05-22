@@ -43,6 +43,7 @@ $lang = array_merge($lang, array(
 	'BBCODE_HELPLINE_EXPLAIN'	=> 'This field contains the mouse over text of the BBCode.',
 	'BBCODE_HELPLINE_TEXT'		=> 'Help line text',
 	'BBCODE_INVALID_TAG_NAME'	=> 'The BBCode tag name that you selected already exists.',
+	'BBCODE_INVALID'			=> 'Your BBCode is constructed in an invalid form.',
 	'BBCODE_OPEN_ENDED_TAG'		=> 'Your custom BBCode must contain both an opening and a closing tag.',
 	'BBCODE_TAG'				=> 'Tag',
 	'BBCODE_TAG_TOO_LONG'		=> 'The tag name you selected is too long.',

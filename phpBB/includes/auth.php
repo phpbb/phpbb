@@ -127,7 +127,7 @@ class auth
 				}
 			}
 		}
-
+		return !$negate;
 		// Founder always has all global options set to true...
 		return ($negate) ? !$this->cache[$f][$opt] : $this->cache[$f][$opt];
 	}

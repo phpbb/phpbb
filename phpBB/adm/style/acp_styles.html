@@ -65,8 +65,8 @@
 		<legend>{L_SELECT_IMAGE}</legend>
 		{L_SELECT_IMAGE}: <select name="imgname" onchange="this.form.submit();">
 		<!-- BEGIN category -->
-			<option class="sep" value="">{category.NAME}</option>
-				<!-- BEGIN images --><option value="{category.images.VALUE}"<!-- IF category.images.SELECTED--> selected="selected"<!-- ENDIF -->>{category.images.TEXT}</option>
+			<option class="sep" value="" disabled="disabled">{category.NAME}</option>
+				<!-- BEGIN images --><option value="{category.images.VALUE}"<!-- IF category.images.SELECTED--> selected="selected"<!-- ENDIF -->>&nbsp;&nbsp;&nbsp;&nbsp;{category.images.TEXT}</option>
 				<!-- END images -->
 			<!-- END category -->
 		</select>&nbsp; <input class="button1" type="submit" value="{L_SELECT}" tabindex="100" />
@@ -80,7 +80,7 @@
 	</dl>
 	<dl>
 		<dt><label>{L_SELECTED_IMAGE}:</label></dt>
-		<dd><img src="images/no_image.png" id="newimg" alt="" /></dd>
+		<dd><img src="{IMG_SRC}" id="newimg" alt="" /></dd>
 	</dl>
 	</fieldset>
 

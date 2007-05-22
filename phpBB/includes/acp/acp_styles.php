@@ -1355,19 +1355,17 @@ parse_css_file = {PARSE_CSS_FILE}
 			{
 				$dp2 = @opendir("$dir/$imgnamelang");
 
-				if (!$dp2)
+				if ($dp2)
 				{
-					continue;
-				}
-
-				while (($file2 = readdir($dp2)) !== false)
-				{
-					if (preg_match('#\.(?:gif|jpg|png)$#', $file2))
+					while (($file2 = readdir($dp2)) !== false)
 					{
-						$imagesetlist['lang'][] = "$imgnamelang/$file2";
+						if (preg_match('#\.(?:gif|jpg|png)$#', $file2))
+						{
+							$imagesetlist['lang'][] = "$imgnamelang/$file2";
+						}
 					}
+					closedir($dp2);
 				}
-				closedir($dp2);
 			}
 			closedir($dp);
 		}
@@ -1408,7 +1406,8 @@ parse_css_file = {PARSE_CSS_FILE}
 		sort($imagesetlist['lang']);
 		sort($imagesetlist['nolang']);
 
-		$imagesetlist_options = '';
+		$image_found = false;
+		$img_val = '';
 		foreach ($imagesetlist as $type => $img_ary)
 		{
 			if ($type !== 'lang' || $sql_extra)
@@ -1424,7 +1423,8 @@ parse_css_file = {PARSE_CSS_FILE}
 				$selected = (!empty($imgname) && strpos($image_filename, $imgtext) !== false);
 				if ($selected)
 				{
-					$template->assign_var('IMAGE_SELECT', true);
+					$image_found = true;
+					$img_val = htmlspecialchars($img);
 				}
 				$template->assign_block_vars('imagesetlist.images', array(
 					'SELECTED'			=> $selected,
@@ -1442,13 +1442,14 @@ parse_css_file = {PARSE_CSS_FILE}
 			'L_TITLE'			=> $user->lang[$this->page_title],
 			'L_EXPLAIN'			=> $user->lang[$this->page_title . '_EXPLAIN'],
 			'IMAGE_OPTIONS'		=> $img_options,
-			'IMAGELIST_OPTIONS'	=> $imagesetlist_options,
 			'IMAGE_SIZE'		=> $imgsize_bool,
 			'IMAGE_REQUEST'		=> $image_request,
 			'U_ACTION'			=> $this->u_action . "&amp;action=edit&amp;id=$imageset_id",
 			'U_BACK'			=> $this->u_action,
 			'NAME'				=> $imageset_name,
-			'ERROR'				=> !$valid_name
+			'ERROR'				=> !$valid_name,
+			'IMG_SRC'			=> ($image_found) ? '../styles/' . $imageset_path . '/imageset/' . $img_val : 'images/no_image.png',
+			'IMAGE_SELECT'		=> $image_found
 		));
 	}
 
