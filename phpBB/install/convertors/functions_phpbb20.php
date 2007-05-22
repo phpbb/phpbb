@@ -533,18 +533,9 @@ function phpbb_convert_authentication($mode)
 			ORDER BY user_regdate ASC";
 		$result = $src_db->sql_query($sql);
 
-		
-		$sql = 'SELECT group_id
-			FROM ' . GROUPS_TABLE . "
-			WHERE group_name = '" . $db->sql_escape('BOTS') . "'";
-		$result = $db->sql_query($sql);
-		$bot_group_id = (int) $db->sql_fetchfield('group_id');
-		$db->sql_freeresult($result);
-
 		while ($row = $src_db->sql_fetchrow($result))
 		{
 			$user_id = (int) phpbb_user_id($row['user_id']);
-
 			// Set founder admin...
 			$sql = 'UPDATE ' . USERS_TABLE . '
 				SET user_type = ' . USER_FOUNDER . "
@@ -552,6 +543,13 @@ function phpbb_convert_authentication($mode)
 			$db->sql_query($sql);
 		}
 		$src_db->sql_freeresult($result);
+
+		$sql = 'SELECT group_id
+			FROM ' . GROUPS_TABLE . "
+			WHERE group_name = '" . $db->sql_escape('BOTS') . "'";
+		$result = $db->sql_query($sql);
+		$bot_group_id = (int) $db->sql_fetchfield('group_id');
+		$db->sql_freeresult($result);
 	}
 
 	// Grab forum auth information
