@@ -1137,21 +1137,12 @@ function user_group_auth($group, $select_query, $use_src_db)
 	}
 	else
 	{
-		$result = $src_db->sql_query(str_replace('{' . strtoupper($group) . '}', $group_id . ', 0', $select_query));
+		$result = $src_db->sql_query(str_replace('{' . strtoupper($group) . '}', $group_id . ' ', $select_query));
 		while ($row = $src_db->sql_fetchrow($result))
 		{
-			// make sure it's exactly 3 ints that were returned
-			$data = array();
-			reset($row);
-			for ($i = 0; $i < 3; $i++)
-			{
-				$data[] = (int) current($row);
-				next($row);
-			}
-
 			// this might become quite a lot of INSERTS unfortunately
-			$sql = 'INSERT INTO ' . USER_GROUP_TABLE . ' (user_id, group_id, user_pending)
-				VALUES (' . implode(', ', $data) . ')';
+			$sql = 'INSERT INTO ' . USER_GROUP_TABLE . " (user_id, group_id, user_pending)
+				VALUES ({$row['user_id']}, $group_id, 0)";
 			$db->sql_query($sql);
 		}
 		$src_db->sql_freeresult($result);
