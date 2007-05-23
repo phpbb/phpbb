@@ -783,7 +783,15 @@ class install_convert extends module
 		$jump = request_var('jump', 0);
 		$final_jump = request_var('final_jump', 0);
 		$sync_batch = request_var('sync_batch', -1);
+		$sync_post_count = request_var('sync_post_count', -1);
 		$last_statement = request_var('last', 0);
+
+		// We are running sync...
+		if ($sync_post_count >= 0)
+		{
+			$this->sync_user_posts($sync_post_count);
+			return;
+		}
 
 		// We are running sync...
 		if ($sync_batch >= 0)
@@ -1163,6 +1171,12 @@ class install_convert extends module
 			$sql .= (!empty($schema['having'])) ? "\nHAVING " . $schema['having'] : '';
 
 			// Order By
+			
+			if (empty($schema['order_by']) && !empty($schema['primary']))
+			{
+				$schema['order_by'] = $schema['primary'];
+			}
+
 			$sql .= (!empty($schema['order_by'])) ? "\nORDER BY " . $schema['order_by'] : '';
 
 			// Counting basically holds the amount of rows processed.
@@ -1398,6 +1412,78 @@ class install_convert extends module
 		return;
 	}
 
+	/**
+	* Sync function being executed at the middle, some functions need to be executed after a successful sync.
+	*/
+	function sync_user_posts($sync_batch)
+	{
+		global $db, $template, $user;
+		global $convert;
+
+		$template->assign_block_vars('checks', array(
+			'S_LEGEND'	=> true,
+			'LEGEND'	=> $user->lang['SYNC_POST_COUNT'],
+		));
+
+		$batch_size = $convert->batch_size;
+
+		$sql = 'SELECT COUNT(user_id) AS max_value
+			FROM ' . USERS_TABLE;
+		$result = $db->sql_query($sql);
+		$row = $db->sql_fetchrow($result);
+		$db->sql_freeresult($result);
+
+		// Set values of minimum/maximum primary value for this table.
+		$primary_min = 0;
+		$primary_max = $row['max_value'];
+
+		if ($sync_batch == 1)
+		{
+			$sync_batch = (int) $primary_min;
+		}
+		// Fetch a batch of rows, process and insert them.
+		while ($sync_batch <= $primary_max && still_on_time())
+		{
+			$end = ($sync_batch + $batch_size - 1);
+			
+
+			$template->assign_block_vars('checks', array(
+				'TITLE'		=> sprintf($user->lang['SYNC_POST_COUNT_ID'], $sync_batch, ($sync_batch + $batch_size)) . ((defined('DEBUG_EXTRA') && function_exists('memory_get_usage')) ? ' [' . ceil(memory_get_usage()/1024) . ' KB]' : ''),
+				'RESULT'	=> $user->lang['DONE'],
+			));
+
+			$sync_batch += $batch_size;
+		}
+
+		if ($sync_batch >= $primary_max)
+		{
+			sync_post_count($sync_batch, $batch_size);
+			$url = $this->save_convert_progress('&amp;sync_batch=0');
+			
+			$template->assign_vars(array(
+				'L_SUBMIT'		=> $user->lang['CONTINUE_CONVERT'],
+				'U_ACTION'		=> $url,
+			));
+
+			$this->meta_refresh($url);
+			return;
+		}
+		else
+		{
+			$sync_batch--;
+		}
+
+		$url = $this->save_convert_progress('&amp;sync_post_count=' . $sync_batch);
+
+		$template->assign_vars(array(
+			'L_SUBMIT'		=> $user->lang['CONTINUE_CONVERT'],
+			'U_ACTION'		=> $url,
+		));
+
+		$this->meta_refresh($url);
+		return;
+	}
+	
 	/**
 	* Sync function being executed at the middle, some functions need to be executed after a successful sync.
 	*/
@@ -1715,9 +1801,8 @@ class install_convert extends module
 				'RESULT'	=> $user->lang['DONE'],
 			));
 
-			// Continue with synchronizing the forums...
-			$url = $this->save_convert_progress('&amp;sync_batch=0');
-
+			// Continue with synchronizing the post counts...
+			$url = $this->save_convert_progress('&amp;sync_post_count=0');
 			$template->assign_vars(array(
 				'L_SUBMIT'		=> $user->lang['CONTINUE_CONVERT'],
 				'U_ACTION'		=> $url,

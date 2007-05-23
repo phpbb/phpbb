@@ -83,6 +83,14 @@ function phpbb_insert_forums()
 			$db->sql_query('SET IDENTITY_INSERT ' . FORUMS_TABLE . ' ON');
 		break;
 	}
+	
+	// pruning disabled globally?
+	$sql = "SELECT config_value
+		FROM {$convert->src_table_prefix}config
+		WHERE config_name = 'prune_enable'";
+	$result = $src_db->sql_query($sql);
+	$prune_enabled = (int) $src_db->sql_fetchfield('config_value');
+	$src_db->sql_freeresult($result);
 
 	$cats_added = array();
 	while ($row = $src_db->sql_fetchrow($result))
@@ -206,7 +214,7 @@ function phpbb_insert_forums()
 			'forum_desc'		=> htmlspecialchars(phpbb_set_default_encoding($row['forum_desc']), ENT_COMPAT, 'UTF-8'),
 			'forum_type'		=> FORUM_POST,
 			'forum_status'		=> is_item_locked($row['forum_status']),
-			'enable_prune'		=> $row['prune_enable'],
+			'enable_prune'		=> ($prune_enabled) ? $row['prune_enable'] : 0,
 			'prune_next'		=> null_to_zero($row['prune_next']),
 			'prune_days'		=> null_to_zero($row['prune_days']),
 			'prune_viewed'		=> 0,

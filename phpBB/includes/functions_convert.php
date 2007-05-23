@@ -1707,6 +1707,27 @@ function add_default_groups()
 	}
 }
 
+
+/** 
+* Sync post count. We might need to do this in batches.
+*/
+function sync_post_count($offset, $limit)
+{
+	global $db;
+	$sql = 'SELECT COUNT(post_id) AS num_posts, poster_id
+			FROM ' . POSTS_TABLE . '
+			WHERE post_postcount = 1
+			GROUP BY poster_id
+			ORDER BY poster_id';
+	$result = $db->sql_query_limit($sql, $limit, $offset);
+
+	while ($row = $db->sql_fetchrow($result))
+	{
+		$db->sql_query('UPDATE ' . USERS_TABLE . " SET user_posts = {$row['num_posts']} WHERE user_id = {$row['poster_id']}");
+	}
+	$db->sql_freeresult($result);
+}
+
 /**
 * Add the search bots into the database
 * This code should be used in execute_last if the source database did not have bots

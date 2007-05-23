@@ -8,7 +8,7 @@
 *
 */
 
-$updates_to_version = '3.0.RC1';
+$updates_to_version = '3.0.RC2';
 
 if (defined('IN_PHPBB') && defined('IN_INSTALL'))
 {
@@ -1150,6 +1150,38 @@ if (version_compare($current_version, '3.0.b5', '<='))
 	$db->sql_query($sql);
 
 	$no_updates = false;
+}
+if (version_compare($current_version, '3.0.RC1', '<='))
+{
+	// we have to remove a few extra entries from converted boards. 
+	$sql = 'SELECT group_id
+		FROM ' . GROUPS_TABLE . "
+		WHERE group_name = '" . $db->sql_escape('BOTS') . "'";
+	$result = $db->sql_query($sql);
+	$bot_group_id = (int) $db->sql_fetchfield('group_id');
+	$db->sql_freeresult($result);
+
+	$bots = array();
+	$sql = 'SELECT u.user_id
+		FROM ' . USERS_TABLE . ' u, ' . USER_GROUP_TABLE . ' ug
+		WHERE ug.group_id = ' . $bot_group_id . '
+		AND ug.user_id = u.user_id';
+	$result = $db->sql_query($sql);
+
+	
+	while ($row = $db->sql_fetchrow($result))
+	{
+		$bots[] = (int)$row['user_id'];
+	}
+	$db->sql_freeresult($result);
+	
+	if (sizeof($bots))
+	{
+		$sql = 'DELETE FROM ' . USER_GROUP_TABLE . "
+			WHERE group_id <> $bot_group_id
+				AND " . $db->sql_in_set('user_id', $bots);
+		$db->sql_query($sql);
+	}
 }
 
 _write_result($no_updates, $errored, $error_ary);
