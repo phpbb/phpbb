@@ -35,8 +35,21 @@ class dbal_oracle extends dbal
 		$this->user = $sqluser;
 		$this->server = $sqlserver . (($port) ? ':' . $port : '');
 		$this->dbname = $database;
-		
-		$this->db_connect_id = ($new_link) ? @ocinlogon($this->user, $sqlpassword, $this->dbname, 'UTF8') : (($this->persistency) ? @ociplogon($this->user, $sqlpassword, $this->dbname, 'UTF8') : @ocinlogon($this->user, $sqlpassword, $this->dbname, 'UTF8'));
+
+		$connect = $database;
+
+		// support for "easy connect naming"
+		if ($sqlserver !== '' && $sqlserver !== '/')
+		{
+			if (substr($sqlserver, -1, 1) == '/')
+			{
+				$sqlserver == substr($sqlserver, 0, -1);
+			}
+			$connect = $sqlserver . (($port) ? ':' . $port : '') . '/' . $dbname;
+			$this->dbname = $connect;
+		}
+
+		$this->db_connect_id = ($new_link) ? @ocinlogon($this->user, $sqlpassword, $connect, 'UTF8') : (($this->persistency) ? @ociplogon($this->user, $sqlpassword, $connect, 'UTF8') : @ocinlogon($this->user, $sqlpassword, $connect, 'UTF8'));
 
 		return ($this->db_connect_id) ? $this->db_connect_id : $this->sql_error('');
 	}
