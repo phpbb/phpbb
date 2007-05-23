@@ -858,7 +858,7 @@ function get_schema_struct()
 		),
 		'PRIMARY_KEY'	=> array('role_id', 'auth_option_id'),
 		'KEYS'			=> array(
-			'ath_opt_id'	=> array('INDEX', 'auth_option_id'),
+			'ath_op_id'			=> array('INDEX', 'auth_option_id'),
 		),
 	);
 
@@ -1643,7 +1643,7 @@ function get_schema_struct()
 		),
 		'PRIMARY_KEY'		=> 'image_id',
 		'KEYS'				=> array(
-			'i_id'			=> array('INDEX', 'imageset_id'),
+			'i_d'			=> array('INDEX', 'imageset_id'),
 		),
 	);
 

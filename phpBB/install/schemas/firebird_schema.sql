@@ -112,7 +112,7 @@ CREATE TABLE phpbb_acl_roles_data (
 
 ALTER TABLE phpbb_acl_roles_data ADD PRIMARY KEY (role_id, auth_option_id);;
 
-CREATE INDEX phpbb_acl_roles_data_ath_opt_id ON phpbb_acl_roles_data(auth_option_id);;
+CREATE INDEX phpbb_acl_roles_data_ath_op_id ON phpbb_acl_roles_data(auth_option_id);;
 
 # Table: 'phpbb_acl_users'
 CREATE TABLE phpbb_acl_users (
@@ -1176,7 +1176,7 @@ CREATE TABLE phpbb_styles_imageset_data (
 
 ALTER TABLE phpbb_styles_imageset_data ADD PRIMARY KEY (image_id);;
 
-CREATE INDEX phpbb_styles_imageset_data_i_id ON phpbb_styles_imageset_data(imageset_id);;
+CREATE INDEX phpbb_styles_imageset_data_i_d ON phpbb_styles_imageset_data(imageset_id);;
 
 CREATE GENERATOR phpbb_styles_imageset_data_gen;;
 SET GENERATOR phpbb_styles_imageset_data_gen TO 0;;

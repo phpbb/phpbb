@@ -713,6 +713,12 @@ function utf8_recode($string, $encoding)
 	{
 		$encoding = 'cp1252';
 	}
+	// convert iso-8859-8-i to iso-8859-8
+	else if ($encoding == 'iso-8859-8-i')
+	{
+		$encoding = 'iso-8859-8';
+		$string = strrev($string);
+	}
 
 	// First, try iconv()
 	if (function_exists('iconv'))

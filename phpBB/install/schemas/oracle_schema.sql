@@ -187,7 +187,7 @@ CREATE TABLE phpbb_acl_roles_data (
 )
 /
 
-CREATE INDEX phpbb_acl_roles_data_ath_opt_id ON phpbb_acl_roles_data (auth_option_id)
+CREATE INDEX phpbb_acl_roles_data_ath_op_id ON phpbb_acl_roles_data (auth_option_id)
 /
 
 /*
@@ -1560,7 +1560,7 @@ CREATE TABLE phpbb_styles_imageset_data (
 )
 /
 
-CREATE INDEX phpbb_styles_imageset_data_i_id ON phpbb_styles_imageset_data (imageset_id)
+CREATE INDEX phpbb_styles_imageset_data_i_d ON phpbb_styles_imageset_data (imageset_id)
 /
 
 CREATE SEQUENCE phpbb_styles_imageset_data_seq

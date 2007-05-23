@@ -312,7 +312,26 @@ $unsigned_types = array('UINT', 'UINT:', 'USINT', 'BOOL', 'TIMESTAMP');
 // Only an example, but also commented out
 $database_update_info = array(
 	// Changes from 3.0.RC1 to the next version
-//	'3.0.RC1'			=> array(),
+	'3.0.RC1'			=> array(
+		// Remove the following keys
+		'drop_keys'		=> array(
+			STYLES_IMAGESET_DATA_TABLE	=> array(
+				'i_id',
+			),
+			ACL_ROLES_DATA_TABLE		=> array(
+				'ath_opt_id',
+			),
+		),
+		// Add the following keys
+		'add_index'		=> array(
+			STYLES_IMAGESET_DATA_TABLE	=> array(
+				'i_d'			=> array('imageset_id'),
+			),
+			ACL_ROLES_DATA_TABLE		=> array(
+				'ath_opt_id'	=> array('auth_option_id'),
+			),
+		),
+	),
 );
 
 // Determine mapping database type
