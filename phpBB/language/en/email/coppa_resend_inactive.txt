@@ -2,7 +2,7 @@ Subject: Welcome to "{SITENAME}" - {U_BOARD}
 
 {WELCOME_MSG}
 
-In compliance with the COPPA act your account is currently inactive.
+In compliance with the COPPA your account is currently inactive.
 
 Please print this message out and have your parent or guardian sign and date it. Then fax it to:
 

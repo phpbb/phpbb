@@ -111,6 +111,7 @@ $lang = array_merge($lang, array(
 	'USER_GROUP_NORMAL'				=> 'Normal groups user is a member of',
 	'USER_GROUP_PENDING'			=> 'Groups user is in pending mode',
 	'USER_GROUP_SPECIAL'			=> 'Special groups user is a member of',
+	'USER_NO_ATTACHMENTS'			=> 'There are no attached files to display.',
 	'USER_OVERVIEW_UPDATED'			=> 'User details updated.',
 	'USER_POSTS_DELETED'			=> 'Successfully removed all posts made by this user.',
 	'USER_POSTS_MOVED'				=> 'Successfully moved users posts to target forum.',
