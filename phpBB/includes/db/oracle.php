@@ -45,8 +45,7 @@ class dbal_oracle extends dbal
 			{
 				$sqlserver == substr($sqlserver, 0, -1);
 			}
-			$connect = $sqlserver . (($port) ? ':' . $port : '') . '/' . $dbname;
-			$this->dbname = $connect;
+			$connect = $sqlserver . (($port) ? ':' . $port : '') . '/' . $database;
 		}
 
 		$this->db_connect_id = ($new_link) ? @ocinlogon($this->user, $sqlpassword, $connect, 'UTF8') : (($this->persistency) ? @ociplogon($this->user, $sqlpassword, $connect, 'UTF8') : @ocinlogon($this->user, $sqlpassword, $connect, 'UTF8'));
