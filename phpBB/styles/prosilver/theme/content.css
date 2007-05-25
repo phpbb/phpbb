@@ -402,22 +402,19 @@ ul.searchresults {
 ----------------------------------------*/
 /* Quote block */
 blockquote {
-	/* Also see tweaks.css */
-	margin: 1em 1px 1em 25px;
-	padding: 5px;
 	background: #ebebeb none 6px 8px no-repeat;
-	border:1px solid #dbdbdb;
-	font-size:0.95em;
-	margin:1em 1px 1em 25px;
-	overflow:hidden;
-	padding:5px;
+	border: 1px solid #dbdbdb;
+	font-size: 0.95em;
+	margin: 0.5em 1px 0 25px;
+	overflow: hidden;
+	padding: 5px;
 }
 
 blockquote blockquote {
 	/* Nested quotes */
-	background-color:#bababa;
-	font-size:1em;
-	margin:0.5em 1px 0pt 15px;	
+	background-color: #bababa;
+	font-size: 1em;
+	margin: 0.5em 1px 0 15px;	
 }
 
 blockquote blockquote blockquote {
