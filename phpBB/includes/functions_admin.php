@@ -659,8 +659,14 @@ function delete_posts($where_type, $where_ids, $auto_sync = true, $posted_sync =
 		foreach ($post_counts as $poster_id => $substract)
 		{
 			$sql = 'UPDATE ' . USERS_TABLE . '
+				SET user_posts = 0
+				WHERE user_id = ' . $poster_id . ' 
+				AND user_posts < ' . $substract;
+			$db->sql_query($sql);
+			$sql = 'UPDATE ' . USERS_TABLE . '
 				SET user_posts = user_posts - ' . $substract . '
-				WHERE user_id = ' . $poster_id;
+				WHERE user_id = ' . $poster_id . ' 
+				AND user_posts >= ' . $substract;
 			$db->sql_query($sql);
 		}
 	}

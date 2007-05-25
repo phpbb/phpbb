@@ -1595,8 +1595,7 @@ function avatar_remote($data, &$error)
 	{
 		$data['remotelink'] = 'http://' . $data['remotelink'];
 	}
-
-	if (!preg_match('#^(http|https|ftp)://(.*?\.)*?[a-z0-9\-]+?\.[a-z]{2,4}:?([0-9]*?).*?\.(gif|jpg|jpeg|png)$#i', $data['remotelink']))
+	if (!preg_match('#^(http|https|ftp)://(?:(.*?\.)*?[a-z0-9\-]+?\.[a-z]{2,4}|(?:\d{1,3}\.){3,5}\d{1,3}):?([0-9]*?).*?\.(gif|jpg|jpeg|png)$#i', $data['remotelink']))
 	{
 		$error[] = $user->lang['AVATAR_URL_INVALID'];
 		return false;
@@ -2023,7 +2022,8 @@ function avatar_process_user(&$error, $custom_userdata = false)
 				$userdata = ($custom_userdata === false) ? $user->data : $custom_userdata;
 
 				// Delete old avatar if present
-				if ($userdata['user_avatar'] && empty($sql_ary['user_avatar']) && $userdata['user_avatar_type'] != AVATAR_GALLERY)
+				if ((!empty($userdata['user_avatar']) && empty($sql_ary['user_avatar']) && $userdata['user_avatar_type'] == AVATAR_UPLOAD)
+				   || ( !empty($userdata['user_avatar']) && !empty($sql_ary['user_avatar']) && $userdata['user_avatar_type'] == AVATAR_UPLOAD && $sql_ary['user_avatar_type'] != AVATAR_UPLOAD))
 				{
 					avatar_delete('user', $userdata);
 				}

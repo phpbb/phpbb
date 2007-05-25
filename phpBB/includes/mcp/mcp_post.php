@@ -403,7 +403,8 @@ function change_poster(&$post_info, $userdata)
 	{
 		$sql = 'UPDATE ' . USERS_TABLE . '
 			SET user_posts = user_posts - 1
-			WHERE user_id = ' . $post_info['user_id'];
+			WHERE user_id = ' . $post_info['user_id'] .' 
+			AND user_posts > 0';
 		$db->sql_query($sql);
 
 		$sql = 'UPDATE ' . USERS_TABLE . '

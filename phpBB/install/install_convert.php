@@ -1157,7 +1157,18 @@ class install_convert extends module
 			$sql .= (!empty($schema['where'])) ? "\nWHERE (" . $schema['where'] . ')' : '';
 
 			// Group By
-			$sql .= (!empty($schema['group_by'])) ? "\nGROUP BY " . $schema['group_by'] : '';
+			if (!empty($schema['group_by']))
+			{
+				$schema['group_by'] = array($schema['group_by']);
+				foreach($sql_data['select_fields'] as $select)
+				{
+					if (!in_array($select, $schema['group_by']))
+					{
+						$schema['group_by'][] = $select;
+					}
+				}
+			}
+			$sql .= (!empty($schema['group_by'])) ? "\nGROUP BY " . implode(', ', $schema['group_by']) : '';
 
 			// Having
 			$sql .= (!empty($schema['having'])) ? "\nHAVING " . $schema['having'] : '';
@@ -1168,7 +1179,7 @@ class install_convert extends module
 				$schema['order_by'] = $schema['primary'];
 			}
 			$sql .= (!empty($schema['order_by'])) ? "\nORDER BY " . $schema['order_by'] : '';
-
+			 
 			// Counting basically holds the amount of rows processed.
 			$counting = -1;
 			$batch_time = 0;
