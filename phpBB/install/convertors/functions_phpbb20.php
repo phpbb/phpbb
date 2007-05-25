@@ -59,6 +59,15 @@ function phpbb_insert_forums()
 
 	$max_forum_id++;
 
+	// pruning disabled globally?
+	$sql = "SELECT config_value
+		FROM {$convert->src_table_prefix}config
+		WHERE config_name = 'prune_enable'";
+	$result = $src_db->sql_query($sql);
+	$prune_enabled = (int) $src_db->sql_fetchfield('config_value');
+	$src_db->sql_freeresult($result);
+	
+	
 	// Insert categories
 	$sql = 'SELECT cat_id, cat_title
 		FROM ' . $convert->src_table_prefix . 'categories
@@ -84,13 +93,7 @@ function phpbb_insert_forums()
 		break;
 	}
 	
-	// pruning disabled globally?
-	$sql = "SELECT config_value
-		FROM {$convert->src_table_prefix}config
-		WHERE config_name = 'prune_enable'";
-	$result = $src_db->sql_query($sql);
-	$prune_enabled = (int) $src_db->sql_fetchfield('config_value');
-	$src_db->sql_freeresult($result);
+
 
 	$cats_added = array();
 	while ($row = $src_db->sql_fetchrow($result))
