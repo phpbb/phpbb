@@ -559,15 +559,33 @@ function delete_topics($where_type, $where_ids, $auto_sync = true, $post_count_s
 	}
 	unset($table_ary);
 
-	$sql = 'DELETE FROM ' . TOPICS_TABLE . ' 
+	$moved_topic_ids = array();
+
+	// update the other forums
+	$sql = 'SELECT topic_id, forum_id
+		FROM ' . TOPICS_TABLE . '
 		WHERE ' . $db->sql_in_set('topic_moved_id', $topic_ids);
-	$db->sql_query($sql);
+	$result = $db->sql_query($sql);
+
+	while ($row = $db->sql_fetchrow($result))
+	{
+		$forum_ids[] = $row['forum_id'];
+		$moved_topic_ids[] = $row['topic_id'];
+	}
+	$db->sql_freeresult($result);
+
+	if (sizeof($moved_topic_ids))
+	{
+		$sql = 'DELETE FROM ' . TOPICS_TABLE . ' 
+			WHERE ' . $db->sql_in_set('topic_id', $moved_topic_ids);
+		$db->sql_query($sql);
+	}
 
 	$db->sql_transaction('commit');
 
 	if ($auto_sync)
 	{
-		sync('forum', 'forum_id', $forum_ids, true, true);
+		sync('forum', 'forum_id', array_unique($forum_ids), true, true);
 		sync('topic_reported', $where_type, $where_ids);
 	}
 
