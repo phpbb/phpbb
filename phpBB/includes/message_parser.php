@@ -905,7 +905,7 @@ class bbcode_firstpass extends bbcode
 				$url = append_sid($url);
 			}
 
-			return ($var1) ? '[url=' . $this->bbcode_specialchars($url) . ':' . $this->bbcode_uid . ']' . $this->bbcode_specialchars($var2) . '[/url:' . $this->bbcode_uid . ']' : '[url:' . $this->bbcode_uid . ']' . $this->bbcode_specialchars($url) . '[/url:' . $this->bbcode_uid . ']'; 
+			return ($var1) ? '[url=' . $this->bbcode_specialchars($url) . ':' . $this->bbcode_uid . ']' . $var2 . '[/url:' . $this->bbcode_uid . ']' : '[url:' . $this->bbcode_uid . ']' . $this->bbcode_specialchars($url) . '[/url:' . $this->bbcode_uid . ']'; 
 		}
 
 		return '[url' . (($var1) ? '=' . $var1 : '') . ']' . $var2 . '[/url]';
