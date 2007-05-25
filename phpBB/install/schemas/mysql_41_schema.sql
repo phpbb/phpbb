@@ -243,7 +243,7 @@ CREATE TABLE phpbb_forums (
 	forum_topics_real mediumint(8) UNSIGNED DEFAULT '0' NOT NULL,
 	forum_last_post_id mediumint(8) UNSIGNED DEFAULT '0' NOT NULL,
 	forum_last_poster_id mediumint(8) UNSIGNED DEFAULT '0' NOT NULL,
-	forum_last_post_subject varchar(100) DEFAULT '' NOT NULL,
+	forum_last_post_subject varchar(100) DEFAULT '' NOT NULL COLLATE utf8_unicode_ci,
 	forum_last_post_time int(11) UNSIGNED DEFAULT '0' NOT NULL,
 	forum_last_poster_name varchar(255) DEFAULT '' NOT NULL,
 	forum_last_poster_colour varchar(6) DEFAULT '' NOT NULL,

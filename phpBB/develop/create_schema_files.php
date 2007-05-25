@@ -1256,7 +1256,7 @@ function get_schema_struct()
 			'enable_magic_url'		=> array('BOOL', 1),
 			'enable_sig'			=> array('BOOL', 1),
 			'post_username'			=> array('VCHAR_UNI:255', ''),
-			'post_subject'			=> array('XSTEXT_UNI', ''),
+			'post_subject'			=> array('XSTEXT_UNI', '', 'true_sort'),
 			'post_text'				=> array('MTEXT_UNI', ''),
 			'post_checksum'			=> array('VCHAR:32', ''),
 			'post_attachment'		=> array('BOOL', 0),

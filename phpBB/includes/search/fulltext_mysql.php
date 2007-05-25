@@ -698,7 +698,7 @@ class fulltext_mysql extends search_backend
 		{
 			if ($db->sql_layer == 'mysqli' || version_compare($db->mysql_version, '4.1.3', '>='))
 			{
-				$alter[] = 'MODIFY post_subject varchar(100) COLLATE utf8_unicode_ci DEFAULT \'\' NOT NULL';
+				//$alter[] = 'MODIFY post_subject varchar(100) COLLATE utf8_unicode_ci DEFAULT \'\' NOT NULL';
 			}
 			else
 			{

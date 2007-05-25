@@ -607,6 +607,11 @@ if (version_compare($current_version, '3.0.RC1', '<='))
 		$db->sql_query($sql);
 	}
 
+	if ($map_dbms === 'mysql_41')
+	{
+		sql_column_change($map_dbms, POSTS_TABLE, 'post_subject', array('XSTEXT_UNI', '', 'true_sort'));
+	}
+
 	$no_updates = false;
 }
 
