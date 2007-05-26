@@ -78,6 +78,14 @@ function request_var($var_name, $default, $multibyte = false, $cookie = false)
 		list($key_type, $type) = each($default);
 		$type = gettype($type);
 		$key_type = gettype($key_type);
+		if ($type == 'array')
+		{
+			reset($default);
+			list($sub_key_type, $sub_type) = each(current($default));
+			$sub_type = gettype($sub_type);
+			$sub_type = ($sub_type == 'array') ? 'NULL' : $sub_type;
+			$sub_key_type = gettype($sub_key_type);
+		}
 	}
 
 	if (is_array($var))
@@ -87,18 +95,25 @@ function request_var($var_name, $default, $multibyte = false, $cookie = false)
 
 		foreach ($_var as $k => $v)
 		{
-			if (is_array($v))
+			set_var($k, $k, $key_type);
+			if ($type == 'array' && is_array($v))
 			{
 				foreach ($v as $_k => $_v)
 				{
-					set_var($k, $k, $key_type);
-					set_var($_k, $_k, $key_type);
-					set_var($var[$k][$_k], $_v, $type, $multibyte);
+					if (is_array($_v))
+					{
+						$_v = null;
+					}
+					set_var($_k, $_k, $sub_key_type);
+					set_var($var[$k][$_k], $_v, $sub_type, $multibyte);
 				}
 			}
 			else
 			{
-				set_var($k, $k, $key_type);
+				if ($type == 'array' || is_array($v))
+				{
+					$v = null;
+				}
 				set_var($var[$k], $v, $type, $multibyte);
 			}
 		}
