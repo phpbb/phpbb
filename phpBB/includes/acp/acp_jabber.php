@@ -54,7 +54,7 @@ class acp_jabber
 			// Is this feature enabled? Then try to establish a connection
 			if ($jab_enable)
 			{
-				$jabber = new jabber($jab_host, $jab_port, $jab_username, $jab_password);
+				$jabber = new jabber($jab_host, $jab_port, $jab_username, $jab_password, $jab_use_ssl);
 
 				if (!$jabber->connect())
 				{
