@@ -42,7 +42,7 @@ class jabber
 		$this->port					= ($port) ? $port : 5222;
 		$this->username				= $username;
 		$this->password				= $password;
-		$this->use_ssl				= ($use_ssl && $this->can_use_ssl) ? true : false;
+		$this->use_ssl				= ($use_ssl && $this->can_use_ssl()) ? true : false;
 
 		// Change port if we use SSL
 		if ($this->port == 5222 && $this->use_ssl)
