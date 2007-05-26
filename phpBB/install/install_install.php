@@ -1359,7 +1359,10 @@ class install_install extends module
 
 		// We set a (semi-)unique cookie name to bypass login issues related to the cookie name.
 		$cookie_name = 'phpbb3_';
-		$cookie_name .= strtolower(gen_rand_string(5));
+		$rand_str = md5(mt_rand());
+		$rand_str = str_replace('0', 'z', base_convert($rand_str, 16, 35));
+		$rand_str = substr($rand_str, 0, 5);
+		$cookie_name .= strtolower($rand_str);
 
 		$sql_ary[] = 'UPDATE ' . $table_prefix . "config
 			SET config_value = '" . $db->sql_escape($cookie_name) . "'
