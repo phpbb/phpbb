@@ -38,10 +38,13 @@
 	<dt><label for="jab_password">{L_JAB_PASSWORD}:</label></dt>
 	<dd><input type="password" id="jab_password" name="jab_password" value="{JAB_PASSWORD}" /></dd>
 </dl>
+<!-- IF S_CAN_USE_SSL -->
 <dl>
-	<dt><label for="jab_resource">{L_JAB_RESOURCE}:</label><br /><span>{L_JAB_RESOURCE_EXPLAIN}</span></dt>
-	<dd><input type="text" id="jab_resource" name="jab_resource" value="{JAB_RESOURCE}" /></dd>
+	<dt><label for="jab_use_ssl">{L_JAB_USE_SSL}:</label><br /><span>{L_JAB_USE_SSL_EXPLAIN}</span></dt>
+	<dd><label><input type="radio" class="radio" id="jab_use_ssl" name="jab_use_ssl" value="1"<!-- IF JAB_USE_SSL --> checked="checked"<!-- ENDIF --> /> {L_YES}</label>
+		<label><input type="radio" class="radio" name="jab_use_ssl" value="0"<!-- IF not JAB_USE_SSL --> checked="checked"<!-- ENDIF --> /> {L_NO}</label></dd>
 </dl>
+<!-- ENDIF -->
 <dl>
 	<dt><label for="jab_package_size">{L_JAB_PACKAGE_SIZE}:</label><br /><span>{L_JAB_PACKAGE_SIZE_EXPLAIN}</span></dt>
 	<dd><input type="text" id="jab_package_size" name="jab_package_size" value="{JAB_PACKAGE_SIZE}" maxlength="5" size="5" /></dd>

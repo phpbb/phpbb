@@ -844,13 +844,28 @@ if ($submit || $preview || $refresh)
 			$sql = 'SELECT topic_type, forum_id
 				FROM ' . TOPICS_TABLE . "
 				WHERE topic_id = $topic_id";
-			$result = $db->sql_query_limit($sql, 1);
+			$result = $db->sql_query($sql);
 			$row = $db->sql_fetchrow($result);
 			$db->sql_freeresult($result);
 
 			if ($row && !$row['forum_id'] && $row['topic_type'] == POST_GLOBAL)
 			{
 				$to_forum_id = request_var('to_forum_id', 0);
+
+				if ($to_forum_id)
+				{
+					$sql = 'SELECT forum_type
+						FROM ' . FORUMS_TABLE . '
+						WHERE forum_id = ' . $to_forum_id;
+					$result = $db->sql_query($sql);
+					$forum_type = (int) $db->sql_fetchfield('forum_type');
+					$db->sql_freeresult($result);
+
+					if ($forum_type != FORUM_POST || !$auth->acl_get('f_post', $to_forum_id))
+					{
+						$to_forum_id = 0;
+					}
+				}
 
 				if (!$to_forum_id)
 				{

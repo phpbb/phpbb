@@ -875,6 +875,10 @@ label {
 	color: #425067;
 }
 
+option.disabled-option {
+	color: graytext;
+}
+
 /* Definition list layout for forms
 ---------------------------------------- */
 dd label {

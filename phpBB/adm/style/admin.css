@@ -721,7 +721,7 @@ option {
 }
 
 option.disabled-option {
-	color: #aaa;
+	color: graytext;
 }
 
 .rtl option {

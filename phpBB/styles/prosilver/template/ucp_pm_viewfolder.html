@@ -57,8 +57,8 @@
 	
 		<!-- BEGIN messagerow -->
 			<li class="row<!-- IF messagerow.S_ROW_COUNT is odd --> bg1<!-- ELSE --> bg2<!-- ENDIF --><!-- IF messagerow.PM_CLASS --> {messagerow.PM_CLASS}<!-- ENDIF -->">
-				<dl class="icon" style="background-image: url({messagerow.FOLDER_IMG_SRC});">
-					<dt<!-- IF messagerow.PM_ICON_URL and S_PM_ICONS --> style="background-image: url({messagerow.PM_ICON_URL});"<!-- ENDIF -->>
+				<dl class="icon" style="background-image: url({messagerow.FOLDER_IMG_SRC}); background-repeat: no-repeat;">
+					<dt<!-- IF messagerow.PM_ICON_URL and S_PM_ICONS --> style="background-image: url({messagerow.PM_ICON_URL}); background-repeat: no-repeat;"<!-- ENDIF -->>
 
 						<!-- IF messagerow.S_PM_DELETED -->
 							<a href="{messagerow.U_REMOVE_PM}" class="topictitle">{L_DELETE_MESSAGE}</a><br />

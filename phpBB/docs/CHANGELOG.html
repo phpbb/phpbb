@@ -218,6 +218,14 @@ p a {
 		<li>[Fix] Do not use the gen_random_string function to create cookie names during install (Bug #11431)</li>
 		<li>[Fix] Send stylesheet in style.php even without a valid session id (Bug #11531)</li>
 		<li>[Fix] request_var should strictly return the requested number of dimensions</li>
+		<li>[Fix] Correct assignment of custom width to $user-&gt;img(); / Correctly display poll bars in subsilver2 (Bug #11301)</li>
+		<li>[Fix] Allow removing polls in prosilver</li>
+		<li>{Fix] Correct link to post in managing users attachments (Bug #11765)</li>
+		<li>[Fix] Reload confirm screen for selecting new forum for global topic type change if not postable forum is chosen (Bug #11711)</li>
+		<li>[Fix] Correctly show system default color for disabled options in Internet Explorer which does not support disabled option fields</li>
+		<li>[Fix] Update query for custom profiles in user management used wrong order for left/right delimiter (affecting mssql) (Bug #11781)</li>
+		<li>[Feature] Replaced outdated jabber class with the one from the flyspray project</li>
+		<li>Limit maximum number of allowed characters in messages to 60.000 by default. Admins should increase their PHP time limits if they want to raise this tremedously.</li>
 	</ul>
 
 	</div>

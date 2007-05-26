@@ -7,6 +7,12 @@
 
 	<fieldset class="fields2">
 	<!-- IF S_SHOW_POLL_BOX -->
+		<!-- IF S_POLL_DELETE -->
+			<dl>
+				<dt><label for="poll_delete">{L_POLL_DELETE}:</label></dt>
+				<dd><label for="poll_delete"><input type="checkbox" name="poll_delete" id="poll_delete"<!-- IF S_POLL_DELETE_CHECKED --> checked="checked"<!-- ENDIF --> /> </label></dd>
+			</dl>
+		<!-- ENDIF -->
 		<dl>
 			<dt><label for="poll_title">{L_POLL_QUESTION}:</label></dt>
 			<dd><input type="text" name="poll_title" id="poll_title" maxlength="255" value="{POLL_TITLE}" class="inputbox" /></dd>
@@ -38,10 +44,10 @@
 			</dl>
 		<!-- ENDIF -->
 
-	<!-- ELSE -->
+	<!-- ELSEIF S_POLL_DELETE -->
 		<dl class="fields1">
 			<dt><label for="poll_delete">{L_POLL_DELETE}:</label></dt>
-			<dd><label for="poll_delete"><input type="checkbox" name="poll_delete" id="poll_delete"<!-- IF S_POLL_DELETE_CHECKED --> checked="checked"<!-- ENDIF --> /> {L_DELETE_POST_WARN}</label></dd>
+			<dd><label for="poll_delete"><input type="checkbox" name="poll_delete" id="poll_delete"<!-- IF S_POLL_DELETE_CHECKED --> checked="checked"<!-- ENDIF --> /> </label></dd>
 		</dl>
 	<!-- ENDIF -->
 	</fieldset>

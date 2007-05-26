@@ -56,6 +56,12 @@ ul.topiclist li.row dt a.subforum {
 	padding: 0 0 0 12px;
 }
 
+.forum-image {
+	float: left;
+	padding-top: 5px;
+	margin-right: 5px;
+}
+
 li.row {
 	border-top: 1px solid #FFFFFF;
 	border-bottom: 1px solid #8f8f8f;

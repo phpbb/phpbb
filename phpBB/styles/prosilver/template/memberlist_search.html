@@ -11,7 +11,10 @@ function insert_marked(users)
 {
 	if (typeof(users.length) == "undefined")
 	{
-		insert_user(users.value);
+		if (users.checked)
+		{
+			insert_user(users.value);
+		}
 	}
 	else if (users.length > 0)
 	{

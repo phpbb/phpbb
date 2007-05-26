@@ -25,9 +25,9 @@
 
 	<!-- IF not forumrow.S_IS_CAT -->
 		<li class="row">
-			<dl class="icon" style="background-image: url({forumrow.FORUM_FOLDER_IMG_SRC});">
+			<dl class="icon" style="background-image: url({forumrow.FORUM_FOLDER_IMG_SRC}); background-repeat: no-repeat;">
 				<dt>
-					<!-- IF forumrow.FORUM_IMAGE --><div style="float: left; padding-top: 5px; margin-right: 5px;">{forumrow.FORUM_IMAGE}</div><!-- ENDIF -->
+					<!-- IF forumrow.FORUM_IMAGE --><div class="forum-image">{forumrow.FORUM_IMAGE}</div><!-- ENDIF -->
 					<a href="{forumrow.U_VIEWFORUM}" class="forumtitle">{forumrow.FORUM_NAME}</a><br />
 					{forumrow.FORUM_DESC}
 					<!-- IF forumrow.MODERATORS -->

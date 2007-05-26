@@ -1712,7 +1712,7 @@ class user extends session
 
 		$img_data = &$imgs[$img];
 
-		if (empty($img_data) || $width !== false)
+		if (empty($img_data))
 		{
 			if (!isset($this->img_array[$img]))
 			{
@@ -1735,7 +1735,7 @@ class user extends session
 			break;
 			
 			case 'width':
-				return $img_data['width'];
+				return ($width === false) ? $img_data['width'] : $width;
 			break;
 
 			case 'height':
@@ -1743,7 +1743,9 @@ class user extends session
 			break;
 
 			default:
-				return '<img src="' . $img_data['src'] . '"' . (($img_data['width']) ? ' width="' . $img_data['width'] . '"' : '') . (($img_data['height']) ? ' height="' . $img_data['height'] . '"' : '') . ' alt="' . $alt . '" title="' . $alt . '" />';
+				$use_width = ($width === false) ? $img_data['width'] : $width;
+
+				return '<img src="' . $img_data['src'] . '"' . (($use_width) ? ' width="' . $use_width . '"' : '') . (($img_data['height']) ? ' height="' . $img_data['height'] . '"' : '') . ' alt="' . $alt . '" title="' . $alt . '" />';
 			break;
 		}
 	}

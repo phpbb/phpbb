@@ -458,7 +458,7 @@ class messenger
 		if (!$use_queue)
 		{
 			include_once($phpbb_root_path . 'includes/functions_jabber.' . $phpEx);
-			$this->jabber = new jabber($config['jab_host'], $config['jab_port'], $config['jab_username'], $config['jab_password'], $config['jab_resource']);
+			$this->jabber = new jabber($config['jab_host'], $config['jab_port'], $config['jab_username'], $config['jab_password']);
 
 			if (!$this->jabber->connect())
 			{
@@ -466,19 +466,17 @@ class messenger
 				return false;
 			}
 
-			if (!$this->jabber->send_auth())
+			if (!$this->jabber->login())
 			{
 				$this->error('JABBER', 'Could not authorise on Jabber server<br />' . $this->jabber->get_log());
 				return false;
 			}
-			$this->jabber->send_presence(NULL, NULL, 'online');
 
 			foreach ($addresses as $address)
 			{
-				$this->jabber->send_message($address, 'normal', NULL, array('body' => $this->msg, 'subject' => $this->subject));
+				$this->jabber->send_message($address, $this->msg, $this->subject);
 			}
 
-			sleep(1);
 			$this->jabber->disconnect();
 		}
 		else
@@ -592,7 +590,7 @@ class queue
 					}
 
 					include_once($phpbb_root_path . 'includes/functions_jabber.'.$phpEx);
-					$this->jabber = new jabber($config['jab_host'], $config['jab_port'], $config['jab_username'], $config['jab_password'], $config['jab_resource']);
+					$this->jabber = new jabber($config['jab_host'], $config['jab_port'], $config['jab_username'], $config['jab_password']);
 
 					if (!$this->jabber->connect())
 					{
@@ -600,12 +598,11 @@ class queue
 						continue 2;
 					}
 
-					if (!$this->jabber->send_auth())
+					if (!$this->jabber->login())
 					{
 						messenger::error('JABBER', 'Could not authorise on Jabber server');
 						continue 2;
 					}
-					$this->jabber->send_presence(NULL, NULL, 'online');
 
 				break;
 
@@ -647,7 +644,7 @@ class queue
 					case 'jabber':
 						foreach ($addresses as $address)
 						{
-							if ($this->jabber->send_message($address, 'normal', NULL, array('body' => $msg, 'subject' => $subject)) === false)
+							if ($this->jabber->send_message($address, $msg, $subject) === false)
 							{
 								messenger::error('JABBER', $this->jabber->get_log());
 								continue 3;
@@ -669,7 +666,6 @@ class queue
 				case 'jabber':
 					// Hang about a couple of secs to ensure the messages are
 					// handled, then disconnect
-					sleep(1);
 					$this->jabber->disconnect();
 				break;
 			}

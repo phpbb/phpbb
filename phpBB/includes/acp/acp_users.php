@@ -1067,7 +1067,7 @@ class acp_users
 
 							foreach ($cp_data as $key => $value)
 							{
-								$cp_data[$right_delim . $key . $left_delim] = $value;
+								$cp_data[$left_delim . $key . $right_delim] = $value;
 								unset($cp_data[$key]);
 							}
 
@@ -1616,7 +1616,7 @@ class acp_users
 					}
 					else
 					{
-						$view_topic = append_sid("{$phpbb_root_path}viewtopic.$phpEx", "t={$row['topic_id']}&amp;p={$row['post_msg_id']}#{$row['post_msg_id']}");
+						$view_topic = append_sid("{$phpbb_root_path}viewtopic.$phpEx", "t={$row['topic_id']}&amp;p={$row['post_msg_id']}") . '#p' . $row['post_msg_id'];
 					}
 
 					$template->assign_block_vars('attach', array(

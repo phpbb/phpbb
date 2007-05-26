@@ -592,7 +592,6 @@ if (version_compare($current_version, '3.0.RC1', '<='))
 		AND ug.user_id = u.user_id';
 	$result = $db->sql_query($sql);
 
-	
 	while ($row = $db->sql_fetchrow($result))
 	{
 		$bots[] = (int)$row['user_id'];
@@ -611,6 +610,11 @@ if (version_compare($current_version, '3.0.RC1', '<='))
 	{
 		sql_column_change($map_dbms, POSTS_TABLE, 'post_subject', array('XSTEXT_UNI', '', 'true_sort'));
 	}
+
+	$sql = 'DELETE FROM ' . CONFIG_TABLE . " WHERE config_name = 'jab_resource'";
+	_sql($sql, $errored, $error_ary);
+
+	set_config('jab_use_ssl', '0');
 
 	$no_updates = false;
 }

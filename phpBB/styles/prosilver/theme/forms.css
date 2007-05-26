@@ -32,6 +32,10 @@ option {
 	padding-right: 1em;
 }
 
+option.disabled-option {
+	color: graytext;
+}
+
 textarea {
 	font-family: "Lucida Grande", Verdana, Helvetica, Arial, sans-serif;
 	width: 60%;

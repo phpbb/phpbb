@@ -412,32 +412,24 @@ $lang = array_merge($lang, array(
 
 // Jabber settings
 $lang = array_merge($lang, array(
-	'ACP_JABBER_SETTINGS_EXPLAIN'	=> 'Here you can enable and control the use of Jabber for instant messaging and board notifications. Jabber is an open source protocol and therefore available for use by anyone. Some Jabber servers include gateways or transports which allow you to contact users on other networks. Not all servers offer all transports and changes in protocols can prevent transports from operating. Note that it may take several seconds to update Jabber account details, so do not stop the script until it is completed!',
+	'ACP_JABBER_SETTINGS_EXPLAIN'	=> 'Here you can enable and control the use of Jabber for instant messaging and board notifications. Jabber is an open source protocol and therefore available for use by anyone. Some Jabber servers include gateways or transports which allow you to contact users on other networks. Not all servers offer all transports and changes in protocols can prevent transports from operating. Please be sure to enter already registered account details - phpBB will use the details you enter here as is.',
 
 	'ERR_JAB_AUTH'			=> 'Could not authorise on Jabber server.',
 	'ERR_JAB_CONNECT'		=> 'Could not connect to Jabber server.',
-	'ERR_JAB_PASSCHG'		=> 'Could not change password.',
-	'ERR_JAB_PASSFAIL'		=> 'Password update failed, %s.',
-	'ERR_JAB_REGISTER'		=> 'An error occurred trying to register this account, %s.',
-	'ERR_JAB_USERNAME'		=> 'The username specified already exists, please choose an alternative.',
-
-	'JAB_CHANGED'				=> 'Jabber account changed successfully.',
 	'JAB_ENABLE'				=> 'Enable Jabber',
 	'JAB_ENABLE_EXPLAIN'		=> 'Enables use of Jabber messaging and notifications.',
 	'JAB_PACKAGE_SIZE'			=> 'Jabber package size',
-	'JAB_PACKAGE_SIZE_EXPLAIN'	=> 'This is the number of messages sent in one package. If set to 0 the message is sent immediately and is not queued for later sending.',
+	'JAB_PACKAGE_SIZE_EXPLAIN'	=> 'This is the number of messages sent in one package. If set to 0 the message is sent immediately and will not be queued for later sending.',
 	'JAB_PASSWORD'				=> 'Jabber password',
-	'JAB_PASS_CHANGED'			=> 'Jabber password changed successfully.',
 	'JAB_PORT'					=> 'Jabber port',
 	'JAB_PORT_EXPLAIN'			=> 'Leave blank unless you know it is not port 5222.',
-	'JAB_REGISTERED'			=> 'New account registered successfully.',
-	'JAB_RESOURCE'				=> 'Jabber resource',
-	'JAB_RESOURCE_EXPLAIN'		=> 'The resource locates this particular connection, e.g. board, home, etc.',
 	'JAB_SERVER'				=> 'Jabber server',
 	'JAB_SERVER_EXPLAIN'		=> 'See %sjabber.org%s for a list of servers.',
 	'JAB_SETTINGS_CHANGED'		=> 'Jabber settings changed successfully.',
+	'JAB_USE_SSL'				=> 'Use SSL to connect',
+	'JAB_USE_SSL_EXPLAIN'		=> 'If enabled a secure connection is tried to be established. The Jabber port will be modified to 5223 if port 5222 is specified.',
 	'JAB_USERNAME'				=> 'Jabber username',
-	'JAB_USERNAME_EXPLAIN'		=> 'If this user is not registered it will be created if possible.',
+	'JAB_USERNAME_EXPLAIN'		=> 'Specify a registered username. The username will not be checked for validity.',
 ));
 
 ?>

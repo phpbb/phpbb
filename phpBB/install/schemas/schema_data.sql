@@ -113,7 +113,7 @@ INSERT INTO phpbb_config (config_name, config_value) VALUES ('jab_host', '');
 INSERT INTO phpbb_config (config_name, config_value) VALUES ('jab_password', '');
 INSERT INTO phpbb_config (config_name, config_value) VALUES ('jab_package_size', '20');
 INSERT INTO phpbb_config (config_name, config_value) VALUES ('jab_port', '5222');
-INSERT INTO phpbb_config (config_name, config_value) VALUES ('jab_resource', '');
+INSERT INTO phpbb_config (config_name, config_value) VALUES ('jab_use_ssl', '0');
 INSERT INTO phpbb_config (config_name, config_value) VALUES ('jab_username', '');
 INSERT INTO phpbb_config (config_name, config_value) VALUES ('ldap_base_dn', '');
 INSERT INTO phpbb_config (config_name, config_value) VALUES ('ldap_email', '');
@@ -148,7 +148,7 @@ INSERT INTO phpbb_config (config_name, config_value) VALUES ('max_login_attempts
 INSERT INTO phpbb_config (config_name, config_value) VALUES ('max_name_chars', '20');
 INSERT INTO phpbb_config (config_name, config_value) VALUES ('max_pass_chars', '30');
 INSERT INTO phpbb_config (config_name, config_value) VALUES ('max_poll_options', '10');
-INSERT INTO phpbb_config (config_name, config_value) VALUES ('max_post_chars', '0');
+INSERT INTO phpbb_config (config_name, config_value) VALUES ('max_post_chars', '60000');
 INSERT INTO phpbb_config (config_name, config_value) VALUES ('max_post_font_size', '200');
 INSERT INTO phpbb_config (config_name, config_value) VALUES ('max_post_img_height', '0');
 INSERT INTO phpbb_config (config_name, config_value) VALUES ('max_post_img_width', '0');
