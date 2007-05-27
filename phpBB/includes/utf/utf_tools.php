@@ -717,7 +717,7 @@ function utf8_recode($string, $encoding)
 	else if ($encoding == 'iso-8859-8-i')
 	{
 		$encoding = 'iso-8859-8';
-		$string = strrev($string);
+		$string = hebrev($string);
 	}
 
 	// First, try iconv()
