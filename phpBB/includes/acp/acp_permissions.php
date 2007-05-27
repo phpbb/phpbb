@@ -593,7 +593,7 @@ class acp_permissions
 	{
 		global $user, $auth;
 
-		$psubmit = request_var('psubmit', array(0));
+		$psubmit = request_var('psubmit', array(0 => array(0 => 0)));
 
 		// User or group to be set?
 		$ug_type = (sizeof($user_id)) ? 'user' : 'group';

@@ -31,7 +31,7 @@ unset($dbpasswd);
 */
 $convertor_data = array(
 	'forum_name'	=> 'phpBB 2.0.x',
-	'version'		=> '0.92',
+	'version'		=> '1.0.RC2-dev',
 	'phpbb_version'	=> '3.0.0',
 	'author'		=> '<a href="http://www.phpbb.com/">phpBB Group</a>',
 	'dbms'			=> $dbms,
@@ -540,9 +540,7 @@ if (!$get_info)
 				array('smiley_width',			'smilies.smile_url',				'get_smiley_width'),
 				array('smiley_height',			'smilies.smile_url',				'get_smiley_height'),
 				array('smiley_order',			'smilies.smilies_id',				''),
-				array('display_on_posting',		'smilies.smilies_id',				array(
-					'execute'		=> '{RESULT} = ({VALUE}[0] <= 20) ? 1 : 0;',
-				)),
+				array('display_on_posting',		'smilies.smilies_id',				'get_smiley_display'),
 
 				'order_by'		=> 'smilies.smilies_id ASC',
 			),
@@ -714,8 +712,8 @@ if (!$get_info)
 				array('user_id',				'privmsgs.privmsgs_from_userid',		'phpbb_user_id'),
 				array('author_id',				'privmsgs.privmsgs_from_userid',		'phpbb_user_id'),
 				array('pm_deleted',				0,										''),
-				array('pm_new',					'privmsgs.privmsgs_type',				'phpbb_new_pm'),
-				array('pm_unread',				'privmsgs.privmsgs_type',				'phpbb_unread_pm'),
+				array('pm_new',					0,										''),
+				array('pm_unread',				0,										''),
 				array('pm_replied',				0,										''),
 				array('pm_marked',				0,										''),
 				array('pm_forwarded',			0,										''),

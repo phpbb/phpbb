@@ -1162,6 +1162,8 @@ class install_convert extends module
 				$schema['group_by'] = array($schema['group_by']);
 				foreach($sql_data['select_fields'] as $select)
 				{
+					$alias = strpos(strtolower($select), ' as ');
+					$select = ($alias) ? substr($select, 0, $alias) : $select;
 					if (!in_array($select, $schema['group_by']))
 					{
 						$schema['group_by'][] = $select;

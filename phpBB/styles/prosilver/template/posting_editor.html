@@ -113,7 +113,7 @@
 				<a href="#" onclick="insert_text('{smiley.A_SMILEY_CODE}', true); return false;"><img src="{smiley.SMILEY_IMG}" width="{smiley.SMILEY_WIDTH}" height="{smiley.SMILEY_HEIGHT}" alt="{smiley.SMILEY_CODE}" title="{smiley.SMILEY_DESC}" /></a>
 			<!-- END smiley -->
 		<!-- ENDIF -->
-		<!-- IF S_SHOW_SMILEY_LINK -->
+		<!-- IF S_SHOW_SMILEY_LINK and S_SMILIES_ALLOWED-->
 			<br /><a href="{U_MORE_SMILIES}" onclick="window.open('{U_MORE_SMILIES}', '_phpbbsmilies', 'HEIGHT=350,resizable=yes,scrollbars=yes,WIDTH=300'); return false;">{L_MORE_SMILIES}</a>
 		<!-- ENDIF -->
 
@@ -180,8 +180,8 @@
 		<fieldset class="submit-buttons">
 			{S_HIDDEN_ADDRESS_FIELD}
 			{S_HIDDEN_FIELDS}
-			<!-- IF S_HAS_DRAFTS --><input type="submit" accesskey="d" tabindex="9" name="load" value="{L_LOAD}" class="button2" onclick="load_draft = true;" />&nbsp; <!-- ENDIF -->			
-			<!-- IF S_SAVE_ALLOWED --><input type="submit" accesskey="k" tabindex="8" name="save" value="{L_SAVE}" class="button2" />&nbsp; <!-- ENDIF -->			
+			<!-- IF S_HAS_DRAFTS --><input type="submit" accesskey="d" tabindex="9" name="load" value="{L_LOAD}" class="button2" onclick="load_draft = true;" />&nbsp; <!-- ENDIF -->
+			<!-- IF S_SAVE_ALLOWED --><input type="submit" accesskey="k" tabindex="8" name="save" value="{L_SAVE}" class="button2" />&nbsp; <!-- ENDIF -->
 			<input type="submit" tabindex="5" name="preview" value="{L_PREVIEW}" class="button1"<!-- IF not S_PRIVMSGS --> onclick="document.getElementById('postform').action += '#preview';"<!-- ENDIF --> />&nbsp;
 			<input type="submit" accesskey="s" tabindex="6" name="post" value="{L_SUBMIT}" class="button1" />&nbsp;
 

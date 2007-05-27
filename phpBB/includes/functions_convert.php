@@ -2405,4 +2405,11 @@ function relative_base($path, $is_relative = true, $line = false, $file = false)
 	return $convert->options['forum_path'] . '/' . $path;
 }
 
+function get_smiley_display()
+{
+	static $smiley_count = 0;
+	$smiley_count++;
+	return ($smiley_count < 50) ? 1 : 0;
+}
+
 ?>
