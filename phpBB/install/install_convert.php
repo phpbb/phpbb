@@ -572,6 +572,8 @@ class install_convert extends module
 		}
 
 		$template->assign_vars(array(
+			'TITLE'		=> $lang['STAGE_SETTINGS'],
+			'BODY'		=> $lang['CONV_OPTIONS_BODY'],
 			'L_SUBMIT'	=> $lang['BEGIN_CONVERT'],
 			'U_ACTION'	=> $this->p_master->module_url . "?mode={$this->mode}&amp;sub=settings&amp;tag=$convertor_tag",
 		));

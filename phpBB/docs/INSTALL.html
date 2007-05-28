@@ -33,8 +33,8 @@ p {
 	font-size: 8pt;
 }
 
-hr { 
-	height: 0; 
+hr {
+	height: 0;
 	border: solid #D1D7DC 0;
 	border-top-width: 1px;
 }
@@ -93,7 +93,7 @@ h3 {
 }
 
 code {
-	color: #006600; 
+	color: #006600;
 	font-weight: normal;
 	font-family: 'Courier New', monospace;
 	border-color: #D1D7DC;
@@ -189,6 +189,7 @@ p a {
 		<li><a href="#prereq">Requirements before converting</a></li>
 		<li><a href="#conversion">Converting</a></li>
 		<li><a href="#postreq">Things to do after conversion</a></li>
+		<li><a href="#convprob">Common conversion problems</a></li>
 	</ol>
 	</li>
 	<li><a href="#postinstall">Important (security related) post-Install tasks for all installation methods</a>
@@ -264,7 +265,7 @@ p a {
 <a name="install"></a><h1>3. New installation</h1>
 
 <div class="paragraph">
-	
+
 	<p>Installation of phpBB3 will vary according to your server and database. If you have <em>shell access</em> to your account (via telnet or ssh for example) you may want to upload the entire phpBB3 archive (in binary mode!) to a directory on your host and unarchive it there.</p>
 
 	<p>If you do not have shell access or do not wish to use it you will need to decompress the phpBB3 archive to a local directory on your system using your favourite compression program, e.g. winzip, rar, zip, etc. From there you must FTP <strong>ALL</strong> the files it contains (being sure to retain the directory structure and filenames) to your host. Please ensure that the cases of filenames are retained, do <strong>NOT</strong> force filenames to all lower or upper case doing so will cause errors later.</p>
@@ -430,6 +431,8 @@ p a {
 	<p>Before converting we heavily recommend you do a <em>full backup of your database and files</em>! If you are unsure how to achieve this please ask your hosting provider for advice. In order to convert, you need to have a new phpBB3 installation within the same database (but with a different prefix) as your old 2.0.x installation. You basically need to follow the basic instructions given for <a href="#install">New installations</a>. Please <strong>do not</strong> overwrite any old files - install phpBB3 at a different location.</p>
 
 	<p>Once you made a backup of everything and also have a brand new phpBB3 installation, you can now begin the conversion.</p>
+
+	<p>Note that the conversion requires CREATE and DROP privileges for the phpBB3's database user account.</p>
 </div>
 <a href="#top">Top</a>
 <br /><br />
@@ -442,7 +445,7 @@ p a {
 	<p>To begin the conversion visit the install folder of your phpBB3 installation (the same as you have done for installing). Now you will see a new tab <em>Convert</em>. Click this tab.</p>
 
 	<p>As with install the conversion is automated. Your previous 2.0.x database tables will not be touched as well as the original 2.0.x files remaining untouched. The conversion is actually only filling your phpBB3 database tables and copying additional data over to your phpBB3 installation. This has the benefit that if something goes wrong you are able to either re-run the conversion or continue a conversion, while your old board is still accessible. We really recommend you disable your old installation while converting, else you may have inconsistent data after the conversion.</p>
-	
+
 	<p>Please note that this conversion process may take quite some time and depending on your hosting provider this may result in it failing (due to web server or other timeout issues). If this is the case you should ask your provider if they are willing to allow the convert script to temporarily exceed their limits (be nice and they will probably be quite helpful).</p>
 
 	<p>Once completed your board should be immediately available. If you encountered errors you should report the problems to our bug tracker or seek help via our forums (see <a href="README.html">README</a> for details).</p>
@@ -461,11 +464,35 @@ p a {
 
 	<p>Within the conversion the search index has not been created or transferred. This means after conversion you are not able to find any matches if you want to search for something. We recommend you rebuild your search index within <code>Admin -&gt; Maintenance -&gt; Database -&gt; Search Index</code>.</p>
 
+	<p>After verifying the settings in the ACP, you can delete the install directory to enable the board. The board will stay disabled until you do so.</p>
+
 	<p>Once you are pleased with your new installation you may want to give it the name of your old installation, changing the directory name. With phpBB3 this is possible without any problems - but you may still want to check your cookie settings within the administration panel, if the cookie path need to be adjusted prior to renaming.</p>
 
 </div>
 <a href="#top">Top</a>
 <br /><br />
+
+<a name="convprob"></a><b>5.iv. Common conversion problems</b>
+<br /><br />
+
+<div class="paragraph">
+
+	<p><strong>Broken non-latin characters</strong> The conversion script assumes that the database encoding in the source phpBB2 matches the encoding defined in the <code>lang_main.php</code> file of the default language pack of the source installation. Edit that file to match the database's encoding and re-start the conversion procedure.</p>
+
+	<p><strong>http 500 / white pages</strong> The conversion is a load-heavy procedure. Restrictions imposed by some server hosting providers can cause problems. The most common causes are: too low values for the php settings <code>memory_limit</code> and <code>max_execution_time</code>. Limits on the allowed CPU time are also a frequent cause for such errors, as are caps on the number of database queries allowed. If you cannot change such settings, then contact your hosting provider or run the conversion procedure on a different computer.</p>
+
+	<p><strong>Password conversion</strong> Due to the utf-8 based handling of passwords in phpBB3, it is not always possible to transfer all passwords. For passwords "lost in translation" the easiest workaround is to use the "forgotten password" function.</p>
+
+	<p><strong>path to your former board</strong></p> The converter expects the relative path to your old board's files. So, -for instance - if the new board is located at <code>http://www.yourdomain.com/forum</code> and the phpBB3 is located at <code>http://www.yourdomain.com/phpBB3</code>, then the correct value would be <code>../forum</code>. Note that the webserver user must be able to access the source installation's files.
+
+	<p><strong>Missing images</strong></p> If your default board language's language pack does not include all images, then some images might be missing in your installation. Always use a complete language pack as default language.
+
+	<p><strong>Smilies</strong></p> During the conversion you might see warnings about image files where the copying failed. That can happen if the old board's smilies have the same file names as those on the new board. Copy those files manually after the conversion, if you want to continue using the old smilies.
+
+</div>
+<a href="#top">Top</a>
+<br /><br />
+
 
 <hr />
 
@@ -476,6 +503,7 @@ p a {
 	<p>Once you have succssfully installed phpBB3 you <strong>MUST</strong> ensure you remove the entire install/ directory. Leaving the install directory in place is a <em>very serious potential security issue</em> which may lead to deletion or alteration of files, etc. Please note that until this directory is not removed phpBB3 will not operate and a warning message will be displayed. Beyond this <strong>essential</strong> deletion you may also wish to delete the docs/ directories if you wish.</p>
 
 	<p>With these directories deleted you should proceed to the administration panel. Depending on how the installation completed you may have been directed there automatically. If not, login as the administrator you specified during install/conversion and click the <strong>Administration Panel</strong> link at the bottom of any page. Ensure that details specified in <code>Admin -&gt; General</code> are correct!</p>
+
 </div>
 <a href="#top">Top</a>
 <br /><br />
