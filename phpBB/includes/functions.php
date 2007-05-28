@@ -2709,8 +2709,8 @@ function make_clickable_callback($type, $whitespace, $url, $relative_url, $class
 
 		case MAGIC_URL_EMAIL:
 			$tag	= 'e';
-			$url	= 'mailto:' . $url;
 			$text	= (strlen($url) > 55) ? substr($url, 0, 39) . ' ... ' . substr($url, -10) : $url;
+			$url	= 'mailto:' . $url;
 		break;
 	}
 
