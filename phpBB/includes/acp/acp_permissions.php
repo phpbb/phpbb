@@ -616,7 +616,7 @@ class acp_permissions
 		$assigned_role = (isset($_POST['role'][$ug_id][$forum_id])) ? (int) $_POST['role'][$ug_id][$forum_id] : 0;
 
 		// Do the admin want to set these permissions to other items too?
-		$inherit = request_var('inherit', array(0));
+		$inherit = request_var('inherit', array(0 => array(0)));
 
 		$ug_id = array($ug_id);
 		$forum_id = array($forum_id);
