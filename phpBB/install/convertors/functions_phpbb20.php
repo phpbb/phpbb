@@ -581,10 +581,11 @@ function phpbb_convert_authentication($mode)
 	}
 	// Grab user auth information from 2.0.x board
 	$sql = "SELECT ug.user_id, aa.*
-		FROM {$convert->src_table_prefix}auth_access aa, {$convert->src_table_prefix}user_group ug, {$convert->src_table_prefix}groups g
+		FROM {$convert->src_table_prefix}auth_access aa, {$convert->src_table_prefix}user_group ug, {$convert->src_table_prefix}groups g, {$convert->src_table_prefix}forums f
 		WHERE g.group_id = aa.group_id
 			AND g.group_single_user = 1
-			AND ug.group_id = g.group_id";
+			AND ug.group_id = g.group_id
+			AND f.forum_id = aa.forum_id";
 	$result = $src_db->sql_query($sql);
 
 	$user_access = array();
