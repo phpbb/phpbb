@@ -34,7 +34,7 @@ html>body dd label input { vertical-align: text-bottom; }	/* Align checkboxes/ra
 
 /* Nice method for clearing floated blocks without having to insert any extra markup (like spacer above)
    From http://www.positioniseverything.net/easyclearing.html */
-#tabs:after, #minitabs:after, .post:after, .navbar:after, fieldset dl:after, ul.topiclist dl:after, ul.linklist:after, dl.polls:after {
+#tabs:after, #minitabs:after, .post:after, .navbar:after, fieldset dd:after, fieldset dl:after, ul.topiclist dl:after, ul.linklist:after, dl.polls:after {
 	content: "."; 
 	display: block; 
 	height: 0; 

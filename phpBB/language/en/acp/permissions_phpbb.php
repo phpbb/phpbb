@@ -130,7 +130,7 @@ $lang = array_merge($lang, array(
 	'acl_f_read'		=> array('lang' => 'Can read forum', 'cat' => 'post'),
 	'acl_f_post'		=> array('lang' => 'Can start new topics', 'cat' => 'post'),
 	'acl_f_reply'		=> array('lang' => 'Can reply to topics', 'cat' => 'post'),
-	'acl_f_icons'		=> array('lang' => 'Can use post icons', 'cat' => 'post'),
+	'acl_f_icons'		=> array('lang' => 'Can use topic/post icons', 'cat' => 'post'),
 	'acl_f_announce'	=> array('lang' => 'Can post announcements', 'cat' => 'post'),
 	'acl_f_sticky'		=> array('lang' => 'Can post stickies', 'cat' => 'post'),
 
@@ -191,7 +191,7 @@ $lang = array_merge($lang, array(
 	'acl_a_forumdel'	=> array('lang' => 'Can delete forums', 'cat' => 'forums'),
 	'acl_a_prune'		=> array('lang' => 'Can prune forums', 'cat' => 'forums'),
 
-	'acl_a_icons'		=> array('lang' => 'Can alter topic icons and smilies', 'cat' => 'posting'),
+	'acl_a_icons'		=> array('lang' => 'Can alter topic/post icons and smilies', 'cat' => 'posting'),
 	'acl_a_words'		=> array('lang' => 'Can alter word censors', 'cat' => 'posting'),
 	'acl_a_bbcode'		=> array('lang' => 'Can define BBCode tags', 'cat' => 'posting'),
 	'acl_a_attach'		=> array('lang' => 'Can alter attachment related settings', 'cat' => 'posting'),

@@ -360,21 +360,6 @@ td.profile {
 	padding: 4px;
 }
 
-.rowgood {
-	background-color: #C2D6CD;
-	padding: 4px;
-}
-
-.rowneutral {
-	background-color: #CAC1D7;
-	padding: 4px;
-}
-
-.rowbad {
-	background-color: #D7C1C3;
-	padding: 4px;
-}
-
 .spacer {
 	background-color: #D1D7DC;
 }

@@ -153,6 +153,10 @@ fieldset.quick-login {
 }
 
 fieldset.quick-login input {
+	width: auto;
+}
+
+fieldset.quick-login input.inputbox {
 	width: 15%;
 	vertical-align: middle;
 	margin-right: 5px;
@@ -285,11 +289,6 @@ fieldset.submit-buttons input {
 .inputbox:focus {
 	border: 1px solid #eaeaea;
 	color: #4b4b4b;
-}
-
-input.checkbox {
-	width: auto !important;
-	background-color: transparent !important;
 }
 
 input.inputbox	{ width: 85%; }

@@ -192,15 +192,15 @@ class jabber
 	{
 		if (@function_exists('dns_get_record'))
 		{
-			$record = dns_get_record("_xmpp-client._tcp.$server", DNS_SRV);
-			if (!empty($record))
+			$record = @dns_get_record("_xmpp-client._tcp.$server", DNS_SRV);
+			if (!empty($record) && !empty($record[0]['target']))
 			{
 				$server = $record[0]['target'];
 			}
 		}
 		else
 		{
-			$this->add_to_log('Warning: dns_get_record function not found. GTalk will not work.');
+			$this->add_to_log('Warning: dns_get_record() function not found. GTalk will not work.');
 		}
 
 		$server = $use_ssl ? 'ssl://' . $server : $server;
@@ -225,7 +225,7 @@ class jabber
 	{
 		if ($this->enable_logging && sizeof($this->log_array))
 		{
-			return '<br /><br />' . implode("<br /><br />", $this->log_array);
+			return implode("<br /><br />", $this->log_array);
 		}
 
 		return '';

@@ -58,13 +58,13 @@ class acp_jabber
 
 				if (!$jabber->connect())
 				{
-					trigger_error($user->lang['ERR_JAB_CONNECT'] . $jabber->get_log() . adm_back_link($this->u_action), E_USER_WARNING);
+					trigger_error($user->lang['ERR_JAB_CONNECT'] . '<br /><br />' . $jabber->get_log() . adm_back_link($this->u_action), E_USER_WARNING);
 				}
 
 				// We'll try to authorise using this account
 				if (!$jabber->login())
 				{
-					trigger_error($user->lang['ERR_JAB_AUTH'] . $jabber->get_log() . adm_back_link($this->u_action), E_USER_WARNING);
+					trigger_error($user->lang['ERR_JAB_AUTH'] . '<br /><br />' . $jabber->get_log() . adm_back_link($this->u_action), E_USER_WARNING);
 				}
 
 				$jabber->disconnect();
