@@ -11,7 +11,8 @@
 /**
 *
 * Jabber class from Flyspray project
-* @version class.jabber2.php 1209 2007-05-12 13:39:10Z floele
+*
+* @version class.jabber2.php 1244 2007-05-28
 * @copyright 2006 Flyspray.org
 * @author: Florian Schmitz (floele)
 *
@@ -36,6 +37,8 @@ class jabber
 
 	var $features = array();
 
+	/**
+	*/
 	function jabber($server, $port, $username, $password, $use_ssl = false)
 	{
 		$this->server				= ($server) ? $server : 'localhost';
@@ -59,8 +62,8 @@ class jabber
 	*/
 	function can_use_ssl()
 	{
-		// Will not work with PHP >= 5.2.1 until timeout problem with ssl hasn't been fixed (http://bugs.php.net/41236)
-		return (version_compare(PHP_VERSION, '5.2.1', '<') && @extension_loaded('openssl')) ? true : false;
+		// Will not work with PHP >= 5.2.1 or < 5.2.3RC2 until timeout problem with ssl hasn't been fixed (http://bugs.php.net/41236)
+		return ((version_compare(PHP_VERSION, '5.2.1', '<') || version_compare(PHP_VERSION, '5.2.3RC2', '>=') && @extension_loaded('openssl')) ? true : false;
 	}
 
 	/**
@@ -299,6 +302,7 @@ class jabber
 	* Sets account presence. No additional info required (default is "online" status)
 	* @param $message online, offline...
 	* @param $type dnd, away, chat, xa or nothing
+	* @param $unavailable set this to true if you want to become unavailable
 	* @access public
 	* @return bool
 	*/
@@ -405,6 +409,7 @@ class jabber
 				}
 
 				// Does the server support SASL authentication?
+
 				// I hope so, because we do (and no other method).
 				if (isset($xml['stream:features'][0]['#']['mechanisms'][0]['@']['xmlns']) && $xml['stream:features'][0]['#']['mechanisms'][0]['@']['xmlns'] == 'urn:ietf:params:xml:ns:xmpp-sasl')
 				{
@@ -416,17 +421,26 @@ class jabber
 						$methods[] = $value['#'];
 					}
 
-					// we prefer this one
+					// we prefer DIGEST-MD5
+					// we don't want to use plain authentication (neither does the server usually) if no encryption is in place
+
+					// http://www.xmpp.org/extensions/attic/jep-0078-1.7.html
+					// The plaintext mechanism SHOULD NOT be used unless the underlying stream is encrypted (using SSL or TLS)
+					// and the client has verified that the server certificate is signed by a trusted certificate authority.
+
 					if (in_array('DIGEST-MD5', $methods))
 					{
 						$this->send("<auth xmlns='urn:ietf:params:xml:ns:xmpp-sasl' mechanism='DIGEST-MD5'/>");
 					}
-					else if (in_array('PLAIN', $methods) && ($this->session['ssl'] || $this->session['tls']))
+					else if (in_array('PLAIN', $methods) && ($this->session['ssl'] || !empty($this->session['tls'])))
 					{
-						// we don't want to use this (neither does the server usually) if no encryption is in place
 						$this->send("<auth xmlns='urn:ietf:params:xml:ns:xmpp-sasl' mechanism='PLAIN'>"
 							. base64_encode(chr(0) . $this->username . '@' . $this->server . chr(0) . $this->password) .
 							'</auth>');
+					}
+					else if (in_array('ANONYMOUS', $methods))
+					{
+						$this->send("<auth xmlns='urn:ietf:params:xml:ns:xmpp-sasl' mechanism='ANONYMOUS'/>");
 					}
 					else
 					{
@@ -561,13 +575,6 @@ class jabber
 					break;
 
 					case 'reg_1':
-						// more than instructions, username and password?
-						if (sizeof($xml['iq'][0]['#']['query'][0]['#']) > 3)
-						{
-							$this->add_to_log('Server requires too much data for registration.');
-							return false;
-						}
-
 						$this->send("<iq type='set' id='reg_2'>
 								<query xmlns='jabber:iq:register'>
 									<username>" . utf8_htmlspecialchars($this->username) . "</username>
