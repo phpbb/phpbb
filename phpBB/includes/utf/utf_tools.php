@@ -788,6 +788,7 @@ function utf8_recode($string, $encoding)
 			case '2':
 			case '4':
 			case '7':
+			case '8':
 			case '9':
 			case '15':
 				if (!function_exists('iso_8859_' . $array[1]))
