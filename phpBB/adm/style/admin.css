@@ -191,7 +191,7 @@ a:active {
 	height: 350px; 
 }
 
-.simple-page-body {
+#page-body.simple-page-body {
 	padding: 0;
 	padding-right: 10px;
 	min-width: 0;
