@@ -110,7 +110,6 @@ $lang = array_merge($lang, array(
 	'NO_VALUE_OPTION_EXPLAIN'	=> 'Value for a non-entry. If the field is required, the user gets an error if he choose the option selected here.',
 	'NUMBERS_ONLY'				=> 'Only numbers (0-9)',
 
-	'PREVIEW_PROFILE_FIELD'		=> 'Preview profile field',
 	'PROFILE_BASIC_OPTIONS'		=> 'Basic options',
 	'PROFILE_FIELD_ACTIVATED'	=> 'Profile field successfully activated.',
 	'PROFILE_FIELD_DEACTIVATED'	=> 'Profile field successfully deactivated.',
@@ -130,7 +129,7 @@ $lang = array_merge($lang, array(
 	'STEP_1_TITLE_CREATE'			=> 'Add profile field',
 	'STEP_1_TITLE_EDIT'				=> 'Edit profile field',
 	'STEP_2_EXPLAIN_CREATE'			=> 'Here you are able to define some common options you may want to adjust.',
-	'STEP_2_EXPLAIN_EDIT'			=> 'Here you are able to change some common options. Further you are able to preview the changed field, as the user will see it. Play around with it until you are satisfied as how the field behaves.<br /><strong>Please note that changes to profile fields will not affect existing profile fields entered by your users.</strong>',
+	'STEP_2_EXPLAIN_EDIT'			=> 'Here you are able to change some common options.<br /><strong>Please note that changes to profile fields will not affect existing profile fields entered by your users.</strong>',
 	'STEP_2_TITLE_CREATE'			=> 'Profile type specific options',
 	'STEP_2_TITLE_EDIT'				=> 'Profile type specific options',
 	'STEP_3_EXPLAIN_CREATE'			=> 'Since you have more than one board language installed, you have to fill out the remaining language items too. The profile field will work with the default language enabled, you are able to fill out the remaining language items later too.',
@@ -142,7 +141,6 @@ $lang = array_merge($lang, array(
 	'TEXT_DEFAULT_VALUE_EXPLAIN'	=> 'Enter a default text to be displayed, a default value. Leave empty if you want to show it empty at the first place.',
 	'TRANSLATE'						=> 'Translate',
 
-	'UPDATE_PREVIEW'	=> 'Update preview',
 	'USER_FIELD_NAME'	=> 'Field name/title presented to the user',
 
 	'VISIBILITY_OPTION'				=> 'Visibility option',
