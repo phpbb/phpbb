@@ -447,7 +447,6 @@ class bbcode_firstpass extends bbcode
 		unset($htm_match[4], $htm_match[5]);
 		$htm_replace = array('\1', '\1', '\2', '\1');
 
-		$in = preg_replace($htm_match, $htm_replace, $in);
 		$out = $code_block = '';
 		$open = 1;
 
@@ -488,6 +487,7 @@ class bbcode_firstpass extends bbcode
 				if ($open == 1)
 				{
 					$code_block .= substr($in, 0, $pos2);
+					$code_block = preg_replace($htm_match, $htm_replace, $code_block);
 
 					// Parse this code block
 					$out .= $this->bbcode_parse_code($stx, $code_block);
@@ -514,6 +514,8 @@ class bbcode_firstpass extends bbcode
 		if ($code_block)
 		{
 			$code_block = substr($code_block, 0, -7);
+			$code_block = preg_replace($htm_match, $htm_replace, $code_block);
+
 			$out .= $this->bbcode_parse_code($stx, $code_block);
 		}
 
