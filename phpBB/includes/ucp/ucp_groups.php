@@ -943,14 +943,14 @@ class ucp_groups
 
 						$user->add_lang(array('acp/groups', 'acp/common'));
 
-						$name_ary = request_var('usernames', '', true);
+						$names = request_var('usernames', '', true);
 
 						if (!$group_id)
 						{
 							trigger_error($user->lang['NO_GROUP'] . $return_page);
 						}
 
-						if (!$name_ary)
+						if (!$names)
 						{
 							trigger_error($user->lang['NO_USERS'] . $return_page);
 						}
@@ -966,15 +966,30 @@ class ucp_groups
 							trigger_error($user->lang['NOT_LEADER_OF_GROUP'] . $return_page);
 						}
 
-						$name_ary = array_unique(explode("\n", $name_ary));
+						$name_ary = array_unique(explode("\n", $names));
 						$group_name = ($group_row['group_type'] == GROUP_SPECIAL) ? $user->lang['G_' . $group_row['group_name']] : $group_row['group_name'];
 
 						$default = request_var('default', 0);
-
-						// Add user/s to group
-						if ($error = group_user_add($group_id, false, $name_ary, $group_name, $default, 0, 0, $group_row))
+						
+						if (confirm_box(true))
 						{
-							trigger_error($user->lang[$error] . $return_page);
+							// Add user/s to group
+							if ($error = group_user_add($group_id, false, $name_ary, $group_name, $default, 0, 0, $group_row))
+							{
+								trigger_error($user->lang[$error] . $return_page);
+							}
+						}
+						else
+						{
+							$s_hidden_fields = array(
+								'default'	=> $default,
+								'usernames'	=> $names,
+								'g'			=> $group_id,
+								'i'			=> $id,
+								'mode'		=> $mode,
+								'action'	=> $action
+							);
+							confirm_box(false, sprintf($user->lang['GROUP_CONFIRM_ADD_USER' . ((sizeof($name_ary) == 1) ? '' : 'S')], implode(', ', $name_ary)), build_hidden_fields($s_hidden_fields));
 						}
 
 						trigger_error($user->lang['GROUP_USERS_ADDED'] . '<br /><br />' . sprintf($user->lang['RETURN_PAGE'], '<a href="' . $this->u_action . '&amp;action=list&amp;g=' . $group_id . '">', '</a>'));

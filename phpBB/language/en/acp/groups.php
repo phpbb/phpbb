@@ -41,6 +41,7 @@ $lang = array_merge($lang, array(
 
 	'GROUPS_NO_MEMBERS'				=> 'This group has no members',
 	'GROUPS_NO_MODS'				=> 'No group leaders defined',
+
 	'GROUP_APPROVE'					=> 'Approve member',
 	'GROUP_APPROVED'				=> 'Approved members',
 	'GROUP_AVATAR'					=> 'Group avatar',
@@ -48,6 +49,8 @@ $lang = array_merge($lang, array(
 	'GROUP_CLOSED'					=> 'Closed',
 	'GROUP_COLOR'					=> 'Group colour',
 	'GROUP_COLOR_EXPLAIN'			=> 'Defines the colour members usernames will appear in, leave blank for user default.',
+	'GROUP_CONFIRM_ADD_USER'		=> 'Are you sure that you want to add the user %1$s to the group?',
+	'GROUP_CONFIRM_ADD_USERS'		=> 'Are you sure that you want to add the users %1$s to the group?',
 	'GROUP_CREATED'					=> 'Group has been created successfully.',
 	'GROUP_DEFAULT'					=> 'Make group default for member',
 	'GROUP_DEFS_UPDATED'			=> 'Default group set for all selected members.',
@@ -90,6 +93,7 @@ $lang = array_merge($lang, array(
 	'GROUP_TYPE'					=> 'Group type',
 	'GROUP_TYPE_EXPLAIN'			=> 'This determines which users can join or view this group.',
 	'GROUP_UPDATED'					=> 'Group preferences updated successfully.',
+	
 	'GROUP_USERS_ADDED'				=> 'New users added to group successfully.',
 	'GROUP_USERS_EXIST'				=> 'The selected users are already members.',
 	'GROUP_USERS_REMOVE'			=> 'Users removed from group and new defaults set successfully.',

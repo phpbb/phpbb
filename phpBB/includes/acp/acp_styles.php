@@ -1462,12 +1462,14 @@ parse_css_file = {PARSE_CSS_FILE}
 
 		$new_id = request_var('new_id', 0);
 		$update = (isset($_POST['update'])) ? true : false;
+		$sql_where = '';
 
 		switch ($mode)
 		{
 			case 'style':
 				$sql_from = STYLES_TABLE;
 				$sql_select = 'style_name';
+				$sql_where = 'AND style_active = 1';
 			break;
 
 			case 'template':
@@ -1502,7 +1504,8 @@ parse_css_file = {PARSE_CSS_FILE}
 
 		$sql = "SELECT {$mode}_id, {$mode}_name
 			FROM $sql_from
-			WHERE {$mode}_id <> $style_id
+			WHERE {$mode}_id <> $style_id 
+			$sql_where 
 			ORDER BY {$mode}_name ASC";
 		$result = $db->sql_query($sql);
 
@@ -1545,14 +1548,14 @@ parse_css_file = {PARSE_CSS_FILE}
 					set_config('default_style', $new_id);
 				}
 			}
-			else if ($mode == 'imageset')
-			{
-				$sql = 'DELETE FROM ' . STYLES_IMAGESET_DATA_TABLE . "
-					WHERE imageset_id = $style_id";
-				$db->sql_query($sql);
-			}
 			else
 			{
+				if ($mode == 'imageset')
+				{
+					$sql = 'DELETE FROM ' . STYLES_IMAGESET_DATA_TABLE . "
+						WHERE imageset_id = $style_id";
+					$db->sql_query($sql);
+				}
 				$sql = 'UPDATE ' . STYLES_TABLE . "
 					SET {$mode}_id = $new_id
 					WHERE {$mode}_id = $style_id";
