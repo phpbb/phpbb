@@ -408,7 +408,7 @@ function iso_8859_7($string)
 
 function iso_8859_8($string)
 {
-	static $tranform = array(
+	static $transform = array(
 		"\xC2\xAA" => "\xC3\x97",
 		"\xC2\xBA" => "\xC3\xB7",
 		"\xC3\x9F" => "\xE2\x80\x97",
