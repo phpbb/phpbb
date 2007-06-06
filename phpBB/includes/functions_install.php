@@ -29,6 +29,7 @@ function can_load_dll($dll)
 */
 function get_available_dbms($dbms = false, $return_unavailable = false, $only_20x_options = false)
 {
+	global $lang;
 	$available_dbms = array(
 		'firebird'	=> array(
 			'LABEL'			=> 'FireBird',
@@ -172,12 +173,14 @@ function get_available_dbms($dbms = false, $return_unavailable = false, $only_20
 */
 function dbms_select($default = '', $only_20x_options = false)
 {
+	global $lang;
+	
 	$available_dbms = get_available_dbms(false, false, $only_20x_options);
 	$dbms_options = '';
 	foreach ($available_dbms as $dbms_name => $details)
 	{
 		$selected = ($dbms_name == $default) ? ' selected="selected"' : '';
-		$dbms_options .= '<option value="' . $dbms_name . '"' . $selected .'>' . $details['LABEL'] . '</option>';
+		$dbms_options .= '<option value="' . $dbms_name . '"' . $selected .'>' . $lang['DLL_' . strtoupper($dbms_name)] . '</option>';
 	}
 	return $dbms_options;
 }
