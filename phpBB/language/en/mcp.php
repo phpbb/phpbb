@@ -346,7 +346,7 @@ $lang = array_merge($lang, array(
 	'WARNED_USERS_EXPLAIN'	=> 'This is a list of users with unexpired warnings issued to them.',
 	'WARNING_PM_BODY'		=> 'The following is a warning which has been issued to you by an administrator or moderator of this site.[quote]%s[/quote]',
 	'WARNING_PM_SUBJECT'	=> 'Board warning issued',
-	'WARNING_POST_DEFAULT'	=> 'This is a warning regarding the following post made by you: %s.',
+	'WARNING_POST_DEFAULT'	=> 'This is a warning regarding the following post made by you: %s .',
 	'WARNINGS_ZERO_TOTAL'	=> 'No warnings exist.',
 
 	'YOU_SELECTED_TOPIC'	=> 'You selected topic number %d: %s.',

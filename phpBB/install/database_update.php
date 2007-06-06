@@ -615,7 +615,8 @@ if (version_compare($current_version, '3.0.RC1', '<='))
 	_sql($sql, $errored, $error_ary);
 
 	set_config('jab_use_ssl', '0');
-
+	set_config('allow_post_flash', '0');
+ 
 	$no_updates = false;
 }
 
