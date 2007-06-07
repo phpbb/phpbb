@@ -127,12 +127,16 @@ switch ($mode)
 
 		// Get group memberships for the admin id ary...
 		$admin_memberships = group_memberships($admin_group_id, $admin_id_ary);
+		
 		$admin_user_ids = array();
-
-		// ok, we only need the user ids...
-		foreach ($admin_memberships as $row)
+		
+		if (!empty($admin_memberships))
 		{
-			$admin_user_ids[$row['user_id']] = true;
+			// ok, we only need the user ids...
+			foreach ($admin_memberships as $row)
+			{
+				$admin_user_ids[$row['user_id']] = true;
+			}
 		}
 		unset($admin_memberships);
 
@@ -163,7 +167,7 @@ switch ($mode)
 				)
 			),
 
-			'WHERE'		=> $db->sql_in_set('u.user_id', array_unique(array_merge($admin_id_ary, $mod_id_ary))) . '
+			'WHERE'		=> $db->sql_in_set('u.user_id', array_unique(array_merge($admin_id_ary, $mod_id_ary)), false, true) . '
 				AND u.group_id = g.group_id',
 
 			'ORDER_BY'	=> 'g.group_name ASC, u.username_clean ASC'

@@ -102,6 +102,7 @@ $lang = array_merge($lang, array(
 
 	'ALLOW_BBCODE_PM'			=> 'Allow BBCode in private messages',
 	'ALLOW_FLASH_PM'			=> 'Allow use of <code>[FLASH]</code> BBCode tag',
+	'ALLOW_FLASH_PM_EXPLAIN'	=> 'Note that the ability to use flash in private messages, if enabled here, also depends on the permissions.',
 	'ALLOW_FORWARD_PM'			=> 'Allow forwarding of private messages',
 	'ALLOW_IMG_PM'				=> 'Allow use of <code>[IMG]</code> BBCode tag',
 	'ALLOW_MASS_PM'				=> 'Allow sending of private messages to multiple users and groups',
@@ -126,8 +127,8 @@ $lang = array_merge($lang, array(
 	'ACP_POST_SETTINGS_EXPLAIN'			=> 'Here you can set all default settings for posting.',
 	'ALLOW_POST_LINKS'					=> 'Allow links in posts/private messages',
 	'ALLOW_POST_LINKS_EXPLAIN'			=> 'If disallowed the <code>[URL]</code> BBCode tag and automatic/magic URLs are disabled.',
-	'ALLOW_POST_FLASH'					=> 'Allow use of <code>[FLASH]</code> BBCode tag',
-	'ALLOW_POST_FLASH_EXPLAIN'			=> 'If disallowed the <code>[FLASH]</code> BBCode tag is disabled in posts.',
+	'ALLOW_POST_FLASH'					=> 'Allow use of <code>[FLASH]</code> BBCode tag in posts. ',
+	'ALLOW_POST_FLASH_EXPLAIN'			=> 'If disallowed the <code>[FLASH]</code> BBCode tag is disabled in posts. Otherwise the permission system controls which users can use the <code>[FLASH]</code> BBCode tag.',
 
 	'BUMP_INTERVAL'					=> 'Bump interval',
 	'BUMP_INTERVAL_EXPLAIN'			=> 'Number of minutes, hours or days between the last post to a topic and the ability to bump this topic.',
