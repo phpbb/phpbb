@@ -48,7 +48,7 @@ class dbal_oracle extends dbal
 			$connect = $sqlserver . (($port) ? ':' . $port : '') . '/' . $database;
 		}
 
-		$this->db_connect_id = ($new_link) ? @ocinlogon($this->user, $sqlpassword, $connect, 'UTF8') : (($this->persistency) ? @ociplogon($this->user, $sqlpassword, $connect, 'UTF8') : @ocinlogon($this->user, $sqlpassword, $connect, 'UTF8'));
+		$this->db_connect_id = ($new_link) ? @ocinlogon($this->user, $sqlpassword, $connect, 'UTF8') : (($this->persistency) ? @ociplogon($this->user, $sqlpassword, $connect, 'UTF8') : @ocilogon($this->user, $sqlpassword, $connect, 'UTF8'));
 
 		return ($this->db_connect_id) ? $this->db_connect_id : $this->sql_error('');
 	}
@@ -83,6 +83,90 @@ class dbal_oracle extends dbal
 		}
 
 		return true;
+	}
+
+	/**
+	* Oracle specific code to handle the fact that it does not compare columns properly
+	* @access private
+	*/
+	function _rewrite_col_compare($args)
+	{
+		if (sizeof($args) == 4)
+		{
+			if ($args[2] == '=')
+			{
+				return '(' . $args[0] . ' OR (' . $args[1] . ' is NULL AND ' . $args[3] . ' is NULL))';
+			}
+			else if ($args[2] == '<>')
+			{
+				// really just a fancy way of saying foo <> bar or (foo is NULL XOR bar is NULL) but SQL has no XOR :P
+				return '(' . $args[0] . ' OR ((' . $args[1] . ' is NULL AND ' . $args[3] . ' is NOT NULL) OR (' . $args[1] . ' is NOT NULL AND ' . $args[3] . ' is NULL)))';
+			}
+		}
+		else
+		{
+			return $this->_rewrite_where($args[0]);
+		}
+	}
+
+	/**
+	* Oracle specific code to handle it's lack of sanity
+	* @access private
+	*/
+	function _rewrite_where($where_clause)
+	{
+		preg_match_all('/\s*(AND|OR)?\s*([\w_.]++)\s*(?:(=|<>)\s*((?>\'(?>[^\']++|\'\')*+\'|\d+))|((NOT )?IN\s*\((?>\'(?>[^\']++|\'\')*+\',? ?|\d+,? ?)*+\)))/', $where_clause, $result, PREG_SET_ORDER);
+		$out = '';
+		foreach ($result as $val)
+		{
+			if (!isset($val[5]))
+			{
+				if ($val[4] !== "''")
+				{
+					$out .= $val[0];
+				}
+				else
+				{
+					$out .= ' ' . $val[1] . ' ' . $val[2];
+					if ($val[3] == '=')
+					{
+						$out .= ' is NULL';
+					}
+					else if ($val[3] == '<>')
+					{
+						$out .= ' is NOT NULL';
+					}
+				}
+			}
+			else
+			{
+				$in_clause = array();
+				$sub_exp = substr($val[5], strpos($val[5], '(') + 1, -1);
+				$extra = false;
+				preg_match_all('/\'(?>[^\']++|\'\')*+\'|\d++/', $sub_exp, $sub_vals, PREG_PATTERN_ORDER);
+				foreach ($sub_vals[0] as $sub_val)
+				{
+					if ($sub_val !== "''")
+					{
+						$in_clause[] = $sub_val;
+					}
+					else
+					{
+						$extra = true;
+					}
+				}
+				if (!$extra)
+				{
+					$out .= $val[0];
+				}
+				else
+				{
+					$out .= ' ' . $val[1] . ' (' . $val[2]. ' ' . (isset($val[6]) ? $val[6] : '') . 'IN(' . implode(', ', $in_clause) . ') OR ' . $val[2] . ' is ' . (isset($val[6]) ? $val[6] : '') . 'NULL)';
+				}
+			}
+		}
+
+		return $out;
 	}
 
 	/**
@@ -127,7 +211,6 @@ class dbal_oracle extends dbal
 				// We overcome Oracle's 4000 char limit by binding vars
 				if (strlen($query) > 4000)
 				{
-
 					if (preg_match('/^(INSERT INTO[^(]+)\\(([^()]+)\\) VALUES[^(]+\\((.*?)\\)$/s', $query, $regs))
 					{
 						if (strlen($regs[3]) > 4000)
@@ -151,13 +234,13 @@ class dbal_oracle extends dbal
 							unset($art);
 						}
 					}
-					else if (preg_match_all('/^(UPDATE [\\w_]++\\s+SET )(\\w+ = (?:\'(?:[^\']++|\'\')*+\'|\\d+)(?:, \\w+ = (?:\'(?:[^\']++|\'\')*+\'|\\d+))*+)\\s+(WHERE.*)$/s', $query, $data, PREG_SET_ORDER))
+					else if (preg_match_all('/^(UPDATE [\\w_]++\\s+SET )([\\w_]+ = (?:\'(?:[^\']++|\'\')*+\'|\\d+)(?:, [\\w_]+ = (?:\'(?:[^\']++|\'\')*+\'|\\d+))*+)\\s+(WHERE.*)$/s', $query, $data, PREG_SET_ORDER))
 					{
 						if (strlen($data[0][2]) > 4000)
 						{
 							$update = $data[0][1];
 							$where = $data[0][3];
-							preg_match_all('/(\\w++) = (\'(?:[^\']++|\'\')*+\'|\\d++)/', $data[0][2], $temp, PREG_SET_ORDER);
+							preg_match_all('/([\\w_]++) = (\'(?:[^\']++|\'\')*+\'|\\d++)/', $data[0][2], $temp, PREG_SET_ORDER);
 							unset($data);
 
 							$art = array();
@@ -178,6 +261,29 @@ class dbal_oracle extends dbal
 							unset($art);
 						}
 					}
+				}
+
+				switch (substr($query, 0, 6))
+				{
+					case 'DELETE':
+						if (preg_match('/^(DELETE FROM [\w_]++ WHERE)((?:\s*(?:AND|OR)?\s*[\w_]+\s*(?:(?:=|<>)\s*(?>\'(?>[^\']++|\'\')*+\'|\d+)|(?:NOT )?IN\s*\((?>\'(?>[^\']++|\'\')*+\',? ?|\d+,? ?)*+\)))*+)$/', $query, $regs))
+						{
+							$query = $regs[1] . $this->_rewrite_where($regs[2]);
+							unset($regs);
+						}
+					break;
+
+					case 'UPDATE':
+						if (preg_match('/^(UPDATE [\\w_]++\\s+SET [\\w_]+\s*=\s*(?:\'(?:[^\']++|\'\')*+\'|\\d++|:\w++)(?:, [\\w_]+\s*=\s*(?:\'(?:[^\']++|\'\')*+\'|\\d++|:\w++))*+\\s+WHERE)(.*)$/s',  $query, $regs))
+						{
+							$query = $regs[1] . $this->_rewrite_where($regs[2]);
+							unset($regs);
+						}
+					break;
+
+					case 'SELECT':
+						$query = preg_replace_callback('/([\w_.]++)\s*(?:(=|<>)\s*(?>\'(?>[^\']++|\'\')*+\'|\d++|([\w_.]++))|(?:NOT )?IN\s*\((?>\'(?>[^\']++|\'\')*+\',? ?|\d++,? ?)*+\))/', array($this, '_rewrite_col_compare'), $query);
+					break;
 				}
 
 				$this->query_result = @ociparse($this->db_connect_id, $query);

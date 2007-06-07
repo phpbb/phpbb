@@ -2824,6 +2824,14 @@ function get_database_size()
 				$database_size = $row['size'];
 			}
 		break;
+
+		case 'oracle':
+			$sql = 'SELECT SUM(bytes) as dbsize
+				FROM user_segments';
+			$result = $db->sql_query($sql);
+			$database_size = ($row = $db->sql_fetchrow($result)) ? $row['dbsize'] : false;
+			$db->sql_freeresult($result);
+		break;
 	}
 
 	if ($database_size !== false)
