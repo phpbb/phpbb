@@ -228,22 +228,24 @@ p a {
 		<li>[Fix] Outbox messages are no always neither new nor unread post-conversion (Bug #11461)</li>
 		<li>[Feature] Replaced outdated jabber class with the one from the flyspray project</li>
 		<li>[Feature] The converter no longer relies on the smiley ID to decide if it should be displayed on the posting page</li>
-		<li> Limit maximum number of allowed characters in messages to 60.000 by default. Admins should increase their PHP time limits if they want to raise this tremedously.</li>
-		<li> Some changes to the conversion documentation</li>
+		<li>[Change] Limit maximum number of allowed characters in messages to 60.000 by default. Admins should increase their PHP time limits if they want to raise this tremedously.</li>
+		<li>[Change] Some changes to the conversion documentation</li>
 		<li>[Fix] Only use permissions from existing forums during the conversion (Bug #11417)</li>
 		<li>[Fix] Do not permit the decimal as a valid prefix character (Bug #11967)</li>
 		<li>[Fix] Account for the fact that the IM fields might hold non-IM information</li>
 		<li>[Fix] Make the queue function on post details</li>
 		<li>[Fix] Check if there are active styles left before deleting a style</li>
 		<li>[Fix] Correctly update styles after the deletion of an imageset.</li>
+		<li>[Fix] Replaced jabber validation to use the method used by the new jabber class (Bug #9822)</li>
 		<li>[Sec] Adding confirm boxes to UCP group actions (ToonArmy)</li>
-		<li>[Feature] Added the option to disable the flash bbcode globally (DelvarWorld).</li>
-		<li>[Sec] Changed the embedding of Flash (NeoThermic, DelvarWorld).</li>
+		<li>[Feature] Added the option to disable the flash bbcode globally (DelvarWorld)</li>
+		<li>[Sec] Changed the embedding of Flash (NeoThermic, DelvarWorld)</li>
 		<li>[Fix] Use the signature setting for PMs (Bug #12001)</li>
 		<li>[Fix] Made the DBMS selection use language variables (Bug #11969)</li>
 		<li>[Fix] Make sure that a folder is used when viewing messages to oneself (Bug #12105)</li>
 		<li>[Fix] Account for the fact that a board might have no visible Admins (Bug #12185)</li>
 		<li>[Fix] Change group ranks even if empty (Bug #12231)</li>
+		<li>[Fix] Correctly move pm's into folders if more than one is received (Bug #12135)</li>
 
 	</ul>
 

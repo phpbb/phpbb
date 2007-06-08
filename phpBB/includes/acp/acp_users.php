@@ -970,7 +970,7 @@ class acp_users
 					'aim'			=> request_var('aim', $user_row['user_aim']),
 					'msn'			=> request_var('msn', $user_row['user_msnm']),
 					'yim'			=> request_var('yim', $user_row['user_yim']),
-					'jabber'		=> request_var('jabber', $user_row['user_jabber']),
+					'jabber'		=> utf8_normalize_nfc(request_var('jabber', $user_row['user_jabber'], true)),
 					'website'		=> request_var('website', $user_row['user_website']),
 					'location'		=> utf8_normalize_nfc(request_var('location', $user_row['user_from'], true)),
 					'occupation'	=> utf8_normalize_nfc(request_var('occupation', $user_row['user_occ'], true)),
@@ -999,7 +999,7 @@ class acp_users
 						'msn'			=> array('string', true, 5, 255),
 						'jabber'		=> array(
 							array('string', true, 5, 255),
-							array('match', true, '#^[^@:\'"<>&\x00-\x1F\x7F\t\r\n]+@(.*?\.)*?[a-z0-9\-_]+?\.[a-z]{2,4}(/.*)?$#iu')),
+							array('jabber')),
 						'yim'			=> array('string', true, 5, 255),
 						'website'		=> array(
 							array('string', true, 12, 255),

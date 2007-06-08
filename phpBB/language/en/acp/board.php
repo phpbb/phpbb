@@ -184,10 +184,10 @@ $lang = array_merge($lang, array(
 
 	'ACC_ACTIVATION'			=> 'Account activation',
 	'ACC_ACTIVATION_EXPLAIN'	=> 'This determines whether users have immediate access to the board or if confirmation is required. You can also completely disable new registrations.',
-	'ACC_ADMIN'					=> 'Admin',
+	'ACC_ADMIN'					=> 'By Admin',
 	'ACC_DISABLE'				=> 'Disable',
 	'ACC_NONE'					=> 'None',
-	'ACC_USER'					=> 'User',
+	'ACC_USER'					=> 'By User',
 //	'ACC_USER_ADMIN'			=> 'User + Admin',
 	'ALLOW_EMAIL_REUSE'			=> 'Allow e-mail address re-use',
 	'ALLOW_EMAIL_REUSE_EXPLAIN'	=> 'Different users can register with the same e-mail address.',
