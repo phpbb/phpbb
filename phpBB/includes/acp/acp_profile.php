@@ -620,13 +620,22 @@ class acp_profile
 
 					foreach ($key_ary as $key)
 					{
-						if (!isset($_REQUEST[$key]))
+						if ($field_type == FIELD_TEXT && $key == 'field_length' && isset($_REQUEST['rows']))
 						{
-							$var = false;
+							$cp->vars['rows'] = request_var('rows', 0);
+							$cp->vars['columns'] = request_var('columns', 0);
+							$_new_key_ary[$key] = $cp->vars['rows'] . '|' . $cp->vars['columns'];
 						}
 						else
 						{
-							$_new_key_ary[$key] = (is_array($_REQUEST[$key])) ? request_var($key, array(''), true) : request_var($key, '', true);
+							if (!isset($_REQUEST[$key]))
+							{
+								$var = false;
+							}
+							else
+							{
+								$_new_key_ary[$key] = (is_array($_REQUEST[$key])) ? request_var($key, array(''), true) : request_var($key, '', true);
+							}
 						}
 					}
 
@@ -897,7 +906,7 @@ class acp_profile
 			foreach ($options as $field => $field_type)
 			{
 				$value = ($action == 'create') ? request_var('l_' . $field, array(0 => ''), true) : $cp->vars['l_' . $field];
-
+				
 				if ($field == 'lang_options')
 				{
 					$var = ($action == 'create' || !is_array($cp->vars['l_lang_options'][$lang_id])) ? $cp->vars['lang_options'] : $cp->vars['lang_options'][$lang_id];
