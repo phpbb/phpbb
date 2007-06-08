@@ -738,7 +738,7 @@ class install_install extends module
 			if ($board_email1 != '' && !preg_match('/^' . get_preg_expression('email') . '$/i', $board_email1))
 			{
 				$error[] = $lang['INST_ERR_EMAIL_INVALID'];
-			}$error = array();
+			}
 
 			$template->assign_block_vars('checks', array(
 				'S_LEGEND'			=> true,
