@@ -620,20 +620,13 @@ class acp_profile
 
 					foreach ($key_ary as $key)
 					{
-						if (!isset($cp->vars[$key]))
+						if (!isset($_REQUEST[$key]))
 						{
-							if (!isset($_REQUEST[$key]))
-							{
-								$var = false;
-							}
-							else
-							{
-								$_new_key_ary[$key] = (is_array($_REQUEST[$key])) ? request_var($key, array(''), true) : request_var($key, '', true);
-							}
+							$var = false;
 						}
 						else
 						{
-							$_new_key_ary[$key] = $cp->vars[$key];
+							$_new_key_ary[$key] = (is_array($_REQUEST[$key])) ? request_var($key, array(''), true) : request_var($key, '', true);
 						}
 					}
 
