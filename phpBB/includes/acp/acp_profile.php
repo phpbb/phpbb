@@ -449,8 +449,7 @@ class acp_profile
 						// Get the number of options if this key is 'field_maxlen'
 						$var = sizeof(explode("\n", request_var('lang_options', '', true)));
 					}
-
-					if ($field_type == FIELD_TEXT && $key == 'field_length')
+					else if ($field_type == FIELD_TEXT && $key == 'field_length')
 					{
 						if (isset($_REQUEST['rows']))
 						{
@@ -465,8 +464,7 @@ class acp_profile
 							$cp->vars['columns'] = $row_col[1];
 						}
 					}
-
-					if ($field_type == FIELD_DATE && $key == 'field_default_value')
+					else if ($field_type == FIELD_DATE && $key == 'field_default_value')
 					{
 						$always_now = request_var('always_now', 0);
 
@@ -622,13 +620,20 @@ class acp_profile
 
 					foreach ($key_ary as $key)
 					{
-						if (!isset($_REQUEST[$key]))
+						if (!isset($cp->vars[$key]))
 						{
-							$var = false;
+							if (!isset($_REQUEST[$key]))
+							{
+								$var = false;
+							}
+							else
+							{
+								$_new_key_ary[$key] = (is_array($_REQUEST[$key])) ? request_var($key, array(''), true) : request_var($key, '', true);
+							}
 						}
 						else
 						{
-							$_new_key_ary[$key] = (is_array($_REQUEST[$key])) ? request_var($key, array(''), true) : request_var($key, '', true);
+							$_new_key_ary[$key] = $cp->vars[$key];
 						}
 					}
 
