@@ -738,7 +738,7 @@ class install_install extends module
 			if ($board_email1 != '' && !preg_match('/^' . get_preg_expression('email') . '$/i', $board_email1))
 			{
 				$error[] = $lang['INST_ERR_EMAIL_INVALID'];
-			}
+			}$error = array();
 
 			$template->assign_block_vars('checks', array(
 				'S_LEGEND'			=> true,
@@ -1645,14 +1645,19 @@ class install_install extends module
 								AND module_class = '" . $db->sql_escape($module_class) . "'
 								AND module_basename <> ''";
 						$result = $db->sql_query_limit($sql, 1);
-						$module_data = $db->sql_fetchrow($result);
+						$row = $db->sql_fetchrow($result);
 						$db->sql_freeresult($result);
 
-						unset($module_data['module_id']);
-						unset($module_data['left_id']);
-						unset($module_data['right_id']);
-
-						$module_data['parent_id'] = (int) $row2['module_id'];
+						$module_data = array(
+							'module_basename'	=> $row['module_basename'],
+							'module_enabled'	=> $row['module_enabled'],
+							'module_display'	=> $row['module_display'],
+							'parent_id'			=> (int) $row2['module_id'],
+							'module_class'		=> $row['module_class'],
+							'module_langname'	=> $row['module_langname'],
+							'module_mode'		=> $row['module_mode'],
+							'module_auth'		=> $row['module_auth'],
+						);
 
 						$_module->update_module_data($module_data, true);
 
