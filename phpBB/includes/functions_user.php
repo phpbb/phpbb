@@ -2702,12 +2702,6 @@ function group_set_user_default($group_id, $user_id_ary, $group_attributes = fal
 				continue;
 			}
 
-			// Do not update the rank if it is set to "user default"
-			if (strpos($attribute, 'group_rank') === 0 && !$group_attributes[$attribute])
-			{
-				continue;
-			}
-
 			settype($group_attributes[$attribute], $type);
 			$sql_ary[str_replace('group_', 'user_', $attribute)] = $group_attributes[$attribute];
 		}
