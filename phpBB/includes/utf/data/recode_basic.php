@@ -447,7 +447,7 @@ function iso_8859_8($string)
 
 function iso_8859_9($string)
 {
-	static $tranform = array(
+	static $transform = array(
 		"\xC3\x90" => "\xC4\x9E",
 		"\xC3\x9D" => "\xC4\xB0",
 		"\xC3\x9E" => "\xC5\x9E",
@@ -460,7 +460,7 @@ function iso_8859_9($string)
 
 function iso_8859_15($string)
 {
-	static $tranform = array(
+	static $transform = array(
 		"\xC2\xA4" => "\xE2\x82\xAC",
 		"\xC2\xA6" => "\xC5\xA0",
 		"\xC2\xA8" => "\xC5\xA1",
@@ -1004,7 +1004,7 @@ function cp1252($string)
 
 function cp1254($string)
 {
-	static $tranform = array(
+	static $transform = array(
 		"\xC2\x80" => "\xE2\x82\xAC",
 		"\xC2\x82" => "\xE2\x80\x9A",
 		"\xC2\x83" => "\xC6\x92",
