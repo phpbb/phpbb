@@ -498,7 +498,7 @@ function place_pm_into_folder(&$global_privmsgs_rules, $release = false)
 
 	// We place actions into arrays, to save queries.
 	$num_new = $num_unread = 0;
-	$sql = $unread_ids = $delete_ids = $important_ids = array();
+	$sql = $unread_ids = $delete_ids = $important_ids = $move_into_folder = array();
 
 	foreach ($action_ary as $msg_id => $msg_ary)
 	{
@@ -517,9 +517,7 @@ function place_pm_into_folder(&$global_privmsgs_rules, $release = false)
 				case ACTION_PLACE_INTO_FOLDER:
 					// Folder actions have precedence, so we will remove any other ones
 					$folder_action = true;
-					$_folder_id = (int) $rule_ary['folder_id'];
-					$move_into_folder = array();
-					$move_into_folder[$_folder_id][] = $msg_id;
+					$move_into_folder[(int) $rule_ary['folder_id']][] = $msg_id;
 					$num_new++;
 				break;
 
