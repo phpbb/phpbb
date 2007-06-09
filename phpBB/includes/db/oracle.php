@@ -386,12 +386,18 @@ class dbal_oracle extends dbal
 			$result_row = array();
 			foreach ($row as $key => $value)
 			{
+				// Oracle treats empty strings as null
+				if (is_null($value))
+				{
+					$value = '';
+				}
+
 				// OCI->CLOB?
 				if (is_object($value))
 				{
 					$value = $value->load();
 				}
-			
+
 				$result_row[strtolower($key)] = $value;
 			}
 
@@ -550,6 +556,67 @@ class dbal_oracle extends dbal
 		switch ($mode)
 		{
 			case 'start':
+
+				$html_table = false;
+
+				// Grab a plan table, any will do
+				$sql = "SELECT table_name
+					FROM USER_TABLES
+					WHERE table_name LIKE '%PLAN_TABLE%'";
+				$stmt = ociparse($this->db_connect_id, $sql);
+				ociexecute($stmt);
+				$result = array();
+
+				if (ocifetchinto($stmt, $result, OCI_ASSOC + OCI_RETURN_NULLS))
+				{
+					$table = $result['TABLE_NAME'];
+
+					// This is the statement_id that will allow us to track the plan
+					$statement_id = substr(md5($query), 0, 30);
+
+					// Remove any stale plans
+					$stmt2 = ociparse($this->db_connect_id, "DELETE FROM $table WHERE statement_id='$statement_id'");
+					ociexecute($stmt2);
+					ocifreestatement($stmt2);
+
+					// Explain the plan
+					$sql = "EXPLAIN PLAN
+						SET STATEMENT_ID = '$statement_id'
+						FOR $query";
+					$stmt2 = ociparse($this->db_connect_id, $sql);
+					ociexecute($stmt2);
+					ocifreestatement($stmt2);
+
+					// Get the data from the plan
+					$sql = "SELECT operation, options, object_name, object_type, cardinality, cost
+						FROM plan_table
+						START WITH id = 0 AND statement_id = '$statement_id'
+						CONNECT BY PRIOR id = parent_id
+							AND statement_id = '$statement_id'";
+					$stmt2 = ociparse($this->db_connect_id, $sql);
+					ociexecute($stmt2);
+
+					$row = array();
+					while (ocifetchinto($stmt2, $row, OCI_ASSOC + OCI_RETURN_NULLS))
+					{
+						$html_table = $this->sql_report('add_select_row', $query, $html_table, $row);
+					}
+
+					ocifreestatement($stmt2);
+
+					// Remove the plan we just made, we delete them on request anyway
+					$stmt2 = ociparse($this->db_connect_id, "DELETE FROM $table WHERE statement_id='$statement_id'");
+					ociexecute($stmt2);
+					ocifreestatement($stmt2);
+				}
+
+				ocifreestatement($stmt);
+
+				if ($html_table)
+				{
+					$this->html_hold .= '</table>';
+				}
+
 			break;
 
 			case 'fromcache':
