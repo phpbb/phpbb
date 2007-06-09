@@ -498,12 +498,13 @@ function place_pm_into_folder(&$global_privmsgs_rules, $release = false)
 
 	// We place actions into arrays, to save queries.
 	$num_new = $num_unread = 0;
-	$sql = $unread_ids = $delete_ids = $important_ids = $move_into_folder = array();
+	$sql = $unread_ids = $delete_ids = $important_ids = array();
 
 	foreach ($action_ary as $msg_id => $msg_ary)
 	{
 		// It is allowed to execute actions more than once, except placing messages into folder
 		$folder_action = false;
+		$message_removed = false;
 
 		foreach ($msg_ary as $pos => $rule_ary)
 		{
@@ -526,15 +527,11 @@ function place_pm_into_folder(&$global_privmsgs_rules, $release = false)
 					{
 						$unread_ids[] = $msg_id;
 					}
-
-					if (!$folder_action)
-					{
-						$move_into_folder[PRIVMSGS_INBOX][] = $msg_id;
-					}
 				break;
 
 				case ACTION_DELETE_MESSAGE:
 					$delete_ids[] = $msg_id;
+					$message_removed = true;
 				break;
 
 				case ACTION_MARK_AS_IMPORTANT:
@@ -542,13 +539,15 @@ function place_pm_into_folder(&$global_privmsgs_rules, $release = false)
 					{
 						$important_ids[] = $msg_id;
 					}
-
-					if (!$folder_action)
-					{
-						$move_into_folder[PRIVMSGS_INBOX][] = $msg_id;
-					}
 				break;
 			}
+		}
+
+		// We place this here because it could happen that the messages are doubled if a rule marks a message and then moves it into a specific
+		// folder. Here we simply move the message into the INBOX if it gets not removed and also not put into a custom folder.
+		if (!$folder_action && !$message_removed)
+		{
+			$move_into_folder[PRIVMSGS_INBOX][] = $msg_id;
 		}
 	}
 
