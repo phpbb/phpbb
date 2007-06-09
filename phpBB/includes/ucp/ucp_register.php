@@ -34,26 +34,31 @@ class ucp_register
 		$agreed			= (!empty($_POST['agreed'])) ? 1 : 0;
 		$submit			= (isset($_POST['submit'])) ? true : false;
 		$change_lang	= request_var('change_lang', '');
+		$user_lang		= request_var('lang', $user->lang_name);
 
-		if ($change_lang)
+		if ($change_lang || $user_lang != $config['default_lang'])
 		{
-			$change_lang = basename($change_lang);
+			$use_lang = ($change_lang) ? basename($change_lang) : basename($user_lang);
 
-			if (file_exists($phpbb_root_path . 'language/' . $change_lang . '/'))
+			if (file_exists($phpbb_root_path . 'language/' . $use_lang . '/'))
 			{
-				$submit = false;
+				if ($change_lang)
+				{
+					$submit = false;
 
-				$user->lang_name = $lang = $change_lang;
+					// Setting back agreed to let the user view the agreement in his/her language
+					$agreed = (empty($_GET['change_lang'])) ? 0 : $agreed;
+				}
+
+				$user->lang_name = $lang = $use_lang;
 				$user->lang_path = $phpbb_root_path . 'language/' . $lang . '/';
 				$user->lang = array();
 				$user->add_lang(array('common', 'ucp'));
-
-				// Setting back agreed to let the user view the agreement in his/her language
-				$agreed = (empty($_GET['change_lang'])) ? 0 : $agreed;
 			}
 			else
 			{
 				$change_lang = '';
+				$user_lang = $user->lang_name;
 			}
 		}
 
