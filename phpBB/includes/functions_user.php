@@ -1761,7 +1761,7 @@ function validate_jabber($jid)
 /**
 * Remove avatar
 */
-function avatar_delete($mode, $row)
+function avatar_delete($mode, $row, $clean_db = false)
 {
 	global $phpbb_root_path, $config, $db, $user;
 
@@ -1774,6 +1774,10 @@ function avatar_delete($mode, $row)
 		}
 	}
 	
+	if ($clean_db)
+	{
+		avatar_remove_db($row[$mode . '_avatar']);
+	}
 	$filename = get_avatar_filename($row[$mode . '_avatar']);
 	if (file_exists($phpbb_root_path . $config['avatar_path'] . '/' . $filename))
 	{
@@ -2414,6 +2418,22 @@ function group_correct_avatar($group_id, $old_entry)
 		$db->sql_query($sql);
 	}
 }
+
+
+/**
+* Remove avatar also for users not having the group as default
+*/
+function avatar_remove_db($avatar_name)
+{
+	global $config, $db;
+	
+	$sql = 'UPDATE ' . USERS_TABLE . "
+		SET user_avatar = '',
+		user_avatar_type = 0 
+		WHERE user_avatar = '" . $db->sql_escape($avatar_name) . '\'';
+	$db->sql_query($sql);
+}
+
 
 /**
 * Group Delete

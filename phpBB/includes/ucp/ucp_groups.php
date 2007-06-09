@@ -548,7 +548,7 @@ class ucp_groups
 							{
 								if (isset($group_row['group_avatar']) && $group_row['group_avatar'])
 								{
-									avatar_delete('group', $group_row);
+									avatar_delete('group', $group_row, true);
 								}
 							}
 
