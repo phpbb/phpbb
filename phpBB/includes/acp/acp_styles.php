@@ -670,7 +670,7 @@ parse_css_file = {PARSE_CSS_FILE}
 		$_POST['template_data'] = (isset($_POST['template_data']) && !empty($_POST['template_data'])) ? str_replace(array("\r\n", "\r"), array("\n", "\n"), $_POST['template_data']) : '';
 
 		$template_data	= (STRIP) ? stripslashes($_POST['template_data']) : $_POST['template_data'];
-		$template_file	= request_var('template_file', '');
+		$template_file	= request_var('template_file', '', true);
 		$text_rows		= max(5, min(999, request_var('text_rows', 20)));
 		$save_changes	= (isset($_POST['save'])) ? true : false;
 
@@ -1023,7 +1023,7 @@ parse_css_file = {PARSE_CSS_FILE}
 		$_POST['template_data'] = (isset($_POST['template_data']) && !empty($_POST['template_data'])) ? str_replace(array("\r\n", "\r"), array("\n", "\n"), $_POST['template_data']) : '';
 
 		$theme_data	= (STRIP) ? stripslashes($_POST['template_data']) : $_POST['template_data'];
-		$theme_file	= request_var('template_file', '');
+		$theme_file	= request_var('template_file', '', true);
 		$text_rows		= max(5, min(999, request_var('text_rows', 20)));
 		$save_changes	= (isset($_POST['save'])) ? true : false;
 
