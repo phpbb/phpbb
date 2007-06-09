@@ -1,10 +1,10 @@
 <?php
-/** 
+/**
 *
 * @package phpBB3
 * @version $Id$
-* @copyright (c) 2005 phpBB Group 
-* @license http://opensource.org/licenses/gpl-license.php GNU Public License 
+* @copyright (c) 2005 phpBB Group
+* @license http://opensource.org/licenses/gpl-license.php GNU Public License
 *
 */
 
@@ -476,24 +476,27 @@ function generate_forum_nav(&$forum_data)
 	$forum_parents = get_forum_parents($forum_data);
 
 	// Build navigation links
-	foreach ($forum_parents as $parent_forum_id => $parent_data)
+	if (!empty($forum_parents))
 	{
-		list($parent_name, $parent_type) = array_values($parent_data);
-
-		// Skip this parent if the user does not have the permission to view it
-		if (!$auth->acl_get('f_list', $parent_forum_id))
+		foreach ($forum_parents as $parent_forum_id => $parent_data)
 		{
-			continue;
-		}
+			list($parent_name, $parent_type) = array_values($parent_data);
 
-		$template->assign_block_vars('navlinks', array(
-			'S_IS_CAT'		=> ($parent_type == FORUM_CAT) ? true : false,
-			'S_IS_LINK'		=> ($parent_type == FORUM_LINK) ? true : false,
-			'S_IS_POST'		=> ($parent_type == FORUM_POST) ? true : false,
-			'FORUM_NAME'	=> $parent_name,
-			'FORUM_ID'		=> $parent_forum_id,
-			'U_VIEW_FORUM'	=> append_sid("{$phpbb_root_path}viewforum.$phpEx", 'f=' . $parent_forum_id))
-		);
+			// Skip this parent if the user does not have the permission to view it
+			if (!$auth->acl_get('f_list', $parent_forum_id))
+			{
+				continue;
+			}
+
+			$template->assign_block_vars('navlinks', array(
+				'S_IS_CAT'		=> ($parent_type == FORUM_CAT) ? true : false,
+				'S_IS_LINK'		=> ($parent_type == FORUM_LINK) ? true : false,
+				'S_IS_POST'		=> ($parent_type == FORUM_POST) ? true : false,
+				'FORUM_NAME'	=> $parent_name,
+				'FORUM_ID'		=> $parent_forum_id,
+				'U_VIEW_FORUM'	=> append_sid("{$phpbb_root_path}viewforum.$phpEx", 'f=' . $parent_forum_id))
+			);
+		}
 	}
 
 	$template->assign_block_vars('navlinks', array(
@@ -1057,6 +1060,7 @@ function watch_topic_forum($mode, &$s_watching, &$s_watching_img, $user_id, $for
 	{
 		$s_watching['link'] = append_sid("{$phpbb_root_path}view$mode.$phpEx", "$u_url=$match_id&amp;" . (($is_watching) ? 'unwatch' : 'watch') . "=$mode&amp;start=$start");
 		$s_watching['title'] = $user->lang[(($is_watching) ? 'STOP' : 'START') . '_WATCHING_' . strtoupper($mode)];
+		$s_watching['is_watching'] = $is_watching;
 	}
 
 	return;

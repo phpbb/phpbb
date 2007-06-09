@@ -16,16 +16,16 @@
 <!-- ENDIF -->
 <tr>
 	<td class="row1" width="35%"><b class="genmed">{L_USERNAME}: </b><br /><span class="gensmall">{L_USERNAME_EXPLAIN}</span></td>
-	<td class="row2"><!-- IF S_CHANGE_USERNAME --><input type="text" class="post" name="username" size="30" maxlength="30" value="{USERNAME}" /><!-- ELSE --><b class="gen">{USERNAME}</b><!-- ENDIF --></td>
+	<td class="row2"><!-- IF S_CHANGE_USERNAME --><input type="text" class="post" name="username" size="30" value="{USERNAME}" /><!-- ELSE --><b class="gen">{USERNAME}</b><!-- ENDIF --></td>
 </tr>
 <tr>
 	<td class="row1" width="35%"><b class="genmed">{L_EMAIL_ADDRESS}: </b></td>
-	<td class="row2"><!-- IF S_CHANGE_EMAIL --><input type="text" class="post" name="email" size="30" maxlength="60" value="{EMAIL}" /><!-- ELSE --><b class="gen">{EMAIL}</b><!-- ENDIF --></td>
+	<td class="row2"><!-- IF S_CHANGE_EMAIL --><input type="text" class="post" name="email" size="30" maxlength="100" value="{EMAIL}" /><!-- ELSE --><b class="gen">{EMAIL}</b><!-- ENDIF --></td>
 </tr>
 <!-- IF S_CHANGE_EMAIL -->
 	<tr>
 		<td class="row1" width="35%"><b class="genmed">{L_CONFIRM_EMAIL}: </b><br /><span class="gensmall">{L_CONFIRM_EMAIL_EXPLAIN}</span></td>
-		<td class="row2"><input type="text" class="post" name="email_confirm" size="30" maxlength="60" value="{CONFIRM_EMAIL}" /></td>
+		<td class="row2"><input type="text" class="post" name="email_confirm" size="30" maxlength="100" value="{CONFIRM_EMAIL}" /></td>
 	</tr>
 <!-- ENDIF -->
 <!-- IF S_CHANGE_PASSWORD -->

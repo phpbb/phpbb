@@ -1,12 +1,12 @@
 <?php
-/** 
+/**
 *
 * common [English]
 *
 * @package language
 * @version $Id$
-* @copyright (c) 2005 phpBB Group 
-* @license http://opensource.org/licenses/gpl-license.php GNU Public License 
+* @copyright (c) 2005 phpBB Group
+* @license http://opensource.org/licenses/gpl-license.php GNU Public License
 *
 */
 
@@ -30,7 +30,7 @@ if (empty($lang) || !is_array($lang))
 // equally where a string contains only two placeholders which are used to wrap text
 // in a url you again do not need to specify an order e.g., 'Click %sHERE%s' is fine
 //
-// Some characters you may want to copy&paste: 
+// Some characters you may want to copy&paste:
 // ’ » “ ” …
 //
 
@@ -327,7 +327,8 @@ $lang = array_merge($lang, array(
 	'NEW_PMS'					=> '<strong>%d</strong> new messages',
 	'NEW_POST'					=> 'New post',
 	'NEW_POSTS'					=> 'New posts',
-	'NEXT'						=> 'Next',
+	'NEXT'						=> 'Next',		// Used in pagination
+	'NEXT_STEP'					=> 'Next',
 	'NEVER'						=> 'Never',
 	'NO'						=> 'No',
 	'NOT_ALLOWED_MANAGE_GROUP'	=> 'You are not allowed to manage this group.',
@@ -412,7 +413,8 @@ $lang = array_merge($lang, array(
 	'POST_TOPIC'			=> 'Post a new topic',
 	'POST_UNAPPROVED'		=> 'This post is waiting for approval',
 	'PREVIEW'				=> 'Preview',
-	'PREVIOUS'				=> 'Previous',
+	'PREVIOUS'				=> 'Previous',		// Used in pagination
+	'PREVIOUS_STEP'			=> 'Previous',
 	'PRIVACY'				=> 'Privacy policy',
 	'PRIVATE_MESSAGE'		=> 'Private message',
 	'PRIVATE_MESSAGES'		=> 'Private messages',

@@ -1,10 +1,10 @@
 <?php
-/** 
+/**
 *
 * @package acp
 * @version $Id$
-* @copyright (c) 2005 phpBB Group 
-* @license http://opensource.org/licenses/gpl-license.php GNU Public License 
+* @copyright (c) 2005 phpBB Group
+* @license http://opensource.org/licenses/gpl-license.php GNU Public License
 *
 */
 
@@ -52,8 +52,8 @@ class acp_styles
 # phpBB {MODE} configuration file
 #
 # @package phpBB3
-# @copyright (c) 2005 phpBB Group 
-# @license http://opensource.org/licenses/gpl-license.php GNU Public License 
+# @copyright (c) 2005 phpBB Group
+# @license http://opensource.org/licenses/gpl-license.php GNU Public License
 #
 #
 # At the left is the name, please do not change this

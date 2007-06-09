@@ -108,6 +108,9 @@ class install_update extends module
 		}
 		$db->sql_freeresult($result);
 
+		// Force template recompile
+		$config['load_tplcompile'] = 1;
+
 		// First of all, init the user session
 		$user->session_begin();
 		$auth->acl($user->data);

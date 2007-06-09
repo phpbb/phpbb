@@ -1,10 +1,10 @@
 <?php
-/** 
+/**
 *
 * @package phpBB3
 * @version $Id$
-* @copyright (c) 2005 phpBB Group 
-* @license http://opensource.org/licenses/gpl-license.php GNU Public License 
+* @copyright (c) 2005 phpBB Group
+* @license http://opensource.org/licenses/gpl-license.php GNU Public License
 *
 */
 
@@ -1586,11 +1586,30 @@ function append_sid($url, $params = false, $is_amp = true, $session_id = false)
 	// Appending custom url parameter?
 	$append_url = (!empty($_EXTRA_URL)) ? implode($amp_delim, $_EXTRA_URL) : '';
 
+	$anchor = '';
+	if (strpos($url, '#') !== false)
+	{
+		list($url, $anchor) = explode('#', $url, 2);
+		$anchor = '#' . $anchor;
+	}
+	else if (!is_array($params) && strpos($params, '#') !== false)
+	{
+		list($params, $anchor) = explode('#', $params, 2);
+		$anchor = '#' . $anchor;
+	}
+
 	// Use the short variant if possible ;)
 	if ($params === false)
 	{
 		// Append session id
-		return (!$session_id) ? $url . (($append_url) ? $url_delim . $append_url : '') : $url . (($append_url) ? $url_delim . $append_url . $amp_delim : $url_delim) . 'sid=' . $session_id;
+		if (!$session_id)
+		{
+			return $url . (($append_url) ? $url_delim . $append_url : '') . $anchor;
+		}
+		else
+		{
+			return $url . (($append_url) ? $url_delim . $append_url . $amp_delim : $url_delim) . 'sid=' . $session_id . $anchor;
+		}
 	}
 
 	// Build string if parameters are specified as array
@@ -1605,6 +1624,12 @@ function append_sid($url, $params = false, $is_amp = true, $session_id = false)
 				continue;
 			}
 
+			if ($key == '#')
+			{
+				$anchor = '#' . $item;
+				continue;
+			}
+
 			$output[] = $key . '=' . $item;
 		}
 
@@ -1613,7 +1638,7 @@ function append_sid($url, $params = false, $is_amp = true, $session_id = false)
 
 	// Append session id and parameters (even if they are empty)
 	// If parameters are empty, the developer can still append his/her parameters without caring about the delimiter
-	return $url . (($append_url) ? $url_delim . $append_url . $amp_delim : $url_delim) . $params . ((!$session_id) ? '' : $amp_delim . 'sid=' . $session_id);
+	return $url . (($append_url) ? $url_delim . $append_url . $amp_delim : $url_delim) . $params . ((!$session_id) ? '' : $amp_delim . 'sid=' . $session_id) . $anchor;
 }
 
 /**

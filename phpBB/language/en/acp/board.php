@@ -1,12 +1,12 @@
 <?php
-/** 
+/**
 *
 * acp_board [English]
 *
 * @package language
 * @version $Id$
-* @copyright (c) 2005 phpBB Group 
-* @license http://opensource.org/licenses/gpl-license.php GNU Public License 
+* @copyright (c) 2005 phpBB Group
+* @license http://opensource.org/licenses/gpl-license.php GNU Public License
 *
 */
 
@@ -343,10 +343,10 @@ $lang = array_merge($lang, array(
 	'ACP_SECURITY_SETTINGS_EXPLAIN'		=> 'Here you are able to define session and login related settings.',
 
 	'ALL'							=> 'All',
-	'ALLOW_AUTOLOGIN'				=> 'Allow persistent logins', 
-	'ALLOW_AUTOLOGIN_EXPLAIN'		=> 'Determines whether users can autologin when they visit the board.', 
-	'AUTOLOGIN_LENGTH'				=> 'Persistent login key expiration length (in days)', 
-	'AUTOLOGIN_LENGTH_EXPLAIN'		=> 'Number of days after which persistent login keys are removed or zero to disable.', 
+	'ALLOW_AUTOLOGIN'				=> 'Allow persistent logins',
+	'ALLOW_AUTOLOGIN_EXPLAIN'		=> 'Determines whether users can autologin when they visit the board.',
+	'AUTOLOGIN_LENGTH'				=> 'Persistent login key expiration length (in days)',
+	'AUTOLOGIN_LENGTH_EXPLAIN'		=> 'Number of days after which persistent login keys are removed or zero to disable.',
 	'BROWSER_VALID'					=> 'Validate browser',
 	'BROWSER_VALID_EXPLAIN'			=> 'Enables browser validation for each session improving security.',
 	'CHECK_DNSBL'					=> 'Check IP against DNS Blackhole List',

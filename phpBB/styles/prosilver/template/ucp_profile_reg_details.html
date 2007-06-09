@@ -14,16 +14,16 @@
 	<!-- IF ERROR --><p class="error">{ERROR}</p><!-- ENDIF -->
 	<dl>
 		<dt><label <!-- IF S_CHANGE_USERNAME -->for="username"<!-- ENDIF -->>{L_USERNAME}:</label><br /><span>{L_USERNAME_EXPLAIN}</span></dt>
-		<dd><!-- IF S_CHANGE_USERNAME --><input type="text" name="username" id="username" maxlength="30" value="{USERNAME}" class="inputbox" title="{L_USERNAME}" /><!-- ELSE --><strong>{USERNAME}</strong><!-- ENDIF --></dd>
+		<dd><!-- IF S_CHANGE_USERNAME --><input type="text" name="username" id="username" value="{USERNAME}" class="inputbox" title="{L_USERNAME}" /><!-- ELSE --><strong>{USERNAME}</strong><!-- ENDIF --></dd>
 	</dl>
 	<dl>
 		<dt><label for="email">{L_EMAIL_ADDRESS}:</label></dt>
-		<dd><!-- IF S_CHANGE_EMAIL --><input type="text" name="email" id="email" maxlength="60" value="{EMAIL}" class="inputbox" title="{L_EMAIL_ADDRESS}" /><!-- ELSE --><strong>{EMAIL}</strong><!-- ENDIF --></dd>
+		<dd><!-- IF S_CHANGE_EMAIL --><input type="text" name="email" id="email" maxlength="100" value="{EMAIL}" class="inputbox" title="{L_EMAIL_ADDRESS}" /><!-- ELSE --><strong>{EMAIL}</strong><!-- ENDIF --></dd>
 	</dl>
 	<!-- IF S_CHANGE_EMAIL -->
 		<dl>
 			<dt><label for="email_confirm">{L_CONFIRM_EMAIL}:</label><br /><span>{L_CONFIRM_EMAIL_EXPLAIN}</span></dt>
-			<dd><input type="text" name="email_confirm" id="email_confirm" maxlength="60" value="{CONFIRM_EMAIL}" class="inputbox" title="{L_CONFIRM_EMAIL}" /></dd>
+			<dd><input type="text" name="email_confirm" id="email_confirm" maxlength="100" value="{CONFIRM_EMAIL}" class="inputbox" title="{L_CONFIRM_EMAIL}" /></dd>
 		</dl>
 	<!-- ENDIF -->
 	<!-- IF S_CHANGE_PASSWORD -->

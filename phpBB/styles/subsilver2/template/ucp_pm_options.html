@@ -22,27 +22,27 @@
 	<tr>
 		<td class="row1" width="50" align="{S_CONTENT_FLOW_BEGIN}" valign="top"><b class="gen">{L_IF}:</b></td>
 		<td class="row2" align="center" valign="top"><!-- IF S_CHECK_SELECT --><select name="check_option">{S_CHECK_OPTIONS}</select><!-- ELSE --><b class="gen">{CHECK_CURRENT}</b><input type="hidden" name="check_option" value="{CHECK_OPTION}" /><!-- ENDIF --></td>
-		<td class="row1" width="50" align="{S_CONTENT_FLOW_END}" valign="top"><!-- IF S_CHECK_SELECT --><input type="submit" name="next" value="{L_NEXT}" class="btnlite" /><!-- ELSE -->&nbsp;<!-- ENDIF --></td>
+		<td class="row1" width="50" align="{S_CONTENT_FLOW_END}" valign="top"><!-- IF S_CHECK_SELECT --><input type="submit" name="next" value="{L_NEXT_STEP}" class="btnlite" /><!-- ELSE -->&nbsp;<!-- ENDIF --></td>
 	</tr>
 <!-- ENDIF -->
 <!-- IF S_RULE_DEFINED -->
 	<tr>
-		<td class="row1" width="50" align="{S_CONTENT_FLOW_BEGIN}" valign="top"><!-- IF S_RULE_SELECT --><input type="submit" name="back[rule]" value="{L_PREVIOUS}" class="btnlite" /><!-- ELSE -->&nbsp;<!-- ENDIF --></td>
+		<td class="row1" width="50" align="{S_CONTENT_FLOW_BEGIN}" valign="top"><!-- IF S_RULE_SELECT --><input type="submit" name="back[rule]" value="{L_PREVIOUS_STEP}" class="btnlite" /><!-- ELSE -->&nbsp;<!-- ENDIF --></td>
 		<td class="row2" align="center" valign="top"><!-- IF S_RULE_SELECT --><select name="rule_option">{S_RULE_OPTIONS}</select><!-- ELSE --><b class="gen">{RULE_CURRENT}</b><input type="hidden" name="rule_option" value="{RULE_OPTION}" /><!-- ENDIF --></td>
-		<td class="row1" width="50" align="{S_CONTENT_FLOW_END}" valign="top"><!-- IF S_RULE_SELECT --><input type="submit" name="next" value="{L_NEXT}" class="btnlite" /><!-- ELSE -->&nbsp;<!-- ENDIF --></td>
+		<td class="row1" width="50" align="{S_CONTENT_FLOW_END}" valign="top"><!-- IF S_RULE_SELECT --><input type="submit" name="next" value="{L_NEXT_STEP}" class="btnlite" /><!-- ELSE -->&nbsp;<!-- ENDIF --></td>
 	</tr>
 <!-- ENDIF -->
 	
 <!-- IF S_COND_DEFINED -->
 	<!-- IF S_COND_SELECT or COND_CURRENT -->
 		<tr>
-			<td class="row1" width="50" align="{S_CONTENT_FLOW_BEGIN}" valign="top"><!-- IF S_COND_SELECT --><input type="submit" name="back[cond]" value="{L_PREVIOUS}" class="btnlite" /><!-- ELSE -->&nbsp;<!-- ENDIF --></td>
+			<td class="row1" width="50" align="{S_CONTENT_FLOW_BEGIN}" valign="top"><!-- IF S_COND_SELECT --><input type="submit" name="back[cond]" value="{L_PREVIOUS_STEP}" class="btnlite" /><!-- ELSE -->&nbsp;<!-- ENDIF --></td>
 			<td class="row2" align="center" valign="top">
 				<!-- IF S_COND_SELECT -->
 					<!-- IF S_TEXT_CONDITION -->
 						<input type="text" name="rule_string" value="{CURRENT_STRING}" size="30" maxlength="250" class="post" />
 					<!-- ELSEIF S_USER_CONDITION -->
-						<input type="text" class="post" name="rule_string" value="{CURRENT_STRING}" maxlength="50" size="20" />&nbsp;<span class="gensmall">[ <a href="{U_FIND_USERNAME}" onclick="find_username(); return false;">{L_FIND_USERNAME}</a> ]</span>
+						<input type="text" class="post" name="rule_string" value="{CURRENT_STRING}" size="20" />&nbsp;<span class="gensmall">[ <a href="{U_FIND_USERNAME}" onclick="find_username(); return false;">{L_FIND_USERNAME}</a> ]</span>
 					<!-- ELSEIF S_GROUP_CONDITION -->
 						<input type="hidden" name="rule_string" value="{CURRENT_STRING}" /><!-- IF S_GROUP_OPTIONS --><select name="rule_group_id">{S_GROUP_OPTIONS}</select><!-- ELSE -->{L_NO_GROUPS}<!-- ENDIF -->
 					<!-- ENDIF -->
@@ -51,7 +51,7 @@
 						<input type="hidden" name="rule_string" value="{CURRENT_STRING}" /><input type="hidden" name="rule_user_id" value="{CURRENT_USER_ID}" /><input type="hidden" name="rule_group_id" value="{CURRENT_GROUP_ID}" />
 				<!-- ENDIF -->
 			</td>
-			<td class="row1" width="50" align="{S_CONTENT_FLOW_END}" valign="top"><!-- IF S_COND_SELECT --><input type="submit" name="next" value="{L_NEXT}" class="btnlite" /><!-- ELSE -->&nbsp;<!-- ENDIF --></td>
+			<td class="row1" width="50" align="{S_CONTENT_FLOW_END}" valign="top"><!-- IF S_COND_SELECT --><input type="submit" name="next" value="{L_NEXT_STEP}" class="btnlite" /><!-- ELSE -->&nbsp;<!-- ENDIF --></td>
 		</tr>
 	<!-- ENDIF -->
 	<input type="hidden" name="cond_option" value="{COND_OPTION}" />
@@ -61,7 +61,7 @@
 
 <!-- IF S_ACTION_DEFINED -->
 	<tr>
-		<td class="row1" width="50" align="{S_CONTENT_FLOW_BEGIN}" valign="top"><!-- IF S_ACTION_SELECT --><input type="submit" name="back[action]" value="{L_PREVIOUS}" class="btnlite" /><!-- ELSE -->&nbsp;<!-- ENDIF --></td>
+		<td class="row1" width="50" align="{S_CONTENT_FLOW_BEGIN}" valign="top"><!-- IF S_ACTION_SELECT --><input type="submit" name="back[action]" value="{L_PREVIOUS_STEP}" class="btnlite" /><!-- ELSE -->&nbsp;<!-- ENDIF --></td>
 		<td class="row2" align="center" valign="top"><!-- IF S_ACTION_SELECT --><select name="action_option">{S_ACTION_OPTIONS}</select><!-- ELSE --><b class="gen">{ACTION_CURRENT}</b><input type="hidden" name="action_option" value="{ACTION_OPTION}" /><!-- ENDIF --></td>
 		<td class="row1" width="50" align="{S_CONTENT_FLOW_END}" valign="top"><!-- IF S_ACTION_SELECT --><input type="submit" name="add_rule" value="{L_ADD_RULE}" class="btnlite" /><!-- ELSE -->&nbsp;<!-- ENDIF --></td>
 	</tr>

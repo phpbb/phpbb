@@ -11,11 +11,11 @@
 		<!-- IF LOGIN_ERROR --><div class="error">{LOGIN_ERROR}</div><!-- ENDIF -->
 		<dl>
 			<dt><label for="username">{L_USERNAME}:</label></dt>
-			<dd><input type="text" tabindex="1" name="username" id="username" size="25" maxlength="40" value="{USERNAME}" class="inputbox autowidth" /></dd>
+			<dd><input type="text" tabindex="1" name="username" id="username" size="25" value="{USERNAME}" class="inputbox autowidth" /></dd>
 		</dl>
 		<dl>
 			<dt><label for="password">{L_PASSWORD}:</label></dt>
-			<dd><input type="password" tabindex="2" id="password" name="password" size="25" maxlength="25" class="inputbox autowidth" /></dd>
+			<dd><input type="password" tabindex="2" id="password" name="password" size="25" class="inputbox autowidth" /></dd>
 			<!-- IF S_DISPLAY_FULL_LOGIN and (U_SEND_PASSWORD or U_RESEND_ACTIVATION) -->
 				<!-- IF U_SEND_PASSWORD --><dd><a href="{U_SEND_PASSWORD}">{L_FORGOT_PASS}</a></dd><!-- ENDIF -->
 				<!-- IF U_RESEND_ACTIVATION --><dd><a href="{U_RESEND_ACTIVATION}">{L_RESEND_ACTIVATION}</a></dd><!-- ENDIF -->

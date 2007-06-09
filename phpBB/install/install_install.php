@@ -63,7 +63,7 @@ class install_install extends module
 				$template->assign_vars(array(
 					'TITLE'			=> $lang['INSTALL_INTRO'],
 					'BODY'			=> $lang['INSTALL_INTRO_BODY'],
-					'L_SUBMIT'		=> $lang['NEXT'],
+					'L_SUBMIT'		=> $lang['NEXT_STEP'],
 					'S_LANG_SELECT'	=> '<select id="language" name="language">' . $this->p_master->inst_language_select($language) . '</select>',
 					'U_ACTION'		=> $this->p_master->module_url . "?mode=$mode&amp;sub=requirements&amp;language=$language",
 				));

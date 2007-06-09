@@ -22,7 +22,7 @@
 	<p>{L_UPDATE_INSTALLATION_EXPLAIN}</p>
 
 	<fieldset class="submit-buttons">
-		<input class="button1" type="submit" name="submit" value="{L_NEXT}" />
+		<input class="button1" type="submit" name="submit" value="{L_NEXT_STEP}" />
 	</fieldset>
 
 	</form>
@@ -100,8 +100,6 @@
 
 		<p>
 			{L_PERFORM_DATABASE_UPDATE_EXPLAIN}<br />
-			<br />
-			<a href="{U_DB_UPDATE}"><strong>&raquo; {L_RUN_DATABASE_SCRIPT} &laquo;</strong></a>
 		</p>
 
 		<br /><br />
@@ -109,7 +107,9 @@
 		<form id="install_dbupdate" method="post" action="{U_DB_UPDATE_ACTION}">
 
 		<fieldset class="submit-buttons">
-			<input class="button1" type="submit" name="db_update" value="{L_CHECK_UPDATE_DATABASE}" />
+			<a href="{U_DB_UPDATE}" class="button1">{L_RUN_DATABASE_SCRIPT}</a>
+
+			<!-- input class="button1" type="submit" name="db_update" value="{L_CHECK_UPDATE_DATABASE}" / -->
 		</fieldset>
 
 		</form>

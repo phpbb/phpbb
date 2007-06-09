@@ -1,10 +1,10 @@
 <?php
-/** 
+/**
 *
 * @package ucp
 * @version $Id$
-* @copyright (c) 2005 phpBB Group 
-* @license http://opensource.org/licenses/gpl-license.php GNU Public License 
+* @copyright (c) 2005 phpBB Group
+* @license http://opensource.org/licenses/gpl-license.php GNU Public License
 *
 */
 
@@ -445,8 +445,8 @@ class ucp_profile
 						if (!sizeof($error) && $submit)
 						{
 							$sql_ary = array(
-								'user_sig'					=> (string) $message_parser->message, 
-								'user_sig_bbcode_uid'		=> (string) $message_parser->bbcode_uid, 
+								'user_sig'					=> (string) $message_parser->message,
+								'user_sig_bbcode_uid'		=> (string) $message_parser->bbcode_uid,
 								'user_sig_bbcode_bitfield'	=> $message_parser->bbcode_bitfield
 							);
 
@@ -491,7 +491,7 @@ class ucp_profile
 
 					'L_SIGNATURE_EXPLAIN'	=> sprintf($user->lang['SIGNATURE_EXPLAIN'], $config['max_sig_chars']),
 
-					'S_BBCODE_ALLOWED'		=> $config['allow_sig_bbcode'], 
+					'S_BBCODE_ALLOWED'		=> $config['allow_sig_bbcode'],
 					'S_SMILIES_ALLOWED'		=> $config['allow_sig_smilies'],
 					'S_BBCODE_IMG'			=> ($config['allow_sig_img']) ? true : false,
 					'S_BBCODE_FLASH'		=> ($config['allow_sig_flash']) ? true : false,
