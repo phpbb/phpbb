@@ -1727,15 +1727,15 @@ function phpbb_check_username_collisions()
 		case 'sqlite':
 			$create_sql = 'CREATE TABLE ' . $table_prefix . 'userconv (
 				user_id INTEGER NOT NULL DEFAULT \'0\',
-				username_clean varchar(255) NOT NULL DEFAULT \'\',
+				username_clean varchar(255) NOT NULL DEFAULT \'\'
 			)';
 		break;
 	}
 
 	$db->sql_return_on_error(true);
 	$db->sql_query($drop_sql);
-	$db->sql_query($create_sql);
 	$db->sql_return_on_error(false);
+	$db->sql_query($create_sql);
 
 	// now select all user_ids and usernames and then convert the username (this can take quite a while!)
 	$sql = 'SELECT user_id, username
