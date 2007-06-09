@@ -37,18 +37,25 @@ function mcp_topic_view($id, $mode, $action)
 	$to_topic_id	= request_var('to_topic_id', 0);
 	$to_forum_id	= request_var('to_forum_id', 0);
 	$post_id_list	= request_var('post_id_list', array(0));
+	$sort			= isset($_POST['sort']) ? true : false;
 	
 	// Split Topic?
 	if ($action == 'split_all' || $action == 'split_beyond')
 	{
-		split_topic($action, $topic_id, $to_forum_id, $subject);
+		if (!$sort)
+		{
+			split_topic($action, $topic_id, $to_forum_id, $subject);
+		}
 		$action = 'split';
 	}
 
 	// Merge Posts?
 	if ($action == 'merge_posts')
 	{
-		merge_posts($topic_id, $to_topic_id);
+		if (!$sort)
+		{
+			merge_posts($topic_id, $to_topic_id);
+		}
 		$action = 'merge';
 	}
 
@@ -69,7 +76,10 @@ function mcp_topic_view($id, $mode, $action)
 			trigger_error('NO_POST_SELECTED');
 		}
 
-		approve_post($post_id_list, $id, $mode);
+		if (!$sort)
+		{
+			approve_post($post_id_list, $id, $mode);
+		}
 	}
 
 	// Jumpbox, sort selects and that kind of things
