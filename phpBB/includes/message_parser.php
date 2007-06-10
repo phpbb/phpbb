@@ -1239,26 +1239,17 @@ class parse_message extends bbcode_firstpass
 		{
 			if ($max_smilies)
 			{
-				$count = 0;
-				foreach ($match as $key => $smilie)
+				$num_matches = preg_match_all('#' . str_replace('#', '', implode('|', $match)) . '#', $this->message, $matches);
+				unset($matches);
+
+				if ($num_matches !== false && $num_matches > $max_smilies)
 				{
-					if ($small_count = preg_match_all($smilie, $this->message, $array))
-					{
-						$count += $small_count;
-						if ($count > $max_smilies)
-						{
-							$this->warn_msg[] = sprintf($user->lang['TOO_MANY_SMILIES'], $max_smilies);
-							return;
-						}
-					}
-					$this->message = preg_replace($smilie, $replace[$key], $this->message);
+					$this->warn_msg[] = sprintf($user->lang['TOO_MANY_SMILIES'], $max_smilies);
+					return;
 				}
-				$this->message = trim($this->message);
 			}
-			else
-			{
-				$this->message = trim(preg_replace($match, $replace, $this->message));
-			}
+
+			$this->message = trim(preg_replace($match, $replace, $this->message));
 		}
 	}
 
