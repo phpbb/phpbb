@@ -1538,6 +1538,7 @@ class parse_message extends bbcode_firstpass
 
 		// Parse Poll Option text ;)
 		$tmp_message = $this->message;
+		$tmp_bitfield = $this->bbcode_bitfield;
 		$this->message = $poll['poll_option_text'];
 
 
@@ -1570,8 +1571,8 @@ class parse_message extends bbcode_firstpass
 		}
 
 		$this->message = $tmp_message;
-
-		unset($tmp_message);
+		$this->bbcode_bitfield = $tmp_bitfield;
+		unset($tmp_message, $tmp_bitfield);
 
 		if (sizeof($poll['poll_options']) == 1)
 		{
