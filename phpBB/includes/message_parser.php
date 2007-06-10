@@ -690,7 +690,7 @@ class bbcode_firstpass extends bbcode
 
 			if ($tok == ']')
 			{
-				if ($buffer == '/quote' && sizeof($close_tags))
+				if ($buffer == '/quote' && sizeof($close_tags) && substr($out, -1, 1) == '[')
 				{
 					// we have found a closing tag
 					$out .= array_pop($close_tags) . ']';
