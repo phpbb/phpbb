@@ -1247,7 +1247,6 @@ class install_convert extends module
 					if (!$convert_row)
 					{
 						// move to the next batch or table
-						$src_db->sql_freeresult($___result);
 						break;
 					}
 

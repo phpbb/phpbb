@@ -184,8 +184,14 @@ if (!$get_info)
 			'extensions',
 			'extension_groups'
 		);
+
+		$src_db->sql_freeresult($result);
 	}
-	$src_db->sql_freeresult($result);
+	elseif ($result)
+	{
+		$src_db->sql_freeresult($result);
+	}
+	
 
 	/**
 	* Tests for further MODs can be included here.

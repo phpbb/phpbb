@@ -1667,12 +1667,12 @@ function add_default_groups()
 	global $db;
 
 	$default_groups = array(
-		'GUESTS'			=> array('', 0),
-		'REGISTERED'		=> array('', 0),
-		'REGISTERED_COPPA'	=> array('', 0),
-		'GLOBAL_MODERATORS'	=> array('00AA00', 1),
-		'ADMINISTRATORS'	=> array('AA0000', 1),
-		'BOTS'				=> array('9E8DA7', 0)
+		'GUESTS'			=> array('', 0, 0),
+		'REGISTERED'		=> array('', 0, 0),
+		'REGISTERED_COPPA'	=> array('', 0, 0),
+		'GLOBAL_MODERATORS'	=> array('00AA00', 1, 0),
+		'ADMINISTRATORS'	=> array('AA0000', 1, 1),
+		'BOTS'				=> array('9E8DA7', 0, 0)
 	);
 
 	$sql = 'SELECT *
@@ -1698,6 +1698,7 @@ function add_default_groups()
 			'group_type'			=> GROUP_SPECIAL,
 			'group_colour'			=> $data[0],
 			'group_legend'			=> $data[1],
+			'group_founder_manage'	=> $data[2]
 		);
 	}
 
