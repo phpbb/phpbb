@@ -143,9 +143,16 @@ function user_add($user_row, $cp_data = false)
 		return false;
 	}
 
+	$username_clean = utf8_clean_string($user_row['username']);
+
+	if (empty($username_clean))
+	{
+		return false;
+	}
+
 	$sql_ary = array(
 		'username'			=> $user_row['username'],
-		'username_clean'	=> utf8_clean_string($user_row['username']),
+		'username_clean'	=> $username_clean,
 		'user_password'		=> (isset($user_row['user_password'])) ? $user_row['user_password'] : '',
 		'user_pass_convert'	=> 0,
 		'user_email'		=> strtolower($user_row['user_email']),
@@ -1262,7 +1269,7 @@ function validate_username($username, $allowed_username = false)
 	}
 
 	// ... fast checks first.
-	if (strpos($username, '&quot;') !== false || strpos($username, '"') !== false)
+	if (strpos($username, '&quot;') !== false || strpos($username, '"') !== false || empty($clean_username))
 	{
 		return 'INVALID_CHARS';
 	}
