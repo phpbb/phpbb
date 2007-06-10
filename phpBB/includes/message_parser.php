@@ -1538,17 +1538,19 @@ class parse_message extends bbcode_firstpass
 
 		// Parse Poll Option text ;)
 		$tmp_message = $this->message;
-		$tmp_bitfield = $this->bbcode_bitfield;
 		$this->message = $poll['poll_option_text'];
+		$bbcode_bitfield = $this->bbcode_bitfield;
 
 
 		$poll['poll_option_text'] = $this->parse($poll['enable_bbcode'], ($config['allow_post_links']) ? $poll['enable_urls'] : false, $poll['enable_smilies'], $poll['img_status'], false, false, $config['allow_post_links'], false);
 
+		$this->bbcode_bitfield = base64_encode(base64_decode($bbcode_bitfield) | base64_decode($this->bbcode_bitfield));
 		$this->message = $tmp_message;
 
 		// Parse Poll Title
 		$tmp_message = $this->message;
 		$this->message = $poll['poll_title'];
+		$this->bbcode_bitfield = $bbcode_bitfield;
 
 		$poll['poll_options'] = explode("\n", trim($poll['poll_option_text']));
 		$poll['poll_options_size'] = sizeof($poll['poll_options']);
@@ -1570,9 +1572,9 @@ class parse_message extends bbcode_firstpass
 			}
 		}
 
+		$this->bbcode_bitfield = base64_encode(base64_decode($bbcode_bitfield) | base64_decode($this->bbcode_bitfield));
 		$this->message = $tmp_message;
-		$this->bbcode_bitfield = $tmp_bitfield;
-		unset($tmp_message, $tmp_bitfield);
+		unset($tmp_message);
 
 		if (sizeof($poll['poll_options']) == 1)
 		{
