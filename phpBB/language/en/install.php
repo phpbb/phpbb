@@ -552,6 +552,10 @@ $lang = array_merge($lang, array(
 	'FORUMS_TEST_FORUM_TITLE'		=> 'Test Forum 1',
 
 	'RANKS_SITE_ADMIN_TITLE'		=> 'Site Admin',
+	'REPORT_WAREZ'					=> 'The post contains links to illegal or pirated software.',
+	'REPORT_SPAM'					=> 'The reported post has the only purpose to advertise for a website or another product.',
+	'REPORT_OFF_TOPIC'				=> 'The reported post is off topic.',
+	'REPORT_OTHER'					=> 'The reported post does not fit into any other category, please use the description field.',
 
 	'SMILIES_ARROW'					=> 'Arrow',
 	'SMILIES_CONFUSED'				=> 'Confused',

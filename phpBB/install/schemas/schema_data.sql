@@ -678,11 +678,11 @@ INSERT INTO phpbb_icons (icons_url, icons_width, icons_height, icons_order, disp
 INSERT INTO phpbb_icons (icons_url, icons_width, icons_height, icons_order, display_on_posting) VALUES ('smile/question.gif', 16, 16, 6, 1);
 INSERT INTO phpbb_icons (icons_url, icons_width, icons_height, icons_order, display_on_posting) VALUES ('smile/alert.gif', 16, 16, 7, 1);
 
-# -- reasons - the report_description here is not used, only to fill up the db. ;)
-INSERT INTO phpbb_reports_reasons (reason_title, reason_description, reason_order) VALUES ('warez', 'The reported post contains links to pirated or illegal software', 1);
-INSERT INTO phpbb_reports_reasons (reason_title, reason_description, reason_order) VALUES ('spam', 'The reported post has for only purpose to advertise for a website or another product', 2);
-INSERT INTO phpbb_reports_reasons (reason_title, reason_description, reason_order) VALUES ('off_topic', 'The reported post is off topic', 3);
-INSERT INTO phpbb_reports_reasons (reason_title, reason_description, reason_order) VALUES ('other', 'The reported post does not fit into any other category (please use the description field)', 4);
+# -- reasons
+INSERT INTO phpbb_reports_reasons (reason_title, reason_description, reason_order) VALUES ('warez', '{L_REPORT_WAREZ}', 1);
+INSERT INTO phpbb_reports_reasons (reason_title, reason_description, reason_order) VALUES ('spam', '{L_REPORT_SPAM}', 2);
+INSERT INTO phpbb_reports_reasons (reason_title, reason_description, reason_order) VALUES ('off_topic', '{L_REPORT_OFF_TOPIC}', 3);
+INSERT INTO phpbb_reports_reasons (reason_title, reason_description, reason_order) VALUES ('other', '{L_REPORT_OTHER}', 4);
 
 # -- extension_groups
 INSERT INTO phpbb_extension_groups (group_name, cat_id, allow_group, download_mode, upload_icon, max_filesize, allowed_forums) VALUES ('{L_EXT_GROUP_IMAGES}', 1, 1, 1, '', 0, '');
