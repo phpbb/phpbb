@@ -367,7 +367,7 @@ class bbcode_firstpass extends bbcode
 	* Parse code text from code tag
 	* @private
 	*/
-	function bbcode_parse_code($stx, $code)
+	function bbcode_parse_code($stx, &$code)
 	{
 		switch (strtolower($stx))
 		{
@@ -1041,7 +1041,7 @@ class parse_message extends bbcode_firstpass
 	
 			if ((!$msg_len && $mode !== 'sig') || $config['max_' . $mode . '_chars'] && $msg_len > $config['max_' . $mode . '_chars'])
 			{
-				$this->warn_msg[] = (!$msg_len) ? $user->lang['TOO_FEW_CHARS'] : $user->lang['TOO_MANY_CHARS'];
+				$this->warn_msg[] = (!$msg_len) ? $user->lang['TOO_FEW_CHARS'] : sprintf($user->lang['TOO_MANY_CHARS_' . strtoupper($mode)], $msg_len, $config['max_' . $mode . '_chars']);
 				return $this->warn_msg;
 			}
 		}

@@ -245,7 +245,7 @@ function compose_pm($id, $mode, $action)
 			$enable_urls = $post['enable_magic_url'];
 			$enable_sig = (isset($post['enable_sig'])) ? $post['enable_sig'] : 0;
 
-			$message_attachment = (isset($post['message_attachement'])) ? $post['message_attachement'] : 0;
+			$message_attachment = (isset($post['message_attachment'])) ? $post['message_attachment'] : 0;
 			$message_subject = $post['message_subject'];
 			$message_time = $post['message_time'];
 			$bbcode_uid = $post['bbcode_uid'];
@@ -538,7 +538,7 @@ function compose_pm($id, $mode, $action)
 		}
 
 		// Parse message
-		$message_parser->parse($enable_bbcode, ($config['allow_post_links']) ? $enable_urls : false, $enable_smilies, $img_status, $flash_status, true, $config['allow_sig_links']);
+		$message_parser->parse($enable_bbcode, ($config['allow_post_links']) ? $enable_urls : false, $enable_smilies, $img_status, $flash_status, true, $config['allow_post_links']);
 
 		// On a refresh we do not care about message parsing errors
 		if (sizeof($message_parser->warn_msg) && !$refresh)
@@ -929,7 +929,7 @@ function compose_pm($id, $mode, $action)
 		'S_SIGNATURE_CHECKED'	=> ($sig_checked) ? ' checked="checked"' : '',
 		'S_LINKS_ALLOWED'		=> $url_status,
 		'S_MAGIC_URL_CHECKED'	=> ($urls_checked) ? ' checked="checked"' : '',
-		'S_SAVE_ALLOWED'		=> $auth->acl_get('u_savedrafts'),
+		'S_SAVE_ALLOWED'		=> ($auth->acl_get('u_savedrafts') && $action != 'edit') ? true : false,
 		'S_HAS_DRAFTS'			=> ($auth->acl_get('u_savedrafts') && $drafts),
 		'S_FORM_ENCTYPE'		=> $form_enctype,
 

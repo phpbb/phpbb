@@ -1272,7 +1272,7 @@ function update_forum_tracking_info($forum_id, $forum_last_post_time, $f_mark_ti
 				WHERE t.forum_id = ' . $forum_id . '
 					AND t.topic_last_post_time > ' . $mark_time_forum . '
 					AND t.topic_moved_id = 0
-					AND tt.topic_id IS NULL
+					AND (tt.topic_id IS NULL OR tt.mark_time < t.topic_last_post_time)
 				GROUP BY t.forum_id';
 			$result = $db->sql_query_limit($sql, 1);
 			$row = $db->sql_fetchrow($result);

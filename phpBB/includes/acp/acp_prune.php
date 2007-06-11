@@ -230,6 +230,7 @@ class acp_prune
 		if ($prune)
 		{
 			$action = request_var('action', 'deactivate');
+			$deleteposts = request_var('deleteposts', 0);
 
 			if (confirm_box(true))
 			{
@@ -361,7 +362,6 @@ class acp_prune
 		global $user, $db;
 
 		$users = request_var('users', '', true);
-		$deleteposts = request_var('deleteposts', 0);
 		
 		if ($users)
 		{
