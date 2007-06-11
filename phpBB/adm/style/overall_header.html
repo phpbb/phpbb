@@ -129,11 +129,17 @@ function switch_menu()
 			main.style.width = '93%';
 			menu_state = 'hidden';
 			menu.style.display = 'none';
-			toggle.style.left = '0';
 			toggle.style.width = '20px';
 			handle.style.backgroundImage = 'url(images/toggle.gif)';
-			handle.style.backgroundPosition = '100% 50%';
 			handle.style.backgroundRepeat = 'no-repeat';
+
+			<!-- IF S_CONTENT_DIRECTION eq 'rtl' -->
+				handle.style.backgroundPosition = '0% 50%';
+				toggle.style.left = '96%';
+			<!-- ELSE -->
+				handle.style.backgroundPosition = '100% 50%';
+				toggle.style.left = '0';
+			<!-- ENDIF -->
 		break;
 
 		// show
@@ -141,11 +147,17 @@ function switch_menu()
 			main.style.width = '76%';
 			menu_state = 'shown';
 			menu.style.display = 'block';
-			toggle.style.left = '15%';
 			toggle.style.width = '5%';
 			handle.style.backgroundImage = 'url(images/toggle.gif)';
-			handle.style.backgroundPosition = '0% 50%';
 			handle.style.backgroundRepeat = 'no-repeat';
+
+			<!-- IF S_CONTENT_DIRECTION eq 'rtl' -->
+				handle.style.backgroundPosition = '100% 50%';
+				toggle.style.left = '75%';
+			<!-- ELSE -->
+				handle.style.backgroundPosition = '0% 50%';
+				toggle.style.left = '15%';
+			<!-- ENDIF -->
 		break;
 	}
 }
