@@ -58,6 +58,35 @@
 		}
 	//-->
 	</script>
+	<script type="text/javascript">
+	<!--
+		/**
+		* Handle displaying/hiding the dimension fields
+		*/
+		function display_options(value)
+		{
+			if (value == 0)
+			{
+				dE('img_dimensions', -1);
+			}
+			else
+			{
+				dE('img_dimensions', 1);
+			}
+		}
+
+		/**
+		* Init the wanted display functionality if javascript is enabled.
+		* If javascript is not available, the user is still able to properly administrate.
+		*/
+		onload = function()
+		{
+			<!-- IF not IMAGE_SIZE -->
+				dE('img_dimensions', -1);
+			<!-- ENDIF -->
+		}
+	//-->
+	</script>
 
 	<form method="post" action="{U_ACTION}">
 
@@ -100,9 +129,19 @@
 	</dl>
 	<dl>
 		<dt><label for="imgsize">{L_INCLUDE_DIMENSIONS}:</label><br /><span>{L_DIMENSIONS_EXPLAIN}</span></dt>
-		<dd><label><input type="radio" class="radio" name="imgsize" id="imgsize" value="1"<!-- IF IMAGE_SIZE --> checked="checked"<!-- ENDIF --> /> {L_YES}</label>
-			<label><input type="radio" class="radio" name="imgsize" value="0"<!-- IF not IMAGE_SIZE --> checked="checked"<!-- ENDIF --> /> {L_NO}</label></dd>
+		<dd><label><input type="radio" class="radio" name="imgsize" id="imgsize" onclick="display_options(1);" value="1"<!-- IF IMAGE_SIZE --> checked="checked"<!-- ENDIF --> /> {L_YES}</label>
+			<label><input type="radio" class="radio" name="imgsize" onclick="display_options(0);" value="0"<!-- IF not IMAGE_SIZE --> checked="checked"<!-- ENDIF --> /> {L_NO}</label></dd>
 	</dl>
+	<div id="img_dimensions">
+		<dl>
+			<dt><label for="imgwidth">{L_IMAGE_WIDTH}:</label><br /><span>{L_AUTOMATIC_EXPLAIN}</span></dt>
+			<dd><input type="text" name="imgwidth" value="{IMAGE_SIZE}" /></dd>
+		</dl>
+		<dl>
+			<dt><label for="imgheight">{L_IMAGE_HEIGHT}:</label><br /><span>{L_AUTOMATIC_EXPLAIN}</span></dt>
+			<dd><input type="text" name="imgheight" value="{IMAGE_HEIGHT}" /></dd>
+		</dl>
+	</div>
 	</fieldset>
 
 	<fieldset class="submit-buttons">

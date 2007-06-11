@@ -1209,7 +1209,8 @@ parse_css_file = {PARSE_CSS_FILE}
 		$imgpath	= request_var('imgpath', '');
 		$imgsize	= request_var('imgsize', false);
 		$imgwidth	= request_var('imgwidth', 0);
-
+		$imgheight	= request_var('imgheight', 0);
+		
 		$imgname	= preg_replace('#[^a-z0-9\-+_]#i', '', $imgname);
 		$imgpath	= str_replace('..', '.', $imgpath);
 
@@ -1269,7 +1270,8 @@ parse_css_file = {PARSE_CSS_FILE}
 				{
 					// If imgwidth and imgheight are non-zero grab the actual size
 					// from the image itself ... we ignore width settings for the poll center image
-					$imgwidth = $imgheight = 0;
+					$imgwidth	= request_var('imgwidth', 0);
+					$imgheight	= request_var('imgheight', 0);
 					$imglang = '';
 
 					if ($imgpath && !file_exists("{$phpbb_root_path}styles/$imageset_path/imageset/$imgpath"))
@@ -1279,10 +1281,16 @@ parse_css_file = {PARSE_CSS_FILE}
 
 					if ($imgsize && $imgpath)
 					{
-						list($imgwidth, $imgheight) = getimagesize("{$phpbb_root_path}styles/$imageset_path/imageset/$imgpath");
+						if (!$imgwidth || !$imgheight)
+						{
+							list($imgwidth_file, $imgheight_file) = getimagesize("{$phpbb_root_path}styles/$imageset_path/imageset/$imgpath");
+							$imgwidth = ($imgwidth) ? $imgwidth : $imgwidth_file;
+							$imgheight = ($imgheight) ? $imgheight : $imgheight_file;
+						}
 						$imgwidth	= ($imgname != 'poll_center') ? (int) $imgwidth : 0;
 						$imgheight	= (int) $imgheight;
-					}
+					} 
+
 
 					if (strpos($imgpath, '/') !== false)
 					{
@@ -1442,7 +1450,8 @@ parse_css_file = {PARSE_CSS_FILE}
 			'L_TITLE'			=> $user->lang[$this->page_title],
 			'L_EXPLAIN'			=> $user->lang[$this->page_title . '_EXPLAIN'],
 			'IMAGE_OPTIONS'		=> $img_options,
-			'IMAGE_SIZE'		=> $imgsize_bool,
+			'IMAGE_SIZE'		=> $image_width,
+			'IMAGE_HEIGHT'		=> $image_height,
 			'IMAGE_REQUEST'		=> $image_request,
 			'U_ACTION'			=> $this->u_action . "&amp;action=edit&amp;id=$imageset_id",
 			'U_BACK'			=> $this->u_action,

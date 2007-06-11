@@ -466,8 +466,8 @@ $lang = array_merge($lang, array(
 	'LOG_POST_EDITED'			=> '<strong>Edited post “%1$s” written by</strong><br />» %2$s',
 	'LOG_REPORT_CLOSED'			=> '<strong>Closed report</strong><br />» %s',
 	'LOG_REPORT_DELETED'		=> '<strong>Deleted report</strong><br />» %s',
-	'LOG_SPLIT_DESTINATION'		=> '<strong>Moved splitted posts</strong><br />» to %s',
-	'LOG_SPLIT_SOURCE'			=> '<strong>Splitted posts</strong><br />» from %s',
+	'LOG_SPLIT_DESTINATION'		=> '<strong>Moved split posts</strong><br />» to %s',
+	'LOG_SPLIT_SOURCE'			=> '<strong>Split posts</strong><br />» from %s',
 
 	'LOG_TOPIC_DELETED'			=> '<strong>Deleted topic</strong><br />» %s',
 	'LOG_TOPIC_APPROVED'		=> '<strong>Approved topic</strong><br />» %s',

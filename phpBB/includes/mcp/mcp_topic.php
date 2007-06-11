@@ -417,7 +417,7 @@ function split_topic($action, $topic_id, $to_forum_id, $subject)
 			$post_id_list = array();
 			while ($row = $db->sql_fetchrow($result))
 			{
-				// If splitted from selected post (split_beyond), we split the unapproved items too.
+				// If split from selected post (split_beyond), we split the unapproved items too.
 				if (!$row['post_approved'] && !$auth->acl_get('m_approve', $row['forum_id']))
 				{
 //					continue;
