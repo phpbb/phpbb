@@ -147,13 +147,6 @@ a#logo:hover {
 	white-space: nowrap; /* For Opera */
 }
 
-.rtl #search-box {
-	float: left;
-	text-align: left;
-	margin-right: 0;
-	margin-left: 5px;
-}
-
 #search-box #keywords {
 	width: 95px;
 	background-color: #FFF;
@@ -182,10 +175,6 @@ a#logo:hover {
 #site-description {
 	float: left;
 	width: 70%;
-}
-
-.rtl #site-description {
-	float: right;
 }
 
 #site-description h1 {

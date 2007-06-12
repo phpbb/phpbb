@@ -89,6 +89,9 @@
 		{T_THEME_DATA}
 	</style>
 <!-- ENDIF -->
+<!-- IF S_CONTENT_DIRECTION eq 'rtl' -->
+	<link href="{T_THEME_PATH}/bidi.css" rel="stylesheet" type="text/css" media="screen, projection" />
+<!-- ENDIF -->
 </head>
 
 <body id="phpbb" class="section-{SCRIPT_NAME} {S_CONTENT_DIRECTION}">
@@ -125,7 +128,8 @@
 			<div class="inner"><span class="corners-top"><span></span></span>
 
 			<ul class="linklist navlinks">
-				<li><a class="icon-home" href="{U_INDEX}" accesskey="h">{L_INDEX}</a> <!-- BEGIN navlinks --> <strong>&#8249;</strong> <a href="{navlinks.U_VIEW_FORUM}">{navlinks.FORUM_NAME}</a><!-- END navlinks --></li>
+				<li><a class="icon-home" href="{U_INDEX}" accesskey="h">{L_INDEX}</a></li>
+				<!-- BEGIN navlinks --><li> <strong>&#8249;</strong> <a href="{navlinks.U_VIEW_FORUM}">{navlinks.FORUM_NAME}</a></li><!-- END navlinks -->
 
 				<li class="rightside"><a href="#" onclick="fontsizeup(); return false;" class="fontsize" title="{L_CHANGE_FONT_SIZE}">{L_CHANGE_FONT_SIZE}</a></li>
 
@@ -138,8 +142,8 @@
 			<ul class="linklist">
 				<!-- IF not S_IS_BOT -->
 					<!-- IF S_USER_LOGGED_IN -->
+					<li><a href="{U_PROFILE}" title="{L_PROFILE}" accesskey="u" class="icon-ucp">{L_PROFILE}</a></li>
 					<li>
-						<a href="{U_PROFILE}" title="{L_PROFILE}" accesskey="u" class="icon-ucp">{L_PROFILE}</a>
 							<!-- IF S_DISPLAY_PM --> (<a href="{U_PRIVATEMSGS}">{PRIVATE_MESSAGE_INFO}</a>)<!-- ENDIF --> &bull; 		
 						<a href="{U_SEARCH_SELF}">{L_SEARCH_SELF}</a>
 						<!-- IF U_RESTORE_PERMISSIONS --> &bull;
@@ -148,14 +152,12 @@
 					</li>
 					<!-- ENDIF -->
 				<!-- ENDIF -->
-				<li class="rightside">
-					<a href="{U_FAQ}" title="{L_FAQ_EXPLAIN}" class="icon-faq">{L_FAQ}</a>&nbsp; 
-					<!-- IF not S_IS_BOT -->
-						<!-- IF S_DISPLAY_MEMBERLIST --><a href="{U_MEMBERLIST}" title="{L_MEMBERLIST_EXPLAIN}" class="icon-members">{L_MEMBERLIST}</a>&nbsp; <!-- ENDIF -->
-						<!-- IF not S_USER_LOGGED_IN --><a href="{U_REGISTER}" class="icon-register">{L_REGISTER}</a>&nbsp; <!-- ENDIF -->
-						<a href="{U_LOGIN_LOGOUT}" title="{L_LOGIN_LOGOUT}" accesskey="l" class="icon-logout">{L_LOGIN_LOGOUT}</a>
-					<!-- ENDIF -->
-				</li>
+				<li class="rightside"><a href="{U_FAQ}" title="{L_FAQ_EXPLAIN}" class="icon-faq">{L_FAQ}</a></li>
+				<!-- IF not S_IS_BOT -->
+					<!-- IF S_DISPLAY_MEMBERLIST --><li class="rightside"><a href="{U_MEMBERLIST}" title="{L_MEMBERLIST_EXPLAIN}" class="icon-members">{L_MEMBERLIST}</a></li><!-- ENDIF -->
+					<!-- IF not S_USER_LOGGED_IN --><li class="rightside"><a href="{U_REGISTER}" class="icon-register">{L_REGISTER}</a></li><!-- ENDIF -->
+					<li class="rightside"><a href="{U_LOGIN_LOGOUT}" title="{L_LOGIN_LOGOUT}" accesskey="l" class="icon-logout">{L_LOGIN_LOGOUT}</a></li>
+				<!-- ENDIF -->
 			</ul>
 
 			<span class="corners-bottom"><span></span></span></div>
