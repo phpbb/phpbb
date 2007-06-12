@@ -411,7 +411,7 @@ class dbal_oracle extends dbal
 	* Seek to given row number
 	* rownum is zero-based
 	*/
-	function sql_rowseek($rownum, $query_id = false)
+	function sql_rowseek($rownum, &$query_id)
 	{
 		global $cache;
 
