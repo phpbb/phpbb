@@ -1100,7 +1100,7 @@ if ($config['load_onlinetrack'] && sizeof($id_cache))
 	$update_time = $config['load_online_time'] * 60;
 	while ($row = $db->sql_fetchrow($result))
 	{
-		$user_cache[$row['session_user_id']]['online'] = (time() - $update_time < $row['online_time'] && (($row['viewonline'] && $user_cache[$row['session_user_id']]['viewonline']) || $auth->acl_get('u_viewonline'))) ? true : false;
+		$user_cache[$row['session_user_id']]['online'] = (time() - $update_time < $row['online_time'] && (($row['viewonline']) || $auth->acl_get('u_viewonline'))) ? true : false;
 	}
 	$db->sql_freeresult($result);
 }

@@ -1506,6 +1506,33 @@ class user extends session
 				trigger_error('BOARD_UNAVAILABLE');
 			}
 		}
+		
+		// Make sure the user is able to hide his session
+		if (!$this->data['session_viewonline'])
+		{
+			// Reset online status if not allowed to hide the session...
+			if (!$auth->acl_get('u_hideonline'))
+			{
+				$sql = 'UPDATE ' . SESSIONS_TABLE . '
+					SET session_viewonline = 1
+					WHERE session_user_id = ' . $this->data['user_id'];
+				$db->sql_query($sql);
+				$this->data['session_viewonline'] = 1;
+			}
+		}
+		elseif (!$this->data['user_allow_viewonline'])
+		{
+			// the user wants to hide and is allowed to  -> cloaking device on.
+			if ($auth->acl_get('u_hideonline'))
+			{
+				$sql = 'UPDATE ' . SESSIONS_TABLE . '
+					SET session_viewonline = 0
+					WHERE session_user_id = ' . $this->data['user_id'];
+				$db->sql_query($sql);
+				$this->data['session_viewonline'] = 0;
+			}
+		}
+
 
 		// Does the user need to change their password? If so, redirect to the
 		// ucp profile reg_details page ... of course do not redirect if we're already in the ucp

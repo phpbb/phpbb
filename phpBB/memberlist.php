@@ -1434,7 +1434,7 @@ function show_profile($data)
 	if ($config['load_onlinetrack'])
 	{
 		$update_time = $config['load_online_time'] * 60;
-		$online = (time() - $update_time < $data['session_time'] && ((isset($data['session_viewonline']) && $data['user_allow_viewonline']) || $auth->acl_get('u_viewonline'))) ? true : false;
+		$online = (time() - $update_time < $data['session_time'] && ((isset($data['session_viewonline'])) || $auth->acl_get('u_viewonline'))) ? true : false;
 	}
 	else
 	{

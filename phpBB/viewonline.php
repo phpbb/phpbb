@@ -139,7 +139,7 @@ while ($row = $db->sql_fetchrow($result))
 			$row['username'] = '<b style="color:#' . $row['user_colour'] . '">' . $row['username'] . '</b>';
 		}
 
-		if (!$row['user_allow_viewonline'] || !$row['session_viewonline'])
+		if (!$row['session_viewonline'])
 		{
 			$view_online = ($auth->acl_get('u_viewonline')) ? true : false;
 			$logged_hidden_online++;

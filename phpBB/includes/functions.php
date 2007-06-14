@@ -2130,24 +2130,6 @@ function login_box($redirect = '', $l_explain = '', $l_success = '', $admin = fa
 			// append/replace SID (may change during the session for AOL users)
 			$redirect = reapply_sid($redirect);
 
-			// Make sure the user is able to hide his session
-			if (!$viewonline)
-			{
-				$check_auth = new auth();
-				$check_auth->acl($user->data);
-
-				// Reset online status if not allowed to hide the session...
-				if (!$check_auth->acl_get('u_hideonline'))
-				{
-					$sql = 'UPDATE ' . SESSIONS_TABLE . '
-						SET session_viewonline = 1
-						WHERE session_user_id = ' . $user->data['user_id'];
-					$db->sql_query($sql);
-				}
-
-				unset($check_auth);
-			}
-
 			// Special case... the user is effectively banned, but we allow founders to login
 			if (defined('IN_CHECK_BAN') && $result['user_row']['user_type'] != USER_FOUNDER)
 			{
@@ -3959,7 +3941,7 @@ function page_header($page_title = '', $display_online_list = true)
 						$user_colour = '';
 					}
 
-					if ($row['user_allow_viewonline'] && $row['session_viewonline'])
+					if ($row['session_viewonline'])
 					{
 						$user_online_link = $row['username'];
 						$logged_visible_online++;
@@ -3970,7 +3952,7 @@ function page_header($page_title = '', $display_online_list = true)
 						$logged_hidden_online++;
 					}
 
-					if (($row['user_allow_viewonline'] && $row['session_viewonline']) || $auth->acl_get('u_viewonline'))
+					if (($row['session_viewonline']) || $auth->acl_get('u_viewonline'))
 					{
 						if ($row['user_type'] <> USER_IGNORE)
 						{
