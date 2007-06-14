@@ -187,7 +187,7 @@ if (!$get_info)
 
 		$src_db->sql_freeresult($result);
 	}
-	elseif ($result)
+	else if ($result)
 	{
 		$src_db->sql_freeresult($result);
 	}

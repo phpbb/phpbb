@@ -113,11 +113,11 @@ if (!empty($mem_limit ))
 	{
 		$mem_limit = floor($mem_limit/1024);
 	} 
-	elseif ($unit == 'g')
+	else if ($unit == 'g')
 	{
 		$mem_limit *= 1024;
 	}
-	elseif (is_numeric($unit))
+	else if (is_numeric($unit))
 	{
 		$mem_limit = floor($mem_limit/1048576);
 	}

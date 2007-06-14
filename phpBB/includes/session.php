@@ -1520,7 +1520,7 @@ class user extends session
 				$this->data['session_viewonline'] = 1;
 			}
 		}
-		elseif (!$this->data['user_allow_viewonline'])
+		else if (!$this->data['user_allow_viewonline'])
 		{
 			// the user wants to hide and is allowed to  -> cloaking device on.
 			if ($auth->acl_get('u_hideonline'))

@@ -2172,7 +2172,7 @@ function avatar_process_user(&$error, $custom_userdata = false)
 		$sql_ary['user_avatar'] = '';
 		$sql_ary['user_avatar_type'] = $sql_ary['user_avatar_width'] = $sql_ary['user_avatar_height'] = 0;
 	}
-	elseif (!empty($userdata['user_avatar']))
+	else if (!empty($userdata['user_avatar']))
 	{
 		// Only update the dimensions
 		
