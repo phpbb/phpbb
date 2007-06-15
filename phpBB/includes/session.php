@@ -543,7 +543,6 @@ class session
 
 				$SID = '?sid=';
 				$_SID = '';
-
 				return true;
 			}
 			else
@@ -1508,7 +1507,7 @@ class user extends session
 		}
 		
 		// Make sure the user is able to hide his session
-		if (if isset($this->data['session_viewonline']) && !$this->data['session_viewonline'])
+		if (isset($this->data['session_viewonline']) && !$this->data['session_viewonline'])
 		{
 			// Reset online status if not allowed to hide the session...
 			if (!$auth->acl_get('u_hideonline'))
