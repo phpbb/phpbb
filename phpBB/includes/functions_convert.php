@@ -1226,7 +1226,7 @@ function get_config()
 
 	if (!sizeof($convert_config))
 	{
-		$convert->p_master->error($lang['CONV_ERROR_CONFIG_EMPTY'], __LINE__, __FILE__);
+		$convert->p_master->error($user->lang['CONV_ERROR_CONFIG_EMPTY'], __LINE__, __FILE__);
 	}
 
 	return $convert_config;
