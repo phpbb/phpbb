@@ -587,7 +587,8 @@ class auth_admin extends auth
 		// Get forum names
 		$sql = 'SELECT forum_id, forum_name
 			FROM ' . FORUMS_TABLE . '
-			WHERE ' . $db->sql_in_set('forum_id', array_keys($hold_ary));
+			WHERE ' . $db->sql_in_set('forum_id', array_keys($hold_ary)) . ' 
+			ORDER BY left_id';
 		$result = $db->sql_query($sql);
 
 		$forum_names = array();
@@ -597,16 +598,12 @@ class auth_admin extends auth
 		}
 		$db->sql_freeresult($result);
 
-		foreach ($hold_ary as $forum_id => $auth_ary)
+		foreach ($forum_names as $forum_id => $forum_name)
 		{
-			// If there is no forum present the database holds auth information for a non-existent forum... continue then
-			if ($forum_id && !isset($forum_names[$forum_id]))
-			{
-				continue;
-			}
+			$auth_ary = $hold_ary[$forum_id];
 
 			$template->assign_block_vars('role_mask', array(
-				'NAME'				=> ($forum_id == 0) ? $user->lang['GLOBAL_MASK'] : $forum_names[$forum_id],
+				'NAME'				=> ($forum_id == 0) ? $user->lang['GLOBAL_MASK'] : $forum_name,
 				'FORUM_ID'			=> $forum_id)
 			);
 
