@@ -151,6 +151,16 @@
 	padding: 1px 0 1px 15px;
 }
 
+.rtl .pagination span {
+	direction: ltr;
+}
+
+.rtl .pagination span.page-sep {
+	display: inline;
+	visibility: hidden;
+	position: absolute;
+}
+
 /* Miscellaneous styles
 ---------------------------------------- */
 .rtl #forum-permissions {
@@ -436,7 +446,6 @@ a.right:hover {
 
 /* Rollover state */
 .rtl .buttons div {
-	float: right;
 	margin: 0 0 0 5px;
 }
 
@@ -457,7 +466,7 @@ a.right:hover {
 /* Poster profile icons
 ----------------------------------------*/
 /* Rollover state */
-.rtl ul.profile-icons li {
+.rtl .postprofile ul.profile-icons li {
 	float: right;
 	margin: 0 0 3px 6px;
 }

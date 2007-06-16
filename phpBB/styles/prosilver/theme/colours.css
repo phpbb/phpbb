@@ -374,7 +374,7 @@ ul.topiclist dd {
 
 .rtl ul.topiclist dd {
 	border-right-color: #fff;
-	border-left-color: none;
+	border-left-color: transparent;
 }
 
 ul.topiclist li.row dt a.subforum.read {
@@ -404,7 +404,7 @@ li.row:hover dd {
 
 .rtl li.row:hover dd {
 	border-right-color: #CCCCCC;
-	border-left-color: none;
+	border-left-color: transparent;
 }
 
 li.header dt, li.header dd {
@@ -565,7 +565,7 @@ fieldset.polls dd div {
 }
 
 .rtl .pollbar1, .rtl .pollbar2, .rtl .pollbar3, .rtl .pollbar4, .rtl .pollbar5 {
-	border-right-color: none;
+	border-right-color: transparent;
 }
 
 .pollbar1 {
@@ -627,7 +627,7 @@ fieldset.polls dd div {
 
 .rtl .postprofile {
 	border-right-color: #FFFFFF;
-	border-left-color: none;
+	border-left-color: transparent;
 }
 
 .pm .postprofile {
@@ -636,7 +636,7 @@ fieldset.polls dd div {
 
 .rtl .pm .postprofile {
 	border-right-color: #DDDDDD;
-	border-left-color: none;
+	border-left-color: transparent;
 }
 
 .postprofile strong {
@@ -646,11 +646,6 @@ fieldset.polls dd div {
 .online {
 	background-image: url("{T_IMAGESET_LANG_PATH}/icon_user_online.gif");
 }
-
-.rtl .online {
-	background-image: url("{T_IMAGESET_LANG_PATH}/icon_user_online_rtl.gif");
-}
-
 
 /*  	
 --------------------------------------------------------------
