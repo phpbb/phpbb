@@ -92,8 +92,6 @@ function phpbb_insert_forums()
 			$db->sql_query('SET IDENTITY_INSERT ' . FORUMS_TABLE . ' ON');
 		break;
 	}
-	
-
 
 	$cats_added = array();
 	while ($row = $src_db->sql_fetchrow($result))
@@ -281,6 +279,10 @@ function phpbb_insert_forums()
 
 	switch ($db->sql_layer)
 	{
+		case 'postgres':
+			$db->sql_query("SELECT SETVAL('" . FORUMS_TABLE . "_seq',(select case when max(forum_id)>0 then max(forum_id)+1 else 1 end from " . FORUMS_TABLE . '));');
+		break;
+
 		case 'mssql':
 		case 'mssql_odbc':
 			$db->sql_query('SET IDENTITY_INSERT ' . FORUMS_TABLE . ' OFF');
