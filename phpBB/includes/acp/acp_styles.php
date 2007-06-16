@@ -1453,7 +1453,6 @@ parse_css_file = {PARSE_CSS_FILE}
 			'IMAGE_SIZE'		=> $image_width,
 			'IMAGE_HEIGHT'		=> $image_height,
 			'IMAGE_REQUEST'		=> (empty($image_filename)) ? 'images/no_image.png' : $image_request,
-			'TEST'				=> (empty($image_filename)) ? 'test' : 'tast',
 			'U_ACTION'			=> $this->u_action . "&amp;action=edit&amp;id=$imageset_id",
 			'U_BACK'			=> $this->u_action,
 			'NAME'				=> $imageset_name,
