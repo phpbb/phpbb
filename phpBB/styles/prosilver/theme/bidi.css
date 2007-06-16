@@ -360,6 +360,10 @@ a.right:hover {
 	margin-right: 0;
 }
 
+.rtl code {
+	direction: ltr;
+}
+
 /* Attachments
 ----------------------------------------*/
 .rtl .attachbox {
