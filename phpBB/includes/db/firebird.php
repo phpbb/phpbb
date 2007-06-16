@@ -27,6 +27,7 @@ class dbal_firebird extends dbal
 {
 	var $last_query_text = '';
 	var $service_handle = false;
+	var $affected_rows = 0;
 
 	/**
 	* Connect to server
@@ -109,13 +110,11 @@ class dbal_firebird extends dbal
 
 			if ($this->query_result === false)
 			{
-				$prepared = false;
+				$array = array();
 				// We overcome Firebird's 32767 char limit by binding vars
 				if (strlen($query) > 32767)
 				{
-					$array = array();
-
-					if (preg_match('/^(INSERT INTO[^(]+)\\(([^()]+)\\) VALUES[^(]+\\((.*?)\\)$/s', $query, $regs))
+					if (preg_match('/^(INSERT INTO[^(]++)\\(([^()]+)\\) VALUES[^(]++\\((.*?)\\)$/s', $query, $regs))
 					{
 						if (strlen($regs[3]) > 32767)
 						{
@@ -134,45 +133,55 @@ class dbal_firebird extends dbal
 							}
 
 							$query = $regs[1] . '(' . $regs[2] . ') VALUES (' . implode(', ', $inserts) . ')';
-							unset($art);
-
-							$prepared = true;
 						}
 					}
-					else if (preg_match_all('/^(UPDATE ([\\w_]++)\\s+SET )(\\w+ = (?:\'(?:[^\']++|\'\')*+\'|\\d+)(?:, \\w+ = (?:\'(?:[^\']++|\'\')*+\'|\\d+))*+)\\s+(WHERE.*)$/s', $query, $data, PREG_SET_ORDER))
+					else if (preg_match('/^(UPDATE ([\\w_]++)\\s+SET )([\\w_]++\\s*=\\s*(?:\'(?:[^\']++|\'\')*+\'|\\d+)(?:,\\s*[\\w_]++\\s*=\\s*(?:\'(?:[^\']++|\'\')*+\'|\\d+))*+)\\s+(WHERE.*)$/s', $query, $data))
 					{
-						if (strlen($data[0][3]) > 32767)
+						if (strlen($data[3]) > 32767)
 						{
-							$update = $data[0][1];
-							$where = $data[0][4];
-							preg_match_all('/(\\w++) = (\'(?:[^\']++|\'\')*+\'|\\d++)/', $data[0][3], $temp, PREG_SET_ORDER);
+							$update = $data[1];
+							$where = $data[4];
+							preg_match_all('/(\\w++)\\s*=\\s*(\'(?:[^\']++|\'\')*+\'|\\d++)/', $data[3], $temp, PREG_SET_ORDER);
 							unset($data);
 
-							$art = array();
+							$cols = array();
 							foreach ($temp as $value)
 							{
 								if (!empty($value[2]) && $value[2][0] === "'" && strlen($value[2]) > 32769) // check to see if this thing is greater than the max + 'x2
 								{
 									$array[] = str_replace("''", "'", substr($value[2], 1, -1));
-									$art[] = $value[1] . '=?';
+									$cols[] = $value[1] . '=?';
 								}
 								else
 								{
-									$art[] = $value[1] . '=' . $value[2];
+									$cols[] = $value[1] . '=' . $value[2];
 								}
 							}
 
-							$query = $update . implode(', ', $art) . ' ' . $where;
-							unset($art);
-
-							$prepared = true;
+							$query = $update . implode(', ', $cols) . ' ' . $where;
+							unset($cols);
 						}
 					}
 				}
 
-				if ($prepared)
+				if (!function_exists('ibase_affected_rows') && (preg_match('/^UPDATE ([\w_]++)\s+SET [\w_]++\s*=\s*(?:\'(?:[^\']++|\'\')*+\'|\d+)(?:,\s*[\w_]++\s*=\s*(?:\'(?:[^\']++|\'\')*+\'|\d+))*+\s+(WHERE.*)$/s', $query, $regs) || preg_match('/^DELETE FROM ([\w_]++)\s*WHERE\s*(.*)$/s', $query, $regs)))
 				{
-					$p_query = ibase_prepare($this->db_connect_id, $query);
+					$affected_sql = 'SELECT COUNT(*) as num_rows_affected FROM ' . $regs[1] . ' ' . $regs[2];
+
+					if (!($temp_q_id = @ibase_query($this->db_connect_id, $affected_sql)))
+					{
+						return false;
+					}
+
+					$temp_result = @ibase_fetch_assoc($temp_q_id);
+					@ibase_free_result($temp_q_id);
+
+					$this->affected_rows = ($temp_result) ? $temp_result['NUM_ROWS_AFFECTED'] : false;
+				}
+
+				if (sizeof($array))
+				{
+					$p_query = @ibase_prepare($this->db_connect_id, $query);
 					array_unshift($array, $p_query);
 					$this->query_result = call_user_func_array('ibase_execute', $array);
 					unset($array);
@@ -252,7 +261,7 @@ class dbal_firebird extends dbal
 		}
 		else
 		{
-			return ($this->query_result) ? true : false;
+			return $this->affected_rows;
 		}
 	}
 

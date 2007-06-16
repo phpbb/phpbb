@@ -1711,7 +1711,7 @@ function phpbb_check_username_collisions()
 		break;
 
 		case 'oracle':
-			$create_sql = 'CREATE TABLE ' . $table_prefix . 'userconv
+			$create_sql = 'CREATE TABLE ' . $table_prefix . 'userconv (
 				user_id number(8) NOT NULL,
 				username_clean varchar2(255) DEFAULT \'\'
 			)';

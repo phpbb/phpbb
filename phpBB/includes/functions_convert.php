@@ -1475,7 +1475,7 @@ function mass_auth($ug_type, $forum_id, $ug_id, $acl_list, $setting = ACL_NO)
 	{
 		$sql = 'SELECT role_id
 			FROM ' . ACL_ROLES_TABLE . "
-			WHERE role_description = 'ROLE_DESCRIPTION_" . $db->sql_escape($acl_list) . "'";
+			WHERE role_name = 'ROLE_" . $db->sql_escape($acl_list) . "'";
 		$result = $db->sql_query_limit($sql, 1);
 		$row = $db->sql_fetchrow($result);
 		$db->sql_freeresult($result);

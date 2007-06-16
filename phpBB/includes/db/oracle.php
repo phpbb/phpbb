@@ -144,24 +144,47 @@ class dbal_oracle extends dbal
 				$sub_exp = substr($val[5], strpos($val[5], '(') + 1, -1);
 				$extra = false;
 				preg_match_all('/\'(?>[^\']++|\'\')*+\'|\d++/', $sub_exp, $sub_vals, PREG_PATTERN_ORDER);
+				$i = 0;
 				foreach ($sub_vals[0] as $sub_val)
 				{
+					// two things:
+					// 1) This determines if an empty string was in the IN clausing, making us turn it into a NULL comparison
+					// 2) This fixes the 1000 list limit that Oracle has (ORA-01795)
 					if ($sub_val !== "''")
 					{
-						$in_clause[] = $sub_val;
+						$in_clause[(int) $i++/1000][] = $sub_val;
 					}
 					else
 					{
 						$extra = true;
 					}
 				}
-				if (!$extra)
+				if (!$extra && $i < 1000)
 				{
 					$out .= $val[0];
 				}
 				else
 				{
-					$out .= ' ' . $val[1] . ' (' . $val[2]. ' ' . (isset($val[6]) ? $val[6] : '') . 'IN(' . implode(', ', $in_clause) . ') OR ' . $val[2] . ' is ' . (isset($val[6]) ? $val[6] : '') . 'NULL)';
+					$out .= ' ' . $val[1] . '(';
+					$in_array = array();
+
+					// constuct each IN() clause	
+					foreach ($in_clause as $in_values)
+					{
+						$in_array[] = $val[2] . ' ' . (isset($val[6]) ? $val[6] : '') . 'IN(' . implode(', ', $in_values) . ')';
+					}
+
+					// Join the IN() clauses against a few ORs (IN is just a nicer OR anyway)
+					$out .= implode(' OR ', $in_array);
+
+					// handle the empty string case
+					if ($extra)
+					{
+						$out .= ' OR ' . $val[2] . ' is ' . (isset($val[6]) ? $val[6] : '') . 'NULL';
+					}
+					$out .= ')';
+
+					unset($in_array, $in_clause);
 				}
 			}
 		}
@@ -211,7 +234,7 @@ class dbal_oracle extends dbal
 				// We overcome Oracle's 4000 char limit by binding vars
 				if (strlen($query) > 4000)
 				{
-					if (preg_match('/^(INSERT INTO[^(]+)\\(([^()]+)\\) VALUES[^(]+\\((.*?)\\)$/s', $query, $regs))
+					if (preg_match('/^(INSERT INTO[^(]++)\\(([^()]+)\\) VALUES[^(]++\\((.*?)\\)$/s', $query, $regs))
 					{
 						if (strlen($regs[3]) > 4000)
 						{
@@ -231,34 +254,33 @@ class dbal_oracle extends dbal
 							}
 
 							$query = $regs[1] . '(' . $regs[2] . ') VALUES (' . implode(', ', $inserts) . ')';
-							unset($art);
 						}
 					}
-					else if (preg_match_all('/^(UPDATE [\\w_]++\\s+SET )([\\w_]+ = (?:\'(?:[^\']++|\'\')*+\'|\\d+)(?:, [\\w_]+ = (?:\'(?:[^\']++|\'\')*+\'|\\d+))*+)\\s+(WHERE.*)$/s', $query, $data, PREG_SET_ORDER))
+					else if (preg_match_all('/^(UPDATE [\\w_]++\\s+SET )([\\w_]++\\s*=\\s*(?:\'(?:[^\']++|\'\')*+\'|\\d+)(?:,\\s*[\\w_]++\\s*=\\s*(?:\'(?:[^\']++|\'\')*+\'|\\d+))*+)\\s+(WHERE.*)$/s', $query, $data, PREG_SET_ORDER))
 					{
 						if (strlen($data[0][2]) > 4000)
 						{
 							$update = $data[0][1];
 							$where = $data[0][3];
-							preg_match_all('/([\\w_]++) = (\'(?:[^\']++|\'\')*+\'|\\d++)/', $data[0][2], $temp, PREG_SET_ORDER);
+							preg_match_all('/([\\w_]++)\\s*=\\s*(\'(?:[^\']++|\'\')*+\'|\\d++)/', $data[0][2], $temp, PREG_SET_ORDER);
 							unset($data);
 
-							$art = array();
+							$cols = array();
 							foreach ($temp as $value)
 							{
 								if (!empty($value[2]) && $value[2][0] === "'" && strlen($value[2]) > 4002) // check to see if this thing is greater than the max + 'x2
 								{
-									$art[] = $value[1] . '=:' . strtoupper($value[1]);
+									$cols[] = $value[1] . '=:' . strtoupper($value[1]);
 									$array[$value[1]] = str_replace("''", "'", substr($value[2], 1, -1));
 								}
 								else
 								{
-									$art[] = $value[1] . '=' . $value[2];
+									$cols[] = $value[1] . '=' . $value[2];
 								}
 							}
 
-							$query = $update . implode(', ', $art) . ' ' . $where;
-							unset($art);
+							$query = $update . implode(', ', $cols) . ' ' . $where;
+							unset($cols);
 						}
 					}
 				}
