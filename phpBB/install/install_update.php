@@ -270,7 +270,7 @@ class install_update extends module
 				$template->assign_vars(array(
 					'S_DB_UPDATE'			=> true,
 					'S_DB_UPDATE_FINISHED'	=> ($config['version'] == $this->latest_version) ? true : false,
-					'U_DB_UPDATE'			=> append_sid($phpbb_root_path . 'install/database_update.' . $phpEx, 'type=1&amp;language=' . $language),
+					'U_DB_UPDATE'			=> append_sid($phpbb_root_path . 'install/database_update.' . $phpEx, 'type=1&amp;language=' . $user->data['user_lang']),
 					'U_DB_UPDATE_ACTION'	=> append_sid($this->p_master->module_url, "mode=$mode&amp;sub=update_db"),
 					'U_ACTION'				=> append_sid($this->p_master->module_url, "mode=$mode&amp;sub=file_check"),
 				));
@@ -1175,8 +1175,8 @@ class install_update extends module
 				{
 					// Adjust the update info file to hold some specific style-related information
 					$info['custom'] = array();
-
-					/* Get custom installed styles...
+/*
+					// Get custom installed styles...
 					$sql = 'SELECT template_name, template_path
 						FROM ' . STYLES_TEMPLATE_TABLE . "
 						WHERE LOWER(template_name) NOT IN ('subsilver2', 'prosilver')";
@@ -1194,16 +1194,16 @@ class install_update extends module
 						foreach ($info['files'] as $filename)
 						{
 							// Template update?
-							if (strpos(strtolower($filename), 'styles/subsilver2/template/') === 0)
+							if (strpos(strtolower($filename), 'styles/prosilver/template/') === 0)
 							{
 								foreach ($templates as $row)
 								{
-									$info['custom'][$filename][] = str_replace('/subsilver2/', '/' . $row['template_path'] . '/', $filename);
+									$info['custom'][$filename][] = str_replace('/prosilver/', '/' . $row['template_path'] . '/', $filename);
 								}
 							}
 						}
 					}
-					*/
+*/
 				}
 			break;
 
