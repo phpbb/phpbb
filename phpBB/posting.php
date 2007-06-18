@@ -321,7 +321,14 @@ if ($mode == 'bump')
 
 
 // Determine some vars
-$post_data['quote_username']	= (!empty($post_data['username'])) ? $post_data['username'] : ((!empty($post_data['post_username'])) ? $post_data['post_username'] : '');
+if (isset($post_data['poster_id']) && $post_data['poster_id'] == ANONYMOUS)
+{
+	$post_data['quote_username'] = (!empty($post_data['post_username'])) ? $post_data['post_username'] : $user->lang['GUEST'];
+}
+else
+{
+	$post_data['quote_username'] = isset($post_data['username']) ? $post_data['username'] : '';
+}
 $post_data['post_edit_locked']	= (isset($post_data['post_edit_locked'])) ? (int) $post_data['post_edit_locked'] : 0;
 $post_data['post_subject']		= (in_array($mode, array('quote', 'edit'))) ? $post_data['post_subject'] : ((isset($post_data['topic_title'])) ? $post_data['topic_title'] : '');
 $post_data['topic_time_limit']	= (isset($post_data['topic_time_limit'])) ? (($post_data['topic_time_limit']) ? (int) $post_data['topic_time_limit'] / 86400 : (int) $post_data['topic_time_limit']) : 0;

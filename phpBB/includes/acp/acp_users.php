@@ -669,7 +669,7 @@ class acp_users
 									// Make sure the user is not setting an Inactive or ignored user to be a founder
 									if ($user_row['user_type'] == USER_IGNORE)
 									{
-										trigger_error($user->lang['CANNOT_SET_FOUNDER_BOT'] . adm_back_link($this->u_action . '&amp;u=' . $user_id), E_USER_WARNING);
+										trigger_error($user->lang['CANNOT_SET_FOUNDER_IGNORED'] . adm_back_link($this->u_action . '&amp;u=' . $user_id), E_USER_WARNING);
 									}
 
 									if ($user_row['user_type'] == USER_INACTIVE)
