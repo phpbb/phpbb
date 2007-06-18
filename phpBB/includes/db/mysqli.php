@@ -408,7 +408,6 @@ class dbal_mysqli extends dbal
 
 			break;
 		}
-		@mysqli_query($this->db_connect_id, "SET profiling = 0;");
 	}
 }
 

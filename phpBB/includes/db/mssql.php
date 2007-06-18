@@ -372,35 +372,22 @@ class dbal_mssql extends dbal
 		switch ($mode)
 		{
 			case 'start':
-				$explain_query = $query;
-				if (preg_match('/UPDATE ([a-z0-9_]+).*?WHERE(.*)/s', $query, $m))
+				$html_table = false;
+				@mssql_query('SET SHOWPLAN_TEXT ON;', $this->db_connect_id);
+				if ($result = @mssql_query($query, $this->db_connect_id))
 				{
-					$explain_query = 'SELECT * FROM ' . $m[1] . ' WHERE ' . $m[2];
-				}
-				else if (preg_match('/DELETE FROM ([a-z0-9_]+).*?WHERE(.*)/s', $query, $m))
-				{
-					$explain_query = 'SELECT * FROM ' . $m[1] . ' WHERE ' . $m[2];
-				}
-
-				if (preg_match('/^SELECT/', $explain_query))
-				{
-					$html_table = false;
-					@mssql_query('SET SHOWPLAN_TEXT ON;', $this->db_connect_id);
-					if ($result = @mssql_query($explain_query, $this->db_connect_id))
+					@mssql_next_result($result);
+					while ($row = @mssql_fetch_row($result))
 					{
-						@mssql_next_result($result);
-						while ($row = @mssql_fetch_row($result))
-						{
-							$html_table = $this->sql_report('add_select_row', $query, $html_table, $row);
-						}
+						$html_table = $this->sql_report('add_select_row', $query, $html_table, $row);
 					}
-					@mssql_query('SET SHOWPLAN_TEXT OFF;', $this->db_connect_id);
-					@mssql_free_result($result);
+				}
+				@mssql_query('SET SHOWPLAN_TEXT OFF;', $this->db_connect_id);
+				@mssql_free_result($result);
 
-					if ($html_table)
-					{
-						$this->html_hold .= '</table>';
-					}
+				if ($html_table)
+				{
+					$this->html_hold .= '</table>';
 				}
 			break;
 
