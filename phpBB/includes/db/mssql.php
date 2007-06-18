@@ -36,6 +36,8 @@ class dbal_mssql extends dbal
 		$this->dbname = $database;
 
 		@ini_set('mssql.charset', 'UTF-8');
+		@ini_set('mssql.textlimit', 2147483647);
+		@ini_set('mssql.textsize', 2147483647);
 
 		$this->db_connect_id = ($this->persistency) ? @mssql_pconnect($this->server, $this->user, $sqlpassword, $new_link) : @mssql_connect($this->server, $this->user, $sqlpassword, $new_link);
 
