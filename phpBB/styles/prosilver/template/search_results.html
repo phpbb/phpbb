@@ -4,9 +4,9 @@
 <!-- IF IGNORED_WORDS --> <p>{L_IGNORED_TERMS}: <strong>{IGNORED_WORDS}</strong></p><!-- ENDIF -->
 
 <!-- IF SEARCH_TOPIC -->
-	<p><a class="left" href="{U_SEARCH_TOPIC}">{L_RETURN_TO}: {SEARCH_TOPIC}</a></p>
+	<p><a class="{S_CONTENT_FLOW_BEGIN}" href="{U_SEARCH_TOPIC}">{L_RETURN_TO}: {SEARCH_TOPIC}</a></p>
 <!-- ELSE -->
-	<p><a class="left" href="{U_SEARCH}" title="{L_SEARCH_ADV}">{L_RETURN_TO_SEARCH_ADV}</a></p>
+	<p><a class="{S_CONTENT_FLOW_BEGIN}" href="{U_SEARCH}" title="{L_SEARCH_ADV}">{L_RETURN_TO_SEARCH_ADV}</a></p>
 <!-- ENDIF -->
 
 <!-- IF PAGINATION or SEARCH_MATCHES or PAGE_NUMBER -->
@@ -116,7 +116,7 @@
 	
 	<!-- IF not searchresults.S_IGNORE_POST -->
 		<ul class="searchresults">
-			<li ><a href="{searchresults.U_VIEW_POST}" class="right">{L_JUMP_TO_POST}</a></li>
+			<li ><a href="{searchresults.U_VIEW_POST}" class="{S_CONTENT_FLOW_END}">{L_JUMP_TO_POST}</a></li>
 		</ul>	
 	<!-- ENDIF -->
 
@@ -135,8 +135,8 @@
 	<form method="post" action="{S_SEARCH_ACTION}">
 
 	<fieldset class="display-options">
-		<!-- IF PREVIOUS_PAGE --><a href="{PREVIOUS_PAGE}" class="left-box left">{L_PREVIOUS}</a><!-- ENDIF -->
-		<!-- IF NEXT_PAGE --><a href="{NEXT_PAGE}" class="right-box right">{L_NEXT}</a><!-- ENDIF -->
+		<!-- IF PREVIOUS_PAGE --><a href="{PREVIOUS_PAGE}" class="left-box {S_CONTENT_FLOW_BEGIN}">{L_PREVIOUS}</a><!-- ENDIF -->
+		<!-- IF NEXT_PAGE --><a href="{NEXT_PAGE}" class="right-box {S_CONTENT_FLOW_END}">{L_NEXT}</a><!-- ENDIF -->
 		<!-- IF S_SELECT_SORT_DAYS or S_SELECT_SORT_KEY -->
 			<label><!-- IF S_SHOW_TOPICS -->{L_DISPLAY_POSTS}<!-- ELSE -->{L_SORT_BY}</label><label><!-- ENDIF --> {S_SELECT_SORT_DAYS}<!-- IF S_SELECT_SORT_KEY --></label> <label>{S_SELECT_SORT_KEY}</label>
 			<label>{S_SELECT_SORT_DIR} <!-- ELSE --></label><!-- ENDIF --><input type="submit" name="sort" value="{L_GO}" class="button2" /></label>

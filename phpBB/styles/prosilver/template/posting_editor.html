@@ -157,7 +157,7 @@
 			<dl>
 
 				<dt><label for="comment_list[{attach_row.ASSOC_INDEX}]">{L_FILE_COMMENT}:</label><br />
-				<span><br /><a href="{attach_row.U_VIEW_ATTACHMENT}" class="right">{attach_row.FILENAME}</a></span></dt>
+				<span><br /><a href="{attach_row.U_VIEW_ATTACHMENT}" class="{S_CONTENT_FLOW_END}">{attach_row.FILENAME}</a></span></dt>
 				<dd><textarea name="comment_list[{attach_row.ASSOC_INDEX}]" id="comment_list[{attach_row.ASSOC_INDEX}]" rows="1" cols="35" class="inputbox">{attach_row.FILE_COMMENT}</textarea></dd>
 				<dd style="margin-top: 5px;">
 					<!-- IF S_INLINE_ATTACHMENT_OPTIONS --><input type="button" value="{L_PLACE_INLINE}" onclick="attach_inline({attach_row.ASSOC_INDEX}, '{attach_row.FILENAME}');" class="button2" />&nbsp; <!-- ENDIF -->

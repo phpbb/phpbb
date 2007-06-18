@@ -143,6 +143,7 @@
 .rtl .pagination {
 	text-align: left;
 	float: left;
+	padding-left: 5px;
 }
 
 /* Pagination in viewforum for multipage topics */
@@ -172,6 +173,14 @@
 	text-align: left;
 }
 
+.rtl .forabg {
+	width: 99%;	/* fix for IE6 */
+}
+
+.rtl .forumbg {
+	width: 99%;	/* fix for IE6 */
+}
+
 /**
 * links.css
 */
@@ -190,57 +199,15 @@
 	padding-right: 15px;
 }
 
-/* Arrow links */
-/*
-a.up		{ background: none no-repeat left center; }
-a.down		{ background: none no-repeat right center; }
-a.left		{ background: none no-repeat 3px 60%; }
-a.right		{ background: none no-repeat 95% 60%; }
-
-a.up, a.up:link, a.up:active, a.up:visited {
-	padding-left: 10px;
-}
-
-a.up:hover {
-	background-position: left top;
-	background-color: transparent;
-}
-
-a.down, a.down:link, a.down:active, a.down:visited {
-	padding-right: 10px;
-}
-
-a.down:hover {
-	background-position: right bottom;
-}
-*/
-
-.rtl a.left, .rtl a.left:active, .rtl a.left:visited {
-	padding-left: 0;
-	padding-right: 12px;
-}
-
-/*
-a.left:hover {
-	background-position: 0 60%;
-}
-*/
-
-.rtl a.right, .rtl a.right:active, .rtl a.right:visited {
-	padding-left: 12px;
-	padding-right: 0;
-}
-/*
-a.right:hover {
-	background-position: 100% 60%;
-}
-*/
-
 /**
 * content.css
 */
 .rtl ul.topiclist dt {
 	float: right;
+}
+
+.rtl ul.topiclist dl {
+	position: static;	/* fix for IE6 */
 }
 
 .rtl ul.topiclist dd {
@@ -251,8 +218,9 @@ a.right:hover {
 }
 
 .rtl ul.topiclist li.row dt a.subforum {
-	padding: 0 12px 0 0;
+	padding: 0 0 0 12px;
 	background-position: 100% 100%;
+	position: static;
 }
 
 .rtl .forum-image {
@@ -283,6 +251,7 @@ a.right:hover {
 .rtl dl.icon dt {
 	padding-left: 0;
 	padding-right: 45px;					/* Space for folder icon */
+	background-position: 99.5% 95%;			/* Position of topic icon */
 }
 
 .rtl dd.lastpost span, .rtl ul.topiclist dd.searchby span, .rtl ul.topiclist dd.info span, .rtl ul.topiclist dd.time span, .rtl dd.redirect span, .rtl dd.moderation span {
@@ -450,7 +419,7 @@ a.right:hover {
 
 /* Rollover state */
 .rtl .buttons div {
-	margin: 0 0 0 5px;
+	margin: 0 1px 0 5px;
 }
 
 /* Sub-header (navigation bar)
@@ -464,7 +433,6 @@ a.right:hover {
 .rtl .sitehome, .rtl .icon-faq, .rtl .icon-members, .rtl .icon-home, .rtl .icon-ucp, .rtl .icon-register, .rtl .icon-logout,
 .rtl .icon-bookmark, .rtl .icon-bump, .rtl .icon-subscribe, .rtl .icon-unsubscribe, .rtl .icon-pages, .rtl .icon-search {
 	background-position: 100% 50%;
-	padding: 1px 17px 0 0;
 }
 
 /* Poster profile icons
@@ -479,11 +447,6 @@ a.right:hover {
 .rtl .postbody ul.profile-icons {
 	float: left;
 }
-
-/* Fix profile icon default margins */
-.rtl ul.profile-icons li.edit-icon	{ margin: 0 3px 0 0; }
-.rtl ul.profile-icons li.quote-icon	{ margin: 0 10px 0 0; }
-.rtl ul.profile-icons li.info-icon, .rtl ul.profile-icons li.report-icon	{ margin: 0 0 0 3px; }
 
 /**
 * cp.css
