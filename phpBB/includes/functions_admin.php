@@ -257,11 +257,31 @@ function get_forum_list($acl_list = 'f_list', $id_only = true, $postable_only = 
 		$result = $db->sql_query($sql, $expire_time);
 
 		$forum_rows = array();
+
+		$right = $padding = 0;
+		$padding_store = array('0' => 0);
+
 		while ($row = $db->sql_fetchrow($result))
 		{
+			if ($row['left_id'] < $right)
+			{
+				$padding++;
+				$padding_store[$row['parent_id']] = $padding;
+			}
+			else if ($row['left_id'] > $right + 1)
+			{
+				// Ok, if the $padding_store for this parent is empty there is something wrong. For now we will skip over it.
+				// @todo digging deep to find out "how" this can happen.
+				$padding = (isset($padding_store[$row['parent_id']])) ? $padding_store[$row['parent_id']] : $padding;
+			}
+
+			$right = $row['right_id'];
+			$row['padding'] = $padding;
+
 			$forum_rows[] = $row;
 		}
 		$db->sql_freeresult($result);
+		unset($padding_store);
 	}
 
 	$rowset = array();
