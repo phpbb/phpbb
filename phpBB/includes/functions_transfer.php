@@ -382,7 +382,9 @@ class ftp extends transfer
 		}
 		else
 		{
-			$chmod_cmd = 'CHMOD ' . $perms . ' ' . $file;
+			// Unfortunatly CHMOD is not expecting an octal value...
+			// We need to transform the integer (which was an octal) to an octal representation (to get the int) and then pass as is. ;)
+			$chmod_cmd = 'CHMOD ' . base_convert($perms, 10, 8) . ' ' . $file;
 			$err = $this->_site($chmod_cmd);
 		}
 
@@ -605,7 +607,9 @@ class ftp_fsock extends transfer
 	*/
 	function _chmod($file, $perms)
 	{
-		return $this->_send_command('SITE CHMOD', $perms . ' ' . $file);
+		// Unfortunatly CHMOD is not expecting an octal value...
+		// We need to transform the integer (which was an octal) to an octal representation (to get the int) and then pass as is. ;)
+		return $this->_send_command('SITE CHMOD', base_convert($perms, 10, 8) . ' ' . $file);
 	}
 
 	/**
