@@ -32,7 +32,7 @@ $view			= request_var('view', '');
 $submit			= request_var('submit', false);
 $keywords		= request_var('keywords', '', true);
 $add_keywords	= request_var('add_keywords', '', true);
-$author			= request_var('author', '');
+$author			= request_var('author', '', true);
 $author_id		= request_var('author_id', 0);
 $show_results	= ($topic_id) ? 'posts' : request_var('sr', 'posts');
 $show_results	= ($show_results == 'posts') ? 'posts' : 'topics';
@@ -84,7 +84,7 @@ if ($keywords || $author || $author_id || $search_id || $submit)
 	// egosearch is an author search
 	if ($search_id == 'egosearch')
 	{
-		$author = $user->data['username'];
+		$author_id = $user->data['user_id'];
 	}
 
 	// If we are looking for authors get their ids
