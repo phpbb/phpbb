@@ -1112,6 +1112,20 @@ class install_convert extends module
 						case 'postgres':
 							$db->sql_query("SELECT SETVAL('" . $schema['target'] . "_seq',(select case when max(" . $schema['autoincrement'] . ")>0 then max(" . $schema['autoincrement'] . ")+1 else 1 end from " . $schema['target'] . '));');
 						break;
+
+						case 'oracle':
+							$result = $db->sql_query('SELECT MAX(' . $schema['autoincrement'] . ') as max_id FROM ' . $schema['target']);
+							$row = $db->sql_fetchrow($result);
+							$db->sql_freeresult($result);
+
+							$largest_id = (int) $row['max_id'];
+
+							if ($largest_id)
+							{
+								$db->sql_query('DROP SEQUENCE ' . $schema['target'] . '_seq');
+								$db->sql_query('CREATE SEQUENCE ' . $schema['target'] . '_seq START WITH ' . ($largest_id + 1));
+							}
+						break;
 					}
 				}
 			}
@@ -1366,6 +1380,20 @@ class install_convert extends module
 
 						case 'postgres':
 							$db->sql_query("SELECT SETVAL('" . $schema['target'] . "_seq',(select case when max(" . $schema['autoincrement'] . ")>0 then max(" . $schema['autoincrement'] . ")+1 else 1 end from " . $schema['target'] . '));');
+						break;
+
+						case 'oracle':
+							$result = $db->sql_query('SELECT MAX(' . $schema['autoincrement'] . ') as max_id FROM ' . $schema['target']);
+							$row = $db->sql_fetchrow($result);
+							$db->sql_freeresult($result);
+
+							$largest_id = (int) $row['max_id'];
+
+							if ($largest_id)
+							{
+								$db->sql_query('DROP SEQUENCE ' . $schema['target'] . '_seq');
+								$db->sql_query('CREATE SEQUENCE ' . $schema['target'] . '_seq START WITH ' . ($largest_id + 1));
+							}
 						break;
 					}
 				}

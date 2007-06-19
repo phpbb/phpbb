@@ -287,6 +287,20 @@ function phpbb_insert_forums()
 		case 'mssql_odbc':
 			$db->sql_query('SET IDENTITY_INSERT ' . FORUMS_TABLE . ' OFF');
 		break;
+
+		case 'oracle':
+			$result = $db->sql_query('SELECT MAX(forum_id) as max_id FROM ' . FORUMS_TABLE);
+			$row = $db->sql_fetchrow($result);
+			$db->sql_freeresult($result);
+
+			$largest_id = (int) $row['max_id'];
+
+			if ($largest_id)
+			{
+				$db->sql_query('DROP SEQUENCE ' . FORUMS_TABLE . '_seq');
+				$db->sql_query('CREATE SEQUENCE ' . FORUMS_TABLE . '_seq START WITH ' . ($largest_id + 1));
+			}
+		break;
 	}
 }
 
