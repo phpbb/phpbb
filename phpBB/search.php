@@ -299,14 +299,14 @@ if ($keywords || $author || $author_id || $search_id || $submit)
 					$last_post_time = '';
 				}
 
+
+				if ($sort_key == 'a')
+				{
+					$sort_join = USERS_TABLE . ' u, ';
+					$sql_sort = ' AND u.user_id = p.poster_id ' . $sql_sort;
+				}
 				if ($show_results == 'posts')
 				{
-					if ($sort_key == 'a')
-					{
-						$sort_join = USERS_TABLE . ' u, ';
-						$sql_sort = ' AND u.user_id = p.poster_id ' . $sql_sort;
-					}
-
 					$sql = "SELECT p.post_id
 						FROM $sort_join" . POSTS_TABLE . ' p, ' . TOPICS_TABLE . " t
 						WHERE t.topic_replies = 0
