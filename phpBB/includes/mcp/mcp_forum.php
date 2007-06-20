@@ -63,7 +63,7 @@ function mcp_forum_view($id, $mode, $action, $forum_info)
 	}
 
 	$selected_ids = '';
-	if (sizeof($post_id_list))
+	if (sizeof($post_id_list) && $action != 'merge_topics')
 	{
 		foreach ($post_id_list as $num => $post_id)
 		{
@@ -318,6 +318,11 @@ function merge_topics($forum_id, $topic_ids, $to_topic_id)
 {
 	global $db, $template, $user, $phpEx, $phpbb_root_path, $auth;
 
+	if (!sizeof($topic_ids))
+	{
+		$template->assign_var('MESSAGE', $user->lang['NO_TOPIC_SELECTED']);
+		return;
+	}
 	if (!$to_topic_id)
 	{
 		$template->assign_var('MESSAGE', $user->lang['NO_FINAL_TOPIC_SELECTED']);

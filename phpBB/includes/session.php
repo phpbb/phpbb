@@ -414,6 +414,7 @@ class session
 			$result = $db->sql_query($sql);
 			$this->data = $db->sql_fetchrow($result);
 			$db->sql_freeresult($result);
+			$bot = false;
 		}
 		else if ($user_id !== false && !sizeof($this->data))
 		{
@@ -427,8 +428,9 @@ class session
 			$result = $db->sql_query($sql);
 			$this->data = $db->sql_fetchrow($result);
 			$db->sql_freeresult($result);
+			$bot = false;
 		}
-
+	
 		// If no data was returned one or more of the following occurred:
 		// Key didn't match one in the DB
 		// User does not exist
