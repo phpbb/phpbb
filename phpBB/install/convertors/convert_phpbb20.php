@@ -706,7 +706,8 @@ if (!$get_info)
 				array('pm_forwarded',			0,										''),
 				array('folder_id',				PRIVMSGS_INBOX,							''),
 
-				'where'			=> 'privmsgs.privmsgs_type = 0 OR privmsgs.privmsgs_type = 1 OR privmsgs.privmsgs_type = 5',
+				'where'			=> 'privmsgs.privmsgs_id = privmsgs_text.privmsgs_text_id 
+										AND (privmsgs.privmsgs_type = 0 OR privmsgs.privmsgs_type = 1 OR privmsgs.privmsgs_type = 5)',
 			),
 			
 			// Outbox
@@ -725,7 +726,8 @@ if (!$get_info)
 				array('pm_forwarded',			0,										''),
 				array('folder_id',				PRIVMSGS_OUTBOX,						''),
 
-				'where'			=> 'privmsgs.privmsgs_type = 1 OR privmsgs.privmsgs_type = 5',
+				'where'			=> 'privmsgs.privmsgs_id = privmsgs_text.privmsgs_text_id
+										AND (privmsgs.privmsgs_type = 1 OR privmsgs.privmsgs_type = 5)',
 			),
 
 			// Sentbox
@@ -744,7 +746,8 @@ if (!$get_info)
 				array('pm_forwarded',			0,										''),
 				array('folder_id',				PRIVMSGS_SENTBOX,						''),
 
-				'where'			=> 'privmsgs.privmsgs_type = 2',
+				'where'			=> 'privmsgs.privmsgs_id = privmsgs_text.privmsgs_text_id 
+										AND privmsgs.privmsgs_type = 2',
 			),
 
 			// Savebox (SAVED IN)
@@ -763,7 +766,8 @@ if (!$get_info)
 				array('pm_forwarded',			0,										''),
 				array('folder_id',				'privmsgs.privmsgs_to_userid',			'phpbb_get_savebox_id'),
 
-				'where'			=> 'privmsgs.privmsgs_type = 3',
+				'where'			=> 'privmsgs.privmsgs_id = privmsgs_text.privmsgs_text_id 
+										AND privmsgs.privmsgs_type = 3',
 			),
 
 			// Savebox (SAVED OUT)
@@ -782,7 +786,8 @@ if (!$get_info)
 				array('pm_forwarded',			0,										''),
 				array('folder_id',				'privmsgs.privmsgs_from_userid',		'phpbb_get_savebox_id'),
 
-				'where'			=> 'privmsgs.privmsgs_type = 4',
+				'where'			=> 'privmsgs.privmsgs_id = privmsgs_text.privmsgs_text_id 
+										AND privmsgs.privmsgs_type = 4',
 			),
 
 			array(

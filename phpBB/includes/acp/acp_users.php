@@ -1831,7 +1831,7 @@ class acp_users
 					// Select auth options
 					$sql = 'SELECT auth_option, is_local, is_global
 						FROM ' . ACL_OPTIONS_TABLE . "
-						WHERE auth_option LIKE '%\_'";
+						WHERE auth_option LIKE '%" . $db->sql_escape('\_') . "'";
 
 					if ($db->sql_layer == 'mssql' || $db->sql_layer == 'mssql_odbc')
 					{
@@ -1843,6 +1843,7 @@ class acp_users
 					$result = $db->sql_query($sql);
 
 					$hold_ary = array();
+					
 					while ($row = $db->sql_fetchrow($result))
 					{
 						$hold_ary = $auth_admin->get_mask('view', $user_id, false, false, $row['auth_option'], 'global', ACL_NEVER);
@@ -1856,7 +1857,7 @@ class acp_users
 				{
 					$sql = 'SELECT auth_option, is_local, is_global
 						FROM ' . ACL_OPTIONS_TABLE . "
-						WHERE auth_option LIKE '%\_'";
+						WHERE auth_option LIKE '%" . $db->sql_escape('\_') . "'";
 
 					if ($db->sql_layer == 'mssql' || $db->sql_layer == 'mssql_odbc')
 					{

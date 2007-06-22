@@ -2206,7 +2206,7 @@ function cache_moderators()
 				AND a.group_id = ug.group_id
 				AND ' . $db->sql_in_set('ug.user_id', $ug_id_ary) . "
 				AND ug.user_pending = 0
-				AND o.auth_option LIKE 'm\_%'" . 
+				AND o.auth_option LIKE '" . $db->sql_escape('m\_') . "%'" . 
 				(($db->sql_layer == 'mssql' || $db->sql_layer == 'mssql_odbc') ? " ESCAPE '\\'" : ''),
 		));
 		$result = $db->sql_query($sql);

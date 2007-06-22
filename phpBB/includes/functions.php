@@ -3878,7 +3878,7 @@ function page_header($page_title = '', $display_online_list = true)
 			$f = request_var('f', 0);
 
 			// Do not change this (it is defined as _f_={forum_id}x within session.php)
-			$reading_sql = " AND s.session_page LIKE '%\_f\_={$f}x%'";
+			$reading_sql = " AND s.session_page LIKE '%" . $db->sql_escape("\_f\_={$f}x") . "%'";
 
 			// Specify escape character for MSSQL
 			if ($db->sql_layer == 'mssql' || $db->sql_layer == 'mssql_odbc')
