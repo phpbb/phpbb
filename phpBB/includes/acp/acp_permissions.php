@@ -1069,8 +1069,8 @@ class acp_permissions
 		global $db, $user;
 
 		$sql_forum_id = ($permission_scope == 'global') ? 'AND a.forum_id = 0' : ((sizeof($forum_id)) ? 'AND ' . $db->sql_in_set('a.forum_id', $forum_id) : 'AND a.forum_id <> 0');
-		$sql_permission_option = "AND o.auth_option LIKE '" . $db->sql_escape($permission_type) . "%'";
-
+		$sql_permission_option = ' AND o.auth_option ' . $db->sql_like_expression($permission_type . '%');
+		
 		$sql = $db->sql_build_query('SELECT_DISTINCT', array(
 			'SELECT'	=> 'u.username, u.username_clean, u.user_regdate, u.user_id',
 

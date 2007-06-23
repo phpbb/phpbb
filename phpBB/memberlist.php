@@ -934,13 +934,13 @@ switch ($mode)
 				$s_find_active_time .= '<option value="' . $key . '"' . $selected . '>' . $value . '</option>';
 			}
 
-			$sql_where .= ($username) ? " AND u.username_clean LIKE '" . str_replace('*', '%', $db->sql_escape(utf8_clean_string($username))) . "'" : '';
-			$sql_where .= ($email) ? " AND u.user_email LIKE '" . str_replace('*', '%', $db->sql_escape($email)) . "' " : '';
-			$sql_where .= ($icq) ? " AND u.user_icq LIKE '" . str_replace('*', '%', $db->sql_escape($icq)) . "' " : '';
-			$sql_where .= ($aim) ? " AND u.user_aim LIKE '" . str_replace('*', '%', $db->sql_escape($aim)) . "' " : '';
-			$sql_where .= ($yahoo) ? " AND u.user_yim LIKE '" . str_replace('*', '%', $db->sql_escape($yahoo)) . "' " : '';
-			$sql_where .= ($msn) ? " AND u.user_msnm LIKE '" . str_replace('*', '%', $db->sql_escape($msn)) . "' " : '';
-			$sql_where .= ($jabber) ? " AND u.user_jabber LIKE '" . str_replace('*', '%', $db->sql_escape($jabber)) . "' " : '';
+			$sql_where .= ($username) ? ' AND u.username_clean ' . $db->sql_like_expression(str_replace('*', '%', utf8_clean_string($username))) : '';
+			$sql_where .= ($email) ? ' AND u.user_email ' . $db->sql_like_expression(str_replace('*', '%', $email)) . ' ' : '';
+			$sql_where .= ($icq) ? ' AND u.user_icq ' . $db->sql_like_expression(str_replace('*', '%', $icq)) . ' ' : '';
+			$sql_where .= ($aim) ? ' AND u.user_aim ' . $db->sql_like_expression(str_replace('*', '%', $aim)) . ' ' : '';
+			$sql_where .= ($yahoo) ? ' AND u.user_yim ' . $db->sql_like_expression(str_replace('*', '%', $yahoo)) . ' ' : '';
+			$sql_where .= ($msn) ? ' AND u.user_msnm ' . $db->sql_like_expression(str_replace('*', '%', $msn)) . ' ' : '';
+			$sql_where .= ($jabber) ? ' AND u.user_jabber ' . $db->sql_like_expression(str_replace('*', '%', $jabber)) . ' ' : '';
 			$sql_where .= (is_numeric($count)) ? ' AND u.user_posts ' . $find_key_match[$count_select] . ' ' . (int) $count . ' ' : '';
 			$sql_where .= (sizeof($joined) > 1) ? " AND u.user_regdate " . $find_key_match[$joined_select] . ' ' . gmmktime(0, 0, 0, intval($joined[1]), intval($joined[2]), intval($joined[0])) : '';
 			$sql_where .= (sizeof($active) > 1) ? " AND u.user_lastvisit " . $find_key_match[$active_select] . ' ' . gmmktime(0, 0, 0, $active[1], intval($active[2]), intval($active[0])) : '';
@@ -1015,12 +1015,12 @@ switch ($mode)
 		{
 			for ($i = 97; $i < 123; $i++)
 			{
-				$sql_where .= " AND u.username_clean NOT LIKE '" . chr($i) . "%'";
+				$sql_where .= ' AND u.username_clean NOT ' . $db->sql_like_expression(chr($i) . '%');
 			}
 		}
 		else if ($first_char)
 		{
-			$sql_where .= " AND u.username_clean LIKE '" . $db->sql_escape(substr($first_char, 0, 1)) . "%'";
+			$sql_where .= ' AND u.username_clean ' . $db->sql_like_expression(substr($first_char, 0, 1) . '%');
 		}
 
 		// Are we looking at a usergroup? If so, fetch additional info

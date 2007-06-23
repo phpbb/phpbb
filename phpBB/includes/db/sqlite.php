@@ -242,6 +242,20 @@ class dbal_sqlite extends dbal
 	}
 
 	/**
+	* Correctly adjust LIKE expression for special characters
+	* For SQLite an underscore is a not-known character... this may change with SQLite3
+	*/
+	function sql_like_expression($expression)
+	{
+		if (strpos($expression, '_') === false)
+		{
+			return "LIKE '" . $this->sql_escape($expression) . "'";
+		}
+
+		return "GLOB '" . $this->sql_escape(str_replace('%', '*', $expression)) . "'";
+	}
+
+	/**
 	* return sql error array
 	* @access private
 	*/

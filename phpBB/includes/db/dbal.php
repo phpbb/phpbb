@@ -192,6 +192,21 @@ class dbal
 	}
 
 	/**
+	* Correctly adjust LIKE expression for special characters
+	* Some DBMS are handling them in a different way we need to take into account
+	*/
+	function sql_like_expression($expression)
+	{
+		// Standard for most DBMS
+		if (strpos($expression, '_') === false)
+		{
+			return 'LIKE \'' . $this->sql_escape($expression) . '\'';
+		}
+
+		return 'LIKE \'' . $this->sql_escape(str_replace('_', "\_", $expression)) . '\'';
+	}
+
+	/**
 	* SQL Transaction
 	* @access private
 	*/

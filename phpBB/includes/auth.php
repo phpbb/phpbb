@@ -842,15 +842,7 @@ class auth
 		{
 			if (strpos($auth_options, '%') !== false)
 			{
-				if (strpos($auth_options, '_') !== false && $db->sql_layer !== 'sqlite')
-				{
-					$sql_opts = "AND $key LIKE '" . $db->sql_escape(str_replace('_', "\_", $auth_options)) . "'";
-					$sql_opts .= ($db->sql_layer == 'mssql' || $db->sql_layer == 'mssql_odbc') ? " ESCAPE '\\' " : '';
-				}
-				else
-				{
-					$sql_opts = "AND $key LIKE '" . $db->sql_escape($auth_options) . "'";
-				}
+				$sql_opts = "AND $key " . $db->sql_like_expression($auth_options);
 			}
 			else
 			{
@@ -881,16 +873,7 @@ class auth
 				{
 					if (strpos($option, '%') !== false)
 					{
-						if (strpos($option, '_') !== false && $db->sql_layer !== 'sqlite')
-						{
-							$_sql = $key . " LIKE '" . $db->sql_escape(str_replace('_', "\_", $option)) . "'";
-							$_sql .= ($db->sql_layer == 'mssql' || $db->sql_layer == 'mssql_odbc') ? " ESCAPE '\\'" : '';
-							$sql[] = $_sql;
-						}
-						else
-						{
-							$sql[] = $key . " LIKE '" . $db->sql_escape($option) . "'";
-						}
+						$sql[] = $key . ' ' . $db->sql_like_expression($option);
 					}
 					else
 					{

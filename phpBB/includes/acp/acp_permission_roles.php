@@ -239,7 +239,7 @@ class acp_permission_roles
 				{
 					$sql = 'SELECT auth_option_id, auth_option
 						FROM ' . ACL_OPTIONS_TABLE . "
-						WHERE auth_option LIKE '{$permission_type}%'
+						WHERE auth_option " . $db->sql_like_expression($permission_type . '%') . "
 							AND auth_option <> '{$permission_type}'
 						ORDER BY auth_option_id";
 					$result = $db->sql_query($sql);
@@ -305,7 +305,7 @@ class acp_permission_roles
 				// We need to fill the auth options array with ACL_NO options ;)
 				$sql = 'SELECT auth_option_id, auth_option
 					FROM ' . ACL_OPTIONS_TABLE . "
-					WHERE auth_option LIKE '{$permission_type}%'
+					WHERE auth_option " . $db->sql_like_expression($permission_type . '%') . "
 						AND auth_option <> '{$permission_type}'
 					ORDER BY auth_option_id";
 				$result = $db->sql_query($sql);
@@ -490,7 +490,7 @@ class acp_permission_roles
 		// Get complete auth array
 		$sql = 'SELECT auth_option, auth_option_id
 			FROM ' . ACL_OPTIONS_TABLE . "
-			WHERE auth_option LIKE '" . $db->sql_escape($permission_type) . "%'";
+			WHERE auth_option " . $db->sql_like_expression($permission_type . '%');
 		$result = $db->sql_query($sql);
 
 		$auth_settings = array();

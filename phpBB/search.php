@@ -100,10 +100,11 @@ if ($keywords || $author || $author_id || $search_id || $submit)
 			trigger_error(sprintf($user->lang['TOO_FEW_AUTHOR_CHARS'], $config['min_search_author_chars']));
 		}
 
-		$sql_where = (strpos($author, '*') !== false) ? ' LIKE ' : ' = ';
+		$sql_where = (strpos($author, '*') !== false) ? ' username_clean ' . $db->sql_like_expression(str_replace('*', '%', utf8_clean_string($author))) : " username_clean = '" . $db->sql_escape(utf8_clean_string($author)) . "'";
+
 		$sql = 'SELECT user_id
 			FROM ' . USERS_TABLE . "
-			WHERE username_clean $sql_where '" . $db->sql_escape(preg_replace('#\*+#', '%', utf8_clean_string($author))) . "'
+			WHERE $sql_where
 				AND user_type IN (" . USER_NORMAL . ', ' . USER_FOUNDER . ')';
 		$result = $db->sql_query_limit($sql, 100);
 

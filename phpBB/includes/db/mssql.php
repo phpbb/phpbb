@@ -309,6 +309,22 @@ class dbal_mssql extends dbal
 	}
 
 	/**
+	* Correctly adjust LIKE expression for special characters
+	* MSSQL needs an escape character being defined
+	*/
+	function sql_like_expression($expression)
+	{
+		// Standard for most DBMS
+		if (strpos($expression, '_') === false)
+		{
+			return 'LIKE \'' . $this->sql_escape($expression) . '\'';
+		}
+
+		// sql_like_expression is only allowed directly within single quotes (to ease the use of it), therefore the special writing of ESCAPE below
+		return 'LIKE \'' . $this->sql_escape(str_replace('_', "\_", $expression)) . "' ESCAPE '\\'";
+	}
+
+	/**
 	* return sql error array
 	* @access private
 	*/
