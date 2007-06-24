@@ -1015,12 +1015,12 @@ switch ($mode)
 		{
 			for ($i = 97; $i < 123; $i++)
 			{
-				$sql_where .= ' AND u.username_clean NOT ' . $db->sql_like_expression(chr($i) . '%');
+				$sql_where .= ' AND u.username_clean NOT ' . $db->sql_like_expression(chr($i) . $db->any_char);
 			}
 		}
 		else if ($first_char)
 		{
-			$sql_where .= ' AND u.username_clean ' . $db->sql_like_expression(substr($first_char, 0, 1) . '%');
+			$sql_where .= ' AND u.username_clean ' . $db->sql_like_expression(substr($first_char, 0, 1) . $db->any_char);
 		}
 
 		// Are we looking at a usergroup? If so, fetch additional info

@@ -346,6 +346,15 @@ class dbal_postgres extends dbal
 	}
 
 	/**
+	* Build LIKE expression
+	* @access private
+	*/
+	function _sql_like_expression($expression)
+	{
+		return $expression;
+	}
+
+	/**
 	* return sql error array
 	* @access private
 	*/

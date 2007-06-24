@@ -226,7 +226,7 @@ class template
 				FROM ' . STYLES_TEMPLATE_DATA_TABLE . '
 				WHERE template_id = ' . $user->theme['template_id'] . "
 					AND (template_filename = '" . $db->sql_escape($this->filename[$handle]) . "'
-						OR template_included " . $db->sql_like_expression('%' . $this->filename[$handle] . ':%') . ')';
+						OR template_included " . $db->sql_like_expression($db->any_char . $this->filename[$handle] . ':' . $db->any_char) . ')';
 			$result = $db->sql_query($sql);
 			$row = $db->sql_fetchrow($result);
 

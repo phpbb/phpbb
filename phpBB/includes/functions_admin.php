@@ -2206,7 +2206,7 @@ function cache_moderators()
 				AND a.group_id = ug.group_id
 				AND ' . $db->sql_in_set('ug.user_id', $ug_id_ary) . "
 				AND ug.user_pending = 0
-				AND o.auth_option " . $db->sql_like_expression('m_%'),
+				AND o.auth_option " . $db->sql_like_expression('m_' . $db->any_char),
 		));
 		$result = $db->sql_query($sql);
 

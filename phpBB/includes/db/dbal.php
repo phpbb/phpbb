@@ -50,6 +50,12 @@ class dbal
 	var $sql_layer = '';
 
 	/**
+	* Wildcards for matching any (%) or exactly one (_) character within LIKE expressions
+	*/
+	var $any_char;
+	var $one_char;
+
+	/**
 	* Constructor
 	*/
 	function dbal()
@@ -63,6 +69,10 @@ class dbal
 		// Fill default sql layer based on the class being called.
 		// This can be changed by the specified layer itself later if needed.
 		$this->sql_layer = substr(get_class($this), 5);
+
+		// Do not change this please! This variable is used to easy the use of it - and is hardcoded.
+		$this->any_char = chr(0) . '%';
+		$this->one_char = chr(0) . '_';
 	}
 
 	/**
@@ -193,17 +203,17 @@ class dbal
 
 	/**
 	* Correctly adjust LIKE expression for special characters
-	* Some DBMS are handling them in a different way we need to take into account
+	* Some DBMS are handling them in a different way
+	*
+	* @param string $expression The expression to use. Every wildcard is escaped, except $this->any_char and $this->one_char
+	* @return string LIKE expression including the keyword!
 	*/
 	function sql_like_expression($expression)
 	{
-		// Standard for most DBMS
-		if (strpos($expression, '_') === false)
-		{
-			return 'LIKE \'' . $this->sql_escape($expression) . '\'';
-		}
+		$expression = str_replace(array('_', '%'), array("\_", "\%"), $expression);
+		$expression = str_replace(array(chr(0) . "\_", chr(0) . "\%"), array('_', '%'), $expression);
 
-		return 'LIKE \'' . $this->sql_escape(str_replace('_', "\_", $expression)) . '\'';
+		return $this->_sql_like_expression('LIKE \'' . $this->sql_escape($expression) . '\'');
 	}
 
 	/**

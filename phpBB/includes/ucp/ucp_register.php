@@ -148,7 +148,7 @@ class ucp_register
 			'email'				=> strtolower(request_var('email', '')),
 			'email_confirm'		=> strtolower(request_var('email_confirm', '')),
 			'confirm_code'		=> request_var('confirm_code', ''),
-			'lang'				=> request_var('lang', $user->lang_name),
+			'lang'				=> basename(request_var('lang', $user->lang_name)),
 			'tz'				=> request_var('tz', (float) $timezone),
 		);
 

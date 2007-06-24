@@ -273,7 +273,7 @@ class search_backend
 			$sql_where = '';
 			foreach ($words as $word)
 			{
-				$sql_where .= " OR search_keywords " . $db->sql_like_expression('%' . $word . '%');
+				$sql_where .= " OR search_keywords " . $db->sql_like_expression($db->any_char . $word . $db->any_char);
 			}
 
 			$sql = 'SELECT search_key

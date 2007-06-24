@@ -968,7 +968,7 @@ class auth_admin extends auth
 			// Get permission type
 			$sql = 'SELECT auth_option, auth_option_id
 				FROM ' . ACL_OPTIONS_TABLE . "
-				WHERE auth_option " . $db->sql_like_expression($permission_type . '%');
+				WHERE auth_option " . $db->sql_like_expression($permission_type . $db->any_char);
 			$result = $db->sql_query($sql);
 
 			$auth_id_ary = array();

@@ -409,6 +409,15 @@ class dbal_firebird extends dbal
 	}
 
 	/**
+	* Build LIKE expression
+	* @access private
+	*/
+	function _sql_like_expression($expression)
+	{
+		return $expression;
+	}
+
+	/**
 	* Build db-specific query data
 	* @access private
 	*/

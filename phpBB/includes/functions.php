@@ -3877,7 +3877,7 @@ function page_header($page_title = '', $display_online_list = true)
 		{
 			$f = request_var('f', 0);
 
-			$reading_sql = ' AND s.session_page ' . $db->sql_like_expression("%_f_={$f}x%");
+			$reading_sql = ' AND s.session_page ' . $db->sql_like_expression("{$db->any_char}_f_={$f}x{$db->any_char}");
 		}
 
 		// Get number of online guests

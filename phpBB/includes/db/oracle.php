@@ -533,6 +533,15 @@ class dbal_oracle extends dbal
 		return str_replace("'", "''", $msg);
 	}
 
+	/**
+	* Build LIKE expression
+	* @access private
+	*/
+	function _sql_like_expression($expression)
+	{
+		return $expression . " ESCAPE '\\'";
+	}
+
 	function _sql_custom_build($stage, $data)
 	{
 		return $data;
