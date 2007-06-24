@@ -414,7 +414,7 @@ class dbal_firebird extends dbal
 	*/
 	function _sql_like_expression($expression)
 	{
-		return $expression;
+		return $expression . " ESCAPE '\\'";
 	}
 
 	/**
