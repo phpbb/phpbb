@@ -1206,7 +1206,7 @@ class user extends session
 		if ($this->data['user_id'] != ANONYMOUS)
 		{
 			$this->lang_name = (file_exists($phpbb_root_path . 'language/' . $this->data['user_lang'] . "/common.$phpEx")) ? $this->data['user_lang'] : $config['default_lang'];
-			$this->lang_path = $phpbb_root_path . 'language/' . $this->lang_name . '/';
+			$this->lang_path = $phpbb_root_path . 'language/' . basename($this->lang_name) . '/';
 
 			$this->date_format = $this->data['user_dateformat'];
 			$this->timezone = $this->data['user_timezone'] * 3600;
@@ -1215,7 +1215,7 @@ class user extends session
 		else
 		{
 			$this->lang_name = $config['default_lang'];
-			$this->lang_path = $phpbb_root_path . 'language/' . $this->lang_name . '/';
+			$this->lang_path = $phpbb_root_path . 'language/' . basename($this->lang_name) . '/';
 			$this->date_format = $config['default_dateformat'];
 			$this->timezone = $config['board_timezone'] * 3600;
 			$this->dst = $config['board_dst'] * 3600;
@@ -1616,7 +1616,7 @@ class user extends session
 		{
 			global $phpbb_root_path, $config;
 
-			$this->lang_path = $phpbb_root_path . 'language/' . $config['default_lang'] . '/';
+			$this->lang_path = $phpbb_root_path . 'language/' . basename($config['default_lang']) . '/';
 		}
 
 		// $lang == $this->lang

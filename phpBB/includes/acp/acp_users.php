@@ -1149,7 +1149,7 @@ class acp_users
 
 				$data = array(
 					'dateformat'		=> request_var('dateformat', $user_row['user_dateformat'], true),
-					'lang'				=> request_var('lang', $user_row['user_lang']),
+					'lang'				=> basename(request_var('lang', $user_row['user_lang'])),
 					'tz'				=> request_var('tz', (float) $user_row['user_timezone']),
 					'style'				=> request_var('style', $user_row['user_style']),
 					'dst'				=> request_var('dst', $user_row['user_dst']),
