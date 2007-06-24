@@ -430,6 +430,21 @@ function validate_config_vars($config_vars, &$cfg_array, &$error)
 
 			break;
 
+			// Absolute path
+			case 'lang':
+				if (!$cfg_array[$config_name])
+				{
+					break;
+				}
+
+				$cfg_array[$config_name] = basename($cfg_array[$config_name]);
+
+				if (!file_exists($phpbb_root_path . 'language/' . $cfg_array[$config_name] . '/'))
+				{
+					$error[] = $user->lang['WRONG_DATA_LANG'];
+				}
+			break;
+
 			// Relative path (appended $phpbb_root_path)
 			case 'rpath':
 			case 'rwpath':
