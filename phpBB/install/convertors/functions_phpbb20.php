@@ -216,10 +216,10 @@ function phpbb_insert_forums()
 			'forum_type'		=> FORUM_POST,
 			'forum_status'		=> is_item_locked($row['forum_status']),
 			'enable_prune'		=> ($prune_enabled) ? $row['prune_enable'] : 0,
-			'prune_next'		=> null_to_zero($row['prune_next']),
-			'prune_days'		=> null_to_zero($row['prune_days']),
+			'prune_next'		=> (int) null_to_zero($row['prune_next']),
+			'prune_days'		=> (int) null_to_zero($row['prune_days']),
 			'prune_viewed'		=> 0,
-			'prune_freq'		=> null_to_zero($row['prune_freq']),
+			'prune_freq'		=> (int) null_to_zero($row['prune_freq']),
 
 			'forum_flags'		=> phpbb_forum_flags(),
 
