@@ -115,10 +115,15 @@ function update_post_information($type, $ids, $return_update_sql = false)
 {
 	global $db;
 
+	if (empty($ids))
+	{
+		return;
+	}
 	if (!is_array($ids))
 	{
 		$ids = array($ids);
 	}
+
 
 	$update_sql = $empty_forums = $not_empty_forums = array();
 
