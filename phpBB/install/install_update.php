@@ -776,11 +776,18 @@ class install_update extends module
 		global $phpbb_root_path, $template, $user;
 
 		$this->tpl_name = 'install_update_diff';
+
+		// Got the diff template itself updated? If so, we are able to directly use it
+		if (in_array('adm/style/install_update_diff.html', $this->update_info['files']))
+		{
+			$this->tpl_name = '../../install/update/new/adm/style/install_update_diff';
+		}
+
 		$this->page_title = 'VIEWING_FILE_DIFF';
 
 		$status = request_var('status', '');
 		$file = request_var('file', '');
-		$diff_mode = request_var('diff_mode', 'inline');
+		$diff_mode = request_var('diff_mode', 'side_by_side');
 
 		// First of all make sure the file is within our file update list with the correct status
 		$found_entry = array();
@@ -852,6 +859,8 @@ class install_update extends module
 							'S_DIFF_CONFLICT_FILE'	=> true,
 							'NUM_CONFLICTS'			=> $diff->merged_output(false, false, false, true))
 						);
+
+						$diff = $this->return_diff($phpbb_root_path . $file, $diff->merged_output());
 					break;
 				}
 
@@ -947,7 +956,11 @@ class install_update extends module
 				}
 				else
 				{
-					$update_list['no_update'][] = $file;
+					// Do not include style-related or language-related content
+					if (strpos($file, 'styles/') !== 0 && strpos($file, 'language/') !== 0)
+					{
+						$update_list['no_update'][] = $file;
+					}
 				}
 				unset($this->update_info['files'][$index]);
 			}
@@ -1090,8 +1103,25 @@ class install_update extends module
 		if ($diff->merged_output(false, false, false, true))
 		{
 			$update_ary['conflicts'] = $diff->_conflicting_blocks;
-			$update_list['conflict'][] = $update_ary;
 
+			// There is one special case... users having merged with a conflicting file... we need to check this
+			$tmp = array(
+				'file1'		=> file_get_contents($phpbb_root_path . $file),
+				'file2'		=> implode("\n", $diff->merged_orig_output()),
+			);
+
+			$diff = &new diff($tmp['file1'], $tmp['file2'], false);
+			$empty = $diff->is_empty();
+
+			if ($empty)
+			{
+				unset($update_ary['conflicts']);
+				unset($diff);
+				$update_list['up_to_date'][] = $update_ary;
+				return;
+			}
+
+			$update_list['conflict'][] = $update_ary;
 			unset($diff);
 
 			return;
@@ -1108,6 +1138,8 @@ class install_update extends module
 
 		if ($empty)
 		{
+			unset($diff);
+
 			$update_list['up_to_date'][] = $update_ary;
 			return;
 		}
