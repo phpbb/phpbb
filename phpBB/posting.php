@@ -164,6 +164,10 @@ if ($post_data['forum_password'])
 }
 
 // Check permissions
+if ($user->data['is_bot'])
+{
+	redirect(append_sid("{$phpbb_root_path}index.$phpEx"));
+}
 
 // Is the user able to read within this forum?
 if (!$auth->acl_get('f_read', $forum_id))
