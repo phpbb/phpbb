@@ -647,6 +647,10 @@ $sql = "UPDATE " . CONFIG_TABLE . "
 	WHERE config_name = 'version'";
 _sql($sql, $errored, $error_ary);
 
+// Reset permissions
+$sql = 'UPDATE ' . USERS_TABLE . "
+	SET user_permissions = ''";
+_sql($sql, $errored, $error_ary);
 
 /* Optimize/vacuum analyze the tables where appropriate 
 // this should be done for each version in future along with 
