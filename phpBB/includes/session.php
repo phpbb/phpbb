@@ -1510,29 +1510,32 @@ class user extends session
 			}
 		}
 		
-		// Make sure the user is able to hide his session
-		if (!$this->data['session_viewonline'])
+		if (isset($this->data['session_viewonline']))
 		{
-			// Reset online status if not allowed to hide the session...
-			if (!$auth->acl_get('u_hideonline'))
+			// Make sure the user is able to hide his session
+			if (!$this->data['session_viewonline'])
 			{
-				$sql = 'UPDATE ' . SESSIONS_TABLE . '
-					SET session_viewonline = 1
-					WHERE session_user_id = ' . $this->data['user_id'];
-				$db->sql_query($sql);
-				$this->data['session_viewonline'] = 1;
+				// Reset online status if not allowed to hide the session...
+				if (!$auth->acl_get('u_hideonline'))
+				{
+					$sql = 'UPDATE ' . SESSIONS_TABLE . '
+						SET session_viewonline = 1
+						WHERE session_user_id = ' . $this->data['user_id'];
+					$db->sql_query($sql);
+					$this->data['session_viewonline'] = 1;
+				}
 			}
-		}
-		else if (!$this->data['user_allow_viewonline'])
-		{
-			// the user wants to hide and is allowed to  -> cloaking device on.
-			if ($auth->acl_get('u_hideonline'))
+			else if (!$this->data['user_allow_viewonline'])
 			{
-				$sql = 'UPDATE ' . SESSIONS_TABLE . '
-					SET session_viewonline = 0
-					WHERE session_user_id = ' . $this->data['user_id'];
-				$db->sql_query($sql);
-				$this->data['session_viewonline'] = 0;
+				// the user wants to hide and is allowed to  -> cloaking device on.
+				if ($auth->acl_get('u_hideonline'))
+				{
+					$sql = 'UPDATE ' . SESSIONS_TABLE . '
+						SET session_viewonline = 0
+						WHERE session_user_id = ' . $this->data['user_id'];
+					$db->sql_query($sql);
+					$this->data['session_viewonline'] = 0;
+				}
 			}
 		}
 
