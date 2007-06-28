@@ -2413,4 +2413,14 @@ function get_smiley_display()
 	return ($smiley_count < 50) ? 1 : 0;
 }
 
+
+function fill_dateformat($user_dateformat)
+{
+	global $config;
+	
+	return ((empty($user_dateformat)) ? $config['default_dateformat'] : $user_dateformat);
+}
+
+
+
 ?>

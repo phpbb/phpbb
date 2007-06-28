@@ -540,7 +540,7 @@ if (!$get_info)
 				'autoincrement'	=> 'smiley_id',
 
 				array('smiley_id',				'smilies.smilies_id',				''),
-				array('code',					'smilies.code',						'phpbb_set_encoding'),
+				array('code',					'smilies.code',						array('function1' => 'phpbb_smilie_html_decode', 'function2' => 'phpbb_set_encoding', 'function3' => 'utf8_htmlspecialchars')),
 				array('emotion',				'smilies.emoticon',					'phpbb_set_encoding'),
 				array('smiley_url',				'smilies.smile_url',				'import_smiley'),
 				array('smiley_width',			'smilies.smile_url',				'get_smiley_width'),
@@ -862,7 +862,7 @@ if (!$get_info)
 				array('user_lang',				$config['default_lang'],			''),
 				array('',						'users.user_lang',					''),
 				array('user_timezone',			'users.user_timezone',				''),
-				array('user_dateformat',		'users.user_dateformat',			array('function1' => 'phpbb_set_encoding')),
+				array('user_dateformat',		'users.user_dateformat',			array('function1' => 'phpbb_set_encoding', 'function2' => 'fill_dateformat')),
 				array('user_inactive_reason',	'',									'phpbb_inactive_reason'),
 				array('user_inactive_time',		'',									'phpbb_inactive_time'),
 

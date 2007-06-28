@@ -1439,6 +1439,16 @@ function phpbb_avatar_type($type)
 	return 0;
 }
 
+
+/**
+* Just undos the replacing of '<' and '>'
+*/
+function  phpbb_smilie_html_decode($code)
+{
+	$code = str_replace('&lt;', '<', $code);
+	return str_replace('&gt;', '>', $code);
+}
+
 /**
 * Transfer avatars, copying the image if it was uploaded
 */
