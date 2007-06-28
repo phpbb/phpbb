@@ -1627,9 +1627,18 @@ class user extends session
 		// - add appropriate variables here, name them as they are used within the language file...
 		if (!$use_db)
 		{
-			if ((include($this->lang_path . (($use_help) ? 'help_' : '') . "$lang_file.$phpEx")) === false)
+			if ($use_help && strpos($lang_file, '/') !== false)
 			{
-				trigger_error("Language file {$this->lang_path}" . (($use_help) ? 'help_' : '') . "$lang_file.$phpEx couldn't be opened.", E_USER_ERROR);
+				$language_filename = $this->lang_path . substr($lang_file, 0, stripos($lang_file, '/') + 1) . 'help_' . substr($lang_file, stripos($lang_file, '/') + 1) . '.' . $phpEx;
+			}
+			else
+			{
+				$language_filename = $this->lang_path . (($use_help) ? 'help_' : '') . $lang_file . '.' . $phpEx;
+			}
+
+			if ((include($language_filename)) === false)
+			{
+				trigger_error("Language file $language_filename couldn't be opened.", E_USER_ERROR);
 			}
 		}
 		else if ($use_db)

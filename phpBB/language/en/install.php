@@ -485,16 +485,16 @@ $lang = array_merge($lang, array(
 
 		<h1>Release announcement</h1>
 
-		<p>Please read <a href="%1$s" title="%1$s">the release announcement for the latest version</a> before you continue your update process, it may contain useful information. It also contains full download links as well as the change log.</p>
+		<p>Please read <a href="%1$s" title="%1$s"><strong>the release announcement for the latest version</strong></a> before you continue your update process, it may contain useful information. It also contains full download links as well as the change log.</p>
 
 		<br />
 
-		<h1>How to update your installation</h1>
+		<h1>How to update your installation with the Automatic Update Package</h1>
 
-		<p>The recommended way of updating your installation only takes the following steps:</p>
+		<p>The recommended way of updating your installation listed here is only valid for the automatic update package. You are also able to update your installation using the methods listed within the INSTALL.html document. The steps for updating phpBB3 automatically are:</p>
 
 		<ul style="margin-left: 20px; font-size: 1.1em;">
-			<li>Go to the <a href="http://www.phpbb.com/downloads/" title="http://www.phpbb.com/downloads/">phpBB.com downloads page</a> and download the correct "phpBB Update Package" archive.<br /><br /></li>
+			<li>Go to the <a href="http://www.phpbb.com/downloads/" title="http://www.phpbb.com/downloads/">phpBB.com downloads page</a> and download the "Automatic Update Package" archive.<br /><br /></li>
 			<li>Unpack the archive.<br /><br /></li>
 			<li>Upload the complete uncompressed install folder to your phpBB root directory (where your config.php file is).<br /><br /></li>
 		</ul>
@@ -502,7 +502,7 @@ $lang = array_merge($lang, array(
 		<p>Once uploaded your board will be offline for normal users due to the install directory you uploaded now present.<br /><br />
 		<strong><a href="%2$s" title="%2$s">Now start the update process by pointing your browser to the install folder</a>.</strong><br />
 		<br />
-		You will then be guided through the update process. You will be notified after the update is complete.
+		You will then be guided through the update process. You will be notified once the update is complete.
 		</p>
 	',
 	'UPDATE_METHOD'					=> 'Update method',

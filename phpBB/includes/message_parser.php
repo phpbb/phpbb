@@ -1229,7 +1229,7 @@ class parse_message extends bbcode_firstpass
 			while ($row = $db->sql_fetchrow($result))
 			{
 				// (assertion)
-				$match[] = '#(?<=^|[\n .])' . preg_quote($row['code'], '#') . '(?![^<>]*>)#';
+				$match[] = '(?<=^|[\n .])' . preg_quote($row['code'], '#') . '(?![^<>]*>)';
 				$replace[] = '<!-- s' . $row['code'] . ' --><img src="{SMILIES_PATH}/' . $row['smiley_url'] . '" alt="' . $row['code'] . '" title="' . $row['emotion'] . '" /><!-- s' . $row['code'] . ' -->';
 			}
 			$db->sql_freeresult($result);
@@ -1239,7 +1239,7 @@ class parse_message extends bbcode_firstpass
 		{
 			if ($max_smilies)
 			{
-				$num_matches = preg_match_all('#' . str_replace('#', '', implode('|', $match)) . '#', $this->message, $matches);
+				$num_matches = preg_match_all('#' . implode('|', $match) . '#', $this->message, $matches);
 				unset($matches);
 
 				if ($num_matches !== false && $num_matches > $max_smilies)
@@ -1248,6 +1248,9 @@ class parse_message extends bbcode_firstpass
 					return;
 				}
 			}
+
+			// Make sure the delimiter # is added in front and at the end of every element within $match
+			$match = explode(chr(0), '#' . implode('#' . chr(0) . '#', $match) . '#');
 
 			$this->message = trim(preg_replace($match, $replace, $this->message));
 		}
