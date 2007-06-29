@@ -345,6 +345,8 @@ function compose_pm($id, $mode, $action)
 			// "{$phpbb_root_path}ucp.$phpEx?i=pm&amp;mode=compose"
 			confirm_box(false, 'DELETE_MESSAGE', build_hidden_fields($s_hidden_fields));
 		}
+
+		redirect(append_sid("{$phpbb_root_path}ucp.$phpEx", 'i=pm&amp;mode=view&amp;action=view_message&amp;p=' . $msg_id));
 	}
 
 	// Handle User/Group adding/removing
