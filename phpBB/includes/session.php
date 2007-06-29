@@ -884,13 +884,13 @@ class session
 			{
 				if (!is_array($user_ips))
 				{
-					$ip_banned = preg_match('#^' . str_replace('*', '.*?', $row['ban_ip']) . '$#i', $user_ips);
+					$ip_banned = preg_match('#^' . str_replace('\*', '.*?', preg_quote($row['ban_ip'], '#')) . '$#i', $user_ips);
 				}
 				else
 				{
 					foreach ($user_ips as $user_ip)
 					{
-						if (preg_match('#^' . str_replace('*', '.*?', $row['ban_ip']) . '$#i', $user_ip))
+						if (preg_match('#^' . str_replace('\*', '.*?', preg_quote($row['ban_ip'], '#')) . '$#i', $user_ip))
 						{
 							$ip_banned = true;
 							break;
@@ -901,7 +901,7 @@ class session
 
 			if ((!empty($row['ban_userid']) && intval($row['ban_userid']) == $user_id) ||
 				$ip_banned ||
-				(!empty($row['ban_email']) && preg_match('#^' . str_replace('*', '.*?', $row['ban_email']) . '$#i', $user_email)))
+				(!empty($row['ban_email']) && preg_match('#^' . str_replace('\*', '.*?', preg_quote($row['ban_email'], '#')) . '$#i', $user_email)))
 			{
 				if (!empty($row['ban_exclude']))
 				{
@@ -917,7 +917,7 @@ class session
 					{
 						$ban_triggered_by = 'user';
 					}
-					else if (!empty($row['ban_ip']) && preg_match('#^' . str_replace('*', '.*?', $row['ban_ip']) . '$#i', $user_ips))
+					else if (!empty($row['ban_ip']) && preg_match('#^' . str_replace('\*', '.*?', preg_quote($row['ban_ip'], '#')) . '$#i', $user_ips))
 					{
 						$ban_triggered_by = 'ip';
 					}

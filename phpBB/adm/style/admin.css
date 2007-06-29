@@ -1221,20 +1221,19 @@ input.disabled {
 }
 
 /* Nice method for clearing floated blocks without having to insert any extra markup
-	From http://www.positioniseverything.net/easyclearing.html */
+	From http://www.positioniseverything.net/easyclearing.html 
 .clearfix:after, #tabs:after, .row:after, #content:after, fieldset dl:after, #page-body:after {
 	content: "."; 
 	display: block; 
 	height: 0; 
 	clear: both; 
 	visibility: hidden;
-}
+}*/
 
-/* Hide from Mac IE, Windows IE uses this as it doesn't support the :after method above \*/
 .clearfix, #tabs, .row, #content, fieldset dl, #page-body {
 	height: 1%;
+	overflow: auto;
 }
-/* End hide */
 
 /* Syntax Highlighting
 ---------------------------------------- */

@@ -123,6 +123,7 @@ class ucp_prefs
 					'S_DST'				=> $data['dst'],
 
 					'DATE_FORMAT'			=> $data['dateformat'],
+					'A_DATE_FORMAT'			=> addslashes($data['dateformat']),
 					'S_DATEFORMAT_OPTIONS'	=> $dateformat_options,
 					'S_CUSTOM_DATEFORMAT'	=> $s_custom,
 					'DEFAULT_DATEFORMAT'	=> $config['default_dateformat'],

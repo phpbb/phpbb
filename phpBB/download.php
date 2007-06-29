@@ -544,7 +544,7 @@ function download_allowed()
 			{
 				foreach ($iplist as $ip)
 				{
-					if (preg_match('#^' . str_replace('*', '.*?', preg_quote($site_ip, '#')) . '$#i', $ip))
+					if (preg_match('#^' . str_replace('\*', '.*?', preg_quote($site_ip, '#')) . '$#i', $ip))
 					{
 						if ($row['ip_exclude'])
 						{
@@ -561,7 +561,7 @@ function download_allowed()
 
 			if ($site_hostname)
 			{
-				if (preg_match('#^' . str_replace('*', '.*?', preg_quote($site_hostname, '#')) . '$#i', $hostname))
+				if (preg_match('#^' . str_replace('\*', '.*?', preg_quote($site_hostname, '#')) . '$#i', $hostname))
 				{
 					if ($row['ip_exclude'])
 					{

@@ -33,17 +33,18 @@ html>body dd label input { vertical-align: text-bottom; }	/* Align checkboxes/ra
 * html .column1, * html .column2 { width: 45%; }
 
 /* Nice method for clearing floated blocks without having to insert any extra markup (like spacer above)
-   From http://www.positioniseverything.net/easyclearing.html */
+   From http://www.positioniseverything.net/easyclearing.html 
 #tabs:after, #minitabs:after, .post:after, .navbar:after, fieldset dl:after, ul.topiclist dl:after, ul.linklist:after, dl.polls:after {
 	content: "."; 
 	display: block; 
 	height: 0; 
 	clear: both; 
 	visibility: hidden;
-}
+}*/
 
-#tabs, #minitabs, .post, .navbar, fieldset dl, ul.topiclist dl, ul.linklist, dl.polls {
+.clearfix, #tabs, #minitabs, .post, .navbar, fieldset dl, ul.topiclist dl, ul.linklist, dl.polls {
 	height: 1%;
+	overflow: auto;
 }
 
 /* Simple fix so forum and topic lists always have a min-height set, even in IE6
