@@ -227,7 +227,7 @@ function validate_website($url)
 	if ($url === 'http://'){
 		return '';
 	}
-	else if (strstr('http://', $url) !== 0)
+	else if (strpos(strtolower($url), 'http://') !== 0)
 	{
 		return 'http://' . $url;
 	}

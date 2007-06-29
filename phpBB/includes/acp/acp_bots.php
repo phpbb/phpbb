@@ -162,7 +162,32 @@ class acp_bots
 					{
 						$error[] = $user->lang['ERR_BOT_AGENT_MATCHES_UA'];
 					}
+					
+					$bot_name = false;
+					if ($bot_id)
+					{
+						$sql = 'SELECT u.username_clean
+							FROM ' . BOTS_TABLE . ' b, ' . USERS_TABLE . " u
+							WHERE b.bot_id = $bot_id
+								AND u.user_id = b.user_id";
+						$result = $db->sql_query($sql);
+						$row = $db->sql_fetchrow($result);
+						$db->sql_freeresult($result);
 
+						if (!$bot_row)
+						{
+							$error[] = $user->lang['NO_BOT'];
+						}
+						else
+						{
+							$bot_name = $row['username_clean'];
+						}
+					}
+					if (!$this->validate_botname($bot_row['bot_name'], $bot_name))
+					{
+						$error[] = $user->lang['BOT_NAME_TAKEN'];
+					}
+					
 					if (!sizeof($error))
 					{
 						// New bot? Create a new user and group entry
@@ -180,6 +205,7 @@ class acp_bots
 							{
 								trigger_error($user->lang['NO_BOT_GROUP'] . adm_back_link($this->u_action . "&amp;id=$bot_id&amp;action=$action"), E_USER_WARNING);
 							}
+						
 
 							$user_id = user_add(array(
 								'user_type'				=> (int) USER_IGNORE, 
@@ -193,7 +219,7 @@ class acp_bots
 								'user_style'			=> (int) $bot_row['bot_style'],
 								'user_allow_massemail'	=> 0,
 							));
-
+	
 							$sql = 'INSERT INTO ' . BOTS_TABLE . ' ' . $db->sql_build_array('INSERT', array(
 								'user_id'		=> (int) $user_id,
 								'bot_name'		=> (string) $bot_row['bot_name'], 
@@ -202,7 +228,7 @@ class acp_bots
 								'bot_ip'		=> (string) $bot_row['bot_ip'])
 							);
 							$db->sql_query($sql);
-
+	
 							$log = 'ADDED';
 						}
 						else if ($bot_id)
@@ -249,11 +275,13 @@ class acp_bots
 
 							$log = 'UPDATED';
 						}
-
-						$cache->destroy('_bots');
-
-						add_log('admin', 'LOG_BOT_' . $log, $bot_row['bot_name']);
-						trigger_error($user->lang['BOT_' . $log] . adm_back_link($this->u_action . "&amp;id=$bot_id&amp;action=$action"));
+						if ($bot_id)
+						{
+							$cache->destroy('_bots');
+	
+							add_log('admin', 'LOG_BOT_' . $log, $bot_row['bot_name']);
+							trigger_error($user->lang['BOT_' . $log] . adm_back_link($this->u_action . "&amp;id=$bot_id&amp;action=$action"));
+						}
 					}
 				}
 				else if ($bot_id)
@@ -347,6 +375,31 @@ class acp_bots
 			);
 		}
 		$db->sql_freeresult($result);
+	}
+	
+	function validate_botname($newname, $oldname = false)
+	{
+		global $db;
+		if ($oldname && utf8_clean_string($newname) === $oldname)
+		{
+			return true;
+		}
+		 // Admins might want to use names otherwise forbidden, thus we only check for duplicates.
+		$sql = 'SELECT username
+			FROM ' . USERS_TABLE . "
+			WHERE username_clean = '" . $db->sql_escape(utf8_clean_string($newname)) . "'";
+		$result = $db->sql_query($sql);
+		$row = $db->sql_fetchrow($result);
+		$db->sql_freeresult($result);
+		
+		if ($row)
+		{
+			return false;
+		}
+		else
+		{
+			return true;
+		}
 	}
 }
 
