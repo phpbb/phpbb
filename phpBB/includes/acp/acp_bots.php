@@ -275,13 +275,12 @@ class acp_bots
 
 							$log = 'UPDATED';
 						}
-						if ($bot_id)
-						{
-							$cache->destroy('_bots');
-	
-							add_log('admin', 'LOG_BOT_' . $log, $bot_row['bot_name']);
-							trigger_error($user->lang['BOT_' . $log] . adm_back_link($this->u_action . "&amp;id=$bot_id&amp;action=$action"));
-						}
+						
+						$cache->destroy('_bots');
+						
+						add_log('admin', 'LOG_BOT_' . $log, $bot_row['bot_name']);
+						trigger_error($user->lang['BOT_' . $log] . adm_back_link($this->u_action . "&amp;id=$bot_id&amp;action=$action"));
+					
 					}
 				}
 				else if ($bot_id)
