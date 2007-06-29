@@ -224,7 +224,13 @@ function make_uid($timestamp)
 */
 function validate_website($url)
 {
-	return ($url == 'http://') ? '' : $url;
+	if ($url === 'http://'){
+		return '';
+	}
+	else if (strstr('http://', $url) !== 0)
+	{
+		return 'http://' . $url;
+	}
 }
 
 /**
