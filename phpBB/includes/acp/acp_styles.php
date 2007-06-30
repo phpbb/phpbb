@@ -258,7 +258,7 @@ parse_css_file = {PARSE_CSS_FILE}
 										}
 										else
 										{
-											$filelist[substr($row['template_filename'], 0, $slash_pos + 1)] = substr($row['template_filename'], $slash_pos + 1, strlen($row['template_filename']) - $slash_pos - 1);
+											$filelist[substr($row['template_filename'], 0, $slash_pos + 1)][] = substr($row['template_filename'], $slash_pos + 1, strlen($row['template_filename']) - $slash_pos - 1);
 										}
 									}
 								}
@@ -779,7 +779,7 @@ parse_css_file = {PARSE_CSS_FILE}
 					}
 					else
 					{
-						$filelist[$file_info['dirname'] . '/'][] = "{$file_info['basename']}.{$file_info['extension']}";
+						$filelist[$file_info['dirname'] . '/'][] = $file_info['basename'];
 					}
 				}
 

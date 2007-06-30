@@ -556,6 +556,7 @@ class queue
 
 		$fp = @fopen($this->cache_file . '.lock', 'wb');
 		fclose($fp);
+		@chmod($this->cache_file . '.lock', 0666);
 
 		include($this->cache_file);
 
@@ -683,6 +684,8 @@ class queue
 				fwrite($fp, "<?php\n\$this->queue_data = " . var_export($this->queue_data, true) . ";\n?>");
 				@flock($fp, LOCK_UN);
 				fclose($fp);
+
+				@chmod($this->cache_file, 0666);
 			}
 		}
 
@@ -722,6 +725,8 @@ class queue
 			fwrite($fp, "<?php\n\$this->queue_data = " . var_export($this->data, true) . ";\n?>");
 			@flock($fp, LOCK_UN);
 			fclose($fp);
+
+			@chmod($this->cache_file, 0666);
 		}
 	}
 }

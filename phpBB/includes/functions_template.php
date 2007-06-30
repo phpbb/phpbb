@@ -752,8 +752,7 @@ class template_compile
 			@flock($fp, LOCK_UN);
 			@fclose($fp);
 
-			@umask(0);
-			@chmod($filename, 0644);
+			@chmod($filename, 0666);
 		}
 
 		return;

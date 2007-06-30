@@ -781,8 +781,8 @@ function _write_result($no_updates, $errored, $error_ary)
 
 			for ($i = 0; $i < sizeof($error_ary['sql']); $i++)
 			{
-				echo '<li>' . $lang['ERROR'] . ' :: <strong>' . $error_ary['error_code'][$i]['message'] . '</strong><br />';
-				echo $lang['SQL'] . ' :: <strong>' . $error_ary['sql'][$i] . '</strong><br /><br /></li>';
+				echo '<li>' . $lang['ERROR'] . ' :: <strong>' . htmlspecialchars($error_ary['error_code'][$i]['message']) . '</strong><br />';
+				echo $lang['SQL'] . ' :: <strong>' . htmlspecialchars($error_ary['sql'][$i]) . '</strong><br /><br /></li>';
 			}
 
 			echo '</ul> <br /><br />' . $lang['SQL_FAILURE_EXPLAIN'] . '</p>';

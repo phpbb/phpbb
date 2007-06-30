@@ -717,7 +717,7 @@ switch ($mode)
 			}
 			else
 			{
-				if (!$email || !preg_match('#^.*?@(.*?\.)?[a-z0-9\-]+\.[a-z]{2,4}$#i', $email))
+				if (!$email || !preg_match('/^' . get_preg_expression('email') . '$/i', $email))
 				{
 					$error[] = $user->lang['EMPTY_ADDRESS_EMAIL'];
 				}

@@ -79,6 +79,8 @@ class acm
 			fwrite($fp, "<?php\n\$this->vars = " . var_export($this->vars, true) . ";\n\n\$this->var_expires = " . var_export($this->var_expires, true) . "\n?>");
 			@flock($fp, LOCK_UN);
 			fclose($fp);
+
+			@chmod($this->cache_dir . 'data_global.' . $phpEx, 0666);
 		}
 		else
 		{
@@ -181,6 +183,8 @@ class acm
 				fwrite($fp, "<?php\n\$expired = (time() > " . (time() + $ttl) . ") ? true : false;\nif (\$expired) { return; }\n\n\$data = " . var_export($var, true) . ";\n?>");
 				@flock($fp, LOCK_UN);
 				fclose($fp);
+
+				@chmod($this->cache_dir . "data{$var_name}.$phpEx", 0666);
 			}
 		}
 		else
@@ -365,8 +369,9 @@ class acm
 
 		// Remove extra spaces and tabs
 		$query = preg_replace('/[\n\r\s\t]+/', ' ', $query);
+		$filename = $this->cache_dir . 'sql_' . md5($query) . '.' . $phpEx;
 
-		if ($fp = @fopen($this->cache_dir . 'sql_' . md5($query) . '.' . $phpEx, 'wb'))
+		if ($fp = @fopen($filename, 'wb'))
 		{
 			@flock($fp, LOCK_EX);
 
@@ -386,6 +391,8 @@ class acm
 			fwrite($fp, $file . "\n\$this->sql_rowset[\$query_id] = " . var_export($this->sql_rowset[$query_id], true) . ";\n?>");
 			@flock($fp, LOCK_UN);
 			fclose($fp);
+
+			@chmod($filename, 0666);
 
 			$query_result = $query_id;
 		}

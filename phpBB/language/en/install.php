@@ -505,6 +505,12 @@ $lang = array_merge($lang, array(
 		You will then be guided through the update process. You will be notified once the update is complete.
 		</p>
 	',
+	'UPDATE_INSTRUCTIONS_INCOMPLETE'	=> '
+
+		<h1>Incomplete update detected</h1>
+
+		<p>phpBB detected an incomplete automatic update. Please make sure you followed every step within the automatic update tool. Below you will find the link again, or go directly to your install directory.</p>
+	',
 	'UPDATE_METHOD'					=> 'Update method',
 	'UPDATE_METHOD_EXPLAIN'			=> 'You are now able to choose your preferred update method. Using the FTP upload will present you with a form you need to enter your FTP account details into. With this method the files will be automatically moved to the new location and backups of the old files being created by appending .bak to the filename. If you choose to download the modified files you are able to unpack and upload them to their correct location manually later.',
 	'UPDATE_SUCCESS'				=> 'Update was successful',
