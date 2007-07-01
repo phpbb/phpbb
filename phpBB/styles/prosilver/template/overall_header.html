@@ -113,7 +113,7 @@
 
 		<!-- IF S_DISPLAY_SEARCH and not S_IN_SEARCH -->
 			<div id="search-box">
-				<form action="{U_SEARCH}" method="get" id="search">
+				<form action="{U_SEARCH}" method="post" id="search">
 				<fieldset>
 					<input name="keywords" id="keywords" type="text" maxlength="128" title="{L_SEARCH_KEYWORDS}" class="inputbox search" value="<!-- IF SEARCH_WORDS-->{SEARCH_WORDS}<!-- ELSE -->{L_SEARCH_MINI}<!-- ENDIF -->" onclick="if(this.value=='{LA_SEARCH_MINI}')this.value='';" onblur="if(this.value=='')this.value='{LA_SEARCH_MINI}';" /> 
 					<input class="button2" value="{L_SEARCH}" type="submit" /><br />
