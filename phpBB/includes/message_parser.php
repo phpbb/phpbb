@@ -1250,9 +1250,7 @@ class parse_message extends bbcode_firstpass
 			}
 
 			// Make sure the delimiter # is added in front and at the end of every element within $match
-			$match = explode(chr(0), '#' . implode('#' . chr(0) . '#', $match) . '#');
-
-			$this->message = trim(preg_replace($match, $replace, $this->message));
+			$this->message = trim(preg_replace(explode(chr(0), '#' . implode('#' . chr(0) . '#', $match) . '#'), $replace, $this->message));
 		}
 	}
 
