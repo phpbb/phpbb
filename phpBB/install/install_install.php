@@ -919,7 +919,7 @@ class install_install extends module
 			// Assume it will work ... if nothing goes wrong below
 			$written = true;
 
-			if (!($fp = @fopen($phpbb_root_path . 'config.'.$phpEx, 'w')))
+			if (!($fp = @fopen($phpbb_root_path . 'config.' . $phpEx, 'w')))
 			{
 				// Something went wrong ... so let's try another method
 				$written = false;
@@ -932,6 +932,11 @@ class install_install extends module
 			}
 
 			@fclose($fp);
+
+			if ($written)
+			{
+				@chmod($phpbb_root_path . 'config.' . $phpEx, 0644);
+			}
 		}
 
 		if (isset($_POST['dldone']))

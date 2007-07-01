@@ -408,6 +408,60 @@ class install_update extends module
 					// Add database update to log
 					add_log('admin', 'LOG_UPDATE_PHPBB', $this->current_version, $this->latest_version);
 
+					// Refresh prosilver css data - this may cause some unhappy users, but 
+					$sql = 'SELECT *
+						FROM ' . STYLES_THEME_TABLE . "
+						WHERE theme_name = 'prosilver'";
+					$result = $db->sql_query($sql);
+					$theme = $db->sql_fetchrow($result);
+					$db->sql_freeresult($result);
+
+					if ($theme)
+					{
+						$recache = (empty($theme['theme_data'])) ? true : false;
+						$update_time = time();
+
+						// We test for stylesheet.css because it is faster and most likely the only file changed on common themes
+						if (!$recache && $theme['theme_mtime'] < @filemtime("{$phpbb_root_path}styles/" . $theme['theme_path'] . '/theme/stylesheet.css'))
+						{
+							$recache = true;
+							$update_time = @filemtime("{$phpbb_root_path}styles/" . $theme['theme_path'] . '/theme/stylesheet.css');
+						}
+						else if (!$recache)
+						{
+							$last_change = $theme['theme_mtime'];
+
+							foreach (glob("{$phpbb_root_path}styles/{$theme['theme_path']}/theme/*.css", GLOB_NOSORT) as $file)
+							{
+								if ($last_change < @filemtime($file))
+								{
+									$recache = true;
+									break;
+								}
+							}
+						}
+
+						if ($recache)
+						{
+							include_once($phpbb_root_path . 'includes/acp/acp_styles.' . $phpEx);
+
+							$theme['theme_data'] = acp_styles::db_theme_data($theme);
+							$theme['theme_mtime'] = $update_time;
+
+							// Save CSS contents
+							$sql_ary = array(
+								'theme_mtime'	=> $theme['theme_mtime'],
+								'theme_data'	=> $theme['theme_data']
+							);
+
+							$sql = 'UPDATE ' . STYLES_THEME_TABLE . ' SET ' . $db->sql_build_array('UPDATE', $sql_ary) . '
+								WHERE theme_id = ' . $theme['theme_id'];
+							$db->sql_query($sql);
+
+							$cache->destroy('sql', STYLES_THEME_TABLE);
+						}
+					}
+
 					$cache->purge();
 
 					$db->sql_return_on_error(true);
@@ -1191,6 +1245,19 @@ class install_update extends module
 				if ($this->test_update !== false)
 				{
 					$info = $this->test_update;
+				}
+
+				// If info is false the fsockopen function may not be working. Instead get the latest version from our update file (and pray it is up-to-date)
+				if ($info === false)
+				{
+					$update_info = array();
+					include($phpbb_root_path . 'install/update/index.php');
+					$info = (empty($update_info) || !is_array($update_info)) ? false : $update_info;
+
+					if ($info !== false)
+					{
+						$info = (!empty($info['version']['to'])) ? trim($info['version']['to']) : false;
+					}
 				}
 			break;
 

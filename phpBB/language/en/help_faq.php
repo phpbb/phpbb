@@ -132,7 +132,7 @@ $help = array(
 	),
 	array(
 		0 => 'Why can’t I access a forum?',
-		1 => 'Some forums may be limited to certain users or groups. To view, read, post or perform another action you may need special authorization. Contact a moderator or board administrator to grant you access.'
+		1 => 'Some forums may be limited to certain users or groups. To view, read, post or perform another action you may need special permissions. Contact a moderator or board administrator to grant you access.'
 	),
 	array(
 		0 => 'Why can’t I add attachments?',
