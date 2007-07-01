@@ -123,6 +123,22 @@ class p_master
 		// Re-index (this is needed, else we are not able to array_slice later)
 		$this->module_cache['modules'] = array_merge($this->module_cache['modules']);
 
+		// Include MOD _info files for populating language entries within the menus
+		if (file_exists($user->lang_path . 'mods'))
+		{
+			$add_files = array();
+
+			foreach (glob($user->lang_path . 'mods/info_' . strtolower($this->p_class) . '_*.' . $phpEx, GLOB_NOSORT) as $file)
+			{
+				$add_files[] = 'mods/' . substr(basename($file), 0, -(strlen($phpEx) + 1));
+			}
+
+			if (sizeof($add_files))
+			{
+				$user->add_lang($add_files);
+			}
+		}
+
 		// Now build the module array, but exclude completely empty categories...
 		$right_id = false;
 		$names = array();
