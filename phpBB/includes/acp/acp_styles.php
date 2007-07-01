@@ -2166,15 +2166,18 @@ parse_css_file = {PARSE_CSS_FILE}
 								$db->sql_query($sql);
 							}
 						}
-						else if (!$store_db && !$safe_mode)
-						{
-							$store_db = 1;
-							$error[] = $user->lang['EDIT_TEMPLATE_STORED_DB'];
-						}
 						else if ($store_db)
 						{
 							$filelist = filelist("{$phpbb_root_path}styles/{$style_row['template_path']}/template", '', 'html');
 							$this->store_templates('insert', $style_id, $style_row['template_path'], $filelist);
+						}
+						else
+						{
+							// We no longer store within the db, but are also not able to update the file structure
+							// Since the admin want to switch this, we adhere to his decision. But we also need to remove the cache
+							$sql = 'DELETE FROM ' . STYLES_TEMPLATE_DATA_TABLE . "
+								WHERE template_id = $style_id";
+							$db->sql_query($sql);
 						}
 
 						$sql_ary += array(
