@@ -739,6 +739,8 @@ parse_css_file = {PARSE_CSS_FILE}
 			// destroy the cached version of the template (filename without extension)
 			$this->clear_template_cache($template_info, array(substr($template_file, 0, -5)));
 
+			$cache->destroy('sql', STYLES_TABLE);
+
 			add_log('admin', 'LOG_TEMPLATE_EDIT', $template_info['template_name'], $template_file);
 			trigger_error($user->lang['TEMPLATE_FILE_UPDATED'] . $additional . adm_back_link($this->u_action . "&amp;action=edit&amp;id=$template_id&amp;text_rows=$text_rows&amp;template_file=$template_file"));
 		}
@@ -2163,6 +2165,11 @@ parse_css_file = {PARSE_CSS_FILE}
 									WHERE template_id = $style_id";
 								$db->sql_query($sql);
 							}
+						}
+						else if (!$store_db && !$safe_mode)
+						{
+							$store_db = 1;
+							$error[] = $user->lang['EDIT_TEMPLATE_STORED_DB'];
 						}
 						else if ($store_db)
 						{
