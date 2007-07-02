@@ -620,10 +620,39 @@ if (version_compare($current_version, '3.0.RC1', '<='))
 	$no_updates = false;
 }
 
-//if (version_compare($current_version, '3.0.RC2', '<='))
-//{
-//		$no_updates = false;
-//}
+if (version_compare($current_version, '3.0.RC2', '<='))
+{
+		
+		$smileys = array();
+		$sql = 'SELECT smiley_id, code 
+			FROM ' . SMILIES_TABLE;
+			
+		$result = $db->sql_query($sql);
+	
+		while ($row = $db->sql_fetchrow($result))
+		{
+			$smileys[$row['smiley_id']] = $row['code'];
+		}
+		$db->sql_freeresult($result);
+		
+		foreach($smileys as $id => $code)
+		{
+			// 2.0 only entitized lt and gt; We need to do something about double quotes.
+			if (strchr($code, '"') === false)
+			{
+				continue;
+			}
+			$new_code = str_replace('&amp;', '&', $code);
+			$new_code = str_replace('&lt;', '<', $new_code);
+			$new_code = str_replace('&gt;', '>', $new_code);
+			$new_code = utf8_htmlspecialchars($new_code);
+			$sql = 'UPDATE ' . SMILIES_TABLE . ' 
+				SET code = \'' . $db->sql_escape($new_code) . '\'
+				WHERE smiley_id = ' . (int)$id;
+			$db->sql_query($sql);
+		}
+		$no_updates = false;
+}
 
 _write_result($no_updates, $errored, $error_ary);
 
