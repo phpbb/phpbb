@@ -720,7 +720,7 @@ if ($submit || $preview || $refresh)
 	}
 
 	// Validate username
-	if (($post_data['username'] && !$user->data['is_registered']) || ($mode == 'edit' && $post_data['username'] && $post_data['post_username'] && $post_data['post_username'] != $post_data['username']))
+	if (($post_data['username'] && !$user->data['is_registered']) || ($mode == 'edit' && $post_data['poster_id'] == ANONYMOUS && $post_data['username'] && $post_data['post_username'] && $post_data['post_username'] != $post_data['username']))
 	{
 		include($phpbb_root_path . 'includes/functions_user.' . $phpEx);
 
