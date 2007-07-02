@@ -31,7 +31,7 @@ if (empty($lang) || !is_array($lang))
 // in a url you again do not need to specify an order e.g., 'Click %sHERE%s' is fine
 
 $lang = array_merge($lang, array(
-	'ACP_GROUPS_MANAGE_EXPLAIN'		=> 'From this panel you can administrate all your usergroups, you can delete, create and edit existing groups. You may choose group leaders, toggle open/closed group status and set the group name and description.',
+	'ACP_GROUPS_MANAGE_EXPLAIN'		=> 'From this panel you can administrate all your usergroups. You can delete, create and edit existing groups. Furthermore, you may choose group leaders, toggle open/hidden/closed group status and set the group name and description.',
 	'ADD_USERS'						=> 'Add users',
 	'ADD_USERS_EXPLAIN'				=> 'Here you can add new users to the group. You may select whether this group becomes the new default for the selected users. Additionally you can define them as group leaders. Please enter each username on a separate line.',
 
@@ -48,7 +48,7 @@ $lang = array_merge($lang, array(
 	'GROUP_AVATAR_EXPLAIN'			=> 'This image will be displayed in the Group Control Panel.',
 	'GROUP_CLOSED'					=> 'Closed',
 	'GROUP_COLOR'					=> 'Group colour',
-	'GROUP_COLOR_EXPLAIN'			=> 'Defines the colour members usernames will appear in, leave blank for user default.',
+	'GROUP_COLOR_EXPLAIN'			=> 'Defines the colour members’ usernames will appear in, leave blank for user default.',
 	'GROUP_CONFIRM_ADD_USER'		=> 'Are you sure that you want to add the user %1$s to the group?',
 	'GROUP_CONFIRM_ADD_USERS'		=> 'Are you sure that you want to add the users %1$s to the group?',
 	'GROUP_CREATED'					=> 'Group has been created successfully.',
@@ -59,10 +59,10 @@ $lang = array_merge($lang, array(
 	'GROUP_DEMOTE'					=> 'Demote group leader',
 	'GROUP_DESC'					=> 'Group description',
 	'GROUP_DETAILS'					=> 'Group details',
-	'GROUP_EDIT_EXPLAIN'			=> 'Here you can edit an existing group. You can change its name, description and type (open, closed, etc.). You can also set certain group wide options such as colouration, rank, etc. Changes made here override users current settings. Please note that group members can alter their avatar unless you set appropriate user permissions.',
+	'GROUP_EDIT_EXPLAIN'			=> 'Here you can edit an existing group. You can change its name, description and type (open, closed, etc.). You can also set certain group wide options such as colouration, rank, etc. Changes made here override users’ current settings. Please note that group members can override group-avatar settings, unless you set appropriate user permissions.',
 	'GROUP_ERR_USERS_EXIST'			=> 'The specified users are already members of this group.',
 	'GROUP_FOUNDER_MANAGE'			=> 'Founder manage only',
-	'GROUP_FOUNDER_MANAGE_EXPLAIN'	=> 'Restrict group management for this group for founders only. Users having group permissions are still able to see this group as well as this groups members.',
+	'GROUP_FOUNDER_MANAGE_EXPLAIN'	=> 'Restrict management of this group to founders only. Users having group permissions are still able to see this group as well as this group’s members.',
 	'GROUP_HIDDEN'					=> 'Hidden',
 	'GROUP_LANG'					=> 'Group language',
 	'GROUP_LEAD'					=> 'Group leaders',
@@ -103,7 +103,7 @@ $lang = array_merge($lang, array(
 	'NO_PERMISSIONS'			=> 'Do not copy permissions',
 	'NO_USERS'					=> 'You haven’t entered any users.',
 
-	'SPECIAL_GROUPS'			=> 'Predefined groups',
+	'SPECIAL_GROUPS'			=> 'Pre-defined groups',
 	'SPECIAL_GROUPS_EXPLAIN'	=> 'Pre-defined groups are special groups, they cannot be deleted or directly modified. However you can still add users and alter basic settings.',
 
 	'TOTAL_MEMBERS'				=> 'Members',

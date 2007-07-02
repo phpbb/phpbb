@@ -993,6 +993,7 @@ if ($submit || $preview || $refresh)
 			{
 				meta_refresh(10, $redirect_url);
 				$message = ($mode == 'edit') ? $user->lang['POST_EDITED_MOD'] : $user->lang['POST_STORED_MOD'];
+				$message .= (($user->data['user_id'] == ANONYMOUS) ? '' : $user->lang['POST_APPROVAL_NOTIFY']);
 			}
 			else
 			{
