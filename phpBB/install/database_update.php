@@ -332,6 +332,16 @@ $database_update_info = array(
 			),
 		),
 	),
+	// Changes from 3.0.RC2 to the next version
+	'3.0.RC2'			=> array(
+		// Remove the following keys
+		'change_columns'		=> array(
+			BANLIST_TABLE	=> array(
+				'ban_reason'		=> array('VCHAR_UNI', ''),
+				'ban_give_reason'	=> array('VCHAR_UNI', ''),
+			),
+		),
+	),
 );
 
 // Determine mapping database type
@@ -1406,7 +1416,16 @@ function sql_column_change($dbms, $table_name, $column_name, $column_data)
 		break;
 
 		case 'postgres':
-			$sql = 'ALTER TABLE ' . $table_name . ' ALTER COLUMN ' . $column_name . ' SET ' . $column_data['column_type_sql'];
+			$default_pos = strpos($column_data['column_type_sql'], ' DEFAULT');
+
+			if ($default_pos === false)
+			{
+				$sql = 'ALTER TABLE ' . $table_name . ' ALTER COLUMN ' . $column_name . ' TYPE ' . $column_data['column_type_sql'];
+			}
+			else
+			{
+				$sql = 'ALTER TABLE ' . $table_name . ' ALTER COLUMN ' . $column_name . ' TYPE ' . substr($column_data['column_type_sql'], 0, $default_pos) . ', ALTER COLUMN ' . $column_name . ' SET ' . substr($column_data['column_type_sql'], $default_pos + 1);
+			}
 			_sql($sql, $errored, $error_ary);
 		break;
 

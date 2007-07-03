@@ -220,8 +220,8 @@ CREATE TABLE phpbb_banlist (
 	ban_start number(11) DEFAULT '0' NOT NULL,
 	ban_end number(11) DEFAULT '0' NOT NULL,
 	ban_exclude number(1) DEFAULT '0' NOT NULL,
-	ban_reason varchar2(3000) DEFAULT '' ,
-	ban_give_reason varchar2(3000) DEFAULT '' ,
+	ban_reason varchar2(765) DEFAULT '' ,
+	ban_give_reason varchar2(765) DEFAULT '' ,
 	CONSTRAINT pk_phpbb_banlist PRIMARY KEY (ban_id)
 )
 /

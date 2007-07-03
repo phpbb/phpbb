@@ -178,8 +178,8 @@ CREATE TABLE [phpbb_banlist] (
 	[ban_start] [int] DEFAULT (0) NOT NULL ,
 	[ban_end] [int] DEFAULT (0) NOT NULL ,
 	[ban_exclude] [int] DEFAULT (0) NOT NULL ,
-	[ban_reason] [varchar] (3000) DEFAULT ('') NOT NULL ,
-	[ban_give_reason] [varchar] (3000) DEFAULT ('') NOT NULL 
+	[ban_reason] [varchar] (255) DEFAULT ('') NOT NULL ,
+	[ban_give_reason] [varchar] (255) DEFAULT ('') NOT NULL 
 ) ON [PRIMARY]
 GO
 

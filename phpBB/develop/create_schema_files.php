@@ -886,8 +886,8 @@ function get_schema_struct()
 			'ban_start'			=> array('TIMESTAMP', 0),
 			'ban_end'			=> array('TIMESTAMP', 0),
 			'ban_exclude'		=> array('BOOL', 0),
-			'ban_reason'		=> array('STEXT', ''),
-			'ban_give_reason'	=> array('STEXT', ''),
+			'ban_reason'		=> array('VCHAR_UNI', ''),
+			'ban_give_reason'	=> array('VCHAR_UNI', ''),
 		),
 		'PRIMARY_KEY'			=> 'ban_id',
 		'KEYS'			=> array(
