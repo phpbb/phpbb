@@ -249,8 +249,8 @@ parse_css_file = {PARSE_CSS_FILE}
 
 								while ($row = $db->sql_fetchrow($result))
 								{
-									if (@filemtime("{$phpbb_root_path}styles/{$template_row['template_path']}/template/" . $row['template_filename']) > $row['template_mtime'])
-									{
+//									if (@filemtime("{$phpbb_root_path}styles/{$template_row['template_path']}/template/" . $row['template_filename']) > $row['template_mtime'])
+//									{
 										// get folder info from the filename
 										if (($slash_pos = strrpos($row['template_filename'], '/')) === false)
 										{
@@ -260,7 +260,7 @@ parse_css_file = {PARSE_CSS_FILE}
 										{
 											$filelist[substr($row['template_filename'], 0, $slash_pos + 1)][] = substr($row['template_filename'], $slash_pos + 1, strlen($row['template_filename']) - $slash_pos - 1);
 										}
-									}
+//									}
 								}
 								$db->sql_freeresult($result);
 
