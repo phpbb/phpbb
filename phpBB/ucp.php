@@ -256,7 +256,7 @@ if ($module->is_active('zebra', 'friends'))
 	$update_time = $config['load_online_time'] * 60;
 
 	$sql = $db->sql_build_query('SELECT_DISTINCT', array(
-		'SELECT'	=> 'u.user_id, u.username, u.username_clean, u.user_colour, u.user_allow_viewonline, MAX(s.session_time) as online_time, MIN(s.session_viewonline) AS viewonline',
+		'SELECT'	=> 'u.user_id, u.username, u.username_clean, u.user_colour,  MAX(s.session_time) as online_time, MIN(s.session_viewonline) AS viewonline',
 
 		'FROM'		=> array(
 			USERS_TABLE		=> 'u',
@@ -274,7 +274,7 @@ if ($module->is_active('zebra', 'friends'))
 			AND z.friend = 1
 			AND u.user_id = z.zebra_id',
 
-		'GROUP_BY'	=> 'z.zebra_id, u.user_id, u.username_clean, u.user_allow_viewonline, u.user_colour, u.username',
+		'GROUP_BY'	=> 'z.zebra_id, u.user_id, u.username_clean, u.user_colour, u.username',
 
 		'ORDER_BY'	=> 'u.username_clean ASC',
 	));
@@ -283,7 +283,7 @@ if ($module->is_active('zebra', 'friends'))
 
 	while ($row = $db->sql_fetchrow($result))
 	{
-		$which = (time() - $update_time < $row['online_time'] && $row['viewonline'] && $row['user_allow_viewonline']) ? 'online' : 'offline';
+		$which = (time() - $update_time < $row['online_time'] && ($row['viewonline'] || $auth->acl_get('u_viewonline'))) ? 'online' : 'offline';
 
 		$template->assign_block_vars("friends_{$which}", array(
 			'USER_ID'		=> $row['user_id'],

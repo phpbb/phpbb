@@ -117,7 +117,7 @@ if (!$show_guests)
 }
 
 // Get user list
-$sql = 'SELECT u.user_id, u.username, u.username_clean, u.user_type, u.user_allow_viewonline, u.user_colour, s.session_id, s.session_time, s.session_page, s.session_ip, s.session_viewonline
+$sql = 'SELECT u.user_id, u.username, u.username_clean, u.user_type, u.user_colour, s.session_id, s.session_time, s.session_page, s.session_ip, s.session_viewonline
 	FROM ' . USERS_TABLE . ' u, ' . SESSIONS_TABLE . ' s
 	WHERE u.user_id = s.session_user_id
 		AND s.session_time >= ' . (time() - ($config['load_online_time'] * 60)) . 
