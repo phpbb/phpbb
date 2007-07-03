@@ -256,7 +256,7 @@ if ($module->is_active('zebra', 'friends'))
 	$update_time = $config['load_online_time'] * 60;
 
 	$sql = $db->sql_build_query('SELECT_DISTINCT', array(
-		'SELECT'	=> 'u.user_id, u.username, u.username_clean, u.user_colour,  MAX(s.session_time) as online_time, MIN(s.session_viewonline) AS viewonline',
+		'SELECT'	=> 'u.user_id, u.username, u.username_clean, u.user_colour, MAX(s.session_time) as online_time, MIN(s.session_viewonline) AS viewonline',
 
 		'FROM'		=> array(
 			USERS_TABLE		=> 'u',
