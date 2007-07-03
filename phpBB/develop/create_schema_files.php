@@ -764,10 +764,10 @@ foreach ($supported_dbms as $dbms)
 *	BOOL		=> tinyint(1) UNSIGNED
 *	VCHAR		=> varchar(255)
 *	CHAR:x		=> char(x)
-*	XSTEXT		=> text for storing 1000 characters (topic_title for example)
-*	STEXT		=> text for storing 3000 characters (normal input field with a max of 255 single-byte chars)
-*	TEXT		=> text for storing 8000 characters (short text, descriptions, comments, etc.)
-*	MTEXT		=> mediumtext (post text, large text)
+*	XSTEXT_UNI	=> text for storing 100 characters (topic_title for example)
+*	STEXT_UNI	=> text for storing 255 characters (normal input field with a max of 255 single-byte chars) - same as VCHAR_UNI
+*	TEXT_UNI	=> text for storing 3000 characters (short text, descriptions, comments, etc.)
+*	MTEXT_UNI	=> mediumtext (post text, large text)
 *	VCHAR:x		=> varchar(x)
 *	TIMESTAMP	=> int(11) UNSIGNED
 *	DECIMAL		=> decimal number (5,2)

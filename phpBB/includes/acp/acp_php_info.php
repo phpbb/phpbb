@@ -51,7 +51,7 @@ class acp_php_info
 		$output = str_replace(array('class="e"', 'class="v"', 'class="h"', '<hr />', '<font', '</font>'), array('class="row1"', 'class="row2"', '', '', '<span', '</span>'), $output);
 		
 		preg_match_all('#<div class="center">(.*)</div>#siU', $output, $output); 
-		$output = $output[1][0];
+		$output = (!empty($output[1][0])) ? $output[1][0] : @$output[1];
 
 		$template->assign_var('PHPINFO', $output);
 	}

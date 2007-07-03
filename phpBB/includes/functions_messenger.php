@@ -52,7 +52,7 @@ class messenger
 		$this->addresses['to'][$pos]['email'] = trim($address);
 
 		// If empty sendmail_path on windows, PHP changes the to line
-		if (!$config['smtp_delivery'] && strpos(strtolower(PHP_OS), 'win') === 0)
+		if (!$config['smtp_delivery'] && DIRECTORY_SEPARATOR == '\\')
 		{
 			$this->addresses['to'][$pos]['name'] = '';
 		}

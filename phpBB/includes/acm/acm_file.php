@@ -121,7 +121,7 @@ class acm
 			@include($this->cache_dir . $entry);
 			if ($expired)
 			{
-				@unlink($this->cache_dir . $entry);
+				$this->remove_file($this->cache_dir . $entry);
 			}
 		}
 		closedir($dir);
@@ -215,7 +215,7 @@ class acm
 				continue;
 			}
 
-			@unlink($this->cache_dir . $entry);
+			$this->remove_file($this->cache_dir . $entry);
 		}
 		closedir($dir);
 
@@ -273,7 +273,7 @@ class acm
 
 				if ($found)
 				{
-					@unlink($this->cache_dir . $entry);
+					$this->remove_file($this->cache_dir . $entry);
 				}
 			}
 			closedir($dir);
@@ -288,7 +288,7 @@ class acm
 
 		if ($var_name[0] == '_')
 		{
-			@unlink($this->cache_dir . 'data' . $var_name . ".$phpEx");
+			$this->remove_file($this->cache_dir . 'data' . $var_name . ".$phpEx");
 		}
 		else if (isset($this->vars[$var_name]))
 		{
@@ -351,7 +351,7 @@ class acm
 		}
 		else if ($expired)
 		{
-			@unlink($this->cache_dir . 'sql_' . md5($query) . ".$phpEx");
+			$this->remove_file($this->cache_dir . 'sql_' . md5($query) . ".$phpEx");
 			return false;
 		}
 
@@ -460,6 +460,18 @@ class acm
 		unset($this->sql_row_pointer[$query_id]);
 
 		return true;
+	}
+
+	/**
+	* Removes/unlinks file
+	*/
+	function remove_file($filename)
+	{
+		if (!@unlink($filename))
+		{
+			// E_USER_ERROR - not using language entry - intended.
+			trigger_error('Unable to remove files within ' . $this->cache_dir . '. Please check directory permissions.', E_USER_ERROR);
+		}
 	}
 }
 

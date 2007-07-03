@@ -380,7 +380,7 @@ class install_install extends module
 		}
 
 		// Can we find Imagemagick anywhere on the system?
-		$exe = (defined('PHP_OS') && strpos(strtolower(PHP_OS), 'win') === 0) ? '.exe' : '';
+		$exe = (DIRECTORY_SEPARATOR == '\\') ? '.exe' : '';
 
 		$magic_home = getenv('MAGICK_HOME');
 		$img_imagick = '';
@@ -868,8 +868,6 @@ class install_install extends module
 		$available_dbms = get_available_dbms($dbms);
 		$check_exts = array_merge(array($available_dbms[$dbms]['MODULE']), $this->php_dlls_other);
 
-		$suffix = (defined('PHP_OS') && strpos(strtolower(PHP_OS), 'win') === 0) ? 'dll' : 'so';
-
 		foreach ($check_exts as $dll)
 		{
 			if (!@extension_loaded($dll))
@@ -879,7 +877,7 @@ class install_install extends module
 					continue;
 				}
 
-				$load_extensions[] = "$dll.$suffix";
+				$load_extensions[] = $dll . '.' . PHP_SHLIB_SUFFIX;
 			}
 		}
 
@@ -891,6 +889,8 @@ class install_install extends module
 			$this->p_master->error($lang['UNABLE_WRITE_LOCK'], __LINE__, __FILE__);
 		}
 		@fclose($fp);
+
+		@chmod($phpbb_root_path . 'cache/install_lock', 0666);
 
 		$dbpasswd = htmlspecialchars_decode($dbpasswd);
 		$load_extensions = implode(',', $load_extensions);
