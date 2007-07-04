@@ -2010,6 +2010,8 @@ function submit_post($mode, $subject, $username, $topic_type, &$poll, &$data, $u
 		// We make a new topic
 		// We reply to a topic
 		// We edit the last post in a topic and this post is the latest in the forum (maybe)
+		// We edit the only post in the topic
+		// We edit the first post in the topic and all the other posts are not approved
 		if (($post_mode == 'post' || $post_mode == 'reply') && $post_approved)
 		{
 			$sql_data[FORUMS_TABLE]['stat'][] = 'forum_last_post_id = ' . $data['post_id'];
@@ -2019,9 +2021,9 @@ function submit_post($mode, $subject, $username, $topic_type, &$poll, &$data, $u
 			$sql_data[FORUMS_TABLE]['stat'][] = "forum_last_poster_name = '" . $db->sql_escape((!$user->data['is_registered'] && $username) ? $username : (($user->data['user_id'] != ANONYMOUS) ? $user->data['username'] : '')) . "'";
 			$sql_data[FORUMS_TABLE]['stat'][] = "forum_last_poster_colour = '" . $db->sql_escape($user->data['user_colour']) . "'";
 		}
-		else if ($post_mode == 'edit_last_post')
+		else if ($post_mode == 'edit_last_post' || $post_mode == 'edit_topic' || ($post_mode == 'edit_first_post' && !$data['topic_replies']))
 		{
-			// edit_last_post does not _necessarily_ mean that we must update the info again,
+			// this does not _necessarily_ mean that we must update the info again,
 			// it just means that we might have to
 			$sql = 'SELECT forum_last_post_id, forum_last_post_subject
 				FROM ' . FORUMS_TABLE . '
@@ -2030,7 +2032,7 @@ function submit_post($mode, $subject, $username, $topic_type, &$poll, &$data, $u
 			$row = $db->sql_fetchrow($result);
 			$db->sql_freeresult($result);
 
-			// this post is the last post in the forum, better update
+			// this post is the latest post in the forum, better update
 			if ($row['forum_last_post_id'] == $data['post_id'])
 			{
 				if ($post_approved && $row['forum_last_post_subject'] !== $subject)
@@ -2070,7 +2072,7 @@ function submit_post($mode, $subject, $username, $topic_type, &$poll, &$data, $u
 					}
 					else
 					{
-						// just our luck, the last topic in the forum has just been globalized...
+						// just our luck, the last topic in the forum has just been turned unapproved...
 						$sql_data[FORUMS_TABLE]['stat'][] = 'forum_last_post_id = 0';
 						$sql_data[FORUMS_TABLE]['stat'][] = "forum_last_post_subject = ''";
 						$sql_data[FORUMS_TABLE]['stat'][] = 'forum_last_post_time = 0';
@@ -2169,13 +2171,13 @@ function submit_post($mode, $subject, $username, $topic_type, &$poll, &$data, $u
 			$sql_data[TOPICS_TABLE]['stat'][] = "topic_last_post_subject = '" . $db->sql_escape($subject) . "'";
 			$sql_data[TOPICS_TABLE]['stat'][] = 'topic_last_post_time = ' . (int) $current_time;
 		}
-		else if ($post_mode == 'edit_last_post')
+		else if ($post_mode == 'edit_last_post' || $post_mode == 'edit_topic' || ($post_mode == 'edit_first_post' && !$data['topic_replies']))
 		{
 			// only the subject can be changed from edit
 			$sql_data[TOPICS_TABLE]['stat'][] = "topic_last_post_subject = '" . $db->sql_escape($subject) . "'";
 		}
 	}
-	else if (!$data['post_approved'] && $post_mode == 'edit_last_post')
+	else if (!$data['post_approved'] && ($post_mode == 'edit_last_post' || $post_mode == 'edit_topic' || ($post_mode == 'edit_first_post' && !$data['topic_replies'])))
 	{
 		// like having the rug pulled from under us
 		$sql = 'SELECT MAX(post_id) as last_post_id

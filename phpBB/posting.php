@@ -981,6 +981,7 @@ if ($submit || $preview || $refresh)
 			if ($mode == 'edit')
 			{
 				$data['topic_replies_real'] = $post_data['topic_replies_real'];
+				$data['topic_replies'] = $post_data['topic_replies'];
 			}
 
 			unset($message_parser);
