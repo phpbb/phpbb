@@ -138,7 +138,7 @@ INSERT INTO phpbb_config (config_name, config_value) VALUES ('load_online_guests
 INSERT INTO phpbb_config (config_name, config_value) VALUES ('load_online_time', '5');
 INSERT INTO phpbb_config (config_name, config_value) VALUES ('load_onlinetrack', '1');
 INSERT INTO phpbb_config (config_name, config_value) VALUES ('load_search', '1');
-INSERT INTO phpbb_config (config_name, config_value) VALUES ('load_tplcompile', '0');
+INSERT INTO phpbb_config (config_name, config_value) VALUES ('load_tplcompile', '1');
 INSERT INTO phpbb_config (config_name, config_value) VALUES ('load_user_activity', '1');
 INSERT INTO phpbb_config (config_name, config_value) VALUES ('max_attachments', '3');
 INSERT INTO phpbb_config (config_name, config_value) VALUES ('max_attachments_pm', '1');
