@@ -115,7 +115,7 @@ class dbal_oracle extends dbal
 	*/
 	function _rewrite_where($where_clause)
 	{
-		preg_match_all('/\s*(AND|OR)?\s*([\w_.]++)\s*(?:(=|<>)\s*((?>\'(?>[^\']++|\'\')*+\'|\d+))|((NOT )?IN\s*\((?>\'(?>[^\']++|\'\')*+\',? ?|\d+,? ?)*+\)))/', $where_clause, $result, PREG_SET_ORDER);
+		preg_match_all('/\s*(AND|OR)?\s*([\w_.]++)\s*(?:(=|<>)\s*((?>\'(?>[^\']++|\'\')*+\'|[\d-.]+))|((NOT )?IN\s*\((?>\'(?>[^\']++|\'\')*+\',? ?|[\d-.]+,? ?)*+\)))/', $where_clause, $result, PREG_SET_ORDER);
 		$out = '';
 		foreach ($result as $val)
 		{
@@ -143,7 +143,7 @@ class dbal_oracle extends dbal
 				$in_clause = array();
 				$sub_exp = substr($val[5], strpos($val[5], '(') + 1, -1);
 				$extra = false;
-				preg_match_all('/\'(?>[^\']++|\'\')*+\'|\d++/', $sub_exp, $sub_vals, PREG_PATTERN_ORDER);
+				preg_match_all('/\'(?>[^\']++|\'\')*+\'|[\d-.]++/', $sub_exp, $sub_vals, PREG_PATTERN_ORDER);
 				$i = 0;
 				foreach ($sub_vals[0] as $sub_val)
 				{
@@ -239,7 +239,7 @@ class dbal_oracle extends dbal
 						if (strlen($regs[3]) > 4000)
 						{
 							$cols = explode(', ', $regs[2]);
-							preg_match_all('/\'(?:[^\']++|\'\')*+\'|\\d+/', $regs[3], $vals, PREG_PATTERN_ORDER);
+							preg_match_all('/\'(?:[^\']++|\'\')*+\'|\[\d-.]+/', $regs[3], $vals, PREG_PATTERN_ORDER);
 
 							$inserts = $vals[0];
 							unset($vals);
@@ -256,13 +256,13 @@ class dbal_oracle extends dbal
 							$query = $regs[1] . '(' . $regs[2] . ') VALUES (' . implode(', ', $inserts) . ')';
 						}
 					}
-					else if (preg_match_all('/^(UPDATE [\\w_]++\\s+SET )([\\w_]++\\s*=\\s*(?:\'(?:[^\']++|\'\')*+\'|\\d+)(?:,\\s*[\\w_]++\\s*=\\s*(?:\'(?:[^\']++|\'\')*+\'|\\d+))*+)\\s+(WHERE.*)$/s', $query, $data, PREG_SET_ORDER))
+					else if (preg_match_all('/^(UPDATE [\\w_]++\\s+SET )([\\w_]++\\s*=\\s*(?:\'(?:[^\']++|\'\')*+\'|[\d-.]+)(?:,\\s*[\\w_]++\\s*=\\s*(?:\'(?:[^\']++|\'\')*+\'|[\d-.]+))*+)\\s+(WHERE.*)$/s', $query, $data, PREG_SET_ORDER))
 					{
 						if (strlen($data[0][2]) > 4000)
 						{
 							$update = $data[0][1];
 							$where = $data[0][3];
-							preg_match_all('/([\\w_]++)\\s*=\\s*(\'(?:[^\']++|\'\')*+\'|\\d++)/', $data[0][2], $temp, PREG_SET_ORDER);
+							preg_match_all('/([\\w_]++)\\s*=\\s*(\'(?:[^\']++|\'\')*+\'|[\d-.]++)/', $data[0][2], $temp, PREG_SET_ORDER);
 							unset($data);
 
 							$cols = array();
@@ -288,7 +288,7 @@ class dbal_oracle extends dbal
 				switch (substr($query, 0, 6))
 				{
 					case 'DELETE':
-						if (preg_match('/^(DELETE FROM [\w_]++ WHERE)((?:\s*(?:AND|OR)?\s*[\w_]+\s*(?:(?:=|<>)\s*(?>\'(?>[^\']++|\'\')*+\'|\d+)|(?:NOT )?IN\s*\((?>\'(?>[^\']++|\'\')*+\',? ?|\d+,? ?)*+\)))*+)$/', $query, $regs))
+						if (preg_match('/^(DELETE FROM [\w_]++ WHERE)((?:\s*(?:AND|OR)?\s*[\w_]+\s*(?:(?:=|<>)\s*(?>\'(?>[^\']++|\'\')*+\'|[\d-.]+)|(?:NOT )?IN\s*\((?>\'(?>[^\']++|\'\')*+\',? ?|[\d-.]+,? ?)*+\)))*+)$/', $query, $regs))
 						{
 							$query = $regs[1] . $this->_rewrite_where($regs[2]);
 							unset($regs);
@@ -296,7 +296,7 @@ class dbal_oracle extends dbal
 					break;
 
 					case 'UPDATE':
-						if (preg_match('/^(UPDATE [\\w_]++\\s+SET [\\w_]+\s*=\s*(?:\'(?:[^\']++|\'\')*+\'|\\d++|:\w++)(?:, [\\w_]+\s*=\s*(?:\'(?:[^\']++|\'\')*+\'|\\d++|:\w++))*+\\s+WHERE)(.*)$/s',  $query, $regs))
+						if (preg_match('/^(UPDATE [\\w_]++\\s+SET [\\w_]+\s*=\s*(?:\'(?:[^\']++|\'\')*+\'|[\d-.]++|:\w++)(?:, [\\w_]+\s*=\s*(?:\'(?:[^\']++|\'\')*+\'|[\d-.]++|:\w++))*+\\s+WHERE)(.*)$/s',  $query, $regs))
 						{
 							$query = $regs[1] . $this->_rewrite_where($regs[2]);
 							unset($regs);
@@ -304,7 +304,7 @@ class dbal_oracle extends dbal
 					break;
 
 					case 'SELECT':
-						$query = preg_replace_callback('/([\w_.]++)\s*(?:(=|<>)\s*(?>\'(?>[^\']++|\'\')*+\'|\d++|([\w_.]++))|(?:NOT )?IN\s*\((?>\'(?>[^\']++|\'\')*+\',? ?|\d++,? ?)*+\))/', array($this, '_rewrite_col_compare'), $query);
+						$query = preg_replace_callback('/([\w_.]++)\s*(?:(=|<>)\s*(?>\'(?>[^\']++|\'\')*+\'|[\d-.]++|([\w_.]++))|(?:NOT )?IN\s*\((?>\'(?>[^\']++|\'\')*+\',? ?|[\d-.]++,? ?)*+\))/', array($this, '_rewrite_col_compare'), $query);
 					break;
 				}
 
