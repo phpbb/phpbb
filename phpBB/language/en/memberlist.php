@@ -54,6 +54,7 @@ $lang = array_merge($lang, array(
 	'EMAIL_TOPIC_EXPLAIN'	=> 'This message will be sent as plain text, do not include any HTML or BBCode. Please note that the topic information is already included in the message. The return address for this message will be set to your e-mail address.',
 	'EMPTY_ADDRESS_EMAIL'	=> 'You must provide a valid e-mail address for the recipient.',
 	'EMPTY_MESSAGE_EMAIL'	=> 'You must enter a message to be emailed.',
+	'EMPTY_MESSAGE_IM'		=> 'You must enter a message to be send.',
 	'EMPTY_NAME_EMAIL'		=> 'You must enter the real name of the recipient.',
 	'EMPTY_SUBJECT_EMAIL'	=> 'You must specify a subject for the e-mail.',
 	'EQUAL_TO'				=> 'Equal to',

@@ -1232,7 +1232,7 @@ input.disabled {
 
 .clearfix, #tabs, .row, #content, fieldset dl, #page-body {
 	height: 1%;
-	overflow: auto;
+	overflow: hidden;
 }
 
 /* Syntax Highlighting

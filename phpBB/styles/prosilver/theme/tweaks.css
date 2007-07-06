@@ -44,7 +44,7 @@ html>body dd label input { vertical-align: text-bottom; }	/* Align checkboxes/ra
 
 .clearfix, #tabs, #minitabs, .post, .navbar, fieldset dl, ul.topiclist dl, ul.linklist, dl.polls {
 	height: 1%;
-	overflow: auto;
+	overflow: hidden;
 }
 
 /* Simple fix so forum and topic lists always have a min-height set, even in IE6

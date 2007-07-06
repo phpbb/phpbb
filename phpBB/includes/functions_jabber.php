@@ -12,7 +12,7 @@
 *
 * Jabber class from Flyspray project
 *
-* @version class.jabber2.php 1244 2007-05-28
+* @version class.jabber2.php 1306 2007-06-21
 * @copyright 2006 Flyspray.org
 * @author: Florian Schmitz (floele)
 *
@@ -31,6 +31,7 @@ class jabber
 	var $username;
 	var $password;
 	var $use_ssl;
+	var $resource = 'functions_jabber.phpbb.php';
 
 	var $enable_logging;
 	var $log_array;
@@ -76,15 +77,29 @@ class jabber
 			return false;
 		}
 
-		// Make sure the encryption stream is supported
+		/**
+		* Make sure the encryption stream is supported
+		* Also seem to work without the crypto stream if correctly compiled
+
 		$streams = stream_get_wrappers();
 
 		if (!in_array('streams.crypto', $streams))
 		{
 			return false;
 		}
+		*/
 
 		return true;
+	}
+
+	/**
+	* Sets the resource which is used. No validation is done here, only escaping.
+	* @param string $name
+	* @access public
+	*/
+	function set_resource($name)
+	{
+		$this->resource = $name;
 	}
 
 	/**
@@ -126,7 +141,7 @@ class jabber
 			// disconnect gracefully
 			if (isset($this->session['sent_presence']))
 			{
-				$this->presence('offline', '', true);
+				$this->send_presence('offline', '', true);
 			}
 
 			$this->send('</stream:stream>');
@@ -379,7 +394,7 @@ class jabber
 				}
 
 				// go on with authentication?
-				if (isset($this->features['stream:features'][0]['#']['bind']))
+				if (isset($this->features['stream:features'][0]['#']['bind']) || $this->session['tls'])
 				{
 					return $this->response($this->features);
 				}
@@ -394,9 +409,9 @@ class jabber
 
 					$this->send("<iq type='set' id='bind_1'>
 						<bind xmlns='urn:ietf:params:xml:ns:xmpp-bind'>
-							<resource>functions_jabber.phpbb.php</resource>
+							<resource>" . utf8_htmlspecialchars($this->resource) . '</resource>
 						</bind>
-					</iq>");
+					</iq>');
 					return $this->response($this->listen());
 				}
 

@@ -13,7 +13,7 @@
 	<fieldset>
 	<dl class="fields2">
 		<dt><label>{L_IM_RECIPIENT}:</label></dt>
-		<dd><strong>{USERNAME}</strong> [ {IM_CONTACT} ]<!-- IF PRESENCE_IMG --> {PRESENCE_IMG}<!-- ENDIF --></dd>
+		<dd><strong>{USERNAME}</strong><!-- IF S_SEND_ICQ or S_SEND_AIM or S_SEND_MSNM --> [ {IM_CONTACT} ]<!-- ENDIF --><!-- IF PRESENCE_IMG --> {PRESENCE_IMG}<!-- ENDIF --></dd>
 	</dl>
 
 	<!-- IF S_SEND_ICQ -->

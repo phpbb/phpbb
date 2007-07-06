@@ -47,7 +47,7 @@ function initInsertions()
 	{
 		textarea.focus();
 		baseHeight = doc.selection.createRange().duplicate().boundingHeight;
-		document.body.focus();
+		// document.body.focus();
 	}
 }
 
