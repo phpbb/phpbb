@@ -43,6 +43,7 @@ class session
 		if (!$script_name)
 		{
 			$script_name = (!empty($_SERVER['REQUEST_URI'])) ? $_SERVER['REQUEST_URI'] : getenv('REQUEST_URI');
+			$script_name = (($pos = strpos($script_name, '?')) !== false) ? substr($script_name, 0, strpos($script_name, '?')) : $script_name;
 			$page_array['failover'] = 1;
 		}
 
