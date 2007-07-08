@@ -1440,8 +1440,7 @@ function sql_list_index($dbms, $table_name)
 			case 'mysql_40':
 			case 'mysql_41':
 				$sql = 'SHOW KEYS
-					FROM ' . $table_name .'
-					WHERE Non_unique = 1';
+					FROM ' . $table_name;
 				$col = 'Key_name';
 			break;
 
@@ -1461,6 +1460,11 @@ function sql_list_index($dbms, $table_name)
 		$result = $db->sql_query($sql);
 		while ($row = $db->sql_fetchrow($result))
 		{
+			if (($dbms == 'mysql_40' || $dbms == 'mysql_41') && !$row['Non_unique']))
+			{
+				continue;
+			}
+
 			$index_array[] = $row[$col];
 		}
 		$db->sql_freeresult($result);
