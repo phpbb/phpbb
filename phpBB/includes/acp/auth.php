@@ -591,7 +591,7 @@ class auth_admin extends auth
 			ORDER BY left_id';
 		$result = $db->sql_query($sql);
 
-		$forum_names = array();
+		$forum_names = array(0 => '');
 		while ($row = $db->sql_fetchrow($result))
 		{
 			$forum_names[$row['forum_id']] = $row['forum_name'];
