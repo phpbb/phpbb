@@ -1460,7 +1460,7 @@ function sql_list_index($dbms, $table_name)
 		$result = $db->sql_query($sql);
 		while ($row = $db->sql_fetchrow($result))
 		{
-			if (($dbms == 'mysql_40' || $dbms == 'mysql_41') && !$row['Non_unique']))
+			if (($dbms == 'mysql_40' || $dbms == 'mysql_41') && !$row['Non_unique'])
 			{
 				continue;
 			}
