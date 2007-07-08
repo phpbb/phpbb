@@ -462,11 +462,11 @@ class install_update extends module
 						}
 					}
 
-					$cache->purge();
-
 					$db->sql_return_on_error(true);
 					$db->sql_query('DELETE FROM ' . CONFIG_TABLE . " WHERE config_name = 'version_update_from'");
 					$db->sql_return_on_error(false);
+
+					$cache->purge();
 				}
 
 			break;

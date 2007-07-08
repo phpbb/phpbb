@@ -8,7 +8,7 @@
 *
 */
 
-$updates_to_version = '3.0.RC2';
+$updates_to_version = '3.0.RC3';
 
 if (defined('IN_PHPBB') && defined('IN_INSTALL'))
 {
@@ -663,7 +663,7 @@ if (version_compare($current_version, '3.0.RC2', '<='))
 
 	$index_list = sql_list_index($map_dbms, ACL_ROLES_DATA_TABLE);
 
-	if (in_array('ath_opt_id', $index))
+	if (in_array('ath_opt_id', $index_list))
 	{
 		sql_index_drop($map_dbms, 'ath_opt_id', ACL_ROLES_DATA_TABLE);
 		sql_create_index($map_dbms, 'ath_op_id', ACL_ROLES_DATA_TABLE, array('auth_option_id'));
