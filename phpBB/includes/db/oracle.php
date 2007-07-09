@@ -239,7 +239,7 @@ class dbal_oracle extends dbal
 						if (strlen($regs[3]) > 4000)
 						{
 							$cols = explode(', ', $regs[2]);
-							preg_match_all('/\'(?:[^\']++|\'\')*+\'|\[\d-.]+/', $regs[3], $vals, PREG_PATTERN_ORDER);
+							preg_match_all('/\'(?:[^\']++|\'\')*+\'|[\d-.]+/', $regs[3], $vals, PREG_PATTERN_ORDER);
 
 							$inserts = $vals[0];
 							unset($vals);
