@@ -937,6 +937,8 @@ function prepare_column_data($dbms, $column_data)
 
 	$sql = '';
 
+	$return_array = array();
+
 	switch ($dbms)
 	{
 		case 'firebird':
@@ -1011,14 +1013,23 @@ function prepare_column_data($dbms, $column_data)
 		break;
 
 		case 'postgres':
+			$return_array['column_type'] = $column_type;
+			$return_array['null'] = 'NOT NULL';
+
+			if (!is_null($column_data[1]))
+			{
+				$return_array['default'] = $column_data[1];
+			}
+
 			$sql .= " {$column_type} ";
-			$sql .= 'NOT NULL';
+			$sql .= 'NOT NULL ';
 
 			$sql .= (!is_null($column_data[1])) ? "DEFAULT '{$column_data[1]}' " : '';
 
 			// Unsigned? Then add a CHECK contraint
 			if (in_array($orig_column_type, $unsigned_types))
 			{
+				$return_array['constraint'] = "CHECK ({$column_name} >= 0)";
 				$sql .= " CHECK ({$column_name} >= 0)";
 			}
 		break;
@@ -1040,9 +1051,9 @@ function prepare_column_data($dbms, $column_data)
 		break;
 	}
 
-	return array(
-		'column_type_sql'		=> $sql,
-	);
+	$return_array['column_type_sql'] = $sql;
+
+	return $return_array;
 }
 
 /**
@@ -1263,7 +1274,7 @@ function sql_index_drop($dbms, $index_name, $table_name)
 		case 'oracle':
 		case 'postgres':
 		case 'sqlite':
-			$sql = 'DROP INDEX ' . $table_name . '_' .  $index_name;
+			$sql = 'DROP INDEX ' . $table_name . '_' . $index_name;
 			_sql($sql, $errored, $error_ary);
 		break;
 	}
@@ -1476,6 +1487,16 @@ function sql_list_index($dbms, $table_name)
 				continue;
 			}
 
+			switch ($dbms)
+			{
+				case 'firebird':
+				case 'oracle':
+				case 'postgres':
+				case 'sqlite':
+					$row[$col] = substr($row[$col], strlen($table_name) + 1);
+				break;
+			}
+
 			$index_array[] = $row[$col];
 		}
 		$db->sql_freeresult($result);
@@ -1519,16 +1540,32 @@ function sql_column_change($dbms, $table_name, $column_name, $column_data)
 		break;
 
 		case 'postgres':
-			$default_pos = strpos($column_data['column_type_sql'], ' DEFAULT');
+			$sql = 'ALTER TABLE ' . $table_name . ' ';
 
-			if ($default_pos === false)
+			$sql_array = array();
+			$sql_array[] = 'ALTER COLUMN ' . $column_name . ' TYPE ' . $column_data['column_type'];
+
+			if ($column_data['null'] == 'NOT NULL')
 			{
-				$sql = 'ALTER TABLE ' . $table_name . ' ALTER COLUMN ' . $column_name . ' TYPE ' . $column_data['column_type_sql'];
+				$sql_array[] = 'ALTER COLUMN ' . $column_name . ' SET NOT NULL';
 			}
 			else
 			{
-				$sql = 'ALTER TABLE ' . $table_name . ' ALTER COLUMN ' . $column_name . ' TYPE ' . substr($column_data['column_type_sql'], 0, $default_pos) . ', ALTER COLUMN ' . $column_name . ' SET ' . substr($column_data['column_type_sql'], $default_pos + 1);
+				$sql_array[] = 'ALTER COLUMN ' . $column_name . ' DROP NOT NULL';
 			}
+
+			if (isset($column_data['default']))
+			{
+				$sql_array[] = 'ALTER COLUMN ' . $column_name . " SET DEFAULT '" . $column_data['default'] . "'";
+			}
+
+			if (isset($column_data['constraint']))
+			{
+				$sql_array[] = 'ALTER COLUMN ' . $column_name . " ADD '" . $column_data['constraint'] . "'";
+			}
+
+			$sql .= implode(', ', $sql_array);
+
 			_sql($sql, $errored, $error_ary);
 		break;
 
