@@ -672,6 +672,17 @@ if (version_compare($current_version, '3.0.RC2', '<='))
 	$no_updates = false;
 }
 
+if (version_compare($current_version, '3.0.RC3', '<='))
+{
+	if ($map_dbms === 'postgres')
+	{
+		$sql = "SELECT SETVAL('" . FORUMS_TABLE . "_seq',(select case when max(forum_id)>0 then max(forum_id)+1 else 1 end from " . FORUMS_TABLE . '));';
+		_sql($sql, $errored, $error_ary);
+
+		$no_updates = false;
+	}
+}
+
 _write_result($no_updates, $errored, $error_ary);
 
 $error_ary = array();
@@ -1252,7 +1263,7 @@ function sql_index_drop($dbms, $index_name, $table_name)
 		case 'oracle':
 		case 'postgres':
 		case 'sqlite':
-			$sql = 'DROP INDEX ' . $table_name . '_' . $index_name;
+			$sql = 'DROP INDEX ' . $table_name . '_' .  $index_name;
 			_sql($sql, $errored, $error_ary);
 		break;
 	}
