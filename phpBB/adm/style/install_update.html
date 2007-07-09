@@ -185,10 +185,34 @@
 								<br /><span>{L_NUM_CONFLICTS}: {files.NUM_CONFLICTS}</span>
 								<!-- ENDIF -->
 							</dt>
-							<dd style="margin-left: 60%;"><!-- IF not files.S_BINARY -->[ <a href="{files.U_SHOW_DIFF}" onclick="popup('{files.U_SHOW_DIFF}', 700, 500); return false;">{files.L_SHOW_DIFF}</a> ]<!-- ELSE -->{L_BINARY_FILE}<!-- ENDIF --></dd>
+							<dd style="margin-left: 60%;"><!-- IF files.STATUS eq 'modified' -->&nbsp;<!-- ELSE --><!-- IF not files.S_BINARY -->[ <a href="{files.U_SHOW_DIFF}" onclick="popup('{files.U_SHOW_DIFF}', 700, 500); return false;">{files.L_SHOW_DIFF}</a> ]<!-- ELSE -->{L_BINARY_FILE}<!-- ENDIF --><!-- ENDIF --></dd>
 							<!-- IF files.S_CUSTOM -->
 								<dd style="margin-left: 60%;"><label><input type="checkbox" name="no_update[]" value="{files.FILENAME}" class="radio" /> {L_DO_NOT_UPDATE}</label></dd>
 							<!-- ENDIF -->
+							
+							<!-- IF files.STATUS eq 'modified' -->
+							</dl>
+							<dl>
+								<dt style="width: 60%"><label><input type="radio" class="radio" name="modified[{files.FILENAME}]" value="0" checked="checked" /> {L_MERGE_MODIFICATIONS_OPTION}</label></dt>
+								<dd style="margin-left: 60%;"><!-- IF not files.S_BINARY -->[ <a href="{files.U_SHOW_DIFF}" onclick="popup('{files.U_SHOW_DIFF}', 700, 500); return false;">{files.L_SHOW_DIFF}</a> ]<!-- ELSE -->{L_BINARY_FILE}<!-- ENDIF --></dd>
+							</dl>
+							<dl>
+								<dt style="width: 60%"><label><input type="radio" class="radio" name="modified[{files.FILENAME}]" value="1" /> {L_MERGE_NO_MERGE_NEW_OPTION}</label></dt>
+								<dd style="margin-left: 60%;"><!-- IF not files.S_BINARY -->[<a href="{files.U_VIEW_NO_MERGE_NEW}" onclick="popup('{files.U_VIEW_NO_MERGE_NEW}', 700, 500); return false;">{L_SHOW_DIFF_FINAL}</a>]<!-- ELSE -->&nbsp;<!-- ENDIF --></dd>
+							</dl>
+							<dl>
+								<dt style="width: 60%"><label><input type="radio" class="radio" name="modified[{files.FILENAME}]" value="2" /> {L_MERGE_NO_MERGE_MOD_OPTION}</label></dt>
+								<dd style="margin-left: 60%;"><!-- IF not files.S_BINARY -->[<a href="{files.U_VIEW_NO_MERGE_MOD}" onclick="popup('{files.U_VIEW_NO_MERGE_MOD}', 700, 500); return false;">{L_SHOW_DIFF_FINAL}</a>]<!-- ELSE -->&nbsp;<!-- ENDIF --></dd>
+							</dl>
+							<!-- IF not files.S_LAST_ROW -->
+							</fieldset>
+
+							<fieldset>
+								<legend><img src="{T_IMAGE_PATH}file_{files.STATUS}.gif" alt="{files.L_STATUS}" /></legend>
+							<!-- ENDIF -->
+
+							<!-- ENDIF -->
+
 							<!-- IF files.STATUS eq 'conflict' -->
 							</dl>
 							<dl>
@@ -218,7 +242,7 @@
 
 							<!-- ENDIF -->
 						<!-- ENDIF -->
-					<!-- IF files.STATUS neq 'conflict' --></dl><!-- ENDIF -->
+					<!-- IF files.STATUS neq 'conflict' and files.STATUS neq 'modified' --></dl><!-- ENDIF -->
 				<!-- ENDIF -->
 			<!-- END files -->
 

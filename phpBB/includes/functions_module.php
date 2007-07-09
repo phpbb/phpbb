@@ -127,10 +127,14 @@ class p_master
 		if (file_exists($user->lang_path . 'mods'))
 		{
 			$add_files = array();
+			$info_files = glob($user->lang_path . 'mods/info_' . strtolower($this->p_class) . '_*.' . $phpEx, GLOB_NOSORT);
 
-			foreach (glob($user->lang_path . 'mods/info_' . strtolower($this->p_class) . '_*.' . $phpEx, GLOB_NOSORT) as $file)
+			if ($info_files !== false && sizeof($info_files))
 			{
-				$add_files[] = 'mods/' . substr(basename($file), 0, -(strlen($phpEx) + 1));
+				foreach ($info_files as $file)
+				{
+					$add_files[] = 'mods/' . substr(basename($file), 0, -(strlen($phpEx) + 1));
+				}
 			}
 
 			if (sizeof($add_files))

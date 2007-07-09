@@ -421,6 +421,9 @@ $lang = array_merge($lang, array(
 	'LOGIN_UPDATE_EXPLAIN'	=> 'In order to update your installation you need to login first.',
 
 	'MAPPING_FILE_STRUCTURE'	=> 'To ease the upload here are the file locations which map your phpBB installation.',
+
+	'MERGE_MODIFICATIONS_OPTION'	=> 'Merge modifications',
+
 	'MERGE_NO_MERGE_NEW_OPTION'	=> 'Do not merge - use new file',
 	'MERGE_NO_MERGE_MOD_OPTION'	=> 'Do not merge - use currently installed file',
 	'MERGE_MOD_FILE_OPTION'		=> 'Merge differences and use modified code within conflicting block',
