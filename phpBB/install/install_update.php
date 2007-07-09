@@ -1302,6 +1302,7 @@ class install_update extends module
 		switch ($mode)
 		{
 			case 'version_info':
+				global $phpbb_root_path, $phpEx;
 				$info = get_remote_file('www.phpbb.com', '/updatecheck', '30x.txt', $errstr, $errno);
 
 				if ($info !== false)
