@@ -1001,9 +1001,9 @@ function prepare_column_data($dbms, $column_data)
 
 		case 'postgres':
 			$sql .= " {$column_type} ";
+			$sql .= 'NOT NULL';
 
 			$sql .= (!is_null($column_data[1])) ? "DEFAULT '{$column_data[1]}' " : '';
-			$sql .= 'NOT NULL';
 
 			// Unsigned? Then add a CHECK contraint
 			if (in_array($orig_column_type, $unsigned_types))
