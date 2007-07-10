@@ -859,18 +859,142 @@ function column_exists($dbms, $table, $column_name)
 {
 	global $db;
 
-	$db->sql_return_on_error(true);
+	switch ($dbms)
+	{
+		case 'mysql_40':
+		case 'mysql_41':
+			$sql = "SHOW COLUMNS
+				FROM $table";
+			$result = $db->sql_query($sql);
+			while ($row = $db->sql_fetchrow($result))
+			{
+				// lower case just in case
+				if (strtolower($row['Field']) == $column_name)
+				{
+					$db->sql_freeresult($result);
+					return true;
+				}
+			}
+			$db->sql_freeresult($result);
+			return false;
+		break;
 
-	$sql = "SELECT $column_name FROM $table";
-	$result = $db->sql_query_limit($sql, 1);
-	$row = $db->sql_fetchrow($result);
-	$db->sql_freeresult($result);
+		// PostgreSQL has a way of doing this in a much simpler way but would
+		// not allow us to support all versions of PostgreSQL
+		case 'postgres':
+			$sql = "SELECT a.attname
+				FROM pg_class c, pg_attribute a
+				WHERE c.relname = '{$table}'
+					AND a.attnum > 0
+					AND a.attrelid = c.oid";
+			$result = $db->sql_query($sql);
+			while ($row = $db->sql_fetchrow($result))
+			{
+				// lower case just in case
+				if (strtolower($row['attname']) == $column_name)
+				{
+					$db->sql_freeresult($result);
+					return true;
+				}
+			}
+			$db->sql_freeresult($result);
+			return false;
+		break;
 
-	$error = ($db->sql_error_triggered) ? true : false;
+		// same deal with PostgreSQL, we must perform more complex operations than
+		// we technically could
+		case 'mssql':
+			$sql = "SELECT c.name
+				FROM syscolumns c
+				LEFT JOIN sysobjects o (ON c.id = o.id)
+				WHERE o.name = '{$table}'";
+			$result = $db->sql_query($sql);
+			while ($row = $db->sql_fetchrow($result))
+			{
+				// lower case just in case
+				if (strtolower($row['name']) == $column_name)
+				{
+					$db->sql_freeresult($result);
+					return true;
+				}
+			}
+			$db->sql_freeresult($result);
+			return false;
+		break;
 
-	$db->sql_return_on_error(false);
+		case 'oracle':
+			$sql = "SELECT column_name
+				FROM user_tab_columns
+				WHERE table_name = '{$table}'";
+			$result = $db->sql_query($sql);
+			while ($row = $db->sql_fetchrow($result))
+			{
+				// lower case just in case
+				if (strtolower($row['column_name']) == $column_name)
+				{
+					$db->sql_freeresult($result);
+					return true;
+				}
+			}
+			$db->sql_freeresult($result);
+			return false;
+		break;
 
-	return (!$error) ? true : false;
+		case 'firebird':
+			$sql = "SELECT RDB$FIELD_NAME as FNAME
+				FROM RDB$RELATION_FIELDS
+				WHERE RDB$RELATION_NAME = '{$table}'";
+			$result = $db->sql_query($sql);
+			while ($row = $db->sql_fetchrow($result))
+			{
+				// lower case just in case
+				if (strtolower($row['fname']) == $column_name)
+				{
+					$db->sql_freeresult($result);
+					return true;
+				}
+			}
+			$db->sql_freeresult($result);
+			return false;
+		break;
+
+		// ugh, SQLite
+		case 'sqlite':
+			$sql = "SELECT sql
+				FROM sqlite_master 
+				WHERE type = 'table' 
+					AND name = '{$table}'";
+			$result = $db->sql_query($sql);
+			$row = $db->sql_fetchrow($result);
+			$db->sql_freeresult($result);
+
+			if (!$result)
+			{
+				return false;
+			}
+
+			preg_match('#\((.*)\)#s', $row['sql'], $matches);
+
+			$cols = trim($matches[1]);
+			$col_array = preg_split('/,(?![\s\w]+\))/m', $cols);
+			$column_list = array();
+
+			foreach ($col_array as $declaration)
+			{
+				$entities = preg_split('#\s+#', trim($declaration));
+				if ($entities[0] == 'PRIMARY')
+				{
+					continue;
+				}
+
+				if (strtolower($entities[0]) == $column_name)
+				{
+					return true;
+				}
+			}
+			return false;
+		break;
+	}
 }
 
 /**
