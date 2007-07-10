@@ -225,6 +225,9 @@ $config = array(
 $template->set_custom_template('../adm/style', 'admin');
 $template->assign_var('T_TEMPLATE_PATH', '../adm/style');
 
+// the acp template is never stored in the database
+$user->theme['template_storedb'] = false;
+
 $install = new module();
 
 $install->create('install', "index.$phpEx", $mode, $sub);
