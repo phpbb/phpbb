@@ -1368,8 +1368,8 @@ function delete_post($forum_id, $topic_id, $post_id, &$data)
 
 			if ($data['topic_type'] != POST_GLOBAL)
 			{
-				$sql_data[FORUMS_TABLE] .= 'forum_posts = forum_posts - 1, forum_topics_real = forum_topics_real - 1';
-				$sql_data[FORUMS_TABLE] .= ($data['topic_approved']) ? ', forum_topics = forum_topics - 1' : '';
+				$sql_data[FORUMS_TABLE] .= 'forum_topics_real = forum_topics_real - 1';
+				$sql_data[FORUMS_TABLE] .= ($data['topic_approved']) ? ', forum_posts = forum_posts - 1, forum_topics = forum_topics - 1' : '';
 			}
 
 			$update_sql = update_post_information('forum', $forum_id, true);
@@ -1392,7 +1392,7 @@ function delete_post($forum_id, $topic_id, $post_id, &$data)
 
 			if ($data['topic_type'] != POST_GLOBAL)
 			{
-				$sql_data[FORUMS_TABLE] = 'forum_posts = forum_posts - 1';
+				$sql_data[FORUMS_TABLE] = ($data['post_approved']) ? 'forum_posts = forum_posts - 1' : '';
 			}
 
 			$sql_data[TOPICS_TABLE] = 'topic_first_post_id = ' . intval($row['post_id']) . ", topic_first_poster_colour = '" . $db->sql_escape($row['user_colour']) . "', topic_first_poster_name = '" . (($row['poster_id'] == ANONYMOUS) ? $db->sql_escape($row['post_username']) : $db->sql_escape($row['username'])) . "'";
@@ -1406,7 +1406,7 @@ function delete_post($forum_id, $topic_id, $post_id, &$data)
 		case 'delete_last_post':
 			if ($data['topic_type'] != POST_GLOBAL)
 			{
-				$sql_data[FORUMS_TABLE] = 'forum_posts = forum_posts - 1';
+				$sql_data[FORUMS_TABLE] = ($data['post_approved']) ? 'forum_posts = forum_posts - 1' : '';
 			}
 
 			$update_sql = update_post_information('forum', $forum_id, true);
@@ -1451,7 +1451,7 @@ function delete_post($forum_id, $topic_id, $post_id, &$data)
 
 			if ($data['topic_type'] != POST_GLOBAL)
 			{
-				$sql_data[FORUMS_TABLE] = 'forum_posts = forum_posts - 1';
+				$sql_data[FORUMS_TABLE] = ($data['post_approved']) ? 'forum_posts = forum_posts - 1' : '';
 			}
 
 			$sql_data[TOPICS_TABLE] = 'topic_replies_real = topic_replies_real - 1' . (($data['post_approved']) ? ', topic_replies = topic_replies - 1' : '');
@@ -2231,7 +2231,7 @@ function submit_post($mode, $subject, $username, $topic_type, &$poll, &$data, $u
 			$row = $db->sql_fetchrow($result);
 			$db->sql_freeresult($result);
 
-			// salvation, a post is found! jam it into the forums table
+			// salvation, a post is found! jam it into the topics table
 			$sql_data[TOPICS_TABLE]['stat'][] = 'topic_last_post_id = ' . (int) $row['post_id'];
 			$sql_data[TOPICS_TABLE]['stat'][] = "topic_last_post_subject = '" . $db->sql_escape($row['post_subject']) . "'";
 			$sql_data[TOPICS_TABLE]['stat'][] = 'topic_last_post_time = ' . (int) $row['post_time'];
