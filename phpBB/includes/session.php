@@ -132,7 +132,7 @@ class session
 	*/
 	function session_begin($update_session_page = true)
 	{
-		global $phpEx, $SID, $_SID, $db, $config, $phpbb_root_path;
+		global $phpEx, $SID, $_SID, $_EXTRA_URL, $db, $config, $phpbb_root_path;
 
 		// Give us some basic information
 		$this->time_now				= time();
@@ -192,6 +192,8 @@ class session
 			$this->session_id = $_SID = request_var('sid', '');
 			$SID = '?sid=' . $this->session_id;
 		}
+
+		$_EXTRA_URL = array();
 
 		// Why no forwarded_for et al? Well, too easily spoofed. With the results of my recent requests
 		// it's pretty clear that in the majority of cases you'll at least be left with a proxy/cache ip.

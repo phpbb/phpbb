@@ -394,7 +394,7 @@ class jabber
 				}
 
 				// go on with authentication?
-				if (isset($this->features['stream:features'][0]['#']['bind']) || $this->session['tls'])
+				if (isset($this->features['stream:features'][0]['#']['bind']) || !empty($this->session['tls']))
 				{
 					return $this->response($this->features);
 				}

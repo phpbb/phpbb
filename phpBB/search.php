@@ -1010,9 +1010,25 @@ for ($i = 100; $i <= 1000 ; $i += 100)
 	$s_characters .= '<option value="' . $i . '"' . $selected . '>' . $i . '</option>';
 }
 
+$s_hidden_fields = array('t' => $topic_id);
+
+if ($_SID)
+{
+	$s_hidden_fields['sid'] = $_SID;
+}
+
+if (!empty($_EXTRA_URL))
+{
+	foreach ($_EXTRA_URL as $url_param)
+	{
+		$url_param = explode('=', $url_param, 2);
+		$s_hidden_fields[$url_param[0]] = $url_param[1];
+	}
+}
+
 $template->assign_vars(array(
 	'S_SEARCH_ACTION'		=> "{$phpbb_root_path}search.$phpEx",
-	'S_HIDDEN_FIELDS'		=> build_hidden_fields(array('sid' => $user->session_id, 't' => $topic_id)),
+	'S_HIDDEN_FIELDS'		=> build_hidden_fields($s_hidden_fields),
 	'S_CHARACTER_OPTIONS'	=> $s_characters,
 	'S_FORUM_OPTIONS'		=> $s_forums,
 	'S_SELECT_SORT_DIR'		=> $s_sort_dir,

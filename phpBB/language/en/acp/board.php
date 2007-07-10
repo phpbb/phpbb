@@ -58,7 +58,7 @@ $lang = array_merge($lang, array(
 	'ALLOW_BOOKMARKS'			=> 'Allow bookmarking topics',
 	'ALLOW_BOOKMARKS_EXPLAIN'	=> 'User is able to store personal bookmarks.',
 	'ALLOW_BBCODE'				=> 'Allow BBCode',
-	'ALLOW_FORUM_NOTIFY'		=> 'Allow forum watching',
+	'ALLOW_FORUM_NOTIFY'		=> 'Allow subscribing to forums',
 	'ALLOW_NAME_CHANGE'			=> 'Allow username changes',
 	'ALLOW_NO_CENSORS'			=> 'Allow disabling of word censoring',
 	'ALLOW_NO_CENSORS_EXPLAIN'	=> 'Users can choose to disable the automatic word censoring of posts and private messages.',
@@ -71,7 +71,7 @@ $lang = array_merge($lang, array(
 	'ALLOW_SIG_LINKS_EXPLAIN'	=> 'If disallowed the <code>[URL]</code> BBCode tag and automatic/magic URLs are disabled.',
 	'ALLOW_SIG_SMILIES'			=> 'Allow use of smilies in user signatures',
 	'ALLOW_SMILIES'				=> 'Allow smilies',
-	'ALLOW_TOPIC_NOTIFY'		=> 'Allow topic watching',
+	'ALLOW_TOPIC_NOTIFY'		=> 'Allow subscribing to topics',
 	'BOARD_PM'					=> 'Private messaging',
 	'BOARD_PM_EXPLAIN'			=> 'Enable or disable private messaging for all users.',
 ));
@@ -376,7 +376,7 @@ $lang = array_merge($lang, array(
 
 // Email Settings
 $lang = array_merge($lang, array(
-	'ACP_EMAIL_SETTINGS_EXPLAIN'	=> 'This information is used when the board sends e-mails to your users. Please ensure the e-mail address you specify is valid, any bounced or undeliverable messages will likely be sent to that address. If your host does not provide a native (PHP based) e-mail service you can instead send messages directly using SMTP. This requires the address of an appropriate server (ask your provider if necessary), do not specify any old name here! If the server requires authentication (and only if it does) enter the necessary username and password. Please note only basic authentication is offered, different authentication implementations are not currently supported.',
+	'ACP_EMAIL_SETTINGS_EXPLAIN'	=> 'This information is used when the board sends e-mails to your users. Please ensure the e-mail address you specify is valid, any bounced or undeliverable messages will likely be sent to that address. If your host does not provide a native (PHP based) e-mail service you can instead send messages directly using SMTP. This requires the address of an appropriate server (ask your provider if necessary). If the server requires authentication (and only if it does) enter the necessary username, password and authentication method.',
 
 	'ADMIN_EMAIL'					=> 'Return e-mail address',
 	'ADMIN_EMAIL_EXPLAIN'			=> 'This will be used as the return address on all e-mails, the technical contact e-mail address. It will always be used as the <samp>Return-Path</samp> and <samp>Sender</samp> address in e-mails.',

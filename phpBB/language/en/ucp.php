@@ -304,8 +304,8 @@ $lang = array_merge($lang, array(
 	'NO_RULES_DEFINED'			=> 'No rules defined.',
 	'NO_SAVED_DRAFTS'			=> 'No drafts saved.',
 	'NO_TO_RECIPIENT'			=> 'None',
-	'NO_WATCHED_FORUMS'			=> 'You are not watching any forums.',
-	'NO_WATCHED_TOPICS'			=> 'You are not watching any topics.',
+	'NO_WATCHED_FORUMS'			=> 'You are not subscribed to any forums.',
+	'NO_WATCHED_TOPICS'			=> 'You are not subscribed to any topics.',
 
 	'PASS_TYPE_ALPHA_EXPLAIN'	=> 'Password must be between %1$d and %2$d characters long, must contain letters in mixed case and must contain numbers.',
 	'PASS_TYPE_ANY_EXPLAIN'		=> 'Must be between %1$d and %2$d characters.',
