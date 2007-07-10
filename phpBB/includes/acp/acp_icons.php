@@ -189,6 +189,7 @@ class acp_icons
 				$db->sql_freeresult($result);
 
 				$order_list = '<option value="1"' . ((!isset($after)) ? ' selected="selected"' : '') . '>' . $user->lang['FIRST'] . '</option>' . $order_list;
+				$add_order_list = '<option value="1">' . $user->lang['FIRST'] . '</option>' . $add_order_list;
 
 				if ($action == 'add')
 				{
@@ -336,7 +337,7 @@ class acp_icons
 						}
 
 						// Image_order holds the 'new' order value
-						if (!empty($image_order[$image]) && !empty($$image_id[$image]))
+						if (!empty($image_order[$image]))
 						{
 							$img_sql = array_merge($img_sql, array(
 								$fields . '_order'	=>	$image_order[$image])
@@ -363,19 +364,19 @@ class acp_icons
 							}
 						}
 
-						if ($action == 'modify')
+						if ($action == 'modify'  && !empty($image_id[$image]))
 						{
 							$sql = "UPDATE $table
 								SET " . $db->sql_build_array('UPDATE', $img_sql) . " 
 								WHERE {$fields}_id = " . $image_id[$image];
 							$db->sql_query($sql);
 						}
-						else
+						else if ($action !== 'modify')
 						{
 							$sql = "INSERT INTO $table " . $db->sql_build_array('INSERT', $img_sql);
 							$db->sql_query($sql);
 						}
-					}
+ 					}
 				}
 				
 				$cache->destroy('_icons');
