@@ -433,8 +433,27 @@ class install_update extends module
 						else if (!$recache)
 						{
 							$last_change = $theme['theme_mtime'];
+							$file_list = @glob("{$phpbb_root_path}styles/{$theme['theme_path']}/theme/*.css", GLOB_NOSORT);
 
-							foreach (glob("{$phpbb_root_path}styles/{$theme['theme_path']}/theme/*.css", GLOB_NOSORT) as $file)
+							if ($file_list === false || $file_list === NULL)
+							{
+								$file_list = array();
+								$dir = @opendir("{$phpbb_root_path}styles/{$theme['theme_path']}/theme");
+
+								if ($dir)
+								{
+									while (($entry = readdir($dir)) !== false)
+									{
+										if (substr(strrchr($entry, '.'), 1) == 'css')
+										{
+											$file_list[] = $entry;
+										}
+									}
+									closedir($dir);
+								}
+							}
+
+							foreach ($file_list as $file)
 							{
 								if ($last_change < @filemtime($file))
 								{

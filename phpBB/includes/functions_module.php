@@ -127,9 +127,25 @@ class p_master
 		if (file_exists($user->lang_path . 'mods'))
 		{
 			$add_files = array();
-			$info_files = glob($user->lang_path . 'mods/info_' . strtolower($this->p_class) . '_*.' . $phpEx, GLOB_NOSORT);
+			$info_files = @glob($user->lang_path . 'mods/info_' . strtolower($this->p_class) . '_*.' . $phpEx, GLOB_NOSORT);
 
-			if ($info_files !== false && sizeof($info_files))
+			if (!is_array($info_files))
+			{
+				$dir = @opendir($user->lang_path . 'mods');
+
+				if ($dir)
+				{
+					while (($entry = readdir($dir)) !== false)
+					{
+						if (strpos($entry, 'info_' . strtolower($this->p_class) . '_') === 0 && substr(strrchr($entry, '.'), 1) == $phpEx)
+						{
+							$add_files[] = 'mods/' . substr(basename($entry), 0, -(strlen($phpEx) + 1));
+						}
+					}
+					closedir($dir);
+				}
+			}
+			else
 			{
 				foreach ($info_files as $file)
 				{

@@ -39,7 +39,7 @@ class acm
 		global $phpEx;
 		if (file_exists($this->cache_dir . 'data_global.' . $phpEx))
 		{
-			include($this->cache_dir . 'data_global.' . $phpEx);
+			@include($this->cache_dir . 'data_global.' . $phpEx);
 		}
 		else
 		{
@@ -159,7 +159,7 @@ class acm
 				return false;
 			}
 
-			include($this->cache_dir . "data{$var_name}.$phpEx");
+			@include($this->cache_dir . "data{$var_name}.$phpEx");
 			return (isset($data)) ? $data : false;
 		}
 		else
@@ -256,7 +256,12 @@ class acm
 				}
 
 				// The following method is more failproof than simply assuming the query is on line 3 (which it should be)
-				$check_line = file_get_contents($this->cache_dir . $entry);
+				$check_line = @file_get_contents($this->cache_dir . $entry);
+
+				if (empty($check_line))
+				{
+					continue;
+				}
 
 				// Now get the contents between /* and */
 				$check_line = substr($check_line, strpos($check_line, '/* ') + 3, strpos($check_line, ' */') - strpos($check_line, '/* ') - 3);
