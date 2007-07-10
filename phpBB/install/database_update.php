@@ -965,19 +965,19 @@ function column_exists($dbms, $table, $column_name)
 				WHERE type = 'table' 
 					AND name = '{$table}'";
 			$result = $db->sql_query($sql);
-			$row = $db->sql_fetchrow($result);
-			$db->sql_freeresult($result);
 
 			if (!$result)
 			{
 				return false;
 			}
 
+			$row = $db->sql_fetchrow($result);
+			$db->sql_freeresult($result);
+
 			preg_match('#\((.*)\)#s', $row['sql'], $matches);
 
 			$cols = trim($matches[1]);
 			$col_array = preg_split('/,(?![\s\w]+\))/m', $cols);
-			$column_list = array();
 
 			foreach ($col_array as $declaration)
 			{
