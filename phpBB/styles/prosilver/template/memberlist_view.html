@@ -23,7 +23,7 @@
 		</dd>
 		<!-- IF not AVATAR_IMG -->
 			<!-- IF RANK_TITLE --><dt>{L_RANK}:</dt><dd>{RANK_TITLE}</dd><!-- ENDIF -->
-			<!-- IF RANK_IMG --><dt>{L_RANK}:</dt><dd>{RANK_IMG}</dd><!-- ENDIF -->
+			<!-- IF RANK_IMG --><dt><!-- IF RANK_TITLE -->&nbsp;<!-- ELSE -->{L_RANK}:<!-- ENDIF --></dt><dd>{RANK_IMG}</dd><!-- ENDIF -->
 		<!-- ENDIF -->
 		<!-- IF S_USER_INACTIVE --><dt>{L_USER_IS_INACTIVE}:</dt><dd>{USER_INACTIVE_REASON}</dd><!-- ENDIF -->
 		<!-- IF LOCATION --><dt>{L_LOCATION}:</dt> <dd>{LOCATION}</dd><!-- ENDIF -->
