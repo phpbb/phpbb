@@ -726,7 +726,7 @@ if (version_compare($current_version, '3.0.RC3', '<='))
 				{
 					// last version, mssql had issues with index removal
 					case 'mssql':
-						$sql = 'DROP INDEX ' . $table_name . '\.' . $bad_index;
+						$sql = 'DROP INDEX ' . $table_name . '.' . $bad_index;
 						_sql($sql, $errored, $error_ary);
 
 						$no_updates = false;
@@ -1166,7 +1166,8 @@ function prepare_column_data($dbms, $column_data)
 		case 'mssql':
 			$sql .= " {$column_type} ";
 
-			if (!is_null($column_data[1]))
+			// we do not support MSSQL DEFAULTs for the near future
+			/*if (!is_null($column_data[1]))
 			{
 				// For hexadecimal values do not use single quotes
 				if (strpos($column_data[1], '0x') === 0)
@@ -1177,7 +1178,7 @@ function prepare_column_data($dbms, $column_data)
 				{
 					$sql .= 'DEFAULT (' . ((is_numeric($column_data[1])) ? $column_data[1] : "'{$column_data[1]}'") . ') ';
 				}
-			}
+			}*/
 
 			$sql .= 'NOT NULL';
 		break;
@@ -1464,7 +1465,7 @@ function sql_index_drop($dbms, $index_name, $table_name)
 	switch ($dbms)
 	{
 		case 'mssql':
-			$sql = 'DROP INDEX ' . $table_name . '\.' . $index_name;
+			$sql = 'DROP INDEX ' . $table_name . '.' . $index_name;
 			_sql($sql, $errored, $error_ary);
 		break;
 
