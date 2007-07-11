@@ -591,13 +591,14 @@ class auth_admin extends auth
 			ORDER BY left_id';
 		$result = $db->sql_query($sql);
 
-		$forum_names = array(0 => '');
+		// If the role is used globally, then reflect that
+		$forum_names = (isset($hold_ary[0])) ? array(0 => '') : array();
 		while ($row = $db->sql_fetchrow($result))
 		{
 			$forum_names[$row['forum_id']] = $row['forum_name'];
 		}
 		$db->sql_freeresult($result);
-
+ 
 		foreach ($forum_names as $forum_id => $forum_name)
 		{
 			$auth_ary = $hold_ary[$forum_id];
