@@ -4298,7 +4298,7 @@ function page_footer($run_cron = true)
 	);
 
 	// Call cron-type script
-	if (!defined('IN_CRON') && $run_cron)
+	if (!defined('IN_CRON') && $run_cron && !$config['board_disable'])
 	{
 		$cron_type = '';
 	

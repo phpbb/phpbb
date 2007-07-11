@@ -740,7 +740,7 @@ class acp_modules
 				$sql = 'SELECT left_id, right_id
 					FROM ' . MODULES_TABLE . "
 					WHERE module_class = '" . $db->sql_escape($module_data['module_class']) . "'
-						AND module_id = {$module_data['parent_id']}";
+						AND module_id = " . (int) $module_data['parent_id'];
 				$result = $db->sql_query($sql);
 				$row = $db->sql_fetchrow($result);
 				$db->sql_freeresult($result);
@@ -823,7 +823,7 @@ class acp_modules
 			$sql = 'UPDATE ' . MODULES_TABLE . '
 				SET ' . $db->sql_build_array('UPDATE', $update_ary) . "
 				WHERE module_class = '" . $db->sql_escape($module_data['module_class']) . "'
-					AND module_id = {$module_data['module_id']}";
+					AND module_id = " . (int) $module_data['module_id'];
 			$db->sql_query($sql);
 
 			if (!$run_inline)
@@ -856,15 +856,15 @@ class acp_modules
 		$sql = 'UPDATE ' . MODULES_TABLE . "
 			SET right_id = right_id - $diff
 			WHERE module_class = '" . $db->sql_escape($this->module_class) . "'
-				AND left_id < " . $from_data['right_id'] . "
-				AND right_id > " . $from_data['right_id'];
+				AND left_id < " . (int) $from_data['right_id'] . '
+				AND right_id > ' . (int) $from_data['right_id'];
 		$db->sql_query($sql);
 
 		// Resync righthand side of tree
 		$sql = 'UPDATE ' . MODULES_TABLE . "
 			SET left_id = left_id - $diff, right_id = right_id - $diff
 			WHERE module_class = '" . $db->sql_escape($this->module_class) . "'
-				AND left_id > " . $from_data['right_id'];
+				AND left_id > " . (int) $from_data['right_id'];
 		$db->sql_query($sql);
 
 		if ($to_parent_id > 0)
@@ -875,7 +875,7 @@ class acp_modules
 			$sql = 'UPDATE ' . MODULES_TABLE . "
 				SET right_id = right_id + $diff
 				WHERE module_class = '" . $db->sql_escape($this->module_class) . "'
-					AND " . $to_data['right_id'] . ' BETWEEN left_id AND right_id
+					AND " . (int) $to_data['right_id'] . ' BETWEEN left_id AND right_id
 					AND ' . $db->sql_in_set('module_id', $moved_ids, true);
 			$db->sql_query($sql);
 
@@ -883,7 +883,7 @@ class acp_modules
 			$sql = 'UPDATE ' . MODULES_TABLE . "
 				SET left_id = left_id + $diff, right_id = right_id + $diff
 				WHERE module_class = '" . $db->sql_escape($this->module_class) . "'
-					AND left_id > " . $to_data['right_id'] . '
+					AND left_id > " . (int) $to_data['right_id'] . '
 					AND ' . $db->sql_in_set('module_id', $moved_ids, true);
 			$db->sql_query($sql);
 
@@ -908,7 +908,7 @@ class acp_modules
 			$row = $db->sql_fetchrow($result);
 			$db->sql_freeresult($result);
 
-			$diff = '+ ' . ($row['right_id'] - $from_data['left_id'] + 1);
+			$diff = '+ ' . (int) ($row['right_id'] - $from_data['left_id'] + 1);
 		}
 
 		$sql = 'UPDATE ' . MODULES_TABLE . "
@@ -940,6 +940,9 @@ class acp_modules
 			WHERE module_class = '" . $db->sql_escape($this->module_class) . "'
 				AND module_id = $module_id";
 		$db->sql_query($sql);
+
+		$row['right_id'] = (int) $row['right_id'];
+		$row['left_id'] = (int) $row['left_id'];
 
 		// Resync tree
 		$sql = 'UPDATE ' . MODULES_TABLE . "
@@ -976,8 +979,8 @@ class acp_modules
 		$sql = 'SELECT module_id, left_id, right_id, module_langname
 			FROM ' . MODULES_TABLE . "
 			WHERE module_class = '" . $db->sql_escape($this->module_class) . "'
-				AND parent_id = {$module_row['parent_id']}
-				AND " . (($action == 'move_up') ? "right_id < {$module_row['right_id']} ORDER BY right_id DESC" : "left_id > {$module_row['left_id']} ORDER BY left_id ASC");
+				AND parent_id = " . (int) $module_row['parent_id'] . '
+				AND ' . (($action == 'move_up') ? 'right_id < ' . (int) $module_row['right_id'] . ' ORDER BY right_id DESC' : 'left_id > ' . (int) $module_row['left_id'] . ' ORDER BY left_id ASC');
 		$result = $db->sql_query_limit($sql, $steps);
 
 		$target = array();
@@ -1002,25 +1005,25 @@ class acp_modules
 		*/
 		if ($action == 'move_up')
 		{
-			$left_id = $target['left_id'];
-			$right_id = $module_row['right_id'];
+			$left_id = (int) $target['left_id'];
+			$right_id = (int) $module_row['right_id'];
 
-			$diff_up = $module_row['left_id'] - $target['left_id'];
-			$diff_down = $module_row['right_id'] + 1 - $module_row['left_id'];
+			$diff_up = (int) ($module_row['left_id'] - $target['left_id']);
+			$diff_down = (int) ($module_row['right_id'] + 1 - $module_row['left_id']);
 
-			$move_up_left = $module_row['left_id'];
-			$move_up_right = $module_row['right_id'];
+			$move_up_left = (int) $module_row['left_id'];
+			$move_up_right = (int) $module_row['right_id'];
 		}
 		else
 		{
-			$left_id = $module_row['left_id'];
-			$right_id = $target['right_id'];
+			$left_id = (int) $module_row['left_id'];
+			$right_id = (int) $target['right_id'];
 
-			$diff_up = $module_row['right_id'] + 1 - $module_row['left_id'];
-			$diff_down = $target['right_id'] - $module_row['right_id'];
+			$diff_up = (int) ($module_row['right_id'] + 1 - $module_row['left_id']);
+			$diff_down = (int) ($target['right_id'] - $module_row['right_id']);
 
-			$move_up_left = $module_row['right_id'] + 1;
-			$move_up_right = $target['right_id'];
+			$move_up_left = (int) ($module_row['right_id'] + 1);
+			$move_up_right = (int) $target['right_id'];
 		}
 
 		// Now do the dirty job

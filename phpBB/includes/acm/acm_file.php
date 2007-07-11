@@ -269,7 +269,8 @@ class acm
 				$found = false;
 				foreach ($table as $check_table)
 				{
-					if (strpos($check_line, $check_table . ' ') !== false)
+					// Better catch partial table names than no table names. ;)
+					if (strpos($check_line, $check_table) !== false)
 					{
 						$found = true;
 						break;

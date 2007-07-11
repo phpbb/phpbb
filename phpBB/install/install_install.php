@@ -1555,10 +1555,11 @@ class install_install extends module
 						{
 							continue;
 						}
+
 						$module_data = array(
 							'module_basename'	=> $module_basename,
 							'module_enabled'	=> 1,
-							'module_display'	=> (isset($row['display'])) ? $row['display'] : 1,
+							'module_display'	=> (isset($row['display'])) ? (int) $row['display'] : 1,
 							'parent_id'			=> (int) $categories[$cat_name]['id'],
 							'module_class'		=> $module_class,
 							'module_langname'	=> $row['title'],
@@ -1660,8 +1661,8 @@ class install_install extends module
 
 						$module_data = array(
 							'module_basename'	=> $row['module_basename'],
-							'module_enabled'	=> $row['module_enabled'],
-							'module_display'	=> $row['module_display'],
+							'module_enabled'	=> (int) $row['module_enabled'],
+							'module_display'	=> (int) $row['module_display'],
 							'parent_id'			=> (int) $row2['module_id'],
 							'module_class'		=> $row['module_class'],
 							'module_langname'	=> $row['module_langname'],

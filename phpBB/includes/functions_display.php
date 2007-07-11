@@ -401,7 +401,7 @@ function display_forums($root_data = '', $display_moderators = true, $return_mod
 			'L_FORUM_FOLDER_ALT'	=> $folder_alt,
 			'L_MODERATOR_STR'		=> $l_moderator,
 
-			'U_VIEWFORUM'		=> ($row['forum_type'] != FORUM_LINK || ($row['forum_flags'] & FORUM_FLAG_LINK_TRACK)) ? append_sid("{$phpbb_root_path}viewforum.$phpEx", 'f=' . $row['forum_id']) : $row['forum_link'],
+			'U_VIEWFORUM'		=> ($row['forum_type'] != FORUM_LINK || ($row['forum_flags'] & FORUM_FLAG_LINK_TRACK) || $row['forum_password']) ? append_sid("{$phpbb_root_path}viewforum.$phpEx", 'f=' . $row['forum_id']) : $row['forum_link'],
 			'U_LAST_POSTER'		=> get_username_string('profile', $row['forum_last_poster_id'], $row['forum_last_poster_name'], $row['forum_last_poster_colour']),
 			'U_LAST_POST'		=> $last_post_url)
 		);

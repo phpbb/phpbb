@@ -87,6 +87,13 @@ if (!$auth->acl_gets('f_list', 'f_read', $forum_id))
 	login_box('', $user->lang['LOGIN_VIEWFORUM']);
 }
 
+// Forum is passworded ... check whether access has been granted to this
+// user this session, if not show login box
+if ($forum_data['forum_password'])
+{
+	login_forum_box($forum_data);
+}
+
 // Is this forum a link? ... User got here either because the
 // number of clicks is being tracked or they guessed the id
 if ($forum_data['forum_type'] == FORUM_LINK && $forum_data['forum_link'])
@@ -101,13 +108,6 @@ if ($forum_data['forum_type'] == FORUM_LINK && $forum_data['forum_link'])
 	}
 
 	redirect($forum_data['forum_link']);
-}
-
-// Forum is passworded ... check whether access has been granted to this
-// user this session, if not show login box
-if ($forum_data['forum_password'])
-{
-	login_forum_box($forum_data);
 }
 
 // Build navigation links
