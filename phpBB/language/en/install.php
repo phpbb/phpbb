@@ -445,6 +445,7 @@ $lang = array_merge($lang, array(
 
 	'OLD_UPDATE_FILES'		=> 'Update files are out of date. The update files found are for updating from phpBB %1$s to phpBB %2$s but the latest version of phpBB is %3$s.',
 
+	'PACKAGE_UPDATES_TO'				=> 'Current package updates to version',
 	'PERFORM_DATABASE_UPDATE'			=> 'Perform database update',
 	'PERFORM_DATABASE_UPDATE_EXPLAIN'	=> 'Below you will find a button to the database update script. The database update can take a while, so please do not stop the execution if it seems to hang. After the database update has been performed just follow the instructions to continue the update process.',
 	'PREVIOUS_VERSION'					=> 'Previous version',

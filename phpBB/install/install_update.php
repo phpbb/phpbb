@@ -58,6 +58,7 @@ class install_update extends module
 	var $new_location;
 	var $latest_version;
 	var $current_version;
+	var $unequal_version;
 
 	// Set to false
 	var $test_update = false;
@@ -73,6 +74,7 @@ class install_update extends module
 
 		$this->tpl_name = 'install_update';
 		$this->page_title = 'UPDATE_INSTALLATION';
+		$this->unequal_version = false;
 
 		$this->old_location = $phpbb_root_path . 'install/update/old/';
 		$this->new_location = $phpbb_root_path . 'install/update/new/';
@@ -173,12 +175,12 @@ class install_update extends module
 		// Check if the update files stored are for the latest version...
 		if ($this->latest_version != $this->update_info['version']['to'])
 		{
-			$template->assign_vars(array(
-				'S_ERROR'		=> true,
-				'ERROR_MSG'		=> sprintf($user->lang['OLD_UPDATE_FILES'], $this->update_info['version']['from'], $this->update_info['version']['to'], $this->latest_version))
-			);
+			$this->unequal_version = true;
 
-			return;
+			$template->assign_vars(array(
+				'S_WARNING'		=> true,
+				'WARNING_MSG'	=> sprintf($user->lang['OLD_UPDATE_FILES'], $this->update_info['version']['from'], $this->update_info['version']['to'], $this->latest_version))
+			);
 		}
 
 		if ($this->test_update === false)
@@ -242,6 +244,12 @@ class install_update extends module
 					'CURRENT_VERSION'	=> $this->current_version)
 				);
 
+				// Print out version the update package updates to
+				if ($this->unequal_version)
+				{
+					$template->assign_var('PACKAGE_VERSION', $this->update_info['version']['to']);
+				}
+
 			break;
 
 			case 'update_db':
@@ -254,7 +262,7 @@ class install_update extends module
 				{
 					include_once($phpbb_root_path . 'install/database_update.' . $phpEx);
 
-					if ($updates_to_version === $this->latest_version)
+					if ($updates_to_version === $this->update_info['version']['to'])
 					{
 						$valid = true;
 					}
@@ -272,7 +280,7 @@ class install_update extends module
 				// Redirect the user to the database update script with some explanations...
 				$template->assign_vars(array(
 					'S_DB_UPDATE'			=> true,
-					'S_DB_UPDATE_FINISHED'	=> ($config['version'] == $this->latest_version) ? true : false,
+					'S_DB_UPDATE_FINISHED'	=> ($config['version'] == $this->update_info['version']['to']) ? true : false,
 					'U_DB_UPDATE'			=> append_sid($phpbb_root_path . 'install/database_update.' . $phpEx, 'type=1&amp;language=' . $user->data['user_lang']),
 					'U_DB_UPDATE_ACTION'	=> append_sid($this->p_master->module_url, "mode=$mode&amp;sub=update_db"),
 					'U_ACTION'				=> append_sid($this->p_master->module_url, "mode=$mode&amp;sub=file_check"),

@@ -11,11 +11,21 @@
 </script>
 
 <!-- IF S_ERROR -->
-	<h1>{L_NOTICE}</h1>
-	<p style="color: red;">{ERROR_MSG}</p>
+	<div class="errorbox" style="margin-top: 0;">
+		<h3>{L_NOTICE}</h3>
+		<p>{ERROR_MSG}</p>
+	</div>
 <!-- ENDIF -->
 
 <!-- IF S_INTRO -->
+
+	<!-- IF S_WARNING -->
+	<div class="successbox" style="margin-top: 0;">
+		<h3>{L_NOTICE}</h3>
+		<p>{WARNING_MSG}</p>
+	</div>
+	<!-- ENDIF -->
+
 	<form id="install_update" method="post" action="{U_ACTION}">
 
 	<h1>{L_UPDATE_INSTALLATION}</h1>
@@ -68,6 +78,12 @@
 		<dt><label>{L_LATEST_VERSION}</label></dt>
 		<dd><strong>{LATEST_VERSION}</strong></dd>
 	</dl>
+	<!-- IF PACKAGE_VERSION and not S_UP_TO_DATE -->
+	<dl>
+		<dt><label>{L_PACKAGE_UPDATES_TO}</label></dt>
+		<dd><strong>{PACKAGE_VERSION}</strong></dd>
+	</dl>
+	<!-- ENDIF -->
 	</fieldset>
 
 	<!-- IF not S_UP_TO_DATE -->
