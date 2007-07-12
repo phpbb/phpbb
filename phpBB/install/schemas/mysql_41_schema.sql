@@ -228,7 +228,7 @@ CREATE TABLE phpbb_forums (
 	forum_desc_uid varchar(5) DEFAULT '' NOT NULL,
 	forum_link varchar(255) DEFAULT '' NOT NULL,
 	forum_password varchar(40) DEFAULT '' NOT NULL,
-	forum_style tinyint(4) DEFAULT '0' NOT NULL,
+	forum_style smallint(4) UNSIGNED DEFAULT '0' NOT NULL,
 	forum_image varchar(255) DEFAULT '' NOT NULL,
 	forum_rules text NOT NULL,
 	forum_rules_link varchar(255) DEFAULT '' NOT NULL,
@@ -713,13 +713,13 @@ CREATE TABLE phpbb_smilies (
 
 # Table: 'phpbb_styles'
 CREATE TABLE phpbb_styles (
-	style_id tinyint(4) NOT NULL auto_increment,
+	style_id smallint(4) UNSIGNED NOT NULL auto_increment,
 	style_name varchar(255) DEFAULT '' NOT NULL,
 	style_copyright varchar(255) DEFAULT '' NOT NULL,
 	style_active tinyint(1) UNSIGNED DEFAULT '1' NOT NULL,
-	template_id tinyint(4) DEFAULT '0' NOT NULL,
-	theme_id tinyint(4) DEFAULT '0' NOT NULL,
-	imageset_id tinyint(4) DEFAULT '0' NOT NULL,
+	template_id smallint(4) UNSIGNED DEFAULT '0' NOT NULL,
+	theme_id smallint(4) UNSIGNED DEFAULT '0' NOT NULL,
+	imageset_id smallint(4) UNSIGNED DEFAULT '0' NOT NULL,
 	PRIMARY KEY (style_id),
 	UNIQUE style_name (style_name),
 	KEY template_id (template_id),
@@ -730,7 +730,7 @@ CREATE TABLE phpbb_styles (
 
 # Table: 'phpbb_styles_template'
 CREATE TABLE phpbb_styles_template (
-	template_id tinyint(4) NOT NULL auto_increment,
+	template_id smallint(4) UNSIGNED NOT NULL auto_increment,
 	template_name varchar(255) DEFAULT '' NOT NULL,
 	template_copyright varchar(255) DEFAULT '' NOT NULL,
 	template_path varchar(100) DEFAULT '' NOT NULL,
@@ -743,7 +743,7 @@ CREATE TABLE phpbb_styles_template (
 
 # Table: 'phpbb_styles_template_data'
 CREATE TABLE phpbb_styles_template_data (
-	template_id tinyint(4) NOT NULL auto_increment,
+	template_id smallint(4) UNSIGNED NOT NULL auto_increment,
 	template_filename varchar(100) DEFAULT '' NOT NULL,
 	template_included text NOT NULL,
 	template_mtime int(11) UNSIGNED DEFAULT '0' NOT NULL,
@@ -755,7 +755,7 @@ CREATE TABLE phpbb_styles_template_data (
 
 # Table: 'phpbb_styles_theme'
 CREATE TABLE phpbb_styles_theme (
-	theme_id tinyint(4) NOT NULL auto_increment,
+	theme_id smallint(4) UNSIGNED NOT NULL auto_increment,
 	theme_name varchar(255) DEFAULT '' NOT NULL,
 	theme_copyright varchar(255) DEFAULT '' NOT NULL,
 	theme_path varchar(100) DEFAULT '' NOT NULL,
@@ -769,7 +769,7 @@ CREATE TABLE phpbb_styles_theme (
 
 # Table: 'phpbb_styles_imageset'
 CREATE TABLE phpbb_styles_imageset (
-	imageset_id tinyint(4) NOT NULL auto_increment,
+	imageset_id smallint(4) UNSIGNED NOT NULL auto_increment,
 	imageset_name varchar(255) DEFAULT '' NOT NULL,
 	imageset_copyright varchar(255) DEFAULT '' NOT NULL,
 	imageset_path varchar(100) DEFAULT '' NOT NULL,
@@ -786,7 +786,7 @@ CREATE TABLE phpbb_styles_imageset_data (
 	image_lang varchar(30) DEFAULT '' NOT NULL,
 	image_height smallint(4) UNSIGNED DEFAULT '0' NOT NULL,
 	image_width smallint(4) UNSIGNED DEFAULT '0' NOT NULL,
-	imageset_id tinyint(4) DEFAULT '0' NOT NULL,
+	imageset_id smallint(4) UNSIGNED DEFAULT '0' NOT NULL,
 	PRIMARY KEY (image_id),
 	KEY i_d (imageset_id)
 ) CHARACTER SET `utf8` COLLATE `utf8_bin`;
@@ -914,7 +914,7 @@ CREATE TABLE phpbb_users (
 	user_timezone decimal(5,2) DEFAULT '0' NOT NULL,
 	user_dst tinyint(1) UNSIGNED DEFAULT '0' NOT NULL,
 	user_dateformat varchar(30) DEFAULT 'd M Y H:i' NOT NULL,
-	user_style tinyint(4) DEFAULT '0' NOT NULL,
+	user_style smallint(4) UNSIGNED DEFAULT '0' NOT NULL,
 	user_rank mediumint(8) UNSIGNED DEFAULT '0' NOT NULL,
 	user_colour varchar(6) DEFAULT '' NOT NULL,
 	user_new_privmsg tinyint(4) DEFAULT '0' NOT NULL,

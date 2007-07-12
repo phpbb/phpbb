@@ -361,7 +361,7 @@ CREATE TABLE phpbb_forums (
 	forum_desc_uid varchar(5) DEFAULT '' NOT NULL,
 	forum_link varchar(255) DEFAULT '' NOT NULL,
 	forum_password varchar(40) DEFAULT '' NOT NULL,
-	forum_style INT2 DEFAULT '0' NOT NULL,
+	forum_style INT2 DEFAULT '0' NOT NULL CHECK (forum_style >= 0),
 	forum_image varchar(255) DEFAULT '' NOT NULL,
 	forum_rules varchar(4000) DEFAULT '' NOT NULL,
 	forum_rules_link varchar(255) DEFAULT '' NOT NULL,
@@ -946,9 +946,9 @@ CREATE TABLE phpbb_styles (
 	style_name varchar(255) DEFAULT '' NOT NULL,
 	style_copyright varchar(255) DEFAULT '' NOT NULL,
 	style_active INT2 DEFAULT '1' NOT NULL CHECK (style_active >= 0),
-	template_id INT2 DEFAULT '0' NOT NULL,
-	theme_id INT2 DEFAULT '0' NOT NULL,
-	imageset_id INT2 DEFAULT '0' NOT NULL,
+	template_id INT2 DEFAULT '0' NOT NULL CHECK (template_id >= 0),
+	theme_id INT2 DEFAULT '0' NOT NULL CHECK (theme_id >= 0),
+	imageset_id INT2 DEFAULT '0' NOT NULL CHECK (imageset_id >= 0),
 	PRIMARY KEY (style_id)
 );
 
@@ -1035,7 +1035,7 @@ CREATE TABLE phpbb_styles_imageset_data (
 	image_lang varchar(30) DEFAULT '' NOT NULL,
 	image_height INT2 DEFAULT '0' NOT NULL CHECK (image_height >= 0),
 	image_width INT2 DEFAULT '0' NOT NULL CHECK (image_width >= 0),
-	imageset_id INT2 DEFAULT '0' NOT NULL,
+	imageset_id INT2 DEFAULT '0' NOT NULL CHECK (imageset_id >= 0),
 	PRIMARY KEY (image_id)
 );
 
@@ -1179,7 +1179,7 @@ CREATE TABLE phpbb_users (
 	user_timezone decimal(5,2) DEFAULT '0' NOT NULL,
 	user_dst INT2 DEFAULT '0' NOT NULL CHECK (user_dst >= 0),
 	user_dateformat varchar(30) DEFAULT 'd M Y H:i' NOT NULL,
-	user_style INT2 DEFAULT '0' NOT NULL,
+	user_style INT2 DEFAULT '0' NOT NULL CHECK (user_style >= 0),
 	user_rank INT4 DEFAULT '0' NOT NULL CHECK (user_rank >= 0),
 	user_colour varchar(6) DEFAULT '' NOT NULL,
 	user_new_privmsg INT2 DEFAULT '0' NOT NULL,

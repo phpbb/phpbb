@@ -1028,7 +1028,7 @@ function get_schema_struct()
 			'forum_desc_uid'		=> array('VCHAR:5', ''),
 			'forum_link'			=> array('VCHAR_UNI', ''),
 			'forum_password'		=> array('VCHAR_UNI:40', ''),
-			'forum_style'			=> array('TINT:4', 0),
+			'forum_style'			=> array('USINT', 0),
 			'forum_image'			=> array('VCHAR', ''),
 			'forum_rules'			=> array('TEXT_UNI', ''),
 			'forum_rules_link'		=> array('VCHAR_UNI', ''),
@@ -1556,13 +1556,13 @@ function get_schema_struct()
 
 	$schema_data['phpbb_styles'] = array(
 		'COLUMNS'		=> array(
-			'style_id'				=> array('TINT:4', NULL, 'auto_increment'),
+			'style_id'				=> array('USINT', NULL, 'auto_increment'),
 			'style_name'			=> array('VCHAR_UNI:255', ''),
 			'style_copyright'		=> array('VCHAR_UNI', ''),
 			'style_active'			=> array('BOOL', 1),
-			'template_id'			=> array('TINT:4', 0),
-			'theme_id'				=> array('TINT:4', 0),
-			'imageset_id'			=> array('TINT:4', 0),
+			'template_id'			=> array('USINT', 0),
+			'theme_id'				=> array('USINT', 0),
+			'imageset_id'			=> array('USINT', 0),
 		),
 		'PRIMARY_KEY'	=> 'style_id',
 		'KEYS'			=> array(
@@ -1575,7 +1575,7 @@ function get_schema_struct()
 
 	$schema_data['phpbb_styles_template'] = array(
 		'COLUMNS'		=> array(
-			'template_id'			=> array('TINT:4', NULL, 'auto_increment'),
+			'template_id'			=> array('USINT', NULL, 'auto_increment'),
 			'template_name'			=> array('VCHAR_UNI:255', ''),
 			'template_copyright'	=> array('VCHAR_UNI', ''),
 			'template_path'			=> array('VCHAR:100', ''),
@@ -1590,7 +1590,7 @@ function get_schema_struct()
 
 	$schema_data['phpbb_styles_template_data'] = array(
 		'COLUMNS'		=> array(
-			'template_id'			=> array('TINT:4', NULL, 'auto_increment'),
+			'template_id'			=> array('USINT', NULL, 'auto_increment'),
 			'template_filename'		=> array('VCHAR:100', ''),
 			'template_included'		=> array('TEXT', ''),
 			'template_mtime'		=> array('TIMESTAMP', 0),
@@ -1604,7 +1604,7 @@ function get_schema_struct()
 
 	$schema_data['phpbb_styles_theme'] = array(
 		'COLUMNS'		=> array(
-			'theme_id'				=> array('TINT:4', NULL, 'auto_increment'),
+			'theme_id'				=> array('USINT', NULL, 'auto_increment'),
 			'theme_name'			=> array('VCHAR_UNI:255', ''),
 			'theme_copyright'		=> array('VCHAR_UNI', ''),
 			'theme_path'			=> array('VCHAR:100', ''),
@@ -1620,7 +1620,7 @@ function get_schema_struct()
 
 	$schema_data['phpbb_styles_imageset'] = array(
 		'COLUMNS'		=> array(
-			'imageset_id'				=> array('TINT:4', NULL, 'auto_increment'),
+			'imageset_id'				=> array('USINT', NULL, 'auto_increment'),
 			'imageset_name'				=> array('VCHAR_UNI:255', ''),
 			'imageset_copyright'		=> array('VCHAR_UNI', ''),
 			'imageset_path'				=> array('VCHAR:100', ''),
@@ -1639,7 +1639,7 @@ function get_schema_struct()
 			'image_lang'			=> array('VCHAR:30', ''),
 			'image_height'			=> array('USINT', 0),
 			'image_width'			=> array('USINT', 0),
-			'imageset_id'			=> array('TINT:4', 0),
+			'imageset_id'			=> array('USINT', 0),
 		),
 		'PRIMARY_KEY'		=> 'image_id',
 		'KEYS'				=> array(
@@ -1777,7 +1777,7 @@ function get_schema_struct()
 			'user_timezone'				=> array('DECIMAL', 0),
 			'user_dst'					=> array('BOOL', 0),
 			'user_dateformat'			=> array('VCHAR_UNI:30', 'd M Y H:i'),
-			'user_style'				=> array('TINT:4', 0),
+			'user_style'				=> array('USINT', 0),
 			'user_rank'					=> array('UINT', 0),
 			'user_colour'				=> array('VCHAR:6', ''),
 			'user_new_privmsg'			=> array('TINT:4', 0),

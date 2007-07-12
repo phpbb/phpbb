@@ -221,7 +221,7 @@ CREATE TABLE phpbb_forums (
 	forum_desc_uid varchar(5) NOT NULL DEFAULT '',
 	forum_link varchar(255) NOT NULL DEFAULT '',
 	forum_password varchar(40) NOT NULL DEFAULT '',
-	forum_style tinyint(4) NOT NULL DEFAULT '0',
+	forum_style INTEGER UNSIGNED NOT NULL DEFAULT '0',
 	forum_image varchar(255) NOT NULL DEFAULT '',
 	forum_rules text(65535) NOT NULL DEFAULT '',
 	forum_rules_link varchar(255) NOT NULL DEFAULT '',
@@ -693,9 +693,9 @@ CREATE TABLE phpbb_styles (
 	style_name varchar(255) NOT NULL DEFAULT '',
 	style_copyright varchar(255) NOT NULL DEFAULT '',
 	style_active INTEGER UNSIGNED NOT NULL DEFAULT '1',
-	template_id tinyint(4) NOT NULL DEFAULT '0',
-	theme_id tinyint(4) NOT NULL DEFAULT '0',
-	imageset_id tinyint(4) NOT NULL DEFAULT '0'
+	template_id INTEGER UNSIGNED NOT NULL DEFAULT '0',
+	theme_id INTEGER UNSIGNED NOT NULL DEFAULT '0',
+	imageset_id INTEGER UNSIGNED NOT NULL DEFAULT '0'
 );
 
 CREATE UNIQUE INDEX phpbb_styles_style_name ON phpbb_styles (style_name);
@@ -758,7 +758,7 @@ CREATE TABLE phpbb_styles_imageset_data (
 	image_lang varchar(30) NOT NULL DEFAULT '',
 	image_height INTEGER UNSIGNED NOT NULL DEFAULT '0',
 	image_width INTEGER UNSIGNED NOT NULL DEFAULT '0',
-	imageset_id tinyint(4) NOT NULL DEFAULT '0'
+	imageset_id INTEGER UNSIGNED NOT NULL DEFAULT '0'
 );
 
 CREATE INDEX phpbb_styles_imageset_data_i_d ON phpbb_styles_imageset_data (imageset_id);
@@ -884,7 +884,7 @@ CREATE TABLE phpbb_users (
 	user_timezone decimal(5,2) NOT NULL DEFAULT '0',
 	user_dst INTEGER UNSIGNED NOT NULL DEFAULT '0',
 	user_dateformat varchar(30) NOT NULL DEFAULT 'd M Y H:i',
-	user_style tinyint(4) NOT NULL DEFAULT '0',
+	user_style INTEGER UNSIGNED NOT NULL DEFAULT '0',
 	user_rank INTEGER UNSIGNED NOT NULL DEFAULT '0',
 	user_colour varchar(6) NOT NULL DEFAULT '',
 	user_new_privmsg tinyint(4) NOT NULL DEFAULT '0',

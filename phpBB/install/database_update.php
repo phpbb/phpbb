@@ -334,7 +334,7 @@ $database_update_info = array(
 	),
 	// Changes from 3.0.RC2 to the next version
 	'3.0.RC2'			=> array(
-		// Remove the following keys
+		// Change the following columns
 		'change_columns'		=> array(
 			BANLIST_TABLE	=> array(
 				'ban_reason'		=> array('VCHAR_UNI', ''),
@@ -344,11 +344,38 @@ $database_update_info = array(
 	),
 	// Changes from 3.0.RC3 to the next version
 	'3.0.RC3'			=> array(
-		// Remove the following keys
+		// Change the following columns
 		'change_columns'		=> array(
-			BANLIST_TABLE	=> array(
+			BANLIST_TABLE				=> array(
 				'ban_reason'		=> array('VCHAR_UNI', ''),
 				'ban_give_reason'	=> array('VCHAR_UNI', ''),
+			),
+			STYLES_TABLE				=> array(
+				'style_id'			=> array('USINT', 0),
+				'template_id'		=> array('USINT', 0),
+				'theme_id'			=> array('USINT', 0),
+				'imageset_id'		=> array('USINT', 0),
+			),
+			STYLES_TEMPLATE_TABLE		=> array(
+				'template_id'		=> array('USINT', 0),
+			),
+			STYLES_TEMPLATE_DATA_TABLE	=> array(
+				'template_id'		=> array('USINT', 0),
+			),
+			STYLES_THEME_TABLE			=> array(
+				'theme_id'			=> array('USINT', 0),
+			),
+			STYLES_IMAGESET_TABLE		=> array(
+				'imageset_id'		=> array('USINT', 0),
+			),
+			STYLES_IMAGESET_DATA_TABLE	=> array(
+				'imageset_id'		=> array('USINT', 0),
+			),
+			USERS_TABLE	=> array(
+				'user_style'		=> array('USINT', 0),
+			),
+			FORUMS_TABLE				=> array(
+				'forum_style'		=> array('USINT', 0),
 			),
 		),
 	),
