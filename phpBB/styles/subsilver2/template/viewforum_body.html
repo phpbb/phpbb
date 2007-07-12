@@ -148,7 +148,6 @@
 		</table>
 	<!-- ENDIF -->
 
-	<!-- IF S_IS_POSTABLE -->
 		<table class="tablebg" width="100%" cellspacing="1">
 		<tr>
 			<td class="cat" colspan="<!-- IF S_TOPIC_ICONS -->7<!-- ELSE -->6<!-- ENDIF -->">
@@ -236,18 +235,22 @@
 		</tr>
 		</table>
 
+	<!-- IF S_IS_POSTABLE or TOTAL_TOPICS -->
 		<table width="100%" cellspacing="1">
 		<tr>
-			<td align="{S_CONTENT_FLOW_BEGIN}" valign="middle"><!-- IF not S_IS_BOT --><a href="{U_POST_NEW_TOPIC}">{POST_IMG}</a><!-- ENDIF --></td>
-			<td class="nav" nowrap="nowrap">&nbsp;{PAGE_NUMBER}</td>
-			<td class="gensmall" nowrap="nowrap">&nbsp;[ {TOTAL_TOPICS} ]</td>
-			<td class="nav" width="100%" align="{S_CONTENT_FLOW_END}" nowrap="nowrap"><!-- INCLUDE pagination.html --></td>
+			<!-- IF S_IS_POSTABLE and not S_IS_BOT -->
+				<td align="{S_CONTENT_FLOW_BEGIN}" valign="middle"><a href="{U_POST_NEW_TOPIC}">{POST_IMG}</a></td>
+			<!-- ENDIF -->
+			<!-- IF TOTAL_TOPICS -->
+				<td class="nav" valign="middle" nowrap="nowrap">&nbsp;{PAGE_NUMBER}<br /></td>
+				<td class="gensmall" nowrap="nowrap">&nbsp;[ {TOTAL_TOPICS} ]&nbsp;</td>
+				<td class="gensmall" width="100%" align="{S_CONTENT_FLOW_END}" nowrap="nowrap"><!-- INCLUDE pagination.html --></td>
+			<!-- ENDIF -->
 		</tr>
 		</table>
-
-		<br clear="all" />
 	<!-- ENDIF -->
 
+		<br clear="all" />
 </div>
 
 <!-- INCLUDE breadcrumbs.html -->

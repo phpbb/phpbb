@@ -31,7 +31,7 @@
 
 	<table width="100%" cellspacing="1">
 	<tr>
-		<td align="{S_CONTENT_FLOW_BEGIN}" valign="middle" nowrap="nowrap"><!-- IF not S_IS_BOT --><a href="{U_POST_NEW_TOPIC}">{POST_IMG}</a>&nbsp;<a href="{U_POST_REPLY_TOPIC}">{REPLY_IMG}</a><!-- ENDIF --></td>
+		<td align="{S_CONTENT_FLOW_BEGIN}" valign="middle" nowrap="nowrap"><!-- IF not S_IS_BOT and U_POST_NEW_TOPIC --><a href="{U_POST_NEW_TOPIC}">{POST_IMG}</a>&nbsp;<!-- ENDIF --><!-- IF not S_IS_BOT and U_POST_REPLY_TOPIC --><a href="{U_POST_REPLY_TOPIC}">{REPLY_IMG}</a><!-- ENDIF --></td>
 		<!-- IF TOTAL_POSTS -->
 			<td class="nav" valign="middle" nowrap="nowrap">&nbsp;{PAGE_NUMBER}<br /></td>
 			<td class="gensmall" nowrap="nowrap">&nbsp;[ {TOTAL_POSTS} ]&nbsp;</td>
@@ -294,7 +294,7 @@
 
 	<table width="100%" cellspacing="1">
 	<tr>
-		<td align="{S_CONTENT_FLOW_BEGIN}" valign="middle" nowrap="nowrap"><!-- IF not S_IS_BOT --><a href="{U_POST_NEW_TOPIC}">{POST_IMG}</a>&nbsp;<a href="{U_POST_REPLY_TOPIC}">{REPLY_IMG}</a><!-- ENDIF --></td>
+		<td align="{S_CONTENT_FLOW_BEGIN}" valign="middle" nowrap="nowrap"><!-- IF not S_IS_BOT and U_POST_NEW_TOPIC --><a href="{U_POST_NEW_TOPIC}">{POST_IMG}</a>&nbsp;<!-- ENDIF --><!-- IF not S_IS_BOT and U_POST_REPLY_TOPIC --><a href="{U_POST_REPLY_TOPIC}">{REPLY_IMG}</a><!-- ENDIF --></td>
 		<!-- IF TOTAL_POSTS -->
 			<td class="nav" valign="middle" nowrap="nowrap">&nbsp;{PAGE_NUMBER}<br /></td>
 			<td class="gensmall" nowrap="nowrap">&nbsp;[ {TOTAL_POSTS} ]&nbsp;</td>

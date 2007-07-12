@@ -643,6 +643,11 @@ class install_update extends module
 					{
 						$this->page_title = 'SELECT_FTP_SETTINGS';
 
+						if (!class_exists($method))
+						{
+							trigger_error('Method does not exist.', E_USER_ERROR);
+						}
+
 						$requested_data = call_user_func(array($method, 'data'));
 						foreach ($requested_data as $data => $default)
 						{

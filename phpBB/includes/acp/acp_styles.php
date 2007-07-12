@@ -700,7 +700,7 @@ parse_css_file = {PARSE_CSS_FILE}
 			// If the template is stored on the filesystem try to write the file else store it in the database
 			if (!$safe_mode && !$template_info['template_storedb'] && file_exists($file) && @is_writable($file))
 			{
-				if (!($fp = fopen($file, 'wb')))
+				if (!($fp = @fopen($file, 'wb')))
 				{
 					trigger_error($user->lang['NO_TEMPLATE'] . adm_back_link($this->u_action), E_USER_WARNING);
 				}
@@ -1055,7 +1055,7 @@ parse_css_file = {PARSE_CSS_FILE}
 			// If the theme is stored on the filesystem try to write the file else store it in the database
 			if (!$safe_mode && !$theme_info['theme_storedb'] && file_exists($file) && @is_writable($file))
 			{
-				if (!($fp = fopen($file, 'wb')))
+				if (!($fp = @fopen($file, 'wb')))
 				{
 					trigger_error($user->lang['NO_THEME'] . adm_back_link($this->u_action), E_USER_WARNING);
 				}
@@ -2344,7 +2344,7 @@ parse_css_file = {PARSE_CSS_FILE}
 		{
 			foreach ($file_ary as $file)
 			{
-				if (!($fp = fopen("{$phpbb_root_path}styles/$template_path$pathfile$file", 'r')))
+				if (!($fp = @fopen("{$phpbb_root_path}styles/$template_path$pathfile$file", 'r')))
 				{
 					trigger_error("Could not open {$phpbb_root_path}styles/$template_path$pathfile$file", E_USER_ERROR);
 				}
