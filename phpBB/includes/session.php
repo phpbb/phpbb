@@ -1506,10 +1506,16 @@ class user extends session
 		// Is load exceeded?
 		if ($config['limit_load'] && $this->load !== false)
 		{
-			if ($this->load > floatval($config['limit_load']) && !defined('IN_LOGIN') && !$auth->acl_gets('a_', 'm_') && !$auth->acl_getf_global('m_'))
+			if ($this->load > floatval($config['limit_load']) && !defined('IN_LOGIN'))
 			{
-				header('HTTP/1.1 503 Service Unavailable');
-				trigger_error('BOARD_UNAVAILABLE');
+				// Set board disabled to true to let the admins/mods get the proper notification
+				$config['board_disable'] = '1';
+
+				if (!$auth->acl_gets('a_', 'm_') && !$auth->acl_getf_global('m_'))
+				{
+					header('HTTP/1.1 503 Service Unavailable');
+					trigger_error('BOARD_UNAVAILABLE');
+				}
 			}
 		}
 		

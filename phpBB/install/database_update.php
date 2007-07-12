@@ -661,13 +661,15 @@ if (version_compare($current_version, '3.0.RC2', '<='))
 		{
 			continue;
 		}
+
 		$new_code = str_replace('&amp;', '&', $code);
 		$new_code = str_replace('&lt;', '<', $new_code);
 		$new_code = str_replace('&gt;', '>', $new_code);
 		$new_code = utf8_htmlspecialchars($new_code);
+
 		$sql = 'UPDATE ' . SMILIES_TABLE . ' 
 			SET code = \'' . $db->sql_escape($new_code) . '\'
-			WHERE smiley_id = ' . (int)$id;
+			WHERE smiley_id = ' . (int) $id;
 		$db->sql_query($sql);
 	}
 
@@ -761,6 +763,10 @@ if (version_compare($current_version, '3.0.RC3', '<='))
 		}
 	}
 
+	// Make sure empty smiley codes do not exist
+	$sql = 'DELETE FROM ' . SMILIES_TABLE . " 
+		WHERE code = ''";
+	$db->sql_query($sql);
 }
 
 _write_result($no_updates, $errored, $error_ary);

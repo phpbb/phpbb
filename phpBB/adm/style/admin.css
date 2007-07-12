@@ -1602,3 +1602,16 @@ fieldset.permissions .permissions-switch {
 	margin: 0;
 	padding: 0;
 }
+
+/* Classes for additional tasks
+---------------------------------------- */
+
+.phpinfo {
+	overflow: auto;
+	width: 99%;
+	direction: ltr;
+}
+
+.phpinfo td, .phpinfo th, .phpinfo h2, .phpinfo h1 {
+	text-align: left;
+}

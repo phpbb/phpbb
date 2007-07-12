@@ -208,12 +208,30 @@ function compose_pm($id, $mode, $action)
 
 	if ($sql)
 	{
-		$result = $db->sql_query_limit($sql, 1);
+		$result = $db->sql_query($sql);
 		$post = $db->sql_fetchrow($result);
 		$db->sql_freeresult($result);
 
 		if (!$post)
 		{
+			// If editing it could be the recipient already read the message...
+			if ($action == 'edit')
+			{
+				$sql = 'SELECT p.*, t.folder_id
+					FROM ' . PRIVMSGS_TO_TABLE . ' t, ' . PRIVMSGS_TABLE . ' p
+					WHERE t.user_id = ' . $user->data['user_id'] . "
+						AND t.msg_id = $msg_id
+						AND t.msg_id = p.msg_id";
+				$result = $db->sql_query($sql);
+				$post = $db->sql_fetchrow($result);
+				$db->sql_freeresult($result);
+
+				if ($post)
+				{
+					trigger_error('NO_EDIT_READ_MESSAGE');
+				}
+			}
+
 			trigger_error('NO_MESSAGE');
 		}
 

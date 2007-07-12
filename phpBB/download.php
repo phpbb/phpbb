@@ -322,7 +322,20 @@ function send_avatar_to_browser($file)
 			header("Content-Length: $size");
 		}
 
-		readfile($file_path);
+		if (@readfile($file_path) === false)
+		{
+			$fp = @fopen($file_path, 'rb');
+
+			if ($fp !== false)
+			{
+				while (!feof($fp))
+				{
+					echo fread($fp, 8192);
+				}
+				fclose($fp);
+			}
+		}
+
 		flush();
 	}
 	else
@@ -446,6 +459,10 @@ function send_file_to_browser($attachment, $upload_dir, $category)
 			echo fread($fp, 8192);
 		}
 		fclose($fp);
+	}
+	else
+	{
+		@readfile($filename);
 	}
 
 	flush();
