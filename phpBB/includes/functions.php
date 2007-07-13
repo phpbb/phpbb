@@ -4294,7 +4294,7 @@ function page_footer($run_cron = true)
 		'DEBUG_OUTPUT'			=> (defined('DEBUG')) ? $debug_output : '',
 		'TRANSLATION_INFO'		=> (!empty($user->lang['TRANSLATION_INFO'])) ? $user->lang['TRANSLATION_INFO'] : '',
 
-		'U_ACP' => ($auth->acl_get('a_') && $user->data['is_registered']) ? append_sid("{$phpbb_root_path}adm/index.$phpEx", '', true, $user->session_id) : '')
+		'U_ACP' => ($auth->acl_get('a_') && $user->data['is_registered']) ? append_sid("{$phpbb_root_path}adm/index.$phpEx", false, true, $user->session_id) : '')
 	);
 
 	// Call cron-type script
