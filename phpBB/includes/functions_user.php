@@ -368,40 +368,47 @@ function user_delete($mode, $user_id, $post_username = false)
 				$post_username = $user->lang['GUEST'];
 			}
 
-			$sql = 'UPDATE ' . FORUMS_TABLE . '
-				SET forum_last_poster_id = ' . ANONYMOUS . ", forum_last_poster_name = '" . $db->sql_escape($post_username) . "', forum_last_poster_colour = ''
-				WHERE forum_last_poster_id = $user_id";
-			$db->sql_query($sql);
-
-			$sql = 'UPDATE ' . POSTS_TABLE . '
-				SET poster_id = ' . ANONYMOUS . ", post_username = '" . $db->sql_escape($post_username) . "'
-				WHERE poster_id = $user_id";
-			$db->sql_query($sql);
-
-			$sql = 'UPDATE ' . POSTS_TABLE . '
-				SET post_edit_user = ' . ANONYMOUS . "
-				WHERE post_edit_user = $user_id";
-			$db->sql_query($sql);
-
-			$sql = 'UPDATE ' . TOPICS_TABLE . '
-				SET topic_poster = ' . ANONYMOUS . ", topic_first_poster_name = '" . $db->sql_escape($post_username) . "', topic_first_poster_colour = ''
-				WHERE topic_poster = $user_id";
-			$db->sql_query($sql);
-
-			$sql = 'UPDATE ' . TOPICS_TABLE . '
-				SET topic_last_poster_id = ' . ANONYMOUS . ", topic_last_poster_name = '" . $db->sql_escape($post_username) . "', topic_last_poster_colour = ''
-				WHERE topic_last_poster_id = $user_id";
-			$db->sql_query($sql);
-
-			// Since we change every post by this author, we need to count this amount towards the anonymous user
-
-			// Update the post count for the anonymous user
-			if ($user_row['user_posts'])
+			// If the user is inactive and newly registered we assume no posts from this user being there...
+			if ($user_row['user_type'] == USER_INACTIVE && $user_row['user_inactive_reason'] == INACTIVE_REGISTER && !$user_row['user_posts'])
 			{
-				$sql = 'UPDATE ' . USERS_TABLE . '
-					SET user_posts = user_posts + ' . $user_row['user_posts'] . '
-					WHERE user_id = ' . ANONYMOUS;
+			}
+			else
+			{
+				$sql = 'UPDATE ' . FORUMS_TABLE . '
+					SET forum_last_poster_id = ' . ANONYMOUS . ", forum_last_poster_name = '" . $db->sql_escape($post_username) . "', forum_last_poster_colour = ''
+					WHERE forum_last_poster_id = $user_id";
 				$db->sql_query($sql);
+
+				$sql = 'UPDATE ' . POSTS_TABLE . '
+					SET poster_id = ' . ANONYMOUS . ", post_username = '" . $db->sql_escape($post_username) . "'
+					WHERE poster_id = $user_id";
+				$db->sql_query($sql);
+
+				$sql = 'UPDATE ' . POSTS_TABLE . '
+					SET post_edit_user = ' . ANONYMOUS . "
+					WHERE post_edit_user = $user_id";
+				$db->sql_query($sql);
+
+				$sql = 'UPDATE ' . TOPICS_TABLE . '
+					SET topic_poster = ' . ANONYMOUS . ", topic_first_poster_name = '" . $db->sql_escape($post_username) . "', topic_first_poster_colour = ''
+					WHERE topic_poster = $user_id";
+				$db->sql_query($sql);
+
+				$sql = 'UPDATE ' . TOPICS_TABLE . '
+					SET topic_last_poster_id = ' . ANONYMOUS . ", topic_last_poster_name = '" . $db->sql_escape($post_username) . "', topic_last_poster_colour = ''
+					WHERE topic_last_poster_id = $user_id";
+				$db->sql_query($sql);
+
+				// Since we change every post by this author, we need to count this amount towards the anonymous user
+
+				// Update the post count for the anonymous user
+				if ($user_row['user_posts'])
+				{
+					$sql = 'UPDATE ' . USERS_TABLE . '
+						SET user_posts = user_posts + ' . $user_row['user_posts'] . '
+						WHERE user_id = ' . ANONYMOUS;
+					$db->sql_query($sql);
+				}
 			}
 		break;
 

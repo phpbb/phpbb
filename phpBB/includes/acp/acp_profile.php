@@ -349,12 +349,12 @@ class acp_profile
 					}
 
 					$field_row = array_merge($default_values[$field_type], array(
-						'field_ident'		=> request_var('field_ident', ''),
+						'field_ident'		=> utf8_clean_string(request_var('field_ident', '', true)),
 						'field_required'	=> 0,
 						'field_hide'		=> 0,
 						'field_no_view'		=> 0,
 						'field_show_on_reg'	=> 0,
-						'lang_name'			=> '',
+						'lang_name'			=> request_var('field_ident', '', true),
 						'lang_explain'		=> '',
 						'lang_default_value'=> '')
 					);
@@ -381,7 +381,7 @@ class acp_profile
 					$exclude[1][] = 'lang_options';
 				}
 
-				$cp->vars['field_ident']		= request_var('field_ident', $field_row['field_ident']);
+				$cp->vars['field_ident']		= ($action == 'create' && $step == 1) ? utf8_clean_string(request_var('field_ident', $field_row['field_ident'], true)) : request_var('field_ident', $field_row['field_ident']);
 				$cp->vars['lang_name']			= request_var('lang_name', $field_row['lang_name'], true);
 				$cp->vars['lang_explain']		= request_var('lang_explain', $field_row['lang_explain'], true);
 				$cp->vars['lang_default_value']	= request_var('lang_default_value', $field_row['lang_default_value'], true);

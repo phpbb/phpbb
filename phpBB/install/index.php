@@ -724,7 +724,7 @@ class module
 		{
 			$path = $phpbb_root_path . 'language/' . $file;
 
-			if (is_file($path) || is_link($path) || $file == '.' || $file == '..' || $file == 'CVS')
+			if ($file == '.' || $file == '..' || is_link($path) || is_file($path) || $file == 'CVS')
 			{
 				continue;
 			}

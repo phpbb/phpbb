@@ -30,7 +30,8 @@ header('Content-length: 43');
 
 echo base64_decode('R0lGODlhAQABAIAAAP///wAAACH5BAEAAAAALAAAAAABAAEAAAICRAEAOw==');
 
-flush();
+// test without flush ;)
+// flush();
 
 /**
 * Run cron-like action
