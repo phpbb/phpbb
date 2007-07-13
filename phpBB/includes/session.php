@@ -303,7 +303,8 @@ class session
 
 						$this->data['is_registered'] = ($this->data['user_id'] != ANONYMOUS && ($this->data['user_type'] == USER_NORMAL || $this->data['user_type'] == USER_FOUNDER)) ? true : false;
 						$this->data['is_bot'] = (!$this->data['is_registered'] && $this->data['user_id'] != ANONYMOUS) ? true : false;
-
+						$this->data['user_lang'] = basename($this->data['user_lang']);
+						
 						return true;
 					}
 				}
@@ -1208,8 +1209,8 @@ class user extends session
 
 		if ($this->data['user_id'] != ANONYMOUS)
 		{
-			$this->lang_name = (file_exists($phpbb_root_path . 'language/' . $this->data['user_lang'] . "/common.$phpEx")) ? $this->data['user_lang'] : $config['default_lang'];
-			$this->lang_path = $phpbb_root_path . 'language/' . basename($this->lang_name) . '/';
+			$this->lang_name = (file_exists($phpbb_root_path . 'language/' . $this->data['user_lang'] . "/common.$phpEx")) ? $this->data['user_lang'] : basename($config['default_lang']);			
+			$this->lang_path = $phpbb_root_path . 'language/' . $this->lang_name . '/';
 
 			$this->date_format = $this->data['user_dateformat'];
 			$this->timezone = $this->data['user_timezone'] * 3600;
@@ -1217,8 +1218,8 @@ class user extends session
 		}
 		else
 		{
-			$this->lang_name = $config['default_lang'];
-			$this->lang_path = $phpbb_root_path . 'language/' . basename($this->lang_name) . '/';
+			$this->lang_name = basename($config['default_lang']);
+			$this->lang_path = $phpbb_root_path . 'language/' . $this->lang_name . '/';
 			$this->date_format = $config['default_dateformat'];
 			$this->timezone = $config['board_timezone'] * 3600;
 			$this->dst = $config['board_dst'] * 3600;
@@ -1261,12 +1262,13 @@ class user extends session
 			}
 			*/
 		}
-
+ 
 		// We include common language file here to not load it every time a custom language file is included
 		$lang = &$this->lang;
-		if ((include $this->lang_path . "common.$phpEx") === false)
+
+		if ((@include $this->lang_path . "common.$phpEx") === false)
 		{
-			die("Language file " . $this->lang_path . "common.$phpEx" . " couldn't be opened.");
+			die('Language file ' . $this->lang_name . "/common.$phpEx" . " couldn't be opened.");
 		}
 
 		$this->add_lang($lang_set);
@@ -1645,9 +1647,9 @@ class user extends session
 				$language_filename = $this->lang_path . (($use_help) ? 'help_' : '') . $lang_file . '.' . $phpEx;
 			}
 
-			if ((include($language_filename)) === false)
+			if ((@include $language_filename) === false)
 			{
-				trigger_error("Language file $language_filename couldn't be opened.", E_USER_ERROR);
+				trigger_error('Language file ' . basename($language_filename) . ' couldn\'t be opened.', E_USER_ERROR);
 			}
 		}
 		else if ($use_db)
