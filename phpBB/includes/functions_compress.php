@@ -12,7 +12,7 @@
 * Class for handling archives (compression/decompression)
 * @package phpBB3
 */
-class compress 
+class compress
 {
 	var $fp = 0;
 
@@ -434,12 +434,15 @@ class compress_zip extends compress
 		header("Content-Type: $mimetype; name=\"$download_name.zip\"");
 		header("Content-disposition: attachment; filename=$download_name.zip");
 
-		$fp = fopen("{$phpbb_root_path}store/$filename.zip", 'rb');
-		while ($buffer = fread($fp, 1024))
+		$fp = @fopen("{$phpbb_root_path}store/$filename.zip", 'rb');
+		if ($fp)
 		{
-			echo $buffer;
+			while ($buffer = fread($fp, 1024))
+			{
+				echo $buffer;
+			}
+			fclose($fp);
 		}
-		fclose($fp);
 	}
 }
 
@@ -546,8 +549,8 @@ class compress_tar extends compress
 		{
 			$fzwrite = ($this->isbz && function_exists('bzwrite')) ? 'bzwrite' : (($this->isgz && @extension_loaded('zlib')) ? 'gzwrite' : 'fwrite');
 
-			// Symbolizes that there are no more files
-			$fzwrite($this->fp, str_repeat("\0", 512));
+			// The end of a tar archive ends in two records of all NULLs (1024 bytes of \0)
+			$fzwrite($this->fp, str_repeat("\0", 1024));
 		}
 
 		$fzclose($this->fp);
@@ -648,12 +651,15 @@ class compress_tar extends compress
 		header("Content-Type: $mimetype; name=\"$download_name$this->type\"");
 		header("Content-disposition: attachment; filename=$download_name$this->type");
 
-		$fp = fopen("{$phpbb_root_path}store/$filename$this->type", 'rb');
-		while ($buffer = fread($fp, 1024))
+		$fp = @fopen("{$phpbb_root_path}store/$filename$this->type", 'rb');
+		if ($fp)
 		{
-			echo $buffer;
+			while ($buffer = fread($fp, 1024))
+			{
+				echo $buffer;
+			}
+			fclose($fp);
 		}
-		fclose($fp);
 	}
 }
 
