@@ -275,7 +275,10 @@ $template->assign_vars(array(
 
 	'L_NO_TOPICS' 			=> ($forum_data['forum_status'] == ITEM_LOCKED) ? $user->lang['POST_FORUM_LOCKED'] : $user->lang['NO_TOPICS'],
 
-	'S_IS_POSTABLE'			=> ($forum_data['forum_type'] == FORUM_POST && $auth->acl_get('f_post', $forum_id)) ? true : false,
+	'S_DISPLAY_POST_INFO'	=> ($forum_data['forum_type'] == FORUM_POST && ($auth->acl_get('f_post', $forum_id) || $user->data['user_id'] == ANONYMOUS)) ? true : false,
+
+	'S_IS_POSTABLE'			=> ($forum_data['forum_type'] == FORUM_POST) ? true : false,
+	'S_USER_CAN_POST'		=> ($auth->acl_get('f_post', $forum_id)) ? true : false,
 	'S_DISPLAY_ACTIVE'		=> $s_display_active,
 	'S_SELECT_SORT_DIR'		=> $s_sort_dir,
 	'S_SELECT_SORT_KEY'		=> $s_sort_key,
@@ -290,7 +293,7 @@ $template->assign_vars(array(
 	'S_SINGLE_MODERATOR'	=> (!empty($moderators[$forum_id]) && sizeof($moderators[$forum_id]) > 1) ? false : true,
 
 	'U_MCP'				=> ($auth->acl_get('m_', $forum_id)) ? append_sid("{$phpbb_root_path}mcp.$phpEx", "f=$forum_id&amp;i=main&amp;mode=forum_view", true, $user->session_id) : '',
-	'U_POST_NEW_TOPIC'	=> ($auth->acl_get('f_post', $forum_id)) ? append_sid("{$phpbb_root_path}posting.$phpEx", 'mode=post&amp;f=' . $forum_id) : '',
+	'U_POST_NEW_TOPIC'	=> ($auth->acl_get('f_post', $forum_id) || $user->data['user_id'] == ANONYMOUS) ? append_sid("{$phpbb_root_path}posting.$phpEx", 'mode=post&amp;f=' . $forum_id) : '',
 	'U_VIEW_FORUM'		=> append_sid("{$phpbb_root_path}viewforum.$phpEx", "f=$forum_id&amp;$u_sort_param&amp;start=$start"),
 	'U_MARK_TOPICS'		=> ($user->data['is_registered'] || $config['load_anon_lastread']) ? append_sid("{$phpbb_root_path}viewforum.$phpEx", "f=$forum_id&amp;mark=topics") : '',
 ));

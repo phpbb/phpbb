@@ -1704,7 +1704,12 @@ class install_install extends module
 		{
 			$path = $phpbb_root_path . 'language/' . $file;
 
-			if (is_dir($path) && !is_link($path) && file_exists($path . '/iso.txt'))
+			if ($file == '.' || $file == '..' || is_link($path) || is_file($path) || $file == 'CVS')
+			{
+				continue;
+			}
+
+			if (is_dir($path) && file_exists($path . '/iso.txt'))
 			{
 				$lang_file = file("{$phpbb_root_path}language/$path/iso.txt");
 

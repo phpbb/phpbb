@@ -581,6 +581,10 @@ div.rules {
 	font-size: 1.1em;
 }
 
+div.rules li {
+	margin-left: 20px;
+}
+
 p.rules {
 	background-color: #ececec;
 	background-image: none;
@@ -595,6 +599,7 @@ p.rules a {
 	vertical-align: middle;
 	clear: both;
 }
+
 
 #top {
 	position: absolute;

@@ -133,10 +133,10 @@
 	<br clear="all" />
 <!-- ENDIF -->
 
-	<!-- IF S_IS_POSTABLE or TOTAL_TOPICS -->
+	<!-- IF S_DISPLAY_POST_INFO or TOTAL_TOPICS -->
 		<table width="100%" cellspacing="1">
 		<tr>
-			<!-- IF S_IS_POSTABLE and not S_IS_BOT -->
+			<!-- IF S_DISPLAY_POST_INFO and not S_IS_BOT -->
 				<td align="{S_CONTENT_FLOW_BEGIN}" valign="middle"><a href="{U_POST_NEW_TOPIC}">{POST_IMG}</a></td>
 			<!-- ENDIF -->
 			<!-- IF TOTAL_TOPICS -->
@@ -235,10 +235,10 @@
 		</tr>
 		</table>
 
-	<!-- IF S_IS_POSTABLE or TOTAL_TOPICS -->
+	<!-- IF S_DISPLAY_POST_INFO or TOTAL_TOPICS -->
 		<table width="100%" cellspacing="1">
 		<tr>
-			<!-- IF S_IS_POSTABLE and not S_IS_BOT -->
+			<!-- IF S_DISPLAY_POST_INFO and not S_IS_BOT -->
 				<td align="{S_CONTENT_FLOW_BEGIN}" valign="middle"><a href="{U_POST_NEW_TOPIC}">{POST_IMG}</a></td>
 			<!-- ENDIF -->
 			<!-- IF TOTAL_TOPICS -->
@@ -268,7 +268,7 @@
 	</table>
 <!-- ENDIF -->
 
-<!-- IF S_IS_POSTABLE -->
+<!-- IF S_DISPLAY_POST_INFO -->
 	<br clear="all" />
 
 	<table width="100%" cellspacing="0">

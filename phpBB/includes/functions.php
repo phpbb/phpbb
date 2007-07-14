@@ -577,7 +577,7 @@ if (!function_exists('realpath'))
 			$bits = explode('/', $path);
 
 			// Remove any . in the path, renumber array for the loop below
-			$bits = array_keys(array_diff($bits, array('.')));
+			$bits = array_values(array_diff($bits, array('.')));
 
 			// Lets get looping, run over and resolve any .. (up directory)
 			for ($i = 0, $max = sizeof($bits); $i < $max; $i++)
@@ -789,6 +789,8 @@ function markread($mode, $forum_id = false, $topic_id = false, $post_time = 0, $
 				$tracking_topics['l'] = base_convert(time() - $config['board_startdate'], 10, 36);
 	
 				$user->set_cookie('track', tracking_serialize($tracking_topics), time() + 31536000);
+				$_COOKIE[$config['cookie_name'] . '_track'] = (STRIP) ? addslashes(tracking_serialize($tracking_topics)) : tracking_serialize($tracking_topics);
+
 				unset($tracking_topics);
 
 				if ($user->data['is_registered'])
@@ -882,7 +884,14 @@ function markread($mode, $forum_id = false, $topic_id = false, $post_time = 0, $
 				$tracking['f'][$f_id] = base_convert(time() - $config['board_startdate'], 10, 36);
 			}
 
+			if (isset($tracking['tf']) && empty($tracking['tf']))
+			{
+				unset($tracking['tf']);
+			}
+
 			$user->set_cookie('track', tracking_serialize($tracking), time() + 31536000);
+			$_COOKIE[$config['cookie_name'] . '_track'] = (STRIP) ? addslashes(tracking_serialize($tracking)) : tracking_serialize($tracking);
+
 			unset($tracking);
 		}
 
@@ -977,6 +986,7 @@ function markread($mode, $forum_id = false, $topic_id = false, $post_time = 0, $
 			}
 
 			$user->set_cookie('track', tracking_serialize($tracking), time() + 31536000);
+			$_COOKIE[$config['cookie_name'] . '_track'] = (STRIP) ? addslashes(tracking_serialize($tracking)) : tracking_serialize($tracking);
 		}
 
 		return;
@@ -1241,11 +1251,8 @@ function update_forum_tracking_info($forum_id, $forum_last_post_time, $f_mark_ti
 		}
 		else if ($config['load_anon_lastread'] || $user->data['is_registered'])
 		{
-			if (!isset($tracking_topics) || !sizeof($tracking_topics))
-			{
-				$tracking_topics = (isset($_COOKIE[$config['cookie_name'] . '_track'])) ? ((STRIP) ? stripslashes($_COOKIE[$config['cookie_name'] . '_track']) : $_COOKIE[$config['cookie_name'] . '_track']) : '';
-				$tracking_topics = ($tracking_topics) ? tracking_unserialize($tracking_topics) : array();
-			}
+			$tracking_topics = (isset($_COOKIE[$config['cookie_name'] . '_track'])) ? ((STRIP) ? stripslashes($_COOKIE[$config['cookie_name'] . '_track']) : $_COOKIE[$config['cookie_name'] . '_track']) : '';
+			$tracking_topics = ($tracking_topics) ? tracking_unserialize($tracking_topics) : array();
 
 			if (!$user->data['is_registered'])
 			{
@@ -1300,6 +1307,7 @@ function update_forum_tracking_info($forum_id, $forum_last_post_time, $f_mark_ti
 
 			$check_forum = $tracking_topics['tf'][$forum_id];
 			$unread = false;
+
 			while ($row = $db->sql_fetchrow($result))
 			{
 				if (!in_array(base_convert($row['topic_id'], 10, 36), array_keys($check_forum)))

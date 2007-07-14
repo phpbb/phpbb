@@ -31,7 +31,19 @@
 		<!-- IF OCCUPATION --><dt>{L_OCCUPATION}:</dt> <dd>{OCCUPATION}</dd><!-- ENDIF -->
 		<!-- IF INTERESTS --><dt>{L_INTERESTS}:</dt> <dd>{INTERESTS}</dd><!-- ENDIF -->
 		<!-- IF S_GROUP_OPTIONS --><dt>{L_USERGROUPS}:</dt> <dd><select name="g">{S_GROUP_OPTIONS}</select> <input type="submit" name="submit" value="{L_GO}" class="button2" /></dd><!-- ENDIF -->
-		<!-- IF SIGNATURE --><dt>{L_SIGNATURE}:</dt> <dd><div class="signature">{SIGNATURE}</div></dd><!-- ENDIF -->
+		<!-- BEGIN custom_fields --><dt>{custom_fields.PROFILE_FIELD_NAME}:</dt> <dd>{custom_fields.PROFILE_FIELD_VALUE}</dd><!-- END custom_fields -->
+		<!-- IF S_USER_LOGGED_IN and S_ZEBRA -->
+			<!-- IF U_ADD_FRIEND and U_ADD_FOE-->
+				<dt>&nbsp;</dt> <dd><a href="{U_ADD_FRIEND}"><strong>{L_ADD_FRIEND}</strong></a></dd>
+				<dt>&nbsp;</dt> <dd><a href="{U_ADD_FOE}"><strong>{L_ADD_FOE}</strong></a></dd>
+			<!-- ELSE -->
+				<!-- IF U_REMOVE_FRIEND -->
+					<dt>&nbsp;</dt> <dd><a href="{U_REMOVE_FRIEND}"><strong>{L_REMOVE_FRIEND}</strong></a></dd>
+				<!-- ELSE -->
+					<dt>&nbsp;</dt> <dd><a href="{U_REMOVE_FOE}"><strong>{L_REMOVE_FOE}</strong></a></dd>
+				<!-- ENDIF -->
+			<!-- ENDIF -->
+		<!-- ENDIF -->
 	</dl>
 
 	<span class="corners-bottom"><span></span></span></div>
@@ -57,19 +69,6 @@
 			<!-- NOTE: Use a construct like this to include admin defined profile fields. Replace FIELD1 with the name of your field. -->
 			<dt>{postrow.PROFILE_FIELD1_NAME}:</dt> <dd>{postrow.PROFILE_FIELD1_VALUE}</dd>
 		<!-- ENDIF -->
-		<!-- BEGIN custom_fields --><dt>{custom_fields.PROFILE_FIELD_NAME}:</dt> <dd>{custom_fields.PROFILE_FIELD_VALUE}</dd><!-- END custom_fields -->
-		<!-- IF S_USER_LOGGED_IN and S_ZEBRA -->
-			<!-- IF U_ADD_FRIEND and U_ADD_FOE-->
-				<dt>&nbsp;</dt> <dd><a href="{U_ADD_FRIEND}"><strong>{L_ADD_FRIEND}</strong></a></dd>
-				<dt>&nbsp;</dt> <dd><a href="{U_ADD_FOE}"><strong>{L_ADD_FOE}</strong></a></dd>
-			<!-- ELSE -->
-				<!-- IF U_REMOVE_FRIEND -->
-					<dt>&nbsp;</dt> <dd><a href="{U_REMOVE_FRIEND}"><strong>{L_REMOVE_FRIEND}</strong></a></dd>
-				<!-- ELSE -->
-					<dt>&nbsp;</dt> <dd><a href="{U_REMOVE_FOE}"><strong>{L_REMOVE_FOE}</strong></a></dd>
-				<!-- ENDIF -->
-			<!-- ENDIF -->
-		<!-- ENDIF -->
 		</dl>
 	</div>
 
@@ -91,6 +90,19 @@
 	</div>
 	<span class="corners-bottom"><span></span></span></div>
 </div>
+
+<!-- IF SIGNATURE -->
+<div class="panel bg1">
+	<div class="inner"><span class="corners-top"><span></span></span>
+
+		<h3>{L_SIGNATURE}</h3>
+		
+		<div class="postbody"><div class="content">{SIGNATURE}</div></div>
+
+	<span class="corners-bottom"><span></span></span></div>
+</div>
+<!-- ENDIF -->
+
 </form>
 
 <!-- INCLUDE jumpbox.html -->

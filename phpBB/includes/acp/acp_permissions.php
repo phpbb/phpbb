@@ -899,7 +899,10 @@ class acp_permissions
 			'PERMISSION'			=> $user->lang['acl_' . $permission]['lang'],
 			'PERMISSION_USERNAME'	=> $userdata['username'],
 			'FORUM_NAME'			=> $forum_name,
-			'U_BACK'					=> ($back) ? build_url(array('f', 'back')) . "&amp;f=$back" : '')
+
+			'S_GLOBAL_TRACE'		=> ($forum_id) ? false : true,
+
+			'U_BACK'				=> ($back) ? build_url(array('f', 'back')) . "&amp;f=$back" : '')
 		);
 
 		$template->assign_block_vars('trace', array(
@@ -929,6 +932,8 @@ class acp_permissions
 		$db->sql_freeresult($result);
 
 		$total = ACL_NO;
+		$add_key = (($forum_id) ? '_LOCAL' : '');
+
 		if (sizeof($groups))
 		{
 			// Get group auth settings
@@ -945,16 +950,16 @@ class acp_permissions
 				switch ($row['auth_setting'])
 				{
 					case ACL_NO:
-						$information = $user->lang['TRACE_GROUP_NO'];
+						$information = $user->lang['TRACE_GROUP_NO' . $add_key];
 					break;
 
 					case ACL_YES:
-						$information = ($total == ACL_YES) ? $user->lang['TRACE_GROUP_YES_TOTAL_YES'] : (($total == ACL_NEVER) ? $user->lang['TRACE_GROUP_YES_TOTAL_NEVER'] : $user->lang['TRACE_GROUP_YES_TOTAL_NO']);
+						$information = ($total == ACL_YES) ? $user->lang['TRACE_GROUP_YES_TOTAL_YES' . $add_key] : (($total == ACL_NEVER) ? $user->lang['TRACE_GROUP_YES_TOTAL_NEVER' . $add_key] : $user->lang['TRACE_GROUP_YES_TOTAL_NO' . $add_key]);
 						$total = ($total == ACL_NO) ? ACL_YES : $total;
 					break;
 
 					case ACL_NEVER:
-						$information = ($total == ACL_YES) ? $user->lang['TRACE_GROUP_NEVER_TOTAL_YES'] : (($total == ACL_NEVER) ? $user->lang['TRACE_GROUP_NEVER_TOTAL_NEVER'] : $user->lang['TRACE_GROUP_NEVER_TOTAL_NO']);
+						$information = ($total == ACL_YES) ? $user->lang['TRACE_GROUP_NEVER_TOTAL_YES' . $add_key] : (($total == ACL_NEVER) ? $user->lang['TRACE_GROUP_NEVER_TOTAL_NEVER' . $add_key] : $user->lang['TRACE_GROUP_NEVER_TOTAL_NO' . $add_key]);
 						$total = ACL_NEVER;
 					break;
 				}
@@ -973,24 +978,24 @@ class acp_permissions
 			}
 		}
 
-		// Get user specific permission...
+		// Get user specific permission... globally or for this forum
 		$hold_ary = $auth->acl_user_raw_data($user_id, $permission, $forum_id);
 		$auth_setting = (!sizeof($hold_ary)) ? ACL_NO : $hold_ary[$user_id][$forum_id][$permission];
 
 		switch ($auth_setting)
 		{
 			case ACL_NO:
-				$information = ($total == ACL_NO) ? $user->lang['TRACE_USER_NO_TOTAL_NO'] : $user->lang['TRACE_USER_KEPT'];
+				$information = ($total == ACL_NO) ? $user->lang['TRACE_USER_NO_TOTAL_NO' . $add_key] : $user->lang['TRACE_USER_KEPT' . $add_key];
 				$total = ($total == ACL_NO) ? ACL_NEVER : $total;
 			break;
 
 			case ACL_YES:
-				$information = ($total == ACL_YES) ? $user->lang['TRACE_USER_YES_TOTAL_YES'] : (($total == ACL_NEVER) ? $user->lang['TRACE_USER_YES_TOTAL_NEVER'] : $user->lang['TRACE_USER_YES_TOTAL_NO']);
+				$information = ($total == ACL_YES) ? $user->lang['TRACE_USER_YES_TOTAL_YES' . $add_key] : (($total == ACL_NEVER) ? $user->lang['TRACE_USER_YES_TOTAL_NEVER' . $add_key] : $user->lang['TRACE_USER_YES_TOTAL_NO' . $add_key]);
 				$total = ($total == ACL_NO) ? ACL_YES : $total;
 			break;
 
 			case ACL_NEVER:
-				$information = ($total == ACL_YES) ? $user->lang['TRACE_USER_NEVER_TOTAL_YES'] : (($total == ACL_NEVER) ? $user->lang['TRACE_USER_NEVER_TOTAL_NEVER'] : $user->lang['TRACE_USER_NEVER_TOTAL_NO']);
+				$information = ($total == ACL_YES) ? $user->lang['TRACE_USER_NEVER_TOTAL_YES' . $add_key] : (($total == ACL_NEVER) ? $user->lang['TRACE_USER_NEVER_TOTAL_NEVER' . $add_key] : $user->lang['TRACE_USER_NEVER_TOTAL_NO' . $add_key]);
 				$total = ACL_NEVER;
 			break;
 		}
@@ -1007,8 +1012,7 @@ class acp_permissions
 			'S_TOTAL_NEVER'		=> ($total == ACL_NEVER) ? true : false)
 		);
 
-		// global permission might overwrite local permission
-		if (($forum_id != 0) && isset($auth->acl_options['global'][$permission]))
+		if ($forum_id != 0 && isset($auth->acl_options['global'][$permission]))
 		{
 			if ($user_id != $user->data['user_id'])
 			{
@@ -1031,17 +1035,21 @@ class acp_permissions
 				$information = $user->lang['TRACE_USER_GLOBAL_NEVER_TOTAL_KEPT'];
 			}
 
-			$template->assign_block_vars('trace', array(
-				'WHO'			=> sprintf($user->lang['TRACE_GLOBAL_SETTING'], $userdata['username']),
-				'INFORMATION'	=> sprintf($information, '<a href="' . $this->u_action . "&amp;u=$user_id&amp;f=0&amp;auth=$permission&amp;back=$forum_id\">", '</a>'),
+			// If there is no auth information we do not need to worry the user by showing non-relevant data.
+			if ($auth_setting)
+			{
+				$template->assign_block_vars('trace', array(
+					'WHO'			=> sprintf($user->lang['TRACE_GLOBAL_SETTING'], $userdata['username']),
+					'INFORMATION'	=> sprintf($information, '<a href="' . $this->u_action . "&amp;u=$user_id&amp;f=0&amp;auth=$permission&amp;back=$forum_id\">", '</a>'),
 
-				'S_SETTING_NO'		=> false,
-				'S_SETTING_YES'		=> $auth_setting,
-				'S_SETTING_NEVER'	=> !$auth_setting,
-				'S_TOTAL_NO'		=> false,
-				'S_TOTAL_YES'		=> ($total == ACL_YES) ? true : false,
-				'S_TOTAL_NEVER'		=> ($total == ACL_NEVER) ? true : false)
-			);
+					'S_SETTING_NO'		=> false,
+					'S_SETTING_YES'		=> $auth_setting,
+					'S_SETTING_NEVER'	=> !$auth_setting,
+					'S_TOTAL_NO'		=> false,
+					'S_TOTAL_YES'		=> ($total == ACL_YES) ? true : false,
+					'S_TOTAL_NEVER'		=> ($total == ACL_NEVER) ? true : false)
+				);
+			}
 		}
 
 		// Take founder status into account, overwriting the default values
@@ -1058,7 +1066,16 @@ class acp_permissions
 				'S_TOTAL_YES'		=> true,
 				'S_TOTAL_NEVER'		=> false)
 			);
+
+			$total = ACL_YES;
 		}
+
+		// Total value...
+		$template->assign_vars(array(
+			'S_RESULT_NO'		=> ($total == ACL_NO) ? true : false,
+			'S_RESULT_YES'		=> ($total == ACL_YES) ? true : false,
+			'S_RESULT_NEVER'	=> ($total == ACL_NEVER) ? true : false,
+		));
 	}
 
 	/**

@@ -18,7 +18,7 @@
 
 <!-- BEGIN p_mask -->
 <div class="clearfix"></div>
-<h3>{p_mask.PADDING}{p_mask.NAME}<!-- IF p_mask.S_LOCAL --> <span class="small"> [{p_mask.L_ACL_TYPE}]</span><!-- ENDIF --></h3>
+<h3>{p_mask.NAME}<!-- IF p_mask.S_LOCAL --> <span class="small"> [{p_mask.L_ACL_TYPE}]</span><!-- ENDIF --></h3>
 
 <!-- BEGIN f_mask -->
 <div class="clearfix"></div>
@@ -28,7 +28,7 @@
 			<input type="checkbox" style="display: none;" class="permissions-checkbox" name="inherit[{p_mask.f_mask.UG_ID}][{p_mask.f_mask.FORUM_ID}]" id="checkbox{p_mask.S_ROW_COUNT}{p_mask.f_mask.S_ROW_COUNT}" value="1" onclick="toggle_opacity('{p_mask.S_ROW_COUNT}{p_mask.f_mask.S_ROW_COUNT}')" /> 
 		<!-- ELSE -->
 		<!-- ENDIF -->
-		<!-- {p_mask.f_mask.PADDING} -->{p_mask.f_mask.NAME}
+		<!-- IF p_mask.f_mask.PADDING --><span class="padding">{p_mask.f_mask.PADDING}{p_mask.f_mask.PADDING}</span><!-- ENDIF -->{p_mask.f_mask.NAME}
 	</legend>
 	<!-- IF not p_mask.S_VIEW -->
 		<div class="permissions-switch">

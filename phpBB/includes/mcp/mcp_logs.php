@@ -55,51 +55,69 @@ class mcp_logs
 		$this->tpl_name = 'mcp_logs';
 		$this->page_title = 'MCP_LOGS';
 
+		$forum_list = get_forum_list('m_');
+		$forum_list[] = 0;
+
 		$forum_id = $topic_id = 0;
+
 		switch ($mode)
 		{
 			case 'front':
-				$where_sql = '';
 			break;
 
 			case 'forum_logs':
 				$forum_id = request_var('f', 0);
-				$where_sql = " AND forum_id = $forum_id";
+
+				if (!in_array($forum_id, $forum_list))
+				{
+					trigger_error('NOT_AUTHORISED');
+				}
+
+				$forum_list = array($forum_id);
 			break;
 
 			case 'topic_logs':
 				$topic_id = request_var('t', 0);
-				$where_sql = " AND topic_id = $topic_id";
+
+				$sql = 'SELECT forum_id
+					FROM ' . TOPICS_TABLE . '
+					WHERE topic_id = ' . $topic_id;
+				$result = $db->sql_query($sql);
+				$forum_id = (int) $db->sql_fetchfield('forum_id');
+				$db->sql_freeresult($result);
+
+				if (!in_array($forum_id, $forum_list))
+				{
+					trigger_error('NOT_AUTHORISED');
+				}
+
+				$forum_list = array($forum_id);
 			break;
 		}
 
 		// Delete entries if requested and able
 		if (($deletemark || $deleteall) && $auth->acl_get('a_clearlogs'))
 		{
-			if ($deletemark)
-			{
-				if (!sizeof($marked))
-				{
-					$where_sql = '';
-				}
-				else
-				{
-					$sql_in = array();
-					foreach ($marked as $mark)
-					{
-						$sql_in[] = $mark;
-					}
-
-					$where_sql = ' AND ' . $db->sql_in_set('log_id', $sql_in);
-					unset($sql_in);
-				}
-			}
-
-			if ($where_sql || $deleteall)
+			if ($deletemark && sizeof($marked))
 			{
 				$sql = 'DELETE FROM ' . LOG_TABLE . '
-					WHERE log_type = ' . LOG_MOD . "
-					$where_sql";
+					WHERE log_type = ' . LOG_MOD . '
+						AND ' . $db->sql_in_set('forum_id', $forum_list) . '
+						AND ' . $db->sql_in_set('log_id', $marked);
+				$db->sql_query($sql);
+
+				add_log('admin', 'LOG_CLEAR_MOD');
+			}
+			else if ($deleteall)
+			{
+				$sql = 'DELETE FROM ' . LOG_TABLE . '
+					WHERE log_type = ' . LOG_MOD . '
+						AND ' . $db->sql_in_set('forum_id', $forum_list);
+
+				if ($mode == 'topic_logs')
+				{
+					$sql .= ' AND topic_id = ' . $topic_id;
+				}
 				$db->sql_query($sql);
 
 				add_log('admin', 'LOG_CLEAR_MOD');
@@ -121,7 +139,7 @@ class mcp_logs
 		// Grab log data
 		$log_data = array();
 		$log_count = 0;
-		view_log('mod', $log_data, $log_count, $config['topics_per_page'], $start, $forum_id, $topic_id, 0, $sql_where, $sql_sort);
+		view_log('mod', $log_data, $log_count, $config['topics_per_page'], $start, $forum_list, $topic_id, 0, $sql_where, $sql_sort);
 
 		$template->assign_vars(array(
 			'PAGE_NUMBER'		=> on_page($log_count, $config['topics_per_page'], $start),

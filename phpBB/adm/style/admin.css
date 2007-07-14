@@ -1322,6 +1322,9 @@ fieldset.permissions .permissions-switch {
 	float: left;
 }
 
+fieldset.permissions .padding {
+}
+
 .permissions-switch a {
 	text-decoration: underline;
 	font-size: 0.90em;

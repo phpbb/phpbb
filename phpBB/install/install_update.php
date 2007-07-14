@@ -454,7 +454,7 @@ class install_update extends module
 									{
 										if (substr(strrchr($entry, '.'), 1) == 'css')
 										{
-											$file_list[] = $entry;
+											$file_list[] = "{$phpbb_root_path}styles/{$theme['theme_path']}/theme/{$entry}";
 										}
 									}
 									closedir($dir);

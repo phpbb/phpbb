@@ -365,14 +365,14 @@ function filelist($rootdir, $dir = '', $type = 'gif|jpg|jpeg|png')
 
 	if (!is_dir($rootdir . $dir))
 	{
-		return false;
+		return $matches;
 	}
 
 	$dh = @opendir($rootdir . $dir);
 
 	if (!$dh)
 	{
-		return false;
+		return $matches;
 	}
 
 	while (($fname = readdir($dh)) !== false)
