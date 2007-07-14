@@ -1500,7 +1500,7 @@ function validate_password($password)
 	{
 		foreach ($chars as $char)
 		{
-			if (!mb_ereg_match($char, $password))
+			if (mb_ereg($char, $password) === false)
 			{
 				return 'INVALID_CHARS';
 			}
