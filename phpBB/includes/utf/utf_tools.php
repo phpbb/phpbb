@@ -1057,15 +1057,20 @@ function utf8_case_fold($text, $option = 'full')
 		$uniarray['s'] = include($phpbb_root_path . 'includes/utf/data/case_fold_s.' . $phpEx);
 	}
 
+	// common is always replaced
 	$text = strtr($text, $uniarray['c']);
+
 	if ($option === 'full')
 	{
+		// full replaces a character with multiple characters
 		$text = strtr($text, $uniarray['f']);
 	}
 	else
 	{
+		// simple replaces a character with another character
 		$text = strtr($text, $uniarray['s']);
 	}
+
 	return $text;
 }
 
@@ -1079,7 +1084,6 @@ function utf8_case_fold($text, $option = 'full')
 */
 function utf8_case_fold_nfkc($text, $option = 'full')
 {
-	static $uniarray = array();
 	static $fc_nfkc_closure = array(
 		"\xCD\xBA"	=> "\x20\xCE\xB9",
 		"\xCF\x92"	=> "\xCF\x85",
@@ -1649,34 +1653,10 @@ function utf8_case_fold_nfkc($text, $option = 'full')
 	);
 	global $phpbb_root_path, $phpEx;
 
-	// common is always set
-	if (!isset($uniarray['c']))
-	{
-		$uniarray['c'] = include($phpbb_root_path . 'includes/utf/data/case_fold_c.' . $phpEx);
-	}
+	// do the case fold
+	$text = utf8_case_fold($text, $option);
 
-	// only set full if we need to
-	if ($option === 'full' && !isset($uniarray['f']))
-	{
-		$uniarray['f'] = include($phpbb_root_path . 'includes/utf/data/case_fold_f.' . $phpEx);
-	}
-
-	// only set simple if we need to
-	if ($option !== 'full' && !isset($uniarray['s']))
-	{
-		$uniarray['s'] = include($phpbb_root_path . 'includes/utf/data/case_fold_s.' . $phpEx);
-	}
-
-	$text = strtr($text, $uniarray['c']);
-	if ($option === 'full')
-	{
-		$text = strtr($text, $uniarray['f']);
-	}
-	else
-	{
-		$text = strtr($text, $uniarray['s']);
-	}
-
+	// convert to NFKC
 	utf_normalizer::nfkc($text);
 
 	// FC_NFKC_Closure, http://www.unicode.org/Public/5.0.0/ucd/DerivedNormalizationProps.txt
@@ -1764,36 +1744,11 @@ function utf8_case_fold_nfc($text, $option = 'full')
 	);
 	global $phpbb_root_path, $phpEx;
 
-	// common is always set
-	if (!isset($uniarray['c']))
-	{
-		$uniarray['c'] = include($phpbb_root_path . 'includes/utf/data/case_fold_c.' . $phpEx);
-	}
-
-	// only set full if we need to
-	if ($option === 'full' && !isset($uniarray['f']))
-	{
-		$uniarray['f'] = include($phpbb_root_path . 'includes/utf/data/case_fold_f.' . $phpEx);
-	}
-
-	// only set simple if we need to
-	if ($option !== 'full' && !isset($uniarray['s']))
-	{
-		$uniarray['s'] = include($phpbb_root_path . 'includes/utf/data/case_fold_s.' . $phpEx);
-	}
-
 	// perform a small trick, avoid further normalization on composed points that contain U+0345 in their decomposition
 	$text = strtr($text, $ypogegrammeni);
 
-	$text = strtr($text, $uniarray['c']);
-	if ($option === 'full')
-	{
-		$text = strtr($text, $uniarray['f']);
-	}
-	else
-	{
-		$text = strtr($text, $uniarray['s']);
-	}
+	// do the case fold
+	$text = utf8_case_fold($text, $option);
 
 	return $text;
 }
