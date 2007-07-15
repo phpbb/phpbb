@@ -142,7 +142,7 @@ class ucp_register
 		}
 
 		$data = array(
-			'username'			=> request_var('username', '', true),
+			'username'			=> utf8_normalize_nfc(request_var('username', '', true)),
 			'new_password'		=> request_var('new_password', '', true),
 			'password_confirm'	=> request_var('password_confirm', '', true),
 			'email'				=> strtolower(request_var('email', '')),

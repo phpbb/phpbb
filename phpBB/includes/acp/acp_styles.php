@@ -2051,6 +2051,18 @@ parse_css_file = {PARSE_CSS_FILE}
 					$error[] = $user->lang['EDIT_' . strtoupper($mode) . '_STORED_DB'];
 					$store_db = 1;
 				}
+
+				// themes which have to be parsed have to go into db
+				if ($mode == 'theme')
+				{
+					$cfg = parse_cfg_file("{$phpbb_root_path}styles/" . $style_row["{$mode}_path"] . "/theme/theme.cfg");
+
+					if (isset($cfg['parse_css_file']) && $cfg['parse_css_file'])
+					{
+						$error[] = $user->lang['EDIT_THEME_STORE_PARSED'];
+						$store_db = 1;
+					}
+				}
 			}
 			
 			if (!sizeof($error))

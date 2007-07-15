@@ -122,7 +122,7 @@ class session
 	*
 	* This is where all session activity begins. We gather various pieces of
 	* information from the client and server. We test to see if a session already
-	* exists. If it does, fine and dandy. If it doesn't we'll go on to create a 
+	* exists. If it does, fine and dandy. If it doesn't we'll go on to create a
 	* new one ... pretty logical heh? We also examine the system load (if we're
 	* running on a system which makes such information readily available) and
 	* halt if it's above an admin definable limit.
@@ -304,7 +304,7 @@ class session
 						$this->data['is_registered'] = ($this->data['user_id'] != ANONYMOUS && ($this->data['user_type'] == USER_NORMAL || $this->data['user_type'] == USER_FOUNDER)) ? true : false;
 						$this->data['is_bot'] = (!$this->data['is_registered'] && $this->data['user_id'] != ANONYMOUS) ? true : false;
 						$this->data['user_lang'] = basename($this->data['user_lang']);
-						
+
 						return true;
 					}
 				}
@@ -322,7 +322,7 @@ class session
 		// If we reach here then no (valid) session exists. So we'll create a new one
 		return $this->session_create();
 	}
-	
+
 	/**
 	* Create a new session
 	*
@@ -357,7 +357,7 @@ class session
 		* check. We loop through the list of bots defined by the admin and
 		* see if we have any useragent and/or IP matches. If we do, this is a
 		* bot, act accordingly
-		*/		
+		*/
 		$bot = false;
 		$active_bots = $cache->obtain_bots();
 
@@ -409,7 +409,7 @@ class session
 		// Else if we've been passed a user_id we'll grab data based on that
 		if (isset($this->cookie_data['k']) && $this->cookie_data['k'] && $this->cookie_data['u'] && !sizeof($this->data))
 		{
-			$sql = 'SELECT u.* 
+			$sql = 'SELECT u.*
 				FROM ' . USERS_TABLE . ' u, ' . SESSIONS_KEYS_TABLE . ' k
 				WHERE u.user_id = ' . (int) $this->cookie_data['u'] . '
 					AND u.user_type IN (' . USER_NORMAL . ', ' . USER_FOUNDER . ")
@@ -434,7 +434,7 @@ class session
 			$db->sql_freeresult($result);
 			$bot = false;
 		}
-	
+
 		// If no data was returned one or more of the following occurred:
 		// Key didn't match one in the DB
 		// User does not exist
@@ -651,7 +651,7 @@ class session
 			$SID = '?sid=';
 			$_SID = '';
 		}
-		
+
 		return true;
 	}
 
@@ -826,7 +826,7 @@ class session
 	*
 	* Checks whether the supplied user is banned by id, ip or email. If no parameters
 	* are passed to the method pre-existing session data is used. If $return is false
-	* this routine does not return on finding a banned user, it outputs a relevant 
+	* this routine does not return on finding a banned user, it outputs a relevant
 	* message and stops execution.
 	*
 	* @param string|array	$user_ips	Can contain a string with one IP or an array of multiple IPs
@@ -1160,7 +1160,7 @@ class session
 		$sql_where = 'session_user_id = ' . (int) $user_id;
 		$sql_where .= ($user_id === $this->data['user_id']) ? " AND session_id <> '" . $db->sql_escape($this->session_id) . "'" : '';
 
-		$sql = 'DELETE FROM ' . SESSIONS_TABLE . " 
+		$sql = 'DELETE FROM ' . SESSIONS_TABLE . "
 			WHERE $sql_where";
 		$db->sql_query($sql);
 
@@ -1209,7 +1209,7 @@ class user extends session
 
 		if ($this->data['user_id'] != ANONYMOUS)
 		{
-			$this->lang_name = (file_exists($phpbb_root_path . 'language/' . $this->data['user_lang'] . "/common.$phpEx")) ? $this->data['user_lang'] : basename($config['default_lang']);			
+			$this->lang_name = (file_exists($phpbb_root_path . 'language/' . $this->data['user_lang'] . "/common.$phpEx")) ? $this->data['user_lang'] : basename($config['default_lang']);
 			$this->lang_path = $phpbb_root_path . 'language/' . $this->lang_name . '/';
 
 			$this->date_format = $this->data['user_dateformat'];
@@ -1262,7 +1262,7 @@ class user extends session
 			}
 			*/
 		}
- 
+
 		// We include common language file here to not load it every time a custom language file is included
 		$lang = &$this->lang;
 
@@ -1303,8 +1303,8 @@ class user extends session
 		{
 			$style = $this->data['user_style'] = $config['default_style'];
 
-			$sql = 'UPDATE ' . USERS_TABLE . " 
-				SET user_style = $style 
+			$sql = 'UPDATE ' . USERS_TABLE . "
+				SET user_style = $style
 				WHERE user_id = {$this->data['user_id']}";
 			$db->sql_query($sql);
 
@@ -1357,7 +1357,7 @@ class user extends session
 			// Match CSS imports
 			$matches = array();
 			preg_match_all('/@import url\(["\'](.*)["\']\);/i', $stylesheet, $matches);
-	
+
 			if (sizeof($matches))
 			{
 				$content = '';
@@ -1419,9 +1419,9 @@ class user extends session
 			// Attention: this code ignores the image definition list from acp_styles and just takes everything
 			// that the config file contains
 			$sql_ary = array();
-	
+
 			$db->sql_transaction('begin');
-	
+
 			$sql = 'DELETE FROM ' . STYLES_IMAGESET_DATA_TABLE . '
 				WHERE imageset_id = ' . $this->theme['imageset_id'] . '
 					AND image_lang = \'' . $db->sql_escape($this->img_lang) . '\'';
@@ -1464,14 +1464,20 @@ class user extends session
 					}
 				}
 			}
-	
-			$db->sql_multi_insert(STYLES_IMAGESET_DATA_TABLE, $sql_ary);
-	
-			$db->sql_transaction('commit');
-	
-			$cache->destroy('sql', STYLES_IMAGESET_DATA_TABLE);
-	
-			add_log('admin', 'LOG_IMAGESET_REFRESHED', $this->theme['imageset_name'], $this->img_lang);
+
+			if (sizeof($sql_ary))
+			{
+				$db->sql_multi_insert(STYLES_IMAGESET_DATA_TABLE, $sql_ary);
+				$db->sql_transaction('commit');
+				$cache->destroy('sql', STYLES_IMAGESET_DATA_TABLE);
+
+				add_log('admin', 'LOG_IMAGESET_LANG_REFRESHED', $this->theme['imageset_name'], $this->img_lang);
+			}
+			else
+			{
+				$db->sql_transaction('commit');
+				add_log('admin', 'LOG_IMAGESET_LANG_MISSING', $this->theme['imageset_name'], $this->img_lang);
+			}
 		}
 
 		// If this function got called from the error handler we are finished here.
@@ -1520,7 +1526,7 @@ class user extends session
 				}
 			}
 		}
-		
+
 		if (isset($this->data['session_viewonline']))
 		{
 			// Make sure the user is able to hide his session
@@ -1786,7 +1792,7 @@ class user extends session
 			case 'src':
 				return $img_data['src'];
 			break;
-			
+
 			case 'width':
 				return ($width === false) ? $img_data['width'] : $width;
 			break;

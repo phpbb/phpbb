@@ -44,7 +44,7 @@ $sort_days		= request_var('st', 0);
 $sort_key		= request_var('sk', 't');
 $sort_dir		= request_var('sd', 'd');
 
-$return_chars	= request_var('ch', ($topic_id) ? -1 : 200);
+$return_chars	= request_var('ch', ($topic_id) ? -1 : 300);
 $search_forum	= request_var('fid', array(0));
 
 // Is user able to search? Has search been disabled?
@@ -476,7 +476,7 @@ if ($keywords || $author || $author_id || $search_id || $submit)
 	$u_search .= ($u_search_forum) ? '&amp;fid%5B%5D=' . $u_search_forum : '';
 	$u_search .= (!$search_child) ? '&amp;sc=0' : '';
 	$u_search .= ($search_fields != 'all') ? '&amp;sf=' . $search_fields : '';
-	$u_search .= ($return_chars != 200) ? '&amp;ch=' . $return_chars : '';
+	$u_search .= ($return_chars != 300) ? '&amp;ch=' . $return_chars : '';
 
 	$template->assign_vars(array(
 		'SEARCH_TITLE'		=> $l_search_title,
@@ -1009,7 +1009,7 @@ $s_characters .= '<option value="50">50</option>';
 
 for ($i = 100; $i <= 1000 ; $i += 100)
 {
-	$selected = ($i == 200) ? ' selected="selected"' : '';
+	$selected = ($i == 300) ? ' selected="selected"' : '';
 	$s_characters .= '<option value="' . $i . '"' . $selected . '>' . $i . '</option>';
 }
 

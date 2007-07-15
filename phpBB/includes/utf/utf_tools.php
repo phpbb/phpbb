@@ -1848,154 +1848,22 @@ function utf8_normalize_nfc($strings)
 */
 function utf8_clean_string($text)
 {
-	$text = utf8_case_fold($text);
-	
-	if (!class_exists('utf_normalizer'))
+	global $phpbb_root_path, $phpEx;
+
+	static $homographs = array();
+	if (empty($homographs))
 	{
-		global $phpbb_root_path, $phpEx;
-		include($phpbb_root_path . 'includes/utf/utf_normalizer.' . $phpEx);
+		$homographs = include($phpbb_root_path . 'includes/utf/data/confusables.' . $phpEx);
 	}
 
-	utf_normalizer::nfc($text);
-
-	static $homographs = array(
-		"\xC2\xA1"			=>	"\x69",				// EXCLAMATION MARK, INVERTED => LATIN SMALL LETTER I
-		"\xC2\xAD"			=>	'',					// HYPHEN, SOFT => empty string
-		"\xC4\x90"			=>	"\xC3\x90",			// LATIN CAPITAL LETTER D WITH STROKE => LATIN CAPITAL LETTER ETH
-		"\xC7\x83"			=>	"\x21",				// LATIN LETTER RETROFLEX CLICK => EXCLAMATION MARK
-		"\xC9\x85"			=>	"\xCE\x9B",			// LATIN CAPITAL LETTER TURNED V => GREEK CAPITAL LETTER LAMDA
-		"\xC9\x99"			=>	"\xC7\x9D",			// LATIN SMALL LETTER SCHWA => LATIN SMALL LETTER TURNED E
-		"\xCA\x99"			=>	"\xD0\xB2",			// LATIN LETTER SMALL CAPITAL B => CYRILLIC SMALL LETTER VE
-		"\xCA\x9C"			=>	"\xD0\xBD",			// LATIN LETTER SMALL CAPITAL H => CYRILLIC SMALL LETTER EN
-		"\xCE\x91"			=>	"\x41",				// GREEK CAPITAL LETTER ALPHA => LATIN CAPITAL LETTER A
-		"\xCE\x92"			=>	"\x42",				// GREEK CAPITAL LETTER BETA => LATIN CAPITAL LETTER B
-		"\xCE\x95"			=>	"\x45",				// GREEK CAPITAL LETTER EPSILON => LATIN CAPITAL LETTER E
-		"\xCE\x96"			=>	"\x5A",				// GREEK CAPITAL LETTER ZETA => LATIN CAPITAL LETTER Z
-		"\xCE\x97"			=>	"\x48",				// GREEK CAPITAL LETTER ETA => LATIN CAPITAL LETTER H
-		"\xCE\x99"			=>	"\x49",				// GREEK CAPITAL LETTER IOTA => LATIN CAPITAL LETTER I
-		"\xCE\x9A"			=>	"\x4B",				// GREEK CAPITAL LETTER KAPPA => LATIN CAPITAL LETTER K
-		"\xCE\x9C"			=>	"\x4D",				// GREEK CAPITAL LETTER MU => LATIN CAPITAL LETTER M
-		"\xCE\x9D"			=>	"\x4E",				// GREEK CAPITAL LETTER NU => LATIN CAPITAL LETTER N
-		"\xCE\x9F"			=>	"\x4F",				// GREEK CAPITAL LETTER OMICRON => LATIN CAPITAL LETTER O
-		"\xCE\xA1"			=>	"\x50",				// GREEK CAPITAL LETTER RHO => LATIN CAPITAL LETTER P
-		"\xCE\xA3"			=>	"\xC6\xA9",			// GREEK CAPITAL LETTER SIGMA => LATIN CAPITAL LETTER ESH
-		"\xCE\xA4"			=>	"\x54",				// GREEK CAPITAL LETTER TAU => LATIN CAPITAL LETTER T
-		"\xCE\xA5"			=>	"\x59",				// GREEK CAPITAL LETTER UPSILON => LATIN CAPITAL LETTER Y
-		"\xCE\xA7"			=>	"\x58",				// GREEK CAPITAL LETTER CHI => LATIN CAPITAL LETTER X
-		"\xCE\xB1"			=>	"\x61",				// GREEK SMALL LETTER ALPHA => LATIN SMALL LETTER A
-		"\xCE\xB5"			=>	"\xC9\x9B",			// GREEK SMALL LETTER EPSILON => LATIN SMALL LETTER OPEN E
-		"\xCE\xB9"			=>	"\xC9\xA9",			// GREEK SMALL LETTER IOTA => LATIN SMALL LETTER IOTA
-		"\xCE\xBF"			=>	"\x6F",				// GREEK SMALL LETTER OMICRON => LATIN SMALL LETTER O
-		"\xCF\xB3"			=>	"\x6A",				// GREEK LETTER YOT => LATIN SMALL LETTER J
-		"\xD0\x85"			=>	"\x53",				// CYRILLIC CAPITAL LETTER DZE => LATIN CAPITAL LETTER S
-		"\xD0\x88"			=>	"\x4A",				// CYRILLIC CAPITAL LETTER JE => LATIN CAPITAL LETTER J
-		"\xD0\x91"			=>	"\xC6\x82",			// CYRILLIC CAPITAL LETTER BE => LATIN CAPITAL LETTER B WITH TOPBAR
-		"\xD0\x93"			=>	"\xCE\x93",			// CYRILLIC CAPITAL LETTER GHE => GREEK CAPITAL LETTER GAMMA
-		"\xD0\x9F"			=>	"\xCE\xA0",			// CYRILLIC CAPITAL LETTER PE => GREEK CAPITAL LETTER PI
-		"\xD0\xA1"			=>	"\x43",				// CYRILLIC CAPITAL LETTER ES => LATIN CAPITAL LETTER C
-		"\xD0\xB0"			=>	"\x61",				// CYRILLIC SMALL LETTER A => LATIN SMALL LETTER A
-		"\xD0\xB5"			=>	"\x65",				// CYRILLIC SMALL LETTER IE => LATIN SMALL LETTER E
-		"\xD0\xBA"			=>	"\xC4\xB8",			// CYRILLIC SMALL LETTER KA => LATIN SMALL LETTER KRA
-		"\xD0\xBE"			=>	"\x6F",				// CYRILLIC SMALL LETTER O => LATIN SMALL LETTER O
-		"\xD1\x80"			=>	"\x70",				// CYRILLIC SMALL LETTER ER => LATIN SMALL LETTER P
-		"\xD1\x81"			=>	"\x63",				// CYRILLIC SMALL LETTER ES => LATIN SMALL LETTER C
-		"\xD1\x83"			=>	"\x79",				// CYRILLIC SMALL LETTER U => LATIN SMALL LETTER Y
-		"\xD1\x85"			=>	"\x78",				// CYRILLIC SMALL LETTER HA => LATIN SMALL LETTER X
-		"\xD1\x95"			=>	"\x73",				// CYRILLIC SMALL LETTER DZE => LATIN SMALL LETTER S
-		"\xD1\x96"			=>	"\x69",				// CYRILLIC SMALL LETTER BYELORUSSIAN-UKRAINIAN I => LATIN SMALL LETTER I
-		"\xD1\x98"			=>	"\x6A",				// CYRILLIC SMALL LETTER JE => LATIN SMALL LETTER J
-		"\xD2\xBB"			=>	"\x68",				// CYRILLIC SMALL LETTER SHHA => LATIN SMALL LETTER H
-		"\xD3\x8F"			=>	"\xC9\xAA",			// CYRILLIC SMALL LETTER PALOCHKA => LATIN LETTER SMALL CAPITAL I
-		"\xD3\x94"			=>	"\xC3\x86",			// CYRILLIC CAPITAL LIGATURE A IE => LATIN CAPITAL LETTER AE
-		"\xD3\x95"			=>	"\xC3\xA6",			// CYRILLIC SMALL LIGATURE A IE => LATIN SMALL LETTER AE
-		"\xD3\x98"			=>	"\xC6\x8E",			// CYRILLIC CAPITAL LETTER SCHWA => LATIN CAPITAL LETTER REVERSED E
-		"\xD3\x99"			=>	"\xC7\x9D",			// CYRILLIC SMALL LETTER SCHWA => LATIN SMALL LETTER TURNED E
-		"\xD3\xA1"			=>	"\xCA\x92",			// CYRILLIC SMALL LETTER ABKHASIAN DZE => LATIN SMALL LETTER EZH
-		"\xD3\xA8"			=>	"\xC6\x9F",			// CYRILLIC CAPITAL LETTER BARRED O => LATIN CAPITAL LETTER O WITH MIDDLE TILDE
-		"\xD3\xA9"			=>	"\xC9\xB5",			// CYRILLIC SMALL LETTER BARRED O => LATIN SMALL LETTER BARRED O
-		"\xD4\x81"			=>	"\x64",				// CYRILLIC SMALL LETTER KOMI DE => LATIN SMALL LETTER D
-		"\xE1\x81\x80"		=>	"\xE1\x80\x9D",		// MYANMAR DIGIT ZERO => MYANMAR LETTER WA
-		"\xE1\x9E\xA3"		=>	"\xE1\x9E\xA2",		// KHMER INDEPENDENT VOWEL QAQ => KHMER LETTER QA
-		"\xE1\xA1\x95"		=>	"\xE1\xA0\xB5",		// MONGOLIAN LETTER TODO YA => MONGOLIAN LETTER JA
-		"\xE1\xA7\x90"		=>	"\xE1\xA6\x9E",		// NEW TAI LUE DIGIT ZERO => NEW TAI LUE LETTER LOW VA
-		"\xE1\xAD\x92"		=>	"\xE1\xAC\x8D",		// BALINESE DIGIT TWO => BALINESE LETTER LA LENGA
-		"\xE1\xAD\x93"		=>	"\xE1\xAC\x91",		// BALINESE DIGIT THREE => BALINESE LETTER OKARA
-		"\xE1\xAD\x98"		=>	"\xE1\xAC\xA8",		// BALINESE DIGIT EIGHT => BALINESE LETTER PA KAPAL
-		"\xE1\xAD\x9C"		=>	"\xE1\xAD\x90",		// BALINESE WINDU => BALINESE DIGIT ZERO
-		"\xE1\xB4\x8D"		=>	"\xD0\xBC",			// LATIN LETTER SMALL CAPITAL M => CYRILLIC SMALL LETTER EM
-		"\xE1\xB4\x9B"		=>	"\xD1\x82",			// LATIN LETTER SMALL CAPITAL T => CYRILLIC SMALL LETTER TE
-		"\xE1\xB4\xA6"		=>	"\xD0\xB3",			// GREEK LETTER SMALL CAPITAL GAMMA => CYRILLIC SMALL LETTER GHE
-		"\xE1\xB4\xA8"		=>	"\xD0\xBF",			// GREEK LETTER SMALL CAPITAL PI => CYRILLIC SMALL LETTER PE
-		"\xE1\xB4\xA9"		=>	"\xE1\xB4\x98",		// GREEK LETTER SMALL CAPITAL RHO => LATIN LETTER SMALL CAPITAL P
-		"\xE1\xB4\xAB"		=>	"\xD0\xBB",			// CYRILLIC LETTER SMALL CAPITAL EL => CYRILLIC SMALL LETTER EL
-		"\xE2\x8D\xB3"		=>	"\xC9\xA9",			// APL FUNCTIONAL SYMBOL IOTA => LATIN SMALL LETTER IOTA
-		"\xE2\x8D\xB4"		=>	"\xCF\x81",			// APL FUNCTIONAL SYMBOL RHO => GREEK SMALL LETTER RHO
-		"\xE2\x8D\xB5"		=>	"\xCF\x89",			// APL FUNCTIONAL SYMBOL OMEGA => GREEK SMALL LETTER OMEGA
-		"\xE2\x8D\xBA"		=>	"\xCE\xB1",			// APL FUNCTIONAL SYMBOL ALPHA => GREEK SMALL LETTER ALPHA
-		"\xE2\xB1\xA7"		=>	"\xD2\xA2",			// LATIN CAPITAL LETTER H WITH DESCENDER => CYRILLIC CAPITAL LETTER EN WITH DESCENDER
-		"\xE2\xB1\xA9"		=>	"\xD2\x9A",			// LATIN CAPITAL LETTER K WITH DESCENDER => CYRILLIC CAPITAL LETTER KA WITH DESCENDER
-		"\xF0\x90\x8F\x91"	=>	"\xF0\x90\x8E\x82",	// OLD PERSIAN NUMBER ONE => UGARITIC LETTER GAMLA
-		"\xF0\x90\x8F\x93"	=>	"\xF0\x90\x8E\x93",	// OLD PERSIAN NUMBER TEN => UGARITIC LETTER AIN
-		"\xF0\x90\x92\xA0"	=>	"\xF0\x90\x92\x86",	// OSMANYA DIGIT ZERO => OSMANYA LETTER DEEL
-		"\xF0\x92\x80\xB8"	=>	"\xF0\x90\x8E\x9A",	// CUNEIFORM SIGN ASH => UGARITIC LETTER TO
-
-		"\xC2\xA0"			=>	"\x20",				// NO-BREAK SPACE
-		"\xE1\x9A\x80"		=>	"\x20",				// OGHAM SPACE MARK
-		"\xE2\x80\x80"		=>	"\x20",				// EN QUAD
-		"\xE2\x80\x81"		=>	"\x20",				// EM QUAD
-		"\xE2\x80\x82"		=>	"\x20",				// EN SPACE
-		"\xE2\x80\x83"		=>	"\x20",				// EM SPACE
-		"\xE2\x80\x84"		=>	"\x20",				// THREE-PER-EM SPACE
-		"\xE2\x80\x85"		=>	"\x20",				// FOUR-PER-EM SPACE
-		"\xE2\x80\x86"		=>	"\x20",				// SIX-PER-EM SPACE
-		"\xE2\x80\x87"		=>	"\x20",				// FIGURE SPACE
-		"\xE2\x80\x88"		=>	"\x20",				// PUNCTUATION SPACE
-		"\xE2\x80\x89"		=>	"\x20",				// THIN SPACE
-		"\xE2\x80\x8A"		=>	"\x20",				// HAIR SPACE
-		"\xE2\x80\xAF"		=>	"\x20",				// NARROW NO-BREAK SPACE
-		"\xE2\x81\x9F"		=>	"\x20",				// MEDIUM MATHEMATICAL SPACE
-		"\xE3\x80\x80"		=>	"\x20",				// IDEOGRAPHIC SPACE
-
-		"\xDB\x9D"			=>	'',					// ARABIC END OF AYAH
-		"\xDC\x8F"			=>	'',					// SYRIAC ABBREVIATION MARK
-		"\xE1\xA0\x86"		=>	'',					// MONGOLIAN TODO SOFT HYPHEN
-		"\xE1\xA0\x8E"		=>	'',					// MONGOLIAN VOWEL SEPARATOR
-		"\xE2\x80\x8B"		=>	'',					// ZERO WIDTH SPACE
-		"\xE2\x80\x8C"		=>	'',					// ZERO WIDTH NON-JOINER
-		"\xE2\x80\x8D"		=>	'',					// ZERO WIDTH JOINER
-		"\xE2\x80\xA8"		=>	'',					// LINE SEPARATOR
-		"\xE2\x80\xA9"		=>	'',					// PARAGRAPH SEPARATOR
-		"\xE2\x81\xA0"		=>	'',					// WORD JOINER
-		"\xE2\x81\xA1"		=>	'',					// FUNCTION APPLICATION
-		"\xE2\x81\xA2"		=>	'',					// INVISIBLE TIMES
-		"\xE2\x81\xA3"		=>	'',					// INVISIBLE SEPARATOR
-		"\xE2\x81\xAA"		=>	'',					// [CONTROL CHARACTERS]
-		"\xE2\x81\xAB"		=>	'',					// [CONTROL CHARACTERS]
-		"\xE2\x81\xAC"		=>	'',					// [CONTROL CHARACTERS]
-		"\xE2\x81\xAD"		=>	'',					// [CONTROL CHARACTERS]
-		"\xE2\x81\xAE"		=>	'',					// [CONTROL CHARACTERS]
-		"\xE2\x81\xAF"		=>	'',					// [CONTROL CHARACTERS]
-		"\xEF\xBB\xBF"		=>	'',					// ZERO WIDTH NO-BREAK SPACE
-		"\xEF\xBF\xB9"		=>	'',					// [CONTROL CHARACTERS]
-		"\xEF\xBF\xBA"		=>	'',					// [CONTROL CHARACTERS]
-		"\xEF\xBF\xBB"		=>	'',					// [CONTROL CHARACTERS]
-		"\xEF\xBF\xBC"		=>	'',					// [CONTROL CHARACTERS]
-		"\xF0\x9D\x85\xB3"	=>	'',					// [MUSICAL CONTROL CHARACTERS]
-		"\xF0\x9D\x85\xB4"	=>	'',					// [MUSICAL CONTROL CHARACTERS]
-		"\xF0\x9D\x85\xB5"	=>	'',					// [MUSICAL CONTROL CHARACTERS]
-		"\xF0\x9D\x85\xB6"	=>	'',					// [MUSICAL CONTROL CHARACTERS]
-		"\xF0\x9D\x85\xB7"	=>	'',					// [MUSICAL CONTROL CHARACTERS]
-		"\xF0\x9D\x85\xB8"	=>	'',					// [MUSICAL CONTROL CHARACTERS]
-		"\xF0\x9D\x85\xB9"	=>	'',					// [MUSICAL CONTROL CHARACTERS]
-		"\xF0\x9D\x85\xBA"	=>	'',					// [MUSICAL CONTROL CHARACTERS]
-	);
-
+	$text = utf8_case_fold_nfkc($text);
 	$text = strtr($text, $homographs);
-
 	// Other control characters
 	$text = preg_replace('#(?:[\x00-\x1F\x7F]+|(?:\xC2[\x80-\x9F])+)#', '', $text);
 
-	return $text;
+	// we can use trim here as all the other space characters should have been turned
+	// into normal ASCII spaces by now
+	return trim($text);
 }
 
 /**

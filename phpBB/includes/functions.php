@@ -2394,7 +2394,7 @@ function get_context($text, $words, $length = 400)
 			{
 				if (preg_match('#(?:[^\w]|^)(' . $word . ')(?:[^\w]|$)#i', $text, $match))
 				{
-					$pos = strpos($text, $match[1]);
+					$pos = utf8_strpos($text, $match[1]);
 					if ($pos !== false)
 					{
 						$word_indizes[] = $pos;
@@ -2417,21 +2417,21 @@ function get_context($text, $words, $length = 400)
 			$final_text_index = -1;
 
 			// cycle through every character in the original text
-			for ($i = $word_indizes[$word], $n = strlen($text); $i < $n; $i++)
+			for ($i = $word_indizes[$word], $n = utf8_strlen($text); $i < $n; $i++)
 			{
 				// if the current position is the start of one of the words then append $sequence_length characters to the final text
 				if (isset($word_indizes[$word]) && ($i == $word_indizes[$word]))
 				{
 					if ($final_text_index < $i - $sequence_length - 1)
 					{
-						$final_text .= '... ' . preg_replace('#^([^ ]*)#', '', substr($text, $i - $sequence_length, $sequence_length));
+						$final_text .= '... ' . preg_replace('#^([^ ]*)#', '', utf8_substr($text, $i - $sequence_length, $sequence_length));
 					}
 					else
 					{
 						// if the final text is already nearer to the current word than $sequence_length we only append the text
 						// from its current index on and distribute the unused length to all other sequenes
 						$sequence_length += (int) (($final_text_index - $i + $sequence_length + 1) / (2 * $wordnum));
-						$final_text .= substr($text, $final_text_index + 1, $i - $final_text_index - 1);
+						$final_text .= utf8_substr($text, $final_text_index + 1, $i - $final_text_index - 1);
 					}
 					$final_text_index = $i - 1;
 
@@ -2443,17 +2443,17 @@ function get_context($text, $words, $length = 400)
 				if ($j > 0)
 				{
 					// add the character to the final text and increment the sequence counter
-					$final_text .= $text[$i];
+					$final_text .= utf8_substr($text, $i, 1);
 					$final_text_index++;
 					$j++;
 
 					// if this is a whitespace then check whether we are done with this sequence
-					if ($text[$i] == ' ')
+					if (utf8_substr($text, $i, 1) == ' ')
 					{
 						// only check whether we have to exit the context generation completely if we haven't already reached the end anyway
 						if ($i + 4 < $n)
 						{
-							if (($j > $sequence_length && $word >= $wordnum) || strlen($final_text) > $length)
+							if (($j > $sequence_length && $word >= $wordnum) || utf8_strlen($final_text) > $length)
 							{
 								$final_text .= ' ...';
 								break;
@@ -2479,7 +2479,7 @@ function get_context($text, $words, $length = 400)
 
 	if (!sizeof($words) || !sizeof($word_indizes))
 	{
-		return (strlen($text) >= $length + 3) ? substr($text, 0, $length) . '...' : $text;
+		return (utf8_strlen($text) >= $length + 3) ? utf8_substr($text, 0, $length) . '...' : $text;
 	}
 }
 

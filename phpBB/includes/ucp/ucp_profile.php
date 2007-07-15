@@ -36,7 +36,7 @@ class ucp_profile
 			case 'reg_details':
 
 				$data = array(
-					'username'			=> request_var('username', $user->data['username'], true),
+					'username'			=> utf8_normalize_nfc(request_var('username', $user->data['username'], true)),
 					'email'				=> strtolower(request_var('email', $user->data['user_email'])),
 					'email_confirm'		=> strtolower(request_var('email_confirm', '')),
 					'new_password'		=> request_var('new_password', '', true),
