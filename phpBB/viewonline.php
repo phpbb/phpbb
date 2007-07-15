@@ -29,6 +29,17 @@ $sort_key	= request_var('sk', 'b');
 $sort_dir	= request_var('sd', 'd');
 $show_guests= ($config['load_online_guests']) ? request_var('sg', 0) : 0;
 
+// Can this user view profiles/memberlist?
+if (!$auth->acl_gets('u_viewprofile', 'a_user', 'a_useradd', 'a_userdel'))
+{
+	if ($user->data['user_id'] != ANONYMOUS)
+	{
+		trigger_error('NO_VIEW_USERS');
+	}
+
+	login_box('', $user->lang['LOGIN_EXPLAIN_VIEWONLINE']);
+}
+
 $sort_key_text = array('a' => $user->lang['SORT_USERNAME'], 'b' => $user->lang['SORT_LOCATION'], 'c' => $user->lang['SORT_JOINED']);
 $sort_key_sql = array('a' => 'u.username_clean', 'b' => 's.session_time', 'c' => 's.session_page');
 
@@ -117,7 +128,7 @@ if (!$show_guests)
 }
 
 // Get user list
-$sql = 'SELECT u.user_id, u.username, u.username_clean, u.user_type, u.user_colour, s.session_id, s.session_time, s.session_page, s.session_ip, s.session_viewonline
+$sql = 'SELECT u.user_id, u.username, u.username_clean, u.user_type, u.user_colour, s.session_id, s.session_time, s.session_page, s.session_ip, s.session_browser, s.session_viewonline
 	FROM ' . USERS_TABLE . ' u, ' . SESSIONS_TABLE . ' s
 	WHERE u.user_id = s.session_user_id
 		AND s.session_time >= ' . (time() - ($config['load_online_time'] * 60)) . 
@@ -132,19 +143,18 @@ while ($row = $db->sql_fetchrow($result))
 {
 	if ($row['user_id'] != ANONYMOUS && !isset($prev_id[$row['user_id']]))
 	{
-		$view_online = false;
-
-		if ($row['user_colour'])
-		{
-			$row['username'] = '<b style="color:#' . $row['user_colour'] . '">' . $row['username'] . '</b>';
-		}
+		$view_online = $s_user_hidden = false;
+		$user_colour = ($row['user_colour']) ? ' style="color:#' . $row['user_colour'] . '" class="username-coloured"' : '';
+		
+		$username_full = ($row['user_type'] != USER_IGNORE) ? get_username_string('full', $row['user_id'], $row['username'], $row['user_colour']) : '<span' . $user_colour . '>' . $row['username'] . '</span>';
 
 		if (!$row['session_viewonline'])
 		{
 			$view_online = ($auth->acl_get('u_viewonline')) ? true : false;
 			$logged_hidden_online++;
 
-			$row['username'] = '<i>' . $row['username'] . '</i>';
+			$username_full = '<em>' . $username_full . '</em>';
+			$s_user_hidden = true;
 		}
 		else
 		{
@@ -175,7 +185,8 @@ while ($row = $db->sql_fetchrow($result))
 			continue;
 		}
 
-		$row['username'] = $user->lang['GUEST'];
+		$s_user_hidden = false;
+		$username_full = get_username_string('full', $row['user_id'], $user->lang['GUEST']);
 	}
 	else
 	{
@@ -318,18 +329,22 @@ while ($row = $db->sql_fetchrow($result))
 
 	$template->assign_block_vars('user_row', array(
 		'USERNAME' 			=> $row['username'],
+		'USERNAME_COLOUR'	=> $row['user_colour'],
+		'USERNAME_FULL'		=> $username_full,
 		'LASTUPDATE'		=> $user->format_date($row['session_time']),
 		'FORUM_LOCATION'	=> $location,
 		'USER_IP'			=> ($auth->acl_get('a_')) ? (($mode == 'lookup' && $session_id == $row['session_id']) ? gethostbyaddr($row['session_ip']) : $row['session_ip']) : '',
+		'USER_BROWSER'		=> ($auth->acl_get('a_user')) ? $row['session_browser'] : '',
 
-		'U_USER_PROFILE'	=> (($row['user_type'] == USER_NORMAL || $row['user_type'] == USER_FOUNDER) && $row['user_id'] != ANONYMOUS) ? append_sid("{$phpbb_root_path}memberlist.$phpEx", 'mode=viewprofile&amp;u=' . $row['user_id']) : '',
+		'U_USER_PROFILE'	=> ($row['user_type'] != USER_IGNORE) ? get_username_string('profile', $row['user_id'], '') : '',
 		'U_USER_IP'			=> append_sid("{$phpbb_root_path}viewonline.$phpEx", 'mode=lookup' . (($mode != 'lookup' || $row['session_id'] != $session_id) ? '&amp;s=' . $row['session_id'] : '') . "&amp;sg=$show_guests&amp;start=$start&amp;sk=$sort_key&amp;sd=$sort_dir"),
 		'U_WHOIS'			=> append_sid("{$phpbb_root_path}viewonline.$phpEx", 'mode=whois&amp;s=' . $row['session_id']),
 		'U_FORUM_LOCATION'	=> $location_url,
 		
+		'S_USER_HIDDEN'		=> $s_user_hidden,
 		'S_GUEST'			=> ($row['user_id'] == ANONYMOUS) ? true : false,
-		'S_USER_TYPE'		=> $row['user_type'])
-	);
+		'S_USER_TYPE'		=> $row['user_type'],
+	));
 }
 $db->sql_freeresult($result);
 unset($prev_id, $prev_ip);

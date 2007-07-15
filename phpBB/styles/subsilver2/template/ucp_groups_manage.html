@@ -157,7 +157,7 @@
 	</tr>
 	<!-- BEGIN leader -->
 		<!-- IF leader.S_ROW_COUNT is even --><tr class="row1"><!-- ELSE --><tr class="row2"><!-- ENDIF -->
-			<td><a href="{leader.U_USER_VIEW}">{leader.USERNAME}</a></td>
+			<td>{leader.USERNAME_FULL}</td>
 			<td style="text-align: center;"><!-- IF leader.S_GROUP_DEFAULT -->{L_YES}<!-- ELSE -->{L_NO}<!-- ENDIF --></td>
 			<td style="text-align: center;">{leader.JOINED}</td>
 			<td style="text-align: center;">{leader.USER_POSTS}</td>
@@ -174,7 +174,7 @@
 			</tr>
 		<!-- ELSE -->
 			<!-- IF member.S_ROW_COUNT is even --><tr class="row1"><!-- ELSE --><tr class="row2"><!-- ENDIF -->
-				<td><a href="{member.U_USER_VIEW}">{member.USERNAME}</a></td>
+				<td>{member.USERNAME_FULL}</td>
 				<td style="text-align: center;"><!-- IF member.S_GROUP_DEFAULT -->{L_YES}<!-- ELSE -->{L_NO}<!-- ENDIF --></td>
 				<td style="text-align: center;">{member.JOINED}</td>
 				<td style="text-align: center;">{member.USER_POSTS}</td>

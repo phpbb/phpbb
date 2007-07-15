@@ -29,7 +29,7 @@
 <!-- ENDIF -->
 
 <!-- IF S_DISPLAY_ONLINE_LIST -->
-	<h3><a href="{U_VIEWONLINE}">{L_WHO_IS_ONLINE}</a></h3>
+	<!-- IF U_VIEWONLINE --><h3><a href="{U_VIEWONLINE}">{L_WHO_IS_ONLINE}</a></h3><!-- ELSE --><h3>{L_WHO_IS_ONLINE}</h3><!-- ENDIF -->
 	<p>{TOTAL_USERS_ONLINE} ({L_ONLINE_EXPLAIN})<br />{RECORD_USERS}<br /> <br />{LOGGED_IN_USER_LIST}
 	<!-- IF LEGEND --><br /><em>{L_LEGEND}: {LEGEND}</em><!-- ENDIF --></p>
 <!-- ENDIF -->

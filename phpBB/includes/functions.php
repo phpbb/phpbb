@@ -4124,7 +4124,7 @@ function page_header($page_title = '', $display_online_list = true)
 		'UA_POPUP_PM'			=> append_sid("{$phpbb_root_path}ucp.$phpEx", 'i=pm&mode=popup', false),
 		'U_MEMBERLIST'			=> append_sid("{$phpbb_root_path}memberlist.$phpEx"),
 		'U_MEMBERSLIST'			=> append_sid("{$phpbb_root_path}memberlist.$phpEx"),
-		'U_VIEWONLINE'			=> append_sid("{$phpbb_root_path}viewonline.$phpEx"),
+		'U_VIEWONLINE'			=> ($auth->acl_gets('u_viewprofile', 'a_user', 'a_useradd', 'a_userdel')) ? append_sid("{$phpbb_root_path}viewonline.$phpEx") : '',
 		'U_LOGIN_LOGOUT'		=> $u_login_logout,
 		'U_INDEX'				=> append_sid("{$phpbb_root_path}index.$phpEx"),
 		'U_SEARCH'				=> append_sid("{$phpbb_root_path}search.$phpEx"),

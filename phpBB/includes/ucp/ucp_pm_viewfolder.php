@@ -163,18 +163,16 @@ function view_folder($id, $mode, $folder_id, $folder)
 					{
 						foreach ($id_ary as $ug_id => $_id)
 						{
-							$user_colour = ($recipient_list[$type][$ug_id]['colour']) ? ' style="font-weight: bold; color:#' . $recipient_list[$type][$ug_id]['colour'] . '"' : '';
-
 							if ($type == 'u')
 							{
-								$link = ($ug_id != ANONYMOUS) ? '<a href="' . append_sid("{$phpbb_root_path}memberlist.$phpEx", 'mode=viewprofile&amp;u=' . $ug_id) . '"' . $user_colour . '>' : '';
+								$address_list[$message_id][] = get_username_string('full', $ug_id, $recipient_list[$type][$ug_id]['name'], $recipient_list[$type][$ug_id]['colour']);
 							}
 							else
 							{
+								$user_colour = ($recipient_list[$type][$ug_id]['colour']) ? ' style="font-weight: bold; color:#' . $recipient_list[$type][$ug_id]['colour'] . '"' : '';
 								$link = '<a href="' . append_sid("{$phpbb_root_path}memberlist.$phpEx", 'mode=group&amp;g=' . $ug_id) . '"' . $user_colour . '>';
+								$address_list[$message_id][] = $link . $recipient_list[$type][$ug_id]['name'] . (($link) ? '</a>' : '');
 							}
-
-							$address_list[$message_id][] = $link . $recipient_list[$type][$ug_id]['name'] . (($link) ? '</a>' : '');
 						}
 					}
 				}

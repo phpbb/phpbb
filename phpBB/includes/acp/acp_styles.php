@@ -2016,7 +2016,7 @@ parse_css_file = {PARSE_CSS_FILE}
 
 		if ($update)
 		{
-			$name = request_var('name', '');
+			$name = request_var('name', '', true);
 			$copyright = request_var('copyright', '', true);
 
 			$template_id = request_var('template_id', 0);
@@ -2635,7 +2635,7 @@ parse_css_file = {PARSE_CSS_FILE}
 		$error = array();
 
 		$style_row = array(
-			$mode . '_name'			=> request_var('name', ''),
+			$mode . '_name'			=> request_var('name', '', true),
 			$mode . '_copyright'	=> request_var('copyright', '', true),
 			'template_id'			=> 0,
 			'theme_id'				=> 0,

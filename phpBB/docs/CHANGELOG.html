@@ -231,12 +231,19 @@ p a {
 		<li>[Fix] Correctly mark forums read if using cookie based topic tracking (Bug #13245)</li>
 		<li>[Change] Put custom profile fields into top box and signature into separate box in members profile view (Bug #13357)</li>
 		<li>[Fix] Only show moderator log entries for forums the user is having moderation rights in (Bug #12481)</li>
-		<li>[Feature] Show resulting permission alone in trace window (Bug #10953) - thanks to dark/rain for the proposal</li>
+		<li>[Feature] Show resulting permission alone in trace window (Bug #10952) - thanks to dark/rain for the proposal</li>
 		<li>[Fix] Fixed bug in realpath replacement letting it actually work again</li>
 		<li>[Change] Try to be a bit more specific regarding global/local permission trace (Bug #11032)</li>
 		<li>[Fix] Fixed some strangeness in password validation due to mb_ereg()</li>
 		<li>[Fix] Subforums of a forum would overwrite the latest post information even if they did not contain the latest post (Bug #11931)</li>
+		<li>[Fix] Use global username display function on several places (Bug #11080, #11098) - patch by HoL</li>
+		<li>[Fix] Several viewonline fixes and feature changes. Also displaying the users browser in viewonline list to let the admin easier spot additional search bots, connected to a_user permission (Bug #11088) - patch and suggestions provided by HoL</li>
+		<li>[Change] u_viewprofile permission also affecting viewonline list now</li>
+		<li>[Fix] Do not display return to search link in prosilver if search is not allowed (Bug #11393)</li>
+		<li>[Fix] Use global url validation for img bbcode tag (Bug #11935)</li>
+		<li>[Fix] Added proper unicode support to style names (Bug #12165)</li>
 
+	
 	</ul>
 
 	</div>

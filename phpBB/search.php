@@ -50,12 +50,14 @@ $search_forum	= request_var('fid', array(0));
 // Is user able to search? Has search been disabled?
 if (!$auth->acl_get('u_search') || !$auth->acl_getf_global('f_search') || !$config['load_search'])
 {
+	$template->assign_var('S_NO_SEARCH', true);
 	trigger_error($user->lang['NO_SEARCH']);
 }
 
 // Check search load limit
 if ($user->load && $config['limit_search_load'] && ($user->load > doubleval($config['limit_search_load'])))
 {
+	$template->assign_var('S_NO_SEARCH', true);
 	trigger_error($user->lang['NO_SEARCH_TIME']);
 }
 
@@ -65,6 +67,7 @@ if ($interval && !$auth->acl_get('u_ignoreflood'))
 {
 	if ($user->data['user_last_search'] > time() - $interval)
 	{
+		$template->assign_var('S_NO_SEARCH', true);
 		trigger_error($user->lang['NO_SEARCH_TIME']);
 	}
 }

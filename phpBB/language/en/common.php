@@ -294,6 +294,7 @@ $lang = array_merge($lang, array(
 	'LOGIN_INFO'						=> 'In order to login you must be registered. Registering takes only a few moments but gives you increased capabilities. The board administrator may also grant additional permissions to registered users. Before you register please ensure you are familiar with our terms of use and related policies. Please ensure you read any forum rules as you navigate around the board.',
 	'LOGIN_VIEWFORUM'					=> 'The board requires you to be registered and logged in to view this forum.',
 	'LOGIN_EXPLAIN_EDIT'				=> 'In order to edit posts in this forum you have to be registered and logged in.',
+	'LOGIN_EXPLAIN_VIEWONLINE'			=> 'In order to view the online list you have to be registered and logged in.',
 	'LOGOUT'							=> 'Logout',
 	'LOGOUT_USER'						=> 'Logout [ %s ]',
 	'LOG_ME_IN'							=> 'Log me on automatically each visit',
@@ -320,7 +321,7 @@ $lang = array_merge($lang, array(
 	'MSNM'					=> 'MSNM/WLM',	
 
 	'NA'						=> 'N/A',
-	'NEWEST_USER'				=> 'Our newest member <strong>%s%s%s</strong>',
+	'NEWEST_USER'				=> 'Our newest member <strong>%s</strong>',
 	'NEW_MESSAGE'				=> 'New message',
 	'NEW_MESSAGES'				=> 'New messages',
 	'NEW_PM'					=> '<strong>%d</strong> new message',

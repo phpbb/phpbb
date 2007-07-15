@@ -707,7 +707,7 @@ class ucp_groups
 						$start = request_var('start', 0);
 
 						// Grab the leaders - always, on every page...
-						$sql = 'SELECT u.user_id, u.username, u.username_clean, u.user_regdate, u.user_posts, u.group_id, ug.group_leader, ug.user_pending 
+						$sql = 'SELECT u.user_id, u.username, u.username_clean, u.user_colour, u.user_regdate, u.user_posts, u.group_id, ug.group_leader, ug.user_pending 
 							FROM ' . USERS_TABLE . ' u, ' . USER_GROUP_TABLE . " ug 
 							WHERE ug.group_id = $group_id 
 								AND u.user_id = ug.user_id
@@ -719,7 +719,9 @@ class ucp_groups
 						{
 							$template->assign_block_vars('leader', array(
 								'USERNAME'			=> $row['username'],
-								'U_USER_VIEW'		=> append_sid("{$phpbb_root_path}memberlist.$phpEx", 'mode=viewprofile&amp;u=' . $row['user_id']),
+								'USERNAME_COLOUR'	=> $row['user_colour'],
+								'USERNAME_FULL'		=> get_username_string('full', $row['user_id'], $row['username'], $row['user_colour']),
+								'U_USER_VIEW'		=> get_username_string('profile', $row['user_id'], $row['username']),
 								'S_GROUP_DEFAULT'	=> ($row['group_id'] == $group_id) ? true : false,
 								'JOINED'			=> ($row['user_regdate']) ? $user->format_date($row['user_regdate']) : ' - ',
 								'USER_POSTS'		=> $row['user_posts'],
@@ -738,7 +740,7 @@ class ucp_groups
 						$db->sql_freeresult($result);
 
 						// Grab the members
-						$sql = 'SELECT u.user_id, u.username, u.username_clean, u.user_regdate, u.user_posts, u.group_id, ug.group_leader, ug.user_pending 
+						$sql = 'SELECT u.user_id, u.username, u.username_clean, u.user_colour, u.user_regdate, u.user_posts, u.group_id, ug.group_leader, ug.user_pending 
 							FROM ' . USERS_TABLE . ' u, ' . USER_GROUP_TABLE . " ug 
 							WHERE ug.group_id = $group_id 
 								AND u.user_id = ug.user_id
@@ -761,7 +763,9 @@ class ucp_groups
 
 							$template->assign_block_vars('member', array(
 								'USERNAME'			=> $row['username'],
-								'U_USER_VIEW'		=> append_sid("{$phpbb_root_path}memberlist.$phpEx", 'mode=viewprofile&amp;u=' . $row['user_id']),
+								'USERNAME_COLOUR'	=> $row['user_colour'],
+								'USERNAME_FULL'		=> get_username_string('full', $row['user_id'], $row['username'], $row['user_colour']),
+								'U_USER_VIEW'		=> get_username_string('profile', $row['user_id'], $row['username']),
 								'S_GROUP_DEFAULT'	=> ($row['group_id'] == $group_id) ? true : false,
 								'JOINED'			=> ($row['user_regdate']) ? $user->format_date($row['user_regdate']) : ' - ',
 								'USER_POSTS'		=> $row['user_posts'],

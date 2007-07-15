@@ -120,8 +120,8 @@
 	<div id="type_actions">
 		<dl>
 			<dt><label for="type_action">{L_DECIDE_MOVE_DELETE_CONTENT}:</label></dt>
-			<dd><label><input type="radio" class="radio" id="type_action" name="type_action" value="delete" checked="checked" /> {L_DELETE_ALL_POSTS}</label></dd>
-			<!-- IF S_MOVE_FORUM_OPTIONS --><dd><label><input type="radio" class="radio" name="type_action" value="move" /> {L_MOVE_POSTS_TO}</label> <select name="to_forum_id">{S_MOVE_FORUM_OPTIONS}</select></dd><!-- ENDIF -->
+			<dd><label><input type="radio" class="radio" name="type_action" value="delete"<!-- IF not S_MOVE_FORUM_OPTIONS --> checked="checked" id="type_action"<!-- ENDIF --> /> {L_DELETE_ALL_POSTS}</label></dd>
+			<!-- IF S_MOVE_FORUM_OPTIONS --><dd><label><input type="radio" class="radio" name="type_action" id="type_action" value="move" checked="checked" /> {L_MOVE_POSTS_TO}</label> <select name="to_forum_id">{S_MOVE_FORUM_OPTIONS}</select></dd><!-- ENDIF -->
 		</dl>
 	</div>
 	<!-- ENDIF -->
