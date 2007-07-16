@@ -1656,6 +1656,12 @@ function utf8_case_fold_nfkc($text, $option = 'full')
 	// do the case fold
 	$text = utf8_case_fold($text, $option);
 
+	if (!class_exists('utf_normalizer'))
+	{
+		global $phpbb_root_path, $phpEx;
+		include($phpbb_root_path . 'includes/utf/utf_normalizer.' . $phpEx);
+	}
+
 	// convert to NFKC
 	utf_normalizer::nfkc($text);
 
