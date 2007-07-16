@@ -463,6 +463,7 @@ class install_convert extends module
 					$prefixes = array();
 
 					$tables_existing = get_tables($src_db);
+					$tables_existing = array_map('strtolower', $tables_existing);
 					foreach ($tables_existing as $table_name)
 					{
 						compare_table($tables, $table_name, $prefixes);

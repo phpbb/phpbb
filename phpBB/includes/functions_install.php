@@ -324,6 +324,7 @@ function connect_check_db($error_connect, &$error, $dbms, $table_prefix, $dbhost
 			$table_ary = array($temp_prefix . 'attachments', $temp_prefix . 'config', $temp_prefix . 'sessions', $temp_prefix . 'topics', $temp_prefix . 'users');
 
 			$tables = get_tables($db);
+			$tables = array_map('strtolower', $tables);
 			$table_intersect = array_intersect($tables, $table_ary);
 
 			if (sizeof($table_intersect))
