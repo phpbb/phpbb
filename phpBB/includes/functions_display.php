@@ -216,10 +216,6 @@ function display_forums($root_data = '', $display_moderators = true, $return_mod
 				$forum_rows[$parent_id]['forum_last_poster_colour'] = $row['forum_last_poster_colour'];
 				$forum_rows[$parent_id]['forum_id_last_post'] = $forum_id;
 			}
-			else if (!isset($forum_rows[$parent_id]['forum_id_last_post']))
-			{
-				$forum_rows[$parent_id]['forum_id_last_post'] = $forum_id;
-			}
 		}
 	}
 	$db->sql_freeresult($result);
