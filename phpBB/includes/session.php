@@ -1409,6 +1409,10 @@ class user extends session
 			{
 				$localised_images = true;
 			}
+
+			// we don't need no steenkin' imageset_ids
+			unset($row['imageset_id']);
+
 			$this->img_array[$row['image_name']] = $row;
 		}
 		$db->sql_freeresult($result);
