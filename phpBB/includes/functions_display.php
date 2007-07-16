@@ -368,6 +368,24 @@ function display_forums($root_data = '', $display_moderators = true, $return_mod
 		$s_subforums_list = (string) implode(', ', $s_subforums_list);
 		$catless = ($row['parent_id'] == $root_data['forum_id']) ? true : false;
 
+		if ($row['forum_type'] != FORUM_LINK)
+		{
+			$u_viewforum = append_sid("{$phpbb_root_path}viewforum.$phpEx", 'f=' . $row['forum_id']);
+		}
+		else
+		{
+			// If the forum is a link and we count redirects we need to visit it
+			// If the forum is having a password or no read access we do not expose the link, but instead handle it in viewforum
+			if (($row['forum_flags'] & FORUM_FLAG_LINK_TRACK) || $row['forum_password'] || !$auth->acl_get('f_read', $forum_id))
+			{
+				$u_viewforum = append_sid("{$phpbb_root_path}viewforum.$phpEx", 'f=' . $row['forum_id']);
+			}
+			else
+			{
+				$u_viewforum = $row['forum_link'];
+			}
+		}
+
 		$template->assign_block_vars('forumrow', array(
 			'S_IS_CAT'			=> false,
 			'S_NO_CAT'			=> $catless && !$last_catless,
@@ -397,7 +415,7 @@ function display_forums($root_data = '', $display_moderators = true, $return_mod
 			'L_FORUM_FOLDER_ALT'	=> $folder_alt,
 			'L_MODERATOR_STR'		=> $l_moderator,
 
-			'U_VIEWFORUM'		=> ($row['forum_type'] != FORUM_LINK || ($row['forum_flags'] & FORUM_FLAG_LINK_TRACK) || $row['forum_password']) ? append_sid("{$phpbb_root_path}viewforum.$phpEx", 'f=' . $row['forum_id']) : $row['forum_link'],
+			'U_VIEWFORUM'		=> $u_viewforum,
 			'U_LAST_POSTER'		=> get_username_string('profile', $row['forum_last_poster_id'], $row['forum_last_poster_name'], $row['forum_last_poster_colour']),
 			'U_LAST_POST'		=> $last_post_url)
 		);

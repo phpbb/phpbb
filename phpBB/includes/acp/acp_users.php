@@ -1546,10 +1546,9 @@ class acp_users
 
 						delete_attachments('attach', $marked);
 
-						$log = (sizeof($log_attachments) == 1) ? 'ATTACHMENT_DELETED' : 'ATTACHMENTS_DELETED';
 						$message = (sizeof($log_attachments) == 1) ? $user->lang['ATTACHMENT_DELETED'] : $user->lang['ATTACHMENTS_DELETED'];
 
-						add_log('admin', $log, implode(', ', $log_attachments));
+						add_log('admin', 'LOG_ATTACHMENTS_DELETED', implode(', ', $log_attachments));
 						trigger_error($message . adm_back_link($this->u_action . '&amp;u=' . $user_id));
 					}
 					else

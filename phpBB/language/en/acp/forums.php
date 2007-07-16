@@ -102,6 +102,8 @@ $lang = array_merge($lang, array(
 	'FORUM_TYPE'						=> 'Forum type',
 	'FORUM_UPDATED'						=> 'Forum information updated successfully.',
 
+	'FORUM_WITH_SUBFORUMS_NOT_TO_LINK'		=> 'You want to change a postable forum having subforums to a link. Please move all subforums out of this forum before you proceed, because after changing to a link you are no longer able to see the subforums currently connected to this forum.',
+
 	'GENERAL_FORUM_SETTINGS'	=> 'General forum settings',
 
 	'LINK'					=> 'Link',
@@ -126,7 +128,7 @@ $lang = array_merge($lang, array(
 	'PRUNE_STICKY'				=> 'Prune stickies',
 	'PRUNE_OLD_POLLS'			=> 'Prune old polls',
 	'PRUNE_OLD_POLLS_EXPLAIN'	=> 'Removes topics with polls not voted in for post age days.',
-	
+
 	'REDIRECT_ACL'	=> 'Now you are able to %sset permissions%s for this forum.',
 
 	'SYNC_IN_PROGRESS'			=> 'Synchronizing forum',

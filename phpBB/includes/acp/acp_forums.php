@@ -991,6 +991,13 @@ class acp_forums
 
 			if ($row['forum_type'] == FORUM_POST && $row['forum_type'] != $forum_data_sql['forum_type'])
 			{
+				// Has subforums and want to change into a link?
+				if ($row['right_id'] - $row['left_id'] > 1 && $forum_data_sql['forum_type'] == FORUM_LINK)
+				{
+					$errors[] = $user->lang['FORUM_WITH_SUBFORUMS_NOT_TO_LINK'];
+					return $errors;
+				}
+
 				// we're turning a postable forum into a non-postable forum
 				if ($forum_data_sql['type_action'] == 'move')
 				{
