@@ -141,33 +141,19 @@ if ($id && $sid)
 		else if (!$recache)
 		{
 			$last_change = $theme['theme_mtime'];
-			$file_list = @glob("{$phpbb_root_path}styles/{$theme['theme_path']}/theme/*.css", GLOB_NOSORT);
+			$dir = @opendir("{$phpbb_root_path}styles/{$theme['theme_path']}/theme");
 
-			if (!is_array($file_list))
+			if ($dir)
 			{
-				$file_list = array();
-				$dir = @opendir("{$phpbb_root_path}styles/{$theme['theme_path']}/theme");
-
-				if ($dir)
+				while (($entry = readdir($dir)) !== false)
 				{
-					while (($entry = readdir($dir)) !== false)
+					if (substr(strrchr($entry, '.'), 1) == 'css' && $last_change < @filemtime("{$phpbb_root_path}styles/{$theme['theme_path']}/theme/{$entry}"))
 					{
-						if (substr(strrchr($entry, '.'), 1) == 'css')
-						{
-							$file_list[] = "{$phpbb_root_path}styles/{$theme['theme_path']}/theme/{$entry}";
-						}
+						$recache = true;
+						break;
 					}
-					closedir($dir);
 				}
-			}
-
-			foreach ($file_list as $file)
-			{
-				if ($last_change < @filemtime($file))
-				{
-					$recache = true;
-					break;
-				}
+				closedir($dir);
 			}
 		}
 
