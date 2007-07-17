@@ -1820,13 +1820,13 @@ function avatar_remote($data, &$error)
 	}
 
 	// Make sure getimagesize works...
-	if (($image_data = @getimagesize($data['remotelink'])) === false)
+	if (($image_data = @getimagesize($data['remotelink'])) === false && (empty($data['width']) || empty($data['height'])))
 	{
 		$error[] = $user->lang['UNABLE_GET_IMAGE_SIZE'];
 		return false;
 	}
 
-	if ($image_data[0] < 2 || $image_data[1] < 2)
+	if (!empty($image_data) && ($image_data[0] < 2 || $image_data[1] < 2))
 	{
 		$error[] = $user->lang['AVATAR_NO_SIZE'];
 		return false;
@@ -1846,7 +1846,7 @@ function avatar_remote($data, &$error)
 	$types = fileupload::image_types();
 	$extension = strtolower(filespec::get_extension($data['remotelink']));
 
-	if (!isset($types[$image_data[2]]) || !in_array($extension, $types[$image_data[2]]))
+	if (!empty($image_data) && (!isset($types[$image_data[2]]) || !in_array($extension, $types[$image_data[2]])))
 	{
 		if (!isset($types[$image_data[2]]))
 		{
