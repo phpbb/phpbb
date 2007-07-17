@@ -979,8 +979,6 @@ class session
 				$this->session_create(ANONYMOUS);
 			}
 
-			// Because we never have a fully working session we need to embed the style
-			$template->assign_var('S_FORCE_EMBED_STYLE', true);
 
 			// Determine which message to output
 			$till_date = ($ban_row['ban_end']) ? $this->format_date($ban_row['ban_end']) : '';

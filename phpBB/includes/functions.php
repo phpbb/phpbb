@@ -4177,78 +4177,7 @@ function page_header($page_title = '', $display_online_list = true)
 		'SITE_LOGO_IMG'			=> $user->img('site_logo'))
 	);
 
-	// Once used, we do not want to have the whole theme data twice in memory...
-	if ($user->theme['theme_storedb'])
-	{
-		// Parse Theme Data
-		$replace = array(
-			'{T_THEME_PATH}'			=> "{$phpbb_root_path}styles/" . $user->theme['theme_path'] . '/theme',
-			'{T_TEMPLATE_PATH}'			=> "{$phpbb_root_path}styles/" . $user->theme['template_path'] . '/template',
-			'{T_IMAGESET_PATH}'			=> "{$phpbb_root_path}styles/" . $user->theme['imageset_path'] . '/imageset',
-			'{T_IMAGESET_LANG_PATH}'	=> "{$phpbb_root_path}styles/" . $user->theme['imageset_path'] . '/imageset/' . $user->data['user_lang'],
-			'{T_STYLESHEET_NAME}'		=> $user->theme['theme_name'],
-			'{S_USER_LANG}'				=> $user->data['user_lang']
-		);
-
-		$user->theme['theme_data'] = str_replace(array_keys($replace), array_values($replace), $user->theme['theme_data']);
-
-		$matches = array();
-		if (strpos($user->theme['theme_data'], '{IMG_') !== false)
-		{
-			preg_match_all('#\{IMG_([A-Za-z0-9_]*?)_(WIDTH|HEIGHT|SRC)\}#', $user->theme['theme_data'], $matches);
-
-			$imgs = $find = $replace = array();
-			if (isset($matches[0]) && sizeof($matches[0]))
-			{
-				foreach ($matches[1] as $i => $img)
-				{
-					$img = strtolower($img);
-					if (!isset($img_array[$img]))
-					{
-						continue;
-					}
-
-					if (!isset($imgs[$img]))
-					{
-						$img_data = &$img_array[$img];
-						$imgsrc = ($img_data['image_lang'] ? $img_data['image_lang'] . '/' : '') . $img_data['image_filename'];
-						$imgs[$img] = array(
-							'src'		=> $phpbb_root_path . 'styles/' . $user->theme['imageset_path'] . '/imageset/' . $imgsrc,
-							'width'		=> $img_data['image_width'],
-							'height'	=> $img_data['image_height'],
-						);
-					}
-
-					switch ($matches[2][$i])
-					{
-						case 'SRC':
-							$replace[] = $imgs[$img]['src'];
-						break;
-						
-						case 'WIDTH':
-							$replace[] = $imgs[$img]['width'];
-						break;
-			
-						case 'HEIGHT':
-							$replace[] = $imgs[$img]['height'];
-						break;
-
-						default:
-							continue;
-					}
-					$find[] = $matches[0][$i];
-				}
-
-				if (sizeof($find))
-				{
-					$user->theme['theme_data'] = str_replace($find, $replace, $user->theme['theme_data']);
-				}
-			}
-		}
-
-		$template->assign_var('T_THEME_DATA', $user->theme['theme_data']);
-		$user->theme['theme_data'] = '';
-	}
+	$user->theme['theme_data'] = '';
 
 	// application/xhtml+xml not used because of IE
 	header('Content-type: text/html; charset=UTF-8');
