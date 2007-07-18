@@ -1203,6 +1203,7 @@ function phpbb_prepare_message($message)
 	if (strpos($message, '[quote=') !== false)
 	{
 		$message = preg_replace('/\[quote="(.*?)"\]/s', '[quote=&quot;\1&quot;]', $message);
+		$message = preg_replace('/\[quote=\\\"(.*?)\\\"\]/s', '[quote=&quot;\1&quot;]', $message);
 	}
 
 	// Already the new user id ;)
