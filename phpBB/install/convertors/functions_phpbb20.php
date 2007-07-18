@@ -1204,6 +1204,10 @@ function phpbb_prepare_message($message)
 	{
 		$message = preg_replace('/\[quote="(.*?)"\]/s', '[quote=&quot;\1&quot;]', $message);
 		$message = preg_replace('/\[quote=\\\"(.*?)\\\"\]/s', '[quote=&quot;\1&quot;]', $message);
+		
+		// let's hope that this solves more problems than it causes. Deal with escaped quotes.
+		$message = str_replace('\"', '&quot;', $message);
+		$message = str_replace('\&quot;', '&quot;', $message);
 	}
 
 	// Already the new user id ;)
