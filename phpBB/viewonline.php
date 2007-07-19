@@ -214,7 +214,7 @@ while ($row = $db->sql_fetchrow($result))
 		case 'posting':
 		case 'viewforum':
 		case 'viewtopic':
-			preg_match('#f=([0-9]+)#', $row['session_page'], $forum_id);
+			preg_match('#_f_=([0-9]+)x#i', $row['session_page'], $forum_id);
 			$forum_id = (sizeof($forum_id)) ? (int) $forum_id[1] : 0;
 
 			if ($forum_id && $auth->acl_get('f_list', $forum_id))
