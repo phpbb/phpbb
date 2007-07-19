@@ -30,14 +30,21 @@ $phpEx = substr(strrchr(__FILE__, '.'), 1);
 
 echo "Checking for required files\n";
 download('http://unicode.org/reports/tr39/data/confusables.txt');
+download('http://unicode.org/Public/UNIDATA/CaseFolding.txt');
 echo "\n";
 
 
 /**
-* Load the CaseFolding table
+* Load the confusables table
 */
 echo "Loading confusables\n";
 $unidata = file_get_contents('confusables.txt');
+
+/**
+* Load the CaseFolding table
+*/
+echo "Loading CaseFolding\n";
+$casefolds = file_get_contents('CaseFolding.txt');
 
 
 function utf8_chr($cp)
@@ -61,6 +68,7 @@ function utf8_chr($cp)
 }
 
 preg_match_all('/^([0-9A-F]+) ;\s((?:[0-9A-F]+ )*);.*?$/im', $unidata, $array, PREG_SET_ORDER);
+preg_match_all('/^([0-9A-F]+); ([CFS]); ([0-9A-F]+(?: [0-9A-F]+)*);/im', $casefolds, $casefold_array);
 
 // some that we defined ourselves
 $uniarray = array(
@@ -136,6 +144,14 @@ foreach ($array as $value)
 			$temp_hold = str_replace(utf8_chr(0x0031), utf8_chr(0x006C), $temp_hold);
 		}
 	}
+
+	// uppercased chars that were folded do not exist in this universe,
+	// no amount of normalization could ever "trick" this into not working
+	if (in_array($value[1], $casefold_array[1]))
+	{
+		continue;
+	}
+
 	$uniarray[utf8_chr(hexdec((string)$value[1]))] = $temp_hold;
 }
 
