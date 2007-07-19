@@ -1056,7 +1056,7 @@ while ($row = $db->sql_fetchrow($result))
 				$user_cache[$poster_id]['icq'] = '';
 			}
 
-			if (!empty($row['user_birthday']))
+			if ($config['allow_birthdays'] && !empty($row['user_birthday']))
 			{
 				list($bday_day, $bday_month, $bday_year) = array_map('intval', explode('-', $row['user_birthday']));
 

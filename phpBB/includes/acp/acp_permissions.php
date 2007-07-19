@@ -448,7 +448,7 @@ class acp_permissions
 		}
 
 		$template->assign_vars(array(
-			'S_PERMISSION_DROPDOWN'		=> (sizeof($this->permission_dropdown) > 1) ? $this->build_permission_dropdown($this->permission_dropdown, $permission_type) : false,
+			'S_PERMISSION_DROPDOWN'		=> (sizeof($this->permission_dropdown) > 1) ? $this->build_permission_dropdown($this->permission_dropdown, $permission_type, $permission_scope) : false,
 			'L_PERMISSION_TYPE'			=> $user->lang['ACL_TYPE_' . strtoupper($permission_type)],
 
 			'U_ACTION'					=> $this->u_action,
@@ -522,7 +522,7 @@ class acp_permissions
 	/**
 	* Build dropdown field for changing permission types
 	*/
-	function build_permission_dropdown($options, $default_option)
+	function build_permission_dropdown($options, $default_option, $permission_scope)
 	{
 		global $user, $auth;
 		
@@ -533,8 +533,10 @@ class acp_permissions
 			{
 				continue;
 			}
+
 			$selected = ($setting == $default_option) ? ' selected="selected"' : '';
-			$s_dropdown_options .= '<option value="' . $setting . '"' . $selected . '>' . $user->lang['permission_type'][$setting] . '</option>';
+			$l_setting = (isset($user->lang['permission_type'][$permission_scope][$setting])) ? $user->lang['permission_type'][$permission_scope][$setting] : $user->lang['permission_type'][$setting];
+			$s_dropdown_options .= '<option value="' . $setting . '"' . $selected . '>' . $l_setting . '</option>';
 		}
 
 		return $s_dropdown_options;

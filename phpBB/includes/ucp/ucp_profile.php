@@ -266,23 +266,25 @@ class ucp_profile
 					'location'		=> utf8_normalize_nfc(request_var('location', $user->data['user_from'], true)),
 					'occupation'	=> utf8_normalize_nfc(request_var('occupation', $user->data['user_occ'], true)),
 					'interests'		=> utf8_normalize_nfc(request_var('interests', $user->data['user_interests'], true)),
-					'bday_day'		=> 0,
-					'bday_month'	=> 0,
-					'bday_year'		=> 0,
 				);
 
-				if ($user->data['user_birthday'])
+				if ($config['allow_birthdays'])
 				{
-					list($data['bday_day'], $data['bday_month'], $data['bday_year']) = explode('-', $user->data['user_birthday']);
-				}
+					$data['bday_day'] = $data['bday_month'] = $data['bday_year'] = 0;
 
-				$data['bday_day'] = request_var('bday_day', $data['bday_day']);
-				$data['bday_month'] = request_var('bday_month', $data['bday_month']);
-				$data['bday_year'] = request_var('bday_year', $data['bday_year']);
+					if ($user->data['user_birthday'])
+					{
+						list($data['bday_day'], $data['bday_month'], $data['bday_year']) = explode('-', $user->data['user_birthday']);
+					}
+
+					$data['bday_day'] = request_var('bday_day', $data['bday_day']);
+					$data['bday_month'] = request_var('bday_month', $data['bday_month']);
+					$data['bday_year'] = request_var('bday_year', $data['bday_year']);
+				}
 
 				if ($submit)
 				{
-					$error = validate_data($data, array(
+					$validate_array = array(
 						'icq'			=> array(
 							array('string', true, 3, 15),
 							array('match', true, '#^[0-9]+$#i')),
@@ -298,10 +300,18 @@ class ucp_profile
 						'location'		=> array('string', true, 2, 255),
 						'occupation'	=> array('string', true, 2, 500),
 						'interests'		=> array('string', true, 2, 500),
-						'bday_day'		=> array('num', true, 1, 31),
-						'bday_month'	=> array('num', true, 1, 12),
-						'bday_year'		=> array('num', true, 1901, gmdate('Y', time())),
-					));
+					);
+
+					if ($config['allow_birthdays'])
+					{
+						$validate_array = array_merge($validate_array, array(
+							'bday_day'		=> array('num', true, 1, 31),
+							'bday_month'	=> array('num', true, 1, 12),
+							'bday_year'		=> array('num', true, 1901, gmdate('Y', time())),
+						));
+					}
+
+					$error = validate_data($data, $validate_array);
 
 					// validate custom profile fields
 					$cp->submit_cp_field('profile', $user->get_iso_lang_id(), $cp_data, $cp_error);
@@ -323,8 +333,12 @@ class ucp_profile
 							'user_from'		=> $data['location'],
 							'user_occ'		=> $data['occupation'],
 							'user_interests'=> $data['interests'],
-							'user_birthday'	=> sprintf('%2d-%2d-%4d', $data['bday_day'], $data['bday_month'], $data['bday_year']),
 						);
+
+						if ($config['allow_birthdays'])
+						{
+							$sql_ary['user_birthday'] = sprintf('%2d-%2d-%4d', $data['bday_day'], $data['bday_month'], $data['bday_year']);
+						}
 
 						$sql = 'UPDATE ' . USERS_TABLE . '
 							SET ' . $db->sql_build_array('UPDATE', $sql_ary) . '
@@ -361,29 +375,39 @@ class ucp_profile
 					$error = preg_replace('#^([A-Z_]+)$#e', "(!empty(\$user->lang['\\1'])) ? \$user->lang['\\1'] : '\\1'", $error);
 				}
 
-				$s_birthday_day_options = '<option value="0"' . ((!$data['bday_day']) ? ' selected="selected"' : '') . '>--</option>';
-				for ($i = 1; $i < 32; $i++)
+				if ($config['allow_birthdays'])
 				{
-					$selected = ($i == $data['bday_day']) ? ' selected="selected"' : '';
-					$s_birthday_day_options .= "<option value=\"$i\"$selected>$i</option>";
-				}
+					$s_birthday_day_options = '<option value="0"' . ((!$data['bday_day']) ? ' selected="selected"' : '') . '>--</option>';
+					for ($i = 1; $i < 32; $i++)
+					{
+						$selected = ($i == $data['bday_day']) ? ' selected="selected"' : '';
+						$s_birthday_day_options .= "<option value=\"$i\"$selected>$i</option>";
+					}
 
-				$s_birthday_month_options = '<option value="0"' . ((!$data['bday_month']) ? ' selected="selected"' : '') . '>--</option>';
-				for ($i = 1; $i < 13; $i++)
-				{
-					$selected = ($i == $data['bday_month']) ? ' selected="selected"' : '';
-					$s_birthday_month_options .= "<option value=\"$i\"$selected>$i</option>";
-				}
-				$s_birthday_year_options = '';
+					$s_birthday_month_options = '<option value="0"' . ((!$data['bday_month']) ? ' selected="selected"' : '') . '>--</option>';
+					for ($i = 1; $i < 13; $i++)
+					{
+						$selected = ($i == $data['bday_month']) ? ' selected="selected"' : '';
+						$s_birthday_month_options .= "<option value=\"$i\"$selected>$i</option>";
+					}
+					$s_birthday_year_options = '';
 
-				$now = getdate();
-				$s_birthday_year_options = '<option value="0"' . ((!$data['bday_year']) ? ' selected="selected"' : '') . '>--</option>';
-				for ($i = $now['year'] - 100; $i < $now['year']; $i++)
-				{
-					$selected = ($i == $data['bday_year']) ? ' selected="selected"' : '';
-					$s_birthday_year_options .= "<option value=\"$i\"$selected>$i</option>";
+					$now = getdate();
+					$s_birthday_year_options = '<option value="0"' . ((!$data['bday_year']) ? ' selected="selected"' : '') . '>--</option>';
+					for ($i = $now['year'] - 100; $i < $now['year']; $i++)
+					{
+						$selected = ($i == $data['bday_year']) ? ' selected="selected"' : '';
+						$s_birthday_year_options .= "<option value=\"$i\"$selected>$i</option>";
+					}
+					unset($now);
+
+					$template->assign_vars(array(
+						'S_BIRTHDAY_DAY_OPTIONS'	=> $s_birthday_day_options,
+						'S_BIRTHDAY_MONTH_OPTIONS'	=> $s_birthday_month_options,
+						'S_BIRTHDAY_YEAR_OPTIONS'	=> $s_birthday_year_options,
+						'S_BIRTHDAYS_ENABLED'		=> true,
+					);
 				}
-				unset($now);
 
 				$template->assign_vars(array(
 					'ERROR'		=> (sizeof($error)) ? implode('<br />', $error) : '',
@@ -397,11 +421,7 @@ class ucp_profile
 					'LOCATION'	=> $data['location'],
 					'OCCUPATION'=> $data['occupation'],
 					'INTERESTS'	=> $data['interests'],
-
-					'S_BIRTHDAY_DAY_OPTIONS'	=> $s_birthday_day_options,
-					'S_BIRTHDAY_MONTH_OPTIONS'	=> $s_birthday_month_options,
-					'S_BIRTHDAY_YEAR_OPTIONS'	=> $s_birthday_year_options,)
-				);
+				));
 
 				// Get additional profile fields and assign them to the template block var 'profile_fields'
 				$user->get_profile_fields($user->data['user_id']);

@@ -794,6 +794,8 @@ if (version_compare($current_version, '3.0.RC3', '<='))
 	$sql = 'DELETE FROM ' . SMILIES_TABLE . " 
 		WHERE code = ''";
 	$db->sql_query($sql);
+
+	set_config('allow_birthdays', '1');
 }
 
 _write_result($no_updates, $errored, $error_ary);

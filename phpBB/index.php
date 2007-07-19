@@ -75,7 +75,7 @@ $db->sql_freeresult($result);
 
 // Generate birthday list if required ...
 $birthday_list = '';
-if ($config['load_birthdays'])
+if ($config['load_birthdays'] && $config['allow_birthdays'])
 {
 	$now = getdate(time() + $user->timezone + $user->dst - date('Z'));
 	$sql = 'SELECT user_id, username, user_colour, user_birthday

@@ -78,11 +78,15 @@ $lang = array_merge($lang, array(
 		'user_group'	=> 'Users &amp; Groups',
 	),
 
+	// With defining 'global' here we are able to specify what is printed out if the permission is within the global scope.
 	'permission_type'	=> array(
 		'u_'			=> 'User permissions',
 		'a_'			=> 'Admin permissions',
 		'm_'			=> 'Moderator permissions',
 		'f_'			=> 'Forum permissions',
+		'global'		=> array(
+			'm_'			=> 'Global moderator permissions',
+		),
 	),
 ));
 
@@ -175,8 +179,8 @@ $lang = array_merge($lang, array(
 	'acl_m_merge'	=> array('lang' => 'Can merge topics', 'cat' => 'topic_actions'),
 
 	'acl_m_info'	=> array('lang' => 'Can view post details', 'cat' => 'misc'),
-	'acl_m_warn'	=> array('lang' => 'Can issue warnings', 'cat' => 'misc'), // This moderator setting is only global (and not local)
-	'acl_m_ban'		=> array('lang' => 'Can manage bans', 'cat' => 'misc'), // This moderator setting is only global (and not local)
+	'acl_m_warn'	=> array('lang' => 'Can issue warnings<br /><em>This setting is only assigned globally. It is not forum based.</em>', 'cat' => 'misc'), // This moderator setting is only global (and not local)
+	'acl_m_ban'		=> array('lang' => 'Can manage bans<br /><em>This setting is only assigned globally. It is not forum based.</em>', 'cat' => 'misc'), // This moderator setting is only global (and not local)
 ));
 
 // Admin Permissions

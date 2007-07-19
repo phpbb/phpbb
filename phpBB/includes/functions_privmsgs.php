@@ -864,6 +864,17 @@ function update_unread_status($unread, $msg_id, $user_id, $folder_id)
 	if ($user->data['user_id'] == $user_id)
 	{
 		$user->data['user_unread_privmsg']--;
+
+		// Try to cope with previous wrong conversions...
+		if ($user->data['user_unread_privmsg'] < 0)
+		{
+			$sql = 'UPDATE ' . USERS_TABLE . " 
+				SET user_unread_privmsg = 0
+				WHERE user_id = $user_id";
+			$db->sql_query($sql);
+
+			$user->data['user_unread_privmsg'] = 0;
+		}
 	}
 }
 

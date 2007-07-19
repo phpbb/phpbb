@@ -97,7 +97,7 @@
 		<!-- IF S_DISPLAY_GALLERY -->
 			<tr>
 				<td class="row1" width="35%"><label>{L_AVATAR_GALLERY}:</label></td>
-				<td class="row2"><input class="button2" type="submit" name="display_gallery" value="{L_DISPLAY_GALLERY}" /></td>
+				<td class="row2"><input class="btnmain" type="submit" name="display_gallery" value="{L_DISPLAY_GALLERY}" /></td>
 			</tr>
 		<!-- ENDIF -->
 	<!-- ELSE -->
@@ -107,7 +107,7 @@
 		</tr>
 		<tr>
 			<td class="row1" width="35%"><label for="category">{L_AVATAR_CATEGORY}:</label></td>
-			<td class="row2"><select name="category" id="category">{S_CAT_OPTIONS}</select>&nbsp;<input class="button2" type="submit" value="{L_GO}" name="display_gallery" /></td>
+			<td class="row2"><select name="category" id="category">{S_CAT_OPTIONS}</select>&nbsp;<input class="btnmain" type="submit" value="{L_GO}" name="display_gallery" /></td>
 		</tr>
 		<tr>
 			<td class="row1" width="35%">
@@ -126,14 +126,14 @@
 				<!-- END avatar_row -->
 				</table>
 			</td>
-			<td class="row2"><input class="button2" type="submit" name="cancel" value="{L_CANCEL}" /></td>
+			<td class="row2"><input class="btnmain" type="submit" name="cancel" value="{L_CANCEL}" /></td>
 		</tr>
 
 	<!-- ENDIF -->
 
 	<tr>
-		<td class="cat" colspan="2" align="center"><input class="button1" type="submit" id="submit" name="update" value="{L_SUBMIT}" />&nbsp;
-		<input class="button2" type="reset" id="reset" name="reset" value="{L_RESET}" /></td>
+		<td class="cat" colspan="2" align="center"><input class="btnlite" type="submit" id="submit" name="update" value="{L_SUBMIT}" />&nbsp;
+		<input class="btnmain" type="reset" id="reset" name="reset" value="{L_RESET}" /></td>
 	</tr>
 	</table>
 
@@ -187,7 +187,7 @@
 		</tr>
 	<!-- END member -->
 	<tr>
-		<td class="cat" colspan="5" align="center"><div style="float: {S_CONTENT_FLOW_END};"><span class="small"><a href="#" onclick="marklist('ucp', 'mark', true); return false;">{L_MARK_ALL}</a> :: <a href="#" onclick="marklist('ucp', 'mark', false); return false;">{L_UNMARK_ALL}</a></span></div><div style="float: {S_CONTENT_FLOW_BEGIN};"><select name="action"><option class="sep" value="">{L_SELECT_OPTION}</option>{S_ACTION_OPTIONS}</select> <input class="button2" type="submit" name="update" value="{L_SUBMIT}" /></div></td>
+		<td class="cat" colspan="5" align="center"><div style="float: {S_CONTENT_FLOW_END};"><span class="small"><a href="#" onclick="marklist('ucp', 'mark', true); return false;">{L_MARK_ALL}</a> :: <a href="#" onclick="marklist('ucp', 'mark', false); return false;">{L_UNMARK_ALL}</a></span></div><div style="float: {S_CONTENT_FLOW_BEGIN};"><select name="action"><option class="sep" value="">{L_SELECT_OPTION}</option>{S_ACTION_OPTIONS}</select> <input class="btnmain" type="submit" name="update" value="{L_SUBMIT}" /></div></td>
 	</tr>
 	</table>
 
@@ -219,7 +219,7 @@
 		<td class="row2"><textarea id="usernames" name="usernames" cols="40" rows="5"></textarea><br />[ <a href="{U_FIND_USERNAME}" onclick="find_username(); return false;">{L_FIND_USERNAME}</a> ]</td>
 	</tr>
 	<tr>
-		<td class="cat" colspan="2" align="center"><input class="button2" type="submit" name="addusers" value="{L_SUBMIT}" /></td>
+		<td class="cat" colspan="2" align="center"><input class="btnmain" type="submit" name="addusers" value="{L_SUBMIT}" /></td>
 	</tr>
 	</table>
 

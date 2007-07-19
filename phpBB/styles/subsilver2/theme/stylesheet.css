@@ -94,6 +94,10 @@ body {
 	font-family: "Lucida Grande", Verdana, Arial, Helvetica, sans-serif;
 }
 
+.forumrules h3 {
+	color: red;
+}
+
 #pageheader { }
 #pagecontent { }
 #pagefooter { }

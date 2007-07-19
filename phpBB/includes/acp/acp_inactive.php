@@ -60,7 +60,50 @@ class acp_inactive
 
 					if ($action == 'activate')
 					{
+						if ($config['require_activation'] == USER_ACTIVATION_ADMIN)
+						{
+							// Get those 'being activated'...
+							$sql = 'SELECT user_id, username, user_email, user_lang
+								FROM ' . USERS_TABLE . '
+								WHERE ' . $db->sql_in_set('user_id', $mark) . '
+									AND user_type = ' . USER_INACTIVE;
+							$result = $db->sql_query($sql);
+
+							$inactive_users = array();
+							while ($row = $db->sql_fetchrow($result))
+							{
+								$inactive_users[] = $row;
+							}
+							$db->sql_freeresult($result);
+						}
+
 						user_active_flip('activate', $mark);
+
+						if ($config['require_activation'] == USER_ACTIVATION_ADMIN && !empty($inactive_users))
+						{
+							include_once($phpbb_root_path . 'includes/functions_messenger.' . $phpEx);
+
+							$messenger = new messenger();
+
+							foreach ($inactive_users as $row)
+							{
+								$messenger->template('admin_welcome_activated', $row['user_lang']);
+
+								$messenger->to($row['user_email'], $row['username']);
+
+								$messenger->headers('X-AntiAbuse: Board servername - ' . $config['server_name']);
+								$messenger->headers('X-AntiAbuse: User_id - ' . $user->data['user_id']);
+								$messenger->headers('X-AntiAbuse: Username - ' . $user->data['username']);
+
+								$messenger->assign_vars(array(
+									'USERNAME'	=> htmlspecialchars_decode($row['username']))
+								);
+
+								$messenger->send(NOTIFY_EMAIL);
+							}
+
+							$messenger->save_queue();
+						}
 					}
 					else if ($action == 'delete')
 					{

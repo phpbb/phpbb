@@ -1395,7 +1395,7 @@ function validate_username($username, $allowed_username = false)
 
 	foreach ($bad_usernames as $bad_username)
 	{
-		if (preg_match('#^' . $bad_username . '#', $clean_username))
+		if (preg_match('#^' . $bad_username . '$#', $clean_username))
 		{
 			return 'USERNAME_DISALLOWED';
 		}

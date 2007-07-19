@@ -565,7 +565,7 @@ $lang = array_merge($lang, array(
 	'REPORT_WAREZ'					=> 'The post contains links to illegal or pirated software.',
 	'REPORT_SPAM'					=> 'The reported post has the only purpose to advertise for a website or another product.',
 	'REPORT_OFF_TOPIC'				=> 'The reported post is off topic.',
-	'REPORT_OTHER'					=> 'The reported post does not fit into any other category, please use the description field.',
+	'REPORT_OTHER'					=> 'The reported post does not fit into any other category, please use the further information field.',
 
 	'SMILIES_ARROW'					=> 'Arrow',
 	'SMILIES_CONFUSED'				=> 'Confused',

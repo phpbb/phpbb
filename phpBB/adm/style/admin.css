@@ -1330,6 +1330,15 @@ fieldset.permissions .padding {
 	font-size: 0.90em;
 }
 
+.permissions-reset {
+	margin-top: -6px;
+	padding-bottom: 10px;
+}
+
+.permissions-reset a {
+	font-size: .8em;
+}
+
 /* Tabbed menu */
 .permissions-category {
 	line-height: normal;

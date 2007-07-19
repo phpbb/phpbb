@@ -1351,7 +1351,7 @@ parse_css_file = {PARSE_CSS_FILE}
 		{
 			while (($file = readdir($dp)) !== false)
 			{
-				if (!is_file($dir . '/' . $file) && !is_link($dir . '/' . $file) && $file[0] != '.' && strtoupper($file) != 'CVS')
+				if ($file[0] != '.' && strtoupper($file) != 'CVS' && !is_file($dir . '/' . $file) && !is_link($dir . '/' . $file))
 				{
 					$langs[] = $file;
 				}
@@ -2429,6 +2429,11 @@ parse_css_file = {PARSE_CSS_FILE}
 		$file_ary = array();
 		while ($file = readdir($dp))
 		{
+			if ($file[0] == '.')
+			{
+				continue;
+			}
+
 			if (is_file($phpbb_root_path . 'cache/' . $file) && (strpos($file, $cache_prefix) === 0))
 			{
 				$file_ary[] = str_replace('.', '/', preg_replace('#^' . preg_quote($cache_prefix, '#') . '_(.*?)\.html\.' . $phpEx . '$#i', '\1', $file));

@@ -1240,7 +1240,7 @@ switch ($mode)
 				'S_JOINED_TIME_OPTIONS'	=> $s_find_join_time,
 				'S_ACTIVE_TIME_OPTIONS'	=> $s_find_active_time,
 				'S_GROUP_SELECT'		=> $s_group_select,
-				'S_SEARCH_ACTION'		=> append_sid("{$phpbb_root_path}memberlist.$phpEx", "mode=searchuser&amp;form=$form&amp;field=$field"))
+				'S_USER_SEARCH_ACTION'	=> append_sid("{$phpbb_root_path}memberlist.$phpEx", "mode=searchuser&amp;form=$form&amp;field=$field"))
 			);
 		}
 
@@ -1458,7 +1458,7 @@ function show_profile($data)
 
 	$age = '';
 
-	if ($data['user_birthday'])
+	if ($config['allow_birthdays'] && $data['user_birthday'])
 	{
 		list($bday_day, $bday_month, $bday_year) = array_map('intval', explode('-', $data['user_birthday']));
 
