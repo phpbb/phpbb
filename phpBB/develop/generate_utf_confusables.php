@@ -10,7 +10,7 @@
 
 if (php_sapi_name() != 'cli')
 {
-	die("This program must be run from the command line.\n");
+//	die("This program must be run from the command line.\n");
 }
 
 //
@@ -20,7 +20,7 @@ if (php_sapi_name() != 'cli')
 // Remove or comment the next line (die(".... ) to enable this script.
 // Do NOT FORGET to either remove this script or disable it after you have used it.
 //
-die("Please read the first lines of this script for instructions on how to enable it");
+//die("Please read the first lines of this script for instructions on how to enable it");
 
 set_time_limit(0);
 
@@ -60,7 +60,7 @@ function utf8_chr($cp)
     }
 }
 
-preg_match_all('/^([0-9A-F]+) ;\s((?:[0-9A-F]+ )*);/im', $unidata, $array, PREG_SET_ORDER);
+preg_match_all('/^([0-9A-F]+) ;\s((?:[0-9A-F]+ )*);.*?$/im', $unidata, $array, PREG_SET_ORDER);
 
 // some that we defined ourselves
 $uniarray = array(
@@ -108,6 +108,8 @@ $copy = $uniarray;
 
 foreach ($array as $value)
 {
+	$temp_hold = implode(array_map('utf8_chr', array_map('hexdec', explode(' ', trim($value[2])))));
+	
 	if (isset($copy[utf8_chr(hexdec((string)$value[1]))]))
 	{
 		$num = '';
@@ -117,13 +119,24 @@ foreach ($array as $value)
 			$num .= '\x' . str_pad(base_convert(ord($string[$i]), 10, 16), 2, '0', STR_PAD_LEFT);
 		}
 		echo $num . "\n";
-		if ($uniarray[$string] != implode(array_map('utf8_chr', array_map('hexdec', explode(' ', trim($value[2]))))))
+		if ($uniarray[$string] != $temp_hold)
 		{
 			echo "  --> $string\n";
-			echo "  --> " . implode(array_map('utf8_chr', array_map('hexdec', explode(' ', trim($value[2]))))) . "\n";
+			echo "  --> " . $temp_hold . "\n";
 		}
 	}
-    $uniarray[utf8_chr(hexdec((string)$value[1]))] = implode(array_map('utf8_chr', array_map('hexdec', explode(' ', trim($value[2])))));
+
+	// do some tests for things that transform into something with the number one
+	if (strpos($temp_hold, utf8_chr(0x0031)) !== false)
+	{
+		// any kind of letter L?
+		if (strpos($value[0], 'LETTER L') !== false || strpos($value[0], 'IOTA') !== false || strpos($value[0], 'SMALL L ') !== false || preg_match('/SMALL LIGATURE [^L]*L /', $value[0]))
+		{
+			// replace all of the mappings that transform some sort of letter l to number one instead to some sort of letter l to latin small letter l
+			$temp_hold = str_replace(utf8_chr(0x0031), utf8_chr(0x006C), $temp_hold);
+		}
+	}
+	$uniarray[utf8_chr(hexdec((string)$value[1]))] = $temp_hold;
 }
 
 echo "Writing to confusables.$phpEx\n";
