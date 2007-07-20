@@ -43,7 +43,7 @@ class session
 		if (!$script_name)
 		{
 			$script_name = (!empty($_SERVER['REQUEST_URI'])) ? $_SERVER['REQUEST_URI'] : getenv('REQUEST_URI');
-			$script_name = (($pos = strpos($script_name, '?')) !== false) ? substr($script_name, 0, strpos($script_name, '?')) : $script_name;
+			$script_name = (($pos = strpos($script_name, '?')) !== false) ? substr($script_name, 0, $pos) : $script_name;
 			$page_array['failover'] = 1;
 		}
 
@@ -1286,7 +1286,7 @@ class user extends session
 			$style = ($style) ? $style : ((!$config['override_user_style'] && $this->data['user_id'] != ANONYMOUS) ? $this->data['user_style'] : $config['default_style']);
 		}
 
-		$sql = 'SELECT s.style_id, t.*, c.*, i.*
+		$sql = 'SELECT s.style_id, t.template_storedb, t.template_path, t.template_id, c.theme_path, c.theme_name, c.theme_storedb, c.theme_id, i.imageset_path, i.imageset_id, i.imageset_name
 			FROM ' . STYLES_TABLE . ' s, ' . STYLES_TEMPLATE_TABLE . ' t, ' . STYLES_THEME_TABLE . ' c, ' . STYLES_IMAGESET_TABLE . " i
 			WHERE s.style_id = $style
 				AND t.template_id = s.template_id
@@ -1306,7 +1306,7 @@ class user extends session
 				WHERE user_id = {$this->data['user_id']}";
 			$db->sql_query($sql);
 
-			$sql = 'SELECT s.style_id, t.*, c.*, i.*
+			$sql = 'SELECT s.style_id, t.template_storedb, t.template_path, t.template_id, c.theme_path, c.theme_name, c.theme_storedb, c.theme_id, i.imageset_path, i.imageset_id, i.imageset_name
 				FROM ' . STYLES_TABLE . ' s, ' . STYLES_TEMPLATE_TABLE . ' t, ' . STYLES_THEME_TABLE . ' c, ' . STYLES_IMAGESET_TABLE . " i
 				WHERE s.style_id = $style
 					AND t.template_id = s.template_id
@@ -1394,7 +1394,7 @@ class user extends session
 
 		$this->img_lang = (file_exists($phpbb_root_path . 'styles/' . $this->theme['imageset_path'] . '/imageset/' . $this->lang_name)) ? $this->lang_name : $config['default_lang'];
 
-		$sql = 'SELECT *
+		$sql = 'SELECT image_name, image_name, image_lang, image_height, image_width
 			FROM ' . STYLES_IMAGESET_DATA_TABLE . '
 			WHERE imageset_id = ' . $this->theme['imageset_id'] . "
 			AND image_lang IN('" . $db->sql_escape($this->img_lang) . "', '')";
@@ -1407,9 +1407,6 @@ class user extends session
 			{
 				$localised_images = true;
 			}
-
-			// we don't need no steenkin' imageset_ids
-			unset($row['imageset_id']);
 
 			$this->img_array[$row['image_name']] = $row;
 		}
