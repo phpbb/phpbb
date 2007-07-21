@@ -163,7 +163,7 @@ class acp_forums
 						$forum_perm_from = request_var('forum_perm_from', 0);
 
 						// Copy permissions?
-						if ($forum_perm_from && !empty($forum_perm_from) && $forum_perm_from == $forum_data['forum_id'])
+						if ($forum_perm_from && !empty($forum_perm_from) && $forum_perm_from != $forum_data['forum_id'])
 						{
 							// if we edit a forum delete current permissions first
 							if ($action == 'edit')
