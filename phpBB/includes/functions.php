@@ -4177,8 +4177,6 @@ function page_header($page_title = '', $display_online_list = true)
 		'SITE_LOGO_IMG'			=> $user->img('site_logo'))
 	);
 
-	$user->theme['theme_data'] = '';
-
 	// application/xhtml+xml not used because of IE
 	header('Content-type: text/html; charset=UTF-8');
 
