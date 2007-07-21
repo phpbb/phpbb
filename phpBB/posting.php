@@ -1070,10 +1070,11 @@ if (!sizeof($error) && $preview)
 		$preview_poll_options = explode('<br />', $parse_poll->message);
 		unset($parse_poll);
 
-		foreach ($preview_poll_options as $option)
+		foreach ($preview_poll_options as $key => $option)
 		{
 			$template->assign_block_vars('poll_option', array(
-				'POLL_OPTION_CAPTION'	=> $option)
+				'POLL_OPTION_CAPTION'	=> $option,
+				'POLL_OPTION_ID'		=> $key + 1)
 			);
 		}
 		unset($preview_poll_options);
