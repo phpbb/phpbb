@@ -406,7 +406,7 @@ class ucp_profile
 						'S_BIRTHDAY_MONTH_OPTIONS'	=> $s_birthday_month_options,
 						'S_BIRTHDAY_YEAR_OPTIONS'	=> $s_birthday_year_options,
 						'S_BIRTHDAYS_ENABLED'		=> true,
-					);
+					));
 				}
 
 				$template->assign_vars(array(
