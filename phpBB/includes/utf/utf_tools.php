@@ -1787,7 +1787,17 @@ function utf8_normalize_nfc($strings)
 	{
 		foreach ($strings as $key => $string)
 		{
-			utf_normalizer::nfc($strings[$key]);
+			if (is_array($string))
+			{
+				foreach ($string as $_key => $_string)
+				{
+					utf_normalizer::nfc($strings[$key][$_key]);
+				}
+			}
+			else
+			{
+				utf_normalizer::nfc($strings[$key]);
+			}
 		}
 	}
 

@@ -38,8 +38,8 @@ class acp_reasons
 			case 'edit':
 
 				$reason_row = array(
-					'reason_title'			=> request_var('reason_title', '', true),
-					'reason_description'	=> request_var('reason_description', '', true)
+					'reason_title'			=> utf8_normalize_nfc(request_var('reason_title', '', true)),
+					'reason_description'	=> utf8_normalize_nfc(request_var('reason_description', '', true)),
 				);
 
 				if ($submit)

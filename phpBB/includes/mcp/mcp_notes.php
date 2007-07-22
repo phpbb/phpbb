@@ -103,7 +103,7 @@ class mcp_notes
 		$deletemark = ($action == 'del_marked') ? true : false;
 		$deleteall	= ($action == 'del_all') ? true : false;
 		$marked		= request_var('marknote', array(0));
-		$usernote	= request_var('usernote', '', true);
+		$usernote	= utf8_normalize_nfc(request_var('usernote', '', true));
 
 		// Handle any actions
 		if (($deletemark || $deleteall) && $auth->acl_get('a_clearlogs'))

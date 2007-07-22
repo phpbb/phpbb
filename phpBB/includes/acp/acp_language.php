@@ -146,8 +146,8 @@ class acp_language
 
 				$sql_ary	= array(
 					'lang_english_name'		=> request_var('lang_english_name', $row['lang_english_name']),
-					'lang_local_name'		=> request_var('lang_local_name', $row['lang_local_name'], true),
-					'lang_author'			=> request_var('lang_author', $row['lang_author'], true),
+					'lang_local_name'		=> utf8_normalize_nfc(request_var('lang_local_name', $row['lang_local_name'], true)),
+					'lang_author'			=> utf8_normalize_nfc(request_var('lang_author', $row['lang_author'], true)),
 				);
 
 				$db->sql_query('UPDATE ' . LANG_TABLE . ' 

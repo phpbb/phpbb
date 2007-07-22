@@ -33,7 +33,7 @@ class acp_disallow
 
 		if ($disallow)
 		{
-			$disallowed_user = str_replace('*', '%', request_var('disallowed_user', '', true));
+			$disallowed_user = str_replace('*', '%', utf8_normalize_nfc(request_var('disallowed_user', '', true)));
 
 			if (!$disallowed_user)
 			{

@@ -35,7 +35,7 @@ class acp_ranks
 		{
 			case 'save':
 				
-				$rank_title = request_var('title', '', true);
+				$rank_title = utf8_normalize_nfc(request_var('title', '', true));
 				$special_rank = request_var('special_rank', 0);
 				$min_posts = ($special_rank) ? 0 : request_var('min_posts', 0);
 				$rank_image = request_var('rank_image', '');

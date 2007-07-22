@@ -30,8 +30,8 @@ $topic_id		= request_var('t', 0);
 $view			= request_var('view', '');
 
 $submit			= request_var('submit', false);
-$keywords		= request_var('keywords', '', true);
-$add_keywords	= request_var('add_keywords', '', true);
+$keywords		= utf8_normalize_nfc(request_var('keywords', '', true));
+$add_keywords	= utf8_normalize_nfc(request_var('add_keywords', '', true));
 $author			= request_var('author', '', true);
 $author_id		= request_var('author_id', 0);
 $show_results	= ($topic_id) ? 'posts' : request_var('sr', 'posts');

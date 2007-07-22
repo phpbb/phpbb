@@ -37,6 +37,9 @@ $sort_dir	= request_var('sd', ((!empty($user->data['user_post_sortby_dir'])) ? $
 
 $update		= request_var('update', false);
 
+/**
+* @todo normalize?
+*/
 $hilit_words	= request_var('hilit', '', true);
 
 // Do we have a topic or post id?

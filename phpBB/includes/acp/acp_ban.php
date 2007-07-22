@@ -33,12 +33,12 @@ class acp_ban
 		if ($bansubmit)
 		{
 			// Grab the list of entries
-			$ban				= request_var('ban', '', true);
+			$ban				= utf8_normalize_nfc(request_var('ban', '', true));
 			$ban_len			= request_var('banlength', 0);
 			$ban_len_other		= request_var('banlengthother', '');
 			$ban_exclude		= request_var('banexclude', 0);
-			$ban_reason			= request_var('banreason', '', true);
-			$ban_give_reason	= request_var('bangivereason', '', true);
+			$ban_reason			= utf8_normalize_nfc(request_var('banreason', '', true));
+			$ban_give_reason	= utf8_normalize_nfc(request_var('bangivereason', '', true));
 
 			if ($ban)
 			{

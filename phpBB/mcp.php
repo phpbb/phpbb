@@ -78,7 +78,7 @@ $post_id = request_var('p', 0);
 $topic_id = request_var('t', 0);
 $forum_id = request_var('f', 0);
 $user_id = request_var('u', 0);
-$username = request_var('username', '', true);
+$username = utf8_normalize_nfc(request_var('username', '', true));
 
 if ($post_id)
 {

@@ -670,7 +670,7 @@ parse_css_file = {PARSE_CSS_FILE}
 		$_POST['template_data'] = (isset($_POST['template_data']) && !empty($_POST['template_data'])) ? str_replace(array("\r\n", "\r"), array("\n", "\n"), $_POST['template_data']) : '';
 
 		$template_data	= (STRIP) ? stripslashes($_POST['template_data']) : $_POST['template_data'];
-		$template_file	= request_var('template_file', '', true);
+		$template_file	= utf8_normalize_nfc(request_var('template_file', '', true));
 		$text_rows		= max(5, min(999, request_var('text_rows', 20)));
 		$save_changes	= (isset($_POST['save'])) ? true : false;
 
@@ -1025,7 +1025,7 @@ parse_css_file = {PARSE_CSS_FILE}
 		$_POST['template_data'] = (isset($_POST['template_data']) && !empty($_POST['template_data'])) ? str_replace(array("\r\n", "\r"), array("\n", "\n"), $_POST['template_data']) : '';
 
 		$theme_data	= (STRIP) ? stripslashes($_POST['template_data']) : $_POST['template_data'];
-		$theme_file	= request_var('template_file', '', true);
+		$theme_file	= utf8_normalize_nfc(request_var('template_file', '', true));
 		$text_rows		= max(5, min(999, request_var('text_rows', 20)));
 		$save_changes	= (isset($_POST['save'])) ? true : false;
 
@@ -2016,8 +2016,8 @@ parse_css_file = {PARSE_CSS_FILE}
 
 		if ($update)
 		{
-			$name = request_var('name', '', true);
-			$copyright = request_var('copyright', '', true);
+			$name = utf8_normalize_nfc(request_var('name', '', true));
+			$copyright = utf8_normalize_nfc(request_var('copyright', '', true));
 
 			$template_id = request_var('template_id', 0);
 			$theme_id = request_var('theme_id', 0);
@@ -2652,8 +2652,8 @@ parse_css_file = {PARSE_CSS_FILE}
 		$error = array();
 
 		$style_row = array(
-			$mode . '_name'			=> request_var('name', '', true),
-			$mode . '_copyright'	=> request_var('copyright', '', true),
+			$mode . '_name'			=> utf8_normalize_nfc(request_var('name', '', true)),
+			$mode . '_copyright'	=> utf8_normalize_nfc(request_var('copyright', '', true)),
 			'template_id'			=> 0,
 			'theme_id'				=> 0,
 			'imageset_id'			=> 0,

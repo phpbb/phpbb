@@ -276,16 +276,16 @@ class acp_icons
 				$image_width	= (isset($_POST['width'])) ? request_var('width', array('' => 0)) : array();
 				$image_height	= (isset($_POST['height'])) ? request_var('height', array('' => 0)) : array();
 				$image_add		= (isset($_POST['add_img'])) ? request_var('add_img', array('' => 0)) : array();
-				$image_emotion	= request_var('emotion', array('' => ''), true);
-				$image_code		= request_var('code', array('' => ''), true);
+				$image_emotion	= utf8_normalize_nfc(request_var('emotion', array('' => ''), true));
+				$image_code		= utf8_normalize_nfc(request_var('code', array('' => ''), true));
 				$image_display_on_posting = (isset($_POST['display_on_posting'])) ? request_var('display_on_posting', array('' => 0)) : array();
 
 				// Ok, add the relevant bits if we are adding new codes to existing emoticons...
 				if (!empty($_POST['add_additional_code']))
 				{
 					$add_image			= request_var('add_image', '');
-					$add_code			= request_var('add_code', '', true);
-					$add_emotion		= request_var('add_emotion', '', true);
+					$add_code			= utf8_normalize_nfc(request_var('add_code', '', true));
+					$add_emotion		= utf8_normalize_nfc(request_var('add_emotion', '', true));
 
 					if ($add_image && $add_emotion && $add_code)
 					{

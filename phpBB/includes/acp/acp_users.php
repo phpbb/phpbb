@@ -30,11 +30,8 @@ class acp_users
 		$this->tpl_name = 'acp_users';
 		$this->page_title = 'ACP_USER_' . strtoupper($mode);
 
-		include($phpbb_root_path . 'includes/functions_user.' . $phpEx);
-		include($phpbb_root_path . 'includes/functions_profile_fields.' . $phpEx);
-
 		$error		= array();
-		$username	= request_var('username', '', true);
+		$username	= utf8_normalize_nfc(request_var('username', '', true));
 		$user_id	= request_var('u', 0);
 		$action		= request_var('action', '');
 
@@ -43,6 +40,8 @@ class acp_users
 		// Whois (special case)
 		if ($action == 'whois')
 		{
+			include($phpbb_root_path . 'includes/functions_user.' . $phpEx);
+
 			$this->page_title = 'WHOIS';
 			$this->tpl_name = 'simple_body';
 
@@ -148,6 +147,8 @@ class acp_users
 		{
 			case 'overview':
 
+				include($phpbb_root_path . 'includes/functions_user.' . $phpEx);
+
 				$user->add_lang('acp/ban');
 
 				$delete			= request_var('delete', 0);
@@ -248,8 +249,8 @@ class acp_users
 								break;
 							}
 
-							$ban_reason = request_var('ban_reason', $user->lang[$reason], true);
-							$ban_give_reason = request_var('ban_give_reason', '', true);
+							$ban_reason = utf8_normalize_nfc(request_var('ban_reason', $user->lang[$reason], true));
+							$ban_give_reason = utf8_normalize_nfc(request_var('ban_give_reason', '', true));
 
 							// Log not used at the moment, we simply utilize the ban function.
 							$result = user_ban(substr($action, 3), $ban, 0, 0, 0, $ban_reason, $ban_give_reason);
@@ -598,7 +599,7 @@ class acp_users
 
 					// Handle registration info updates
 					$data = array(
-						'username'			=> request_var('user', $user_row['username'], true),
+						'username'			=> utf8_normalize_nfc(request_var('user', $user_row['username'], true)),
 						'user_founder'		=> request_var('user_founder', ($user_row['user_type'] == USER_FOUNDER) ? 1 : 0),
 						'email'				=> strtolower(request_var('user_email', $user_row['user_email'])),
 						'email_confirm'		=> strtolower(request_var('email_confirm', '')),
@@ -867,7 +868,7 @@ class acp_users
 				$deletemark = (isset($_POST['delmarked'])) ? true : false;
 				$deleteall	= (isset($_POST['delall'])) ? true : false;
 				$marked		= request_var('mark', array(0));
-				$message	= request_var('message', '', true);
+				$message	= utf8_normalize_nfc(request_var('message', '', true));
 
 				// Sort keys
 				$sort_days	= request_var('st', 0);
@@ -951,6 +952,9 @@ class acp_users
 			break;
 
 			case 'profile':
+
+				include($phpbb_root_path . 'includes/functions_user.' . $phpEx);
+				include($phpbb_root_path . 'includes/functions_profile_fields.' . $phpEx);
 
 				$cp = new custom_profile();
 
@@ -1147,8 +1151,10 @@ class acp_users
 
 			case 'prefs':
 
+				include($phpbb_root_path . 'includes/functions_user.' . $phpEx);
+
 				$data = array(
-					'dateformat'		=> request_var('dateformat', $user_row['user_dateformat'], true),
+					'dateformat'		=> utf8_normalize_nfc(request_var('dateformat', $user_row['user_dateformat'], true)),
 					'lang'				=> basename(request_var('lang', $user_row['user_lang'])),
 					'tz'				=> request_var('tz', (float) $user_row['user_timezone']),
 					'style'				=> request_var('style', $user_row['user_style']),
@@ -1352,6 +1358,7 @@ class acp_users
 			case 'avatar':
 
 				include($phpbb_root_path . 'includes/functions_display.' . $phpEx);
+				include($phpbb_root_path . 'includes/functions_user.' . $phpEx);
 
 				$can_upload = (file_exists($phpbb_root_path . $config['avatar_path']) && @is_writable($phpbb_root_path . $config['avatar_path']) && $file_uploads) ? true : false;
 
@@ -1651,6 +1658,8 @@ class acp_users
 			break;
 		
 			case 'groups':
+
+				include($phpbb_root_path . 'includes/functions_user.' . $phpEx);
 
 				$user->add_lang(array('groups', 'acp/groups'));
 				$group_id = request_var('g', 0);

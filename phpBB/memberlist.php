@@ -332,7 +332,7 @@ switch ($mode)
 					include_once($phpbb_root_path . 'includes/functions_messenger.' . $phpEx);
 
 					$subject = sprintf($user->lang['IM_JABBER_SUBJECT'], $user->data['username'], $config['server_name']);
-					$message = trim(request_var('message', '', true));
+					$message = utf8_normalize_nfc(request_var('message', '', true));
 
 					if (empty($message))
 					{
@@ -698,11 +698,11 @@ switch ($mode)
 
 		$error = array();
 
-		$name		= request_var('name', '', true);
+		$name		= utf8_normalize_nfc(request_var('name', '', true));
 		$email		= request_var('email', '');
 		$email_lang = request_var('lang', $config['default_lang']);
-		$subject	= request_var('subject', '', true);
-		$message	= request_var('message', '', true);
+		$subject	= utf8_normalize_nfc(request_var('subject', '', true));
+		$message	= utf8_normalize_nfc(request_var('message', '', true));
 		$cc			= (isset($_POST['cc_email'])) ? true : false;
 		$submit		= (isset($_POST['submit'])) ? true : false;
 
