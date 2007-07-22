@@ -276,7 +276,7 @@ function mcp_resync_topics($topic_ids)
 
 	if (!sizeof($topic_ids))
 	{
-		trigger_error($user->lang['NO_TOPIC_SELECTED']);
+		trigger_error('NO_TOPIC_SELECTED');
 	}
 
 	if (!check_ids($topic_ids, TOPICS_TABLE, 'topic_id', array('m_')))

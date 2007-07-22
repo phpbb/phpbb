@@ -224,7 +224,7 @@ class mcp_queue
 
 					if (!sizeof($topic_info))
 					{
-						trigger_error($user->lang['TOPIC_NOT_EXIST']);
+						trigger_error('TOPIC_NOT_EXIST');
 					}
 
 					$topic_info = $topic_info[$topic_id];

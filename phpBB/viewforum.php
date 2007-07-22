@@ -81,7 +81,7 @@ if (!$auth->acl_gets('f_list', 'f_read', $forum_id) || ($forum_data['forum_type'
 {
 	if ($user->data['user_id'] != ANONYMOUS)
 	{
-		trigger_error($user->lang['SORRY_AUTH_READ']);
+		trigger_error('SORRY_AUTH_READ');
 	}
 
 	login_box('', $user->lang['LOGIN_VIEWFORUM']);

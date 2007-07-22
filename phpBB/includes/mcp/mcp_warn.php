@@ -203,19 +203,19 @@ class mcp_warn
 
 		if (!$user_row)
 		{
-			trigger_error($user->lang['NO_POST']);
+			trigger_error('NO_POST');
 		}
 
 		// There is no point issuing a warning to ignored users (ie anonymous and bots)
 		if ($user_row['user_type'] == USER_IGNORE)
 		{
-			trigger_error($user->lang['CANNOT_WARN_ANONYMOUS']);
+			trigger_error('CANNOT_WARN_ANONYMOUS');
 		}
 
 		// Prevent someone from warning themselves
 		if ($user_row['user_id'] == $user->data['user_id'])
 		{
-			trigger_error($user->lang['CANNOT_WARN_SELF']);
+			trigger_error('CANNOT_WARN_SELF');
 		}
 
 		// Check if there is already a warning for this post to prevent multiple
@@ -229,7 +229,7 @@ class mcp_warn
 
 		if ($row)
 		{
-			trigger_error($user->lang['ALREADY_WARNED']);
+			trigger_error('ALREADY_WARNED');
 		}
 
 		$user_id = $user_row['user_id'];
@@ -325,7 +325,7 @@ class mcp_warn
 		// Prevent someone from warning themselves
 		if ($user_row['user_id'] == $user->data['user_id'])
 		{
-			trigger_error($user->lang['CANNOT_WARN_SELF']);
+			trigger_error('CANNOT_WARN_SELF');
 		}
 
 		$user_id = $user_row['user_id'];

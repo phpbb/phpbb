@@ -309,7 +309,7 @@ class ucp_register
 				// This should not happen, because the required variables are listed above...
 				if ($user_id === false)
 				{
-					trigger_error($user->lang['NO_USER'], E_USER_ERROR);
+					trigger_error('NO_USER', E_USER_ERROR);
 				}
 
 				if ($coppa && $config['email_enable'])
@@ -460,7 +460,7 @@ class ucp_register
 
 				if ($config['max_reg_attempts'] && $attempts > $config['max_reg_attempts'])
 				{
-					trigger_error($user->lang['TOO_MANY_REGISTERS']);
+					trigger_error('TOO_MANY_REGISTERS');
 				}
 
 				$code = gen_rand_string(mt_rand(5, 8));

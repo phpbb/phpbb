@@ -25,7 +25,7 @@ function mcp_topic_view($id, $mode, $action)
 
 	if (!sizeof($topic_info))
 	{
-		trigger_error($user->lang['TOPIC_NOT_EXIST']);
+		trigger_error('TOPIC_NOT_EXIST');
 	}
 
 	$topic_info = $topic_info[$topic_id];
@@ -439,7 +439,7 @@ function split_topic($action, $topic_id, $to_forum_id, $subject)
 
 		if (!sizeof($post_id_list))
 		{
-			trigger_error($user->lang['NO_POST_SELECTED']);
+			trigger_error('NO_POST_SELECTED');
 		}
 
 		$icon_id = request_var('icon', 0);

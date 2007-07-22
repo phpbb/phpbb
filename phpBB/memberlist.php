@@ -669,7 +669,7 @@ switch ($mode)
 			{
 				if (!$auth->acl_get('f_read', $row['forum_id']))
 				{
-					trigger_error($user->lang['SORRY_AUTH_READ']);
+					trigger_error('SORRY_AUTH_READ');
 				}
 
 				if (!$auth->acl_get('f_email', $row['forum_id']))
@@ -682,7 +682,7 @@ switch ($mode)
 				// If global announcement, we need to check if the user is able to at least read and email in one forum...
 				if (!$auth->acl_getf_global('f_read'))
 				{
-					trigger_error($user->lang['SORRY_AUTH_READ']);
+					trigger_error('SORRY_AUTH_READ');
 				}
 
 				if (!$auth->acl_getf_global('f_email'))

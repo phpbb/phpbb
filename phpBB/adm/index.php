@@ -27,12 +27,6 @@ $auth->acl($user->data);
 $user->setup('acp/common');
 // End session management
 
-// Did user forget to login? Give 'em a chance to here ...
-if ($user->data['user_id'] == ANONYMOUS)
-{
-	login_box('', $user->lang['LOGIN_ADMIN'], $user->lang['LOGIN_ADMIN_SUCCESS'], true);
-}
-
 // Have they authenticated (again) as an admin for this session?
 if (!isset($user->data['session_admin']) || !$user->data['session_admin'])
 {
@@ -43,7 +37,7 @@ if (!isset($user->data['session_admin']) || !$user->data['session_admin'])
 // check specific permissions but this is a catchall
 if (!$auth->acl_get('a_'))
 {
-	trigger_error($user->lang['NO_ADMIN']);
+	trigger_error('NO_ADMIN');
 }
 
 // We define the admin variables now, because the user is now able to use the admin related features...

@@ -26,7 +26,7 @@ function mcp_post_details($id, $mode, $action)
 
 	if (!sizeof($post_info))
 	{
-		trigger_error($user->lang['POST_NOT_EXIST']);
+		trigger_error('POST_NOT_EXIST');
 	}
 
 	$post_info = $post_info[$post_id];
@@ -79,7 +79,7 @@ function mcp_post_details($id, $mode, $action)
 
 			if (!$row)
 			{
-				trigger_error($user->lang['NO_USER']);
+				trigger_error('NO_USER');
 			}
 
 			if ($auth->acl_get('m_chgposter', $post_info['forum_id']))
@@ -473,7 +473,7 @@ function change_poster(&$post_info, $userdata)
 
 	if (!sizeof($post_info))
 	{
-		trigger_error($user->lang['POST_NOT_EXIST']);
+		trigger_error('POST_NOT_EXIST');
 	}
 
 	$post_info = $post_info[$post_id];

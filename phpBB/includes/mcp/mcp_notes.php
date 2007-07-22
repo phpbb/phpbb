@@ -86,7 +86,7 @@ class mcp_notes
 
 		if (!$userrow)
 		{
-			trigger_error($user->lang['NO_USER']);
+			trigger_error('NO_USER');
 		}
 
 		$user_id = $userrow['user_id'];

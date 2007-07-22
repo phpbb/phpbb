@@ -1515,7 +1515,7 @@ class parse_message extends bbcode_firstpass
 
 		if (sizeof($not_orphan))
 		{
-			trigger_error($user->lang['NO_ACCESS_ATTACHMENT'], E_USER_ERROR);
+			trigger_error('NO_ACCESS_ATTACHMENT', E_USER_ERROR);
 		}
 
 		// Regenerate newly uploaded attachments
@@ -1541,7 +1541,7 @@ class parse_message extends bbcode_firstpass
 
 		if (sizeof($orphan))
 		{
-			trigger_error($user->lang['NO_ACCESS_ATTACHMENT'], E_USER_ERROR);
+			trigger_error('NO_ACCESS_ATTACHMENT', E_USER_ERROR);
 		}
 
 		ksort($this->attachment_data);

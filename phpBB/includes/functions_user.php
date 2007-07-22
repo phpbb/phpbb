@@ -678,7 +678,7 @@ function user_ban($mode, $ban, $ban_len, $ban_len_other, $ban_exclude, $ban_reas
 			}
 			else
 			{
-				trigger_error($user->lang['LENGTH_BAN_INVALID']);
+				trigger_error('LENGTH_BAN_INVALID');
 			}
 		}
 	}
@@ -730,11 +730,11 @@ function user_ban($mode, $ban, $ban_len, $ban_len_other, $ban_exclude, $ban_reas
 						$clean_name = utf8_clean_string($username);
 						if ($clean_name == $user->data['username_clean'])
 						{
-							trigger_error($user->lang['CANNOT_BAN_YOURSELF']);
+							trigger_error('CANNOT_BAN_YOURSELF');
 						}
 						if (in_array($clean_name, $founder_names))
 						{
-							trigger_error($user->lang['CANNOT_BAN_FOUNDER']);
+							trigger_error('CANNOT_BAN_FOUNDER');
 						}
 						$sql_usernames[] = $clean_name;
 					}
@@ -743,7 +743,7 @@ function user_ban($mode, $ban, $ban_len, $ban_len_other, $ban_exclude, $ban_reas
 				// Make sure we have been given someone to ban
 				if (!sizeof($sql_usernames))
 				{
-					trigger_error($user->lang['NO_USER_SPECIFIED']);
+					trigger_error('NO_USER_SPECIFIED');
 				}
 
 				$sql = 'SELECT user_id
@@ -772,7 +772,7 @@ function user_ban($mode, $ban, $ban_len, $ban_len_other, $ban_exclude, $ban_reas
 				}
 				else
 				{
-					trigger_error($user->lang['NO_USERS']);
+					trigger_error('NO_USERS');
 				}
 				$db->sql_freeresult($result);
 			}

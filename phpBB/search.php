@@ -51,14 +51,14 @@ $search_forum	= request_var('fid', array(0));
 if (!$auth->acl_get('u_search') || !$auth->acl_getf_global('f_search') || !$config['load_search'])
 {
 	$template->assign_var('S_NO_SEARCH', true);
-	trigger_error($user->lang['NO_SEARCH']);
+	trigger_error('NO_SEARCH');
 }
 
 // Check search load limit
 if ($user->load && $config['limit_search_load'] && ($user->load > doubleval($config['limit_search_load'])))
 {
 	$template->assign_var('S_NO_SEARCH', true);
-	trigger_error($user->lang['NO_SEARCH_TIME']);
+	trigger_error('NO_SEARCH_TIME');
 }
 
 // Check flood limit ... if applicable
@@ -68,7 +68,7 @@ if ($interval && !$auth->acl_get('u_ignoreflood'))
 	if ($user->data['user_last_search'] > time() - $interval)
 	{
 		$template->assign_var('S_NO_SEARCH', true);
-		trigger_error($user->lang['NO_SEARCH_TIME']);
+		trigger_error('NO_SEARCH_TIME');
 	}
 }
 
@@ -124,7 +124,7 @@ if ($keywords || $author || $author_id || $search_id || $submit)
 
 		if (!sizeof($author_id_ary))
 		{
-			trigger_error($user->lang['NO_SEARCH_RESULTS']);
+			trigger_error('NO_SEARCH_RESULTS');
 		}
 	}
 
@@ -425,7 +425,7 @@ if ($keywords || $author || $author_id || $search_id || $submit)
 	// For some searches we need to print out the "no results" page directly to allow re-sorting/refining the search options.
 	if (!sizeof($id_ary) && !$search_id)
 	{
-		trigger_error($user->lang['NO_SEARCH_RESULTS']);
+		trigger_error('NO_SEARCH_RESULTS');
 	}
 
 	$sql_where = '';
@@ -998,7 +998,7 @@ unset($pad_store);
 
 if (!$s_forums)
 {
-	trigger_error($user->lang['NO_SEARCH']);
+	trigger_error('NO_SEARCH');
 }
 
 // Number of chars returned
