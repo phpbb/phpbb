@@ -84,6 +84,8 @@ $db->sql_connect($dbhost, $dbuser, $dbpasswd, $dbname, $dbport, false, false);
 // We do not need this any longer, unset for safety purposes
 unset($dbpasswd);
 
+$user->ip = (!empty($_SERVER['REMOTE_ADDR'])) ? htmlspecialchars($_SERVER['REMOTE_ADDR']) : '';
+
 $sql = "SELECT config_value
 	FROM " . CONFIG_TABLE . "
 	WHERE config_name = 'default_lang'";
@@ -486,6 +488,377 @@ else
 	$db->sql_query('DELETE FROM ' . CONFIG_TABLE . " WHERE config_name = 'version_update_from'");
 }
 
+// Checks/Operations that have to be completed prior to starting the update itself
+$exit = false;
+if (version_compare($current_version, '3.0.RC3', '<='))
+{
+	$submit			= (isset($_POST['resolve_conflicts'])) ? true : false;
+	$modify_users	= request_var('modify_users', array(0 => ''));
+	$new_usernames	= request_var('new_usernames', array(0 => ''), true);
+
+	// the admin decided to change some usernames
+	if (sizeof($modify_users) && $submit)
+	{
+		$sql = 'SELECT user_id, username, user_type
+			FROM ' . USERS_TABLE . '
+			WHERE ' . $db->sql_in_set('user_id', array_keys($modify_users));
+		$result = $db->sql_query($sql);
+
+		$users = 0;
+		while ($row = $db->sql_fetchrow())
+		{
+			$users++;
+			$user_id = (int) $row['user_id'];
+
+			if (isset($modify_users[$user_id]))
+			{
+				$row['action'] = $modify_users[$user_id];
+				$modify_users[$user_id] = $row;
+			}
+		}
+
+		// only if all ids really existed
+		if (sizeof($modify_users) == $users)
+		{
+			$user->data['user_id'] = ANONYMOUS;
+			include($phpbb_root_path . 'includes/functions_user.' . $phpEx);
+			foreach ($modify_users as $user_id => $row)
+			{
+				switch ($row['action'])
+				{
+					case 'edit':
+						if (isset($new_usernames[$user_id]))
+						{
+							$data = array('username' => utf8_normalize_nfc($new_usernames[$user_id]));
+							// Need to update config, forum, topic, posting, messages, etc.
+							if ($data['username'] != $row['username'])
+							{
+								$check_ary = array('username' => array(
+									array('string', false, $config['min_name_chars'], $config['max_name_chars']),
+									array('username'),
+								));
+								// need a little trick for this to work properly
+								$user->data['username_clean'] = utf8_clean_string($data['username']) . 'a';
+								$errors = validate_data($data, $check_ary);
+
+								if ($errors)
+								{
+									include($phpbb_root_path . 'language/' . $language . '/ucp.' . $phpEx);
+									echo '<div class="errorbox">';
+									foreach ($errors as $error)
+									{
+										echo '<p>' . $lang[$error] . '</p>';
+									}
+									echo '</div>';
+								}
+
+								if (!$errors)
+								{
+									$sql = 'UPDATE ' . USERS_TABLE . '
+										SET ' . $db->sql_build_array('UPDATE', array(
+												'username' => $data['username'],
+												'username_clean' => utf8_clean_string($data['username'])
+											)) . '
+										WHERE user_id = ' . $user_id;
+									$db->sql_query($sql);
+
+									add_log('user', $user_id, 'LOG_USER_UPDATE_NAME', $row['username'], $data['username']);
+									user_update_name($row['username'], $data['username']);
+								}
+							}
+						}
+					break;
+
+					case 'delete_retain':
+					case 'delete_remove':
+						if ($user_id != ANONYMOUS && $row['user_type'] != USER_FOUNDER)
+						{
+							user_delete(substr($row['action'], 7), $user_id, $row['username']);
+							add_log('admin', 'LOG_USER_DELETED', $row['username']);
+						}
+					break;
+				}
+			}
+		}
+	}
+
+	// after RC3 a different utf8_clean_string function is used, this requires that
+	// the unique column username_clean is recalculated, during this recalculation
+	// duplicates might be created. Since the column has to be unique such usernames
+	// must not exist. We need identify them and let the admin decide what to do
+	// about them.
+	$sql = 'SELECT user_id, username, username_clean
+		FROM ' . USERS_TABLE;
+	$result = $db->sql_query($sql);
+
+	$colliding_users = $found_names = array();
+	while ($row = $db->sql_fetchrow($result))
+	{
+		// Calculate the new clean name. If it differs from the old one we need
+		// to make sure there is no collision
+		$clean_name = utf8_new_clean_string($row['username']);
+		if ($clean_name != $row['username_clean'])
+		{
+			$user_id = (int) $row['user_id'];
+
+			// If this clean name was not the result of another user already ...
+			if (!isset($found_names[$clean_name]))
+			{
+				// then we need to figure out whether there are any other users
+				// who already had this clean name with the old version
+				$sql = 'SELECT user_id, username
+					FROM ' . USERS_TABLE . '
+					WHERE username_clean = \'' . $db->sql_escape($clean_name) . '\'';
+				$result = $db->sql_query($sql);
+
+				$user_ids = array($user_id);
+				while ($row = $db->sql_fetchrow())
+				{
+					// Make sure this clean name will still be the same with the
+					// new function. If it is, then we have to add it to the list
+					// of user ids for this clean name
+					if (utf8_new_clean_string($row['username']) == $clean_name)
+					{
+						$user_ids[] = (int) $row['user_id'];
+					}
+				}
+				$db->sql_freeresult();
+
+				// if we already found a collision save it
+				if (sizeof($user_ids) > 1)
+				{
+					$colliding_users[$clean_name] = $user_ids;
+					$found_names[$clean_name] = true;
+				}
+				else
+				{
+					// otherwise just mark this name as found
+					$found_names[$clean_name] = $user_id;
+				}
+			}
+			// Else, if we already found the username
+			else
+			{
+				// If the value in the found_names lookup table is only true ...
+				if ($found_names[$clean_name] === true)
+				{
+					// then the actual data was already added to $colliding_users
+					// and we only need to append the user_id
+					$colliding_users[$clean_name][] = $user_id;
+				}
+				else
+				{
+					// otherwise it still keeps the first user_id for this name
+					// and we need to move the data to $colliding_users, and set
+					// the value in the found_names lookup table to true, so
+					// following users will directly be appended to $colliding_users
+					$colliding_users[$clean_name] = array($found_names[$clean_name], $user_id);
+					$found_names[$clean_name] = true;
+				}
+			}
+		}
+	}
+	unset($found_names);
+	$db->sql_freeresult($result);
+
+	// now retrieve all information about the users and let the admin decide what to do
+	if (sizeof($colliding_users))
+	{
+		$exit = true;
+		include($phpbb_root_path . 'includes/functions_display.' . $phpEx);
+		include($phpbb_root_path . 'language/' . $language . '/memberlist.' . $phpEx);
+		include($phpbb_root_path . 'language/' . $language . '/acp/users.' . $phpEx);
+
+		// link a few things to the correct place so we don't get any problems
+		$user->lang = &$lang;
+		$user->data['user_id'] = ANONYMOUS;
+		$user->date_format = $config['default_dateformat'];
+
+		// a little trick to get all user_ids
+		$user_ids = call_user_func_array('array_merge', array_values($colliding_users));
+
+		$sql = 'SELECT session_user_id, MAX(session_time) AS session_time
+			FROM ' . SESSIONS_TABLE . '
+			WHERE session_time >= ' . (time() - $config['session_length']) . '
+				AND ' . $db->sql_in_set('session_user_id', $user_ids) . '
+			GROUP BY session_user_id';
+		$result = $db->sql_query($sql);
+
+		$session_times = array();
+		while ($row = $db->sql_fetchrow($result))
+		{
+			$session_times[$row['session_user_id']] = $row['session_time'];
+		}
+		$db->sql_freeresult($result);
+
+		$sql = 'SELECT *
+			FROM ' . USERS_TABLE . '
+			WHERE ' . $db->sql_in_set('user_id', $user_ids);
+		$result = $db->sql_query($sql);
+
+		$users = array();
+		while ($row = $db->sql_fetchrow($result))
+		{
+			if (isset($session_times[$row['user_id']]))
+			{
+				$row['session_time'] = $session_times[$row['user_id']];
+			}
+			else
+			{
+				$row['session_time'] = 0;
+			}
+			$users[(int) $row['user_id']] = $row;
+		}
+		$db->sql_freeresult($result);
+		unset($session_times);
+
+		// now display a table with all users, some information about them and options
+		// for the admin: keep name, change name (with text input) or delete user
+		$u_action = "database_update.$phpEx?language=$language&amp;type=$inline_update";
+?>
+<p><?php echo $lang['CHANGE_CLEAN_NAMES']; ?></p>
+<form id="change_clean_names" method="post" action="<?php echo $u_action; ?>">
+
+
+<?php
+		foreach ($colliding_users as $clean_name => $user_ids)
+		{
+?>
+	<fieldset class="tabulated">
+		<table>
+			<caption><?php echo sprintf($lang['COLLIDING_CLEAN_USERNAME'], $clean_name); ?></caption>
+			<thead>
+				<tr>
+					<th><?php echo $lang['RANK']; ?> <?php echo $lang['USERNAME']; ?></th>
+					<th><?php echo $lang['POSTS']; ?></th>
+					<th><?php echo $lang['INFORMATION']; ?></th>
+					<th><?php echo $lang['JOINED']; ?></th>
+					<th><?php echo $lang['LAST_ACTIVE']; ?></th>
+					<th><?php echo $lang['ACTION']; ?></th>
+					<th><?php echo $lang['NEW_USERNAME']; ?></th>
+				</tr>
+			</thead>
+			<tbody>
+<?php
+			foreach ($user_ids as $i => $user_id)
+			{
+				$row = $users[$user_id];
+				
+				$rank_title = $rank_img = '';
+				get_user_rank($row['user_rank'], $row['user_posts'], $rank_title, $rank_img, $rank_img_src);
+
+				$last_visit = (!empty($row['session_time'])) ? $row['session_time'] : $row['user_lastvisit'];
+
+				$info = '';
+				switch ($row['user_type'])
+				{
+					case USER_INACTIVE:
+						$info .= $lang['USER_INACTIVE'];
+					break;
+
+					case USER_IGNORE:
+						$info .= $lang['BOT'];
+					break;
+
+					case USER_FOUNDER:
+						$info .= $lang['FOUNDER'];
+					break;
+
+					default:
+						$info .= $lang['USER_ACTIVE'];
+				}
+
+				if ($user_id == ANONYMOUS)
+				{
+					$info = $lang['GUEST'];
+				}
+?>
+				<tr class="bg<?php echo ($i % 2) + 1; ?>">
+					<td>
+						<span class="rank-img"><?php echo ($rank_img) ? $rank_img : $rank_title; ?></span>
+						<?php echo get_username_string('full', $row['user_id'], $row['username'], $row['user_colour']); ?>
+					</td>
+					<td class="posts"><?php echo $row['user_posts']; ?></td>
+					<td class="info"><?php echo $info; ?></td>
+					<td><?php echo $user->format_date($row['user_regdate']) ?></td>
+					<td><?php echo (empty($last_visit)) ? ' - ' : $user->format_date($last_visit); ?>&nbsp;</td>
+					<td>
+						<label><input type="radio" class="radio" id="keep_user_<?php echo $user_id; ?>" name="modify_users[<?php echo $user_id; ?>]" value="keep" checked="checked" /> <?php echo $lang['KEEP_OLD_NAME']; ?></label><br />
+						<label><input type="radio" class="radio" id="edit_user_<?php echo $user_id; ?>" name="modify_users[<?php echo $user_id; ?>]" value="edit" /> <?php echo $lang['EDIT_USERNAME']; ?></label><br />
+<?php
+				// some users must not be deleted
+				if ($user_id != ANONYMOUS && $row['user_type'] != USER_FOUNDER)
+				{
+?>
+						<label><input type="radio" class="radio" id="delete_user_retain_<?php echo $user_id; ?>" name="modify_users[<?php echo $user_id; ?>]" value="delete_retain" /> <?php echo $lang['DELETE_USER_RETAIN']; ?></label><br />
+						<label><input type="radio" class="radio" id="delete_user_remove_<?php echo $user_id; ?>" name="modify_users[<?php echo $user_id; ?>]" value="delete_remove" /> <?php echo $lang['DELETE_USER_REMOVE']; ?></label>
+<?php
+				}
+?>
+					</td>
+					<td>
+						<input id="new_username_<?php echo $user_id; ?>" type="text" name="new_usernames[<?php echo $user_id; ?>]" value="<?php echo $row['username']; ?>" />
+					</td>
+				</tr>
+<?php
+			}
+?>
+			</tbody>
+		</table>
+	</fieldset>
+<?php
+		}
+?>
+		<p class="quick">
+			<input class="button2" id="resolve_conflicts" type="submit" name="resolve_conflicts" value="<?php echo $lang['SUBMIT']; ?>" />
+		</p>
+	</form>
+<?php
+	}
+	else
+	{
+		$sql = 'SELECT user_id, username, username_clean
+			FROM ' . USERS_TABLE;
+		$result = $db->sql_query($sql);
+	
+		while ($row = $db->sql_fetchrow($result))
+		{
+			$clean_name = utf8_new_clean_string($row['username']);
+			if ($clean_name != $row['username_clean'])
+			{
+				$sql = 'UPDATE ' . USERS_TABLE . '
+					SET username_clean = \'' . $db->sql_escape($clean_name) . '\'
+					WHERE user_id = ' . (int) $row['user_id'];
+				$db->sql_query($sql);
+			}
+		}
+	}
+	unset($colliding_users);
+}
+
+if ($exit)
+{
+?>
+
+					</div>
+				</div>
+			<span class="corners-bottom"><span></span></span>
+		</div>
+		</div>
+	</div>
+
+	<div id="page-footer">
+		Powered by phpBB &copy; 2000, 2002, 2005, 2007 <a href="http://www.phpbb.com/">phpBB Group</a>
+	</div>
+</div>
+
+</body>
+</html>
+
+<?php
+	exit;
+}
+
 // Schema updates
 ?>
 	</p><br /><br />
@@ -876,8 +1249,6 @@ else
 }
 
 // Add database update to log
-
-$user->ip = (!empty($_SERVER['REMOTE_ADDR'])) ? htmlspecialchars($_SERVER['REMOTE_ADDR']) : '';
 add_log('admin', 'LOG_UPDATE_DATABASE', $orig_version, $updates_to_version);
 
 // Now we purge the session table as well as all cache files
@@ -1982,6 +2353,40 @@ function sql_column_change($dbms, $table_name, $column_name, $column_data)
 
 		break;
 	}
+}
+
+function utf8_new_clean_string($text)
+{
+	static $homographs = array();
+	static $utf8_case_fold_nfkc = '';
+	if (empty($homographs))
+	{
+		global $phpbb_root_path, $phpEx;
+		if (!function_exists('utf8_case_fold_nfkc') || !file_exists($phpbb_root_path . 'includes/utf/data/confusables.' . $phpEx))
+		{
+			if (!file_exists($phpbb_root_path . 'install/data/confusables.' . $phpEx))
+			{
+				global $lang;
+				trigger_error(sprintf($lang['UPDATE_REQUIRES_FILE'], $phpbb_root_path . 'install/data/confusables.' . $phpEx), E_USER_ERROR);
+			}
+			$homographs = include($phpbb_root_path . 'install/data/confusables.' . $phpEx);
+			$utf8_case_fold_nfkc = 'utf8_new_case_fold_nfkc';
+		}
+		else
+		{
+			$homographs = include($phpbb_root_path . 'includes/utf/data/confusables.' . $phpEx);
+			$utf8_case_fold_nfkc = 'utf8_case_fold_nfkc';
+		}
+	}
+
+	$text = $utf8_case_fold_nfkc($text);
+	$text = strtr($text, $homographs);
+	// Other control characters
+	$text = preg_replace('#(?:[\x00-\x1F\x7F]+|(?:\xC2[\x80-\x9F])+)#', '', $text);
+
+	// we can use trim here as all the other space characters should have been turned
+	// into normal ASCII spaces by now
+	return trim($text);
 }
 
 ?>

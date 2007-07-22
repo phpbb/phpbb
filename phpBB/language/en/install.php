@@ -360,7 +360,9 @@ $lang = array_merge($lang, array(
 
 	'BACK'				=> 'Back',
 	'BINARY_FILE'		=> 'Binary file',
+	'BOT'				=> 'Spider/Robot',
 
+	'CHANGE_CLEAN_NAMES'			=> 'The method used to make sure a username is not used by multiple users has been changed. There are some users which have the same name when compared with the new method. You have to delete or rename these users to make sure that each name is only used by one user before you can proceed.',
 	'CHECK_FILES'					=> 'Check files',
 	'CHECK_FILES_AGAIN'				=> 'Check files again',
 	'CHECK_FILES_EXPLAIN'			=> 'Within the next step all files will be checked against the update files - this can take a while if this is the first file check.',
@@ -375,6 +377,8 @@ $lang = array_merge($lang, array(
 
 	'DATABASE_TYPE'						=> 'Database type',
 	'DATABASE_UPDATE_INFO_OLD'			=> 'The database update file within the install directory is outdated. Please make sure you uploaded the correct version of the file.',
+	'DELETE_USER_REMOVE'				=> 'Delete user and remove posts',
+	'DELETE_USER_RETAIN'				=> 'Delete user but keep posts',
 	'DESTINATION'						=> 'Destination file',
 	'DIFF_INLINE'						=> 'Inline',
 	'DIFF_RAW'							=> 'Raw unified diff',
@@ -388,7 +392,8 @@ $lang = array_merge($lang, array(
 	'DOWNLOAD_UPDATE_METHOD'			=> 'Download modified files archive',
 	'DOWNLOAD_UPDATE_METHOD_EXPLAIN'	=> 'Once downloaded you should unpack the archive. You will find the modified files you need to upload to your phpBB root directory within it. Please upload the files to their respective locations then. After you have uploaded all files, please check the files again with the other button below.',
 
-	'ERROR'		=> 'Error',
+	'ERROR'			=> 'Error',
+	'EDIT_USERNAME'	=> 'Edit username',
 
 	'FILE_ALREADY_UP_TO_DATE'		=> 'File is already up to date.',
 	'FILE_DIFF_NOT_ALLOWED'			=> 'File not allowed to be diffed.',
@@ -412,6 +417,8 @@ $lang = array_merge($lang, array(
 	'INCOMPLETE_UPDATE_FILES'		=> 'The update files are incomplete.',
 	'INLINE_UPDATE_SUCCESSFUL'		=> 'The database update was successful. Now you need to continue the update process.',
 
+	'KEEP_OLD_NAME'		=> 'Keep username',
+
 	'LATEST_VERSION'		=> 'Latest version',
 	'LINE'					=> 'Line',
 	'LINE_ADDED'			=> 'Added',
@@ -431,6 +438,7 @@ $lang = array_merge($lang, array(
 	'MERGE_SELECT_ERROR'		=> 'Conflicting file merge modes are not correctly selected.',
 
 	'NEW_FILE'						=> 'New updated file',
+	'NEW_USERNAME'					=> 'New username',
 	'NO_AUTH_UPDATE'				=> 'Not authorised to update',
 	'NO_ERRORS'						=> 'No errors',
 	'NO_UPDATE_FILES'				=> 'Not updating the following files',
@@ -517,6 +525,7 @@ $lang = array_merge($lang, array(
 	',
 	'UPDATE_METHOD'					=> 'Update method',
 	'UPDATE_METHOD_EXPLAIN'			=> 'You are now able to choose your preferred update method. Using the FTP upload will present you with a form you need to enter your FTP account details into. With this method the files will be automatically moved to the new location and backups of the old files being created by appending .bak to the filename. If you choose to download the modified files you are able to unpack and upload them to their correct location manually later.',
+	'UPDATE_REQUIRES_FILE'			=> 'The updater requires that the following file is present: %s',
 	'UPDATE_SUCCESS'				=> 'Update was successful',
 	'UPDATE_SUCCESS_EXPLAIN'		=> 'Successfully updated all files. The next step involves checking all files again to make sure the files got updated correctly.',
 	'UPDATE_VERSION_OPTIMIZE'		=> 'Updating version and optimising tables',
@@ -526,6 +535,8 @@ $lang = array_merge($lang, array(
 	'UPLOAD_METHOD'					=> 'Upload method',
 
 	'UPDATE_DB_SUCCESS'				=> 'Database update was successful.',
+	'USER_ACTIVE'					=> 'Active user',
+	'USER_INACTIVE'					=> 'Inactive user',
 
 	'VERSION_CHECK'				=> 'Version check',
 	'VERSION_CHECK_EXPLAIN'		=> 'Checks to see if the version of phpBB you are currently running is up to date.',
