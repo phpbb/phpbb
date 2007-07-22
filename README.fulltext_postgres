@@ -1,0 +1,23 @@
+
+Fulltext Search for PostgreSQL
+==============================
+
+Installation Instructions
+1. Install the tsearch2 contribution by executing the tsearch2.sql script
+   from the PostgreSQL contrib directory.
+2. Apply the fulltext_postgres.diff patch using patch(1) to the root
+   directory of your phpBB3 forum.
+
+   $ patch -p0 <fulltext_postgres.diff
+
+3. Upload everything in the phpbb directory to the root directory of
+   your phpBB3 forum.
+4. Apply the fulltext_postgres.sql SQL script to your database.
+
+   $ psql phpbb <fulltext_postgres.sql
+
+5. Login to the administration control panel.
+6. Select General tab, Search settings, Change the Search backend to
+   Fulltext postgres, Submit the changes.
+7. Select Maintenance tab, Search index, click on the Create index button
+   under the Fulltext postgres section.
