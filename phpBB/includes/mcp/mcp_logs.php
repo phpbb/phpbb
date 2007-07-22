@@ -98,29 +98,49 @@ class mcp_logs
 		// Delete entries if requested and able
 		if (($deletemark || $deleteall) && $auth->acl_get('a_clearlogs'))
 		{
-			if ($deletemark && sizeof($marked))
+			if (confirm_box(true))
 			{
-				$sql = 'DELETE FROM ' . LOG_TABLE . '
-					WHERE log_type = ' . LOG_MOD . '
-						AND ' . $db->sql_in_set('forum_id', $forum_list) . '
-						AND ' . $db->sql_in_set('log_id', $marked);
-				$db->sql_query($sql);
-
-				add_log('admin', 'LOG_CLEAR_MOD');
-			}
-			else if ($deleteall)
-			{
-				$sql = 'DELETE FROM ' . LOG_TABLE . '
-					WHERE log_type = ' . LOG_MOD . '
-						AND ' . $db->sql_in_set('forum_id', $forum_list);
-
-				if ($mode == 'topic_logs')
+				if ($deletemark && sizeof($marked))
 				{
-					$sql .= ' AND topic_id = ' . $topic_id;
-				}
-				$db->sql_query($sql);
+					$sql = 'DELETE FROM ' . LOG_TABLE . '
+						WHERE log_type = ' . LOG_MOD . '
+							AND ' . $db->sql_in_set('forum_id', $forum_list) . '
+							AND ' . $db->sql_in_set('log_id', $marked);
+					$db->sql_query($sql);
 
-				add_log('admin', 'LOG_CLEAR_MOD');
+					add_log('admin', 'LOG_CLEAR_MOD');
+				}
+				else if ($deleteall)
+				{
+					$sql = 'DELETE FROM ' . LOG_TABLE . '
+						WHERE log_type = ' . LOG_MOD . '
+							AND ' . $db->sql_in_set('forum_id', $forum_list);
+
+					if ($mode == 'topic_logs')
+					{
+						$sql .= ' AND topic_id = ' . $topic_id;
+					}
+					$db->sql_query($sql);
+
+					add_log('admin', 'LOG_CLEAR_MOD');
+				}
+			}
+			else
+			{
+				confirm_box(false, $user->lang['CONFIRM_OPERATION'], build_hidden_fields(array(
+					'f'			=> $forum_id,
+					't'			=> $topic_id,
+					'start'		=> $start,
+					'delmarked'	=> $deletemark,
+					'delall'	=> $deleteall,
+					'mark'		=> $marked,
+					'st'		=> $sort_days,
+					'sk'		=> $sort_key,
+					'sd'		=> $sort_dir,
+					'i'			=> $id,
+					'mode'		=> $mode,
+					'action'	=> request_var('action', array('' => ''))))
+				);
 			}
 		}
 
