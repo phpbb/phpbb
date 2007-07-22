@@ -646,6 +646,7 @@ $lang = array_merge($lang, array(
 	'WRONG_DATA_JABBER'			=> 'The name you entered is not a valid Jabber account name.',
 	'WRONG_DATA_LANG'			=> 'The language you specified is not valid.',
 	'WRONG_DATA_WEBSITE'		=> 'The website address has to be a valid URL, including the protocol. For example http://www.example.com/.',
+	'WROTE'						=> 'wrote',
 
 	'YEAR'				=> 'Year',
 	'YEAR_MONTH_DAY'	=> '(YYYY-MM-DD)',

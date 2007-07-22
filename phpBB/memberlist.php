@@ -316,7 +316,11 @@ switch ($mode)
 
 		if (!$row)
 		{
-			trigger_error('NO_USER_DATA');
+			trigger_error('NO_USER');
+		}
+		else if (empty($row[$sql_field]))
+		{
+			trigger_error('IM_NO_DATA');
 		}
 
 		// Post data grab actions
