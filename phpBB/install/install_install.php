@@ -62,7 +62,7 @@ class install_install extends module
 
 		switch ($sub)
 		{
-			case 'intro' :
+			case 'intro':
 				$this->page_title = $lang['SUB_INTRO'];
 
 				$template->assign_vars(array(
@@ -75,27 +75,27 @@ class install_install extends module
 
 			break;
 
-			case 'requirements' :
+			case 'requirements':
 				$this->check_server_requirements($mode, $sub);
 
 			break;
 
-			case 'database' :
+			case 'database':
 				$this->obtain_database_settings($mode, $sub);
 			
 			break;
 
-			case 'administrator' :
+			case 'administrator':
 				$this->obtain_admin_settings($mode, $sub);
 
 			break;
 
-			case 'config_file' :
+			case 'config_file':
 				$this->create_config_file($mode, $sub);
 			
 			break;
 
-			case 'advanced' :
+			case 'advanced':
 				$this->obtain_advanced_settings($mode, $sub);
 
 			break;
@@ -104,7 +104,7 @@ class install_install extends module
 				$this->load_schema($mode, $sub);
 			break;
 
-			case 'final' :
+			case 'final':
 				$this->build_search_index($mode, $sub);
 				$this->add_modules($mode, $sub);
 				$this->add_language($mode, $sub);
@@ -1388,6 +1388,7 @@ class install_install extends module
 
 		// Obtain any submitted data
 		$data = $this->get_submitted_data();
+		$table_prefix = $data['table_prefix'];
 
 		// If we get here and the extension isn't loaded it should be safe to just go ahead and load it 
 		$available_dbms = get_available_dbms($data['dbms']);
@@ -1439,7 +1440,6 @@ class install_install extends module
 	{
 		global $db, $lang, $phpbb_root_path, $phpEx;
 
-		include_once($phpbb_root_path . 'includes/constants.' . $phpEx);
 		include_once($phpbb_root_path . 'includes/acp/acp_modules.' . $phpEx);
 
 		$_module = &new acp_modules();
@@ -1856,9 +1856,6 @@ class install_install extends module
 
 		// Obtain any submitted data
 		$data = $this->get_submitted_data();
-
-		// Load the basic configuration data
-		include_once($phpbb_root_path . 'includes/constants.' . $phpEx);
 
 		$sql = 'SELECT *
 			FROM ' . CONFIG_TABLE;

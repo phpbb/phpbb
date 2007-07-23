@@ -492,6 +492,16 @@ else
 $exit = false;
 if (version_compare($current_version, '3.0.RC3', '<='))
 {
+/*	</p>
+
+	<h1>Clean Usernames</h1>
+
+	<br />
+	<p>Please note that this can take a while... Please do not stop the script.</p>
+*/
+
+	flush();
+
 	$submit			= (isset($_POST['resolve_conflicts'])) ? true : false;
 	$modify_users	= request_var('modify_users', array(0 => ''));
 	$new_usernames	= request_var('new_usernames', array(0 => ''), true);
@@ -505,7 +515,7 @@ if (version_compare($current_version, '3.0.RC3', '<='))
 		$result = $db->sql_query($sql);
 
 		$users = 0;
-		while ($row = $db->sql_fetchrow())
+		while ($row = $db->sql_fetchrow($result))
 		{
 			$users++;
 			$user_id = (int) $row['user_id'];
@@ -516,6 +526,7 @@ if (version_compare($current_version, '3.0.RC3', '<='))
 				$modify_users[$user_id] = $row;
 			}
 		}
+		$db->sql_freeresult($result);
 
 		// only if all ids really existed
 		if (sizeof($modify_users) == $users)
@@ -554,10 +565,11 @@ if (version_compare($current_version, '3.0.RC3', '<='))
 
 								if (!$errors)
 								{
+									// We use utf8_new_clean_string() here to make sure the new one is really used.
 									$sql = 'UPDATE ' . USERS_TABLE . '
 										SET ' . $db->sql_build_array('UPDATE', array(
 												'username' => $data['username'],
-												'username_clean' => utf8_clean_string($data['username'])
+												'username_clean' => utf8_new_clean_string($data['username'])
 											)) . '
 										WHERE user_id = ' . $user_id;
 									$db->sql_query($sql);
@@ -588,7 +600,8 @@ if (version_compare($current_version, '3.0.RC3', '<='))
 	// must not exist. We need identify them and let the admin decide what to do
 	// about them.
 	$sql = 'SELECT user_id, username, username_clean
-		FROM ' . USERS_TABLE;
+		FROM ' . USERS_TABLE . '
+		ORDER BY user_id';
 	$result = $db->sql_query($sql);
 
 	$colliding_users = $found_names = array();
@@ -609,10 +622,10 @@ if (version_compare($current_version, '3.0.RC3', '<='))
 				$sql = 'SELECT user_id, username
 					FROM ' . USERS_TABLE . '
 					WHERE username_clean = \'' . $db->sql_escape($clean_name) . '\'';
-				$result = $db->sql_query($sql);
+				$result2 = $db->sql_query($sql);
 
 				$user_ids = array($user_id);
-				while ($row = $db->sql_fetchrow())
+				while ($row = $db->sql_fetchrow($result2))
 				{
 					// Make sure this clean name will still be the same with the
 					// new function. If it is, then we have to add it to the list
@@ -622,7 +635,7 @@ if (version_compare($current_version, '3.0.RC3', '<='))
 						$user_ids[] = (int) $row['user_id'];
 					}
 				}
-				$db->sql_freeresult();
+				$db->sql_freeresult($result2);
 
 				// if we already found a collision save it
 				if (sizeof($user_ids) > 1)
@@ -832,6 +845,7 @@ if (version_compare($current_version, '3.0.RC3', '<='))
 				$db->sql_query($sql);
 			}
 		}
+		$db->sql_freeresult($result);
 	}
 	unset($colliding_users);
 }
