@@ -2396,7 +2396,7 @@ function group_create(&$group_id, $type, $name, $desc, $group_attributes, $allow
 
 			if (sizeof($user_ary))
 			{
-				group_set_user_default($group_id, $user_ary, $sql_ary);
+				group_set_user_default($group_id, $user_ary, $sql_ary, false, true);
 			}
 		}
 
@@ -2893,7 +2893,7 @@ function group_validate_groupname($group_id, $group_name)
 *
 * @private
 */
-function group_set_user_default($group_id, $user_id_ary, $group_attributes = false, $update_listing = false)
+function group_set_user_default($group_id, $user_id_ary, $group_attributes = false, $update_listing = false, $same_group = false)
 {
 	global $db;
 
@@ -2930,8 +2930,8 @@ function group_set_user_default($group_id, $user_id_ary, $group_attributes = fal
 	{
 		if (isset($group_attributes[$attribute]))
 		{
-			// If we are about to set an avatar, we will not overwrite user avatars if no group avatar is set...
-			if (strpos($attribute, 'group_avatar') === 0 && !$group_attributes[$attribute])
+			// If we are about to set an avatar or rank, we will not overwrite with empty, unless we are not actually changing the default group
+			if (!$same_group && (strpos($attribute, 'group_avatar') === 0 || strpos($attribute, 'group_rank') === 0) && !$group_attributes[$attribute])
 			{
 				continue;
 			}
