@@ -43,7 +43,11 @@ class fulltext_mysql extends search_backend
 
 		if (version_compare(PHP_VERSION, '5.1.0', '>=') || (version_compare(PHP_VERSION, '5.0.0-dev', '<=') && version_compare(PHP_VERSION, '4.4.0', '>=')))
 		{
-			$this->pcre_properties = true;
+			// While this is the proper range of PHP versions, PHP may not be linked with the bundled PCRE lib and instead with an older version
+			if (@preg_match('/\p{L}/u', 'a') !== false)
+			{
+				$this->pcre_properties = true;
+			}
 		}
 
 		if (function_exists('mb_ereg'))

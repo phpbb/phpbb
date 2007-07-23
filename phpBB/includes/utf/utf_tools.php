@@ -338,7 +338,7 @@ else
 	*/
 	function utf8_strtolower($string)
 	{
-		static $UTF8_UPPER_TO_LOWER = array(
+		static $utf8_upper_to_lower = array(
 			"\xC3\x80" => "\xC3\xA0", "\xC3\x81" => "\xC3\xA1",
 			"\xC3\x82" => "\xC3\xA2", "\xC3\x83" => "\xC3\xA3", "\xC3\x84" => "\xC3\xA4", "\xC3\x85" => "\xC3\xA5",
 			"\xC3\x86" => "\xC3\xA6", "\xC3\x87" => "\xC3\xA7", "\xC3\x88" => "\xC3\xA8", "\xC3\x89" => "\xC3\xA9",
@@ -387,7 +387,7 @@ else
 			"\xE1\xBA\x82" => "\xE1\xBA\x83", "\xE1\xBA\x84" => "\xE1\xBA\x85", "\xE1\xBB\xB2" => "\xE1\xBB\xB3"
 		);
 
-		return strtr(strtolower($string), $UTF8_UPPER_TO_LOWER);
+		return strtr(strtolower($string), $utf8_upper_to_lower);
 	}
 
 	/**
@@ -403,7 +403,7 @@ else
 	*/
 	function utf8_strtoupper($string)
 	{
-		static $UTF8_LOWER_TO_UPPER = array(
+		static $utf8_lower_to_upper = array(
 			"\xC3\xA0" => "\xC3\x80", "\xC3\xA1" => "\xC3\x81",
 			"\xC3\xA2" => "\xC3\x82", "\xC3\xA3" => "\xC3\x83", "\xC3\xA4" => "\xC3\x84", "\xC3\xA5" => "\xC3\x85",
 			"\xC3\xA6" => "\xC3\x86", "\xC3\xA7" => "\xC3\x87", "\xC3\xA8" => "\xC3\x88", "\xC3\xA9" => "\xC3\x89",
@@ -452,7 +452,7 @@ else
 			"\xE1\xBA\x83" => "\xE1\xBA\x82", "\xE1\xBA\x85" => "\xE1\xBA\x84", "\xE1\xBB\xB3" => "\xE1\xBB\xB2"
 		);
 
-		return strtr(strtoupper($string), $UTF8_LOWER_TO_UPPER);
+		return strtr(strtoupper($string), $utf8_lower_to_upper);
 	}
 
 	/**
