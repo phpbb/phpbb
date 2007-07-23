@@ -744,6 +744,7 @@ class fulltext_native extends search_backend
 	* Performs a search on an author's posts without caring about message contents. Depends on display specific params
 	*
 	* @param	string		$type				contains either posts or topics depending on what should be searched for
+	* @param	boolean		$firstpost_only		if true, only topic starting posts will be considered
 	* @param	array		&$sort_by_sql		contains SQL code for the ORDER BY part of a query
 	* @param	string		&$sort_key			is the key of $sort_by_sql for the selected sorting
 	* @param	string		&$sort_dir			is either a or d representing ASC and DESC
