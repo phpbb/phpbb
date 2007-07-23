@@ -492,7 +492,8 @@ else
 $exit = false;
 if (version_compare($current_version, '3.0.RC3', '<='))
 {
-/*	</p>
+/*
+	</p>
 
 	<h1>Clean Usernames</h1>
 
@@ -729,6 +730,7 @@ if (version_compare($current_version, '3.0.RC3', '<='))
 		// for the admin: keep name, change name (with text input) or delete user
 		$u_action = "database_update.$phpEx?language=$language&amp;type=$inline_update";
 ?>
+</p>
 <p><?php echo $lang['CHANGE_CLEAN_NAMES']; ?></p>
 <form id="change_clean_names" method="post" action="<?php echo $u_action; ?>">
 
@@ -788,7 +790,7 @@ if (version_compare($current_version, '3.0.RC3', '<='))
 ?>
 				<tr class="bg<?php echo ($i % 2) + 1; ?>">
 					<td>
-						<span class="rank-img"><?php echo ($rank_img) ? $rank_img : $rank_title; ?></span>
+						<span class="rank-img"><?php echo ($rank_img) ? $rank_img : $rank_title; ?></span><br />
 						<?php echo get_username_string('full', $row['user_id'], $row['username'], $row['user_colour']); ?>
 					</td>
 					<td class="posts"><?php echo $row['user_posts']; ?></td>
