@@ -419,7 +419,8 @@ if ($keywords || $author || $author_id || $search_id || $submit)
 	}
 	else if (sizeof($author_id_ary))
 	{
-		$total_match_count = $search->author_search($show_results, $sort_by_sql, $sort_key, $sort_dir, $sort_days, $ex_fid_ary, $m_approve_fid_ary, $topic_id, $author_id_ary, $id_ary, $start, $per_page);
+		$firstpost_only = ($search_fields === 'firstpost') ? true : false;
+		$total_match_count = $search->author_search($show_results, $firstpost_only, $sort_by_sql, $sort_key, $sort_dir, $sort_days, $ex_fid_ary, $m_approve_fid_ary, $topic_id, $author_id_ary, $id_ary, $start, $per_page);
 	}
 
 	// For some searches we need to print out the "no results" page directly to allow re-sorting/refining the search options.

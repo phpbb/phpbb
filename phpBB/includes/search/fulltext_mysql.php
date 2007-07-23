@@ -494,7 +494,7 @@ class fulltext_mysql extends search_backend
 	* @param int $per_page number of ids each page is supposed to contain
 	* @return total number of results
 	*/
-	function author_search($type, &$sort_by_sql, &$sort_key, &$sort_dir, &$sort_days, &$ex_fid_ary, &$m_approve_fid_ary, &$topic_id, &$author_ary, &$id_ary, $start, $per_page)
+	function author_search($type, $firstpost_only, &$sort_by_sql, &$sort_key, &$sort_dir, &$sort_days, &$ex_fid_ary, &$m_approve_fid_ary, &$topic_id, &$author_ary, &$id_ary, $start, $per_page)
 	{
 		global $config, $db;
 
@@ -508,6 +508,7 @@ class fulltext_mysql extends search_backend
 		$search_key = md5(implode('#', array(
 			'',
 			$type,
+			($firstpost_only) ? 'firstpost' : '',
 			'',
 			'',
 			$sort_days,
@@ -532,6 +533,7 @@ class fulltext_mysql extends search_backend
 		$sql_fora		= (sizeof($ex_fid_ary)) ? ' AND ' . $db->sql_in_set('p.forum_id', $ex_fid_ary, true) : '';
 		$sql_topic_id	= ($topic_id) ? ' AND p.topic_id = ' . (int) $topic_id : '';
 		$sql_time		= ($sort_days) ? ' AND p.post_time >= ' . (time() - ($sort_days * 86400)) : '';
+		$sql_firstpost = ($firstpost_only) ? ' AND p.post_id = t.topic_first_post_id' : '';
 
 		// Build sql strings for sorting
 		$sql_sort = $sort_by_sql[$sort_key] . (($sort_dir == 'a') ? ' ASC' : ' DESC');
@@ -574,9 +576,10 @@ class fulltext_mysql extends search_backend
 		if ($type == 'posts')
 		{
 			$sql = "SELECT {$calc_results}p.post_id
-				FROM " . $sql_sort_table . POSTS_TABLE . " p
+				FROM " . $sql_sort_table . POSTS_TABLE . ' p' . (($firstpost_only) ? ', ' . TOPICS_TABLE . ' t ' : ' ') . "
 				WHERE $sql_author
 					$sql_topic_id
+					$sql_firstpost
 					$m_approve_fid_sql
 					$sql_fora
 					$sql_sort_join
@@ -590,6 +593,7 @@ class fulltext_mysql extends search_backend
 				FROM " . $sql_sort_table . TOPICS_TABLE . ' t, ' . POSTS_TABLE . " p
 				WHERE $sql_author
 					$sql_topic_id
+					$sql_firstpost
 					$m_approve_fid_sql
 					$sql_fora
 					AND t.topic_id = p.topic_id
