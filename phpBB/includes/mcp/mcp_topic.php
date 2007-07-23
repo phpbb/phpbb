@@ -34,6 +34,7 @@ function mcp_topic_view($id, $mode, $action)
 	$icon_id		= request_var('icon', 0);
 	$subject		= utf8_normalize_nfc(request_var('subject', '', true));
 	$start			= request_var('start', 0);
+	$forum_id		= request_var('f', 0);
 	$to_topic_id	= request_var('to_topic_id', 0);
 	$to_forum_id	= request_var('to_forum_id', 0);
 	$post_id_list	= request_var('post_id_list', array(0));
@@ -215,7 +216,7 @@ function mcp_topic_view($id, $mode, $action)
 			'S_CHECKED'			=> ($post_id_list && in_array(intval($row['post_id']), $post_id_list)) ? true : false,
 			'S_HAS_ATTACHMENTS'	=> (!empty($attachments[$row['post_id']])) ? true : false,
 
-			'U_POST_DETAILS'	=> "$url&amp;i=$id&amp;p={$row['post_id']}&amp;mode=post_details",
+			'U_POST_DETAILS'	=> "$url&amp;i=$id&amp;p={$row['post_id']}&amp;mode=post_details" . (($forum_id) ? "&amp;f=$forum_id" : ''),
 			'U_MCP_APPROVE'		=> ($auth->acl_get('m_approve', $topic_info['forum_id'])) ? append_sid("{$phpbb_root_path}mcp.$phpEx", 'i=queue&amp;mode=approve_details&amp;f=' . $topic_info['forum_id'] . '&amp;p=' . $row['post_id']) : '',
 			'U_MCP_REPORT'		=> ($auth->acl_get('m_report', $topic_info['forum_id'])) ? append_sid("{$phpbb_root_path}mcp.$phpEx", 'i=reports&amp;mode=report_details&amp;f=' . $topic_info['forum_id'] . '&amp;p=' . $row['post_id']) : '')
 		);
