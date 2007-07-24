@@ -49,7 +49,11 @@
 
 	<!-- BEGIN category -->
 		<!-- IF p_mask.f_mask.category.S_FIRST_ROW -->
-			<div class="permissions-advanced" id="advanced{p_mask.S_ROW_COUNT}{p_mask.f_mask.S_ROW_COUNT}"<!-- IF not p_mask.S_VIEW --> style="display: none;"<!-- ENDIF -->>
+			<!-- IF not p_mask.S_VIEW -->
+				<div class="permissions-advanced" id="advanced{p_mask.S_ROW_COUNT}{p_mask.f_mask.S_ROW_COUNT}" style="display: none;">
+			<!-- ELSE -->
+				<div class="permissions-advanced" id="advanced{p_mask.S_ROW_COUNT}{p_mask.f_mask.S_ROW_COUNT}">
+			<!-- ENDIF -->
 
 			<div class="permissions-category">
 				<ul>

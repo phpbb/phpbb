@@ -124,29 +124,7 @@ class p_master
 		$this->module_cache['modules'] = array_merge($this->module_cache['modules']);
 
 		// Include MOD _info files for populating language entries within the menus
-		if (file_exists($user->lang_path . 'mods'))
-		{
-			$add_files = array();
-
-			$dir = @opendir($user->lang_path . 'mods');
-
-			if ($dir)
-			{
-				while (($entry = readdir($dir)) !== false)
-				{
-					if (strpos($entry, 'info_' . strtolower($this->p_class) . '_') === 0 && substr(strrchr($entry, '.'), 1) == $phpEx)
-					{
-						$add_files[] = 'mods/' . substr(basename($entry), 0, -(strlen($phpEx) + 1));
-					}
-				}
-				closedir($dir);
-			}
-
-			if (sizeof($add_files))
-			{
-				$user->add_lang($add_files);
-			}
-		}
+		$this->add_mod_info($this->p_class);
 
 		// Now build the module array, but exclude completely empty categories...
 		$right_id = false;
@@ -821,6 +799,38 @@ class p_master
 			if (($item_ary['name'] === $id || $item_ary['id'] === (int) $id) && (!$mode || $item_ary['mode'] === $mode))
 			{
 				$this->module_ary[$row_id]['display'] = (int) $display;
+			}
+		}
+	}
+
+	/**
+	* Add custom MOD info language file
+	*/
+	function add_mod_info($module_class)
+	{
+		global $user, $phpEx;
+
+		if (file_exists($user->lang_path . 'mods'))
+		{
+			$add_files = array();
+
+			$dir = @opendir($user->lang_path . 'mods');
+
+			if ($dir)
+			{
+				while (($entry = readdir($dir)) !== false)
+				{
+					if (strpos($entry, 'info_' . strtolower($module_class) . '_') === 0 && substr(strrchr($entry, '.'), 1) == $phpEx)
+					{
+						$add_files[] = 'mods/' . substr(basename($entry), 0, -(strlen($phpEx) + 1));
+					}
+				}
+				closedir($dir);
+			}
+
+			if (sizeof($add_files))
+			{
+				$user->add_lang($add_files);
 			}
 		}
 	}

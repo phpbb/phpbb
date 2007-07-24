@@ -29,7 +29,7 @@ class acp_modules
 
 	function main($id, $mode)
 	{
-		global $db, $user, $auth, $template;
+		global $db, $user, $auth, $template, $module;
 		global $config, $phpbb_admin_path, $phpbb_root_path, $phpEx;
 
 		// Set a global define for modules we might include (the author is able to prevent execution of code by checking this constant)
@@ -48,6 +48,11 @@ class acp_modules
 		else if ($this->module_class == 'mcp')
 		{
 			$user->add_lang('mcp');
+		}
+
+		if ($module->p_class != $this->module_class)
+		{
+			$module->add_mod_info($this->module_class);
 		}
 
 		$this->page_title = strtoupper($this->module_class);

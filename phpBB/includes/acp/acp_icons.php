@@ -410,7 +410,7 @@ class acp_icons
 					// Make sure the pak_ary is valid
 					foreach ($pak_ary as $pak_entry)
 					{
-						if (preg_match_all("#'(.*?)', #", $pak_entry, $data))
+						if (preg_match_all("#'(.*?)', ?#", $pak_entry, $data))
 						{
 							if ((sizeof($data[1]) != 4 && $mode == 'icons') || 
 								(sizeof($data[1]) != 6 && $mode == 'smilies'))
@@ -473,7 +473,7 @@ class acp_icons
 					foreach ($pak_ary as $pak_entry)
 					{
 						$data = array();
-						if (preg_match_all("#'(.*?)', #", $pak_entry, $data))
+						if (preg_match_all("#'(.*?)', ?#", $pak_entry, $data))
 						{
 							if ((sizeof($data[1]) != 4 && $mode == 'icons') || 
 								(sizeof($data[1]) != 6 && $mode == 'smilies'))
