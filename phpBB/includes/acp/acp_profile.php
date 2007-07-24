@@ -631,8 +631,23 @@ class acp_profile
 							$cp->vars['columns'] = request_var('columns', 0);
 							$_new_key_ary[$key] = $cp->vars['rows'] . '|' . $cp->vars['columns'];
 						}
+						else if ($field_type == FIELD_DATE && $key == 'field_default_value')
+						{
+							$always_now = request_var('always_now', 0);
 
-						if ($field_type == FIELD_BOOL && $key == 'l_lang_options' && isset($_REQUEST['l_lang_options']))
+							if ($always_now)
+							{
+								$_new_key_ary[$key] = 'now';
+							}
+							else if (isset($_REQUEST['field_default_value_day']))
+							{
+								$cp->vars['field_default_value_day'] = request_var('field_default_value_day', 0);
+								$cp->vars['field_default_value_month'] = request_var('field_default_value_month', 0);
+								$cp->vars['field_default_value_year'] = request_var('field_default_value_year', 0);
+								$_new_key_ary[$key]  = sprintf('%2d-%2d-%4d', $cp->vars['field_default_value_day'], $cp->vars['field_default_value_month'], $cp->vars['field_default_value_year']);
+							}
+						}
+						else if ($field_type == FIELD_BOOL && $key == 'l_lang_options' && isset($_REQUEST['l_lang_options']))
 						{
 							$_new_key_ary[$key] = utf8_normalize_nfc(request_var($key, array(array('')), true));
 						}

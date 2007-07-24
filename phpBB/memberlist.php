@@ -590,7 +590,7 @@ switch ($mode)
 			);
 		}
 
-		// Now generate page tilte
+		// Now generate page title
 		$page_title = sprintf($user->lang['VIEWING_PROFILE'], $member['username']);
 		$template_html = 'memberlist_view.html';
 
