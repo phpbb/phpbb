@@ -566,11 +566,10 @@ if (version_compare($current_version, '3.0.RC3', '<='))
 
 								if (!$errors)
 								{
-									// We use utf8_new_clean_string() here to make sure the new one is really used.
 									$sql = 'UPDATE ' . USERS_TABLE . '
 										SET ' . $db->sql_build_array('UPDATE', array(
 												'username' => $data['username'],
-												'username_clean' => utf8_new_clean_string($data['username'])
+												'username_clean' => utf8_clean_string($data['username'])
 											)) . '
 										WHERE user_id = ' . $user_id;
 									$db->sql_query($sql);
@@ -602,7 +601,7 @@ if (version_compare($current_version, '3.0.RC3', '<='))
 	// about them.
 	$sql = 'SELECT user_id, username, username_clean
 		FROM ' . USERS_TABLE . '
-		ORDER BY user_id';
+		ORDER BY user_id ASC';
 	$result = $db->sql_query($sql);
 
 	$colliding_users = $found_names = array();
@@ -622,7 +621,9 @@ if (version_compare($current_version, '3.0.RC3', '<='))
 				// who already had this clean name with the old version
 				$sql = 'SELECT user_id, username
 					FROM ' . USERS_TABLE . '
-					WHERE username_clean = \'' . $db->sql_escape($clean_name) . '\'';
+					WHERE username_clean = \'' . $db->sql_escape($clean_name) . '\'
+						AND user_id > ' . $user_id . '
+					ORDER BY user_id';
 				$result2 = $db->sql_query($sql);
 
 				$user_ids = array($user_id);
@@ -672,7 +673,6 @@ if (version_compare($current_version, '3.0.RC3', '<='))
 			}
 		}
 	}
-	unset($found_names);
 	$db->sql_freeresult($result);
 
 	// now retrieve all information about the users and let the admin decide what to do
@@ -833,22 +833,36 @@ if (version_compare($current_version, '3.0.RC3', '<='))
 	else
 	{
 		$sql = 'SELECT user_id, username, username_clean
-			FROM ' . USERS_TABLE;
+			FROM ' . USERS_TABLE . '
+			WHERE ' . $db->sql_in_set('user_id', array_values($found_names));
 		$result = $db->sql_query($sql);
-	
+
+		$found_names = array();
 		while ($row = $db->sql_fetchrow($result))
 		{
 			$clean_name = utf8_new_clean_string($row['username']);
 			if ($clean_name != $row['username_clean'])
 			{
+				$user_id = (int) $row['user_id'];
+				$found_names[$user_id] = $clean_name;
+				// impossible unique clean name
 				$sql = 'UPDATE ' . USERS_TABLE . '
-					SET username_clean = \'' . $db->sql_escape($clean_name) . '\'
-					WHERE user_id = ' . (int) $row['user_id'];
+					SET username_clean = \'  ' . $user_id . '\'
+					WHERE user_id = ' . $user_id;
 				$db->sql_query($sql);
 			}
 		}
 		$db->sql_freeresult($result);
+
+		foreach ($found_names as $user_id => $clean_name)
+		{
+			$sql = 'UPDATE ' . USERS_TABLE . '
+				SET username_clean = \'' . $db->sql_escape($clean_name) . '\'
+				WHERE user_id = ' . $user_id;
+			$db->sql_query($sql);
+		}
 	}
+	unset($found_names);
 	unset($colliding_users);
 }
 
