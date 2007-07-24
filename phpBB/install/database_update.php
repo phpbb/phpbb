@@ -1,14 +1,14 @@
 <?php
-/** 
+/**
 *
 * @package install
 * @version $Id$
-* @copyright (c) 2006 phpBB Group 
-* @license http://opensource.org/licenses/gpl-license.php GNU Public License 
+* @copyright (c) 2006 phpBB Group
+* @license http://opensource.org/licenses/gpl-license.php GNU Public License
 *
 */
 
-$updates_to_version = '3.0.RC3';
+$updates_to_version = '3.0.RC4';
 
 if (defined('IN_PHPBB') && defined('IN_INSTALL'))
 {
@@ -492,15 +492,24 @@ else
 $exit = false;
 if (version_compare($current_version, '3.0.RC3', '<='))
 {
-/*
-	</p>
+	if (!isset($lang['CLEANING_USERNAMES']))
+	{
+		$lang['CLEANING_USERNAMES'] = 'Cleaning usernames';
+	}
 
-	<h1>Clean Usernames</h1>
+	if (!isset($lang['LONG_SCRIPT_EXECUTION']))
+	{
+		$lang['LONG_SCRIPT_EXECUTION'] = 'Please note that this can take a while... Please do not stop the script.';
+	}
+
+?>
+	</p><br /><br />
+
+	<h1><?php echo $lang['CLEANING_USERNAMES']; ?></h1>
 
 	<br />
-	<p>Please note that this can take a while... Please do not stop the script.</p>
-*/
 
+<?php
 	flush();
 
 	$submit			= (isset($_POST['resolve_conflicts'])) ? true : false;
@@ -593,7 +602,12 @@ if (version_compare($current_version, '3.0.RC3', '<='))
 			}
 		}
 	}
+?>
 
+	<p><?php echo $lang['LONG_SCRIPT_EXECUTION']; ?></p>
+	<p><?php echo $lang['PROGRESS']; ?> :: <strong>
+
+<?php
 	// after RC3 a different utf8_clean_string function is used, this requires that
 	// the unique column username_clean is recalculated, during this recalculation
 	// duplicates might be created. Since the column has to be unique such usernames
@@ -605,13 +619,17 @@ if (version_compare($current_version, '3.0.RC3', '<='))
 	$result = $db->sql_query($sql);
 
 	$colliding_users = $found_names = array();
+	$echos = 0;
+
 	while ($row = $db->sql_fetchrow($result))
 	{
 		// Calculate the new clean name. If it differs from the old one we need
 		// to make sure there is no collision
 		$clean_name = utf8_new_clean_string($row['username']);
+
 		if ($clean_name != $row['username_clean'])
 		{
+			// Check if there would be a collission, if not put it up for changing
 			$user_id = (int) $row['user_id'];
 
 			// If this clean name was not the result of another user already ...
@@ -621,14 +639,18 @@ if (version_compare($current_version, '3.0.RC3', '<='))
 				// who already had this clean name with the old version
 				$sql = 'SELECT user_id, username
 					FROM ' . USERS_TABLE . '
-					WHERE username_clean = \'' . $db->sql_escape($clean_name) . '\'
-						AND user_id > ' . $user_id . '
-					ORDER BY user_id';
+					WHERE username_clean = \'' . $db->sql_escape($clean_name) . '\'';
 				$result2 = $db->sql_query($sql);
 
 				$user_ids = array($user_id);
 				while ($row = $db->sql_fetchrow($result2))
 				{
+					// For not trimmed entries this could happen, yes. ;)
+					if ($row['user_id'] == $user_id)
+					{
+						continue;
+					}
+
 					// Make sure this clean name will still be the same with the
 					// new function. If it is, then we have to add it to the list
 					// of user ids for this clean name
@@ -672,6 +694,13 @@ if (version_compare($current_version, '3.0.RC3', '<='))
 				}
 			}
 		}
+
+		if (($echos % 1000) == 0)
+		{
+			echo '.';
+			flush();
+		}
+		$echos++;
 	}
 	$db->sql_freeresult($result);
 
@@ -730,7 +759,8 @@ if (version_compare($current_version, '3.0.RC3', '<='))
 		// for the admin: keep name, change name (with text input) or delete user
 		$u_action = "database_update.$phpEx?language=$language&amp;type=$inline_update";
 ?>
-</p>
+</strong></p><br /><br />
+
 <p><?php echo $lang['CHANGE_CLEAN_NAMES']; ?></p>
 <form id="change_clean_names" method="post" action="<?php echo $u_action; ?>">
 
@@ -830,7 +860,7 @@ if (version_compare($current_version, '3.0.RC3', '<='))
 	</form>
 <?php
 	}
-	else
+	else if (sizeof($found_names))
 	{
 		$sql = 'SELECT user_id, username, username_clean
 			FROM ' . USERS_TABLE . '
@@ -841,14 +871,16 @@ if (version_compare($current_version, '3.0.RC3', '<='))
 		while ($row = $db->sql_fetchrow($result))
 		{
 			$clean_name = utf8_new_clean_string($row['username']);
+
 			if ($clean_name != $row['username_clean'])
 			{
 				$user_id = (int) $row['user_id'];
 				$found_names[$user_id] = $clean_name;
+
 				// impossible unique clean name
-				$sql = 'UPDATE ' . USERS_TABLE . '
-					SET username_clean = \'  ' . $user_id . '\'
-					WHERE user_id = ' . $user_id;
+				$sql = 'UPDATE ' . USERS_TABLE . "
+					SET username_clean = '  {$user_id}'
+					WHERE user_id = {$user_id}";
 				$db->sql_query($sql);
 			}
 		}

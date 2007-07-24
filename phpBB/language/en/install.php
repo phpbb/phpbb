@@ -58,6 +58,7 @@ $lang = array_merge($lang, array(
 	'CHANGE'					=> 'Change',
 	'CHECK_TABLE_PREFIX'		=> 'Please check your table prefix and try again.',
 	'CLEAN_VERIFY'				=> 'Cleaning up and verifying the final structure',
+	'CLEANING_USERNAMES'		=> 'Cleaning usernames',
 	'COLLIDING_CLEAN_USERNAME'	=> '<strong>%s</strong> is the clean username for:',
 	'COLLIDING_USERNAMES_FOUND'	=> 'Colliding usernames were found on your old board. In order to complete the conversion please delete or rename these users so that there is only one user on your old board for each clean username.',
 	'COLLIDING_USER'			=> '» user id: <strong>%d</strong> username: <strong>%s</strong> (%d posts)',
@@ -244,6 +245,8 @@ $lang = array_merge($lang, array(
 	'INST_ERR_USER_TOO_LONG'	=> 'The username you entered is too long. The maximum length is 20 characters.',
 	'INST_ERR_USER_TOO_SHORT'	=> 'The username you entered is too short. The minimum length is 3 characters.',
 	'INVALID_PRIMARY_KEY'		=> 'Invalid primary key : %s',
+
+	'LONG_SCRIPT_EXECUTION'		=> 'Please note that this can take a while... Please do not stop the script.',
 
 	// mbstring
 	'MBSTRING_CHECK'						=> '<samp>mbstring</samp> extension check',
