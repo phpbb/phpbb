@@ -229,7 +229,7 @@ function play_qt_file(obj)
 
 	if (rectangle)
 	{
-		rectangle = rectangle.split(',')
+		rectangle = rectangle.split(',');
 		var x1 = parseInt(rectangle[0]);
 		var x2 = parseInt(rectangle[2]);
 		var y1 = parseInt(rectangle[1]);
