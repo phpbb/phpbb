@@ -77,14 +77,17 @@
 		<td>{L_GZIP_COMPRESSION}: </td>
 		<td><strong>{GZIP_COMPRESSION}</strong></td>
 	</tr>
-	<!-- IF S_TOTAL_ORPHAN -->
 	<tr>
-		<td>&nbsp;</td>
-		<td>&nbsp;</td>
+		<td>{L_BOARD_VERSION}: </td>
+		<td><strong>{BOARD_VERSION}</strong></td>
+	<!-- IF S_TOTAL_ORPHAN -->
 		<td>{L_NUMBER_ORPHAN}: </td>
 		<td><strong>{TOTAL_ORPHAN}</strong></td>
-	</tr>
+	<!-- ELSE -->
+		<td>&nbsp;</td>
+		<td>&nbsp;</td>
 	<!-- ENDIF -->
+	</tr>
 	</tbody>
 	</table>
 
