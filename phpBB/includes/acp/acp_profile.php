@@ -931,10 +931,9 @@ class acp_profile
 			foreach ($options as $field => $field_type)
 			{
 				$value = ($action == 'create') ? utf8_normalize_nfc(request_var('l_' . $field, array(0 => ''), true)) : $cp->vars['l_' . $field];
-				
 				if ($field == 'lang_options')
 				{
-					$var = ($action == 'create' || !is_array($cp->vars['l_lang_options'][$lang_id])) ? $cp->vars['lang_options'] : $cp->vars['lang_options'][$lang_id];
+					$var = (!isset($cp->vars['l_lang_options'][$lang_id]) || !is_array($cp->vars['l_lang_options'][$lang_id])) ? $cp->vars['lang_options'] : $cp->vars['l_lang_options'][$lang_id];
 					
 					switch ($field_type)
 					{
@@ -949,10 +948,10 @@ class acp_profile
 						break;
 
 						case 'optionfield':
-
+							$value = ((isset($value[$lang_id])) ? ((is_array($value[$lang_id])) ?  implode("\n", $value[$lang_id]) : $value[$lang_id]) : implode("\n", $var));
 							$lang_options[$lang_id]['fields'][$field] = array(
 								'TITLE'		=> $user->lang['CP_' . strtoupper($field)],
-								'FIELD'		=> '<dd><textarea name="l_' . $field . '[' . $lang_id . ']" rows="7" cols="80">' . ((isset($value[$lang_id])) ? implode("\n", $value[$lang_id]) : implode("\n", $var)) . '</textarea></dd>'
+								'FIELD'		=> '<dd><textarea name="l_' . $field . '[' . $lang_id . ']" rows="7" cols="80">' . $value . '</textarea></dd>'
 							);
 						break;
 					}
