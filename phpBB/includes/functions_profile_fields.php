@@ -14,7 +14,7 @@
 */
 class custom_profile
 {
-	var $profile_types = array(1 => 'int', 2 => 'string', 3 => 'text', 4 => 'bool', 5 => 'dropdown', 6 => 'date');
+	var $profile_types = array(FIELD_INT => 'int', FIELD_STRING => 'string', FIELD_TEXT => 'text', FIELD_BOOL => 'bool', FIELD_DROPDOWN => 'dropdown', FIELD_DATE => 'date');
 	var $profile_cache = array();
 	var $options_lang = array();
 
@@ -69,7 +69,7 @@ class custom_profile
 				'LANG_NAME'		=> $row['lang_name'],
 				'LANG_EXPLAIN'	=> $row['lang_explain'],
 				'FIELD'			=> $tpl_snippet,
-				'FIELD_ID'		=> ($type == 6 || ($type == 4 && $row['field_length'] == '1')) ? '' : 'pf_' . $row['field_ident'],
+				'FIELD_ID'		=> ($type == FIELD_DATE || ($type == FIELD_BOOL && $row['field_length'] == '1')) ? '' : 'pf_' . $row['field_ident'],
 				'S_REQUIRED'	=> ($row['field_required']) ? true : false)
 			);
 		}
@@ -528,7 +528,7 @@ class custom_profile
 				}
 				else
 				{
-					return $this->options_lang[$field_id][$lang_id][(int) ($value + 1)];
+					return $this->options_lang[$field_id][$lang_id][(int) ($value) + 1];
 				}
 			break;
 
@@ -547,8 +547,7 @@ class custom_profile
 		global $user;
 
 		$profile_row['field_ident'] = (isset($profile_row['var_name'])) ? $profile_row['var_name'] : 'pf_' . $profile_row['field_ident'];
-		$user_ident = 'pf_' . str_replace('pf_', '', $profile_row['field_ident']);
-
+		$user_ident = $profile_row['field_ident'];
 		// checkbox - only testing for isset
 		if ($profile_row['field_type'] == FIELD_BOOL && $profile_row['field_length'] == 2)
 		{
@@ -619,7 +618,7 @@ class custom_profile
 		global $user, $template;
 
 		$profile_row['field_ident'] = (isset($profile_row['var_name'])) ? $profile_row['var_name'] : 'pf_' . $profile_row['field_ident'];
-		$user_ident = 'pf_' . str_replace('pf_', '', $profile_row['field_ident']);
+		$user_ident = $profile_row['field_ident'];
 
 		$now = getdate();
 
@@ -994,7 +993,7 @@ class custom_profile_admin extends custom_profile
 		);
 
 		$options = array(
-			0 => array('TITLE' => $user->lang['FIELD_TYPE'], 'EXPLAIN' => $user->lang['BOOL_TYPE_EXPLAIN'], 'FIELD' => '<label><input type="radio" class="radio" name="field_length" value="1"' . (($this->vars['field_length'] == 1) ? ' checked="checked"' : '') . ' /> ' . $user->lang['RADIO_BUTTONS'] . '</label><label><input type="radio" class="radio" name="field_length" value="2"' . (($this->vars['field_length'] == 2) ? ' checked="checked"' : '') . ' /> ' . $user->lang['CHECKBOX'] . '</label>'),
+			0 => array('TITLE' => $user->lang['FIELD_TYPE'], 'EXPLAIN' => $user->lang['BOOL_TYPE_EXPLAIN'], 'FIELD' => '<label><input type="radio" class="radio" name="field_length" value="1"' . (($this->vars['field_length'] == 1) ? ' checked="checked"' : '') . ' onchange="document.getElementById(\'add_profile_field\').submit();" /> ' . $user->lang['RADIO_BUTTONS'] . '</label><label><input type="radio" class="radio" name="field_length" value="2"' . (($this->vars['field_length'] == 2) ? ' checked="checked"' : '') . ' onchange="document.getElementById(\'add_profile_field\').submit();" /> ' . $user->lang['CHECKBOX'] . '</label>'),
 			1 => array('TITLE' => $user->lang['DEFAULT_VALUE'], 'FIELD' => $this->process_field_row('preview', $profile_row))
 		);
 

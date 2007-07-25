@@ -730,11 +730,11 @@ function user_ban($mode, $ban, $ban_len, $ban_len_other, $ban_exclude, $ban_reas
 						$clean_name = utf8_clean_string($username);
 						if ($clean_name == $user->data['username_clean'])
 						{
-							trigger_error('CANNOT_BAN_YOURSELF');
+							trigger_error('CANNOT_BAN_YOURSELF', E_USER_WARNING);
 						}
 						if (in_array($clean_name, $founder_names))
 						{
-							trigger_error('CANNOT_BAN_FOUNDER');
+							trigger_error('CANNOT_BAN_FOUNDER', E_USER_WARNING);
 						}
 						$sql_usernames[] = $clean_name;
 					}

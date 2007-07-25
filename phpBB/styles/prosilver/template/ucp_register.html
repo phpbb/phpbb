@@ -63,7 +63,7 @@
 
 	<!-- BEGIN profile_fields -->
 		<dl>
-			<dt><label for="{profile_fields.FIELD_ID}">{profile_fields.LANG_NAME}:<!-- IF profile_fields.S_REQUIRED --> *<!-- ENDIF --></label>
+			<dt><label <!-- IF profile_fields.FIELD_ID -->for="{profile_fields.FIELD_ID}" <!-- ENDIF -->>{profile_fields.LANG_NAME}:<!-- IF profile_fields.S_REQUIRED --> *<!-- ENDIF --></label>
 			<!-- IF profile_fields.LANG_EXPLAIN --><br /><span>{profile_fields.LANG_EXPLAIN}</span><!-- ENDIF -->
 			<!-- IF profile_fields.ERROR --><br /><span class="error">{profile_fields.ERROR}</span><!-- ENDIF --></dt>
 			<dd>{profile_fields.FIELD}</dd>
