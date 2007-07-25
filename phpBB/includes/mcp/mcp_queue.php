@@ -733,7 +733,7 @@ function disapprove_post($post_id_list, $id, $mode)
 		trigger_error('NOT_AUTHORISED');
 	}
 
-	$redirect = request_var('redirect', build_url(array('t', 'mode', '_f_', 'quickmod')) . '&amp;mode=unapproved_topics');
+	$redirect = request_var('redirect', build_url(array('t', 'mode', '_f_', 'quickmod')) . "&amp;mode=$mode");
 	$reason = utf8_normalize_nfc(request_var('reason', '', true));
 	$reason_id = request_var('reason_id', 0);
 	$success_msg = $additional_msg = '';
