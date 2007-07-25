@@ -1233,6 +1233,7 @@ if (version_compare($current_version, '3.0.RC3', '<='))
 	$db->sql_query($sql);
 
 	set_config('allow_birthdays', '1');
+	set_config('cron_lock', '0', true);
 }
 
 _write_result($no_updates, $errored, $error_ary);
