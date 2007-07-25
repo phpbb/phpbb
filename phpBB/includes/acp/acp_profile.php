@@ -759,7 +759,7 @@ class acp_profile
 						
 						$template->assign_vars(array(
 							'S_STEP_TWO'		=> true,
-							'L_NEXT'			=> (sizeof($this->lang_defs['iso']) == 1) ? $user->lang['SAVE'] : $user->lang['PROFILE_LANG_OPTIONS'])
+							'L_NEXT_STEP'			=> (sizeof($this->lang_defs['iso']) == 1) ? $user->lang['SAVE'] : $user->lang['PROFILE_LANG_OPTIONS'])
 						);
 
 						// Build options based on profile type
