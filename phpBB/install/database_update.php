@@ -608,6 +608,8 @@ if (version_compare($current_version, '3.0.RC3', '<='))
 	<p><?php echo $lang['PROGRESS']; ?> :: <strong>
 
 <?php
+	flush();
+
 	// after RC3 a different utf8_clean_string function is used, this requires that
 	// the unique column username_clean is recalculated, during this recalculation
 	// duplicates might be created. Since the column has to be unique such usernames
@@ -1315,6 +1317,8 @@ add_log('admin', 'LOG_UPDATE_DATABASE', $orig_version, $updates_to_version);
 
 // Now we purge the session table as well as all cache files
 $cache->purge();
+
+exit;
 
 ?>
 

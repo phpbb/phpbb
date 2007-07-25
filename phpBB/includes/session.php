@@ -311,7 +311,7 @@ class session
 				else
 				{
 					// Added logging temporarly to help debug bugs...
-					if (defined('DEBUG_EXTRA'))
+					if (defined('DEBUG_EXTRA') && $this->data['user_id'] != ANONYMOUS)
 					{
 						add_log('critical', 'LOG_IP_BROWSER_FORWARDED_CHECK', $u_ip, $s_ip, $u_browser, $s_browser, htmlspecialchars($u_forwarded_for), htmlspecialchars($s_forwarded_for));
 					}
@@ -1121,6 +1121,12 @@ class session
 
 		if ($key)
 		{
+			// removing "stale" keys
+			$sql = 'DELETE FROM ' . SESSIONS_KEYS_TABLE . '
+				WHERE user_id = ' . (int) $user_id . "
+					AND key_id <> '" . $db->sql_escape(md5($key)) . "'";
+			$db->sql_query($sql);
+
 			$sql = 'UPDATE ' . SESSIONS_KEYS_TABLE . '
 				SET ' . $db->sql_build_array('UPDATE', $sql_ary) . '
 				WHERE user_id = ' . (int) $user_id . "
@@ -1128,6 +1134,11 @@ class session
 		}
 		else
 		{
+			// Before inserting, we will remove all previous keys. ;)
+			$sql = 'DELETE FROM ' . SESSIONS_KEYS_TABLE . '
+				WHERE user_id = ' . (int) $user_id;
+			$db->sql_query($sql);
+
 			$sql = 'INSERT INTO ' . SESSIONS_KEYS_TABLE . ' ' . $db->sql_build_array('INSERT', $sql_ary);
 		}
 		$db->sql_query($sql);

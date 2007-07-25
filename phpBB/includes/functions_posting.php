@@ -2276,6 +2276,19 @@ function submit_post($mode, $subject, $username, $topic_type, &$poll, &$data, $u
 		$db->sql_query($sql);
 	}
 
+	// Committing the transaction before updating search index
+	$db->sql_transaction('commit');
+
+	// Delete draft if post was loaded...
+	$draft_id = request_var('draft_loaded', 0);
+	if ($draft_id)
+	{
+		$sql = 'DELETE FROM ' . DRAFTS_TABLE . "
+			WHERE draft_id = $draft_id
+				AND user_id = {$user->data['user_id']}";
+		$db->sql_query($sql);
+	}
+
 	// Index message contents
 	if ($update_message && $data['enable_indexing'])
 	{
@@ -2303,16 +2316,6 @@ function submit_post($mode, $subject, $username, $topic_type, &$poll, &$data, $u
 		$search->index($mode, $data['post_id'], $data['message'], $subject, $poster_id, ($topic_type == POST_GLOBAL) ? 0 : $data['forum_id']);
 	}
 
-	// Delete draft if post was loaded...
-	$draft_id = request_var('draft_loaded', 0);
-	if ($draft_id)
-	{
-		$sql = 'DELETE FROM ' . DRAFTS_TABLE . "
-			WHERE draft_id = $draft_id
-				AND user_id = {$user->data['user_id']}";
-		$db->sql_query($sql);
-	}
-
 	// Topic Notification, do not change if moderator is changing other users posts...
 	if ($user->data['user_id'] == $poster_id)
 	{
@@ -2330,8 +2333,6 @@ function submit_post($mode, $subject, $username, $topic_type, &$poll, &$data, $u
 			$db->sql_query($sql);
 		}
 	}
-
-	$db->sql_transaction('commit');
 
 	if ($mode == 'post' || $mode == 'reply' || $mode == 'quote')
 	{
