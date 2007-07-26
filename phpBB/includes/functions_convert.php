@@ -1481,18 +1481,21 @@ function mass_auth($ug_type, $forum_id, $ug_id, $acl_list, $setting = ACL_NO)
 	// Role based permissions are the simplest to handle so check for them first
 	if ($ug_type == 'user_role' || $ug_type == 'group_role')
 	{
-		$sql = 'SELECT role_id
-			FROM ' . ACL_ROLES_TABLE . "
-			WHERE role_name = 'ROLE_" . $db->sql_escape($acl_list) . "'";
-		$result = $db->sql_query_limit($sql, 1);
-		$row = $db->sql_fetchrow($result);
-		$db->sql_freeresult($result);
-
-		// If we have no role id there is something wrong here
-		if ($row)
+		if (is_numeric($forum_id))
 		{
-			$sql = "INSERT INTO $table ($id_field, forum_id, auth_role_id) VALUES ($ug_id, $forum_id, " . $row['role_id'] . ')';
-			$db->sql_query($sql);
+			$sql = 'SELECT role_id
+				FROM ' . ACL_ROLES_TABLE . "
+				WHERE role_name = 'ROLE_" . $db->sql_escape($acl_list) . "'";
+			$result = $db->sql_query_limit($sql, 1);
+			$row = $db->sql_fetchrow($result);
+			$db->sql_freeresult($result);
+
+			// If we have no role id there is something wrong here
+			if ($row)
+			{
+				$sql = "INSERT INTO $table ($id_field, forum_id, auth_role_id) VALUES ($ug_id, $forum_id, " . $row['role_id'] . ')';
+				$db->sql_query($sql);
+			}
 		}
 
 		return;
@@ -1542,7 +1545,7 @@ function mass_auth($ug_type, $forum_id, $ug_id, $acl_list, $setting = ACL_NO)
 		$db->sql_freeresult($result);
 	}
 
-	$sql_forum = 'AND a.forum_id IN (' . implode(', ', array_map('intval', $forum_id)) . ')';
+	$sql_forum = 'AND ' . $db->sql_in_set('a.forum_id', array_map('intval', $forum_id), false, true);
 
 	$sql = ($ug_type == 'user') ? 'SELECT o.auth_option_id, o.auth_option, a.forum_id, a.auth_setting FROM ' . ACL_USERS_TABLE . ' a, ' . ACL_OPTIONS_TABLE . " o WHERE a.auth_option_id = o.auth_option_id $sql_forum AND a.user_id = $ug_id" : 'SELECT o.auth_option_id, o.auth_option, a.forum_id, a.auth_setting FROM ' . ACL_GROUPS_TABLE . ' a, ' . ACL_OPTIONS_TABLE . " o WHERE a.auth_option_id = o.auth_option_id $sql_forum AND a.group_id = $ug_id";
 	$result = $db->sql_query($sql);
@@ -1684,8 +1687,8 @@ function add_default_groups()
 	);
 
 	$sql = 'SELECT *
-		FROM ' . GROUPS_TABLE . "
-		WHERE group_name IN ('" . implode("', '", array_keys($default_groups)) . "')";
+		FROM ' . GROUPS_TABLE . '
+		WHERE ' . $db->sql_in_set('group_name', array_keys($default_groups));
 	$result = $db->sql_query($sql);
 
 	while ($row = $db->sql_fetchrow($result))
@@ -2062,7 +2065,7 @@ function fix_empty_primary_groups()
 	if (sizeof($user_ids))
 	{
 		$db->sql_query('UPDATE ' . USERS_TABLE . ' SET group_id = ' . get_group_id('administrators') . '
-			WHERE group_id = 0 AND user_id IN (' . implode(', ', $user_ids) . ')');
+			WHERE group_id = 0 AND ' . $db->sql_in_set('user_id', $user_ids));
 	}
 
 	$sql = 'SELECT user_id FROM ' . USER_GROUP_TABLE . ' WHERE group_id = ' . get_group_id('global_moderators');
@@ -2077,7 +2080,7 @@ function fix_empty_primary_groups()
 	if (sizeof($user_ids))
 	{
 		$db->sql_query('UPDATE ' . USERS_TABLE . ' SET group_id = ' . get_group_id('global_moderators') . '
-			WHERE group_id = 0 AND user_id IN (' . implode(', ', $user_ids) . ')');
+			WHERE group_id = 0 AND ' . $db->sql_in_set('user_id', $user_ids));
 	}
 
 	// Set user colour
