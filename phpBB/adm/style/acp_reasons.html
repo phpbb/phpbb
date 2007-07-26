@@ -4,7 +4,7 @@
 
 <!-- IF S_EDIT_REASON -->
 
-	<a href="{U_BACK}" style="float: right">&laquo; {L_BACK}</a>
+	<a href="{U_BACK}" style="float: {S_CONTENT_FLOW_END};">&laquo; {L_BACK}</a>
 
 	<h1>{L_TITLE}</h1>
 
@@ -81,7 +81,7 @@
 		<!-- BEGIN reasons -->
 			<tr>
 				<td>
-					<i style="float: right; font-size: .9em;"><!-- IF reasons.S_TRANSLATED -->{L_IS_TRANSLATED}<!-- ELSE -->{L_IS_NOT_TRANSLATED}<!-- ENDIF --></i>
+					<i style="float: {S_CONTENT_FLOW_END}; font-size: .9em;"><!-- IF reasons.S_TRANSLATED -->{L_IS_TRANSLATED}<!-- ELSE -->{L_IS_NOT_TRANSLATED}<!-- ENDIF --></i>
 					<strong>{reasons.REASON_TITLE}<!-- IF reasons.S_OTHER_REASON --> *<!-- ENDIF --></strong>
 					<br /><span>{reasons.REASON_DESCRIPTION}</span>
 				</td>

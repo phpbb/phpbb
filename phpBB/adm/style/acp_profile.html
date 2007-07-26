@@ -4,7 +4,7 @@
 
 <!-- IF S_EDIT -->
 
-	<a href="{U_BACK}" style="float: right">&laquo; {L_BACK}</a>
+	<a href="{U_BACK}" style="float: {S_CONTENT_FLOW_END};">&laquo; {L_BACK}</a>
 
 	<h1>{L_TITLE}</h1>
 
@@ -123,11 +123,11 @@
 		<!-- END option -->
 		</fieldset>
 
-		<fieldset class="quick" style="float: left;">
+		<fieldset class="quick" style="float: {S_CONTENT_FLOW_BEGIN};">
 			<input class="button1" type="submit" name="prev" value="{L_PROFILE_BASIC_OPTIONS}" />
 		</fieldset>
 		
-		<fieldset class="quick" style="float: right">
+		<fieldset class="quick" style="float: {S_CONTENT_FLOW_END};">
 			{S_HIDDEN_FIELDS}
 			<input class="button1" type="submit" name="next" value="{L_NEXT_STEP}" />
 		</fieldset>
@@ -146,11 +146,11 @@
 			</fieldset>
 		<!-- END options -->
 
-		<fieldset class="quick" style="float: left;">
+		<fieldset class="quick" style="float: {S_CONTENT_FLOW_BEGIN};">
 			<input class="button1" type="submit" name="prev" value="{L_PROFILE_TYPE_OPTIONS}" />
 		</fieldset>
 		
-		<fieldset class="quick" style="float: right;">
+		<fieldset class="quick" style="float: {S_CONTENT_FLOW_END};">
 			{S_HIDDEN_FIELDS}
 			<input class="button1" type="submit" name="save" value="{L_SAVE}" />
 		</fieldset>

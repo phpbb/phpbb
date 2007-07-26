@@ -108,7 +108,7 @@
 
 		<!-- ELSEIF S_SELECT_USERGROUP -->
 
-		<div style="float: left; width: 48%;">
+		<div style="float: {S_CONTENT_FLOW_BEGIN}; width: 48%;">
 
 		<!-- IF S_CAN_SELECT_USER -->
 
@@ -138,7 +138,7 @@
 				<p>{L_USERNAMES_EXPLAIN}</p>
 			<dl>
 				<dd class="full"><textarea id="username" name="usernames" rows="5" cols="5" style="width: 100%; height: 60px;"></textarea></dd>
-				<dd class="full" style="text-align: left;"><div style="float: right;">[ <a href="{U_FIND_USERNAME}" onclick="find_username(); return false;">{L_FIND_USERNAME}</a> ]</div><label><input type="checkbox" class="radio" id="anonymous" name="user_id[]" value="{ANONYMOUS_USER_ID}" /> {L_SELECT_ANONYMOUS}</label></dd>
+				<dd class="full" style="text-align: left;"><div style="float: {S_CONTENT_FLOW_END};">[ <a href="{U_FIND_USERNAME}" onclick="find_username(); return false;">{L_FIND_USERNAME}</a> ]</div><label><input type="checkbox" class="radio" id="anonymous" name="user_id[]" value="{ANONYMOUS_USER_ID}" /> {L_SELECT_ANONYMOUS}</label></dd>
 			</dl>
 			</fieldset>
 
@@ -153,7 +153,7 @@
 
 		</div>
 
-		<div style="float: right; width: 48%">
+		<div style="float: {S_CONTENT_FLOW_END}; width: 48%">
 			
 		<!-- IF S_CAN_SELECT_GROUP -->
 
@@ -198,7 +198,7 @@
 
 	<!-- ELSEIF S_SELECT_USERGROUP_VIEW -->
 
-		<div style="float: left; width: 48%;">
+		<div style="float: {S_CONTENT_FLOW_BEGIN}; width: 48%;">
 		
 			<h1>{L_USERS}</h1>
 
@@ -239,7 +239,7 @@
 
 		</div>
 
-		<div style="float: right; width: 48%">
+		<div style="float: {S_CONTENT_FLOW_END}; width: 48%">
 			
 			<h1>{L_USERGROUPS}</h1>
 
@@ -305,14 +305,14 @@
 
 	<br />
 
-	<fieldset class="quick" style="float: right;">
+	<fieldset class="quick" style="float: {S_CONTENT_FLOW_END};">
 		<strong>&raquo; {L_PERMISSION_TYPE}</strong>
 	</fieldset>
 
 	<!-- IF S_PERMISSION_DROPDOWN -->
 		<form id="pselect" method="post" action="{U_ACTION}">
 	
-		<fieldset class="quick" style="float: left;">
+		<fieldset class="quick" style="float: {S_CONTENT_FLOW_BEGIN};">
 			{S_HIDDEN_FIELDS}
 			{L_SELECT_TYPE}: <select name="type">{S_PERMISSION_DROPDOWN}</select> 
 
@@ -340,7 +340,7 @@
 
 	<br /><br />
 
-	<fieldset class="quick" style="float: right;">
+	<fieldset class="quick" style="float: {S_CONTENT_FLOW_END};">
 		<input class="button1" type="submit" name="action[apply_all_permissions]" value="{L_APPLY_ALL_PERMISSIONS}" />
 		<input class="button2" type="button" name="cancel" value="{L_RESET}" onclick="document.forms['set-permissions'].reset(); init_colours(active_pmask + active_fmask);" />
 	</fieldset>

@@ -55,7 +55,7 @@
 	//-->
 	</script>
 
-	<a href="{U_BACK}" style="float: right">&laquo; {L_BACK}</a>
+	<a href="{U_BACK}" style="float: {S_CONTENT_FLOW_END};">&laquo; {L_BACK}</a>
 
 	<h1>{L_TITLE} :: {MODULENAME}</h1>
 
@@ -177,7 +177,7 @@
 
 	<form id="quick" method="post" action="{U_ACTION}">
 
-	<fieldset class="quick" style="float: right;">
+	<fieldset class="quick" style="float: {S_CONTENT_FLOW_END};">
 		<input type="hidden" name="action" value="quickadd" />
 
 		<select name="quick_install">{S_INSTALL_OPTIONS}</select>
@@ -188,7 +188,7 @@
 
 	<form id="module" method="post" action="{U_ACTION}">
 
-	<fieldset class="quick" style="float: left;">
+	<fieldset class="quick" style="float: {S_CONTENT_FLOW_BEGIN};">
 		<input type="hidden" name="action" value="add" />
 		<input type="hidden" name="module_parent_id" value="{PARENT_ID}" />
 

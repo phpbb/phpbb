@@ -15,7 +15,7 @@ define('IN_PHPBB', true);
 define('IN_INSTALL', true);
 /**#@-*/
 
-$phpbb_root_path = './../';
+$phpbb_root_path = (defined('PHPBB_ROOT_PATH')) ? PHPBB_ROOT_PATH : './../';
 $phpEx = substr(strrchr(__FILE__, '.'), 1);
 
 // Report all errors, except notices

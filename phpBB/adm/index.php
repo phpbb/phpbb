@@ -15,7 +15,7 @@ define('ADMIN_START', true);
 define('NEED_SID', true);
 
 // Include files
-$phpbb_root_path = './../';
+$phpbb_root_path = (defined('PHPBB_ROOT_PATH')) ? PHPBB_ROOT_PATH : './../';
 $phpEx = substr(strrchr(__FILE__, '.'), 1);
 require($phpbb_root_path . 'common.' . $phpEx);
 require($phpbb_root_path . 'includes/functions_admin.' . $phpEx);
@@ -141,6 +141,8 @@ function adm_page_header($page_title)
 		'S_USER_LANG'			=> $user->lang['USER_LANG'],
 		'S_CONTENT_DIRECTION'	=> $user->lang['DIRECTION'],
 		'S_CONTENT_ENCODING'	=> 'UTF-8',
+		'S_CONTENT_FLOW_BEGIN'	=> ($user->lang['DIRECTION'] == 'ltr') ? 'left' : 'right',
+		'S_CONTENT_FLOW_END'	=> ($user->lang['DIRECTION'] == 'ltr') ? 'right' : 'left',
 	));
 
 	// application/xhtml+xml not used because of IE

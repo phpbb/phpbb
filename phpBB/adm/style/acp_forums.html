@@ -95,7 +95,7 @@
 	//-->
 	</script>
 
-	<a href="{U_BACK}" style="float: right">&laquo; {L_BACK}</a>
+	<a href="{U_BACK}" style="float: {S_CONTENT_FLOW_END};">&laquo; {L_BACK}</a>
 
 	<h1>{L_TITLE} :: {FORUM_NAME}</h1>
 
@@ -316,7 +316,7 @@
 
 <!-- ELSEIF S_DELETE_FORUM -->
 
-	<a href="{U_BACK}" style="float: right">&laquo; {L_BACK}</a>
+	<a href="{U_BACK}" style="float: {S_CONTENT_FLOW_END};">&laquo; {L_BACK}</a>
 
 	<h1>{L_FORUM_DELETE}</h1>
 
@@ -431,7 +431,7 @@
 			<tr>
 				<td style="width: 5%; text-align: center;">{forums.FOLDER_IMAGE}</td>
 				<td>
-					<!-- IF forums.FORUM_IMAGE --><div style="float: left; margin-right: 5px;">{forums.FORUM_IMAGE}</div><!-- ENDIF -->
+					<!-- IF forums.FORUM_IMAGE --><div style="float: {S_CONTENT_FLOW_BEGIN}; margin-right: 5px;">{forums.FORUM_IMAGE}</div><!-- ENDIF -->
 					<strong><!-- IF forums.S_FORUM_LINK -->{forums.FORUM_NAME}<!-- ELSE --><a href="{forums.U_FORUM}">{forums.FORUM_NAME}</a><!-- ENDIF --></strong>
 					<!-- IF forums.FORUM_DESCRIPTION --><br /><span>{forums.FORUM_DESCRIPTION}</span><!-- ENDIF -->
 					<!-- IF forums.S_FORUM_POST --><br /><br /><span>{L_TOPICS}: <strong>{forums.FORUM_TOPICS}</strong> / {L_POSTS}: <b>{forums.FORUM_POSTS}</b></span><!-- ENDIF -->
