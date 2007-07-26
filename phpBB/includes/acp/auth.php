@@ -830,7 +830,7 @@ class auth_admin extends auth
 		$sql = "DELETE FROM $table
 			WHERE $forum_sql
 				AND $ug_id_sql
-				AND ". $db->sql_in_set(auth_option_id, $auth_option_ids);
+				AND " . $db->sql_in_set('auth_option_id', $auth_option_ids);
 		$db->sql_query($sql);
 
 		// Remove those having a role assigned... the correct type of course...
