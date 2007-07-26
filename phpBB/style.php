@@ -126,6 +126,19 @@ if ($id && $sid)
 		exit;
 	}
 
+	// gzip_compression
+	if ($config['gzip_compress'])
+	{
+		if (@extension_loaded('zlib') && !headers_sent())
+		{
+			ob_start('ob_gzhandler');
+		}
+	}
+
+	// Expire time of seven days if not recached
+	$expire_time = 7*86400;
+	$recache = false;
+
 	// Re-cache stylesheet data if necessary
 	if ($recompile || empty($theme['theme_data']))
 	{
@@ -156,35 +169,37 @@ if ($id && $sid)
 				closedir($dir);
 			}
 		}
+	}
 
-		if ($recache)
-		{
-			include_once($phpbb_root_path . 'includes/acp/acp_styles.' . $phpEx);
+	header('Content-type: text/css; charset=UTF-8');
 
-			$theme['theme_data'] = acp_styles::db_theme_data($theme);
-			$theme['theme_mtime'] = $update_time;
+	if ($recache)
+	{
+		include_once($phpbb_root_path . 'includes/acp/acp_styles.' . $phpEx);
 
-			// Save CSS contents
-			$sql_ary = array(
-				'theme_mtime'	=> $theme['theme_mtime'],
-				'theme_data'	=> $theme['theme_data']
-			);
+		$theme['theme_data'] = acp_styles::db_theme_data($theme);
+		$theme['theme_mtime'] = $update_time;
 
-			$sql = 'UPDATE ' . STYLES_THEME_TABLE . ' SET ' . $db->sql_build_array('UPDATE', $sql_ary) . "
-				WHERE theme_id = $id";
-			$db->sql_query($sql);
+		// Save CSS contents
+		$sql_ary = array(
+			'theme_mtime'	=> $theme['theme_mtime'],
+			'theme_data'	=> $theme['theme_data']
+		);
 
-			$cache->destroy('sql', STYLES_THEME_TABLE);
+		$sql = 'UPDATE ' . STYLES_THEME_TABLE . ' SET ' . $db->sql_build_array('UPDATE', $sql_ary) . "
+			WHERE theme_id = $id";
+		$db->sql_query($sql);
 
-			header('Expires: 0');
-		}
+		$cache->destroy('sql', STYLES_THEME_TABLE);
+
+		header('Cache-Control: private, no-cache="set-cookie"');
+		header('Expires: 0');
+		header('Pragma: no-cache');
 	}
 	else
 	{
-		header('Expires: ' . gmdate('D, d M Y H:i:s \G\M\T', time() + 3600));
+		header('Expires: ' . gmdate('D, d M Y H:i:s \G\M\T', time() + $expire_time));
 	}
-
-	header('Content-type: text/css');
 
 	// Parse Theme Data
 	$replace = array(
@@ -259,5 +274,7 @@ if ($id && $sid)
 	}
 	$db->sql_close();
 }
+
+exit;
 
 ?>
