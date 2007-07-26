@@ -25,7 +25,11 @@ function view_message($id, $mode, $folder_id, $msg_id, $folder, $message_row)
 	// Not able to view message, it was deleted by the sender
 	if ($message_row['pm_deleted'])
 	{
-		trigger_error('NO_AUTH_READ_REMOVED_MESSAGE');
+		$meta_info = append_sid("{$phpbb_root_path}ucp.$phpEx", "i=pm&amp;folder=$folder_id");
+		$message = $user->lang['NO_AUTH_READ_REMOVED_MESSAGE'];
+
+		$message .= '<br /><br />' . sprintf($user->lang['RETURN_FOLDER'], '<a href="' . $meta_info . '">', '</a>');
+		trigger_error($message);
 	}
 
 	// Do not allow hold messages to be seen
