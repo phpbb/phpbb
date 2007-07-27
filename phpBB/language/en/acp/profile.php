@@ -38,7 +38,7 @@ $lang = array_merge($lang, array(
 	'ALWAYS_TODAY'			=> 'Always the current date',
 
 	'BOOL_ENTRIES_EXPLAIN'	=> 'Enter your options now',
-	'BOOL_TYPE_EXPLAIN'		=> 'Define the type, either a checkbox or radio buttons.',
+	'BOOL_TYPE_EXPLAIN'		=> 'Define the type, either a checkbox or radio buttons. A checkbox will only be displayed if it is checked for a given user. In that case the <strong>second</strong> language option will be used. Radio buttons will display regardless of their value.',
 
 	'CHANGED_PROFILE_FIELD'		=> 'Successfully changed profile field.',
 	'CHARS_ANY'					=> 'Any character',
