@@ -491,6 +491,11 @@ class acp_profile
 								list($cp->vars['field_default_value_day'], $cp->vars['field_default_value_month'], $cp->vars['field_default_value_year']) = explode('-', $var);
 							}
 						}	
+					} 
+					else if ($field_type == FIELD_BOOL && $key == 'field_default_value')
+					{
+						// Get the number of options if this key is 'field_maxlen'
+						$var = request_var('field_default_value', 0);
 					}
 
 					$cp->vars[$key] = $var;
