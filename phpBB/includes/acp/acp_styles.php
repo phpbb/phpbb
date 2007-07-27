@@ -1847,6 +1847,54 @@ parse_css_file = {PARSE_CSS_FILE}
 					'prefix'	=> 'imageset/imageset.cfg'
 				);
 
+				end($data);
+
+				$imageset_root = "{$phpbb_root_path}styles/{$style_row['imageset_path']}/imageset/";
+
+				$dh = @opendir($imageset_root);
+				while (($fname = readdir($dh)) !== false)
+				{
+					if ($fname[0] != '.' && $fname != 'CVS' && is_dir("$imageset_root$fname"))
+					{
+						$files[key($files)]['exclude'] .= ',' . $fname . '/imageset.cfg';
+					}
+				}
+				@closedir($dh);
+
+				$imageset_lang = array();
+
+				$sql = 'SELECT image_filename, image_name, image_height, image_width, image_lang
+					FROM ' . STYLES_IMAGESET_DATA_TABLE . "
+					WHERE imageset_id = $style_id
+						AND image_lang <> ''";
+				$result = $db->sql_query($sql);
+				while ($row = $db->sql_fetchrow($result))
+				{
+					$imageset_lang[$row['image_lang']][$row['image_name']] = $row['image_filename'] . ($row['image_height'] ? '*' . $row['image_height']: '') . ($row['image_width'] ? '*' . $row['image_width']: '');
+				}
+				$db->sql_freeresult($result);
+
+				foreach ($imageset_lang as $lang => $imageset_localized)
+				{
+					$imageset_cfg = str_replace(array('{MODE}', '{NAME}', '{COPYRIGHT}', '{VERSION}'), array($mode, $style_row['imageset_name'], $style_row['imageset_copyright'], $config['version']), $this->imageset_cfg);
+
+					foreach ($this->imageset_keys as $topic => $key_array)
+					{
+						foreach ($key_array as $key)
+						{
+							if (isset($imageset_localized[$key]))
+							{
+								$imageset_cfg .= "\nimg_" . $key . ' = ' . str_replace("styles/{$style_row['imageset_path']}/imageset/", '{PATH}', $imageset_localized[$key]);
+							}
+						}
+					}
+
+					$data[] = array(
+						'src'		=> trim($imageset_cfg),
+						'prefix'	=> 'imageset/' . $lang . '/imageset.cfg'
+					);
+				}
+
 				unset($imageset_cfg);
 			}
 
