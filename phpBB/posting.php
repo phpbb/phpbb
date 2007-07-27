@@ -512,7 +512,7 @@ if ($save && $user->data['is_registered'] && $auth->acl_get('u_savedrafts') && (
 	}
 	else
 	{
-		if (!$subject)
+		if (!$subject || !utf_clean_string($subject))
 		{
 			$error[] = $user->lang['EMPTY_SUBJECT'];
 		}
@@ -756,7 +756,7 @@ if ($submit || $preview || $refresh)
 	}
 
 	// Parse subject
-	if (!$preview && !$refresh && !$post_data['post_subject'] && ($mode == 'post' || ($mode == 'edit' && $post_data['topic_first_post_id'] == $post_id)))
+	if (!$preview && !$refresh && !utf8_clean_string($post_data['post_subject']) && ($mode == 'post' || ($mode == 'edit' && $post_data['topic_first_post_id'] == $post_id)))
 	{
 		$error[] = $user->lang['EMPTY_SUBJECT'];
 	}

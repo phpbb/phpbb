@@ -481,7 +481,7 @@ function compose_pm($id, $mode, $action)
 		}
 		else
 		{
-			if (!$subject)
+			if (!$subject || !utf8_clean_string($subject))
 			{
 				$error[] = $user->lang['EMPTY_MESSAGE_SUBJECT'];
 			}
@@ -583,7 +583,7 @@ function compose_pm($id, $mode, $action)
 		// Subject defined
 		if ($submit)
 		{
-			if (!$subject)
+			if (!$subject || !utf8_clean_string($subject))
 			{
 				$error[] = $user->lang['EMPTY_MESSAGE_SUBJECT'];
 			}
