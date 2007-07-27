@@ -765,7 +765,7 @@ class auth_admin extends auth
 			foreach ($option_ary as $option)
 			{
 				$sql_ary[] = array(
-					'auth_option'	=> $option,
+					'auth_option'	=> (string) $option,
 					'is_global'		=> ($type == 'global' || $type == 'local_global') ? 1 : 0,
 					'is_local'		=> ($type == 'local' || $type == 'local_global') ? 1 : 0
 				);
@@ -879,7 +879,7 @@ class auth_admin extends auth
 						'forum_id'			=> (int) $forum,
 						'auth_option_id'	=> 0,
 						'auth_setting'		=> 0,
-						'auth_role_id'		=> $role_id
+						'auth_role_id'		=> (int) $role_id,
 					);
 				}
 			}
@@ -960,7 +960,7 @@ class auth_admin extends auth
 		{
 			$sql_ary[] = array(
 				'role_id'			=> (int) $role_id,
-				'auth_option_id'	=> $this->option_ids[$flag],
+				'auth_option_id'	=> (int) $this->option_ids[$flag],
 				'auth_setting'		=> ACL_NEVER
 			);
 		}

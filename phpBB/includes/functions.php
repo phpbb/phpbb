@@ -848,8 +848,8 @@ function markread($mode, $forum_id = false, $topic_id = false, $post_time = 0, $
 				foreach ($sql_insert as $f_id)
 				{
 					$sql_ary[] = array(
-						'user_id'	=> $user->data['user_id'],
-						'forum_id'	=> $f_id,
+						'user_id'	=> (int) $user->data['user_id'],
+						'forum_id'	=> (int) $f_id,
 						'mark_time'	=> time()
 					);
 				}
@@ -918,10 +918,10 @@ function markread($mode, $forum_id = false, $topic_id = false, $post_time = 0, $
 				$db->sql_return_on_error(true);
 
 				$sql_ary = array(
-					'user_id'		=> $user->data['user_id'],
-					'topic_id'		=> $topic_id,
+					'user_id'		=> (int) $user->data['user_id'],
+					'topic_id'		=> (int) $topic_id,
 					'forum_id'		=> (int) $forum_id,
-					'mark_time'		=> ($post_time) ? $post_time : time(),
+					'mark_time'		=> ($post_time) ? (int) $post_time : time(),
 				);
 
 				$db->sql_query('INSERT INTO ' . TOPICS_TRACK_TABLE . ' ' . $db->sql_build_array('INSERT', $sql_ary));
@@ -1005,8 +1005,8 @@ function markread($mode, $forum_id = false, $topic_id = false, $post_time = 0, $
 			$db->sql_return_on_error(true);
 
 			$sql_ary = array(
-				'user_id'		=> $use_user_id,
-				'topic_id'		=> $topic_id,
+				'user_id'		=> (int) $use_user_id,
+				'topic_id'		=> (int) $topic_id,
 				'topic_posted'	=> 1
 			);
 

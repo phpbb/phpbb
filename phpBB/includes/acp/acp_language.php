@@ -800,12 +800,12 @@ class acp_language
 								if (in_array($image_name, $valid_localized))
 								{
 									$sql_ary[] = array(
-										'image_name'		=> $image_name,
-										'image_filename'	=> $image_filename,
-										'image_height'		=> $image_height,
-										'image_width'		=> $image_width,
-										'imageset_id'		=> $imageset_row['imageset_id'],
-										'image_lang'		=> $lang_pack['iso'],
+										'image_name'		=> (string) $image_name,
+										'image_filename'	=> (string) $image_filename,
+										'image_height'		=> (int) $image_height,
+										'image_width'		=> (int) $image_width,
+										'imageset_id'		=> (int) $imageset_row['imageset_id'],
+										'image_lang'		=> (string) $lang_pack['iso'],
 									);
 								}
 							}

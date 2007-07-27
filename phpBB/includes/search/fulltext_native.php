@@ -1134,7 +1134,7 @@ class fulltext_native extends search_backend
 
 				foreach ($new_words as $word)
 				{
-					$sql_ary[] = array('word_text' => $word, 'word_count' => 0);
+					$sql_ary[] = array('word_text' => (string) $word, 'word_count' => 0);
 				}
 				$db->sql_return_on_error(true);
 				$db->sql_multi_insert(SEARCH_WORDLIST_TABLE, $sql_ary);
@@ -1183,9 +1183,9 @@ class fulltext_native extends search_backend
 
 			if (sizeof($word_ary))
 			{
-				$sql = 'INSERT INTO ' . SEARCH_WORDMATCH_TABLE . " (post_id, word_id, title_match)
-					SELECT $post_id, word_id, $title_match
-					FROM " . SEARCH_WORDLIST_TABLE . '
+				$sql = 'INSERT INTO ' . SEARCH_WORDMATCH_TABLE . ' (post_id, word_id, title_match)
+					SELECT ' . (int) $post_id . ', word_id, ' . (int) $title_match . '
+					FROM ' . SEARCH_WORDLIST_TABLE . '
 					WHERE ' . $db->sql_in_set('word_text', $word_ary);
 				$db->sql_query($sql);
 

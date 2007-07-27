@@ -412,11 +412,11 @@ parse_css_file = {PARSE_CSS_FILE}
 									if (in_array($image_name, $imageset_definitions))
 									{
 										$sql_ary[] = array(
-											'image_name'		=> $image_name,
-											'image_filename'	=> $image_filename,
+											'image_name'		=> (string) $image_name,
+											'image_filename'	=> (string) $image_filename,
 											'image_height'		=> (int) $image_height,
 											'image_width'		=> (int) $image_width,
-											'imageset_id'		=> $style_id,
+											'imageset_id'		=> (int) $style_id,
 											'image_lang'		=> '',
 										);
 									}
@@ -458,12 +458,12 @@ parse_css_file = {PARSE_CSS_FILE}
 											if (in_array($image_name, $imageset_definitions))
 											{
 												$sql_ary[] = array(
-													'image_name'		=> $image_name,
-													'image_filename'	=> $image_filename,
-													'image_height'		=> $image_height,
-													'image_width'		=> $image_width,
-													'imageset_id'		=> $style_id,
-													'image_lang'		=> $row['lang_dir'],
+													'image_name'		=> (string) $image_name,
+													'image_filename'	=> (string) $image_filename,
+													'image_height'		=> (int) $image_height,
+													'image_width'		=> (int) $image_width,
+													'imageset_id'		=> (int) $style_id,
+													'image_lang'		=> (string) $row['lang_dir'],
 												);
 											}
 										}

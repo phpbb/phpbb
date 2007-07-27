@@ -476,12 +476,12 @@ if ($save && $user->data['is_registered'] && $auth->acl_get('u_savedrafts') && (
 		if (confirm_box(true))
 		{
 			$sql = 'INSERT INTO ' . DRAFTS_TABLE . ' ' . $db->sql_build_array('INSERT', array(
-				'user_id'		=> $user->data['user_id'],
-				'topic_id'		=> $topic_id,
-				'forum_id'		=> $forum_id,
-				'save_time'		=> $current_time,
-				'draft_subject'	=> $subject,
-				'draft_message'	=> $message)
+				'user_id'		=> (int) $user->data['user_id'],
+				'topic_id'		=> (int) $topic_id,
+				'forum_id'		=> (int) $forum_id,
+				'save_time'		=> (int) $current_time,
+				'draft_subject'	=> (string) $subject,
+				'draft_message'	=> (string) $message)
 			);
 			$db->sql_query($sql);
 

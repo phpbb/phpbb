@@ -1079,8 +1079,8 @@ function update_posted_info(&$topic_ids)
 		foreach ($topic_row as $topic_id)
 		{
 			$sql_ary[] = array(
-				'user_id'		=> $user_id,
-				'topic_id'		=> $topic_id,
+				'user_id'		=> (int) $user_id,
+				'topic_id'		=> (int) $topic_id,
 				'topic_posted'	=> 1,
 			);
 		}
@@ -2244,9 +2244,9 @@ function cache_moderators()
 				foreach ($forum_id_ary as $forum_id => $auth_ary)
 				{
 					$sql_ary[] = array(
-						'forum_id'		=> $forum_id,
-						'user_id'		=> $user_id,
-						'username'		=> $usernames_ary[$user_id],
+						'forum_id'		=> (int) $forum_id,
+						'user_id'		=> (int) $user_id,
+						'username'		=> (string) $usernames_ary[$user_id],
 						'group_id'		=> 0,
 						'group_name'	=> ''
 					);
@@ -2307,11 +2307,11 @@ function cache_moderators()
 				}
 
 				$sql_ary[] = array(
-					'forum_id'		=> $forum_id,
+					'forum_id'		=> (int) $forum_id,
 					'user_id'		=> 0,
 					'username'		=> '',
-					'group_id'		=> $group_id,
-					'group_name'	=> $groupnames_ary[$group_id]
+					'group_id'		=> (int) $group_id,
+					'group_name'	=> (string) $groupnames_ary[$group_id]
 				);
 			}
 		}

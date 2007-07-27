@@ -1453,12 +1453,12 @@ class user extends session
 					{
 						$image_name = substr($image_name, 4);
 						$sql_ary[] = array(
-							'image_name'		=> $image_name,
-							'image_filename'	=> $image_filename,
-							'image_height'		=> $image_height,
-							'image_width'		=> $image_width,
-							'imageset_id'		=> $this->theme['imageset_id'],
-							'image_lang'		=> $this->img_lang,
+							'image_name'		=> (string) $image_name,
+							'image_filename'	=> (string) $image_filename,
+							'image_height'		=> (int) $image_height,
+							'image_width'		=> (int) $image_width,
+							'imageset_id'		=> (int) $this->theme['imageset_id'],
+							'image_lang'		=> (string) $this->img_lang,
 						);
 					}
 				}

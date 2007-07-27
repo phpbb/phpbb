@@ -1738,12 +1738,12 @@ class install_install extends module
 								if (in_array($image_name, $valid_localized))
 								{
 									$sql_ary[] = array(
-										'image_name'		=> $image_name,
-										'image_filename'	=> $image_filename,
-										'image_height'		=> $image_height,
-										'image_width'		=> $image_width,
-										'imageset_id'		=> $imageset_row['imageset_id'],
-										'image_lang'		=> $lang_pack['lang_iso'],
+										'image_name'		=> (string) $image_name,
+										'image_filename'	=> (string) $image_filename,
+										'image_height'		=> (int) $image_height,
+										'image_width'		=> (int) $image_width,
+										'imageset_id'		=> (int) $imageset_row['imageset_id'],
+										'image_lang'		=> (string) $lang_pack['lang_iso'],
 									);
 								}
 							}
@@ -1835,10 +1835,10 @@ class install_install extends module
 
 			$sql = 'INSERT INTO ' . BOTS_TABLE . ' ' . $db->sql_build_array('INSERT', array(
 				'bot_active'	=> 1,
-				'bot_name'		=> $bot_name,
-				'user_id'		=> $user_id,
-				'bot_agent'		=> $bot_ary[0],
-				'bot_ip'		=> $bot_ary[1],
+				'bot_name'		=> (string) $bot_name,
+				'user_id'		=> (int) $user_id,
+				'bot_agent'		=> (string) $bot_ary[0],
+				'bot_ip'		=> (string) $bot_ary[1],
 			));
 
 			$result = $db->sql_query($sql);

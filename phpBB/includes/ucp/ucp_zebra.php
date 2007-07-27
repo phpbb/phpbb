@@ -157,7 +157,7 @@ class ucp_zebra
 									foreach ($user_id_ary as $zebra_id)
 									{
 										$sql_ary[] = array(
-											'user_id'		=> $user->data['user_id'],
+											'user_id'		=> (int) $user->data['user_id'],
 											'zebra_id'		=> (int) $zebra_id,
 											$sql_mode		=> 1
 										);

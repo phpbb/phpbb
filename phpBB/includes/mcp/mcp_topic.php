@@ -572,10 +572,10 @@ function merge_posts($topic_id, $to_topic_id)
 			// If the topic no longer exist, we will update the topic watch table.
 			// To not let it error out on users watching both topics, we just return on an error...
 			$db->sql_return_on_error(true);
-			$db->sql_query('UPDATE ' . TOPICS_WATCH_TABLE . ' SET topic_id = ' . $to_topic_id . ' WHERE topic_id = ' . $topic_id);
+			$db->sql_query('UPDATE ' . TOPICS_WATCH_TABLE . ' SET topic_id = ' . (int) $to_topic_id . ' WHERE topic_id = ' . (int) $topic_id);
 			$db->sql_return_on_error(false);
 
-			$db->sql_query('DELETE FROM ' . TOPICS_WATCH_TABLE . ' WHERE topic_id = ' . $topic_id);
+			$db->sql_query('DELETE FROM ' . TOPICS_WATCH_TABLE . ' WHERE topic_id = ' . (int) $topic_id);
 		}
 
 		// Link to the new topic

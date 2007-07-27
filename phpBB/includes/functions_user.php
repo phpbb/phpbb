@@ -766,7 +766,7 @@ function user_ban($mode, $ban, $ban_len, $ban_len_other, $ban_exclude, $ban_reas
 				{
 					do
 					{
-						$banlist_ary[] = $row['user_id'];
+						$banlist_ary[] = (int) $row['user_id'];
 					}
 					while ($row = $db->sql_fetchrow($result));
 				}
@@ -849,7 +849,7 @@ function user_ban($mode, $ban, $ban_len, $ban_len_other, $ban_exclude, $ban_reas
 				else if (preg_match('#^\*$#', trim($ban_item)))
 				{
 					// Ban all IPs
-					$banlist_ary[] = "*";
+					$banlist_ary[] = '*';
 				}
 				else if (preg_match('#^([\w\-_]\.?){2,}$#is', trim($ban_item)))
 				{
@@ -959,11 +959,11 @@ function user_ban($mode, $ban, $ban_len, $ban_len_other, $ban_exclude, $ban_reas
 		{
 			$sql_ary[] = array(
 				$type				=> $ban_entry,
-				'ban_start'			=> $current_time,
-				'ban_end'			=> $ban_end,
-				'ban_exclude'		=> $ban_exclude,
-				'ban_reason'		=> $ban_reason,
-				'ban_give_reason'	=> $ban_give_reason,
+				'ban_start'			=> (int) $current_time,
+				'ban_end'			=> (int) $ban_end,
+				'ban_exclude'		=> (int) $ban_exclude,
+				'ban_reason'		=> (string) $ban_reason,
+				'ban_give_reason'	=> (string) $ban_give_reason,
 			);
 		}
 		
@@ -2574,10 +2574,10 @@ function group_user_add($group_id, $user_id_ary = false, $username_ary = false, 
 		foreach ($add_id_ary as $user_id)
 		{
 			$sql_ary[] = array(
-				'user_id'		=> $user_id,
-				'group_id'		=> $group_id,
-				'group_leader'	=> $leader,
-				'user_pending'	=> $pending,
+				'user_id'		=> (int) $user_id,
+				'group_id'		=> (int) $group_id,
+				'group_leader'	=> (int) $leader,
+				'user_pending'	=> (int) $pending,
 			);
 		}
 

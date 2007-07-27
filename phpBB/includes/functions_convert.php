@@ -1707,9 +1707,9 @@ function add_default_groups()
 			'group_desc_uid'		=> '',
 			'group_desc_bitfield'	=> '',
 			'group_type'			=> GROUP_SPECIAL,
-			'group_colour'			=> $data[0],
-			'group_legend'			=> $data[1],
-			'group_founder_manage'	=> $data[2]
+			'group_colour'			=> (string) $data[0],
+			'group_legend'			=> (int) $data[1],
+			'group_founder_manage'	=> (int) $data[2]
 		);
 	}
 

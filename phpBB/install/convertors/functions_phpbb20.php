@@ -97,7 +97,7 @@ function phpbb_insert_forums()
 	while ($row = $src_db->sql_fetchrow($result))
 	{
 		$sql_ary = array(
-			'forum_id'		=> $max_forum_id,
+			'forum_id'		=> (int) $max_forum_id,
 			'forum_name'	=> ($row['cat_title']) ? htmlspecialchars(phpbb_set_default_encoding($row['cat_title']), ENT_COMPAT, 'UTF-8') : $user->lang['CATEGORY'],
 			'parent_id'		=> 0,
 			'forum_parents'	=> '',
@@ -113,8 +113,8 @@ function phpbb_insert_forums()
 		$cat_row = $db->sql_fetchrow($_result);
 		$db->sql_freeresult($_result);
 
-		$sql_ary['left_id'] = $cat_row['right_id'] + 1;
-		$sql_ary['right_id'] = $cat_row['right_id'] + 2;
+		$sql_ary['left_id'] = (int) ($cat_row['right_id'] + 1);
+		$sql_ary['right_id'] = (int) ($cat_row['right_id'] + 2);
 
 		$sql = 'INSERT INTO ' . FORUMS_TABLE . ' ' . $db->sql_build_array('INSERT', $sql_ary);
 		$db->sql_query($sql);
@@ -148,8 +148,8 @@ function phpbb_insert_forums()
 		$unknown_cat_id = 'ghost';
 
 		$sql_ary = array(
-			'forum_id'		=> $max_forum_id,
-			'forum_name'	=> $user->lang['CATEGORY'],
+			'forum_id'		=> (int) $max_forum_id,
+			'forum_name'	=> (string) $user->lang['CATEGORY'],
 			'parent_id'		=> 0,
 			'forum_parents'	=> '',
 			'forum_desc'	=> '',
@@ -164,8 +164,8 @@ function phpbb_insert_forums()
 		$cat_row = $db->sql_fetchrow($_result);
 		$db->sql_freeresult($_result);
 
-		$sql_ary['left_id'] = $cat_row['right_id'] + 1;
-		$sql_ary['right_id'] = $cat_row['right_id'] + 2;
+		$sql_ary['left_id'] = (int) ($cat_row['right_id'] + 1);
+		$sql_ary['right_id'] = (int) ($cat_row['right_id'] + 2);
 
 		$sql = 'INSERT INTO ' . FORUMS_TABLE . ' ' . $db->sql_build_array('INSERT', $sql_ary);
 		$db->sql_query($sql);
@@ -210,7 +210,7 @@ function phpbb_insert_forums()
 		$sql_ary = array(
 			'forum_id'			=> (int) $row['forum_id'],
 			'forum_name'		=> htmlspecialchars(phpbb_set_default_encoding($row['forum_name']), ENT_COMPAT, 'UTF-8'),
-			'parent_id'			=> $cats_added[$row['cat_id']],
+			'parent_id'			=> (int) $cats_added[$row['cat_id']],
 			'forum_parents'		=> '',
 			'forum_desc'		=> htmlspecialchars(phpbb_set_default_encoding($row['forum_desc']), ENT_COMPAT, 'UTF-8'),
 			'forum_type'		=> FORUM_POST,
@@ -269,8 +269,8 @@ function phpbb_insert_forums()
 			WHERE ' . $cat_row['left_id'] . ' BETWEEN left_id AND right_id';
 		$db->sql_query($sql);
 
-		$sql_ary['left_id'] = $cat_row['right_id'];
-		$sql_ary['right_id'] = $cat_row['right_id'] + 1;
+		$sql_ary['left_id'] = (int) $cat_row['right_id'];
+		$sql_ary['right_id'] = (int) ($cat_row['right_id'] + 1);
 
 		$sql = 'INSERT INTO ' . FORUMS_TABLE . ' ' . $db->sql_build_array('INSERT', $sql_ary);
 		$db->sql_query($sql);
@@ -1778,7 +1778,7 @@ function phpbb_check_username_collisions()
 	while ($row = $src_db->sql_fetchrow($result))
 	{
 		$clean_name = utf8_clean_string(phpbb_set_default_encoding($row['username']));
-		$insert_ary[] = array('user_id' => $row['user_id'], 'username_clean' => $clean_name);
+		$insert_ary[] = array('user_id' => (int) $row['user_id'], 'username_clean' => (string) $clean_name);
 
 		if ($i % 1000 == 999)
 		{

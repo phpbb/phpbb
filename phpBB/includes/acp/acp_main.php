@@ -251,8 +251,8 @@ class acp_main
 								foreach ($topic_row as $topic_id)
 								{
 									$sql_ary[] = array(
-										'user_id'		=> $user_id,
-										'topic_id'		=> $topic_id,
+										'user_id'		=> (int) $user_id,
+										'topic_id'		=> (int) $topic_id,
 										'topic_posted'	=> 1,
 									);
 								}

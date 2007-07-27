@@ -1132,9 +1132,9 @@ function mcp_fork_topic($topic_ids)
 			while ($row = $db->sql_fetchrow($result))
 			{
 				$sql_ary[] = array(
-					'topic_id'		=> $new_topic_id,
-					'user_id'		=> $row['user_id'],
-					'notify_status'	=> $row['notify_status'],
+					'topic_id'		=> (int) $new_topic_id,
+					'user_id'		=> (int) $row['user_id'],
+					'notify_status'	=> (int) $row['notify_status'],
 				);
 			}
 			$db->sql_freeresult($result);
