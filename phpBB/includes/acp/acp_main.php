@@ -151,6 +151,12 @@ class acp_main
 						$result = $db->sql_query($sql);
 						set_config('upload_dir_size', (int) $db->sql_fetchfield('stat'), true);
 						$db->sql_freeresult($result);
+						
+						if (!function_exists('update_last_username'))
+						{
+							include($phpbb_root_path . "includes/functions_user.$phpEx");
+						}
+						update_last_username();
 
 						add_log('admin', 'LOG_RESYNC_STATS');
 					break;
