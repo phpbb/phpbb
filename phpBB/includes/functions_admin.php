@@ -2792,6 +2792,17 @@ function get_database_size()
 			}
 		break;
 
+		case 'firebird':
+			global $dbname;
+
+			// if it on the local machine, we can get lucky
+			if (file_exists($dbname))
+			{
+				$database_size = filesize($dbname);
+			}
+
+		break;
+
 		case 'sqlite':
 			global $dbhost;
 
