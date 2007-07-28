@@ -380,6 +380,11 @@ $database_update_info = array(
 			FORUMS_TABLE				=> array(
 				'forum_style'		=> array('USINT', 0),
 			),
+			GROUPS_TABLE			=> array(
+				'group_avatar_type'		=> array('TINT:2', 0),
+				'group_avatar_width'	=> array('USINT', 0),
+				'group_avatar_height'	=> array('USINT', 0),
+			),
 		),
 	),
 );
@@ -466,7 +471,6 @@ while ($row = $db->sql_fetchrow($result))
 	$config[$row['config_name']] = $row['config_value'];
 }
 $db->sql_freeresult($result);
-
 
 echo $lang['PREVIOUS_VERSION'] . ' :: <strong>' . $config['version'] . '</strong><br />';
 echo $lang['UPDATED_VERSION'] . ' :: <strong>' . $updates_to_version . '</strong>';
@@ -1164,8 +1168,6 @@ if (version_compare($current_version, '3.0.RC3', '<='))
 	{
 		$sql = "SELECT SETVAL('" . FORUMS_TABLE . "_seq',(select case when max(forum_id)>0 then max(forum_id)+1 else 1 end from " . FORUMS_TABLE . '));';
 		_sql($sql, $errored, $error_ary);
-
-		$no_updates = false;
 	}
 
 	// we check for:
@@ -1204,8 +1206,6 @@ if (version_compare($current_version, '3.0.RC3', '<='))
 					case 'mssql':
 						$sql = 'DROP INDEX ' . $table_name . '.' . $bad_index;
 						_sql($sql, $errored, $error_ary);
-
-						$no_updates = false;
 					break;
 
 					// last version, firebird, oracle, postgresql and sqlite all got bad index names
@@ -1216,8 +1216,6 @@ if (version_compare($current_version, '3.0.RC3', '<='))
 					case 'sqlite':
 						$sql = 'DROP INDEX ' . $bad_index;
 						_sql($sql, $errored, $error_ary);
-
-						$no_updates = false;
 					break;
 				}
 
@@ -1247,10 +1245,12 @@ if (version_compare($current_version, '3.0.RC3', '<='))
 	// Make sure empty smiley codes do not exist
 	$sql = 'DELETE FROM ' . SMILIES_TABLE . " 
 		WHERE code = ''";
-	$db->sql_query($sql);
+	_sql($sql, $errored, $error_ary);
 
 	set_config('allow_birthdays', '1');
 	set_config('cron_lock', '0', true);
+
+	$no_updates = false;
 }
 
 _write_result($no_updates, $errored, $error_ary);

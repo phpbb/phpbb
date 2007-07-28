@@ -593,7 +593,7 @@ CREATE TABLE phpbb_groups (
 	group_desc_uid varchar2(5) DEFAULT '' ,
 	group_display number(1) DEFAULT '0' NOT NULL,
 	group_avatar varchar2(255) DEFAULT '' ,
-	group_avatar_type number(4) DEFAULT '0' NOT NULL,
+	group_avatar_type number(2) DEFAULT '0' NOT NULL,
 	group_avatar_width number(4) DEFAULT '0' NOT NULL,
 	group_avatar_height number(4) DEFAULT '0' NOT NULL,
 	group_rank number(8) DEFAULT '0' NOT NULL,

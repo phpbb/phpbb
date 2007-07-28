@@ -14,7 +14,7 @@
 
 die("Please read the first lines of this script for instructions on how to enable it");
 
-set_time_limit(0);
+@set_time_limit(0);
 
 $schema_path = './../install/schemas/';
 
@@ -1107,9 +1107,9 @@ function get_schema_struct()
 			'group_desc_uid'		=> array('VCHAR:5', ''),
 			'group_display'			=> array('BOOL', 0),
 			'group_avatar'			=> array('VCHAR', ''),
-			'group_avatar_type'		=> array('TINT:4', 0),
-			'group_avatar_width'	=> array('TINT:4', 0),
-			'group_avatar_height'	=> array('TINT:4', 0),
+			'group_avatar_type'		=> array('TINT:2', 0),
+			'group_avatar_width'	=> array('USINT', 0),
+			'group_avatar_height'	=> array('USINT', 0),
 			'group_rank'			=> array('UINT', 0),
 			'group_colour'			=> array('VCHAR:6', ''),
 			'group_sig_chars'		=> array('UINT', 0),
