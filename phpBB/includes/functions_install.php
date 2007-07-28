@@ -258,7 +258,7 @@ function connect_check_db($error_connect, &$error, $dbms, $table_prefix, $dbhost
 	$db->sql_return_on_error(true);
 
 	// Check that we actually have a database name before going any further.....
-	if ($dbms['DRIVER'] != 'sqlite' && $dbname === '')
+	if ($dbms['DRIVER'] != 'sqlite' && $dbms['DRIVER'] != 'oracle' && $dbname === '')
 	{
 		$error[] = $lang['INST_ERR_DB_NO_NAME'];
 		return false;
