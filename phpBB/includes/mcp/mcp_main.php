@@ -570,10 +570,15 @@ function mcp_move_topic($topic_ids)
 			}
 		}
 	}
+	else
+	{
+		$additional_msg = $user->lang['FORUM_NOT_EXIST'];
+	}
 
 	if (!$to_forum_id || $additional_msg)
 	{
 		unset($_POST['confirm']);
+		unset($_REQUEST['confirm_key']);
 	}
 
 	if (confirm_box(true))
@@ -964,10 +969,15 @@ function mcp_fork_topic($topic_ids)
 			}
 		}
 	}
+	else
+	{
+		$additional_msg = $user->lang['FORUM_NOT_EXIST'];
+	}
 
-	if (!$to_forum_id || $additional_msg)
+	if ($additional_msg)
 	{
 		unset($_POST['confirm']);
+		unset($_REQUEST['confirm_key']);
 	}
 
 	if (confirm_box(true))
