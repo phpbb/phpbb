@@ -570,7 +570,7 @@ function mcp_move_topic($topic_ids)
 			}
 		}
 	}
-	else
+	else if (isset($_POST['confirm']))
 	{
 		$additional_msg = $user->lang['FORUM_NOT_EXIST'];
 	}
@@ -969,7 +969,7 @@ function mcp_fork_topic($topic_ids)
 			}
 		}
 	}
-	else
+	else if (isset($_POST['confirm']))
 	{
 		$additional_msg = $user->lang['FORUM_NOT_EXIST'];
 	}
