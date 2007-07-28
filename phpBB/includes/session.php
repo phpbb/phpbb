@@ -590,7 +590,7 @@ class session
 		if (!defined('IN_ERROR_HANDLER') && (!$this->session_id || !$db->sql_query($sql) || !$db->sql_affectedrows()))
 		{
 			// Limit new sessions in 1 minute period (if required)
-			if ((!isset($this->data['session_time']) || !$this->data['session_time']) && $config['active_sessions'])
+			if (empty($this->data['session_time']) && $config['active_sessions'])
 			{
 				$sql = 'SELECT COUNT(session_id) AS sessions
 					FROM ' . SESSIONS_TABLE . '
