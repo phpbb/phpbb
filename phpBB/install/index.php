@@ -105,14 +105,14 @@ else
 // Try to override some limits - maybe it helps some...
 @set_time_limit(0);
 $mem_limit = @ini_get('memory_limit');
-if (!empty($mem_limit ))
+if (!empty($mem_limit))
 {
 	$unit = strtolower(substr($mem_limit, -1, 1));
-	$mem_limit = (int)$mem_limit;
+	$mem_limit = (int) $mem_limit;
 	if ($unit == 'k')
 	{
 		$mem_limit = floor($mem_limit/1024);
-	} 
+	}
 	else if ($unit == 'g')
 	{
 		$mem_limit *= 1024;
@@ -127,7 +127,7 @@ else
 {
 	$mem_limit = '128M';
 }
-@ini_set('memory_limit', $mem_limit );
+@ini_set('memory_limit', $mem_limit);
 
 // Include essential scripts
 require($phpbb_root_path . 'includes/functions.' . $phpEx);

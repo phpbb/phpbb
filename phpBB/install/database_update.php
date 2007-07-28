@@ -493,16 +493,25 @@ else
 $exit = false;
 if (version_compare($current_version, '3.0.RC3', '<='))
 {
+	// Define missing language entries...
 	if (!isset($lang['CLEANING_USERNAMES']))
 	{
-		$lang['CLEANING_USERNAMES'] = 'Cleaning usernames';
-	}
+		$lang = array_merge($lang, array(
+			'CLEANING_USERNAMES'		=> 'Cleaning usernames',
+			'LONG_SCRIPT_EXECUTION'		=> 'Please note that this can take a while... Please do not stop the script.',
+			'CHANGE_CLEAN_NAMES'		=> 'The method used to make sure a username is not used by multiple users has been changed. There are some users which have the same name when compared with the new method. You have to delete or rename these users to make sure that each name is only used by one user before you can proceed.',
+			'USER_ACTIVE'				=> 'Active user',
+			'USER_INACTIVE'				=> 'Inactive user',
+			'BOT'						=> 'Spider/Robot',
+			'UPDATE_REQUIRES_FILE'		=> 'The updater requires that the following file is present: %s',
 
-	if (!isset($lang['LONG_SCRIPT_EXECUTION']))
-	{
-		$lang['LONG_SCRIPT_EXECUTION'] = 'Please note that this can take a while... Please do not stop the script.';
+			'DELETE_USER_REMOVE'		=> 'Delete user and remove posts',
+			'DELETE_USER_RETAIN'		=> 'Delete user but keep posts',
+			'EDIT_USERNAME'				=> 'Edit username',
+			'KEEP_OLD_NAME'				=> 'Keep username',
+			'NEW_USERNAME'				=> 'New username',
+		));
 	}
-
 ?>
 	</p><br /><br />
 
@@ -1212,7 +1221,14 @@ if (version_compare($current_version, '3.0.RC3', '<='))
 					break;
 				}
 
-				$needed_creation[$table_name][$good_index] = 1;
+				// If the good index already exist we do not need to create it again...
+				if (($map_dbms == 'mysql_40' || $map_dbms == 'mysql_41') && $bad_index == $good_index)
+				{
+				}
+				else
+				{
+					$needed_creation[$table_name][$good_index] = 1;
+				}
 			}
 		}
 	}
