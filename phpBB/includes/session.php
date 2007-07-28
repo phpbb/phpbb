@@ -679,7 +679,7 @@ class session
 		$method = 'logout_' . $method;
 		if (function_exists($method))
 		{
-			$method($this->data);
+			$method($this->data, $new_session);
 		}
 
 		if ($this->data['user_id'] != ANONYMOUS)
