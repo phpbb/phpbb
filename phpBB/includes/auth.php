@@ -349,7 +349,7 @@ class auth
 		// Since this function is not called that often (we are caching the data) we check for this inconsistency.
 		$sql = 'SELECT forum_id
 			FROM ' . FORUMS_TABLE . '
-			WHERE ' . $db->sql_in_set('forum_id', array_keys($hold_ary),false, true);
+			WHERE ' . $db->sql_in_set('forum_id', array_keys($hold_ary), false, true);
 		$result = $db->sql_query($sql);
 
 		$forum_ids = (isset($hold_ary[0])) ? array(0) : array();
