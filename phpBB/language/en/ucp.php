@@ -104,8 +104,8 @@ $lang = array_merge($lang, array(
 	'BOOKMARKS_REMOVED'			=> 'Bookmarks removed successfully.',
 
 	'CANNOT_EDIT_MESSAGE_TIME'	=> 'You can no longer edit or delete that message.',
-	'CANNOT_MOVE_TO_SAME_FOLDER'=> 'Messages can not be moved to the folder you want to remove.',
-	'CANNOT_MOVE_FROM_SPECIAL'	=> 'Messages can not be moved from the outbox.',
+	'CANNOT_MOVE_TO_SAME_FOLDER'=> 'Messages cannot be moved to the folder you want to remove.',
+	'CANNOT_MOVE_FROM_SPECIAL'	=> 'Messages cannot be moved from the outbox.',
 	'CANNOT_RENAME_FOLDER'		=> 'This folder can not be renamed.',
 	'CANNOT_REMOVE_FOLDER'		=> 'This folder can not be removed.',
 	'CHANGE_DEFAULT_GROUP'		=> 'Change default group',
