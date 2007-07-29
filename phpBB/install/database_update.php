@@ -8,7 +8,7 @@
 *
 */
 
-$updates_to_version = '3.0.RC4';
+$updates_to_version = '3.0.RC5';
 
 // Return if we "just include it" to find out for which version the database update is responsuble for
 if (defined('IN_PHPBB') && defined('IN_INSTALL'))
@@ -382,6 +382,43 @@ $database_update_info = array(
 			),
 			GROUPS_TABLE			=> array(
 				'group_avatar_type'		=> array('TINT:2', 0),
+				'group_avatar_width'	=> array('USINT', 0),
+				'group_avatar_height'	=> array('USINT', 0),
+			),
+		),
+	),
+	// Changes from 3.0.RC4 to the next version
+	'3.0.RC4'			=> array(
+		// Change the following columns
+		'change_columns'		=> array(
+			STYLES_TABLE				=> array(
+				'style_id'			=> array('USINT', NULL, 'auto_increment'),
+				'template_id'		=> array('USINT', 0),
+				'theme_id'			=> array('USINT', 0),
+				'imageset_id'		=> array('USINT', 0),
+			),
+			STYLES_TEMPLATE_TABLE		=> array(
+				'template_id'		=> array('USINT', NULL, 'auto_increment'),
+			),
+			STYLES_TEMPLATE_DATA_TABLE	=> array(
+				'template_id'		=> array('USINT', NULL, 'auto_increment'),
+			),
+			STYLES_THEME_TABLE			=> array(
+				'theme_id'			=> array('USINT', NULL, 'auto_increment'),
+			),
+			STYLES_IMAGESET_TABLE		=> array(
+				'imageset_id'		=> array('USINT', NULL, 'auto_increment'),
+			),
+			STYLES_IMAGESET_DATA_TABLE	=> array(
+				'imageset_id'		=> array('USINT', 0),
+			),
+			USERS_TABLE	=> array(
+				'user_style'		=> array('USINT', 0),
+			),
+			FORUMS_TABLE				=> array(
+				'forum_style'		=> array('USINT', 0),
+			),
+			GROUPS_TABLE			=> array(
 				'group_avatar_width'	=> array('USINT', 0),
 				'group_avatar_height'	=> array('USINT', 0),
 			),
@@ -1253,6 +1290,44 @@ if (version_compare($current_version, '3.0.RC3', '<='))
 	$no_updates = false;
 }
 
+if (version_compare($current_version, '3.0.RC4', '<='))
+{
+	$update_auto_increment = array(
+		STYLES_TABLE				=> 'style_id',
+		STYLES_TEMPLATE_TABLE		=> 'template_id',
+		STYLES_TEMPLATE_DATA_TABLE	=> 'template_id',
+		STYLES_THEME_TABLE			=> 'theme_id',
+		STYLES_IMAGESET_TABLE		=> 'imageset_id'
+	);
+
+	if ($map_dbms == 'mysql_40' || $map_dbms == 'mysql_41')
+	{
+		foreach ($update_auto_increment as $auto_table_name => $auto_column_name)
+		{
+			$sql = "SELECT MAX({$auto_column_name}) as max_id
+				FROM {$auto_table_name}";
+			$result = _sql($sql, $errored, $error_ary);
+			$row = $db->sql_fetchrow($result);
+			$db->sql_freeresult($result);
+
+			$max_id = ((int) $row['max_id']) + 1;
+			_sql("ALTER TABLE {$auto_table_name} AUTO_INCREMENT = {$max_id}");
+		}
+
+		$no_updates = false;
+	}
+	else if ($map_dbms == 'sqlite')
+	{
+		foreach ($update_auto_increment as $auto_table_name => $auto_column_name)
+		{
+			var_dump('eh?');
+			sql_column_change($dbms, $auto_table_name, $auto_column_name, array('USINT', NULL, 'auto_increment'));
+		}
+
+		$no_updates = false;
+	}
+}
+
 _write_result($no_updates, $errored, $error_ary);
 
 $error_ary = array();
@@ -1570,7 +1645,7 @@ function column_exists($dbms, $table, $column_name)
 /**
 * Function to prepare some column information for better usage
 */
-function prepare_column_data($dbms, $column_data)
+function prepare_column_data($dbms, $column_data, $table_name, $column_name)
 {
 	global $dbms_type_map, $unsigned_types;
 
@@ -1709,17 +1784,23 @@ function prepare_column_data($dbms, $column_data)
 
 		case 'postgres':
 			$return_array['column_type'] = $column_type;
-			$return_array['null'] = 'NOT NULL';
-
-			if (!is_null($column_data[1]))
-			{
-				$return_array['default'] = $column_data[1];
-			}
 
 			$sql .= " {$column_type} ";
-			$sql .= 'NOT NULL ';
 
-			$sql .= (!is_null($column_data[1])) ? "DEFAULT '{$column_data[1]}' " : '';
+			if (isset($column_data[2]) && $column_data[2] == 'auto_increment')
+			{
+				$default_val = "nextval('{$table_name}_seq')";
+			}
+			else if (!is_null($column_data[1]))
+			{
+				$default_val = "'" . $column_data[1] . "'";
+				$return_array['null'] = 'NOT NULL';
+				$sql .= 'NOT NULL ';
+			}
+
+			$return_array['default'] = $default_val;
+
+			$sql .= "DEFAULT {$default_val}";
 
 			// Unsigned? Then add a CHECK contraint
 			if (in_array($orig_column_type, $unsigned_types))
@@ -1730,7 +1811,7 @@ function prepare_column_data($dbms, $column_data)
 		break;
 
 		case 'sqlite':
-/*			if (isset($column_data[2]) && $column_data[2] == 'auto_increment')
+			if (isset($column_data[2]) && $column_data[2] == 'auto_increment')
 			{
 				$sql .= ' INTEGER PRIMARY KEY';
 			}
@@ -1738,8 +1819,6 @@ function prepare_column_data($dbms, $column_data)
 			{
 				$sql .= ' ' . $column_type;
 			}
-*/
-			$sql .= ' ' . $column_type;
 
 			$sql .= ' NOT NULL ';
 			$sql .= (!is_null($column_data[1])) ? "DEFAULT '{$column_data[1]}'" : '';
@@ -1758,7 +1837,7 @@ function sql_column_add($dbms, $table_name, $column_name, $column_data)
 {
 	global $errored, $error_ary;
 
-	$column_data = prepare_column_data($dbms, $column_data);
+	$column_data = prepare_column_data($dbms, $column_data, $table_name, $column_name);
 
 	switch ($dbms)
 	{
@@ -2300,7 +2379,7 @@ function sql_column_change($dbms, $table_name, $column_name, $column_data)
 	global $dbms_type_map, $db;
 	global $errored, $error_ary;
 
-	$column_data = prepare_column_data($dbms, $column_data);
+	$column_data = prepare_column_data($dbms, $column_data, $table_name, $column_name);
 
 	switch ($dbms)
 	{
@@ -2332,18 +2411,21 @@ function sql_column_change($dbms, $table_name, $column_name, $column_data)
 			$sql_array = array();
 			$sql_array[] = 'ALTER COLUMN ' . $column_name . ' TYPE ' . $column_data['column_type'];
 
-			if ($column_data['null'] == 'NOT NULL')
+			if (isset($column_data['null']))
 			{
-				$sql_array[] = 'ALTER COLUMN ' . $column_name . ' SET NOT NULL';
-			}
-			else
-			{
-				$sql_array[] = 'ALTER COLUMN ' . $column_name . ' DROP NOT NULL';
+				if ($column_data['null'] == 'NOT NULL')
+				{
+					$sql_array[] = 'ALTER COLUMN ' . $column_name . ' SET NOT NULL';
+				}
+				else if ($column_data['null'] == 'NULL')
+				{
+					$sql_array[] = 'ALTER COLUMN ' . $column_name . ' DROP NOT NULL';
+				}
 			}
 
 			if (isset($column_data['default']))
 			{
-				$sql_array[] = 'ALTER COLUMN ' . $column_name . " SET DEFAULT '" . $column_data['default'] . "'";
+				$sql_array[] = 'ALTER COLUMN ' . $column_name . ' SET DEFAULT ' . $column_data['default'];
 			}
 
 			// we don't want to double up on constraints if we change different number data types
