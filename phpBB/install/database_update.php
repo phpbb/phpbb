@@ -1300,6 +1300,100 @@ if (version_compare($current_version, '3.0.RC4', '<='))
 		STYLES_IMAGESET_TABLE		=> 'imageset_id'
 	);
 
+	$sql = 'SELECT *
+		FROM ' . STYLES_TABLE . '
+		WHERE style_id = 0';
+	$result = _sql($sql, $errored, $error_ary);
+	$bad_style_row = $db->sql_fetchrow($result);
+	$db->sql_freeresult($result);
+
+	if ($bad_style_row)
+	{
+		$sql = 'SELECT MAX(style_id) as max_id
+			FROM ' . STYLES_TABLE;
+		$result = _sql($sql, $errored, $error_ary);
+		$row = $db->sql_fetchrow($result);
+		$db->sql_freeresult($result);
+
+		$proper_id = $row['max_id'] + 1;
+
+		_sql('UPDATE ' . STYLES_TABLE . " SET style_id = $proper_id WHERE style_id = 0", $errored, $error_ary);
+		_sql('UPDATE ' . FORUMS_TABLE . " SET forum_style = $proper_id WHERE forum_style = 0", $errored, $error_ary);
+
+		$sql = 'SELECT config_value
+			FROM ' . CONFIG_TABLE . "
+			WHERE config_name = 'default_style'";
+		$result = _sql($sql, $errored, $error_ary);
+		$style_config = $db->sql_fetchrow($result);
+		$db->sql_freeresult($result);
+
+		if ($style_config['config_value'] === '0')
+		{
+			set_config('default_style', (string) $proper_id);
+		}
+	}
+
+	$sql = 'SELECT *
+		FROM ' . STYLES_TEMPLATE_TABLE . '
+		WHERE template_id = 0';
+	$result = _sql($sql, $errored, $error_ary);
+	$bad_style_row = $db->sql_fetchrow($result);
+	$db->sql_freeresult($result);
+
+	if ($bad_style_row)
+	{
+		$sql = 'SELECT MAX(template_id) as max_id
+			FROM ' . STYLES_TEMPLATE_TABLE;
+		$result = _sql($sql, $errored, $error_ary);
+		$row = $db->sql_fetchrow($result);
+		$db->sql_freeresult($result);
+
+		$proper_id = $row['max_id'] + 1;
+
+		_sql('UPDATE ' . STYLES_TABLE . " SET template_id = $proper_id WHERE template_id = 0", $errored, $error_ary);
+	}
+
+	$sql = 'SELECT *
+		FROM ' . STYLES_THEME_TABLE . '
+		WHERE theme_id = 0';
+	$result = _sql($sql, $errored, $error_ary);
+	$bad_style_row = $db->sql_fetchrow($result);
+	$db->sql_freeresult($result);
+
+	if ($bad_style_row)
+	{
+		$sql = 'SELECT MAX(theme_id) as max_id
+			FROM ' . STYLES_THEME_TABLE;
+		$result = _sql($sql, $errored, $error_ary);
+		$row = $db->sql_fetchrow($result);
+		$db->sql_freeresult($result);
+
+		$proper_id = $row['max_id'] + 1;
+
+		_sql('UPDATE ' . STYLES_TABLE . " SET theme_id = $proper_id WHERE theme_id = 0", $errored, $error_ary);
+	}
+
+	$sql = 'SELECT *
+		FROM ' . STYLES_IMAGESET_TABLE . '
+		WHERE imageset_id = 0';
+	$result = _sql($sql, $errored, $error_ary);
+	$bad_style_row = $db->sql_fetchrow($result);
+	$db->sql_freeresult($result);
+
+	if ($bad_style_row)
+	{
+		$sql = 'SELECT MAX(imageset_id) as max_id
+			FROM ' . STYLES_IMAGESET_TABLE;
+		$result = _sql($sql, $errored, $error_ary);
+		$row = $db->sql_fetchrow($result);
+		$db->sql_freeresult($result);
+
+		$proper_id = $row['max_id'] + 1;
+
+		_sql('UPDATE ' . STYLES_TABLE . " SET imageset_id = $proper_id WHERE imageset_id = 0", $errored, $error_ary);
+		_sql('UPDATE ' . STYLES_IMAGESET_DATA_TABLE . " SET imageset_id = $proper_id WHERE imageset_id = 0", $errored, $error_ary);
+	}
+
 	if ($map_dbms == 'mysql_40' || $map_dbms == 'mysql_41')
 	{
 		foreach ($update_auto_increment as $auto_table_name => $auto_column_name)
@@ -1311,7 +1405,7 @@ if (version_compare($current_version, '3.0.RC4', '<='))
 			$db->sql_freeresult($result);
 
 			$max_id = ((int) $row['max_id']) + 1;
-			_sql("ALTER TABLE {$auto_table_name} AUTO_INCREMENT = {$max_id}");
+			_sql("ALTER TABLE {$auto_table_name} AUTO_INCREMENT = {$max_id}", $errored, $error_ary);
 		}
 
 		$no_updates = false;
@@ -1320,7 +1414,6 @@ if (version_compare($current_version, '3.0.RC4', '<='))
 	{
 		foreach ($update_auto_increment as $auto_table_name => $auto_column_name)
 		{
-			var_dump('eh?');
 			sql_column_change($dbms, $auto_table_name, $auto_column_name, array('USINT', NULL, 'auto_increment'));
 		}
 
@@ -1446,13 +1539,19 @@ function _sql($sql, &$errored, &$error_ary, $echo_dot = true)
 
 	$db->sql_return_on_error(true);
 
-	$result = $db->sql_query($sql);
-
-	if ($db->sql_error_triggered)
+	if (preg_match('/^\\s*SELECT/', $sql))
 	{
-		$errored = true;
-		$error_ary['sql'][] = $db->sql_error_sql;
-		$error_ary['error_code'][] = $db->_sql_error();
+		$result = $db->sql_query($sql);
+		if ($db->sql_error_triggered)
+		{
+			$errored = true;
+			$error_ary['sql'][] = $db->sql_error_sql;
+			$error_ary['error_code'][] = $db->_sql_error();
+		}
+	}
+	else
+	{
+		var_dump($sql);
 	}
 
 	$db->sql_return_on_error(false);
@@ -1462,7 +1561,7 @@ function _sql($sql, &$errored, &$error_ary, $echo_dot = true)
 		echo ". \n";
 		flush();
 	}
-
+if (preg_match('/^\\s*SELECT/', $sql))
 	return $result;
 }
 
