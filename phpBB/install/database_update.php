@@ -1539,19 +1539,12 @@ function _sql($sql, &$errored, &$error_ary, $echo_dot = true)
 
 	$db->sql_return_on_error(true);
 
-	if (preg_match('/^\\s*SELECT/', $sql))
+	$result = $db->sql_query($sql);
+	if ($db->sql_error_triggered)
 	{
-		$result = $db->sql_query($sql);
-		if ($db->sql_error_triggered)
-		{
-			$errored = true;
-			$error_ary['sql'][] = $db->sql_error_sql;
-			$error_ary['error_code'][] = $db->_sql_error();
-		}
-	}
-	else
-	{
-		var_dump($sql);
+		$errored = true;
+		$error_ary['sql'][] = $db->sql_error_sql;
+		$error_ary['error_code'][] = $db->_sql_error();
 	}
 
 	$db->sql_return_on_error(false);
@@ -1561,7 +1554,7 @@ function _sql($sql, &$errored, &$error_ary, $echo_dot = true)
 		echo ". \n";
 		flush();
 	}
-if (preg_match('/^\\s*SELECT/', $sql))
+
 	return $result;
 }
 
