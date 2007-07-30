@@ -1419,6 +1419,14 @@ if (version_compare($current_version, '3.0.RC4', '<='))
 
 		$no_updates = false;
 	}
+	else if ($map_dbms == 'postgres')
+	{
+		foreach ($update_auto_increment as $auto_table_name => $auto_column_name)
+		{
+			$sql = "SELECT SETVAL('" . $auto_table_name . "_seq',(select case when max({$auto_column_name})>0 then max({$auto_column_name})+1 else 1 end from " . $auto_table_name . '));';
+			_sql($sql, $errored, $error_ary);
+		}
+	}
 }
 
 _write_result($no_updates, $errored, $error_ary);
@@ -1539,12 +1547,19 @@ function _sql($sql, &$errored, &$error_ary, $echo_dot = true)
 
 	$db->sql_return_on_error(true);
 
-	$result = $db->sql_query($sql);
-	if ($db->sql_error_triggered)
+	if (preg_match('/^\\s*SELECT/', $sql))
 	{
-		$errored = true;
-		$error_ary['sql'][] = $db->sql_error_sql;
-		$error_ary['error_code'][] = $db->_sql_error();
+		$result = $db->sql_query($sql);
+		if ($db->sql_error_triggered)
+		{
+			$errored = true;
+			$error_ary['sql'][] = $db->sql_error_sql;
+			$error_ary['error_code'][] = $db->_sql_error();
+		}
+	}
+	else
+	{
+		var_dump($sql);
 	}
 
 	$db->sql_return_on_error(false);
@@ -1554,7 +1569,7 @@ function _sql($sql, &$errored, &$error_ary, $echo_dot = true)
 		echo ". \n";
 		flush();
 	}
-
+if (preg_match('/^\\s*SELECT/', $sql))
 	return $result;
 }
 
