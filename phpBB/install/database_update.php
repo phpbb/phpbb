@@ -1445,7 +1445,7 @@ if (version_compare($current_version, '3.0.RC4', '<='))
 		$db->sql_transaction('begin');
 
 		$sql = 'SELECT *
-			FROM ' . STYLES_TEMPLATE_TABLE;
+			FROM ' . STYLES_TEMPLATE_DATA_TABLE;
 		$result = _sql($sql, $errored, $error_ary);
 		$old_style_rows = array();
 		while ($row = $db->sql_fetchrow($result))
@@ -1478,7 +1478,7 @@ if (version_compare($current_version, '3.0.RC4', '<='))
 
 		foreach ($old_style_rows as $return_row)
 		{
-			_sql('INSERT INTO ' . STYLES_TEMPLATE_DATA_TABLE . '(' . implode(', ', array_keys($return_row)) . ') VALUES (' . implode(', ', $return_row) . ')');
+			_sql('INSERT INTO ' . STYLES_TEMPLATE_DATA_TABLE . ' ' . $db->sql_build_array('INSERT', $return_row), $errored, $error_ary);
 		}
 
 		$db->sql_transaction('commit');
@@ -2619,7 +2619,7 @@ function sql_column_change($dbms, $table_name, $column_name, $column_data)
 
 				if (!$constraint_exists)
 				{
-					$sql_array[] = "ADD '" . $column_data['constraint'] . "'";
+					$sql_array[] = 'ADD ' . $column_data['constraint'];
 				}
 			}
 
