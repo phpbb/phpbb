@@ -401,7 +401,7 @@ $database_update_info = array(
 				'template_id'		=> array('USINT', NULL, 'auto_increment'),
 			),
 			STYLES_TEMPLATE_DATA_TABLE	=> array(
-				'template_id'		=> array('USINT', NULL, 'auto_increment'),
+				'template_id'		=> array('USINT', 0),
 			),
 			STYLES_THEME_TABLE			=> array(
 				'theme_id'			=> array('USINT', NULL, 'auto_increment'),
@@ -1297,7 +1297,6 @@ if (version_compare($current_version, '3.0.RC4', '<='))
 	$update_auto_increment = array(
 		STYLES_TABLE				=> 'style_id',
 		STYLES_TEMPLATE_TABLE		=> 'template_id',
-		STYLES_TEMPLATE_DATA_TABLE	=> 'template_id',
 		STYLES_THEME_TABLE			=> 'theme_id',
 		STYLES_IMAGESET_TABLE		=> 'imageset_id'
 	);
@@ -1413,15 +1412,6 @@ if (version_compare($current_version, '3.0.RC4', '<='))
 
 		$no_updates = false;
 	}
-	else if ($map_dbms == 'sqlite')
-	{
-		foreach ($update_auto_increment as $auto_table_name => $auto_column_name)
-		{
-			sql_column_change($dbms, $auto_table_name, $auto_column_name, array('USINT', NULL, 'auto_increment'));
-		}
-
-		$no_updates = false;
-	}
 	else if ($map_dbms == 'postgres')
 	{
 		foreach ($update_auto_increment as $auto_table_name => $auto_column_name)
@@ -1429,6 +1419,69 @@ if (version_compare($current_version, '3.0.RC4', '<='))
 			$sql = "SELECT SETVAL('" . $auto_table_name . "_seq',(select case when max({$auto_column_name})>0 then max({$auto_column_name})+1 else 1 end from " . $auto_table_name . '));';
 			_sql($sql, $errored, $error_ary);
 		}
+
+		$sql = 'DROP SEQUENCE ' . STYLES_TEMPLATE_DATA_TABLE . '_seq';
+		_sql($sql, $errored, $error_ary);
+	}
+	else if ($map_dbms == 'firebird')
+	{
+		$sql = 'DROP TRIGGER t_' . STYLES_TEMPLATE_DATA_TABLE;
+		_sql($sql, $errored, $error_ary);
+
+		$sql = 'DROP GENERATOR ' . STYLES_TEMPLATE_DATA_TABLE . '_gen';
+		_sql($sql, $errored, $error_ary);
+	}
+	else if ($map_dbms == 'oracle')
+	{
+		$sql = 'DROP TRIGGER t_' . STYLES_TEMPLATE_DATA_TABLE;
+		_sql($sql, $errored, $error_ary);
+
+		$sql = 'DROP SEQUENCE ' . STYLES_TEMPLATE_DATA_TABLE . '_seq';
+		_sql($sql, $errored, $error_ary);
+	}
+	else if ($map_dbms == 'mssql')
+	{
+		// we use transactions because we need to have a working DB at the end of all of this
+		$db->sql_transaction('begin');
+
+		$sql = 'SELECT *
+			FROM ' . STYLES_TEMPLATE_TABLE;
+		$result = _sql($sql, $errored, $error_ary);
+		$old_style_rows = array();
+		while ($row = $db->sql_fetchrow($result))
+		{
+			$old_style_rows[] = $row;
+		}
+		$db->sql_freeresult($result);
+
+		// death to the table, it is evil!
+		$sql = 'DROP TABLE ' . STYLES_TEMPLATE_DATA_TABLE;
+		_sql($sql, $errored, $error_ary);
+
+		// the table of awesomeness, praise be to it (or something)
+		$sql = 'CREATE TABLE [' . STYLES_TEMPLATE_DATA_TABLE . "] (
+			[template_id] [int] DEFAULT (0) NOT NULL ,
+			[template_filename] [varchar] (100) DEFAULT ('') NOT NULL ,
+			[template_included] [varchar] (8000) DEFAULT ('') NOT NULL ,
+			[template_mtime] [int] DEFAULT (0) NOT NULL ,
+			[template_data] [text] DEFAULT ('') NOT NULL 
+		) ON [PRIMARY] TEXTIMAGE_ON [PRIMARY]";
+		_sql($sql, $errored, $error_ary);
+
+		// index? index
+		$sql = 'CREATE  INDEX [tid] ON [' . STYLES_TEMPLATE_DATA_TABLE . ']([template_id]) ON [PRIMARY]';
+		_sql($sql, $errored, $error_ary);
+
+		// yet another index
+		$sql = 'CREATE  INDEX [tfn] ON [' . STYLES_TEMPLATE_DATA_TABLE . ']([template_filename]) ON [PRIMARY]';
+		_sql($sql, $errored, $error_ary);
+
+		foreach ($old_style_rows as $return_row)
+		{
+			_sql('INSERT INTO ' . STYLES_TEMPLATE_DATA_TABLE . '(' . implode(', ', array_keys($return_row)) . ') VALUES (' . implode(', ', $return_row) . ')');
+		}
+
+		$db->sql_transaction('commit');
 	}
 }
 
@@ -1882,7 +1935,11 @@ function prepare_column_data($dbms, $column_data, $table_name, $column_name)
 
 			// In Oracle empty strings ('') are treated as NULL.
 			// Therefore in oracle we allow NULL's for all DEFAULT '' entries
-			$sql .= ($column_data[1] === '') ? '' : 'NOT NULL';
+			// Oracle does not like setting NOT NULL on a column that is already NOT NULL (this happens only on number fields)
+			if (preg_match('/number/i', $column_type))
+			{
+				$sql .= ($column_data[1] === '') ? '' : 'NOT NULL';
+			}
 		break;
 
 		case 'postgres':

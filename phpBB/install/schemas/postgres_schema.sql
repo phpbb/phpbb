@@ -977,10 +977,8 @@ CREATE UNIQUE INDEX phpbb_styles_template_tmplte_nm ON phpbb_styles_template (te
 /*
 	Table: 'phpbb_styles_template_data'
 */
-CREATE SEQUENCE phpbb_styles_template_data_seq;
-
 CREATE TABLE phpbb_styles_template_data (
-	template_id INT2 DEFAULT nextval('phpbb_styles_template_data_seq'),
+	template_id INT2 DEFAULT '0' NOT NULL CHECK (template_id >= 0),
 	template_filename varchar(100) DEFAULT '' NOT NULL,
 	template_included varchar(8000) DEFAULT '' NOT NULL,
 	template_mtime INT4 DEFAULT '0' NOT NULL CHECK (template_mtime >= 0),

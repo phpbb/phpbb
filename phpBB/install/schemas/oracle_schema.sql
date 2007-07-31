@@ -1453,7 +1453,7 @@ END;
 	Table: 'phpbb_styles_template_data'
 */
 CREATE TABLE phpbb_styles_template_data (
-	template_id number(4) NOT NULL,
+	template_id number(4) DEFAULT '0' NOT NULL,
 	template_filename varchar2(100) DEFAULT '' ,
 	template_included clob DEFAULT '' ,
 	template_mtime number(11) DEFAULT '0' NOT NULL,
@@ -1465,22 +1465,6 @@ CREATE INDEX phpbb_styles_template_data_tid ON phpbb_styles_template_data (templ
 /
 CREATE INDEX phpbb_styles_template_data_tfn ON phpbb_styles_template_data (template_filename)
 /
-
-CREATE SEQUENCE phpbb_styles_template_data_seq
-/
-
-CREATE OR REPLACE TRIGGER t_phpbb_styles_template_data
-BEFORE INSERT ON phpbb_styles_template_data
-FOR EACH ROW WHEN (
-	new.template_id IS NULL OR new.template_id = 0
-)
-BEGIN
-	SELECT phpbb_styles_template_data_seq.nextval
-	INTO :new.template_id
-	FROM dual;
-END;
-/
-
 
 /*
 	Table: 'phpbb_styles_theme'

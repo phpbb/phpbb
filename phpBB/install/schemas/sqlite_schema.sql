@@ -717,7 +717,7 @@ CREATE UNIQUE INDEX phpbb_styles_template_tmplte_nm ON phpbb_styles_template (te
 
 # Table: 'phpbb_styles_template_data'
 CREATE TABLE phpbb_styles_template_data (
-	template_id INTEGER PRIMARY KEY NOT NULL ,
+	template_id INTEGER UNSIGNED NOT NULL DEFAULT '0',
 	template_filename varchar(100) NOT NULL DEFAULT '',
 	template_included text(65535) NOT NULL DEFAULT '',
 	template_mtime INTEGER UNSIGNED NOT NULL DEFAULT '0',

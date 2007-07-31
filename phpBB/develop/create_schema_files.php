@@ -1590,7 +1590,7 @@ function get_schema_struct()
 
 	$schema_data['phpbb_styles_template_data'] = array(
 		'COLUMNS'		=> array(
-			'template_id'			=> array('USINT', NULL, 'auto_increment'),
+			'template_id'			=> array('USINT', 0),
 			'template_filename'		=> array('VCHAR:100', ''),
 			'template_included'		=> array('TEXT', ''),
 			'template_mtime'		=> array('TIMESTAMP', 0),
