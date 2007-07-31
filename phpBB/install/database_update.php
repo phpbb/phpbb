@@ -974,9 +974,11 @@ if ($exit)
 	exit;
 }
 
+_write_result(false, $errored, $error_ary);
+
 // Schema updates
 ?>
-	</p><br /><br />
+	<br /><br />
 
 	<h1><?php echo $lang['UPDATE_DATABASE_SCHEMA']; ?></h1>
 

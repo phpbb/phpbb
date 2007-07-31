@@ -40,7 +40,7 @@ if (!$auth->acl_gets('u_viewprofile', 'a_user', 'a_useradd', 'a_userdel'))
 	login_box('', $user->lang['LOGIN_EXPLAIN_VIEWONLINE']);
 }
 
-$sort_key_text = array('a' => $user->lang['SORT_USERNAME'], 'b' => $user->lang['SORT_LOCATION'], 'c' => $user->lang['SORT_JOINED']);
+$sort_key_text = array('a' => $user->lang['SORT_USERNAME'], 'b' => $user->lang['SORT_JOINED'], 'c' => $user->lang['SORT_LOCATION']);
 $sort_key_sql = array('a' => 'u.username_clean', 'b' => 's.session_time', 'c' => 's.session_page');
 
 // Sorting and order
@@ -92,6 +92,7 @@ $sql = 'SELECT forum_id, forum_name, parent_id, forum_type, left_id, right_id
 	ORDER BY left_id ASC';
 $result = $db->sql_query($sql, 600);
 
+$forum_data = array();
 while ($row = $db->sql_fetchrow($result))
 {
 	$forum_data[$row['forum_id']] = $row;
