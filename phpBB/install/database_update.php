@@ -1319,6 +1319,7 @@ if (version_compare($current_version, '3.0.RC4', '<='))
 
 		_sql('UPDATE ' . STYLES_TABLE . " SET style_id = $proper_id WHERE style_id = 0", $errored, $error_ary);
 		_sql('UPDATE ' . FORUMS_TABLE . " SET forum_style = $proper_id WHERE forum_style = 0", $errored, $error_ary);
+		_sql('UPDATE ' . USERS_TABLE . " SET user_style = $proper_id WHERE user_style = 0", $errored, $error_ary);
 
 		$sql = 'SELECT config_value
 			FROM ' . CONFIG_TABLE . "
