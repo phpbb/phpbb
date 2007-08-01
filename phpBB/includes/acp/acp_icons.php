@@ -144,13 +144,19 @@ class acp_icons
 						}
 					}
 				}
-
+				
 				$sql = "SELECT * 
 					FROM $table 
 					ORDER BY {$fields}_order " . (($icon_id || $action == 'add') ? 'DESC' : 'ASC');
 				$result = $db->sql_query($sql);
-
+				
 				$data = array();
+				$after = false;
+				$display = 0;
+				$order_lists = array('', '');
+				$add_order_lists = array('', '');
+				$display_count = 0;
+				
 				while ($row = $db->sql_fetchrow($result))
 				{
 					if ($action == 'add')
@@ -158,9 +164,11 @@ class acp_icons
 						unset($_images[$row[$fields . '_url']]);
 					}
 
+
 					if ($row[$fields . '_id'] == $icon_id)
 					{
 						$after = true;
+						$display = $row['display_on_posting'];
 						$data[$row[$fields . '_url']] = $row;
 					}
 					else
@@ -176,35 +184,41 @@ class acp_icons
 							$selected = ' selected="selected"';
 							$after = false;
 						}
-
+						if ($row['display_on_posting'])
+						{
+							$display_count++;
+						}
 						$after_txt = ($mode == 'smilies') ? $row['code'] : $row['icons_url'];
-						$order_list = '<option value="' . ($row[$fields . '_order'] + 1) . '"' . $selected . '>' . sprintf($user->lang['AFTER_' . $lang], ' -&gt; ' . $after_txt) . '</option>' . $order_list;
+						$order_lists[$row['display_on_posting']] = '<option value="' . ($row[$fields . '_order'] + 1) . '"' . $selected . '>' . sprintf($user->lang['AFTER_' . $lang], ' -&gt; ' . $after_txt) . '</option>' . $order_lists[$row['display_on_posting']];
 
 						if (!empty($default_row))
 						{
-							$add_order_list = '<option value="' . ($row[$fields . '_order'] + 1) . '"' . (($row[$fields . '_id'] == $default_row['smiley_id']) ? ' selected="selected"' : '') . '>' . sprintf($user->lang['AFTER_' . $lang], ' -&gt; ' . $after_txt) . '</option>' . $add_order_list;
+							$add_order_lists[$row['display_on_posting']] = '<option value="' . ($row[$fields . '_order'] + 1) . '"' . (($row[$fields . '_id'] == $default_row['smiley_id']) ? ' selected="selected"' : '') . '>' . sprintf($user->lang['AFTER_' . $lang], ' -&gt; ' . $after_txt) . '</option>' . $add_order_lists[$row['display_on_posting']];
 						}
 					}
 				}
 				$db->sql_freeresult($result);
 
-				$order_list = '<option value="1"' . ((!isset($after)) ? ' selected="selected"' : '') . '>' . $user->lang['FIRST'] . '</option>' . $order_list;
-				$add_order_list = '<option value="1">' . $user->lang['FIRST'] . '</option>' . $add_order_list;
-
+				$order_list = '<option value="1"' . ((!isset($after)) ? ' selected="selected"' : '') . '>' . $user->lang['FIRST'] . '</option>';
+ 				$add_order_list = '<option value="1">' . $user->lang['FIRST'] . '</option>';
+ 
 				if ($action == 'add')
 				{
 					$data = $_images;
 				}
-
+				 
 				$colspan = (($mode == 'smilies') ? '7' : '5');
 				$colspan += ($icon_id) ? 1 : 0;
 				$colspan += ($action == 'add') ? 2 : 0;
-
+				
 				$template->assign_vars(array(
 					'S_EDIT'		=> true,
 					'S_SMILIES'		=> ($mode == 'smilies') ? true : false,
 					'S_ADD'			=> ($action == 'add') ? true : false,
-					'S_ORDER_LIST'	=> $order_list,
+					
+					'S_ORDER_LIST_DISPLAY'		=> $order_list . $order_lists[1],
+					'S_ORDER_LIST_UNDISPLAY'	=> $order_list . $order_lists[0],
+					'S_ORDER_LIST_DISPLAY_COUNT'	=> $display_count + 1,
 
 					'L_TITLE'		=> $user->lang['ACP_' . $lang],
 					'L_EXPLAIN'		=> $user->lang['ACP_' . $lang . '_EXPLAIN'],
@@ -247,7 +261,10 @@ class acp_icons
 						'S_ADD_CODE'		=> true,
 
 						'S_IMG_OPTIONS'		=> $smiley_options,
-						'S_ADD_ORDER_LIST'	=> $add_order_list,
+						
+						'S_ADD_ORDER_LIST_DISPLAY'		=> $add_order_list . $add_order_lists[1],
+						'S_ADD_ORDER_LIST_UNDISPLAY'	=> $add_order_list . $add_order_lists[0],
+						
 						'IMG_SRC'			=> $phpbb_root_path . $img_path . '/' . $default_row['smiley_url'],
 						'IMG_PATH'			=> $img_path,
 						'PHPBB_ROOT_PATH'	=> $phpbb_root_path,

@@ -4,8 +4,8 @@
 
 <!-- IF S_EDIT -->
 
+	<script type="text/javascript" defer="defer">
 	<!-- IF S_ADD_CODE -->
-		<script type="text/javascript" defer="defer">
 		<!--
 
 			var smiley = Array();
@@ -38,8 +38,36 @@
 				}
 			}
 		//-->
-		</script>
 	<!-- ENDIF -->
+	var toggle_options;
+	
+	function toggle_select(smilie, display, select)
+	{
+		var disp = document.getElementById('order_disp[' + smilie + ']');
+		var nodisp = document.getElementById('order_no_disp[' + smilie + ']');
+		disp.disabled = !display;
+		//document.getElementById('order_disp[' + smilie + ']').style = '';
+		nodisp.disabled = display;
+		//document.getElementById('order_no_disp[' + smilie + ']').style = 'display:none';
+		if (display)
+		{
+
+			document.getElementById(select).selectedIndex = 0;
+			
+			nodisp.style.display = 'none';
+			disp.style.display = '';
+		}
+		else
+		{
+				document.getElementById(select).selectedIndex = {S_ORDER_LIST_DISPLAY_COUNT};
+			
+			disp.style.display = 'none';
+			nodisp.style.display = '';
+		}
+	}
+	
+	</script>
+
 
 	<a href="{U_BACK}" style="float: {S_CONTENT_FLOW_END};">&laquo; {L_BACK}</a>
 
@@ -89,13 +117,16 @@
 		<td><input class="text post" type="text" size="3" name="width[{items.IMG}]" value="{items.WIDTH}" /></td>
 		<td><input class="text post" type="text" size="3" name="height[{items.IMG}]" value="{items.HEIGHT}" /></td>
 		<td>
-			<input type="checkbox" class="radio" name="display_on_posting[{items.IMG}]"{items.POSTING_CHECKED} />
+			<input type="checkbox" class="radio" name="display_on_posting[{items.IMG}]"{items.POSTING_CHECKED} onclick="toggle_select('{items.IMG}', this.checked, 'order[{items.IMG}]');"/>
 			<!-- IF items.S_ID -->
 				<input type="hidden" name="id[{items.IMG}]" value="{items.ID}" />
 			<!-- ENDIF -->
 		</td>
 		<!-- IF ID or S_ADD -->
-			<td><select name="order[{items.IMG}]">{S_ORDER_LIST}</select></td>
+			<td><select id="order[{items.IMG}]" name="order[{items.IMG}]">
+				<optgroup id="order_disp[{items.IMG}]" label="{L_DISPLAY_POSTING}" <!-- IF not items.POSTING_CHECKED -->disabled="disabled" style="display:none"<!-- ENDIF -->>{S_ORDER_LIST_DISPLAY}</optgroup>
+				<optgroup id="order_no_disp[{items.IMG}]" label="{L_DISPLAY_POSTING_NO}" <!-- IF  items.POSTING_CHECKED -->disabled="disabled" style="display:none"<!-- ENDIF -->>{S_ORDER_LIST_UNDISPLAY}</optgroup>
+			</select></td>
 		<!-- ENDIF -->	
 		<!-- IF S_ADD -->
 			<td><input type="checkbox" class="radio" name="add_img[{items.IMG}]" value="1" /></td>
@@ -113,8 +144,11 @@
 		<td><input class="text post" type="text" name="add_emotion" id="add_emotion" value="{EMOTION}" size="10" maxlength="50" /></td>
 		<td><input class="text post" type="text" size="3" name="add_width" id="add_width" value="{WIDTH}" /></td>
 		<td><input class="text post" type="text" size="3" name="add_height" id="add_height" value="{HEIGHT}" /></td>
-		<td><input type="checkbox" class="radio" name="add_display_on_posting" checked="checked" /></td>
-		<td><select name="add_order" id="add_order">{S_ADD_ORDER_LIST}</select></td>
+		<td><input type="checkbox" class="radio" name="add_display_on_posting" checked="checked" onclick="toggle_select('add', this.checked, 'add_order');"/></td>
+ 		<td><select id="add_order" name="add_order">
+				<optgroup id="order_disp[add]" label="{L_DISPLAY_POSTING}">{S_ADD_ORDER_LIST_DISPLAY}</optgroup>
+				<optgroup id="order_no_disp[add]" label="{L_DISPLAY_POSTING_NO}" disabled="disabled" style="display:none">{S_ADD_ORDER_LIST_UNDISPLAY}</optgroup>
+		</select></td>
 		<td><input type="checkbox" class="radio" name="add_additional_code" value="1" /></td>
 	</tr>
 	<!-- ENDIF -->
