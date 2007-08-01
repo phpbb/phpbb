@@ -91,8 +91,12 @@ $lang = array_merge($lang, array(
 	'CURRENT_SMILIES'			=> 'Current smilies',
 	'CURRENT_SMILIES_EXPLAIN'	=> 'Choose what to do with the currently installed smilies.',
 
-	'DISPLAY_ON_POSTING'	=> 'Display on posting page',
+	'DISPLAY_ON_POSTING'		=> 'Display on posting page',
+	'DISPLAY_POSTING'			=> 'On posting page',
+	'DISPLAY_POSTING_NO'		=> 'Not on posting page',
 
+
+	
 	'EDIT_ICONS'				=> 'Edit icons',
 	'EDIT_SMILIES'				=> 'Edit smilies',
 	'EMOTION'					=> 'Emotion',
