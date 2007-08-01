@@ -1582,6 +1582,13 @@ function append_sid($url, $params = false, $is_amp = true, $session_id = false)
 {
 	global $_SID, $_EXTRA_URL;
 
+	// Developers using the hook function need to globalise the $_SID and $_EXTRA_URL on their own and also handle it appropiatly.
+	// They could mimick most of what is within this function
+	if (function_exists('append_sid_phpbb_hook'))
+	{
+		return append_sid_phpbb_hook($url, $params, $is_amp, $session_id);
+	}
+
 	// Assign sid if session id is not specified
 	if ($session_id === false)
 	{
@@ -4276,7 +4283,10 @@ function page_footer($run_cron = true)
 
 	garbage_collection();
 
-	exit;
+	if (!defined('PHPBB_EMBEDDED'))
+	{
+		exit;
+	}
 }
 
 /**

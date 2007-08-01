@@ -195,8 +195,11 @@ p a {
 		<li>[Fix] Multiple PM recipients not separated (Bug #13876)</li>
 		<li>[Change] Split the select list for the smilie order to clarify which are feasible and which are not (Bug #13911)</li>
 		<li>[Fix] Convert empty homepage fields (Bug #13917)</li>
-
-
+		<li>[Fix] Use board default DST setting on creating new profiles (Bug #11563)</li>
+		<li>[Feature] New constant PHPBB_EMBEDDED can be used to let phpBB not call exit; if wrapped/embedded (We may re-check this constant on other code locations later too)</li>
+		<li>[Feature] append_sid() having a check for the function append_sid_phpbb_hook(). This function is called in favor of append_sid() with the exact same parameters if present.</li>
+		<li>[Fix] Only list enabled modes within the dropdown at user administration (Bug #13883) - patch provided by damnian</li>
+		<li>[Fix] Properly display ban reason if selecting banned entries within the ACP (Bug #13896)</li>
 
 	</ul>
 

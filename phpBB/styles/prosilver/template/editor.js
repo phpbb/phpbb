@@ -227,7 +227,8 @@ function addquote(post_id, username)
 			theSelection = theSelection.replace(/<br\/>/ig, '\n');
 			theSelection = theSelection.replace(/&lt\;/ig, '<');
 			theSelection = theSelection.replace(/&gt\;/ig, '>');
-			theSelection = theSelection.replace(/&amp\;/ig, '&');			
+			theSelection = theSelection.replace(/&amp\;/ig, '&');
+			theSelection = theSelection.replace(/&nbsp\;/ig, ' ');
 		}
 		else if (document.all)
 		{

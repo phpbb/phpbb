@@ -113,6 +113,7 @@ switch ($mode)
 		else
 		{
 			upload_popup();
+			garbage_collection();
 			exit;
 		}
 	break;
