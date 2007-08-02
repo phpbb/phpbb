@@ -49,7 +49,7 @@
 			<legend>{L_USER_CUSTOM_PROFILE_FIELDS}</legend>
 		<!-- BEGIN profile_fields -->
 		<dl> 
-			<dt><label>{profile_fields.LANG_NAME}:</label><!-- IF profile_fields.LANG_EXPLAIN --><br /><span>{profile_fields.LANG_EXPLAIN}</span><!-- ENDIF --></dt>
+			<dt><label<!-- IF profile_fields.FIELD_ID --> for="{profile_fields.FIELD_ID}"<!-- ENDIF -->>{profile_fields.LANG_NAME}:</label><!-- IF profile_fields.LANG_EXPLAIN --><br /><span>{profile_fields.LANG_EXPLAIN}</span><!-- ENDIF --></dt>
 			<dd>{profile_fields.FIELD}</dd>
 			<!-- IF profile_fields.ERROR -->
 				<dd><span class="small" style="color: red;">{profile_fields.ERROR}</span></dd>
