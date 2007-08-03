@@ -123,6 +123,12 @@ class utf_normalizer
 			include($phpbb_root_path . 'includes/utf/data/utf_nfc_qc.' . $phpEx);
 		}
 
+		if (!isset($GLOBALS['utf_canonical_decomp']))
+		{
+			global $phpbb_root_path, $phpEx;
+			include($phpbb_root_path . 'includes/utf/data/utf_canonical_decomp.' . $phpEx);
+		}
+
 		$str = utf_normalizer::recompose($str, $pos, $len, $GLOBALS['utf_nfc_qc'], $GLOBALS['utf_canonical_decomp']);
 	}
 
@@ -149,10 +155,10 @@ class utf_normalizer
 			include($phpbb_root_path . 'includes/utf/data/utf_nfkc_qc.' . $phpEx);
 		}
 
-		if (!isset($GLOBALS['utf_canonical_comp']))
+		if (!isset($GLOBALS['utf_compatibility_decomp']))
 		{
 			global $phpbb_root_path, $phpEx;
-			include($phpbb_root_path . 'includes/utf/data/utf_canonical_comp.' . $phpEx);
+			include($phpbb_root_path . 'includes/utf/data/utf_compatibility_decomp.' . $phpEx);
 		}
 
 		$str = utf_normalizer::recompose($str, $pos, $len, $GLOBALS['utf_nfkc_qc'], $GLOBALS['utf_compatibility_decomp']);

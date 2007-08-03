@@ -532,7 +532,7 @@ else
 
 // Checks/Operations that have to be completed prior to starting the update itself
 $exit = false;
-if (version_compare($current_version, '3.0.RC3', '<='))
+if (version_compare($current_version, '3.0.RC4', '<='))
 {
 	// Define missing language entries...
 	if (!isset($lang['CLEANING_USERNAMES']))
