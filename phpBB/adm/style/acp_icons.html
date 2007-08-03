@@ -41,10 +41,10 @@
 	<!-- ENDIF -->
 
 	
-	function toggle_select(smilie, display, select)
+	function toggle_select(icon, display, select)
 	{
-		var disp = document.getElementById('order_disp[' + smilie + ']');
-		var nodisp = document.getElementById('order_no_disp[' + smilie + ']');
+		var disp = document.getElementById('order_disp[' + icon + ']');
+		var nodisp = document.getElementById('order_no_disp[' + icon + ']');
 		disp.disabled = !display;
 		nodisp.disabled = display;
 		if (display)
