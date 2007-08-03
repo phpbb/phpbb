@@ -726,6 +726,11 @@ optgroup {
 	font-weight: bold;
 }
 
+optgroup.disabled-options {
+	display: none;
+	background-color: gray;
+}
+
 option {
 	padding: 0 1em 0 0;
 	color: #000;
