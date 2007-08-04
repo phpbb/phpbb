@@ -116,10 +116,11 @@ class acp_users
 
 		// Build modes dropdown list
 		$sql = 'SELECT module_mode, module_auth
-			FROM ' . MODULES_TABLE . '
-			WHERE parent_id = ' . $this->p_master->p_parent . "
-				AND module_basename = 'users'
+			FROM ' . MODULES_TABLE . "
+			WHERE module_basename = 'users'
 				AND module_enabled = 1
+				AND module_class = 'acp'
+			GROUP BY module_mode
 			ORDER BY left_id";
 		$result = $db->sql_query($sql);
 
