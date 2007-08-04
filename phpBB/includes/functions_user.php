@@ -2710,7 +2710,7 @@ function group_user_del($group_id, $user_id_ary = false, $username_ary = false, 
 	{
 		if (isset($sql_where_ary[$gid]) && sizeof($sql_where_ary[$gid]))
 		{
-			group_set_user_default($gid, $sql_where_ary[$gid], $special_group_data[$gid]);
+			group_set_user_default($gid, $sql_where_ary[$gid], $special_group_data[$gid], false, true);
 		}
 	}
 	unset($special_group_data);
@@ -2892,7 +2892,7 @@ function group_validate_groupname($group_id, $group_name)
 *
 * @private
 */
-function group_set_user_default($group_id, $user_id_ary, $group_attributes = false, $update_listing = false, $same_group = false)
+function group_set_user_default($group_id, $user_id_ary, $group_attributes = false, $update_listing = false, $overwrite = false)
 {
 	global $db;
 
@@ -2930,7 +2930,7 @@ function group_set_user_default($group_id, $user_id_ary, $group_attributes = fal
 		if (isset($group_attributes[$attribute]))
 		{
 			// If we are about to set an avatar or rank, we will not overwrite with empty, unless we are not actually changing the default group
-			if (!$same_group && (strpos($attribute, 'group_avatar') === 0 || strpos($attribute, 'group_rank') === 0) && !$group_attributes[$attribute])
+			if (!$overwrite && (strpos($attribute, 'group_avatar') === 0 || strpos($attribute, 'group_rank') === 0) && !$group_attributes[$attribute])
 			{
 				continue;
 			}
