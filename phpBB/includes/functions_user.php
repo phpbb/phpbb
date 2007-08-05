@@ -2301,6 +2301,7 @@ function group_create(&$group_id, $type, $name, $desc, $group_attributes, $allow
 
 	if (!sizeof($error))
 	{
+		$user_ary = array();
 		$sql_ary = array(
 			'group_name'			=> (string) $name,
 			'group_desc'			=> (string) $desc,
@@ -2334,6 +2335,26 @@ function group_create(&$group_id, $type, $name, $desc, $group_attributes, $allow
 
 		if ($group_id)
 		{
+			$sql = 'SELECT user_id
+				FROM ' . USERS_TABLE . '
+				WHERE group_id = ' . $group_id;
+			$result = $db->sql_query($sql);
+
+			while ($row = $db->sql_fetchrow($result))
+			{
+				$user_ary[] = $row['user_id'];
+			}
+			$db->sql_freeresult($result);
+
+			if (isset($sql_ary['group_avatar']) && !$sql_ary['group_avatar'])
+			{
+				remove_default_avatar($group_id, $user_ary);
+			}
+			if (isset($sql_ary['group_rank']) && !$sql_ary['group_rank'])
+			{
+				remove_default_rank($group_id, $user_ary);
+			}
+
 			$sql = 'UPDATE ' . GROUPS_TABLE . '
 				SET ' . $db->sql_build_array('UPDATE', $sql_ary) . "
 				WHERE group_id = $group_id";
@@ -2379,24 +2400,10 @@ function group_create(&$group_id, $type, $name, $desc, $group_attributes, $allow
 			}
 		}
 
-		if (sizeof($sql_ary))
+		if (sizeof($sql_ary) && sizeof($user_ary))
 		{
-			$sql = 'SELECT user_id
-				FROM ' . USERS_TABLE . '
-				WHERE group_id = ' . $group_id;
-			$result = $db->sql_query($sql);
-
-			$user_ary = array();
-			while ($row = $db->sql_fetchrow($result))
-			{
-				$user_ary[] = $row['user_id'];
-			}
-			$db->sql_freeresult($result);
-
-			if (sizeof($user_ary))
-			{
-				group_set_user_default($group_id, $user_ary, $sql_ary, false, true);
-			}
+			group_set_user_default($group_id, $user_ary, $sql_ary);
+		 
 		}
 
 		$name = ($type == GROUP_SPECIAL) ? $user->lang['G_' . $name] : $name;
@@ -2710,7 +2717,9 @@ function group_user_del($group_id, $user_id_ary = false, $username_ary = false, 
 	{
 		if (isset($sql_where_ary[$gid]) && sizeof($sql_where_ary[$gid]))
 		{
-			group_set_user_default($gid, $sql_where_ary[$gid], $special_group_data[$gid], false, true);
+			remove_default_rank($group_id, $sql_where_ary[$gid]);
+			remove_default_avatar($group_id, $sql_where_ary[$gid]);
+			group_set_user_default($gid, $sql_where_ary[$gid], $default_data_ary);
 		}
 	}
 	unset($special_group_data);
@@ -2736,6 +2745,82 @@ function group_user_del($group_id, $user_id_ary = false, $username_ary = false, 
 
 	// Return false - no error
 	return false;
+}
+
+
+/**
+* Removes the group avatar of the default group from the users in user_ids who have that group as default.
+*/
+function remove_default_avatar($group_id, $user_ids)
+{
+	global $db;
+
+	if (!is_array($user_ids))
+	{
+		$user_ids = array($user_ids);
+	}
+	if (empty($user_ids))
+	{
+		return false;
+	}
+
+	$user_ids = array_map('intval', $user_ids);
+
+	$sql = 'SELECT *
+		FROM ' . GROUPS_TABLE . '
+		WHERE group_id = ' . (int)$group_id;
+	$result = $db->sql_query($sql);
+	if (!$row = $db->sql_fetchrow($result))
+	{
+		return false;
+	}
+	$sql = 'UPDATE ' . USERS_TABLE . '
+		SET user_avatar = \'\', 
+			user_avatar_type = 0, 
+			user_avatar_width = 0, 
+			user_avatar_height = 0 
+		WHERE group_id = ' . (int)$group_id . ' 
+		AND user_avatar = \'' . $row['group_avatar'] . '\' 
+		AND ' . $db->sql_in_set('user_id', $user_ids);
+	
+	$db->sql_query($sql);
+}
+
+/**
+* Removes the group rank of the default group from the users in user_ids who have that group as default.
+*/
+function remove_default_rank($group_id, $user_ids)
+{
+	global $db;
+
+	if (!is_array($user_ids))
+	{
+		$user_ids = array($user_ids);
+	}
+	if (empty($user_ids))
+	{
+		return false;
+	}
+
+	$user_ids = array_map('intval', $user_ids);
+
+	$sql = 'SELECT *
+		FROM ' . GROUPS_TABLE . '
+		WHERE group_id = ' . (int)$group_id;
+	$result = $db->sql_query($sql);
+	if (!$row = $db->sql_fetchrow($result))
+	{
+		return false;
+	}
+	
+
+	$sql = 'UPDATE ' . USERS_TABLE . '
+		SET user_rank = 0
+		WHERE group_id = ' . (int)$group_id . ' 
+		AND user_rank <> 0 
+		AND user_rank = ' . (int)$row['group_rank'] . ' 
+		AND ' . $db->sql_in_set('user_id', $user_ids);
+	$db->sql_query($sql);
 }
 
 /**
@@ -2826,6 +2911,26 @@ function group_user_attributes($action, $group_id, $user_id_ary = false, $userna
 		break;
 
 		case 'default':
+			$sql = 'SELECT user_id, group_id FROM ' . USERS_TABLE . ' 
+				WHERE ' . $db->sql_in_set('user_id', $user_id_ary, false, true);
+			$result = $db->sql_query($sql);
+
+			$groups = array();
+			while ($row = $db->sql_fetchrow($result))
+			{
+				if (!isset($groups[$row['group_id']]))
+				{
+					$groups[$row['group_id']] = array();
+				}
+				$groups[$row['group_id']][] = $row['user_id'];
+			}
+			$db->sql_freeresult($result);
+
+			foreach ($groups as $gid => $uids)
+			{
+				remove_default_rank($gid, $uids);
+				remove_default_avatar($gid, $uids);
+			}
 			group_set_user_default($group_id, $user_id_ary, $group_attributes);
 			$log = 'LOG_GROUP_DEFAULTS';
 		break;
@@ -2892,7 +2997,7 @@ function group_validate_groupname($group_id, $group_name)
 *
 * @private
 */
-function group_set_user_default($group_id, $user_id_ary, $group_attributes = false, $update_listing = false, $overwrite = false)
+function group_set_user_default($group_id, $user_id_ary, $group_attributes = false, $update_listing = false)
 {
 	global $db;
 
@@ -2925,12 +3030,14 @@ function group_set_user_default($group_id, $user_id_ary, $group_attributes = fal
 		$db->sql_freeresult($result);
 	}
 
+ 
+
 	foreach ($attribute_ary as $attribute => $type)
 	{
 		if (isset($group_attributes[$attribute]))
 		{
 			// If we are about to set an avatar or rank, we will not overwrite with empty, unless we are not actually changing the default group
-			if (!$overwrite && (strpos($attribute, 'group_avatar') === 0 || strpos($attribute, 'group_rank') === 0) && !$group_attributes[$attribute])
+			if ((strpos($attribute, 'group_avatar') === 0 || strpos($attribute, 'group_rank') === 0) && !$group_attributes[$attribute])
 			{
 				continue;
 			}
@@ -2955,6 +3062,12 @@ function group_set_user_default($group_id, $user_id_ary, $group_attributes = fal
 			avatar_delete('user', $row);
 		}
 		$db->sql_freeresult($result);
+	}
+	else
+	{
+		unset($sql_ary['user_avatar_type']);
+		unset($sql_ary['user_avatar_height']);
+		unset($sql_ary['user_avatar_width']);
 	}
 
 	$sql = 'UPDATE ' . USERS_TABLE . ' SET ' . $db->sql_build_array('UPDATE', $sql_ary) . '
