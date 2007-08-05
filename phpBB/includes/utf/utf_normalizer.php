@@ -240,6 +240,13 @@ class utf_normalizer
 			include($phpbb_root_path . 'includes/utf/data/utf_normalizer_common.' . $phpEx);
 		}
 
+		// Load the canonical composition table
+		if (!isset($utf_canonical_comp))
+		{
+			global $phpbb_root_path, $phpEx;
+			include($phpbb_root_path . 'includes/utf/data/utf_canonical_comp.' . $phpEx);
+		}
+
 		// Buffer the last ASCII char before the UTF-8 stuff if applicable
 		$tmp = '';
 		$i = $tmp_pos = $last_cc = 0;
