@@ -2772,8 +2772,11 @@ function remove_default_avatar($group_id, $user_ids)
 	$result = $db->sql_query($sql);
 	if (!$row = $db->sql_fetchrow($result))
 	{
+		$db->sql_freeresult($result);
 		return false;
 	}
+	$db->sql_freeresult($result);
+	
 	$sql = 'UPDATE ' . USERS_TABLE . '
 		SET user_avatar = \'\', 
 			user_avatar_type = 0, 
@@ -2810,9 +2813,10 @@ function remove_default_rank($group_id, $user_ids)
 	$result = $db->sql_query($sql);
 	if (!$row = $db->sql_fetchrow($result))
 	{
+		$db->sql_freeresult($result);
 		return false;
 	}
-	
+	$db->sql_freeresult($result);
 
 	$sql = 'UPDATE ' . USERS_TABLE . '
 		SET user_rank = 0
