@@ -1190,6 +1190,7 @@ class user extends session
 	var $dst;
 
 	var $lang_name;
+	var $lang_id = false;
 	var $lang_path;
 	var $img_lang;
 	var $img_array = array();
@@ -1720,7 +1721,7 @@ class user extends session
 	{
 		global $config, $db;
 
-		if (isset($this->lang_id))
+		if (!empty($this->lang_id))
 		{
 			return $this->lang_id;
 		}
@@ -1734,10 +1735,10 @@ class user extends session
 			FROM ' . LANG_TABLE . "
 			WHERE lang_iso = '" . $db->sql_escape($this->lang_name) . "'";
 		$result = $db->sql_query($sql);
-		$lang_id = (int) $db->sql_fetchfield('lang_id');
+		$this->lang_id = (int) $db->sql_fetchfield('lang_id');
 		$db->sql_freeresult($result);
 
-		return $lang_id;
+		return $this->lang_id;
 	}
 
 	/**

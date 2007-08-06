@@ -652,11 +652,23 @@ function create_thumbnail($source, $destination, $mimetype)
 			if ($type['version'] == 1)
 			{
 				$new_image = imagecreate($new_width, $new_height);
+
+				if ($new_image === false)
+				{
+					return false;
+				}
+
 				imagecopyresized($new_image, $image, 0, 0, 0, 0, $new_width, $new_height, $width, $height);
 			}
 			else
 			{
 				$new_image = imagecreatetruecolor($new_width, $new_height);
+
+				if ($new_image === false)
+				{
+					return false;
+				}
+
 				imagecopyresampled($new_image, $image, 0, 0, 0, 0, $new_width, $new_height, $width, $height);
 			}
 
