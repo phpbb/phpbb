@@ -323,6 +323,7 @@ class acp_icons
 					}
 				}
 
+				$icons_updated = 0;
 				foreach ($images as $image)
 				{
 					if (($mode == 'smilies' && ($image_emotion[$image] == '' || $image_code[$image] == '')) ||
@@ -387,25 +388,43 @@ class acp_icons
 								SET " . $db->sql_build_array('UPDATE', $img_sql) . " 
 								WHERE {$fields}_id = " . $image_id[$image];
 							$db->sql_query($sql);
+							$icons_updated++;
 						}
 						else if ($action !== 'modify')
 						{
 							$sql = "INSERT INTO $table " . $db->sql_build_array('INSERT', $img_sql);
 							$db->sql_query($sql);
+							$icons_updated++;
 						}
+						
  					}
 				}
 				
 				$cache->destroy('_icons');
 				$cache->destroy('sql', $table);
-
+				
+				$level = E_USER_NOTICE;
+				switch ($icons_updated)
+				{
+					case 0:
+						$suc_lang = "{$lang}_NONE";
+						$level = E_USER_WARNING;
+						break;
+						
+					case 1:
+						$suc_lang = "{$lang}_ONE";
+						break;
+						
+					default:
+						$suc_lang = $lang;
+				}
 				if ($action == 'modify')
 				{
-					trigger_error($user->lang[$lang . '_EDITED'] . adm_back_link($this->u_action));
+					trigger_error($user->lang[$suc_lang . '_EDITED'] . adm_back_link($this->u_action), $level);
 				}
 				else
 				{
-					trigger_error($user->lang[$lang . '_ADDED'] . adm_back_link($this->u_action));
+					trigger_error($user->lang[$suc_lang . '_ADDED'] . adm_back_link($this->u_action), $level);
 				}
 
 			break;
