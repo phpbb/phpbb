@@ -2783,7 +2783,7 @@ function remove_default_avatar($group_id, $user_ids)
 			user_avatar_width = 0, 
 			user_avatar_height = 0 
 		WHERE group_id = ' . (int)$group_id . ' 
-		AND user_avatar = \'' . $row['group_avatar'] . '\' 
+		AND user_avatar = \'' . $db->sql_escape($row['group_avatar']) . '\' 
 		AND ' . $db->sql_in_set('user_id', $user_ids);
 	
 	$db->sql_query($sql);
