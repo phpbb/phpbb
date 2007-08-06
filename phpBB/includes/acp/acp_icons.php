@@ -615,7 +615,10 @@ class acp_icons
 
 				$template->assign_vars(array(
 					'MESSAGE_TITLE'		=> $user->lang['EXPORT_' . $lang],
-					'MESSAGE_TEXT'		=> sprintf($user->lang['EXPORT_' . $lang . '_EXPLAIN'], '<a href="' . $this->u_action . '&amp;action=send">', '</a>'))
+					'MESSAGE_TEXT'		=> sprintf($user->lang['EXPORT_' . $lang . '_EXPLAIN'], '<a href="' . $this->u_action . '&amp;action=send">', '</a>'),
+
+					'S_USER_NOTICE'		=> true,
+					)
 				);
 
 				return;
