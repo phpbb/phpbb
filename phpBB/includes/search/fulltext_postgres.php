@@ -35,7 +35,6 @@ class fulltext_postgres extends search_backend
 	var $common_words = array();
 	var $pcre_properties = false;
 	var $mbstring_regex = false;
-	var $tsearch_builtin = false;
 
 	function fulltext_postgres(&$error)
 	{
@@ -59,16 +58,7 @@ class fulltext_postgres extends search_backend
 
 		if ($db->sql_layer == 'postgres')
 		{
-			$pgsql_version = explode('.', substr($db->sql_server_info(), 10));
-			if ($pgsql_version[0] >= 8 && $pgsql_version[1] >= 3)
-			{
-				$this->tsearch_builtin = true;
-			}
-
-
-			if (!$this->tsearch_builtin) {
-				$db->sql_query("SELECT set_curcfg('" . $db->sql_escape($config['fulltext_postgres_ts_name']) . "')");
-			}
+			$db->sql_query("SELECT set_curcfg('" . $db->sql_escape($config['fulltext_postgres_ts_name']) . "')");
 		}
 
 		$error = false;
@@ -86,20 +76,18 @@ class fulltext_postgres extends search_backend
 			return $user->lang['FULLTEXT_POSTGRES_INCOMPATIBLE_VERSION'];
 		}
 
-		if (!$this->tsearch_builtin) {
-			$sql = "SELECT c.relname
-				  FROM pg_catalog.pg_class c
-				 WHERE c.relkind = 'r'
-				   AND c.relname = 'pg_ts_cfg'
-				   AND pg_catalog.pg_table_is_visible(c.oid)";
-			$result = $db->sql_query($sql);
-			$row = $db->sql_fetchrow($result);
-			$db->sql_freeresult($result);
+		$sql = "SELECT c.relname
+			  FROM pg_catalog.pg_class c
+			 WHERE c.relkind = 'r'
+			   AND c.relname = 'pg_ts_cfg'
+			   AND pg_catalog.pg_table_is_visible(c.oid)";
+		$result = $db->sql_query($sql);
+		$row = $db->sql_fetchrow($result);
+		$db->sql_freeresult($result);
 
-			if (empty ($row['relname']))
-			{
-				return $user->lang['FULLTEXT_POSTGRES_TS_NOT_FOUND'];
-			}
+		if (empty ($row['relname']))
+		{
+			return $user->lang['FULLTEXT_POSTGRES_TS_NOT_FOUND'];
 		}
 
 		return false;
@@ -126,7 +114,7 @@ class fulltext_postgres extends search_backend
 		}
 
 		// Filter out as above
-		$split_keywords = preg_replace("#[\"\n\r\t]+#", ' ', trim(htmlspecialchars_decode($keywords)));
+		$split_keywords = preg_replace("#[\n\r\t]+#", ' ', trim(htmlspecialchars_decode($keywords)));
 
 		// Split words
 		if ($this->pcre_properties)
@@ -458,14 +446,7 @@ class fulltext_postgres extends search_backend
 		$tmp_sql_match = array();
 		foreach (explode(',', $sql_match) as $sql_match_column)
 		{
-			if ($this->tsearch_builtin)
-			{
-				$tmp_sql_match[] = "to_tsvector ('" . $db->sql_escape($config['fulltext_postgres_ts_name']) . "', " . $sql_match_column . ") @@ to_tsquery ('" . $db->sql_escape($config['fulltext_postgres_ts_name']) . "', '" . $db->sql_escape($this->tsearch_query) . "')";
-			}
-			else
-			{
-				$tmp_sql_match[] = "to_tsvector (" . $sql_match_column . ") @@ to_tsquery ('" . $db->sql_escape($this->tsearch_query) . "')";
-			}
+			$tmp_sql_match[] = "to_tsvector (" . $sql_match_column . ") @@ to_tsquery ('" . $db->sql_escape($this->tsearch_query) . "')";
 		}
 
 		$sql = "SELECT $sql_select
@@ -616,7 +597,7 @@ class fulltext_postgres extends search_backend
 					AND t.topic_id = p.topic_id
 					$sql_sort_join
 					$sql_time
-				GROUP BY t.topic_id, $sort_by_sql[$sort_key]
+				GROUP BY t.topic_id
 				ORDER BY $sql_sort";
 			$field = 'topic_id';
 		}
@@ -701,7 +682,7 @@ class fulltext_postgres extends search_backend
 	*/
 	function create_index($acp_module, $u_action)
 	{
-		global $db, $config;
+		global $db;
 
 		// Make sure we can actually use PostgreSQL with fulltext indexes
 		if ($error = $this->init())
@@ -716,12 +697,12 @@ class fulltext_postgres extends search_backend
 
 		if (!isset($this->stats['post_subject']))
 		{
-			$db->sql_query("CREATE INDEX " . POSTS_TABLE . "_" . $config['fulltext_postgres_ts_name'] . "_post_subject ON " . POSTS_TABLE . " USING gin (to_tsvector ('" . $db->sql_escape($config['fulltext_postgres_ts_name']) . "', post_subject))");
+			$db->sql_query('CREATE INDEX ' . POSTS_TABLE . '_post_subject ON ' . POSTS_TABLE . ' USING gist (to_tsvector (post_subject))');
 		}
 
 		if (!isset($this->stats['post_text']))
 		{
-			$db->sql_query("CREATE INDEX " . POSTS_TABLE . "_" . $config['fulltext_postgres_ts_name'] . "_post_text ON " . POSTS_TABLE . " USING gin (to_tsvector ('" . $db->sql_escape($config['fulltext_postgres_ts_name']) . "', post_text))");
+			$db->sql_query('CREATE INDEX ' . POSTS_TABLE . '_post_text ON ' . POSTS_TABLE . ' USING gist (to_tsvector (post_text))');
 		}
 
 		$db->sql_query('TRUNCATE TABLE ' . SEARCH_RESULTS_TABLE);
@@ -749,12 +730,12 @@ class fulltext_postgres extends search_backend
 
 		if (isset($this->stats['post_subject']))
 		{
-			$db->sql_query('DROP INDEX ' . $this->stats['post_subject']['relname']);
+			$db->sql_query('DROP INDEX ' . POSTS_TABLE . '_post_subject');
 		}
 
 		if (isset($this->stats['post_text']))
 		{
-			$db->sql_query('DROP INDEX ' . $this->stats['post_text']['relname']);
+			$db->sql_query('DROP INDEX ' . POSTS_TABLE . '_post_text');
 		}
 
 		$db->sql_query('TRUNCATE TABLE ' . SEARCH_RESULTS_TABLE);
@@ -809,11 +790,11 @@ class fulltext_postgres extends search_backend
 			// deal with older PostgreSQL versions which didn't use Index_type
 			if (strpos($row['indexdef'], 'to_tsvector') !== false)
 			{
-				if ($row['relname'] == POSTS_TABLE . '_' . $config['fulltext_postgres_ts_name'] . '_post_text' || $row['relname'] == POSTS_TABLE . '_post_text')
+				if ($row['relname'] == POSTS_TABLE . '_post_text')
 				{
 					$this->stats['post_text'] = $row;
 				}
-				else if ($row['relname'] == POSTS_TABLE . '_' . $config['fulltext_postgres_ts_name'] . '_post_subject' || $row['relname'] == POSTS_TABLE . '_post_subject')
+				else if ($row['relname'] == POSTS_TABLE . '_post_subject')
 				{
 					$this->stats['post_subject'] = $row;
 				}
@@ -846,17 +827,8 @@ class fulltext_postgres extends search_backend
 
 		if ($db->sql_layer == 'postgres')
 		{
-			if ($this->tsearch_builtin)
-			{
-				$sql = 'SELECT cfgname AS ts_name
-					  FROM pg_ts_config';
-			}
-			else
-			{
-				$sql = 'SELECT *
-					  FROM pg_ts_cfg';
-			}
-
+			$sql = 'SELECT *
+				  FROM pg_ts_cfg';
 			$result = $db->sql_query($sql);
 
 			while ($row = $db->sql_fetchrow($result))
