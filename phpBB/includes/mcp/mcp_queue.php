@@ -460,11 +460,11 @@ function approve_post($post_id_list, $id, $mode)
 		'redirect'		=> $redirect)
 	);
 
+	$post_info = get_post_data($post_id_list, 'm_approve');
+
 	if (confirm_box(true))
 	{
 		$notify_poster = (isset($_REQUEST['notify_poster'])) ? true : false;
-
-		$post_info = get_post_data($post_id_list, 'm_approve');
 
 		// If Topic -> total_topics = total_topics+1, total_posts = total_posts+1, forum_topics = forum_topics+1, forum_posts = forum_posts+1
 		// If Post -> total_posts = total_posts+1, forum_posts = forum_posts+1, topic_replies = topic_replies+1
@@ -690,8 +690,23 @@ function approve_post($post_id_list, $id, $mode)
 	}
 	else
 	{
+		$show_notify = false;
+
+		foreach ($post_info as $post_data)
+		{
+			if ($post_data['poster_id'] == ANONYMOUS)
+			{
+				continue;
+			}
+			else
+			{
+				$show_notify = true;
+				break;
+			}
+		}
+
 		$template->assign_vars(array(
-			'S_NOTIFY_POSTER'	=> true,
+			'S_NOTIFY_POSTER'	=> $show_notify,
 			'S_APPROVE'			=> true)
 		);
 
@@ -771,9 +786,10 @@ function disapprove_post($post_id_list, $id, $mode)
 		}
 	}
 
+	$post_info = get_post_data($post_id_list, 'm_approve');
+
 	if (confirm_box(true))
 	{
-		$post_info = get_post_data($post_id_list, 'm_approve');
 
 		// If Topic -> forum_topics_real -= 1
 		// If Post -> topic_replies_real -= 1
@@ -929,8 +945,23 @@ function disapprove_post($post_id_list, $id, $mode)
 
 		display_reasons($reason_id);
 
+		$show_notify = false;
+
+		foreach ($post_info as $post_data)
+		{
+			if ($post_data['poster_id'] == ANONYMOUS)
+			{
+				continue;
+			}
+			else
+			{
+				$show_notify = true;
+				break;
+			}
+		}
+
 		$template->assign_vars(array(
-			'S_NOTIFY_POSTER'	=> true,
+			'S_NOTIFY_POSTER'	=> $show_notify,
 			'S_APPROVE'			=> false,
 			'REASON'			=> $reason,
 			'ADDITIONAL_MSG'	=> $additional_msg)
