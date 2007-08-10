@@ -120,7 +120,7 @@ class acp_users
 			WHERE module_basename = 'users'
 				AND module_enabled = 1
 				AND module_class = 'acp'
-			GROUP BY module_mode
+			GROUP BY module_mode, module_auth
 			ORDER BY left_id";
 		$result = $db->sql_query($sql);
 
