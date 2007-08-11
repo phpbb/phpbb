@@ -115,12 +115,13 @@ class acp_users
 		$s_form_options = '';
 
 		// Build modes dropdown list
-		$sql = 'SELECT DISTINCT module_mode, module_auth
+		$sql = 'SELECT module_mode, module_auth
 			FROM ' . MODULES_TABLE . "
 			WHERE module_basename = 'users'
 				AND module_enabled = 1
 				AND module_class = 'acp'
-			ORDER BY left_id";
+			GROUP BY module_mode, module_auth
+			ORDER BY MIN(left_id)";
 		$result = $db->sql_query($sql);
 
 		while ($row = $db->sql_fetchrow($result))
