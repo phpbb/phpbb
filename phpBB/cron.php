@@ -33,6 +33,12 @@ echo base64_decode('R0lGODlhAQABAIAAAP///wAAACH5BAEAAAAALAAAAAABAAEAAAICRAEAOw==
 // test without flush ;)
 // flush();
 
+// 
+if (!isset($config['cron_lock']))
+{
+	set_config('cron_lock', '0', true);
+}
+
 // make sure cron doesn't run multiple times in parallel
 if ($config['cron_lock'])
 {

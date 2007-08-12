@@ -1483,6 +1483,11 @@ if (version_compare($current_version, '3.0.RC4', '<='))
 
 		$db->sql_transaction('commit');
 	}
+
+	// Setting this here again because new installations may not have it...
+	set_config('cron_lock', '0', true);
+
+	$no_updates = false;
 }
 
 _write_result($no_updates, $errored, $error_ary);
