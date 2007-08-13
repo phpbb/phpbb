@@ -121,7 +121,7 @@ if ($view && !$post_id)
 			WHERE forum_id = ' . $row['forum_id'] . "
 				AND topic_moved_id = 0
 				AND topic_last_post_time $sql_condition {$row['topic_last_post_time']}
-				" . (($auth->acl_get('m_approve', $row['forum_id']) && false) ? '' : 'AND topic_approved = 1') . "
+				" . (($auth->acl_get('m_approve', $row['forum_id'])) ? '' : 'AND topic_approved = 1') . "
 			ORDER BY topic_last_post_time $sql_ordering";
 		$result = $db->sql_query_limit($sql, 1);
 		$row = $db->sql_fetchrow($result);
