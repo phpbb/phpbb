@@ -109,13 +109,20 @@ if ($view && !$post_id)
 		$sql_condition = ($view == 'next') ? '>' : '<';
 		$sql_ordering = ($view == 'next') ? 'ASC' : 'DESC';
 
-		$sql = 'SELECT t.topic_id, t.forum_id
-			FROM ' . TOPICS_TABLE . ' t
-			LEFT JOIN ' . TOPICS_TABLE . " t2 ON (t2.topic_id = $topic_id AND t.forum_id = t2.forum_id)
-			WHERE t.topic_last_post_time $sql_condition t2.topic_last_post_time
-				" . (($auth->acl_get('m_approve', $forum_id)) ? '' : 'AND t.topic_approved = 1') . "
-				AND t.topic_moved_id = 0
-			ORDER BY t.topic_last_post_time $sql_ordering";
+		$sql = 'SELECT forum_id, topic_last_post_time
+			FROM ' . TOPICS_TABLE . '
+			WHERE topic_id = ' . $topic_id;
+		$result = $db->sql_query($sql);
+		$row = $db->sql_fetchrow($result);
+		$db->sql_freeresult($result);
+
+		$sql = 'SELECT topic_id, forum_id
+			FROM ' . TOPICS_TABLE . '
+			WHERE forum_id = ' . $row['forum_id'] . "
+				AND topic_moved_id = 0
+				AND topic_last_post_time $sql_condition {$row['topic_last_post_time']}
+				" . (($auth->acl_get('m_approve', $row['forum_id']) && false) ? '' : 'AND topic_approved = 1') . "
+			ORDER BY topic_last_post_time $sql_ordering";
 		$result = $db->sql_query_limit($sql, 1);
 		$row = $db->sql_fetchrow($result);
 		$db->sql_freeresult($result);
