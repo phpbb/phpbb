@@ -22,16 +22,19 @@
 			<!-- IF U_SWITCH_PERMISSIONS --> [ <a href="{U_SWITCH_PERMISSIONS}">{L_USE_PERMISSIONS}</a> ]<!-- ENDIF -->
 		</dd>
 		<!-- IF not AVATAR_IMG -->
-			<!-- IF RANK_TITLE --><dt>{L_RANK}:</dt><dd>{RANK_TITLE}</dd><!-- ENDIF -->
-			<!-- IF RANK_IMG --><dt><!-- IF RANK_TITLE -->&nbsp;<!-- ELSE -->{L_RANK}:<!-- ENDIF --></dt><dd>{RANK_IMG}</dd><!-- ENDIF -->
+			<!-- IF RANK_TITLE --><dt>{L_RANK}:</dt> <dd>{RANK_TITLE}</dd><!-- ENDIF -->
+			<!-- IF RANK_IMG --><dt><!-- IF RANK_TITLE -->&nbsp;<!-- ELSE -->{L_RANK}:<!-- ENDIF --></dt> <dd>{RANK_IMG}</dd><!-- ENDIF -->
 		<!-- ENDIF -->
-		<!-- IF S_USER_INACTIVE --><dt>{L_USER_IS_INACTIVE}:</dt><dd>{USER_INACTIVE_REASON}</dd><!-- ENDIF -->
+		<!-- IF S_USER_INACTIVE --><dt>{L_USER_IS_INACTIVE}:</dt> <dd>{USER_INACTIVE_REASON}</dd><!-- ENDIF -->
 		<!-- IF LOCATION --><dt>{L_LOCATION}:</dt> <dd>{LOCATION}</dd><!-- ENDIF -->
 		<!-- IF AGE --><dt>{L_AGE}:</dt> <dd>{AGE}</dd><!-- ENDIF -->
 		<!-- IF OCCUPATION --><dt>{L_OCCUPATION}:</dt> <dd>{OCCUPATION}</dd><!-- ENDIF -->
 		<!-- IF INTERESTS --><dt>{L_INTERESTS}:</dt> <dd>{INTERESTS}</dd><!-- ENDIF -->
 		<!-- IF S_GROUP_OPTIONS --><dt>{L_USERGROUPS}:</dt> <dd><select name="g">{S_GROUP_OPTIONS}</select> <input type="submit" name="submit" value="{L_GO}" class="button2" /></dd><!-- ENDIF -->
 		<!-- BEGIN custom_fields --><dt>{custom_fields.PROFILE_FIELD_NAME}:</dt> <dd>{custom_fields.PROFILE_FIELD_VALUE}</dd><!-- END custom_fields -->
+		<dt>rank something somethinglong to display here to display</dt> <dd>Something</dd>
+		<dt>rank something somethinglong to display here to display</dt> <dd>Something</dd>
+		<dt>rank something somethinglong to display here to display</dt> <dd>Something</dd>
 		<!-- IF S_USER_LOGGED_IN and S_ZEBRA -->
 			<!-- IF U_ADD_FRIEND and U_ADD_FOE-->
 				<dt>&nbsp;</dt> <dd><a href="{U_ADD_FRIEND}"><strong>{L_ADD_FRIEND}</strong></a></dd>

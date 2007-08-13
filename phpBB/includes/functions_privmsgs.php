@@ -1684,4 +1684,145 @@ function pm_notification($mode, $author, $recipients, $subject, $message)
 	unset($messenger);
 }
 
+/**
+* Display Message History
+*/
+function message_history($msg_id, $user_id, $message_row, $folder, $in_post_mode = false)
+{
+	global $db, $user, $config, $template, $phpbb_root_path, $phpEx, $auth, $bbcode;
+
+	// Get History Messages (could be newer)
+	$sql = 'SELECT t.*, p.*, u.*
+		FROM ' . PRIVMSGS_TABLE . ' p, ' . PRIVMSGS_TO_TABLE . ' t, ' . USERS_TABLE . ' u
+		WHERE t.msg_id = p.msg_id
+			AND p.author_id = u.user_id
+			AND t.folder_id NOT IN (' . PRIVMSGS_NO_BOX . ', ' . PRIVMSGS_HOLD_BOX . ")
+			AND t.user_id = $user_id";
+
+	if (!$message_row['root_level'])
+	{
+		$sql .= " AND (p.root_level = $msg_id OR (p.root_level = 0 AND p.msg_id = $msg_id))";
+	}
+	else
+	{
+		$sql .= " AND (p.root_level = " . $message_row['root_level'] . ' OR p.msg_id = ' . $message_row['root_level'] . ')';
+	}
+	$sql .= ' ORDER BY p.message_time DESC';
+
+	$result = $db->sql_query($sql);
+	$row = $db->sql_fetchrow($result);
+
+	if (!$row)
+	{
+		$db->sql_freeresult($result);
+		return false;
+	}
+
+	$rowset = array();
+	$bbcode_bitfield = '';
+	$folder_url = append_sid("{$phpbb_root_path}ucp.$phpEx", 'i=pm') . '&amp;folder=';
+
+	do
+	{
+		$folder_id = (int) $row['folder_id'];
+
+		$row['folder'][] = (isset($folder[$folder_id])) ? '<a href="' . $folder_url . $folder_id . '">' . $folder[$folder_id]['folder_name'] . '</a>' : $user->lang['UNKNOWN_FOLDER'];
+
+		if (isset($rowset[$row['msg_id']]))
+		{
+			$rowset[$row['msg_id']]['folder'][] = (isset($folder[$folder_id])) ? '<a href="' . $folder_url . $folder_id . '">' . $folder[$folder_id]['folder_name'] . '</a>' : $user->lang['UNKNOWN_FOLDER'];
+		}
+		else
+		{
+			$rowset[$row['msg_id']] = $row;
+			$bbcode_bitfield = $bbcode_bitfield | base64_decode($row['bbcode_bitfield']);
+		}
+	}
+	while ($row = $db->sql_fetchrow($result));
+	$db->sql_freeresult($result);
+
+	$title = $row['message_subject'];
+
+	if (sizeof($rowset) == 1 && !$in_post_mode)
+	{
+		return false;
+	}
+
+	// Instantiate BBCode class
+	if ((empty($bbcode) || $bbcode === false) && $bbcode_bitfield !== '')
+	{
+		if (!class_exists('bbcode'))
+		{
+			include($phpbb_root_path . 'includes/bbcode.' . $phpEx);
+		}
+		$bbcode = new bbcode(base64_encode($bbcode_bitfield));
+	}
+
+	$title = censor_text($title);
+
+	$url = append_sid("{$phpbb_root_path}ucp.$phpEx", 'i=pm');
+	$next_history_pm = $previous_history_pm = $prev_id = 0;
+
+	foreach ($rowset as $id => $row)
+	{
+		$author_id	= $row['author_id'];
+		$folder_id	= (int) $row['folder_id'];
+
+		$subject	= $row['message_subject'];
+		$message	= $row['message_text'];
+
+		$message = censor_text($message);
+		$message = str_replace("\n", '<br />', $message);
+
+		if ($row['bbcode_bitfield'])
+		{
+			$bbcode->bbcode_second_pass($message, $row['bbcode_uid'], $row['bbcode_bitfield']);
+		}
+
+		$message = smiley_text($message, !$row['enable_smilies']);
+
+		$subject = censor_text($subject);
+
+		if ($id == $msg_id)
+		{
+			$next_history_pm = next($rowset);
+			$next_history_pm = (sizeof($next_history_pm)) ? (int) $next_history_pm['msg_id'] : 0;
+			$previous_history_pm = $prev_id;
+		}
+
+		$template->assign_block_vars('history_row', array(
+			'MESSAGE_AUTHOR_FULL'		=> get_username_string('full', $author_id, $row['username'], $row['user_colour'], $row['username']),
+			'MESSAGE_AUTHOR_COLOUR'		=> get_username_string('colour', $author_id, $row['username'], $row['user_colour'], $row['username']),
+			'MESSAGE_AUTHOR'			=> get_username_string('username', $author_id, $row['username'], $row['user_colour'], $row['username']),
+			'U_MESSAGE_AUTHOR'			=> get_username_string('profile', $author_id, $row['username'], $row['user_colour'], $row['username']),
+
+			'SUBJECT'		=> $subject,
+			'SENT_DATE'		=> $user->format_date($row['message_time']),
+			'MESSAGE'		=> $message,
+			'FOLDER'		=> implode(', ', $row['folder']),
+
+			'S_CURRENT_MSG'		=> ($row['msg_id'] == $msg_id),
+			'S_AUTHOR_DELETED'	=> ($author_id == ANONYMOUS) ? true : false,
+			'S_IN_POST_MODE'	=> $in_post_mode,
+
+			'MSG_ID'			=> $row['msg_id'],
+			'U_VIEW_MESSAGE'	=> "$url&amp;f=$folder_id&amp;p=" . $row['msg_id'],
+			'U_QUOTE'			=> (!$in_post_mode && $auth->acl_get('u_sendpm') && $author_id != ANONYMOUS && $author_id != $user->data['user_id']) ? "$url&amp;mode=compose&amp;action=quote&amp;f=" . $folder_id . "&amp;p=" . $row['msg_id'] : '',
+			'U_POST_REPLY_PM'	=> ($author_id != $user->data['user_id'] && $author_id != ANONYMOUS && $auth->acl_get('u_sendpm')) ? "$url&amp;mode=compose&amp;action=reply&amp;f=$folder_id&amp;p=" . $row['msg_id'] : '')
+		);
+		unset($rowset[$id]);
+		$prev_id = $id;
+	}
+
+	$template->assign_vars(array(
+		'QUOTE_IMG'			=> $user->img('icon_post_quote', $user->lang['REPLY_WITH_QUOTE']),
+		'HISTORY_TITLE'		=> $title,
+
+		'U_VIEW_NEXT_HISTORY'		=> "$url&amp;p=" . (($next_history_pm) ? $next_history_pm : $msg_id),
+		'U_VIEW_PREVIOUS_HISTORY'	=> "$url&amp;p=" . (($previous_history_pm) ? $previous_history_pm : $msg_id))
+	);
+
+	return true;
+}
+
 ?>

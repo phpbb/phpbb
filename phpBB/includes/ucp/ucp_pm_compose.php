@@ -976,6 +976,15 @@ function compose_pm($id, $mode, $action)
 	{
 		posting_gen_attachment_entry($attachment_data, $filename_data);
 	}
+
+	// Message History
+	if ($action == 'reply' || $action == 'quote' || $action == 'forward')
+	{
+		if (message_history($msg_id, $user->data['user_id'], $post, array(), true))
+		{
+			$template->assign_var('S_DISPLAY_HISTORY', true);
+		}
+	}
 }
 
 /**

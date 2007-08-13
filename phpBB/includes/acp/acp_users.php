@@ -120,10 +120,10 @@ class acp_users
 			WHERE module_basename = 'users'
 				AND module_enabled = 1
 				AND module_class = 'acp'
-			GROUP BY module_mode, module_auth
-			ORDER BY MIN(left_id)";
+			ORDER BY left_id, module_mode";
 		$result = $db->sql_query($sql);
 
+		$dropdown_modes = array();
 		while ($row = $db->sql_fetchrow($result))
 		{
 			if (!$this->p_master->module_auth($row['module_auth']))
@@ -131,10 +131,15 @@ class acp_users
 				continue;
 			}
 
-			$selected = ($mode == $row['module_mode']) ? ' selected="selected"' : '';
-			$s_form_options .= '<option value="' . $row['module_mode'] . '"' . $selected . '>' . $user->lang['ACP_USER_' . strtoupper($row['module_mode'])] . '</option>';
+			$dropdown_modes[$row['module_mode']] = true;
 		}
 		$db->sql_freeresult($result);
+
+		foreach ($dropdown_modes as $module_mode => $null)
+		{
+			$selected = ($mode == $module_mode) ? ' selected="selected"' : '';
+			$s_form_options .= '<option value="' . $module_mode . '"' . $selected . '>' . $user->lang['ACP_USER_' . strtoupper($module_mode)] . '</option>';
+		}
 
 		$template->assign_vars(array(
 			'U_BACK'			=> $this->u_action,

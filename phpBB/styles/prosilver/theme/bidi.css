@@ -128,14 +128,26 @@
 
 .rtl dl.details dt {
 	float: right;
+	clear: right;
 	text-align: left;
 }
 
 .rtl dl.details dd {
-	margin-right: 16em;
+	margin-right: 0;
 	margin-left: 0;
 	padding-right: 5px;
 	padding-left: 0;
+	float: right;
+}
+
+*:first-child+html dl.details dd {
+	margin-right: 16em;
+	float: none;
+}
+
+* html dl.details dd {
+	margin-right: 16em;
+	float: none;
 }
 
 /* Pagination

@@ -364,6 +364,7 @@ class p_master
 				$this->p_mode 	= $item_ary['mode'];
 				$this->p_left	= $item_ary['left'];
 				$this->p_right	= $item_ary['right'];
+				$this->p_icat	= $icat;
 
 				$this->module_cache['parents'] = $this->module_cache['parents'][$this->p_id];
 				$this->active_module = $item_ary['id'];

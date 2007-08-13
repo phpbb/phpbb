@@ -279,7 +279,7 @@ class acp_bots
 						$cache->destroy('_bots');
 						
 						add_log('admin', 'LOG_BOT_' . $log, $bot_row['bot_name']);
-						trigger_error($user->lang['BOT_' . $log] . adm_back_link($this->u_action . "&amp;id=$bot_id&amp;action=$action"));
+						trigger_error($user->lang['BOT_' . $log] . adm_back_link($this->u_action));
 					
 					}
 				}
@@ -376,14 +376,19 @@ class acp_bots
 		$db->sql_freeresult($result);
 	}
 	
+	/**
+	* Validate bot name against username table
+	*/
 	function validate_botname($newname, $oldname = false)
 	{
 		global $db;
+
 		if ($oldname && utf8_clean_string($newname) === $oldname)
 		{
 			return true;
 		}
-		 // Admins might want to use names otherwise forbidden, thus we only check for duplicates.
+
+		// Admins might want to use names otherwise forbidden, thus we only check for duplicates.
 		$sql = 'SELECT username
 			FROM ' . USERS_TABLE . "
 			WHERE username_clean = '" . $db->sql_escape(utf8_clean_string($newname)) . "'";
@@ -391,14 +396,7 @@ class acp_bots
 		$row = $db->sql_fetchrow($result);
 		$db->sql_freeresult($result);
 		
-		if ($row)
-		{
-			return false;
-		}
-		else
-		{
-			return true;
-		}
+		return ($row) ? false : true;
 	}
 }
 

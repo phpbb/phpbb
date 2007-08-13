@@ -444,6 +444,7 @@ dl.details {
 
 dl.details dt {
 	float: left;
+	clear: left;
 	width: 16em;
 	text-align: right;
 	color: #000000;
@@ -451,10 +452,11 @@ dl.details dt {
 }
 
 dl.details dd {
-	margin-left: 16em;
+	margin-left: 0;
 	padding-left: 5px;
 	margin-bottom: 5px;
 	color: #828282;
+	float: left;
 }
 
 /* Pagination

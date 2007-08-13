@@ -59,3 +59,14 @@ dl.icon {
 	margin-right: 35px;
 }
 
+/* Correctly clear floating for details on profile view */
+*:first-child+html dl.details dd {
+	margin-left: 16em;
+	float: none;
+}
+
+* html dl.details dd {
+	margin-left: 16em;
+	float: none;
+}
+

@@ -575,6 +575,12 @@ class queue
 			$package_size = $data_ary['package_size'];
 			$num_items = (!$package_size || sizeof($data_ary['data']) < $package_size) ? sizeof($data_ary['data']) : $package_size;
 
+			// If the amount of emails to be sent is way more than package_size than we need to increase it to prevent backlogs...
+			if (sizeof($data_ary['data']) > $package_size * 2.5)
+			{
+				$num_items = sizeof($data_ary['data']);
+			}
+
 			switch ($object)
 			{
 				case 'email':
