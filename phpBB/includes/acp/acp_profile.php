@@ -662,6 +662,10 @@ class acp_profile
 							{
 								$var = false;
 							}
+							else if ($key == 'field_ident' && isset($cp->vars[$key]))
+							{
+								$_new_key_ary[$key]= $cp->vars[$key];
+							}
 							else
 							{
 								$_new_key_ary[$key] = (is_array($_REQUEST[$key])) ? utf8_normalize_nfc(request_var($key, array(''), true)) : utf8_normalize_nfc(request_var($key, '', true));
