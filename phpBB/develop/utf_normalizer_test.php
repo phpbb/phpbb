@@ -132,7 +132,8 @@ while (!feof($fp))
 
 			foreach ($tests as $test)
 			{
-				$utf_result = call_user_func(array('utf_normalizer', $form), $utf_expected);
+				$utf_result = $utf_expected;
+				call_user_func(array('utf_normalizer', $form), $utf_result);
 
 				if (strcmp($utf_expected, $utf_result))
 				{
@@ -196,7 +197,8 @@ while (!feof($fp))
 
 	foreach (array('nfc', 'nfkc', 'nfd', 'nfkd') as $form)
 	{
-		$utf_result = utf_normalizer::$form($utf_expected);
+		$utf_result = $utf_expected;
+		utf_normalizer::$form($utf_result);
 		$hex_result = utf_to_hexseq($utf_result);
 //		echo "$form($utf_expected) == $utf_result\n";
 
