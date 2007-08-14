@@ -89,6 +89,12 @@ class utf_normalizer
 			include($phpbb_root_path . 'includes/utf/data/utf_nfc_qc.' . $phpEx);
 		}
 
+		if (!isset($GLOBALS['utf_canonical_decomp']))
+		{
+			global $phpbb_root_path, $phpEx;
+			include($phpbb_root_path . 'includes/utf/data/utf_canonical_decomp.' . $phpEx);
+		}
+
 		// Replace any byte in the range 0x00..0x1F, except for \r, \n and \t
 		// We replace those characters with a 0xFF byte, which is illegal in UTF-8 and will in turn be replaced with a UTF replacement char
 		$str = strtr(
