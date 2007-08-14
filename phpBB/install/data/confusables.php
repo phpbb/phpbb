@@ -621,7 +621,7 @@ function utf8_new_case_fold_nfkc($text, $option = 'full')
 	}
 
 	// convert to NFKC
-	utf_normalizer::nfkc($text);
+	utf_new_normalizer::nfkc($text);
 
 	// FC_NFKC_Closure, http://www.unicode.org/Public/5.0.0/ucd/DerivedNormalizationProps.txt
 	$text = strtr($text, $fc_nfkc_closure);

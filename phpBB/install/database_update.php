@@ -567,6 +567,16 @@ if (version_compare($current_version, '3.0.RC4', '<='))
 	$modify_users	= request_var('modify_users', array(0 => ''));
 	$new_usernames	= request_var('new_usernames', array(0 => ''), true);
 
+	if (!class_exists('utf_new_normalizer'))
+	{
+		if (!file_exists($phpbb_root_path . 'install/data/new_normalizer.' . $phpEx))
+		{
+			global $lang;
+			trigger_error(sprintf($lang['UPDATE_REQUIRES_FILE'], $phpbb_root_path . 'install/data/new_normalizer.' . $phpEx), E_USER_ERROR);
+		}
+		include($phpbb_root_path . 'install/data/new_normalizer.' . $phpEx);
+	}
+
 	// the admin decided to change some usernames
 	if (sizeof($modify_users) && $submit)
 	{
@@ -601,7 +611,7 @@ if (version_compare($current_version, '3.0.RC4', '<='))
 					case 'edit':
 						if (isset($new_usernames[$user_id]))
 						{
-							$data = array('username' => utf8_normalize_nfc($new_usernames[$user_id]));
+							$data = array('username' => utf8_new_normalize_nfc($new_usernames[$user_id]));
 							// Need to update config, forum, topic, posting, messages, etc.
 							if ($data['username'] != $row['username'])
 							{
