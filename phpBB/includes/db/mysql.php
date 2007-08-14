@@ -57,6 +57,31 @@ class dbal_mysql extends dbal
 				if (version_compare($this->mysql_version, '4.1.3', '>='))
 				{
 					@mysql_query("SET NAMES 'utf8'", $this->db_connect_id);
+					// enforce strict mode on databases that support it
+					if (version_compare($this->mysql_version, '5.0.2', '>='))
+					{
+						$result = @mysql_query('SELECT @@session.sql_mode AS sql_mode', $this->db_connect_id);
+						$row = @mysql_fetch_assoc($result);
+						@mysql_free_result($result);
+						$modes = array_map('trim', explode(',', $row['sql_mode']));
+
+						// TRADITIONAL includes STRICT_ALL_TABLES and STRICT_TRANS_TABLES
+						if (!in_array('TRADITIONAL', $modes))
+						{
+							if (!in_array('STRICT_ALL_TABLES', $modes))
+							{
+								$modes[] = 'STRICT_ALL_TABLES';
+							}
+
+							if (!in_array('STRICT_TRANS_TABLES', $modes))
+							{
+								$modes[] = 'STRICT_TRANS_TABLES';
+							}
+						}
+
+						$mode = implode(',', $modes);
+						@mysql_query("SET SESSION sql_mode='{$mode}'", $this->db_connect_id);
+					}
 				}
 				else if (version_compare($this->mysql_version, '4.0.0', '<'))
 				{
