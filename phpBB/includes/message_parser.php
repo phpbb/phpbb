@@ -1370,9 +1370,10 @@ class parse_message extends bbcode_firstpass
 			{
 				include_once($phpbb_root_path . 'includes/functions_admin.' . $phpEx);
 
-				$index = (int) key($_POST['delete_file']);
+				$index = array_keys(request_var('delete_file', array(0 => 0)));
+				$index = (!empty($index[0])) ? $index[0] : false;
 
-				if (!empty($this->attachment_data[$index]))
+				if ($index !== false && !empty($this->attachment_data[$index]))
 				{
 					// delete selected attachment
 					if ($this->attachment_data[$index]['is_orphan'])

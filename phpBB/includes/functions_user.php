@@ -173,6 +173,7 @@ function user_add($user_row, $cp_data = false)
 		'user_ip'			=> '',
 		'user_regdate'		=> time(),
 		'user_passchg'		=> time(),
+		'user_options'		=> 895,
 
 		'user_inactive_reason'	=> 0,
 		'user_inactive_time'	=> 0,

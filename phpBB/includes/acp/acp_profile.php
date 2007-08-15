@@ -492,11 +492,11 @@ class acp_profile
 							}
 						}	
 					} 
-					else if ($field_type == FIELD_BOOL && $key == 'field_default_value')
+					/* else if ($field_type == FIELD_BOOL && $key == 'field_default_value')
 					{
 						// Get the number of options if this key is 'field_maxlen'
 						$var = request_var('field_default_value', 0);
-					}
+					}*/
 
 					$cp->vars[$key] = $var;
 				}

@@ -1348,10 +1348,12 @@ function submit_pm($mode, $subject, &$data, $put_in_outbox = true)
 
 		if (isset($data['address_list']['g']) && sizeof($data['address_list']['g']))
 		{
-			$sql = 'SELECT group_id, user_id
-				FROM ' . USER_GROUP_TABLE . '
-				WHERE ' . $db->sql_in_set('group_id', array_keys($data['address_list']['g'])) . '
-					AND user_pending = 0';
+			$sql = 'SELECT u.user_type, ug.group_id, ug.user_id 
+				FROM ' . USERS_TABLE . ' u, ' . USER_GROUP_TABLE . ' ug 
+				WHERE ' . $db->sql_in_set('ug.group_id', array_keys($data['address_list']['g'])) . '
+					AND ug.user_pending = 0
+					AND u.user_id = ug.user_id 
+					AND u.user_type IN (' . USER_NORMAL . ', ' . USER_FOUNDER . ')';
 			$result = $db->sql_query($sql);
 	
 			while ($row = $db->sql_fetchrow($result))

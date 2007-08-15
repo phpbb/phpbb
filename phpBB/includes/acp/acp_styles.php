@@ -666,10 +666,8 @@ parse_css_file = {PARSE_CSS_FILE}
 
 		$filelist = $filelist_cats = array();
 
-		// we want newlines no carriage returns!
-		$_POST['template_data'] = (isset($_POST['template_data']) && !empty($_POST['template_data'])) ? str_replace(array("\r\n", "\r"), array("\n", "\n"), $_POST['template_data']) : '';
-
-		$template_data	= (STRIP) ? stripslashes($_POST['template_data']) : $_POST['template_data'];
+		$template_data	= utf8_normalize_nfc(request_var('template_data', '', true));
+		$template_data	= htmlspecialchars_decode($template_data);
 		$template_file	= utf8_normalize_nfc(request_var('template_file', '', true));
 		$text_rows		= max(5, min(999, request_var('text_rows', 20)));
 		$save_changes	= (isset($_POST['save'])) ? true : false;
@@ -871,7 +869,7 @@ parse_css_file = {PARSE_CSS_FILE}
 
 			'SELECTED_TEMPLATE'	=> $template_info['template_name'],
 			'TEMPLATE_FILE'		=> $template_file,
-			'TEMPLATE_DATA'		=> htmlspecialchars($template_data),
+			'TEMPLATE_DATA'		=> utf8_htmlspecialchars($template_data),
 			'TEXT_ROWS'			=> $text_rows)
 		);
 	}
@@ -1021,11 +1019,9 @@ parse_css_file = {PARSE_CSS_FILE}
 
 		$filelist = $filelist_cats = array();
 
-		// we want newlines no carriage returns!
-		$_POST['template_data'] = (isset($_POST['template_data']) && !empty($_POST['template_data'])) ? str_replace(array("\r\n", "\r"), array("\n", "\n"), $_POST['template_data']) : '';
-
-		$theme_data	= (STRIP) ? stripslashes($_POST['template_data']) : $_POST['template_data'];
-		$theme_file	= utf8_normalize_nfc(request_var('template_file', '', true));
+		$theme_data		= utf8_normalize_nfc(request_var('template_data', '', true));
+		$theme_data		= htmlspecialchars_decode($theme_data);
+		$theme_file		= utf8_normalize_nfc(request_var('template_file', '', true));
 		$text_rows		= max(5, min(999, request_var('text_rows', 20)));
 		$save_changes	= (isset($_POST['save'])) ? true : false;
 
@@ -1040,7 +1036,7 @@ parse_css_file = {PARSE_CSS_FILE}
 
 		if (!($theme_info = $db->sql_fetchrow($result)))
 		{
-			trigger_error($user->lang['NO_THEME'] . adm_bacl_link($this->u_action), E_USER_WARNING);
+			trigger_error($user->lang['NO_THEME'] . adm_back_link($this->u_action), E_USER_WARNING);
 		}
 		$db->sql_freeresult($result);
 
@@ -1188,7 +1184,7 @@ parse_css_file = {PARSE_CSS_FILE}
 
 			'SELECTED_TEMPLATE'	=> $theme_info['theme_name'],
 			'TEMPLATE_FILE'		=> $theme_file,
-			'TEMPLATE_DATA'		=> htmlspecialchars($theme_data),
+			'TEMPLATE_DATA'		=> utf8_htmlspecialchars($theme_data),
 			'TEXT_ROWS'			=> $text_rows)
 		);
 	}

@@ -19,7 +19,7 @@ include($phpbb_root_path . 'common.' . $phpEx);
 // Start session management
 $user->session_begin();
 $auth->acl($user->data);
-$user->setup();
+$user->setup('memberlist');
 
 // Get and set some variables
 $mode		= request_var('mode', '');

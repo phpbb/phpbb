@@ -6,9 +6,6 @@
 * @copyright (c) 2006 phpBB Group
 * @license http://opensource.org/licenses/gpl-license.php GNU Public License
 *
-* @todo make sure the replacements are called correctly
-* already done: strtolower, strtoupper, ucfirst, str_split, strrpos, strlen (hopefully!), strpos, substr, htmlspecialchars
-* remaining:	strspn, chr, ord
 */
 
 /**
@@ -621,7 +618,7 @@ else
 * @author Harry Fuecks
 * @param string $str UTF-8 encoded
 * @param int $split_len number to characters to split string by
-* @return string characters in string reverses
+* @return array characters in string reverses
 */
 function utf8_str_split($str, $split_len = 1)
 {
@@ -1862,6 +1859,50 @@ function utf8_convert_message($message)
 
 	// else we need to convert some part of the message
 	return utf8_htmlspecialchars(utf8_recode($message, 'ISO-8859-1'));
+}
+
+/**
+* UTF8-compatible wordwrap replacement
+*
+* @param	string	$string	The input string
+* @param	int		$width	The column width. Defaults to 75.
+* @param	string	$break	The line is broken using the optional break parameter. Defaults to '\n'.
+* @param	bool	$cut	If the cut is set to TRUE, the string is always wrapped at the specified width. So if you have a word that is larger than the given width, it is broken apart.
+*
+* @return	string			the given string wrapped at the specified column.
+*
+*/
+function utf8_wordwrap($string, $width = 75, $break = "\n", $cut = false)
+{
+	// If cutting, we just split by $width chars
+	if ($cut)
+	{
+		return implode($break, utf8_str_split($string, $width));
+	}
+
+	// If not cutting, we first need to explode on spacer and then merge
+	$words = explode(' ', $string);
+	$lines = array();
+	$index = 0;
+
+	foreach ($words as $word)
+	{
+		if (!isset($lines[$index]))
+		{
+			$lines[$index] = '';
+		}
+
+		if (!empty($lines[$index]) && utf8_strlen($lines[$index]) > $width)
+		{
+			$lines[$index] = substr($lines[$index], 0, -1);
+			$index++;
+			$lines[$index] = '';
+		}
+
+		$lines[$index] .= $word . ' ';
+	}
+
+	return implode($break, $lines);
 }
 
 ?>

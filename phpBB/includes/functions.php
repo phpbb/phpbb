@@ -1977,7 +1977,7 @@ function confirm_box($check, $title = '', $hidden = '', $html_body = 'confirm_bo
 	if (isset($_POST['confirm']))
 	{
 		// language frontier
-		if ($_POST['confirm'] == $user->lang['YES'])
+		if ($_POST['confirm'] === $user->lang['YES'])
 		{
 			$confirm = true;
 		}
@@ -3498,14 +3498,14 @@ function truncate_string($string, $max_length = 60, $allow_reply = true, $append
 	}
 
 	$_chars = utf8_str_split(htmlspecialchars_decode($string));
-	$chars = array_map('htmlspecialchars', $_chars);
+	$chars = array_map('utf8_htmlspecialchars', $_chars);
 
 	// Now check the length ;)
 	if (sizeof($chars) > $max_length)
 	{
 		// Cut off the last elements from the array
 		$string = implode('', array_slice($chars, 0, $max_length));
-		$stripped = true;		
+		$stripped = true;
 	}
 
 	if ($strip_reply)
@@ -3697,7 +3697,7 @@ function msg_handler($errno, $msg_text, $errfile, $errline)
 				{
 					if (@extension_loaded('zlib') && !headers_sent())
 					{
-						ob_end_flush();
+						ob_flush();
 					}
 				}
 
