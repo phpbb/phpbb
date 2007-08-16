@@ -109,9 +109,10 @@ if (!empty($mem_limit))
 {
 	$unit = strtolower(substr($mem_limit, -1, 1));
 	$mem_limit = (int) $mem_limit;
+
 	if ($unit == 'k')
 	{
-		$mem_limit = floor($mem_limit/1024);
+		$mem_limit = floor($mem_limit / 1024);
 	}
 	else if ($unit == 'g')
 	{
@@ -119,7 +120,7 @@ if (!empty($mem_limit))
 	}
 	else if (is_numeric($unit))
 	{
-		$mem_limit = floor($mem_limit/1048576);
+		$mem_limit = floor((int) ($mem_limit . $unit) / 1048576);
 	}
 	$mem_limit = max(128, $mem_limit) . 'M';
 }
