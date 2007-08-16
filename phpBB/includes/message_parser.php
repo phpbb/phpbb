@@ -1371,7 +1371,7 @@ class parse_message extends bbcode_firstpass
 				include_once($phpbb_root_path . 'includes/functions_admin.' . $phpEx);
 
 				$index = array_keys(request_var('delete_file', array(0 => 0)));
-				$index = (!empty($index[0])) ? $index[0] : false;
+				$index = (!empty($index)) ? $index[0] : false;
 
 				if ($index !== false && !empty($this->attachment_data[$index]))
 				{

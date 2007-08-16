@@ -908,8 +908,8 @@ function utf8_recode($string, $encoding)
 	}
 
 	// Trigger an error?! Fow now just give bad data :-(
-	//trigger_error('Unknown encoding: ' . $encoding, E_USER_ERROR);
-	return $string;
+	trigger_error('Unknown encoding: ' . $encoding, E_USER_ERROR);
+	//return $string; // use utf_normalizer::cleanup() ?
 }
 
 /**
