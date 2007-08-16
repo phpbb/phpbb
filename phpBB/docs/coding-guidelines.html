@@ -1597,7 +1597,9 @@ K??se
 <blockquote><pre>
 $_REQUEST['multibyte_string'] = 'K&#228;se';
 
+// normalize multibyte strings
 echo utf8_normalize_nfc(request_var('multibyte_string', '', true));
+// ASCII strings do not need to be normalized
 echo request_var('multibyte_string', '');
 </pre></blockquote>
 
