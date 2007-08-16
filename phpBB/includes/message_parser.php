@@ -426,10 +426,10 @@ class bbcode_firstpass extends bbcode
 				}
 
 				$code = preg_replace('#^<span class="[a-z]+"><span class="([a-z]+)">(.*)</span></span>#s', '<span class="$1">$2</span>', $code);
-				$code = preg_replace('#(?:[\n\r\s\t]|&nbsp;)*</span>$#u', '</span>', $code);
+				$code = preg_replace('#(?:\s++|&nbsp;)*+</span>$#u', '</span>', $code);
 
 				// remove newline at the end
-				if (!empty($code) && $code[strlen($code) - 1] == "\n")
+				if (!empty($code) && substr($code, -1) == "\n")
 				{
 					$code = substr($code, 0, -1);
 				}
@@ -1565,7 +1565,7 @@ class parse_message extends bbcode_firstpass
 
 		$poll['poll_option_text'] = $this->parse($poll['enable_bbcode'], ($config['allow_post_links']) ? $poll['enable_urls'] : false, $poll['enable_smilies'], $poll['img_status'], false, false, $config['allow_post_links'], false);
 
-		$this->bbcode_bitfield = base64_encode(base64_decode($bbcode_bitfield) | base64_decode($this->bbcode_bitfield));
+		$bbcode_bitfield = base64_encode(base64_decode($bbcode_bitfield) | base64_decode($this->bbcode_bitfield));
 		$this->message = $tmp_message;
 
 		// Parse Poll Title
