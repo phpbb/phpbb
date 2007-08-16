@@ -1603,7 +1603,7 @@ echo request_var('multibyte_string', '');
 
 <h3>Case Folding</h3>
 
-<p>Case insensitive comparison of strings is no longer possible with <code>strtolower</code> or <code>strtoupper</code> as some characters have multiple lower case or multiple upper case forms depending on their position in a word. So instead you should use case folding which gives you a case insensitive version of the string which can be used for case insensitive comparisons. An NFC normalized string can be case folded using <code>utf8_case_fold_nfc()</code>.</p>
+<p>Case insensitive comparison of strings is no longer possible with <code>strtolower</code> or <code>strtoupper</code> as some characters have multiple lower case or multiple upper case forms depending on their position in a word. The <code>utf8_strtolower</code> and the <code>utf8_strtoupper</code> functions suffer from the same problem so they can only be used to display upper/lower case versions of a string but they cannot be used for case insensitive comparisons either. So instead you should use case folding which gives you a case insensitive version of the string which can be used for case insensitive comparisons. An NFC normalized string can be case folded using <code>utf8_case_fold_nfc()</code>.</p>
 
 <p class="bad">// Bad - The strings might be the same even if strtolower differs</p>
 
