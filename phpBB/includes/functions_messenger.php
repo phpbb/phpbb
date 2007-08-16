@@ -399,12 +399,12 @@ class messenger
 
 			if ($config['smtp_delivery'])
 			{
-				$result = smtpmail($this->addresses, mail_encode($this->subject), utf8_wordwrap($this->msg), $err_msg, $headers);
+				$result = smtpmail($this->addresses, mail_encode($this->subject), wordwrap(utf8_wordwrap($this->msg), 997, "\n", true), $err_msg, $headers);
 			}
 			else
 			{
 				ob_start();
-				$result = $config['email_function_name']($mail_to, mail_encode($this->subject), utf8_wordwrap($this->msg), $headers);
+				$result = $config['email_function_name']($mail_to, mail_encode($this->subject), wordwrap(utf8_wordwrap($this->msg), 997, "\n", true), $headers);
 				$err_msg = ob_get_clean();
 			}
 
@@ -633,12 +633,12 @@ class queue
 
 						if ($config['smtp_delivery'])
 						{
-							$result = smtpmail($addresses, mail_encode($subject), utf8_wordwrap($msg), $err_msg, $headers);
+							$result = smtpmail($addresses, mail_encode($subject), wordwrap(utf8_wordwrap($msg), 997, "\n", true), $err_msg, $headers);
 						}
 						else
 						{
 							ob_start();
-							$result = $config['email_function_name']($to, mail_encode($subject), utf8_wordwrap($msg), $headers);
+							$result = $config['email_function_name']($to, mail_encode($subject), wordwrap(utf8_wordwrap($msg), 997, "\n", true), $headers);
 							$err_msg = ob_get_clean();
 						}
 

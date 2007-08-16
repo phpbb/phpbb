@@ -324,6 +324,11 @@ if ($mode == 'bump')
 	trigger_error('BUMP_ERROR');
 }
 
+// Subject length limiting to 60 characters if first post...
+if ($mode == 'post' || ($mode == 'edit' && $post_data['topic_first_post_id'] == $post_data['post_id']))
+{
+	$template->assign_var('S_NEW_MESSAGE', true);
+}
 
 // Determine some vars
 if (isset($post_data['poster_id']) && $post_data['poster_id'] == ANONYMOUS)
@@ -334,6 +339,7 @@ else
 {
 	$post_data['quote_username'] = isset($post_data['username']) ? $post_data['username'] : '';
 }
+
 $post_data['post_edit_locked']	= (isset($post_data['post_edit_locked'])) ? (int) $post_data['post_edit_locked'] : 0;
 $post_data['post_subject']		= (in_array($mode, array('quote', 'edit'))) ? $post_data['post_subject'] : ((isset($post_data['topic_title'])) ? $post_data['topic_title'] : '');
 $post_data['topic_time_limit']	= (isset($post_data['topic_time_limit'])) ? (($post_data['topic_time_limit']) ? (int) $post_data['topic_time_limit'] / 86400 : (int) $post_data['topic_time_limit']) : 0;

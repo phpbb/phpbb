@@ -1,7 +1,7 @@
 <?php
 /** 
 *
-* @package phpBB3
+* @package utf
 * @version $Id$ 
 * @copyright (c) 2005 phpBB Group 
 * @license http://opensource.org/licenses/gpl-license.php GNU Public License 
@@ -57,7 +57,7 @@ define('UNICODE_JAMO_T', 2);
 /**
 * Unicode normalization routines
 *
-* @package phpBB3
+* @package utf
 */
 class utf_normalizer
 {

@@ -1,7 +1,7 @@
 <?php
 /** 
 *
-* @package phpBB3
+* @package diff
 * @version $Id$
 * @copyright (c) 2006 phpBB Group 
 * @license http://opensource.org/licenses/gpl-license.php GNU Public License 
@@ -41,7 +41,7 @@ if (!defined('IN_PHPBB'))
 * code was written by him, and is used/adapted with his permission.
 *
 * @author  Geoffrey T. Dairiki <dairiki@dairiki.org>
-* @package phpBB3
+* @package diff
 *
 * @access private
 */

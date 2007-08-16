@@ -1,7 +1,7 @@
 <?php
 /**
 *
-* @package phpBB3
+* @package utf
 * @version $Id$
 * @copyright (c) 2006 phpBB Group
 * @license http://opensource.org/licenses/gpl-license.php GNU Public License
@@ -24,7 +24,7 @@ setlocale(LC_CTYPE, 'C');
 * Whenever possible, these functions will try to use PHP's built-in functions or
 * extensions, otherwise they will default to custom routines.
 *
-* @package phpBB3
+* @package utf
 */
 
 if (!extension_loaded('xml'))
@@ -1874,35 +1874,44 @@ function utf8_convert_message($message)
 */
 function utf8_wordwrap($string, $width = 75, $break = "\n", $cut = false)
 {
-	// If cutting, we just split by $width chars
-	if ($cut)
-	{
-		return implode($break, utf8_str_split($string, $width));
-	}
-
-	// If not cutting, we first need to explode on spacer and then merge
-	$words = explode(' ', $string);
-	$lines = array();
+	// We first need to explode on $break, not destroying existing (intended) breaks
+	$lines = explode($break, $string);
+	$new_lines = array(0 => '');
 	$index = 0;
 
-	foreach ($words as $word)
+	foreach ($lines as $line)
 	{
-		if (!isset($lines[$index]))
+		$words = explode(' ', $line);
+
+		for ($i = 0, $size = sizeof($words); $i < $size; $i++)
 		{
-			$lines[$index] = '';
+			$word = $words[$i];
+
+			// If cut is true we need to cut the word if it is > width chars
+			if ($cut && utf8_strlen($word) > $width)
+			{
+				$words[$i] = utf8_substr($word, $width);
+				$word = utf8_substr($word, 0, $width);
+				$i--;
+			}
+
+			if (utf8_strlen($new_lines[$index] . $word) > $width)
+			{
+				$new_lines[$index] = substr($new_lines[$index], 0, -1);
+				$index++;
+				$new_lines[$index] = '';
+			}
+
+			$new_lines[$index] .= $word . ' ';
 		}
 
-		if (!empty($lines[$index]) && utf8_strlen($lines[$index]) > $width)
-		{
-			$lines[$index] = substr($lines[$index], 0, -1);
-			$index++;
-			$lines[$index] = '';
-		}
-
-		$lines[$index] .= $word . ' ';
+		$new_lines[$index] = substr($new_lines[$index], 0, -1);
+		$index++;
+		$new_lines[$index] = '';
 	}
 
-	return implode($break, $lines);
+	unset($new_lines[$index]);
+	return implode($break, $new_lines);
 }
 
 ?>

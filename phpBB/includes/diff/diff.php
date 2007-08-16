@@ -1,7 +1,7 @@
 <?php
 /** 
 *
-* @package phpBB3
+* @package diff
 * @version $Id$
 * @copyright (c) 2006 phpBB Group 
 * @license http://opensource.org/licenses/gpl-license.php GNU Public License 
@@ -25,7 +25,7 @@ if (!defined('IN_PHPBB'))
 * General API for generating and formatting diffs - the differences between
 * two sequences of strings.
 *
-* @package phpBB3
+* @package diff
 * @author  Geoffrey T. Dairiki <dairiki@dairiki.org>
 */
 class diff
@@ -226,7 +226,7 @@ class diff
 }
 
 /**
-* @package phpBB3
+* @package diff
 * @author  Geoffrey T. Dairiki <dairiki@dairiki.org>
 */
 class mapped_diff extends diff
@@ -274,7 +274,7 @@ class mapped_diff extends diff
 }
 
 /**
-* @package phpBB3
+* @package diff
 * @author  Geoffrey T. Dairiki <dairiki@dairiki.org>
 *
 * @access private
@@ -301,7 +301,7 @@ class diff_op
 }
 
 /**
-* @package phpBB3
+* @package diff
 * @author  Geoffrey T. Dairiki <dairiki@dairiki.org>
 *
 * @access private
@@ -326,7 +326,7 @@ class diff_op_copy extends diff_op
 }
 
 /**
-* @package phpBB3
+* @package diff
 * @author  Geoffrey T. Dairiki <dairiki@dairiki.org>
 *
 * @access private
@@ -347,7 +347,7 @@ class diff_op_delete extends diff_op
 }
 
 /**
-* @package phpBB3
+* @package diff
 * @author  Geoffrey T. Dairiki <dairiki@dairiki.org>
 *
 * @access private
@@ -368,7 +368,7 @@ class diff_op_add extends diff_op
 }
 
 /**
-* @package phpBB3
+* @package diff
 * @author  Geoffrey T. Dairiki <dairiki@dairiki.org>
 *
 * @access private
@@ -392,7 +392,7 @@ class diff_op_change extends diff_op
 /**
 * A class for computing three way diffs.
 *
-* @package phpBB3
+* @package diff
 * @author  Geoffrey T. Dairiki <dairiki@dairiki.org>
 */
 class diff3 extends diff
@@ -637,7 +637,7 @@ class diff3 extends diff
 }
 
 /**
-* @package phpBB3
+* @package diff
 * @author  Geoffrey T. Dairiki <dairiki@dairiki.org>
 *
 * @access private
@@ -683,7 +683,7 @@ class diff3_op
 }
 
 /**
-* @package phpBB3
+* @package diff
 * @author  Geoffrey T. Dairiki <dairiki@dairiki.org>
 *
 * @access private
@@ -709,7 +709,7 @@ class diff3_op_copy extends diff3_op
 }
 
 /**
-* @package phpBB3
+* @package diff
 * @author  Geoffrey T. Dairiki <dairiki@dairiki.org>
 *
 * @access private

@@ -221,6 +221,7 @@ p a {
 		<li>[Fix] Return to last page after voting in viewtopic instead of first page in topic (Bug #13976)</li>
 		<li>[Fix] If sending PM's to groups only include activated member (Bug #14040)</li>
 		<li>[Fix] Correctly wrap words in emails containing utf8 characters (Bug #14109)</li>
+		<li>[Change] For new posts or editing the first post topic titles have a maxlength of 60 characters. For any subsequent posts the length is extended to 64 to make room for the Re: part, but cutting at 60 characters. The maxlength need to be 64, else users using opera are unable to post (opera does not allow pre-filling a field with more characters than specified within the maxlength attribute)</li>
 	</ul>
 
 	</div>

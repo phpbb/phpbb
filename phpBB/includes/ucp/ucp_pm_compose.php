@@ -320,6 +320,11 @@ function compose_pm($id, $mode, $action)
 		}
 	}
 
+	if ($action == 'post')
+	{
+		$template->assign_var('S_NEW_MESSAGE', true);
+	}
+
 	if (!isset($icon_id))
 	{
 		$icon_id = 0;
