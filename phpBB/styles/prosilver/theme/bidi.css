@@ -13,6 +13,11 @@
 	text-align: left;
 }
 
+.rtl div.rules ul {
+	margin-left: 0;
+	margin-right: 20px;
+}
+
 /* Main blocks
 ---------------------------------------- */
 .rtl #logo {
@@ -64,6 +69,24 @@
 	float: left;
 	margin-right: 5px;
 	margin-left: 0;
+	text-align: left;
+}
+
+.rtl ul.leftside li, .rtl ul.rightside li {
+	float: left;
+}
+
+.rtl ul.leftside {
+	float: right;
+	margin-left: 5px;
+	margin-right: 0;
+	text-align: right;
+}
+
+.rtl ul.rightside {
+	float: left;
+	margin-left: -5px;
+	margin-right: 5px;
 	text-align: left;
 }
 
@@ -445,6 +468,7 @@
 .rtl .sitehome, .rtl .icon-faq, .rtl .icon-members, .rtl .icon-home, .rtl .icon-ucp, .rtl .icon-register, .rtl .icon-logout,
 .rtl .icon-bookmark, .rtl .icon-bump, .rtl .icon-subscribe, .rtl .icon-unsubscribe, .rtl .icon-pages, .rtl .icon-search {
 	background-position: 100% 50%;
+	padding: 0 17px 0 0;
 }
 
 /* Poster profile icons

@@ -326,6 +326,20 @@ ul.navlinks {
 	font-weight: bold;
 }
 
+ul.leftside {
+	float: left;
+	margin-left: 0;
+	margin-right: 5px;
+	text-align: left;
+}
+
+ul.rightside {
+	float: right;
+	margin-left: 5px;
+	margin-right: -5px;
+	text-align: right;
+}
+
 /* Table styles
 ----------------------------------------*/
 table.table1 {
@@ -584,7 +598,7 @@ div.rules {
 	font-size: 1.1em;
 }
 
-div.rules li {
+div.rules ul {
 	margin-left: 20px;
 }
 
