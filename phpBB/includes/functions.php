@@ -2527,7 +2527,7 @@ function strip_bbcode(&$text, $uid = '')
 		$uid = '[0-9a-z]{5,}';
 	}
 
-	$text = preg_replace("#\[\/?[a-z0-9\*\+\-]+(?:=.*?)?(?::[a-z])?(\:?$uid)\]#", ' ', $text);
+	$text = preg_replace("#\[\/?[a-z0-9\*\+\-]+(?:=(?:&quot;.*&quot;|[^\]]*))?(?::[a-z])?(\:$uid)\]#", ' ', $text);
 
 	$match = get_preg_expression('bbcode_htm');
 	$replace = array('\1', '\1', '\2', '\1', '', '');
@@ -3689,6 +3689,8 @@ function msg_handler($errno, $msg_text, $errfile, $errline)
 			{
 				return;
 			}
+			static $counter = 0;
+			$counter++; //echo "<b>"; var_dump($counter); echo "</b>";
 
 			if (strpos($errfile, 'cache') === false && strpos($errfile, 'template.') === false)
 			{

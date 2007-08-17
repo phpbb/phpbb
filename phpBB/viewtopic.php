@@ -1252,14 +1252,15 @@ for ($i = 0, $end = sizeof($post_list); $i < $end; ++$i)
 		parse_attachments($forum_id, $message, $attachments[$row['post_id']], $update_count);
 	}
 
+	// Replace naughty words such as farty pants
+	$row['post_subject'] = censor_text($row['post_subject']);
+
 	// Highlight active words (primarily for search)
 	if ($highlight_match)
 	{
 		$message = preg_replace('#(?!<.*)(?<!\w)(' . $highlight_match . ')(?!\w|[^<>]*(?:</s(?:cript|tyle))?>)#is', '<span class="posthilit">\1</span>', $message);
+		$row['post_subject'] = preg_replace('#(?!<.*)(?<!\w)(' . $highlight_match . ')(?!\w|[^<>]*(?:</s(?:cript|tyle))?>)#is', '<span class="posthilit">\1</span>', $row['post_subject']);
 	}
-
-	// Replace naughty words such as farty pants
-	$row['post_subject'] = censor_text($row['post_subject']);
 
 	// Editing information
 	if (($row['post_edit_count'] && $config['display_last_edited']) || $row['post_edit_reason'])
