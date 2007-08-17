@@ -627,11 +627,11 @@ class template_compile
 				{
 					$expr_end++;
 					$expr_arg = $tokens[$expr_end++];
-					$expr = "!(isset($is_arg) && ($is_arg / $expr_arg) % $expr_arg)";
+					$expr = "!(($is_arg / $expr_arg) % $expr_arg)";
 				}
 				else
 				{
-					$expr = "!(isset($is_arg) && $is_arg & 1)";
+					$expr = "!($is_arg & 1)";
 				}
 			break;
 
@@ -640,11 +640,11 @@ class template_compile
 				{
 					$expr_end++;
 					$expr_arg = $tokens[$expr_end++];
-					$expr = "(isset($is_arg) && ($is_arg / $expr_arg) % $expr_arg)";
+					$expr = "(($is_arg / $expr_arg) % $expr_arg)";
 				}
 				else
 				{
-					$expr = "(isset($is_arg) && $is_arg & 1)";
+					$expr = "($is_arg & 1)";
 				}
 			break;
 
@@ -653,7 +653,7 @@ class template_compile
 				{
 					$expr_end++;
 					$expr_arg = $tokens[$expr_end++];
-					$expr = "!(isset($is_arg) && $is_arg % $expr_arg)";
+					$expr = "!($is_arg % $expr_arg)";
 				}
 			break;
 		}

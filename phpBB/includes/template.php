@@ -149,6 +149,14 @@ class template
 	{
 		global $user;
 
+		if (defined('IN_ERROR_HANDLER'))
+		{
+			if ((E_NOTICE & error_reporting()) == E_NOTICE)
+			{
+				error_reporting(error_reporting() ^ E_NOTICE);
+			}
+		}
+
 		if ($filename = $this->_tpl_load($handle))
 		{
 			($include_once) ? include_once($filename) : include($filename);
