@@ -526,7 +526,60 @@ class template_compile
 			}
 		}
 
-		return (($elseif) ? '} else if (' : 'if (') . (implode(' ', $tokens) . ') { ');
+		// Try to combine some tokens...
+		$new_tokens = array();
+		$j = 0;
+
+		for ($i = 0, $size = sizeof($tokens); $i < $size; $i++)
+		{
+			$token = &$tokens[$i];
+
+			if ($token != '&&' && $token != '||')
+			{
+				$new_tokens[$j][] = $token;
+				continue;
+			}
+
+			$this->_merge_tokens(' ', $new_tokens[$j]);
+			$new_tokens[$j++] .= $token;
+		}
+
+		if (!sizeof($new_tokens))
+		{
+			$new_tokens[$j] = &$tokens;
+		}
+
+		if (isset($new_tokens[$j]) && is_array($new_tokens[$j]))
+		{
+			$this->_merge_tokens('', $new_tokens[$j]);
+		}
+
+		return (($elseif) ? '} else if (' : 'if (') . (implode(' ', $new_tokens) . ') { ');
+	}
+
+	/**
+	* Merge tokens from IF expression, correctly adding isset() calls.
+	* @access private
+	*/
+	function _merge_tokens($suffix, &$tokens)
+	{
+		for ($i = 0, $size = sizeof($tokens); $i < $size; $i++)
+		{
+			$token = &$tokens[$i];
+
+			if (strpos($token, '$this') === 0)
+			{
+				$token = '(isset(' . $token . ') && ' . $token;
+				$suffix = ')' . $suffix;
+			}
+			else if (strpos($token, 'sizeof(') === 0)
+			{
+				$token = '(isset(' . substr($token, 7, -1) . ') && ' . $token;
+				$suffix = ')' . $suffix;
+			}
+		}
+
+		$tokens = implode(' ', $tokens) . $suffix;
 	}
 
 	/**
@@ -627,11 +680,11 @@ class template_compile
 				{
 					$expr_end++;
 					$expr_arg = $tokens[$expr_end++];
-					$expr = "!(($is_arg / $expr_arg) % $expr_arg)";
+					$expr = "!(isset($is_arg) && ($is_arg / $expr_arg) % $expr_arg)";
 				}
 				else
 				{
-					$expr = "!($is_arg & 1)";
+					$expr = "!(isset($is_arg) && $is_arg & 1)";
 				}
 			break;
 
@@ -640,11 +693,11 @@ class template_compile
 				{
 					$expr_end++;
 					$expr_arg = $tokens[$expr_end++];
-					$expr = "(($is_arg / $expr_arg) % $expr_arg)";
+					$expr = "(isset($is_arg) && ($is_arg / $expr_arg) % $expr_arg)";
 				}
 				else
 				{
-					$expr = "($is_arg & 1)";
+					$expr = "(isset($is_arg) && $is_arg & 1)";
 				}
 			break;
 
@@ -653,7 +706,7 @@ class template_compile
 				{
 					$expr_end++;
 					$expr_arg = $tokens[$expr_end++];
-					$expr = "!($is_arg % $expr_arg)";
+					$expr = "!(isset($is_arg) && $is_arg % $expr_arg)";
 				}
 			break;
 		}
