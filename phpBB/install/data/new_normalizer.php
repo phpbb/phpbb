@@ -174,7 +174,7 @@ class utf_new_normalizer
 			include($phpbb_root_path . 'includes/utf/data/utf_canonical_comp.' . $phpEx);
 		}
 
-		return utf_normalizer::recompose($str, $pos, $len, &$qc, &$decomp_map);
+		return utf_normalizer::recompose($str, $pos, $len, $qc, $decomp_map);
 	}
 }
 

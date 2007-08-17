@@ -510,7 +510,7 @@ while ($row = $db->sql_fetchrow($result))
 $db->sql_freeresult($result);
 
 echo $lang['PREVIOUS_VERSION'] . ' :: <strong>' . $config['version'] . '</strong><br />';
-echo $lang['UPDATED_VERSION'] . ' :: <strong>' . $updates_to_version . '</strong>';
+echo $lang['UPDATED_VERSION'] . ' :: <strong>' . $updates_to_version . '</strong></p>';
 
 $current_version = str_replace('rc', 'RC', strtolower($config['version']));
 $latest_version = str_replace('rc', 'RC', strtolower($updates_to_version));
@@ -554,7 +554,7 @@ if (version_compare($current_version, '3.0.RC4', '<='))
 		));
 	}
 ?>
-	</p><br /><br />
+	<br /><br />
 
 	<h1><?php echo $lang['CLEANING_USERNAMES']; ?></h1>
 
@@ -767,6 +767,8 @@ if (version_compare($current_version, '3.0.RC4', '<='))
 	}
 	$db->sql_freeresult($result);
 
+	_write_result(false, $errored, $error_ary);
+
 	// now retrieve all information about the users and let the admin decide what to do
 	if (sizeof($colliding_users))
 	{
@@ -822,7 +824,7 @@ if (version_compare($current_version, '3.0.RC4', '<='))
 		// for the admin: keep name, change name (with text input) or delete user
 		$u_action = "database_update.$phpEx?language=$language&amp;type=$inline_update";
 ?>
-</strong></p><br /><br />
+<br /><br />
 
 <p><?php echo $lang['CHANGE_CLEAN_NAMES']; ?></p>
 <form id="change_clean_names" method="post" action="<?php echo $u_action; ?>">
@@ -983,8 +985,6 @@ if ($exit)
 <?php
 	exit;
 }
-
-_write_result(false, $errored, $error_ary);
 
 // Schema updates
 ?>
@@ -1583,8 +1583,6 @@ add_log('admin', 'LOG_UPDATE_DATABASE', $orig_version, $updates_to_version);
 // Now we purge the session table as well as all cache files
 $cache->purge();
 
-exit;
-
 ?>
 
 					</div>
@@ -1603,6 +1601,9 @@ exit;
 </html>
 
 <?php
+
+exit;
+
 
 /**
 * Function for triggering an sql statement
