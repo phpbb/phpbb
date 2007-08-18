@@ -477,7 +477,7 @@ function validate_config_vars($config_vars, &$cfg_array, &$error)
 				$cfg_array[$config_name] = trim($cfg_array[$config_name]);
 
 				// Make sure no NUL byte is present...
-				if (strpos($cfg_array[$config_name], '\0') !== false || strpos($cfg_array[$config_name], '%00') !== false)
+				if (strpos($cfg_array[$config_name], "\0") !== false || strpos($cfg_array[$config_name], '%00') !== false)
 				{
 					$cfg_array[$config_name] = '';
 					break;

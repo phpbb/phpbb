@@ -92,7 +92,7 @@ class acp_search
 		unset($search);
 		unset($error);
 
-		$cfg_array = (isset($_REQUEST['config'])) ? request_var('config', array('' => '')) : array();
+		$cfg_array = (isset($_REQUEST['config'])) ? request_var('config', array('' => ''), true) : array();
 		$updated = request_var('updated', false);
 
 		foreach ($settings as $config_name => $var_type)

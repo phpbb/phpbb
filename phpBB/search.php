@@ -939,9 +939,9 @@ while ($row = $db->sql_fetchrow($result))
 		continue;
 	}
 
-	if (!$auth->acl_get('f_list', $row['forum_id']) || $row['forum_type'] == FORUM_LINK || ($row['forum_password'] && !$row['user_id']))
+	if ($row['forum_type'] == FORUM_LINK || ($row['forum_password'] && !$row['user_id']))
 	{
-		// if the user does not have permissions to list this forum skip to the next branch
+		// if this forum is a link or password protected (user has not entered the password yet) then skip to the next branch
 		continue;
 	}
 
@@ -964,9 +964,9 @@ while ($row = $db->sql_fetchrow($result))
 
 	$right = $row['right_id'];
 
-	if (!$auth->acl_get('f_search', $row['forum_id']))
+	if ($auth->acl_gets('!f_search', '!f_list', $row['forum_id']))
 	{
-		// if the user does not have permissions to search this forum skip only this forum/category
+		// if the user does not have permissions to search or see this forum skip only this forum/category
 		continue;
 	}
 

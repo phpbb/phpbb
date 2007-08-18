@@ -46,7 +46,7 @@ function init_ldap()
 	$search = @ldap_search(
 		$ldap,
 		$config['ldap_base_dn'],
-		'(' . $config['ldap_uid'] . '=' . ldap_escape(htmlspecialchars_decode($user->data['username'])) . ')',
+		ldap_user_filter($user->data['username']),
 		(empty($config['ldap_email'])) ? array($config['ldap_uid']) : array($config['ldap_uid'], $config['ldap_email']),
 		0,
 		1
@@ -114,7 +114,7 @@ function login_ldap(&$username, &$password)
 	$search = @ldap_search(
 		$ldap,
 		$config['ldap_base_dn'],
-		'(' . $config['ldap_uid'] . '=' . ldap_escape(htmlspecialchars_decode($username)) . ')',
+		ldap_user_filter($username),
 		(empty($config['ldap_email'])) ? array($config['ldap_uid']) : array($config['ldap_uid'], $config['ldap_email']),
 		0,
 		1
@@ -216,6 +216,25 @@ function login_ldap(&$username, &$password)
 }
 
 /**
+* Generates a filter string for ldap_search to find a user
+*
+* @param	$username	string	Username identifying the searched user
+*
+* @return				string	A filter string for ldap_search
+*/
+function ldap_user_filter($username)
+{
+	global $config;
+
+	$filter = '(' . $config['ldap_uid'] . '=' . ldap_escape(htmlspecialchars_decode($username)) . ')';
+	if ($config['ldap_user_filter'])
+	{
+		$filter = "(&$filter({$config['ldap_user_filter']}))";
+	}
+	return $filter;
+}
+
+/**
 * Escapes an LDAP AttributeValue
 */
 function ldap_escape($string)
@@ -238,14 +257,6 @@ function acp_ldap(&$new)
 		<dd><input type="text" id="ldap_server" size="40" name="config[ldap_server]" value="' . $new['ldap_server'] . '" /></dd>
 	</dl>
 	<dl>
-		<dt><label for="ldap_user">' . $user->lang['LDAP_USER'] . ':</label><br /><span>' . $user->lang['LDAP_USER_EXPLAIN'] . '</span></dt>
-		<dd><input type="text" id="ldap_user" size="40" name="config[ldap_user]" value="' . $new['ldap_user'] . '" /></dd>
-	</dl>
-	<dl>
-		<dt><label for="ldap_password">' . $user->lang['LDAP_PASSWORD'] . ':</label><br /><span>' . $user->lang['LDAP_PASSWORD_EXPLAIN'] . '</span></dt>
-		<dd><input type="password" id="ldap_password" size="40" name="config[ldap_password]" value="' . $new['ldap_password'] . '" /></dd>
-	</dl>
-	<dl>
 		<dt><label for="ldap_dn">' . $user->lang['LDAP_DN'] . ':</label><br /><span>' . $user->lang['LDAP_DN_EXPLAIN'] . '</span></dt>
 		<dd><input type="text" id="ldap_dn" size="40" name="config[ldap_base_dn]" value="' . $new['ldap_base_dn'] . '" /></dd>
 	</dl>
@@ -254,15 +265,27 @@ function acp_ldap(&$new)
 		<dd><input type="text" id="ldap_uid" size="40" name="config[ldap_uid]" value="' . $new['ldap_uid'] . '" /></dd>
 	</dl>
 	<dl>
+		<dt><label for="ldap_user_filter">' . $user->lang['LDAP_USER_FILTER'] . ':</label><br /><span>' . $user->lang['LDAP_USER_FILTER_EXPLAIN'] . '</span></dt>
+		<dd><input type="text" id="ldap_user_filter" size="40" name="config[ldap_user_filter]" value="' . $new['ldap_user_filter'] . '" /></dd>
+	</dl>
+	<dl>
 		<dt><label for="ldap_email">' . $user->lang['LDAP_EMAIL'] . ':</label><br /><span>' . $user->lang['LDAP_EMAIL_EXPLAIN'] . '</span></dt>
 		<dd><input type="text" id="ldap_email" size="40" name="config[ldap_email]" value="' . $new['ldap_email'] . '" /></dd>
+	</dl>
+	<dl>
+		<dt><label for="ldap_user">' . $user->lang['LDAP_USER'] . ':</label><br /><span>' . $user->lang['LDAP_USER_EXPLAIN'] . '</span></dt>
+		<dd><input type="text" id="ldap_user" size="40" name="config[ldap_user]" value="' . $new['ldap_user'] . '" /></dd>
+	</dl>
+	<dl>
+		<dt><label for="ldap_password">' . $user->lang['LDAP_PASSWORD'] . ':</label><br /><span>' . $user->lang['LDAP_PASSWORD_EXPLAIN'] . '</span></dt>
+		<dd><input type="password" id="ldap_password" size="40" name="config[ldap_password]" value="' . $new['ldap_password'] . '" /></dd>
 	</dl>
 	';
 
 	// These are fields required in the config table
 	return array(
 		'tpl'		=> $tpl,
-		'config'	=> array('ldap_server', 'ldap_user', 'ldap_password', 'ldap_base_dn', 'ldap_uid', 'ldap_email')
+		'config'	=> array('ldap_server', 'ldap_base_dn', 'ldap_uid', 'ldap_user_filter', 'ldap_email', 'ldap_user', 'ldap_password')
 	);
 }
 

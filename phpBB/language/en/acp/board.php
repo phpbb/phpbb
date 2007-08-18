@@ -304,13 +304,15 @@ $lang = array_merge($lang, array(
 	'LDAP_NO_EMAIL'					=> 'The specified e-mail attribute does not exist.',
 	'LDAP_NO_IDENTITY'				=> 'Could not find a login identity for %s.',
 	'LDAP_PASSWORD'					=> 'LDAP password',
-	'LDAP_PASSWORD_EXPLAIN'			=> 'Leave blank to use anonymous access. Else fill in the password for the above user. <strong>WARNING:</strong> This password will be stored as plain text in the database visible to everybody who can access your database.',
+	'LDAP_PASSWORD_EXPLAIN'			=> 'Leave blank to use anonymous binding. Else fill in the password for the above user.  Required for Active Directory Servers. <strong>WARNING:</strong> This password will be stored as plain text in the database visible to everybody who can access your database or who can view this configuration page.',
 	'LDAP_SERVER'					=> 'LDAP server name',
-	'LDAP_SERVER_EXPLAIN'			=> 'If using LDAP this is the name or IP address of the server.',
+	'LDAP_SERVER_EXPLAIN'			=> 'If using LDAP this is the hostname or IP address of the LDAP server. Alternatively you can specify an URL like ldap://hostname:port/',
 	'LDAP_UID'						=> 'LDAP <var>uid</var>',
 	'LDAP_UID_EXPLAIN'				=> 'This is the key under which to search for a given login identity, e.g. <var>uid</var>, <var>sn</var>, etc.',
-	'LDAP_USER'						=> 'LDAP user',
-	'LDAP_USER_EXPLAIN'				=> 'Leave blank to use anonymous access. If filled in phpBB will connect to the LDAP server as the specified user.',
+	'LDAP_USER'						=> 'LDAP user <var>dn</var>',
+	'LDAP_USER_EXPLAIN'				=> 'Leave blank to use anonymous binding. If filled in phpBB uses the specified distinguished name on login attempts to find the correct user, e.g. <samp>uid=Username,ou=MyUnit,o=MyCompany,c=US</samp>. Required for Active Directory Servers.',
+	'LDAP_USER_FILTER'				=> 'LDAP user filter',
+	'LDAP_USER_FILTER_EXPLAIN'		=> 'Optionally you can further limit the searched objects with additional filters. For example <samp>objectClass=posixGroup</samp> would result in the use of <samp>(&(uid=$username)(objectClass=posixGroup))</samp>',
 ));
 
 // Server Settings
