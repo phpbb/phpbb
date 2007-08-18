@@ -123,6 +123,7 @@ INSERT INTO phpbb_config (config_name, config_value) VALUES ('ldap_password', ''
 INSERT INTO phpbb_config (config_name, config_value) VALUES ('ldap_server', '');
 INSERT INTO phpbb_config (config_name, config_value) VALUES ('ldap_uid', '');
 INSERT INTO phpbb_config (config_name, config_value) VALUES ('ldap_user', '');
+INSERT INTO phpbb_config (config_name, config_value) VALUES ('ldap_user_filter', '');
 INSERT INTO phpbb_config (config_name, config_value) VALUES ('limit_load', '0');
 INSERT INTO phpbb_config (config_name, config_value) VALUES ('limit_search_load', '0');
 INSERT INTO phpbb_config (config_name, config_value) VALUES ('load_anon_lastread', '0');
