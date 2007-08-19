@@ -332,7 +332,7 @@ class bbcode
 								// In order to use templates with custom bbcodes we need
 								// to replace all {VARS} to corresponding backreferences
 								// Note that backreferences are numbered from bbcode_match
-								if (preg_match_all('/\{(URL|EMAIL|TEXT|COLOR|NUMBER)[0-9]*\}/', $rowset[$bbcode_id]['bbcode_match'], $m))
+								if (preg_match_all('/\{(URL|LOCAL_URL|EMAIL|TEXT|SIMPLETEXT|IDENTIFIER|COLOR|NUMBER)[0-9]*\}/', $rowset[$bbcode_id]['bbcode_match'], $m))
 								{
 									foreach ($m[0] as $i => $tok)
 									{
