@@ -471,7 +471,6 @@ switch ($mode)
 		if ($member['user_sig'])
 		{
 			$member['user_sig'] = censor_text($member['user_sig']);
-			$member['user_sig'] = str_replace("\n", '<br />', $member['user_sig']);
 
 			if ($member['user_sig_bbcode_bitfield'])
 			{
@@ -480,6 +479,7 @@ switch ($mode)
 				$bbcode->bbcode_second_pass($member['user_sig'], $member['user_sig_bbcode_uid'], $member['user_sig_bbcode_bitfield']);
 			}
 
+			$member['user_sig'] = bbcode_nl2br($member['user_sig']);
 			$member['user_sig'] = smiley_text($member['user_sig']);
 		}
 

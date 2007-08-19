@@ -119,13 +119,15 @@ class mcp_queue
 
 				// Process message, leave it uncensored
 				$message = $post_info['post_text'];
-				$message = str_replace("\n", '<br />', $message);
+
 				if ($post_info['bbcode_bitfield'])
 				{
 					include_once($phpbb_root_path . 'includes/bbcode.' . $phpEx);
 					$bbcode = new bbcode($post_info['bbcode_bitfield']);
 					$bbcode->bbcode_second_pass($message, $post_info['bbcode_uid'], $post_info['bbcode_bitfield']);
 				}
+
+				$message = bbcode_nl2br($message);
 				$message = smiley_text($message);
 
 				if ($post_info['post_attachment'] && $auth->acl_get('u_download') && $auth->acl_get('f_download', $post_info['forum_id']))

@@ -1021,8 +1021,7 @@ function topic_review($topic_id, $forum_id, $mode = 'topic_review', $cur_post_id
 			$decoded_message = $message;
 			decode_message($decoded_message, $row['bbcode_uid']);
 
-			$decoded_message = censor_text($decoded_message);
-			$decoded_message = str_replace("\n", "<br />", $decoded_message);
+			$decoded_message = bbcode_nl2br($decoded_message);
 		}
 
 		if ($row['bbcode_bitfield'])
@@ -1030,8 +1029,7 @@ function topic_review($topic_id, $forum_id, $mode = 'topic_review', $cur_post_id
 			$bbcode->bbcode_second_pass($message, $row['bbcode_uid'], $row['bbcode_bitfield']);
 		}
 
-		$message = str_replace("\n", '<br />', $message);
-
+		$message = bbcode_nl2br($message);
 		$message = smiley_text($message, !$row['enable_smilies']);
 
 		if (!empty($attachments[$row['post_id']]))

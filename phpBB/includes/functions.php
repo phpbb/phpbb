@@ -2571,8 +2571,7 @@ function generate_text_for_display($text, $uid, $bitfield, $flags)
 		$bbcode->bbcode_second_pass($text, $uid);
 	}
 
-	$text = str_replace("\n", '<br />', $text);
-
+	$text = bbcode_nl2br($text);
 	$text = smiley_text($text, !($flags & OPTION_FLAG_SMILIES));
 
 	return $text;
@@ -2814,6 +2813,17 @@ function censor_text($text)
 }
 
 /**
+* custom version of nl2br which takes custom BBCodes into account
+*/
+function bbcode_nl2br($text)
+{
+	// custom BBCodes might contain carriage returns so they
+	// are not converted into <br /> so now revert that
+	$text = str_replace(array("\n", "\r"), array('<br />', "\n"), $text);
+	return $text;
+}
+
+/**
 * Smiley processing
 */
 function smiley_text($text, $force_option = false)
@@ -2955,7 +2965,7 @@ function parse_attachments($forum_id, &$message, &$attachments, &$update_count, 
 		$size_lang = ($filesize >= 1048576) ? $user->lang['MB'] : ( ($filesize >= 1024) ? $user->lang['KB'] : $user->lang['BYTES'] );
 		$filesize = ($filesize >= 1048576) ? round((round($filesize / 1048576 * 100) / 100), 2) : (($filesize >= 1024) ? round((round($filesize / 1024 * 100) / 100), 2) : $filesize);
 
-		$comment = str_replace("\n", '<br />', censor_text($attachment['attach_comment']));
+		$comment = bbcode_nl2br(censor_text($attachment['attach_comment']));
 
 		$block_array += array(
 			'UPLOAD_ICON'		=> $upload_icon,

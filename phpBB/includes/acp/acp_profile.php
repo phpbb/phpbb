@@ -925,7 +925,7 @@ class acp_profile
 			$lang_options[1]['lang_iso'] = $this->lang_defs['id'][$default_lang_id];
 			$lang_options[1]['fields'][$field] = array(
 				'TITLE'		=> $user->lang['CP_' . strtoupper($field)],
-				'FIELD'		=> '<dd>' . ((is_array($cp->vars[$field])) ? implode('<br />', $cp->vars[$field]) : str_replace("\n", '<br />', $cp->vars[$field])) . '</dd>'
+				'FIELD'		=> '<dd>' . ((is_array($cp->vars[$field])) ? implode('<br />', $cp->vars[$field]) : bbcode_nl2br($cp->vars[$field])) . '</dd>'
 			);
 
 			if (isset($user->lang['CP_' . strtoupper($field) . '_EXPLAIN']))

@@ -1138,6 +1138,9 @@ class parse_message extends bbcode_firstpass
 			$this->parse($allow_bbcode, $allow_magic_url, $allow_smilies, $this->allow_img_bbcode, $this->allow_flash_bbcode, $this->allow_quote_bbcode, $this->allow_url_bbcode, true);
 		}
 
+		// Replace naughty words such as farty pants
+		$this->message = censor_text($this->message);
+
 		// Parse BBcode
 		if ($allow_bbcode)
 		{
@@ -1147,10 +1150,8 @@ class parse_message extends bbcode_firstpass
 			$this->bbcode_second_pass($this->message, $this->bbcode_uid);
 		}
 
+		$this->message = bbcode_nl2br($this->message);
 		$this->message = smiley_text($this->message, !$allow_smilies);
-
-		// Replace naughty words such as farty pants
-		$this->message = str_replace("\n", '<br />', censor_text($this->message));
 
 		if (!$update_this_message)
 		{

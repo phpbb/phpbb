@@ -56,8 +56,7 @@ function view_message($id, $mode, $folder_id, $msg_id, $folder, $message_row)
 	$user_info = get_user_information($author_id, $message_row);
 
 	// Parse the message and subject
-	$message = $message_row['message_text'];
-	$message = str_replace("\n", '<br />', censor_text($message));
+	$message = censor_text($message_row['message_text']);
 
 	// Second parse bbcode here
 	if ($message_row['bbcode_bitfield'])
@@ -66,6 +65,7 @@ function view_message($id, $mode, $folder_id, $msg_id, $folder, $message_row)
 	}
 
 	// Always process smilies after parsing bbcodes
+	$message = bbcode_nl2br($message);
 	$message = smiley_text($message);
 
 	// Replace naughty words such as farty pants
@@ -142,7 +142,6 @@ function view_message($id, $mode, $folder_id, $msg_id, $folder, $message_row)
 	if ($signature)
 	{
 		$signature = censor_text($signature);
-		$signature = str_replace("\n", '<br />', censor_text($signature));
 
 		if ($user_info['user_sig_bbcode_bitfield'])
 		{
@@ -155,6 +154,7 @@ function view_message($id, $mode, $folder_id, $msg_id, $folder, $message_row)
 			$bbcode->bbcode_second_pass($signature, $user_info['user_sig_bbcode_uid'], $user_info['user_sig_bbcode_bitfield']);
 		}
 
+		$signature = bbcode_nl2br($signature);
 		$signature = smiley_text($signature);
 	}
 

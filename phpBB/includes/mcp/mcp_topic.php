@@ -175,13 +175,13 @@ function mcp_topic_view($id, $mode, $action)
 	{
 		$message = $row['post_text'];
 		$post_subject = ($row['post_subject'] != '') ? $row['post_subject'] : $topic_info['topic_title'];
-		$message = str_replace("\n", '<br />', $message);
 
 		if ($row['bbcode_bitfield'])
 		{
 			$bbcode->bbcode_second_pass($message, $row['bbcode_uid'], $row['bbcode_bitfield']);
 		}
 
+		$message = bbcode_nl2br($message);
 		$message = smiley_text($message);
 
 		if (!empty($attachments[$row['post_id']]))

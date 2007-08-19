@@ -838,17 +838,18 @@ if ($keywords || $author || $author_id || $search_id || $submit)
 				{
 					// now find context for the searched words
 					$row['post_text'] = get_context($row['post_text'], array_filter(explode('|', $hilit), 'strlen'), $return_chars);
-					$row['post_text'] = str_replace("\n", '<br />', $row['post_text']);
+					$row['post_text'] = bbcode_nl2br($row['post_text']);
 				}
 				else
 				{
-					$row['post_text'] = str_replace("\n", '<br />', $row['post_text']);
-
 					// Second parse bbcode here
 					if ($row['bbcode_bitfield'])
 					{
 						$bbcode->bbcode_second_pass($row['post_text'], $row['bbcode_uid'], $row['bbcode_bitfield']);
 					}
+
+					$row['post_text'] = bbcode_nl2br($row['post_text']);
+					$row['post_text'] = smiley_text($row['post_text']);
 
 					if (!empty($attachments[$row['post_id']]))
 					{
@@ -857,9 +858,6 @@ if ($keywords || $author || $author_id || $search_id || $submit)
 						// we only display inline attachments
 						unset($attachments[$row['post_id']]);
 					}
-
-					// Always process smilies after parsing bbcodes
-					$row['post_text'] = smiley_text($row['post_text']);
 				}
 
 				if ($hilit)

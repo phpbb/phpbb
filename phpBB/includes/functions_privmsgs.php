@@ -1774,13 +1774,13 @@ function message_history($msg_id, $user_id, $message_row, $folder, $in_post_mode
 		$message	= $row['message_text'];
 
 		$message = censor_text($message);
-		$message = str_replace("\n", '<br />', $message);
 
 		if ($row['bbcode_bitfield'])
 		{
 			$bbcode->bbcode_second_pass($message, $row['bbcode_uid'], $row['bbcode_bitfield']);
 		}
 
+		$message = bbcode_nl2br($message);
 		$message = smiley_text($message, !$row['enable_smilies']);
 
 		$subject = censor_text($subject);
