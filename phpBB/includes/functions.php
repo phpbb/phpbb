@@ -3699,8 +3699,6 @@ function msg_handler($errno, $msg_text, $errfile, $errline)
 			{
 				return;
 			}
-			static $counter = 0;
-			$counter++; //echo "<b>"; var_dump($counter); echo "</b>";
 
 			if (strpos($errfile, 'cache') === false && strpos($errfile, 'template.') === false)
 			{
