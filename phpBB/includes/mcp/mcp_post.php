@@ -263,8 +263,8 @@ function mcp_post_details($id, $mode, $action)
 					'U_REPORTER'	=> ($row['user_id'] != ANONYMOUS) ? append_sid("{$phpbb_root_path}memberlist.$phpEx", 'mode=viewprofile&amp;u=' . $row['user_id']) : '',
 					'USER_NOTIFY'	=> ($row['user_notify']) ? true : false,
 					'REPORT_TIME'	=> $user->format_date($row['report_time']),
-					'REPORT_TEXT'	=> bbcode_nl2br(trim($row['report_text']))))
-				);
+					'REPORT_TEXT'	=> bbcode_nl2br(trim($row['report_text'])),
+				));
 			}
 			while ($row = $db->sql_fetchrow($result));
 		}
