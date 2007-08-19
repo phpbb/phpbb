@@ -174,8 +174,6 @@ if ($id)
 		}
 	}
 
-	header('Content-type: text/css; charset=UTF-8');
-
 	if ($recache)
 	{
 		include_once($phpbb_root_path . 'includes/acp/acp_styles.' . $phpEx);
@@ -199,14 +197,14 @@ if ($id)
 	// Only set the expire time if the theme changed data is older than 30 minutes - to cope with changes from the ACP
 	if ($recache || $theme['theme_mtime'] > (time() - 1800))
 	{
-		header('Cache-Control: private, no-cache="set-cookie"');
 		header('Expires: 0');
-		header('Pragma: no-cache');
 	}
 	else
 	{
 		header('Expires: ' . gmdate('D, d M Y H:i:s \G\M\T', time() + $expire_time));
 	}
+
+	header('Content-type: text/css; charset=UTF-8');
 
 	// Parse Theme Data
 	$replace = array(
