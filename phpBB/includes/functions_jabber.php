@@ -14,7 +14,7 @@
 *
 * @version class.jabber2.php 1306 2007-06-21
 * @copyright 2006 Flyspray.org
-* @author: Florian Schmitz (floele)
+* @author Florian Schmitz (floele)
 *
 * Modified by Acyd Burn
 *

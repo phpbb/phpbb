@@ -116,7 +116,7 @@ if ($id)
 	$sql = 'SELECT *
 		FROM ' . STYLES_IMAGESET_DATA_TABLE . '
 		WHERE imageset_id = ' . $theme['imageset_id'] . "
-		AND image_lang IN('" . $db->sql_escape($user_image_lang) . "', '')";
+		AND image_lang IN ('" . $db->sql_escape($user_image_lang) . "', '')";
 	$result = $db->sql_query($sql, 3600);
 
 	$img_array = array();
