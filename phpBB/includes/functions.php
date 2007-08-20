@@ -2293,8 +2293,10 @@ function login_forum_box($forum_data)
 	if ($password)
 	{
 		// Remove expired authorised sessions
-		$sql = 'SELECT session_id
-			FROM ' . SESSIONS_TABLE;
+		$sql = 'SELECT f.session_id
+			FROM ' . FORUMS_ACCESS_TABLE . ' f
+			LEFT JOIN ' . SESSIONS_TABLE . ' s ON (f.session_id = s.session_id)
+			WHERE s.session_id IS NULL';
 		$result = $db->sql_query($sql);
 
 		if ($row = $db->sql_fetchrow($result))
@@ -2308,7 +2310,7 @@ function login_forum_box($forum_data)
 
 			// Remove expired sessions
 			$sql = 'DELETE FROM ' . FORUMS_ACCESS_TABLE . '
-				WHERE ' . $db->sql_in_set('session_id', $sql_in, true);
+				WHERE ' . $db->sql_in_set('session_id', $sql_in);
 			$db->sql_query($sql);
 		}
 		$db->sql_freeresult($result);
