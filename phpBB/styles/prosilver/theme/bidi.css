@@ -73,7 +73,7 @@
 }
 
 .rtl ul.leftside li, .rtl ul.rightside li {
-	float: right;
+	float: left;
 }
 
 .rtl ul.leftside {
