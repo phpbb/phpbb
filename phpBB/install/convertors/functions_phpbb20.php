@@ -587,7 +587,7 @@ function phpbb_convert_authentication($mode)
 	$forum_access = array();
 	while ($row = $src_db->sql_fetchrow($result))
 	{
-		$forum_access[] = $row;
+		$forum_access[$row['forum_id']] = $row;
 	}
 	$src_db->sql_freeresult($result);
 
@@ -967,6 +967,12 @@ function phpbb_convert_authentication($mode)
 	{
 		// And now the moderators
 		// We make sure that they have at least standard access to the forums they moderate in addition to the moderating permissions
+		
+		$mod_post_map = array(
+			'auth_announce'		=> 'f_announce',
+			'auth_sticky'		=> 'f_sticky'
+		);
+		
 		foreach ($user_access as $forum_id => $access_map)
 		{
 			$forum_id = (int) $forum_id;
@@ -977,6 +983,13 @@ function phpbb_convert_authentication($mode)
 				{
 					mass_auth('user_role', $forum_id, (int) phpbb_user_id($access['user_id']), 'MOD_STANDARD');
 					mass_auth('user_role', $forum_id, (int) phpbb_user_id($access['user_id']), 'FORUM_STANDARD');
+					foreach ($mod_post_map as $old => $new)
+					{
+						if (isset($forum_access[$forum_id]) && isset($forum_access[$forum_id][$old]) && $forum_access[$forum_id][$old] == AUTH_MOD)
+						{
+							mass_auth('user', $forum_id, (int) phpbb_user_id($access['user_id']), $new, ACL_YES);
+						}
+					}
 				}
 			}
 		}
@@ -991,6 +1004,13 @@ function phpbb_convert_authentication($mode)
 				{
 					mass_auth('group_role', $forum_id, (int) $access['group_id'], 'MOD_STANDARD');
 					mass_auth('group_role', $forum_id, (int) $access['group_id'], 'FORUM_STANDARD');
+					foreach ($mod_post_map as $old => $new)
+					{
+						if (isset($forum_access[$forum_id]) && isset($forum_access[$forum_id][$old]) && $forum_access[$forum_id][$old] == AUTH_MOD)
+						{
+							mass_auth('group', $forum_id, (int) $access['group_id'], $new, ACL_YES);
+						}
+					}
 				}
 			}
 		}
