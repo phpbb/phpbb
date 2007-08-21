@@ -192,7 +192,7 @@ p a {
 
 <!-- BEGIN DOCUMENT -->
 
-<p>These are the phpBB Coding Guidelines for Olympus, all attempts should be made to follow them as closely as possible.<br />This document is (c) 2006 phpBB Group, copying or redistribution is not allowed without permission.</p>
+<p>These are the phpBB Coding Guidelines for Olympus, all attempts should be made to follow them as closely as possible.</p>
 
 <h1>Coding Guidelines</h1>
 
@@ -224,6 +224,7 @@ p a {
 	</ol>
 	</li>
 	<li><a href="#changes">Guidelines Changelog</a></li>
+	<li><a href="#disclaimer">Copyright and disclaimer</a></li>
 </ol>
 
 <hr />
@@ -803,7 +804,7 @@ $sql = 'SELECT *
 
 	<h3>sql_escape():</h3>
 
-	<p>Always use <code>$db-&gt;sql_escape()</code> if you need to check for a string within an SQL statement (even if you are sure the variable can not contain single quotes - never trust your input), for example:</p>
+	<p>Always use <code>$db-&gt;sql_escape()</code> if you need to check for a string within an SQL statement (even if you are sure the variable cannot contain single quotes - never trust your input), for example:</p>
 
 	<blockquote><pre>
 $sql = 'SELECT *
@@ -2352,6 +2353,18 @@ if (utf8_case_fold_nfc($string1) == utf8_case_fold_nfc($string2))
 	<li>Changed General function usage paragraph in <a href="#general">2.v. General Guidelines</a></li>
 </ul>
 
+
+</div>
+<a href="#top">Top</a>
+<br /><br />
+
+<hr />
+
+<a name="disclaimer"></a><h1>8. Copyright and disclaimer</h1>
+
+	<div class="paragraph">
+
+	<p>This application is opensource software released under the <a href="http://opensource.org/licenses/gpl-license.php">GPL</a>. Please see source code and the docs directory for more details. This package and its contents are Copyright (c) 2000, 2002, 2005, 2007 <a href="http://www.phpbb.com/">phpBB Group</a>, All Rights Reserved.</p>
 
 </div>
 <a href="#top">Top</a>

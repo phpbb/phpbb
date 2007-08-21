@@ -427,7 +427,7 @@ class ucp_register
 			$str = '';
 			if (!$change_lang)
 			{
-				$sql = 'SELECT c.confirm_id
+				$sql = 'SELECT c.session_id
 					FROM ' . CONFIRM_TABLE . ' c
 					LEFT JOIN ' . SESSIONS_TABLE . ' s ON (c.session_id = s.session_id)
 					WHERE s.session_id IS NULL';
@@ -438,14 +438,14 @@ class ucp_register
 					$sql_in = array();
 					do
 					{
-						$sql_in[] = (string) $row['confirm_id'];
+						$sql_in[(string) $row['session_id']] = 1;
 					}
 					while ($row = $db->sql_fetchrow($result));
 
 					if (sizeof($sql_in))
 					{
 						$sql = 'DELETE FROM ' . CONFIRM_TABLE . '
-							WHERE ' . $db->sql_in_set('confirm_id', $sql_in) . '
+							WHERE ' . $db->sql_in_set('session_id', array_keys($sql_in)) . '
 								AND confirm_type = ' . CONFIRM_REG;
 						$db->sql_query($sql);
 					}

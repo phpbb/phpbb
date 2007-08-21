@@ -778,7 +778,7 @@ function move_pm($user_id, $message_limit, $move_msg_ids, $dest_folder, $cur_fol
 				trigger_error('NOT_AUTHORISED');
 			}
 
-			if ($row['pm_count'] + sizeof($move_msg_ids) > $message_limit)
+			if ($message_limit && $row['pm_count'] + sizeof($move_msg_ids) > $message_limit)
 			{
 				$message = sprintf($user->lang['NOT_ENOUGH_SPACE_FOLDER'], $row['folder_name']) . '<br /><br />';
 				$message .= sprintf($user->lang['CLICK_RETURN_FOLDER'], '<a href="' . append_sid("{$phpbb_root_path}ucp.$phpEx", 'i=pm&amp;folder=' . $row['folder_id']) . '">', '</a>', $row['folder_name']);
@@ -795,7 +795,7 @@ function move_pm($user_id, $message_limit, $move_msg_ids, $dest_folder, $cur_fol
 			$num_messages = (int) $db->sql_fetchfield('num_messages');
 			$db->sql_freeresult($result);
 
-			if ($num_messages + sizeof($move_msg_ids) > $message_limit)
+			if ($message_limit && $num_messages + sizeof($move_msg_ids) > $message_limit)
 			{
 				$message = sprintf($user->lang['NOT_ENOUGH_SPACE_FOLDER'], $user->lang['PM_INBOX']) . '<br /><br />';
 				$message .= sprintf($user->lang['CLICK_RETURN_FOLDER'], '<a href="' . append_sid("{$phpbb_root_path}ucp.$phpEx", 'i=pm&amp;folder=inbox') . '">', '</a>', $user->lang['PM_INBOX']);
@@ -1281,9 +1281,9 @@ function get_folder_status($folder_id, $folder)
 	$return = array(
 		'folder_name'	=> $folder['folder_name'], 
 		'cur'			=> $folder['num_messages'],
-		'remaining'		=> $user->data['message_limit'] - $folder['num_messages'],
+		'remaining'		=> ($user->data['message_limit']) ? $user->data['message_limit'] - $folder['num_messages'] : 0,
 		'max'			=> $user->data['message_limit'],
-		'percent'		=> ($user->data['message_limit'] > 0) ? round(($folder['num_messages'] / $user->data['message_limit']) * 100) : 100,
+		'percent'		=> ($user->data['message_limit']) ? (($user->data['message_limit'] > 0) ? round(($folder['num_messages'] / $user->data['message_limit']) * 100) : 100) : 0,
 	);
 
 	$return['message']	= sprintf($user->lang['FOLDER_STATUS_MSG'], $return['percent'], $return['cur'], $return['max']);
