@@ -1496,6 +1496,7 @@ if (version_compare($current_version, '3.0.RC4', '<='))
 
 	// Setting this here again because new installations may not have it...
 	set_config('cron_lock', '0', true);
+	set_config('ldap_port', '');
 	set_config('ldap_user_filter', '');
 
 	$no_updates = false;

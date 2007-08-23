@@ -1042,45 +1042,49 @@ $template->assign_vars(array(
 	'S_IN_SEARCH'			=> true,
 ));
 
-// Handle large objects differently for Oracle and MSSQL
-switch ($db->sql_layer)
+// only show recent searches to search administrators
+if ($auth->acl_get('a_search'))
 {
-	case 'oracle':
-		$sql = 'SELECT search_time, search_keywords
-			FROM ' . SEARCH_RESULTS_TABLE . '
-			WHERE dbms_lob.getlength(search_keywords) > 0
-			ORDER BY search_time DESC';
-	break;
+	// Handle large objects differently for Oracle and MSSQL
+	switch ($db->sql_layer)
+	{
+		case 'oracle':
+			$sql = 'SELECT search_time, search_keywords
+				FROM ' . SEARCH_RESULTS_TABLE . '
+				WHERE dbms_lob.getlength(search_keywords) > 0
+				ORDER BY search_time DESC';
+		break;
+	
+		case 'mssql':
+		case 'mssql_odbc':
+			$sql = 'SELECT search_time, search_keywords
+				FROM ' . SEARCH_RESULTS_TABLE . '
+				WHERE DATALENGTH(search_keywords) > 0
+				ORDER BY search_time DESC';
+		break;
+	
+		default:
+			$sql = 'SELECT search_time, search_keywords
+				FROM ' . SEARCH_RESULTS_TABLE . '
+				WHERE search_keywords <> \'\'
+				ORDER BY search_time DESC';
+		break;
+	}
+	$result = $db->sql_query_limit($sql, 5);
 
-	case 'mssql':
-	case 'mssql_odbc':
-		$sql = 'SELECT search_time, search_keywords
-			FROM ' . SEARCH_RESULTS_TABLE . '
-			WHERE DATALENGTH(search_keywords) > 0
-			ORDER BY search_time DESC';
-	break;
+	while ($row = $db->sql_fetchrow($result))
+	{
+		$keywords = $row['search_keywords'];
 
-	default:
-		$sql = 'SELECT search_time, search_keywords
-			FROM ' . SEARCH_RESULTS_TABLE . '
-			WHERE search_keywords <> \'\'
-			ORDER BY search_time DESC';
-	break;
+		$template->assign_block_vars('recentsearch', array(
+			'KEYWORDS'	=> $keywords,
+			'TIME'		=> $user->format_date($row['search_time']),
+
+			'U_KEYWORDS'	=> append_sid("{$phpbb_root_path}search.$phpEx", 'keywords=' . urlencode(htmlspecialchars_decode($keywords)))
+		));
+	}
+	$db->sql_freeresult($result);
 }
-$result = $db->sql_query_limit($sql, 5);
-
-while ($row = $db->sql_fetchrow($result))
-{
-	$keywords = $row['search_keywords'];
-
-	$template->assign_block_vars('recentsearch', array(
-		'KEYWORDS'	=> $keywords,
-		'TIME'		=> $user->format_date($row['search_time']),
-
-		'U_KEYWORDS'	=> append_sid("{$phpbb_root_path}search.$phpEx", 'keywords=' . urlencode(htmlspecialchars_decode($keywords)))
-	));
-}
-$db->sql_freeresult($result);
 
 // Output the basic page
 page_header($user->lang['SEARCH']);

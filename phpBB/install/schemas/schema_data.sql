@@ -120,6 +120,7 @@ INSERT INTO phpbb_config (config_name, config_value) VALUES ('jab_username', '')
 INSERT INTO phpbb_config (config_name, config_value) VALUES ('ldap_base_dn', '');
 INSERT INTO phpbb_config (config_name, config_value) VALUES ('ldap_email', '');
 INSERT INTO phpbb_config (config_name, config_value) VALUES ('ldap_password', '');
+INSERT INTO phpbb_config (config_name, config_value) VALUES ('ldap_port', '');
 INSERT INTO phpbb_config (config_name, config_value) VALUES ('ldap_server', '');
 INSERT INTO phpbb_config (config_name, config_value) VALUES ('ldap_uid', '');
 INSERT INTO phpbb_config (config_name, config_value) VALUES ('ldap_user', '');

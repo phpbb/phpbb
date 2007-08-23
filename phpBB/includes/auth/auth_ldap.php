@@ -26,7 +26,17 @@ function init_ldap()
 		return $user->lang['LDAP_NO_LDAP_EXTENSION'];
 	}
 
-	if (!($ldap = @ldap_connect($config['ldap_server'])))
+	$config['ldap_port'] = (int) $config['ldap_port'];
+	if ($config['ldap_port'])
+	{
+		$ldap = @ldap_connect($config['ldap_server'], $config['ldap_port']);
+	}
+	else
+	{
+		$ldap = @ldap_connect($config['ldap_server']);
+	}
+
+	if (!$ldap)
 	{
 		return $user->lang['LDAP_NO_SERVER_CONNECTION'];
 	}
@@ -91,7 +101,17 @@ function login_ldap(&$username, &$password)
 		);
 	}
 
-	if (!($ldap = @ldap_connect($config['ldap_server'])))
+	$config['ldap_port'] = (int) $config['ldap_port'];
+	if ($config['ldap_port'])
+	{
+		$ldap = @ldap_connect($config['ldap_server'], $config['ldap_port']);
+	}
+	else
+	{
+		$ldap = @ldap_connect($config['ldap_server']);
+	}
+
+	if (!$ldap)
 	{
 		return array(
 			'status'		=> LOGIN_ERROR_EXTERNAL_AUTH,
@@ -257,6 +277,10 @@ function acp_ldap(&$new)
 		<dd><input type="text" id="ldap_server" size="40" name="config[ldap_server]" value="' . $new['ldap_server'] . '" /></dd>
 	</dl>
 	<dl>
+		<dt><label for="ldap_port">' . $user->lang['LDAP_PORT'] . ':</label><br /><span>' . $user->lang['LDAP_PORT_EXPLAIN'] . '</span></dt>
+		<dd><input type="text" id="ldap_port" size="40" name="config[ldap_port]" value="' . $new['ldap_port'] . '" /></dd>
+	</dl>
+	<dl>
 		<dt><label for="ldap_dn">' . $user->lang['LDAP_DN'] . ':</label><br /><span>' . $user->lang['LDAP_DN_EXPLAIN'] . '</span></dt>
 		<dd><input type="text" id="ldap_dn" size="40" name="config[ldap_base_dn]" value="' . $new['ldap_base_dn'] . '" /></dd>
 	</dl>
@@ -285,7 +309,7 @@ function acp_ldap(&$new)
 	// These are fields required in the config table
 	return array(
 		'tpl'		=> $tpl,
-		'config'	=> array('ldap_server', 'ldap_base_dn', 'ldap_uid', 'ldap_user_filter', 'ldap_email', 'ldap_user', 'ldap_password')
+		'config'	=> array('ldap_server', 'ldap_port', 'ldap_base_dn', 'ldap_uid', 'ldap_user_filter', 'ldap_email', 'ldap_user', 'ldap_password')
 	);
 }
 
