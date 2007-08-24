@@ -997,7 +997,7 @@ function watch_topic_forum($mode, &$s_watching, &$s_watching_img, $user_id, $for
 			$db->sql_freeresult($result);
 		}
 
-		if (!is_null($notify_status))
+		if (!is_null($notify_status) && $notify_status !== '')
 		{
 			if (isset($_GET['unwatch']))
 			{
