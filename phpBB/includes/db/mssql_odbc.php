@@ -102,19 +102,15 @@ class dbal_mssql_odbc extends dbal
 		switch ($status)
 		{
 			case 'begin':
-				return @odbc_autocommit($this->db_connect_id, false);
+				return @odbc_exec($this->db_connect_id, 'BEGIN TRANSACTION');
 			break;
 
 			case 'commit':
-				$result = @odbc_commit($this->db_connect_id);
-				@odbc_autocommit($this->db_connect_id, true);
-				return $result;
+				return @odbc_exec($this->db_connect_id, 'COMMIT TRANSACTION');
 			break;
 
 			case 'rollback':
-				$result = @odbc_rollback($this->db_connect_id);
-				@odbc_autocommit($this->db_connect_id, true);
-				return $result;
+				return @odbc_exec($this->db_connect_id, 'ROLLBACK TRANSACTION');
 			break;
 		}
 
