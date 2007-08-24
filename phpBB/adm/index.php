@@ -205,7 +205,10 @@ function adm_page_footer($copyright_html = true)
 
 	garbage_collection();
 
-	exit;
+	if (!defined('PHPBB_EMBEDDED'))
+	{
+		exit;
+	}
 }
 
 /**
