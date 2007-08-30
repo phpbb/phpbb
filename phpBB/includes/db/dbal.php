@@ -651,8 +651,10 @@ class dbal
 					</div>
 					</body>
 					</html>';
-				exit;
-				break;
+
+				exit_handler();
+
+			break;
 
 			case 'stop':
 				$endtime = explode(' ', microtime());

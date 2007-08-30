@@ -9,6 +9,10 @@
 */
 
 /**
+* valid external constants:
+* PHPBB_MSG_HANDLER
+* PHPBB_ROOT_PATH
+* PHPBB_ADMIN_PATH
 */
 
 // User related

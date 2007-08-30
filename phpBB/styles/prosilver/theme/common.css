@@ -459,7 +459,7 @@ dl.details {
 dl.details dt {
 	float: left;
 	clear: left;
-	width: 15em;
+	width: 30%;
 	text-align: right;
 	color: #000000;
 	display: block;
@@ -471,6 +471,7 @@ dl.details dd {
 	margin-bottom: 5px;
 	color: #828282;
 	float: left;
+	width: 65%;
 }
 
 /* Pagination

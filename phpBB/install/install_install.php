@@ -2060,7 +2060,7 @@ class install_install extends module
 		'FAST WebCrawler [Crawler]'	=> array('FAST-WebCrawler/', ''),
 		'Francis [Bot]'				=> array('http://www.neomo.de/', ''),
 		'Gigabot [Bot]'				=> array('Gigabot/', ''),
-		'Google Adsense [Bot]'		=> array('Mediapartners-Google/', ''),
+		'Google Adsense [Bot]'		=> array('Mediapartners-Google', ''),
 		'Google Desktop'			=> array('Google Desktop', ''),
 		'Google Feedfetcher'		=> array('Feedfetcher-Google', ''),
 		'Google [Bot]'				=> array('Googlebot', ''),

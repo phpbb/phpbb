@@ -1154,27 +1154,47 @@ switch ($mode)
 
 		// Build a relevant pagination_url
 		$params = $sort_params = array();
-		foreach (array('_POST', '_GET') as $global_var)
+
+		// We do not use request_var() here directly to save some calls (not all variables are set)
+		$check_params = array(
+			'g'				=> array('g', 0),
+			'sk'			=> array('sk', $default_key),
+			'sd'			=> array('sd', 'a'),
+			'form'			=> array('form', ''),
+			'field'			=> array('field', ''),
+			'select_single'	=> array('select_single', 0),
+			'username'		=> array('username', '', true),
+			'email'			=> array('email', ''),
+			'icq'			=> array('icq', ''),
+			'aim'			=> array('aim', ''),
+			'yahoo'			=> array('yahoo', ''),
+			'msn'			=> array('msn', ''),
+			'jabber'		=> array('jabber', ''),
+			'search_group_id'	=> array('search_group_id', 0),
+			'joined_select'	=> array('joined_select', 'lt'),
+			'active_select'	=> array('active_select', 'lt'),
+			'count_select'	=> array('count_select', 'eq'),
+			'joined'		=> array('joined', ''),
+			'active'		=> array('active', ''),
+			'count'			=> ($count !== '') ? array('count', 0) : array('count', ''),
+			'ipdomain'		=> array('ip', ''),
+			'first_char'	=> array('first_char', ''),
+		);
+
+		foreach ($check_params as $key => $call)
 		{
-			foreach ($$global_var as $key => $var)
+			if (!isset($_REQUEST[$key]))
 			{
-				if ($global_var == '_POST')
-				{
-					unset($_GET[$key]);
-				}
+				continue;
+			}
 
-				if (in_array($key, array('submit', 'start', 'mode', 'char')) || empty($var))
-				{
-					continue;
-				}
+			$param = call_user_func_array('request_var', $call);
+			$param = urlencode($key) . '=' . ((is_string($param)) ? urlencode($param) : $param);
+			$params[] = $param;
 
-				$param = urlencode($key) . '=' . urlencode(htmlspecialchars($var));
-				$params[] = $param;
-
-				if (!in_array($key, array('sk', 'sd')))
-				{
-					$sort_params[] = $param;
-				}
+			if ($key != 'sk' && $key != 'sd')
+			{
+				$sort_params[] = $param;
 			}
 		}
 
@@ -1405,7 +1425,7 @@ switch ($mode)
 			'S_MODE_SELECT'		=> $s_sort_key,
 			'S_ORDER_SELECT'	=> $s_sort_dir,
 			'S_CHAR_OPTIONS'	=> $s_char_options,
-			'S_MODE_ACTION'		=> $pagination_url . "&amp;form=$form")
+			'S_MODE_ACTION'		=> $pagination_url)
 		);
 }
 

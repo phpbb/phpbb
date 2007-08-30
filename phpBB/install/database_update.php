@@ -8,7 +8,7 @@
 *
 */
 
-$updates_to_version = '3.0.RC5';
+$updates_to_version = '3.0.RC6';
 
 // Return if we "just include it" to find out for which version the database update is responsuble for
 if (defined('IN_PHPBB') && defined('IN_INSTALL'))
@@ -983,7 +983,7 @@ if ($exit)
 </html>
 
 <?php
-	exit;
+	exit_handler();
 }
 
 // Schema updates
@@ -1502,6 +1502,17 @@ if (version_compare($current_version, '3.0.RC4', '<='))
 	$no_updates = false;
 }
 
+if (version_compare($current_version, '3.0.RC5', '<='))
+{
+	// In case the user is having the bot mediapartner google "as is", adjust it.
+	$sql = 'UPDATE ' . BOTS_TABLE . "
+		SET bot_agent = '" . $db->sql_escape('Mediapartners-Google') . "'
+		WHERE bot_agent = '" . $db->sql_escape('Mediapartners-Google/') . "'";
+	_sql($sql, $errored, $error_ary);
+
+	$no_updates = false;
+}
+
 _write_result($no_updates, $errored, $error_ary);
 
 $error_ary = array();
@@ -1604,7 +1615,7 @@ $cache->purge();
 
 <?php
 
-exit;
+exit_handler();
 
 
 /**

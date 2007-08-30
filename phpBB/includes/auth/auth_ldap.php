@@ -92,6 +92,15 @@ function login_ldap(&$username, &$password)
 {
 	global $db, $config, $user;
 
+	// do not allow empty password
+	if (!$password)
+	{
+		return array(
+			'status'	=> LOGIN_BREAK,
+			'error_msg'	=> 'NO_PASSWORD_SUPPLIED',
+		);
+	}
+
 	if (!@extension_loaded('ldap'))
 	{
 		return array(

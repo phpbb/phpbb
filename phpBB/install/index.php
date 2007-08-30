@@ -415,7 +415,7 @@ class module
 			$db->sql_close();
 		}
 
-		exit;
+		exit_handler();
 	}
 
 	/**
@@ -606,7 +606,7 @@ class module
 			$db->sql_close();
 		}
 
-		exit;
+		exit_handler();
 	}
 
 	/**

@@ -1577,6 +1577,8 @@ function on_page($num_items, $per_page, $start)
 * append_sid("{$phpbb_root_path}viewtopic.$phpEx", 't=1&f=2', false);
 * append_sid("{$phpbb_root_path}viewtopic.$phpEx", array('t' => 1, 'f' => 2));
 * </code>
+*
+* Ability to use own function <code>append_sid_phpbb_hook</code> as a hook. It is called in favor of this function.
 */
 function append_sid($url, $params = false, $is_amp = true, $session_id = false)
 {
@@ -2105,12 +2107,6 @@ function login_box($redirect = '', $l_explain = '', $l_success = '', $admin = fa
 			// We log the attempt to use a different username...
 			add_log('admin', 'LOG_ADMIN_AUTH_FAIL');
 			trigger_error('NO_AUTH_ADMIN_USER_DIFFER');
-		}
-
-		// do not allow empty password
-		if (!$password)
-		{
-			trigger_error('NO_PASSWORD_SUPPLIED');
 		}
 
 		// If authentication is successful we redirect user to previous page
@@ -3572,8 +3568,7 @@ function get_username_string($mode, $user_id, $username, $username_colour = '', 
 		}
 		else
 		{
-			$profile_url = ($custom_profile_url !== false) ? $custom_profile_url : append_sid("{$phpbb_root_path}memberlist.$phpEx", 'mode=viewprofile');
-			$profile_url .= '&amp;u=' . (int) $user_id;
+			$profile_url = ($custom_profile_url !== false) ? $custom_profile_url . '&amp;u=' . (int) $user_id : append_sid("{$phpbb_root_path}memberlist.$phpEx", 'mode=viewprofile&amp;u=' . (int) $user_id);
 		}
 	}
 	else
@@ -3794,7 +3789,7 @@ function msg_handler($errno, $msg_text, $errfile, $errline)
 			echo '</body>';
 			echo '</html>';
 			
-			exit;
+			exit_handler();
 		break;
 
 		case E_USER_WARNING:
@@ -3853,7 +3848,7 @@ function msg_handler($errno, $msg_text, $errfile, $errline)
 				page_footer();
 			}
 
-			exit;
+			exit_handler();
 		break;
 	}
 
@@ -4303,11 +4298,7 @@ function page_footer($run_cron = true)
 	$template->display('body');
 
 	garbage_collection();
-
-	if (!defined('PHPBB_EMBEDDED'))
-	{
-		exit;
-	}
+	exit_handler();
 }
 
 /**
@@ -4329,6 +4320,21 @@ function garbage_collection()
 	{
 		$db->sql_close();
 	}
+}
+
+/**
+* Handler for exit calls in phpBB
+*
+* Ability to use own function <code>exit_handler_phpbb_hook</code> as a hook. It is called in favor of this function.
+*/
+function exit_handler()
+{
+	if (function_exists('exit_handler_phpbb_hook'))
+	{
+		return exit_handler_phpbb_hook();
+	}
+
+	exit;
 }
 
 /**

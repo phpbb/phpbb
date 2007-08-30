@@ -36,6 +36,15 @@ function login_apache(&$username, &$password)
 {
 	global $db;
 
+	// do not allow empty password
+	if (!$password)
+	{
+		return array(
+			'status'	=> LOGIN_BREAK,
+			'error_msg'	=> 'NO_PASSWORD_SUPPLIED',
+		);
+	}
+
 	if (!isset($_SERVER['PHP_AUTH_USER']))
 	{
 		return array(

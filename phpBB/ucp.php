@@ -69,7 +69,7 @@ switch ($mode)
 
 	case 'confirm':
 		$module->load('ucp', 'confirm');
-		exit;
+		exit_handler();
 	break;
 
 	case 'login':

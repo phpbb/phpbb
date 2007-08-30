@@ -169,6 +169,7 @@ p a {
 <ol class="menu">
 	<li><a href="#changelog">Changelog</a>
 	<ol type="i">
+		<li><a href="#v30rc5">Changes since RC-5</a></li>
 		<li><a href="#v30rc4">Changes since RC-4</a></li>
 		<li><a href="#v30rc3">Changes since RC-3</a></li>
 		<li><a href="#v30rc2">Changes since RC-2</a></li>
@@ -182,11 +183,27 @@ p a {
 
 <a name="changelog"></a><h1>1. Changelog</h1>
 
-	<a name="v30rc4"></a><b>1.i. Changes since 3.0.RC4</b>
+	<a name="v30rc5"></a><b>1.i. Changes since 3.0.RC5</b>
 	<br /><br />
 	<div class="paragraph">
 
-	<p>These fixes/changes are currently only present within CVS and will appear within the next phpBB3 version.</p>
+	<ul class="menu">
+		<li>[Feature] Removing constant PHPBB_EMBEDDED in favor of using an exit_handler(); the constant was meant to achive this more or less.</li>
+		<li>[Feature] The new exit_handler() function having a check for the function exit_handler_phpbb_hook().</li>
+		<li>[Feature] Constant PHPBB_ADMIN_PATH introduced, having the same purpose as PHPBB_ROOT_PATH, but for the ACP.</li>
+		<li>[Fix] Further fixing user profile view (please do not forget to update/refresh your template and style) (Bug #14230)</li>
+		<li>[Fix] Adjust google adsense bot information (Bug #14296)</li>
+	</ul>
+
+	</div>
+	<a href="#top">Top</a>
+	<br /><br />
+
+	<hr />
+
+	<a name="v30rc4"></a><b>1.ii. Changes since 3.0.RC4</b>
+	<br /><br />
+	<div class="paragraph">
 
 	<ul class="menu">
 		<li>[Fix] MySQL, PostgreSQL and SQLite related database fixes (Bug #13862)</li>
@@ -243,7 +260,7 @@ p a {
 
 	<hr />
 
-	<a name="v30rc3"></a><b>1.ii. Changes since 3.0.RC3</b>
+	<a name="v30rc3"></a><b>1.iii. Changes since 3.0.RC3</b>
 	<br /><br />
 	<div class="paragraph">
 
@@ -360,7 +377,7 @@ p a {
 
 	<hr />
 
-	<a name="v30rc2"></a><b>1.iii. Changes since 3.0.RC2</b>
+	<a name="v30rc2"></a><b>1.iv. Changes since 3.0.RC2</b>
 	<br /><br />
 	<div class="paragraph">
 
@@ -414,7 +431,7 @@ p a {
 
 	<hr />
 
-	<a name="v30rc1"></a><b>1.iiii. Changes since 3.0.RC1</b>
+	<a name="v30rc1"></a><b>1.v. Changes since 3.0.RC1</b>
 	<br /><br />
 	<div class="paragraph">
 

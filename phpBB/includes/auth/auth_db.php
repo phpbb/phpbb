@@ -20,6 +20,15 @@ function login_db(&$username, &$password)
 {
 	global $db, $config;
 
+	// do not allow empty password
+	if (!$password)
+	{
+		return array(
+			'status'	=> LOGIN_BREAK,
+			'error_msg'	=> 'NO_PASSWORD_SUPPLIED',
+		);
+	}
+
 	$sql = 'SELECT user_id, username, user_password, user_passchg, user_pass_convert, user_email, user_type, user_login_attempts
 		FROM ' . USERS_TABLE . "
 		WHERE username_clean = '" . $db->sql_escape(utf8_clean_string($username)) . "'";
