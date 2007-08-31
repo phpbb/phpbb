@@ -44,7 +44,7 @@ $lang = array_merge($lang, array(
 	'BBCODE_B_HELP'				=> 'Bold text: [b]text[/b]',
 	'BBCODE_C_HELP'				=> 'Code display: [code]code[/code]',
 	'BBCODE_E_HELP'				=> 'List: Add list element',
-	'BBCODE_F_HELP'				=> 'Font size: [size=x-small]small text[/size]',
+	'BBCODE_F_HELP'				=> 'Font size: [size=85]small text[/size]',
 	'BBCODE_IS_OFF'				=> '%sBBCode%s is <em>OFF</em>',
 	'BBCODE_IS_ON'				=> '%sBBCode%s is <em>ON</em>',
 	'BBCODE_I_HELP'				=> 'Italic text: [i]text[/i]',

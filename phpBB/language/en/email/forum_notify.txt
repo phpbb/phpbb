@@ -10,7 +10,7 @@ If you want to view the topic, click the following link:
 {U_TOPIC}
 
 If you want to view the forum, click the following link:
-{U_TOPIC}
+{U_FORUM}
 
 If you no longer wish to watch this forum you can either click the "Unsubscribe forum" link found in the forum above, or by clicking the following link:
 

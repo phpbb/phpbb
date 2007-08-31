@@ -56,7 +56,7 @@ dl.icon {
 }
 
 * html #search-box {
-	margin-right: 35px;
+	width: 25%;
 }
 
 /* Correctly clear floating for details on profile view */
