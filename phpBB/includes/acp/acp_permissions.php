@@ -612,6 +612,16 @@ class acp_permissions
 		list($ug_id, ) = each($psubmit);
 		list($forum_id, ) = each($psubmit[$ug_id]);
 
+		$_POST['setting'] = 1;
+		// We obtain and check $_POST['setting'][$ug_id][$forum_id] directly and not using request_var() because request_var()
+		// currently does not support the amount of dimensions required. ;)
+		//		$auth_settings = request_var('setting', array(0 => array(0 => array('' => 0))));
+
+		if (empty($_POST['setting']) || empty($_POST['setting'][$ug_id]) || empty($_POST['setting'][$ug_id][$forum_id]) || !is_array($_POST['setting'][$ug_id][$forum_id]))
+		{
+			trigger_error('WRONG_PERMISSION_SETTING_FORMAT', E_USER_WARNING);
+		}
+
 		$auth_settings = array_map('intval', $_POST['setting'][$ug_id][$forum_id]);
 
 		// Do we have a role we want to set?

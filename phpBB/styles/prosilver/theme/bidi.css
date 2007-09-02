@@ -164,12 +164,12 @@
 }
 
 *:first-child+html dl.details dd {
-	margin-right: 35%;
+	margin-right: 30%;
 	float: none;
 }
 
 * html dl.details dd {
-	margin-right: 35%;
+	margin-right: 30%;
 	float: none;
 }
 

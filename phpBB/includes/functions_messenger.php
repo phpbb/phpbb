@@ -275,7 +275,7 @@ class messenger
 			break;
 		}
 
-		$message .= '<br /><em>' . htmlspecialchars($calling_page) . '<em><br /><br />' . $msg . '<br />';
+		$message .= '<br /><em>' . htmlspecialchars($calling_page) . '</em><br /><br />' . $msg . '<br />';
 		add_log('critical', 'LOG_ERROR_' . $type, $message);
 	}
 
@@ -465,13 +465,13 @@ class messenger
 
 			if (!$this->jabber->connect())
 			{
-				$this->error('JABBER', 'Could not connect to Jabber server<br />' . $this->jabber->get_log());
+				$this->error('JABBER', $user->lang['ERR_JAB_CONNECT'] . '<br />' . $this->jabber->get_log());
 				return false;
 			}
 
 			if (!$this->jabber->login())
 			{
-				$this->error('JABBER', 'Could not authorise on Jabber server<br />' . $this->jabber->get_log());
+				$this->error('JABBER', $user->lang['ERR_JAB_AUTH'] . '<br />' . $this->jabber->get_log());
 				return false;
 			}
 
@@ -541,7 +541,7 @@ class queue
 	*/
 	function process()
 	{
-		global $db, $config, $phpEx, $phpbb_root_path;
+		global $db, $config, $phpEx, $phpbb_root_path, $user;
 
 		set_config('last_queue_run', time(), true);
 
@@ -604,13 +604,13 @@ class queue
 
 					if (!$this->jabber->connect())
 					{
-						messenger::error('JABBER', 'Could not connect to Jabber server');
+						messenger::error('JABBER', $user->lang['ERR_JAB_CONNECT']);
 						continue 2;
 					}
 
 					if (!$this->jabber->login())
 					{
-						messenger::error('JABBER', 'Could not authorise on Jabber server');
+						messenger::error('JABBER', $user->lang['ERR_JAB_AUTH']);
 						continue 2;
 					}
 

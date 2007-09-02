@@ -93,6 +93,7 @@ class acp_jabber
 			'JAB_PACKAGE_SIZE'		=> $jab_package_size,
 			'JAB_USE_SSL'			=> $jab_use_ssl,
 			'S_CAN_USE_SSL'			=> jabber::can_use_ssl(),
+			'S_GTALK_NOTE'			=> (!@function_exists('dns_get_record')) ? true : false,
 		));
 	}
 }

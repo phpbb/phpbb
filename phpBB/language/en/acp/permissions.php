@@ -265,7 +265,8 @@ $lang = array_merge($lang, array(
 	'VIEW_GLOBAL_PERMS'		=> 'Global permissions',
 	'VIEW_PERMISSIONS'		=> 'View permissions',
 
-	'WRONG_PERMISSION_TYPE'	=> 'Wrong permission type selected.',
+	'WRONG_PERMISSION_TYPE'				=> 'Wrong permission type selected.',
+	'WRONG_PERMISSION_SETTING_FORMAT'	=> 'The permission settings are in a wrong format, phpBB is not able to process them correctly.',
 ));
 
 ?>

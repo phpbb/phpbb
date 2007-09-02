@@ -773,6 +773,7 @@ function posting_gen_attachment_entry($attachment_data, &$filename_data)
 
 			$template->assign_block_vars('attach_row', array(
 				'FILENAME'			=> basename($attach_row['real_filename']),
+				'A_FILENAME'		=> addslashes(basename($attach_row['real_filename'])),
 				'FILE_COMMENT'		=> $attach_row['attach_comment'],
 				'ATTACH_ID'			=> $attach_row['attach_id'],
 				'S_IS_ORPHAN'		=> $attach_row['is_orphan'],
@@ -1626,6 +1627,12 @@ function submit_post($mode, $subject, $username, $topic_type, &$poll, &$data, $u
 				);
 
 				$sql_data[POSTS_TABLE]['stat'][] = 'post_edit_count = post_edit_count + 1';
+			}
+			else if (!$data['post_edit_reason'] && $mode == 'edit' && $auth->acl_get('m_edit', $data['forum_id']))
+			{
+				$sql_data[POSTS_TABLE]['sql'] = array(
+					'post_edit_reason'	=> '',
+				);
 			}
 
 			// If the person editing this post is different to the one having posted then we will add a log entry stating the edit

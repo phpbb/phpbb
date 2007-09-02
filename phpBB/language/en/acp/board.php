@@ -424,10 +424,9 @@ $lang = array_merge($lang, array(
 $lang = array_merge($lang, array(
 	'ACP_JABBER_SETTINGS_EXPLAIN'	=> 'Here you can enable and control the use of Jabber for instant messaging and board notifications. Jabber is an open source protocol and therefore available for use by anyone. Some Jabber servers include gateways or transports which allow you to contact users on other networks. Not all servers offer all transports and changes in protocols can prevent transports from operating. Please be sure to enter already registered account details - phpBB will use the details you enter here as is.',
 
-	'ERR_JAB_AUTH'			=> 'Could not authorise on Jabber server.',
-	'ERR_JAB_CONNECT'		=> 'Could not connect to Jabber server.',
 	'JAB_ENABLE'				=> 'Enable Jabber',
 	'JAB_ENABLE_EXPLAIN'		=> 'Enables use of Jabber messaging and notifications.',
+	'JAB_GTALK_NOTE'			=> 'Please note that using GTalk will not work due to the <samp>dns_get_record</samp> function not found. This function is not available in PHP4 and not implemented on Windows platforms, nor does it (currently) work on *BSD systems.',
 	'JAB_PACKAGE_SIZE'			=> 'Jabber package size',
 	'JAB_PACKAGE_SIZE_EXPLAIN'	=> 'This is the number of messages sent in one package. If set to 0 the message is sent immediately and will not be queued for later sending.',
 	'JAB_PASSWORD'				=> 'Jabber password',

@@ -1090,7 +1090,6 @@ while ($row = $db->sql_fetchrow($result))
 	}
 }
 $db->sql_freeresult($result);
-unset($today);
 
 // Load custom profile fields
 if ($config['load_cpf_viewtopic'])

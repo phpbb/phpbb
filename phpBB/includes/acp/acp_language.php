@@ -163,7 +163,12 @@ class acp_language
 			case 'download_file':
 			case 'upload_data':
 
-				if (!$lang_id || empty($_POST['entry']) || !is_array($_POST['entry']))
+				if (!$lang_id || empty($_POST['entry']))
+				{
+					trigger_error($user->lang['NO_LANG_ID'] . adm_back_link($this->u_action), E_USER_WARNING);
+				}
+
+				if ($this->language_directory != 'email' && !is_array($_POST['entry']))
 				{
 					trigger_error($user->lang['NO_LANG_ID'] . adm_back_link($this->u_action), E_USER_WARNING);
 				}

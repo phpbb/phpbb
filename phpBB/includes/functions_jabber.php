@@ -216,10 +216,6 @@ class jabber
 				$server = $record[0]['target'];
 			}
 		}
-		else
-		{
-			$this->add_to_log('Warning: dns_get_record() function not found. GTalk will not work.');
-		}
 
 		$server = $use_ssl ? 'ssl://' . $server : $server;
 
