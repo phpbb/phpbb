@@ -1192,7 +1192,7 @@ class acp_users
 					'view_smilies'		=> request_var('view_smilies', $this->optionget($user_row, 'viewsmilies')),
 					'view_sigs'			=> request_var('view_sigs', $this->optionget($user_row, 'viewsigs')),
 					'view_avatars'		=> request_var('view_avatars', $this->optionget($user_row, 'viewavatars')),
-					'view_wordcensor'	=> request_var('view_wordcensore', $this->optionget($user_row, 'viewcensors')),
+					'view_wordcensor'	=> request_var('view_wordcensor', $this->optionget($user_row, 'viewcensors')),
 
 					'bbcode'	=> request_var('bbcode', $this->optionget($user_row, 'bbcode')),
 					'smilies'	=> request_var('smilies', $this->optionget($user_row, 'smilies')),
