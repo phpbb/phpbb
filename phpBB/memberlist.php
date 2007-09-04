@@ -1176,7 +1176,7 @@ switch ($mode)
 			'count_select'	=> array('count_select', 'eq'),
 			'joined'		=> array('joined', ''),
 			'active'		=> array('active', ''),
-			'count'			=> ($count !== '') ? array('count', 0) : array('count', ''),
+			'count'			=> (request_var('count', '') !== '') ? array('count', 0) : array('count', ''),
 			'ipdomain'		=> array('ip', ''),
 			'first_char'	=> array('first_char', ''),
 		);
