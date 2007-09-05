@@ -329,6 +329,7 @@ function place_pm_into_folder(&$global_privmsgs_rules, $release = false)
 	$user_id = (int) $user->data['user_id'];
 
 	$action_ary = $move_into_folder = array();
+	$num_not_moved = $num_removed = 0;
 
 	// Newly processing on-hold messages
 	if ($release)
@@ -383,6 +384,17 @@ function place_pm_into_folder(&$global_privmsgs_rules, $release = false)
 			// The function needs this value to be up-to-date
 			$user_new_privmsg = (int) $user->data['user_new_privmsg'];
 		}
+	}
+	else
+	{
+		// If not relasing we need to check the number of not moved messages...
+		$sql = 'SELECT COUNT(msg_id) as num_messages
+			FROM ' . PRIVMSGS_TO_TABLE . "
+			WHERE user_id = $user_id
+				AND folder_id = " . PRIVMSGS_HOLD_BOX;
+		$result = $db->sql_query($sql);
+		$num_not_moved = (int) $db->sql_fetchfield('num_messages');
+		$db->sql_freeresult($result);
 	}
 
 	// Get those messages not yet placed into any box
@@ -558,7 +570,6 @@ function place_pm_into_folder(&$global_privmsgs_rules, $release = false)
 	// Do not change the order of processing
 	// The number of queries needed to be executed here highly depends on the defined rules and are
 	// only gone through if new messages arrive.
-	$num_not_moved = $num_removed = 0;
 
 	// Delete messages
 	if (sizeof($delete_ids))
@@ -619,12 +630,11 @@ function place_pm_into_folder(&$global_privmsgs_rules, $release = false)
 
 		if (in_array(PRIVMSGS_INBOX, array_keys($move_into_folder)))
 		{
-			$sql = 'SELECT folder_id, COUNT(msg_id) as num_messages
+			$sql = 'SELECT COUNT(msg_id) as num_messages
 				FROM ' . PRIVMSGS_TO_TABLE . "
 				WHERE user_id = $user_id
-					AND folder_id = " . PRIVMSGS_INBOX . "
-				GROUP BY folder_id";
-			$result = $db->sql_query_limit($sql, 1);
+					AND folder_id = " . PRIVMSGS_INBOX;
+			$result = $db->sql_query($sql);
 			$folder[PRIVMSGS_INBOX] = (int) $db->sql_fetchfield('num_messages');
 			$db->sql_freeresult($result);
 		}
@@ -673,11 +683,12 @@ function place_pm_into_folder(&$global_privmsgs_rules, $release = false)
 				delete_pm($user_id, $delete_ids, $dest_folder);
 			}
 		}
-		
+
 		// 
 		if ($full_folder_action == FULL_FOLDER_HOLD)
 		{
 			$num_not_moved += sizeof($msg_ary);
+			$num_new -= sizeof($msg_ary);
 
 			$sql = 'UPDATE ' . PRIVMSGS_TO_TABLE . ' 
 				SET folder_id = ' . PRIVMSGS_HOLD_BOX . '

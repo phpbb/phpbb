@@ -245,10 +245,10 @@ class ucp_pm
 				if ($user->data['user_new_privmsg'] && $action == 'view_folder')
 				{
 					$return = place_pm_into_folder($global_privmsgs_rules, request_var('release', 0));
-					$num_not_moved = $user->data['user_new_privmsg'];
+					$num_not_moved = $return['not_moved'];
 
 					// Make sure num_not_moved is valid.
-					if ($num_not_moved < 0)
+					if ($user->data['user_new_privmsg'] < 0 || $num_not_moved < 0)
 					{
 						$sql = 'UPDATE ' . USERS_TABLE . '
 							SET user_new_privmsg = 0, user_unread_privmsg = 0

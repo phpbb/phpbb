@@ -426,7 +426,7 @@ $lang = array_merge($lang, array(
 
 	'JAB_ENABLE'				=> 'Enable Jabber',
 	'JAB_ENABLE_EXPLAIN'		=> 'Enables use of Jabber messaging and notifications.',
-	'JAB_GTALK_NOTE'			=> 'Please note that using GTalk will not work due to the <samp>dns_get_record</samp> function not found. This function is not available in PHP4 and not implemented on Windows platforms, nor does it (currently) work on *BSD systems.',
+	'JAB_GTALK_NOTE'			=> 'Please note that GTalk will not work because the <samp>dns_get_record</samp> function could not be found. This function is not available in PHP4, and is not implemented on Windows platforms. It currently does not work on BSD-based systems, including Mac OS.',
 	'JAB_PACKAGE_SIZE'			=> 'Jabber package size',
 	'JAB_PACKAGE_SIZE_EXPLAIN'	=> 'This is the number of messages sent in one package. If set to 0 the message is sent immediately and will not be queued for later sending.',
 	'JAB_PASSWORD'				=> 'Jabber password',

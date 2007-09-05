@@ -79,6 +79,12 @@ switch ($cron_type)
 			break;
 		}
 
+		// A user reported using the mail() function while using shutdown does not work. We do not want to risk that.
+		if ($use_shutdown_function && !$config['smtp_delivery'])
+		{
+			$use_shutdown_function = false;
+		}
+
 		include_once($phpbb_root_path . 'includes/functions_messenger.' . $phpEx);
 		$queue = new queue();
 

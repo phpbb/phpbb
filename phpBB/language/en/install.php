@@ -160,7 +160,7 @@ $lang = array_merge($lang, array(
 	'FILES_REQUIRED_EXPLAIN'	=> '<strong>Required</strong> - In order to function correctly phpBB needs to be able to access or write to certain files or directories. If you see “Not Found” you need to create the relevant file or directory. If you see “Unwritable” you need to change the permissions on the file or directory to allow phpBB to write to it.',
 	'FILLING_TABLE'				=> 'Filling table <strong>%s</strong>',
 	'FILLING_TABLES'			=> 'Filling tables',
-	'FINAL_STEP'				=> 'Processing final step',
+	'FINAL_STEP'				=> 'Process final step',
 	'FORUM_ADDRESS'				=> 'Board address',
 	'FORUM_ADDRESS_EXPLAIN'		=> 'This is the URL of your former board, for example <samp>http://www.example.com/phpBB2/</samp>. If an address is entered here and not left empty every instance of this address will be replaced by your new board address within messages, private messages and signatures.',
 	'FORUM_PATH'				=> 'Board path',
@@ -371,7 +371,7 @@ $lang = array_merge($lang, array(
 	'CHECK_FILES_EXPLAIN'			=> 'Within the next step all files will be checked against the update files - this can take a while if this is the first file check.',
 	'CHECK_FILES_UP_TO_DATE'		=> 'According to your database your version is up to date. You may want to proceed with the file check to make sure all files are really up to date with the latest phpBB version.',
 	'CHECK_UPDATE_DATABASE'			=> 'Continue update process',
-	'COLLECTED_INFORMATION'			=> 'Information on collected files',
+	'COLLECTED_INFORMATION'			=> 'File information',
 	'COLLECTED_INFORMATION_EXPLAIN'	=> 'The list below shows information about the files needing an update. Please read the information in front of every status block to see what they mean and what you may need to do to perform a successful update.',
 	'COMPLETE_LOGIN_TO_BOARD'		=> 'You should now <a href="../ucp.php?mode=login">login to your board</a> and check if everything is working fine. Do not forget to delete, rename or move your install directory!',
 	'CONTINUE_UPDATE_NOW'			=> 'Continue the update process now',
@@ -406,11 +406,11 @@ $lang = array_merge($lang, array(
 	'FILES_MODIFIED'				=> 'Modified files',
 	'FILES_MODIFIED_EXPLAIN'		=> 'The following files are modified and do not represent the original files from the old version. The updated file will be a merge between your modifications and the new file.',
 	'FILES_NEW'						=> 'New files',
-	'FILES_NEW_EXPLAIN'				=> 'The following files currently do not exist within your installation.',
+	'FILES_NEW_EXPLAIN'				=> 'The following files currently do not exist within your installation. These files will be added to your installation.',
 	'FILES_NEW_CONFLICT'			=> 'New conflicting files',
 	'FILES_NEW_CONFLICT_EXPLAIN'	=> 'The following files are new within the latest version but it has been determined that there is already a file with the same name within the same position. This file will be overwritten by the new file.',
 	'FILES_NOT_MODIFIED'			=> 'Not modified files',
-	'FILES_NOT_MODIFIED_EXPLAIN'	=> 'The following files were not modified and represent the original phpBB files from the version you want to update from.',
+	'FILES_NOT_MODIFIED_EXPLAIN'	=> 'The following files are not modified and represent the original phpBB files from the version you want to update from.',
 	'FILES_UP_TO_DATE'				=> 'Already updated files',
 	'FILES_UP_TO_DATE_EXPLAIN'		=> 'The following files are already up to date and do not need to be updated.',
 	'FTP_SETTINGS'					=> 'FTP settings',
@@ -556,10 +556,10 @@ $lang = array_merge($lang, array(
 // Default database schema entries...
 $lang = array_merge($lang, array(
 	'CONFIG_BOARD_EMAIL_SIG'		=> 'Thanks, The Management',
-	'CONFIG_SITE_DESC'				=> 'A _little_ text to describe your forum',
+	'CONFIG_SITE_DESC'				=> 'A short text to describe your forum',
 	'CONFIG_SITENAME'				=> 'yourdomain.com',
 
-	'DEFAULT_INSTALL_POST'			=> 'This is an example post in your phpBB3 installation. You may delete this post, this topic and even this forum if you like since everything seems to be working!',
+	'DEFAULT_INSTALL_POST'			=> 'This is an example post in your phpBB3 installation. Everything seems to be working. You may delete this post if you like and continue to set up your board. During the installation process your first category and your first forum are assigned an appropriate set of permissions for the predefined usergroups administrators, bots, global moderators, guests, registered users and registered COPPA users. If you also choose to delete your first category and your first forum, do not forget to assign permissions for all these usergroups for all new categories and forums you create. It is recommended to rename your first category and your first forum and copy permissions from these while creating new categories and forums. Have fun!',
 
 	'EXT_GROUP_ARCHIVES'			=> 'Archives',
 	'EXT_GROUP_DOCUMENTS'			=> 'Documents',
@@ -571,9 +571,9 @@ $lang = array_merge($lang, array(
 	'EXT_GROUP_REAL_MEDIA'			=> 'Real Media',
 	'EXT_GROUP_WINDOWS_MEDIA'		=> 'Windows Media',
 
-	'FORUMS_FIRST_CATEGORY'			=> 'My first Category',
-	'FORUMS_TEST_FORUM_DESC'		=> 'This is just a test forum.',
-	'FORUMS_TEST_FORUM_TITLE'		=> 'Test Forum 1',
+	'FORUMS_FIRST_CATEGORY'			=> 'Your first category',
+	'FORUMS_TEST_FORUM_DESC'		=> 'Description of your first forum.',
+	'FORUMS_TEST_FORUM_TITLE'		=> 'Your first forum',
 
 	'RANKS_SITE_ADMIN_TITLE'		=> 'Site Admin',
 	'REPORT_WAREZ'					=> 'The post contains links to illegal or pirated software.',

@@ -217,7 +217,7 @@ $lang = array_merge($lang, array(
 
 // Disallow Usernames
 $lang = array_merge($lang, array(
-	'ACP_DISALLOW_EXPLAIN'	=> 'Here you can control usernames which will not be allowed to be used. Disallowed usernames are allowed to contain a wildcard character of *.  Please note that you will not be allowed to specify any username that has already been registered, you must first delete that name then disallow it.',
+	'ACP_DISALLOW_EXPLAIN'	=> 'Here you can control usernames which will not be allowed to be used. Disallowed usernames are allowed to contain a wildcard character of *. Please note that you will not be allowed to specify any username that has already been registered, you must first delete that name then disallow it.',
 	'ADD_DISALLOW_EXPLAIN'	=> 'You can disallow a username using the wildcard character * to match any character.',
 	'ADD_DISALLOW_TITLE'	=> 'Add a disallowed username',
 
