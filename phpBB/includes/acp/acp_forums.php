@@ -163,7 +163,8 @@ class acp_forums
 						$forum_perm_from = request_var('forum_perm_from', 0);
 
 						// Copy permissions?
-						if ($forum_perm_from && !empty($forum_perm_from) && $forum_perm_from != $forum_data['forum_id'])
+						if ($forum_perm_from && !empty($forum_perm_from) && $forum_perm_from != $forum_data['forum_id'] && 
+							(($action != 'edit') || $auth->acl_get('acl_a_fauth && acl_a_authusers && acl_a_authgroups && acl_a_mauth')))
 						{
 							// if we edit a forum delete current permissions first
 							if ($action == 'edit')
@@ -656,6 +657,7 @@ class acp_forums
 					'S_PRUNE_STICKY'			=> ($forum_data['forum_flags'] & FORUM_FLAG_PRUNE_STICKY) ? true : false,
 					'S_DISPLAY_ACTIVE_TOPICS'	=> ($forum_data['forum_flags'] & FORUM_FLAG_ACTIVE_TOPICS) ? true : false,
 					'S_ENABLE_POST_REVIEW'		=> ($forum_data['forum_flags'] & FORUM_FLAG_POST_REVIEW) ? true : false,
+					'S_CAN_COPY_PERMISSIONS'	=> (($action != 'edit') || $auth->acl_get('acl_a_fauth && acl_a_authusers && acl_a_authgroups && acl_a_mauth')),
 					)
 				);
 
