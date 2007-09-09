@@ -2711,7 +2711,7 @@ function make_clickable_callback($type, $whitespace, $url, $relative_url, $class
 			$tag			= 'l';
 			$relative_url	= preg_replace('/[&?]sid=[0-9a-f]{32}$/', '', preg_replace('/([&?])sid=[0-9a-f]{32}&/', '$1', $relative_url));
 			$url			= $url . '/' . $relative_url;
-			$text			= ($relative_url) ? $relative_url : $url . '/';
+			$text			= ($relative_url) ? $relative_url : $url;
 		break;
 
 		case MAGIC_URL_FULL:
