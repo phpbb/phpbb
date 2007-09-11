@@ -949,7 +949,7 @@ function mcp_fork_topic($topic_ids)
 
 		if (!sizeof($topic_ids))
 		{
-			$additional_msg = $user->lang['NO_TOPICS_SELECTED'];
+			$additional_msg = $user->lang['NO_TOPIC_SELECTED'];
 		}
 		else if (!sizeof($forum_data))
 		{
