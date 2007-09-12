@@ -99,8 +99,8 @@ class dbal
 	*/
 	function sql_add_num_queries($cached = false)
 	{
-		$this->num_queries['cached'] += ($cached) ? 1 : 0;
-		$this->num_queries['normal'] += ($cached) ? 0 : 1;
+		$this->num_queries['cached'] += ($cached !== false) ? 1 : 0;
+		$this->num_queries['normal'] += ($cached !== false) ? 0 : 1;
 		$this->num_queries['total'] += 1;
 	}
 

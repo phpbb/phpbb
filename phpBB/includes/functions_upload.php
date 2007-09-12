@@ -577,7 +577,7 @@ class fileupload
 
 			if (function_exists('mime_content_type'))
 			{
-				$mimetype = mime_content_type($filename);
+				$mimetype = mime_content_type($source_file);
 			}
 
 			// Some browsers choke on a mimetype of application/octet-stream

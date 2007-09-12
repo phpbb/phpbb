@@ -695,25 +695,34 @@ class jabber
 	}
 
 	/**
-	* parse_data like a="b",c="d",...
+	* parse_data like a="b",c="d",... or like a="a, b", c, d="e", f=g,...
 	* @param string $data
 	* @access public
 	* @return array a => b ...
 	*/
 	function parse_data($data)
 	{
-		// super basic, but should suffice
 		$data = explode(',', $data);
 		$pairs = array();
+		$key = false;
 
 		foreach ($data as $pair)
 		{
 			$dd = strpos($pair, '=');
+
 			if ($dd)
 			{
-				$pairs[substr($pair, 0, $dd)] = trim(substr($pair, $dd + 1), '"');
+				$key = trim(substr($pair, 0, $dd));
+				$pairs[$key] = trim(trim(substr($pair, $dd + 1)), '"');
+			}
+			else if (strpos(strrev(trim($pair)), '"') === 0 && $key)
+			{
+				// We are actually having something left from "a, b" values, add it to the last one we handled.
+				$pairs[$key] .= ',' . trim(trim($pair), '"');
+				continue;
 			}
 		}
+
 		return $pairs;
 	}
 

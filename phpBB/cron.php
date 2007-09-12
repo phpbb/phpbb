@@ -259,18 +259,29 @@ switch ($cron_type)
 // Unloading cache and closing db after having done the dirty work.
 if ($use_shutdown_function)
 {
+	register_shutdown_function('unlock_cron');
 	register_shutdown_function('garbage_collection');
 }
 else
 {
+	unlock_cron();
 	garbage_collection();
 }
 
-$sql = 'UPDATE ' . CONFIG_TABLE . "
-	SET config_value = '0'
-	WHERE config_name = 'cron_lock' AND config_value = '" . $db->sql_escape(CRON_ID) . "'";
-$db->sql_query($sql);
-
 exit;
+
+
+/**
+* Unlock cron script
+*/
+function unlock_cron()
+{
+	global $db;
+
+	$sql = 'UPDATE ' . CONFIG_TABLE . "
+		SET config_value = '0'
+		WHERE config_name = 'cron_lock' AND config_value = '" . $db->sql_escape(CRON_ID) . "'";
+	$db->sql_query($sql);
+}
 
 ?>
