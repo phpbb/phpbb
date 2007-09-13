@@ -294,7 +294,7 @@ $lang = array_merge($lang, array(
 	'POST_ID'						=> 'Post ID',
 	'PREFIX_FOUND'					=> 'A scan of your tables has shown a valid installation using <strong>%s</strong> as table prefix.',
 	'PREPROCESS_STEP'				=> 'Executing pre-processing functions/queries',
-	'PRE_CONVERT_COMPLETE'			=> 'All pre-conversion steps have successfully been completed. You may now begin the actual conversion process. Please note that you may have to manually adjust several things. After conversion, especially check the permissions assigned, rebuild your search index if necessary and also make sure files got copied correctly, for example avatars and smilies.',
+	'PRE_CONVERT_COMPLETE'			=> 'All pre-conversion steps have successfully been completed. You may now begin the actual conversion process. Please note that you may have to manually do and adjust several things. After conversion, especially check the permissions assigned, rebuild your search index which is not converted and also make sure files got copied correctly, for example avatars and smilies.',
 	'PROCESS_LAST'					=> 'Processing last statements',
 
 	'REFRESH_PAGE'				=> 'Refresh page to continue conversion',

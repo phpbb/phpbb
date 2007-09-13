@@ -2423,7 +2423,7 @@ function view_log($mode, &$log, &$log_count, $limit = 0, $offset = 0, $forum_id 
 
 			if (isset($user->lang[$row['log_operation']]))
 			{
-				// We supress the warning about inappropiate number of passed parameters here due to possible changes within LOG strings from one version to another.
+				// We supress the warning about inappropriate number of passed parameters here due to possible changes within LOG strings from one version to another.
 				$log[$i]['action'] = @vsprintf($log[$i]['action'], $log_data_ary);
 
 				// If within the admin panel we do not censor text out

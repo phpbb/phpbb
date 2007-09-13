@@ -822,7 +822,7 @@ $sql = 'SELECT *
 
 	<h3>sql_build_array():</h3>
 
-	<p>If you need to UPDATE or INSERT data, make use of the <code>$db-&gt;sql_build_array()</code> function. This function already escapes strings and checks other types, so there is no need to do this here. The data to be inserted should go into an array - <code>$sql_ary</code> - or directly within the statement if one one or two variables needs to be inserted/updated. An example of an insert statement would be:</p>
+	<p>If you need to UPDATE or INSERT data, make use of the <code>$db-&gt;sql_build_array()</code> function. This function already escapes strings and checks other types, so there is no need to do this here. The data to be inserted should go into an array - <code>$sql_ary</code> - or directly within the statement if one or two variables needs to be inserted/updated. An example of an insert statement would be:</p>
 
 	<blockquote><pre>
 $sql_ary = array(
@@ -1940,7 +1940,7 @@ if (utf8_case_fold_nfc($string1) == utf8_case_fold_nfc($string2))
 
 	<h3>Normalisation of language tags for phpBB:</h3>
 
-	<p>For phpBB, the language tags are <strong>not</strong> used in their raw form and instead converted to all lower-case and have the hyphen <code>-</code> replaced with an underscore <code>_</code> where appropiate, with some examples below:</p>
+	<p>For phpBB, the language tags are <strong>not</strong> used in their raw form and instead converted to all lower-case and have the hyphen <code>-</code> replaced with an underscore <code>_</code> where appropriate, with some examples below:</p>
 
 	<table summary="Normalisation of language tags for usage in phpBB">
 	<caption>Language tag normalisation examples</caption>
@@ -2040,13 +2040,13 @@ if (utf8_case_fold_nfc($string1) == utf8_case_fold_nfc($string2))
 	</tbody>
 	</table>
 
-	<p>For the localised language description, just translate the English version though use whatever appropiate punctuation typical for your own locale, assuming the language uses punctuation at all.</p>
+	<p>For the localised language description, just translate the English version though use whatever appropriate punctuation typical for your own locale, assuming the language uses punctuation at all.</p>
 
 	<h3>Unicode bi-directional considerations:</h3>
 	
 	<p>Because phpBB is now UTF-8, all translators must take into account that certain strings may be shown when the directionality of the document is either opposite to normal or is ambiguous.</p>
 		
-	<p>The various Unicode control characters for bi-directional text and their HTML enquivalents where appropiate are as follows:</p>
+	<p>The various Unicode control characters for bi-directional text and their HTML enquivalents where appropriate are as follows:</p>
 	
 	<table summary="Table of the various Unicode bidirectional control characters">
 	<caption>Unicode bidirectional control characters &amp; HTML elements/entities</caption>
@@ -2159,12 +2159,12 @@ if (utf8_case_fold_nfc($string1) == utf8_case_fold_nfc($string2))
 	</table>
 	
 	<p>In choosing which of the three methods to use, in the majority of cases, the <code>LRM</code> or <code>RLM</code> to put a &quot;strong&quot; character to fully enclose an ambiguous punctuation character and thus make it inherit the correct directionality is sufficient.</p>
-	<p>Within some cases, there may be mixed scripts of a left-to-right and right-to-left direction, so using <code>LRE</code> &amp; <code>RLE</code> with <code>PDF</code> may be more appropiate. Lastly, in very rare instances where directionality must be forced, then use <code>LRO</code> &amp; <code>RLO</code> with <code>PDF</code>.</p>
+	<p>Within some cases, there may be mixed scripts of a left-to-right and right-to-left direction, so using <code>LRE</code> &amp; <code>RLE</code> with <code>PDF</code> may be more appropriate. Lastly, in very rare instances where directionality must be forced, then use <code>LRO</code> &amp; <code>RLO</code> with <code>PDF</code>.</p>
 	<p>For further information on authoring techniques of bi-directional text, please see the W3C tutorial on <a href="http://www.w3.org/International/tutorials/bidi-xhtml/">authoring techniques for XHTML pages with bi-directional text</a>.</p>
 	
 	<h3>Working with placeholders:</h3>
 	
-	<p>As phpBB is translated into languages with different ordering rules to that of English, it is possible to show specific values in any order deemed appropiate. Take for example the extremely simple &quot;Page <em>X</em> of <em>Y</em>&quot;, whilst in English this could just be coded as:</p>
+	<p>As phpBB is translated into languages with different ordering rules to that of English, it is possible to show specific values in any order deemed appropriate. Take for example the extremely simple &quot;Page <em>X</em> of <em>Y</em>&quot;, whilst in English this could just be coded as:</p>
 	
 	<blockquote><pre>
 	...

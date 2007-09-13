@@ -207,6 +207,7 @@ $lang = array_merge($lang, array(
 	'USER_CANNOT_FORUM_POST'	=> 'You are not able to do posting operations on this forum due to the forum type not supporting it.',
 
 	'VIEW_MESSAGE'				=> '%sView your submitted message%s',
+	'VIEW_PRIVATE_MESSAGE'		=> '%sView your submitted private message%s',
 
 	'WRONG_FILESIZE'			=> 'The file is too big, maximum allowed size is %1d %2s.',
 	'WRONG_SIZE'				=> 'The image must be at least %1$d pixels wide, %2$d pixels high and at most %3$d pixels wide and %4$d pixels high. The submitted image is %5$d pixels wide and %6$d pixels high.',
