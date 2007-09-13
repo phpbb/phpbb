@@ -746,6 +746,8 @@ class session
 	{
 		global $db, $config;
 
+		$batch_size = 10;
+		
 		if (!$this->time_now)
 		{
 			$this->time_now = time();
@@ -762,7 +764,7 @@ class session
 			FROM ' . SESSIONS_TABLE . '
 			WHERE session_time < ' . ($this->time_now - $config['session_length']) . '
 			GROUP BY session_user_id, session_page';
-		$result = $db->sql_query_limit($sql, 10);
+		$result = $db->sql_query_limit($sql, $batch_size);
 
 		$del_user_id = array();
 		$del_sessions = 0;
@@ -788,23 +790,55 @@ class session
 			$db->sql_query($sql);
 		}
 
-		if ($del_sessions < 10)
+		if ($del_sessions < $batch_size)
 		{
-			// Less than 10 sessions, update gc timer ... else we want gc
+			// Less than 10 users, update gc timer ... else we want gc
 			// called again to delete other sessions
 			set_config('session_last_gc', $this->time_now, true);
+			
+			if ($config['max_autologin_time'])
+			{
+				$sql = 'DELETE FROM ' . SESSIONS_KEYS_TABLE . '
+					WHERE last_login < ' . (time() - (86400 * (int) $config['max_autologin_time']));
+				$db->sql_query($sql);
+			}
+			$this->confirm_gc();
 		}
-
-		if ($config['max_autologin_time'])
-		{
-			$sql = 'DELETE FROM ' . SESSIONS_KEYS_TABLE . '
-				WHERE last_login < ' . (time() - (86400 * (int) $config['max_autologin_time']));
-			$db->sql_query($sql);
-		}
-
+		
 		return;
 	}
+	
+	function confirm_gc($type = 0)
+	{
+		global $db, $config;
+		
+		$sql = 'SELECT DISTINCT c.session_id
+				FROM ' . CONFIRM_TABLE . ' c
+				LEFT JOIN ' . SESSIONS_TABLE . ' s ON (c.session_id = s.session_id)
+				WHERE s.session_id IS NULL' . 
+					((empty($type)) ? '' : ' AND c.confirm_type = ' . (int) $type);
+		$result = $db->sql_query($sql);
 
+		if ($row = $db->sql_fetchrow($result))
+		{
+			$sql_in = array();
+			do
+			{
+				$sql_in[] = (string) $row['session_id'];
+			}
+			while ($row = $db->sql_fetchrow($result));
+
+			if (sizeof($sql_in))
+			{
+				$sql = 'DELETE FROM ' . CONFIRM_TABLE . '
+					WHERE ' . $db->sql_in_set('session_id', $sql_in);
+				$db->sql_query($sql);
+			}
+		}
+		$db->sql_freeresult($result);
+	}
+	
+	
 	/**
 	* Sets a cookie
 	*

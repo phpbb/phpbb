@@ -427,31 +427,8 @@ class ucp_register
 			$str = '';
 			if (!$change_lang)
 			{
-				$sql = 'SELECT DISTINCT c.session_id
-					FROM ' . CONFIRM_TABLE . ' c
-					LEFT JOIN ' . SESSIONS_TABLE . ' s ON (c.session_id = s.session_id)
-					WHERE s.session_id IS NULL';
-				$result = $db->sql_query($sql);
-
-				if ($row = $db->sql_fetchrow($result))
-				{
-					$sql_in = array();
-					do
-					{
-						$sql_in[] = (string) $row['session_id'];
-					}
-					while ($row = $db->sql_fetchrow($result));
-
-					if (sizeof($sql_in))
-					{
-						$sql = 'DELETE FROM ' . CONFIRM_TABLE . '
-							WHERE ' . $db->sql_in_set('session_id', $sql_in) . '
-								AND confirm_type = ' . CONFIRM_REG;
-						$db->sql_query($sql);
-					}
-				}
-				$db->sql_freeresult($result);
-
+				$user->confirm_gc(CONFIRM_REG);
+				
 				$sql = 'SELECT COUNT(session_id) AS attempts
 					FROM ' . CONFIRM_TABLE . "
 					WHERE session_id = '" . $db->sql_escape($user->session_id) . "'
