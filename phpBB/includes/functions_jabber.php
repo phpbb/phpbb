@@ -499,6 +499,13 @@ class jabber
 				}
 				else
 				{
+					// Make sure we only use 'auth' for qop (relevant for $this->encrypt_password())
+					// If the <response> is choking up on the changed parameter we may need to adjust encrypt_password() directly
+					if (isset($decoded['qop']) && $decoded['qop'] != 'auth' && strpos($decoded['qop'], 'auth') !== false)
+					{
+						$decoded['qop'] = 'auth';
+					}
+
 					$response = array(
 						'username'	=> $this->username,
 						'response'	=> $this->encrypt_password(array_merge($decoded, array('nc' => '00000001'))),

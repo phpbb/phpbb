@@ -394,7 +394,7 @@ class messenger
 		// Send message ...
 		if (!$use_queue)
 		{
-			$mail_to = ($to == '') ? 'Undisclosed-Recipient:;' : $to;
+			$mail_to = ($to == '') ? 'undisclosed-recipients:;' : $to;
 			$err_msg = '';
 
 			if ($config['smtp_delivery'])
@@ -629,7 +629,7 @@ class queue
 				{
 					case 'email':
 						$err_msg = '';
-						$to = (!$to) ? 'Undisclosed-Recipient:;' : $to;
+						$to = (!$to) ? 'undisclosed-recipients:;' : $to;
 
 						if ($config['smtp_delivery'])
 						{
@@ -922,7 +922,7 @@ function smtpmail($addresses, $subject, $message, &$err_msg, $headers = '')
 	$smtp->server_send("Subject: $subject");
 
 	// Now the To Header.
-	$to_header = ($to_header == '') ? 'Undisclosed-Recipients:;' : $to_header;
+	$to_header = ($to_header == '') ? 'undisclosed-recipients:;' : $to_header;
 	$smtp->server_send("To: $to_header");
 
 	// Now the CC Header.
