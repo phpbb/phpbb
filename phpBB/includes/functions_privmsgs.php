@@ -1831,9 +1831,9 @@ function message_history($msg_id, $user_id, $message_row, $folder, $in_post_mode
 		'QUOTE_IMG'			=> $user->img('icon_post_quote', $user->lang['REPLY_WITH_QUOTE']),
 		'HISTORY_TITLE'		=> $title,
 
-		'U_VIEW_NEXT_HISTORY'		=> "$url&amp;p=" . (($next_history_pm) ? $next_history_pm : $msg_id),
-		'U_VIEW_PREVIOUS_HISTORY'	=> "$url&amp;p=" . (($previous_history_pm) ? $previous_history_pm : $msg_id))
-	);
+		'U_VIEW_NEXT_HISTORY'		=> ($next_history_pm) ? "$url&amp;p=" . $next_history_pm : '',
+		'U_VIEW_PREVIOUS_HISTORY'	=> ($previous_history_pm) ? "$url&amp;p=" . $previous_history_pm : '',
+	));
 
 	return true;
 }

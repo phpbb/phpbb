@@ -2101,7 +2101,7 @@ parse_css_file = {PARSE_CSS_FILE}
 				{
 					$cfg = parse_cfg_file("{$phpbb_root_path}styles/" . $style_row["{$mode}_path"] . "/theme/theme.cfg");
 
-					if (isset($cfg['parse_css_file']) && $cfg['parse_css_file'])
+					if (isset($cfg['parse_css_file']) && $cfg['parse_css_file'] && !$store_db)
 					{
 						$error[] = $user->lang['EDIT_THEME_STORE_PARSED'];
 						$store_db = 1;

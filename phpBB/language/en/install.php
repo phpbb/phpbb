@@ -79,8 +79,9 @@ $lang = array_merge($lang, array(
 	'CONVERT_INTRO_BODY'		=> 'From here, you are able to import data from other (installed) board systems. The list below shows all the conversion modules currently available. If there is no convertor shown in this list for the board software you wish to convert from, please check our website where further conversion modules may be available for download.',
 	'CONVERT_NEW_CONVERSION'	=> 'New conversion',
 	'CONVERT_NOT_EXIST'			=> 'The specified convertor does not exist.',
+	'CONVERT_OPTIONS'			=> 'Options',
 	'CONVERT_SETTINGS_VERIFIED'	=> 'The information you entered has been verified. To start the conversion process, push the button below to begin.',
-	'CONV_ERR_FATAL'					=> 'Fatal conversion error',
+	'CONV_ERR_FATAL'			=> 'Fatal conversion error',
 
 	'CONV_ERROR_ATTACH_FTP_DIR'			=> 'FTP upload for attachments is enabled at the old board. Please disable the FTP upload option and make sure a valid upload directory is specified, then copy all attachment files to this new web accessible directory. Once you have done this, restart the convertor.',
 	'CONV_ERROR_CONFIG_EMPTY'			=> 'There is no configuration information available for the conversion.',
@@ -350,6 +351,7 @@ $lang = array_merge($lang, array(
 	'UNWRITABLE'				=> 'Unwritable',
 	'UPDATE_TOPICS_POSTED'		=> 'Generating topics posted information',
 	'UPDATE_TOPICS_POSTED_ERR'	=> 'An error occured while generating topics posted information. You can retry this step in the ACP after the conversion process is completed.',
+	'VERIFY_OPTIONS'			=> 'Verifying conversion options',
 	'VERSION'					=> 'Version',
 
 	'WELCOME_INSTALL'			=> 'Welcome to phpBB3 Installation',

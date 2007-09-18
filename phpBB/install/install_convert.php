@@ -273,7 +273,7 @@ class install_convert extends module
 			'L_AVAILABLE_CONVERTORS'	=> $lang['AVAILABLE_CONVERTORS'],
 			'L_CONVERT'					=> $lang['CONVERT'],
 			'L_NO_CONVERTORS'			=> $lang['NO_CONVERTORS'],
-			'L_OPTIONS'					=> $lang['OPTIONS'],
+			'L_OPTIONS'					=> $lang['CONVERT_OPTIONS'],
 			'L_SOFTWARE'				=> $lang['SOFTWARE'],
 			'L_VERSION'					=> $lang['VERSION'],
 
@@ -521,7 +521,7 @@ class install_convert extends module
 				set_config('convert_options', serialize(array('forum_path' => './../' . $forum_path, 'refresh' => $refresh)), true);
 
 				$template->assign_block_vars('checks', array(
-					'TITLE'		=> $lang['SPECIFY_OPTIONS'],
+					'TITLE'		=> $lang['VERIFY_OPTIONS'],
 					'RESULT'	=> $lang['CONVERT_SETTINGS_VERIFIED'],
 				));
 
@@ -536,7 +536,7 @@ class install_convert extends module
 			else
 			{
 				$template->assign_block_vars('checks', array(
-					'TITLE'		=> $lang['SPECIFY_OPTIONS'],
+					'TITLE'		=> $lang['VERIFY_OPTIONS'],
 					'RESULT'	=> '<b style="color:red">' . implode('<br />', $error) . '</b>',
 				));
 			}

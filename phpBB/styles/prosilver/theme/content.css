@@ -579,7 +579,6 @@ dl.file dd {
 dl.thumbnail img {
 	padding: 3px;
 	border: 1px solid #666666;
-	display: block;
 	background-color: #FFF;
 }
 

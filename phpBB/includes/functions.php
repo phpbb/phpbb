@@ -3512,7 +3512,7 @@ function truncate_string($string, $max_length = 60, $allow_reply = true, $append
 	if (sizeof($chars) > $max_length)
 	{
 		// Cut off the last elements from the array
-		$string = implode('', array_slice($chars, 0, $max_length));
+		$string = implode('', array_slice($chars, 0, $max_length - utf8_strlen($append)));
 		$stripped = true;
 	}
 
