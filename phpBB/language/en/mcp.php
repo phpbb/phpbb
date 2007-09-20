@@ -224,7 +224,7 @@ $lang = array_merge($lang, array(
 	'NO_TOPIC_SELECTED'				=> 'You must select at least one topic to perform this action.',
 	'NO_TOPICS_QUEUE'				=> 'There are no topics waiting for approval.',
 
-	'ONLY_TOPIC'			=> 'Only topic "%s"',
+	'ONLY_TOPIC'			=> 'Only topic “%s”',
 	'OTHER_USERS'			=> 'Other users posting from this IP',
 
 	'POSTER'					=> 'Poster',

@@ -244,7 +244,7 @@ $lang = array_merge($lang, array(
 	
 	'NO_REASON'					=> 'Reason could not be found.',
 	'NO_REASON_INFO'			=> 'You have to specify a title and a description for this reason.',
-	'NO_REMOVE_DEFAULT_REASON'	=> 'You are not able to remove the default reason "Other".',
+	'NO_REMOVE_DEFAULT_REASON'	=> 'You are not able to remove the default reason “Other”.',
 
 	'REASON_ADD'				=> 'Add report/denial reason',
 	'REASON_ADDED'				=> 'Report/denial reason successfully added.',
