@@ -52,7 +52,7 @@ if (!isset($sort_key_text[$sort_key]))
 $order_by = $sort_key_sql[$sort_key] . ' ' . (($sort_dir == 'a') ? 'ASC' : 'DESC');
 
 // Whois requested
-if ($mode == 'whois')
+if ($mode == 'whois' && $auth->acl_get('a_') && $session_id)
 {
 	include($phpbb_root_path . 'includes/functions_user.' . $phpEx);
 
@@ -64,14 +64,7 @@ if ($mode == 'whois')
 
 	if ($row = $db->sql_fetchrow($result))
 	{
-		$whois = user_ipwhois($row['session_ip']);
-
-		$whois = preg_replace('#(\s)([\w\-\._\+]+@[\w\-\.]+)(\s)#', '\1<a href="mailto:\2">\2</a>\3', $whois);
-		$whois = preg_replace('#(\s)(http:/{2}[^\s]*)(\s)#', '\1<a href="\2">\2</a>\3', $whois);
-
-		$template->assign_vars(array(
-			'WHOIS'	=> trim($whois))
-		);
+		$template->assign_var('WHOIS', user_ipwhois($row['session_ip']));
 	}
 	$db->sql_freeresult($result);
 

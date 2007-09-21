@@ -1112,6 +1112,13 @@ function user_ipwhois($ip)
 {
 	$ipwhois = '';
 
+	// Check IP
+	// Only supporting IPv4 at the moment...
+	if (empty($ip) || !preg_match(get_preg_expression('ipv4'), $ip))
+	{
+		return '';
+	}
+
 	$match = array(
 		'#RIPE\.NET#is'				=> 'whois.ripe.net',
 		'#whois\.apnic\.net#is'		=> 'whois.apnic.net',
@@ -1147,7 +1154,10 @@ function user_ipwhois($ip)
 		}
 	}
 
-	return $ipwhois;
+	$ipwhois = htmlspecialchars($ipwhois);
+
+	// Magic URL ;)
+	return trim(make_clickable($ipwhois, false, ''));
 }
 
 /**

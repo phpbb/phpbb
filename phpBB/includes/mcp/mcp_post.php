@@ -36,20 +36,18 @@ function mcp_post_details($id, $mode, $action)
 	{
 		case 'whois':
 
-			$ip = request_var('ip', '');
-			include($phpbb_root_path . 'includes/functions_user.' . $phpEx);
+			if ($auth->acl_get('m_info', $post_info['forum_id']))
+			{
+				$ip = request_var('ip', '');
+				include($phpbb_root_path . 'includes/functions_user.' . $phpEx);
 
-			$whois = user_ipwhois($ip);
-
-			$whois = preg_replace('#(\s)([\w\-\._\+]+@[\w\-\.]+)(\s)#', '\1<a href="mailto:\2">\2</a>\3', $whois);
-			$whois = preg_replace('#(\s)(ht{2}p:/{2}\S*)(\s)#', '\1<a href="\2">\2</a>\3', $whois);
-
-			$template->assign_vars(array(
-				'RETURN_POST'	=> sprintf($user->lang['RETURN_POST'], '<a href="' . append_sid("{$phpbb_root_path}mcp.$phpEx", "i=$id&amp;mode=$mode&amp;p=$post_id") . '">', '</a>'),
-				'U_RETURN_POST'	=> append_sid("{$phpbb_root_path}mcp.$phpEx", "i=$id&amp;mode=$mode&amp;p=$post_id"),
-				'L_RETURN_POST'	=> sprintf($user->lang['RETURN_POST'], '', ''),
-				'WHOIS'			=> trim($whois))
-			);
+				$template->assign_vars(array(
+					'RETURN_POST'	=> sprintf($user->lang['RETURN_POST'], '<a href="' . append_sid("{$phpbb_root_path}mcp.$phpEx", "i=$id&amp;mode=$mode&amp;p=$post_id") . '">', '</a>'),
+					'U_RETURN_POST'	=> append_sid("{$phpbb_root_path}mcp.$phpEx", "i=$id&amp;mode=$mode&amp;p=$post_id"),
+					'L_RETURN_POST'	=> sprintf($user->lang['RETURN_POST'], '', ''),
+					'WHOIS'			=> user_ipwhois($ip),
+				));
+			}
 
 			// We're done with the whois page so return
 			return;

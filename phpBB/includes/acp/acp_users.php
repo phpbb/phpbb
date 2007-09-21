@@ -47,13 +47,7 @@ class acp_users
 
 			$user_ip = request_var('user_ip', '');
 			$domain = gethostbyaddr($user_ip);
-			$ipwhois = '';
-
-			if ($ipwhois = user_ipwhois($user_ip))
-			{
-				$ipwhois = preg_replace('#(\s)([\w\-\._\+]+@[\w\-\.]+)(\s)#', '\1<a href="mailto:\2">\2</a>\3', $ipwhois);
-				$ipwhois = preg_replace('#(\s)(http:/{2}[^\s]*)(\s)#', '\1<a href="\2">\2</a>\3', $ipwhois);
-			}
+			$ipwhois = user_ipwhois($user_ip);
 
 			$template->assign_vars(array(
 				'MESSAGE_TITLE'		=> sprintf($user->lang['IP_WHOIS_FOR'], $domain),
