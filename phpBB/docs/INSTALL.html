@@ -1,164 +1,44 @@
-<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
-    "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
-<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en" lang="en">
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml" dir="ltr" lang="en" xml:lang="en">
 <head>
-<title>phpBB 3.0.x Install</title>
-<meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1" />
-<meta http-equiv="Content-Style-Type" content="text/css" />
+
+<meta http-equiv="content-type" content="text/html; charset=utf-8" />
+<meta http-equiv="content-style-type" content="text/css" />
+<meta http-equiv="content-language" content="en" />
+<meta http-equiv="imagetoolbar" content="no" />
 <meta name="resource-type" content="document" />
-<meta name="description" lang="en" content="phpBB 3.0.x Installation, updating and conversion informations" />
-<meta name="keywords" lang="en" content="" />
-<meta name="author" content="phpBB Group" />
-<meta name="copyright" content="phpBB Group" />
-<meta name="MSSmartTagsPreventParsing" content="true" />
+<meta name="distribution" content="global" />
+<meta name="copyright" content="2007 phpBB Group" />
+<meta name="keywords" content="" />
+<meta name="description" content="phpBB 3.0.x Installation, updating and conversion informations" />
+<title>phpBB3 &bull; Install</title>
 
-<style type="text/css">
-<!--
-
-/* The original "subSilver" theme for phpBB2 Created by subBlue design :: http://www.subBlue.com */
-body {
-	background-color: white;
-	font-family: Verdana, Arial, Helvetica, sans-serif;
-	margin: 0;
-	border: 0;
-	padding: 0;
-}
-
-img {
-	border: 0;
-}
-
-p {
-	font-size: 8pt;
-}
-
-hr {
-	height: 0;
-	border: solid #D1D7DC 0;
-	border-top-width: 1px;
-}
-
-#title, h1 {
-	font: bold 18pt 'Trebuchet MS', Verdana, sans-serif;
-	text-decoration: none;
-	line-height: 120%;
-}
-
-h2 {
-	font: bold 12pt Arial, Helvetica, sans-serif;
-	text-decoration: none;
-	line-height: 120%;
-}
-
-h3 {
-	font: bold 10pt Arial, Helvetica, sans-serif;
-	text-decoration: none;
-	line-height: 120%;
-}
-
-.paragraph {
-	margin-left: 20px;
-}
-
-/* Structure */
-#logo {
-	background: #fff url(header_bg.jpg) repeat-x top right;
-	height: 60px;
-}
-
-#title {
-	color: #12749b;
-	float: right;
-	margin: 10px 10px 0;
-}
-
-#main {
-	margin-left: 25px;
-	margin-right: 25px;
-}
-
-.good {
-	color: green;
-}
-
-.bad {
-	color: red;
-}
-
-#footer {
-	margin-left: 75px;
-	font-size: 70%;
-	color: #006600;
-}
-
-code {
-	color: #006600;
-	font-weight: normal;
-	font-family: 'Courier New', monospace;
-	border-color: #D1D7DC;
-	border-width: 1px;
-	border-style: solid;
-	background-color: #FAFAFA;
-}
-
-.indent p {
-	padding-left: 20px;
-	font-size: 90%;
-}
-
-/* Anchors */
-a {
-	font-size: 70%;
-}
-
-a:link, a:active, a:visited {
-	color:	#006699;
-	text-decoration: none;
-}
-
-a:hover {
-	color: #DD6900;
-	text-decoration: underline;
-}
-
-a.nav {
-	color: #006699;
-	text-decoration: none;
-}
-
-a.nav:hover {
-	text-decoration: underline;
-}
-
-p a {
-	font-size: 100%;
-}
-
-.menu {
-	font-size: 80%;
-}
-
-.menu li a {
-	font-size: 100%;
-}
-
-.comment {
-	color: green;
-}
-
-//-->
-</style>
+<link href="stylesheet.css" rel="stylesheet" type="text/css" media="screen, projection" />
 
 </head>
 
-<body>
+<body id="phpbb" class="section-docs">
 
-<div id="logo">
-	<div id="title">phpBB 3.0.x Install</div>
-	<img src="header_left.jpg" alt="phpBB Logo" />
-</div>
+<div id="wrap">
+	<a id="top" name="top" accesskey="t"></a>
+	<div id="page-header">
+		<div class="headerbar">
+			<div class="inner"><span class="corners-top"><span></span></span>
 
-<a name="top"></a><div id="main">
+			<div id="doc-description">
+				<a href="../index.php" id="logo"><img src="site_logo.gif" alt="" /></a>
+				<h1>phpBB 3.0.x Install</h1>
+				<p>phpBB 3.0.x Installation, updating and conversion informations</p>
+				<p style="display: none;"><a href="#start_here">Skip</a></p>
+			</div>
+
+			<span class="corners-bottom"><span></span></span></div>
+		</div>
+	</div>
+
+	<a name="start_here"></a>
+
+	<div id="page-body">
 
 <!-- BEGIN DOCUMENT -->
 
@@ -170,12 +50,17 @@ p a {
 
 <h1>Install</h1>
 
-<ol class="menu">
+	<div class="paragraph menu">
+		<div class="inner"><span class="corners-top"><span></span></span>
+
+		<div class="content">
+
+<ol>
 	<li><a href="#quickinstall">Quick install</a></li>
 	<li><a href="#require">Requirements</a></li>
 	<li><a href="#install">New installation</a></li>
 	<li><a href="#update">Updating from stable releases of phpBB 3.0.x</a>
-	<ol type="i">
+	<ol style="list-style-type: lower-roman;">
 		<li><a href="#update_full">Full package</a></li>
 		<li><a href="#update_files">Changed files only</a></li>
 		<li><a href="#update_patch">Patch file</a></li>
@@ -184,7 +69,7 @@ p a {
 	</ol>
 	</li>
 	<li><a href="#convert">Conversion from phpBB 2.0.x to phpBB 3.0.x</a>
-	<ol type="i">
+	<ol style="list-style-type: lower-roman;">
 		<li><a href="#prereq">Requirements before converting</a></li>
 		<li><a href="#conversion">Converting</a></li>
 		<li><a href="#postreq">Things to do after conversion</a></li>
@@ -192,21 +77,30 @@ p a {
 	</ol>
 	</li>
 	<li><a href="#postinstall">Important (security related) post-Install tasks for all installation methods</a>
-	<ol type="i">
+	<ol style="list-style-type: lower-roman;">
 		<li><a href="#avatars">Uploadable avatars</a></li>
 	</ol>
 	</li>
 	<li><a href="#disclaimer">Disclaimer</a></li>
 </ol>
 
-<hr />
+		</div>
 
-<a name="quickinstall"></a><h1>1. Quick install</h1>
+		<span class="corners-bottom"><span></span></span></div>
+	</div>
 
-<div class="paragraph">
+	<hr />
+
+	<a name="quickinstall"></a><h2>1. Quick install</h2>
+
+	<div class="paragraph">
+		<div class="inner"><span class="corners-top"><span></span></span>
+
+		<div class="content">
+
 	<p>If you have basic knowledge of using FTP and are sure your hosting service or server will run phpBB3 you can use these steps to quickly get started. For a more detailed explanation you should skip this and go to <a href="#require">section 2</a> below.</p>
 
-	<ol class="menu">
+	<ol>
 		<li>Decompress the phpBB3 archive to a local directory on your system.</li>
 		<li>Upload all the files contained in this archive (retaining the directory structure) to a web accessible directory on your server or hosting account.</li>
 		<li>Change the permissions on config.php to be writable by all (666 or -rw-rw-rw- within your FTP Client)</li>
@@ -219,18 +113,26 @@ p a {
 	</ol>
 
 	<p>If you experienced problems or do not know how to proceed with any of the steps above please read the rest of this document.</p>
-</div>
-<a href="#top">Top</a>
-<br /><br />
 
-<hr />
+		</div>
 
-<a name="require"></a><h1>2. Requirements</h1>
+		<div class="back2top"><a href="#wrap" class="top">Back to Top</a></div>
 
-<div class="paragraph">
+		<span class="corners-bottom"><span></span></span></div>
+	</div>
+
+	<hr />
+
+	<a name="require"></a><h2>2. Requirements</h2>
+
+	<div class="paragraph">
+		<div class="inner"><span class="corners-top"><span></span></span>
+
+		<div class="content">
+
 	<p>phpBB3 has a few requirements which must be met before you are able to install and use it.</p>
 
-	<ul class="menu">
+	<ul>
 		<li>A webserver or web hosting account running on any major Operating System with support for PHP</li>
 		<li>A SQL database system, <strong>one of</strong>:
 		<ul>
@@ -256,15 +158,22 @@ p a {
 	</ul>
 
 	<p>If your server or hosting account does not meet the requirements above we are afraid phpBB3 is not for you.</p>
-</div>
-<a href="#top">Top</a>
-<br /><br />
 
-<hr />
+		</div>
 
-<a name="install"></a><h1>3. New installation</h1>
+		<div class="back2top"><a href="#wrap" class="top">Back to Top</a></div>
 
-<div class="paragraph">
+		<span class="corners-bottom"><span></span></span></div>
+	</div>
+
+	<hr />
+
+	<a name="install"></a><h2>3. New installation</h2>
+
+	<div class="paragraph">
+		<div class="inner"><span class="corners-top"><span></span></span>
+
+		<div class="content">
 
 	<p>Installation of phpBB3 will vary according to your server and database. If you have <em>shell access</em> to your account (via telnet or ssh for example) you may want to upload the entire phpBB3 archive (in binary mode!) to a directory on your host and unarchive it there.</p>
 
@@ -276,19 +185,19 @@ p a {
 
 	<p>Once all the files have been uploaded to your site you should point your browser at this location with the addition of <code>install/</code>. For example if your domain name is <em>www.mydomain.tld</em> and you placed phpBB3 in a directory /phpBB3 off your web root you would enter <em>http://www.mydomain.tld/phpBB3/install/</em> or (alternatively) <em>http://www.mydomain.tld/phpBB3/install/index.php</em> into your browser. When you have done this you should see the phpBB3 Installation screen appear.</p>
 
-	<h3>Introduction:</h3>
+	<h4>Introduction:</h4>
 
 	<p>The installation screen gives you a short introduction into phpBB. It allows you to read the license phpBB3 is released under (General Public License) and provides information about how you can receive support. To start the installation, use the <em>Install</em> button.</p>
 
-	<h3>Requirements</h3>
+	<h4>Requirements</h4>
 
 	<p>The first page you will see after starting the installation is the Requirements list. phpBB3 checks automatically whether everything that it needs to run properly is installed on your server. You need to have at least the minimum PHP version installed, and at least one database available to continue the installation. Also important, is that all shown folders are available and do have the correct permissions. Please see the description of each section to find out whether they are optional or required for phpBB3 to run. If everything is in order, you can continue the installation with <em>Start Install</em>.</p>
 
-	<h3>Database settings</h3>
+	<h4>Database settings</h4>
 
 	<p>You now have to decide which database to use. See the <a href="#require">Requirements section</a> for information on which databases are supported. If you do not know your database settings, please contact your host and ask for them. You will not be able to continue without them. You need:</p>
 
-	<ul class="menu">
+	<ul>
 		<li>The Database Type - the database you will be using.</li>
 		<li>The Database server hostname or DSN - the address of the database server.</li>
 		<li>The Database server port - the port of the database server (most of the time this is not needed).</li>
@@ -310,17 +219,17 @@ p a {
 
 	<p>If you see the Successful Connection message, you can continue to the next step.</p>
 
-	<h3>Administrator details</h3>
+	<h4>Administrator details</h4>
 
 	<p>Now you have to create your administration user. This user will have full administration access and he/she will be the first user on your forum. All fields on this page are required. You can also set the default language of your forum on this page. In a vanilla phpBB3 installation we only include English. You can download further languages from <a href="http://www.phpbb.com/">www.phpbb.com</a>, and add them before installing or later.</p>
 
-	<h3>Configuration file</h3>
+	<h4>Configuration file</h4>
 
 	<p>In this step, phpBB will try to write the configuration file automatically. The forum needs the configuration to run properly. It contains all database settings, so without it, phpBB will not be able to access the database.</p>
 
 	<p>Usually writing the configuration file automatically works fine. But in some cases it can fail due to wrong file permissions, for instance. In this case, you need to upload the file manually. phpBB asks you to download the config.php file and tells you what to do with it. Please read the instructions carefully. After you have uploaded the file, use <em>Done</em> to get to the last step. If <em>Done</em> returns you to the same page as before, and does not return a success message, you did not upload the file correctly.</p>
 
-	<h3>Advanced settings</h3>
+	<h4>Advanced settings</h4>
 
 	<p>The Advanced settings allow you to set some parameters of the board configuration. They are optional, and you can always change them later. So if you are not sure what these settings mean, proceed to the final step and finish the installation.</p>
 
@@ -330,21 +239,27 @@ p a {
 
 	<p>At this point if you are converting from phpBB 2.0.x, you should refer to the <a href="#convert">conversion steps</a> for further information. If not, you should remove the install directory from your server as you will only be able to access the Administration Control Panel whilst it is present.</p>
 
-</div>
-<a href="#top">Top</a>
-<br /><br />
+		</div>
 
-<hr />
+		<div class="back2top"><a href="#wrap" class="top">Back to Top</a></div>
 
-<a name="update"></a><h1>4. Updating from stable releases of phpBB 3.0.x</h1>
+		<span class="corners-bottom"><span></span></span></div>
+	</div>
+
+	<hr />
+
+	<a name="update"></a><h2>4. Updating from stable releases of phpBB 3.0.x</h2>
+
+	<div class="paragraph">
+		<div class="inner"><span class="corners-top"><span></span></span>
+
+		<div class="content">
 
 <p>If you are currently using a stable release of phpBB3 updating to this version is straightforward. You would have downloaded one of four packages and your choice determines what you need to do. <strong>Please Note</strong>: That before updating we heavily recommend you do a <em>full backup of your database and existing phpBB3 files</em>! If you are unsure how to achieve this please ask your hosting provider for advice.</p>
 
 <p><strong>Please make sure you update your phpBB3 source files too, even if you run the <code>database_update.php</code> file.</strong></p>
 
-<a name="update_full"></a><b>4.i. Full package</b>
-<br /><br />
-<div class="paragraph">
+<a name="update_full"></a><h3>4.i. Full package</h3>
 
 	<p>The full package is normally meant for new installations, but if you want to replace all source files this package comes in handy.</p>
 
@@ -353,27 +268,16 @@ p a {
 	<p>You should now run <code>install/database_update.php</code> which, depending on your previous version, will make a number of database changes. You may receive <em>FAILURES</em> during this procedure, they should not be a cause for concern unless you see an actual <em>ERROR</em>, in which case the script will stop (in this case you should seek help via our forums or bug tracker).</p>
 
 	<p>Once the install/database_update.php has completed you may proceed to the Administration Control Panel and check remove the install directory as advised.</p>
-</div>
-<a href="#top">Top</a>
-<br /><br />
 
-<a name="update_files"></a><b>4.ii. Changed files only</b>
-<br /><br />
-<div class="paragraph">
+<a name="update_files"></a><h3>4.ii. Changed files only</h3>
 
 	<p>This package contains a number of archives, each contains the files changed from a given release to the latest version. You should select the appropriate archive for your current version, e.g. if you currently have <samp>3.0.0</samp> you should select the phpBB-3.0.0_to_3.0.1.zip/tar.gz file.</p>
 
 	<p>The directory structure has been preserved enabling you (if you wish) to simply upload the contents of the archive to the appropriate location on your server, i.e. simply overwrite the existing files with the new versions. Do not forget that if you have installed any MODs these files will overwrite the originals possibly destroying them in the process. You will need to re-add MODs to any affected file before uploading.</p>
 
 	<p>As for the other update procedures you should run <b>install/database_update.php</b> after you have finished updating the files. This will update your database schema and increment the version number.</p>
-</div>
-<a href="#top">Top</a>
-<br /><br />
 
-<a name="update_patch"></a><b>4.iii. Patch file</b>
-<br /><br />
-
-<div class="paragraph">
+<a name="update_patch"></a><h3>4.iii. Patch file</h3>
 
 	<p>The patch file is probably the best solution for those with many Modifications (MODs) or other changes who do not want to re-add them back to all the changed files. To use this you will need command line access to a standard UNIX type <strong>patch</strong> application. If you do not have access to such an application but still want to use this update approach we recommend the <a href="update_auto">Automatic update package</a> explained below.</p>
 
@@ -382,20 +286,14 @@ p a {
 	<p>If you do get failures you should look at using the <a href="#update_files">Changed files only</a> package to replace the files which failed to patch, please note that you will need to manually re-add any Modifications (MODs) to these particular files. Alternatively if you know how you can examine the .rej files to determine what failed where and make manual adjustments to the relevant source.</p>
 
 	<p>You should of course delete the patch file (or files) after use. As for the other update procedures you should run <code>install/database_update.php</code> after you have finished updating the files. This will update your database schema and data (if appropriate) and increment the version number.</p>
-</div>
-<a href="#top">Top</a>
-<br /><br />
 
-<a name="update_auto"></a><b>4.iv. Automatic update package</b>
-<br /><br />
-
-<div class="paragraph">
+<a name="update_auto"></a><h3>4.iv. Automatic update package</h3>
 
 	<p>The automatic update package is holding - contrary to the others - only the update informations for updating the last released version to the latest available version. These package is meant for use with the automatic update tool.</p>
 
 	<p>To perform the update, either follow the instructions from the <code>Administration Control Panel -&gt; System</code> Tab - this should point out that you are running an outdated version and will guide you through the update - or following the instructions listed below.</p>
 
-	<ul class="menu">
+	<ul>
 		<li>Go to the <a href="http://www.phpbb.com/downloads/">downloads page</a> and download the latest update package listed there.</li>
 		<li>Upload the archives contents to your phpBB installation - only the install folder is required. Upload the whole install folder, retaining the file structure.</li>
 		<li>After the install folder is present, phpBB3 will go offline automatically.</li>
@@ -403,44 +301,39 @@ p a {
 		<li>Choose the "Update" Tab and follow the instructions</li>
 	</ul>
 
-</div>
-<a href="#top">Top</a>
-<br /><br />
+	<p>&nbsp;</p>
 
-<a name="update_all"></a><b>4.v. All package types</b>
-<br /><br />
-
-<div class="paragraph">
+<a name="update_all"></a><h3>4.v. All package types</h3>
 
 	<p>If you have non-English language packs installed you may want to see if a new version has been made available. A number of missing strings may have been added which, though not essential, may be beneficial to users. Please note that at this time not all language packs have been updated so you should be prepared to periodically check for updates.</p>
 
-</div>
-<a href="#top">Top</a>
-<br /><br />
+		</div>
 
-<hr />
+		<div class="back2top"><a href="#wrap" class="top">Back to Top</a></div>
 
-<a name="convert"></a><h1>5. Conversion from phpBB 2.0.x to phpBB 3.0.x</h1>
+		<span class="corners-bottom"><span></span></span></div>
+	</div>
+
+	<hr />
+
+	<a name="convert"></a><h2>5. Conversion from phpBB 2.0.x to phpBB 3.0.x</h2>
+
+	<div class="paragraph">
+		<div class="inner"><span class="corners-top"><span></span></span>
+
+		<div class="content">
 
 <p>This paragraph explains the steps necessary to convert your existing phpBB2 installation to phpBB3.</p>
 
-<a name="prereq"></a><b>5.i. Requirements before converting</b>
-<br /><br />
+<a name="prereq"></a><h3>5.i. Requirements before converting</h3>
 
-<div class="paragraph">
 	<p>Before converting we heavily recommend you do a <em>full backup of your database and files</em>! If you are unsure how to achieve this please ask your hosting provider for advice. You basically need to follow the basic instructions given for <a href="#install">New installations</a>. Please <strong>do not</strong> overwrite any old files - install phpBB3 at a different location.</p>
 
 	<p>Once you made a backup of everything and also have a brand new phpBB3 installation, you can now begin the conversion.</p>
 
 	<p>Note that the conversion requires CREATE and DROP privileges for the phpBB3's database user account.</p>
-</div>
-<a href="#top">Top</a>
-<br /><br />
 
-<a name="conversion"></a><b>5.ii. Converting</b>
-<br /><br />
-
-<div class="paragraph">
+<a name="conversion"></a><h3>5.ii. Converting</h3>
 
 	<p>To begin the conversion visit the install folder of your phpBB3 installation (the same as you have done for installing). Now you will see a new tab <em>Convert</em>. Click this tab.</p>
 
@@ -449,14 +342,8 @@ p a {
 	<p>Please note that this conversion process may take quite some time and depending on your hosting provider this may result in it failing (due to web server or other timeout issues). If this is the case you should ask your provider if they are willing to allow the convert script to temporarily exceed their limits (be nice and they will probably be quite helpful).</p>
 
 	<p>Once completed your board should be immediately available. If you encountered errors you should report the problems to our bug tracker or seek help via our forums (see <a href="README.html">README</a> for details).</p>
-</div>
-<a href="#top">Top</a>
-<br /><br />
 
-<a name="postreq"></a><b>5.iii. Things to do after conversion</b>
-<br /><br />
-
-<div class="paragraph">
+<a name="postreq"></a><h3>5.iii. Things to do after conversion</h3>
 
 	<p>After successful conversion there may be a few items you need to do - apart from checking if the installation is accessible and everything displayed correctly.</p>
 
@@ -468,14 +355,7 @@ p a {
 
 	<p>Once you are pleased with your new installation you may want to give it the name of your old installation, changing the directory name. With phpBB3 this is possible without any problems - but you may still want to check your cookie settings within the administration panel, if the cookie path need to be adjusted prior to renaming.</p>
 
-</div>
-<a href="#top">Top</a>
-<br /><br />
-
-<a name="convprob"></a><b>5.iv. Common conversion problems</b>
-<br /><br />
-
-<div class="paragraph">
+<a name="convprob"></a><h3>5.iv. Common conversion problems</h3>
 
 	<p><strong>Broken non-latin characters</strong> The conversion script assumes that the database encoding in the source phpBB2 matches the encoding defined in the <code>lang_main.php</code> file of the default language pack of the source installation. Edit that file to match the database's encoding and re-start the conversion procedure.</p>
 
@@ -489,28 +369,28 @@ p a {
 
 	<p><strong>Smilies</strong> During the conversion you might see warnings about image files where the copying failed. That can happen if the old board's smilies have the same file names as those on the new board. Copy those files manually after the conversion, if you want to continue using the old smilies.</p> 
 
-</div>
-<a href="#top">Top</a>
-<br /><br />
 
+		</div>
 
-<hr />
+		<div class="back2top"><a href="#wrap" class="top">Back to Top</a></div>
 
-<a name="postinstall"></a><h1>6. Important (security related) post-Install tasks for all installation methods</h1>
+		<span class="corners-bottom"><span></span></span></div>
+	</div>
 
-<div class="paragraph">
+	<hr />
+
+	<a name="postinstall"></a><h2>6. Important (security related) post-Install tasks for all installation methods</h2>
+
+	<div class="paragraph">
+		<div class="inner"><span class="corners-top"><span></span></span>
+
+		<div class="content">
 
 	<p>Once you have successfully installed phpBB3 you <strong>MUST</strong> ensure you remove the entire install/ directory. Leaving the install directory in place is a <em>very serious potential security issue</em> which may lead to deletion or alteration of files, etc. Please note that until this directory is removed, phpBB3 will not operate and a warning message will be displayed. Beyond this <strong>essential</strong> deletion, you may also wish to delete the docs/ directories if you wish.</p>
 
 	<p>With these directories deleted you should proceed to the administration panel. Depending on how the installation completed you may have been directed there automatically. If not, login as the administrator you specified during install/conversion and click the <strong>Administration Panel</strong> link at the bottom of any page. Ensure that details specified in <code>Admin -&gt; General</code> are correct!</p>
 
-</div>
-<a href="#top">Top</a>
-<br /><br />
-
-<a name="avatars"></a><b>6.i. Uploadable avatars</b>
-<br /><br />
-<div class="paragraph">
+<a name="avatars"></a><h3>6.i. Uploadable avatars</h3>
 
 	<p>phpBB3 supports several methods for allowing users to select their own <em>avatar</em> (an avatar is a small image generally unique to a user and displayed just below their username in posts).</p>
 
@@ -521,27 +401,42 @@ p a {
 	<p>On Windows system you need to ensure the directory is not write-protected and that it has global write permissions (see your servers documentation or contact your hosting provider if you are unsure on how to achieve this).</p>
 
 	<p>Please be aware that setting a directories permissions to global write access is a potential security issue. While it is unlikely that anything nasty will occur (such as all the avatars being deleted) there are always people out there to cause trouble. Therefore you should monitor this directory and if possible make regular backups.</p>
-</div>
 
-<a href="#top">Top</a>
-<br /><br />
+		</div>
 
-<hr />
+		<div class="back2top"><a href="#wrap" class="top">Back to Top</a></div>
 
-<a name="disclaimer"></a><h1>7. Copyright and disclaimer</h1>
+		<span class="corners-bottom"><span></span></span></div>
+	</div>
+
+	<hr />
+
+<a name="disclaimer"></a><h2>7. Copyright and disclaimer</h2>
 
 	<div class="paragraph">
+		<div class="inner"><span class="corners-top"><span></span></span>
+
+		<div class="content">
 
 	<p>This application is opensource software released under the <a href="http://opensource.org/licenses/gpl-license.php">GPL</a>. Please see source code and the docs directory for more details. This package and its contents are Copyright (c) 2000, 2002, 2005, 2007 <a href="http://www.phpbb.com/">phpBB Group</a>, All Rights Reserved.</p>
 
-</div>
-<a href="#top">Top</a>
+		</div>
+
+		<div class="back2top"><a href="#wrap" class="top">Back to Top</a></div>
+
+		<span class="corners-bottom"><span></span></span></div>
+	</div>
 
 <!-- END DOCUMENT -->
 
-</div>
+	<div id="page-footer">
+		<div class="version">&nbsp;</div>
+	</div>
+</div></div>
 
-<div id="footer">&nbsp;<br /><br /></div>
+<div>
+	<a id="bottom" name="bottom" accesskey="z"></a>
+</div>
 
 </body>
 </html>

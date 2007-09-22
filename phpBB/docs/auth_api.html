@@ -1,191 +1,60 @@
-<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
-    "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
-<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en" lang="en">
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml" dir="ltr" lang="en" xml:lang="en">
 <head>
-<title>Auth API</title>
-<meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1" />
-<meta http-equiv="Content-Style-Type" content="text/css" />
+
+<meta http-equiv="content-type" content="text/html; charset=utf-8" />
+<meta http-equiv="content-style-type" content="text/css" />
+<meta http-equiv="content-language" content="en" />
+<meta http-equiv="imagetoolbar" content="no" />
 <meta name="resource-type" content="document" />
-<meta name="description" lang="en" content="Olympus coding guidelines document" />
-<meta name="keywords" lang="en" content="" />
-<meta name="author" content="phpBB Group" />
-<meta name="copyright" content="phpBB Group" />
-<meta name="MSSmartTagsPreventParsing" content="true" />
-<link rel="shortcut icon" href="" />
+<meta name="distribution" content="global" />
+<meta name="copyright" content="2007 phpBB Group" />
+<meta name="keywords" content="" />
+<meta name="description" content="This is an explanation of how to use the phpBB auth/acl API" />
+<title>phpBB3 &bull; Auth API</title>
 
-<style type="text/css">
-<!--
-
-/*
-	    The original "subSilver" theme for phpBB2
-	Created by subBlue design :: http://www.subBlue.com
-*/
-
-body {
-	background-color:	white;
-	font-family:		Verdana, Arial, Helvetica, sans-serif;
-	margin:				0px;
-	border:				0px;
-	padding:			0px;
-}
-
-img {
-	border: 0;
-}
-
-p {
-	font-size:	8pt;
-}
-
-hr { 
-	height: 0px; 
-	border: solid #D1D7DC 0px; 
-	border-top-width: 1px;
-}
-
-#title, h1 {
-	font: bold 18pt 'Trebuchet MS', Verdana, sans-serif;
-	text-decoration: none; 
-	line-height: 120%; 
-}
-
-h2 {
-	font: bold 12pt Arial, Helvetica, sans-serif;
-	text-decoration: none; 
-	line-height: 120%; 
-}
-
-h3 {
-	font: bold 10pt Arial, Helvetica, sans-serif;
-	text-decoration: none; 
-	line-height: 120%; 
-}
-
-.paragraph {
-	margin-left: 20px;
-}
-
-/* 
-	Structure 
-*/
-#logo {
-	background: #fff url(header_bg.jpg) repeat-x top right;
-	height: 60px;
-}
-
-#title {
-	color: #12749b;
-	float: right;
-	margin: 10px 10px 0;
-}
-
-#main {
-	margin-left: 25px;
-	margin-right: 25px;
-}
-
-.good {
-	color: green;
-}
-
-.bad {
-	color: red;
-}
-
-#footer {
-	margin-left: 75px;
-	font-size: 70%;
-	color: #006600;
-}
-
-code { 
-	color: #006600; 
-	font-weight: normal; 
-	font-family: 'Courier New', monospace; 
-	border-color: #D1D7DC; 
-	border-width: 1px; 
-	border-style: solid; 
-	background-color: #FAFAFA; 
-}
-
-.indent p {
-	padding-left: 20px;
-	font-size: 90%;
-}
-
-/*
-	Anchors
-*/
-a {
-	font-size: 70%;
-}
-
-a:link, a:active, a:visited {
-	color:	#006699;
-	text-decoration:	none;
-}
-
-a:hover {
-	color:				#DD6900;
-	text-decoration:	underline;
-}
-
-a.nav {
-	color:				#006699;
-	text-decoration:	none;
-}
-
-a.nav:hover {
-	text-decoration:	underline;
-}
-
-p a {
-	font-size: 100%;
-}
-
-.menu {
-	font-size: 80%;
-}
-
-.menu li a {
-	font-size: 100%;
-}
-//-->
-</style>
-
-<!--[if IE]>
-<style type="text/css">
-body {
-	scrollbar-face-color:		#DEE3E7;
-	scrollbar-highlight-color:	white;
-	scrollbar-shadow-color:		#DEE3E7;
-	scrollbar-3dlight-color:	#D1D7DC;
-	scrollbar-arrow-color:		#006699;
-	scrollbar-track-color:		#EFEFEF;
-	scrollbar-darkshadow-color: #98AAB1;
-}
-</style>
-<![endif]-->
+<link href="stylesheet.css" rel="stylesheet" type="text/css" media="screen, projection" />
 
 </head>
 
-<body>
+<body id="phpbb" class="section-docs">
 
-<div id="logo">
-	<div id="title">Auth API</div>
-	<a href="index.php"><img src="header_left.jpg" alt="phpBB Logo" /></a>
-</div>
+<div id="wrap">
+	<a id="top" name="top" accesskey="t"></a>
+	<div id="page-header">
+		<div class="headerbar">
+			<div class="inner"><span class="corners-top"><span></span></span>
 
-<a name="top"></a><div id="main">
+			<div id="doc-description">
+				<a href="../index.php" id="logo"><img src="site_logo.gif" alt="" /></a>
+				<h1>Auth API</h1>
+				<p>This is an explanation of how to use the phpBB auth/acl API</p>
+				<p style="display: none;"><a href="#start_here">Skip</a></p>
+			</div>
 
-<p>This is an explanation of how to use the phpBB auth/acl API.</p>
+			<span class="corners-bottom"><span></span></span></div>
+		</div>
+	</div>
 
-<h1>Auth API</h1>
+	<a name="start_here"></a>
 
-<ol class="menu">
+	<div id="page-body">
+
+<!-- BEGIN DOCUMENT -->
+
+	<p>This is an explanation of how to use the phpBB auth/acl API.</p>
+
+	<h1>Auth API</h1>
+
+	<div class="paragraph menu">
+		<div class="inner"><span class="corners-top"><span></span></span>
+
+		<div class="content">
+
+<ol>
 	<li><a href="#intro">Introduction</a></li>
 	<li><a href="#methods">Methods</a>
-	<ol type="i">
+	<ol style="list-style-type: lower-roman;">
 		<li><a href="#acl">acl</a></li>
 		<li><a href="#acl_get">acl_get</a></li>
 		<li><a href="#acl_gets">acl_gets</a></li>
@@ -198,62 +67,69 @@ body {
 	<li><a href="#disclaimer">Copyright and disclaimer</a></li>
 </ol>
 
-<hr />
+		</div>
 
-<a name="intro"></a><h1>1. Introduction</h1>
+		<span class="corners-bottom"><span></span></span></div>
+	</div>
+
+	<hr />
+
+<a name="intro"></a><h2>1. Introduction</h2>
 
 	<div class="paragraph">
+		<div class="inner"><span class="corners-top"><span></span></span>
 
-	<h3>What is it?</h3>
+		<div class="content">
+
+	<h4>What is it?</h4>
 
 	<p>The <code>auth</code> class contains methods related to authorisation users to access various board functions, e.g. posting, viewing, replying, logging in (and out), etc. If you need to check whether a user can carry out a task or handle user login/logouts this class is required.</p>
 
-	<h3>Initialisation</h3>
+	<h4>Initialisation</h4>
 
 	<p>To use any methods contained with the <code>auth</code> class it first needs to be instantiated. This is best achieved early in the execution of the script in the following manner:</p>
 
-	<blockquote><pre>
+	<div class="codebox"><pre>
 $auth = new auth();
-	</pre></blockquote>
+	</pre></div>
 
 	<p>Once an instance of the class has been created you are free to call the various methods it contains. Please note that should you wish to use the <code>auth_admin</code> methods you will need to instantiate this separately but in the same way.</p>
 
+		</div>
+
+		<div class="back2top"><a href="#wrap" class="top">Back to Top</a></div>
+
+		<span class="corners-bottom"><span></span></span></div>
 	</div>
-	<a href="#top">Top</a>
-	<br /><br />
 
-<hr />
+	<hr />
 
-<a name="methods"></a><h1>2. Methods</h1>
+<a name="methods"></a><h2>2. Methods</h2>
+
+	<div class="paragraph">
+		<div class="inner"><span class="corners-top"><span></span></span>
+
+		<div class="content">
 
 	<p>Following are the methods you are able to use.</p>
 
-	<a name="acl"></a><b>2.i. acl</b>
-	<br /><br />
-	<div class="paragraph">
+	<a name="acl"></a><h3>2.i. acl</h3>
 	
 	<p>The <code>acl</code> method is the initialisation routine for all the acl functions. If you intend calling any acl method you must first call this. The method takes as its one and only required parameter an associative array containing user information as stored in the database. This array must contain at least the following information; user_id, user_permissions and user_type. It is called in the following way:</p>
 
-	<blockquote><pre>
+	<div class="codebox"><pre>
 $auth-&gt;acl(<code>userdata</code>);
-	</pre></blockquote>
+	</pre></div>
 
 	<p>Where userdata is the array containing the aforementioned data.</p>
 
-	</div>
-	<a href="#top">Top</a>
-	<br /><br />
-
-
-	<a name="acl_get"></a><b>2.ii. acl_get</b>
-	<br /><br />
-	<div class="paragraph">
+	<a name="acl_get"></a><h3>2.ii. acl_get</h3>
 
 	<p>This method is the primary way of determining what a user can and cannot do for a given option globally or in a given forum. The method should be called in the following way:</p>
 
-	<blockquote><pre>
+	<div class="codebox"><pre>
 $result = $auth-&gt;acl_get(<code>option</code>[, <code>forum</code>]);
-	</pre></blockquote>
+	</pre></div>
 
 	<p>Where option is a string representing the required option, e.g. 'f_list', 'm_edit', 'a_adduser', etc. By adding a ! in front of the option, e.g. '!f_list' the result of this method will be negated. The optional forum term is the integer forum_id.</p>
 
@@ -263,121 +139,114 @@ $result = $auth-&gt;acl_get(<code>option</code>[, <code>forum</code>]);
 
 	<p>There are some special options or <em>flags</em> which are used as prefixes for other options, e.g. 'f_' or 'm_'. These flags will automatically be set to a positive integer if the user has one or more permissions with the given prefix. A local setting will result in the flag being set only locally (so it will require a forum id to retrieve). If a user has one or more global permissions with the prefix acl_get will return a positive integer regardless of the forum id.</p>
 
-	</div>
-	<a href="#top">Top</a>
-	<br /><br />
-
-
-	<a name="acl_gets"></a><b>2.iii. acl_gets</b>
-	<br /><br />
-	<div class="paragraph">
+	<a name="acl_gets"></a><h3>2.iii. acl_gets</h3>
 
 	<p>This method is funtionally similar to <code>acl_get</code> in that it returns information on whether a user can or cannot carry out a given task. The difference here is the ability to test several different options in one go. This may be useful for testing whether a user is a moderator or an admin in one call. Rather than having to call and check <code>acl_get</code> twice.</p>
 
 	<p>The method should be called thus:</p>
 
-	<blockquote><pre>
+	<div class="codebox"><pre>
 $result = $auth-&gt;acl_gets(<code>option1</code>[, <code>option2</code>, ..., <code>optionN</code>, <code>forum</code>]);
-	</pre></blockquote>
+	</pre></div>
 
 	<p>As with the <code>acl_get</code> method the options are strings representing the required permissions to check. The forum again is an integer representing a given forum_id.</p>
 
 	<p>The method will return a positive integer if <code>acl_get</code> for one of the options evaluates to a positive integer (combines permissions with OR).</p>
 
-	</div>
-	<a href="#top">Top</a>
-	<br /><br />
-
-
-	<a name="acl_getf"></a><b>2.iv. acl_getf</b>
-	<br /><br />
-	<div class="paragraph">
+	<a name="acl_getf"></a><h3>2.iv. acl_getf</h3>
 
 	<p>This method is used to find out in which forums a user is allowed to carry out an operation or to find out in which forums he is not allowed to carry out an operation. The method should be called in the following way:</p>
 
-	<blockquote><pre>
+	<div class="codebox"><pre>
 $result = $auth-&gt;acl_getf(<code>option</code>[, <code>clean</code>]);
-	</pre></blockquote>
+	</pre></div>
 
 	<p>Just like in the <code>acl_get</code> method the option is a string specifying the permission which has to be checked (negation using ! is allowed). The second parameter is a boolean. If it is set to false this method returns all forums with either zero or a positive integer. If it is set to true only those forums with a positive integer as the result will be returned.</p>
 
 	<p>The method returns an associative array of the form:</p>
 
-	<blockquote><pre>
+	<div class="codebox"><pre>
 array(<em>forum_id1</em> =&gt; array(<em>option</em> =&gt; <em>integer</em>), <em>forum_id2</em> =&gt; ...)
-	</pre></blockquote>
+	</pre></div>
 
 	<p>Where option is the option passed to the method and integer is either zero or a positive integer and the same <code>acl_get(option, forum_id)</code> would return.</p>
 
-	</div>
-	<a href="#top">Top</a>
-	<br /><br />
-
-
-	<a name="acl_getf_global"></a><b>2.v. acl_getf_global</b>
-	<br /><br />
-	<div class="paragraph">
+	<a name="acl_getf_global"></a><h3>2.v. acl_getf_global</h3>
 
 	<p>This method is used to find out whether a user has a permission in at least one forum or globally. This method is similar to checking whether <code>acl_getf(option, true)</code> returned one or more forums but it's faster. It should be called in the following way:</p>
 
-	<blockquote><pre>
+	<div class="codebox"><pre>
 $result = acl_getf_global(<code>option</code>)
-	</pre></blockquote>
+	</pre></div>
 
 	<p>As with the previous methods option is a string specifying the permission which has to be checked.</p>
 
 	<p>This method returns either zero or a positive integer.</p>
 
-	</div>
-	<a href="#top">Top</a>
-	<br /><br />
-
-
-	<a name="acl_cache"></a><b>2.vi. acl_cache</b>
-	<br /><br />
-	<div class="paragraph">
+	<a name="acl_cache"></a><h3>2.vi. acl_cache</h3>
 
 	<p>This should be considered a private method and not be called externally. It handles the generation of the user_permissions data from the basic user and group authorisation data. When necessary this method is called automatically by <code>acl</code>.</p>
 
+		</div>
+
+		<div class="back2top"><a href="#wrap" class="top">Back to Top</a></div>
+
+		<span class="corners-bottom"><span></span></span></div>
 	</div>
-	<a href="#top">Top</a>
-	<br /><br />
 
-<hr />
+	<hr />
 
-<a name="admin_related"></a><h1>3. Admin related functions</h1>
+<a name="admin_related"></a><h2>3. Admin related functions</h2>
 
 	<div class="paragraph">
+		<div class="inner"><span class="corners-top"><span></span></span>
+
+		<div class="content">
 
 	<p>A number of additional methods are available related to <code>auth</code>. These handle more basic functions such as adding user and group permissions, new options and clearing the user cache. These methods are contained within a separate class, <code>auth_admin</code>. This can be found in <code>includes/acp/auth.php</code>.</p>
 
 	<p>To use any methods this class contains it first needs to be instantiated separately from <code>auth</code>. This is achieved in the same way as <code>auth</code>:</p>
 
-	<blockquote><pre>
+	<div class="codebox"><pre>
 $auth_admin = new auth_admin();
-	</pre></blockquote>
+	</pre></div>
 
 	<p>This instance gives you access to both the methods of this specific class and that of <code>auth</code>.</p>
 
+		</div>
+
+		<div class="back2top"><a href="#wrap" class="top">Back to Top</a></div>
+
+		<span class="corners-bottom"><span></span></span></div>
 	</div>
-	<a href="#top">Top</a>
-	<br /><br />
 
 	<hr />
 
-<a name="disclaimer"></a><h1>4. Copyright and disclaimer</h1>
+<a name="disclaimer"></a><h2>4. Copyright and disclaimer</h2>
 
 	<div class="paragraph">
+		<div class="inner"><span class="corners-top"><span></span></span>
+
+		<div class="content">
 
 	<p>This application is opensource software released under the <a href="http://opensource.org/licenses/gpl-license.php">GPL</a>. Please see source code and the docs directory for more details. This package and its contents are Copyright (c) 2000, 2002, 2005, 2007 <a href="http://www.phpbb.com/">phpBB Group</a>, All Rights Reserved.</p>
 
-</div>
-<a href="#top">Top</a>
+		</div>
 
-</div>
+		<div class="back2top"><a href="#wrap" class="top">Back to Top</a></div>
 
-<div id="footer"> $Id$ 
-<br /><br />
+		<span class="corners-bottom"><span></span></span></div>
+	</div>
+
+<!-- END DOCUMENT -->
+
+	<div id="page-footer">
+		<div class="version"> $Id$ </div>
+	</div>
+</div></div>
+
+<div>
+	<a id="bottom" name="bottom" accesskey="z"></a>
 </div>
 
 </body>

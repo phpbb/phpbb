@@ -1,164 +1,43 @@
-<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
-    "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
-<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en" lang="en">
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml" dir="ltr" lang="en" xml:lang="en">
 <head>
-<title>phpBB 3.0.x Changelog</title>
-<meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1" />
-<meta http-equiv="Content-Style-Type" content="text/css" />
+
+<meta http-equiv="content-type" content="text/html; charset=utf-8" />
+<meta http-equiv="content-style-type" content="text/css" />
+<meta http-equiv="content-language" content="en" />
+<meta http-equiv="imagetoolbar" content="no" />
 <meta name="resource-type" content="document" />
-<meta name="description" lang="en" content="phpBB 3.0.x Changelog" />
-<meta name="keywords" lang="en" content="" />
-<meta name="author" content="phpBB Group" />
-<meta name="copyright" content="phpBB Group" />
-<meta name="MSSmartTagsPreventParsing" content="true" />
+<meta name="distribution" content="global" />
+<meta name="copyright" content="2007 phpBB Group" />
+<meta name="keywords" content="" />
+<meta name="description" content="phpBB 3.0.x Changelog" />
+<title>phpBB3 &bull; Changelog</title>
 
-<style type="text/css">
-<!--
-
-/* The original "subSilver" theme for phpBB2 Created by subBlue design :: http://www.subBlue.com */
-body {
-	background-color: white;
-	font-family: Verdana, Arial, Helvetica, sans-serif;
-	margin: 0;
-	border: 0;
-	padding: 0;
-}
-
-img {
-	border: 0;
-}
-
-p {
-	font-size: 8pt;
-}
-
-hr {
-	height: 0;
-	border: solid #D1D7DC 0;
-	border-top-width: 1px;
-}
-
-#title, h1 {
-	font: bold 18pt 'Trebuchet MS', Verdana, sans-serif;
-	text-decoration: none;
-	line-height: 120%;
-}
-
-h2 {
-	font: bold 12pt Arial, Helvetica, sans-serif;
-	text-decoration: none;
-	line-height: 120%;
-}
-
-h3 {
-	font: bold 10pt Arial, Helvetica, sans-serif;
-	text-decoration: none;
-	line-height: 120%;
-}
-
-.paragraph {
-	margin-left: 20px;
-}
-
-/* Structure */
-#logo {
-	background: #fff url(header_bg.jpg) repeat-x top right;
-	height: 60px;
-}
-
-#title {
-	color: #12749b;
-	float: right;
-	margin: 10px 10px 0;
-}
-
-#main {
-	margin-left: 25px;
-	margin-right: 25px;
-}
-
-.good {
-	color: green;
-}
-
-.bad {
-	color: red;
-}
-
-#footer {
-	margin-left: 75px;
-	font-size: 70%;
-	color: #006600;
-}
-
-code {
-	color: #006600;
-	font-weight: normal;
-	font-family: 'Courier New', monospace;
-	border-color: #D1D7DC;
-	border-width: 1px;
-	border-style: solid;
-	background-color: #FAFAFA;
-}
-
-.indent p {
-	padding-left: 20px;
-	font-size: 90%;
-}
-
-/* Anchors */
-a {
-	font-size: 70%;
-}
-
-a:link, a:active, a:visited {
-	color:	#006699;
-	text-decoration: none;
-}
-
-a:hover {
-	color: #DD6900;
-	text-decoration: underline;
-}
-
-a.nav {
-	color: #006699;
-	text-decoration: none;
-}
-
-a.nav:hover {
-	text-decoration: underline;
-}
-
-p a {
-	font-size: 100%;
-}
-
-.menu {
-	font-size: 80%;
-}
-
-.menu li a {
-	font-size: 100%;
-}
-
-.comment {
-	color: green;
-}
-
-//-->
-</style>
+<link href="stylesheet.css" rel="stylesheet" type="text/css" media="screen, projection" />
 
 </head>
 
-<body>
+<body id="phpbb" class="section-docs">
 
-<div id="logo">
-	<div id="title">phpBB 3.0.x Changelog</div>
-	<img src="header_left.jpg" alt="phpBB Logo" />
-</div>
+<div id="wrap">
+	<a id="top" name="top" accesskey="t"></a>
+	<div id="page-header">
+		<div class="headerbar">
+			<div class="inner"><span class="corners-top"><span></span></span>
 
-<a name="top"></a><div id="main">
+			<div id="doc-description">
+				<a href="../index.php" id="logo"><img src="site_logo.gif" alt="" /></a>
+				<h1>phpBB 3.0.x Changelog</h1>
+				<p style="display: none;"><a href="#start_here">Skip</a></p>
+			</div>
+
+			<span class="corners-bottom"><span></span></span></div>
+		</div>
+	</div>
+
+	<a name="start_here"></a>
+
+	<div id="page-body">
 
 <!-- BEGIN DOCUMENT -->
 
@@ -166,9 +45,14 @@ p a {
 
 <h1>Changelog</h1>
 
-<ol class="menu">
+	<div class="paragraph menu">
+		<div class="inner"><span class="corners-top"><span></span></span>
+
+		<div class="content">
+
+<ol>
 	<li><a href="#changelog">Changelog</a>
-	<ol type="i">
+	<ol style="list-style-type: lower-roman;">
 		<li><a href="#v30rc5">Changes since RC-5</a></li>
 		<li><a href="#v30rc4">Changes since RC-4</a></li>
 		<li><a href="#v30rc3">Changes since RC-3</a></li>
@@ -179,15 +63,23 @@ p a {
 	<li><a href="#disclaimer">Copyright and disclaimer</a></li>
 </ol>
 
-<hr />
+		</div>
 
-<a name="changelog"></a><h1>1. Changelog</h1>
+		<span class="corners-bottom"><span></span></span></div>
+	</div>
 
-	<a name="v30rc5"></a><b>1.i. Changes since 3.0.RC5</b>
-	<br /><br />
+	<hr />
+
+	<a name="changelog"></a><h2>1. Changelog</h2>
+
 	<div class="paragraph">
+		<div class="inner"><span class="corners-top"><span></span></span>
 
-	<ul class="menu">
+		<div class="content">
+
+	<a name="v30rc5"></a><h3>1.i. Changes since 3.0.RC5</h3>
+
+	<ul>
 		<li>[Feature] Removing constant PHPBB_EMBEDDED in favor of using an exit_handler(); the constant was meant to achive this more or less.</li>
 		<li>[Feature] The new exit_handler() function having a check for the function exit_handler_phpbb_hook().</li>
 		<li>[Feature] Constant PHPBB_ADMIN_PATH introduced, having the same purpose as PHPBB_ROOT_PATH, but for the ACP.</li>
@@ -217,17 +109,9 @@ p a {
 		<li>[Fix] Only display PM history links if there are PM's to be displayed (Bug #14484)</li>
 	</ul>
 
-	</div>
-	<a href="#top">Top</a>
-	<br /><br />
+	<a name="v30rc4"></a><h3>1.ii. Changes since 3.0.RC4</h3>
 
-	<hr />
-
-	<a name="v30rc4"></a><b>1.ii. Changes since 3.0.RC4</b>
-	<br /><br />
-	<div class="paragraph">
-
-	<ul class="menu">
+	<ul>
 		<li>[Fix] MySQL, PostgreSQL and SQLite related database fixes (Bug #13862)</li>
 		<li>[Fix] Allow MS SQL to properly connect when using the mssql driver and PHP is less than either 4.4.1 or 5.1 (Bug #13874)</li>
 		<li>[Fix] Ignore files containing HTML special chars in the filenames as gallery avatars (Bug #13906)</li>
@@ -276,17 +160,9 @@ p a {
 		<li>[Fix] odbc_autocommit causing existing result sets to be dropped (Bug #14182)</li>
 	</ul>
 
-	</div>
-	<a href="#top">Top</a>
-	<br /><br />
+	<a name="v30rc3"></a><h3>1.iii. Changes since 3.0.RC3</h3>
 
-	<hr />
-
-	<a name="v30rc3"></a><b>1.iii. Changes since 3.0.RC3</b>
-	<br /><br />
-	<div class="paragraph">
-
-	<ul class="menu">
+	<ul>
 		<li>[Fix] Fixing some subsilver2 and prosilver style issues</li>
 		<li>[Fix] Parse error in MCP ban (Bug #13109)</li>
 		<li>[Fix] Correctly hide online status in the profile (Bug #13059)</li>
@@ -393,17 +269,9 @@ p a {
 
 	</ul>
 
-	</div>
-	<a href="#top">Top</a>
-	<br /><br />
+	<a name="v30rc2"></a><h3>1.iv. Changes since 3.0.RC2</h3>
 
-	<hr />
-
-	<a name="v30rc2"></a><b>1.iv. Changes since 3.0.RC2</b>
-	<br /><br />
-	<div class="paragraph">
-
-	<ul class="menu">
+	<ul>
 		<li>[Fix] Re-allow searching within the memberlist</li>
 		<li>[Fix] Force prune related values to integers during conversions</li>
 		<li>[Fix] Updater now detects successfully merged files having conflicts and user chose to merge with modifications (Bug #12685)</li>
@@ -447,17 +315,9 @@ p a {
 
 	</ul>
 
-	</div>
-	<a href="#top">Top</a>
-	<br /><br />
+	<a name="v30rc1"></a><h3>1.v. Changes since 3.0.RC1</h3>
 
-	<hr />
-
-	<a name="v30rc1"></a><b>1.v. Changes since 3.0.RC1</b>
-	<br /><br />
-	<div class="paragraph">
-
-	<ul class="menu">
+	<ul>
 		<li>[Fix] (X)HTML issues within the templates (Bug #11255, #11255)</li>
 		<li>[Fix] Tiny language and grammar changes</li>
 		<li>[Fix] Several style related fixes, mainly fixing cross-browser issues</li>
@@ -574,28 +434,41 @@ p a {
 
 	</ul>
 
+		</div>
+
+		<div class="back2top"><a href="#wrap" class="top">Back to Top</a></div>
+
+		<span class="corners-bottom"><span></span></span></div>
 	</div>
-	<a href="#top">Top</a>
-	<br /><br />
 
 	<hr />
 
-<a name="disclaimer"></a><h1>2. Copyright and disclaimer</h1>
+<a name="disclaimer"></a><h2>2. Copyright and disclaimer</h2>
 
 	<div class="paragraph">
+		<div class="inner"><span class="corners-top"><span></span></span>
+
+		<div class="content">
 
 	<p>This application is opensource software released under the <a href="http://opensource.org/licenses/gpl-license.php">GPL</a>. Please see source code and the docs directory for more details. This package and its contents are Copyright (c) 2000, 2002, 2005, 2007 <a href="http://www.phpbb.com/">phpBB Group</a>, All Rights Reserved.</p>
 
-</div>
-<a href="#top">Top</a>
+		</div>
+
+		<div class="back2top"><a href="#wrap" class="top">Back to Top</a></div>
+
+		<span class="corners-bottom"><span></span></span></div>
+	</div>
 
 <!-- END DOCUMENT -->
 
+	<div id="page-footer">
+		<div class="version">Note that a full list of fixed bugs can be found at the bug tracker (<a href="README.html#bugs">see section on bug reporting</a>)</div>
+	</div>
+</div></div>
+
+<div>
+	<a id="bottom" name="bottom" accesskey="z"></a>
 </div>
-
-<br /><br />
-
-<div id="footer">Note that a full list of fixed bugs can be found at the bug tracker (<a href="README.html#bugs">see section on bug reporting</a>)<br /><br /></div>
 
 </body>
 </html>
