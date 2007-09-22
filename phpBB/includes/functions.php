@@ -1564,7 +1564,8 @@ function on_page($num_items, $per_page, $start)
 // Server functions (building urls, redirecting...)
 
 /**
-* Append session id to url
+* Append session id to url.
+* This function supports hooks.
 *
 * @param string $url The url the session id needs to be appended to (can have params)
 * @param mixed $params String or array of additional url parameters
@@ -1579,17 +1580,19 @@ function on_page($num_items, $per_page, $start)
 * append_sid("{$phpbb_root_path}viewtopic.$phpEx", array('t' => 1, 'f' => 2));
 * </code>
 *
-* Ability to use own function <code>append_sid_phpbb_hook</code> as a hook. It is called in favor of this function.
 */
 function append_sid($url, $params = false, $is_amp = true, $session_id = false)
 {
-	global $_SID, $_EXTRA_URL;
+	global $_SID, $_EXTRA_URL, $phpbb_hook;
 
 	// Developers using the hook function need to globalise the $_SID and $_EXTRA_URL on their own and also handle it appropiatly.
 	// They could mimick most of what is within this function
-	if (function_exists('append_sid_phpbb_hook'))
+	if ($phpbb_hook->call_hook(__FUNCTION__, $url, $params, $is_amp, $session_id))
 	{
-		return append_sid_phpbb_hook($url, $params, $is_amp, $session_id);
+		if ($phpbb_hook->hook_return(__FUNCTION__))
+		{
+			return $phpbb_hook->hook_return_result(__FUNCTION__);
+		}
 	}
 
 	// Assign sid if session id is not specified
@@ -4333,18 +4336,43 @@ function garbage_collection()
 }
 
 /**
-* Handler for exit calls in phpBB
+* Handler for exit calls in phpBB.
+* This function supports hooks.
 *
-* Ability to use own function <code>exit_handler_phpbb_hook</code> as a hook. It is called in favor of this function.
+* Note: This function is called after the template has been outputted.
 */
 function exit_handler()
 {
-	if (function_exists('exit_handler_phpbb_hook'))
+	global $phpbb_hook;
+
+	if ($phpbb_hook->call_hook(__FUNCTION__))
 	{
-		return exit_handler_phpbb_hook();
+		if ($phpbb_hook->hook_return(__FUNCTION__))
+		{
+			return $phpbb_hook->hook_return_result(__FUNCTION__);
+		}
 	}
 
 	exit;
+}
+
+/**
+* Handler for init calls in phpBB. This function is called in user::setup();
+* This function supports hooks.
+*/
+function phpbb_user_session_handler()
+{
+	global $phpbb_hook;
+
+	if ($phpbb_hook->call_hook(__FUNCTION__))
+	{
+		if ($phpbb_hook->hook_return(__FUNCTION__))
+		{
+			return $phpbb_hook->hook_return_result(__FUNCTION__);
+		}
+	}
+
+	return;
 }
 
 /**

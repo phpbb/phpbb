@@ -1518,6 +1518,10 @@ class user extends session
 			}
 		}
 
+		// Call phpbb_user_session_handler() in case external application want to "bend" some variables or replace classes...
+		// After calling it we continue script execution...
+		phpbb_user_session_handler();
+
 		// If this function got called from the error handler we are finished here.
 		if (defined('IN_ERROR_HANDLER'))
 		{

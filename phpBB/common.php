@@ -190,4 +190,13 @@ unset($dbpasswd);
 // Grab global variables, re-cache if necessary
 $config = $cache->obtain_config();
 
+// Add own hook handler
+require($phpbb_root_path . 'includes/hooks/index.' . $phpEx);
+$phpbb_hook = new phpbb_hook(array('exit_handler', 'phpbb_user_session_handler', 'append_sid', array('template', 'display')));
+
+foreach ($cache->obtain_hooks() as $hook)
+{
+	include($phpbb_root_path . 'includes/hooks/' . $hook . '.' . $phpEx);
+}
+
 ?>
