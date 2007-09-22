@@ -51,18 +51,28 @@ class session
 		$script_name = str_replace(array('\\', '//'), '/', $script_name);
 
 		// Now, remove the sid and let us get a clean query string...
+		$use_args = array();
+
+		// Since some browser do not encode correctly we need to do this with some "special" characters...
+		// " -> %22, ' => %27, < -> %3C, > -> %3E
+		$find = array('"', "'", '<', '>');
+		$replace = array('%22', '%27', '%3C', '%3E');
+
 		foreach ($args as $key => $argument)
 		{
 			if (strpos($argument, 'sid=') === 0 || strpos($argument, '_f_=') === 0)
 			{
-				unset($args[$key]);
+				continue;
 			}
+
+			$use_args[str_replace($find, $replace, $key)] = str_replace($find, $replace, $argument);
 		}
+		unset($args);
 
 		// The following examples given are for an request uri of {path to the phpbb directory}/adm/index.php?i=10&b=2
 
 		// The current query string
-		$query_string = trim(implode('&', $args));
+		$query_string = trim(implode('&', $use_args));
 
 		// basenamed page name (for example: index.php)
 		$page_name = basename($script_name);

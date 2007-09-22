@@ -1883,8 +1883,7 @@ function build_url($strip_vars = false)
 	global $user, $phpbb_root_path;
 
 	// Append SID
-	$redirect = (($user->page['page_dir']) ? $user->page['page_dir'] . '/' : '') . $user->page['page_name'] . (($user->page['query_string']) ? "?{$user->page['query_string']}" : '');
-	$redirect = append_sid($redirect, false, false);
+	$redirect = append_sid($user->page['page'], false, false);
 
 	// Add delimiter if not there...
 	if (strpos($redirect, '?') === false)
