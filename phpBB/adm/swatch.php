@@ -29,9 +29,16 @@ $template->set_filenames(array(
 	'body' => 'colour_swatch.html')
 );
 
+$form = request_var('form', '');
+$name = request_var('name', '');
+
+// We validate form and name here, only id/class allowed
+$form = (!preg_match('/^[a-z0-9_-]+$/i', $form)) ? '' : $form;
+$name = (!preg_match('/^[a-z0-9_-]+$/i', $name)) ? '' : $name;
+
 $template->assign_vars(array(
-	'OPENER'		=> addslashes(request_var('form', '')),
-	'NAME'			=> request_var('name', ''),
+	'OPENER'		=> $form,
+	'NAME'			=> $name,
 	'T_IMAGES_PATH'	=> "{$phpbb_root_path}images/",
 
 	'S_USER_LANG'			=> $user->lang['USER_LANG'],

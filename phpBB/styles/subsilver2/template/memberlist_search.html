@@ -2,7 +2,7 @@
 
 <!-- IF S_IN_SEARCH_POPUP -->
 	<script type="text/javascript">
-	<!--
+	// <![CDATA[
 		function insert_user(user)
 		{
 			opener.document.forms['{S_FORM_NAME}'].{S_FIELD_NAME}.value = ( opener.document.forms['{S_FORM_NAME}'].{S_FIELD_NAME}.value.length && opener.document.forms['{S_FORM_NAME}'].{S_FIELD_NAME}.type == "textarea" ) ? opener.document.forms['{S_FORM_NAME}'].{S_FIELD_NAME}.value + "\n" + user : user;
@@ -64,7 +64,7 @@
 				}
 			}
 		}
-	//-->
+	// ]]>
 	</script>
 <!-- ENDIF -->
 

@@ -310,7 +310,7 @@ class acp_modules
 					// Name options
 					$s_name_options .= '<option value="' . $option . '"' . (($option == $module_data['module_basename']) ? ' selected="selected"' : '') . '>' . $this->lang_name($values['title']) . ' [' . $this->module_class . '_' . $option . ']</option>';
 
-					$template->assign_block_vars('m_names', array('NAME' => $option));
+					$template->assign_block_vars('m_names', array('NAME' => $option, 'A_NAME' => addslashes($option)));
 
 					// Build module modes
 					foreach ($values['modes'] as $m_mode => $m_values)

@@ -12,11 +12,11 @@
 <link href="style/admin.css" rel="stylesheet" type="text/css" media="screen" />
 
 <script type="text/javascript">
-<!--
+// <![CDATA[
 var jump_page = '{LA_JUMP_PAGE}:';
 var on_page = '{ON_PAGE}';
 var per_page = '{PER_PAGE}';
-var base_url = '{BASE_URL}';
+var base_url = '{A_BASE_URL}';
 
 var menu_state = 'shown';
 
@@ -82,33 +82,25 @@ function marklist(id, name, state)
 }
 
 /**
-* Open trace popup
-*/
-function trace(link)
-{
-	window.open(link.replace(/&amp;/g, '&'), '_trace', 'height=515, resizable=yes, scrollbars=yes, width=750');
-	return false;
-}
-
-/**
 * Find a member
 */
-function find_username()
+function find_username(url)
 {
-	<!-- IF UA_FIND_USERNAME -->
-	window.open('{UA_FIND_USERNAME}', '_usersearch', 'height=570, resizable=yes, scrollbars=yes, width=760');
-	<!-- ENDIF -->
+	popup(url, 760, 570, '_usersearch');
 	return false;
 }
 
 /**
-* Color swatch
+* Window popup
 */
-function swatch(field)
+function popup(url, width, height, name)
 {
-	<!-- IF UA_SWATCH -->
-	window.open('{UA_SWATCH}' + field, '_swatch', 'height=150, resizable=yes, scrollbars=no, width=636');
-	<!-- ENDIF -->
+	if (!name)
+	{
+		name = '_popup';
+	}
+
+	window.open(url.replace(/&amp;/g, '&'), name, 'height=' + height + ',resizable=yes,scrollbars=yes, width=' + width);
 	return false;
 }
 
@@ -162,7 +154,7 @@ function switch_menu()
 	}
 }
 
-//-->
+// ]]>
 </script>
 </head>
 

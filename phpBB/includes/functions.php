@@ -1530,13 +1530,14 @@ function generate_pagination($base_url, $num_items, $per_page, $start_item, $add
 	}
 
 	$template->assign_vars(array(
-		$tpl_prefix . 'BASE_URL'	=> $base_url,
-		$tpl_prefix . 'PER_PAGE'	=> $per_page,
+		$tpl_prefix . 'BASE_URL'		=> $base_url,
+		'A_' . $tpl_prefix . 'BASE_URL'	=> addslashes($base_url),
+		$tpl_prefix . 'PER_PAGE'		=> $per_page,
 
 		$tpl_prefix . 'PREVIOUS_PAGE'	=> ($on_page == 1) ? '' : $base_url . "{$url_delim}start=" . (($on_page - 2) * $per_page),
 		$tpl_prefix . 'NEXT_PAGE'		=> ($on_page == $total_pages) ? '' : $base_url . "{$url_delim}start=" . ($on_page * $per_page),
-		$tpl_prefix . 'TOTAL_PAGES'		=> $total_pages)
-	);
+		$tpl_prefix . 'TOTAL_PAGES'		=> $total_pages,
+	));
 
 	return $page_string;
 }
@@ -4152,9 +4153,8 @@ function page_header($page_title = '', $display_online_list = true)
 
 		'U_PRIVATEMSGS'			=> append_sid("{$phpbb_root_path}ucp.$phpEx", 'i=pm&amp;folder=inbox'),
 		'U_RETURN_INBOX'		=> append_sid("{$phpbb_root_path}ucp.$phpEx", 'i=pm&amp;folder=inbox'),
-		'UA_RETURN_INBOX'		=> append_sid("{$phpbb_root_path}ucp.$phpEx", 'i=pm&folder=inbox', false),
 		'U_POPUP_PM'			=> append_sid("{$phpbb_root_path}ucp.$phpEx", 'i=pm&amp;mode=popup'),
-		'UA_POPUP_PM'			=> append_sid("{$phpbb_root_path}ucp.$phpEx", 'i=pm&mode=popup', false),
+		'UA_POPUP_PM'			=> addslashes(append_sid("{$phpbb_root_path}ucp.$phpEx", 'i=pm&amp;mode=popup')),
 		'U_MEMBERLIST'			=> append_sid("{$phpbb_root_path}memberlist.$phpEx"),
 		'U_MEMBERSLIST'			=> append_sid("{$phpbb_root_path}memberlist.$phpEx"),
 		'U_VIEWONLINE'			=> ($auth->acl_gets('u_viewprofile', 'a_user', 'a_useradd', 'a_userdel')) ? append_sid("{$phpbb_root_path}viewonline.$phpEx") : '',

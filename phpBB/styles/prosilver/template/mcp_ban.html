@@ -1,24 +1,24 @@
 <!-- INCLUDE mcp_header.html -->
 
 <script type="text/javascript">
-<!--
+// <![CDATA[
 
 	var ban_length = new Array();
 		ban_length[-1] = '';
 	<!-- BEGIN ban_length -->
-		ban_length['{ban_length.BAN_ID}'] = "{ban_length.A_LENGTH}";
+		ban_length['{ban_length.BAN_ID}'] = '{ban_length.A_LENGTH}';
 	<!-- END ban_length -->
 
 	var ban_reason = new Array();
 		ban_reason[-1] = '';
 	<!-- BEGIN ban_reason -->
-		ban_reason['{ban_reason.BAN_ID}'] = "{ban_reason.A_REASON}";
+		ban_reason['{ban_reason.BAN_ID}'] = '{ban_reason.A_REASON}';
 	<!-- END ban_reason -->
 
 	var ban_give_reason = new Array();
 		ban_give_reason[-1] = '';
 	<!-- BEGIN ban_give_reason -->
-		ban_give_reason['{ban_give_reason.BAN_ID}'] = "{ban_give_reason.A_REASON}";
+		ban_give_reason['{ban_give_reason.BAN_ID}'] = '{ban_give_reason.A_REASON}';
 	<!-- END ban_give_reason -->
 
 	function display_details(option)
@@ -28,7 +28,7 @@
 		document.getElementById('unbanlength').textContent = ban_length[option];
 	}
 
-//-->
+// ]]>
 </script>
 
 <form id="mcp_ban" method="post" action="{U_ACTION}">
@@ -45,7 +45,7 @@
 	<dl>
 		<dt><label for="ban">{L_BAN_CELL}:</label></dt>
 		<dd><label for="ban"><textarea name="ban" id="ban" class="inputbox" cols="40" rows="3">{USERNAMES}</textarea></label></dd>
-		<!-- IF S_USERNAME_BAN --><dd><strong><a href="#" onclick="window.open('{U_FIND_USER}', '_phpbbsearch', 'height=500, resizable=yes, scrollbars=yes, width=740'); return false;">{L_FIND_USERNAME}</a></strong></dd><!-- ENDIF -->
+		<!-- IF S_USERNAME_BAN --><dd><strong><a href="{U_FIND_USERNAME}" onclick="find_username(this.href); return false;">{L_FIND_USERNAME}</a></strong></dd><!-- ENDIF -->
 	</dl>
 	<dl>
 		<dt><label for="banlength">{L_BAN_LENGTH}:</label></dt>

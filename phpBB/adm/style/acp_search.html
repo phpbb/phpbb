@@ -66,17 +66,17 @@
 <!-- ELSEIF S_INDEX -->
 
 	<script type="text/javascript">
-	<!--
-
+	// <![CDATA[
 		/**
 		* Popup search progress bar
 		*/
 		function popup_progress_bar(progress_type)
 		{
 			close_waitscreen = 0;
-			window.open('{UA_PROGRESS_BAR}&type=' + progress_type, '_index', 'HEIGHT=240,resizable=yes,scrollbars=no,WIDTH=400');
+			// no scrollbars
+			popup('{UA_PROGRESS_BAR}&amp;type=' + progress_type, 400, 240, '_index');
 		}
-	//-->
+	// ]]>
 	</script>
 
 	<h1>{L_ACP_SEARCH_INDEX}</h1>

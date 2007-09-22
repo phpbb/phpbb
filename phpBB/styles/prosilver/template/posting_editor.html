@@ -31,13 +31,13 @@
 			<!-- ENDIF -->
 			<dl class="pmlist">
 				<dt><textarea id="username_list" name="username_list" class="inputbox"></textarea></dt>
-				<dd><span><a href="{U_FIND_USERNAME}" onclick="find_username(); return false">{L_FIND_USERNAME}</a></span></dd>
+				<dd><span><a href="{U_FIND_USERNAME}" onclick="find_username(this.href); return false;">{L_FIND_USERNAME}</a></span></dd>
 				<dd><input type="submit" name="add_to" value="{L_ADD}" class="button2" /></dd>
 				<dd><input type="submit" name="add_bcc" value="{L_ADD_BCC}" class="button2" /></dd>
 			</dl>
 		<!-- ELSE -->
 			<dl>
-				<dt><label for="username_list">{L_TO}:</label><br /><span><a href="{U_FIND_USERNAME}" onclick="find_username(); return false">{L_FIND_USERNAME}</a></span></dt>
+				<dt><label for="username_list">{L_TO}:</label><br /><span><a href="{U_FIND_USERNAME}" onclick="find_username(this.href); return false">{L_FIND_USERNAME}</a></span></dt>
 				<!-- IF .to_recipient -->
 					<dd>
 						<!-- BEGIN to_recipient -->
@@ -114,7 +114,7 @@
 			<!-- END smiley -->
 		<!-- ENDIF -->
 		<!-- IF S_SHOW_SMILEY_LINK and S_SMILIES_ALLOWED-->
-			<br /><a href="{U_MORE_SMILIES}" onclick="window.open('{U_MORE_SMILIES}', '_phpbbsmilies', 'HEIGHT=350,resizable=yes,scrollbars=yes,WIDTH=300'); return false;">{L_MORE_SMILIES}</a>
+			<br /><a href="{U_MORE_SMILIES}" onclick="popup(this.href, 300, 350, '_phpbbsmilies'); return false;">{L_MORE_SMILIES}</a>
 		<!-- ENDIF -->
 
 		<!-- IF BBCODE_STATUS -->

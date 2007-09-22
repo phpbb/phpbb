@@ -364,6 +364,11 @@ switch ($mode)
 		// Send vars to the template
 		$template->assign_vars(array(
 			'IM_CONTACT'	=> $row[$sql_field],
+			'A_IM_CONTACT'	=> addslashes($row[$sql_field]),
+
+			'U_AIM_CONTACT'	=> ($action == 'aim') ? 'aim:addbuddy?screenname=' . urlencode($row[$sql_field]) : '',
+			'U_AIM_MESSAGE'	=> ($action == 'aim') ? 'aim:goim?screenname=' . urlencode($row[$sql_field]) . '&amp;message=' . urlencode($config['sitename']) : '',
+
 			'USERNAME'		=> $row['username'],
 			'CONTACT_NAME'	=> $row[$sql_field],
 			'SITENAME'		=> $config['sitename'],
@@ -897,7 +902,11 @@ switch ($mode)
 
 		$form			= request_var('form', '');
 		$field			= request_var('field', '');
-		$select_single 	= request_var('select_single', false);	
+		$select_single 	= request_var('select_single', false);
+
+		// We validate form and field here, only id/class allowed
+		$form = (!preg_match('/^[a-z0-9_-]+$/i', $form)) ? '' : $form;
+		$field = (!preg_match('/^[a-z0-9_-]+$/i', $field)) ? '' : $field;
 
 		if ($mode == 'searchuser' && ($config['load_search'] || $auth->acl_get('a_')))
 		{
@@ -1517,6 +1526,8 @@ function show_profile($data)
 		'USERNAME'			=> get_username_string('username', $user_id, $username, $data['user_colour']),
 		'USER_COLOR'		=> get_username_string('colour', $user_id, $username, $data['user_colour']),
 		'U_VIEW_PROFILE'	=> get_username_string('profile', $user_id, $username, $data['user_colour']),
+
+		'A_USERNAME'		=> addslashes(get_username_string('username', $user_id, $username, $data['user_colour'])),
 
 		'ONLINE_IMG'		=> (!$config['load_onlinetrack']) ? '' : (($online) ? $user->img('icon_user_online', 'ONLINE') : $user->img('icon_user_offline', 'OFFLINE')),
 		'S_ONLINE'			=> ($config['load_onlinetrack'] && $online) ? true : false,

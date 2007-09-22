@@ -19,7 +19,7 @@
 
 	<!-- IF S_SEND_AIM -->
 		<tr>
-			<td class="row1" colspan="2" align="center"><br /><a class="gen" href="aim:addbuddy?screenname={IM_CONTACT}">{L_IM_ADD_CONTACT}</a><br /><a class="gen" href="aim:goim?screenname={IM_CONTACT}&message={SITENAME}">{L_IM_SEND_MESSAGE}</a><br /><br /><a class="gensmall" href="http://www.aim.com/download.adp">{L_IM_DOWNLOAD_APP}</a> | <a class="gensmall" href="http://aimexpress.oscar.aol.com/aimexpress/launch.adp?Brand=AIM">{L_IM_AIM_EXPRESS}</a> </td>
+			<td class="row1" colspan="2" align="center"><br /><a class="gen" href="{U_AIM_CONTACT}">{L_IM_ADD_CONTACT}</a><br /><a class="gen" href="{U_AIM_MESSAGE}">{L_IM_SEND_MESSAGE}</a><br /><br /><a class="gensmall" href="http://www.aim.com/download.adp">{L_IM_DOWNLOAD_APP}</a> | <a class="gensmall" href="http://aimexpress.oscar.aol.com/aimexpress/launch.adp?Brand=AIM">{L_IM_AIM_EXPRESS}</a> </td>
 		</tr>
 		<tr>
 			<td class="cat" colspan="2" align="center">&nbsp;</td>
@@ -31,60 +31,59 @@
 			<td class="row1" colspan="2" align="center">
 				<object classid="clsid:B69003B3-C55E-4B48-836C-BC5946FC3B28" codetype="application/x-oleobject" id="objMessengerApp" width="0" height="0"></object>
 				<script type="text/javascript">
-				<!--					
+				// <![CDATA[
 					var app = document.getElementById('objMessengerApp');
 					
 					/**
-					 * Check whether the browser supports this and whether MSNM is connected
-					 */
+					* Check whether the browser supports this and whether MSNM is connected
+					*/
 					function msn_supported()
 					{
-						//Does the browser support the MSNM object?
+						// Does the browser support the MSNM object?
 						if (app.MyStatus) 
 						{
-							//Is MSNM connected?
+							// Is MSNM connected?
 							if (app.MyStatus == 1)
 							{
-									alert('{L_IM_MSNM_CONNECT}');
-									return false;
+								alert('{LA_IM_MSNM_CONNECT}');
+								return false;
 							}
 						}
-						else 
-						{	
-							alert('{L_IM_MSNM_BROWSER}');
+						else
+						{
+							alert('{LA_IM_MSNM_BROWSER}');
 							return false;
-						}				
+						}
 						return true;
 					}
-					
+
 					/**
-					 * Add to your contact list
-					 */					
-					function add_contact(address) 
+					* Add to your contact list
+					*/
+					function add_contact(address)
 					{
-						if (msn_supported()) 
+						if (msn_supported())
 						{
 							// Could return an error while MSNM is connecting, don't want that
 							try
 							{
 								app.AddContact(0, address);
-							} 
+							}
 							catch (e)
 							{
 								return;
 							}
 						}
-							
 					}
-					
+
 					/**
-					 * Write IM to contact
-					 */							
-					function im_contact(address) 
+					* Write IM to contact
+					*/
+					function im_contact(address)
 					{
-						if (msn_supported()) 
+						if (msn_supported())
 						{
-							// Could return an error while MSNM is connecting, don't want that						
+							// Could return an error while MSNM is connecting, don't want that
 							try
 							{
 								app.InstantMessage(address);
@@ -93,12 +92,12 @@
 							{
 								return;
 							}
-						}	
+						}
 					}
-				//-->
+				// ]]>
 				</script>
 	
-				<a class="gen" href="#" onclick="add_contact('{IM_CONTACT}'); return false;">{L_IM_ADD_CONTACT}</a><br /><a class="gen" href="#" onclick="im_contact('{IM_CONTACT}'); return false;">{L_IM_SEND_MESSAGE}</a>
+				<a class="gen" href="#" onclick="add_contact('{A_IM_CONTACT}'); return false;">{L_IM_ADD_CONTACT}</a><br /><a class="gen" href="#" onclick="im_contact('{A_IM_CONTACT}'); return false;">{L_IM_SEND_MESSAGE}</a>
 			</td>
 		</tr>
 		<tr>

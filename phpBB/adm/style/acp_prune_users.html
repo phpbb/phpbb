@@ -33,7 +33,7 @@
 <dl>
 	<dt><label for="users">{L_ACP_PRUNE_USERS}:</label><br /><span>{L_SELECT_USERS_EXPLAIN}</span></dt>
 	<dd><textarea id="users" name="users" cols="40" rows="5"></textarea></dd>
-	<dd>[ <a href="#" onclick="window.open('{U_FIND_USER}', '_phpbbsearch', 'height=500, resizable=yes, scrollbars=yes, width=740'); return false;">{L_FIND_USERNAME}</a> ]</dd>
+	<dd>[ <a href="{U_FIND_USERNAME}" onclick="find_username(this.href); return false;">{L_FIND_USERNAME}</a> ]</dd>
 </dl>
 <dl>
 	<dt><label for="deleteposts">{L_DELETE_USER_POSTS}:</label><br /><span>{L_DELETE_USER_POSTS_EXPLAIN}</span></dt>

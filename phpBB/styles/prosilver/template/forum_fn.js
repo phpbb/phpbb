@@ -5,9 +5,14 @@
 /**
 * Window popup
 */
-function popup(url, width, height)
+function popup(url, width, height, name)
 {
-	window.open(url.replace(/&amp;/g, '&'), '_popup', 'height=' + height + ',resizable=yes,scrollbars=yes, width=' + width);
+	if (!name)
+	{
+		name = '_popup';
+	}
+
+	window.open(url.replace(/&amp;/g, '&'), name, 'height=' + height + ',resizable=yes,scrollbars=yes, width=' + width);
 	return false;
 }
 

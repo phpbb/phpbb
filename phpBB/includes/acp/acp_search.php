@@ -473,8 +473,8 @@ class acp_search
 			'S_INDEX'				=> true,
 			'U_ACTION'				=> $this->u_action,
 			'U_PROGRESS_BAR'		=> append_sid("{$phpbb_admin_path}index.$phpEx", "i=$id&amp;mode=$mode&amp;action=progress_bar"),
-			'UA_PROGRESS_BAR'		=> append_sid("{$phpbb_admin_path}index.$phpEx", "i=$id&mode=$mode&action=progress_bar", false))
-		);
+			'UA_PROGRESS_BAR'		=> addslashes(append_sid("{$phpbb_admin_path}index.$phpEx", "i=$id&amp;mode=$mode&amp;action=progress_bar")),
+		));
 
 		if (isset($this->state[1]))
 		{

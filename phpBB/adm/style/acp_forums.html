@@ -5,8 +5,7 @@
 <!-- IF S_EDIT_FORUM -->
 
 	<script type="text/javascript">
-	<!--
-
+	// <![CDATA[
 		/**
 		* Handle displaying/hiding several options based on the forum type
 		*/
@@ -92,7 +91,7 @@
 			<!-- ENDIF -->
 		}
 
-	//-->
+	// ]]>
 	</script>
 
 	<a href="{U_BACK}" style="float: {S_CONTENT_FLOW_END};">&laquo; {L_BACK}</a>
@@ -368,12 +367,11 @@
 <!-- ELSEIF S_CONTINUE_SYNC -->
 
 	<script type="text/javascript">
-	<!--
-
+	// <![CDATA[
 		var close_waitscreen = 0;
-		window.open('{UA_PROGRESS_BAR}', '_sync', 'height=240, resizable=yes, scrollbars=no, width=400');
-
-	//-->
+		// no scrollbars...
+		popup('{UA_PROGRESS_BAR}', 400, 240, '_sync');
+	// ]]>
 	</script>
 
 	<h1>{L_FORUM_ADMIN}</h1>
@@ -385,18 +383,17 @@
 <!-- ELSE -->
 
 	<script type="text/javascript">
-	<!--
-
+	// <![CDATA[
 		/**
 		* Popup search progress bar
 		*/
 		function popup_progress_bar()
 		{
 			var close_waitscreen = 0;
-			window.open('{UA_PROGRESS_BAR}', '_sync', 'height=240, resizable=yes, scrollbars=no, width=400');
+			// no scrollbars...
+			popup('{UA_PROGRESS_BAR}', 400, 240, '_sync');
 		}
-
-	//-->
+	// ]]>
 	</script>
 
 	<h1>{L_FORUM_ADMIN}</h1>
@@ -412,9 +409,9 @@
 
 	<!-- IF S_RESYNCED -->
 		<script type="text/javascript">
-		<!--
+		// <![CDATA[
 			var close_waitscreen = 1;
-		//-->
+		// ]]>
 		</script>
 
 		<div class="successbox">

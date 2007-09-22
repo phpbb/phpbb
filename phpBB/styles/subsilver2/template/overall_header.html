@@ -17,17 +17,22 @@
 <link rel="stylesheet" href="{T_STYLESHEET_LINK}" type="text/css" />
 
 <script type="text/javascript">
-<!--
+// <![CDATA[
 <!-- IF S_USER_PM_POPUP -->
 	if ({S_NEW_PM})
 	{
-		window.open('{UA_POPUP_PM}', '_phpbbprivmsg', 'height=225,resizable=yes,width=400');
+		popup('{UA_POPUP_PM}', 400, 225, '_phpbbprivmsg');
 	}
 <!-- ENDIF -->
 
-function popup(url, width, height)
+function popup(url, width, height, name)
 {
-	window.open(url.replace(/&amp;/g, '&'), '_popup', 'HEIGHT=' + height + ',resizable=yes,scrollbars=yes, WIDTH=' + width);
+	if (!name)
+	{
+		name = '_popup';
+	}
+
+	window.open(url.replace(/&amp;/g, '&'), name, 'height=' + height + ',resizable=yes,scrollbars=yes,width=' + width);
 	return false;
 }
 
@@ -35,7 +40,7 @@ function jumpto()
 {
 	var page = prompt('{LA_JUMP_PAGE}:', '{ON_PAGE}');
 	var perpage = '{PER_PAGE}';
-	var base_url = '{BASE_URL}';
+	var base_url = '{A_BASE_URL}';
 
 	if (page !== null && !isNaN(page) && page > 0)
 	{
@@ -46,11 +51,9 @@ function jumpto()
 /**
 * Find a member
 */
-function find_username()
+function find_username(url)
 {
-	<!-- IF UA_FIND_USERNAME -->
-	window.open('{UA_FIND_USERNAME}', '_usersearch', 'height=500, resizable=yes, scrollbars=yes, width=740');
-	<!-- ENDIF -->
+	popup(url, 760, 570, '_usersearch');
 	return false;
 }
 
@@ -120,7 +123,7 @@ function marklist(id, name, state)
 	}
 <!-- ENDIF -->
 
-//-->
+// ]]>
 </script>
 </head>
 <body class="{S_CONTENT_DIRECTION}">

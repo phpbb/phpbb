@@ -15,7 +15,7 @@
 	<dl>
 		<dt><label for="username">{L_FIND_USERNAME}:</label></dt>
 		<dd><input class="text medium" type="text" id="username" name="username" /></dd>
-		<dd>[ <a href="{U_FIND_USERNAME}" onclick="find_username(); return false;">{L_FIND_USERNAME}</a> ]</dd>
+		<dd>[ <a href="{U_FIND_USERNAME}" onclick="find_username(this.href); return false;">{L_FIND_USERNAME}</a> ]</dd>
 		<dd class="full" style="text-align: left;"><label><input type="checkbox" class="radio" id="anonymous" name="u" value="{ANONYMOUS_USER_ID}" /> {L_SELECT_ANONYMOUS}</label></dd>
 	</dl>
 

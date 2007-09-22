@@ -42,11 +42,10 @@ class mcp_notes
 			case 'front':
 				$template->assign_vars(array(
 					'U_FIND_USERNAME'	=> append_sid("{$phpbb_root_path}memberlist.$phpEx", 'mode=searchuser&amp;form=mcp&amp;field=username&amp;select_single=true'),
-					'UA_FIND_USERNAME'	=> append_sid("{$phpbb_root_path}memberlist.$phpEx", 'mode=searchuser&form=mcp&field=username&select_single=true', false),
 					'U_POST_ACTION'		=> append_sid("{$phpbb_root_path}mcp.$phpEx", 'i=notes&amp;mode=user_notes'),
 
-					'L_TITLE'			=> $user->lang['MCP_NOTES'])
-				);
+					'L_TITLE'			=> $user->lang['MCP_NOTES'],
+				));
 
 				$this->tpl_name = 'mcp_notes_front';
 			break;

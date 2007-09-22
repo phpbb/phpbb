@@ -1,6 +1,6 @@
 
 <script type="text/javascript">
-<!--
+// <![CDATA[
 	var form_name = 'postform';
 	var text_name = <!-- IF $SIG_EDIT -->'signature'<!-- ELSE -->'message'<!-- ENDIF -->;
 	var load_draft = false;
@@ -38,7 +38,7 @@
 		{
 			if (!upload)
 			{
-				alert('{L_EMPTY_MESSAGE}');
+				alert('{LA_EMPTY_MESSAGE}');
 				return false;
 			}
 			upload = false;
@@ -54,7 +54,7 @@
 	var show_panel = 'options-panel';
 
 
-//-->
+// ]]>
 </script>
 <script type="text/javascript" src="{T_TEMPLATE_PATH}/editor.js"></script>
 
@@ -64,7 +64,7 @@
 		<dt><label>{L_FONT_COLOR}:</label></dt>
 		<dd>
 		<script type="text/javascript">
-		<!--
+		// <![CDATA[
 			function change_palette()
 			{
 				dE('colour_palette');
@@ -81,7 +81,7 @@
 			}
 
 			colorPalette('h', 15, 10);
-		//-->
+		// ]]>
 		</script>
 		</dd>
 	</dl>

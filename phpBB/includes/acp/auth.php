@@ -382,7 +382,7 @@ class auth_admin extends auth
 					continue;
 				}
 
-				$s_role_js_array[$row['role_id']] .= 'role_options[' . $row['role_id'] . '][\'' . $row['auth_option'] . '\'] = ' . $row['auth_setting'] . '; ';
+				$s_role_js_array[$row['role_id']] .= 'role_options[' . $row['role_id'] . '][\'' . addslashes($row['auth_option']) . '\'] = ' . $row['auth_setting'] . '; ';
 			}
 			$db->sql_freeresult($result);
 

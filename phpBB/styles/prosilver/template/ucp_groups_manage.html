@@ -12,19 +12,6 @@
 	<!-- IF S_EDIT -->
 		<h3>{L_GROUP_DETAILS}</h3>
 	
-		<script type="text/javascript">
-		<!--
-		/**
-		* Colour swatch
-		*/
-		function swatch()
-		{
-			window.open('{UA_SWATCH}', '_swatch', 'height=150, resizable=yes, scrollbars=no, width=636');
-			return false;
-		}
-		//-->
-		</script>
-
 		<!-- IF S_ERROR -->
 		<div class="errorbox">
 			<h3>{L_WARNING}</h3>
@@ -68,7 +55,7 @@
 	<fieldset>
 	<dl>
 		<dt><label for="group_colour">{L_GROUP_COLOR}:</label><br /><span>{L_GROUP_COLOR_EXPLAIN}</span></dt>
-		<dd><input name="group_colour" type="text" id="group_colour" value="{GROUP_COLOUR}" size="7" maxlength="7" class="inputbox narrow" /> <span style="background-color: {GROUP_COLOUR};">&nbsp;&nbsp;&nbsp;</span> [ <a href="#" onclick="swatch(); return false">{L_COLOUR_SWATCH}</a> ]</dd>
+		<dd><input name="group_colour" type="text" id="group_colour" value="{GROUP_COLOUR}" size="7" maxlength="7" class="inputbox narrow" /> <span style="background-color: {GROUP_COLOUR};">&nbsp;&nbsp;&nbsp;</span> [ <a href="{U_SWATCH}" onclick="popup(this.href, 636, 150, '_swatch'); return false;">{L_COLOUR_SWATCH}</a> ]</dd>
 	</dl>
 	<dl>
 		<dt><label for="group_rank">{L_GROUP_RANK}:</label></dt>
@@ -191,7 +178,7 @@
 	<dl>
 		<dt><label for="usernames">{L_USERNAME}:</label><br /><span>{L_USERNAMES_EXPLAIN}</span></dt>
 		<dd><textarea name="usernames" id="usernames" rows="3" cols="30" class="inputbox"></textarea></dd>
-		<dd><strong><a href="{U_FIND_USERNAME}" onclick="find_username(); return false;">{L_FIND_USERNAME}</a></strong></dd>
+		<dd><strong><a href="{U_FIND_USERNAME}" onclick="find_username(this.href); return false;">{L_FIND_USERNAME}</a></strong></dd>
 	</dl>
 	</fieldset>
 

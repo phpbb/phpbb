@@ -90,7 +90,7 @@
 			</object>
 
 			<script type="text/javascript">
-			<!--
+			// <![CDATA[
 				if (document.rmstream_{_file.ATTACH_ID}.GetClipWidth)
 				{
 					while (!document.rmstream_{_file.ATTACH_ID}.GetClipWidth())
@@ -104,13 +104,13 @@
 					document.rmstream_{_file.ATTACH_ID}.height = height;
 					document.ctrls_{_file.ATTACH_ID}.width = width;
 				}
-			//-->
+			// ]]>
 			</script>
 		<!-- ENDIF -->
 
 		<!-- IF _file.S_WM_FILE or _file.S_RM_FILE or _file.S_FLASH_FILE or _file.S_QUICKTIME_FILE -->
 			<br />
-			<!-- IF _file.S_QUICKTIME_FILE --><a href="javascript:play_qt_file(document.qtstream_{_file.ATTACH_ID});">[ {L_PLAY_QUICKTIME_FILE} ]</a> <!-- ENDIF -->
+			<!-- IF _file.S_QUICKTIME_FILE --><a href="#" onclick="play_qt_file(document.qtstream_{_file.ATTACH_ID}); return false;">[ {L_PLAY_QUICKTIME_FILE} ]</a> <!-- ENDIF -->
 			<span class="gensmall"><a href="{_file.U_DOWNLOAD_LINK}">{_file.DOWNLOAD_NAME}</a> [ {_file.FILESIZE} {_file.SIZE_LANG} | {_file.L_DOWNLOAD_COUNT} ]</span>
 		<!-- ENDIF -->
 

@@ -1,7 +1,7 @@
 <tr valign="middle" align="{S_CONTENT_FLOW_BEGIN}">
 	<td colspan="2">
 		<script type="text/javascript">
-		<!--
+		// <![CDATA[
 		
 		// Define the bbCode tags
 		var bbcode = new Array();
@@ -29,22 +29,8 @@
 				,cb_{custom_tags.BBCODE_ID}: '{custom_tags.BBCODE_HELPLINE}'
 			<!-- END custom_tags -->
 		}
-		
-		function checkForm()
-		{
-			if (document.post.message.value.length < 2)
-			{
-				alert('{LA_EMPTY_MESSAGE}');
-				return false;
-			}
-			else
-			{
-		//		document.post.post.disabled = true;
-				return true;
-			}
-		}
-		
-		//-->
+
+		// ]]>
 		</script>
 		<script type="text/javascript" src="{T_TEMPLATE_PATH}/editor.js"></script>
 

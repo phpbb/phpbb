@@ -1,35 +1,8 @@
 <!-- INCLUDE overall_header.html -->
 
-<script type="text/javascript">
-<!--
-
-function checkForm(formObj)
-{
-	return;
-
-	formErrors = false;
-
-	if (formObj.message.value.length < 2)
-	{
-		formErrors = "{LA_EMPTY_MESSAGE_EMAIL}";
-	}
-	else if ( formObj.subject.value.length < 2)
-	{
-		formErrors = "{LA_EMPTY_SUBJECT_EMAIL}";
-	}
-
-	if (formErrors) 
-	{
-		alert(formErrors);
-		return false;
-	}
-}
-//-->
-</script>
-
 <div id="pagecontent">
 
-	<form action="{S_POST_ACTION}" method="post" name="postform" onsubmit="return checkForm(this)">
+	<form action="{S_POST_ACTION}" method="post" name="postform">
 	
 	<table class="tablebg" width="100%" cellspacing="1">
 	<tr> 

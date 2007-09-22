@@ -987,7 +987,6 @@ parse_css_file = {PARSE_CSS_FILE}
 
 			$template->assign_block_vars('file', array(
 				'U_VIEWSOURCE'	=> $this->u_action . "&amp;action=cache&amp;id=$template_id&amp;source=$file",
-				'UA_VIEWSOURCE'	=> str_replace('&amp;', '&', $this->u_action) . "&action=cache&id=$template_id&source=$file",
 
 				'CACHED'		=> $user->format_date(filemtime("{$phpbb_root_path}cache/$filename")),
 				'FILENAME'		=> $file,
@@ -1454,6 +1453,7 @@ parse_css_file = {PARSE_CSS_FILE}
 			'U_ACTION'			=> $this->u_action . "&amp;action=edit&amp;id=$imageset_id",
 			'U_BACK'			=> $this->u_action,
 			'NAME'				=> $imageset_name,
+			'A_NAME'			=> addslashes($imageset_name),
 			'ERROR'				=> !$valid_name,
 			'IMG_SRC'			=> ($image_found) ? '../styles/' . $imageset_path . '/imageset/' . $img_val : 'images/no_image.png',
 			'IMAGE_SELECT'		=> $image_found

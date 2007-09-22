@@ -7,13 +7,13 @@
 	<a href="{U_BACK}" style="float: {S_CONTENT_FLOW_END};">&laquo; {L_BACK}</a>
 
 	<script type="text/javascript">
-	<!--
+	// <![CDATA[
 		function update_image(newimage)
 		{
-			document.getElementById('image').src = (newimage) ? "{RANKS_PATH}/" + newimage : "./images/spacer.gif";
+			document.getElementById('image').src = (newimage) ? "{RANKS_PATH}/" + encodeURI(newimage) : "./images/spacer.gif";
 		}
 
-	//-->
+	// ]]>
 	</script>
 
 	<h1>{L_ACP_MANAGE_RANKS}</h1>

@@ -1,5 +1,5 @@
-	<script type="text/javascript">
-	<!--
+<script type="text/javascript">
+// <![CDATA[
 
 	var form_name = 'user_signature';
 	var text_name = 'signature';
@@ -31,11 +31,11 @@
 		<!-- END custom_tags -->
 	}
 
-	//-->
-	</script>
-	<script type="text/javascript" src="{T_TEMPLATE_PATH}/editor.js"></script>
+// ]]>
+</script>
+<script type="text/javascript" src="{T_TEMPLATE_PATH}/editor.js"></script>
 
-	<form id="user_signature" method="post" action="{U_ACTION}">
+<form id="user_signature" method="post" action="{U_ACTION}">
 
 	<!-- IF SIGNATURE_PREVIEW -->
 		<fieldset>
@@ -86,9 +86,12 @@
 		<p><input type="text" class="text full" style="border: 0; background: none;" name="helpbox" value="{L_STYLES_TIP}" /></p>
 
 		<dl>
-			<dt style="width: 90px;"><script type="text/javascript"><!--
-				colorPalette('v', 12, 10);
-				//--></script>
+			<dt style="width: 90px;">
+				<script type="text/javascript">
+				// <![CDATA[
+					colorPalette('v', 12, 10);
+				// ]]>
+				</script>
 			</dt>
 			<dd style="margin-left: 90px;"><textarea name="signature" rows="10" cols="60" style="width: 95%;" onselect="storeCaret(this);" onclick="storeCaret(this);" onkeyup="storeCaret(this);">{SIGNATURE}</textarea></dd>
 			<dd style="margin-left: 90px; margin-top: 5px;">
@@ -111,4 +114,4 @@
 		<input class="button2" type="submit" name="preview" value="{L_PREVIEW}" />
 	</fieldset>
 
-	</form>
+</form>

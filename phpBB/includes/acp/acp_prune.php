@@ -350,8 +350,8 @@ class acp_prune
 			'S_JOINED_OPTIONS'	=> $s_find_join_time,
 			'S_ACTIVE_OPTIONS'	=> $s_find_active_time,
 			'S_COUNT_OPTIONS'	=> $s_find_count,
-			'U_FIND_USER'		=> append_sid($phpbb_root_path . "memberlist.$phpEx", 'mode=searchuser&amp;form=acp_prune&amp;field=users'))
-		);
+			'U_FIND_USERNAME'	=> append_sid("{$phpbb_root_path}memberlist.$phpEx", 'mode=searchuser&amp;form=acp_prune&amp;field=users'),
+		));
 	}
 
 	/**

@@ -5,8 +5,7 @@
 <!-- IF S_EDIT_MODULE -->
 
 	<script type="text/javascript">
-	<!--
-
+	// <![CDATA[
 		function display_options(value)
 		{
 			if (value == 'category')
@@ -38,7 +37,7 @@
 			var j = 0;
 <!-- BEGIN m_names -->
 		
-			if (value == '{m_names.NAME}')
+			if (value == '{m_names.A_NAME}')
 			{
 	<!-- BEGIN modes -->
 				item.options[j] = new Option('{m_names.modes.A_VALUE}');
@@ -52,7 +51,7 @@
 			item.options[0].selected = true;
 		}
 
-	//-->
+	// ]]>
 	</script>
 
 	<a href="{U_BACK}" style="float: {S_CONTENT_FLOW_END};">&laquo; {L_BACK}</a>

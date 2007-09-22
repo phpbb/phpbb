@@ -37,8 +37,8 @@
 	<!-- IF S_SEND_AIM -->
 		<dl class="fields2">
 			<dt>&nbsp;</dt>
-			<dd><a href="aim:addbuddy?screenname={IM_CONTACT}">{L_IM_ADD_CONTACT}</a></dd>
-			<dd><a href="aim:goim?screenname={IM_CONTACT}&amp;message={SITENAME}">{L_IM_SEND_MESSAGE}</a></dd>
+			<dd><a href="{U_AIM_CONTACT}">{L_IM_ADD_CONTACT}</a></dd>
+			<dd><a href="{U_AIM_MESSAGE}">{L_IM_SEND_MESSAGE}</a></dd>
 			<dd><a href="http://www.aim.com/download.adp">{L_IM_DOWNLOAD_APP}</a> | <a href="http://aimexpress.oscar.aol.com/aimexpress/launch.adp?Brand=AIM">{L_IM_AIM_EXPRESS}</a></dd>
 		</dl>
 	<!-- ENDIF -->
@@ -46,9 +46,9 @@
 	<!-- IF S_SEND_MSNM -->
 		<dl class="fields2">
 			<dt>&nbsp;</dt>
-			<dd><object classid="clsid:FB7199AB-79BF-11d2-8D94-0000F875C541" codetype="application/x-oleobject" id="objMessengerApp" width="0" height="0"></object></dd>
-			<dd><a href="#" onclick="objMessengerApp.LaunchAddContactUI('{IM_CONTACT}'); return false;">{L_IM_ADD_CONTACT}</a></dd>
-			<dd><a href="#" onclick="objMessengerApp.LaunchIMUI('{IM_CONTACT}'); return false;">{L_IM_SEND_MESSAGE}</a></dd>
+			<dd><object classid="clsid:B69003B3-C55E-4B48-836C-BC5946FC3B28" codetype="application/x-oleobject" id="objMessengerApp" width="0" height="0"></object></dd>
+			<dd><a href="#" onclick="add_contact('{A_IM_CONTACT}'); return false;">{L_IM_ADD_CONTACT}</a></dd>
+			<dd><a href="#" onclick="im_contact('{A_IM_CONTACT}'); return false;">{L_IM_SEND_MESSAGE}</a></dd>
 		</dl>
 	<!-- ENDIF -->
 
@@ -84,5 +84,74 @@
 
 </form>
 
+<script type="text/javascript">
+// <![CDATA[
+
+	/** The following will not work with Windows Vista **/
+
+	var app = document.getElementById('objMessengerApp');
+
+	/**
+	* Check whether the browser supports this and whether MSNM is connected
+	*/
+	function msn_supported()
+	{
+		// Does the browser support the MSNM object?
+		if (app.MyStatus)
+		{
+			// Is MSNM connected?
+			if (app.MyStatus == 1)
+			{
+				alert('{LA_IM_MSNM_CONNECT}');
+				return false;
+			}
+		}
+		else
+		{
+			alert('{LA_IM_MSNM_BROWSER}');
+			return false;
+		}
+		return true;
+	}
+
+	/**
+	* Add to your contact list
+	*/
+	function add_contact(address) 
+	{
+		if (msn_supported()) 
+		{
+			// Could return an error while MSNM is connecting, don't want that
+			try
+			{
+				app.AddContact(0, address);
+			}
+			catch (e)
+			{
+				return;
+			}
+	}
+}
+
+/**
+* Write IM to contact
+*/
+function im_contact(address)
+{
+	if (msn_supported())
+	{
+		// Could return an error while MSNM is connecting, don't want that
+		try
+		{
+			app.InstantMessage(address);
+		}
+		catch (e)
+		{
+			return;
+		}
+	}
+}
+// ]]>
+</script>
 
 <!-- INCLUDE simple_footer.html -->

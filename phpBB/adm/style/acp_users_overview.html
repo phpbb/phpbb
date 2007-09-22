@@ -21,7 +21,7 @@
 <dl>
 	<dt><label>{L_REGISTERED_IP}:</label></dt>
 	<dd><a href="{U_SHOW_IP}">{REGISTERED_IP}</a></dd>
-	<dd>[ <a href="{U_WHOIS}" onclick="window.open(this.href, '_whois', 'height=500, resizable=yes, scrollbars=yes, width=700'); return false;">{L_WHOIS}</a> ]</dd>
+	<dd>[ <a href="{U_WHOIS}" onclick="popup(this.href, 700, 500, '_whois'); return false;">{L_WHOIS}</a> ]</dd>
 </dl>
 <!-- ENDIF -->
 <dl>
@@ -70,7 +70,7 @@
 <!-- IF not S_USER_FOUNDER or S_FOUNDER -->
 
 	<script type="text/javascript">
-	<!--
+	// <![CDATA[
 
 		function display_reason(option)
 		{
@@ -103,7 +103,7 @@
 			}
 		}
 
-	//-->
+	// ]]>
 	</script>
 
 	<form id="user_quick_tools" method="post" action="{U_ACTION}">

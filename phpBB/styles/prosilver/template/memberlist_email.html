@@ -1,36 +1,8 @@
 <!-- INCLUDE overall_header.html -->
 
-<script type="text/javascript">
-<!--
-function checkForm(formObj)
-{
-	var formErrors = false;
-
-	if (formObj.message.value.length < 2 )
-	{
-		formErrors = "{L_EMPTY_MESSAGE_EMAIL}";
-	}
-	else if (formObj.subject.value.length < 2)
-	{
-		formErrors = "{L_EMPTY_SUBJECT_EMAIL}";
-	}
-
-	if (formErrors)
-	{
-		alert(formErrors);
-		return false;
-	}
-	else
-	{
-		return true;
-	}
-}
-//-->
-</script>
-
 <h2 class="titlespace">{L_SEND_EMAIL_USER} {USERNAME}</h2>
 
-<form method="post" action="{S_POST_ACTION}" id="post" onsubmit="return checkForm(this)">
+<form method="post" action="{S_POST_ACTION}" id="post">
 
 <div class="panel">
 	<div class="inner"><span class="corners-top"><span></span></span>

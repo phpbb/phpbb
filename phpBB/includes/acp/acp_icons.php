@@ -241,6 +241,7 @@ class acp_icons
 				{
 					$template->assign_block_vars('items', array(
 						'IMG'		=> $img,
+						'A_IMG'		=> addslashes($img),
 						'IMG_SRC'	=> $phpbb_root_path . $img_path . '/' . $img,
 
 						'CODE'		=> ($mode == 'smilies' && isset($img_row['code'])) ? $img_row['code'] : '',

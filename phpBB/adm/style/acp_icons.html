@@ -5,7 +5,7 @@
 <!-- IF S_EDIT -->
 
 	<script type="text/javascript" defer="defer">
-	<!--
+	// <![CDATA[
 	<!-- IF S_ADD_CODE -->
 	
 			var smiley = Array();
@@ -22,7 +22,7 @@
 			{
 				var use_element = smiley[newimage];
 
-				document.getElementById('add_image_src').src = '{PHPBB_ROOT_PATH}{IMG_PATH}/' + newimage;
+				document.getElementById('add_image_src').src = '{PHPBB_ROOT_PATH}{IMG_PATH}/' + encodeURI(newimage);
 				document.getElementById('add_code').value = use_element['code'];
 				document.getElementById('add_emotion').value = use_element['emotion'];
 				document.getElementById('add_width').value = use_element['width'];
@@ -60,9 +60,8 @@
 			nodisp.className = '';
 		}
 	}
-	//-->
+	// ]]>
 	</script>
-
 
 	<a href="{U_BACK}" style="float: {S_CONTENT_FLOW_END};">&laquo; {L_BACK}</a>
 
@@ -112,7 +111,7 @@
 		<td><input class="text post" type="text" size="3" name="width[{items.IMG}]" value="{items.WIDTH}" /></td>
 		<td><input class="text post" type="text" size="3" name="height[{items.IMG}]" value="{items.HEIGHT}" /></td>
 		<td>
-			<input type="checkbox" class="radio" name="display_on_posting[{items.IMG}]"{items.POSTING_CHECKED} onclick="toggle_select('{items.IMG}', this.checked, 'order[{items.IMG}]');"/>
+			<input type="checkbox" class="radio" name="display_on_posting[{items.IMG}]"{items.POSTING_CHECKED} onclick="toggle_select('{items.A_IMG}', this.checked, 'order[{items.A_IMG}]');"/>
 			<!-- IF items.S_ID -->
 				<input type="hidden" name="id[{items.IMG}]" value="{items.ID}" />
 			<!-- ENDIF -->
