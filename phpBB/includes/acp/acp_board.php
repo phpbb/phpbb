@@ -407,7 +407,7 @@ class acp_board
 				{
 					if (preg_match('#^auth_(.*?)\.' . $phpEx . '$#', $file))
 					{
-						$auth_plugins[] = preg_replace('#^auth_(.*?)\.' . $phpEx . '$#', '\1', $file);
+						$auth_plugins[] = basename(preg_replace('#^auth_(.*?)\.' . $phpEx . '$#', '\1', $file));
 					}
 				}
 				closedir($dp);
@@ -459,7 +459,7 @@ class acp_board
 
 			if ($submit && (($cfg_array['auth_method'] != $this->new_config['auth_method']) || $updated_auth_settings))
 			{
-				$method = $cfg_array['auth_method'];
+				$method = basename($cfg_array['auth_method']);
 				if ($method && in_array($method, $auth_plugins))
 				{
 					include_once($phpbb_root_path . 'includes/auth/auth_' . $method . '.' . $phpEx);
@@ -476,7 +476,7 @@ class acp_board
 							trigger_error($error . adm_back_link($this->u_action), E_USER_WARNING);
 						}
 					}
-					set_config('auth_method', $cfg_array['auth_method']);
+					set_config('auth_method', basename($cfg_array['auth_method']));
 				}
 				else
 				{
