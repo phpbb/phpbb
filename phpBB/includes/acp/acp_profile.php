@@ -138,6 +138,12 @@ class acp_profile
 							foreach ($old_table_cols as $declaration)
 							{
 								$entities = preg_split('#\s+#', trim($declaration));
+
+								if ($entities[0] == 'PRIMARY')
+								{
+									continue;
+								}
+
 								if ($entities[0] !== 'pf_' . $field_ident)
 								{
 									$column_list[] = $entities[0];
@@ -1431,7 +1437,7 @@ class acp_profile
 					foreach ($old_table_cols as $declaration)
 					{
 						$entities = preg_split('#\s+#', trim($declaration));
-						if ($entities == 'PRIMARY')
+						if ($entities[0] == 'PRIMARY')
 						{
 							continue;
 						}

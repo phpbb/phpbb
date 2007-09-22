@@ -2188,7 +2188,7 @@ function sql_column_remove($dbms, $table_name, $column_name)
 				foreach ($old_table_cols as $declaration)
 				{
 					$entities = preg_split('#\s+#', trim($declaration));
-					if ($entities[0] == 'PRIMARY' || $entities[0] === '$column_name')
+					if ($entities[0] == 'PRIMARY' || $entities[0] === $column_name)
 					{
 						continue;
 					}
