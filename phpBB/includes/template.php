@@ -149,11 +149,11 @@ class template
 	{
 		global $user, $phpbb_hook;
 
-		if ($phpbb_hook->call_hook(array(get_class($this), __FUNCTION__), $handle, $include_once))
+		if ($phpbb_hook->call_hook(array(__CLASS__, __FUNCTION__), $handle, $include_once))
 		{
-			if ($phpbb_hook->hook_return(array(get_class($this), __FUNCTION__)))
+			if ($phpbb_hook->hook_return(array(__CLASS__, __FUNCTION__)))
 			{
-				return $phpbb_hook->hook_return_result(array(get_class($this), __FUNCTION__));
+				return $phpbb_hook->hook_return_result(array(__CLASS__, __FUNCTION__));
 			}
 		}
 

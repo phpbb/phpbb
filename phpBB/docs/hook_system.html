@@ -434,11 +434,11 @@ class my_hookable_object
 	{
 		global $phpbb_hook;
 
-		if ($phpbb_hook-&gt;call_hook(array(get_class($this), __FUNCTION__), $my_first_parameter, $my_second_parameter))
+		if ($phpbb_hook-&gt;call_hook(array(__CLASS__, __FUNCTION__), $my_first_parameter, $my_second_parameter))
 		{
-			if ($phpbb_hook-&gt;hook_return(array(get_class($this), __FUNCTION__)))
+			if ($phpbb_hook-&gt;hook_return(array(__CLASS__, __FUNCTION__)))
 			{
-				return $phpbb_hook-&gt;hook_return_result(array(get_class($this), __FUNCTION__));
+				return $phpbb_hook-&gt;hook_return_result(array(__CLASS__, __FUNCTION__));
 			}
 		}
 
@@ -447,7 +447,7 @@ class my_hookable_object
 }
 </pre></div>
 
-<p>The only difference about calling it is the way you define the first parameter. For a function it is only <code>__FUNCTION__</code>, for a method it is <code>array(get_class($this), __FUNCTION__)</code>. Since PHP 5.0.0 the get_class() function no longer requires the object to be given, you simply write: <code>array(get_class(), __FUNCTION__)</code>.</p>
+<p>The only difference about calling it is the way you define the first parameter. For a function it is only <code>__FUNCTION__</code>, for a method it is <code>array(__CLASS__, __FUNCTION__)</code>. In PHP4 __CLASS__ is always returning the class in lowercase.</p>
 
 <p>Now, in phpBB there are some pre-defined hooks available, but how do you make your own hookable function available (and therefore allowing others to hook into it)? For this, there is the add_hook() method:</p>
 
@@ -579,11 +579,11 @@ class my_hookable_object2 extends my_hookable_object
 		{
 			global $phpbb_hook;
 
-			if ($phpbb_hook-&gt;call_hook(array(get_class($this), __FUNCTION__), $my_first_parameter, $my_second_parameter))
+			if ($phpbb_hook-&gt;call_hook(array(__CLASS__, __FUNCTION__), $my_first_parameter, $my_second_parameter))
 			{
-				if ($phpbb_hook-&gt;hook_return(array(get_class($this), __FUNCTION__)))
+				if ($phpbb_hook-&gt;hook_return(array(__CLASS__, __FUNCTION__)))
 				{
-					return $phpbb_hook-&gt;hook_return_result(array(get_class($this), __FUNCTION__));
+					return $phpbb_hook-&gt;hook_return_result(array(__CLASS__, __FUNCTION__));
 				}
 			}
 		}
@@ -636,11 +636,11 @@ class my_hookable_object2 extends my_hookable_object
 		{
 			global $phpbb_hook;
 
-			if ($phpbb_hook-&gt;call_hook(array(get_class($this), __FUNCTION__), $my_first_parameter, $my_second_parameter))
+			if ($phpbb_hook-&gt;call_hook(array(__CLASS__, __FUNCTION__), $my_first_parameter, $my_second_parameter))
 			{
-				if ($phpbb_hook-&gt;hook_return(array(get_class($this), __FUNCTION__)))
+				if ($phpbb_hook-&gt;hook_return(array(__CLASS__, __FUNCTION__)))
 				{
-					return $phpbb_hook-&gt;hook_return_result(array(get_class($this), __FUNCTION__));
+					return $phpbb_hook-&gt;hook_return_result(array(__CLASS__, __FUNCTION__));
 				}
 			}
 		}

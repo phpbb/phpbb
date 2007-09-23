@@ -59,7 +59,7 @@ class phpbb_hook
 	* Register function/method to be called within hook
 	* This function is normally called by the modification/application to attach/register the functions.
 	*
-	* @param mixed $definition Declaring function (with __FUNCTION__) or class with array(get_class([$object]), __FUNCTION__) (PHP4 requires $object to be given)
+	* @param mixed $definition Declaring function (with __FUNCTION__) or class with array(__CLASS__, __FUNCTION__)
 	* @param mixed $hook The replacement function/method to be called. Passing function name or array with object/class definition
 	* @param string $mode Specify the priority/chain mode. 'normal' -> hook gets appended to the chain. 'standalone' -> only the specified hook gets called - later hooks are not able to overwrite this (E_NOTICE is triggered then). 'first' -> hook is called as the first one within the chain. 'last' -> hook is called as the last one within the chain.
 	*/
@@ -101,7 +101,7 @@ class phpbb_hook
 	* Calling all functions/methods attached to a specified hook.
 	* Called by the function allowing hooks...
 	*
-	* @param mixed $definition Declaring function (with __FUNCTION__) or class definition with array(). Must be call_user_func_array() compatible.
+	* @param mixed $definition Declaring function (with __FUNCTION__) or class with array(__CLASS__, __FUNCTION__)
 	* @return bool False if no hook got executed, true otherwise
 	*/
 	function call_hook($definition)
@@ -154,7 +154,7 @@ class phpbb_hook
 	/**
 	* Get result from previously called functions/methods for the same hook
 	*
-	* @param mixed $definition Declaring function (with __FUNCTION__) or class with array(get_class([$object]), __FUNCTION__) (PHP4 requires $object to be given)
+	* @param mixed $definition Declaring function (with __FUNCTION__) or class with array(__CLASS__, __FUNCTION__)
 	* @return mixed False if nothing returned if there is no result, else array('result' => ... )
 	*/
 	function previous_hook_result($definition)
@@ -173,7 +173,7 @@ class phpbb_hook
 	/**
 	* Check if the called functions/methods returned something.
 	*
-	* @param mixed $definition Declaring function (with __FUNCTION__) or class with array(get_class([$object]), __FUNCTION__) (PHP4 requires $object to be given)
+	* @param mixed $definition Declaring function (with __FUNCTION__) or class with array(__CLASS__, __FUNCTION__)
 	* @return bool True if results are there, false if not
 	*/
 	function hook_return($definition)
@@ -192,7 +192,7 @@ class phpbb_hook
 	/**
 	* Give actual result from called functions/methods back.
 	*
-	* @param mixed $definition Declaring function (with __FUNCTION__) or class with array(get_class([$object]), __FUNCTION__) (PHP4 requires $object to be given)
+	* @param mixed $definition Declaring function (with __FUNCTION__) or class with array(__CLASS__, __FUNCTION__)
 	* @return mixed The result
 	*/
 	function hook_return_result($definition)
@@ -213,7 +213,7 @@ class phpbb_hook
 	/**
 	* Add new function to the allowed hooks.
 	*
-	* @param mixed $definition Declaring function (with __FUNCTION__) or class with array(get_class([$object]), __FUNCTION__) (PHP4 requires $object to be given)
+	* @param mixed $definition Declaring function (with __FUNCTION__) or class with array(__CLASS__, __FUNCTION__)
 	*/
 	function add_hook($definition)
 	{
@@ -228,7 +228,7 @@ class phpbb_hook
 	/**
 	* Remove function from the allowed hooks.
 	*
-	* @param mixed $definition Declaring function (with __FUNCTION__) or class with array(get_class([$object]), __FUNCTION__) (PHP4 requires $object to be given)
+	* @param mixed $definition Declaring function (with __FUNCTION__) or class with array(__CLASS__, __FUNCTION__)
 	*/
 	function remove_hook($definition)
 	{
