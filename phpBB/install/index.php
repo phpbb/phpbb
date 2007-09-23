@@ -211,12 +211,21 @@ $mode = request_var('mode', 'overview');
 $sub = request_var('sub', '');
 
 // Set PHP error handler to ours
-set_error_handler('msg_handler');
+set_error_handler(defined('PHPBB_MSG_HANDLER') ? PHPBB_MSG_HANDLER : 'msg_handler');
 
 $user = new user();
 $auth = new auth();
 $cache = new cache();
 $template = new template();
+
+// Add own hook handler
+require($phpbb_root_path . 'includes/hooks/index.' . $phpEx);
+$phpbb_hook = new phpbb_hook(array('exit_handler', 'phpbb_user_session_handler', 'append_sid', array('template', 'display')));
+
+foreach ($cache->obtain_hooks() as $hook)
+{
+	@include($phpbb_root_path . 'includes/hooks/' . $hook . '.' . $phpEx);
+}
 
 // Set some standard variables we want to force
 $config = array(
