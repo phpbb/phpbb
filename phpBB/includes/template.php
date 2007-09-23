@@ -149,12 +149,11 @@ class template
 	{
 		global $user, $phpbb_hook;
 
-		// To let users change the complete templated page (all variables available)
-		if ($phpbb_hook->call_hook(array(get_class(), __FUNCTION__), $handle, $include_once))
+		if ($phpbb_hook->call_hook(array(get_class($this), __FUNCTION__), $handle, $include_once))
 		{
-			if ($phpbb_hook->hook_return(array(get_class(), __FUNCTION__)))
+			if ($phpbb_hook->hook_return(array(get_class($this), __FUNCTION__)))
 			{
-				return $phpbb_hook->hook_return_result(array(get_class(), __FUNCTION__));
+				return $phpbb_hook->hook_return_result(array(get_class($this), __FUNCTION__));
 			}
 		}
 
