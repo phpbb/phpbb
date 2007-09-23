@@ -415,7 +415,7 @@ class cache extends acm
 		{
 			$hook_files = array();
 
-			// Now search in acp and mods folder for permissions_ files.
+			// Now search for hooks...
 			$dh = @opendir($phpbb_root_path . 'includes/hooks/');
 
 			if ($dh)
