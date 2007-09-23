@@ -218,13 +218,20 @@ $auth = new auth();
 $cache = new cache();
 $template = new template();
 
-// Add own hook handler
-require($phpbb_root_path . 'includes/hooks/index.' . $phpEx);
-$phpbb_hook = new phpbb_hook(array('exit_handler', 'phpbb_user_session_handler', 'append_sid', array('template', 'display')));
-
-foreach ($cache->obtain_hooks() as $hook)
+// Add own hook handler, if present. :o
+if (file_exists($phpbb_root_path . 'includes/hooks/index.' . $phpEx))
 {
-	@include($phpbb_root_path . 'includes/hooks/' . $hook . '.' . $phpEx);
+	require($phpbb_root_path . 'includes/hooks/index.' . $phpEx);
+	$phpbb_hook = new phpbb_hook(array('exit_handler', 'phpbb_user_session_handler', 'append_sid', array('template', 'display')));
+
+	foreach ($cache->obtain_hooks() as $hook)
+	{
+		@include($phpbb_root_path . 'includes/hooks/' . $hook . '.' . $phpEx);
+	}
+}
+else
+{
+	$phpbb_hook = false;
 }
 
 // Set some standard variables we want to force
