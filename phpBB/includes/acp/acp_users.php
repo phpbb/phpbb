@@ -1541,6 +1541,23 @@ class acp_users
 
 				if ($deletemark && sizeof($marked))
 				{
+					$sql = 'SELECT attach_id
+						FROM ' . ATTACHMENTS_TABLE . '
+						WHERE poster_id = ' . $user_id . '
+							AND is_orphan = 0
+							AND ' . $db->sql_in_set('attach_id', $marked);
+					$result = $db->sql_query($sql);
+
+					$marked = array();
+					while ($row = $db->sql_fetchrow($result))
+					{
+						$marked[] = $row['attach_id'];
+					}
+					$db->sql_freeresult($result);
+				}
+
+				if ($deletemark && sizeof($marked))
+				{
 					if (confirm_box(true))
 					{
 						$sql = 'SELECT real_filename
@@ -1603,7 +1620,8 @@ class acp_users
 
 				$sql = 'SELECT COUNT(attach_id) as num_attachments
 					FROM ' . ATTACHMENTS_TABLE . "
-					WHERE poster_id = $user_id";
+					WHERE poster_id = $user_id
+						AND is_orphan = 0";
 				$result = $db->sql_query_limit($sql, 1);
 				$num_attachments = (int) $db->sql_fetchfield('num_attachments');
 				$db->sql_freeresult($result);
@@ -1615,6 +1633,7 @@ class acp_users
 						LEFT JOIN ' . PRIVMSGS_TABLE . ' p ON (a.post_msg_id = p.msg_id
 							AND a.in_message = 1)
 					WHERE a.poster_id = ' . $user_id . "
+						AND a.is_orphan = 0
 					ORDER BY $order_by";
 				$result = $db->sql_query_limit($sql, $config['posts_per_page'], $start);
 

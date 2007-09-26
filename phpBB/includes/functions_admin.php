@@ -790,7 +790,7 @@ function delete_attachments($mode, $ids, $resync = true)
 {
 	global $db, $config;
 
-	if (is_array($ids))
+	if (is_array($ids) && sizeof($ids))
 	{
 		$ids = array_unique($ids);
 		$ids = array_map('intval', $ids);

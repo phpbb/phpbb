@@ -31,6 +31,24 @@ class ucp_attachments
 
 		if ($delete && sizeof($delete_ids))
 		{
+			// Validate $delete_ids...
+			$sql = 'SELECT attach_id
+				FROM ' . ATTACHMENTS_TABLE . '
+				WHERE poster_id = ' . $user->data['user_id'] . '
+					AND is_orphan = 0
+					AND ' . $db->sql_in_set('attach_id', $delete_ids);
+			$result = $db->sql_query($sql);
+
+			$delete_ids = array();
+			while ($row = $db->sql_fetchrow($result))
+			{
+				$delete_ids[] = $row['attach_id'];
+			}
+			$db->sql_freeresult($result);
+		}
+
+		if ($delete && sizeof($delete_ids))
+		{
 			$s_hidden_fields = array(
 				'delete'	=> 1
 			);
@@ -46,6 +64,7 @@ class ucp_attachments
 				{
 					include_once($phpbb_root_path . 'includes/functions_admin.' . $phpEx);
 				}
+
 				delete_attachments('attach', $delete_ids);
 
 				meta_refresh(3, $this->u_action);

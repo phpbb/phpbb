@@ -34,7 +34,7 @@
 		<li class="row<!-- IF attachrow.S_ROW_COUNT is odd --> bg1<!-- ELSE --> bg2<!-- ENDIF -->">
 			<dl>
 				<dt><a href="{attachrow.U_VIEW_ATTACHMENT}" class="topictitle">{attachrow.FILENAME}</a><br />
-					{L_TOPIC}: <a href="{attachrow.U_VIEW_TOPIC}">{attachrow.TOPIC_TITLE}</a></dt>
+					<!-- IF attachrow.S_IN_MESSAGE -->{L_PM}: <!-- ELSE -->{L_TOPIC}: <!-- ENDIF --><a href="{attachrow.U_VIEW_TOPIC}">{attachrow.TOPIC_TITLE}</a></dt>
 				<dd class="extra">{attachrow.DOWNLOAD_COUNT}</dd>
 				<dd class="extra">{attachrow.SIZE}</dd>
 				<dd class="time"><span>{attachrow.POST_TIME}</span></dd>
