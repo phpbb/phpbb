@@ -1816,6 +1816,15 @@ function redirect($url, $return = false)
 		trigger_error('Tried to redirect to potentially insecure url.', E_USER_ERROR);
 	}
 
+	// Now, also check the protocol and for a valid url the last time...
+	$allowed_protocols = array('http', 'https', 'ftp', 'ftps');
+	$url_parts = parse_url($url);
+
+	if ($url_parts === false || empty($url_parts['scheme']) || !in_array($url_parts['scheme'], $allowed_protocols))
+	{
+		trigger_error('Tried to redirect to potentially insecure url.', E_USER_ERROR);
+	}
+
 	if ($return)
 	{
 		return $url;
