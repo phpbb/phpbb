@@ -30,6 +30,8 @@ class acp_icons
 		$action = (isset($_POST['import'])) ? 'import' : $action;
 		$icon_id = request_var('id', 0);
 
+		$mode = ($mode == 'smilies') ? 'smilies' : 'icons';
+
 		$this->tpl_name = 'acp_icons';
 
 		// What are we working on?
@@ -658,8 +660,8 @@ class acp_icons
 					header('Pragma: public');
 
 					// Send out the Headers
-					header('Content-Type: text/x-delimtext; name="' . $fields . '.pak"');
-					header('Content-Disposition: inline; filename="' . $fields . '.pak"');
+					header('Content-Type: text/x-delimtext; name="' . $mode . '.pak"');
+					header('Content-Disposition: inline; filename="' . $mode . '.pak"');
 					echo $pak;
 
 					flush();
