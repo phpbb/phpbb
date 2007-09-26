@@ -604,7 +604,7 @@ function compose_pm($id, $mode, $action)
 			$pm_data = array(
 				'msg_id'				=> (int) $msg_id,
 				'from_user_id'			=> $user->data['user_id'],
-				'from_user_ip'			=> $user->data['user_ip'],
+				'from_user_ip'			=> $user->ip,
 				'from_username'			=> $user->data['username'],
 				'reply_from_root_level'	=> (isset($post['root_level'])) ? (int) $post['root_level'] : 0,
 				'reply_from_msg_id'		=> (int) $msg_id,
