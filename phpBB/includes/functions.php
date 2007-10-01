@@ -4354,7 +4354,7 @@ function exit_handler()
 {
 	global $phpbb_hook;
 
-	if ($phpbb_hook->call_hook(__FUNCTION__))
+	if (!empty($phpbb_hook) && $phpbb_hook->call_hook(__FUNCTION__))
 	{
 		if ($phpbb_hook->hook_return(__FUNCTION__))
 		{
