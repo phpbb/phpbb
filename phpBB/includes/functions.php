@@ -204,7 +204,7 @@ function still_on_time($extra_time = 15)
 
 	if (empty($max_execution_time))
 	{
-		$max_execution_time = (function_exists('ini_get')) ? (int) ini_get('max_execution_time') : (int) get_cfg_var('max_execution_time');
+		$max_execution_time = (function_exists('ini_get')) ? (int) @ini_get('max_execution_time') : (int) @get_cfg_var('max_execution_time');
 
 		// If zero, then set to something higher to not let the user catch the ten seconds barrier.
 		if ($max_execution_time === 0)

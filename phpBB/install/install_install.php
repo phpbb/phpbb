@@ -278,7 +278,7 @@ class install_install extends module
 
 			foreach ($checks as $mb_checks)
 			{
-				$ini_val = ini_get('mbstring.' . $mb_checks[0]);
+				$ini_val = @ini_get('mbstring.' . $mb_checks[0]);
 				switch ($mb_checks[1])
 				{
 					case '&':
