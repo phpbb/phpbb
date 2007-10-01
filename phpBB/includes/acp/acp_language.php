@@ -185,6 +185,55 @@ class acp_language
 				$row = $db->sql_fetchrow($result);
 				$db->sql_freeresult($result);
 
+				if (!$row)
+				{
+					trigger_error($user->lang['NO_LANG_ID'] . adm_back_link($this->u_action), E_USER_WARNING);
+				}
+
+				// Before we attempt to write anything let's check if the admin really chose a correct filename
+				switch ($this->language_directory)
+				{
+					case 'email':
+						// Get email templates
+						$email_files = filelist($phpbb_root_path . 'language/' . $row['lang_iso'], 'email', 'txt');
+						$email_files = $email_files['email/'];
+
+						if (!in_array($this->language_file, $email_files))
+						{
+							trigger_error($user->lang['WRONG_LANGUAGE_FILE'] . adm_back_link($this->u_action . '&amp;action=details&amp;id=' . $lang_id), E_USER_WARNING);
+						}
+					break;
+
+					case 'acp':
+						// Get acp files
+						$acp_files = filelist($phpbb_root_path . 'language/' . $row['lang_iso'], 'acp', $phpEx);
+						$acp_files = $acp_files['acp/'];
+
+						if (!in_array($this->language_file, $acp_files))
+						{
+							trigger_error($user->lang['WRONG_LANGUAGE_FILE'] . adm_back_link($this->u_action . '&amp;action=details&amp;id=' . $lang_id), E_USER_WARNING);
+						}
+					break;
+
+					case 'mods':
+						// Get mod files
+						$mods_files = filelist($phpbb_root_path . 'language/' . $row['lang_iso'], 'mods', $phpEx);
+						$mods_files = (isset($mods_files['mods/'])) ? $mods_files['mods/'] : array();
+
+						if (!in_array($this->language_file, $mods_files))
+						{
+							trigger_error($user->lang['WRONG_LANGUAGE_FILE'] . adm_back_link($this->u_action . '&amp;action=details&amp;id=' . $lang_id), E_USER_WARNING);
+						}
+					break;
+
+					default:
+						if (!in_array($this->language_file, $this->main_files))
+						{
+							trigger_error($user->lang['WRONG_LANGUAGE_FILE'] . adm_back_link($this->u_action . '&amp;action=details&amp;id=' . $lang_id), E_USER_WARNING);
+						}
+					break;
+				}
+
 				if (!$safe_mode)
 				{
 					$mkdir_ary = array('language', 'language/' . $row['lang_iso']);
