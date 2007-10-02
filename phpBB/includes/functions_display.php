@@ -1149,7 +1149,7 @@ function get_user_avatar($avatar, $avatar_type, $avatar_width, $avatar_height, $
 	switch ($avatar_type)
 	{
 		case AVATAR_UPLOAD:
-			$avatar_img = $phpbb_root_path . "download.$phpEx?avatar=";
+			$avatar_img = $phpbb_root_path . "download/file.$phpEx?avatar=";
 		break;
 
 		case AVATAR_GALLERY:
