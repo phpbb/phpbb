@@ -1930,9 +1930,7 @@ function submit_post($mode, $subject, $username, $topic_type, &$poll, &$data, $u
 		}
 
 		$sql_insert_ary = array();
-		$sql_delete_array = array();
 		
-		print_r($cur_poll_options);
 		for ($i = 0, $size = sizeof($poll['poll_options']); $i < $size; $i++)
 		{
 			if (strlen(trim($poll['poll_options'][$i])))
@@ -1954,10 +1952,6 @@ function submit_post($mode, $subject, $username, $topic_type, &$poll, &$data, $u
 							AND topic_id = ' . $data['topic_id'];
 					$db->sql_query($sql);
 				}
-			}
-			else if (!empty($cur_poll_options[$i]))
-			{
-				$sql_delete_array[] = $cur_poll_options[$i]['poll_option_id'];
 			}
 		}
 
