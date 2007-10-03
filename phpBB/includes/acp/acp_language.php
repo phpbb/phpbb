@@ -32,14 +32,19 @@ class acp_language
 		$this->default_variables();
 
 		// Check and set some common vars
-		$action		= request_var('action', '');
 
-		$action		= (isset($_POST['update_details'])) ? 'update_details' : $action;
-		$action		= (isset($_POST['download_file'])) ? 'download_file' : $action;
-		$action		= (isset($_POST['upload_file'])) ? 'upload_file' : $action;
-		$action		= (isset($_POST['upload_data'])) ? 'upload_data' : $action;
-		$action		= (isset($_POST['submit_file'])) ? 'submit_file' : $action;
-		$action		= (isset($_POST['remove_store'])) ? 'details' : $action;
+		$action		= (isset($_POST['update_details'])) ? 'update_details' : '';
+		$action		= (isset($_POST['download_file'])) ? 'download_file' : '';
+		$action		= (isset($_POST['upload_file'])) ? 'upload_file' : '';
+		$action		= (isset($_POST['upload_data'])) ? 'upload_data' : '';
+		$action		= (isset($_POST['submit_file'])) ? 'submit_file' : '';
+		$action		= (isset($_POST['remove_store'])) ? 'details' : '';
+
+		$submit = (empty($action)) ? false : true;
+		$action = (empty($action)) ? request_var('action', '') : $action;
+
+		$form_name = 'acp_lang';
+		add_form_key('acp_lang');
 
 		$lang_id = request_var('id', 0);
 		if (isset($_POST['missing_file']))
@@ -59,7 +64,7 @@ class acp_language
 		$this->tpl_name = 'acp_language';
 		$this->page_title = 'ACP_LANGUAGE_PACKS';
 
-		if ($action == 'upload_data' && request_var('test_connection', ''))
+		if ($submit && $action == 'upload_data' && request_var('test_connection', ''))
 		{
 			$test_connection = false;
 			$action = 'upload_file';
@@ -89,6 +94,7 @@ class acp_language
 		switch ($action)
 		{
 			case 'upload_file':
+
 				include_once($phpbb_root_path . 'includes/functions_transfer.' . $phpEx);
 
 				$method = request_var('method', '');
@@ -132,6 +138,11 @@ class acp_language
 
 			case 'update_details':
 
+				if(!$submit || !check_form_key($form_name))
+				{
+					trigger_error($user->lang['FORM_INVALID']. adm_back_link($this->u_action), E_USER_WARNING);
+				}
+
 				if (!$lang_id)
 				{
 					trigger_error($user->lang['NO_LANG_ID'] . adm_back_link($this->u_action), E_USER_WARNING);
@@ -162,6 +173,11 @@ class acp_language
 			case 'submit_file':
 			case 'download_file':
 			case 'upload_data':
+				
+				if(!$submit || !check_form_key($form_name))
+				{
+					trigger_error($user->lang['FORM_INVALID']. adm_back_link($this->u_action), E_USER_WARNING);
+				}
 
 				if (!$lang_id || empty($_POST['entry']))
 				{

@@ -424,6 +424,15 @@ $database_update_info = array(
 			),
 		),
 	),
+	// Changes from 3.0.RC5 to the next version
+	'3.0.RC5'			=> array(
+		// Add the following columns
+		'add_columns'		=> array(
+			USER_TABLE	=> array(
+				'user_form_salt'	=> array('VCHAR_UNI:32', ''),
+			),
+		),
+	),
 );
 
 // Determine mapping database type
@@ -1509,6 +1518,9 @@ if (version_compare($current_version, '3.0.RC5', '<='))
 		SET bot_agent = '" . $db->sql_escape('Mediapartners-Google') . "'
 		WHERE bot_agent = '" . $db->sql_escape('Mediapartners-Google/') . "'";
 	_sql($sql, $errored, $error_ary);
+
+	set_config('form_token_lifetime', '7200');
+	set_config('form_token_mintime', '0');
 
 	$no_updates = false;
 }

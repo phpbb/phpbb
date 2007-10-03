@@ -33,6 +33,9 @@ class acp_words
 		$this->tpl_name = 'acp_words';
 		$this->page_title = 'ACP_WORDS';
 
+		$form_name = 'acp_words';
+		add_form_key($form_name);
+
 		switch ($action)
 		{
 			case 'edit':
@@ -68,6 +71,11 @@ class acp_words
 			break;
 
 			case 'save':
+
+				if(!check_form_key($form_name))
+				{
+					trigger_error($user->lang['FORM_INVALID']. adm_back_link($this->u_action), E_USER_WARNING);
+				}
 				$word_id		= request_var('id', 0);
 				$word			= utf8_normalize_nfc(request_var('word', '', true));
 				$replacement	= utf8_normalize_nfc(request_var('replacement', '', true));

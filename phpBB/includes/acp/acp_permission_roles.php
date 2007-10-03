@@ -35,6 +35,9 @@ class acp_permission_roles
 		$action = request_var('action', '');
 		$action = (isset($_POST['add'])) ? 'add' : $action;
 
+		$form_name = 'acp_permissions';
+		add_form_key($form_name);
+
 		switch ($mode)
 		{
 			case 'admin_roles':
@@ -133,6 +136,11 @@ class acp_permission_roles
 				// no break;
 
 				case 'add':
+
+					if(!check_form_key($form_name))
+					{
+						trigger_error($user->lang['FORM_INVALID']. adm_back_link($this->u_action), E_USER_WARNING);
+					}
 
 					$role_name = utf8_normalize_nfc(request_var('role_name', '', true));
 					$role_description = utf8_normalize_nfc(request_var('role_description', '', true));

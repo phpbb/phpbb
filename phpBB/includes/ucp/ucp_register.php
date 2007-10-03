@@ -36,6 +36,16 @@ class ucp_register
 		$change_lang	= request_var('change_lang', '');
 		$user_lang		= request_var('lang', $user->lang_name);
 
+		add_form_key('ucp_register');
+
+		// not so fast, buddy
+		if (($submit && !check_form_key('ucp_register', false, '', false, 5))
+			|| (!$submit && !check_form_key('ucp_register', false, '', false, 1)))
+		{
+			$agreed = false;
+		}
+
+
 		if ($change_lang || $user_lang != $config['default_lang'])
 		{
 			$use_lang = ($change_lang) ? basename($change_lang) : basename($user_lang);
@@ -121,6 +131,7 @@ class ucp_register
 			$this->tpl_name = 'ucp_agreement';
 			return;
 		}
+
 
 		// Try to manually determine the timezone and adjust the dst if the server date/time complies with the default setting +/- 1
 		$timezone = date('Z') / 3600;

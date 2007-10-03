@@ -641,6 +641,24 @@ class session
 			$this->set_cookie('sid', $this->session_id, $cookie_expire);
 
 			unset($cookie_expire);
+			
+			$sql = 'SELECT COUNT(session_id) AS sessions
+					FROM ' . SESSIONS_TABLE . '
+					WHERE session_user_id = ' . (int) $this->data['user_id'] . ' 
+					AND session_time >= ' . ($this->time_now - $config['form_token_lifetime']);
+			$result = $db->sql_query($sql);
+			$row = $db->sql_fetchrow($result);
+			$db->sql_freeresult($result);
+
+			if ((int) $row['sessions'] <= 1 || empty($this->data['user_form_salt']))
+			{
+				$this->data['user_form_salt'] = unique_id();
+				// Update the form key
+				$sql = 'UPDATE ' . USERS_TABLE . '
+					SET user_form_salt = \'' . $db->sql_escape($this->data['user_form_salt']) . '\'
+					WHERE user_id = ' . (int) $this->data['user_id'];
+				$db->sql_query($sql);
+			}
 		}
 		else
 		{

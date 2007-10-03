@@ -24,6 +24,9 @@ class acp_email
 		$this->tpl_name = 'acp_email';
 		$this->page_title = 'ACP_MASS_EMAIL';
 
+		$form_key = 'acp_email';
+		add_form_key($form_key);
+
 		// Set some vars
 		$submit = (isset($_POST['submit'])) ? true : false;
 		$error = array();
@@ -40,6 +43,11 @@ class acp_email
 			// over the send and return to the form
 			$use_queue		= (isset($_POST['send_immediately'])) ? false : true;
 			$priority		= request_var('mail_priority_flag', MAIL_NORMAL_PRIORITY);
+
+			if (!check_form_key($form_key))
+			{
+				$error[] = $user->lang['FORM_INVALID'];
+			}
 
 			if (!$subject)
 			{

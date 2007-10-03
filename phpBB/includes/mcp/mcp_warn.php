@@ -37,6 +37,8 @@ class mcp_warn
 
 		$this->page_title = 'MCP_WARN';
 
+		add_form_key('mcp_warn');
+
 		switch ($mode)
 		{
 			case 'front':
@@ -241,8 +243,15 @@ class mcp_warn
 
 		if ($warning && $action == 'add_warning')
 		{
-			add_warning($user_row, $warning, $notify, $post_id);
-
+			if (check_form_key('mcp_warn'))
+			{
+				add_warning($user_row, $warning, $notify, $post_id);
+				$msg = $user->lang['USER_WARNING_ADDED'];
+			}
+			else
+			{
+				$msg = $user->lang['FORM_INVALID'];
+			}
 			$redirect = append_sid("{$phpbb_root_path}mcp.$phpEx", "i=notes&amp;mode=user_notes&amp;u=$user_id");
 			meta_refresh(2, $redirect);
 			trigger_error($user->lang['USER_WARNING_ADDED'] . '<br /><br />' . sprintf($user->lang['RETURN_PAGE'], '<a href="' . $redirect . '">', '</a>'));
@@ -336,11 +345,18 @@ class mcp_warn
 
 		if ($warning && $action == 'add_warning')
 		{
-			add_warning($user_row, $warning, $notify);
-
+			if(check_form_key('mcp_warn'))
+			{
+				add_warning($user_row, $warning, $notify);
+				$msg = $user->lang['USER_WARNING_ADDED'];
+			}
+			else
+			{
+				$msg = $user->lang['FORM_INVALID'];
+			}
 			$redirect = append_sid("{$phpbb_root_path}mcp.$phpEx", "i=notes&amp;mode=user_notes&amp;u=$user_id");
 			meta_refresh(2, $redirect);
-			trigger_error($user->lang['USER_WARNING_ADDED'] . '<br /><br />' . sprintf($user->lang['RETURN_PAGE'], '<a href="' . $redirect . '">', '</a>'));
+			trigger_error($msg . '<br /><br />' . sprintf($user->lang['RETURN_PAGE'], '<a href="' . $redirect . '">', '</a>'));
 		}
 
 		// Generate the appropriate user information for the user we are looking at

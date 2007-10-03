@@ -27,6 +27,14 @@ class acp_attachments
 		$submit = (isset($_POST['submit'])) ? true : false;
 		$action = request_var('action', '');
 
+		$form_key = 'acp_attach';
+		add_form_key($form_key);
+
+		if ($submit && !check_form_key($form_key))
+		{
+			trigger_error($user->lang['FORM_INVALID'] . adm_back_link($this->u_action), E_USER_WARNING);
+		}
+
 		switch ($mode)
 		{
 			case 'attach':

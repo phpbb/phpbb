@@ -46,7 +46,6 @@ class acp_permissions
 				$this->permission_trace($user_id, $forum_id, $permission);
 				return;
 			}
-			
 			trigger_error('NO_MODE', E_USER_ERROR);
 		}
 
@@ -65,6 +64,9 @@ class acp_permissions
 
 		$group_id = request_var('group_id', array(0));
 		$select_all_groups = request_var('select_all_groups', 0);
+
+		$form_name = 'acp_permissions';
+		add_form_key($form_name);
 
 		// If select all groups is set, we pre-build the group id array (this option is used for other screens to link to the permission settings screen)
 		if ($select_all_groups)
@@ -214,6 +216,11 @@ class acp_permissions
 			switch ($action)
 			{
 				case 'delete':
+
+					if(!check_form_key($form_name))
+					{
+						trigger_error($user->lang['FORM_INVALID']. adm_back_link($this->u_action), E_USER_WARNING);
+					}
 					// All users/groups selected?
 					$all_users = (isset($_POST['all_users'])) ? true : false;
 					$all_groups = (isset($_POST['all_groups'])) ? true : false;
@@ -247,6 +254,10 @@ class acp_permissions
 					{
 						trigger_error($user->lang['NO_AUTH_SETTING_FOUND'] . adm_back_link($this->u_action), E_USER_WARNING);
 					}
+					if(!check_form_key($form_name))
+					{
+						trigger_error($user->lang['FORM_INVALID']. adm_back_link($this->u_action), E_USER_WARNING);
+					}
 
 					$this->set_permissions($mode, $permission_type, $auth_admin, $user_id, $group_id);
 				break;
@@ -255,6 +266,10 @@ class acp_permissions
 					if (!isset($_POST['setting']))
 					{
 						trigger_error($user->lang['NO_AUTH_SETTING_FOUND'] . adm_back_link($this->u_action), E_USER_WARNING);
+					}
+					if(!check_form_key($form_name))
+					{
+						trigger_error($user->lang['FORM_INVALID']. adm_back_link($this->u_action), E_USER_WARNING);
 					}
 
 					$this->set_all_permissions($mode, $permission_type, $auth_admin, $user_id, $group_id);

@@ -955,6 +955,7 @@ CREATE TABLE phpbb_users (
 	user_interests text NOT NULL,
 	user_actkey varchar(32) DEFAULT '' NOT NULL,
 	user_newpasswd varchar(32) DEFAULT '' NOT NULL,
+	user_form_salt varchar(32) DEFAULT '' NOT NULL,
 	PRIMARY KEY (user_id),
 	KEY user_birthday (user_birthday),
 	KEY user_email_hash (user_email_hash),

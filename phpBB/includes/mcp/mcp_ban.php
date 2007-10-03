@@ -49,7 +49,6 @@ class mcp_ban
 			$ban_exclude		= request_var('banexclude', 0);
 			$ban_reason			= utf8_normalize_nfc(request_var('banreason', '', true));
 			$ban_give_reason	= utf8_normalize_nfc(request_var('bangivereason', '', true));
-			
 
 			if ($ban)
 			{

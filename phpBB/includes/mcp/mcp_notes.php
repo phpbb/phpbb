@@ -74,6 +74,8 @@ class mcp_notes
 		$sk	= request_var('sk', 'b');
 		$sd	= request_var('sd', 'd');
 
+		add_form_key('mcp_notes');
+
 		$sql_where = ($user_id) ? "user_id = $user_id" : "username_clean = '" . $db->sql_escape(utf8_clean_string($username)) . "'";
 
 		$sql = 'SELECT *
@@ -121,15 +123,22 @@ class mcp_notes
 
 			if ($where_sql || $deleteall)
 			{
-				$sql = 'DELETE FROM ' . LOG_TABLE . '
-					WHERE log_type = ' . LOG_USERS . " 
-						AND reportee_id = $user_id
-						$where_sql";
-				$db->sql_query($sql);
+				if (check_form_key('mcp_notes'))
+				{
+					$sql = 'DELETE FROM ' . LOG_TABLE . '
+						WHERE log_type = ' . LOG_USERS . " 
+							AND reportee_id = $user_id
+							$where_sql";
+					$db->sql_query($sql);
 
-				add_log('admin', 'LOG_CLEAR_USER', $userrow['username']);
+					add_log('admin', 'LOG_CLEAR_USER', $userrow['username']);
 
-				$msg = ($deletemark) ? 'MARKED_NOTES_DELETED' : 'ALL_NOTES_DELETED';
+					$msg = ($deletemark) ? 'MARKED_NOTES_DELETED' : 'ALL_NOTES_DELETED';
+				}
+				else
+				{
+					$msg = 'FORM_INVALID';
+				}
 				$redirect = $this->u_action . '&amp;u=' . $user_id;
 				meta_refresh(3, $redirect);
 				trigger_error($user->lang[$msg] . '<br /><br />' . sprintf($user->lang['RETURN_PAGE'], '<a href="' . $redirect . '">', '</a>'));
@@ -138,15 +147,22 @@ class mcp_notes
 
 		if ($usernote && $action == 'add_feedback')
 		{
-			add_log('admin', 'LOG_USER_FEEDBACK', $userrow['username']);
-			add_log('mod', 0, 0, 'LOG_USER_FEEDBACK', $userrow['username']);
+			if(check_form_key('mcp_notes'))
+			{
+				add_log('admin', 'LOG_USER_FEEDBACK', $userrow['username']);
+				add_log('mod', 0, 0, 'LOG_USER_FEEDBACK', $userrow['username']);
 
-			add_log('user', $user_id, 'LOG_USER_GENERAL', $usernote);
-
+				add_log('user', $user_id, 'LOG_USER_GENERAL', $usernote);
+				$msg = $user->lang['USER_FEEDBACK_ADDED'];
+			}
+			else
+			{
+				$msg = $user->lang['FORM_INVALID'];
+			}
 			$redirect = $this->u_action;
 			meta_refresh(3, $redirect);
 
-			trigger_error($user->lang['USER_FEEDBACK_ADDED'] . '<br /><br />' . sprintf($user->lang['RETURN_PAGE'], '<a href="' . $redirect . '">', '</a>'));
+			trigger_error($msg .  '<br /><br />' . sprintf($user->lang['RETURN_PAGE'], '<a href="' . $redirect . '">', '</a>'));
 		}
 
 		// Generate the appropriate user information for the user we are looking at

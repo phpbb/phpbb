@@ -28,7 +28,7 @@ class ucp_prefs
 		switch ($mode)
 		{
 			case 'personal':
-
+				add_form_key('ucp_prefs_personal');
 				$data = array(
 					'notifymethod'	=> request_var('notifymethod', $user->data['user_notify_type']),
 					'dateformat'	=> request_var('dateformat', $user->data['user_dateformat'], true),
@@ -54,6 +54,11 @@ class ucp_prefs
 						'lang'			=> array('match', false, '#^[a-z0-9_\-]{2,}$#i'),
 						'tz'			=> array('num', false, -14, 14),
 					));
+
+					if (!check_form_key('ucp_prefs_personal'))
+					{
+						$error[] = 'FORM_INVALID';
+					}
 
 					if (!sizeof($error))
 					{
@@ -140,6 +145,8 @@ class ucp_prefs
 
 			case 'view':
 
+				add_form_key('ucp_prefs_view');
+
 				$data = array(
 					'topic_sk'		=> request_var('topic_sk', (!empty($user->data['user_topic_sortby_type'])) ? $user->data['user_topic_sortby_type'] : 't'),
 					'topic_sd'		=> request_var('topic_sd', (!empty($user->data['user_topic_sortby_dir'])) ? $user->data['user_topic_sortby_dir'] : 'd'),
@@ -165,6 +172,11 @@ class ucp_prefs
 						'post_sk'	=> array('string', false, 1, 1),
 						'post_sd'	=> array('string', false, 1, 1),
 					));
+
+					if (!check_form_key('ucp_prefs_view'))
+					{
+						$error[] = 'FORM_INVALID';
+					}
 
 					if (!sizeof($error))
 					{
@@ -276,25 +288,34 @@ class ucp_prefs
 					'sig'		=> request_var('sig', $user->optionget('attachsig')),
 					'notify'	=> request_var('notify', $user->data['user_notify']),
 				);
+				add_form_key('ucp_prefs_post');
 
 				if ($submit)
 				{
-					$user->optionset('bbcode', $data['bbcode']);
-					$user->optionset('smilies', $data['smilies']);
-					$user->optionset('attachsig', $data['sig']);
+					if (check_form_key('ucp_prefs_post'))
+					{
+						$user->optionset('bbcode', $data['bbcode']);
+						$user->optionset('smilies', $data['smilies']);
+						$user->optionset('attachsig', $data['sig']);
 
-					$sql_ary = array(
-						'user_options'	=> $user->data['user_options'],
-						'user_notify'	=> $data['notify'],
-					);
+						$sql_ary = array(
+							'user_options'	=> $user->data['user_options'],
+							'user_notify'	=> $data['notify'],
+						);
 
-					$sql = 'UPDATE ' . USERS_TABLE . '
-						SET ' . $db->sql_build_array('UPDATE', $sql_ary) . '
-						WHERE user_id = ' . $user->data['user_id'];
-					$db->sql_query($sql);
+						$sql = 'UPDATE ' . USERS_TABLE . '
+							SET ' . $db->sql_build_array('UPDATE', $sql_ary) . '
+							WHERE user_id = ' . $user->data['user_id'];
+						$db->sql_query($sql);
 
+						$msg = $user->lang['PREFERENCES_UPDATED'];
+					}
+					else
+					{
+						$msg = $user->lang['FORM_INVALID'];
+					}
 					meta_refresh(3, $this->u_action);
-					$message = $user->lang['PREFERENCES_UPDATED'] . '<br /><br />' . sprintf($user->lang['RETURN_UCP'], '<a href="' . $this->u_action . '">', '</a>');
+					$message = $msg . '<br /><br />' . sprintf($user->lang['RETURN_UCP'], '<a href="' . $this->u_action . '">', '</a>');
 					trigger_error($message);
 				}
 

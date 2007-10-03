@@ -28,8 +28,16 @@ class acp_disallow
 		$this->tpl_name = 'acp_disallow';
 		$this->page_title = 'ACP_DISALLOW_USERNAMES';
 
+		$form_key = 'acp_disallow';
+		add_form_key($form_key);
+
 		$disallow = (isset($_POST['disallow'])) ? true : false;
 		$allow = (isset($_POST['allow'])) ? true : false;
+
+		if (($allow || $disallow) && !check_form_key($form_key))
+		{
+			trigger_error($user->lang['FORM_INVALID'] . adm_back_link($this->u_action), E_USER_WARNING);
+		}
 
 		if ($disallow)
 		{

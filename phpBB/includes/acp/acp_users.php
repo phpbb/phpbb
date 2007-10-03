@@ -37,6 +37,9 @@ class acp_users
 
 		$submit		= (isset($_POST['update'])) ? true : false;
 
+		$form_name = 'acp_users';
+		add_form_key($form_name);
+
 		// Whois (special case)
 		if ($action == 'whois')
 		{
@@ -218,6 +221,11 @@ class acp_users
 								trigger_error($user->lang['CANNOT_BAN_FOUNDER'] . adm_back_link($this->u_action . '&amp;u=' . $user_id), E_USER_WARNING);
 							}
 
+							if (!check_form_key($form_name))
+							{
+								trigger_error($user->lang['FORM_INVALID'] . adm_back_link($this->u_action . '&amp;u=' . $user_id), E_USER_WARNING);
+							}
+
 							$ban = array();
 
 							switch ($action)
@@ -268,6 +276,11 @@ class acp_users
 							if ($user_id == $user->data['user_id'])
 							{
 								trigger_error($user->lang['CANNOT_FORCE_REACT_YOURSELF'] . adm_back_link($this->u_action . '&amp;u=' . $user_id), E_USER_WARNING);
+							}
+
+							if (!check_form_key($form_name))
+							{
+								trigger_error($user->lang['FORM_INVALID'] . adm_back_link($this->u_action . '&amp;u=' . $user_id), E_USER_WARNING);
 							}
 
 							if ($user_row['user_type'] == USER_FOUNDER)
@@ -337,6 +350,11 @@ class acp_users
 								trigger_error($user->lang['CANNOT_DEACTIVATE_YOURSELF'] . adm_back_link($this->u_action . '&amp;u=' . $user_id), E_USER_WARNING);
 							}
 
+							if (!check_form_key($form_name))
+							{
+								trigger_error($user->lang['FORM_INVALID'] . adm_back_link($this->u_action . '&amp;u=' . $user_id), E_USER_WARNING);
+							}
+
 							if ($user_row['user_type'] == USER_FOUNDER)
 							{
 								trigger_error($user->lang['CANNOT_DEACTIVATE_FOUNDER'] . adm_back_link($this->u_action . '&amp;u=' . $user_id), E_USER_WARNING);
@@ -361,6 +379,11 @@ class acp_users
 
 						case 'delsig':
 
+							if (!check_form_key($form_name))
+							{
+								trigger_error($user->lang['FORM_INVALID'] . adm_back_link($this->u_action . '&amp;u=' . $user_id), E_USER_WARNING);
+							}
+
 							$sql_ary = array(
 								'user_sig'					=> '',
 								'user_sig_bbcode_uid'		=> '',
@@ -379,7 +402,12 @@ class acp_users
 						break;
 
 						case 'delavatar':
-							
+
+							if (!check_form_key($form_name))
+							{
+								trigger_error($user->lang['FORM_INVALID'] . adm_back_link($this->u_action . '&amp;u=' . $user_id), E_USER_WARNING);
+							}
+
 							$sql_ary = array(
 								'user_avatar'			=> '',
 								'user_avatar_type'		=> 0,
@@ -450,6 +478,11 @@ class acp_users
 						break;
 						
 						case 'moveposts':
+
+							if (!check_form_key($form_name))
+							{
+								trigger_error($user->lang['FORM_INVALID'] . adm_back_link($this->u_action . '&amp;u=' . $user_id), E_USER_WARNING);
+							}
 
 							$user->add_lang('acp/forums');
 
@@ -652,6 +685,11 @@ class acp_users
 					if ($data['email'] != $user_row['user_email'] && $data['email_confirm'] != $data['email'])
 					{
 						$error[] = 'NEW_EMAIL_ERROR';
+					}
+
+					if (!check_form_key($form_name))
+					{
+						$error[] = 'FORM_INVALID';
 					}
 
 					// Which updates do we need to do?
@@ -882,6 +920,11 @@ class acp_users
 				// Delete entries if requested and able
 				if (($deletemark || $deleteall) && $auth->acl_get('a_clearlogs'))
 				{
+					if (!check_form_key($form_name))
+					{
+						trigger_error($user->lang['FORM_INVALID'] . adm_back_link($this->u_action . '&amp;u=' . $user_id), E_USER_WARNING);
+					}
+
 					$where_sql = '';
 					if ($deletemark && $marked)
 					{
@@ -907,6 +950,11 @@ class acp_users
 
 				if ($submit && $message)
 				{
+					if (!check_form_key($form_name))
+					{
+						trigger_error($user->lang['FORM_INVALID'] . adm_back_link($this->u_action . '&amp;u=' . $user_id), E_USER_WARNING);
+					}
+
 					add_log('admin', 'LOG_USER_FEEDBACK', $user_row['username']);
 					add_log('mod', 0, 0, 'LOG_USER_FEEDBACK', $user_row['username']);
 					add_log('user', $user_id, 'LOG_USER_GENERAL', $message);
@@ -1026,6 +1074,10 @@ class acp_users
 					if (sizeof($cp_error))
 					{
 						$error = array_merge($error, $cp_error);
+					}
+					if (!check_form_key($form_name))
+					{
+						$error[] = 'FORM_INVALID';
 					}
 
 					if (!sizeof($error))
@@ -1205,6 +1257,11 @@ class acp_users
 						'post_sd'		=> array('string', false, 1, 1),
 					));
 
+					if (!check_form_key($form_name))
+					{
+						$error[] = 'FORM_INVALID';
+					}
+
 					if (!sizeof($error))
 					{
 						$this->optionset($user_row, 'popuppm', $data['popuppm']);
@@ -1368,6 +1425,12 @@ class acp_users
 
 				if ($submit)
 				{
+
+					if (!check_form_key($form_name))
+					{
+							trigger_error($user->lang['FORM_INVALID'] . adm_back_link($this->u_action . '&amp;u=' . $user_id), E_USER_WARNING);
+					}
+
 					if (avatar_process_user($error, $user_row))
 					{
 						trigger_error($user->lang['USER_AVATAR_UPDATED'] . adm_back_link($this->u_action . '&amp;u=' . $user_row['user_id']));
@@ -1410,6 +1473,11 @@ class acp_users
 
 				if ($submit)
 				{
+					if (!check_form_key($form_name))
+					{
+						trigger_error($user->lang['FORM_INVALID'] . adm_back_link($this->u_action . '&amp;u=' . $user_id), E_USER_WARNING);
+					}
+
 					$rank_id = request_var('user_rank', 0);
 
 					$sql = 'UPDATE ' . USERS_TABLE . "
@@ -1467,7 +1535,12 @@ class acp_users
 					{
 						$error[] = implode('<br />', $message_parser->warn_msg);
 					}
-						
+
+					if (!check_form_key($form_name))
+					{
+						$error = 'FORM_INVALID';
+					}
+
 					if (!sizeof($error) && $submit)
 					{
 						$sql_ary = array(
@@ -1733,6 +1806,12 @@ class acp_users
 				// Add user to group?
 				if ($submit)
 				{
+
+					if (!check_form_key($form_name))
+					{
+						trigger_error($user->lang['FORM_INVALID'] . adm_back_link($this->u_action . '&amp;u=' . $user_id), E_USER_WARNING);
+					}
+
 					if (!$group_id)
 					{
 						trigger_error($user->lang['NO_GROUP'] . adm_back_link($this->u_action . '&amp;u=' . $user_id), E_USER_WARNING);

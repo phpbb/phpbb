@@ -28,6 +28,9 @@ class acp_bbcodes
 
 		$this->tpl_name = 'acp_bbcodes';
 		$this->page_title = 'ACP_BBCODES';
+		$form_key = 'acp_bbcodes';
+
+		add_form_key($form_key);
 
 		// Set up mode-specific vars
 		switch ($action)

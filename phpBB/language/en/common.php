@@ -178,6 +178,7 @@ $lang = array_merge($lang, array(
 	'FIND_USERNAME'			=> 'Find a member',
 	'FOLDER'				=> 'Folder',
 	'FORGOT_PASS'			=> 'I forgot my password',
+	'FORM_INVALID'			=> 'The submitted form was invalid. Try submitting again.',
 	'FORUM'					=> 'Forum',
 	'FORUMS'				=> 'Forums',
 	'FORUMS_MARKED'			=> 'All forums have been marked read.',

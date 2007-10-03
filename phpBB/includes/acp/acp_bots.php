@@ -35,6 +35,13 @@ class acp_bots
 		$user->add_lang('acp/bots');
 		$this->tpl_name = 'acp_bots';
 		$this->page_title = 'ACP_BOTS';
+		$form_key = 'acp_bots';
+		add_form_key($form_key);
+
+		if ($submit && !check_form_key($form_key))
+		{
+			$error[] = $user->lang['FORM_INVALID'];
+		}
 
 		// User wants to do something, how inconsiderate of them!
 		switch ($action)

@@ -73,7 +73,7 @@ switch ($mode)
 	case 'leaders':
 		// Display a listing of board admins, moderators
 		include($phpbb_root_path . 'includes/functions_user.' . $phpEx);
-	
+
 		$page_title = $user->lang['THE_TEAM'];
 		$template_html = 'memberlist_leaders.html';
 
@@ -127,7 +127,7 @@ switch ($mode)
 
 		// Get group memberships for the admin id ary...
 		$admin_memberships = group_memberships($admin_group_id, $admin_id_ary);
-		
+
 		$admin_user_ids = array();
 		
 		if (!empty($admin_memberships))
@@ -268,6 +268,7 @@ switch ($mode)
 	break;
 
 	case 'contact':
+
 		$page_title = $user->lang['IM_USER'];
 		$template_html = 'memberlist_im.html';
 
@@ -327,36 +328,46 @@ switch ($mode)
 		switch ($action)
 		{
 			case 'jabber':
+				add_form_key('memberlist_messaging');
+
 				if ($submit && @extension_loaded('xml') && $config['jab_enable'])
 				{
-					include_once($phpbb_root_path . 'includes/functions_messenger.' . $phpEx);
-
-					$subject = sprintf($user->lang['IM_JABBER_SUBJECT'], $user->data['username'], $config['server_name']);
-					$message = utf8_normalize_nfc(request_var('message', '', true));
-
-					if (empty($message))
+					if (check_form_key('memberlist_messaging'))
 					{
-						trigger_error('EMPTY_MESSAGE_IM');
+
+						include_once($phpbb_root_path . 'includes/functions_messenger.' . $phpEx);
+
+						$subject = sprintf($user->lang['IM_JABBER_SUBJECT'], $user->data['username'], $config['server_name']);
+						$message = utf8_normalize_nfc(request_var('message', '', true));
+
+						if (empty($message))
+						{
+							trigger_error('EMPTY_MESSAGE_IM');
+						}
+
+						$messenger = new messenger(false);
+
+						$messenger->template('profile_send_im', $row['user_lang']);
+						$messenger->subject(htmlspecialchars_decode($subject));
+
+						$messenger->replyto($user->data['user_email']);
+						$messenger->im($row['user_jabber'], $row['username']);
+
+						$messenger->assign_vars(array(
+							'BOARD_CONTACT'	=> $config['board_contact'],
+							'FROM_USERNAME'	=> htmlspecialchars_decode($user->data['username']),
+							'TO_USERNAME'	=> htmlspecialchars_decode($row['username']),
+							'MESSAGE'		=> htmlspecialchars_decode($message))
+						);
+
+						$messenger->send(NOTIFY_IM);
+
+						$s_select = 'S_SENT_JABBER';
 					}
-
-					$messenger = new messenger(false);
-
-					$messenger->template('profile_send_im', $row['user_lang']);
-					$messenger->subject(htmlspecialchars_decode($subject));
-
-					$messenger->replyto($user->data['user_email']);
-					$messenger->im($row['user_jabber'], $row['username']);
-
-					$messenger->assign_vars(array(
-						'BOARD_CONTACT'	=> $config['board_contact'],
-						'FROM_USERNAME'	=> htmlspecialchars_decode($user->data['username']),
-						'TO_USERNAME'	=> htmlspecialchars_decode($row['username']),
-						'MESSAGE'		=> htmlspecialchars_decode($message))
-					);
-
-					$messenger->send(NOTIFY_IM);
-
-					$s_select = 'S_SENT_JABBER';
+					else
+					{
+						trigger_error('FORM_INVALID');
+					}
 				}
 			break;
 		}
@@ -588,7 +599,7 @@ switch ($mode)
 					$inactive_reason = $user->lang['INACTIVE_REASON_REMIND'];
 				break;
 			}
-	
+
 			$template->assign_vars(array(
 				'S_USER_INACTIVE'		=> true,
 				'USER_INACTIVE_REASON'	=> $inactive_reason)
@@ -606,6 +617,8 @@ switch ($mode)
 		// Send an email
 		$page_title = $user->lang['SEND_EMAIL'];
 		$template_html = 'memberlist_email.html';
+
+		add_form_key('memberlist_email');
 
 		if (!$config['email_enable'])
 		{
@@ -713,6 +726,10 @@ switch ($mode)
 
 		if ($submit)
 		{
+			if (!check_form_key('memberlist_email'))
+			{
+				$error[] = 'FORM_INVALID';
+			}
 			if ($user_id)
 			{
 				if (!$subject)
@@ -834,7 +851,7 @@ switch ($mode)
 			$template->assign_vars(array(
 				'S_SEND_USER'	=> true,
 				'USERNAME'		=> $row['username'],
-	
+
 				'L_EMAIL_BODY_EXPLAIN'	=> $user->lang['EMAIL_BODY_EXPLAIN'],
 				'S_POST_ACTION'			=> append_sid("{$phpbb_root_path}memberlist.$phpEx", 'mode=email&amp;u=' . $user_id))
 			);
@@ -900,6 +917,7 @@ switch ($mode)
 		// then only admins can make use of this (for ACP functionality)
 		$sql_select = $sql_where_data = $sql_from = $sql_where = $order_by = '';
 
+
 		$form			= request_var('form', '');
 		$field			= request_var('field', '');
 		$select_single 	= request_var('select_single', false);
@@ -907,7 +925,6 @@ switch ($mode)
 		// We validate form and field here, only id/class allowed
 		$form = (!preg_match('/^[a-z0-9_-]+$/i', $form)) ? '' : $form;
 		$field = (!preg_match('/^[a-z0-9_-]+$/i', $field)) ? '' : $field;
-
 		if ($mode == 'searchuser' && ($config['load_search'] || $auth->acl_get('a_')))
 		{
 			$username	= request_var('username', '', true);
@@ -1338,7 +1355,7 @@ switch ($mode)
 				$id_cache[$row['user_id']] = $row;
 			}
 			$db->sql_freeresult($result);
-				
+
 			// Load custom profile fields
 			if ($config['load_cpf_memberlist'])
 			{
@@ -1394,7 +1411,7 @@ switch ($mode)
 				unset($id_cache[$user_id]);
 			}
 		}
-	
+
 		// Generate page
 		$template->assign_vars(array(
 			'PAGINATION'	=> generate_pagination($pagination_url, $total_users, $config['topics_per_page'], $start),

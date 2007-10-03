@@ -243,7 +243,7 @@ while ($row = $db->sql_fetchrow($result))
 					case 'viewtopic':
 						$location = sprintf($user->lang['READING_TOPIC'], $forum_data[$forum_id]['forum_name']);
 					break;
-	
+
 					case 'viewforum':
 						$location = sprintf($user->lang['READING_FORUM'], $forum_data[$forum_id]['forum_name']);
 					break;

@@ -955,6 +955,7 @@ CREATE TABLE phpbb_users (
 	user_interests blob NOT NULL,
 	user_actkey varbinary(32) DEFAULT '' NOT NULL,
 	user_newpasswd varbinary(96) DEFAULT '' NOT NULL,
+	user_form_salt varbinary(96) DEFAULT '' NOT NULL,
 	PRIMARY KEY (user_id),
 	KEY user_birthday (user_birthday),
 	KEY user_email_hash (user_email_hash),

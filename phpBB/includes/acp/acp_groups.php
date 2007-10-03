@@ -24,6 +24,9 @@ class acp_groups
 		$this->tpl_name = 'acp_groups';
 		$this->page_title = 'ACP_GROUPS_MANAGE';
 
+		$form_key = 'acp_groups';
+		add_form_key($form_key);
+
 		include($phpbb_root_path . 'includes/functions_user.' . $phpEx);
 
 		// Check and set some common vars
@@ -35,6 +38,7 @@ class acp_groups
 		$default	= request_var('default', 0);
 		$start		= request_var('start', 0);
 		$update		= (isset($_POST['update'])) ? true : false;
+
 
 		// Clear some vars
 		$can_upload = (file_exists($phpbb_root_path . $config['avatar_path']) && @is_writable($phpbb_root_path . $config['avatar_path']) && $file_uploads) ? true : false;
@@ -251,13 +255,18 @@ class acp_groups
 
 				$error = array();
 				$user->add_lang('ucp');
-			
+
 				$avatar_select = basename(request_var('avatar_select', ''));
 				$category = basename(request_var('category', ''));
 
 				// Did we submit?
 				if ($update)
 				{
+					if (!check_form_key($form_key))
+					{
+						trigger_error($user->lang['FORM_INVALID'] . adm_back_link($this->u_action), E_USER_WARNING);
+					}
+
 					$group_name	= utf8_normalize_nfc(request_var('group_name', '', true));
 					$group_desc = utf8_normalize_nfc(request_var('group_desc', '', true));
 					$group_type	= request_var('group_type', GROUP_FREE);

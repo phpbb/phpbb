@@ -26,8 +26,15 @@ class ucp_resend
 		$email		= strtolower(request_var('email', ''));
 		$submit		= (isset($_POST['submit'])) ? true : false;
 
+		add_form_key('ucp_resend');
+
 		if ($submit)
 		{
+			if (!check_form_key('ucp_resend'))
+			{
+				trigger_error('FORM_INVALID');
+			}
+
 			$sql = 'SELECT user_id, group_id, username, user_email, user_type, user_lang, user_actkey, user_inactive_reason
 				FROM ' . USERS_TABLE . "
 				WHERE user_email = '" . $db->sql_escape($email) . "'

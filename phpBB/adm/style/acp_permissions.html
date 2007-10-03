@@ -39,7 +39,7 @@
 		</p>
 
 		</fieldset>
-
+		{S_FORM_TOKEN}
 		</form>
 
 		<!-- IF S_FORUM_MULTIPLE -->
@@ -60,7 +60,7 @@
 			</p>
 
 			</fieldset>
-
+			{S_FORM_TOKEN}
 			</form>
 			
 		<!-- ENDIF -->
@@ -83,7 +83,7 @@
 			<input type="submit" name="submit" value="{L_SUBMIT}" class="button1" />
 		</p>
 		</fieldset>
-
+		{S_FORM_TOKEN}
 		</form>
 
 	<!-- ELSEIF S_SELECT_GROUP and S_CAN_SELECT_GROUP -->
@@ -103,7 +103,7 @@
 		</p>
 
 		</fieldset>
-
+		{S_FORM_TOKEN}
 		</form>
 
 		<!-- ELSEIF S_SELECT_USERGROUP -->
@@ -128,7 +128,7 @@
 				{S_HIDDEN_FIELDS}
 				<input type="submit" class="button2" name="action[delete]" value="{L_REMOVE_PERMISSIONS}" style="width: 46% !important;" /> &nbsp; <input class="button1" type="submit" name="submit_edit_options" value="{L_EDIT_PERMISSIONS}" style="width: 46% !important;" />
 			</fieldset>
-			
+			{S_FORM_TOKEN}
 			</form>
 
 			<form id="add_user" method="post" action="{U_ACTION}">
@@ -146,7 +146,7 @@
 				{S_HIDDEN_FIELDS}
 				<input class="button1" type="submit" name="submit_add_options" value="{L_ADD_PERMISSIONS}" />
 			</fieldset>
-			
+			{S_FORM_TOKEN}
 			</form>
 
 		<!-- ENDIF -->
@@ -173,7 +173,7 @@
 				{S_HIDDEN_FIELDS}
 				<input class="button2" type="submit" name="action[delete]" value="{L_REMOVE_PERMISSIONS}" style="width: 46% !important;" /> &nbsp; <input class="button1" type="submit" name="submit_edit_options" value="{L_EDIT_PERMISSIONS}" style="width: 46% !important;" />
 			</fieldset>
-			
+			{S_FORM_TOKEN}
 			</form>
 
 			<form id="add_groups" method="post" action="{U_ACTION}">
@@ -190,6 +190,7 @@
 				<input type="submit" class="button1" name="submit_add_options" value="{L_ADD_PERMISSIONS}" />
 			</fieldset>
 			
+			{S_FORM_TOKEN}
 			</form>
 
 		<!-- ENDIF -->
@@ -216,6 +217,7 @@
 				<input class="button1" type="submit" name="submit" value="{L_VIEW_PERMISSIONS}" />
 			</fieldset>
 			
+			{S_FORM_TOKEN}
 			</form>
 
 			<form id="add_user" method="post" action="{U_ACTION}">
@@ -234,7 +236,7 @@
 				{S_HIDDEN_FIELDS}
 				<input type="submit" name="submit" value="{L_VIEW_PERMISSIONS}" class="button1" />
 			</fieldset>
-
+			{S_FORM_TOKEN}
 			</form>
 
 		</div>
@@ -257,6 +259,7 @@
 				<input class="button1" type="submit" name="submit" value="{L_VIEW_PERMISSIONS}" />
 			</fieldset>
 			
+			{S_FORM_TOKEN}
 			</form>
 
 			<form id="group" method="post" action="{U_ACTION}">
@@ -275,6 +278,7 @@
 				<input type="submit" name="submit" value="{L_VIEW_PERMISSIONS}" class="button1" />
 			</fieldset>
 
+			{S_FORM_TOKEN}
 			</form>
 
 		</div>
@@ -318,7 +322,7 @@
 
 			<input class="button2" type="submit" name="submit" value="{L_GO}" />
 		</fieldset>
-	
+		{S_FORM_TOKEN}	
 		</form>
 	<!-- ENDIF -->
 
@@ -346,7 +350,8 @@
 	</fieldset>
 
 	<br /><br />
-
+	
+	{S_FORM_TOKEN}
 	</form>
 
 <!-- ENDIF -->

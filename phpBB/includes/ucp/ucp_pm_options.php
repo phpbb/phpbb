@@ -17,9 +17,11 @@ function message_options($id, $mode, $global_privmsgs_rules, $global_rule_condit
 
 	$redirect_url = append_sid("{$phpbb_root_path}ucp.$phpEx", "i=pm&amp;mode=options");
 
+	add_form_key('ucp_pm_options');
 	// Change "full folder" setting - what to do if folder is full
 	if (isset($_POST['fullfolder']))
 	{
+		check_form_key('ucp_pm_options', $config['form_token_lifetime'], $redirect_url);
 		$full_action = request_var('full_action', 0);
 
 		$set_folder_id = 0;
@@ -60,79 +62,94 @@ function message_options($id, $mode, $global_privmsgs_rules, $global_rule_condit
 	// Add Folder
 	if (isset($_POST['addfolder']))
 	{
-		$folder_name = utf8_normalize_nfc(request_var('foldername', '', true));
-		
-		if ($folder_name)
+		if (check_form_key('ucp_pm_options'))
 		{
-			$sql = 'SELECT folder_name 
-				FROM ' . PRIVMSGS_FOLDER_TABLE . "
-				WHERE folder_name = '" . $db->sql_escape($folder_name) . "'
-					AND user_id = " . $user->data['user_id'];
-			$result = $db->sql_query_limit($sql, 1);
-			$row = $db->sql_fetchrow($result);
-			$db->sql_freeresult($result);
+			$folder_name = utf8_normalize_nfc(request_var('foldername', '', true));
+			$msg = '';
 
-			if ($row)
+			if ($folder_name)
 			{
-				trigger_error(sprintf($user->lang['FOLDER_NAME_EXIST'], $folder_name));
+				$sql = 'SELECT folder_name 
+					FROM ' . PRIVMSGS_FOLDER_TABLE . "
+					WHERE folder_name = '" . $db->sql_escape($folder_name) . "'
+						AND user_id = " . $user->data['user_id'];
+				$result = $db->sql_query_limit($sql, 1);
+				$row = $db->sql_fetchrow($result);
+				$db->sql_freeresult($result);
+
+				if ($row)
+				{
+					trigger_error(sprintf($user->lang['FOLDER_NAME_EXIST'], $folder_name));
+				}
+
+				$sql = 'SELECT COUNT(folder_id) as num_folder
+					FROM ' . PRIVMSGS_FOLDER_TABLE . '
+						WHERE user_id = ' . $user->data['user_id'];
+				$result = $db->sql_query($sql);
+				$num_folder = (int) $db->sql_fetchfield('num_folder');
+				$db->sql_freeresult($result);
+
+				if ($num_folder >= $config['pm_max_boxes'])
+				{
+					trigger_error('MAX_FOLDER_REACHED');
+				}
+
+				$sql = 'INSERT INTO ' . PRIVMSGS_FOLDER_TABLE . ' ' . $db->sql_build_array('INSERT', array(
+					'user_id'		=> (int) $user->data['user_id'],
+					'folder_name'	=> $folder_name)
+				);
+				$db->sql_query($sql);
+				$msg = $user->lang['FOLDER_ADDED'];
 			}
-
-			$sql = 'SELECT COUNT(folder_id) as num_folder
-				FROM ' . PRIVMSGS_FOLDER_TABLE . '
-					WHERE user_id = ' . $user->data['user_id'];
-			$result = $db->sql_query($sql);
-			$num_folder = (int) $db->sql_fetchfield('num_folder');
-			$db->sql_freeresult($result);
-
-			if ($num_folder >= $config['pm_max_boxes'])
-			{
-				trigger_error('MAX_FOLDER_REACHED');
-			}
-
-			$sql = 'INSERT INTO ' . PRIVMSGS_FOLDER_TABLE . ' ' . $db->sql_build_array('INSERT', array(
-				'user_id'		=> (int) $user->data['user_id'],
-				'folder_name'	=> $folder_name)
-			);
-			$db->sql_query($sql);
-
-			$message = $user->lang['FOLDER_ADDED'] . '<br /><br />' . sprintf($user->lang['RETURN_UCP'], '<a href="' . $redirect_url . '">', '</a>');
-			meta_refresh(3, $redirect_url);
-			trigger_error($message);
 		}
+		else
+		{
+			$msg = $user->lang['FORM_INVALID'];
+		}
+		$message = $msg . '<br /><br />' . sprintf($user->lang['RETURN_UCP'], '<a href="' . $redirect_url . '">', '</a>');
+		meta_refresh(3, $redirect_url);
+		trigger_error($message);
 	}
 
 	// Rename folder
 	if (isset($_POST['rename_folder']))
 	{
-		$new_folder_name = utf8_normalize_nfc(request_var('new_folder_name', '', true));
-		$rename_folder_id= request_var('rename_folder_id', 0);
-
-		if (!$new_folder_name)
+		if (check_form_key('ucp_pm_options'))
 		{
-			trigger_error('NO_NEW_FOLDER_NAME');
+			$new_folder_name = utf8_normalize_nfc(request_var('new_folder_name', '', true));
+			$rename_folder_id= request_var('rename_folder_id', 0);
+
+			if (!$new_folder_name)
+			{
+				trigger_error('NO_NEW_FOLDER_NAME');
+			}
+
+			// Select custom folder
+			$sql = 'SELECT folder_name, pm_count
+				FROM ' . PRIVMSGS_FOLDER_TABLE . "
+				WHERE user_id = {$user->data['user_id']}
+					AND folder_id = $rename_folder_id";
+			$result = $db->sql_query_limit($sql, 1);
+			$folder_row = $db->sql_fetchrow($result);
+			$db->sql_freeresult($result);
+
+			if (!$folder_row)
+			{
+				trigger_error('CANNOT_RENAME_FOLDER');
+			}
+
+			$sql = 'UPDATE ' . PRIVMSGS_FOLDER_TABLE . " 
+				SET folder_name = '" . $db->sql_escape($new_folder_name) . "'
+				WHERE folder_id = $rename_folder_id
+					AND user_id = {$user->data['user_id']}";
+			$db->sql_query($sql);
+			$msg = $user->lang['FOLDER_RENAMED'];
 		}
-
-		// Select custom folder
-		$sql = 'SELECT folder_name, pm_count
-			FROM ' . PRIVMSGS_FOLDER_TABLE . "
-			WHERE user_id = {$user->data['user_id']}
-				AND folder_id = $rename_folder_id";
-		$result = $db->sql_query_limit($sql, 1);
-		$folder_row = $db->sql_fetchrow($result);
-		$db->sql_freeresult($result);
-
-		if (!$folder_row)
+		else
 		{
-			trigger_error('CANNOT_RENAME_FOLDER');
+			$msg = $user->lang['FORM_INVALID'];
 		}
-
-		$sql = 'UPDATE ' . PRIVMSGS_FOLDER_TABLE . " 
-			SET folder_name = '" . $db->sql_escape($new_folder_name) . "'
-			WHERE folder_id = $rename_folder_id
-				AND user_id = {$user->data['user_id']}";
-		$db->sql_query($sql);
-
-		$message = $user->lang['FOLDER_RENAMED'] . '<br /><br />' . sprintf($user->lang['RETURN_UCP'], '<a href="' . $redirect_url . '">', '</a>');
+		$message = $msg . '<br /><br />' . sprintf($user->lang['RETURN_UCP'], '<a href="' . $redirect_url . '">', '</a>');
 		meta_refresh(3, $redirect_url);
 		trigger_error($message);
 	}
@@ -251,60 +268,68 @@ function message_options($id, $mode, $global_privmsgs_rules, $global_rule_condit
 	// Add Rule
 	if (isset($_POST['add_rule']))
 	{
-		$check_option	= request_var('check_option', 0);
-		$rule_option	= request_var('rule_option', 0);
-		$cond_option	= request_var('cond_option', '');
-		$action_option	= explode('|', request_var('action_option', ''));
-		$rule_string	= ($cond_option != 'none') ? utf8_normalize_nfc(request_var('rule_string', '', true)) : '';
-		$rule_user_id	= ($cond_option != 'none') ? request_var('rule_user_id', 0) : 0;
-		$rule_group_id	= ($cond_option != 'none') ? request_var('rule_group_id', 0) : 0;
-		
-		$action = (int) $action_option[0];
-		$folder_id = (int) $action_option[1];
-
-		if (!$action || !$check_option || !$rule_option || !$cond_option || ($cond_option != 'none' && !$rule_string))
+		if(check_form_key('ucp_pm_options'))
 		{
-			trigger_error('RULE_NOT_DEFINED');
-		}
+			$check_option	= request_var('check_option', 0);
+			$rule_option	= request_var('rule_option', 0);
+			$cond_option	= request_var('cond_option', '');
+			$action_option	= explode('|', request_var('action_option', ''));
+			$rule_string	= ($cond_option != 'none') ? utf8_normalize_nfc(request_var('rule_string', '', true)) : '';
+			$rule_user_id	= ($cond_option != 'none') ? request_var('rule_user_id', 0) : 0;
+			$rule_group_id	= ($cond_option != 'none') ? request_var('rule_group_id', 0) : 0;
 
-		if (($cond_option == 'user' && !$rule_user_id) || ($cond_option == 'group' && !$rule_group_id))
+			$action = (int) $action_option[0];
+			$folder_id = (int) $action_option[1];
+
+			if (!$action || !$check_option || !$rule_option || !$cond_option || ($cond_option != 'none' && !$rule_string))
+			{
+				trigger_error('RULE_NOT_DEFINED');
+			}
+
+			if (($cond_option == 'user' && !$rule_user_id) || ($cond_option == 'group' && !$rule_group_id))
+			{
+				trigger_error('RULE_NOT_DEFINED');
+			}
+
+			$rule_ary = array(
+				'user_id'			=> $user->data['user_id'],
+				'rule_check'		=> $check_option,
+				'rule_connection'	=> $rule_option,
+				'rule_string'		=> $rule_string,
+				'rule_user_id'		=> $rule_user_id,
+				'rule_group_id'		=> $rule_group_id,
+				'rule_action'		=> $action,
+				'rule_folder_id'	=> $folder_id
+			);
+
+			$sql = 'SELECT rule_id 
+				FROM ' . PRIVMSGS_RULES_TABLE . '
+				WHERE ' . $db->sql_build_array('SELECT', $rule_ary);
+			$result = $db->sql_query($sql);
+			$row = $db->sql_fetchrow($result);
+			$db->sql_freeresult($result);
+
+			if ($row)
+			{
+				trigger_error('RULE_ALREADY_DEFINED');
+			}
+
+			$sql = 'INSERT INTO ' . PRIVMSGS_RULES_TABLE . ' ' . $db->sql_build_array('INSERT', $rule_ary);
+			$db->sql_query($sql);
+
+			// Update users message rules
+			$sql = 'UPDATE ' . USERS_TABLE . '
+				SET user_message_rules = 1
+				WHERE user_id = ' . $user->data['user_id'];
+			$db->sql_query($sql);
+
+			$msg = $user->lang['RULE_ADDED'];
+		}
+		else
 		{
-			trigger_error('RULE_NOT_DEFINED');
+			$msg = $user->lang['FORM_INVALID'];
 		}
-
-		$rule_ary = array(
-			'user_id'			=> $user->data['user_id'],
-			'rule_check'		=> $check_option,
-			'rule_connection'	=> $rule_option,
-			'rule_string'		=> $rule_string,
-			'rule_user_id'		=> $rule_user_id,
-			'rule_group_id'		=> $rule_group_id,
-			'rule_action'		=> $action,
-			'rule_folder_id'	=> $folder_id
-		);
-
-		$sql = 'SELECT rule_id 
-			FROM ' . PRIVMSGS_RULES_TABLE . '
-			WHERE ' . $db->sql_build_array('SELECT', $rule_ary);
-		$result = $db->sql_query($sql);
-		$row = $db->sql_fetchrow($result);
-		$db->sql_freeresult($result);
-
-		if ($row)
-		{
-			trigger_error('RULE_ALREADY_DEFINED');
-		}
-
-		$sql = 'INSERT INTO ' . PRIVMSGS_RULES_TABLE . ' ' . $db->sql_build_array('INSERT', $rule_ary);
-		$db->sql_query($sql);
-
-		// Update users message rules
-		$sql = 'UPDATE ' . USERS_TABLE . '
-			SET user_message_rules = 1
-			WHERE user_id = ' . $user->data['user_id'];
-		$db->sql_query($sql);
-
-		$message = $user->lang['RULE_ADDED'] . '<br /><br />' . sprintf($user->lang['RETURN_UCP'], '<a href="' . $redirect_url . '">', '</a>');
+		$message = $msg . '<br /><br />' . sprintf($user->lang['RETURN_UCP'], '<a href="' . $redirect_url . '">', '</a>');
 		meta_refresh(3, $redirect_url);
 		trigger_error($message);
 	}

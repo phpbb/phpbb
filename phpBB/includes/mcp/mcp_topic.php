@@ -40,7 +40,7 @@ function mcp_topic_view($id, $mode, $action)
 	$to_forum_id	= request_var('to_forum_id', 0);
 	$post_id_list	= request_var('post_id_list', array(0));
 	$sort			= isset($_POST['sort']) ? true : false;
-	
+
 	// Split Topic?
 	if ($action == 'split_all' || $action == 'split_beyond')
 	{
@@ -98,8 +98,8 @@ function mcp_topic_view($id, $mode, $action)
 	if ($total == -1)
 	{
 		$total = $topic_info['topic_replies'] + 1;
-	} 
-	
+	}
+
 	$posts_per_page = max(0, request_var('posts_per_page', intval($config['posts_per_page'])));
 	if ($posts_per_page == 0)
 	{
@@ -220,7 +220,7 @@ function mcp_topic_view($id, $mode, $action)
 			'S_POST_UNAPPROVED'	=> ($row['post_approved']) ? false : true,
 			'S_CHECKED'			=> ($post_id_list && in_array(intval($row['post_id']), $post_id_list)) ? true : false,
 			'S_HAS_ATTACHMENTS'	=> (!empty($attachments[$row['post_id']])) ? true : false,
-			
+
 			'U_POST_DETAILS'	=> "$url&amp;i=$id&amp;p={$row['post_id']}&amp;mode=post_details" . (($forum_id) ? "&amp;f=$forum_id" : ''),
 			'U_MCP_APPROVE'		=> ($auth->acl_get('m_approve', $topic_info['forum_id'])) ? append_sid("{$phpbb_root_path}mcp.$phpEx", 'i=queue&amp;mode=approve_details&amp;f=' . $topic_info['forum_id'] . '&amp;p=' . $row['post_id']) : '',
 			'U_MCP_REPORT'		=> ($auth->acl_get('m_report', $topic_info['forum_id'])) ? append_sid("{$phpbb_root_path}mcp.$phpEx", 'i=reports&amp;mode=report_details&amp;f=' . $topic_info['forum_id'] . '&amp;p=' . $row['post_id']) : '')
@@ -268,11 +268,11 @@ function mcp_topic_view($id, $mode, $action)
 			}
 		}
 	}
-	
+
 	$s_hidden_fields = build_hidden_fields(array(
 		'st_old'	=> $sort_days,
 	));
-	
+
 	$template->assign_vars(array(
 		'TOPIC_TITLE'		=> $topic_info['topic_title'],
 		'U_VIEW_TOPIC'		=> append_sid("{$phpbb_root_path}viewtopic.$phpEx", 'f=' . $topic_info['forum_id'] . '&amp;t=' . $topic_info['topic_id']),
@@ -298,7 +298,7 @@ function mcp_topic_view($id, $mode, $action)
 		'S_REPORT_VIEW'		=> ($action == 'reports') ? true : false,
 		'S_MERGE_VIEW'		=> ($action == 'merge') ? true : false,
 		'S_SPLIT_VIEW'		=> ($action == 'split') ? true : false,
-		
+
 		'S_HIDDEN_FIELDS'	=> $s_hidden_fields,
 
 		'S_SHOW_TOPIC_ICONS'	=> $s_topic_icons,

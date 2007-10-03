@@ -27,6 +27,9 @@ class acp_board
 		$action	= request_var('action', '');
 		$submit = (isset($_POST['submit'])) ? true : false;
 
+		$form_key = 'acp_board';
+		add_form_key($form_key);
+
 		/**
 		*	Validation types are:
 		*		string, int, bool,
@@ -314,6 +317,8 @@ class acp_board
 						'chg_passforce'			=> array('lang' => 'FORCE_PASS_CHANGE',		'validate' => 'int',	'type' => 'text:3:3', 'explain' => true, 'append' => ' ' . $user->lang['DAYS']),
 						'max_login_attempts'	=> array('lang' => 'MAX_LOGIN_ATTEMPTS',	'validate' => 'int',	'type' => 'text:3:3', 'explain' => true),
 						'tpl_allow_php'			=> array('lang' => 'TPL_ALLOW_PHP',			'validate' => 'bool',	'type' => 'radio:yes_no', 'explain' => true),
+						'form_token_lifetime'	=> array('lang' => 'FORM_TIME_MAX',			'validate' => 'int',	'type' => 'text:5:5', 'explain' => true, 'append' => ' ' . $user->lang['SECONDS']),
+						'form_token_mintime'	=> array('lang' => 'FORM_TIME_MIN',			'validate' => 'int',	'type' => 'text:5:5', 'explain' => true, 'append' => ' ' . $user->lang['SECONDS']),
 					)
 				);
 			break;
@@ -360,6 +365,10 @@ class acp_board
 		// We validate the complete config if whished
 		validate_config_vars($display_vars['vars'], $cfg_array, $error);
 
+		if ($submit && !check_form_key($form_key))
+		{
+			$error[] = $user->lang['FORM_INVALID'];
+		}
 		// Do not write values if there is an error
 		if (sizeof($error))
 		{

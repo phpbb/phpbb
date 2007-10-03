@@ -31,10 +31,17 @@ class acp_ranks
 		$this->tpl_name = 'acp_ranks';
 		$this->page_title = 'ACP_MANAGE_RANKS';
 
+		$form_name = 'acp_prune';
+		add_form_key($form_name);
+
 		switch ($action)
 		{
 			case 'save':
-				
+
+				if(!check_form_key($form_name))
+				{
+					trigger_error($user->lang['FORM_INVALID']. adm_back_link($this->u_action), E_USER_WARNING);
+				}
 				$rank_title = utf8_normalize_nfc(request_var('title', '', true));
 				$special_rank = request_var('special_rank', 0);
 				$min_posts = ($special_rank) ? 0 : request_var('min_posts', 0);
@@ -123,6 +130,11 @@ class acp_ranks
 
 			case 'edit':
 			case 'add':
+
+				if(!check_form_key($form_name))
+				{
+					trigger_error($user->lang['FORM_INVALID']. adm_back_link($this->u_action), E_USER_WARNING);
+				}
 
 				$data = $ranks = $existing_imgs = array();
 				

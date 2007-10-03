@@ -44,6 +44,8 @@ class ucp_profile
 					'password_confirm'	=> request_var('password_confirm', '', true),
 				);
 
+				add_form_key('ucp_reg_details');
+
 				if ($submit)
 				{
 					// Do not check cur_password, it is the old one.
@@ -87,6 +89,11 @@ class ucp_profile
 					if ($auth->acl_get('u_chgemail') && $data['email'] != $user->data['user_email'] && $data['email_confirm'] != $data['email'])
 					{
 						$error[] = 'NEW_EMAIL_ERROR';
+					}
+
+					if (!check_form_key('ucp_reg_details'))
+					{
+						$error[] = 'FORM_INVALID';
 					}
 
 					if (!sizeof($error))
@@ -224,7 +231,7 @@ class ucp_profile
 
 						trigger_error($message);
 					}
-	
+
 					// Replace "error" strings with their real, localised form
 					$error = preg_replace('#^([A-Z_]+)$#e', "(!empty(\$user->lang['\\1'])) ? \$user->lang['\\1'] : '\\1'", $error);
 				}
@@ -282,6 +289,8 @@ class ucp_profile
 					$data['bday_year'] = request_var('bday_year', $data['bday_year']);
 				}
 
+				add_form_key('ucp_profile_info');
+
 				if ($submit)
 				{
 					$validate_array = array(
@@ -319,6 +328,11 @@ class ucp_profile
 					if (sizeof($cp_error))
 					{
 						$error = array_merge($error, $cp_error);
+					}
+
+					if (!check_form_key('ucp_profile_info'))
+					{
+						$error[] = 'FORM_INVALID';
 					}
 
 					if (!sizeof($error))
@@ -446,6 +460,8 @@ class ucp_profile
 
 				$signature		= utf8_normalize_nfc(request_var('signature', (string) $user->data['user_sig'], true));
 
+				add_form_key('ucp_sig');
+
 				if ($submit || $preview)
 				{
 					include($phpbb_root_path . 'includes/message_parser.' . $phpEx);
@@ -460,6 +476,11 @@ class ucp_profile
 						if (sizeof($message_parser->warn_msg))
 						{
 							$error[] = implode('<br />', $message_parser->warn_msg);
+						}
+
+						if (!check_form_key('ucp_sig'))
+						{
+							$error[] = 'FORM_INVALID';
 						}
 
 						if (!sizeof($error) && $submit)
@@ -517,7 +538,7 @@ class ucp_profile
 					'S_BBCODE_FLASH'		=> ($config['allow_sig_flash']) ? true : false,
 					'S_LINKS_ALLOWED'		=> ($config['allow_sig_links']) ? true : false)
 				);
-			
+
 				// Build custom bbcodes array
 				display_custom_bbcodes();
 
@@ -533,15 +554,23 @@ class ucp_profile
 
 				$can_upload = ($config['allow_avatar_upload'] && file_exists($phpbb_root_path . $config['avatar_path']) && @is_writable($phpbb_root_path . $config['avatar_path']) && $auth->acl_get('u_chgavatar') && (@ini_get('file_uploads') || strtolower(@ini_get('file_uploads')) == 'on')) ? true : false;
 
+				add_form_key('ucp_avatar');
+
 				if ($submit)
 				{
-					if (avatar_process_user($error))
+					if (check_form_key('ucp_avatar'))
 					{
-						meta_refresh(3, $this->u_action);
-						$message = $user->lang['PROFILE_UPDATED'] . '<br /><br />' . sprintf($user->lang['RETURN_UCP'], '<a href="' . $this->u_action . '">', '</a>');
-						trigger_error($message);
+						if (avatar_process_user($error))
+						{
+							meta_refresh(3, $this->u_action);
+							$message = $user->lang['PROFILE_UPDATED'] . '<br /><br />' . sprintf($user->lang['RETURN_UCP'], '<a href="' . $this->u_action . '">', '</a>');
+							trigger_error($message);
+						}
 					}
-
+					else
+					{
+						$error[] = 'FORM_INVALID';
+					}
 					// Replace "error" strings with their real, localised form
 					$error = preg_replace('#^([A-Z_]+)$#e', "(!empty(\$user->lang['\\1'])) ? \$user->lang['\\1'] : '\\1'", $error);
 				}

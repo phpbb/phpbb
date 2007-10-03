@@ -47,7 +47,7 @@
 	<fieldset class="quick">
 		<input type="submit" name="update" value="{L_SUBMIT}" class="button1" />
 	</fieldset>
-
+	{S_FORM_TOKEN}
 	</form>
 
 <!-- ELSE -->
@@ -70,7 +70,7 @@
 	<fieldset class="quick">
 		{L_SELECT_FORM}: <select name="mode" onchange="if (this.options[this.selectedIndex].value != '') this.form.submit();">{S_FORM_OPTIONS}</select> <input class="button2" type="submit" value="{L_GO}" />
 	</fieldset>
-
+	{S_FORM_TOKEN}
 	</form>
 
 <!-- ENDIF -->
@@ -110,7 +110,7 @@
 	<fieldset class="quick">
 		<input class="button1" type="submit" name="update" value="{L_SUBMIT}" />
 	</fieldset>
-
+	{S_FORM_TOKEN}
 	</form>
 
 <!-- ELSEIF S_SIGNATURE -->
@@ -145,7 +145,7 @@
 			{L_USER_GROUP_ADD}: <select name="g">{S_GROUP_OPTIONS}</select> <input class="button1" type="submit" name="update" value="{L_SUBMIT}" />
 		</fieldset>
 	<!-- ENDIF -->
-
+	{S_FORM_TOKEN}
 	</form>
 
 <!-- ELSEIF S_ATTACHMENTS -->
@@ -202,7 +202,7 @@
 		<input class="button2" type="submit" name="delmarked" value="{L_DELETE_MARKED}" />
 		<p class="small"><a href="#" onclick="marklist('user_attachments', 'mark', true);">{L_MARK_ALL}</a> &bull; <a href="#" onclick="marklist('user_attachments', 'mark', false);">{L_UNMARK_ALL}</a></p>
 	</fieldset>
-
+	{S_FORM_TOKEN}
 	</form>
 
 <!-- ELSEIF S_PERMISSIONS -->
@@ -218,7 +218,7 @@
 			{L_SELECT_FORUM}: <select name="f">{S_FORUM_OPTIONS}</select> 
 			<input class="button2" type="submit" value="{L_GO}" name="select" />
 		</fieldset>
-
+	{S_FORM_TOKEN}
 	</form>
 
 	<div class="clearfix">&nbsp;</div>

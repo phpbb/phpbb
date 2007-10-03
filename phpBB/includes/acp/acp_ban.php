@@ -23,11 +23,18 @@ class acp_ban
 		include($phpbb_root_path . 'includes/functions_user.' . $phpEx);
 
 		$bansubmit	= (isset($_POST['bansubmit'])) ? true : false;
-		$unbansubmit= (isset($_POST['unbansubmit'])) ? true : false;
+		$unbansubmit = (isset($_POST['unbansubmit'])) ? true : false;
 		$current_time = time();
 
 		$user->add_lang(array('acp/ban', 'acp/users'));
 		$this->tpl_name = 'acp_ban';
+		$form_key = 'acp_ban';
+		add_form_key($form_key);
+
+		if(($bansubmit || $unbansubmit) && !check_form_key($form_key))
+		{
+			trigger_error($user->lang['FORM_INVALID'] . adm_back_link($this->u_action), E_USER_WARNING);
+		}
 
 		// Ban submitted?
 		if ($bansubmit)

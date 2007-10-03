@@ -45,6 +45,7 @@ $mode		= ($delete && !$preview && !$refresh && $submit) ? 'delete' : request_var
 $error = $post_data = array();
 $current_time = time();
 
+
 // Was cancel pressed? If so then redirect to the appropriate page
 if ($cancel || ($current_time - $lastclick < 2 && $submit))
 {
@@ -611,7 +612,7 @@ if ($submit || $preview || $refresh)
 	if ($poll_delete && $mode == 'edit' && sizeof($post_data['poll_options']) && 
 		((!$post_data['poll_last_vote'] && $post_data['poster_id'] == $user->data['user_id'] && $auth->acl_get('f_delete', $forum_id)) || $auth->acl_get('m_delete', $forum_id)))
 	{
-		if ($submit)
+		if ($submit && 	check_form_key('posting'))
 		{
 			$sql = 'DELETE FROM ' . POLL_OPTIONS_TABLE . "
 				WHERE topic_id = $topic_id";
@@ -760,6 +761,12 @@ if ($submit || $preview || $refresh)
 		{
 			$solved_captcha = true;
 		}
+	}
+
+	// check form
+	if (!check_form_key('posting', false, '', false, 2))
+	{
+		$error[] = $user->lang['FORM_INVALID'];
 	}
 
 	// Parse subject
@@ -1262,6 +1269,8 @@ if ($solved_captcha !== false)
 }
 
 $form_enctype = (@ini_get('file_uploads') == '0' || strtolower(@ini_get('file_uploads')) == 'off' || @ini_get('file_uploads') == '0' || !$config['allow_attachments'] || !$auth->acl_get('u_attach') || !$auth->acl_get('f_attach', $forum_id)) ? '' : ' enctype="multipart/form-data"';
+add_form_key('posting');
+
 
 // Start assigning vars for main posting page ...
 $template->assign_vars(array(

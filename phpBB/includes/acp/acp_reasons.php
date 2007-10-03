@@ -30,6 +30,9 @@ class acp_reasons
 		$this->tpl_name = 'acp_reasons';
 		$this->page_title = 'ACP_REASONS';
 
+		$form_name = 'acp_reason';
+		add_form_key('acp_reason');
+
 		$error = array();
 
 		switch ($action)
@@ -44,6 +47,10 @@ class acp_reasons
 
 				if ($submit)
 				{
+					if(!check_form_key($form_name))
+					{
+						$error[] = $user->lang['FORM_INVALID'];
+					}
 					// Reason specified?
 					if (!$reason_row['reason_title'] || !$reason_row['reason_description'])
 					{

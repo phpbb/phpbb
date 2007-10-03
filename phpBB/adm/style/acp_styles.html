@@ -27,7 +27,7 @@
 		<input class="button1" type="submit" name="update" value="{L_DELETE}" />
 	</p>
 	</fieldset>
-
+	{S_FORM_TOKEN}
 	</form>
 
 <!-- ELSEIF S_EDIT_IMAGESET -->
@@ -148,7 +148,7 @@
 		<legend>{L_SUBMIT}</legend>
 		<input class="button1" type="submit" name="update" value="{L_SUBMIT}" />&nbsp;&nbsp;<input class="button2" type="reset" value="{L_RESET}" />
 	</fieldset>
-
+	{S_FORM_TOKEN}
 	</form>
 
 <!-- ELSEIF S_EDIT_TEMPLATE or S_EDIT_THEME -->
@@ -172,7 +172,8 @@
 	</dl>
 	</fieldset>
 	<!-- ENDIF -->
-
+	
+	{S_FORM_TOKEN}
 	</form>
 
 	<!-- IF TEMPLATE_FILE or (S_EDIT_THEME and S_THEME_IN_DB) -->
@@ -254,7 +255,8 @@
 			{S_HIDDEN_FIELDS}
 			<input class="button1" id="save" type="submit" name="save" value="{L_SUBMIT}" />
 		</fieldset>
-
+		
+		{S_FORM_TOKEN}
 		</form>
 	<!-- ENDIF -->
 
@@ -304,6 +306,7 @@
 	</p>
 	</fieldset>
 
+	{S_FORM_TOKEN}
 	</form>
 
 <!-- ELSEIF S_EXPORT -->
@@ -361,6 +364,7 @@
 	</p>
 	</fieldset>
 
+	{S_FORM_TOKEN}
 	</form>
 
 <!-- ELSEIF S_FRONTEND -->
@@ -505,7 +509,8 @@
 		<legend>{L_SUBMIT}</legend>
 		<input class="button1" type="submit" name="update" value="{L_SUBMIT}" />
 	</fieldset>
-
+	
+	{S_FORM_TOKEN}
 	</form>
 
 <!-- ENDIF -->

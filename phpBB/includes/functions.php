@@ -1964,6 +1964,70 @@ function meta_refresh($time, $url)
 	);
 }
 
+//Form validation
+
+/**
+* Add a secret token to the form (requires the S_FORM_TOKEN template variable)
+* @param string  $form_name The name of the form; has to match the name used in check_form_key, otherwise no restrictions apply
+*/
+function add_form_key($form_name)
+{
+	global $template, $user;
+	$now = time();
+	$token = sha1($now . $user->data['user_form_salt'] . $form_name);
+
+	$s_fields = build_hidden_fields(array(
+			'creation_time' => $now,
+			'form_token'	=> $token,
+	));
+	$template->assign_vars(array(
+			'S_FORM_TOKEN'	=> $s_fields,
+	));
+}
+
+/**
+* Check the form key. Required for all altering actions not secured by confirm_box
+* @param string  $form_name The name of the form; has to match the name used in add_form_key, otherwise no restrictions apply
+* @param int $timespan The maximum acceptable age for a submitted form in seconds. Defaults to the config setting.
+* @param string $return_page The address for the return link
+* @param bool $trigger If true, the function will triger an error when encountering an invalid form
+* @param int $minimum_time The minimum acceptable age for a submitted form in seconds
+*/
+function check_form_key($form_name, $timespan = false, $return_page = '', $trigger = false, $miniumum_time = false)
+{
+	global $user, $config;
+
+	if ($timespan === false) 
+	{
+		$timespan = $config['form_token_lifetime'];
+	}
+	if ($miniumum_time === false)
+	{
+		$miniumum_time = $config['form_token_mintime'];
+	}
+	if (isset($_POST['creation_time']) && isset($_POST['form_token']))
+	{
+		$creation_time	= abs(request_var('creation_time', 0));
+		$token = request_var('form_token', '');
+
+		$diff = (time() - $creation_time);
+
+		if (($diff > $miniumum_time) && (($diff < $timespan) || $timespan == -1))
+		{
+			$key = sha1($creation_time . $user->data['user_form_salt'] . $form_name);
+			if ($key === $token)
+			{
+				return true;
+			}
+		}
+	}
+	if ($trigger)
+	{
+		trigger_error($user->lang['FORM_INVALID'] . $return_page);
+	}
+	return false;
+}
+
 // Message/Login boxes
 
 /**

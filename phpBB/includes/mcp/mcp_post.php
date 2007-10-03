@@ -24,6 +24,8 @@ function mcp_post_details($id, $mode, $action)
 	// Get post data
 	$post_info = get_post_data(array($post_id), false, true);
 
+	add_form_key('mcp_post_details');
+
 	if (!sizeof($post_info))
 	{
 		trigger_error('POST_NOT_EXIST');
@@ -82,7 +84,14 @@ function mcp_post_details($id, $mode, $action)
 
 			if ($auth->acl_get('m_chgposter', $post_info['forum_id']))
 			{
-				change_poster($post_info, $row);
+				if (check_form_key('mcp_post_details'))
+				{
+					change_poster($post_info, $row);
+				}
+				else
+				{
+					trigger_error('FORM_INVALID');
+				}
 			}
 
 		break;

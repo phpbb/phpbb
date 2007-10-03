@@ -33,14 +33,23 @@ class acp_inactive
 		$action = request_var('action', '');
 		$mark	= (isset($_REQUEST['mark'])) ? request_var('mark', array(0)) : array();
 		$start	= request_var('start', 0);
+		$submit = isset($_POST['submit']);
 
 		// Sort keys
 		$sort_days	= request_var('st', 0);
 		$sort_key	= request_var('sk', 'i');
 		$sort_dir	= request_var('sd', 'd');
 
-		if (sizeof($mark))
+		$form_key = 'acp_inactive';
+		add_form_key($form_key);
+
+		if ($submit && sizeof($mark))
 		{
+			if (!check_form_key($form_key))
+			{
+				trigger_error($user->lang['FORM_INVALID'] . adm_back_link($this->u_action), E_USER_WARNING);
+			}
+
 			switch ($action)
 			{
 				case 'activate':

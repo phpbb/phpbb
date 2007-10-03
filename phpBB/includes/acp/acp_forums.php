@@ -25,6 +25,9 @@ class acp_forums
 		$this->tpl_name = 'acp_forums';
 		$this->page_title = 'ACP_MANAGE_FORUMS';
 
+		$form_key = 'acp_forums';
+		add_form_key($form_key);
+
 		$action		= request_var('action', '');
 		$update		= (isset($_POST['update'])) ? true : false;
 		$forum_id	= request_var('f', 0);
@@ -32,6 +35,12 @@ class acp_forums
 		$this->parent_id	= request_var('parent_id', 0);
 
 		$forum_data = $errors = array();
+
+		if ($update && !check_form_key($form_key))
+		{
+			$update = false;
+			$error[] = $user->lang['FORM_INVALID'];
+		}
 
 		// Check additional permissions
 		switch ($action)

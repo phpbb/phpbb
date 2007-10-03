@@ -33,6 +33,7 @@
 	</table>
 
 	<input type="hidden" name="report_id_list[]" value="{REPORT_ID}" />
+	{S_FORM_TOKEN}
 	</form>
 
 	<br clear="all"/>
@@ -104,7 +105,7 @@
 	<input type="hidden" name="post_id_list[]" value="{POST_ID}" />
 <!-- ENDIF -->
 </table>
-
+{S_FORM_TOKEN}
 </form>
 
 <!-- IF S_MCP_QUEUE -->
@@ -132,7 +133,7 @@
 		<!-- IF S_CAN_LOCK_POST or S_CAN_DELETE_POST -->
 			<tr>
 				<td class="row1" valign="top"><b class="gen">{L_MOD_OPTIONS}</b></td>
-				<td class="row2"><form method="post" name="mcp" action="{U_MCP_ACTION}"><select name="action"><!-- IF S_CAN_LOCK_POST --><!-- IF S_POST_LOCKED --><option value="unlock_post">{L_UNLOCK_POST} [{L_UNLOCK_POST_EXPLAIN}]</option><!-- ELSE --><option value="lock_post">{L_LOCK_POST} [{L_LOCK_POST_EXPLAIN}]</option><!-- ENDIF --><!-- ENDIF --><!-- IF S_CAN_DELETE_POST --><option value="delete_post">{L_DELETE_POST}</option><!-- ENDIF --></select> <input class="btnmain" type="submit" value="{L_SUBMIT}" /></form></td>
+				<td class="row2"><form method="post" name="mcp" action="{U_MCP_ACTION}"><select name="action"><!-- IF S_CAN_LOCK_POST --><!-- IF S_POST_LOCKED --><option value="unlock_post">{L_UNLOCK_POST} [{L_UNLOCK_POST_EXPLAIN}]</option><!-- ELSE --><option value="lock_post">{L_LOCK_POST} [{L_LOCK_POST_EXPLAIN}]</option><!-- ENDIF --><!-- ENDIF --><!-- IF S_CAN_DELETE_POST --><option value="delete_post">{L_DELETE_POST}</option><!-- ENDIF --></select> <input class="btnmain" type="submit" value="{L_SUBMIT}" />	{S_FORM_TOKEN}</form></td>
 			</tr>
 		<!-- ENDIF -->
 		</table>

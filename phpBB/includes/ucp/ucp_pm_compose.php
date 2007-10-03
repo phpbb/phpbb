@@ -25,6 +25,7 @@ function compose_pm($id, $mode, $action)
 	{
 		$action = 'post';
 	}
+	add_form_key('ucp_pm_compose');
 
 	// Grab only parameters needed here
 	$to_user_id		= request_var('u', 0);
@@ -532,6 +533,10 @@ function compose_pm($id, $mode, $action)
 
 	if ($submit || $preview || $refresh)
 	{
+		if (!check_form_key('ucp_pm_compose'))
+		{
+			$error[] = $user->lang['FORM_INVALID'];
+		}
 		$subject = utf8_normalize_nfc(request_var('subject', '', true));
 		$message_parser->message = utf8_normalize_nfc(request_var('message', '', true));
 
