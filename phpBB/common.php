@@ -65,8 +65,26 @@ function deregister_globals()
 	{
 		if (isset($not_unset[$varname]))
 		{
-			// Hacking attempt. No point in continuing.
-			exit;
+			// Hacking attempt. No point in continuing unless it's a COOKIE
+			if ($varname !== 'GLOBALS' || isset($_GET['GLOBALS']) || isset($_POST['GLOBALS']) || isset($_SERVER['GLOBALS']) || isset($_SESSION['GLOBALS']) || isset($_ENV['GLOBALS']) || isset($_FILES['GLOBALS']))
+			{
+				exit;
+			}
+			else
+			{
+				$cookie = &$_COOKIE;
+				while (isset($cookie['GLOBALS']))
+				{
+					foreach ($cookie['GLOBALS'] as $registered_var => $value)
+					{
+						if (!isset($not_unset[$registered_var]))
+						{
+							unset($GLOBALS[$registered_var]);
+						}
+					}
+					$cookie = &$cookie['GLOBALS'];
+				}
+			}
 		}
 
 		unset($GLOBALS[$varname]);
