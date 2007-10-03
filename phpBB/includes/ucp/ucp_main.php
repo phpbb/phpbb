@@ -200,7 +200,7 @@ class ucp_main
 
 				if ($unwatch)
 				{
-					if(check_form_key('ucp_front_subscribed'))
+					if (check_form_key('ucp_front_subscribed'))
 					{
 						$forums = array_keys(request_var('f', array(0 => 0)));
 						$topics = array_keys(request_var('t', array(0 => 0)));

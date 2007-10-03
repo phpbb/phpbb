@@ -147,7 +147,7 @@ class mcp_notes
 
 		if ($usernote && $action == 'add_feedback')
 		{
-			if(check_form_key('mcp_notes'))
+			if (check_form_key('mcp_notes'))
 			{
 				add_log('admin', 'LOG_USER_FEEDBACK', $userrow['username']);
 				add_log('mod', 0, 0, 'LOG_USER_FEEDBACK', $userrow['username']);

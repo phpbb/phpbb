@@ -345,7 +345,7 @@ class mcp_warn
 
 		if ($warning && $action == 'add_warning')
 		{
-			if(check_form_key('mcp_warn'))
+			if (check_form_key('mcp_warn'))
 			{
 				add_warning($user_row, $warning, $notify);
 				$msg = $user->lang['USER_WARNING_ADDED'];

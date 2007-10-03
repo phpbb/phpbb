@@ -268,7 +268,7 @@ function message_options($id, $mode, $global_privmsgs_rules, $global_rule_condit
 	// Add Rule
 	if (isset($_POST['add_rule']))
 	{
-		if(check_form_key('ucp_pm_options'))
+		if (check_form_key('ucp_pm_options'))
 		{
 			$check_option	= request_var('check_option', 0);
 			$rule_option	= request_var('rule_option', 0);
