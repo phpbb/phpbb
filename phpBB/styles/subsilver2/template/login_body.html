@@ -35,7 +35,7 @@
 
 		<tr>
 			<td valign="top" <!-- IF S_ADMIN_AUTH -->style="width: 50%; text-align: {S_CONTENT_FLOW_END};"<!-- ENDIF -->><b class="gensmall">{L_USERNAME}:</b></td>
-			<td><input class="post" type="text" name="username" size="25" value="{USERNAME}" tabindex="1" />
+			<td><input class="post" type="text" name="{USERNAME_CREDENTIAL}" size="25" value="{USERNAME}" tabindex="1" />
 				<!-- IF not S_ADMIN_AUTH -->
 					<br /><a class="gensmall" href="{U_REGISTER}">{L_REGISTER}</a>
 				<!-- ENDIF -->
@@ -44,7 +44,7 @@
 		<tr>
 			<td valign="top" <!-- IF S_ADMIN_AUTH -->style="width: 50%; text-align: {S_CONTENT_FLOW_END};"<!-- ENDIF -->><b class="gensmall">{L_PASSWORD}:</b></td>
 			<td>
-				<input class="post" type="password" name="password" size="25" tabindex="2" />
+				<input class="post" type="password" name="{PASSWORD_CREDENTIAL}" size="25" tabindex="2" />
 				<!-- IF U_SEND_PASSWORD --><br /><a class="gensmall" href="{U_SEND_PASSWORD}">{L_FORGOT_PASS}</a><!-- ENDIF -->
 				<!-- IF U_RESEND_ACTIVATION and not S_ADMIN_AUTH --><br /><a class="gensmall" href="{U_RESEND_ACTIVATION}">{L_RESEND_ACTIVATION}</a><!-- ENDIF -->
 			</td>

@@ -2170,8 +2170,28 @@ function login_box($redirect = '', $l_explain = '', $l_success = '', $admin = fa
 
 	if (isset($_POST['login']))
 	{
+		// Get credential
+		if ($admin)
+		{
+			$credential = request_var('credential', '');
+
+			if (strspn($credential, 'abcdef0123456789') !== strlen($credential) || strlen($credential) != 32)
+			{
+				if ($user->data['is_registered'])
+				{
+					add_log('admin', 'LOG_ADMIN_AUTH_FAIL');
+				}
+				trigger_error('NO_AUTH_ADMIN');
+			}
+
+			$password	= request_var('password_' . $credential, '', true);
+		}
+		else
+		{
+			$password	= request_var('password', '', true);
+		}
+
 		$username	= request_var('username', '', true);
-		$password	= request_var('password', '', true);
 		$autologin	= (!empty($_POST['autologin'])) ? true : false;
 		$viewonline = (!empty($_POST['viewonline'])) ? 0 : 1;
 		$admin 		= ($admin) ? 1 : 0;
@@ -2310,7 +2330,20 @@ function login_box($redirect = '', $l_explain = '', $l_success = '', $admin = fa
 		$redirect .= $user->page['page_name'] . (($user->page['query_string']) ? '?' . htmlspecialchars($user->page['query_string']) : '');
 	}
 
-	$s_hidden_fields = build_hidden_fields(array('redirect' => $redirect, 'sid' => $user->session_id));
+	// Assign credential for username/password pair
+	$credential = ($admin) ? md5(unique_id()) : false;
+
+	$s_hidden_fields = array(
+		'redirect'	=> $redirect,
+		'sid'		=> $user->session_id,
+	);
+
+	if ($admin)
+	{
+		$s_hidden_fields['credential'] = $credential;
+	}
+
+	$s_hidden_fields = build_hidden_fields($s_hidden_fields);
 
 	$template->assign_vars(array(
 		'LOGIN_ERROR'		=> $err,
@@ -2326,8 +2359,11 @@ function login_box($redirect = '', $l_explain = '', $l_success = '', $admin = fa
 		'S_HIDDEN_FIELDS' 		=> $s_hidden_fields,
 
 		'S_ADMIN_AUTH'			=> $admin,
-		'USERNAME'				=> ($admin) ? $user->data['username'] : '')
-	);
+		'USERNAME'				=> ($admin) ? $user->data['username'] : '',
+
+		'USERNAME_CREDENTIAL'	=> 'username',
+		'PASSWORD_CREDENTIAL'	=> ($admin) ? 'password_' . $credential : 'password',
+	));
 
 	page_header($user->lang['LOGIN']);
 
