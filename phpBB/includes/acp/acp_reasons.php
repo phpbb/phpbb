@@ -47,7 +47,7 @@ class acp_reasons
 
 				if ($submit)
 				{
-					if(!check_form_key($form_name))
+					if (!check_form_key($form_name))
 					{
 						$error[] = $user->lang['FORM_INVALID'];
 					}

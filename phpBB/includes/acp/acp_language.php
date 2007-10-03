@@ -138,7 +138,7 @@ class acp_language
 
 			case 'update_details':
 
-				if(!$submit || !check_form_key($form_name))
+				if (!$submit || !check_form_key($form_name))
 				{
 					trigger_error($user->lang['FORM_INVALID']. adm_back_link($this->u_action), E_USER_WARNING);
 				}
@@ -174,7 +174,7 @@ class acp_language
 			case 'download_file':
 			case 'upload_data':
 				
-				if(!$submit || !check_form_key($form_name))
+				if (!$submit || !check_form_key($form_name))
 				{
 					trigger_error($user->lang['FORM_INVALID']. adm_back_link($this->u_action), E_USER_WARNING);
 				}

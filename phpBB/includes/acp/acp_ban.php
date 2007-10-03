@@ -31,7 +31,7 @@ class acp_ban
 		$form_key = 'acp_ban';
 		add_form_key($form_key);
 
-		if(($bansubmit || $unbansubmit) && !check_form_key($form_key))
+		if (($bansubmit || $unbansubmit) && !check_form_key($form_key))
 		{
 			trigger_error($user->lang['FORM_INVALID'] . adm_back_link($this->u_action), E_USER_WARNING);
 		}

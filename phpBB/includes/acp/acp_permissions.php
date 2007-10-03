@@ -217,7 +217,7 @@ class acp_permissions
 			{
 				case 'delete':
 
-					if(!check_form_key($form_name))
+					if (!check_form_key($form_name))
 					{
 						trigger_error($user->lang['FORM_INVALID']. adm_back_link($this->u_action), E_USER_WARNING);
 					}
@@ -254,7 +254,7 @@ class acp_permissions
 					{
 						trigger_error($user->lang['NO_AUTH_SETTING_FOUND'] . adm_back_link($this->u_action), E_USER_WARNING);
 					}
-					if(!check_form_key($form_name))
+					if (!check_form_key($form_name))
 					{
 						trigger_error($user->lang['FORM_INVALID']. adm_back_link($this->u_action), E_USER_WARNING);
 					}
@@ -267,7 +267,7 @@ class acp_permissions
 					{
 						trigger_error($user->lang['NO_AUTH_SETTING_FOUND'] . adm_back_link($this->u_action), E_USER_WARNING);
 					}
-					if(!check_form_key($form_name))
+					if (!check_form_key($form_name))
 					{
 						trigger_error($user->lang['FORM_INVALID']. adm_back_link($this->u_action), E_USER_WARNING);
 					}

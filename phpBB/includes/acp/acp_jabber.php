@@ -49,7 +49,7 @@ class acp_jabber
 
 		if ($submit)
 		{
-			if(!check_form_key($form_name))
+			if (!check_form_key($form_name))
 			{
 				trigger_error($user->lang['FORM_INVALID']. adm_back_link($this->u_action), E_USER_WARNING);
 			}
