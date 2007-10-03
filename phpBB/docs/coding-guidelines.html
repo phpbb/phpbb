@@ -109,21 +109,21 @@
 
 	<p>If entered with tabs (replace the {TAB}) both equal signs need to be on the same column.</p>
 
-	<h3>Linefeeds:</h3> 
+	<h3>Linefeeds:</h3>
 	<p>Ensure that your editor is saving files in the UNIX format. This means lines are terminated with a newline, not with a CR/LF combo as they are on Win32, or whatever the Mac uses. Any decent editor should be able to do this, but it might not always be the default. Know your editor. If you want advice on Windows text editors, just ask one of the developers. Some of them do their editing on Win32.</p>
-	
+
 	<a name="fileheader"></a><h3>1.ii. File Header</h3>
 
 	<h4>Standard header for new files:</h4>
 	<p>This template of the header must be included at the start of all phpBB files: </p>
 
 	<div class="codebox"><pre>
-/** 
+/**
 *
 * @package {PACKAGENAME}
 * @version &#36;Id: &#36;
-* @copyright (c) 2007 phpBB Group 
-* @license http://opensource.org/licenses/gpl-license.php GNU Public License 
+* @copyright (c) 2007 phpBB Group
+* @license http://opensource.org/licenses/gpl-license.php GNU Public License
 *
 */
 	</pre></div>
@@ -145,11 +145,11 @@
 	</pre></div>
 
 	<h4>Files containing only functions:</h4>
-	
+
 	<p>Do not forget to comment the functions (especially the first function following the header). Each function should have at least a comment of what this function does. For more complex functions it is recommended to document the parameters too.</p>
 
 	<h4>Files containing only classes:</h4>
-	
+
 	<p>Do not forget to comment the class. Classes need a separate @package definition, it is the same as the header package name. Apart from this special case the above statement for files containing only functions needs to be applied to classes and it's methods too.</p>
 
 	<h4>Code following the header but only functions/classes file:</h4>
@@ -157,7 +157,7 @@
 	<p>If this case is true, the best method to avoid documentation confusions is adding an ignore command, for example:</p>
 
 	<div class="codebox"><pre>
-/** 
+/**
 * {HEADER}
 */
 
@@ -285,7 +285,7 @@ while (condition)
 for ($i = 0; $i &lt; size; $i++)
 	do_stuff($i);
 	</pre></div>
-		
+
 	<p class="good">// These are all right. </p>
 	<div class="codebox"><pre>
 if (condition)
@@ -293,12 +293,12 @@ if (condition)
 	do_stuff();
 }
 
-while (condition) 
+while (condition)
 {
 	do_stuff();
 }
 
-for ($i = 0; $i &lt; size; $i++) 
+for ($i = 0; $i &lt; size; $i++)
 {
 	do_stuff();
 }
@@ -308,29 +308,29 @@ for ($i = 0; $i &lt; size; $i++)
 	<p>This one is a bit of a holy war, but we're going to use a style that can be summed up in one sentence: Braces always go on their own line. The closing brace should also always be at the same column as the corresponding opening brace, examples:</p>
 
 	<div class="codebox"><pre>
-if (condition) 
+if (condition)
 {
 	while (condition2)
 	{
 		...
 	}
 }
-else 
+else
 {
 	...
 }
 
-for ($i = 0; $i &lt; $size; $i++) 
+for ($i = 0; $i &lt; $size; $i++)
 {
 	...
 }
 
-while (condition) 
+while (condition)
 {
 	...
 }
 
-function do_stuff() 
+function do_stuff()
 {
 	...
 }
@@ -344,19 +344,19 @@ function do_stuff()
 	<div class="codebox"><pre>
 $i=0;
 $i = 0;
-		
+
 if($i&lt;7) ...
 if ($i &lt; 7) ...
-		
+
 if ( ($i &lt; 7)&amp;&amp;($j &gt; 8) ) ...
 if ($i &lt; 7 &amp;&amp; $j &gt; 8) ...
-		
+
 do_stuff( $i, 'foo', $b );
 do_stuff($i, 'foo', $b);
-		
+
 for($i=0; $i&lt;$size; $i++) ...
-for ($i = 0; $i &lt; $size; $i++) ... 
-		
+for ($i = 0; $i &lt; $size; $i++) ...
+
 $i=($j &lt; $size)?0:1;
 $i = ($j &lt; $size) ? 0 : 1;
 	</pre></div>
@@ -532,9 +532,9 @@ switch ($mode)
 		// I am doing something here
 
 	break;
-	
+
 	case 'mode2':
-	
+
 		// I am doing something completely different here
 
 	break;
@@ -556,7 +556,7 @@ switch ($mode)
 switch ($mode)
 {
 	case 'mode1':
-	
+
 		// I am doing something here
 
 	// no break here
@@ -585,22 +585,22 @@ switch ($mode)
 	<p>SQL Statements are often unreadable without some formatting, since they tend to be big at times. Though the formatting of sql statements adds a lot to the readability of code. SQL statements should be formatted in the following way, basically writing keywords: </p>
 
 	<div class="codebox"><pre>
-$sql = 'SELECT * 
-&lt;-one tab-&gt;FROM ' . SOME_TABLE . ' 
-&lt;-one tab-&gt;WHERE a = 1 
-&lt;-two tabs-&gt;AND (b = 2 
-&lt;-three tabs-&gt;OR b = 3) 
+$sql = 'SELECT *
+&lt;-one tab-&gt;FROM ' . SOME_TABLE . '
+&lt;-one tab-&gt;WHERE a = 1
+&lt;-two tabs-&gt;AND (b = 2
+&lt;-three tabs-&gt;OR b = 3)
 &lt;-one tab-&gt;ORDER BY b';
 	</pre></div>
 
 	<p>Here the example with the tabs applied:</p>
 
 	<div class="codebox"><pre>
-$sql = 'SELECT * 
-	FROM ' . SOME_TABLE . ' 
-	WHERE a = 1 
-		AND (b = 2 
-			OR b = 3) 
+$sql = 'SELECT *
+	FROM ' . SOME_TABLE . '
+	WHERE a = 1
+		AND (b = 2
+			OR b = 3)
 	ORDER BY b';
 	</pre></div>
 
@@ -609,18 +609,18 @@ $sql = 'SELECT *
 
 	<p class="bad">// These are wrong.</p>
 	<div class="codebox"><pre>
-"UPDATE " . SOME_TABLE . " SET something = something_else WHERE a = $b"; 
+"UPDATE " . SOME_TABLE . " SET something = something_else WHERE a = $b";
 
-'UPDATE ' . SOME_TABLE . ' SET something = ' . $user_id . ' WHERE a = ' . $something; 
-	</pre></div> 
+'UPDATE ' . SOME_TABLE . ' SET something = ' . $user_id . ' WHERE a = ' . $something;
+	</pre></div>
 
 	<p class="good">// These are right. </p>
 
 	<div class="codebox"><pre>
-'UPDATE ' . SOME_TABLE . " SET something = something_else WHERE a = $b"; 
+'UPDATE ' . SOME_TABLE . " SET something = something_else WHERE a = $b";
 
-'UPDATE ' . SOME_TABLE . " SET something = $user_id WHERE a = $something"; 
-	</pre></div> 
+'UPDATE ' . SOME_TABLE . " SET something = $user_id WHERE a = $something";
+	</pre></div>
 
 	<p>In other words use single quotes where no variable substitution is required or where the variable involved shouldn't appear within double quotes. Otherwise use double quotes.</p>
 
@@ -629,15 +629,15 @@ $sql = 'SELECT *
 
 	<p class="bad">// This is wrong.</p>
 	<div class="codebox"><pre>
-$sql = 'SELECT * 
-	FROM ' . SOME_TABLE . ' 
+$sql = 'SELECT *
+	FROM ' . SOME_TABLE . '
 	WHERE a != 2';
 	</pre></div>
 
 	<p class="good">// This is right. </p>
 	<div class="codebox"><pre>
-$sql = 'SELECT * 
-	FROM ' . SOME_TABLE . ' 
+$sql = 'SELECT *
+	FROM ' . SOME_TABLE . '
 	WHERE a &lt;&gt; 2';
 	</pre></div>
 
@@ -684,7 +684,7 @@ $sql_ary = array(
 	'moredata'		=&gt; $another_int
 );
 
-$sql = 'UPDATE ' . SOME_TABLE . ' 
+$sql = 'UPDATE ' . SOME_TABLE . '
 	SET ' . $db-&gt;sql_build_array('UPDATE', $sql_ary) . '
 	WHERE user_id = ' . (int) $user_id;
 $db-&gt;sql_query($sql);
@@ -762,7 +762,7 @@ $sql_array = array(
 		)
 	),
 
-	'WHERE'		=&gt; 'fw.user_id = ' . $user-&gt;data['user_id'] . ' 
+	'WHERE'		=&gt; 'fw.user_id = ' . $user-&gt;data['user_id'] . '
 		AND f.forum_id = fw.forum_id',
 
 	'ORDER_BY'	=&gt; 'left_id'
@@ -782,7 +782,7 @@ $sql_array = array(
 		FORUMS_TABLE		=&gt; 'f'
 	),
 
-	'WHERE'		=&gt; 'fw.user_id = ' . $user-&gt;data['user_id'] . ' 
+	'WHERE'		=&gt; 'fw.user_id = ' . $user-&gt;data['user_id'] . '
 		AND f.forum_id = fw.forum_id',
 
 	'ORDER_BY'	=&gt; 'left_id'
@@ -879,6 +879,23 @@ $action_ary = request_var('action', array('' =&gt; 0));
 
 	<h4>Sensitive Operations: </h4>
 	<p>For sensitive operations always let the user confirm the action. For the confirmation screens, make use of the <code>confirm_box()</code> function.</p>
+
+	<h4>Altering Operations: </h4>
+	<p>For operations altering the state of the database, for instance posting, always verify the form token, unless you are already using <code>confirm_box()</code>. To do so, make use of the <code>add_form_key()</code> and <code>check_form_key()</code> functions. </p>
+	<div class="codebox"><pre>
+	add_form_key('my_form');
+
+	if ($submit)
+	{
+		if (!check_form_token('my_form'))
+		{
+			trigger_error('FORM_INVALID');
+		}
+	}
+	</pre></div>
+
+	<p>The string passed to <code>add_form_key()</code> needs to match the string passed to <code>check_form_key()</code>. Another requirement for this to work correctly is that all forms include the <code>{S_FORM_TOKEN}</code> template variable.</p>
+
 
 	<h4>Sessions: </h4>
 	<p>Sessions should be initiated on each page, as near the top as possible using the following code:</p>
@@ -1396,6 +1413,18 @@ div
 
 <p>Just always remember that processing is taking place from up to down.</p>
 
+	<h4>Forms</h4>
+		<p>If a form is used for a non-trivial operation (i.e. more than a jumpbox), then it should include the <code>{S_FORM_TOKEN}</code> template variable.</p>
+		<div class="codebox"><pre>
+&lt;form method=&quot;post&quot; id=&quot;mcp&quot; action=&quot;{U_POST_ACTION}&quot;&gt;
+
+	&lt;fieldset class="submit-buttons"&gt;
+		&lt;input type=&quot;reset&quot; value=&quot;{L_RESET}&quot; name=&quot;reset&quot; class=&quot;button2&quot; /&gt&nbsp;
+		&lt;input type=&quot;submit&quot; name=&quot;action[add_warning]&quot; value=&quot;{L_SUBMIT}&quot; class=&quot;button1&quot; /&gt
+	&lt;/fieldset&gt
+	{S_FORM_TOKEN}
+&lt;/form&gt
+		</pre></div><br />
 		</div>
 
 		<div class="back2top"><a href="#wrap" class="top">Back to Top</a></div>
@@ -1405,12 +1434,16 @@ div
 
 	<hr />
 
+
+
 <a name="charsets"></a><h2>5. Character Sets and Encodings</h2>
 
 	<div class="paragraph">
 		<div class="inner"><span class="corners-top"><span></span></span>
 
 		<div class="content">
+
+
 
 <h4>What are Unicode, UCS and UTF-8?</h4>
 <p>The <a href="http://en.wikipedia.org/wiki/Universal_Character_Set">Universal Character Set (UCS)</a> described in ISO/IEC 10646 consists of a large amount of characters. Each of them has a unique name and a code point which is an integer number. <a href="http://en.wikipedia.org/wiki/Unicode">Unicode</a> - which is an industry standard - complements the Universal Character Set with further information about the characters' properties and alternative character encodings. More information on Unicode can be found on the <a href="http://www.unicode.org/">Unicode Consortium's website</a>. One of the Unicode encodings is the <a href="http://en.wikipedia.org/wiki/UTF-8">8-bit Unicode Transformation Format (UTF-8)</a>. It encodes characters with up to four bytes aiming for maximum compatability with the <a href="http://en.wikipedia.org/wiki/ASCII">American Standard Code for Information Interchange</a> which is a 7-bit encoding of a relatively small subset of the UCS.</p>
@@ -1495,13 +1528,13 @@ if (utf8_case_fold_nfc($string1) == utf8_case_fold_nfc($string2))
 		<div class="content">
 
 	<a name="standardisation"></a><h3>6.i. Standardisation</h3>
-	
+
 	<h4>Reason:</h4>
-	
+
 	<p>phpBB is one of the most translated open-source projects, with the current stable version being available in over 60 localisations. Whilst the ad hoc approach to the naming of language packs has worked, for phpBB3 and beyond we hope to make this process saner which will allow for better interoperation with current and future web browsers.</p>
-	
+
 	<h4>Encoding:</h4>
-	
+
 	<p>With phpBB3, the output encoding for the forum in now UTF-8, a Universal Character Encoding by the Unicode Consortium that is by design a superset to US-ASCII and ISO-8859-1. By using one character set which simultaenously supports all scripts which previously would have required different encodings (eg: ISO-8859-1 to ISO-8859-15 (Latin, Greek, Cyrillic, Thai, Hebrew, Arabic); GB2312 (Simplified Chinese); Big5 (Traditional Chinese), EUC-JP (Japanese), EUC-KR (Korean), VISCII (Vietnamese); et cetera), this removes the need to convert between encodings and improves the accessibility of multilingual forums.</p>
 
 	<p>The impact is that the language files for phpBB must now also be encoded as UTF-8, with a caveat that the files must <strong>not contain</strong> a <acronym title="Byte-Order-Mark">BOM</acronym> for compatibility reasons with non-Unicode aware versions of PHP. For those with forums using the Latin character set (ie: most European languages), this change is transparent since UTF-8 is superset to US-ASCII and ISO-8859-1.</p>
@@ -1835,7 +1868,7 @@ if (utf8_case_fold_nfc($string1) == utf8_case_fold_nfc($string2))
 		<li><code>Language's local name</code></li>
 		<li><code>Authors information</code></li>
 	</ol>
-	
+
 	<p><code>iso.txt</code> is automatically generated by the language pack submission system on phpBB.com. You don't have to create this file yourself if you plan on releasing your language pack on phpBB.com, but do keep in mind that phpBB itself does require this file to be present.</p>
 
 	<p>Because language tags themselves are meant to be machine read, they can be rather obtuse to humans and why descriptive strings as provided by <code>iso.txt</code> are needed. Whilst <code>en-US</code> could be fairly easily deduced to be "English as used in the United States", <code>de-CH</code> is more difficult less one happens to know that <code>de</code> is from "<span lang="de">Deutsch</span>", German for "German" and <code>CH</code> is the abbreviation of the official Latin name for Switzerland, "<span lang="la">Confoederatio Helvetica</span>".</p>
@@ -1889,11 +1922,11 @@ if (utf8_case_fold_nfc($string1) == utf8_case_fold_nfc($string2))
 	<p>For the localised language description, just translate the English version though use whatever appropriate punctuation typical for your own locale, assuming the language uses punctuation at all.</p>
 
 	<h4>Unicode bi-directional considerations:</h4>
-	
+
 	<p>Because phpBB is now UTF-8, all translators must take into account that certain strings may be shown when the directionality of the document is either opposite to normal or is ambiguous.</p>
-		
+
 	<p>The various Unicode control characters for bi-directional text and their HTML enquivalents where appropriate are as follows:</p>
-	
+
 	<table summary="Table of the various Unicode bidirectional control characters">
 	<caption>Unicode bidirectional control characters &amp; HTML elements/entities</caption>
 	<thead>
@@ -1957,9 +1990,9 @@ if (utf8_case_fold_nfc($string1) == utf8_case_fold_nfc($string2))
 	</tr>
 	</tbody>
 	</table>
-	
+
 	<p>For <code>iso.txt</code>, the directionality of the text can be explicitly set using special Unicode characters via any of the three methods provided by left-to-right/right-to-left markers/embeds/overrides, as without them, the ordering of characters will be incorrect, eg:</p>
-	
+
 	<table summary="Effect of using Unicode bidirectional control characters within iso.txt">
 	<caption>Unicode bidirectional control characters iso.txt</caption>
 	<thead>
@@ -2003,15 +2036,15 @@ if (utf8_case_fold_nfc($string1) == utf8_case_fold_nfc($string2))
 	</tr>
 	</tbody>
 	</table>
-	
+
 	<p>In choosing which of the three methods to use, in the majority of cases, the <code>LRM</code> or <code>RLM</code> to put a &quot;strong&quot; character to fully enclose an ambiguous punctuation character and thus make it inherit the correct directionality is sufficient.</p>
 	<p>Within some cases, there may be mixed scripts of a left-to-right and right-to-left direction, so using <code>LRE</code> &amp; <code>RLE</code> with <code>PDF</code> may be more appropriate. Lastly, in very rare instances where directionality must be forced, then use <code>LRO</code> &amp; <code>RLO</code> with <code>PDF</code>.</p>
 	<p>For further information on authoring techniques of bi-directional text, please see the W3C tutorial on <a href="http://www.w3.org/International/tutorials/bidi-xhtml/">authoring techniques for XHTML pages with bi-directional text</a>.</p>
-	
+
 	<h4>Working with placeholders:</h4>
-	
+
 	<p>As phpBB is translated into languages with different ordering rules to that of English, it is possible to show specific values in any order deemed appropriate. Take for example the extremely simple &quot;Page <em>X</em> of <em>Y</em>&quot;, whilst in English this could just be coded as:</p>
-	
+
 	<div class="codebox"><pre>
 	...
 'PAGE_OF'	=&gt;	'Page %s of %s',
@@ -2019,9 +2052,9 @@ if (utf8_case_fold_nfc($string1) == utf8_case_fold_nfc($string2))
 		come and hope they are in the right order */
 	...
 	</pre></div>
-	
+
 	<p>&hellip; a clearer way to show explicit replacement ordering is to do:</p>
-	
+
 	<div class="codebox"><pre>
 	...
 'PAGE_OF'	=&gt;	'Page %1$s of %2$s',
@@ -2029,9 +2062,9 @@ if (utf8_case_fold_nfc($string1) == utf8_case_fold_nfc($string2))
 		even if they are the same order as English */
 	...
 	</pre></div>
-	
+
 	<p>Why bother at all? Because some languages, the string transliterated back to English might read something like:</p>
-	
+
 	<div class="codebox"><pre>
 	...
 'PAGE_OF'	=&gt;	'Total of %2$s pages, currently on page %1$s',
@@ -2039,104 +2072,104 @@ if (utf8_case_fold_nfc($string1) == utf8_case_fold_nfc($string2))
 		reversed compared to English as the total comes first */
 	...
 	</pre></div>
-	
+
 	<a name="writingstyle"></a><h3>6.iii. Writing Style</h3>
-	
+
 	<h4>Miscellaneous tips &amp; hints:</h4>
-	
+
 	<p>As the language files are PHP files, where the various strings for phpBB are stored within an array which in turn are used for display within an HTML page, rules of syntax for both must be considered. Potentially problematic characters are: <code>'</code> (straight quote/apostrophe), <code>&quot;</code> (straight double quote), <code>&lt;</code> (less-than sign), <code>&gt;</code> (greater-than sign) and <code>&amp;</code> (ampersand).</p>
-	
+
 	<p class="bad">// Bad - The un-escapsed straight-quote/apostrophe will throw a PHP parse error</p>
-	
+
 	<div class="codebox"><pre>
 	...
 'CONV_ERROR_NO_AVATAR_PATH'
 	=&gt;	'Note to developer: you must specify $convertor['avatar_path'] to use %s.',
 	...
 	</pre></div>
-	
+
 	<p class="good">// Good - Literal straight quotes should be escaped with a backslash, ie: \</p>
-	
+
 	<div class="codebox"><pre>
 	...
 'CONV_ERROR_NO_AVATAR_PATH'
 	=&gt;	'Note to developer: you must specify $convertor[\'avatar_path\'] to use %s.',
 	...
 	</pre></div>
-	
+
 	<p>However, because phpBB3 now uses UTF-8 as its sole encoding, we can actually use this to our advantage and not have to remember to escape a straight quote when we don't have to:</p>
-	
+
 	<p class="bad">// Bad - The un-escapsed straight-quote/apostrophe will throw a PHP parse error</p>
-	
+
 	<div class="codebox"><pre>
 	...
 'USE_PERMISSIONS'	=&gt;	'Test out user's permissions',
 	...
 	</pre></div>
-	
+
 	<p class="good">// Okay - However, non-programmers wouldn't type "user\'s" automatically</p>
-	
+
 	<div class="codebox"><pre>
 	...
 'USE_PERMISSIONS'	=&gt;	'Test out user\'s permissions',
 	...
 	</pre></div>
-	
+
 	<p class="good">// Best - Use the Unicode Right-Single-Quotation-Mark character</p>
-	
+
 	<div class="codebox"><pre>
 	...
 'USE_PERMISSIONS'	=&gt;	'Test out user&rsquo;s permissions',
 	...
 	</pre></div>
-	
+
 	<p>The <code>&quot;</code> (straight double quote), <code>&lt;</code> (less-than sign) and <code>&gt;</code> (greater-than sign) characters can all be used as displayed glyphs or as part of HTML markup, for example:</p>
-	
+
 	<p class="bad">// Bad - Invalid HTML, as segments not part of elements are not entitised</p>
-	
+
 	<div class="codebox"><pre>
 	...
 'FOO_BAR'	=&gt;	'PHP version &lt; 4.3.3.&lt;br /&gt;
 	Visit &quot;Downloads&quot; at &lt;a href=&quot;http://www.php.net/&quot;&gt;www.php.net&lt;/a&gt;.',
 	...
 	</pre></div>
-	
+
 	<p class="good">// Okay - No more invalid HTML, but &quot;&amp;quot;&quot; is rather clumsy</p>
-	
+
 	<div class="codebox"><pre>
 	...
 'FOO_BAR'	=&gt;	'PHP version &amp;lt; 4.3.3.&lt;br /&gt;
 	Visit &amp;quot;Downloads&amp;quot; at &lt;a href=&quot;http://www.php.net/&quot;&gt;www.php.net&lt;/a&gt;.',
 	...
 	</pre></div>
-	
+
 	<p class="good">// Best - No more invalid HTML, and usage of correct typographical quotation marks</p>
-	
+
 	<div class="codebox"><pre>
 	...
 'FOO_BAR'	=&gt;	'PHP version &amp;lt; 4.3.3.&lt;br /&gt;
 	Visit &ldquo;Downloads&rdquo; at &lt;a href=&quot;http://www.php.net/&quot;&gt;www.php.net&lt;/a&gt;.',
 	...
 	</pre></div>
-	
+
 	<p>Lastly, the <code>&amp;</code> (ampersand) must always be entitised regardless of where it is used:</p>
-	
+
 	<p class="bad">// Bad - Invalid HTML, none of the ampersands are entitised</p>
-	
+
 	<div class="codebox"><pre>
 	...
 'FOO_BAR'	=&gt;	'&lt;a href=&quot;http://somedomain.tld/?foo=1&amp;bar=2&quot;&gt;Foo &amp; Bar&lt;/a&gt;.',
 	...
 	</pre></div>
-	
+
 	<p class="good">// Good - Valid HTML, amperands are correctly entitised in all cases</p>
-	
+
 	<div class="codebox"><pre>
 	...
 'FOO_BAR'	=&gt;	'&lt;a href=&quot;http://somedomain.tld/?foo=1&amp;amp;bar=2&quot;&gt;Foo &amp;amp; Bar&lt;/a&gt;.',
 	...
 	</pre></div>
-	
+
 	<p>As for how these charcters are entered depends very much on choice of Operating System, current language locale/keyboard configuration and native abilities of the text editor used to edit phpBB language files. Please see <a href="http://en.wikipedia.org/wiki/Unicode#Input_methods">http://en.wikipedia.org/wiki/Unicode#Input_methods</a> for more information.</p>
 
 	<h4>Spelling, punctuation, grammar, et cetera:</h4>
