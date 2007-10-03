@@ -208,6 +208,8 @@ function user_add($user_row, $cp_data = false)
 		'user_sig'					=> '',
 		'user_sig_bbcode_uid'		=> '',
 		'user_sig_bbcode_bitfield'	=> '',
+		
+		'user_form_salt'			=> unique_id(),
 	);
 
 	// Now fill the sql array with not required variables
