@@ -55,7 +55,14 @@ require($phpbb_root_path . 'includes/cache.' . $phpEx);
 require($phpbb_root_path . 'includes/template.' . $phpEx);
 require($phpbb_root_path . 'includes/session.' . $phpEx);
 require($phpbb_root_path . 'includes/auth.' . $phpEx);
+
 require($phpbb_root_path . 'includes/functions.' . $phpEx);
+
+if (file_exists($phpbb_root_path . 'includes/functions_content.' . $phpEx))
+{
+	require($phpbb_root_path . 'includes/functions_content.' . $phpEx);
+}
+
 require($phpbb_root_path . 'includes/functions_admin.' . $phpEx);
 require($phpbb_root_path . 'includes/constants.' . $phpEx);
 require($phpbb_root_path . 'includes/db/' . $dbms . '.' . $phpEx);

@@ -204,7 +204,7 @@ function login_ldap(&$username, &$password)
 				// generate user account data
 				$ldap_user_row = array(
 					'username'		=> $username,
-					'user_password'	=> md5($password),
+					'user_password'	=> phpbb_hash($password),
 					'user_email'	=> (!empty($config['ldap_email'])) ? $ldap_result[0][$config['ldap_email']][0] : '',
 					'group_id'		=> (int) $row['group_id'],
 					'user_type'		=> USER_NORMAL,

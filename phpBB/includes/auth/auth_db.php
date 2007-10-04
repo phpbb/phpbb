@@ -125,15 +125,17 @@ function login_db(&$username, &$password)
 			// cp1252 is phpBB2's default encoding, characters outside ASCII range might work when converted into that encoding
 			if (md5($password_old_format) == $row['user_password'] || md5(utf8_to_cp1252($password_old_format)) == $row['user_password'])
 			{
+				$hash = phpbb_hash($password_new_format);
+
 				// Update the password in the users table to the new format and remove user_pass_convert flag
 				$sql = 'UPDATE ' . USERS_TABLE . '
-					SET user_password = \'' . $db->sql_escape(md5($password_new_format)) . '\',
+					SET user_password = \'' . $db->sql_escape($hash) . '\',
 						user_pass_convert = 0
 					WHERE user_id = ' . $row['user_id'];
 				$db->sql_query($sql);
 
 				$row['user_pass_convert'] = 0;
-				$row['user_password'] = md5($password_new_format);
+				$row['user_password'] = $hash;
 			}
 			else
 			{
@@ -154,8 +156,23 @@ function login_db(&$username, &$password)
 	}
 
 	// Check password ...
-	if (!$row['user_pass_convert'] && md5($password) == $row['user_password'])
+	if (!$row['user_pass_convert'] && phpbb_check_hash($password, $row['user_password']))
 	{
+		// Check for old password hash...
+		if (strlen($row['user_password']) == 32)
+		{
+			$hash = phpbb_hash($password);
+
+			// Update the password in the users table to the new format
+			$sql = 'UPDATE ' . USERS_TABLE . "
+				SET user_password = '" . $db->sql_escape($hash) . "',
+					user_pass_convert = 0
+				WHERE user_id = {$row['user_id']}";
+			$db->sql_query($sql);
+
+			$row['user_password'] = $hash;
+		}
+
 		if ($row['user_login_attempts'] != 0)
 		{
 			// Successful, reset login attempts (the user passed all stages)

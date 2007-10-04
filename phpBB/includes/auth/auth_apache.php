@@ -194,7 +194,7 @@ function user_row_apache($username, $password)
 	// generate user account data
 	return array(
 		'username'		=> $username,
-		'user_password'	=> md5($password),
+		'user_password'	=> phpbb_hash($password),
 		'user_email'	=> '',
 		'group_id'		=> (int) $row['group_id'],
 		'user_type'		=> USER_NORMAL,

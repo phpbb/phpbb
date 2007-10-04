@@ -300,7 +300,7 @@ class ucp_register
 
 				$user_row = array(
 					'username'				=> $data['username'],
-					'user_password'			=> md5($data['new_password']),
+					'user_password'			=> phpbb_hash($data['new_password']),
 					'user_email'			=> $data['email'],
 					'group_id'				=> (int) $group_id,
 					'user_timezone'			=> (float) $data['tz'],
