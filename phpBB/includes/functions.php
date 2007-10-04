@@ -8,6 +8,14 @@
 *
 */
 
+/**
+* @ignore
+*/
+if (!defined('IN_PHPBB'))
+{
+	exit;
+}
+
 // Common global functions
 
 /**
@@ -426,7 +434,7 @@ if (!function_exists('str_split'))
 	*  	the returned array will be broken down into chunks with each being split_length in length,
 	*  	otherwise each chunk will be one character in length. FALSE is returned if split_length is
 	*  	less than 1. If the split_length length exceeds the length of string, the entire string is
-	*  	returned as the first (and only) array element. 
+	*  	returned as the first (and only) array element.
 	*/
 	function str_split($string, $split_length = 1)
 	{
@@ -457,7 +465,7 @@ if (!function_exists('stripos'))
 	*
 	* @return mixed Returns the numeric position of the first occurrence of needle in the haystack string. Unlike strpos(), stripos() is case-insensitive.
 	* Note that the needle may be a string of one or more characters.
-	* If needle is not found, stripos() will return boolean FALSE. 
+	* If needle is not found, stripos() will return boolean FALSE.
 	*/
 	function stripos($haystack, $needle)
 	{
@@ -472,184 +480,166 @@ if (!function_exists('stripos'))
 
 if (!function_exists('realpath'))
 {
-	if (DIRECTORY_SEPARATOR != '\\' && !(bool) ini_get('safe_mode') && function_exists('shell_exec') && trim(`realpath .`))
+	/**
+	* Checks if a path ($path) is absolute or relative
+	*
+	* @param string $path Path to check absoluteness of
+	* @return boolean
+	*/
+	function is_absolute($path)
 	{
-		/**
-		* @author Chris Smith <chris@project-minerva.org>
-		* @copyright 2006 Project Minerva Team
-		* @param string $path The path which we should attempt to resolve.
-		* @return mixed
-		* @ignore
-		*/
-		function phpbb_realpath($path)
-		{
-			$arg = escapeshellarg($path);
-			return trim(`realpath '$arg'`);
-		}
+		return ($path[0] == '/' || (DIRECTORY_SEPARATOR == '\\' && preg_match('#^[a-z]:/#i', $path))) ? true : false;
 	}
-	else
+
+	/**
+	* @author Chris Smith <chris@project-minerva.org>
+	* @copyright 2006 Project Minerva Team
+	* @param string $path The path which we should attempt to resolve.
+	* @return mixed
+	*/
+	function phpbb_realpath($path)
 	{
-		/**
-		* Checks if a path ($path) is absolute or relative
-		*
-		* @param string $path Path to check absoluteness of
-		* @return boolean
-		*/
-		function is_absolute($path)
+		// Now to perform funky shizzle
+
+		// Switch to use UNIX slashes
+		$path = str_replace(DIRECTORY_SEPARATOR, '/', $path);
+		$path_prefix = '';
+
+		// Determine what sort of path we have
+		if (is_absolute($path))
 		{
-			return ($path[0] == '/' || (DIRECTORY_SEPARATOR == '\\' && preg_match('#^[a-z]:/#i', $path))) ? true : false;
-		}
+			$absolute = true;
 
-		/**
-		* @author Chris Smith <chris@project-minerva.org>
-		* @copyright 2006 Project Minerva Team
-		* @param string $path The path which we should attempt to resolve.
-		* @return mixed
-		*/
-		function phpbb_realpath($path)
-		{
-			// Now to perform funky shizzle
-
-			// Switch to use UNIX slashes
-			$path = str_replace(DIRECTORY_SEPARATOR, '/', $path);
-			$path_prefix = '';
-
-			// Determine what sort of path we have
-			if (is_absolute($path))
+			if ($path[0] == '/')
 			{
+				// Absolute path, *NIX style
+				$path_prefix = '';
+			}
+			else
+			{
+				// Absolute path, Windows style
+				// Remove the drive letter and colon
+				$path_prefix = $path[0] . ':';
+				$path = substr($path, 2);
+			}
+		}
+		else
+		{
+			// Relative Path
+			// Prepend the current working directory
+			if (function_exists('getcwd'))
+			{
+				// This is the best method, hopefully it is enabled!
+				$path = str_replace(DIRECTORY_SEPARATOR, '/', getcwd()) . '/' . $path;
 				$absolute = true;
-
-				if ($path[0] == '/')
+				if (preg_match('#^[a-z]:#i', $path))
 				{
-					// Absolute path, *NIX style
-					$path_prefix = '';
+					$path_prefix = $path[0] . ':';
+					$path = substr($path, 2);
 				}
 				else
 				{
-					// Absolute path, Windows style
-					// Remove the drive letter and colon
-					$path_prefix = $path[0] . ':';
-					$path = substr($path, 2);
+					$path_prefix = '';
+				}
+			}
+			else if (isset($_SERVER['SCRIPT_FILENAME']) && !empty($_SERVER['SCRIPT_FILENAME']))
+			{
+				// Warning: If chdir() has been used this will lie!
+				// Warning: This has some problems sometime (CLI can create them easily)
+				$path = str_replace(DIRECTORY_SEPARATOR, '/', dirname($_SERVER['SCRIPT_FILENAME'])) . '/' . $path;
+				$absolute = true;
+				$path_prefix = '';
+			}
+			else
+			{
+				// We have no way of getting the absolute path, just run on using relative ones.
+				$absolute = false;
+				$path_prefix = '.';
+			}
+		}
+
+		// Remove any repeated slashes
+		$path = preg_replace('#/{2,}#', '/', $path);
+
+		// Remove the slashes from the start and end of the path
+		$path = trim($path, '/');
+
+		// Break the string into little bits for us to nibble on
+		$bits = explode('/', $path);
+
+		// Remove any . in the path, renumber array for the loop below
+		$bits = array_values(array_diff($bits, array('.')));
+
+		// Lets get looping, run over and resolve any .. (up directory)
+		for ($i = 0, $max = sizeof($bits); $i < $max; $i++)
+		{
+			// @todo Optimise
+			if ($bits[$i] == '..' )
+			{
+				if (isset($bits[$i - 1]))
+				{
+					if ($bits[$i - 1] != '..')
+					{
+						// We found a .. and we are able to traverse upwards, lets do it!
+						unset($bits[$i]);
+						unset($bits[$i - 1]);
+						$i -= 2;
+						$max -= 2;
+						$bits = array_values($bits);
+					}
+				}
+				else if ($absolute) // ie. !isset($bits[$i - 1]) && $absolute
+				{
+					// We have an absolute path trying to descend above the root of the filesystem
+					// ... Error!
+					return false;
+				}
+			}
+		}
+
+		// Prepend the path prefix
+		array_unshift($bits, $path_prefix);
+
+		$resolved = '';
+
+		$max = sizeof($bits) - 1;
+
+		// Check if we are able to resolve symlinks, Windows cannot.
+		$symlink_resolve = (function_exists('readlink')) ? true : false;
+
+		foreach ($bits as $i => $bit)
+		{
+			if (@is_dir("$resolved/$bit") || ($i == $max && @is_file("$resolved/$bit")))
+			{
+				// Path Exists
+				if ($symlink_resolve && is_link("$resolved/$bit") && ($link = readlink("$resolved/$bit")))
+				{
+					// Resolved a symlink.
+					$resolved = $link . (($i == $max) ? '' : '/');
+					continue;
 				}
 			}
 			else
 			{
-				// Relative Path
-				// Prepend the current working directory
-				if (function_exists('getcwd'))
-				{
-					// This is the best method, hopefully it is enabled!
-					$path = str_replace(DIRECTORY_SEPARATOR, '/', getcwd()) . '/' . $path;
-					$absolute = true;
-					if (preg_match('#^[a-z]:#i', $path))
-					{
-						$path_prefix = $path[0] . ':';
-						$path = substr($path, 2);
-					}
-					else
-					{
-						$path_prefix = '';
-					}
-				}
-				else if (isset($_SERVER['SCRIPT_FILENAME']) && !empty($_SERVER['SCRIPT_FILENAME']))
-				{
-					// Warning: If chdir() has been used this will lie!
-					// Warning: This has some problems sometime (CLI can create them easily)
-					$path = str_replace(DIRECTORY_SEPARATOR, '/', dirname($_SERVER['SCRIPT_FILENAME'])) . '/' . $path;
-					$absolute = true;
-					$path_prefix = '';
-				}
-				else
-				{
-					// We have no way of getting the absolute path, just run on using relative ones.
-					$absolute = false;
-					$path_prefix = '.';
-				}
+				// Something doesn't exist here!
+				// This is correct realpath() behaviour but sadly open_basedir and safe_mode make this problematic
+				// return false;
 			}
-
-			// Remove any repeated slashes
-			$path = preg_replace('#/{2,}#', '/', $path);
-
-			// Remove the slashes from the start and end of the path
-			$path = trim($path, '/');
-
-			// Break the string into little bits for us to nibble on
-			$bits = explode('/', $path);
-
-			// Remove any . in the path, renumber array for the loop below
-			$bits = array_values(array_diff($bits, array('.')));
-
-			// Lets get looping, run over and resolve any .. (up directory)
-			for ($i = 0, $max = sizeof($bits); $i < $max; $i++)
-			{
-				// @todo Optimise
-				if ($bits[$i] == '..' )
-				{
-					if (isset($bits[$i - 1]))
-					{
-						if ($bits[$i - 1] != '..')
-						{
-							// We found a .. and we are able to traverse upwards, lets do it!
-							unset($bits[$i]);
-							unset($bits[$i - 1]);
-							$i -= 2;
-							$max -= 2;
-							$bits = array_values($bits);
-						}
-					}
-					else if ($absolute) // ie. !isset($bits[$i - 1]) && $absolute
-					{
-						// We have an absolute path trying to descend above the root of the filesystem
-						// ... Error!
-						return false;
-					}
-				}
-			}
-
-			// Prepend the path prefix
-			array_unshift($bits, $path_prefix); 
-
-			$resolved = '';
-
-			$max = sizeof($bits) - 1;
-
-			// Check if we are able to resolve symlinks, Windows cannot.
-			$symlink_resolve = (function_exists('readlink')) ? true : false;
-
-			foreach ($bits as $i => $bit)
-			{
-				if (@is_dir("$resolved/$bit") || ($i == $max && @is_file("$resolved/$bit")))
-				{
-					// Path Exists
-					if ($symlink_resolve && is_link("$resolved/$bit") && ($link = readlink("$resolved/$bit")))
-					{
-						// Resolved a symlink.
-						$resolved = $link . (($i == $max) ? '' : '/');
-						continue;
-					}
-				}
-				else
-				{
-					// Something doesn't exist here!
-					// This is correct realpath() behaviour but sadly open_basedir and safe_mode make this problematic
-					// return false;
-				}
-				$resolved .= $bit . (($i == $max) ? '' : '/');
-			}
-
-			// @todo If the file exists fine and open_basedir only has one path we should be able to prepend it
-			// because we must be inside that basedir, the question is where...
-			// @internal The slash in is_dir() gets around an open_basedir restriction
-			if (!@file_exists($resolved) || (!is_dir($resolved . '/') && !is_file($resolved)))
-			{
-				return false;
-			}
-
-			// Put the slashes back to the native operating systems slashes
-			$resolved = str_replace('/', DIRECTORY_SEPARATOR, $resolved);
-
-			return $resolved; // We got here, in the end!
+			$resolved .= $bit . (($i == $max) ? '' : '/');
 		}
+
+		// @todo If the file exists fine and open_basedir only has one path we should be able to prepend it
+		// because we must be inside that basedir, the question is where...
+		// @internal The slash in is_dir() gets around an open_basedir restriction
+		if (!@file_exists($resolved) || (!is_dir($resolved . '/') && !is_file($resolved)))
+		{
+			return false;
+		}
+
+		// Put the slashes back to the native operating systems slashes
+		$resolved = str_replace('/', DIRECTORY_SEPARATOR, $resolved);
+
+		return $resolved; // We got here, in the end!
 	}
 }
 else
@@ -701,7 +691,7 @@ function language_select($default = '')
 	return $lang_options;
 }
 
-/** 
+/**
 * Pick a template/theme combo,
 */
 function style_select($default = '', $all = false)
@@ -815,7 +805,7 @@ function markread($mode, $forum_id = false, $topic_id = false, $post_time = 0, $
 
 		if ($config['load_db_lastread'] && $user->data['is_registered'])
 		{
-			$sql = 'DELETE FROM ' . TOPICS_TRACK_TABLE . " 
+			$sql = 'DELETE FROM ' . TOPICS_TRACK_TABLE . "
 				WHERE user_id = {$user->data['user_id']}
 					AND " . $db->sql_in_set('forum_id', $forum_id);
 			$db->sql_query($sql);
@@ -1133,10 +1123,10 @@ function get_complete_topic_tracking($forum_id, $topic_ids, $global_announce_lis
 
 		if (sizeof($topic_ids))
 		{
-			$sql = 'SELECT forum_id, mark_time 
+			$sql = 'SELECT forum_id, mark_time
 				FROM ' . FORUMS_TRACK_TABLE . "
 				WHERE user_id = {$user->data['user_id']}
-					AND forum_id " . 
+					AND forum_id " .
 					(($global_announce_list && sizeof($global_announce_list)) ? "IN (0, $forum_id)" : "= $forum_id");
 			$result = $db->sql_query($sql);
 		
@@ -1518,7 +1508,7 @@ function generate_pagination($base_url, $num_items, $per_page, $start_item, $add
 
 	if ($add_prevnext_text)
 	{
-		if ($on_page != 1) 
+		if ($on_page != 1)
 		{
 			$page_string = '<a href="' . $base_url . "{$url_delim}start=" . (($on_page - 2) * $per_page) . '">' . $user->lang['PREVIOUS'] . '</a>&nbsp;&nbsp;' . $page_string;
 		}
@@ -1997,7 +1987,7 @@ function check_form_key($form_name, $timespan = false, $return_page = '', $trigg
 {
 	global $user, $config;
 
-	if ($timespan === false) 
+	if ($timespan === false)
 	{
 		$timespan = $config['form_token_lifetime'];
 	}
@@ -2034,7 +2024,7 @@ function check_form_key($form_name, $timespan = false, $return_page = '', $trigg
 * Build Confirm box
 * @param boolean $check True for checking if confirmed (without any additional parameters) and false for displaying the confirm box
 * @param string $title Title/Message used for confirm box.
-*		message text is _CONFIRM appended to title. 
+*		message text is _CONFIRM appended to title.
 *		If title cannot be found in user->lang a default one is displayed
 *		If title_CONFIRM cannot be found in user->lang the text given is used.
 * @param string $hidden Hidden variables
@@ -2209,7 +2199,7 @@ function login_box($redirect = '', $l_explain = '', $l_success = '', $admin = fa
 		$result = $auth->login($username, $password, $autologin, $viewonline, $admin);
 
 		// If admin authentication and login, we will log if it was a success or not...
-		// We also break the operation on the first non-success login - it could be argued that the user already knows 
+		// We also break the operation on the first non-success login - it could be argued that the user already knows
 		if ($admin)
 		{
 			if ($result['status'] == LOGIN_SUCCESS)
@@ -2969,7 +2959,7 @@ function parse_attachments($forum_id, &$message, &$attachments, &$update_count, 
 	global $template, $cache, $user;
 	global $extensions, $config, $phpbb_root_path, $phpEx;
 
-	// 
+	//
 	$compiled_attachments = array();
 
 	if (!isset($template->filename['attachment_tpl']))
@@ -3745,7 +3735,7 @@ function get_username_string($mode, $user_id, $username, $username_colour = '', 
 * The windows failover is from the php manual
 * Please make sure to check the return value for === true and === false, since NULL could
 * be returned too.
-* 
+*
 * @return true if entry found, false if not, NULL if this function is not supported by this environment
 */
 function phpbb_checkdnsrr($host, $type = '')
@@ -4043,7 +4033,7 @@ function page_header($page_title = '', $display_online_list = true)
 						SELECT DISTINCT s.session_ip
 							FROM ' . SESSIONS_TABLE . ' s
 							WHERE s.session_user_id = ' . ANONYMOUS . '
-								AND s.session_time >= ' . (time() - ($config['load_online_time'] * 60)) . 
+								AND s.session_time >= ' . (time() - ($config['load_online_time'] * 60)) .
 								$reading_sql .
 					')';
 			}
@@ -4052,7 +4042,7 @@ function page_header($page_title = '', $display_online_list = true)
 				$sql = 'SELECT COUNT(DISTINCT s.session_ip) as num_guests
 					FROM ' . SESSIONS_TABLE . ' s
 					WHERE s.session_user_id = ' . ANONYMOUS . '
-						AND s.session_time >= ' . (time() - ($config['load_online_time'] * 60)) . 
+						AND s.session_time >= ' . (time() - ($config['load_online_time'] * 60)) .
 					$reading_sql;
 			}
 			$result = $db->sql_query($sql);
@@ -4062,10 +4052,10 @@ function page_header($page_title = '', $display_online_list = true)
 
 		$sql = 'SELECT u.username, u.username_clean, u.user_id, u.user_type, u.user_allow_viewonline, u.user_colour, s.session_ip, s.session_viewonline
 			FROM ' . USERS_TABLE . ' u, ' . SESSIONS_TABLE . ' s
-			WHERE s.session_time >= ' . (time() - (intval($config['load_online_time']) * 60)) . 
+			WHERE s.session_time >= ' . (time() - (intval($config['load_online_time']) * 60)) .
 				$reading_sql .
 				((!$config['load_online_guests']) ? ' AND s.session_user_id <> ' . ANONYMOUS : '') . '
-				AND u.user_id = s.session_user_id 
+				AND u.user_id = s.session_user_id
 			ORDER BY u.username_clean ASC, s.session_ip ASC';
 		$result = $db->sql_query($sql);
 
