@@ -610,7 +610,7 @@ CREATE TABLE phpbb_posts (
 	post_checksum varchar(32) DEFAULT '' NOT NULL,
 	post_attachment INT2 DEFAULT '0' NOT NULL CHECK (post_attachment >= 0),
 	bbcode_bitfield varchar(255) DEFAULT '' NOT NULL,
-	bbcode_uid varchar(5) DEFAULT '' NOT NULL,
+	bbcode_uid varchar(8) DEFAULT '' NOT NULL,
 	post_postcount INT2 DEFAULT '1' NOT NULL CHECK (post_postcount >= 0),
 	post_edit_time INT4 DEFAULT '0' NOT NULL CHECK (post_edit_time >= 0),
 	post_edit_reason varchar(255) DEFAULT '' NOT NULL,

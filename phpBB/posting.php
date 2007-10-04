@@ -674,7 +674,7 @@ if ($submit || $preview || $refresh)
 	$message_md5 = md5($message_parser->message);
 
 	// Check checksum ... don't re-parse message if the same
-	$update_message = ($mode != 'edit' || $message_md5 != $post_data['post_checksum'] || $status_switch) ? true : false;
+	$update_message = ($mode != 'edit' || $message_md5 != $post_data['post_checksum'] || $status_switch || strlen($post_data['bbcode_uid']) < BBCODE_UID_LEN) ? true : false;
 	
 	// Parse message
 	if ($update_message)

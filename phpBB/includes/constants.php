@@ -140,7 +140,7 @@ define('ATTACHMENT_CATEGORY_FLASH', 5); // Flash/SWF files
 define('ATTACHMENT_CATEGORY_QUICKTIME', 6); // Quicktime/Mov files
 
 // BBCode UID length
-define('BBCODE_UID_LEN', 5);
+define('BBCODE_UID_LEN', 8);
 
 // Number of core BBCodes
 define('NUM_CORE_BBCODES', 12);

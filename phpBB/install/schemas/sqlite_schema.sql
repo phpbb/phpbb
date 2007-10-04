@@ -428,7 +428,7 @@ CREATE TABLE phpbb_posts (
 	post_checksum varchar(32) NOT NULL DEFAULT '',
 	post_attachment INTEGER UNSIGNED NOT NULL DEFAULT '0',
 	bbcode_bitfield varchar(255) NOT NULL DEFAULT '',
-	bbcode_uid varchar(5) NOT NULL DEFAULT '',
+	bbcode_uid varchar(8) NOT NULL DEFAULT '',
 	post_postcount INTEGER UNSIGNED NOT NULL DEFAULT '1',
 	post_edit_time INTEGER UNSIGNED NOT NULL DEFAULT '0',
 	post_edit_reason text(65535) NOT NULL DEFAULT '',

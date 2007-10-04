@@ -853,7 +853,7 @@ CREATE TABLE phpbb_posts (
 	post_checksum varchar2(32) DEFAULT '' ,
 	post_attachment number(1) DEFAULT '0' NOT NULL,
 	bbcode_bitfield varchar2(255) DEFAULT '' ,
-	bbcode_uid varchar2(5) DEFAULT '' ,
+	bbcode_uid varchar2(8) DEFAULT '' ,
 	post_postcount number(1) DEFAULT '1' NOT NULL,
 	post_edit_time number(11) DEFAULT '0' NOT NULL,
 	post_edit_reason varchar2(765) DEFAULT '' ,

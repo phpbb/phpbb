@@ -1285,7 +1285,7 @@ function get_schema_struct()
 			'post_checksum'			=> array('VCHAR:32', ''),
 			'post_attachment'		=> array('BOOL', 0),
 			'bbcode_bitfield'		=> array('VCHAR:255', ''),
-			'bbcode_uid'			=> array('VCHAR:5', ''),
+			'bbcode_uid'			=> array('VCHAR:8', ''),
 			'post_postcount'		=> array('BOOL', 1),
 			'post_edit_time'		=> array('TIMESTAMP', 0),
 			'post_edit_reason'		=> array('STEXT_UNI', ''),

@@ -764,7 +764,7 @@ CREATE TABLE [phpbb_posts] (
 	[post_checksum] [varchar] (32) DEFAULT ('') NOT NULL ,
 	[post_attachment] [int] DEFAULT (0) NOT NULL ,
 	[bbcode_bitfield] [varchar] (255) DEFAULT ('') NOT NULL ,
-	[bbcode_uid] [varchar] (5) DEFAULT ('') NOT NULL ,
+	[bbcode_uid] [varchar] (8) DEFAULT ('') NOT NULL ,
 	[post_postcount] [int] DEFAULT (1) NOT NULL ,
 	[post_edit_time] [int] DEFAULT (0) NOT NULL ,
 	[post_edit_reason] [varchar] (255) DEFAULT ('') NOT NULL ,

@@ -441,7 +441,7 @@ CREATE TABLE phpbb_posts (
 	post_checksum varbinary(32) DEFAULT '' NOT NULL,
 	post_attachment tinyint(1) UNSIGNED DEFAULT '0' NOT NULL,
 	bbcode_bitfield varbinary(255) DEFAULT '' NOT NULL,
-	bbcode_uid varbinary(5) DEFAULT '' NOT NULL,
+	bbcode_uid varbinary(8) DEFAULT '' NOT NULL,
 	post_postcount tinyint(1) UNSIGNED DEFAULT '1' NOT NULL,
 	post_edit_time int(11) UNSIGNED DEFAULT '0' NOT NULL,
 	post_edit_reason blob NOT NULL,

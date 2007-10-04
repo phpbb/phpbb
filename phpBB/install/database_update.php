@@ -432,6 +432,12 @@ $database_update_info = array(
 				'user_form_salt'	=> array('VCHAR_UNI:32', ''),
 			),
 		),
+		// Change the following columns
+		'change_columns'		=> array(
+			POSTS_TABLE				=> array(
+				'bbcode_uid'			=> array('VCHAR_UNI:8', ''),
+			),
+		),
 	),
 );
 
