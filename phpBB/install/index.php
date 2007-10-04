@@ -1,10 +1,10 @@
 <?php
-/** 
+/**
 *
 * @package install
 * @version $Id$
-* @copyright (c) 2005 phpBB Group 
-* @license http://opensource.org/licenses/gpl-license.php GNU Public License 
+* @copyright (c) 2005 phpBB Group
+* @license http://opensource.org/licenses/gpl-license.php GNU Public License
 *
 */
 
@@ -34,17 +34,17 @@ if (version_compare(PHP_VERSION, '4.3.3') < 0)
 function deregister_globals()
 {
 	$not_unset = array(
-		'GLOBALS' => true,
-		'_GET' => true,
-		'_POST' => true,
-		'_COOKIE' => true,
-		'_REQUEST' => true,
-		'_SERVER' => true,
-		'_SESSION' => true,
-		'_ENV' => true,
-		'_FILES' => true,
-		'phpEx' => true,
-		'phpbb_root_path' => true
+		'GLOBALS'	=> true,
+		'_GET'		=> true,
+		'_POST'		=> true,
+		'_COOKIE'	=> true,
+		'_REQUEST'	=> true,
+		'_SERVER'	=> true,
+		'_SESSION'	=> true,
+		'_ENV'		=> true,
+		'_FILES'	=> true,
+		'phpEx'		=> true,
+		'phpbb_root_path'	=> true
 	);
 
 	// Not only will array_merge and array_keys give a warning if
@@ -55,8 +55,7 @@ function deregister_globals()
 		$_SESSION = array();
 	}
 
-	// Merge all into one extremely huge array; unset
-	// this later
+	// Merge all into one extremely huge array; unset this later
 	$input = array_merge(
 		array_keys($_GET),
 		array_keys($_POST),
@@ -71,8 +70,26 @@ function deregister_globals()
 	{
 		if (isset($not_unset[$varname]))
 		{
-			// Hacking attempt. No point in continuing.
-			exit;
+			// Hacking attempt. No point in continuing unless it's a COOKIE
+			if ($varname !== 'GLOBALS' || isset($_GET['GLOBALS']) || isset($_POST['GLOBALS']) || isset($_SERVER['GLOBALS']) || isset($_SESSION['GLOBALS']) || isset($_ENV['GLOBALS']) || isset($_FILES['GLOBALS']))
+			{
+				exit;
+			}
+			else
+			{
+				$cookie = &$_COOKIE;
+				while (isset($cookie['GLOBALS']))
+				{
+					foreach ($cookie['GLOBALS'] as $registered_var => $value)
+					{
+						if (!isset($not_unset[$registered_var]))
+						{
+							unset($GLOBALS[$registered_var]);
+						}
+					}
+					$cookie = &$cookie['GLOBALS'];
+				}
+			}
 		}
 
 		unset($GLOBALS[$varname]);
@@ -517,7 +534,7 @@ class module
 
 					if (is_array($this->module_ary[$this->id]['subs']))
 					{
-						$subs = $this->module_ary[$this->id]['subs']; 
+						$subs = $this->module_ary[$this->id]['subs'];
 						foreach ($subs as $option)
 						{
 							$l_option = (!empty($lang['SUB_' . $option])) ? $lang['SUB_' . $option] : preg_replace('#_#', ' ', $option);
@@ -534,7 +551,7 @@ class module
 
 					if (is_array($this->module_ary[$this->id]['stages']))
 					{
-						$subs = $this->module_ary[$this->id]['stages']; 
+						$subs = $this->module_ary[$this->id]['stages'];
 						$matched = false;
 						foreach ($subs as $option)
 						{

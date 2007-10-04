@@ -1,4 +1,4 @@
-<?php 
+<?php
 
 //
 // Security message:
@@ -54,9 +54,9 @@ print "<html>\n<body>\n";
 //
 // Fetch a batch of posts_text entries
 //
-$sql = "SELECT COUNT(*) as total, MAX(post_id) as max_post_id 
+$sql = "SELECT COUNT(*) as total, MAX(post_id) as max_post_id
 	FROM ". POSTS_TABLE;
-if ( !($result = $db->sql_query($sql)) ) 
+if ( !($result = $db->sql_query($sql)) )
 {
 	$error = $db->sql_error();
 	die("Couldn't get maximum post ID :: " . $sql . " :: " . $error['message']);
@@ -77,10 +77,10 @@ for(;$postcounter <= $max_post_id; $postcounter += $batchsize)
 	$batchend = $postcounter + $batchsize;
 	$batchcount++;
 	
-	$sql = "SELECT * 
-		FROM " . POSTS_TABLE . " 
-		WHERE post_id 
-			BETWEEN $batchstart 
+	$sql = "SELECT *
+		FROM " . POSTS_TABLE . "
+		WHERE post_id
+			BETWEEN $batchstart
 				AND $batchend";
 	if( !($result = $db->sql_query($sql)) )
 	{
@@ -97,16 +97,16 @@ for(;$postcounter <= $max_post_id; $postcounter += $batchsize)
 	{
 
 	// $sql = "LOCK TABLES ".POST_TEXT_TABLE." WRITE";
-	// $result = $db->sql_query($sql); 
+	// $result = $db->sql_query($sql);
 		print "\n<p>\n<a href='{$_SERVER['PHP_SELF']}?batchstart=$batchstart'>Restart from posting $batchstart</a><br>\n";
 
 		// For every post in the batch:
 		for($post_nr = 0; $post_nr < $post_rows; $post_nr++ )
-		{ 
+		{
 			print ".";
 			flush();
 
-			$post_id = $rowset[$post_nr]['post_id']; 
+			$post_id = $rowset[$post_nr]['post_id'];
 
 			$search->index('post', $rowset[$post_nr]['post_id'], $rowset[$post_nr]['post_text'], $rowset[$post_nr]['post_subject'], $rowset[$post_nr]['poster_id']);
 		}

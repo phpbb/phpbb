@@ -1,10 +1,10 @@
 <?php
-/** 
+/**
 *
 * @package install
 * @version $Id$
-* @copyright (c) 2006 phpBB Group 
-* @license http://opensource.org/licenses/gpl-license.php GNU Public License 
+* @copyright (c) 2006 phpBB Group
+* @license http://opensource.org/licenses/gpl-license.php GNU Public License
 *
 */
 
@@ -57,9 +57,9 @@ $tables = array(
 	'forum_prune',
 	'forums',
 	'groups',
-	'posts', 
-	'posts_text', 
-	'privmsgs', 
+	'posts',
+	'posts_text',
+	'privmsgs',
 	'privmsgs_text',
 	'ranks',
 	'smilies',
@@ -70,7 +70,7 @@ $tables = array(
 	'vote_desc',
 	'vote_results',
 	'vote_voters',
-	'words' 
+	'words'
 );
 
 /**
@@ -140,7 +140,7 @@ $config_schema = array(
 
 /**
 * $test_file is the name of a file which is present on the source
-* forum which can be used to check that the path specified by the 
+* forum which can be used to check that the path specified by the
 * user was correct
 */
 $test_file = 'modcp.php';
@@ -250,14 +250,14 @@ if (!$get_info)
 *
 *		// DB INSERT array
 *		This one consist of three parameters
-*		First Parameter: 
+*		First Parameter:
 *							The key need to be filled within the target table
 *							If this is empty, the target table gets not assigned the source value
 *		Second Parameter:
 *							Source value. If the first parameter is specified, it will be assigned this value.
 *							If the first parameter is empty, this only gets added to the select query
 *		Third Parameter:
-*							Custom Function. Function to execute while storing source value into target table. 
+*							Custom Function. Function to execute while storing source value into target table.
 *							The functions return value get stored.
 *							The function parameter consist of the value of the second parameter.
 *
@@ -706,7 +706,7 @@ if (!$get_info)
 				array('pm_forwarded',			0,										''),
 				array('folder_id',				PRIVMSGS_INBOX,							''),
 
-				'where'			=> 'privmsgs.privmsgs_id = privmsgs_text.privmsgs_text_id 
+				'where'			=> 'privmsgs.privmsgs_id = privmsgs_text.privmsgs_text_id
 										AND (privmsgs.privmsgs_type = 0 OR privmsgs.privmsgs_type = 1 OR privmsgs.privmsgs_type = 5)',
 			),
 			
@@ -746,7 +746,7 @@ if (!$get_info)
 				array('pm_forwarded',			0,										''),
 				array('folder_id',				PRIVMSGS_SENTBOX,						''),
 
-				'where'			=> 'privmsgs.privmsgs_id = privmsgs_text.privmsgs_text_id 
+				'where'			=> 'privmsgs.privmsgs_id = privmsgs_text.privmsgs_text_id
 										AND privmsgs.privmsgs_type = 2',
 			),
 
@@ -766,7 +766,7 @@ if (!$get_info)
 				array('pm_forwarded',			0,										''),
 				array('folder_id',				'privmsgs.privmsgs_to_userid',			'phpbb_get_savebox_id'),
 
-				'where'			=> 'privmsgs.privmsgs_id = privmsgs_text.privmsgs_text_id 
+				'where'			=> 'privmsgs.privmsgs_id = privmsgs_text.privmsgs_text_id
 										AND privmsgs.privmsgs_type = 3',
 			),
 
@@ -786,7 +786,7 @@ if (!$get_info)
 				array('pm_forwarded',			0,										''),
 				array('folder_id',				'privmsgs.privmsgs_from_userid',		'phpbb_get_savebox_id'),
 
-				'where'			=> 'privmsgs.privmsgs_id = privmsgs_text.privmsgs_text_id 
+				'where'			=> 'privmsgs.privmsgs_id = privmsgs_text.privmsgs_text_id
 										AND privmsgs.privmsgs_type = 4',
 			),
 

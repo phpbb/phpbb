@@ -1,10 +1,10 @@
 <?php
-/** 
+/**
 *
 * @package install
 * @version $Id$
-* @copyright (c) 2006 phpBB Group 
-* @license http://opensource.org/licenses/gpl-license.php GNU Public License 
+* @copyright (c) 2006 phpBB Group
+* @license http://opensource.org/licenses/gpl-license.php GNU Public License
 *
 * @todo check for writable cache/store/files directory
 */
@@ -419,7 +419,7 @@ class install_update extends module
 					// Add database update to log
 					add_log('admin', 'LOG_UPDATE_PHPBB', $this->current_version, $this->latest_version);
 
-					// Refresh prosilver css data - this may cause some unhappy users, but 
+					// Refresh prosilver css data - this may cause some unhappy users, but
 					$sql = 'SELECT *
 						FROM ' . STYLES_THEME_TABLE . "
 						WHERE theme_name = 'prosilver'";

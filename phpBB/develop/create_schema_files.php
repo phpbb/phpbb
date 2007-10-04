@@ -1,10 +1,10 @@
 <?php
-/** 
+/**
 *
 * @package phpBB3
 * @version $Id$
-* @copyright (c) 2006 phpBB Group 
-* @license http://opensource.org/licenses/gpl-license.php GNU Public License 
+* @copyright (c) 2006 phpBB Group
+* @license http://opensource.org/licenses/gpl-license.php GNU Public License
 *
 * This file creates new schema files for every database.
 * The filenames will be prefixed with an underscore to not overwrite the current schema files.
@@ -323,7 +323,7 @@ foreach ($supported_dbms as $dbms)
 		}
 
 		// Table specific so we don't get overlap
-		$modded_array = array(); 
+		$modded_array = array();
 
 		// Write columns one by one...
 		foreach ($table_data['COLUMNS'] as $column_name => $column_data)
@@ -1908,17 +1908,17 @@ function custom_data($dbms)
 
 /*
 CREATE TABLESPACE "PHPBB"
-	LOGGING 
-	DATAFILE 'E:\ORACLE\ORADATA\LOCAL\PHPBB.ora' 
+	LOGGING
+	DATAFILE 'E:\ORACLE\ORADATA\LOCAL\PHPBB.ora'
 	SIZE 10M
 	AUTOEXTEND ON NEXT 10M
 	MAXSIZE 100M;
 
-CREATE USER "PHPBB" 
-	PROFILE "DEFAULT" 
-	IDENTIFIED BY "phpbb_password" 
-	DEFAULT TABLESPACE "PHPBB" 
-	QUOTA UNLIMITED ON "PHPBB" 
+CREATE USER "PHPBB"
+	PROFILE "DEFAULT"
+	IDENTIFIED BY "phpbb_password"
+	DEFAULT TABLESPACE "PHPBB"
+	QUOTA UNLIMITED ON "PHPBB"
 	ACCOUNT UNLOCK;
 
 GRANT ANALYZE ANY TO "PHPBB";

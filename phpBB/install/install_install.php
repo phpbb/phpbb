@@ -1,10 +1,10 @@
 <?php
-/** 
+/**
 *
 * @package install
 * @version $Id$
-* @copyright (c) 2005 phpBB Group 
-* @license http://opensource.org/licenses/gpl-license.php GNU Public License 
+* @copyright (c) 2005 phpBB Group
+* @license http://opensource.org/licenses/gpl-license.php GNU Public License
 *
 */
 
@@ -191,7 +191,7 @@ class install_install extends module
 		));
 		
 		
-		// Check for url_fopen 
+		// Check for url_fopen
 		if (@ini_get('allow_url_fopen') == '1' || strtolower(@ini_get('allow_url_fopen')) == 'on')
 		{
 			$result = '<strong style="color:green">' . $lang['YES'] . '</strong>';
@@ -211,7 +211,7 @@ class install_install extends module
 		));
 		
 		
-		// Check for getimagesize 
+		// Check for getimagesize
 		if (@function_exists('getimagesize'))
 		{
 			$passed['imagesize'] = true;
@@ -1326,16 +1326,16 @@ class install_install extends module
 					OR topic_last_poster_name = 'Admin'",
 
 			'UPDATE ' . $data['table_prefix'] . "users
-				SET user_regdate = $current_time", 
+				SET user_regdate = $current_time",
 
 			'UPDATE ' . $data['table_prefix'] . "posts
-				SET post_time = $current_time, poster_ip = '" . $db->sql_escape($user_ip) . "'", 
+				SET post_time = $current_time, poster_ip = '" . $db->sql_escape($user_ip) . "'",
 
 			'UPDATE ' . $data['table_prefix'] . "topics
-				SET topic_time = $current_time, topic_last_post_time = $current_time", 
+				SET topic_time = $current_time, topic_last_post_time = $current_time",
 
 			'UPDATE ' . $data['table_prefix'] . "forums
-				SET forum_last_post_time = $current_time", 
+				SET forum_last_post_time = $current_time",
 		);
 
 		if (@extension_loaded('gd') || can_load_dll('gd'))
@@ -1390,7 +1390,7 @@ class install_install extends module
 		$data = $this->get_submitted_data();
 		$table_prefix = $data['table_prefix'];
 
-		// If we get here and the extension isn't loaded it should be safe to just go ahead and load it 
+		// If we get here and the extension isn't loaded it should be safe to just go ahead and load it
 		$available_dbms = get_available_dbms($data['dbms']);
 
 		// Load the appropriate database class if not already loaded
@@ -1609,7 +1609,7 @@ class install_install extends module
 				foreach ($this->module_extras[$module_class] as $cat_name => $mods)
 				{
 					$sql = 'SELECT module_id, left_id, right_id
-						FROM ' . MODULES_TABLE . " 
+						FROM ' . MODULES_TABLE . "
 						WHERE module_langname = '" . $db->sql_escape($cat_name) . "'
 							AND module_class = '" . $db->sql_escape($module_class) . "'";
 					$result = $db->sql_query_limit($sql, 1);
@@ -1619,7 +1619,7 @@ class install_install extends module
 					foreach ($mods as $mod_name)
 					{
 						$sql = 'SELECT *
-							FROM ' . MODULES_TABLE . " 
+							FROM ' . MODULES_TABLE . "
 							WHERE module_langname = '" . $db->sql_escape($mod_name) . "'
 								AND module_class = '" . $db->sql_escape($module_class) . "'
 								AND module_basename <> ''";

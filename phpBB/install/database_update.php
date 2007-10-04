@@ -1139,7 +1139,7 @@ $no_updates = true;
 // some code magic
 if (version_compare($current_version, '3.0.RC1', '<='))
 {
-	// we have to remove a few extra entries from converted boards. 
+	// we have to remove a few extra entries from converted boards.
 	$sql = 'SELECT group_id
 		FROM ' . GROUPS_TABLE . "
 		WHERE group_name = '" . $db->sql_escape('BOTS') . "'";
@@ -1178,14 +1178,14 @@ if (version_compare($current_version, '3.0.RC1', '<='))
 
 	set_config('jab_use_ssl', '0');
 	set_config('allow_post_flash', '1');
- 
+
 	$no_updates = false;
 }
 
 if (version_compare($current_version, '3.0.RC2', '<='))
 {
 	$smileys = array();
-	$sql = 'SELECT smiley_id, code 
+	$sql = 'SELECT smiley_id, code
 		FROM ' . SMILIES_TABLE;
 		
 	$result = $db->sql_query($sql);
@@ -1209,7 +1209,7 @@ if (version_compare($current_version, '3.0.RC2', '<='))
 		$new_code = str_replace('&gt;', '>', $new_code);
 		$new_code = utf8_htmlspecialchars($new_code);
 
-		$sql = 'UPDATE ' . SMILIES_TABLE . ' 
+		$sql = 'UPDATE ' . SMILIES_TABLE . '
 			SET code = \'' . $db->sql_escape($new_code) . '\'
 			WHERE smiley_id = ' . (int) $id;
 		$db->sql_query($sql);
@@ -1307,7 +1307,7 @@ if (version_compare($current_version, '3.0.RC3', '<='))
 	}
 
 	// Make sure empty smiley codes do not exist
-	$sql = 'DELETE FROM ' . SMILIES_TABLE . " 
+	$sql = 'DELETE FROM ' . SMILIES_TABLE . "
 		WHERE code = ''";
 	_sql($sql, $errored, $error_ary);
 
@@ -1489,7 +1489,7 @@ if (version_compare($current_version, '3.0.RC4', '<='))
 			[template_filename] [varchar] (100) DEFAULT ('') NOT NULL ,
 			[template_included] [varchar] (8000) DEFAULT ('') NOT NULL ,
 			[template_mtime] [int] DEFAULT (0) NOT NULL ,
-			[template_data] [text] DEFAULT ('') NOT NULL 
+			[template_data] [text] DEFAULT ('') NOT NULL
 		) ON [PRIMARY] TEXTIMAGE_ON [PRIMARY]";
 		_sql($sql, $errored, $error_ary);
 
@@ -1558,8 +1558,8 @@ $sql = 'UPDATE ' . USERS_TABLE . "
 	SET user_permissions = ''";
 _sql($sql, $errored, $error_ary);
 
-/* Optimize/vacuum analyze the tables where appropriate 
-// this should be done for each version in future along with 
+/* Optimize/vacuum analyze the tables where appropriate
+// this should be done for each version in future along with
 // the version number update
 switch ($db->sql_layer)
 {
@@ -1809,8 +1809,8 @@ function column_exists($dbms, $table, $column_name)
 		// ugh, SQLite
 		case 'sqlite':
 			$sql = "SELECT sql
-				FROM sqlite_master 
-				WHERE type = 'table' 
+				FROM sqlite_master
+				WHERE type = 'table'
 					AND name = '{$table}'";
 			$result = $db->sql_query($sql);
 
@@ -2079,8 +2079,8 @@ function sql_column_add($dbms, $table_name, $column_name, $column_data)
 			{
 				global $db;
 				$sql = "SELECT sql
-					FROM sqlite_master 
-					WHERE type = 'table' 
+					FROM sqlite_master
+					WHERE type = 'table'
 						AND name = '{$table_name}'
 					ORDER BY type DESC, name;";
 				$result = $db->sql_query($sql);
@@ -2176,8 +2176,8 @@ function sql_column_remove($dbms, $table_name, $column_name)
 			{
 				global $db;
 				$sql = "SELECT sql
-					FROM sqlite_master 
-					WHERE type = 'table' 
+					FROM sqlite_master
+					WHERE type = 'table'
 						AND name = '{$table_name}'
 					ORDER BY type DESC, name;";
 				$result = $db->sql_query($sql);
@@ -2295,8 +2295,8 @@ function sql_create_primary_key($dbms, $table_name, $column)
 
 		case 'sqlite':
 			$sql = "SELECT sql
-				FROM sqlite_master 
-				WHERE type = 'table' 
+				FROM sqlite_master
+				WHERE type = 'table'
 					AND name = '{$table_name}'
 				ORDER BY type DESC, name;";
 			$result = _sql($sql, $errored, $error_ary);
@@ -2678,8 +2678,8 @@ function sql_column_change($dbms, $table_name, $column_name, $column_data)
 		case 'sqlite':
 
 			$sql = "SELECT sql
-				FROM sqlite_master 
-				WHERE type = 'table' 
+				FROM sqlite_master
+				WHERE type = 'table'
 					AND name = '{$table_name}'
 				ORDER BY type DESC, name;";
 			$result = _sql($sql, $errored, $error_ary);

@@ -1,10 +1,10 @@
 <?php
-/** 
+/**
 *
 * @package install
 * @version $Id$
-* @copyright (c) 2006 phpBB Group 
-* @license http://opensource.org/licenses/gpl-license.php GNU Public License 
+* @copyright (c) 2006 phpBB Group
+* @license http://opensource.org/licenses/gpl-license.php GNU Public License
 *
 */
 
@@ -612,7 +612,7 @@ class install_convert extends module
 		$config['max_quote_depth'] = 0;
 
 		// @todo Need to confirm that max post length in source is <= max post length in destination or there may be interesting formatting issues
-		$config['max_post_chars'] = -1; 
+		$config['max_post_chars'] = -1;
 
 		// Set up a user as well. We _should_ have enough of a database here at this point to do this
 		// and it helps for any core code we call
@@ -1198,7 +1198,7 @@ class install_convert extends module
 				$schema['order_by'] = $schema['primary'];
 			}
 			$sql .= (!empty($schema['order_by'])) ? "\nORDER BY " . $schema['order_by'] : '';
-			 
+
 			// Counting basically holds the amount of rows processed.
 			$counting = -1;
 			$batch_time = 0;
@@ -1561,7 +1561,7 @@ class install_convert extends module
 	{
 		global $db, $phpbb_root_path, $convert, $config, $user, $template;
 
-		$db->sql_query('DELETE FROM ' . CONFIG_TABLE . " 
+		$db->sql_query('DELETE FROM ' . CONFIG_TABLE . "
 			WHERE config_name = 'convert_progress'
 				OR config_name = 'convert_options'
 				OR config_name = 'convert_db_server'
