@@ -113,7 +113,7 @@ class custom_profile
 					return 'FIELD_REQUIRED';
 				}
 
-				if ($day < 0 || $day > 31 || $month < 0 || $month > 12 || ($year < 1901 && $year > 0) || $year > gmdate('Y', time()))
+				if ($day < 0 || $day > 31 || $month < 0 || $month > 12 || ($year < 1901 && $year > 0) || $year > gmdate('Y', time()) + 50)
 				{
 					return 'FIELD_INVALID_DATE';
 				}

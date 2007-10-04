@@ -316,7 +316,7 @@ class ucp_profile
 						$validate_array = array_merge($validate_array, array(
 							'bday_day'		=> array('num', true, 1, 31),
 							'bday_month'	=> array('num', true, 1, 12),
-							'bday_year'		=> array('num', true, 1901, gmdate('Y', time())),
+							'bday_year'		=> array('num', true, 1901, gmdate('Y', time()) + 50),
 						));
 					}
 

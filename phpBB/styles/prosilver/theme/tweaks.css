@@ -42,8 +42,20 @@ html>body dd label input { vertical-align: text-bottom; }	/* Align checkboxes/ra
 	visibility: hidden;
 }*/
 
-.clearfix, #tabs, #minitabs, .post, .navbar, fieldset dl, ul.topiclist dl, ul.linklist, dl.polls {
+.clearfix, #tabs, #minitabs, fieldset dl, ul.topiclist dl, dl.polls {
 	height: 1%;
+	overflow: hidden;
+}
+
+/* viewtopic fix */
+* html .post {
+	height: 25%;
+	overflow: hidden;
+}
+
+/* navbar fix */
+* html .clearfix, * html .navbar, ul.linklist {
+	height: 4%;
 	overflow: hidden;
 }
 

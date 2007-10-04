@@ -1187,7 +1187,7 @@ $bbcode_checked		= (isset($post_data['enable_bbcode'])) ? !$post_data['enable_bb
 $smilies_checked	= (isset($post_data['enable_smilies'])) ? !$post_data['enable_smilies'] : (($config['allow_smilies']) ? !$user->optionget('smilies') : 1);
 $urls_checked		= (isset($post_data['enable_urls'])) ? !$post_data['enable_urls'] : 0;
 $sig_checked		= $post_data['enable_sig'];
-$lock_topic_checked	= (isset($topic_lock)) ? $topic_lock : (($post_data['topic_status'] == ITEM_LOCKED) ? 1 : 0);
+$lock_topic_checked	= (isset($topic_lock) && $topic_lock) ? $topic_lock : (($post_data['topic_status'] == ITEM_LOCKED) ? 1 : 0);
 $lock_post_checked	= (isset($post_lock)) ? $post_lock : $post_data['post_edit_locked'];
 
 // If the user is replying or posting and not already watching this topic but set to always being notified we need to overwrite this setting
