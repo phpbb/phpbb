@@ -1577,7 +1577,7 @@ function append_sid($url, $params = false, $is_amp = true, $session_id = false)
 
 	// Developers using the hook function need to globalise the $_SID and $_EXTRA_URL on their own and also handle it appropiatly.
 	// They could mimick most of what is within this function
-	if ($phpbb_hook->call_hook(__FUNCTION__, $url, $params, $is_amp, $session_id))
+	if (!empty($phpbb_hook) && $phpbb_hook->call_hook(__FUNCTION__, $url, $params, $is_amp, $session_id))
 	{
 		if ($phpbb_hook->hook_return(__FUNCTION__))
 		{
@@ -4463,7 +4463,7 @@ function phpbb_user_session_handler()
 {
 	global $phpbb_hook;
 
-	if ($phpbb_hook->call_hook(__FUNCTION__))
+	if (!empty($phpbb_hook) && $phpbb_hook->call_hook(__FUNCTION__))
 	{
 		if ($phpbb_hook->hook_return(__FUNCTION__))
 		{

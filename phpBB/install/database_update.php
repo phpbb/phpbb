@@ -79,6 +79,22 @@ $user = new user();
 $cache = new cache();
 $db = new $sql_db();
 
+// Add own hook handler, if present. :o
+if (file_exists($phpbb_root_path . 'includes/hooks/index.' . $phpEx))
+{
+	require($phpbb_root_path . 'includes/hooks/index.' . $phpEx);
+	$phpbb_hook = new phpbb_hook(array('exit_handler', 'phpbb_user_session_handler', 'append_sid', array('template', 'display')));
+
+	foreach ($cache->obtain_hooks() as $hook)
+	{
+		@include($phpbb_root_path . 'includes/hooks/' . $hook . '.' . $phpEx);
+	}
+}
+else
+{
+	$phpbb_hook = false;
+}
+
 // Connect to DB
 $db->sql_connect($dbhost, $dbuser, $dbpasswd, $dbname, $dbport, false, false);
 
@@ -428,7 +444,7 @@ $database_update_info = array(
 	'3.0.RC5'			=> array(
 		// Add the following columns
 		'add_columns'		=> array(
-			USER_TABLE	=> array(
+			USERS_TABLE	=> array(
 				'user_form_salt'	=> array('VCHAR_UNI:32', ''),
 			),
 		),

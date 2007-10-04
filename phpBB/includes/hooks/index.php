@@ -1,10 +1,10 @@
 <?php
-/** 
+/**
 *
 * @package phpBB3
 * @version $Id$
-* @copyright (c) 2007 phpBB Group 
-* @license http://opensource.org/licenses/gpl-license.php GNU Public License 
+* @copyright (c) 2007 phpBB Group
+* @license http://opensource.org/licenses/gpl-license.php GNU Public License
 *
 */
 
@@ -111,7 +111,7 @@ class phpbb_hook
 
 		if (!empty($this->hooks[$class][$function]))
 		{
-			// Developer tries to call a hooked function within the hooked function... 
+			// Developer tries to call a hooked function within the hooked function...
 			if ($this->current_hook !== NULL && $this->current_hook['class'] === $class && $this->current_hook['function'] === $function)
 			{
 				return false;

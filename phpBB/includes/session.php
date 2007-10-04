@@ -9,6 +9,14 @@
 */
 
 /**
+* @ignore
+*/
+if (!defined('IN_PHPBB'))
+{
+	exit;
+}
+
+/**
 * Session class
 * @package phpBB3
 */
@@ -367,7 +375,7 @@ class session
 
 		foreach ($active_bots as $row)
 		{
-			if ($row['bot_agent'] && strpos(strtolower($this->browser), strtolower($row['bot_agent'])) !== false)
+			if ($row['bot_agent'] && preg_match('#' . str_replace('\*', '.*?', preg_quote($row['bot_agent'], '#')) . '#i', $this->browser))
 			{
 				$bot = $row['user_id'];
 			}
@@ -644,7 +652,7 @@ class session
 			
 			$sql = 'SELECT COUNT(session_id) AS sessions
 					FROM ' . SESSIONS_TABLE . '
-					WHERE session_user_id = ' . (int) $this->data['user_id'] . ' 
+					WHERE session_user_id = ' . (int) $this->data['user_id'] . '
 					AND session_time >= ' . ($this->time_now - $config['form_token_lifetime']);
 			$result = $db->sql_query($sql);
 			$row = $db->sql_fetchrow($result);
@@ -837,7 +845,7 @@ class session
 		$sql = 'SELECT DISTINCT c.session_id
 				FROM ' . CONFIRM_TABLE . ' c
 				LEFT JOIN ' . SESSIONS_TABLE . ' s ON (c.session_id = s.session_id)
-				WHERE s.session_id IS NULL' . 
+				WHERE s.session_id IS NULL' .
 					((empty($type)) ? '' : ' AND c.confirm_type = ' . (int) $type);
 		$result = $db->sql_query($sql);
 
