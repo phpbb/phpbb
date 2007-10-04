@@ -220,7 +220,7 @@ function phpbb_insert_forums()
 			'forum_desc'		=> htmlspecialchars(phpbb_set_default_encoding($row['forum_desc']), ENT_COMPAT, 'UTF-8'),
 			'forum_type'		=> FORUM_POST,
 			'forum_status'		=> is_item_locked($row['forum_status']),
-			'enable_prune'		=> ($prune_enabled) ? $row['prune_enable'] : 0,
+			'enable_prune'		=> ($prune_enabled) ? (int)$row['prune_enable'] : 0,
 			'prune_next'		=> (int) null_to_zero($row['prune_next']),
 			'prune_days'		=> (int) null_to_zero($row['prune_days']),
 			'prune_viewed'		=> 0,
