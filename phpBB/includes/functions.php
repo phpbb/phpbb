@@ -3645,7 +3645,7 @@ function truncate_string($string, $max_length = 60, $allow_reply = true, $append
 /**
 * Get username details for placing into templates.
 *
-* @param string $mode Can be profile (for getting an url to the profile), username (for obtaining the username), colour (for obtaining the user colour) or full (for obtaining a html string representing a coloured link to the users profile).
+* @param string $mode Can be profile (for getting an url to the profile), username (for obtaining the username), colour (for obtaining the user colour), full (for obtaining a html string representing a coloured link to the users profile) or no_profile (the same as full but forcing no profile link)
 * @param int $user_id The users id
 * @param string $username The users name
 * @param string $username_colour The users colour
@@ -3671,7 +3671,7 @@ function get_username_string($mode, $user_id, $username, $username_colour = '', 
 	}
 
 	// Only show the link if not anonymous
-	if ($user_id && $user_id != ANONYMOUS)
+	if ($mode != 'no_profile' && $user_id && $user_id != ANONYMOUS)
 	{
 		// Do not show the link if the user is already logged in but do not have u_viewprofile permissions (relevant for bots mostly).
 		// For all others the link leads to a login page or the profile.
@@ -3703,6 +3703,7 @@ function get_username_string($mode, $user_id, $username, $username_colour = '', 
 			return $username_colour;
 		break;
 
+		case 'no_profile':
 		case 'full':
 		default:
 
@@ -4067,38 +4068,19 @@ function page_header($page_title = '', $display_online_list = true)
 				// Skip multiple sessions for one user
 				if ($row['user_id'] != $prev_user_id)
 				{
-					if ($row['user_colour'])
-					{
-						$user_colour = ' style="color:#' . $row['user_colour'] . '"';
-						$row['username'] = '<strong>' . $row['username'] . '</strong>';
-					}
-					else
-					{
-						$user_colour = '';
-					}
-
 					if ($row['session_viewonline'])
 					{
-						$user_online_link = $row['username'];
 						$logged_visible_online++;
 					}
 					else
 					{
-						$user_online_link = '<em>' . $row['username'] . '</em>';
+						$row['username'] = '<em>' . $row['username'] . '</em>';
 						$logged_hidden_online++;
 					}
 
 					if (($row['session_viewonline']) || $auth->acl_get('u_viewonline'))
 					{
-						if ($row['user_type'] <> USER_IGNORE)
-						{
-							$user_online_link = '<a href="' . append_sid("{$phpbb_root_path}memberlist.$phpEx", 'mode=viewprofile&amp;u=' . $row['user_id']) . '"' . $user_colour . '>' . $user_online_link . '</a>';
-						}
-						else
-						{
-							$user_online_link = ($user_colour) ? '<span' . $user_colour . '>' . $user_online_link . '</span>' : $user_online_link;
-						}
-
+						$user_online_link = get_username_string(($row['user_type'] <> USER_IGNORE) ? 'full' : 'no_profile', $row['user_id'], $row['username'], $row['user_colour']);
 						$online_userlist .= ($online_userlist != '') ? ', ' . $user_online_link : $user_online_link;
 					}
 				}

@@ -1,18 +1,23 @@
 <?php
-/** 
+/**
 *
 * groups [English]
 *
 * @package language
 * @version $Id$
-* @copyright (c) 2005 phpBB Group 
-* @license http://opensource.org/licenses/gpl-license.php GNU Public License 
+* @copyright (c) 2005 phpBB Group
+* @license http://opensource.org/licenses/gpl-license.php GNU Public License
 *
 */
 
 /**
 * DO NOT CHANGE
 */
+if (!defined('IN_PHPBB'))
+{
+	exit;
+}
+
 if (empty($lang) || !is_array($lang))
 {
 	$lang = array();
@@ -37,17 +42,17 @@ $lang = array_merge($lang, array(
 
 	'CHANGED_DEFAULT_GROUP'	=> 'Successfully changed default group.',
 	
-	'GROUP_AVATAR'						=> 'Group avatar', 
+	'GROUP_AVATAR'						=> 'Group avatar',
 	'GROUP_CHANGE_DEFAULT'				=> 'Are you sure you want to change your default membership to the group “%s”?',
 	'GROUP_CLOSED'						=> 'Closed',
 	'GROUP_DESC'						=> 'Group description',
 	'GROUP_HIDDEN'						=> 'Hidden',
-	'GROUP_INFORMATION'					=> 'Usergroup information', 
+	'GROUP_INFORMATION'					=> 'Usergroup information',
 	'GROUP_IS_CLOSED'					=> 'This is a closed group, new members can only join upon invitation of a group leader.',
-	'GROUP_IS_FREE'						=> 'This is a freely open group, all new members are welcome.', 
+	'GROUP_IS_FREE'						=> 'This is a freely open group, all new members are welcome.',
 	'GROUP_IS_HIDDEN'					=> 'This is a hidden group, only members of this group can view its membership.',
 	'GROUP_IS_OPEN'						=> 'This is an open group, members can apply to join.',
-	'GROUP_IS_SPECIAL'					=> 'This is a special group, special groups are managed by the board administrators.', 
+	'GROUP_IS_SPECIAL'					=> 'This is a special group, special groups are managed by the board administrators.',
 	'GROUP_JOIN'						=> 'Join group',
 	'GROUP_JOIN_CONFIRM'				=> 'Are you sure you want to join the selected group?',
 	'GROUP_JOIN_PENDING'				=> 'Request to join group',
@@ -58,7 +63,7 @@ $lang = array_merge($lang, array(
 	'GROUP_MEMBERS'						=> 'Group members',
 	'GROUP_NAME'						=> 'Group name',
 	'GROUP_OPEN'						=> 'Open',
-	'GROUP_RANK'						=> 'Group rank', 
+	'GROUP_RANK'						=> 'Group rank',
 	'GROUP_RESIGN_MEMBERSHIP'			=> 'Resign group membership',
 	'GROUP_RESIGN_MEMBERSHIP_CONFIRM'	=> 'Are you sure you want to resign your membership from the selected group?',
 	'GROUP_RESIGN_PENDING'				=> 'Resign a pending group membership',
