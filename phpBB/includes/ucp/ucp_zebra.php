@@ -1,12 +1,20 @@
 <?php
-/** 
+/**
 *
 * @package ucp
 * @version $Id$
-* @copyright (c) 2005 phpBB Group 
-* @license http://opensource.org/licenses/gpl-license.php GNU Public License 
+* @copyright (c) 2005 phpBB Group
+* @license http://opensource.org/licenses/gpl-license.php GNU Public License
 *
 */
+
+/**
+* @ignore
+*/
+if (!defined('IN_PHPBB'))
+{
+	exit;
+}
 
 /**
 * ucp_zebra
@@ -49,11 +57,11 @@ class ucp_zebra
 						$data['add'] = array_map('trim', array_map('utf8_clean_string', explode("\n", $data['add'])));
 
 						// Do these name/s exist on a list already? If so, ignore ... we could be
-						// 'nice' and automatically handle names added to one list present on 
+						// 'nice' and automatically handle names added to one list present on
 						// the other (by removing the existing one) ... but I have a feeling this
 						// may lead to complaints
-						$sql = 'SELECT z.*, u.username, u.username_clean 
-							FROM ' . ZEBRA_TABLE . ' z, ' . USERS_TABLE . ' u 
+						$sql = 'SELECT z.*, u.username, u.username_clean
+							FROM ' . ZEBRA_TABLE . ' z, ' . USERS_TABLE . ' u
 							WHERE z.user_id = ' . $user->data['user_id'] . '
 								AND u.user_id = z.zebra_id';
 						$result = $db->sql_query($sql);
@@ -104,7 +112,7 @@ class ucp_zebra
 						if (sizeof($data['add']))
 						{
 							$sql = 'SELECT user_id, user_type
-								FROM ' . USERS_TABLE . ' 
+								FROM ' . USERS_TABLE . '
 								WHERE ' . $db->sql_in_set('username_clean', $data['add']) . '
 									AND user_type <> ' . USER_INACTIVE;
 							$result = $db->sql_query($sql);
@@ -180,8 +188,8 @@ class ucp_zebra
 						// Force integer values
 						$data['usernames'] = array_map('intval', $data['usernames']);
 
-						$sql = 'DELETE FROM ' . ZEBRA_TABLE . ' 
-							WHERE user_id = ' . $user->data['user_id'] . ' 
+						$sql = 'DELETE FROM ' . ZEBRA_TABLE . '
+							WHERE user_id = ' . $user->data['user_id'] . '
 								AND ' . $db->sql_in_set('zebra_id', $data['usernames']);
 						$db->sql_query($sql);
 
@@ -212,10 +220,10 @@ class ucp_zebra
 		}
 
 		$sql_and = ($mode == 'friends') ? 'z.friend = 1' : 'z.foe = 1';
-		$sql = 'SELECT z.*, u.username, u.username_clean 
-			FROM ' . ZEBRA_TABLE . ' z, ' . USERS_TABLE . ' u 
+		$sql = 'SELECT z.*, u.username, u.username_clean
+			FROM ' . ZEBRA_TABLE . ' z, ' . USERS_TABLE . ' u
 			WHERE z.user_id = ' . $user->data['user_id'] . "
-				AND $sql_and 
+				AND $sql_and
 				AND u.user_id = z.zebra_id
 			ORDER BY u.username_clean ASC";
 		$result = $db->sql_query($sql);
@@ -227,7 +235,7 @@ class ucp_zebra
 		}
 		$db->sql_freeresult($result);
 
-		$template->assign_vars(array( 
+		$template->assign_vars(array(
 			'L_TITLE'			=> $user->lang['UCP_ZEBRA_' . $l_mode],
 
 			'U_FIND_USERNAME'	=> append_sid("{$phpbb_root_path}memberlist.$phpEx", 'mode=searchuser&amp;form=ucp&amp;field=add'),

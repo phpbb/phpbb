@@ -9,6 +9,14 @@
 */
 
 /**
+* @ignore
+*/
+if (!defined('IN_PHPBB'))
+{
+	exit;
+}
+
+/**
 * ucp_profile
 * Changing profile settings
 *
@@ -491,8 +499,8 @@ class ucp_profile
 								'user_sig_bbcode_bitfield'	=> $message_parser->bbcode_bitfield
 							);
 
-							$sql = 'UPDATE ' . USERS_TABLE . ' 
-								SET ' . $db->sql_build_array('UPDATE', $sql_ary) . ' 
+							$sql = 'UPDATE ' . USERS_TABLE . '
+								SET ' . $db->sql_build_array('UPDATE', $sql_ary) . '
 								WHERE user_id = ' . $user->data['user_id'];
 							$db->sql_query($sql);
 

@@ -1,12 +1,20 @@
 <?php
-/** 
+/**
 *
 * @package ucp
 * @version $Id$
-* @copyright (c) 2005 phpBB Group 
-* @license http://opensource.org/licenses/gpl-license.php GNU Public License 
+* @copyright (c) 2005 phpBB Group
+* @license http://opensource.org/licenses/gpl-license.php GNU Public License
 *
 */
+
+/**
+* @ignore
+*/
+if (!defined('IN_PHPBB'))
+{
+	exit;
+}
 
 /**
 * ucp_main
@@ -38,7 +46,7 @@ class ucp_main
 
 				if ($config['load_db_track'])
 				{
-					$sql_from .= ' LEFT JOIN ' . TOPICS_POSTED_TABLE . ' tp ON (tp.topic_id = t.topic_id 
+					$sql_from .= ' LEFT JOIN ' . TOPICS_POSTED_TABLE . ' tp ON (tp.topic_id = t.topic_id
 						AND tp.user_id = ' . $user->data['user_id'] . ')';
 					$sql_select .= ', tp.topic_posted';
 				}
@@ -59,7 +67,7 @@ class ucp_main
 				$forum_ary = array_unique(array_keys($forum_ary));
 
 				// Determine first forum the user is able to read into - for global announcement link
-				$sql = 'SELECT forum_id 
+				$sql = 'SELECT forum_id
 					FROM ' . FORUMS_TABLE . '
 					WHERE forum_type = ' . FORUM_POST;
 	
@@ -71,7 +79,7 @@ class ucp_main
 				$g_forum_id = (int) $db->sql_fetchfield('forum_id');
 				$db->sql_freeresult($result);
 
-				$sql = "SELECT t.* $sql_select 
+				$sql = "SELECT t.* $sql_select
 					FROM $sql_from
 					WHERE t.forum_id = 0
 						AND t.topic_type = " . POST_GLOBAL . '
@@ -164,13 +172,13 @@ class ucp_main
 					display_user_activity($user->data);
 				}
 
-				// Do the relevant calculations 
+				// Do the relevant calculations
 				$memberdays = max(1, round((time() - $user->data['user_regdate']) / 86400));
 				$posts_per_day = $user->data['user_posts'] / $memberdays;
 				$percentage = ($config['num_posts']) ? min(100, ($user->data['user_posts'] / $config['num_posts']) * 100) : 0;
 
 				$template->assign_vars(array(
-					'USER_COLOR'		=> (!empty($user->data['user_colour'])) ? $user->data['user_colour'] : '', 
+					'USER_COLOR'		=> (!empty($user->data['user_colour'])) ? $user->data['user_colour'] : '',
 					'JOINED'			=> $user->format_date($user->data['user_regdate']),
 					'VISITED'			=> (empty($last_visit)) ? ' - ' : $user->format_date($last_visit),
 					'WARNINGS'			=> ($user->data['user_warnings']) ? $user->data['user_warnings'] : 0,
@@ -181,7 +189,7 @@ class ucp_main
 					'OCCUPATION'	=> (!empty($row['user_occ'])) ? $row['user_occ'] : '',
 					'INTERESTS'		=> (!empty($row['user_interests'])) ? $row['user_interests'] : '',
 
-//					'S_GROUP_OPTIONS'	=> $group_options, 
+//					'S_GROUP_OPTIONS'	=> $group_options,
 
 					'U_SEARCH_USER'		=> ($auth->acl_get('u_search')) ? append_sid("{$phpbb_root_path}search.$phpEx", 'author_id=' . $user->data['user_id'] . '&amp;sr=posts') : '',
 				));
@@ -256,7 +264,7 @@ class ucp_main
 							FORUMS_TABLE		=> 'f'
 						),
 
-						'WHERE'		=> 'fw.user_id = ' . $user->data['user_id'] . ' 
+						'WHERE'		=> 'fw.user_id = ' . $user->data['user_id'] . '
 							AND f.forum_id = fw.forum_id
 							AND ' . $db->sql_in_set('f.forum_id', $forbidden_forums, true, true),
 
@@ -322,7 +330,7 @@ class ucp_main
 						}
 
 						$template->assign_block_vars('forumrow', array(
-							'FORUM_ID'				=> $forum_id, 
+							'FORUM_ID'				=> $forum_id,
 							'FORUM_FOLDER_IMG'		=> $user->img($folder_image, $folder_alt),
 							'FORUM_FOLDER_IMG_SRC'	=> $user->img($folder_image, $folder_alt, false, '', 'src'),
 							'FORUM_IMAGE'			=> ($row['forum_image']) ? '<img src="' . $phpbb_root_path . $row['forum_image'] . '" alt="' . $user->lang[$folder_alt] . '" />' : '',
@@ -336,7 +344,7 @@ class ucp_main
 							'LAST_POST_AUTHOR_FULL'		=> get_username_string('full', $row['forum_last_poster_id'], $row['forum_last_poster_name'], $row['forum_last_poster_colour']),
 							'U_LAST_POST_AUTHOR'		=> get_username_string('profile', $row['forum_last_poster_id'], $row['forum_last_poster_name'], $row['forum_last_poster_colour']),
 
-							'U_LAST_POST'			=> $last_post_url, 
+							'U_LAST_POST'			=> $last_post_url,
 							'U_VIEWFORUM'			=> append_sid("{$phpbb_root_path}viewforum.$phpEx", 'f=' . $row['forum_id']))
 						);
 					}
@@ -468,8 +476,8 @@ class ucp_main
 								'draft_message' => $draft_message
 							);
 
-							$sql = 'UPDATE ' . DRAFTS_TABLE . ' 
-								SET ' . $db->sql_build_array('UPDATE', $draft_row) . " 
+							$sql = 'UPDATE ' . DRAFTS_TABLE . '
+								SET ' . $db->sql_build_array('UPDATE', $draft_row) . "
 								WHERE draft_id = $draft_id
 									AND user_id = " . $user->data['user_id'];
 							$db->sql_query($sql);
@@ -504,7 +512,7 @@ class ucp_main
 					$sql = 'SELECT * FROM ' . DRAFTS_TABLE . '
 						WHERE user_id = ' . $user->data['user_id'] . ' ' .
 							(($edit) ? "AND draft_id = $draft_id" : '') . '
-							AND forum_id = 0 
+							AND forum_id = 0
 							AND topic_id = 0
 						ORDER BY save_time DESC';
 				}
@@ -600,10 +608,10 @@ class ucp_main
 		}
 
 
-		$template->assign_vars(array( 
+		$template->assign_vars(array(
 			'L_TITLE'			=> $user->lang['UCP_MAIN_' . strtoupper($mode)],
 
-			'S_DISPLAY_MARK_ALL'	=> ($mode == 'watched' || ($mode == 'drafts' && !isset($_GET['edit']))) ? true : false, 
+			'S_DISPLAY_MARK_ALL'	=> ($mode == 'watched' || ($mode == 'drafts' && !isset($_GET['edit']))) ? true : false,
 			'S_HIDDEN_FIELDS'		=> (isset($s_hidden_fields)) ? $s_hidden_fields : '',
 			'S_UCP_ACTION'			=> $this->u_action,
 

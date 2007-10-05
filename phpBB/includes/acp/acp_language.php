@@ -1,12 +1,20 @@
 <?php
-/** 
+/**
 *
 * @package acp
 * @version $Id$
-* @copyright (c) 2005 phpBB Group 
-* @license http://opensource.org/licenses/gpl-license.php GNU Public License 
+* @copyright (c) 2005 phpBB Group
+* @license http://opensource.org/licenses/gpl-license.php GNU Public License
 *
 */
+
+/**
+* @ignore
+*/
+if (!defined('IN_PHPBB'))
+{
+	exit;
+}
 
 /**
 * @package acp
@@ -161,7 +169,7 @@ class acp_language
 					'lang_author'			=> utf8_normalize_nfc(request_var('lang_author', $row['lang_author'], true)),
 				);
 
-				$db->sql_query('UPDATE ' . LANG_TABLE . ' 
+				$db->sql_query('UPDATE ' . LANG_TABLE . '
 					SET ' . $db->sql_build_array('UPDATE', $sql_ary) . '
 					WHERE lang_id = ' . $lang_id);
 
@@ -760,7 +768,7 @@ class acp_language
 
 				$db->sql_query('DELETE FROM ' . LANG_TABLE . ' WHERE lang_id = ' . $lang_id);
 
-				$sql = 'UPDATE ' . USERS_TABLE . " 
+				$sql = 'UPDATE ' . USERS_TABLE . "
 					SET user_lang = '" . $db->sql_escape($config['default_lang']) . "'
 					WHERE user_lang = '" . $db->sql_escape($row['lang_iso']) . "'";
 				$db->sql_query($sql);
@@ -939,7 +947,7 @@ class acp_language
 					trigger_error($user->lang['NO_LANG_ID'] . adm_back_link($this->u_action), E_USER_WARNING);
 				}
 
-				$sql = 'SELECT * 
+				$sql = 'SELECT *
 					FROM ' . LANG_TABLE . '
 					WHERE lang_id = ' . $lang_id;
 				$result = $db->sql_query($sql);
@@ -1055,7 +1063,7 @@ class acp_language
 		}
 
 		$sql = 'SELECT user_lang, COUNT(user_lang) AS lang_count
-			FROM ' . USERS_TABLE . ' 
+			FROM ' . USERS_TABLE . '
 			GROUP BY user_lang';
 		$result = $db->sql_query($sql);
 
@@ -1066,7 +1074,7 @@ class acp_language
 		}
 		$db->sql_freeresult($result);
 
-		$sql = 'SELECT * 
+		$sql = 'SELECT *
 			FROM ' . LANG_TABLE . '
 			ORDER BY lang_english_name';
 		$result = $db->sql_query($sql);
@@ -1148,15 +1156,15 @@ class acp_language
 		global $phpEx;
 
 		$this->language_file_header = '<?php
-/** 
+/**
 *
 * {FILENAME} [{LANG_NAME}]
 *
 * @package language
 * @version $' . 'Id: ' . '$
-* @copyright (c) ' . date('Y') . ' phpBB Group 
+* @copyright (c) ' . date('Y') . ' phpBB Group
 * @author {CHANGED} - {AUTHOR}
-* @license http://opensource.org/licenses/gpl-license.php GNU Public License 
+* @license http://opensource.org/licenses/gpl-license.php GNU Public License
 *
 */
 

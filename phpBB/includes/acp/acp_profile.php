@@ -9,6 +9,14 @@
 */
 
 /**
+* @ignore
+*/
+if (!defined('IN_PHPBB'))
+{
+	exit;
+}
+
+/**
 * @package acp
 */
 class acp_profile
@@ -99,8 +107,8 @@ class acp_profile
 
 				if (confirm_box(true))
 				{
-					$sql = 'SELECT field_ident 
-						FROM ' . PROFILE_FIELDS_TABLE . " 
+					$sql = 'SELECT field_ident
+						FROM ' . PROFILE_FIELDS_TABLE . "
 						WHERE field_id = $field_id";
 					$result = $db->sql_query($sql);
 					$field_ident = (string) $db->sql_fetchfield('field_ident');
@@ -116,8 +124,8 @@ class acp_profile
 					{
 						case 'sqlite':
 							$sql = "SELECT sql
-								FROM sqlite_master 
-								WHERE type = 'table' 
+								FROM sqlite_master
+								WHERE type = 'table'
 									AND name = '" . PROFILE_FIELDS_DATA_TABLE . "'
 								ORDER BY type DESC, name;";
 							$result = $db->sql_query($sql);
@@ -176,8 +184,8 @@ class acp_profile
 						$order++;
 						if ($row['field_order'] != $order)
 						{
-							$sql = 'UPDATE ' . PROFILE_FIELDS_TABLE . " 
-								SET field_order = $order 
+							$sql = 'UPDATE ' . PROFILE_FIELDS_TABLE . "
+								SET field_order = $order
 								WHERE field_id = {$row['field_id']}";
 							$db->sql_query($sql);
 						}
@@ -209,8 +217,8 @@ class acp_profile
 					trigger_error($user->lang['NO_FIELD_ID'] . adm_back_link($this->u_action), E_USER_WARNING);
 				}
 	
-				$sql = 'SELECT lang_id 
-					FROM ' . LANG_TABLE . " 
+				$sql = 'SELECT lang_id
+					FROM ' . LANG_TABLE . "
 					WHERE lang_iso = '" . $db->sql_escape($config['default_lang']) . "'";
 				$result = $db->sql_query($sql);
 				$default_lang_id = (int) $db->sql_fetchfield('lang_id');
@@ -221,13 +229,13 @@ class acp_profile
 					trigger_error($user->lang['DEFAULT_LANGUAGE_NOT_FILLED'] . adm_back_link($this->u_action), E_USER_WARNING);
 				}
 
-				$sql = 'UPDATE ' . PROFILE_FIELDS_TABLE . " 
-					SET field_active = 1 
+				$sql = 'UPDATE ' . PROFILE_FIELDS_TABLE . "
+					SET field_active = 1
 					WHERE field_id = $field_id";
 				$db->sql_query($sql);
 
-				$sql = 'SELECT field_ident 
-					FROM ' . PROFILE_FIELDS_TABLE . " 
+				$sql = 'SELECT field_ident
+					FROM ' . PROFILE_FIELDS_TABLE . "
 					WHERE field_id = $field_id";
 				$result = $db->sql_query($sql);
 				$field_ident = (string) $db->sql_fetchfield('field_ident');
@@ -247,12 +255,12 @@ class acp_profile
 				}
 	
 				$sql = 'UPDATE ' . PROFILE_FIELDS_TABLE . "
-					SET field_active = 0 
+					SET field_active = 0
 					WHERE field_id = $field_id";
 				$db->sql_query($sql);
 
-				$sql = 'SELECT field_ident 
-					FROM ' . PROFILE_FIELDS_TABLE . " 
+				$sql = 'SELECT field_ident
+					FROM ' . PROFILE_FIELDS_TABLE . "
 					WHERE field_id = $field_id";
 				$result = $db->sql_query($sql);
 				$field_ident = (string) $db->sql_fetchfield('field_ident');
@@ -296,7 +304,7 @@ class acp_profile
 					}
 
 					$sql = 'SELECT l.*, f.*
-						FROM ' . PROFILE_LANG_TABLE . ' l, ' . PROFILE_FIELDS_TABLE . ' f 
+						FROM ' . PROFILE_LANG_TABLE . ' l, ' . PROFILE_FIELDS_TABLE . ' f
 						WHERE l.lang_id = ' . $this->edit_lang_id . "
 							AND f.field_id = $field_id
 							AND l.field_id = f.field_id";
@@ -308,7 +316,7 @@ class acp_profile
 					{
 						// Some admin changed the default language?
 						$sql = 'SELECT l.*, f.*
-							FROM ' . PROFILE_LANG_TABLE . ' l, ' . PROFILE_FIELDS_TABLE . ' f 
+							FROM ' . PROFILE_LANG_TABLE . ' l, ' . PROFILE_FIELDS_TABLE . ' f
 							WHERE l.lang_id <> ' . $this->edit_lang_id . "
 							AND f.field_id = $field_id
 							AND l.field_id = f.field_id";
@@ -327,7 +335,7 @@ class acp_profile
 
 					// Get language entries
 					$sql = 'SELECT *
-						FROM ' . PROFILE_FIELDS_LANG_TABLE . ' 
+						FROM ' . PROFILE_FIELDS_LANG_TABLE . '
 						WHERE lang_id = ' . $this->edit_lang_id . "
 							AND field_id = $field_id
 						ORDER BY option_id ASC";
@@ -497,7 +505,7 @@ class acp_profile
 								list($cp->vars['field_default_value_day'], $cp->vars['field_default_value_month'], $cp->vars['field_default_value_year']) = explode('-', $var);
 							}
 						}	
-					} 
+					}
 					/* else if ($field_type == FIELD_BOOL && $key == 'field_default_value')
 					{
 						// Get the number of options if this key is 'field_maxlen'
@@ -512,7 +520,7 @@ class acp_profile
 				{
 					// Get language entries
 					$sql = 'SELECT *
-						FROM ' . PROFILE_FIELDS_LANG_TABLE . ' 
+						FROM ' . PROFILE_FIELDS_LANG_TABLE . '
 						WHERE lang_id <> ' . $this->edit_lang_id . "
 							AND field_id = $field_id
 						ORDER BY option_id ASC";
@@ -527,7 +535,7 @@ class acp_profile
 
 		
 					$sql = 'SELECT lang_id, lang_name, lang_explain, lang_default_value
-						FROM ' . PROFILE_LANG_TABLE . ' 
+						FROM ' . PROFILE_LANG_TABLE . '
 						WHERE lang_id <> ' . $this->edit_lang_id . "
 							AND field_id = $field_id
 						ORDER BY lang_id ASC";
@@ -602,8 +610,8 @@ class acp_profile
 					// Check for already existing field ident
 					if ($action != 'edit')
 					{
-						$sql = 'SELECT field_ident 
-							FROM ' . PROFILE_FIELDS_TABLE . " 
+						$sql = 'SELECT field_ident
+							FROM ' . PROFILE_FIELDS_TABLE . "
 							WHERE field_ident = '" . $db->sql_escape($cp->vars['field_ident']) . "'";
 						$result = $db->sql_query($sql);
 						$row = $db->sql_fetchrow($result);
@@ -710,7 +718,7 @@ class acp_profile
 				switch ($step)
 				{
 					// Create basic options - only small differences between field types
-					case 1: 
+					case 1:
 	
 						// Build common create options
 						$template->assign_vars(array(
@@ -789,7 +797,7 @@ class acp_profile
 					break;
 
 					// Define remaining language variables
-					case 3: 
+					case 3:
 
 						$template->assign_var('S_STEP_THREE', true);
 						$options = $this->build_language_options($cp, $field_type, $action);
@@ -885,7 +893,7 @@ class acp_profile
 
 		$default_lang_id = (!empty($this->edit_lang_id)) ? $this->edit_lang_id : $this->lang_defs['iso'][$config['default_lang']];
 
-		$sql = 'SELECT lang_id, lang_iso 
+		$sql = 'SELECT lang_id, lang_iso
 			FROM ' . LANG_TABLE . '
 			WHERE lang_id <> ' . (int) $default_lang_id . '
 			ORDER BY lang_english_name';
@@ -1108,7 +1116,7 @@ class acp_profile
 
 			foreach ($empty_lang as $lang_id => $NULL)
 			{
-				$sql = 'DELETE FROM ' . PROFILE_LANG_TABLE . " 
+				$sql = 'DELETE FROM ' . PROFILE_LANG_TABLE . "
 					WHERE field_id = $field_id
 					AND lang_id = " . (int) $lang_id;
 				$db->sql_query($sql);
@@ -1142,7 +1150,7 @@ class acp_profile
 
 			if ($action != 'create')
 			{
-				$sql = 'DELETE FROM ' . PROFILE_FIELDS_LANG_TABLE . " 
+				$sql = 'DELETE FROM ' . PROFILE_FIELDS_LANG_TABLE . "
 					WHERE field_id = $field_id
 						AND lang_id = " . (int) $default_lang_id;
 				$db->sql_query($sql);
@@ -1194,7 +1202,7 @@ class acp_profile
 				{
 					if ($action != 'create')
 					{
-						$sql = 'DELETE FROM ' . PROFILE_FIELDS_LANG_TABLE . " 
+						$sql = 'DELETE FROM ' . PROFILE_FIELDS_LANG_TABLE . "
 							WHERE field_id = $field_id
 							AND lang_id = " . (int) $lang_id;
 						$db->sql_query($sql);
@@ -1215,7 +1223,7 @@ class acp_profile
 
 			foreach ($empty_lang as $lang_id => $NULL)
 			{
-				$sql = 'DELETE FROM ' . PROFILE_FIELDS_LANG_TABLE . " 
+				$sql = 'DELETE FROM ' . PROFILE_FIELDS_LANG_TABLE . "
 					WHERE field_id = $field_id
 					AND lang_id = " . (int) $lang_id;
 				$db->sql_query($sql);
@@ -1252,7 +1260,7 @@ class acp_profile
 					unset($sql['lang_id'], $sql['field_id'], $sql['option_id']);
 					
 					$this->update_insert(PROFILE_FIELDS_LANG_TABLE, $sql, array(
-						'lang_id'	=> $lang_id, 
+						'lang_id'	=> $lang_id,
 						'field_id'	=> $field_id,
 						'option_id'	=> $option_id)
 					);
@@ -1306,7 +1314,7 @@ class acp_profile
 			return;
 		}
 
-		$sql = "SELECT $check_key 
+		$sql = "SELECT $check_key
 			FROM $table
 			WHERE " . implode(' AND ', $where_sql);
 		$result = $db->sql_query($sql);
@@ -1326,7 +1334,7 @@ class acp_profile
 		{
 			if (sizeof($sql_ary))
 			{
-				$sql = "UPDATE $table SET " . $db->sql_build_array('UPDATE', $sql_ary) . ' 
+				$sql = "UPDATE $table SET " . $db->sql_build_array('UPDATE', $sql_ary) . '
 					WHERE ' . implode(' AND ', $where_sql);
 				$db->sql_query($sql);
 			}
@@ -1415,8 +1423,8 @@ class acp_profile
 				if (version_compare(sqlite_libversion(), '3.0') == -1)
 				{
 					$sql = "SELECT sql
-						FROM sqlite_master 
-						WHERE type = 'table' 
+						FROM sqlite_master
+						WHERE type = 'table'
 							AND name = '" . PROFILE_FIELDS_DATA_TABLE . "'
 						ORDER BY type DESC, name;";
 					$result = $db->sql_query($sql);

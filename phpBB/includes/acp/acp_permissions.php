@@ -9,6 +9,14 @@
 */
 
 /**
+* @ignore
+*/
+if (!defined('IN_PHPBB'))
+{
+	exit;
+}
+
+/**
 * @package acp
 */
 class acp_permissions
@@ -601,7 +609,7 @@ class acp_permissions
 		}
 	}
 
-	/** 
+	/**
 	* Apply permissions
 	*/
 	function set_permissions($mode, $permission_type, &$auth_admin, &$user_id, &$group_id)
@@ -690,7 +698,7 @@ class acp_permissions
 		trigger_error($user->lang['AUTH_UPDATED'] . adm_back_link($this->u_action));
 	}
 
-	/** 
+	/**
 	* Apply all permissions
 	*/
 	function set_all_permissions($mode, $permission_type, &$auth_admin, &$user_id, &$group_id)
@@ -862,7 +870,7 @@ class acp_permissions
 		else
 		{
 			// Grab the forum details if non-zero forum_id
-			$sql = 'SELECT forum_name 
+			$sql = 'SELECT forum_name
 				FROM ' . FORUMS_TABLE . '
 				WHERE ' . $db->sql_in_set('forum_id', $forum_id);
 			$result = $db->sql_query($sql);

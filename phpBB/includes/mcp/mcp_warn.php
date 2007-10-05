@@ -1,12 +1,20 @@
 <?php
-/** 
+/**
 *
 * @package mcp
 * @version $Id$
-* @copyright (c) 2005 phpBB Group 
-* @license http://opensource.org/licenses/gpl-license.php GNU Public License 
+* @copyright (c) 2005 phpBB Group
+* @license http://opensource.org/licenses/gpl-license.php GNU Public License
 *
 */
+
+/**
+* @ignore
+*/
+if (!defined('IN_PHPBB'))
+{
+	exit;
+}
 
 /**
 * mcp_warn
@@ -195,7 +203,7 @@ class mcp_warn
 		$warning = utf8_normalize_nfc(request_var('warning', '', true));
 
 		$sql = 'SELECT u.*, p.*
-			FROM ' . POSTS_TABLE . ' p, ' . USERS_TABLE . " u 
+			FROM ' . POSTS_TABLE . ' p, ' . USERS_TABLE . " u
 			WHERE post_id = $post_id
 				AND u.user_id = p.poster_id";
 		$result = $db->sql_query($sql);
@@ -438,7 +446,7 @@ function add_warning($user_row, $warning, $send_pm = true, $post_id = 0)
 
 	$db->sql_query('INSERT INTO ' . WARNINGS_TABLE . ' ' . $db->sql_build_array('INSERT', $sql_ary));
 
-	$sql = 'UPDATE ' . USERS_TABLE . ' 
+	$sql = 'UPDATE ' . USERS_TABLE . '
 		SET user_warnings = user_warnings + 1,
 			user_last_warning = ' . time() . '
 		WHERE user_id = ' . $user_row['user_id'];

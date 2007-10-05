@@ -1,12 +1,20 @@
 <?php
-/** 
+/**
 *
 * @package acp
 * @version $Id$
-* @copyright (c) 2005 phpBB Group 
-* @license http://opensource.org/licenses/gpl-license.php GNU Public License 
+* @copyright (c) 2005 phpBB Group
+* @license http://opensource.org/licenses/gpl-license.php GNU Public License
 *
 */
+
+/**
+* @ignore
+*/
+if (!defined('IN_PHPBB'))
+{
+	exit;
+}
 
 /**
 * @todo [smilies] check regular expressions for special char replacements (stored specialchared in db)
@@ -108,7 +116,7 @@ class acp_icons
 
 				if ($action == 'add' && $mode == 'smilies')
 				{
-					$sql = 'SELECT * 
+					$sql = 'SELECT *
 						FROM ' . SMILIES_TABLE . '
 						ORDER BY smiley_order';
 					$result = $db->sql_query($sql);
@@ -147,8 +155,8 @@ class acp_icons
 					}
 				}
 				
-				$sql = "SELECT * 
-					FROM $table 
+				$sql = "SELECT *
+					FROM $table
 					ORDER BY {$fields}_order " . (($icon_id || $action == 'add') ? 'DESC' : 'ASC');
 				$result = $db->sql_query($sql);
 				
@@ -202,13 +210,13 @@ class acp_icons
 				$db->sql_freeresult($result);
 
 				$order_list = '<option value="1"' . ((!isset($after)) ? ' selected="selected"' : '') . '>' . $user->lang['FIRST'] . '</option>';
- 				$add_order_list = '<option value="1">' . $user->lang['FIRST'] . '</option>';
- 
+				$add_order_list = '<option value="1">' . $user->lang['FIRST'] . '</option>';
+
 				if ($action == 'add')
 				{
 					$data = $_images;
 				}
-				 
+
 				$colspan = (($mode == 'smilies') ? '7' : '5');
 				$colspan += ($icon_id) ? 1 : 0;
 				$colspan += ($action == 'add') ? 2 : 0;
@@ -388,7 +396,7 @@ class acp_icons
 						if ($action == 'modify'  && !empty($image_id[$image]))
 						{
 							$sql = "UPDATE $table
-								SET " . $db->sql_build_array('UPDATE', $img_sql) . " 
+								SET " . $db->sql_build_array('UPDATE', $img_sql) . "
 								WHERE {$fields}_id = " . $image_id[$image];
 							$db->sql_query($sql);
 							$icons_updated++;
@@ -451,7 +459,7 @@ class acp_icons
 					{
 						if (preg_match_all("#'(.*?)', ?#", $pak_entry, $data))
 						{
-							if ((sizeof($data[1]) != 4 && $mode == 'icons') || 
+							if ((sizeof($data[1]) != 4 && $mode == 'icons') ||
 								(sizeof($data[1]) != 6 && $mode == 'smilies'))
 							{
 								trigger_error($user->lang['WRONG_PAK_TYPE'] . adm_back_link($this->u_action), E_USER_WARNING);
@@ -491,7 +499,7 @@ class acp_icons
 							break;
 						}
 					}
-					else 
+					else
 					{
 						$cur_img = array();
 
@@ -514,7 +522,7 @@ class acp_icons
 						$data = array();
 						if (preg_match_all("#'(.*?)', ?#", $pak_entry, $data))
 						{
-							if ((sizeof($data[1]) != 4 && $mode == 'icons') || 
+							if ((sizeof($data[1]) != 4 && $mode == 'icons') ||
 								(sizeof($data[1]) != 6 && $mode == 'smilies'))
 							{
 								trigger_error($user->lang['WRONG_PAK_TYPE'] . adm_back_link($this->u_action), E_USER_WARNING);
@@ -532,8 +540,8 @@ class acp_icons
 								$code = stripslashes($data[1][5]);
 							}
 
-							if ($current == 'replace' && 
-								(($mode == 'smilies' && !empty($cur_img[$code])) || 
+							if ($current == 'replace' &&
+								(($mode == 'smilies' && !empty($cur_img[$code])) ||
 								($mode == 'icons' && !empty($cur_img[$img]))))
 							{
 								$replace_sql = ($mode == 'smilies') ? $code : $img;
@@ -551,7 +559,7 @@ class acp_icons
 									));
 								}
 
-								$sql = "UPDATE $table SET " . $db->sql_build_array('UPDATE', $sql) . " 
+								$sql = "UPDATE $table SET " . $db->sql_build_array('UPDATE', $sql) . "
 									WHERE $field_sql = '" . $db->sql_escape($replace_sql) . "'";
 								$db->sql_query($sql);
 							}
@@ -630,7 +638,7 @@ class acp_icons
 
 			case 'send':
 
-				$sql = "SELECT * 
+				$sql = "SELECT *
 					FROM $table
 					ORDER BY {$fields}_order";
 				$result = $db->sql_query($sql);
@@ -689,12 +697,12 @@ class acp_icons
 
 						case 'icons':
 							// Reset appropriate icon_ids
-							$db->sql_query('UPDATE ' . TOPICS_TABLE . " 
-								SET icon_id = 0 
+							$db->sql_query('UPDATE ' . TOPICS_TABLE . "
+								SET icon_id = 0
 								WHERE icon_id = $icon_id");
 
-							$db->sql_query('UPDATE ' . POSTS_TABLE . " 
-								SET icon_id = 0 
+							$db->sql_query('UPDATE ' . POSTS_TABLE . "
+								SET icon_id = 0
 								WHERE icon_id = $icon_id");
 						break;
 					}
@@ -736,7 +744,7 @@ class acp_icons
 				// on move_up, switch position with previous order_id...
 				$switch_order_id = ($action == 'move_down') ? $current_order + 1 : $current_order - 1;
 
-				// 
+				//
 				$sql = "UPDATE $table
 					SET {$fields}_order = $current_order
 					WHERE {$fields}_order = $switch_order_id
@@ -804,7 +812,7 @@ class acp_icons
 
 		$spacer = false;
 
-		$sql = "SELECT * 
+		$sql = "SELECT *
 			FROM $table
 			ORDER BY {$fields}_order ASC";
 		$result = $db->sql_query($sql);

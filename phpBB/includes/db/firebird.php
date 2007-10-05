@@ -1,10 +1,10 @@
 <?php
-/** 
+/**
 *
 * @package dbal
 * @version $Id$
-* @copyright (c) 2005 phpBB Group 
-* @license http://opensource.org/licenses/gpl-license.php GNU Public License 
+* @copyright (c) 2005 phpBB Group
+* @license http://opensource.org/licenses/gpl-license.php GNU Public License
 *
 */
 
@@ -250,7 +250,7 @@ class dbal_firebird extends dbal
 
 		$query = 'SELECT FIRST ' . $total . ((!empty($offset)) ? ' SKIP ' . $offset : '') . substr($query, 6);
 
-		return $this->sql_query($query, $cache_ttl); 
+		return $this->sql_query($query, $cache_ttl);
 	}
 
 	/**

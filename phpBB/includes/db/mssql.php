@@ -1,10 +1,10 @@
 <?php
-/** 
+/**
 *
 * @package dbal
 * @version $Id$
-* @copyright (c) 2005 phpBB Group 
-* @license http://opensource.org/licenses/gpl-license.php GNU Public License 
+* @copyright (c) 2005 phpBB Group
+* @license http://opensource.org/licenses/gpl-license.php GNU Public License
 *
 */
 
@@ -168,7 +168,7 @@ class dbal_mssql extends dbal
 	/**
 	* Build LIMIT query
 	*/
-	function _sql_query_limit($query, $total, $offset = 0, $cache_ttl = 0) 
+	function _sql_query_limit($query, $total, $offset = 0, $cache_ttl = 0)
 	{
 		$this->query_result = false;
 
@@ -345,7 +345,7 @@ class dbal_mssql extends dbal
 		}
 
 		// Get full error message if possible
-		$sql = 'SELECT CAST(description as varchar(255)) as message 
+		$sql = 'SELECT CAST(description as varchar(255)) as message
 			FROM master.dbo.sysmessages
 			WHERE error = ' . $error['code'];
 		$result_id = @mssql_query($sql);

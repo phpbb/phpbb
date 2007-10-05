@@ -1,12 +1,20 @@
 <?php
-/** 
+/**
 *
 * @package acp
 * @version $Id$
-* @copyright (c) 2005 phpBB Group 
-* @license http://opensource.org/licenses/gpl-license.php GNU Public License 
+* @copyright (c) 2005 phpBB Group
+* @license http://opensource.org/licenses/gpl-license.php GNU Public License
 *
 */
+
+/**
+* @ignore
+*/
+if (!defined('IN_PHPBB'))
+{
+	exit;
+}
 
 /**
 * @package acp
@@ -138,8 +146,8 @@ class acp_ranks
 
 				$data = $ranks = $existing_imgs = array();
 				
-				$sql = 'SELECT * 
-					FROM ' . RANKS_TABLE . ' 
+				$sql = 'SELECT *
+					FROM ' . RANKS_TABLE . '
 					ORDER BY rank_min ASC, rank_special ASC';
 				$result = $db->sql_query($sql);
 
@@ -163,7 +171,7 @@ class acp_ranks
 
 					foreach ($img_ary as $img)
 					{
-						$img = $path . $img; 
+						$img = $path . $img;
 
 						if (!in_array($img, $existing_imgs) || $action == 'edit')
 						{

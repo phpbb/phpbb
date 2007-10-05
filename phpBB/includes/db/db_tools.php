@@ -1,12 +1,20 @@
 <?php
-/** 
+/**
 *
 * @package dbal
 * @version $Id$
-* @copyright (c) 2007 phpBB Group 
-* @license http://opensource.org/licenses/gpl-license.php GNU Public License 
+* @copyright (c) 2007 phpBB Group
+* @license http://opensource.org/licenses/gpl-license.php GNU Public License
 *
 */
+
+/**
+* @ignore
+*/
+if (!defined('IN_PHPBB'))
+{
+	exit;
+}
 
 /**
 * Database Tools for handling cross-db actions such as altering columns, etc.
@@ -547,8 +555,8 @@ class phpbb_db_tools
 			// ugh, SQLite
 			case 'sqlite':
 				$sql = "SELECT sql
-					FROM sqlite_master 
-					WHERE type = 'table' 
+					FROM sqlite_master
+					WHERE type = 'table'
 						AND name = '{$table}'";
 				$result = $this->db->sql_query($sql);
 
@@ -840,8 +848,8 @@ class phpbb_db_tools
 				if (version_compare(sqlite_libversion(), '3.0') == -1)
 				{
 					$sql = "SELECT sql
-						FROM sqlite_master 
-						WHERE type = 'table' 
+						FROM sqlite_master
+						WHERE type = 'table'
 							AND name = '{$table_name}'
 						ORDER BY type DESC, name;";
 					$result = $this->db->sql_query($sql);
@@ -932,8 +940,8 @@ class phpbb_db_tools
 				if (version_compare(sqlite_libversion(), '3.0') == -1)
 				{
 					$sql = "SELECT sql
-						FROM sqlite_master 
-						WHERE type = 'table' 
+						FROM sqlite_master
+						WHERE type = 'table'
 							AND name = '{$table_name}'
 						ORDER BY type DESC, name;";
 					$result = $this->db->sql_query($sql);
@@ -1053,8 +1061,8 @@ class phpbb_db_tools
 
 			case 'sqlite':
 				$sql = "SELECT sql
-					FROM sqlite_master 
-					WHERE type = 'table' 
+					FROM sqlite_master
+					WHERE type = 'table'
 						AND name = '{$table_name}'
 					ORDER BY type DESC, name;";
 				$result = $this->db->sql_query($sql);
@@ -1349,8 +1357,8 @@ class phpbb_db_tools
 			case 'sqlite':
 
 				$sql = "SELECT sql
-					FROM sqlite_master 
-					WHERE type = 'table' 
+					FROM sqlite_master
+					WHERE type = 'table'
 						AND name = '{$table_name}'
 					ORDER BY type DESC, name;";
 				$result = $this->db->sql_query($sql);

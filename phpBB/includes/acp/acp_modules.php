@@ -1,12 +1,20 @@
 <?php
-/** 
+/**
 *
 * @package acp
 * @version $Id$
-* @copyright (c) 2005 phpBB Group 
-* @license http://opensource.org/licenses/gpl-license.php GNU Public License 
+* @copyright (c) 2005 phpBB Group
+* @license http://opensource.org/licenses/gpl-license.php GNU Public License
 *
 */
+
+/**
+* @ignore
+*/
+if (!defined('IN_PHPBB'))
+{
+	exit;
+}
 
 /**
 * - Able to check for new module versions (modes changed/adjusted/added/removed)
@@ -124,7 +132,7 @@ class acp_modules
 					trigger_error($user->lang['NO_MODULE'] . adm_back_link($this->u_action . '&amp;parent_id=' . $this->parent_id), E_USER_WARNING);
 				}
 
-				$sql = 'UPDATE ' . MODULES_TABLE . ' 
+				$sql = 'UPDATE ' . MODULES_TABLE . '
 					SET module_enabled = ' . (($action == 'enable') ? 1 : 0) . "
 					WHERE module_class = '" . $db->sql_escape($this->module_class) . "'
 						AND module_id = $module_id";
@@ -346,7 +354,7 @@ class acp_modules
 					'ACTION'			=> $action,
 					'MODULE_ID'			=> $module_id,
 
-				), 
+				),
 					array_change_key_case($module_data, CASE_UPPER))
 				);
 
@@ -730,7 +738,7 @@ class acp_modules
 
 	/**
 	* Update/Add module
-	* 
+	*
 	* @param bool $run_inline if set to true errors will be returned and no logs being written
 	*/
 	function update_module_data(&$module_data, $run_inline = false)

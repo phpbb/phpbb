@@ -1,12 +1,20 @@
 <?php
-/** 
+/**
 *
 * @package ucp
 * @version $Id$
-* @copyright (c) 2005 phpBB Group 
-* @license http://opensource.org/licenses/gpl-license.php GNU Public License 
+* @copyright (c) 2005 phpBB Group
+* @license http://opensource.org/licenses/gpl-license.php GNU Public License
 *
 */
+
+/**
+* @ignore
+*/
+if (!defined('IN_PHPBB'))
+{
+	exit;
+}
 
 /**
 * Execute message options
@@ -69,7 +77,7 @@ function message_options($id, $mode, $global_privmsgs_rules, $global_rule_condit
 
 			if ($folder_name)
 			{
-				$sql = 'SELECT folder_name 
+				$sql = 'SELECT folder_name
 					FROM ' . PRIVMSGS_FOLDER_TABLE . "
 					WHERE folder_name = '" . $db->sql_escape($folder_name) . "'
 						AND user_id = " . $user->data['user_id'];
@@ -138,7 +146,7 @@ function message_options($id, $mode, $global_privmsgs_rules, $global_rule_condit
 				trigger_error('CANNOT_RENAME_FOLDER');
 			}
 
-			$sql = 'UPDATE ' . PRIVMSGS_FOLDER_TABLE . " 
+			$sql = 'UPDATE ' . PRIVMSGS_FOLDER_TABLE . "
 				SET folder_name = '" . $db->sql_escape($new_folder_name) . "'
 				WHERE folder_id = $rename_folder_id
 					AND user_id = {$user->data['user_id']}";
@@ -149,7 +157,9 @@ function message_options($id, $mode, $global_privmsgs_rules, $global_rule_condit
 		{
 			$msg = $user->lang['FORM_INVALID'];
 		}
+
 		$message = $msg . '<br /><br />' . sprintf($user->lang['RETURN_UCP'], '<a href="' . $redirect_url . '">', '</a>');
+
 		meta_refresh(3, $redirect_url);
 		trigger_error($message);
 	}
@@ -194,7 +204,7 @@ function message_options($id, $mode, $global_privmsgs_rules, $global_rule_condit
 		if (confirm_box(true))
 		{
 			// Gather message ids
-			$sql = 'SELECT msg_id 
+			$sql = 'SELECT msg_id
 				FROM ' . PRIVMSGS_TO_TABLE . '
 				WHERE user_id = ' . $user->data['user_id'] . "
 					AND folder_id = $remove_folder_id";
@@ -302,7 +312,7 @@ function message_options($id, $mode, $global_privmsgs_rules, $global_rule_condit
 				'rule_folder_id'	=> $folder_id
 			);
 
-			$sql = 'SELECT rule_id 
+			$sql = 'SELECT rule_id
 				FROM ' . PRIVMSGS_RULES_TABLE . '
 				WHERE ' . $db->sql_build_array('SELECT', $rule_ary);
 			$result = $db->sql_query($sql);
@@ -357,7 +367,7 @@ function message_options($id, $mode, $global_privmsgs_rules, $global_rule_condit
 			$message = $user->lang['RULE_DELETED'];
 
 			// Reset user_message_rules if no more assigned
-			$sql = 'SELECT rule_id 
+			$sql = 'SELECT rule_id
 				FROM ' . PRIVMSGS_RULES_TABLE . '
 				WHERE user_id = ' . $user->data['user_id'];
 			$result = $db->sql_query_limit($sql, 1);
@@ -394,11 +404,11 @@ function message_options($id, $mode, $global_privmsgs_rules, $global_rule_condit
 	$db->sql_freeresult($result);
 	
 	$folder[PRIVMSGS_INBOX] = array(
-		'folder_name'		=> $user->lang['PM_INBOX'], 
+		'folder_name'		=> $user->lang['PM_INBOX'],
 		'message_status'	=> sprintf($user->lang['FOLDER_MESSAGE_STATUS'], $num_messages, $user->data['message_limit'])
 	);
 
-	$sql = 'SELECT folder_id, folder_name, pm_count 
+	$sql = 'SELECT folder_id, folder_name, pm_count
 		FROM ' . PRIVMSGS_FOLDER_TABLE . '
 			WHERE user_id = ' . $user->data['user_id'];
 	$result = $db->sql_query($sql);
@@ -408,7 +418,7 @@ function message_options($id, $mode, $global_privmsgs_rules, $global_rule_condit
 	{
 		$num_user_folder++;
 		$folder[$row['folder_id']] = array(
-			'folder_name'		=> $row['folder_name'], 
+			'folder_name'		=> $row['folder_name'],
 			'message_status'	=> sprintf($user->lang['FOLDER_MESSAGE_STATUS'], $row['pm_count'], $user->data['message_limit'])
 		);
 	}
@@ -557,7 +567,7 @@ function define_check_option($hardcoded, $check_option, $check_lang)
 	{
 		foreach ($check_lang as $value => $lang)
 		{
-			$s_check_options .= '<option value="' . $value . '"' . (($value == $check_option) ? ' selected="selected"' : '') . '>' . $lang . '</option>'; 
+			$s_check_options .= '<option value="' . $value . '"' . (($value == $check_option) ? ' selected="selected"' : '') . '>' . $lang . '</option>';
 		}
 	}
 
@@ -629,7 +639,7 @@ function define_rule_option($hardcoded, $rule_option, $rule_lang, $check_ary)
 	{
 		foreach ($check_ary as $value => $_check)
 		{
-			$s_rule_options .= '<option value="' . $value . '"' . (($value == $rule_option) ? ' selected="selected"' : '') . '>' . $rule_lang[$value] . '</option>'; 
+			$s_rule_options .= '<option value="' . $value . '"' . (($value == $rule_option) ? ' selected="selected"' : '') . '>' . $rule_lang[$value] . '</option>';
 		}
 	}
 
@@ -729,10 +739,10 @@ function define_cond_option($hardcoded, $cond_option, $rule_option, $global_rule
 		case 'group':
 			$rule_group_id = request_var('rule_group_id', 0);
 			$rule_string = utf8_normalize_nfc(request_var('rule_string', '', true));
-			
+
 			$sql = 'SELECT g.group_id, g.group_name, g.group_type
 					FROM ' . GROUPS_TABLE . ' g ';
-			 
+
 			if (!$auth->acl_gets('a_group', 'a_groupadd', 'a_groupdel'))
 			{
 				$sql .= 'LEFT JOIN ' . USER_GROUP_TABLE . ' ug
@@ -762,7 +772,7 @@ function define_cond_option($hardcoded, $cond_option, $rule_option, $global_rule
 					$rule_string = (($row['group_type'] == GROUP_SPECIAL) ? $user->lang['G_' . $row['group_name']] : $row['group_name']);
 				}
 
-				$s_class	= ($row['group_type'] == GROUP_SPECIAL) ? ' class="sep"' : ''; 
+				$s_class	= ($row['group_type'] == GROUP_SPECIAL) ? ' class="sep"' : '';
 				$s_selected	= ($row['group_id'] == $rule_group_id) ? ' selected="selected"' : '';
 				
 				$s_group_options .= '<option value="' . $row['group_id'] . '"' . $s_class . $s_selected . '>' . (($row['group_type'] == GROUP_SPECIAL) ? $user->lang['G_' . $row['group_name']] : $row['group_name']) . '</option>';

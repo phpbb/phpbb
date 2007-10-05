@@ -1,12 +1,20 @@
 <?php
-/** 
+/**
 *
 * @package mcp
 * @version $Id$
-* @copyright (c) 2005 phpBB Group 
-* @license http://opensource.org/licenses/gpl-license.php GNU Public License 
+* @copyright (c) 2005 phpBB Group
+* @license http://opensource.org/licenses/gpl-license.php GNU Public License
 *
 */
+
+/**
+* @ignore
+*/
+if (!defined('IN_PHPBB'))
+{
+	exit;
+}
 
 /**
 * mcp_notes
@@ -126,7 +134,7 @@ class mcp_notes
 				if (check_form_key('mcp_notes'))
 				{
 					$sql = 'DELETE FROM ' . LOG_TABLE . '
-						WHERE log_type = ' . LOG_USERS . " 
+						WHERE log_type = ' . LOG_USERS . "
 							AND reportee_id = $user_id
 							$where_sql";
 					$db->sql_query($sql);

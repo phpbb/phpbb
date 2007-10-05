@@ -9,6 +9,14 @@
 */
 
 /**
+* @ignore
+*/
+if (!defined('IN_PHPBB'))
+{
+	exit;
+}
+
+/**
 * Handling actions in post details screen
 */
 function mcp_post_details($id, $mode, $action)
@@ -310,7 +318,7 @@ function mcp_post_details($id, $mode, $action)
 		if (sizeof($users_ary))
 		{
 			// Get the usernames
-			$sql = 'SELECT user_id, username 
+			$sql = 'SELECT user_id, username
 				FROM ' . USERS_TABLE . '
 				WHERE ' . $db->sql_in_set('user_id', array_keys($users_ary));
 			$result = $db->sql_query($sql);
@@ -412,7 +420,7 @@ function change_poster(&$post_info, $userdata)
 	{
 		$sql = 'UPDATE ' . USERS_TABLE . '
 			SET user_posts = user_posts - 1
-			WHERE user_id = ' . $post_info['user_id'] .' 
+			WHERE user_id = ' . $post_info['user_id'] .'
 			AND user_posts > 0';
 		$db->sql_query($sql);
 

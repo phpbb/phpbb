@@ -1,12 +1,20 @@
 <?php
-/** 
+/**
 *
 * @package acp
 * @version $Id$
-* @copyright (c) 2005 phpBB Group 
-* @license http://opensource.org/licenses/gpl-license.php GNU Public License 
+* @copyright (c) 2005 phpBB Group
+* @license http://opensource.org/licenses/gpl-license.php GNU Public License
 *
 */
+
+/**
+* @ignore
+*/
+if (!defined('IN_PHPBB'))
+{
+	exit;
+}
 
 /**
 * @package acp
@@ -315,7 +323,7 @@ class acp_reasons
 
 		// Reason count
 		$sql = 'SELECT reason_id, COUNT(reason_id) AS reason_count
-			FROM ' . REPORTS_TABLE . ' 
+			FROM ' . REPORTS_TABLE . '
 			GROUP BY reason_id';
 		$result = $db->sql_query($sql);
 

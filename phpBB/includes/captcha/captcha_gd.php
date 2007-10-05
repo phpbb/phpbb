@@ -1,14 +1,20 @@
 <?php
-/** 
+/**
 *
 * @package VC
 * @version $Id$
-* @copyright (c) 2006 phpBB Group 
-* @license http://opensource.org/licenses/gpl-license.php GNU Public License 
+* @copyright (c) 2006 phpBB Group
+* @license http://opensource.org/licenses/gpl-license.php GNU Public License
 *
 */
 
- 
+/**
+* @ignore
+*/
+if (!defined('IN_PHPBB'))
+{
+	exit;
+}
 
 /**
 * Original Author - Xore (Robert Hetzler)
@@ -42,7 +48,7 @@ class captcha
 		$scheme = $colour->colour_scheme('background', false);
 		$scheme = $colour->mono_range($scheme, 10, false);
 		shuffle($scheme);
-		 
+
 		$bg_colours = array_splice($scheme, mt_rand(6, 12));
 
 		// Generate code characters
@@ -1146,7 +1152,7 @@ class colour_manager
 			// everything else is params
 			return $this->random_colour($colour, $mode);
 		}
-		 
+
 		$rgb		= colour_manager::model_convert($colour, $mode, 'rgb');
 		$store		= ($this->mode == 'rgb') ? $rgb : colour_manager::model_convert($colour, $mode, $this->mode);
 		$resource	= imagecolorallocate($this->img, $rgb[0], $rgb[1], $rgb[2]);
@@ -1269,7 +1275,7 @@ class colour_manager
 		$colour = colour_manager::model_convert($this->colours[$resource], $this->mode, $mode);
 		$results = ($include_original) ? array($resource) : array();
 		$colour2 = $colour3 = $colour4 = $colour;
-		$colour2[0] += 150;  
+		$colour2[0] += 150;
 		$colour3[0] += 180;
 		$colour4[0] += 210;
 
@@ -1383,15 +1389,12 @@ class colour_manager
 	*/
 	function hsv2rgb($hsv)
 	{
-		 
 		colour_manager::normalize_hue($hsv[0]);
-	
-
 
 		$h = $hsv[0];
 		$s = min(1, max(0, $hsv[1] / 100));
 		$v = min(1, max(0, $hsv[2] / 100));
-	 
+
 		// calculate hue sector
 		$hi = floor($hsv[0] / 60);
 
@@ -1409,7 +1412,7 @@ class colour_manager
 
 		// calculate adjacent colour
 		$q = $v * (1 - ($f * $s));
-		 
+
 		switch ($hi)
 		{
 			case 0:
@@ -1440,7 +1443,7 @@ class colour_manager
 				return array(0, 0, 0);
 			break;
 		}
- 
+
 		return array(255 * $rgb[0], 255 * $rgb[1], 255 * $rgb[2]);
 	}
 

@@ -9,6 +9,14 @@
 */
 
 /**
+* @ignore
+*/
+if (!defined('IN_PHPBB'))
+{
+	exit;
+}
+
+/**
 * @package acp
 */
 class acp_styles
@@ -61,10 +69,10 @@ class acp_styles
 # For on/off options the valid values are on, off, 1, 0, true and false
 #
 # Values get trimmed, if you want to add a space in front or at the end of
-# the value, then enclose the value with single or double quotes. 
+# the value, then enclose the value with single or double quotes.
 # Single and double quotes do not need to be escaped.
 #
-# 
+#
 
 # General Information about this {MODE}
 name = {NAME}
@@ -76,7 +84,7 @@ version = {VERSION}
 # Some configuration options
 
 #
-# You have to turn this option on if you want to use the 
+# You have to turn this option on if you want to use the
 # path template variables ({T_IMAGESET_PATH} for example) within
 # your css file.
 # This is mostly the case if you want to use language specific
@@ -978,7 +986,7 @@ parse_css_file = {PARSE_CSS_FILE}
 		{
 			$file 		= str_replace('/', '.', $file);
 			
-			// perform some dirty guessing to get the path right. 
+			// perform some dirty guessing to get the path right.
 			// We assume that three dots in a row were '../'
 			$tpl_file 	= str_replace('.', '/', $file);
 			$tpl_file 	= str_replace('///', '../', $tpl_file);
@@ -1286,7 +1294,7 @@ parse_css_file = {PARSE_CSS_FILE}
 						}
 						$imgwidth	= ($imgname != 'poll_center') ? (int) $imgwidth : 0;
 						$imgheight	= (int) $imgheight;
-					} 
+					}
 
 
 					if (strpos($imgpath, '/') !== false)
@@ -1511,8 +1519,8 @@ parse_css_file = {PARSE_CSS_FILE}
 
 		$sql = "SELECT {$mode}_id, {$mode}_name
 			FROM $sql_from
-			WHERE {$mode}_id <> $style_id 
-			$sql_where 
+			WHERE {$mode}_id <> $style_id
+			$sql_where
 			ORDER BY {$mode}_name ASC";
 		$result = $db->sql_query($sql);
 

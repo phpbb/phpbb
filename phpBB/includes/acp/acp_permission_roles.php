@@ -1,12 +1,20 @@
 <?php
-/** 
+/**
 *
 * @package acp
 * @version $Id$
-* @copyright (c) 2005 phpBB Group 
-* @license http://opensource.org/licenses/gpl-license.php GNU Public License 
+* @copyright (c) 2005 phpBB Group
+* @license http://opensource.org/licenses/gpl-license.php GNU Public License
 *
 */
+
+/**
+* @ignore
+*/
+if (!defined('IN_PHPBB'))
+{
+	exit;
+}
 
 /**
 * @package acp
@@ -179,8 +187,8 @@ class acp_permission_roles
 
 					if ($action == 'edit')
 					{
-						$sql = 'UPDATE ' . ACL_ROLES_TABLE . ' 
-							SET ' . $db->sql_build_array('UPDATE', $sql_ary) . ' 
+						$sql = 'UPDATE ' . ACL_ROLES_TABLE . '
+							SET ' . $db->sql_build_array('UPDATE', $sql_ary) . '
 							WHERE role_id = ' . $role_id;
 						$db->sql_query($sql);
 					}

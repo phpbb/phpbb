@@ -1,12 +1,20 @@
 <?php
-/** 
+/**
 *
 * @package acp
 * @version $Id$
-* @copyright (c) 2005 phpBB Group 
-* @license http://opensource.org/licenses/gpl-license.php GNU Public License 
+* @copyright (c) 2005 phpBB Group
+* @license http://opensource.org/licenses/gpl-license.php GNU Public License
 *
 */
+
+/**
+* @ignore
+*/
+if (!defined('IN_PHPBB'))
+{
+	exit;
+}
 
 /**
 * @package acp
@@ -713,7 +721,7 @@ class mysql_extractor extends base_extractor
 
 			// Get field information
 			$field = array();
-			for ($i = 0; $i < $fields_cnt; $i++) 
+			for ($i = 0; $i < $fields_cnt; $i++)
 			{
 				$field[] = mysql_fetch_field($result, $i);
 			}
@@ -915,8 +923,8 @@ class sqlite_extractor extends base_extractor
 		$sql_data .= "DROP TABLE $table_name;\n";
 
 		$sql = "SELECT sql
-			FROM sqlite_master 
-			WHERE type = 'table' 
+			FROM sqlite_master
+			WHERE type = 'table'
 				AND name = '" . $db->sql_escape($table_name) . "'
 			ORDER BY type DESC, name;";
 		$result = $db->sql_query($sql);
@@ -974,8 +982,8 @@ class sqlite_extractor extends base_extractor
 		else
 		{
 			$sql = "SELECT sql
-				FROM sqlite_master 
-				WHERE type = 'table' 
+				FROM sqlite_master
+				WHERE type = 'table'
 					AND name = '" . $table_name . "'";
 			$table_data = sqlite_single_query($db->db_connect_id, $sql);
 			$table_data = preg_replace('#CREATE\s+TABLE\s+"?' . $table_name . '"?#i', '', $table_data);

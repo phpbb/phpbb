@@ -1,12 +1,20 @@
 <?php
-/** 
+/**
 *
 * @package mcp
 * @version $Id$
-* @copyright (c) 2005 phpBB Group 
-* @license http://opensource.org/licenses/gpl-license.php GNU Public License 
+* @copyright (c) 2005 phpBB Group
+* @license http://opensource.org/licenses/gpl-license.php GNU Public License
 *
 */
+
+/**
+* @ignore
+*/
+if (!defined('IN_PHPBB'))
+{
+	exit;
+}
 
 /**
 * @package mcp
@@ -35,7 +43,6 @@ class mcp_ban
 		// Ban submitted?
 		if ($bansubmit)
 		{
-			 
 			// Grab the list of entries
 			$ban				= request_var('ban', '', ($mode === 'user') ? true : false);
 

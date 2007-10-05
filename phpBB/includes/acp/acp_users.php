@@ -9,6 +9,14 @@
 */
 
 /**
+* @ignore
+*/
+if (!defined('IN_PHPBB'))
+{
+	exit;
+}
+
+/**
 * @package acp
 */
 class acp_users
@@ -1488,7 +1496,7 @@ class acp_users
 					trigger_error($user->lang['USER_RANK_UPDATED'] . adm_back_link($this->u_action . '&amp;u=' . $user_id));
 				}
 				
-				$sql = 'SELECT * 
+				$sql = 'SELECT *
 					FROM ' . RANKS_TABLE . '
 					WHERE rank_special = 1
 					ORDER BY rank_title';
@@ -1544,13 +1552,13 @@ class acp_users
 					if (!sizeof($error) && $submit)
 					{
 						$sql_ary = array(
-							'user_sig'					=> (string) $message_parser->message, 
-							'user_sig_bbcode_uid'		=> (string) $message_parser->bbcode_uid, 
+							'user_sig'					=> (string) $message_parser->message,
+							'user_sig_bbcode_uid'		=> (string) $message_parser->bbcode_uid,
 							'user_sig_bbcode_bitfield'	=> (string) $message_parser->bbcode_bitfield
 						);
 
-						$sql = 'UPDATE ' . USERS_TABLE . ' 
-							SET ' . $db->sql_build_array('UPDATE', $sql_ary) . ' 
+						$sql = 'UPDATE ' . USERS_TABLE . '
+							SET ' . $db->sql_build_array('UPDATE', $sql_ary) . '
 							WHERE user_id = ' . $user_id;
 						$db->sql_query($sql);
 
@@ -1590,7 +1598,7 @@ class acp_users
 
 					'L_SIGNATURE_EXPLAIN'	=> sprintf($user->lang['SIGNATURE_EXPLAIN'], $config['max_sig_chars']),
 
-					'S_BBCODE_ALLOWED'		=> $config['allow_sig_bbcode'], 
+					'S_BBCODE_ALLOWED'		=> $config['allow_sig_bbcode'],
 					'S_SMILIES_ALLOWED'		=> $config['allow_sig_smilies'],
 					'S_BBCODE_IMG'			=> ($config['allow_sig_img']) ? true : false,
 					'S_BBCODE_FLASH'		=> ($config['allow_sig_flash']) ? true : false,
@@ -1700,7 +1708,7 @@ class acp_users
 				$db->sql_freeresult($result);
 
 				$sql = 'SELECT a.*, t.topic_title, p.message_subject as message_title
-					FROM ' . ATTACHMENTS_TABLE . ' a 
+					FROM ' . ATTACHMENTS_TABLE . ' a
 						LEFT JOIN ' . TOPICS_TABLE . ' t ON (a.topic_id = t.topic_id
 							AND a.in_message = 0)
 						LEFT JOIN ' . PRIVMSGS_TABLE . ' p ON (a.post_msg_id = p.msg_id

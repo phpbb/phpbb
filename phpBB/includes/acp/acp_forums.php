@@ -9,6 +9,14 @@
 */
 
 /**
+* @ignore
+*/
+if (!defined('IN_PHPBB'))
+{
+	exit;
+}
+
+/**
 * @package acp
 */
 class acp_forums
@@ -127,8 +135,8 @@ class acp_forums
 						'forum_image'			=> request_var('forum_image', ''),
 						'forum_style'			=> request_var('forum_style', 0),
 						'display_on_index'		=> request_var('display_on_index', false),
-						'forum_topics_per_page'	=> request_var('topics_per_page', 0), 
-						'enable_indexing'		=> request_var('enable_indexing', true), 
+						'forum_topics_per_page'	=> request_var('topics_per_page', 0),
+						'enable_indexing'		=> request_var('enable_indexing', true),
 						'enable_icons'			=> request_var('enable_icons', false),
 						'enable_prune'			=> request_var('enable_prune', false),
 						'enable_post_review'	=> request_var('enable_post_review', true),
@@ -173,7 +181,7 @@ class acp_forums
 						$forum_perm_from = request_var('forum_perm_from', 0);
 
 						// Copy permissions?
-						if ($forum_perm_from && !empty($forum_perm_from) && $forum_perm_from != $forum_data['forum_id'] && 
+						if ($forum_perm_from && !empty($forum_perm_from) && $forum_perm_from != $forum_data['forum_id'] &&
 							(($action != 'edit') || $auth->acl_get('acl_a_fauth && acl_a_authusers && acl_a_authgroups && acl_a_mauth')))
 						{
 							// if we edit a forum delete current permissions first
@@ -465,8 +473,8 @@ class acp_forums
 							'forum_image'			=> '',
 							'forum_style'			=> 0,
 							'display_on_index'		=> false,
-							'forum_topics_per_page'	=> 0, 
-							'enable_indexing'		=> true, 
+							'forum_topics_per_page'	=> 0,
+							'enable_indexing'		=> true,
 							'enable_icons'			=> false,
 							'enable_prune'			=> false,
 							'prune_days'			=> 7,
@@ -1100,7 +1108,7 @@ class acp_forums
 							$db->sql_query($sql);
 
 							// Delete forum ids from extension groups table
-							$sql = 'SELECT group_id, allowed_forums 
+							$sql = 'SELECT group_id, allowed_forums
 								FROM ' . EXTENSION_GROUPS_TABLE;
 							$result = $db->sql_query($sql);
 
@@ -1114,7 +1122,7 @@ class acp_forums
 								$allowed_forums = unserialize(trim($_row['allowed_forums']));
 								$allowed_forums = array_diff($allowed_forums, $forum_ids);
 
-								$sql = 'UPDATE ' . EXTENSION_GROUPS_TABLE . " 
+								$sql = 'UPDATE ' . EXTENSION_GROUPS_TABLE . "
 									SET allowed_forums = '" . ((sizeof($allowed_forums)) ? serialize($allowed_forums) : '') . "'
 									WHERE group_id = {$_row['group_id']}";
 								$db->sql_query($sql);
@@ -1131,7 +1139,7 @@ class acp_forums
 							return array($user->lang['NO_DESTINATION_FORUM']);
 						}
 
-						$sql = 'SELECT forum_name 
+						$sql = 'SELECT forum_name
 							FROM ' . FORUMS_TABLE . '
 							WHERE forum_id = ' . $subforums_to_id;
 						$result = $db->sql_query($sql);
@@ -1386,7 +1394,7 @@ class acp_forums
 			{
 				$log_action_posts = 'MOVE_POSTS';
 
-				$sql = 'SELECT forum_name 
+				$sql = 'SELECT forum_name
 					FROM ' . FORUMS_TABLE . '
 					WHERE forum_id = ' . $posts_to_id;
 				$result = $db->sql_query($sql);
@@ -1450,7 +1458,7 @@ class acp_forums
 			{
 				$log_action_forums = 'MOVE_FORUMS';
 
-				$sql = 'SELECT forum_name 
+				$sql = 'SELECT forum_name
 					FROM ' . FORUMS_TABLE . '
 					WHERE forum_id = ' . $subforums_to_id;
 				$result = $db->sql_query($sql);
@@ -1532,7 +1540,7 @@ class acp_forums
 		$db->sql_query($sql);
 
 		// Delete forum ids from extension groups table
-		$sql = 'SELECT group_id, allowed_forums 
+		$sql = 'SELECT group_id, allowed_forums
 			FROM ' . EXTENSION_GROUPS_TABLE;
 		$result = $db->sql_query($sql);
 
@@ -1546,7 +1554,7 @@ class acp_forums
 			$allowed_forums = unserialize(trim($row['allowed_forums']));
 			$allowed_forums = array_diff($allowed_forums, $forum_ids);
 
-			$sql = 'UPDATE ' . EXTENSION_GROUPS_TABLE . " 
+			$sql = 'UPDATE ' . EXTENSION_GROUPS_TABLE . "
 				SET allowed_forums = '" . ((sizeof($allowed_forums)) ? serialize($allowed_forums) : '') . "'
 				WHERE group_id = {$row['group_id']}";
 			$db->sql_query($sql);
@@ -1749,12 +1757,12 @@ class acp_forums
 			{
 				$sql = 'UPDATE ' . USERS_TABLE . '
 					SET user_posts = 0
-					WHERE user_id = ' . $poster_id . ' 
+					WHERE user_id = ' . $poster_id . '
 					AND user_posts < ' . $substract;
 				$db->sql_query($sql);
 				$sql = 'UPDATE ' . USERS_TABLE . '
 					SET user_posts = user_posts - ' . $substract . '
-					WHERE user_id = ' . $poster_id . ' 
+					WHERE user_id = ' . $poster_id . '
 					AND user_posts >= ' . $substract;
 				$db->sql_query($sql);
 			}
@@ -1763,7 +1771,7 @@ class acp_forums
 		$db->sql_transaction('commit');
 
 		// Make sure the overall post/topic count is correct...
-		$sql = 'SELECT COUNT(post_id) AS stat 
+		$sql = 'SELECT COUNT(post_id) AS stat
 			FROM ' . POSTS_TABLE . '
 			WHERE post_approved = 1';
 		$result = $db->sql_query($sql);
@@ -1873,7 +1881,7 @@ class acp_forums
 				ELSE {$diff_down}
 			END,
 			forum_parents = ''
-			WHERE 
+			WHERE
 				left_id BETWEEN {$left_id} AND {$right_id}
 				AND right_id BETWEEN {$left_id} AND {$right_id}";
 		$db->sql_query($sql);

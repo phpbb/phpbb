@@ -7,7 +7,15 @@
 *
 */
 
-/** 
+/**
+* @ignore
+*/
+if (!defined('IN_PHPBB'))
+{
+	exit;
+}
+
+/**
 * Private Message Class
 *
 * $_REQUEST['folder'] display folder with the id used
@@ -271,7 +279,7 @@ class ucp_pm
 					$sql = 'SELECT folder_id
 						FROM ' . PRIVMSGS_TO_TABLE . "
 						WHERE msg_id = $msg_id
-							AND folder_id <> " . PRIVMSGS_NO_BOX . ' 
+							AND folder_id <> " . PRIVMSGS_NO_BOX . '
 							AND user_id = ' . $user->data['user_id'];
 					$result = $db->sql_query($sql);
 					$row = $db->sql_fetchrow($result);

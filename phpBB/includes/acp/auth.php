@@ -1,14 +1,15 @@
 <?php
-/** 
+/**
 *
 * @package phpBB3
-* @version $Id$ 
-* @copyright (c) 2005 phpBB Group 
-* @license http://opensource.org/licenses/gpl-license.php GNU Public License 
+* @version $Id$
+* @copyright (c) 2005 phpBB Group
+* @license http://opensource.org/licenses/gpl-license.php GNU Public License
 *
 */
 
 /**
+* @ignore
 */
 if (!defined('IN_PHPBB'))
 {
@@ -119,7 +120,7 @@ class auth_admin extends auth
 		// If forum_ids is false and the scope is local we actually want to have all forums within the array
 		if ($scope == 'local' && !sizeof($forum_ids))
 		{
-			$sql = 'SELECT forum_id 
+			$sql = 'SELECT forum_id
 				FROM ' . FORUMS_TABLE;
 			$result = $db->sql_query($sql, 120);
 
@@ -206,10 +207,10 @@ class auth_admin extends auth
 					// Do not include the global auth_option
 					unset($options[$auth_option]);
 
-					// Not a "fine" solution, but at all it's a 1-dimensional 
+					// Not a "fine" solution, but at all it's a 1-dimensional
 					// array_diff_key function filling the resulting array values with zeros
 					// The differences get merged into $hold_ary (all permissions having $acl_fill set)
-					$hold_ary[$ug_id][$id] = array_merge($options, 
+					$hold_ary[$ug_id][$id] = array_merge($options,
 
 						array_map($return_acl_fill,
 							array_flip(
@@ -253,7 +254,7 @@ class auth_admin extends auth
 		}
 		$db->sql_freeresult($result);
 
-		// Now grab groups... 
+		// Now grab groups...
 		$sql = 'SELECT group_id, forum_id
 			FROM ' . ACL_GROUPS_TABLE . '
 			WHERE auth_role_id = ' . $role_id . '
@@ -428,7 +429,7 @@ class auth_admin extends auth
 			unset($memberships, $groups);
 		}
 
-		// If we only have one forum id to display or being in local mode and more than one user/group to display, 
+		// If we only have one forum id to display or being in local mode and more than one user/group to display,
 		// we switch the complete interface to group by user/usergroup instead of grouping by forum
 		// To achieve this, we need to switch the array a bit
 		if (sizeof($forum_ids) == 1 || ($local && sizeof($ug_names_ary) > 1))
@@ -628,7 +629,7 @@ class auth_admin extends auth
 		// Get forum names
 		$sql = 'SELECT forum_id, forum_name
 			FROM ' . FORUMS_TABLE . '
-			WHERE ' . $db->sql_in_set('forum_id', array_keys($hold_ary)) . ' 
+			WHERE ' . $db->sql_in_set('forum_id', array_keys($hold_ary)) . '
 			ORDER BY left_id';
 		$result = $db->sql_query($sql);
 
@@ -639,7 +640,7 @@ class auth_admin extends auth
 			$forum_names[$row['forum_id']] = $row['forum_name'];
 		}
 		$db->sql_freeresult($result);
- 
+
 		foreach ($forum_names as $forum_id => $forum_name)
 		{
 			$auth_ary = $hold_ary[$forum_id];
@@ -1224,7 +1225,7 @@ class auth_admin extends auth
 	/**
 	* Use permissions from another user. This transferes a permission set from one user to another.
 	* The other user is always able to revert back to his permission set.
-	* This function does not check for lower/higher permissions, it is possible for the user to gain 
+	* This function does not check for lower/higher permissions, it is possible for the user to gain
 	* "more" permissions by this.
 	* Admin permissions will not be copied.
 	*/

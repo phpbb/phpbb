@@ -240,7 +240,7 @@ else
 	/**
 	* UTF-8 aware alternative to strrpos
 	* Find position of last occurrence of a char in a string
-	* 
+	*
 	* @author Harry Fuecks
 	* @param string $str haystack
 	* @param string $needle needle
@@ -329,7 +329,7 @@ else
 	* such as Latin, Greek, Cyrillic, Armenian and archaic Georgian - it does
 	* not exist in the Chinese alphabet, for example. See Unicode Standard
 	* Annex #21: Case Mappings
-	* 
+	*
 	* @param string
 	* @return string string in lowercase
 	*/
@@ -394,7 +394,7 @@ else
 	* such as Latin, Greek, Cyrillic, Armenian and archaic Georgian - it does
 	* not exist in the Chinese alphabet, for example. See Unicode Standard
 	* Annex #21: Case Mappings
-	* 
+	*
 	* @param string
 	* @return string string in uppercase
 	*/
@@ -614,7 +614,7 @@ else
 /**
 * UTF-8 aware alternative to str_split
 * Convert a string to an array
-* 
+*
 * @author Harry Fuecks
 * @param string $str UTF-8 encoded
 * @param int $split_len number to characters to split string by
@@ -640,7 +640,7 @@ function utf8_str_split($str, $split_len = 1)
 /**
 * UTF-8 aware alternative to strspn
 * Find length of initial segment matching the mask
-* 
+*
 * @author Harry Fuecks
 */
 function utf8_strspn($str, $mask, $start = null, $length = null)
@@ -663,7 +663,7 @@ function utf8_strspn($str, $mask, $start = null, $length = null)
 /**
 * UTF-8 aware alternative to ucfirst
 * Make a string's first character uppercase
-* 
+*
 * @author Harry Fuecks
 * @param string
 * @return string with first character as upper case (if applicable)
