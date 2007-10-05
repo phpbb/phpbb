@@ -53,7 +53,7 @@ class acp_inactive
 
 		if ($submit && sizeof($mark))
 		{
-			if (!check_form_key($form_key))
+			if ($action !== 'delete' && !check_form_key($form_key))
 			{
 				trigger_error($user->lang['FORM_INVALID'] . adm_back_link($this->u_action), E_USER_WARNING);
 			}
@@ -124,14 +124,27 @@ class acp_inactive
 					}
 					else if ($action == 'delete')
 					{
-						if (!$auth->acl_get('a_userdel'))
+						if (confirm_box(true))
 						{
-							trigger_error($user->lang['NO_AUTH_OPERATION'] . adm_back_link($this->u_action), E_USER_WARNING);
-						}
+							if (!$auth->acl_get('a_userdel'))
+							{
+								trigger_error($user->lang['NO_AUTH_OPERATION'] . adm_back_link($this->u_action), E_USER_WARNING);
+							}
 
-						foreach ($mark as $user_id)
+							foreach ($mark as $user_id)
+							{
+								user_delete('retain', $user_id, $user_affected[$user_id]);
+							}
+						}
+						else
 						{
-							user_delete('retain', $user_id, $user_affected[$user_id]);
+							$s_hidden_fields = array(
+								'mode'			=> $mode,
+								'action'		=> $action,
+								'mark'			=> $mark,
+								'submit'		=> 1,
+							);
+							confirm_box(false, $user->lang['CONFIRM_OPERATION'], build_hidden_fields($s_hidden_fields));
 						}
 					}
 
