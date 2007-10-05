@@ -887,7 +887,7 @@ $action_ary = request_var('action', array('' =&gt; 0));
 
 	if ($submit)
 	{
-		if (!check_form_token('my_form'))
+		if (!check_form_key('my_form'))
 		{
 			trigger_error('FORM_INVALID');
 		}
