@@ -432,7 +432,7 @@ if ($user->data['is_registered'] && $auth->acl_get('u_savedrafts') && ($mode == 
 	$sql = 'SELECT draft_id
 		FROM ' . DRAFTS_TABLE . '
 		WHERE user_id = ' . $user->data['user_id'] .
-			(($forum_id) ? ' AND forum_id = ' . (int) $forum_id : '') . 
+			(($forum_id) ? ' AND forum_id = ' . (int) $forum_id : '') .
 			(($topic_id) ? ' AND topic_id = ' . (int) $topic_id : '') .
 			(($draft_id) ? " AND draft_id <> $draft_id" : '');
 	$result = $db->sql_query_limit($sql, 1);
@@ -609,7 +609,7 @@ if ($submit || $preview || $refresh)
 	}
 
 	// Delete Poll
-	if ($poll_delete && $mode == 'edit' && sizeof($post_data['poll_options']) && 
+	if ($poll_delete && $mode == 'edit' && sizeof($post_data['poll_options']) &&
 		((!$post_data['poll_last_vote'] && $post_data['poster_id'] == $user->data['user_id'] && $auth->acl_get('f_delete', $forum_id)) || $auth->acl_get('m_delete', $forum_id)))
 	{
 		if ($submit && 	check_form_key('posting'))
@@ -777,7 +777,7 @@ if ($submit || $preview || $refresh)
 
 	$post_data['poll_last_vote'] = (isset($post_data['poll_last_vote'])) ? $post_data['poll_last_vote'] : 0;
 
-	if ($post_data['poll_option_text'] && 
+	if ($post_data['poll_option_text'] &&
 		($mode == 'post' || ($mode == 'edit' && $post_id == $post_data['topic_first_post_id']/* && (!$post_data['poll_last_vote'] || $auth->acl_get('m_edit', $forum_id))*/))
 		&& $auth->acl_get('f_poll', $forum_id))
 	{

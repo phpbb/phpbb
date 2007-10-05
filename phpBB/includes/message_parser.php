@@ -875,7 +875,7 @@ class bbcode_firstpass extends bbcode
 	* Validate url
 	*
 	* @param string $var1 optional url parameter for url bbcode: [url(=$var1)]$var2[/url]
-	* @param string $var2 url bbcode content: [url(=$var1)]$var2[/url] 
+	* @param string $var2 url bbcode content: [url(=$var1)]$var2[/url]
 	*/
 	function validate_url($var1, $var2)
 	{
@@ -921,7 +921,7 @@ class bbcode_firstpass extends bbcode
 				$url = append_sid($url);
 			}
 
-			return ($var1) ? '[url=' . $this->bbcode_specialchars($url) . ':' . $this->bbcode_uid . ']' . $var2 . '[/url:' . $this->bbcode_uid . ']' : '[url:' . $this->bbcode_uid . ']' . $this->bbcode_specialchars($url) . '[/url:' . $this->bbcode_uid . ']'; 
+			return ($var1) ? '[url=' . $this->bbcode_specialchars($url) . ':' . $this->bbcode_uid . ']' . $var2 . '[/url:' . $this->bbcode_uid . ']' : '[url:' . $this->bbcode_uid . ']' . $this->bbcode_specialchars($url) . '[/url:' . $this->bbcode_uid . ']';
 		}
 
 		return '[url' . (($var1) ? '=' . $var1 : '') . ']' . $var2 . '[/url]';
@@ -1221,20 +1221,20 @@ class parse_message extends bbcode_firstpass
 			{
 				case 'mssql':
 				case 'mssql_odbc':
-					$sql = 'SELECT * 
+					$sql = 'SELECT *
 						FROM ' . SMILIES_TABLE . '
 						ORDER BY LEN(code) DESC';
 				break;
 	
 				case 'firebird':
-					$sql = 'SELECT * 
+					$sql = 'SELECT *
 						FROM ' . SMILIES_TABLE . '
 						ORDER BY CHAR_LENGTH(code) DESC';
 				break;
 
 				// LENGTH supported by MySQL, IBM DB2, Oracle and Access for sure...
 				default:
-					$sql = 'SELECT * 
+					$sql = 'SELECT *
 						FROM ' . SMILIES_TABLE . '
 						ORDER BY LENGTH(code) DESC';
 				break;

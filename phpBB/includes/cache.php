@@ -9,6 +9,7 @@
 */
 
 /**
+* @ignore
 */
 if (!defined('IN_PHPBB'))
 {
@@ -293,14 +294,14 @@ class cache extends acm
 			{
 				case 'mssql':
 				case 'mssql_odbc':
-					$sql = 'SELECT user_id, bot_agent, bot_ip 
+					$sql = 'SELECT user_id, bot_agent, bot_ip
 						FROM ' . BOTS_TABLE . '
 						WHERE bot_active = 1
 					ORDER BY LEN(bot_agent) DESC';
 				break;
 
 				case 'firebird':
-					$sql = 'SELECT user_id, bot_agent, bot_ip 
+					$sql = 'SELECT user_id, bot_agent, bot_ip
 						FROM ' . BOTS_TABLE . '
 						WHERE bot_active = 1
 					ORDER BY CHAR_LENGTH(bot_agent) DESC';
@@ -308,7 +309,7 @@ class cache extends acm
 
 				// LENGTH supported by MySQL, IBM DB2 and Oracle for sure...
 				default:
-					$sql = 'SELECT user_id, bot_agent, bot_ip 
+					$sql = 'SELECT user_id, bot_agent, bot_ip
 						FROM ' . BOTS_TABLE . '
 						WHERE bot_active = 1
 					ORDER BY LENGTH(bot_agent) DESC';

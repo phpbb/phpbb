@@ -1,10 +1,10 @@
 <?php
-/** 
+/**
 *
 * @package phpBB3
 * @version $Id$
-* @copyright (c) 2005 phpBB Group 
-* @license http://opensource.org/licenses/gpl-license.php GNU Public License 
+* @copyright (c) 2005 phpBB Group
+* @license http://opensource.org/licenses/gpl-license.php GNU Public License
 *
 */
 
@@ -592,7 +592,7 @@ if ($keywords || $author || $author_id || $search_id || $submit)
 				$forums[$row['forum_id']]['rowset'][$row['topic_id']] = &$rowset[$row['topic_id']];
 			}
 			$db->sql_freeresult($result);
- 
+
 			// If we have some shadow topics, update the rowset to reflect their topic information
 			if (sizeof($shadow_topic_list))
 			{
@@ -744,7 +744,7 @@ if ($keywords || $author || $author_id || $search_id || $submit)
 					$forum_ary = array_unique(array_keys($auth->acl_getf('!f_read', true)));
 	
 					// Determine first forum the user is able to read (must not be a category)
-					$sql = 'SELECT forum_id 
+					$sql = 'SELECT forum_id
 						FROM ' . FORUMS_TABLE . '
 						WHERE forum_type = ' . FORUM_POST;
 		

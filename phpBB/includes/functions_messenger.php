@@ -9,6 +9,14 @@
 */
 
 /**
+* @ignore
+*/
+if (!defined('IN_PHPBB'))
+{
+	exit;
+}
+
+/**
 * Messenger
 * @package phpBB3
 */
@@ -1058,7 +1066,7 @@ class smtp_class
 
 		// If we are authenticating through pop-before-smtp, we
 		// have to login ones before we get authenticated
-		// NOTE: on some configurations the time between an update of the auth database takes so 
+		// NOTE: on some configurations the time between an update of the auth database takes so
 		// long that the first email send does not work. This is not a biggie on a live board (only
 		// the install mail will most likely fail) - but on a dynamic ip connection this might produce
 		// severe problems and is not fixable!
@@ -1311,7 +1319,7 @@ class smtp_class
 				{
 					$tokens[$matches[1]] = array($tokens[$matches[1]], preg_replace('/^"(.*)"$/', '\\1', $matches[2]));
 				}
-			} 
+			}
 			else if (!empty($tokens[$matches[1]])) // Any other multiple instance = failure
 			{
 				$tokens = array();

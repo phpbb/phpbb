@@ -232,7 +232,7 @@ function still_on_time($extra_time = 15)
 	return (ceil($current_time - $start_time) < $max_execution_time) ? true : false;
 }
 
-/** 
+/**
 *
 * @version Version 0.1 / $Id$
 *

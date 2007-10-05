@@ -9,6 +9,14 @@
 */
 
 /**
+* @ignore
+*/
+if (!defined('IN_PHPBB'))
+{
+	exit;
+}
+
+/**
 * Recalculate Binary Tree
 function recalc_btree($sql_id, $sql_table, $module_class = '')
 {
@@ -33,13 +41,13 @@ function recalc_btree($sql_id, $sql_table, $module_class = '')
 
 	if ($substract > 0)
 	{
-		$sql = "UPDATE $sql_table 
+		$sql = "UPDATE $sql_table
 			SET left_id = left_id - $substract, right_id = right_id - $substract
 			$sql_where";
 		$db->sql_query($sql);
 	}
 
-	$sql = "SELECT $sql_id, parent_id, left_id, right_id 
+	$sql = "SELECT $sql_id, parent_id, left_id, right_id
 		FROM $sql_table
 		$sql_where
 		ORDER BY left_id ASC, parent_id ASC, $sql_id ASC";
@@ -219,7 +227,7 @@ function group_select_options($group_id, $exclude_ids = false, $manage_founder =
 	$sql_and = (!$config['coppa_enable']) ? (($exclude_sql) ? ' AND ' : ' WHERE ') . "group_name <> 'REGISTERED_COPPA'" : '';
 	$sql_founder = ($manage_founder !== false) ? (($exclude_sql || $sql_and) ? ' AND ' : ' WHERE ') . 'group_founder_manage = ' . (int) $manage_founder : '';
 
-	$sql = 'SELECT group_id, group_name, group_type 
+	$sql = 'SELECT group_id, group_name, group_type
 		FROM ' . GROUPS_TABLE . "
 		$exclude_sql
 		$sql_and
@@ -476,8 +484,8 @@ function move_posts($post_ids, $topic_id, $auto_sync = true)
 	}
 	$db->sql_freeresult($result);
 
-	$sql = 'SELECT forum_id 
-		FROM ' . TOPICS_TABLE . ' 
+	$sql = 'SELECT forum_id
+		FROM ' . TOPICS_TABLE . '
 		WHERE topic_id = ' . $topic_id;
 	$result = $db->sql_query($sql);
 	$forum_row = $db->sql_fetchrow($result);
@@ -573,7 +581,7 @@ function delete_topics($where_type, $where_ids, $auto_sync = true, $post_count_s
 
 	foreach ($table_ary as $table)
 	{
-		$sql = "DELETE FROM $table 
+		$sql = "DELETE FROM $table
 			WHERE " . $db->sql_in_set('topic_id', $topic_ids);
 		$db->sql_query($sql);
 	}
@@ -596,7 +604,7 @@ function delete_topics($where_type, $where_ids, $auto_sync = true, $post_count_s
 
 	if (sizeof($moved_topic_ids))
 	{
-		$sql = 'DELETE FROM ' . TOPICS_TABLE . ' 
+		$sql = 'DELETE FROM ' . TOPICS_TABLE . '
 			WHERE ' . $db->sql_in_set('topic_id', $moved_topic_ids);
 		$db->sql_query($sql);
 	}
@@ -685,7 +693,7 @@ function delete_posts($where_type, $where_ids, $auto_sync = true, $posted_sync =
 
 	foreach ($table_ary as $table)
 	{
-		$sql = "DELETE FROM $table 
+		$sql = "DELETE FROM $table
 			WHERE " . $db->sql_in_set('post_id', $post_ids);
 		$db->sql_query($sql);
 	}
@@ -698,12 +706,12 @@ function delete_posts($where_type, $where_ids, $auto_sync = true, $posted_sync =
 		{
 			$sql = 'UPDATE ' . USERS_TABLE . '
 				SET user_posts = 0
-				WHERE user_id = ' . $poster_id . ' 
+				WHERE user_id = ' . $poster_id . '
 				AND user_posts < ' . $substract;
 			$db->sql_query($sql);
 			$sql = 'UPDATE ' . USERS_TABLE . '
 				SET user_posts = user_posts - ' . $substract . '
-				WHERE user_id = ' . $poster_id . ' 
+				WHERE user_id = ' . $poster_id . '
 				AND user_posts >= ' . $substract;
 			$db->sql_query($sql);
 		}
@@ -890,7 +898,7 @@ function delete_attachments($mode, $ids, $resync = true)
 	{
 		if ($mode == 'post' || $mode == 'topic')
 		{
-			$sql = 'UPDATE ' . POSTS_TABLE . ' 
+			$sql = 'UPDATE ' . POSTS_TABLE . '
 				SET post_attachment = 0
 				WHERE ' . $db->sql_in_set('post_id', $post_ids);
 			$db->sql_query($sql);
@@ -901,7 +909,7 @@ function delete_attachments($mode, $ids, $resync = true)
 			$remaining = array();
 
 			$sql = 'SELECT post_msg_id
-				FROM ' . ATTACHMENTS_TABLE . ' 
+				FROM ' . ATTACHMENTS_TABLE . '
 				WHERE ' . $db->sql_in_set('post_msg_id', $post_ids) . '
 					AND in_message = 0';
 			$result = $db->sql_query($sql);
@@ -916,7 +924,7 @@ function delete_attachments($mode, $ids, $resync = true)
 
 			if (sizeof($unset_ids))
 			{
-				$sql = 'UPDATE ' . POSTS_TABLE . ' 
+				$sql = 'UPDATE ' . POSTS_TABLE . '
 					SET post_attachment = 0
 					WHERE ' . $db->sql_in_set('post_id', $unset_ids);
 				$db->sql_query($sql);
@@ -925,7 +933,7 @@ function delete_attachments($mode, $ids, $resync = true)
 			$remaining = array();
 
 			$sql = 'SELECT post_msg_id
-				FROM ' . ATTACHMENTS_TABLE . ' 
+				FROM ' . ATTACHMENTS_TABLE . '
 				WHERE ' . $db->sql_in_set('post_msg_id', $post_ids) . '
 					AND in_message = 1';
 			$result = $db->sql_query($sql);
@@ -940,7 +948,7 @@ function delete_attachments($mode, $ids, $resync = true)
 
 			if (sizeof($unset_ids))
 			{
-				$sql = 'UPDATE ' . PRIVMSGS_TABLE . ' 
+				$sql = 'UPDATE ' . PRIVMSGS_TABLE . '
 					SET message_attachment = 0
 					WHERE ' . $db->sql_in_set('msg_id', $unset_ids);
 				$db->sql_query($sql);
@@ -964,7 +972,7 @@ function delete_attachments($mode, $ids, $resync = true)
 			$remaining = array();
 
 			$sql = 'SELECT topic_id
-				FROM ' . ATTACHMENTS_TABLE . ' 
+				FROM ' . ATTACHMENTS_TABLE . '
 				WHERE ' . $db->sql_in_set('topic_id', $topic_ids);
 			$result = $db->sql_query($sql);
 
@@ -978,7 +986,7 @@ function delete_attachments($mode, $ids, $resync = true)
 
 			if (sizeof($unset_ids))
 			{
-				$sql = 'UPDATE ' . TOPICS_TABLE . ' 
+				$sql = 'UPDATE ' . TOPICS_TABLE . '
 					SET topic_attachment = 0
 					WHERE ' . $db->sql_in_set('topic_id', $unset_ids);
 				$db->sql_query($sql);
@@ -1864,7 +1872,7 @@ function sync($mode, $where_type = '', $where_ids = '', $resync_parents = false,
 					{
 						$topic_id = (int) $row['topic_id'];
 
-						// Ok, there should be a shadow topic. If there isn't, then there's something wrong with the db. 
+						// Ok, there should be a shadow topic. If there isn't, then there's something wrong with the db.
 						// However, there's not much we can do about it.
 						if (!empty($shadow_topic_data[$topic_id]))
 						{
@@ -2047,7 +2055,7 @@ function prune($forum_id, $prune_mode, $prune_date, $prune_flags = 0, $auto_sync
 	$sql = 'SELECT topic_id
 		FROM ' . TOPICS_TABLE . '
 		WHERE ' . $db->sql_in_set('forum_id', $forum_id) . "
-			AND poll_start = 0 
+			AND poll_start = 0
 			$sql_and";
 	$result = $db->sql_query($sql);
 
@@ -2063,8 +2071,8 @@ function prune($forum_id, $prune_mode, $prune_date, $prune_flags = 0, $auto_sync
 		$sql = 'SELECT topic_id
 			FROM ' . TOPICS_TABLE . '
 			WHERE ' . $db->sql_in_set('forum_id', $forum_id) . "
-				AND poll_start > 0 
-				AND poll_last_vote < $prune_date 
+				AND poll_start > 0
+				AND poll_last_vote < $prune_date
 				$sql_and";
 		$result = $db->sql_query($sql);
 
@@ -2455,7 +2463,7 @@ function view_log($mode, &$log, &$log_count, $limit = 0, $offset = 0, $forum_id 
 	{
 		$topic_id_list = array_unique($topic_id_list);
 
-		// This query is not really needed if move_topics() updates the forum_id field, 
+		// This query is not really needed if move_topics() updates the forum_id field,
 		// although it's also used to determine if the topic still exists in the database
 		$sql = 'SELECT topic_id, forum_id
 			FROM ' . TOPICS_TABLE . '
@@ -2555,7 +2563,7 @@ function update_foes($group_id = false, $user_id = false)
 	// update foes for some user
 	if (is_array($user_id) && sizeof($user_id))
 	{
-		$sql = 'DELETE FROM ' . ZEBRA_TABLE . ' 
+		$sql = 'DELETE FROM ' . ZEBRA_TABLE . '
 			WHERE ' . $db->sql_in_set('zebra_id', $user_id) . '
 				AND foe = 1';
 		$db->sql_query($sql);
@@ -2565,7 +2573,7 @@ function update_foes($group_id = false, $user_id = false)
 	// update foes for some group
 	if (is_array($group_id) && sizeof($group_id))
 	{
-		// Grab group settings... 
+		// Grab group settings...
 		$sql = $db->sql_build_query('SELECT', array(
 			'SELECT'	=> 'a.group_id',
 
@@ -2628,7 +2636,7 @@ function update_foes($group_id = false, $user_id = false)
 
 				if (sizeof($users))
 				{				
-					$sql = 'DELETE FROM ' . ZEBRA_TABLE . ' 
+					$sql = 'DELETE FROM ' . ZEBRA_TABLE . '
 						WHERE ' . $db->sql_in_set('zebra_id', $users) . '
 							AND foe = 1';
 					$db->sql_query($sql);
@@ -2651,7 +2659,7 @@ function update_foes($group_id = false, $user_id = false)
 
 	if (sizeof($perms))
 	{
-		$sql = 'DELETE FROM ' . ZEBRA_TABLE . ' 
+		$sql = 'DELETE FROM ' . ZEBRA_TABLE . '
 			WHERE ' . $db->sql_in_set('zebra_id', array_unique($perms)) . '
 				AND foe = 1';
 		$db->sql_query($sql);
@@ -2667,9 +2675,9 @@ function view_inactive_users(&$users, &$user_count, $limit = 0, $offset = 0, $li
 	global $db, $user;
 
 	$sql = 'SELECT user_id, username, user_regdate, user_lastvisit, user_inactive_time, user_inactive_reason
-		FROM ' . USERS_TABLE . ' 
-		WHERE user_type = ' . USER_INACTIVE . 
-		(($limit_days) ? " AND user_inactive_time >= $limit_days" : '') . " 
+		FROM ' . USERS_TABLE . '
+		WHERE user_type = ' . USER_INACTIVE .
+		(($limit_days) ? " AND user_inactive_time >= $limit_days" : '') . "
 		ORDER BY $sort_by";
 	$result = $db->sql_query_limit($sql, $limit, $offset);
 
@@ -2700,7 +2708,7 @@ function view_inactive_users(&$users, &$user_count, $limit = 0, $offset = 0, $li
 	
 	$sql = 'SELECT COUNT(user_id) AS user_count
 		FROM ' . USERS_TABLE . '
-		WHERE user_type = ' . USER_INACTIVE . 
+		WHERE user_type = ' . USER_INACTIVE .
 		(($limit_days) ? " AND user_inactive_time >= $limit_days" : '');
 	$result = $db->sql_query($sql);
 	$user_count = (int) $db->sql_fetchfield('user_count');

@@ -9,6 +9,14 @@
 */
 
 /**
+* @ignore
+*/
+if (!defined('IN_PHPBB'))
+{
+	exit;
+}
+
+/**
 * Display Forums
 */
 function display_forums($root_data = '', $display_moderators = true, $return_moderators = false)
@@ -833,8 +841,8 @@ function display_reasons($reason_id = 0)
 {
 	global $db, $user, $template;
 
-	$sql = 'SELECT * 
-		FROM ' . REPORTS_REASONS_TABLE . ' 
+	$sql = 'SELECT *
+		FROM ' . REPORTS_REASONS_TABLE . '
 		ORDER BY reason_order ASC';
 	$result = $db->sql_query($sql);
 

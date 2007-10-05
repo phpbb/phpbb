@@ -1,14 +1,15 @@
 <?php
-/** 
+/**
 *
 * @package phpBB3
 * @version $Id$
 * @copyright (c) 2005 phpBB Group, sections (c) 2001 ispi of Lincoln Inc
-* @license http://opensource.org/licenses/gpl-license.php GNU Public License 
+* @license http://opensource.org/licenses/gpl-license.php GNU Public License
 *
 */
 
 /**
+* @ignore
 */
 if (!defined('IN_PHPBB'))
 {
@@ -29,7 +30,7 @@ if (!defined('IN_PHPBB'))
 * (on its own and in whole) under the LGPL. Section 3 of the LGPL states that any code
 * derived from an LGPL application may be relicenced under the GPL, this applies
 * to this source
-* 
+*
 * DEFINE directive inspired by a request by Cyberalien
 *
 * @package phpBB3

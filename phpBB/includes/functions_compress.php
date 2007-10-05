@@ -1,12 +1,20 @@
 <?php
-/** 
+/**
 *
 * @package phpBB3
-* @version $Id$ 
-* @copyright (c) 2005 phpBB Group 
-* @license http://opensource.org/licenses/gpl-license.php GNU Public License 
+* @version $Id$
+* @copyright (c) 2005 phpBB Group
+* @license http://opensource.org/licenses/gpl-license.php GNU Public License
 *
 */
+
+/**
+* @ignore
+*/
+if (!defined('IN_PHPBB'))
+{
+	exit;
+}
 
 /**
 * Class for handling archives (compression/decompression)
@@ -121,7 +129,7 @@ class compress
 }
 
 /**
-* Zip creation class from phpMyAdmin 2.3.0 (c) Tobias Ratschiller, Olivier Müller, Loïc Chapeaux, 
+* Zip creation class from phpMyAdmin 2.3.0 (c) Tobias Ratschiller, Olivier Müller, Loïc Chapeaux,
 * Marc Delisle, http://www.phpmyadmin.net/
 *
 * Zip extraction function by Alexandre Tedeschi, alexandrebr at gmail dot com
@@ -452,7 +460,7 @@ class compress_zip extends compress
 *
 * @package phpBB3
 */
-class compress_tar extends compress 
+class compress_tar extends compress
 {
 	var $isgz = false;
 	var $isbz = false;
@@ -545,7 +553,7 @@ class compress_tar extends compress
 	{
 		$fzclose = ($this->isbz && function_exists('bzclose')) ? 'bzclose' : (($this->isgz && @extension_loaded('zlib')) ? 'gzclose' : 'fclose');
 
-		if ($this->wrote) 
+		if ($this->wrote)
 		{
 			$fzwrite = ($this->isbz && function_exists('bzwrite')) ? 'bzwrite' : (($this->isgz && @extension_loaded('zlib')) ? 'gzwrite' : 'fwrite');
 

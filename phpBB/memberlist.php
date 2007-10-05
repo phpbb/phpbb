@@ -140,7 +140,7 @@ switch ($mode)
 		}
 		unset($admin_memberships);
 
-		$sql = 'SELECT forum_id, forum_name 
+		$sql = 'SELECT forum_id, forum_name
 			FROM ' . FORUMS_TABLE . '
 			WHERE forum_type = ' . FORUM_POST;
 		$result = $db->sql_query($sql);

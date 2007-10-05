@@ -1,12 +1,20 @@
 <?php
-/** 
+/**
 *
 * @package phpBB3
-* @version $Id$ 
-* @copyright (c) 2005 phpBB Group 
-* @license http://opensource.org/licenses/gpl-license.php GNU Public License 
+* @version $Id$
+* @copyright (c) 2005 phpBB Group
+* @license http://opensource.org/licenses/gpl-license.php GNU Public License
 *
 */
+
+/**
+* @ignore
+*/
+if (!defined('IN_PHPBB'))
+{
+	exit;
+}
 
 /**
 * Responsible for holding all file relevant information, as well as doing file-specific operations.
@@ -76,7 +84,7 @@ class filespec
 
 	/**
 	* Cleans destination filename
-	* 
+	*
 	* @param real|unique|unique_ext $mode real creates a realname, filtering some characters, lowering every character. Unique creates an unique filename
 	* @param string $prefix Prefix applied to filename
 	* @access public
@@ -269,9 +277,9 @@ class filespec
 			{
 				case 'copy':
 
-					if (!@copy($this->filename, $this->destination_file)) 
+					if (!@copy($this->filename, $this->destination_file))
 					{
-						if (!@move_uploaded_file($this->filename, $this->destination_file)) 
+						if (!@move_uploaded_file($this->filename, $this->destination_file))
 						{
 							$this->error[] = sprintf($user->lang[$this->upload->error_prefix . 'GENERAL_UPLOAD_ERROR'], $this->destination_file);
 							return false;
@@ -284,9 +292,9 @@ class filespec
 
 				case 'move':
 
-					if (!@move_uploaded_file($this->filename, $this->destination_file)) 
+					if (!@move_uploaded_file($this->filename, $this->destination_file))
 					{
-						if (!@copy($this->filename, $this->destination_file)) 
+						if (!@copy($this->filename, $this->destination_file))
 						{
 							$this->error[] = sprintf($user->lang[$this->upload->error_prefix . 'GENERAL_UPLOAD_ERROR'], $this->destination_file);
 							return false;
@@ -299,7 +307,7 @@ class filespec
 
 				case 'local':
 
-					if (!@copy($this->filename, $this->destination_file)) 
+					if (!@copy($this->filename, $this->destination_file))
 					{
 						$this->error[] = sprintf($user->lang[$this->upload->error_prefix . 'GENERAL_UPLOAD_ERROR'], $this->destination_file);
 						return false;
@@ -653,7 +661,7 @@ class fileupload
 			$file = new fileerror($user->lang[$this->error_prefix . 'URL_INVALID']);
 			return $file;
 		}
- 
+
 		if (empty($match[2]))
 		{
 			$file = new fileerror($user->lang[$this->error_prefix . 'URL_INVALID']);
@@ -813,7 +821,7 @@ class fileupload
 
 		// check Filename
 		if (preg_match("#[\\/:*?\"<>|]#i", $file->get('realname')))
-		{ 
+		{
 			$file->error[] = sprintf($user->lang[$this->error_prefix . 'INVALID_FILENAME'], $file->get('realname'));
 		}
 
@@ -842,8 +850,8 @@ class fileupload
 			return true;
 		}
 
-		if (($file->get('width') > $this->max_width && $this->max_width) || 
-			($file->get('height') > $this->max_height && $this->max_height) || 
+		if (($file->get('width') > $this->max_width && $this->max_width) ||
+			($file->get('height') > $this->max_height && $this->max_height) ||
 			($file->get('width') < $this->min_width && $this->min_width) ||
 			($file->get('height') < $this->min_height && $this->min_height))
 		{
@@ -862,7 +870,7 @@ class fileupload
 	}
 
 	/**
-	* Return image type/extension mapping 
+	* Return image type/extension mapping
 	*/
 	function image_types()
 	{
