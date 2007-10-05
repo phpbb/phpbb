@@ -1,12 +1,20 @@
 <?php
-/** 
+/**
 *
 * @package phpBB3
 * @version $Id$
-* @copyright (c) 2005 phpBB Group 
-* @license http://opensource.org/licenses/gpl-license.php GNU Public License 
+* @copyright (c) 2005 phpBB Group
+* @license http://opensource.org/licenses/gpl-license.php GNU Public License
 *
 */
+
+/**
+* @ignore
+*/
+if (!defined('IN_PHPBB'))
+{
+	exit;
+}
 
 /**
 * Custom Profile Fields
@@ -49,11 +57,11 @@ class custom_profile
 		}
 
 		$sql = 'SELECT l.*, f.*
-			FROM ' . PROFILE_LANG_TABLE . ' l, ' . PROFILE_FIELDS_TABLE . " f 
+			FROM ' . PROFILE_LANG_TABLE . ' l, ' . PROFILE_FIELDS_TABLE . " f
 			WHERE f.field_active = 1
 				$sql_where
 				AND l.lang_id = $lang_id
-				AND l.field_id = f.field_id 
+				AND l.field_id = f.field_id
 			ORDER BY f.field_order";
 		$result = $db->sql_query($sql);
 
@@ -141,7 +149,7 @@ class custom_profile
 				{
 					return 'FIELD_TOO_SMALL';
 				}
-				else if ($field_value > $field_data['field_maxlen']) 
+				else if ($field_value > $field_data['field_maxlen'])
 				{
 					return 'FIELD_TOO_LARGE';
 				}
@@ -200,12 +208,12 @@ class custom_profile
 		
 		// Display hidden/no_view fields for admin/moderator
 		$sql = 'SELECT l.*, f.*
-			FROM ' . PROFILE_LANG_TABLE . ' l, ' . PROFILE_FIELDS_TABLE . ' f 
+			FROM ' . PROFILE_LANG_TABLE . ' l, ' . PROFILE_FIELDS_TABLE . ' f
 			WHERE l.lang_id = ' . $user->get_iso_lang_id() . '
 				AND f.field_active = 1 ' .
 				((!$auth->acl_gets('a_', 'm_') && !$auth->acl_getf_global('m_')) ? '	AND f.field_hide = 0 ' : '') . '
 				AND f.field_no_view = 0
-				AND l.field_id = f.field_id 
+				AND l.field_id = f.field_id
 			ORDER BY f.field_order';
 		$result = $db->sql_query($sql);
 
@@ -280,11 +288,11 @@ class custom_profile
 		}
 
 		$sql = 'SELECT l.*, f.*
-			FROM ' . PROFILE_LANG_TABLE . ' l, ' . PROFILE_FIELDS_TABLE . " f 
+			FROM ' . PROFILE_LANG_TABLE . ' l, ' . PROFILE_FIELDS_TABLE . " f
 			WHERE l.lang_id = $lang_id
 				AND f.field_active = 1
 				$sql_where
-				AND l.field_id = f.field_id 
+				AND l.field_id = f.field_id
 			ORDER BY f.field_order";
 		$result = $db->sql_query($sql);
 
@@ -800,8 +808,8 @@ class custom_profile
 		}
 
 		$sql = 'SELECT f.field_type, f.field_ident, f.field_default_value, l.lang_default_value
-			FROM ' . PROFILE_LANG_TABLE . ' l, ' . PROFILE_FIELDS_TABLE . ' f 
-			WHERE l.lang_id = ' . $user->get_iso_lang_id() . ' 
+			FROM ' . PROFILE_LANG_TABLE . ' l, ' . PROFILE_FIELDS_TABLE . ' f
+			WHERE l.lang_id = ' . $user->get_iso_lang_id() . '
 				' . ((sizeof($sql_not_in)) ? ' AND ' . $db->sql_in_set('f.field_ident', $sql_not_in, true) : '') . '
 				AND l.field_id = f.field_id';
 		$result = $db->sql_query($sql);
