@@ -642,6 +642,9 @@ class ucp_groups
 						{
 							avatar_gallery($category, $avatar_select, 4);
 						}
+						
+						$avatars_enabled = ($can_upload || ($config['allow_avatar_local'] || $config['allow_avatar_remote'])) ? true : false;
+
 
 						$template->assign_vars(array(
 							'S_EDIT'			=> true,
@@ -650,6 +653,7 @@ class ucp_groups
 							'S_FORM_ENCTYPE'	=> ($can_upload) ? ' enctype="multipart/form-data"' : '',
 							'S_ERROR'			=> (sizeof($error)) ? true : false,
 							'S_SPECIAL_GROUP'	=> ($group_type == GROUP_SPECIAL) ? true : false,
+							'S_AVATARS_ENABLED'	=> $avatars_enabled,
 							'S_DISPLAY_GALLERY'	=> ($config['allow_avatar_local'] && !$display_gallery) ? true : false,
 							'S_IN_GALLERY'		=> ($config['allow_avatar_local'] && $display_gallery) ? true : false,
 
