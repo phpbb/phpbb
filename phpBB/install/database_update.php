@@ -1551,6 +1551,23 @@ if (version_compare($current_version, '3.0.RC5', '<='))
 	set_config('form_token_lifetime', '7200');
 	set_config('form_token_mintime', '0');
 
+	$db->sql_transaction('begin');
+
+	$sql = 'SELECT forum_id, forum_password
+			FROM ' . FORUMS_TABLE;
+	$result = _sql($sql, $errored, $error_ary);
+	
+	while ($row = $db->sql_fetchrow($result))
+	{
+		if (!empty($row['forum_password']))
+		{
+			_sql('UPDATE ' . FORUMS_TABLE . " SET forum_password = '" . md5($row['forum_password']) . "' WHERE forum_id = {$row['forum_id']}", $errored, $error_ary);
+		}
+	}
+	$db->sql_freeresult($result);
+	
+	$db->sql_transaction('commit');
+
 	$no_updates = false;
 }
 

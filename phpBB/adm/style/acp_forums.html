@@ -160,12 +160,18 @@
 	</dl>
 	<dl>
 		<dt><label for="forum_password">{L_FORUM_PASSWORD}:</label><br /><span>{L_FORUM_PASSWORD_EXPLAIN}</span></dt>
-		<dd><input type="password" id="forum_password" name="forum_password" value="{FORUM_PASSWORD}" /></dd>
+		<dd><input type="password" id="forum_password" name="forum_password" value="<!-- IF S_FORUM_PASSWORD_SET -->&#x20;&#x20;&#x20;&#x20;&#x20;&#x20;<!-- ENDIF -->" /></dd>
 	</dl>
 	<dl>
 		<dt><label for="forum_password_confirm">{L_FORUM_PASSWORD_CONFIRM}:</label><br /><span>{L_FORUM_PASSWORD_CONFIRM_EXPLAIN}</span></dt>
-		<dd><input type="password" id="forum_password_confirm" name="forum_password_confirm" value="{FORUM_PASSWORD_CONFIRM}" /></dd>
+		<dd><input type="password" id="forum_password_confirm" name="forum_password_confirm" value="<!-- IF S_FORUM_PASSWORD_SET -->&#x20;&#x20;&#x20;&#x20;&#x20;&#x20;<!-- ENDIF -->" /></dd>
 	</dl>
+	<!-- IF S_FORUM_PASSWORD_SET -->
+	<dl>
+		<dt><label for="forum_password_unset">{L_FORUM_PASSWORD_UNSET}:</label><br /><span>{L_FORUM_PASSWORD_UNSET_EXPLAIN}</span></dt>
+		<dd><input id="forum_password_unset" name="forum_password_unset" type="checkbox" /></dd>
+	</dl>
+	<!-- ENDIF -->
 	<dl>
 		<dt><label for="forum_style">{L_FORUM_STYLE}:</label></dt>
 		<dd><select id="forum_style" name="forum_style"><option value="0">{L_DEFAULT_STYLE}</option>{S_STYLES_OPTIONS}</select></dd>

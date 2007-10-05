@@ -140,6 +140,7 @@ class acp_forums
 						'prune_sticky'			=> request_var('prune_sticky', false),
 						'forum_password'		=> request_var('forum_password', '', true),
 						'forum_password_confirm'=> request_var('forum_password_confirm', '', true),
+						'forum_password_unset'	=> request_var('forum_password_unset', false),
 					);
 
 					// Use link_display_on_index setting if forum type is link
@@ -603,6 +604,11 @@ class acp_forums
 						}
 					}
 				}
+				
+				if (strlen($forum_data['forum_password']) == 32)
+				{
+					$errors[] = 'FORUM_PASSWORD_OLD';
+				}
 
 				$template->assign_vars(array(
 					'S_EDIT_FORUM'		=> true,
@@ -629,8 +635,6 @@ class acp_forums
 					'PRUNE_DAYS'				=> $forum_data['prune_days'],
 					'PRUNE_VIEWED'				=> $forum_data['prune_viewed'],
 					'TOPICS_PER_PAGE'			=> $forum_data['forum_topics_per_page'],
-					'FORUM_PASSWORD'			=> $forum_data['forum_password'],
-					'FORUM_PASSWORD_CONFIRM'	=> $forum_data['forum_password_confirm'],
 					'FORUM_RULES_LINK'			=> $forum_data['forum_rules_link'],
 					'FORUM_RULES'				=> $forum_data['forum_rules'],
 					'FORUM_RULES_PREVIEW'		=> $forum_rules_preview,
@@ -638,6 +642,7 @@ class acp_forums
 					'S_BBCODE_CHECKED'			=> ($forum_rules_data['allow_bbcode']) ? true : false,
 					'S_SMILIES_CHECKED'			=> ($forum_rules_data['allow_smilies']) ? true : false,
 					'S_URLS_CHECKED'			=> ($forum_rules_data['allow_urls']) ? true : false,
+					'S_FORUM_PASSWORD_SET'		=> (empty($forum_data['forum_password'])) ? false : true,
 
 					'FORUM_DESC'				=> $forum_desc_data['text'],
 					'S_DESC_BBCODE_CHECKED'		=> ($forum_desc_data['allow_bbcode']) ? true : false,
@@ -938,7 +943,22 @@ class acp_forums
 		{
 			return $errors;
 		}
-
+ 
+ 		// As we don't know the old password, it's kinda tricky to detect changes
+		if ($forum_data_sql['forum_password_unset'])
+		{
+			$forum_data_sql['forum_password'] = '';
+		}
+		else if (empty($forum_data_sql['forum_password']))
+		{
+			unset($forum_data_sql['forum_password']);
+		}
+		else
+		{
+			$forum_data_sql['forum_password'] = phpbb_hash($forum_data_sql['forum_password']);
+		}
+		unset($forum_data_sql['forum_password_unset']);
+		
 		if (!isset($forum_data_sql['forum_id']))
 		{
 			// no forum_id means we're creating a new forum

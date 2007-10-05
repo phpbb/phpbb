@@ -2457,7 +2457,7 @@ function login_forum_box($forum_data)
 		}
 		$db->sql_freeresult($result);
 
-		if ($password == $forum_data['forum_password'])
+		if (phpbb_check_hash($password, $forum_data['forum_password']))
 		{
 			$sql_ary = array(
 				'forum_id'		=> (int) $forum_data['forum_id'],
