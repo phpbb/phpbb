@@ -15,17 +15,17 @@
 
 /*
 CREATE TABLESPACE "PHPBB"
-	LOGGING 
-	DATAFILE 'E:\ORACLE\ORADATA\LOCAL\PHPBB.ora' 
+	LOGGING
+	DATAFILE 'E:\ORACLE\ORADATA\LOCAL\PHPBB.ora'
 	SIZE 10M
 	AUTOEXTEND ON NEXT 10M
 	MAXSIZE 100M;
 
-CREATE USER "PHPBB" 
-	PROFILE "DEFAULT" 
-	IDENTIFIED BY "phpbb_password" 
-	DEFAULT TABLESPACE "PHPBB" 
-	QUOTA UNLIMITED ON "PHPBB" 
+CREATE USER "PHPBB"
+	PROFILE "DEFAULT"
+	IDENTIFIED BY "phpbb_password"
+	DEFAULT TABLESPACE "PHPBB"
+	QUOTA UNLIMITED ON "PHPBB"
 	ACCOUNT UNLOCK;
 
 GRANT ANALYZE ANY TO "PHPBB";
@@ -913,7 +913,7 @@ CREATE TABLE phpbb_privmsgs (
 	message_edit_user number(8) DEFAULT '0' NOT NULL,
 	message_attachment number(1) DEFAULT '0' NOT NULL,
 	bbcode_bitfield varchar2(255) DEFAULT '' ,
-	bbcode_uid varchar2(5) DEFAULT '' ,
+	bbcode_uid varchar2(8) DEFAULT '' ,
 	message_edit_time number(11) DEFAULT '0' NOT NULL,
 	message_edit_count number(4) DEFAULT '0' NOT NULL,
 	to_address clob DEFAULT '' ,
@@ -1759,7 +1759,7 @@ CREATE TABLE phpbb_users (
 	user_avatar_width number(4) DEFAULT '0' NOT NULL,
 	user_avatar_height number(4) DEFAULT '0' NOT NULL,
 	user_sig clob DEFAULT '' ,
-	user_sig_bbcode_uid varchar2(5) DEFAULT '' ,
+	user_sig_bbcode_uid varchar2(8) DEFAULT '' ,
 	user_sig_bbcode_bitfield varchar2(255) DEFAULT '' ,
 	user_from varchar2(300) DEFAULT '' ,
 	user_icq varchar2(15) DEFAULT '' ,

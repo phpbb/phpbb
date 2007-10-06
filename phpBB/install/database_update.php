@@ -337,27 +337,6 @@ $unsigned_types = array('UINT', 'UINT:', 'USINT', 'BOOL', 'TIMESTAMP');
 
 // Only an example, but also commented out
 $database_update_info = array(
-	// Changes from 3.0.RC1 to the next version
-	'3.0.RC1'			=> array(
-		// Remove the following keys
-		'drop_keys'		=> array(
-			STYLES_IMAGESET_DATA_TABLE	=> array(
-				'i_id',
-			),
-			ACL_ROLES_DATA_TABLE		=> array(
-				'ath_opt_id',
-			),
-		),
-		// Add the following keys
-		'add_index'		=> array(
-			STYLES_IMAGESET_DATA_TABLE	=> array(
-				'i_d'			=> array('imageset_id'),
-			),
-			ACL_ROLES_DATA_TABLE		=> array(
-				'ath_opt_id'	=> array('auth_option_id'),
-			),
-		),
-	),
 	// Changes from 3.0.RC2 to the next version
 	'3.0.RC2'			=> array(
 		// Change the following columns
@@ -458,7 +437,13 @@ $database_update_info = array(
 		// Change the following columns
 		'change_columns'		=> array(
 			POSTS_TABLE				=> array(
-				'bbcode_uid'			=> array('VCHAR_UNI:8', ''),
+				'bbcode_uid'			=> array('VCHAR:8', ''),
+			),
+			PRIVMSGS_TABLE		=> array(
+				'bbcode_uid'			=> array('VCHAR:8', ''),
+			),
+			USERS_TABLE			=> array(
+				'user_sig_bbcode_uid'	=> array('VCHAR:8', ''),
 			),
 		),
 	),
@@ -1160,51 +1145,6 @@ flush();
 $no_updates = true;
 
 // some code magic
-if (version_compare($current_version, '3.0.RC1', '<='))
-{
-	// we have to remove a few extra entries from converted boards.
-	$sql = 'SELECT group_id
-		FROM ' . GROUPS_TABLE . "
-		WHERE group_name = '" . $db->sql_escape('BOTS') . "'";
-	$result = $db->sql_query($sql);
-	$bot_group_id = (int) $db->sql_fetchfield('group_id');
-	$db->sql_freeresult($result);
-
-	$bots = array();
-	$sql = 'SELECT u.user_id
-		FROM ' . USERS_TABLE . ' u, ' . USER_GROUP_TABLE . ' ug
-		WHERE ug.group_id = ' . $bot_group_id . '
-		AND ug.user_id = u.user_id';
-	$result = $db->sql_query($sql);
-
-	while ($row = $db->sql_fetchrow($result))
-	{
-		$bots[] = (int)$row['user_id'];
-	}
-	$db->sql_freeresult($result);
-	
-	if (sizeof($bots))
-	{
-		$sql = 'DELETE FROM ' . USER_GROUP_TABLE . "
-			WHERE group_id <> $bot_group_id
-				AND " . $db->sql_in_set('user_id', $bots);
-		$db->sql_query($sql);
-	}
-
-	if ($map_dbms === 'mysql_41')
-	{
-		sql_column_change($map_dbms, POSTS_TABLE, 'post_subject', array('XSTEXT_UNI', '', 'true_sort'));
-	}
-
-	$sql = 'DELETE FROM ' . CONFIG_TABLE . " WHERE config_name = 'jab_resource'";
-	_sql($sql, $errored, $error_ary);
-
-	set_config('jab_use_ssl', '0');
-	set_config('allow_post_flash', '1');
-
-	$no_updates = false;
-}
-
 if (version_compare($current_version, '3.0.RC2', '<='))
 {
 	$smileys = array();
