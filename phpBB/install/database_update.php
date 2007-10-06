@@ -1006,7 +1006,10 @@ if ($exit)
 </html>
 
 <?php
-	exit_handler();
+	if (function_exists('exit_handler'))
+	{
+		exit_handler();
+	}
 }
 
 // Schema updates
@@ -1613,7 +1616,10 @@ $cache->purge();
 
 <?php
 
-exit_handler();
+if (function_exists('exit_handler'))
+{
+	exit_handler();
+}
 
 
 /**

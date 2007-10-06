@@ -380,6 +380,7 @@ $lang = array_merge($lang, array(
 	'CHECK_UPDATE_DATABASE'			=> 'Continue update process',
 	'COLLECTED_INFORMATION'			=> 'File information',
 	'COLLECTED_INFORMATION_EXPLAIN'	=> 'The list below shows information about the files needing an update. Please read the information in front of every status block to see what they mean and what you may need to do to perform a successful update.',
+	'COLLECTING_FILE_DIFFS'			=> 'Collecting file differences',
 	'COMPLETE_LOGIN_TO_BOARD'		=> 'You should now <a href="../ucp.php?mode=login">login to your board</a> and check if everything is working fine. Do not forget to delete, rename or move your install directory!',
 	'CONTINUE_UPDATE_NOW'			=> 'Continue the update process now',
 	'CURRENT_FILE'					=> 'Current original file',
@@ -446,6 +447,8 @@ $lang = array_merge($lang, array(
 	'MERGE_MOD_FILE_OPTION'		=> 'Merge differences and use modified code within conflicting block',
 	'MERGE_NEW_FILE_OPTION'		=> 'Merge differences and use new file code within conflicting block',
 	'MERGE_SELECT_ERROR'		=> 'Conflicting file merge modes are not correctly selected.',
+	'MERGING_FILES'				=> 'Merging differences',
+	'MERGING_FILES_EXPLAIN'		=> 'Currently collecting final file changes.<br /><br />Please wait until phpBB has completed all operations on changed files.',
 
 	'NEW_FILE'						=> 'New updated file',
 	'NEW_USERNAME'					=> 'New username',
@@ -460,6 +463,7 @@ $lang = array_merge($lang, array(
 	'NO_VISIBLE_CHANGES'			=> 'No visible changes',
 	'NOTICE'						=> 'Notice',
 	'NUM_CONFLICTS'					=> 'Number of conflicts',
+	'NUMBER_OF_FILES_COLLECTED'		=> 'Currently having differences about %1$d from %2$d files collected.<br />Please wait until file collection finished.',
 
 	'OLD_UPDATE_FILES'		=> 'Update files are out of date. The update files found are for updating from phpBB %1$s to phpBB %2$s but the latest version of phpBB is %3$s.',
 
@@ -494,6 +498,8 @@ $lang = array_merge($lang, array(
 	'STATUS_NEW_CONFLICT'		=> 'Conflicting new file',
 	'STATUS_NOT_MODIFIED'		=> 'Not modified file',
 	'STATUS_UP_TO_DATE'			=> 'Already updated file',
+
+	'TOGGLE_DISPLAY'			=> 'View/Hide file list',
 
 	'UPDATE_COMPLETED'				=> 'Update completed',
 	'UPDATE_DATABASE'				=> 'Update database',

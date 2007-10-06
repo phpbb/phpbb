@@ -228,6 +228,7 @@ class install_update extends module
 
 				// Make sure the update list is destroyed.
 				$cache->destroy('_update_list');
+				$cache->destroy('_diff_files');
 			break;
 
 			case 'version_check':
@@ -290,6 +291,9 @@ class install_update extends module
 
 			case 'file_check':
 
+				// Make sure the previous file collection is no longer valid...
+				$cache->destroy('_diff_files');
+
 				$this->page_title = 'STAGE_FILE_CHECK';
 
 				// Now make sure our update list is correct if the admin refreshes
@@ -317,10 +321,32 @@ class install_update extends module
 					$get_new_list = true;
 				}
 
+				if (!$get_new_list && $update_list['status'] != 'finished')
+				{
+					$get_new_list = true;
+				}
+
 				if ($get_new_list)
 				{
-					$update_list = $this->get_update_structure();
+					$this->get_update_structure($update_list);
 					$cache->put('_update_list', $update_list);
+
+					// Refresh the page if we are still not finished...
+					if ($update_list['status'] != 'finished')
+					{
+						$refresh_url = append_sid($this->p_master->module_url, "mode=$mode&amp;sub=file_check");
+						meta_refresh(2, $refresh_url);
+
+						$template->assign_vars(array(
+							'S_IN_PROGRESS'		=> true,
+							'S_COLLECTED'		=> (int) $update_list['status'],
+							'S_TO_COLLECT'		=> sizeof($this->update_info['files']),
+							'L_IN_PROGRESS'				=> $user->lang['COLLECTING_FILE_DIFFS'],
+							'L_IN_PROGRESS_EXPLAIN'		=> sprintf($user->lang['NUMBER_OF_FILES_COLLECTED'], (int) $update_list['status'], sizeof($this->update_info['files'])),
+						));
+
+						return;
+					}
 				}
 
 				if ($action == 'diff')
@@ -340,7 +366,7 @@ class install_update extends module
 				// Now assign the list to the template
 				foreach ($update_list as $status => $filelist)
 				{
-					if ($status == 'no_update' || !sizeof($filelist))
+					if ($status == 'no_update' || !sizeof($filelist) || $status == 'status')
 					{
 						continue;
 					}
@@ -398,7 +424,7 @@ class install_update extends module
 				$all_up_to_date = true;
 				foreach ($update_list as $status => $filelist)
 				{
-					if ($status != 'up_to_date' && $status != 'custom' && sizeof($filelist))
+					if ($status != 'up_to_date' && $status != 'custom' && $status != 'status' && sizeof($filelist))
 					{
 						$all_up_to_date = false;
 						break;
@@ -492,12 +518,14 @@ class install_update extends module
 				$this->page_title = 'STAGE_UPDATE_FILES';
 
 				$s_hidden_fields = '';
+				$params = array();
 				$conflicts = request_var('conflict', array('' => 0));
 				$modified = request_var('modified', array('' => 0));
 
 				foreach ($conflicts as $filename => $merge_option)
 				{
 					$s_hidden_fields .= '<input type="hidden" name="conflict[' . htmlspecialchars($filename) . ']" value="' . $merge_option . '" />';
+					$params[] = 'conflict[' . urlencode($filename) . ']=' . urlencode($merge_option);
 				}
 
 				foreach ($modified as $filename => $merge_option)
@@ -507,6 +535,7 @@ class install_update extends module
 						continue;
 					}
 					$s_hidden_fields .= '<input type="hidden" name="modified[' . htmlspecialchars($filename) . ']" value="' . $merge_option . '" />';
+					$params[] = 'modified[' . urlencode($filename) . ']=' . urlencode($merge_option);
 				}
 
 				$no_update = request_var('no_update', array(0 => ''));
@@ -514,171 +543,11 @@ class install_update extends module
 				foreach ($no_update as $index => $filename)
 				{
 					$s_hidden_fields .= '<input type="hidden" name="no_update[]" value="' . htmlspecialchars($filename) . '" />';
+					$params[] = 'no_update[]=' . urlencode($filename);
 				}
 
-				if (!empty($_POST['download']))
-				{
-					$this->include_file('includes/functions_compress.' . $phpEx);
-
-					$use_method = request_var('use_method', '');
-					$methods = array('.tar');
-
-					$available_methods = array('.tar.gz' => 'zlib', '.tar.bz2' => 'bz2', '.zip' => 'zlib');
-					foreach ($available_methods as $type => $module)
-					{
-						if (!@extension_loaded($module))
-						{
-							continue;
-						}
-		
-						$methods[] = $type;
-					}
-
-					// Let the user decide in which format he wants to have the pack
-					if (!$use_method)
-					{
-						$this->page_title = 'SELECT_DOWNLOAD_FORMAT';
-
-						$radio_buttons = '';
-						foreach ($methods as $method)
-						{
-							$radio_buttons .= '<label><input type="radio"' . ((!$radio_buttons) ? ' id="use_method"' : '') . ' class="radio" value="' . $method . '" name="use_method" /> ' . $method . '</label>';
-						}
-
-						$template->assign_vars(array(
-							'S_DOWNLOAD_FILES'		=> true,
-							'U_ACTION'				=> append_sid($this->p_master->module_url, "mode=$mode&amp;sub=update_files"),
-							'RADIO_BUTTONS'			=> $radio_buttons,
-							'S_HIDDEN_FIELDS'		=> $s_hidden_fields)
-						);
-
-						// To ease the update process create a file location map
-						$update_list = $cache->get('_update_list');
-						$script_path = ($config['force_server_vars']) ? (($config['script_path'] == '/') ? '/' : $config['script_path'] . '/') : $user->page['root_script_path'];
-
-						foreach ($update_list as $status => $files)
-						{
-							if ($status == 'up_to_date' || $status == 'no_update')
-							{
-								continue;
-							}
-
-							foreach ($files as $file_struct)
-							{
-								if (in_array($file_struct['filename'], $no_update))
-								{
-									continue;
-								}
-
-								$template->assign_block_vars('location', array(
-									'SOURCE'		=> htmlspecialchars($file_struct['filename']),
-									'DESTINATION'	=> $script_path . htmlspecialchars($file_struct['filename']),
-								));
-							}
-						}
-
-						return;
-					}
-
-					if (!in_array($use_method, $methods))
-					{
-						$use_method = '.tar';
-					}
-
-					$update_mode = 'download';
-				}
-				else
-				{
-					$this->include_file('includes/functions_transfer.' . $phpEx);
-
-					// Choose FTP, if not available use fsock...
-					$method = request_var('method', '');
-					$submit = (isset($_POST['submit'])) ? true : false;
-					$test_ftp_connection = request_var('test_connection', '');
-
-					if (!$method)
-					{
-						$method = 'ftp';
-						$methods = transfer::methods();
-
-						if (!in_array('ftp', $methods))
-						{
-							$method = $methods[0];
-						}
-					}
-
-					$test_connection = false;
-					if ($test_ftp_connection || $submit)
-					{
-						$transfer = new $method(request_var('host', ''), request_var('username', ''), request_var('password', ''), request_var('root_path', ''), request_var('port', ''), request_var('timeout', ''));
-						$test_connection = $transfer->open_session();
-
-						// Make sure that the directory is correct by checking for the existence of common.php
-						if ($test_connection === true)
-						{
-							// Check for common.php file
-							if (!$transfer->file_exists($phpbb_root_path, 'common.' . $phpEx))
-							{
-								$test_connection = 'ERR_WRONG_PATH_TO_PHPBB';
-							}
-						}
-
-						$transfer->close_session();
-
-						// Make sure the login details are correct before continuing
-						if ($submit && $test_connection !== true)
-						{
-							$submit = false;
-							$test_ftp_connection = true;
-						}
-					}
-
-					if (!$submit)
-					{
-						$this->page_title = 'SELECT_FTP_SETTINGS';
-
-						if (!class_exists($method))
-						{
-							trigger_error('Method does not exist.', E_USER_ERROR);
-						}
-
-						$requested_data = call_user_func(array($method, 'data'));
-						foreach ($requested_data as $data => $default)
-						{
-							$template->assign_block_vars('data', array(
-								'DATA'		=> $data,
-								'NAME'		=> $user->lang[strtoupper($method . '_' . $data)],
-								'EXPLAIN'	=> $user->lang[strtoupper($method . '_' . $data) . '_EXPLAIN'],
-								'DEFAULT'	=> (!empty($_REQUEST[$data])) ? request_var($data, '') : $default
-							));
-						}
-
-						$s_hidden_fields .= build_hidden_fields(array('method' => $method));
-
-						$template->assign_vars(array(
-							'S_CONNECTION_SUCCESS'		=> ($test_ftp_connection && $test_connection === true) ? true : false,
-							'S_CONNECTION_FAILED'		=> ($test_ftp_connection && $test_connection !== true) ? true : false,
-							'ERROR_MSG'					=> ($test_ftp_connection && $test_connection !== true) ? $user->lang[$test_connection] : '',
-
-							'S_FTP_UPLOAD'		=> true,
-							'UPLOAD_METHOD'		=> $method,
-							'U_ACTION'			=> append_sid($this->p_master->module_url, "mode=$mode&amp;sub=update_files"),
-							'S_HIDDEN_FIELDS'	=> $s_hidden_fields)
-						);
-
-						return;
-					}
-
-					$update_mode = 'upload';
-				}
-
-				// Now update the installation or download the archive...
-				$download_filename = 'update_' . $this->update_info['version']['from'] . '_to_' . $this->update_info['version']['to'];
-				$archive_filename = $download_filename . '_' . time() . '_' . unique_id();
-
+				// Before the user is choosing his preferred method, let's create the content list...
 				$update_list = $cache->get('_update_list');
-				$conflicts = request_var('conflict', array('' => 0));
-				$modified = request_var('modified', array('' => 0));
 
 				if ($update_list === false)
 				{
@@ -733,6 +602,313 @@ class install_update extends module
 					trigger_error($user->lang['MERGE_SELECT_ERROR'], E_USER_ERROR);
 				}
 
+				// Before we do anything, let us diff the files and store the raw file information "somewhere"
+				$get_files = false;
+				$file_list = $cache->get('_diff_files');
+
+				if ($file_list === false || $file_list['status'] != 'finished')
+				{
+					$get_files = true;
+				}
+
+				if ($get_files)
+				{
+					if ($file_list === false)
+					{
+						$file_list = array(
+							'status'	=> 0,
+						);
+					}
+
+					$processed = 0;
+					foreach ($update_list as $status => $files)
+					{
+						if (!is_array($files))
+						{
+							continue;
+						}
+
+						foreach ($files as $file_struct)
+						{
+							// Skip this file if the user selected to not update it
+							if (in_array($file_struct['filename'], $no_update))
+							{
+								continue;
+							}
+
+							// Already handled... then skip of course...
+							if (isset($file_list[$file_struct['filename']]))
+							{
+								continue;
+							}
+
+							// Refresh if we reach 5 diffs...
+							if ($processed >= 5)
+							{
+								$cache->put('_diff_files', $file_list);
+
+								if (!empty($_REQUEST['download']))
+								{
+									$params[] = 'download=1';
+								}
+
+								$redirect_url = append_sid($this->p_master->module_url, "mode=$mode&amp;sub=update_files&amp;" . implode('&amp;', $params));
+								meta_refresh(3, $redirect_url);
+
+								$template->assign_vars(array(
+									'S_IN_PROGRESS'			=> true,
+									'L_IN_PROGRESS'			=> $user->lang['MERGING_FILES'],
+									'L_IN_PROGRESS_EXPLAIN'	=> $user->lang['MERGING_FILES_EXPLAIN'],
+								));
+
+								return;
+							}
+
+							$original_filename = ($file_struct['custom']) ? $file_struct['original'] : $file_struct['filename'];
+
+							switch ($status)
+							{
+								case 'modified':
+
+									$option = (isset($modified[$file_struct['filename']])) ? $modified[$file_struct['filename']] : 0;
+
+									switch ($option)
+									{
+										case MERGE_NO_MERGE_NEW:
+											$contents = file_get_contents($this->new_location . $original_filename);
+										break;
+
+										case MERGE_NO_MERGE_MOD:
+											$contents = file_get_contents($phpbb_root_path . $file_struct['filename']);
+										break;
+
+										default:
+											$diff = $this->return_diff($this->old_location . $original_filename, $phpbb_root_path . $file_struct['filename'], $this->new_location . $original_filename);
+
+											$contents = implode("\n", $diff->merged_output());
+											unset($diff);
+										break;
+									}
+
+									$file_list[$file_struct['filename']] = '_file_' . md5($file_struct['filename']);
+									$cache->put($file_list[$file_struct['filename']], base64_encode($contents));
+
+									$file_list['status']++;
+									$processed++;
+
+								break;
+
+								case 'conflict':
+
+									$option = $conflicts[$file_struct['filename']];
+									$contents = '';
+
+									switch ($option)
+									{
+										case MERGE_NO_MERGE_NEW:
+											$contents = file_get_contents($this->new_location . $original_filename);
+										break;
+
+										case MERGE_NO_MERGE_MOD:
+											$contents = file_get_contents($phpbb_root_path . $file_struct['filename']);
+										break;
+
+										default:
+
+											$diff = $this->return_diff($this->old_location . $original_filename, $phpbb_root_path . $file_struct['filename'], $this->new_location . $original_filename);
+
+											if ($option == MERGE_NEW_FILE)
+											{
+												$contents = implode("\n", $diff->merged_new_output());
+											}
+											else if ($option == MERGE_MOD_FILE)
+											{
+												$contents = implode("\n", $diff->merged_orig_output());
+											}
+											else
+											{
+												unset($diff);
+												break 2;
+											}
+
+											unset($diff);
+										break;
+									}
+
+									$file_list[$file_struct['filename']] = '_file_' . md5($file_struct['filename']);
+									$cache->put($file_list[$file_struct['filename']], base64_encode($contents));
+
+									$file_list['status']++;
+									$processed++;
+
+								break;
+							}
+						}
+					}
+				}
+
+				$file_list['status'] = 'finished';
+				$cache->put('_diff_files', $file_list);
+
+				if (!empty($_REQUEST['download']))
+				{
+					$this->include_file('includes/functions_compress.' . $phpEx);
+
+					$use_method = request_var('use_method', '');
+					$methods = array('.tar');
+
+					$available_methods = array('.tar.gz' => 'zlib', '.tar.bz2' => 'bz2', '.zip' => 'zlib');
+					foreach ($available_methods as $type => $module)
+					{
+						if (!@extension_loaded($module))
+						{
+							continue;
+						}
+		
+						$methods[] = $type;
+					}
+
+					// Let the user decide in which format he wants to have the pack
+					if (!$use_method)
+					{
+						$this->page_title = 'SELECT_DOWNLOAD_FORMAT';
+
+						$radio_buttons = '';
+						foreach ($methods as $method)
+						{
+							$radio_buttons .= '<label><input type="radio"' . ((!$radio_buttons) ? ' id="use_method"' : '') . ' class="radio" value="' . $method . '" name="use_method" /> ' . $method . '</label>';
+						}
+
+						$template->assign_vars(array(
+							'S_DOWNLOAD_FILES'		=> true,
+							'U_ACTION'				=> append_sid($this->p_master->module_url, "mode=$mode&amp;sub=update_files"),
+							'RADIO_BUTTONS'			=> $radio_buttons,
+							'S_HIDDEN_FIELDS'		=> $s_hidden_fields)
+						);
+
+						// To ease the update process create a file location map
+						$update_list = $cache->get('_update_list');
+						$script_path = ($config['force_server_vars']) ? (($config['script_path'] == '/') ? '/' : $config['script_path'] . '/') : $user->page['root_script_path'];
+
+						foreach ($update_list as $status => $files)
+						{
+							if ($status == 'up_to_date' || $status == 'no_update' || $status == 'status')
+							{
+								continue;
+							}
+
+							foreach ($files as $file_struct)
+							{
+								if (in_array($file_struct['filename'], $no_update))
+								{
+									continue;
+								}
+
+								$template->assign_block_vars('location', array(
+									'SOURCE'		=> htmlspecialchars($file_struct['filename']),
+									'DESTINATION'	=> $script_path . htmlspecialchars($file_struct['filename']),
+								));
+							}
+						}
+						return;
+					}
+
+					if (!in_array($use_method, $methods))
+					{
+						$use_method = '.tar';
+					}
+
+					$update_mode = 'download';
+				}
+				else
+				{
+					$this->include_file('includes/functions_transfer.' . $phpEx);
+
+					// Choose FTP, if not available use fsock...
+					$method = basename(request_var('method', ''));
+					$submit = (isset($_POST['submit'])) ? true : false;
+					$test_ftp_connection = request_var('test_connection', '');
+
+					if (!$method || !class_exists($method))
+					{
+						$method = 'ftp';
+						$methods = transfer::methods();
+
+						if (!in_array('ftp', $methods))
+						{
+							$method = $methods[0];
+						}
+					}
+
+					$test_connection = false;
+					if ($test_ftp_connection || $submit)
+					{
+						$transfer = new $method(request_var('host', ''), request_var('username', ''), request_var('password', ''), request_var('root_path', ''), request_var('port', ''), request_var('timeout', ''));
+						$test_connection = $transfer->open_session();
+
+						// Make sure that the directory is correct by checking for the existence of common.php
+						if ($test_connection === true)
+						{
+							// Check for common.php file
+							if (!$transfer->file_exists($phpbb_root_path, 'common.' . $phpEx))
+							{
+								$test_connection = 'ERR_WRONG_PATH_TO_PHPBB';
+							}
+						}
+
+						$transfer->close_session();
+
+						// Make sure the login details are correct before continuing
+						if ($submit && $test_connection !== true)
+						{
+							$submit = false;
+							$test_ftp_connection = true;
+						}
+					}
+
+					$s_hidden_fields .= build_hidden_fields(array('method' => $method));
+
+					if (!$submit)
+					{
+						$this->page_title = 'SELECT_FTP_SETTINGS';
+
+						if (!class_exists($method))
+						{
+							trigger_error('Method does not exist.', E_USER_ERROR);
+						}
+
+						$requested_data = call_user_func(array($method, 'data'));
+						foreach ($requested_data as $data => $default)
+						{
+							$template->assign_block_vars('data', array(
+								'DATA'		=> $data,
+								'NAME'		=> $user->lang[strtoupper($method . '_' . $data)],
+								'EXPLAIN'	=> $user->lang[strtoupper($method . '_' . $data) . '_EXPLAIN'],
+								'DEFAULT'	=> (!empty($_REQUEST[$data])) ? request_var($data, '') : $default
+							));
+						}
+
+						$template->assign_vars(array(
+							'S_CONNECTION_SUCCESS'		=> ($test_ftp_connection && $test_connection === true) ? true : false,
+							'S_CONNECTION_FAILED'		=> ($test_ftp_connection && $test_connection !== true) ? true : false,
+							'ERROR_MSG'					=> ($test_ftp_connection && $test_connection !== true) ? $user->lang[$test_connection] : '',
+
+							'S_FTP_UPLOAD'		=> true,
+							'UPLOAD_METHOD'		=> $method,
+							'U_ACTION'			=> append_sid($this->p_master->module_url, "mode=$mode&amp;sub=update_files"),
+							'S_HIDDEN_FIELDS'	=> $s_hidden_fields)
+						);
+
+						return;
+					}
+
+					$update_mode = 'upload';
+				}
+
+				// Now update the installation or download the archive...
+				$download_filename = 'update_' . $this->update_info['version']['from'] . '_to_' . $this->update_info['version']['to'];
+				$archive_filename = $download_filename . '_' . time() . '_' . unique_id();
+
 				// Now init the connection
 				if ($update_mode == 'download')
 				{
@@ -754,6 +930,11 @@ class install_update extends module
 				// Ok, go through the update list and do the operations based on their status
 				foreach ($update_list as $status => $files)
 				{
+					if (!is_array($files))
+					{
+						continue;
+					}
+
 					foreach ($files as $file_struct)
 					{
 						// Skip this file if the user selected to not update it
@@ -769,6 +950,7 @@ class install_update extends module
 							case 'new':
 							case 'new_conflict':
 							case 'not_modified':
+
 								if ($update_mode == 'download')
 								{
 									$compress->add_custom_file($this->new_location . $original_filename, $file_struct['filename']);
@@ -779,31 +961,22 @@ class install_update extends module
 									{
 										$transfer->rename($file_struct['filename'], $file_struct['filename'] . '.bak');
 									}
+
+									// New directory too?
+									$dirname = dirname($file_struct['filename']);
+
+									if ($dirname && !file_exists($phpbb_root_path . $dirname))
+									{
+										$transfer->make_dir($dirname);
+									}
+
 									$transfer->copy_file($this->new_location . $original_filename, $file_struct['filename']);
 								}
 							break;
 
 							case 'modified':
 
-								$option = (isset($modified[$file_struct['filename']])) ? $modified[$file_struct['filename']] : 0;
-
-								switch ($option)
-								{
-									case MERGE_NO_MERGE_NEW:
-										$contents = file_get_contents($this->new_location . $original_filename);
-									break;
-
-									case MERGE_NO_MERGE_MOD:
-										$contents = file_get_contents($phpbb_root_path . $file_struct['filename']);
-									break;
-
-									default:
-										$diff = $this->return_diff($this->old_location . $original_filename, $phpbb_root_path . $file_struct['filename'], $this->new_location . $original_filename);
-
-										$contents = implode("\n", $diff->merged_output());
-										unset($diff);
-									break;
-								}
+								$contents = base64_decode($cache->get($file_list[$file_struct['filename']]));
 
 								if ($update_mode == 'download')
 								{
@@ -819,40 +992,7 @@ class install_update extends module
 
 							case 'conflict':
 
-								$option = $conflicts[$file_struct['filename']];
-								$contents = '';
-
-								switch ($option)
-								{
-									case MERGE_NO_MERGE_NEW:
-										$contents = file_get_contents($this->new_location . $original_filename);
-									break;
-
-									case MERGE_NO_MERGE_MOD:
-										$contents = file_get_contents($phpbb_root_path . $file_struct['filename']);
-									break;
-
-									default:
-
-										$diff = $this->return_diff($this->old_location . $original_filename, $phpbb_root_path . $file_struct['filename'], $this->new_location . $original_filename);
-
-										if ($option == MERGE_NEW_FILE)
-										{
-											$contents = implode("\n", $diff->merged_new_output());
-										}
-										else if ($option == MERGE_MOD_FILE)
-										{
-											$contents = implode("\n", $diff->merged_orig_output());
-										}
-										else
-										{
-											unset($diff);
-											break 2;
-										}
-
-										unset($diff);
-									break;
-								}
+								$contents = base64_decode($cache->get($file_list[$file_struct['filename']]));
 
 								if ($update_mode == 'download')
 								{
@@ -1058,23 +1198,50 @@ class install_update extends module
 	/**
 	* Collect all file status infos we need for the update by diffing all files
 	*/
-	function get_update_structure()
+	function get_update_structure(&$update_list)
 	{
 		global $phpbb_root_path, $phpEx, $user;
 
-		$update_list = array(
-			'up_to_date'	=> array(),
-			'new'			=> array(),
-			'not_modified'	=> array(),
-			'modified'		=> array(),
-			'new_conflict'	=> array(),
-			'conflict'		=> array(),
-			'no_update'		=> array(),
-		);
+		if ($update_list === false)
+		{
+			$update_list = array(
+				'up_to_date'	=> array(),
+				'new'			=> array(),
+				'not_modified'	=> array(),
+				'modified'		=> array(),
+				'new_conflict'	=> array(),
+				'conflict'		=> array(),
+				'no_update'		=> array(),
+				'status'		=> 0,
+			);
+		}
+
+		/* if (!empty($this->update_info['custom']))
+		{
+			foreach ($this->update_info['custom'] as $original_file => $file_ary)
+			{
+				foreach ($file_ary as $index => $file)
+				{
+					$this->make_update_diff($update_list, $original_file, $file, true);
+				}
+			}
+		} */
 
 		// Get a list of those files which are completely new by checking with file_exists...
+		$num_bytes_processed = 0;
+
 		foreach ($this->update_info['files'] as $index => $file)
 		{
+			if (is_int($update_list['status']) && $index <= $update_list['status'])
+			{
+				continue;
+			}
+
+			if ($num_bytes_processed >= 500 * 1024)
+			{
+				return;
+			}
+
 			if (!file_exists($phpbb_root_path . $file))
 			{
 				// Make sure the update files are consistent by checking if the file is in new_files...
@@ -1090,7 +1257,7 @@ class install_update extends module
 				//		$update_list['removed'][] = $file;
 				//	}
 
-				// Only include a new file as new if the underlying path exist
+				/* Only include a new file as new if the underlying path exist
 				// The path normally do not exist if the original style or language has been removed
 				if (file_exists($phpbb_root_path . dirname($file)))
 				{
@@ -1104,12 +1271,28 @@ class install_update extends module
 					{
 						$update_list['no_update'][] = $file;
 					}
+				}*/
+
+				if (file_exists($phpbb_root_path . dirname($file)) || (strpos($file, 'styles/') !== 0 && strpos($file, 'language/') !== 0))
+				{
+					$this->get_custom_info($update_list['new'], $file);
+					$update_list['new'][] = array('filename' => $file, 'custom' => false);
 				}
-				unset($this->update_info['files'][$index]);
+
+				// unset($this->update_info['files'][$index]);
 			}
+			else
+			{
+				// not modified?
+				$this->make_update_diff($update_list, $file, $file);
+			}
+
+			$num_bytes_processed += (file_exists($this->new_location . $file)) ? filesize($this->new_location . $file) : 100 * 1024;
+			$update_list['status']++;
 		}
 
-		if (!sizeof($this->update_info['files']))
+		$update_list['status'] = 'finished';
+/*		if (!sizeof($this->update_info['files']))
 		{
 			return $update_list;
 		}
@@ -1136,7 +1319,7 @@ class install_update extends module
 			}
 		}
 
-		return $update_list;
+		return $update_list;*/
 	}
 
 	/**
@@ -1177,6 +1360,12 @@ class install_update extends module
 
 			// If no other status matches we have another file in the way...
 			$update_list['new_conflict'][] = $update_ary;
+			return;
+		}
+
+		// Old file removed?
+		if (file_exists($this->old_location . $original_file) && !file_exists($this->new_location . $original_file))
+		{
 			return;
 		}
 

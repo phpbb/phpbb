@@ -426,7 +426,10 @@ class module
 			'T_IMAGE_PATH'			=> $phpbb_root_path . 'adm/images/',
 
 			'S_CONTENT_DIRECTION' 	=> $lang['DIRECTION'],
+			'S_CONTENT_FLOW_BEGIN'	=> ($lang['DIRECTION'] == 'ltr') ? 'left' : 'right',
+			'S_CONTENT_FLOW_END'	=> ($lang['DIRECTION'] == 'ltr') ? 'right' : 'left',
 			'S_CONTENT_ENCODING' 	=> 'UTF-8',
+
 			'S_USER_LANG'			=> $lang['USER_LANG'],
 			)
 		);
@@ -454,7 +457,10 @@ class module
 			$db->sql_close();
 		}
 
-		exit_handler();
+		if (function_exists('exit_handler'))
+		{
+			exit_handler();
+		}
 	}
 
 	/**
