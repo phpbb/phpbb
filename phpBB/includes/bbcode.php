@@ -80,6 +80,7 @@ class bbcode
 		$bitfield = new bitfield($this->bbcode_bitfield);
 		$bbcodes_set = $bitfield->get_all_set();
 
+		$undid_bbcode_specialchars = false;
 		foreach ($bbcodes_set as $bbcode_id)
 		{
 			if (!empty($this->bbcode_cache[$bbcode_id]))
@@ -100,6 +101,14 @@ class bbcode
 
 					if (sizeof($preg['search']))
 					{
+						// we need to turn the entities back into their original form to allow the
+						// search patterns to work properly
+						if (!$undid_bbcode_specialchars)
+						{
+							$message = str_replace(array('&#58;', '&#46;'), array(':', '.'), $message);
+							$undid_bbcode_specialchars = true;
+						}
+
 						$message = preg_replace($preg['search'], $preg['replace'], $message);
 						$preg = array('search' => array(), 'replace' => array());
 					}

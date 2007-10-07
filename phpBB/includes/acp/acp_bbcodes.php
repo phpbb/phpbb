@@ -331,6 +331,17 @@ class acp_bbcodes
 			)
 		);
 
+		$sp_tokens = array(
+			'URL'	 => '(?i)((?:' . str_replace(array('!', '\#'), array('\!', '#'), get_preg_expression('url')) . ')|(?:' . str_replace(array('!', '\#'), array('\!', '#'), get_preg_expression('www_url')) . '))(?-i)',
+			'LOCAL_URL'	 => '(?i)(' . str_replace(array('!', '\#'), array('\!', '#'), get_preg_expression('relative_url')) . ')(?-i)',
+			'EMAIL' => '([a-zA-Z0-9]+[a-zA-Z0-9\-\._]*@(?:(?:[0-9]{1,3}\.){3,5}[0-9]{1,3}|[a-zA-Z0-9]+[a-zA-Z0-9\-\._]*\.[a-zA-Z]+))',
+			'TEXT' => '(.*?)',
+			'SIMPLETEXT' => '([a-zA-Z0-9-+.,_ ]+)',
+			'IDENTIFIER' => '([a-zA-Z0-9-_]+)',
+			'COLOR' => '([a-zA-Z]+|#[0-9abcdefABCDEF]+)',
+			'NUMBER' => '([0-9]+)',
+		);
+
 		$pad = 0;
 		$modifiers = 'i';
 
@@ -376,7 +387,7 @@ class acp_bbcodes
 				$fp_match = str_replace(preg_quote($token, '!'), $regex, $fp_match);
 				$fp_replace = str_replace($token, $replace, $fp_replace);
 
-				$sp_match = str_replace(preg_quote($token, '!'), '(.*?)', $sp_match);
+				$sp_match = str_replace(preg_quote($token, '!'), $sp_tokens[$token_type], $sp_match);
 				$sp_replace = str_replace($token, '${' . ($n + 1) . '}', $sp_replace);
 			}
 
