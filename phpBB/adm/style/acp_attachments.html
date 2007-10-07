@@ -110,7 +110,7 @@
 		<p>{L_NO_IPS_DEFINED}</p>
 	<!-- ENDIF -->
 	</fieldset>
-
+	{S_FORM_TOKEN}
 	</form>
 
 <!-- ELSEIF S_EXTENSION_GROUPS -->
@@ -254,7 +254,7 @@
 		</tbody>
 		</table>
 		<p class="quick">
-				{L_CREATE_GROUP}: <input type="text" name="group_name" maxlength="30" /> 
+				{L_CREATE_GROUP}: <input type="text" name="group_name" maxlength="30" />
 				<input class="button2" name="add" type="submit" value="{L_SUBMIT}" />
 		</p>
 		</fieldset>
@@ -283,7 +283,7 @@
 	</fieldset>
 	{S_FORM_TOKEN}
 	</form>
-	
+
 	<br />
 
 	<form id="change_ext" method="post" action="{U_ACTION}">
@@ -307,7 +307,7 @@
 			<td class="spacer" colspan="3">&nbsp;</td>
 		</tr>
 		<!-- ENDIF -->
-		<tr> 
+		<tr>
 			<td><strong>{extensions.EXTENSION}</strong></td>
 			<td>{extensions.GROUP_OPTIONS}</td>
 			<td><input type="checkbox" class="radio" name="extension_id_list[]" value="{extensions.EXTENSION_ID}" /><input type="hidden" name="extension_change_list[]" value="{extensions.EXTENSION_ID}" /></td>
