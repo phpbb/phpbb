@@ -68,6 +68,7 @@ $lang = array_merge($lang, array(
 	'ACCOUNT_INACTIVE'				=> 'Your account has been created. However, this board requires account activation, an activation key has been sent to the e-mail address you provided. Please check your e-mail for further information.',
 	'ACCOUNT_INACTIVE_ADMIN'		=> 'Your account has been created. However, this board requires account activation by the administrator group. An e-mail has been sent to them and you will be informed when your account has been activated.',
 	'ACTIVATION_EMAIL_SENT'			=> 'The activation e-mail has been sent to your e-mail address.',
+	'ACTIVATION_EMAIL_SENT_ADMIN'	=> 'The activation e-mail has been sent to the administrators e-mail addresses.',
 	'ADD'							=> 'Add',
 	'ADD_BCC'						=> 'Add [BCC]',
 	'ADD_FOES'						=> 'Add new foes',

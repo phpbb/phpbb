@@ -672,6 +672,11 @@ class bbcode_firstpass extends bbcode
 	{
 		global $config, $user;
 
+		/**
+		* If you change this code, make sure the cases described within the following reports are still working:
+		* #3572, #14667
+		*/
+
 		$in = str_replace("\r\n", "\n", str_replace('\"', '"', trim($in)));
 
 		if (!$in)
@@ -801,11 +806,18 @@ class bbcode_firstpass extends bbcode
 				{
 					// Search the text for the next tok... if an ending quote comes first, then change tok to []
 					$pos1 = strpos($in, '[/quote');
+					// If the token ] comes first, we change it to ]
 					$pos2 = strpos($in, ']');
+					// If the token [ comes first, we change it to [
+					$pos3 = strpos($in, '[');
 
-					if ($pos1 !== false && ($pos2 === false || $pos1 < $pos2))
+					if ($pos1 !== false && ($pos2 === false || $pos1 < $pos2) && ($pos3 === false || $pos1 < $pos3))
 					{
 						$tok = '[]';
+					}
+					else if ($pos3 !== false && ($pos2 === false || $pos3 < $pos2))
+					{
+						$tok = '[';
 					}
 					else
 					{
@@ -1049,7 +1061,7 @@ class parse_message extends bbcode_firstpass
 		$this->message = preg_replace($match, $replace, trim($this->message));
 
 		// Message length check. -1 disables this check completely.
-		if ($config['max_' . $mode . '_chars'] != -1)
+		if ($config['max_' . $mode . '_chars'])
 		{
 			$msg_len = ($mode == 'post') ? utf8_strlen($this->message) : utf8_strlen(preg_replace('#\[\/?[a-z\*\+\-]+(=[\S]+)?\]#ius', ' ', $this->message));
 	

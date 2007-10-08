@@ -262,8 +262,8 @@ $lang = array_merge($lang, array(
 	'TRACE_TOTAL'							=> 'Total',
 
 	'USERS_NOT_ASSIGNED'			=> 'No user assigned to this role',
-	'USER_IS_MEMBER_OF_DEFAULT'		=> 'is a member of the following default groups',
-	'USER_IS_MEMBER_OF_CUSTOM'		=> 'is a member of the following custom groups',
+	'USER_IS_MEMBER_OF_DEFAULT'		=> 'is a member of the following pre-defined groups',
+	'USER_IS_MEMBER_OF_CUSTOM'		=> 'is a member of the following user defined groups',
 
 	'VIEW_ASSIGNED_ITEMS'	=> 'View assigned items',
 	'VIEW_LOCAL_PERMS'		=> 'Local permissions',

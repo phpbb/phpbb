@@ -81,7 +81,6 @@
 
 	<ul>
 		<li>[Feature] Removing constant PHPBB_EMBEDDED in favor of using an exit_handler(); the constant was meant to achive this more or less.</li>
-		<li>[Feature] The new exit_handler() function having a check for the function exit_handler_phpbb_hook().</li>
 		<li>[Feature] Constant PHPBB_ADMIN_PATH introduced, having the same purpose as PHPBB_ROOT_PATH, but for the ACP.</li>
 		<li>[Fix] Further fixing user profile view (please do not forget to update/refresh your template and style) (Bug #14230)</li>
 		<li>[Fix] Adjust google adsense bot information (Bug #14296)</li>
@@ -112,10 +111,11 @@
 		<li>[Change] use in-build functions for user online list (Bug #14596) - provided by rxu</li>
 		<li>[Fix] Fixing google cache display problems with Firefox (Bug #14472) - patch provided by Raimon</li>
 		<li>[Fix] Prevent topic unlocking if locked by someone else while posting (Bug #10307)</li>
-		<li>[Change] Allow years in future be selected for date custom profile field (Bug#14519)</li>
+		<li>[Change] Allow years in future be selected for date custom profile field (Bug #14519)</li>
 		<li>[Fix] Don't display &quot;Avatars Disabled&quot; message on edit groups in UCP (Bug #14636)</li>
 		<li>[Change] Require confirm for deleting inactive users. (Bug #14641)</li>
 		<li>[Fix] Match custom BBCodes in the same way during first and second pass - patch provided by IBBoard (Bug #14268)</li>
+		<li>[Fix] Correct quote parsing if opening bracket before opening quote (Bug #14667)</li>
 	</ul>
 
 	<a name="v30rc4"></a><h3>1.ii. Changes since 3.0.RC4</h3>
