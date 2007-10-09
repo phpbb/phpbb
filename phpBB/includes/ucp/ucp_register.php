@@ -141,7 +141,7 @@ class ucp_register
 					'S_REGISTRATION'	=> true,
 					'S_HIDDEN_FIELDS'	=> build_hidden_fields($s_hidden_fields),
 					'S_UCP_ACTION'		=> append_sid("{$phpbb_root_path}ucp.$phpEx", 'mode=register' . $add_lang . $add_coppa),
-					'S_TIME'			=> 1000 * (int)$config['min_time_terms'],
+					'S_TIME'			=> 1000 * ((int) $config['min_time_terms']),
 					)
 				);
 			}
@@ -529,7 +529,7 @@ class ucp_register
 			'S_COPPA'			=> $coppa,
 			'S_HIDDEN_FIELDS'	=> $s_hidden_fields,
 			'S_UCP_ACTION'		=> append_sid("{$phpbb_root_path}ucp.$phpEx", 'mode=register'),
-			'S_TIME'			=> 1000 * (int)$config['min_time_reg'],
+			'S_TIME'			=> 1000 * ((int) $config['min_time_reg']),
 			)
 		);
 
