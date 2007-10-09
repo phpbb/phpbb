@@ -2028,7 +2028,7 @@ function add_form_key($form_name)
 * @param bool $trigger If true, the function will triger an error when encountering an invalid form
 * @param int $minimum_time The minimum acceptable age for a submitted form in seconds
 */
-function check_form_key($form_name, $timespan = false, $return_page = '', $trigger = false, $miniumum_time = false)
+function check_form_key($form_name, $timespan = false, $return_page = '', $trigger = false, $minimum_time = false)
 {
 	global $config, $user;
 
@@ -2036,9 +2036,9 @@ function check_form_key($form_name, $timespan = false, $return_page = '', $trigg
 	{
 		$timespan = $config['form_token_lifetime'];
 	}
-	if ($miniumum_time === false)
+	if ($minimum_time === false)
 	{
-		$miniumum_time = $config['form_token_mintime'];
+		$minimum_time = $config['form_token_mintime'];
 	}
 	
 	if (isset($_POST['creation_time']) && isset($_POST['form_token']))
@@ -2048,7 +2048,7 @@ function check_form_key($form_name, $timespan = false, $return_page = '', $trigg
 
 		$diff = (time() - $creation_time);
 
-		if (($diff >= $miniumum_time) && (($diff <= $timespan) || $timespan == -1))
+		if (($diff >= $minimum_time) && (($diff <= $timespan) || $timespan == -1))
 		{
 			$token_sid = ($user->data['user_id'] == ANONYMOUS && !empty($config['form_token_sid_guests'])) ? $user->session_id : '';
 			
