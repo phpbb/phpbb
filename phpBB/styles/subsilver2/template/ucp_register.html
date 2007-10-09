@@ -10,6 +10,27 @@
 		document.forms['register'].change_lang.value = lang_iso;
 		document.forms['register'].submit.click();
 	}
+	
+	var old_func = window.onload;
+	
+	function disable(disabl)
+	{
+		document.getElementById("submit").disabled = disabl;
+	}
+	
+	function disable_and_handle()
+	{
+		if (old_func)
+		{
+			old_func();
+		}
+		disable(true);
+	}
+	
+	<!-- IF S_TIME -->		
+		window.onload = disable_and_handle;
+		setTimeout("disable(false)", {S_TIME});	
+	<!-- ENDIF -->
 // ]]>
 </script>
 
@@ -102,7 +123,7 @@
 <!-- ENDIF -->
 
 <tr>
-	<td class="cat" colspan="2" align="center">{S_HIDDEN_FIELDS}<input class="btnmain" type="submit" name="submit" value="{L_SUBMIT}" />&nbsp;&nbsp;<input class="btnlite" type="reset" value="{L_RESET}" name="reset" /></td>
+	<td class="cat" colspan="2" align="center">{S_HIDDEN_FIELDS}<input class="btnmain" type="submit" name="submit" id="submit" value="{L_SUBMIT}" />&nbsp;&nbsp;<input class="btnlite" type="reset" value="{L_RESET}" name="reset" /></td>
 </tr>
 </table>
 {S_FORM_TOKEN}

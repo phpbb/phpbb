@@ -2006,9 +2006,10 @@ function meta_refresh($time, $url)
 */
 function add_form_key($form_name)
 {
-	global $template, $user;
+	global $config, $template, $user;
 	$now = time();
-	$token = sha1($now . $user->data['user_form_salt'] . $form_name);
+	$token_sid = ($user->data['user_id'] == ANONYMOUS && !empty($config['form_token_sid_guests'])) ? $user->session_id : '';
+	$token = sha1($now . $user->data['user_form_salt'] . $form_name . $token_sid);
 
 	$s_fields = build_hidden_fields(array(
 			'creation_time' => $now,
@@ -2029,7 +2030,7 @@ function add_form_key($form_name)
 */
 function check_form_key($form_name, $timespan = false, $return_page = '', $trigger = false, $miniumum_time = false)
 {
-	global $user, $config;
+	global $config, $user;
 
 	if ($timespan === false)
 	{
@@ -2039,6 +2040,7 @@ function check_form_key($form_name, $timespan = false, $return_page = '', $trigg
 	{
 		$miniumum_time = $config['form_token_mintime'];
 	}
+	
 	if (isset($_POST['creation_time']) && isset($_POST['form_token']))
 	{
 		$creation_time	= abs(request_var('creation_time', 0));
@@ -2046,9 +2048,11 @@ function check_form_key($form_name, $timespan = false, $return_page = '', $trigg
 
 		$diff = (time() - $creation_time);
 
-		if (($diff > $miniumum_time) && (($diff < $timespan) || $timespan == -1))
+		if (($diff >= $miniumum_time) && (($diff <= $timespan) || $timespan == -1))
 		{
-			$key = sha1($creation_time . $user->data['user_form_salt'] . $form_name);
+			$token_sid = ($user->data['user_id'] == ANONYMOUS && !empty($config['form_token_sid_guests'])) ? $user->session_id : '';
+			
+			$key = sha1($creation_time . $user->data['user_form_salt'] . $form_name . $token_sid);
 			if ($key === $token)
 			{
 				return true;

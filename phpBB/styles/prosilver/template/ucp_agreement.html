@@ -1,5 +1,19 @@
 <!-- INCLUDE overall_header.html -->
 
+<script type="text/javascript" defer="defer" >
+// <![CDATA[	
+	function disable(disabl)
+	{
+		document.getElementById("agreed").disabled = disabl;
+	}
+	
+	<!-- IF S_TIME -->
+		onload_functions.push('disable(true)');
+		setTimeout("disable(false)", {S_TIME});
+	<!-- ENDIF -->
+// ]]>
+</script>
+
 <!-- IF S_SHOW_COPPA or S_REGISTRATION -->
 
 	<form method="post" action="{S_UCP_ACTION}" id="agreement">
@@ -19,7 +33,7 @@
 			<!-- IF S_SHOW_COPPA -->
 			<strong><a href="{U_COPPA_NO}" class="button1">{L_COPPA_NO}</a></strong>&nbsp; <a href="{U_COPPA_YES}" class="button2">{L_COPPA_YES}</a>
 			<!-- ELSE -->
-			<input type="submit" name="agreed" value="{L_AGREE}" class="button1" />&nbsp; 
+			<input type="submit" name="agreed" id="agreed" value="{L_AGREE}" class="button1" />&nbsp; 
 			<input type="submit" name="not_agreed" value="{L_NOT_AGREE}" class="button2" />
 			<!-- ENDIF -->
 		</fieldset>

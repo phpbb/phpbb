@@ -10,6 +10,17 @@
 		document.forms['register'].change_lang.value = lang_iso;
 		document.forms['register'].submit.click();
 	}
+	
+	function disable(disabl)
+	{
+		document.getElementById("submit").disabled = disabl;
+	}
+	
+	<!-- IF S_TIME -->
+		onload_functions.push('disable(true)');
+		setTimeout("disable(false)", {S_TIME});
+	<!-- ENDIF -->
+	
 // ]]>
 </script>
 
@@ -112,7 +123,7 @@
 	<fieldset class="submit-buttons">
 		{S_HIDDEN_FIELDS}
 		<input type="reset" value="{L_RESET}" name="reset" class="button2" />&nbsp; 
-		<input type="submit" name="submit" value="{L_SUBMIT}" class="button1" />
+		<input type="submit" name="submit" id ="submit" value="{L_SUBMIT}" class="button1" />
 	</fieldset>
 
 	<span class="corners-bottom"><span></span></span></div>

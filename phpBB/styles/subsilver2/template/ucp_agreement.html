@@ -1,5 +1,31 @@
 <!-- INCLUDE overall_header.html -->
 
+<script type="text/javascript" defer="defer" >
+// <![CDATA[
+
+	var old_func = window.onload;
+	
+	function disable(disabl)
+	{
+		document.getElementById("agreed").disabled = disabl;
+	}
+	
+	function disable_and_handle()
+	{
+		if (old_func)
+		{
+			old_func();
+		}
+		disable(true);
+	}
+	
+	<!-- IF S_TIME -->		
+		window.onload = disable_and_handle;
+		setTimeout("disable(false)", {S_TIME});	
+	<!-- ENDIF -->
+// ]]>
+</script>
+
 <!-- IF S_SHOW_COPPA or S_REGISTRATION -->
 	
 	<form method="post" action="{S_UCP_ACTION}">
@@ -18,7 +44,7 @@
 					<td>
 						<span class="genmed"><br />{L_TERMS_OF_USE}<br /><br /></span>
 						<div align="center">
-							<input class="btnlite" type="submit" name="agreed" value="{L_AGREE}" /><br /><br />
+							<input class="btnlite" type="submit" id="agreed" name="agreed" value="{L_AGREE}" /><br /><br />
 							<input class="btnlite" type="submit" name="not_agreed" value="{L_NOT_AGREE}" />
 						</div>
 					</td>

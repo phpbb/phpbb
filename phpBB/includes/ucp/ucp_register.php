@@ -44,13 +44,21 @@ class ucp_register
 		$change_lang	= request_var('change_lang', '');
 		$user_lang		= request_var('lang', $user->lang_name);
 
-		add_form_key('ucp_register');
 
 		// not so fast, buddy
-		if (($submit && !check_form_key('ucp_register', false, '', false, 5))
-			|| (!$submit && !check_form_key('ucp_register', false, '', false, 1)))
+		if (($submit && !check_form_key('ucp_register', false, '', false, $config['min_time_reg']))
+			|| (!$submit && !check_form_key('ucp_register_terms', false, '', false, $config['min_time_terms'])))
 		{
 			$agreed = false;
+		}
+		
+		if ($agreed)
+		{
+			add_form_key('ucp_register');
+		}
+		else
+		{
+			add_form_key('ucp_register_terms');
 		}
 
 
@@ -121,8 +129,8 @@ class ucp_register
 
 					'S_SHOW_COPPA'		=> true,
 					'S_HIDDEN_FIELDS'	=> build_hidden_fields($s_hidden_fields),
-					'S_UCP_ACTION'		=> append_sid("{$phpbb_root_path}ucp.$phpEx", 'mode=register' . $add_lang))
-				);
+					'S_UCP_ACTION'		=> append_sid("{$phpbb_root_path}ucp.$phpEx", 'mode=register' . $add_lang),
+				));
 			}
 			else
 			{
@@ -132,7 +140,9 @@ class ucp_register
 					'S_SHOW_COPPA'		=> false,
 					'S_REGISTRATION'	=> true,
 					'S_HIDDEN_FIELDS'	=> build_hidden_fields($s_hidden_fields),
-					'S_UCP_ACTION'		=> append_sid("{$phpbb_root_path}ucp.$phpEx", 'mode=register' . $add_lang . $add_coppa))
+					'S_UCP_ACTION'		=> append_sid("{$phpbb_root_path}ucp.$phpEx", 'mode=register' . $add_lang . $add_coppa),
+					'S_TIME'			=> 1000 * (int)$config['min_time_terms'],
+					)
 				);
 			}
 
@@ -518,7 +528,9 @@ class ucp_register
 			'S_CONFIRM_CODE'	=> ($config['enable_confirm']) ? true : false,
 			'S_COPPA'			=> $coppa,
 			'S_HIDDEN_FIELDS'	=> $s_hidden_fields,
-			'S_UCP_ACTION'		=> append_sid("{$phpbb_root_path}ucp.$phpEx", 'mode=register'))
+			'S_UCP_ACTION'		=> append_sid("{$phpbb_root_path}ucp.$phpEx", 'mode=register'),
+			'S_TIME'			=> 1000 * (int)$config['min_time_reg'],
+			)
 		);
 
 		//

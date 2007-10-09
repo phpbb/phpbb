@@ -1493,6 +1493,9 @@ if (version_compare($current_version, '3.0.RC5', '<='))
 
 	set_config('form_token_lifetime', '7200');
 	set_config('form_token_mintime', '0');
+	set_config('min_time_reg', '5');
+	set_config('min_time_terms', '2');
+	set_config('form_token_sid_guests', '1');
 
 	$db->sql_transaction('begin');
 

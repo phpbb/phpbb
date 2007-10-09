@@ -90,6 +90,7 @@ INSERT INTO phpbb_config (config_name, config_value) VALUES ('flood_interval', '
 INSERT INTO phpbb_config (config_name, config_value) VALUES ('force_server_vars', '0');
 INSERT INTO phpbb_config (config_name, config_value) VALUES ('form_token_lifetime', '7200');
 INSERT INTO phpbb_config (config_name, config_value) VALUES ('form_token_mintime', '0');
+INSERT INTO phpbb_config (config_name, config_value) VALUES ('form_token_sid_guests', '1');
 INSERT INTO phpbb_config (config_name, config_value) VALUES ('forward_pm', '1');
 INSERT INTO phpbb_config (config_name, config_value) VALUES ('forwarded_for_check', '0');
 INSERT INTO phpbb_config (config_name, config_value) VALUES ('full_folder_action', '2');
@@ -171,6 +172,8 @@ INSERT INTO phpbb_config (config_name, config_value) VALUES ('max_sig_urls', '5'
 INSERT INTO phpbb_config (config_name, config_value) VALUES ('min_name_chars', '3');
 INSERT INTO phpbb_config (config_name, config_value) VALUES ('min_pass_chars', '6');
 INSERT INTO phpbb_config (config_name, config_value) VALUES ('min_search_author_chars', '3');
+INSERT INTO phpbb_config (config_name, config_value) VALUES ('min_time_reg', '5');
+INSERT INTO phpbb_config (config_name, config_value) VALUES ('min_time_terms', '2');
 INSERT INTO phpbb_config (config_name, config_value) VALUES ('override_user_style', '0');
 INSERT INTO phpbb_config (config_name, config_value) VALUES ('pass_complex', 'PASS_TYPE_ANY');
 INSERT INTO phpbb_config (config_name, config_value) VALUES ('pm_edit_time', '0');
