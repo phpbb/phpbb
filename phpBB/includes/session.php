@@ -985,7 +985,7 @@ class session
 					{
 						$ban_triggered_by = 'user';
 					}
-					else if (!empty($row['ban_ip']) && preg_match('#^' . str_replace('\*', '.*?', preg_quote($row['ban_ip'], '#')) . '$#i', $user_ips))
+					else if ($ip_banned)
 					{
 						$ban_triggered_by = 'ip';
 					}
