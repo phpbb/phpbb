@@ -996,3 +996,7 @@ a.button1:hover, input.button1:hover, a.button2:hover, input.button2:hover, inpu
 input.search {
 	background-image: url("{T_THEME_PATH}/images/icon_textbox_search.gif");
 }
+
+input.disabled {
+	color: #666666;
+}
