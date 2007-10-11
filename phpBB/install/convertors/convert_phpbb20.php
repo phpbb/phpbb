@@ -892,7 +892,7 @@ if (!$get_info)
 				array('user_notify_type',		NOTIFY_EMAIL,						''),
 				array('user_allow_pm',			'users.user_allow_pm',				''),
 				array('user_allow_viewonline',	'users.user_allow_viewonline',		''),
-				array('user_allow_viewemail',	'users.user_viewemail',				''),
+				array('user_allow_viewemail',	'users.user_viewemail',				'intval'),
 				array('user_actkey',			'users.user_actkey',				''),
 				array('user_newpasswd',			'',									''), // Users need to re-request their password...
 				array('user_style',				$config['default_style'],			''),
