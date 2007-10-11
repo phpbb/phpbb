@@ -1060,8 +1060,8 @@ class parse_message extends bbcode_firstpass
 		$replace = array("\\1&#058;");
 		$this->message = preg_replace($match, $replace, trim($this->message));
 
-		// Message length check. -1 disables this check completely.
-		if ($config['max_' . $mode . '_chars'])
+		// Message length check. 0 disables this check completely.
+		if ($config['max_' . $mode . '_chars'] > 0)
 		{
 			$msg_len = ($mode == 'post') ? utf8_strlen($this->message) : utf8_strlen(preg_replace('#\[\/?[a-z\*\+\-]+(=[\S]+)?\]#ius', ' ', $this->message));
 	
@@ -1070,6 +1070,13 @@ class parse_message extends bbcode_firstpass
 				$this->warn_msg[] = (!$msg_len) ? $user->lang['TOO_FEW_CHARS'] : sprintf($user->lang['TOO_MANY_CHARS_' . strtoupper($mode)], $msg_len, $config['max_' . $mode . '_chars']);
 				return $this->warn_msg;
 			}
+		}
+
+		// Check for "empty" message
+		if (!utf8_clean_string($this->message))
+		{
+			$this->warn_msg[] = $user->lang['TOO_FEW_CHARS'];
+			return $this->warn_msg;
 		}
 
 		// Prepare BBcode (just prepares some tags for better parsing)
