@@ -376,3 +376,9 @@ input.search {
 	background-position: left 1px;
 	padding-left: 17px;
 }
+
+.full { width: 95%; }
+.medium { width: 50%;}
+.narrow { width: 25%;}
+.tiny { width: 10%;}
+

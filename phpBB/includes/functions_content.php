@@ -99,11 +99,12 @@ function gen_sort_selects(&$limit_days, &$sort_by_text, &$sort_days, &$sort_key,
 /**
 * Generate Jumpbox
 */
-function make_jumpbox($action, $forum_id = false, $select_all = false, $acl_list = false)
+function make_jumpbox($action, $forum_id = false, $select_all = false, $acl_list = false, $force_display = false)
 {
 	global $config, $auth, $template, $user, $db;
 
-	if (!$config['load_jumpbox'])
+	// We only return if the jumpbox is not forced to be displayed (in case it is needed for functionality)
+	if (!$config['load_jumpbox'] && $force_display === false)
 	{
 		return;
 	}

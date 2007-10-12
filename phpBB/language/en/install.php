@@ -117,7 +117,7 @@ $lang = array_merge($lang, array(
 	'CONV_SAVED_MESSAGES'				=> 'Saved messages',
 
 	'COULD_NOT_COPY'			=> 'Could not copy file <strong>%1$s</strong> to <strong>%2$s</strong><br /><br />Please check that the target directory exists and is writable by the webserver.',
-	'COULD_NOT_FIND_PATH'		=> 'Could not find path to your former board. Please check your settings and try again.<br />» Specified source path was %s.',
+	'COULD_NOT_FIND_PATH'		=> 'Could not find path to your former board. Please check your settings and try again.<br />» %s was specified as the source path.',
 
 	'DBMS'						=> 'Database type',
 	'DB_CONFIG'					=> 'Database configuration',

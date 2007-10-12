@@ -329,7 +329,7 @@ parse_css_file = {PARSE_CSS_FILE}
 							{
 								// Save CSS contents
 								$sql_ary = array(
-									'theme_mtime'	=> @filemtime("{$phpbb_root_path}styles/{$theme_row['theme_path']}/theme/stylesheet.css"),
+									'theme_mtime'	=> (int) filemtime("{$phpbb_root_path}styles/{$theme_row['theme_path']}/theme/stylesheet.css"),
 									'theme_data'	=> $this->db_theme_data($theme_row)
 								);
 
@@ -1307,10 +1307,10 @@ parse_css_file = {PARSE_CSS_FILE}
 					}
 
 					$sql_ary = array(
-						'image_filename'	=> $imgfilename,
-						'image_width'		=> $imgwidth,
-						'image_height'		=> $imgheight,
-						'image_lang'		=> $imglang,
+						'image_filename'	=> (string) $imgfilename,
+						'image_width'		=> (int) $imgwidth,
+						'image_height'		=> (int) $imgheight,
+						'image_lang'		=> (string) $imglang,
 					);
 
 					// already exists
@@ -1325,7 +1325,7 @@ parse_css_file = {PARSE_CSS_FILE}
 					else if (!$imageset_data_row)
 					{
 						$sql_ary['image_name']	= $imgname;
-						$sql_ary['imageset_id']	= $imageset_id;
+						$sql_ary['imageset_id']	= (int) $imageset_id;
 						$db->sql_query('INSERT INTO ' . STYLES_IMAGESET_DATA_TABLE . ' ' . $db->sql_build_array('INSERT', $sql_ary));
 					}
 
@@ -2158,10 +2158,10 @@ parse_css_file = {PARSE_CSS_FILE}
 				case 'style':
 
 					$sql_ary += array(
-						'template_id'		=> $template_id,
-						'theme_id'			=> $theme_id,
-						'imageset_id'		=> $imageset_id,
-						'style_active'		=> $style_active,
+						'template_id'		=> (int) $template_id,
+						'theme_id'			=> (int) $theme_id,
+						'imageset_id'		=> (int) $imageset_id,
+						'style_active'		=> (int) $style_active,
 					);
 				break;
 
@@ -2438,11 +2438,11 @@ parse_css_file = {PARSE_CSS_FILE}
 				// We could do this using extended inserts ... but that could be one
 				// heck of a lot of data ...
 				$sql_ary = array(
-					'template_id'			=> $style_id,
+					'template_id'			=> (int) $style_id,
 					'template_filename'		=> "$pathfile$file",
 					'template_included'		=> (isset($includes[$file])) ? implode(':', $includes[$file]) . ':' : '',
-					'template_mtime'		=> filemtime("{$phpbb_root_path}styles/$template_path$pathfile$file"),
-					'template_data'			=> file_get_contents("{$phpbb_root_path}styles/$template_path$pathfile$file"),
+					'template_mtime'		=> (int) filemtime("{$phpbb_root_path}styles/$template_path$pathfile$file"),
+					'template_data'			=> (string) file_get_contents("{$phpbb_root_path}styles/$template_path$pathfile$file"),
 				);
 
 				if ($mode == 'insert')
@@ -2984,10 +2984,10 @@ parse_css_file = {PARSE_CSS_FILE}
 		$sql_ary = array(
 			'style_name'		=> $name,
 			'style_copyright'	=> $copyright,
-			'style_active'		=> $active,
-			'template_id'		=> $style_row['template_id'],
-			'theme_id'			=> $style_row['theme_id'],
-			'imageset_id'		=> $style_row['imageset_id'],
+			'style_active'		=> (int) $active,
+			'template_id'		=> (int) $style_row['template_id'],
+			'theme_id'			=> (int) $style_row['theme_id'],
+			'imageset_id'		=> (int) $style_row['imageset_id'],
 		);
 
 		$sql = 'INSERT INTO ' . STYLES_TABLE . '
@@ -3115,7 +3115,7 @@ parse_css_file = {PARSE_CSS_FILE}
 				$sql_ary += array(
 					'theme_storedb'	=> $store_db,
 					'theme_data'	=> ($store_db) ? $this->db_theme_data($sql_ary, false, $root_path) : '',
-					'theme_mtime'	=> filemtime("{$phpbb_root_path}styles/$path/theme/stylesheet.css")
+					'theme_mtime'	=> (int) filemtime("{$phpbb_root_path}styles/$path/theme/stylesheet.css")
 				);
 			break;
 
@@ -3167,7 +3167,7 @@ parse_css_file = {PARSE_CSS_FILE}
 					$image_height = $image_width = 0;
 				}
 
-				if (strpos($key, 'img_') === 0&& $image_filename)
+				if (strpos($key, 'img_') === 0 && $image_filename)
 				{
 					$key = substr($key, 4);
 					if (in_array($key, $imageset_definitions))
@@ -3175,9 +3175,9 @@ parse_css_file = {PARSE_CSS_FILE}
 						$sql_ary = array(
 							'image_name'		=> $key,
 							'image_filename'	=> str_replace('{PATH}', "styles/$path/imageset/", trim($image_filename)),
-							'image_height'		=> $image_height,
-							'image_width'		=> $image_width,
-							'imageset_id'		=> $id,
+							'image_height'		=> (int) $image_height,
+							'image_width'		=> (int) $image_width,
+							'imageset_id'		=> (int) $id,
 							'image_lang'		=> '',
 						);
 						$db->sql_query('INSERT INTO ' . STYLES_IMAGESET_DATA_TABLE . ' ' . $db->sql_build_array('INSERT', $sql_ary));
@@ -3223,9 +3223,9 @@ parse_css_file = {PARSE_CSS_FILE}
 								$sql_ary = array(
 									'image_name'		=> $image_name,
 									'image_filename'	=> $image_filename,
-									'image_height'		=> $image_height,
-									'image_width'		=> $image_width,
-									'imageset_id'		=> $id,
+									'image_height'		=> (int) $image_height,
+									'image_width'		=> (int) $image_width,
+									'imageset_id'		=> (int) $id,
 									'image_lang'		=> $row['lang_dir'],
 								);
 								$db->sql_query('INSERT INTO ' . STYLES_IMAGESET_DATA_TABLE . ' ' . $db->sql_build_array('INSERT', $sql_ary));
