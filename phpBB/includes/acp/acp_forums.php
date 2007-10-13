@@ -681,6 +681,8 @@ class acp_forums
 					)
 				);
 
+				return;
+
 			break;
 
 			case 'delete':
