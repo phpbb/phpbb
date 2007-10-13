@@ -118,6 +118,23 @@
 		<li>[Fix] Correct quote parsing if opening bracket before opening quote (Bug #14667)</li>
 		<li>[Fix] Clean post message for checking length to prevent posting empty messages</li>
 		<li>[Fix] Display jumpbox if needed for functionality (Bug #14702)</li>
+		<li>[Sec] Fixing possible XSS through compromised WHOIS server (#i63, #i64)</li>
+		<li>[Sec] Missing access control on whois in viewonline.php (#i51)</li>
+		<li>[Sec] Encoding some variables within user::page array correctly (to cope with browser not doing it correctly) to prevent XSS through functions re-using them (#i61)</li>
+		<li>[Sec] Fixed XSS through memberlist search feature (#i62)</li>
+		<li>[Sec] Fixed XSS through colour swatch (#i65)</li>
+		<li>[Sec] Fixed insecure attachment deletion (#i53)</li>
+		<li>[Sec] Only allow whitelisted protocols in meta_redirect/redirect (#i66)</li>
+		<li>[Sec] Check file names to be written in language management panel (#i52)</li>
+		<li>[Sec] Deregister globals if ini_get has been disabled (#i112)</li>
+		<li>[Sec] Added form tokens to most forms to enforce a lighter variant of CSRF protection (#i91 - #i96)</li>
+		<li>[Sec] Use new password hash method for forum passwords (#i43)</li>
+		<li>[Sec] Changed download file location to prevent flash crossdomain policies taking effect (#i8)</li>
+		<li>[Sec] Do not allow autocompletion for password on admin re-authentication (#i41)</li>
+		<li>[Sec] Made sure users are not completely locked out if they have a GLOBALS cookie (#i101)</li>
+		<li>[Sec] Use the secure hash to generate BBCODE_UIDs (#i71)</li>
+		<li>[Sec] Increase the length of BBCODE_UIDs (#i72)</li>
+		<li>[Sec] New password hashing mechanism for storing passwords (#i42)</li>
 	</ul>
 
 	<a name="v30rc4"></a><h3>1.ii. Changes since 3.0.RC4</h3>
