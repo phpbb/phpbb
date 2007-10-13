@@ -41,9 +41,7 @@ class acp_forums
 		$forum_id	= request_var('f', 0);
 
 		$this->parent_id	= request_var('parent_id', 0);
-
 		$forum_data = $errors = array();
-
 		if ($update && !check_form_key($form_key))
 		{
 			$update = false;
@@ -182,7 +180,7 @@ class acp_forums
 
 						// Copy permissions?
 						if ($forum_perm_from && !empty($forum_perm_from) && $forum_perm_from != $forum_data['forum_id'] &&
-							(($action != 'edit') || $auth->acl_get('acl_a_fauth && acl_a_authusers && acl_a_authgroups && acl_a_mauth')))
+							(($action != 'edit') || empty($forum_id) || ($auth->acl_get('a_fauth') && $auth->acl_get('a_authusers') && $auth->acl_get('a_authgroups') && $auth->acl_get('a_mauth'))))
 						{
 							// if we edit a forum delete current permissions first
 							if ($action == 'edit')
@@ -679,11 +677,9 @@ class acp_forums
 					'S_PRUNE_STICKY'			=> ($forum_data['forum_flags'] & FORUM_FLAG_PRUNE_STICKY) ? true : false,
 					'S_DISPLAY_ACTIVE_TOPICS'	=> ($forum_data['forum_flags'] & FORUM_FLAG_ACTIVE_TOPICS) ? true : false,
 					'S_ENABLE_POST_REVIEW'		=> ($forum_data['forum_flags'] & FORUM_FLAG_POST_REVIEW) ? true : false,
-					'S_CAN_COPY_PERMISSIONS'	=> (($action != 'edit') || $auth->acl_get('acl_a_fauth && acl_a_authusers && acl_a_authgroups && acl_a_mauth')),
+					'S_CAN_COPY_PERMISSIONS'	=> ($action != 'edit' || empty($forum_id) || ($auth->acl_get('a_fauth') && $auth->acl_get('a_authusers') && $auth->acl_get('a_authgroups') && $auth->acl_get('a_mauth'))) ? true :false,
 					)
 				);
-
-				return;
 
 			break;
 
