@@ -613,7 +613,7 @@ class acp_forums
 				
 				if (strlen($forum_data['forum_password']) == 32)
 				{
-					$errors[] = 'FORUM_PASSWORD_OLD';
+					$errors[] = $user->lang['FORUM_PASSWORD_OLD'];
 				}
 
 				$template->assign_vars(array(
