@@ -10,7 +10,7 @@
 		document.forms['register'].change_lang.value = lang_iso;
 		document.forms['register'].submit.click();
 	}
-	
+
 	function disable(disabl, name)
 	{
 		document.getElementById(name).disabled = disabl;
@@ -23,12 +23,12 @@
 			document.getElementById(name).className = 'button1 enabled';
 		}
 	}
-	
+
 	<!-- IF S_TIME -->
 		onload_functions.push('disable(true, "submit")');
-		setTimeout('disable(false, "submit")', {S_TIME});
+		setInterval('disable(false, "submit")', {S_TIME});
 	<!-- ENDIF -->
-	
+
 // ]]>
 </script>
 
@@ -68,9 +68,9 @@
 		<dt><label for="password_confirm">{L_CONFIRM_PASSWORD}:</label></dt>
 		<dd><input type="password" tabindex="5" name="password_confirm" id="password_confirm" size="25" value="{PASSWORD_CONFIRM}" class="inputbox autowidth" title="{L_CONFIRM_PASSWORD}" /></dd>
 	</dl>
-	
+
 	<hr />
-	
+
 	<dl>
 		<dt><label for="lang">{L_LANGUAGE}:</label></dt>
 		<dd><select name="lang" id="lang" onchange="change_language(this.value); return false;" title="{L_LANGUAGE}">{S_LANG_OPTIONS}</select></dd>
@@ -130,7 +130,7 @@
 
 	<fieldset class="submit-buttons">
 		{S_HIDDEN_FIELDS}
-		<input type="reset" value="{L_RESET}" name="reset" class="button2" />&nbsp; 
+		<input type="reset" value="{L_RESET}" name="reset" class="button2" />&nbsp;
 		<input type="submit" name="submit" id ="submit" value="{L_SUBMIT}" class="button1" />
 	</fieldset>
 

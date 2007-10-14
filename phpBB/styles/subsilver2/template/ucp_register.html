@@ -10,14 +10,14 @@
 		document.forms['register'].change_lang.value = lang_iso;
 		document.forms['register'].submit.click();
 	}
-	
+
 	var old_func = window.onload;
-	
+
 	function disable(disabl)
 	{
 		document.getElementById("submit").disabled = disabl;
 	}
-	
+
 	function disable_and_handle()
 	{
 		if (old_func)
@@ -26,10 +26,10 @@
 		}
 		disable(true);
 	}
-	
-	<!-- IF S_TIME -->		
+
+	<!-- IF S_TIME -->
 		window.onload = disable_and_handle;
-		setTimeout("disable(false)", {S_TIME});	
+		setInterval("disable(false)", {S_TIME});
 	<!-- ENDIF -->
 // ]]>
 </script>
@@ -48,12 +48,12 @@
 <!-- ENDIF -->
 
 <!-- IF L_REG_COND -->
-	<tr> 
+	<tr>
 		<td class="row2" colspan="2"><span class="gensmall">{L_REG_COND}</span></td>
 	</tr>
 <!-- ENDIF -->
 <!-- IF .profile_fields -->
-	<tr> 
+	<tr>
 		<td class="row2" colspan="2"><span class="gensmall">{L_ITEMS_REQUIRED}</span></td>
 	</tr>
 <!-- ENDIF -->
