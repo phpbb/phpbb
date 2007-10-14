@@ -42,11 +42,11 @@ class acp_language
 		// Check and set some common vars
 
 		$action		= (isset($_POST['update_details'])) ? 'update_details' : '';
-		$action		= (isset($_POST['download_file'])) ? 'download_file' : '';
-		$action		= (isset($_POST['upload_file'])) ? 'upload_file' : '';
-		$action		= (isset($_POST['upload_data'])) ? 'upload_data' : '';
-		$action		= (isset($_POST['submit_file'])) ? 'submit_file' : '';
-		$action		= (isset($_POST['remove_store'])) ? 'details' : '';
+		$action		= (isset($_POST['download_file'])) ? 'download_file' : $action;
+		$action		= (isset($_POST['upload_file'])) ? 'upload_file' : $action;
+		$action		= (isset($_POST['upload_data'])) ? 'upload_data' : $action;
+		$action		= (isset($_POST['submit_file'])) ? 'submit_file' : $action;
+		$action		= (isset($_POST['remove_store'])) ? 'details' : $action;
 
 		$submit = (empty($action)) ? false : true;
 		$action = (empty($action)) ? request_var('action', '') : $action;
