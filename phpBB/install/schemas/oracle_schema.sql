@@ -1771,7 +1771,7 @@ CREATE TABLE phpbb_users (
 	user_occ clob DEFAULT '' ,
 	user_interests clob DEFAULT '' ,
 	user_actkey varchar2(32) DEFAULT '' ,
-	user_newpasswd varchar2(96) DEFAULT '' ,
+	user_newpasswd varchar2(120) DEFAULT '' ,
 	user_form_salt varchar2(96) DEFAULT '' ,
 	CONSTRAINT pk_phpbb_users PRIMARY KEY (user_id),
 	CONSTRAINT u_phpbb_username_clean UNIQUE (username_clean)

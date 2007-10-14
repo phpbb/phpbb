@@ -924,7 +924,7 @@ CREATE TABLE phpbb_users (
 	user_occ text(65535) NOT NULL DEFAULT '',
 	user_interests text(65535) NOT NULL DEFAULT '',
 	user_actkey varchar(32) NOT NULL DEFAULT '',
-	user_newpasswd varchar(32) NOT NULL DEFAULT '',
+	user_newpasswd varchar(40) NOT NULL DEFAULT '',
 	user_form_salt varchar(32) NOT NULL DEFAULT ''
 );
 

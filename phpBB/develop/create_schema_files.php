@@ -1841,7 +1841,7 @@ function get_schema_struct()
 			'user_occ'					=> array('TEXT_UNI', ''),
 			'user_interests'			=> array('TEXT_UNI', ''),
 			'user_actkey'				=> array('VCHAR:32', ''),
-			'user_newpasswd'			=> array('VCHAR_UNI:32', ''),
+			'user_newpasswd'			=> array('VCHAR_UNI:40', ''),
 			'user_form_salt'			=> array('VCHAR_UNI:32', ''),
 
 		),

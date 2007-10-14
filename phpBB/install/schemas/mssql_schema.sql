@@ -1621,7 +1621,7 @@ CREATE TABLE [phpbb_users] (
 	[user_occ] [varchar] (4000) DEFAULT ('') NOT NULL ,
 	[user_interests] [varchar] (4000) DEFAULT ('') NOT NULL ,
 	[user_actkey] [varchar] (32) DEFAULT ('') NOT NULL ,
-	[user_newpasswd] [varchar] (32) DEFAULT ('') NOT NULL ,
+	[user_newpasswd] [varchar] (40) DEFAULT ('') NOT NULL ,
 	[user_form_salt] [varchar] (32) DEFAULT ('') NOT NULL 
 ) ON [PRIMARY] TEXTIMAGE_ON [PRIMARY]
 GO

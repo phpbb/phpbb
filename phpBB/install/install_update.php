@@ -1187,7 +1187,7 @@ class install_update extends module
 
 		$template->assign_vars(array(
 			'DIFF_CONTENT'			=> $renderer->get_diff_content($diff),
-			'DIFF_MODE'			=> $diff_mode,
+			'DIFF_MODE'				=> $diff_mode,
 			'S_DIFF_MODE_OPTIONS'	=> $diff_mode_options,
 			'S_SHOW_DIFF'			=> true,
 		));

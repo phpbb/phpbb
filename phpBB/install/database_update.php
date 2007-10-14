@@ -458,6 +458,9 @@ $database_update_info = array(
 			GROUPS_TABLE		=> array(
 				'group_desc_uid'		=> array('VCHAR:8', ''),
 			),
+			USERS_TABLE			=> array(
+				'user_newpasswd'			=> array('VCHAR_UNI:40', ''),
+			),
 		),
 	),
 );
