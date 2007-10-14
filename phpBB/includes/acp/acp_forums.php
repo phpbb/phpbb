@@ -948,8 +948,8 @@ class acp_forums
 		{
 			return $errors;
 		}
- 
- 		// As we don't know the old password, it's kinda tricky to detect changes
+
+		// As we don't know the old password, it's kinda tricky to detect changes
 		if ($forum_data_sql['forum_password_unset'])
 		{
 			$forum_data_sql['forum_password'] = '';
