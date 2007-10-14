@@ -8,7 +8,7 @@
 *
 */
 
-$updates_to_version = '3.0.RC6';
+$updates_to_version = '3.0.RC7';
 
 // Return if we "just include it" to find out for which version the database update is responsuble for
 if (defined('IN_PHPBB') && defined('IN_INSTALL'))
@@ -444,6 +444,19 @@ $database_update_info = array(
 			),
 			USERS_TABLE			=> array(
 				'user_sig_bbcode_uid'	=> array('VCHAR:8', ''),
+			),
+		),
+	),
+	// Changes from 3.0.RC6 to the next version
+	'3.0.RC6'			=> array(
+		// Change the following columns
+		'change_columns'		=> array(
+			FORUMS_TABLE				=> array(
+				'forum_desc_uid'		=> array('VCHAR:8', ''),
+				'forum_rules_uid'		=> array('VCHAR:8', ''),
+			),
+			GROUPS_TABLE		=> array(
+				'group_desc_uid'		=> array('VCHAR:8', ''),
 			),
 		),
 	),
