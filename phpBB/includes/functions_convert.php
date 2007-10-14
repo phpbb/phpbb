@@ -224,8 +224,16 @@ function is_topic_locked($bool)
 */
 function make_uid($timestamp)
 {
-	return substr(base_convert(unique_id(), 16, 36), 0, BBCODE_UID_LEN);
+	static $last_timestamp, $last_uid;
+
+	if (empty($last_timestamp) || $timestamp != $last_timestamp)
+	{
+		$last_uid = substr(base_convert(unique_id(), 16, 36), 0, BBCODE_UID_LEN);
+	}
+	$last_timestamp = $timestamp;
+	return $last_uid;
 }
+
 
 /**
 * Validate a website address
