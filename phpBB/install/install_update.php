@@ -321,7 +321,7 @@ class install_update extends module
 					$get_new_list = true;
 				}
 
-				if (!$get_new_list && $update_list['status'] != 'finished')
+				if (!$get_new_list && $update_list['status'] != -1)
 				{
 					$get_new_list = true;
 				}
@@ -332,7 +332,7 @@ class install_update extends module
 					$cache->put('_update_list', $update_list);
 
 					// Refresh the page if we are still not finished...
-					if ($update_list['status'] != 'finished')
+					if ($update_list['status'] != -1)
 					{
 						$refresh_url = append_sid($this->p_master->module_url, "mode=$mode&amp;sub=file_check");
 						meta_refresh(2, $refresh_url);
@@ -604,9 +604,9 @@ class install_update extends module
 
 				// Before we do anything, let us diff the files and store the raw file information "somewhere"
 				$get_files = false;
-				$file_list = $cache->get('_diff_files');
+				$file_list = false; //$cache->get('_diff_files');
 
-				if ($file_list === false || $file_list['status'] != 'finished')
+				if ($file_list === false || $file_list['status'] != -1)
 				{
 					$get_files = true;
 				}
@@ -747,7 +747,7 @@ class install_update extends module
 					}
 				}
 
-				$file_list['status'] = 'finished';
+				$file_list['status'] = -1;
 				$cache->put('_diff_files', $file_list);
 
 				if (!empty($_REQUEST['download']))
@@ -1291,7 +1291,7 @@ class install_update extends module
 			$update_list['status']++;
 		}
 
-		$update_list['status'] = 'finished';
+		$update_list['status'] = -1;
 /*		if (!sizeof($this->update_info['files']))
 		{
 			return $update_list;
