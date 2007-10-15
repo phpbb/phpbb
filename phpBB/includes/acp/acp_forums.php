@@ -45,7 +45,7 @@ class acp_forums
 		if ($update && !check_form_key($form_key))
 		{
 			$update = false;
-			$error[] = $user->lang['FORM_INVALID'];
+			$errors[] = $user->lang['FORM_INVALID'];
 		}
 
 		// Check additional permissions
