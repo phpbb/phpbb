@@ -604,7 +604,7 @@ class install_update extends module
 
 				// Before we do anything, let us diff the files and store the raw file information "somewhere"
 				$get_files = false;
-				$file_list = false; //$cache->get('_diff_files');
+				$file_list = $cache->get('_diff_files');
 
 				if ($file_list === false || $file_list['status'] != -1)
 				{
