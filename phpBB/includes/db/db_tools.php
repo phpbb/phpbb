@@ -500,7 +500,7 @@ class phpbb_db_tools
 			case 'mssql':
 				$sql = "SELECT c.name
 					FROM syscolumns c
-					LEFT JOIN sysobjects o (ON c.id = o.id)
+					LEFT JOIN sysobjects o ON c.id = o.id
 					WHERE o.name = '{$table}'";
 				$result = $this->db->sql_query($sql);
 				while ($row = $this->db->sql_fetchrow($result))

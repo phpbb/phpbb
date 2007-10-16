@@ -1759,7 +1759,7 @@ function column_exists($dbms, $table, $column_name)
 		case 'mssql':
 			$sql = "SELECT c.name
 				FROM syscolumns c
-				LEFT JOIN sysobjects o (ON c.id = o.id)
+				LEFT JOIN sysobjects o ON c.id = o.id
 				WHERE o.name = '{$table}'";
 			$result = $db->sql_query($sql);
 			while ($row = $db->sql_fetchrow($result))
