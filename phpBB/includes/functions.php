@@ -2034,7 +2034,8 @@ function check_form_key($form_name, $timespan = false, $return_page = '', $trigg
 
 	if ($timespan === false)
 	{
-		$timespan = $config['form_token_lifetime'];
+		// we enforce a minimum value of half a minute here.
+		$timespan = max(30, $config['form_token_lifetime']);
 	}
 	if ($minimum_time === false)
 	{
