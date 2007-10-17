@@ -683,6 +683,12 @@ if (!function_exists('realpath'))
 		// Put the slashes back to the native operating systems slashes
 		$resolved = str_replace('/', DIRECTORY_SEPARATOR, $resolved);
 
+		// Check for DIRECTORY_SEPARATOR at the end (and remove it!)
+		if (substr($resolved, -1) == DIRECTORY_SEPARATOR)
+		{
+			return substr($resolved, 0, -1);
+		}
+
 		return $resolved; // We got here, in the end!
 	}
 }
@@ -694,7 +700,15 @@ else
 	*/
 	function phpbb_realpath($path)
 	{
-		return realpath($path);
+		$path = realpath($path);
+
+		// Check for DIRECTORY_SEPARATOR at the end (and remove it!)
+		if (substr($path, -1) == DIRECTORY_SEPARATOR)
+		{
+			return substr($path, 0, -1);
+		}
+
+		return $path;
 	}
 }
 
