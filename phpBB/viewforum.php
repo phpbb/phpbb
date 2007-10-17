@@ -627,6 +627,7 @@ if (sizeof($topic_list))
 			'S_POST_STICKY'			=> ($row['topic_type'] == POST_STICKY) ? true : false,
 			'S_TOPIC_LOCKED'		=> ($row['topic_status'] == ITEM_LOCKED) ? true : false,
 			'S_TOPIC_MOVED'			=> ($row['topic_status'] == ITEM_MOVED) ? true : false,
+			'S_VIEWFORUM'			=> true,
 
 			'U_NEWEST_POST'			=> $view_topic_url . '&amp;view=unread#unread',
 			'U_LAST_POST'			=> $view_topic_url . '&amp;p=' . $row['topic_last_post_id'] . '#p' . $row['topic_last_post_id'],
