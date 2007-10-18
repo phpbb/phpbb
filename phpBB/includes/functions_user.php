@@ -2035,7 +2035,7 @@ function avatar_gallery($category, $avatar_select, $items_per_column, $block_var
 	}
 
 	@ksort($avatar_list);
-
+ 
 	$category = (!$category) ? key($avatar_list) : $category;
 	$avatar_categories = array_keys($avatar_list);
 
@@ -2050,8 +2050,8 @@ function avatar_gallery($category, $avatar_select, $items_per_column, $block_var
 		'S_IN_AVATAR_GALLERY'	=> true,
 		'S_CAT_OPTIONS'			=> $s_category_options)
 	);
-
-	$avatar_list = $avatar_list[$category];
+ 
+	$avatar_list = (isset($avatar_list[$category])) ? $avatar_list[$category] : array();
 
 	foreach ($avatar_list as $avatar_row_ary)
 	{
