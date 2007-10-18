@@ -905,48 +905,59 @@ class session
 		}
 
 		$banned = false;
+		$cache_ttl = 3600;
+		$where_sql = array();
 
 		$sql = 'SELECT ban_ip, ban_userid, ban_email, ban_exclude, ban_give_reason, ban_end
 			FROM ' . BANLIST_TABLE . '
-			WHERE (ban_end >= ' . time() . ' OR ban_end = 0)';
+			WHERE ';
 
 		// Determine which entries to check, only return those
 		if ($user_email === false)
 		{
-			$sql .= " AND ban_email = ''";
+			$where_sql[] = "ban_email = ''";
 		}
 
 		if ($user_ips === false)
 		{
-			$sql .= " AND (ban_ip = '' OR ban_exclude = 1)";
+			$where_sql[] = "(ban_ip = '' OR ban_exclude = 1)";
 		}
 
 		if ($user_id === false)
 		{
-			$sql .= ' AND (ban_userid = 0 OR ban_exclude = 1)';
+			$where_sql[] = '(ban_userid = 0 OR ban_exclude = 1)';
 		}
 		else
 		{
-			$sql .= ' AND (ban_userid = ' . $user_id;
+			$cache_ttl = ($user_id == ANONYMOUS) ? 3600 : 0;
+			$_sql = '(ban_userid = ' . $user_id;
 
 			if ($user_email !== false)
 			{
-				$sql .= " OR ban_email <> ''";
+				$_sql .= " OR ban_email <> ''";
 			}
 
 			if ($user_ips !== false)
 			{
-				$sql .= " OR ban_ip <> ''";
+				$_sql .= " OR ban_ip <> ''";
 			}
 
-			$sql .= ')';
+			$_sql .= ')';
+
+			$where_sql[] = $_sql;
 		}
 
-		$result = $db->sql_query($sql);
+		$sql .= (sizeof($where_sql)) ? implode(' AND ', $where_sql) : '';
+		$result = $db->sql_query($sql, $cache_ttl);
 
 		$ban_triggered_by = 'user';
 		while ($row = $db->sql_fetchrow($result))
 		{
+			if ($row['ban_end'] && $row['ban_end'] < time())
+			{
+				continue;
+			}
+
 			$ip_banned = false;
 			if (!empty($row['ban_ip']))
 			{

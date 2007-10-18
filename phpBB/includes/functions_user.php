@@ -659,7 +659,7 @@ function user_active_flip($mode, $user_id_ary, $reason = INACTIVE_MANUAL)
 */
 function user_ban($mode, $ban, $ban_len, $ban_len_other, $ban_exclude, $ban_reason, $ban_give_reason = '')
 {
-	global $db, $user, $auth;
+	global $db, $user, $auth, $cache;
 
 	// Delete stale bans
 	$sql = 'DELETE FROM ' . BANLIST_TABLE . '
@@ -1043,10 +1043,14 @@ function user_ban($mode, $ban, $ban_len, $ban_len_other, $ban_exclude, $ban_reas
 		add_log('admin', $log_entry . strtoupper($mode), $ban_reason, $ban_list_log);
 		add_log('mod', 0, 0, $log_entry . strtoupper($mode), $ban_reason, $ban_list_log);
 
+		$cache->destroy('sql', BANLIST_TABLE);
+
 		return true;
 	}
 
-	// There was nothing to ban/exclude
+	// There was nothing to ban/exclude. But destroying the cache because of the removal of stale bans.
+	$cache->destroy('sql', BANLIST_TABLE);
+
 	return false;
 }
 
@@ -1055,7 +1059,7 @@ function user_ban($mode, $ban, $ban_len, $ban_len_other, $ban_exclude, $ban_reas
 */
 function user_unban($mode, $ban)
 {
-	global $db, $user, $auth;
+	global $db, $user, $auth, $cache;
 
 	// Delete stale bans
 	$sql = 'DELETE FROM ' . BANLIST_TABLE . '
@@ -1111,6 +1115,8 @@ function user_unban($mode, $ban)
 		add_log('admin', 'LOG_UNBAN_' . strtoupper($mode), $l_unban_list);
 		add_log('mod', 0, 0, 'LOG_UNBAN_' . strtoupper($mode), $l_unban_list);
 	}
+
+	$cache->destroy('sql', BANLIST_TABLE);
 
 	return false;
 }
