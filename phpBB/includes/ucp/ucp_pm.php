@@ -249,10 +249,11 @@ class ucp_pm
 
 				// If new messages arrived, place them into the appropriate folder
 				$num_not_moved = $num_removed = 0;
+				$release = request_var('release', 0);
 
 				if ($user->data['user_new_privmsg'] && $action == 'view_folder')
 				{
-					$return = place_pm_into_folder($global_privmsgs_rules, request_var('release', 0));
+					$return = place_pm_into_folder($global_privmsgs_rules, $release);
 					$num_not_moved = $return['not_moved'];
 
 					// Make sure num_not_moved is valid.
@@ -268,6 +269,12 @@ class ucp_pm
 
 					// Assign the number of private messages being removed due to rules.
 					$num_removed = $return['deleted'];
+				}
+
+				// If user released the message, we will re-calculate the statistics (again)
+				if ($release)
+				{
+					fix_pm_counts();
 				}
 
 				if (!$msg_id && $folder_id == PRIVMSGS_NO_BOX)

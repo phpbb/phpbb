@@ -322,6 +322,16 @@ class acp_users
 										WHERE user_id = $user_id";
 									$db->sql_query($sql);
 								}
+								else
+								{
+									// Grabbing the last confirm key - we only send a reminder
+									$sql = 'SELECT user_actkey
+										FROM ' . USERS_TABLE . '
+										WHERE user_id = ' . $user_id;
+									$result = $db->sql_query($sql);
+									$user_actkey = (string) $db->sql_fetchfield('user_actkey');
+									$db->sql_freeresult($result);
+								}
 
 								$messenger = new messenger(false);
 
@@ -774,8 +784,9 @@ class acp_users
 						if ($update_password)
 						{
 							$sql_ary += array(
-								'user_password' => phpbb_hash($data['new_password']),
-								'user_passchg'	=> time(),
+								'user_password'		=> phpbb_hash($data['new_password']),
+								'user_passchg'		=> time(),
+								'user_pass_convert'	=> 0,
 							);
 
 							$user->reset_login_keys($user_id);

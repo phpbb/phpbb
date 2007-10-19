@@ -313,6 +313,50 @@ function check_rule(&$rules, &$rule_row, &$message_row, $user_id)
 }
 
 /**
+* Fix user PM count
+*/
+function fix_pm_counts()
+{
+	global $user, $db;
+
+	// Update unread count
+	$sql = 'SELECT COUNT(msg_id) as num_messages
+		FROM ' . PRIVMSGS_TO_TABLE . '
+		WHERE pm_unread = 1
+			AND folder_id <> ' . PRIVMSGS_OUTBOX . '
+			AND user_id = ' . $user->data['user_id'];
+	$result = $db->sql_query($sql);
+	$user->data['user_unread_privmsg'] = (int) $db->sql_fetchfield('num_messages');
+	$db->sql_freeresult($result);
+
+	// Update new pm count
+	$sql = 'SELECT COUNT(msg_id) as num_messages
+		FROM ' . PRIVMSGS_TO_TABLE . '
+		WHERE pm_new = 1
+			AND folder_id IN (' . PRIVMSGS_NO_BOX . ', ' . PRIVMSGS_HOLD_BOX . ')
+			AND user_id = ' . $user->data['user_id'];
+	$result = $db->sql_query($sql);
+	$user->data['user_new_privmsg'] = (int) $db->sql_fetchfield('num_messages');
+	$db->sql_freeresult($result);
+
+	$db->sql_query('UPDATE ' . USERS_TABLE . ' SET ' . $db->sql_build_array('UPDATE', array(
+		'user_unread_privmsg'	=> (int) $user->data['user_unread_privmsg'],
+		'user_new_privmsg'		=> (int) $user->data['user_new_privmsg'],
+	)) . ' WHERE user_id = ' . $user->data['user_id']);
+
+	// Ok, here we need to repair something, other boxes than privmsgs_no_box and privmsgs_hold_box should not carry the pm_new flag.
+	if (!$user->data['user_new_privmsg'])
+	{
+		$sql = 'UPDATE ' . PRIVMSGS_TO_TABLE . '
+			SET pm_new = 0
+			WHERE pm_new = 1
+				AND folder_id NOT IN (' . PRIVMSGS_NO_BOX . ', ' . PRIVMSGS_HOLD_BOX . ')
+				AND user_id = ' . $user->data['user_id'];
+		$db->sql_query($sql);
+	}
+}
+
+/**
 * Place new messages into appropriate folder
 */
 function place_pm_into_folder(&$global_privmsgs_rules, $release = false)
@@ -344,42 +388,7 @@ function place_pm_into_folder(&$global_privmsgs_rules, $release = false)
 		// We try to fix this on our way down...
 		if (!$db->sql_affectedrows())
 		{
-			// Update unread count
-			$sql = 'SELECT COUNT(msg_id) as num_messages
-				FROM ' . PRIVMSGS_TO_TABLE . '
-				WHERE pm_unread = 1
-					AND folder_id <> ' . PRIVMSGS_OUTBOX . '
-					AND user_id = ' . $user_id;
-			$result = $db->sql_query($sql);
-			$num_messages = (int) $db->sql_fetchfield('num_messages');
-			$db->sql_freeresult($result);
-
-			$db->sql_query('UPDATE ' . USERS_TABLE . ' SET user_unread_privmsg = ' . $num_messages . ' WHERE user_id = ' . $user_id);
-			$user->data['user_unread_privmsg'] = $num_messages;
-
-			// Update new pm count
-			$sql = 'SELECT COUNT(msg_id) as num_messages
-				FROM ' . PRIVMSGS_TO_TABLE . '
-				WHERE pm_new = 1
-					AND folder_id IN (' . PRIVMSGS_NO_BOX . ', ' . PRIVMSGS_HOLD_BOX . ')
-					AND user_id = ' . $user_id;
-			$result = $db->sql_query($sql);
-			$num_messages = (int) $db->sql_fetchfield('num_messages');
-			$db->sql_freeresult($result);
-
-			$db->sql_query('UPDATE ' . USERS_TABLE . ' SET user_new_privmsg = ' . $num_messages . ' WHERE user_id = ' . $user_id);
-			$user->data['user_new_privmsg'] = $num_messages;
-
-			// Ok, here we need to repair something, other boxes than privmsgs_no_box and privmsgs_hold_box should not carry the pm_new flag.
-			if (!$num_messages)
-			{
-				$sql = 'UPDATE ' . PRIVMSGS_TO_TABLE . '
-					SET pm_new = 0
-					WHERE pm_new = 1
-						AND folder_id NOT IN (' . PRIVMSGS_NO_BOX . ', ' . PRIVMSGS_HOLD_BOX . ')
-						AND user_id = ' . $user_id;
-				$db->sql_query($sql);
-			}
+			fix_pm_counts();
 
 			// The function needs this value to be up-to-date
 			$user_new_privmsg = (int) $user->data['user_new_privmsg'];
@@ -413,7 +422,7 @@ function place_pm_into_folder(&$global_privmsgs_rules, $release = false)
 		while ($row = $db->sql_fetchrow($result))
 		{
 			$action_ary[$row['msg_id']][] = array('action' => false);
-			$move_into_folder[PRIVMSGS_INBOX][] = $row['msg_id'];
+//			$move_into_folder[PRIVMSGS_INBOX][] = $row['msg_id'];
 		}
 		$db->sql_freeresult($result);
 	}
@@ -501,7 +510,7 @@ function place_pm_into_folder(&$global_privmsgs_rules, $release = false)
 			if (!$is_match)
 			{
 				$action_ary[$row['msg_id']][] = array('action' => false);
-				$move_into_folder[PRIVMSGS_INBOX][] = $row['msg_id'];
+//				$move_into_folder[PRIVMSGS_INBOX][] = $row['msg_id'];
 			}
 		}
 
@@ -688,7 +697,11 @@ function place_pm_into_folder(&$global_privmsgs_rules, $release = false)
 		if ($full_folder_action == FULL_FOLDER_HOLD)
 		{
 			$num_not_moved += sizeof($msg_ary);
-			$num_new -= sizeof($msg_ary);
+
+			if ($num_new)
+			{
+				$num_new -= sizeof($msg_ary);
+			}
 
 			$sql = 'UPDATE ' . PRIVMSGS_TO_TABLE . '
 				SET folder_id = ' . PRIVMSGS_HOLD_BOX . '

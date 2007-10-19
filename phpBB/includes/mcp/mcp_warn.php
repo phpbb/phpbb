@@ -418,7 +418,7 @@ function add_warning($user_row, $warning, $send_pm = true, $post_id = 0)
 
 		$pm_data = array(
 			'from_user_id'			=> $user->data['user_id'],
-			'from_user_ip'			=> $user->data['user_ip'],
+			'from_user_ip'			=> $user->ip,
 			'from_username'			=> $user->data['username'],
 			'enable_sig'			=> false,
 			'enable_bbcode'			=> true,

@@ -63,7 +63,8 @@ class ucp_activate
 			$sql_ary = array(
 				'user_actkey'		=> '',
 				'user_password'		=> $user_row['user_newpasswd'],
-				'user_newpasswd'	=> ''
+				'user_newpasswd'	=> '',
+				'user_pass_convert'	=> 0,
 			);
 
 			$sql = 'UPDATE ' . USERS_TABLE . '

@@ -674,7 +674,11 @@ class bbcode_firstpass extends bbcode
 
 		/**
 		* If you change this code, make sure the cases described within the following reports are still working:
-		* #3572, #14667
+		* #3572 - [quote="[test]test"]test [ test[/quote] - (correct: parsed)
+		* #14667 - [quote]test[/quote] test ] and [ test [quote]test[/quote] (correct: parsed)
+		* #14770 - [quote="["]test[/quote] (correct: parsed)
+		* [quote="[i]test[/i]"]test[/quote] (correct: parsed)
+		* [quote="[quote]test[/quote]"]test[/quote] (correct: NOT parsed)
 		*/
 
 		$in = str_replace("\r\n", "\n", str_replace('\"', '"', trim($in)));
@@ -683,6 +687,9 @@ class bbcode_firstpass extends bbcode
 		{
 			return '';
 		}
+
+		// To let the parser not catch tokens within quote_username quotes we encode them before we start this...
+		$in = preg_replace('#quote=&quot;(.*?)&quot;\]#ie', "'quote=&quot;' . str_replace(array('[', ']'), array('&#91;', '&#93;'), '\$1') . '&quot;]'", $in);
 
 		$tok = ']';
 		$out = '[';
@@ -745,7 +752,9 @@ class bbcode_firstpass extends bbcode
 
 					if (isset($m[1]) && $m[1])
 					{
-						$username = preg_replace('#\[(?!b|i|u|color|url|email|/b|/i|/u|/color|/url|/email)#iU', '&#91;$1', $m[1]);
+						$username = str_replace(array('&#91;', '&#93;'), array('[', ']'), $m[1]);
+						$username = preg_replace('#\[(?!b|i|u|color|url|email|/b|/i|/u|/color|/url|/email)#iU', '&#91;$1', $username);
+
 						$end_tags = array();
 						$error = false;
 
@@ -765,7 +774,7 @@ class bbcode_firstpass extends bbcode
 
 						if ($error)
 						{
-							$username = str_replace('[', '&#91;', str_replace(']', '&#93;', $m[1]));
+							$username = $m[1];
 						}
 
 						$out .= 'quote=&quot;' . $username . '&quot;:' . $this->bbcode_uid . ']';
@@ -1073,7 +1082,7 @@ class parse_message extends bbcode_firstpass
 		}
 
 		// Check for "empty" message
-		if (!utf8_clean_string($this->message))
+		if ($mode !== 'sig' && !utf8_clean_string($this->message))
 		{
 			$this->warn_msg[] = $user->lang['TOO_FEW_CHARS'];
 			return $this->warn_msg;
