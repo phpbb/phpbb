@@ -993,6 +993,11 @@ parse_css_file = {PARSE_CSS_FILE}
 			
 			$filename = "{$cache_prefix}_$file.html.$phpEx";
 
+			if (!file_exists("{$phpbb_root_path}cache/$filename"))
+			{
+				continue;
+			}
+
 			$template->assign_block_vars('file', array(
 				'U_VIEWSOURCE'	=> $this->u_action . "&amp;action=cache&amp;id=$template_id&amp;source=$file",
 

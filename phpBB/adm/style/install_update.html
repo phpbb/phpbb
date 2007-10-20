@@ -201,7 +201,7 @@
 
 					<h2>{files.TITLE}</h2>
 
-					<!-- IF files.STATUS eq 'not_modified' --><div style="float: {S_CONTENT_FLOW_END};">&raquo; <a href="#" onclick="dE('not_modified', 0);">{L_TOGGLE_DISPLAY}</a></div><!-- ENDIF -->
+					<!-- IF files.STATUS eq 'not_modified' --><div style="float: {S_CONTENT_FLOW_END};">&raquo; <a href="#" onclick="dE('not_modified', 0); return false;">{L_TOGGLE_DISPLAY}</a></div><!-- ENDIF -->
 					<p>{files.EXPLAIN}</p>
 
 					<div style="display: <!-- IF files.STATUS neq 'not_modified' -->block<!-- ELSE -->none<!-- ENDIF -->;" id="{files.STATUS}">
