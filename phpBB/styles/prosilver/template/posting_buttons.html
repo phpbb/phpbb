@@ -32,24 +32,6 @@
 		<!-- END custom_tags -->
 	}
 
-	function checkForm()
-	{
-		if (document.getElementById(text_name).value.length < 2 && load_draft == false)
-		{
-			if (!upload)
-			{
-				alert('{LA_EMPTY_MESSAGE}');
-				return false;
-			}
-			upload = false;
-			return true;
-		}
-		else
-		{
-			return true;
-		}
-	}
-
 	var panels = new Array('options-panel', 'attach-panel', 'poll-panel');
 	var show_panel = 'options-panel';
 
