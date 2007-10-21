@@ -211,6 +211,8 @@ $s_limit_days = $s_sort_key = $s_sort_dir = $u_sort_param = '';
 gen_sort_selects($limit_days, $sort_by_text, $sort_days, $sort_key, $sort_dir, $s_limit_days, $s_sort_key, $s_sort_dir, $u_sort_param);
 
 // Limit topics to certain time frame, obtain correct topic count
+// global announcements must not be counted, normal announcements have to
+// be counted, as forum_topics(_real) includes them
 if ($sort_days)
 {
 	$min_post_time = time() - ($sort_days * 86400);
@@ -218,8 +220,8 @@ if ($sort_days)
 	$sql = 'SELECT COUNT(topic_id) AS num_topics
 		FROM ' . TOPICS_TABLE . "
 		WHERE forum_id = $forum_id
-			AND topic_type NOT IN (" . POST_ANNOUNCE . ', ' . POST_GLOBAL . ")
-			AND topic_last_post_time >= $min_post_time
+			AND ((topic_type <> " . POST_GLOBAL . " AND topic_last_post_time >= $min_post_time)
+				OR topic_type = " . POST_ANNOUNCE . ")
 		" . (($auth->acl_get('m_approve', $forum_id)) ? '' : 'AND topic_approved = 1');
 	$result = $db->sql_query($sql);
 	$topics_count = (int) $db->sql_fetchfield('num_topics');
