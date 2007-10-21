@@ -9,11 +9,6 @@
 */
 
 /**
-* @todo: check for those functions being 'available'? Though not able to check with function_exists, we need to create test cases
-* ini_get(), glob, getimagesize, fsockopen, readfile
-*/
-
-/**
 */
 if (!defined('IN_INSTALL'))
 {

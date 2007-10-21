@@ -1999,31 +1999,38 @@ function avatar_gallery($category, $avatar_select, $items_per_column, $block_var
 		// Collect images
 		$dp = @opendir($path);
 
+		if (!$dp)
+		{
+			return array($user->lang['NO_AVATAR_CATEGORY'] => array());
+		}
+
 		while (($file = readdir($dp)) !== false)
 		{
 			if ($file[0] != '.' && preg_match('#^[^&"\'<>]+$#i', $file) && is_dir("$path/$file"))
 			{
 				$avatar_row_count = $avatar_col_count = 0;
 	
-				$dp2 = @opendir("$path/$file");
-				while (($sub_file = readdir($dp2)) !== false)
+				if ($dp2 = @opendir("$path/$file"))
 				{
-					if (preg_match('#^[^&\'"<>]+\.(?:gif|png|jpe?g)$#i', $sub_file))
+					while (($sub_file = readdir($dp2)) !== false)
 					{
-						$avatar_list[$file][$avatar_row_count][$avatar_col_count] = array(
-							'file'		=> "$file/$sub_file",
-							'filename'	=> $sub_file,
-							'name'		=> ucfirst(str_replace('_', ' ', preg_replace('#^(.*)\..*$#', '\1', $sub_file))),
-						);
-						$avatar_col_count++;
-						if ($avatar_col_count == $items_per_column)
+						if (preg_match('#^[^&\'"<>]+\.(?:gif|png|jpe?g)$#i', $sub_file))
 						{
-							$avatar_row_count++;
-							$avatar_col_count = 0;
+							$avatar_list[$file][$avatar_row_count][$avatar_col_count] = array(
+								'file'		=> "$file/$sub_file",
+								'filename'	=> $sub_file,
+								'name'		=> ucfirst(str_replace('_', ' ', preg_replace('#^(.*)\..*$#', '\1', $sub_file))),
+							);
+							$avatar_col_count++;
+							if ($avatar_col_count == $items_per_column)
+							{
+								$avatar_row_count++;
+								$avatar_col_count = 0;
+							}
 						}
 					}
+					closedir($dp2);
 				}
-				closedir($dp2);
 			}
 		}
 		closedir($dp);
