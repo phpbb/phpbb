@@ -184,8 +184,8 @@ class install_convert extends module
 						'L_CONTINUE'	=> $lang['CONTINUE_OLD_CONVERSION'],
 						'S_CONTINUE'	=> true,
 
-						'U_NEW_ACTION'		=> $this->p_master->module_url . "?mode={$this->mode}&amp;sub=intro&amp;new_conv=1",
-						'U_CONTINUE_ACTION'	=> $this->p_master->module_url . "?mode={$this->mode}&amp;sub=in_progress&amp;tag={$options['tag']}{$options['step']}",
+						'U_NEW_ACTION'		=> $this->p_master->module_url . "?mode={$this->mode}&amp;sub=intro&amp;new_conv=1&amp;language=$language",
+						'U_CONTINUE_ACTION'	=> $this->p_master->module_url . "?mode={$this->mode}&amp;sub=in_progress&amp;tag={$options['tag']}{$options['step']}&amp;language=$language",
 					));
 
 					return;
@@ -261,7 +261,7 @@ class install_convert extends module
 	*/
 	function list_convertors($sub)
 	{
-		global $lang, $template, $phpbb_root_path, $phpEx;
+		global $lang, $language, $template, $phpbb_root_path, $phpEx;
 
 		$this->page_title = $lang['SUB_INTRO'];
 
@@ -327,7 +327,7 @@ class install_convert extends module
 				'SOFTWARE'	=> $convertors[$index]['forum_name'],
 				'VERSION'	=> $convertors[$index]['version'],
 
-				'U_CONVERT'	=> $this->p_master->module_url . "?mode={$this->mode}&amp;sub=settings&amp;tag=" . $convertors[$index]['tag'],
+				'U_CONVERT'	=> $this->p_master->module_url . "?mode={$this->mode}&amp;language=$language&amp;sub=settings&amp;tag=" . $convertors[$index]['tag'],
 			));
 		}
 	}
@@ -336,7 +336,7 @@ class install_convert extends module
 	*/
 	function get_convert_settings($sub)
 	{
-		global $lang, $template, $db, $phpbb_root_path, $phpEx, $config, $cache;
+		global $lang, $language, $template, $db, $phpbb_root_path, $phpEx, $config, $cache;
 
 		require($phpbb_root_path . 'config.' . $phpEx);
 		require($phpbb_root_path . 'includes/constants.' . $phpEx);
@@ -528,7 +528,7 @@ class install_convert extends module
 				$template->assign_vars(array(
 					'L_SUBMIT'	=> $lang['BEGIN_CONVERT'],
 //					'S_HIDDEN'	=> $s_hidden_fields,
-					'U_ACTION'	=> $this->p_master->module_url . "?mode={$this->mode}&amp;sub=in_progress&amp;tag=$convertor_tag",
+					'U_ACTION'	=> $this->p_master->module_url . "?mode={$this->mode}&amp;sub=in_progress&amp;tag=$convertor_tag&amp;language=$language",
 				));
 
 				return;
@@ -576,7 +576,7 @@ class install_convert extends module
 			'TITLE'		=> $lang['STAGE_SETTINGS'],
 			'BODY'		=> $lang['CONV_OPTIONS_BODY'],
 			'L_SUBMIT'	=> $lang['BEGIN_CONVERT'],
-			'U_ACTION'	=> $this->p_master->module_url . "?mode={$this->mode}&amp;sub=settings&amp;tag=$convertor_tag",
+			'U_ACTION'	=> $this->p_master->module_url . "?mode={$this->mode}&amp;sub=settings&amp;tag=$convertor_tag&amp;language=$language",
 		));
 	}
 
@@ -858,7 +858,7 @@ class install_convert extends module
 
 					$template->assign_vars(array(
 						'L_SUBMIT'	=> $user->lang['INSTALL_TEST'],
-						'U_ACTION'	=> $this->p_master->module_url . "?mode={$this->mode}&amp;sub=in_progress&amp;tag={$convert->convertor_tag}",
+						'U_ACTION'	=> $this->p_master->module_url . "?mode={$this->mode}&amp;sub=in_progress&amp;tag={$convert->convertor_tag}&amp;language=$language",
 					));
 					return;
 				}
@@ -1530,7 +1530,7 @@ class install_convert extends module
 	*/
 	function save_convert_progress($step)
 	{
-		global $convert;
+		global $convert, $language;
 
 		// Save convertor Status
 		set_config('convert_progress', serialize(array(
@@ -1551,7 +1551,7 @@ class install_convert extends module
 			'dbpasswd'		=> $convert->src_dbpasswd,
 		)), true);
 
-		return $this->p_master->module_url . "?mode={$this->mode}&amp;sub=in_progress&amp;tag={$convert->convertor_tag}$step";
+		return $this->p_master->module_url . "?mode={$this->mode}&amp;sub=in_progress&amp;tag={$convert->convertor_tag}$step&amp;language=$language";
 	}
 
 	/**
@@ -1559,7 +1559,7 @@ class install_convert extends module
 	*/
 	function finish_conversion()
 	{
-		global $db, $phpbb_root_path, $convert, $config, $user, $template;
+		global $db, $phpbb_root_path, $convert, $config, $language, $user, $template;
 
 		$db->sql_query('DELETE FROM ' . CONFIG_TABLE . "
 			WHERE config_name = 'convert_progress'
@@ -1574,7 +1574,7 @@ class install_convert extends module
 		// And finally, add a note to the log
 		add_log('admin', 'LOG_INSTALL_CONVERTED', $convert->convertor_data['forum_name'], $config['version']);
 
-		$url = $this->p_master->module_url . "?mode={$this->mode}&amp;sub=final";
+		$url = $this->p_master->module_url . "?mode={$this->mode}&amp;sub=final&amp;language=$language";
 
 		$template->assign_vars(array(
 			'L_SUBMIT'		=> $user->lang['FINAL_STEP'],
