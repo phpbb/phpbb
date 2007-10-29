@@ -654,13 +654,25 @@ if (!empty($topic_data['poll_start']))
 
 	if ($update && $s_can_vote)
 	{
-		if (!sizeof($voted_id) || sizeof($voted_id) > $topic_data['poll_max_options'])
+		
+		if (!sizeof($voted_id) || sizeof($voted_id) > $topic_data['poll_max_options'] || in_array(VOTE_CONVERTED, $cur_voted_id))
 		{
 			$redirect_url = append_sid("{$phpbb_root_path}viewtopic.$phpEx", "f=$forum_id&amp;t=$topic_id&amp;start=$start");
 
 			meta_refresh(5, $redirect_url);
-
-			$message = (!sizeof($voted_id)) ? 'NO_VOTE_OPTION' : 'TOO_MANY_VOTE_OPTIONS';
+			if (!sizeof($voted_id))
+			{
+				$message = 'NO_VOTE_OPTION';
+			}
+			else if (sizeof($voted_id) > $topic_data['poll_max_options'])
+			{
+				$message = 'TOO_MANY_VOTE_OPTIONS';
+			}
+			else
+			{
+				$message = 'VOTE_CONVERTED';
+			}
+ 
 			$message = $user->lang[$message] . '<br /><br />' . sprintf($user->lang['RETURN_TOPIC'], '<a href="' . $redirect_url . '">', '</a>');
 			trigger_error($message);
 		}

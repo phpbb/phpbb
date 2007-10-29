@@ -169,7 +169,7 @@ define('FIELD_DATE', 6);
 
 
 // Additional constants
-
+define('VOTE_CONVERTED', 9999);
 
 // Table names
 define('ACL_GROUPS_TABLE',			$table_prefix . 'acl_groups');
