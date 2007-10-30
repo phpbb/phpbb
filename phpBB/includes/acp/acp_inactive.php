@@ -246,6 +246,8 @@ class acp_inactive
 			'S_SORT_DIR'	=> $s_sort_dir,
 			'S_ON_PAGE'		=> on_page($inactive_count, $config['topics_per_page'], $start),
 			'PAGINATION'	=> generate_pagination($this->u_action . "&amp;$u_sort_param", $inactive_count, $config['topics_per_page'], $start, true),
+			
+			'U_ACTION'		=> $this->u_action,
 		));
 
 		$this->tpl_name = 'acp_inactive';
