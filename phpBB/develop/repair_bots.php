@@ -166,10 +166,6 @@ function add_bots()
 		'YahooSeeker [Bot]'			=> array('YahooSeeker/', ''),
 	);
 
-	if (!function_exists('user_add'))
-	{
-		include($phpbb_root_path . 'includes/functions_user.' . $phpEx);
-	}
 
 	foreach ($bots as $bot_name => $bot_ary)
 	{
