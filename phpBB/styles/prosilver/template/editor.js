@@ -34,7 +34,7 @@ function initInsertions()
 {
 	var doc;
 
-	if( document.forms[form_name])
+	if (document.forms[form_name])
 	{
 		doc = document;
 	}
@@ -44,11 +44,16 @@ function initInsertions()
 	}
 
 	var textarea = doc.forms[form_name].elements[text_name];
+
 	if (is_ie && typeof(baseHeight) != 'number')
 	{
 		textarea.focus();
 		baseHeight = doc.selection.createRange().duplicate().boundingHeight;
-		// document.body.focus();
+
+		if (!document.forms[form_name])
+		{
+			document.body.focus();
+		}
 	}
 }
 

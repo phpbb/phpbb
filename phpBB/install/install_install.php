@@ -482,7 +482,7 @@ class install_install extends module
 			'LEGEND_EXPLAIN'	=> $lang['FILES_OPTIONAL_EXPLAIN'],
 		));
 
-		$directories = array('config.'.$phpEx, 'images/avatars/upload/');
+		$directories = array('config.' . $phpEx, 'images/avatars/upload/');
 
 		foreach ($directories as $dir)
 		{
@@ -931,7 +931,7 @@ class install_install extends module
 			// Note that all we check is that the file has _something_ in it
 			// We don't compare the contents exactly - if they can't upload
 			// a single file correctly, it's likely they will have other problems....
-			if (filesize($phpbb_root_path . 'config.'.$phpEx) > 10)
+			if (filesize($phpbb_root_path . 'config.' . $phpEx) > 10)
 			{
 				$written = true;
 			}

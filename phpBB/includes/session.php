@@ -1018,7 +1018,8 @@ class session
 			// If the session is empty we need to create a valid one...
 			if (empty($this->session_id))
 			{
-				$this->session_create(ANONYMOUS);
+				// This seems to be no longer needed? - #14971
+//				$this->session_create(ANONYMOUS);
 			}
 
 			// Initiate environment ... since it won't be set at this stage
