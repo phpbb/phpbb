@@ -190,8 +190,8 @@ $lang = array_merge($lang, array(
 		<h2>Go live with your phpBB3!</h2>
 		<p>Clicking the button below will take you to your Administration Control Panel (ACP). Take some time to examine the options available to you. Remember that help is available online via the <a href="http://www.phpbb.com/support/documentation/3.0/">Documentation</a> and the <a href="http://www.phpbb.com/community/viewforum.php?f=46">support forums</a>, see the <a href="%3$s">README</a> for further information.</p><p><strong>Please now delete, move or rename the install directory before you use your board. If this directory is still present, only the Administration Control Panel (ACP) will be accessible.</strong></p>',
 	'INSTALL_INTRO'				=> 'Welcome to Installation',
-// TODO: write some more introductions here
-	'INSTALL_INTRO_BODY'		=> 'With this option, it is possible to install phpBB onto your server.</p><p>In order to proceed, you will need your database settings. If you do not know your database settings, please contact your host and ask for them. You will not be able to continue without them. You need:</p>
+
+	'INSTALL_INTRO_BODY'		=> 'With this option, it is possible to install phpBB3 onto your server.</p><p>In order to proceed, you will need your database settings. If you do not know your database settings, please contact your host and ask for them. You will not be able to continue without them. You need:</p>
 
 	<ul>
 		<li>The Database Type - the database you will be using.</li>
@@ -277,9 +277,9 @@ $lang = array_merge($lang, array(
 	'NO_CONVERT_SPECIFIED'		=> 'No convertor specified.',
 	'NO_LOCATION'				=> 'Cannot determine location. If you know Imagemagick is installed, you may specify the location later within your administration control panel',
 	'NO_TABLES_FOUND'			=> 'No tables found.',
-// TODO: Write some explanatory introduction text
 
-	'OVERVIEW_BODY'					=> 'Welcome to our public release candidate of the next-generation of phpBB after 2.0.x, phpBB 3.0! This release is intended for wider scale use to help us identifying last bugs and problematic areas.</p><p>Please read <a href="../docs/INSTALL.html">our installation guide</a> for more information about installing phpBB3</p><p><strong style="text-transform: uppercase;">Note:</strong> This release is <strong style="text-transform: uppercase;">still not final</strong>. You may want to wait for the full final release before running it live.</p><p>This installation system will guide you through the process of installing phpBB, converting from a different software package or updating to the latest version of phpBB. For more information on each option, select it from the menu above.',
+	// TODO: write introduction...
+	'OVERVIEW_BODY'					=> 'Introduction body missing...',
 
 	'PCRE_UTF_SUPPORT'				=> 'PCRE UTF-8 support',
 	'PCRE_UTF_SUPPORT_EXPLAIN'		=> 'phpBB will <strong>not</strong> run if your PHP installation is not compiled with UTF-8 support in the PCRE extension.',
@@ -305,7 +305,6 @@ $lang = array_merge($lang, array(
 
 	'REFRESH_PAGE'				=> 'Refresh page to continue conversion',
 	'REFRESH_PAGE_EXPLAIN'		=> 'If set to yes, the convertor will refresh the page to continue the conversion after having finished a step. If this is your first conversion for testing purposes and to determine any errors in advance, we suggest to set this to No.',
-//	'REQUIRED'					=> 'Required',
 	'REQUIREMENTS_TITLE'		=> 'Installation compatibility',
 	'REQUIREMENTS_EXPLAIN'		=> 'Before proceeding with the full installation phpBB will carry out some tests on your server configuration and files to ensure that you are able to install and run phpBB. Please ensure you read through the results thoroughly and do not proceed until all the required tests are passed. If you wish to use any of the features depending on the optional tests, you should ensure that these tests are passed also.',
 	'RETRY_WRITE'				=> 'Retry writing config',
@@ -337,8 +336,7 @@ $lang = array_merge($lang, array(
 	'SUB_LICENSE'				=> 'License',
 	'SUB_SUPPORT'				=> 'Support',
 	'SUCCESSFUL_CONNECT'		=> 'Successful connection',
-// TODO: Write some text on obtaining support
-	'SUPPORT_BODY'				=> 'During the release candidate phase full support will be given at <a href="http://www.phpbb.com/community/viewforum.php?f=46">the phpBB 3.0.x support forums</a>. We will provide answers to general setup questions, configuration problems, conversion problems and support for determining common problems mostly related to bugs. We also allow discussions about modifications and custom code/style additions.</p><p>For additional assistance, please refer to our <a href="http://www.phpbb.com/support/documentation/3.0/quickstart/">Quick Start Guide</a> and <a href="http://www.phpbb.com/support/documentation/3.0/">the online documentation</a>.</p><p>To ensure you stay up to date with the latest news and releases, why not <a href="http://www.phpbb.com/support/">subscribe to our mailing list</a>?',
+	'SUPPORT_BODY'				=> '</p><p>Full support will be provided in the <a href="http://www.phpbb.com/community/viewforum.php?f=46">phpBB 3.0.x Support Forums</a>.<br />We will be happy to assist you with:<ul><li>installation</li><li>configuration</li><li>technical questions</li><li>problems relating to potential bugs in the software</li><li>updating from release candidate versions to the latest stable version</li><li>converting from phpBB 2.0.x to phpBB3</li><li>converting from other discussion board software to phpBB3 (please see the <a href="http://www.phpbb.com/community/viewforum.php?f=65">Convertors Forum</a>)</li></ul>For issues relating to MODs, please post in the appropriate <a href="http://www.phpbb.com/community/viewforum.php?f=81">Modifications Forum</a>.<br />For issues relating to styles, imagesets and templates, please post in the appropriate <a href="http://www.phpbb.com/community/viewforum.php?f=80">Styles Forum</a>.</p><p>For additional assistance, please refer to our <a href="http://www.phpbb.com/support/documentation/3.0/quickstart/">Quick Start Guide</a> and <a href="http://www.phpbb.com/support/documentation/3.0/">the online documentation</a>.</p><p>To ensure you stay up to date with the latest news and releases, why not <a href="http://www.phpbb.com/support/">subscribe to our mailing list</a>?',
 	'SYNC_FORUMS'				=> 'Starting to synchronise forums',
 	'SYNC_POST_COUNT'			=> 'Synchronising post_counts',
 	'SYNC_POST_COUNT_ID'		=> 'Synchronising post_counts from <var>entry</var> %1$s to %2$s.',

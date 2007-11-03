@@ -599,7 +599,7 @@ function close_report($report_id_list, $mode, $action)
 			}
 		}
 		
-		foreach($post_info as $post)
+		foreach ($post_info as $post)
 		{
 			$forum_ids[$post['forum_id']] = $post['forum_id'];
 			$topic_ids[$post['topic_id']] = $post['topic_id'];

@@ -89,7 +89,8 @@ function request_var($var_name, $default, $multibyte = false, $cookie = false)
 		if ($type == 'array')
 		{
 			reset($default);
-			list($sub_key_type, $sub_type) = each(current($default));
+			$default = current($default);
+			list($sub_key_type, $sub_type) = each($default);
 			$sub_type = gettype($sub_type);
 			$sub_type = ($sub_type == 'array') ? 'NULL' : $sub_type;
 			$sub_key_type = gettype($sub_key_type);
@@ -269,23 +270,12 @@ function phpbb_hash($password)
 	$random = '';
 	$count = 6;
 
-	if (($fh = @fopen('/dev/urandom', 'rb')))
+	for ($i = 0; $i < $count; $i += 16)
 	{
-		$random = fread($fh, $count);
-		fclose($fh);
+		$random_state = md5(unique_id() . $random_state);
+		$random .= pack('H*', md5($random_state));
 	}
-
-	if (strlen($random) < $count)
-	{
-		$random = '';
-
-		for ($i = 0; $i < $count; $i += 16)
-		{
-			$random_state = md5(unique_id() . $random_state);
-			$random .= pack('H*', md5($random_state));
-		}
-		$random = substr($random, 0, $count);
-	}
+	$random = substr($random, 0, $count);
 
 	$hash = _hash_crypt_private($password, _hash_gensalt_private($random, $itoa64), $itoa64);
 

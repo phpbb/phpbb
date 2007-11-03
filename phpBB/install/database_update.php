@@ -1178,7 +1178,7 @@ if (version_compare($current_version, '3.0.RC2', '<='))
 	}
 	$db->sql_freeresult($result);
 	
-	foreach($smileys as $id => $code)
+	foreach ($smileys as $id => $code)
 	{
 		// 2.0 only entitized lt and gt; We need to do something about double quotes.
 		if (strchr($code, '"') === false)

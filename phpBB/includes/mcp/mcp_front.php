@@ -73,6 +73,14 @@ function mcp_front_view($id, $mode, $action)
 				}
 				$db->sql_freeresult($result);
 
+				if (empty($post_list))
+				{
+					$total = 0;
+				}
+			}
+
+			if ($total)
+			{
 				$sql = 'SELECT p.post_id, p.post_subject, p.post_time, p.poster_id, p.post_username, u.username, u.username_clean, t.topic_id, t.topic_title, t.topic_first_post_id, p.forum_id
 					FROM ' . POSTS_TABLE . ' p, ' . TOPICS_TABLE . ' t, ' . USERS_TABLE . ' u
 					WHERE ' . $db->sql_in_set('p.post_id', $post_list) . '
