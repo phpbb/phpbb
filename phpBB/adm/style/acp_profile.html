@@ -108,6 +108,7 @@
 
 		<fieldset class="quick">
 			{S_HIDDEN_FIELDS}
+			{S_FORM_TOKEN}
 			<input class="button1" type="submit" name="next" value="{L_PROFILE_TYPE_OPTIONS}" />
 		</fieldset>
 
@@ -129,6 +130,7 @@
 		
 		<fieldset class="quick" style="float: {S_CONTENT_FLOW_END};">
 			{S_HIDDEN_FIELDS}
+			{S_FORM_TOKEN}
 			<input class="button1" type="submit" name="next" value="{L_NEXT_STEP}" />
 		</fieldset>
 
@@ -153,10 +155,11 @@
 		<fieldset class="quick" style="float: {S_CONTENT_FLOW_END};">
 			{S_HIDDEN_FIELDS}
 			<input class="button1" type="submit" name="save" value="{L_SAVE}" />
+			{S_FORM_TOKEN}
 		</fieldset>
 	
 	<!-- ENDIF -->
-	{S_FORM_TOKEN}
+	
 	</form>
 
 <!-- ELSE -->
@@ -216,8 +219,8 @@
 		<input class="text small" type="text" name="field_ident" /> <select name="field_type">{S_TYPE_OPTIONS}</select>
 		<input class="button1" type="submit" name="submit" value="{L_CREATE_NEW_FIELD}" />
 		<input type="hidden" name="create" value="1" />
+		{S_FORM_TOKEN}
 	</fieldset>
-	{S_FORM_TOKEN}
 	</form>
 
 <!-- ENDIF -->

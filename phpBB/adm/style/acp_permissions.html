@@ -35,11 +35,11 @@
 
 		<p class="quick">
 			{S_HIDDEN_FIELDS}
+			{S_FORM_TOKEN}
 			<input type="submit" name="submit" value="{L_SUBMIT}" class="button1" />
 		</p>
 
 		</fieldset>
-		{S_FORM_TOKEN}
 		</form>
 
 		<!-- IF S_FORUM_MULTIPLE -->
@@ -56,11 +56,11 @@
 
 			<p class="quick">
 				{S_HIDDEN_FIELDS}
+				{S_FORM_TOKEN}
 				<input type="submit" name="submit" value="{L_SUBMIT}" class="button1" />
 			</p>
 
 			</fieldset>
-			{S_FORM_TOKEN}
 			</form>
 			
 		<!-- ENDIF -->
@@ -80,10 +80,10 @@
 
 		<p class="quick">
 			{S_HIDDEN_FIELDS}
+			{S_FORM_TOKEN}
 			<input type="submit" name="submit" value="{L_SUBMIT}" class="button1" />
 		</p>
 		</fieldset>
-		{S_FORM_TOKEN}
 		</form>
 
 	<!-- ELSEIF S_SELECT_GROUP and S_CAN_SELECT_GROUP -->
@@ -99,11 +99,11 @@
 
 		<p class="quick">
 			{S_HIDDEN_FIELDS}
+			{S_FORM_TOKEN}
 			<input type="submit" name="submit" value="{L_SUBMIT}" class="button1" />
 		</p>
 
 		</fieldset>
-		{S_FORM_TOKEN}
 		</form>
 
 		<!-- ELSEIF S_SELECT_USERGROUP -->
@@ -126,9 +126,9 @@
 			
 			<fieldset class="quick">
 				{S_HIDDEN_FIELDS}
+				{S_FORM_TOKEN}
 				<input type="submit" class="button2" name="action[delete]" value="{L_REMOVE_PERMISSIONS}" style="width: 46% !important;" /> &nbsp; <input class="button1" type="submit" name="submit_edit_options" value="{L_EDIT_PERMISSIONS}" style="width: 46% !important;" />
 			</fieldset>
-			{S_FORM_TOKEN}
 			</form>
 
 			<form id="add_user" method="post" action="{U_ACTION}">
@@ -144,9 +144,9 @@
 
 			<fieldset class="quick">
 				{S_HIDDEN_FIELDS}
+				{S_FORM_TOKEN}
 				<input class="button1" type="submit" name="submit_add_options" value="{L_ADD_PERMISSIONS}" />
 			</fieldset>
-			{S_FORM_TOKEN}
 			</form>
 
 		<!-- ENDIF -->
@@ -171,9 +171,9 @@
 			
 			<fieldset class="quick">
 				{S_HIDDEN_FIELDS}
+				{S_FORM_TOKEN}
 				<input class="button2" type="submit" name="action[delete]" value="{L_REMOVE_PERMISSIONS}" style="width: 46% !important;" /> &nbsp; <input class="button1" type="submit" name="submit_edit_options" value="{L_EDIT_PERMISSIONS}" style="width: 46% !important;" />
 			</fieldset>
-			{S_FORM_TOKEN}
 			</form>
 
 			<form id="add_groups" method="post" action="{U_ACTION}">
@@ -187,10 +187,9 @@
 
 			<fieldset class="quick">
 				{S_HIDDEN_FIELDS}
+				{S_FORM_TOKEN}
 				<input type="submit" class="button1" name="submit_add_options" value="{L_ADD_PERMISSIONS}" />
 			</fieldset>
-			
-			{S_FORM_TOKEN}
 			</form>
 
 		<!-- ENDIF -->
@@ -214,10 +213,9 @@
 			
 			<fieldset class="quick">
 				{S_HIDDEN_FIELDS}
+				{S_FORM_TOKEN}
 				<input class="button1" type="submit" name="submit" value="{L_VIEW_PERMISSIONS}" />
 			</fieldset>
-			
-			{S_FORM_TOKEN}
 			</form>
 
 			<form id="add_user" method="post" action="{U_ACTION}">
@@ -234,9 +232,9 @@
 
 			<fieldset class="quick">
 				{S_HIDDEN_FIELDS}
+				{S_FORM_TOKEN}
 				<input type="submit" name="submit" value="{L_VIEW_PERMISSIONS}" class="button1" />
 			</fieldset>
-			{S_FORM_TOKEN}
 			</form>
 
 		</div>
@@ -256,10 +254,9 @@
 			
 			<fieldset class="quick">
 				{S_HIDDEN_FIELDS}
+				{S_FORM_TOKEN}
 				<input class="button1" type="submit" name="submit" value="{L_VIEW_PERMISSIONS}" />
 			</fieldset>
-			
-			{S_FORM_TOKEN}
 			</form>
 
 			<form id="group" method="post" action="{U_ACTION}">
@@ -275,10 +272,9 @@
 
 			<fieldset class="quick">
 				{S_HIDDEN_FIELDS}
+				{S_FORM_TOKEN}
 				<input type="submit" name="submit" value="{L_VIEW_PERMISSIONS}" class="button1" />
 			</fieldset>
-
-			{S_FORM_TOKEN}
 			</form>
 
 		</div>
@@ -318,11 +314,11 @@
 	
 		<fieldset class="quick" style="float: {S_CONTENT_FLOW_BEGIN};">
 			{S_HIDDEN_FIELDS}
+			{S_FORM_TOKEN}
 			{L_SELECT_TYPE}: <select name="type">{S_PERMISSION_DROPDOWN}</select> 
 
 			<input class="button2" type="submit" name="submit" value="{L_GO}" />
 		</fieldset>
-		{S_FORM_TOKEN}	
 		</form>
 	<!-- ENDIF -->
 
@@ -347,11 +343,11 @@
 	<fieldset class="quick" style="float: {S_CONTENT_FLOW_END};">
 		<input class="button1" type="submit" name="action[apply_all_permissions]" value="{L_APPLY_ALL_PERMISSIONS}" />
 		<input class="button2" type="button" name="cancel" value="{L_RESET}" onclick="document.forms['set-permissions'].reset(); init_colours(active_pmask + active_fmask);" />
+		{S_FORM_TOKEN}
 	</fieldset>
 
 	<br /><br />
 	
-	{S_FORM_TOKEN}
 	</form>
 
 <!-- ENDIF -->

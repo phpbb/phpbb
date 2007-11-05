@@ -63,7 +63,7 @@
 				<!-- IF PAGE_NUMBER --><!-- IF PAGINATION --> &bull; <a href="#" onclick="jumpto(); return false;" title="{L_JUMP_TO_PAGE}">{PAGE_NUMBER}</a> &bull; <span>{PAGINATION}</span><!-- ELSE --> &bull; {PAGE_NUMBER}<!-- ENDIF --><!-- ENDIF -->
 			</li>
 		</ul>
-
+		{S_FORM_TOKEN}
 		<span class="corners-bottom"><span></span></span></div>
 	</div>
 
@@ -76,10 +76,10 @@
 			</fieldset>
 		<!-- ENDIF -->
 	<!-- ELSE -->
+			{S_FORM_TOKEN}
 			<span class="corners-bottom"><span></span></span></div>
 		</div>
 	<!-- ENDIF -->
-	{S_FORM_TOKEN}
 </form>
 
 <br />

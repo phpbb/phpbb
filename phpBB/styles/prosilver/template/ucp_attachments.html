@@ -48,6 +48,7 @@
 			<label for="sk">{L_SORT_BY}: <select name="sk" id="sk">{S_SORT_OPTIONS}</select></label> 
 			<label><select name="sd" id="sd">{S_ORDER_SELECT}</select></label>
 			<input class="button2" type="submit" name="sort" value="{L_SORT}" />
+			{S_FORM_TOKEN}
 		</fieldset>
 
 		<hr />
@@ -69,9 +70,9 @@
 	<fieldset class="display-actions">	
 		<input class="button2" type="submit" name="delete" value="{L_DELETE_MARKED}" />
 		<div><a href="#" onclick="marklist('ucp', 'attachment', true); return false;">{L_MARK_ALL}</a> &bull; <a href="#" onclick="marklist('ucp', 'attachment', false); return false;">{L_UNMARK_ALL}</a></div>
+		{S_FORM_TOKEN}
 	</fieldset>
 <!-- ENDIF -->
-{S_FORM_TOKEN}
 </form>
 
 <!-- INCLUDE ucp_footer.html -->
