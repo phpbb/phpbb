@@ -313,9 +313,9 @@ function check_rule(&$rules, &$rule_row, &$message_row, $user_id)
 }
 
 /**
-* Fix user PM count
+* Update user PM count
 */
-function fix_pm_counts()
+function update_pm_counts()
 {
 	global $user, $db;
 
@@ -368,12 +368,11 @@ function place_pm_into_folder(&$global_privmsgs_rules, $release = false)
 		return 0;
 	}
 
-	$user_new_privmsg = (int) $user->data['user_new_privmsg'];
 	$user_message_rules = (int) $user->data['user_message_rules'];
 	$user_id = (int) $user->data['user_id'];
 
 	$action_ary = $move_into_folder = array();
-	$num_not_moved = $num_removed = 0;
+	$num_removed = 0;
 
 	// Newly processing on-hold messages
 	if ($release)
@@ -383,27 +382,6 @@ function place_pm_into_folder(&$global_privmsgs_rules, $release = false)
 			WHERE folder_id = ' . PRIVMSGS_HOLD_BOX . "
 				AND user_id = $user_id";
 		$db->sql_query($sql);
-
-		// If there are no rows affected there is something wrong with the new and unread message count.
-		// We try to fix this on our way down...
-		if (!$db->sql_affectedrows())
-		{
-			fix_pm_counts();
-
-			// The function needs this value to be up-to-date
-			$user_new_privmsg = (int) $user->data['user_new_privmsg'];
-		}
-	}
-	else
-	{
-		// If not relasing we need to check the number of not moved messages...
-		$sql = 'SELECT COUNT(msg_id) as num_messages
-			FROM ' . PRIVMSGS_TO_TABLE . "
-			WHERE user_id = $user_id
-				AND folder_id = " . PRIVMSGS_HOLD_BOX;
-		$result = $db->sql_query($sql);
-		$num_not_moved = (int) $db->sql_fetchfield('num_messages');
-		$db->sql_freeresult($result);
 	}
 
 	// Get those messages not yet placed into any box
@@ -422,7 +400,6 @@ function place_pm_into_folder(&$global_privmsgs_rules, $release = false)
 		while ($row = $db->sql_fetchrow($result))
 		{
 			$action_ary[$row['msg_id']][] = array('action' => false);
-//			$move_into_folder[PRIVMSGS_INBOX][] = $row['msg_id'];
 		}
 		$db->sql_freeresult($result);
 	}
@@ -510,7 +487,6 @@ function place_pm_into_folder(&$global_privmsgs_rules, $release = false)
 			if (!$is_match)
 			{
 				$action_ary[$row['msg_id']][] = array('action' => false);
-//				$move_into_folder[PRIVMSGS_INBOX][] = $row['msg_id'];
 			}
 		}
 
@@ -518,14 +494,12 @@ function place_pm_into_folder(&$global_privmsgs_rules, $release = false)
 	}
 
 	// We place actions into arrays, to save queries.
-	$num_new = $num_unread = 0;
 	$sql = $unread_ids = $delete_ids = $important_ids = array();
 
 	foreach ($action_ary as $msg_id => $msg_ary)
 	{
 		// It is allowed to execute actions more than once, except placing messages into folder
-		$folder_action = false;
-		$message_removed = false;
+		$folder_action = $message_removed = false;
 
 		foreach ($msg_ary as $pos => $rule_ary)
 		{
@@ -540,7 +514,6 @@ function place_pm_into_folder(&$global_privmsgs_rules, $release = false)
 					// Folder actions have precedence, so we will remove any other ones
 					$folder_action = true;
 					$move_into_folder[(int) $rule_ary['folder_id']][] = $msg_id;
-					$num_new++;
 				break;
 
 				case ACTION_MARK_AS_READ:
@@ -572,10 +545,6 @@ function place_pm_into_folder(&$global_privmsgs_rules, $release = false)
 		}
 	}
 
-//	$num_new += sizeof(array_unique($delete_ids));
-//	$num_unread += sizeof(array_unique($delete_ids));
-	$num_unread += sizeof(array_unique($unread_ids));
-
 	// Do not change the order of processing
 	// The number of queries needed to be executed here highly depends on the defined rules and are
 	// only gone through if new messages arrive.
@@ -583,7 +552,7 @@ function place_pm_into_folder(&$global_privmsgs_rules, $release = false)
 	// Delete messages
 	if (sizeof($delete_ids))
 	{
-		$num_removed = sizeof($delete_ids);
+		$num_removed += sizeof($delete_ids);
 		delete_pm($user_id, $delete_ids, PRIVMSGS_NO_BOX);
 	}
 
@@ -689,6 +658,7 @@ function place_pm_into_folder(&$global_privmsgs_rules, $release = false)
 				}
 				$db->sql_freeresult($result);
 
+				$num_removed += sizeof($delete_ids);
 				delete_pm($user_id, $delete_ids, $dest_folder);
 			}
 		}
@@ -696,13 +666,6 @@ function place_pm_into_folder(&$global_privmsgs_rules, $release = false)
 		//
 		if ($full_folder_action == FULL_FOLDER_HOLD)
 		{
-			$num_not_moved += sizeof($msg_ary);
-
-			if ($num_new)
-			{
-				$num_new -= sizeof($msg_ary);
-			}
-
 			$sql = 'UPDATE ' . PRIVMSGS_TO_TABLE . '
 				SET folder_id = ' . PRIVMSGS_HOLD_BOX . '
 				WHERE folder_id = ' . PRIVMSGS_NO_BOX . "
@@ -728,10 +691,6 @@ function place_pm_into_folder(&$global_privmsgs_rules, $release = false)
 						AND user_id = $user_id";
 				$db->sql_query($sql);
 			}
-			else
-			{
-				$num_new += $db->sql_affectedrows();
-			}
 		}
 	}
 
@@ -746,26 +705,19 @@ function place_pm_into_folder(&$global_privmsgs_rules, $release = false)
 		$db->sql_query($sql);
 	}
 
-	// Update unread and new status field
-	if ($num_unread || $num_new)
-	{
-		$set_sql = ($num_unread) ? 'user_unread_privmsg = user_unread_privmsg - ' . $num_unread : '';
-		if ($num_new)
-		{
-			$set_sql .= ($set_sql != '') ? ', ' : '';
-			$set_sql .= 'user_new_privmsg = user_new_privmsg - ' . $num_new;
-		}
-		
-		$db->sql_query('UPDATE ' . USERS_TABLE . " SET $set_sql WHERE user_id = $user_id");
+	// Update new/unread count
+	update_pm_counts();
 
-		$user->data['user_new_privmsg'] -= $num_new;
-		$user->data['user_unread_privmsg'] -= $num_unread;
-	}
+	// Now check how many messages got not moved...
+	$sql = 'SELECT COUNT(msg_id) as num_messages
+		FROM ' . PRIVMSGS_TO_TABLE . "
+		WHERE user_id = $user_id
+			AND folder_id = " . PRIVMSGS_HOLD_BOX;
+	$result = $db->sql_query($sql);
+	$num_not_moved = (int) $db->sql_fetchfield('num_messages');
+	$db->sql_freeresult($result);
 
-	return array(
-		'not_moved'		=> $num_not_moved,
-		'deleted'		=> $num_removed,
-	);
+	return array($num_not_moved, $num_removed);
 }
 
 /**
