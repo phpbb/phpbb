@@ -116,34 +116,43 @@ if ($view && !$post_id)
 		$row = $db->sql_fetchrow($result);
 		$db->sql_freeresult($result);
 
-		$sql = 'SELECT topic_id, forum_id
-			FROM ' . TOPICS_TABLE . '
-			WHERE forum_id = ' . $row['forum_id'] . "
-				AND topic_moved_id = 0
-				AND topic_last_post_time $sql_condition {$row['topic_last_post_time']}
-				" . (($auth->acl_get('m_approve', $row['forum_id'])) ? '' : 'AND topic_approved = 1') . "
-			ORDER BY topic_last_post_time $sql_ordering";
-		$result = $db->sql_query_limit($sql, 1);
-		$row = $db->sql_fetchrow($result);
-		$db->sql_freeresult($result);
-
 		if (!$row)
 		{
 			$user->setup('viewtopic');
+			// OK, the topic doesn't exist. This error message is not helpful, but technically correct.
 			trigger_error(($view == 'next') ? 'NO_NEWER_TOPICS' : 'NO_OLDER_TOPICS');
 		}
 		else
 		{
-			$topic_id = $row['topic_id'];
+			$sql = 'SELECT topic_id, forum_id
+				FROM ' . TOPICS_TABLE . '
+				WHERE forum_id = ' . $row['forum_id'] . "
+					AND topic_moved_id = 0
+					AND topic_last_post_time $sql_condition {$row['topic_last_post_time']}
+					" . (($auth->acl_get('m_approve', $row['forum_id'])) ? '' : 'AND topic_approved = 1') . "
+				ORDER BY topic_last_post_time $sql_ordering";
+			$result = $db->sql_query_limit($sql, 1);
+			$row = $db->sql_fetchrow($result);
+			$db->sql_freeresult($result);
 
-			// Check for global announcement correctness?
-			if (!$row['forum_id'] && !$forum_id)
+			if (!$row)
 			{
-				trigger_error('NO_TOPIC');
+				$user->setup('viewtopic');
+				trigger_error(($view == 'next') ? 'NO_NEWER_TOPICS' : 'NO_OLDER_TOPICS');
 			}
-			else if ($row['forum_id'])
+			else
 			{
-				$forum_id = $row['forum_id'];
+				$topic_id = $row['topic_id'];
+
+				// Check for global announcement correctness?
+				if (!$row['forum_id'] && !$forum_id)
+				{
+					trigger_error('NO_TOPIC');
+				}
+				else if ($row['forum_id'])
+				{
+					$forum_id = $row['forum_id'];
+				}
 			}
 		}
 	}
