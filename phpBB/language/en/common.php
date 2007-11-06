@@ -575,6 +575,7 @@ $lang = array_merge($lang, array(
 	'TOPICS'			=> 'Topics',
 	'TOPIC_ICON'		=> 'Topic icon',
 	'TOPIC_LOCKED'		=> 'This topic is locked, you cannot edit posts or make further replies.',
+	'TOPIC_LOCKED_SHORT'=> 'Topic locked',
 	'TOPIC_MOVED'		=> 'Moved topic',
 	'TOPIC_REVIEW'		=> 'Topic review',
 	'TOPIC_TITLE'		=> 'Topic title',
