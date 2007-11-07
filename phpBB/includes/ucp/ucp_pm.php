@@ -253,7 +253,9 @@ class ucp_pm
 
 				if ($user->data['user_new_privmsg'] && $action == 'view_folder')
 				{
-					list($num_not_moved, $num_removed) = each(place_pm_into_folder($global_privmsgs_rules, $release));
+					$return = place_pm_into_folder($global_privmsgs_rules, $release);
+					$num_not_moved = $return['not_moved'];
+					$num_removed = $return['removed'];
 				}
 
 				if (!$msg_id && $folder_id == PRIVMSGS_NO_BOX)

@@ -365,7 +365,7 @@ function place_pm_into_folder(&$global_privmsgs_rules, $release = false)
 
 	if (!$user->data['user_new_privmsg'])
 	{
-		return 0;
+		return array('not_moved' => 0, 'removed' => 0);
 	}
 
 	$user_message_rules = (int) $user->data['user_message_rules'];
@@ -717,7 +717,7 @@ function place_pm_into_folder(&$global_privmsgs_rules, $release = false)
 	$num_not_moved = (int) $db->sql_fetchfield('num_messages');
 	$db->sql_freeresult($result);
 
-	return array($num_not_moved, $num_removed);
+	return array('not_moved' => $num_not_moved, 'removed' => $num_removed);
 }
 
 /**

@@ -2775,7 +2775,7 @@ function get_database_size()
 
 					$sql = 'SHOW TABLE STATUS
 						FROM ' . $db_name;
-					$result = $db->sql_query($sql);
+					$result = $db->sql_query($sql, 7200);
 
 					$database_size = 0;
 					while ($row = $db->sql_fetchrow($result))
@@ -2825,7 +2825,7 @@ function get_database_size()
 		case 'mssql_odbc':
 			$sql = 'SELECT ((SUM(size) * 8.0) * 1024.0) as dbsize
 				FROM sysfiles';
-			$result = $db->sql_query($sql);
+			$result = $db->sql_query($sql, 7200);
 			$database_size = ($row = $db->sql_fetchrow($result)) ? $row['dbsize'] : false;
 			$db->sql_freeresult($result);
 		break;
@@ -2867,7 +2867,7 @@ function get_database_size()
 		case 'oracle':
 			$sql = 'SELECT SUM(bytes) as dbsize
 				FROM user_segments';
-			$result = $db->sql_query($sql);
+			$result = $db->sql_query($sql, 7200);
 			$database_size = ($row = $db->sql_fetchrow($result)) ? $row['dbsize'] : false;
 			$db->sql_freeresult($result);
 		break;
