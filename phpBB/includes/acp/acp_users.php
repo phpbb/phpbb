@@ -43,7 +43,7 @@ class acp_users
 		$user_id	= request_var('u', 0);
 		$action		= request_var('action', '');
 
-		$submit		= (isset($_POST['update'])) ? true : false;
+		$submit		= (isset($_POST['update']) && !isset($_POST['cancel'])) ? true : false;
 
 		$form_name = 'acp_users';
 		add_form_key($form_name);

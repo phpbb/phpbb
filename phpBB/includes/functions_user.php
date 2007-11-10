@@ -370,6 +370,11 @@ function user_delete($mode, $user_id, $post_username = false)
 	// Remove reports
 	$db->sql_query('DELETE FROM ' . REPORTS_TABLE . ' WHERE user_id = ' . $user_id);
 
+	if ($user_row['user_avatar'] && $user_row['user_avatar_type'] == AVATAR_UPLOAD)
+	{
+		avatar_delete('user', $user_row);
+	}
+	
 	switch ($mode)
 	{
 		case 'retain':
