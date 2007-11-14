@@ -24,12 +24,13 @@
 	height: 100%;
 	background-position: 0 0;
 	position: relative;
+	overflow: hidden;
 }
 
 /* Hide <a> text and hide off-state image when rolling over (prevents flicker in IE) */
 /*.buttons div span		{ display: none; }*/
 /*.buttons div a:hover	{ background-image: none; }*/
-.buttons div span			{ position: absolute; width: 100%; height: 100%; cursor: pointer; }
+.buttons div span			{ position: absolute; width: 100%; height: 100%; cursor: pointer;}
 .buttons div a:hover span	{ background-position: 0 100%; }
 
 /* Big button images */
