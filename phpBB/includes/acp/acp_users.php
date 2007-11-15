@@ -1778,12 +1778,36 @@ class acp_users
 
 				$user->add_lang(array('groups', 'acp/groups'));
 				$group_id = request_var('g', 0);
-
+				
+				if ($group_id)
+				{
+					// Check the founder only entry for this group to make sure everything is well
+					$sql = 'SELECT group_founder_manage
+						FROM ' . GROUPS_TABLE . '
+						WHERE group_id = ' . $group_id;
+					$result = $db->sql_query($sql);
+					$founder_manage = (int) $db->sql_fetchfield('group_founder_manage');
+					$db->sql_freeresult($result);
+					
+					if ($user->data['user_type'] != USER_FOUNDER && $founder_manage)
+					{
+						trigger_error($user->lang['NOT_ALLOWED_MANAGE_GROUP'] . adm_back_link($this->u_action . '&amp;u=' . $user_id), E_USER_WARNING);
+					}
+				}
+				else
+				{
+					$founder_manage = 0;
+				}
+				
 				switch ($action)
 				{
 					case 'demote':
 					case 'promote':
 					case 'default':
+						if (!$group_id)
+						{
+							trigger_error($user->lang['NO_GROUP'] . adm_back_link($this->u_action . '&amp;u=' . $user_id), E_USER_WARNING);
+						}
 						group_user_attributes($action, $group_id, $user_id);
 
 						if ($action == 'default')
@@ -1834,19 +1858,6 @@ class acp_users
 					if (!$group_id)
 					{
 						trigger_error($user->lang['NO_GROUP'] . adm_back_link($this->u_action . '&amp;u=' . $user_id), E_USER_WARNING);
-					}
-
-					// Check the founder only entry for this group to make sure everything is well
-					$sql = 'SELECT group_founder_manage
-						FROM ' . GROUPS_TABLE . '
-						WHERE group_id = ' . $group_id;
-					$result = $db->sql_query($sql);
-					$founder_manage = (int) $db->sql_fetchfield('group_founder_manage');
-					$db->sql_freeresult($result);
-
-					if ($user->data['user_type'] != USER_FOUNDER && $founder_manage)
-					{
-						trigger_error($user->lang['NOT_ALLOWED_MANAGE_GROUP'] . adm_back_link($this->u_action . '&amp;u=' . $user_id), E_USER_WARNING);
 					}
 
 					// Add user/s to group
