@@ -32,6 +32,9 @@ if (isset($_GET['avatar']))
 		exit;
 	}
 	unset($dbpasswd);
+	
+	// worst-case default
+	$browser = (!empty($_SERVER['HTTP_USER_AGENT'])) ? htmlspecialchars((string) $_SERVER['HTTP_USER_AGENT']) : 'msie 6.0';
 
 	$config = $cache->obtain_config();
 	$filename = $_GET['avatar'];
@@ -53,9 +56,25 @@ if (isset($_GET['avatar']))
 		$db->sql_close();
 		exit;
 	}
-
+	
 	$ext		= substr(strrchr($filename, '.'), 1);
-	$filename	= intval($filename);
+	$stamp		= (int) substr(stristr($filename, '_'), 1);
+	$filename	= (int) $filename;
+	
+	// let's see if we have to send the file at all
+	$last_load 	=  isset($_SERVER['HTTP_IF_MODIFIED_SINCE']) ? strtotime(trim($_SERVER['HTTP_IF_MODIFIED_SINCE'])) : false;
+	if (strpos(strtolower($browser), 'msie 6.0') === false)
+	{
+		if ($last_load !== false && $last_load <= $stamp)
+		{
+			header('Not Modified', true, 304);
+			exit();
+		} 
+		else
+		{
+			header('Last-Modified: ' . gmdate('D, d M Y H:i:s', $stamp) . ' GMT');
+		}
+	}
 	
 	if (!in_array($ext, array('png', 'gif', 'jpg', 'jpeg')))
 	{
@@ -68,7 +87,7 @@ if (isset($_GET['avatar']))
 		$db->sql_close();
 		exit;
 	}
-
+	
 	if (!$filename)
 	{
 		// no way such an avatar could exist. They are not following the rules, stop the show.
@@ -81,7 +100,7 @@ if (isset($_GET['avatar']))
 		exit;
 	}
 
-	send_avatar_to_browser(($avatar_group ? 'g' : '') . $filename . '.' . $ext);
+	send_avatar_to_browser(($avatar_group ? 'g' : '') . $filename . '.' . $ext, $browser);
 
 	if (!empty($cache))
 	{
@@ -267,15 +286,12 @@ else
 * A simplified function to deliver avatars
 * The argument needs to be checked before calling this function.
 */
-function send_avatar_to_browser($file)
+function send_avatar_to_browser($file, $browser)
 {
 	global $config, $phpbb_root_path;
 
 	$prefix = $config['avatar_salt'] . '_';
 	$image_dir = $config['avatar_path'];
-
-	// worst-case default
-	$browser = (!empty($_SERVER['HTTP_USER_AGENT'])) ? htmlspecialchars((string) $_SERVER['HTTP_USER_AGENT']) : 'msie 6.0';
 
 	// Adjust image_dir path (no trailing slash)
 	if (substr($image_dir, -1, 1) == '/' || substr($image_dir, -1, 1) == '\\')
@@ -290,7 +306,7 @@ function send_avatar_to_browser($file)
 	}
 	$file_path = $phpbb_root_path . $image_dir . '/' . $prefix . $file;
 
-	if ((@file_exists($file_path) && @is_readable($file_path)) || headers_sent())
+	if ((@file_exists($file_path) && @is_readable($file_path)) && !headers_sent())
 	{
 		header('Pragma: public');
 
