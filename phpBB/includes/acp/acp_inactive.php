@@ -143,6 +143,7 @@ class acp_inactive
 								'action'		=> $action,
 								'mark'			=> $mark,
 								'submit'		=> 1,
+								'start'			=> ($start - sizeof($user_affected) < 0) ? 0 : $start - sizeof($user_affected),
 							);
 							confirm_box(false, $user->lang['CONFIRM_OPERATION'], build_hidden_fields($s_hidden_fields));
 						}

@@ -67,6 +67,11 @@ class acm
 		unset($this->var_expires);
 		unset($this->sql_rowset);
 		unset($this->sql_row_pointer);
+
+		$this->vars = array();
+		$this->var_expires = array();
+		$this->sql_rowset = array();
+		$this->sql_row_pointer = array();
 	}
 
 	/**
@@ -231,6 +236,11 @@ class acm
 		unset($this->var_expires);
 		unset($this->sql_rowset);
 		unset($this->sql_row_pointer);
+
+		$this->vars = array();
+		$this->var_expires = array();
+		$this->sql_rowset = array();
+		$this->sql_row_pointer = array();
 
 		$this->is_modified = false;
 	}

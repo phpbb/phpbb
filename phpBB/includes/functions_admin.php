@@ -2674,6 +2674,19 @@ function view_inactive_users(&$users, &$user_count, $limit = 0, $offset = 0, $li
 {
 	global $db, $user;
 
+	$sql = 'SELECT COUNT(user_id) AS user_count
+		FROM ' . USERS_TABLE . '
+		WHERE user_type = ' . USER_INACTIVE .
+		(($limit_days) ? " AND user_inactive_time >= $limit_days" : '');
+	$result = $db->sql_query($sql);
+	$user_count = (int) $db->sql_fetchfield('user_count');
+	$db->sql_freeresult($result);
+
+	if ($offset >= $user_count)
+	{
+		$offset = ($offset - $limit < 0) ? 0 : $offset - $limit;
+	}
+
 	$sql = 'SELECT user_id, username, user_regdate, user_lastvisit, user_inactive_time, user_inactive_reason
 		FROM ' . USERS_TABLE . '
 		WHERE user_type = ' . USER_INACTIVE .
@@ -2705,16 +2718,8 @@ function view_inactive_users(&$users, &$user_count, $limit = 0, $offset = 0, $li
 	
 		$users[] = $row;
 	}
-	
-	$sql = 'SELECT COUNT(user_id) AS user_count
-		FROM ' . USERS_TABLE . '
-		WHERE user_type = ' . USER_INACTIVE .
-		(($limit_days) ? " AND user_inactive_time >= $limit_days" : '');
-	$result = $db->sql_query($sql);
-	$user_count = (int) $db->sql_fetchfield('user_count');
-	$db->sql_freeresult($result);
 
-	return;
+	return $offset;
 }
 
 /**
