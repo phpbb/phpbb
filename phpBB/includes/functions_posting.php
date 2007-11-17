@@ -1227,7 +1227,7 @@ function user_notification($mode, $subject, $topic_title, $forum_name, $forum_id
 	// Now, we are able to really send out notifications
 	if (sizeof($msg_users))
 	{
-		include_once($phpbb_root_path . 'includes/functions_messenger.'.$phpEx);
+		include_once($phpbb_root_path . 'includes/functions_messenger.' . $phpEx);
 		$messenger = new messenger();
 
 		$msg_list_ary = array();

@@ -165,12 +165,7 @@ class messenger
 
 			if (!file_exists($tpl_file))
 			{
-				$tpl_file = "{$phpbb_root_path}language/$template_lang/email/$template_file.txt";
-
-				if (!file_exists($tpl_file))
-				{
-					trigger_error("Could not find email template file [ $tpl_file ]", E_USER_ERROR);
-				}
+				trigger_error("Could not find email template file [ $tpl_file ]", E_USER_ERROR);
 			}
 
 			if (($data = @file_get_contents($tpl_file)) === false)
@@ -607,7 +602,7 @@ class queue
 						continue 2;
 					}
 
-					include_once($phpbb_root_path . 'includes/functions_jabber.'.$phpEx);
+					include_once($phpbb_root_path . 'includes/functions_jabber.' . $phpEx);
 					$this->jabber = new jabber($config['jab_host'], $config['jab_port'], $config['jab_username'], $config['jab_password'], $config['jab_use_ssl']);
 
 					if (!$this->jabber->connect())

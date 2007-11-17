@@ -270,13 +270,24 @@ function phpbb_hash($password)
 	$random = '';
 	$count = 6;
 
-	for ($i = 0; $i < $count; $i += 16)
+	if (($fh = @fopen('/dev/urandom', 'rb')))
 	{
-		$random_state = md5(unique_id() . $random_state);
-		$random .= pack('H*', md5($random_state));
+		$random = fread($fh, $count);
+		fclose($fh);
 	}
-	$random = substr($random, 0, $count);
 
+	if (strlen($random) < $count)
+	{
+		$random = '';
+
+		for ($i = 0; $i < $count; $i += 16)
+		{
+			$random_state = md5(unique_id() . $random_state);
+			$random .= pack('H*', md5($random_state));
+		}
+		$random = substr($random, 0, $count);
+	}
+	
 	$hash = _hash_crypt_private($password, _hash_gensalt_private($random, $itoa64), $itoa64);
 
 	if (strlen($hash) == 34)
@@ -2867,6 +2878,12 @@ function msg_handler($errno, $msg_text, $errfile, $errline)
 	global $cache, $db, $auth, $template, $config, $user;
 	global $phpEx, $phpbb_root_path, $msg_title, $msg_long_text;
 
+	// Do not display notices if we suppress them via @
+	if (error_reporting() == 0)
+	{
+		return;
+	}
+
 	// Message handler is stripping text. In case we need it, we are possible to define long text...
 	if (isset($msg_long_text) && $msg_long_text && !$msg_text)
 	{
@@ -2879,9 +2896,8 @@ function msg_handler($errno, $msg_text, $errfile, $errline)
 		case E_WARNING:
 
 			// Check the error reporting level and return if the error level does not match
-			// Additionally do not display notices if we suppress them via @
 			// If DEBUG is defined the default level is E_ALL
-			if (($errno & ((defined('DEBUG') && error_reporting()) ? E_ALL : error_reporting())) == 0)
+			if (($errno & ((defined('DEBUG')) ? E_ALL : error_reporting())) == 0)
 			{
 				return;
 			}

@@ -167,7 +167,7 @@ class acp_inactive
 					if ($row = $db->sql_fetchrow($result))
 					{
 						// Send the messages
-						include_once($phpbb_root_path . 'includes/functions_messenger.'.$phpEx);
+						include_once($phpbb_root_path . 'includes/functions_messenger.' . $phpEx);
 
 						$messenger = new messenger();
 						$usernames = array();
