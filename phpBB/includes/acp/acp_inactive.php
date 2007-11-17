@@ -143,7 +143,7 @@ class acp_inactive
 								'action'		=> $action,
 								'mark'			=> $mark,
 								'submit'		=> 1,
-								'start'			=> ($start - sizeof($user_affected) < 0) ? 0 : $start - sizeof($user_affected),
+								'start'			=> $start,
 							);
 							confirm_box(false, $user->lang['CONFIRM_OPERATION'], build_hidden_fields($s_hidden_fields));
 						}
@@ -217,7 +217,7 @@ class acp_inactive
 		$inactive = array();
 		$inactive_count = 0;
 
-		view_inactive_users($inactive, $inactive_count, $config['topics_per_page'], $start, $sql_where, $sql_sort);
+		$start = view_inactive_users($inactive, $inactive_count, $config['topics_per_page'], $start, $sql_where, $sql_sort);
 
 		foreach ($inactive as $row)
 		{
@@ -248,7 +248,7 @@ class acp_inactive
 			'S_ON_PAGE'		=> on_page($inactive_count, $config['topics_per_page'], $start),
 			'PAGINATION'	=> generate_pagination($this->u_action . "&amp;$u_sort_param", $inactive_count, $config['topics_per_page'], $start, true),
 			
-			'U_ACTION'		=> $this->u_action,
+			'U_ACTION'		=> $this->u_action . '&amp;start=' . $start,
 		));
 
 		$this->tpl_name = 'acp_inactive';
