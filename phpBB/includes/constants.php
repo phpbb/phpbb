@@ -19,6 +19,7 @@ if (!defined('IN_PHPBB'))
 /**
 * valid external constants:
 * PHPBB_MSG_HANDLER
+* PHPBB_DB_NEW_LINK
 * PHPBB_ROOT_PATH
 * PHPBB_ADMIN_PATH
 */

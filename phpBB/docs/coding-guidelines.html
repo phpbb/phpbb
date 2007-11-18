@@ -955,6 +955,10 @@ append_sid(&quot;{$phpbb_root_path}memberlist.$phpEx&quot;, 'mode=group&amp;amp;
 		</li>
 	</ul>
 
+	<h4>Exiting</h4>
+
+	<p>Your page should either call <code>page_footer()</code> in the end to trigger output through the template engine and terminate the script, or alternatively at least call the <code>exit_handler()</code>. That call is necessary because it provides a method for external applications embedding phpBB to be called at the end of the script.</p>
+
 		</div>
 
 		<div class="back2top"><a href="#wrap" class="top">Back to Top</a></div>
