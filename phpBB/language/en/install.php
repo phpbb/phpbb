@@ -380,7 +380,7 @@ $lang = array_merge($lang, array(
 	'COLLECTING_FILE_DIFFS'			=> 'Collecting file differences',
 	'COMPLETE_LOGIN_TO_BOARD'		=> 'You should now <a href="../ucp.php?mode=login">login to your board</a> and check if everything is working fine. Do not forget to delete, rename or move your install directory!',
 	'CONTINUE_UPDATE_NOW'			=> 'Continue the update process now',
-	'CURRENT_FILE'					=> 'Begin of current original file',
+	'CURRENT_FILE'					=> 'Beginning of current original file',
 	'CURRENT_VERSION'				=> 'Current version',
 
 	'DATABASE_TYPE'						=> 'Database type',
@@ -390,7 +390,7 @@ $lang = array_merge($lang, array(
 	'DESTINATION'						=> 'Destination file',
 	'DIFF_INLINE'						=> 'Inline',
 	'DIFF_RAW'							=> 'Raw unified diff',
-	'DIFF_SEP_EXPLAIN'					=> 'End of current original file / Begin of new updated file',
+	'DIFF_SEP_EXPLAIN'					=> 'End of current original file / Beginning of new updated file',
 	'DIFF_SIDE_BY_SIDE'					=> 'Side by Side',
 	'DIFF_UNIFIED'						=> 'Unified diff',
 	'DO_NOT_UPDATE'						=> 'Do not update this file',
