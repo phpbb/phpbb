@@ -1111,11 +1111,18 @@ class install_install extends module
 		// If we get here and the extension isn't loaded it should be safe to just go ahead and load it
 		$available_dbms = get_available_dbms($data['dbms']);
 
+		if (!isset($available_dbms[$data['dbms']]))
+		{
+			// Someone's been silly and tried providing a non-existant dbms
+			$this->p_master->redirect("index.$phpEx?mode=install");
+		}
+
+		$dbms = $available_dbms[$data['dbms']]['DRIVER'];
+
 		// Load the appropriate database class if not already loaded
-		include($phpbb_root_path . 'includes/db/' . $available_dbms[$data['dbms']]['DRIVER'] . '.' . $phpEx);
+		include($phpbb_root_path . 'includes/db/' . $dbms . '.' . $phpEx);
 
 		// Instantiate the database
-		$sql_db = 'dbal_' . $available_dbms[$data['dbms']]['DRIVER'];
 		$db = new $sql_db();
 		$db->sql_connect($data['dbhost'], $data['dbuser'], $data['dbpasswd'], $data['dbname'], $data['dbport'], false, false);
 
@@ -1388,11 +1395,18 @@ class install_install extends module
 		// If we get here and the extension isn't loaded it should be safe to just go ahead and load it
 		$available_dbms = get_available_dbms($data['dbms']);
 
+		if (!isset($available_dbms[$data['dbms']]))
+		{
+			// Someone's been silly and tried providing a non-existant dbms
+			$this->p_master->redirect("index.$phpEx?mode=install");
+		}
+
+		$dbms = $available_dbms[$data['dbms']]['DRIVER'];
+
 		// Load the appropriate database class if not already loaded
-		include($phpbb_root_path . 'includes/db/' . $available_dbms[$data['dbms']]['DRIVER'] . '.' . $phpEx);
+		include($phpbb_root_path . 'includes/db/' . $dbms . '.' . $phpEx);
 
 		// Instantiate the database
-		$sql_db = 'dbal_' . $available_dbms[$data['dbms']]['DRIVER'];
 		$db = new $sql_db();
 		$db->sql_connect($data['dbhost'], $data['dbuser'], $data['dbpasswd'], $data['dbname'], $data['dbport'], false, false);
 

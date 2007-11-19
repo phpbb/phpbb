@@ -250,37 +250,39 @@ function get_tables($db)
 * @param	array	$dbms should be of the format of an element of the array returned by {@link get_available_dbms get_available_dbms()}
 *					necessary extensions should be loaded already
 */
-function connect_check_db($error_connect, &$error, $dbms, $table_prefix, $dbhost, $dbuser, $dbpasswd, $dbname, $dbport, $prefix_may_exist = false, $load_dbal = true, $unicode_check = true)
+function connect_check_db($error_connect, &$error, $dbms_details, $table_prefix, $dbhost, $dbuser, $dbpasswd, $dbname, $dbport, $prefix_may_exist = false, $load_dbal = true, $unicode_check = true)
 {
 	global $phpbb_root_path, $phpEx, $config, $lang;
+
+	$dbms = $dbms_details['DRIVER'];
 
 	if ($load_dbal)
 	{
 		// Include the DB layer
-		include($phpbb_root_path . 'includes/db/' . $dbms['DRIVER'] . '.' . $phpEx);
+		include($phpbb_root_path . 'includes/db/' . $dbms . '.' . $phpEx);
 	}
 
 	// Instantiate it and set return on error true
-	$sql_db = 'dbal_' . $dbms['DRIVER'];
+	$sql_db = 'dbal_' . $dbms;
 	$db = new $sql_db();
 	$db->sql_return_on_error(true);
 
 	// Check that we actually have a database name before going any further.....
-	if ($dbms['DRIVER'] != 'sqlite' && $dbms['DRIVER'] != 'oracle' && $dbname === '')
+	if ($dbms_details['DRIVER'] != 'sqlite' && $dbms_details['DRIVER'] != 'oracle' && $dbname === '')
 	{
 		$error[] = $lang['INST_ERR_DB_NO_NAME'];
 		return false;
 	}
 
 	// Make sure we don't have a daft user who thinks having the SQLite database in the forum directory is a good idea
-	if ($dbms['DRIVER'] == 'sqlite' && stripos(phpbb_realpath($dbhost), phpbb_realpath('../')) === 0)
+	if ($dbms_details['DRIVER'] == 'sqlite' && stripos(phpbb_realpath($dbhost), phpbb_realpath('../')) === 0)
 	{
 		$error[] = $lang['INST_ERR_DB_FORUM_PATH'];
 		return false;
 	}
 
 	// Check the prefix length to ensure that index names are not too long and does not contain invalid characters
-	switch ($dbms['DRIVER'])
+	switch ($dbms_details['DRIVER'])
 	{
 		case 'mysql':
 		case 'mysqli':
@@ -342,7 +344,7 @@ function connect_check_db($error_connect, &$error, $dbms, $table_prefix, $dbhost
 		}
 
 		// Make sure that the user has selected a sensible DBAL for the DBMS actually installed
-		switch ($dbms['DRIVER'])
+		switch ($dbms_details['DRIVER'])
 		{
 			case 'mysqli':
 				if (version_compare(mysqli_get_server_info($db->db_connect_id), '4.1.3', '<'))

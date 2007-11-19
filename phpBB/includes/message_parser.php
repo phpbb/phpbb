@@ -716,7 +716,7 @@ class bbcode_firstpass extends bbcode
 
 			if ($tok == ']')
 			{
-				if ($buffer == '/quote' && sizeof($close_tags) && substr($out, -1, 1) == '[')
+				if (strtolower($buffer) == '/quote' && sizeof($close_tags) && substr($out, -1, 1) == '[')
 				{
 					// we have found a closing tag
 					$out .= array_pop($close_tags) . ']';
@@ -814,7 +814,7 @@ class bbcode_firstpass extends bbcode
 				if ($tok == '[')
 				{
 					// Search the text for the next tok... if an ending quote comes first, then change tok to []
-					$pos1 = strpos($in, '[/quote');
+					$pos1 = stripos($in, '[/quote');
 					// If the token ] comes first, we change it to ]
 					$pos2 = strpos($in, ']');
 					// If the token [ comes first, we change it to [
