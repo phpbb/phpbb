@@ -24,6 +24,9 @@ if (!defined('IN_PHPBB'))
 * PHPBB_ADMIN_PATH
 */
 
+// QA-related
+// define('PHPBB_QA', 1);
+
 // User related
 define('ANONYMOUS', 1);
 
