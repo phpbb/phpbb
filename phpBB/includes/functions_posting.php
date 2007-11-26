@@ -1628,7 +1628,9 @@ function submit_post($mode, $subject, $username, $topic_type, &$poll, &$data, $u
 			// Display edit info if edit reason given or user is editing his post, which is not the last within the topic.
 			if ($data['post_edit_reason'] || (!$auth->acl_get('m_edit', $data['forum_id']) && ($post_mode == 'edit' || $post_mode == 'edit_first_post')))
 			{
-				$sql_data[POSTS_TABLE]['sql'] = array(
+				$data['post_edit_reason']		= truncate_string($data['post_edit_reason'], 255, false);
+				
+				$sql_data[POSTS_TABLE]['sql']	= array(
 					'post_edit_time'	=> $current_time,
 					'post_edit_reason'	=> $data['post_edit_reason'],
 					'post_edit_user'	=> (int) $data['post_edit_user'],
