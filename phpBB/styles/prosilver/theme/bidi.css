@@ -280,7 +280,7 @@
 .rtl li.header dl.icon dt {
 	/* Tweak for headers alignment when folder icon used */
 	padding-right: 0;
-	padding-left: 44px;
+	padding-left: 50px;
 }
 
 .rtl dl.icon dt {
