@@ -239,6 +239,7 @@ class acp_forums
 							// Now insert the data
 							$db->sql_multi_insert(ACL_USERS_TABLE, $users_sql_ary);
 							$db->sql_multi_insert(ACL_GROUPS_TABLE, $groups_sql_ary);
+							cache_moderators();
 						}
 
 						$auth->acl_clear_prefetch();

@@ -115,7 +115,7 @@ $lang = array_merge($lang, array(
 	'FIRST'			=> 'First',
 
 	'ICONS_ADD'				=> 'Add a new icon',
-	'ICON_NONE_ADDED'		=> 'No icons were added.',
+	'ICONS_NONE_ADDED'		=> 'No icons were added.',
 	'ICONS_ONE_ADDED'		=> 'The icon has been added successfully.',
 	'ICONS_ADDED'			=> 'The icons have been added successfully.',
 	'ICONS_CONFIG'			=> 'Icon configuration',

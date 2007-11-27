@@ -287,6 +287,7 @@ class acp_main
 
 						// Clear permissions
 						$auth->acl_clear_prefetch();
+						cache_moderators();
 
 						add_log('admin', 'LOG_PURGE_CACHE');
 					break;

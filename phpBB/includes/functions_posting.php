@@ -34,7 +34,7 @@ function generate_smilies($mode, $forum_id)
 			$result = $db->sql_query_limit($sql, 1);
 			$row = $db->sql_fetchrow($result);
 			$db->sql_freeresult($result);
-		
+
 			$user->setup('posting', (int) $row['forum_style']);
 		}
 		else
@@ -1629,7 +1629,7 @@ function submit_post($mode, $subject, $username, $topic_type, &$poll, &$data, $u
 			if ($data['post_edit_reason'] || (!$auth->acl_get('m_edit', $data['forum_id']) && ($post_mode == 'edit' || $post_mode == 'edit_first_post')))
 			{
 				$data['post_edit_reason']		= truncate_string($data['post_edit_reason'], 255, false);
-				
+
 				$sql_data[POSTS_TABLE]['sql']	= array(
 					'post_edit_time'	=> $current_time,
 					'post_edit_reason'	=> $data['post_edit_reason'],
