@@ -208,6 +208,12 @@ class bbcode_firstpass extends bbcode
 			return '[size=' . $stx . ']' . $in . '[/size]';
 		}
 
+		// Do not allow size=0
+		if ($stx <= 0)
+		{
+			return '[size=' . $stx . ']' . $in . '[/size]';
+		}
+
 		return '[size=' . $stx . ':' . $this->bbcode_uid . ']' . $in . '[/size:' . $this->bbcode_uid . ']';
 	}
 
