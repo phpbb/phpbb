@@ -54,6 +54,7 @@ class fulltext_mysql extends search_backend
 		if (function_exists('mb_ereg'))
 		{
 			$this->mbstring_regex = true;
+			mb_regex_encoding('UTF-8');
 		}
 
 		$error = false;
@@ -152,7 +153,6 @@ class fulltext_mysql extends search_backend
 		}
 		else if ($this->mbstring_regex)
 		{
-			mb_regex_encoding('UTF-8');
 			mb_ereg_search_init($split_keywords, '(?:[^\w*"()]|^)([+\-|]?(?:[\w*"()]+\'?)*[\w*"()])(?:[^\w*"()]|$)');
 
 			while (($word = mb_ereg_search_regs()))
@@ -285,7 +285,6 @@ class fulltext_mysql extends search_backend
 		}
 		else if ($this->mbstring_regex)
 		{
-			mb_regex_encoding('UTF-8');
 			mb_ereg_search_init($text, '(?:[^\w*]|^)([+\-|]?(?:[\w*]+\'?)*[\w*])(?:[^\w*]|$)');
 
 			$text = array();
