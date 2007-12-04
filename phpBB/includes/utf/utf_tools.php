@@ -1829,6 +1829,9 @@ function utf8_clean_string($text)
 	// Other control characters
 	$text = preg_replace('#(?:[\x00-\x1F\x7F]+|(?:\xC2[\x80-\x9F])+)#', '', $text);
 
+	// we need to reduce multiple spaces to a single one
+	$text = preg_replace('# {2,}#', ' ', $text);
+
 	// we can use trim here as all the other space characters should have been turned
 	// into normal ASCII spaces by now
 	return trim($text);
