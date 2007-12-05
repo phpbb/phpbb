@@ -8,7 +8,7 @@
 *
 */
 
-$updates_to_version = '3.0.RC8';
+$updates_to_version = '3.0.RC9-dev';
 
 // Return if we "just include it" to find out for which version the database update is responsuble for
 if (defined('IN_PHPBB') && defined('IN_INSTALL'))
@@ -460,6 +460,16 @@ $database_update_info = array(
 			),
 			USERS_TABLE			=> array(
 				'user_newpasswd'			=> array('VCHAR_UNI:40', ''),
+			),
+		),
+	),
+	// Changes from 3.0.RC8 to the next version
+	'3.0.RC8'			=> array(
+		// Change the following columns
+		'change_columns'		=> array(
+			USERS_TABLE			=> array(
+				'user_new_privmsg'			=> array('INT:4', 0),
+				'user_unread_privmsg'		=> array('INT:4', 0),
 			),
 		),
 	),
