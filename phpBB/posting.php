@@ -766,7 +766,7 @@ if ($submit || $preview || $refresh)
 	}
 
 	// check form
-	if (($submit || $preview) && !check_form_key('posting', false, '', false, 2))
+	if (($submit || $preview) && !check_form_key('posting'))
 	{
 		$error[] = $user->lang['FORM_INVALID'];
 	}
