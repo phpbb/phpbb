@@ -135,6 +135,8 @@ class acp_inactive
 							{
 								user_delete('retain', $user_id, $user_affected[$user_id]);
 							}
+
+							add_log('admin', 'LOG_INACTIVE_' . strtoupper($action), implode(', ', $user_affected));
 						}
 						else
 						{
@@ -148,8 +150,6 @@ class acp_inactive
 							confirm_box(false, $user->lang['CONFIRM_OPERATION'], build_hidden_fields($s_hidden_fields));
 						}
 					}
-
-					add_log('admin', 'LOG_INACTIVE_' . strtoupper($action), implode(', ', $user_affected));
 
 				break;
 
