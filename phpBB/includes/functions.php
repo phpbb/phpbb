@@ -2837,6 +2837,7 @@ function phpbb_checkdnsrr($host, $type = '')
 			return NULL;
 		}
 
+		// @exec('nslookup -retry=1 -timout=1 -type=' . escapeshellarg($type) . ' ' . escapeshellarg($host), $output);
 		@exec('nslookup -type=' . escapeshellarg($type) . ' ' . escapeshellarg($host), $output);
 
 		// If output is empty, the nslookup failed
