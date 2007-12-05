@@ -530,6 +530,7 @@ if ($save && $user->data['is_registered'] && $auth->acl_get('u_savedrafts') && (
 			$error[] = $user->lang['TOO_FEW_CHARS'];
 		}
 	}
+	//unset($subject, $message);
 
 	unset($subject, $message);
 }
@@ -568,6 +569,7 @@ $solved_captcha = false;
 
 if ($submit || $preview || $refresh)
 {
+
 	$post_data['topic_cur_post_id']	= request_var('topic_cur_post_id', 0);
 	$post_data['post_subject']		= utf8_normalize_nfc(request_var('subject', '', true));
 	$message_parser->message		= utf8_normalize_nfc(request_var('message', '', true));
@@ -764,7 +766,7 @@ if ($submit || $preview || $refresh)
 	}
 
 	// check form
-	if (!check_form_key('posting', false, '', false, 2))
+	if (($submit || $preview) && !check_form_key('posting', false, '', false, 2))
 	{
 		$error[] = $user->lang['FORM_INVALID'];
 	}
