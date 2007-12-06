@@ -588,7 +588,12 @@ class dbal
 
 			trigger_error($message, E_USER_ERROR);
 		}
-		
+
+		if ($this->transaction)
+		{
+			$this->sql_transaction('rollback');
+		}
+
 		return $error;
 	}
 

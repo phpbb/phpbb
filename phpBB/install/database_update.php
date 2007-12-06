@@ -1649,6 +1649,8 @@ $cache->purge();
 
 <?php
 
+garbage_collection();
+
 if (function_exists('exit_handler'))
 {
 	exit_handler();
