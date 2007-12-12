@@ -1232,7 +1232,7 @@ class install_update extends module
 
 		foreach ($this->update_info['files'] as $index => $file)
 		{
-			if (is_int($update_list['status']) && $index <= $update_list['status'])
+			if (is_int($update_list['status']) && $index < $update_list['status'])
 			{
 				continue;
 			}
