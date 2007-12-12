@@ -520,7 +520,7 @@ if ($save && $user->data['is_registered'] && $auth->acl_get('u_savedrafts') && (
 	}
 	else
 	{
-		if (!$subject || !utf_clean_string($subject))
+		if (!$subject || !utf8_clean_string($subject))
 		{
 			$error[] = $user->lang['EMPTY_SUBJECT'];
 		}
