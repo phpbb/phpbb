@@ -1060,9 +1060,11 @@ class acp_users
 					list($data['bday_day'], $data['bday_month'], $data['bday_year']) = explode('-', $user_row['user_birthday']);
 				}
 
-				$data['bday_day'] = request_var('bday_day', $data['bday_day']);
-				$data['bday_month'] = request_var('bday_month', $data['bday_month']);
-				$data['bday_year'] = request_var('bday_year', $data['bday_year']);
+				$data['bday_day']		= request_var('bday_day', $data['bday_day']);
+				$data['bday_month']		= request_var('bday_month', $data['bday_month']);
+				$data['bday_year']		= request_var('bday_year', $data['bday_year']);
+				$data['user_birthday']	= sprintf('%2d-%2d-%4d', $data['bday_day'], $data['bday_month'], $data['bday_year']);
+
 
 				if ($submit)
 				{
@@ -1085,6 +1087,7 @@ class acp_users
 						'bday_day'		=> array('num', true, 1, 31),
 						'bday_month'	=> array('num', true, 1, 12),
 						'bday_year'		=> array('num', true, 1901, gmdate('Y', time())),
+						'user_birthday'	=> array('date', true),
 					));
 
 					// validate custom profile fields
@@ -1111,7 +1114,7 @@ class acp_users
 							'user_from'		=> $data['location'],
 							'user_occ'		=> $data['occupation'],
 							'user_interests'=> $data['interests'],
-							'user_birthday'	=> sprintf('%2d-%2d-%4d', $data['bday_day'], $data['bday_month'], $data['bday_year']),
+							'user_birthday'	=> $data['user_birthday'],
 						);
 
 						$sql = 'UPDATE ' . USERS_TABLE . '

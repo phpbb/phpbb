@@ -1261,6 +1261,45 @@ function validate_num($num, $optional = false, $min = 0, $max = 1E99)
 }
 
 /**
+* Validate Date
+* @param String $string a date in the dd-mm-yyyy format
+* @return	boolean
+*/
+function validate_date($date_string, $optional = false)
+{
+	$date = explode('-', $date_string);
+	if ((empty($date) || sizeof($date) != 3) && $optional)
+	{
+		return false;
+	}
+	else if ($optional)
+	{
+		for ($field = 0; $field <= 1; $field++)
+		{
+			$date[$field] = (int) $date[$field];
+			if (empty($date[$field]))
+			{
+				$date[$field] = 1;
+			}
+		}
+		$date[2] = (int) $date[2];
+		// assume an arbitrary leap year
+		if (empty($date[2]))
+		{
+			$date[2] = 1980;
+		}
+	}
+	
+	if (sizeof($date) != 3 || !checkdate($date[1], $date[0], $date[2]))
+	{
+		return 'INVALID';
+	}
+
+	return false;
+}
+
+
+/**
 * Validate Match
 *
 * @return	boolean|string	Either false if validation succeeded or a string which will be used as the error message (with the variable name appended)
