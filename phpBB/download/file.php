@@ -68,6 +68,14 @@ if (isset($_GET['avatar']))
 		if ($last_load !== false && $last_load <= $stamp)
 		{
 			header('Not Modified', true, 304);
+			if (@php_sapi_name() == 'CGI') 
+			{
+				header('Status: 304 Not Modified', true, 304);
+			} 
+			else 
+			{
+				header('HTTP/1.0 304 Not Modified', true, 304);
+			}
 			// seems that we need those too ... browsers
 			header('Pragma: public');
 			header('Expires: ' . gmdate('D, d M Y H:i:s \G\M\T', time() + 31536000));
