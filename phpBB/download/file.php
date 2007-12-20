@@ -67,8 +67,7 @@ if (isset($_GET['avatar']))
 	{
 		if ($last_load !== false && $last_load <= $stamp)
 		{
-			header('Not Modified', true, 304);
-			if (@php_sapi_name() == 'CGI') 
+			if (@php_sapi_name() === 'CGI') 
 			{
 				header('Status: 304 Not Modified', true, 304);
 			} 
