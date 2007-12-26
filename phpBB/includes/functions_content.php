@@ -647,12 +647,21 @@ function make_clickable($text, $server_url = false, $class = 'postlink')
 function censor_text($text)
 {
 	static $censors;
-	global $cache;
 
+	// We moved the word censor checks in here because we call this function quite often - and then only need to do the check once
 	if (!isset($censors) || !is_array($censors))
 	{
-		// obtain_word_list is taking care of the users censor option and the board-wide option
-		$censors = $cache->obtain_word_list();
+		global $config, $user, $auth, $cache;
+
+		// We check here if the user is having viewing censors disabled (and also allowed to do so).
+		if (!$user->optionget('viewcensors') && $config['allow_nocensors'] && $auth->acl_get('u_chgcensors'))
+		{
+			$censors = array();
+		}
+		else
+		{
+			$censors = $cache->obtain_word_list();
+		}
 	}
 
 	if (sizeof($censors))
