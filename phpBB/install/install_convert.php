@@ -422,8 +422,7 @@ class install_convert extends module
 			}
 			else
 			{
-				$src_dbpasswd = htmlspecialchars_decode($src_dbpasswd);
-				$connect_test = connect_check_db(true, $error, $available_dbms[$src_dbms], $src_table_prefix, $src_dbhost, $src_dbuser, $src_dbpasswd, $src_dbname, $src_dbport, true, ($src_dbms == $dbms) ? false : true, false);
+				$connect_test = connect_check_db(true, $error, $available_dbms[$src_dbms], $src_table_prefix, $src_dbhost, $src_dbuser, htmlspecialchars_decode($src_dbpasswd), $src_dbname, $src_dbport, true, ($src_dbms == $dbms) ? false : true, false);
 			}
 
 			// The forum prefix of the old and the new forum can only be the same if two different databases are used.
@@ -443,7 +442,7 @@ class install_convert extends module
 				{
 					$sql_db = 'dbal_' . $src_dbms;
 					$src_db = new $sql_db();
-					$src_db->sql_connect($src_dbhost, $src_dbuser, $src_dbpasswd, $src_dbname, $src_dbport, false, true);
+					$src_db->sql_connect($src_dbhost, $src_dbuser, htmlspecialchars_decode($src_dbpasswd), $src_dbname, $src_dbport, false, true);
 					$same_db = false;
 				}
 				else
@@ -666,7 +665,7 @@ class install_convert extends module
 			}
 			$sql_db = 'dbal_' . $convert->src_dbms;
 			$src_db = new $sql_db();
-			$src_db->sql_connect($convert->src_dbhost, $convert->src_dbuser, $convert->src_dbpasswd, $convert->src_dbname, $convert->src_dbport, false, true);
+			$src_db->sql_connect($convert->src_dbhost, $convert->src_dbuser, htmlspecialchars_decode($convert->src_dbpasswd), $convert->src_dbname, $convert->src_dbport, false, true);
 			$same_db = false;
 		}
 		else

@@ -551,7 +551,7 @@ class install_install extends module
 			}
 			else
 			{
-				$connect_test = connect_check_db(true, $error, $available_dbms[$data['dbms']], $data['table_prefix'], $data['dbhost'], $data['dbuser'], $data['dbpasswd'], $data['dbname'], $data['dbport']);
+				$connect_test = connect_check_db(true, $error, $available_dbms[$data['dbms']], $data['table_prefix'], $data['dbhost'], $data['dbuser'], htmlspecialchars_decode($data['dbpasswd']), $data['dbname'], $data['dbport']);
 			}
 
 			$template->assign_block_vars('checks', array(
@@ -884,17 +884,26 @@ class install_install extends module
 		// Time to convert the data provided into a config file
 		$config_data = "<?php\n";
 		$config_data .= "// phpBB 3.0.x auto-generated configuration file\n// Do not change anything in this file!\n";
-		$config_data .= "\$dbms = '" . $available_dbms[$data['dbms']]['DRIVER'] . "';\n";
-		$config_data .= "\$dbhost = '{$data['dbhost']}';\n";
-		$config_data .= "\$dbport = '{$data['dbport']}';\n";
-		$config_data .= "\$dbname = '{$data['dbname']}';\n";
-		$config_data .= "\$dbuser = '{$data['dbuser']}';\n";
-		$config_data .= "\$dbpasswd = '{$data['dbpasswd']}';\n\n";
-		$config_data .= "\$table_prefix = '{$data['table_prefix']}';\n";
-//		$config_data .= "\$acm_type = '" . (($acm_type) ? $acm_type : 'file') . "';\n";
-		$config_data .= "\$acm_type = 'file';\n";
-		$config_data .= "\$load_extensions = '$load_extensions';\n\n";
-		$config_data .= "@define('PHPBB_INSTALLED', true);\n";
+
+		$config_data_array = array(
+			'dbms'			=> $available_dbms[$data['dbms']]['DRIVER'],
+			'dbhost'		=> $data['dbhost'],
+			'dbport'		=> $data['dbport'],
+			'dbname'		=> $data['dbname'],
+			'dbuser'		=> $data['dbuser'],
+			'dbpasswd'		=> htmlspecialchars_decode($data['dbpasswd']),
+			'table_prefix'	=> $data['table_prefix'],
+			'acm_type'		=> 'file',
+			'load_extensions'	=> $load_extensions,
+		);
+
+		foreach ($config_data_array as $key => $value)
+		{
+			$config_data .= "\${$key} = '" . str_replace("'", "\\'", str_replace('\\', '\\\\', $value)) . "';\n";
+		}
+		unset($config_data_array);
+
+		$config_data .= "\n@define('PHPBB_INSTALLED', true);\n";
 		$config_data .= "// @define('DEBUG', true);\n";
 		$config_data .= "// @define('DEBUG_EXTRA', true);\n";
 		$config_data .= '?' . '>'; // Done this to prevent highlighting editors getting confused!
@@ -1124,7 +1133,7 @@ class install_install extends module
 
 		// Instantiate the database
 		$db = new $sql_db();
-		$db->sql_connect($data['dbhost'], $data['dbuser'], $data['dbpasswd'], $data['dbname'], $data['dbport'], false, false);
+		$db->sql_connect($data['dbhost'], $data['dbuser'], htmlspecialchars_decode($data['dbpasswd']), $data['dbname'], $data['dbport'], false, false);
 
 		// NOTE: trigger_error does not work here.
 		$db->sql_return_on_error(true);
@@ -1408,7 +1417,7 @@ class install_install extends module
 
 		// Instantiate the database
 		$db = new $sql_db();
-		$db->sql_connect($data['dbhost'], $data['dbuser'], $data['dbpasswd'], $data['dbname'], $data['dbport'], false, false);
+		$db->sql_connect($data['dbhost'], $data['dbuser'], htmlspecialchars_decode($data['dbpasswd']), $data['dbname'], $data['dbport'], false, false);
 
 		// NOTE: trigger_error does not work here.
 		$db->sql_return_on_error(true);
@@ -1948,7 +1957,7 @@ class install_install extends module
 			'dbhost'		=> request_var('dbhost', ''),
 			'dbport'		=> request_var('dbport', ''),
 			'dbuser'		=> request_var('dbuser', ''),
-			'dbpasswd'		=> htmlspecialchars_decode(request_var('dbpasswd', '', true)),
+			'dbpasswd'		=> request_var('dbpasswd', '', true),
 			'dbname'		=> request_var('dbname', ''),
 			'table_prefix'	=> request_var('table_prefix', ''),
 			'default_lang'	=> basename(request_var('default_lang', '')),
