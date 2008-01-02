@@ -666,7 +666,7 @@ class custom_profile
 		}
 
 		$profile_row['s_year_options'] = '<option value="0"' . ((!$year) ? ' selected="selected"' : '') . '>--</option>';
-		for ($i = $now['year'] - 100; $i <= $now['year']; $i++)
+		for ($i = $now['year'] - 100; $i <= $now['year'] + 100; $i++)
 		{
 			$profile_row['s_year_options'] .= '<option value="' . $i . '"' . (($i == $year) ? ' selected="selected"' : '') . ">$i</option>";
 		}
