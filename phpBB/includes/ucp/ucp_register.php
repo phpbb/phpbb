@@ -103,7 +103,7 @@ class ucp_register
 			// If we change the language, we want to pass on some more possible parameter.
 			if ($change_lang)
 			{
-				// We do not include the password and not the captcha
+				// We do not include the password
 				$s_hidden_fields = array_merge($s_hidden_fields, array(
 					'username'			=> utf8_normalize_nfc(request_var('username', '', true)),
 					'email'				=> strtolower(request_var('email', '')),
