@@ -22,7 +22,7 @@ if (!defined('IN_PHPBB'))
 */
 class custom_profile
 {
-	public $profile_types = array(FIELD_INT => 'int', FIELD_STRING => 'string', FIELD_TEXT => 'text', FIELD_BOOL => 'bool', FIELD_DROPDOWN => 'dropdown', FIELD_DATE => 'date');
+	public static $profile_types = array(FIELD_INT => 'int', FIELD_STRING => 'string', FIELD_TEXT => 'text', FIELD_BOOL => 'bool', FIELD_DROPDOWN => 'dropdown', FIELD_DATE => 'date');
 	private $profile_cache = array();
 	private $options_lang = array();
 
@@ -453,7 +453,7 @@ class custom_profile
 		$value = $ident_ary['value'];
 		$field_type = $ident_ary['data']['field_type'];
 
-		switch (self::profile_types[$field_type])
+		switch (self::$profile_types[$field_type])
 		{
 			case 'int':
 				if ($value == '')
@@ -616,7 +616,7 @@ class custom_profile
 		global $template;
 
 		$profile_row['field_value'] = $this->get_var('int', $profile_row, $profile_row['field_default_value'], $preview);
-		$template->assign_block_vars(self::profile_types[$profile_row['field_type']], array_change_key_case($profile_row, CASE_UPPER));
+		$template->assign_block_vars(self::$profile_types[$profile_row['field_type']], array_change_key_case($profile_row, CASE_UPPER));
 	}
 
 	/**
@@ -675,7 +675,7 @@ class custom_profile
 		unset($now);
 		
 		$profile_row['field_value'] = 0;
-		$template->assign_block_vars(self::profile_types[$profile_row['field_type']], array_change_key_case($profile_row, CASE_UPPER));
+		$template->assign_block_vars(self::$profile_types[$profile_row['field_type']], array_change_key_case($profile_row, CASE_UPPER));
 	}
 
 	/**
@@ -689,7 +689,7 @@ class custom_profile
 		$value = $this->get_var('int', $profile_row, $profile_row['field_default_value'], $preview);
 
 		$profile_row['field_value'] = $value;
-		$template->assign_block_vars(self::profile_types[$profile_row['field_type']], array_change_key_case($profile_row, CASE_UPPER));
+		$template->assign_block_vars(self::$profile_types[$profile_row['field_type']], array_change_key_case($profile_row, CASE_UPPER));
 
 		if ($profile_row['field_length'] == 1)
 		{
@@ -718,7 +718,7 @@ class custom_profile
 		global $template;
 
 		$profile_row['field_value'] = $this->get_var('string', $profile_row, $profile_row['lang_default_value'], $preview);
-		$template->assign_block_vars(self::profile_types[$profile_row['field_type']], array_change_key_case($profile_row, CASE_UPPER));
+		$template->assign_block_vars(self::$profile_types[$profile_row['field_type']], array_change_key_case($profile_row, CASE_UPPER));
 	}
 
 	/**
@@ -735,7 +735,7 @@ class custom_profile
 		$profile_row['field_cols'] = $field_length[1];
 
 		$profile_row['field_value'] = $this->get_var('string', $profile_row, $profile_row['lang_default_value'], $preview);
-		$template->assign_block_vars(self::profile_types[$profile_row['field_type']], array_change_key_case($profile_row, CASE_UPPER));
+		$template->assign_block_vars(self::$profile_types[$profile_row['field_type']], array_change_key_case($profile_row, CASE_UPPER));
 	}
 
 	/**
@@ -754,7 +754,7 @@ class custom_profile
 		}
 
 		$profile_row['field_value'] = $value;
-		$template->assign_block_vars(self::profile_types[$profile_row['field_type']], array_change_key_case($profile_row, CASE_UPPER));
+		$template->assign_block_vars(self::$profile_types[$profile_row['field_type']], array_change_key_case($profile_row, CASE_UPPER));
 
 		foreach ($this->options_lang[$profile_row['field_id']][$profile_row['lang_id']] as $option_id => $option_value)
 		{
@@ -783,13 +783,13 @@ class custom_profile
 		);
 
 		// empty previously filled blockvars
-		foreach (self::profile_types as $field_case => $field_type)
+		foreach (self::$profile_types as $field_case => $field_type)
 		{
 			$template->destroy_block_vars($field_type);
 		}
 
 		// Assign template variables
-		$type_func = 'generate_' . self::profile_types[$profile_row['field_type']];
+		$type_func = 'generate_' . self::$profile_types[$profile_row['field_type']];
 		$this->$type_func($profile_row, $preview);
 
 		// Return templated data

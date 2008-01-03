@@ -729,7 +729,7 @@ class acp_profile
 							'S_FIELD_NO_VIEW'	=> ($cp->vars['field_no_view']) ? true : false,
 
 							'L_LANG_SPECIFIC'	=> sprintf($user->lang['LANG_SPECIFIC_OPTIONS'], $config['default_lang']),
-							'FIELD_TYPE'		=> $user->lang['FIELD_' . strtoupper(custom_profile::profile_types[$field_type])],
+							'FIELD_TYPE'		=> $user->lang['FIELD_' . strtoupper(custom_profile::$profile_types[$field_type])],
 							'FIELD_IDENT'		=> $cp->vars['field_ident'],
 							'LANG_NAME'			=> $cp->vars['lang_name'],
 							'LANG_EXPLAIN'		=> $cp->vars['lang_explain'])
@@ -742,7 +742,7 @@ class acp_profile
 								'S_TEXT'		=> ($field_type == FIELD_TEXT) ? true : false,
 								'S_STRING'		=> ($field_type == FIELD_STRING) ? true : false,
 
-								'L_DEFAULT_VALUE_EXPLAIN'	=> $user->lang[strtoupper(custom_profile::profile_types[$field_type]) . '_DEFAULT_VALUE_EXPLAIN'],
+								'L_DEFAULT_VALUE_EXPLAIN'	=> $user->lang[strtoupper(custom_profile::$profile_types[$field_type]) . '_DEFAULT_VALUE_EXPLAIN'],
 								'LANG_DEFAULT_VALUE'		=> $cp->vars['lang_default_value'])
 							);
 						}
@@ -769,7 +769,7 @@ class acp_profile
 								'S_BOOL'		=> ($field_type == FIELD_BOOL) ? true : false,
 								'S_DROPDOWN'	=> ($field_type == FIELD_DROPDOWN) ? true : false,
 
-								'L_LANG_OPTIONS_EXPLAIN'	=> $user->lang[strtoupper(custom_profile::profile_types[$field_type]) . '_ENTRIES_EXPLAIN'],
+								'L_LANG_OPTIONS_EXPLAIN'	=> $user->lang[strtoupper(custom_profile::$profile_types[$field_type]) . '_ENTRIES_EXPLAIN'],
 								'LANG_OPTIONS'				=> ($field_type == FIELD_DROPDOWN) ? implode("\n", $cp->vars['lang_options']) : '',
 								'FIRST_LANG_OPTION'			=> ($field_type == FIELD_BOOL) ? $cp->vars['lang_options'][0] : '',
 								'SECOND_LANG_OPTION'		=> ($field_type == FIELD_BOOL) ? $cp->vars['lang_options'][1] : '')
@@ -786,7 +786,7 @@ class acp_profile
 						);
 
 						// Build options based on profile type
-						$function = 'get_' . custom_profile::profile_types[$field_type] . '_options';
+						$function = 'get_' . custom_profile::$profile_types[$field_type] . '_options';
 						$options = $cp->$function();
 
 						foreach ($options as $num => $option_ary)
@@ -851,7 +851,7 @@ class acp_profile
 
 			$template->assign_block_vars('fields', array(
 				'FIELD_IDENT'		=> $row['field_ident'],
-				'FIELD_TYPE'		=> $user->lang['FIELD_' . strtoupper(custom_profile::profile_types[$row['field_type']])],
+				'FIELD_TYPE'		=> $user->lang['FIELD_' . strtoupper(custom_profile::$profile_types[$row['field_type']])],
 
 				'L_ACTIVATE_DEACTIVATE'		=> $user->lang[$active_lang],
 				'U_ACTIVATE_DEACTIVATE'		=> $this->u_action . "&amp;action=$active_value&amp;field_id=$id",
@@ -873,7 +873,7 @@ class acp_profile
 		}
 
 		$s_select_type = '';
-		foreach (custom_profile::profile_types as $key => $value)
+		foreach (custom_profile::$profile_types as $key => $value)
 		{
 			$s_select_type .= '<option value="' . $key . '">' . $user->lang['FIELD_' . strtoupper($value)] . '</option>';
 		}
