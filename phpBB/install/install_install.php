@@ -151,7 +151,7 @@ class install_install extends module
 
 			// We also give feedback on whether we're running in safe mode
 			$result = '<strong style="color:green">' . $lang['YES'];
-			if (@ini_get('safe_mode') || strtolower(@ini_get('safe_mode')) == 'on')
+			if (@ini_get('safe_mode') == '1' || strtolower(@ini_get('safe_mode')) == 'on')
 			{
 				$result .= ', ' . $lang['PHP_SAFE_MODE'];
 			}
