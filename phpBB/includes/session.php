@@ -1477,6 +1477,7 @@ class user extends session
 		$sql = 'SELECT image_name, image_filename, image_lang, image_height, image_width
 			FROM ' . STYLES_IMAGESET_DATA_TABLE . '
 			WHERE imageset_id = ' . $this->theme['imageset_id'] . "
+			AND image_filename <> '' 
 			AND image_lang IN ('" . $db->sql_escape($this->img_lang) . "', '')";
 		$result = $db->sql_query($sql, 3600);
 
@@ -1886,7 +1887,7 @@ class user extends session
 
 			default:
 				$use_width = ($width === false) ? $img_data['width'] : $width;
-
+				
 				return '<img src="' . $img_data['src'] . '"' . (($use_width) ? ' width="' . $use_width . '"' : '') . (($img_data['height']) ? ' height="' . $img_data['height'] . '"' : '') . ' alt="' . $alt . '" title="' . $alt . '" />';
 			break;
 		}
