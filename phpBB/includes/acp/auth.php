@@ -451,7 +451,7 @@ class auth_admin extends auth
 			foreach ($hold_ary as $forum_id => $forum_array)
 			{
 				$content_array = $categories = array();
-				this::build_permission_array($hold_ary[$forum_id], $content_array, $categories, array_keys($ug_names_ary));
+				self::build_permission_array($hold_ary[$forum_id], $content_array, $categories, array_keys($ug_names_ary));
 
 				$template->assign_block_vars($tpl_pmask, array(
 					'NAME'			=> ($forum_id == 0) ? $forum_names_ary[0] : $forum_names_ary[$forum_id]['forum_name'],
@@ -519,7 +519,7 @@ class auth_admin extends auth
 						'FORUM_ID'			=> $forum_id)
 					);
 
-					this::assign_cat_array($ug_array, $tpl_pmask . '.' . $tpl_fmask . '.' . $tpl_category, $tpl_mask, $ug_id, $forum_id, $show_trace, ($mode == 'view'));
+					self::assign_cat_array($ug_array, $tpl_pmask . '.' . $tpl_fmask . '.' . $tpl_category, $tpl_mask, $ug_id, $forum_id, $show_trace, ($mode == 'view'));
 
 					unset($content_array[$ug_id]);
 				}
@@ -537,7 +537,7 @@ class auth_admin extends auth
 				}
 
 				$content_array = $categories = array();
-				this::build_permission_array($hold_ary[$ug_id], $content_array, $categories, array_keys($forum_names_ary));
+				self::build_permission_array($hold_ary[$ug_id], $content_array, $categories, array_keys($forum_names_ary));
 
 				$template->assign_block_vars($tpl_pmask, array(
 					'NAME'			=> $ug_name,
@@ -606,7 +606,7 @@ class auth_admin extends auth
 						'FORUM_ID'			=> $forum_id)
 					);
 
-					this::assign_cat_array($forum_array, $tpl_pmask . '.' . $tpl_fmask . '.' . $tpl_category, $tpl_mask, $ug_id, $forum_id, $show_trace, ($mode == 'view'));
+					self::assign_cat_array($forum_array, $tpl_pmask . '.' . $tpl_fmask . '.' . $tpl_category, $tpl_mask, $ug_id, $forum_id, $show_trace, ($mode == 'view'));
 				}
 
 				unset($hold_ary[$ug_id], $ug_names_ary[$ug_id]);
