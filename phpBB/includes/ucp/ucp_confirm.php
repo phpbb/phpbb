@@ -71,8 +71,7 @@ class ucp_confirm
 			include($phpbb_root_path . 'includes/captcha/captcha_non_gd.' . $phpEx);
 		}
 
-		$captcha = new captcha();
-		$captcha->execute($row['code'], $row['seed']);
+		captcha::execute($row['code'], $row['seed']);
 		exit;
 	}
 }

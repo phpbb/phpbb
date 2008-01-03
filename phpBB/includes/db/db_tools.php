@@ -253,7 +253,7 @@ class phpbb_db_tools
 
 	/**
 	*/
-	function phpbb_db_tools(&$db)
+	function __construct(&$db)
 	{
 		$this->db = $db;
 

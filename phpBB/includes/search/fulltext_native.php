@@ -28,14 +28,14 @@ include_once($phpbb_root_path . 'includes/search/search.' . $phpEx);
 */
 class fulltext_native extends search_backend
 {
-	var $stats = array();
-	var $word_length = array();
-	var $search_query;
-	var $common_words = array();
+	private $stats = array();
+	public $word_length = array();
+	public $search_query;
+	public $common_words = array();
 
-	var $must_contain_ids = array();
-	var $must_not_contain_ids = array();
-	var $must_exclude_one_ids = array();
+	private $must_contain_ids = array();
+	private $must_not_contain_ids = array();
+	private $must_exclude_one_ids = array();
 
 	/**
 	* Initialises the fulltext_native search backend with min/max word length and makes sure the UTF-8 normalizer is loaded.
@@ -44,7 +44,7 @@ class fulltext_native extends search_backend
 	*
 	* @access	public
 	*/
-	function fulltext_native(&$error)
+	function __construct(&$error)
 	{
 		global $phpbb_root_path, $phpEx, $config;
 
@@ -79,7 +79,7 @@ class fulltext_native extends search_backend
 	*
 	* @access	public
 	*/
-	function split_keywords($keywords, $terms)
+	public function split_keywords($keywords, $terms)
 	{
 		global $db, $user;
 
@@ -402,7 +402,7 @@ class fulltext_native extends search_backend
 	*
 	* @access	public
 	*/
-	function keyword_search($type, &$fields, &$terms, &$sort_by_sql, &$sort_key, &$sort_dir, &$sort_days, &$ex_fid_ary, &$m_approve_fid_ary, &$topic_id, &$author_ary, &$id_ary, $start, $per_page)
+	public function keyword_search($type, &$fields, &$terms, &$sort_by_sql, &$sort_key, &$sort_dir, &$sort_days, &$ex_fid_ary, &$m_approve_fid_ary, &$topic_id, &$author_ary, &$id_ary, $start, $per_page)
 	{
 		global $config, $db;
 
@@ -430,7 +430,7 @@ class fulltext_native extends search_backend
 
 		// try reading the results from cache
 		$total_results = 0;
-		if ($this->obtain_ids($search_key, $total_results, $id_ary, $start, $per_page, $sort_dir) == SEARCH_RESULT_IN_CACHE)
+		if ($this->obtain_ids($search_key, $total_results, $id_ary, $start, $per_page, $sort_dir) == self::SEARCH_RESULT_IN_CACHE)
 		{
 			return $total_results;
 		}
@@ -761,7 +761,7 @@ class fulltext_native extends search_backend
 	*
 	* @access	public
 	*/
-	function author_search($type, $firstpost_only, &$sort_by_sql, &$sort_key, &$sort_dir, &$sort_days, &$ex_fid_ary, &$m_approve_fid_ary, &$topic_id, &$author_ary, &$id_ary, $start, $per_page)
+	public function author_search($type, $firstpost_only, &$sort_by_sql, &$sort_key, &$sort_dir, &$sort_days, &$ex_fid_ary, &$m_approve_fid_ary, &$topic_id, &$author_ary, &$id_ary, $start, $per_page)
 	{
 		global $config, $db;
 
@@ -788,7 +788,7 @@ class fulltext_native extends search_backend
 
 		// try reading the results from cache
 		$total_results = 0;
-		if ($this->obtain_ids($search_key, $total_results, $id_ary, $start, $per_page, $sort_dir) == SEARCH_RESULT_IN_CACHE)
+		if ($this->obtain_ids($search_key, $total_results, $id_ary, $start, $per_page, $sort_dir) == self::SEARCH_RESULT_IN_CACHE)
 		{
 			return $total_results;
 		}
@@ -973,7 +973,7 @@ class fulltext_native extends search_backend
 	*
 	* @access	private
 	*/
-	function split_message($text)
+	private function split_message($text)
 	{
 		global $phpbb_root_path, $phpEx, $user;
 
@@ -1052,7 +1052,7 @@ class fulltext_native extends search_backend
 	*
 	* @access	public
 	*/
-	function index($mode, $post_id, &$message, &$subject, $poster_id, $forum_id)
+	public function index($mode, $post_id, &$message, &$subject, $poster_id, $forum_id)
 	{
 		global $config, $db, $user;
 
@@ -1211,7 +1211,7 @@ class fulltext_native extends search_backend
 	/**
 	* Removes entries from the wordmatch table for the specified post_ids
 	*/
-	function index_remove($post_ids, $author_ids, $forum_ids)
+	public function index_remove($post_ids, $author_ids, $forum_ids)
 	{
 		global $db;
 
@@ -1271,7 +1271,7 @@ class fulltext_native extends search_backend
 	* Tidy up indexes: Tag 'common words' and remove
 	* words no longer referenced in the match table
 	*/
-	function tidy()
+	public function tidy()
 	{
 		global $db, $config;
 
@@ -1336,7 +1336,7 @@ class fulltext_native extends search_backend
 	/**
 	* Deletes all words from the index
 	*/
-	function delete_index($acp_module, $u_action)
+	public function delete_index($acp_module, $u_action)
 	{
 		global $db;
 
@@ -1360,7 +1360,7 @@ class fulltext_native extends search_backend
 	/**
 	* Returns true if both FULLTEXT indexes exist
 	*/
-	function index_created()
+	public function index_created()
 	{
 		if (!sizeof($this->stats))
 		{
@@ -1373,7 +1373,7 @@ class fulltext_native extends search_backend
 	/**
 	* Returns an associative array containing information about the indexes
 	*/
-	function index_stats()
+	public function index_stats()
 	{
 		global $user;
 
@@ -1387,7 +1387,7 @@ class fulltext_native extends search_backend
 			$user->lang['TOTAL_MATCHES']	=> $this->stats['total_matches']);
 	}
 
-	function get_stats()
+	private function get_stats()
 	{
 		global $db;
 
@@ -1414,23 +1414,15 @@ class fulltext_native extends search_backend
 	*
 	* @param	string	$text			Text to split, in UTF-8 (not normalized or sanitized)
 	* @param	string	$allowed_chars	String of special chars to allow
-	* @param	string	$encoding		Text encoding
 	* @return	string					Cleaned up text, only alphanumeric chars are left
 	*
 	* @todo normalizer::cleanup being able to be used?
 	*/
-	function cleanup($text, $allowed_chars = null, $encoding = 'utf-8')
+	private function cleanup($text, $allowed_chars = null)
 	{
 		global $phpbb_root_path, $phpEx;
 		static $conv = array(), $conv_loaded = array();
 		$words = $allow = array();
-
-		// Convert the text to UTF-8
-		$encoding = strtolower($encoding);
-		if ($encoding != 'utf-8')
-		{
-			$text = utf8_recode($text, $encoding);
-		}
 
 		$utf_len_mask = array(
 			"\xC0"	=>	2,
@@ -1649,7 +1641,7 @@ class fulltext_native extends search_backend
 	/**
 	* Returns a list of options for the ACP to display
 	*/
-	function acp()
+	public function acp()
 	{
 		global $user, $config;
 

@@ -26,7 +26,7 @@ class mcp_reports
 	var $p_master;
 	var $u_action;
 
-	function mcp_reports(&$p_master)
+	function __construct(&$p_master)
 	{
 		$this->p_master = &$p_master;
 	}
@@ -149,7 +149,7 @@ class mcp_reports
 
 				if ($post_info['post_attachment'] && $auth->acl_get('u_download') && $auth->acl_get('f_download', $post_info['forum_id']))
 				{
-					$extensions = $cache->obtain_attach_extensions($post_info['forum_id']);
+					$extensions = cache::obtain_attach_extensions($post_info['forum_id']);
 
 					$sql = 'SELECT *
 						FROM ' . ATTACHMENTS_TABLE . '

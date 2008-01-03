@@ -1354,88 +1354,38 @@ function validate_username($username, $allowed_username = false)
 
 	$mbstring = $pcre = false;
 
-	// generic UTF-8 character types supported?
-	if ((version_compare(PHP_VERSION, '5.1.0', '>=') || (version_compare(PHP_VERSION, '5.0.0-dev', '<=') && version_compare(PHP_VERSION, '4.4.0', '>='))) && @preg_match('/\p{L}/u', 'a') !== false)
-	{
-		$pcre = true;
-	}
-	else if (function_exists('mb_ereg_match'))
-	{
-		mb_regex_encoding('UTF-8');
-		$mbstring = true;
-	}
-
+	// generic UTF-8 character types supported
 	switch ($config['allow_name_chars'])
 	{
 		case 'USERNAME_CHARS_ANY':
-			$pcre = true;
 			$regex = '.+';
 		break;
 
 		case 'USERNAME_ALPHA_ONLY':
-			$pcre = true;
 			$regex = '[A-Za-z0-9]+';
 		break;
 
 		case 'USERNAME_ALPHA_SPACERS':
-			$pcre = true;
 			$regex = '[A-Za-z0-9-[\]_+ ]+';
 		break;
 
 		case 'USERNAME_LETTER_NUM':
-			if ($pcre)
-			{
-				$regex = '[\p{Lu}\p{Ll}\p{N}]+';
-			}
-			else if ($mbstring)
-			{
-				$regex = '[[:upper:][:lower:][:digit:]]+';
-			}
-			else
-			{
-				$pcre = true;
-				$regex = '[a-zA-Z0-9]+';
-			}
+			$regex = '[\p{Lu}\p{Ll}\p{N}]+';
 		break;
 
 		case 'USERNAME_LETTER_NUM_SPACERS':
-			if ($pcre)
-			{
-				$regex = '[-\]_+ [\p{Lu}\p{Ll}\p{N}]+';
-			}
-			else if ($mbstring)
-			{
-				$regex = '[-\]_+ [[:upper:][:lower:][:digit:]]+';
-			}
-			else
-			{
-				$pcre = true;
-				$regex = '[-\]_+ [a-zA-Z0-9]+';
-			}
+			$regex = '[-\]_+ [\p{Lu}\p{Ll}\p{N}]+';
 		break;
 
 		case 'USERNAME_ASCII':
 		default:
-			$pcre = true;
 			$regex = '[\x01-\x7F]+';
 		break;
 	}
 
-	if ($pcre)
+	if (!preg_match('#^' . $regex . '$#u', $username))
 	{
-		if (!preg_match('#^' . $regex . '$#u', $username))
-		{
-			return 'INVALID_CHARS';
-		}
-	}
-	else if ($mbstring)
-	{
-		$matches = array();
-		mb_ereg_search_init('^' . $username . '$', $regex, $matches);
-		if (!mb_ereg_search())
-		{
-			return 'INVALID_CHARS';
-		}
+		return 'INVALID_CHARS';
 	}
 
 	$sql = 'SELECT username
@@ -1462,7 +1412,7 @@ function validate_username($username, $allowed_username = false)
 		return 'USERNAME_TAKEN';
 	}
 
-	$bad_usernames = $cache->obtain_disallowed_usernames();
+	$bad_usernames = cache::obtain_disallowed_usernames();
 
 	foreach ($bad_usernames as $bad_username)
 	{
@@ -1503,37 +1453,12 @@ function validate_password($password)
 		return false;
 	}
 
-	$pcre = $mbstring = false;
-
-	// generic UTF-8 character types supported?
-	if ((version_compare(PHP_VERSION, '5.1.0', '>=') || (version_compare(PHP_VERSION, '5.0.0-dev', '<=') && version_compare(PHP_VERSION, '4.4.0', '>='))) && @preg_match('/\p{L}/u', 'a') !== false)
-	{
-		$upp = '\p{Lu}';
-		$low = '\p{Ll}';
-		$let = '\p{L}';
-		$num = '\p{N}';
-		$sym = '[^\p{Lu}\p{Ll}\p{N}]';
-		$pcre = true;
-	}
-	else if (function_exists('mb_ereg_match'))
-	{
-		mb_regex_encoding('UTF-8');
-		$upp = '[[:upper:]]';
-		$low = '[[:lower:]]';
-		$let = '[[:lower:][:upper:]]';
-		$num = '[[:digit:]]';
-		$sym = '[^[:upper:][:lower:][:digit:]]';
-		$mbstring = true;
-	}
-	else
-	{
-		$upp = '[A-Z]';
-		$low = '[a-z]';
-		$let = '[a-zA-Z]';
-		$num = '[0-9]';
-		$sym = '[^A-Za-z0-9]';
-		$pcre = true;
-	}
+	// generic UTF-8 character types supported
+	$upp = '\p{Lu}';
+	$low = '\p{Ll}';
+	$let = '\p{L}';
+	$num = '\p{N}';
+	$sym = '[^\p{Lu}\p{Ll}\p{N}]';
 
 	$chars = array();
 
@@ -1799,6 +1724,7 @@ function validate_jabber($jid)
 	$pos = 0;
 	$result = true;
 
+	// @todo: rewrite this!
 	while ($pos < strlen($username))
 	{
 		$len = $uni = 0;

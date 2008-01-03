@@ -112,8 +112,9 @@ function login_db(&$username, &$password)
 		}
 	}
 
+	// @todo: safe to remove?
 	// If the password convert flag is set we need to convert it
-	if ($row['user_pass_convert'])
+	/*if ($row['user_pass_convert'])
 	{
 		// in phpBB2 passwords were used exactly as they were sent, with addslashes applied
 		$password_old_format = isset($_REQUEST['password']) ? (string) $_REQUEST['password'] : '';
@@ -161,7 +162,7 @@ function login_db(&$username, &$password)
 				);
 			}
 		}
-	}
+	}*/
 
 	// Check password ...
 	if (!$row['user_pass_convert'] && phpbb_check_hash($password, $row['user_password']))

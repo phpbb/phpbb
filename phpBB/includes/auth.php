@@ -22,15 +22,15 @@ if (!defined('IN_PHPBB'))
 */
 class auth
 {
-	var $acl = array();
-	var $cache = array();
-	var $acl_options = array();
-	var $acl_forum_ids = false;
+	private $acl = array();
+	private $cache = array();
+	public $acl_options = array();
+	private $acl_forum_ids = false;
 
 	/**
 	* Init permissions
 	*/
-	function acl(&$userdata)
+	function acl(array &$userdata)
 	{
 		global $db, $cache;
 
@@ -100,7 +100,7 @@ class auth
 	* If a forum id is specified the local option will be combined with a global option if one exist.
 	* If a forum id is not specified, only the global option will be checked.
 	*/
-	function acl_get($opt, $f = 0)
+	public function acl_get($opt, $f = 0)
 	{
 		$negate = false;
 
@@ -110,6 +110,7 @@ class auth
 			$opt = substr($opt, 1);
 		}
 
+		// @todo: use the ref technique to reduce opcode generation
 		if (!isset($this->cache[$f][$opt]))
 		{
 			// We combine the global/local option with an OR because some options are global and local.
@@ -137,7 +138,7 @@ class auth
 		}
 
 		// Founder always has all global options set to true...
-		return ($negate) ? !$this->cache[$f][$opt] : $this->cache[$f][$opt];
+		return $negate xor $this->cache[$f][$opt];
 	}
 
 	/**
@@ -146,7 +147,7 @@ class auth
 	*
 	* @param bool $clean set to true if only values needs to be returned which are set/unset
 	*/
-	function acl_getf($opt, $clean = false)
+	public function acl_getf($opt, $clean = false)
 	{
 		$acl_f = array();
 		$negate = false;
@@ -196,14 +197,11 @@ class auth
 
 				if (!$clean)
 				{
-					$acl_f[$f][$opt] = ($negate) ? !$allowed : $allowed;
+					$acl_f[$f][$opt] = $negate xor $allowed;
 				}
-				else
+				else if ($negate xor $allowed)
 				{
-					if (($negate && !$allowed) || (!$negate && $allowed))
-					{
-						$acl_f[$f][$opt] = 1;
-					}
+					$acl_f[$f][$opt] = 1;
 				}
 			}
 		}
@@ -227,7 +225,7 @@ class auth
 	* If global option is checked it returns the global state (same as acl_get($opt))
 	* Local option has precedence...
 	*/
-	function acl_getf_global($opt)
+	public function acl_getf_global($opt)
 	{
 		if (is_array($opt))
 		{
@@ -271,7 +269,7 @@ class auth
 	/**
 	* Get permission settings (more than one)
 	*/
-	function acl_gets()
+	public function acl_gets()
 	{
 		$args = func_get_args();
 		$f = array_pop($args);
@@ -300,7 +298,7 @@ class auth
 	/**
 	* Get permission listing based on user_id/options/forum_ids
 	*/
-	function acl_get_list($user_id = false, $opts = false, $forum_id = false)
+	public function acl_get_list($user_id = false, $opts = false, $forum_id = false)
 	{
 		$hold_ary = $this->acl_raw_data($user_id, $opts, $forum_id);
 
@@ -325,7 +323,7 @@ class auth
 	/**
 	* Cache data to user_permissions row
 	*/
-	function acl_cache(&$userdata)
+	public function acl_cache(array &$userdata)
 	{
 		global $db;
 
@@ -403,7 +401,7 @@ class auth
 	/**
 	* Build bitstring from permission set
 	*/
-	function build_bitstring(&$hold_ary)
+	protected function build_bitstring(&$hold_ary)
 	{
 		$hold_str = '';
 
@@ -464,7 +462,7 @@ class auth
 	/**
 	* Clear one or all users cached permission settings
 	*/
-	function acl_clear_prefetch($user_id = false)
+	public function acl_clear_prefetch($user_id = false)
 	{
 		global $db;
 
@@ -487,8 +485,9 @@ class auth
 
 	/**
 	* Get assigned roles
+	* @todo: protected or public?
 	*/
-	function acl_role_data($user_type, $role_type, $ug_id = false, $forum_id = false)
+	public function acl_role_data($user_type, $role_type, $ug_id = false, $forum_id = false)
 	{
 		global $db;
 
@@ -520,8 +519,9 @@ class auth
 
 	/**
 	* Get raw acl data based on user/option/forum
+	* @todo: protected or public?
 	*/
-	function acl_raw_data($user_id = false, $opts = false, $forum_id = false)
+	public function acl_raw_data($user_id = false, $opts = false, $forum_id = false)
 	{
 		global $db;
 
@@ -632,6 +632,7 @@ class auth
 
 			while ($row = $db->sql_fetchrow($result))
 			{
+				// @todo: use the ref technique to reduce opcode generation
 				if (!isset($hold_ary[$row['user_id']][$row['forum_id']][$row['auth_option']]) || (isset($hold_ary[$row['user_id']][$row['forum_id']][$row['auth_option']]) && $hold_ary[$row['user_id']][$row['forum_id']][$row['auth_option']] != ACL_NEVER))
 				{
 					$setting = ($row['auth_role_id']) ? $row['role_auth_setting'] : $row['auth_setting'];
@@ -663,7 +664,7 @@ class auth
 	/**
 	* Get raw user based permission settings
 	*/
-	function acl_user_raw_data($user_id = false, $opts = false, $forum_id = false)
+	public function acl_user_raw_data($user_id = false, $opts = false, $forum_id = false)
 	{
 		global $db;
 
@@ -717,7 +718,7 @@ class auth
 	/**
 	* Get raw group based permission settings
 	*/
-	function acl_group_raw_data($group_id = false, $opts = false, $forum_id = false)
+	public function acl_group_raw_data($group_id = false, $opts = false, $forum_id = false)
 	{
 		global $db;
 
@@ -771,7 +772,7 @@ class auth
 	/**
 	* Authentication plug-ins is largely down to Sergey Kanareykin, our thanks to him.
 	*/
-	function login($username, $password, $autologin = false, $viewonline = 1, $admin = 0)
+	public function login($username, $password, $autologin = false, $viewonline = 1, $admin = 0)
 	{
 		global $config, $db, $user, $phpbb_root_path, $phpEx;
 
@@ -873,7 +874,7 @@ class auth
 	/**
 	* Fill auth_option statement for later querying based on the supplied options
 	*/
-	function build_auth_option_statement($key, $auth_options, &$sql_opts)
+	private function build_auth_option_statement($key, $auth_options, &$sql_opts)
 	{
 		global $db;
 

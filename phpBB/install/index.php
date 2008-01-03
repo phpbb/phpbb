@@ -22,9 +22,9 @@ $phpEx = substr(strrchr(__FILE__, '.'), 1);
 error_reporting(E_ALL ^ E_NOTICE);
 
 // @todo Review this test and see if we can find out what it is which prevents PHP 4.2.x from even displaying the page with requirements on it
-if (version_compare(PHP_VERSION, '4.3.3') < 0)
+if (version_compare(PHP_VERSION, '5.1.0') < 0)
 {
-	die('You are running an unsupported PHP version. Please upgrade to PHP 4.3.3 or higher before trying to install phpBB 3.0');
+	die('You are running an unsupported PHP version. Please upgrade to PHP 5.1.0 or higher before trying to install phpBB 3.0');
 }
 
 /*
@@ -238,7 +238,7 @@ set_error_handler(defined('PHPBB_MSG_HANDLER') ? PHPBB_MSG_HANDLER : 'msg_handle
 
 $user = new user();
 $auth = new auth();
-$cache = new cache();
+$cache = new acm();
 $template = new template();
 
 // Add own hook handler, if present. :o
@@ -247,7 +247,7 @@ if (file_exists($phpbb_root_path . 'includes/hooks/index.' . $phpEx))
 	require($phpbb_root_path . 'includes/hooks/index.' . $phpEx);
 	$phpbb_hook = new phpbb_hook(array('exit_handler', 'phpbb_user_session_handler', 'append_sid', array('template', 'display')));
 
-	foreach ($cache->obtain_hooks() as $hook)
+	foreach (cache::obtain_hooks() as $hook)
 	{
 		@include($phpbb_root_path . 'includes/hooks/' . $hook . '.' . $phpEx);
 	}

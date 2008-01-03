@@ -477,7 +477,7 @@ class ucp_register
 			if (!$change_lang || !$confirm_id)
 			{
 				$user->confirm_gc(CONFIRM_REG);
-					
+				
 				$sql = 'SELECT COUNT(session_id) AS attempts
 					FROM ' . CONFIRM_TABLE . "
 					WHERE session_id = '" . $db->sql_escape($user->session_id) . "'

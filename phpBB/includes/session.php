@@ -371,7 +371,7 @@ class session
 		* bot, act accordingly
 		*/
 		$bot = false;
-		$active_bots = $cache->obtain_bots();
+		$active_bots = cache::obtain_bots();
 
 		foreach ($active_bots as $row)
 		{
@@ -1403,7 +1403,7 @@ class user extends session
 		}
 
 		// Now parse the cfg file and cache it
-		$parsed_items = $cache->obtain_cfg_items($this->theme);
+		$parsed_items = cache::obtain_cfg_items($this->theme);
 
 		// We are only interested in the theme configuration for now
 		$parsed_items = $parsed_items['theme'];

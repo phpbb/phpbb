@@ -27,7 +27,7 @@ class auth_admin extends auth
 	/**
 	* Init auth settings
 	*/
-	function auth_admin()
+	function __construct()
 	{
 		global $db, $cache;
 
@@ -84,7 +84,7 @@ class auth_admin extends auth
 	* @param local|global $scope the scope defines the permission scope. If local, a forum_id is additionally required
 	* @param ACL_NEVER|ACL_NO|ACL_YES $acl_fill defines the mode those permissions not set are getting filled with
 	*/
-	function get_mask($mode, $user_id = false, $group_id = false, $forum_id = false, $auth_option = false, $scope = false, $acl_fill = ACL_NEVER)
+	public function get_mask($mode, $user_id = false, $group_id = false, $forum_id = false, $auth_option = false, $scope = false, $acl_fill = ACL_NEVER)
 	{
 		global $db, $user;
 
@@ -235,7 +235,7 @@ class auth_admin extends auth
 	* Get permission mask for roles
 	* This function only supports getting masks for one role
 	*/
-	function get_role_mask($role_id)
+	public function get_role_mask($role_id)
 	{
 		global $db;
 
@@ -273,7 +273,7 @@ class auth_admin extends auth
 	/**
 	* Display permission mask (assign to template)
 	*/
-	function display_mask($mode, $permission_type, &$hold_ary, $user_mode = 'user', $local = false, $group_display = true)
+	public function display_mask($mode, $permission_type, array $hold_ary, $user_mode = 'user', $local = false, $group_display = true)
 	{
 		global $template, $user, $db, $phpbb_root_path, $phpEx;
 
@@ -451,7 +451,7 @@ class auth_admin extends auth
 			foreach ($hold_ary as $forum_id => $forum_array)
 			{
 				$content_array = $categories = array();
-				$this->build_permission_array($hold_ary[$forum_id], $content_array, $categories, array_keys($ug_names_ary));
+				this::build_permission_array($hold_ary[$forum_id], $content_array, $categories, array_keys($ug_names_ary));
 
 				$template->assign_block_vars($tpl_pmask, array(
 					'NAME'			=> ($forum_id == 0) ? $forum_names_ary[0] : $forum_names_ary[$forum_id]['forum_name'],
@@ -519,7 +519,7 @@ class auth_admin extends auth
 						'FORUM_ID'			=> $forum_id)
 					);
 
-					$this->assign_cat_array($ug_array, $tpl_pmask . '.' . $tpl_fmask . '.' . $tpl_category, $tpl_mask, $ug_id, $forum_id, $show_trace, ($mode == 'view'));
+					this::assign_cat_array($ug_array, $tpl_pmask . '.' . $tpl_fmask . '.' . $tpl_category, $tpl_mask, $ug_id, $forum_id, $show_trace, ($mode == 'view'));
 
 					unset($content_array[$ug_id]);
 				}
@@ -537,7 +537,7 @@ class auth_admin extends auth
 				}
 
 				$content_array = $categories = array();
-				$this->build_permission_array($hold_ary[$ug_id], $content_array, $categories, array_keys($forum_names_ary));
+				this::build_permission_array($hold_ary[$ug_id], $content_array, $categories, array_keys($forum_names_ary));
 
 				$template->assign_block_vars($tpl_pmask, array(
 					'NAME'			=> $ug_name,
@@ -606,7 +606,7 @@ class auth_admin extends auth
 						'FORUM_ID'			=> $forum_id)
 					);
 
-					$this->assign_cat_array($forum_array, $tpl_pmask . '.' . $tpl_fmask . '.' . $tpl_category, $tpl_mask, $ug_id, $forum_id, $show_trace, ($mode == 'view'));
+					this::assign_cat_array($forum_array, $tpl_pmask . '.' . $tpl_fmask . '.' . $tpl_category, $tpl_mask, $ug_id, $forum_id, $show_trace, ($mode == 'view'));
 				}
 
 				unset($hold_ary[$ug_id], $ug_names_ary[$ug_id]);
@@ -617,7 +617,7 @@ class auth_admin extends auth
 	/**
 	* Display permission mask for roles
 	*/
-	function display_role_mask(&$hold_ary)
+	public function display_role_mask(array $hold_ary)
 	{
 		global $db, $template, $user, $phpbb_root_path, $phpbb_admin_path, $phpEx;
 
@@ -698,14 +698,9 @@ class auth_admin extends auth
 	*	'global'	=> array('optionA', 'optionB', ...)
 	* );
 	*/
-	function acl_add_option($options)
+	public function acl_add_option(array $options)
 	{
 		global $db, $cache;
-
-		if (!is_array($options))
-		{
-			return false;
-		}
 
 		$cur_options = array();
 
@@ -784,7 +779,7 @@ class auth_admin extends auth
 	/**
 	* Set a user or group ACL record
 	*/
-	function acl_set($ug_type, $forum_id, $ug_id, $auth, $role_id = 0, $clear_prefetch = true)
+	public function acl_set($ug_type, $forum_id, $ug_id, $auth, $role_id = 0, $clear_prefetch = true)
 	{
 		global $db;
 
@@ -917,7 +912,7 @@ class auth_admin extends auth
 	/**
 	* Set a role-specific ACL record
 	*/
-	function acl_set_role($role_id, $auth)
+	public function acl_set_role($role_id, $auth)
 	{
 		global $db;
 
@@ -980,7 +975,7 @@ class auth_admin extends auth
 	/**
 	* Remove local permission
 	*/
-	function acl_delete($mode, $ug_id = false, $forum_id = false, $permission_type = false)
+	public function acl_delete($mode, $ug_id = false, $forum_id = false, $permission_type = false)
 	{
 		global $db;
 
@@ -1088,7 +1083,7 @@ class auth_admin extends auth
 	* Assign category to template
 	* used by display_mask()
 	*/
-	function assign_cat_array(&$category_array, $tpl_cat, $tpl_mask, $ug_id, $forum_id, $show_trace = false, $s_view)
+	private static function assign_cat_array(array $category_array, $tpl_cat, $tpl_mask, $ug_id, $forum_id, $show_trace = false, $s_view)
 	{
 		global $template, $user, $phpbb_admin_path, $phpEx;
 
@@ -1164,7 +1159,7 @@ class auth_admin extends auth
 	* Building content array from permission rows with explicit key ordering
 	* used by display_mask()
 	*/
-	function build_permission_array(&$permission_row, &$content_array, &$categories, $key_sort_array)
+	public static function build_permission_array(array $permission_row, array &$content_array, array &$categories, array $key_sort_array)
 	{
 		global $user;
 
@@ -1229,7 +1224,7 @@ class auth_admin extends auth
 	* "more" permissions by this.
 	* Admin permissions will not be copied.
 	*/
-	function ghost_permissions($from_user_id, $to_user_id)
+	public function ghost_permissions($from_user_id, $to_user_id)
 	{
 		global $db;
 

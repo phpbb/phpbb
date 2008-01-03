@@ -362,7 +362,7 @@ function connect_check_db($error_connect, &$error, $dbms_details, $table_prefix,
 
 			case 'firebird':
 				// check the version of FB, use some hackery if we can't get access to the server info
-				if ($db->service_handle !== false && function_exists('ibase_server_info'))
+				if ($db->service_handle !== false && strtolower($dbuser) == 'sysdba')
 				{
 					$val = @ibase_server_info($db->service_handle, IBASE_SVC_SERVER_VERSION);
 					preg_match('#V([\d.]+)#', $val, $match);

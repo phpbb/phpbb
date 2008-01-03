@@ -68,7 +68,7 @@ class convert
 
 	var $p_master;
 
-	function convert(&$p_master)
+	function __construct(&$p_master)
 	{
 		$this->p_master = &$p_master;
 	}

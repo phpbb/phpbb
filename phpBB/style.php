@@ -60,7 +60,7 @@ if ($id)
 	require($phpbb_root_path . 'includes/constants.' . $phpEx);
 
 	$db = new $sql_db();
-	$cache = new cache();
+	$cache = new acm();
 
 	// Connect to DB
 	if (!@$db->sql_connect($dbhost, $dbuser, $dbpasswd, $dbname, $dbport, false, false))
@@ -69,7 +69,7 @@ if ($id)
 	}
 	unset($dbpasswd);
 
-	$config = $cache->obtain_config();
+	$config = cache::obtain_config();
 	$user = false;
 
 	if ($sid)

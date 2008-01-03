@@ -23,25 +23,15 @@ if (!defined('IN_PHPBB'))
 */
 class captcha
 {
-	var $filtered_pngs;
-	var $width = 320;
-	var $height = 50;
-
-	/**
-	* Define filtered pngs on init
-	*/
-	function captcha()
-	{
-		// If we can we will generate a single filtered png, we avoid nastiness via emulation of some Zlib stuff
-		$this->define_filtered_pngs();
-	}
+	const width = 320;
+	const height = 50;
 
 	/**
 	* Create the image containing $code with a seed of $seed
 	*/
-	function execute($code, $seed)
+	public static function execute($code, $seed)
 	{
-		$img_height = $this->height - 10;
+		$img_height = self::height - 10;
 		$img_width = 0;
 
 		mt_srand($seed);
@@ -49,27 +39,30 @@ class captcha
 		$char_widths = $hold_chars = array();
 		$code_len = strlen($code);
 
+		// If we can we will generate a single filtered png, we avoid nastiness via emulation of some Zlib stuff
+		$filtered_pngs = self::define_filtered_pngs();
+
 		for ($i = 0; $i < $code_len; $i++)
 		{
 			$char = $code[$i];
 
 			$width = mt_rand(0, 4);
-			$raw_width = $this->filtered_pngs[$char]['width'];
+			$raw_width = $filtered_pngs[$char]['width'];
 			$char_widths[$i] = $width;
 			$img_width += $raw_width - $width;
 
 			// Split the char into chunks of $raw_width + 1 length
 			if (empty($hold_chars[$char]))
 			{
-				$hold_chars[$char] = str_split(base64_decode($this->filtered_pngs[$char]['data']), $raw_width + 1);
+				$hold_chars[$char] = str_split(base64_decode($filtered_pngs[$char]['data']), $raw_width + 1);
 			}
 		}
 
-		$offset_x = mt_rand(0, $this->width - $img_width);
-		$offset_y = mt_rand(0, $this->height - $img_height);
+		$offset_x = mt_rand(0, self::width - $img_width);
+		$offset_y = mt_rand(0, self::height - $img_height);
 
 		$image = '';
-		for ($i = 0; $i < $this->height; $i++)
+		for ($i = 0; $i < self::height; $i++)
 		{
 			$image .= chr(0);
 
@@ -82,10 +75,10 @@ class captcha
 
 				for ($j = 0; $j < $code_len; $j++)
 				{
-					$image .= $this->randomise(substr($hold_chars[$code{$j}][$i - $offset_y - 1], 1), $char_widths[$j]);
+					$image .= self::randomise(substr($hold_chars[$code{$j}][$i - $offset_y - 1], 1), $char_widths[$j]);
 				}
 
-				for ($j = $offset_x + $img_width; $j < $this->width; $j++)
+				for ($j = $offset_x + $img_width; $j < self::width; $j++)
 				{
 					$image .= chr(mt_rand(140, 255));
 				}
@@ -100,13 +93,12 @@ class captcha
 		}
 		unset($hold_chars);
 
-		$image = $this->create_png($image, $this->width, $this->height);
+		$image = self::create_png($image, $this->width, $this->height);
 
 		// Output image
 		header('Content-Type: image/png');
 		header('Cache-control: no-cache, no-store');
 		echo $image;
-		exit;
 	}
 
 	/**
@@ -114,14 +106,14 @@ class captcha
 	* certain limits so as to keep it readable. It also varies the image
 	* width a little
 	*/
-	function randomise($scanline, $width)
+	private static function randomise($scanline, $width)
 	{
 		$new_line = '';
 
-		$end = strlen($scanline) - ceil($width/2);
-		for ($i = floor($width/2); $i < $end; $i++)
+		$end = strlen($scanline) - ceil($width / 2);
+		for ($i = $width >> 1; $i < $end; $i++)
 		{
-			$pixel = ord($scanline{$i});
+			$pixel = ord($scanline[$i]);
 
 			if ($pixel < 190)
 			{
@@ -144,7 +136,7 @@ class captcha
 	* This creates a chunk of the given type, with the given data
 	* of the given length adding the relevant crc
 	*/
-	function png_chunk($length, $type, $data)
+	private static function png_chunk($length, $type, $data)
 	{
 		$raw = $type . $data;
 
@@ -165,7 +157,7 @@ class captcha
 		// IHDR
 		$raw = pack('N2', $width, $height);
 		$raw .= pack('C5', 8, 0, 0, 0, 0);
-		$image .= $this->png_chunk(13, 'IHDR', $raw);
+		$image .= self::png_chunk(13, 'IHDR', $raw);
 
 		// IDAT
 		if (@extension_loaded('zlib'))
@@ -226,10 +218,10 @@ class captcha
 		}
 
 		// IDAT
-		$image .= $this->png_chunk($length, 'IDAT', $raw_image);
+		$image .= self::png_chunk($length, 'IDAT', $raw_image);
 
 		// IEND
-		$image .= $this->png_chunk(0, 'IEND', '');
+		$image .= self::png_chunk(0, 'IEND', '');
 
 		return $image;
 	}
@@ -238,7 +230,7 @@ class captcha
 	* png image data
 	* Each 'data' element is base64_encoded uncompressed IDAT
 	*/
-	function define_filtered_pngs()
+	private static function define_filtered_pngs()
 	{
 		$this->filtered_pngs = array(
 			'0' => array(

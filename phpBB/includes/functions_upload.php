@@ -48,7 +48,7 @@ class filespec
 	* File Class
 	* @access private
 	*/
-	function filespec($upload_ary, $upload_namespace)
+	function __construct($upload_ary, $upload_namespace)
 	{
 		if (!isset($upload_ary))
 		{
@@ -446,7 +446,7 @@ class fileupload
 	* @param int $max_height Maximum image height (only checked for images)
 	*
 	*/
-	function fileupload($error_prefix = '', $allowed_extensions = false, $max_filesize = false, $min_width = false, $min_height = false, $max_width = false, $max_height = false)
+	function __construct($error_prefix = '', $allowed_extensions = false, $max_filesize = false, $min_width = false, $min_height = false, $max_width = false, $max_height = false)
 	{
 		$this->set_allowed_extensions($allowed_extensions);
 		$this->set_max_filesize($max_filesize);

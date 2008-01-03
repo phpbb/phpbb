@@ -22,12 +22,12 @@ if (!defined('IN_PHPBB'))
 */
 class compress
 {
-	var $fp = 0;
+	protected $fp = 0;
 
 	/**
 	* Add file to archive
 	*/
-	function add_file($src, $src_rm_prefix = '', $src_add_prefix = '', $skip_files = '')
+	public function add_file($src, $src_rm_prefix = '', $src_add_prefix = '', $skip_files = '')
 	{
 		global $phpbb_root_path;
 
@@ -87,7 +87,7 @@ class compress
 	/**
 	* Add custom file (the filepath will not be adjusted)
 	*/
-	function add_custom_file($src, $filename)
+	public function add_custom_file($src, $filename)
 	{
 		$this->data($filename, file_get_contents($src), false, stat($src));
 		return true;
@@ -96,7 +96,7 @@ class compress
 	/**
 	* Add file data
 	*/
-	function add_data($src, $name)
+	public function add_data($src, $name)
 	{
 		$stat = array();
 		$stat[2] = 436; //384
@@ -110,7 +110,7 @@ class compress
 	/**
 	* Return available methods
 	*/
-	function methods()
+	public static function methods()
 	{
 		$methods = array('.tar');
 		$available_methods = array('.tar.gz' => 'zlib', '.tar.bz2' => 'bz2', '.zip' => 'zlib');
@@ -143,17 +143,17 @@ class compress
 */
 class compress_zip extends compress
 {
-	var $datasec = array();
-	var $ctrl_dir = array();
-	var $eof_cdh = "\x50\x4b\x05\x06\x00\x00\x00\x00";
+	private $datasec = array();
+	private $ctrl_dir = array();
+	const eof_cdh = "\x50\x4b\x05\x06\x00\x00\x00\x00";
 
-	var $old_offset = 0;
-	var $datasec_len = 0;
+	private $old_offset = 0;
+	private $datasec_len = 0;
 
 	/**
 	* Constructor
 	*/
-	function compress_zip($mode, $file)
+	function __construct($mode, $file)
 	{
 		return $this->fp = @fopen($file, $mode . 'b');
 	}
@@ -161,7 +161,7 @@ class compress_zip extends compress
 	/**
 	* Convert unix to dos time
 	*/
-	function unix_to_dos_time($time)
+	private static function unix_to_dos_time($time)
 	{
 		$timearray = (!$time) ? getdate() : getdate($time);
 
@@ -178,7 +178,7 @@ class compress_zip extends compress
 	/**
 	* Extract archive
 	*/
-	function extract($dst)
+	public function extract($dst)
 	{		
 		// Loop the file, looking for files and folders
 		$dd_try = false;
@@ -313,7 +313,7 @@ class compress_zip extends compress
 	/**
 	* Close archive
 	*/
-	function close()
+	public function close()
 	{
 		// Write out central file directory and footer ... if it exists
 		if (sizeof($this->ctrl_dir))
@@ -326,11 +326,11 @@ class compress_zip extends compress
 	/**
 	* Create the structures ... note we assume version made by is MSDOS
 	*/
-	function data($name, $data, $is_dir = false, $stat)
+	protected function data($name, $data, $is_dir = false, $stat)
 	{
 		$name = str_replace('\\', '/', $name);
 
-		$hexdtime = pack('V', $this->unix_to_dos_time($stat[9]));
+		$hexdtime = pack('V', self::unix_to_dos_time($stat[9]));
 
 		if ($is_dir)
 		{
@@ -412,11 +412,11 @@ class compress_zip extends compress
 	/**
 	* file
 	*/
-	function file()
+	private function file()
 	{
 		$ctrldir = implode('', $this->ctrl_dir);
 
-		return $ctrldir . $this->eof_cdh .
+		return $ctrldir . self::eof_cdh .
 			pack('v', sizeof($this->ctrl_dir)) .	// total # of entries "on this disk"
 			pack('v', sizeof($this->ctrl_dir)) .	// total # of entries overall
 			pack('V', strlen($ctrldir)) .			// size of central dir
@@ -427,7 +427,7 @@ class compress_zip extends compress
 	/**
 	* Download archive
 	*/
-	function download($filename, $download_name = false)
+	public function download($filename, $download_name = false)
 	{
 		global $phpbb_root_path;
 
@@ -462,17 +462,17 @@ class compress_zip extends compress
 */
 class compress_tar extends compress
 {
-	var $isgz = false;
-	var $isbz = false;
-	var $filename = '';
-	var $mode = '';
-	var $type = '';
-	var $wrote = false;
+	private $isgz = false;
+	private $isbz = false;
+	private $filename = '';
+	private $mode = '';
+	private $type = '';
+	private $wrote = false;
 
 	/**
 	* Constructor
 	*/
-	function compress_tar($mode, $file, $type = '')
+	function __construct($mode, $file, $type = '')
 	{
 		$type = (!$type) ? $file : $type;
 		$this->isgz = (strpos($type, '.tar.gz') !== false || strpos($type, '.tgz') !== false) ? true : false;
@@ -487,7 +487,7 @@ class compress_tar extends compress
 	/**
 	* Extract archive
 	*/
-	function extract($dst)
+	public function extract($dst)
 	{
 		$fzread = ($this->isbz && function_exists('bzread')) ? 'bzread' : (($this->isgz && @extension_loaded('zlib')) ? 'gzread' : 'fread');
 
@@ -549,7 +549,7 @@ class compress_tar extends compress
 	/**
 	* Close archive
 	*/
-	function close()
+	public function close()
 	{
 		$fzclose = ($this->isbz && function_exists('bzclose')) ? 'bzclose' : (($this->isgz && @extension_loaded('zlib')) ? 'gzclose' : 'fclose');
 
@@ -567,7 +567,7 @@ class compress_tar extends compress
 	/**
 	* Create the structures
 	*/
-	function data($name, $data, $is_dir = false, $stat)
+	protected function data($name, $data, $is_dir = false, $stat)
 	{
 		$this->wrote = true;
 		$fzwrite = 	($this->isbz && function_exists('bzwrite')) ? 'bzwrite' : (($this->isgz && @extension_loaded('zlib')) ? 'gzwrite' : 'fwrite');
@@ -613,7 +613,7 @@ class compress_tar extends compress
 	/**
 	* Open archive
 	*/
-	function open()
+	private function open()
 	{
 		$fzopen = ($this->isbz && function_exists('bzopen')) ? 'bzopen' : (($this->isgz && @extension_loaded('zlib')) ? 'gzopen' : 'fopen');
 		$this->fp = @$fzopen($this->file, $this->mode . (($fzopen == 'bzopen') ? '' : 'b') . (($fzopen == 'gzopen') ? '9' : ''));
@@ -627,7 +627,7 @@ class compress_tar extends compress
 	/**
 	* Download archive
 	*/
-	function download($filename, $download_name = false)
+	public function download($filename, $download_name = false)
 	{
 		global $phpbb_root_path;
 

@@ -36,7 +36,7 @@ class transfer
 	/**
 	* Constructor - init some basic values
 	*/
-	function transfer()
+	function __construct()
 	{
 		global $phpbb_root_path;
 
@@ -50,7 +50,7 @@ class transfer
 	/**
 	* Write file to location
 	*/
-	function write_file($destination_file = '', $contents = '')
+	public function write_file($destination_file = '', $contents = '')
 	{
 		global $phpbb_root_path;
 
@@ -86,7 +86,7 @@ class transfer
 	/**
 	* Moving file into location. If the destination file already exists it gets overwritten
 	*/
-	function overwrite_file($source_file, $destination_file)
+	public function overwrite_file($source_file, $destination_file)
 	{
 		/**
 		* @todo generally think about overwriting files in another way, by creating a temporary file and then renaming it
@@ -102,7 +102,7 @@ class transfer
 	/**
 	* Create directory structure
 	*/
-	function make_dir($dir)
+	public function make_dir($dir)
 	{
 		global $phpbb_root_path;
 
@@ -142,7 +142,7 @@ class transfer
 	/**
 	* Copy file from source location to destination location
 	*/
-	function copy_file($from_loc, $to_loc)
+	public function copy_file($from_loc, $to_loc)
 	{
 		global $phpbb_root_path;
 
@@ -162,7 +162,7 @@ class transfer
 	/**
 	* Remove file
 	*/
-	function delete_file($file)
+	public function delete_file($file)
 	{
 		global $phpbb_root_path;
 
@@ -175,7 +175,7 @@ class transfer
 	* Remove directory
 	* @todo remove child directories?
 	*/
-	function remove_dir($dir)
+	public function remove_dir($dir)
 	{
 		global $phpbb_root_path;
 
@@ -187,7 +187,7 @@ class transfer
 	/**
 	* Rename a file or folder
 	*/
-	function rename($old_handle, $new_handle)
+	public function rename($old_handle, $new_handle)
 	{
 		global $phpbb_root_path;
 
@@ -199,7 +199,7 @@ class transfer
 	/**
 	* Check if a specified file exist...
 	*/
-	function file_exists($directory, $filename)
+	public function file_exists($directory, $filename)
 	{
 		global $phpbb_root_path;
 
@@ -219,7 +219,7 @@ class transfer
 	/**
 	* Open session
 	*/
-	function open_session()
+	public function open_session()
 	{
 		return $this->_init();
 	}
@@ -227,7 +227,7 @@ class transfer
 	/**
 	* Close current session
 	*/
-	function close_session()
+	public function close_session()
 	{
 		return $this->_close();
 	}
@@ -235,7 +235,7 @@ class transfer
 	/**
 	* Determine methods able to be used
 	*/
-	function methods()
+	public static function methods()
 	{
 		$methods = array();
 		$disabled_functions = explode(',', @ini_get('disable_functions'));
@@ -263,7 +263,7 @@ class ftp extends transfer
 	/**
 	* Standard parameters for FTP session
 	*/
-	function ftp($host, $username, $password, $root_path, $port = 21, $timeout = 10)
+	function __construct($host, $username, $password, $root_path, $port = 21, $timeout = 10)
 	{
 		$this->host			= $host;
 		$this->port			= $port;
@@ -280,7 +280,7 @@ class ftp extends transfer
 		}
 
 		// Init some needed values
-		transfer::transfer();
+		parent::__construct();
 
 		return;
 	}
@@ -288,7 +288,7 @@ class ftp extends transfer
 	/**
 	* Requests data
 	*/
-	function data()
+	private function data()
 	{
 		global $user;
 
@@ -306,7 +306,7 @@ class ftp extends transfer
 	* Init FTP Session
 	* @access private
 	*/
-	function _init()
+	private function _init()
 	{
 		// connect to the server
 		$this->connection = @ftp_connect($this->host, $this->port, $this->timeout);
@@ -338,7 +338,7 @@ class ftp extends transfer
 	* Create Directory (MKDIR)
 	* @access private
 	*/
-	function _mkdir($dir)
+	private function _mkdir($dir)
 	{
 		return @ftp_mkdir($this->connection, $dir);
 	}
@@ -347,7 +347,7 @@ class ftp extends transfer
 	* Remove directory (RMDIR)
 	* @access private
 	*/
-	function _rmdir($dir)
+	private function _rmdir($dir)
 	{
 		return @ftp_rmdir($this->connection, $dir);
 	}
@@ -356,7 +356,7 @@ class ftp extends transfer
 	* Rename file
 	* @access private
 	*/
-	function _rename($old_handle, $new_handle)
+	private function _rename($old_handle, $new_handle)
 	{
 		return @ftp_rename($this->connection, $old_handle, $new_handle);
 	}
@@ -365,7 +365,7 @@ class ftp extends transfer
 	* Change current working directory (CHDIR)
 	* @access private
 	*/
-	function _chdir($dir = '')
+	private function _chdir($dir = '')
 	{
 		if ($dir && $dir !== '/')
 		{
@@ -382,7 +382,7 @@ class ftp extends transfer
 	* change file permissions (CHMOD)
 	* @access private
 	*/
-	function _chmod($file, $perms)
+	private function _chmod($file, $perms)
 	{
 		if (function_exists('ftp_chmod'))
 		{
@@ -403,7 +403,7 @@ class ftp extends transfer
 	* Upload file to location (PUT)
 	* @access private
 	*/
-	function _put($from_file, $to_file)
+	private function _put($from_file, $to_file)
 	{
 		// get the file extension
 		$file_extension = strtolower(substr(strrchr($to_file, '.'), 1));
@@ -425,7 +425,7 @@ class ftp extends transfer
 	* Delete file (DELETE)
 	* @access private
 	*/
-	function _delete($file)
+	private function _delete($file)
 	{
 		return @ftp_delete($this->connection, $file);
 	}
@@ -434,7 +434,7 @@ class ftp extends transfer
 	* Close ftp session (CLOSE)
 	* @access private
 	*/
-	function _close()
+	private function _close()
 	{
 		if (!$this->connection)
 		{
@@ -449,7 +449,7 @@ class ftp extends transfer
 	* At the moment not used by parent class
 	* @access private
 	*/
-	function _cwd()
+	private function _cwd()
 	{
 		return @ftp_pwd($this->connection);
 	}
@@ -458,7 +458,7 @@ class ftp extends transfer
 	* Return list of files in a given directory (LS)
 	* @access private
 	*/
-	function _ls($dir = './')
+	private function _ls($dir = './')
 	{
 		return @ftp_nlist($this->connection, $dir);
 	}
@@ -467,7 +467,7 @@ class ftp extends transfer
 	* FTP SITE command (ftp-only function)
 	* @access private
 	*/
-	function _site($command)
+	private function _site($command)
 	{
 		return @ftp_site($this->connection, $command);
 	}
@@ -486,7 +486,7 @@ class ftp_fsock extends transfer
 	/**
 	* Standard parameters for FTP session
 	*/
-	function ftp_fsock($host, $username, $password, $root_path, $port = 21, $timeout = 10)
+	function __construct($host, $username, $password, $root_path, $port = 21, $timeout = 10)
 	{
 		$this->host			= $host;
 		$this->port			= $port;
@@ -503,7 +503,7 @@ class ftp_fsock extends transfer
 		}
 
 		// Init some needed values
-		transfer::transfer();
+		parent::__construct();
 
 		return;
 	}
@@ -511,7 +511,7 @@ class ftp_fsock extends transfer
 	/**
 	* Requests data
 	*/
-	function data()
+	private function data()
 	{
 		global $user;
 
@@ -529,7 +529,7 @@ class ftp_fsock extends transfer
 	* Init FTP Session
 	* @access private
 	*/
-	function _init()
+	private function _init()
 	{
 		$errno = 0;
 		$errstr = '';
@@ -568,7 +568,7 @@ class ftp_fsock extends transfer
 	* Create Directory (MKDIR)
 	* @access private
 	*/
-	function _mkdir($dir)
+	private function _mkdir($dir)
 	{
 		return $this->_send_command('MKD', $dir);
 	}
@@ -577,7 +577,7 @@ class ftp_fsock extends transfer
 	* Remove directory (RMDIR)
 	* @access private
 	*/
-	function _rmdir($dir)
+	private function _rmdir($dir)
 	{
 		return $this->_send_command('RMD', $dir);
 	}
@@ -586,7 +586,7 @@ class ftp_fsock extends transfer
 	* Rename File
 	* @access private
 	*/
-	function _rename($old_handle, $new_handle)
+	private function _rename($old_handle, $new_handle)
 	{
 		$this->_send_command('RNFR', $old_handle);
 		return $this->_send_command('RNTO', $new_handle);
@@ -613,7 +613,7 @@ class ftp_fsock extends transfer
 	* change file permissions (CHMOD)
 	* @access private
 	*/
-	function _chmod($file, $perms)
+	private function _chmod($file, $perms)
 	{
 		// Unfortunatly CHMOD is not expecting an octal value...
 		// We need to transform the integer (which was an octal) to an octal representation (to get the int) and then pass as is. ;)
@@ -624,7 +624,7 @@ class ftp_fsock extends transfer
 	* Upload file to location (PUT)
 	* @access private
 	*/
-	function _put($from_file, $to_file)
+	private function _put($from_file, $to_file)
 	{
 		// We only use the BINARY file mode to cicumvent rewrite actions from ftp server (mostly linefeeds being replaced)
 		// 'I' == BINARY
@@ -660,7 +660,7 @@ class ftp_fsock extends transfer
 	* Delete file (DELETE)
 	* @access private
 	*/
-	function _delete($file)
+	private function _delete($file)
 	{
 		return $this->_send_command('DELE', $file);
 	}
@@ -669,7 +669,7 @@ class ftp_fsock extends transfer
 	* Close ftp session (CLOSE)
 	* @access private
 	*/
-	function _close()
+	private function _close()
 	{
 		if (!$this->connection)
 		{
@@ -684,7 +684,7 @@ class ftp_fsock extends transfer
 	* At the moment not used by parent class
 	* @access private
 	*/
-	function _cwd()
+	private function _cwd()
 	{
 		$this->_send_command('PWD', '', false);
 		return preg_replace('#^[0-9]{3} "(.+)" .+\r\n#', '\\1', $this->_check_command(true));
@@ -694,7 +694,7 @@ class ftp_fsock extends transfer
 	* Return list of files in a given directory (LS)
 	* @access private
 	*/
-	function _ls($dir = './')
+	private function _ls($dir = './')
 	{
 		if (!$this->_open_data_connection())
 		{
@@ -717,7 +717,7 @@ class ftp_fsock extends transfer
 	* Send a command to server (FTP fsock only function)
 	* @access private
 	*/
-	function _send_command($command, $args = '', $check = true)
+	private function _send_command($command, $args = '', $check = true)
 	{
 		if (!empty($args))
 		{
@@ -738,7 +738,7 @@ class ftp_fsock extends transfer
 	* Opens a connection to send data (FTP fosck only function)
 	* @access private
 	*/
-	function _open_data_connection()
+	private function _open_data_connection()
 	{
 		$this->_send_command('PASV', '', false);
 
@@ -773,7 +773,7 @@ class ftp_fsock extends transfer
 	* Closes a connection used to send data
 	* @access private
 	*/
-	function _close_data_connection()
+	private function _close_data_connection()
 	{
 		return @fclose($this->data_connection);
 	}
@@ -782,7 +782,7 @@ class ftp_fsock extends transfer
 	* Check to make sure command was successful (FTP fsock only function)
 	* @access private
 	*/
-	function _check_command($return = false)
+	private function _check_command($return = false)
 	{
 		$response = '';
 

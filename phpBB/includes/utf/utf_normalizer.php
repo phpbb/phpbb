@@ -15,51 +15,8 @@ if (!defined('IN_PHPBB'))
 	exit;
 }
 
-/**
-* Some Unicode characters encoded in UTF-8
-*
-* Preserved for compatibility
-*/
-define('UTF8_REPLACEMENT', "\xEF\xBF\xBD");
-define('UTF8_MAX', "\xF4\x8F\xBF\xBF");
-define('UTF8_FFFE', "\xEF\xBF\xBE");
-define('UTF8_FFFF', "\xEF\xBF\xBF");
-define('UTF8_SURROGATE_FIRST', "\xED\xA0\x80");
-define('UTF8_SURROGATE_LAST', "\xED\xBF\xBF");
-define('UTF8_HANGUL_FIRST', "\xEA\xB0\x80");
-define('UTF8_HANGUL_LAST', "\xED\x9E\xA3");
-
-define('UTF8_CJK_FIRST', "\xE4\xB8\x80");
-define('UTF8_CJK_LAST', "\xE9\xBE\xBB");
-define('UTF8_CJK_B_FIRST', "\xF0\xA0\x80\x80");
-define('UTF8_CJK_B_LAST', "\xF0\xAA\x9B\x96");
-
 // Unset global variables
 unset($GLOBALS['utf_jamo_index'], $GLOBALS['utf_jamo_type'], $GLOBALS['utf_nfc_qc'], $GLOBALS['utf_combining_class'], $GLOBALS['utf_canonical_comp'], $GLOBALS['utf_canonical_decomp'], $GLOBALS['utf_nfkc_qc'], $GLOBALS['utf_compatibility_decomp']);
-
-// NFC_QC and NFKC_QC values
-define('UNICODE_QC_MAYBE', 0);
-define('UNICODE_QC_NO', 1);
-
-// Contains all the ASCII characters appearing in UTF-8, sorted by frequency
-define('UTF8_ASCII_RANGE', "\x20\x65\x69\x61\x73\x6E\x74\x72\x6F\x6C\x75\x64\x5D\x5B\x63\x6D\x70\x27\x0A\x67\x7C\x68\x76\x2E\x66\x62\x2C\x3A\x3D\x2D\x71\x31\x30\x43\x32\x2A\x79\x78\x29\x28\x4C\x39\x41\x53\x2F\x50\x22\x45\x6A\x4D\x49\x6B\x33\x3E\x35\x54\x3C\x44\x34\x7D\x42\x7B\x38\x46\x77\x52\x36\x37\x55\x47\x4E\x3B\x4A\x7A\x56\x23\x48\x4F\x57\x5F\x26\x21\x4B\x3F\x58\x51\x25\x59\x5C\x09\x5A\x2B\x7E\x5E\x24\x40\x60\x7F\x00\x01\x02\x03\x04\x05\x06\x07\x08\x0B\x0C\x0D\x0E\x0F\x10\x11\x12\x13\x14\x15\x16\x17\x18\x19\x1A\x1B\x1C\x1D\x1E\x1F");
-
-// Contains all the tail bytes that can appear in the composition of a UTF-8 char
-define('UTF8_TRAILING_BYTES', "\xA9\xA0\xA8\x80\xAA\x99\xA7\xBB\xAB\x89\x94\x82\xB4\xA2\xAE\x83\xB0\xB9\xB8\x93\xAF\xBC\xB3\x81\xA4\xB2\x9C\xA1\xB5\xBE\xBD\xBA\x98\xAD\xB1\x84\x95\xA6\xB6\x88\x8D\x90\xB7\xBF\x92\x85\xA5\x97\x8C\x86\xA3\x8E\x9F\x8F\x87\x91\x9D\xAC\x9E\x8B\x96\x9B\x8A\x9A");
-
-// Constants used by the Hangul [de]composition algorithms
-define('UNICODE_HANGUL_SBASE', 0xAC00);
-define('UNICODE_HANGUL_LBASE', 0x1100);
-define('UNICODE_HANGUL_VBASE', 0x1161);
-define('UNICODE_HANGUL_TBASE', 0x11A7);
-define('UNICODE_HANGUL_SCOUNT', 11172);
-define('UNICODE_HANGUL_LCOUNT', 19);
-define('UNICODE_HANGUL_VCOUNT', 21);
-define('UNICODE_HANGUL_TCOUNT', 28);
-define('UNICODE_HANGUL_NCOUNT', 588);
-define('UNICODE_JAMO_L', 0);
-define('UNICODE_JAMO_V', 1);
-define('UNICODE_JAMO_T', 2);
 
 /**
 * Unicode normalization routines
@@ -69,6 +26,50 @@ define('UNICODE_JAMO_T', 2);
 class utf_normalizer
 {
 	/**
+	* Some Unicode characters encoded in UTF-8
+	*
+	* Preserved for compatibility
+	*/
+
+	const UTF8_REPLACEMENT = "\xEF\xBF\xBD";
+	const UTF8_MAX = "\xF4\x8F\xBF\xBF";
+	const UTF8_FFFE = "\xEF\xBF\xBE";
+	const UTF8_FFFF = "\xEF\xBF\xBF";
+	const UTF8_SURROGATE_FIRST = "\xED\xA0\x80";
+	const UTF8_SURROGATE_LAST = "\xED\xBF\xBF";
+	const UTF8_HANGUL_FIRST = "\xEA\xB0\x80";
+	const UTF8_HANGUL_LAST = "\xED\x9E\xA3";
+
+	const UTF8_CJK_FIRST = "\xE4\xB8\x80";
+	const UTF8_CJK_LAST = "\xE9\xBE\xBB";
+	const UTF8_CJK_B_FIRST = "\xF0\xA0\x80\x80";
+	const UTF8_CJK_B_LAST = "\xF0\xAA\x9B\x96";
+
+	// NFC_QC and NFKC_QC values
+	const UNICODE_QC_MAYBE = 0;
+	const UNICODE_QC_NO = 1;
+
+	// Contains all the ASCII characters appearing in UTF-8, sorted by frequency
+	const UTF8_ASCII_RANGE = "\x20\x65\x69\x61\x73\x6E\x74\x72\x6F\x6C\x75\x64\x5D\x5B\x63\x6D\x70\x27\x0A\x67\x7C\x68\x76\x2E\x66\x62\x2C\x3A\x3D\x2D\x71\x31\x30\x43\x32\x2A\x79\x78\x29\x28\x4C\x39\x41\x53\x2F\x50\x22\x45\x6A\x4D\x49\x6B\x33\x3E\x35\x54\x3C\x44\x34\x7D\x42\x7B\x38\x46\x77\x52\x36\x37\x55\x47\x4E\x3B\x4A\x7A\x56\x23\x48\x4F\x57\x5F\x26\x21\x4B\x3F\x58\x51\x25\x59\x5C\x09\x5A\x2B\x7E\x5E\x24\x40\x60\x7F\x00\x01\x02\x03\x04\x05\x06\x07\x08\x0B\x0C\x0D\x0E\x0F\x10\x11\x12\x13\x14\x15\x16\x17\x18\x19\x1A\x1B\x1C\x1D\x1E\x1F";
+
+	// Contains all the tail bytes that can appear in the composition of a UTF-8 char
+	const UTF8_TRAILING_BYTES = "\xA9\xA0\xA8\x80\xAA\x99\xA7\xBB\xAB\x89\x94\x82\xB4\xA2\xAE\x83\xB0\xB9\xB8\x93\xAF\xBC\xB3\x81\xA4\xB2\x9C\xA1\xB5\xBE\xBD\xBA\x98\xAD\xB1\x84\x95\xA6\xB6\x88\x8D\x90\xB7\xBF\x92\x85\xA5\x97\x8C\x86\xA3\x8E\x9F\x8F\x87\x91\x9D\xAC\x9E\x8B\x96\x9B\x8A\x9A";
+
+	// Constants used by the Hangul [de]composition algorithms
+	const UNICODE_HANGUL_SBASE = 0xAC00;
+	const UNICODE_HANGUL_LBASE = 0x1100;
+	const UNICODE_HANGUL_VBASE = 0x1161;
+	const UNICODE_HANGUL_TBASE = 0x11A7;
+	const UNICODE_HANGUL_SCOUNT = 11172;
+	const UNICODE_HANGUL_LCOUNT = 19;
+	const UNICODE_HANGUL_VCOUNT = 21;
+	const UNICODE_HANGUL_TCOUNT = 28;
+	const UNICODE_HANGUL_NCOUNT = 588;
+	const UNICODE_JAMO_L = 0;
+	const UNICODE_JAMO_V = 1;
+	const UNICODE_JAMO_T = 2;
+
+	/**
 	* Validate, cleanup and normalize a string
 	*
 	* The ultimate convenience function! Clean up invalid UTF-8 sequences,
@@ -77,9 +78,9 @@ class utf_normalizer
 	* @param	string	&$str	The dirty string
 	* @return	string			The same string, all shiny and cleaned-up
 	*/
-	function cleanup(&$str)
+	public static function cleanup(&$str)
 	{
-		// The string below is the list of all autorized characters, sorted by frequency in latin text
+		// The string below is the list of all authorized characters, sorted by frequency in latin text
 		$pos = strspn($str, "\x20\x65\x69\x61\x73\x6E\x74\x72\x6F\x6C\x75\x64\x5D\x5B\x63\x6D\x70\x27\x0A\x67\x7C\x68\x76\x2E\x66\x62\x2C\x3A\x3D\x2D\x71\x31\x30\x43\x32\x2A\x79\x78\x29\x28\x4C\x39\x41\x53\x2F\x50\x22\x45\x6A\x4D\x49\x6B\x33\x3E\x35\x54\x3C\x44\x34\x7D\x42\x7B\x38\x46\x77\x52\x36\x37\x55\x47\x4E\x3B\x4A\x7A\x56\x23\x48\x4F\x57\x5F\x26\x21\x4B\x3F\x58\x51\x25\x59\x5C\x09\x5A\x2B\x7E\x5E\x24\x40\x60\x7F\x0D");
 		$len = strlen($str);
 
@@ -110,7 +111,7 @@ class utf_normalizer
 			"\xFF\xFF\xFF\xFF\xFF\xFF\xFF\xFF\xFF\xFF\xFF\xFF\xFF\xFF\xFF\xFF\xFF\xFF\xFF\xFF\xFF\xFF\xFF\xFF\xFF\xFF\xFF\xFF\xFF"
 		);
 
-		$str = utf_normalizer::recompose($str, $pos, $len, $GLOBALS['utf_nfc_qc'], $GLOBALS['utf_canonical_decomp']);
+		$str = self::recompose($str, $pos, $len, $GLOBALS['utf_nfc_qc'], $GLOBALS['utf_canonical_decomp']);
 	}
 
 	/**
@@ -119,9 +120,9 @@ class utf_normalizer
 	* @param	string	&$str	Unchecked UTF string
 	* @return	string			The string, validated and in normal form
 	*/
-	function nfc(&$str)
+	public static function nfc(&$str)
 	{
-		$pos = strspn($str, UTF8_ASCII_RANGE);
+		$pos = strspn($str, self::UTF8_ASCII_RANGE);
 		$len = strlen($str);
 
 		if ($pos == $len)
@@ -142,7 +143,7 @@ class utf_normalizer
 			include($phpbb_root_path . 'includes/utf/data/utf_canonical_decomp.' . $phpEx);
 		}
 
-		$str = utf_normalizer::recompose($str, $pos, $len, $GLOBALS['utf_nfc_qc'], $GLOBALS['utf_canonical_decomp']);
+		$str = self::recompose($str, $pos, $len, $GLOBALS['utf_nfc_qc'], $GLOBALS['utf_canonical_decomp']);
 	}
 
 	/**
@@ -151,9 +152,9 @@ class utf_normalizer
 	* @param	string	&$str	Unchecked UTF string
 	* @return	string			The string, validated and in normal form
 	*/
-	function nfkc(&$str)
+	public static function nfkc(&$str)
 	{
-		$pos = strspn($str, UTF8_ASCII_RANGE);
+		$pos = strspn($str, self::UTF8_ASCII_RANGE);
 		$len = strlen($str);
 
 		if ($pos == $len)
@@ -174,7 +175,7 @@ class utf_normalizer
 			include($phpbb_root_path . 'includes/utf/data/utf_compatibility_decomp.' . $phpEx);
 		}
 
-		$str = utf_normalizer::recompose($str, $pos, $len, $GLOBALS['utf_nfkc_qc'], $GLOBALS['utf_compatibility_decomp']);
+		$str = self::recompose($str, $pos, $len, $GLOBALS['utf_nfkc_qc'], $GLOBALS['utf_compatibility_decomp']);
 	}
 
 	/**
@@ -183,9 +184,9 @@ class utf_normalizer
 	* @param	string	&$str	Unchecked UTF string
 	* @return	string			The string, validated and in normal form
 	*/
-	function nfd(&$str)
+	public static function nfd(&$str)
 	{
-		$pos = strspn($str, UTF8_ASCII_RANGE);
+		$pos = strspn($str, self::UTF8_ASCII_RANGE);
 		$len = strlen($str);
 
 		if ($pos == $len)
@@ -200,7 +201,7 @@ class utf_normalizer
 			include($phpbb_root_path . 'includes/utf/data/utf_canonical_decomp.' . $phpEx);
 		}
 
-		$str = utf_normalizer::decompose($str, $pos, $len, $GLOBALS['utf_canonical_decomp']);
+		$str = self::decompose($str, $pos, $len, $GLOBALS['utf_canonical_decomp']);
 	}
 
 	/**
@@ -209,9 +210,9 @@ class utf_normalizer
 	* @param	string	&$str	Unchecked UTF string
 	* @return	string			The string, validated and in normal form
 	*/
-	function nfkd(&$str)
+	public static function nfkd(&$str)
 	{
-		$pos = strspn($str, UTF8_ASCII_RANGE);
+		$pos = strspn($str, self::UTF8_ASCII_RANGE);
 		$len = strlen($str);
 
 		if ($pos == $len)
@@ -226,7 +227,7 @@ class utf_normalizer
 			include($phpbb_root_path . 'includes/utf/data/utf_compatibility_decomp.' . $phpEx);
 		}
 
-		$str = utf_normalizer::decompose($str, $pos, $len, $GLOBALS['utf_compatibility_decomp']);
+		$str = self::decompose($str, $pos, $len, $GLOBALS['utf_compatibility_decomp']);
 	}
 
 
@@ -242,7 +243,7 @@ class utf_normalizer
 	*
 	* @access	private
 	*/
-	function recompose($str, $pos, $len, &$qc, &$decomp_map)
+	private static function recompose($str, $pos, $len, &$qc, &$decomp_map)
 	{
 		global $utf_combining_class, $utf_canonical_comp, $utf_jamo_type, $utf_jamo_index;
 
@@ -363,8 +364,8 @@ class utf_normalizer
 								$trailing_bytes = $utf_len - 1;
 							}
 
-							$tmp .= substr($str, $tmp_pos, $pos - $tmp_pos) . UTF8_REPLACEMENT;
-							$pos += strspn($str, UTF8_TRAILING_BYTES, ++$pos, $trailing_bytes);
+							$tmp .= substr($str, $tmp_pos, $pos - $tmp_pos) . self::UTF8_REPLACEMENT;
+							$pos += strspn($str, self::UTF8_TRAILING_BYTES, ++$pos, $trailing_bytes);
 							$tmp_pos = $pos;
 
 							continue;
@@ -379,7 +380,7 @@ class utf_normalizer
 									if ($utf_char >= "\xED\xA0\x80")
 									{
 										// Surrogates (U+D800..U+DFFF) are not allowed in UTF-8 (UTF sequence 0xEDA080..0xEDBFBF)
-										$tmp .= substr($str, $tmp_pos, $pos - $tmp_pos) . UTF8_REPLACEMENT;
+										$tmp .= substr($str, $tmp_pos, $pos - $tmp_pos) . self::UTF8_REPLACEMENT;
 										$pos += $utf_len;
 										$tmp_pos = $pos;
 										continue 2;
@@ -391,7 +392,7 @@ class utf_normalizer
 									if ($utf_char == "\xEF\xBF\xBE" || $utf_char == "\xEF\xBF\xBF")
 									{
 										// U+FFFE and U+FFFF are explicitly disallowed (UTF sequence 0xEFBFBE..0xEFBFBF)
-										$tmp .= substr($str, $tmp_pos, $pos - $tmp_pos) . UTF8_REPLACEMENT;
+										$tmp .= substr($str, $tmp_pos, $pos - $tmp_pos) . self::UTF8_REPLACEMENT;
 										$pos += $utf_len;
 										$tmp_pos = $pos;
 										continue 2;
@@ -403,7 +404,7 @@ class utf_normalizer
 									if ($utf_char <= "\xC1\xBF")
 									{
 										// Overlong sequence: Unicode char U+0000..U+007F encoded as a double-byte UTF char
-										$tmp .= substr($str, $tmp_pos, $pos - $tmp_pos) . UTF8_REPLACEMENT;
+										$tmp .= substr($str, $tmp_pos, $pos - $tmp_pos) . self::UTF8_REPLACEMENT;
 										$pos += $utf_len;
 										$tmp_pos = $pos;
 										continue 2;
@@ -414,7 +415,7 @@ class utf_normalizer
 									if ($utf_char <= "\xE0\x9F\xBF")
 									{
 										// Unicode char U+0000..U+07FF encoded in 3 bytes
-										$tmp .= substr($str, $tmp_pos, $pos - $tmp_pos) . UTF8_REPLACEMENT;
+										$tmp .= substr($str, $tmp_pos, $pos - $tmp_pos) . self::UTF8_REPLACEMENT;
 										$pos += $utf_len;
 										$tmp_pos = $pos;
 										continue 2;
@@ -425,7 +426,7 @@ class utf_normalizer
 									if ($utf_char <= "\xF0\x8F\xBF\xBF")
 									{
 										// Unicode char U+0000..U+FFFF encoded in 4 bytes
-										$tmp .= substr($str, $tmp_pos, $pos - $tmp_pos) . UTF8_REPLACEMENT;
+										$tmp .= substr($str, $tmp_pos, $pos - $tmp_pos) . self::UTF8_REPLACEMENT;
 										$pos += $utf_len;
 										$tmp_pos = $pos;
 										continue 2;
@@ -454,8 +455,8 @@ class utf_normalizer
 											$trailing_bytes = 5;
 										}
 
-										$tmp .= substr($str, $tmp_pos, $pos - $tmp_pos) . UTF8_REPLACEMENT;
-										$pos += strspn($str, UTF8_TRAILING_BYTES, ++$pos, $trailing_bytes);
+										$tmp .= substr($str, $tmp_pos, $pos - $tmp_pos) . self::UTF8_REPLACEMENT;
+										$pos += strspn($str, self::UTF8_TRAILING_BYTES, ++$pos, $trailing_bytes);
 										$tmp_pos = $pos;
 										continue 2;
 									}
@@ -472,8 +473,8 @@ class utf_normalizer
 				{
 					// A trailing byte came out of nowhere, we will advance the cursor and treat the this byte and all following trailing bytes as if
 					// each of them was a Unicode replacement char
-					$spn = strspn($str, UTF8_TRAILING_BYTES, $pos);
-					$tmp .= substr($str, $tmp_pos, $pos - $tmp_pos) . str_repeat(UTF8_REPLACEMENT, $spn);
+					$spn = strspn($str, self::UTF8_TRAILING_BYTES, $pos);
+					$tmp .= substr($str, $tmp_pos, $pos - $tmp_pos) . str_repeat(self::UTF8_REPLACEMENT, $spn);
 
 					$pos += $spn;
 					$tmp_pos = $pos;
@@ -533,7 +534,7 @@ class utf_normalizer
 
 				// Check out the combining class of the first character of the UTF sequence
 				$k = 0;
-				if (isset($utf_combining_class[$utf_seq[0]]) || $qc[$utf_char] == UNICODE_QC_MAYBE)
+				if (isset($utf_combining_class[$utf_seq[0]]) || $qc[$utf_char] == self::UNICODE_QC_MAYBE)
 				{
 					// Not a starter, inspect previous characters
 					// The last 8 characters are kept in a buffer so that we don't have to capture them everytime.
@@ -762,12 +763,11 @@ class utf_normalizer
 				if (!$k && $k_max == 1)
 				{
 					// There is only one char in the UTF sequence, add it then jump to the next iteration of main loop
-						// Note: the two commented lines below can be enabled under PHP5 for a very small performance gain in most cases
-//						if (substr_compare($str, $utf_seq[0], $lpos, $pos - $lpos))
-//						{
+					if (substr_compare($str, $utf_seq[0], $lpos, $pos - $lpos))
+					{
 						$tmp .= substr($str, $tmp_pos, $lpos - $tmp_pos) . $utf_seq[0];
 						$tmp_pos = $pos;
-//						}
+					}
 
 					continue;
 				}
@@ -809,10 +809,10 @@ class utf_normalizer
 							else if (isset($utf_jamo_type[$utf_char]))
 							{
 								// Current char is a composable jamo
-								if (isset($utf_jamo_type[$starter]) && $utf_jamo_type[$starter] == UNICODE_JAMO_L && $utf_jamo_type[$utf_char] == UNICODE_JAMO_V)
+								if (isset($utf_jamo_type[$starter]) && $utf_jamo_type[$starter] == self::UNICODE_JAMO_L && $utf_jamo_type[$utf_char] == self::UNICODE_JAMO_V)
 								{
 									// We have a L jamo followed by a V jamo, we are going to prefetch the next char to see if it's a T jamo
-									if (isset($utf_jamo_type[$utf_seq[$k]]) && $utf_jamo_type[$utf_seq[$k]] == UNICODE_JAMO_T)
+									if (isset($utf_jamo_type[$utf_seq[$k]]) && $utf_jamo_type[$utf_seq[$k]] == self::UNICODE_JAMO_T)
 									{
 										// L+V+T jamos, combine to a LVT Hangul syllable ($k is incremented)
 										$cp = $utf_jamo_index[$starter] + $utf_jamo_index[$utf_char] + $utf_jamo_index[$utf_seq[$k]];
@@ -901,7 +901,7 @@ class utf_normalizer
 				{
 					if ($str[$pos] < "\x80")
 					{
-						$pos += strspn($str, UTF8_ASCII_RANGE, ++$pos);
+						$pos += strspn($str, self::UTF8_ASCII_RANGE, ++$pos);
 						$buffer[++$i & 7] = $str[$pos - 1];
 					}
 					else
@@ -944,7 +944,7 @@ class utf_normalizer
 	*
 	* @access	private
 	*/
-	function decompose($str, $pos, $len, &$decomp_map)
+	private static function decompose($str, $pos, $len, &$decomp_map)
 	{
 		global $utf_combining_class;
 
@@ -1011,7 +1011,7 @@ class utf_normalizer
 				{
 					// A trailing byte came out of nowhere, we will treat it and all following trailing bytes as if each of them was a Unicode
 					// replacement char and we will advance the cursor
-					$spn = strspn($str, UTF8_TRAILING_BYTES, $pos);
+					$spn = strspn($str, self::UTF8_TRAILING_BYTES, $pos);
 
 					if ($dump)
 					{
@@ -1031,12 +1031,12 @@ class utf_normalizer
 							}
 						}
 
-						$tmp .= str_repeat(UTF8_REPLACEMENT, $spn);
+						$tmp .= str_repeat(self::UTF8_REPLACEMENT, $spn);
 						$dump = $sort = 0;
 					}
 					else
 					{
-						$tmp .= substr($str, $tmp_pos, $pos - $tmp_pos) . str_repeat(UTF8_REPLACEMENT, $spn);
+						$tmp .= substr($str, $tmp_pos, $pos - $tmp_pos) . str_repeat(self::UTF8_REPLACEMENT, $spn);
 					}
 
 					$pos += $spn;
@@ -1177,7 +1177,7 @@ class utf_normalizer
 				else
 				{
 					// Non-decomposable starter, check out if it's a Hangul syllable
-					if ($utf_char < UTF8_HANGUL_FIRST || $utf_char > UTF8_HANGUL_LAST)
+					if ($utf_char < self::UTF8_HANGUL_FIRST || $utf_char > self::UTF8_HANGUL_LAST)
 					{
 						// Nope, regular UTF char, check that we have the correct number of trailing bytes
 						if (($utf_char & $utf_validation_mask[$utf_len]) != $utf_validation_check[$utf_len])
@@ -1202,8 +1202,8 @@ class utf_normalizer
 							// Add a replacement char then another replacement char for every trailing byte.
 							//
 							// @todo I'm not entirely sure that's how we're supposed to mark invalidated byte sequences, check this
-							$spn = strspn($str, UTF8_TRAILING_BYTES, ++$pos);
-							$tmp .= str_repeat(UTF8_REPLACEMENT, $spn + 1);
+							$spn = strspn($str, self::UTF8_TRAILING_BYTES, ++$pos);
+							$tmp .= str_repeat(self::UTF8_REPLACEMENT, $spn + 1);
 
 							$dump = $sort = 0;
 
@@ -1234,7 +1234,7 @@ class utf_normalizer
 											$utf_sort = array();
 										}
 
-										$tmp .= UTF8_REPLACEMENT;
+										$tmp .= self::UTF8_REPLACEMENT;
 										$dump = $sort = 0;
 
 										$tmp_pos = $starter_pos = $pos;
@@ -1260,7 +1260,7 @@ class utf_normalizer
 											$utf_sort = array();
 										}
 
-										$tmp .= UTF8_REPLACEMENT;
+										$tmp .= self::UTF8_REPLACEMENT;
 										$dump = $sort = 0;
 
 										$tmp_pos = $starter_pos = $pos;
@@ -1286,7 +1286,7 @@ class utf_normalizer
 											$utf_sort = array();
 										}
 
-										$tmp .= UTF8_REPLACEMENT;
+										$tmp .= self::UTF8_REPLACEMENT;
 										$dump = $sort = 0;
 
 										$tmp_pos = $starter_pos = $pos;
@@ -1311,7 +1311,7 @@ class utf_normalizer
 											$utf_sort = array();
 										}
 
-										$tmp .= UTF8_REPLACEMENT;
+										$tmp .= self::UTF8_REPLACEMENT;
 										$dump = $sort = 0;
 
 										$tmp_pos = $starter_pos = $pos;
@@ -1336,7 +1336,7 @@ class utf_normalizer
 											$utf_sort = array();
 										}
 
-										$tmp .= UTF8_REPLACEMENT;
+										$tmp .= self::UTF8_REPLACEMENT;
 										$dump = $sort = 0;
 
 										$tmp_pos = $starter_pos = $pos;
@@ -1361,7 +1361,7 @@ class utf_normalizer
 											$utf_sort = array();
 										}
 
-										$tmp .= UTF8_REPLACEMENT;
+										$tmp .= self::UTF8_REPLACEMENT;
 										$dump = $sort = 0;
 
 										$tmp_pos = $starter_pos = $pos;
@@ -1374,12 +1374,12 @@ class utf_normalizer
 					else
 					{
 						// Hangul syllable
-						$idx = (((ord($utf_char[0]) & 0x0F) << 12) | ((ord($utf_char[1]) & 0x3F) << 6) | (ord($utf_char[2]) & 0x3F)) - UNICODE_HANGUL_SBASE;
+						$idx = (((ord($utf_char[0]) & 0x0F) << 12) | ((ord($utf_char[1]) & 0x3F) << 6) | (ord($utf_char[2]) & 0x3F)) - self::UNICODE_HANGUL_SBASE;
 
 						// LIndex can only range from 0 to 18, therefore it cannot influence the first two bytes of the L Jamo, which allows us to hardcode them (based on LBase).
 						//
 						// The same goes for VIndex, but for TIndex there's a catch: the value of the third byte could exceed 0xBF and we would have to increment the second byte
-						if ($t_index = $idx % UNICODE_HANGUL_TCOUNT)
+						if ($t_index = $idx % self::UNICODE_HANGUL_TCOUNT)
 						{
 							if ($t_index < 25)
 							{
@@ -1397,8 +1397,8 @@ class utf_normalizer
 							$utf_char = "\xE1\x84\x00\xE1\x85\x00";
 						}
 
-						$utf_char[2] = chr(0x80 + (int) ($idx / UNICODE_HANGUL_NCOUNT));
-						$utf_char[5] = chr(0xA1 + (int) (($idx % UNICODE_HANGUL_NCOUNT) / UNICODE_HANGUL_TCOUNT));
+						$utf_char[2] = chr(0x80 + (int) ($idx / self::UNICODE_HANGUL_NCOUNT));
+						$utf_char[5] = chr(0xA1 + (int) (($idx % self::UNICODE_HANGUL_NCOUNT) / self::UNICODE_HANGUL_TCOUNT));
 
 						// Just like other decompositions, the resulting Jamos must be dumped to the tmp string
 						$dump = 1;
@@ -1458,11 +1458,11 @@ class utf_normalizer
 					$dump = $sort = 0;
 					$tmp_pos = ++$pos;
 
-					$pos += strspn($str, UTF8_ASCII_RANGE, $pos);
+					$pos += strspn($str, self::UTF8_ASCII_RANGE, $pos);
 				}
 				else
 				{
-					$pos += strspn($str, UTF8_ASCII_RANGE, ++$pos);
+					$pos += strspn($str, self::UTF8_ASCII_RANGE, ++$pos);
 				}
 
 				$last_cc = 0;

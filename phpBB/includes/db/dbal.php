@@ -66,7 +66,7 @@ class dbal
 	/**
 	* Constructor
 	*/
-	function dbal()
+	function __construct()
 	{
 		$this->num_queries = array(
 			'cached'		=> 0,

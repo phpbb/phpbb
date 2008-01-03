@@ -362,11 +362,12 @@ class dbal_mysql extends dbal
 	function _sql_report($mode, $query = '')
 	{
 		static $test_prof;
+		static $test_extend;
 
 		// current detection method, might just switch to see the existance of INFORMATION_SCHEMA.PROFILING
 		if ($test_prof === null)
 		{
-			$test_prof = false;
+			$test_prof = $test_extend = false;
 			if (strpos($this->mysql_version, 'community') !== false)
 			{
 				$ver = substr($this->mysql_version, 0, strpos($this->mysql_version, '-'));
@@ -374,6 +375,11 @@ class dbal_mysql extends dbal
 				{
 					$test_prof = true;
 				}
+			}
+
+			if (version_compare($ver, '4.1.1', '>='))
+			{
+				$test_extend = true;
 			}
 		}
 
@@ -401,7 +407,7 @@ class dbal_mysql extends dbal
 						@mysql_query('SET profiling = 1;', $this->db_connect_id);
 					}
 
-					if ($result = @mysql_query("EXPLAIN $explain_query", $this->db_connect_id))
+					if ($result = @mysql_query('EXPLAIN ' . (($test_extend) ? 'EXTENDED ' : '') . "$explain_query", $this->db_connect_id))
 					{
 						while ($row = @mysql_fetch_assoc($result))
 						{
@@ -414,6 +420,27 @@ class dbal_mysql extends dbal
 					{
 						$this->html_hold .= '</table>';
 					}
+
+					if ($test_extend)
+					{
+						$html_table = false;
+
+						if ($result = @mysql_query('SHOW WARNINGS', $this->db_connect_id))
+						{
+							$this->html_hold .= '<br />';
+							while ($row = @mysql_fetch_assoc($result))
+							{
+								$html_table = $this->sql_report('add_select_row', $query, $html_table, $row);
+							}
+						}
+						@mysql_free_result($result);
+
+						if ($html_table)
+						{
+							$this->html_hold .= '</table>';
+						}
+					}
+
 
 					if ($test_prof)
 					{

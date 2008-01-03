@@ -44,6 +44,7 @@ class acp_captcha
 			{
 				$config[$captcha_var] = (isset($_REQUEST[$captcha_var])) ? request_var($captcha_var, 0) : $config[$captcha_var];
 			}
+
 			if ($config['captcha_gd'])
 			{
 				include($phpbb_root_path . 'includes/captcha/captcha_gd.' . $phpEx);
@@ -52,9 +53,9 @@ class acp_captcha
 			{
 				include($phpbb_root_path . 'includes/captcha/captcha_non_gd.' . $phpEx);
 			}
-			$captcha = new captcha();
-			$captcha->execute(gen_rand_string(mt_rand(5, 8)), time());
-			exit_handler();
+
+			captcha::execute(gen_rand_string(mt_rand(5, 8)), time());
+			exit();
 		}
 
 		$config_vars = array(

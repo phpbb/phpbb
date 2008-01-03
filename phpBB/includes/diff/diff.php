@@ -43,7 +43,7 @@ class diff
 	* @param array $from_lines  An array of strings. Typically these are lines from a file.
 	* @param array $to_lines    An array of strings.
 	*/
-	function diff(&$from_content, &$to_content, $preserve_cr = true)
+	function __construct(&$from_content, &$to_content, $preserve_cr = true)
 	{
 		$diff_engine = &new diff_engine();
 		$this->_edits = $diff_engine->diff($from_content, $to_content, $preserve_cr);
@@ -645,7 +645,7 @@ class diff3 extends diff
 */
 class diff3_op
 {
-	function diff3_op($orig = false, $final1 = false, $final2 = false)
+	function __construct($orig = false, $final1 = false, $final2 = false)
 	{
 		$this->orig = $orig ? $orig : array();
 		$this->final1 = $final1 ? $final1 : array();
@@ -717,7 +717,7 @@ class diff3_op_copy extends diff3_op
 */
 class diff3_block_builder
 {
-	function diff3_block_builder()
+	function __construct()
 	{
 		$this->_init();
 	}

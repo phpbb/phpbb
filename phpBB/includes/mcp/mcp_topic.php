@@ -164,7 +164,7 @@ function mcp_topic_view($id, $mode, $action)
 	$extensions = $attachments = array();
 	if ($topic_info['topic_attachment'] && sizeof($post_id_list))
 	{
-		$extensions = $cache->obtain_attach_extensions($topic_info['forum_id']);
+		$extensions = cache::obtain_attach_extensions($topic_info['forum_id']);
 
 		// Get attachments...
 		if ($auth->acl_get('u_download') && $auth->acl_get('f_download', $topic_info['forum_id']))

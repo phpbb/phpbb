@@ -22,17 +22,17 @@ if (!defined('IN_PHPBB'))
 */
 class messenger
 {
-	var $vars, $msg, $extra_headers, $replyto, $from, $subject;
-	var $addresses = array();
+	private $vars, $msg, $extra_headers, $replyto, $from, $subject;
+	private $addresses = array();
 
-	var $mail_priority = MAIL_NORMAL_PRIORITY;
-	var $use_queue = true;
-	var $tpl_msg = array();
+	private $mail_priority = MAIL_NORMAL_PRIORITY;
+	private $use_queue = true;
+	private $tpl_msg = array();
 
 	/**
 	* Constructor
 	*/
-	function messenger($use_queue = true)
+	function __construct($use_queue = true)
 	{
 		global $config;
 
@@ -43,7 +43,7 @@ class messenger
 	/**
 	* Resets all the data (address, template file, etc etc) to default
 	*/
-	function reset()
+	private function reset()
 	{
 		$this->addresses = $this->extra_headers = array();
 		$this->vars = $this->msg = $this->replyto = $this->from = '';
@@ -254,7 +254,7 @@ class messenger
 	/**
 	* Add error message to log
 	*/
-	function error($type, $msg)
+	public static function error($type, $msg)
 	{
 		global $user, $phpEx, $phpbb_root_path, $config;
 
@@ -299,7 +299,7 @@ class messenger
 	/**
 	* Return email header
 	*/
-	function build_header($to, $cc, $bcc)
+	private function build_header($to, $cc, $bcc)
 	{
 		global $config;
 
@@ -346,7 +346,7 @@ class messenger
 	/**
 	* Send out emails
 	*/
-	function msg_email()
+	private function msg_email()
 	{
 		global $config, $user;
 
@@ -413,7 +413,7 @@ class messenger
 
 			if (!$result)
 			{
-				$this->error('EMAIL', $err_msg);
+				self::error('EMAIL', $err_msg);
 				return false;
 			}
 		}
@@ -434,7 +434,7 @@ class messenger
 	/**
 	* Send jabber message out
 	*/
-	function msg_jabber()
+	private function msg_jabber()
 	{
 		global $config, $db, $user, $phpbb_root_path, $phpEx;
 
@@ -468,13 +468,13 @@ class messenger
 
 			if (!$this->jabber->connect())
 			{
-				$this->error('JABBER', $user->lang['ERR_JAB_CONNECT'] . '<br />' . $this->jabber->get_log());
+				self::error('JABBER', $user->lang['ERR_JAB_CONNECT'] . '<br />' . $this->jabber->get_log());
 				return false;
 			}
 
 			if (!$this->jabber->login())
 			{
-				$this->error('JABBER', $user->lang['ERR_JAB_AUTH'] . '<br />' . $this->jabber->get_log());
+				self::error('JABBER', $user->lang['ERR_JAB_AUTH'] . '<br />' . $this->jabber->get_log());
 				return false;
 			}
 
@@ -504,15 +504,15 @@ class messenger
 */
 class queue
 {
-	var $data = array();
-	var $queue_data = array();
-	var $package_size = 0;
-	var $cache_file = '';
+	private $data = array();
+	private $queue_data = array();
+	private $package_size = 0;
+	private $cache_file = '';
 
 	/**
 	* constructor
 	*/
-	function queue()
+	function __construct()
 	{
 		global $phpEx, $phpbb_root_path;
 
@@ -523,7 +523,7 @@ class queue
 	/**
 	* Init a queue object
 	*/
-	function init($object, $package_size)
+	public function init($object, $package_size)
 	{
 		$this->data[$object] = array();
 		$this->data[$object]['package_size'] = $package_size;
@@ -533,7 +533,7 @@ class queue
 	/**
 	* Put object in queue
 	*/
-	function put($object, $scope)
+	public function put($object, $scope)
 	{
 		$this->data[$object]['data'][] = $scope;
 	}
@@ -542,7 +542,7 @@ class queue
 	* Process queue
 	* Using lock file
 	*/
-	function process()
+	public function process()
 	{
 		global $db, $config, $phpEx, $phpbb_root_path, $user;
 
@@ -707,7 +707,7 @@ class queue
 	/**
 	* Save queue
 	*/
-	function save()
+	public function save()
 	{
 		if (!sizeof($this->data))
 		{
@@ -963,16 +963,16 @@ function smtpmail($addresses, $subject, $message, &$err_msg, $headers = '')
 */
 class smtp_class
 {
-	var $server_response = '';
-	var $socket = 0;
-	var $responses = array();
-	var $commands = array();
-	var $numeric_response_code = 0;
+	private $server_response = '';
+	public $socket = 0;
+	private $responses = array();
+	private $commands = array();
+	public $numeric_response_code = 0;
 
-	var $backtrace = false;
-	var $backtrace_log = array();
+	private $backtrace = false;
+	private $backtrace_log = array();
 
-	function smtp_class()
+	function __construct()
 	{
 		// Always create a backtrace for admins to identify SMTP problems
 		$this->backtrace = true;
@@ -982,7 +982,7 @@ class smtp_class
 	/**
 	* Add backtrace message for debugging
 	*/
-	function add_backtrace($message)
+	public function add_backtrace($message)
 	{
 		if ($this->backtrace)
 		{
@@ -993,7 +993,7 @@ class smtp_class
 	/**
 	* Send command to smtp server
 	*/
-	function server_send($command, $private_info = false)
+	public function server_send($command, $private_info = false)
 	{
 		fputs($this->socket, $command . "\r\n");
 
@@ -1005,7 +1005,7 @@ class smtp_class
 	/**
 	* We use the line to give the support people an indication at which command the error occurred
 	*/
-	function server_parse($response, $line)
+	public function server_parse($response, $line)
 	{
 		global $user;
 
@@ -1037,7 +1037,7 @@ class smtp_class
 	/**
 	* Close session
 	*/
-	function close_session(&$err_msg)
+	public function close_session(&$err_msg)
 	{
 		fclose($this->socket);
 
@@ -1051,7 +1051,7 @@ class smtp_class
 	/**
 	* Log into server and get possible auth codes if neccessary
 	*/
-	function log_into_server($hostname, $username, $password, $default_auth_method)
+	public function log_into_server($hostname, $username, $password, $default_auth_method)
 	{
 		global $user;
 
@@ -1171,7 +1171,7 @@ class smtp_class
 	/**
 	* Pop before smtp authentication
 	*/
-	function pop_before_smtp($hostname, $username, $password)
+	private function pop_before_smtp($hostname, $username, $password)
 	{
 		global $user;
 
@@ -1206,7 +1206,7 @@ class smtp_class
 	/**
 	* Plain authentication method
 	*/
-	function plain($username, $password)
+	private function plain($username, $password)
 	{
 		$this->server_send('AUTH PLAIN');
 		if ($err_msg = $this->server_parse('334', __LINE__))
@@ -1227,7 +1227,7 @@ class smtp_class
 	/**
 	* Login authentication method
 	*/
-	function login($username, $password)
+	private function login($username, $password)
 	{
 		$this->server_send('AUTH LOGIN');
 		if ($err_msg = $this->server_parse('334', __LINE__))
@@ -1253,7 +1253,7 @@ class smtp_class
 	/**
 	* cram_md5 authentication method
 	*/
-	function cram_md5($username, $password)
+	private function cram_md5($username, $password)
 	{
 		$this->server_send('AUTH CRAM-MD5');
 		if ($err_msg = $this->server_parse('334', __LINE__))
@@ -1280,7 +1280,7 @@ class smtp_class
 	* digest_md5 authentication method
 	* A real pain in the ***
 	*/
-	function digest_md5($username, $password)
+	private function digest_md5($username, $password)
 	{
 		global $config, $user;
 

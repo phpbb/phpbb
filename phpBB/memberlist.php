@@ -64,7 +64,7 @@ $sort_dir = request_var('sd', 'a');
 
 
 // Grab rank information for later
-$ranks = $cache->obtain_ranks();
+$ranks = cache::obtain_ranks();
 
 
 // What do you want to do today? ... oops, I think that line is taken ...

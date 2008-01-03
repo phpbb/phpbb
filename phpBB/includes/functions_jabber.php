@@ -30,31 +30,31 @@ if (!defined('IN_PHPBB'))
 */
 class jabber
 {
-	var $connection = null;
-	var $session = array();
-	var $timeout = 10;
+	private $connection = null;
+	private $session = array();
+	private $timeout = 10;
 
-	var $server;
-	var $port;
-	var $username;
-	var $password;
-	var $use_ssl;
-	var $resource = 'functions_jabber.phpbb.php';
+	private $server;
+	private $port;
+	private $username;
+	private $password;
+	private $use_ssl;
+	private $resource = 'functions_jabber.phpbb.php';
 
-	var $enable_logging;
-	var $log_array;
+	private $enable_logging;
+	private $log_array;
 
-	var $features = array();
+	private $features = array();
 
 	/**
 	*/
-	function jabber($server, $port, $username, $password, $use_ssl = false)
+	function __construct($server, $port, $username, $password, $use_ssl = false)
 	{
 		$this->server				= ($server) ? $server : 'localhost';
 		$this->port					= ($port) ? $port : 5222;
 		$this->username				= $username;
 		$this->password				= $password;
-		$this->use_ssl				= ($use_ssl && $this->can_use_ssl()) ? true : false;
+		$this->use_ssl				= ($use_ssl && self::can_use_ssl()) ? true : false;
 
 		// Change port if we use SSL
 		if ($this->port == 5222 && $this->use_ssl)
@@ -69,7 +69,7 @@ class jabber
 	/**
 	* Able to use the SSL functionality?
 	*/
-	function can_use_ssl()
+	public static function can_use_ssl()
 	{
 		// Will not work with PHP >= 5.2.1 or < 5.2.3RC2 until timeout problem with ssl hasn't been fixed (http://bugs.php.net/41236)
 		return ((version_compare(PHP_VERSION, '5.2.1', '<') || version_compare(PHP_VERSION, '5.2.3RC2', '>=')) && @extension_loaded('openssl')) ? true : false;
@@ -78,7 +78,7 @@ class jabber
 	/**
 	* Able to use TLS?
 	*/
-	function can_use_tls()
+	public static function can_use_tls()
 	{
 		if (!@extension_loaded('openssl') || !function_exists('stream_socket_enable_crypto') || !function_exists('stream_get_meta_data') || !function_exists('socket_set_blocking') || !function_exists('stream_get_wrappers'))
 		{
@@ -105,7 +105,7 @@ class jabber
 	* @param string $name
 	* @access public
 	*/
-	function set_resource($name)
+	public function set_resource($name)
 	{
 		$this->resource = $name;
 	}
@@ -113,7 +113,7 @@ class jabber
 	/**
 	* Connect
 	*/
-	function connect()
+	public function connect()
 	{
 /*		if (!$this->check_jid($this->username . '@' . $this->server))
 		{
@@ -142,7 +142,7 @@ class jabber
 	/**
 	* Disconnect
 	*/
-	function disconnect()
+	public function disconnect()
 	{
 		if ($this->connected())
 		{
@@ -163,7 +163,7 @@ class jabber
 	/**
 	* Connected?
 	*/
-	function connected()
+	public function connected()
 	{
 		return (is_resource($this->connection) && !feof($this->connection)) ? true : false;
 	}
@@ -174,7 +174,7 @@ class jabber
 	* @access public
 	* @return bool
 	*/
-	function login()
+	public function login()
 	{
 		if (!sizeof($this->features))
 		{
@@ -188,10 +188,10 @@ class jabber
 	/**
 	* Send data to the Jabber server
 	* @param string $xml
-	* @access public
+	* @access private
 	* @return bool
 	*/
-	function send($xml)
+	private function send($xml)
 	{
 		if ($this->connected())
 		{
@@ -211,10 +211,10 @@ class jabber
 	* @param string $server host to connect to
 	* @param int $port port number
 	* @param bool $use_ssl use ssl or not
-	* @access public
+	* @access private
 	* @return bool
 	*/
-	function open_socket($server, $port, $use_ssl = false)
+	private function open_socket($server, $port, $use_ssl = false)
 	{
 		if (@function_exists('dns_get_record'))
 		{
@@ -243,7 +243,7 @@ class jabber
 	/**
 	* Return log
 	*/
-	function get_log()
+	public function get_log()
 	{
 		if ($this->enable_logging && sizeof($this->log_array))
 		{
@@ -256,7 +256,7 @@ class jabber
 	/**
 	* Add information to log
 	*/
-	function add_to_log($string)
+	private function add_to_log($string)
 	{
 		if ($this->enable_logging)
 		{
@@ -267,10 +267,10 @@ class jabber
 	/**
 	* Listens to the connection until it gets data or the timeout is reached.
 	* Thus, it should only be called if data is expected to be received.
-	* @access public
+	* @access private
 	* @return mixed either false for timeout or an array with the received data
 	*/
-	function listen($timeout = 10, $wait = false)
+	private function listen($timeout = 10, $wait = false)
 	{
 		if (!$this->connected())
 		{
@@ -291,7 +291,7 @@ class jabber
 		if ($data != '')
 		{
 			$this->add_to_log('RECV: '. $data);
-			return $this->xmlize($data);
+			return self::xmlize($data);
 		}
 		else
 		{
@@ -302,10 +302,10 @@ class jabber
 
 	/**
 	* Initiates account registration (based on data used for contructor)
-	* @access public
+	* @access private
 	* @return bool
 	*/
-	function register()
+	private function register()
 	{
 		if (!isset($this->session['id']) || isset($this->session['jid']))
 		{
@@ -322,10 +322,10 @@ class jabber
 	* @param $message online, offline...
 	* @param $type dnd, away, chat, xa or nothing
 	* @param $unavailable set this to true if you want to become unavailable
-	* @access public
+	* @access private
 	* @return bool
 	*/
-	function send_presence($message = '', $type = '', $unavailable = false)
+	private function send_presence($message = '', $type = '', $unavailable = false)
 	{
 		if (!isset($this->session['jid']))
 		{
@@ -347,10 +347,10 @@ class jabber
 	/**
 	* This handles all the different XML elements
 	* @param array $xml
-	* @access public
+	* @access private
 	* @return bool
 	*/
-	function response($xml)
+	private function response($xml)
 	{
 		if (!is_array($xml) || !sizeof($xml))
 		{
@@ -420,7 +420,7 @@ class jabber
 				}
 
 				// Let's use TLS if SSL is not enabled and we can actually use it
-				if (!$this->session['ssl'] && $this->can_use_tls() && $this->can_use_ssl() && isset($xml['stream:features'][0]['#']['starttls']))
+				if (!$this->session['ssl'] && self::can_use_tls() && self::can_use_ssl() && isset($xml['stream:features'][0]['#']['starttls']))
 				{
 					$this->add_to_log('Switching to TLS.');
 					$this->send("<starttls xmlns='urn:ietf:params:xml:ns:xmpp-tls'/>\n");
@@ -483,7 +483,7 @@ class jabber
 			case 'challenge':
 				// continue with authentication...a challenge literally -_-
 				$decoded = base64_decode($xml['challenge'][0]['#']);
-				$decoded = $this->parse_data($decoded);
+				$decoded = self::parse_data($decoded);
 
 				if (!isset($decoded['digest-uri']))
 				{
@@ -656,7 +656,7 @@ class jabber
 		}
 	}
 
-	function send_message($to, $text, $subject = '', $type = 'normal')
+	public function send_message($to, $text, $subject = '', $type = 'normal')
 	{
 		if (!isset($this->session['jid']))
 		{
@@ -681,7 +681,7 @@ class jabber
 	* @access public
 	* @return string
 	*/
-	function encrypt_password($data)
+	public function encrypt_password($data)
 	{
 		// let's me think about <challenge> again...
 		foreach (array('realm', 'cnonce', 'digest-uri') as $key)
@@ -712,10 +712,10 @@ class jabber
 	/**
 	* parse_data like a="b",c="d",... or like a="a, b", c, d="e", f=g,...
 	* @param string $data
-	* @access public
+	* @access private
 	* @return array a => b ...
 	*/
-	function parse_data($data)
+	private static function parse_data($data)
 	{
 		$data = explode(',', $data);
 		$pairs = array();
@@ -744,10 +744,10 @@ class jabber
 	/**
 	* opposite of jabber::parse_data()
 	* @param array $data
-	* @access public
+	* @access private
 	* @return string
 	*/
-	function implode_data($data)
+	private function implode_data($data)
 	{
 		$return = array();
 		foreach ($data as $key => $value)
@@ -762,7 +762,7 @@ class jabber
 	* @author Hans Anderson
 	* @copyright Hans Anderson / http://www.hansanderson.com/php/xml/
 	*/
-	function xmlize($data, $skip_white = 1, $encoding = 'UTF-8')
+	private static function xmlize($data, $skip_white = 1, $encoding = 'UTF-8')
 	{
 		$data = trim($data);
 
@@ -783,7 +783,7 @@ class jabber
 		$tagname = $vals[$i]['tag'];
 
 		$array[$tagname][0]['@'] = (isset($vals[$i]['attributes'])) ? $vals[$i]['attributes'] : array();
-		$array[$tagname][0]['#'] = $this->_xml_depth($vals, $i);
+		$array[$tagname][0]['#'] = self::_xml_depth($vals, $i);
 
 		if (substr($data, 0, 5) != '<?xml')
 		{
@@ -798,7 +798,7 @@ class jabber
 	* @author Hans Anderson
 	* @copyright Hans Anderson / http://www.hansanderson.com/php/xml/
 	*/
-	function _xml_depth($vals, &$i)
+	private static function _xml_depth($vals, &$i)
 	{
 		$children = array();
 
@@ -821,7 +821,7 @@ class jabber
 						$children[$tagname][$size]['@'] = $vals[$i]['attributes'];
 					}
 
-					$children[$tagname][$size]['#'] = $this->_xml_depth($vals, $i);
+					$children[$tagname][$size]['#'] = self::_xml_depth($vals, $i);
 
 				break;
 

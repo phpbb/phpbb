@@ -480,16 +480,16 @@ if ($config['allow_bookmarks'] && $user->data['is_registered'] && request_var('b
 }
 
 // Grab ranks
-$ranks = $cache->obtain_ranks();
+$ranks = cache::obtain_ranks();
 
 // Grab icons
-$icons = $cache->obtain_icons();
+$icons = cache::obtain_icons();
 
 // Grab extensions
 $extensions = array();
 if ($topic_data['topic_attachment'])
 {
-	$extensions = $cache->obtain_attach_extensions($forum_id);
+	$extensions = cache::obtain_attach_extensions($forum_id);
 }
 
 // Forum rules listing

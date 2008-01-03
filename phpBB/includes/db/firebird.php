@@ -27,7 +27,6 @@ class dbal_firebird extends dbal
 {
 	var $last_query_text = '';
 	var $service_handle = false;
-	var $affected_rows = 0;
 
 	/**
 	* Connect to server
@@ -41,7 +40,7 @@ class dbal_firebird extends dbal
 
 		$this->db_connect_id = ($this->persistency) ? @ibase_pconnect($this->server . ':' . $this->dbname, $this->user, $sqlpassword, false, false, 3) : @ibase_connect($this->server . ':' . $this->dbname, $this->user, $sqlpassword, false, false, 3);
 
-		$this->service_handle = (function_exists('ibase_service_attach')) ? @ibase_service_attach($this->server, $this->user, $sqlpassword) : false;
+		$this->service_handle = (strtolower($this->user) == 'sysdba') ? @ibase_service_attach($this->server, $this->user, $sqlpassword) : false;
 
 		return ($this->db_connect_id) ? $this->db_connect_id : $this->sql_error('');
 	}
@@ -51,7 +50,7 @@ class dbal_firebird extends dbal
 	*/
 	function sql_server_info()
 	{
-		if ($this->service_handle !== false && function_exists('ibase_server_info'))
+		if ($this->service_handle !== false)
 		{
 			return @ibase_server_info($this->service_handle, IBASE_SVC_SERVER_VERSION);
 		}
@@ -164,25 +163,6 @@ class dbal_firebird extends dbal
 					}
 				}
 
-				if (!function_exists('ibase_affected_rows') && (preg_match('/^UPDATE ([\w_]++)\s+SET [\w_]++\s*=\s*(?:\'(?:[^\']++|\'\')*+\'|[\d-.]+)(?:,\s*[\w_]++\s*=\s*(?:\'(?:[^\']++|\'\')*+\'|[\d-.]+))*+\s+(WHERE.*)?$/s', $query, $regs) || preg_match('/^DELETE FROM ([\w_]++)\s*(WHERE\s*.*)?$/s', $query, $regs)))
-				{
-					$affected_sql = 'SELECT COUNT(*) as num_rows_affected FROM ' . $regs[1];
-					if (!empty($regs[2]))
-					{
-						$affected_sql .= ' ' . $regs[2];
-					}
-
-					if (!($temp_q_id = @ibase_query($this->db_connect_id, $affected_sql)))
-					{
-						return false;
-					}
-
-					$temp_result = @ibase_fetch_assoc($temp_q_id);
-					@ibase_free_result($temp_q_id);
-
-					$this->affected_rows = ($temp_result) ? $temp_result['NUM_ROWS_AFFECTED'] : false;
-				}
-
 				if (sizeof($array))
 				{
 					$p_query = @ibase_prepare($this->db_connect_id, $query);
@@ -207,15 +187,7 @@ class dbal_firebird extends dbal
 
 				if (!$this->transaction)
 				{
-					if (function_exists('ibase_commit_ret'))
-					{
-						@ibase_commit_ret();
-					}
-					else
-					{
-						// way cooler than ibase_commit_ret :D
-						@ibase_query('COMMIT RETAIN;');
-					}
+					@ibase_commit_ret();
 				}
 
 				if ($cache_ttl && method_exists($cache, 'sql_save'))
@@ -258,15 +230,7 @@ class dbal_firebird extends dbal
 	*/
 	function sql_affectedrows()
 	{
-		// PHP 5+ function
-		if (function_exists('ibase_affected_rows'))
-		{
-			return ($this->db_connect_id) ? @ibase_affected_rows($this->db_connect_id) : false;
-		}
-		else
-		{
-			return $this->affected_rows;
-		}
+		return ($this->db_connect_id) ? @ibase_affected_rows($this->db_connect_id) : false;
 	}
 
 	/**
@@ -438,7 +402,7 @@ class dbal_firebird extends dbal
 	{
 		return array(
 			'message'	=> @ibase_errmsg(),
-			'code'		=> (@function_exists('ibase_errcode') ? @ibase_errcode() : '')
+			'code'		=> @ibase_errcode()
 		);
 	}
 

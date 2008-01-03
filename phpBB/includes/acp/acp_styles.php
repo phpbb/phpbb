@@ -1782,7 +1782,7 @@ parse_css_file = {PARSE_CSS_FILE}
 				$theme_cfg = str_replace(array('{MODE}', '{NAME}', '{COPYRIGHT}', '{VERSION}'), array($mode, $style_row['theme_name'], $style_row['theme_copyright'], $config['version']), $this->theme_cfg);
 
 				// Read old cfg file
-				$items = $cache->obtain_cfg_items($style_row);
+				$items = cache::obtain_cfg_items($style_row);
 				$items = $items['theme'];
 
 				if (!isset($items['parse_css_file']))

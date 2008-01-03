@@ -28,23 +28,23 @@ class template
 	* if it's a root-level variable, it'll be like this:
 	* --> $this->_tpldata[.][0][varname] == value
 	*/
-	var $_tpldata = array('.' => array(0 => array()));
-	var $_rootref;
+	private $_tpldata = array('.' => array(0 => array()));
+	private $_rootref;
 
 	// Root dir and hash of filenames for each template handle.
-	var $root = '';
-	var $cachepath = '';
-	var $files = array();
-	var $filename = array();
+	private $root = '';
+	public $cachepath = '';
+	public $files = array();
+	public $filename = array();
 
 	// this will hash handle names to the compiled/uncompiled code for that handle.
-	var $compiled_code = array();
+	public $compiled_code = array();
 
 	/**
 	* Set template location
 	* @access public
 	*/
-	function set_template()
+	public function set_template()
 	{
 		global $phpbb_root_path, $user;
 
@@ -67,7 +67,7 @@ class template
 	* Set custom template location (able to use directory outside of phpBB)
 	* @access public
 	*/
-	function set_custom_template($template_path, $template_name)
+	public function set_custom_template($template_path, $template_name)
 	{
 		global $phpbb_root_path;
 
@@ -82,13 +82,8 @@ class template
 	* should be a hash of handle => filename pairs.
 	* @access public
 	*/
-	function set_filenames($filename_array)
+	public function set_filenames(array $filename_array)
 	{
-		if (!is_array($filename_array))
-		{
-			return false;
-		}
-
 		foreach ($filename_array as $handle => $filename)
 		{
 			if (empty($filename))
@@ -107,7 +102,7 @@ class template
 	* Destroy template data set
 	* @access public
 	*/
-	function destroy()
+	function __destruct()
 	{
 		$this->_tpldata = array('.' => array(0 => array()));
 	}
@@ -116,7 +111,7 @@ class template
 	* Reset/empty complete block
 	* @access public
 	*/
-	function destroy_block_vars($blockname)
+	public function destroy_block_vars($blockname)
 	{
 		if (strpos($blockname, '.') !== false)
 		{
@@ -146,7 +141,7 @@ class template
 	* Display handle
 	* @access public
 	*/
-	function display($handle, $include_once = true)
+	public function display($handle, $include_once = true)
 	{
 		global $user, $phpbb_hook;
 
@@ -162,7 +157,7 @@ class template
 		{
 			if ((E_NOTICE & error_reporting()) == E_NOTICE)
 			{
-				error_reporting(error_reporting() ^ E_NOTICE);
+				//error_reporting(error_reporting() ^ E_NOTICE);
 			}
 		}
 
@@ -182,7 +177,7 @@ class template
 	* Display the handle and assign the output to a template variable or return the compiled result.
 	* @access public
 	*/
-	function assign_display($handle, $template_var = '', $return_content = true, $include_once = false)
+	public function assign_display($handle, $template_var = '', $return_content = true, $include_once = false)
 	{
 		ob_start();
 		$this->display($handle, $include_once);
@@ -202,7 +197,7 @@ class template
 	* Load a compiled template if possible, if not, recompile it
 	* @access private
 	*/
-	function _tpl_load(&$handle)
+	private function _tpl_load(&$handle)
 	{
 		global $user, $phpEx, $config;
 
@@ -305,7 +300,7 @@ class template
 	* Assign key variable pairs from an array
 	* @access public
 	*/
-	function assign_vars($vararray)
+	public function assign_vars(array $vararray)
 	{
 		foreach ($vararray as $key => $val)
 		{
@@ -319,7 +314,7 @@ class template
 	* Assign a single variable to a single key
 	* @access public
 	*/
-	function assign_var($varname, $varval)
+	public function assign_var($varname, $varval)
 	{
 		$this->_rootref[$varname] = $varval;
 
@@ -330,7 +325,7 @@ class template
 	* Assign key variable pairs from an array to a specified block
 	* @access public
 	*/
-	function assign_block_vars($blockname, $vararray)
+	public function assign_block_vars($blockname, array $vararray)
 	{
 		if (strpos($blockname, '.') !== false)
 		{
@@ -421,7 +416,7 @@ class template
 	* @return bool false on error, true on success
 	* @access public
 	*/
-	function alter_block_array($blockname, $vararray, $key = false, $mode = 'insert')
+	public function alter_block_array($blockname, array $vararray, $key = false, $mode = 'insert')
 	{
 		if (strpos($blockname, '.') !== false)
 		{
@@ -507,7 +502,7 @@ class template
 	* Include a separate template
 	* @access private
 	*/
-	function _tpl_include($filename, $include = true)
+	public function _tpl_include($filename, $include = true)
 	{
 		$handle = $filename;
 		$this->filename[$handle] = $filename;

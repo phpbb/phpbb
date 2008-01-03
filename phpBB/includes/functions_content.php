@@ -660,7 +660,7 @@ function censor_text($text)
 		}
 		else
 		{
-			$censors = $cache->obtain_word_list();
+			$censors = cache::obtain_word_list();
 		}
 	}
 
@@ -722,6 +722,7 @@ function parse_attachments($forum_id, &$message, &$attachments, &$update_count, 
 	//
 	$compiled_attachments = array();
 
+	// @todo: do we really need this check?
 	if (!isset($template->filename['attachment_tpl']))
 	{
 		$template->set_filenames(array(
@@ -731,7 +732,7 @@ function parse_attachments($forum_id, &$message, &$attachments, &$update_count, 
 
 	if (empty($extensions) || !is_array($extensions))
 	{
-		$extensions = $cache->obtain_attach_extensions($forum_id);
+		$extensions = cache::obtain_attach_extensions($forum_id);
 	}
 
 	// Look for missing attachment information...
@@ -1046,7 +1047,7 @@ function extension_allowed($forum_id, $extension, &$extensions)
 	if (empty($extensions))
 	{
 		global $cache;
-		$extensions = $cache->obtain_attach_extensions($forum_id);
+		$extensions = cache::obtain_attach_extensions($forum_id);
 	}
 
 	return (!isset($extensions['_allowed_'][$extension])) ? false : true;
@@ -1187,7 +1188,7 @@ class bitfield
 {
 	var $data;
 
-	function bitfield($bitfield = '')
+	function __construct($bitfield = '')
 	{
 		$this->data = base64_decode($bitfield);
 	}

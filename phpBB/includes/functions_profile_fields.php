@@ -22,16 +22,16 @@ if (!defined('IN_PHPBB'))
 */
 class custom_profile
 {
-	var $profile_types = array(FIELD_INT => 'int', FIELD_STRING => 'string', FIELD_TEXT => 'text', FIELD_BOOL => 'bool', FIELD_DROPDOWN => 'dropdown', FIELD_DATE => 'date');
-	var $profile_cache = array();
-	var $options_lang = array();
+	const profile_types = array(FIELD_INT => 'int', FIELD_STRING => 'string', FIELD_TEXT => 'text', FIELD_BOOL => 'bool', FIELD_DROPDOWN => 'dropdown', FIELD_DATE => 'date');
+	private $profile_cache = array();
+	private $options_lang = array();
 
 	/**
 	* Assign editable fields to template, mode can be profile (for profile change) or register (for registration)
 	* Called by ucp_profile and ucp_register
 	* @access public
 	*/
-	function generate_profile_fields($mode, $lang_id)
+	public function generate_profile_fields($mode, $lang_id)
 	{
 		global $db, $template, $auth;
 
@@ -88,7 +88,7 @@ class custom_profile
 	* Validate entered profile field data
 	* @access public
 	*/
-	function validate_profile_field($field_type, &$field_value, $field_data)
+	public function validate_profile_field($field_type, &$field_value, $field_data)
 	{
 		switch ($field_type)
 		{
@@ -200,7 +200,7 @@ class custom_profile
 	* Build profile cache, used for display
 	* @access private
 	*/
-	function build_cache()
+	private function build_cache()
 	{
 		global $db, $user, $auth;
 
@@ -227,14 +227,15 @@ class custom_profile
 	/**
 	* Get language entries for options and store them here for later use
 	*/
-	function get_option_lang($field_id, $lang_id, $field_type, $preview)
+	private function get_option_lang($field_id, $lang_id, $field_type, $preview)
 	{
 		global $db;
 
 		if ($preview)
 		{
 			$lang_options = (!is_array($this->vars['lang_options'])) ? explode("\n", $this->vars['lang_options']) : $this->vars['lang_options'];
-			
+
+			// @todo: ref optimize
 			foreach ($lang_options as $num => $var)
 			{
 				$this->options_lang[$field_id][$lang_id][($num + 1)] = $var;
@@ -250,6 +251,7 @@ class custom_profile
 				ORDER BY option_id";
 			$result = $db->sql_query($sql);
 
+			// @todo: ref optimize
 			while ($row = $db->sql_fetchrow($result))
 			{
 				$this->options_lang[$field_id][$lang_id][($row['option_id'] + 1)] = $row['lang_value'];
@@ -262,7 +264,7 @@ class custom_profile
 	* Submit profile field
 	* @access public
 	*/
-	function submit_cp_field($mode, $lang_id, &$cp_data, &$cp_error)
+	public function submit_cp_field($mode, $lang_id, &$cp_data, &$cp_error)
 	{
 		global $auth, $db, $user;
 
@@ -354,7 +356,7 @@ class custom_profile
 	* This is directly connected to the user -> mode == grab is to grab the user specific fields, mode == show is for assigning the row to the template
 	* @access public
 	*/
-	function generate_profile_fields_template($mode, $user_id = 0, $profile_row = false)
+	public function generate_profile_fields_template($mode, $user_id = 0, $profile_row = false)
 	{
 		global $db;
 
@@ -446,12 +448,12 @@ class custom_profile
 	/**
 	* Get Profile Value for display
 	*/
-	function get_profile_value($ident_ary)
+	private function get_profile_value($ident_ary)
 	{
 		$value = $ident_ary['value'];
 		$field_type = $ident_ary['data']['field_type'];
 
-		switch ($this->profile_types[$field_type])
+		switch (self::profile_types[$field_type])
 		{
 			case 'int':
 				if ($value == '')
@@ -550,7 +552,7 @@ class custom_profile
 	* Get field value for registration/profile
 	* @access private
 	*/
-	function get_var($field_validation, &$profile_row, $default_value, $preview)
+	private function get_var($field_validation, &$profile_row, $default_value, $preview)
 	{
 		global $user;
 
@@ -609,19 +611,19 @@ class custom_profile
 	* Process int-type
 	* @access private
 	*/
-	function generate_int($profile_row, $preview = false)
+	private function generate_int($profile_row, $preview = false)
 	{
 		global $template;
 
 		$profile_row['field_value'] = $this->get_var('int', $profile_row, $profile_row['field_default_value'], $preview);
-		$template->assign_block_vars($this->profile_types[$profile_row['field_type']], array_change_key_case($profile_row, CASE_UPPER));
+		$template->assign_block_vars(self::profile_types[$profile_row['field_type']], array_change_key_case($profile_row, CASE_UPPER));
 	}
 
 	/**
 	* Process date-type
 	* @access private
 	*/
-	function generate_date($profile_row, $preview = false)
+	private function generate_date($profile_row, $preview = false)
 	{
 		global $user, $template;
 
@@ -673,21 +675,21 @@ class custom_profile
 		unset($now);
 		
 		$profile_row['field_value'] = 0;
-		$template->assign_block_vars($this->profile_types[$profile_row['field_type']], array_change_key_case($profile_row, CASE_UPPER));
+		$template->assign_block_vars(self::profile_types[$profile_row['field_type']], array_change_key_case($profile_row, CASE_UPPER));
 	}
 
 	/**
 	* Process bool-type
 	* @access private
 	*/
-	function generate_bool($profile_row, $preview = false)
+	private function generate_bool($profile_row, $preview = false)
 	{
 		global $template;
 
 		$value = $this->get_var('int', $profile_row, $profile_row['field_default_value'], $preview);
 
 		$profile_row['field_value'] = $value;
-		$template->assign_block_vars($this->profile_types[$profile_row['field_type']], array_change_key_case($profile_row, CASE_UPPER));
+		$template->assign_block_vars(self::profile_types[$profile_row['field_type']], array_change_key_case($profile_row, CASE_UPPER));
 
 		if ($profile_row['field_length'] == 1)
 		{
@@ -711,19 +713,19 @@ class custom_profile
 	* Process string-type
 	* @access private
 	*/
-	function generate_string($profile_row, $preview = false)
+	private function generate_string($profile_row, $preview = false)
 	{
 		global $template;
 
 		$profile_row['field_value'] = $this->get_var('string', $profile_row, $profile_row['lang_default_value'], $preview);
-		$template->assign_block_vars($this->profile_types[$profile_row['field_type']], array_change_key_case($profile_row, CASE_UPPER));
+		$template->assign_block_vars(self::profile_types[$profile_row['field_type']], array_change_key_case($profile_row, CASE_UPPER));
 	}
 
 	/**
 	* Process text-type
 	* @access private
 	*/
-	function generate_text($profile_row, $preview = false)
+	private function generate_text($profile_row, $preview = false)
 	{
 		global $template;
 		global $user, $phpEx, $phpbb_root_path;
@@ -733,14 +735,14 @@ class custom_profile
 		$profile_row['field_cols'] = $field_length[1];
 
 		$profile_row['field_value'] = $this->get_var('string', $profile_row, $profile_row['lang_default_value'], $preview);
-		$template->assign_block_vars($this->profile_types[$profile_row['field_type']], array_change_key_case($profile_row, CASE_UPPER));
+		$template->assign_block_vars(self::profile_types[$profile_row['field_type']], array_change_key_case($profile_row, CASE_UPPER));
 	}
 
 	/**
 	* Process dropdown-type
 	* @access private
 	*/
-	function generate_dropdown($profile_row, $preview = false)
+	private function generate_dropdown($profile_row, $preview = false)
 	{
 		global $user, $template;
 
@@ -752,7 +754,7 @@ class custom_profile
 		}
 
 		$profile_row['field_value'] = $value;
-		$template->assign_block_vars($this->profile_types[$profile_row['field_type']], array_change_key_case($profile_row, CASE_UPPER));
+		$template->assign_block_vars(self::profile_types[$profile_row['field_type']], array_change_key_case($profile_row, CASE_UPPER));
 
 		foreach ($this->options_lang[$profile_row['field_id']][$profile_row['lang_id']] as $option_id => $option_value)
 		{
@@ -769,7 +771,7 @@ class custom_profile
 	* change == user is able to set/enter profile values; preview == just show the value
 	* @access private
 	*/
-	function process_field_row($mode, $profile_row)
+	private function process_field_row($mode, $profile_row)
 	{
 		global $template;
 
@@ -781,13 +783,13 @@ class custom_profile
 		);
 
 		// empty previously filled blockvars
-		foreach ($this->profile_types as $field_case => $field_type)
+		foreach (self::profile_types as $field_case => $field_type)
 		{
 			$template->destroy_block_vars($field_type);
 		}
 
 		// Assign template variables
-		$type_func = 'generate_' . $this->profile_types[$profile_row['field_type']];
+		$type_func = 'generate_' . self::profile_types[$profile_row['field_type']];
 		$this->$type_func($profile_row, $preview);
 
 		// Return templated data
@@ -797,7 +799,7 @@ class custom_profile
 	/**
 	* Build Array for user insertion into custom profile fields table
 	*/
-	function build_insert_sql_array($cp_data)
+	public static function build_insert_sql_array($cp_data)
 	{
 		global $db, $user, $auth;
 
@@ -833,7 +835,7 @@ class custom_profile
 	* Get profile field value on submit
 	* @access private
 	*/
-	function get_profile_field($profile_row)
+	private function get_profile_field($profile_row)
 	{
 		global $phpbb_root_path, $phpEx;
 		global $config;
@@ -906,12 +908,12 @@ class custom_profile
 */
 class custom_profile_admin extends custom_profile
 {
-	var $vars = array();
+	public $vars = array();
 
 	/**
 	* Return possible validation options
 	*/
-	function validate_options()
+	public function validate_options()
 	{
 		global $user;
 
@@ -930,7 +932,7 @@ class custom_profile_admin extends custom_profile
 	/**
 	* Get string options for second step in ACP
 	*/
-	function get_string_options()
+	public function get_string_options()
 	{
 		global $user;
 
@@ -947,7 +949,7 @@ class custom_profile_admin extends custom_profile
 	/**
 	* Get text options for second step in ACP
 	*/
-	function get_text_options()
+	public function get_text_options()
 	{
 		global $user;
 
@@ -964,7 +966,7 @@ class custom_profile_admin extends custom_profile
 	/**
 	* Get int options for second step in ACP
 	*/
-	function get_int_options()
+	public function get_int_options()
 	{
 		global $user;
 
@@ -981,7 +983,7 @@ class custom_profile_admin extends custom_profile
 	/**
 	* Get bool options for second step in ACP
 	*/
-	function get_bool_options()
+	public function get_bool_options()
 	{
 		global $user, $config, $lang_defs;
 
@@ -1011,7 +1013,7 @@ class custom_profile_admin extends custom_profile
 	/**
 	* Get dropdown options for second step in ACP
 	*/
-	function get_dropdown_options()
+	public function get_dropdown_options()
 	{
 		global $user, $config, $lang_defs;
 
@@ -1045,7 +1047,7 @@ class custom_profile_admin extends custom_profile
 	/**
 	* Get date options for second step in ACP
 	*/
-	function get_date_options()
+	public function get_date_options()
 	{
 		global $user, $config, $lang_defs;
 

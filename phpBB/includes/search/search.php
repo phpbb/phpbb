@@ -17,13 +17,6 @@ if (!defined('IN_PHPBB'))
 }
 
 /**
-* @ignore
-*/
-define('SEARCH_RESULT_NOT_IN_CACHE', 0);
-define('SEARCH_RESULT_IN_CACHE', 1);
-define('SEARCH_RESULT_INCOMPLETE', 2);
-
-/**
 * search_backend
 * optional base class for search plugins providing simple caching based on ACM
 * and functions to retrieve ignore_words and synonyms
@@ -31,11 +24,15 @@ define('SEARCH_RESULT_INCOMPLETE', 2);
 */
 class search_backend
 {
-	var $ignore_words = array();
-	var $match_synonym = array();
-	var $replace_synonym = array();
+	const SEARCH_RESULT_NOT_IN_CACHE = 0;
+	const SEARCH_RESULT_IN_CACHE = 1;
+	const SEARCH_RESULT_INCOMPLETE = 2;
 
-	function search_backend(&$error)
+	public $ignore_words = array();
+	public $match_synonym = array();
+	public $replace_synonym = array();
+
+	function __construct(&$error)
 	{
 		// This class cannot be used as a search plugin
 		$error = true;
@@ -44,7 +41,7 @@ class search_backend
 	/**
 	* Retrieves a language dependend list of words that should be ignored by the search
 	*/
-	function get_ignore_words()
+	public function get_ignore_words()
 	{
 		if (!sizeof($this->ignore_words))
 		{
@@ -66,7 +63,7 @@ class search_backend
 	/**
 	* Stores a list of synonyms that should be replaced in $this->match_synonym and $this->replace_synonym and caches them
 	*/
-	function get_synonyms()
+	public function get_synonyms()
 	{
 		if (!sizeof($this->match_synonym))
 		{
@@ -95,14 +92,14 @@ class search_backend
 	*
 	* @return int SEARCH_RESULT_NOT_IN_CACHE or SEARCH_RESULT_IN_CACHE or SEARCH_RESULT_INCOMPLETE
 	*/
-	function obtain_ids($search_key, &$result_count, &$id_ary, $start, $per_page, $sort_dir)
+	protected function obtain_ids($search_key, &$result_count, &$id_ary, $start, $per_page, $sort_dir)
 	{
 		global $cache;
 
 		if (!($stored_ids = $cache->get('_search_results_' . $search_key)))
 		{
 			// no search results cached for this search_key
-			return SEARCH_RESULT_NOT_IN_CACHE;
+			return self::SEARCH_RESULT_NOT_IN_CACHE;
 		}
 		else
 		{
@@ -119,7 +116,7 @@ class search_backend
 				// the user requested a page past the last index
 				if ($start < 0)
 				{
-					return SEARCH_RESULT_NOT_IN_CACHE;
+					return self::SEARCH_RESULT_NOT_IN_CACHE;
 				}
 			}
 
@@ -143,9 +140,9 @@ class search_backend
 
 			if (!$complete)
 			{
-				return SEARCH_RESULT_INCOMPLETE;
+				return self::SEARCH_RESULT_INCOMPLETE;
 			}
-			return SEARCH_RESULT_IN_CACHE;
+			return self::SEARCH_RESULT_IN_CACHE;
 		}
 	}
 
@@ -155,7 +152,7 @@ class search_backend
 	* @param array &$id_ary contains a list of post or topic ids that shall be cached, the first element
 	* 	must have the absolute index $start in the result set.
 	*/
-	function save_ids($search_key, $keywords, $author_ary, $result_count, &$id_ary, $start, $sort_dir)
+	protected function save_ids($search_key, $keywords, $author_ary, $result_count, &$id_ary, $start, $sort_dir)
 	{
 		global $cache, $config, $db, $user;
 
@@ -264,7 +261,7 @@ class search_backend
 	/**
 	* Removes old entries from the search results table and removes searches with keywords that contain a word in $words.
 	*/
-	function destroy_cache($words, $authors = false)
+	public function destroy_cache($words, $authors = false)
 	{
 		global $db, $cache, $config;
 

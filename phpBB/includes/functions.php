@@ -323,7 +323,7 @@ function _hash_gensalt_private($input, &$itoa64, $iteration_count_log2 = 6)
 	}
 
 	$output = '$H$';
-	$output .= $itoa64[min($iteration_count_log2 + ((PHP_VERSION >= 5) ? 5 : 3), 30)];
+	$output .= $itoa64[min($iteration_count_log2 + 5, 30)];
 	$output .= _hash_encode64($input, 6, $itoa64);
 
 	return $output;
@@ -409,118 +409,17 @@ function _hash_crypt_private($password, $setting, &$itoa64)
 	* consequently in lower iteration counts and hashes that are
 	* quicker to crack (by non-PHP code).
 	*/
-	if (PHP_VERSION >= 5)
+	$hash = md5($salt . $password, true);
+	do
 	{
-		$hash = md5($salt . $password, true);
-		do
-		{
-			$hash = md5($hash . $password, true);
-		}
-		while (--$count);
+		$hash = md5($hash . $password, true);
 	}
-	else
-	{
-		$hash = pack('H*', md5($salt . $password));
-		do
-		{
-			$hash = pack('H*', md5($hash . $password));
-		}
-		while (--$count);
-	}
+	while (--$count);
 
 	$output = substr($setting, 0, 12);
 	$output .= _hash_encode64($hash, 16, $itoa64);
 
 	return $output;
-}
-
-// Compatibility functions
-
-if (!function_exists('array_combine'))
-{
-	/**
-	* A wrapper for the PHP5 function array_combine()
-	* @param array $keys contains keys for the resulting array
-	* @param array $values contains values for the resulting array
-	*
-	* @return Returns an array by using the values from the keys array as keys and the
-	* 	values from the values array as the corresponding values. Returns false if the
-	* 	number of elements for each array isn't equal or if the arrays are empty.
-	*/
-	function array_combine($keys, $values)
-	{
-		$keys = array_values($keys);
-		$values = array_values($values);
-
-		$n = sizeof($keys);
-		$m = sizeof($values);
-		if (!$n || !$m || ($n != $m))
-		{
-			return false;
-		}
-
-		$combined = array();
-		for ($i = 0; $i < $n; $i++)
-		{
-			$combined[$keys[$i]] = $values[$i];
-		}
-		return $combined;
-	}
-}
-
-if (!function_exists('str_split'))
-{
-	/**
-	* A wrapper for the PHP5 function str_split()
-	* @param array $string contains the string to be converted
-	* @param array $split_length contains the length of each chunk
-	*
-	* @return  Converts a string to an array. If the optional split_length parameter is specified,
-	*  	the returned array will be broken down into chunks with each being split_length in length,
-	*  	otherwise each chunk will be one character in length. FALSE is returned if split_length is
-	*  	less than 1. If the split_length length exceeds the length of string, the entire string is
-	*  	returned as the first (and only) array element.
-	*/
-	function str_split($string, $split_length = 1)
-	{
-		if ($split_length < 1)
-		{
-			return false;
-		}
-		else if ($split_length >= strlen($string))
-		{
-			return array($string);
-		}
-		else
-		{
-			preg_match_all('#.{1,' . $split_length . '}#s', $string, $matches);
-			return $matches[0];
-		}
-	}
-}
-
-if (!function_exists('stripos'))
-{
-	/**
-	* A wrapper for the PHP5 function stripos
-	* Find position of first occurrence of a case-insensitive string
-	*
-	* @param string $haystack is the string to search in
-	* @param string $needle is the string to search for
-	*
-	* @return mixed Returns the numeric position of the first occurrence of needle in the haystack string. Unlike strpos(), stripos() is case-insensitive.
-	* Note that the needle may be a string of one or more characters.
-	* If needle is not found, stripos() will return boolean FALSE.
-	*/
-	function stripos($haystack, $needle)
-	{
-		if (preg_match('#' . preg_quote($needle, '#') . '#i', $haystack, $m))
-		{
-			return strpos($haystack, $m[0]);
-		}
-
-		return false;
-	}
 }
 
 if (!function_exists('realpath'))
@@ -710,18 +609,6 @@ else
 		}
 
 		return $path;
-	}
-}
-
-if (!function_exists('htmlspecialchars_decode'))
-{
-	/**
-	* A wrapper for htmlspecialchars_decode
-	* @ignore
-	*/
-	function htmlspecialchars_decode($string, $quote_style = ENT_COMPAT)
-	{
-		return strtr($string, array_flip(get_html_translation_table(HTML_SPECIALCHARS, $quote_style)));
 	}
 }
 
@@ -3153,6 +3040,8 @@ function page_header($page_title = '', $display_online_list = true)
 			ORDER BY u.username_clean ASC, s.session_ip ASC';
 		$result = $db->sql_query($sql);
 
+		$prev_user_id = false;
+
 		while ($row = $db->sql_fetchrow($result))
 		{
 			// User is logged in and therefore not a guest
@@ -3355,6 +3244,9 @@ function page_header($page_title = '', $display_online_list = true)
 		'S_BOARD_DISABLED'		=> ($config['board_disable']) ? true : false,
 		'S_REGISTERED_USER'		=> $user->data['is_registered'],
 		'S_IS_BOT'				=> $user->data['is_bot'],
+		'S_IN_SEARCH'			=> false,
+		'S_VIEWTOPIC'			=> false,
+		'S_VIEWFORUM'			=> false,
 		'S_USER_PM_POPUP'		=> $user->optionget('popuppm'),
 		'S_USER_LANG'			=> $user->lang['USER_LANG'],
 		'S_USER_BROWSER'		=> (isset($user->data['session_browser'])) ? $user->data['session_browser'] : $user->lang['UNKNOWN_BROWSER'],

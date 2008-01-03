@@ -24,20 +24,20 @@ if (!defined('IN_PHPBB'))
 */
 class captcha
 {
-	var $width = 360;
-	var $height = 96;
+	const width = 360;
+	const height = 96;
 
 	/**
 	* Create the image containing $code with a seed of $seed
 	*/
-	function execute($code, $seed)
+	public static function execute($code, $seed)
 	{
 		global $config;
 		srand($seed);
 		mt_srand($seed);
 
 		// Create image
-		$img = imagecreatetruecolor($this->width, $this->height);
+		$img = imagecreatetruecolor(self::width, self::height);
 
 		// Generate colours
 		$colour = new colour_manager($img, array(
@@ -53,15 +53,15 @@ class captcha
 
 		// Generate code characters
 		$characters = $sizes = $bounding_boxes = array();
-		$width_avail = $this->width - 15;
+		$width_avail = self::width - 15;
 		$code_len = strlen($code);
 
-		$captcha_bitmaps = $this->captcha_bitmaps();
+		$captcha_bitmaps = self::captcha_bitmaps();
 		for ($i = 0; $i < $code_len; ++$i)
 		{
 			$characters[$i] = new char_cube3d($captcha_bitmaps, $code[$i]);
 
-			list($min, $max) = $characters[$i]->range();
+			list($min, $max) = char_cube3d::range();
 			$sizes[$i] = mt_rand($min, $max);
 
 			$box = $characters[$i]->dimensions($sizes[$i]);
@@ -82,20 +82,20 @@ class captcha
 		if ($config['captcha_gd_x_grid'])
 		{
 			$grid = (int) $config['captcha_gd_x_grid'];
-			for ($y = 0; $y < $this->height; $y += mt_rand($grid - 2, $grid + 2))
+			for ($y = 0; $y < self::height; $y += mt_rand($grid - 2, $grid + 2))
 			{
 				$current_colour = $scheme[array_rand($scheme)];
-				imageline($img, mt_rand(0,4), mt_rand($y - 3, $y), mt_rand($this->width - 5, $this->width), mt_rand($y - 3, $y), $current_colour);
+				imageline($img, mt_rand(0,4), mt_rand($y - 3, $y), mt_rand(self::width - 5, self::width), mt_rand($y - 3, $y), $current_colour);
 			}
 		}
 
 		if ($config['captcha_gd_y_grid'])
 		{
 			$grid = (int) $config['captcha_gd_y_grid'];
-			for ($x = 0; $x < $this->width; $x += mt_rand($grid - 2, $grid + 2))
+			for ($x = 0; $x < self::width; $x += mt_rand($grid - 2, $grid + 2))
 			{
 				$current_colour = $scheme[array_rand($scheme)];
-				imagedashedline($img, mt_rand($x -3, $x + 3), mt_rand(0, 4), mt_rand($x -3, $x + 3), mt_rand($this->height - 5, $this->height), $current_colour);
+				imagedashedline($img, mt_rand($x -3, $x + 3), mt_rand(0, 4), mt_rand($x -3, $x + 3), mt_rand(self::height - 5, self::height), $current_colour);
 			}
 		}
 
@@ -104,7 +104,7 @@ class captcha
 		{
 			$dimm = $bounding_boxes[$i];
 			$xoffset += ($offset[$i] - $dimm[0]);
-			$yoffset = mt_rand(-$dimm[1], $this->height - $dimm[3]);
+			$yoffset = mt_rand(-$dimm[1], self::height - $dimm[3]);
 
 			$characters[$i]->drawchar($sizes[$i], $xoffset, $yoffset, $img, $colour->get_resource('background'), $scheme);
 			$xoffset += $dimm[2];
@@ -112,7 +112,7 @@ class captcha
 		
 		if ($config['captcha_gd_foreground_noise'])
 		{
-			$this->noise_line($img, 0, 0, $this->width, $this->height, $colour->get_resource('background'), $scheme, $bg_colours);
+			self::noise_line($img, 0, 0, self::width, self::height, $colour->get_resource('background'), $scheme, $bg_colours);
 		}
 
 		// Send image
@@ -125,7 +125,7 @@ class captcha
 	/**
 	* Noise line
 	*/
-	function noise_line($img, $min_x, $min_y, $max_x, $max_y, $bg, $font, $non_font)
+	private static function noise_line($img, $min_x, $min_y, $max_x, $max_y, $bg, $font, $non_font)
 	{
 		imagesetthickness($img, 2);
 
@@ -174,7 +174,7 @@ class captcha
 	/**
 	* Return bitmaps
 	*/
-	function captcha_bitmaps()
+	private static function captcha_bitmaps()
 	{
 		return array(
 			'width'		=> 9,
@@ -786,21 +786,21 @@ class captcha
 */
 class char_cube3d
 {
-	var $bitmap;
-	var $bitmap_width;
-	var $bitmap_height;
+	private $bitmap;
+	private $bitmap_width;
+	private $bitmap_height;
 
-	var $basis_matrix = array(array(1, 0, 0), array(0, 1, 0), array(0, 0, 1));
-	var $abs_x = array(1, 0);
-	var $abs_y = array(0, 1);
-	var $x = 0;
-	var $y = 1;
-	var $z = 2;
-	var $letter = '';
+	private $basis_matrix = array(array(1, 0, 0), array(0, 1, 0), array(0, 0, 1));
+	private $abs_x = array(1, 0);
+	private $abs_y = array(0, 1);
+	private $x = 0;
+	private $y = 1;
+	private $z = 2;
+	private $letter = '';
 
 	/**
 	*/
-	function char_cube3d(&$bitmaps, $letter)
+	function __construct(&$bitmaps, $letter)
 	{
 		$this->bitmap			= $bitmaps['data'][$letter];
 		$this->bitmap_width		= $bitmaps['width'];
@@ -886,7 +886,7 @@ class char_cube3d
 	/**
 	* Draw a character
 	*/
-	function drawchar($scale, $xoff, $yoff, $img, $background, $colours)
+	public function drawchar($scale, $xoff, $yoff, $img, $background, $colours)
 	{
 		$width	= $this->bitmap_width;
 		$height	= $this->bitmap_height;
@@ -915,16 +915,16 @@ class char_cube3d
 					$origin = array(0, 0, 0);
 					$xvec = $this->scale($this->basis_matrix[$this->x], $scale);
 					$yvec = $this->scale($this->basis_matrix[$this->y], $scale);
-					$face_corner = $this->sum2($xvec, $yvec);
+					$face_corner = self::sum2($xvec, $yvec);
 
 					$zvec = $this->scale($this->basis_matrix[$this->z], $scale);
-					$x_corner = $this->sum2($xvec, $zvec);
-					$y_corner = $this->sum2($yvec, $zvec);
+					$x_corner = self::sum2($xvec, $zvec);
+					$y_corner = self::sum2($yvec, $zvec);
 
-					imagefilledpolygon($img, $this->gen_poly($xo, $yo, $origin, $xvec, $x_corner,$zvec), 4, $colour1);
-					imagefilledpolygon($img, $this->gen_poly($xo, $yo, $origin, $yvec, $y_corner,$zvec), 4, $colour2);
+					imagefilledpolygon($img, self::gen_poly($xo, $yo, $origin, $xvec, $x_corner,$zvec), 4, $colour1);
+					imagefilledpolygon($img, self::gen_poly($xo, $yo, $origin, $yvec, $y_corner,$zvec), 4, $colour2);
 
-					$face = $this->gen_poly($xo, $yo, $origin, $xvec, $face_corner, $yvec);
+					$face = self::gen_poly($xo, $yo, $origin, $xvec, $face_corner, $yvec);
 
 					imagefilledpolygon($img, $face, 4, $background);
 					imagepolygon($img, $face, 4, $colour1);
@@ -936,7 +936,7 @@ class char_cube3d
 	/*
 	* return a roughly acceptable range of sizes for rendering with this texttype
 	*/
-	function range()
+	public static function range()
 	{
 		return array(3, 4);
 	}
@@ -944,7 +944,7 @@ class char_cube3d
 	/**
 	* Vector length
 	*/
-	function vectorlen($vector)
+	private static function vectorlen($vector)
 	{
 		return sqrt(pow($vector[0], 2) + pow($vector[1], 2) + pow($vector[2], 2));
 	}
@@ -952,10 +952,10 @@ class char_cube3d
 	/**
 	* Normalize
 	*/
-	function normalize(&$vector, $length = 1)
+	private static function normalize(&$vector, $length = 1)
 	{
 		$length = (( $length < 1) ? 1 : $length);
-		$length /= $this->vectorlen($vector);
+		$length /= self::vectorlen($vector);
 		$vector[0] *= $length;
 		$vector[1] *= $length;
 		$vector[2] *= $length;
@@ -963,7 +963,7 @@ class char_cube3d
 
 	/**
 	*/
-	function cross_product($vector1, $vector2)
+	private static function cross_product($vector1, $vector2)
 	{
 		$retval = array(0, 0, 0);
 		$retval[0] =  (($vector1[1] * $vector2[2]) - ($vector1[2] * $vector2[1]));
@@ -975,21 +975,21 @@ class char_cube3d
 
 	/**
 	*/
-	function sum($vector1, $vector2)
+	private static function sum($vector1, $vector2)
 	{
 		return array($vector1[0] + $vector2[0], $vector1[1] + $vector2[1], $vector1[2] + $vector2[2]);
 	}
 
 	/**
 	*/
-	function sum2($vector1, $vector2)
+	private static function sum2($vector1, $vector2)
 	{
 		return array($vector1[0] + $vector2[0], $vector1[1] + $vector2[1]);
 	}
 
 	/**
 	*/
-	function scale($vector, $length)
+	private static function scale($vector, $length)
 	{
 		if (sizeof($vector) == 2)
 		{
@@ -1001,7 +1001,7 @@ class char_cube3d
 
 	/**
 	*/
-	function gen_poly($xoff, $yoff, &$vec1, &$vec2, &$vec3, &$vec4)
+	private static function gen_poly($xoff, $yoff, &$vec1, &$vec2, &$vec3, &$vec4)
 	{
 		$poly = array();
 		$poly[0] = $xoff + $vec1[0];
@@ -1019,7 +1019,7 @@ class char_cube3d
 	/**
 	* dimensions
 	*/
-	function dimensions($size)
+	public function dimensions($size)
 	{
 		$xn = $this->scale($this->basis_matrix[$this->x], -($this->bitmap_width / 2) * $size);
 		$xp = $this->scale($this->basis_matrix[$this->x], ($this->bitmap_width / 2) * $size);
@@ -1027,10 +1027,10 @@ class char_cube3d
 		$yp = $this->scale($this->basis_matrix[$this->y], ($this->bitmap_height / 2) * $size);
 
 		$p = array();
-		$p[0] = $this->sum2($xn, $yn);
-		$p[1] = $this->sum2($xp, $yn);
-		$p[2] = $this->sum2($xp, $yp);
-		$p[3] = $this->sum2($xn, $yp);
+		$p[0] = self::sum2($xn, $yn);
+		$p[1] = self::sum2($xp, $yn);
+		$p[2] = self::sum2($xp, $yp);
+		$p[3] = self::sum2($xn, $yp);
 
 		$min_x = $max_x = $p[0][0];
 		$min_y = $max_y = $p[0][1];
@@ -1052,15 +1052,15 @@ class char_cube3d
 */
 class colour_manager
 {
-	var $img;
-	var $mode;
-	var $colours;
-	var $named_colours;
+	private $img;
+	private $mode;
+	private $colours;
+	private $named_colours;
 
 	/**
 	* Create the colour manager, link it to the image resource
 	*/
-	function colour_manager($img, $background = false, $mode = 'ahsv')
+	function __construct($img, $background = false, $mode = 'ahsv')
 	{
 		$this->img = $img;
 		$this->mode = $mode;
@@ -1077,7 +1077,7 @@ class colour_manager
 	/**
 	* Lookup a named colour resource
 	*/
-	function get_resource($named_colour)
+	public function get_resource($named_colour)
 	{
 		if (isset($this->named_colours[$named_colour]))
 		{
@@ -1095,7 +1095,7 @@ class colour_manager
 	/**
 	* Assign a name to a colour resource
 	*/
-	function name_colour($name, $resource)
+	private function name_colour($name, $resource)
 	{
 		$this->named_colours[$name] = $resource;
 	}
@@ -1103,7 +1103,7 @@ class colour_manager
 	/**
 	* names and allocates a colour resource
 	*/
-	function allocate_named($name, $colour, $mode = false)
+	private function allocate_named($name, $colour, $mode = false)
 	{
 		$resource = $this->allocate($colour, $mode);
 
@@ -1117,7 +1117,7 @@ class colour_manager
 	/**
 	* allocates a specified colour into the image
 	*/
-	function allocate($colour, $mode = false)
+	private function allocate($colour, $mode = false)
 	{
 		if ($mode === false)
 		{
@@ -1164,7 +1164,7 @@ class colour_manager
 	/**
 	* randomly generates a colour, with optional params
 	*/
-	function random_colour($params = array(), $mode = false)
+	private function random_colour($params = array(), $mode = false)
 	{
 		if ($mode === false)
 		{
@@ -1263,7 +1263,7 @@ class colour_manager
 
 	/**
 	*/
-	function colour_scheme($resource, $include_original = true)
+	public function colour_scheme($resource, $include_original = true)
 	{
 		$mode = 'hsv';
 
@@ -1289,7 +1289,7 @@ class colour_manager
 
 	/**
 	*/
-	function mono_range($resource, $count = 5, $include_original = true)
+	public function mono_range($resource, $count = 5, $include_original = true)
 	{
 		if (is_array($resource))
 		{
@@ -1331,7 +1331,7 @@ class colour_manager
 	/**
 	* Convert from one colour model to another
 	*/
-	function model_convert($colour, $from_model, $to_model)
+	private static function model_convert($colour, $from_model, $to_model)
 	{
 		if ($from_model == $to_model)
 		{
@@ -1387,7 +1387,7 @@ class colour_manager
 	/**
 	* Slightly altered from wikipedia's algorithm
 	*/
-	function hsv2rgb($hsv)
+	private static function hsv2rgb($hsv)
 	{
 		colour_manager::normalize_hue($hsv[0]);
 
@@ -1450,7 +1450,7 @@ class colour_manager
 	/**
 	* (more than) Slightly altered from wikipedia's algorithm
 	*/
-	function rgb2hsv($rgb)
+	private static function rgb2hsv($rgb)
 	{
 		$r = min(255, max(0, $rgb[0]));
 		$g = min(255, max(0, $rgb[1]));
@@ -1488,7 +1488,7 @@ class colour_manager
 
 	/**
 	*/
-	function normalize_hue(&$hue)
+	private static function normalize_hue(&$hue)
 	{
 		$hue %= 360;
 
@@ -1501,7 +1501,7 @@ class colour_manager
 	/**
 	* Alternate hue to hue
 	*/
-	function ah2h($ahue)
+	private static function ah2h($ahue)
 	{
 		if (is_array($ahue))
 		{
@@ -1535,7 +1535,7 @@ class colour_manager
 	/**
 	* hue to Alternate hue
 	*/
-	function h2ah($hue)
+	private static function h2ah($hue)
 	{
 		if (is_array($hue))
 		{

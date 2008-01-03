@@ -450,7 +450,7 @@ if ($keywords || $author || $author_id || $search_id || $submit)
 	$user->add_lang('viewtopic');
 
 	// Grab icons
-	$icons = $cache->obtain_icons();
+	$icons = cache::obtain_icons();
 
 	// Output header
 	if ($search_id && ($total_match_count > 1000))

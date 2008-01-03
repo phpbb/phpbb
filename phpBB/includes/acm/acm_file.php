@@ -22,18 +22,18 @@ if (!defined('IN_PHPBB'))
 */
 class acm
 {
-	var $vars = array();
-	var $var_expires = array();
-	var $is_modified = false;
+	private $vars = array();
+	private $var_expires = array();
+	private $is_modified = false;
 
-	var $sql_rowset = array();
-	var $sql_row_pointer = array();
-	var $cache_dir = '';
+	public $sql_rowset = array();
+	private $sql_row_pointer = array();
+	public $cache_dir = '';
 
 	/**
 	* Set cache path
 	*/
-	function acm()
+	function __construct()
 	{
 		global $phpbb_root_path;
 		$this->cache_dir = $phpbb_root_path . 'cache/';
@@ -42,25 +42,24 @@ class acm
 	/**
 	* Load global cache
 	*/
-	function load()
+	private function load()
 	{
 		global $phpEx;
+
+		// grab the global cache
 		if (file_exists($this->cache_dir . 'data_global.' . $phpEx))
 		{
 			@include($this->cache_dir . 'data_global.' . $phpEx);
-		}
-		else
-		{
-			return false;
+			return true;
 		}
 
-		return true;
+		return false;
 	}
 
 	/**
 	* Unload cache object
 	*/
-	function unload()
+	public function unload()
 	{
 		$this->save();
 		unset($this->vars);
@@ -77,7 +76,7 @@ class acm
 	/**
 	* Save modified objects
 	*/
-	function save()
+	private function save()
 	{
 		if (!$this->is_modified)
 		{
@@ -112,7 +111,7 @@ class acm
 	/**
 	* Tidy cache
 	*/
-	function tidy()
+	public function tidy()
 	{
 		global $phpEx;
 
@@ -161,9 +160,9 @@ class acm
 	/**
 	* Get saved cache object
 	*/
-	function get($var_name)
+	public function get($var_name)
 	{
-		if ($var_name[0] == '_')
+		if ($var_name[0] === '_')
 		{
 			global $phpEx;
 
@@ -186,7 +185,7 @@ class acm
 	*/
 	function put($var_name, $var, $ttl = 31536000)
 	{
-		if ($var_name[0] == '_')
+		if ($var_name[0] === '_')
 		{
 			global $phpEx;
 
@@ -252,7 +251,7 @@ class acm
 	{
 		global $phpEx;
 
-		if ($var_name == 'sql' && !empty($table))
+		if ($var_name === 'sql' && !empty($table))
 		{
 			if (!is_array($table))
 			{
@@ -310,7 +309,7 @@ class acm
 			return;
 		}
 
-		if ($var_name[0] == '_')
+		if ($var_name[0] === '_')
 		{
 			$this->remove_file($this->cache_dir . 'data' . $var_name . ".$phpEx");
 		}
@@ -330,7 +329,7 @@ class acm
 	*/
 	function _exists($var_name)
 	{
-		if ($var_name[0] == '_')
+		if ($var_name[0] === '_')
 		{
 			global $phpEx;
 			return file_exists($this->cache_dir . 'data' . $var_name . ".$phpEx");

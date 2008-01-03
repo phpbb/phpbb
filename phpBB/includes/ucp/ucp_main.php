@@ -26,7 +26,7 @@ class ucp_main
 	var $p_master;
 	var $u_action;
 	
-	function ucp_main(&$p_master)
+	function __construct(&$p_master)
 	{
 		$this->p_master = &$p_master;
 	}

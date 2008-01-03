@@ -303,7 +303,7 @@ $template->assign_vars(array(
 ));
 
 // Grab icons
-$icons = $cache->obtain_icons();
+$icons = cache::obtain_icons();
 
 // Grab all topic data
 $rowset = $announcement_list = $topic_list = $global_announce_list = array();

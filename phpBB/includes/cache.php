@@ -20,16 +20,16 @@ if (!defined('IN_PHPBB'))
 * Class for grabbing/handling cached entries, extends acm_file or acm_db depending on the setup
 * @package acm
 */
-class cache extends acm
+class cache
 {
 	/**
 	* Get config values
 	*/
-	function obtain_config()
+	public static function obtain_config()
 	{
-		global $db;
+		global $db, $cache;
 
-		if (($config = $this->get('config')) !== false)
+		if (($config = $cache->get('config')) !== false)
 		{
 			$sql = 'SELECT config_name, config_value
 				FROM ' . CONFIG_TABLE . '
@@ -61,7 +61,7 @@ class cache extends acm
 			}
 			$db->sql_freeresult($result);
 
-			$this->put('config', $cached_config);
+			$cache->put('config', $cached_config);
 		}
 	
 		return $config;
@@ -71,12 +71,14 @@ class cache extends acm
 	* Obtain list of naughty words and build preg style replacement arrays for use by the
 	* calling script
 	*/
-	function obtain_word_list()
+	public static function obtain_word_list()
 	{
-		global $db;
+		global $cache;
 
-		if (($censors = $this->get('_word_censors')) === false)
+		if (($censors = $cache->get('_word_censors')) === false)
 		{
+			global $db;
+
 			$sql = 'SELECT word, replacement
 				FROM ' . WORDS_TABLE;
 			$result = $db->sql_query($sql);
@@ -89,7 +91,7 @@ class cache extends acm
 			}
 			$db->sql_freeresult($result);
 
-			$this->put('_word_censors', $censors);
+			$cache->put('_word_censors', $censors);
 		}
 
 		return $censors;
@@ -98,12 +100,14 @@ class cache extends acm
 	/**
 	* Obtain currently listed icons
 	*/
-	function obtain_icons()
+	public static function obtain_icons()
 	{
-		if (($icons = $this->get('_icons')) === false)
+		global $cache;
+
+		if (($icons = $cache->get('_icons')) === false)
 		{
 			global $db;
-	
+
 			// Topic icons
 			$sql = 'SELECT *
 				FROM ' . ICONS_TABLE . '
@@ -120,7 +124,7 @@ class cache extends acm
 			}
 			$db->sql_freeresult($result);
 
-			$this->put('_icons', $icons);
+			$cache->put('_icons', $icons);
 		}
 
 		return $icons;
@@ -129,12 +133,14 @@ class cache extends acm
 	/**
 	* Obtain ranks
 	*/
-	function obtain_ranks()
+	public static function obtain_ranks()
 	{
-		if (($ranks = $this->get('_ranks')) === false)
+		global $cache;
+
+		if (($ranks = $cache->get('_ranks')) === false)
 		{
 			global $db;
-	
+
 			$sql = 'SELECT *
 				FROM ' . RANKS_TABLE . '
 				ORDER BY rank_min DESC';
@@ -161,7 +167,7 @@ class cache extends acm
 			}
 			$db->sql_freeresult($result);
 
-			$this->put('_ranks', $ranks);
+			$cache->put('_ranks', $ranks);
 		}
 
 		return $ranks;
@@ -174,9 +180,11 @@ class cache extends acm
 	*
 	* @return array allowed extensions array.
 	*/
-	function obtain_attach_extensions($forum_id)
+	public static function obtain_attach_extensions($forum_id)
 	{
-		if (($extensions = $this->get('_extensions')) === false)
+		global $cache;
+
+		if (($extensions = $cache->get('_extensions')) === false)
 		{
 			global $db;
 
@@ -220,7 +228,7 @@ class cache extends acm
 			}
 			$db->sql_freeresult($result);
 
-			$this->put('_extensions', $extensions);
+			$cache->put('_extensions', $extensions);
 		}
 
 		// Forum post
@@ -279,12 +287,14 @@ class cache extends acm
 	/**
 	* Obtain active bots
 	*/
-	function obtain_bots()
+	public static function obtain_bots()
 	{
-		if (($bots = $this->get('_bots')) === false)
+		global $cache;
+
+		if (($bots = $cache->get('_bots')) === false)
 		{
 			global $db;
-	
+
 			switch ($db->sql_layer)
 			{
 				case 'mssql':
@@ -319,7 +329,7 @@ class cache extends acm
 			}
 			$db->sql_freeresult($result);
 
-			$this->put('_bots', $bots);
+			$cache->put('_bots', $bots);
 		}
 	
 		return $bots;
@@ -328,9 +338,9 @@ class cache extends acm
 	/**
 	* Obtain cfg file data
 	*/
-	function obtain_cfg_items($theme)
+	public static function obtain_cfg_items($theme)
 	{
-		global $config, $phpbb_root_path;
+		global $config, $phpbb_root_path, $cache;
 
 		$parsed_items = array(
 			'theme'		=> array(),
@@ -340,7 +350,7 @@ class cache extends acm
 
 		foreach ($parsed_items as $key => $parsed_array)
 		{
-			$parsed_array = $this->get('_cfg_' . $key . '_' . $theme[$key . '_path']);
+			$parsed_array = $cache->get('_cfg_' . $key . '_' . $theme[$key . '_path']);
 
 			if ($parsed_array === false)
 			{
@@ -366,7 +376,7 @@ class cache extends acm
 				$parsed_array = parse_cfg_file($filename);
 				$parsed_array['filetime'] = @filemtime($filename);
 
-				$this->put('_cfg_' . $key . '_' . $theme[$key . '_path'], $parsed_array);
+				$cache->put('_cfg_' . $key . '_' . $theme[$key . '_path'], $parsed_array);
 			}
 			$parsed_items[$key] = $parsed_array;
 		}
@@ -377,9 +387,11 @@ class cache extends acm
 	/**
 	* Obtain disallowed usernames
 	*/
-	function obtain_disallowed_usernames()
+	public static function obtain_disallowed_usernames()
 	{
-		if (($usernames = $this->get('_disallowed_usernames')) === false)
+		global $cache;
+
+		if (($usernames = $cache->get('_disallowed_usernames')) === false)
 		{
 			global $db;
 
@@ -394,7 +406,7 @@ class cache extends acm
 			}
 			$db->sql_freeresult($result);
 
-			$this->put('_disallowed_usernames', $usernames);
+			$cache->put('_disallowed_usernames', $usernames);
 		}
 
 		return $usernames;
@@ -403,12 +415,14 @@ class cache extends acm
 	/**
 	* Obtain hooks...
 	*/
-	function obtain_hooks()
+	public static function obtain_hooks()
 	{
-		global $phpbb_root_path, $phpEx;
+		global $cache;
 
-		if (($hook_files = $this->get('_hooks')) === false)
+		if (($hook_files = $cache->get('_hooks')) === false)
 		{
+			global $phpbb_root_path;
+			
 			$hook_files = array();
 
 			// Now search for hooks...
@@ -416,6 +430,8 @@ class cache extends acm
 
 			if ($dh)
 			{
+				global $phpEx;
+
 				while (($file = readdir($dh)) !== false)
 				{
 					if (strpos($file, 'hook_') === 0 && substr($file, -(strlen($phpEx) + 1)) === '.' . $phpEx)
@@ -426,7 +442,7 @@ class cache extends acm
 				closedir($dh);
 			}
 
-			$this->put('_hooks', $hook_files);
+			$cache->put('_hooks', $hook_files);
 		}
 
 		return $hook_files;

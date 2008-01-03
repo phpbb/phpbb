@@ -1106,7 +1106,7 @@ function get_user_rank($user_rank, $user_posts, &$rank_title, &$rank_img, &$rank
 	if (empty($ranks))
 	{
 		global $cache;
-		$ranks = $cache->obtain_ranks();
+		$ranks = cache::obtain_ranks();
 	}
 
 	if (!empty($user_rank))

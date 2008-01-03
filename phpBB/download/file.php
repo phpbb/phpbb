@@ -24,7 +24,7 @@ if (isset($_GET['avatar']))
 	require($phpbb_root_path . 'includes/constants.' . $phpEx);
 
 	$db = new $sql_db();
-	$cache = new cache();
+	$cache = new acm();
 
 	// Connect to DB
 	if (!@$db->sql_connect($dbhost, $dbuser, $dbpasswd, $dbname, $dbport, false, false))
@@ -36,7 +36,7 @@ if (isset($_GET['avatar']))
 	// worst-case default
 	$browser = (!empty($_SERVER['HTTP_USER_AGENT'])) ? htmlspecialchars((string) $_SERVER['HTTP_USER_AGENT']) : 'msie 6.0';
 
-	$config = $cache->obtain_config();
+	$config = cache::obtain_config();
 	$filename = $_GET['avatar'];
 	$avatar_group = false;
 	if ($filename[0] === 'g')
@@ -172,7 +172,7 @@ if ($attachment['is_orphan'])
 	}
 
 	// Obtain all extensions...
-	$extensions = $cache->obtain_attach_extensions(true);
+	$extensions = cache::obtain_attach_extensions(true);
 }
 else
 {

@@ -20,7 +20,7 @@ $starttime = explode(' ', microtime());
 $starttime = $starttime[1] + $starttime[0];
 
 // Report all errors, except notices
-error_reporting(E_ALL ^ E_NOTICE);
+error_reporting(E_ALL | E_STRICT);
 
 /*
 * Remove variables created by register_globals from the global scope
@@ -199,7 +199,7 @@ set_error_handler(defined('PHPBB_MSG_HANDLER') ? PHPBB_MSG_HANDLER : 'msg_handle
 $user		= new user();
 $auth		= new auth();
 $template	= new template();
-$cache		= new cache();
+$cache		= new acm();
 $db			= new $sql_db();
 
 // Connect to DB
@@ -209,13 +209,13 @@ $db->sql_connect($dbhost, $dbuser, $dbpasswd, $dbname, $dbport, false, defined('
 unset($dbpasswd);
 
 // Grab global variables, re-cache if necessary
-$config = $cache->obtain_config();
+$config = cache::obtain_config();
 
 // Add own hook handler
 require($phpbb_root_path . 'includes/hooks/index.' . $phpEx);
 $phpbb_hook = new phpbb_hook(array('exit_handler', 'phpbb_user_session_handler', 'append_sid', array('template', 'display')));
 
-foreach ($cache->obtain_hooks() as $hook)
+foreach (cache::obtain_hooks() as $hook)
 {
 	@include($phpbb_root_path . 'includes/hooks/' . $hook . '.' . $phpEx);
 }
