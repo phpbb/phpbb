@@ -2164,6 +2164,7 @@ function cache_moderators()
 	if ($db->truncate)
 	{
 		$db->sql_query('TRUNCATE TABLE ' . MODERATOR_CACHE_TABLE);
+	}
 	else
 	{
 		$db->sql_query('DELETE FROM ' . MODERATOR_CACHE_TABLE);

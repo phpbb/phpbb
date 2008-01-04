@@ -205,6 +205,7 @@ class acp_main
 						if ($db->truncate)
 						{
 							$db->sql_query('TRUNCATE TABLE ' . TOPICS_POSTED_TABLE);
+						}
 						else
 						{
 							$db->sql_query('DELETE FROM ' . TOPICS_POSTED_TABLE);

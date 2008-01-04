@@ -480,6 +480,7 @@ class acp_icons
 						if ($db->truncate)
 						{
 							$db->sql_query('TRUNCATE TABLE ' . $table);
+						}
 						else
 						{
 							$db->sql_query('DELETE FROM ' . $table);
