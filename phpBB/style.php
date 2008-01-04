@@ -140,7 +140,7 @@ if ($id)
 	}
 
 	// Expire time of seven days if not recached
-	$expire_time = 7*86400;
+	$expire_time = 7 * 86400;
 	$recache = false;
 
 	// Re-cache stylesheet data if necessary
@@ -177,7 +177,10 @@ if ($id)
 
 	if ($recache)
 	{
-		include_once($phpbb_root_path . 'includes/acp/acp_styles.' . $phpEx);
+		if (!class_exists('acp_styles'))
+		{
+			include($phpbb_root_path . 'includes/acp/acp_styles.' . $phpEx);
+		}
 
 		$theme['theme_data'] = acp_styles::db_theme_data($theme);
 		$theme['theme_mtime'] = $update_time;

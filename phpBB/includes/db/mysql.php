@@ -32,6 +32,9 @@ class dbal_mysql extends dbal
 	var $mysql_version;
 	var $multi_insert = true;
 
+	// Supports multiple table deletion
+	var $multi_table_deletion = false;
+
 	/**
 	* Connect to server
 	* @access public
@@ -299,6 +302,20 @@ class dbal_mysql extends dbal
 		}
 
 		return @mysql_real_escape_string($msg, $this->db_connect_id);
+	}
+
+	/**
+	* Expose a DBMS specific function
+	*/
+	function sql_function($type, $col)
+	{
+		switch ($type)
+		{
+			case 'length_varchar':
+			case 'length_text':
+				return 'LENGTH(' . $col . ')';
+			break;
+		}
 	}
 
 	/**

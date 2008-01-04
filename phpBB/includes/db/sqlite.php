@@ -25,6 +25,12 @@ include_once($phpbb_root_path . 'includes/db/dbal.' . $phpEx);
 */
 class dbal_sqlite extends dbal
 {
+	// like MS ACCESS, SQLite does not support COUNT(DISTINCT ...)
+	var $count_distinct = false;
+
+	// can't truncate a table
+	var $truncate = false;
+
 	/**
 	* Connect to server
 	*/
@@ -255,6 +261,20 @@ class dbal_sqlite extends dbal
 		$expression = str_replace(array(chr(0) . "\?", chr(0) . "\*"), array('?', '*'), $expression);
 
 		return 'GLOB \'' . $this->sql_escape($expression) . '\'';
+	}
+
+	/**
+	* Expose a DBMS specific function
+	*/
+	function sql_function($type, $col)
+	{
+		switch ($type)
+		{
+			case 'length_varchar':
+			case 'length_text':
+				return 'LENGTH(' . $col . ')';
+			break;
+		}
 	}
 
 	/**

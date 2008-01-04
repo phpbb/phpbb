@@ -28,6 +28,9 @@ class dbal_firebird extends dbal
 	var $last_query_text = '';
 	var $service_handle = false;
 
+	// can't truncate a table
+	var $truncate = false;
+
 	/**
 	* Connect to server
 	*/
@@ -374,6 +377,20 @@ class dbal_firebird extends dbal
 	function sql_escape($msg)
 	{
 		return str_replace("'", "''", $msg);
+	}
+
+	/**
+	* Expose a DBMS specific function
+	*/
+	function sql_function($type, $col)
+	{
+		switch ($type)
+		{
+			case 'length_varchar':
+			case 'length_text':
+				return 'OCTET_LENGTH(' . $col . ')';
+			break;
+		}
 	}
 
 	/**

@@ -3007,7 +3007,15 @@ function page_header($page_title = '', $display_online_list = true)
 		// Get number of online guests
 		if (!$config['load_online_guests'])
 		{
-			if ($db->sql_layer === 'sqlite')
+			if ($db->count_distinct)
+			{
+				$sql = 'SELECT COUNT(DISTINCT s.session_ip) as num_guests
+					FROM ' . SESSIONS_TABLE . ' s
+					WHERE s.session_user_id = ' . ANONYMOUS . '
+						AND s.session_time >= ' . (time() - ($config['load_online_time'] * 60)) .
+					$reading_sql;
+			}
+			else
 			{
 				$sql = 'SELECT COUNT(session_ip) as num_guests
 					FROM (
@@ -3017,14 +3025,6 @@ function page_header($page_title = '', $display_online_list = true)
 								AND s.session_time >= ' . (time() - ($config['load_online_time'] * 60)) .
 								$reading_sql .
 					')';
-			}
-			else
-			{
-				$sql = 'SELECT COUNT(DISTINCT s.session_ip) as num_guests
-					FROM ' . SESSIONS_TABLE . ' s
-					WHERE s.session_user_id = ' . ANONYMOUS . '
-						AND s.session_time >= ' . (time() - ($config['load_online_time'] * 60)) .
-					$reading_sql;
 			}
 			$result = $db->sql_query($sql);
 			$guests_online = (int) $db->sql_fetchfield('num_guests');

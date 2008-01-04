@@ -211,53 +211,22 @@ class acp_reasons
 				// Let the deletion be confirmed...
 				if (confirm_box(true))
 				{
-					$sql = 'SELECT reason_id
+					$sql = 'SELECT reason_id, report_text
 						FROM ' . REPORTS_REASONS_TABLE . "
 						WHERE LOWER(reason_title) = 'other'";
 					$result = $db->sql_query($sql);
-					$other_reason_id = (int) $db->sql_fetchfield('reason_id');
+					$row = $db->sql_fetchrow($result);
+
+					$other_reason_id = (int) $row['reason_id'];
+					$report_text = $row['report_text'];
+
 					$db->sql_freeresult($result);
 
-					switch ($db->sql_layer)
-					{
-						// The ugly one!
-						case 'mysqli':
-						case 'mysql4':
-						case 'mysql':
-							// Change the reports using this reason to 'other'
-							$sql = 'UPDATE ' . REPORTS_TABLE . '
-								SET reason_id = ' . $other_reason_id . ", report_text = CONCAT('" . $db->sql_escape($reason_row['reason_description']) . "\n\n', report_text)
-								WHERE reason_id = $reason_id";
-						break;
+					$report_text .= $reason_row['reason_description'] . "\n\n";
 
-						// Standard? What's that?
-						case 'mssql':
-						case 'mssql_odbc':
-							// Change the reports using this reason to 'other'
-							$sql = "DECLARE @ptrval binary(16)
-
-									SELECT @ptrval = TEXTPTR(report_text)
-										FROM " . REPORTS_TABLE . "
-									WHERE reason_id = " . $reason_id . "
-
-									UPDATETEXT " . REPORTS_TABLE . ".report_text @ptrval 0 0 '" . $db->sql_escape($reason_row['reason_description']) . "\n\n'
-
-									UPDATE " . REPORTS_TABLE . '
-										SET reason_id = ' . $other_reason_id . "
-									WHERE reason_id = $reason_id";
-						break;
-
-						// Teh standard
-						case 'postgres':
-						case 'oracle':
-						case 'firebird':
-						case 'sqlite':
-							// Change the reports using this reason to 'other'
-							$sql = 'UPDATE ' . REPORTS_TABLE . '
-								SET reason_id = ' . $other_reason_id . ", report_text = '" . $db->sql_escape($reason_row['reason_description']) . "\n\n' || report_text
-								WHERE reason_id = $reason_id";
-						break;
-					}
+					$sql = 'UPDATE ' . REPORTS_TABLE . '
+						SET reason_id = ' . $other_reason_id . ", report_text = '" . $db->sql_escape($report_text) "'
+						WHERE reason_id = $reason_id";
 					$db->sql_query($sql);
 
 					$db->sql_query('DELETE FROM ' . REPORTS_REASONS_TABLE . ' WHERE reason_id = ' . $reason_id);

@@ -864,14 +864,14 @@ class fulltext_native extends search_backend
 					}
 					else
 					{
-						if ($db->sql_layer == 'sqlite')
+						if ($db->count_distinct)
 						{
-							$sql = 'SELECT COUNT(topic_id) as total_results
-								FROM (SELECT DISTINCT t.topic_id';
+							$sql = 'SELECT COUNT(DISTINCT t.topic_id) as total_results';
 						}
 						else
 						{
-							$sql = 'SELECT COUNT(DISTINCT t.topic_id) as total_results';
+							$sql = 'SELECT COUNT(topic_id) as total_results
+								FROM (SELECT DISTINCT t.topic_id';
 						}
 
 						$sql .= ' FROM ' . TOPICS_TABLE . ' t, ' . POSTS_TABLE . " p
@@ -881,7 +881,7 @@ class fulltext_native extends search_backend
 								$m_approve_fid_sql
 								$sql_fora
 								AND t.topic_id = p.topic_id
-								$sql_time" . (($db->sql_layer == 'sqlite') ? ')' : '');
+								$sql_time" . (($db->count_distinct) ? '' : ')');
 					}
 					$result = $db->sql_query($sql);
 

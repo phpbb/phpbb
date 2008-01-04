@@ -88,7 +88,7 @@ class acm
 		if ($fp = @fopen($this->cache_dir . 'data_global.' . $phpEx, 'wb'))
 		{
 			@flock($fp, LOCK_EX);
-			fwrite($fp, "<?php\n\$this->vars = " . var_export($this->vars, true) . ";\n\n\$this->var_expires = " . var_export($this->var_expires, true) . "\n?>");
+			fwrite($fp, "<?php\n\$this->vars = unserialize('" . serialize($this->vars) . "');\n\$this->var_expires = unserialize('" . serialize($this->var_expires) . "');");
 			@flock($fp, LOCK_UN);
 			fclose($fp);
 
@@ -192,7 +192,7 @@ class acm
 			if ($fp = @fopen($this->cache_dir . "data{$var_name}.$phpEx", 'wb'))
 			{
 				@flock($fp, LOCK_EX);
-				fwrite($fp, "<?php\n\$expired = (time() > " . (time() + $ttl) . ") ? true : false;\nif (\$expired) { return; }\n\n\$data = " . var_export($var, true) . ";\n?>");
+				fwrite($fp, "<?php\n\$expired = (time() > " . (time() + $ttl) . ") ? true : false;\nif (\$expired) { return; }\n\$data =  " . (sizeof($var) ? "unserialize('" . serialize($var) . "');" : 'array();'));
 				@flock($fp, LOCK_UN);
 				fclose($fp);
 
@@ -210,7 +210,7 @@ class acm
 	/**
 	* Purge cache data
 	*/
-	function purge()
+	public function purge()
 	{
 		// Purge all phpbb cache files
 		$dir = @opendir($this->cache_dir);
@@ -247,7 +247,7 @@ class acm
 	/**
 	* Destroy cache data
 	*/
-	function destroy($var_name, $table = '')
+	public function destroy($var_name, $table = '')
 	{
 		global $phpEx;
 
@@ -327,7 +327,7 @@ class acm
 	/**
 	* Check if a given cache entry exist
 	*/
-	function _exists($var_name)
+	private function _exists($var_name)
 	{
 		if ($var_name[0] === '_')
 		{
@@ -353,7 +353,7 @@ class acm
 	/**
 	* Load cached sql query
 	*/
-	function sql_load($query)
+	public function sql_load($query)
 	{
 		global $phpEx;
 
@@ -386,7 +386,7 @@ class acm
 	/**
 	* Save sql query
 	*/
-	function sql_save($query, &$query_result, $ttl)
+	public function sql_save($query, &$query_result, $ttl)
 	{
 		global $db, $phpEx;
 
@@ -408,10 +408,10 @@ class acm
 			}
 			$db->sql_freeresult($query_result);
 
-			$file = "<?php\n\n/* " . str_replace('*/', '*\/', $query) . " */\n";
+			$file = "<?php\n/* " . str_replace('*/', '*\/', $query) . " */";
 			$file .= "\n\$expired = (time() > " . (time() + $ttl) . ") ? true : false;\nif (\$expired) { return; }\n";
 
-			fwrite($fp, $file . "\n\$this->sql_rowset[\$query_id] = " . var_export($this->sql_rowset[$query_id], true) . ";\n?>");
+			fwrite($fp, $file . "\$this->sql_rowset[\$query_id] = " . (sizeof($this->sql_rowset[$query_id]) ? "unserialize('" . serialize($this->sql_rowset[$query_id]) . "');" : 'array();'));
 			@flock($fp, LOCK_UN);
 			fclose($fp);
 
@@ -422,17 +422,9 @@ class acm
 	}
 
 	/**
-	* Ceck if a given sql query exist in cache
-	*/
-	function sql_exists($query_id)
-	{
-		return isset($this->sql_rowset[$query_id]);
-	}
-
-	/**
 	* Fetch row from cache (database)
 	*/
-	function sql_fetchrow($query_id)
+	public function sql_fetchrow($query_id)
 	{
 		if ($this->sql_row_pointer[$query_id] < sizeof($this->sql_rowset[$query_id]))
 		{
@@ -445,7 +437,7 @@ class acm
 	/**
 	* Fetch a field from the current row of a cached database result (database)
 	*/
-	function sql_fetchfield($query_id, $field)
+	public function sql_fetchfield($query_id, $field)
 	{
 		if ($this->sql_row_pointer[$query_id] < sizeof($this->sql_rowset[$query_id]))
 		{
@@ -458,7 +450,7 @@ class acm
 	/**
 	* Seek a specific row in an a cached database result (database)
 	*/
-	function sql_rowseek($rownum, $query_id)
+	public function sql_rowseek($rownum, $query_id)
 	{
 		if ($rownum >= sizeof($this->sql_rowset[$query_id]))
 		{
@@ -472,7 +464,7 @@ class acm
 	/**
 	* Free memory used for a cached database result (database)
 	*/
-	function sql_freeresult($query_id)
+	public function sql_freeresult($query_id)
 	{
 		if (!isset($this->sql_rowset[$query_id]))
 		{
@@ -488,7 +480,7 @@ class acm
 	/**
 	* Removes/unlinks file
 	*/
-	function remove_file($filename)
+	private function remove_file($filename)
 	{
 		if (!@unlink($filename))
 		{

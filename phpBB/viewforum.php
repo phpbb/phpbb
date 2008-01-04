@@ -405,8 +405,23 @@ else if (empty($active_forum_ary['exclude_forum_id']))
 else
 {
 	$get_forum_ids = array_diff($active_forum_ary['forum_id'], $active_forum_ary['exclude_forum_id']);
-	$sql_where = (sizeof($get_forum_ids)) ? $db->sql_in_set('t.forum_id', $get_forum_ids) : 't.forum_id = ' . $forum_id;
+	$sql_where = $db->sql_in_set('t.forum_id', $get_forum_ids);
 }
+
+// Grab just the sorted topic ids
+$sql = 'SELECT t.topic_id
+	FROM ' . TOPICS_TABLE . " t
+	WHERE $sql_where
+		AND t.topic_type IN (" . POST_NORMAL . ', ' . POST_STICKY . ")
+		$sql_approved
+		$sql_limit_time
+	ORDER BY t.topic_type " . ((!$store_reverse) ? 'DESC' : 'ASC') . ', ' . $sql_sort_order;
+$result = $db->sql_query_limit($sql, $sql_limit, $sql_start);
+while ($row = $db->sql_fetchrow($result))
+{
+	$topic_list[] = (int) $row['topic_id'];
+}
+$db->sql_freeresult($result);
 
 // SQL array for obtaining topics/stickies
 $sql_array = array(
@@ -414,19 +429,14 @@ $sql_array = array(
 	'FROM'			=> $sql_array['FROM'],
 	'LEFT_JOIN'		=> $sql_array['LEFT_JOIN'],
 
-	'WHERE'			=> $sql_where . '
-		AND t.topic_type IN (' . POST_NORMAL . ', ' . POST_STICKY . ")
-		$sql_approved
-		$sql_limit_time",
-
-	'ORDER_BY'		=> 't.topic_type ' . ((!$store_reverse) ? 'DESC' : 'ASC') . ', ' . $sql_sort_order,
+	'WHERE'			=> $db->sql_in_set('t.topic_id', $topic_list),
 );
 
 // If store_reverse, then first obtain topics, then stickies, else the other way around...
 // Funnily enough you typically save one query if going from the last page to the middle (store_reverse) because
 // the number of stickies are not known
 $sql = $db->sql_build_query('SELECT', $sql_array);
-$result = $db->sql_query_limit($sql, $sql_limit, $sql_start);
+$result = $db->sql_query($sql);
 
 $shadow_topic_list = array();
 while ($row = $db->sql_fetchrow($result))
@@ -437,7 +447,6 @@ while ($row = $db->sql_fetchrow($result))
 	}
 
 	$rowset[$row['topic_id']] = $row;
-	$topic_list[] = $row['topic_id'];
 }
 $db->sql_freeresult($result);
 

@@ -28,6 +28,9 @@ class dbal_mysqli extends dbal
 {
 	var $multi_insert = true;
 
+	// Supports multiple table deletion
+	var $multi_table_deletion = false;
+
 	/**
 	* Connect to server
 	*/
@@ -268,6 +271,20 @@ class dbal_mysqli extends dbal
 	function sql_escape($msg)
 	{
 		return @mysqli_real_escape_string($this->db_connect_id, $msg);
+	}
+
+	/**
+	* Expose a DBMS specific function
+	*/
+	function sql_function($type, $col)
+	{
+		switch ($type)
+		{
+			case 'length_varchar':
+			case 'length_text':
+				return 'LENGTH(' . $col . ')';
+			break;
+		}
 	}
 
 	/**

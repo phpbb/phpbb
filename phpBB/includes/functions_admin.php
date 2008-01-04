@@ -1004,40 +1004,38 @@ function delete_topic_shadows($max_age, $forum_id = '', $auto_sync = true)
 {
 	$where = (is_array($forum_id)) ? 'AND ' . $db->sql_in_set('t.forum_id', array_map('intval', $forum_id)) : (($forum_id) ? 'AND t.forum_id = ' . (int) $forum_id : '');
 
-	switch ($db->sql_layer)
+	if ($db->multi_table_deletion)
 	{
-		case 'mysql4':
-		case 'mysqli':
-			$sql = 'DELETE t.*
-				FROM ' . TOPICS_TABLE . ' t, ' . TOPICS_TABLE . ' t2
+			$sql = 'DELETE FROM ' . TOPICS_TABLE . ' t
+				USING ' . TOPICS_TABLE . ' t2
 				WHERE t.topic_moved_id = t2.topic_id
 					AND t.topic_time < ' . (time() - $max_age)
-				. $where;
+					. $where;
 			$db->sql_query($sql);
-		break;
-	
-		default:
-			$sql = 'SELECT t.topic_id
-				FROM ' . TOPICS_TABLE . ' t, ' . TOPICS_TABLE . ' t2
-				WHERE t.topic_moved_id = t2.topic_id
-					AND t.topic_time < ' . (time() - $max_age)
-				. $where;
-			$result = $db->sql_query($sql);
 
-			$topic_ids = array();
-			while ($row = $db->sql_fetchrow($result))
-			{
-				$topic_ids[] = $row['topic_id'];
-			}
-			$db->sql_freeresult($result);
+	}
+	else
+	{
+		$sql = 'SELECT t.topic_id
+			FROM ' . TOPICS_TABLE . ' t, ' . TOPICS_TABLE . ' t2
+			WHERE t.topic_moved_id = t2.topic_id
+				AND t.topic_time < ' . (time() - $max_age)
+			. $where;
+		$result = $db->sql_query($sql);
 
-			if (sizeof($topic_ids))
-			{
-				$sql = 'DELETE FROM ' . TOPICS_TABLE . '
-					WHERE ' . $db->sql_in_set('topic_id', $topic_ids);
-				$db->sql_query($sql);
-			}
-		break;
+		$topic_ids = array();
+		while ($row = $db->sql_fetchrow($result))
+		{
+			$topic_ids[] = $row['topic_id'];
+		}
+		$db->sql_freeresult($result);
+
+		if (sizeof($topic_ids))
+		{
+			$sql = 'DELETE FROM ' . TOPICS_TABLE . '
+				WHERE ' . $db->sql_in_set('topic_id', $topic_ids);
+			$db->sql_query($sql);
+		}
 	}
 
 	if ($auto_sync)
@@ -1203,41 +1201,37 @@ function sync($mode, $where_type = '', $where_ids = '', $resync_parents = false,
 	switch ($mode)
 	{
 		case 'topic_moved':
-			switch ($db->sql_layer)
+			if ($db->multi_table_deletion)
 			{
-				case 'mysql4':
-				case 'mysqli':
-					$sql = 'DELETE FROM ' . TOPICS_TABLE . '
-						USING ' . TOPICS_TABLE . ' t1, ' . TOPICS_TABLE . " t2
-						WHERE t1.topic_moved_id = t2.topic_id
-							AND t1.forum_id = t2.forum_id";
-					$db->sql_query($sql);
-				break;
-			
-				default:
-					$sql = 'SELECT t1.topic_id
-						FROM ' .TOPICS_TABLE . ' t1, ' . TOPICS_TABLE . " t2
-						WHERE t1.topic_moved_id = t2.topic_id
-							AND t1.forum_id = t2.forum_id";
-					$result = $db->sql_query($sql);
+				$sql = 'DELETE FROM ' . TOPICS_TABLE . '
+					USING ' . TOPICS_TABLE . ' t1, ' . TOPICS_TABLE . " t2
+					WHERE t1.topic_moved_id = t2.topic_id
+						AND t1.forum_id = t2.forum_id";
+				$db->sql_query($sql);
+			}
+			else
+			{
+				$sql = 'SELECT t1.topic_id
+					FROM ' .TOPICS_TABLE . ' t1, ' . TOPICS_TABLE . " t2
+					WHERE t1.topic_moved_id = t2.topic_id
+						AND t1.forum_id = t2.forum_id";
+				$result = $db->sql_query($sql);
 
-					$topic_id_ary = array();
-					while ($row = $db->sql_fetchrow($result))
-					{
-						$topic_id_ary[] = $row['topic_id'];
-					}
-					$db->sql_freeresult($result);
+				$topic_id_ary = array();
+				while ($row = $db->sql_fetchrow($result))
+				{
+					$topic_id_ary[] = $row['topic_id'];
+				}
+				$db->sql_freeresult($result);
 
-					if (!sizeof($topic_id_ary))
-					{
-						return;
-					}
+				if (!sizeof($topic_id_ary))
+				{
+					return;
+				}
 
-					$sql = 'DELETE FROM ' . TOPICS_TABLE . '
-						WHERE ' . $db->sql_in_set('topic_id', $topic_id_ary);
-					$db->sql_query($sql);
-
-				break;
+				$sql = 'DELETE FROM ' . TOPICS_TABLE . '
+					WHERE ' . $db->sql_in_set('topic_id', $topic_id_ary);
+				$db->sql_query($sql);
 			}
 		break;
 
@@ -2167,16 +2161,12 @@ function cache_moderators()
 	$cache->destroy('sql', MODERATOR_CACHE_TABLE);
 
 	// Clear table
-	switch ($db->sql_layer)
+	if ($db->truncate)
 	{
-		case 'sqlite':
-		case 'firebird':
-			$db->sql_query('DELETE FROM ' . MODERATOR_CACHE_TABLE);
-		break;
-
-		default:
-			$db->sql_query('TRUNCATE TABLE ' . MODERATOR_CACHE_TABLE);
-		break;
+		$db->sql_query('TRUNCATE TABLE ' . MODERATOR_CACHE_TABLE);
+	else
+	{
+		$db->sql_query('DELETE FROM ' . MODERATOR_CACHE_TABLE);
 	}
 
 	// We add moderators who have forum moderator permissions without an explicit ACL_NEVER setting
@@ -2609,39 +2599,36 @@ function update_foes($group_id = false, $user_id = false)
 			return;
 		}
 
-		switch ($db->sql_layer)
+		if ($db->multi_table_deletion)
 		{
-			case 'mysqli':
-			case 'mysql4':
-				$sql = 'DELETE ' . (($db->sql_layer === 'mysqli' || version_compare($db->mysql_version, '4.1', '>=')) ? 'z.*' : ZEBRA_TABLE) . '
-					FROM ' . ZEBRA_TABLE . ' z, ' . USER_GROUP_TABLE . ' ug
-					WHERE z.zebra_id = ug.user_id
-						AND z.foe = 1
-						AND ' . $db->sql_in_set('ug.group_id', $groups);
+			$sql = 'DELETE FROM' . ZEBRA_TABLE . ' z
+				USING ' . USER_GROUP_TABLE . ' ug
+				WHERE z.zebra_id = ug.user_id
+					AND z.foe = 1
+					AND ' . $db->sql_in_set('ug.group_id', $groups);
+			$db->sql_query($sql);
+		}
+		else
+		{
+			$sql = 'SELECT user_id
+				FROM ' . USER_GROUP_TABLE . '
+				WHERE ' . $db->sql_in_set('group_id', $groups);
+			$result = $db->sql_query($sql);
+
+			$users = array();
+			while ($row = $db->sql_fetchrow($result))
+			{
+				$users[] = (int) $row['user_id'];
+			}
+			$db->sql_freeresult($result);
+
+			if (sizeof($users))
+			{				
+				$sql = 'DELETE FROM ' . ZEBRA_TABLE . '
+					WHERE ' . $db->sql_in_set('zebra_id', $users) . '
+						AND foe = 1';
 				$db->sql_query($sql);
-			break;
-
-			default:
-				$sql = 'SELECT user_id
-					FROM ' . USER_GROUP_TABLE . '
-					WHERE ' . $db->sql_in_set('group_id', $groups);
-				$result = $db->sql_query($sql);
-
-				$users = array();
-				while ($row = $db->sql_fetchrow($result))
-				{
-					$users[] = (int) $row['user_id'];
-				}
-				$db->sql_freeresult($result);
-
-				if (sizeof($users))
-				{				
-					$sql = 'DELETE FROM ' . ZEBRA_TABLE . '
-						WHERE ' . $db->sql_in_set('zebra_id', $users) . '
-							AND foe = 1';
-					$db->sql_query($sql);
-				}
-			break;
+			}
 		}
 
 		return;

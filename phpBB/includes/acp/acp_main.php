@@ -202,16 +202,12 @@ class acp_main
 					break;
 				
 					case 'db_track':
-						switch ($db->sql_layer)
+						if ($db->truncate)
 						{
-							case 'sqlite':
-							case 'firebird':
-								$db->sql_query('DELETE FROM ' . TOPICS_POSTED_TABLE);
-							break;
-
-							default:
-								$db->sql_query('TRUNCATE TABLE ' . TOPICS_POSTED_TABLE);
-							break;
+							$db->sql_query('TRUNCATE TABLE ' . TOPICS_POSTED_TABLE);
+						else
+						{
+							$db->sql_query('DELETE FROM ' . TOPICS_POSTED_TABLE);
 						}
 
 						// This can get really nasty... therefore we only do the last six months

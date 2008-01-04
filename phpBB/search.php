@@ -1047,31 +1047,10 @@ $template->assign_vars(array(
 // only show recent searches to search administrators
 if ($auth->acl_get('a_search'))
 {
-	// Handle large objects differently for Oracle and MSSQL
-	switch ($db->sql_layer)
-	{
-		case 'oracle':
-			$sql = 'SELECT search_time, search_keywords
-				FROM ' . SEARCH_RESULTS_TABLE . '
-				WHERE dbms_lob.getlength(search_keywords) > 0
-				ORDER BY search_time DESC';
-		break;
-	
-		case 'mssql':
-		case 'mssql_odbc':
-			$sql = 'SELECT search_time, search_keywords
-				FROM ' . SEARCH_RESULTS_TABLE . '
-				WHERE DATALENGTH(search_keywords) > 0
-				ORDER BY search_time DESC';
-		break;
-	
-		default:
-			$sql = 'SELECT search_time, search_keywords
-				FROM ' . SEARCH_RESULTS_TABLE . '
-				WHERE search_keywords <> \'\'
-				ORDER BY search_time DESC';
-		break;
-	}
+	$sql = 'SELECT search_time, search_keywords
+		FROM ' . SEARCH_RESULTS_TABLE . '
+		WHERE ' . $db->sql_function('length_text', 'search_keywords') . ' > 0
+		ORDER BY search_time DESC';
 	$result = $db->sql_query_limit($sql, 5);
 
 	while ($row = $db->sql_fetchrow($result))

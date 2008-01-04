@@ -534,6 +534,23 @@ class dbal_oracle extends dbal
 	}
 
 	/**
+	* Expose a DBMS specific function
+	*/
+	function sql_function($type, $col)
+	{
+		switch ($type)
+		{
+			case 'length_varchar':
+				return 'LENGTH(' . $col . ')';
+			break;
+
+			case 'length_text':
+				return 'dbms_lob.getlength(' . $col . ')';
+			break;
+		}
+	}
+
+	/**
 	* Build LIKE expression
 	* @access private
 	*/

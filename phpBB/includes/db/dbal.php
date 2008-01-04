@@ -52,6 +52,15 @@ class dbal
 	// Supports multi inserts?
 	var $multi_insert = false;
 
+	// Supports COUNT(DISTINCT ...)?
+	var $count_distinct = true;
+
+	// Supports multiple table deletion
+	var $multi_table_deletion = false;
+
+	// Supports table truncation
+	var $truncate = true;
+
 	/**
 	* Current sql layer
 	*/

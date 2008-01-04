@@ -1251,28 +1251,10 @@ class parse_message extends bbcode_firstpass
 			// NOTE: obtain_* function? chaching the table contents?
 	
 			// For now setting the ttl to 10 minutes
-			switch ($db->sql_layer)
-			{
-				case 'mssql':
-				case 'mssql_odbc':
-					$sql = 'SELECT *
-						FROM ' . SMILIES_TABLE . '
-						ORDER BY LEN(code) DESC';
-				break;
-	
-				case 'firebird':
-					$sql = 'SELECT *
-						FROM ' . SMILIES_TABLE . '
-						ORDER BY CHAR_LENGTH(code) DESC';
-				break;
+			$sql = 'SELECT *
+				FROM ' . SMILIES_TABLE . '
+				ORDER BY ' . $db->sql_function('length_varchar', 'code') . ' DESC';
 
-				// LENGTH supported by MySQL, IBM DB2, Oracle and Access for sure...
-				default:
-					$sql = 'SELECT *
-						FROM ' . SMILIES_TABLE . '
-						ORDER BY LENGTH(code) DESC';
-				break;
-			}
 			$result = $db->sql_query($sql, 600);
 
 			while ($row = $db->sql_fetchrow($result))

@@ -337,6 +337,20 @@ class dbal_mssql_odbc extends dbal
 	}
 
 	/**
+	* Expose a DBMS specific function
+	*/
+	function sql_function($type, $col)
+	{
+		switch ($type)
+		{
+			case 'length_varchar':
+			case 'length_text':
+				return 'DATALENGTH(' . $col . ')';
+			break;
+		}
+	}
+
+	/**
 	* Build LIKE expression
 	* @access private
 	*/

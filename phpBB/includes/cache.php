@@ -295,31 +295,10 @@ class cache
 		{
 			global $db;
 
-			switch ($db->sql_layer)
-			{
-				case 'mssql':
-				case 'mssql_odbc':
-					$sql = 'SELECT user_id, bot_agent, bot_ip
-						FROM ' . BOTS_TABLE . '
-						WHERE bot_active = 1
-					ORDER BY LEN(bot_agent) DESC';
-				break;
-
-				case 'firebird':
-					$sql = 'SELECT user_id, bot_agent, bot_ip
-						FROM ' . BOTS_TABLE . '
-						WHERE bot_active = 1
-					ORDER BY CHAR_LENGTH(bot_agent) DESC';
-				break;
-
-				// LENGTH supported by MySQL, IBM DB2 and Oracle for sure...
-				default:
-					$sql = 'SELECT user_id, bot_agent, bot_ip
-						FROM ' . BOTS_TABLE . '
-						WHERE bot_active = 1
-					ORDER BY LENGTH(bot_agent) DESC';
-				break;
-			}
+			$sql = 'SELECT user_id, bot_agent, bot_ip
+				FROM ' . BOTS_TABLE . '
+				WHERE bot_active = 1
+			ORDER BY ' . $db->sql_function('length_varchar', 'bot_agent') . 'DESC';
 			$result = $db->sql_query($sql);
 
 			$bots = array();

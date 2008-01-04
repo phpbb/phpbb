@@ -27,7 +27,7 @@ class dbal_postgres extends dbal
 {
 	var $last_query_text = '';
 	var $pgsql_version;
-	
+
 	/**
 	* Connect to server
 	*/
@@ -84,9 +84,17 @@ class dbal_postgres extends dbal
 			// determine what version of PostgreSQL is running, we can be more efficient if they are running 8.2+
 			$this->pgsql_version = @pg_parameter_status($this->db_connect_id, 'server_version');
 
-			if (!empty($this->pgsql_version) && $this->pgsql_version[0] >= '8' && $this->pgsql_version[2] >= '2')
+			if (!empty($this->pgsql_version) && $this->pgsql_version[0] >= '8')
 			{
-				$this->multi_insert = true;
+				if ($this->pgsql_version[2] >= '1')
+				{
+					$this->multi_table_deletion = true;
+				}
+
+				if ($this->pgsql_version[2] >= '2')
+				{
+					$this->multi_insert = true;
+				}
 			}
 
 			if ($schema !== '')
@@ -329,6 +337,20 @@ class dbal_postgres extends dbal
 	function sql_escape($msg)
 	{
 		return @pg_escape_string($msg);
+	}
+
+	/**
+	* Expose a DBMS specific function
+	*/
+	function sql_function($type, $col)
+	{
+		switch ($type)
+		{
+			case 'length_varchar':
+			case 'length_text':
+				return 'LENGTH(' . $col . ')';
+			break;
+		}
 	}
 
 	/**

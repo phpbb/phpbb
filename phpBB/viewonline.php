@@ -97,23 +97,21 @@ $guest_counter = 0;
 // Get number of online guests (if we do not display them)
 if (!$show_guests)
 {
-	switch ($db->sql_layer)
+	if ($db->count_distinct)
 	{
-		case 'sqlite':
-			$sql = 'SELECT COUNT(session_ip) as num_guests
-				FROM (
-					SELECT DISTINCT session_ip
-						FROM ' . SESSIONS_TABLE . '
-						WHERE session_user_id = ' . ANONYMOUS . '
-							AND session_time >= ' . (time() - ($config['load_online_time'] * 60)) .
-				')';
-		break;
-
-		default:
-			$sql = 'SELECT COUNT(DISTINCT session_ip) as num_guests
+		$sql = 'SELECT COUNT(DISTINCT session_ip) as num_guests
 				FROM ' . SESSIONS_TABLE . '
 				WHERE session_user_id = ' . ANONYMOUS . '
 					AND session_time >= ' . (time() - ($config['load_online_time'] * 60));
+	else
+	{
+		$sql = 'SELECT COUNT(session_ip) as num_guests
+			FROM (
+				SELECT DISTINCT session_ip
+					FROM ' . SESSIONS_TABLE . '
+					WHERE session_user_id = ' . ANONYMOUS . '
+						AND session_time >= ' . (time() - ($config['load_online_time'] * 60)) .
+			')';
 		break;
 	}
 	$result = $db->sql_query($sql);
