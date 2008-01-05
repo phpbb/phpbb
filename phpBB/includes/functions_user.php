@@ -137,6 +137,9 @@ function user_update_name($old_name, $new_name)
 	{
 		set_config('newest_username', $new_name, true);
 	}
+
+	// Because some tables/caches use username-specific data we need to purge this here.
+	$cache->destroy('sql', MODERATOR_CACHE_TABLE);
 }
 
 /**
@@ -1471,20 +1474,6 @@ function validate_username($username, $allowed_username = false)
 			return 'USERNAME_DISALLOWED';
 		}
 	}
-
-	$sql = 'SELECT word
-		FROM ' . WORDS_TABLE;
-	$result = $db->sql_query($sql);
-
-	while ($row = $db->sql_fetchrow($result))
-	{
-		if (preg_match('#(' . str_replace('\*', '.*?', preg_quote($row['word'], '#')) . ')#i', $username))
-		{
-			$db->sql_freeresult($result);
-			return 'USERNAME_DISALLOWED';
-		}
-	}
-	$db->sql_freeresult($result);
 
 	return false;
 }

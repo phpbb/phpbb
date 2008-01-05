@@ -913,9 +913,14 @@ class bbcode_firstpass extends bbcode
 
 		$url = ($var1) ? $var1 : $var2;
 
-		if (!$url || ($var1 && !$var2))
+		if ($var1 && !$var2)
 		{
-			return '';
+			$var2 = $var1;
+		}
+
+		if (!$url)
+		{
+			return '[url' . (($var1) ? '=' . $var1 : '') . ']' . $var2 . '[/url]';
 		}
 
 		$valid = false;
@@ -1088,7 +1093,7 @@ class parse_message extends bbcode_firstpass
 		}
 
 		// Check for "empty" message
-		if ($mode !== 'sig' && !utf8_clean_string($this->message))
+		if ($mode !== 'sig' && utf8_clean_string($this->message) === '')
 		{
 			$this->warn_msg[] = $user->lang['TOO_FEW_CHARS'];
 			return $this->warn_msg;
