@@ -520,12 +520,12 @@ if ($save && $user->data['is_registered'] && $auth->acl_get('u_savedrafts') && (
 	}
 	else
 	{
-		if (!$subject || !utf8_clean_string($subject))
+		if (utf8_clean_string($subject) === '')
 		{
 			$error[] = $user->lang['EMPTY_SUBJECT'];
 		}
 
-		if (!$message)
+		if (utf8_clean_string($message) === '')
 		{
 			$error[] = $user->lang['TOO_FEW_CHARS'];
 		}
@@ -769,7 +769,7 @@ if ($submit || $preview || $refresh)
 	}
 
 	// Parse subject
-	if (!$preview && !$refresh && !utf8_clean_string($post_data['post_subject']) && ($mode == 'post' || ($mode == 'edit' && $post_data['topic_first_post_id'] == $post_id)))
+	if (!$preview && !$refresh && utf8_clean_string($post_data['post_subject']) === '' && ($mode == 'post' || ($mode == 'edit' && $post_data['topic_first_post_id'] == $post_id)))
 	{
 		$error[] = $user->lang['EMPTY_SUBJECT'];
 	}

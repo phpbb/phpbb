@@ -494,12 +494,12 @@ function compose_pm($id, $mode, $action)
 		}
 		else
 		{
-			if (!$subject || !utf8_clean_string($subject))
+			if (utf8_clean_string($subject) === '')
 			{
 				$error[] = $user->lang['EMPTY_MESSAGE_SUBJECT'];
 			}
 
-			if (!$message)
+			if (utf8_clean_string($message) === '')
 			{
 				$error[] = $user->lang['TOO_FEW_CHARS'];
 			}
@@ -600,7 +600,7 @@ function compose_pm($id, $mode, $action)
 		// Subject defined
 		if ($submit)
 		{
-			if (!$subject || !utf8_clean_string($subject))
+			if (utf8_clean_string($subject) === '')
 			{
 				$error[] = $user->lang['EMPTY_MESSAGE_SUBJECT'];
 			}
