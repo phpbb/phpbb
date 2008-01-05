@@ -408,38 +408,53 @@ else
 	$sql_where = (sizeof($get_forum_ids)) ? $db->sql_in_set('t.forum_id', $get_forum_ids) : 't.forum_id = ' . $forum_id;
 }
 
-// SQL array for obtaining topics/stickies
-$sql_array = array(
-	'SELECT'		=> $sql_array['SELECT'],
-	'FROM'			=> $sql_array['FROM'],
-	'LEFT_JOIN'		=> $sql_array['LEFT_JOIN'],
-
-	'WHERE'			=> $sql_where . '
-		AND t.topic_type IN (' . POST_NORMAL . ', ' . POST_STICKY . ")
+// Grab just the sorted topic ids
+$sql = 'SELECT t.topic_id
+	FROM ' . TOPICS_TABLE . " t
+	WHERE $sql_where
+		AND t.topic_type IN (" . POST_NORMAL . ', ' . POST_STICKY . ")
 		$sql_approved
-		$sql_limit_time",
-
-	'ORDER_BY'		=> 't.topic_type ' . ((!$store_reverse) ? 'DESC' : 'ASC') . ', ' . $sql_sort_order,
-);
-
-// If store_reverse, then first obtain topics, then stickies, else the other way around...
-// Funnily enough you typically save one query if going from the last page to the middle (store_reverse) because
-// the number of stickies are not known
-$sql = $db->sql_build_query('SELECT', $sql_array);
+		$sql_limit_time
+	ORDER BY t.topic_type " . ((!$store_reverse) ? 'DESC' : 'ASC') . ', ' . $sql_sort_order;
 $result = $db->sql_query_limit($sql, $sql_limit, $sql_start);
 
-$shadow_topic_list = array();
 while ($row = $db->sql_fetchrow($result))
 {
-	if ($row['topic_status'] == ITEM_MOVED)
-	{
-		$shadow_topic_list[$row['topic_moved_id']] = $row['topic_id'];
-	}
-
-	$rowset[$row['topic_id']] = $row;
-	$topic_list[] = $row['topic_id'];
+	$topic_list[] = (int) $row['topic_id'];
 }
 $db->sql_freeresult($result);
+
+// For storing shadow topics
+$shadow_topic_list = array();
+
+if (sizeof($topic_list))
+{
+	// SQL array for obtaining topics/stickies
+	$sql_array = array(
+		'SELECT'		=> $sql_array['SELECT'],
+		'FROM'			=> $sql_array['FROM'],
+		'LEFT_JOIN'		=> $sql_array['LEFT_JOIN'],
+
+		'WHERE'			=> $db->sql_in_set('t.topic_id', $topic_list),
+	);
+
+	// If store_reverse, then first obtain topics, then stickies, else the other way around...
+	// Funnily enough you typically save one query if going from the last page to the middle (store_reverse) because
+	// the number of stickies are not known
+	$sql = $db->sql_build_query('SELECT', $sql_array);
+	$result = $db->sql_query($sql);
+
+	while ($row = $db->sql_fetchrow($result))
+	{
+		if ($row['topic_status'] == ITEM_MOVED)
+		{
+			$shadow_topic_list[$row['topic_moved_id']] = $row['topic_id'];
+		}
+
+		$rowset[$row['topic_id']] = $row;
+	}
+	$db->sql_freeresult($result);
+}
 
 // If we have some shadow topics, update the rowset to reflect their topic information
 if (sizeof($shadow_topic_list))
