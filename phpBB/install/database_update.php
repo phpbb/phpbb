@@ -1787,40 +1787,4 @@ function sql_column_change($dbms, $table_name, $column_name, $column_data)
 	}
 }
 
-function utf8_new_clean_string($text)
-{
-	static $homographs = array();
-	static $utf8_case_fold_nfkc = '';
-	if (empty($homographs))
-	{
-		global $phpbb_root_path, $phpEx;
-		if (!function_exists('utf8_case_fold_nfkc') || !file_exists($phpbb_root_path . 'includes/utf/data/confusables.' . $phpEx))
-		{
-			if (!file_exists($phpbb_root_path . 'install/data/confusables.' . $phpEx))
-			{
-				global $lang;
-				trigger_error(sprintf($lang['UPDATE_REQUIRES_FILE'], $phpbb_root_path . 'install/data/confusables.' . $phpEx), E_USER_ERROR);
-			}
-			$homographs = include($phpbb_root_path . 'install/data/confusables.' . $phpEx);
-			$utf8_case_fold_nfkc = 'utf8_new_case_fold_nfkc';
-		}
-		else
-		{
-			$homographs = include($phpbb_root_path . 'includes/utf/data/confusables.' . $phpEx);
-			$utf8_case_fold_nfkc = 'utf8_case_fold_nfkc';
-		}
-	}
-
-	$text = $utf8_case_fold_nfkc($text);
-	$text = strtr($text, $homographs);
-	// Other control characters
-	$text = preg_replace('#(?:[\x00-\x1F\x7F]+|(?:\xC2[\x80-\x9F])+)#', '', $text);
-
-	$text = preg_replace('# {2,}#', ' ', $text);
-
-	// we can use trim here as all the other space characters should have been turned
-	// into normal ASCII spaces by now
-	return trim($text);
-}
-
 ?>

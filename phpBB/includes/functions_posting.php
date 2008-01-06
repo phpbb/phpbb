@@ -618,6 +618,11 @@ function create_thumbnail($source, $destination, $mimetype)
 	// Only use imagemagick if defined and the passthru function not disabled
 	if ($config['img_imagick'] && function_exists('passthru'))
 	{
+		if (substr($config['img_magick'], -1) !== '/')
+		{
+			$config['img_magick'] .= '/';
+		}
+
 		@passthru(escapeshellcmd($config['img_imagick']) . 'convert' . ((defined('PHP_OS') && preg_match('#^win#i', PHP_OS)) ? '.exe' : '') . ' -quality 85 -antialias -sample ' . $new_width . 'x' . $new_height . ' "' . str_replace('\\', '/', $source) . '" +profile "*" "' . str_replace('\\', '/', $destination) . '"');
 
 		if (file_exists($destination))

@@ -371,7 +371,7 @@ function display_forums($root_data = '', $display_moderators = true, $return_mod
 		$s_subforums_list = array();
 		foreach ($subforums_list as $subforum)
 		{
-			$s_subforums_list[] = '<a href="' . $subforum['link'] . '" class="subforum ' . (($subforum['unread']) ? 'unread' : 'read') . '">' . $subforum['name'] . '</a>';
+			$s_subforums_list[] = '<a href="' . $subforum['link'] . '" class="subforum ' . (($subforum['unread']) ? 'unread' : 'read') . '" title="' . (($subforum['unread']) ? $user->lang['NEW_POSTS'] : $user->lang['NO_NEW_POSTS']) . '">' . $subforum['name'] . '</a>';
 		}
 		$s_subforums_list = (string) implode(', ', $s_subforums_list);
 		$catless = ($row['parent_id'] == $root_data['forum_id']) ? true : false;
@@ -409,6 +409,7 @@ function display_forums($root_data = '', $display_moderators = true, $return_mod
 			$l_post_click_count		=> $post_click_count,
 			'FORUM_FOLDER_IMG'		=> $user->img($folder_image, $folder_alt),
 			'FORUM_FOLDER_IMG_SRC'	=> $user->img($folder_image, $folder_alt, false, '', 'src'),
+			'FORUM_FOLDER_IMG_ALT'	=> isset($user->lang[$folder_alt]) ? $user->lang[$folder_alt] : '',
 			'FORUM_IMAGE'			=> ($row['forum_image']) ? '<img src="' . $phpbb_root_path . $row['forum_image'] . '" alt="' . $user->lang[$folder_alt] . '" />' : '',
 			'FORUM_IMAGE_SRC'		=> ($row['forum_image']) ? $phpbb_root_path . $row['forum_image'] : '',
 			'LAST_POST_SUBJECT'		=> censor_text($last_post_subject),

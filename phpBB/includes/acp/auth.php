@@ -773,6 +773,10 @@ class auth_admin extends auth
 		$cache->destroy('_acl_options');
 		$this->acl_clear_prefetch();
 
+		// Because we just changed the options and also purged the options cache, we instantly update/regenerate it for later calls to succeed.
+		$this->option_ids = $this->acl_options = array();
+		$this->__construct();
+
 		return true;
 	}
 

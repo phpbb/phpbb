@@ -184,7 +184,18 @@ class acp_attachments
 				}
 
 				// We strip eventually manual added convert program, we only want the patch
-				$this->new_config['img_imagick'] = str_replace(array('convert', '.exe'), array('', ''), $this->new_config['img_imagick']);
+				if ($this->new_config['img_imagick'])
+				{
+					// Change path separator
+					$this->new_config['img_magick'] = str_replace('\\', '/', $this->new_config['img_magick']);
+					$this->new_config['img_imagick'] = str_replace(array('convert', '.exe'), array('', ''), $this->new_config['img_imagick']);
+
+					// Check for trailing slash
+					if (substr($this->new_config['img_magick'], -1) !== '/')
+					{
+						$this->new_config['img_magick'] .= '/';
+					}
+				}
 
 				$supported_types = get_supported_image_types();
 
@@ -1134,7 +1145,7 @@ class acp_attachments
 			foreach ($locations as $location)
 			{
 				// The path might not end properly, fudge it
-				if (substr($location, -1, 1) !== '/')
+				if (substr($location, -1) !== '/')
 				{
 					$location .= '/';
 				}
