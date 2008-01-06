@@ -630,7 +630,7 @@ class acp_users
 							}
 
 							$forum_id_ary = array_unique($forum_id_ary);
-							$topic_id_ary = array_unique(array_merge($topic_id_ary, $new_topic_id_ary));
+							$topic_id_ary = array_unique(array_merge(array_keys($topic_id_ary), $new_topic_id_ary));
 
 							if (sizeof($topic_id_ary))
 							{

@@ -94,9 +94,14 @@
 		<li>[Change] Do not check usernames against word censor list. Disallowed usernames is already checked and word censor belong to posts. (Bug #17745)</li>
 		<li>[Fix] Additionally include non-postable forums for moderators forums shown within the teams list. (Bug #17265)</li>
 		<li>[Change] Sped up viewforum considerably (also goes towards mcp_forum)</li>
-
+		<li>[Fix] Do not split topic list for topics being promoted to announcements after been moved to another forum (Bug #18635)</li>
+		<li>[Fix] Allow editing usernames within database_update on username cleanup (Bug #18415)</li>
+		<li>[Fix] Fixing wrong sync() calls if moving all posts by a member in ACP (Bug #18385)</li>
+		<li>[Fix] Check entered imagemagick path for trailing slash (Bug #18205)</li>
+		<li>[Fix] Use proper title on index for new/unread posts (Bug #13101) - patch provided by Pyramide</li>
+		<li>[Fix] Allow calls to $user->set_cookie() define no cookie time for setting session cookies (Bug #18025)</li>
 	</ul>
-	
+
 	<a name="v30rc8"></a><h3>1.i. Changes since 3.0.RC8</h3>
 
 	<ul>

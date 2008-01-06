@@ -616,6 +616,9 @@ if (version_compare($current_version, '3.0.RC8', '<='))
 	$modify_users	= request_var('modify_users', array(0 => ''));
 	$new_usernames	= request_var('new_usernames', array(0 => ''), true);
 
+	// We need this file if someone wants to edit usernames.
+	include($phpbb_root_path . 'includes/utf/utf_normalizer.' . $phpEx);
+
 	if (!class_exists('utf_new_normalizer'))
 	{
 		if (!file_exists($phpbb_root_path . 'install/data/new_normalizer.' . $phpEx))
