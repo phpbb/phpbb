@@ -31,7 +31,7 @@ class phpbb_db_tools
 	var $sql_layer = '';
 
 	var $dbms_type_map = array(
-		'mysql_41'	=> array(
+		'mysql'		=> array(
 			'INT:'		=> 'int(%d)',
 			'BINT'		=> 'bigint(20)',
 			'UINT'		=> 'mediumint(8) UNSIGNED',
@@ -58,36 +58,6 @@ class phpbb_db_tools
 			'VCHAR_UNI'	=> 'varchar(255)',
 			'VCHAR_UNI:'=> 'varchar(%d)',
 			'VCHAR_CI'	=> 'varchar(255)',
-			'VARBINARY'	=> 'varbinary(255)',
-		),
-
-		'mysql_40'	=> array(
-			'INT:'		=> 'int(%d)',
-			'BINT'		=> 'bigint(20)',
-			'UINT'		=> 'mediumint(8) UNSIGNED',
-			'UINT:'		=> 'int(%d) UNSIGNED',
-			'TINT:'		=> 'tinyint(%d)',
-			'USINT'		=> 'smallint(4) UNSIGNED',
-			'BOOL'		=> 'tinyint(1) UNSIGNED',
-			'VCHAR'		=> 'varbinary(255)',
-			'VCHAR:'	=> 'varbinary(%d)',
-			'CHAR:'		=> 'binary(%d)',
-			'XSTEXT'	=> 'blob',
-			'XSTEXT_UNI'=> 'blob',
-			'STEXT'		=> 'blob',
-			'STEXT_UNI'	=> 'blob',
-			'TEXT'		=> 'blob',
-			'TEXT_UNI'	=> 'blob',
-			'MTEXT'		=> 'mediumblob',
-			'MTEXT_UNI'	=> 'mediumblob',
-			'TIMESTAMP'	=> 'int(11) UNSIGNED',
-			'DECIMAL'	=> 'decimal(5,2)',
-			'DECIMAL:'	=> 'decimal(%d,2)',
-			'PDECIMAL'	=> 'decimal(6,3)',
-			'PDECIMAL:'	=> 'decimal(%d,3)',
-			'VCHAR_UNI'	=> 'blob',
-			'VCHAR_UNI:'=> array('varbinary(%d)', 'limit' => array('mult', 3, 255, 'blob')),
-			'VCHAR_CI'	=> 'blob',
 			'VARBINARY'	=> 'varbinary(255)',
 		),
 
@@ -244,7 +214,7 @@ class phpbb_db_tools
 
 	// A list of types being unsigned for better reference in some db's
 	var $unsigned_types = array('UINT', 'UINT:', 'USINT', 'BOOL', 'TIMESTAMP');
-	var $supported_dbms = array('firebird', 'mssql', 'mysql_40', 'mysql_41', 'oracle', 'postgres', 'sqlite');
+	var $supported_dbms = array('firebird', 'mssql', 'mysql', 'oracle', 'postgres', 'sqlite');
 
 	/**
 	* Set this to true if you only want to return the 'to-be-executed' SQL statement(s) (as an array).
@@ -260,26 +230,10 @@ class phpbb_db_tools
 		// Determine mapping database type
 		switch ($this->db->sql_layer)
 		{
-			case 'mysql':
-				$this->sql_layer = 'mysql_40';
-			break;
-
-			case 'mysql4':
-				if (version_compare($this->db->mysql_version, '4.1.3', '>='))
-				{
-					$this->sql_layer = 'mysql_41';
-				}
-				else
-				{
-					$this->sql_layer = 'mysql_40';
-				}
-			break;
-
 			case 'mysqli':
-				$this->sql_layer = 'mysql_41';
+				$this->sql_layer = 'mysql';
 			break;
 
-			case 'mssql':
 			case 'mssql_odbc':
 				$this->sql_layer = 'mssql';
 			break;
@@ -453,8 +407,7 @@ class phpbb_db_tools
 	{
 		switch ($this->sql_layer)
 		{
-			case 'mysql_40':
-			case 'mysql_41':
+			case 'mysql':
 
 				$sql = "SHOW COLUMNS FROM $table";
 				$result = $this->db->sql_query($sql);
@@ -731,8 +684,7 @@ class phpbb_db_tools
 				$return_array['column_type_sql_default'] = $sql_default;
 			break;
 
-			case 'mysql_40':
-			case 'mysql_41':
+			case 'mysql':
 				$sql .= " {$column_type} ";
 
 				// For hexadecimal values do not use single quotes
@@ -748,7 +700,7 @@ class phpbb_db_tools
 					{
 						$sql .= ' auto_increment';
 					}
-					else if ($this->sql_layer === 'mysql_41' && $column_data[2] == 'true_sort')
+					else if ($column_data[2] == 'true_sort')
 					{
 						$sql .= ' COLLATE utf8_unicode_ci';
 					}
@@ -835,8 +787,7 @@ class phpbb_db_tools
 				$statements[] = 'ALTER TABLE [' . $table_name . '] ADD [' . $column_name . '] ' . $column_data['column_type_sql_default'];
 			break;
 
-			case 'mysql_40':
-			case 'mysql_41':
+			case 'mysql':
 				$statements[] = 'ALTER TABLE `' . $table_name . '` ADD COLUMN `' . $column_name . '` ' . $column_data['column_type_sql'];
 			break;
 
@@ -927,8 +878,7 @@ class phpbb_db_tools
 				$statements[] = 'ALTER TABLE [' . $table_name . '] DROP COLUMN [' . $column_name . ']';
 			break;
 
-			case 'mysql_40':
-			case 'mysql_41':
+			case 'mysql':
 				$statements[] = 'ALTER TABLE `' . $table_name . '` DROP COLUMN `' . $column_name . '`';
 			break;
 
@@ -1015,8 +965,7 @@ class phpbb_db_tools
 				$statements[] = 'DROP INDEX ' . $table_name . '.' . $index_name;
 			break;
 
-			case 'mysql_40':
-			case 'mysql_41':
+			case 'mysql':
 				$statements[] = 'DROP INDEX ' . $index_name . ' ON ' . $table_name;
 			break;
 
@@ -1054,8 +1003,7 @@ class phpbb_db_tools
 				$statements[] = $sql;
 			break;
 
-			case 'mysql_40':
-			case 'mysql_41':
+			case 'mysql':
 				$statements[] = 'ALTER TABLE ' . $table_name . ' ADD PRIMARY KEY (' . implode(', ', $column) . ')';
 			break;
 
@@ -1132,8 +1080,7 @@ class phpbb_db_tools
 				$statements[] = 'CREATE UNIQUE INDEX ' . $table_name . '_' . $index_name . ' ON ' . $table_name . '(' . implode(', ', $column) . ')';
 			break;
 
-			case 'mysql_40':
-			case 'mysql_41':
+			case 'mysql':
 				$statements[] = 'CREATE UNIQUE INDEX ' . $index_name . ' ON ' . $table_name . '(' . implode(', ', $column) . ')';
 			break;
 
@@ -1161,8 +1108,7 @@ class phpbb_db_tools
 				$statements[] = 'CREATE INDEX ' . $table_name . '_' . $index_name . ' ON ' . $table_name . '(' . implode(', ', $column) . ')';
 			break;
 
-			case 'mysql_40':
-			case 'mysql_41':
+			case 'mysql':
 				$statements[] = 'CREATE INDEX ' . $index_name . ' ON ' . $table_name . '(' . implode(', ', $column) . ')';
 			break;
 
@@ -1221,8 +1167,7 @@ class phpbb_db_tools
 					$col = 'index_name';
 				break;
 
-				case 'mysql_40':
-				case 'mysql_41':
+				case 'mysql':
 					$sql = 'SHOW KEYS
 						FROM ' . $table_name;
 					$col = 'Key_name';
@@ -1244,7 +1189,7 @@ class phpbb_db_tools
 			$result = $this->db->sql_query($sql);
 			while ($row = $this->db->sql_fetchrow($result))
 			{
-				if (($this->sql_layer == 'mysql_40' || $this->sql_layer == 'mysql_41') && !$row['Non_unique'])
+				if ($this->sql_layer == 'mysql' && !$row['Non_unique'])
 				{
 					continue;
 				}
@@ -1286,8 +1231,7 @@ class phpbb_db_tools
 				$statements[] = 'ALTER TABLE [' . $table_name . '] ALTER COLUMN [' . $column_name . '] ' . $column_data['column_type_sql'];
 			break;
 
-			case 'mysql_40':
-			case 'mysql_41':
+			case 'mysql':
 				$statements[] = 'ALTER TABLE `' . $table_name . '` CHANGE `' . $column_name . '` `' . $column_name . '` ' . $column_data['column_type_sql'];
 			break;
 

@@ -44,7 +44,7 @@ function get_available_dbms($dbms = false, $return_unavailable = false, $only_20
 		),
 		'mysqli'	=> array(
 			'LABEL'			=> 'MySQL with MySQLi Extension',
-			'SCHEMA'		=> 'mysql_41',
+			'SCHEMA'		=> 'mysql',
 			'MODULE'		=> 'mysqli',
 			'DELIM'			=> ';',
 			'COMMENTS'		=> 'remove_remarks',
@@ -194,7 +194,6 @@ function get_tables($db)
 	switch ($db->sql_layer)
 	{
 		case 'mysql':
-		case 'mysql4':
 		case 'mysqli':
 			$sql = 'SHOW TABLES';
 		break;
@@ -346,6 +345,13 @@ function connect_check_db($error_connect, &$error, $dbms_details, $table_prefix,
 		// Make sure that the user has selected a sensible DBAL for the DBMS actually installed
 		switch ($dbms_details['DRIVER'])
 		{
+			case 'mysql':
+				if (version_compare(mysql_get_server_info($db->db_connect_id), '4.1.3', '<'))
+				{
+					$error[] = $lang['INST_ERR_DB_NO_MYSQL'];
+				}
+			break;
+
 			case 'mysqli':
 				if (version_compare(mysqli_get_server_info($db->db_connect_id), '4.1.3', '<'))
 				{
@@ -432,11 +438,10 @@ function connect_check_db($error_connect, &$error, $dbms_details, $table_prefix,
 					{
 						$error[] = $lang['INST_ERR_DB_NO_FIREBIRD_PS'];
 					}
-					else
-					{
-						// Kill the old table
-						$db->sql_query('DROP TABLE ' . $final . ';');
-					}
+
+					// Kill the old table
+					$db->sql_query('DROP TABLE ' . $final . ';');
+
 					unset($final);
 				}
 			break;

@@ -142,7 +142,7 @@ $inline_update = (request_var('type', 0)) ? true : false;
 
 // Database column types mapping
 $dbms_type_map = array(
-	'mysql_41'	=> array(
+	'mysql'		=> array(
 		'INT:'		=> 'int(%d)',
 		'BINT'		=> 'bigint(20)',
 		'UINT'		=> 'mediumint(8) UNSIGNED',
@@ -166,33 +166,6 @@ $dbms_type_map = array(
 		'VCHAR_UNI'	=> 'varchar(255)',
 		'VCHAR_UNI:'=> 'varchar(%d)',
 		'VCHAR_CI'	=> 'varchar(255)',
-		'VARBINARY'	=> 'varbinary(255)',
-	),
-
-	'mysql_40'	=> array(
-		'INT:'		=> 'int(%d)',
-		'BINT'		=> 'bigint(20)',
-		'UINT'		=> 'mediumint(8) UNSIGNED',
-		'UINT:'		=> 'int(%d) UNSIGNED',
-		'TINT:'		=> 'tinyint(%d)',
-		'USINT'		=> 'smallint(4) UNSIGNED',
-		'BOOL'		=> 'tinyint(1) UNSIGNED',
-		'VCHAR'		=> 'varbinary(255)',
-		'VCHAR:'	=> 'varbinary(%d)',
-		'CHAR:'		=> 'binary(%d)',
-		'XSTEXT'	=> 'blob',
-		'XSTEXT_UNI'=> 'blob',
-		'STEXT'		=> 'blob',
-		'STEXT_UNI'	=> 'blob',
-		'TEXT'		=> 'blob',
-		'TEXT_UNI'	=> 'blob',
-		'MTEXT'		=> 'mediumblob',
-		'MTEXT_UNI'	=> 'mediumblob',
-		'TIMESTAMP'	=> 'int(11) UNSIGNED',
-		'DECIMAL'	=> 'decimal(5,2)',
-		'VCHAR_UNI'	=> 'blob',
-		'VCHAR_UNI:'=> array('varbinary(%d)', 'limit' => array('mult', 3, 255, 'blob')),
-		'VCHAR_CI'	=> 'blob',
 		'VARBINARY'	=> 'varbinary(255)',
 	),
 
@@ -342,26 +315,11 @@ $database_update_info = array(
 // Determine mapping database type
 switch ($db->sql_layer)
 {
-	case 'mysql':
-		$map_dbms = 'mysql_40';
-	break;
-
-	case 'mysql4':
-		if (version_compare($db->mysql_version, '4.1.3', '>='))
-		{
-			$map_dbms = 'mysql_41';
-		}
-		else
-		{
-			$map_dbms = 'mysql_40';
-		}
-	break;
 
 	case 'mysqli':
-		$map_dbms = 'mysql_41';
+		$map_dbms = 'mysql';
 	break;
 
-	case 'mssql':
 	case 'mssql_odbc':
 		$map_dbms = 'mssql';
 	break;
@@ -643,7 +601,6 @@ switch ($db->sql_layer)
 {
 	case 'mysql':
 	case 'mysqli':
-	case 'mysql4':
 		$sql = 'OPTIMIZE TABLE ' . $table_prefix . 'auth_access, ' . $table_prefix . 'banlist, ' . $table_prefix . 'categories, ' . $table_prefix . 'config, ' . $table_prefix . 'disallow, ' . $table_prefix . 'forum_prune, ' . $table_prefix . 'forums, ' . $table_prefix . 'groups, ' . $table_prefix . 'posts, ' . $table_prefix . 'posts_text, ' . $table_prefix . 'privmsgs, ' . $table_prefix . 'privmsgs_text, ' . $table_prefix . 'ranks, ' . $table_prefix . 'search_results, ' . $table_prefix . 'search_wordlist, ' . $table_prefix . 'search_wordmatch, ' . $table_prefix . 'sessions_keys' . $table_prefix . 'smilies, ' . $table_prefix . 'themes, ' . $table_prefix . 'themes_name, ' . $table_prefix . 'topics, ' . $table_prefix . 'topics_watch, ' . $table_prefix . 'user_group, ' . $table_prefix . 'users, ' . $table_prefix . 'vote_desc, ' . $table_prefix . 'vote_results, ' . $table_prefix . 'vote_voters, ' . $table_prefix . 'words';
 		_sql($sql, $errored, $error_ary);
 	break;
@@ -792,8 +749,7 @@ function column_exists($dbms, $table, $column_name)
 
 	switch ($dbms)
 	{
-		case 'mysql_40':
-		case 'mysql_41':
+		case 'mysql':
 			$sql = "SHOW COLUMNS
 				FROM $table";
 			$result = $db->sql_query($sql);
@@ -1037,8 +993,7 @@ function prepare_column_data($dbms, $column_data, $table_name, $column_name)
 			$return_array['column_type_sql_default'] = $sql_default;
 		break;
 
-		case 'mysql_40':
-		case 'mysql_41':
+		case 'mysql':
 			$sql .= " {$column_type} ";
 
 			// For hexadecimal values do not use single quotes
@@ -1054,7 +1009,7 @@ function prepare_column_data($dbms, $column_data, $table_name, $column_name)
 				{
 					$sql .= ' auto_increment';
 				}
-				else if ($dbms === 'mysql_41' && $column_data[2] == 'true_sort')
+				else if ($column_data[2] == 'true_sort')
 				{
 					$sql .= ' COLLATE utf8_unicode_ci';
 				}
@@ -1144,8 +1099,7 @@ function sql_column_add($dbms, $table_name, $column_name, $column_data)
 			_sql($sql, $errored, $error_ary);
 		break;
 
-		case 'mysql_40':
-		case 'mysql_41':
+		case 'mysql':
 			$sql = 'ALTER TABLE `' . $table_name . '` ADD COLUMN `' . $column_name . '` ' . $column_data['column_type_sql'];
 			_sql($sql, $errored, $error_ary);
 		break;
@@ -1241,8 +1195,7 @@ function sql_column_remove($dbms, $table_name, $column_name)
 			_sql($sql, $errored, $error_ary);
 		break;
 
-		case 'mysql_40':
-		case 'mysql_41':
+		case 'mysql':
 			$sql = 'ALTER TABLE `' . $table_name . '` DROP COLUMN `' . $column_name . '`';
 			_sql($sql, $errored, $error_ary);
 		break;
@@ -1331,8 +1284,7 @@ function sql_index_drop($dbms, $index_name, $table_name)
 			_sql($sql, $errored, $error_ary);
 		break;
 
-		case 'mysql_40':
-		case 'mysql_41':
+		case 'mysql':
 			$sql = 'DROP INDEX ' . $index_name . ' ON ' . $table_name;
 			_sql($sql, $errored, $error_ary);
 		break;
@@ -1368,8 +1320,7 @@ function sql_create_primary_key($dbms, $table_name, $column)
 			_sql($sql, $errored, $error_ary);
 		break;
 
-		case 'mysql_40':
-		case 'mysql_41':
+		case 'mysql':
 			$sql = 'ALTER TABLE ' . $table_name . ' ADD PRIMARY KEY (' . implode(', ', $column) . ')';
 			_sql($sql, $errored, $error_ary);
 		break;
@@ -1445,8 +1396,7 @@ function sql_create_unique_index($dbms, $index_name, $table_name, $column)
 			_sql($sql, $errored, $error_ary);
 		break;
 
-		case 'mysql_40':
-		case 'mysql_41':
+		case 'mysql':
 			$sql = 'CREATE UNIQUE INDEX ' . $index_name . ' ON ' . $table_name . '(' . implode(', ', $column) . ')';
 			_sql($sql, $errored, $error_ary);
 		break;
@@ -1473,8 +1423,7 @@ function sql_create_index($dbms, $index_name, $table_name, $column)
 			_sql($sql, $errored, $error_ary);
 		break;
 
-		case 'mysql_40':
-		case 'mysql_41':
+		case 'mysql':
 			$sql = 'CREATE INDEX ' . $index_name . ' ON ' . $table_name . '(' . implode(', ', $column) . ')';
 			_sql($sql, $errored, $error_ary);
 		break;
@@ -1534,8 +1483,7 @@ function sql_list_index($dbms, $table_name)
 				$col = 'index_name';
 			break;
 
-			case 'mysql_40':
-			case 'mysql_41':
+			case 'mysql':
 				$sql = 'SHOW KEYS
 					FROM ' . $table_name;
 				$col = 'Key_name';
@@ -1557,7 +1505,7 @@ function sql_list_index($dbms, $table_name)
 		$result = $db->sql_query($sql);
 		while ($row = $db->sql_fetchrow($result))
 		{
-			if (($dbms == 'mysql_40' || $dbms == 'mysql_41') && !$row['Non_unique'])
+			if ($dbms == 'mysql' && !$row['Non_unique'])
 			{
 				continue;
 			}
@@ -1628,8 +1576,7 @@ function sql_list_fake($dbms, $table_name)
 				$col = 'index_name';
 			break;
 
-			case 'mysql_40':
-			case 'mysql_41':
+			case 'mysql':
 				$sql = 'SHOW KEYS
 					FROM ' . $table_name;
 				$col = 'Key_name';
@@ -1651,7 +1598,7 @@ function sql_list_fake($dbms, $table_name)
 		$result = $db->sql_query($sql);
 		while ($row = $db->sql_fetchrow($result))
 		{
-			if (($dbms == 'mysql_40' || $dbms == 'mysql_41') && !$row['Non_unique'])
+			if ($dbms == 'mysql' && !$row['Non_unique'])
 			{
 				continue;
 			}
@@ -1687,8 +1634,7 @@ function sql_column_change($dbms, $table_name, $column_name, $column_data)
 			_sql($sql, $errored, $error_ary);
 		break;
 
-		case 'mysql_40':
-		case 'mysql_41':
+		case 'mysql':
 			$sql = 'ALTER TABLE `' . $table_name . '` CHANGE `' . $column_name . '` `' . $column_name . '` ' . $column_data['column_type_sql'];
 			_sql($sql, $errored, $error_ary);
 		break;

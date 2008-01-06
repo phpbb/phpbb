@@ -1141,7 +1141,6 @@ class acp_users
 								break;
 
 								case 'mysql':
-								case 'mysql4':
 								case 'mysqli':
 									$right_delim = $left_delim = '`';
 								break;

@@ -20,8 +20,9 @@ include_once($phpbb_root_path . 'includes/db/dbal.' . $phpEx);
 
 /**
 * MySQLi Database Abstraction Layer
-* mysqli-extension has to be compiled with:
-* MySQL 4.1+ or MySQL 5.0+
+* Compatible with:
+* MySQL 4.1+
+* MySQL 5.0+
 * @package dbal
 */
 class dbal_mysqli extends dbal
@@ -29,7 +30,7 @@ class dbal_mysqli extends dbal
 	var $multi_insert = true;
 
 	// Supports multiple table deletion
-	var $multi_table_deletion = false;
+	var $multi_table_deletion = true;
 
 	/**
 	* Connect to server

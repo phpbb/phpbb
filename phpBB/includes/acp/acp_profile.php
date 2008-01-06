@@ -1351,7 +1351,6 @@ class acp_profile
 		switch ($db->sql_layer)
 		{
 			case 'mysql':
-			case 'mysql4':
 			case 'mysqli':
 
 				// We are defining the biggest common value, because of the possibility to edit the min/max values of each field.

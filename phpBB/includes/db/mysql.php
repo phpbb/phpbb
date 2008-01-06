@@ -19,21 +19,18 @@ if (!defined('IN_PHPBB'))
 include_once($phpbb_root_path . 'includes/db/dbal.' . $phpEx);
 
 /**
-* MySQL4 Database Abstraction Layer
+* MySQL Database Abstraction Layer
 * Compatible with:
-* MySQL 3.23+
-* MySQL 4.0+
 * MySQL 4.1+
 * MySQL 5.0+
 * @package dbal
 */
 class dbal_mysql extends dbal
 {
-	var $mysql_version;
 	var $multi_insert = true;
 
 	// Supports multiple table deletion
-	var $multi_table_deletion = false;
+	var $multi_table_deletion = true;
 
 	/**
 	* Connect to server
@@ -46,49 +43,37 @@ class dbal_mysql extends dbal
 		$this->server = $sqlserver . (($port) ? ':' . $port : '');
 		$this->dbname = $database;
 
-		$this->sql_layer = 'mysql4';
-
 		$this->db_connect_id = ($this->persistency) ? @mysql_pconnect($this->server, $this->user, $sqlpassword, $new_link) : @mysql_connect($this->server, $this->user, $sqlpassword, $new_link);
 
 		if ($this->db_connect_id && $this->dbname != '')
 		{
 			if (@mysql_select_db($this->dbname, $this->db_connect_id))
 			{
-				// Determine what version we are using and if it natively supports UNICODE
-				$this->mysql_version = mysql_get_server_info($this->db_connect_id);
-
-				if (version_compare($this->mysql_version, '4.1.3', '>='))
+				@mysql_query("SET NAMES 'utf8'", $this->db_connect_id);
+				// enforce strict mode on databases that support it
+				if (version_compare(mysql_get_server_info($this->db_connect_id), '5.0.2', '>='))
 				{
-					@mysql_query("SET NAMES 'utf8'", $this->db_connect_id);
-					// enforce strict mode on databases that support it
-					if (version_compare($this->mysql_version, '5.0.2', '>='))
+					$result = @mysql_query('SELECT @@session.sql_mode AS sql_mode', $this->db_connect_id);
+					$row = @mysql_fetch_assoc($result);
+					@mysql_free_result($result);
+					$modes = array_map('trim', explode(',', $row['sql_mode']));
+
+					// TRADITIONAL includes STRICT_ALL_TABLES and STRICT_TRANS_TABLES
+					if (!in_array('TRADITIONAL', $modes))
 					{
-						$result = @mysql_query('SELECT @@session.sql_mode AS sql_mode', $this->db_connect_id);
-						$row = @mysql_fetch_assoc($result);
-						@mysql_free_result($result);
-						$modes = array_map('trim', explode(',', $row['sql_mode']));
-
-						// TRADITIONAL includes STRICT_ALL_TABLES and STRICT_TRANS_TABLES
-						if (!in_array('TRADITIONAL', $modes))
+						if (!in_array('STRICT_ALL_TABLES', $modes))
 						{
-							if (!in_array('STRICT_ALL_TABLES', $modes))
-							{
-								$modes[] = 'STRICT_ALL_TABLES';
-							}
-
-							if (!in_array('STRICT_TRANS_TABLES', $modes))
-							{
-								$modes[] = 'STRICT_TRANS_TABLES';
-							}
+							$modes[] = 'STRICT_ALL_TABLES';
 						}
 
-						$mode = implode(',', $modes);
-						@mysql_query("SET SESSION sql_mode='{$mode}'", $this->db_connect_id);
+						if (!in_array('STRICT_TRANS_TABLES', $modes))
+						{
+							$modes[] = 'STRICT_TRANS_TABLES';
+						}
 					}
-				}
-				else if (version_compare($this->mysql_version, '4.0.0', '<'))
-				{
-					$this->sql_layer = 'mysql';
+
+					$mode = implode(',', $modes);
+					@mysql_query("SET SESSION sql_mode='{$mode}'", $this->db_connect_id);
 				}
 
 				return $this->db_connect_id;
@@ -103,7 +88,7 @@ class dbal_mysql extends dbal
 	*/
 	function sql_server_info()
 	{
-		return 'MySQL ' . $this->mysql_version;
+		return 'MySQL ' . mysql_get_server_info($this->db_connect_id);
 	}
 
 	/**

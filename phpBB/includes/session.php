@@ -1402,11 +1402,9 @@ class user extends session
 			trigger_error('Could not get style data', E_USER_ERROR);
 		}
 
-		// Now parse the cfg file and cache it
-		$parsed_items = cache::obtain_cfg_items($this->theme);
-
-		// We are only interested in the theme configuration for now
-		$parsed_items = $parsed_items['theme'];
+		// Now parse the cfg file and cache it,
+		// we are only interested in the theme configuration for now
+		$parsed_items = cache::obtain_cfg_item($this->theme, 'theme');
 
 		$check_for = array(
 			'parse_css_file'	=> (int) 0,

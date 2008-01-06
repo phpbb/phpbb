@@ -25,7 +25,7 @@ if (!is_writable($schema_path))
 
 $schema_data = get_schema_struct();
 $dbms_type_map = array(
-	'mysql_41'	=> array(
+	'mysql'		=> array(
 		'INT:'		=> 'int(%d)',
 		'BINT'		=> 'bigint(20)',
 		'UINT'		=> 'mediumint(8) UNSIGNED',
@@ -52,36 +52,6 @@ $dbms_type_map = array(
 		'VCHAR_UNI'	=> 'varchar(255)',
 		'VCHAR_UNI:'=> 'varchar(%d)',
 		'VCHAR_CI'	=> 'varchar(255)',
-		'VARBINARY'	=> 'varbinary(255)',
-	),
-
-	'mysql_40'	=> array(
-		'INT:'		=> 'int(%d)',
-		'BINT'		=> 'bigint(20)',
-		'UINT'		=> 'mediumint(8) UNSIGNED',
-		'UINT:'		=> 'int(%d) UNSIGNED',
-		'TINT:'		=> 'tinyint(%d)',
-		'USINT'		=> 'smallint(4) UNSIGNED',
-		'BOOL'		=> 'tinyint(1) UNSIGNED',
-		'VCHAR'		=> 'varbinary(255)',
-		'VCHAR:'	=> 'varbinary(%d)',
-		'CHAR:'		=> 'binary(%d)',
-		'XSTEXT'	=> 'blob',
-		'XSTEXT_UNI'=> 'blob',
-		'STEXT'		=> 'blob',
-		'STEXT_UNI'	=> 'blob',
-		'TEXT'		=> 'blob',
-		'TEXT_UNI'	=> 'blob',
-		'MTEXT'		=> 'mediumblob',
-		'MTEXT_UNI'	=> 'mediumblob',
-		'TIMESTAMP'	=> 'int(11) UNSIGNED',
-		'DECIMAL'	=> 'decimal(5,2)',
-		'DECIMAL:'	=> 'decimal(%d,2)',
-		'PDECIMAL'	=> 'decimal(6,3)',
-		'PDECIMAL:'	=> 'decimal(%d,3)',
-		'VCHAR_UNI'	=> 'blob',
-		'VCHAR_UNI:'=> array('varbinary(%d)', 'limit' => array('mult', 3, 255, 'blob')),
-		'VCHAR_CI'	=> 'blob',
 		'VARBINARY'	=> 'varbinary(255)',
 	),
 
@@ -238,7 +208,7 @@ $dbms_type_map = array(
 
 // A list of types being unsigned for better reference in some db's
 $unsigned_types = array('UINT', 'UINT:', 'USINT', 'BOOL', 'TIMESTAMP');
-$supported_dbms = array('firebird', 'mssql', 'mysql_40', 'mysql_41', 'oracle', 'postgres', 'sqlite');
+$supported_dbms = array('firebird', 'mssql', 'mysql', 'oracle', 'postgres', 'sqlite');
 
 foreach ($supported_dbms as $dbms)
 {
@@ -249,8 +219,7 @@ foreach ($supported_dbms as $dbms)
 	// Write Header
 	switch ($dbms)
 	{
-		case 'mysql_40':
-		case 'mysql_41':
+		case 'mysql':
 			$line = "#\n# \$I" . "d: $\n#\n\n";
 		break;
 
@@ -288,8 +257,7 @@ foreach ($supported_dbms as $dbms)
 		// Write comment about table
 		switch ($dbms)
 		{
-			case 'mysql_40':
-			case 'mysql_41':
+			case 'mysql':
 			case 'firebird':
 			case 'sqlite':
 				fwrite($fp, "# Table: '{$table_name}'\n");
@@ -308,8 +276,7 @@ foreach ($supported_dbms as $dbms)
 
 		switch ($dbms)
 		{
-			case 'mysql_40':
-			case 'mysql_41':
+			case 'mysql':
 			case 'firebird':
 			case 'oracle':
 			case 'sqlite':
@@ -389,8 +356,7 @@ foreach ($supported_dbms as $dbms)
 
 			switch ($dbms)
 			{
-				case 'mysql_40':
-				case 'mysql_41':
+				case 'mysql':
 					$line .= "\t{$column_name} {$column_type} ";
 
 					// For hexadecimal values do not use single quotes
@@ -406,7 +372,7 @@ foreach ($supported_dbms as $dbms)
 						{
 							$line .= ' auto_increment';
 						}
-						else if ($dbms === 'mysql_41' && $column_data[2] == 'true_sort')
+						else if ($column_data[2] == 'true_sort')
 						{
 							$line .= ' COLLATE utf8_unicode_ci';
 						}
@@ -551,8 +517,7 @@ foreach ($supported_dbms as $dbms)
 
 			switch ($dbms)
 			{
-				case 'mysql_40':
-				case 'mysql_41':
+				case 'mysql':
 				case 'postgres':
 					$line .= "\tPRIMARY KEY (" . implode(', ', $table_data['PRIMARY_KEY']) . "),\n";
 				break;
@@ -633,8 +598,7 @@ foreach ($supported_dbms as $dbms)
 
 				switch ($dbms)
 				{
-					case 'mysql_40':
-					case 'mysql_41':
+					case 'mysql':
 						$line .= ($key_data[0] == 'INDEX') ? "\tKEY" : '';
 						$line .= ($key_data[0] == 'UNIQUE') ? "\tUNIQUE" : '';
 						foreach ($key_data[1] as $key => $col_name)
@@ -698,13 +662,7 @@ foreach ($supported_dbms as $dbms)
 
 		switch ($dbms)
 		{
-			case 'mysql_40':
-				// Remove last line delimiter...
-				$line = substr($line, 0, -2);
-				$line .= "\n);\n\n";
-			break;
-
-			case 'mysql_41':
+			case 'mysql':
 				// Remove last line delimiter...
 				$line = substr($line, 0, -2);
 				$line .= "\n) CHARACTER SET `utf8` COLLATE `utf8_bin`;\n\n";

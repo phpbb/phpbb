@@ -89,7 +89,6 @@ class acp_database
 						switch ($db->sql_layer)
 						{
 							case 'mysqli':
-							case 'mysql4':
 							case 'mysql':
 								$extractor = new mysql_extractor($download, $store, $format, $filename, $time);
 							break;
@@ -317,7 +316,6 @@ class acp_database
 							switch ($db->sql_layer)
 							{
 								case 'mysql':
-								case 'mysql4':
 								case 'mysqli':
 								case 'sqlite':
 									while (($sql = $fgetd($fp, ";\n", $read, $seek, $eof)) !== false)
@@ -592,28 +590,16 @@ class mysql_extractor extends base_extractor
 	function write_table($table_name)
 	{
 		global $db;
-		static $new_extract;
 
-		if ($new_extract === null)
-		{
-			if ($db->sql_layer === 'mysqli' || version_compare($db->mysql_version, '3.23.20', '>='))
-			{
-				$new_extract = true;
-			}
-			else
-			{
-				$new_extract = false;
-			}
-		}
+		$sql = 'SHOW CREATE TABLE ' . $table_name;
+		$result = $db->sql_query($sql);
+		$row = $db->sql_fetchrow($result);
 
-		if ($new_extract)
-		{
-			$this->new_write_table($table_name);
-		}
-		else
-		{
-			$this->old_write_table($table_name);
-		}
+		$sql_data = '# Table: ' . $table_name . "\n";
+		$sql_data .= "DROP TABLE IF EXISTS $table_name;\n";
+		$this->flush($sql_data . $row['Create Table'] . ";\n\n");
+
+		$db->sql_freeresult($result);
 	}
 
 	function write_data($table_name)
@@ -790,113 +776,6 @@ class mysql_extractor extends base_extractor
 				$this->flush($query . ";\n\n");
 			}
 		}
-	}
-
-	function new_write_table($table_name)
-	{
-		global $db;
-
-		$sql = 'SHOW CREATE TABLE ' . $table_name;
-		$result = $db->sql_query($sql);
-		$row = $db->sql_fetchrow($result);
-
-		$sql_data = '# Table: ' . $table_name . "\n";
-		$sql_data .= "DROP TABLE IF EXISTS $table_name;\n";
-		$this->flush($sql_data . $row['Create Table'] . ";\n\n");
-
-		$db->sql_freeresult($result);
-	}
-
-	function old_write_table($table_name)
-	{
-		global $db;
-
-		$sql_data = '# Table: ' . $table_name . "\n";
-		$sql_data .= "DROP TABLE IF EXISTS $table_name;\n";
-		$sql_data .= "CREATE TABLE $table_name(\n";
-		$rows = array();
-
-		$sql = "SHOW FIELDS
-			FROM $table_name";
-		$result = $db->sql_query($sql);
-
-		while ($row = $db->sql_fetchrow($result))
-		{
-			$line = '   ' . $row['Field'] . ' ' . $row['Type'];
-
-			if (!is_null($row['Default']))
-			{
-				$line .= " DEFAULT '{$row['Default']}'";
-			}
-
-			if ($row['Null'] != 'YES')
-			{
-				$line .= ' NOT NULL';
-			}
-
-			if ($row['Extra'] != '')
-			{
-				$line .= ' ' . $row['Extra'];
-			}
-
-			$rows[] = $line;
-		}
-		$db->sql_freeresult($result);
-
-		$sql = "SHOW KEYS
-			FROM $table_name";
-
-		$result = $db->sql_query($sql);
-
-		$index = array();
-		while ($row = $db->sql_fetchrow($result))
-		{
-			$kname = $row['Key_name'];
-
-			if ($kname != 'PRIMARY')
-			{
-				if ($row['Non_unique'] == 0)
-				{
-					$kname = "UNIQUE|$kname";
-				}
-			}
-
-			if ($row['Sub_part'])
-			{
-				$row['Column_name'] .= '(' . $row['Sub_part'] . ')';
-			}
-			$index[$kname][] = $row['Column_name'];
-		}
-		$db->sql_freeresult($result);
-
-		foreach ($index as $key => $columns)
-		{
-			$line = '   ';
-
-			if ($key == 'PRIMARY')
-			{
-				$line .= 'PRIMARY KEY (' . implode(', ', $columns) . ')';
-			}
-			else if (strpos($key, 'UNIQUE') === 0)
-			{
-				$line .= 'UNIQUE ' . substr($key, 7) . ' (' . implode(', ', $columns) . ')';
-			}
-			else if (strpos($key, 'FULLTEXT') === 0)
-			{
-				$line .= 'FULLTEXT ' . substr($key, 9) . ' (' . implode(', ', $columns) . ')';
-			}
-			else
-			{
-				$line .= "KEY $key (" . implode(', ', $columns) . ')';
-			}
-
-			$rows[] = $line;
-		}
-
-		$sql_data .= implode(",\n", $rows);
-		$sql_data .= "\n);\n\n";
-
-		$this->flush($sql_data);
 	}
 }
 

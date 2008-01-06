@@ -1238,7 +1238,7 @@ function sync($mode, $where_type = '', $where_ids = '', $resync_parents = false,
 		case 'topic_approved':
 			switch ($db->sql_layer)
 			{
-				case 'mysql4':
+				case 'mysql':
 				case 'mysqli':
 					$sql = 'UPDATE ' . TOPICS_TABLE . ' t, ' . POSTS_TABLE . " p
 						SET t.topic_approved = p.post_approved
@@ -2739,7 +2739,6 @@ function view_warned_users(&$users, &$user_count, $limit = 0, $offset = 0, $limi
 
 /**
 * Get database size
-* Currently only mysql and mssql are supported
 */
 function get_database_size()
 {
@@ -2751,7 +2750,6 @@ function get_database_size()
 	switch ($db->sql_layer)
 	{
 		case 'mysql':
-		case 'mysql4':
 		case 'mysqli':
 			$sql = 'SELECT VERSION() AS mysql_version';
 			$result = $db->sql_query($sql);

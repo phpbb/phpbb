@@ -205,7 +205,7 @@ $lang = array_merge($lang, array(
 
 	<p>phpBB3 supports the following databases:</p>
 	<ul>
-		<li>MySQL 3.23 or above (MySQLi supported)</li>
+		<li>MySQL 4.1 or above (MySQLi supported)</li>
 		<li>PostgreSQL 7.3+</li>
 		<li>SQLite 2.8.2+</li>
 		<li>Firebird 2.0+</li>
@@ -227,6 +227,7 @@ $lang = array_merge($lang, array(
 	'INST_ERR_DB_CONNECT'		=> 'Could not connect to the database, see error message below.',
 	'INST_ERR_DB_FORUM_PATH'	=> 'The database file specified is within your board directory tree. You should put this file in a non web-accessible location.',
 	'INST_ERR_DB_NO_ERROR'		=> 'No error message given.',
+	'INST_ERR_DB_NO_MYSQL'		=> 'The version of MySQL installed on the target server must be at least 4.1, phpBB 3.1 cannot be installed on an older version.',
 	'INST_ERR_DB_NO_MYSQLI'		=> 'The version of MySQL installed on this machine is incompatible with the “MySQL with MySQLi Extension” option you have selected. Please try the “MySQL” option instead.',
 	'INST_ERR_DB_NO_SQLITE'		=> 'The version of the SQLite extension you have installed is too old, it must be upgraded to at least 2.8.2.',
 	'INST_ERR_DB_NO_ORACLE'		=> 'The version of Oracle installed on this machine requires you to set the <var>NLS_CHARACTERSET</var> parameter to <var>UTF8</var>. Either upgrade your installation to 9.2+ or change the parameter.',
@@ -294,7 +295,7 @@ $lang = array_merge($lang, array(
 	'PHP_REGISTER_GLOBALS_EXPLAIN'	=> 'phpBB will still run if this setting is enabled, but if possible, it is recommended that register_globals is disabled on your PHP install for security reasons.',
 	'PHP_SAFE_MODE'					=> 'Safe mode',
 	'PHP_SETTINGS'					=> 'PHP version and settings',
-	'PHP_SETTINGS_EXPLAIN'			=> '<strong>Required</strong> - You must be running at least version 4.3.3 of PHP in order to install phpBB. If <var>safe mode</var> is displayed below your PHP installation is running in that mode. This will impose limitations on remote administration and similar features.',
+	'PHP_SETTINGS_EXPLAIN'			=> '<strong>Required</strong> - You must be running at least version 5.1.0 of PHP in order to install phpBB. If <var>safe mode</var> is displayed below your PHP installation is running in that mode. This will impose limitations on remote administration and similar features.',
 	'PHP_URL_FOPEN_SUPPORT'			=> 'PHP setting <var>allow_url_fopen</var> is enabled',
 	'PHP_URL_FOPEN_SUPPORT_EXPLAIN'	=> '<strong>Optional</strong> - This setting is optional, however certain phpBB functions like off-site avatars will not work properly without it. ',
 	'PHP_VERSION_REQD'				=> 'PHP version >= 5.1.0',

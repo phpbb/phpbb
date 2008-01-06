@@ -316,51 +316,46 @@ class cache
 
 	/**
 	* Obtain cfg file data
+	*
+	* @param array $theme An array containing the path to the item
+	*
+	* @param string $item The specific item to get: 'theme', 'template', or 'imageset'
+	*
 	*/
-	public static function obtain_cfg_items($theme)
+	public static function obtain_cfg_item($theme, $item = 'theme')
 	{
 		global $config, $phpbb_root_path, $cache;
 
-		$parsed_items = array(
-			'theme'		=> array(),
-			'template'	=> array(),
-			'imageset'	=> array()
-		);
+		$parsed_array = $cache->get('_cfg_' . $item . '_' . $theme[$item . '_path']);
 
-		foreach ($parsed_items as $key => $parsed_array)
+		if ($parsed_array === false)
 		{
-			$parsed_array = $cache->get('_cfg_' . $key . '_' . $theme[$key . '_path']);
-
-			if ($parsed_array === false)
-			{
-				$parsed_array = array();
-			}
-
-			$reparse = false;
-			$filename = $phpbb_root_path . 'styles/' . $theme[$key . '_path'] . '/' . $key . '/' . $key . '.cfg';
-
-			if (!file_exists($filename))
-			{
-				continue;
-			}
-
-			if (!isset($parsed_array['filetime']) || (($config['load_tplcompile'] && @filemtime($filename) > $parsed_array['filetime'])))
-			{
-				$reparse = true;
-			}
-
-			// Re-parse cfg file
-			if ($reparse)
-			{
-				$parsed_array = parse_cfg_file($filename);
-				$parsed_array['filetime'] = @filemtime($filename);
-
-				$cache->put('_cfg_' . $key . '_' . $theme[$key . '_path'], $parsed_array);
-			}
-			$parsed_items[$key] = $parsed_array;
+			$parsed_array = array();
 		}
 
-		return $parsed_items;
+		$reparse = false;
+		$filename = $phpbb_root_path . 'styles/' . $theme[$item . '_path'] . '/' . $item . '/' . $item . '.cfg';
+
+		if (!file_exists($filename))
+		{
+			return $parsed_array;
+		}
+
+		if (!isset($parsed_array['filetime']) || (($config['load_tplcompile'] && @filemtime($filename) > $parsed_array['filetime'])))
+		{
+			$reparse = true;
+		}
+
+		// Re-parse cfg file
+		if ($reparse)
+		{
+			$parsed_array = parse_cfg_file($filename);
+			$parsed_array['filetime'] = @filemtime($filename);
+
+			$cache->put('_cfg_' . $item . '_' . $theme[$item . '_path'], $parsed_array);
+		}
+
+		return $parsed_array;
 	}
 
 	/**
