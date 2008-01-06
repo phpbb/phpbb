@@ -775,7 +775,7 @@ class acp_users
 						{
 							$sql_ary += array(
 								'user_email'		=> $update_email,
-								'user_email_hash'	=> crc32($update_email) . strlen($update_email)
+								'user_email_hash'	=> hexdec(crc32($update_email) . strlen($update_email))
 							);
 
 							add_log('user', $user_id, 'LOG_USER_UPDATE_EMAIL', $user_row['username'], $user_row['user_email'], $update_email);
@@ -1130,6 +1130,7 @@ class acp_users
 								case 'oracle':
 								case 'firebird':
 								case 'postgres':
+								case 'db2':
 									$right_delim = $left_delim = '"';
 								break;
 

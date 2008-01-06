@@ -1605,6 +1605,42 @@ class acp_profile
 				}
 
 			break;
+
+			case 'db2':
+
+				// We are defining the biggest common value, because of the possibility to edit the min/max values of each field.
+				$sql = 'ALTER TABLE ' . PROFILE_FIELDS_DATA_TABLE . " ADD \"$field_ident\" ";
+
+				switch ($field_type)
+				{
+					case FIELD_STRING:
+						$sql .= ' VARCHAR(255) ';
+					break;
+
+					case FIELD_DATE:
+						$sql .= 'VARCHAR(10) ';
+					break;
+
+					case FIELD_TEXT:
+						$sql .= "varchar(32672)";
+		//						ADD {$field_ident}_bbcode_uid VARCHAR2(5) NOT NULL,
+		//						ADD {$field_ident}_bbcode_bitfield NUMBER(11) UNSIGNED";
+					break;
+
+					case FIELD_BOOL:
+						$sql .= 'smallint ';
+					break;
+
+					case FIELD_DROPDOWN:
+						$sql .= 'integer ';
+					break;
+
+					case FIELD_INT:
+						$sql .= 'float ';
+					break;
+				}
+
+			break;
 		}
 
 		return $sql;

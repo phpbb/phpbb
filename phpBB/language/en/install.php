@@ -140,6 +140,7 @@ $lang = array_merge($lang, array(
 	'DEV_NO_TEST_FILE'			=> 'No value has been specified for the test_file variable in the convertor. If you are a user of this convertor, you should not be seeing this error, please report this message to the convertor author. If you are a convertor author, you must specify the name of a file which exists in the source board to allow the path to it to be verified.',
 	'DIRECTORIES_AND_FILES'		=> 'Directory and file setup',
 	'DISABLE_KEYS'				=> 'Disabling keys',
+	'DLL_DB2'					=> 'DB2',
 	'DLL_FIREBIRD'				=> 'Firebird',
 	'DLL_FTP'					=> 'Remote FTP support [ Installation ]',
 	'DLL_GD'					=> 'GD graphics support [ Visual Confirmation ]',
@@ -211,6 +212,7 @@ $lang = array_merge($lang, array(
 		<li>Firebird 2.0+</li>
 		<li>MS SQL Server 2000 or above (directly or via ODBC)</li>
 		<li>Oracle</li>
+		<li>IBM DB2</li>
 	</ul>
 	
 	<p>Only those databases supported on your server will be displayed.',

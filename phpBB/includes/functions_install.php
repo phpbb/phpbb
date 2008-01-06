@@ -82,6 +82,16 @@ function get_available_dbms($dbms = false, $return_unavailable = false, $only_20
 			'AVAILABLE'		=> true,
 			'2.0.x'			=> true,
 		),
+		'db2'		=> array(
+			'LABEL'			=> 'IBM DB2',
+			'SCHEMA'		=> 'db2',
+			'MODULE'		=> 'ibm_db2', 
+			'DELIM'			=> ';',
+			'COMMENTS'		=> 'remove_comments',
+			'DRIVER'		=> 'db2',
+			'AVAILABLE'		=> true,
+			'2.0.x'			=> false,
+		),
 		'oracle'	=>	array(
 			'LABEL'			=> 'Oracle',
 			'SCHEMA'		=> 'oracle',
@@ -223,6 +233,14 @@ function get_tables($db)
 					AND rdb$system_flag = 0';
 		break;
 
+		case 'db2':
+			$sql = "SELECT tabname
+				FROM SYSCAT.TABLES
+				WHERE type = 'T'
+					AND tabschema = 'DB2ADMIN'";
+			$field = 'tabname';
+		break;
+
 		case 'oracle':
 			$sql = 'SELECT table_name
 				FROM USER_TABLES';
@@ -300,6 +318,10 @@ function connect_check_db($error_connect, &$error, $dbms_details, $table_prefix,
 		case 'mssql':
 		case 'mssql_odbc':
 			$prefix_length = 90;
+		break;
+
+		case 'db2':
+			$prefix_length = 108;
 		break;
 
 		case 'sqlite':
