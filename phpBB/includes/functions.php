@@ -3190,6 +3190,13 @@ function page_header($page_title = '', $display_online_list = true)
 	// Which timezone?
 	$tz = ($user->data['user_id'] != ANONYMOUS) ? strval(doubleval($user->data['user_timezone'])) : strval(doubleval($config['board_timezone']));
 	
+	// Send a proper content-language to the output
+	$user_lang = $user->lang['USER_LANG'];
+	if (strpos($user_lang, '-x-') !== false)
+	{
+	    $user_lang = substr($user_lang, 0, strpos($user_lang, '-x-'));
+	}
+	
 	// The following assigns all _common_ variables that may be used at any point in a template.
 	$template->assign_vars(array(
 		'SITENAME'						=> $config['sitename'],
@@ -3248,7 +3255,7 @@ function page_header($page_title = '', $display_online_list = true)
 		'S_VIEWTOPIC'			=> false,
 		'S_VIEWFORUM'			=> false,
 		'S_USER_PM_POPUP'		=> $user->optionget('popuppm'),
-		'S_USER_LANG'			=> $user->lang['USER_LANG'],
+		'S_USER_LANG'			=> $user_lang,
 		'S_USER_BROWSER'		=> (isset($user->data['session_browser'])) ? $user->data['session_browser'] : $user->lang['UNKNOWN_BROWSER'],
 		'S_USERNAME'			=> $user->data['username'],
 		'S_CONTENT_DIRECTION'	=> $user->lang['DIRECTION'],
