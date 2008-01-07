@@ -187,13 +187,13 @@ class acp_attachments
 				if ($this->new_config['img_imagick'])
 				{
 					// Change path separator
-					$this->new_config['img_magick'] = str_replace('\\', '/', $this->new_config['img_magick']);
+					$this->new_config['img_imagick'] = str_replace('\\', '/', $this->new_config['img_imagick']);
 					$this->new_config['img_imagick'] = str_replace(array('convert', '.exe'), array('', ''), $this->new_config['img_imagick']);
 
 					// Check for trailing slash
-					if (substr($this->new_config['img_magick'], -1) !== '/')
+					if (substr($this->new_config['img_imagick'], -1) !== '/')
 					{
-						$this->new_config['img_magick'] .= '/';
+						$this->new_config['img_imagick'] .= '/';
 					}
 				}
 
