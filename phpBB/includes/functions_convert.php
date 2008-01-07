@@ -1620,10 +1620,9 @@ function mass_auth($ug_type, $forum_id, $ug_id, $acl_list, $setting = ACL_NO)
 		switch ($sql_type)
 		{
 			case 'insert':
-				switch ($db->sql_layer)
+				switch ($db->dbms_type)
 				{
 					case 'mysql':
-					case 'mysql4':
 						$sql = 'VALUES ' . implode(', ', preg_replace('#^(.*?)$#', '(\1)', $sql_subary));
 					break;
 
@@ -1977,16 +1976,13 @@ function update_topics_posted()
 {
 	global $db, $config;
 
-	switch ($db->sql_layer)
+	if ($db->truncate)
 	{
-		case 'sqlite':
-		case 'firebird':
-			$db->sql_query('DELETE FROM ' . TOPICS_POSTED_TABLE);
-		break;
-
-		default:
-			$db->sql_query('TRUNCATE TABLE ' . TOPICS_POSTED_TABLE);
-		break;
+		$db->sql_query('DELETE FROM ' . TOPICS_POSTED_TABLE);
+	}
+	else
+	{
+		$db->sql_query('TRUNCATE TABLE ' . TOPICS_POSTED_TABLE);
 	}
 
 	// This can get really nasty... therefore we only do the last six months

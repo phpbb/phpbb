@@ -31,6 +31,8 @@ class dbal_sqlite extends dbal
 	// can't truncate a table
 	var $truncate = false;
 
+	var $dbms_type = 'sqlite';
+
 	/**
 	* Connect to server
 	*/

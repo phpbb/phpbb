@@ -82,6 +82,16 @@ function get_available_dbms($dbms = false, $return_unavailable = false, $only_20
 			'AVAILABLE'		=> true,
 			'2.0.x'			=> true,
 		),
+		'mssql_2005'=>	array(
+			'LABEL'			=> 'MS SQL Server [ 2005 ]',
+			'SCHEMA'		=> 'mssql',
+			'MODULE'		=> 'sqlsrv',
+			'DELIM'			=> 'GO',
+			'COMMENTS'		=> 'remove_comments',
+			'DRIVER'		=> 'mssql_2005',
+			'AVAILABLE'		=> true,
+			'2.0.x'			=> true,
+		),
 		'db2'		=> array(
 			'LABEL'			=> 'IBM DB2',
 			'SCHEMA'		=> 'db2',
@@ -201,10 +211,9 @@ function dbms_select($default = '', $only_20x_options = false)
 */
 function get_tables($db)
 {
-	switch ($db->sql_layer)
+	switch ($db->dbms_type)
 	{
 		case 'mysql':
-		case 'mysqli':
 			$sql = 'SHOW TABLES';
 		break;
 
@@ -215,7 +224,6 @@ function get_tables($db)
 		break;
 
 		case 'mssql':
-		case 'mssql_odbc':
 			$sql = "SELECT name
 				FROM sysobjects
 				WHERE type='U'";
@@ -317,6 +325,7 @@ function connect_check_db($error_connect, &$error, $dbms_details, $table_prefix,
 
 		case 'mssql':
 		case 'mssql_odbc':
+		case 'mssql_2005':
 			$prefix_length = 90;
 		break;
 

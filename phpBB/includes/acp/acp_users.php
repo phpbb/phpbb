@@ -1125,7 +1125,7 @@ class acp_users
 						// Update Custom Fields
 						if (sizeof($cp_data))
 						{
-							switch ($db->sql_layer)
+							switch ($db->dbms_type)
 							{
 								case 'oracle':
 								case 'firebird':
@@ -1136,13 +1136,11 @@ class acp_users
 
 								case 'sqlite':
 								case 'mssql':
-								case 'mssql_odbc':
 									$right_delim = ']';
 									$left_delim = '[';
 								break;
 
 								case 'mysql':
-								case 'mysqli':
 									$right_delim = $left_delim = '`';
 								break;
 							}

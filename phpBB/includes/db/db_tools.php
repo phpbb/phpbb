@@ -254,21 +254,7 @@ class phpbb_db_tools
 	{
 		$this->db = $db;
 
-		// Determine mapping database type
-		switch ($this->db->sql_layer)
-		{
-			case 'mysqli':
-				$this->sql_layer = 'mysql';
-			break;
-
-			case 'mssql_odbc':
-				$this->sql_layer = 'mssql';
-			break;
-
-			default:
-				$this->sql_layer = $this->db->sql_layer;
-			break;
-		}
+		$this->sql_layer = $this->db->dbms_type;
 	}
 
 	/**

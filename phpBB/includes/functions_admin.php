@@ -1236,40 +1236,37 @@ function sync($mode, $where_type = '', $where_ids = '', $resync_parents = false,
 		break;
 
 		case 'topic_approved':
-			switch ($db->sql_layer)
+			if ($db->dbms_type == 'mysql')
 			{
-				case 'mysql':
-				case 'mysqli':
-					$sql = 'UPDATE ' . TOPICS_TABLE . ' t, ' . POSTS_TABLE . " p
-						SET t.topic_approved = p.post_approved
-						$where_sql_and t.topic_first_post_id = p.post_id";
-					$db->sql_query($sql);
-				break;
+				$sql = 'UPDATE ' . TOPICS_TABLE . ' t, ' . POSTS_TABLE . " p
+					SET t.topic_approved = p.post_approved
+					$where_sql_and t.topic_first_post_id = p.post_id";
+				$db->sql_query($sql);
+			}
+			else
+			{
+				$sql = 'SELECT t.topic_id, p.post_approved
+					FROM ' . TOPICS_TABLE . ' t, ' . POSTS_TABLE . " p
+					$where_sql_and p.post_id = t.topic_first_post_id
+						AND p.post_approved <> t.topic_approved";
+				$result = $db->sql_query($sql);
 
-				default:
-					$sql = 'SELECT t.topic_id, p.post_approved
-						FROM ' . TOPICS_TABLE . ' t, ' . POSTS_TABLE . " p
-						$where_sql_and p.post_id = t.topic_first_post_id
-							AND p.post_approved <> t.topic_approved";
-					$result = $db->sql_query($sql);
+				$topic_ids = array();
+				while ($row = $db->sql_fetchrow($result))
+				{
+					$topic_ids[] = $row['topic_id'];
+				}
+				$db->sql_freeresult($result);
 
-					$topic_ids = array();
-					while ($row = $db->sql_fetchrow($result))
-					{
-						$topic_ids[] = $row['topic_id'];
-					}
-					$db->sql_freeresult($result);
+				if (!sizeof($topic_ids))
+				{
+					return;
+				}
 
-					if (!sizeof($topic_ids))
-					{
-						return;
-					}
-
-					$sql = 'UPDATE ' . TOPICS_TABLE . '
-						SET topic_approved = 1 - topic_approved
-						WHERE ' . $db->sql_in_set('topic_id', $topic_ids);
-					$db->sql_query($sql);
-				break;
+				$sql = 'UPDATE ' . TOPICS_TABLE . '
+					SET topic_approved = 1 - topic_approved
+					WHERE ' . $db->sql_in_set('topic_id', $topic_ids);
+				$db->sql_query($sql);
 			}
 		break;
 
@@ -2747,10 +2744,9 @@ function get_database_size()
 	$database_size = false;
 
 	// This code is heavily influenced by a similar routine in phpMyAdmin 2.2.0
-	switch ($db->sql_layer)
+	switch ($db->dbms_type)
 	{
 		case 'mysql':
-		case 'mysqli':
 			$sql = 'SELECT VERSION() AS mysql_version';
 			$result = $db->sql_query($sql);
 			$row = $db->sql_fetchrow($result);
@@ -2813,7 +2809,6 @@ function get_database_size()
 		break;
 
 		case 'mssql':
-		case 'mssql_odbc':
 			$sql = 'SELECT ((SUM(size) * 8.0) * 1024.0) as dbsize
 				FROM sysfiles';
 			$result = $db->sql_query($sql, 7200);

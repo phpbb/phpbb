@@ -25,6 +25,8 @@ include_once($phpbb_root_path . 'includes/db/dbal.' . $phpEx);
 */
 class dbal_mssql extends dbal
 {
+	var $dbms_type = 'mssql';
+
 	/**
 	* Connect to server
 	*/

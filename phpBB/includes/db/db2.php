@@ -31,6 +31,8 @@ class dbal_db2 extends dbal
 	// can't truncate a table
 	var $truncate = false;
 
+	var $dbms_type = 'db2';
+
 	/**
 	* Connect to server
 	*/

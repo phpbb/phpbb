@@ -238,18 +238,15 @@ class install_convert extends module
 					));
 				}
 
-				switch ($db->sql_layer)
+				if ($db->truncate)
 				{
-					case 'sqlite':
-					case 'firebird':
-						$db->sql_query('DELETE FROM ' . SESSIONS_KEYS_TABLE);
-						$db->sql_query('DELETE FROM ' . SESSIONS_TABLE);
-					break;
-
-					default:
-						$db->sql_query('TRUNCATE TABLE ' . SESSIONS_KEYS_TABLE);
-						$db->sql_query('TRUNCATE TABLE ' . SESSIONS_TABLE);
-					break;
+					$db->sql_query('TRUNCATE TABLE ' . SESSIONS_KEYS_TABLE);
+					$db->sql_query('TRUNCATE TABLE ' . SESSIONS_TABLE);
+				}
+				else
+				{
+					$db->sql_query('DELETE FROM ' . SESSIONS_KEYS_TABLE);
+					$db->sql_query('DELETE FROM ' . SESSIONS_TABLE);
 				}
 
 			break;
@@ -684,7 +681,6 @@ class install_convert extends module
 
 			// Thanks MySQL, for silently converting...
 			case 'mysql':
-			case 'mysql4':
 				if (version_compare($src_db->mysql_version, '4.1.3', '>='))
 				{
 					$convert->mysql_convert = true;
@@ -707,16 +703,13 @@ class install_convert extends module
 			$src_db->sql_query("SET NAMES 'binary'");
 		}
 
-		switch ($db->sql_layer)
+		if ($db->truncate)
 		{
-			case 'sqlite':
-			case 'firebird':
-				$convert->truncate_statement = 'DELETE FROM ';
-			break;
-
-			default:
-				$convert->truncate_statement = 'TRUNCATE TABLE ';
-			break;
+			$convert->truncate_statement = 'TRUNCATE TABLE ';
+		}
+		else
+		{
+			$convert->truncate_statement = 'DELETE FROM ';
 		}
 
 		$get_info = false;
@@ -1107,7 +1100,7 @@ class install_convert extends module
 
 				if (!empty($schema['autoincrement']))
 				{
-					switch ($db->sql_layer)
+					switch ($db->dbms_type)
 					{
 						case 'postgres':
 							$db->sql_query("SELECT SETVAL('" . $schema['target'] . "_seq',(select case when max(" . $schema['autoincrement'] . ")>0 then max(" . $schema['autoincrement'] . ")+1 else 1 end from " . $schema['target'] . '));');
@@ -1244,10 +1237,9 @@ class install_convert extends module
 
 				if (!empty($schema['autoincrement']))
 				{
-					switch ($db->sql_layer)
+					switch ($db->dbms_type)
 					{
 						case 'mssql':
-						case 'mssql_odbc':
 							$db->sql_query('SET IDENTITY_INSERT ' . $schema['target'] . ' ON');
 						break;
 					}
@@ -1276,12 +1268,10 @@ class install_convert extends module
 
 					if ($sql_flag === true)
 					{
-						switch ($db->sql_layer)
+						switch ($db->dbms_type)
 						{
 							// If MySQL, we'll wait to have num_wait_rows rows to submit at once
 							case 'mysql':
-							case 'mysql4':
-							case 'mysqli':
 								$waiting_rows[] = '(' . implode(', ', $insert_values) . ')';
 
 								if (sizeof($waiting_rows) >= $convert->num_wait_rows)
@@ -1371,10 +1361,9 @@ class install_convert extends module
 
 				if (!empty($schema['autoincrement']))
 				{
-					switch ($db->sql_layer)
+					switch ($db->dbms_type)
 					{
 						case 'mssql':
-						case 'mssql_odbc':
 							$db->sql_query('SET IDENTITY_INSERT ' . $schema['target'] . ' OFF');
 						break;
 
@@ -1780,7 +1769,7 @@ class install_convert extends module
 		global $convert;
 
 		// Can we use IGNORE with this DBMS?
-		$sql_ignore = (strpos($db->sql_layer, 'mysql') === 0 && !defined('DEBUG_EXTRA')) ? 'IGNORE ' : '';
+		$sql_ignore = ($db->dbms_type === 'mysql' && !defined('DEBUG_EXTRA')) ? 'IGNORE ' : '';
 		$insert_query = 'INSERT ' . $sql_ignore . 'INTO ' . $schema['target'] . ' (';
 
 		$aliases = array();

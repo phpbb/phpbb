@@ -726,7 +726,7 @@ class fulltext_mysql extends search_backend
 	{
 		global $db;
 
-		if (strpos($db->sql_layer, 'mysql') === false)
+		if ($db->dbms_type !== 'mysql')
 		{
 			$this->stats = array();
 			return;

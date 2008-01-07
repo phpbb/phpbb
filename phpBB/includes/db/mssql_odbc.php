@@ -32,6 +32,7 @@ include_once($phpbb_root_path . 'includes/db/dbal.' . $phpEx);
 class dbal_mssql_odbc extends dbal
 {
 	var $last_query_text = '';
+	var $dbms_type = 'mssql';
 
 	/**
 	* Connect to server

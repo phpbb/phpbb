@@ -19,94 +19,37 @@ if (!defined('IN_PHPBB'))
 include_once($phpbb_root_path . 'includes/db/dbal.' . $phpEx);
 
 /**
-* PostgreSQL Database Abstraction Layer
-* Minimum Requirement is Version 7.3+
+* MSSQL Database Abstraction Layer
+* Minimum Requirement is MSSQL 2005+
 * @package dbal
 */
-class dbal_postgres extends dbal
+class dbal_mssql_2005 extends dbal
 {
 	var $last_query_text = '';
-	var $pgsql_version;
-
-	var $dbms_type = 'postgres';
+	var $dbms_type = 'mssql';
 
 	/**
 	* Connect to server
 	*/
 	function sql_connect($sqlserver, $sqluser, $sqlpassword, $database, $port = false, $persistency = false, $new_link = false)
 	{
-		$connect_string = '';
-
-		if ($sqluser)
-		{
-			$connect_string .= "user=$sqluser ";
-		}
-
-		if ($sqlpassword)
-		{
-			$connect_string .= "password=$sqlpassword ";
-		}
-
-		if ($sqlserver)
-		{
-			if (strpos($sqlserver, ':') !== false)
-			{
-				list($sqlserver, $port) = explode(':', $sqlserver);
-			}
-
-			if ($sqlserver !== 'localhost')
-			{
-				$connect_string .= "host=$sqlserver ";
-			}
-		
-			if ($port)
-			{
-				$connect_string .= "port=$port ";
-			}
-		}
-
-		$schema = '';
-
-		if ($database)
-		{
-			$this->dbname = $database;
-			if (strpos($database, '.') !== false)
-			{
-				list($database, $schema) = explode('.', $database);
-			}
-			$connect_string .= "dbname=$database";
-		}
-
 		$this->persistency = $persistency;
+		$this->user = $sqluser;
+		$this->server = $sqlserver . (($port) ? ':' . $port : '');
+		$this->dbname = $database;
 
-		$this->db_connect_id = ($this->persistency) ? @pg_pconnect($connect_string, $new_link) : @pg_connect($connect_string, $new_link);
+		$this->db_connect_id = sqlsrv_connect($this->server, array('UID' => $this->user, 'PWD' => $sqlpassword));
 
-		if ($this->db_connect_id)
+		if ($this->db_connect_id && $this->dbname != '')
 		{
-			// determine what version of PostgreSQL is running, we can be more efficient if they are running 8.2+
-			$this->pgsql_version = @pg_parameter_status($this->db_connect_id, 'server_version');
-
-			if (!empty($this->pgsql_version) && $this->pgsql_version[0] >= '8')
+			if (!sqlsrv_conn_execute($this->db_connect_id, 'USE ' . $this->dbname))
 			{
-				if ($this->pgsql_version[2] >= '1')
-				{
-					$this->multi_table_deletion = true;
-				}
-
-				if ($this->pgsql_version[2] >= '2')
-				{
-					$this->multi_insert = true;
-				}
+				@sqlsrv_conn_close($this->db_connect_id);
+				return false;
 			}
-
-			if ($schema !== '')
-			{
-				@pg_query($this->db_connect_id, 'SET search_path TO ' . $schema);
-			}
-			return $this->db_connect_id;
 		}
 
-		return $this->sql_error('');
+		return ($this->db_connect_id) ? $this->db_connect_id : $this->sql_error('');
 	}
 
 	/**
@@ -114,7 +57,9 @@ class dbal_postgres extends dbal
 	*/
 	function sql_server_info()
 	{
-		return 'PostgreSQL ' . $this->pgsql_version;
+		$server_info = sqlsrv_conn_server_info($this->db_connect_id);
+
+		return 'MSSQL (2005)<br />' . $server_info['SQL Server Version'];
 	}
 
 	/**
@@ -126,15 +71,15 @@ class dbal_postgres extends dbal
 		switch ($status)
 		{
 			case 'begin':
-				return @pg_query($this->db_connect_id, 'BEGIN');
+				return sqlsrv_conn_execute($this->db_connect_id, 'BEGIN TRANSACTION');
 			break;
 
 			case 'commit':
-				return @pg_query($this->db_connect_id, 'COMMIT');
+				return sqlsrv_conn_execute($this->db_connect_id, 'COMMIT TRANSACTION');
 			break;
 
 			case 'rollback':
-				return @pg_query($this->db_connect_id, 'ROLLBACK');
+				return sqlsrv_conn_execute($this->db_connect_id, 'ROLLBACK TRANSACTION');
 			break;
 		}
 
@@ -156,6 +101,11 @@ class dbal_postgres extends dbal
 		{
 			global $cache;
 
+			if (strpos($query, 'BEGIN') === 0 || strpos($query, 'COMMIT') === 0)
+			{
+				return true;
+			}
+
 			// EXPLAIN only in extra debug mode
 			if (defined('DEBUG_EXTRA'))
 			{
@@ -168,7 +118,7 @@ class dbal_postgres extends dbal
 
 			if ($this->query_result === false)
 			{
-				if (($this->query_result = pg_query($this->db_connect_id, $query)) === false)
+				if (($this->query_result = @sqlsrv_conn_execute($this->db_connect_id, $query)) === false)
 				{
 					$this->sql_error($query);
 				}
@@ -202,30 +152,35 @@ class dbal_postgres extends dbal
 	}
 
 	/**
-	* Build db-specific query data
-	* @access private
-	*/
-	function _sql_custom_build($stage, $data)
-	{
-		return $data;
-	}
-
-	/**
 	* Build LIMIT query
 	*/
 	function _sql_query_limit($query, $total, $offset = 0, $cache_ttl = 0)
 	{
 		$this->query_result = false;
 
-		// if $total is set to 0 we do not want to limit the number of rows
-		if ($total == 0)
+		// Since TOP is only returning a set number of rows we won't need it if total is set to 0 (return all rows)
+		if ($total)
 		{
-			$total = -1;
+			// We need to grab the total number of rows + the offset number of rows to get the correct result
+			if (strpos($query, 'SELECT DISTINCT') === 0)
+			{
+				$query = 'SELECT DISTINCT TOP ' . ($total + $offset) . ' ' . substr($query, 15);
+			}
+			else
+			{
+				$query = 'SELECT TOP ' . ($total + $offset) . ' ' . substr($query, 6);
+			}
 		}
 
-		$query .= "\n LIMIT $total OFFSET $offset";
+		$result = $this->sql_query($query, $cache_ttl);
 
-		return $this->sql_query($query, $cache_ttl);
+		// Seek by $offset rows
+		if ($offset)
+		{
+			$this->sql_rowseek($offset, $result);
+		}
+
+		return $result;
 	}
 
 	/**
@@ -233,7 +188,7 @@ class dbal_postgres extends dbal
 	*/
 	function sql_affectedrows()
 	{
-		return ($this->query_result) ? @pg_affected_rows($this->query_result) : false;
+		return ($this->db_connect_id) ? sqlsrv_stmt_rows_affected($this->db_connect_id) : false;
 	}
 
 	/**
@@ -253,7 +208,23 @@ class dbal_postgres extends dbal
 			return $cache->sql_fetchrow($query_id);
 		}
 
-		return ($query_id !== false) ? @pg_fetch_assoc($query_id, null) : false;
+		if ($query_id === false)
+		{
+			return false;
+		}
+
+		$row = @sqlsrv_stmt_fetch_array($query_id, SQLSRV_FETCH_TYPE_ARRAY);
+
+		// I hope i am able to remove this later... hopefully only a PHP or MSSQL bug
+		if ($row)
+		{
+			foreach ($row as $key => $value)
+			{
+				$row[$key] = ($value === ' ' || $value === NULL) ? '' : $value;
+			}
+		}
+
+		return $row;
 	}
 
 	/**
@@ -274,7 +245,29 @@ class dbal_postgres extends dbal
 			return $cache->sql_rowseek($rownum, $query_id);
 		}
 
-		return ($query_id !== false) ? @pg_result_seek($query_id, $rownum) : false;
+		if ($query_id === false)
+		{
+			return false;
+		}
+
+		$this->sql_freeresult($query_id);
+		$query_id = $this->sql_query($this->last_query_text);
+
+		if ($query_id === false)
+		{
+			return false;
+		}
+
+		// We do not fetch the row for rownum == 0 because then the next resultset would be the second row
+		for ($i = 0; $i < $rownum; $i++)
+		{
+			if (!$this->sql_fetchrow($query_id))
+			{
+				return false;
+			}
+		}
+
+		return true;
 	}
 
 	/**
@@ -282,25 +275,15 @@ class dbal_postgres extends dbal
 	*/
 	function sql_nextid()
 	{
-		$query_id = $this->query_result;
-
-		if ($query_id !== false && $this->last_query_text != '')
+		$result_id = @sqlsrv_conn_execute($this->db_connect_id, 'SELECT SCOPE_IDENTITY()');
+		if ($result_id)
 		{
-			if (preg_match("/^INSERT[\t\n ]+INTO[\t\n ]+([a-z0-9\_\-]+)/is", $this->last_query_text, $tablename))
+			if ($row = @sqlsrv_stmt_fetch_array($result_id, SQLSRV_FETCH_TYPE_ARRAY))
 			{
-				$query = "SELECT currval('" . $tablename[1] . "_seq') AS last_value";
-				$temp_q_id = @pg_query($this->db_connect_id, $query);
-
-				if (!$temp_q_id)
-				{
-					return false;
-				}
-
-				$temp_result = @pg_fetch_assoc($temp_q_id, NULL);
-				@pg_free_result($query_id);
-
-				return ($temp_result) ? $temp_result['last_value'] : false;
+				@sqlsrv_stmt_close($result_id);
+				return $row['computed'];
 			}
+			@sqlsrv_stmt_close($result_id);
 		}
 
 		return false;
@@ -323,10 +306,10 @@ class dbal_postgres extends dbal
 			return $cache->sql_freeresult($query_id);
 		}
 
-		if (isset($this->open_queries[(int) $query_id]))
+		if (isset($this->open_queries[$query_id]))
 		{
-			unset($this->open_queries[(int) $query_id]);
-			return @pg_free_result($query_id);
+			unset($this->open_queries[$query_id]);
+			return @sqlsrv_stmt_close($query_id);
 		}
 
 		return false;
@@ -334,11 +317,10 @@ class dbal_postgres extends dbal
 
 	/**
 	* Escape string used in sql query
-	* Note: Do not use for bytea values if we may use them at a later stage
 	*/
 	function sql_escape($msg)
 	{
-		return @pg_escape_string($msg);
+		return str_replace("'", "''", $msg);
 	}
 
 	/**
@@ -350,7 +332,7 @@ class dbal_postgres extends dbal
 		{
 			case 'length_varchar':
 			case 'length_text':
-				return 'LENGTH(' . $col . ')';
+				return 'DATALENGTH(' . $col . ')';
 			break;
 		}
 	}
@@ -361,7 +343,7 @@ class dbal_postgres extends dbal
 	*/
 	function _sql_like_expression($expression)
 	{
-		return $expression;
+		return $expression . " ESCAPE '\\'";
 	}
 
 	/**
@@ -370,10 +352,27 @@ class dbal_postgres extends dbal
 	*/
 	function _sql_error()
 	{
-		return array(
-			'message'	=> (!$this->db_connect_id) ? @pg_last_error() : @pg_last_error($this->db_connect_id),
+		$error = array(
+			'message'	=> '',
 			'code'		=> ''
 		);
+
+		foreach (sqlsrv_errors() as $error_array)
+		{
+			$error['message'] .= $error_array['message'] . "<br />";
+			$error['code'] .= $error_array['code'] . "<br />";
+		}
+
+		return $error;
+	}
+
+	/**
+	* Build db-specific query data
+	* @access private
+	*/
+	function _sql_custom_build($stage, $data)
+	{
+		return $data;
 	}
 
 	/**
@@ -382,7 +381,7 @@ class dbal_postgres extends dbal
 	*/
 	function _sql_close()
 	{
-		return @pg_close($this->db_connect_id);
+		return @sqlsrv_conn_close($this->db_connect_id);
 	}
 
 	/**
@@ -393,49 +392,16 @@ class dbal_postgres extends dbal
 	{
 		switch ($mode)
 		{
-			case 'start':
-
-				$explain_query = $query;
-				if (preg_match('/UPDATE ([a-z0-9_]+).*?WHERE(.*)/s', $query, $m))
-				{
-					$explain_query = 'SELECT * FROM ' . $m[1] . ' WHERE ' . $m[2];
-				}
-				else if (preg_match('/DELETE FROM ([a-z0-9_]+).*?WHERE(.*)/s', $query, $m))
-				{
-					$explain_query = 'SELECT * FROM ' . $m[1] . ' WHERE ' . $m[2];
-				}
-
-				if (preg_match('/^SELECT/', $explain_query))
-				{
-					$html_table = false;
-
-					if ($result = @pg_query($this->db_connect_id, "EXPLAIN $explain_query"))
-					{
-						while ($row = @pg_fetch_assoc($result, NULL))
-						{
-							$html_table = $this->sql_report('add_select_row', $query, $html_table, $row);
-						}
-					}
-					@pg_free_result($result);
-
-					if ($html_table)
-					{
-						$this->html_hold .= '</table>';
-					}
-				}
-
-			break;
-
 			case 'fromcache':
 				$endtime = explode(' ', microtime());
 				$endtime = $endtime[0] + $endtime[1];
 
-				$result = @pg_query($this->db_connect_id, $query);
-				while ($void = @pg_fetch_assoc($result, NULL))
+				$result = @sqlsrv_conn_execute($this->db_connect_id, $query);
+				while ($void = @sqlsrv_stmt_fetch_array($result))
 				{
 					// Take the time spent on parsing rows into account
 				}
-				@pg_free_result($result);
+				@sqlsrv_stmt_close($result);
 
 				$splittime = explode(' ', microtime());
 				$splittime = $splittime[0] + $splittime[1];

@@ -86,9 +86,8 @@ class acp_database
 						$time = time();
 
 						$filename = 'backup_' . $time . '_' . unique_id();
-						switch ($db->sql_layer)
+						switch ($db->dbms_type)
 						{
-							case 'mysqli':
 							case 'mysql':
 								$extractor = new mysql_extractor($download, $store, $format, $filename, $time);
 							break;
@@ -106,7 +105,6 @@ class acp_database
 							break;
 
 							case 'mssql':
-							case 'mssql_odbc':
 								$extractor = new mssql_extractor($download, $store, $format, $filename, $time);
 							break;
 
@@ -131,7 +129,7 @@ class acp_database
 							else
 							{
 								// We might wanna empty out all that junk :D
-								switch ($db->sql_layer)
+								switch ($db->dbms_type)
 								{
 									case 'sqlite':
 									case 'firebird':
@@ -140,7 +138,6 @@ class acp_database
 									break;
 
 									case 'mssql':
-									case 'mssql_odbc':
 										$extractor->flush('TRUNCATE TABLE ' . $table_name . "GO\n");
 									break;
 
@@ -318,11 +315,11 @@ class acp_database
 								break;
 							}
 
-							switch ($db->sql_layer)
+							switch ($db->dbms_type)
 							{
 								case 'mysql':
-								case 'mysqli':
 								case 'sqlite':
+								case 'db2':
 									while (($sql = $fgetd($fp, ";\n", $read, $seek, $eof)) !== false)
 									{
 										$db->sql_query($sql);
@@ -372,7 +369,6 @@ class acp_database
 								break;
 
 								case 'mssql':
-								case 'mssql_odbc':
 									while (($sql = $fgetd($fp, "GO\n", $read, $seek, $eof)) !== false)
 									{
 										$db->sql_query($sql);
@@ -1356,9 +1352,14 @@ class mssql_extractor extends base_extractor
 		{
 			$this->write_data_mssql($table_name);
 		}
-		else
+		else if ($db->sql_layer === 'mssql_odbc')
 		{
 			$this->write_data_odbc($table_name);
+		}
+		else
+		{
+			// @todo: write code for MS SQL 2005 DBAL
+			trigger_error('KungFuDeathGrip');
 		}
 	}
 

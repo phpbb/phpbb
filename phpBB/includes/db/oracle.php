@@ -26,6 +26,8 @@ class dbal_oracle extends dbal
 {
 	var $last_query_text = '';
 
+	var $dbms_type = 'oracle';
+
 	/**
 	* Connect to server
 	*/

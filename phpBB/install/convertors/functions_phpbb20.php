@@ -90,12 +90,9 @@ function phpbb_insert_forums()
 		$src_db->sql_query("SET NAMES 'utf8'");
 	}
 
-	switch ($db->sql_layer)
+	if ($db->dbms_type == 'mssql')
 	{
-		case 'mssql':
-		case 'mssql_odbc':
-			$db->sql_query('SET IDENTITY_INSERT ' . FORUMS_TABLE . ' ON');
-		break;
+		$db->sql_query('SET IDENTITY_INSERT ' . FORUMS_TABLE . ' ON');
 	}
 
 	$cats_added = array();
@@ -282,14 +279,13 @@ function phpbb_insert_forums()
 	}
 	$src_db->sql_freeresult($result);
 
-	switch ($db->sql_layer)
+	switch ($db->dbms_type)
 	{
 		case 'postgres':
 			$db->sql_query("SELECT SETVAL('" . FORUMS_TABLE . "_seq',(select case when max(forum_id)>0 then max(forum_id)+1 else 1 end from " . FORUMS_TABLE . '));');
 		break;
 
 		case 'mssql':
-		case 'mssql_odbc':
 			$db->sql_query('SET IDENTITY_INSERT ' . FORUMS_TABLE . ' OFF');
 		break;
 
@@ -1702,41 +1698,9 @@ function phpbb_check_username_collisions()
 {
 	global $db, $src_db, $convert, $table_prefix, $user, $lang;
 
-	$map_dbms = '';
-	switch ($db->sql_layer)
-	{
-		case 'mysql':
-			$map_dbms = 'mysql_40';
-		break;
-	
-		case 'mysql4':
-			if (version_compare($db->mysql_version, '4.1.3', '>='))
-			{
-				$map_dbms = 'mysql_41';
-			}
-			else
-			{
-				$map_dbms = 'mysql_40';
-			}
-		break;
-	
-		case 'mysqli':
-			$map_dbms = 'mysql_41';
-		break;
-	
-		case 'mssql':
-		case 'mssql_odbc':
-			$map_dbms = 'mssql';
-		break;
-	
-		default:
-			$map_dbms = $db->sql_layer;
-		break;
-	}
-
 	// create a temporary table in which we store the clean usernames
 	$drop_sql = 'DROP TABLE ' . $table_prefix . 'userconv';
-	switch ($map_dbms)
+	switch ($db->dbms_type)
 	{
 		case 'firebird':
 			$create_sql = 'CREATE TABLE ' . $table_prefix . 'userconv (
@@ -1752,14 +1716,7 @@ function phpbb_check_username_collisions()
 			)';
 		break;
 
-		case 'mysql_40':
-			$create_sql = 'CREATE TABLE ' . $table_prefix . 'userconv (
-				user_id mediumint(8) NOT NULL,
-				username_clean blob NOT NULL
-			)';
-		break;
-
-		case 'mysql_41':
+		case 'mysql':
 			$create_sql = 'CREATE TABLE ' . $table_prefix . 'userconv (
 				user_id mediumint(8) NOT NULL,
 				username_clean varchar(255) DEFAULT \'\' NOT NULL

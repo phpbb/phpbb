@@ -120,9 +120,8 @@ class acp_profile
 					$db->sql_query('DELETE FROM ' . PROFILE_FIELDS_LANG_TABLE . " WHERE field_id = $field_id");
 					$db->sql_query('DELETE FROM ' . PROFILE_LANG_TABLE . " WHERE field_id = $field_id");
 
-					switch ($db->sql_layer)
+					if ($db->dbms_type == 'sqlite')
 					{
-						case 'sqlite':
 							$sql = "SELECT sql
 								FROM sqlite_master
 								WHERE type = 'table'
@@ -166,9 +165,9 @@ class acp_profile
 							$db->sql_query('CREATE TABLE ' . PROFILE_FIELDS_DATA_TABLE . ' (' . $new_table_cols . ');');
 							$db->sql_query('INSERT INTO ' . PROFILE_FIELDS_DATA_TABLE . ' (' . $columns . ') SELECT ' . $columns . ' FROM ' . PROFILE_FIELDS_DATA_TABLE . '_temp;');
 							$db->sql_query('DROP TABLE ' . PROFILE_FIELDS_DATA_TABLE . '_temp');
-						break;
-
-						default:
+					}
+					else
+					{
 							$db->sql_query('ALTER TABLE ' . PROFILE_FIELDS_DATA_TABLE . " DROP COLUMN pf_$field_ident");
 					}
 
@@ -1348,10 +1347,9 @@ class acp_profile
 	{
 		global $db;
 
-		switch ($db->sql_layer)
+		switch ($db->dbms_type)
 		{
 			case 'mysql':
-			case 'mysqli':
 
 				// We are defining the biggest common value, because of the possibility to edit the min/max values of each field.
 				$sql = 'ALTER TABLE ' . PROFILE_FIELDS_DATA_TABLE . " ADD `$field_ident` ";
@@ -1468,7 +1466,6 @@ class acp_profile
 			break;
 
 			case 'mssql':
-			case 'mssql_odbc':
 
 				// We are defining the biggest common value, because of the possibility to edit the min/max values of each field.
 				$sql = 'ALTER TABLE [' . PROFILE_FIELDS_DATA_TABLE . "] ADD [$field_ident] ";

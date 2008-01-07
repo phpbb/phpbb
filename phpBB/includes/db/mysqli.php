@@ -32,6 +32,8 @@ class dbal_mysqli extends dbal
 	// Supports multiple table deletion
 	var $multi_table_deletion = true;
 
+	var $dbms_type = 'mysql';
+
 	/**
 	* Connect to server
 	*/

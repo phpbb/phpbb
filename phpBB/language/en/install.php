@@ -146,6 +146,7 @@ $lang = array_merge($lang, array(
 	'DLL_GD'					=> 'GD graphics support [ Visual Confirmation ]',
 	'DLL_MBSTRING'				=> 'Multi-byte character support',
 	'DLL_MSSQL'					=> 'MSSQL Server 2000+',
+	'DLL_MSSQL_2005'			=> 'MSSQL Server 2005+',
 	'DLL_MSSQL_ODBC'			=> 'MSSQL Server 2000+ via ODBC',
 	'DLL_MYSQL'					=> 'MySQL',
 	'DLL_MYSQLI'				=> 'MySQL with MySQLi Extension',

@@ -1647,10 +1647,9 @@ class acp_forums
 		}
 		$db->sql_freeresult($result);
 
-		switch ($db->sql_layer)
+		if ($db->dbms_type)
 		{
 			case 'mysql':
-			case 'mysqli':
 
 				// Delete everything else and thank MySQL for offering multi-table deletion
 				$tables_ary = array(

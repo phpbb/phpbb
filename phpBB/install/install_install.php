@@ -1193,6 +1193,7 @@ class install_install extends module
 		{
 			case 'mssql':
 			case 'mssql_odbc':
+			case 'mssql_2005':
 				$sql_query = preg_replace('#\# MSSQL IDENTITY (phpbb_[a-z_]+) (ON|OFF) \##s', 'SET IDENTITY_INSERT \1 \2;', $sql_query);
 			break;
 

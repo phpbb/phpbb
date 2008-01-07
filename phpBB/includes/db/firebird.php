@@ -31,6 +31,8 @@ class dbal_firebird extends dbal
 	// can't truncate a table
 	var $truncate = false;
 
+	var $dbms_type = 'firebird';
+
 	/**
 	* Connect to server
 	*/

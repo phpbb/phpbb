@@ -640,35 +640,31 @@ class fulltext_native extends search_backend
 			$sql = '';
 			$sql_array_count = $sql_array;
 
-			switch ($db->sql_layer)
+			if ($db->dbms_type === 'mysql')
 			{
-				case 'mysql':
-				case 'mysqli':
-					$sql_array['SELECT'] = 'SQL_CALC_FOUND_ROWS ' . $sql_array['SELECT'];
-					$is_mysql = true;
-
-				break;
-
-				case 'sqlite':
+				$sql_array['SELECT'] = 'SQL_CALC_FOUND_ROWS ' . $sql_array['SELECT'];
+				$is_mysql = true;
+			}
+			else
+			{
+				if (!$db->count_distinct)
+				{
 					$sql_array_count['SELECT'] = ($type == 'posts') ? 'DISTINCT p.post_id' : 'DISTINCT p.topic_id';
 					$sql = 'SELECT COUNT(' . (($type == 'posts') ? 'post_id' : 'topic_id') . ') as total_results
 							FROM (' . $db->sql_build_query('SELECT', $sql_array_count) . ')';
+				}
 
-				// no break
+				$sql_array_count['SELECT'] = ($type == 'posts') ? 'COUNT(DISTINCT p.post_id) AS total_results' : 'COUNT(DISTINCT p.topic_id) AS total_results';
+				$sql = (!$sql) ? $db->sql_build_query('SELECT', $sql_array_count) : $sql;
 
-				default:
-					$sql_array_count['SELECT'] = ($type == 'posts') ? 'COUNT(DISTINCT p.post_id) AS total_results' : 'COUNT(DISTINCT p.topic_id) AS total_results';
-					$sql = (!$sql) ? $db->sql_build_query('SELECT', $sql_array_count) : $sql;
+				$result = $db->sql_query($sql);
+				$total_results = (int) $db->sql_fetchfield('total_results');
+				$db->sql_freeresult($result);
 
-					$result = $db->sql_query($sql);
-					$total_results = (int) $db->sql_fetchfield('total_results');
-					$db->sql_freeresult($result);
-
-					if (!$total_results)
-					{
-						return false;
-					}
-				break;
+				if (!$total_results)
+				{
+					return false;
+				}
 			}
 
 			unset($sql_array_count, $sql);
@@ -840,57 +836,54 @@ class fulltext_native extends search_backend
 		// If the cache was completely empty count the results
 		if (!$total_results)
 		{
-			switch ($db->sql_layer)
+			if ($db->dbms_type === 'mysql')
 			{
-				case 'mysql':
-				case 'mysqli':
 					$select = 'SQL_CALC_FOUND_ROWS ' . $select;
 					$is_mysql = true;
-				break;
-
-				default:
-					if ($type == 'posts')
+			}
+			else
+			{
+				if ($type == 'posts')
+				{
+					$sql = 'SELECT COUNT(p.post_id) as total_results
+						FROM ' . POSTS_TABLE . ' p' . (($firstpost_only) ? ', ' . TOPICS_TABLE . ' t ' : ' ') . "
+						WHERE $sql_author
+							$sql_topic_id
+							$sql_firstpost
+							$m_approve_fid_sql
+							$sql_fora
+							$sql_time";
+				}
+				else
+				{
+					if ($db->count_distinct)
 					{
-						$sql = 'SELECT COUNT(p.post_id) as total_results
-							FROM ' . POSTS_TABLE . ' p' . (($firstpost_only) ? ', ' . TOPICS_TABLE . ' t ' : ' ') . "
-							WHERE $sql_author
-								$sql_topic_id
-								$sql_firstpost
-								$m_approve_fid_sql
-								$sql_fora
-								$sql_time";
+						$sql = 'SELECT COUNT(DISTINCT t.topic_id) as total_results';
 					}
 					else
 					{
-						if ($db->count_distinct)
-						{
-							$sql = 'SELECT COUNT(DISTINCT t.topic_id) as total_results';
-						}
-						else
-						{
-							$sql = 'SELECT COUNT(topic_id) as total_results
-								FROM (SELECT DISTINCT t.topic_id';
-						}
-
-						$sql .= ' FROM ' . TOPICS_TABLE . ' t, ' . POSTS_TABLE . " p
-							WHERE $sql_author
-								$sql_topic_id
-								$sql_firstpost
-								$m_approve_fid_sql
-								$sql_fora
-								AND t.topic_id = p.topic_id
-								$sql_time" . (($db->count_distinct) ? '' : ')');
+						$sql = 'SELECT COUNT(topic_id) as total_results
+							FROM (SELECT DISTINCT t.topic_id';
 					}
-					$result = $db->sql_query($sql);
 
-					$total_results = (int) $db->sql_fetchfield('total_results');
-					$db->sql_freeresult($result);
+					$sql .= ' FROM ' . TOPICS_TABLE . ' t, ' . POSTS_TABLE . " p
+						WHERE $sql_author
+							$sql_topic_id
+							$sql_firstpost
+							$m_approve_fid_sql
+							$sql_fora
+							AND t.topic_id = p.topic_id
+							$sql_time" . (($db->count_distinct) ? '' : ')');
+				}
+				$result = $db->sql_query($sql);
 
-					if (!$total_results)
-					{
-						return false;
-					}
-				break;
+				$total_results = (int) $db->sql_fetchfield('total_results');
+				$db->sql_freeresult($result);
+
+				if (!$total_results)
+				{
+					return false;
+				}
 			}
 		}
 
@@ -1338,20 +1331,17 @@ class fulltext_native extends search_backend
 	{
 		global $db;
 
-		switch ($db->sql_layer)
+		if ($db->truncate)
 		{
-			case 'sqlite':
-			case 'firebird':
-				$db->sql_query('DELETE FROM ' . SEARCH_WORDLIST_TABLE);
-				$db->sql_query('DELETE FROM ' . SEARCH_WORDMATCH_TABLE);
-				$db->sql_query('DELETE FROM ' . SEARCH_RESULTS_TABLE);
-			break;
-
-			default:
-				$db->sql_query('TRUNCATE TABLE ' . SEARCH_WORDLIST_TABLE);
-				$db->sql_query('TRUNCATE TABLE ' . SEARCH_WORDMATCH_TABLE);
-				$db->sql_query('TRUNCATE TABLE ' . SEARCH_RESULTS_TABLE);
-			break;
+			$db->sql_query('TRUNCATE TABLE ' . SEARCH_WORDLIST_TABLE);
+			$db->sql_query('TRUNCATE TABLE ' . SEARCH_WORDMATCH_TABLE);
+			$db->sql_query('TRUNCATE TABLE ' . SEARCH_RESULTS_TABLE);
+		}
+		else
+		{
+			$db->sql_query('DELETE FROM ' . SEARCH_WORDLIST_TABLE);
+			$db->sql_query('DELETE FROM ' . SEARCH_WORDMATCH_TABLE);
+			$db->sql_query('DELETE FROM ' . SEARCH_RESULTS_TABLE);
 		}
 	}
 
