@@ -574,7 +574,7 @@ function phpbb_convert_authentication($mode)
 
 		$sql = 'SELECT group_id
 			FROM ' . GROUPS_TABLE . "
-			WHERE group_name = '" . $db->sql_escape('BOTS') . "'";
+			WHERE group_name_clean = '" . $db->sql_escape('bots') . "'";
 		$result = $db->sql_query($sql);
 		$bot_group_id = (int) $db->sql_fetchfield('group_id');
 		$db->sql_freeresult($result);
@@ -1137,6 +1137,28 @@ function phpbb_convert_group_name($group_name)
 	}
 
 	return phpbb_set_default_encoding($group_name);
+}
+
+/**
+* Convert the group name, making sure to avoid conflicts with 3.0 special groups
+*/
+function phpbb_convert_group_name_clean($group_name)
+{
+	$default_groups = array(
+		'GUESTS',
+		'REGISTERED',
+		'REGISTERED_COPPA',
+		'GLOBAL_MODERATORS',
+		'ADMINISTRATORS',
+		'BOTS',
+	);
+
+	if (in_array(strtoupper($group_name), $default_groups))
+	{
+		return utf8_clean_string('phpBB2 - ' . $group_name);
+	}
+
+	return utf8_clean_string(phpbb_set_default_encoding($group_name));
 }
 
 /**

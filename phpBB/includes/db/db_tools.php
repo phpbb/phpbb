@@ -214,7 +214,7 @@ class phpbb_db_tools
 			'UINT'		=> 'INT4', // unsigned
 			'UINT:'		=> 'INT4', // unsigned
 			'USINT'		=> 'INT2', // unsigned
-			'BOOL'		=> 'INT2', // unsigned
+			'BOOL'		=> 'boolean', // unsigned
 			'TINT:'		=> 'INT2',
 			'VCHAR'		=> 'varchar(255)',
 			'VCHAR:'	=> 'varchar(%d)',
@@ -234,7 +234,7 @@ class phpbb_db_tools
 			'PDECIMAL:'	=> 'decimal(%d,3)',
 			'VCHAR_UNI'	=> 'varchar(255)',
 			'VCHAR_UNI:'=> 'varchar(%d)',
-			'VCHAR_CI'	=> 'varchar_ci',
+			'VCHAR_CI'	=> 'varchar(255)',
 			'VARBINARY'	=> 'bytea',
 		),
 	);

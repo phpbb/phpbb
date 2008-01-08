@@ -479,14 +479,21 @@ class acp_attachments
 					// Check New Group Name
 					if ($new_group_name)
 					{
-						$sql = 'SELECT group_id
-							FROM ' . EXTENSION_GROUPS_TABLE . "
-							WHERE LOWER(group_name) = '" . $db->sql_escape(utf8_strtolower($new_group_name)) . "'";
+						$sql = 'SELECT group_name
+							FROM ' . EXTENSION_GROUPS_TABLE;
 						$result = $db->sql_query($sql);
+						$ext_row = $db->sql_fetchrow($result);
+						$db->sql_freeresult($result);
 
-						if ($db->sql_fetchrow($result))
+						$clean_group_name = utf8_clean_string($new_group_name);
+
+						while ($row = $db->sql_fetchrow($result))
 						{
-							$error[] = sprintf($user->lang['EXTENSION_GROUP_EXIST'], $new_group_name);
+							if (utf8_clean_string($row['group_name']) === $clean_group_name)
+							{
+								$error[] = sprintf($user->lang['EXTENSION_GROUP_EXIST'], $new_group_name);
+								break;
+							}
 						}
 						$db->sql_freeresult($result);
 					}

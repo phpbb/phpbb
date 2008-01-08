@@ -329,6 +329,8 @@ CREATE TABLE phpbb_config (
 
 CREATE INDEX phpbb_config_is_dynamic ON phpbb_config (is_dynamic)
 /
+CREATE INDEX phpbb_config_config_name ON phpbb_config (config_name)
+/
 
 /*
 	Table: 'phpbb_confirm'
@@ -586,7 +588,8 @@ CREATE TABLE phpbb_groups (
 	group_id number(8) NOT NULL,
 	group_type number(4) DEFAULT '1' NOT NULL,
 	group_founder_manage number(1) DEFAULT '0' NOT NULL,
-	group_name varchar2(255) DEFAULT '' ,
+	group_name varchar2(765) DEFAULT '' ,
+	group_name_clean varchar2(765) DEFAULT '' ,
 	group_desc clob DEFAULT '' ,
 	group_desc_bitfield varchar2(255) DEFAULT '' ,
 	group_desc_options number(11) DEFAULT '7' NOT NULL,
@@ -1707,8 +1710,8 @@ CREATE TABLE phpbb_users (
 	user_perm_from number(8) DEFAULT '0' NOT NULL,
 	user_ip varchar2(40) DEFAULT '' ,
 	user_regdate number(11) DEFAULT '0' NOT NULL,
-	username varchar2(255) DEFAULT '' ,
-	username_clean varchar2(255) DEFAULT '' ,
+	username varchar2(765) DEFAULT '' ,
+	username_clean varchar2(765) DEFAULT '' ,
 	user_password varchar2(120) DEFAULT '' ,
 	user_passchg number(11) DEFAULT '0' NOT NULL,
 	user_pass_convert number(1) DEFAULT '0' NOT NULL,
@@ -1871,4 +1874,6 @@ CREATE TABLE phpbb_zebra (
 )
 /
 
+CREATE INDEX phpbb_zebra_zebra_user ON phpbb_zebra (zebra_id, user_id)
+/
 

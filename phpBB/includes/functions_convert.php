@@ -1141,7 +1141,7 @@ function user_group_auth($group, $select_query, $use_src_db)
 
 	$sql = 'SELECT group_id
 		FROM ' . GROUPS_TABLE . "
-		WHERE group_name = '" . $db->sql_escape(strtoupper($group)) . "'";
+		WHERE group_name_clean = '" . $db->sql_escape(utf8_clean_string($group)) . "'";
 	$result = $db->sql_query($sql);
 	$group_id = (int) $db->sql_fetchfield('group_id');
 	$db->sql_freeresult($result);
@@ -1474,7 +1474,7 @@ function mass_auth($ug_type, $forum_id, $ug_id, $acl_list, $setting = ACL_NO)
 		{
 			$sql = 'SELECT group_id
 				FROM ' . GROUPS_TABLE . "
-				WHERE group_name = '" . $db->sql_escape(strtoupper($ug_id)) . "'";
+				WHERE group_name_clean = '" . $db->sql_escape(utf8_clean_string($ug_id)) . "'";
 			$result = $db->sql_query_limit($sql, 1);
 			$id = (int) $db->sql_fetchfield('group_id');
 			$db->sql_freeresult($result);
@@ -1702,7 +1702,7 @@ function add_default_groups()
 
 	$sql = 'SELECT *
 		FROM ' . GROUPS_TABLE . '
-		WHERE ' . $db->sql_in_set('group_name', array_keys($default_groups));
+		WHERE ' . $db->sql_in_set('group_name_clean', array_map('utf8_clean_string', array_keys($default_groups));
 	$result = $db->sql_query($sql);
 
 	while ($row = $db->sql_fetchrow($result))
@@ -1717,6 +1717,7 @@ function add_default_groups()
 	{
 		$sql_ary[] = array(
 			'group_name'			=> (string) $name,
+			'group_name_clean'		=> (string) utf8_clean_string($name),
 			'group_desc'			=> '',
 			'group_desc_uid'		=> '',
 			'group_desc_bitfield'	=> '',
@@ -1766,7 +1767,7 @@ function add_bots()
 
 	$db->sql_query($convert->truncate_statement . BOTS_TABLE);
 
-	$sql = 'SELECT group_id FROM ' . GROUPS_TABLE . " WHERE group_name = 'BOTS'";
+	$sql = 'SELECT group_id FROM ' . GROUPS_TABLE . " WHERE group_name_clean = 'bots'";
 	$result = $db->sql_query($sql);
 	$group_id = (int) $db->sql_fetchfield('group_id', false, $result);
 	$db->sql_freeresult($result);
@@ -1775,7 +1776,7 @@ function add_bots()
 	{
 		add_default_groups();
 
-		$sql = 'SELECT group_id FROM ' . GROUPS_TABLE . " WHERE group_name = 'BOTS'";
+		$sql = 'SELECT group_id FROM ' . GROUPS_TABLE . " WHERE group_name_clean = 'bots'";
 		$result = $db->sql_query($sql);
 		$group_id = (int) $db->sql_fetchfield('group_id', false, $result);
 		$db->sql_freeresult($result);

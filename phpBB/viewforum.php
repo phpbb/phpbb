@@ -494,7 +494,7 @@ if (sizeof($shadow_topic_list))
 		$row = array_merge($row, array(
 			'topic_moved_id'	=> $rowset[$orig_topic_id]['topic_moved_id'],
 			'topic_status'		=> $rowset[$orig_topic_id]['topic_status'],
-			'topic_type'		=> $rowset[$orig_topic_id]['topic_type'])
+			'topic_type'		=> $rowset[$orig_topic_id]['topic_type'],
 		));
 
 		$rowset[$orig_topic_id] = $row;

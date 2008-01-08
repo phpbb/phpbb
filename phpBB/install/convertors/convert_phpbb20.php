@@ -800,6 +800,7 @@ if (!$get_info)
 				array('group_display',			0,									''),
 				array('group_legend',			0,									''),
 				array('group_name',				'groups.group_name',				'phpbb_convert_group_name'), // phpbb_set_encoding called in phpbb_convert_group_name
+				array('group_name_clean',		'groups.group_name',				'phpbb_convert_group_name_clean'), // phpbb_set_encoding called in phpbb_convert_group_name
 				array('group_desc',				'groups.group_description',			'phpbb_set_encoding'),
 
 				'where'			=> 'groups.group_single_user = 0',

@@ -210,7 +210,7 @@ class acp_bots
 						{
 							$sql = 'SELECT group_id, group_colour
 								FROM ' . GROUPS_TABLE . "
-								WHERE group_name = 'BOTS'
+								WHERE group_name_clean = 'bots'
 									AND group_type = " . GROUP_SPECIAL;
 							$result = $db->sql_query($sql);
 							$group_row = $db->sql_fetchrow($result);

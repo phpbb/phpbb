@@ -220,6 +220,7 @@ CREATE TABLE phpbb_config (
 ALTER TABLE phpbb_config ADD PRIMARY KEY (config_name);;
 
 CREATE INDEX phpbb_config_is_dynamic ON phpbb_config(is_dynamic);;
+CREATE INDEX phpbb_config_config_name ON phpbb_config(config_name);;
 
 # Table: 'phpbb_confirm'
 CREATE TABLE phpbb_confirm (
@@ -425,6 +426,7 @@ CREATE TABLE phpbb_groups (
 	group_type INTEGER DEFAULT 1 NOT NULL,
 	group_founder_manage INTEGER DEFAULT 0 NOT NULL,
 	group_name VARCHAR(255) CHARACTER SET UTF8 DEFAULT '' NOT NULL COLLATE UNICODE,
+	group_name_clean VARCHAR(255) CHARACTER SET UTF8 DEFAULT '' NOT NULL COLLATE UNICODE,
 	group_desc BLOB SUB_TYPE TEXT CHARACTER SET UTF8 DEFAULT '' NOT NULL,
 	group_desc_bitfield VARCHAR(255) CHARACTER SET NONE DEFAULT '' NOT NULL,
 	group_desc_options INTEGER DEFAULT 7 NOT NULL,
@@ -1430,4 +1432,5 @@ CREATE TABLE phpbb_zebra (
 
 ALTER TABLE phpbb_zebra ADD PRIMARY KEY (user_id, zebra_id);;
 
+CREATE INDEX phpbb_zebra_zebra_user ON phpbb_zebra(zebra_id, user_id);;
 

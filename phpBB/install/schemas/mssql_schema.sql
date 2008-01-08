@@ -293,6 +293,9 @@ GO
 CREATE  INDEX [is_dynamic] ON [phpbb_config]([is_dynamic]) ON [PRIMARY]
 GO
 
+CREATE  INDEX [config_name] ON [phpbb_config]([config_name]) ON [PRIMARY]
+GO
+
 
 /*
 	Table: 'phpbb_confirm'
@@ -530,6 +533,7 @@ CREATE TABLE [phpbb_groups] (
 	[group_type] [int] DEFAULT (1) NOT NULL ,
 	[group_founder_manage] [int] DEFAULT (0) NOT NULL ,
 	[group_name] [varchar] (255) DEFAULT ('') NOT NULL ,
+	[group_name_clean] [varchar] (255) DEFAULT ('') NOT NULL ,
 	[group_desc] [varchar] (4000) DEFAULT ('') NOT NULL ,
 	[group_desc_bitfield] [varchar] (255) DEFAULT ('') NOT NULL ,
 	[group_desc_options] [int] DEFAULT (7) NOT NULL ,
@@ -1701,6 +1705,9 @@ ALTER TABLE [phpbb_zebra] WITH NOCHECK ADD
 		[user_id],
 		[zebra_id]
 	)  ON [PRIMARY] 
+GO
+
+CREATE  INDEX [zebra_user] ON [phpbb_zebra]([zebra_id], [user_id]) ON [PRIMARY]
 GO
 
 

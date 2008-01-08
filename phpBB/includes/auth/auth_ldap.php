@@ -198,7 +198,7 @@ function login_ldap(&$username, &$password)
 				// retrieve default group id
 				$sql = 'SELECT group_id
 					FROM ' . GROUPS_TABLE . "
-					WHERE group_name = '" . $db->sql_escape('REGISTERED') . "'
+					WHERE group_name_clean = '" . $db->sql_escape('registered') . "'
 						AND group_type = " . GROUP_SPECIAL;
 				$result = $db->sql_query($sql);
 				$row = $db->sql_fetchrow($result);

@@ -208,7 +208,7 @@ $dbms_type_map = array(
 		'UINT'		=> 'INT4', // unsigned
 		'UINT:'		=> 'INT4', // unsigned
 		'USINT'		=> 'INT2', // unsigned
-		'BOOL'		=> 'INT2', // unsigned
+		'BOOL'		=> 'boolean', // unsigned
 		'TINT:'		=> 'INT2',
 		'VCHAR'		=> 'varchar(255)',
 		'VCHAR:'	=> 'varchar(%d)',
@@ -228,7 +228,7 @@ $dbms_type_map = array(
 		'PDECIMAL:'	=> 'decimal(%d,3)',
 		'VCHAR_UNI'	=> 'varchar(255)',
 		'VCHAR_UNI:'=> 'varchar(%d)',
-		'VCHAR_CI'	=> 'varchar_ci',
+		'VCHAR_CI'	=> 'varchar(255)',
 		'VARBINARY'	=> 'bytea',
 	),
 );
@@ -239,7 +239,7 @@ $supported_dbms = array('firebird', 'mssql', 'mysql', 'db2', 'oracle', 'postgres
 
 foreach ($supported_dbms as $dbms)
 {
-	$fp = fopen($schema_path . '_' . $dbms . '_schema.sql', 'wt');
+	$fp = fopen($schema_path . '' . $dbms . '_schema.sql', 'wt');
 
 	$line = '';
 
@@ -999,6 +999,7 @@ function get_schema_struct()
 		'PRIMARY_KEY'	=> 'config_name',
 		'KEYS'			=> array(
 			'is_dynamic'		=> array('INDEX', 'is_dynamic'),
+			'config_name'		=> array('INDEX', 'config_name'),
 		),
 	);
 
@@ -1150,7 +1151,8 @@ function get_schema_struct()
 			'group_id'				=> array('UINT', NULL, 'auto_increment'),
 			'group_type'			=> array('TINT:4', 1),
 			'group_founder_manage'	=> array('BOOL', 0),
-			'group_name'			=> array('VCHAR_CI', ''),
+			'group_name'			=> array('VCHAR_UNI', ''),
+			'group_name_clean'		=> array('VCHAR_UNI', ''),
 			'group_desc'			=> array('TEXT_UNI', ''),
 			'group_desc_bitfield'	=> array('VCHAR:255', ''),
 			'group_desc_options'	=> array('UINT:11', 7),
@@ -1803,8 +1805,8 @@ function get_schema_struct()
 			'user_perm_from'			=> array('UINT', 0),
 			'user_ip'					=> array('VCHAR:40', ''),
 			'user_regdate'				=> array('TIMESTAMP', 0),
-			'username'					=> array('VCHAR_CI', ''),
-			'username_clean'			=> array('VCHAR_CI', ''),
+			'username'					=> array('VCHAR_UNI', ''),
+			'username_clean'			=> array('VCHAR_UNI', ''),
 			'user_password'				=> array('VCHAR_UNI:40', ''),
 			'user_passchg'				=> array('TIMESTAMP', 0),
 			'user_pass_convert'			=> array('BOOL', 0),
@@ -1908,6 +1910,9 @@ function get_schema_struct()
 			'foe'					=> array('BOOL', 0),
 		),
 		'PRIMARY_KEY'	=> array('user_id', 'zebra_id'),
+		'KEYS'			=> array(
+			'zebra_user'			=> array('INDEX', array('zebra_id', 'user_id')),
+		),
 	);
 
 	return $schema_data;
@@ -1962,86 +1967,6 @@ CONNECT phpbb/phpbb_password;
 */
 EOF;
 
-		break;
-
-		case 'postgres':
-			return <<<EOF
-/*
-	Domain definition
-*/
-CREATE DOMAIN varchar_ci AS varchar(255) NOT NULL DEFAULT ''::character varying;
-
-/*
-	Operation Functions
-*/
-CREATE FUNCTION _varchar_ci_equal(varchar_ci, varchar_ci) RETURNS boolean AS 'SELECT LOWER($1) = LOWER($2)' LANGUAGE SQL STRICT;
-CREATE FUNCTION _varchar_ci_not_equal(varchar_ci, varchar_ci) RETURNS boolean AS 'SELECT LOWER($1) != LOWER($2)' LANGUAGE SQL STRICT;
-CREATE FUNCTION _varchar_ci_less_than(varchar_ci, varchar_ci) RETURNS boolean AS 'SELECT LOWER($1) < LOWER($2)' LANGUAGE SQL STRICT;
-CREATE FUNCTION _varchar_ci_less_equal(varchar_ci, varchar_ci) RETURNS boolean AS 'SELECT LOWER($1) <= LOWER($2)' LANGUAGE SQL STRICT;
-CREATE FUNCTION _varchar_ci_greater_than(varchar_ci, varchar_ci) RETURNS boolean AS 'SELECT LOWER($1) > LOWER($2)' LANGUAGE SQL STRICT;
-CREATE FUNCTION _varchar_ci_greater_equals(varchar_ci, varchar_ci) RETURNS boolean AS 'SELECT LOWER($1) >= LOWER($2)' LANGUAGE SQL STRICT;
-
-/*
-	Operators
-*/
-CREATE OPERATOR <(
-  PROCEDURE = _varchar_ci_less_than,
-  LEFTARG = varchar_ci,
-  RIGHTARG = varchar_ci,
-  COMMUTATOR = >,
-  NEGATOR = >=,
-  RESTRICT = scalarltsel,
-  JOIN = scalarltjoinsel);
-
-CREATE OPERATOR <=(
-  PROCEDURE = _varchar_ci_less_equal,
-  LEFTARG = varchar_ci,
-  RIGHTARG = varchar_ci,
-  COMMUTATOR = >=,
-  NEGATOR = >,
-  RESTRICT = scalarltsel,
-  JOIN = scalarltjoinsel);
-
-CREATE OPERATOR >(
-  PROCEDURE = _varchar_ci_greater_than,
-  LEFTARG = varchar_ci,
-  RIGHTARG = varchar_ci,
-  COMMUTATOR = <,
-  NEGATOR = <=,
-  RESTRICT = scalargtsel,
-  JOIN = scalargtjoinsel);
-
-CREATE OPERATOR >=(
-  PROCEDURE = _varchar_ci_greater_equals,
-  LEFTARG = varchar_ci,
-  RIGHTARG = varchar_ci,
-  COMMUTATOR = <=,
-  NEGATOR = <,
-  RESTRICT = scalargtsel,
-  JOIN = scalargtjoinsel);
-
-CREATE OPERATOR <>(
-  PROCEDURE = _varchar_ci_not_equal,
-  LEFTARG = varchar_ci,
-  RIGHTARG = varchar_ci,
-  COMMUTATOR = <>,
-  NEGATOR = =,
-  RESTRICT = neqsel,
-  JOIN = neqjoinsel);
-
-CREATE OPERATOR =(
-  PROCEDURE = _varchar_ci_equal,
-  LEFTARG = varchar_ci,
-  RIGHTARG = varchar_ci,
-  COMMUTATOR = =,
-  NEGATOR = <>,
-  RESTRICT = eqsel,
-  JOIN = eqjoinsel,
-  HASHES,
-  MERGES,
-  SORT1= <);
-
-EOF;
 		break;
 	}
 

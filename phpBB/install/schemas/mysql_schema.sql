@@ -152,7 +152,8 @@ CREATE TABLE phpbb_config (
 	config_value varchar(255) DEFAULT '' NOT NULL,
 	is_dynamic tinyint(1) UNSIGNED DEFAULT '0' NOT NULL,
 	PRIMARY KEY (config_name),
-	KEY is_dynamic (is_dynamic)
+	KEY is_dynamic (is_dynamic),
+	KEY config_name (config_name)
 ) CHARACTER SET `utf8` COLLATE `utf8_bin`;
 
 
@@ -297,6 +298,7 @@ CREATE TABLE phpbb_groups (
 	group_type tinyint(4) DEFAULT '1' NOT NULL,
 	group_founder_manage tinyint(1) UNSIGNED DEFAULT '0' NOT NULL,
 	group_name varchar(255) DEFAULT '' NOT NULL,
+	group_name_clean varchar(255) DEFAULT '' NOT NULL,
 	group_desc text NOT NULL,
 	group_desc_bitfield varchar(255) DEFAULT '' NOT NULL,
 	group_desc_options int(11) UNSIGNED DEFAULT '7' NOT NULL,
@@ -990,7 +992,8 @@ CREATE TABLE phpbb_zebra (
 	zebra_id mediumint(8) UNSIGNED DEFAULT '0' NOT NULL,
 	friend tinyint(1) UNSIGNED DEFAULT '0' NOT NULL,
 	foe tinyint(1) UNSIGNED DEFAULT '0' NOT NULL,
-	PRIMARY KEY (user_id, zebra_id)
+	PRIMARY KEY (user_id, zebra_id),
+	KEY zebra_user (zebra_id, user_id)
 ) CHARACTER SET `utf8` COLLATE `utf8_bin`;
 
 

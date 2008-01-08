@@ -227,7 +227,7 @@ class acp_email
 		// Exclude bots and guests...
 		$sql = 'SELECT group_id
 			FROM ' . GROUPS_TABLE . "
-			WHERE group_name IN ('BOTS', 'GUESTS')";
+			WHERE group_name_clean IN ('bots', 'guests')";
 		$result = $db->sql_query($sql);
 
 		$exclude = array();

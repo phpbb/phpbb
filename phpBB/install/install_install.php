@@ -1817,7 +1817,7 @@ class install_install extends module
 
 		$sql = 'SELECT group_id
 			FROM ' . GROUPS_TABLE . "
-			WHERE group_name = 'BOTS'";
+			WHERE group_name_clean = 'bots'";
 		$result = $db->sql_query($sql);
 		$group_id = (int) $db->sql_fetchfield('group_id');
 		$db->sql_freeresult($result);

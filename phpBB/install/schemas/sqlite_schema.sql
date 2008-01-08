@@ -152,6 +152,7 @@ CREATE TABLE phpbb_config (
 );
 
 CREATE INDEX phpbb_config_is_dynamic ON phpbb_config (is_dynamic);
+CREATE INDEX phpbb_config_config_name ON phpbb_config (config_name);
 
 # Table: 'phpbb_confirm'
 CREATE TABLE phpbb_confirm (
@@ -289,6 +290,7 @@ CREATE TABLE phpbb_groups (
 	group_type tinyint(4) NOT NULL DEFAULT '1',
 	group_founder_manage INTEGER UNSIGNED NOT NULL DEFAULT '0',
 	group_name varchar(255) NOT NULL DEFAULT '',
+	group_name_clean varchar(255) NOT NULL DEFAULT '',
 	group_desc text(65535) NOT NULL DEFAULT '',
 	group_desc_bitfield varchar(255) NOT NULL DEFAULT '',
 	group_desc_options INTEGER UNSIGNED NOT NULL DEFAULT '7',
@@ -960,6 +962,7 @@ CREATE TABLE phpbb_zebra (
 	PRIMARY KEY (user_id, zebra_id)
 );
 
+CREATE INDEX phpbb_zebra_zebra_user ON phpbb_zebra (zebra_id, user_id);
 
 
 COMMIT;

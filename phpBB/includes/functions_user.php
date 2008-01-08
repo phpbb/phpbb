@@ -1405,7 +1405,7 @@ function validate_username($username, $allowed_username = false)
 
 	$sql = 'SELECT group_name
 		FROM ' . GROUPS_TABLE . "
-		WHERE LOWER(group_name) = '" . $db->sql_escape(utf8_strtolower($username)) . "'";
+		WHERE group_name = '" . $db->sql_escape($clean_username) . "'";
 	$result = $db->sql_query($sql);
 	$row = $db->sql_fetchrow($result);
 	$db->sql_freeresult($result);
@@ -2297,6 +2297,7 @@ function group_create(&$group_id, $type, $name, $desc, $group_attributes, $allow
 		$user_ary = array();
 		$sql_ary = array(
 			'group_name'			=> (string) $name,
+			'group_name_clean'		=> (string) utf8_clean_string($name),
 			'group_desc'			=> (string) $desc,
 			'group_desc_uid'		=> '',
 			'group_desc_bitfield'	=> '',
@@ -2637,9 +2638,11 @@ function group_user_del($group_id, $user_id_ary = false, $username_ary = false, 
 		return 'NO_USER';
 	}
 
+	$clean_group_order = array_map('utf8_clean_string', $group_order);
+
 	$sql = 'SELECT *
 		FROM ' . GROUPS_TABLE . '
-		WHERE ' . $db->sql_in_set('group_name', $group_order);
+		WHERE ' . $db->sql_in_set('group_name_clean', $clean_group_order);
 	$result = $db->sql_query($sql);
 
 	$group_order_id = $special_group_data = array();
@@ -2679,7 +2682,7 @@ function group_user_del($group_id, $user_id_ary = false, $username_ary = false, 
 	$db->sql_freeresult($result);
 
 	// What special group memberships exist for these users?
-	$sql = 'SELECT g.group_id, g.group_name, ug.user_id
+	$sql = 'SELECT g.group_id, g.group_name_clean, ug.user_id
 		FROM ' . USER_GROUP_TABLE . ' ug, ' . GROUPS_TABLE . ' g
 		WHERE ' . $db->sql_in_set('ug.user_id', $user_id_ary) . "
 			AND g.group_id = ug.group_id
@@ -2691,7 +2694,7 @@ function group_user_del($group_id, $user_id_ary = false, $username_ary = false, 
 	$temp_ary = array();
 	while ($row = $db->sql_fetchrow($result))
 	{
-		if ($default_groups[$row['user_id']] == $group_id && (!isset($temp_ary[$row['user_id']]) || array_search($row['group_name'], $group_order) < $temp_ary[$row['user_id']]))
+		if ($default_groups[$row['user_id']] == $group_id && (!isset($temp_ary[$row['user_id']]) || array_search($row['group_name_clean'], $clean_group_order) < $temp_ary[$row['user_id']]))
 		{
 			$temp_ary[$row['user_id']] = $row['group_id'];
 		}
@@ -2953,7 +2956,7 @@ function group_validate_groupname($group_id, $group_name)
 
 	if (!empty($group_id))
 	{
-		$sql = 'SELECT group_name
+		$sql = 'SELECT group_name_clean
 			FROM ' . GROUPS_TABLE . '
 			WHERE group_id = ' . (int) $group_id;
 		$result = $db->sql_query($sql);
@@ -2975,7 +2978,7 @@ function group_validate_groupname($group_id, $group_name)
 
 	$sql = 'SELECT group_name
 		FROM ' . GROUPS_TABLE . "
-		WHERE LOWER(group_name) = '" . $db->sql_escape(utf8_strtolower($group_name)) . "'";
+		WHERE group_name_clean = '" . $db->sql_escape(utf8_clean_string($group_name)) . "'";
 	$result = $db->sql_query($sql);
 	$row = $db->sql_fetchrow($result);
 	$db->sql_freeresult($result);
