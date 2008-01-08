@@ -239,7 +239,7 @@ $supported_dbms = array('firebird', 'mssql', 'mysql', 'db2', 'oracle', 'postgres
 
 foreach ($supported_dbms as $dbms)
 {
-	$fp = fopen($schema_path . '' . $dbms . '_schema.sql', 'wt');
+	$fp = fopen($schema_path . '_' . $dbms . '_schema.sql', 'wt');
 
 	$line = '';
 
