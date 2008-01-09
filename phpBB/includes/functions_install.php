@@ -492,9 +492,14 @@ function connect_check_db($error_connect, &$error, $dbms_details, $table_prefix,
 					}
 					$db->sql_freeresult($result);
 
-					if (version_compare($stats['NLS_RDBMS_VERSION'], '9.2', '<') && $stats['NLS_CHARACTERSET'] !== 'UTF8')
+					if (version_compare($stats['NLS_RDBMS_VERSION'], '9.2', '<'))
 					{
 						$error[] = $lang['INST_ERR_DB_NO_ORACLE'];
+					}
+
+					if ($stats['NLS_CHARACTERSET'] !== 'AL32UTF8')
+					{
+						$error[] = $lang['INST_ERR_DB_NO_ORACLE_NLS'];
 					}
 				}
 			break;

@@ -50,7 +50,7 @@ class dbal_oracle extends dbal
 			$connect = $sqlserver . (($port) ? ':' . $port : '') . '/' . $database;
 		}
 
-		$this->db_connect_id = ($new_link) ? @oci_new_connect($this->user, $sqlpassword, $connect, 'UTF8') : (($this->persistency) ? @oci_pconnect($this->user, $sqlpassword, $connect, 'UTF8') : @oci_connect($this->user, $sqlpassword, $connect, 'UTF8'));
+		$this->db_connect_id = ($new_link) ? @oci_new_connect($this->user, $sqlpassword, $connect, 'AL32UTF8') : (($this->persistency) ? @oci_pconnect($this->user, $sqlpassword, $connect, 'AL32UTF8') : @oci_connect($this->user, $sqlpassword, $connect, 'AL32UTF8'));
 
 		return ($this->db_connect_id) ? $this->db_connect_id : $this->sql_error('');
 	}
