@@ -486,7 +486,7 @@ INSERT INTO phpbb_users (user_type, group_id, username, username_clean, user_reg
 INSERT INTO phpbb_groups (group_name, group_name_clean, group_type, group_founder_manage, group_colour, group_legend, group_avatar, group_desc, group_desc_uid) VALUES ('GUESTS', 'guests', 3, 0, '', 0, '', '', '');
 INSERT INTO phpbb_groups (group_name, group_name_clean, group_type, group_founder_manage, group_colour, group_legend, group_avatar, group_desc, group_desc_uid) VALUES ('REGISTERED', 'registered', 3, 0, '', 0, '', '', '');
 INSERT INTO phpbb_groups (group_name, group_name_clean, group_type, group_founder_manage, group_colour, group_legend, group_avatar, group_desc, group_desc_uid) VALUES ('REGISTERED_COPPA', 'registered_coppa', 3, 0, '', 0, '', '', '');
-INSERT INTO phpbb_groups (group_name, group_name_clean, group_type, group_founder_manage, group_colour, group_legend, group_avatar, group_desc, group_desc_uid) VALUES ('GLOBAL_MODERATORS', 'global_moderators' 3, 0, '00AA00', 1, '', '', '');
+INSERT INTO phpbb_groups (group_name, group_name_clean, group_type, group_founder_manage, group_colour, group_legend, group_avatar, group_desc, group_desc_uid) VALUES ('GLOBAL_MODERATORS', 'global_moderators', 3, 0, '00AA00', 1, '', '', '');
 INSERT INTO phpbb_groups (group_name, group_name_clean, group_type, group_founder_manage, group_colour, group_legend, group_avatar, group_desc, group_desc_uid) VALUES ('ADMINISTRATORS', 'administrators', 3, 1, 'AA0000', 1, '', '', '');
 INSERT INTO phpbb_groups (group_name, group_name_clean, group_type, group_founder_manage, group_colour, group_legend, group_avatar, group_desc, group_desc_uid) VALUES ('BOTS', 'bots', 3, 0, '9E8DA7', 0, '', '', '');
 

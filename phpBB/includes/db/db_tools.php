@@ -621,38 +621,7 @@ class phpbb_db_tools
 			{
 				$column_type = sprintf($this->dbms_type_map[$this->sql_layer][$orig_column_type . ':'], $column_length);
 			}
-			else
-			{
-				if (isset($this->dbms_type_map[$this->sql_layer][$orig_column_type . ':']['rule']))
-				{
-					switch ($this->dbms_type_map[$this->sql_layer][$orig_column_type . ':']['rule'][0])
-					{
-						case 'div':
-							$column_length /= $this->dbms_type_map[$this->sql_layer][$orig_column_type . ':']['rule'][1];
-							$column_length = ceil($column_length);
-							$column_type = sprintf($this->dbms_type_map[$this->sql_layer][$orig_column_type . ':'][0], $column_length);
-						break;
-					}
-				}
 
-				if (isset($this->dbms_type_map[$this->sql_layer][$orig_column_type . ':']['limit']))
-				{
-					switch ($this->dbms_type_map[$this->sql_layer][$orig_column_type . ':']['limit'][0])
-					{
-						case 'mult':
-							$column_length *= $this->dbms_type_map[$this->sql_layer][$orig_column_type . ':']['limit'][1];
-							if ($column_length > $this->dbms_type_map[$this->sql_layer][$orig_column_type . ':']['limit'][2])
-							{
-								$column_type = $this->dbms_type_map[$this->sql_layer][$orig_column_type . ':']['limit'][3];
-							}
-							else
-							{
-								$column_type = sprintf($this->dbms_type_map[$this->sql_layer][$orig_column_type . ':'][0], $column_length);
-							}
-						break;
-					}
-				}
-			}
 			$orig_column_type .= ':';
 		}
 		else
@@ -689,6 +658,12 @@ class phpbb_db_tools
 					$sql .= ' COLLATE UNICODE';
 				}
 
+				$return_array['auto_increment'] = false;
+				if (isset($column_data[2]) && $column_data[2] == 'auto_increment')
+				{
+					$return_array['auto_increment'] = true;
+				}
+
 			break;
 
 			case 'mssql':
@@ -708,6 +683,8 @@ class phpbb_db_tools
 						$sql_default .= 'DEFAULT (' . ((is_numeric($column_data[1])) ? $column_data[1] : "'{$column_data[1]}'") . ') ';
 					}
 				}
+
+				$return_array['textimage'] = $column_type === '[text]';
 
 				$sql .= 'NOT NULL';
 				$sql_default .= 'NOT NULL';
@@ -750,6 +727,12 @@ class phpbb_db_tools
 				{
 					$sql .= ($column_data[1] === '') ? '' : 'NOT NULL';
 				}
+
+				$return_array['auto_increment'] = false;
+				if (isset($column_data[2]) && $column_data[2] == 'auto_increment')
+				{
+					$return_array['auto_increment'] = true;
+				}
 			break;
 
 			case 'postgres':
@@ -757,9 +740,11 @@ class phpbb_db_tools
 
 				$sql .= " {$column_type} ";
 
+				$return_array['auto_increment'] = false;
 				if (isset($column_data[2]) && $column_data[2] == 'auto_increment')
 				{
 					$default_val = "nextval('{$table_name}_seq')";
+					$return_array['auto_increment'] = true;
 				}
 				else if (!is_null($column_data[1]))
 				{
@@ -781,9 +766,11 @@ class phpbb_db_tools
 			break;
 
 			case 'sqlite':
+				$return_array['primary_key_set'] = false;
 				if (isset($column_data[2]) && $column_data[2] == 'auto_increment')
 				{
 					$sql .= ' INTEGER PRIMARY KEY';
+					$return_array['primary_key_set'] = true;
 				}
 				else
 				{
@@ -795,7 +782,7 @@ class phpbb_db_tools
 			break;
 
 			case 'db2':
-				$sql .= "\t{$column_name} {$column_type} NOT NULL";
+				$sql .= " {$column_type} NOT NULL";
 
 				if (isset($column_data[2]) && $column_data[2] == 'auto_increment')
 				{
@@ -812,13 +799,191 @@ class phpbb_db_tools
 						$sql .= " DEFAULT '{$column_data[1]}'";
 					}
 				}
-				$sql .= ",\n";
 			break;
 		}
 
 		$return_array['column_type_sql'] = $sql;
 
 		return $return_array;
+	}
+
+	function sql_create_table($table_name, $table_data)
+	{
+		// holds the DDL for a column
+		$columns = array();
+
+		$table_sql = 'CREATE TABLE ' . $table_name . ' (' . "\n";
+
+		// Determine if we have created a PRIMARY KEY in the earliest
+		$primary_key_gen = false;
+
+		// Determine if the table must be created with TEXTIMAGE
+		$create_textimage = false;
+
+		// Determine if the table requires a sequence
+		$create_sequence = false;
+
+		foreach ($table_data['COLUMNS'] as $column_name => $column_data)
+		{
+			// here lies an array, filled with information compiled on the column's data
+			$prepared_column = $this->sql_prepare_column_data($table_name, $column_name, $column_data);
+
+			// here we add the definition of the new column to the list of columns
+			$columns[] = "\t {$column_name} " . $prepared_column['column_type_sql'];
+
+			// see if we have found a primary key set due to a column definition,
+			// if we have found it, we can stop looking
+			if (!$primary_key_gen)
+			{
+				$primary_key_gen = isset($prepared_column['primary_key_set']) && $prepared_column['primary_key_set'];
+			}
+
+			// create textimage DDL based off of the existance of certain column types
+			if (!$create_textimage)
+			{
+				$create_textimage = isset($prepared_column['textimage']) && $prepared_column['textimage'];
+			}
+
+			// create sequence DDL based off of the existance of auto incrementing columns
+			if (!$create_sequence && isset($prepared_column['auto_increment']) && $prepared_column['auto_increment'])
+			{
+				$create_sequence = $column_name;
+			}
+		}
+
+		// this makes up all the columns in the create table statement
+		$table_sql .= implode(",\n", $columns);
+
+		switch ($this->sql_layer)
+		{
+			case 'firebird':
+				$table_sql .= "\n);";
+				$statements[] = $table_sql;
+			break;
+
+			case 'mssql':
+				$table_sql .= "\n) ON [PRIMARY]" . (($create_textimage) ? ' TEXTIMAGE_ON [PRIMARY]' : '');
+				$statements[] = $table_sql;
+			break;
+		}
+
+		// we have yet to create a primary key for this table,
+		// this means that we can add the one we really wanted instead
+		if (!$primary_key_gen)
+		{
+			// Write primary key
+			if (isset($table_data['PRIMARY_KEY']))
+			{
+				if (!is_array($table_data['PRIMARY_KEY']))
+				{
+					$table_data['PRIMARY_KEY'] = array($table_data['PRIMARY_KEY']);
+				}
+
+				switch ($this->sql_layer)
+				{
+					case 'mysql':
+					case 'postgres':
+					case 'db2':
+					case 'sqlite':
+						$table_sql .= ",\n\t PRIMARY KEY (" . implode(', ', $table_data['PRIMARY_KEY']) . ')';
+					break;
+
+					case 'firebird':
+					case 'mssql':
+						$primary_key_stmts = $this->sql_create_primary_key($table_name, $table_data['PRIMARY_KEY']);
+						foreach ($primary_key_stmts as $pk_stmt)
+						{
+							$statements[] = $pk_stmt;
+						}
+					break;
+
+					case 'oracle':
+						$table_sql .= ",\n\t CONSTRAINT pk_{$table_name} PRIMARY KEY (" . implode(', ', $table_data['PRIMARY_KEY']) . ')';
+					break;
+				}
+			}
+		}
+
+
+		// close the table
+		switch ($this->sql_layer)
+		{
+			case 'mysql':
+				// make sure the table is in UTF-8 mode
+				$table_sql .= "\n) CHARACTER SET `utf8` COLLATE `utf8_bin`;";
+				$statements[] = $table_sql;
+			break;
+
+			case 'postgres':
+				// do we need to add a sequence for auto incrementing columns?
+				if ($create_sequence)
+				{
+					$statements[] = "CREATE SEQUENCE {$table_name}_seq;";
+				}
+
+				$table_sql .= "\n);";
+				$statements[] = $table_sql;
+			break;
+
+			case 'db2':
+			case 'sqlite':
+				$table_sql .= "\n);";
+				$statements[] = $table_sql;
+			break;
+
+			case 'oracle':
+				$table_sql .= "\n);";
+				$statements[] = $table_sql;
+
+				// do we need to add a sequence and a tigger for auto incrementing columns?
+				if ($create_sequence)
+				{
+					// create the actual sequence
+					$statements[] = "CREATE SEQUENCE {$table_name}_seq";
+
+					// the trigger is the mechanism by which we increment the counter
+					$trigger = "CREATE OR REPLACE TRIGGER t_{$table_name}\n";
+					$trigger .= "BEFORE INSERT ON {$table_name}\n";
+					$trigger .= "FOR EACH ROW WHEN (\n";
+					$trigger .= "\tnew.{$create_sequence} IS NULL OR new.{$create_sequence} = 0\n";
+					$trigger .= ")\n";
+					$trigger .= "BEGIN\n";
+					$trigger .= "\tSELECT {$table_name}_seq.nextval\n";
+					$trigger .= "\tINTO :new.{$create_sequence}\n";
+					$trigger .= "\tFROM dual\n";
+					$trigger .= "END;";
+
+					$statements[] = $trigger;
+				}
+			break;
+
+			case 'firebird':
+				if ($create_sequence)
+				{
+					$statements[] = "CREATE SEQUENCE {$table_name}_seq;";
+				}
+			break;
+		}
+
+		// Write Keys
+		if (isset($table_data['KEYS']))
+		{
+			foreach ($table_data['KEYS'] as $key_name => $key_data)
+			{
+				if (!is_array($key_data[1]))
+				{
+					$key_data[1] = array($key_data[1]);
+				}
+
+				$key_stmts = ($key_data[0] == 'UNIQUE') ? $this->sql_create_unique_index($table_name, $key_name, $key_data[1]) : $this->sql_create_index($table_name, $key_name, $key_data[1]);
+				foreach ($key_stmts as $key_stmt)
+				{
+					$statements[] = $key_stmt;
+				}
+			}
+		}
+
+		return $this->_sql_run_sql($statements);
 	}
 
 	/**

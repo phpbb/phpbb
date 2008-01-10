@@ -1166,24 +1166,31 @@ class install_install extends module
 		$remove_remarks = $available_dbms[$data['dbms']]['COMMENTS'];
 		$delimiter = $available_dbms[$data['dbms']]['DELIM'];
 
-		$sql_query = @file_get_contents($dbms_schema);
 
-		$sql_query = preg_replace('#phpbb_#i', $data['table_prefix'], $sql_query);
+		include($phpbb_root_path . 'includes/db/db_tools.php');
+		include($phpbb_root_path . 'install/schemas/schema_data.php');
 
-		$remove_remarks($sql_query);
+		$tools = new phpbb_db_tools($db);
 
-		$sql_query = split_sql_file($sql_query, $delimiter);
+		// we must do this so that we can handle the errors
+		$tools->return_statements = true;
 
-		foreach ($sql_query as $sql)
+		foreach ($schema_data as $table_name => $table_data)
 		{
-			//$sql = trim(str_replace('|', ';', $sql));
-			if (!$db->sql_query($sql))
+			// Change prefix
+			$table_name = preg_replace('#phpbb_#i', $data['table_prefix'], $table_name);
+
+			$statements = $tools->sql_create_table($table_name, $table_data);
+
+			foreach ($statements as $sql)
 			{
-				$error = $db->sql_error();
-				$this->p_master->db_error($error['message'], $sql, __LINE__, __FILE__);
+				if (!$db->sql_query($sql))
+				{
+					$error = $db->sql_error();
+					$this->p_master->db_error($error['message'], $sql, __LINE__, __FILE__);
+				}
 			}
 		}
-		unset($sql_query);
 
 		// Ok tables have been built, let's fill in the basic information
 		$sql_query = file_get_contents('schemas/schema_data.sql');
