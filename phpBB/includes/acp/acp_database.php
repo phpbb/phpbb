@@ -1805,7 +1805,7 @@ class oracle_extractor extends base_extractor
 			FROM USER_DEPENDENCIES A, USER_TRIGGERS B
 			WHERE A.REFERENCED_TYPE = 'SEQUENCE'
 				AND A.NAME = B.TRIGGER_NAME
-				AND B. TABLE_NAME = '{$table_name}'";
+				AND B.TABLE_NAME = '{$table_name}'";
 		$result = $db->sql_query($sql);
 		while ($row = $db->sql_fetchrow($result))
 		{

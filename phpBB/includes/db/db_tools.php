@@ -1195,6 +1195,70 @@ class phpbb_db_tools
 	}
 
 	/**
+	* Drop Table
+	*/
+	public static function sql_table_drop($table_name, $index_name)
+	{
+		global $db;
+
+		$statements = array();
+
+		// the most basic operation, get rid of the table
+		$statements[] = 'DROP TABLE ' . $table_name;
+
+		switch ($db->dbms_type)
+		{
+			case 'firebird':
+				$sql = 'SELECT RDB$GENERATOR_NAME as gen
+					FROM RDB$GENERATORS
+					WHERE RDB$SYSTEM_FLAG = 0
+						AND RDB$GENERATOR_NAME = \'' . strtoupper($table_name) . "_GEN'";
+				$result = $db->sql_query($sql);
+
+				// does a generator exist?
+				if ($row = $db->sql_fetchrow($result))
+				{
+					$statements[] = "DROP GENERATOR {$row['gen']};";
+				}
+				$db->sql_freeresult($result);
+			break;
+
+			case 'oracle':
+				$sql = 'SELECT A.REFERENCED_NAME
+					FROM USER_DEPENDENCIES A, USER_TRIGGERS B
+					WHERE A.REFERENCED_TYPE = 'SEQUENCE'
+						AND A.NAME = B.TRIGGER_NAME
+						AND B.TABLE_NAME = \'' . strtoupper($table_name) . "'";
+				$result = $db->sql_query($sql);
+
+				// any sequences ref'd to this table's triggers?
+				while ($row = $db->sql_fetchrow($result))
+				{
+					$statements[] = "DROP SEQUENCE {$row['referenced_name']}";
+				}
+				$db->sql_freeresult($result);
+
+			case 'postgres':
+				// PGSQL does not "tightly" bind sequences and tables, we must guess...
+				$sql = "SELECT relname
+					FROM pg_class
+					WHERE relkind = 'S'
+						AND relname = '{$table_name}_seq'";
+				$result = $db->sql_query($sql);
+
+				// We don't even care about storing the results. We already know the answer if we get rows back.
+				if ($db->sql_fetchrow($result))
+				{
+					$statements[] =  "DROP SEQUENCE {$table_name}_seq;\n";
+				}
+				$db->sql_freeresult($result);
+			break;
+		}
+
+		return self::_sql_run_sql($statements);
+	}
+
+	/**
 	* Add primary key
 	*/
 	public static function sql_create_primary_key($table_name, $column)
