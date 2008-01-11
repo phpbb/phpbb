@@ -25,12 +25,7 @@ if (!defined('IN_PHPBB'))
 */
 class phpbb_db_tools
 {
-	/**
-	* Current sql layer
-	*/
-	var $sql_layer = '';
-
-	var $dbms_type_map = array(
+	public static $dbms_type_map = array(
 		'mysql'		=> array(
 			'INT:'		=> 'int(%d)',
 			'BINT'		=> 'bigint(20)',
@@ -240,22 +235,13 @@ class phpbb_db_tools
 	);
 
 	// A list of types being unsigned for better reference in some db's
-	var $unsigned_types = array('UINT', 'UINT:', 'USINT', 'BOOL', 'TIMESTAMP');
-	var $supported_dbms = array('firebird', 'mssql', 'mysql', 'oracle', 'postgres', 'sqlite');
+	public static $unsigned_types = array('UINT', 'UINT:', 'USINT', 'BOOL', 'TIMESTAMP');
+	public static $supported_dbms = array('firebird', 'mssql', 'mysql', 'oracle', 'postgres', 'sqlite');
 
 	/**
 	* Set this to true if you only want to return the 'to-be-executed' SQL statement(s) (as an array).
 	*/
-	var $return_statements = false;
-
-	/**
-	*/
-	function __construct(&$db)
-	{
-		$this->db = $db;
-
-		$this->sql_layer = $this->db->dbms_type;
-	}
+	public static $return_statements = false;
 
 	/**
 	* Handle passed database update array.
@@ -275,9 +261,9 @@ class phpbb_db_tools
 	*			{KEY/INDEX NAME}	=> array({COLUMN NAMES}),
 	*		)
 	*
-	* For more information have a look at /develop/create_schema_files.php (only available through CVS)
+	* For more information have a look at /install/schemas/schema_data.php (only available through CVS)
 	*/
-	function perform_schema_changes($schema_changes)
+	public static function perform_schema_changes($schema_changes)
 	{
 		if (empty($schema_changes))
 		{
@@ -293,9 +279,9 @@ class phpbb_db_tools
 			{
 				foreach ($columns as $column_name => $column_data)
 				{
-					$result = $this->sql_column_change($table, $column_name, $column_data);
+					$result = self::sql_column_change($table, $column_name, $column_data);
 
-					if ($this->return_statements)
+					if (self::$return_statements)
 					{
 						$statements = array_merge($statements, $result);
 					}
@@ -311,11 +297,11 @@ class phpbb_db_tools
 				foreach ($columns as $column_name => $column_data)
 				{
 					// Only add the column if it does not exist yet
-					if (!$this->sql_column_exists($table, $column_name))
+					if (!self::sql_column_exists($table, $column_name))
 					{
-						$result = $this->sql_column_add($table, $column_name, $column_data);
+						$result = self::sql_column_add($table, $column_name, $column_data);
 
-						if ($this->return_statements)
+						if (self::$return_statements)
 						{
 							$statements = array_merge($statements, $result);
 						}
@@ -331,9 +317,9 @@ class phpbb_db_tools
 			{
 				foreach ($indexes as $index_name)
 				{
-					$result = $this->sql_index_drop($table, $index_name);
+					$result = self::sql_index_drop($table, $index_name);
 
-					if ($this->return_statements)
+					if (self::$return_statements)
 					{
 						$statements = array_merge($statements, $result);
 					}
@@ -348,9 +334,9 @@ class phpbb_db_tools
 			{
 				foreach ($columns as $column)
 				{
-					$result = $this->sql_column_remove($table, $column);
+					$result = self::sql_column_remove($table, $column);
 
-					if ($this->return_statements)
+					if (self::$return_statements)
 					{
 						$statements = array_merge($statements, $result);
 					}
@@ -363,9 +349,9 @@ class phpbb_db_tools
 		{
 			foreach ($schema_changes['add_primary_keys'] as $table => $columns)
 			{
-				$result = $this->sql_create_primary_key($table, $columns);
+				$result = self::sql_create_primary_key($table, $columns);
 
-				if ($this->return_statements)
+				if (self::$return_statements)
 				{
 					$statements = array_merge($statements, $result);
 				}
@@ -379,9 +365,9 @@ class phpbb_db_tools
 			{
 				foreach ($index_array as $index_name => $column)
 				{
-					$result = $this->sql_create_unique_index($table, $index_name, $column);
+					$result = self::sql_create_unique_index($table, $index_name, $column);
 
-					if ($this->return_statements)
+					if (self::$return_statements)
 					{
 						$statements = array_merge($statements, $result);
 					}
@@ -396,9 +382,9 @@ class phpbb_db_tools
 			{
 				foreach ($index_array as $index_name => $column)
 				{
-					$result = $this->sql_create_index($table, $index_name, $column);
+					$result = self::sql_create_unique_index($table, $index_name, $column);
 
-					if ($this->return_statements)
+					if (self::$return_statements)
 					{
 						$statements = array_merge($statements, $result);
 					}
@@ -406,7 +392,7 @@ class phpbb_db_tools
 			}
 		}
 
-		if ($this->return_statements)
+		if (self::$return_statements)
 		{
 			return $statements;
 		}
@@ -416,25 +402,27 @@ class phpbb_db_tools
 	* Check if a specified column exist
 	* @return bool True if column exists, else false
 	*/
-	function sql_column_exists($table, $column_name)
+	public static function sql_column_exists($table, $column_name)
 	{
-		switch ($this->sql_layer)
+		global $db;
+
+		switch ($db->dbms_type)
 		{
 			case 'mysql':
 
 				$sql = "SHOW COLUMNS FROM $table";
-				$result = $this->db->sql_query($sql);
+				$result = $db->sql_query($sql);
 
-				while ($row = $this->db->sql_fetchrow($result))
+				while ($row = $db->sql_fetchrow($result))
 				{
 					// lower case just in case
 					if (strtolower($row['Field']) == $column_name)
 					{
-						$this->db->sql_freeresult($result);
+						$db->sql_freeresult($result);
 						return true;
 					}
 				}
-				$this->db->sql_freeresult($result);
+				$db->sql_freeresult($result);
 				return false;
 			break;
 
@@ -446,17 +434,17 @@ class phpbb_db_tools
 					WHERE c.relname = '{$table}'
 						AND a.attnum > 0
 						AND a.attrelid = c.oid";
-				$result = $this->db->sql_query($sql);
-				while ($row = $this->db->sql_fetchrow($result))
+				$result = $db->sql_query($sql);
+				while ($row = $db->sql_fetchrow($result))
 				{
 					// lower case just in case
 					if (strtolower($row['attname']) == $column_name)
 					{
-						$this->db->sql_freeresult($result);
+						$db->sql_freeresult($result);
 						return true;
 					}
 				}
-				$this->db->sql_freeresult($result);
+				$db->sql_freeresult($result);
 
 				return false;
 			break;
@@ -468,17 +456,17 @@ class phpbb_db_tools
 					FROM syscolumns c
 					LEFT JOIN sysobjects o ON c.id = o.id
 					WHERE o.name = '{$table}'";
-				$result = $this->db->sql_query($sql);
-				while ($row = $this->db->sql_fetchrow($result))
+				$result = $db->sql_query($sql);
+				while ($row = $db->sql_fetchrow($result))
 				{
 					// lower case just in case
 					if (strtolower($row['name']) == $column_name)
 					{
-						$this->db->sql_freeresult($result);
+						$db->sql_freeresult($result);
 						return true;
 					}
 				}
-				$this->db->sql_freeresult($result);
+				$db->sql_freeresult($result);
 				return false;
 			break;
 
@@ -486,17 +474,17 @@ class phpbb_db_tools
 				$sql = "SELECT column_name
 					FROM user_tab_columns
 					WHERE table_name = '{$table}'";
-				$result = $this->db->sql_query($sql);
-				while ($row = $this->db->sql_fetchrow($result))
+				$result = $db->sql_query($sql);
+				while ($row = $db->sql_fetchrow($result))
 				{
 					// lower case just in case
 					if (strtolower($row['column_name']) == $column_name)
 					{
-						$this->db->sql_freeresult($result);
+						$db->sql_freeresult($result);
 						return true;
 					}
 				}
-				$this->db->sql_freeresult($result);
+				$db->sql_freeresult($result);
 				return false;
 			break;
 
@@ -504,17 +492,17 @@ class phpbb_db_tools
 				$sql = "SELECT RDB\$FIELD_NAME as FNAME
 					FROM RDB\$RELATION_FIELDS
 					WHERE RDB\$RELATION_NAME = '{$table}'";
-				$result = $this->db->sql_query($sql);
-				while ($row = $this->db->sql_fetchrow($result))
+				$result = $db->sql_query($sql);
+				while ($row = $db->sql_fetchrow($result))
 				{
 					// lower case just in case
 					if (strtolower($row['fname']) == $column_name)
 					{
-						$this->db->sql_freeresult($result);
+						$db->sql_freeresult($result);
 						return true;
 					}
 				}
-				$this->db->sql_freeresult($result);
+				$db->sql_freeresult($result);
 				return false;
 			break;
 
@@ -522,17 +510,17 @@ class phpbb_db_tools
 				$sql = "SELECT colname
 					FROM syscat.columns
 					WHERE tabname = '$table'";
-				$result = $this->db->sql_query($sql);
-				while ($row = $this->db->sql_fetchrow($result))
+				$result = $db->sql_query($sql);
+				while ($row = $db->sql_fetchrow($result))
 				{
 					// lower case just in case
 					if (strtolower($row['colname']) == $column_name)
 					{
-						$this->db->sql_freeresult($result);
+						$db->sql_freeresult($result);
 						return true;
 					}
 				}
-				$this->db->sql_freeresult($result);
+				$db->sql_freeresult($result);
 				return false;
 			break;
 
@@ -542,15 +530,15 @@ class phpbb_db_tools
 					FROM sqlite_master
 					WHERE type = 'table'
 						AND name = '{$table}'";
-				$result = $this->db->sql_query($sql);
+				$result = $db->sql_query($sql);
 
 				if (!$result)
 				{
 					return false;
 				}
 
-				$row = $this->db->sql_fetchrow($result);
-				$this->db->sql_freeresult($result);
+				$row = $db->sql_fetchrow($result);
+				$db->sql_freeresult($result);
 
 				preg_match('#\((.*)\)#s', $row['sql'], $matches);
 
@@ -579,27 +567,29 @@ class phpbb_db_tools
 	* Private method for performing sql statements (either execute them or return them)
 	* @private
 	*/
-	function _sql_run_sql($statements)
+	private static function _sql_run_sql($statements)
 	{
-		if ($this->return_statements)
+		if (self::$return_statements)
 		{
 			return $statements;
 		}
+
+		global $db;
 
 		// We could add error handling here...
 		foreach ($statements as $sql)
 		{
 			if ($sql === 'begin')
 			{
-				$this->db->sql_transaction('begin');
+				$db->sql_transaction('begin');
 			}
 			else if ($sql === 'commit')
 			{
-				$this->db->sql_transaction('commit');
+				$db->sql_transaction('commit');
 			}
 			else
 			{
-				$this->db->sql_query($sql);
+				$db->sql_query($sql);
 			}
 		}
 
@@ -610,16 +600,18 @@ class phpbb_db_tools
 	* Function to prepare some column information for better usage
 	* @private
 	*/
-	function sql_prepare_column_data($table_name, $column_name, $column_data)
+	private static function sql_prepare_column_data($table_name, $column_name, $column_data)
 	{
+		global $db;
+
 		// Get type
 		if (strpos($column_data[0], ':') !== false)
 		{
 			list($orig_column_type, $column_length) = explode(':', $column_data[0]);
 
-			if (!is_array($this->dbms_type_map[$this->sql_layer][$orig_column_type . ':']))
+			if (!is_array(self::$dbms_type_map[$db->dbms_type][$orig_column_type . ':']))
 			{
-				$column_type = sprintf($this->dbms_type_map[$this->sql_layer][$orig_column_type . ':'], $column_length);
+				$column_type = sprintf(self::$dbms_type_map[$db->dbms_type][$orig_column_type . ':'], $column_length);
 			}
 
 			$orig_column_type .= ':';
@@ -627,20 +619,20 @@ class phpbb_db_tools
 		else
 		{
 			$orig_column_type = $column_data[0];
-			$column_type = $this->dbms_type_map[$this->sql_layer][$column_data[0]];
+			$column_type = self::$dbms_type_map[$db->dbms_type][$column_data[0]];
 		}
 
 		// Adjust default value if db-dependant specified
 		if (is_array($column_data[1]))
 		{
-			$column_data[1] = (isset($column_data[1][$this->sql_layer])) ? $column_data[1][$this->sql_layer] : $column_data[1]['default'];
+			$column_data[1] = (isset($column_data[1][$db->dbms_type])) ? $column_data[1][$db->dbms_type] : $column_data[1]['default'];
 		}
 
 		$sql = '';
 
 		$return_array = array();
 
-		switch ($this->sql_layer)
+		switch ($db->dbms_type)
 		{
 			case 'firebird':
 				$sql .= " {$column_type} ";
@@ -758,7 +750,7 @@ class phpbb_db_tools
 				$sql .= "DEFAULT {$default_val}";
 
 				// Unsigned? Then add a CHECK contraint
-				if (in_array($orig_column_type, $this->unsigned_types))
+				if (in_array($orig_column_type, self::$unsigned_types))
 				{
 					$return_array['constraint'] = "CHECK ({$column_name} >= 0)";
 					$sql .= " CHECK ({$column_name} >= 0)";
@@ -807,8 +799,10 @@ class phpbb_db_tools
 		return $return_array;
 	}
 
-	function sql_create_table($table_name, $table_data)
+	public static function sql_create_table($table_name, $table_data)
 	{
+		global $db;
+
 		// holds the DDL for a column
 		$columns = array();
 
@@ -826,7 +820,7 @@ class phpbb_db_tools
 		foreach ($table_data['COLUMNS'] as $column_name => $column_data)
 		{
 			// here lies an array, filled with information compiled on the column's data
-			$prepared_column = $this->sql_prepare_column_data($table_name, $column_name, $column_data);
+			$prepared_column = self::sql_prepare_column_data($table_name, $column_name, $column_data);
 
 			// here we add the definition of the new column to the list of columns
 			$columns[] = "\t {$column_name} " . $prepared_column['column_type_sql'];
@@ -854,7 +848,7 @@ class phpbb_db_tools
 		// this makes up all the columns in the create table statement
 		$table_sql .= implode(",\n", $columns);
 
-		switch ($this->sql_layer)
+		switch ($db->dbms_type)
 		{
 			case 'firebird':
 				$table_sql .= "\n);";
@@ -879,7 +873,7 @@ class phpbb_db_tools
 					$table_data['PRIMARY_KEY'] = array($table_data['PRIMARY_KEY']);
 				}
 
-				switch ($this->sql_layer)
+				switch ($db->dbms_type)
 				{
 					case 'mysql':
 					case 'postgres':
@@ -890,7 +884,7 @@ class phpbb_db_tools
 
 					case 'firebird':
 					case 'mssql':
-						$primary_key_stmts = $this->sql_create_primary_key($table_name, $table_data['PRIMARY_KEY']);
+						$primary_key_stmts = self::sql_create_primary_key($table_name, $table_data['PRIMARY_KEY']);
 						foreach ($primary_key_stmts as $pk_stmt)
 						{
 							$statements[] = $pk_stmt;
@@ -906,7 +900,7 @@ class phpbb_db_tools
 
 
 		// close the table
-		switch ($this->sql_layer)
+		switch ($db->dbms_type)
 		{
 			case 'mysql':
 				// make sure the table is in UTF-8 mode
@@ -975,7 +969,7 @@ class phpbb_db_tools
 					$key_data[1] = array($key_data[1]);
 				}
 
-				$key_stmts = ($key_data[0] == 'UNIQUE') ? $this->sql_create_unique_index($table_name, $key_name, $key_data[1]) : $this->sql_create_index($table_name, $key_name, $key_data[1]);
+				$key_stmts = ($key_data[0] == 'UNIQUE') ? self::sql_create_unique_index($table_name, $key_name, $key_data[1]) : self::sql_create_index($table_name, $key_name, $key_data[1]);
 				foreach ($key_stmts as $key_stmt)
 				{
 					$statements[] = $key_stmt;
@@ -983,18 +977,18 @@ class phpbb_db_tools
 			}
 		}
 
-		return $this->_sql_run_sql($statements);
+		return self::_sql_run_sql($statements);
 	}
 
 	/**
 	* Add new column
 	*/
-	function sql_column_add($table_name, $column_name, $column_data)
+	public static function sql_column_add($table_name, $column_name, $column_data)
 	{
-		$column_data = $this->sql_prepare_column_data($table_name, $column_name, $column_data);
+		$column_data = self::sql_prepare_column_data($table_name, $column_name, $column_data);
 		$statements = array();
 
-		switch ($this->sql_layer)
+		switch ($db->dbms_type)
 		{
 			case 'firebird':
 				$statements[] = 'ALTER TABLE "' . $table_name . '" ADD "' . $column_name . '" ' . $column_data['column_type_sql'];
@@ -1021,75 +1015,72 @@ class phpbb_db_tools
 			break;
 
 			case 'sqlite':
-				if (version_compare(sqlite_libversion(), '3.0') == -1)
+				global $db;
+
+				$sql = "SELECT sql
+					FROM sqlite_master
+					WHERE type = 'table'
+						AND name = '{$table_name}'
+					ORDER BY type DESC, name;";
+				$result = $db->sql_query($sql);
+
+				if (!$result)
 				{
-					$sql = "SELECT sql
-						FROM sqlite_master
-						WHERE type = 'table'
-							AND name = '{$table_name}'
-						ORDER BY type DESC, name;";
-					$result = $this->db->sql_query($sql);
-
-					if (!$result)
-					{
-						break;
-					}
-
-					$row = $this->db->sql_fetchrow($result);
-					$this->db->sql_freeresult($result);
-
-					$statements[] = 'begin';
-
-					// Create a backup table and populate it, destroy the existing one
-					$statements[] = preg_replace('#CREATE\s+TABLE\s+"?' . $table_name . '"?#i', 'CREATE TEMPORARY TABLE ' . $table_name . '_temp', $row['sql']);
-					$statements[] = 'INSERT INTO ' . $table_name . '_temp SELECT * FROM ' . $table_name;
-					$statements[] = 'DROP TABLE ' . $table_name;
-
-					preg_match('#\((.*)\)#s', $row['sql'], $matches);
-
-					$new_table_cols = trim($matches[1]);
-					$old_table_cols = preg_split('/,(?![\s\w]+\))/m', $new_table_cols);
-					$column_list = array();
-
-					foreach ($old_table_cols as $declaration)
-					{
-						$entities = preg_split('#\s+#', trim($declaration));
-						if ($entities[0] == 'PRIMARY')
-						{
-							continue;
-						}
-						$column_list[] = $entities[0];
-					}
-
-					$columns = implode(',', $column_list);
-
-					$new_table_cols = $column_name . ' ' . $column_data['column_type_sql'] . ',' . $new_table_cols;
-
-					// create a new table and fill it up. destroy the temp one
-					$statements[] = 'CREATE TABLE ' . $table_name . ' (' . $new_table_cols . ');';
-					$statements[] = 'INSERT INTO ' . $table_name . ' (' . $columns . ') SELECT ' . $columns . ' FROM ' . $table_name . '_temp;';
-					$statements[] = 'DROP TABLE ' . $table_name . '_temp';
-
-					$statements[] = 'commit';
+					break;
 				}
-				else
+
+				$row = $db->sql_fetchrow($result);
+				$db->sql_freeresult($result);
+
+				$statements[] = 'begin';
+
+				// Create a backup table and populate it, destroy the existing one
+				$statements[] = preg_replace('#CREATE\s+TABLE\s+"?' . $table_name . '"?#i', 'CREATE TEMPORARY TABLE ' . $table_name . '_temp', $row['sql']);
+				$statements[] = 'INSERT INTO ' . $table_name . '_temp SELECT * FROM ' . $table_name;
+				$statements[] = 'DROP TABLE ' . $table_name;
+
+				preg_match('#\((.*)\)#s', $row['sql'], $matches);
+
+				$new_table_cols = trim($matches[1]);
+				$old_table_cols = preg_split('/,(?![\s\w]+\))/m', $new_table_cols);
+				$column_list = array();
+
+				foreach ($old_table_cols as $declaration)
 				{
-					$statements[] = 'ALTER TABLE ' . $table_name . ' ADD ' . $column_name . ' [' . $column_data['column_type_sql'] . ']';
+					$entities = preg_split('#\s+#', trim($declaration));
+					if ($entities[0] == 'PRIMARY')
+					{
+						continue;
+					}
+					$column_list[] = $entities[0];
 				}
+
+				$columns = implode(',', $column_list);
+
+				$new_table_cols = $column_name . ' ' . $column_data['column_type_sql'] . ',' . $new_table_cols;
+
+				// create a new table and fill it up. destroy the temp one
+				$statements[] = 'CREATE TABLE ' . $table_name . ' (' . $new_table_cols . ');';
+				$statements[] = 'INSERT INTO ' . $table_name . ' (' . $columns . ') SELECT ' . $columns . ' FROM ' . $table_name . '_temp;';
+				$statements[] = 'DROP TABLE ' . $table_name . '_temp';
+
+				$statements[] = 'commit';
 			break;
 		}
 
-		return $this->_sql_run_sql($statements);
+		return self::_sql_run_sql($statements);
 	}
 
 	/**
 	* Drop column
 	*/
-	function sql_column_remove($table_name, $column_name)
+	public static function sql_column_remove($table_name, $column_name)
 	{
+		global $db;
+
 		$statements = array();
 
-		switch ($this->sql_layer)
+		switch ($db->dbms_type)
 		{
 			case 'firebird':
 				$statements[] = 'ALTER TABLE "' . $table_name . '" DROP "' . $column_name . '"';
@@ -1116,75 +1107,72 @@ class phpbb_db_tools
 			break;
 
 			case 'sqlite':
-				if (version_compare(sqlite_libversion(), '3.0') == -1)
+				global $db;
+
+				$sql = "SELECT sql
+					FROM sqlite_master
+					WHERE type = 'table'
+						AND name = '{$table_name}'
+					ORDER BY type DESC, name;";
+				$result = $db->sql_query($sql);
+
+				if (!$result)
 				{
-					$sql = "SELECT sql
-						FROM sqlite_master
-						WHERE type = 'table'
-							AND name = '{$table_name}'
-						ORDER BY type DESC, name;";
-					$result = $this->db->sql_query($sql);
-
-					if (!$result)
-					{
-						break;
-					}
-
-					$row = $this->db->sql_fetchrow($result);
-					$this->db->sql_freeresult($result);
-
-					$statements[] = 'begin';
-
-					// Create a backup table and populate it, destroy the existing one
-					$statements[] = preg_replace('#CREATE\s+TABLE\s+"?' . $table_name . '"?#i', 'CREATE TEMPORARY TABLE ' . $table_name . '_temp', $row['sql']);
-					$statements[] = 'INSERT INTO ' . $table_name . '_temp SELECT * FROM ' . $table_name;
-					$statements[] = 'DROP TABLE ' . $table_name;
-
-					preg_match('#\((.*)\)#s', $row['sql'], $matches);
-
-					$new_table_cols = trim($matches[1]);
-					$old_table_cols = preg_split('/,(?![\s\w]+\))/m', $new_table_cols);
-					$column_list = array();
-
-					foreach ($old_table_cols as $declaration)
-					{
-						$entities = preg_split('#\s+#', trim($declaration));
-						if ($entities[0] == 'PRIMARY' || $entities[0] === $column_name)
-						{
-							continue;
-						}
-						$column_list[] = $entities[0];
-					}
-
-					$columns = implode(',', $column_list);
-
-					$new_table_cols = $new_table_cols = preg_replace('/' . $column_name . '[^,]+(?:,|$)/m', '', $new_table_cols);
-
-					// create a new table and fill it up. destroy the temp one
-					$statements[] = 'CREATE TABLE ' . $table_name . ' (' . $new_table_cols . ');';
-					$statements[] = 'INSERT INTO ' . $table_name . ' (' . $columns . ') SELECT ' . $columns . ' FROM ' . $table_name . '_temp;';
-					$statements[] = 'DROP TABLE ' . $table_name . '_temp';
-
-					$statements[] = 'commit';
+					break;
 				}
-				else
+
+				$row = $db->sql_fetchrow($result);
+				$db->sql_freeresult($result);
+
+				$statements[] = 'begin';
+
+				// Create a backup table and populate it, destroy the existing one
+				$statements[] = preg_replace('#CREATE\s+TABLE\s+"?' . $table_name . '"?#i', 'CREATE TEMPORARY TABLE ' . $table_name . '_temp', $row['sql']);
+				$statements[] = 'INSERT INTO ' . $table_name . '_temp SELECT * FROM ' . $table_name;
+				$statements[] = 'DROP TABLE ' . $table_name;
+
+				preg_match('#\((.*)\)#s', $row['sql'], $matches);
+
+				$new_table_cols = trim($matches[1]);
+				$old_table_cols = preg_split('/,(?![\s\w]+\))/m', $new_table_cols);
+				$column_list = array();
+
+				foreach ($old_table_cols as $declaration)
 				{
-					$statements[] = 'ALTER TABLE ' . $table_name . ' DROP COLUMN ' . $column_name;
+					$entities = preg_split('#\s+#', trim($declaration));
+					if ($entities[0] == 'PRIMARY' || $entities[0] === $column_name)
+					{
+						continue;
+					}
+					$column_list[] = $entities[0];
 				}
+
+				$columns = implode(',', $column_list);
+
+				$new_table_cols = $new_table_cols = preg_replace('/' . $column_name . '[^,]+(?:,|$)/m', '', $new_table_cols);
+
+				// create a new table and fill it up. destroy the temp one
+				$statements[] = 'CREATE TABLE ' . $table_name . ' (' . $new_table_cols . ');';
+				$statements[] = 'INSERT INTO ' . $table_name . ' (' . $columns . ') SELECT ' . $columns . ' FROM ' . $table_name . '_temp;';
+				$statements[] = 'DROP TABLE ' . $table_name . '_temp';
+
+				$statements[] = 'commit';
 			break;
 		}
 
-		return $this->_sql_run_sql($statements);
+		return self::_sql_run_sql($statements);
 	}
 
 	/**
 	* Drop Index
 	*/
-	function sql_index_drop($table_name, $index_name)
+	public static function sql_index_drop($table_name, $index_name)
 	{
+		global $db;
+
 		$statements = array();
 
-		switch ($this->sql_layer)
+		switch ($db->dbms_type)
 		{
 			case 'mssql':
 				$statements[] = 'DROP INDEX ' . $table_name . '.' . $index_name;
@@ -1203,17 +1191,19 @@ class phpbb_db_tools
 			break;
 		}
 
-		return $this->_sql_run_sql($statements);
+		return self::_sql_run_sql($statements);
 	}
 
 	/**
 	* Add primary key
 	*/
-	function sql_create_primary_key($table_name, $column)
+	public static function sql_create_primary_key($table_name, $column)
 	{
+		global $db;
+
 		$statements = array();
 
-		switch ($this->sql_layer)
+		switch ($db->dbms_type)
 		{
 			case 'firebird':
 			case 'postgres':
@@ -1236,20 +1226,22 @@ class phpbb_db_tools
 			break;
 
 			case 'sqlite':
+				global $db;
+
 				$sql = "SELECT sql
 					FROM sqlite_master
 					WHERE type = 'table'
 						AND name = '{$table_name}'
 					ORDER BY type DESC, name;";
-				$result = $this->db->sql_query($sql);
+				$result = $db->sql_query($sql);
 
 				if (!$result)
 				{
 					break;
 				}
 
-				$row = $this->db->sql_fetchrow($result);
-				$this->db->sql_freeresult($result);
+				$row = $db->sql_fetchrow($result);
+				$db->sql_freeresult($result);
 
 				$statements[] = 'begin';
 
@@ -1285,17 +1277,19 @@ class phpbb_db_tools
 			break;
 		}
 
-		return $this->_sql_run_sql($statements);
+		return self::_sql_run_sql($statements);
 	}
 
 	/**
 	* Add unique index
 	*/
-	function sql_create_unique_index($table_name, $index_name, $column)
+	public static function sql_create_unique_index($table_name, $index_name, $column)
 	{
+		global $db;
+
 		$statements = array();
 
-		switch ($this->sql_layer)
+		switch ($db->dbms_type)
 		{
 			case 'firebird':
 			case 'postgres':
@@ -1314,17 +1308,19 @@ class phpbb_db_tools
 			break;
 		}
 
-		return $this->_sql_run_sql($statements);
+		return self::_sql_run_sql($statements);
 	}
 
 	/**
 	* Add index
 	*/
-	function sql_create_index($table_name, $index_name, $column)
+	public static function sql_create_index($table_name, $index_name, $column)
 	{
+		global $db;
+
 		$statements = array();
 
-		switch ($this->sql_layer)
+		switch ($db->dbms_type)
 		{
 			case 'firebird':
 			case 'postgres':
@@ -1343,7 +1339,7 @@ class phpbb_db_tools
 			break;
 		}
 
-		return $this->_sql_run_sql($statements);
+		return self::_sql_run_sql($statements);
 	}
 
 	/**
@@ -1352,26 +1348,28 @@ class phpbb_db_tools
 	* * UNIQUE indices
 	* * PRIMARY keys
 	*/
-	function sql_list_index($table_name)
+	public static function sql_list_index($table_name)
 	{
+		global $db;
+
 		$index_array = array();
 
-		if ($this->sql_layer == 'mssql')
+		if ($db->dbms_type == 'mssql')
 		{
 			$sql = "EXEC sp_statistics '$table_name'";
-			$result = $this->db->sql_query($sql);
-			while ($row = $this->db->sql_fetchrow($result))
+			$result = $db->sql_query($sql);
+			while ($row = $db->sql_fetchrow($result))
 			{
 				if ($row['TYPE'] == 3)
 				{
 					$index_array[] = $row['INDEX_NAME'];
 				}
 			}
-			$this->db->sql_freeresult($result);
+			$db->sql_freeresult($result);
 		}
 		else
 		{
-			switch ($this->sql_layer)
+			switch ($db->dbms_type)
 			{
 				case 'firebird':
 					$sql = "SELECT LOWER(RDB\$INDEX_NAME) as index_name
@@ -1419,15 +1417,15 @@ class phpbb_db_tools
 					$col = 'name';
 			}
 
-			$result = $this->db->sql_query($sql);
-			while ($row = $this->db->sql_fetchrow($result))
+			$result = $db->sql_query($sql);
+			while ($row = $db->sql_fetchrow($result))
 			{
-				if ($this->sql_layer == 'mysql' && !$row['Non_unique'])
+				if ($db->dbms_type == 'mysql' && !$row['Non_unique'])
 				{
 					continue;
 				}
 
-				switch ($this->sql_layer)
+				switch ($db->dbms_type)
 				{
 					case 'firebird':
 					case 'oracle':
@@ -1440,7 +1438,7 @@ class phpbb_db_tools
 
 				$index_array[] = $row[$col];
 			}
-			$this->db->sql_freeresult($result);
+			$db->sql_freeresult($result);
 		}
 
 		return array_map('strtolower', $index_array);
@@ -1449,12 +1447,12 @@ class phpbb_db_tools
 	/**
 	* Change column type (not name!)
 	*/
-	function sql_column_change($table_name, $column_name, $column_data)
+	public static function sql_column_change($table_name, $column_name, $column_data)
 	{
-		$column_data = $this->sql_prepare_column_data($table_name, $column_name, $column_data);
+		$column_data = self::sql_prepare_column_data($table_name, $column_name, $column_data);
 		$statements = array();
 
-		switch ($this->sql_layer)
+		switch ($db->dbms_type)
 		{
 			case 'firebird':
 				// Change type...
@@ -1503,6 +1501,8 @@ class phpbb_db_tools
 				// we don't want to double up on constraints if we change different number data types
 				if (isset($column_data['constraint']))
 				{
+					global $db;
+
 					$constraint_sql = "SELECT consrc as constraint_data
 								FROM pg_constraint, pg_class bc
 								WHERE conrelid = bc.oid
@@ -1518,8 +1518,8 @@ class phpbb_db_tools
 
 					$constraint_exists = false;
 
-					$result = $this->db->sql_query($constraint_sql);
-					while ($row = $this->db->sql_fetchrow($result))
+					$result = $db->sql_query($constraint_sql);
+					while ($row = $db->sql_fetchrow($result))
 					{
 						if (trim($row['constraint_data']) == trim($column_data['constraint']))
 						{
@@ -1527,7 +1527,7 @@ class phpbb_db_tools
 							break;
 						}
 					}
-					$this->db->sql_freeresult($result);
+					$db->sql_freeresult($result);
 
 					if (!$constraint_exists)
 					{
@@ -1541,21 +1541,22 @@ class phpbb_db_tools
 			break;
 
 			case 'sqlite':
+				global $db;
 
 				$sql = "SELECT sql
 					FROM sqlite_master
 					WHERE type = 'table'
 						AND name = '{$table_name}'
 					ORDER BY type DESC, name;";
-				$result = $this->db->sql_query($sql);
+				$result = $db->sql_query($sql);
 
 				if (!$result)
 				{
 					break;
 				}
 
-				$row = $this->db->sql_fetchrow($result);
-				$this->db->sql_freeresult($result);
+				$row = $db->sql_fetchrow($result);
+				$db->sql_freeresult($result);
 
 				$statements[] = 'begin';
 
@@ -1592,7 +1593,7 @@ class phpbb_db_tools
 			break;
 		}
 
-		return $this->_sql_run_sql($statements);
+		return self::_sql_run_sql($statements);
 	}
 }
 
