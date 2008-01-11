@@ -1197,7 +1197,7 @@ class phpbb_db_tools
 	/**
 	* Drop Table
 	*/
-	public static function sql_table_drop($table_name, $index_name)
+	public static function sql_table_drop($table_name)
 	{
 		global $db;
 
