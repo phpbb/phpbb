@@ -1015,9 +1015,9 @@ class fulltext_native extends search_backend
 				* Note: this could be optimized. If the codepoint is lower than Hangul's range
 				* we know that it will also be lower than CJK ranges
 				*/
-				if ((strncmp($word, UTF8_HANGUL_FIRST, 3) < 0 || strncmp($word, UTF8_HANGUL_LAST, 3) > 0)
-				 && (strncmp($word, UTF8_CJK_FIRST, 3) < 0 || strncmp($word, UTF8_CJK_LAST, 3) > 0)
-				 && (strncmp($word, UTF8_CJK_B_FIRST, 4) < 0 || strncmp($word, UTF8_CJK_B_LAST, 4) > 0))
+				if ((strncmp($word, utf_normalizer::UTF8_HANGUL_FIRST, 3) < 0 || strncmp($word, utf_normalizer::UTF8_HANGUL_LAST, 3) > 0)
+				 && (strncmp($word, utf_normalizer::UTF8_CJK_FIRST, 3) < 0 || strncmp($word, utf_normalizer::UTF8_CJK_LAST, 3) > 0)
+				 && (strncmp($word, utf_normalizer::UTF8_CJK_B_FIRST, 4) < 0 || strncmp($word, utf_normalizer::UTF8_CJK_B_LAST, 4) > 0))
 				{
 					$word = strtok(' ');
 					continue;
