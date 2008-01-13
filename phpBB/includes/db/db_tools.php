@@ -209,7 +209,7 @@ class phpbb_db_tools
 			'UINT'		=> 'INT4', // unsigned
 			'UINT:'		=> 'INT4', // unsigned
 			'USINT'		=> 'INT2', // unsigned
-			'BOOL'		=> 'boolean', // unsigned
+			'BOOL'		=> 'INT2', // unsigned
 			'TINT:'		=> 'INT2',
 			'VCHAR'		=> 'varchar(255)',
 			'VCHAR:'	=> 'varchar(%d)',
@@ -1226,7 +1226,7 @@ class phpbb_db_tools
 			case 'oracle':
 				$sql = 'SELECT A.REFERENCED_NAME
 					FROM USER_DEPENDENCIES A, USER_TRIGGERS B
-					WHERE A.REFERENCED_TYPE = 'SEQUENCE'
+					WHERE A.REFERENCED_TYPE = \'SEQUENCE\'
 						AND A.NAME = B.TRIGGER_NAME
 						AND B.TABLE_NAME = \'' . strtoupper($table_name) . "'";
 				$result = $db->sql_query($sql);
