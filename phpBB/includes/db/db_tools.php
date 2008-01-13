@@ -236,7 +236,7 @@ class phpbb_db_tools
 
 	// A list of types being unsigned for better reference in some db's
 	public static $unsigned_types = array('UINT', 'UINT:', 'USINT', 'BOOL', 'TIMESTAMP');
-	public static $supported_dbms = array('firebird', 'mssql', 'mysql', 'oracle', 'postgres', 'sqlite');
+	public static $supported_dbms = array('firebird', 'mssql', 'mysql', 'oracle', 'postgres', 'sqlite', 'db2');
 
 	/**
 	* Set this to true if you only want to return the 'to-be-executed' SQL statement(s) (as an array).
