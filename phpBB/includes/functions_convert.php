@@ -1702,7 +1702,7 @@ function add_default_groups()
 
 	$sql = 'SELECT *
 		FROM ' . GROUPS_TABLE . '
-		WHERE ' . $db->sql_in_set('group_name_clean', array_map('utf8_clean_string', array_keys($default_groups));
+		WHERE ' . $db->sql_in_set('group_name_clean', array_map('utf8_clean_string', array_keys($default_groups)));
 	$result = $db->sql_query($sql);
 
 	while ($row = $db->sql_fetchrow($result))

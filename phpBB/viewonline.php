@@ -103,6 +103,7 @@ if (!$show_guests)
 				FROM ' . SESSIONS_TABLE . '
 				WHERE session_user_id = ' . ANONYMOUS . '
 					AND session_time >= ' . (time() - ($config['load_online_time'] * 60));
+	}
 	else
 	{
 		$sql = 'SELECT COUNT(session_ip) as num_guests

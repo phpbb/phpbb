@@ -225,7 +225,7 @@ class acp_reasons
 					$report_text .= $reason_row['reason_description'] . "\n\n";
 
 					$sql = 'UPDATE ' . REPORTS_TABLE . '
-						SET reason_id = ' . $other_reason_id . ", report_text = '" . $db->sql_escape($report_text) "'
+						SET reason_id = ' . $other_reason_id . ", report_text = '" . $db->sql_escape($report_text) . "'
 						WHERE reason_id = $reason_id";
 					$db->sql_query($sql);
 
