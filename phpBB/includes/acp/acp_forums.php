@@ -1647,7 +1647,7 @@ class acp_forums
 		}
 		$db->sql_freeresult($result);
 
-		if ($db->dbms_type)
+		switch ($db->dbms_type)
 		{
 			case 'mysql':
 
