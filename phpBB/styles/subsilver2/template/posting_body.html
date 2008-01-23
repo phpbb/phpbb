@@ -382,13 +382,14 @@
 			<!-- IF S_SAVE_ALLOWED -->&nbsp; <input class="btnlite" type="submit" accesskey="k" tabindex="12" name="save" value="{L_SAVE}" /><!-- ENDIF -->
 			<!-- IF S_HAS_DRAFTS -->&nbsp; <input class="btnlite" type="submit" accesskey="d" tabindex="13" name="load" value="{L_LOAD}" /><!-- ENDIF -->
 		<!-- ENDIF -->
-		&nbsp; <input class="btnlite" type="submit" accesskey="c" tabindex="14" name="cancel" value="{L_CANCEL}" />
+		&nbsp; <input class="btnlite" type="submit" accesskey="c" tabindex="14" name="cancel" value="{L_CANCEL}" />{S_FORM_TOKEN}
 	</td>
 </tr>
 </table>
 
 <br clear="all" />
-
+	
+	</form>
 <!-- IF S_DISPLAY_REVIEW --><!-- INCLUDE posting_topic_review.html --><!-- ENDIF -->
 <!-- IF S_DISPLAY_HISTORY --><!-- INCLUDE ucp_pm_history.html --><!-- ENDIF -->
 
@@ -397,8 +398,7 @@
 <!-- ELSE -->
 
 	<!-- INCLUDE breadcrumbs.html -->
-	{S_FORM_TOKEN}
-	</form>
+
 
 	<!-- IF S_DISPLAY_ONLINE_LIST -->
 		<br clear="all" />
