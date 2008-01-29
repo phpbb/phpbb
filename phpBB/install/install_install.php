@@ -77,7 +77,7 @@ class install_install extends module
 
 			case 'database':
 				$this->obtain_database_settings($mode, $sub);
-			
+
 			break;
 
 			case 'administrator':
@@ -87,7 +87,7 @@ class install_install extends module
 
 			case 'config_file':
 				$this->create_config_file($mode, $sub);
-			
+
 			break;
 
 			case 'advanced':
@@ -105,7 +105,7 @@ class install_install extends module
 				$this->add_language($mode, $sub);
 				$this->add_bots($mode, $sub);
 				$this->email_admin($mode, $sub);
-				
+
 				// Remove the lock file
 				@unlink($phpbb_root_path . 'cache/install_lock');
 
@@ -184,8 +184,8 @@ class install_install extends module
 			'S_EXPLAIN'		=> true,
 			'S_LEGEND'		=> false,
 		));
-		
-		
+
+
 		// Check for url_fopen
 		if (@ini_get('allow_url_fopen') == '1' || strtolower(@ini_get('allow_url_fopen')) == 'on')
 		{
@@ -204,8 +204,8 @@ class install_install extends module
 			'S_EXPLAIN'		=> true,
 			'S_LEGEND'		=> false,
 		));
-		
-		
+
+
 		// Check for getimagesize
 		if (@function_exists('getimagesize'))
 		{
@@ -802,7 +802,7 @@ class install_install extends module
 				$s_hidden_fields .= '<input type="hidden" name="' . $config_key . '" value="' . $data[$config_key] . '" />';
 			}
 		}
-		
+
 		$s_hidden_fields .= ($data['img_imagick']) ? '<input type="hidden" name="img_imagick" value="' . addslashes($data['img_imagick']) . '" />' : '';
 		$s_hidden_fields .= '<input type="hidden" name="language" value="' . $data['language'] . '" />';
 
@@ -907,7 +907,7 @@ class install_install extends module
 		$config_data .= "// @define('DEBUG', true);\n";
 		$config_data .= "// @define('DEBUG_EXTRA', true);\n";
 		$config_data .= '?' . '>'; // Done this to prevent highlighting editors getting confused!
-	
+
 		// Attempt to write out the config file directly. If it works, this is the easiest way to do it ...
 		if ((file_exists($phpbb_root_path . 'config.' . $phpEx) && is_writable($phpbb_root_path . 'config.' . $phpEx)) || is_writable($phpbb_root_path))
 		{
@@ -1018,8 +1018,11 @@ class install_install extends module
 		$s_hidden_fields = ($data['img_imagick']) ? '<input type="hidden" name="img_imagick" value="' . addslashes($data['img_imagick']) . '" />' : '';
 		$s_hidden_fields .= '<input type="hidden" name="language" value="' . $data['language'] . '" />';
 
+		// HTTP_HOST is having the correct browser url in most cases...
+		$server_name = (!empty($_SERVER['HTTP_HOST'])) ? strtolower($_SERVER['HTTP_HOST']) : ((!empty($_SERVER['SERVER_NAME'])) ? $_SERVER['SERVER_NAME'] : getenv('SERVER_NAME'));
+
 		$data['email_enable'] = ($data['email_enable'] !== '') ? $data['email_enable'] : true;
-		$data['server_name'] = ($data['server_name'] !== '') ? $data['server_name'] : ((!empty($_SERVER['SERVER_NAME'])) ? $_SERVER['SERVER_NAME'] : getenv('SERVER_NAME'));
+		$data['server_name'] = ($data['server_name'] !== '') ? $data['server_name'] : $server_name;
 		$data['server_port'] = ($data['server_port'] !== '') ? $data['server_port'] : ((!empty($_SERVER['SERVER_PORT'])) ? (int) $_SERVER['SERVER_PORT'] : (int) getenv('SERVER_PORT'));
 		$data['server_protocol'] = ($data['server_protocol'] !== '') ? $data['server_protocol'] : ((isset($_SERVER['HTTPS']) && $_SERVER['HTTPS'] == 'on') ? 'https://' : 'http://');
 		$data['cookie_secure'] = ($data['cookie_secure'] !== '') ? $data['cookie_secure'] : ((isset($_SERVER['HTTPS']) && $_SERVER['HTTPS'] == 'on') ? true : false);
@@ -1109,7 +1112,9 @@ class install_install extends module
 			$this->p_master->redirect("index.$phpEx?mode=install");
 		}
 
-		$cookie_domain = ($data['server_name'] != '') ? $data['server_name'] : (!empty($_SERVER['SERVER_NAME'])) ? $_SERVER['SERVER_NAME'] : getenv('SERVER_NAME');
+		// HTTP_HOST is having the correct browser url in most cases...
+		$server_name = (!empty($_SERVER['HTTP_HOST'])) ? strtolower($_SERVER['HTTP_HOST']) : ((!empty($_SERVER['SERVER_NAME'])) ? $_SERVER['SERVER_NAME'] : getenv('SERVER_NAME'));
+		$cookie_domain = ($data['server_name'] != '') ? $data['server_name'] : $server_name;
 
 		// Try to come up with the best solution for cookie domain...
 		if (strpos($cookie_domain, 'www.') === 0)
@@ -1314,11 +1319,11 @@ class install_install extends module
 			'UPDATE ' . $data['table_prefix'] . "config
 				SET config_value = '" . $db->sql_escape($data['admin_name']) . "'
 				WHERE config_name = 'newest_username'",
-			
+
 			'UPDATE ' . $data['table_prefix'] . "config
 				SET config_value = '" . md5(mt_rand()) . "'
 				WHERE config_name = 'avatar_salt'",
-				
+
 			'UPDATE ' . $data['table_prefix'] . "users
 				SET username = '" . $db->sql_escape($data['admin_name']) . "', user_password='" . $db->sql_escape(md5($data['admin_pass1'])) . "', user_ip = '" . $db->sql_escape($user_ip) . "', user_lang = '" . $db->sql_escape($data['default_lang']) . "', user_email='" . $db->sql_escape($data['board_email1']) . "', user_dateformat='" . $db->sql_escape($lang['default_dateformat']) . "', user_email_hash = " . (crc32($data['board_email1']) . strlen($data['board_email1'])) . ", username_clean = '" . $db->sql_escape(utf8_clean_string($data['admin_name'])) . "'
 				WHERE username = 'Admin'",
@@ -1577,7 +1582,7 @@ class install_install extends module
 				$result = $db->sql_query($sql);
 				$row = $db->sql_fetchrow($result);
 				$db->sql_freeresult($result);
-	
+
 				$_module->move_module_by($row, 'move_up', 4);
 
 				// Move permissions intro screen module 4 up...
@@ -1589,7 +1594,7 @@ class install_install extends module
 				$result = $db->sql_query($sql);
 				$row = $db->sql_fetchrow($result);
 				$db->sql_freeresult($result);
-	
+
 				$_module->move_module_by($row, 'move_up', 4);
 
 				// Move manage users screen module 5 up...
@@ -1601,7 +1606,7 @@ class install_install extends module
 				$result = $db->sql_query($sql);
 				$row = $db->sql_fetchrow($result);
 				$db->sql_freeresult($result);
-	
+
 				$_module->move_module_by($row, 'move_up', 5);
 			}
 
@@ -1616,7 +1621,7 @@ class install_install extends module
 				$result = $db->sql_query($sql);
 				$row = $db->sql_fetchrow($result);
 				$db->sql_freeresult($result);
-	
+
 				$_module->move_module_by($row, 'move_down', 4);
 			}
 
@@ -1841,7 +1846,7 @@ class install_install extends module
 				'user_dateformat'		=> $lang['default_dateformat'],
 				'user_allow_massemail'	=> 0,
 			);
-			
+
 			$user_id = user_add($user_row);
 
 			if (!$user_id)

@@ -32,7 +32,7 @@ if (isset($_GET['avatar']))
 		exit;
 	}
 	unset($dbpasswd);
-	
+
 	// worst-case default
 	$browser = (!empty($_SERVER['HTTP_USER_AGENT'])) ? htmlspecialchars((string) $_SERVER['HTTP_USER_AGENT']) : 'msie 6.0';
 
@@ -44,7 +44,7 @@ if (isset($_GET['avatar']))
 		$avatar_group = true;
 		$filename = substr($filename, 1);
 	}
-	
+
 	// '==' is not a bug - . as the first char is as bad as no dot at all
 	if (strpos($filename, '.') == false)
 	{
@@ -56,22 +56,22 @@ if (isset($_GET['avatar']))
 		$db->sql_close();
 		exit;
 	}
-	
+
 	$ext		= substr(strrchr($filename, '.'), 1);
 	$stamp		= (int) substr(stristr($filename, '_'), 1);
 	$filename	= (int) $filename;
-	
+
 	// let's see if we have to send the file at all
 	$last_load 	=  isset($_SERVER['HTTP_IF_MODIFIED_SINCE']) ? strtotime(trim($_SERVER['HTTP_IF_MODIFIED_SINCE'])) : false;
 	if (strpos(strtolower($browser), 'msie 6.0') === false)
 	{
 		if ($last_load !== false && $last_load <= $stamp)
 		{
-			if (@php_sapi_name() === 'CGI') 
+			if (@php_sapi_name() === 'CGI')
 			{
 				header('Status: 304 Not Modified', true, 304);
-			} 
-			else 
+			}
+			else
 			{
 				header('HTTP/1.0 304 Not Modified', true, 304);
 			}
@@ -79,13 +79,13 @@ if (isset($_GET['avatar']))
 			header('Pragma: public');
 			header('Expires: ' . gmdate('D, d M Y H:i:s \G\M\T', time() + 31536000));
 			exit();
-		} 
+		}
 		else
 		{
 			header('Last-Modified: ' . gmdate('D, d M Y H:i:s', $stamp) . ' GMT');
 		}
 	}
-	
+
 	if (!in_array($ext, array('png', 'gif', 'jpg', 'jpeg')))
 	{
 		// no way such an avatar could exist. They are not following the rules, stop the show.
@@ -97,7 +97,7 @@ if (isset($_GET['avatar']))
 		$db->sql_close();
 		exit;
 	}
-	
+
 	if (!$filename)
 	{
 		// no way such an avatar could exist. They are not following the rules, stop the show.
@@ -280,7 +280,7 @@ else
 		{
 			trigger_error($user->lang['PHYSICAL_DOWNLOAD_NOT_POSSIBLE']);
 		}
-		
+
 		redirect($phpbb_root_path . $config['upload_path'] . '/' . $attachment['physical_filename']);
 		exit;
 	}
@@ -467,7 +467,7 @@ function send_file_to_browser($attachment, $upload_dir, $category)
 	{
 		header('Content-Disposition: ' . ((strpos($attachment['mimetype'], 'image') === 0) ? 'inline' : 'attachment') . '; ' . header_filename(htmlspecialchars_decode($attachment['real_filename'])));
 	}
-	
+
 	if ($size)
 	{
 		header("Content-Length: $size");
@@ -556,9 +556,9 @@ function download_allowed()
 			}
 		}
 	}
-	
+
 	// Check for own server...
-	$server_name = (!empty($_SERVER['SERVER_NAME'])) ? $_SERVER['SERVER_NAME'] : getenv('SERVER_NAME');
+	$server_name = $user->host;
 
 	// Forcing server vars is the only way to specify/override the protocol
 	if ($config['force_server_vars'] || !$server_name)
@@ -570,7 +570,7 @@ function download_allowed()
 	{
 		$allowed = true;
 	}
-	
+
 	// Get IP's and Hostnames
 	if (!$allowed)
 	{
@@ -620,7 +620,7 @@ function download_allowed()
 		}
 		$db->sql_freeresult($result);
 	}
-	
+
 	return $allowed;
 }
 

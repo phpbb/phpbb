@@ -450,7 +450,7 @@ class module
 		global $db, $template;
 
 		$template->display('body');
-	
+
 		// Close our DB connection.
 		if (!empty($db) && is_object($db))
 		{
@@ -493,7 +493,8 @@ class module
 	*/
 	function redirect($page)
 	{
-		$server_name = (!empty($_SERVER['SERVER_NAME'])) ? $_SERVER['SERVER_NAME'] : getenv('SERVER_NAME');
+		// HTTP_HOST is having the correct browser url in most cases...
+		$server_name = (!empty($_SERVER['HTTP_HOST'])) ? strtolower($_SERVER['HTTP_HOST']) : ((!empty($_SERVER['SERVER_NAME'])) ? $_SERVER['SERVER_NAME'] : getenv('SERVER_NAME'));
 		$server_port = (!empty($_SERVER['SERVER_PORT'])) ? (int) $_SERVER['SERVER_PORT'] : (int) getenv('SERVER_PORT');
 		$secure = (isset($_SERVER['HTTPS']) && $_SERVER['HTTPS'] == 'on') ? 1 : 0;
 
@@ -511,7 +512,11 @@ class module
 
 		if ($server_port && (($secure && $server_port <> 443) || (!$secure && $server_port <> 80)))
 		{
-			$url .= ':' . $server_port;
+			// HTTP HOST can carry a port number...
+			if (strpos($server_name, ':') === false)
+			{
+				$url .= ':' . $server_port;
+			}
 		}
 
 		$url .= $script_path . '/' . $page;
@@ -535,7 +540,7 @@ class module
 				$l_cat = (!empty($lang['CAT_' . $cat])) ? $lang['CAT_' . $cat] : preg_replace('#_#', ' ', $cat);
 				$cat = strtolower($cat);
 				$url = $this->module_url . "?mode=$cat&amp;language=$language";
-				
+
 				if ($this->mode == $cat)
 				{
 					$template->assign_block_vars('t_block1', array(

@@ -983,7 +983,7 @@ class bbcode_firstpass extends bbcode
 		// Is the user trying to link to a php file in this domain and script path?
 		if (strpos($url, ".{$phpEx}") !== false && strpos($url, $check_path) !== false)
 		{
-			$server_name = (!empty($_SERVER['SERVER_NAME'])) ? $_SERVER['SERVER_NAME'] : getenv('SERVER_NAME');
+			$server_name = $user->host;
 
 			// Forcing server vars is the only way to specify/override the protocol
 			if ($config['force_server_vars'] || !$server_name)
@@ -1084,7 +1084,7 @@ class parse_message extends bbcode_firstpass
 		if ($config['max_' . $mode . '_chars'] > 0)
 		{
 			$msg_len = ($mode == 'post') ? utf8_strlen($this->message) : utf8_strlen(preg_replace('#\[\/?[a-z\*\+\-]+(=[\S]+)?\]#ius', ' ', $this->message));
-	
+
 			if ((!$msg_len && $mode !== 'sig') || $config['max_' . $mode . '_chars'] && $msg_len > $config['max_' . $mode . '_chars'])
 			{
 				$this->warn_msg[] = (!$msg_len) ? $user->lang['TOO_FEW_CHARS'] : sprintf($user->lang['TOO_MANY_CHARS_' . strtoupper($mode)], $msg_len, $config['max_' . $mode . '_chars']);
@@ -1254,7 +1254,7 @@ class parse_message extends bbcode_firstpass
 			$match = $replace = array();
 
 			// NOTE: obtain_* function? chaching the table contents?
-	
+
 			// For now setting the ttl to 10 minutes
 			switch ($db->sql_layer)
 			{
@@ -1264,7 +1264,7 @@ class parse_message extends bbcode_firstpass
 						FROM ' . SMILIES_TABLE . '
 						ORDER BY LEN(code) DESC';
 				break;
-	
+
 				case 'firebird':
 					$sql = 'SELECT *
 						FROM ' . SMILIES_TABLE . '

@@ -287,7 +287,7 @@ function phpbb_hash($password)
 		}
 		$random = substr($random, 0, $count);
 	}
-	
+
 	$hash = _hash_crypt_private($password, _hash_gensalt_private($random, $itoa64), $itoa64);
 
 	if (strlen($hash) == 34)
@@ -360,7 +360,7 @@ function _hash_encode64($input, $count, &$itoa64)
 		}
 
 		$output .= $itoa64[($value >> 12) & 0x3f];
-		
+
 		if ($i++ >= $count)
 		{
 			break;
@@ -836,7 +836,7 @@ function markread($mode, $forum_id = false, $topic_id = false, $post_time = 0, $
 				unset($tracking_topics['t']);
 				unset($tracking_topics['f']);
 				$tracking_topics['l'] = base_convert(time() - $config['board_startdate'], 10, 36);
-	
+
 				$user->set_cookie('track', tracking_serialize($tracking_topics), time() + 31536000);
 				$_COOKIE[$config['cookie_name'] . '_track'] = (STRIP) ? addslashes(tracking_serialize($tracking_topics)) : tracking_serialize($tracking_topics);
 
@@ -1129,7 +1129,7 @@ function get_topic_tracking($forum_id, $topic_ids, &$rowset, $forum_mark_time, $
 		{
 			$mark_time[$forum_id] = $forum_mark_time[$forum_id];
 		}
-			
+
 		$user_lastmark = (isset($mark_time[$forum_id])) ? $mark_time[$forum_id] : $user->data['user_lastmark'];
 
 		foreach ($topic_ids as $topic_id)
@@ -1177,7 +1177,7 @@ function get_complete_topic_tracking($forum_id, $topic_ids, $global_announce_lis
 			$last_read[$row['topic_id']] = $row['mark_time'];
 		}
 		$db->sql_freeresult($result);
-	
+
 		$topic_ids = array_diff($topic_ids, array_keys($last_read));
 
 		if (sizeof($topic_ids))
@@ -1188,7 +1188,7 @@ function get_complete_topic_tracking($forum_id, $topic_ids, $global_announce_lis
 					AND forum_id " .
 					(($global_announce_list && sizeof($global_announce_list)) ? "IN (0, $forum_id)" : "= $forum_id");
 			$result = $db->sql_query($sql);
-		
+
 			$mark_time = array();
 			while ($row = $db->sql_fetchrow($result))
 			{
@@ -1459,7 +1459,7 @@ function tracking_unserialize($string, $max_depth = 3)
 					break;
 				}
 			break;
-			
+
 			case 2:
 				switch ($string[$i])
 				{
@@ -1477,7 +1477,7 @@ function tracking_unserialize($string, $max_depth = 3)
 					break;
 				}
 			break;
-			
+
 			case 3:
 				switch ($string[$i])
 				{
@@ -1501,7 +1501,7 @@ function tracking_unserialize($string, $max_depth = 3)
 	{
 		die('Invalid data supplied');
 	}
-	
+
 	return $level;
 }
 
@@ -1719,7 +1719,7 @@ function generate_board_url($without_script_path = false)
 {
 	global $config, $user;
 
-	$server_name = (!empty($_SERVER['SERVER_NAME'])) ? $_SERVER['SERVER_NAME'] : getenv('SERVER_NAME');
+	$server_name = $user->host;
 	$server_port = (!empty($_SERVER['SERVER_PORT'])) ? (int) $_SERVER['SERVER_PORT'] : (int) getenv('SERVER_PORT');
 
 	// Forcing server vars is the only way to specify/override the protocol
@@ -1743,7 +1743,11 @@ function generate_board_url($without_script_path = false)
 
 	if ($server_port && (($config['cookie_secure'] && $server_port <> 443) || (!$config['cookie_secure'] && $server_port <> 80)))
 	{
-		$url .= ':' . $server_port;
+		// HTTP HOST can carry a port number...
+		if (strpos($server_name, ':') === false)
+		{
+			$url .= ':' . $server_port;
+		}
 	}
 
 	if (!$without_script_path)
@@ -1984,7 +1988,7 @@ function build_url($strip_vars = false)
 				unset($query[$strip]);
 			}
 		}
-	
+
 		// Glue the remaining parts together... already urlencoded
 		foreach ($query as $key => $value)
 		{
@@ -2056,7 +2060,7 @@ function check_form_key($form_name, $timespan = false, $return_page = '', $trigg
 	{
 		$minimum_time = (int) $config['form_token_mintime'];
 	}
-	
+
 	if (isset($_POST['creation_time']) && isset($_POST['form_token']))
 	{
 		$creation_time	= abs(request_var('creation_time', 0));
@@ -2067,7 +2071,7 @@ function check_form_key($form_name, $timespan = false, $return_page = '', $trigg
 		if (($diff >= $minimum_time) && (($diff <= $timespan) || $timespan == -1))
 		{
 			$token_sid = ($user->data['user_id'] == ANONYMOUS && !empty($config['form_token_sid_guests'])) ? $user->session_id : '';
-			
+
 			$key = sha1($creation_time . $user->data['user_form_salt'] . $form_name . $token_sid);
 			if ($key === $token)
 			{
@@ -2365,7 +2369,7 @@ function login_box($redirect = '', $l_explain = '', $l_success = '', $admin = fa
 				{
 					$err = (!$config['board_contact']) ? sprintf($user->lang[$result['error_msg']], '', '') : sprintf($user->lang[$result['error_msg']], '<a href="mailto:' . htmlspecialchars($config['board_contact']) . '">', '</a>');
 				}
-				
+
 			break;
 		}
 	}
@@ -2502,7 +2506,7 @@ function login_forum_box($forum_data)
 	$template->set_filenames(array(
 		'body' => 'login_forum.html')
 	);
-	
+
 	page_footer();
 }
 
@@ -2601,10 +2605,10 @@ function parse_cfg_file($filename, $lines = false)
 		{
 			$value = substr($value, 1, sizeof($value)-2);
 		}
-	
+
 		$parsed_items[$key] = $value;
 	}
-	
+
 	return $parsed_items;
 }
 
@@ -2631,13 +2635,13 @@ function add_log()
 		'log_operation'	=> $action,
 		'log_data'		=> $data,
 	);
-	
+
 	switch ($mode)
 	{
 		case 'admin':
 			$sql_ary['log_type'] = LOG_ADMIN;
 		break;
-		
+
 		case 'mod':
 			$sql_ary += array(
 				'log_type'	=> LOG_MOD,
@@ -2656,7 +2660,7 @@ function add_log()
 		case 'critical':
 			$sql_ary['log_type'] = LOG_CRITICAL;
 		break;
-		
+
 		default:
 			return false;
 	}
@@ -2981,9 +2985,9 @@ function msg_handler($errno, $msg_text, $errfile, $errline)
 			echo '	<div class="panel">';
 			echo '		<div id="content">';
 			echo '			<h1>' . $msg_title . '</h1>';
-			
+
 			echo '			<div>' . $msg_text . '</div>';
-			
+
 			echo $l_notify;
 
 			echo '		</div>';
@@ -2995,7 +2999,7 @@ function msg_handler($errno, $msg_text, $errfile, $errline)
 			echo '</div>';
 			echo '</body>';
 			echo '</html>';
-			
+
 			exit_handler();
 		break;
 
@@ -3045,7 +3049,7 @@ function msg_handler($errno, $msg_text, $errfile, $errline)
 
 			// We do not want the cron script to be called on error messages
 			define('IN_CRON', true);
-			
+
 			if (defined('IN_ADMIN') && isset($user->data['session_admin']) && $user->data['session_admin'])
 			{
 				adm_page_footer();
@@ -3075,7 +3079,7 @@ function page_header($page_title = '', $display_online_list = true)
 	{
 		return;
 	}
-	
+
 	define('HEADER_INC', true);
 
 	// gzip_compression
@@ -3300,14 +3304,14 @@ function page_header($page_title = '', $display_online_list = true)
 
 	// Which timezone?
 	$tz = ($user->data['user_id'] != ANONYMOUS) ? strval(doubleval($user->data['user_timezone'])) : strval(doubleval($config['board_timezone']));
-	
+
 	// Send a proper content-language to the output
 	$user_lang = $user->lang['USER_LANG'];
 	if (strpos($user_lang, '-x-') !== false)
 	{
 	    $user_lang = substr($user_lang, 0, strpos($user_lang, '-x-'));
 	}
-	
+
 	// The following assigns all _common_ variables that may be used at any point in a template.
 	$template->assign_vars(array(
 		'SITENAME'						=> $config['sitename'],
@@ -3453,7 +3457,7 @@ function page_footer($run_cron = true)
 	if (!defined('IN_CRON') && $run_cron && !$config['board_disable'])
 	{
 		$cron_type = '';
-	
+
 		if (time() - $config['queue_interval'] > $config['last_queue_run'] && !defined('IN_ADMIN') && file_exists($phpbb_root_path . 'cache/queue.' . $phpEx))
 		{
 			// Process email queue
