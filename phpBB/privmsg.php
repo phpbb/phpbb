@@ -699,7 +699,7 @@ else if ( ( $delete && $mark_list ) || $delete_all )
 		include($phpbb_root_path . 'includes/page_tail.'.$phpEx);
 
 	}
-	else if ($confirm && $_POST['sid'] === $userdata['session_id'])
+	else if ($confirm && $sid === $userdata['session_id'])
 	{
 		$delete_sql_id = '';
 
