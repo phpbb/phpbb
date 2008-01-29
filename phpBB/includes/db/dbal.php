@@ -271,6 +271,13 @@ class dbal
 					return true;
 				}
 
+				// Check if there is a transaction (no transaction can happen if there was an error, with a combined rollback and error returning enabled)
+				// This implies we have transaction always set for autocommit db's
+				if (!$this->transaction)
+				{
+					return false;
+				}
+
 				$result = $this->_sql_transaction('commit');
 
 				if (!$result)

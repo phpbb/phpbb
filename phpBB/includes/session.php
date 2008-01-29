@@ -158,7 +158,7 @@ class session
 		$this->update_session_page	= $update_session_page;
 		$this->browser				= (!empty($_SERVER['HTTP_USER_AGENT'])) ? htmlspecialchars((string) $_SERVER['HTTP_USER_AGENT']) : '';
 		$this->forwarded_for		= (!empty($_SERVER['HTTP_X_FORWARDED_FOR'])) ? (string) $_SERVER['HTTP_X_FORWARDED_FOR'] : '';
-		$this->host					= (!empty($_SERVER['HTTP_HOST'])) ? (string) $_SERVER['HTTP_HOST'] : 'localhost';
+		$this->host					= (!empty($_SERVER['HTTP_HOST'])) ? (string) strtolower($_SERVER['HTTP_HOST']) : ((!empty($_SERVER['SERVER_NAME'])) ? $_SERVER['SERVER_NAME'] : getenv('SERVER_NAME'));
 		$this->page					= $this->extract_current_page($phpbb_root_path);
 
 		// if the forwarded for header shall be checked we have to validate its contents
@@ -649,7 +649,7 @@ class session
 			$this->set_cookie('sid', $this->session_id, $cookie_expire);
 
 			unset($cookie_expire);
-			
+
 			$sql = 'SELECT COUNT(session_id) AS sessions
 					FROM ' . SESSIONS_TABLE . '
 					WHERE session_user_id = ' . (int) $this->data['user_id'] . '
@@ -777,7 +777,7 @@ class session
 		global $db, $config;
 
 		$batch_size = 10;
-		
+
 		if (!$this->time_now)
 		{
 			$this->time_now = time();
@@ -825,7 +825,7 @@ class session
 			// Less than 10 users, update gc timer ... else we want gc
 			// called again to delete other sessions
 			set_config('session_last_gc', $this->time_now, true);
-			
+
 			if ($config['max_autologin_time'])
 			{
 				$sql = 'DELETE FROM ' . SESSIONS_KEYS_TABLE . '
@@ -834,14 +834,14 @@ class session
 			}
 			$this->confirm_gc();
 		}
-		
+
 		return;
 	}
-	
+
 	function confirm_gc($type = 0)
 	{
 		global $db, $config;
-		
+
 		$sql = 'SELECT DISTINCT c.session_id
 				FROM ' . CONFIRM_TABLE . ' c
 				LEFT JOIN ' . SESSIONS_TABLE . ' s ON (c.session_id = s.session_id)
@@ -867,8 +867,8 @@ class session
 		}
 		$db->sql_freeresult($result);
 	}
-	
-	
+
+
 	/**
 	* Sets a cookie
 	*
@@ -1479,7 +1479,7 @@ class user extends session
 		$sql = 'SELECT image_name, image_filename, image_lang, image_height, image_width
 			FROM ' . STYLES_IMAGESET_DATA_TABLE . '
 			WHERE imageset_id = ' . $this->theme['imageset_id'] . "
-			AND image_filename <> '' 
+			AND image_filename <> ''
 			AND image_lang IN ('" . $db->sql_escape($this->img_lang) . "', '')";
 		$result = $db->sql_query($sql, 3600);
 
