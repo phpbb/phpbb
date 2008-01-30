@@ -1111,7 +1111,7 @@ function user_notification($mode, $subject, $topic_title, $forum_name, $forum_id
 		trigger_error('WRONG_NOTIFICATION_MODE');
 	}
 
-	if (!$config['allow_topic_notify'])
+	if (($topic_notification && !$config['allow_topic_notify']) || ($forum_notification && !$config['allow_forum_notify']))
 	{
 		return;
 	}
