@@ -1102,7 +1102,7 @@ function watch_topic_forum($mode, &$s_watching, $user_id, $forum_id, $topic_id, 
 */
 function get_user_rank($user_rank, $user_posts, &$rank_title, &$rank_img, &$rank_img_src)
 {
-	global $ranks, $config;
+	global $ranks, $config, $phpbb_root_path;
 
 	if (empty($ranks))
 	{
@@ -1113,8 +1113,8 @@ function get_user_rank($user_rank, $user_posts, &$rank_title, &$rank_img, &$rank
 	if (!empty($user_rank))
 	{
 		$rank_title = (isset($ranks['special'][$user_rank]['rank_title'])) ? $ranks['special'][$user_rank]['rank_title'] : '';
-		$rank_img = (!empty($ranks['special'][$user_rank]['rank_image'])) ? '<img src="' . $config['ranks_path'] . '/' . $ranks['special'][$user_rank]['rank_image'] . '" alt="' . $ranks['special'][$user_rank]['rank_title'] . '" title="' . $ranks['special'][$user_rank]['rank_title'] . '" />' : '';
-		$rank_img_src = (!empty($ranks['special'][$user_rank]['rank_image'])) ? $config['ranks_path'] . '/' . $ranks['special'][$user_rank]['rank_image'] : '';
+		$rank_img = (!empty($ranks['special'][$user_rank]['rank_image'])) ? '<img src="' . $phpbb_root_path . $config['ranks_path'] . '/' . $ranks['special'][$user_rank]['rank_image'] . '" alt="' . $ranks['special'][$user_rank]['rank_title'] . '" title="' . $ranks['special'][$user_rank]['rank_title'] . '" />' : '';
+		$rank_img_src = (!empty($ranks['special'][$user_rank]['rank_image'])) ? $phpbb_root_path . $config['ranks_path'] . '/' . $ranks['special'][$user_rank]['rank_image'] : '';
 	}
 	else
 	{
@@ -1125,8 +1125,8 @@ function get_user_rank($user_rank, $user_posts, &$rank_title, &$rank_img, &$rank
 				if ($user_posts >= $rank['rank_min'])
 				{
 					$rank_title = $rank['rank_title'];
-					$rank_img = (!empty($rank['rank_image'])) ? '<img src="' . $config['ranks_path'] . '/' . $rank['rank_image'] . '" alt="' . $rank['rank_title'] . '" title="' . $rank['rank_title'] . '" />' : '';
-					$rank_img_src = (!empty($rank['rank_image'])) ? $config['ranks_path'] . '/' . $rank['rank_image'] : '';
+					$rank_img = (!empty($rank['rank_image'])) ? '<img src="' . $phpbb_root_path . $config['ranks_path'] . '/' . $rank['rank_image'] . '" alt="' . $rank['rank_title'] . '" title="' . $rank['rank_title'] . '" />' : '';
+					$rank_img_src = (!empty($rank['rank_image'])) ? $phpbb_root_path . $config['ranks_path'] . '/' . $rank['rank_image'] : '';
 					break;
 				}
 			}
