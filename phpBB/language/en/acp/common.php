@@ -1,7 +1,7 @@
 <?php
 /**
 *
-* acp common [English]
+* acp_common [English]
 *
 * @package language
 * @version $Id$
@@ -57,7 +57,7 @@ $lang = array_merge($lang, array(
 	'ACP_BOARD_MANAGEMENT'		=> 'Board management',
 	'ACP_BOARD_SETTINGS'		=> 'Board settings',
 	'ACP_BOTS'					=> 'Spiders/Robots',
-	
+
 	'ACP_CAPTCHA'				=> 'CAPTCHA',
 
 	'ACP_CAT_DATABASE'			=> 'Database',
@@ -75,14 +75,14 @@ $lang = array_merge($lang, array(
 	'ACP_COOKIE_SETTINGS'		=> 'Cookie settings',
 	'ACP_CRITICAL_LOGS'			=> 'Error log',
 	'ACP_CUSTOM_PROFILE_FIELDS'	=> 'Custom profile fields',
-	
+
 	'ACP_DATABASE'				=> 'Database management',
 	'ACP_DISALLOW'				=> 'Disallow',
 	'ACP_DISALLOW_USERNAMES'	=> 'Disallow usernames',
-	
+
 	'ACP_EMAIL_SETTINGS'		=> 'E-mail settings',
 	'ACP_EXTENSION_GROUPS'		=> 'Manage extension groups',
-	
+
 	'ACP_FORUM_BASED_PERMISSIONS'	=> 'Forum based permissions',
 	'ACP_FORUM_LOGS'				=> 'Forum logs',
 	'ACP_FORUM_MANAGEMENT'			=> 'Forum management',
@@ -99,20 +99,20 @@ $lang = array_merge($lang, array(
 	'ACP_GROUPS_MANAGE'				=> 'Manage groups',
 	'ACP_GROUPS_MANAGEMENT'			=> 'Group management',
 	'ACP_GROUPS_PERMISSIONS'		=> 'Groups’ permissions',
-	
+
 	'ACP_ICONS'					=> 'Topic icons',
 	'ACP_ICONS_SMILIES'			=> 'Topic icons/smilies',
 	'ACP_IMAGESETS'				=> 'Imagesets',
 	'ACP_INACTIVE_USERS'		=> 'Inactive users',
 	'ACP_INDEX'					=> 'ACP index',
-	
+
 	'ACP_JABBER_SETTINGS'		=> 'Jabber settings',
-	
+
 	'ACP_LANGUAGE'				=> 'Language management',
 	'ACP_LANGUAGE_PACKS'		=> 'Language packs',
 	'ACP_LOAD_SETTINGS'			=> 'Load settings',
 	'ACP_LOGGING'				=> 'Logging',
-	
+
 	'ACP_MAIN'					=> 'ACP index',
 	'ACP_MANAGE_EXTENSIONS'		=> 'Manage extensions',
 	'ACP_MANAGE_FORUMS'			=> 'Manage forums',
@@ -125,9 +125,9 @@ $lang = array_merge($lang, array(
 	'ACP_MODULE_MANAGEMENT'		=> 'Module management',
 	'ACP_MOD_LOGS'				=> 'Moderator log',
 	'ACP_MOD_ROLES'				=> 'Moderator roles',
-	
+
 	'ACP_ORPHAN_ATTACHMENTS'	=> 'Orphaned attachments',
-	
+
 	'ACP_PERMISSIONS'			=> 'Permissions',
 	'ACP_PERMISSION_MASKS'		=> 'Permission masks',
 	'ACP_PERMISSION_ROLES'		=> 'Permission roles',
@@ -137,9 +137,9 @@ $lang = array_merge($lang, array(
 	'ACP_PRUNE_FORUMS'			=> 'Prune forums',
 	'ACP_PRUNE_USERS'			=> 'Prune users',
 	'ACP_PRUNING'				=> 'Pruning',
-	
+
 	'ACP_QUICK_ACCESS'			=> 'Quick access',
-	
+
 	'ACP_RANKS'					=> 'Ranks',
 	'ACP_REASONS'				=> 'Report/denial reasons',
 	'ACP_REGISTER_SETTINGS'		=> 'User registration settings',
@@ -158,10 +158,10 @@ $lang = array_merge($lang, array(
 	'ACP_STYLE_COMPONENTS'		=> 'Style components',
 	'ACP_STYLE_MANAGEMENT'		=> 'Style management',
 	'ACP_STYLES'				=> 'Styles',
-	
+
 	'ACP_TEMPLATES'				=> 'Templates',
 	'ACP_THEMES'				=> 'Themes',
-	
+
 	'ACP_UPDATE'					=> 'Updating',
 	'ACP_USERS_FORUM_PERMISSIONS'	=> 'Users’ forum permissions',
 	'ACP_USERS_LOGS'				=> 'User logs',
@@ -188,7 +188,7 @@ $lang = array_merge($lang, array(
 	'ACP_VIEW_FORUM_PERMISSIONS'		=> 'View forum-based permissions',
 	'ACP_VIEW_GLOBAL_MOD_PERMISSIONS'	=> 'View global moderation permissions',
 	'ACP_VIEW_USER_PERMISSIONS'			=> 'View user-based permissions',
-	
+
 	'ACP_WORDS'					=> 'Word censoring',
 
 	'ACTION'				=> 'Action',
@@ -242,7 +242,7 @@ $lang = array_merge($lang, array(
 	'NOTIFY'				=> 'Notification',
 	'NO_ADMIN'				=> 'You are not authorised to administrate this board.',
 	'NO_EMAILS_DEFINED'		=> 'No valid e-mail addresses found.',
-	'NO_PASSWORD_SUPPLIED'	=> 'You need to enter your password to access the Administration Control Panel.',	
+	'NO_PASSWORD_SUPPLIED'	=> 'You need to enter your password to access the Administration Control Panel.',
 
 	'OFF'					=> 'Off',
 	'ON'					=> 'On',
@@ -252,7 +252,7 @@ $lang = array_merge($lang, array(
 	'PARSE_URLS'						=> 'Parse links',
 	'PERMISSIONS_TRANSFERRED'			=> 'Permissions transferred',
 	'PERMISSIONS_TRANSFERRED_EXPLAIN'	=> 'You currently have the permissions from %1$s. You are able to browse the board with this user’s permissions, but not access the administration control panel since admin permissions were not transferred. You can <a href="%2$s"><strong>revert to your permission set</strong></a> at any time.',
-	'PIXEL'								=> 'px',	
+	'PIXEL'								=> 'px',
 	'PROCEED_TO_ACP'					=> '%sProceed to the ACP%s',
 
 	'REMIND'							=> 'Remind',
@@ -404,7 +404,7 @@ $lang = array_merge($lang, array(
 
 	'LOG_ACL_TRANSFER_PERMISSIONS'		=> '<strong>Permissions transferred from</strong><br />» %s',
 	'LOG_ACL_RESTORE_PERMISSIONS'		=> '<strong>Own permissions restored after using permissions from</strong><br />» %s',
-	
+
 	'LOG_ADMIN_AUTH_FAIL'		=> '<strong>Failed administration login attempt</strong>',
 	'LOG_ADMIN_AUTH_SUCCESS'	=> '<strong>Successful administration login</strong>',
 
@@ -498,7 +498,7 @@ $lang = array_merge($lang, array(
 
 	'LOG_ERROR_JABBER'		=> '<strong>Jabber error</strong><br />» %s',
 	'LOG_ERROR_EMAIL'		=> '<strong>E-mail error</strong><br />» %s',
-	
+
 	'LOG_FORUM_ADD'							=> '<strong>Created new forum</strong><br />» %s',
 	'LOG_FORUM_DEL_FORUM'					=> '<strong>Deleted forum</strong><br />» %s',
 	'LOG_FORUM_DEL_FORUMS'					=> '<strong>Deleted forum and its subforums</strong><br />» %s',

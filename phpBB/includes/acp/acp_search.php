@@ -518,9 +518,9 @@ class acp_search
 	function close_popup_js()
 	{
 		return "<script type=\"text/javascript\">\n" .
-			"<!--\n" .
+			"// <![CDATA[\n" .
 			"	close_waitscreen = 1;\n" .
-			"//-->\n" .
+			"// ]]>\n" .
 			"</script>\n";
 	}
 

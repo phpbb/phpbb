@@ -92,7 +92,7 @@ class ucp_pm
 				{
 					if ($user->data['user_new_privmsg'])
 					{
-						$l_new_message = ($user->data['user_new_privmsg'] == 1 ) ? $user->lang['YOU_NEW_PM'] : $user->lang['YOU_NEW_PMS'];
+						$l_new_message = ($user->data['user_new_privmsg'] == 1) ? $user->lang['YOU_NEW_PM'] : $user->lang['YOU_NEW_PMS'];
 					}
 					else
 					{

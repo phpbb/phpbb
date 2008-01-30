@@ -53,7 +53,7 @@ class install_update extends module
 {
 	var $p_master;
 	var $update_info;
-	
+
 	var $old_location;
 	var $new_location;
 	var $latest_version;
@@ -764,7 +764,7 @@ class install_update extends module
 						{
 							continue;
 						}
-		
+
 						$methods[] = $type;
 					}
 
@@ -1490,7 +1490,7 @@ class install_update extends module
 			return;
 		}
 
-		if (in_array($file, array_keys($this->update_info['custom'])))
+		if (isset($this->update_info['custom'][$file]))
 		{
 			foreach ($this->update_info['custom'][$file] as $_file)
 			{

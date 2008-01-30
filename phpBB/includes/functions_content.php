@@ -67,7 +67,7 @@ function gen_sort_selects(&$limit_days, &$sort_by_text, &$sort_days, &$sort_key,
 		$sort_dir = key($sort_dir_text);
 	}
 
-	$s_limit_days = '<select name="st">';
+	$s_limit_days = '<select name="st" id="st">';
 	foreach ($limit_days as $day => $text)
 	{
 		$selected = ($sort_days == $day) ? ' selected="selected"' : '';
@@ -75,7 +75,7 @@ function gen_sort_selects(&$limit_days, &$sort_by_text, &$sort_days, &$sort_key,
 	}
 	$s_limit_days .= '</select>';
 
-	$s_sort_key = '<select name="sk">';
+	$s_sort_key = '<select name="sk" id="sk">';
 	foreach ($sort_by_text as $key => $text)
 	{
 		$selected = ($sort_key == $key) ? ' selected="selected"' : '';
@@ -83,7 +83,7 @@ function gen_sort_selects(&$limit_days, &$sort_by_text, &$sort_days, &$sort_key,
 	}
 	$s_sort_key .= '</select>';
 
-	$s_sort_dir = '<select name="sd">';
+	$s_sort_dir = '<select name="sd" id="sd">';
 	foreach ($sort_dir_text as $key => $value)
 	{
 		$selected = ($sort_dir == $key) ? ' selected="selected"' : '';
@@ -382,7 +382,7 @@ function strip_bbcode(&$text, $uid = '')
 
 	$match = get_preg_expression('bbcode_htm');
 	$replace = array('\1', '\1', '\2', '\1', '', '');
-	
+
 	$text = preg_replace($match, $replace, $text);
 }
 
@@ -418,7 +418,7 @@ function generate_text_for_display($text, $uid, $bitfield, $flags)
 		{
 			$bbcode->bbcode($bitfield);
 		}
-		
+
 		$bbcode->bbcode_second_pass($text, $uid);
 	}
 
@@ -802,7 +802,7 @@ function parse_attachments($forum_id, &$message, &$attachments, &$update_count, 
 		$template->destroy_block_vars('_file');
 
 		$block_array = array();
-		
+
 		// Some basics...
 		$attachment['extension'] = strtolower(trim($attachment['extension']));
 		$filename = $phpbb_root_path . $config['upload_path'] . '/' . basename($attachment['physical_filename']);
@@ -1084,7 +1084,7 @@ function truncate_string($string, $max_length = 60, $allow_reply = true, $append
 	{
 		$string = 'Re: ' . $string;
 	}
-	
+
 	if ($append != '' && $stripped)
 	{
 		$string = $string . $append;
@@ -1203,7 +1203,7 @@ class bitfield
 		if (strlen($this->data) >= $byte + 1)
 		{
 			$c = $this->data[$byte];
-	
+
 			// Lookup the ($n % 8)th bit of the byte
 			$bit = 7 - ($n & 7);
 			return (bool) (ord($c) & (1 << $bit));

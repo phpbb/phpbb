@@ -677,7 +677,7 @@ class p_master
 			}
 
 			// Select first id we can get
-			if (!$current_id && (in_array($item_ary['id'], array_keys($this->module_cache['parents'])) || $item_ary['id'] == $this->p_id))
+			if (!$current_id && (isset($this->module_cache['parents'][$item_ary['id']]) || $item_ary['id'] == $this->p_id))
 			{
 				$current_id = $item_ary['id'];
 			}
@@ -710,7 +710,7 @@ class p_master
 
 				$tpl_ary = array(
 					'L_TITLE'		=> $item_ary['lang'],
-					'S_SELECTED'	=> (in_array($item_ary['id'], array_keys($this->module_cache['parents'])) || $item_ary['id'] == $this->p_id) ? true : false,
+					'S_SELECTED'	=> (isset($this->module_cache['parents'][$item_ary['id']]) || $item_ary['id'] == $this->p_id) ? true : false,
 					'U_TITLE'		=> $u_title
 				);
 
@@ -719,7 +719,7 @@ class p_master
 
 			$tpl_ary = array(
 				'L_TITLE'		=> $item_ary['lang'],
-				'S_SELECTED'	=> (in_array($item_ary['id'], array_keys($this->module_cache['parents'])) || $item_ary['id'] == $this->p_id) ? true : false,
+				'S_SELECTED'	=> (isset($this->module_cache['parents'][$item_ary['id']]) || $item_ary['id'] == $this->p_id) ? true : false,
 				'U_TITLE'		=> $u_title
 			);
 

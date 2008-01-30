@@ -267,7 +267,7 @@ function posting_gen_topic_icons($mode, $icon_id)
 					'ICON_IMG'		=> $phpbb_root_path . $config['icons_path'] . '/' . $data['img'],
 					'ICON_WIDTH'	=> $data['width'],
 					'ICON_HEIGHT'	=> $data['height'],
-	
+
 					'S_CHECKED'			=> ($id == $icon_id) ? true : false,
 					'S_ICON_CHECKED'	=> ($id == $icon_id) ? ' checked="checked"' : '')
 				);
@@ -323,7 +323,7 @@ function posting_gen_topic_types($forum_id, $cur_topic_type = POST_NORMAL)
 
 			$topic_type_array
 		);
-		
+
 		foreach ($topic_type_array as $array)
 		{
 			$template->assign_block_vars('topic_type', $array);
@@ -939,7 +939,8 @@ function topic_review($topic_id, $forum_id, $mode = 'topic_review', $cur_post_id
 		WHERE p.topic_id = $topic_id
 			" . ((!$auth->acl_get('m_approve', $forum_id)) ? 'AND p.post_approved = 1' : '') . '
 			' . (($mode == 'post_review') ? " AND p.post_id > $cur_post_id" : '') . '
-		ORDER BY p.post_time DESC';
+		ORDER BY p.post_time';
+	$sql .= ($mode == 'post_review') ? 'ASC' : 'DESC';
 	$result = $db->sql_query_limit($sql, $config['posts_per_page']);
 
 	$post_list = array();
@@ -1722,7 +1723,7 @@ function submit_post($mode, $subject, $username, $topic_type, &$poll, &$data, $u
 			}
 
 			$sql_data[USERS_TABLE]['stat'][] = "user_lastpost_time = $current_time" . (($auth->acl_get('f_postcount', $data['forum_id'])) ? ', user_posts = user_posts + 1' : '');
-	
+
 			if ($topic_type != POST_GLOBAL)
 			{
 				if ($auth->acl_get('f_noapprove', $data['forum_id']) || $auth->acl_get('m_approve', $data['forum_id']))
@@ -1945,7 +1946,7 @@ function submit_post($mode, $subject, $username, $topic_type, &$poll, &$data, $u
 		}
 
 		$sql_insert_ary = array();
-		
+
 		for ($i = 0, $size = sizeof($poll['poll_options']); $i < $size; $i++)
 		{
 			if (strlen(trim($poll['poll_options'][$i])))
@@ -2018,7 +2019,7 @@ function submit_post($mode, $subject, $username, $topic_type, &$poll, &$data, $u
 
 		foreach ($data['attachment_data'] as $pos => $attach_row)
 		{
-			if ($attach_row['is_orphan'] && !in_array($attach_row['attach_id'], array_keys($orphan_rows)))
+			if ($attach_row['is_orphan'] && !isset($orphan_rows[$attach_row['attach_id']]))
 			{
 				continue;
 			}

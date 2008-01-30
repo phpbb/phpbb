@@ -27,7 +27,7 @@ function display_forums($root_data = '', $display_moderators = true, $return_mod
 	$forum_rows = $subforums = $forum_ids = $forum_ids_moderator = $forum_moderators = $active_forum_ary = array();
 	$parent_id = $visible_forums = 0;
 	$sql_from = '';
-	
+
 	// Mark forums read?
 	$mark_read = request_var('mark', '');
 
@@ -438,7 +438,7 @@ function display_forums($root_data = '', $display_moderators = true, $return_mod
 				'S_UNREAD'		=> $subforum['unread'])
 			);
 		}
-		
+
 		$last_catless = $catless;
 	}
 
@@ -980,7 +980,7 @@ function display_user_activity(&$userdata)
 /**
 * Topic and forum watching common code
 */
-function watch_topic_forum($mode, &$s_watching, &$s_watching_img, $user_id, $forum_id, $topic_id, $notify_status = 'unset', $start = 0)
+function watch_topic_forum($mode, &$s_watching, $user_id, $forum_id, $topic_id, $notify_status = 'unset', $start = 0)
 {
 	global $template, $db, $user, $phpEx, $start, $phpbb_root_path;
 
