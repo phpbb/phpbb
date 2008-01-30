@@ -939,7 +939,7 @@ function topic_review($topic_id, $forum_id, $mode = 'topic_review', $cur_post_id
 		WHERE p.topic_id = $topic_id
 			" . ((!$auth->acl_get('m_approve', $forum_id)) ? 'AND p.post_approved = 1' : '') . '
 			' . (($mode == 'post_review') ? " AND p.post_id > $cur_post_id" : '') . '
-		ORDER BY p.post_time';
+		ORDER BY p.post_time ';
 	$sql .= ($mode == 'post_review') ? 'ASC' : 'DESC';
 	$result = $db->sql_query_limit($sql, $config['posts_per_page']);
 
