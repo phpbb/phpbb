@@ -127,7 +127,7 @@ class acp_board
 						'pm_max_msgs'			=> array('lang' => 'BOXES_LIMIT',			'validate' => 'int',	'type' => 'text:4:4', 'explain' => true),
 						'full_folder_action'	=> array('lang' => 'FULL_FOLDER_ACTION',	'validate' => 'int',	'type' => 'select', 'method' => 'full_folder_select', 'explain' => true),
 						'pm_edit_time'			=> array('lang' => 'PM_EDIT_TIME',			'validate' => 'int',	'type' => 'text:5:5', 'explain' => true, 'append' => ' ' . $user->lang['MINUTES']),
-						
+
 						'legend2'				=> 'GENERAL_OPTIONS',
 						'allow_mass_pm'			=> array('lang' => 'ALLOW_MASS_PM',			'validate' => 'bool',	'type' => 'radio:yes_no', 'explain' => false),
 						'auth_bbcode_pm'		=> array('lang' => 'ALLOW_BBCODE_PM',		'validate' => 'bool',	'type' => 'radio:yes_no', 'explain' => false),
@@ -269,7 +269,7 @@ class acp_board
 						'load_jumpbox'			=> array('lang' => 'YES_JUMPBOX',			'validate' => 'bool',	'type' => 'radio:yes_no', 'explain' => false),
 						'load_user_activity'	=> array('lang' => 'LOAD_USER_ACTIVITY',	'validate' => 'bool',	'type' => 'radio:yes_no', 'explain' => true),
 						'load_tplcompile'		=> array('lang' => 'RECOMPILE_STYLES',	'validate' => 'bool',	'type' => 'radio:yes_no', 'explain' => true),
-						
+
 						'legend3'				=> 'CUSTOM_PROFILE_FIELDS',
 						'load_cpf_memberlist'	=> array('lang' => 'LOAD_CPF_MEMBERLIST',	'validate' => 'bool',	'type' => 'radio:yes_no', 'explain' => false),
 						'load_cpf_viewprofile'	=> array('lang' => 'LOAD_CPF_VIEWPROFILE',	'validate' => 'bool',	'type' => 'radio:yes_no', 'explain' => false),
@@ -564,7 +564,7 @@ class acp_board
 				'CONTENT'		=> build_cfg_template($type, $config_key, $this->new_config, $config_key, $vars),
 				)
 			);
-		
+
 			unset($display_vars['vars'][$config_key]);
 		}
 
@@ -795,7 +795,7 @@ class acp_board
 		}
 
 		$dateformat_options .= '<option value="custom"';
-		if (!in_array($value, array_keys($user->lang['dateformats'])))
+		if (!isset($user->lang['dateformats'][$value]))
 		{
 			$dateformat_options .= ' selected="selected"';
 		}

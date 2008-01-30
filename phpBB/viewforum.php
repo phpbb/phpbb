@@ -188,14 +188,16 @@ if ($forum_data['prune_next'] < time() && $forum_data['enable_prune'])
 }
 
 // Forum rules and subscription info
-$s_watching_forum = $s_watching_forum_img = array();
-$s_watching_forum['link'] = $s_watching_forum['title'] = '';
-$s_watching_forum['is_watching'] = false;
+$s_watching_forum = array(
+	'link'			=> '',
+	'title'			=> '',
+	'is_watching'	=> false,
+);
 
 if (($config['email_enable'] || $config['jab_enable']) && $config['allow_forum_notify'] && $auth->acl_get('f_subscribe', $forum_id))
 {
 	$notify_status = (isset($forum_data['notify_status'])) ? $forum_data['notify_status'] : NULL;
-	watch_topic_forum('forum', $s_watching_forum, $s_watching_forum_img, $user->data['user_id'], $forum_id, 0, $notify_status);
+	watch_topic_forum('forum', $s_watching_forum, $user->data['user_id'], $forum_id, 0, $notify_status);
 }
 
 $s_forum_rules = '';
@@ -346,7 +348,7 @@ if ($forum_data['forum_type'] == FORUM_POST)
 		'SELECT'	=> $sql_array['SELECT'],
 		'FROM'		=> $sql_array['FROM'],
 		'LEFT_JOIN'	=> $sql_array['LEFT_JOIN'],
-	
+
 		'WHERE'		=> 't.forum_id IN (' . $forum_id . ', 0)
 			AND t.topic_type IN (' . POST_ANNOUNCE . ', ' . POST_GLOBAL . ')',
 

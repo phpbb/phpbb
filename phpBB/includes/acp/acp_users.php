@@ -411,7 +411,7 @@ class acp_users
 							$sql = 'UPDATE ' . USERS_TABLE . ' SET ' . $db->sql_build_array('UPDATE', $sql_ary) . "
 								WHERE user_id = $user_id";
 							$db->sql_query($sql);
-						
+
 							add_log('admin', 'LOG_USER_DEL_SIG', $user_row['username']);
 							add_log('user', $user_id, 'LOG_USER_DEL_SIG_USER');
 
@@ -492,9 +492,9 @@ class acp_users
 									'update'		=> true))
 								);
 							}
-						
+
 						break;
-						
+
 						case 'moveposts':
 
 							if (!check_form_key($form_name))
@@ -835,9 +835,9 @@ class acp_users
 					{
 						$quick_tool_ary += array('active' => (($user_row['user_type'] == USER_INACTIVE) ? 'ACTIVATE' : 'DEACTIVATE'));
 					}
-					
+
 					$quick_tool_ary += array('delsig' => 'DEL_SIG', 'delavatar' => 'DEL_AVATAR', 'moveposts' => 'MOVE_POSTS', 'delposts' => 'DEL_POSTS', 'delattach' => 'DEL_ATTACH');
-					
+
 					if ($config['email_enable'] && ($user_row['user_type'] == USER_NORMAL || $user_row['user_type'] == USER_INACTIVE))
 					{
 						$quick_tool_ary['reactivate'] = 'FORCE';
@@ -923,7 +923,7 @@ class acp_users
 			case 'feedback':
 
 				$user->add_lang('mcp');
-				
+
 				// Set up general vars
 				$start		= request_var('start', 0);
 				$deletemark = (isset($_POST['delmarked'])) ? true : false;
@@ -980,7 +980,7 @@ class acp_users
 
 					trigger_error($user->lang['USER_FEEDBACK_ADDED'] . adm_back_link($this->u_action . '&amp;u=' . $user_id));
 				}
-				
+
 				// Sorting
 				$limit_days = array(0 => $user->lang['ALL_ENTRIES'], 1 => $user->lang['1_DAY'], 7 => $user->lang['7_DAYS'], 14 => $user->lang['2_WEEKS'], 30 => $user->lang['1_MONTH'], 90 => $user->lang['3_MONTHS'], 180 => $user->lang['6_MONTHS'], 365 => $user->lang['1_YEAR']);
 				$sort_by_text = array('u' => $user->lang['SORT_USERNAME'], 't' => $user->lang['SORT_DATE'], 'i' => $user->lang['SORT_IP'], 'o' => $user->lang['SORT_ACTION']);
@@ -1216,7 +1216,7 @@ class acp_users
 					'S_BIRTHDAY_DAY_OPTIONS'	=> $s_birthday_day_options,
 					'S_BIRTHDAY_MONTH_OPTIONS'	=> $s_birthday_month_options,
 					'S_BIRTHDAY_YEAR_OPTIONS'	=> $s_birthday_year_options,
-						
+
 					'S_PROFILE'		=> true)
 				);
 
@@ -1347,7 +1347,7 @@ class acp_users
 				$s_custom = false;
 
 				$dateformat_options .= '<option value="custom"';
-				if (!in_array($data['dateformat'], array_keys($user->lang['dateformats'])))
+				if (!isset($user->lang['dateformats'][$data['dateformat']]))
 				{
 					$dateformat_options .= ' selected="selected"';
 					$s_custom = true;
@@ -1395,7 +1395,7 @@ class acp_users
 				$template->assign_vars(array(
 					'S_PREFS'			=> true,
 					'S_JABBER_DISABLED'	=> ($config['jab_enable'] && $user_row['user_jabber'] && @extension_loaded('xml')) ? false : true,
-					
+
 					'VIEW_EMAIL'		=> $data['viewemail'],
 					'MASS_EMAIL'		=> $data['massemail'],
 					'ALLOW_PM'			=> $data['allowpm'],
@@ -1416,7 +1416,7 @@ class acp_users
 					'VIEW_SIGS'			=> $data['view_sigs'],
 					'VIEW_AVATARS'		=> $data['view_avatars'],
 					'VIEW_WORDCENSOR'	=> $data['view_wordcensor'],
-					
+
 					'S_TOPIC_SORT_DAYS'		=> $s_limit_topic_days,
 					'S_TOPIC_SORT_KEY'		=> $s_sort_topic_key,
 					'S_TOPIC_SORT_DIR'		=> $s_sort_topic_dir,
@@ -1509,7 +1509,7 @@ class acp_users
 
 					trigger_error($user->lang['USER_RANK_UPDATED'] . adm_back_link($this->u_action . '&amp;u=' . $user_id));
 				}
-				
+
 				$sql = 'SELECT *
 					FROM ' . RANKS_TABLE . '
 					WHERE rank_special = 1
@@ -1531,9 +1531,9 @@ class acp_users
 				);
 
 			break;
-			
+
 			case 'sig':
-			
+
 				include_once($phpbb_root_path . 'includes/functions_posting.' . $phpEx);
 				include_once($phpbb_root_path . 'includes/functions_display.' . $phpEx);
 
@@ -1552,7 +1552,7 @@ class acp_users
 
 					// Allowing Quote BBCode
 					$message_parser->parse($enable_bbcode, $enable_urls, $enable_smilies, $config['allow_sig_img'], $config['allow_sig_flash'], true, $config['allow_sig_links'], true, 'sig');
-						
+
 					if (sizeof($message_parser->warn_msg))
 					{
 						$error[] = implode('<br />', $message_parser->warn_msg);
@@ -1578,13 +1578,13 @@ class acp_users
 
 						trigger_error($user->lang['USER_SIG_UPDATED'] . adm_back_link($this->u_action . '&amp;u=' . $user_id));
 					}
-	
+
 					// Replace "error" strings with their real, localised form
 					$error = preg_replace('#^([A-Z_]+)$#e', "(!empty(\$user->lang['\\1'])) ? \$user->lang['\\1'] : '\\1'", $error);
 				}
-				
+
 				$signature_preview = '';
-				
+
 				if ($preview)
 				{
 					// Now parse it for displaying
@@ -1755,7 +1755,7 @@ class acp_users
 						'ATTACH_ID'			=> $row['attach_id'],
 						'POST_ID'			=> $row['post_msg_id'],
 						'TOPIC_ID'			=> $row['topic_id'],
-				
+
 						'S_IN_MESSAGE'		=> $row['in_message'],
 
 						'U_DOWNLOAD'		=> append_sid("{$phpbb_root_path}download/file.$phpEx", 'mode=view&amp;id=' . $row['attach_id']),
@@ -1763,7 +1763,7 @@ class acp_users
 					);
 				}
 				$db->sql_freeresult($result);
-		
+
 				$template->assign_vars(array(
 					'S_ATTACHMENTS'		=> true,
 					'S_ON_PAGE'			=> on_page($num_attachments, $config['topics_per_page'], $start),
@@ -1774,14 +1774,14 @@ class acp_users
 				);
 
 			break;
-		
+
 			case 'groups':
 
 				include($phpbb_root_path . 'includes/functions_user.' . $phpEx);
 
 				$user->add_lang(array('groups', 'acp/groups'));
 				$group_id = request_var('g', 0);
-				
+
 				if ($group_id)
 				{
 					// Check the founder only entry for this group to make sure everything is well
@@ -1791,7 +1791,7 @@ class acp_users
 					$result = $db->sql_query($sql);
 					$founder_manage = (int) $db->sql_fetchfield('group_founder_manage');
 					$db->sql_freeresult($result);
-					
+
 					if ($user->data['user_type'] != USER_FOUNDER && $founder_manage)
 					{
 						trigger_error($user->lang['NOT_ALLOWED_MANAGE_GROUP'] . adm_back_link($this->u_action . '&amp;u=' . $user_id), E_USER_WARNING);
@@ -1801,7 +1801,7 @@ class acp_users
 				{
 					$founder_manage = 0;
 				}
-				
+
 				switch ($action)
 				{
 					case 'demote':
@@ -1832,7 +1832,7 @@ class acp_users
 							{
 								trigger_error($user->lang[$error] . adm_back_link($this->u_action . '&amp;u=' . $user_id), E_USER_WARNING);
 							}
-						
+
 							$error = array();
 						}
 						else
@@ -1845,7 +1845,7 @@ class acp_users
 								'g'				=> $group_id))
 							);
 						}
-	
+
 					break;
 				}
 
@@ -1980,7 +1980,7 @@ class acp_users
 					$result = $db->sql_query($sql);
 
 					$hold_ary = array();
-					
+
 					while ($row = $db->sql_fetchrow($result))
 					{
 						$hold_ary = $auth_admin->get_mask('view', $user_id, false, false, $row['auth_option'], 'global', ACL_NEVER);
@@ -2020,7 +2020,7 @@ class acp_users
 					'U_USER_PERMISSIONS'		=> append_sid("{$phpbb_admin_path}index.$phpEx" ,'i=permissions&amp;mode=setting_user_global&amp;user_id[]=' . $user_id),
 					'U_USER_FORUM_PERMISSIONS'	=> append_sid("{$phpbb_admin_path}index.$phpEx", 'i=permissions&amp;mode=setting_user_local&amp;user_id[]=' . $user_id))
 				);
-			
+
 			break;
 
 		}

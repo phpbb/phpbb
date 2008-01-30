@@ -114,7 +114,7 @@ class ucp_prefs
 				$s_custom = false;
 
 				$dateformat_options .= '<option value="custom"';
-				if (!in_array($data['dateformat'], array_keys($user->lang['dateformats'])))
+				if (!isset($user->lang['dateformats'][$data['dateformat']]))
 				{
 					$dateformat_options .= ' selected="selected"';
 					$s_custom = true;

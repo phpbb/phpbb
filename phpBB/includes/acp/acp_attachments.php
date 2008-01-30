@@ -23,7 +23,7 @@ class acp_attachments
 {
 	var $u_action;
 	var $new_config;
-	
+
 	function main($id, $mode)
 	{
 		global $db, $user, $auth, $template, $cache;
@@ -56,7 +56,7 @@ class acp_attachments
 			case 'ext_groups':
 				$l_title = 'ACP_EXTENSION_GROUPS';
 			break;
-	
+
 			case 'orphan':
 				$l_title = 'ACP_ORPHAN_ATTACHMENTS';
 			break;
@@ -212,7 +212,7 @@ class acp_attachments
 
 				// Secure Download Options - Same procedure as with banning
 				$allow_deny = ($this->new_config['secure_allow_deny']) ? 'ALLOWED' : 'DISALLOWED';
-		
+
 				$sql = 'SELECT *
 					FROM ' . SITELIST_TABLE;
 				$result = $db->sql_query($sql);
@@ -282,7 +282,7 @@ class acp_attachments
 						'CONTENT'		=> build_cfg_template($type, $config_key, $this->new_config, $config_key, $vars),
 						)
 					);
-		
+
 					unset($display_vars['vars'][$config_key]);
 				}
 
@@ -334,7 +334,7 @@ class acp_attachments
 								FROM ' . EXTENSIONS_TABLE . '
 								WHERE ' . $db->sql_in_set('extension_id', $extension_id_list);
 							$result = $db->sql_query($sql);
-							
+
 							$extension_list = '';
 							while ($row = $db->sql_fetchrow($result))
 							{
@@ -364,7 +364,7 @@ class acp_attachments
 								FROM ' . EXTENSIONS_TABLE . "
 								WHERE extension = '" . $db->sql_escape($add_extension) . "'";
 							$result = $db->sql_query($sql);
-							
+
 							if ($row = $db->sql_fetchrow($result))
 							{
 								$error[] = sprintf($user->lang['EXTENSION_EXIST'], $add_extension);
@@ -603,7 +603,7 @@ class acp_attachments
 								SET group_id = 0
 								WHERE group_id = $group_id";
 							$db->sql_query($sql);
-					
+
 							add_log('admin', 'LOG_ATTACH_EXTGROUP_DEL', $group_name);
 
 							$cache->destroy('_extensions');
@@ -900,7 +900,7 @@ class acp_attachments
 					$upload_list = array();
 					foreach ($add_files as $attach_id)
 					{
-						if (!in_array($attach_id, array_keys($delete_files)) && !empty($post_ids[$attach_id]))
+						if (!isset($delete_files[$attach_id]) && !empty($post_ids[$attach_id]))
 						{
 							$upload_list[$attach_id] = $post_ids[$attach_id];
 						}
@@ -1050,7 +1050,7 @@ class acp_attachments
 			ATTACHMENT_CATEGORY_FLASH		=> $user->lang['CAT_FLASH_FILES'],
 			ATTACHMENT_CATEGORY_QUICKTIME	=> $user->lang['CAT_QUICKTIME_FILES'],
 		);
-		
+
 		if ($group_id)
 		{
 			$sql = 'SELECT cat_id
@@ -1066,7 +1066,7 @@ class acp_attachments
 		{
 			$cat_type = ATTACHMENT_CATEGORY_NONE;
 		}
-		
+
 		$group_select = '<select name="' . $select_name . '"' . (($key) ? ' id="' . $key . '"' : '') . '>';
 
 		foreach ($types as $type => $mode)
@@ -1086,7 +1086,7 @@ class acp_attachments
 	function group_select($select_name, $default_group = false, $key = '')
 	{
 		global $db, $user;
-			
+
 		$group_select = '<select name="' . $select_name . '"' . (($key) ? ' id="' . $key . '"' : '') . '>';
 
 		$sql = 'SELECT group_id, group_name
@@ -1104,7 +1104,7 @@ class acp_attachments
 		$row['group_id'] = 0;
 		$row['group_name'] = $user->lang['NOT_ASSIGNED'];
 		$group_name[] = $row;
-		
+
 		for ($i = 0; $i < sizeof($group_name); $i++)
 		{
 			if ($default_group === false)
@@ -1138,7 +1138,7 @@ class acp_attachments
 		if (empty($magic_home))
 		{
 			$locations = array('C:/WINDOWS/', 'C:/WINNT/', 'C:/WINDOWS/SYSTEM/', 'C:/WINNT/SYSTEM/', 'C:/WINDOWS/SYSTEM32/', 'C:/WINNT/SYSTEM32/', '/usr/bin/', '/usr/sbin/', '/usr/local/bin/', '/usr/local/sbin/', '/opt/', '/usr/imagemagick/', '/usr/bin/imagemagick/');
-			$path_locations = str_replace('\\', '/', (explode(($exe) ? ';' : ':', getenv('PATH'))));	
+			$path_locations = str_replace('\\', '/', (explode(($exe) ? ';' : ':', getenv('PATH'))));
 
 			$locations = array_merge($path_locations, $locations);
 
@@ -1352,7 +1352,7 @@ class acp_attachments
 					$db->sql_query($sql);
 				}
 			}
-			
+
 			if (!empty($ip_list_log))
 			{
 				// Update log

@@ -478,7 +478,7 @@ if ($save && $user->data['is_registered'] && $auth->acl_get('u_savedrafts') && (
 	$subject = utf8_normalize_nfc(request_var('subject', '', true));
 	$subject = (!$subject && $mode != 'post') ? $post_data['topic_title'] : $subject;
 	$message = utf8_normalize_nfc(request_var('message', '', true));
-	
+
 	if ($subject && $message)
 	{
 		if (confirm_box(true))
@@ -620,7 +620,7 @@ if ($submit || $preview || $refresh)
 			$sql = 'DELETE FROM ' . POLL_VOTES_TABLE . "
 				WHERE topic_id = $topic_id";
 			$db->sql_query($sql);
-			
+
 			$topic_sql = array(
 				'poll_title'		=> '',
 				'poll_start' 		=> 0,
@@ -674,7 +674,7 @@ if ($submit || $preview || $refresh)
 
 	// Check checksum ... don't re-parse message if the same
 	$update_message = ($mode != 'edit' || $message_md5 != $post_data['post_checksum'] || $status_switch || strlen($post_data['bbcode_uid']) < BBCODE_UID_LEN) ? true : false;
-	
+
 	// Parse message
 	if ($update_message)
 	{
@@ -1073,7 +1073,7 @@ if (!sizeof($error) && $preview)
 			'S_IS_MULTI_CHOICE'		=> ($post_data['poll_max_options'] > 1) ? true : false,
 
 			'POLL_QUESTION'		=> $parse_poll->message,
-			
+
 			'L_POLL_LENGTH'		=> ($post_data['poll_length']) ? sprintf($user->lang['POLL_RUN_TILL'], $user->format_date($poll_end)) : '',
 			'L_MAX_VOTES'		=> ($post_data['poll_max_options'] == 1) ? $user->lang['MAX_OPTION_SELECT'] : sprintf($user->lang['MAX_OPTIONS_SELECT'], $post_data['poll_max_options']))
 		);
@@ -1460,7 +1460,7 @@ function handle_post_delete($forum_id, $topic_id, $post_id, &$post_data)
 		}
 		else
 		{
-			confirm_box(false, 'DELETE_MESSAGE', $s_hidden_fields);
+			confirm_box(false, 'DELETE_POST', $s_hidden_fields);
 		}
 	}
 
