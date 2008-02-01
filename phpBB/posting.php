@@ -582,7 +582,7 @@ if ($submit || $preview || $refresh)
 	$post_data['enable_bbcode']		= (!$bbcode_status || isset($_POST['disable_bbcode'])) ? false : true;
 	$post_data['enable_smilies']	= (!$smilies_status || isset($_POST['disable_smilies'])) ? false : true;
 	$post_data['enable_urls']		= (isset($_POST['disable_magic_url'])) ? 0 : 1;
-	$post_data['enable_sig']		= (!$config['allow_sig']) ? false : ((isset($_POST['attach_sig']) && $user->data['is_registered']) ? true : false);
+	$post_data['enable_sig']		= (!$config['allow_sig'] || !$auth->acl_get('f_sigs', $forum_id) || !$auth->acl_get('u_sig')) ? false : ((isset($_POST['attach_sig']) && $user->data['is_registered']) ? true : false);
 
 	if ($config['allow_topic_notify'] && $user->data['is_registered'])
 	{
@@ -1428,6 +1428,7 @@ function handle_post_delete($forum_id, $topic_id, $post_id, &$post_data)
 			$data = array(
 				'topic_first_post_id'	=> $post_data['topic_first_post_id'],
 				'topic_last_post_id'	=> $post_data['topic_last_post_id'],
+				'topic_replies_real'	=> $post_data['topic_replies_real'],
 				'topic_approved'		=> $post_data['topic_approved'],
 				'topic_type'			=> $post_data['topic_type'],
 				'post_approved'			=> $post_data['post_approved'],
@@ -1439,7 +1440,7 @@ function handle_post_delete($forum_id, $topic_id, $post_id, &$post_data)
 
 			$next_post_id = delete_post($forum_id, $topic_id, $post_id, $data);
 
-			if ($post_data['topic_first_post_id'] == $post_data['topic_last_post_id'])
+			if ($next_post_id === false)
 			{
 				add_log('mod', $forum_id, $topic_id, 'LOG_DELETE_TOPIC', $post_data['topic_title']);
 
