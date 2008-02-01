@@ -57,7 +57,7 @@
 	*/
 	window.onload = function()
 	{
-		for (i = 0; i < onload_functions.length; i++)
+		for (var i = 0; i < onload_functions.length; i++)
 		{
 			eval(onload_functions[i]);
 		}
@@ -65,7 +65,7 @@
 
 	window.onunload = function()
 	{
-		for (i = 0; i < onunload_functions.length; i++)
+		for (var i = 0; i < onunload_functions.length; i++)
 		{
 			eval(onunload_functions[i]);
 		}
