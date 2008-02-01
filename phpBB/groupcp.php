@@ -146,7 +146,7 @@ else
 
 $confirm = ( isset($HTTP_POST_VARS['confirm']) ) ? TRUE : 0;
 $cancel = ( isset($HTTP_POST_VARS['cancel']) ) ? TRUE : 0;
-
+$sid = ( isset($HTTP_POST_VARS['sid']) ) ? $HTTP_POST_VARS['sid'] : '';
 $start = ( isset($HTTP_GET_VARS['start']) ) ? intval($HTTP_GET_VARS['start']) : 0;
 $start = ($start < 0) ? 0 : $start;
 
@@ -210,6 +210,10 @@ else if ( isset($HTTP_POST_VARS['joingroup']) && $group_id )
 	{
 		redirect(append_sid("login.$phpEx?redirect=groupcp.$phpEx&" . POST_GROUPS_URL . "=$group_id", true));
 	}
+	else if ( $sid !== $userdata['session_id'] )
+	{
+		message_die(GENERAL_ERROR, $lang['Session_invalid']);
+	}
 
 	$sql = "SELECT ug.user_id, g.group_type
 		FROM " . USER_GROUP_TABLE . " ug, " . GROUPS_TABLE . " g 
@@ -221,7 +225,7 @@ else if ( isset($HTTP_POST_VARS['joingroup']) && $group_id )
 		message_die(GENERAL_ERROR, 'Could not obtain user and group information', '', __LINE__, __FILE__, $sql);
 	}
 
-	if (	$row = $db->sql_fetchrow($result) )
+	if ( $row = $db->sql_fetchrow($result))
 	{
 		if ( $row['group_type'] == GROUP_OPEN )
 		{
@@ -311,10 +315,15 @@ else if ( isset($HTTP_POST_VARS['unsub']) || isset($HTTP_POST_VARS['unsubpending
 	{
 		redirect(append_sid("groupcp.$phpEx", true));
 	}
-	elseif ( !$userdata['session_logged_in'] )
+	else if ( !$userdata['session_logged_in'] )
 	{
 		redirect(append_sid("login.$phpEx?redirect=groupcp.$phpEx&" . POST_GROUPS_URL . "=$group_id", true));
 	}
+	else if ( $sid !== $userdata['session_id'] )
+	{
+		message_die(GENERAL_ERROR, $lang['Session_invalid']);
+	}
+
 
 	if ( $confirm )
 	{
@@ -363,6 +372,7 @@ else if ( isset($HTTP_POST_VARS['unsub']) || isset($HTTP_POST_VARS['unsubpending
 		$unsub_msg = ( isset($HTTP_POST_VARS['unsub']) ) ? $lang['Confirm_unsub'] : $lang['Confirm_unsub_pending'];
 
 		$s_hidden_fields = '<input type="hidden" name="' . POST_GROUPS_URL . '" value="' . $group_id . '" /><input type="hidden" name="unsub" value="1" />';
+		$s_hidden_fields .= '<input type="hidden" name="sid" value="' . $userdata['session_id'] . '" />';
 
 		$page_title = $lang['Group_Control_Panel'];
 		include($phpbb_root_path . 'includes/page_header.'.$phpEx);
@@ -461,6 +471,10 @@ else if ( $group_id )
 			if ( !$userdata['session_logged_in'] )
 			{
 				redirect(append_sid("login.$phpEx?redirect=groupcp.$phpEx&" . POST_GROUPS_URL . "=$group_id", true));
+			} 
+			else if ( $sid !== $userdata['session_id'] )
+			{
+				message_die(GENERAL_ERROR, $lang['Session_invalid']);
 			}
 
 			if ( !$is_moderator )
@@ -901,7 +915,7 @@ else if ( $group_id )
 
 	generate_user_info($group_moderator, $board_config['default_dateformat'], $is_moderator, $from, $posts, $joined, $poster_avatar, $profile_img, $profile, $search_img, $search, $pm_img, $pm, $email_img, $email, $www_img, $www, $icq_status_img, $icq_img, $icq, $aim_img, $aim, $msn_img, $msn, $yim_img, $yim);
 
-	$s_hidden_fields .= '';
+	$s_hidden_fields .= '<input type="hidden" name="sid" value="' . $userdata['session_id'] . '" />';
 
 	$template->assign_vars(array(
 		'L_GROUP_INFORMATION' => $lang['Group_Information'],
