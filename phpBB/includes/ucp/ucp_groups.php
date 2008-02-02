@@ -127,6 +127,18 @@ class ucp_groups
 							}
 							list(, $row) = each($row);
 
+							$sql = 'SELECT group_type
+								FROM ' . GROUPS_TABLE . '
+								WHERE group_id = ' . $group_id;
+							$result = $db->sql_query($sql);
+							$group_type = (int) $db->sql_fetchfield('group_type');
+							$db->sql_freeresult($result);
+
+							if ($group_type != GROUP_OPEN && $group_type != GROUP_FREE)
+							{
+								trigger_error($user->lang['CANNOT_RESIGN_GROUP'] . $return_page);
+							}
+
 							if (confirm_box(true))
 							{
 								group_user_del($group_id, $user->data['user_id']);
