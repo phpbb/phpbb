@@ -438,6 +438,7 @@ CREATE TABLE [phpbb_forums] (
 	[forum_last_poster_name] [varchar] (255) DEFAULT ('') NOT NULL ,
 	[forum_last_poster_colour] [varchar] (6) DEFAULT ('') NOT NULL ,
 	[forum_flags] [int] DEFAULT (32) NOT NULL ,
+	[display_subforum_list] [int] DEFAULT (1) NOT NULL ,
 	[display_on_index] [int] DEFAULT (1) NOT NULL ,
 	[enable_indexing] [int] DEFAULT (1) NOT NULL ,
 	[enable_icons] [int] DEFAULT (1) NOT NULL ,

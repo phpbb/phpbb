@@ -241,6 +241,7 @@ CREATE TABLE phpbb_forums (
 	forum_last_poster_name varchar(255) NOT NULL DEFAULT '',
 	forum_last_poster_colour varchar(6) NOT NULL DEFAULT '',
 	forum_flags tinyint(4) NOT NULL DEFAULT '32',
+	display_subforum_list INTEGER UNSIGNED NOT NULL DEFAULT '1',
 	display_on_index INTEGER UNSIGNED NOT NULL DEFAULT '1',
 	enable_indexing INTEGER UNSIGNED NOT NULL DEFAULT '1',
 	enable_icons INTEGER UNSIGNED NOT NULL DEFAULT '1',

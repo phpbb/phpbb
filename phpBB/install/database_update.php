@@ -10,7 +10,7 @@
 
 $updates_to_version = '3.0.0';
 
-// Return if we "just include it" to find out for which version the database update is responsuble for
+// Return if we "just include it" to find out for which version the database update is responsible for
 if (defined('IN_PHPBB') && defined('IN_INSTALL'))
 {
 	return;
@@ -470,6 +470,15 @@ $database_update_info = array(
 			USERS_TABLE			=> array(
 				'user_new_privmsg'			=> array('INT:4', 0),
 				'user_unread_privmsg'		=> array('INT:4', 0),
+			),
+		),
+	),
+	// Changes from 3.0.0 to the next version
+	'3.0.0'			=> array(
+		// Add the following columns
+		'add_columns'		=> array(
+			FORUMS_TABLE			=> array(
+				'display_subforum_list'		=> array('BOOL', 1),
 			),
 		),
 	),

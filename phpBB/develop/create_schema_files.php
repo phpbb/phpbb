@@ -1072,6 +1072,7 @@ function get_schema_struct()
 			'forum_last_poster_name'=> array('VCHAR_UNI', ''),
 			'forum_last_poster_colour'=> array('VCHAR:6', ''),
 			'forum_flags'			=> array('TINT:4', 32),
+			'display_subforum_list'	=> array('BOOL', 1),
 			'display_on_index'		=> array('BOOL', 1),
 			'enable_indexing'		=> array('BOOL', 1),
 			'enable_icons'			=> array('BOOL', 1),

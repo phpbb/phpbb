@@ -362,6 +362,7 @@ CREATE TABLE phpbb_forums (
 	forum_last_poster_name VARCHAR(255) CHARACTER SET UTF8 DEFAULT '' NOT NULL COLLATE UNICODE,
 	forum_last_poster_colour VARCHAR(6) CHARACTER SET NONE DEFAULT '' NOT NULL,
 	forum_flags INTEGER DEFAULT 32 NOT NULL,
+	display_subforum_list INTEGER DEFAULT 1 NOT NULL,
 	display_on_index INTEGER DEFAULT 1 NOT NULL,
 	enable_indexing INTEGER DEFAULT 1 NOT NULL,
 	enable_icons INTEGER DEFAULT 1 NOT NULL,
