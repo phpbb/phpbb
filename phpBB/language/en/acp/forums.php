@@ -114,10 +114,12 @@ $lang = array_merge($lang, array(
 
 	'GENERAL_FORUM_SETTINGS'	=> 'General forum settings',
 
-	'LINK'					=> 'Link',
-	'LIST_INDEX'			=> 'List subforum in parent-forum’s legend',
-	'LIST_INDEX_EXPLAIN'	=> 'Displays this forum on the index and elsewhere as a link within the legend of its parent-forum.',
-	'LOCKED'				=> 'Locked',
+	'LINK'						=> 'Link',
+	'LIST_INDEX'				=> 'List subforum in parent-forum’s legend',
+	'LIST_INDEX_EXPLAIN'		=> 'Displays this forum on the index and elsewhere as a link within the legend of its parent-forum if the parent-forum’s “List subforums in legend” option is enabled.',
+	'LIST_SUBFORUMS'			=> 'List subforums in legend',
+	'LIST_SUBFORUMS_EXPLAIN'	=> 'Displays this forum’s subforums on the index and elsewhere as a link within the legend if their “List subforum in parent-forum’s legend” option is enabled.',
+	'LOCKED'					=> 'Locked',
 
 	'MOVE_POSTS_NO_POSTABLE_FORUM'	=> 'The forum you selected for moving the posts to is not postable. Please select a postable forum.',
 	'MOVE_POSTS_TO'					=> 'Move posts to',
