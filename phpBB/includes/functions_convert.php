@@ -1769,7 +1769,7 @@ function add_bots()
 
 	$sql = 'SELECT group_id FROM ' . GROUPS_TABLE . " WHERE group_name_clean = 'bots'";
 	$result = $db->sql_query($sql);
-	$group_id = (int) $db->sql_fetchfield('group_id', false, $result);
+	$group_id = (int) $db->sql_fetchfield('group_id', $result);
 	$db->sql_freeresult($result);
 
 	if (!$group_id)
@@ -1778,7 +1778,7 @@ function add_bots()
 
 		$sql = 'SELECT group_id FROM ' . GROUPS_TABLE . " WHERE group_name_clean = 'bots'";
 		$result = $db->sql_query($sql);
-		$group_id = (int) $db->sql_fetchfield('group_id', false, $result);
+		$group_id = (int) $db->sql_fetchfield('group_id', $result);
 		$db->sql_freeresult($result);
 
 		if (!$group_id)

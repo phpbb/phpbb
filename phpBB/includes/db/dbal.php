@@ -192,9 +192,8 @@ class dbal
 
 	/**
 	* Fetch field
-	* if rownum is false, the current row is used, else it is pointing to the row (zero-based)
 	*/
-	function sql_fetchfield($field, $rownum = false, $query_id = false)
+	function sql_fetchfield($field, $query_id = false)
 	{
 		global $cache;
 
@@ -205,11 +204,6 @@ class dbal
 
 		if ($query_id !== false)
 		{
-			if ($rownum !== false)
-			{
-				$this->sql_rowseek($rownum, $query_id);
-			}
-
 			if (!is_object($query_id) && isset($cache->sql_rowset[$query_id]))
 			{
 				return $cache->sql_fetchfield($query_id, $field);

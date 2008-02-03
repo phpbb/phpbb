@@ -1008,7 +1008,7 @@ class postgres_extractor extends base_extractor
 			}
 			else
 			{
-				$row['rowdefault'] = $db->sql_fetchfield('rowdefault', false, $def_res);
+				$row['rowdefault'] = $db->sql_fetchfield('rowdefault', $def_res);
 			}
 			$db->sql_freeresult($def_res);
 

@@ -186,7 +186,7 @@ class dbal_mssql extends dbal
 		// Seek by $offset rows
 		if ($offset)
 		{
-			$this->sql_rowseek($offset, $result);
+			@mssql_data_seek($result, $offset);
 		}
 
 		return $result;
@@ -234,27 +234,6 @@ class dbal_mssql extends dbal
 		}
 
 		return $row;
-	}
-
-	/**
-	* Seek to given row number
-	* rownum is zero-based
-	*/
-	function sql_rowseek($rownum, &$query_id)
-	{
-		global $cache;
-
-		if ($query_id === false)
-		{
-			$query_id = $this->query_result;
-		}
-
-		if (isset($cache->sql_rowset[$query_id]))
-		{
-			return $cache->sql_rowseek($rownum, $query_id);
-		}
-
-		return ($query_id !== false) ? @mssql_data_seek($query_id, $rownum) : false;
 	}
 
 	/**

@@ -27,7 +27,6 @@ class acm
 	private $is_modified = false;
 
 	public $sql_rowset = array();
-	private $sql_row_pointer = array();
 	public $cache_dir = '';
 
 	/**
@@ -65,12 +64,10 @@ class acm
 		unset($this->vars);
 		unset($this->var_expires);
 		unset($this->sql_rowset);
-		unset($this->sql_row_pointer);
 
 		$this->vars = array();
 		$this->var_expires = array();
 		$this->sql_rowset = array();
-		$this->sql_row_pointer = array();
 	}
 
 	/**
@@ -234,12 +231,10 @@ class acm
 		unset($this->vars);
 		unset($this->var_expires);
 		unset($this->sql_rowset);
-		unset($this->sql_row_pointer);
 
 		$this->vars = array();
 		$this->var_expires = array();
 		$this->sql_rowset = array();
-		$this->sql_row_pointer = array();
 
 		$this->is_modified = false;
 	}
@@ -378,7 +373,6 @@ class acm
 			return false;
 		}
 
-		$this->sql_row_pointer[$query_id] = 0;
 
 		return $query_id;
 	}
@@ -400,7 +394,6 @@ class acm
 
 			$query_id = sizeof($this->sql_rowset);
 			$this->sql_rowset[$query_id] = array();
-			$this->sql_row_pointer[$query_id] = 0;
 
 			while ($row = $db->sql_fetchrow($query_result))
 			{
@@ -426,12 +419,9 @@ class acm
 	*/
 	public function sql_fetchrow($query_id)
 	{
-		if ($this->sql_row_pointer[$query_id] < sizeof($this->sql_rowset[$query_id]))
-		{
-			return $this->sql_rowset[$query_id][$this->sql_row_pointer[$query_id]++];
-		}
+		list(, $row) = each($this->sql_rowset[$query_id]);
 
-		return false;
+		return ($row !== NULL) ? $row : false;
 	}
 
 	/**
@@ -439,26 +429,9 @@ class acm
 	*/
 	public function sql_fetchfield($query_id, $field)
 	{
-		if ($this->sql_row_pointer[$query_id] < sizeof($this->sql_rowset[$query_id]))
-		{
-			return (isset($this->sql_rowset[$query_id][$this->sql_row_pointer[$query_id]][$field])) ? $this->sql_rowset[$query_id][$this->sql_row_pointer[$query_id]][$field] : false;
-		}
+		$row = current($this->sql_rowset[$query_id]);
 
-		return false;
-	}
-
-	/**
-	* Seek a specific row in an a cached database result (database)
-	*/
-	public function sql_rowseek($rownum, $query_id)
-	{
-		if ($rownum >= sizeof($this->sql_rowset[$query_id]))
-		{
-			return false;
-		}
-
-		$this->sql_row_pointer[$query_id] = $rownum;
-		return true;
+		return ($row !== false && isset($row[$field])) ? $row[$field] : false;
 	}
 
 	/**
@@ -472,7 +445,6 @@ class acm
 		}
 
 		unset($this->sql_rowset[$query_id]);
-		unset($this->sql_row_pointer[$query_id]);
 
 		return true;
 	}

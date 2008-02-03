@@ -26,7 +26,6 @@ include_once($phpbb_root_path . 'includes/db/dbal.' . $phpEx);
 class dbal_db2 extends dbal
 {
 	var $multi_insert = true;
-	var $last_query_text = '';
 
 	// can't truncate a table
 	var $truncate = false;
@@ -106,7 +105,6 @@ class dbal_db2 extends dbal
 				$this->sql_report('start', $query);
 			}
 
-			$this->last_query_text = $query;
 			$this->query_result = ($cache_ttl && method_exists($cache, 'sql_load')) ? $cache->sql_load($query) : false;
 			$this->sql_add_num_queries($this->query_result);
 
@@ -281,49 +279,6 @@ class dbal_db2 extends dbal
 		$row = @db2_fetch_assoc($query_id);
 
 		return $row;
-	}
-
-	/**
-	* Seek to given row number
-	* rownum is zero-based
-	*/
-	function sql_rowseek($rownum, $query_id = false)
-	{
-		global $cache;
-
-		if ($query_id === false)
-		{
-			$query_id = $this->query_result;
-		}
-
-		if (isset($cache->sql_rowset[$query_id]))
-		{
-			return $cache->sql_rowseek($rownum, $query_id);
-		}
-
-		if ($query_id === false)
-		{
-			return;
-		}
-
-		$this->sql_freeresult($query_id);
-		$query_id = $this->sql_query($this->last_query_text);
-
-		if ($query_id === false)
-		{
-			return false;
-		}
-
-		// We do not fetch the row for rownum == 0 because then the next resultset would be the second row
-		for ($i = 0; $i < $rownum; $i++)
-		{
-			if (!$this->sql_fetchrow($query_id))
-			{
-				return false;
-			}
-		}
-
-		return true;
 	}
 
 	/**

@@ -250,7 +250,7 @@ function mass_auth($ug_type, $forum_id, $ug_id, $acl_list, $setting)
 			$sql = 'SELECT group_id FROM ' . GROUPS_TABLE . " 
 				WHERE group_name = '" . strtoupper($ug_id) . "'";
 			$result = $db->sql_query_limit($sql, 1);
-			$id = (int) $db->sql_fetchfield('group_id', 0, $result);
+			$id = (int) $db->sql_fetchfield('group_id', $result);
 			$db->sql_freeresult($result);
 
 			if (!$id)

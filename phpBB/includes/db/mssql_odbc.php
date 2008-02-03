@@ -31,7 +31,6 @@ include_once($phpbb_root_path . 'includes/db/dbal.' . $phpEx);
 */
 class dbal_mssql_odbc extends dbal
 {
-	var $last_query_text = '';
 	var $dbms_type = 'mssql';
 
 	/**
@@ -139,7 +138,6 @@ class dbal_mssql_odbc extends dbal
 				$this->sql_report('start', $query);
 			}
 
-			$this->last_query_text = $query;
 			$this->query_result = ($cache_ttl && method_exists($cache, 'sql_load')) ? $cache->sql_load($query) : false;
 			$this->sql_add_num_queries($this->query_result);
 
@@ -204,7 +202,14 @@ class dbal_mssql_odbc extends dbal
 		// Seek by $offset rows
 		if ($offset)
 		{
-			$this->sql_rowseek($offset, $result);
+			// We do not fetch the row for rownum == 0 because then the next resultset would be the second row
+			for ($i = 0; $i < $offset; $i++)
+			{
+				if (!$this->sql_fetchrow($result))
+				{
+					return false;
+				}
+			}
 		}
 
 		return $result;
@@ -237,49 +242,6 @@ class dbal_mssql_odbc extends dbal
 		}
 
 		return ($query_id !== false) ? @odbc_fetch_array($query_id) : false;
-	}
-
-	/**
-	* Seek to given row number
-	* rownum is zero-based
-	*/
-	function sql_rowseek($rownum, &$query_id)
-	{
-		global $cache;
-
-		if ($query_id === false)
-		{
-			$query_id = $this->query_result;
-		}
-
-		if (isset($cache->sql_rowset[$query_id]))
-		{
-			return $cache->sql_rowseek($rownum, $query_id);
-		}
-
-		if ($query_id === false)
-		{
-			return false;
-		}
-
-		$this->sql_freeresult($query_id);
-		$query_id = $this->sql_query($this->last_query_text);
-
-		if ($query_id === false)
-		{
-			return false;
-		}
-
-		// We do not fetch the row for rownum == 0 because then the next resultset would be the second row
-		for ($i = 0; $i < $rownum; $i++)
-		{
-			if (!$this->sql_fetchrow($query_id))
-			{
-				return false;
-			}
-		}
-
-		return true;
 	}
 
 	/**

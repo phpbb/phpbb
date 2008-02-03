@@ -98,7 +98,7 @@ function add_bots($bots)
 
 	$sql = 'SELECT group_id FROM ' . GROUPS_TABLE . " WHERE group_name = 'BOTS'";
 	$result = $db->sql_query($sql);
-	$group_id = (int) $db->sql_fetchfield('group_id', false, $result);
+	$group_id = (int) $db->sql_fetchfield('group_id', $result);
 	$db->sql_freeresult($result);
 	$db->sql_query('TRUNCATE TABLE ' . BOTS_TABLE);
 
@@ -108,7 +108,7 @@ function add_bots($bots)
 
 		$sql = 'SELECT group_id FROM ' . GROUPS_TABLE . " WHERE group_name = 'BOTS'";
 		$result = $db->sql_query($sql);
-		$group_id = (int) $db->sql_fetchfield('group_id', false, $result);
+		$group_id = (int) $db->sql_fetchfield('group_id', $result);
 		$db->sql_freeresult($result);
 
 	}

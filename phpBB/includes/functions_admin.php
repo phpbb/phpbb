@@ -2472,7 +2472,7 @@ function view_log($mode, &$log, &$log_count, $limit = 0, $offset = 0, $forum_id 
 							FROM ' . FORUMS_TABLE . '
 							WHERE forum_type = ' . FORUM_POST;
 						$f_result = $db->sql_query_limit($sql, 1);
-						$default_forum_id = (int) $db->sql_fetchfield('forum_id', false, $f_result);
+						$default_forum_id = (int) $db->sql_fetchfield('forum_id', $f_result);
 						$db->sql_freeresult($f_result);
 					}
 
