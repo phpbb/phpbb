@@ -179,6 +179,10 @@ class session
 				}
 			}
 		}
+		else
+		{
+			$this->forwarded_for = '';
+		}
 
 		// Add forum to the page for tracking online users - also adding a "x" to the end to properly identify the number
 		$this->page['page'] .= (isset($_REQUEST['f'])) ? ((strpos($this->page['page'], '?') !== false) ? '&' : '?') . '_f_=' . (int) $_REQUEST['f'] . 'x' : '';
