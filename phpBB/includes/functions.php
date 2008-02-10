@@ -370,7 +370,7 @@ function init_userprefs($userdata)
 
 		$userdata['user_lang'] = $default_lang;
 	}
-	elseif ( $userdata['user_id'] === ANONYMOUS && $board_config['default_lang'] !== $default_lang )
+	elseif ( $userdata['user_id'] == ANONYMOUS && $board_config['default_lang'] !== $default_lang )
 	{
 		$sql = 'UPDATE ' . CONFIG_TABLE . "
 			SET config_value = '" . $default_lang . "'

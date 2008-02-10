@@ -36,22 +36,19 @@ if( !empty($setmodules) )
 	return;
 }
 
-//
-// Load default header
-//
-if( isset($HTTP_GET_VARS['export_pack']) )
-{
-	if ( $HTTP_GET_VARS['export_pack'] == "send" )
-	{	
-		$no_page_header = true;
-	}
-}
-
 $phpbb_root_path = "./../";
 require($phpbb_root_path . 'extension.inc');
 
-$cancel = ( isset($HTTP_POST_VARS['cancel']) ) ? true : false;
+$cancel = ( isset($HTTP_POST_VARS['cancel']) || isset($_POST['cancel']) ) ? true : false;
 $no_page_header = $cancel;
+
+//
+// Load default header
+//
+if ((!empty($HTTP_GET_VARS['export_pack']) && $HTTP_GET_VARS['export_pack'] == 'send') || (!empty($_GET['export_pack']) && $_GET['export_pack'] == 'send'))
+{
+	$no_page_header = true;
+}
 
 require('./pagestart.' . $phpEx);
 
