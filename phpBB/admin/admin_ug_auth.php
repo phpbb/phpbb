@@ -261,7 +261,7 @@ if ( isset($HTTP_POST_VARS['submit']) && ( ( $mode == 'user' && $user_id ) || ( 
 					}
 				}
 
-				while( list($forum_id, $value) = @each($_POST['private']) )
+				while( list($forum_id, $value) = @each($HTTP_POST_VARS['private']) )
 				{
 					while( list($auth_field, $exists) = @each($forum_auth_level_fields[$forum_id]) )
 					{
