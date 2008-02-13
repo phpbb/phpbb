@@ -1282,7 +1282,7 @@ function restore_config($schema)
 			// Most are...
 			if (is_string($config_value))
 			{
-				$config_value = utf8_htmlspecialchars($config_value);
+				$config_value = truncate_string(utf8_htmlspecialchars($config_value), 255, false);
 			}
 
 			set_config($config_name, $config_value);

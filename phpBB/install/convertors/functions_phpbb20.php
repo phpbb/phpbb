@@ -455,7 +455,7 @@ function phpbb_get_birthday($birthday = '')
 	{
 		$birthday = (int) $birthday;
 
-		if (!$birthday || $birthday == 999999 || $birthday < 0)
+		if (!$birthday || $birthday == 999999 || ((version_compare(PHP_VERSION, '5.1.0') < 0) && $birthday < 0))
 		{
 			return ' 0- 0-   0';
 		}

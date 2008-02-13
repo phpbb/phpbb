@@ -1559,6 +1559,16 @@ if (version_compare($current_version, '3.0.RC5', '<='))
 	$no_updates = false;
 }
 
+
+if (version_compare($current_version, '3.0.0', '<='))
+{
+	$sql = 'UPDATE ' . TOPICS_TABLE . "
+		SET topic_last_view_time = topic_last_post_time
+		WHERE topic_last_view_time = 0";
+	_sql($sql, $errored, $error_ary);
+	
+	// TODO: remove all form token min times
+}
 _write_result($no_updates, $errored, $error_ary);
 
 $error_ary = array();
