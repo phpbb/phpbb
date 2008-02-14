@@ -512,6 +512,7 @@ if ($save && $user->data['is_registered'] && $auth->acl_get('u_savedrafts') && (
 				't'			=> $topic_id,
 				'subject'	=> $subject,
 				'message'	=> $message,
+				'attachment_data' => $message_parser->attachment_data,
 				)
 			);
 
