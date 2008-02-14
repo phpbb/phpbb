@@ -143,7 +143,11 @@ function user_update_name($old_name, $new_name)
 }
 
 /**
-* Add User
+* Adds an user
+*
+* @param mixed $user_row An array containing the following keys (and the appropriate values): username, group_id (the group to place the user in), user_email and the user_type(usually 0). Additional entries not overridden by defaults will be forwarded.
+* @param string $cp_data custom profile fields, see custom_profile::build_insert_sql_array
+* @return: the new user's ID.
 */
 function user_add($user_row, $cp_data = false)
 {
@@ -281,7 +285,7 @@ function user_add($user_row, $cp_data = false)
 
 		$sql = 'SELECT group_colour
 			FROM ' . GROUPS_TABLE . '
-			WHERE group_id = ' . $user_row['group_id'];
+			WHERE group_id = ' . (int) $user_row['group_id'];
 		$result = $db->sql_query_limit($sql, 1);
 		$row = $db->sql_fetchrow($result);
 		$db->sql_freeresult($result);
