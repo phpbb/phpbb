@@ -48,7 +48,7 @@ class acp_permissions
 
 			$this->tpl_name = 'permission_trace';
 
-			if ($user_id && isset($auth_admin->option_ids[$permission]) && $auth->acl_get('a_viewauth'))
+			if ($user_id && isset($auth_admin->acl_options['id'][$permission]) && $auth->acl_get('a_viewauth'))
 			{
 				$this->page_title = sprintf($user->lang['TRACE_PERMISSION'], $user->lang['acl_' . $permission]['lang']);
 				$this->permission_trace($user_id, $forum_id, $permission);
