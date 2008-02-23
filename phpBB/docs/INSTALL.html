@@ -281,9 +281,9 @@
 
 <a name="update_patch"></a><h3>4.iii. Patch file</h3>
 
-	<p>The patch file package is for those wanting to update through the patch application, and being compfortable with it.</p>
+	<p>The patch file package is for those wanting to update through the patch application, and being comfortable with it.</p>
 
-	<p>The patch file is one solution for those with many Modifications (MODs) or other changes who do not want to re-add them back to all the changed files if they use the method explained above. To use this you will need command line access to a standard UNIX type <strong>patch</strong> application. If you do not have access to such an application but still want to use this update approach, we strongly recommend the <a href="update_auto">Automatic update package</a> explained below. It is also the preferred update method.</p>
+	<p>The patch file is one solution for those with many Modifications (MODs) or other changes who do not want to re-add them back to all the changed files if they use the method explained above. To use this you will need command line access to a standard UNIX type <strong>patch</strong> application. If you do not have access to such an application but still want to use this update approach, we strongly recommend the <a href="#update_auto">Automatic update package</a> explained below. It is also the preferred update method.</p>
 
 	<p>A number of patch files are provided to allow you to update from previous stable releases. Select the correct patch, e.g. if your current version is 3.0.0 you need the phpBB-3.0.0_to_3.0.1.patch file. Place the correct patch in the parent directory containing the phpBB3 core files (i.e. index.php, viewforum.php, etc.). With this done you should run the following command: <strong>patch -cl -d [PHPBB DIRECTORY] -p1 &lt; [PATCH NAME]</strong> (where PHPBB DIRECTORY is the directory name your phpBB Installation resides in, for example phpBB3, and where PATCH NAME is the relevant filename of the selected patch file). This should complete quickly, hopefully without any HUNK FAILED comments.</p>
 
@@ -369,7 +369,7 @@
 
 	<p><strong>Password conversion</strong> Due to the utf-8 based handling of passwords in phpBB3, it is not always possible to transfer all passwords. For passwords "lost in translation" the easiest workaround is to use the "forgotten password" function.</p>
 
-	<p><strong>Path to your former board</strong> The converter expects the relative path to your old board's files. So, -for instance - if the new board is located at <code>http://www.yourdomain.com/forum</code> and the phpBB3 is located at <code>http://www.yourdomain.com/phpBB3</code>, then the correct value would be <code>../forum</code>. Note that the webserver user must be able to access the source installation's files.</p>
+	<p><strong>Path to your former board</strong> The converter expects the relative path to your old board's files. So, - for instance - if the old board is located at <code>http://www.yourdomain.com/forum</code> and the phpBB3 installation is located at <code>http://www.yourdomain.com/phpBB3</code>, then the correct value would be <code>../forum</code>. Note that the webserver user must be able to access the source installation's files.</p>
 
 	<p><strong>Missing images</strong> If your default board language's language pack does not include all images, then some images might be missing in your installation. Always use a complete language pack as default language.</p> 
 

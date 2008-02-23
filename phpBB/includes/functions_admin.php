@@ -196,7 +196,7 @@ function size_select_options($size_compare)
 {
 	global $user;
 
-	$size_types_text = array($user->lang['BYTES'], $user->lang['KB'], $user->lang['MB']);
+	$size_types_text = array($user->lang['BYTES'], $user->lang['KIB'], $user->lang['MIB']);
 	$size_types = array('b', 'kb', 'mb');
 
 	$s_size_options = '';
@@ -2878,14 +2878,7 @@ function get_database_size()
 		break;
 	}
 
-	if ($database_size !== false)
-	{
-		$database_size = ($database_size >= 1048576) ? sprintf('%.2f ' . $user->lang['MB'], ($database_size / 1048576)) : (($database_size >= 1024) ? sprintf('%.2f ' . $user->lang['KB'], ($database_size / 1024)) : sprintf('%.2f ' . $user->lang['BYTES'], $database_size));
-	}
-	else
-	{
-		$database_size = $user->lang['NOT_AVAILABLE'];
-	}
+	$database_size = ($database_size !== false) ? get_formatted_filesize($database_size) : $user->lang['NOT_AVAILABLE'];
 
 	return $database_size;
 }

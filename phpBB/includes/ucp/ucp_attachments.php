@@ -150,7 +150,7 @@ class ucp_attachments
 					'FILENAME'			=> $row['real_filename'],
 					'COMMENT'			=> bbcode_nl2br($row['attach_comment']),
 					'EXTENSION'			=> $row['extension'],
-					'SIZE'				=> ($row['filesize'] >= 1048576) ? ($row['filesize'] >> 20) . ' ' . $user->lang['MB'] : (($row['filesize'] >= 1024) ? ($row['filesize'] >> 10) . ' ' . $user->lang['KB'] : $row['filesize'] . ' ' . $user->lang['BYTES']),
+					'SIZE'				=> get_formatted_filesize($row['filesize']),
 					'DOWNLOAD_COUNT'	=> $row['download_count'],
 					'POST_TIME'			=> $user->format_date($row['filetime']),
 					'TOPIC_TITLE'		=> ($row['in_message']) ? $row['message_title'] : $row['topic_title'],

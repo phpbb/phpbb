@@ -310,8 +310,8 @@ class acp_main
 		$users_per_day = sprintf('%.2f', $total_users / $boarddays);
 		$files_per_day = sprintf('%.2f', $total_files / $boarddays);
 
-		$upload_dir_size = ($config['upload_dir_size'] >= 1048576) ? sprintf('%.2f ' . $user->lang['MB'], ($config['upload_dir_size'] / 1048576)) : (($config['upload_dir_size'] >= 1024) ? sprintf('%.2f ' . $user->lang['KB'], ($config['upload_dir_size'] / 1024)) : sprintf('%.2f ' . $user->lang['BYTES'], $config['upload_dir_size']));
-
+		$upload_dir_size = get_formatted_filesize($config['upload_dir_size']);
+	
 		$avatar_dir_size = 0;
 
 		if ($avatar_dir = @opendir($phpbb_root_path . $config['avatar_path']))
@@ -325,10 +325,7 @@ class acp_main
 			}
 			closedir($avatar_dir);
 
-			// This bit of code translates the avatar directory size into human readable format
-			// Borrowed the code from the PHP.net annoted manual, origanally written by:
-			// Jesse (jesse@jess.on.ca)
-			$avatar_dir_size = ($avatar_dir_size >= 1048576) ? sprintf('%.2f ' . $user->lang['MB'], ($avatar_dir_size / 1048576)) : (($avatar_dir_size >= 1024) ? sprintf('%.2f ' . $user->lang['KB'], ($avatar_dir_size / 1024)) : sprintf('%.2f ' . $user->lang['BYTES'], $avatar_dir_size));
+			$avatar_dir_size = get_formatted_filesize($avatar_dir_size);
 		}
 		else
 		{

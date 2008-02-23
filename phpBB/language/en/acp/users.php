@@ -44,10 +44,10 @@ $lang = array_merge($lang, array(
 
 	'CANNOT_BAN_FOUNDER'			=> 'You are not allowed to ban founder accounts.',
 	'CANNOT_BAN_YOURSELF'			=> 'You are not allowed to ban yourself.',
-	'CANNOT_DEACTIVATE_BOT'			=> 'You are not allowed to deactivate bot accounts. Please deactivate the bot instead.',
+	'CANNOT_DEACTIVATE_BOT'			=> 'You are not allowed to deactivate bot accounts. Please deactivate the bot within the bots page instead.',
 	'CANNOT_DEACTIVATE_FOUNDER'		=> 'You are not allowed to deactivate founder accounts.',
 	'CANNOT_DEACTIVATE_YOURSELF'	=> 'You are not allowed to deactivate your own account.',
-	'CANNOT_FORCE_REACT_BOT'		=> 'You are not allowed to force reactivation on bot accounts. Please deactivate the bot instead.',
+	'CANNOT_FORCE_REACT_BOT'		=> 'You are not allowed to force reactivation on bot accounts. Please deactivate the bot within the bots page instead.',
 	'CANNOT_FORCE_REACT_FOUNDER'	=> 'You are not allowed to force reactivation on founder accounts.',
 	'CANNOT_FORCE_REACT_YOURSELF'	=> 'You are not allowed to force reactivation of your own account.',
 	'CANNOT_REMOVE_ANONYMOUS'		=> 'You are not able to remove the guest user account.',

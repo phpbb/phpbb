@@ -823,7 +823,7 @@ function parse_attachments($forum_id, &$message, &$attachments, &$update_count, 
 
 		$filesize = $attachment['filesize'];
 		$size_lang = ($filesize >= 1048576) ? $user->lang['MB'] : ( ($filesize >= 1024) ? $user->lang['KB'] : $user->lang['BYTES'] );
-		$filesize = ($filesize >= 1048576) ? round((round($filesize / 1048576 * 100) / 100), 2) : (($filesize >= 1024) ? round((round($filesize / 1024 * 100) / 100), 2) : $filesize);
+		$filesize = get_formatted_filesize($filesize, false);
 
 		$comment = bbcode_nl2br(censor_text($attachment['attach_comment']));
 

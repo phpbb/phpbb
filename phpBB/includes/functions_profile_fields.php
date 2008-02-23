@@ -871,13 +871,13 @@ class custom_profile
 				}
 				else
 				{
-					$var = request_var($var_name, $profile_row['field_default_value']);
+					$var = request_var($var_name, (int) $profile_row['field_default_value']);
 				}
 			break;
 
 			case FIELD_STRING:
 			case FIELD_TEXT:
-				$var = utf8_normalize_nfc(request_var($var_name, $profile_row['field_default_value'], true));
+				$var = utf8_normalize_nfc(request_var($var_name, (string) $profile_row['field_default_value'], true));
 			break;
 
 			case FIELD_INT:
@@ -887,8 +887,12 @@ class custom_profile
 				}
 				else
 				{
-					$var = request_var($var_name, $profile_row['field_default_value']);
+					$var = request_var($var_name, (int) $profile_row['field_default_value']);
 				}
+			break;
+
+			case FIELD_DROPDOWN:
+				$var = request_var($var_name, (int) $profile_row['field_default_value']);
 			break;
 
 			default:

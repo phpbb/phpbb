@@ -152,7 +152,7 @@ class acp_attachments
 					if (in_array($config_name, array('attachment_quota', 'max_filesize', 'max_filesize_pm')))
 					{
 						$size_var = request_var($config_name, '');
-						$this->new_config[$config_name] = $config_value = ($size_var == 'kb') ? round($config_value * 1024) : (($size_var == 'mb') ? round($config_value * 1048576) : $config_value);
+						$this->new_config[$config_name] = $config_value = ($size_var == 'kb') ? ($config_value << 10) : (($size_var == 'mb') ? ($config_value << 20) : $config_value);
 					}
 
 					if ($submit)
@@ -500,7 +500,7 @@ class acp_attachments
 						$allowed_forums	= request_var('allowed_forums', array(0));
 						$allow_in_pm	= (isset($_POST['allow_in_pm'])) ? true : false;
 						$max_filesize	= request_var('max_filesize', 0);
-						$max_filesize	= ($size_select == 'kb') ? round($max_filesize * 1024) : (($size_select == 'mb') ? round($max_filesize * 1048576) : $max_filesize);
+						$max_filesize	= ($size_select == 'kb') ? ($max_filesize << 10) : (($size_select == 'mb') ? ($max_filesize << 20) : $max_filesize);
 						$allow_group	= (isset($_POST['allow_group'])) ? true : false;
 
 						if ($max_filesize == $config['max_filesize'])
@@ -673,8 +673,7 @@ class acp_attachments
 						}
 
 						$size_format = ($ext_group_row['max_filesize'] >= 1048576) ? 'mb' : (($ext_group_row['max_filesize'] >= 1024) ? 'kb' : 'b');
-
-						$ext_group_row['max_filesize'] = ($ext_group_row['max_filesize'] >= 1048576) ? round($ext_group_row['max_filesize'] / 1048576 * 100) / 100 : (($ext_group_row['max_filesize'] >= 1024) ? round($ext_group_row['max_filesize'] / 1024 * 100) / 100 : $ext_group_row['max_filesize']);
+						$ext_group_row['max_filesize'] = get_formatted_filesize($ext_group_row['max_filesize'], false);
 
 						$img_path = $config['upload_icons_path'];
 
@@ -1000,11 +999,8 @@ class acp_attachments
 
 				while ($row = $db->sql_fetchrow($result))
 				{
-					$size_lang = ($row['filesize'] >= 1048576) ? $user->lang['MB'] : (($row['filesize'] >= 1024) ? $user->lang['KB'] : $user->lang['BYTES']);
-					$row['filesize'] = ($row['filesize'] >= 1048576) ? round((round($row['filesize'] / 1048576 * 100) / 100), 2) : (($row['filesize'] >= 1024) ? round((round($row['filesize'] / 1024 * 100) / 100), 2) : $row['filesize']);
-
 					$template->assign_block_vars('orphan', array(
-						'FILESIZE'			=> $row['filesize'] . ' ' . $size_lang,
+						'FILESIZE'			=> get_formatted_filesize($row['filesize']),
 						'FILETIME'			=> $user->format_date($row['filetime']),
 						'REAL_FILENAME'		=> basename($row['real_filename']),
 						'PHYSICAL_FILENAME'	=> basename($row['physical_filename']),
@@ -1410,7 +1406,7 @@ class acp_attachments
 	{
 		// Determine size var and adjust the value accordingly
 		$size_var = ($value >= 1048576) ? 'mb' : (($value >= 1024) ? 'kb' : 'b');
-		$value = ($value >= 1048576) ? round($value / 1048576 * 100) / 100 : (($value >= 1024) ? round($value / 1024 * 100) / 100 : $value);
+		$value = get_formatted_filesize($value, false);
 
 		return '<input type="text" id="' . $key . '" size="8" maxlength="15" name="config[' . $key . ']" value="' . $value . '" /> <select name="' . $key . '">' . size_select_options($size_var) . '</select>';
 	}

@@ -1003,7 +1003,7 @@ parse_css_file = {PARSE_CSS_FILE}
 
 				'CACHED'		=> $user->format_date(filemtime("{$phpbb_root_path}cache/$filename")),
 				'FILENAME'		=> $file,
-				'FILESIZE'		=> sprintf('%.1f KB', filesize("{$phpbb_root_path}cache/$filename") / 1024),
+				'FILESIZE'		=> sprintf('%.1f ' . $user->lang['KIB'], filesize("{$phpbb_root_path}cache/$filename") / 1024),
 				'MODIFIED'		=> $user->format_date((!$template_row['template_storedb']) ? filemtime("{$phpbb_root_path}styles/{$template_row['template_path']}/template/$tpl_file.html") : $filemtime[$file . '.html']))
 			);
 		}

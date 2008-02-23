@@ -278,6 +278,7 @@ $lang = array_merge($lang, array(
 	'JUMP_TO_PAGE'			=> 'Click to jump to page…',
 
 	'KB'					=> 'KB',
+	'KIB'					=> 'KiB',
 
 	'LAST_POST'							=> 'Last post',
 	'LAST_UPDATED'						=> 'Last updated',
@@ -311,6 +312,7 @@ $lang = array_merge($lang, array(
 	'MARK_ALL'				=> 'Mark all',
 	'MARK_FORUMS_READ'		=> 'Mark forums read',
 	'MB'					=> 'MB',
+	'MIB'					=> 'MiB',
 	'MCP'					=> 'Moderator Control Panel',
 	'MEMBERLIST'			=> 'Members',
 	'MEMBERLIST_EXPLAIN'	=> 'View complete list of members',
