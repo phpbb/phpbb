@@ -199,6 +199,26 @@ function unique_id($extra = 'c')
 }
 
 /**
+* Return formatted string for filesizes
+*/
+function get_formatted_filesize($bytes, $add_size_lang = true)
+{
+	global $user;
+
+	if ($bytes >= pow(2, 20))
+	{
+		return ($add_size_lang) ? round($bytes / 1024 / 1024, 2) . ' ' . $user->lang['MIB'] : round($bytes / 1024 / 1024, 2);
+	}
+
+	if ($bytes >= pow(2, 10))
+	{
+		return ($add_size_lang) ? round($bytes / 1024, 2) . ' ' . $user->lang['KIB'] : round($bytes / 1024, 2);
+	}
+
+	return ($add_size_lang) ? ($bytes) . ' ' . $user->lang['BYTES'] : ($bytes);
+}
+
+/**
 * Determine whether we are approaching the maximum execution time. Should be called once
 * at the beginning of the script in which it's used.
 * @return	bool	Either true if the maximum execution time is nearly reached, or false
@@ -2643,7 +2663,7 @@ function get_preg_expression($mode)
 	switch ($mode)
 	{
 		case 'email':
-			return '[a-z0-9&\'\.\-_\+]+@[a-z0-9\-]+\.([a-z0-9\-]+\.)*[a-z]+';
+			return '[a-z0-9&\'\.\-_\+]+@[a-z0-9\-]+\.(?:[a-z0-9\-]+\.)*[a-z]+';
 		break;
 
 		case 'bbcode_htm':
@@ -3343,7 +3363,7 @@ function page_footer($run_cron = true)
 				{
 					global $base_memory_usage;
 					$memory_usage -= $base_memory_usage;
-					$memory_usage = ($memory_usage >= 1048576) ? round((round($memory_usage / 1048576 * 100) / 100), 2) . ' ' . $user->lang['MB'] : (($memory_usage >= 1024) ? round((round($memory_usage / 1024 * 100) / 100), 2) . ' ' . $user->lang['KB'] : $memory_usage . ' ' . $user->lang['BYTES']);
+					$memory_usage = get_formatted_filesize($memory_usage);
 
 					$debug_output .= ' | Memory Usage: ' . $memory_usage;
 				}

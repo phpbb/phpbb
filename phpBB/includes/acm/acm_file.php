@@ -306,7 +306,7 @@ class acm
 
 		if ($var_name[0] === '_')
 		{
-			$this->remove_file($this->cache_dir . 'data' . $var_name . ".$phpEx");
+			$this->remove_file($this->cache_dir . 'data' . $var_name . ".$phpEx", true);
 		}
 		else if (isset($this->vars[$var_name]))
 		{
@@ -369,7 +369,7 @@ class acm
 		}
 		else if ($expired)
 		{
-			$this->remove_file($this->cache_dir . 'sql_' . md5($query) . ".$phpEx");
+			$this->remove_file($this->cache_dir . 'sql_' . md5($query) . ".$phpEx", true);
 			return false;
 		}
 
@@ -452,13 +452,15 @@ class acm
 	/**
 	* Removes/unlinks file
 	*/
-	private function remove_file($filename)
+	private function remove_file($filename, $check = false)
 	{
-		if (!@unlink($filename))
+		if ($check && !@is_writeable($this->cache_dir))
 		{
 			// E_USER_ERROR - not using language entry - intended.
 			trigger_error('Unable to remove files within ' . $this->cache_dir . '. Please check directory permissions.', E_USER_ERROR);
 		}
+
+		return @unlink($filename);
 	}
 }
 

@@ -39,7 +39,7 @@ class auth
 
 		if (($this->acl_options = $cache->get('_acl_options')) === false)
 		{
-			$sql = 'SELECT auth_option, is_global, is_local
+			$sql = 'SELECT auth_option_id, auth_option, is_global, is_local
 				FROM ' . ACL_OPTIONS_TABLE . '
 				ORDER BY auth_option_id';
 			$result = $db->sql_query($sql);
@@ -57,6 +57,9 @@ class auth
 				{
 					$this->acl_options['local'][$row['auth_option']] = $local++;
 				}
+
+				$this->acl_options['id'][$row['auth_option']] = (int) $row['auth_option_id'];
+				$this->acl_options['option'][(int) $row['auth_option_id']] = $row['auth_option'];
 			}
 			$db->sql_freeresult($result);
 
@@ -300,7 +303,14 @@ class auth
 	*/
 	public function acl_get_list($user_id = false, $opts = false, $forum_id = false)
 	{
-		$hold_ary = $this->acl_raw_data($user_id, $opts, $forum_id);
+		if ($user_id !== false && !is_array($user_id) && $opts === false && $forum_id === false)
+		{
+			$hold_ary = array($user_id => $this->acl_raw_data_single_user($user_id));
+		}
+		else
+		{
+			$hold_ary = $this->acl_raw_data($user_id, $opts, $forum_id);
+		}
 
 		$auth_ary = array();
 		foreach ($hold_ary as $user_id => $forum_ary)
@@ -330,12 +340,7 @@ class auth
 		// Empty user_permissions
 		$userdata['user_permissions'] = '';
 
-		$hold_ary = $this->acl_raw_data($userdata['user_id'], false, false);
-
-		if (isset($hold_ary[$userdata['user_id']]))
-		{
-			$hold_ary = $hold_ary[$userdata['user_id']];
-		}
+		$hold_ary = $this->acl_raw_data_single_user($userdata['user_id']);
 
 		// Key 0 in $hold_ary are global options, all others are forum_ids
 
@@ -346,40 +351,9 @@ class auth
 			{
 				if (strpos($opt, 'a_') === 0)
 				{
-					$hold_ary[0][$opt] = ACL_YES;
+					$hold_ary[0][$this->acl_options['id'][$opt]] = ACL_YES;
 				}
 			}
-		}
-
-		// Sometimes, it can happen $hold_ary holding forums which do not exist.
-		// Since this function is not called that often (we are caching the data) we check for this inconsistency.
-		$sql = 'SELECT forum_id
-			FROM ' . FORUMS_TABLE . '
-			WHERE ' . $db->sql_in_set('forum_id', array_keys($hold_ary), false, true);
-		$result = $db->sql_query($sql);
-
-		$forum_ids = (isset($hold_ary[0])) ? array(0) : array();
-		while ($row = $db->sql_fetchrow($result))
-		{
-			$forum_ids[] = $row['forum_id'];
-		}
-		$db->sql_freeresult($result);
-
-		// Now determine forums which do not exist and remove the unneeded information (for modding purposes it is clearly the wrong place. ;))
-		$missing_forums = array_diff(array_keys($hold_ary), $forum_ids);
-
-		if (sizeof($missing_forums))
-		{
-			foreach ($missing_forums as $forum_id)
-			{
-				unset($hold_ary[$forum_id]);
-			}
-
-			$sql = 'DELETE FROM ' . ACL_GROUPS_TABLE . ' WHERE ' . $db->sql_in_set('forum_id', $missing_forums);
-			$db->sql_query($sql);
-
-			$sql = 'DELETE FROM ' . ACL_USERS_TABLE . ' WHERE ' . $db->sql_in_set('forum_id', $missing_forums);
-			$db->sql_query($sql);
 		}
 
 		$hold_str = $this->build_bitstring($hold_ary);
@@ -418,15 +392,15 @@ class auth
 				$bitstring = array();
 				foreach ($this->acl_options[$ary_key] as $opt => $id)
 				{
-					if (isset($auth_ary[$opt]))
+					if (isset($auth_ary[$this->acl_options['id'][$opt]]))
 					{
-						$bitstring[$id] = $auth_ary[$opt];
+						$bitstring[$id] = $auth_ary[$this->acl_options['id'][$opt]];
 
 						$option_key = substr($opt, 0, strpos($opt, '_') + 1);
 
 						// If one option is allowed, the global permission for this option has to be allowed too
 						// example: if the user has the a_ permission this means he has one or more a_* permissions
-						if ($auth_ary[$opt] == ACL_YES && (!isset($bitstring[$this->acl_options[$ary_key][$option_key]]) || $bitstring[$this->acl_options[$ary_key][$option_key]] == ACL_NEVER))
+						if ($auth_ary[$this->acl_options['id'][$opt]] == ACL_YES && (!isset($bitstring[$this->acl_options[$ary_key][$option_key]]) || $bitstring[$this->acl_options[$ary_key][$option_key]] == ACL_NEVER))
 						{
 							$bitstring[$this->acl_options[$ary_key][$option_key]] = ACL_YES;
 						}
@@ -464,8 +438,31 @@ class auth
 	*/
 	public function acl_clear_prefetch($user_id = false)
 	{
-		global $db;
+		global $db, $cache;
 
+		// Rebuild options cache
+		$cache->destroy('_role_cache');
+
+		$sql = 'SELECT *
+			FROM ' . ACL_ROLES_DATA_TABLE . '
+			ORDER BY role_id ASC';
+		$result = $db->sql_query($sql);
+
+		$this->role_cache = array();
+		while ($row = $db->sql_fetchrow($result))
+		{
+			$this->role_cache[$row['role_id']][$row['auth_option_id']] = (int) $row['auth_setting'];
+		}
+		$db->sql_freeresult($result);
+
+		foreach ($this->role_cache as $role_id => $role_options)
+		{
+			$this->role_cache[$role_id] = serialize($role_options);
+		}
+
+		$cache->put('_role_cache', $this->role_cache);
+
+		// Now empty user permissions
 		$where_sql = '';
 
 		if ($user_id !== false)
@@ -528,103 +525,35 @@ class auth
 		$sql_user = ($user_id !== false) ? ((!is_array($user_id)) ? 'user_id = ' . (int) $user_id : $db->sql_in_set('user_id', array_map('intval', $user_id))) : '';
 		$sql_forum = ($forum_id !== false) ? ((!is_array($forum_id)) ? 'AND a.forum_id = ' . (int) $forum_id : 'AND ' . $db->sql_in_set('a.forum_id', array_map('intval', $forum_id))) : '';
 
-		$sql_opts = '';
+		$sql_opts = $sql_opts_select = $sql_opts_from = '';
+		$hold_ary = array();
 
 		if ($opts !== false)
 		{
+			$sql_opts_select = ', ao.auth_option';
+			$sql_opts_from = ', ' . ACL_OPTIONS_TABLE . ' ao';
 			$this->build_auth_option_statement('ao.auth_option', $opts, $sql_opts);
 		}
 
-		$hold_ary = array();
+		$sql_ary = array();
 
-		// First grab user settings ... each user has only one setting for each
-		// option ... so we shouldn't need any ACL_NEVER checks ... he says ...
-		// Grab assigned roles...
-		$sql = $db->sql_build_query('SELECT', array(
-			'SELECT'	=> 'ao.auth_option, a.auth_role_id, r.auth_setting as role_auth_setting, a.user_id, a.forum_id, a.auth_setting',
-
-			'FROM'		=> array(
-				ACL_OPTIONS_TABLE	=> 'ao',
-				ACL_USERS_TABLE		=> 'a'
-			),
-
-			'LEFT_JOIN'	=> array(
-				array(
-					'FROM'	=> array(ACL_ROLES_DATA_TABLE => 'r'),
-					'ON'	=> 'a.auth_role_id = r.role_id'
-				)
-			),
-
-			'WHERE'		=> '(ao.auth_option_id = a.auth_option_id OR ao.auth_option_id = r.auth_option_id)
-				' . (($sql_user) ? 'AND a.' . $sql_user : '') . "
+		// Grab non-role settings - user-specific
+		$sql_ary[] = 'SELECT a.user_id, a.forum_id, a.auth_setting, a.auth_option_id' . $sql_opts_select . '
+			FROM ' . ACL_USERS_TABLE . ' a' . $sql_opts_from . '
+			WHERE a.auth_role_id = 0 ' .
+				(($sql_opts_from) ? 'AND a.auth_option_id = ao.auth_option_id ' : '') .
+				(($sql_user) ? 'AND a.' . $sql_user : '') . "
 				$sql_forum
-				$sql_opts",
-		));
-		$result = $db->sql_query($sql);
+				$sql_opts";
 
-		while ($row = $db->sql_fetchrow($result))
-		{
-			$setting = ($row['auth_role_id']) ? $row['role_auth_setting'] : $row['auth_setting'];
-			$hold_ary[$row['user_id']][$row['forum_id']][$row['auth_option']] = $setting;
-		}
-		$db->sql_freeresult($result);
-
-		// Now grab group settings ... ACL_NEVER overrides ACL_YES so act appropriatley
-		$sql_ary[] = $db->sql_build_query('SELECT', array(
-			'SELECT'	=> 'ug.user_id, ao.auth_option, a.forum_id, a.auth_setting, a.auth_role_id, r.auth_setting as role_auth_setting',
-
-			'FROM'		=> array(
-				USER_GROUP_TABLE	=> 'ug',
-				ACL_OPTIONS_TABLE	=> 'ao',
-				ACL_GROUPS_TABLE	=> 'a'
-			),
-
-			'LEFT_JOIN'	=> array(
-				array(
-					'FROM'	=> array(ACL_ROLES_DATA_TABLE => 'r'),
-					'ON'	=> 'a.auth_role_id = r.role_id'
-				)
-			),
-
-			'WHERE'		=> 'ao.auth_option_id = a.auth_option_id
-				AND a.group_id = ug.group_id
-				AND ug.user_pending = 0
-				' . (($sql_user) ? 'AND ug.' . $sql_user : '') . "
+		// Now the role settings - user-specific
+		$sql_ary[] = 'SELECT a.user_id, a.forum_id, r.auth_option_id, r.auth_setting, r.auth_option_id' . $sql_opts_select . '
+			FROM ' . ACL_USERS_TABLE . ' a, ' . ACL_ROLES_DATA_TABLE . ' r' . $sql_opts_from . '
+			WHERE a.auth_role_id = r.role_id ' . 
+				(($sql_opts_from) ? 'AND r.auth_option_id = ao.auth_option_id ' : '') .
+				(($sql_user) ? 'AND a.' . $sql_user : '') . "
 				$sql_forum
-				$sql_opts"
-		));
-
-		$sql_ary[] = $db->sql_build_query('SELECT', array(
-			'SELECT'	=> 'ug.user_id,  a.forum_id, a.auth_setting, a.auth_role_id, r.auth_setting as role_auth_setting, ao.auth_option' ,
-
-			'FROM'		=> array(
-				ACL_OPTIONS_TABLE	=> 'ao'
-				
-			),
-
-			'LEFT_JOIN'	=> array(
-				
-				array(
-					'FROM'	=> array(ACL_ROLES_DATA_TABLE => 'r'),
-					'ON'	=> 'r.auth_option_id = ao.auth_option_id'
-				),
-				array(
-					'FROM'	=> array(ACL_GROUPS_TABLE	=> 'a'),
-					'ON'	=> 'a.auth_role_id = r.role_id'
-				),
-				array(
-					'FROM'	=> array(USER_GROUP_TABLE	=> 'ug'),
-					'ON'	=> 'ug.group_id = a.group_id'
-				)
-				
-			),
-
-			'WHERE'		=> 'ug.user_pending = 0
-				' . (($sql_user) ? 'AND ug.' . $sql_user : '') . "
-				$sql_forum
-				$sql_opts"
-		));
-		
+				$sql_opts";
 
 		foreach ($sql_ary as $sql)
 		{
@@ -632,25 +561,63 @@ class auth
 
 			while ($row = $db->sql_fetchrow($result))
 			{
+				$option = ($sql_opts_select) ? $row['auth_option'] : $this->acl_options['option'][$row['auth_option_id']];
+				$hold_ary[$row['user_id']][$row['forum_id']][$option] = $row['auth_setting'];
+			}
+			$db->sql_freeresult($result);
+		}
+
+		$sql_ary = array();
+
+		// Now grab group settings - non-role specific...
+		$sql_ary[] = 'SELECT ug.user_id, a.forum_id, a.auth_setting, a.auth_option_id' . $sql_opts_select . '
+			FROM ' . ACL_GROUPS_TABLE . ' a, ' . USER_GROUP_TABLE . ' ug' . $sql_opts_from . '
+			WHERE a.auth_role_id = 0 ' .
+				(($sql_opts_from) ? 'AND a.auth_option_id = ao.auth_option_id ' : '') . '
+				AND a.group_id = ug.group_id
+				AND ug.user_pending = 0
+				' . (($sql_user) ? 'AND ug.' . $sql_user : '') . "
+				$sql_forum
+				$sql_opts";
+
+		// Now grab group settings - role specific...
+		$sql_ary[] = 'SELECT ug.user_id, a.forum_id, r.auth_setting, r.auth_option_id' . $sql_opts_select . '
+			FROM ' . ACL_GROUPS_TABLE . ' a, ' . USER_GROUP_TABLE . ' ug, ' . ACL_ROLES_DATA_TABLE . ' r' . $sql_opts_from . '
+			WHERE a.auth_role_id = r.role_id ' .
+				(($sql_opts_from) ? 'AND r.auth_option_id = ao.auth_option_id ' : '') . '
+				AND a.group_id = ug.group_id
+				AND ug.user_pending = 0
+				' . (($sql_user) ? 'AND ug.' . $sql_user : '') . "
+				$sql_forum
+				$sql_opts";
+
+		foreach ($sql_ary as $sql)
+		{
+			$result = $db->sql_query($sql);
+
+			while ($row = $db->sql_fetchrow($result))
+			{
+				$option = ($sql_opts_select) ? $row['auth_option'] : $this->acl_options['option'][$row['auth_option_id']];
+
 				// @todo: use the ref technique to reduce opcode generation
-				if (!isset($hold_ary[$row['user_id']][$row['forum_id']][$row['auth_option']]) || (isset($hold_ary[$row['user_id']][$row['forum_id']][$row['auth_option']]) && $hold_ary[$row['user_id']][$row['forum_id']][$row['auth_option']] != ACL_NEVER))
+				if (!isset($hold_ary[$row['user_id']][$row['forum_id']][$option]) || (isset($hold_ary[$row['user_id']][$row['forum_id']][$option]) && $hold_ary[$row['user_id']][$row['forum_id']][$option] != ACL_NEVER))
 				{
-					$setting = ($row['auth_role_id']) ? $row['role_auth_setting'] : $row['auth_setting'];
-					$hold_ary[$row['user_id']][$row['forum_id']][$row['auth_option']] = $setting;
-	
-					// Check for existence of ACL_YES if an option got set to ACL_NEVER
-					if ($setting == ACL_NEVER)
+					$hold_ary[$row['user_id']][$row['forum_id']][$option] = $row['auth_setting'];
+
+					// If we detect ACL_NEVER, we will unset the flag option (within building the bitstring it is correctly set again)
+					if ($row['auth_setting'] == ACL_NEVER)
 					{
-						$flag = substr($row['auth_option'], 0, strpos($row['auth_option'], '_') + 1);
+						$flag = substr($option, 0, strpos($option, '_') + 1);
 	
 						if (isset($hold_ary[$row['user_id']][$row['forum_id']][$flag]) && $hold_ary[$row['user_id']][$row['forum_id']][$flag] == ACL_YES)
 						{
 							unset($hold_ary[$row['user_id']][$row['forum_id']][$flag]);
-	
-							if (in_array(ACL_YES, $hold_ary[$row['user_id']][$row['forum_id']]))
+
+/*							if (in_array(ACL_YES, $hold_ary[$row['user_id']][$row['forum_id']]))
 							{
 								$hold_ary[$row['user_id']][$row['forum_id']][$flag] = ACL_YES;
 							}
+*/
 						}
 					}
 				}
@@ -672,45 +639,43 @@ class auth
 		$sql_forum = ($forum_id !== false) ? ((!is_array($forum_id)) ? 'AND a.forum_id = ' . (int) $forum_id : 'AND ' . $db->sql_in_set('a.forum_id', array_map('intval', $forum_id))) : '';
 
 		$sql_opts = '';
+		$hold_ary = $sql_ary = array();
 
 		if ($opts !== false)
 		{
 			$this->build_auth_option_statement('ao.auth_option', $opts, $sql_opts);
 		}
 
-		$hold_ary = array();
-
-		// Grab user settings...
-		$sql = $db->sql_build_query('SELECT', array(
-			'SELECT'	=> 'ao.auth_option, a.auth_role_id, r.auth_setting as role_auth_setting, a.user_id, a.forum_id, a.auth_setting',
-			
-			'FROM'		=> array(
-				ACL_OPTIONS_TABLE	=> 'ao',
-				ACL_USERS_TABLE		=> 'a'
-			),
-			
-			'LEFT_JOIN'	=> array(
-				array(
-					'FROM'	=> array(ACL_ROLES_DATA_TABLE => 'r'),
-					'ON'	=> 'a.auth_role_id = r.role_id'
-				),
-			),
-
-			'WHERE'		=> '(ao.auth_option_id = a.auth_option_id OR ao.auth_option_id = r.auth_option_id)
-				' . (($sql_user) ? 'AND a.' . $sql_user : '') . "
+		// Grab user settings - non-role specific...
+		$sql_ary[] = 'SELECT a.user_id, a.forum_id, a.auth_setting, a.auth_option_id, ao.auth_option
+			FROM ' . ACL_USERS_TABLE . ' a, ' . ACL_OPTIONS_TABLE . ' ao
+			WHERE a.auth_role_id = 0
+				AND a.auth_option_id = ao.auth_option_id ' .
+				(($sql_user) ? 'AND a.' . $sql_user : '') . "
 				$sql_forum
-				$sql_opts",
+				$sql_opts
+			ORDER BY a.forum_id, ao.auth_option";
 
-			'ORDER_BY'	=> 'a.forum_id, ao.auth_option'
-		));
-		$result = $db->sql_query($sql);
+		// Now the role settings - user-specific
+		$sql_ary[] = 'SELECT a.user_id, a.forum_id, r.auth_option_id, r.auth_setting, r.auth_option_id, ao.auth_option
+			FROM ' . ACL_USERS_TABLE . ' a, ' . ACL_ROLES_DATA_TABLE . ' r, ' . ACL_OPTIONS_TABLE . ' ao
+			WHERE a.auth_role_id = r.role_id
+				AND r.auth_option_id = ao.auth_option_id ' .
+				(($sql_user) ? 'AND a.' . $sql_user : '') . "
+				$sql_forum
+				$sql_opts
+			ORDER BY a.forum_id, ao.auth_option";
 
-		while ($row = $db->sql_fetchrow($result))
+		foreach ($sql_ary as $sql)
 		{
-			$setting = ($row['auth_role_id']) ? $row['role_auth_setting'] : $row['auth_setting'];
-			$hold_ary[$row['user_id']][$row['forum_id']][$row['auth_option']] = $setting;
+			$result = $db->sql_query($sql);
+
+			while ($row = $db->sql_fetchrow($result))
+			{
+				$hold_ary[$row['user_id']][$row['forum_id']][$row['auth_option']] = $row['auth_setting'];
+			}
+			$db->sql_freeresult($result);
 		}
-		$db->sql_freeresult($result);
 
 		return $hold_ary;
 	}
@@ -726,47 +691,156 @@ class auth
 		$sql_forum = ($forum_id !== false) ? ((!is_array($forum_id)) ? 'AND a.forum_id = ' . (int) $forum_id : 'AND ' . $db->sql_in_set('a.forum_id', array_map('intval', $forum_id))) : '';
 
 		$sql_opts = '';
+		$hold_ary = $sql_ary = array();
 
 		if ($opts !== false)
 		{
 			$this->build_auth_option_statement('ao.auth_option', $opts, $sql_opts);
 		}
 
+		// Grab group settings - non-role specific...
+		$sql_ary[] = 'SELECT a.group_id, a.forum_id, a.auth_setting, a.auth_option_id, ao.auth_option
+			FROM ' . ACL_GROUPS_TABLE . ' a, ' . ACL_OPTIONS_TABLE . ' ao
+			WHERE a.auth_role_id = 0
+				AND a.auth_option_id = ao.auth_option_id ' .
+				(($sql_group) ? 'AND a.' . $sql_group : '') . "
+				$sql_forum
+				$sql_opts
+			ORDER BY a.forum_id, ao.auth_option";
+
+		// Now grab group settings - role specific...
+		$sql_ary[] = 'SELECT a.group_id, a.forum_id, r.auth_setting, r.auth_option_id, ao.auth_option
+			FROM ' . ACL_GROUPS_TABLE . ' a, ' . ACL_ROLES_DATA_TABLE . ' r, ' . ACL_OPTIONS_TABLE . ' ao
+			WHERE a.auth_role_id = r.role_id
+				AND r.auth_option_id = ao.auth_option_id ' .
+				(($sql_group) ? 'AND a.' . $sql_group : '') . "
+				$sql_forum
+				$sql_opts
+			ORDER BY a.forum_id, ao.auth_option";
+
+		foreach ($sql_ary as $sql)
+		{
+			$result = $db->sql_query($sql);
+
+			while ($row = $db->sql_fetchrow($result))
+			{
+				$hold_ary[$row['group_id']][$row['forum_id']][$row['auth_option']] = $row['auth_setting'];
+			}
+			$db->sql_freeresult($result);
+		}
+
+		return $hold_ary;
+	}
+
+	/**
+	* Get raw acl data based on user for caching user_permissions
+	* This function returns the same data as acl_raw_data(), but without the user id as the first key within the array.
+	*/
+	public function acl_raw_data_single_user($user_id)
+	{
+		global $db, $cache;
+
+		// Check if the role-cache is there
+		if (($this->role_cache = $cache->get('_role_cache')) === false)
+		{
+			$this->role_cache = array();
+
+			// We pre-fetch roles
+			$sql = 'SELECT *
+				FROM ' . ACL_ROLES_DATA_TABLE . '
+				ORDER BY role_id ASC';
+			$result = $db->sql_query($sql);
+
+			while ($row = $db->sql_fetchrow($result))
+			{
+				$this->role_cache[$row['role_id']][$row['auth_option_id']] = (int) $row['auth_setting'];
+			}
+			$db->sql_freeresult($result);
+
+			foreach ($this->role_cache as $role_id => $role_options)
+			{
+				$this->role_cache[$role_id] = serialize($role_options);
+			}
+
+			$cache->put('_role_cache', $this->role_cache);
+		}
+
 		$hold_ary = array();
 
-		// Grab group settings...
-		$sql = $db->sql_build_query('SELECT', array(
-			'SELECT'	=> 'a.group_id, ao.auth_option, a.forum_id, a.auth_setting, a.auth_role_id, r.auth_setting as role_auth_setting',
-
-			'FROM'		=> array(
-				ACL_OPTIONS_TABLE	=> 'ao',
-				ACL_GROUPS_TABLE	=> 'a'
-			),
-
-			'LEFT_JOIN'	=> array(
-				array(
-					'FROM'	=> array(ACL_ROLES_DATA_TABLE => 'r'),
-					'ON'	=> 'a.auth_role_id = r.role_id'
-				),
-			),
-
-			'WHERE'		=> '(ao.auth_option_id = a.auth_option_id OR ao.auth_option_id = r.auth_option_id)
-				' . (($sql_group) ? 'AND a.' . $sql_group : '') . "
-				$sql_forum
-				$sql_opts",
-
-			'ORDER_BY'	=> 'a.forum_id, ao.auth_option'
-		));
+		// Grab user-specific permission settings
+		$sql = 'SELECT forum_id, auth_option_id, auth_role_id, auth_setting
+			FROM ' . ACL_USERS_TABLE . '
+			WHERE user_id = ' . $user_id;
 		$result = $db->sql_query($sql);
 
 		while ($row = $db->sql_fetchrow($result))
 		{
-			$setting = ($row['auth_role_id']) ? $row['role_auth_setting'] : $row['auth_setting'];
-			$hold_ary[$row['group_id']][$row['forum_id']][$row['auth_option']] = $setting;
+			// If a role is assigned, assign all options included within this role. Else, only set this one option.
+			if ($row['auth_role_id'])
+			{
+				$hold_ary[$row['forum_id']] = (empty($hold_ary[$row['forum_id']])) ? unserialize($this->role_cache[$row['auth_role_id']]) : $hold_ary[$row['forum_id']] + unserialize($this->role_cache[$row['auth_role_id']]);
+			}
+			else
+			{
+				$hold_ary[$row['forum_id']][$row['auth_option_id']] = $row['auth_setting'];
+			}
+		}
+		$db->sql_freeresult($result);
+
+		// Now grab group-specific permission settings
+		$sql = 'SELECT a.forum_id, a.auth_option_id, a.auth_role_id, a.auth_setting
+			FROM ' . ACL_GROUPS_TABLE . ' a, ' . USER_GROUP_TABLE . ' ug
+			WHERE a.group_id = ug.group_id
+				AND ug.user_pending = 0
+				AND ug.user_id = ' . $user_id;
+		$result = $db->sql_query($sql);
+
+		while ($row = $db->sql_fetchrow($result))
+		{
+			if (!$row['auth_role_id'])
+			{
+				$this->_set_group_hold_ary($hold_ary[$row['forum_id']], $row['auth_option_id'], $row['auth_setting']);
+			}
+			else
+			{
+				foreach (unserialize($this->role_cache[$row['auth_role_id']]) as $option_id => $setting)
+				{
+					$this->_set_group_hold_ary($hold_ary[$row['forum_id']], $option_id, $setting);
+				}
+			}
 		}
 		$db->sql_freeresult($result);
 
 		return $hold_ary;
+	}
+
+	/**
+	* Private function snippet for setting a specific piece of the hold_ary
+	*/
+	private function _set_group_hold_ary(&$hold_ary, $option_id, $setting)
+	{
+		if (!isset($hold_ary[$option_id]) || (isset($hold_ary[$option_id]) && $hold_ary[$option_id] != ACL_NEVER))
+		{
+			$hold_ary[$option_id] = $setting;
+
+			// If we detect ACL_NEVER, we will unset the flag option (within building the bitstring it is correctly set again)
+			if ($setting == ACL_NEVER)
+			{
+				$flag = substr($this->acl_options['option'][$option_id], 0, strpos($this->acl_options['option'][$option_id], '_') + 1);
+				$flag = (int) $this->acl_options['id'][$flag];
+		
+				if (isset($hold_ary[$flag]) && $hold_ary[$flag] == ACL_YES)
+				{
+					unset($hold_ary[$flag]);
+
+/*					This is uncommented, because i suspect this being slightly wrong due to mixed permission classes being possible
+					if (in_array(ACL_YES, $hold_ary))
+					{
+						$hold_ary[$flag] = ACL_YES;
+					}*/
+				}
+			}
+		}
 	}
 
 	/**

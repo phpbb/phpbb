@@ -22,8 +22,6 @@ if (!defined('IN_PHPBB'))
 */
 class auth_admin extends auth
 {
-	var $option_ids = array();
-
 	/**
 	* Init auth settings
 	*/
@@ -33,7 +31,7 @@ class auth_admin extends auth
 
 		if (($this->acl_options = $cache->get('_acl_options')) === false)
 		{
-			$sql = 'SELECT auth_option, is_global, is_local
+			$sql = 'SELECT auth_option_id, auth_option, is_global, is_local
 				FROM ' . ACL_OPTIONS_TABLE . '
 				ORDER BY auth_option_id';
 			$result = $db->sql_query($sql);
@@ -51,24 +49,13 @@ class auth_admin extends auth
 				{
 					$this->acl_options['local'][$row['auth_option']] = $local++;
 				}
+
+				$this->acl_options['id'][$row['auth_option']] = (int) $row['auth_option_id'];
+				$this->acl_options['option'][(int) $row['auth_option_id']] = $row['auth_option'];
 			}
 			$db->sql_freeresult($result);
 
 			$cache->put('_acl_options', $this->acl_options);
-		}
-
-		if (!sizeof($this->option_ids))
-		{
-			$sql = 'SELECT auth_option_id, auth_option
-				FROM ' . ACL_OPTIONS_TABLE;
-			$result = $db->sql_query($sql);
-
-			$this->option_ids = array();
-			while ($row = $db->sql_fetchrow($result))
-			{
-				$this->option_ids[$row['auth_option']] = $row['auth_option_id'];
-			}
-			$db->sql_freeresult($result);
 		}
 	}
 	
@@ -126,7 +113,7 @@ class auth_admin extends auth
 
 			while ($row = $db->sql_fetchrow($result))
 			{
-				$forum_ids[] = $row['forum_id'];
+				$forum_ids[] = (int) $row['forum_id'];
 			}
 			$db->sql_freeresult($result);
 		}
@@ -774,7 +761,7 @@ class auth_admin extends auth
 		$this->acl_clear_prefetch();
 
 		// Because we just changed the options and also purged the options cache, we instantly update/regenerate it for later calls to succeed.
-		$this->option_ids = $this->acl_options = array();
+		$this->acl_options = array();
 		$this->__construct();
 
 		return true;
@@ -812,7 +799,7 @@ class auth_admin extends auth
 		$flag = substr($flag, 0, strpos($flag, '_') + 1);
 		
 		// This ID (the any-flag) is set if one or more permissions are true...
-		$any_option_id = (int) $this->option_ids[$flag];
+		$any_option_id = (int) $this->acl_options['id'][$flag];
 
 		// Remove any-flag from auth ary
 		if (isset($auth[$flag]))
@@ -824,7 +811,7 @@ class auth_admin extends auth
 		$auth_option_ids = array((int)$any_option_id);
 		foreach ($auth as $auth_option => $auth_setting)
 		{
-			$auth_option_ids[] = (int) $this->option_ids[$auth_option];
+			$auth_option_ids[] = (int) $this->acl_options['id'][$auth_option];
 		}
 
 		$sql = "DELETE FROM $table
@@ -887,7 +874,7 @@ class auth_admin extends auth
 			{
 				foreach ($auth as $auth_option => $setting)
 				{
-					$auth_option_id = (int) $this->option_ids[$auth_option];
+					$auth_option_id = (int) $this->acl_options['id'][$auth_option];
 
 					if ($setting != ACL_NO)
 					{
@@ -943,7 +930,7 @@ class auth_admin extends auth
 		$sql_ary = array();
 		foreach ($auth as $auth_option => $setting)
 		{
-			$auth_option_id = (int) $this->option_ids[$auth_option];
+			$auth_option_id = (int) $this->acl_options['id'][$auth_option];
 
 			if ($setting != ACL_NO)
 			{
@@ -960,7 +947,7 @@ class auth_admin extends auth
 		{
 			$sql_ary[] = array(
 				'role_id'			=> (int) $role_id,
-				'auth_option_id'	=> (int) $this->option_ids[$flag],
+				'auth_option_id'	=> (int) $this->acl_options['id'][$flag],
 				'auth_setting'		=> ACL_NEVER
 			);
 		}
@@ -1237,13 +1224,8 @@ class auth_admin extends auth
 			return false;
 		}
 
-		$hold_ary = $this->acl_raw_data($from_user_id, false, false);
+		$hold_ary = $this->acl_raw_data_single_user($from_user_id);
 
-		if (isset($hold_ary[$from_user_id]))
-		{
-			$hold_ary = $hold_ary[$from_user_id];
-		}
-		
 		// Key 0 in $hold_ary are global options, all others are forum_ids
 
 		// We disallow copying admin permissions
@@ -1251,12 +1233,12 @@ class auth_admin extends auth
 		{
 			if (strpos($opt, 'a_') === 0)
 			{
-				$hold_ary[0][$opt] = ACL_NEVER;
+				$hold_ary[0][$this->acl_options['id'][$opt]] = ACL_NEVER;
 			}
 		}
 
 		// Force a_switchperm to be allowed
-		$hold_ary[0]['a_switchperm'] = ACL_YES;
+		$hold_ary[0][$this->acl_options['id']['a_switchperm']] = ACL_YES;
 
 		$user_permissions = $this->build_bitstring($hold_ary);
 
