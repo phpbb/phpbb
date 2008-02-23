@@ -113,7 +113,7 @@ class auth_admin extends auth
 
 			while ($row = $db->sql_fetchrow($result))
 			{
-				$forum_ids[] = $row['forum_id'];
+				$forum_ids[] = (int) $row['forum_id'];
 			}
 			$db->sql_freeresult($result);
 		}

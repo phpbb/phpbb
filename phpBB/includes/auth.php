@@ -453,9 +453,14 @@ class auth
 		$this->role_cache = array();
 		while ($row = $db->sql_fetchrow($result))
 		{
-			$this->role_cache[$row['role_id']][$row['auth_option_id']] = (bool) $row['auth_setting'];
+			$this->role_cache[$row['role_id']][$row['auth_option_id']] = (int) $row['auth_setting'];
 		}
 		$db->sql_freeresult($result);
+
+		foreach ($this->role_cache as $role_id => $role_options)
+		{
+			$this->role_cache[$role_id] = serialize($role_options);
+		}
 
 		$cache->put('_role_cache', $this->role_cache);
 
@@ -747,9 +752,14 @@ class auth
 
 			while ($row = $db->sql_fetchrow($result))
 			{
-				$this->role_cache[$row['role_id']][$row['auth_option_id']] = (bool) $row['auth_setting'];
+				$this->role_cache[$row['role_id']][$row['auth_option_id']] = (int) $row['auth_setting'];
 			}
 			$db->sql_freeresult($result);
+
+			foreach ($this->role_cache as $role_id => $role_options)
+			{
+				$this->role_cache[$role_id] = serialize($role_options);
+			}
 
 			$cache->put('_role_cache', $this->role_cache);
 		}
@@ -767,7 +777,7 @@ class auth
 			// If a role is assigned, assign all options included within this role. Else, only set this one option.
 			if ($row['auth_role_id'])
 			{
-				$hold_ary[$row['forum_id']] = (empty($hold_ary[$row['forum_id']])) ? $this->role_cache[$row['auth_role_id']] : $hold_ary[$row['forum_id']] + $this->role_cache[$row['auth_role_id']];
+				$hold_ary[$row['forum_id']] = (empty($hold_ary[$row['forum_id']])) ? unserialize($this->role_cache[$row['auth_role_id']]) : $hold_ary[$row['forum_id']] + unserialize($this->role_cache[$row['auth_role_id']]);
 			}
 			else
 			{
@@ -792,7 +802,7 @@ class auth
 			}
 			else
 			{
-				foreach ($this->role_cache[$row['auth_role_id']] as $option_id => $setting)
+				foreach (unserialize($this->role_cache[$row['auth_role_id']]) as $option_id => $setting)
 				{
 					$this->_set_group_hold_ary($hold_ary[$row['forum_id']], $option_id, $setting);
 				}
