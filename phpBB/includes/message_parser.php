@@ -198,7 +198,7 @@ class bbcode_firstpass extends bbcode
 
 		if (!$this->check_bbcode('size', $in))
 		{
-			return '';
+			return $in;
 		}
 
 		if ($config['max_' . $this->mode . '_font_size'] && $config['max_' . $this->mode . '_font_size'] < $stx)
@@ -224,7 +224,7 @@ class bbcode_firstpass extends bbcode
 	{
 		if (!$this->check_bbcode('color', $in))
 		{
-			return '';
+			return $in;
 		}
 
 		return '[color=' . $stx . ':' . $this->bbcode_uid . ']' . $in . '[/color:' . $this->bbcode_uid . ']';
@@ -237,7 +237,7 @@ class bbcode_firstpass extends bbcode
 	{
 		if (!$this->check_bbcode('u', $in))
 		{
-			return '';
+			return $in;
 		}
 
 		return '[u:' . $this->bbcode_uid . ']' . $in . '[/u:' . $this->bbcode_uid . ']';
@@ -250,7 +250,7 @@ class bbcode_firstpass extends bbcode
 	{
 		if (!$this->check_bbcode('b', $in))
 		{
-			return '';
+			return $in;
 		}
 
 		return '[b:' . $this->bbcode_uid . ']' . $in . '[/b:' . $this->bbcode_uid . ']';
@@ -263,7 +263,7 @@ class bbcode_firstpass extends bbcode
 	{
 		if (!$this->check_bbcode('i', $in))
 		{
-			return '';
+			return $in;
 		}
 
 		return '[i:' . $this->bbcode_uid . ']' . $in . '[/i:' . $this->bbcode_uid . ']';
@@ -278,7 +278,7 @@ class bbcode_firstpass extends bbcode
 
 		if (!$this->check_bbcode('img', $in))
 		{
-			return '';
+			return $in;
 		}
 
 		$in = trim($in);
@@ -340,7 +340,7 @@ class bbcode_firstpass extends bbcode
 
 		if (!$this->check_bbcode('flash', $in))
 		{
-			return '';
+			return $in;
 		}
 
 		$in = trim($in);
@@ -377,7 +377,7 @@ class bbcode_firstpass extends bbcode
 	{
 		if (!$this->check_bbcode('attachment', $in))
 		{
-			return '';
+			return $in;
 		}
 
 		return '[attachment=' . $stx . ':' . $this->bbcode_uid . ']<!-- ia' . $stx . ' -->' . trim($in) . '<!-- ia' . $stx . ' -->[/attachment:' . $this->bbcode_uid . ']';
@@ -457,7 +457,7 @@ class bbcode_firstpass extends bbcode
 	{
 		if (!$this->check_bbcode('code', $in))
 		{
-			return '';
+			return $in;
 		}
 
 		// We remove the hardcoded elements from the code block here because it is not used in code blocks
@@ -550,7 +550,7 @@ class bbcode_firstpass extends bbcode
 	{
 		if (!$this->check_bbcode('list', $in))
 		{
-			return '';
+			return $in;
 		}
 
 		// $tok holds characters to stop at. Since the string starts with a '[' we'll get everything up to the first ']' which should be the opening [list] tag
@@ -684,7 +684,8 @@ class bbcode_firstpass extends bbcode
 		* #14667 - [quote]test[/quote] test ] and [ test [quote]test[/quote] (correct: parsed)
 		* #14770 - [quote="["]test[/quote] (correct: parsed)
 		* [quote="[i]test[/i]"]test[/quote] (correct: parsed)
-		* [quote="[quote]test[/quote]"]test[/quote] (correct: NOT parsed)
+		* [quote="[quote]test[/quote]"]test[/quote] (correct: parsed - Username displayed as [quote]test[/quote])
+		* #20735 - [quote]test[/[/b]quote] test [/quote][/quote] test - (correct: quoted: "test[/[/b]quote] test" / non-quoted: "[/quote] test" - also failed if layout distorted)
 		*/
 
 		$in = str_replace("\r\n", "\n", str_replace('\"', '"', trim($in)));
@@ -737,7 +738,7 @@ class bbcode_firstpass extends bbcode
 						$out .= ' ';
 					}*/
 				}
-				else if (preg_match('#^quote(?:=&quot;(.*?)&quot;)?$#is', $buffer, $m))
+				else if (preg_match('#^quote(?:=&quot;(.*?)&quot;)?$#is', $buffer, $m) && substr($out, -1, 1) == '[')
 				{
 					$this->parsed_items['quote']++;
 
