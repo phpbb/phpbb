@@ -1,444 +1,289 @@
 <?php
-/**
-*
-* @package phpBB3
-* @version $Id$
-* @copyright (c) 2005 phpBB Group
-* @license http://opensource.org/licenses/gpl-license.php GNU Public License
-*
-*/
+/***************************************************************************
+ *                              viewonline.php
+ *                            -------------------
+ *   begin                : Saturday, Feb 13, 2001
+ *   copyright            : (C) 2001 The phpBB Group
+ *   email                : support@phpbb.com
+ *
+ *   $Id$
+ *
+ *
+ ***************************************************************************/
 
-/**
-* @ignore
-*/
+/***************************************************************************
+ *
+ *   This program is free software; you can redistribute it and/or modify
+ *   it under the terms of the GNU General Public License as published by
+ *   the Free Software Foundation; either version 2 of the License, or
+ *   (at your option) any later version.
+ *
+ ***************************************************************************/
+
 define('IN_PHPBB', true);
-$phpbb_root_path = (defined('PHPBB_ROOT_PATH')) ? PHPBB_ROOT_PATH : './';
-$phpEx = substr(strrchr(__FILE__, '.'), 1);
-include($phpbb_root_path . 'common.' . $phpEx);
+$phpbb_root_path = './';
+include($phpbb_root_path . 'extension.inc');
+include($phpbb_root_path . 'common.'.$phpEx);
 
+//
 // Start session management
-$user->session_begin();
-$auth->acl($user->data);
-$user->setup('memberlist');
+//
+$userdata = session_pagestart($user_ip, PAGE_VIEWONLINE);
+init_userprefs($userdata);
+//
+// End session management
+//
 
-// Get and set some variables
-$mode		= request_var('mode', '');
-$session_id	= request_var('s', '');
-$start		= request_var('start', 0);
-$sort_key	= request_var('sk', 'b');
-$sort_dir	= request_var('sd', 'd');
-$show_guests= ($config['load_online_guests']) ? request_var('sg', 0) : 0;
+//
+// Output page header and load viewonline template
+//
+$page_title = $lang['Who_is_Online'];
+include($phpbb_root_path . 'includes/page_header.'.$phpEx);
 
-// Can this user view profiles/memberlist?
-if (!$auth->acl_gets('u_viewprofile', 'a_user', 'a_useradd', 'a_userdel'))
-{
-	if ($user->data['user_id'] != ANONYMOUS)
-	{
-		trigger_error('NO_VIEW_USERS');
-	}
+$template->set_filenames(array(
+	'body' => 'viewonline_body.tpl')
+);
+make_jumpbox('viewforum.'.$phpEx);
 
-	login_box('', $user->lang['LOGIN_EXPLAIN_VIEWONLINE']);
-}
-
-$sort_key_text = array('a' => $user->lang['SORT_USERNAME'], 'b' => $user->lang['SORT_JOINED'], 'c' => $user->lang['SORT_LOCATION']);
-$sort_key_sql = array('a' => 'u.username_clean', 'b' => 's.session_time', 'c' => 's.session_page');
-
-// Sorting and order
-if (!isset($sort_key_text[$sort_key]))
-{
-	$sort_key = 'b';
-}
-
-$order_by = $sort_key_sql[$sort_key] . ' ' . (($sort_dir == 'a') ? 'ASC' : 'DESC');
-
-// Whois requested
-if ($mode == 'whois' && $auth->acl_get('a_') && $session_id)
-{
-	include($phpbb_root_path . 'includes/functions_user.' . $phpEx);
-
-	$sql = 'SELECT u.user_id, u.username, u.user_type, s.session_ip
-		FROM ' . USERS_TABLE . ' u, ' . SESSIONS_TABLE . " s
-		WHERE s.session_id = '" . $db->sql_escape($session_id) . "'
-			AND	u.user_id = s.session_user_id";
-	$result = $db->sql_query($sql);
-
-	if ($row = $db->sql_fetchrow($result))
-	{
-		$template->assign_var('WHOIS', user_ipwhois($row['session_ip']));
-	}
-	$db->sql_freeresult($result);
-
-	// Output the page
-	page_header($user->lang['WHO_IS_ONLINE']);
-
-	$template->set_filenames(array(
-		'body' => 'viewonline_whois.html')
-	);
-	make_jumpbox(append_sid("{$phpbb_root_path}viewforum.$phpEx"));
-
-	page_footer();
-}
-
-// Forum info
-$sql = 'SELECT forum_id, forum_name, parent_id, forum_type, left_id, right_id
-	FROM ' . FORUMS_TABLE . '
-	ORDER BY left_id ASC';
-$result = $db->sql_query($sql, 600);
-
-$forum_data = array();
-while ($row = $db->sql_fetchrow($result))
-{
-	$forum_data[$row['forum_id']] = $row;
-}
-$db->sql_freeresult($result);
-
-$guest_counter = 0;
-
-// Get number of online guests (if we do not display them)
-if (!$show_guests)
-{
-	if ($db->count_distinct)
-	{
-		$sql = 'SELECT COUNT(DISTINCT session_ip) as num_guests
-				FROM ' . SESSIONS_TABLE . '
-				WHERE session_user_id = ' . ANONYMOUS . '
-					AND session_time >= ' . (time() - ($config['load_online_time'] * 60));
-	}
-	else
-	{
-		$sql = 'SELECT COUNT(session_ip) as num_guests
-			FROM (
-				SELECT DISTINCT session_ip
-					FROM ' . SESSIONS_TABLE . '
-					WHERE session_user_id = ' . ANONYMOUS . '
-						AND session_time >= ' . (time() - ($config['load_online_time'] * 60)) .
-			')';
-		break;
-	}
-	$result = $db->sql_query($sql);
-	$guest_counter = (int) $db->sql_fetchfield('num_guests');
-	$db->sql_freeresult($result);
-}
-
-// Get user list
-$sql = 'SELECT u.user_id, u.username, u.username_clean, u.user_type, u.user_colour, s.session_id, s.session_time, s.session_page, s.session_ip, s.session_browser, s.session_viewonline
-	FROM ' . USERS_TABLE . ' u, ' . SESSIONS_TABLE . ' s
-	WHERE u.user_id = s.session_user_id
-		AND s.session_time >= ' . (time() - ($config['load_online_time'] * 60)) .
-		((!$show_guests) ? ' AND s.session_user_id <> ' . ANONYMOUS : '') . '
-	ORDER BY ' . $order_by;
-$result = $db->sql_query($sql);
-
-$prev_id = $prev_ip = $user_list = array();
-$logged_visible_online = $logged_hidden_online = $counter = 0;
-
-while ($row = $db->sql_fetchrow($result))
-{
-	if ($row['user_id'] != ANONYMOUS && !isset($prev_id[$row['user_id']]))
-	{
-		$view_online = $s_user_hidden = false;
-		$user_colour = ($row['user_colour']) ? ' style="color:#' . $row['user_colour'] . '" class="username-coloured"' : '';
-		
-		$username_full = ($row['user_type'] != USER_IGNORE) ? get_username_string('full', $row['user_id'], $row['username'], $row['user_colour']) : '<span' . $user_colour . '>' . $row['username'] . '</span>';
-
-		if (!$row['session_viewonline'])
-		{
-			$view_online = ($auth->acl_get('u_viewonline')) ? true : false;
-			$logged_hidden_online++;
-
-			$username_full = '<em>' . $username_full . '</em>';
-			$s_user_hidden = true;
-		}
-		else
-		{
-			$view_online = true;
-			$logged_visible_online++;
-		}
-
-		$prev_id[$row['user_id']] = 1;
-
-		if ($view_online)
-		{
-			$counter++;
-		}
-
-		if (!$view_online || $counter > $start + $config['topics_per_page'] || $counter <= $start)
-		{
-			continue;
-		}
-	}
-	else if ($show_guests && $row['user_id'] == ANONYMOUS && !isset($prev_ip[$row['session_ip']]))
-	{
-		$prev_ip[$row['session_ip']] = 1;
-		$guest_counter++;
-		$counter++;
-
-		if ($counter > $start + $config['topics_per_page'] || $counter <= $start)
-		{
-			continue;
-		}
-
-		$s_user_hidden = false;
-		$username_full = get_username_string('full', $row['user_id'], $user->lang['GUEST']);
-	}
-	else
-	{
-		continue;
-	}
-
-	preg_match('#^([a-z/]+)#i', $row['session_page'], $on_page);
-	if (!sizeof($on_page))
-	{
-		$on_page[1] = '';
-	}
-
-	switch ($on_page[1])
-	{
-		case 'index':
-			$location = $user->lang['INDEX'];
-			$location_url = append_sid("{$phpbb_root_path}index.$phpEx");
-		break;
-
-		case 'adm/index':
-			$location = $user->lang['ACP'];
-			$location_url = append_sid("{$phpbb_root_path}index.$phpEx");
-		break;
-
-		case 'posting':
-		case 'viewforum':
-		case 'viewtopic':
-			preg_match('#_f_=([0-9]+)x#i', $row['session_page'], $forum_id);
-			$forum_id = (sizeof($forum_id)) ? (int) $forum_id[1] : 0;
-
-			if ($forum_id && $auth->acl_get('f_list', $forum_id))
-			{
-				$location = '';
-				$location_url = append_sid("{$phpbb_root_path}viewforum.$phpEx", 'f=' . $forum_id);
-
-				if ($forum_data[$forum_id]['forum_type'] == FORUM_LINK)
-				{
-					$location = sprintf($user->lang['READING_LINK'], $forum_data[$forum_id]['forum_name']);
-					break;
-				}
-
-				switch ($on_page[1])
-				{
-					case 'posting':
-						preg_match('#mode=([a-z]+)#', $row['session_page'], $on_page);
-
-						switch ($on_page[1])
-						{
-							case 'reply':
-							case 'quote':
-								$location = sprintf($user->lang['REPLYING_MESSAGE'], $forum_data[$forum_id]['forum_name']);
-							break;
-
-							default:
-								$location = sprintf($user->lang['POSTING_MESSAGE'], $forum_data[$forum_id]['forum_name']);
-							break;
-						}
-					break;
-
-					case 'viewtopic':
-						$location = sprintf($user->lang['READING_TOPIC'], $forum_data[$forum_id]['forum_name']);
-					break;
-
-					case 'viewforum':
-						$location = sprintf($user->lang['READING_FORUM'], $forum_data[$forum_id]['forum_name']);
-					break;
-				}
-			}
-			else
-			{
-				$location = $user->lang['INDEX'];
-				$location_url = append_sid("{$phpbb_root_path}index.$phpEx");
-			}
-		break;
-
-		case 'search':
-			$location = $user->lang['SEARCHING_FORUMS'];
-			$location_url = append_sid("{$phpbb_root_path}search.$phpEx");
-		break;
-
-		case 'faq':
-			$location = $user->lang['VIEWING_FAQ'];
-			$location_url = append_sid("{$phpbb_root_path}faq.$phpEx");
-		break;
-
-		case 'viewonline':
-			$location = $user->lang['VIEWING_ONLINE'];
-			$location_url = append_sid("{$phpbb_root_path}viewonline.$phpEx");
-		break;
-
-		case 'memberlist':
-			$location = (strpos($row['session_page'], 'mode=viewprofile') !== false) ? $user->lang['VIEWING_MEMBER_PROFILE'] : $user->lang['VIEWING_MEMBERS'];
-			$location_url = append_sid("{$phpbb_root_path}memberlist.$phpEx");
-		break;
-
-		case 'mcp':
-			$location = $user->lang['VIEWING_MCP'];
-			$location_url = append_sid("{$phpbb_root_path}index.$phpEx");
-		break;
-
-		case 'ucp':
-			$location = $user->lang['VIEWING_UCP'];
-
-			// Grab some common modules
-			$url_params = array(
-				'mode=register'		=> 'VIEWING_REGISTER',
-				'i=pm&mode=compose'	=> 'POSTING_PRIVATE_MESSAGE',
-				'i=pm&'				=> 'VIEWING_PRIVATE_MESSAGES',
-				'i=profile&'		=> 'CHANGING_PROFILE',
-				'i=prefs&'			=> 'CHANGING_PREFERENCES',
-			);
-
-			foreach ($url_params as $param => $lang)
-			{
-				if (strpos($row['session_page'], $param) !== false)
-				{
-					$location = $user->lang[$lang];
-					break;
-				}
-			}
-
-			$location_url = append_sid("{$phpbb_root_path}index.$phpEx");
-		break;
-
-		case 'download':
-			$location = $user->lang['DOWNLOADING_FILE'];
-			$location_url = append_sid("{$phpbb_root_path}index.$phpEx");
-		break;
-
-		case 'report':
-			$location = $user->lang['REPORTING_POST'];
-			$location_url = append_sid("{$phpbb_root_path}index.$phpEx");
-		break;
-
-		default:
-			$location = $user->lang['INDEX'];
-			$location_url = append_sid("{$phpbb_root_path}index.$phpEx");
-		break;
-	}
-
-	$template->assign_block_vars('user_row', array(
-		'USERNAME' 			=> $row['username'],
-		'USERNAME_COLOUR'	=> $row['user_colour'],
-		'USERNAME_FULL'		=> $username_full,
-		'LASTUPDATE'		=> $user->format_date($row['session_time']),
-		'FORUM_LOCATION'	=> $location,
-		'USER_IP'			=> ($auth->acl_get('a_')) ? (($mode == 'lookup' && $session_id == $row['session_id']) ? gethostbyaddr($row['session_ip']) : $row['session_ip']) : '',
-		'USER_BROWSER'		=> ($auth->acl_get('a_user')) ? $row['session_browser'] : '',
-
-		'U_USER_PROFILE'	=> ($row['user_type'] != USER_IGNORE) ? get_username_string('profile', $row['user_id'], '') : '',
-		'U_USER_IP'			=> append_sid("{$phpbb_root_path}viewonline.$phpEx", 'mode=lookup' . (($mode != 'lookup' || $row['session_id'] != $session_id) ? '&amp;s=' . $row['session_id'] : '') . "&amp;sg=$show_guests&amp;start=$start&amp;sk=$sort_key&amp;sd=$sort_dir"),
-		'U_WHOIS'			=> append_sid("{$phpbb_root_path}viewonline.$phpEx", 'mode=whois&amp;s=' . $row['session_id']),
-		'U_FORUM_LOCATION'	=> $location_url,
-		
-		'S_USER_HIDDEN'		=> $s_user_hidden,
-		'S_GUEST'			=> ($row['user_id'] == ANONYMOUS) ? true : false,
-		'S_USER_TYPE'		=> $row['user_type'],
-	));
-}
-$db->sql_freeresult($result);
-unset($prev_id, $prev_ip);
-
-// Generate reg/hidden/guest online text
-$vars_online = array(
-	'REG'	=> array('logged_visible_online', 'l_r_user_s'),
-	'HIDDEN'=> array('logged_hidden_online', 'l_h_user_s'),
-	'GUEST'	=> array('guest_counter', 'l_g_user_s')
+$template->assign_vars(array(
+	'L_WHOSONLINE' => $lang['Who_is_Online'],
+	'L_ONLINE_EXPLAIN' => $lang['Online_explain'],
+	'L_USERNAME' => $lang['Username'],
+	'L_FORUM_LOCATION' => $lang['Forum_Location'],
+	'L_LAST_UPDATE' => $lang['Last_updated'])
 );
 
-foreach ($vars_online as $l_prefix => $var_ary)
+//
+// Forum info
+//
+$sql = "SELECT forum_name, forum_id
+	FROM " . FORUMS_TABLE;
+if ( $result = $db->sql_query($sql) )
 {
-	switch ($$var_ary[0])
+	while( $row = $db->sql_fetchrow($result) )
 	{
-		case 0:
-			$$var_ary[1] = $user->lang[$l_prefix . '_USERS_ZERO_ONLINE'];
-		break;
-
-		case 1:
-			$$var_ary[1] = $user->lang[$l_prefix . '_USER_ONLINE'];
-		break;
-
-		default:
-			$$var_ary[1] = $user->lang[$l_prefix . '_USERS_ONLINE'];
-		break;
+		$forum_data[$row['forum_id']] = $row['forum_name'];
 	}
-}
-unset($vars_online);
-
-$pagination = generate_pagination(append_sid("{$phpbb_root_path}viewonline.$phpEx", "sg=$show_guests&amp;sk=$sort_key&amp;sd=$sort_dir"), $counter, $config['topics_per_page'], $start);
-
-// Grab group details for legend display
-if ($auth->acl_gets('a_group', 'a_groupadd', 'a_groupdel'))
-{
-	$sql = 'SELECT group_id, group_name, group_colour, group_type
-		FROM ' . GROUPS_TABLE . '
-		WHERE group_legend = 1
-		ORDER BY group_name ASC';
 }
 else
 {
-	$sql = 'SELECT g.group_id, g.group_name, g.group_colour, g.group_type
-		FROM ' . GROUPS_TABLE . ' g
-		LEFT JOIN ' . USER_GROUP_TABLE . ' ug
-			ON (
-				g.group_id = ug.group_id
-				AND ug.user_id = ' . $user->data['user_id'] . '
-				AND ug.user_pending = 0
-			)
-		WHERE g.group_legend = 1
-			AND (g.group_type <> ' . GROUP_HIDDEN . ' OR ug.user_id = ' . $user->data['user_id'] . ')
-		ORDER BY g.group_name ASC';
+	message_die(GENERAL_ERROR, 'Could not obtain user/online forums information', '', __LINE__, __FILE__, $sql);
 }
-$result = $db->sql_query($sql);
 
-$legend = '';
-while ($row = $db->sql_fetchrow($result))
+//
+// Get auth data
+//
+$is_auth_ary = array();
+$is_auth_ary = auth(AUTH_VIEW, AUTH_LIST_ALL, $userdata);
+
+//
+// Get user list
+//
+$sql = "SELECT u.user_id, u.username, u.user_allow_viewonline, u.user_level, s.session_logged_in, s.session_time, s.session_page, s.session_ip
+	FROM ".USERS_TABLE." u, ".SESSIONS_TABLE." s
+	WHERE u.user_id = s.session_user_id
+		AND s.session_time >= ".( time() - 300 ) . "
+	ORDER BY u.username ASC, s.session_ip ASC";
+if ( !($result = $db->sql_query($sql)) )
 {
-	if ($row['group_name'] == 'BOTS')
+	message_die(GENERAL_ERROR, 'Could not obtain regd user/online information', '', __LINE__, __FILE__, $sql);
+}
+
+$guest_users = 0;
+$registered_users = 0;
+$hidden_users = 0;
+
+$reg_counter = 0;
+$guest_counter = 0;
+$prev_user = 0;
+$prev_ip = '';
+
+while ( $row = $db->sql_fetchrow($result) )
+{
+	$view_online = false;
+
+	if ( $row['session_logged_in'] ) 
 	{
-		$legend .= (($legend != '') ? ', ' : '') . '<span style="color:#' . $row['group_colour'] . '">' . $user->lang['G_BOTS'] . '</span>';
+		$user_id = $row['user_id'];
+
+		if ( $user_id != $prev_user )
+		{
+			$username = $row['username'];
+
+			$style_color = '';
+			if ( $row['user_level'] == ADMIN )
+			{
+				$username = '<b style="color:#' . $theme['fontcolor3'] . '">' . $username . '</b>';
+			}
+			else if ( $row['user_level'] == MOD )
+			{
+				$username = '<b style="color:#' . $theme['fontcolor2'] . '">' . $username . '</b>';
+			}
+
+			if ( !$row['user_allow_viewonline'] )
+			{
+				$view_online = ( $userdata['user_level'] == ADMIN ) ? true : false;
+				$hidden_users++;
+
+				$username = '<i>' . $username . '</i>';
+			}
+			else
+			{
+				$view_online = true;
+				$registered_users++;
+			}
+
+			$which_counter = 'reg_counter';
+			$which_row = 'reg_user_row';
+			$prev_user = $user_id;
+		}
 	}
 	else
 	{
-		$legend .= (($legend != '') ? ', ' : '') . '<a style="color:#' . $row['group_colour'] . '" href="' . append_sid("{$phpbb_root_path}memberlist.$phpEx", 'mode=group&amp;g=' . $row['group_id']) . '">' . (($row['group_type'] == GROUP_SPECIAL) ? $user->lang['G_' . $row['group_name']] : $row['group_name']) . '</a>';
+		if ( $row['session_ip'] != $prev_ip )
+		{
+			$username = $lang['Guest'];
+			$view_online = true;
+			$guest_users++;
+	
+			$which_counter = 'guest_counter';
+			$which_row = 'guest_user_row';
+		}
+	}
+
+	$prev_ip = $row['session_ip'];
+
+	if ( $view_online )
+	{
+		if ( $row['session_page'] < 1 || !$is_auth_ary[$row['session_page']]['auth_view'] )
+		{
+			switch( $row['session_page'] )
+			{
+				case PAGE_INDEX:
+					$location = $lang['Forum_index'];
+					$location_url = "index.$phpEx";
+					break;
+				case PAGE_POSTING:
+					$location = $lang['Posting_message'];
+					$location_url = "index.$phpEx";
+					break;
+				case PAGE_LOGIN:
+					$location = $lang['Logging_on'];
+					$location_url = "index.$phpEx";
+					break;
+				case PAGE_SEARCH:
+					$location = $lang['Searching_forums'];
+					$location_url = "search.$phpEx";
+					break;
+				case PAGE_PROFILE:
+					$location = $lang['Viewing_profile'];
+					$location_url = "index.$phpEx";
+					break;
+				case PAGE_VIEWONLINE:
+					$location = $lang['Viewing_online'];
+					$location_url = "viewonline.$phpEx";
+					break;
+				case PAGE_VIEWMEMBERS:
+					$location = $lang['Viewing_member_list'];
+					$location_url = "memberlist.$phpEx";
+					break;
+				case PAGE_PRIVMSGS:
+					$location = $lang['Viewing_priv_msgs'];
+					$location_url = "privmsg.$phpEx";
+					break;
+				case PAGE_FAQ:
+					$location = $lang['Viewing_FAQ'];
+					$location_url = "faq.$phpEx";
+					break;
+				default:
+					$location = $lang['Forum_index'];
+					$location_url = "index.$phpEx";
+			}
+		}
+		else
+		{
+			$location_url = append_sid("viewforum.$phpEx?" . POST_FORUM_URL . '=' . $row['session_page']);
+			$location = $forum_data[$row['session_page']];
+		}
+
+		$row_color = ( $$which_counter % 2 ) ? $theme['td_color1'] : $theme['td_color2'];
+		$row_class = ( $$which_counter % 2 ) ? $theme['td_class1'] : $theme['td_class2'];
+
+		$template->assign_block_vars("$which_row", array(
+			'ROW_COLOR' => '#' . $row_color,
+			'ROW_CLASS' => $row_class,
+			'USERNAME' => $username,
+			'LASTUPDATE' => create_date($board_config['default_dateformat'], $row['session_time'], $board_config['board_timezone']),
+			'FORUM_LOCATION' => $location,
+
+			'U_USER_PROFILE' => append_sid("profile.$phpEx?mode=viewprofile&amp;" . POST_USERS_URL . '=' . $user_id),
+			'U_FORUM_LOCATION' => append_sid($location_url))
+		);
+
+		$$which_counter++;
 	}
 }
-$db->sql_freeresult($result);
 
-// Refreshing the page every 60 seconds...
-meta_refresh(60, append_sid("{$phpbb_root_path}viewonline.$phpEx", "sg=$show_guests&amp;sk=$sort_key&amp;sd=$sort_dir&amp;start=$start"));
+if( $registered_users == 0 )
+{
+	$l_r_user_s = $lang['Reg_users_zero_online'];
+}
+else if( $registered_users == 1 )
+{
+	$l_r_user_s = $lang['Reg_user_online'];
+}
+else
+{
+	$l_r_user_s = $lang['Reg_users_online'];
+}
 
-// Send data to template
+if( $hidden_users == 0 )
+{
+	$l_h_user_s = $lang['Hidden_users_zero_online'];
+}
+else if( $hidden_users == 1 )
+{
+	$l_h_user_s = $lang['Hidden_user_online'];
+}
+else
+{
+	$l_h_user_s = $lang['Hidden_users_online'];
+}
+
+if( $guest_users == 0 )
+{
+	$l_g_user_s = $lang['Guest_users_zero_online'];
+}
+else if( $guest_users == 1 )
+{
+	$l_g_user_s = $lang['Guest_user_online'];
+}
+else
+{
+	$l_g_user_s = $lang['Guest_users_online'];
+}
+
 $template->assign_vars(array(
-	'TOTAL_REGISTERED_USERS_ONLINE'	=> sprintf($l_r_user_s, $logged_visible_online) . sprintf($l_h_user_s, $logged_hidden_online),
-	'TOTAL_GUEST_USERS_ONLINE'		=> sprintf($l_g_user_s, $guest_counter),
-	'LEGEND'						=> $legend,
-	'PAGINATION'					=> $pagination,
-	'PAGE_NUMBER'					=> on_page($counter, $config['topics_per_page'], $start),
-
-	'U_SORT_USERNAME'		=> append_sid("{$phpbb_root_path}viewonline.$phpEx", 'sk=a&amp;sd=' . (($sort_key == 'a' && $sort_dir == 'a') ? 'd' : 'a') . '&amp;sg=' . ((int) $show_guests)),
-	'U_SORT_UPDATED'		=> append_sid("{$phpbb_root_path}viewonline.$phpEx", 'sk=b&amp;sd=' . (($sort_key == 'b' && $sort_dir == 'a') ? 'd' : 'a') . '&amp;sg=' . ((int) $show_guests)),
-	'U_SORT_LOCATION'		=> append_sid("{$phpbb_root_path}viewonline.$phpEx", 'sk=c&amp;sd=' . (($sort_key == 'c' && $sort_dir == 'a') ? 'd' : 'a') . '&amp;sg=' . ((int) $show_guests)),
-
-	'U_SWITCH_GUEST_DISPLAY'	=> append_sid("{$phpbb_root_path}viewonline.$phpEx", 'sg=' . ((int) !$show_guests)),
-	'L_SWITCH_GUEST_DISPLAY'	=> ($show_guests) ? $user->lang['HIDE_GUESTS'] : $user->lang['DISPLAY_GUESTS'],
-	'S_SWITCH_GUEST_DISPLAY'	=> ($config['load_online_guests']) ? true : false)
+	'TOTAL_REGISTERED_USERS_ONLINE' => sprintf($l_r_user_s, $registered_users) . sprintf($l_h_user_s, $hidden_users), 
+	'TOTAL_GUEST_USERS_ONLINE' => sprintf($l_g_user_s, $guest_users))
 );
 
-// We do not need to load the who is online box here. ;)
-$config['load_online'] = false;
+if ( $registered_users + $hidden_users == 0 )
+{
+	$template->assign_vars(array(
+		'L_NO_REGISTERED_USERS_BROWSING' => $lang['No_users_browsing'])
+	);
+}
 
-// Output the page
-page_header($user->lang['WHO_IS_ONLINE']);
+if ( $guest_users == 0 )
+{
+	$template->assign_vars(array(
+		'L_NO_GUESTS_BROWSING' => $lang['No_users_browsing'])
+	);
+}
 
-$template->set_filenames(array(
-	'body' => 'viewonline_body.html')
-);
-make_jumpbox(append_sid("{$phpbb_root_path}viewforum.$phpEx"));
+$template->pparse('body');
 
-page_footer();
+include($phpbb_root_path . 'includes/page_tail.'.$phpEx);
 
 ?>
