@@ -1567,7 +1567,25 @@ if (version_compare($current_version, '3.0.0', '<='))
 		WHERE topic_last_view_time = 0";
 	_sql($sql, $errored, $error_ary);
 	
+	// Update smiley sizes
+	$smileys = array('icon_e_surprised.gif','icon_cool.gif', 'icon_lol.gif', 'icon_mad.gif', 'icon_razz.gif', 'icon_redface.gif', 'icon_cry.gif', 'icon_evil.gif', 'icon_twisted.gif', 'icon_rolleyes.gif', 'icon_exclaim.gif', 'icon_question.gif', 'icon_idea.gif', 'icon_arrow.gif', 'icon_neutral.gif', 'icon_mrgreen.gif', 'icon_e_ugeek.gif');
+	foreach ($smileys as $smiley)
+	{
+		if (file_exists($phpbb_root_path . 'images/smilies/' . $smiley))
+		{
+			list($width, $height) = getimagesize($phpbb_root_path . 'images/smilies/' . $smiley);
+			
+			$sql = 'UPDATE ' . SMILIES_TABLE . '
+				SET smiley_width = ' . $width . ', smiley_height = ' . $height . "
+				WHERE smiley_url = '" . $db->sql_escape($smiley) . "'";
+			
+			_sql($sql, $errored, $error_ary);
+		}
+	}
+	
 	// TODO: remove all form token min times
+	
+	$no_updates = false;
 }
 _write_result($no_updates, $errored, $error_ary);
 
