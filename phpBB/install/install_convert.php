@@ -404,7 +404,7 @@ class install_convert extends module
 		$error = array();
 		if ($submit)
 		{
-			if (!file_exists('./../' . $forum_path . '/' . $test_file))
+			if (!@file_exists('./../' . $forum_path . '/' . $test_file))
 			{
 				$error[] = sprintf($lang['COULD_NOT_FIND_PATH'], $forum_path);
 			}
