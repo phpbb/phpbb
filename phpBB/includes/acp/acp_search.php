@@ -183,15 +183,24 @@ class acp_search
 				}
 			}
 
-			if ($updated)
+			$search = null;
+			$error = false;
+			if (!$this->init_search($config['search_type'], $search, $error))
 			{
-				if (method_exists($search, 'config_updated'))
+				if ($updated)
 				{
-					if ($search->config_updated())
+					if (method_exists($search, 'config_updated'))
 					{
-						trigger_error($error . adm_back_link($this->u_action), E_USER_WARNING);
+						if ($search->config_updated())
+						{
+							trigger_error($error . adm_back_link($this->u_action), E_USER_WARNING);
+						}
 					}
 				}
+			}
+			else
+			{
+				trigger_error($error . adm_back_link($this->u_action), E_USER_WARNING);
 			}
 
 			trigger_error($user->lang['CONFIG_UPDATED'] . $extra_message . adm_back_link($this->u_action));
