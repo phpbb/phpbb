@@ -1967,7 +1967,6 @@ function add_form_key($form_name)
 * @param int $timespan The maximum acceptable age for a submitted form in seconds. Defaults to the config setting.
 * @param string $return_page The address for the return link
 * @param bool $trigger If true, the function will triger an error when encountering an invalid form
-* @param int $minimum_time The minimum acceptable age for a submitted form in seconds
 */
 function check_form_key($form_name, $timespan = false, $return_page = '', $trigger = false)
 {
