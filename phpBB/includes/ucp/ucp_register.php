@@ -43,14 +43,6 @@ class ucp_register
 		$submit			= (isset($_POST['submit'])) ? true : false;
 		$change_lang	= request_var('change_lang', '');
 		$user_lang		= request_var('lang', $user->lang_name);
-
-
-		// not so fast, buddy
-		if (!check_form_key('ucp_register', false, '', false, $config['min_time_reg'])
-			&& !check_form_key('ucp_register_terms', false, '', false, $config['min_time_terms']))
-		{
-			$agreed = false;
-		}
 		
 		if ($agreed)
 		{
@@ -92,7 +84,7 @@ class ucp_register
 
 		$error = $cp_data = $cp_error = array();
 
-		//
+
 		if (!$agreed || ($coppa === false && $config['coppa_enable']) || ($coppa && !$config['coppa_enable']))
 		{
 			$add_lang = ($change_lang) ? '&amp;change_lang=' . urlencode($change_lang) : '';
@@ -142,7 +134,6 @@ class ucp_register
 					'S_REGISTRATION'	=> true,
 					'S_HIDDEN_FIELDS'	=> build_hidden_fields($s_hidden_fields),
 					'S_UCP_ACTION'		=> append_sid("{$phpbb_root_path}ucp.$phpEx", 'mode=register' . $add_lang . $add_coppa),
-					'S_TIME'			=> 1000 * ((int) $config['min_time_terms']),
 					)
 				);
 			}
@@ -201,7 +192,10 @@ class ucp_register
 				'tz'				=> array('num', false, -14, 14),
 				'lang'				=> array('match', false, '#^[a-z_\-]{2,}$#i'),
 			));
-
+			if (!check_form_key('ucp_register'))
+			{
+				$error[] = $user->lang['FORM_INVALID'];
+			}
 			// Replace "error" strings with their real, localised form
 			$error = preg_replace('#^([A-Z_]+)$#e', "(!empty(\$user->lang['\\1'])) ? \$user->lang['\\1'] : '\\1'", $error);
 
@@ -544,7 +538,6 @@ class ucp_register
 			'S_COPPA'			=> $coppa,
 			'S_HIDDEN_FIELDS'	=> $s_hidden_fields,
 			'S_UCP_ACTION'		=> append_sid("{$phpbb_root_path}ucp.$phpEx", 'mode=register'),
-			'S_TIME'			=> 1000 * ((int) $config['min_time_reg']),
 			)
 		);
 

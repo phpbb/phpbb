@@ -11,26 +11,6 @@
 		document.forms['register'].submit.click();
 	}
 
-	var old_func = window.onload;
-
-	function disable(disabl)
-	{
-		document.getElementById("submit").disabled = disabl;
-	}
-
-	function disable_and_handle()
-	{
-		if (old_func)
-		{
-			old_func();
-		}
-		disable(true);
-	}
-
-	<!-- IF S_TIME -->
-		window.onload = disable_and_handle;
-		setInterval("disable(false)", {S_TIME});
-	<!-- ENDIF -->
 // ]]>
 </script>
 

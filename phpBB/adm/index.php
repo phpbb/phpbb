@@ -367,33 +367,61 @@ function build_cfg_template($tpl_type, $key, &$new, $config_key, $vars)
 }
 
 /**
-* Going through a config array and validate values, writing errors to $error.
+* Going through a config array and validate values, writing errors to $error. The validation method  accepts parameters separated by ':' for string and int.
+* The first parameter defines the type to be used, the second the lower bound and the third the upper bound. Only the type is required.
 */
 function validate_config_vars($config_vars, &$cfg_array, &$error)
 {
 	global $phpbb_root_path, $user;
-
+	$type	= 0;
+	$min	= 1;
+	$max	= 2;
+	
 	foreach ($config_vars as $config_name => $config_definition)
 	{
 		if (!isset($cfg_array[$config_name]) || strpos($config_name, 'legend') !== false)
 		{
 			continue;
 		}
-
+	
 		if (!isset($config_definition['validate']))
 		{
 			continue;
 		}
-
-		// Validate a bit. ;) String is already checked through request_var(), therefore we do not check this again
-		switch ($config_definition['validate'])
+		
+		$validator = explode(':', $config_definition['validate']);
+		// Validate a bit. ;) (0 = type, 1 = min, 2= max)
+		switch ($validator[$type])
 		{
+			case 'string':
+				$length = strlen($cfg_array[$config_name]);
+				// the column is a VARCHAR
+				$validator[$max] = (isset($validator[$max])) ? min(255, $validator[$max]) : 255;
+				if (isset($validator[$min]) && $length < $validator[$min])
+				{
+					$error[] = sprintf($user->lang['SETTING_TOO_SHORT'], $user->lang[$config_definition['lang']], $validator[$min]);
+				}
+				else if (isset($validator[$max]) && $length > $validator[2])
+				{
+					$error[] = sprintf($user->lang['SETTING_TOO_LONG'], $user->lang[$config_definition['lang']], $validator[$max]);
+				}
+			break;
+			
 			case 'bool':
 				$cfg_array[$config_name] = ($cfg_array[$config_name]) ? 1 : 0;
 			break;
 
 			case 'int':
 				$cfg_array[$config_name] = (int) $cfg_array[$config_name];
+				
+				if (isset($validator[$min]) && $cfg_array[$config_name] < $validator[$min])
+				{
+					$error[] = sprintf($user->lang['SETTING_TOO_LOW'], $user->lang[$config_definition['lang']], $validator[$min]);
+				}
+				else if (isset($validator[$max]) && $cfg_array[$config_name] > $validator[$max])
+				{
+					$error[] = sprintf($user->lang['SETTING_TOO_BIG'], $user->lang[$config_definition['lang']], $validator[$max]);
+				}
 			break;
 
 			// Absolute path
@@ -506,6 +534,66 @@ function validate_config_vars($config_vars, &$cfg_array, &$error)
 	}
 
 	return;
+}
+
+/**
+* Checks whatever or not a variable is OK for use in the Database
+* param mixed $value_ary An array of the form array(array('lang' => ..., 'value' => ..., 'column_type' =>))'
+* param mixed $error The error array
+*/
+function validate_range($value_ary, &$error)
+{
+	global $user;
+	
+	$column_types = array(
+		'BOOL'	=> array('php_type' => 'int', 		'min' => 0, 				'max' => 1),
+		'USINT'	=> array('php_type' => 'int',		'min' => 0, 				'max' => 65535),
+		'UINT'	=> array('php_type' => 'int', 		'min' => 0, 				'max' => (int) 0x7fffffff),
+		'INT'	=> array('php_type' => 'int', 		'min' => (int) 0x80000000, 	'max' => (int) 0x7fffffff),
+		'TINT'	=> array('php_type' => 'int',		'min' => -128,				'max' => 127),
+		
+		'VCHAR'	=> array('php_type' => 'string', 	'min' => 0, 				'max' => 255),
+	);
+	foreach ($value_ary as $value)
+	{
+		$column = explode(':', $value['column_type']);
+		$max = $min = 0;
+		$type = 0;
+		if (!isset($column_types[$column[0]]))
+		{
+			continue;
+		}
+		else
+		{
+			$type = $column_types[$column[0]];
+		}
+
+		switch ($type['php_type'])
+		{
+			case 'string' :
+				$max = (isset($column[1])) ? min($column[1],$type['max']) : $type['max'];
+				if (strlen($value['value']) > $max)
+				{
+					$error[] = sprintf($user->lang['SETTING_TOO_LONG'], $user->lang[$value['lang']], $max);
+				}
+				
+				break;
+			
+			case 'int': 
+				$min = (isset($column[1])) ? max($column[1],$type['min']) : $type['min'];
+				$max = (isset($column[2])) ? min($column[2],$type['max']) : $type['max'];
+				if ($value['value'] < $min)
+				{
+					$error[] = sprintf($user->lang['SETTING_TOO_LOW'], $user->lang[$value['lang']], $min);
+				}
+				else if ($value['value'] > $max)
+				{
+					$error[] = sprintf($user->lang['SETTING_TOO_BIG'], $user->lang[$value['lang']], $max);
+				}
+				break;
+		}
+	}
+	
 }
 
 ?>

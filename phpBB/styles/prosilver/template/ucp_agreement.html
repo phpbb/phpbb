@@ -1,26 +1,5 @@
 <!-- INCLUDE overall_header.html -->
 
-<script type="text/javascript" defer="defer" >
-// <![CDATA[
-	function disable(disabl, name)
-	{
-		document.getElementById(name).disabled = disabl;
-		if (disabl)
-		{
-			document.getElementById(name).className = 'button1 disabled';
-		}
-		else
-		{
-			document.getElementById(name).className = 'button1 enabled';
-		}
-	}
-
-	<!-- IF S_TIME -->
-		onload_functions.push('disable(true, "agreed")');
-		setInterval('disable(false, "agreed")', {S_TIME});
-	<!-- ENDIF -->
-// ]]>
-</script>
 
 <!-- IF S_SHOW_COPPA or S_REGISTRATION -->
 
