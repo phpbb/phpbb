@@ -45,7 +45,9 @@ class dbal
 
 	// Holding the last sql query on sql error
 	var $sql_error_sql = '';
-
+	// Holding the error information - only populated if sql_error_triggered is set
+	var $sql_error_returned = array();
+	
 	// Holding transaction count
 	var $transactions = 0;
 
@@ -547,11 +549,11 @@ class dbal
 		$this->sql_error_triggered = true;
 		$this->sql_error_sql = $sql;
 
-		$error = $this->_sql_error();
+		$this->sql_error_returned = $this->_sql_error();
 
 		if (!$this->return_on_error)
 		{
-			$message = 'SQL ERROR [ ' . $this->sql_layer . ' ]<br /><br />' . $error['message'] . ' [' . $error['code'] . ']';
+			$message = 'SQL ERROR [ ' . $this->sql_layer . ' ]<br /><br />' . $this->sql_error_returned['message'] . ' [' . $this->sql_error_returned['code'] . ']';
 
 			// Show complete SQL error and path to administrators only
 			// Additionally show complete error on installation or if extended debug mode is enabled
