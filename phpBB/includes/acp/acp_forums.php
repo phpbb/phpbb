@@ -918,6 +918,13 @@ class acp_forums
 			$forum_data['prune_days'] = $forum_data['prune_viewed'] = $forum_data['prune_freq'] = 0;
 			$errors[] = $user->lang['FORUM_DATA_NEGATIVE'];
 		}
+		
+		$range_test_ary = array(
+			array('lang' => 'FORUM_TOPICS_PAGE', 'value' => $forum_data['forum_topics_per_page'], 'column_type' => 'TINT:0'),
+		);
+		validate_range($range_test_ary, $errors);
+
+
 
 		// Set forum flags
 		// 1 = link tracking
