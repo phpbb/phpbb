@@ -610,7 +610,7 @@ class dbal
 			$this->sql_transaction('rollback');
 		}
 
-		return $error;
+		return $this->sql_error_returned;
 	}
 
 	/**
