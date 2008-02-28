@@ -262,10 +262,10 @@ $lang = array_merge($lang, array(
 	'SELECT_ANONYMOUS'		=> 'Select anonymous user',
 	'SELECT_OPTION'			=> 'Select option',
 
-	'SETTING_TOO_LOW'		=> 'The entered value for the setting %s is too low. The minimal allowed value is %d.',
-	'SETTING_TOO_BIG'		=> 'The entered value for the setting %s is too big. The maximal allowed value is %d.',	
-	'SETTING_TOO_LONG'		=> 'The entered value for the setting %s is too long. The maximal allowed length is %d.',
-	'SETTING_TOO_SHORT'		=> 'The entered value for the setting %s is not long enough. The minimal allowed length is %d.',
+	'SETTING_TOO_LOW'		=> 'The entered value for the setting “%s” is too low. The minimal allowed value is %d.',
+	'SETTING_TOO_BIG'		=> 'The entered value for the setting “%s” is too big. The maximal allowed value is %d.',	
+	'SETTING_TOO_LONG'		=> 'The entered value for the setting “%s” is too long. The maximal allowed length is %d.',
+	'SETTING_TOO_SHORT'		=> 'The entered value for the setting “%s” is not long enough. The minimal allowed length is %d.',
 
 	'UCP'					=> 'User Control Panel',
 	'USERNAMES_EXPLAIN'		=> 'Place each username on a separate line.',
