@@ -488,7 +488,8 @@ class custom_profile
 				else if ($day && $month && $year)
 				{
 					global $user;
-					return $user->format_date(mktime(0, 0, 0, $month, $day, $year), $user->lang['DATE_FORMAT'], true);
+					// d/m/y 00:00 GMT isn't necessarily on the same d/m/y in the user's timezone, so add the timezone seconds
+					return $user->format_date(gmmktime(0, 0, 0, $month, $day, $year) + $user->timezone + $user->dst, $user->lang['DATE_FORMAT'], true);
 				}
 
 				return $value;
