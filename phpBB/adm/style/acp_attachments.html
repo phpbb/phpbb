@@ -122,11 +122,11 @@
 			{
 				if (newimage == 'no_image')
 				{
-					document.image_upload_icon.src = "{PHPBB_ROOT_PATH}images/spacer.gif";
+					document.getElementById('image_upload_icon').src = "{PHPBB_ROOT_PATH}images/spacer.gif";
 				}
 				else
 				{
-					document.image_upload_icon.src = "{PHPBB_ROOT_PATH}{IMG_PATH}/" + newimage;
+					document.getElementById('image_upload_icon').src = "{PHPBB_ROOT_PATH}{IMG_PATH}/" + newimage;
 				}
 			}
 
@@ -192,7 +192,7 @@
 			<dd><select name="upload_icon" id="upload_icon" onchange="update_image(this.options[selectedIndex].value);">
 					<option value="no_image"<!-- IF S_NO_IMAGE --> selected="selected"<!-- ENDIF -->>{L_NO_IMAGE}</option>{S_FILENAME_LIST}
 			</select></dd>
-			<dd>&nbsp;<img <!-- IF S_NO_IMAGE -->src="{PHPBB_ROOT_PATH}images/spacer.gif"<!-- ELSE -->src="{UPLOAD_ICON_SRC}"<!-- ENDIF --> name="image_upload_icon" alt="" title="" />&nbsp;</dd>
+			<dd>&nbsp;<img <!-- IF S_NO_IMAGE -->src="{PHPBB_ROOT_PATH}images/spacer.gif"<!-- ELSE -->src="{UPLOAD_ICON_SRC}"<!-- ENDIF --> id="image_upload_icon" alt="" title="" />&nbsp;</dd>
 		</dl>
 		<dl>
 			<dt><label for="extgroup_filesize">{L_MAX_EXTGROUP_FILESIZE}:</label></dt>

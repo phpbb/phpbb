@@ -43,19 +43,19 @@
 	
 	function toggle_select(icon, display, select)
 	{
-		var disp = document.getElementById('order_disp[' + icon + ']');
-		var nodisp = document.getElementById('order_no_disp[' + icon + ']');
+		var disp = document.getElementById('order_disp_' + select);
+		var nodisp = document.getElementById('order_no_disp_' + select);
 		disp.disabled = !display;
 		nodisp.disabled = display;
 		if (display)
 		{
-			document.getElementById(select).selectedIndex = 0;
+			document.getElementById('order_' + select).selectedIndex = 0;
 			nodisp.className = 'disabled-options';
 			disp.className = '';
 		}
 		else
 		{
-			document.getElementById(select).selectedIndex = {S_ORDER_LIST_DISPLAY_COUNT};
+			document.getElementById('order_' + select).selectedIndex = {S_ORDER_LIST_DISPLAY_COUNT};
 			disp.className = 'disabled-options';
 			nodisp.className = '';
 		}
@@ -111,15 +111,15 @@
 		<td><input class="text post" type="text" size="3" name="width[{items.IMG}]" value="{items.WIDTH}" /></td>
 		<td><input class="text post" type="text" size="3" name="height[{items.IMG}]" value="{items.HEIGHT}" /></td>
 		<td>
-			<input type="checkbox" class="radio" name="display_on_posting[{items.IMG}]"{items.POSTING_CHECKED} onclick="toggle_select('{items.A_IMG}', this.checked, 'order[{items.A_IMG}]');"/>
+			<input type="checkbox" class="radio" name="display_on_posting[{items.IMG}]"{items.POSTING_CHECKED} onclick="toggle_select('{items.A_IMG}', this.checked, '{items.S_ROW_COUNT}');"/>
 			<!-- IF items.S_ID -->
 				<input type="hidden" name="id[{items.IMG}]" value="{items.ID}" />
 			<!-- ENDIF -->
 		</td>
 		<!-- IF ID or S_ADD -->
-			<td><select id="order[{items.IMG}]" name="order[{items.IMG}]">
-				<optgroup id="order_disp[{items.IMG}]" label="{L_DISPLAY_POSTING}" <!-- IF not items.POSTING_CHECKED -->disabled="disabled" class="disabled-options" <!-- ENDIF -->>{S_ORDER_LIST_DISPLAY}</optgroup>
-				<optgroup id="order_no_disp[{items.IMG}]" label="{L_DISPLAY_POSTING_NO}" <!-- IF  items.POSTING_CHECKED -->disabled="disabled" class="disabled-options" <!-- ENDIF -->>{S_ORDER_LIST_UNDISPLAY}</optgroup>
+			<td><select id="order_{items.S_ROW_COUNT}" name="order[{items.IMG}]">
+				<optgroup id="order_disp_{items.S_ROW_COUNT}" label="{L_DISPLAY_POSTING}" <!-- IF not items.POSTING_CHECKED -->disabled="disabled" class="disabled-options" <!-- ENDIF -->>{S_ORDER_LIST_DISPLAY}</optgroup>
+				<optgroup id="order_no_disp_{items.S_ROW_COUNT}" label="{L_DISPLAY_POSTING_NO}" <!-- IF  items.POSTING_CHECKED -->disabled="disabled" class="disabled-options" <!-- ENDIF -->>{S_ORDER_LIST_UNDISPLAY}</optgroup>
 			</select></td>
 		<!-- ENDIF -->	
 		<!-- IF S_ADD -->
@@ -247,6 +247,10 @@
 				<!-- IF items.S_LAST_ROW -->{ICON_MOVE_DOWN_DISABLED}<!-- ELSE --><a href="{items.U_MOVE_DOWN}">{ICON_MOVE_DOWN}</a><!-- ENDIF -->
 				&nbsp;<a href="{items.U_EDIT}">{ICON_EDIT}</a> <a href="{items.U_DELETE}">{ICON_DELETE}</a>
 			</td>
+		</tr>
+	<!-- BEGINELSE -->
+		<tr class="row3">
+			<td colspan="{COLSPAN}">{L_ACP_NO_ITEMS}</td>
 		</tr>
 	<!-- END items -->
 	</tbody>
