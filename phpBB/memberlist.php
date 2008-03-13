@@ -1237,6 +1237,7 @@ switch ($mode)
 		{
 			$group_selected = request_var('search_group_id', 0);
 			$s_group_select = '<option value="0"' . ((!$group_selected) ? ' selected="selected"' : '') . '>&nbsp;</option>';
+			$group_ids = array();
 
 			if ($auth->acl_gets('a_group', 'a_groupadd', 'a_groupdel'))
 			{
@@ -1261,9 +1262,15 @@ switch ($mode)
 
 			while ($row = $db->sql_fetchrow($result))
 			{
+				$group_ids[] = $row['group_id'];
 				$s_group_select .= '<option value="' . $row['group_id'] . '"' . (($group_selected == $row['group_id']) ? ' selected="selected"' : '') . '>' . (($row['group_type'] == GROUP_SPECIAL) ? $user->lang['G_' . $row['group_name']] : $row['group_name']) . '</option>';
 			}
 			$db->sql_freeresult($result);
+
+			if ($group_selected !== 0 && !in_array($group_selected, $group_ids))
+			{
+				trigger_error('NO_GROUP');
+			}
 
 			$template->assign_vars(array(
 				'USERNAME'	=> $username,
