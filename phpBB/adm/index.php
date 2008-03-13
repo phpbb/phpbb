@@ -390,13 +390,16 @@ function validate_config_vars($config_vars, &$cfg_array, &$error)
 		}
 		
 		$validator = explode(':', $config_definition['validate']);
+
 		// Validate a bit. ;) (0 = type, 1 = min, 2= max)
 		switch ($validator[$type])
 		{
 			case 'string':
 				$length = strlen($cfg_array[$config_name]);
+
 				// the column is a VARCHAR
 				$validator[$max] = (isset($validator[$max])) ? min(255, $validator[$max]) : 255;
+
 				if (isset($validator[$min]) && $length < $validator[$min])
 				{
 					$error[] = sprintf($user->lang['SETTING_TOO_SHORT'], $user->lang[$config_definition['lang']], $validator[$min]);
@@ -406,14 +409,14 @@ function validate_config_vars($config_vars, &$cfg_array, &$error)
 					$error[] = sprintf($user->lang['SETTING_TOO_LONG'], $user->lang[$config_definition['lang']], $validator[$max]);
 				}
 			break;
-			
+
 			case 'bool':
 				$cfg_array[$config_name] = ($cfg_array[$config_name]) ? 1 : 0;
 			break;
 
 			case 'int':
 				$cfg_array[$config_name] = (int) $cfg_array[$config_name];
-				
+
 				if (isset($validator[$min]) && $cfg_array[$config_name] < $validator[$min])
 				{
 					$error[] = sprintf($user->lang['SETTING_TOO_LOW'], $user->lang[$config_definition['lang']], $validator[$min]);
@@ -576,9 +579,8 @@ function validate_range($value_ary, &$error)
 				{
 					$error[] = sprintf($user->lang['SETTING_TOO_LONG'], $user->lang[$value['lang']], $max);
 				}
-				
-				break;
-			
+			break;
+
 			case 'int': 
 				$min = (isset($column[1])) ? max($column[1],$type['min']) : $type['min'];
 				$max = (isset($column[2])) ? min($column[2],$type['max']) : $type['max'];
@@ -590,10 +592,9 @@ function validate_range($value_ary, &$error)
 				{
 					$error[] = sprintf($user->lang['SETTING_TOO_BIG'], $user->lang[$value['lang']], $max);
 				}
-				break;
+			break;
 		}
 	}
-	
 }
 
 ?>

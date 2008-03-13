@@ -1089,7 +1089,7 @@ class parse_message extends bbcode_firstpass
 			if ((!$msg_len && $mode !== 'sig') || $config['max_' . $mode . '_chars'] && $msg_len > $config['max_' . $mode . '_chars'])
 			{
 				$this->warn_msg[] = (!$msg_len) ? $user->lang['TOO_FEW_CHARS'] : sprintf($user->lang['TOO_MANY_CHARS_' . strtoupper($mode)], $msg_len, $config['max_' . $mode . '_chars']);
-				return $this->warn_msg;
+				return (!$update_this_message) ? $return_message : $this->warn_msg;
 			}
 		}
 
@@ -1097,7 +1097,7 @@ class parse_message extends bbcode_firstpass
 		if ($mode !== 'sig' && utf8_clean_string($this->message) === '')
 		{
 			$this->warn_msg[] = $user->lang['TOO_FEW_CHARS'];
-			return $this->warn_msg;
+			return (!$update_this_message) ? $return_message : $this->warn_msg;
 		}
 
 		// Prepare BBcode (just prepares some tags for better parsing)
@@ -1146,7 +1146,7 @@ class parse_message extends bbcode_firstpass
 		if ($config['max_' . $mode . '_urls'] && $num_urls > $config['max_' . $mode . '_urls'])
 		{
 			$this->warn_msg[] = sprintf($user->lang['TOO_MANY_URLS'], $config['max_' . $mode . '_urls']);
-			return $this->warn_msg;
+			return (!$update_this_message) ? $return_message : $this->warn_msg;
 		}
 
 		if (!$update_this_message)
@@ -1602,7 +1602,6 @@ class parse_message extends bbcode_firstpass
 		$tmp_message = $this->message;
 		$this->message = $poll['poll_option_text'];
 		$bbcode_bitfield = $this->bbcode_bitfield;
-
 
 		$poll['poll_option_text'] = $this->parse($poll['enable_bbcode'], ($config['allow_post_links']) ? $poll['enable_urls'] : false, $poll['enable_smilies'], $poll['img_status'], false, false, $config['allow_post_links'], false);
 
