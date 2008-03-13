@@ -28,10 +28,10 @@
 
 	<p>{L_EXPLAIN}</p>
 
-	<form id="acp_roles" method="post" action="{U_ACTION}">
-
 	<br />
 	<a href="#acl">&raquo; {L_SET_ROLE_PERMISSIONS}</a>
+
+	<form id="acp_roles" method="post" action="{U_ACTION}">
 
 	<fieldset>
 		<legend>{L_ROLE_DETAILS}</legend>
@@ -46,6 +46,7 @@
 
 	<p class="quick">
 		<input type="submit" class="button1" name="submit" value="{L_SUBMIT}" />
+		{S_FORM_TOKEN}
 	</p>
 	</fieldset>
 
@@ -57,10 +58,14 @@
 
 	<!-- ENDIF -->
 
+	<p>
+
 	<a name="acl"></a>
 
 	<a href="#maincontent">&raquo; {L_BACK_TO_TOP}</a><br />
 	<br /><br />
+
+	</p>
 
 	<h1>{L_ACL_TYPE}</h1>
 
@@ -107,9 +112,9 @@
 						<!-- IF auth.mask.S_ROW_COUNT is even --><tr class="row4"><!-- ELSE --><tr class="row3"><!-- ENDIF -->
 						<th class="permissions-name<!-- IF auth.mask.S_ROW_COUNT is even --> row4<!-- ELSE --> row3<!-- ENDIF -->">{auth.mask.PERMISSION}</th>
 							
-						<td class="permissions-yes"><label for="{auth.mask.FIELD_NAME}_y"><input onchange="set_colours('00{auth.S_ROW_COUNT}', false)" id="setting[{auth.mask.FIELD_NAME}]_y" name="setting[{auth.mask.FIELD_NAME}]" class="radio" type="radio"<!-- IF auth.mask.S_YES --> checked="checked"<!-- ENDIF --> value="1" /></label></td>
-						<td class="permissions-no"><label for="{auth.mask.FIELD_NAME}_u"><input onchange="set_colours('00{auth.S_ROW_COUNT}', false)" id="setting[{auth.mask.FIELD_NAME}]_u" name="setting[{auth.mask.FIELD_NAME}]" class="radio" type="radio"<!-- IF auth.mask.S_NO --> checked="checked"<!-- ENDIF --> value="-1" /></label></td>
-						<td class="permissions-never"><label for="{auth.mask.FIELD_NAME}_n"><input onchange="set_colours('00{auth.S_ROW_COUNT}', false)" id="setting[{auth.mask.FIELD_NAME}]_n" name="setting[{auth.mask.FIELD_NAME}]" class="radio" type="radio"<!-- IF auth.mask.S_NEVER --> checked="checked"<!-- ENDIF --> value="0" /></label></td>
+						<td class="permissions-yes"><label for="setting_{auth.mask.FIELD_NAME}_y"><input onchange="set_colours('00{auth.S_ROW_COUNT}', false)" id="setting_{auth.mask.FIELD_NAME}_y" name="setting[{auth.mask.FIELD_NAME}]" class="radio" type="radio"<!-- IF auth.mask.S_YES --> checked="checked"<!-- ENDIF --> value="1" /></label></td>
+						<td class="permissions-no"><label for="setting_{auth.mask.FIELD_NAME}_u"><input onchange="set_colours('00{auth.S_ROW_COUNT}', false)" id="setting_{auth.mask.FIELD_NAME}_u" name="setting[{auth.mask.FIELD_NAME}]" class="radio" type="radio"<!-- IF auth.mask.S_NO --> checked="checked"<!-- ENDIF --> value="-1" /></label></td>
+						<td class="permissions-never"><label for="setting_{auth.mask.FIELD_NAME}_n"><input onchange="set_colours('00{auth.S_ROW_COUNT}', false)" id="setting_{auth.mask.FIELD_NAME}_n" name="setting[{auth.mask.FIELD_NAME}]" class="radio" type="radio"<!-- IF auth.mask.S_NEVER --> checked="checked"<!-- ENDIF --> value="0" /></label></td>
 					</tr>
 					<!-- END mask -->
 					</tbody>

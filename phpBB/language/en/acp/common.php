@@ -126,6 +126,8 @@ $lang = array_merge($lang, array(
 	'ACP_MOD_LOGS'				=> 'Moderator log',
 	'ACP_MOD_ROLES'				=> 'Moderator roles',
 
+	'ACP_NO_ITEMS'				=> 'There are no items yet.',
+
 	'ACP_ORPHAN_ATTACHMENTS'	=> 'Orphaned attachments',
 
 	'ACP_PERMISSIONS'			=> 'Permissions',
