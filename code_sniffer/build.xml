@@ -1,0 +1,46 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project name="code_sniffer" basedir="." default="phpunit">
+
+  <property name="cvs.module" value="pear/PHP_CodeSniffer" />
+  <property name="working.dir" value="/tmp/phpcs-test" />
+  <property name="test.coverage" value="/tmp/phpcs-cov" />
+
+  <target name="phpunit" depends="update,prepare">
+    <exec executable="phpunit">
+      <arg line="--coverage-html ${test.coverage}
+      	         PHP_CodeSniffer_AllTests 
+      	         ${working.dir}/${cvs.module}/tests/AllTests.php" />
+    </exec>
+  </target>
+
+  <target name="prepare">
+    <delete dir="${working.dir}/${cvs.module}/CodeSniffer/Standards/phpBB" />
+    <copy todir="${working.dir}/${cvs.module}/CodeSniffer/Standards/phpBB">
+      <fileset dir="${basedir}/Sniffs" />
+    </copy>
+
+    <delete dir="${working.dir}/${cvs.module}/CodeSniffer/Standards/phpBB/Tests" />
+    <copy todir="${working.dir}/${cvs.module}/CodeSniffer/Standards/phpBB/Tests">
+      <fileset dir="${basedir}/Tests" />
+    </copy>
+  </target>
+
+  <target name="cleanup">
+    <delete dir="${working.dir}" />
+  </target>
+
+  <target name="update">
+    <exec executable="cvs" dir="${working.dir}/${cvs.module}">
+      <arg line="up" />
+    </exec>
+  </target>
+
+  <target name="checkout" depends="cleanup">
+    <cvspass cvsroot=":pserver:cvsread@cvs.php.net:/repository" password="phpfi" />
+    <cvs cvsRoot=":pserver:cvsread@cvs.php.net:/repository"
+         package="${cvs.module}"
+         dest="${working.dir}" />
+  </target>
+
+
+</project>
