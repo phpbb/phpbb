@@ -2,8 +2,8 @@
 <project name="code_sniffer" basedir="." default="phpunit">
 
   <property name="cvs.module" value="pear/PHP_CodeSniffer" />
-  <property name="working.dir" value="/tmp/phpcs-test" />
-  <property name="test.coverage" value="/tmp/phpcs-cov" />
+  <property name="working.dir" value="${basedir}/_work/code" />
+  <property name="test.coverage" value="${basedir}/_work/coverage" />
 
   <target name="phpunit" depends="update,prepare">
     <exec executable="phpunit">
@@ -14,15 +14,20 @@
   </target>
 
   <target name="prepare">
-    <delete dir="${working.dir}/${cvs.module}/CodeSniffer/Standards/phpBB" />
-    <copy todir="${working.dir}/${cvs.module}/CodeSniffer/Standards/phpBB">
+    <delete dir="${working.dir}/${cvs.module}/CodeSniffer/Standards/phpbb" />
+  	<mkdir dir="${working.dir}/${cvs.module}/CodeSniffer/Standards/phpbb"/>
+  	
+    <copy todir="${working.dir}/${cvs.module}/CodeSniffer/Standards/phpbb/Sniffs">
       <fileset dir="${basedir}/Sniffs" />
     </copy>
 
-    <delete dir="${working.dir}/${cvs.module}/CodeSniffer/Standards/phpBB/Tests" />
-    <copy todir="${working.dir}/${cvs.module}/CodeSniffer/Standards/phpBB/Tests">
+    <copy todir="${working.dir}/${cvs.module}/CodeSniffer/Standards/phpbb/Tests">
       <fileset dir="${basedir}/Tests" />
     </copy>
+  	
+  	<copy todir="${working.dir}/${cvs.module}/CodeSniffer/Standards/phpbb">
+  	  <fileset file="${basedir}/phpbbCodingStandard.php" />
+  	</copy>
   </target>
 
   <target name="cleanup">
@@ -41,6 +46,20 @@
          package="${cvs.module}"
          dest="${working.dir}" />
   </target>
+	
+  <!--
+  Installs the sniffs on my local development machine
+  -->
+  <target name="install">
+	<delete dir="/usr/local/pear/PEAR/PHP/CodeSniffer/Standards/phpbb" />
+  	<mkdir dir="/usr/local/pear/PEAR/PHP/CodeSniffer/Standards/phpbb" />
 
+  	<copy todir="/usr/local/pear/PEAR/PHP/CodeSniffer/Standards/phpbb">
+  	  <fileset file="${basedir}/phpbbCodingStandard.php" />
+  	</copy>
+    <copy todir="/usr/local/pear/PEAR/PHP/CodeSniffer/Standards/phpbb/Sniffs">
+      <fileset dir="${basedir}/Sniffs" />
+    </copy>
+  </target>
 
 </project>
