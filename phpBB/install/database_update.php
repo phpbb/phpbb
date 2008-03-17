@@ -480,6 +480,20 @@ $database_update_info = array(
 			FORUMS_TABLE			=> array(
 				'display_subforum_list'		=> array('BOOL', 1),
 			),
+			SESSIONS_TABLE			=> array(
+				'session_forum_id'		=> array('UINT', 0),
+			),
+		),
+		'add_index'		=> array(
+			SESSIONS_TABLE			=> array(
+				'session_forum_id'		=> 'session_forum_id',
+			),
+			GROUP_TABLE			=> array(
+				'group_legend_name'		=> array('group_legend', 'group_name'),
+			),
+		),
+		'drop_keys'		=> array(
+			GROUP_TABLE			=> array('group_legend'),
 		),
 	),
 );

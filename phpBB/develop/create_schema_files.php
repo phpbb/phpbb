@@ -1144,7 +1144,7 @@ function get_schema_struct()
 		),
 		'PRIMARY_KEY'	=> 'group_id',
 		'KEYS'			=> array(
-			'group_legend'			=> array('INDEX', 'group_legend'),
+			'group_legend_name'		=> array('INDEX', array('group_legend', 'group_name')),
 		),
 	);
 
@@ -1520,6 +1520,7 @@ function get_schema_struct()
 		'COLUMNS'		=> array(
 			'session_id'			=> array('CHAR:32', ''),
 			'session_user_id'		=> array('UINT', 0),
+			'session_forum_id'		=> array('UINT', 0),
 			'session_last_visit'	=> array('TIMESTAMP', 0),
 			'session_start'			=> array('TIMESTAMP', 0),
 			'session_time'			=> array('TIMESTAMP', 0),
@@ -1535,6 +1536,7 @@ function get_schema_struct()
 		'KEYS'			=> array(
 			'session_time'		=> array('INDEX', 'session_time'),
 			'session_user_id'	=> array('INDEX', 'session_user_id'),
+			'session_forum_id'	=> array('INDEX', 'session_forum_id'),
 		),
 	);
 

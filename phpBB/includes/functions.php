@@ -3099,6 +3099,207 @@ function msg_handler($errno, $msg_text, $errfile, $errline)
 }
 
 /**
+* Queries the session table to get information about online guests
+* @param int $forum_id Limits the search to the forum with this id
+* @return int The number of active distinct guest sessions
+*/
+function obtain_guest_count($forum_id = 0)
+{
+	global $db, $config;
+	
+	if ($forum_id)
+	{
+		$reading_sql = ' AND s.session_forum_id = ' . (int) $f;
+	} 
+	else
+	{
+		$reading_sql = '';
+	}
+	$time = (time() - (intval($config['load_online_time']) * 60)); 
+	 
+ 	// Get number of online guests
+
+	if ($db->sql_layer === 'sqlite')
+	{
+		$sql = 'SELECT COUNT(session_ip) as num_guests
+			FROM (
+				SELECT DISTINCT s.session_ip
+				FROM ' . SESSIONS_TABLE . ' s
+				WHERE s.session_user_id = ' . ANONYMOUS . '
+					AND s.session_time >= ' . ($time - ((int) ($time % 60))) .
+				$reading_sql .
+			')';
+	}
+	else
+	{
+		$sql = 'SELECT COUNT(DISTINCT s.session_ip) as num_guests
+			FROM ' . SESSIONS_TABLE . ' s
+			WHERE s.session_user_id = ' . ANONYMOUS . '
+				AND s.session_time >= ' . ($time - ((int) ($time % 60))) .
+			$reading_sql;
+	}
+	$result = $db->sql_query($sql, 60);
+	$guests_online = (int) $db->sql_fetchfield('num_guests');
+	$db->sql_freeresult($result);
+	
+	return $guests_online;
+}
+
+/**
+* Queries the session table to get information about online users
+* @param int $forum_id Limits the search to the forum with this id
+* @return array An array containing the ids of online, hidden and visible users, as well as statistical info
+*/
+function obtain_users_online($forum_id = 0)
+{
+	global $db, $config, $user;
+	$logged_visible_online = $logged_hidden_online = $guests_online = $prev_user_id = 0;
+	$reading_sql = $prev_session_ip = '';
+
+	if ($forum_id !== 0)
+	{
+		$reading_sql = ' AND s.session_forum_id = ' . (int) $forum_id;
+	}
+	$online_users = array(
+		'online_users'			=> array(),
+		'hidden_users'			=> array(),
+		'total_online'			=> 0,
+		'visible_online'		=> 0,
+		'hidden_online'			=> 0,
+		'guests_online'			=> 0,
+	);
+	if ($config['load_online_guests'])
+	{
+		$online_users['guests_online'] = obtain_guest_count($forum_id);
+	}
+	
+	// a little discrete magic to cache this for 30 seconds
+	$time = (time() - (intval($config['load_online_time']) * 60)); 
+	$sql = 'SELECT s.session_user_id, s.session_ip, s.session_viewonline
+		FROM ' . SESSIONS_TABLE . ' s
+		WHERE s.session_time >= ' . ($time - ((int) ($time % 30))) .
+			$reading_sql .
+		' AND s.session_user_id <> ' . ANONYMOUS;
+	$result = $db->sql_query($sql, 30); 
+
+	while ($row = $db->sql_fetchrow($result))
+	{
+
+		// Skip multiple sessions for one user
+		if (!isset($online_users['online_users'][$row['session_user_id']]))
+		{
+			$online_users['online_users'][$row['session_user_id']] = $row['session_user_id'];
+			if ($row['session_viewonline'])
+			{
+				$online_users['visible_online']++;
+			}
+			else
+			{
+				$online_users['hidden_users'][$row['session_user_id']] = $row['session_user_id'];
+				$online_users['hidden_online']++;
+			}
+		}
+	}
+	$online_users['total_online'] = $online_users['guests_online'] + $online_users['visible_online'] + $online_users['hidden_online'];
+	$db->sql_freeresult($result);
+	
+	return $online_users;
+}
+
+/**
+* Uses the result of obtain_users_online to generate a localized, readable representation.
+* @param mixed $online_users result of obtain_users_online - array with user_id lists for total, hidden and visible users, and statistics
+* @param int $forum_id Indicate that the data is limited to one forum and not global.
+* @return array An array containing the string for output to the template
+*/
+function obtain_users_online_string($online_users, $forum_id = 0)
+{
+	global $db, $user, $auth;
+	$user_online_link = $online_userlist = '';
+		
+	if (count($online_users['online_users']))
+	{
+		$sql = 'SELECT u.username, u.username_clean, u.user_id, u.user_type, u.user_allow_viewonline, u.user_colour
+				FROM ' . USERS_TABLE . ' u 
+				WHERE ' . $db->sql_in_set('u.user_id', $online_users['online_users']) . '
+				ORDER BY u.username_clean ASC';
+		$result = $db->sql_query($sql, 100);
+
+		while ($row = $db->sql_fetchrow($result))
+		{
+			// User is logged in and therefore not a guest
+			if ($row['user_id'] != ANONYMOUS)
+			{
+				if (isset($online_users['hidden_users'][$row['user_id']]))
+				{
+					$row['username'] = '<em>' . $row['username'] . '</em>';
+				}
+
+				if (!isset($online_users['hidden_users'][$row['user_id']]) || $auth->acl_get('u_viewonline'))
+				{
+					$user_online_link = get_username_string(($row['user_type'] <> USER_IGNORE) ? 'full' : 'no_profile', $row['user_id'], $row['username'], $row['user_colour']);
+					$online_userlist .= ($online_userlist != '') ? ', ' . $user_online_link : $user_online_link;
+				}
+			}
+		}
+		$db->sql_freeresult($result);
+	}
+
+	if (!$online_userlist)
+	{
+		$online_userlist = $user->lang['NO_ONLINE_USERS'];
+	}
+
+	if ($forum_id === 0)
+	{
+		$online_userlist = $user->lang['REGISTERED_USERS'] . ' ' . $online_userlist;
+	}
+	else
+	{
+		$l_online = ($online_users['guests_online'] === 1) ? $user->lang['BROWSING_FORUM_GUEST'] : $user->lang['BROWSING_FORUM_GUESTS'];
+		$online_userlist = sprintf($l_online, $online_userlist, $online_users['guests_online']);
+	}
+
+	// Build online listing
+	$vars_online = array(
+		'ONLINE'	=> array('total_online', 'l_t_user_s'),
+		'REG'		=> array('visible_online', 'l_r_user_s'),
+		'HIDDEN'	=> array('hidden_online', 'l_h_user_s'),
+		'GUEST'		=> array('guests_online', 'l_g_user_s')
+	);
+
+	foreach ($vars_online as $l_prefix => $var_ary)
+	{
+		switch ($online_users[$var_ary[0]])
+		{
+			case 0:
+				${$var_ary[1]} = $user->lang[$l_prefix . '_USERS_ZERO_TOTAL'];
+			break;
+
+			case 1:
+				${$var_ary[1]} = $user->lang[$l_prefix . '_USER_TOTAL'];
+			break;
+
+			default:
+				${$var_ary[1]} = $user->lang[$l_prefix . '_USERS_TOTAL'];
+			break;
+		}
+	}
+	unset($vars_online);
+
+	$l_online_users = sprintf($l_t_user_s, $online_users['total_online']);
+	$l_online_users .= sprintf($l_r_user_s, $online_users['visible_online']);
+	$l_online_users .= sprintf($l_h_user_s, $online_users['hidden_online']);
+	$l_online_users .= sprintf($l_g_user_s, $online_users['guests_online']);
+
+	return array(
+		'online_userlist'	=> $online_userlist,
+		'l_online_users'	=> $l_online_users,
+	);
+}
+
+
+/**
 * Generate page header
 */
 function page_header($page_title = '', $display_online_list = true)
@@ -3141,146 +3342,20 @@ function page_header($page_title = '', $display_online_list = true)
 
 	if ($config['load_online'] && $config['load_online_time'] && $display_online_list)
 	{
-		$logged_visible_online = $logged_hidden_online = $guests_online = $prev_user_id = 0;
-		$prev_session_ip = $reading_sql = '';
-
-		if (!empty($_REQUEST['f']))
-		{
-			$f = request_var('f', 0);
-
-			$reading_sql = ' AND s.session_page ' . $db->sql_like_expression("{$db->any_char}_f_={$f}x{$db->any_char}");
-		}
-
-		// Get number of online guests
-		if (!$config['load_online_guests'])
-		{
-			if ($db->sql_layer === 'sqlite')
-			{
-				$sql = 'SELECT COUNT(session_ip) as num_guests
-					FROM (
-						SELECT DISTINCT s.session_ip
-							FROM ' . SESSIONS_TABLE . ' s
-							WHERE s.session_user_id = ' . ANONYMOUS . '
-								AND s.session_time >= ' . (time() - ($config['load_online_time'] * 60)) .
-								$reading_sql .
-					')';
-			}
-			else
-			{
-				$sql = 'SELECT COUNT(DISTINCT s.session_ip) as num_guests
-					FROM ' . SESSIONS_TABLE . ' s
-					WHERE s.session_user_id = ' . ANONYMOUS . '
-						AND s.session_time >= ' . (time() - ($config['load_online_time'] * 60)) .
-					$reading_sql;
-			}
-			$result = $db->sql_query($sql);
-			$guests_online = (int) $db->sql_fetchfield('num_guests');
-			$db->sql_freeresult($result);
-		}
-
-		$sql = 'SELECT u.username, u.username_clean, u.user_id, u.user_type, u.user_allow_viewonline, u.user_colour, s.session_ip, s.session_viewonline
-			FROM ' . USERS_TABLE . ' u, ' . SESSIONS_TABLE . ' s
-			WHERE s.session_time >= ' . (time() - (intval($config['load_online_time']) * 60)) .
-				$reading_sql .
-				((!$config['load_online_guests']) ? ' AND s.session_user_id <> ' . ANONYMOUS : '') . '
-				AND u.user_id = s.session_user_id
-			ORDER BY u.username_clean ASC, s.session_ip ASC';
-		$result = $db->sql_query($sql);
-
-		while ($row = $db->sql_fetchrow($result))
-		{
-			// User is logged in and therefore not a guest
-			if ($row['user_id'] != ANONYMOUS)
-			{
-				// Skip multiple sessions for one user
-				if ($row['user_id'] != $prev_user_id)
-				{
-					if ($row['session_viewonline'])
-					{
-						$logged_visible_online++;
-					}
-					else
-					{
-						$row['username'] = '<em>' . $row['username'] . '</em>';
-						$logged_hidden_online++;
-					}
-
-					if (($row['session_viewonline']) || $auth->acl_get('u_viewonline'))
-					{
-						$user_online_link = get_username_string(($row['user_type'] <> USER_IGNORE) ? 'full' : 'no_profile', $row['user_id'], $row['username'], $row['user_colour']);
-						$online_userlist .= ($online_userlist != '') ? ', ' . $user_online_link : $user_online_link;
-					}
-				}
-
-				$prev_user_id = $row['user_id'];
-			}
-			else
-			{
-				// Skip multiple sessions for one user
-				if ($row['session_ip'] != $prev_session_ip)
-				{
-					$guests_online++;
-				}
-			}
-
-			$prev_session_ip = $row['session_ip'];
-		}
-		$db->sql_freeresult($result);
-
-		if (!$online_userlist)
-		{
-			$online_userlist = $user->lang['NO_ONLINE_USERS'];
-		}
-
-		if (empty($_REQUEST['f']))
-		{
-			$online_userlist = $user->lang['REGISTERED_USERS'] . ' ' . $online_userlist;
-		}
-		else
-		{
-			$l_online = ($guests_online == 1) ? $user->lang['BROWSING_FORUM_GUEST'] : $user->lang['BROWSING_FORUM_GUESTS'];
-			$online_userlist = sprintf($l_online, $online_userlist, $guests_online);
-		}
-
-		$total_online_users = $logged_visible_online + $logged_hidden_online + $guests_online;
+ 
+		$f = request_var('f', 0);
+		$f = max($f, 0);
+		$online_users = obtain_users_online($f);
+		$user_online_strings = obtain_users_online_string($online_users, $f);
+		$l_online_users = $user_online_strings['l_online_users'];
+		$online_userlist = $user_online_strings['online_userlist'];
+		$total_online_users = $online_users['total_online'];
 
 		if ($total_online_users > $config['record_online_users'])
 		{
 			set_config('record_online_users', $total_online_users, true);
 			set_config('record_online_date', time(), true);
 		}
-
-		// Build online listing
-		$vars_online = array(
-			'ONLINE'	=> array('total_online_users', 'l_t_user_s'),
-			'REG'		=> array('logged_visible_online', 'l_r_user_s'),
-			'HIDDEN'	=> array('logged_hidden_online', 'l_h_user_s'),
-			'GUEST'		=> array('guests_online', 'l_g_user_s')
-		);
-
-		foreach ($vars_online as $l_prefix => $var_ary)
-		{
-			switch (${$var_ary[0]})
-			{
-				case 0:
-					${$var_ary[1]} = $user->lang[$l_prefix . '_USERS_ZERO_TOTAL'];
-				break;
-
-				case 1:
-					${$var_ary[1]} = $user->lang[$l_prefix . '_USER_TOTAL'];
-				break;
-
-				default:
-					${$var_ary[1]} = $user->lang[$l_prefix . '_USERS_TOTAL'];
-				break;
-			}
-		}
-		unset($vars_online);
-
-		$l_online_users = sprintf($l_t_user_s, $total_online_users);
-		$l_online_users .= sprintf($l_r_user_s, $logged_visible_online);
-		$l_online_users .= sprintf($l_h_user_s, $logged_hidden_online);
-		$l_online_users .= sprintf($l_g_user_s, $guests_online);
 
 		$l_online_record = sprintf($user->lang['RECORD_ONLINE_USERS'], $config['record_online_users'], $user->format_date($config['record_online_date']));
 

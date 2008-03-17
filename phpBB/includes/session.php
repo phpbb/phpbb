@@ -129,7 +129,8 @@ class session
 			'script_path'		=> str_replace(' ', '%20', htmlspecialchars($script_path)),
 			'root_script_path'	=> str_replace(' ', '%20', htmlspecialchars($root_script_path)),
 
-			'page'				=> $page
+			'page'				=> $page,
+			'forum'				=> (isset($_REQUEST['f']) && $_REQUEST['f'] > 0) ?  (int) $_REQUEST['f'] : 0,
 		);
 
 		return $page_array;
@@ -186,6 +187,8 @@ class session
 
 		// Add forum to the page for tracking online users - also adding a "x" to the end to properly identify the number
 		$this->page['page'] .= (isset($_REQUEST['f'])) ? ((strpos($this->page['page'], '?') !== false) ? '&' : '?') . '_f_=' . (int) $_REQUEST['f'] . 'x' : '';
+		
+
 
 		if (isset($_COOKIE[$config['cookie_name'] . '_sid']) || isset($_COOKIE[$config['cookie_name'] . '_u']))
 		{
@@ -310,6 +313,7 @@ class session
 							if ($this->update_session_page)
 							{
 								$sql_ary['session_page'] = substr($this->page['page'], 0, 199);
+								$sql_ary['session_forum_id'] = $this->page['forum'];
 							}
 
 							$sql = 'UPDATE ' . SESSIONS_TABLE . ' SET ' . $db->sql_build_array('UPDATE', $sql_ary) . "
@@ -550,6 +554,7 @@ class session
 					if ($this->update_session_page)
 					{
 						$sql_ary['session_page'] = substr($this->page['page'], 0, 199);
+						$sql_ary['session_forum_id'] = $this->page['forum'];
 					}
 
 					$sql = 'UPDATE ' . SESSIONS_TABLE . ' SET ' . $db->sql_build_array('UPDATE', $sql_ary) . "
@@ -594,6 +599,7 @@ class session
 		if ($this->update_session_page)
 		{
 			$sql_ary['session_page'] = (string) substr($this->page['page'], 0, 199);
+			$sql_ary['session_forum_id'] = $this->page['forum'];
 		}
 
 		$db->sql_return_on_error(true);
@@ -627,6 +633,7 @@ class session
 
 		$sql_ary['session_id'] = (string) $this->session_id;
 		$sql_ary['session_page'] = (string) substr($this->page['page'], 0, 199);
+		$sql_ary['session_forum_id'] = $this->page['forum'];
 
 		$sql = 'INSERT INTO ' . SESSIONS_TABLE . ' ' . $db->sql_build_array('INSERT', $sql_ary);
 		$db->sql_query($sql);
