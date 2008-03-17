@@ -3109,7 +3109,7 @@ function obtain_guest_count($forum_id = 0)
 	
 	if ($forum_id)
 	{
-		$reading_sql = ' AND s.session_forum_id = ' . (int) $f;
+		$reading_sql = ' AND s.session_forum_id = ' . (int) $forum_id;
 	} 
 	else
 	{
