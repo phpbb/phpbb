@@ -3153,9 +3153,8 @@ function obtain_guest_count($forum_id = 0)
 function obtain_users_online($forum_id = 0)
 {
 	global $db, $config, $user;
-	$logged_visible_online = $logged_hidden_online = $guests_online = $prev_user_id = 0;
-	$reading_sql = '';
 
+	$reading_sql = '';
 	if ($forum_id !== 0)
 	{
 		$reading_sql = ' AND s.session_forum_id = ' . (int) $forum_id;
@@ -3217,8 +3216,10 @@ function obtain_users_online($forum_id = 0)
 function obtain_users_online_string($online_users, $forum_id = 0)
 {
 	global $db, $user, $auth;
+
 	$user_online_link = $online_userlist = '';
-		
+	$prev_user_id = 0;
+
 	if (sizeof($online_users['online_users']))
 	{
 		$sql = 'SELECT u.username, u.username_clean, u.user_id, u.user_type, u.user_allow_viewonline, u.user_colour
@@ -3239,8 +3240,7 @@ function obtain_users_online_string($online_users, $forum_id = 0)
 				}
 				else
 				{
-					$row['username'] = '<em>' . $row['username'] . '</em>';
-					$logged_hidden_online++;
+					$row['username'] = $row['username'];
 				}
 
 				if (!isset($online_users['hidden_users'][$row['user_id']]) || $auth->acl_get('u_viewonline'))
