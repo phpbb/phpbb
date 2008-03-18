@@ -1121,16 +1121,15 @@ function user_notification($mode, $subject, $topic_title, $forum_name, $forum_id
 
 	// Get banned User ID's
 	$sql = 'SELECT ban_userid
-		FROM ' . BANLIST_TABLE;
+		FROM ' . BANLIST_TABLE . '
+		WHERE ban_userid <> 0
+			AND ban_exclude <> 1';
 	$result = $db->sql_query($sql);
 
 	$sql_ignore_users = ANONYMOUS . ', ' . $user->data['user_id'];
 	while ($row = $db->sql_fetchrow($result))
 	{
-		if (isset($row['ban_userid']))
-		{
-			$sql_ignore_users .= ', ' . $row['ban_userid'];
-		}
+		$sql_ignore_users .= ', ' . (int) $row['ban_userid'];
 	}
 	$db->sql_freeresult($result);
 
