@@ -1187,7 +1187,7 @@ switch ($mode)
 			'sd'			=> array('sd', 'a'),
 			'form'			=> array('form', ''),
 			'field'			=> array('field', ''),
-			'select_single'	=> array('select_single', 0),
+			'select_single'	=> array('select_single', $select_single),
 			'username'		=> array('username', '', true),
 			'email'			=> array('email', ''),
 			'icq'			=> array('icq', ''),
