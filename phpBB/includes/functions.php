@@ -3238,10 +3238,6 @@ function obtain_users_online_string($online_users, $forum_id = 0)
 				{
 					$row['username'] = '<em>' . $row['username'] . '</em>';
 				}
-				else
-				{
-					$row['username'] = $row['username'];
-				}
 
 				if (!isset($online_users['hidden_users'][$row['user_id']]) || $auth->acl_get('u_viewonline'))
 				{
