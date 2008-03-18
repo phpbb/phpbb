@@ -1702,7 +1702,7 @@ class install_install extends module
 
 			if (is_dir($path) && file_exists($path . '/iso.txt'))
 			{
-				$lang_file = file("{$phpbb_root_path}language/$path/iso.txt");
+				$lang_file = file("$path/iso.txt");
 
 				$lang_pack = array(
 					'lang_iso'			=> basename($path),
