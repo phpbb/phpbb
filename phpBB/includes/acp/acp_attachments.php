@@ -940,6 +940,7 @@ class acp_attachments
 								AND is_orphan = 1';
 						$result = $db->sql_query($sql);
 
+						$files_added = $space_taken = 0;
 						while ($row = $db->sql_fetchrow($result))
 						{
 							$post_row = $post_info[$upload_list[$row['attach_id']]];
@@ -979,9 +980,18 @@ class acp_attachments
 								WHERE topic_id = ' . $post_row['topic_id'];
 							$db->sql_query($sql);
 
+							$space_taken += $row['filesize'];
+							$files_added++;
+
 							add_log('admin', 'LOG_ATTACH_FILEUPLOAD', $post_row['post_id'], $row['real_filename']);
 						}
 						$db->sql_freeresult($result);
+
+						if ($files_added)
+						{
+							set_config('upload_dir_size', $config['upload_dir_size'] + $space_taken, true);
+							set_config('num_files', $config['num_files'] + $files_added, true);
+						}
 					}
 				}
 
