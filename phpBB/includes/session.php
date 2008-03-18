@@ -130,7 +130,7 @@ class session
 			'root_script_path'	=> str_replace(' ', '%20', htmlspecialchars($root_script_path)),
 
 			'page'				=> $page,
-			'forum'				=> (isset($_REQUEST['f']) && $_REQUEST['f'] > 0) ?  (int) $_REQUEST['f'] : 0,
+			'forum'				=> (isset($_REQUEST['f']) && $_REQUEST['f'] > 0) ? (int) $_REQUEST['f'] : 0,
 		);
 
 		return $page_array;
@@ -184,11 +184,6 @@ class session
 		{
 			$this->forwarded_for = '';
 		}
-
-		// Add forum to the page for tracking online users - also adding a "x" to the end to properly identify the number
-		$this->page['page'] .= (isset($_REQUEST['f'])) ? ((strpos($this->page['page'], '?') !== false) ? '&' : '?') . '_f_=' . (int) $_REQUEST['f'] . 'x' : '';
-		
-
 
 		if (isset($_COOKIE[$config['cookie_name'] . '_sid']) || isset($_COOKIE[$config['cookie_name'] . '_u']))
 		{
@@ -614,6 +609,8 @@ class session
 			// Limit new sessions in 1 minute period (if required)
 			if (empty($this->data['session_time']) && $config['active_sessions'])
 			{
+				$db->sql_return_on_error(false);
+
 				$sql = 'SELECT COUNT(session_id) AS sessions
 					FROM ' . SESSIONS_TABLE . '
 					WHERE session_time >= ' . ($this->time_now - 60);
@@ -629,6 +626,9 @@ class session
 			}
 		}
 
+		// Since we re-create the session id here, the inserted row must be unique. Therefore, we display potential errors.
+		$db->sql_return_on_error(false);
+
 		$this->session_id = $this->data['session_id'] = md5(unique_id());
 
 		$sql_ary['session_id'] = (string) $this->session_id;
@@ -637,8 +637,6 @@ class session
 
 		$sql = 'INSERT INTO ' . SESSIONS_TABLE . ' ' . $db->sql_build_array('INSERT', $sql_ary);
 		$db->sql_query($sql);
-
-		$db->sql_return_on_error(false);
 
 		// Regenerate autologin/persistent login key
 		if ($session_autologin)

@@ -3154,12 +3154,13 @@ function obtain_users_online($forum_id = 0)
 {
 	global $db, $config, $user;
 	$logged_visible_online = $logged_hidden_online = $guests_online = $prev_user_id = 0;
-	$reading_sql = $prev_session_ip = '';
+	$reading_sql = '';
 
 	if ($forum_id !== 0)
 	{
 		$reading_sql = ' AND s.session_forum_id = ' . (int) $forum_id;
 	}
+
 	$online_users = array(
 		'online_users'			=> array(),
 		'hidden_users'			=> array(),
@@ -3168,6 +3169,7 @@ function obtain_users_online($forum_id = 0)
 		'hidden_online'			=> 0,
 		'guests_online'			=> 0,
 	);
+
 	if ($config['load_online_guests'])
 	{
 		$online_users['guests_online'] = obtain_guest_count($forum_id);
@@ -3175,6 +3177,7 @@ function obtain_users_online($forum_id = 0)
 	
 	// a little discrete magic to cache this for 30 seconds
 	$time = (time() - (intval($config['load_online_time']) * 60)); 
+
 	$sql = 'SELECT s.session_user_id, s.session_ip, s.session_viewonline
 		FROM ' . SESSIONS_TABLE . ' s
 		WHERE s.session_time >= ' . ($time - ((int) ($time % 30))) .
@@ -3184,7 +3187,6 @@ function obtain_users_online($forum_id = 0)
 
 	while ($row = $db->sql_fetchrow($result))
 	{
-
 		// Skip multiple sessions for one user
 		if (!isset($online_users['online_users'][$row['session_user_id']]))
 		{
@@ -3217,7 +3219,7 @@ function obtain_users_online_string($online_users, $forum_id = 0)
 	global $db, $user, $auth;
 	$user_online_link = $online_userlist = '';
 		
-	if (count($online_users['online_users']))
+	if (sizeof($online_users['online_users']))
 	{
 		$sql = 'SELECT u.username, u.username_clean, u.user_id, u.user_type, u.user_allow_viewonline, u.user_colour
 				FROM ' . USERS_TABLE . ' u 
@@ -3225,14 +3227,20 @@ function obtain_users_online_string($online_users, $forum_id = 0)
 				ORDER BY u.username_clean ASC';
 		$result = $db->sql_query($sql, 100);
 
+		$userlist_array = array();
 		while ($row = $db->sql_fetchrow($result))
 		{
-			// User is logged in and therefore not a guest
-			if ($row['user_id'] != ANONYMOUS)
+			// Skip multiple sessions for one user
+			if ($row['user_id'] != $prev_user_id)
 			{
 				if (isset($online_users['hidden_users'][$row['user_id']]))
 				{
 					$row['username'] = '<em>' . $row['username'] . '</em>';
+				}
+				else
+				{
+					$row['username'] = '<em>' . $row['username'] . '</em>';
+					$logged_hidden_online++;
 				}
 
 				if (!isset($online_users['hidden_users'][$row['user_id']]) || $auth->acl_get('u_viewonline'))
@@ -3342,11 +3350,11 @@ function page_header($page_title = '', $display_online_list = true)
 
 	if ($config['load_online'] && $config['load_online_time'] && $display_online_list)
 	{
- 
 		$f = request_var('f', 0);
 		$f = max($f, 0);
 		$online_users = obtain_users_online($f);
 		$user_online_strings = obtain_users_online_string($online_users, $f);
+
 		$l_online_users = $user_online_strings['l_online_users'];
 		$online_userlist = $user_online_strings['online_userlist'];
 		$total_online_users = $online_users['total_online'];
@@ -3414,7 +3422,7 @@ function page_header($page_title = '', $display_online_list = true)
 	$user_lang = $user->lang['USER_LANG'];
 	if (strpos($user_lang, '-x-') !== false)
 	{
-	    $user_lang = substr($user_lang, 0, strpos($user_lang, '-x-'));
+		$user_lang = substr($user_lang, 0, strpos($user_lang, '-x-'));
 	}
 
 	// The following assigns all _common_ variables that may be used at any point in a template.

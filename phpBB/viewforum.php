@@ -158,7 +158,7 @@ if (!$auth->acl_get('f_read', $forum_id))
 	$template->assign_vars(array(
 		'S_NO_READ_ACCESS'		=> true,
 		'S_AUTOLOGIN_ENABLED'	=> ($config['allow_autologin']) ? true : false,
-		'S_LOGIN_ACTION'		=> append_sid("{$phpbb_root_path}ucp.$phpEx", 'mode=login') . '&amp;redirect=' . urlencode(str_replace('&amp;', '&', build_url(array('_f_')))),
+		'S_LOGIN_ACTION'		=> append_sid("{$phpbb_root_path}ucp.$phpEx", 'mode=login') . '&amp;redirect=' . urlencode(str_replace('&amp;', '&', build_url())),
 	));
 
 	page_footer();
