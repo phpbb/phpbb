@@ -3159,7 +3159,7 @@ function obtain_users_online($forum_id = 0)
 	{
 		$reading_sql = ' AND s.session_forum_id = ' . (int) $forum_id;
 	}
-
+$config['load_online_time'] = 500000;
 	$online_users = array(
 		'online_users'			=> array(),
 		'hidden_users'			=> array(),
@@ -3182,21 +3182,21 @@ function obtain_users_online($forum_id = 0)
 		WHERE s.session_time >= ' . ($time - ((int) ($time % 30))) .
 			$reading_sql .
 		' AND s.session_user_id <> ' . ANONYMOUS;
-	$result = $db->sql_query($sql, 30); 
+	$result = $db->sql_query($sql); 
 
 	while ($row = $db->sql_fetchrow($result))
 	{
 		// Skip multiple sessions for one user
 		if (!isset($online_users['online_users'][$row['session_user_id']]))
 		{
-			$online_users['online_users'][$row['session_user_id']] = $row['session_user_id'];
+			$online_users['online_users'][$row['session_user_id']] = (int) $row['session_user_id'];
 			if ($row['session_viewonline'])
 			{
 				$online_users['visible_online']++;
 			}
 			else
 			{
-				$online_users['hidden_users'][$row['session_user_id']] = $row['session_user_id'];
+				$online_users['hidden_users'][$row['session_user_id']] = (int) $row['session_user_id'];
 				$online_users['hidden_online']++;
 			}
 		}
@@ -3218,21 +3218,19 @@ function obtain_users_online_string($online_users, $forum_id = 0)
 	global $db, $user, $auth;
 
 	$user_online_link = $online_userlist = '';
-	$prev_user_id = 0;
 
 	if (sizeof($online_users['online_users']))
 	{
-		$sql = 'SELECT u.username, u.username_clean, u.user_id, u.user_type, u.user_allow_viewonline, u.user_colour
-				FROM ' . USERS_TABLE . ' u 
-				WHERE ' . $db->sql_in_set('u.user_id', $online_users['online_users']) . '
-				ORDER BY u.username_clean ASC';
-		$result = $db->sql_query($sql, 100);
+		$sql = 'SELECT username, username_clean, user_id, user_type, user_allow_viewonline, user_colour
+				FROM ' . USERS_TABLE . '
+				WHERE ' . $db->sql_in_set('user_id', $online_users['online_users']) . '
+				ORDER BY username_clean ASC';
+		$result = $db->sql_query($sql);
 
-		$userlist_array = array();
 		while ($row = $db->sql_fetchrow($result))
 		{
-			// Skip multiple sessions for one user
-			if ($row['user_id'] != $prev_user_id)
+			// User is logged in and therefore not a guest
+			if ($row['user_id'] != ANONYMOUS)
 			{
 				if (isset($online_users['hidden_users'][$row['user_id']]))
 				{
