@@ -3159,7 +3159,7 @@ function obtain_users_online($forum_id = 0)
 	{
 		$reading_sql = ' AND s.session_forum_id = ' . (int) $forum_id;
 	}
-$config['load_online_time'] = 500000;
+
 	$online_users = array(
 		'online_users'			=> array(),
 		'hidden_users'			=> array(),
@@ -3182,7 +3182,7 @@ $config['load_online_time'] = 500000;
 		WHERE s.session_time >= ' . ($time - ((int) ($time % 30))) .
 			$reading_sql .
 		' AND s.session_user_id <> ' . ANONYMOUS;
-	$result = $db->sql_query($sql); 
+	$result = $db->sql_query($sql, 30); 
 
 	while ($row = $db->sql_fetchrow($result))
 	{
