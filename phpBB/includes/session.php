@@ -609,7 +609,7 @@ class session
 			// Limit new sessions in 1 minute period (if required)
 			if (empty($this->data['session_time']) && $config['active_sessions'])
 			{
-				$db->sql_return_on_error(false);
+//				$db->sql_return_on_error(false);
 
 				$sql = 'SELECT COUNT(session_id) AS sessions
 					FROM ' . SESSIONS_TABLE . '
@@ -627,7 +627,8 @@ class session
 		}
 
 		// Since we re-create the session id here, the inserted row must be unique. Therefore, we display potential errors.
-		$db->sql_return_on_error(false);
+		// Commented out because it will not allow forums to update correctly
+//		$db->sql_return_on_error(false);
 
 		$this->session_id = $this->data['session_id'] = md5(unique_id());
 
@@ -637,6 +638,8 @@ class session
 
 		$sql = 'INSERT INTO ' . SESSIONS_TABLE . ' ' . $db->sql_build_array('INSERT', $sql_ary);
 		$db->sql_query($sql);
+
+		$db->sql_return_on_error(false);
 
 		// Regenerate autologin/persistent login key
 		if ($session_autologin)
