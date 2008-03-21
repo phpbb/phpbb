@@ -208,7 +208,31 @@ else
 		$row['forum_id'] = false;
 		if (!$auth->acl_get('u_pm_download'))
 		{
+			header('HTTP/1.0 403 forbidden');
 			trigger_error('SORRY_AUTH_VIEW_ATTACH');
+		}
+
+		// Check if the attachment is within the users scope...
+		$sql = 'SELECT user_id, author_id
+			FROM ' . PRIVMSGS_TO_TABLE . '
+			WHERE msg_id = ' . $attachment['post_msg_id'];
+		$result = $db->sql_query($sql);
+
+		$allowed = false;
+		while ($user_row = $db->sql_fetchrow($result))
+		{
+			if ($user->data['user_id'] == $user_row['user_id'] || $user->data['user_id'] == $user_row['author_id'])
+			{
+				$allowed = true;
+				break;
+			}
+		}
+		$db->sql_freeresult($result);
+
+		if (!$allowed)
+		{
+			header('HTTP/1.0 403 forbidden');
+			trigger_error('ERROR_NO_ATTACHMENT');
 		}
 	}
 
@@ -222,6 +246,7 @@ else
 
 if (!download_allowed())
 {
+	header('HTTP/1.0 403 forbidden');
 	trigger_error($user->lang['LINKAGE_FORBIDDEN']);
 }
 
