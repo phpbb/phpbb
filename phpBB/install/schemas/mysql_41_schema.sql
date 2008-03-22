@@ -314,7 +314,7 @@ CREATE TABLE phpbb_groups (
 	group_message_limit mediumint(8) UNSIGNED DEFAULT '0' NOT NULL,
 	group_legend tinyint(1) UNSIGNED DEFAULT '1' NOT NULL,
 	PRIMARY KEY (group_id),
-	KEY group_legend (group_legend)
+	KEY group_legend_name (group_legend, group_name)
 ) CHARACTER SET `utf8` COLLATE `utf8_bin`;
 
 
@@ -660,6 +660,7 @@ CREATE TABLE phpbb_search_wordmatch (
 CREATE TABLE phpbb_sessions (
 	session_id char(32) DEFAULT '' NOT NULL,
 	session_user_id mediumint(8) UNSIGNED DEFAULT '0' NOT NULL,
+	session_forum_id mediumint(8) UNSIGNED DEFAULT '0' NOT NULL,
 	session_last_visit int(11) UNSIGNED DEFAULT '0' NOT NULL,
 	session_start int(11) UNSIGNED DEFAULT '0' NOT NULL,
 	session_time int(11) UNSIGNED DEFAULT '0' NOT NULL,
@@ -672,7 +673,8 @@ CREATE TABLE phpbb_sessions (
 	session_admin tinyint(1) UNSIGNED DEFAULT '0' NOT NULL,
 	PRIMARY KEY (session_id),
 	KEY session_time (session_time),
-	KEY session_user_id (session_user_id)
+	KEY session_user_id (session_user_id),
+	KEY session_forum_id (session_forum_id)
 ) CHARACTER SET `utf8` COLLATE `utf8_bin`;
 
 

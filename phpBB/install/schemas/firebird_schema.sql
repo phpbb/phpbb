@@ -445,7 +445,7 @@ CREATE TABLE phpbb_groups (
 
 ALTER TABLE phpbb_groups ADD PRIMARY KEY (group_id);;
 
-CREATE INDEX phpbb_groups_group_legend ON phpbb_groups(group_legend);;
+CREATE INDEX phpbb_groups_group_legend_name ON phpbb_groups(group_legend, group_name);;
 
 CREATE GENERATOR phpbb_groups_gen;;
 SET GENERATOR phpbb_groups_gen TO 0;;
@@ -960,6 +960,7 @@ CREATE INDEX phpbb_search_wordmatch_post_id ON phpbb_search_wordmatch(post_id);;
 CREATE TABLE phpbb_sessions (
 	session_id CHAR(32) CHARACTER SET NONE DEFAULT '' NOT NULL,
 	session_user_id INTEGER DEFAULT 0 NOT NULL,
+	session_forum_id INTEGER DEFAULT 0 NOT NULL,
 	session_last_visit INTEGER DEFAULT 0 NOT NULL,
 	session_start INTEGER DEFAULT 0 NOT NULL,
 	session_time INTEGER DEFAULT 0 NOT NULL,
@@ -976,6 +977,7 @@ ALTER TABLE phpbb_sessions ADD PRIMARY KEY (session_id);;
 
 CREATE INDEX phpbb_sessions_session_time ON phpbb_sessions(session_time);;
 CREATE INDEX phpbb_sessions_session_user_id ON phpbb_sessions(session_user_id);;
+CREATE INDEX phpbb_sessions_session_forum_id ON phpbb_sessions(session_forum_id);;
 
 # Table: 'phpbb_sessions_keys'
 CREATE TABLE phpbb_sessions_keys (
