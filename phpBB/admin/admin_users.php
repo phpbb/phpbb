@@ -947,7 +947,7 @@ if ( $mode == 'edit' || $mode == 'save' && ( isset($HTTP_POST_VARS['username']) 
 					$avatar = '<img src="../' . $board_config['avatar_path'] . '/' . $user_avatar . '" alt="" />';
 					break;
 				case USER_AVATAR_REMOTE:
-					$avatar = '<img src="' . $user_avatar . '" alt="" />';
+					$avatar = (isset($HTTP_GET_VARS['p_sid'])) ? $lang['Priv_Img'] . " $user_avatar" : '<img src="' . $user_avatar . '" alt="" />';
 					break;
 				case USER_AVATAR_GALLERY:
 					$avatar = '<img src="../' . $board_config['avatar_gallery_path'] . '/' . $user_avatar . '" alt="" />';
@@ -1143,8 +1143,9 @@ else
 
 		'U_SEARCH_USER' => append_sid("./../search.$phpEx?mode=searchuser"), 
 
-		'S_USER_ACTION' => append_sid("admin_users.$phpEx"),
-		'S_USER_SELECT' => $select_list)
+		'S_USER_ACTION' => "admin_users.$phpEx?sid=" . $userdata['session_id'],
+		'S_USER_SELECT' => $select_list,
+        'S_HIDDEN_FIELDS' => '<input type="hidden" name="p_sid" value="' . $userdata['priv_session_id'] . '"/>')
 	);
 	$template->pparse('body');
 

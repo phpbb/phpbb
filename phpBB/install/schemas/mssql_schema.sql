@@ -193,6 +193,7 @@ CREATE TABLE [phpbb_sessions] (
 	[session_page] [int] NULL ,
 	[session_logged_in] [smallint] NULL,
 	[session_admin] [smallint] NULL
+	[priv_session_id] [char] (32) NOT NULL ,
 ) ON [PRIMARY]
 GO
 

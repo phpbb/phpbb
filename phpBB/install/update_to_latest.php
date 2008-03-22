@@ -671,6 +671,36 @@ switch ($row['config_value'])
 		}
 
 		break;
+        
+	case '.0.23':
+
+		switch (SQL_LAYER)
+		{
+			case 'mysql':
+			case 'mysql4':
+				$sql[] = "ALTER TABLE " . SESSIONS_TABLE . "
+					ADD COLUMN priv_session_id char(32) DEFAULT '' NOT NULL";
+				break;
+
+			case 'postgresql':
+				$sql[] = "ALTER TABLE " . SESSIONS_TABLE . "
+					ADD COLUMN priv_session_id char(32)";
+				$sql[] = "ALTER TABLE " . SESSIONS_TABLE . "
+					ALTER COLUMN priv_session_id SET DEFAULT ''";
+				break;
+
+			case 'mssql-odbc':
+			case 'mssql':
+				$sql[] = "ALTER TABLE " . SESSIONS_TABLE . " ADD
+					priv_session_id char (32) NOT NULL";
+				break;
+
+			case 'msaccess':
+				$sql[] = "ALTER TABLE " . SESSIONS_TABLE . " ADD
+					priv_session_id char (32) NOT NULL";
+				break;
+		}
+
 }
 
 echo "<h2>Updating database schema</h2>\n";

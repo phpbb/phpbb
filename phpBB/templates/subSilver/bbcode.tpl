@@ -54,6 +54,7 @@
 <!-- BEGIN size_close --></span><!-- END size_close -->
 
 <!-- BEGIN img --><img src="{URL}" border="0" /><!-- END img -->
+<!-- BEGIN p_img -->{L_PRIV_IMG}:{URL}<!-- END p_img -->
 
 <!-- BEGIN url --><a href="{URL}" target="_blank" class="postlink">{DESCRIPTION}</a><!-- END url -->
 

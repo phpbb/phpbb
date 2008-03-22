@@ -92,7 +92,7 @@ function prepare_bbcode_template($bbcode_tpl)
 
 	$bbcode_tpl['code_open'] = str_replace('{L_CODE}', $lang['Code'], $bbcode_tpl['code_open']);
 
-	$bbcode_tpl['img'] = str_replace('{URL}', '\\1', $bbcode_tpl['img']);
+	$bbcode_tpl['img'] = str_replace('{URL}', '\\1', get_image_tag_replacement($bbcode_tpl));
 
 	// We do URLs in several different ways..
 	$bbcode_tpl['url1'] = str_replace('{URL}', '\\1', $bbcode_tpl['url']);
@@ -114,6 +114,31 @@ function prepare_bbcode_template($bbcode_tpl)
 	return $bbcode_tpl;
 }
 
+
+/**
+* Disables the img tag for privileged pages. It also implements a compability hack for old templates.
+*/
+function get_image_tag_replacement($bbcode_tpl)
+{
+	global $lang, $HTTP_POST_VARS, $HTTP_GET_VARS;
+	$bb_tmpl = '';
+	if (isset($HTTP_POST_VARS['p_sid']))
+	{
+		if (isset($bbcode_tpl['p_img']))
+		{
+			$bb_tmpl = str_replace('{L_PRIV_IMG}', $lang['Priv_Img'], $bbcode_tpl['p_img']);
+		}
+		else
+		{
+			$bb_tmpl = $lang['Priv_Img'] . ': {URL}';
+		}
+	}
+	else
+	{
+		$bb_tmpl = $bbcode_tpl['img'];
+	}
+	return $bb_tmpl;
+}
 
 /**
  * Does second-pass bbencoding. This should be used before displaying the message in

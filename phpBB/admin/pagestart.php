@@ -52,6 +52,13 @@ if ($HTTP_GET_VARS['sid'] != $userdata['session_id'])
 	redirect("index.$phpEx?sid=" . $userdata['session_id']);
 }
 
+$p_sid = (isset($HTTP_GET_VARS['p_sid'])) ? $HTTP_GET_VARS['p_sid'] : ((isset($HTTP_POST_VARS['p_sid'])) ? $HTTP_POST_VARS['p_sid'] : '');
+
+if ($p_sid !== $userdata['priv_session_id'])
+{
+	redirect("index.$phpEx?sid=" . $userdata['session_id']);
+}
+
 if (!$userdata['session_admin'])
 {
 	redirect(append_sid("login.$phpEx?redirect=admin/index.$phpEx&admin=1", true));

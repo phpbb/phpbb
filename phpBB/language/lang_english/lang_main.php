@@ -283,6 +283,7 @@ $lang['Delete_post'] = 'Delete this post';
 $lang['wrote'] = 'wrote'; // proceeds the username and is followed by the quoted text
 $lang['Quote'] = 'Quote'; // comes before bbcode quote output.
 $lang['Code'] = 'Code'; // comes before bbcode code output.
+$lang['Priv_Img'] = 'Image display disabled'; // Explanation for missing images in the ModCP.
 
 $lang['Edited_time_total'] = 'Last edited by %s on %s; edited %d time in total'; // Last edited by me on 12 Oct 2001; edited 1 time in total
 $lang['Edited_times_total'] = 'Last edited by %s on %s; edited %d times in total'; // Last edited by me on 12 Oct 2001; edited 2 times in total
