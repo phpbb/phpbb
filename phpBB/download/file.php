@@ -48,7 +48,7 @@ if (isset($_GET['avatar']))
 	// '==' is not a bug - . as the first char is as bad as no dot at all
 	if (strpos($filename, '.') == false)
 	{
-		header('HTTP/1.0 403 forbidden');
+		header('HTTP/1.0 403 Forbidden');
 		if (!empty($cache))
 		{
 			$cache->unload();
@@ -89,7 +89,7 @@ if (isset($_GET['avatar']))
 	if (!in_array($ext, array('png', 'gif', 'jpg', 'jpeg')))
 	{
 		// no way such an avatar could exist. They are not following the rules, stop the show.
-		header("HTTP/1.0 403 forbidden");
+		header("HTTP/1.0 403 Forbidden");
 		if (!empty($cache))
 		{
 			$cache->unload();
@@ -101,7 +101,7 @@ if (isset($_GET['avatar']))
 	if (!$filename)
 	{
 		// no way such an avatar could exist. They are not following the rules, stop the show.
-		header("HTTP/1.0 403 forbidden");
+		header("HTTP/1.0 403 Forbidden");
 		if (!empty($cache))
 		{
 			$cache->unload();
@@ -208,7 +208,7 @@ else
 		$row['forum_id'] = false;
 		if (!$auth->acl_get('u_pm_download'))
 		{
-			header('HTTP/1.0 403 forbidden');
+			header('HTTP/1.0 403 Forbidden');
 			trigger_error('SORRY_AUTH_VIEW_ATTACH');
 		}
 
@@ -231,7 +231,7 @@ else
 
 		if (!$allowed)
 		{
-			header('HTTP/1.0 403 forbidden');
+			header('HTTP/1.0 403 Forbidden');
 			trigger_error('ERROR_NO_ATTACHMENT');
 		}
 	}
@@ -246,7 +246,7 @@ else
 
 if (!download_allowed())
 {
-	header('HTTP/1.0 403 forbidden');
+	header('HTTP/1.0 403 Forbidden');
 	trigger_error($user->lang['LINKAGE_FORBIDDEN']);
 }
 
