@@ -721,6 +721,7 @@ $schema_data['phpbb_sessions'] = array(
 	'COLUMNS'		=> array(
 		'session_id'			=> array('CHAR:32', ''),
 		'session_user_id'		=> array('UINT', 0),
+		'session_forum_id'		=> array('UINT', 0),
 		'session_last_visit'	=> array('TIMESTAMP', 0),
 		'session_start'			=> array('TIMESTAMP', 0),
 		'session_time'			=> array('TIMESTAMP', 0),
