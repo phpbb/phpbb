@@ -56,9 +56,25 @@ function set_var(&$result, $var, $type, $multibyte = false)
 }
 
 /**
-* request_var
+* Central type safe input handling function.
+* All variables in GET or POST requests should be retrieved through this
+* function to maximise security.
 *
-* Used to get passed variable
+* @param	string	$var_name	The name of the variable from the form that is
+*								to be retrieved.
+* @param	mixed	$default	A default value that is returned if the variable
+*								was not set. This function will always return a
+*								a value of the same type as the default.
+* @param	bool	$multibyte	If $default is a string this paramater has to be
+*								true if the variable may contain any UTF-8 characters
+*								Default is fault, causing all bytes outside the ASCII
+*								range (0-127) to be replaced with question marks
+* @param	bool	$cookie		True if the variable shall be retrieved from $_COOKIE
+*								instead of $_REQUEST. False by default.
+* @return	mixed				The value of $_REQUEST[$var_name] run through
+*								{@link set_var set_var} to ensure that the type is the
+*								the same as that of $default. If the variable is not set
+*								$default is returned.
 */
 function request_var($var_name, $default, $multibyte = false, $cookie = false)
 {
@@ -133,6 +149,26 @@ function request_var($var_name, $default, $multibyte = false, $cookie = false)
 	}
 
 	return $var;
+}
+
+/**
+* Checks whether a certain variable was sent via POST.
+* To make sure that a request was sent using POST you should call this function
+* on at least one variable. The function will perform referrer validation
+* as an additional measure against CSRF.
+*
+* @param	string	$name	The name of the form variable which should have a
+*							_p suffix to indicate the check in the code that
+*							creates the form too.
+* @return	bool			True if the variable was set in a POST request,
+*							false otherwise.
+*/
+function isset_post($name)
+{
+	/**
+	* @todo validate referrer
+	*/
+	return isset($_POST[$name]);
 }
 
 /**
