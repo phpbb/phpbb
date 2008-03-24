@@ -2817,10 +2817,11 @@ function msg_handler($errno, $msg_text, $errfile, $errline)
 	{
 		case E_NOTICE:
 		case E_WARNING:
+		case E_STRICT:
 
 			// Check the error reporting level and return if the error level does not match
 			// If DEBUG is defined the default level is E_ALL
-			if (($errno & ((defined('DEBUG')) ? E_ALL : error_reporting())) == 0)
+			if (($errno & ((defined('DEBUG')) ? E_ALL | E_STRICT : error_reporting())) == 0)
 			{
 				return;
 			}
@@ -2847,6 +2848,7 @@ function msg_handler($errno, $msg_text, $errfile, $errline)
 
 		break;
 
+		case E_RECOVERABLE_ERROR:
 		case E_USER_ERROR:
 
 			if (!empty($user) && !empty($user->lang))
