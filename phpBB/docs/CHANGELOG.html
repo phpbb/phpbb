@@ -143,9 +143,11 @@
 		<li>[Fix] Do not error out if php_uname function disabled / Authenticating on SMTP Server (Bug #22235 - patch by HoL)</li>
 		<li>[Fix] Correctly obtain to be ignored users within topic/forum notification (Bug #21795 - patch provided by dr.death)</li>
 		<li>[Fix] Correctly update board statistics for attaching orphaned files to existing posts (Bug #20185)</li>
-		<li>[Sec] Only allow searching by email address in memberlist for users having the a_user permission (reported by evil&lt;3)</li>
 		<li>[Fix] Do not detect the board URL as a link twice in posts (Bug #19215)</li>
 		<li>[Fix] Set correct error reporting in style.php to avoid blank pages after CSS changes (Bug #23885)</li>
+		<li>[Fix] If pruning users based on last activity, do not include users never logged in before (Bug #18105)</li>
+		<li>[Sec] Only allow searching by email address in memberlist for users having the a_user permission (reported by evil&lt;3)</li>
+		<li>[Sec] Limit private message attachments to be viewable only by the recipient(s)/sender (Report #s23535) - reported by AlleyKat</li>
 	</ul>
 
 	<a name="v30rc8"></a><h3>1.i. Changes since 3.0.RC8</h3>
