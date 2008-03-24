@@ -492,6 +492,7 @@ function generate_text_for_edit($text, $uid, $flags)
 */
 function make_clickable_callback($type, $whitespace, $url, $relative_url, $class)
 {
+	$orig_url		= $url . $relative_url;
 	$append			= '';
 	$url			= htmlspecialchars_decode($url);
 	$relative_url	= htmlspecialchars_decode($relative_url);
@@ -558,29 +559,39 @@ function make_clickable_callback($type, $whitespace, $url, $relative_url, $class
 		break;
 	}
 
+	$short_url = (strlen($url) > 55) ? substr($url, 0, 39) . ' ... ' . substr($url, -10) : $url;
+
 	switch ($type)
 	{
 		case MAGIC_URL_LOCAL:
 			$tag			= 'l';
 			$relative_url	= preg_replace('/[&?]sid=[0-9a-f]{32}$/', '', preg_replace('/([&?])sid=[0-9a-f]{32}&/', '$1', $relative_url));
 			$url			= $url . '/' . $relative_url;
-			$text			= ($relative_url) ? $relative_url : $url;
+			$text			= $relative_url;
+			
+			// this url goes to http://domain.tld/path/to/board/ which
+			// would result in an empty link if treated as local so
+			// don't touch it and let MAGIC_URL_FULL take care of it.
+			if (!$relative_url)
+			{
+				return $orig_url . '/'; // slash is taken away by relative url pattern
+			}
 		break;
 
 		case MAGIC_URL_FULL:
 			$tag	= 'm';
-			$text	= (strlen($url) > 55) ? substr($url, 0, 39) . ' ... ' . substr($url, -10) : $url;
+			$text	= $short_url;
 		break;
 
 		case MAGIC_URL_WWW:
 			$tag	= 'w';
 			$url	= 'http://' . $url;
-			$text	= (strlen($url) > 55) ? substr($url, 0, 39) . ' ... ' . substr($url, -10) : $url;
+			$text	= $short_url;
 		break;
 
 		case MAGIC_URL_EMAIL:
 			$tag	= 'e';
-			$text	= (strlen($url) > 55) ? substr($url, 0, 39) . ' ... ' . substr($url, -10) : $url;
+			$text	= $short_url;
 			$url	= 'mailto:' . $url;
 		break;
 	}
