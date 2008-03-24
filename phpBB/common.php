@@ -21,6 +21,7 @@ $starttime = $starttime[1] + $starttime[0];
 
 // Report all errors, except notices
 error_reporting(E_ALL ^ E_NOTICE);
+date_default_timezone_set('UTC');
 
 /*
 * Remove variables created by register_globals from the global scope

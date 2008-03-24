@@ -17,6 +17,7 @@ $phpEx = substr(strrchr(__FILE__, '.'), 1);
 
 // Report all errors, except notices
 error_reporting(E_ALL ^ E_NOTICE);
+date_default_timezone_set('UTC');
 
 require($phpbb_root_path . 'config.' . $phpEx);
 
