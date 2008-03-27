@@ -3116,8 +3116,8 @@ function obtain_guest_count($forum_id = 0)
 		$reading_sql = '';
 	}
 	$time = (time() - (intval($config['load_online_time']) * 60)); 
-	 
- 	// Get number of online guests
+
+	// Get number of online guests
 
 	if ($db->sql_layer === 'sqlite')
 	{

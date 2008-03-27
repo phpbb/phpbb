@@ -1625,7 +1625,8 @@ _sql($sql, $errored, $error_ary);
 
 // Reset permissions
 $sql = 'UPDATE ' . USERS_TABLE . "
-	SET user_permissions = ''";
+	SET user_permissions = '',
+		user_perm_from = 0";
 _sql($sql, $errored, $error_ary);
 
 /* Optimize/vacuum analyze the tables where appropriate
@@ -1659,6 +1660,8 @@ _write_result($no_updates, $errored, $error_ary);
 
 if (!$inline_update)
 {
+	// Purge the cache...
+	$cache->purge();
 ?>
 
 	<p style="color:red"><?php echo $lang['UPDATE_FILES_NOTICE']; ?></p>
