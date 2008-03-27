@@ -3215,7 +3215,7 @@ function obtain_users_online($forum_id = 0)
 */
 function obtain_users_online_string($online_users, $forum_id = 0)
 {
-	global $db, $user, $auth;
+	global $config, $db, $user, $auth;
 
 	$user_online_link = $online_userlist = '';
 
@@ -3256,34 +3256,45 @@ function obtain_users_online_string($online_users, $forum_id = 0)
 	{
 		$online_userlist = $user->lang['REGISTERED_USERS'] . ' ' . $online_userlist;
 	}
-	else
+	else if ($config['load_online_guests'])
 	{
 		$l_online = ($online_users['guests_online'] === 1) ? $user->lang['BROWSING_FORUM_GUEST'] : $user->lang['BROWSING_FORUM_GUESTS'];
 		$online_userlist = sprintf($l_online, $online_userlist, $online_users['guests_online']);
 	}
-
+	else
+	{
+		$online_userlist = sprintf($user->lang['BROWSING_FORUM'], $online_userlist);
+	}
 	// Build online listing
 	$vars_online = array(
-		'ONLINE'	=> array('total_online', 'l_t_user_s'),
-		'REG'		=> array('visible_online', 'l_r_user_s'),
-		'HIDDEN'	=> array('hidden_online', 'l_h_user_s'),
-		'GUEST'		=> array('guests_online', 'l_g_user_s')
+		'ONLINE'	=> array('total_online', 'l_t_user_s', 0),
+		'REG'		=> array('visible_online', 'l_r_user_s', !$config['load_online_guests']),
+		'HIDDEN'	=> array('hidden_online', 'l_h_user_s', $config['load_online_guests']),
+		'GUEST'		=> array('guests_online', 'l_g_user_s', 0)
 	);
 
 	foreach ($vars_online as $l_prefix => $var_ary)
 	{
+		if ($var_ary[2])
+		{
+			$l_suffix = '_AND';
+		}
+		else
+		{
+			$l_suffix = '';
+		}
 		switch ($online_users[$var_ary[0]])
 		{
 			case 0:
-				${$var_ary[1]} = $user->lang[$l_prefix . '_USERS_ZERO_TOTAL'];
+				${$var_ary[1]} = $user->lang[$l_prefix . '_USERS_ZERO_TOTAL' . $l_suffix];
 			break;
 
 			case 1:
-				${$var_ary[1]} = $user->lang[$l_prefix . '_USER_TOTAL'];
+				${$var_ary[1]} = $user->lang[$l_prefix . '_USER_TOTAL' . $l_suffix];
 			break;
 
 			default:
-				${$var_ary[1]} = $user->lang[$l_prefix . '_USERS_TOTAL'];
+				${$var_ary[1]} = $user->lang[$l_prefix . '_USERS_TOTAL' . $l_suffix];
 			break;
 		}
 	}
@@ -3292,7 +3303,13 @@ function obtain_users_online_string($online_users, $forum_id = 0)
 	$l_online_users = sprintf($l_t_user_s, $online_users['total_online']);
 	$l_online_users .= sprintf($l_r_user_s, $online_users['visible_online']);
 	$l_online_users .= sprintf($l_h_user_s, $online_users['hidden_online']);
-	$l_online_users .= sprintf($l_g_user_s, $online_users['guests_online']);
+
+	if ($config['load_online_guests'])
+	{
+		$l_online_users .= sprintf($l_g_user_s, $online_users['guests_online']);
+	}
+
+
 
 	return array(
 		'online_userlist'	=> $online_userlist,
