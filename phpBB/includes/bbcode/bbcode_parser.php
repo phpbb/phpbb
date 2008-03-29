@@ -2,7 +2,7 @@
 /**
 *
 * @package phpBB3
-* @version
+* @version $Id$
 * @copyright (c) 2005 phpBB Group
 * @license http://opensource.org/licenses/gpl-license.php GNU Public License
 *
@@ -37,7 +37,7 @@ class phpbb_bbcode_parser extends phpbb_bbcode_parser_base
 				'parents' => array(true),
 			),
 			// The exact I BBcode from phpBB
-				'i' => array(
+			'i' => array(
 				'replace' => '<span style="font-style: italic">',
 				'close' => '</span>',
 				'attributes' => array(),
@@ -207,7 +207,7 @@ class phpbb_bbcode_parser extends phpbb_bbcode_parser_base
 			':(' => '<img src="http://area51.phpbb.com/phpBB/images/smilies/icon_e_sad.gif" />',
 		);
 		
-		$this->text_callback = 'strtoupper';
+//		$this->text_callback = 'strtoupper';
 		parent::__construct();
 	}
 

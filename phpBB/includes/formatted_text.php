@@ -2,7 +2,7 @@
 /**
 *
 * @package phpBB3
-* @version
+* @version $Id$
 * @copyright (c) 2005 phpBB Group
 * @license http://opensource.org/licenses/gpl-license.php GNU Public License
 *
@@ -17,7 +17,7 @@ if (!defined('IN_PHPBB'))
 }
 
 /**
- * Formatted text class to handle any text that can contain BBCodes, smielys, magic URLs or under word censor.
+ * Formatted text class to handle any text that can contain BBCodes, smilies, magic URLs or under word censor.
  */
 class formatted_text
 {

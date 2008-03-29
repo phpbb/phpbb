@@ -2,7 +2,7 @@
 /**
 *
 * @package phpBB3
-* @version
+* @version $Id$
 * @copyright (c) 2005 phpBB Group
 * @license http://opensource.org/licenses/gpl-license.php GNU Public License
 *
@@ -67,8 +67,8 @@ abstract class phpbb_bbcode_parser_base
 	/**
 	 * The smilies which are to be "parsed".
 	 * 
-	 * Smilies are treated the same way as BBCodes (though BBcodes have precedance).
-	 * Use "__smiely" to allow/disallow them in tags. Smileys can only be children.
+	 * Smilies are treated the same way as BBCodes (though BBcodes have precedence).
+	 * Use "__smiley" to allow/disallow them in tags. Smileys can only be children.
 	 * 
 	 * 'smiley' => 'replacement'
 	 *
@@ -134,6 +134,13 @@ abstract class phpbb_bbcode_parser_base
 	private $parse_pos = 1;
 	
 	/**
+	 * Parse flags
+	 *
+	 * @var int
+	 */
+	protected $flags;
+	
+	/**
 	 * Types
 	 */
 	const TYPE_TAG				= 1;
@@ -148,12 +155,22 @@ abstract class phpbb_bbcode_parser_base
 	const PARSE_BBCODE	= 1;
 	const PARSE_URLS	= 2;
 	const PARSE_SMILIES	= 4;
-	
-	protected $flags;
 
-	// Old ones without the "fast" tag=attribute.
-//	private $tag_regex = '~\[(/?)([a-z][a-z0-9]*)((?: [a-z]+(?:\s?=\s?(?:\'(?:\\\'|[^\'])*\'|"(?:[^"]|\\\")*"))?)*)\]~i';
-//	private $attribute_regex = '~([a-z]+)(?:\s?=\s?((?:\'(?:\\\'|[^\'])*?\'|"(?:\\"|[^"])*?")))?~i';
+	/**
+	 * Tag Backreferences.
+	 *
+	 */
+	const MATCH_CLOSING_TAG	= 1;
+	const MATCH_TAG_NAME	= 2;
+	const MATCH_SHORT_ARG	= 3;
+	const MATCH_ARGS		= 4;
+	
+	/**
+	 * Argument backreferences
+	 * 
+	 */
+	const MATCH_ARG_NAME	= 1;
+	const MATCH_ARG_VALUE	= 2;
 
 	/**
 	 * Constructor.
@@ -240,15 +257,9 @@ abstract class phpbb_bbcode_parser_base
 	 */
 	public function first_pass_decompile($string)
 	{
-		$string = explode($this->delimiter, $string);
+		$string = unserialize($string);
 		for ($i = 1, $n = sizeof($string); $i < $n; $i += 2)
 		{
-			// This will proably throw an unwanted notice...
-			$tag = $string[$i];
-			if ($tag === false)
-			{
-				$tag = $string[$i];
-			}
 			$string[$i] = $this->decompile_tag($tag);
 		}
 		return implode('', $string);
@@ -558,14 +569,14 @@ abstract class phpbb_bbcode_parser_base
 			
 			default:
 
-				if (!isset($this->tags[$matches[2]]))
+				if (!isset($this->tags[$matches[self::MATCH_TAG_NAME]]))
 				{
 					// Tag with the given name not defined.
 					return $matches[0];
 				}
 
 				// If tag is an opening tag.
-				if (strlen($matches[1]) == 0)
+				if (strlen($matches[self::MATCH_CLOSING_TAG]) == 0)
 				{
 					if (sizeof($this->stack))
 					{
@@ -575,7 +586,7 @@ abstract class phpbb_bbcode_parser_base
 							return $matches[0];
 						}
 						// Tag parent not allowed for this tag. Omit here.
-						else if (!$this->parent_allowed($matches[2], $this->stack[0]))
+						else if (!$this->parent_allowed($matches[self::MATCH_TAG_NAME], $this->stack[0]))
 						{
 							if (isset($this->tags[$this->stack[0]]['close_shadow']))
 							{
@@ -588,35 +599,35 @@ abstract class phpbb_bbcode_parser_base
 						}
 					}
 					// Is tag allowed in global scope?
-					else if (!$this->parent_allowed($matches[2], '__global'))
+					else if (!$this->parent_allowed($matches[self::MATCH_TAG_NAME], '__global'))
 					{
 						return $matches[0];
 					}
 		
-					if ($this->tags[$matches[2]]['close'] !== false || !isset($this->tags[$matches[2]]['close_shadow']))
+					if ($this->tags[$matches[self::MATCH_TAG_NAME]]['close'] !== false || !isset($this->tags[$matches[self::MATCH_TAG_NAME]]['close_shadow']))
 					{
 						// Do not add tags to stack that do not need closing tags.
-						array_unshift($this->stack, $matches[2]);
+						array_unshift($this->stack, $matches[self::MATCH_TAG_NAME]);
 					}
 		
-					$tag_attributes = &$this->tags[$matches[2]]['attributes'];
+					$tag_attributes = &$this->tags[$matches[self::MATCH_TAG_NAME]]['attributes'];
 		
-					if (strlen($matches[3]) != 0 && isset($tag_attributes['_']))
+					if (strlen($matches[self::MATCH_SHORT_ARG]) != 0 && isset($tag_attributes['_']))
 					{
 						// Add short attribute.
-						$attributes = array('_' => substr($matches[3], 1, -1));
+						$attributes = array('_' => substr($matches[self::MATCH_SHORT_ARG], 1, -1));
 					}
 					else if (strlen($matches[4]) == 0 || (sizeof($tag_attributes)) == 0)
 					{
 						// Check all attributes, which were not used, if they are required.
-						if ($this->has_required($matches[2], array_keys($tag_attributes)))
+						if ($this->has_required($matches[self::MATCH_TAG_NAME], array_keys($tag_attributes)))
 						{
 							// Not all required attributes were used.
 							return $matches[0];
 						}
 						else
 						{
-							$this->parsed[$this->parse_pos] = array(self::TYPE_TAG_SIMPLE, $matches[2]);
+							$this->parsed[$this->parse_pos] = array(self::TYPE_TAG_SIMPLE, $matches[self::MATCH_TAG_NAME]);
 							if (isset($attributes))
 							{
 								$this->parsed[$this->parse_pos][] = $attributes;
@@ -633,12 +644,12 @@ abstract class phpbb_bbcode_parser_base
 					// Analyzer...
 					$matched_attrs = array();
 		
-					preg_match_all($this->attribute_regex, $matches[4], $matched_attrs, PREG_SET_ORDER);
+					preg_match_all($this->attribute_regex, $matches[self::MATCH_ARGS], $matched_attrs, PREG_SET_ORDER);
 		
 					foreach($matched_attrs as $i => $value)
 					{
-						$tag_attribs_matched = &$tag_attributes[$value[1]];
-						if (isset($attributes[$value[1]]))
+						$tag_attribs_matched = &$tag_attributes[$value[self::MATCH_ARG_NAME]];
+						if (isset($attributes[$value[self::MATCH_ARG_NAME]]))
 						{
 							// This prevents adding the same attribute more than once. Childish betatesters are needed.
 							continue;
@@ -647,7 +658,7 @@ abstract class phpbb_bbcode_parser_base
 						{
 							// The attribute exists within the defined tag. Undefined tags are removed.
 		
-							$attr_value = substr($value[2], 1, -1);
+							$attr_value = substr($value[self::MATCH_ARG_VALUE], 1, -1);
 		
 							if (isset($tag_attribs_matched['type_check']))
 							{
@@ -671,12 +682,12 @@ abstract class phpbb_bbcode_parser_base
 								// A required attribute is empty. This is done after the type check as the type check may return an empty value.
 								return $matches[0];
 							}
-							$attributes[$value[1]] = $attr_value;
+							$attributes[$value[self::MATCH_ARG_NAME]] = $attr_value;
 						}
 					}
 		
 					// Check all attributes, which were not used, if they are required.
-					if ($this->has_required($matches[2], array_values(array_diff(array_keys($tag_attributes), array_keys($attributes)))))
+					if ($this->has_required($matches[self::MATCH_TAG_NAME], array_values(array_diff(array_keys($tag_attributes), array_keys($attributes)))))
 					{
 						// Not all required attributes were used.
 						return $matches[0];
@@ -684,19 +695,19 @@ abstract class phpbb_bbcode_parser_base
 		
 					if (sizeof($attributes))
 					{
-						$this->parsed[$this->parse_pos] = array(self::TYPE_TAG, $matches[2], $attributes);
+						$this->parsed[$this->parse_pos] = array(self::TYPE_TAG, $matches[self::MATCH_TAG_NAME], $attributes);
 						$this->parse_pos += 2;
 						return $this->delimiter;
 					}
 
-					$this->parsed[$this->parse_pos] = array(self::TYPE_TAG_SIMPLE, $matches[2]);
+					$this->parsed[$this->parse_pos] = array(self::TYPE_TAG_SIMPLE, $matches[self::MATCH_TAG_NAME]);
 					$this->parse_pos += 2;
 					return $this->delimiter;
 				}
 				// If tag is a closing tag.
 				
 
-				$valid = array_search($matches[2], $this->stack);
+				$valid = array_search($matches[self::MATCH_TAG_NAME], $this->stack);
 		
 				if ($valid === false)
 				{
@@ -720,7 +731,7 @@ abstract class phpbb_bbcode_parser_base
 				{
 					// A unset() was elicting many notices here.
 					array_shift($this->stack);
-					$this->parsed[$this->parse_pos] = array(self::TYPE_CTAG, $matches[2]);
+					$this->parsed[$this->parse_pos] = array(self::TYPE_CTAG, $matches[self::MATCH_TAG_NAME]);
 					$this->parse_pos += 2;
 					return $this->delimiter;
 				}
@@ -754,17 +765,11 @@ abstract class phpbb_bbcode_parser_base
 	/**
 	 * Returns the tag to the form it had before the first_pass
 	 *
-	 * @param mixed $tag
+	 * @param array $tag
 	 * @return string
 	 */
-	private function decompile_tag($tag)
+	private function decompile_tag(array $tag)
 	{
-
-		if (!is_array($tag))
-		{
-			return '[' . $tag . ']';
-		}
-
 		$ret = '[' . (($tag[0]) ? '' : '/');
 		$ret .= $tag[1];
 		
@@ -778,7 +783,7 @@ abstract class phpbb_bbcode_parser_base
 	
 			foreach ($tag[2] as $attribute => $value)
 			{
-				$ret .= ' ' . $attribute . '=' . $value;
+				$ret .= ' ' . $attribute . '="' . $value . '"';
 			}
 		}
 		$ret .= ']';
