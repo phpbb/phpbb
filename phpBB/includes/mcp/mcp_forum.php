@@ -164,7 +164,7 @@ function mcp_forum_view($id, $mode, $action, $forum_info)
 
 	$sql = "SELECT t.*$read_tracking_select
 		FROM " . TOPICS_TABLE . " t $read_tracking_join
-		WHERE " . $db->sql_in_set('t.topic_id', $topic_list);
+		WHERE " . $db->sql_in_set('t.topic_id', $topic_list, false, true);
 
 	$result = $db->sql_query($sql);
 	while ($row = $db->sql_fetchrow($result))
@@ -389,7 +389,7 @@ function merge_topics($forum_id, $topic_ids, $to_topic_id)
 		return;
 	}
 
-	$redirect = request_var('redirect', build_url(array('_f_', 'quickmod')));
+	$redirect = request_var('redirect', build_url(array('quickmod')));
 
 	$s_hidden_fields = build_hidden_fields(array(
 		'i'				=> 'main',
