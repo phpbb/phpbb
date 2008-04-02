@@ -334,6 +334,41 @@ class dbal_postgres extends dbal
 		}
 	}
 
+	function sql_handle_data($type, $table, $data, $where = '')
+	{
+		// for now, stmtname is an empty string, it might change to something more unique in the future
+		if ($type === 'INSERT')
+		{
+			$stmt = pg_prepare($this->dbms_type, '', "INSERT INTO $table (". implode(', ', array_keys($data)) . ") VALUES ($" . implode(', $', range(1, sizeof($data))) . ')');
+		}
+		else
+		{
+			$query = "UPDATE $table SET ";
+
+			$set = array();
+			foreach (array_keys($data) as $key_id => $key)
+			{
+				$set[] = $key . ' = $' . $key_id;
+			}
+			$query .= implode(', ', $set);
+
+			if ($where !== '')
+			{
+				$query .= $where;
+			}
+			
+			$stmt = pg_prepare($this->db_connect_id, '', $query);
+		}
+
+		// add the stmtname to the top
+		array_unshift($data, '');
+
+		// add the connection resource
+		array_unshift($data, $this->db_connect_id);
+
+		call_user_func_array('pg_execute', $data);
+	}
+
 	/**
 	* Build LIKE expression
 	* @access private

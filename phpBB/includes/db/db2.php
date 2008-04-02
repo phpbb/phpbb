@@ -351,6 +351,37 @@ class dbal_db2 extends dbal
 		}
 	}
 
+	function sql_handle_data($type, $table, $data, $where = '')
+	{
+		if ($type == 'INSERT')
+		{
+			$stmt = db2_prepare($this->db_connect_id, "INSERT INTO $table (". implode(', ', array_keys($data)) . ") VALUES (" . substr(str_repeat('?, ', sizeof($data)) ,0, -1) . ')');
+		}
+		else
+		{
+			$query = "UPDATE $table SET ";
+
+			$set = array();
+			foreach (array_keys($data) as $key)
+			{
+				$set[] = "$key = ?";
+			}
+			$query .= implode(', ', $set);
+
+			if ($where !== '')
+			{
+				$query .= $where;
+			}
+
+			$stmt = db2_prepare($this->db_connect_id, $query);
+		}
+
+		// get the stmt onto the top of the function arguments
+		array_unshift($data, $stmt);
+
+		call_user_func_array('db2_execute', $data);
+	}
+
 	/**
 	* Build LIKE expression
 	* @access private

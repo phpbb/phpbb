@@ -196,6 +196,7 @@ if ($id)
 			'theme_data'	=> $theme['theme_data']
 		);
 
+		// @TODO: rewrite with the new param db functions
 		$sql = 'UPDATE ' . STYLES_THEME_TABLE . ' SET ' . $db->sql_build_array('UPDATE', $sql_ary) . "
 			WHERE theme_id = $id";
 		$db->sql_query($sql);

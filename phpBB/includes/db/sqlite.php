@@ -258,6 +258,21 @@ class dbal_sqlite extends dbal
 		}
 	}
 
+	function sql_handle_data($type, $table, $data, $where = '')
+	{
+		if ($type === 'UPDATE')
+		{
+			$this->sql_query('INSERT INTO ' . $table . ' ' .
+				$this->sql_build_array('INSERT', $data));
+		}
+		else
+		{
+			$this->sql_query('UPDATE ' . $table . '
+				SET ' . $db->sql_build_array('UPDATE', $data) .
+				$where);
+		}
+	}
+
 	/**
 	* return sql error array
 	* @access private

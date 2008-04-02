@@ -535,6 +535,7 @@ class acp_attachments
 							$group_ary['download_mode'] = INLINE_LINK;
 						}
 
+						// @TODO: rewrite with the new param db functions
 						$sql = ($action == 'add') ? 'INSERT INTO ' . EXTENSION_GROUPS_TABLE . ' ' : 'UPDATE ' . EXTENSION_GROUPS_TABLE . ' SET ';
 						$sql .= $db->sql_build_array((($action == 'add') ? 'INSERT' : 'UPDATE'), $group_ary);
 						$sql .= ($action == 'edit') ? " WHERE group_id = $group_id" : '';

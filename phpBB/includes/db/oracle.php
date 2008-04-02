@@ -514,6 +514,39 @@ class dbal_oracle extends dbal
 		}
 	}
 
+	function sql_handle_data($type, $table, $data, $where = '')
+	{
+		if ($type === 'INSERT')
+		{
+			$stmt = oci_parse($this->db_connect_id, "INSERT INTO $table (". implode(', ', array_keys($data)) . ") VALUES (:" . implode(', :', array_keys($data)) . ')');
+		}
+		else
+		{
+			$query = "UPDATE $table SET ";
+
+			$set = array();
+			foreach (array_keys($data) as $key)
+			{
+				$set[] = "$key = :$key";
+			}
+			$query .= implode(', ', $set);
+
+			if ($where !== '')
+			{
+				$query .= $where;
+			}
+
+			$stmt = oci_parse($this->db_connect_id, $query);
+		}
+
+		foreach ($data as $column => $value)
+		{
+			oci_bind_by_name($stmt, ":$column", $data[$column], -1);
+		}
+
+		oci_execute($stmt);
+	}
+
 	/**
 	* Build LIKE expression
 	* @access private
