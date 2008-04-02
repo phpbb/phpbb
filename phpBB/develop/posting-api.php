@@ -105,7 +105,7 @@ class posting_api
 			FROM ' . FORUMS_TABLE . '
 			WHERE forum_id = ' . (int) $forum_id;
 		$result = $db->sql_query($sql);
-		$row = $db->sql_fetchrow($query);
+		$row = $db->sql_fetchrow($result);
 		$db->sql_freeresult($result);
 
 		// everything starts out normal, one way or another
@@ -234,7 +234,7 @@ class posting_api
 			FROM ' . FORUMS_TABLE . '
 			WHERE forum_id = ' . (int) $forum_id;
 		$result = $db->sql_query($sql);
-		$row = $db->sql_fetchrow($query);
+		$row = $db->sql_fetchrow($result);
 		$db->sql_freeresult($result);
 
 		// everything starts out normal, one way or another
@@ -287,7 +287,7 @@ class posting_api
 		{
 			$forum_data['forum_last_poster_name']	= $username;
 			$forum_data['forum_last_user_id']		= $user_id;
-			$forum_data['forum_last_post_title']	= $topic_title;
+			$forum_data['forum_last_post_title']	= $post_title;
 			$forum_data['forum_last_post_time']		= $time;
 		}
 		else
