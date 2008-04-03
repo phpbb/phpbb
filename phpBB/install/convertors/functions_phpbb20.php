@@ -1835,7 +1835,7 @@ function phpbb_check_username_collisions()
 		$result = $src_db->sql_query($sql);
 
 		$colliding_users = array();
-		while ($row = $db->sql_fetchrow($result))
+		while ($row = $src_db->sql_fetchrow($result))
 		{
 			$row['user_id'] = (int) $row['user_id'];
 			if (isset($colliding_user_ids[$row['user_id']]))
@@ -1843,7 +1843,7 @@ function phpbb_check_username_collisions()
 				$colliding_users[$colliding_user_ids[$row['user_id']]][] = $row;
 			}
 		}
-		$db->sql_freeresult($result);
+		$src_db->sql_freeresult($result);
 		unset($colliding_user_ids);
 
 		$list = '';
