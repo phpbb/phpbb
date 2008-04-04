@@ -2945,7 +2945,7 @@ function msg_handler($errno, $msg_text, $errfile, $errline)
 				{
 					if (@extension_loaded('zlib') && !headers_sent())
 					{
-						ob_flush();
+						@ob_flush();
 					}
 				}
 
@@ -3661,6 +3661,9 @@ function exit_handler()
 			return $phpbb_hook->hook_return_result(__FUNCTION__);
 		}
 	}
+
+	// As a pre-caution... some setups display a blank page if the flush() is not there.
+	@flush();
 
 	exit;
 }
