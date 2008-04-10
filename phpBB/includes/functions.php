@@ -3182,7 +3182,7 @@ function obtain_users_online($forum_id = 0)
 		WHERE s.session_time >= ' . ($time - ((int) ($time % 30))) .
 			$reading_sql .
 		' AND s.session_user_id <> ' . ANONYMOUS;
-	$result = $db->sql_query($sql, 30); 
+	$result = $db->sql_query($sql); 
 
 	while ($row = $db->sql_fetchrow($result))
 	{
