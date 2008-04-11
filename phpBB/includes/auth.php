@@ -800,7 +800,7 @@ class auth
 			{
 				$this->_set_group_hold_ary($hold_ary[$row['forum_id']], $row['auth_option_id'], $row['auth_setting']);
 			}
-			else
+			else if (!empty($this->role_cache[$row['auth_role_id']]))
 			{
 				foreach (unserialize($this->role_cache[$row['auth_role_id']]) as $option_id => $setting)
 				{
