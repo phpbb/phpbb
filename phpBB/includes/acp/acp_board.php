@@ -565,7 +565,7 @@ class acp_board
 				'TITLE'			=> (isset($user->lang[$vars['lang']])) ? $user->lang[$vars['lang']] : $vars['lang'],
 				'S_EXPLAIN'		=> $vars['explain'],
 				'TITLE_EXPLAIN'	=> $l_explain,
-				'CONTENT'		=> build_cfg_template($type, $config_key, $this->new_config, $config_key, $vars),
+				'CONTENT'		=> $content,
 				)
 			);
 

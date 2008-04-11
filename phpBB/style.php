@@ -21,7 +21,7 @@ date_default_timezone_set('UTC');
 
 require($phpbb_root_path . 'config.' . $phpEx);
 
-if (!defined('PHPBB_INSTALLED') || empty($dbms) || !isset($dbhost) || !isset($dbpasswd) || empty($dbuser))
+if (!defined('PHPBB_INSTALLED') || empty($dbms) || empty($acm_type))
 {
 	exit;
 }
@@ -58,11 +58,6 @@ if (strspn($sid, 'abcdefABCDEF0123456789') !== strlen($sid))
 // server a little
 if ($id)
 {
-	if (empty($acm_type) || empty($dbms))
-	{
-		die('Hacking attempt');
-	}
-
 	// Include files
 	require($phpbb_root_path . 'includes/acm/acm_' . $acm_type . '.' . $phpEx);
 	require($phpbb_root_path . 'includes/cache.' . $phpEx);

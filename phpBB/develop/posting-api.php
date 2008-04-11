@@ -77,7 +77,7 @@ class posting_api
 		global $db;
 
 		// one transaction, we can now garuntee that atomicity of insertions
-		$db->transaction('BEGIN');
+		$db->sql_transaction('begin');
 
 		$user_id = (int) $data['user_id'];
 		$forum_id = (int) $data['forum_id'];
@@ -96,8 +96,7 @@ class posting_api
 				FROM ' . USERS_TABLE . '
 				WHERE user_id = ' . $user_id;
 			$result = $db->sql_query($sql);
-			$row = $db->sql_fetchrow($result);
-			$username = $row['username'];
+			$username = (string) $db->sql_fetchfield('username');
 			$db->sql_freeresult($result);
 		}
 		
@@ -125,7 +124,7 @@ class posting_api
 			'topic_posts'				=> 1,
 			'topic_moved_posts'			=> 0,
 			'topic_deleted_posts'		=> 0,
-			'topic_unapproved_posts'	=> ($approved ? 0 : 1),
+			'topic_unapproved_posts'	=> ($approved) ? 0 : 1,
 			'topic_first_poster_name'	=> $username,
 			'topic_poster'				=> $user_id,
 			'topic_last_username'		=> $username,
@@ -179,14 +178,15 @@ class posting_api
 		$db->sql_handle_data('UPDATE', FORUMS_TABLE, $forum_data, "forum_id = $forum_id");
 
 		// we are consistant, victory is ours
-		$db->transaction('END');
+		$db->sql_transaction('commit');
 	}
 
 	public function insert_post($data)
 	{
 		global $db;
+
 		// one transaction, we can now garuntee that atomicity of insertions
-		$db->transaction('BEGIN');
+		$db->sql_transaction('begin');
 
 		$user_id = (int) $data['user_id'];
 		$topic_id = (int) $data['topic_id'];
@@ -203,8 +203,7 @@ class posting_api
 				FROM ' . TOPICS_TABLE . '
 				WHERE topic_id = ' . $topic_id;
 			$result = $db->sql_query($sql);
-			$row = $db->sql_fetchrow($result);
-			$forum_id = (int) $row['forum_id'];
+			$forum_id = (int) $db->sql_fetchfield('forum_id');
 			$db->sql_freeresult($result);
 		}
 
@@ -223,8 +222,7 @@ class posting_api
 				FROM ' . USERS_TABLE . '
 				WHERE user_id = ' . $user_id;
 			$result = $db->sql_query($sql);
-			$row = $db->sql_fetchrow($result);
-			$username = $row['username'];
+			$username = (string) $db->sql_fetchfield('username');
 			$db->sql_freeresult($result);
 		}
 
@@ -298,7 +296,7 @@ class posting_api
 		$db->sql_handle_data('UPDATE', FORUMS_TABLE, $forum_data, "forum_id = $forum_id");
 
 		// we are consistant, victory is ours
-		$db->transaction('END');
+		$db->sql_transaction('commit');
 	}
 
 	function move_topic($data)
@@ -306,7 +304,7 @@ class posting_api
 		global $db;
 
 		// lets get this party started
-		$db->transaction('BEGIN');
+		$db->sql_transaction('begin');
 
 		$topic_id = (int) $data['topic_id'];
 		$to_forum_id = (int) $data['forum_id'];
@@ -317,6 +315,7 @@ class posting_api
 			WHERE topic_id = ' . $topic_id;
 		$result = $db->sql_query($sql);
 		$row = $db->sql_fetchrow($result);
+		$db->sql_freeresult($result);
 
 		$topic_status = (int) $row['topic_status'];
 		$from_forum_id = (int) $row['from_forum_id'];
@@ -325,8 +324,6 @@ class posting_api
 		$topic_row['topic_moved_posts']			= (int) $row['topic_moved_posts'];
 		$topic_row['topic_deleted_posts']		= (int) $row['topic_deleted_posts'];
 		$topic_row['topic_unapproved_posts']	= (int) $row['topic_unapproved_posts'];
-
-		$db->sql_freeresult($result);
 
 		// let us first determine how many items we are removing from the pool
 		$sql = 'SELECT forum_posts, forum_moved_posts, forum_deleted_posts, forum_unapproved_posts, forum_id, forum_topics, forum_deleted_topics, forum_unapproved_topics
@@ -448,7 +445,7 @@ class posting_api
 
 		// in hundreds of fewer lines of code, we have now moved a topic
 		// (this totally ignores the shadow topic thingy, I do not care for now)
-		$db->transaction('COMMIT');
+		$db->sql_transaction('commit');
 	}
 }
 

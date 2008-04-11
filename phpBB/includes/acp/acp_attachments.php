@@ -273,13 +273,19 @@ class acp_attachments
 					{
 						$l_explain = (isset($user->lang[$vars['lang'] . '_EXPLAIN'])) ? $user->lang[$vars['lang'] . '_EXPLAIN'] : '';
 					}
+					
+					$content = build_cfg_template($type, $config_key, $this->new_config, $config_key, $vars);
+					if (empty($content))
+					{
+						continue;
+					}
 
 					$template->assign_block_vars('options', array(
 						'KEY'			=> $config_key,
 						'TITLE'			=> $user->lang[$vars['lang']],
 						'S_EXPLAIN'		=> $vars['explain'],
 						'TITLE_EXPLAIN'	=> $l_explain,
-						'CONTENT'		=> build_cfg_template($type, $config_key, $this->new_config, $config_key, $vars),
+						'CONTENT'		=> $content,
 						)
 					);
 
