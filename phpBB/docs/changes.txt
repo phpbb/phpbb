@@ -1,0 +1,4 @@
+List of major changes since 3.0.x:
+
+- new stack-based bbcode system
+- Migrate phpBB to PHP versions >= 5.2
