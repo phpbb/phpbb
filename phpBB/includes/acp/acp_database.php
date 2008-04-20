@@ -171,6 +171,7 @@ class acp_database
 					default:
 						include($phpbb_root_path . 'includes/functions_install.' . $phpEx);
 						$tables = get_tables($db);
+						asort($tables);
 						foreach ($tables as $table_name)
 						{
 							if (strlen($table_prefix) === 0 || stripos($table_name, $table_prefix) === 0)
@@ -345,7 +346,25 @@ class acp_database
 									while (($sql = $fgetd($fp, $delim, $read, $seek, $eof)) !== false)
 									{
 										$query = trim($sql);
-										$db->sql_query($query);
+
+										if (substr($query, 0, 13) == 'CREATE DOMAIN')
+										{
+											list(, , $domain) = explode(' ', $query);
+											$sql = "SELECT domain_name
+												FROM information_schema.domains
+												WHERE domain_name = '$domain';";
+											$result = $db->sql_query($sql);
+											if (!$db->sql_fetchrow($result))
+											{
+												$db->sql_query($query);
+											}
+											$db->sql_freeresult($result);
+										}
+										else
+										{
+											$db->sql_query($query);
+										}
+
 										if (substr($query, 0, 4) == 'COPY')
 										{
 											while (($sub = $fgetd($fp, "\n", $read, $seek, $eof)) !== '\.')
@@ -1087,7 +1106,7 @@ class postgres_extractor extends base_extractor
 		}
 
 		$sql_data = '-- Table: ' . $table_name . "\n";
-		//$sql_data .= "DROP TABLE $table_name;\n";
+		$sql_data .= "DROP TABLE $table_name;\n";
 		// PGSQL does not "tightly" bind sequences and tables, we must guess...
 		$sql = "SELECT relname
 			FROM pg_class
@@ -1156,7 +1175,7 @@ class postgres_extractor extends base_extractor
 				$line .= ')';
 			}
 
-			if (!empty($row['rowdefault']))
+			if (isset($row['rowdefault']))
 			{
 				$line .= ' DEFAULT ' . $row['rowdefault'];
 			}
