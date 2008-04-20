@@ -231,7 +231,7 @@ class compress_zip extends compress
 					}
 					else
 					{
-						// Some archivers are punks, they don't don't include folders in their archives!
+						// Some archivers are punks, they don't include folders in their archives!
 						$str = '';
 						$folders = explode('/', pathinfo($target_filename, PATHINFO_DIRNAME));
 
@@ -507,12 +507,14 @@ class compress_tar extends compress
 				$tmp = unpack('A12size', substr($buffer, 124, 12));
 				$filesize = octdec((int) trim($tmp['size']));
 
+				$target_filename = "$dst$filename";
+
 				if ($filetype == 5)
 				{
-					if (!is_dir("$dst$filename"))
+					if (!is_dir($target_filename))
 					{
 						$str = '';
-						$folders = explode('/', "$dst$filename");
+						$folders = explode('/', $target_filename);
 
 						// Create and folders and subfolders if they do not exist
 						foreach ($folders as $folder)
@@ -529,17 +531,35 @@ class compress_tar extends compress
 						}
 					}
 				}
-				else if ($filesize != 0 && ($filetype == 0 || $filetype == "\0"))
+				else if ($filesize >= 0 && ($filetype == 0 || $filetype == "\0"))
 				{
+					// Some archivers are punks, they don't properly order the folders in their archives!
+					$str = '';
+					$folders = explode('/', pathinfo($target_filename, PATHINFO_DIRNAME));
+
+					// Create and folders and subfolders if they do not exist
+					foreach ($folders as $folder)
+					{
+						$str = (!empty($str)) ? $str . '/' . $folder : $folder;
+						if (!is_dir($str))
+						{
+							if (!@mkdir($str, 0777))
+							{
+								trigger_error("Could not create directory $folder");
+							}
+							@chmod($str, 0777);
+						}
+					}
+
 					// Write out the files
-					if (!($fp = fopen("$dst$filename", 'wb')))
+					if (!($fp = fopen($target_filename, 'wb')))
 					{
 						trigger_error("Couldn't create file $filename");
 					}
-					@chmod("$dst$filename", 0777);
+					@chmod($target_filename, 0777);
 
 					// Grab the file contents
-					fwrite($fp, $fzread($this->fp, ($filesize + 511) &~ 511), $filesize);
+					fwrite($fp, ($filesize) ? $fzread($this->fp, ($filesize + 511) &~ 511) : '', $filesize);
 					fclose($fp);
 				}
 			}
