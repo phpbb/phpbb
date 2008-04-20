@@ -286,7 +286,7 @@ function connect_check_db($error_connect, &$error, $dbms_details, $table_prefix,
 	{
 		case 'mysql':
 		case 'mysqli':
-			if (strpos($table_prefix, '-') !== false || strpos($table_prefix, '.') !== false)
+			if (strspn($table_prefix, '-./\\') !== 0)
 			{
 				$error[] = $lang['INST_ERR_PREFIX_INVALID'];
 				return false;
