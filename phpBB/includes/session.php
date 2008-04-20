@@ -217,9 +217,9 @@ class session
 		// Load limit check (if applicable)
 		if ($config['limit_load'] || $config['limit_search_load'])
 		{
-			if ($load = @file_get_contents('/proc/loadavg'))
+			if ((function_exists('sys_getloadavg') && $load = sys_getloadavg()) || ($load = explode(' ', @file_get_contents('/proc/loadavg'))))
 			{
-				$this->load = array_slice(explode(' ', $load), 0, 1);
+				$this->load = array_slice($load, 0, 1);
 				$this->load = floatval($this->load[0]);
 			}
 			else
