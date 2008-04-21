@@ -450,15 +450,15 @@ function close_report($report_id_list, $mode, $action)
 
 	if ($action == 'delete' && strpos($user->data['session_page'], 'mode=report_details') !== false)
 	{
-		$redirect = request_var('redirect', build_url(array('mode', '_f_', 'r', 'quickmod')) . '&amp;mode=reports');
+		$redirect = request_var('redirect', build_url(array('mode', 'r', 'quickmod')) . '&amp;mode=reports');
 	}
 	else if ($action == 'close' && !request_var('r', 0))
 	{
-		$redirect = request_var('redirect', build_url(array('mode', '_f_', 'p', 'quickmod')) . '&amp;mode=reports');
+		$redirect = request_var('redirect', build_url(array('mode', 'p', 'quickmod')) . '&amp;mode=reports');
 	}
 	else
 	{
-		$redirect = request_var('redirect', build_url(array('_f_', 'quickmod')));
+		$redirect = request_var('redirect', build_url(array('quickmod')));
 	}
 	$success_msg = '';
 	$forum_ids = array();
