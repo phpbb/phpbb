@@ -1803,4 +1803,25 @@ function message_history($msg_id, $user_id, $message_row, $folder, $in_post_mode
 	return true;
 }
 
+/**
+* Set correct users max messages in PM folder.
+* If several group memberships define different amount of messages, the highest will be chosen.
+*/
+function set_user_message_limit()
+{
+	global $user, $db, $config;
+
+	// Get maximum about from user memberships - if it is 0, there is no limit set and we use the maximum value within the config.
+	$sql = 'SELECT MAX(g.group_message_limit) as max_message_limit
+		FROM ' . GROUPS_TABLE . ' g, ' . USER_GROUP_TABLE . ' ug
+		WHERE ug.user_id = ' . $user->data['user_id'] . '
+			AND ug.user_pending = 0
+			AND ug.group_id = g.group_id';
+	$result = $db->sql_query($sql);
+	$message_limit = (int) $db->sql_fetchfield('max_message_limit');
+	$db->sql_freeresult($result);
+
+	$user->data['message_limit'] = (!$message_limit) ? $config['pm_max_msgs'] : $message_limit;
+}
+
 ?>

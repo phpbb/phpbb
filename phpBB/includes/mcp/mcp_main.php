@@ -235,7 +235,7 @@ function lock_unlock($action, $ids)
 	}
 	unset($orig_ids);
 
-	$redirect = request_var('redirect', build_url(array('_f_', 'action', 'quickmod')));
+	$redirect = request_var('redirect', build_url(array('action', 'quickmod')));
 
 	$s_hidden_fields = build_hidden_fields(array(
 		$sql_id . '_list'	=> $ids,
@@ -321,7 +321,7 @@ function change_topic_type($action, $topic_ids)
 		break;
 	}
 
-	$redirect = request_var('redirect', build_url(array('_f_', 'action', 'quickmod')));
+	$redirect = request_var('redirect', build_url(array('action', 'quickmod')));
 
 	$s_hidden_fields = array(
 		'topic_id_list'	=> $topic_ids,
@@ -542,7 +542,7 @@ function mcp_move_topic($topic_ids)
 	}
 
 	$to_forum_id = request_var('to_forum_id', 0);
-	$redirect = request_var('redirect', build_url(array('_f_', 'action', 'quickmod')));
+	$redirect = request_var('redirect', build_url(array('action', 'quickmod')));
 	$additional_msg = $success_msg = '';
 
 	$s_hidden_fields = build_hidden_fields(array(
@@ -762,7 +762,7 @@ function mcp_delete_topic($topic_ids)
 		return;
 	}
 
-	$redirect = request_var('redirect', build_url(array('_f_', 'action', 'quickmod')));
+	$redirect = request_var('redirect', build_url(array('action', 'quickmod')));
 	$forum_id = request_var('f', 0);
 
 	$s_hidden_fields = build_hidden_fields(array(
@@ -818,7 +818,7 @@ function mcp_delete_post($post_ids)
 		return;
 	}
 
-	$redirect = request_var('redirect', build_url(array('_f_', 'action', 'quickmod')));
+	$redirect = request_var('redirect', build_url(array('action', 'quickmod')));
 	$forum_id = request_var('f', 0);
 
 	$s_hidden_fields = build_hidden_fields(array(
@@ -941,7 +941,7 @@ function mcp_fork_topic($topic_ids)
 
 	$to_forum_id = request_var('to_forum_id', 0);
 	$forum_id = request_var('f', 0);
-	$redirect = request_var('redirect', build_url(array('_f_', 'action', 'quickmod')));
+	$redirect = request_var('redirect', build_url(array('action', 'quickmod')));
 	$additional_msg = $success_msg = '';
 
 	$s_hidden_fields = build_hidden_fields(array(

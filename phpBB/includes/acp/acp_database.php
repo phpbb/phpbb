@@ -25,7 +25,7 @@ class acp_database
 
 	function main($id, $mode)
 	{
-		global $db, $user, $auth, $template, $table_prefix;
+		global $cache, $db, $user, $auth, $template, $table_prefix;
 		global $config, $phpbb_root_path, $phpbb_admin_path, $phpEx;
 		
 		$user->add_lang('acp/database');
@@ -160,12 +160,13 @@ class acp_database
 
 						$extractor->write_end();
 
+						add_log('admin', 'LOG_DB_BACKUP');
+
 						if ($download == true)
 						{
 							exit;
 						}
 
-						add_log('admin', 'LOG_DB_BACKUP');
 						trigger_error($user->lang['BACKUP_SUCCESS'] . adm_back_link($this->u_action));
 					break;
 
@@ -378,6 +379,9 @@ class acp_database
 							}
 
 							$close($fp);
+
+							// Purge the cache due to updated data
+							$cache->purge();
 
 							add_log('admin', 'LOG_DB_RESTORE');
 							trigger_error($user->lang['RESTORE_SUCCESS'] . adm_back_link($this->u_action));

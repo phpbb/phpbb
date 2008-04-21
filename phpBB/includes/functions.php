@@ -2865,6 +2865,12 @@ function msg_handler($errno, $msg_text, $errfile, $errline)
 			if (strpos($errfile, 'cache') === false && strpos($errfile, 'template.') === false)
 			{
 				// flush the content, else we get a white page if output buffering is on
+				if (strtolower(@ini_get('output_buffering')) !== 'off')
+				{
+					@ob_end_flush();
+				}
+
+				// Another quick fix for those having gzip compression enabled
 				if ($config['gzip_compress'])
 				{
 					if (@extension_loaded('zlib') && !headers_sent())
@@ -3488,7 +3494,7 @@ function garbage_collection()
 */
 function exit_handler()
 {
-	global $phpbb_hook;
+	global $phpbb_hook, $config;
 
 	if (!empty($phpbb_hook) && $phpbb_hook->call_hook(__FUNCTION__))
 	{
@@ -3499,7 +3505,7 @@ function exit_handler()
 	}
 
 	// As a pre-caution... some setups display a blank page if the flush() is not there.
-	@flush();
+	(!$config['gzip_compress']) ? @flush() : @ob_flush();
 
 	exit;
 }
