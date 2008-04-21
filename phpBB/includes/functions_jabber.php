@@ -399,12 +399,13 @@ class jabber
 				$second_time = isset($this->session['id']);
 				$this->session['id'] = $xml['stream:stream'][0]['@']['id'];
 
+				/** Currently commented out due to problems with some jabber server - reason unknown
 				if ($second_time)
 				{
 					// If we are here for the second time after TLS, we need to continue logging in
 					$this->login();
 					return;
-				}
+				}*/
 
 				// go on with authentication?
 				if (isset($this->features['stream:features'][0]['#']['bind']) || !empty($this->session['tls']))
