@@ -257,7 +257,7 @@ class filespec
 			return false;
 		}
 
-		$upload_mode = (@ini_get('open_basedir') || @ini_get('safe_mode')) ? 'move' : 'copy';
+		$upload_mode = (@ini_get('open_basedir') || @ini_get('safe_mode') || strtolower(@ini_get('safe_mode')) == 'on') ? 'move' : 'copy';
 		$upload_mode = ($this->local) ? 'local' : $upload_mode;
 		$this->destination_file = $this->destination_path . '/' . basename($this->realname);
 
@@ -741,7 +741,7 @@ class fileupload
 			return $file;
 		}
 
-		$tmp_path = (!@ini_get('safe_mode')) ? false : $phpbb_root_path . 'cache';
+		$tmp_path = (!@ini_get('safe_mode') || strtolower(@ini_get('safe_mode')) == 'off') ? false : $phpbb_root_path . 'cache';
 		$filename = tempnam($tmp_path, unique_id() . '-');
 
 		if (!($fp = @fopen($filename, 'wb')))
