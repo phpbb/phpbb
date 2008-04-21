@@ -524,6 +524,8 @@ function get_supported_image_types($type = false)
 
 		if ($type !== false)
 		{
+			// Type is one of the IMAGETYPE constants - it is fetched from getimagesize()
+			// We do not use the constants here, because some were not available in PHP 4.3.x
 			switch ($type)
 			{
 				// GIF
@@ -545,8 +547,7 @@ function get_supported_image_types($type = false)
 					$new_type = ($format & IMG_PNG) ? IMG_PNG : false;
 				break;
 
-				// BMP, WBMP
-				case 6:
+				// WBMP
 				case 15:
 					$new_type = ($format & IMG_WBMP) ? IMG_WBMP : false;
 				break;
