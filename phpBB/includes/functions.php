@@ -2941,6 +2941,12 @@ function msg_handler($errno, $msg_text, $errfile, $errline)
 			if (strpos($errfile, 'cache') === false && strpos($errfile, 'template.') === false)
 			{
 				// flush the content, else we get a white page if output buffering is on
+				if (strtolower(@ini_get('output_buffering')) !== 'off')
+				{
+					@ob_end_flush();
+				}
+
+				// Another quick fix for those having gzip compression enabled
 				if ($config['gzip_compress'])
 				{
 					if (@extension_loaded('zlib') && !headers_sent())
