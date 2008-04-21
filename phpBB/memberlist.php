@@ -896,7 +896,7 @@ switch ($mode)
 		}
 
 		$sort_key_text['m'] = $user->lang['SORT_RANK'];
-		$sort_key_sql['m'] = 'u.user_rank DESC, u.user_posts';
+		$sort_key_sql['m'] = 'u.user_rank';
 
 		$sort_dir_text = array('a' => $user->lang['ASCENDING'], 'd' => $user->lang['DESCENDING']);
 
@@ -1155,6 +1155,12 @@ switch ($mode)
 		}
 
 		$order_by .= $sort_key_sql[$sort_key] . ' ' . (($sort_dir == 'a') ? 'ASC' : 'DESC');
+
+		// Unfortunately we must do this here for sorting by rank, else the sort order is applied wrongly
+		if ($sort_key == 'm')
+		{
+			$order_by .= ', u.user_posts DESC';
+		}
 
 		// Count the users ...
 		if ($sql_where)
