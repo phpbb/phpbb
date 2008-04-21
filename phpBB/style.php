@@ -95,7 +95,7 @@ if ($id)
 		$user		= array('user_id' => ANONYMOUS);
 	}
 
-	$sql = 'SELECT s.style_id, c.theme_data, c.theme_path, c.theme_name, c.theme_mtime, i.*, t.template_path
+	$sql = 'SELECT s.style_id, c.theme_id, c.theme_data, c.theme_path, c.theme_name, c.theme_mtime, i.*, t.template_path
 		FROM ' . STYLES_TABLE . ' s, ' . STYLES_TEMPLATE_TABLE . ' t, ' . STYLES_THEME_TABLE . ' c, ' . STYLES_IMAGESET_TABLE . ' i
 		WHERE s.style_id = ' . $id . '
 			AND t.template_id = s.template_id
@@ -193,7 +193,7 @@ if ($id)
 		);
 
 		$sql = 'UPDATE ' . STYLES_THEME_TABLE . ' SET ' . $db->sql_build_array('UPDATE', $sql_ary) . "
-			WHERE theme_id = $id";
+			WHERE theme_id = {$theme['theme_id']}";
 		$db->sql_query($sql);
 
 		$cache->destroy('sql', STYLES_THEME_TABLE);
