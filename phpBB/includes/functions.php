@@ -3652,7 +3652,7 @@ function garbage_collection()
 */
 function exit_handler()
 {
-	global $phpbb_hook;
+	global $phpbb_hook, $config;
 
 	if (!empty($phpbb_hook) && $phpbb_hook->call_hook(__FUNCTION__))
 	{
@@ -3663,7 +3663,7 @@ function exit_handler()
 	}
 
 	// As a pre-caution... some setups display a blank page if the flush() is not there.
-	@flush();
+	(!$config['gzip_compress']) ? @flush() : @ob_flush();
 
 	exit;
 }
