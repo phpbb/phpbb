@@ -152,7 +152,7 @@ class acp_attachments
 					if (in_array($config_name, array('attachment_quota', 'max_filesize', 'max_filesize_pm')))
 					{
 						$size_var = request_var($config_name, '');
-						$this->new_config[$config_name] = $config_value = ($size_var == 'kb') ? ($config_value << 10) : (($size_var == 'mb') ? ($config_value << 20) : $config_value);
+						$this->new_config[$config_name] = $config_value = ($size_var == 'kb') ? round($config_value * 1024) : (($size_var == 'mb') ? round($config_value * 1048576) : $config_value);
 					}
 
 					if ($submit)
@@ -513,7 +513,7 @@ class acp_attachments
 						$allowed_forums	= request_var('allowed_forums', array(0));
 						$allow_in_pm	= (isset($_POST['allow_in_pm'])) ? true : false;
 						$max_filesize	= request_var('max_filesize', 0);
-						$max_filesize	= ($size_select == 'kb') ? ($max_filesize << 10) : (($size_select == 'mb') ? ($max_filesize << 20) : $max_filesize);
+						$max_filesize	= ($size_select == 'kb') ? round($max_filesize * 1024) : (($size_select == 'mb') ? round($max_filesize * 1048576) : $max_filesize);
 						$allow_group	= (isset($_POST['allow_group'])) ? true : false;
 
 						if ($max_filesize == $config['max_filesize'])
