@@ -1003,7 +1003,6 @@ while ($row = $db->sql_fetchrow($result))
 				'rank_image'		=> '',
 				'rank_image_src'	=> '',
 				'sig'				=> '',
-				'posts'				=> '',
 				'profile'			=> '',
 				'pm'				=> '',
 				'email'				=> '',
