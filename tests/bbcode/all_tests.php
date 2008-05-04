@@ -1,5 +1,15 @@
 <?php
+/**
+*
+* @package testing
+* @version $Id$
+* @copyright (c) 2008 phpBB Group
+* @license http://opensource.org/licenses/gpl-license.php GNU Public License
+*
+*/
+
 define('IN_PHPBB', true);
+
 if (!defined('PHPUnit_MAIN_METHOD'))
 {
 	define('PHPUnit_MAIN_METHOD', 'phpbb_bbcode_all_tests::main');

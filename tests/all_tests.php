@@ -1,5 +1,15 @@
 <?php
+/**
+*
+* @package testing
+* @version $Id$
+* @copyright (c) 2008 phpBB Group
+* @license http://opensource.org/licenses/gpl-license.php GNU Public License
+*
+*/
+
 define('IN_PHPBB', true);
+
 if (!defined('PHPUnit_MAIN_METHOD'))
 {
 	define('PHPUnit_MAIN_METHOD', 'phpbb_all_tests::main');
@@ -11,6 +21,7 @@ require_once 'PHPUnit/TextUI/TestRunner.php';
 require_once 'bbcode/all_tests.php';
 require_once 'utf/all_tests.php';
 
+// exclude the test directory from code coverage reports
 PHPUnit_Util_Filter::addDirectoryToFilter('./');
 
 class phpbb_all_tests
