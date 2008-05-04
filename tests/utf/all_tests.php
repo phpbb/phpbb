@@ -9,6 +9,7 @@ require_once 'PHPUnit/Framework.php';
 require_once 'PHPUnit/TextUI/TestRunner.php';
 
 require_once 'utf/utf8_wordwrap_test.php';
+require_once 'utf/utf8_clean_string_test.php';
 
 class phpbb_utf_all_tests
 {
@@ -22,6 +23,7 @@ class phpbb_utf_all_tests
 		$suite = new PHPUnit_Framework_TestSuite('phpBB Unicode Transformation Format');
 
 		$suite->addTestSuite('phpbb_utf_utf8_wordwrap_test');
+		$suite->addTestSuite('phpbb_utf_utf8_clean_string_test');
 
 		return $suite;
 	}
