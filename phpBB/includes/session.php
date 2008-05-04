@@ -68,7 +68,7 @@ class session
 
 		foreach ($args as $key => $argument)
 		{
-			if (strpos($argument, 'sid=') === 0 || strpos($argument, '_f_=') === 0)
+			if (strpos($argument, 'sid=') === 0)
 			{
 				continue;
 			}
