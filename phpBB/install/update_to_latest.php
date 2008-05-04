@@ -59,7 +59,7 @@ include($phpbb_root_path . 'includes/db.'.$phpEx);
 //
 //
 //
-$updates_to_version = '.0.23';
+$updates_to_version = '.0.24';
 //
 //
 //
@@ -671,7 +671,8 @@ switch ($row['config_value'])
 		}
 
 		break;
-        
+
+	case '.0.22':
 	case '.0.23':
 
 		switch (SQL_LAYER)
@@ -1150,6 +1151,13 @@ switch ($row['config_value'])
 		_sql($sql, $errored, $error_ary);
 
 		break;
+
+	case '.0.21':
+	case '.0.22':
+	case '.0.23':
+		$sql = 'DELETE FROM ' . SESSIONS_TABLE;
+		_sql($sql, $errored, $error_ary);
+	break;
 
 	default:
 		echo " No updates were required</b></p>\n";
