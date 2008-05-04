@@ -8,7 +8,10 @@ if (!defined('PHPUnit_MAIN_METHOD'))
 require_once 'PHPUnit/Framework.php';
 require_once 'PHPUnit/TextUI/TestRunner.php';
 
+require_once 'bbcode/all_tests.php';
 require_once 'utf/all_tests.php';
+
+PHPUnit_Util_Filter::addDirectoryToFilter('./');
 
 class phpbb_all_tests
 {
@@ -21,6 +24,7 @@ class phpbb_all_tests
 	{
 		$suite = new PHPUnit_Framework_TestSuite('phpBB');
 
+		$suite->addTest(phpbb_bbcode_all_tests::suite());
 		$suite->addTest(phpbb_utf_all_tests::suite());
 
 		return $suite;
