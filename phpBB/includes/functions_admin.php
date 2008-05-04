@@ -1536,7 +1536,8 @@ function sync($mode, $where_type = '', $where_ids = '', $resync_parents = false,
 					$sql = 'SELECT SUM(t.topic_replies + 1) AS forum_posts
 						FROM ' . TOPICS_TABLE . ' t
 						WHERE ' . $db->sql_in_set('t.forum_id', $forum_ids) . '
-							AND t.topic_approved = 1';
+							AND t.topic_approved = 1
+							AND t.topic_status <> ' . ITEM_MOVED;
 				}
 				else
 				{
@@ -1544,6 +1545,7 @@ function sync($mode, $where_type = '', $where_ids = '', $resync_parents = false,
 						FROM ' . TOPICS_TABLE . ' t
 						WHERE ' . $db->sql_in_set('t.forum_id', $forum_ids) . '
 							AND t.topic_approved = 1
+							AND t.topic_status <> ' . ITEM_MOVED . '
 						GROUP BY t.forum_id';
 				}
 
