@@ -14,21 +14,21 @@ class phpbb_utf_utf8_wordwrap_test extends PHPUnit_Framework_TestCase
 
 		$php_wordwrap = wordwrap($text, 20);
 		$phpbb_utf8_wordwrap = utf8_wordwrap($text, 20);
-		$this->assertEquals($phpbb_utf8_wordwrap, $php_wordwrap, "Checking ASCII standard behaviour with length 20");
+		$this->assertEquals($php_wordwrap, $phpbb_utf8_wordwrap, "Checking ASCII standard behaviour with length 20");
 
 		$php_wordwrap = wordwrap($text, 30, "<br />\n");
 		$phpbb_utf8_wordwrap = utf8_wordwrap($text, 30, "<br />\n");
-		$this->assertEquals($phpbb_utf8_wordwrap, $php_wordwrap, "Checking ASCII special break string with length 30");
+		$this->assertEquals($php_wordwrap, $phpbb_utf8_wordwrap, "Checking ASCII special break string with length 30");
 
 		$text = 'A very long woooooooooooord.';
 
 		$php_wordwrap = wordwrap($text, 8, "\n");
 		$phpbb_utf8_wordwrap = utf8_wordwrap($text, 8, "\n");
-		$this->assertEquals($phpbb_utf8_wordwrap, $php_wordwrap, 'Checking ASCII not cutting long words');
+		$this->assertEquals($php_wordwrap, $phpbb_utf8_wordwrap, 'Checking ASCII not cutting long words');
 
 		$php_wordwrap = wordwrap($text, 8, "\n", true);
 		$phpbb_utf8_wordwrap = utf8_wordwrap($text, 8, "\n", true);
-		$this->assertEquals($phpbb_utf8_wordwrap, $php_wordwrap, 'Checking ASCII cutting long words');
+		$this->assertEquals($php_wordwrap, $phpbb_utf8_wordwrap, 'Checking ASCII cutting long words');
 	}
 
 	/**
@@ -62,7 +62,7 @@ class phpbb_utf_utf8_wordwrap_test extends PHPUnit_Framework_TestCase
 
 		$expected = $this->turn_into_greek(wordwrap($text, 10));
 		$phpbb_utf8_wordwrap = utf8_wordwrap($greek, 10);
-		$this->assertEquals($phpbb_utf8_wordwrap, $expected, 'Checking UTF-8 standard behaviour with length 10');
+		$this->assertEquals($expected, $phpbb_utf8_wordwrap, 'Checking UTF-8 standard behaviour with length 10');
 	}
 
 	public function test_utf8_wordwrap_utf8_cut()
@@ -72,7 +72,7 @@ class phpbb_utf_utf8_wordwrap_test extends PHPUnit_Framework_TestCase
 
 		$expected = $this->turn_into_greek(wordwrap($text, 5, "\n", true));
 		$phpbb_utf8_wordwrap = utf8_wordwrap($greek, 5, "\n", true);
-		$this->assertEquals($phpbb_utf8_wordwrap, $expected, 'Checking UTF-8 cutting long words');
+		$this->assertEquals($expected, $phpbb_utf8_wordwrap, 'Checking UTF-8 cutting long words');
 	}
 }
 ?>
