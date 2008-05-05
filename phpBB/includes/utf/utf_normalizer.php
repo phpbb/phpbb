@@ -435,7 +435,7 @@ class utf_normalizer
 
 								default:
 									// Five- and six- byte sequences do not need being checked for here anymore
-									if ($utf_char > UTF8_MAX)
+									if ($utf_char > self::UTF8_MAX)
 									{
 										// Out of the Unicode range
 										if ($utf_char[0] < "\xF8")
@@ -1345,7 +1345,7 @@ class utf_normalizer
 								break;
 
 								default:
-									if ($utf_char > UTF8_MAX)
+									if ($utf_char > self::UTF8_MAX)
 									{
 										// Out of the Unicode range
 										$tmp .= substr($str, $tmp_pos, $starter_pos - $tmp_pos);

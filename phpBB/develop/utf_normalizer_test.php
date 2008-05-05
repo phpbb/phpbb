@@ -20,7 +20,7 @@ if (php_sapi_name() != 'cli')
 // Remove or comment the next line (die(".... ) to enable this script.
 // Do NOT FORGET to either remove this script or disable it after you have used it.
 //
-die("Please read the first lines of this script for instructions on how to enable it");
+//die("Please read the first lines of this script for instructions on how to enable it");
 
 set_time_limit(0);
 error_reporting(E_ALL);
@@ -184,14 +184,14 @@ while (!feof($fp))
 
 	$utf_expected = hex_to_utf($hex_expected);
 
-	if ($utf_expected >= UTF8_SURROGATE_FIRST
-	 && $utf_expected <= UTF8_SURROGATE_LAST)
+	if ($utf_expected >= utf_normalizer::UTF8_SURROGATE_FIRST
+	 && $utf_expected <= utf_normalizer::UTF8_SURROGATE_LAST)
 	{
 		/**
 		* Surrogates are illegal on their own, we expect the normalizer
 		* to return a replacement char
 		*/
-		$utf_expected = UTF8_REPLACEMENT;
+		$utf_expected = utf_normalizer::UTF8_REPLACEMENT;
 		$hex_expected = utf_to_hexseq($utf_expected);
 	}
 
