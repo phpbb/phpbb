@@ -255,6 +255,7 @@
 .rtl ul.topiclist li.row dt a.subforum {
 	padding-right: 12px;
 	background-position: right;
+	position: static;
 }
 
 .rtl .forum-image {
