@@ -64,6 +64,7 @@ INSERT INTO phpbb_config (config_name, config_value) VALUES ('captcha_gd', '0');
 INSERT INTO phpbb_config (config_name, config_value) VALUES ('captcha_gd_foreground_noise', '0');
 INSERT INTO phpbb_config (config_name, config_value) VALUES ('captcha_gd_x_grid', '25');
 INSERT INTO phpbb_config (config_name, config_value) VALUES ('captcha_gd_y_grid', '25');
+INSERT INTO phpbb_config (config_name, config_value) VALUES ('check_attachment_content', '1');
 INSERT INTO phpbb_config (config_name, config_value) VALUES ('check_dnsbl', '0');
 INSERT INTO phpbb_config (config_name, config_value) VALUES ('chg_passforce', '0');
 INSERT INTO phpbb_config (config_name, config_value) VALUES ('cookie_domain', '');
@@ -172,8 +173,7 @@ INSERT INTO phpbb_config (config_name, config_value) VALUES ('max_sig_urls', '5'
 INSERT INTO phpbb_config (config_name, config_value) VALUES ('min_name_chars', '3');
 INSERT INTO phpbb_config (config_name, config_value) VALUES ('min_pass_chars', '6');
 INSERT INTO phpbb_config (config_name, config_value) VALUES ('min_search_author_chars', '3');
-INSERT INTO phpbb_config (config_name, config_value) VALUES ('min_time_reg', '0');
-INSERT INTO phpbb_config (config_name, config_value) VALUES ('min_time_terms', '0');
+INSERT INTO phpbb_config (config_name, config_value) VALUES ('mime_triggers', 'body|head|html|img|plaintext|a href|pre|script|table|title');
 INSERT INTO phpbb_config (config_name, config_value) VALUES ('override_user_style', '0');
 INSERT INTO phpbb_config (config_name, config_value) VALUES ('pass_complex', 'PASS_TYPE_ANY');
 INSERT INTO phpbb_config (config_name, config_value) VALUES ('pm_edit_time', '0');

@@ -228,6 +228,34 @@ class filespec
 	{
 		return @filesize($filename);
 	}
+	
+	
+	/**
+	* Check the first 256 bytes for forbidden content
+	*/
+	function check_content($disallowed_content)
+	{
+		if (empty($disallowed_content))
+		{
+			return true;
+		}
+		
+		$fp = @fopen($this->filename, 'rb');
+
+		if ($fp !== false)
+		{
+			$ie_mime_relevant = fread($fp, 256);
+			fclose($fp);
+			foreach ($disallowed_content as $forbidden)
+			{
+				if (stripos($ie_mime_relevant, '<' . $forbidden) !== false)
+				{
+					return false;
+				}
+			}
+		}
+		return true;
+	}
 
 	/**
 	* Move file to destination folder
@@ -427,6 +455,7 @@ class fileerror extends filespec
 class fileupload
 {
 	var $allowed_extensions = array();
+	var $disallowed_content = array();
 	var $max_filesize = 0;
 	var $min_width = 0;
 	var $min_height = 0;
@@ -446,12 +475,13 @@ class fileupload
 	* @param int $max_height Maximum image height (only checked for images)
 	*
 	*/
-	function fileupload($error_prefix = '', $allowed_extensions = false, $max_filesize = false, $min_width = false, $min_height = false, $max_width = false, $max_height = false)
+	function fileupload($error_prefix = '', $allowed_extensions = false, $max_filesize = false, $min_width = false, $min_height = false, $max_width = false, $max_height = false, $disallowed_content = false)
 	{
 		$this->set_allowed_extensions($allowed_extensions);
 		$this->set_max_filesize($max_filesize);
 		$this->set_allowed_dimensions($min_width, $min_height, $max_width, $max_height);
 		$this->set_error_prefix($error_prefix);
+		$this->set_disallowed_content($disallowed_content);
 	}
 
 	/**
@@ -463,6 +493,7 @@ class fileupload
 		$this->min_width = $this->min_height = $this->max_width = $this->max_height = 0;
 		$this->error_prefix = '';
 		$this->allowed_extensions = array();
+		$this->disallowed_content = array();
 	}
 
 	/**
@@ -495,6 +526,17 @@ class fileupload
 		if ($max_filesize !== false && (int) $max_filesize)
 		{
 			$this->max_filesize = (int) $max_filesize;
+		}
+	}
+	
+	/**
+	* Set disallowed strings
+	*/
+	function set_disallowed_content($disallowed_content)
+	{
+		if ($disallowed_content !== false && is_array($disallowed_content))
+		{
+			$this->disallowed_content = $disallowed_content;
 		}
 	}
 
@@ -830,6 +872,12 @@ class fileupload
 		{
 			$file->error[] = sprintf($user->lang[$this->error_prefix . 'DISALLOWED_EXTENSION'], $file->get('extension'));
 		}
+		
+		// MIME Sniffing
+		if (!$this->valid_content($file))
+		{
+			$file->error[] = sprintf($user->lang[$this->error_prefix . 'DISALLOWED_CONTENT']);
+		}
 	}
 
 	/**
@@ -867,6 +915,15 @@ class fileupload
 	function is_valid($form_name)
 	{
 		return (isset($_FILES[$form_name]) && $_FILES[$form_name]['name'] != 'none') ? true : false;
+	}
+
+
+	/**
+	* Check for allowed extension
+	*/
+	function valid_content(&$file)
+	{
+		return ($file->check_content($this->disallowed_content));
 	}
 
 	/**

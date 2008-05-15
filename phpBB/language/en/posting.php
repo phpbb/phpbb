@@ -82,6 +82,7 @@ $lang = array_merge($lang, array(
 	'DISABLE_BBCODE'			=> 'Disable BBCode',
 	'DISABLE_MAGIC_URL'			=> 'Do not automatically parse URLs',
 	'DISABLE_SMILIES'			=> 'Disable smilies',
+	'DISALLOWED_CONTENT'		=> 'The upload was rejected because the uploaded file was identified as a possible attack vector.',
 	'DISALLOWED_EXTENSION'		=> 'The extension %s is not allowed.',
 	'DRAFT_LOADED'				=> 'Draft loaded into posting area, you may want to finish your post now.<br />Your draft will be deleted after submitting this post.',
 	'DRAFT_LOADED_PM'			=> 'Draft loaded into message area, you may want to finish your private message now.<br />Your draft will be deleted after submitting this private message.',
