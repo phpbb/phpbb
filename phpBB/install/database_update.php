@@ -1740,6 +1740,10 @@ function change_database_data($version)
 			// TODO: remove all form token min times
 
 		break;
+		
+		case '3.0.1':
+
+			set_config('referer_validation', '1');
 	}
 }
 
