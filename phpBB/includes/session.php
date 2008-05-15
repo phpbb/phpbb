@@ -1315,7 +1315,7 @@ class session
 		{
 			return false;
 		}
-		else if ($check_script_path && !empty(rtrim($this->page['root_script_path'], '/')))
+		else if ($check_script_path && rtrim($this->page['root_script_path'], '/') !== '' )
 		{
 			$ref = substr($ref, strlen($host));
 			if (!(stripos(rtrim($ref, '/'), rtrim($this->page['root_script_path'], '/')) === 0))
