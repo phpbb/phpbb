@@ -268,6 +268,7 @@ class session
 				// referer checks
 				$check_referer_path = $config['referer_validation'] == REFERER_VALIDATE_PATH;
 				$referer_valid = true;
+				// we assume HEAD and TRACE to be foul play and thus only whitelist GET
 				if ($config['referer_validation'] && isset($_SERVER['REQUEST_METHOD']) && strtolower($_SERVER['REQUEST_METHOD']) !== 'get')
 				{
 					$referer_valid = $this->validate_referer($check_referer_path);
