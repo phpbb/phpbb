@@ -1316,14 +1316,14 @@ class session
 		{
 			return false;
 		}
-		else if ($check_script_path && rtrim($this->page['root_script_path'], '/') !== '' )
+		else if ($check_script_path && rtrim($this->page['root_script_path'], '/') !== '')
 		{
 			$ref = substr($ref, strlen($host));
-            $server_port = (!empty($_SERVER['SERVER_PORT'])) ? (int) $_SERVER['SERVER_PORT'] : (int) getenv('SERVER_PORT');
-            if ($server_port !== 80 && $server_port !== 443 && stripos($ref , ":$server_port") === 0)
-            {
-                $ref = substr($ref,  strlen(":$server_port"));
-            }
+			$server_port = (!empty($_SERVER['SERVER_PORT'])) ? (int) $_SERVER['SERVER_PORT'] : (int) getenv('SERVER_PORT');
+			if ($server_port !== 80 && $server_port !== 443 && stripos($ref , ":$server_port") === 0)
+			{
+				$ref = substr($ref, strlen(":$server_port"));
+			}
 			if (!(stripos(rtrim($ref, '/'), rtrim($this->page['root_script_path'], '/')) === 0))
 			{
 				return false;
