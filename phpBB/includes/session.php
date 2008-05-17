@@ -1320,7 +1320,7 @@ class session
 		{
 			$ref = substr($ref, strlen($host));
 			$server_port = (!empty($_SERVER['SERVER_PORT'])) ? (int) $_SERVER['SERVER_PORT'] : (int) getenv('SERVER_PORT');
-			if ($server_port !== 80 && $server_port !== 443 && stripos($ref , ":$server_port") === 0)
+			if ($server_port !== 80 && $server_port !== 443 && stripos($ref, ":$server_port") === 0)
 			{
 				$ref = substr($ref, strlen(":$server_port"));
 			}
