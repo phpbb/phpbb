@@ -1194,6 +1194,8 @@ function user_ipwhois($ip)
 */
 function validate_data($data, $val_ary)
 {
+	global $user;
+
 	$error = array();
 
 	foreach ($val_ary as $var => $val_seq)
@@ -1210,7 +1212,8 @@ function validate_data($data, $val_ary)
 
 			if ($result = call_user_func_array('validate_' . $function, $validate))
 			{
-				$error[] = $result . '_' . strtoupper($var);
+				// Since errors are checked later for their language file existence, we need to make sure custom errors are not adjusted.
+				$error[] = (empty($user->lang[$result . '_' . strtoupper($var)])) ? $result : $result . '_' . strtoupper($var);
 			}
 		}
 	}
@@ -1535,9 +1538,9 @@ function validate_email($email, $allowed_email = false)
 		}
 	}
 
-	if ($user->check_ban(false, false, $email, true) == true)
+	if (($ban_reason = $user->check_ban(false, false, $email, true)) !== false)
 	{
-		return 'EMAIL_BANNED';
+		return ($ban_reason === true) ? 'EMAIL_BANNED' : $ban_reason;
 	}
 
 	if (!$config['allow_emailreuse'])
