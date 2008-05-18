@@ -574,7 +574,7 @@ function make_clickable_callback($type, $whitespace, $url, $relative_url, $class
 			// don't touch it and let MAGIC_URL_FULL take care of it.
 			if (!$relative_url)
 			{
-				return $orig_url . '/'; // slash is taken away by relative url pattern
+				return $whitespace . $orig_url . '/'; // slash is taken away by relative url pattern
 			}
 		break;
 
