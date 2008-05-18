@@ -264,16 +264,17 @@ class session
 
 				$s_forwarded_for = ($config['forwarded_for_check']) ? substr($this->data['session_forwarded_for'], 0, 254) : '';
 				$u_forwarded_for = ($config['forwarded_for_check']) ? substr($this->forwarded_for, 0, 254) : '';
-				
+
 				// referer checks
-				$check_referer_path = $config['referer_validation'] == REFERER_VALIDATE_PATH;
+				// The @ before $config['referer_validation'] suppresses notices present while running the updater
+				$check_referer_path = (@$config['referer_validation'] == REFERER_VALIDATE_PATH);
 				$referer_valid = true;
+
 				// we assume HEAD and TRACE to be foul play and thus only whitelist GET
-				if ($config['referer_validation'] && isset($_SERVER['REQUEST_METHOD']) && strtolower($_SERVER['REQUEST_METHOD']) !== 'get')
+				if (@$config['referer_validation'] && isset($_SERVER['REQUEST_METHOD']) && strtolower($_SERVER['REQUEST_METHOD']) !== 'get')
 				{
 					$referer_valid = $this->validate_referer($check_referer_path);
 				}
-				
 
 				if ($u_ip === $s_ip && $s_browser === $u_browser && $s_forwarded_for === $u_forwarded_for && $referer_valid)
 				{
@@ -1119,7 +1120,7 @@ class session
 			trigger_error($message);
 		}
 
-		return ($banned) ? true : false;
+		return ($banned && $ban_row['ban_give_reason']) ? $ban_row['ban_give_reason'] : $banned;
 	}
 
 	/**
@@ -1297,10 +1298,10 @@ class session
 			$this->set_login_key($user_id);
 		}
 	}
-	
-	
+
+
 	/**
-	* Check if the request originated from the same page. 
+	* Check if the request originated from the same page.
 	* @param bool $check_script_path If true, the path will be checked as well
 	*/
 	function validate_referer($check_script_path = false)
