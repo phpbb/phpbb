@@ -358,6 +358,11 @@ function upload_attachment($form_name, $forum_id, $local = false, $local_storage
 	include_once($phpbb_root_path . 'includes/functions_upload.' . $phpEx);
 	$upload = new fileupload();
 
+	if ($config['check_attachment_content'])
+	{
+		$upload->set_disallowed_content(explode('|', $config['mime_triggers']));
+	}
+	
 	if (!$local)
 	{
 		$filedata['post_attach'] = ($upload->is_valid($form_name)) ? true : false;

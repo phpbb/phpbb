@@ -1112,10 +1112,15 @@ function change_database_data($version)
 					_sql($sql, $errored, $error_ary);
 				}
 			}
-	
-			// TODO: remove all form token min times
 
 		break;
+
+		case '3.0.1':
+			
+			set_config('referer_validation', '1');
+			set_config('check_attachment_content', '1');
+			set_config('mime_triggers', 'body|head|html|img|plaintext|a href|pre|script|table|title');
+
 	}
 }
 

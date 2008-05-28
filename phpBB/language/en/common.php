@@ -78,6 +78,7 @@ $lang = array_merge($lang, array(
 	'ATTACHED_IMAGE_NOT_IMAGE'		=> 'The image file you tried to attach is invalid.',
 	'AUTHOR'						=> 'Author',
 	'AUTH_NO_PROFILE_CREATED'		=> 'The creation of a user profile was unsuccessful.',
+	'AVATAR_DISALLOWED_CONTENT'		=> 'The upload was rejected because the uploaded file was identified as a possible attack vector.',
 	'AVATAR_DISALLOWED_EXTENSION'	=> 'This file cannot be displayed because the extension <strong>%s</strong> is not allowed.',
 	'AVATAR_EMPTY_REMOTE_DATA'		=> 'The specified avatar could not be uploaded because the remote data appears to be invalid or corrupted.',
 	'AVATAR_EMPTY_FILEUPLOAD'		=> 'The uploaded avatar file is empty.',
