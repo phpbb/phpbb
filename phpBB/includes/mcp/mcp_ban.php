@@ -150,7 +150,7 @@ class mcp_ban
 			'U_FIND_USERNAME'	=> append_sid('memberlist', 'mode=searchuser&amp;form=mcp_ban&amp;field=ban'),
 		));
 
-		if ($mode != 'user')
+		if ($mode === 'email' && !$auth->acl_get('a_user'))
 		{
 			return;
 		}
@@ -162,11 +162,24 @@ class mcp_ban
 
 		if ($user_id && $user_id <> ANONYMOUS)
 		{
-			$sql = 'SELECT username
+			$sql = 'SELECT username, user_email, user_ip
 				FROM ' . USERS_TABLE . '
 				WHERE user_id = ' . $user_id;
 			$result = $db->sql_query($sql);
-			$username = (string) $db->sql_fetchfield('username');
+			switch ($mode)
+			{
+				case 'user':
+					$pre_fill = (string) $db->sql_fetchfield('username');
+				break;
+				
+				case 'ip':
+					$pre_fill = (string) $db->sql_fetchfield('user_ip');
+				break;
+
+				case 'email':
+					$pre_fill = (string) $db->sql_fetchfield('user_email');
+				break;
+			}
 			$db->sql_freeresult($result);
 		}
 		else if ($post_id)
@@ -175,13 +188,27 @@ class mcp_ban
 
 			if (sizeof($post_info) && !empty($post_info[$post_id]))
 			{
-				$username = $post_info[$post_id]['username'];
+				switch ($mode)
+				{
+					case 'user':
+						$pre_fill = $post_info[$post_id]['username'];
+					break;
+
+					case 'ip':
+						$pre_fill = $post_info[$post_id]['poster_ip'];
+					break;
+
+					case 'email':
+						$pre_fill = $post_info[$post_id]['user_email'];
+					break;
+				}
+
 			}
 		}
 
-		if ($username)
+		if ($pre_fill)
 		{
-			$template->assign_var('USERNAMES', $username);
+			$template->assign_var('BAN_QUANTIFIER', $pre_fill);
 		}
 	}
 }
