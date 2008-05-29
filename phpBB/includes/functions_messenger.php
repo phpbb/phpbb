@@ -6,7 +6,6 @@
 * @copyright (c) 2005 phpBB Group
 * @license http://opensource.org/licenses/gpl-license.php GNU Public License
 *
-* @todo handling email and jabber queue through the database, not relying on a single file/file transactions
 */
 
 /**
@@ -18,16 +17,10 @@ if (!defined('IN_PHPBB'))
 }
 
 /**
-* phpbb_messenger
-* phpbb_queue
-* phpbb_smtp_mailer
-*/
-
-/**
 * Messenger
 * @package phpBB3
 */
-class phpbb_messenger
+class messenger
 {
 	private $vars, $msg, $extra_headers, $replyto, $from, $subject;
 	private $addresses = array();
@@ -60,7 +53,7 @@ class phpbb_messenger
 	/**
 	* Sets an email address to send to
 	*/
-	public function to($address, $realname = '')
+	function to($address, $realname = '')
 	{
 		global $config;
 
@@ -82,7 +75,7 @@ class phpbb_messenger
 	/**
 	* Sets an cc address to send to
 	*/
-	public function cc($address, $realname = '')
+	function cc($address, $realname = '')
 	{
 		$pos = isset($this->addresses['cc']) ? sizeof($this->addresses['cc']) : 0;
 		$this->addresses['cc'][$pos]['email'] = trim($address);
@@ -92,7 +85,7 @@ class phpbb_messenger
 	/**
 	* Sets an bcc address to send to
 	*/
-	public function bcc($address, $realname = '')
+	function bcc($address, $realname = '')
 	{
 		$pos = isset($this->addresses['bcc']) ? sizeof($this->addresses['bcc']) : 0;
 		$this->addresses['bcc'][$pos]['email'] = trim($address);
@@ -102,7 +95,7 @@ class phpbb_messenger
 	/**
 	* Sets a im contact to send to
 	*/
-	public function im($address, $realname = '')
+	function im($address, $realname = '')
 	{
 		$pos = isset($this->addresses['im']) ? sizeof($this->addresses['im']) : 0;
 		$this->addresses['im'][$pos]['uid'] = trim($address);
@@ -112,7 +105,7 @@ class phpbb_messenger
 	/**
 	* Set the reply to address
 	*/
-	public function replyto($address)
+	function replyto($address)
 	{
 		$this->replyto = trim($address);
 	}
@@ -120,7 +113,7 @@ class phpbb_messenger
 	/**
 	* Set the from address
 	*/
-	public function from($address)
+	function from($address)
 	{
 		$this->from = trim($address);
 	}
@@ -128,7 +121,7 @@ class phpbb_messenger
 	/**
 	* set up subject for mail
 	*/
-	public function subject($subject = '')
+	function subject($subject = '')
 	{
 		$this->subject = trim($subject);
 	}
@@ -136,7 +129,7 @@ class phpbb_messenger
 	/**
 	* set up extra mail headers
 	*/
-	public function headers($headers)
+	function headers($headers)
 	{
 		$this->extra_headers[] = trim($headers);
 	}
@@ -144,7 +137,7 @@ class phpbb_messenger
 	/**
 	* Set the email priority
 	*/
-	public function set_mail_priority($priority = MAIL_NORMAL_PRIORITY)
+	function set_mail_priority($priority = MAIL_NORMAL_PRIORITY)
 	{
 		$this->mail_priority = $priority;
 	}
@@ -152,7 +145,7 @@ class phpbb_messenger
 	/**
 	* Set email template to use
 	*/
-	public function template($template_file, $template_lang = '')
+	function template($template_file, $template_lang = '')
 	{
 		global $config;
 
@@ -191,7 +184,7 @@ class phpbb_messenger
 	/**
 	* assign variables to email template
 	*/
-	public function assign_vars($vars)
+	function assign_vars($vars)
 	{
 		$this->vars = (empty($this->vars)) ? $vars : $this->vars + $vars;
 	}
@@ -199,7 +192,7 @@ class phpbb_messenger
 	/**
 	* Send the mail out to the recipients set previously in var $this->addresses
 	*/
-	public function send($method = NOTIFY_EMAIL, $break = false)
+	function send($method = NOTIFY_EMAIL, $break = false)
 	{
 		global $config, $user;
 
@@ -292,7 +285,7 @@ class phpbb_messenger
 	/**
 	* Save to queue
 	*/
-	public function save_queue()
+	function save_queue()
 	{
 		global $config;
 
@@ -506,67 +499,10 @@ class phpbb_messenger
 }
 
 /**
-* Classes for handling queue objects - singletons
-*/
-class phpbb_queue_jabber
-{
-	static $queue;
-
-	public function __construct(phpbb_queue &$queue)
-	{
-		self::queue = $queue;
-	}
-
-	// singleton
-	public static function &get_instance(phpbb_queue &$queue)
-	{
-		static $self;
-
-		if (is_object($self) === true)
-		{
-			return $self;
-		}
-
-		$self = new phpbb_queue_jabber($queue);
-		return $self;
-	}
-
-	public function start()
-	{
-		echo "START";
-		print_r($queue);
-		exit;
-/*		if (!$config['jab_enable'])
-		{
-						unset($this->queue_data['jabber']);
-						continue 2;
-					}
-
-					include_once(PHPBB_ROOT_PATH . 'includes/functions_jabber.' . PHP_EXT);
-					$this->jabber = new jabber($config['jab_host'], $config['jab_port'], $config['jab_username'], $config['jab_password'], $config['jab_use_ssl']);
-
-					if (!$this->jabber->connect())
-					{
-						messenger::error('JABBER', $user->lang['ERR_JAB_CONNECT']);
-						continue 2;
-					}
-
-					if (!$this->jabber->login())
-					{
-						messenger::error('JABBER', $user->lang['ERR_JAB_AUTH']);
-						continue 2;
-					}
-*/
-	}
-}
-
-class phpbb_queue_test(
-
-/**
 * handling email and jabber queue
 * @package phpBB3
 */
-class phpbb_queue
+class queue
 {
 	private $data = array();
 	private $queue_data = array();
@@ -606,7 +542,7 @@ class phpbb_queue
 	*/
 	public function process()
 	{
-		global $db, $config,  $user;
+		global $db, $config, $user;
 
 		set_config('last_queue_run', time(), true);
 
@@ -646,13 +582,6 @@ class phpbb_queue
 				$num_items = sizeof($data_ary['data']);
 			}
 
-			$class = 'phpbb_queue_' . $object;
-			$queue_object &= $class->get_instance($this);
-
-			$queue_object->start();
-
-
-/*
 			switch ($object)
 			{
 				case 'email':
@@ -665,7 +594,27 @@ class phpbb_queue
 				break;
 
 				case 'jabber':
-					
+					if (!$config['jab_enable'])
+					{
+						unset($this->queue_data['jabber']);
+						continue 2;
+					}
+
+					include_once(PHPBB_ROOT_PATH . 'includes/functions_jabber.' . PHP_EXT);
+					$this->jabber = new jabber($config['jab_host'], $config['jab_port'], $config['jab_username'], $config['jab_password'], $config['jab_use_ssl']);
+
+					if (!$this->jabber->connect())
+					{
+						messenger::error('JABBER', $user->lang['ERR_JAB_CONNECT']);
+						continue 2;
+					}
+
+					if (!$this->jabber->login())
+					{
+						messenger::error('JABBER', $user->lang['ERR_JAB_AUTH']);
+						continue 2;
+					}
+
 				break;
 
 				default:
@@ -731,7 +680,6 @@ class phpbb_queue
 					$this->jabber->disconnect();
 				break;
 			}
-			*/
 		}
 	
 		if (!sizeof($this->queue_data))
