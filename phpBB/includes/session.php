@@ -150,7 +150,7 @@ class session
 	*/
 	function session_begin($update_session_page = true)
 	{
-		global $phpEx, $SID, $_SID, $_EXTRA_URL, $db, $config, $phpbb_root_path;
+		global $SID, $_SID, $_EXTRA_URL, $db, $config;
 
 		// Give us some basic information
 		$this->time_now				= time();
@@ -160,7 +160,7 @@ class session
 		$this->referer				= (!empty($_SERVER['HTTP_REFERER'])) ? htmlspecialchars((string) $_SERVER['HTTP_REFERER']) : '';
 		$this->forwarded_for		= (!empty($_SERVER['HTTP_X_FORWARDED_FOR'])) ? (string) $_SERVER['HTTP_X_FORWARDED_FOR'] : '';
 		$this->host					= (!empty($_SERVER['HTTP_HOST'])) ? (string) strtolower($_SERVER['HTTP_HOST']) : ((!empty($_SERVER['SERVER_NAME'])) ? $_SERVER['SERVER_NAME'] : getenv('SERVER_NAME'));
-		$this->page					= $this->extract_current_page($phpbb_root_path);
+		$this->page					= $this->extract_current_page(PHPBB_ROOT_PATH);
 
 		// if the forwarded for header shall be checked we have to validate its contents
 		if ($config['forwarded_for_check'])
@@ -283,7 +283,7 @@ class session
 
 					// Check whether the session is still valid if we have one
 					$method = basename(trim($config['auth_method']));
-					include_once($phpbb_root_path . 'includes/auth/auth_' . $method . '.' . $phpEx);
+					include_once(PHPBB_ROOT_PATH . 'includes/auth/auth_' . $method . '.' . PHP_EXT);
 
 					$method = 'validate_session_' . $method;
 					if (function_exists($method))
@@ -383,7 +383,7 @@ class session
 	*/
 	function session_create($user_id = false, $set_admin = false, $persist_login = false, $viewonline = true)
 	{
-		global $SID, $_SID, $db, $config, $cache, $phpbb_root_path, $phpEx;
+		global $SID, $_SID, $db, $config, $cache;
 
 		$this->data = array();
 
@@ -440,7 +440,7 @@ class session
 		}
 
 		$method = basename(trim($config['auth_method']));
-		include_once($phpbb_root_path . 'includes/auth/auth_' . $method . '.' . $phpEx);
+		include_once(PHPBB_ROOT_PATH . 'includes/auth/auth_' . $method . '.' . PHP_EXT);
 
 		$method = 'autologin_' . $method;
 		if (function_exists($method))
@@ -732,7 +732,7 @@ class session
 	*/
 	function session_kill($new_session = true)
 	{
-		global $SID, $_SID, $db, $config, $phpbb_root_path, $phpEx;
+		global $SID, $_SID, $db, $config;
 
 		$sql = 'DELETE FROM ' . SESSIONS_TABLE . "
 			WHERE session_id = '" . $db->sql_escape($this->session_id) . "'
@@ -741,7 +741,7 @@ class session
 
 		// Allow connecting logout with external auth method logout
 		$method = basename(trim($config['auth_method']));
-		include_once($phpbb_root_path . 'includes/auth/auth_' . $method . '.' . $phpEx);
+		include_once(PHPBB_ROOT_PATH . 'includes/auth/auth_' . $method . '.' . PHP_EXT);
 
 		$method = 'logout_' . $method;
 		if (function_exists($method))
@@ -1075,15 +1075,13 @@ class session
 			// We show a login box here to allow founders accessing the board if banned by IP
 			if (defined('IN_LOGIN') && $this->data['user_id'] == ANONYMOUS)
 			{
-				global $phpEx;
-
 				$this->setup('ucp');
 				$this->data['is_registered'] = $this->data['is_bot'] = false;
 
 				// Set as a precaution to allow login_box() handling this case correctly as well as this function not being executed again.
 				define('IN_CHECK_BAN', 1);
 
-				login_box("index.$phpEx");
+				login_box('index.' . PHP_EXT);
 
 				// The false here is needed, else the user is able to circumvent the ban.
 				$this->session_kill(false);
@@ -1358,12 +1356,12 @@ class user extends session
 	*/
 	function setup($lang_set = false, $style = false)
 	{
-		global $db, $template, $config, $auth, $phpEx, $phpbb_root_path, $cache;
+		global $db, $template, $config, $auth, $cache;
 
 		if ($this->data['user_id'] != ANONYMOUS)
 		{
-			$this->lang_name = (file_exists($phpbb_root_path . 'language/' . $this->data['user_lang'] . "/common.$phpEx")) ? $this->data['user_lang'] : basename($config['default_lang']);
-			$this->lang_path = $phpbb_root_path . 'language/' . $this->lang_name . '/';
+			$this->lang_name = (file_exists(PHPBB_ROOT_PATH . 'language/' . $this->data['user_lang'] . '/common.' . PHP_EXT)) ? $this->data['user_lang'] : basename($config['default_lang']);
+			$this->lang_path = PHPBB_ROOT_PATH . 'language/' . $this->lang_name . '/';
 
 			$this->date_format = $this->data['user_dateformat'];
 			$this->timezone = $this->data['user_timezone'] * 3600;
@@ -1372,7 +1370,7 @@ class user extends session
 		else
 		{
 			$this->lang_name = basename($config['default_lang']);
-			$this->lang_path = $phpbb_root_path . 'language/' . $this->lang_name . '/';
+			$this->lang_path = PHPBB_ROOT_PATH . 'language/' . $this->lang_name . '/';
 			$this->date_format = $config['default_dateformat'];
 			$this->timezone = $config['board_timezone'] * 3600;
 			$this->dst = $config['board_dst'] * 3600;
@@ -1392,10 +1390,10 @@ class user extends session
 					$accept_lang = substr($accept_lang, 0, 2) . '_' . strtoupper(substr($accept_lang, 3, 2));
 					$accept_lang = basename($accept_lang);
 
-					if (file_exists($phpbb_root_path . 'language/' . $accept_lang . "/common.$phpEx"))
+					if (file_exists(PHPBB_ROOT_PATH . 'language/' . $accept_lang . "/common." . PHP_EXT))
 					{
 						$this->lang_name = $config['default_lang'] = $accept_lang;
-						$this->lang_path = $phpbb_root_path . 'language/' . $accept_lang . '/';
+						$this->lang_path = PHPBB_ROOT_PATH . 'language/' . $accept_lang . '/';
 						break;
 					}
 					else
@@ -1404,10 +1402,10 @@ class user extends session
 						$accept_lang = substr($accept_lang, 0, 2);
 						$accept_lang = basename($accept_lang);
 
-						if (file_exists($phpbb_root_path . 'language/' . $accept_lang . "/common.$phpEx"))
+						if (file_exists(PHPBB_ROOT_PATH . 'language/' . $accept_lang . "/common." . PHP_EXT))
 						{
 							$this->lang_name = $config['default_lang'] = $accept_lang;
-							$this->lang_path = $phpbb_root_path . 'language/' . $accept_lang . '/';
+							$this->lang_path = PHPBB_ROOT_PATH . 'language/' . $accept_lang . '/';
 							break;
 						}
 					}
@@ -1419,9 +1417,9 @@ class user extends session
 		// We include common language file here to not load it every time a custom language file is included
 		$lang = &$this->lang;
 
-		if ((@include $this->lang_path . "common.$phpEx") === false)
+		if ((@include $this->lang_path . 'common.' . PHP_EXT) === false)
 		{
-			die('Language file ' . $this->lang_name . "/common.$phpEx" . " couldn't be opened.");
+			die('Language file ' . $this->lang_name . '/common.' . PHP_EXT . " couldn't be opened.");
 		}
 
 		$this->add_lang($lang_set);
@@ -1504,7 +1502,7 @@ class user extends session
 		{
 			$this->theme['theme_storedb'] = 1;
 
-			$stylesheet = file_get_contents("{$phpbb_root_path}styles/{$this->theme['theme_path']}/theme/stylesheet.css");
+			$stylesheet = file_get_contents(PHPBB_ROOT_PATH . "styles/{$this->theme['theme_path']}/theme/stylesheet.css");
 			// Match CSS imports
 			$matches = array();
 			preg_match_all('/@import url\(["\'](.*)["\']\);/i', $stylesheet, $matches);
@@ -1514,7 +1512,7 @@ class user extends session
 				$content = '';
 				foreach ($matches[0] as $idx => $match)
 				{
-					if ($content = @file_get_contents("{$phpbb_root_path}styles/{$this->theme['theme_path']}/theme/" . $matches[1][$idx]))
+					if ($content = @file_get_contents(PHPBB_ROOT_PATH . "styles/{$this->theme['theme_path']}/theme/" . $matches[1][$idx]))
 					{
 						$content = trim($content);
 					}
@@ -1545,7 +1543,7 @@ class user extends session
 
 		$template->set_template();
 
-		$this->img_lang = (file_exists($phpbb_root_path . 'styles/' . $this->theme['imageset_path'] . '/imageset/' . $this->lang_name)) ? $this->lang_name : $config['default_lang'];
+		$this->img_lang = (file_exists(PHPBB_ROOT_PATH . 'styles/' . $this->theme['imageset_path'] . '/imageset/' . $this->lang_name)) ? $this->lang_name : $config['default_lang'];
 
 		$sql = 'SELECT image_name, image_filename, image_lang, image_height, image_width
 			FROM ' . STYLES_IMAGESET_DATA_TABLE . '
@@ -1580,9 +1578,9 @@ class user extends session
 					AND image_lang = \'' . $db->sql_escape($this->img_lang) . '\'';
 			$result = $db->sql_query($sql);
 
-			if (@file_exists("{$phpbb_root_path}styles/{$this->theme['imageset_path']}/imageset/{$this->img_lang}/imageset.cfg"))
+			if (@file_exists(PHPBB_ROOT_PATH . "styles/{$this->theme['imageset_path']}/imageset/{$this->img_lang}/imageset.cfg"))
 			{
-				$cfg_data_imageset_data = parse_cfg_file("{$phpbb_root_path}styles/{$this->theme['imageset_path']}/imageset/{$this->img_lang}/imageset.cfg");
+				$cfg_data_imageset_data = parse_cfg_file(PHPBB_ROOT_PATH . "styles/{$this->theme['imageset_path']}/imageset/{$this->img_lang}/imageset.cfg");
 				foreach ($cfg_data_imageset_data as $image_name => $value)
 				{
 					if (strpos($value, '*') !== false)
@@ -1645,7 +1643,7 @@ class user extends session
 
 		// Disable board if the install/ directory is still present
 		// For the brave development army we do not care about this, else we need to comment out this everytime we develop locally
-		if (!defined('DEBUG_EXTRA') && !defined('ADMIN_START') && !defined('IN_INSTALL') && !defined('IN_LOGIN') && file_exists($phpbb_root_path . 'install'))
+		if (!defined('DEBUG_EXTRA') && !defined('ADMIN_START') && !defined('IN_INSTALL') && !defined('IN_LOGIN') && file_exists(PHPBB_ROOT_PATH . 'install'))
 		{
 			// Adjust the message slightly according to the permissions
 			if ($auth->acl_gets('a_', 'm_') || $auth->acl_getf_global('m_'))
@@ -1718,9 +1716,9 @@ class user extends session
 		// ucp profile reg_details page ... of course do not redirect if we're already in the ucp
 		if (!defined('IN_ADMIN') && !defined('ADMIN_START') && $config['chg_passforce'] && $this->data['is_registered'] && $auth->acl_get('u_chgpasswd') && $this->data['user_passchg'] < time() - ($config['chg_passforce'] * 86400))
 		{
-			if (strpos($this->page['query_string'], 'mode=reg_details') === false && $this->page['page_name'] != "ucp.$phpEx")
+			if (strpos($this->page['query_string'], 'mode=reg_details') === false && $this->page['page_name'] != 'ucp.' . PHP_EXT)
 			{
-				redirect(append_sid("{$phpbb_root_path}ucp.$phpEx", 'i=profile&amp;mode=reg_details'));
+				redirect(append_sid('ucp', 'i=profile&amp;mode=reg_details'));
 			}
 		}
 
@@ -1745,8 +1743,6 @@ class user extends session
 	*/
 	function add_lang($lang_set, $use_db = false, $use_help = false)
 	{
-		global $phpEx;
-
 		if (is_array($lang_set))
 		{
 			foreach ($lang_set as $key => $lang_file)
@@ -1786,14 +1782,12 @@ class user extends session
 	*/
 	function set_lang(&$lang, &$help, $lang_file, $use_db = false, $use_help = false)
 	{
-		global $phpEx;
-
 		// Make sure the language path is set (if the user setup did not happen it is not set)
 		if (!$this->lang_path)
 		{
-			global $phpbb_root_path, $config;
+			global $config;
 
-			$this->lang_path = $phpbb_root_path . 'language/' . basename($config['default_lang']) . '/';
+			$this->lang_path = PHPBB_ROOT_PATH . 'language/' . basename($config['default_lang']) . '/';
 		}
 
 		// $lang == $this->lang
@@ -1803,11 +1797,11 @@ class user extends session
 		{
 			if ($use_help && strpos($lang_file, '/') !== false)
 			{
-				$language_filename = $this->lang_path . substr($lang_file, 0, stripos($lang_file, '/') + 1) . 'help_' . substr($lang_file, stripos($lang_file, '/') + 1) . '.' . $phpEx;
+				$language_filename = $this->lang_path . substr($lang_file, 0, stripos($lang_file, '/') + 1) . 'help_' . substr($lang_file, stripos($lang_file, '/') + 1) . '.' . PHP_EXT;
 			}
 			else
 			{
-				$language_filename = $this->lang_path . (($use_help) ? 'help_' : '') . $lang_file . '.' . $phpEx;
+				$language_filename = $this->lang_path . (($use_help) ? 'help_' : '') . $lang_file . '.' . PHP_EXT;
 			}
 
 			if ((@include $language_filename) === false)
@@ -1924,7 +1918,6 @@ class user extends session
 	function img($img, $alt = '', $width = false, $suffix = '', $type = 'full_tag')
 	{
 		static $imgs;
-		global $phpbb_root_path;
 
 		$img_data = &$imgs[$img];
 
@@ -1937,7 +1930,7 @@ class user extends session
 				return $img_data;
 			}
 
-			$img_data['src'] = $phpbb_root_path . 'styles/' . $this->theme['imageset_path'] . '/imageset/' . ($this->img_array[$img]['image_lang'] ? $this->img_array[$img]['image_lang'] .'/' : '') . $this->img_array[$img]['image_filename'];
+			$img_data['src'] = PHPBB_ROOT_PATH . 'styles/' . $this->theme['imageset_path'] . '/imageset/' . ($this->img_array[$img]['image_lang'] ? $this->img_array[$img]['image_lang'] .'/' : '') . $this->img_array[$img]['image_filename'];
 			$img_data['width'] = $this->img_array[$img]['image_width'];
 			$img_data['height'] = $this->img_array[$img]['image_height'];
 		}

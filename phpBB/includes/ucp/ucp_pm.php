@@ -43,7 +43,7 @@ class ucp_pm
 
 	function main($id, $mode)
 	{
-		global $user, $template, $phpbb_root_path, $auth, $phpEx, $db, $config;
+		global $user, $template, $auth, $db, $config;
 
 		if (!$user->data['is_registered'])
 		{
@@ -80,7 +80,7 @@ class ucp_pm
 			$mode = 'view';
 		}
 
-		include($phpbb_root_path . 'includes/functions_privmsgs.' . $phpEx);
+		include(PHPBB_ROOT_PATH . 'includes/functions_privmsgs.' . PHP_EXT);
 
 		switch ($mode)
 		{
@@ -103,9 +103,9 @@ class ucp_pm
 				$template->assign_vars(array(
 					'MESSAGE'			=> $l_new_message,
 					'S_NOT_LOGGED_IN'	=> ($user->data['user_id'] == ANONYMOUS) ? true : false,
-					'CLICK_TO_VIEW'		=> sprintf($user->lang['CLICK_VIEW_PRIVMSG'], '<a href="' . append_sid("{$phpbb_root_path}ucp.$phpEx", 'i=pm&amp;folder=inbox') . '" onclick="jump_to_inbox(this.href); return false;">', '</a>'),
-					'U_INBOX'			=> append_sid("{$phpbb_root_path}ucp.$phpEx", 'i=pm&amp;folder=inbox'),
-					'UA_INBOX'			=> append_sid("{$phpbb_root_path}ucp.$phpEx", 'i=pm&folder=inbox', false))
+					'CLICK_TO_VIEW'		=> sprintf($user->lang['CLICK_VIEW_PRIVMSG'], '<a href="' . append_sid('ucp', 'i=pm&amp;folder=inbox') . '" onclick="jump_to_inbox(this.href); return false;">', '</a>'),
+					'U_INBOX'			=> append_sid('ucp', 'i=pm&amp;folder=inbox'),
+					'UA_INBOX'			=> append_sid('ucp', 'i=pm&folder=inbox', false))
 				);
 
 				$tpl_file = 'ucp_pm_popup';
@@ -122,7 +122,7 @@ class ucp_pm
 					trigger_error('NO_AUTH_SEND_MESSAGE');
 				}
 
-				include($phpbb_root_path . 'includes/ucp/ucp_pm_compose.' . $phpEx);
+				include(PHPBB_ROOT_PATH . 'includes/ucp/ucp_pm_compose.' . PHP_EXT);
 				compose_pm($id, $mode, $action);
 
 				$tpl_file = 'posting_body';
@@ -132,7 +132,7 @@ class ucp_pm
 				set_user_message_limit();
 				get_folder($user->data['user_id']);
 
-				include($phpbb_root_path . 'includes/ucp/ucp_pm_options.' . $phpEx);
+				include(PHPBB_ROOT_PATH . 'includes/ucp/ucp_pm_options.' . PHP_EXT);
 				message_options($id, $mode, $global_privmsgs_rules, $global_rule_conditions);
 
 				$tpl_file = 'ucp_pm_options';
@@ -144,7 +144,7 @@ class ucp_pm
 				$this->p_name = 'pm';
 
 				// Call another module... please do not try this at home... Hoochie Coochie Man
-				include($phpbb_root_path . 'includes/ucp/ucp_main.' . $phpEx);
+				include(PHPBB_ROOT_PATH . 'includes/ucp/ucp_main.' . PHP_EXT);
 
 				$module = new ucp_main($this);
 				$module->u_action = $this->u_action;
@@ -365,7 +365,7 @@ class ucp_pm
 
 				if ($action == 'view_folder')
 				{
-					include($phpbb_root_path . 'includes/ucp/ucp_pm_viewfolder.' . $phpEx);
+					include(PHPBB_ROOT_PATH . 'includes/ucp/ucp_pm_viewfolder.' . PHP_EXT);
 					view_folder($id, $mode, $folder_id, $folder);
 
 					$tpl_file = 'ucp_pm_viewfolder';
@@ -382,7 +382,7 @@ class ucp_pm
 						trigger_error('NO_MESSAGE');
 					}
 
-					include($phpbb_root_path . 'includes/ucp/ucp_pm_viewmessage.' . $phpEx);
+					include(PHPBB_ROOT_PATH . 'includes/ucp/ucp_pm_viewmessage.' . PHP_EXT);
 					view_message($id, $mode, $folder_id, $msg_id, $folder, $message_row);
 
 					$tpl_file = ($view == 'print') ? 'ucp_pm_viewmessage_print' : 'ucp_pm_viewmessage';

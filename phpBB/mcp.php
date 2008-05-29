@@ -12,11 +12,11 @@
 * @ignore
 */
 define('IN_PHPBB', true);
-$phpbb_root_path = (defined('PHPBB_ROOT_PATH')) ? PHPBB_ROOT_PATH : './';
-$phpEx = substr(strrchr(__FILE__, '.'), 1);
-include($phpbb_root_path . 'common.' . $phpEx);
-include($phpbb_root_path . 'includes/functions_admin.' . $phpEx);
-require($phpbb_root_path . 'includes/functions_module.' . $phpEx);
+if (!defined('PHPBB_ROOT_PATH')) define('PHPBB_ROOT_PATH', './');
+if (!defined('PHP_EXT')) define('PHP_EXT', substr(strrchr(__FILE__, '.'), 1));
+include(PHPBB_ROOT_PATH . 'common.' . PHP_EXT);
+include(PHPBB_ROOT_PATH . 'includes/functions_admin.' . PHP_EXT);
+require(PHPBB_ROOT_PATH . 'includes/functions_module.' . PHP_EXT);
 
 // Start session management
 $user->session_begin();
@@ -46,7 +46,7 @@ if (!$user->data['is_registered'])
 {
 	if ($user->data['is_bot'])
 	{
-		redirect(append_sid("{$phpbb_root_path}index.$phpEx"));
+		redirect(append_sid(PHPBB_ROOT_PATH . 'index.' . PHP_EXT));
 	}
 
 	login_box('', $user->lang['LOGIN_EXPLAIN_MCP']);
@@ -231,14 +231,14 @@ if (!$user_id && $username == '')
 $module->load_active();
 
 // Assign data to the template engine for the list of modules
-$module->assign_tpl_vars(append_sid("{$phpbb_root_path}mcp.$phpEx"));
+$module->assign_tpl_vars(append_sid(PHPBB_ROOT_PATH . 'mcp.' . PHP_EXT));
 
 // Generate urls for letting the moderation control panel being accessed in different modes
 $template->assign_vars(array(
-	'U_MCP'			=> append_sid("{$phpbb_root_path}mcp.$phpEx", 'i=main'),
-	'U_MCP_FORUM'	=> ($forum_id) ? append_sid("{$phpbb_root_path}mcp.$phpEx", "i=main&amp;mode=forum_view&amp;f=$forum_id") : '',
-	'U_MCP_TOPIC'	=> ($forum_id && $topic_id) ? append_sid("{$phpbb_root_path}mcp.$phpEx", "i=main&amp;mode=topic_view&amp;t=$topic_id") : '',
-	'U_MCP_POST'	=> ($forum_id && $topic_id && $post_id) ? append_sid("{$phpbb_root_path}mcp.$phpEx", "i=main&amp;mode=post_details&amp;t=$topic_id&amp;p=$post_id") : '',
+	'U_MCP'			=> append_sid('mcp', 'i=main'),
+	'U_MCP_FORUM'	=> ($forum_id) ? append_sid('mcp', "i=main&amp;mode=forum_view&amp;f=$forum_id") : '',
+	'U_MCP_TOPIC'	=> ($forum_id && $topic_id) ? append_sid('mcp', "i=main&amp;mode=topic_view&amp;t=$topic_id") : '',
+	'U_MCP_POST'	=> ($forum_id && $topic_id && $post_id) ? append_sid('mcp', "i=main&amp;mode=post_details&amp;t=$topic_id&amp;p=$post_id") : '',
 ));
 
 // Generate the page, do not display/query online list

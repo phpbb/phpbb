@@ -25,8 +25,7 @@ class acp_database
 
 	function main($id, $mode)
 	{
-		global $cache, $db, $user, $auth, $template, $table_prefix;
-		global $config, $phpbb_root_path, $phpbb_admin_path, $phpEx;
+		global $cache, $db, $user, $auth, $template, $table_prefix, $config;
 		
 		$user->add_lang('acp/database');
 
@@ -171,7 +170,7 @@ class acp_database
 					break;
 
 					default:
-						include($phpbb_root_path . 'includes/functions_install.' . $phpEx);
+						include(PHPBB_ROOT_PATH . 'includes/functions_install.' . PHP_EXT);
 						$tables = get_tables($db);
 						asort($tables);
 						foreach ($tables as $table_name)
@@ -225,7 +224,7 @@ class acp_database
 							trigger_error($user->lang['BACKUP_INVALID'] . adm_back_link($this->u_action), E_USER_WARNING);
 						}
 
-						$file_name = $phpbb_root_path . 'store/' . $matches[0];
+						$file_name = PHPBB_ROOT_PATH . 'store/' . $matches[0];
 
 						if (!file_exists($file_name) || !is_readable($file_name))
 						{
@@ -420,7 +419,7 @@ class acp_database
 							$methods[] = $type;
 						}
 
-						$dir = $phpbb_root_path . 'store/';
+						$dir = PHPBB_ROOT_PATH . 'store/';
 						$dh = @opendir($dir);
 
 						if ($dh)
@@ -529,8 +528,7 @@ class base_extractor
 		
 		if ($store == true)
 		{
-			global $phpbb_root_path;
-			$file = $phpbb_root_path . 'store/' . $filename . $ext;
+			$file = PHPBB_ROOT_PATH . 'store/' . $filename . $ext;
 	
 			$this->fp = $open($file, 'w');
 	

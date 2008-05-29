@@ -1581,16 +1581,37 @@ function on_page($num_items, $per_page, $start)
 *
 * Examples:
 * <code>
-* append_sid("{$phpbb_root_path}viewtopic.$phpEx?t=1&amp;f=2");
-* append_sid("{$phpbb_root_path}viewtopic.$phpEx", 't=1&amp;f=2');
-* append_sid("{$phpbb_root_path}viewtopic.$phpEx", 't=1&f=2', false);
-* append_sid("{$phpbb_root_path}viewtopic.$phpEx", array('t' => 1, 'f' => 2));
+* append_sid(PHPBB_ROOT_PATH . 'viewtopic.' . PHP_EXT . '?t=1&amp;f=2');
+* append_sid(PHPBB_ROOT_PATH . 'viewtopic.' . PHP_EXT, 't=1&amp;f=2');
+* append_sid('viewtopic', 't=1&amp;f=2'); // short notation of the above example
+* append_sid('viewtopic', 't=1&f=2', false);
+* append_sid('viewtopic', array('t' => 1, 'f' => 2));
 * </code>
 *
 */
 function append_sid($url, $params = false, $is_amp = true, $session_id = false)
 {
 	global $_SID, $_EXTRA_URL, $phpbb_hook;
+	static $parsed_urls = array();
+
+	// Adjust internal url before calling the hook - we are able to just leave out any path and extension.
+	// In this case the root path and extension are added before going through this function.
+	if (isset($parsed_urls[$url]))
+	{
+		$url = $parsed_urls[$url];
+	}
+	else
+	{
+		if (strpos($url, '.' . PHP_EXT) === false && $url[0] != '.' && $url[0] != '/')
+		{
+			$parsed_urls[$url] = $url = PHPBB_ROOT_PATH . $url . '.' . PHP_EXT;
+		}
+	}
+
+	if (empty($params))
+	{
+		$params = false;
+	}
 
 	// Developers using the hook function need to globalise the $_SID and $_EXTRA_URL on their own and also handle it appropiatly.
 	// They could mimick most of what is within this function
@@ -1727,7 +1748,7 @@ function generate_board_url($without_script_path = false)
 */
 function redirect($url, $return = false)
 {
-	global $db, $cache, $config, $user, $phpbb_root_path;
+	global $db, $cache, $config, $user;
 
 	if (empty($user->lang))
 	{
@@ -1786,8 +1807,8 @@ function redirect($url, $return = false)
 		}
 		else
 		{
-			// Used ./ before, but $phpbb_root_path is working better with urls within another root path
-			$root_dirs = explode('/', str_replace('\\', '/', phpbb_realpath($phpbb_root_path)));
+			// Used ./ before, but PHPBB_ROOT_PATH is working better with urls within another root path
+			$root_dirs = explode('/', str_replace('\\', '/', phpbb_realpath(PHPBB_ROOT_PATH)));
 			$page_dirs = explode('/', str_replace('\\', '/', phpbb_realpath($pathinfo['dirname'])));
 			$intersection = array_intersect_assoc($root_dirs, $page_dirs);
 
@@ -1871,15 +1892,13 @@ function redirect($url, $return = false)
 */
 function reapply_sid($url)
 {
-	global $phpEx, $phpbb_root_path;
-
-	if ($url === "index.$phpEx")
+	if ($url === 'index.' . PHP_EXT)
 	{
-		return append_sid("index.$phpEx");
+		return append_sid('index.' . PHP_EXT);
 	}
-	else if ($url === "{$phpbb_root_path}index.$phpEx")
+	else if ($url === PHPBB_ROOT_PATH . 'index.' . PHP_EXT)
 	{
-		return append_sid("{$phpbb_root_path}index.$phpEx");
+		return append_sid('index');
 	}
 
 	// Remove previously added sid
@@ -1904,7 +1923,7 @@ function reapply_sid($url)
 */
 function build_url($strip_vars = false)
 {
-	global $user, $phpbb_root_path;
+	global $user;
 
 	// Append SID
 	$redirect = append_sid($user->page['page'], false, false);
@@ -1957,7 +1976,7 @@ function build_url($strip_vars = false)
 		$redirect .= ($query) ? '?' . $query : '';
 	}
 
-	return $phpbb_root_path . str_replace('&', '&amp;', $redirect);
+	return PHPBB_ROOT_PATH . str_replace('&', '&amp;', $redirect);
 }
 
 /**
@@ -2055,7 +2074,6 @@ function check_form_key($form_name, $timespan = false, $return_page = '', $trigg
 function confirm_box($check, $title = '', $hidden = '', $html_body = 'confirm_body.html', $u_action = '')
 {
 	global $user, $template, $db;
-	global $phpEx, $phpbb_root_path;
 
 	if (isset($_POST['cancel']))
 	{
@@ -2125,7 +2143,7 @@ function confirm_box($check, $title = '', $hidden = '', $html_body = 'confirm_bo
 	}
 
 	// re-add sid / transform & to &amp; for user->page (user->page is always using &)
-	$use_page = ($u_action) ? $phpbb_root_path . $u_action : $phpbb_root_path . str_replace('&', '&amp;', $user->page['page']);
+	$use_page = ($u_action) ? PHPBB_ROOT_PATH . $u_action : PHPBB_ROOT_PATH . str_replace('&', '&amp;', $user->page['page']);
 	$u_action = reapply_sid($use_page);
 	$u_action .= ((strpos($u_action, '?') === false) ? '?' : '&amp;') . 'confirm_key=' . $confirm_key;
 
@@ -2157,7 +2175,7 @@ function confirm_box($check, $title = '', $hidden = '', $html_body = 'confirm_bo
 */
 function login_box($redirect = '', $l_explain = '', $l_success = '', $admin = false, $s_display = true)
 {
-	global $db, $user, $template, $auth, $phpEx, $phpbb_root_path, $config;
+	global $db, $user, $template, $auth, $config;
 
 	$err = '';
 
@@ -2241,9 +2259,9 @@ function login_box($redirect = '', $l_explain = '', $l_success = '', $admin = fa
 		// The result parameter is always an array, holding the relevant information...
 		if ($result['status'] == LOGIN_SUCCESS)
 		{
-			$redirect = request_var('redirect', "{$phpbb_root_path}index.$phpEx");
+			$redirect = request_var('redirect', PHPBB_ROOT_PATH . 'index.' . PHP_EXT);
 			$message = ($l_success) ? $l_success : $user->lang['LOGIN_REDIRECT'];
-			$l_redirect = ($admin) ? $user->lang['PROCEED_TO_ACP'] : (($redirect === "{$phpbb_root_path}index.$phpEx" || $redirect === "index.$phpEx") ? $user->lang['RETURN_INDEX'] : $user->lang['RETURN_PAGE']);
+			$l_redirect = ($admin) ? $user->lang['PROCEED_TO_ACP'] : (($redirect === PHPBB_ROOT_PATH . 'index.' . PHP_EXT || $redirect === "index." . PHP_EXT) ? $user->lang['RETURN_INDEX'] : $user->lang['RETURN_PAGE']);
 
 			// append/replace SID (may change during the session for AOL users)
 			$redirect = reapply_sid($redirect);
@@ -2295,7 +2313,7 @@ function login_box($redirect = '', $l_explain = '', $l_success = '', $admin = fa
 				$template->assign_vars(array(
 					'S_CONFIRM_CODE'			=> true,
 					'CONFIRM_ID'				=> $confirm_id,
-					'CONFIRM_IMAGE'				=> '<img src="' . append_sid("{$phpbb_root_path}ucp.$phpEx", 'mode=confirm&amp;id=' . $confirm_id . '&amp;type=' . CONFIRM_LOGIN) . '" alt="" title="" />',
+					'CONFIRM_IMAGE'				=> '<img src="' . append_sid('ucp', 'mode=confirm&amp;id=' . $confirm_id . '&amp;type=' . CONFIRM_LOGIN) . '" alt="" title="" />',
 					'L_LOGIN_CONFIRM_EXPLAIN'	=> sprintf($user->lang['LOGIN_CONFIRM_EXPLAIN'], '<a href="mailto:' . htmlspecialchars($config['board_contact']) . '">', '</a>'),
 				));
 
@@ -2306,7 +2324,7 @@ function login_box($redirect = '', $l_explain = '', $l_success = '', $admin = fa
 			case LOGIN_ERROR_PASSWORD_CONVERT:
 				$err = sprintf(
 					$user->lang[$result['error_msg']],
-					($config['email_enable']) ? '<a href="' . append_sid("{$phpbb_root_path}ucp.$phpEx", 'mode=sendpassword') . '">' : '',
+					($config['email_enable']) ? '<a href="' . append_sid('ucp', 'mode=sendpassword') . '">' : '',
 					($config['email_enable']) ? '</a>' : '',
 					($config['board_contact']) ? '<a href="mailto:' . htmlspecialchars($config['board_contact']) . '">' : '',
 					($config['board_contact']) ? '</a>' : ''
@@ -2360,13 +2378,13 @@ function login_box($redirect = '', $l_explain = '', $l_success = '', $admin = fa
 		'LOGIN_ERROR'		=> $err,
 		'LOGIN_EXPLAIN'		=> $l_explain,
 
-		'U_SEND_PASSWORD' 		=> ($config['email_enable']) ? append_sid("{$phpbb_root_path}ucp.$phpEx", 'mode=sendpassword') : '',
-		'U_RESEND_ACTIVATION'	=> ($config['require_activation'] != USER_ACTIVATION_NONE && $config['email_enable']) ? append_sid("{$phpbb_root_path}ucp.$phpEx", 'mode=resend_act') : '',
-		'U_TERMS_USE'			=> append_sid("{$phpbb_root_path}ucp.$phpEx", 'mode=terms'),
-		'U_PRIVACY'				=> append_sid("{$phpbb_root_path}ucp.$phpEx", 'mode=privacy'),
+		'U_SEND_PASSWORD' 		=> ($config['email_enable']) ? append_sid('ucp', 'mode=sendpassword') : '',
+		'U_RESEND_ACTIVATION'	=> ($config['require_activation'] != USER_ACTIVATION_NONE && $config['email_enable']) ? append_sid('ucp', 'mode=resend_act') : '',
+		'U_TERMS_USE'			=> append_sid('ucp', 'mode=terms'),
+		'U_PRIVACY'				=> append_sid('ucp', 'mode=privacy'),
 
 		'S_DISPLAY_FULL_LOGIN'	=> ($s_display) ? true : false,
-		'S_LOGIN_ACTION'		=> (!$admin) ? append_sid("{$phpbb_root_path}ucp.$phpEx", 'mode=login') : append_sid("index.$phpEx", false, true, $user->session_id), // Needs to stay index.$phpEx because we are within the admin directory
+		'S_LOGIN_ACTION'		=> (!$admin) ? append_sid('ucp', 'mode=login') : append_sid(PHPBB_ADMIN_PATH . 'index.' . PHP_EXT, false, true, $user->session_id),
 		'S_HIDDEN_FIELDS' 		=> $s_hidden_fields,
 
 		'S_ADMIN_AUTH'			=> $admin,
@@ -2381,7 +2399,7 @@ function login_box($redirect = '', $l_explain = '', $l_success = '', $admin = fa
 	$template->set_filenames(array(
 		'body' => 'login_body.html')
 	);
-	make_jumpbox(append_sid("{$phpbb_root_path}viewforum.$phpEx"));
+	make_jumpbox(append_sid('viewforum'));
 
 	page_footer();
 }
@@ -2391,7 +2409,7 @@ function login_box($redirect = '', $l_explain = '', $l_success = '', $admin = fa
 */
 function login_forum_box($forum_data)
 {
-	global $db, $config, $user, $template, $phpEx;
+	global $db, $config, $user, $template;
 
 	$password = request_var('password', '', true);
 
@@ -2628,11 +2646,9 @@ function add_log()
 */
 function get_backtrace()
 {
-	global $phpbb_root_path;
-
 	$output = '<div style="font-family: monospace;">';
 	$backtrace = debug_backtrace();
-	$path = phpbb_realpath($phpbb_root_path);
+	$path = phpbb_realpath(PHPBB_ROOT_PATH);
 
 	foreach ($backtrace as $number => $trace)
 	{
@@ -2835,7 +2851,7 @@ function phpbb_checkdnsrr($host, $type = '')
 function msg_handler($errno, $msg_text, $errfile, $errline)
 {
 	global $cache, $db, $auth, $template, $config, $user;
-	global $phpEx, $phpbb_root_path, $msg_title, $msg_long_text;
+	global $msg_title, $msg_long_text;
 
 	// Do not display notices if we suppress them via @
 	if (error_reporting() == 0)
@@ -2880,8 +2896,8 @@ function msg_handler($errno, $msg_text, $errfile, $errline)
 				}
 
 				// remove complete path to installation, with the risk of changing backslashes meant to be there
-				$errfile = str_replace(array(phpbb_realpath($phpbb_root_path), '\\'), array('', '/'), $errfile);
-				$msg_text = str_replace(array(phpbb_realpath($phpbb_root_path), '\\'), array('', '/'), $msg_text);
+				$errfile = str_replace(array(phpbb_realpath(PHPBB_ROOT_PATH), '\\'), array('', '/'), $errfile);
+				$msg_text = str_replace(array(phpbb_realpath(PHPBB_ROOT_PATH), '\\'), array('', '/'), $msg_text);
 
 				echo '<b>[phpBB Debug] PHP Notice</b>: in file <b>' . $errfile . '</b> on line <b>' . $errline . '</b>: <b>' . $msg_text . '</b><br />' . "\n";
 			}
@@ -2898,7 +2914,7 @@ function msg_handler($errno, $msg_text, $errfile, $errline)
 				$msg_text = (!empty($user->lang[$msg_text])) ? $user->lang[$msg_text] : $msg_text;
 				$msg_title = (!isset($msg_title)) ? $user->lang['GENERAL_ERROR'] : ((!empty($user->lang[$msg_title])) ? $user->lang[$msg_title] : $msg_title);
 
-				$l_return_index = sprintf($user->lang['RETURN_INDEX'], '<a href="' . $phpbb_root_path . '">', '</a>');
+				$l_return_index = sprintf($user->lang['RETURN_INDEX'], '<a href="' . PHPBB_ROOT_PATH . '">', '</a>');
 				$l_notify = '';
 
 				if (!empty($config['board_contact']))
@@ -2909,7 +2925,7 @@ function msg_handler($errno, $msg_text, $errfile, $errline)
 			else
 			{
 				$msg_title = 'General Error';
-				$l_return_index = '<a href="' . $phpbb_root_path . '">Return to index page</a>';
+				$l_return_index = '<a href="' . PHPBB_ROOT_PATH . '">Return to index page</a>';
 				$l_notify = '';
 
 				if (!empty($config['board_contact']))
@@ -3034,7 +3050,7 @@ function msg_handler($errno, $msg_text, $errfile, $errline)
 */
 function page_header($page_title = '', $display_online_list = true)
 {
-	global $db, $config, $template, $SID, $_SID, $user, $auth, $phpEx, $phpbb_root_path;
+	global $db, $config, $template, $SID, $_SID, $user, $auth;
 
 	if (defined('HEADER_INC'))
 	{
@@ -3055,12 +3071,12 @@ function page_header($page_title = '', $display_online_list = true)
 	// Generate logged in/logged out status
 	if ($user->data['user_id'] != ANONYMOUS)
 	{
-		$u_login_logout = append_sid("{$phpbb_root_path}ucp.$phpEx", 'mode=logout', true, $user->session_id);
+		$u_login_logout = append_sid('ucp', 'mode=logout', true, $user->session_id);
 		$l_login_logout = sprintf($user->lang['LOGOUT_USER'], $user->data['username']);
 	}
 	else
 	{
-		$u_login_logout = append_sid("{$phpbb_root_path}ucp.$phpEx", 'mode=login');
+		$u_login_logout = append_sid('ucp', 'mode=login');
 		$l_login_logout = $user->lang['LOGIN'];
 	}
 
@@ -3272,7 +3288,7 @@ function page_header($page_title = '', $display_online_list = true)
 	$user_lang = $user->lang['USER_LANG'];
 	if (strpos($user_lang, '-x-') !== false)
 	{
-	    $user_lang = substr($user_lang, 0, strpos($user_lang, '-x-'));
+		$user_lang = substr($user_lang, 0, strpos($user_lang, '-x-'));
 	}
 
 	// The following assigns all _common_ variables that may be used at any point in a template.
@@ -3280,7 +3296,7 @@ function page_header($page_title = '', $display_online_list = true)
 		'SITENAME'						=> $config['sitename'],
 		'SITE_DESCRIPTION'				=> $config['site_desc'],
 		'PAGE_TITLE'					=> $page_title,
-		'SCRIPT_NAME'					=> str_replace('.' . $phpEx, '', $user->page['page_name']),
+		'SCRIPT_NAME'					=> str_replace('.' . PHP_EXT, '', $user->page['page_name']),
 		'LAST_VISIT_DATE'				=> sprintf($user->lang['YOU_LAST_VISIT'], $s_last_visit),
 		'LAST_VISIT_YOU'				=> $s_last_visit,
 		'CURRENT_TIME'					=> sprintf($user->lang['CURRENT_TIME'], $user->format_date(time(), false, true)),
@@ -3296,32 +3312,32 @@ function page_header($page_title = '', $display_online_list = true)
 		'SID'				=> $SID,
 		'_SID'				=> $_SID,
 		'SESSION_ID'		=> $user->session_id,
-		'ROOT_PATH'			=> $phpbb_root_path,
+		'ROOT_PATH'			=> PHPBB_ROOT_PATH,
 
 		'L_LOGIN_LOGOUT'	=> $l_login_logout,
 		'L_INDEX'			=> $user->lang['FORUM_INDEX'],
 		'L_ONLINE_EXPLAIN'	=> $l_online_time,
 
-		'U_PRIVATEMSGS'			=> append_sid("{$phpbb_root_path}ucp.$phpEx", 'i=pm&amp;folder=inbox'),
-		'U_RETURN_INBOX'		=> append_sid("{$phpbb_root_path}ucp.$phpEx", 'i=pm&amp;folder=inbox'),
-		'U_POPUP_PM'			=> append_sid("{$phpbb_root_path}ucp.$phpEx", 'i=pm&amp;mode=popup'),
-		'UA_POPUP_PM'			=> addslashes(append_sid("{$phpbb_root_path}ucp.$phpEx", 'i=pm&amp;mode=popup')),
-		'U_MEMBERLIST'			=> append_sid("{$phpbb_root_path}memberlist.$phpEx"),
-		'U_VIEWONLINE'			=> ($auth->acl_gets('u_viewprofile', 'a_user', 'a_useradd', 'a_userdel')) ? append_sid("{$phpbb_root_path}viewonline.$phpEx") : '',
+		'U_PRIVATEMSGS'			=> append_sid('ucp', 'i=pm&amp;folder=inbox'),
+		'U_RETURN_INBOX'		=> append_sid('ucp', 'i=pm&amp;folder=inbox'),
+		'U_POPUP_PM'			=> append_sid('ucp', 'i=pm&amp;mode=popup'),
+		'UA_POPUP_PM'			=> addslashes(append_sid('ucp', 'i=pm&amp;mode=popup')),
+		'U_MEMBERLIST'			=> append_sid('memberlist'),
+		'U_VIEWONLINE'			=> ($auth->acl_gets('u_viewprofile', 'a_user', 'a_useradd', 'a_userdel')) ? append_sid('viewonline') : '',
 		'U_LOGIN_LOGOUT'		=> $u_login_logout,
-		'U_INDEX'				=> append_sid("{$phpbb_root_path}index.$phpEx"),
-		'U_SEARCH'				=> append_sid("{$phpbb_root_path}search.$phpEx"),
-		'U_REGISTER'			=> append_sid("{$phpbb_root_path}ucp.$phpEx", 'mode=register'),
-		'U_PROFILE'				=> append_sid("{$phpbb_root_path}ucp.$phpEx"),
-		'U_MODCP'				=> append_sid("{$phpbb_root_path}mcp.$phpEx", false, true, $user->session_id),
-		'U_FAQ'					=> append_sid("{$phpbb_root_path}faq.$phpEx"),
-		'U_SEARCH_SELF'			=> append_sid("{$phpbb_root_path}search.$phpEx", 'search_id=egosearch'),
-		'U_SEARCH_NEW'			=> append_sid("{$phpbb_root_path}search.$phpEx", 'search_id=newposts'),
-		'U_SEARCH_UNANSWERED'	=> append_sid("{$phpbb_root_path}search.$phpEx", 'search_id=unanswered'),
-		'U_SEARCH_ACTIVE_TOPICS'=> append_sid("{$phpbb_root_path}search.$phpEx", 'search_id=active_topics'),
-		'U_DELETE_COOKIES'		=> append_sid("{$phpbb_root_path}ucp.$phpEx", 'mode=delete_cookies'),
-		'U_TEAM'				=> append_sid("{$phpbb_root_path}memberlist.$phpEx", 'mode=leaders'),
-		'U_RESTORE_PERMISSIONS'	=> ($user->data['user_perm_from'] && $auth->acl_get('a_switchperm')) ? append_sid("{$phpbb_root_path}ucp.$phpEx", 'mode=restore_perm') : '',
+		'U_INDEX'				=> append_sid('index'),
+		'U_SEARCH'				=> append_sid('search'),
+		'U_REGISTER'			=> append_sid('ucp', 'mode=register'),
+		'U_PROFILE'				=> append_sid('ucp'),
+		'U_MODCP'				=> append_sid('mcp', false, true, $user->session_id),
+		'U_FAQ'					=> append_sid('faq'),
+		'U_SEARCH_SELF'			=> append_sid('search', 'search_id=egosearch'),
+		'U_SEARCH_NEW'			=> append_sid('search', 'search_id=newposts'),
+		'U_SEARCH_UNANSWERED'	=> append_sid('search', 'search_id=unanswered'),
+		'U_SEARCH_ACTIVE_TOPICS'=> append_sid('search', 'search_id=active_topics'),
+		'U_DELETE_COOKIES'		=> append_sid('ucp', 'mode=delete_cookies'),
+		'U_TEAM'				=> append_sid('memberlist', 'mode=leaders'),
+		'U_RESTORE_PERMISSIONS'	=> ($user->data['user_perm_from'] && $auth->acl_get('a_switchperm')) ? append_sid('ucp', 'mode=restore_perm') : '',
 
 		'S_USER_LOGGED_IN'		=> ($user->data['user_id'] != ANONYMOUS) ? true : false,
 		'S_AUTOLOGIN_ENABLED'	=> ($config['allow_autologin']) ? true : false,
@@ -3347,18 +3363,18 @@ function page_header($page_title = '', $display_online_list = true)
 		'S_NEW_PM'				=> ($s_privmsg_new) ? 1 : 0,
 		'S_REGISTER_ENABLED'	=> ($config['require_activation'] != USER_ACTIVATION_DISABLE) ? true : false,
 
-		'T_THEME_PATH'			=> "{$phpbb_root_path}styles/" . $user->theme['theme_path'] . '/theme',
-		'T_TEMPLATE_PATH'		=> "{$phpbb_root_path}styles/" . $user->theme['template_path'] . '/template',
-		'T_IMAGESET_PATH'		=> "{$phpbb_root_path}styles/" . $user->theme['imageset_path'] . '/imageset',
-		'T_IMAGESET_LANG_PATH'	=> "{$phpbb_root_path}styles/" . $user->theme['imageset_path'] . '/imageset/' . $user->data['user_lang'],
-		'T_IMAGES_PATH'			=> "{$phpbb_root_path}images/",
-		'T_SMILIES_PATH'		=> "{$phpbb_root_path}{$config['smilies_path']}/",
-		'T_AVATAR_PATH'			=> "{$phpbb_root_path}{$config['avatar_path']}/",
-		'T_AVATAR_GALLERY_PATH'	=> "{$phpbb_root_path}{$config['avatar_gallery_path']}/",
-		'T_ICONS_PATH'			=> "{$phpbb_root_path}{$config['icons_path']}/",
-		'T_RANKS_PATH'			=> "{$phpbb_root_path}{$config['ranks_path']}/",
-		'T_UPLOAD_PATH'			=> "{$phpbb_root_path}{$config['upload_path']}/",
-		'T_STYLESHEET_LINK'		=> (!$user->theme['theme_storedb']) ? "{$phpbb_root_path}styles/" . $user->theme['theme_path'] . '/theme/stylesheet.css' : "{$phpbb_root_path}style.$phpEx?sid=$user->session_id&amp;id=" . $user->theme['style_id'] . '&amp;lang=' . $user->data['user_lang'],
+		'T_THEME_PATH'			=> PHPBB_ROOT_PATH . 'styles/' . $user->theme['theme_path'] . '/theme',
+		'T_TEMPLATE_PATH'		=> PHPBB_ROOT_PATH . 'styles/' . $user->theme['template_path'] . '/template',
+		'T_IMAGESET_PATH'		=> PHPBB_ROOT_PATH . 'styles/' . $user->theme['imageset_path'] . '/imageset',
+		'T_IMAGESET_LANG_PATH'	=> PHPBB_ROOT_PATH . 'styles/' . $user->theme['imageset_path'] . '/imageset/' . $user->data['user_lang'],
+		'T_IMAGES_PATH'			=> PHPBB_ROOT_PATH . 'images/',
+		'T_SMILIES_PATH'		=> PHPBB_ROOT_PATH . $config['smilies_path'] . '/',
+		'T_AVATAR_PATH'			=> PHPBB_ROOT_PATH . $config['avatar_path'] . '/',
+		'T_AVATAR_GALLERY_PATH'	=> PHPBB_ROOT_PATH . $config['avatar_gallery_path'] . '/',
+		'T_ICONS_PATH'			=> PHPBB_ROOT_PATH . $config['icons_path'] . '/',
+		'T_RANKS_PATH'			=> PHPBB_ROOT_PATH . $config['ranks_path'] . '/',
+		'T_UPLOAD_PATH'			=> PHPBB_ROOT_PATH . $config['upload_path'] . '/',
+		'T_STYLESHEET_LINK'		=> (!$user->theme['theme_storedb']) ? PHPBB_ROOT_PATH . 'styles/' . $user->theme['theme_path'] . '/theme/stylesheet.css' : PHPBB_ROOT_PATH . 'style.' . PHP_EXT . "?sid=$user->session_id&amp;id=" . $user->theme['style_id'] . '&amp;lang=' . $user->data['user_lang'],
 		'T_STYLESHEET_NAME'		=> $user->theme['theme_name'],
 
 		'SITE_LOGO_IMG'			=> $user->img('site_logo'))
@@ -3379,7 +3395,7 @@ function page_header($page_title = '', $display_online_list = true)
 */
 function page_footer($run_cron = true)
 {
-	global $db, $config, $template, $user, $auth, $cache, $starttime, $phpbb_root_path, $phpEx;
+	global $db, $config, $template, $user, $auth, $cache, $starttime;
 
 	// Output page creation time
 	if (defined('DEBUG'))
@@ -3416,7 +3432,7 @@ function page_footer($run_cron = true)
 		'DEBUG_OUTPUT'			=> (defined('DEBUG')) ? $debug_output : '',
 		'TRANSLATION_INFO'		=> (!empty($user->lang['TRANSLATION_INFO'])) ? $user->lang['TRANSLATION_INFO'] : '',
 
-		'U_ACP' => ($auth->acl_get('a_') && $user->data['is_registered']) ? append_sid("{$phpbb_root_path}adm/index.$phpEx", false, true, $user->session_id) : '')
+		'U_ACP' => ($auth->acl_get('a_') && $user->data['is_registered']) ? append_sid(CONFIG_ADM_FOLDER . 'index', false, true, $user->session_id) : '')
 	);
 
 	// Call cron-type script
@@ -3424,7 +3440,7 @@ function page_footer($run_cron = true)
 	{
 		$cron_type = '';
 
-		if (time() - $config['queue_interval'] > $config['last_queue_run'] && !defined('IN_ADMIN') && file_exists($phpbb_root_path . 'cache/queue.' . $phpEx))
+		if (time() - $config['queue_interval'] > $config['last_queue_run'] && !defined('IN_ADMIN') && file_exists(PHPBB_ROOT_PATH . 'cache/queue.' . PHP_EXT))
 		{
 			// Process email queue
 			$cron_type = 'queue';
@@ -3455,7 +3471,7 @@ function page_footer($run_cron = true)
 
 		if ($cron_type)
 		{
-			$template->assign_var('RUN_CRON_TASK', '<img src="' . append_sid($phpbb_root_path . 'cron.' . $phpEx, 'cron_type=' . $cron_type) . '" width="1" height="1" alt="cron" />');
+			$template->assign_var('RUN_CRON_TASK', '<img src="' . append_sid('cron', 'cron_type=' . $cron_type) . '" width="1" height="1" alt="cron" />');
 		}
 	}
 

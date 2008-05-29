@@ -19,7 +19,7 @@ if (!defined('IN_PHPBB'))
 /**
 * @ignore
 */
-include_once($phpbb_root_path . 'includes/search/search.' . $phpEx);
+include_once(PHPBB_ROOT_PATH . 'includes/search/search.' . PHP_EXT);
 
 /**
 * fulltext_mysql

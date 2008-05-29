@@ -25,8 +25,8 @@ die("Please read the first lines of this script for instructions on how to enabl
 set_time_limit(0);
 
 define('IN_PHPBB', true);
-$phpbb_root_path = '../';
-$phpEx = substr(strrchr(__FILE__, '.'), 1);
+define('PHPBB_ROOT_PATH', './../');
+define('PHP_EXT', substr(strrchr(__FILE__, '.'), 1));
 
 echo "Checking for required files\n";
 download('http://unicode.org/reports/tr39/data/confusables.txt');
@@ -155,9 +155,9 @@ foreach ($array as $value)
 	$uniarray[utf8_chr(hexdec((string)$value[1]))] = $temp_hold;
 }
 
-echo "Writing to confusables.$phpEx\n";
+echo "Writing to confusables." . PHP_EXT . "\n";
 
-$fp = fopen($phpbb_root_path . 'includes/utf/data/confusables.' . $phpEx, 'wb');
+$fp = fopen(PHPBB_ROOT_PATH . 'includes/utf/data/confusables.' . PHP_EXT, 'wb');
 fwrite($fp, '<?php return ' . my_var_export($uniarray) . ';');
 fclose($fp);
 
@@ -200,9 +200,7 @@ function my_var_export($var)
 */
 function download($url)
 {
-	global $phpbb_root_path;
-
-	if (file_exists($phpbb_root_path . 'develop/' . basename($url)))
+	if (file_exists(PHPBB_ROOT_PATH . 'develop/' . basename($url)))
 	{
 		return;
 	}
@@ -214,7 +212,7 @@ function download($url)
 		die("Can't download from $url\nPlease download it yourself and put it in the develop/ dir, kthxbai");
 	}
 
-	if (!$fpw = fopen($phpbb_root_path . 'develop/' . basename($url), 'wb'))
+	if (!$fpw = fopen(PHPBB_ROOT_PATH . 'develop/' . basename($url), 'wb'))
 	{
 		die("Can't open develop/" . basename($url) . " for output... please check your permissions or something");
 	}

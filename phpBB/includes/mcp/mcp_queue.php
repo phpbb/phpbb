@@ -34,9 +34,9 @@ class mcp_queue
 	function main($id, $mode)
 	{
 		global $auth, $db, $user, $template, $cache;
-		global $config, $phpbb_root_path, $phpEx, $action;
+		global $config, $action;
 
-		include_once($phpbb_root_path . 'includes/functions_posting.' . $phpEx);
+		include_once(PHPBB_ROOT_PATH . 'includes/functions_posting.' . PHP_EXT);
 
 		$forum_id = request_var('f', 0);
 		$start = request_var('start', 0);
@@ -47,7 +47,7 @@ class mcp_queue
 		{
 			case 'approve':
 			case 'disapprove':
-				include_once($phpbb_root_path . 'includes/functions_messenger.' . $phpEx);
+				include_once(PHPBB_ROOT_PATH . 'includes/functions_messenger.' . PHP_EXT);
 
 				$post_id_list = request_var('post_id_list', array(0));
 
@@ -130,7 +130,7 @@ class mcp_queue
 
 				if ($post_info['bbcode_bitfield'])
 				{
-					include_once($phpbb_root_path . 'includes/bbcode.' . $phpEx);
+					include_once(PHPBB_ROOT_PATH . 'includes/bbcode.' . PHP_EXT);
 					$bbcode = new bbcode($post_info['bbcode_bitfield']);
 					$bbcode->bbcode_second_pass($message, $post_info['bbcode_uid'], $post_info['bbcode_bitfield']);
 				}
@@ -175,29 +175,29 @@ class mcp_queue
 					}
 				}
 
-				$post_url = append_sid("{$phpbb_root_path}viewtopic.$phpEx", 'f=' . $post_info['forum_id'] . '&amp;p=' . $post_info['post_id'] . '#p' . $post_info['post_id']);
-				$topic_url = append_sid("{$phpbb_root_path}viewtopic.$phpEx", 'f=' . $post_info['forum_id'] . '&amp;t=' . $post_info['topic_id']);
+				$post_url = append_sid('viewtopic', 'f=' . $post_info['forum_id'] . '&amp;p=' . $post_info['post_id'] . '#p' . $post_info['post_id']);
+				$topic_url = append_sid('viewtopic', 'f=' . $post_info['forum_id'] . '&amp;t=' . $post_info['topic_id']);
 
 				$template->assign_vars(array(
 					'S_MCP_QUEUE'			=> true,
-					'U_APPROVE_ACTION'		=> append_sid("{$phpbb_root_path}mcp.$phpEx", "i=queue&amp;p=$post_id&amp;f=$forum_id"),
+					'U_APPROVE_ACTION'		=> append_sid('mcp', "i=queue&amp;p=$post_id&amp;f=$forum_id"),
 					'S_CAN_VIEWIP'			=> $auth->acl_get('m_info', $post_info['forum_id']),
 					'S_POST_REPORTED'		=> $post_info['post_reported'],
 					'S_POST_UNAPPROVED'		=> !$post_info['post_approved'],
 					'S_POST_LOCKED'			=> $post_info['post_edit_locked'],
 					'S_USER_NOTES'			=> true,
 
-					'U_EDIT'				=> ($auth->acl_get('m_edit', $post_info['forum_id'])) ? append_sid("{$phpbb_root_path}posting.$phpEx", "mode=edit&amp;f={$post_info['forum_id']}&amp;p={$post_info['post_id']}") : '',
-					'U_MCP_APPROVE'			=> append_sid("{$phpbb_root_path}mcp.$phpEx", 'i=queue&amp;mode=approve_details&amp;f=' . $post_info['forum_id'] . '&amp;p=' . $post_id),
-					'U_MCP_REPORT'			=> append_sid("{$phpbb_root_path}mcp.$phpEx", 'i=reports&amp;mode=report_details&amp;f=' . $post_info['forum_id'] . '&amp;p=' . $post_id),
-					'U_MCP_USER_NOTES'		=> append_sid("{$phpbb_root_path}mcp.$phpEx", 'i=notes&amp;mode=user_notes&amp;u=' . $post_info['user_id']),
-					'U_MCP_WARN_USER'		=> ($auth->acl_get('m_warn')) ? append_sid("{$phpbb_root_path}mcp.$phpEx", 'i=warn&amp;mode=warn_user&amp;u=' . $post_info['user_id']) : '',
+					'U_EDIT'				=> ($auth->acl_get('m_edit', $post_info['forum_id'])) ? append_sid('posting', "mode=edit&amp;f={$post_info['forum_id']}&amp;p={$post_info['post_id']}") : '',
+					'U_MCP_APPROVE'			=> append_sid('mcp', 'i=queue&amp;mode=approve_details&amp;f=' . $post_info['forum_id'] . '&amp;p=' . $post_id),
+					'U_MCP_REPORT'			=> append_sid('mcp', 'i=reports&amp;mode=report_details&amp;f=' . $post_info['forum_id'] . '&amp;p=' . $post_id),
+					'U_MCP_USER_NOTES'		=> append_sid('mcp', 'i=notes&amp;mode=user_notes&amp;u=' . $post_info['user_id']),
+					'U_MCP_WARN_USER'		=> ($auth->acl_get('m_warn')) ? append_sid('mcp', 'i=warn&amp;mode=warn_user&amp;u=' . $post_info['user_id']) : '',
 					'U_VIEW_POST'			=> $post_url,
 					'U_VIEW_TOPIC'			=> $topic_url,
 
 					'MINI_POST_IMG'			=> ($post_unread) ? $user->img('icon_post_target_unread', 'NEW_POST') : $user->img('icon_post_target', 'POST'),
 
-					'RETURN_QUEUE'			=> sprintf($user->lang['RETURN_QUEUE'], '<a href="' . append_sid("{$phpbb_root_path}mcp.$phpEx", 'i=queue' . (($topic_id) ? '&amp;mode=unapproved_topics' : '&amp;mode=unapproved_posts')) . "&amp;start=$start\">", '</a>'),
+					'RETURN_QUEUE'			=> sprintf($user->lang['RETURN_QUEUE'], '<a href="' . append_sid('mcp', 'i=queue' . (($topic_id) ? '&amp;mode=unapproved_topics' : '&amp;mode=unapproved_posts')) . "&amp;start=$start\">", '</a>'),
 					'RETURN_POST'			=> sprintf($user->lang['RETURN_POST'], '<a href="' . $post_url . '">', '</a>'),
 					'RETURN_TOPIC_SIMPLE'	=> sprintf($user->lang['RETURN_TOPIC_SIMPLE'], '<a href="' . $topic_url . '">', '</a>'),
 					'REPORTED_IMG'			=> $user->img('icon_topic_reported', $user->lang['POST_REPORTED']),
@@ -216,7 +216,7 @@ class mcp_queue
 					'POST_IPADDR'			=> ($auth->acl_get('m_info', $post_info['forum_id']) && request_var('lookup', '')) ? @gethostbyaddr($post_info['poster_ip']) : '',
 					'POST_ID'				=> $post_info['post_id'],
 
-					'U_LOOKUP_IP'			=> ($auth->acl_get('m_info', $post_info['forum_id'])) ? append_sid("{$phpbb_root_path}mcp.$phpEx", 'i=queue&amp;mode=approve_details&amp;f=' . $post_info['forum_id'] . '&amp;p=' . $post_id . '&amp;lookup=' . $post_info['poster_ip']) . '#ip' : '',
+					'U_LOOKUP_IP'			=> ($auth->acl_get('m_info', $post_info['forum_id'])) ? append_sid('mcp', 'i=queue&amp;mode=approve_details&amp;f=' . $post_info['forum_id'] . '&amp;p=' . $post_id . '&amp;lookup=' . $post_info['poster_ip']) . '#ip' : '',
 				));
 
 			break;
@@ -404,10 +404,10 @@ class mcp_queue
 					}
 
 					$template->assign_block_vars('postrow', array(
-						'U_TOPIC'			=> append_sid("{$phpbb_root_path}viewtopic.$phpEx", 'f=' . $row['forum_id'] . '&amp;t=' . $row['topic_id']),
-						'U_VIEWFORUM'		=> (!$global_topic) ? append_sid("{$phpbb_root_path}viewforum.$phpEx", 'f=' . $row['forum_id']) : '',
-						'U_VIEWPOST'		=> append_sid("{$phpbb_root_path}viewtopic.$phpEx", 'f=' . $row['forum_id'] . '&amp;p=' . $row['post_id']) . (($mode == 'unapproved_posts') ? '#p' . $row['post_id'] : ''),
-						'U_VIEW_DETAILS'	=> append_sid("{$phpbb_root_path}mcp.$phpEx", "i=queue&amp;start=$start&amp;mode=approve_details&amp;f={$row['forum_id']}&amp;p={$row['post_id']}" . (($mode == 'unapproved_topics') ? "&amp;t={$row['topic_id']}" : '')),
+						'U_TOPIC'			=> append_sid('viewtopic', 'f=' . $row['forum_id'] . '&amp;t=' . $row['topic_id']),
+						'U_VIEWFORUM'		=> (!$global_topic) ? append_sid('viewforum', 'f=' . $row['forum_id']) : '',
+						'U_VIEWPOST'		=> append_sid('viewtopic', 'f=' . $row['forum_id'] . '&amp;p=' . $row['post_id']) . (($mode == 'unapproved_posts') ? '#p' . $row['post_id'] : ''),
+						'U_VIEW_DETAILS'	=> append_sid('mcp', "i=queue&amp;start=$start&amp;mode=approve_details&amp;f={$row['forum_id']}&amp;p={$row['post_id']}" . (($mode == 'unapproved_topics') ? "&amp;t={$row['topic_id']}" : '')),
 
 						'POST_AUTHOR_FULL'		=> get_username_string('full', $row['poster_id'], $row['username'], $row['user_colour'], $row['post_username']),
 						'POST_AUTHOR_COLOUR'	=> get_username_string('colour', $row['poster_id'], $row['username'], $row['user_colour'], $row['post_username']),
@@ -452,7 +452,6 @@ class mcp_queue
 function approve_post($post_id_list, $id, $mode)
 {
 	global $db, $template, $user, $config;
-	global $phpEx, $phpbb_root_path;
 
 	if (!check_ids($post_id_list, POSTS_TABLE, 'post_id', array('m_approve')))
 	{
@@ -655,8 +654,8 @@ function approve_post($post_id_list, $id, $mode)
 					'POST_SUBJECT'	=> htmlspecialchars_decode(censor_text($post_data['post_subject'])),
 					'TOPIC_TITLE'	=> htmlspecialchars_decode(censor_text($post_data['topic_title'])),
 
-					'U_VIEW_TOPIC'	=> generate_board_url() . "/viewtopic.$phpEx?f={$post_data['forum_id']}&t={$post_data['topic_id']}&e=0",
-					'U_VIEW_POST'	=> generate_board_url() . "/viewtopic.$phpEx?f={$post_data['forum_id']}&t={$post_data['topic_id']}&p=$post_id&e=$post_id")
+					'U_VIEW_TOPIC'	=> generate_board_url() . '/viewtopic.' . PHP_EXT . "?f={$post_data['forum_id']}&t={$post_data['topic_id']}&e=0",
+					'U_VIEW_POST'	=> generate_board_url() . '/viewtopic.' . PHP_EXT . "?f={$post_data['forum_id']}&t={$post_data['topic_id']}&p=$post_id&e=$post_id")
 				);
 
 				$messenger->send($post_data['user_notify_type']);
@@ -685,7 +684,7 @@ function approve_post($post_id_list, $id, $mode)
 		if (sizeof($post_id_list) == 1)
 		{
 			$post_data = $post_info[$post_id_list[0]];
-			$post_url = append_sid("{$phpbb_root_path}viewtopic.$phpEx", "f={$post_data['forum_id']}&amp;t={$post_data['topic_id']}&amp;p={$post_data['post_id']}") . '#p' . $post_data['post_id'];
+			$post_url = append_sid('viewtopic', "f={$post_data['forum_id']}&amp;t={$post_data['topic_id']}&amp;p={$post_data['post_id']}") . '#p' . $post_data['post_id'];
 		}
 		unset($post_info);
 
@@ -723,7 +722,7 @@ function approve_post($post_id_list, $id, $mode)
 		confirm_box(false, 'APPROVE_POST' . ((sizeof($post_id_list) == 1) ? '' : 'S'), $s_hidden_fields, 'mcp_approve.html');
 	}
 
-	$redirect = request_var('redirect', "index.$phpEx");
+	$redirect = request_var('redirect', 'index.' . PHP_EXT);
 	$redirect = reapply_sid($redirect);
 
 	if (!$success_msg)
@@ -751,7 +750,6 @@ function approve_post($post_id_list, $id, $mode)
 function disapprove_post($post_id_list, $id, $mode)
 {
 	global $db, $template, $user, $config;
-	global $phpEx, $phpbb_root_path;
 
 	if (!check_ids($post_id_list, POSTS_TABLE, 'post_id', array('m_approve')))
 	{
@@ -886,7 +884,7 @@ function disapprove_post($post_id_list, $id, $mode)
 		{
 			if (!function_exists('delete_posts'))
 			{
-				include_once($phpbb_root_path . 'includes/functions_admin.' . $phpEx);
+				include_once(PHPBB_ROOT_PATH . 'includes/functions_admin.' . PHP_EXT);
 			}
 
 			// We do not check for permissions here, because the moderator allowed approval/disapproval should be allowed to delete the disapproved posts
@@ -951,7 +949,7 @@ function disapprove_post($post_id_list, $id, $mode)
 	}
 	else
 	{
-		include_once($phpbb_root_path . 'includes/functions_display.' . $phpEx);
+		include_once(PHPBB_ROOT_PATH . 'includes/functions_display.' . PHP_EXT);
 
 		display_reasons($reason_id);
 
@@ -980,7 +978,7 @@ function disapprove_post($post_id_list, $id, $mode)
 		confirm_box(false, 'DISAPPROVE_POST' . ((sizeof($post_id_list) == 1) ? '' : 'S'), $s_hidden_fields, 'mcp_approve.html');
 	}
 
-	$redirect = request_var('redirect', "index.$phpEx");
+	$redirect = request_var('redirect', 'index.' . PHP_EXT);
 	$redirect = reapply_sid($redirect);
 
 	if (!$success_msg)

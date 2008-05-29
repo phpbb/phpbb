@@ -24,8 +24,7 @@ class acp_captcha
 
 	function main($id, $mode)
 	{
-		global $db, $user, $auth, $template;
-		global $config, $phpbb_root_path, $phpbb_admin_path, $phpEx;
+		global $db, $user, $auth, $template, $config;
 
 		$user->add_lang('acp/board');
 
@@ -47,11 +46,11 @@ class acp_captcha
 
 			if ($config['captcha_gd'])
 			{
-				include($phpbb_root_path . 'includes/captcha/captcha_gd.' . $phpEx);
+				include(PHPBB_ROOT_PATH . 'includes/captcha/captcha_gd.' . PHP_EXT);
 			}
 			else
 			{
-				include($phpbb_root_path . 'includes/captcha/captcha_non_gd.' . $phpEx);
+				include(PHPBB_ROOT_PATH . 'includes/captcha/captcha_non_gd.' . PHP_EXT);
 			}
 
 			captcha::execute(gen_rand_string(mt_rand(5, 8)), time());
@@ -92,7 +91,7 @@ class acp_captcha
 		else
 		{
 			
-			$preview_image_src = append_sid(append_sid("{$phpbb_admin_path}index.$phpEx", "i=$id&amp;demo=demo"));
+			$preview_image_src = append_sid(append_sid(PHPBB_ADMIN_PATH . 'index.' . PHP_EXT, "i=$id&amp;demo=demo"));
 			if (@extension_loaded('gd'))
 			{
 				$template->assign_var('GD', true);

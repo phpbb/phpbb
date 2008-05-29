@@ -7,9 +7,9 @@ die("Please read the first lines of this script for instructions on how to enabl
 set_time_limit(0);
 
 define('IN_PHPBB', true);
-$phpbb_root_path = './../';
-$phpEx = substr(strrchr(__FILE__, '.'), 1);
-include($phpbb_root_path . 'common.'.$phpEx);
+define('PHPBB_ROOT_PATH', './../');
+define('PHP_EXT', substr(strrchr(__FILE__, '.'), 1));
+include(PHPBB_ROOT_PATH . 'common.' . PHP_EXT);
 
 // Start session management
 $user->session_begin();

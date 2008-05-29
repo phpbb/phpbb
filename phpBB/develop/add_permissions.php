@@ -20,34 +20,10 @@
 //
 die("Please read the first lines of this script for instructions on how to enable it");
 
-
-// This script adds missing permissions
-$db = $dbhost = $dbuser = $dbpasswd = $dbport = $dbname = '';
-
 define('IN_PHPBB', 1);
-define('ANONYMOUS', 1);
-$phpEx = substr(strrchr(__FILE__, '.'), 1);
-$phpbb_root_path='./../';
-include($phpbb_root_path . 'config.'.$phpEx);
-require($phpbb_root_path . 'includes/acm/acm_' . $acm_type . '.'.$phpEx);
-require($phpbb_root_path . 'includes/db/' . $dbms . '.'.$phpEx);
-include($phpbb_root_path . 'includes/functions.'.$phpEx);
-
-define('ACL_NEVER', 0);
-define('ACL_YES', 1);
-define('ACL_NO', -1);
-
-define('ACL_GROUPS_TABLE', $table_prefix.'acl_groups');
-define('ACL_OPTIONS_TABLE', $table_prefix.'acl_options');
-define('ACL_USERS_TABLE', $table_prefix.'acl_users');
-define('GROUPS_TABLE', $table_prefix.'groups');
-define('USERS_TABLE', $table_prefix.'users');
-
-$cache		= new acm();
-$db			= new sql_db();
-
-// Connect to DB
-$db->sql_connect($dbhost, $dbuser, $dbpasswd, $dbname, $dbport, false);
+define('PHPBB_ROOT_PATH', './../');
+define('PHP_EXT', substr(strrchr(__FILE__, '.'), 1));
+require(PHPBB_ROOT_PATH . 'common.' . PHP_EXT);
 
 // auth => is_local, is_global
 $f_permissions = array(
@@ -413,5 +389,8 @@ function mass_auth($ug_type, $forum_id, $ug_id, $acl_list, $setting)
 	unset($sql_ary);
 
 }
+
+garbage_collection();
+exit_handler();
 
 ?>

@@ -262,7 +262,7 @@ class auth_admin extends auth
 	*/
 	public function display_mask($mode, $permission_type, array $hold_ary, $user_mode = 'user', $local = false, $group_display = true)
 	{
-		global $template, $user, $db, $phpbb_root_path, $phpEx;
+		global $template, $user, $db;
 
 		// Define names for template loops, might be able to be set
 		$tpl_pmask = 'p_mask';
@@ -606,7 +606,7 @@ class auth_admin extends auth
 	*/
 	public function display_role_mask(array $hold_ary)
 	{
-		global $db, $template, $user, $phpbb_root_path, $phpbb_admin_path, $phpEx;
+		global $db, $template, $user;
 
 		if (!sizeof($hold_ary))
 		{
@@ -650,7 +650,7 @@ class auth_admin extends auth
 					$template->assign_block_vars('role_mask.users', array(
 						'USER_ID'		=> $row['user_id'],
 						'USERNAME'		=> $row['username'],
-						'U_PROFILE'		=> append_sid("{$phpbb_root_path}memberlist.$phpEx", "mode=viewprofile&amp;u={$row['user_id']}"))
+						'U_PROFILE'		=> append_sid('memberlist', "mode=viewprofile&amp;u={$row['user_id']}"))
 					);
 				}
 				$db->sql_freeresult($result);
@@ -669,7 +669,7 @@ class auth_admin extends auth
 					$template->assign_block_vars('role_mask.groups', array(
 						'GROUP_ID'		=> $row['group_id'],
 						'GROUP_NAME'	=> ($row['group_type'] == GROUP_SPECIAL) ? $user->lang['G_' . $row['group_name']] : $row['group_name'],
-						'U_PROFILE'		=> append_sid("{$phpbb_root_path}memberlist.$phpEx", "mode=group&amp;g={$row['group_id']}"))
+						'U_PROFILE'		=> append_sid('memberlist', "mode=group&amp;g={$row['group_id']}"))
 					);
 				}
 				$db->sql_freeresult($result);
@@ -1076,7 +1076,7 @@ class auth_admin extends auth
 	*/
 	private static function assign_cat_array(array $category_array, $tpl_cat, $tpl_mask, $ug_id, $forum_id, $show_trace = false, $s_view)
 	{
-		global $template, $user, $phpbb_admin_path, $phpEx;
+		global $template, $user;
 
 		@reset($category_array);
 		while (list($cat, $cat_array) = each($category_array))
@@ -1118,8 +1118,8 @@ class auth_admin extends auth
 						'FIELD_NAME'	=> $permission,
 						'S_FIELD_NAME'	=> 'setting[' . $ug_id . '][' . $forum_id . '][' . $permission . ']',
 
-						'U_TRACE'		=> ($show_trace) ? append_sid("{$phpbb_admin_path}index.$phpEx", "i=permissions&amp;mode=trace&amp;u=$ug_id&amp;f=$forum_id&amp;auth=$permission") : '',
-						'UA_TRACE'		=> ($show_trace) ? append_sid("{$phpbb_admin_path}index.$phpEx", "i=permissions&mode=trace&u=$ug_id&f=$forum_id&auth=$permission", false) : '',
+						'U_TRACE'		=> ($show_trace) ? append_sid(PHPBB_ADMIN_PATH . 'index.' . PHP_EXT, "i=permissions&amp;mode=trace&amp;u=$ug_id&amp;f=$forum_id&amp;auth=$permission") : '',
+						'UA_TRACE'		=> ($show_trace) ? append_sid(PHPBB_ADMIN_PATH . 'index.' . PHP_EXT, "i=permissions&mode=trace&u=$ug_id&f=$forum_id&auth=$permission", false) : '',
 
 						'PERMISSION'	=> $user->lang['acl_' . $permission]['lang'])
 					);
@@ -1136,8 +1136,8 @@ class auth_admin extends auth
 						'FIELD_NAME'	=> $permission,
 						'S_FIELD_NAME'	=> 'setting[' . $ug_id . '][' . $forum_id . '][' . $permission . ']',
 
-						'U_TRACE'		=> ($show_trace) ? append_sid("{$phpbb_admin_path}index.$phpEx", "i=permissions&amp;mode=trace&amp;u=$ug_id&amp;f=$forum_id&amp;auth=$permission") : '',
-						'UA_TRACE'		=> ($show_trace) ? append_sid("{$phpbb_admin_path}index.$phpEx", "i=permissions&mode=trace&u=$ug_id&f=$forum_id&auth=$permission", false) : '',
+						'U_TRACE'		=> ($show_trace) ? append_sid(PHPBB_ADMIN_PATH . 'index.' . PHP_EXT, "i=permissions&amp;mode=trace&amp;u=$ug_id&amp;f=$forum_id&amp;auth=$permission") : '',
+						'UA_TRACE'		=> ($show_trace) ? append_sid(PHPBB_ADMIN_PATH . 'index.' . PHP_EXT, "i=permissions&mode=trace&u=$ug_id&f=$forum_id&auth=$permission", false) : '',
 
 						'PERMISSION'	=> $user->lang['acl_' . $permission]['lang'])
 					);

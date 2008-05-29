@@ -32,9 +32,8 @@ class acp_inactive
 	function main($id, $mode)
 	{
 		global $config, $db, $user, $auth, $template;
-		global $phpbb_root_path, $phpbb_admin_path, $phpEx, $table_prefix;
 
-		include($phpbb_root_path . 'includes/functions_user.' . $phpEx);
+		include(PHPBB_ROOT_PATH . 'includes/functions_user.' . PHP_EXT);
 
 		$user->add_lang('memberlist');
 
@@ -98,7 +97,7 @@ class acp_inactive
 
 						if ($config['require_activation'] == USER_ACTIVATION_ADMIN && !empty($inactive_users))
 						{
-							include_once($phpbb_root_path . 'includes/functions_messenger.' . $phpEx);
+							include_once(PHPBB_ROOT_PATH . 'includes/functions_messenger.' . PHP_EXT);
 
 							$messenger = new messenger();
 
@@ -167,7 +166,7 @@ class acp_inactive
 					if ($row = $db->sql_fetchrow($result))
 					{
 						// Send the messages
-						include_once($phpbb_root_path . 'includes/functions_messenger.' . $phpEx);
+						include_once(PHPBB_ROOT_PATH . 'includes/functions_messenger.' . PHP_EXT);
 
 						$messenger = new messenger();
 						$usernames = array();
@@ -182,7 +181,7 @@ class acp_inactive
 							$messenger->assign_vars(array(
 								'USERNAME'		=> htmlspecialchars_decode($row['username']),
 								'REGISTER_DATE'	=> $user->format_date($row['user_regdate']),
-								'U_ACTIVATE'	=> generate_board_url() . "/ucp.$phpEx?mode=activate&u=" . $row['user_id'] . '&k=' . $row['user_actkey'])
+								'U_ACTIVATE'	=> generate_board_url() . '/ucp.' . PHP_EXT . '?mode=activate&u=' . $row['user_id'] . '&k=' . $row['user_actkey'])
 							);
 
 							$messenger->send($row['user_notify_type']);
@@ -228,7 +227,7 @@ class acp_inactive
 				'REASON'		=> $row['inactive_reason'],
 				'USER_ID'		=> $row['user_id'],
 				'USERNAME'		=> $row['username'],
-				'U_USER_ADMIN'	=> append_sid("{$phpbb_admin_path}index.$phpEx", "i=users&amp;mode=overview&amp;u={$row['user_id']}"))
+				'U_USER_ADMIN'	=> append_sid(PHPBB_ADMIN_PATH . 'index.' . PHP_EXT, "i=users&amp;mode=overview&amp;u={$row['user_id']}"))
 			);
 		}
 

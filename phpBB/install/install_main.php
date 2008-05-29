@@ -22,7 +22,7 @@ if (!empty($setmodules))
 	$module[] = array(
 		'module_type'		=> 'install',
 		'module_title'		=> 'OVERVIEW',
-		'module_filename'	=> substr(basename(__FILE__), 0, -strlen($phpEx)-1),
+		'module_filename'	=> substr(basename(__FILE__), 0, -strlen(PHP_EXT)-1),
 		'module_order'		=> 0,
 		'module_subs'		=> array('INTRO', 'LICENSE', 'SUPPORT'),
 		'module_stages'		=> '',

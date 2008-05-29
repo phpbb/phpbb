@@ -27,7 +27,7 @@ class ucp_register
 
 	function main($id, $mode)
 	{
-		global $config, $db, $user, $auth, $template, $phpbb_root_path, $phpEx;
+		global $config, $db, $user, $auth, $template;
 
 		//
 		if ($config['require_activation'] == USER_ACTIVATION_DISABLE)
@@ -35,7 +35,7 @@ class ucp_register
 			trigger_error('UCP_REGISTER_DISABLE');
 		}
 
-		include($phpbb_root_path . 'includes/functions_profile_fields.' . $phpEx);
+		include(PHPBB_ROOT_PATH . 'includes/functions_profile_fields.' . PHP_EXT);
 
 		$confirm_id		= request_var('confirm_id', '');
 		$coppa			= (isset($_REQUEST['coppa'])) ? ((!empty($_REQUEST['coppa'])) ? 1 : 0) : false;
@@ -58,7 +58,7 @@ class ucp_register
 		{
 			$use_lang = ($change_lang) ? basename($change_lang) : basename($user_lang);
 
-			if (file_exists($phpbb_root_path . 'language/' . $use_lang . '/'))
+			if (file_exists(PHPBB_ROOT_PATH . 'language/' . $use_lang . '/'))
 			{
 				if ($change_lang)
 				{
@@ -69,7 +69,7 @@ class ucp_register
 				}
 
 				$user->lang_name = $lang = $use_lang;
-				$user->lang_path = $phpbb_root_path . 'language/' . $lang . '/';
+				$user->lang_path = PHPBB_ROOT_PATH . 'language/' . $lang . '/';
 				$user->lang = array();
 				$user->add_lang(array('common', 'ucp'));
 			}
@@ -117,12 +117,12 @@ class ucp_register
 					'L_COPPA_NO'		=> sprintf($user->lang['UCP_COPPA_BEFORE'], $coppa_birthday),
 					'L_COPPA_YES'		=> sprintf($user->lang['UCP_COPPA_ON_AFTER'], $coppa_birthday),
 
-					'U_COPPA_NO'		=> append_sid("{$phpbb_root_path}ucp.$phpEx", 'mode=register&amp;coppa=0' . $add_lang),
-					'U_COPPA_YES'		=> append_sid("{$phpbb_root_path}ucp.$phpEx", 'mode=register&amp;coppa=1' . $add_lang),
+					'U_COPPA_NO'		=> append_sid('ucp', 'mode=register&amp;coppa=0' . $add_lang),
+					'U_COPPA_YES'		=> append_sid('ucp', 'mode=register&amp;coppa=1' . $add_lang),
 
 					'S_SHOW_COPPA'		=> true,
 					'S_HIDDEN_FIELDS'	=> build_hidden_fields($s_hidden_fields),
-					'S_UCP_ACTION'		=> append_sid("{$phpbb_root_path}ucp.$phpEx", 'mode=register' . $add_lang),
+					'S_UCP_ACTION'		=> append_sid('ucp', 'mode=register' . $add_lang),
 				));
 			}
 			else
@@ -133,7 +133,7 @@ class ucp_register
 					'S_SHOW_COPPA'		=> false,
 					'S_REGISTRATION'	=> true,
 					'S_HIDDEN_FIELDS'	=> build_hidden_fields($s_hidden_fields),
-					'S_UCP_ACTION'		=> append_sid("{$phpbb_root_path}ucp.$phpEx", 'mode=register' . $add_lang . $add_coppa),
+					'S_UCP_ACTION'		=> append_sid('ucp', 'mode=register' . $add_lang . $add_coppa),
 					)
 				);
 			}
@@ -359,7 +359,7 @@ class ucp_register
 
 				if ($config['email_enable'])
 				{
-					include_once($phpbb_root_path . 'includes/functions_messenger.' . $phpEx);
+					include_once(PHPBB_ROOT_PATH . 'includes/functions_messenger.' . PHP_EXT);
 
 					$messenger = new messenger(false);
 
@@ -376,7 +376,7 @@ class ucp_register
 						'WELCOME_MSG'	=> htmlspecialchars_decode(sprintf($user->lang['WELCOME_SUBJECT'], $config['sitename'])),
 						'USERNAME'		=> htmlspecialchars_decode($data['username']),
 						'PASSWORD'		=> htmlspecialchars_decode($data['new_password']),
-						'U_ACTIVATE'	=> "$server_url/ucp.$phpEx?mode=activate&u=$user_id&k=$user_actkey")
+						'U_ACTIVATE'	=> "$server_url/ucp." . PHP_EXT . "?mode=activate&u=$user_id&k=$user_actkey")
 					);
 
 					if ($coppa)
@@ -417,8 +417,8 @@ class ucp_register
 
 							$messenger->assign_vars(array(
 								'USERNAME'			=> htmlspecialchars_decode($data['username']),
-								'U_USER_DETAILS'	=> "$server_url/memberlist.$phpEx?mode=viewprofile&u=$user_id",
-								'U_ACTIVATE'		=> "$server_url/ucp.$phpEx?mode=activate&u=$user_id&k=$user_actkey")
+								'U_USER_DETAILS'	=> "$server_url/memberlist." . PHP_EXT . "?mode=viewprofile&u=$user_id",
+								'U_ACTIVATE'		=> "$server_url/ucp." . PHP_EXT . "?mode=activate&u=$user_id&k=$user_actkey")
 							);
 
 							$messenger->send($row['user_notify_type']);
@@ -427,7 +427,7 @@ class ucp_register
 					}
 				}
 
-				$message = $message . '<br /><br />' . sprintf($user->lang['RETURN_INDEX'], '<a href="' . append_sid("{$phpbb_root_path}index.$phpEx") . '">', '</a>');
+				$message = $message . '<br /><br />' . sprintf($user->lang['RETURN_INDEX'], '<a href="' . append_sid('index') . '">', '</a>');
 				trigger_error($message);
 			}
 		}
@@ -501,7 +501,7 @@ class ucp_register
 				);
 				$db->sql_query($sql);
 			}
-			$confirm_image = '<img src="' . append_sid("{$phpbb_root_path}ucp.$phpEx", 'mode=confirm&amp;id=' . $confirm_id . '&amp;type=' . CONFIRM_REG . $str) . '" alt="" title="" />';
+			$confirm_image = '<img src="' . append_sid('ucp', 'mode=confirm&amp;id=' . $confirm_id . '&amp;type=' . CONFIRM_REG . $str) . '" alt="" title="" />';
 			$s_hidden_fields .= '<input type="hidden" name="confirm_id" value="' . $confirm_id . '" />';
 		}
 
@@ -537,7 +537,7 @@ class ucp_register
 			'S_CONFIRM_CODE'	=> ($config['enable_confirm']) ? true : false,
 			'S_COPPA'			=> $coppa,
 			'S_HIDDEN_FIELDS'	=> $s_hidden_fields,
-			'S_UCP_ACTION'		=> append_sid("{$phpbb_root_path}ucp.$phpEx", 'mode=register'),
+			'S_UCP_ACTION'		=> append_sid('ucp', 'mode=register'),
 			)
 		);
 

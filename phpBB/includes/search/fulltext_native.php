@@ -19,7 +19,7 @@ if (!defined('IN_PHPBB'))
 /**
 * @ignore
 */
-include_once($phpbb_root_path . 'includes/search/search.' . $phpEx);
+include_once(PHPBB_ROOT_PATH . 'includes/search/search.' . PHP_EXT);
 
 /**
 * fulltext_native
@@ -46,7 +46,7 @@ class fulltext_native extends search_backend
 	*/
 	function __construct(&$error)
 	{
-		global $phpbb_root_path, $phpEx, $config;
+		global $config;
 
 		$this->word_length = array('min' => $config['fulltext_native_min_chars'], 'max' => $config['fulltext_native_max_chars']);
 
@@ -55,7 +55,7 @@ class fulltext_native extends search_backend
 		*/
 		if (!class_exists('utf_normalizer'))
 		{
-			include($phpbb_root_path . 'includes/utf/utf_normalizer.' . $phpEx);
+			include(PHPBB_ROOT_PATH . 'includes/utf/utf_normalizer.' . PHP_EXT);
 		}
 
 
@@ -966,7 +966,7 @@ class fulltext_native extends search_backend
 	*/
 	private function split_message($text)
 	{
-		global $phpbb_root_path, $phpEx, $user;
+		global $user;
 
 		$match = $words = array();
 
@@ -1408,7 +1408,6 @@ class fulltext_native extends search_backend
 	*/
 	private function cleanup($text, $allowed_chars = null)
 	{
-		global $phpbb_root_path, $phpEx;
 		static $conv = array(), $conv_loaded = array();
 		$words = $allow = array();
 
@@ -1598,7 +1597,7 @@ class fulltext_native extends search_backend
 			if (!isset($conv_loaded[$idx]))
 			{
 				$conv_loaded[$idx] = 1;
-				$file = $phpbb_root_path . 'includes/utf/data/search_indexer_' . $idx . '.' . $phpEx;
+				$file = PHPBB_ROOT_PATH . 'includes/utf/data/search_indexer_' . $idx . '.' . PHP_EXT;
 
 				if (file_exists($file))
 				{

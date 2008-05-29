@@ -21,10 +21,10 @@ die("Please read the first lines of this script for instructions on how to enabl
 
 
 define('IN_PHPBB', true);
-$phpbb_root_path = './../';
-$phpEx = substr(strrchr(__FILE__, '.'), 1);
-include($phpbb_root_path . 'common.'.$phpEx);
-include($phpbb_root_path . 'includes/functions_admin.'.$phpEx);
+define('PHPBB_ROOT_PATH', './../');
+define('PHP_EXT', substr(strrchr(__FILE__, '.'), 1));
+include(PHPBB_ROOT_PATH . 'common.' . PHP_EXT);
+include(PHPBB_ROOT_PATH . 'includes/functions_admin.' . PHP_EXT);
 
 set_time_limit(0);
 header('Expires: 0');
@@ -117,14 +117,14 @@ switch ($mode)
 
 		if ($topic_id >= $num_topics)
 		{
-			echo '<meta http-equiv="refresh" content="10; url=fill.' . $phpEx . '?mode=sync&amp;' . time() . '">And now for something completely different...';
+			echo '<meta http-equiv="refresh" content="10; url=fill.' . PHP_EXT . '?mode=sync&amp;' . time() . '">And now for something completely different...';
 
 			$db->sql_query('ANALYZE TABLES ' . TOPICS_TABLE . ', ' . POSTS_TABLE);
 			flush();
 		}
 		else
 		{
-			echo '<meta http-equiv="refresh" content="10; url=fill.' . $phpEx . '?start=' . $topic_id . '&amp;' . time() . '">To the next page... (' . $topic_id . '/' . $num_topics . ')';
+			echo '<meta http-equiv="refresh" content="10; url=fill.' . PHP_EXT . '?start=' . $topic_id . '&amp;' . time() . '">To the next page... (' . $topic_id . '/' . $num_topics . ')';
 			flush();
 		}
 	break;
@@ -141,7 +141,7 @@ switch ($mode)
 			$e = explode(' ', microtime());
 
 			echo '<pre><b>' . ($e[0] + $e[1] - $s[0] - $s[1]) . '</b></pre>';
-			echo '<a href="fill.' . $phpEx . '">Here we go again</a>';
+			echo '<a href="fill.' . PHP_EXT . '">Here we go again</a>';
 		}
 		else
 		{
@@ -157,11 +157,11 @@ switch ($mode)
 			if ($end < $num_topics)
 			{
 				$start += $batch_size;
-				echo '<meta http-equiv="refresh" content="0; url=fill.' . $phpEx . "?mode=sync&amp;start=$start&amp;" . time() . "\">And now for something completely different... ($start/$num_topics)";
+				echo '<meta http-equiv="refresh" content="0; url=fill.' . PHP_EXT . "?mode=sync&amp;start=$start&amp;" . time() . "\">And now for something completely different... ($start/$num_topics)";
 			}
 			else
 			{
-				echo '<a href="fill.' . $phpEx . '">Here we go again</a>';
+				echo '<a href="fill.' . PHP_EXT . '">Here we go again</a>';
 			}
 		}
 

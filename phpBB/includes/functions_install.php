@@ -277,14 +277,14 @@ function get_tables($db)
 */
 function connect_check_db($error_connect, &$error, $dbms_details, $table_prefix, $dbhost, $dbuser, $dbpasswd, $dbname, $dbport, $prefix_may_exist = false, $load_dbal = true, $unicode_check = true)
 {
-	global $phpbb_root_path, $phpEx, $config, $lang;
+	global $config, $lang;
 
 	$dbms = $dbms_details['DRIVER'];
 
 	if ($load_dbal)
 	{
 		// Include the DB layer
-		include($phpbb_root_path . 'includes/db/' . $dbms . '.' . $phpEx);
+		include(PHPBB_ROOT_PATH . 'includes/db/' . $dbms . '.' . PHP_EXT);
 	}
 
 	// Instantiate it and set return on error true

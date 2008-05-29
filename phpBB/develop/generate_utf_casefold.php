@@ -25,8 +25,8 @@ die("Please read the first lines of this script for instructions on how to enabl
 set_time_limit(0);
 
 define('IN_PHPBB', true);
-$phpbb_root_path = '../';
-$phpEx = substr(strrchr(__FILE__, '.'), 1);
+define('PHPBB_ROOT_PATH', './../');
+define('PHP_EXT', substr(strrchr(__FILE__, '.'), 1));
 
 echo "Checking for required files\n";
 download('http://unicode.org/Public/UNIDATA/CaseFolding.txt');
@@ -71,8 +71,8 @@ foreach ($array as $value)
 
 foreach ($uniarray as $idx => $contents)
 {
-	echo "Writing to case_fold_$idx.$phpEx\n";
-	$fp = fopen($phpbb_root_path . 'includes/utf/data/case_fold_' . strtolower($idx) . '.' . $phpEx, 'wb');
+	echo "Writing to case_fold_$idx." . PHP_EXT . "\n";
+	$fp = fopen(PHPBB_ROOT_PATH . 'includes/utf/data/case_fold_' . strtolower($idx) . '.' . PHP_EXT, 'wb');
 	fwrite($fp, '<?php return ' . my_var_export($contents) . ';');
 	fclose($fp);
 }
@@ -116,9 +116,7 @@ function my_var_export($var)
 */
 function download($url)
 {
-	global $phpbb_root_path;
-
-	if (file_exists($phpbb_root_path . 'develop/' . basename($url)))
+	if (file_exists(PHPBB_ROOT_PATH . 'develop/' . basename($url)))
 	{
 		return;
 	}
@@ -130,7 +128,7 @@ function download($url)
 		die("Can't download from $url\nPlease download it yourself and put it in the develop/ dir, kthxbai");
 	}
 
-	if (!$fpw = fopen($phpbb_root_path . 'develop/' . basename($url), 'wb'))
+	if (!$fpw = fopen(PHPBB_ROOT_PATH . 'develop/' . basename($url), 'wb'))
 	{
 		die("Can't open develop/" . basename($url) . " for output... please check your permissions or something");
 	}

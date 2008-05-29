@@ -22,7 +22,7 @@ if (!empty($setmodules))
 	$module[] = array(
 		'module_type'		=> 'install',
 		'module_title'		=> 'CONVERT',
-		'module_filename'	=> substr(basename(__FILE__), 0, -strlen($phpEx)-1),
+		'module_filename'	=> substr(basename(__FILE__), 0, -strlen(PHP_EXT)-1),
 		'module_order'		=> 20,
 		'module_subs'		=> '',
 		'module_stages'		=> array('INTRO', 'SETTINGS', 'IN_PROGRESS', 'FINAL'),
@@ -90,7 +90,7 @@ class install_convert extends module
 
 	function main($mode, $sub)
 	{
-		global $lang, $template, $phpbb_root_path, $phpEx, $cache, $config, $language, $table_prefix;
+		global $lang, $template, $cache, $config, $language, $table_prefix;
 		global $convert;
 
 		$this->tpl_name = 'install_convert';
@@ -104,9 +104,9 @@ class install_convert extends module
 				// Try opening config file
 				// @todo If phpBB is not installed, we need to do a cut-down installation here
 				// For now, we redirect to the installation script instead
-				if (@file_exists($phpbb_root_path . 'config.' . $phpEx))
+				if (@file_exists(PHPBB_ROOT_PATH . 'config.' . PHP_EXT))
 				{
-					include($phpbb_root_path . 'config.' . $phpEx);
+					include(PHPBB_ROOT_PATH . 'config.' . PHP_EXT);
 				}
 
 				if (!defined('PHPBB_INSTALLED'))
@@ -114,16 +114,16 @@ class install_convert extends module
 					$template->assign_vars(array(
 						'S_NOT_INSTALLED'		=> true,
 						'TITLE'					=> $lang['BOARD_NOT_INSTALLED'],
-						'BODY'					=> sprintf($lang['BOARD_NOT_INSTALLED_EXPLAIN'], append_sid($phpbb_root_path . 'install/index.' . $phpEx, 'mode=install&amp;language=' . $language)),
+						'BODY'					=> sprintf($lang['BOARD_NOT_INSTALLED_EXPLAIN'], append_sid('install/index', 'mode=install&amp;language=' . $language)),
 					));
 
 					return;
 				}
 
-				require($phpbb_root_path . 'config.' . $phpEx);
-				require($phpbb_root_path . 'includes/constants.' . $phpEx);
-				require($phpbb_root_path . 'includes/db/' . $dbms . '.' . $phpEx);
-				require($phpbb_root_path . 'includes/functions_convert.' . $phpEx);
+				require(PHPBB_ROOT_PATH . 'config.' . PHP_EXT);
+				require(PHPBB_ROOT_PATH . 'includes/constants.' . PHP_EXT);
+				require(PHPBB_ROOT_PATH . 'includes/db/' . $dbms . '.' . PHP_EXT);
+				require(PHPBB_ROOT_PATH . 'includes/functions_convert.' . PHP_EXT);
 
 				$db = new $sql_db();
 				$db->sql_connect($dbhost, $dbuser, $dbpasswd, $dbname, $dbport, false, true);
@@ -215,10 +215,10 @@ class install_convert extends module
 				// This is for making sure the session get not screwed due to the 3.0.x users table being completely new.
 				$cache->purge();
 
-				require($phpbb_root_path . 'config.' . $phpEx);
-				require($phpbb_root_path . 'includes/constants.' . $phpEx);
-				require($phpbb_root_path . 'includes/db/' . $dbms . '.' . $phpEx);
-				require($phpbb_root_path . 'includes/functions_convert.' . $phpEx);
+				require(PHPBB_ROOT_PATH . 'config.' . PHP_EXT);
+				require(PHPBB_ROOT_PATH . 'includes/constants.' . PHP_EXT);
+				require(PHPBB_ROOT_PATH . 'includes/db/' . $dbms . '.' . PHP_EXT);
+				require(PHPBB_ROOT_PATH . 'includes/functions_convert.' . PHP_EXT);
 
 				$db = new $sql_db();
 				$db->sql_connect($dbhost, $dbuser, $dbpasswd, $dbname, $dbport, false, true);
@@ -258,7 +258,7 @@ class install_convert extends module
 	*/
 	function list_convertors($sub)
 	{
-		global $lang, $language, $template, $phpbb_root_path, $phpEx;
+		global $lang, $language, $template;
 
 		$this->page_title = $lang['SUB_INTRO'];
 
@@ -289,7 +289,7 @@ class install_convert extends module
 
 		while ($entry = readdir($handle))
 		{
-			if (preg_match('/^convert_([a-z0-9_]+).' . $phpEx . '$/i', $entry, $m))
+			if (preg_match('/^convert_([a-z0-9_]+).' . PHP_EXT . '$/i', $entry, $m))
 			{
 				include('./convertors/' . $entry);
 				if (isset($convertor_data))
@@ -333,12 +333,12 @@ class install_convert extends module
 	*/
 	function get_convert_settings($sub)
 	{
-		global $lang, $language, $template, $db, $phpbb_root_path, $phpEx, $config, $cache;
+		global $lang, $language, $template, $db, $config, $cache;
 
-		require($phpbb_root_path . 'config.' . $phpEx);
-		require($phpbb_root_path . 'includes/constants.' . $phpEx);
-		require($phpbb_root_path . 'includes/db/' . $dbms . '.' . $phpEx);
-		require($phpbb_root_path . 'includes/functions_convert.' . $phpEx);
+		require(PHPBB_ROOT_PATH . 'config.' . PHP_EXT);
+		require(PHPBB_ROOT_PATH . 'includes/constants.' . PHP_EXT);
+		require(PHPBB_ROOT_PATH . 'includes/db/' . $dbms . '.' . PHP_EXT);
+		require(PHPBB_ROOT_PATH . 'includes/functions_convert.' . PHP_EXT);
 
 		$db = new $sql_db();
 		$db->sql_connect($dbhost, $dbuser, $dbpasswd, $dbname, $dbport, false, true);
@@ -368,12 +368,12 @@ class install_convert extends module
 
 		// check security implications of direct inclusion
 		$convertor_tag = basename($convertor_tag);
-		if (!file_exists('./convertors/convert_' . $convertor_tag . '.' . $phpEx))
+		if (!file_exists('./convertors/convert_' . $convertor_tag . '.' . PHP_EXT))
 		{
 			$this->p_master->error($lang['CONVERT_NOT_EXIST'], __LINE__, __FILE__);
 		}
 
-		include('./convertors/convert_' . $convertor_tag . '.' . $phpEx);
+		include('./convertors/convert_' . $convertor_tag . '.' . PHP_EXT);
 
 		// The test_file is a file that should be present in the location of the old board.
 		if (!isset($test_file))
@@ -581,13 +581,13 @@ class install_convert extends module
 	*/
 	function convert_data($sub)
 	{
-		global $template, $user, $phpbb_root_path, $phpEx, $db, $lang, $config, $cache;
+		global $template, $user, $db, $lang, $config, $cache;
 		global $convert, $convert_row, $message_parser, $skip_rows;
 
-		require($phpbb_root_path . 'config.' . $phpEx);
-		require($phpbb_root_path . 'includes/constants.' . $phpEx);
-		require($phpbb_root_path . 'includes/db/' . $dbms . '.' . $phpEx);
-		require($phpbb_root_path . 'includes/functions_convert.' . $phpEx);
+		require(PHPBB_ROOT_PATH . 'config.' . PHP_EXT);
+		require(PHPBB_ROOT_PATH . 'includes/constants.' . PHP_EXT);
+		require(PHPBB_ROOT_PATH . 'includes/db/' . $dbms . '.' . PHP_EXT);
+		require(PHPBB_ROOT_PATH . 'includes/functions_convert.' . PHP_EXT);
 
 		$db = new $sql_db();
 		$db->sql_connect($dbhost, $dbuser, $dbpasswd, $dbname, $dbport, false, true);
@@ -613,7 +613,7 @@ class install_convert extends module
 		// Set up a user as well. We _should_ have enough of a database here at this point to do this
 		// and it helps for any core code we call
 		$user->session_begin();
-		$user->page = $user->extract_current_page($phpbb_root_path);
+		$user->page = $user->extract_current_page(PHPBB_ROOT_PATH);
 
 		// This is a little bit of a fudge, but it allows the language entries to be available to the
 		// core code without us loading them again
@@ -658,7 +658,7 @@ class install_convert extends module
 		{
 			if ($convert->src_dbms != $dbms)
 			{
-				require($phpbb_root_path . 'includes/db/' . $convert->src_dbms . '.' . $phpEx);
+				require(PHPBB_ROOT_PATH . 'includes/db/' . $convert->src_dbms . '.' . PHP_EXT);
 			}
 			$sql_db = 'dbal_' . $convert->src_dbms;
 			$src_db = new $sql_db();
@@ -715,18 +715,18 @@ class install_convert extends module
 		$get_info = false;
 
 		// check security implications of direct inclusion
-		if (!file_exists('./convertors/convert_' . $convert->convertor_tag . '.' . $phpEx))
+		if (!file_exists('./convertors/convert_' . $convert->convertor_tag . '.' . PHP_EXT))
 		{
 			$this->p_master->error($user->lang['CONVERT_NOT_EXIST'], __LINE__, __FILE__);
 		}
 
-		if (file_exists('./convertors/functions_' . $convert->convertor_tag . '.' . $phpEx))
+		if (file_exists('./convertors/functions_' . $convert->convertor_tag . '.' . PHP_EXT))
 		{
-			include('./convertors/functions_' . $convert->convertor_tag . '.' . $phpEx);
+			include('./convertors/functions_' . $convert->convertor_tag . '.' . PHP_EXT);
 		}
 
 		$get_info = true;
-		include('./convertors/convert_' . $convert->convertor_tag . '.' . $phpEx);
+		include('./convertors/convert_' . $convert->convertor_tag . '.' . PHP_EXT);
 
 		// Map some variables...
 		$convert->convertor_data = $convertor_data;
@@ -735,7 +735,7 @@ class install_convert extends module
 
 		// Now include the real data
 		$get_info = false;
-		include('./convertors/convert_' . $convert->convertor_tag . '.' . $phpEx);
+		include('./convertors/convert_' . $convert->convertor_tag . '.' . PHP_EXT);
 
 		$convert->convertor_data = $convertor_data;
 		$convert->tables = $tables;
@@ -751,18 +751,18 @@ class install_convert extends module
 		$search_type = basename(trim($config['search_type']));
 
 		// For conversions we are a bit less strict and set to a search backend we know exist...
-		if (!file_exists($phpbb_root_path . 'includes/search/' . $search_type . '.' . $phpEx))
+		if (!file_exists(PHPBB_ROOT_PATH . 'includes/search/' . $search_type . '.' . PHP_EXT))
 		{
 			$search_type = 'fulltext_native';
 			set_config('search_type', $search_type);
 		}
 
-		if (!file_exists($phpbb_root_path . 'includes/search/' . $search_type . '.' . $phpEx))
+		if (!file_exists(PHPBB_ROOT_PATH . 'includes/search/' . $search_type . '.' . PHP_EXT))
 		{
 			trigger_error('NO_SUCH_SEARCH_MODULE');
 		}
 
-		require($phpbb_root_path . 'includes/search/' . $search_type . '.' . $phpEx);
+		require(PHPBB_ROOT_PATH . 'includes/search/' . $search_type . '.' . PHP_EXT);
 
 		$error = false;
 		$convert->fulltext_search = new $search_type($error);
@@ -772,7 +772,7 @@ class install_convert extends module
 			trigger_error($error);
 		}
 
-		include($phpbb_root_path . 'includes/message_parser.' . $phpEx);
+		include(PHPBB_ROOT_PATH . 'includes/message_parser.' . PHP_EXT);
 		$message_parser = new parse_message();
 
 		$jump = request_var('jump', 0);
@@ -828,7 +828,7 @@ class install_convert extends module
 							$this->p_master->error($user->lang['DEV_NO_TEST_FILE'], __LINE__, __FILE__);
 						}
 
-						if (!$local_path || !@is_writable($phpbb_root_path . $local_path))
+						if (!$local_path || !@is_writable(PHPBB_ROOT_PATH . $local_path))
 						{
 							if (!$local_path)
 							{
@@ -1438,7 +1438,7 @@ class install_convert extends module
 	*/
 	function sync_forums($sync_batch)
 	{
-		global $template, $user, $db, $phpbb_root_path, $phpEx, $config, $cache;
+		global $template, $user, $db, $config, $cache;
 		global $convert;
 
 		$template->assign_block_vars('checks', array(
@@ -1547,7 +1547,7 @@ class install_convert extends module
 	*/
 	function finish_conversion()
 	{
-		global $db, $phpbb_root_path, $convert, $config, $language, $user, $template;
+		global $db, $convert, $config, $language, $user, $template;
 
 		$db->sql_query('DELETE FROM ' . CONFIG_TABLE . "
 			WHERE config_name = 'convert_progress'
@@ -1556,7 +1556,7 @@ class install_convert extends module
 				OR config_name = 'convert_db_user'");
 		$db->sql_query('DELETE FROM ' . SESSIONS_TABLE);
 
-		@unlink($phpbb_root_path . 'cache/data_global.php');
+		@unlink(PHPBB_ROOT_PATH . 'cache/data_global.php');
 		cache_moderators();
 
 		// And finally, add a note to the log
@@ -1578,7 +1578,7 @@ class install_convert extends module
 	*/
 	function final_jump($final_jump)
 	{
-		global $template, $user, $src_db, $same_db, $db, $phpbb_root_path, $phpEx, $config, $cache;
+		global $template, $user, $src_db, $same_db, $db, $config, $cache;
 		global $convert;
 
 		$template->assign_block_vars('checks', array(
@@ -1617,7 +1617,7 @@ class install_convert extends module
 	*/
 	function jump($jump, $last_statement)
 	{
-		global $template, $user, $src_db, $same_db, $db, $phpbb_root_path, $phpEx, $config, $cache;
+		global $template, $user, $src_db, $same_db, $db, $config, $cache;
 		global $convert;
 
 		$template->assign_block_vars('checks', array(
@@ -1920,7 +1920,7 @@ class install_convert extends module
 	*/
 	function process_row(&$schema, &$sql_data, &$insert_values)
 	{
-		global $template, $user, $phpbb_root_path, $phpEx, $db, $lang, $config, $cache;
+		global $template, $user, $db, $lang, $config, $cache;
 		global $convert, $convert_row;
 
 		$sql_flag = false;

@@ -12,9 +12,9 @@
 * @ignore
 */
 define('IN_PHPBB', true);
-$phpbb_root_path = (defined('PHPBB_ROOT_PATH')) ? PHPBB_ROOT_PATH : './';
-$phpEx = substr(strrchr(__FILE__, '.'), 1);
-include($phpbb_root_path . 'common.' . $phpEx);
+if (!defined('PHPBB_ROOT_PATH')) define('PHPBB_ROOT_PATH', './');
+if (!defined('PHP_EXT')) define('PHP_EXT', substr(strrchr(__FILE__, '.'), 1));
+include(PHPBB_ROOT_PATH . 'common.' . PHP_EXT);
 
 // Start session management
 $user->session_begin();
@@ -221,12 +221,12 @@ if ($keywords || $author || $author_id || $search_id || $submit)
 	// Select which method we'll use to obtain the post_id or topic_id information
 	$search_type = basename($config['search_type']);
 
-	if (!file_exists($phpbb_root_path . 'includes/search/' . $search_type . '.' . $phpEx))
+	if (!file_exists(PHPBB_ROOT_PATH . 'includes/search/' . $search_type . '.' . PHP_EXT))
 	{
 		trigger_error('NO_SUCH_SEARCH_MODULE');
 	}
 
-	require("{$phpbb_root_path}includes/search/$search_type.$phpEx");
+	require(PHPBB_ROOT_PATH . "includes/search/$search_type." . PHP_EXT);
 
 	// We do some additional checks in the module to ensure it can actually be utilised
 	$error = false;
@@ -440,11 +440,11 @@ if ($keywords || $author || $author_id || $search_id || $submit)
 
 	if ($show_results == 'posts')
 	{
-		include($phpbb_root_path . 'includes/functions_posting.' . $phpEx);
+		include(PHPBB_ROOT_PATH . 'includes/functions_posting.' . PHP_EXT);
 	}
 	else
 	{
-		include($phpbb_root_path . 'includes/functions_display.' . $phpEx);
+		include(PHPBB_ROOT_PATH . 'includes/functions_display.' . PHP_EXT);
 	}
 
 	$user->add_lang('viewtopic');
@@ -470,7 +470,7 @@ if ($keywords || $author || $author_id || $search_id || $submit)
 	$u_show_results = ($show_results != 'posts') ? '&amp;sr=' . $show_results : '';
 	$u_search_forum = implode('&amp;fid%5B%5D=', $search_forum);
 
-	$u_search = append_sid("{$phpbb_root_path}search.$phpEx", $u_sort_param . $u_show_results);
+	$u_search = append_sid('search', $u_sort_param . $u_show_results);
 	$u_search .= ($search_id) ? '&amp;search_id=' . $search_id : '';
 	$u_search .= ($u_hilit) ? '&amp;keywords=' . urlencode(htmlspecialchars_decode($search->search_query)) : '';
 	$u_search .= ($topic_id) ? '&amp;t=' . $topic_id : '';
@@ -681,7 +681,7 @@ if ($keywords || $author || $author_id || $search_id || $submit)
 			// Instantiate BBCode if needed
 			if ($bbcode_bitfield !== '')
 			{
-				include_once($phpbb_root_path . 'includes/bbcode.' . $phpEx);
+				include_once(PHPBB_ROOT_PATH . 'includes/bbcode.' . PHP_EXT);
 				$bbcode = new bbcode(base64_encode($bbcode_bitfield));
 			}
 
@@ -763,7 +763,7 @@ if ($keywords || $author || $author_id || $search_id || $submit)
 				$u_forum_id = $forum_id;
 			}
 
-			$view_topic_url = append_sid("{$phpbb_root_path}viewtopic.$phpEx", "f=$u_forum_id&amp;t=$result_topic_id" . (($u_hilit) ? "&amp;hilit=$u_hilit" : ''));
+			$view_topic_url = append_sid('viewtopic', "f=$u_forum_id&amp;t=$result_topic_id" . (($u_hilit) ? "&amp;hilit=$u_hilit" : ''));
 
 			$replies = ($auth->acl_get('m_approve', $forum_id)) ? $row['topic_replies_real'] : $row['topic_replies'];
 
@@ -776,7 +776,7 @@ if ($keywords || $author || $author_id || $search_id || $submit)
 
 				$topic_unapproved = (!$row['topic_approved'] && $auth->acl_get('m_approve', $forum_id)) ? true : false;
 				$posts_unapproved = ($row['topic_approved'] && $row['topic_replies'] < $row['topic_replies_real'] && $auth->acl_get('m_approve', $forum_id)) ? true : false;
-				$u_mcp_queue = ($topic_unapproved || $posts_unapproved) ? append_sid("{$phpbb_root_path}mcp.$phpEx", 'i=queue&amp;mode=' . (($topic_unapproved) ? 'approve_details' : 'unapproved_posts') . "&amp;t=$result_topic_id", true, $user->session_id) : '';
+				$u_mcp_queue = ($topic_unapproved || $posts_unapproved) ? append_sid('mcp', 'i=queue&amp;mode=' . (($topic_unapproved) ? 'approve_details' : 'unapproved_posts') . "&amp;t=$result_topic_id", true, $user->session_id) : '';
 
 				$row['topic_title'] = preg_replace('#(?!<.*)(?<!\w)(' . $hilit . ')(?!\w|[^<>]*(?:</s(?:cript|tyle))?>)#is', '<span class="posthilit">$1</span>', $row['topic_title']);
 
@@ -816,7 +816,7 @@ if ($keywords || $author || $author_id || $search_id || $submit)
 					'U_LAST_POST_AUTHOR'	=> get_username_string('profile', $row['topic_last_poster_id'], $row['topic_last_poster_name'], $row['topic_last_poster_colour']),
 					'U_TOPIC_AUTHOR'		=> get_username_string('profile', $row['topic_poster'], $row['topic_first_poster_name'], $row['topic_first_poster_colour']),
 					'U_NEWEST_POST'			=> $view_topic_url . '&amp;view=unread#unread',
-					'U_MCP_REPORT'			=> append_sid("{$phpbb_root_path}mcp.$phpEx", 'i=reports&amp;mode=reports&amp;t=' . $result_topic_id, true, $user->session_id),
+					'U_MCP_REPORT'			=> append_sid('mcp', 'i=reports&amp;mode=reports&amp;t=' . $result_topic_id, true, $user->session_id),
 					'U_MCP_QUEUE'			=> $u_mcp_queue,
 				);
 			}
@@ -892,8 +892,8 @@ if ($keywords || $author || $author_id || $search_id || $submit)
 				'TOPIC_VIEWS'		=> $row['topic_views'],
 
 				'U_VIEW_TOPIC'		=> $view_topic_url,
-				'U_VIEW_FORUM'		=> append_sid("{$phpbb_root_path}viewforum.$phpEx", 'f=' . $forum_id),
-				'U_VIEW_POST'		=> (!empty($row['post_id'])) ? append_sid("{$phpbb_root_path}viewtopic.$phpEx", "f=$forum_id&amp;t=" . $row['topic_id'] . '&amp;p=' . $row['post_id'] . (($u_hilit) ? '&amp;hilit=' . $u_hilit : '')) . '#p' . $row['post_id'] : '')
+				'U_VIEW_FORUM'		=> append_sid('viewforum', 'f=' . $forum_id),
+				'U_VIEW_POST'		=> (!empty($row['post_id'])) ? append_sid('viewtopic', "f=$forum_id&amp;t=" . $row['topic_id'] . '&amp;p=' . $row['post_id'] . (($u_hilit) ? '&amp;hilit=' . $u_hilit : '')) . '#p' . $row['post_id'] : '')
 			));
 		}
 
@@ -912,7 +912,7 @@ if ($keywords || $author || $author_id || $search_id || $submit)
 	$template->set_filenames(array(
 		'body' => 'search_results.html')
 	);
-	make_jumpbox(append_sid("{$phpbb_root_path}viewforum.$phpEx"));
+	make_jumpbox(append_sid('viewforum'));
 
 	page_footer();
 }
@@ -1034,7 +1034,7 @@ if (!empty($_EXTRA_URL))
 }
 
 $template->assign_vars(array(
-	'S_SEARCH_ACTION'		=> "{$phpbb_root_path}search.$phpEx",
+	'S_SEARCH_ACTION'		=> append_sid('search'),
 	'S_HIDDEN_FIELDS'		=> build_hidden_fields($s_hidden_fields),
 	'S_CHARACTER_OPTIONS'	=> $s_characters,
 	'S_FORUM_OPTIONS'		=> $s_forums,
@@ -1061,7 +1061,7 @@ if ($auth->acl_get('a_search'))
 			'KEYWORDS'	=> $keywords,
 			'TIME'		=> $user->format_date($row['search_time']),
 
-			'U_KEYWORDS'	=> append_sid("{$phpbb_root_path}search.$phpEx", 'keywords=' . urlencode(htmlspecialchars_decode($keywords)))
+			'U_KEYWORDS'	=> append_sid('search', 'keywords=' . urlencode(htmlspecialchars_decode($keywords)))
 		));
 	}
 	$db->sql_freeresult($result);
@@ -1073,7 +1073,7 @@ page_header($user->lang['SEARCH']);
 $template->set_filenames(array(
 	'body' => 'search_body.html')
 );
-make_jumpbox(append_sid("{$phpbb_root_path}viewforum.$phpEx"));
+make_jumpbox(append_sid('viewforum'));
 
 page_footer();
 

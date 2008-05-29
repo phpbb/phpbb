@@ -117,15 +117,15 @@ else
 
 if (defined('IN_CRON'))
 {
-	$phpbb_root_path = dirname(__FILE__) . DIRECTORY_SEPARATOR;
+	@define('PHPBB_ROOT_PATH', dirname(__FILE__) . DIRECTORY_SEPARATOR);
 }
 
-if (!file_exists($phpbb_root_path . 'config.' . $phpEx))
+if (!file_exists(PHPBB_ROOT_PATH . 'config.' . PHP_EXT))
 {
-	die("<p>The config.$phpEx file could not be found.</p><p><a href=\"{$phpbb_root_path}install/index.$phpEx\">Click here to install phpBB</a></p>");
+	die('<p>The config.' . PHP_EXT . ' file could not be found.</p><p><a href="' . PHPBB_ROOT_PATH . 'install/index.' . PHP_EXT . '">Click here to install phpBB</a></p>');
 }
 
-require($phpbb_root_path . 'config.' . $phpEx);
+require(PHPBB_ROOT_PATH . 'config.' . PHP_EXT);
 
 if (!defined('PHPBB_INSTALLED'))
 {
@@ -144,7 +144,7 @@ if (!defined('PHPBB_INSTALLED'))
 
 	// Replace any number of consecutive backslashes and/or slashes with a single slash
 	// (could happen on some proxy setups and/or Windows servers)
-	$script_path = trim(dirname($script_name)) . '/install/index.' . $phpEx;
+	$script_path = trim(dirname($script_name)) . '/install/index.' . PHP_EXT;
 	$script_path = preg_replace('#[\\\\/]{2,}#', '/', $script_path);
 
 	$url = (($secure) ? 'https://' : 'http://') . $server_name;
@@ -184,18 +184,18 @@ if (!empty($load_extensions))
 }
 
 // Include files
-require($phpbb_root_path . 'includes/acm/acm_' . $acm_type . '.' . $phpEx);
-require($phpbb_root_path . 'includes/cache.' . $phpEx);
-require($phpbb_root_path . 'includes/template.' . $phpEx);
-require($phpbb_root_path . 'includes/session.' . $phpEx);
-require($phpbb_root_path . 'includes/auth.' . $phpEx);
+require(PHPBB_ROOT_PATH . 'includes/acm/acm_' . $acm_type . '.' . PHP_EXT);
+require(PHPBB_ROOT_PATH . 'includes/cache.' . PHP_EXT);
+require(PHPBB_ROOT_PATH . 'includes/template.' . PHP_EXT);
+require(PHPBB_ROOT_PATH . 'includes/session.' . PHP_EXT);
+require(PHPBB_ROOT_PATH . 'includes/auth.' . PHP_EXT);
 
-require($phpbb_root_path . 'includes/functions.' . $phpEx);
-require($phpbb_root_path . 'includes/functions_content.' . $phpEx);
+require(PHPBB_ROOT_PATH . 'includes/functions.' . PHP_EXT);
+require(PHPBB_ROOT_PATH . 'includes/functions_content.' . PHP_EXT);
 
-require($phpbb_root_path . 'includes/constants.' . $phpEx);
-require($phpbb_root_path . 'includes/db/' . $dbms . '.' . $phpEx);
-require($phpbb_root_path . 'includes/utf/utf_tools.' . $phpEx);
+require(PHPBB_ROOT_PATH . 'includes/constants.' . PHP_EXT);
+require(PHPBB_ROOT_PATH . 'includes/db/' . $dbms . '.' . PHP_EXT);
+require(PHPBB_ROOT_PATH . 'includes/utf/utf_tools.' . PHP_EXT);
 
 // Set PHP error handler to ours
 set_error_handler(defined('PHPBB_MSG_HANDLER') ? PHPBB_MSG_HANDLER : 'msg_handler');
@@ -217,12 +217,12 @@ unset($dbpasswd);
 $config = cache::obtain_config();
 
 // Add own hook handler
-require($phpbb_root_path . 'includes/hooks/index.' . $phpEx);
+require(PHPBB_ROOT_PATH . 'includes/hooks/index.' . PHP_EXT);
 $phpbb_hook = new phpbb_hook(array('exit_handler', 'phpbb_user_session_handler', 'append_sid', array('template', 'display')));
 
 foreach (cache::obtain_hooks() as $hook)
 {
-	@include($phpbb_root_path . 'includes/hooks/' . $hook . '.' . $phpEx);
+	@include(PHPBB_ROOT_PATH . 'includes/hooks/' . $hook . '.' . PHP_EXT);
 }
 
 ?>

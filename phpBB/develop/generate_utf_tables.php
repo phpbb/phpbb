@@ -25,8 +25,8 @@ die("Please read the first lines of this script for instructions on how to enabl
 set_time_limit(0);
 
 define('IN_PHPBB', true);
-$phpbb_root_path = '../';
-$phpEx = substr(strrchr(__FILE__, '.'), 1);
+define('PHPBB_ROOT_PATH', './../');
+define('PHP_EXT', substr(strrchr(__FILE__, '.'), 1));
 
 echo "Checking for required files\n";
 download('http://www.unicode.org/Public/UNIDATA/CompositionExclusions.txt');
@@ -34,7 +34,7 @@ download('http://www.unicode.org/Public/UNIDATA/DerivedNormalizationProps.txt');
 download('http://www.unicode.org/Public/UNIDATA/UnicodeData.txt');
 echo "\n";
 
-require_once($phpbb_root_path . 'includes/utf/utf_normalizer.' . $phpEx);
+require_once(PHPBB_ROOT_PATH . 'includes/utf/utf_normalizer.' . PHP_EXT);
 $file_contents = array();
 
 /**
@@ -172,7 +172,7 @@ fclose($fp);
 * Do mappings
 */
 echo "Loading Unicode decomposition mappings\n";
-$fp = fopen($phpbb_root_path . 'develop/UnicodeData.txt', 'rt');
+$fp = fopen(PHPBB_ROOT_PATH . 'develop/UnicodeData.txt', 'rt');
 
 $map = array();
 while (!feof($fp))
@@ -266,9 +266,9 @@ foreach ($file_contents as $file => $contents)
 	/**
 	* Generate a new file
 	*/
-	echo "Writing to $file.$phpEx\n";
+	echo "Writing to $file." . PHP_EXT . "\n";
 
-	if (!$fp = fopen($phpbb_root_path . 'includes/utf/data/' . $file . '.' . $phpEx, 'wb'))
+	if (!$fp = fopen(PHPBB_ROOT_PATH . 'includes/utf/data/' . $file . '.' . PHP_EXT, 'wb'))
 	{
 		trigger_error('Cannot open ' . $file . ' for write');
 	}
@@ -288,7 +288,7 @@ echo "\n*** UTF-8 normalization tables done\n\n";
 */
 echo "Generating search indexer tables\n";
 
-$fp = fopen($phpbb_root_path . 'develop/UnicodeData.txt', 'rt');
+$fp = fopen(PHPBB_ROOT_PATH . 'develop/UnicodeData.txt', 'rt');
 
 $map = array();
 while ($line = fgets($fp, 1024))
@@ -406,8 +406,8 @@ unset($map);
 
 foreach ($file_contents as $idx => $contents)
 {
-	echo "Writing to search_indexer_$idx.$phpEx\n";
-	$fp = fopen($phpbb_root_path . 'includes/utf/data/search_indexer_' . $idx . '.' . $phpEx, 'wb');
+	echo "Writing to search_indexer_$idx." . PHP_EXT . "\n";
+	$fp = fopen(PHPBB_ROOT_PATH . 'includes/utf/data/search_indexer_' . $idx . '.' . PHP_EXT, 'wb');
 	fwrite($fp, '<?php return ' . my_var_export($contents) . ';');
 	fclose($fp);
 }
@@ -486,9 +486,7 @@ function my_var_export($var)
 */
 function download($url)
 {
-	global $phpbb_root_path;
-
-	if (file_exists($phpbb_root_path . 'develop/' . basename($url)))
+	if (file_exists(PHPBB_ROOT_PATH . 'develop/' . basename($url)))
 	{
 		return;
 	}
@@ -500,7 +498,7 @@ function download($url)
 		die("Can't download from $url\nPlease download it yourself and put it in the develop/ dir, kthxbai");
 	}
 
-	if (!$fpw = fopen($phpbb_root_path . 'develop/' . basename($url), 'wb'))
+	if (!$fpw = fopen(PHPBB_ROOT_PATH . 'develop/' . basename($url), 'wb'))
 	{
 		die("Can't open develop/" . basename($url) . " for output... please check your permissions or something");
 	}

@@ -268,7 +268,7 @@ class filespec
 	*/
 	function move_file($destination, $overwrite = false, $skip_image_check = false, $chmod = 0666)
 	{
-		global $user, $phpbb_root_path;
+		global $user;
 
 		if (sizeof($this->error))
 		{
@@ -276,7 +276,7 @@ class filespec
 		}
 
 		// We need to trust the admin in specifying valid upload directories and an attacker not being able to overwrite it...
-		$this->destination_path = $phpbb_root_path . $destination;
+		$this->destination_path = PHPBB_ROOT_PATH . $destination;
 
 		// Check if the destination path exist...
 		if (!file_exists($this->destination_path))
@@ -693,7 +693,7 @@ class fileupload
 	*/
 	function remote_upload($upload_url)
 	{
-		global $user, $phpbb_root_path;
+		global $user;
 
 		$upload_ary = array();
 		$upload_ary['local_mode'] = true;
@@ -783,7 +783,7 @@ class fileupload
 			return $file;
 		}
 
-		$tmp_path = (!@ini_get('safe_mode') || strtolower(@ini_get('safe_mode')) == 'off') ? false : $phpbb_root_path . 'cache';
+		$tmp_path = (!@ini_get('safe_mode') || strtolower(@ini_get('safe_mode')) == 'off') ? false : PHPBB_ROOT_PATH . 'cache';
 		$filename = tempnam($tmp_path, unique_id() . '-');
 
 		if (!($fp = @fopen($filename, 'wb')))

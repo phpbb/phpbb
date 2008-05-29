@@ -22,7 +22,7 @@ if (!defined('IN_PHPBB'))
 	exit;
 }
 
-include($phpbb_root_path . 'config.' . $phpEx);
+include(PHPBB_ROOT_PATH . 'config.' . PHP_EXT);
 unset($dbpasswd);
 
 /**

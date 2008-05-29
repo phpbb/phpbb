@@ -26,8 +26,7 @@ class ucp_groups
 
 	function main($id, $mode)
 	{
-		global $config, $phpbb_root_path, $phpEx;
-		global $db, $user, $auth, $cache, $template;
+		global $db, $user, $auth, $cache, $template, $config;
 
 		$user->add_lang('groups');
 
@@ -203,7 +202,7 @@ class ucp_groups
 									$email_template = 'group_request';
 								}
 
-								include_once($phpbb_root_path . 'includes/functions_messenger.' . $phpEx);
+								include_once(PHPBB_ROOT_PATH . 'includes/functions_messenger.' . PHP_EXT);
 								$messenger = new messenger();
 
 								$sql = 'SELECT u.username, u.username_clean, u.user_email, u.user_notify_type, u.user_jabber, u.user_lang
@@ -224,8 +223,8 @@ class ucp_groups
 										'USERNAME'		=> htmlspecialchars_decode($row['username']),
 										'GROUP_NAME'	=> htmlspecialchars_decode($group_row[$group_id]['group_name']),
 
-										'U_PENDING'		=> generate_board_url() . "/ucp.$phpEx?i=groups&mode=manage&action=list&g=$group_id",
-										'U_GROUP'		=> generate_board_url() . "/memberlist.$phpEx?mode=group&g=$group_id")
+										'U_PENDING'		=> generate_board_url() . '/ucp.' . PHP_EXT . "?i=groups&mode=manage&action=list&g=$group_id",
+										'U_GROUP'		=> generate_board_url() . '/memberlist.' . PHP_EXT . "?mode=group&g=$group_id")
 									);
 
 									$messenger->send($row['user_notify_type']);
@@ -333,7 +332,7 @@ class ucp_groups
 						'GROUP_STATUS'	=> $user->lang['GROUP_IS_' . $group_status],
 						'GROUP_COLOUR'	=> $row['group_colour'],
 
-						'U_VIEW_GROUP'	=> append_sid("{$phpbb_root_path}memberlist.$phpEx", 'mode=group&amp;g=' . $row['group_id']),
+						'U_VIEW_GROUP'	=> append_sid('memberlist', 'mode=group&amp;g=' . $row['group_id']),
 
 						'S_GROUP_DEFAULT'	=> ($row['group_id'] == $user->data['group_id']) ? true : false,
 						'S_ROW_COUNT'		=> ${$block . '_count'}++)
@@ -389,7 +388,7 @@ class ucp_groups
 						'S_CAN_JOIN'	=> ($row['group_type'] == GROUP_OPEN || $row['group_type'] == GROUP_FREE) ? true : false,
 						'GROUP_COLOUR'	=> $row['group_colour'],
 
-						'U_VIEW_GROUP'	=> append_sid("{$phpbb_root_path}memberlist.$phpEx", 'mode=group&amp;g=' . $row['group_id']),
+						'U_VIEW_GROUP'	=> append_sid('memberlist', 'mode=group&amp;g=' . $row['group_id']),
 
 						'S_ROW_COUNT'	=> $nonmember_count++)
 					);
@@ -440,7 +439,7 @@ class ucp_groups
 				{
 					case 'edit':
 
-						include($phpbb_root_path . 'includes/functions_display.' . $phpEx);
+						include(PHPBB_ROOT_PATH . 'includes/functions_display.' . PHP_EXT);
 
 						if (!$group_id)
 						{
@@ -470,7 +469,7 @@ class ucp_groups
 						$avatar_select = basename(request_var('avatar_select', ''));
 						$category = basename(request_var('category', ''));
 
-						$can_upload = (file_exists($phpbb_root_path . $config['avatar_path']) && @is_writable($phpbb_root_path . $config['avatar_path']) && $file_uploads) ? true : false;
+						$can_upload = (file_exists(PHPBB_ROOT_PATH . $config['avatar_path']) && @is_writable(PHPBB_ROOT_PATH . $config['avatar_path']) && $file_uploads) ? true : false;
 
 						// Did we submit?
 						if ($update)
@@ -523,11 +522,11 @@ class ucp_groups
 							else if ($avatar_select && $config['allow_avatar_local'])
 							{
 								// check avatar gallery
-								if (is_dir($phpbb_root_path . $config['avatar_gallery_path'] . '/' . $category))
+								if (is_dir(PHPBB_ROOT_PATH . $config['avatar_gallery_path'] . '/' . $category))
 								{
 									$submit_ary['avatar_type'] = AVATAR_GALLERY;
 
-									list($submit_ary['avatar_width'], $submit_ary['avatar_height']) = getimagesize($phpbb_root_path . $config['avatar_gallery_path'] . '/' . $category . '/' . $avatar_select);
+									list($submit_ary['avatar_width'], $submit_ary['avatar_height']) = getimagesize(PHPBB_ROOT_PATH . $config['avatar_gallery_path'] . '/' . $category . '/' . $avatar_select);
 									$submit_ary['avatar'] = $category . '/' . $avatar_select;
 								}
 							}
@@ -654,7 +653,7 @@ class ucp_groups
 						$type_closed	= ($group_type == GROUP_CLOSED) ? ' checked="checked"' : '';
 						$type_hidden	= ($group_type == GROUP_HIDDEN) ? ' checked="checked"' : '';
 
-						$avatar_img = (!empty($group_row['group_avatar'])) ? get_user_avatar($group_row['group_avatar'], $group_row['group_avatar_type'], $group_row['group_avatar_width'], $group_row['group_avatar_height'], 'GROUP_AVATAR') : '<img src="' . $phpbb_root_path . 'adm/images/no_avatar.gif" alt="" />';
+						$avatar_img = (!empty($group_row['group_avatar'])) ? get_user_avatar($group_row['group_avatar'], $group_row['group_avatar_type'], $group_row['group_avatar_width'], $group_row['group_avatar_height'], 'GROUP_AVATAR') : '<img src="' . PHPBB_ROOT_PATH . 'adm/images/no_avatar.gif" alt="" />';
 
 						$display_gallery = (isset($_POST['display_gallery'])) ? true : false;
 
@@ -707,7 +706,7 @@ class ucp_groups
 							'GROUP_CLOSED'		=> $type_closed,
 							'GROUP_HIDDEN'		=> $type_hidden,
 
-							'U_SWATCH'			=> append_sid("{$phpbb_root_path}adm/swatch.$phpEx", 'form=ucp&amp;name=group_colour'),
+							'U_SWATCH'			=> append_sid(CONFIG_ADM_FOLDER . '/swatch', 'form=ucp&amp;name=group_colour'),
 							'S_UCP_ACTION'		=> $this->u_action . "&amp;action=$action&amp;g=$group_id",
 							'L_AVATAR_EXPLAIN'	=> sprintf($user->lang['AVATAR_EXPLAIN'], $config['avatar_max_width'], $config['avatar_max_height'], $config['avatar_filesize'] / 1024),
 						));
@@ -818,7 +817,7 @@ class ucp_groups
 							'PAGINATION'		=> generate_pagination($this->u_action . "&amp;action=$action&amp;g=$group_id", $total_members, $config['topics_per_page'], $start),
 
 							'U_ACTION'			=> $this->u_action . "&amp;g=$group_id",
-							'U_FIND_USERNAME'	=> append_sid("{$phpbb_root_path}memberlist.$phpEx", 'mode=searchuser&amp;form=ucp&amp;field=usernames'),
+							'U_FIND_USERNAME'	=> append_sid('memberlist', 'mode=searchuser&amp;form=ucp&amp;field=usernames'),
 						));
 
 					break;

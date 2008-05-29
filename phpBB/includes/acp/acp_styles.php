@@ -31,8 +31,7 @@ class acp_styles
 
 	function main($id, $mode)
 	{
-		global $db, $user, $auth, $template, $cache;
-		global $config, $phpbb_root_path, $phpbb_admin_path, $phpEx;
+		global $db, $user, $auth, $template, $cache, $config;
 
 		// Hardcoded template bitfield to add for new templates
 		$bitfield = new bitfield();
@@ -246,7 +245,7 @@ parse_css_file = {PARSE_CSS_FILE}
 							$template_refreshed = '';
 
 							// Only refresh database if the template is stored in the database
-							if ($template_row['template_storedb'] && file_exists("{$phpbb_root_path}styles/{$template_row['template_path']}/template/"))
+							if ($template_row['template_storedb'] && file_exists(PHPBB_ROOT_PATH . "styles/{$template_row['template_path']}/template/"))
 							{
 								$filelist = array('' => array());
 
@@ -257,7 +256,7 @@ parse_css_file = {PARSE_CSS_FILE}
 
 								while ($row = $db->sql_fetchrow($result))
 								{
-//									if (@filemtime("{$phpbb_root_path}styles/{$template_row['template_path']}/template/" . $row['template_filename']) > $row['template_mtime'])
+//									if (@filemtime(PHPBB_ROOT_PATH . "styles/{$template_row['template_path']}/template/" . $row['template_filename']) > $row['template_mtime'])
 //									{
 										// get folder info from the filename
 										if (($slash_pos = strrpos($row['template_filename'], '/')) === false)
@@ -325,11 +324,11 @@ parse_css_file = {PARSE_CSS_FILE}
 
 						if (confirm_box(true))
 						{
-							if ($theme_row['theme_storedb'] && file_exists("{$phpbb_root_path}styles/{$theme_row['theme_path']}/theme/stylesheet.css"))
+							if ($theme_row['theme_storedb'] && file_exists(PHPBB_ROOT_PATH . "styles/{$theme_row['theme_path']}/theme/stylesheet.css"))
 							{
 								// Save CSS contents
 								$sql_ary = array(
-									'theme_mtime'	=> (int) filemtime("{$phpbb_root_path}styles/{$theme_row['theme_path']}/theme/stylesheet.css"),
+									'theme_mtime'	=> (int) filemtime(PHPBB_ROOT_PATH . "styles/{$theme_row['theme_path']}/theme/stylesheet.css"),
 									'theme_data'	=> $this->db_theme_data($theme_row)
 								);
 
@@ -386,7 +385,7 @@ parse_css_file = {PARSE_CSS_FILE}
 								$imageset_definitions = array_merge($imageset_definitions, $key_array);
 							}
 
-							$cfg_data_imageset = parse_cfg_file("{$phpbb_root_path}styles/{$imageset_row['imageset_path']}/imageset/imageset.cfg");
+							$cfg_data_imageset = parse_cfg_file(PHPBB_ROOT_PATH . "styles/{$imageset_row['imageset_path']}/imageset/imageset.cfg");
 
 							$db->sql_transaction('begin');
 
@@ -437,9 +436,9 @@ parse_css_file = {PARSE_CSS_FILE}
 
 							while ($row = $db->sql_fetchrow($result))
 							{
-								if (@file_exists("{$phpbb_root_path}styles/{$imageset_row['imageset_path']}/imageset/{$row['lang_dir']}/imageset.cfg"))
+								if (@file_exists(PHPBB_ROOT_PATH . "styles/{$imageset_row['imageset_path']}/imageset/{$row['lang_dir']}/imageset.cfg"))
 								{
-									$cfg_data_imageset_data = parse_cfg_file("{$phpbb_root_path}styles/{$imageset_row['imageset_path']}/imageset/{$row['lang_dir']}/imageset.cfg");
+									$cfg_data_imageset_data = parse_cfg_file(PHPBB_ROOT_PATH . "styles/{$imageset_row['imageset_path']}/imageset/{$row['lang_dir']}/imageset.cfg");
 									foreach ($cfg_data_imageset_data as $image_name => $value)
 									{
 										if (strpos($value, '*') !== false)
@@ -511,7 +510,7 @@ parse_css_file = {PARSE_CSS_FILE}
 	*/
 	function frontend($mode, $options, $actions)
 	{
-		global $user, $template, $db, $config, $phpbb_root_path, $phpEx;
+		global $user, $template, $db, $config;
 
 		$sql_from = '';
 		$style_count = array();
@@ -600,7 +599,7 @@ parse_css_file = {PARSE_CSS_FILE}
 				'L_STYLE_ACT_DEACT'		=> $user->lang['STYLE_' . strtoupper($stylevis)],
 				'S_OPTIONS'				=> implode(' | ', $s_options),
 				'S_ACTIONS'				=> implode(' | ', $s_actions),
-				'U_PREVIEW'				=> ($mode == 'style') ? append_sid("{$phpbb_root_path}index.$phpEx", "$mode=" . $row[$mode . '_id']) : '',
+				'U_PREVIEW'				=> ($mode == 'style') ? append_sid('index', "style=" . $row[$mode . '_id']) : '',
 
 				'NAME'					=> $row[$mode . '_name'],
 				'STYLE_COUNT'			=> ($mode == 'style' && isset($style_count[$row['style_id']])) ? $style_count[$row['style_id']] : 0,
@@ -612,16 +611,16 @@ parse_css_file = {PARSE_CSS_FILE}
 		// Grab uninstalled items
 		$new_ary = $cfg = array();
 
-		$dp = @opendir("{$phpbb_root_path}styles");
+		$dp = @opendir(PHPBB_ROOT_PATH . 'styles');
 
 		if ($dp)
 		{
 			while (($file = readdir($dp)) !== false)
 			{
 				$subpath = ($mode != 'style') ? "$mode/" : '';
-				if ($file[0] != '.' && file_exists("{$phpbb_root_path}styles/$file/$subpath$mode.cfg"))
+				if ($file[0] != '.' && file_exists(PHPBB_ROOT_PATH . "styles/$file/$subpath$mode.cfg"))
 				{
-					if ($cfg = file("{$phpbb_root_path}styles/$file/$subpath$mode.cfg"))
+					if ($cfg = file(PHPBB_ROOT_PATH . "styles/$file/$subpath$mode.cfg"))
 					{
 						$items = parse_cfg_file('', $cfg);
 						$name = (isset($items['name'])) ? trim($items['name']) : false;
@@ -668,7 +667,7 @@ parse_css_file = {PARSE_CSS_FILE}
 	*/
 	function edit_template($template_id)
 	{
-		global $phpbb_root_path, $phpEx, $config, $db, $cache, $user, $template, $safe_mode;
+		global $config, $db, $cache, $user, $template, $safe_mode;
 
 		$this->page_title = 'EDIT_TEMPLATE';
 
@@ -709,7 +708,7 @@ parse_css_file = {PARSE_CSS_FILE}
 		if ($save_changes && $template_file)
 		{
 			// Get the filesystem location of the current file
-			$file = "{$phpbb_root_path}styles/{$template_info['template_path']}/template/$template_file";
+			$file = PHPBB_ROOT_PATH . "styles/{$template_info['template_path']}/template/$template_file";
 			$additional = '';
 
 			// If the template is stored on the filesystem try to write the file else store it in the database
@@ -734,7 +733,7 @@ parse_css_file = {PARSE_CSS_FILE}
 						WHERE template_id = ' . $template_id;
 					$db->sql_query($sql);
 
-					$filelist = filelist("{$phpbb_root_path}styles/{$template_info['template_path']}/template", '', 'html');
+					$filelist = filelist(PHPBB_ROOT_PATH . "styles/{$template_info['template_path']}/template", '', 'html');
 					$this->store_templates('insert', $template_id, $template_info['template_path'], $filelist);
 
 					add_log('admin', 'LOG_TEMPLATE_EDIT_DETAILS', $template_info['template_name']);
@@ -763,7 +762,7 @@ parse_css_file = {PARSE_CSS_FILE}
 		// Generate a category array containing template filenames
 		if (!$template_info['template_storedb'])
 		{
-			$template_path = "{$phpbb_root_path}styles/{$template_info['template_path']}/template";
+			$template_path = PHPBB_ROOT_PATH . "styles/{$template_info['template_path']}/template";
 
 			$filelist = filelist($template_path, '', 'html');
 			$filelist[''] = array_diff($filelist[''], array('bbcode.html'));
@@ -898,7 +897,7 @@ parse_css_file = {PARSE_CSS_FILE}
 	*/
 	function template_cache($template_id)
 	{
-		global $phpbb_root_path, $phpEx, $config, $db, $cache, $user, $template;
+		global $config, $db, $cache, $user, $template;
 
 		$source		= str_replace('/', '.', request_var('source', ''));
 		$file_ary	= array_diff(request_var('delete', array('')), array(''));
@@ -928,7 +927,7 @@ parse_css_file = {PARSE_CSS_FILE}
 		// Someone wants to see the cached source ... so we'll highlight it,
 		// add line numbers and indent it appropriately. This could be nasty
 		// on larger source files ...
-		if ($source && file_exists("{$phpbb_root_path}cache/{$cache_prefix}_$source.html.$phpEx"))
+		if ($source && file_exists(PHPBB_ROOT_PATH . "cache/{$cache_prefix}_$source.html." . PHP_EXT))
 		{
 			adm_page_header($user->lang['TEMPLATE_CACHE']);
 
@@ -940,7 +939,7 @@ parse_css_file = {PARSE_CSS_FILE}
 				'FILENAME'	=> str_replace('.', '/', $source) . '.html')
 			);
 
-			$code = str_replace(array("\r\n", "\r"), array("\n", "\n"), file_get_contents("{$phpbb_root_path}cache/{$cache_prefix}_$source.html.$phpEx"));
+			$code = str_replace(array("\r\n", "\r"), array("\n", "\n"), file_get_contents(PHPBB_ROOT_PATH . "cache/{$cache_prefix}_$source.html." . PHP_EXT));
 
 			$conf = array('highlight.bg', 'highlight.comment', 'highlight.default', 'highlight.html', 'highlight.keyword', 'highlight.string');
 			foreach ($conf as $ini_var)
@@ -1000,9 +999,9 @@ parse_css_file = {PARSE_CSS_FILE}
 			$tpl_file 	= str_replace('.', '/', $file);
 			$tpl_file 	= str_replace('///', '../', $tpl_file);
 			
-			$filename = "{$cache_prefix}_$file.html.$phpEx";
+			$filename = "{$cache_prefix}_$file.html." . PHP_EXT;
 
-			if (!file_exists("{$phpbb_root_path}cache/$filename"))
+			if (!file_exists(PHPBB_ROOT_PATH . "cache/$filename"))
 			{
 				continue;
 			}
@@ -1010,10 +1009,10 @@ parse_css_file = {PARSE_CSS_FILE}
 			$template->assign_block_vars('file', array(
 				'U_VIEWSOURCE'	=> $this->u_action . "&amp;action=cache&amp;id=$template_id&amp;source=$file",
 
-				'CACHED'		=> $user->format_date(filemtime("{$phpbb_root_path}cache/$filename")),
+				'CACHED'		=> $user->format_date(filemtime(PHPBB_ROOT_PATH . "cache/$filename")),
 				'FILENAME'		=> $file,
-				'FILESIZE'		=> sprintf('%.1f ' . $user->lang['KIB'], filesize("{$phpbb_root_path}cache/$filename") / 1024),
-				'MODIFIED'		=> $user->format_date((!$template_row['template_storedb']) ? filemtime("{$phpbb_root_path}styles/{$template_row['template_path']}/template/$tpl_file.html") : $filemtime[$file . '.html']))
+				'FILESIZE'		=> sprintf('%.1f ' . $user->lang['KIB'], filesize(PHPBB_ROOT_PATH . "cache/$filename") / 1024),
+				'MODIFIED'		=> $user->format_date((!$template_row['template_storedb']) ? filemtime(PHPBB_ROOT_PATH . "styles/{$template_row['template_path']}/template/$tpl_file.html") : $filemtime[$file . '.html']))
 			);
 		}
 		unset($filemtime);
@@ -1034,7 +1033,7 @@ parse_css_file = {PARSE_CSS_FILE}
 	*/
 	function edit_theme($theme_id)
 	{
-		global $phpbb_root_path, $phpEx, $config, $db, $cache, $user, $template, $safe_mode;
+		global $config, $db, $cache, $user, $template, $safe_mode;
 
 		$this->page_title = 'EDIT_THEME';
 
@@ -1065,7 +1064,7 @@ parse_css_file = {PARSE_CSS_FILE}
 		if ($save_changes)
 		{
 			// Get the filesystem location of the current file
-			$file = "{$phpbb_root_path}styles/{$theme_info['theme_path']}/theme/$theme_file";
+			$file = PHPBB_ROOT_PATH . "styles/{$theme_info['theme_path']}/theme/$theme_file";
 			$additional = '';
 			$message = $user->lang['THEME_UPDATED'];
 
@@ -1110,7 +1109,7 @@ parse_css_file = {PARSE_CSS_FILE}
 		// Generate a category array containing theme filenames
 		if (!$theme_info['theme_storedb'])
 		{
-			$theme_path = "{$phpbb_root_path}styles/{$theme_info['theme_path']}/theme";
+			$theme_path = PHPBB_ROOT_PATH ."styles/{$theme_info['theme_path']}/theme";
 
 			$filelist = filelist($theme_path, '', 'css');
 
@@ -1218,7 +1217,7 @@ parse_css_file = {PARSE_CSS_FILE}
 	*/
 	function edit_imageset($imageset_id)
 	{
-		global $db, $user, $phpbb_root_path, $cache, $template;
+		global $db, $user, $cache, $template;
 
 		$this->page_title = 'EDIT_IMAGESET';
 
@@ -1293,7 +1292,7 @@ parse_css_file = {PARSE_CSS_FILE}
 					$imgheight	= request_var('imgheight', 0);
 					$imglang = '';
 
-					if ($imgpath && !file_exists("{$phpbb_root_path}styles/$imageset_path/imageset/$imgpath"))
+					if ($imgpath && !file_exists(PHPBB_ROOT_PATH . "styles/$imageset_path/imageset/$imgpath"))
 					{
 						trigger_error($user->lang['NO_IMAGE_ERROR'] . adm_back_link($this->u_action), E_USER_WARNING);
 					}
@@ -1302,7 +1301,7 @@ parse_css_file = {PARSE_CSS_FILE}
 					{
 						if (!$imgwidth || !$imgheight)
 						{
-							list($imgwidth_file, $imgheight_file) = getimagesize("{$phpbb_root_path}styles/$imageset_path/imageset/$imgpath");
+							list($imgwidth_file, $imgheight_file) = getimagesize(PHPBB_ROOT_PATH . "styles/$imageset_path/imageset/$imgpath");
 							$imgwidth = ($imgwidth) ? $imgwidth : $imgwidth_file;
 							$imgheight = ($imgheight) ? $imgheight : $imgheight_file;
 						}
@@ -1361,7 +1360,7 @@ parse_css_file = {PARSE_CSS_FILE}
 		$imagesetlist = array('nolang' => array(), 'lang' => array());
 		$langs = array();
 
-		$dir = "{$phpbb_root_path}styles/$imageset_path/imageset";
+		$dir = PHPBB_ROOT_PATH . "styles/$imageset_path/imageset";
 		$dp = @opendir($dir);
 
 		if ($dp)
@@ -1487,7 +1486,7 @@ parse_css_file = {PARSE_CSS_FILE}
 	*/
 	function remove($mode, $style_id)
 	{
-		global $db, $template, $user, $phpbb_root_path, $cache, $config;
+		global $db, $template, $user, $cache, $config;
 
 		$new_id = request_var('new_id', 0);
 		$update = (isset($_POST['update'])) ? true : false;
@@ -1623,7 +1622,7 @@ parse_css_file = {PARSE_CSS_FILE}
 	*/
 	function export($mode, $style_id)
 	{
-		global $db, $template, $user, $phpbb_root_path, $cache, $phpEx, $config;
+		global $db, $template, $user, $cache, $config;
 
 		$update = (isset($_POST['update'])) ? true : false;
 
@@ -1866,7 +1865,7 @@ parse_css_file = {PARSE_CSS_FILE}
 
 				end($data);
 
-				$imageset_root = "{$phpbb_root_path}styles/{$style_row['imageset_path']}/imageset/";
+				$imageset_root = PHPBB_ROOT_PATH . "styles/{$style_row['imageset_path']}/imageset/";
 
 				if ($dh = @opendir($imageset_root))
 				{
@@ -1946,7 +1945,7 @@ parse_css_file = {PARSE_CSS_FILE}
 
 			if (!sizeof($error))
 			{
-				include($phpbb_root_path . 'includes/functions_compress.' . $phpEx);
+				include(PHPBB_ROOT_PATH . 'includes/functions_compress.' . PHP_EXT);
 
 				if ($mode == 'style')
 				{
@@ -1959,11 +1958,11 @@ parse_css_file = {PARSE_CSS_FILE}
 
 				if ($format == 'zip')
 				{
-					$compress = new compress_zip('w', $phpbb_root_path . "store/$path$ext");
+					$compress = new compress_zip('w', PHPBB_ROOT_PATH . "store/$path$ext");
 				}
 				else
 				{
-					$compress = new compress_tar('w', $phpbb_root_path . "store/$path$ext", $ext);
+					$compress = new compress_tar('w', PHPBB_ROOT_PATH . "store/$path$ext", $ext);
 				}
 
 				if (sizeof($files))
@@ -1989,7 +1988,7 @@ parse_css_file = {PARSE_CSS_FILE}
 				if (!$store)
 				{
 					$compress->download($path);
-					@unlink("{$phpbb_root_path}store/$path$ext");
+					@unlink(PHPBB_ROOT_PATH . "store/$path$ext");
 					exit;
 				}
 
@@ -2040,7 +2039,7 @@ parse_css_file = {PARSE_CSS_FILE}
 	*/
 	function details($mode, $style_id)
 	{
-		global $template, $db, $config, $user, $safe_mode, $cache, $phpbb_root_path;
+		global $template, $db, $config, $user, $safe_mode, $cache;
 
 		$update = (isset($_POST['update'])) ? true : false;
 		$l_type = strtoupper($mode);
@@ -2112,7 +2111,7 @@ parse_css_file = {PARSE_CSS_FILE}
 			if ($mode === 'theme' || $mode === 'template')
 			{
 				// a rather elaborate check we have to do here once to avoid trouble later
-				$check = "{$phpbb_root_path}styles/" . $style_row["{$mode}_path"] . (($mode === 'theme') ? '/theme/stylesheet.css' : '/template');
+				$check = PHPBB_ROOT_PATH . "styles/" . $style_row["{$mode}_path"] . (($mode === 'theme') ? '/theme/stylesheet.css' : '/template');
 				if (($style_row["{$mode}_storedb"] != $store_db) && !$store_db && ($safe_mode || !@is_writable($check)))
 				{
 					$error[] = $user->lang['EDIT_' . strtoupper($mode) . '_STORED_DB'];
@@ -2122,7 +2121,7 @@ parse_css_file = {PARSE_CSS_FILE}
 				// themes which have to be parsed have to go into db
 				if ($mode == 'theme')
 				{
-					$cfg = parse_cfg_file("{$phpbb_root_path}styles/" . $style_row["{$mode}_path"] . "/theme/theme.cfg");
+					$cfg = parse_cfg_file(PHPBB_ROOT_PATH . "styles/" . $style_row["{$mode}_path"] . "/theme/theme.cfg");
 
 					if (isset($cfg['parse_css_file']) && $cfg['parse_css_file'] && !$store_db)
 					{
@@ -2193,12 +2192,12 @@ parse_css_file = {PARSE_CSS_FILE}
 						{
 							$theme_data = $this->db_theme_data($style_row);
 						}
-						else if (!$store_db && !$safe_mode && @is_writable("{$phpbb_root_path}styles/{$style_row['theme_path']}/theme/stylesheet.css"))
+						else if (!$store_db && !$safe_mode && @is_writable(PHPBB_ROOT_PATH . "styles/{$style_row['theme_path']}/theme/stylesheet.css"))
 						{
 							$store_db = 1;
 							$theme_data = $style_row['theme_data'];
 
-							if ($fp = @fopen("{$phpbb_root_path}styles/{$style_row['theme_path']}/theme/stylesheet.css", 'wb'))
+							if ($fp = @fopen(PHPBB_ROOT_PATH . "styles/{$style_row['theme_path']}/theme/stylesheet.css", 'wb'))
 							{
 								$store_db = (@fwrite($fp, str_replace("styles/{$style_row['theme_path']}/theme/", './', $theme_data))) ? 0 : 1;
 							}
@@ -2206,7 +2205,7 @@ parse_css_file = {PARSE_CSS_FILE}
 						}
 
 						$sql_ary += array(
-							'theme_mtime'	=> ($store_db) ? filemtime("{$phpbb_root_path}styles/{$style_row['theme_path']}/theme/stylesheet.css") : 0,
+							'theme_mtime'	=> ($store_db) ? filemtime(PHPBB_ROOT_PATH . "styles/{$style_row['theme_path']}/theme/stylesheet.css") : 0,
 							'theme_storedb'	=> $store_db,
 							'theme_data'	=> ($store_db) ? $theme_data : '',
 						);
@@ -2217,7 +2216,7 @@ parse_css_file = {PARSE_CSS_FILE}
 
 					if ($style_row['template_storedb'] != $store_db)
 					{
-						if (!$store_db && !$safe_mode && @is_writable("{$phpbb_root_path}styles/{$style_row['template_path']}/template"))
+						if (!$store_db && !$safe_mode && @is_writable(PHPBB_ROOT_PATH . "styles/{$style_row['template_path']}/template"))
 						{
 							$sql = 'SELECT *
 								FROM ' . STYLES_TEMPLATE_DATA_TABLE . "
@@ -2226,7 +2225,7 @@ parse_css_file = {PARSE_CSS_FILE}
 
 							while ($row = $db->sql_fetchrow($result))
 							{
-								if (!($fp = @fopen("{$phpbb_root_path}styles/{$style_row['template_path']}/template/" . $row['template_filename'], 'wb')))
+								if (!($fp = @fopen(PHPBB_ROOT_PATH . "styles/{$style_row['template_path']}/template/" . $row['template_filename'], 'wb')))
 								{
 									$store_db = 1;
 									$error[] = $user->lang['EDIT_TEMPLATE_STORED_DB'];
@@ -2247,7 +2246,7 @@ parse_css_file = {PARSE_CSS_FILE}
 						}
 						else if ($store_db)
 						{
-							$filelist = filelist("{$phpbb_root_path}styles/{$style_row['template_path']}/template", '', 'html');
+							$filelist = filelist(PHPBB_ROOT_PATH . "styles/{$style_row['template_path']}/template", '', 'html');
 							$this->store_templates('insert', $style_id, $style_row['template_path'], $filelist);
 						}
 						else
@@ -2350,9 +2349,7 @@ parse_css_file = {PARSE_CSS_FILE}
 	*/
 	function load_css_file($path, $filename)
 	{
-		global $phpbb_root_path;
-
-		$file = "{$phpbb_root_path}styles/$path/theme/$filename";
+		$file = PHPBB_ROOT_PATH . "styles/$path/theme/$filename";
 
 		if (file_exists($file) && ($content = file_get_contents($file)))
 		{
@@ -2372,17 +2369,15 @@ parse_css_file = {PARSE_CSS_FILE}
 	*
 	* @param array $theme_row is an associative array containing the theme's current database entry
 	* @param mixed $stylesheet can either be the new content for the stylesheet or false to load from the standard file
-	* @param string $root_path should only be used in case you want to use a different root path than "{$phpbb_root_path}styles/{$theme_row['theme_path']}"
+	* @param string $root_path should only be used in case you want to use a different root path than PHPBB_ROOT_PATH . "styles/{$theme_row['theme_path']}"
 	*
 	* @return string Stylesheet data for theme_data column in the theme table
 	*/
 	function db_theme_data($theme_row, $stylesheet = false, $root_path = '')
 	{
-		global $phpbb_root_path;
-
 		if (!$root_path)
 		{
-			$root_path = $phpbb_root_path . 'styles/' . $theme_row['theme_path'];
+			$root_path = PHPBB_ROOT_PATH . 'styles/' . $theme_row['theme_path'];
 		}
 
 		if (!$stylesheet)
@@ -2415,7 +2410,7 @@ parse_css_file = {PARSE_CSS_FILE}
 	*/
 	function store_templates($mode, $style_id, $template_path, $filelist)
 	{
-		global $phpbb_root_path, $phpEx, $db;
+		global $db;
 
 		$template_path = $template_path . '/template/';
 		$includes = array();
@@ -2423,11 +2418,11 @@ parse_css_file = {PARSE_CSS_FILE}
 		{
 			foreach ($file_ary as $file)
 			{
-				if (!($fp = @fopen("{$phpbb_root_path}styles/$template_path$pathfile$file", 'r')))
+				if (!($fp = @fopen(PHPBB_ROOT_PATH . "styles/$template_path$pathfile$file", 'r')))
 				{
-					trigger_error("Could not open {$phpbb_root_path}styles/$template_path$pathfile$file", E_USER_ERROR);
+					trigger_error('Could not open ' . PHPBB_ROOT_PATH . "styles/$template_path$pathfile$file", E_USER_ERROR);
 				}
-				$template_data = fread($fp, filesize("{$phpbb_root_path}styles/$template_path$pathfile$file"));
+				$template_data = fread($fp, filesize(PHPBB_ROOT_PATH . "styles/$template_path$pathfile$file"));
 				fclose($fp);
 
 				if (preg_match_all('#<!-- INCLUDE (.*?\.html) -->#is', $template_data, $matches))
@@ -2456,8 +2451,8 @@ parse_css_file = {PARSE_CSS_FILE}
 					'template_id'			=> (int) $style_id,
 					'template_filename'		=> "$pathfile$file",
 					'template_included'		=> (isset($includes[$file])) ? implode(':', $includes[$file]) . ':' : '',
-					'template_mtime'		=> (int) filemtime("{$phpbb_root_path}styles/$template_path$pathfile$file"),
-					'template_data'			=> (string) file_get_contents("{$phpbb_root_path}styles/$template_path$pathfile$file"),
+					'template_mtime'		=> (int) filemtime(PHPBB_ROOT_PATH . "styles/$template_path$pathfile$file"),
+					'template_data'			=> (string) file_get_contents(PHPBB_ROOT_PATH . "styles/$template_path$pathfile$file"),
 				);
 
 				if ($mode == 'insert')
@@ -2484,11 +2479,11 @@ parse_css_file = {PARSE_CSS_FILE}
 	*/
 	function template_cache_filelist($template_path)
 	{
-		global $phpbb_root_path, $phpEx, $user;
+		global $user;
 
 		$cache_prefix = 'tpl_' . $template_path;
 
-		if (!($dp = @opendir("{$phpbb_root_path}cache")))
+		if (!($dp = @opendir(PHPBB_ROOT_PATH . 'cache')))
 		{
 			trigger_error($user->lang['TEMPLATE_ERR_CACHE_READ'] . adm_back_link($this->u_action), E_USER_WARNING);
 		}
@@ -2501,9 +2496,9 @@ parse_css_file = {PARSE_CSS_FILE}
 				continue;
 			}
 
-			if (is_file($phpbb_root_path . 'cache/' . $file) && (strpos($file, $cache_prefix) === 0))
+			if (is_file(PHPBB_ROOT_PATH . 'cache/' . $file) && (strpos($file, $cache_prefix) === 0))
 			{
-				$file_ary[] = str_replace('.', '/', preg_replace('#^' . preg_quote($cache_prefix, '#') . '_(.*?)\.html\.' . $phpEx . '$#i', '\1', $file));
+				$file_ary[] = str_replace('.', '/', preg_replace('#^' . preg_quote($cache_prefix, '#') . '_(.*?)\.html\.' . PHP_EXT . '$#i', '\1', $file));
 			}
 		}
 		closedir($dp);
@@ -2520,7 +2515,7 @@ parse_css_file = {PARSE_CSS_FILE}
 	*/
 	function clear_template_cache($template_row, $file_ary = false)
 	{
-		global $phpbb_root_path, $phpEx, $user;
+		global $user;
 
 		$cache_prefix = 'tpl_' . $template_row['template_path'];
 
@@ -2538,7 +2533,7 @@ parse_css_file = {PARSE_CSS_FILE}
 		{
 			$file = str_replace('/', '.', $file);
 
-			$file = "{$phpbb_root_path}cache/{$cache_prefix}_$file.html.$phpEx";
+			$file = PHPBB_ROOT_PATH . "cache/{$cache_prefix}_$file.html." . PHP_EXT;
 			if (file_exists($file) && is_file($file))
 			{
 				@unlink($file);
@@ -2554,7 +2549,7 @@ parse_css_file = {PARSE_CSS_FILE}
 	*/
 	function install($mode)
 	{
-		global $phpbb_root_path, $phpEx, $config, $db, $cache, $user, $template;
+		global $config, $db, $cache, $user, $template;
 
 		$l_type = strtoupper($mode);
 
@@ -2568,7 +2563,7 @@ parse_css_file = {PARSE_CSS_FILE}
 		// Installing, obtain cfg file contents
 		if ($install_path)
 		{
-			$root_path = $phpbb_root_path . 'styles/' . $install_path . '/';
+			$root_path = PHPBB_ROOT_PATH . 'styles/' . $install_path . '/';
 			$cfg_file = ($mode == 'style') ? "$root_path$mode.cfg" : "$root_path$mode/$mode.cfg";
 
 			if (!file_exists($cfg_file))
@@ -2617,7 +2612,7 @@ parse_css_file = {PARSE_CSS_FILE}
 							$element . '_copyright'		=> '')
 						);
 
-			 			$this->test_installed($element, $error, (${'reqd_' . $element}) ? $phpbb_root_path . 'styles/' . $reqd_template . '/' : $root_path, ${'reqd_' . $element}, $style_row[$element . '_id'], $style_row[$element . '_name'], $style_row[$element . '_copyright']);
+			 			$this->test_installed($element, $error, (${'reqd_' . $element}) ? PHPBB_ROOT_PATH . 'styles/' . $reqd_template . '/' : $root_path, ${'reqd_' . $element}, $style_row[$element . '_id'], $style_row[$element . '_name'], $style_row[$element . '_copyright']);
 
 						if (!$style_row[$element . '_name'])
 						{
@@ -2656,7 +2651,7 @@ parse_css_file = {PARSE_CSS_FILE}
 			{
 				foreach ($element_ary as $element => $table)
 				{
-					${$element . '_root_path'} = (${'reqd_' . $element}) ? $phpbb_root_path . 'styles/' . ${'reqd_' . $element} . '/' : false;
+					${$element . '_root_path'} = (${'reqd_' . $element}) ? PHPBB_ROOT_PATH . 'styles/' . ${'reqd_' . $element} . '/' : false;
 					${$element . '_path'} = (${'reqd_' . $element}) ? ${'reqd_' . $element} : false;
 				}
 				$this->install_style($error, 'install', $root_path, $style_row['style_id'], $style_row['style_name'], $install_path, $style_row['style_copyright'], $style_row['style_active'], $style_row['style_default'], $style_row, $template_root_path, $template_path, $theme_root_path, $theme_path, $imageset_root_path, $imageset_path);
@@ -2712,7 +2707,7 @@ parse_css_file = {PARSE_CSS_FILE}
 	*/
 	function add($mode)
 	{
-		global $phpbb_root_path, $phpEx, $config, $db, $cache, $user, $template;
+		global $config, $db, $cache, $user, $template;
 
 		$l_type = strtoupper($mode);
 		$element_ary = array('template' => STYLES_TEMPLATE_TABLE, 'theme' => STYLES_THEME_TABLE, 'imageset' => STYLES_IMAGESET_TABLE);
@@ -3031,7 +3026,7 @@ parse_css_file = {PARSE_CSS_FILE}
 	*/
 	function install_element($mode, &$error, $action, $root_path, &$id, $name, $path, $copyright, $store_db = 0)
 	{
-		global $phpbb_root_path, $db, $user;
+		global $db, $user;
 
 		switch ($mode)
 		{
@@ -3120,7 +3115,7 @@ parse_css_file = {PARSE_CSS_FILE}
 
 			case 'theme':
 				// We are only interested in the theme configuration for now
-				$theme_cfg = parse_cfg_file("{$phpbb_root_path}styles/$path/theme/theme.cfg");
+				$theme_cfg = parse_cfg_file(PHPBB_ROOT_PATH . "styles/$path/theme/theme.cfg");
 
 				if (isset($theme_cfg['parse_css_file']) && $theme_cfg['parse_css_file'])
 				{
@@ -3130,7 +3125,7 @@ parse_css_file = {PARSE_CSS_FILE}
 				$sql_ary += array(
 					'theme_storedb'	=> $store_db,
 					'theme_data'	=> ($store_db) ? $this->db_theme_data($sql_ary, false, $root_path) : '',
-					'theme_mtime'	=> (int) filemtime("{$phpbb_root_path}styles/$path/theme/stylesheet.css")
+					'theme_mtime'	=> (int) filemtime(PHPBB_ROOT_PATH . "styles/$path/theme/stylesheet.css")
 				);
 			break;
 

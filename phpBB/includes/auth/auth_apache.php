@@ -165,9 +165,7 @@ function autologin_apache()
 
 		if (!function_exists('user_add'))
 		{
-			global $phpbb_root_path, $phpEx;
-
-			include($phpbb_root_path . 'includes/functions_user.' . $phpEx);
+			include(PHPBB_ROOT_PATH . 'includes/functions_user.' . PHP_EXT);
 		}
 
 		// create the user if he does not exist yet

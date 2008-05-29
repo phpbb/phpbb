@@ -30,23 +30,9 @@ die("Please read the first lines of this script for instructions on how to enabl
 
 @set_time_limit(2400);
 
-// This script adds missing permissions
-$db = $dbhost = $dbuser = $dbpasswd = $dbport = $dbname = '';
-
-define('IN_PHPBB', 1);
-define('ANONYMOUS', 1);
-$phpEx = substr(strrchr(__FILE__, '.'), 1);
-$phpbb_root_path='./../';
-include($phpbb_root_path . 'config.'.$phpEx);
-require($phpbb_root_path . 'includes/acm/acm_' . $acm_type . '.'.$phpEx);
-require($phpbb_root_path . 'includes/db/' . $dbms . '.'.$phpEx);
-include($phpbb_root_path . 'includes/functions.'.$phpEx);
-
-$cache		= new acm();
-$db			= new $sql_db();
-
-// Connect to DB
-$db->sql_connect($dbhost, $dbuser, $dbpasswd, $dbname, $dbport, false);
+define('PHPBB_ROOT_PATH', './../');
+define('PHP_EXT', substr(strrchr(__FILE__, '.'), 1));
+include(PHPBB_ROOT_PATH . 'common.' . PHP_EXT);
 
 $sql = "SELECT post_id, post_text FROM {$table_prefix}posts WHERE post_text LIKE '%{SMILE_PATH}%'";
 $result = $db->sql_query($sql);

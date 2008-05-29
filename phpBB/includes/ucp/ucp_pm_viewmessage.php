@@ -21,8 +21,7 @@ if (!defined('IN_PHPBB'))
 */
 function view_message($id, $mode, $folder_id, $msg_id, $folder, $message_row)
 {
-	global $user, $template, $auth, $db, $cache;
-	global $phpbb_root_path, $phpEx, $config;
+	global $user, $template, $auth, $db, $cache, $config;
 
 	$user->add_lang(array('viewtopic', 'memberlist'));
 
@@ -33,7 +32,7 @@ function view_message($id, $mode, $folder_id, $msg_id, $folder, $message_row)
 	// Not able to view message, it was deleted by the sender
 	if ($message_row['pm_deleted'])
 	{
-		$meta_info = append_sid("{$phpbb_root_path}ucp.$phpEx", "i=pm&amp;folder=$folder_id");
+		$meta_info = append_sid('ucp', "i=pm&amp;folder=$folder_id");
 		$message = $user->lang['NO_AUTH_READ_REMOVED_MESSAGE'];
 
 		$message .= '<br /><br />' . sprintf($user->lang['RETURN_FOLDER'], '<a href="' . $meta_info . '">', '</a>');
@@ -54,7 +53,7 @@ function view_message($id, $mode, $folder_id, $msg_id, $folder, $message_row)
 	// Instantiate BBCode if need be
 	if ($message_row['bbcode_bitfield'])
 	{
-		include($phpbb_root_path . 'includes/bbcode.' . $phpEx);
+		include(PHPBB_ROOT_PATH . 'includes/bbcode.' . PHP_EXT);
 		$bbcode = new bbcode($message_row['bbcode_bitfield']);
 	}
 
@@ -155,7 +154,7 @@ function view_message($id, $mode, $folder_id, $msg_id, $folder, $message_row)
 		{
 			if ($bbcode === false)
 			{
-				include($phpbb_root_path . 'includes/bbcode.' . $phpEx);
+				include(PHPBB_ROOT_PATH . 'includes/bbcode.' . PHP_EXT);
 				$bbcode = new bbcode($user_info['user_sig_bbcode_bitfield']);
 			}
 
@@ -166,7 +165,7 @@ function view_message($id, $mode, $folder_id, $msg_id, $folder, $message_row)
 		$signature = smiley_text($signature);
 	}
 
-	$url = append_sid("{$phpbb_root_path}ucp.$phpEx", 'i=pm');
+	$url = append_sid('ucp', 'i=pm');
 
 	$template->assign_vars(array(
 		'MESSAGE_AUTHOR_FULL'		=> get_username_string('full', $author_id, $user_info['username'], $user_info['user_colour'], $user_info['username']),
@@ -199,13 +198,13 @@ function view_message($id, $mode, $folder_id, $msg_id, $folder, $message_row)
 		'EDITED_MESSAGE'	=> $l_edited_by,
 		'MESSAGE_ID'		=> $message_row['msg_id'],
 
-		'U_PM'			=> ($config['allow_privmsg'] && $auth->acl_get('u_sendpm') && ($user_info['user_allow_pm'] || $auth->acl_gets('a_', 'm_') || $auth->acl_getf_global('m_'))) ? append_sid("{$phpbb_root_path}ucp.$phpEx", 'i=pm&amp;mode=compose&amp;u=' . $author_id) : '',
+		'U_PM'			=> ($config['allow_privmsg'] && $auth->acl_get('u_sendpm') && ($user_info['user_allow_pm'] || $auth->acl_gets('a_', 'm_') || $auth->acl_getf_global('m_'))) ? append_sid('ucp', 'i=pm&amp;mode=compose&amp;u=' . $author_id) : '',
 		'U_WWW'			=> (!empty($user_info['user_website'])) ? $user_info['user_website'] : '',
 		'U_ICQ'			=> ($user_info['user_icq']) ? 'http://www.icq.com/people/webmsg.php?to=' . urlencode($user_info['user_icq']) : '',
-		'U_AIM'			=> ($user_info['user_aim'] && $auth->acl_get('u_sendim')) ? append_sid("{$phpbb_root_path}memberlist.$phpEx", 'mode=contact&amp;action=aim&amp;u=' . $author_id) : '',
+		'U_AIM'			=> ($user_info['user_aim'] && $auth->acl_get('u_sendim')) ? append_sid('memberlist', 'mode=contact&amp;action=aim&amp;u=' . $author_id) : '',
 		'U_YIM'			=> ($user_info['user_yim']) ? 'http://edit.yahoo.com/config/send_webmesg?.target=' . urlencode($user_info['user_yim']) . '&amp;.src=pg' : '',
-		'U_MSN'			=> ($user_info['user_msnm'] && $auth->acl_get('u_sendim')) ? append_sid("{$phpbb_root_path}memberlist.$phpEx", 'mode=contact&amp;action=msnm&amp;u=' . $author_id) : '',
-		'U_JABBER'		=> ($user_info['user_jabber'] && $auth->acl_get('u_sendim')) ? append_sid("{$phpbb_root_path}memberlist.$phpEx", 'mode=contact&amp;action=jabber&amp;u=' . $author_id) : '',
+		'U_MSN'			=> ($user_info['user_msnm'] && $auth->acl_get('u_sendim')) ? append_sid('memberlist', 'mode=contact&amp;action=msnm&amp;u=' . $author_id) : '',
+		'U_JABBER'		=> ($user_info['user_jabber'] && $auth->acl_get('u_sendim')) ? append_sid('memberlist', 'mode=contact&amp;action=jabber&amp;u=' . $author_id) : '',
 
 		'U_DELETE'			=> ($auth->acl_get('u_pm_delete')) ? "$url&amp;mode=compose&amp;action=delete&amp;f=$folder_id&amp;p=" . $message_row['msg_id'] : '',
 		'U_EMAIL'			=> $user_info['email'],
@@ -250,8 +249,7 @@ function view_message($id, $mode, $folder_id, $msg_id, $folder, $message_row)
 */
 function get_user_information($user_id, $user_row)
 {
-	global $db, $auth, $user, $cache;
-	global $phpbb_root_path, $phpEx, $config;
+	global $db, $auth, $user, $cache, $config;
 
 	if (!$user_id)
 	{
@@ -292,7 +290,7 @@ function get_user_information($user_id, $user_row)
 
 	if (!function_exists('get_user_avatar'))
 	{
-		include($phpbb_root_path . 'includes/functions_display.' . $phpEx);
+		include(PHPBB_ROOT_PATH . 'includes/functions_display.' . PHP_EXT);
 	}
 
 	$user_row['avatar'] = ($user->optionget('viewavatars')) ? get_user_avatar($user_row['user_avatar'], $user_row['user_avatar_type'], $user_row['user_avatar_width'], $user_row['user_avatar_height']) : '';
@@ -301,7 +299,7 @@ function get_user_information($user_id, $user_row)
 
 	if (!empty($user_row['user_allow_viewemail']) || $auth->acl_get('a_email'))
 	{
-		$user_row['email'] = ($config['board_email_form'] && $config['email_enable']) ? append_sid("{$phpbb_root_path}memberlist.$phpEx", "mode=email&amp;u=$user_id") : ((($config['board_hide_emails'] && !$auth->acl_get('a_email')) || empty($user_row['user_email'])) ? '' : 'mailto:' . $user_row['user_email']);
+		$user_row['email'] = ($config['board_email_form'] && $config['email_enable']) ? append_sid('memberlist', "mode=email&amp;u=$user_id") : ((($config['board_hide_emails'] && !$auth->acl_get('a_email')) || empty($user_row['user_email'])) ? '' : 'mailto:' . $user_row['user_email']);
 	}
 
 	return $user_row;

@@ -98,8 +98,7 @@ function utf8_normalize_nfkc($strings)
 
 	if (!class_exists('utf_normalizer'))
 	{
-		global $phpbb_root_path, $phpEx;
-		include($phpbb_root_path . 'includes/utf/utf_normalizer.' . $phpEx);
+		include(PHPBB_ROOT_PATH . 'includes/utf/utf_normalizer.' . PHP_EXT);
 	}
 
 	if (!is_array($strings))

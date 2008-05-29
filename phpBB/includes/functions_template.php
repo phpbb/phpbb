@@ -735,9 +735,7 @@ class template_compile
 	*/
 	public function compile_write($handle, $data)
 	{
-		global $phpEx;
-
-		$filename = $this->template->cachepath . str_replace('/', '.', $this->template->filename[$handle]) . '.' . $phpEx;
+		$filename = $this->template->cachepath . str_replace('/', '.', $this->template->filename[$handle]) . '.' . PHP_EXT;
 
 		if ($fp = @fopen($filename, 'wb'))
 		{

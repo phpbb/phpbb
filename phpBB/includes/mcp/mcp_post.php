@@ -21,8 +21,7 @@ if (!defined('IN_PHPBB'))
 */
 function mcp_post_details($id, $mode, $action)
 {
-	global $phpEx, $phpbb_root_path, $config;
-	global $template, $db, $user, $auth, $cache;
+	global $template, $db, $user, $auth, $cache, $config;
 
 	$user->add_lang('posting');
 
@@ -40,7 +39,8 @@ function mcp_post_details($id, $mode, $action)
 	}
 
 	$post_info = $post_info[$post_id];
-	$url = append_sid("{$phpbb_root_path}mcp.$phpEx?" . extra_url());
+	$extra_url = extra_url();
+	$url = ($extra_url) ? append_sid('mcp', extra_url()) : append_sid('mcp') . '?';
 
 	switch ($action)
 	{
@@ -49,11 +49,11 @@ function mcp_post_details($id, $mode, $action)
 			if ($auth->acl_get('m_info', $post_info['forum_id']))
 			{
 				$ip = request_var('ip', '');
-				include($phpbb_root_path . 'includes/functions_user.' . $phpEx);
+				include(PHPBB_ROOT_PATH . 'includes/functions_user.' . PHP_EXT);
 
 				$template->assign_vars(array(
-					'RETURN_POST'	=> sprintf($user->lang['RETURN_POST'], '<a href="' . append_sid("{$phpbb_root_path}mcp.$phpEx", "i=$id&amp;mode=$mode&amp;p=$post_id") . '">', '</a>'),
-					'U_RETURN_POST'	=> append_sid("{$phpbb_root_path}mcp.$phpEx", "i=$id&amp;mode=$mode&amp;p=$post_id"),
+					'RETURN_POST'	=> sprintf($user->lang['RETURN_POST'], '<a href="' . append_sid('mcp', "i=$id&amp;mode=$mode&amp;p=$post_id") . '">', '</a>'),
+					'U_RETURN_POST'	=> append_sid('mcp', "i=$id&amp;mode=$mode&amp;p=$post_id"),
 					'L_RETURN_POST'	=> sprintf($user->lang['RETURN_POST'], '', ''),
 					'WHOIS'			=> user_ipwhois($ip),
 				));
@@ -130,7 +130,7 @@ function mcp_post_details($id, $mode, $action)
 
 	if ($post_info['bbcode_bitfield'])
 	{
-		include_once($phpbb_root_path . 'includes/bbcode.' . $phpEx);
+		include_once(PHPBB_ROOT_PATH . 'includes/bbcode.' . PHP_EXT);
 		$bbcode = new bbcode($post_info['bbcode_bitfield']);
 		$bbcode->bbcode_second_pass($message, $post_info['bbcode_uid'], $post_info['bbcode_bitfield']);
 	}
@@ -178,7 +178,7 @@ function mcp_post_details($id, $mode, $action)
 	$template->assign_vars(array(
 		'U_MCP_ACTION'			=> "$url&amp;i=main&amp;quickmod=1", // Use this for mode paramaters
 		'U_POST_ACTION'			=> "$url&amp;i=$id&amp;mode=post_details", // Use this for action parameters
-		'U_APPROVE_ACTION'		=> append_sid("{$phpbb_root_path}mcp.$phpEx", "i=queue&amp;p=$post_id&amp;f={$post_info['forum_id']}"),
+		'U_APPROVE_ACTION'		=> append_sid('mcp', "i=queue&amp;p=$post_id&amp;f={$post_info['forum_id']}"),
 
 		'S_CAN_VIEWIP'			=> $auth->acl_get('m_info', $post_info['forum_id']),
 		'S_CAN_CHGPOSTER'		=> $auth->acl_get('m_chgposter', $post_info['forum_id']),
@@ -191,19 +191,19 @@ function mcp_post_details($id, $mode, $action)
 		'S_USER_NOTES'			=> true,
 		'S_CLEAR_ALLOWED'		=> ($auth->acl_get('a_clearlogs')) ? true : false,
 
-		'U_EDIT'				=> ($auth->acl_get('m_edit', $post_info['forum_id'])) ? append_sid("{$phpbb_root_path}posting.$phpEx", "mode=edit&amp;f={$post_info['forum_id']}&amp;p={$post_info['post_id']}") : '',
-		'U_FIND_USERNAME'		=> append_sid("{$phpbb_root_path}memberlist.$phpEx", 'mode=searchuser&amp;form=mcp_chgposter&amp;field=username&amp;select_single=true'),
-		'U_MCP_APPROVE'			=> append_sid("{$phpbb_root_path}mcp.$phpEx", 'i=queue&amp;mode=approve_details&amp;f=' . $post_info['forum_id'] . '&amp;p=' . $post_id),
-		'U_MCP_REPORT'			=> append_sid("{$phpbb_root_path}mcp.$phpEx", 'i=reports&amp;mode=report_details&amp;f=' . $post_info['forum_id'] . '&amp;p=' . $post_id),
-		'U_MCP_USER_NOTES'		=> append_sid("{$phpbb_root_path}mcp.$phpEx", 'i=notes&amp;mode=user_notes&amp;u=' . $post_info['user_id']),
-		'U_MCP_WARN_USER'		=> ($auth->acl_get('m_warn')) ? append_sid("{$phpbb_root_path}mcp.$phpEx", 'i=warn&amp;mode=warn_user&amp;u=' . $post_info['user_id']) : '',
-		'U_VIEW_POST'			=> append_sid("{$phpbb_root_path}viewtopic.$phpEx", 'f=' . $post_info['forum_id'] . '&amp;p=' . $post_info['post_id'] . '#p' . $post_info['post_id']),
-		'U_VIEW_TOPIC'			=> append_sid("{$phpbb_root_path}viewtopic.$phpEx", 'f=' . $post_info['forum_id'] . '&amp;t=' . $post_info['topic_id']),
+		'U_EDIT'				=> ($auth->acl_get('m_edit', $post_info['forum_id'])) ? append_sid('posting', "mode=edit&amp;f={$post_info['forum_id']}&amp;p={$post_info['post_id']}") : '',
+		'U_FIND_USERNAME'		=> append_sid('memberlist', 'mode=searchuser&amp;form=mcp_chgposter&amp;field=username&amp;select_single=true'),
+		'U_MCP_APPROVE'			=> append_sid('mcp', 'i=queue&amp;mode=approve_details&amp;f=' . $post_info['forum_id'] . '&amp;p=' . $post_id),
+		'U_MCP_REPORT'			=> append_sid('mcp', 'i=reports&amp;mode=report_details&amp;f=' . $post_info['forum_id'] . '&amp;p=' . $post_id),
+		'U_MCP_USER_NOTES'		=> append_sid('mcp', 'i=notes&amp;mode=user_notes&amp;u=' . $post_info['user_id']),
+		'U_MCP_WARN_USER'		=> ($auth->acl_get('m_warn')) ? append_sid('mcp', 'i=warn&amp;mode=warn_user&amp;u=' . $post_info['user_id']) : '',
+		'U_VIEW_POST'			=> append_sid('viewtopic', 'f=' . $post_info['forum_id'] . '&amp;p=' . $post_info['post_id'] . '#p' . $post_info['post_id']),
+		'U_VIEW_TOPIC'			=> append_sid('viewtopic', 'f=' . $post_info['forum_id'] . '&amp;t=' . $post_info['topic_id']),
 
 		'MINI_POST_IMG'			=> ($post_unread) ? $user->img('icon_post_target_unread', 'NEW_POST') : $user->img('icon_post_target', 'POST'),
 
-		'RETURN_TOPIC'			=> sprintf($user->lang['RETURN_TOPIC'], '<a href="' . append_sid("{$phpbb_root_path}viewtopic.$phpEx", "f={$post_info['forum_id']}&amp;p=$post_id") . "#p$post_id\">", '</a>'),
-		'RETURN_FORUM'			=> sprintf($user->lang['RETURN_FORUM'], '<a href="' . append_sid("{$phpbb_root_path}viewforum.$phpEx", "f={$post_info['forum_id']}&amp;start={$start}") . '">', '</a>'),
+		'RETURN_TOPIC'			=> sprintf($user->lang['RETURN_TOPIC'], '<a href="' . append_sid('viewtopic', "f={$post_info['forum_id']}&amp;p=$post_id") . "#p$post_id\">", '</a>'),
+		'RETURN_FORUM'			=> sprintf($user->lang['RETURN_FORUM'], '<a href="' . append_sid('viewforum', "f={$post_info['forum_id']}&amp;start={$start}") . '">', '</a>'),
 		'REPORTED_IMG'			=> $user->img('icon_topic_reported', $user->lang['POST_REPORTED']),
 		'UNAPPROVED_IMG'		=> $user->img('icon_topic_unapproved', $user->lang['POST_UNAPPROVED']),
 		'EDIT_IMG'				=> $user->img('icon_post_edit', $user->lang['EDIT_POST']),
@@ -222,7 +222,7 @@ function mcp_post_details($id, $mode, $action)
 		'POST_ID'				=> $post_info['post_id'],
 
 		'U_LOOKUP_IP'			=> ($auth->acl_get('m_info', $post_info['forum_id'])) ? "$url&amp;i=$id&amp;mode=$mode&amp;lookup={$post_info['poster_ip']}#ip" : '',
-		'U_WHOIS'				=> ($auth->acl_get('m_info', $post_info['forum_id'])) ? append_sid("{$phpbb_root_path}mcp.$phpEx", "i=$id&amp;mode=$mode&amp;action=whois&amp;p=$post_id&amp;ip={$post_info['poster_ip']}") : '',
+		'U_WHOIS'				=> ($auth->acl_get('m_info', $post_info['forum_id'])) ? append_sid('mcp', "i=$id&amp;mode=$mode&amp;action=whois&amp;p=$post_id&amp;ip={$post_info['poster_ip']}") : '',
 	));
 
 	// Get User Notes
@@ -274,7 +274,7 @@ function mcp_post_details($id, $mode, $action)
 					'REASON_TITLE'	=> $row['reason_title'],
 					'REASON_DESC'	=> $row['reason_description'],
 					'REPORTER'		=> ($row['user_id'] != ANONYMOUS) ? $row['username'] : $user->lang['GUEST'],
-					'U_REPORTER'	=> ($row['user_id'] != ANONYMOUS) ? append_sid("{$phpbb_root_path}memberlist.$phpEx", 'mode=viewprofile&amp;u=' . $row['user_id']) : '',
+					'U_REPORTER'	=> ($row['user_id'] != ANONYMOUS) ? append_sid('memberlist', 'mode=viewprofile&amp;u=' . $row['user_id']) : '',
 					'USER_NOTIFY'	=> ($row['user_notify']) ? true : false,
 					'REPORT_TIME'	=> $user->format_date($row['report_time']),
 					'REPORT_TEXT'	=> bbcode_nl2br(trim($row['report_text'])),
@@ -337,8 +337,8 @@ function mcp_post_details($id, $mode, $action)
 					'NUM_POSTS'		=> $user_row['postings'],
 					'L_POST_S'		=> ($user_row['postings'] == 1) ? $user->lang['POST'] : $user->lang['POSTS'],
 
-					'U_PROFILE'		=> ($user_id == ANONYMOUS) ? '' : append_sid("{$phpbb_root_path}memberlist.$phpEx", 'mode=viewprofile&amp;u=' . $user_id),
-					'U_SEARCHPOSTS' => append_sid("{$phpbb_root_path}search.$phpEx", 'author_id=' . $user_id . '&amp;sr=topics'))
+					'U_PROFILE'		=> ($user_id == ANONYMOUS) ? '' : append_sid('memberlist', 'mode=viewprofile&amp;u=' . $user_id),
+					'U_SEARCHPOSTS' => append_sid('search', 'author_id=' . $user_id . '&amp;sr=topics'))
 				);
 			}
 		}
@@ -367,7 +367,7 @@ function mcp_post_details($id, $mode, $action)
 				'L_POST_S'		=> ($row['postings'] == 1) ? $user->lang['POST'] : $user->lang['POSTS'],
 
 				'U_LOOKUP_IP'	=> ($rdns_ip_num == $row['poster_ip'] || $rdns_ip_num == 'all') ? '' : "$url&amp;i=$id&amp;mode=post_details&amp;rdns={$row['poster_ip']}#ip",
-				'U_WHOIS'		=> append_sid("{$phpbb_root_path}mcp.$phpEx", "i=$id&amp;mode=$mode&amp;action=whois&amp;p=$post_id&amp;ip={$row['poster_ip']}"))
+				'U_WHOIS'		=> append_sid('mcp', "i=$id&amp;mode=$mode&amp;action=whois&amp;p=$post_id&amp;ip={$row['poster_ip']}"))
 			);
 		}
 		$db->sql_freeresult($result);
@@ -394,7 +394,7 @@ function mcp_post_details($id, $mode, $action)
 */
 function change_poster(&$post_info, $userdata)
 {
-	global $auth, $db, $config, $phpbb_root_path, $phpEx;
+	global $auth, $db, $config;
 
 	if (empty($userdata) || $userdata['user_id'] == $post_info['user_id'])
 	{
@@ -467,9 +467,9 @@ function change_poster(&$post_info, $userdata)
 	// refresh search cache of this post
 	$search_type = basename($config['search_type']);
 
-	if (file_exists($phpbb_root_path . 'includes/search/' . $search_type . '.' . $phpEx))
+	if (file_exists(PHPBB_ROOT_PATH . 'includes/search/' . $search_type . '.' . PHP_EXT))
 	{
-		require("{$phpbb_root_path}includes/search/$search_type.$phpEx");
+		require(PHPBB_ROOT_PATH . "includes/search/$search_type." . PHP_EXT);
 	
 		// We do some additional checks in the module to ensure it can actually be utilised
 		$error = false;

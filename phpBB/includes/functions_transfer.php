@@ -38,13 +38,11 @@ class transfer
 	*/
 	function __construct()
 	{
-		global $phpbb_root_path;
-
 		$this->file_perms	= 0644;
 		$this->dir_perms	= 0777;
 
 		// We use the store directory as temporary path to circumvent open basedir restrictions
-		$this->tmp_path = $phpbb_root_path . 'store/';
+		$this->tmp_path = PHPBB_ROOT_PATH . 'store/';
 	}
 
 	/**
@@ -52,9 +50,7 @@ class transfer
 	*/
 	public function write_file($destination_file = '', $contents = '')
 	{
-		global $phpbb_root_path;
-
-		$destination_file = $this->root_path . str_replace($phpbb_root_path, '', $destination_file);
+		$destination_file = $this->root_path . str_replace(PHPBB_ROOT_PATH, '', $destination_file);
 
 		// need to create a temp file and then move that temp file.
 		// ftp functions can only move files around and can't create.
@@ -104,9 +100,7 @@ class transfer
 	*/
 	public function make_dir($dir)
 	{
-		global $phpbb_root_path;
-
-		$dir = str_replace($phpbb_root_path, '', $dir);
+		$dir = str_replace(PHPBB_ROOT_PATH, '', $dir);
 		$dir = explode('/', $dir);
 		$dirs = '';
 
@@ -120,7 +114,7 @@ class transfer
 			}
 			$cur_dir = $dir[$i] . '/';
 
-			if (!file_exists($phpbb_root_path . $dirs . $cur_dir))
+			if (!file_exists(PHPBB_ROOT_PATH . $dirs . $cur_dir))
 			{
 				// create the directory
 				$result = $this->_mkdir($dir[$i]);
@@ -144,10 +138,8 @@ class transfer
 	*/
 	public function copy_file($from_loc, $to_loc)
 	{
-		global $phpbb_root_path;
-
-		$from_loc = ((strpos($from_loc, $phpbb_root_path) !== 0) ? $phpbb_root_path : '') . $from_loc;
-		$to_loc = $this->root_path . str_replace($phpbb_root_path, '', $to_loc);
+		$from_loc = ((strpos($from_loc, PHPBB_ROOT_PATH) !== 0) ? PHPBB_ROOT_PATH : '') . $from_loc;
+		$to_loc = $this->root_path . str_replace(PHPBB_ROOT_PATH, '', $to_loc);
 
 		if (!file_exists($from_loc))
 		{
@@ -164,9 +156,7 @@ class transfer
 	*/
 	public function delete_file($file)
 	{
-		global $phpbb_root_path;
-
-		$file = $this->root_path . str_replace($phpbb_root_path, '', $file);
+		$file = $this->root_path . str_replace(PHPBB_ROOT_PATH, '', $file);
 
 		return $this->_delete($file);
 	}
@@ -177,9 +167,7 @@ class transfer
 	*/
 	public function remove_dir($dir)
 	{
-		global $phpbb_root_path;
-
-		$dir = $this->root_path . str_replace($phpbb_root_path, '', $dir);
+		$dir = $this->root_path . str_replace(PHPBB_ROOT_PATH, '', $dir);
 
 		return $this->_rmdir($dir);
 	}
@@ -189,9 +177,7 @@ class transfer
 	*/
 	public function rename($old_handle, $new_handle)
 	{
-		global $phpbb_root_path;
-
-		$old_handle = $this->root_path . str_replace($phpbb_root_path, '', $old_handle);
+		$old_handle = $this->root_path . str_replace(PHPBB_ROOT_PATH, '', $old_handle);
 
 		return $this->_rename($old_handle, $new_handle);
 	}
@@ -201,9 +187,7 @@ class transfer
 	*/
 	public function file_exists($directory, $filename)
 	{
-		global $phpbb_root_path;
-
-		$directory = $this->root_path . str_replace($phpbb_root_path, '', $directory);
+		$directory = $this->root_path . str_replace(PHPBB_ROOT_PATH, '', $directory);
 
 		$this->_chdir($directory);
 		$result = $this->_ls('');

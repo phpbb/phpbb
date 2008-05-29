@@ -29,7 +29,7 @@ class ucp_profile
 
 	function main($id, $mode)
 	{
-		global $config, $db, $user, $auth, $template, $phpbb_root_path, $phpEx;
+		global $config, $db, $user, $auth, $template;
 
 		$user->add_lang('posting');
 
@@ -137,7 +137,7 @@ class ucp_profile
 						{
 							$message = ($config['require_activation'] == USER_ACTIVATION_SELF) ? 'ACCOUNT_EMAIL_CHANGED' : 'ACCOUNT_EMAIL_CHANGED_ADMIN';
 
-							include_once($phpbb_root_path . 'includes/functions_messenger.' . $phpEx);
+							include_once(PHPBB_ROOT_PATH . 'includes/functions_messenger.' . PHP_EXT);
 
 							$server_url = generate_board_url();
 
@@ -160,7 +160,7 @@ class ucp_profile
 
 							$messenger->assign_vars(array(
 								'USERNAME'		=> htmlspecialchars_decode($data['username']),
-								'U_ACTIVATE'	=> "$server_url/ucp.$phpEx?mode=activate&u={$user->data['user_id']}&k=$user_actkey")
+								'U_ACTIVATE'	=> "$server_url/ucp." . PHP_EXT . "?mode=activate&u={$user->data['user_id']}&k=$user_actkey")
 							);
 
 							$messenger->send(NOTIFY_EMAIL);
@@ -192,8 +192,8 @@ class ucp_profile
 
 									$messenger->assign_vars(array(
 										'USERNAME'			=> htmlspecialchars_decode($data['username']),
-										'U_USER_DETAILS'	=> "$server_url/memberlist.$phpEx?mode=viewprofile&u={$user->data['user_id']}",
-										'U_ACTIVATE'		=> "$server_url/ucp.$phpEx?mode=activate&u={$user->data['user_id']}&k=$user_actkey")
+										'U_USER_DETAILS'	=> "$server_url/memberlist." . PHP_EXT . "?mode=viewprofile&u={$user->data['user_id']}",
+										'U_ACTIVATE'		=> "$server_url/ucp." . PHP_EXT . "?mode=activate&u={$user->data['user_id']}&k=$user_actkey")
 									);
 
 									$messenger->send($row['user_notify_type']);
@@ -225,8 +225,8 @@ class ucp_profile
 						// Now, we can remove the user completely (kill the session) - NOT BEFORE!!!
 						if (!empty($sql_ary['user_actkey']))
 						{
-							meta_refresh(5, append_sid($phpbb_root_path . 'index.' . $phpEx));
-							$message = $user->lang[$message] . '<br /><br />' . sprintf($user->lang['RETURN_INDEX'], '<a href="' . append_sid($phpbb_root_path . 'index.' . $phpEx) . '">', '</a>');
+							meta_refresh(5, append_sid('index'));
+							$message = $user->lang[$message] . '<br /><br />' . sprintf($user->lang['RETURN_INDEX'], '<a href="' . append_sid('index') . '">', '</a>');
 
 							// Because the user gets deactivated we log him out too, killing his session
 							$user->session_kill();
@@ -265,7 +265,7 @@ class ucp_profile
 
 			case 'profile_info':
 
-				include($phpbb_root_path . 'includes/functions_profile_fields.' . $phpEx);
+				include(PHPBB_ROOT_PATH . 'includes/functions_profile_fields.' . PHP_EXT);
 
 				$cp = new custom_profile();
 
@@ -461,8 +461,8 @@ class ucp_profile
 					trigger_error('NO_AUTH_SIGNATURE');
 				}
 				
-				include($phpbb_root_path . 'includes/functions_posting.' . $phpEx);
-				include($phpbb_root_path . 'includes/functions_display.' . $phpEx);
+				include(PHPBB_ROOT_PATH . 'includes/functions_posting.' . PHP_EXT);
+				include(PHPBB_ROOT_PATH . 'includes/functions_display.' . PHP_EXT);
 
 				$enable_bbcode	= ($config['allow_sig_bbcode']) ? ((request_var('disable_bbcode', !$user->optionget('bbcode'))) ? false : true) : false;
 				$enable_smilies	= ($config['allow_sig_smilies']) ? ((request_var('disable_smilies', !$user->optionget('smilies'))) ? false : true) : false;
@@ -474,7 +474,7 @@ class ucp_profile
 
 				if ($submit || $preview)
 				{
-					include($phpbb_root_path . 'includes/message_parser.' . $phpEx);
+					include(PHPBB_ROOT_PATH . 'includes/message_parser.' . PHP_EXT);
 
 					if (!sizeof($error))
 					{
@@ -534,7 +534,7 @@ class ucp_profile
 					'S_SMILIES_CHECKED' 	=> (!$enable_smilies) ? ' checked="checked"' : '',
 					'S_MAGIC_URL_CHECKED' 	=> (!$enable_urls) ? ' checked="checked"' : '',
 
-					'BBCODE_STATUS'			=> ($config['allow_sig_bbcode']) ? sprintf($user->lang['BBCODE_IS_ON'], '<a href="' . append_sid("{$phpbb_root_path}faq.$phpEx", 'mode=bbcode') . '">', '</a>') : sprintf($user->lang['BBCODE_IS_OFF'], '<a href="' . append_sid("{$phpbb_root_path}faq.$phpEx", 'mode=bbcode') . '">', '</a>'),
+					'BBCODE_STATUS'			=> ($config['allow_sig_bbcode']) ? sprintf($user->lang['BBCODE_IS_ON'], '<a href="' . append_sid('faq', 'mode=bbcode') . '">', '</a>') : sprintf($user->lang['BBCODE_IS_OFF'], '<a href="' . append_sid('faq', 'mode=bbcode') . '">', '</a>'),
 					'SMILIES_STATUS'		=> ($config['allow_sig_smilies']) ? $user->lang['SMILIES_ARE_ON'] : $user->lang['SMILIES_ARE_OFF'],
 					'IMG_STATUS'			=> ($config['allow_sig_img']) ? $user->lang['IMAGES_ARE_ON'] : $user->lang['IMAGES_ARE_OFF'],
 					'FLASH_STATUS'			=> ($config['allow_sig_flash']) ? $user->lang['FLASH_IS_ON'] : $user->lang['FLASH_IS_OFF'],
@@ -556,13 +556,13 @@ class ucp_profile
 
 			case 'avatar':
 
-				include($phpbb_root_path . 'includes/functions_display.' . $phpEx);
+				include(PHPBB_ROOT_PATH . 'includes/functions_display.' . PHP_EXT);
 
 				$display_gallery = request_var('display_gallery', '0');
 				$avatar_select = basename(request_var('avatar_select', ''));
 				$category = basename(request_var('category', ''));
 
-				$can_upload = ($config['allow_avatar_upload'] && file_exists($phpbb_root_path . $config['avatar_path']) && @is_writable($phpbb_root_path . $config['avatar_path']) && $auth->acl_get('u_chgavatar') && (@ini_get('file_uploads') || strtolower(@ini_get('file_uploads')) == 'on')) ? true : false;
+				$can_upload = ($config['allow_avatar_upload'] && file_exists(PHPBB_ROOT_PATH . $config['avatar_path']) && @is_writable(PHPBB_ROOT_PATH . $config['avatar_path']) && $auth->acl_get('u_chgavatar') && (@ini_get('file_uploads') || strtolower(@ini_get('file_uploads')) == 'on')) ? true : false;
 
 				add_form_key('ucp_avatar');
 
@@ -590,7 +590,7 @@ class ucp_profile
 					'AVATAR'		=> get_user_avatar($user->data['user_avatar'], $user->data['user_avatar_type'], $user->data['user_avatar_width'], $user->data['user_avatar_height']),
 					'AVATAR_SIZE'	=> $config['avatar_filesize'],
 					
-					'U_GALLERY'		=> append_sid("{$phpbb_root_path}ucp.$phpEx", 'i=profile&amp;mode=avatar&amp;display_gallery=1'),
+					'U_GALLERY'		=> append_sid('ucp', 'i=profile&amp;mode=avatar&amp;display_gallery=1'),
 					
 					'S_FORM_ENCTYPE'	=> ($can_upload) ? ' enctype="multipart/form-data"' : '',
 

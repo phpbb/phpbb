@@ -22,8 +22,7 @@ if (!defined('IN_PHPBB'))
 */
 function view_folder($id, $mode, $folder_id, $folder)
 {
-	global $user, $template, $auth, $db, $cache;
-	global $phpbb_root_path, $config, $phpEx;
+	global $user, $template, $auth, $db, $cache, $config;
 
 	$submit_export = (isset($_POST['submit_export'])) ? true : false;
 
@@ -180,7 +179,7 @@ function view_folder($id, $mode, $folder_id, $folder)
 							else
 							{
 								$user_colour = ($recipient_list[$type][$ug_id]['colour']) ? ' style="font-weight: bold; color:#' . $recipient_list[$type][$ug_id]['colour'] . '"' : '';
-								$link = '<a href="' . append_sid("{$phpbb_root_path}memberlist.$phpEx", 'mode=group&amp;g=' . $ug_id) . '"' . $user_colour . '>';
+								$link = '<a href="' . append_sid('memberlist', 'mode=group&amp;g=' . $ug_id) . '"' . $user_colour . '>';
 								$address_list[$message_id][] = $link . $recipient_list[$type][$ug_id]['name'] . (($link) ? '</a>' : '');
 							}
 						}
@@ -199,8 +198,8 @@ function view_folder($id, $mode, $folder_id, $folder)
 				$folder_alt = ($row['pm_unread']) ? 'NEW_MESSAGES' : 'NO_NEW_MESSAGES';
 
 				// Generate all URIs ...
-				$view_message_url = append_sid("{$phpbb_root_path}ucp.$phpEx", "i=$id&amp;mode=view&amp;f=$folder_id&amp;p=$message_id");
-				$remove_message_url = append_sid("{$phpbb_root_path}ucp.$phpEx", "i=$id&amp;mode=compose&amp;action=delete&amp;p=$message_id");
+				$view_message_url = append_sid('ucp', "i=$id&amp;mode=view&amp;f=$folder_id&amp;p=$message_id");
+				$remove_message_url = append_sid('ucp', "i=$id&amp;mode=compose&amp;action=delete&amp;p=$message_id");
 
 				$row_indicator = '';
 				foreach ($color_rows as $var)
@@ -228,7 +227,7 @@ function view_folder($id, $mode, $folder_id, $folder)
 					'SENT_TIME'			=> $user->format_date($row['message_time']),
 					'SUBJECT'			=> censor_text($row['message_subject']),
 					'FOLDER'			=> (isset($folder[$row['folder_id']])) ? $folder[$row['folder_id']]['folder_name'] : '',
-					'U_FOLDER'			=> (isset($folder[$row['folder_id']])) ? append_sid("{$phpbb_root_path}ucp.$phpEx", 'folder=' . $row['folder_id']) : '',
+					'U_FOLDER'			=> (isset($folder[$row['folder_id']])) ? append_sid('ucp', 'folder=' . $row['folder_id']) : '',
 					'PM_ICON_IMG'		=> (!empty($icons[$row['icon_id']])) ? '<img src="' . $config['icons_path'] . '/' . $icons[$row['icon_id']]['img'] . '" width="' . $icons[$row['icon_id']]['width'] . '" height="' . $icons[$row['icon_id']]['height'] . '" alt="" title="" />' : '',
 					'PM_ICON_URL'		=> (!empty($icons[$row['icon_id']])) ? $config['icons_path'] . '/' . $icons[$row['icon_id']]['img'] : '',
 					'FOLDER_IMG'		=> $user->img($folder_img, $folder_alt),
@@ -280,7 +279,7 @@ function view_folder($id, $mode, $folder_id, $folder)
 			{
 				$row = &$folder_info['rowset'][$message_id];
 
-				include_once($phpbb_root_path . 'includes/functions_posting.' . $phpEx);
+				include_once(PHPBB_ROOT_PATH . 'includes/functions_posting.' . PHP_EXT);
 
 				$sql = 'SELECT p.message_text, p.bbcode_uid
 					FROM ' . PRIVMSGS_TO_TABLE . ' t, ' . PRIVMSGS_TABLE . ' p, ' . USERS_TABLE . ' u
@@ -439,7 +438,7 @@ function view_folder($id, $mode, $folder_id, $folder)
 */
 function get_pm_from($folder_id, $folder, $user_id)
 {
-	global $user, $db, $template, $config, $auth, $phpbb_root_path, $phpEx;
+	global $user, $db, $template, $config, $auth;
 
 	$start = request_var('start', 0);
 
@@ -498,7 +497,7 @@ function get_pm_from($folder_id, $folder, $user_id)
 	}
 
 	$template->assign_vars(array(
-		'PAGINATION'		=> generate_pagination(append_sid("{$phpbb_root_path}ucp.$phpEx", "i=pm&amp;mode=view&amp;action=view_folder&amp;f=$folder_id&amp;$u_sort_param"), $pm_count, $config['topics_per_page'], $start),
+		'PAGINATION'		=> generate_pagination(append_sid('ucp', "i=pm&amp;mode=view&amp;action=view_folder&amp;f=$folder_id&amp;$u_sort_param"), $pm_count, $config['topics_per_page'], $start),
 		'PAGE_NUMBER'		=> on_page($pm_count, $config['topics_per_page'], $start),
 		'TOTAL_MESSAGES'	=> (($pm_count == 1) ? $user->lang['VIEW_PM_MESSAGE'] : sprintf($user->lang['VIEW_PM_MESSAGES'], $pm_count)),
 
@@ -511,8 +510,8 @@ function get_pm_from($folder_id, $folder, $user_id)
 		'S_SELECT_SORT_DAYS'	=> $s_limit_days,
 		'S_TOPIC_ICONS'			=> ($config['enable_pm_icons']) ? true : false,
 
-		'U_POST_NEW_TOPIC'	=> ($auth->acl_get('u_sendpm')) ? append_sid("{$phpbb_root_path}ucp.$phpEx", 'i=pm&amp;mode=compose') : '',
-		'S_PM_ACTION'		=> append_sid("{$phpbb_root_path}ucp.$phpEx", "i=pm&amp;mode=view&amp;action=view_folder&amp;f=$folder_id"))
+		'U_POST_NEW_TOPIC'	=> ($auth->acl_get('u_sendpm')) ? append_sid('ucp', 'i=pm&amp;mode=compose') : '',
+		'S_PM_ACTION'		=> append_sid('ucp', "i=pm&amp;mode=view&amp;action=view_folder&amp;f=$folder_id"))
 	);
 
 	// Grab all pm data

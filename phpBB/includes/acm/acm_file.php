@@ -34,8 +34,7 @@ class acm
 	*/
 	function __construct()
 	{
-		global $phpbb_root_path;
-		$this->cache_dir = $phpbb_root_path . 'cache/';
+		$this->cache_dir = PHPBB_ROOT_PATH . 'cache/';
 	}
 
 	/**
@@ -43,12 +42,10 @@ class acm
 	*/
 	private function load()
 	{
-		global $phpEx;
-
 		// grab the global cache
-		if (file_exists($this->cache_dir . 'data_global.' . $phpEx))
+		if (file_exists($this->cache_dir . 'data_global.' . PHP_EXT))
 		{
-			@include($this->cache_dir . 'data_global.' . $phpEx);
+			@include($this->cache_dir . 'data_global.' . PHP_EXT);
 			return true;
 		}
 
@@ -80,16 +77,14 @@ class acm
 			return;
 		}
 
-		global $phpEx;
-
-		if ($fp = @fopen($this->cache_dir . 'data_global.' . $phpEx, 'wb'))
+		if ($fp = @fopen($this->cache_dir . 'data_global.' . PHP_EXT, 'wb'))
 		{
 			@flock($fp, LOCK_EX);
 			fwrite($fp, "<?php\n\$this->vars = unserialize('" . serialize($this->vars) . "');\n\$this->var_expires = unserialize('" . serialize($this->var_expires) . "');");
 			@flock($fp, LOCK_UN);
 			fclose($fp);
 
-			@chmod($this->cache_dir . 'data_global.' . $phpEx, 0666);
+			@chmod($this->cache_dir . 'data_global.' . PHP_EXT, 0666);
 		}
 		else
 		{
@@ -99,7 +94,7 @@ class acm
 				trigger_error($this->cache_dir . ' is NOT writable.', E_USER_ERROR);
 			}
 
-			trigger_error('Not able to open ' . $this->cache_dir . 'data_global.' . $phpEx, E_USER_ERROR);
+			trigger_error('Not able to open ' . $this->cache_dir . 'data_global.' . PHP_EXT, E_USER_ERROR);
 		}
 
 		$this->is_modified = false;
@@ -110,8 +105,6 @@ class acm
 	*/
 	public function tidy()
 	{
-		global $phpEx;
-
 		$dir = @opendir($this->cache_dir);
 
 		if (!$dir)
@@ -135,7 +128,7 @@ class acm
 		}
 		closedir($dir);
 
-		if (file_exists($this->cache_dir . 'data_global.' . $phpEx))
+		if (file_exists($this->cache_dir . 'data_global.' . PHP_EXT))
 		{
 			if (!sizeof($this->vars))
 			{
@@ -161,14 +154,12 @@ class acm
 	{
 		if ($var_name[0] === '_')
 		{
-			global $phpEx;
-
 			if (!$this->_exists($var_name))
 			{
 				return false;
 			}
 
-			@include($this->cache_dir . "data{$var_name}.$phpEx");
+			@include($this->cache_dir . "data{$var_name}." . PHP_EXT);
 			return (isset($data)) ? $data : false;
 		}
 		else
@@ -184,16 +175,14 @@ class acm
 	{
 		if ($var_name[0] === '_')
 		{
-			global $phpEx;
-
-			if ($fp = @fopen($this->cache_dir . "data{$var_name}.$phpEx", 'wb'))
+			if ($fp = @fopen($this->cache_dir . "data{$var_name}." . PHP_EXT, 'wb'))
 			{
 				@flock($fp, LOCK_EX);
 				fwrite($fp, "<?php\n\$expired = (time() > " . (time() + $ttl) . ") ? true : false;\nif (\$expired) { return; }\n\$data =  " . (sizeof($var) ? "unserialize('" . serialize($var) . "');" : 'array();'));
 				@flock($fp, LOCK_UN);
 				fclose($fp);
 
-				@chmod($this->cache_dir . "data{$var_name}.$phpEx", 0666);
+				@chmod($this->cache_dir . "data{$var_name}." . PHP_EXT, 0666);
 			}
 		}
 		else
@@ -244,8 +233,6 @@ class acm
 	*/
 	public function destroy($var_name, $table = '')
 	{
-		global $phpEx;
-
 		if ($var_name === 'sql' && !empty($table))
 		{
 			if (!is_array($table))
@@ -306,7 +293,7 @@ class acm
 
 		if ($var_name[0] === '_')
 		{
-			$this->remove_file($this->cache_dir . 'data' . $var_name . ".$phpEx", true);
+			$this->remove_file($this->cache_dir . 'data' . $var_name . '.' . PHP_EXT, true);
 		}
 		else if (isset($this->vars[$var_name]))
 		{
@@ -326,8 +313,7 @@ class acm
 	{
 		if ($var_name[0] === '_')
 		{
-			global $phpEx;
-			return file_exists($this->cache_dir . 'data' . $var_name . ".$phpEx");
+			return file_exists($this->cache_dir . 'data' . $var_name . '.' . PHP_EXT);
 		}
 		else
 		{
@@ -350,18 +336,16 @@ class acm
 	*/
 	public function sql_load($query)
 	{
-		global $phpEx;
-
 		// Remove extra spaces and tabs
 		$query = preg_replace('/[\n\r\s\t]+/', ' ', $query);
 		$query_id = sizeof($this->sql_rowset);
 
-		if (!file_exists($this->cache_dir . 'sql_' . md5($query) . ".$phpEx"))
+		if (!file_exists($this->cache_dir . 'sql_' . md5($query) . '.' . PHP_EXT))
 		{
 			return false;
 		}
 
-		@include($this->cache_dir . 'sql_' . md5($query) . ".$phpEx");
+		@include($this->cache_dir . 'sql_' . md5($query) . '.' . PHP_EXT);
 
 		if (!isset($expired))
 		{
@@ -369,7 +353,7 @@ class acm
 		}
 		else if ($expired)
 		{
-			$this->remove_file($this->cache_dir . 'sql_' . md5($query) . ".$phpEx", true);
+			$this->remove_file($this->cache_dir . 'sql_' . md5($query) . '.' . PHP_EXT, true);
 			return false;
 		}
 
@@ -382,11 +366,11 @@ class acm
 	*/
 	public function sql_save($query, &$query_result, $ttl)
 	{
-		global $db, $phpEx;
+		global $db;
 
 		// Remove extra spaces and tabs
 		$query = preg_replace('/[\n\r\s\t]+/', ' ', $query);
-		$filename = $this->cache_dir . 'sql_' . md5($query) . '.' . $phpEx;
+		$filename = $this->cache_dir . 'sql_' . md5($query) . '.' . PHP_EXT;
 
 		if ($fp = @fopen($filename, 'wb'))
 		{

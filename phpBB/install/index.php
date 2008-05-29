@@ -15,8 +15,8 @@ define('IN_PHPBB', true);
 define('IN_INSTALL', true);
 /**#@-*/
 
-$phpbb_root_path = (defined('PHPBB_ROOT_PATH')) ? PHPBB_ROOT_PATH : './../';
-$phpEx = substr(strrchr(__FILE__, '.'), 1);
+if (!defined('PHPBB_ROOT_PATH')) define('PHPBB_ROOT_PATH', './../');
+if (!defined('PHP_EXT')) define('PHP_EXT', substr(strrchr(__FILE__, '.'), 1));
 
 // Report all errors, except notices
 error_reporting(E_ALL ^ E_NOTICE);
@@ -148,21 +148,21 @@ else
 @ini_set('memory_limit', $mem_limit);
 
 // Include essential scripts
-require($phpbb_root_path . 'includes/functions.' . $phpEx);
+require(PHPBB_ROOT_PATH . 'includes/functions.' . PHP_EXT);
 
-if (file_exists($phpbb_root_path . 'includes/functions_content.' . $phpEx))
+if (file_exists(PHPBB_ROOT_PATH . 'includes/functions_content.' . PHP_EXT))
 {
-	require($phpbb_root_path . 'includes/functions_content.' . $phpEx);
+	require(PHPBB_ROOT_PATH . 'includes/functions_content.' . PHP_EXT);
 }
 
-include($phpbb_root_path . 'includes/auth.' . $phpEx);
-include($phpbb_root_path . 'includes/session.' . $phpEx);
-include($phpbb_root_path . 'includes/template.' . $phpEx);
-include($phpbb_root_path . 'includes/acm/acm_file.' . $phpEx);
-include($phpbb_root_path . 'includes/cache.' . $phpEx);
-include($phpbb_root_path . 'includes/functions_admin.' . $phpEx);
-include($phpbb_root_path . 'includes/utf/utf_tools.' . $phpEx);
-require($phpbb_root_path . 'includes/functions_install.' . $phpEx);
+include(PHPBB_ROOT_PATH . 'includes/auth.' . PHP_EXT);
+include(PHPBB_ROOT_PATH . 'includes/session.' . PHP_EXT);
+include(PHPBB_ROOT_PATH . 'includes/template.' . PHP_EXT);
+include(PHPBB_ROOT_PATH . 'includes/acm/acm_file.' . PHP_EXT);
+include(PHPBB_ROOT_PATH . 'includes/cache.' . PHP_EXT);
+include(PHPBB_ROOT_PATH . 'includes/functions_admin.' . PHP_EXT);
+include(PHPBB_ROOT_PATH . 'includes/utf/utf_tools.' . PHP_EXT);
+require(PHPBB_ROOT_PATH . 'includes/functions_install.' . PHP_EXT);
 
 // Try and load an appropriate language if required
 $language = basename(request_var('language', ''));
@@ -175,7 +175,7 @@ if (!empty($_SERVER['HTTP_ACCEPT_LANGUAGE']) && !$language)
 		// Set correct format ... guess full xx_yy form
 		$accept_lang = substr($accept_lang, 0, 2) . '_' . substr($accept_lang, 3, 2);
 
-		if (file_exists($phpbb_root_path . 'language/' . $accept_lang))
+		if (file_exists(PHPBB_ROOT_PATH . 'language/' . $accept_lang))
 		{
 			$language = $accept_lang;
 			break;
@@ -184,7 +184,7 @@ if (!empty($_SERVER['HTTP_ACCEPT_LANGUAGE']) && !$language)
 		{
 			// No match on xx_yy so try xx
 			$accept_lang = substr($accept_lang, 0, 2);
-			if (file_exists($phpbb_root_path . 'language/' . $accept_lang))
+			if (file_exists(PHPBB_ROOT_PATH . 'language/' . $accept_lang))
 			{
 				$language = $accept_lang;
 				break;
@@ -197,7 +197,7 @@ if (!empty($_SERVER['HTTP_ACCEPT_LANGUAGE']) && !$language)
 // dir, this may or may not be English
 if (!$language)
 {
-	$dir = @opendir($phpbb_root_path . 'language');
+	$dir = @opendir(PHPBB_ROOT_PATH . 'language');
 
 	if (!$dir)
 	{
@@ -207,7 +207,7 @@ if (!$language)
 
 	while (($file = readdir($dir)) !== false)
 	{
-		$path = $phpbb_root_path . 'language/' . $file;
+		$path = PHPBB_ROOT_PATH . 'language/' . $file;
 
 		if (!is_file($path) && !is_link($path) && file_exists($path . '/iso.txt'))
 		{
@@ -218,17 +218,17 @@ if (!$language)
 	closedir($dir);
 }
 
-if (!file_exists($phpbb_root_path . 'language/' . $language))
+if (!file_exists(PHPBB_ROOT_PATH . 'language/' . $language))
 {
 	die('No language found!');
 }
 
 // And finally, load the relevant language files
-include($phpbb_root_path . 'language/' . $language . '/common.' . $phpEx);
-include($phpbb_root_path . 'language/' . $language . '/acp/common.' . $phpEx);
-include($phpbb_root_path . 'language/' . $language . '/acp/board.' . $phpEx);
-include($phpbb_root_path . 'language/' . $language . '/install.' . $phpEx);
-include($phpbb_root_path . 'language/' . $language . '/posting.' . $phpEx);
+include(PHPBB_ROOT_PATH . 'language/' . $language . '/common.' . PHP_EXT);
+include(PHPBB_ROOT_PATH . 'language/' . $language . '/acp/common.' . PHP_EXT);
+include(PHPBB_ROOT_PATH . 'language/' . $language . '/acp/board.' . PHP_EXT);
+include(PHPBB_ROOT_PATH . 'language/' . $language . '/install.' . PHP_EXT);
+include(PHPBB_ROOT_PATH . 'language/' . $language . '/posting.' . PHP_EXT);
 
 $mode = request_var('mode', 'overview');
 $sub = request_var('sub', '');
@@ -242,14 +242,14 @@ $cache = new acm();
 $template = new template();
 
 // Add own hook handler, if present. :o
-if (file_exists($phpbb_root_path . 'includes/hooks/index.' . $phpEx))
+if (file_exists(PHPBB_ROOT_PATH . 'includes/hooks/index.' . PHP_EXT))
 {
-	require($phpbb_root_path . 'includes/hooks/index.' . $phpEx);
+	require(PHPBB_ROOT_PATH . 'includes/hooks/index.' . PHP_EXT);
 	$phpbb_hook = new phpbb_hook(array('exit_handler', 'phpbb_user_session_handler', 'append_sid', array('template', 'display')));
 
 	foreach (cache::obtain_hooks() as $hook)
 	{
-		@include($phpbb_root_path . 'includes/hooks/' . $hook . '.' . $phpEx);
+		@include(PHPBB_ROOT_PATH . 'includes/hooks/' . $hook . '.' . PHP_EXT);
 	}
 }
 else
@@ -270,7 +270,7 @@ $user->theme['template_storedb'] = false;
 
 $install = new module();
 
-$install->create('install', "index.$phpEx", $mode, $sub);
+$install->create('install', 'index.' . PHP_EXT, $mode, $sub);
 $install->load();
 
 // Generate the page
@@ -302,7 +302,7 @@ class module
 	*/
 	function create($module_type, $module_url, $selected_mod = false, $selected_submod = false)
 	{
-		global $db, $config, $phpEx, $phpbb_root_path;
+		global $db, $config;
 
 		$module = array();
 
@@ -317,7 +317,7 @@ class module
 		$setmodules = 1;
 		while (($file = readdir($dir)) !== false)
 		{
-			if (preg_match('#^install_(.*?)\.' . $phpEx . '$#', $file))
+			if (preg_match('#^install_(.*?)\.' . PHP_EXT . '$#', $file))
 			{
 				include($file);
 			}
@@ -381,8 +381,6 @@ class module
 	*/
 	function load($mode = false, $run = true)
 	{
-		global $phpbb_root_path, $phpEx;
-
 		if ($run)
 		{
 			if (!empty($mode))
@@ -415,7 +413,7 @@ class module
 		}
 
 		define('HEADER_INC', true);
-		global $template, $lang, $stage, $phpbb_root_path;
+		global $template, $lang, $stage;
 
 		$template->assign_vars(array(
 			'L_CHANGE'				=> $lang['CHANGE'],
@@ -423,7 +421,7 @@ class module
 			'L_SELECT_LANG'			=> $lang['SELECT_LANG'],
 			'L_SKIP'				=> $lang['SKIP'],
 			'PAGE_TITLE'			=> $this->get_page_title(),
-			'T_IMAGE_PATH'			=> $phpbb_root_path . 'adm/images/',
+			'T_IMAGE_PATH'			=> PHPBB_ROOT_PATH . 'adm/images/',
 
 			'S_CONTENT_DIRECTION' 	=> $lang['DIRECTION'],
 			'S_CONTENT_FLOW_BEGIN'	=> ($lang['DIRECTION'] == 'ltr') ? 'left' : 'right',
@@ -529,7 +527,7 @@ class module
 	*/
 	function generate_navigation()
 	{
-		global $lang, $template, $phpEx, $language;
+		global $lang, $template, $language;
 
 		if (is_array($this->module_ary))
 		{
@@ -762,9 +760,7 @@ class module
 	*/
 	function inst_language_select($default = '')
 	{
-		global $phpbb_root_path, $phpEx;
-
-		$dir = @opendir($phpbb_root_path . 'language');
+		$dir = @opendir(PHPBB_ROOT_PATH . 'language');
 
 		if (!$dir)
 		{
@@ -773,7 +769,7 @@ class module
 
 		while ($file = readdir($dir))
 		{
-			$path = $phpbb_root_path . 'language/' . $file;
+			$path = PHPBB_ROOT_PATH . 'language/' . $file;
 
 			if ($file == '.' || $file == '..' || is_link($path) || is_file($path) || $file == 'CVS')
 			{

@@ -16,7 +16,7 @@ if (!defined('IN_PHPBB'))
 	exit;
 }
 
-include_once($phpbb_root_path . 'includes/db/dbal.' . $phpEx);
+include_once(PHPBB_ROOT_PATH . 'includes/db/dbal.' . PHP_EXT);
 
 /**
 * Oracle Database Abstraction Layer

@@ -116,7 +116,6 @@ $global_rule_conditions = array(
 function get_folder($user_id, $folder_id = false)
 {
 	global $db, $user, $template;
-	global $phpbb_root_path, $phpEx;
 
 	$folder = array();
 
@@ -200,7 +199,7 @@ function get_folder($user_id, $folder_id = false)
 			'NUM_MESSAGES'		=> $folder_ary['num_messages'],
 			'UNREAD_MESSAGES'	=> $folder_ary['unread_messages'],
 
-			'U_FOLDER'			=> ($f_id > 0) ? append_sid("{$phpbb_root_path}ucp.$phpEx", 'i=pm&amp;folder=' . $f_id) : append_sid("{$phpbb_root_path}ucp.$phpEx", 'i=pm&amp;folder=' . $folder_id_name),
+			'U_FOLDER'			=> ($f_id > 0) ? append_sid('ucp', 'i=pm&amp;folder=' . $f_id) : append_sid('ucp', 'i=pm&amp;folder=' . $folder_id_name),
 
 			'S_CUR_FOLDER'		=> ($f_id === $folder_id) ? true : false,
 			'S_UNREAD_MESSAGES'	=> ($folder_ary['unread_messages']) ? true : false,
@@ -731,7 +730,6 @@ function place_pm_into_folder(&$global_privmsgs_rules, $release = false)
 function move_pm($user_id, $message_limit, $move_msg_ids, $dest_folder, $cur_folder_id)
 {
 	global $db, $user;
-	global $phpbb_root_path, $phpEx;
 
 	$num_moved = 0;
 
@@ -762,7 +760,7 @@ function move_pm($user_id, $message_limit, $move_msg_ids, $dest_folder, $cur_fol
 			if ($message_limit && $row['pm_count'] + sizeof($move_msg_ids) > $message_limit)
 			{
 				$message = sprintf($user->lang['NOT_ENOUGH_SPACE_FOLDER'], $row['folder_name']) . '<br /><br />';
-				$message .= sprintf($user->lang['CLICK_RETURN_FOLDER'], '<a href="' . append_sid("{$phpbb_root_path}ucp.$phpEx", 'i=pm&amp;folder=' . $row['folder_id']) . '">', '</a>', $row['folder_name']);
+				$message .= sprintf($user->lang['CLICK_RETURN_FOLDER'], '<a href="' . append_sid('ucp', 'i=pm&amp;folder=' . $row['folder_id']) . '">', '</a>', $row['folder_name']);
 				trigger_error($message);
 			}
 		}
@@ -779,7 +777,7 @@ function move_pm($user_id, $message_limit, $move_msg_ids, $dest_folder, $cur_fol
 			if ($message_limit && $num_messages + sizeof($move_msg_ids) > $message_limit)
 			{
 				$message = sprintf($user->lang['NOT_ENOUGH_SPACE_FOLDER'], $user->lang['PM_INBOX']) . '<br /><br />';
-				$message .= sprintf($user->lang['CLICK_RETURN_FOLDER'], '<a href="' . append_sid("{$phpbb_root_path}ucp.$phpEx", 'i=pm&amp;folder=inbox') . '">', '</a>', $user->lang['PM_INBOX']);
+				$message .= sprintf($user->lang['CLICK_RETURN_FOLDER'], '<a href="' . append_sid('ucp', 'i=pm&amp;folder=inbox') . '">', '</a>', $user->lang['PM_INBOX']);
 				trigger_error($message);
 			}
 		}
@@ -868,7 +866,7 @@ function update_unread_status($unread, $msg_id, $user_id, $folder_id)
 */
 function handle_mark_actions($user_id, $mark_action)
 {
-	global $db, $user, $phpbb_root_path, $phpEx;
+	global $db, $user;
 
 	$msg_ids		= request_var('marked_msg_id', array(0));
 	$cur_folder_id	= request_var('cur_folder_id', PRIVMSGS_NO_BOX);
@@ -899,7 +897,7 @@ function handle_mark_actions($user_id, $mark_action)
 				delete_pm($user_id, $msg_ids, $cur_folder_id);
 
 				$success_msg = (sizeof($msg_ids) == 1) ? 'MESSAGE_DELETED' : 'MESSAGES_DELETED';
-				$redirect = append_sid("{$phpbb_root_path}ucp.$phpEx", 'i=pm&amp;folder=' . $cur_folder_id);
+				$redirect = append_sid('ucp', 'i=pm&amp;folder=' . $cur_folder_id);
 
 				meta_refresh(3, $redirect);
 				trigger_error($user->lang[$success_msg] . '<br /><br />' . sprintf($user->lang['RETURN_FOLDER'], '<a href="' . $redirect . '">', '</a>'));
@@ -1105,7 +1103,7 @@ function rebuild_header($check_ary)
 */
 function write_pm_addresses($check_ary, $author_id, $plaintext = false)
 {
-	global $db, $user, $template, $phpbb_root_path, $phpEx;
+	global $db, $user, $template;
 
 	$addresses = array();
 
@@ -1228,7 +1226,7 @@ function write_pm_addresses($check_ary, $author_id, $plaintext = false)
 					else
 					{
 						$tpl_ary = array_merge($tpl_ary, array(
-							'U_VIEW'		=> append_sid("{$phpbb_root_path}memberlist.$phpEx", 'mode=group&amp;g=' . $id),
+							'U_VIEW'		=> append_sid('memberlist', 'mode=group&amp;g=' . $id),
 						));
 					}
 
@@ -1281,7 +1279,7 @@ function get_folder_status($folder_id, $folder)
 */
 function submit_pm($mode, $subject, &$data, $put_in_outbox = true)
 {
-	global $db, $auth, $config, $phpEx, $template, $user, $phpbb_root_path;
+	global $db, $auth, $config, $template, $user;
 
 	// We do not handle erasing pms here
 	if ($mode == 'delete')
@@ -1528,7 +1526,7 @@ function submit_pm($mode, $subject, &$data, $put_in_outbox = true)
 			else
 			{
 				// insert attachment into db
-				if (!@file_exists($phpbb_root_path . $config['upload_path'] . '/' . basename($orphan_rows[$attach_row['attach_id']]['physical_filename'])))
+				if (!@file_exists(PHPBB_ROOT_PATH . $config['upload_path'] . '/' . basename($orphan_rows[$attach_row['attach_id']]['physical_filename'])))
 				{
 					continue;
 				}
@@ -1585,7 +1583,7 @@ function submit_pm($mode, $subject, &$data, $put_in_outbox = true)
 */
 function pm_notification($mode, $author, $recipients, $subject, $message)
 {
-	global $db, $user, $config, $phpbb_root_path, $phpEx, $auth;
+	global $db, $user, $config, $auth;
 
 	$subject = censor_text($subject);
 
@@ -1640,7 +1638,7 @@ function pm_notification($mode, $author, $recipients, $subject, $message)
 		return;
 	}
 
-	include_once($phpbb_root_path . 'includes/functions_messenger.' . $phpEx);
+	include_once(PHPBB_ROOT_PATH . 'includes/functions_messenger.' . PHP_EXT);
 	$messenger = new messenger();
 
 	foreach ($msg_list_ary as $pos => $addr)
@@ -1655,7 +1653,7 @@ function pm_notification($mode, $author, $recipients, $subject, $message)
 			'AUTHOR_NAME'	=> htmlspecialchars_decode($author),
 			'USERNAME'		=> htmlspecialchars_decode($addr['name']),
 
-			'U_INBOX'		=> generate_board_url() . "/ucp.$phpEx?i=pm&folder=inbox")
+			'U_INBOX'		=> generate_board_url() . '/ucp.' . PHP_EXT . '?i=pm&folder=inbox')
 		);
 
 		$messenger->send($addr['method']);
@@ -1672,7 +1670,7 @@ function pm_notification($mode, $author, $recipients, $subject, $message)
 */
 function message_history($msg_id, $user_id, $message_row, $folder, $in_post_mode = false)
 {
-	global $db, $user, $config, $template, $phpbb_root_path, $phpEx, $auth, $bbcode;
+	global $db, $user, $config, $template, $auth, $bbcode;
 
 	// Get History Messages (could be newer)
 	$sql = 'SELECT t.*, p.*, u.*
@@ -1703,7 +1701,7 @@ function message_history($msg_id, $user_id, $message_row, $folder, $in_post_mode
 
 	$rowset = array();
 	$bbcode_bitfield = '';
-	$folder_url = append_sid("{$phpbb_root_path}ucp.$phpEx", 'i=pm') . '&amp;folder=';
+	$folder_url = append_sid('ucp', 'i=pm') . '&amp;folder=';
 
 	do
 	{
@@ -1736,14 +1734,14 @@ function message_history($msg_id, $user_id, $message_row, $folder, $in_post_mode
 	{
 		if (!class_exists('bbcode'))
 		{
-			include($phpbb_root_path . 'includes/bbcode.' . $phpEx);
+			include(PHPBB_ROOT_PATH . 'includes/bbcode.' . PHP_EXT);
 		}
 		$bbcode = new bbcode(base64_encode($bbcode_bitfield));
 	}
 
 	$title = censor_text($title);
 
-	$url = append_sid("{$phpbb_root_path}ucp.$phpEx", 'i=pm');
+	$url = append_sid('ucp', 'i=pm');
 	$next_history_pm = $previous_history_pm = $prev_id = 0;
 
 	foreach ($rowset as $id => $row)

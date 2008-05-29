@@ -634,24 +634,23 @@ function utf8_decode_ncr_callback($m)
 function utf8_case_fold($text, $option = 'full')
 {
 	static $uniarray = array();
-	global $phpbb_root_path, $phpEx;
 
 	// common is always set
 	if (!isset($uniarray['c']))
 	{
-		$uniarray['c'] = include($phpbb_root_path . 'includes/utf/data/case_fold_c.' . $phpEx);
+		$uniarray['c'] = include(PHPBB_ROOT_PATH . 'includes/utf/data/case_fold_c.' . PHP_EXT);
 	}
 
 	// only set full if we need to
 	if ($option === 'full' && !isset($uniarray['f']))
 	{
-		$uniarray['f'] = include($phpbb_root_path . 'includes/utf/data/case_fold_f.' . $phpEx);
+		$uniarray['f'] = include(PHPBB_ROOT_PATH . 'includes/utf/data/case_fold_f.' . PHP_EXT);
 	}
 
 	// only set simple if we need to
 	if ($option !== 'full' && !isset($uniarray['s']))
 	{
-		$uniarray['s'] = include($phpbb_root_path . 'includes/utf/data/case_fold_s.' . $phpEx);
+		$uniarray['s'] = include(PHPBB_ROOT_PATH . 'includes/utf/data/case_fold_s.' . PHP_EXT);
 	}
 
 	// common is always replaced
@@ -1248,15 +1247,13 @@ function utf8_case_fold_nfkc($text, $option = 'full')
 		"\xF0\x9D\x9E\xBB"	=> "\xCF\x83",
 		"\xF0\x9D\x9F\x8A"	=> "\xCF\x9D",
 	);
-	global $phpbb_root_path, $phpEx;
 
 	// do the case fold
 	$text = utf8_case_fold($text, $option);
 
 	if (!class_exists('utf_normalizer'))
 	{
-		global $phpbb_root_path, $phpEx;
-		include($phpbb_root_path . 'includes/utf/utf_normalizer.' . $phpEx);
+		include(PHPBB_ROOT_PATH . 'includes/utf/utf_normalizer.' . PHP_EXT);
 	}
 
 	// convert to NFKC
@@ -1345,7 +1342,6 @@ function utf8_case_fold_nfc($text, $option = 'full')
 		"\xE1\xBF\xB7"	=> "\xE1\xBF\xB6\xCD\x85",
 		"\xE1\xBF\xBC"	=> "\xCE\xA9\xCD\x85",
 	);
-	global $phpbb_root_path, $phpEx;
 
 	// perform a small trick, avoid further normalization on composed points that contain U+0345 in their decomposition
 	$text = strtr($text, $ypogegrammeni);
@@ -1372,8 +1368,7 @@ function utf8_normalize_nfc($strings)
 
 	if (!class_exists('utf_normalizer'))
 	{
-		global $phpbb_root_path, $phpEx;
-		include($phpbb_root_path . 'includes/utf/utf_normalizer.' . $phpEx);
+		include(PHPBB_ROOT_PATH . 'includes/utf/utf_normalizer.' . PHP_EXT);
 	}
 
 	if (!is_array($strings))
@@ -1416,12 +1411,11 @@ function utf8_normalize_nfc($strings)
 */
 function utf8_clean_string($text)
 {
-	global $phpbb_root_path, $phpEx;
-
 	static $homographs = array();
+
 	if (empty($homographs))
 	{
-		$homographs = include($phpbb_root_path . 'includes/utf/data/confusables.' . $phpEx);
+		$homographs = include(PHPBB_ROOT_PATH . 'includes/utf/data/confusables.' . PHP_EXT);
 	}
 
 	$text = utf8_case_fold_nfkc($text);

@@ -128,12 +128,12 @@ class bbcode
 	*/
 	function bbcode_cache_init()
 	{
-		global $user, $phpbb_root_path;
+		global $user;
 
 		if (empty($this->template_filename))
 		{
 			$this->template_bitfield = new bitfield($user->theme['bbcode_bitfield']);
-			$this->template_filename = $phpbb_root_path . 'styles/' . $user->theme['template_path'] . '/template/bbcode.html';
+			$this->template_filename = PHPBB_ROOT_PATH . 'styles/' . $user->theme['template_path'] . '/template/bbcode.html';
 
 			if (!@file_exists($this->template_filename))
 			{

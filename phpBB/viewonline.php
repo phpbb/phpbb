@@ -12,9 +12,9 @@
 * @ignore
 */
 define('IN_PHPBB', true);
-$phpbb_root_path = (defined('PHPBB_ROOT_PATH')) ? PHPBB_ROOT_PATH : './';
-$phpEx = substr(strrchr(__FILE__, '.'), 1);
-include($phpbb_root_path . 'common.' . $phpEx);
+if (!defined('PHPBB_ROOT_PATH')) define('PHPBB_ROOT_PATH', './');
+if (!defined('PHP_EXT')) define('PHP_EXT', substr(strrchr(__FILE__, '.'), 1));
+include(PHPBB_ROOT_PATH . 'common.' . PHP_EXT);
 
 // Start session management
 $user->session_begin();
@@ -54,7 +54,7 @@ $order_by = $sort_key_sql[$sort_key] . ' ' . (($sort_dir == 'a') ? 'ASC' : 'DESC
 // Whois requested
 if ($mode == 'whois' && $auth->acl_get('a_') && $session_id)
 {
-	include($phpbb_root_path . 'includes/functions_user.' . $phpEx);
+	include(PHPBB_ROOT_PATH . 'includes/functions_user.' . PHP_EXT);
 
 	$sql = 'SELECT u.user_id, u.username, u.user_type, s.session_ip
 		FROM ' . USERS_TABLE . ' u, ' . SESSIONS_TABLE . " s
@@ -74,7 +74,7 @@ if ($mode == 'whois' && $auth->acl_get('a_') && $session_id)
 	$template->set_filenames(array(
 		'body' => 'viewonline_whois.html')
 	);
-	make_jumpbox(append_sid("{$phpbb_root_path}viewforum.$phpEx"));
+	make_jumpbox(append_sid('viewforum'));
 
 	page_footer();
 }
@@ -196,12 +196,12 @@ while ($row = $db->sql_fetchrow($result))
 	{
 		case 'index':
 			$location = $user->lang['INDEX'];
-			$location_url = append_sid("{$phpbb_root_path}index.$phpEx");
+			$location_url = append_sid('index');
 		break;
 
 		case 'adm/index':
 			$location = $user->lang['ACP'];
-			$location_url = append_sid("{$phpbb_root_path}index.$phpEx");
+			$location_url = append_sid('index');
 		break;
 
 		case 'posting':
@@ -213,7 +213,7 @@ while ($row = $db->sql_fetchrow($result))
 			if ($forum_id && $auth->acl_get('f_list', $forum_id))
 			{
 				$location = '';
-				$location_url = append_sid("{$phpbb_root_path}viewforum.$phpEx", 'f=' . $forum_id);
+				$location_url = append_sid('viewforum', 'f=' . $forum_id);
 
 				if ($forum_data[$forum_id]['forum_type'] == FORUM_LINK)
 				{
@@ -251,33 +251,33 @@ while ($row = $db->sql_fetchrow($result))
 			else
 			{
 				$location = $user->lang['INDEX'];
-				$location_url = append_sid("{$phpbb_root_path}index.$phpEx");
+				$location_url = append_sid('index');
 			}
 		break;
 
 		case 'search':
 			$location = $user->lang['SEARCHING_FORUMS'];
-			$location_url = append_sid("{$phpbb_root_path}search.$phpEx");
+			$location_url = append_sid('search');
 		break;
 
 		case 'faq':
 			$location = $user->lang['VIEWING_FAQ'];
-			$location_url = append_sid("{$phpbb_root_path}faq.$phpEx");
+			$location_url = append_sid('faq');
 		break;
 
 		case 'viewonline':
 			$location = $user->lang['VIEWING_ONLINE'];
-			$location_url = append_sid("{$phpbb_root_path}viewonline.$phpEx");
+			$location_url = append_sid('viewonline');
 		break;
 
 		case 'memberlist':
 			$location = (strpos($row['session_page'], 'mode=viewprofile') !== false) ? $user->lang['VIEWING_MEMBER_PROFILE'] : $user->lang['VIEWING_MEMBERS'];
-			$location_url = append_sid("{$phpbb_root_path}memberlist.$phpEx");
+			$location_url = append_sid('memberlist');
 		break;
 
 		case 'mcp':
 			$location = $user->lang['VIEWING_MCP'];
-			$location_url = append_sid("{$phpbb_root_path}index.$phpEx");
+			$location_url = append_sid('index');
 		break;
 
 		case 'ucp':
@@ -301,22 +301,22 @@ while ($row = $db->sql_fetchrow($result))
 				}
 			}
 
-			$location_url = append_sid("{$phpbb_root_path}index.$phpEx");
+			$location_url = append_sid('index');
 		break;
 
 		case 'download':
 			$location = $user->lang['DOWNLOADING_FILE'];
-			$location_url = append_sid("{$phpbb_root_path}index.$phpEx");
+			$location_url = append_sid('index');
 		break;
 
 		case 'report':
 			$location = $user->lang['REPORTING_POST'];
-			$location_url = append_sid("{$phpbb_root_path}index.$phpEx");
+			$location_url = append_sid('index');
 		break;
 
 		default:
 			$location = $user->lang['INDEX'];
-			$location_url = append_sid("{$phpbb_root_path}index.$phpEx");
+			$location_url = append_sid('index');
 		break;
 	}
 
@@ -330,8 +330,8 @@ while ($row = $db->sql_fetchrow($result))
 		'USER_BROWSER'		=> ($auth->acl_get('a_user')) ? $row['session_browser'] : '',
 
 		'U_USER_PROFILE'	=> ($row['user_type'] != USER_IGNORE) ? get_username_string('profile', $row['user_id'], '') : '',
-		'U_USER_IP'			=> append_sid("{$phpbb_root_path}viewonline.$phpEx", 'mode=lookup' . (($mode != 'lookup' || $row['session_id'] != $session_id) ? '&amp;s=' . $row['session_id'] : '') . "&amp;sg=$show_guests&amp;start=$start&amp;sk=$sort_key&amp;sd=$sort_dir"),
-		'U_WHOIS'			=> append_sid("{$phpbb_root_path}viewonline.$phpEx", 'mode=whois&amp;s=' . $row['session_id']),
+		'U_USER_IP'			=> append_sid('viewonline', 'mode=lookup' . (($mode != 'lookup' || $row['session_id'] != $session_id) ? '&amp;s=' . $row['session_id'] : '') . "&amp;sg=$show_guests&amp;start=$start&amp;sk=$sort_key&amp;sd=$sort_dir"),
+		'U_WHOIS'			=> append_sid('viewonline', 'mode=whois&amp;s=' . $row['session_id']),
 		'U_FORUM_LOCATION'	=> $location_url,
 		
 		'S_USER_HIDDEN'		=> $s_user_hidden,
@@ -368,7 +368,7 @@ foreach ($vars_online as $l_prefix => $var_ary)
 }
 unset($vars_online);
 
-$pagination = generate_pagination(append_sid("{$phpbb_root_path}viewonline.$phpEx", "sg=$show_guests&amp;sk=$sort_key&amp;sd=$sort_dir"), $counter, $config['topics_per_page'], $start);
+$pagination = generate_pagination(append_sid('viewonline', "sg=$show_guests&amp;sk=$sort_key&amp;sd=$sort_dir"), $counter, $config['topics_per_page'], $start);
 
 // Grab group details for legend display
 if ($auth->acl_gets('a_group', 'a_groupadd', 'a_groupdel'))
@@ -403,13 +403,13 @@ while ($row = $db->sql_fetchrow($result))
 	}
 	else
 	{
-		$legend .= (($legend != '') ? ', ' : '') . '<a style="color:#' . $row['group_colour'] . '" href="' . append_sid("{$phpbb_root_path}memberlist.$phpEx", 'mode=group&amp;g=' . $row['group_id']) . '">' . (($row['group_type'] == GROUP_SPECIAL) ? $user->lang['G_' . $row['group_name']] : $row['group_name']) . '</a>';
+		$legend .= (($legend != '') ? ', ' : '') . '<a style="color:#' . $row['group_colour'] . '" href="' . append_sid('memberlist', 'mode=group&amp;g=' . $row['group_id']) . '">' . (($row['group_type'] == GROUP_SPECIAL) ? $user->lang['G_' . $row['group_name']] : $row['group_name']) . '</a>';
 	}
 }
 $db->sql_freeresult($result);
 
 // Refreshing the page every 60 seconds...
-meta_refresh(60, append_sid("{$phpbb_root_path}viewonline.$phpEx", "sg=$show_guests&amp;sk=$sort_key&amp;sd=$sort_dir&amp;start=$start"));
+meta_refresh(60, append_sid('viewonline', "sg=$show_guests&amp;sk=$sort_key&amp;sd=$sort_dir&amp;start=$start"));
 
 // Send data to template
 $template->assign_vars(array(
@@ -419,11 +419,11 @@ $template->assign_vars(array(
 	'PAGINATION'					=> $pagination,
 	'PAGE_NUMBER'					=> on_page($counter, $config['topics_per_page'], $start),
 
-	'U_SORT_USERNAME'		=> append_sid("{$phpbb_root_path}viewonline.$phpEx", 'sk=a&amp;sd=' . (($sort_key == 'a' && $sort_dir == 'a') ? 'd' : 'a') . '&amp;sg=' . ((int) $show_guests)),
-	'U_SORT_UPDATED'		=> append_sid("{$phpbb_root_path}viewonline.$phpEx", 'sk=b&amp;sd=' . (($sort_key == 'b' && $sort_dir == 'a') ? 'd' : 'a') . '&amp;sg=' . ((int) $show_guests)),
-	'U_SORT_LOCATION'		=> append_sid("{$phpbb_root_path}viewonline.$phpEx", 'sk=c&amp;sd=' . (($sort_key == 'c' && $sort_dir == 'a') ? 'd' : 'a') . '&amp;sg=' . ((int) $show_guests)),
+	'U_SORT_USERNAME'		=> append_sid('viewonline', 'sk=a&amp;sd=' . (($sort_key == 'a' && $sort_dir == 'a') ? 'd' : 'a') . '&amp;sg=' . ((int) $show_guests)),
+	'U_SORT_UPDATED'		=> append_sid('viewonline', 'sk=b&amp;sd=' . (($sort_key == 'b' && $sort_dir == 'a') ? 'd' : 'a') . '&amp;sg=' . ((int) $show_guests)),
+	'U_SORT_LOCATION'		=> append_sid('viewonline', 'sk=c&amp;sd=' . (($sort_key == 'c' && $sort_dir == 'a') ? 'd' : 'a') . '&amp;sg=' . ((int) $show_guests)),
 
-	'U_SWITCH_GUEST_DISPLAY'	=> append_sid("{$phpbb_root_path}viewonline.$phpEx", 'sg=' . ((int) !$show_guests)),
+	'U_SWITCH_GUEST_DISPLAY'	=> append_sid('viewonline', 'sg=' . ((int) !$show_guests)),
 	'L_SWITCH_GUEST_DISPLAY'	=> ($show_guests) ? $user->lang['HIDE_GUESTS'] : $user->lang['DISPLAY_GUESTS'],
 	'S_SWITCH_GUEST_DISPLAY'	=> ($config['load_online_guests']) ? true : false)
 );
@@ -437,7 +437,7 @@ page_header($user->lang['WHO_IS_ONLINE']);
 $template->set_filenames(array(
 	'body' => 'viewonline_body.html')
 );
-make_jumpbox(append_sid("{$phpbb_root_path}viewforum.$phpEx"));
+make_jumpbox(append_sid('viewforum'));
 
 page_footer();
 

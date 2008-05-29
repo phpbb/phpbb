@@ -151,7 +151,7 @@ function user_update_name($old_name, $new_name)
 */
 function user_add($user_row, $cp_data = false)
 {
-	global $db, $user, $auth, $config, $phpbb_root_path, $phpEx;
+	global $db, $user, $auth, $config;
 
 	if (empty($user_row['username']) || !isset($user_row['group_id']) || !isset($user_row['user_email']) || !isset($user_row['user_type']))
 	{
@@ -256,7 +256,7 @@ function user_add($user_row, $cp_data = false)
 
 		if (!class_exists('custom_profile'))
 		{
-			include_once($phpbb_root_path . 'includes/functions_profile_fields.' . $phpEx);
+			include_once(PHPBB_ROOT_PATH . 'includes/functions_profile_fields.' . PHP_EXT);
 		}
 
 		$sql = 'INSERT INTO ' . PROFILE_FIELDS_DATA_TABLE . ' ' .
@@ -301,7 +301,6 @@ function user_add($user_row, $cp_data = false)
 function user_delete($mode, $user_id, $post_username = false)
 {
 	global $cache, $config, $db, $user, $auth;
-	global $phpbb_root_path, $phpEx;
 
 	$sql = 'SELECT *
 		FROM ' . USERS_TABLE . '
@@ -438,7 +437,7 @@ function user_delete($mode, $user_id, $post_username = false)
 
 			if (!function_exists('delete_posts'))
 			{
-				include($phpbb_root_path . 'includes/functions_admin.' . $phpEx);
+				include(PHPBB_ROOT_PATH . 'includes/functions_admin.' . PHP_EXT);
 			}
 
 			$sql = 'SELECT topic_id, COUNT(post_id) AS total_posts
@@ -1769,7 +1768,7 @@ function validate_jabber($jid)
 */
 function avatar_delete($mode, $row, $clean_db = false)
 {
-	global $phpbb_root_path, $config, $db, $user;
+	global $config, $db, $user;
 
 	// Check if the users avatar is actually *not* a group avatar
 	if ($mode == 'user')
@@ -1785,9 +1784,9 @@ function avatar_delete($mode, $row, $clean_db = false)
 		avatar_remove_db($row[$mode . '_avatar']);
 	}
 	$filename = get_avatar_filename($row[$mode . '_avatar']);
-	if (file_exists($phpbb_root_path . $config['avatar_path'] . '/' . $filename))
+	if (file_exists(PHPBB_ROOT_PATH . $config['avatar_path'] . '/' . $filename))
 	{
-		@unlink($phpbb_root_path . $config['avatar_path'] . '/' . $filename);
+		@unlink(PHPBB_ROOT_PATH . $config['avatar_path'] . '/' . $filename);
 		return true;
 	}
 
@@ -1799,7 +1798,7 @@ function avatar_delete($mode, $row, $clean_db = false)
 */
 function avatar_remote($data, &$error)
 {
-	global $config, $db, $user, $phpbb_root_path, $phpEx;
+	global $config, $db, $user;
 
 	if (!preg_match('#^(http|https|ftp)://#i', $data['remotelink']))
 	{
@@ -1834,7 +1833,7 @@ function avatar_remote($data, &$error)
 	}
 
 	// Check image type
-	include_once($phpbb_root_path . 'includes/functions_upload.' . $phpEx);
+	include_once(PHPBB_ROOT_PATH . 'includes/functions_upload.' . PHP_EXT);
 	$types = fileupload::image_types();
 	$extension = strtolower(filespec::get_extension($data['remotelink']));
 
@@ -1877,10 +1876,10 @@ function avatar_remote($data, &$error)
 */
 function avatar_upload($data, &$error)
 {
-	global $phpbb_root_path, $config, $db, $user, $phpEx;
+	global $config, $db, $user;
 
 	// Init upload class
-	include_once($phpbb_root_path . 'includes/functions_upload.' . $phpEx);
+	include_once(PHPBB_ROOT_PATH . 'includes/functions_upload.' . PHP_EXT);
 	$upload = new fileupload('AVATAR_', array('jpg', 'jpeg', 'gif', 'png'), $config['avatar_filesize'], $config['avatar_min_width'], $config['avatar_min_height'], $config['avatar_max_width'], $config['avatar_max_height'], explode('|', $config['mime_triggers']));
 
 	if (!empty($_FILES['uploadfile']['name']))
@@ -1948,12 +1947,11 @@ function get_avatar_filename($avatar_entry)
 */
 function avatar_gallery($category, $avatar_select, $items_per_column, $block_var = 'avatar_row')
 {
-	global $user, $cache, $template;
-	global $config, $phpbb_root_path;
+	global $user, $cache, $template, $config;
 
 	$avatar_list = array();
 
-	$path = $phpbb_root_path . $config['avatar_gallery_path'];
+	$path = PHPBB_ROOT_PATH . $config['avatar_gallery_path'];
 
 	if (!file_exists($path) || !is_dir($path))
 	{
@@ -2032,13 +2030,13 @@ function avatar_gallery($category, $avatar_select, $items_per_column, $block_var
 		foreach ($avatar_row_ary as $avatar_col_ary)
 		{
 			$template->assign_block_vars($block_var . '.avatar_column', array(
-				'AVATAR_IMAGE'	=> $phpbb_root_path . $config['avatar_gallery_path'] . '/' . $avatar_col_ary['file'],
+				'AVATAR_IMAGE'	=> PHPBB_ROOT_PATH . $config['avatar_gallery_path'] . '/' . $avatar_col_ary['file'],
 				'AVATAR_NAME'	=> $avatar_col_ary['name'],
 				'AVATAR_FILE'	=> $avatar_col_ary['filename'])
 			);
 
 			$template->assign_block_vars($block_var . '.avatar_option_column', array(
-				'AVATAR_IMAGE'	=> $phpbb_root_path . $config['avatar_gallery_path'] . '/' . $avatar_col_ary['file'],
+				'AVATAR_IMAGE'	=> PHPBB_ROOT_PATH . $config['avatar_gallery_path'] . '/' . $avatar_col_ary['file'],
 				'S_OPTIONS_AVATAR'	=> $avatar_col_ary['filename'])
 			);
 		}
@@ -2053,7 +2051,7 @@ function avatar_gallery($category, $avatar_select, $items_per_column, $block_var
 */
 function avatar_get_dimensions($avatar, $avatar_type, &$error, $current_x = 0, $current_y = 0)
 {
-	global $config, $phpbb_root_path, $user;
+	global $config, $user;
 
 	switch ($avatar_type)
 	{
@@ -2061,11 +2059,11 @@ function avatar_get_dimensions($avatar, $avatar_type, &$error, $current_x = 0, $
 			break;
 
 		case AVATAR_UPLOAD :
-			$avatar = $phpbb_root_path . $config['avatar_path'] . '/' . get_avatar_filename($avatar);
+			$avatar = PHPBB_ROOT_PATH . $config['avatar_path'] . '/' . get_avatar_filename($avatar);
 			break;
 
 		case AVATAR_GALLERY :
-			$avatar = $phpbb_root_path . $config['avatar_gallery_path'] . '/' . $avatar ;
+			$avatar = PHPBB_ROOT_PATH . $config['avatar_gallery_path'] . '/' . $avatar ;
 			break;
 	}
 
@@ -2106,7 +2104,7 @@ function avatar_get_dimensions($avatar, $avatar_type, &$error, $current_x = 0, $
 */
 function avatar_process_user(&$error, $custom_userdata = false)
 {
-	global $config, $phpbb_root_path, $auth, $user, $db;
+	global $config, $auth, $user, $db;
 
 	$data = array(
 		'uploadurl'		=> request_var('uploadurl', ''),
@@ -2143,7 +2141,7 @@ function avatar_process_user(&$error, $custom_userdata = false)
 	$avatar_select = basename(request_var('avatar_select', ''));
 
 	// Can we upload?
-	$can_upload = ($config['allow_avatar_upload'] && file_exists($phpbb_root_path . $config['avatar_path']) && @is_writable($phpbb_root_path . $config['avatar_path']) && $change_avatar && (@ini_get('file_uploads') || strtolower(@ini_get('file_uploads')) == 'on')) ? true : false;
+	$can_upload = ($config['allow_avatar_upload'] && file_exists(PHPBB_ROOT_PATH . $config['avatar_path']) && @is_writable(PHPBB_ROOT_PATH . $config['avatar_path']) && $change_avatar && (@ini_get('file_uploads') || strtolower(@ini_get('file_uploads')) == 'on')) ? true : false;
 
 	if ((!empty($_FILES['uploadfile']['name']) || $data['uploadurl']) && $can_upload)
 	{
@@ -2161,14 +2159,14 @@ function avatar_process_user(&$error, $custom_userdata = false)
 		$sql_ary['user_avatar'] = $avatar_select;
 
 		// check avatar gallery
-		if (!is_dir($phpbb_root_path . $config['avatar_gallery_path'] . '/' . $category))
+		if (!is_dir(PHPBB_ROOT_PATH . $config['avatar_gallery_path'] . '/' . $category))
 		{
 			$sql_ary['user_avatar'] = '';
 			$sql_ary['user_avatar_type'] = $sql_ary['user_avatar_width'] = $sql_ary['user_avatar_height'] = 0;
 		}
 		else
 		{
-			list($sql_ary['user_avatar_width'], $sql_ary['user_avatar_height']) = getimagesize($phpbb_root_path . $config['avatar_gallery_path'] . '/' . $category . '/' . $sql_ary['user_avatar']);
+			list($sql_ary['user_avatar_width'], $sql_ary['user_avatar_height']) = getimagesize(PHPBB_ROOT_PATH . $config['avatar_gallery_path'] . '/' . $category . '/' . $sql_ary['user_avatar']);
 			$sql_ary['user_avatar'] = $category . '/' . $sql_ary['user_avatar'];
 		}
 	}
@@ -2260,7 +2258,7 @@ function avatar_process_user(&$error, $custom_userdata = false)
 */
 function group_create(&$group_id, $type, $name, $desc, $group_attributes, $allow_desc_bbcode = false, $allow_desc_urls = false, $allow_desc_smilies = false)
 {
-	global $phpbb_root_path, $config, $db, $user, $file_upload;
+	global $config, $db, $user, $file_upload;
 
 	$error = array();
 	$attribute_ary = array(
@@ -2420,7 +2418,7 @@ function group_create(&$group_id, $type, $name, $desc, $group_attributes, $allow
 */
 function group_correct_avatar($group_id, $old_entry)
 {
-	global $config, $db, $phpbb_root_path;
+	global $config, $db;
 
 	$group_id		= (int)$group_id;
 	$ext 			= substr(strrchr($old_entry, '.'), 1);
@@ -2428,7 +2426,7 @@ function group_correct_avatar($group_id, $old_entry)
 	$new_filename 	= $config['avatar_salt'] . "_g$group_id.$ext";
 	$new_entry 		= 'g' . $group_id . '_' . substr(time(), -5) . ".$ext";
 
-	$avatar_path = $phpbb_root_path . $config['avatar_path'];
+	$avatar_path = PHPBB_ROOT_PATH . $config['avatar_path'];
 	if (@rename($avatar_path . '/'. $old_filename, $avatar_path . '/' . $new_filename))
 	{
 		$sql = 'UPDATE ' . GROUPS_TABLE . '
@@ -2459,7 +2457,7 @@ function avatar_remove_db($avatar_name)
 */
 function group_delete($group_id, $group_name = false)
 {
-	global $db, $phpbb_root_path, $phpEx;
+	global $db;
 
 	if (!$group_name)
 	{
@@ -2513,7 +2511,7 @@ function group_delete($group_id, $group_name = false)
 	// Re-cache moderators
 	if (!function_exists('cache_moderators'))
 	{
-		include($phpbb_root_path . 'includes/functions_admin.' . $phpEx);
+		include(PHPBB_ROOT_PATH . 'includes/functions_admin.' . PHP_EXT);
 	}
 
 	cache_moderators();
@@ -2833,7 +2831,7 @@ function remove_default_rank($group_id, $user_ids)
 */
 function group_user_attributes($action, $group_id, $user_id_ary = false, $username_ary = false, $group_name = false, $group_attributes = false)
 {
-	global $db, $auth, $phpbb_root_path, $phpEx, $config;
+	global $db, $auth, $config;
 
 	// We need both username and user_id info
 	$result = user_get_id_name($user_id_ary, $username_ary);
@@ -2891,7 +2889,7 @@ function group_user_attributes($action, $group_id, $user_id_ary = false, $userna
 			$db->sql_query($sql);
 
 			// Send approved email to users...
-			include_once($phpbb_root_path . 'includes/functions_messenger.' . $phpEx);
+			include_once(PHPBB_ROOT_PATH . 'includes/functions_messenger.' . PHP_EXT);
 			$messenger = new messenger();
 
 			foreach ($email_users as $row)
@@ -2904,8 +2902,8 @@ function group_user_attributes($action, $group_id, $user_id_ary = false, $userna
 				$messenger->assign_vars(array(
 					'USERNAME'		=> htmlspecialchars_decode($row['username']),
 					'GROUP_NAME'	=> htmlspecialchars_decode($group_name),
-					'U_GROUP'		=> generate_board_url() . "/ucp.$phpEx?i=groups&mode=membership")
-				);
+					'U_GROUP'		=> generate_board_url() . '/ucp.' . PHP_EXT . '?i=groups&mode=membership',
+				));
 
 				$messenger->send($row['user_notify_type']);
 			}
@@ -3246,8 +3244,7 @@ function group_update_listings($group_id)
 	{
 		if (!function_exists('cache_moderators'))
 		{
-			global $phpbb_root_path, $phpEx;
-			include($phpbb_root_path . 'includes/functions_admin.' . $phpEx);
+			include(PHPBB_ROOT_PATH . 'includes/functions_admin.' . PHP_EXT);
 		}
 		cache_moderators();
 	}
@@ -3256,8 +3253,7 @@ function group_update_listings($group_id)
 	{
 		if (!function_exists('update_foes'))
 		{
-			global $phpbb_root_path, $phpEx;
-			include($phpbb_root_path . 'includes/functions_admin.' . $phpEx);
+			include(PHPBB_ROOT_PATH . 'includes/functions_admin.' . PHP_EXT);
 		}
 		update_foes(array($group_id));
 	}

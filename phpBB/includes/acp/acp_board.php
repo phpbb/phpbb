@@ -27,8 +27,7 @@ class acp_board
 
 	function main($id, $mode)
 	{
-		global $db, $user, $auth, $template;
-		global $config, $phpbb_root_path, $phpbb_admin_path, $phpEx;
+		global $db, $user, $auth, $template, $config;
 
 		$user->add_lang('acp/board');
 
@@ -418,15 +417,15 @@ class acp_board
 			// Retrieve a list of auth plugins and check their config values
 			$auth_plugins = array();
 
-			$dp = @opendir($phpbb_root_path . 'includes/auth');
+			$dp = @opendir(PHPBB_ROOT_PATH . 'includes/auth');
 
 			if ($dp)
 			{
 				while (($file = readdir($dp)) !== false)
 				{
-					if (preg_match('#^auth_(.*?)\.' . $phpEx . '$#', $file))
+					if (preg_match('#^auth_(.*?)\.' . PHP_EXT . '$#', $file))
 					{
-						$auth_plugins[] = basename(preg_replace('#^auth_(.*?)\.' . $phpEx . '$#', '\1', $file));
+						$auth_plugins[] = basename(preg_replace('#^auth_(.*?)\.' . PHP_EXT . '$#', '\1', $file));
 					}
 				}
 				closedir($dp);
@@ -438,9 +437,9 @@ class acp_board
 			$old_auth_config = array();
 			foreach ($auth_plugins as $method)
 			{
-				if ($method && file_exists($phpbb_root_path . 'includes/auth/auth_' . $method . '.' . $phpEx))
+				if ($method && file_exists(PHPBB_ROOT_PATH . 'includes/auth/auth_' . $method . '.' . PHP_EXT))
 				{
-					include_once($phpbb_root_path . 'includes/auth/auth_' . $method . '.' . $phpEx);
+					include_once(PHPBB_ROOT_PATH . 'includes/auth/auth_' . $method . '.' . PHP_EXT);
 
 					$method = 'acp_' . $method;
 					if (function_exists($method))
@@ -481,7 +480,7 @@ class acp_board
 				$method = basename($cfg_array['auth_method']);
 				if ($method && in_array($method, $auth_plugins))
 				{
-					include_once($phpbb_root_path . 'includes/auth/auth_' . $method . '.' . $phpEx);
+					include_once(PHPBB_ROOT_PATH . 'includes/auth/auth_' . $method . '.' . PHP_EXT);
 
 					$method = 'init_' . $method;
 					if (function_exists($method))
@@ -579,7 +578,7 @@ class acp_board
 
 			foreach ($auth_plugins as $method)
 			{
-				if ($method && file_exists($phpbb_root_path . 'includes/auth/auth_' . $method . '.' . $phpEx))
+				if ($method && file_exists(PHPBB_ROOT_PATH . 'includes/auth/auth_' . $method . '.' . PHP_EXT))
 				{
 					$method = 'acp_' . $method;
 					if (function_exists($method))
@@ -604,11 +603,9 @@ class acp_board
 	*/
 	function select_auth_method($selected_method, $key = '')
 	{
-		global $phpbb_root_path, $phpEx;
-
 		$auth_plugins = array();
 
-		$dp = @opendir($phpbb_root_path . 'includes/auth');
+		$dp = @opendir(PHPBB_ROOT_PATH . 'includes/auth');
 
 		if (!$dp)
 		{
@@ -617,9 +614,9 @@ class acp_board
 
 		while (($file = readdir($dp)) !== false)
 		{
-			if (preg_match('#^auth_(.*?)\.' . $phpEx . '$#', $file))
+			if (preg_match('#^auth_(.*?)\.' . PHP_EXT . '$#', $file))
 			{
-				$auth_plugins[] = preg_replace('#^auth_(.*?)\.' . $phpEx . '$#', '\1', $file);
+				$auth_plugins[] = preg_replace('#^auth_(.*?)\.' . PHP_EXT . '$#', '\1', $file);
 			}
 		}
 		closedir($dp);

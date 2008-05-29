@@ -46,12 +46,12 @@ class template
 	*/
 	public function set_template()
 	{
-		global $phpbb_root_path, $user;
+		global $user;
 
-		if (file_exists($phpbb_root_path . 'styles/' . $user->theme['template_path'] . '/template'))
+		if (file_exists(PHPBB_ROOT_PATH . 'styles/' . $user->theme['template_path'] . '/template'))
 		{
-			$this->root = $phpbb_root_path . 'styles/' . $user->theme['template_path'] . '/template';
-			$this->cachepath = $phpbb_root_path . 'cache/tpl_' . $user->theme['template_path'] . '_';
+			$this->root = PHPBB_ROOT_PATH . 'styles/' . $user->theme['template_path'] . '/template';
+			$this->cachepath = PHPBB_ROOT_PATH . 'cache/tpl_' . $user->theme['template_path'] . '_';
 		}
 		else
 		{
@@ -69,10 +69,8 @@ class template
 	*/
 	public function set_custom_template($template_path, $template_name)
 	{
-		global $phpbb_root_path;
-
 		$this->root = $template_path;
-		$this->cachepath = $phpbb_root_path . 'cache/ctpl_' . $template_name . '_';
+		$this->cachepath = PHPBB_ROOT_PATH . 'cache/ctpl_' . $template_name . '_';
 
 		return true;
 	}
@@ -199,9 +197,9 @@ class template
 	*/
 	private function _tpl_load(&$handle)
 	{
-		global $user, $phpEx, $config;
+		global $user, $config;
 
-		$filename = $this->cachepath . str_replace('/', '.', $this->filename[$handle]) . '.' . $phpEx;
+		$filename = $this->cachepath . str_replace('/', '.', $this->filename[$handle]) . '.' . PHP_EXT;
 
 		$recompile = (($config['load_tplcompile'] && @filemtime($filename) < filemtime($this->files[$handle])) || !file_exists($filename) || @filesize($filename) === 0) ? true : false;
 
@@ -211,11 +209,11 @@ class template
 			return $filename;
 		}
 
-		global $db, $phpbb_root_path;
+		global $db;
 
 		if (!class_exists('template_compile'))
 		{
-			include($phpbb_root_path . 'includes/functions_template.' . $phpEx);
+			include(PHPBB_ROOT_PATH . 'includes/functions_template.' . PHP_EXT);
 		}
 
 		$compile = new template_compile($this);
@@ -247,7 +245,7 @@ class template
 			{
 				do
 				{
-					if ($row['template_mtime'] < filemtime($phpbb_root_path . 'styles/' . $user->theme['template_path'] . '/template/' . $row['template_filename']))
+					if ($row['template_mtime'] < filemtime(PHPBB_ROOT_PATH . 'styles/' . $user->theme['template_path'] . '/template/' . $row['template_filename']))
 					{
 						if ($row['template_filename'] == $this->filename[$handle])
 						{
@@ -271,7 +269,7 @@ class template
 					else
 					{
 						// Only bother compiling if it doesn't already exist
-						if (!file_exists($this->cachepath . str_replace('/', '.', $row['template_filename']) . '.' . $phpEx))
+						if (!file_exists($this->cachepath . str_replace('/', '.', $row['template_filename']) . '.' . PHP_EXT))
 						{
 							$this->filename[$row['template_filename']] = $row['template_filename'];
 							$compile->compile_write($row['template_filename'], $compile->compile(trim($row['template_data'])));

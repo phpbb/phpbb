@@ -26,7 +26,6 @@ class acp_main
 	function main($id, $mode)
 	{
 		global $config, $db, $user, $auth, $template;
-		global $phpbb_root_path, $phpbb_admin_path, $phpEx;
 
 		// Show restore permissions notice
 		if ($user->data['user_perm_from'] && $auth->acl_get('a_switchperm'))
@@ -42,16 +41,16 @@ class acp_main
 			$db->sql_freeresult($result);
 
 			$perm_from = '<strong' . (($user_row['user_colour']) ? ' style="color: #' . $user_row['user_colour'] . '">' : '>');
-			$perm_from .= ($user_row['user_id'] != ANONYMOUS) ? '<a href="' . append_sid("{$phpbb_root_path}memberlist.$phpEx", 'mode=viewprofile&amp;u=' . $user_row['user_id']) . '">' : '';
+			$perm_from .= ($user_row['user_id'] != ANONYMOUS) ? '<a href="' . append_sid('memberlist', 'mode=viewprofile&amp;u=' . $user_row['user_id']) . '">' : '';
 			$perm_from .= $user_row['username'];
 			$perm_from .= ($user_row['user_id'] != ANONYMOUS) ? '</a>' : '';
 			$perm_from .= '</strong>';
 
 			$template->assign_vars(array(
 				'S_RESTORE_PERMISSIONS'		=> true,
-				'U_RESTORE_PERMISSIONS'		=> append_sid("{$phpbb_root_path}ucp.$phpEx", 'mode=restore_perm'),
+				'U_RESTORE_PERMISSIONS'		=> append_sid('ucp', 'mode=restore_perm'),
 				'PERM_FROM'					=> $perm_from,
-				'L_PERMISSIONS_TRANSFERRED_EXPLAIN'	=> sprintf($user->lang['PERMISSIONS_TRANSFERRED_EXPLAIN'], $perm_from, append_sid("{$phpbb_root_path}ucp.$phpEx", 'mode=restore_perm')),
+				'L_PERMISSIONS_TRANSFERRED_EXPLAIN'	=> sprintf($user->lang['PERMISSIONS_TRANSFERRED_EXPLAIN'], $perm_from, append_sid('ucp', 'mode=restore_perm')),
 			));
 
 			return;
@@ -162,7 +161,7 @@ class acp_main
 						
 						if (!function_exists('update_last_username'))
 						{
-							include($phpbb_root_path . "includes/functions_user.$phpEx");
+							include(PHPBB_ROOT_PATH . 'includes/functions_user.' . PHP_EXT);
 						}
 						update_last_username();
 
@@ -311,13 +310,13 @@ class acp_main
 	
 		$avatar_dir_size = 0;
 
-		if ($avatar_dir = @opendir($phpbb_root_path . $config['avatar_path']))
+		if ($avatar_dir = @opendir(PHPBB_ROOT_PATH . $config['avatar_path']))
 		{
 			while (($file = readdir($avatar_dir)) !== false)
 			{
 				if ($file[0] != '.' && $file != 'CVS' && strpos($file, 'index.') === false)
 				{
-					$avatar_dir_size += filesize($phpbb_root_path . $config['avatar_path'] . '/' . $file);
+					$avatar_dir_size += filesize(PHPBB_ROOT_PATH . $config['avatar_path'] . '/' . $file);
 				}
 			}
 			closedir($avatar_dir);
@@ -387,8 +386,8 @@ class acp_main
 			'BOARD_VERSION'		=> $config['version'],
 
 			'U_ACTION'			=> $this->u_action,
-			'U_ADMIN_LOG'		=> append_sid("{$phpbb_admin_path}index.$phpEx", 'i=logs&amp;mode=admin'),
-			'U_INACTIVE_USERS'	=> append_sid("{$phpbb_admin_path}index.$phpEx", 'i=inactive&amp;mode=list'),
+			'U_ADMIN_LOG'		=> append_sid(PHPBB_ADMIN_PATH . 'index.' . PHP_EXT, 'i=logs&amp;mode=admin'),
+			'U_INACTIVE_USERS'	=> append_sid(PHPBB_ADMIN_PATH . 'index.' . PHP_EXT, 'i=inactive&amp;mode=list'),
 
 			'S_ACTION_OPTIONS'	=> ($auth->acl_get('a_board')) ? true : false,
 			'S_FOUNDER'			=> ($user->data['user_type'] == USER_FOUNDER) ? true : false,
@@ -429,7 +428,7 @@ class acp_main
 					'REASON'		=> $row['inactive_reason'],
 					'USER_ID'		=> $row['user_id'],
 					'USERNAME'		=> $row['username'],
-					'U_USER_ADMIN'	=> append_sid("{$phpbb_admin_path}index.$phpEx", "i=users&amp;mode=overview&amp;u={$row['user_id']}"))
+					'U_USER_ADMIN'	=> append_sid(PHPBB_ADMIN_PATH . 'index.' . PHP_EXT, "i=users&amp;mode=overview&amp;u={$row['user_id']}"))
 				);
 			}
 
@@ -446,7 +445,7 @@ class acp_main
 		}
 
 		// Warn if install is still present
-		if (file_exists($phpbb_root_path . 'install'))
+		if (file_exists(PHPBB_ROOT_PATH . 'install'))
 		{
 			$template->assign_var('S_REMOVE_INSTALL', true);
 		}

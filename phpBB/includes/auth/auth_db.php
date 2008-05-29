@@ -137,8 +137,7 @@ function login_db(&$username, &$password)
 		{
 			if (!function_exists('utf8_to_cp1252'))
 			{
-				global $phpbb_root_path, $phpEx;
-				include($phpbb_root_path . 'includes/utf/data/recode_basic.' . $phpEx);
+				include(PHPBB_ROOT_PATH . 'includes/utf/data/recode_basic.' . PHP_EXT);
 			}
 
 			// cp1252 is phpBB2's default encoding, characters outside ASCII range might work when converted into that encoding

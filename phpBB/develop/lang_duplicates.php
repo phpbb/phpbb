@@ -24,13 +24,13 @@ die("Please read the first lines of this script for instructions on how to enabl
 // Thanks to arod-1
 
 define('IN_PHPBB', 1);
-$phpEx = substr(strrchr(__FILE__, '.'), 1);
-$phpbb_root_path='./../';
-include($phpbb_root_path . 'common.'.$phpEx);
+define('PHPBB_ROOT_PATH', './../');
+define('PHP_EXT', substr(strrchr(__FILE__, '.'), 1));
+include(PHPBB_ROOT_PATH . 'common.' . PHP_EXT);
 
 $mode = request_var('mode', '');
 
-$modules = find_modules($phpbb_root_path . 'language/en');
+$modules = find_modules(PHPBB_ROOT_PATH . 'language/en');
 
 $kkeys = $keys = array();
 $langdir = dirname(__FILE__);
@@ -81,7 +81,7 @@ while ($module = array_shift($keys))
 			}
 
 			$color = '';
-			if ((basename($module) == "common.$phpEx") || (basename($other_module) == "common.$phpEx"))
+			if ((basename($module) == "common." . PHP_EXT) || (basename($other_module) == "common." . PHP_EXT))
 			{
 				$color = ' style="color:#B00000;"';
 			}

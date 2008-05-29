@@ -20,9 +20,9 @@ if (!defined('IN_INSTALL'))
 if (!empty($setmodules))
 {
 	// If phpBB is not installed we do not include this module
-	if (@file_exists($phpbb_root_path . 'config.' . $phpEx) && !@file_exists($phpbb_root_path . 'cache/install_lock'))
+	if (@file_exists(PHPBB_ROOT_PATH . 'config.' . PHP_EXT) && !@file_exists(PHPBB_ROOT_PATH . 'cache/install_lock'))
 	{
-		include_once($phpbb_root_path . 'config.' . $phpEx);
+		include_once(PHPBB_ROOT_PATH . 'config.' . PHP_EXT);
 
 		if (!defined('PHPBB_INSTALLED'))
 		{
@@ -37,7 +37,7 @@ if (!empty($setmodules))
 	$module[] = array(
 		'module_type'		=> 'update',
 		'module_title'		=> 'UPDATE',
-		'module_filename'	=> substr(basename(__FILE__), 0, -strlen($phpEx)-1),
+		'module_filename'	=> substr(basename(__FILE__), 0, -strlen(PHP_EXT)-1),
 		'module_order'		=> 30,
 		'module_subs'		=> '',
 		'module_stages'		=> array('INTRO', 'VERSION_CHECK', 'UPDATE_DB', 'FILE_CHECK', 'UPDATE_FILES'),
@@ -70,19 +70,19 @@ class install_update extends module
 
 	function main($mode, $sub)
 	{
-		global $template, $phpEx, $phpbb_root_path, $user, $db, $config, $cache, $auth;
+		global $template, $user, $db, $config, $cache, $auth;
 
 		$this->tpl_name = 'install_update';
 		$this->page_title = 'UPDATE_INSTALLATION';
 		$this->unequal_version = false;
 
-		$this->old_location = $phpbb_root_path . 'install/update/old/';
-		$this->new_location = $phpbb_root_path . 'install/update/new/';
+		$this->old_location = PHPBB_ROOT_PATH . 'install/update/old/';
+		$this->new_location = PHPBB_ROOT_PATH . 'install/update/new/';
 
 		// Init DB
-		require($phpbb_root_path . 'config.' . $phpEx);
-		require($phpbb_root_path . 'includes/db/' . $dbms . '.' . $phpEx);
-		require($phpbb_root_path . 'includes/constants.' . $phpEx);
+		require(PHPBB_ROOT_PATH . 'config.' . PHP_EXT);
+		require(PHPBB_ROOT_PATH . 'includes/db/' . $dbms . '.' . PHP_EXT);
+		require(PHPBB_ROOT_PATH . 'includes/constants.' . PHP_EXT);
 
 		// Special options for conflicts/modified files
 		define('MERGE_NO_MERGE_NEW', 1);
@@ -148,7 +148,7 @@ class install_update extends module
 		$up_to_date = (version_compare(str_replace('rc', 'RC', strtolower($this->current_version)), str_replace('rc', 'RC', strtolower($this->latest_version)), '<')) ? false : true;
 
 		// Check for a valid update directory, else point the user to the phpbb.com website
-		if (!file_exists($phpbb_root_path . 'install/update') || !file_exists($phpbb_root_path . 'install/update/index.' . $phpEx) || !file_exists($this->old_location) || !file_exists($this->new_location))
+		if (!file_exists(PHPBB_ROOT_PATH . 'install/update') || !file_exists(PHPBB_ROOT_PATH . 'install/update/index.php') || !file_exists($this->old_location) || !file_exists($this->new_location))
 		{
 			$template->assign_vars(array(
 				'S_ERROR'		=> true,
@@ -206,9 +206,9 @@ class install_update extends module
 		}
 
 		// Include renderer and engine
-		$this->include_file('includes/diff/diff.' . $phpEx);
-		$this->include_file('includes/diff/engine.' . $phpEx);
-		$this->include_file('includes/diff/renderer.' . $phpEx);
+		$this->include_file('includes/diff/diff.' . PHP_EXT);
+		$this->include_file('includes/diff/engine.' . PHP_EXT);
+		$this->include_file('includes/diff/renderer.' . PHP_EXT);
 
 		// Make sure we stay at the file check if checking the files again
 		if (!empty($_POST['check_again']))
@@ -259,9 +259,9 @@ class install_update extends module
 				$valid = false;
 				$updates_to_version = '';
 
-				if (file_exists($phpbb_root_path . 'install/database_update.' . $phpEx))
+				if (file_exists(PHPBB_ROOT_PATH . 'install/database_update.' . PHP_EXT))
 				{
-					include_once($phpbb_root_path . 'install/database_update.' . $phpEx);
+					include_once(PHPBB_ROOT_PATH . 'install/database_update.' . PHP_EXT);
 
 					if ($updates_to_version === $this->update_info['version']['to'])
 					{
@@ -282,7 +282,7 @@ class install_update extends module
 				$template->assign_vars(array(
 					'S_DB_UPDATE'			=> true,
 					'S_DB_UPDATE_FINISHED'	=> ($config['version'] == $this->update_info['version']['to']) ? true : false,
-					'U_DB_UPDATE'			=> append_sid($phpbb_root_path . 'install/database_update.' . $phpEx, 'type=1&amp;language=' . $user->data['user_lang']),
+					'U_DB_UPDATE'			=> append_sid('install/database_update', 'type=1&amp;language=' . $user->data['user_lang']),
 					'U_DB_UPDATE_ACTION'	=> append_sid($this->p_master->module_url, "mode=$mode&amp;sub=update_db"),
 					'U_ACTION'				=> append_sid($this->p_master->module_url, "mode=$mode&amp;sub=file_check"),
 				));
@@ -301,7 +301,7 @@ class install_update extends module
 
 				// We are directly within an update. To make sure our update list is correct we check its status.
 				$update_list = (!empty($_POST['check_again'])) ? false : $cache->get('_update_list');
-				$modified = ($update_list !== false) ? @filemtime($cache->cache_dir . 'data_update_list.' . $phpEx) : 0;
+				$modified = ($update_list !== false) ? @filemtime($cache->cache_dir . 'data_update_list.' . PHP_EXT) : 0;
 
 				// Make sure the list is up-to-date
 				if ($update_list !== false)
@@ -309,7 +309,7 @@ class install_update extends module
 					$get_new_list = false;
 					foreach ($this->update_info['files'] as $file)
 					{
-						if (file_exists($phpbb_root_path . $file) && filemtime($phpbb_root_path . $file) > $modified)
+						if (file_exists(PHPBB_ROOT_PATH . $file) && filemtime(PHPBB_ROOT_PATH . $file) > $modified)
 						{
 							$get_new_list = true;
 							break;
@@ -459,21 +459,21 @@ class install_update extends module
 						$update_time = time();
 
 						// We test for stylesheet.css because it is faster and most likely the only file changed on common themes
-						if (!$recache && $theme['theme_mtime'] < @filemtime("{$phpbb_root_path}styles/" . $theme['theme_path'] . '/theme/stylesheet.css'))
+						if (!$recache && $theme['theme_mtime'] < @filemtime(PHPBB_ROOT_PATH . 'styles/' . $theme['theme_path'] . '/theme/stylesheet.css'))
 						{
 							$recache = true;
-							$update_time = @filemtime("{$phpbb_root_path}styles/" . $theme['theme_path'] . '/theme/stylesheet.css');
+							$update_time = @filemtime(PHPBB_ROOT_PATH . 'styles/' . $theme['theme_path'] . '/theme/stylesheet.css');
 						}
 						else if (!$recache)
 						{
 							$last_change = $theme['theme_mtime'];
-							$dir = @opendir("{$phpbb_root_path}styles/{$theme['theme_path']}/theme");
+							$dir = @opendir(PHPBB_ROOT_PATH . "styles/{$theme['theme_path']}/theme");
 
 							if ($dir)
 							{
 								while (($entry = readdir($dir)) !== false)
 								{
-									if (substr(strrchr($entry, '.'), 1) == 'css' && $last_change < @filemtime("{$phpbb_root_path}styles/{$theme['theme_path']}/theme/{$entry}"))
+									if (substr(strrchr($entry, '.'), 1) == 'css' && $last_change < @filemtime(PHPBB_ROOT_PATH . "styles/{$theme['theme_path']}/theme/{$entry}"))
 									{
 										$recache = true;
 										break;
@@ -485,7 +485,7 @@ class install_update extends module
 
 						if ($recache)
 						{
-							include_once($phpbb_root_path . 'includes/acp/acp_styles.' . $phpEx);
+							include_once(PHPBB_ROOT_PATH . 'includes/acp/acp_styles.' . PHP_EXT);
 
 							$theme['theme_data'] = acp_styles::db_theme_data($theme);
 							$theme['theme_mtime'] = $update_time;
@@ -679,11 +679,11 @@ class install_update extends module
 										break;
 
 										case MERGE_NO_MERGE_MOD:
-											$contents = file_get_contents($phpbb_root_path . $file_struct['filename']);
+											$contents = file_get_contents(PHPBB_ROOT_PATH . $file_struct['filename']);
 										break;
 
 										default:
-											$diff = $this->return_diff($this->old_location . $original_filename, $phpbb_root_path . $file_struct['filename'], $this->new_location . $original_filename);
+											$diff = $this->return_diff($this->old_location . $original_filename, PHPBB_ROOT_PATH . $file_struct['filename'], $this->new_location . $original_filename);
 
 											$contents = implode("\n", $diff->merged_output());
 											unset($diff);
@@ -710,12 +710,12 @@ class install_update extends module
 										break;
 
 										case MERGE_NO_MERGE_MOD:
-											$contents = file_get_contents($phpbb_root_path . $file_struct['filename']);
+											$contents = file_get_contents(PHPBB_ROOT_PATH . $file_struct['filename']);
 										break;
 
 										default:
 
-											$diff = $this->return_diff($this->old_location . $original_filename, $phpbb_root_path . $file_struct['filename'], $this->new_location . $original_filename);
+											$diff = $this->return_diff($this->old_location . $original_filename, PHPBB_ROOT_PATH . $file_struct['filename'], $this->new_location . $original_filename);
 
 											if ($option == MERGE_NEW_FILE)
 											{
@@ -752,7 +752,7 @@ class install_update extends module
 
 				if (!empty($_REQUEST['download']))
 				{
-					$this->include_file('includes/functions_compress.' . $phpEx);
+					$this->include_file('includes/functions_compress.' . PHP_EXT);
 
 					$use_method = request_var('use_method', '');
 					$methods = array('.tar');
@@ -822,7 +822,7 @@ class install_update extends module
 				}
 				else
 				{
-					$this->include_file('includes/functions_transfer.' . $phpEx);
+					$this->include_file('includes/functions_transfer.' . PHP_EXT);
 
 					// Choose FTP, if not available use fsock...
 					$method = basename(request_var('method', ''));
@@ -850,7 +850,7 @@ class install_update extends module
 						if ($test_connection === true)
 						{
 							// Check for common.php file
-							if (!$transfer->file_exists($phpbb_root_path, 'common.' . $phpEx))
+							if (!$transfer->file_exists(PHPBB_ROOT_PATH, 'common.' . PHP_EXT))
 							{
 								$test_connection = 'ERR_WRONG_PATH_TO_PHPBB';
 							}
@@ -914,11 +914,11 @@ class install_update extends module
 				{
 					if ($use_method == '.zip')
 					{
-						$compress = new compress_zip('w', $phpbb_root_path . 'store/' . $archive_filename . $use_method);
+						$compress = new compress_zip('w', PHPBB_ROOT_PATH . 'store/' . $archive_filename . $use_method);
 					}
 					else
 					{
-						$compress = new compress_tar('w', $phpbb_root_path . 'store/' . $archive_filename . $use_method, $use_method);
+						$compress = new compress_tar('w', PHPBB_ROOT_PATH . 'store/' . $archive_filename . $use_method, $use_method);
 					}
 				}
 				else
@@ -965,7 +965,7 @@ class install_update extends module
 									// New directory too?
 									$dirname = dirname($file_struct['filename']);
 
-									if ($dirname && !file_exists($phpbb_root_path . $dirname))
+									if ($dirname && !file_exists(PHPBB_ROOT_PATH . $dirname))
 									{
 										$transfer->make_dir($dirname);
 									}
@@ -1013,7 +1013,7 @@ class install_update extends module
 					$compress->close();
 
 					$compress->download($archive_filename, $download_filename);
-					@unlink($phpbb_root_path . 'store/' . $archive_filename . $use_method);
+					@unlink(PHPBB_ROOT_PATH . 'store/' . $archive_filename . $use_method);
 
 					exit;
 				}
@@ -1038,7 +1038,7 @@ class install_update extends module
 	*/
 	function show_diff(&$update_list)
 	{
-		global $phpbb_root_path, $template, $user;
+		global $template, $user;
 
 		$this->tpl_name = 'install_update_diff';
 
@@ -1088,7 +1088,7 @@ class install_update extends module
 					case MERGE_NO_MERGE_NEW:
 					case MERGE_NO_MERGE_MOD:
 
-						$diff = $this->return_diff(array(), ($option == MERGE_NO_MERGE_NEW) ? $this->new_location . $original_file : $phpbb_root_path . $file);
+						$diff = $this->return_diff(array(), ($option == MERGE_NO_MERGE_NEW) ? $this->new_location . $original_file : PHPBB_ROOT_PATH . $file);
 
 						$template->assign_var('S_DIFF_NEW_FILE', true);
 						$diff_mode = 'inline';
@@ -1099,7 +1099,7 @@ class install_update extends module
 					case MERGE_NEW_FILE:
 					case MERGE_MOD_FILE:
 
-						$diff = $this->return_diff($this->old_location . $original_file, $phpbb_root_path . $file, $this->new_location . $original_file);
+						$diff = $this->return_diff($this->old_location . $original_file, PHPBB_ROOT_PATH . $file, $this->new_location . $original_file);
 
 						$tmp = array(
 							'file1'		=> array(),
@@ -1118,14 +1118,14 @@ class install_update extends module
 
 					default:
 
-						$diff = $this->return_diff($this->old_location . $original_file, $phpbb_root_path . $file, $this->new_location . $original_file);
+						$diff = $this->return_diff($this->old_location . $original_file, PHPBB_ROOT_PATH . $file, $this->new_location . $original_file);
 
 						$template->assign_vars(array(
 							'S_DIFF_CONFLICT_FILE'	=> true,
 							'NUM_CONFLICTS'			=> $diff->merged_output(false, false, false, true))
 						);
 
-						$diff = $this->return_diff($phpbb_root_path . $file, $diff->merged_output());
+						$diff = $this->return_diff(PHPBB_ROOT_PATH . $file, $diff->merged_output());
 					break;
 				}
 
@@ -1139,7 +1139,7 @@ class install_update extends module
 					case MERGE_NO_MERGE_NEW:
 					case MERGE_NO_MERGE_MOD:
 
-						$diff = $this->return_diff(array(), ($option == MERGE_NO_MERGE_NEW) ? $this->new_location . $original_file : $phpbb_root_path . $file);
+						$diff = $this->return_diff(array(), ($option == MERGE_NO_MERGE_NEW) ? $this->new_location . $original_file : PHPBB_ROOT_PATH . $file);
 
 						$template->assign_var('S_DIFF_NEW_FILE', true);
 						$diff_mode = 'inline';
@@ -1148,14 +1148,14 @@ class install_update extends module
 					break;
 
 					default:
-						$diff = $this->return_diff($this->old_location . $original_file, $phpbb_root_path . $original_file, $this->new_location . $file);
+						$diff = $this->return_diff($this->old_location . $original_file, PHPBB_ROOT_PATH . $original_file, $this->new_location . $file);
 					break;
 				}
 			break;
 
 			case 'not_modified':
 			case 'new_conflict':
-				$diff = $this->return_diff($phpbb_root_path . $file, $this->new_location . $original_file);
+				$diff = $this->return_diff(PHPBB_ROOT_PATH . $file, $this->new_location . $original_file);
 			break;
 
 			case 'new':
@@ -1200,7 +1200,7 @@ class install_update extends module
 	*/
 	function get_update_structure(&$update_list)
 	{
-		global $phpbb_root_path, $phpEx, $user;
+		global $user;
 
 		if ($update_list === false)
 		{
@@ -1242,7 +1242,7 @@ class install_update extends module
 				return;
 			}
 
-			if (!file_exists($phpbb_root_path . $file))
+			if (!file_exists(PHPBB_ROOT_PATH . $file))
 			{
 				// Make sure the update files are consistent by checking if the file is in new_files...
 				if (!file_exists($this->new_location . $file))
@@ -1259,7 +1259,7 @@ class install_update extends module
 
 				/* Only include a new file as new if the underlying path exist
 				// The path normally do not exist if the original style or language has been removed
-				if (file_exists($phpbb_root_path . dirname($file)))
+				if (file_exists(PHPBB_ROOT_PATH . dirname($file)))
 				{
 					$this->get_custom_info($update_list['new'], $file);
 					$update_list['new'][] = array('filename' => $file, 'custom' => false);
@@ -1273,7 +1273,7 @@ class install_update extends module
 					}
 				}*/
 
-				if (file_exists($phpbb_root_path . dirname($file)) || (strpos($file, 'styles/') !== 0 && strpos($file, 'language/') !== 0))
+				if (file_exists(PHPBB_ROOT_PATH . dirname($file)) || (strpos($file, 'styles/') !== 0 && strpos($file, 'language/') !== 0))
 				{
 					$this->get_custom_info($update_list['new'], $file);
 					$update_list['new'][] = array('filename' => $file, 'custom' => false);
@@ -1327,7 +1327,7 @@ class install_update extends module
 	*/
 	function make_update_diff(&$update_list, $original_file, $file, $custom = false)
 	{
-		global $phpbb_root_path, $user;
+		global $user;
 
 		$update_ary = array('filename' => $file, 'custom' => $custom);
 
@@ -1338,11 +1338,11 @@ class install_update extends module
 
 		// On a successfull update the new location file exists but the old one does not exist.
 		// Check for this circumstance, the new file need to be up-to-date with the current file then...
-		if (!file_exists($this->old_location . $original_file) && file_exists($this->new_location . $original_file) && file_exists($phpbb_root_path . $file))
+		if (!file_exists($this->old_location . $original_file) && file_exists($this->new_location . $original_file) && file_exists(PHPBB_ROOT_PATH . $file))
 		{
 			$tmp = array(
 				'file1'		=> file_get_contents($this->new_location . $original_file),
-				'file2'		=> file_get_contents($phpbb_root_path . $file),
+				'file2'		=> file_get_contents(PHPBB_ROOT_PATH . $file),
 			);
 
 			// We need to diff the contents here to make sure the file is really the one we expect
@@ -1377,7 +1377,7 @@ class install_update extends module
 
 		$tmp = array(
 			'file1'		=> file_get_contents($this->old_location . $original_file),
-			'file2'		=> file_get_contents($phpbb_root_path . $file),
+			'file2'		=> file_get_contents(PHPBB_ROOT_PATH . $file),
 		);
 
 		// We need to diff the contents here to make sure the file is really the one we expect
@@ -1388,7 +1388,7 @@ class install_update extends module
 
 		$tmp = array(
 			'file1'		=> file_get_contents($this->new_location . $original_file),
-			'file2'		=> file_get_contents($phpbb_root_path . $file),
+			'file2'		=> file_get_contents(PHPBB_ROOT_PATH . $file),
 		);
 
 		// We need to diff the contents here to make sure the file is really the one we expect
@@ -1424,7 +1424,7 @@ class install_update extends module
 		// if the file is modified we try to make sure a merge succeed
 		$tmp = array(
 			'file1'		=> file_get_contents($this->old_location . $original_file),
-			'file2'		=> file_get_contents($phpbb_root_path . $file),
+			'file2'		=> file_get_contents(PHPBB_ROOT_PATH . $file),
 			'file3'		=> file_get_contents($this->new_location . $original_file),
 		);
 
@@ -1438,7 +1438,7 @@ class install_update extends module
 
 			// There is one special case... users having merged with a conflicting file... we need to check this
 			$tmp = array(
-				'file1'		=> file_get_contents($phpbb_root_path . $file),
+				'file1'		=> file_get_contents(PHPBB_ROOT_PATH . $file),
 				'file2'		=> implode("\n", $diff->merged_orig_output()),
 			);
 
@@ -1460,7 +1460,7 @@ class install_update extends module
 		}
 
 		$tmp = array(
-			'file1'		=> file_get_contents($phpbb_root_path . $file),
+			'file1'		=> file_get_contents(PHPBB_ROOT_PATH . $file),
 			'file2'		=> implode("\n", $diff->merged_output()),
 		);
 
@@ -1512,7 +1512,6 @@ class install_update extends module
 		switch ($mode)
 		{
 			case 'version_info':
-				global $phpbb_root_path, $phpEx;
 				$info = get_remote_file('www.phpbb.com', '/updatecheck', ((defined('PHPBB_QA')) ? '30x_qa.txt' : '30x.txt'), $errstr, $errno);
 
 				if ($info !== false)
@@ -1530,7 +1529,7 @@ class install_update extends module
 				if ($info === false)
 				{
 					$update_info = array();
-					include($phpbb_root_path . 'install/update/index.php');
+					include(PHPBB_ROOT_PATH . 'install/update/index.php');
 					$info = (empty($update_info) || !is_array($update_info)) ? false : $update_info;
 
 					if ($info !== false)
@@ -1541,10 +1540,8 @@ class install_update extends module
 			break;
 
 			case 'update_info':
-				global $phpbb_root_path, $phpEx;
-
 				$update_info = array();
-				include($phpbb_root_path . 'install/update/index.php');
+				include(PHPBB_ROOT_PATH . 'install/update/index.php');
 
 				$info = (empty($update_info) || !is_array($update_info)) ? false : $update_info;
 				$errstr = ($info === false) ? $user->lang['WRONG_INFO_FILE_FORMAT'] : '';
@@ -1603,15 +1600,13 @@ class install_update extends module
 	*/
 	function include_file($filename)
 	{
-		global $phpbb_root_path, $phpEx;
-
 		if (!empty($this->update_info['files']) && in_array($filename, $this->update_info['files']))
 		{
 			include_once($this->new_location . $filename);
 		}
 		else
 		{
-			include_once($phpbb_root_path . $filename);
+			include_once(PHPBB_ROOT_PATH . $filename);
 		}
 	}
 

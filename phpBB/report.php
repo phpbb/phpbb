@@ -12,10 +12,10 @@
 * @ignore
 */
 define('IN_PHPBB', true);
-$phpbb_root_path = (defined('PHPBB_ROOT_PATH')) ? PHPBB_ROOT_PATH : './';
-$phpEx = substr(strrchr(__FILE__, '.'), 1);
-include($phpbb_root_path . 'common.' . $phpEx);
-include($phpbb_root_path . 'includes/functions_display.' . $phpEx);
+if (!defined('PHPBB_ROOT_PATH')) define('PHPBB_ROOT_PATH', './');
+if (!defined('PHP_EXT')) define('PHP_EXT', substr(strrchr(__FILE__, '.'), 1));
+include(PHPBB_ROOT_PATH . 'common.' . PHP_EXT);
+include(PHPBB_ROOT_PATH . 'includes/functions_display.' . PHP_EXT);
 
 // Start session management
 $user->session_begin();
@@ -35,7 +35,7 @@ if (!$post_id)
 	trigger_error('NO_POST_SELECTED');
 }
 
-$redirect_url = append_sid("{$phpbb_root_path}viewtopic.$phpEx", "f=$forum_id&amp;p=$post_id") . "#p$post_id";
+$redirect_url = append_sid('viewtopic', "f=$forum_id&amp;p=$post_id") . "#p$post_id";
 
 // Has the report been cancelled?
 if (isset($_POST['cancel']))
@@ -148,7 +148,7 @@ display_reasons($reason_id);
 
 $template->assign_vars(array(
 	'REPORT_TEXT'		=> $report_text,
-	'S_REPORT_ACTION'	=> append_sid("{$phpbb_root_path}report.$phpEx", 'f=' . $forum_id . '&amp;p=' . $post_id),
+	'S_REPORT_ACTION'	=> append_sid('report', 'f=' . $forum_id . '&amp;p=' . $post_id),
 
 	'S_NOTIFY'			=> $user_notify,
 	'S_CAN_NOTIFY'		=> ($user->data['is_registered']) ? true : false)

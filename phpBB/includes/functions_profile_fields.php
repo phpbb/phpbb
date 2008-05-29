@@ -728,8 +728,7 @@ class custom_profile
 	*/
 	private function generate_text($profile_row, $preview = false)
 	{
-		global $template;
-		global $user, $phpEx, $phpbb_root_path;
+		global $template, $user;
 
 		$field_length = explode('|', $profile_row['field_length']);
 		$profile_row['field_rows'] = $field_length[0];
@@ -838,7 +837,6 @@ class custom_profile
 	*/
 	private function get_profile_field($profile_row)
 	{
-		global $phpbb_root_path, $phpEx;
 		global $config;
 		
 		$var_name = 'pf_' . $profile_row['field_ident'];

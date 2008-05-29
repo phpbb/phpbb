@@ -27,7 +27,7 @@ class ucp_prefs
 
 	function main($id, $mode)
 	{
-		global $config, $db, $user, $auth, $template, $phpbb_root_path, $phpEx;
+		global $config, $db, $user, $auth, $template;
 
 		$submit = (isset($_POST['submit'])) ? true : false;
 		$error = $data = array();

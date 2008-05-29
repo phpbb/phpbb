@@ -26,8 +26,8 @@ set_time_limit(0);
 error_reporting(E_ALL);
 
 define('IN_PHPBB', true);
-$phpbb_root_path = '../';
-$phpEx = substr(strrchr(__FILE__, '.'), 1);
+define('PHPBB_ROOT_PATH', './../');
+define('PHP_EXT', substr(strrchr(__FILE__, '.'), 1));
 
 
 /**
@@ -77,13 +77,13 @@ $test_suite = array(
 	)
 );
 
-require_once($phpbb_root_path . 'includes/utf/utf_normalizer.' . $phpEx);
+require_once(PHPBB_ROOT_PATH . 'includes/utf/utf_normalizer.' . PHP_EXT);
 
 $i = $n = 0;
 $failed = false;
 $tested_chars = array();
 
-$fp = fopen($phpbb_root_path . 'develop/NormalizationTest.txt', 'rb');
+$fp = fopen(PHPBB_ROOT_PATH . 'develop/NormalizationTest.txt', 'rb');
 while (!feof($fp))
 {
 	$line = fgets($fp);
@@ -158,7 +158,7 @@ fclose($fp);
 */
 echo "\n\nTesting for invariants...\n\n";
 
-$fp = fopen($phpbb_root_path . 'develop/UnicodeData.txt', 'rt');
+$fp = fopen(PHPBB_ROOT_PATH . 'develop/UnicodeData.txt', 'rt');
 
 $n = 0;
 while (!feof($fp))
@@ -227,9 +227,7 @@ die("\n\nALL TESTS PASSED SUCCESSFULLY\n");
 */
 function download($url)
 {
-	global $phpbb_root_path;
-
-	if (file_exists($phpbb_root_path . 'develop/' . basename($url)))
+	if (file_exists(PHPBB_ROOT_PATH . 'develop/' . basename($url)))
 	{
 		return;
 	}
@@ -241,7 +239,7 @@ function download($url)
 		die("Can't download from $url\nPlease download it yourself and put it in the develop/ dir, kthxbai");
 	}
 
-	if (!$fpw = fopen($phpbb_root_path . 'develop/' . basename($url), 'wb'))
+	if (!$fpw = fopen(PHPBB_ROOT_PATH . 'develop/' . basename($url), 'wb'))
 	{
 		die("Can't open develop/" . basename($url) . " for output... please check your permissions or something");
 	}

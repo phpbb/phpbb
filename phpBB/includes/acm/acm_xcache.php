@@ -33,8 +33,7 @@ class acm
 	*/
 	function __construct()
 	{
-		global $phpbb_root_path;
-		$this->cache_dir = $phpbb_root_path . 'cache/';
+		$this->cache_dir = PHPBB_ROOT_PATH . 'cache/';
 	}
 
 	/**
@@ -42,8 +41,6 @@ class acm
 	*/
 	private function load()
 	{
-		global $phpEx;
-
 		// grab the global cache
 		if (xcache_isset('global'))
 		{
@@ -87,8 +84,6 @@ class acm
 	*/
 	public function tidy()
 	{
-		global $phpEx;
-
 		// cache has auto GC, no need to have any code here :)
 
 		set_config('cache_last_gc', time(), true);
@@ -101,8 +96,6 @@ class acm
 	{
 		if ($var_name[0] === '_')
 		{
-			global $phpEx;
-
 			return (xcache_isset($var_name)) ? xcache_get($var_name) : false;
 		}
 		else
@@ -176,8 +169,6 @@ class acm
 	*/
 	public function destroy($var_name, $table = '')
 	{
-		global $phpEx;
-
 		if ($var_name === 'sql' && !empty($table))
 		{
 			if (!is_array($table))
@@ -226,8 +217,6 @@ class acm
 	*/
 	public function sql_load($query)
 	{
-		global $phpEx;
-
 		// Remove extra spaces and tabs
 		$query = preg_replace('/[\n\r\s\t]+/', ' ', $query);
 		$query_id = sizeof($this->sql_rowset);
@@ -250,7 +239,7 @@ class acm
 	*/
 	public function sql_save($query, &$query_result, $ttl)
 	{
-		global $db, $phpEx;
+		global $db;
 
 		// Remove extra spaces and tabs
 		$query = preg_replace('/[\n\r\s\t]+/', ' ', $query);

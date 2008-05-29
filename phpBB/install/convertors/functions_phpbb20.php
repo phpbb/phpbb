@@ -314,7 +314,7 @@ function phpbb_insert_forums()
 function phpbb_set_encoding($text, $grab_user_lang = true)
 {
 	global $lang_enc_array, $convert_row;
-	global $convert, $phpEx;
+	global $convert;
 
 	/*static $lang_enc_array = array(
 		'korean'						=> 'euc-kr',
@@ -395,7 +395,7 @@ function phpbb_set_encoding($text, $grab_user_lang = true)
 
 	if (!isset($lang_enc_array[$get_lang]))
 	{
-		$filename = $convert->options['forum_path'] . '/language/lang_' . $get_lang . '/lang_main.' . $phpEx;
+		$filename = $convert->options['forum_path'] . '/language/lang_' . $get_lang . '/lang_main.' . PHP_EXT;
 
 		if (!file_exists($filename))
 		{
@@ -404,7 +404,7 @@ function phpbb_set_encoding($text, $grab_user_lang = true)
 
 		if (!isset($lang_enc_array[$get_lang]))
 		{
-			include($convert->options['forum_path'] . '/language/lang_' . $get_lang . '/lang_main.' . $phpEx);
+			include($convert->options['forum_path'] . '/language/lang_' . $get_lang . '/lang_main.' . PHP_EXT);
 			$lang_enc_array[$get_lang] = $lang['ENCODING'];
 			unset($lang);
 		}
@@ -1223,7 +1223,7 @@ function phpbb_replace_size($matches)
 */
 function phpbb_prepare_message($message)
 {
-	global $phpbb_root_path, $phpEx, $db, $convert, $user, $config, $cache, $convert_row, $message_parser;
+	global $db, $convert, $user, $config, $cache, $convert_row, $message_parser;
 
 	if (!$message)
 	{
@@ -1367,7 +1367,7 @@ function phpbb_get_files_dir()
 */
 function phpbb_copy_thumbnails()
 {
-	global $db, $convert, $user, $config, $cache, $phpbb_root_path;
+	global $db, $convert, $user, $config, $cache;
 
 	$src_path = $convert->options['forum_path'] . '/' . phpbb_get_files_dir() . '/thumbs/';
 	
@@ -1387,7 +1387,7 @@ function phpbb_copy_thumbnails()
 			else
 			{
 				copy_file($src_path . $entry, $config['upload_path'] . '/' . preg_replace('/^t_/', 'thumb_', $entry));
-				@unlink($phpbb_root_path . $config['upload_path'] . '/thumbs/' . $entry);
+				@unlink(PHPBB_ROOT_PATH . $config['upload_path'] . '/thumbs/' . $entry);
 			}
 		}
 		closedir($handle);

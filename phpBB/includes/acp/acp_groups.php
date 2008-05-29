@@ -25,8 +25,7 @@ class acp_groups
 
 	function main($id, $mode)
 	{
-		global $config, $db, $user, $auth, $template, $cache;
-		global $phpbb_root_path, $phpbb_admin_path, $phpEx, $table_prefix, $file_uploads;
+		global $config, $db, $user, $auth, $template, $cache, $file_uploads;
 
 		$user->add_lang('acp/groups');
 		$this->tpl_name = 'acp_groups';
@@ -35,7 +34,7 @@ class acp_groups
 		$form_key = 'acp_groups';
 		add_form_key($form_key);
 
-		include($phpbb_root_path . 'includes/functions_user.' . $phpEx);
+		include(PHPBB_ROOT_PATH . 'includes/functions_user.' . PHP_EXT);
 
 		// Check and set some common vars
 		$action		= (isset($_POST['add'])) ? 'add' : ((isset($_POST['addusers'])) ? 'addusers' : request_var('action', ''));
@@ -49,7 +48,7 @@ class acp_groups
 
 
 		// Clear some vars
-		$can_upload = (file_exists($phpbb_root_path . $config['avatar_path']) && @is_writable($phpbb_root_path . $config['avatar_path']) && $file_uploads) ? true : false;
+		$can_upload = (file_exists(PHPBB_ROOT_PATH . $config['avatar_path']) && @is_writable(PHPBB_ROOT_PATH . $config['avatar_path']) && $file_uploads) ? true : false;
 		$group_row = array();
 
 		// Grab basic data for group, if group_id is set and exists
@@ -247,7 +246,7 @@ class acp_groups
 			case 'edit':
 			case 'add':
 
-				include($phpbb_root_path . 'includes/functions_display.' . $phpEx);
+				include(PHPBB_ROOT_PATH . 'includes/functions_display.' . PHP_EXT);
 
 				$data = $submit_ary = array();
 
@@ -330,11 +329,11 @@ class acp_groups
 					else if ($avatar_select && $config['allow_avatar_local'])
 					{
 						// check avatar gallery
-						if (is_dir($phpbb_root_path . $config['avatar_gallery_path'] . '/' . $category))
+						if (is_dir(PHPBB_ROOT_PATH . $config['avatar_gallery_path'] . '/' . $category))
 						{
 							$submit_ary['avatar_type'] = AVATAR_GALLERY;
 
-							list($submit_ary['avatar_width'], $submit_ary['avatar_height']) = getimagesize($phpbb_root_path . $config['avatar_gallery_path'] . '/' . $category . '/' . $avatar_select);
+							list($submit_ary['avatar_width'], $submit_ary['avatar_height']) = getimagesize(PHPBB_ROOT_PATH . $config['avatar_gallery_path'] . '/' . $category . '/' . $avatar_select);
 							$submit_ary['avatar'] = $category . '/' . $avatar_select;
 						}
 					}
@@ -505,7 +504,7 @@ class acp_groups
 				$type_closed	= ($group_type == GROUP_CLOSED) ? ' checked="checked"' : '';
 				$type_hidden	= ($group_type == GROUP_HIDDEN) ? ' checked="checked"' : '';
 
-				$avatar_img = (!empty($group_row['group_avatar'])) ? get_user_avatar($group_row['group_avatar'], $group_row['group_avatar_type'], $group_row['group_avatar_width'], $group_row['group_avatar_height'], 'GROUP_AVATAR') : '<img src="' . $phpbb_admin_path . 'images/no_avatar.gif" alt="" />';
+				$avatar_img = (!empty($group_row['group_avatar'])) ? get_user_avatar($group_row['group_avatar'], $group_row['group_avatar_type'], $group_row['group_avatar_width'], $group_row['group_avatar_height'], 'GROUP_AVATAR') : '<img src="' . PHPBB_ADMIN_PATH . 'images/no_avatar.gif" alt="" />';
 
 				$display_gallery = (isset($_POST['display_gallery'])) ? true : false;
 
@@ -519,7 +518,7 @@ class acp_groups
 				switch ($back_link)
 				{
 					case 'acp_users_groups':
-						$u_back = append_sid("{$phpbb_admin_path}index.$phpEx", 'i=users&amp;mode=groups&amp;u=' . request_var('u', 0));
+						$u_back = append_sid(PHPBB_ADMIN_PATH . 'index.' . PHP_EXT, 'i=users&amp;mode=groups&amp;u=' . request_var('u', 0));
 					break;
 
 					default:
@@ -574,7 +573,7 @@ class acp_groups
 					'GROUP_HIDDEN'		=> $type_hidden,
 
 					'U_BACK'			=> $u_back,
-					'U_SWATCH'			=> append_sid("{$phpbb_admin_path}swatch.$phpEx", 'form=settings&amp;name=group_colour'),
+					'U_SWATCH'			=> append_sid(PHPBB_ADMIN_PATH . 'swatch.' . PHP_EXT, 'form=settings&amp;name=group_colour'),
 					'U_ACTION'			=> "{$this->u_action}&amp;action=$action&amp;g=$group_id",
 					'L_AVATAR_EXPLAIN'	=> sprintf($user->lang['AVATAR_EXPLAIN'], $config['avatar_max_width'], $config['avatar_max_height'], round($config['avatar_filesize'] / 1024)),
 					)
@@ -604,7 +603,7 @@ class acp_groups
 				while ($row = $db->sql_fetchrow($result))
 				{
 					$template->assign_block_vars('leader', array(
-						'U_USER_EDIT'		=> append_sid("{$phpbb_admin_path}index.$phpEx", "i=users&amp;action=edit&amp;u={$row['user_id']}"),
+						'U_USER_EDIT'		=> append_sid(PHPBB_ADMIN_PATH . 'index.' . PHP_EXT, "i=users&amp;action=edit&amp;u={$row['user_id']}"),
 
 						'USERNAME'			=> $row['username'],
 						'S_GROUP_DEFAULT'	=> ($row['group_id'] == $group_id) ? true : false,
@@ -643,7 +642,7 @@ class acp_groups
 
 					'U_ACTION'			=> $this->u_action . "&amp;g=$group_id",
 					'U_BACK'			=> $this->u_action,
-					'U_FIND_USERNAME'	=> append_sid("{$phpbb_root_path}memberlist.$phpEx", 'mode=searchuser&amp;form=list&amp;field=usernames'),
+					'U_FIND_USERNAME'	=> append_sid('memberlist', 'mode=searchuser&amp;form=list&amp;field=usernames'),
 					'U_DEFAULT_ALL'		=> "{$this->u_action}&amp;action=default&amp;g=$group_id",
 				));
 
@@ -670,7 +669,7 @@ class acp_groups
 					}
 
 					$template->assign_block_vars('member', array(
-						'U_USER_EDIT'		=> append_sid("{$phpbb_admin_path}index.$phpEx", "i=users&amp;action=edit&amp;u={$row['user_id']}"),
+						'U_USER_EDIT'		=> append_sid(PHPBB_ADMIN_PATH . 'index.' . PHP_EXT, "i=users&amp;action=edit&amp;u={$row['user_id']}"),
 
 						'USERNAME'			=> $row['username'],
 						'S_GROUP_DEFAULT'	=> ($row['group_id'] == $group_id) ? true : false,

@@ -406,8 +406,7 @@ function generate_text_for_display($text, $uid, $bitfield, $flags)
 	{
 		if (!class_exists('bbcode'))
 		{
-			global $phpbb_root_path, $phpEx;
-			include($phpbb_root_path . 'includes/bbcode.' . $phpEx);
+			include(PHPBB_ROOT_PATH . 'includes/bbcode.' . PHP_EXT);
 		}
 
 		if (empty($bbcode))
@@ -435,8 +434,6 @@ function generate_text_for_display($text, $uid, $bitfield, $flags)
 */
 function generate_text_for_storage(&$text, &$uid, &$bitfield, &$flags, $allow_bbcode = false, $allow_urls = false, $allow_smilies = false)
 {
-	global $phpbb_root_path, $phpEx;
-
 	$uid = $bitfield = '';
 
 	if (!$text)
@@ -446,7 +443,7 @@ function generate_text_for_storage(&$text, &$uid, &$bitfield, &$flags, $allow_bb
 
 	if (!class_exists('parse_message'))
 	{
-		include($phpbb_root_path . 'includes/message_parser.' . $phpEx);
+		include(PHPBB_ROOT_PATH . 'includes/message_parser.' . PHP_EXT);
 	}
 
 	$message_parser = new parse_message($text);
@@ -473,8 +470,6 @@ function generate_text_for_storage(&$text, &$uid, &$bitfield, &$flags, $allow_bb
 */
 function generate_text_for_edit($text, $uid, $flags)
 {
-	global $phpbb_root_path, $phpEx;
-
 	decode_message($text, $uid);
 
 	return array(
@@ -699,7 +694,7 @@ function bbcode_nl2br($text)
 */
 function smiley_text($text, $force_option = false)
 {
-	global $config, $user, $phpbb_root_path;
+	global $config, $user;
 
 	if ($force_option || !$config['allow_smilies'] || !$user->optionget('viewsmilies'))
 	{
@@ -707,7 +702,7 @@ function smiley_text($text, $force_option = false)
 	}
 	else
 	{
-		return preg_replace('#<!\-\- s(.*?) \-\-><img src="\{SMILIES_PATH\}\/(.*?) \/><!\-\- s\1 \-\->#', '<img src="' . $phpbb_root_path . $config['smilies_path'] . '/\2 />', $text);
+		return preg_replace('#<!\-\- s(.*?) \-\-><img src="\{SMILIES_PATH\}\/(.*?) \/><!\-\- s\1 \-\->#', '<img src="' . PHPBB_ROOT_PATH . $config['smilies_path'] . '/\2 />', $text);
 	}
 }
 
@@ -728,7 +723,7 @@ function parse_attachments($forum_id, &$message, &$attachments, &$update_count, 
 	}
 
 	global $template, $cache, $user;
-	global $extensions, $config, $phpbb_root_path, $phpEx;
+	global $extensions, $config;
 
 	//
 	$compiled_attachments = array();
@@ -816,8 +811,8 @@ function parse_attachments($forum_id, &$message, &$attachments, &$update_count, 
 
 		// Some basics...
 		$attachment['extension'] = strtolower(trim($attachment['extension']));
-		$filename = $phpbb_root_path . $config['upload_path'] . '/' . basename($attachment['physical_filename']);
-		$thumbnail_filename = $phpbb_root_path . $config['upload_path'] . '/thumb_' . basename($attachment['physical_filename']);
+		$filename = PHPBB_ROOT_PATH . $config['upload_path'] . '/' . basename($attachment['physical_filename']);
+		$thumbnail_filename = PHPBB_ROOT_PATH . $config['upload_path'] . '/thumb_' . basename($attachment['physical_filename']);
 
 		$upload_icon = '';
 
@@ -829,7 +824,7 @@ function parse_attachments($forum_id, &$message, &$attachments, &$update_count, 
 			}
 			else if ($extensions[$attachment['extension']]['upload_icon'])
 			{
-				$upload_icon = '<img src="' . $phpbb_root_path . $config['upload_icons_path'] . '/' . trim($extensions[$attachment['extension']]['upload_icon']) . '" alt="" />';
+				$upload_icon = '<img src="' . PHPBB_ROOT_PATH . $config['upload_icons_path'] . '/' . trim($extensions[$attachment['extension']]['upload_icon']) . '" alt="" />';
 			}
 		}
 
@@ -907,14 +902,14 @@ function parse_attachments($forum_id, &$message, &$attachments, &$update_count, 
 				$display_cat = ATTACHMENT_CATEGORY_NONE;
 			}
 
-			$download_link = append_sid("{$phpbb_root_path}download/file.$phpEx", 'id=' . $attachment['attach_id']);
+			$download_link = append_sid('download/file', 'id=' . $attachment['attach_id']);
 
 			switch ($display_cat)
 			{
 				// Images
 				case ATTACHMENT_CATEGORY_IMAGE:
 					$l_downloaded_viewed = 'VIEWED_COUNT';
-					$inline_link = append_sid("{$phpbb_root_path}download/file.$phpEx", 'id=' . $attachment['attach_id']);
+					$inline_link = append_sid('download/file', 'id=' . $attachment['attach_id']);
 					$download_link .= '&amp;mode=view';
 
 					$block_array += array(
@@ -928,7 +923,7 @@ function parse_attachments($forum_id, &$message, &$attachments, &$update_count, 
 				// Images, but display Thumbnail
 				case ATTACHMENT_CATEGORY_THUMB:
 					$l_downloaded_viewed = 'VIEWED_COUNT';
-					$thumbnail_link = append_sid("{$phpbb_root_path}download/file.$phpEx", 'id=' . $attachment['attach_id'] . '&amp;t=1');
+					$thumbnail_link = append_sid('download/file', 'id=' . $attachment['attach_id'] . '&amp;t=1');
 					$download_link .= '&amp;mode=view';
 
 					$block_array += array(
@@ -1118,7 +1113,7 @@ function truncate_string($string, $max_length = 60, $allow_reply = true, $append
 */
 function get_username_string($mode, $user_id, $username, $username_colour = '', $guest_username = false, $custom_profile_url = false)
 {
-	global $phpbb_root_path, $phpEx, $user, $auth;
+	global $user, $auth;
 
 	$profile_url = '';
 	$username_colour = ($username_colour) ? '#' . $username_colour : '';
@@ -1143,7 +1138,7 @@ function get_username_string($mode, $user_id, $username, $username_colour = '', 
 		}
 		else
 		{
-			$profile_url = ($custom_profile_url !== false) ? $custom_profile_url . '&amp;u=' . (int) $user_id : append_sid("{$phpbb_root_path}memberlist.$phpEx", 'mode=viewprofile&amp;u=' . (int) $user_id);
+			$profile_url = ($custom_profile_url !== false) ? $custom_profile_url . '&amp;u=' . (int) $user_id : append_sid('memberlist', 'mode=viewprofile&amp;u=' . (int) $user_id);
 		}
 	}
 	else

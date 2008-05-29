@@ -26,7 +26,6 @@ class acp_bots
 	function main($id, $mode)
 	{
 		global $config, $db, $user, $auth, $template, $cache;
-		global $phpbb_root_path, $phpbb_admin_path, $phpEx, $table_prefix;
 
 		$action = request_var('action', '');
 		$submit = (isset($_POST['submit'])) ? true : false;
@@ -141,7 +140,7 @@ class acp_bots
 
 			case 'edit':
 			case 'add':
-				include_once($phpbb_root_path . 'includes/functions_user.' . $phpEx);
+				include_once(PHPBB_ROOT_PATH . 'includes/functions_user.' . PHP_EXT);
 
 				$bot_row = array(
 					'bot_name'		=> utf8_normalize_nfc(request_var('bot_name', '', true)),

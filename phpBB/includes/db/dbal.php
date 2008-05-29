@@ -618,7 +618,7 @@ class dbal
 	*/
 	function sql_report($mode, $query = '')
 	{
-		global $cache, $starttime, $phpbb_root_path, $user;
+		global $cache, $starttime, $user;
 
 		if (empty($_REQUEST['explain']))
 		{
@@ -649,7 +649,7 @@ class dbal
 						<meta http-equiv="Content-Style-Type" content="text/css" />
 						<meta http-equiv="imagetoolbar" content="no" />
 						<title>SQL Report</title>
-						<link href="' . $phpbb_root_path . 'adm/style/admin.css" rel="stylesheet" type="text/css" media="screen" />
+						<link href="' . PHPBB_ROOT_PATH . 'adm/style/admin.css" rel="stylesheet" type="text/css" media="screen" />
 					</head>
 					<body id="errorpage">
 					<div id="wrap">

@@ -33,8 +33,7 @@ class mcp_main
 
 	function main($id, $mode)
 	{
-		global $auth, $db, $user, $template, $action;
-		global $config, $phpbb_root_path, $phpEx;
+		global $auth, $db, $user, $template, $action, $config;
 
 		$quickmod = ($mode == 'quickmod') ? true : false;
 
@@ -136,7 +135,7 @@ class mcp_main
 		switch ($mode)
 		{
 			case 'front':
-				include($phpbb_root_path . 'includes/mcp/mcp_front.' . $phpEx);
+				include(PHPBB_ROOT_PATH . 'includes/mcp/mcp_front.' . PHP_EXT);
 
 				$user->add_lang('acp/common');
 
@@ -147,7 +146,7 @@ class mcp_main
 			break;
 
 			case 'forum_view':
-				include($phpbb_root_path . 'includes/mcp/mcp_forum.' . $phpEx);
+				include(PHPBB_ROOT_PATH . 'includes/mcp/mcp_forum.' . PHP_EXT);
 
 				$user->add_lang('viewforum');
 
@@ -170,7 +169,7 @@ class mcp_main
 			break;
 
 			case 'topic_view':
-				include($phpbb_root_path . 'includes/mcp/mcp_topic.' . $phpEx);
+				include(PHPBB_ROOT_PATH . 'includes/mcp/mcp_topic.' . PHP_EXT);
 
 				mcp_topic_view($id, $mode, $action);
 
@@ -179,7 +178,7 @@ class mcp_main
 			break;
 
 			case 'post_details':
-				include($phpbb_root_path . 'includes/mcp/mcp_post.' . $phpEx);
+				include(PHPBB_ROOT_PATH . 'includes/mcp/mcp_post.' . PHP_EXT);
 
 				mcp_post_details($id, $mode, $action);
 
@@ -199,7 +198,7 @@ class mcp_main
 */
 function lock_unlock($action, $ids)
 {
-	global $auth, $user, $db, $phpEx, $phpbb_root_path;
+	global $auth, $user, $db;
 
 	if ($action == 'lock' || $action == 'unlock')
 	{
@@ -265,7 +264,7 @@ function lock_unlock($action, $ids)
 		confirm_box(false, strtoupper($action) . '_' . $l_prefix . ((sizeof($ids) == 1) ? '' : 'S'), $s_hidden_fields);
 	}
 
-	$redirect = request_var('redirect', "index.$phpEx");
+	$redirect = request_var('redirect', 'index.' . PHP_EXT);
 	$redirect = reapply_sid($redirect);
 
 	if (!$success_msg)
@@ -284,7 +283,7 @@ function lock_unlock($action, $ids)
 */
 function change_topic_type($action, $topic_ids)
 {
-	global $auth, $user, $db, $phpEx, $phpbb_root_path;
+	global $auth, $user, $db;
 
 	// For changing topic types, we only allow operations in one forum.
 	$forum_id = check_ids($topic_ids, TOPICS_TABLE, 'topic_id', array('f_announce', 'f_sticky', 'm_'), true);
@@ -511,7 +510,7 @@ function change_topic_type($action, $topic_ids)
 		}
 	}
 
-	$redirect = request_var('redirect', "index.$phpEx");
+	$redirect = request_var('redirect', 'index.' . PHP_EXT);
 	$redirect = reapply_sid($redirect);
 
 	if (!$success_msg)
@@ -531,7 +530,6 @@ function change_topic_type($action, $topic_ids)
 function mcp_move_topic($topic_ids)
 {
 	global $auth, $user, $db, $template;
-	global $phpEx, $phpbb_root_path;
 
 	// Here we limit the operation to one forum only
 	$forum_id = check_ids($topic_ids, TOPICS_TABLE, 'topic_id', array('m_move'), true);
@@ -730,7 +728,7 @@ function mcp_move_topic($topic_ids)
 		confirm_box(false, 'MOVE_TOPIC' . ((sizeof($topic_ids) == 1) ? '' : 'S'), $s_hidden_fields, 'mcp_move.html');
 	}
 
-	$redirect = request_var('redirect', "index.$phpEx");
+	$redirect = request_var('redirect', 'index.' . PHP_EXT);
 	$redirect = reapply_sid($redirect);
 
 	if (!$success_msg)
@@ -743,8 +741,8 @@ function mcp_move_topic($topic_ids)
 
 		$message = $user->lang[$success_msg];
 		$message .= '<br /><br />' . sprintf($user->lang['RETURN_PAGE'], '<a href="' . $redirect . '">', '</a>');
-		$message .= '<br /><br />' . sprintf($user->lang['RETURN_FORUM'], '<a href="' . append_sid("{$phpbb_root_path}viewforum.$phpEx", "f=$forum_id") . '">', '</a>');
-		$message .= '<br /><br />' . sprintf($user->lang['RETURN_NEW_FORUM'], '<a href="' . append_sid("{$phpbb_root_path}viewforum.$phpEx", "f=$to_forum_id") . '">', '</a>');
+		$message .= '<br /><br />' . sprintf($user->lang['RETURN_FORUM'], '<a href="' . append_sid('viewforum', "f=$forum_id") . '">', '</a>');
+		$message .= '<br /><br />' . sprintf($user->lang['RETURN_NEW_FORUM'], '<a href="' . append_sid('viewforum', "f=$to_forum_id") . '">', '</a>');
 
 		trigger_error($message);
 	}
@@ -755,7 +753,7 @@ function mcp_move_topic($topic_ids)
 */
 function mcp_delete_topic($topic_ids)
 {
-	global $auth, $user, $db, $phpEx, $phpbb_root_path;
+	global $auth, $user, $db;
 
 	if (!check_ids($topic_ids, TOPICS_TABLE, 'topic_id', array('m_delete')))
 	{
@@ -791,7 +789,7 @@ function mcp_delete_topic($topic_ids)
 		confirm_box(false, (sizeof($topic_ids) == 1) ? 'DELETE_TOPIC' : 'DELETE_TOPICS', $s_hidden_fields);
 	}
 
-	$redirect = request_var('redirect', "index.$phpEx");
+	$redirect = request_var('redirect', 'index.' . PHP_EXT);
 	$redirect = reapply_sid($redirect);
 
 	if (!$success_msg)
@@ -800,7 +798,7 @@ function mcp_delete_topic($topic_ids)
 	}
 	else
 	{
-		$redirect_url = append_sid("{$phpbb_root_path}viewforum.$phpEx", 'f=' . $forum_id);
+		$redirect_url = append_sid('viewforum', 'f=' . $forum_id);
 		meta_refresh(3, $redirect_url);
 		trigger_error($user->lang[$success_msg] . '<br /><br />' . sprintf($user->lang['RETURN_FORUM'], '<a href="' . $redirect_url . '">', '</a>'));
 	}
@@ -811,7 +809,7 @@ function mcp_delete_topic($topic_ids)
 */
 function mcp_delete_post($post_ids)
 {
-	global $auth, $user, $db, $phpEx, $phpbb_root_path;
+	global $auth, $user, $db;
 
 	if (!check_ids($post_ids, POSTS_TABLE, 'post_id', array('m_delete')))
 	{
@@ -833,7 +831,7 @@ function mcp_delete_post($post_ids)
 	{
 		if (!function_exists('delete_posts'))
 		{
-			include($phpbb_root_path . 'includes/functions_admin.' . $phpEx);
+			include(PHPBB_ROOT_PATH . 'includes/functions_admin.' . PHP_EXT);
 		}
 
 		// Count the number of topics that are affected
@@ -877,9 +875,9 @@ function mcp_delete_post($post_ids)
 		$return_link = array();
 		if ($affected_topics == 1 && !$deleted_topics && $topic_id)
 		{
-			$return_link[] = sprintf($user->lang['RETURN_TOPIC'], '<a href="' . append_sid("{$phpbb_root_path}viewtopic.$phpEx", "f=$forum_id&amp;t=$topic_id") . '">', '</a>');
+			$return_link[] = sprintf($user->lang['RETURN_TOPIC'], '<a href="' . append_sid('viewtopic', "f=$forum_id&amp;t=$topic_id") . '">', '</a>');
 		}
-		$return_link[] = sprintf($user->lang['RETURN_FORUM'], '<a href="' . append_sid("{$phpbb_root_path}viewforum.$phpEx", 'f=' . $forum_id) . '">', '</a>');
+		$return_link[] = sprintf($user->lang['RETURN_FORUM'], '<a href="' . append_sid('viewforum', 'f=' . $forum_id) . '">', '</a>');
 
 		if (sizeof($post_ids) == 1)
 		{
@@ -912,7 +910,7 @@ function mcp_delete_post($post_ids)
 		confirm_box(false, (sizeof($post_ids) == 1) ? 'DELETE_POST' : 'DELETE_POSTS', $s_hidden_fields);
 	}
 
-	$redirect = request_var('redirect', "index.$phpEx");
+	$redirect = request_var('redirect', 'index.' . PHP_EXT);
 	$redirect = reapply_sid($redirect);
 
 	if (!$success_msg)
@@ -932,7 +930,6 @@ function mcp_delete_post($post_ids)
 function mcp_fork_topic($topic_ids)
 {
 	global $auth, $user, $db, $template, $config;
-	global $phpEx, $phpbb_root_path;
 
 	if (!check_ids($topic_ids, TOPICS_TABLE, 'topic_id', array('m_')))
 	{
@@ -1202,7 +1199,7 @@ function mcp_fork_topic($topic_ids)
 		confirm_box(false, 'FORK_TOPIC' . ((sizeof($topic_ids) == 1) ? '' : 'S'), $s_hidden_fields, 'mcp_move.html');
 	}
 
-	$redirect = request_var('redirect', "index.$phpEx");
+	$redirect = request_var('redirect', 'index.' . PHP_EXT);
 	$redirect = reapply_sid($redirect);
 
 	if (!$success_msg)
@@ -1211,13 +1208,13 @@ function mcp_fork_topic($topic_ids)
 	}
 	else
 	{
-		$redirect_url = append_sid("{$phpbb_root_path}viewforum.$phpEx", 'f=' . $forum_id);
+		$redirect_url = append_sid('viewforum', 'f=' . $forum_id);
 		meta_refresh(3, $redirect_url);
 		$return_link = sprintf($user->lang['RETURN_FORUM'], '<a href="' . $redirect_url . '">', '</a>');
 
 		if ($forum_id != $to_forum_id)
 		{
-			$return_link .= '<br /><br />' . sprintf($user->lang['RETURN_NEW_FORUM'], '<a href="' . append_sid("{$phpbb_root_path}viewforum.$phpEx", 'f=' . $to_forum_id) . '">', '</a>');
+			$return_link .= '<br /><br />' . sprintf($user->lang['RETURN_NEW_FORUM'], '<a href="' . append_sid('viewforum', 'f=' . $to_forum_id) . '">', '</a>');
 		}
 
 		trigger_error($user->lang[$success_msg] . '<br /><br />' . $return_link);

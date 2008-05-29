@@ -6,6 +6,7 @@
 * @copyright (c) 2005 phpBB Group
 * @license http://opensource.org/licenses/gpl-license.php GNU Public License
 *
+* @todo handling email and jabber queue through the database, not relying on a single file/file transactions
 */
 
 /**
@@ -17,10 +18,16 @@ if (!defined('IN_PHPBB'))
 }
 
 /**
+* phpbb_messenger
+* phpbb_queue
+* phpbb_smtp_mailer
+*/
+
+/**
 * Messenger
 * @package phpBB3
 */
-class messenger
+class phpbb_messenger
 {
 	private $vars, $msg, $extra_headers, $replyto, $from, $subject;
 	private $addresses = array();
@@ -53,7 +60,7 @@ class messenger
 	/**
 	* Sets an email address to send to
 	*/
-	function to($address, $realname = '')
+	public function to($address, $realname = '')
 	{
 		global $config;
 
@@ -75,7 +82,7 @@ class messenger
 	/**
 	* Sets an cc address to send to
 	*/
-	function cc($address, $realname = '')
+	public function cc($address, $realname = '')
 	{
 		$pos = isset($this->addresses['cc']) ? sizeof($this->addresses['cc']) : 0;
 		$this->addresses['cc'][$pos]['email'] = trim($address);
@@ -85,7 +92,7 @@ class messenger
 	/**
 	* Sets an bcc address to send to
 	*/
-	function bcc($address, $realname = '')
+	public function bcc($address, $realname = '')
 	{
 		$pos = isset($this->addresses['bcc']) ? sizeof($this->addresses['bcc']) : 0;
 		$this->addresses['bcc'][$pos]['email'] = trim($address);
@@ -95,7 +102,7 @@ class messenger
 	/**
 	* Sets a im contact to send to
 	*/
-	function im($address, $realname = '')
+	public function im($address, $realname = '')
 	{
 		$pos = isset($this->addresses['im']) ? sizeof($this->addresses['im']) : 0;
 		$this->addresses['im'][$pos]['uid'] = trim($address);
@@ -105,7 +112,7 @@ class messenger
 	/**
 	* Set the reply to address
 	*/
-	function replyto($address)
+	public function replyto($address)
 	{
 		$this->replyto = trim($address);
 	}
@@ -113,7 +120,7 @@ class messenger
 	/**
 	* Set the from address
 	*/
-	function from($address)
+	public function from($address)
 	{
 		$this->from = trim($address);
 	}
@@ -121,7 +128,7 @@ class messenger
 	/**
 	* set up subject for mail
 	*/
-	function subject($subject = '')
+	public function subject($subject = '')
 	{
 		$this->subject = trim($subject);
 	}
@@ -129,7 +136,7 @@ class messenger
 	/**
 	* set up extra mail headers
 	*/
-	function headers($headers)
+	public function headers($headers)
 	{
 		$this->extra_headers[] = trim($headers);
 	}
@@ -137,7 +144,7 @@ class messenger
 	/**
 	* Set the email priority
 	*/
-	function set_mail_priority($priority = MAIL_NORMAL_PRIORITY)
+	public function set_mail_priority($priority = MAIL_NORMAL_PRIORITY)
 	{
 		$this->mail_priority = $priority;
 	}
@@ -145,9 +152,9 @@ class messenger
 	/**
 	* Set email template to use
 	*/
-	function template($template_file, $template_lang = '')
+	public function template($template_file, $template_lang = '')
 	{
-		global $config, $phpbb_root_path;
+		global $config;
 
 		if (!trim($template_file))
 		{
@@ -161,7 +168,7 @@ class messenger
 
 		if (empty($this->tpl_msg[$template_lang . $template_file]))
 		{
-			$tpl_file = "{$phpbb_root_path}language/$template_lang/email/$template_file.txt";
+			$tpl_file = PHPBB_ROOT_PATH . "language/$template_lang/email/$template_file.txt";
 
 			if (!file_exists($tpl_file))
 			{
@@ -184,7 +191,7 @@ class messenger
 	/**
 	* assign variables to email template
 	*/
-	function assign_vars($vars)
+	public function assign_vars($vars)
 	{
 		$this->vars = (empty($this->vars)) ? $vars : $this->vars + $vars;
 	}
@@ -192,7 +199,7 @@ class messenger
 	/**
 	* Send the mail out to the recipients set previously in var $this->addresses
 	*/
-	function send($method = NOTIFY_EMAIL, $break = false)
+	public function send($method = NOTIFY_EMAIL, $break = false)
 	{
 		global $config, $user;
 
@@ -256,7 +263,7 @@ class messenger
 	*/
 	public static function error($type, $msg)
 	{
-		global $user, $phpEx, $phpbb_root_path, $config;
+		global $user, $config;
 
 		// Session doesn't exist, create it
 		if (!isset($user->session_id) || $user->session_id === '')
@@ -285,7 +292,7 @@ class messenger
 	/**
 	* Save to queue
 	*/
-	function save_queue()
+	public function save_queue()
 	{
 		global $config;
 
@@ -436,7 +443,7 @@ class messenger
 	*/
 	private function msg_jabber()
 	{
-		global $config, $db, $user, $phpbb_root_path, $phpEx;
+		global $config, $db, $user;
 
 		if (empty($config['jab_enable']) || empty($config['jab_host']) || empty($config['jab_username']) || empty($config['jab_password']))
 		{
@@ -463,7 +470,7 @@ class messenger
 
 		if (!$use_queue)
 		{
-			include_once($phpbb_root_path . 'includes/functions_jabber.' . $phpEx);
+			include_once(PHPBB_ROOT_PATH . 'includes/functions_jabber.' . PHP_EXT);
 			$this->jabber = new jabber($config['jab_host'], $config['jab_port'], $config['jab_username'], $config['jab_password'], $config['jab_use_ssl']);
 
 			if (!$this->jabber->connect())
@@ -499,10 +506,67 @@ class messenger
 }
 
 /**
+* Classes for handling queue objects - singletons
+*/
+class phpbb_queue_jabber
+{
+	static $queue;
+
+	public function __construct(phpbb_queue &$queue)
+	{
+		self::queue = $queue;
+	}
+
+	// singleton
+	public static function &get_instance(phpbb_queue &$queue)
+	{
+		static $self;
+
+		if (is_object($self) === true)
+		{
+			return $self;
+		}
+
+		$self = new phpbb_queue_jabber($queue);
+		return $self;
+	}
+
+	public function start()
+	{
+		echo "START";
+		print_r($queue);
+		exit;
+/*		if (!$config['jab_enable'])
+		{
+						unset($this->queue_data['jabber']);
+						continue 2;
+					}
+
+					include_once(PHPBB_ROOT_PATH . 'includes/functions_jabber.' . PHP_EXT);
+					$this->jabber = new jabber($config['jab_host'], $config['jab_port'], $config['jab_username'], $config['jab_password'], $config['jab_use_ssl']);
+
+					if (!$this->jabber->connect())
+					{
+						messenger::error('JABBER', $user->lang['ERR_JAB_CONNECT']);
+						continue 2;
+					}
+
+					if (!$this->jabber->login())
+					{
+						messenger::error('JABBER', $user->lang['ERR_JAB_AUTH']);
+						continue 2;
+					}
+*/
+	}
+}
+
+class phpbb_queue_test(
+
+/**
 * handling email and jabber queue
 * @package phpBB3
 */
-class queue
+class phpbb_queue
 {
 	private $data = array();
 	private $queue_data = array();
@@ -514,10 +578,8 @@ class queue
 	*/
 	function __construct()
 	{
-		global $phpEx, $phpbb_root_path;
-
 		$this->data = array();
-		$this->cache_file = "{$phpbb_root_path}cache/queue.$phpEx";
+		$this->cache_file = PHPBB_ROOT_PATH . 'cache/queue.' . PHP_EXT;
 	}
 
 	/**
@@ -544,7 +606,7 @@ class queue
 	*/
 	public function process()
 	{
-		global $db, $config, $phpEx, $phpbb_root_path, $user;
+		global $db, $config,  $user;
 
 		set_config('last_queue_run', time(), true);
 
@@ -584,6 +646,13 @@ class queue
 				$num_items = sizeof($data_ary['data']);
 			}
 
+			$class = 'phpbb_queue_' . $object;
+			$queue_object &= $class->get_instance($this);
+
+			$queue_object->start();
+
+
+/*
 			switch ($object)
 			{
 				case 'email':
@@ -596,27 +665,7 @@ class queue
 				break;
 
 				case 'jabber':
-					if (!$config['jab_enable'])
-					{
-						unset($this->queue_data['jabber']);
-						continue 2;
-					}
-
-					include_once($phpbb_root_path . 'includes/functions_jabber.' . $phpEx);
-					$this->jabber = new jabber($config['jab_host'], $config['jab_port'], $config['jab_username'], $config['jab_password'], $config['jab_use_ssl']);
-
-					if (!$this->jabber->connect())
-					{
-						messenger::error('JABBER', $user->lang['ERR_JAB_CONNECT']);
-						continue 2;
-					}
-
-					if (!$this->jabber->login())
-					{
-						messenger::error('JABBER', $user->lang['ERR_JAB_AUTH']);
-						continue 2;
-					}
-
+					
 				break;
 
 				default:
@@ -682,6 +731,7 @@ class queue
 					$this->jabber->disconnect();
 				break;
 			}
+			*/
 		}
 	
 		if (!sizeof($this->queue_data))

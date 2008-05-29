@@ -23,9 +23,9 @@ die("Please read the first lines of this script for instructions on how to enabl
 set_time_limit(0);
 
 define('IN_PHPBB', true);
-$phpbb_root_path = '../';
-$phpEx = substr(strrchr(__FILE__, '.'), 1);
-include($phpbb_root_path . 'common.'.$phpEx);
+define('PHPBB_ROOT_PATH', './../');
+define('PHP_EXT', substr(strrchr(__FILE__, '.'), 1));
+include(PHPBB_ROOT_PATH . 'common.' . PHP_EXT);
 
 // Start session management
 $user->session_begin();
@@ -34,12 +34,12 @@ $user->setup();
 
 $search_type = $config['search_type'];
 
-if (!file_exists($phpbb_root_path . 'includes/search/' . $search_type . '.' . $phpEx))
+if (!file_exists(PHPBB_ROOT_PATH . 'includes/search/' . $search_type . '.' . PHP_EXT))
 {
 	trigger_error('NO_SUCH_SEARCH_MODULE');
 }
 
-require($phpbb_root_path . 'includes/search/' . $search_type . '.' . $phpEx);
+require(PHPBB_ROOT_PATH . 'includes/search/' . $search_type . '.' . PHP_EXT);
 
 $error = false;
 $search = new $search_type($error);

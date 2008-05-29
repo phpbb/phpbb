@@ -12,9 +12,9 @@
 */
 define('IN_PHPBB', true);
 define('IN_CRON', true);
-$phpbb_root_path = (defined('PHPBB_ROOT_PATH')) ? PHPBB_ROOT_PATH : './';
-$phpEx = substr(strrchr(__FILE__, '.'), 1);
-include($phpbb_root_path . 'common.' . $phpEx);
+if (!defined('PHPBB_ROOT_PATH')) define('PHPBB_ROOT_PATH', './');
+if (!defined('PHP_EXT')) define('PHP_EXT', substr(strrchr(__FILE__, '.'), 1));
+include(PHPBB_ROOT_PATH . 'common.' . PHP_EXT);
 
 // Do not update users last page entry
 $user->session_begin(false);
@@ -74,7 +74,7 @@ switch ($cron_type)
 {
 	case 'queue':
 
-		if (time() - $config['queue_interval'] <= $config['last_queue_run'] || !file_exists($phpbb_root_path . 'cache/queue.' . $phpEx))
+		if (time() - $config['queue_interval'] <= $config['last_queue_run'] || !file_exists(PHPBB_ROOT_PATH . 'cache/queue.' . PHP_EXT))
 		{
 			break;
 		}
@@ -85,7 +85,7 @@ switch ($cron_type)
 			$use_shutdown_function = false;
 		}
 
-		include_once($phpbb_root_path . 'includes/functions_messenger.' . $phpEx);
+		include_once(PHPBB_ROOT_PATH . 'includes/functions_messenger.' . PHP_EXT);
 		$queue = new queue();
 
 		if ($use_shutdown_function)
@@ -122,12 +122,12 @@ switch ($cron_type)
 		// Select the search method
 		$search_type = basename($config['search_type']);
 
-		if (time() - $config['search_gc'] <= $config['search_last_gc'] || !file_exists($phpbb_root_path . 'includes/search/' . $search_type . '.' . $phpEx))
+		if (time() - $config['search_gc'] <= $config['search_last_gc'] || !file_exists(PHPBB_ROOT_PATH . 'includes/search/' . $search_type . '.' . PHP_EXT))
 		{
 			break;
 		}
 
-		include_once("{$phpbb_root_path}includes/search/$search_type.$phpEx");
+		include_once(PHPBB_ROOT_PATH . "includes/search/$search_type." . PHP_EXT);
 
 		// We do some additional checks in the module to ensure it can actually be utilised
 		$error = false;
@@ -156,7 +156,7 @@ switch ($cron_type)
 			break;
 		}
 
-		include_once($phpbb_root_path . 'includes/functions_admin.' . $phpEx);
+		include_once(PHPBB_ROOT_PATH . 'includes/functions_admin.' . PHP_EXT);
 
 		if ($use_shutdown_function)
 		{
@@ -176,7 +176,7 @@ switch ($cron_type)
 			break;
 		}
 
-		include_once($phpbb_root_path . 'includes/functions_admin.' . $phpEx);
+		include_once(PHPBB_ROOT_PATH . 'includes/functions_admin.' . PHP_EXT);
 
 		if ($use_shutdown_function)
 		{
@@ -226,7 +226,7 @@ switch ($cron_type)
 		// Do the forum Prune thang
 		if ($row['prune_next'] < time() && $row['enable_prune'])
 		{
-			include_once($phpbb_root_path . 'includes/functions_admin.' . $phpEx);
+			include_once(PHPBB_ROOT_PATH . 'includes/functions_admin.' . PHP_EXT);
 
 			if ($row['prune_days'])
 			{

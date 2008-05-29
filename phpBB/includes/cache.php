@@ -324,7 +324,7 @@ class cache
 	*/
 	public static function obtain_cfg_item($theme, $item = 'theme')
 	{
-		global $config, $phpbb_root_path, $cache;
+		global $config, $cache;
 
 		$parsed_array = $cache->get('_cfg_' . $item . '_' . $theme[$item . '_path']);
 
@@ -334,7 +334,7 @@ class cache
 		}
 
 		$reparse = false;
-		$filename = $phpbb_root_path . 'styles/' . $theme[$item . '_path'] . '/' . $item . '/' . $item . '.cfg';
+		$filename = PHPBB_ROOT_PATH . 'styles/' . $theme[$item . '_path'] . '/' . $item . '/' . $item . '.cfg';
 
 		if (!file_exists($filename))
 		{
@@ -395,22 +395,18 @@ class cache
 
 		if (($hook_files = $cache->get('_hooks')) === false)
 		{
-			global $phpbb_root_path;
-			
 			$hook_files = array();
 
 			// Now search for hooks...
-			$dh = @opendir($phpbb_root_path . 'includes/hooks/');
+			$dh = @opendir(PHPBB_ROOT_PATH . 'includes/hooks/');
 
 			if ($dh)
 			{
-				global $phpEx;
-
 				while (($file = readdir($dh)) !== false)
 				{
-					if (strpos($file, 'hook_') === 0 && substr($file, -(strlen($phpEx) + 1)) === '.' . $phpEx)
+					if (strpos($file, 'hook_') === 0 && substr($file, -(strlen(PHP_EXT) + 1)) === '.' . PHP_EXT)
 					{
-						$hook_files[] = substr($file, 0, -(strlen($phpEx) + 1));
+						$hook_files[] = substr($file, 0, -(strlen(PHP_EXT) + 1));
 					}
 				}
 				closedir($dh);

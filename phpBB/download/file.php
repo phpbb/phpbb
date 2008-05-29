@@ -12,33 +12,12 @@
 * @ignore
 */
 define('IN_PHPBB', true);
-$phpbb_root_path = (defined('PHPBB_ROOT_PATH')) ? PHPBB_ROOT_PATH : './../';
-$phpEx = substr(strrchr(__FILE__, '.'), 1);
+if (!defined('PHPBB_ROOT_PATH')) define('PHPBB_ROOT_PATH', './../');
+if (!defined('PHP_EXT')) define('PHP_EXT', substr(strrchr(__FILE__, '.'), 1));
+include(PHPBB_ROOT_PATH . 'common.' . PHP_EXT);
 
 if (isset($_GET['avatar']))
 {
-	require($phpbb_root_path . 'config.' . $phpEx);
-
-	if (!defined('PHPBB_INSTALLED') || empty($dbms) || empty($acm_type))
-	{
-		exit;
-	}
-
-	require($phpbb_root_path . 'includes/acm/acm_' . $acm_type . '.' . $phpEx);
-	require($phpbb_root_path . 'includes/cache.' . $phpEx);
-	require($phpbb_root_path . 'includes/db/' . $dbms . '.' . $phpEx);
-	require($phpbb_root_path . 'includes/constants.' . $phpEx);
-
-	$db = new $sql_db();
-	$cache = new acm();
-
-	// Connect to DB
-	if (!@$db->sql_connect($dbhost, $dbuser, $dbpasswd, $dbname, $dbport, false, false))
-	{
-		exit;
-	}
-	unset($dbpasswd);
-
 	// worst-case default
 	$browser = (!empty($_SERVER['HTTP_USER_AGENT'])) ? htmlspecialchars((string) $_SERVER['HTTP_USER_AGENT']) : 'msie 6.0';
 
@@ -92,43 +71,21 @@ if (isset($_GET['avatar']))
 		}
 	}
 
-	if (!in_array($ext, array('png', 'gif', 'jpg', 'jpeg')))
+	if (!in_array($ext, array('png', 'gif', 'jpg', 'jpeg')) || !$filename)
 	{
 		// no way such an avatar could exist. They are not following the rules, stop the show.
-		header("HTTP/1.0 403 forbidden");
-		if (!empty($cache))
-		{
-			$cache->unload();
-		}
-		$db->sql_close();
-		exit;
-	}
-
-	if (!$filename)
-	{
-		// no way such an avatar could exist. They are not following the rules, stop the show.
-		header("HTTP/1.0 403 forbidden");
-		if (!empty($cache))
-		{
-			$cache->unload();
-		}
-		$db->sql_close();
-		exit;
+		header("HTTP/1.0 403 Forbidden");
+		garbage_collection();
+		exit_handler();
 	}
 
 	send_avatar_to_browser(($avatar_group ? 'g' : '') . $filename . '.' . $ext, $browser);
 
-	if (!empty($cache))
-	{
-		$cache->unload();
-	}
-	$db->sql_close();
-	exit;
+	garbage_collection();
+	exit_handler();
 }
 
 // implicit else: we are not in avatar mode
-include($phpbb_root_path . 'common.' . $phpEx);
-
 $download_id = request_var('id', 0);
 $mode = request_var('mode', '');
 $thumbnail = request_var('t', false);
@@ -299,7 +256,7 @@ else if (($display_cat == ATTACHMENT_CATEGORY_NONE || $display_cat == ATTACHMENT
 
 if ($display_cat == ATTACHMENT_CATEGORY_IMAGE && $mode === 'view' && (strpos($attachment['mimetype'], 'image') === 0) && strpos(strtolower($user->browser), 'msie') !== false)
 {
-	wrap_img_in_html(append_sid($phpbb_root_path . 'download/file.' . $phpEx, 'id=' . $attachment['attach_id']), $attachment['real_filename']);
+	wrap_img_in_html(append_sid('download/file', 'id=' . $attachment['attach_id']), $attachment['real_filename']);
 }
 else
 {
@@ -307,12 +264,12 @@ else
 	if ($download_mode == PHYSICAL_LINK)
 	{
 		// This presenting method should no longer be used
-		if (!@is_dir($phpbb_root_path . $config['upload_path']))
+		if (!@is_dir(PHPBB_ROOT_PATH . $config['upload_path']))
 		{
 			trigger_error($user->lang['PHYSICAL_DOWNLOAD_NOT_POSSIBLE']);
 		}
 
-		redirect($phpbb_root_path . $config['upload_path'] . '/' . $attachment['physical_filename']);
+		redirect(PHPBB_ROOT_PATH . $config['upload_path'] . '/' . $attachment['physical_filename']);
 		exit;
 	}
 	else
@@ -329,7 +286,7 @@ else
 */
 function send_avatar_to_browser($file, $browser)
 {
-	global $config, $phpbb_root_path;
+	global $config;
 
 	$prefix = $config['avatar_salt'] . '_';
 	$image_dir = $config['avatar_path'];
@@ -345,7 +302,7 @@ function send_avatar_to_browser($file, $browser)
 	{
 		$image_dir = '';
 	}
-	$file_path = $phpbb_root_path . $image_dir . '/' . $prefix . $file;
+	$file_path = PHPBB_ROOT_PATH . $image_dir . '/' . $prefix . $file;
 
 	if ((@file_exists($file_path) && @is_readable($file_path)) && !headers_sent())
 	{
@@ -427,9 +384,9 @@ function wrap_img_in_html($src, $title)
 */
 function send_file_to_browser($attachment, $upload_dir, $category)
 {
-	global $user, $db, $config, $phpbb_root_path;
+	global $user, $db, $config;
 
-	$filename = $phpbb_root_path . $upload_dir . '/' . $attachment['physical_filename'];
+	$filename = PHPBB_ROOT_PATH . $upload_dir . '/' . $attachment['physical_filename'];
 
 	if (!@file_exists($filename))
 	{

@@ -21,8 +21,8 @@ if (defined('IN_PHPBB') && defined('IN_INSTALL'))
 define('IN_PHPBB', true);
 define('IN_INSTALL', true);
 
-$phpbb_root_path = (defined('PHPBB_ROOT_PATH')) ? PHPBB_ROOT_PATH : './../';
-$phpEx = substr(strrchr(__FILE__, '.'), 1);
+if (!defined('PHPBB_ROOT_PATH')) define('PHPBB_ROOT_PATH', './../');
+if (!defined('PHP_EXT')) define('PHP_EXT', substr(strrchr(__FILE__, '.'), 1));
 
 // Report all errors, except notices
 //error_reporting(E_ALL ^ E_NOTICE);
@@ -31,7 +31,7 @@ error_reporting(E_ALL);
 @set_time_limit(0);
 
 // Include essential scripts
-include($phpbb_root_path . 'config.' . $phpEx);
+include(PHPBB_ROOT_PATH . 'config.' . PHP_EXT);
 
 if (!isset($dbms))
 {
@@ -50,23 +50,23 @@ if (!empty($load_extensions))
 }
 
 // Include files
-require($phpbb_root_path . 'includes/acm/acm_' . $acm_type . '.' . $phpEx);
-require($phpbb_root_path . 'includes/cache.' . $phpEx);
-require($phpbb_root_path . 'includes/template.' . $phpEx);
-require($phpbb_root_path . 'includes/session.' . $phpEx);
-require($phpbb_root_path . 'includes/auth.' . $phpEx);
+require(PHPBB_ROOT_PATH . 'includes/acm/acm_' . $acm_type . '.' . PHP_EXT);
+require(PHPBB_ROOT_PATH . 'includes/cache.' . PHP_EXT);
+require(PHPBB_ROOT_PATH . 'includes/template.' . PHP_EXT);
+require(PHPBB_ROOT_PATH . 'includes/session.' . PHP_EXT);
+require(PHPBB_ROOT_PATH . 'includes/auth.' . PHP_EXT);
 
-require($phpbb_root_path . 'includes/functions.' . $phpEx);
+require(PHPBB_ROOT_PATH . 'includes/functions.' . PHP_EXT);
 
-if (file_exists($phpbb_root_path . 'includes/functions_content.' . $phpEx))
+if (file_exists(PHPBB_ROOT_PATH . 'includes/functions_content.' . PHP_EXT))
 {
-	require($phpbb_root_path . 'includes/functions_content.' . $phpEx);
+	require(PHPBB_ROOT_PATH . 'includes/functions_content.' . PHP_EXT);
 }
 
-require($phpbb_root_path . 'includes/functions_admin.' . $phpEx);
-require($phpbb_root_path . 'includes/constants.' . $phpEx);
-require($phpbb_root_path . 'includes/db/' . $dbms . '.' . $phpEx);
-require($phpbb_root_path . 'includes/utf/utf_tools.' . $phpEx);
+require(PHPBB_ROOT_PATH . 'includes/functions_admin.' . PHP_EXT);
+require(PHPBB_ROOT_PATH . 'includes/constants.' . PHP_EXT);
+require(PHPBB_ROOT_PATH . 'includes/db/' . $dbms . '.' . PHP_EXT);
+require(PHPBB_ROOT_PATH . 'includes/utf/utf_tools.' . PHP_EXT);
 
 // If we are on PHP >= 6.0.0 we do not need some code
 if (version_compare(PHP_VERSION, '6.0.0-dev', '>='))
@@ -87,14 +87,14 @@ $cache = new acm();
 $db = new $sql_db();
 
 // Add own hook handler, if present. :o
-if (file_exists($phpbb_root_path . 'includes/hooks/index.' . $phpEx))
+if (file_exists(PHPBB_ROOT_PATH . 'includes/hooks/index.' . PHP_EXT))
 {
-	require($phpbb_root_path . 'includes/hooks/index.' . $phpEx);
+	require(PHPBB_ROOT_PATH . 'includes/hooks/index.' . PHP_EXT);
 	$phpbb_hook = new phpbb_hook(array('exit_handler', 'phpbb_user_session_handler', 'append_sid', array('template', 'display')));
 
 	foreach (cache::obtain_hooks() as $hook)
 	{
-		@include($phpbb_root_path . 'includes/hooks/' . $hook . '.' . $phpEx);
+		@include(PHPBB_ROOT_PATH . 'includes/hooks/' . $hook . '.' . PHP_EXT);
 	}
 }
 else
@@ -124,15 +124,15 @@ if (!$language)
 	$language = $row['config_value'];
 }
 
-if (!file_exists($phpbb_root_path . 'language/' . $language))
+if (!file_exists(PHPBB_ROOT_PATH . 'language/' . $language))
 {
 	die('No language found!');
 }
 
 // And finally, load the relevant language files
-include($phpbb_root_path . 'language/' . $language . '/common.' . $phpEx);
-include($phpbb_root_path . 'language/' . $language . '/acp/common.' . $phpEx);
-include($phpbb_root_path . 'language/' . $language . '/install.' . $phpEx);
+include(PHPBB_ROOT_PATH . 'language/' . $language . '/common.' . PHP_EXT);
+include(PHPBB_ROOT_PATH . 'language/' . $language . '/acp/common.' . PHP_EXT);
+include(PHPBB_ROOT_PATH . 'language/' . $language . '/install.' . PHP_EXT);
 
 // Set PHP error handler to ours
 //set_error_handler('msg_handler');
@@ -589,7 +589,6 @@ flush();
 $no_updates = true;
 
 $versions = array(
-	'3.0.RC2', '3.0.RC3', '3.0.RC4', '3.0.RC5', '3.0.0'
 );
 
 // some code magic
@@ -681,7 +680,7 @@ else
 
 	<p><?php echo ((isset($lang['INLINE_UPDATE_SUCCESSFUL'])) ? $lang['INLINE_UPDATE_SUCCESSFUL'] : 'The database update was successful. Now you need to continue the update process.'); ?></p>
 
-	<p><a href="<?php echo append_sid("{$phpbb_root_path}install/index.{$phpEx}", "mode=update&amp;sub=file_check&amp;lang=$language"); ?>" class="button1"><?php echo (isset($lang['CONTINUE_UPDATE_NOW'])) ? $lang['CONTINUE_UPDATE_NOW'] : 'Continue the update process now'; ?></a></p>
+	<p><a href="<?php echo append_sid('install/index', "mode=update&amp;sub=file_check&amp;lang=$language"); ?>" class="button1"><?php echo (isset($lang['CONTINUE_UPDATE_NOW'])) ? $lang['CONTINUE_UPDATE_NOW'] : 'Continue the update process now'; ?></a></p>
 
 <?php
 }
@@ -723,404 +722,12 @@ if (function_exists('exit_handler'))
 */
 function change_database_data($version)
 {
-	global $db, $map_dbms, $errored, $error_ary, $config, $phpbb_root_path;
+	global $db, $map_dbms, $errored, $error_ary, $config;
 
 	switch ($version)
 	{
-		case '3.0.RC2':
-
-			$smileys = array();
-
-			$sql = 'SELECT smiley_id, code
-				FROM ' . SMILIES_TABLE;
-			$result = $db->sql_query($sql);
-
-			while ($row = $db->sql_fetchrow($result))
-			{
-				$smileys[$row['smiley_id']] = $row['code'];
-			}
-			$db->sql_freeresult($result);
-	
-			foreach ($smileys as $id => $code)
-			{
-				// 2.0 only entitized lt and gt; We need to do something about double quotes.
-				if (strchr($code, '"') === false)
-				{
-					continue;
-				}
-
-				$new_code = str_replace('&amp;', '&', $code);
-				$new_code = str_replace('&lt;', '<', $new_code);
-				$new_code = str_replace('&gt;', '>', $new_code);
-				$new_code = utf8_htmlspecialchars($new_code);
-
-				$sql = 'UPDATE ' . SMILIES_TABLE . '
-					SET code = \'' . $db->sql_escape($new_code) . '\'
-					WHERE smiley_id = ' . (int) $id;
-				$db->sql_query($sql);
-			}
-
-			$index_list = sql_list_index($map_dbms, ACL_ROLES_DATA_TABLE);
-
-			if (in_array('ath_opt_id', $index_list))
-			{
-				sql_index_drop($map_dbms, 'ath_opt_id', ACL_ROLES_DATA_TABLE);
-				sql_create_index($map_dbms, 'ath_op_id', ACL_ROLES_DATA_TABLE, array('auth_option_id'));
-			}
-
+		default:
 		break;
-
-		case '3.0.RC3':
-
-			if ($map_dbms === 'postgres')
-			{
-				$sql = "SELECT SETVAL('" . FORUMS_TABLE . "_seq',(select case when max(forum_id)>0 then max(forum_id)+1 else 1 end from " . FORUMS_TABLE . '));';
-				_sql($sql, $errored, $error_ary);
-			}
-
-			// we check for:
-			// ath_opt_id
-			// ath_op_id
-			// ACL_ROLES_DATA_TABLE_ath_opt_id
-			// we want ACL_ROLES_DATA_TABLE_ath_op_id
-
-			$table_index_fix = array(
-				ACL_ROLES_DATA_TABLE => array(
-					'ath_opt_id'							=> 'ath_op_id',
-					'ath_op_id'								=> 'ath_op_id',
-					ACL_ROLES_DATA_TABLE . '_ath_opt_id'	=> 'ath_op_id'
-				),
-				STYLES_IMAGESET_DATA_TABLE => array(
-					'i_id'									=> 'i_d',
-					'i_d'									=> 'i_d',
-					STYLES_IMAGESET_DATA_TABLE . '_i_id'	=> 'i_d'
-				)
-			);
-
-			// we need to create some indicies...
-			$needed_creation = array();
-
-			foreach ($table_index_fix as $table_name => $index_info)
-			{
-				$index_list = sql_list_fake($map_dbms, $table_name);
-				foreach ($index_info as $bad_index => $good_index)
-				{
-					if (in_array($bad_index, $index_list))
-					{
-						// mysql is actually OK, it won't get a hand in this crud
-						switch ($map_dbms)
-						{
-							// last version, mssql had issues with index removal
-							case 'mssql':
-								$sql = 'DROP INDEX ' . $table_name . '.' . $bad_index;
-								_sql($sql, $errored, $error_ary);
-							break;
-
-							// last version, firebird, oracle, postgresql and sqlite all got bad index names
-							// we got kinda lucky, tho: they all support the same syntax
-							case 'firebird':
-							case 'oracle':
-							case 'postgres':
-							case 'sqlite':
-								$sql = 'DROP INDEX ' . $bad_index;
-								_sql($sql, $errored, $error_ary);
-							break;
-						}
-
-						// If the good index already exist we do not need to create it again...
-						if (($map_dbms == 'mysql_40' || $map_dbms == 'mysql_41') && $bad_index == $good_index)
-						{
-						}
-						else
-						{
-							$needed_creation[$table_name][$good_index] = 1;
-						}
-					}
-				}
-			}
-
-			$new_index_defs = array('ath_op_id' => array('auth_option_id'), 'i_d' => array('imageset_id'));
-
-			foreach ($needed_creation as $bad_table => $index_repair_list)
-			{
-				foreach ($index_repair_list as $new_index => $garbage)
-				{
-					sql_create_index($map_dbms, $new_index, $bad_table, $new_index_defs[$new_index]);
-				}
-			}
-
-			// Make sure empty smiley codes do not exist
-			$sql = 'DELETE FROM ' . SMILIES_TABLE . "
-				WHERE code = ''";
-			_sql($sql, $errored, $error_ary);
-
-			set_config('allow_birthdays', '1');
-			set_config('cron_lock', '0', true);
-
-		break;
-
-		case '3.0.RC4':
-
-			$update_auto_increment = array(
-				STYLES_TABLE				=> 'style_id',
-				STYLES_TEMPLATE_TABLE		=> 'template_id',
-				STYLES_THEME_TABLE			=> 'theme_id',
-				STYLES_IMAGESET_TABLE		=> 'imageset_id'
-			);
-
-			$sql = 'SELECT *
-				FROM ' . STYLES_TABLE . '
-				WHERE style_id = 0';
-			$result = _sql($sql, $errored, $error_ary);
-			$bad_style_row = $db->sql_fetchrow($result);
-			$db->sql_freeresult($result);
-
-			if ($bad_style_row)
-			{
-				$sql = 'SELECT MAX(style_id) as max_id
-					FROM ' . STYLES_TABLE;
-				$result = _sql($sql, $errored, $error_ary);
-				$row = $db->sql_fetchrow($result);
-				$db->sql_freeresult($result);
-
-				$proper_id = $row['max_id'] + 1;
-
-				_sql('UPDATE ' . STYLES_TABLE . " SET style_id = $proper_id WHERE style_id = 0", $errored, $error_ary);
-				_sql('UPDATE ' . FORUMS_TABLE . " SET forum_style = $proper_id WHERE forum_style = 0", $errored, $error_ary);
-				_sql('UPDATE ' . USERS_TABLE . " SET user_style = $proper_id WHERE user_style = 0", $errored, $error_ary);
-
-				$sql = 'SELECT config_value
-					FROM ' . CONFIG_TABLE . "
-					WHERE config_name = 'default_style'";
-				$result = _sql($sql, $errored, $error_ary);
-				$style_config = $db->sql_fetchrow($result);
-				$db->sql_freeresult($result);
-
-				if ($style_config['config_value'] === '0')
-				{
-					set_config('default_style', (string) $proper_id);
-				}
-			}
-
-			$sql = 'SELECT *
-				FROM ' . STYLES_TEMPLATE_TABLE . '
-				WHERE template_id = 0';
-			$result = _sql($sql, $errored, $error_ary);
-			$bad_style_row = $db->sql_fetchrow($result);
-			$db->sql_freeresult($result);
-
-			if ($bad_style_row)
-			{
-				$sql = 'SELECT MAX(template_id) as max_id
-					FROM ' . STYLES_TEMPLATE_TABLE;
-				$result = _sql($sql, $errored, $error_ary);
-				$row = $db->sql_fetchrow($result);
-				$db->sql_freeresult($result);
-
-				$proper_id = $row['max_id'] + 1;
-
-				_sql('UPDATE ' . STYLES_TABLE . " SET template_id = $proper_id WHERE template_id = 0", $errored, $error_ary);
-			}
-
-			$sql = 'SELECT *
-				FROM ' . STYLES_THEME_TABLE . '
-				WHERE theme_id = 0';
-			$result = _sql($sql, $errored, $error_ary);
-			$bad_style_row = $db->sql_fetchrow($result);
-			$db->sql_freeresult($result);
-
-			if ($bad_style_row)
-			{
-				$sql = 'SELECT MAX(theme_id) as max_id
-					FROM ' . STYLES_THEME_TABLE;
-				$result = _sql($sql, $errored, $error_ary);
-				$row = $db->sql_fetchrow($result);
-				$db->sql_freeresult($result);
-
-				$proper_id = $row['max_id'] + 1;
-
-				_sql('UPDATE ' . STYLES_TABLE . " SET theme_id = $proper_id WHERE theme_id = 0", $errored, $error_ary);
-			}
-
-			$sql = 'SELECT *
-				FROM ' . STYLES_IMAGESET_TABLE . '
-				WHERE imageset_id = 0';
-			$result = _sql($sql, $errored, $error_ary);
-			$bad_style_row = $db->sql_fetchrow($result);
-			$db->sql_freeresult($result);
-
-			if ($bad_style_row)
-			{
-				$sql = 'SELECT MAX(imageset_id) as max_id
-					FROM ' . STYLES_IMAGESET_TABLE;
-				$result = _sql($sql, $errored, $error_ary);
-				$row = $db->sql_fetchrow($result);
-				$db->sql_freeresult($result);
-
-				$proper_id = $row['max_id'] + 1;
-
-				_sql('UPDATE ' . STYLES_TABLE . " SET imageset_id = $proper_id WHERE imageset_id = 0", $errored, $error_ary);
-				_sql('UPDATE ' . STYLES_IMAGESET_DATA_TABLE . " SET imageset_id = $proper_id WHERE imageset_id = 0", $errored, $error_ary);
-			}
-
-			if ($map_dbms == 'mysql_40' || $map_dbms == 'mysql_41')
-			{
-				foreach ($update_auto_increment as $auto_table_name => $auto_column_name)
-				{
-					$sql = "SELECT MAX({$auto_column_name}) as max_id
-						FROM {$auto_table_name}";
-					$result = _sql($sql, $errored, $error_ary);
-					$row = $db->sql_fetchrow($result);
-					$db->sql_freeresult($result);
-
-					$max_id = ((int) $row['max_id']) + 1;
-					_sql("ALTER TABLE {$auto_table_name} AUTO_INCREMENT = {$max_id}", $errored, $error_ary);
-				}
-			}
-			else if ($map_dbms == 'postgres')
-			{
-				foreach ($update_auto_increment as $auto_table_name => $auto_column_name)
-				{
-					$sql = "SELECT SETVAL('" . $auto_table_name . "_seq',(select case when max({$auto_column_name})>0 then max({$auto_column_name})+1 else 1 end from " . $auto_table_name . '));';
-					_sql($sql, $errored, $error_ary);
-				}
-
-				$sql = 'DROP SEQUENCE ' . STYLES_TEMPLATE_DATA_TABLE . '_seq';
-				_sql($sql, $errored, $error_ary);
-			}
-			else if ($map_dbms == 'firebird')
-			{
-				$sql = 'DROP TRIGGER t_' . STYLES_TEMPLATE_DATA_TABLE;
-				_sql($sql, $errored, $error_ary);
-
-				$sql = 'DROP GENERATOR ' . STYLES_TEMPLATE_DATA_TABLE . '_gen';
-				_sql($sql, $errored, $error_ary);
-			}
-			else if ($map_dbms == 'oracle')
-			{
-				$sql = 'DROP TRIGGER t_' . STYLES_TEMPLATE_DATA_TABLE;
-				_sql($sql, $errored, $error_ary);
-
-				$sql = 'DROP SEQUENCE ' . STYLES_TEMPLATE_DATA_TABLE . '_seq';
-				_sql($sql, $errored, $error_ary);
-			}
-			else if ($map_dbms == 'mssql')
-			{
-				// we use transactions because we need to have a working DB at the end of all of this
-				$db->sql_transaction('begin');
-
-				$sql = 'SELECT *
-					FROM ' . STYLES_TEMPLATE_DATA_TABLE;
-				$result = _sql($sql, $errored, $error_ary);
-				$old_style_rows = array();
-				while ($row = $db->sql_fetchrow($result))
-				{
-					$old_style_rows[] = $row;
-				}
-				$db->sql_freeresult($result);
-
-				// death to the table, it is evil!
-				$sql = 'DROP TABLE ' . STYLES_TEMPLATE_DATA_TABLE;
-				_sql($sql, $errored, $error_ary);
-
-				// the table of awesomeness, praise be to it (or something)
-				$sql = 'CREATE TABLE [' . STYLES_TEMPLATE_DATA_TABLE . "] (
-					[template_id] [int] DEFAULT (0) NOT NULL ,
-					[template_filename] [varchar] (100) DEFAULT ('') NOT NULL ,
-					[template_included] [varchar] (8000) DEFAULT ('') NOT NULL ,
-					[template_mtime] [int] DEFAULT (0) NOT NULL ,
-					[template_data] [text] DEFAULT ('') NOT NULL
-				) ON [PRIMARY] TEXTIMAGE_ON [PRIMARY]";
-				_sql($sql, $errored, $error_ary);
-
-				// index? index
-				$sql = 'CREATE  INDEX [tid] ON [' . STYLES_TEMPLATE_DATA_TABLE . ']([template_id]) ON [PRIMARY]';
-				_sql($sql, $errored, $error_ary);
-
-				// yet another index
-				$sql = 'CREATE  INDEX [tfn] ON [' . STYLES_TEMPLATE_DATA_TABLE . ']([template_filename]) ON [PRIMARY]';
-				_sql($sql, $errored, $error_ary);
-
-				foreach ($old_style_rows as $return_row)
-				{
-					_sql('INSERT INTO ' . STYLES_TEMPLATE_DATA_TABLE . ' ' . $db->sql_build_array('INSERT', $return_row), $errored, $error_ary);
-				}
-
-				$db->sql_transaction('commit');
-			}
-
-			// Setting this here again because new installations may not have it...
-			set_config('cron_lock', '0', true);
-			set_config('ldap_port', '');
-			set_config('ldap_user_filter', '');
-
-		break;
-
-		case '3.0.RC5':
-
-			// In case the user is having the bot mediapartner google "as is", adjust it.
-			$sql = 'UPDATE ' . BOTS_TABLE . "
-				SET bot_agent = '" . $db->sql_escape('Mediapartners-Google') . "'
-				WHERE bot_agent = '" . $db->sql_escape('Mediapartners-Google/') . "'";
-			_sql($sql, $errored, $error_ary);
-
-			set_config('form_token_lifetime', '7200');
-			set_config('form_token_mintime', '0');
-			set_config('min_time_reg', '5');
-			set_config('min_time_terms', '2');
-			set_config('form_token_sid_guests', '1');
-
-			$db->sql_transaction('begin');
-
-			$sql = 'SELECT forum_id, forum_password
-					FROM ' . FORUMS_TABLE;
-			$result = _sql($sql, $errored, $error_ary);
-			
-			while ($row = $db->sql_fetchrow($result))
-			{
-				if (!empty($row['forum_password']))
-				{
-					_sql('UPDATE ' . FORUMS_TABLE . " SET forum_password = '" . md5($row['forum_password']) . "' WHERE forum_id = {$row['forum_id']}", $errored, $error_ary);
-				}
-			}
-			$db->sql_freeresult($result);
-			
-			$db->sql_transaction('commit');
-
-		break;
-
-		case '3.0.0':
-
-			$sql = 'UPDATE ' . TOPICS_TABLE . "
-				SET topic_last_view_time = topic_last_post_time
-				WHERE topic_last_view_time = 0";
-			_sql($sql, $errored, $error_ary);
-	
-			// Update smiley sizes
-			$smileys = array('icon_e_surprised.gif', 'icon_eek.gif', 'icon_cool.gif', 'icon_lol.gif', 'icon_mad.gif', 'icon_razz.gif', 'icon_redface.gif', 'icon_cry.gif', 'icon_evil.gif', 'icon_twisted.gif', 'icon_rolleyes.gif', 'icon_exclaim.gif', 'icon_question.gif', 'icon_idea.gif', 'icon_arrow.gif', 'icon_neutral.gif', 'icon_mrgreen.gif', 'icon_e_ugeek.gif');
-
-			foreach ($smileys as $smiley)
-			{
-				if (file_exists($phpbb_root_path . 'images/smilies/' . $smiley))
-				{
-					list($width, $height) = getimagesize($phpbb_root_path . 'images/smilies/' . $smiley);
-			
-					$sql = 'UPDATE ' . SMILIES_TABLE . '
-						SET smiley_width = ' . $width . ', smiley_height = ' . $height . "
-						WHERE smiley_url = '" . $db->sql_escape($smiley) . "'";
-			
-					_sql($sql, $errored, $error_ary);
-				}
-			}
-
-		break;
-
-		case '3.0.1':
-			
-			set_config('referer_validation', '1');
-			set_config('check_attachment_content', '1');
-			set_config('mime_triggers', 'body|head|html|img|plaintext|a href|pre|script|table|title');
-
 	}
 }
 

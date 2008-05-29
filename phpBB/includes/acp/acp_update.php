@@ -26,7 +26,6 @@ class acp_update
 	function main($id, $mode)
 	{
 		global $config, $db, $user, $auth, $template, $cache;
-		global $phpbb_root_path, $phpbb_admin_path, $phpEx;
 
 		$user->add_lang('install');
 
@@ -48,7 +47,7 @@ class acp_update
 		$latest_version = trim($info[0]);
 
 		$announcement_url = trim($info[1]);
-		$update_link = append_sid($phpbb_root_path . 'install/index.' . $phpEx, 'mode=update');
+		$update_link = append_sid('install/index', 'mode=update');
 
 		// Determine automatic update...
 		$sql = 'SELECT config_value
