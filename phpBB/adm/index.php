@@ -28,9 +28,13 @@ $user->setup('acp/common');
 // End session management
 
 // Have they authenticated (again) as an admin for this session?
-if (!isset($user->data['session_admin']) || !$user->data['session_admin'])
+if ($user->data['user_id'] != ANONYMOUS &&  (!isset($user->data['session_admin']) || !$user->data['session_admin']))
 {
 	login_box('', $user->lang['LOGIN_ADMIN_CONFIRM'], $user->lang['LOGIN_ADMIN_SUCCESS'], true, false);
+}
+else if ($user->data['user_id'] == ANONYMOUS)
+{
+	login_box();
 }
 
 // Is user any type of admin? No, then stop here, each script needs to
@@ -108,7 +112,7 @@ function adm_page_header($page_title)
 
 	$template->assign_vars(array(
 		'PAGE_TITLE'			=> $page_title,
-		'USERNAME'				=> $user->data['username'],
+		'USERNAME'				=> ($user->data['user_id'] != ANONYMOUS) ? $user->data['username'] : '',
 
 		'SID'					=> $SID,
 		'_SID'					=> $_SID,
@@ -119,6 +123,9 @@ function adm_page_header($page_title)
 		'U_ADM_LOGOUT'			=> append_sid("{$phpbb_admin_path}index.$phpEx", 'action=admlogout'),
 		'U_ADM_INDEX'			=> append_sid("{$phpbb_admin_path}index.$phpEx"),
 		'U_INDEX'				=> append_sid("{$phpbb_root_path}index.$phpEx"),
+
+		'S_USER_ADMIN'			=> $user->data['session_admin'],
+		'S_USER_LOGGED_IN'		=> ($user->data['user_id'] != ANONYMOUS && !$user->data['is_bot']),
 
 		'T_IMAGES_PATH'			=> "{$phpbb_root_path}images/",
 		'T_SMILIES_PATH'		=> "{$phpbb_root_path}{$config['smilies_path']}/",

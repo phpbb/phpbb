@@ -2234,7 +2234,7 @@ function confirm_box($check, $title = '', $hidden = '', $html_body = 'confirm_bo
 */
 function login_box($redirect = '', $l_explain = '', $l_success = '', $admin = false, $s_display = true)
 {
-	global $db, $user, $template, $auth, $phpEx, $phpbb_root_path, $config;
+	global $db, $user, $template, $auth, $phpEx, $phpbb_root_path, $phpbb_admin_path, $config;
 
 	$err = '';
 
@@ -2242,6 +2242,16 @@ function login_box($redirect = '', $l_explain = '', $l_success = '', $admin = fa
 	if (empty($user->lang))
 	{
 		$user->setup();
+	}
+	
+	if (defined('ADMIN_START'))
+	{
+		// Set custom template for admin area
+		$template->set_custom_template($phpbb_admin_path . 'style', 'admin');
+		$template->assign_var('T_TEMPLATE_PATH', $phpbb_admin_path . 'style');
+
+		// the acp template is never stored in the database
+		$user->theme['template_storedb'] = false;
 	}
 
 	// Print out error if user tries to authenticate as an administrator without having the privileges...
@@ -2447,20 +2457,43 @@ function login_box($redirect = '', $l_explain = '', $l_success = '', $admin = fa
 		'S_HIDDEN_FIELDS' 		=> $s_hidden_fields,
 
 		'S_ADMIN_AUTH'			=> $admin,
+		'S_ACP_LOGIN'			=> defined('ADMIN_START'),
 		'USERNAME'				=> ($admin) ? $user->data['username'] : '',
 
 		'USERNAME_CREDENTIAL'	=> 'username',
 		'PASSWORD_CREDENTIAL'	=> ($admin) ? 'password_' . $credential : 'password',
 	));
-
-	page_header($user->lang['LOGIN'], false);
-
-	$template->set_filenames(array(
-		'body' => 'login_body.html')
-	);
+	
+	if (defined('ADMIN_START'))
+	{
+		$template->set_filenames(array(
+			'body' => 'acp_login.html')
+		);
+		$template->assign_block_vars('t_block1', array(
+			'L_TITLE'		=> $user->lang['LOGIN'],
+			'S_SELECTED'	=> true,
+			'U_TITLE'		=> '',
+		));
+		adm_page_header($user->lang['LOGIN'], false);
+	}
+	else
+	{
+		$template->set_filenames(array(
+			'body' => 'login_body.html')
+		);
+		page_header($user->lang['LOGIN'], false);
+	}
+ 
 	make_jumpbox(append_sid("{$phpbb_root_path}viewforum.$phpEx"));
-
-	page_footer();
+	if (defined('ADMIN_START') && isset($user->data['session_admin']) && $user->data['session_admin'])
+	{
+		adm_page_footer();
+	}
+	else
+	{
+		page_footer();
+	}
+	
 }
 
 /**
