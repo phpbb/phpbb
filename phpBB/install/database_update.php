@@ -8,7 +8,7 @@
 *
 */
 
-$updates_to_version = '3.0.1';
+$updates_to_version = '3.0.1'; //'3.0.2-RC1';
 
 // Return if we "just include it" to find out for which version the database update is responsible for
 if (defined('IN_PHPBB') && defined('IN_INSTALL'))
@@ -33,7 +33,7 @@ error_reporting(E_ALL);
 // Include essential scripts
 include($phpbb_root_path . 'config.' . $phpEx);
 
-if (!isset($dbms))
+if (!defined('PHPBB_INSTALLED') || empty($dbms) || empty($acm_type))
 {
 	die("Please read: <a href='../docs/INSTALL.html'>INSTALL.html</a> before attempting to update.");
 }
@@ -496,6 +496,10 @@ $database_update_info = array(
 			GROUPS_TABLE			=> array('group_legend'),
 		),
 	),
+	// No changes from 3.0.0 to 3.0.1-RC1
+	'3.0.1-RC1'		=> array(),
+	// No changes from 3.0.1-RC1 to 3.0.1
+	'3.0.1'			=> array(),
 );
 
 // Determine mapping database type
@@ -932,7 +936,7 @@ if (version_compare($current_version, '3.0.RC8', '<='))
 			foreach ($user_ids as $i => $user_id)
 			{
 				$row = $users[$user_id];
-				
+
 				$rank_title = $rank_img = '';
 				get_user_rank($row['user_rank'], $row['user_posts'], $rank_title, $rank_img, $rank_img_src);
 
@@ -1211,7 +1215,7 @@ flush();
 $no_updates = true;
 
 $versions = array(
-	'3.0.RC2', '3.0.RC3', '3.0.RC4', '3.0.RC5', '3.0.0'
+	'3.0.RC2', '3.0.RC3', '3.0.RC4', '3.0.RC5', '3.0.0', '3.0.1-RC1'
 );
 
 // some code magic
@@ -1324,7 +1328,7 @@ $cache->purge();
 		</div>
 		</div>
 	</div>
-	
+
 	<div id="page-footer">
 		Powered by phpBB &copy; 2000, 2002, 2005, 2007 <a href="http://www.phpbb.com/">phpBB Group</a>
 	</div>
@@ -1364,7 +1368,7 @@ function change_database_data($version)
 				$smileys[$row['smiley_id']] = $row['code'];
 			}
 			$db->sql_freeresult($result);
-	
+
 			foreach ($smileys as $id => $code)
 			{
 				// 2.0 only entitized lt and gt; We need to do something about double quotes.
@@ -1699,7 +1703,7 @@ function change_database_data($version)
 			$sql = 'SELECT forum_id, forum_password
 					FROM ' . FORUMS_TABLE;
 			$result = _sql($sql, $errored, $error_ary);
-			
+
 			while ($row = $db->sql_fetchrow($result))
 			{
 				if (!empty($row['forum_password']))
@@ -1708,7 +1712,7 @@ function change_database_data($version)
 				}
 			}
 			$db->sql_freeresult($result);
-			
+
 			$db->sql_transaction('commit');
 
 		break;
@@ -1719,7 +1723,7 @@ function change_database_data($version)
 				SET topic_last_view_time = topic_last_post_time
 				WHERE topic_last_view_time = 0";
 			_sql($sql, $errored, $error_ary);
-	
+
 			// Update smiley sizes
 			$smileys = array('icon_e_surprised.gif', 'icon_eek.gif', 'icon_cool.gif', 'icon_lol.gif', 'icon_mad.gif', 'icon_razz.gif', 'icon_redface.gif', 'icon_cry.gif', 'icon_evil.gif', 'icon_twisted.gif', 'icon_rolleyes.gif', 'icon_exclaim.gif', 'icon_question.gif', 'icon_idea.gif', 'icon_arrow.gif', 'icon_neutral.gif', 'icon_mrgreen.gif', 'icon_e_ugeek.gif');
 
@@ -1728,22 +1732,24 @@ function change_database_data($version)
 				if (file_exists($phpbb_root_path . 'images/smilies/' . $smiley))
 				{
 					list($width, $height) = getimagesize($phpbb_root_path . 'images/smilies/' . $smiley);
-			
+
 					$sql = 'UPDATE ' . SMILIES_TABLE . '
 						SET smiley_width = ' . $width . ', smiley_height = ' . $height . "
 						WHERE smiley_url = '" . $db->sql_escape($smiley) . "'";
-			
+
 					_sql($sql, $errored, $error_ary);
 				}
 			}
 
 		break;
 
-		case '3.0.1':
-			
+		case '3.0.1-RC1':
+
 			set_config('referer_validation', '1');
 			set_config('check_attachment_content', '1');
 			set_config('mime_triggers', 'body|head|html|img|plaintext|a href|pre|script|table|title');
+
+		break;
 
 	}
 }
