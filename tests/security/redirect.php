@@ -16,8 +16,6 @@ require_once 'PHPUnit/Extensions/OutputTestCase.php';
 define('PHPBB_ROOT_PATH', './../phpBB/');
 define('PHP_EXT', 'php');
 
-// Functional phpBB Installation required... we are actually embedding phpBB here
-
 require_once '../phpBB/includes/functions.php';
 require_once '../phpBB/includes/session.php';
 
