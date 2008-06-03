@@ -2420,7 +2420,7 @@ function login_box($redirect = '', $l_explain = '', $l_success = '', $admin = fa
 		// If we are not within the admin directory we use the page dir...
 		$redirect = '';
 
-		if (!$admin)
+		if (!$admin && !defined('ADMIN_START'))
 		{
 			$redirect .= ($user->page['page_dir']) ? $user->page['page_dir'] . '/' : '';
 		}
@@ -2453,7 +2453,7 @@ function login_box($redirect = '', $l_explain = '', $l_success = '', $admin = fa
 		'U_PRIVACY'				=> append_sid("{$phpbb_root_path}ucp.$phpEx", 'mode=privacy'),
 
 		'S_DISPLAY_FULL_LOGIN'	=> ($s_display) ? true : false,
-		'S_LOGIN_ACTION'		=> (!$admin) ? append_sid("{$phpbb_root_path}ucp.$phpEx", 'mode=login') : append_sid("index.$phpEx", false, true, $user->session_id), // Needs to stay index.$phpEx because we are within the admin directory
+		'S_LOGIN_ACTION'		=> (!$admin && !defined('ADMIN_START')) ? append_sid("{$phpbb_root_path}ucp.$phpEx", 'mode=login') : append_sid("index.$phpEx", false, true, $user->session_id), // Needs to stay index.$phpEx because we are within the admin directory
 		'S_HIDDEN_FIELDS' 		=> $s_hidden_fields,
 
 		'S_ADMIN_AUTH'			=> $admin,
@@ -3095,7 +3095,7 @@ function msg_handler($errno, $msg_text, $errfile, $errline)
 
 			if (!defined('HEADER_INC'))
 			{
-				if (defined('IN_ADMIN') && isset($user->data['session_admin']) && $user->data['session_admin'])
+				if (defined('ADMIN_START') || (defined('IN_ADMIN') && isset($user->data['session_admin']) && $user->data['session_admin']))
 				{
 					adm_page_header($msg_title);
 				}
@@ -3119,7 +3119,7 @@ function msg_handler($errno, $msg_text, $errfile, $errline)
 			// We do not want the cron script to be called on error messages
 			define('IN_CRON', true);
 
-			if (defined('IN_ADMIN') && isset($user->data['session_admin']) && $user->data['session_admin'])
+			if (defined('ADMIN_START') || (defined('IN_ADMIN') && isset($user->data['session_admin']) && $user->data['session_admin']))
 			{
 				adm_page_footer();
 			}

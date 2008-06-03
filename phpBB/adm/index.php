@@ -34,7 +34,7 @@ if ($user->data['user_id'] != ANONYMOUS &&  (!isset($user->data['session_admin']
 }
 else if ($user->data['user_id'] == ANONYMOUS)
 {
-	login_box();
+	login_box('');
 }
 
 // Is user any type of admin? No, then stop here, each script needs to
