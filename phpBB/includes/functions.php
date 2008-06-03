@@ -2176,6 +2176,7 @@ function confirm_box($check, $title = '', $hidden = '', $html_body = 'confirm_bo
 function login_box($redirect = '', $l_explain = '', $l_success = '', $admin = false, $s_display = true)
 {
 	global $db, $user, $template, $auth, $config;
+ 
 
 	$err = '';
 
@@ -2183,6 +2184,16 @@ function login_box($redirect = '', $l_explain = '', $l_success = '', $admin = fa
 	if (empty($user->lang))
 	{
 		$user->setup();
+	}
+	
+	if (defined('ADMIN_START'))
+	{
+		// Set custom template for admin area
+		$template->set_custom_template(PHPBB_ADMIN_PATH . 'style', 'admin');
+		$template->assign_var('T_TEMPLATE_PATH', PHPBB_ADMIN_PATH . 'style');
+
+		// the acp template is never stored in the database
+		$user->theme['template_storedb'] = false;
 	}
 
 	// Print out error if user tries to authenticate as an administrator without having the privileges...
@@ -2351,7 +2362,7 @@ function login_box($redirect = '', $l_explain = '', $l_success = '', $admin = fa
 		// If we are not within the admin directory we use the page dir...
 		$redirect = '';
 
-		if (!$admin)
+		if (!$admin && !defined('ADMIN_START'))
 		{
 			$redirect .= ($user->page['page_dir']) ? $user->page['page_dir'] . '/' : '';
 		}
@@ -2384,24 +2395,47 @@ function login_box($redirect = '', $l_explain = '', $l_success = '', $admin = fa
 		'U_PRIVACY'				=> append_sid('ucp', 'mode=privacy'),
 
 		'S_DISPLAY_FULL_LOGIN'	=> ($s_display) ? true : false,
-		'S_LOGIN_ACTION'		=> (!$admin) ? append_sid('ucp', 'mode=login') : append_sid(PHPBB_ADMIN_PATH . 'index.' . PHP_EXT, false, true, $user->session_id),
+		'S_LOGIN_ACTION'		=> (!$admin && !defined('ADMIN_START'))  ? append_sid('ucp', 'mode=login') : append_sid(PHPBB_ADMIN_PATH . 'index.' . PHP_EXT, false, true, $user->session_id),
 		'S_HIDDEN_FIELDS' 		=> $s_hidden_fields,
 
 		'S_ADMIN_AUTH'			=> $admin,
+		'S_ACP_LOGIN'			=> defined('ADMIN_START'),
 		'USERNAME'				=> ($admin) ? $user->data['username'] : '',
 
 		'USERNAME_CREDENTIAL'	=> 'username',
 		'PASSWORD_CREDENTIAL'	=> ($admin) ? 'password_' . $credential : 'password',
 	));
-
-	page_header($user->lang['LOGIN'], false);
-
-	$template->set_filenames(array(
-		'body' => 'login_body.html')
-	);
+	
+	if (defined('ADMIN_START'))
+	{
+		$template->set_filenames(array(
+			'body' => 'acp_login.html')
+		);
+		$template->assign_block_vars('t_block1', array(
+			'L_TITLE'		=> $user->lang['LOGIN'],
+			'S_SELECTED'	=> true,
+			'U_TITLE'		=> '',
+		));
+		adm_page_header($user->lang['LOGIN'], false);
+	}
+	else
+	{
+		$template->set_filenames(array(
+			'body' => 'login_body.html')
+		);
+		page_header($user->lang['LOGIN'], false);
+	}
+ 
 	make_jumpbox(append_sid('viewforum'));
-
-	page_footer();
+	if (defined('ADMIN_START') && isset($user->data['session_admin']) && $user->data['session_admin'])
+	{
+		adm_page_footer();
+	}
+	else
+	{
+		page_footer();
+	}
+	
 }
 
 /**
@@ -3003,7 +3037,7 @@ function msg_handler($errno, $msg_text, $errfile, $errline)
 
 			if (!defined('HEADER_INC'))
 			{
-				if (defined('IN_ADMIN') && isset($user->data['session_admin']) && $user->data['session_admin'])
+				if (defined('ADMIN_START') || (defined('IN_ADMIN') && isset($user->data['session_admin']) && $user->data['session_admin']))
 				{
 					adm_page_header($msg_title);
 				}
@@ -3027,7 +3061,7 @@ function msg_handler($errno, $msg_text, $errfile, $errline)
 			// We do not want the cron script to be called on error messages
 			define('IN_CRON', true);
 
-			if (defined('IN_ADMIN') && isset($user->data['session_admin']) && $user->data['session_admin'])
+			if (defined('ADMIN_START') || (defined('IN_ADMIN') && isset($user->data['session_admin']) && $user->data['session_admin']))
 			{
 				adm_page_footer();
 			}

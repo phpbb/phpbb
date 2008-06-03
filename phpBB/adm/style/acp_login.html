@@ -1,0 +1,46 @@
+<!-- INCLUDE overall_header.html -->
+<h1>{PAGE_TITLE}</h1>
+<p><!-- IF LOGIN_EXPLAIN -->{LOGIN_EXPLAIN}<!-- ELSE -->{L_LOGIN}<!-- ENDIF --></p>
+
+<!-- IF LOGIN_ERROR -->
+	<div class="errorbox">
+		<h3>{L_WARNING}</h3>
+		<p>{LOGIN_ERROR}</p>
+	</div>
+<!-- ENDIF -->
+<form action="{S_LOGIN_ACTION}" method="post" id="login">
+ 
+	<fieldset>
+		<dl>
+			<dt><label for="{USERNAME_CREDENTIAL}">{L_USERNAME}:</label></dt>
+			<dd><input type="text" tabindex="1" name="{USERNAME_CREDENTIAL}" id="{USERNAME_CREDENTIAL}" size="25" value="{USERNAME}" class="inputbox autowidth" /></dd>
+		</dl>
+		<dl>
+			<dt><label for="{PASSWORD_CREDENTIAL}">{L_PASSWORD}:</label></dt>
+			<dd><input type="password" tabindex="2" id="{PASSWORD_CREDENTIAL}" name="{PASSWORD_CREDENTIAL}" size="25" class="inputbox autowidth" /></dd>
+			<!-- IF S_DISPLAY_FULL_LOGIN and (U_SEND_PASSWORD or U_RESEND_ACTIVATION) -->
+				<!-- IF U_SEND_PASSWORD --><dd><a href="{U_SEND_PASSWORD}">{L_FORGOT_PASS}</a></dd><!-- ENDIF -->
+				<!-- IF U_RESEND_ACTIVATION --><dd><a href="{U_RESEND_ACTIVATION}">{L_RESEND_ACTIVATION}</a></dd><!-- ENDIF -->
+			<!-- ENDIF -->
+		</dl>
+			
+		<!-- IF S_CONFIRM_CODE -->
+		<dl>
+			<dt><label for="confirm_code">{L_CONFIRM_CODE}:</label><br /><span>{L_CONFIRM_CODE_EXPLAIN}</span></dt>
+				<dd><input type="hidden" name="confirm_id" value="{CONFIRM_ID}" />{CONFIRM_IMAGE}</dd>
+				<dd><input type="text" name="confirm_code" id="confirm_code" size="8" maxlength="8" tabindex="3" class="inputbox narrow" title="{L_CONFIRM_CODE}" /></dd>
+		</dl>
+		<!-- ENDIF -->
+	
+		<p class="submit-buttons">
+			<!-- IF S_DISPLAY_FULL_LOGIN -->
+				<!-- IF S_AUTOLOGIN_ENABLED --><label for="autologin"><input type="checkbox" name="autologin" id="autologin" tabindex="4" /> {L_LOG_ME_IN}</label><!-- ENDIF -->
+				<label for="viewonline"><input type="checkbox" name="viewonline" id="viewonline" tabindex="5" /> {L_HIDE_ME}</label>
+			<!-- ENDIF -->
+				&nbsp;
+				{S_HIDDEN_FIELDS}<input type="submit" name="login" tabindex="6" value="{L_LOGIN}" class="button1" />
+		</p>
+	</fieldset> 
+</form>
+
+<!-- INCLUDE overall_footer.html -->

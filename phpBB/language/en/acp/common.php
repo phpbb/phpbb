@@ -201,6 +201,9 @@ $lang = array_merge($lang, array(
 	'ADMIN_INDEX'			=> 'Admin index',
 	'ADMIN_PANEL'			=> 'Administration Control Panel',
 
+	'ADM_LOGOUT'			=> 'ACP Logout',
+	'ADM_LOGGED_OUT'		=> 'Successfully logged out from Administration Control Panel',
+
 	'BACK'					=> 'Back',
 
 	'COLOUR_SWATCH'			=> 'Web-safe colour swatch',
@@ -236,6 +239,7 @@ $lang = array_merge($lang, array(
 	'LOOK_UP_FORUM'			=> 'Select a forum',
 	'LOOK_UP_FORUMS_EXPLAIN'=> 'You are able to select more than one forum.',
 
+	'LOGIN_REDIRECT'		=> 'You have been successfully logged in.',
 	'MANAGE'				=> 'Manage',
 	'MENU_TOGGLE'			=> 'Hide or display the side menu',
 	'MOVE_DOWN'				=> 'Move down',
