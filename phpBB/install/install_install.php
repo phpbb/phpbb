@@ -923,7 +923,9 @@ class install_install extends module
 		}
 		unset($config_data_array);
 
-		$config_data .= "\n@define('PHPBB_INSTALLED', true);\n";
+		$config_data .= "\n// If you rename your admin folder, please change this value\n";
+		$config_data .= "@define('CONFIG_ADM_FOLDER', 'adm');\n";
+		$config_data .= "@define('PHPBB_INSTALLED', true);\n";
 		$config_data .= "@define('DEBUG', true);\n";
 		$config_data .= "@define('DEBUG_EXTRA', true);\n";
 		$config_data .= '?' . '>'; // Done this to prevent highlighting editors getting confused!
