@@ -12,8 +12,8 @@ define('IN_PHPBB', true);
 
 require_once 'PHPUnit/Framework.php';
 
-$phpbb_root_path = '../phpBB/';
-$phpEx = 'php';
+define(PHPBB_ROOT_PATH, '../phpBB/');
+define(PHP_EXT, 'php');
 require_once '../phpBB/includes/utf/utf_tools.php';
 
 class phpbb_utf_utf8_clean_string_test extends PHPUnit_Framework_TestCase

@@ -21,6 +21,7 @@ require_once 'PHPUnit/TextUI/TestRunner.php';
 require_once 'bbcode/all_tests.php';
 require_once 'utf/all_tests.php';
 require_once 'request/all_tests.php';
+require_once 'security/all_tests.php';
 
 // exclude the test directory from code coverage reports
 PHPUnit_Util_Filter::addDirectoryToFilter('./');
@@ -39,6 +40,7 @@ class phpbb_all_tests
 		$suite->addTest(phpbb_bbcode_all_tests::suite());
 		$suite->addTest(phpbb_utf_all_tests::suite());
 		$suite->addTest(phpbb_request_all_tests::suite());
+		$suite->addTest(phpbb_security_all_tests::suite());
 
 		return $suite;
 	}
@@ -48,4 +50,5 @@ if (PHPUnit_MAIN_METHOD == 'phpbb_all_tests::main')
 {
 	phpbb_all_tests::main();
 }
+
 ?>
