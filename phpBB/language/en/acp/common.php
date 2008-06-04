@@ -239,7 +239,6 @@ $lang = array_merge($lang, array(
 	'LOOK_UP_FORUM'			=> 'Select a forum',
 	'LOOK_UP_FORUMS_EXPLAIN'=> 'You are able to select more than one forum.',
 
-	'LOGIN_REDIRECT'		=> 'You have been successfully logged in.',
 	'MANAGE'				=> 'Manage',
 	'MENU_TOGGLE'			=> 'Hide or display the side menu',
 	'MOVE_DOWN'				=> 'Move down',
