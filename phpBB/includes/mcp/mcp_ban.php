@@ -159,7 +159,7 @@ class mcp_ban
 		// As a "service" we will check if any post id is specified and populate the username of the poster id if given
 		$post_id = request_var('p', 0);
 		$user_id = request_var('u', 0);
-		$username = false;
+		$username = $pre_fill = false;
 
 		if ($user_id && $user_id <> ANONYMOUS)
 		{
