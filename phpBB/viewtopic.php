@@ -451,9 +451,16 @@ $s_watching_topic = array(
 	'is_watching'	=> false,
 );
 
-if ($config['email_enable'] && $config['allow_topic_notify'] && $user->data['is_registered'])
+if (($config['email_enable'] || $config['jab_enable']) && $config['allow_topic_notify'] && $user->data['is_registered'])
 {
 	watch_topic_forum('topic', $s_watching_topic, $user->data['user_id'], $forum_id, $topic_id, $topic_data['notify_status'], $start);
+
+	// Reset forum notification if forum notify is set
+	if ($config['allow_forum_notify'] && $auth->acl_get('f_subscribe', $forum_id))
+	{
+		$s_watching_forum = $s_watching_topic;
+		watch_topic_forum('forum', $s_watching_forum, $user->data['user_id'], $forum_id, 0);
+	}
 }
 
 // Bookmarks
