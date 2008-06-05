@@ -17,6 +17,8 @@ define('NEED_SID', true);
 // Include files
 if (!defined('PHPBB_ROOT_PATH')) define('PHPBB_ROOT_PATH', './../');
 if (!defined('PHP_EXT')) define('PHP_EXT', substr(strrchr(__FILE__, '.'), 1));
+if (!defined('PHPBB_ADMIN_PATH')) define('PHPBB_ADMIN_PATH', './');
+
 include(PHPBB_ROOT_PATH . 'common.' . PHP_EXT);
 require(PHPBB_ROOT_PATH . 'includes/functions_admin.' . PHP_EXT);
 require(PHPBB_ROOT_PATH . 'includes/functions_module.' . PHP_EXT);
@@ -46,7 +48,6 @@ if (!$auth->acl_get('a_'))
 
 // We define the admin variables now, because the user is now able to use the admin related features...
 define('IN_ADMIN', true);
-if (!defined('PHPBB_ADMIN_PATH')) define('PHPBB_ADMIN_PATH', './');
 
 // Some oft used variables
 $safe_mode		= (@ini_get('safe_mode') == '1' || strtolower(@ini_get('safe_mode')) === 'on') ? true : false;
