@@ -2915,15 +2915,15 @@ function msg_handler($errno, $msg_text, $errfile, $errline)
 			if (strpos($errfile, 'cache') === false && strpos($errfile, 'template.') === false)
 			{
 				// flush the content, else we get a white page if output buffering is on
-				if (strtolower(@ini_get('output_buffering')) !== 'off')
+				if ((int) @ini_get('output_buffering') === 1 || strtolower(@ini_get('output_buffering')) === 'on')
 				{
-					@ob_end_flush();
+					@ob_flush();
 				}
 
-				// Another quick fix for those having gzip compression enabled
+				// Another quick fix for those having gzip compression enabled, but do not flush if the coder wants to catch "something". ;)
 				if ($config['gzip_compress'])
 				{
-					if (@extension_loaded('zlib') && !headers_sent())
+					if (@extension_loaded('zlib') && !headers_sent() && !ob_get_level())
 					{
 						@ob_flush();
 					}

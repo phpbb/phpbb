@@ -97,7 +97,7 @@ class acp_ban
 			break;
 		}
 
-		$this->display_ban_options($mode);
+		self::display_ban_options($mode);
 
 		$template->assign_vars(array(
 			'L_TITLE'				=> $this->page_title,

@@ -74,7 +74,7 @@ class mcp_queue
 
 				$this->tpl_name = 'mcp_post';
 
-				$user->add_lang('posting');
+				$user->add_lang(array('posting', 'viewtopic'));
 
 				$post_id = request_var('p', 0);
 				$topic_id = request_var('t', 0);
