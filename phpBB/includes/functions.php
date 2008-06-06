@@ -1773,7 +1773,10 @@ function redirect($url, $return = false)
 	}
 	else if (!empty($url_parts['scheme']) && !empty($url_parts['host']))
 	{
-		// Full URL
+		if ($url_parts['host'] !== $user->host)
+		{
+			$url = generate_board_url(true);
+		}
 	}
 	else if ($url[0] == '/')
 	{
@@ -1987,11 +1990,14 @@ function meta_refresh($time, $url)
 	global $template;
 
 	$url = redirect($url, true);
+	$url = str_replace('&', '&amp;', $url);
 
 	// For XHTML compatibility we change back & to &amp;
 	$template->assign_vars(array(
-		'META' => '<meta http-equiv="refresh" content="' . $time . ';url=' . str_replace('&', '&amp;', $url) . '" />')
+		'META' => '<meta http-equiv="refresh" content="' . $time . ';url=' . $url . '" />')
 	);
+	
+	return $url;
 }
 
 //Form validation
@@ -2283,7 +2289,7 @@ function login_box($redirect = '', $l_explain = '', $l_success = '', $admin = fa
 				return;
 			}
 
-			meta_refresh(3, $redirect);
+			$redirect = meta_refresh(3, $redirect);
 			trigger_error($message . '<br /><br />' . sprintf($l_redirect, '<a href="' . $redirect . '">', '</a>'));
 		}
 
