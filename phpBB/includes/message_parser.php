@@ -346,6 +346,12 @@ class bbcode_firstpass extends bbcode
 		$in = trim($in);
 		$error = false;
 
+		// Do not allow 0-sizes generally being entered
+		if ($width <= 0 || $height <= 0)
+		{
+			return '[flash=' . $width . ',' . $height . ']' . $in . '[/flash]';
+		}
+
 		// Apply the same size checks on flash files as on images
 		if ($config['max_' . $this->mode . '_img_height'] || $config['max_' . $this->mode . '_img_width'])
 		{
