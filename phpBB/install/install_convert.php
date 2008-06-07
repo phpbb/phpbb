@@ -298,7 +298,7 @@ class install_convert extends module
 				if (isset($convertor_data))
 				{
 					$sort[strtolower($convertor_data['forum_name'])] = sizeof($convertors);
-					
+
 					$convertors[] = array(
 						'tag'			=>	$m[1],
 						'forum_name'	=>	$convertor_data['forum_name'],
@@ -585,7 +585,7 @@ class install_convert extends module
 	function convert_data($sub)
 	{
 		global $template, $user, $phpbb_root_path, $phpEx, $db, $lang, $config, $cache;
-		global $convert, $convert_row, $message_parser, $skip_rows;
+		global $convert, $convert_row, $message_parser, $skip_rows, $language;
 
 		require($phpbb_root_path . 'config.' . $phpEx);
 		require($phpbb_root_path . 'includes/constants.' . $phpEx);
@@ -891,7 +891,7 @@ class install_convert extends module
 								{
 									$table = $convert->src_table_prefix . $m[1];
 									$tables_list[$table] = $table;
-		
+
 									if (!empty($m[3]))
 									{
 										$aliases[] = $convert->src_table_prefix . $m[3];
@@ -948,7 +948,7 @@ class install_convert extends module
 
 				// Throw an error if some tables are missing
 				// We used to do some guessing here, but since we have a suggestion of possible values earlier, I don't see it adding anything here to do it again
-				
+
 				if (sizeof($missing_tables) == sizeof($tables_list))
 				{
 					$this->p_master->error($user->lang['NO_TABLES_FOUND'] . ' ' . $user->lang['CHECK_TABLE_PREFIX'], __LINE__, __FILE__);
@@ -1299,7 +1299,7 @@ class install_convert extends module
 									if ($errored)
 									{
 										$db->sql_return_on_error(true);
-	
+
 										// Because it errored out we will try to insert the rows one by one... most of the time this
 										// is caused by duplicate entries - but we also do not want to miss one...
 										foreach ($waiting_rows as $waiting_sql)
@@ -1607,7 +1607,7 @@ class install_convert extends module
 				'TITLE'		=> $user->lang['UPDATE_TOPICS_POSTED'],
 				'RESULT'	=> $user->lang['DONE'],
 			));
-			
+
 			if ($db->sql_error_triggered)
 			{
 				$template->assign_vars(array(
@@ -1617,7 +1617,7 @@ class install_convert extends module
 				));
 			}
 			$db->sql_return_on_error(false);
-			
+
 			$this->finish_conversion();
 			return;
 		}
@@ -1949,7 +1949,7 @@ class install_convert extends module
 
 				$firstkey_set = false;
 				$firstkey = 0;
-	
+
 				foreach ($fields[1] as $inner_key => $inner_value)
 				{
 					if (!$firstkey_set)
@@ -1974,7 +1974,7 @@ class install_convert extends module
 					{
 						$sql_flag = true;
 					}
-		
+
 					// No function assigned?
 					if (empty($fields[2]))
 					{
