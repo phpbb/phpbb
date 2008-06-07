@@ -39,7 +39,7 @@ class session
 	*
 	* @param string $root_path current root path (phpbb_root_path)
 	*/
-	function extract_current_page($root_path)
+	public static function extract_current_page($root_path)
 	{
 		$page_array = array();
 
@@ -160,7 +160,7 @@ class session
 		$this->referer				= (!empty($_SERVER['HTTP_REFERER'])) ? htmlspecialchars((string) $_SERVER['HTTP_REFERER']) : '';
 		$this->forwarded_for		= (!empty($_SERVER['HTTP_X_FORWARDED_FOR'])) ? (string) $_SERVER['HTTP_X_FORWARDED_FOR'] : '';
 		$this->host					= (!empty($_SERVER['HTTP_HOST'])) ? (string) strtolower($_SERVER['HTTP_HOST']) : ((!empty($_SERVER['SERVER_NAME'])) ? $_SERVER['SERVER_NAME'] : getenv('SERVER_NAME'));
-		$this->page					= $this->extract_current_page(PHPBB_ROOT_PATH);
+		$this->page					= self::extract_current_page(PHPBB_ROOT_PATH);
 
 		// if the forwarded for header shall be checked we have to validate its contents
 		if ($config['forwarded_for_check'])
@@ -266,7 +266,7 @@ class session
 
 				$s_forwarded_for = ($config['forwarded_for_check']) ? substr($this->data['session_forwarded_for'], 0, 254) : '';
 				$u_forwarded_for = ($config['forwarded_for_check']) ? substr($this->forwarded_for, 0, 254) : '';
-				
+
 				// referer checks
 				$check_referer_path = $config['referer_validation'] == REFERER_VALIDATE_PATH;
 				$referer_valid = true;
@@ -275,7 +275,7 @@ class session
 				{
 					$referer_valid = $this->validate_referer($check_referer_path);
 				}
-				
+
 
 				if ($u_ip === $s_ip && $s_browser === $u_browser && $s_forwarded_for === $u_forwarded_for && $referer_valid)
 				{
@@ -1287,10 +1287,10 @@ class session
 			$this->set_login_key($user_id);
 		}
 	}
-	
-	
+
+
 	/**
-	* Check if the request originated from the same page. 
+	* Check if the request originated from the same page.
 	* @param bool $check_script_path If true, the path will be checked as well
 	*/
 	function validate_referer($check_script_path = false)

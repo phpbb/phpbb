@@ -63,7 +63,7 @@ class cache
 
 			$cache->put('config', $cached_config);
 		}
-	
+
 		return $config;
 	}
 
@@ -310,7 +310,7 @@ class cache
 
 			$cache->put('_bots', $bots);
 		}
-	
+
 		return $bots;
 	}
 
