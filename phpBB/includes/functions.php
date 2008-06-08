@@ -1775,7 +1775,7 @@ function redirect($url, $return = false)
 	{
 		if ($url_parts['host'] !== $user->host)
 		{
-			$url = generate_board_url(true);
+			$url = generate_board_url();
 		}
 	}
 	else if ($url[0] == '/')
@@ -1996,7 +1996,7 @@ function meta_refresh($time, $url)
 	$template->assign_vars(array(
 		'META' => '<meta http-equiv="refresh" content="' . $time . ';url=' . $url . '" />')
 	);
-	
+
 	return $url;
 }
 
@@ -2182,7 +2182,7 @@ function confirm_box($check, $title = '', $hidden = '', $html_body = 'confirm_bo
 function login_box($redirect = '', $l_explain = '', $l_success = '', $admin = false, $s_display = true)
 {
 	global $db, $user, $template, $auth, $config;
- 
+
 
 	$err = '';
 
@@ -2191,7 +2191,7 @@ function login_box($redirect = '', $l_explain = '', $l_success = '', $admin = fa
 	{
 		$user->setup();
 	}
-	
+
 	if (defined('ADMIN_START'))
 	{
 		// Set custom template for admin area
@@ -2411,7 +2411,7 @@ function login_box($redirect = '', $l_explain = '', $l_success = '', $admin = fa
 		'USERNAME_CREDENTIAL'	=> 'username',
 		'PASSWORD_CREDENTIAL'	=> ($admin) ? 'password_' . $credential : 'password',
 	));
-	
+
 	if (defined('ADMIN_START'))
 	{
 		$template->set_filenames(array(
@@ -2431,7 +2431,7 @@ function login_box($redirect = '', $l_explain = '', $l_success = '', $admin = fa
 		);
 		page_header($user->lang['LOGIN'], false);
 	}
- 
+
 	make_jumpbox(append_sid('viewforum'));
 	if (defined('ADMIN_START') && isset($user->data['session_admin']) && $user->data['session_admin'])
 	{
@@ -2441,7 +2441,7 @@ function login_box($redirect = '', $l_explain = '', $l_success = '', $admin = fa
 	{
 		page_footer();
 	}
-	
+
 }
 
 /**
