@@ -1831,7 +1831,7 @@ function redirect($url, $return = false)
 	{
 		if ($url_parts['host'] !== $user->host)
 		{
-			$url = generate_board_url(true);
+			$url = generate_board_url();
 		}
 	}
 	else if ($url[0] == '/')
