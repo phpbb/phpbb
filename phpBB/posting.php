@@ -998,8 +998,6 @@ if ($submit || $preview || $refresh)
 				$data['topic_replies'] = $post_data['topic_replies'];
 			}
 
-			unset($message_parser);
-
 			$redirect_url = submit_post($mode, $post_data['post_subject'], $post_data['username'], $post_data['topic_type'], $poll, $data, $update_message);
 			$post_need_approval = (!$auth->acl_get('f_noapprove', $data['forum_id']) && !$auth->acl_get('m_approve', $data['forum_id'])) ? true : false;
 
@@ -1155,7 +1153,6 @@ if (sizeof($post_data['poll_options']) && $post_data['poll_title'])
 	$message_parser->decode_message();
 	$post_data['poll_options'] = explode("\n", $message_parser->message);
 }
-unset($message_parser);
 
 // MAIN POSTING PAGE BEGINS HERE
 
