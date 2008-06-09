@@ -160,6 +160,13 @@ class session
 		$this->referer				= (!empty($_SERVER['HTTP_REFERER'])) ? htmlspecialchars((string) $_SERVER['HTTP_REFERER']) : '';
 		$this->forwarded_for		= (!empty($_SERVER['HTTP_X_FORWARDED_FOR'])) ? (string) $_SERVER['HTTP_X_FORWARDED_FOR'] : '';
 		$this->host					= (!empty($_SERVER['HTTP_HOST'])) ? (string) strtolower($_SERVER['HTTP_HOST']) : ((!empty($_SERVER['SERVER_NAME'])) ? $_SERVER['SERVER_NAME'] : getenv('SERVER_NAME'));
+
+		// Since HTTP_HOST may carry a port definition, we need to remove it here...
+		if (strpos($this->host, ':') !== false)
+		{
+			$this->host = substr($this->host, 0, strpos($this->host, ':'));
+		}
+
 		$this->page					= self::extract_current_page(PHPBB_ROOT_PATH);
 
 		// if the forwarded for header shall be checked we have to validate its contents
@@ -1300,8 +1307,10 @@ class session
 		{
 			return true;
 		}
+
 		$host = htmlspecialchars($this->host);
 		$ref = substr($this->referer, strpos($this->referer, '://') + 3);
+
 		if (!(stripos($ref , $host) === 0))
 		{
 			return false;
@@ -1310,15 +1319,18 @@ class session
 		{
 			$ref = substr($ref, strlen($host));
 			$server_port = (!empty($_SERVER['SERVER_PORT'])) ? (int) $_SERVER['SERVER_PORT'] : (int) getenv('SERVER_PORT');
+
 			if ($server_port !== 80 && $server_port !== 443 && stripos($ref, ":$server_port") === 0)
 			{
 				$ref = substr($ref, strlen(":$server_port"));
 			}
+
 			if (!(stripos(rtrim($ref, '/'), rtrim($this->page['root_script_path'], '/')) === 0))
 			{
 				return false;
 			}
 		}
+
 		return true;
 	}
 

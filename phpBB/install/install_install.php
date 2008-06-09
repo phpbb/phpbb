@@ -1043,6 +1043,12 @@ class install_install extends module
 		// HTTP_HOST is having the correct browser url in most cases...
 		$server_name = (!empty($_SERVER['HTTP_HOST'])) ? strtolower($_SERVER['HTTP_HOST']) : ((!empty($_SERVER['SERVER_NAME'])) ? $_SERVER['SERVER_NAME'] : getenv('SERVER_NAME'));
 
+		// HTTP HOST can carry a port number...
+		if (strpos($server_name, ':') !== false)
+		{
+			$server_name = substr($server_name, 0, strpos($server_name, ':'));
+		}
+
 		$data['email_enable'] = ($data['email_enable'] !== '') ? $data['email_enable'] : true;
 		$data['server_name'] = ($data['server_name'] !== '') ? $data['server_name'] : $server_name;
 		$data['server_port'] = ($data['server_port'] !== '') ? $data['server_port'] : ((!empty($_SERVER['SERVER_PORT'])) ? (int) $_SERVER['SERVER_PORT'] : (int) getenv('SERVER_PORT'));
@@ -1136,6 +1142,13 @@ class install_install extends module
 
 		// HTTP_HOST is having the correct browser url in most cases...
 		$server_name = (!empty($_SERVER['HTTP_HOST'])) ? strtolower($_SERVER['HTTP_HOST']) : ((!empty($_SERVER['SERVER_NAME'])) ? $_SERVER['SERVER_NAME'] : getenv('SERVER_NAME'));
+
+		// HTTP HOST can carry a port number...
+		if (strpos($server_name, ':') !== false)
+		{
+			$server_name = substr($server_name, 0, strpos($server_name, ':'));
+		}
+
 		$cookie_domain = ($data['server_name'] != '') ? $data['server_name'] : $server_name;
 
 		// Try to come up with the best solution for cookie domain...
