@@ -177,7 +177,7 @@ class compress_zip extends compress
 	* Extract archive
 	*/
 	public function extract($dst)
-	{		
+	{
 		// Loop the file, looking for files and folders
 		$dd_try = false;
 		rewind($this->fp);
@@ -213,6 +213,12 @@ class compress_zip extends compress
 							// Create and folders and subfolders if they do not exist
 							foreach ($folders as $folder)
 							{
+								$folder = trim($folder);
+								if (!$folder)
+								{
+									continue;
+								}
+
 								$str = (!empty($str)) ? $str . '/' . $folder : $folder;
 								if (!is_dir($str))
 								{
@@ -236,6 +242,12 @@ class compress_zip extends compress
 						// Create and folders and subfolders if they do not exist
 						foreach ($folders as $folder)
 						{
+							$folder = trim($folder);
+							if (!$folder)
+							{
+								continue;
+							}
+
 							$str = (!empty($str)) ? $str . '/' . $folder : $folder;
 							if (!is_dir($str))
 							{
@@ -265,7 +277,7 @@ class compress_zip extends compress
 							// Not compressed
 							fwrite($fp, $content);
 						break;
-					
+
 						case 8:
 							// Deflate
 							fwrite($fp, gzinflate($content, $data['uc_size']));
@@ -276,7 +288,7 @@ class compress_zip extends compress
 							fwrite($fp, bzdecompress($content));
 						break;
 					}
-					
+
 					fclose($fp);
 				break;
 
@@ -286,11 +298,11 @@ class compress_zip extends compress
 				// This case should simply never happen.. but it does exist..
 				case "\x50\x4b\x05\x06":
 				break 2;
-				
+
 				// 'Packed to Removable Disk', ignore it and look for the next signature...
 				case 'PK00':
 				continue 2;
-				
+
 				// We have encountered a header that is weird. Lets look for better data...
 				default:
 					if (!$dd_try)
@@ -515,6 +527,12 @@ class compress_tar extends compress
 						// Create and folders and subfolders if they do not exist
 						foreach ($folders as $folder)
 						{
+							$folder = trim($folder);
+							if (!$folder)
+							{
+								continue;
+							}
+
 							$str = (!empty($str)) ? $str . '/' . $folder : $folder;
 							if (!is_dir($str))
 							{
@@ -536,6 +554,12 @@ class compress_tar extends compress
 					// Create and folders and subfolders if they do not exist
 					foreach ($folders as $folder)
 					{
+						$folder = trim($folder);
+						if (!$folder)
+						{
+							continue;
+						}
+
 						$str = (!empty($str)) ? $str . '/' . $folder : $folder;
 						if (!is_dir($str))
 						{
