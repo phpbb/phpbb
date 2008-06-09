@@ -1778,7 +1778,7 @@ function generate_board_url($without_script_path = false)
 
 	if ($server_port && (($config['cookie_secure'] && $server_port <> 443) || (!$config['cookie_secure'] && $server_port <> 80)))
 	{
-		// HTTP HOST can carry a port number...
+		// HTTP HOST can carry a port number (we fetch $user->host, but for old versions this may be true)
 		if (strpos($server_name, ':') === false)
 		{
 			$url .= ':' . $server_port;
@@ -2054,7 +2054,7 @@ function meta_refresh($time, $url)
 	$template->assign_vars(array(
 		'META' => '<meta http-equiv="refresh" content="' . $time . ';url=' . $url . '" />')
 	);
-	
+
 	return $url;
 }
 
@@ -3118,16 +3118,16 @@ function msg_handler($errno, $msg_text, $errfile, $errline)
 function obtain_guest_count($forum_id = 0)
 {
 	global $db, $config;
-	
+
 	if ($forum_id)
 	{
 		$reading_sql = ' AND s.session_forum_id = ' . (int) $forum_id;
-	} 
+	}
 	else
 	{
 		$reading_sql = '';
 	}
-	$time = (time() - (intval($config['load_online_time']) * 60)); 
+	$time = (time() - (intval($config['load_online_time']) * 60));
 
 	// Get number of online guests
 
@@ -3153,7 +3153,7 @@ function obtain_guest_count($forum_id = 0)
 	$result = $db->sql_query($sql, 60);
 	$guests_online = (int) $db->sql_fetchfield('num_guests');
 	$db->sql_freeresult($result);
-	
+
 	return $guests_online;
 }
 
@@ -3185,16 +3185,16 @@ function obtain_users_online($forum_id = 0)
 	{
 		$online_users['guests_online'] = obtain_guest_count($forum_id);
 	}
-	
+
 	// a little discrete magic to cache this for 30 seconds
-	$time = (time() - (intval($config['load_online_time']) * 60)); 
+	$time = (time() - (intval($config['load_online_time']) * 60));
 
 	$sql = 'SELECT s.session_user_id, s.session_ip, s.session_viewonline
 		FROM ' . SESSIONS_TABLE . ' s
 		WHERE s.session_time >= ' . ($time - ((int) ($time % 30))) .
 			$reading_sql .
 		' AND s.session_user_id <> ' . ANONYMOUS;
-	$result = $db->sql_query($sql); 
+	$result = $db->sql_query($sql);
 
 	while ($row = $db->sql_fetchrow($result))
 	{
@@ -3215,7 +3215,7 @@ function obtain_users_online($forum_id = 0)
 	}
 	$online_users['total_online'] = $online_users['guests_online'] + $online_users['visible_online'] + $online_users['hidden_online'];
 	$db->sql_freeresult($result);
-	
+
 	return $online_users;
 }
 

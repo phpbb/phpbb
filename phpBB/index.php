@@ -25,6 +25,8 @@ $user->session_begin();
 $auth->acl($user->data);
 $user->setup('viewforum');
 
+echo generate_board_url();
+exit;
 display_forums('', $config['load_moderators']);
 
 // Set some stats, get posts count from forums data if we... hum... retrieve all forums data
