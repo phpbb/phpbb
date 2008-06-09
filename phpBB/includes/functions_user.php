@@ -2838,7 +2838,7 @@ function group_user_attributes($action, $group_id, $user_id_ary = false, $userna
 
 	if (!sizeof($user_id_ary) || $result !== false)
 	{
-		return false;
+		return 'NO_USERS';
 	}
 
 	if (!$group_name)
@@ -2850,9 +2850,23 @@ function group_user_attributes($action, $group_id, $user_id_ary = false, $userna
 	{
 		case 'demote':
 		case 'promote':
+		
+			$sql = 'SELECT user_id FROM ' . USER_GROUP_TABLE . "
+				WHERE group_id = $group_id
+					AND user_pending = 1
+					AND " . $db->sql_in_set('user_id', $user_id_ary);
+			$result = $db->sql_query_limit($sql, 1);
+			$not_empty = ($db->sql_fetchrow($result));
+			$db->sql_freeresult($result);
+			if ($not_empty)
+			{
+				return 'NO_VALID_USERS';
+			}
+			
 			$sql = 'UPDATE ' . USER_GROUP_TABLE . '
 				SET group_leader = ' . (($action == 'promote') ? 1 : 0) . "
 				WHERE group_id = $group_id
+					AND user_pending = 0
 					AND " . $db->sql_in_set('user_id', $user_id_ary);
 			$db->sql_query($sql);
 
@@ -2946,7 +2960,7 @@ function group_user_attributes($action, $group_id, $user_id_ary = false, $userna
 
 	group_update_listings($group_id);
 
-	return true;
+	return false;
 }
 
 /**
