@@ -1862,6 +1862,7 @@ function submit_post($mode, $subject, $username, $topic_type, &$poll, &$data, $u
 				'topic_last_poster_id'		=> (int) $user->data['user_id'],
 				'topic_last_poster_name'	=> (!$user->data['is_registered'] && $username) ? $username : (($user->data['user_id'] != ANONYMOUS) ? $user->data['username'] : ''),
 				'topic_last_poster_colour'	=> $user->data['user_colour'],
+				'topic_last_post_subject'	=> (string) $subject,
 			);
 		}
 
