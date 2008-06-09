@@ -554,7 +554,7 @@ function mcp_move_topic($topic_ids)
 
 	if ($to_forum_id)
 	{
-		$forum_data = get_forum_data($to_forum_id);
+		$forum_data = get_forum_data($to_forum_id, 'f_post');
 
 		if (!sizeof($forum_data))
 		{
@@ -953,7 +953,7 @@ function mcp_fork_topic($topic_ids)
 
 	if ($to_forum_id)
 	{
-		$forum_data = get_forum_data($to_forum_id);
+		$forum_data = get_forum_data($to_forum_id, 'f_post');
 
 		if (!sizeof($topic_ids))
 		{
@@ -990,7 +990,7 @@ function mcp_fork_topic($topic_ids)
 
 	if (confirm_box(true))
 	{
-		$topic_data = get_topic_data($topic_ids);
+		$topic_data = get_topic_data($topic_ids, 'f_post');
 
 		$total_posts = 0;
 		$new_topic_id_list = array();
