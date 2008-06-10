@@ -1801,6 +1801,7 @@ function generate_board_url($without_script_path = false)
 
 /**
 * Redirects the user to another page then exits the script nicely
+* This function is intended for urls within the board. It's not meant to redirect to cross-domains.
 */
 function redirect($url, $return = false)
 {
@@ -1829,6 +1830,7 @@ function redirect($url, $return = false)
 	}
 	else if (!empty($url_parts['scheme']) && !empty($url_parts['host']))
 	{
+		// Attention: only able to redirect within the same domain (yourdomain.com -> www.yourdomain.com will not work)
 		if ($url_parts['host'] !== $user->host)
 		{
 			$url = generate_board_url();
