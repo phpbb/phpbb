@@ -1560,6 +1560,7 @@ function show_profile($data)
 
 		'A_USERNAME'		=> addslashes(get_username_string('username', $user_id, $username, $data['user_colour'])),
 
+		'AVATAR_IMG'		=> get_user_avatar($data['user_avatar'], $data['user_avatar_type'], $data['user_avatar_width'], $data['user_avatar_height']),
 		'ONLINE_IMG'		=> (!$config['load_onlinetrack']) ? '' : (($online) ? $user->img('icon_user_online', 'ONLINE') : $user->img('icon_user_offline', 'OFFLINE')),
 		'S_ONLINE'			=> ($config['load_onlinetrack'] && $online) ? true : false,
 		'RANK_IMG'			=> $rank_img,
