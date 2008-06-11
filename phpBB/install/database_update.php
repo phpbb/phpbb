@@ -8,7 +8,7 @@
 *
 */
 
-$updates_to_version = '3.0.1'; //'3.0.2-RC1';
+$updates_to_version = '3.0.2-RC1';
 
 // Return if we "just include it" to find out for which version the database update is responsible for
 if (defined('IN_PHPBB') && defined('IN_INSTALL'))
@@ -496,10 +496,12 @@ $database_update_info = array(
 			GROUPS_TABLE			=> array('group_legend'),
 		),
 	),
-	// No changes from 3.0.0 to 3.0.1-RC1
-	'3.0.1-RC1'		=> array(),
 	// No changes from 3.0.1-RC1 to 3.0.1
+	'3.0.1-RC1'		=> array(),
+	// No changes from 3.0.1 to 3.0.2-RC1
 	'3.0.1'			=> array(),
+// uncomment once RC1 out - no changes from 3.0.2-RC1 to 3.0.2
+//	'3.0.2-RC1'		=> array(),
 );
 
 // Determine mapping database type
@@ -585,6 +587,11 @@ while ($row = $db->sql_fetchrow($result))
 }
 $db->sql_freeresult($result);
 
+/*if ($debug_from_version !== false)
+{
+	$config['version'] = $debug_from_version;
+}*/
+
 echo $lang['PREVIOUS_VERSION'] . ' :: <strong>' . $config['version'] . '</strong><br />';
 echo $lang['UPDATED_VERSION'] . ' :: <strong>' . $updates_to_version . '</strong></p>';
 
@@ -608,7 +615,7 @@ else
 
 // Checks/Operations that have to be completed prior to starting the update itself
 $exit = false;
-if (version_compare($current_version, '3.0.RC8', '<='))
+if (version_compare($current_version, '3.0.RC8', '<=')) /* && $debug_from_version === false) */
 {
 	// Define missing language entries...
 	if (!isset($lang['CLEANING_USERNAMES']))
@@ -1096,13 +1103,20 @@ for ($i = 0; $i < sizeof($versions); $i++)
 
 	$next_version = (isset($versions[$i + 1])) ? $versions[$i + 1] : $updates_to_version;
 
-	if (!sizeof($schema_changes))
+	// If the installed version to be updated to is < than the current version, and if the current version is >= as the version to be updated to next, we will skip the process
+	if (version_compare($version, $current_version, '<') && version_compare($current_version, $next_version, '>='))
 	{
 		continue;
 	}
 
-	// If the installed version to be updated to is < than the current version, and if the current version is >= as the version to be updated to next, we will skip the process
-	if (version_compare($version, $current_version, '<') && version_compare($current_version, $next_version, '>='))
+/*	if ($debug_from_version !== false)
+	{
+		// Applying update schema for version array with key '$version'
+		// for version '$version' to '$next_version'
+		continue;
+	}*/
+
+	if (!sizeof($schema_changes))
 	{
 		continue;
 	}
@@ -1213,10 +1227,7 @@ $errored = $no_updates = false;
 flush();
 
 $no_updates = true;
-
-$versions = array(
-	'3.0.RC2', '3.0.RC3', '3.0.RC4', '3.0.RC5', '3.0.0', '3.0.1-RC1'
-);
+$versions = array_keys($database_update_info);
 
 // some code magic
 for ($i = 0; $i < sizeof($versions); $i++)
@@ -1230,8 +1241,14 @@ for ($i = 0; $i < sizeof($versions); $i++)
 		continue;
 	}
 
-	$no_updates = false;
-	change_database_data($version);
+/*	if ($debug_from_version !== false)
+	{
+		// Applying update schema for version array with key '$version'
+		// for version '$version' to '$next_version'
+		continue;
+	}*/
+
+	change_database_data($no_updates, $version);
 }
 
 _write_result($no_updates, $errored, $error_ary);
@@ -1250,6 +1267,9 @@ $errored = $no_updates = false;
 
 flush();
 
+//if ($debug_from_version === false)
+// {
+
 // update the version
 $sql = "UPDATE " . CONFIG_TABLE . "
 	SET config_value = '$updates_to_version'
@@ -1261,6 +1281,8 @@ $sql = 'UPDATE ' . USERS_TABLE . "
 	SET user_permissions = '',
 		user_perm_from = 0";
 _sql($sql, $errored, $error_ary);
+
+// }
 
 /* Optimize/vacuum analyze the tables where appropriate
 // this should be done for each version in future along with
@@ -1349,7 +1371,7 @@ if (function_exists('exit_handler'))
 /**
 * Function where all data changes are executed
 */
-function change_database_data($version)
+function change_database_data(&$no_updates, $version)
 {
 	global $db, $map_dbms, $errored, $error_ary, $config, $phpbb_root_path;
 
@@ -1396,6 +1418,7 @@ function change_database_data($version)
 				sql_create_index($map_dbms, 'ath_op_id', ACL_ROLES_DATA_TABLE, array('auth_option_id'));
 			}
 
+			$no_updates = false;
 		break;
 
 		case '3.0.RC3':
@@ -1485,6 +1508,7 @@ function change_database_data($version)
 			set_config('allow_birthdays', '1');
 			set_config('cron_lock', '0', true);
 
+			$no_updates = false;
 		break;
 
 		case '3.0.RC4':
@@ -1682,6 +1706,7 @@ function change_database_data($version)
 			set_config('ldap_port', '');
 			set_config('ldap_user_filter', '');
 
+			$no_updates = false;
 		break;
 
 		case '3.0.RC5':
@@ -1715,6 +1740,7 @@ function change_database_data($version)
 
 			$db->sql_transaction('commit');
 
+			$no_updates = false;
 		break;
 
 		case '3.0.0':
@@ -1741,6 +1767,7 @@ function change_database_data($version)
 				}
 			}
 
+			$no_updates = false;
 		break;
 
 		case '3.0.1-RC1':
@@ -1749,6 +1776,7 @@ function change_database_data($version)
 			set_config('check_attachment_content', '1');
 			set_config('mime_triggers', 'body|head|html|img|plaintext|a href|pre|script|table|title');
 
+			$no_updates = false;
 		break;
 
 	}
