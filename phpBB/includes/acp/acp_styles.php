@@ -2861,7 +2861,7 @@ parse_css_file = {PARSE_CSS_FILE}
 
 	function generate_stylesheets($theme)
 	{
-		global $db, $phpbb_root_path, $config;
+		global $db, $config;
 
 		// get all the lang_dirs
 		$sql = 'SELECT lang_dir
@@ -2888,7 +2888,7 @@ parse_css_file = {PARSE_CSS_FILE}
 				$theme['imageset_id'] = $theme_row['imageset_id'];
 				$theme['template_path'] = $theme_row['template_path'];
 
-				$user_image_lang = (file_exists($phpbb_root_path . 'styles/' . $theme['imageset_path'] . '/imageset/' . $lang_dir)) ? $lang_dir : $config['default_lang'];
+				$user_image_lang = (file_exists(PHPBB_ROOT_PATH . 'styles/' . $theme['imageset_path'] . '/imageset/' . $lang_dir)) ? $lang_dir : $config['default_lang'];
 
 				// Parse Theme Data
 				$replace = array(
@@ -2938,7 +2938,7 @@ parse_css_file = {PARSE_CSS_FILE}
 							$img_data = &$img_array[$img];
 							$imgsrc = ($img_data['image_lang'] ? $img_data['image_lang'] . '/' : '') . $img_data['image_filename'];
 							$imgs[$img] = array(
-								'src'		=> $phpbb_root_path . 'styles/' . $theme['imageset_path'] . '/imageset/' . $imgsrc,
+								'src'		=> './styles/' . $theme['imageset_path'] . '/imageset/' . $imgsrc,
 								'width'		=> $img_data['image_width'],
 								'height'	=> $img_data['image_height'],
 							);
@@ -2968,7 +2968,7 @@ parse_css_file = {PARSE_CSS_FILE}
 						$specific_theme_data = str_replace($find, $replace, $specific_theme_data);
 					}
 				}
-				file_put_contents($phpbb_root_path . '/store/' . $theme['theme_id'] . '_' . $theme['imageset_id'] . '_' . $lang_dir . '.css', $specific_theme_data, LOCK_EX);
+				file_put_contents(PHPBB_ROOT_PATH . '/store/' . $theme['theme_id'] . '_' . $theme['imageset_id'] . '_' . $lang_dir . '.css', $specific_theme_data, LOCK_EX);
 			}
 		}
 		$db->sql_freeresult($result);

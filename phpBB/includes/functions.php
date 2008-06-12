@@ -3416,7 +3416,7 @@ function page_header($page_title = '', $display_online_list = true)
 		'T_ICONS_PATH'			=> PHPBB_ROOT_PATH . $config['icons_path'] . '/',
 		'T_RANKS_PATH'			=> PHPBB_ROOT_PATH . $config['ranks_path'] . '/',
 		'T_UPLOAD_PATH'			=> PHPBB_ROOT_PATH . $config['upload_path'] . '/',
-		'T_STYLESHEET_LINK'		=> (!$user->theme['theme_storedb']) ? PHPBB_ROOT_PATH . 'styles/' . $user->theme['theme_path'] . '/theme/stylesheet.css' : PHPBB_ROOT_PATH . 'style.' . PHP_EXT . "?sid=$user->session_id&amp;id=" . $user->theme['style_id'] . '&amp;lang=' . $user->data['user_lang'], //"{$phpbb_root_path}store/{$user->theme['theme_id']}_{$user->theme['imageset_id']}_{$user->lang_name}.css"
+		'T_STYLESHEET_LINK'		=> (!$user->theme['theme_storedb']) ? PHPBB_ROOT_PATH . 'styles/' . $user->theme['theme_path'] . '/theme/stylesheet.css' : PHPBB_ROOT_PATH . 'style.' . PHP_EXT . "?sid=$user->session_id&amp;id=" . $user->theme['style_id'] . '&amp;lang=' . $user->data['user_lang'], //PHPBB_ROOT_PATH . "store/{$user->theme['theme_id']}_{$user->theme['imageset_id']}_{$user->lang_name}.css"
 		'T_STYLESHEET_NAME'		=> $user->theme['theme_name'],
 
 		'SITE_LOGO_IMG'			=> $user->img('site_logo'))
