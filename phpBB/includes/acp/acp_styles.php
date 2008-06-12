@@ -1060,6 +1060,9 @@ parse_css_file = {PARSE_CSS_FILE}
 		}
 		$db->sql_freeresult($result);
 
+		$theme_info['theme_id'] = $theme_id;
+		self::generate_stylesheets($theme_info);
+
 		// save changes to the theme if the user submitted any
 		if ($save_changes)
 		{
@@ -2856,6 +2859,120 @@ parse_css_file = {PARSE_CSS_FILE}
 
 	}
 
+	function generate_stylesheets($theme)
+	{
+		global $db, $phpbb_root_path, $config;
+
+		// get all the lang_dirs
+		$sql = 'SELECT lang_dir
+			FROM ' . LANG_TABLE;
+		$result = $db->sql_query($sql);
+		while ($row = $db->sql_fetchrow($result))
+		{
+			$lang_dirs[] = $row['lang_dir'];
+		}
+		$db->sql_freeresult($result);
+
+		// get all imagesets this theme is associated with
+		$sql = 'SELECT si.imageset_id, si.imageset_path, st.template_path
+			FROM ' . STYLES_TABLE . ' s, ' . STYLES_IMAGESET_TABLE . ' si, ' . STYLES_TEMPLATE_TABLE . ' st
+			WHERE s.theme_id = ' . (int) $theme['theme_id'] . '
+				AND s.imageset_id = si.imageset_id
+				AND s.template_id = st.template_id';
+		$result = $db->sql_query($sql);
+		while ($theme_row = $db->sql_fetchrow($result))
+		{
+			foreach ($lang_dirs as $lang_dir)
+			{
+				$theme['imageset_path'] = $theme_row['imageset_path'];
+				$theme['imageset_id'] = $theme_row['imageset_id'];
+				$theme['template_path'] = $theme_row['template_path'];
+
+				$user_image_lang = (file_exists($phpbb_root_path . 'styles/' . $theme['imageset_path'] . '/imageset/' . $lang_dir)) ? $lang_dir : $config['default_lang'];
+
+				// Parse Theme Data
+				$replace = array(
+					'{T_THEME_PATH}'			=> "./styles/" . $theme['theme_path'] . '/theme',
+					'{T_TEMPLATE_PATH}'			=> "./styles/" . $theme['template_path'] . '/template',
+					'{T_IMAGESET_PATH}'			=> "./styles/" . $theme['imageset_path'] . '/imageset',
+					'{T_IMAGESET_LANG_PATH}'	=> "./styles/" . $theme['imageset_path'] . '/imageset/' . $user_image_lang,
+					'{T_STYLESHEET_NAME}'		=> $theme['theme_name'],
+					'{S_USER_LANG}'				=> $lang_dir // this bastard forces us to make a copy for every language that is installed, not just those with an actual i18'd imageset!
+				);
+
+				$sql = 'SELECT image_name, image_filename, image_lang, image_width, image_height
+					FROM ' . STYLES_IMAGESET_DATA_TABLE . '
+					WHERE imageset_id = ' . $theme['imageset_id'] . "
+					AND image_filename <> '' 
+					AND image_lang IN ('" . $db->sql_escape($user_image_lang) . "', '')";
+				$result2 = $db->sql_query($sql);
+
+				$img_array = array();
+				while ($row = $db->sql_fetchrow($result2))
+				{
+					$img_array[$row['image_name']] = $row;
+				}
+				$db->sql_freeresult($result2);
+
+				$specific_theme_data = str_replace(array_keys($replace), array_values($replace), $theme['theme_data']);
+
+				$matches = array();
+				preg_match_all('#\{IMG_([A-Za-z0-9_]*?)_(WIDTH|HEIGHT|SRC)\}#', $specific_theme_data, $matches);
+			
+				$imgs = $find = $replace = array();
+				if (isset($matches[0]) && sizeof($matches[0]))
+				{
+					foreach ($matches[1] as $i => $img)
+					{
+						$img = strtolower($img);
+						$find[] = $matches[0][$i];
+			
+						if (!isset($img_array[$img]))
+						{
+							$replace[] = '';
+							continue;
+						}
+			
+						if (!isset($imgs[$img]))
+						{
+							$img_data = &$img_array[$img];
+							$imgsrc = ($img_data['image_lang'] ? $img_data['image_lang'] . '/' : '') . $img_data['image_filename'];
+							$imgs[$img] = array(
+								'src'		=> $phpbb_root_path . 'styles/' . $theme['imageset_path'] . '/imageset/' . $imgsrc,
+								'width'		=> $img_data['image_width'],
+								'height'	=> $img_data['image_height'],
+							);
+						}
+			
+						switch ($matches[2][$i])
+						{
+							case 'SRC':
+								$replace[] = $imgs[$img]['src'];
+							break;
+							
+							case 'WIDTH':
+								$replace[] = $imgs[$img]['width'];
+							break;
+				
+							case 'HEIGHT':
+								$replace[] = $imgs[$img]['height'];
+							break;
+			
+							default:
+								continue;
+						}
+					}
+			
+					if (sizeof($find))
+					{
+						$specific_theme_data = str_replace($find, $replace, $specific_theme_data);
+					}
+				}
+				file_put_contents($phpbb_root_path . '/store/' . $theme['theme_id'] . '_' . $theme['imageset_id'] . '_' . $lang_dir . '.css', $specific_theme_data, LOCK_EX);
+			}
+		}
+		$db->sql_freeresult($result);
+	}
 	/**
 
 					$reqd_template = (isset($installcfg['required_template'])) ? $installcfg['required_template'] : false;
