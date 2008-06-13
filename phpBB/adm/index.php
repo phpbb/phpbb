@@ -73,7 +73,7 @@ $module->set_active($module_id, $mode);
 
 // Assign data to the template engine for the list of modules
 // We do this before loading the active module for correct menu display in trigger_error
-$module->assign_tpl_vars(append_sid('index'));
+$module->assign_tpl_vars(append_sid(PHPBB_ADMIN_PATH . 'index.' . PHP_EXT));
 
 // Load and execute the relevant module
 $module->load_active();
