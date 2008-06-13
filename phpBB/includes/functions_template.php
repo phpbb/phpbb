@@ -17,215 +17,100 @@ if (!defined('IN_PHPBB'))
 }
 
 /**
-* Extension of template class - Functions needed for compiling templates only.
-*
-* psoTFX, phpBB Development Team - Completion of file caching, decompilation
-* routines and implementation of conditionals/keywords and associated changes
-*
-* The interface was inspired by PHPLib templates,  and the template file (formats are
-* quite similar)
-*
-* The keyword/conditional implementation is currently based on sections of code from
-* the Smarty templating engine (c) 2001 ispi of Lincoln, Inc. which is released
-* (on its own and in whole) under the LGPL. Section 3 of the LGPL states that any code
-* derived from an LGPL application may be relicenced under the GPL, this applies
-* to this source
-*
-* DEFINE directive inspired by a request by Cyberalien
-*
-* @package phpBB3
-*/
-class template_compile
+ * The template filter that does the actual compilation
+ * @see tempalte_compile
+ *
+ */
+class template_filter extends php_user_filter
 {
-	private $template;
+	private $regex = '~<!-- ([A-Z][A-Z_0-9]+)(?: (.*?) ?)?-->|{((?:[a-z][a-z_0-9]+\.)*[A-Z][A-Z_0-9]+)}~';
+	private $blocks = array();
 
-	// Various storage arrays
 	private $block_names = array();
 	private $block_else_level = array();
 
-	/**
-	* constuctor
-	*/
-	function __construct(template &$template)
+	function filter($in, $out, &$consumed/*, $closing*/)
 	{
-		$this->template = &$template;
+		while ($bucket = stream_bucket_make_writeable($in))
+		{
+			$bucket->data = $this->compile($bucket->data);
+			$consumed += $bucket->datalen;
+			stream_bucket_append($out, $bucket);
+		}
+		return PSFS_PASS_ON;
 	}
 	
-	/**
-	* Load template source from file
-	* @access private
-	*/
-	public function _tpl_load_file($handle, $store_in_db = false)
+	private function compile($data)
 	{
-		// Try and open template for read
-		if (!file_exists($this->template->files[$handle]))
-		{
-			trigger_error("template->_tpl_load_file(): File {$this->template->files[$handle]} does not exist or is empty", E_USER_ERROR);
-		}
-
-		$this->template->compiled_code[$handle] = $this->compile(trim(@file_get_contents($this->template->files[$handle])));
-
-		// Actually compile the code now.
-		$this->compile_write($handle, $this->template->compiled_code[$handle]);
-
-		// Store in database if required...
-		if ($store_in_db)
-		{
-			global $db, $user;
-
-			$sql_ary = array(
-				'template_id'			=> $user->theme['template_id'],
-				'template_filename'		=> $this->template->filename[$handle],
-				'template_included'		=> '',
-				'template_mtime'		=> time(),
-				'template_data'			=> trim(@file_get_contents($this->template->files[$handle])),
-			);
-
-			$sql = 'INSERT INTO ' . STYLES_TEMPLATE_DATA_TABLE . ' ' . $db->sql_build_array('INSERT', $sql_ary);
-			$db->sql_query($sql);
-		}
+		return preg_replace_callback($this->regex, array($this, 'replace'), $data);
 	}
 
-	/**
-	* Remove any PHP tags that do not belong, these regular expressions are derived from
-	* the ones that exist in zend_language_scanner.l
-	* @access private
-	*/
-	private function remove_php_tags(&$code)
+	private function replace($matches)
 	{
-		// This matches the information gathered from the internal PHP lexer
-		$match = array(
-			'#<([\?%])=?.*?\1>#s',
-			'#<script\s+language\s*=\s*(["\']?)php\1\s*>.*?</script\s*>#s',
-			'#<\?php(?:\r\n?|[ \n\t]).*?\?>#s'
-		);
-
-		$code = preg_replace($match, '', $code);
-	}
-
-	/**
-	* The all seeing all doing compile method. Parts are inspired by or directly from Smarty
-	* @access private
-	*/
-	public function compile($code, $no_echo = false, $echo_var = '')
-	{
-		global $config;
-
-		if ($echo_var)
+		if (isset($matches[3]))
 		{
-			global $$echo_var;
+			return $this->compile_var_tags($matches[0]);
 		}
 
-		// Remove any "loose" php ... we want to give admins the ability
-		// to switch on/off PHP for a given template. Allowing unchecked
-		// php is a no-no. There is a potential issue here in that non-php
-		// content may be removed ... however designers should use entities
-		// if they wish to display < and >
-		$this->remove_php_tags($code);
-
-		// Pull out all block/statement level elements and separate plain text
-		preg_match_all('#<!-- PHP -->(.*?)<!-- ENDPHP -->#s', $code, $matches);
-		$php_blocks = $matches[1];
-		$code = preg_replace('#<!-- PHP -->.*?<!-- ENDPHP -->#s', '<!-- PHP -->', $code);
-
-		preg_match_all('#<!-- INCLUDE ([a-zA-Z0-9\_\-\+\./]+) -->#', $code, $matches);
-		$include_blocks = $matches[1];
-		$code = preg_replace('#<!-- INCLUDE [a-zA-Z0-9\_\-\+\./]+ -->#', '<!-- INCLUDE -->', $code);
-
-		preg_match_all('#<!-- INCLUDEPHP ([a-zA-Z0-9\_\-\+\./]+) -->#', $code, $matches);
-		$includephp_blocks = $matches[1];
-		$code = preg_replace('#<!-- INCLUDEPHP [a-zA-Z0-9\_\-\+\./]+ -->#', '<!-- INCLUDEPHP -->', $code);
-
-		preg_match_all('#<!-- ([^<].*?) (.*?)? ?-->#', $code, $blocks, PREG_SET_ORDER);
-
-		$text_blocks = preg_split('#<!-- [^<].*? (?:.*?)? ?-->#', $code);
-
-		for ($i = 0, $j = sizeof($text_blocks); $i < $j; $i++)
+		switch ($matches[1])
 		{
-			$this->compile_var_tags($text_blocks[$i]);
+			case 'BEGIN':
+				$this->block_else_level[] = false;
+				return '<?php ' . $this->compile_tag_block($matches[2]) . ' ?>';
+			break;
+
+			case 'BEGINELSE':
+				$this->block_else_level[sizeof($this->block_else_level) - 1] = true;
+				return '<?php }} else { ?>';
+			break;
+
+			case 'END':
+				array_pop($this->block_names);
+				return '<?php ' . ((array_pop($this->block_else_level)) ? '}' : '}}') . ' ?>';
+			break;
+
+			case 'IF':
+				return '<?php ' . $this->compile_tag_if($matches[2], false) . ' ?>';
+			break;
+
+			case 'ELSE':
+				return '<?php } else { ?>';
+			break;
+
+			case 'ELSEIF':
+				return '<?php ' . $this->compile_tag_if($matches[2], true) . ' ?>';
+			break;
+
+			case 'ENDIF':
+				return '<?php } ?>';
+			break;
+
+			case 'DEFINE':
+				return '<?php ' . $this->compile_tag_define($matches[2], true) . ' ?>';
+			break;
+
+			case 'UNDEFINE':
+				return '<?php ' . $this->compile_tag_define($matches[2], false) . ' ?>';
+			break;
+
+			case 'INCLUDE':
+				return '<?php ' . $this->compile_tag_include($matches[2]) . ' ?>';
+			break;
+
+/*			case 'INCLUDEPHP':
+				$this->compile_blocks[] = ($config['tpl_allow_php']) ? '<?php ' . $this->compile_tag_include_php(array_shift($includephp_blocks)) . ' ?>' : '';
+			break;
+
+			case 'PHP':
+				$this->compile_blocks[] = ($config['tpl_allow_php']) ? '<?php ' . array_shift($php_blocks) . ' ?>' : '';
+			break;
+*/
+			default:
+				return $matches[0];
+			break;
+
 		}
-		$compile_blocks = array();
-
-		for ($curr_tb = 0, $tb_size = sizeof($blocks); $curr_tb < $tb_size; $curr_tb++)
-		{
-			$block_val = &$blocks[$curr_tb];
-
-			switch ($block_val[1])
-			{
-				case 'BEGIN':
-					$this->block_else_level[] = false;
-					$compile_blocks[] = '<?php ' . $this->compile_tag_block($block_val[2]) . ' ?>';
-				break;
-
-				case 'BEGINELSE':
-					$this->block_else_level[sizeof($this->block_else_level) - 1] = true;
-					$compile_blocks[] = '<?php }} else { ?>';
-				break;
-
-				case 'END':
-					array_pop($this->block_names);
-					$compile_blocks[] = '<?php ' . ((array_pop($this->block_else_level)) ? '}' : '}}') . ' ?>';
-				break;
-
-				case 'IF':
-					$compile_blocks[] = '<?php ' . $this->compile_tag_if($block_val[2], false) . ' ?>';
-				break;
-
-				case 'ELSE':
-					$compile_blocks[] = '<?php } else { ?>';
-				break;
-
-				case 'ELSEIF':
-					$compile_blocks[] = '<?php ' . $this->compile_tag_if($block_val[2], true) . ' ?>';
-				break;
-
-				case 'ENDIF':
-					$compile_blocks[] = '<?php } ?>';
-				break;
-
-				case 'DEFINE':
-					$compile_blocks[] = '<?php ' . $this->compile_tag_define($block_val[2], true) . ' ?>';
-				break;
-
-				case 'UNDEFINE':
-					$compile_blocks[] = '<?php ' . $this->compile_tag_define($block_val[2], false) . ' ?>';
-				break;
-
-				case 'INCLUDE':
-					$temp = array_shift($include_blocks);
-					$compile_blocks[] = '<?php ' . $this->compile_tag_include($temp) . ' ?>';
-					$this->template->_tpl_include($temp, false);
-				break;
-
-				case 'INCLUDEPHP':
-					$compile_blocks[] = ($config['tpl_allow_php']) ? '<?php ' . $this->compile_tag_include_php(array_shift($includephp_blocks)) . ' ?>' : '';
-				break;
-
-				case 'PHP':
-					$compile_blocks[] = ($config['tpl_allow_php']) ? '<?php ' . array_shift($php_blocks) . ' ?>' : '';
-				break;
-
-				default:
-					$this->compile_var_tags($block_val[0]);
-					$trim_check = trim($block_val[0]);
-					$compile_blocks[] = (!$no_echo) ? ((!empty($trim_check)) ? $block_val[0] : '') : ((!empty($trim_check)) ? $block_val[0] : '');
-				break;
-			}
-		}
-
-		$template_php = '';
-		for ($i = 0, $size = sizeof($text_blocks); $i < $size; $i++)
-		{
-			$trim_check_text = trim($text_blocks[$i]);
-			$template_php .= (!$no_echo) ? (($trim_check_text != '') ? $text_blocks[$i] : '') . ((isset($compile_blocks[$i])) ? $compile_blocks[$i] : '') : (($trim_check_text != '') ? $text_blocks[$i] : '') . ((isset($compile_blocks[$i])) ? $compile_blocks[$i] : '');
-		}
-
-		// There will be a number of occasions where we switch into and out of
-		// PHP mode instantaneously. Rather than "burden" the parser with this
-		// we'll strip out such occurences, minimising such switching
-		$template_php = str_replace(' ?><?php ', ' ', $template_php);
-
-		return (!$no_echo) ? $template_php : "\$$echo_var .= '" . $template_php . "'";
+		return '';
 	}
 
 	/**
@@ -267,7 +152,7 @@ class template_compile
 		$text_blocks = preg_replace('#\{([a-z0-9\-_]*)\}#is', "<?php echo (isset(\$this->_rootref['\\1'])) ? \$this->_rootref['\\1'] : ''; ?>", $text_blocks);
 		$text_blocks = preg_replace('#\{\$([a-z0-9\-_]*)\}#is', "<?php echo (isset(\$this->_tpldata['DEFINE']['.']['\\1'])) ? \$this->_tpldata['DEFINE']['.']['\\1'] : ''; ?>", $text_blocks);
 
-		return;
+		return $text_blocks;
 	}
 
 	/**
@@ -291,6 +176,7 @@ class template_compile
 		// foo(-2)   : Will start the loop two entries from the end
 		// foo(3,4)  : Will start the loop on the fourth entry and end it on the fifth
 		// foo(3,-4) : Will start the loop on the fourth entry and end it four from last
+		$match = array();
 		if (preg_match('#^([^()]*)\(([\-\d]+)(?:,([\-\d]+))?\)$#', $tag_args, $match))
 		{
 			$tag_args = $match[1];
@@ -382,6 +268,7 @@ class template_compile
 	private function compile_tag_if($tag_args, $elseif)
 	{
 		// Tokenize args for 'if' tag.
+		$match = array();
 		preg_match_all('/(?:
 			"[^"\\\\]*(?:\\\\.[^"\\\\]*)*"         |
 			\'[^\'\\\\]*(?:\\\\.[^\'\\\\]*)*\'     |
@@ -485,6 +372,7 @@ class template_compile
 				// no break
 
 				default:
+					$varrefs = array();
 					if (preg_match('#^((?:[a-z0-9\-_]+\.)+)?(\$)?(?=[A-Z])([A-Z0-9\-_]+)#s', $token, $varrefs))
 					{
 						$token = (!empty($varrefs[1])) ? $this->generate_block_data_ref(substr($varrefs[1], 0, -1), true, $varrefs[2]) . '[\'' . $varrefs[3] . '\']' : (($varrefs[2]) ? '$this->_tpldata[\'DEFINE\'][\'.\'][\'' . $varrefs[3] . '\']' : '$this->_rootref[\'' . $varrefs[3] . '\']');
@@ -529,6 +417,7 @@ class template_compile
 	*/
 	private function compile_tag_define($tag_args, $op)
 	{
+		$match = array();
 		preg_match('#^((?:[a-z0-9\-_]+\.)+)?\$(?=[A-Z])([A-Z0-9_\-]*)(?: = (\'?)([^\']*)(\'?))?$#', $tag_args, $match);
 
 		if (empty($match[2]) || (!isset($match[4]) && $op))
@@ -554,6 +443,7 @@ class template_compile
 		}
 		else
 		{
+			$type = array();
 			preg_match('#true|false|\.#i', $match[4], $type);
 
 			switch (strtolower($type[0]))
@@ -599,7 +489,7 @@ class template_compile
 	* This is from Smarty
 	* @access private
 	*/
-	private function _parse_is_expr($is_arg, array $tokens)
+	private function _parse_is_expr($is_arg, $tokens)
 	{
 		$expr_end = 0;
 		$negate_expr = false;
@@ -670,7 +560,7 @@ class template_compile
 	* NOTE: expects a trailing "." on the namespace.
 	* @access private
 	*/
-	private function generate_block_varref($namespace, $varname, $echo = true, $defop = false)
+	function generate_block_varref($namespace, $varname, $echo = true, $defop = false)
 	{
 		// Strip the trailing period.
 		$namespace = substr($namespace, 0, -1);
@@ -695,7 +585,7 @@ class template_compile
 	* NOTE: does not expect a trailing "." on the blockname.
 	* @access private
 	*/
-	private function generate_block_data_ref($blockname, $include_last_iterator, $defop = false)
+	function generate_block_data_ref($blockname, $include_last_iterator, $defop = false)
 	{
 		// Get an array of the blocks involved.
 		$blocks = explode('.', $blockname);
@@ -728,26 +618,83 @@ class template_compile
 			return '$_'. $blocks[$blockcount - 1] . '_val[\''. $blocks[$blockcount]. '\']';
 		}
 	}
+}
+
+stream_filter_register('template', 'template_filter');
+
+/**
+* Extension of template class - Functions needed for compiling templates only.
+*
+* psoTFX, phpBB Development Team - Completion of file caching, decompilation
+* routines and implementation of conditionals/keywords and associated changes
+*
+* The interface was inspired by PHPLib templates,  and the template file (formats are
+* quite similar)
+*
+* The keyword/conditional implementation is currently based on sections of code from
+* the Smarty templating engine (c) 2001 ispi of Lincoln, Inc. which is released
+* (on its own and in whole) under the LGPL. Section 3 of the LGPL states that any code
+* derived from an LGPL application may be relicenced under the GPL, this applies
+* to this source
+*
+* DEFINE directive inspired by a request by Cyberalien
+*
+* @package phpBB3
+*/
+class template_compile
+{
+	private $template;
+
+	/**
+	* constuctor
+	*/
+	function __construct(template &$template)
+	{
+		$this->template = &$template;
+	}
+	
+	/**
+	* Load template source from file
+	* @access public
+	*/
+	public function _tpl_load_file($handle/*, $store_in_db = false*/)
+	{
+		// Try and open template for read
+		if (!file_exists($this->template->files[$handle]))
+		{
+			trigger_error("template->_tpl_load_file(): File {$this->template->files[$handle]} does not exist or is empty", E_USER_ERROR);
+		}
+
+		// Actually compile the code now.
+		$this->compile_write($handle, $this->template->files[$handle]);
+
+	}
 
 	/**
 	* Write compiled file to cache directory
 	* @access private
 	*/
-	public function compile_write($handle, $data)
+	private function compile_write($handle, $source_file)
 	{
 		$filename = $this->template->cachepath . str_replace('/', '.', $this->template->filename[$handle]) . '.' . PHP_EXT;
 
-		if ($fp = @fopen($filename, 'wb'))
-		{
-			@flock($fp, LOCK_EX);
-			@fwrite($fp, $data);
-			@flock($fp, LOCK_UN);
-			@fclose($fp);
+		$source_handle = @fopen($source_file, 'rb');
+		$destination_handle = @fopen($filename, 'wb');
 
-			@chmod($filename, 0666);
+		if(!$source_handle || !$destination_handle)
+		{
+			return;
 		}
 
-		return;
+		stream_filter_append($destination_handle, 'template');
+
+		@flock($destination_handle, LOCK_EX);
+		@stream_copy_to_stream($source_handle, $destination_handle);
+		@flock($destination_handle, LOCK_UN);
+		@fclose($destination_handle);
+
+		@chmod($filename, 0666);
+
 	}
 }
 

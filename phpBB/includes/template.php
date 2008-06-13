@@ -37,9 +37,6 @@ class template
 	public $files = array();
 	public $filename = array();
 
-	// this will hash handle names to the compiled/uncompiled code for that handle.
-	public $compiled_code = array();
-
 	/**
 	* Set template location
 	* @access public
@@ -142,6 +139,8 @@ class template
 	public function display($handle, $include_once = true)
 	{
 		global $user, $phpbb_hook;
+		// $user _is_ used the included files.
+		$user;
 
 		if (!empty($phpbb_hook) && $phpbb_hook->call_hook(array(__CLASS__, __FUNCTION__), $handle, $include_once))
 		{
@@ -151,22 +150,17 @@ class template
 			}
 		}
 
-		if (defined('IN_ERROR_HANDLER'))
+/*		if (defined('IN_ERROR_HANDLER'))
 		{
 			if ((E_NOTICE & error_reporting()) == E_NOTICE)
 			{
 				//error_reporting(error_reporting() ^ E_NOTICE);
 			}
-		}
+		}*/
 
-		if ($filename = $this->_tpl_load($handle))
-		{
-			($include_once) ? include_once($filename) : include($filename);
-		}
-		else
-		{
-			eval(' ?>' . $this->compiled_code[$handle] . '<?php ');
-		}
+		$filename = $this->_tpl_load($handle);
+
+		($include_once) ? include_once($filename) : include($filename);
 
 		return true;
 	}
@@ -209,8 +203,6 @@ class template
 			return $filename;
 		}
 
-		global $db;
-
 		if (!class_exists('template_compile'))
 		{
 			include(PHPBB_ROOT_PATH . 'includes/functions_template.' . PHP_EXT);
@@ -228,70 +220,11 @@ class template
 		if (!$user)
 		{
 			$compile->_tpl_load_file($handle);
-			return false;
-		}
-
-		if (isset($user->theme['template_storedb']) && $user->theme['template_storedb'])
-		{
-			$sql = 'SELECT *
-				FROM ' . STYLES_TEMPLATE_DATA_TABLE . '
-				WHERE template_id = ' . $user->theme['template_id'] . "
-					AND (template_filename = '" . $db->sql_escape($this->filename[$handle]) . "'
-						OR template_included " . $db->sql_like_expression($db->any_char . $this->filename[$handle] . ':' . $db->any_char) . ')';
-			$result = $db->sql_query($sql);
-			$row = $db->sql_fetchrow($result);
-
-			if ($row)
-			{
-				do
-				{
-					if ($row['template_mtime'] < filemtime(PHPBB_ROOT_PATH . 'styles/' . $user->theme['template_path'] . '/template/' . $row['template_filename']))
-					{
-						if ($row['template_filename'] == $this->filename[$handle])
-						{
-							$compile->_tpl_load_file($handle);
-						}
-						else
-						{
-							$this->files[$row['template_filename']] = $this->root . '/' . $row['template_filename'];
-							$compile->_tpl_load_file($row['template_filename']);
-							unset($this->compiled_code[$row['template_filename']]);
-							unset($this->files[$row['template_filename']]);
-							unset($this->filename[$row['template_filename']]);
-						}
-					}
-
-					if ($row['template_filename'] == $this->filename[$handle])
-					{
-						$this->compiled_code[$handle] = $compile->compile(trim($row['template_data']));
-						$compile->compile_write($handle, $this->compiled_code[$handle]);
-					}
-					else
-					{
-						// Only bother compiling if it doesn't already exist
-						if (!file_exists($this->cachepath . str_replace('/', '.', $row['template_filename']) . '.' . PHP_EXT))
-						{
-							$this->filename[$row['template_filename']] = $row['template_filename'];
-							$compile->compile_write($row['template_filename'], $compile->compile(trim($row['template_data'])));
-							unset($this->filename[$row['template_filename']]);
-						}
-					}
-				}
-				while ($row = $db->sql_fetchrow($result));
-			}
-			else
-			{
-				// Try to load from filesystem and instruct to insert into the styles table...
-				$compile->_tpl_load_file($handle, true);
-				return false;
-			}
-			$db->sql_freeresult($result);
-
-			return false;
+			return $filename;
 		}
 
 		$compile->_tpl_load_file($handle);
-		return false;
+		return $filename;
 	}
 
 	/**
@@ -510,14 +443,16 @@ class template
 
 		if ($include)
 		{
+
 			global $user;
+			// $user _is_ used the included files.
+			$user;
 
 			if ($filename)
 			{
 				include($filename);
 				return;
 			}
-			eval(' ?>' . $this->compiled_code[$handle] . '<?php ');
 		}
 	}
 }
