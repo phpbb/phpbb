@@ -18,7 +18,7 @@ if (!defined('IN_PHPBB'))
 
 /**
  * The template filter that does the actual compilation
- * @see tempalte_compile
+ * @see template_compile
  *
  */
 class template_filter extends php_user_filter
@@ -692,6 +692,7 @@ class template_compile
 		@stream_copy_to_stream($source_handle, $destination_handle);
 		@flock($destination_handle, LOCK_UN);
 		@fclose($destination_handle);
+		@fclose($source_handle);
 
 		@chmod($filename, 0666);
 
