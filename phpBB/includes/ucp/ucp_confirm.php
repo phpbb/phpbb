@@ -72,7 +72,9 @@ class ucp_confirm
 		}
 
 		captcha::execute($row['code'], $row['seed']);
-		exit;
+
+		garbage_collection();
+		exit_handler();
 	}
 }
 

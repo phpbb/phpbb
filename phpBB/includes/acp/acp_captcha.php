@@ -28,7 +28,7 @@ class acp_captcha
 
 		$user->add_lang('acp/board');
 
-		
+
 		$captcha_vars = array(
 			'captcha_gd_x_grid'				=> 'CAPTCHA_GD_X_GRID',
 			'captcha_gd_y_grid'				=> 'CAPTCHA_GD_Y_GRID',
@@ -52,9 +52,8 @@ class acp_captcha
 			{
 				include(PHPBB_ROOT_PATH . 'includes/captcha/captcha_non_gd.' . PHP_EXT);
 			}
-
 			captcha::execute(gen_rand_string(mt_rand(5, 8)), time());
-			exit();
+			exit;
 		}
 
 		$config_vars = array(
@@ -90,7 +89,7 @@ class acp_captcha
 		}
 		else
 		{
-			
+
 			$preview_image_src = append_sid(append_sid(PHPBB_ADMIN_PATH . 'index.' . PHP_EXT, "i=$id&amp;demo=demo"));
 			if (@extension_loaded('gd'))
 			{
@@ -110,7 +109,7 @@ class acp_captcha
 				'CAPTCHA_PREVIEW'	=> $preview_image_src,
 				'PREVIEW'			=> isset($_POST['preview']),
 			));
-			
+
 		}
 	}
 }
