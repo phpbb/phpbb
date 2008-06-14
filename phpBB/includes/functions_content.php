@@ -438,6 +438,7 @@ function generate_text_for_storage(&$text, &$uid, &$bitfield, &$flags, $allow_bb
 	global $phpbb_root_path, $phpEx;
 
 	$uid = $bitfield = '';
+	$flags = (($allow_bbcode) ? OPTION_FLAG_BBCODE : 0) + (($allow_smilies) ? OPTION_FLAG_SMILIES : 0) + (($allow_urls) ? OPTION_FLAG_LINKS : 0);
 
 	if (!$text)
 	{
@@ -461,7 +462,6 @@ function generate_text_for_storage(&$text, &$uid, &$bitfield, &$flags, $allow_bb
 		$uid = '';
 	}
 
-	$flags = (($allow_bbcode) ? OPTION_FLAG_BBCODE : 0) + (($allow_smilies) ? OPTION_FLAG_SMILIES : 0) + (($allow_urls) ? OPTION_FLAG_LINKS : 0);
 	$bitfield = $message_parser->bbcode_bitfield;
 
 	return;
@@ -568,7 +568,7 @@ function make_clickable_callback($type, $whitespace, $url, $relative_url, $class
 			$relative_url	= preg_replace('/[&?]sid=[0-9a-f]{32}$/', '', preg_replace('/([&?])sid=[0-9a-f]{32}&/', '$1', $relative_url));
 			$url			= $url . '/' . $relative_url;
 			$text			= $relative_url;
-			
+
 			// this url goes to http://domain.tld/path/to/board/ which
 			// would result in an empty link if treated as local so
 			// don't touch it and let MAGIC_URL_FULL take care of it.
