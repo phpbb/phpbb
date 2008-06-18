@@ -22,9 +22,9 @@ if (!defined('PHP_EXT')) define('PHP_EXT', substr(strrchr(__FILE__, '.'), 1));
 error_reporting(E_ALL ^ E_NOTICE);
 
 // @todo Review this test and see if we can find out what it is which prevents PHP 4.2.x from even displaying the page with requirements on it
-if (version_compare(PHP_VERSION, '5.1.0') < 0)
+if (version_compare(PHP_VERSION, '5.2.0') < 0)
 {
-	die('You are running an unsupported PHP version. Please upgrade to PHP 5.1.0 or higher before trying to install phpBB 3.0');
+	die('You are running an unsupported PHP version. Please upgrade to PHP 5.2.0 or higher before trying to install phpBB 3.0');
 }
 
 /*
