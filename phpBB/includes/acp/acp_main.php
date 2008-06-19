@@ -63,7 +63,7 @@ class acp_main
 			if ($action === 'admlogout')
 			{
 				$user->unset_admin();
-				$redirect_url = append_sid("{$phpbb_root_path}index.$phpEx");
+				$redirect_url = append_sid(PHPBB_ROOT_PATH . 'index.' . PHP_EXT);
 				meta_refresh(3, $redirect_url);
 				trigger_error($user->lang['ADM_LOGGED_OUT'] . '<br /><br />' . sprintf($user->lang['RETURN_INDEX'], '<a href="' . $redirect_url . '">', '</a>'));
 			}
