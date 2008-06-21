@@ -1770,7 +1770,12 @@ function change_database_data(&$no_updates, $version)
 			$no_updates = false;
 		break;
 
+		// No changes from 3.0.1-RC1 to 3.0.1
 		case '3.0.1-RC1':
+		break;
+
+		// changes from 3.0.1 to 3.0.2-RC1
+		case '3.0.1':
 
 			set_config('referer_validation', '1');
 			set_config('check_attachment_content', '1');
@@ -1779,6 +1784,9 @@ function change_database_data(&$no_updates, $version)
 			$no_updates = false;
 		break;
 
+		// uncomment once RC1 out - no changes from 3.0.2-RC1 to 3.0.2
+//		case '3.0.2-RC1':
+//		break;
 	}
 }
 
