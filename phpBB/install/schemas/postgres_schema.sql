@@ -304,7 +304,7 @@ CREATE TABLE phpbb_drafts (
 	topic_id INT4 DEFAULT '0' NOT NULL CHECK (topic_id >= 0),
 	forum_id INT4 DEFAULT '0' NOT NULL CHECK (forum_id >= 0),
 	save_time INT4 DEFAULT '0' NOT NULL CHECK (save_time >= 0),
-	draft_subject varchar(100) DEFAULT '' NOT NULL,
+	draft_subject varchar(255) DEFAULT '' NOT NULL,
 	draft_message TEXT DEFAULT '' NOT NULL,
 	PRIMARY KEY (draft_id)
 );
@@ -376,7 +376,7 @@ CREATE TABLE phpbb_forums (
 	forum_topics_real INT4 DEFAULT '0' NOT NULL CHECK (forum_topics_real >= 0),
 	forum_last_post_id INT4 DEFAULT '0' NOT NULL CHECK (forum_last_post_id >= 0),
 	forum_last_poster_id INT4 DEFAULT '0' NOT NULL CHECK (forum_last_poster_id >= 0),
-	forum_last_post_subject varchar(100) DEFAULT '' NOT NULL,
+	forum_last_post_subject varchar(255) DEFAULT '' NOT NULL,
 	forum_last_post_time INT4 DEFAULT '0' NOT NULL CHECK (forum_last_post_time >= 0),
 	forum_last_poster_name varchar(255) DEFAULT '' NOT NULL,
 	forum_last_poster_colour varchar(6) DEFAULT '' NOT NULL,
@@ -606,7 +606,7 @@ CREATE TABLE phpbb_posts (
 	enable_magic_url INT2 DEFAULT '1' NOT NULL CHECK (enable_magic_url >= 0),
 	enable_sig INT2 DEFAULT '1' NOT NULL CHECK (enable_sig >= 0),
 	post_username varchar(255) DEFAULT '' NOT NULL,
-	post_subject varchar(100) DEFAULT '' NOT NULL,
+	post_subject varchar(255) DEFAULT '' NOT NULL,
 	post_text TEXT DEFAULT '' NOT NULL,
 	post_checksum varchar(32) DEFAULT '' NOT NULL,
 	post_attachment INT2 DEFAULT '0' NOT NULL CHECK (post_attachment >= 0),
@@ -644,7 +644,7 @@ CREATE TABLE phpbb_privmsgs (
 	enable_smilies INT2 DEFAULT '1' NOT NULL CHECK (enable_smilies >= 0),
 	enable_magic_url INT2 DEFAULT '1' NOT NULL CHECK (enable_magic_url >= 0),
 	enable_sig INT2 DEFAULT '1' NOT NULL CHECK (enable_sig >= 0),
-	message_subject varchar(100) DEFAULT '' NOT NULL,
+	message_subject varchar(255) DEFAULT '' NOT NULL,
 	message_text TEXT DEFAULT '' NOT NULL,
 	message_edit_reason varchar(255) DEFAULT '' NOT NULL,
 	message_edit_user INT4 DEFAULT '0' NOT NULL CHECK (message_edit_user >= 0),
@@ -891,7 +891,7 @@ CREATE TABLE phpbb_sessions (
 
 CREATE INDEX phpbb_sessions_session_time ON phpbb_sessions (session_time);
 CREATE INDEX phpbb_sessions_session_user_id ON phpbb_sessions (session_user_id);
-CREATE INDEX phpbb_sessions_session_forum_id ON phpbb_sessions (session_forum_id);
+CREATE INDEX phpbb_sessions_session_fid ON phpbb_sessions (session_forum_id);
 
 /*
 	Table: 'phpbb_sessions_keys'
@@ -1054,7 +1054,7 @@ CREATE TABLE phpbb_topics (
 	topic_attachment INT2 DEFAULT '0' NOT NULL CHECK (topic_attachment >= 0),
 	topic_approved INT2 DEFAULT '1' NOT NULL CHECK (topic_approved >= 0),
 	topic_reported INT2 DEFAULT '0' NOT NULL CHECK (topic_reported >= 0),
-	topic_title varchar(100) DEFAULT '' NOT NULL,
+	topic_title varchar(255) DEFAULT '' NOT NULL,
 	topic_poster INT4 DEFAULT '0' NOT NULL CHECK (topic_poster >= 0),
 	topic_time INT4 DEFAULT '0' NOT NULL CHECK (topic_time >= 0),
 	topic_time_limit INT4 DEFAULT '0' NOT NULL CHECK (topic_time_limit >= 0),
@@ -1070,7 +1070,7 @@ CREATE TABLE phpbb_topics (
 	topic_last_poster_id INT4 DEFAULT '0' NOT NULL CHECK (topic_last_poster_id >= 0),
 	topic_last_poster_name varchar(255) DEFAULT '' NOT NULL,
 	topic_last_poster_colour varchar(6) DEFAULT '' NOT NULL,
-	topic_last_post_subject varchar(100) DEFAULT '' NOT NULL,
+	topic_last_post_subject varchar(255) DEFAULT '' NOT NULL,
 	topic_last_post_time INT4 DEFAULT '0' NOT NULL CHECK (topic_last_post_time >= 0),
 	topic_last_view_time INT4 DEFAULT '0' NOT NULL CHECK (topic_last_view_time >= 0),
 	topic_moved_id INT4 DEFAULT '0' NOT NULL CHECK (topic_moved_id >= 0),

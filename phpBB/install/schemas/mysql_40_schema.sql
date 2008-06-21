@@ -674,7 +674,7 @@ CREATE TABLE phpbb_sessions (
 	PRIMARY KEY (session_id),
 	KEY session_time (session_time),
 	KEY session_user_id (session_user_id),
-	KEY session_forum_id (session_forum_id)
+	KEY session_fid (session_forum_id)
 );
 
 

@@ -8,7 +8,7 @@
 *
 */
 
-$updates_to_version = '3.0.2-RC1';
+$updates_to_version = '3.0.2-RC2';
 
 // Return if we "just include it" to find out for which version the database update is responsible for
 if (defined('IN_PHPBB') && defined('IN_INSTALL'))
@@ -500,8 +500,37 @@ $database_update_info = array(
 	'3.0.1-RC1'		=> array(),
 	// No changes from 3.0.1 to 3.0.2-RC1
 	'3.0.1'			=> array(),
-// uncomment once RC1 out - no changes from 3.0.2-RC1 to 3.0.2
-//	'3.0.2-RC1'		=> array(),
+	// Changes from 3.0.2-RC1 to 3.0.2-RC2
+	'3.0.2-RC1'		=> array(
+		'change_columns'	=> array(
+			DRAFTS_TABLE			=> array(
+				'draft_subject'		=> array('STEXT_UNI', ''),
+			),
+			FORUMS_TABLE	=> array(
+				'forum_last_post_subject' => array('STEXT_UNI', ''),
+			),
+			POSTS_TABLE		=> array(
+				'post_subject'			=> array('STEXT_UNI', '', 'true_sort'),
+			),
+			PRIVMSGS_TABLE	=> array(
+				'message_subject'		=> array('STEXT_UNI', ''),
+			),
+			TOPICS_TABLE	=> array(
+				'topic_title'				=> array('STEXT_UNI', '', 'true_sort'),
+				'topic_last_post_subject'	=> array('STEXT_UNI', ''),
+			),
+		),
+		'drop_keys'		=> array(
+			SESSIONS_TABLE			=> array('session_forum_id'),
+		),
+		'add_index'		=> array(
+			SESSIONS_TABLE			=> array(
+				'session_fid'		=> array('session_forum_id'),
+			),
+		),
+	),
+	// uncomment once RC2 out - no changes from 3.0.2-RC2 to 3.0.2
+//	'3.0.2-RC2'		=> array(),
 );
 
 // Determine mapping database type
@@ -1784,8 +1813,12 @@ function change_database_data(&$no_updates, $version)
 			$no_updates = false;
 		break;
 
-		// uncomment once RC1 out - no changes from 3.0.2-RC1 to 3.0.2
-//		case '3.0.2-RC1':
+		// No changes from 3.0.2-RC1 to 3.0.2-RC2
+		case '3.0.2-RC1':
+		break;
+
+		// uncomment once RC2 out - no changes from 3.0.2-RC2 to 3.0.2
+//		case '3.0.2-RC2':
 //		break;
 	}
 }

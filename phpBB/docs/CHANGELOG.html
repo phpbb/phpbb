@@ -90,39 +90,42 @@
 		<li>[Fix] Made the compress_tar class tolerate archives that do not properly have their archived contents listed (Bug #14429 / thanks to JRSweets for his patch)</li>
 		<li>[Fix] Moved topics should not count towards the number of topics in a forum (Bug #14648 / thanks to Schumi for his patch)</li>
 		<li>[Fix] Properly check for invalid characters in MySQL DB prefixes during install (Bug #18775)</li>
-		<li>[Change] Generalize load check (Bug #21255 / thanks to Xipher)</li>
-		<li>[Change] Make utf8_htmlspecialchars not pass its argument by reference (Bug #21885)</li>
 		<li>[Fix] Bring the PostgreSQL backup system back to working order (Bug #22385)</li>
-		<li>[Change] Sort the tables at the database table backup screen</li>
 		<li>[Fix] Update correct theme for cached styles in style.php (Bug #25805)</li>
 		<li>[Fix] Also add PHPBB_INSTALLED check to download/file.php for inline avatar delivery</li>
 		<li>[Fix] Unable to login to some jabber server, reverted previous change (Bug #25095)</li>
 		<li>[Fix] Do not return BMP as valid image type for GD image manipulation (Bug #25925)</li>
-		<li>[Change] For determining the maximum number of private messages in one box, use the biggest value from all groups the user is a member of (Bug #24665)</li>
 		<li>[Fix] Correctly determine safe mode for temp file creation in functions_upload.php (Bug #23525)</li>
 		<li>[Fix] Correctly sort by rank in memberlist (Bug #24435)</li>
 		<li>[Fix] Purge cache after database restore (Bug #24245)</li>
 		<li>[Fix] Correctly display subforum read/unread icons from RTL in FF3, Konqueror and Safari3+. (thanks arod-1 for the fix, related to Bug #14830)</li>
-		<li>[Feature] Added optional referer validation of POST requests as additional CSRF protection.</li>
 		<li>[Fix] Added missing form token in acp (thanks NBBN).</li>
-		<li>[Feature] Added optional stricter upload validation to avoid mime sniffing in addition to the safeguards provided by file.php. (thanks to Nicolas Grekas for compiling the list).</li>
 		<li>[Fix] Do not remove whitespace in front of url containing the boards url and no relative path appended (Bug #27355)</li>
-		<li>[Change] Show email ban reason on registration. Additionally allow custom errors properly returned if using validate_data(). (Bug #26885)</li>
-		<li>[Feature] Streamlined banning via the MCP by adding a ban link to the user profile. Also pre-fills ban fields as far as possible.</li>
-		<li>[Feature] Added ACP logout to reset an admin session.</li>
 		<li>[Fix] reset forum notifications in viewtopic (Bug #28025)</li>
 		<li>[Fix] corrected link for searching post author's other posts (Bug #26455)</li>
 		<li>[Fix] HTTP Authentication supports UTF-8 usernames now (Bug #21135)</li>
 		<li>[Fix] Topic searches by author no longer return invalid results (Bug #11777)</li>
-		<li>[Change] Don't allow redirects to different domains. (thanks nookieman)</li>
 		<li>[Fix] Delete drafts and bookmarks when deleting an user. (#27585, thanks Schumi for the fix)</li>
 		<li>[Fix] Set last_post_subject for new topics. (#23945)</li>
 		<li>[Fix] Allow moving posts to invisible forums. (#27325)</li>
 		<li>[Fix] Don't allow promoting unapproved group members (#16124)</li>
 		<li>[Fix] Correctly fetch server name if using non-standard port (#27395)</li>
 		<li>[Fix] Regular expression for email matching in posts will no longer die on long words.</li>
-		<li>[Sec] Only allow urls gone through redirect() being used within login_box(). (thanks nookieman)</li>
 		<li>[Fix] Do not display ban message if direct call to cron. (thanks Dog Cow for reporting)</li>
+		<li>[Fix] Correctly display double-colon on special conditions within highlighted php source (Bug #26795)</li>
+		<li>[Fix] Increase storage capacity of titles/subjects due to specialchared content (Bug #25235)</li>
+		<li>[Change] Adjust truncate_string() to be able to adjust the maximum storage length.</li>
+		<li>[Change] Generalize load check (Bug #21255 / thanks to Xipher)</li>
+		<li>[Change] Make utf8_htmlspecialchars not pass its argument by reference (Bug #21885)</li>
+		<li>[Change] Sort the tables at the database table backup screen</li>
+		<li>[Change] For determining the maximum number of private messages in one box, use the biggest value from all groups the user is a member of (Bug #24665)</li>
+		<li>[Change] Show email ban reason on registration. Additionally allow custom errors properly returned if using validate_data(). (Bug #26885)</li>
+		<li>[Change] Don't allow redirects to different domains. (thanks nookieman)</li>
+		<li>[Feature] Added optional referer validation of POST requests as additional CSRF protection.</li>
+		<li>[Feature] Added optional stricter upload validation to avoid mime sniffing in addition to the safeguards provided by file.php. (thanks to Nicolas Grekas for compiling the list).</li>
+		<li>[Feature] Streamlined banning via the MCP by adding a ban link to the user profile. Also pre-fills ban fields as far as possible.</li>
+		<li>[Feature] Added ACP logout to reset an admin session.</li>
+		<li>[Sec] Only allow urls gone through redirect() being used within login_box(). (thanks nookieman)</li>
 	</ul>
 
 	<a name="v300"></a><h3>1.ii. Changes since 3.0.0</h3>

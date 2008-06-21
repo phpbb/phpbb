@@ -382,7 +382,7 @@ CREATE TABLE phpbb_drafts (
 	topic_id number(8) DEFAULT '0' NOT NULL,
 	forum_id number(8) DEFAULT '0' NOT NULL,
 	save_time number(11) DEFAULT '0' NOT NULL,
-	draft_subject varchar2(300) DEFAULT '' ,
+	draft_subject varchar2(765) DEFAULT '' ,
 	draft_message clob DEFAULT '' ,
 	CONSTRAINT pk_phpbb_drafts PRIMARY KEY (draft_id)
 )
@@ -500,7 +500,7 @@ CREATE TABLE phpbb_forums (
 	forum_topics_real number(8) DEFAULT '0' NOT NULL,
 	forum_last_post_id number(8) DEFAULT '0' NOT NULL,
 	forum_last_poster_id number(8) DEFAULT '0' NOT NULL,
-	forum_last_post_subject varchar2(300) DEFAULT '' ,
+	forum_last_post_subject varchar2(765) DEFAULT '' ,
 	forum_last_post_time number(11) DEFAULT '0' NOT NULL,
 	forum_last_poster_name varchar2(765) DEFAULT '' ,
 	forum_last_poster_colour varchar2(6) DEFAULT '' ,
@@ -849,7 +849,7 @@ CREATE TABLE phpbb_posts (
 	enable_magic_url number(1) DEFAULT '1' NOT NULL,
 	enable_sig number(1) DEFAULT '1' NOT NULL,
 	post_username varchar2(765) DEFAULT '' ,
-	post_subject varchar2(300) DEFAULT '' ,
+	post_subject varchar2(765) DEFAULT '' ,
 	post_text clob DEFAULT '' ,
 	post_checksum varchar2(32) DEFAULT '' ,
 	post_attachment number(1) DEFAULT '0' NOT NULL,
@@ -908,7 +908,7 @@ CREATE TABLE phpbb_privmsgs (
 	enable_smilies number(1) DEFAULT '1' NOT NULL,
 	enable_magic_url number(1) DEFAULT '1' NOT NULL,
 	enable_sig number(1) DEFAULT '1' NOT NULL,
-	message_subject varchar2(300) DEFAULT '' ,
+	message_subject varchar2(765) DEFAULT '' ,
 	message_text clob DEFAULT '' ,
 	message_edit_reason varchar2(765) DEFAULT '' ,
 	message_edit_user number(8) DEFAULT '0' NOT NULL,
@@ -1300,7 +1300,7 @@ CREATE INDEX phpbb_sessions_session_time ON phpbb_sessions (session_time)
 /
 CREATE INDEX phpbb_sessions_session_user_id ON phpbb_sessions (session_user_id)
 /
-CREATE INDEX phpbb_sessions_session_forum_id ON phpbb_sessions (session_forum_id)
+CREATE INDEX phpbb_sessions_session_fid ON phpbb_sessions (session_forum_id)
 /
 
 /*
@@ -1577,7 +1577,7 @@ CREATE TABLE phpbb_topics (
 	topic_attachment number(1) DEFAULT '0' NOT NULL,
 	topic_approved number(1) DEFAULT '1' NOT NULL,
 	topic_reported number(1) DEFAULT '0' NOT NULL,
-	topic_title varchar2(300) DEFAULT '' ,
+	topic_title varchar2(765) DEFAULT '' ,
 	topic_poster number(8) DEFAULT '0' NOT NULL,
 	topic_time number(11) DEFAULT '0' NOT NULL,
 	topic_time_limit number(11) DEFAULT '0' NOT NULL,
@@ -1593,7 +1593,7 @@ CREATE TABLE phpbb_topics (
 	topic_last_poster_id number(8) DEFAULT '0' NOT NULL,
 	topic_last_poster_name varchar2(765) DEFAULT '' ,
 	topic_last_poster_colour varchar2(6) DEFAULT '' ,
-	topic_last_post_subject varchar2(300) DEFAULT '' ,
+	topic_last_post_subject varchar2(765) DEFAULT '' ,
 	topic_last_post_time number(11) DEFAULT '0' NOT NULL,
 	topic_last_view_time number(11) DEFAULT '0' NOT NULL,
 	topic_moved_id number(8) DEFAULT '0' NOT NULL,
