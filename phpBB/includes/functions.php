@@ -822,7 +822,7 @@ function tz_select($default = '', $truncate = false)
 	{
 		if ($truncate)
 		{
-			$zone_trunc = truncate_string($zone, 50, false, '...');
+			$zone_trunc = truncate_string($zone, 50, 255, false, '...');
 		}
 		else
 		{
