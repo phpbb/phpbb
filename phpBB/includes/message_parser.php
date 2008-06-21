@@ -400,7 +400,10 @@ class bbcode_firstpass extends bbcode
 			case 'php':
 
 				$remove_tags = false;
-				$code = str_replace(array('&lt;', '&gt;'), array('<', '>'), $code);
+
+				$str_from = array('&lt;', '&gt;', '&#91;', '&#93;', '&#46;', '&#58;', '&#058;');
+				$str_to = array('<', '>', '[', ']', '.', ':', ':');
+				$code = str_replace($str_from, $str_to, $code);
 
 				if (!preg_match('/\<\?.*?\?\>/is', $code))
 				{
