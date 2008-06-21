@@ -734,70 +734,65 @@ function user_ban($mode, $ban, $ban_len, $ban_len_other, $ban_exclude, $ban_reas
 		case 'user':
 			$type = 'ban_userid';
 
-			if (in_array('*', $ban_list))
+			// At the moment we do not support wildcard username banning
+
+			// Select the relevant user_ids.
+			$sql_usernames = array();
+
+			foreach ($ban_list as $username)
 			{
-				// Ban all users (it's a good thing that you can exclude people)
-				$banlist_ary[] = '*';
+				$username = trim($username);
+				if ($username != '')
+				{
+					$clean_name = utf8_clean_string($username);
+					if ($clean_name == $user->data['username_clean'])
+					{
+						trigger_error('CANNOT_BAN_YOURSELF', E_USER_WARNING);
+					}
+					if (in_array($clean_name, $founder_names))
+					{
+						trigger_error('CANNOT_BAN_FOUNDER', E_USER_WARNING);
+					}
+					$sql_usernames[] = $clean_name;
+				}
+			}
+
+			// Make sure we have been given someone to ban
+			if (!sizeof($sql_usernames))
+			{
+				trigger_error('NO_USER_SPECIFIED');
+			}
+
+			$sql = 'SELECT user_id
+				FROM ' . USERS_TABLE . '
+				WHERE ' . $db->sql_in_set('username_clean', $sql_usernames);
+
+			// Do not allow banning yourself
+			if (sizeof($founder))
+			{
+				$sql .= ' AND ' . $db->sql_in_set('user_id', array_merge(array_keys($founder), array($user->data['user_id'])), true);
 			}
 			else
 			{
-				// Select the relevant user_ids.
-				$sql_usernames = array();
-
-				foreach ($ban_list as $username)
-				{
-					$username = trim($username);
-					if ($username != '')
-					{
-						$clean_name = utf8_clean_string($username);
-						if ($clean_name == $user->data['username_clean'])
-						{
-							trigger_error('CANNOT_BAN_YOURSELF', E_USER_WARNING);
-						}
-						if (in_array($clean_name, $founder_names))
-						{
-							trigger_error('CANNOT_BAN_FOUNDER', E_USER_WARNING);
-						}
-						$sql_usernames[] = $clean_name;
-					}
-				}
-
-				// Make sure we have been given someone to ban
-				if (!sizeof($sql_usernames))
-				{
-					trigger_error('NO_USER_SPECIFIED');
-				}
-
-				$sql = 'SELECT user_id
-					FROM ' . USERS_TABLE . '
-					WHERE ' . $db->sql_in_set('username_clean', $sql_usernames);
-
-				// Do not allow banning yourself
-				if (sizeof($founder))
-				{
-					$sql .= ' AND ' . $db->sql_in_set('user_id', array_merge(array_keys($founder), array($user->data['user_id'])), true);
-				}
-				else
-				{
-					$sql .= ' AND user_id <> ' . $user->data['user_id'];
-				}
-
-				$result = $db->sql_query($sql);
-
-				if ($row = $db->sql_fetchrow($result))
-				{
-					do
-					{
-						$banlist_ary[] = (int) $row['user_id'];
-					}
-					while ($row = $db->sql_fetchrow($result));
-				}
-				else
-				{
-					trigger_error('NO_USERS');
-				}
-				$db->sql_freeresult($result);
+				$sql .= ' AND user_id <> ' . $user->data['user_id'];
 			}
+
+			$result = $db->sql_query($sql);
+
+			if ($row = $db->sql_fetchrow($result))
+			{
+				do
+				{
+					$banlist_ary[] = (int) $row['user_id'];
+				}
+				while ($row = $db->sql_fetchrow($result));
+			}
+			else
+			{
+				$db->sql_freeresult($result);
+				trigger_error('NO_USERS');
+			}
+			$db->sql_freeresult($result);
 		break;
 
 		case 'ip':
@@ -997,7 +992,7 @@ function user_ban($mode, $ban, $ban_len, $ban_len_other, $ban_exclude, $ban_reas
 			switch ($mode)
 			{
 				case 'user':
-					$sql_where = (in_array('*', $banlist_ary)) ? '' : 'WHERE ' . $db->sql_in_set('session_user_id', $banlist_ary);
+					$sql_where = 'WHERE ' . $db->sql_in_set('session_user_id', $banlist_ary);
 				break;
 
 				case 'ip':
@@ -2923,7 +2918,7 @@ function group_user_attributes($action, $group_id, $user_id_ary = false, $userna
 	{
 		case 'demote':
 		case 'promote':
-		
+
 			$sql = 'SELECT user_id FROM ' . USER_GROUP_TABLE . "
 				WHERE group_id = $group_id
 					AND user_pending = 1
@@ -2935,7 +2930,7 @@ function group_user_attributes($action, $group_id, $user_id_ary = false, $userna
 			{
 				return 'NO_VALID_USERS';
 			}
-			
+
 			$sql = 'UPDATE ' . USER_GROUP_TABLE . '
 				SET group_leader = ' . (($action == 'promote') ? 1 : 0) . "
 				WHERE group_id = $group_id
