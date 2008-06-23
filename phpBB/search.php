@@ -88,7 +88,7 @@ if ($keywords || $author || $author_id || $search_id || $submit)
 	if ($search_id == 'egosearch')
 	{
 		$author_id = $user->data['user_id'];
-		
+
 		if ($user->data['user_id'] == ANONYMOUS)
 		{
 			login_box('', $user->lang['LOGIN_EXPLAIN_EGOSEARCH']);
@@ -466,6 +466,9 @@ if ($keywords || $author || $author_id || $search_id || $submit)
 
 	// define some vars for urls
 	$hilit = implode('|', explode(' ', preg_replace('#\s+#u', ' ', str_replace(array('+', '-', '|', '(', ')', '&quot;'), ' ', $keywords))));
+	// Do not allow *only* wildcard being used for hilight
+	$hilit = (strspn($hilit, '*') === strlen($hilit)) ? '' : $hilit;
+
 	$u_hilit = urlencode(htmlspecialchars_decode(str_replace('|', ' ', $hilit)));
 	$u_show_results = ($show_results != 'posts') ? '&amp;sr=' . $show_results : '';
 	$u_search_forum = implode('&amp;fid%5B%5D=', $search_forum);
@@ -600,18 +603,18 @@ if ($keywords || $author || $author_id || $search_id || $submit)
 					FROM ' . TOPICS_TABLE . '
 					WHERE ' . $db->sql_in_set('topic_id', array_keys($shadow_topic_list));
 				$result = $db->sql_query($sql);
-			
+
 				while ($row = $db->sql_fetchrow($result))
 				{
 					$orig_topic_id = $shadow_topic_list[$row['topic_id']];
-			
+
 					// We want to retain some values
 					$row = array_merge($row, array(
 						'topic_moved_id'	=> $rowset[$orig_topic_id]['topic_moved_id'],
 						'topic_status'		=> $rowset[$orig_topic_id]['topic_status'],
 						'forum_name'		=> $rowset[$orig_topic_id]['forum_name'])
 					);
-			
+
 					$rowset[$orig_topic_id] = $row;
 				}
 				$db->sql_freeresult($result);
@@ -627,7 +630,7 @@ if ($keywords || $author || $author_id || $search_id || $submit)
 				else if ($config['load_anon_lastread'] || $user->data['is_registered'])
 				{
 					$topic_tracking_info[$forum_id] = get_complete_topic_tracking($forum_id, $forum['topic_list'], ($forum_id) ? false : $forum['topic_list']);
-		
+
 					if (!$user->data['is_registered'])
 					{
 						$user->data['user_lastmark'] = (isset($tracking_topics['l'])) ? (int) (base_convert($tracking_topics['l'], 36, 10) + $config['board_startdate']) : 0;
@@ -708,7 +711,7 @@ if ($keywords || $author || $author_id || $search_id || $submit)
 						AND in_message = 0
 					ORDER BY filetime DESC, post_msg_id ASC';
 				$result = $db->sql_query($sql);
-		
+
 				while ($row = $db->sql_fetchrow($result))
 				{
 					$attachments[$row['post_msg_id']][] = $row;
@@ -742,12 +745,12 @@ if ($keywords || $author || $author_id || $search_id || $submit)
 				{
 					// Get a list of forums the user cannot read
 					$forum_ary = array_unique(array_keys($auth->acl_getf('!f_read', true)));
-	
+
 					// Determine first forum the user is able to read (must not be a category)
 					$sql = 'SELECT forum_id
 						FROM ' . FORUMS_TABLE . '
 						WHERE forum_type = ' . FORUM_POST;
-		
+
 					if (sizeof($forum_ary))
 					{
 						$sql .= ' AND ' . $db->sql_in_set('forum_id', $forum_ary, true);
@@ -856,7 +859,7 @@ if ($keywords || $author || $author_id || $search_id || $submit)
 					if (!empty($attachments[$row['post_id']]))
 					{
 						parse_attachments($forum_id, $row['post_text'], $attachments[$row['post_id']], $update_count);
-				
+
 						// we only display inline attachments
 						unset($attachments[$row['post_id']]);
 					}
@@ -874,7 +877,7 @@ if ($keywords || $author || $author_id || $search_id || $submit)
 					'POST_AUTHOR_COLOUR'	=> get_username_string('colour', $row['poster_id'], $row['username'], $row['user_colour'], $row['post_username']),
 					'POST_AUTHOR'			=> get_username_string('username', $row['poster_id'], $row['username'], $row['user_colour'], $row['post_username']),
 					'U_POST_AUTHOR'			=> get_username_string('profile', $row['poster_id'], $row['username'], $row['user_colour'], $row['post_username']),
-				
+
 					'POST_SUBJECT'		=> $row['post_subject'],
 					'POST_DATE'			=> (!empty($row['post_time'])) ? $user->format_date($row['post_time']) : '',
 					'MESSAGE'			=> $row['post_text']

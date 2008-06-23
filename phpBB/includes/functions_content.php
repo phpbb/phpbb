@@ -435,6 +435,7 @@ function generate_text_for_display($text, $uid, $bitfield, $flags)
 function generate_text_for_storage(&$text, &$uid, &$bitfield, &$flags, $allow_bbcode = false, $allow_urls = false, $allow_smilies = false)
 {
 	$uid = $bitfield = '';
+	$flags = (($allow_bbcode) ? OPTION_FLAG_BBCODE : 0) + (($allow_smilies) ? OPTION_FLAG_SMILIES : 0) + (($allow_urls) ? OPTION_FLAG_LINKS : 0);
 
 	if (!$text)
 	{
@@ -458,7 +459,6 @@ function generate_text_for_storage(&$text, &$uid, &$bitfield, &$flags, $allow_bb
 		$uid = '';
 	}
 
-	$flags = (($allow_bbcode) ? OPTION_FLAG_BBCODE : 0) + (($allow_smilies) ? OPTION_FLAG_SMILIES : 0) + (($allow_urls) ? OPTION_FLAG_LINKS : 0);
 	$bitfield = $message_parser->bbcode_bitfield;
 
 	return;
@@ -563,7 +563,7 @@ function make_clickable_callback($type, $whitespace, $url, $relative_url, $class
 			$relative_url	= preg_replace('/[&?]sid=[0-9a-f]{32}$/', '', preg_replace('/([&?])sid=[0-9a-f]{32}&/', '$1', $relative_url));
 			$url			= $url . '/' . $relative_url;
 			$text			= $relative_url;
-			
+
 			// this url goes to http://domain.tld/path/to/board/ which
 			// would result in an empty link if treated as local so
 			// don't touch it and let MAGIC_URL_FULL take care of it.
@@ -1062,8 +1062,16 @@ function extension_allowed($forum_id, $extension, &$extensions)
 /**
 * Truncates string while retaining special characters if going over the max length
 * The default max length is 60 at the moment
+* The maximum storage length is there to fit the string within the given length. The string may be further truncated due to html entities.
+* For example: string given is 'a "quote"' (length: 9), would be a stored as 'a &quot;quote&quot;' (length: 19)
+*
+* @param string $string The text to truncate to the given length. String is specialchared.
+* @param int $max_length Maximum length of string (multibyte character count as 1 char / Html entity count as 1 char)
+* @param int $max_store_length Maximum character length of string (multibyte character count as 1 char / Html entity count as entity chars).
+* @param bool $allow_reply Allow Re: in front of string
+* @param string $append String to be appended
 */
-function truncate_string($string, $max_length = 60, $allow_reply = true, $append = '')
+function truncate_string($string, $max_length = 60, $max_store_length = 255, $allow_reply = true, $append = '')
 {
 	$chars = array();
 
@@ -1084,6 +1092,21 @@ function truncate_string($string, $max_length = 60, $allow_reply = true, $append
 		// Cut off the last elements from the array
 		$string = implode('', array_slice($chars, 0, $max_length - utf8_strlen($append)));
 		$stripped = true;
+	}
+
+	// Due to specialchars, we may not be able to store the string...
+	if (utf8_strlen($string) > $max_store_length)
+	{
+		// let's split again, we do not want half-baked strings where entities are split
+		$_chars = utf8_str_split(htmlspecialchars_decode($string));
+		$chars = array_map('utf8_htmlspecialchars', $_chars);
+
+		do
+		{
+			array_pop($chars);
+			$string = implode('', $chars);
+		}
+		while (utf8_strlen($string) > $max_store_length || !sizeof($chars));
 	}
 
 	if ($strip_reply)

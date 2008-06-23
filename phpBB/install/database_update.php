@@ -8,7 +8,7 @@
 *
 */
 
-$updates_to_version = '3.1.0';
+$updates_to_version = '3.0.2-RC2';
 
 // Return if we "just include it" to find out for which version the database update is responsuble for
 if (defined('IN_PHPBB') && defined('IN_INSTALL'))
@@ -699,7 +699,7 @@ $cache->purge();
 		</div>
 		</div>
 	</div>
-	
+
 	<div id="page-footer">
 		Powered by phpBB &copy; 2000, 2002, 2005, 2007 <a href="http://www.phpbb.com/">phpBB Group</a>
 	</div>

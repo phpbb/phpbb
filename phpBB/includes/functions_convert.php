@@ -148,7 +148,7 @@ function auto_id($pad = 0)
 	{
 		return $convert_row['max_id'] + $pad;
 	}
-	
+
 	return $auto_id + $pad;
 }
 
@@ -280,7 +280,7 @@ function get_config_value($config_name)
 	{
 		$convert_config = get_config();
 	}
-	
+
 	if (!isset($convert_config[$config_name]))
 	{
 		return false;
@@ -669,12 +669,12 @@ function import_avatar($source, $use_target = false, $user_id = false)
 	{
 		$convert->p_master->error(sprintf($user->lang['CONV_ERROR_NO_AVATAR_PATH'], 'import_avatar()'), __LINE__, __FILE__);
 	}
-	
+
 	if ($use_target === false && $user_id !== false)
 	{
 		$use_target = $config['avatar_salt'] . '_' . $user_id . '.' . substr(strrchr($source, '.'), 1);
 	}
-	
+
 	$result = _import_check('avatar_path', $source, $use_target);
 
 	return ((!empty($user_id)) ? $user_id : $use_target) . '.' . substr(strrchr($source, '.'), 1);
@@ -946,7 +946,7 @@ function get_remote_avatar_dim($src, $axis)
 		unset($remote_avatar_cache);
 		return $retval;
 	}
-	
+
 	$url_info = @parse_url($src);
 	if (empty($url_info['host']))
 	{
@@ -962,19 +962,19 @@ function get_remote_avatar_dim($src, $axis)
 			case 'ftp':
 				$port = 21;
 				break;
-				
+
 			case 'https':
 				$port = 443;
 				break;
-			
+
 			default:
 				$port = 80;
 		}
 	}
-	
+
 	$timeout = @ini_get('default_socket_timeout');
 	@ini_set('default_socket_timeout', 2);
-	
+
 	// We're just trying to reach the server to avoid timeouts
 	$fp = @fsockopen($host, $port, $errno, $errstr, 1);
 	if ($fp)
@@ -982,11 +982,11 @@ function get_remote_avatar_dim($src, $axis)
 		$remote_avatar_cache[$src] = @getimagesize($src);
 		fclose($fp);
 	}
-	
+
 	$default_x 	= (defined('DEFAULT_AVATAR_X_CUSTOM')) ? DEFAULT_AVATAR_X_CUSTOM : DEFAULT_AVATAR_X;
 	$default_y 	= (defined('DEFAULT_AVATAR_Y_CUSTOM')) ? DEFAULT_AVATAR_Y_CUSTOM : DEFAULT_AVATAR_Y;
 	$default 	= array($default_x, $default_y);
-	
+
 	if (empty($remote_avatar_cache[$src]) || empty($remote_avatar_cache[$src][0]) || empty($remote_avatar_cache[$src][1]))
 	{
 		$remote_avatar_cache[$src] = $default;
@@ -1002,7 +1002,7 @@ function get_remote_avatar_dim($src, $axis)
 			$remote_avatar_cache[$src][1] = (int)($remote_avatar_cache[$src][1] * $ratio);
 		}
 	}
-	
+
 	@ini_set('default_socket_timeout', $timeout);
 	return $remote_avatar_cache[$src][$axis];
 }
@@ -1112,7 +1112,7 @@ function words_unique(&$words)
 function add_user_group($group_id, $user_id, $group_leader=false)
 {
 	global $convert, $config, $user, $db;
-	
+
 	$sql = 'INSERT INTO ' . USER_GROUP_TABLE . ' ' . $db->sql_build_array('INSERT', array(
 		'group_id'		=> $group_id,
 		'user_id'		=> $user_id,
@@ -1282,7 +1282,7 @@ function restore_config($schema)
 			// Most are...
 			if (is_string($config_value))
 			{
-				$config_value = truncate_string(utf8_htmlspecialchars($config_value), 255, false);
+				$config_value = truncate_string(utf8_htmlspecialchars($config_value), 255, 255, false);
 			}
 
 			set_config($config_name, $config_value);
@@ -2440,7 +2440,7 @@ function get_smiley_display()
 function fill_dateformat($user_dateformat)
 {
 	global $config;
-	
+
 	return ((empty($user_dateformat)) ? $config['default_dateformat'] : $user_dateformat);
 }
 

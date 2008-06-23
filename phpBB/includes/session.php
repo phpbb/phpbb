@@ -1113,6 +1113,14 @@ class session
 			// To circumvent session_begin returning a valid value and the check_ban() not called on second page view, we kill the session again
 			$this->session_kill(false);
 
+			// A very special case... we are within the cron script which is not supposed to print out the ban message... show blank page
+			if (defined('IN_CRON'))
+			{
+				garbage_collection();
+				exit_handler();
+				exit;
+			}
+
 			trigger_error($message);
 		}
 
@@ -1582,6 +1590,7 @@ class user extends session
 				$localised_images = true;
 			}
 
+			$row['image_filename'] = rawurlencode($row['image_filename']);
 			$this->img_array[$row['image_name']] = $row;
 		}
 		$db->sql_freeresult($result);
