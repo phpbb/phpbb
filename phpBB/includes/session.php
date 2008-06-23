@@ -1603,6 +1603,7 @@ class user extends session
 				$localised_images = true;
 			}
 
+			$row['image_filename'] = rawurlencode($row['image_filename']);
 			$this->img_array[$row['image_name']] = $row;
 		}
 		$db->sql_freeresult($result);
