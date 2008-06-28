@@ -1802,8 +1802,12 @@ function generate_board_url($without_script_path = false)
 /**
 * Redirects the user to another page then exits the script nicely
 * This function is intended for urls within the board. It's not meant to redirect to cross-domains.
+*
+* @param string $url The url to redirect to
+* @param bool $return If true, do not redirect but return the sanitized URL. Default is no return.
+* @param bool $disable_cd_check If true, redirect() will redirect to an external domain. If false, the redirect point to the boards url if it does not match the current domain. Default is false.
 */
-function redirect($url, $return = false)
+function redirect($url, $return = false, $disable_cd_check = false)
 {
 	global $db, $cache, $config, $user, $phpbb_root_path;
 
@@ -1830,8 +1834,8 @@ function redirect($url, $return = false)
 	}
 	else if (!empty($url_parts['scheme']) && !empty($url_parts['host']))
 	{
-		// Attention: only able to redirect within the same domain (yourdomain.com -> www.yourdomain.com will not work)
-		if ($url_parts['host'] !== $user->host)
+		// Attention: only able to redirect within the same domain if $disable_cd_check is false (yourdomain.com -> www.yourdomain.com will not work)
+		if (!$disable_cd_check && $url_parts['host'] !== $user->host)
 		{
 			$url = generate_board_url();
 		}
