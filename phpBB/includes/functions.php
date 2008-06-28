@@ -2884,7 +2884,7 @@ function phpbb_checkdnsrr($host, $type = '')
 		}
 
 		// @exec('nslookup -retry=1 -timout=1 -type=' . escapeshellarg($type) . ' ' . escapeshellarg($host), $output);
-		@exec('nslookup -type=' . escapeshellarg($type) . ' ' . escapeshellarg($host), $output);
+		@exec('nslookup -type=' . escapeshellarg($type) . ' ' . escapeshellarg($host) . '.', $output);
 
 		// If output is empty, the nslookup failed
 		if (empty($output))
@@ -2910,7 +2910,8 @@ function phpbb_checkdnsrr($host, $type = '')
 	}
 	else if (function_exists('checkdnsrr'))
 	{
-		return (checkdnsrr($host, $type)) ? true : false;
+		// The dot indicates to search the DNS root (helps those having DNS prefixes on the same domain)
+		return (checkdnsrr($host . '.', $type)) ? true : false;
 	}
 
 	return NULL;
