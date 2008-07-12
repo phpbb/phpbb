@@ -28,18 +28,29 @@ class template_filter extends php_user_filter
 
 	private $block_names = array();
 	private $block_else_level = array();
+	
+	private $chunk;
 
 	function filter($in, $out, &$consumed/*, $closing*/)
 	{
 		while ($bucket = stream_bucket_make_writeable($in))
 		{
-			$bucket->data = $this->compile($bucket->data);
+			$last_nl = strrpos($bucket->data, "\n");
+			$data = $this->chunk . substr($bucket->data, 0, $last_nl);
+			$this->chunk = substr($bucket->data, $last_nl);
+			$bucket->data = $this->compile($data);
 			$consumed += $bucket->datalen;
 			stream_bucket_append($out, $bucket);
 		}
 		return PSFS_PASS_ON;
 	}
-	
+
+	public function onCreate()
+	{
+		$this->chunk = '';
+		return true;
+	}
+
 	private function compile($data)
 	{
 		return preg_replace_callback($this->regex, array($this, 'replace'), $data);
@@ -643,6 +654,8 @@ stream_filter_register('template', 'template_filter');
 */
 class template_compile
 {
+	const BUFFER = 8192;
+
 	private $template;
 
 	/**
@@ -652,7 +665,7 @@ class template_compile
 	{
 		$this->template = &$template;
 	}
-	
+
 	/**
 	* Load template source from file
 	* @access public
@@ -689,13 +702,15 @@ class template_compile
 		stream_filter_append($destination_handle, 'template');
 
 		@flock($destination_handle, LOCK_EX);
-		@stream_copy_to_stream($source_handle, $destination_handle);
+		while (!feof($source_handle))
+		{
+			@fwrite($destination_handle, fread($source_handle, self::BUFFER));
+		}
+		@fwrite($destination_handle, "\n");
 		@flock($destination_handle, LOCK_UN);
 		@fclose($destination_handle);
 		@fclose($source_handle);
-
 		@chmod($filename, 0666);
-
 	}
 }
 
