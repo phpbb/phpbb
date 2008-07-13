@@ -80,7 +80,7 @@ class acm
 		if ($fp = @fopen($this->cache_dir . 'data_global.' . PHP_EXT, 'wb'))
 		{
 			@flock($fp, LOCK_EX);
-			fwrite($fp, "<?php\n\$this->vars = unserialize('" . serialize($this->vars) . "');\n\$this->var_expires = unserialize('" . serialize($this->var_expires) . "');");
+			fwrite($fp, "<?php\n\$this->vars = unserialize(" . var_export(serialize($this->vars), true) . ");\n\$this->var_expires = unserialize(" . var_export(serialize($this->var_expires), true) . ");");
 			@flock($fp, LOCK_UN);
 			fclose($fp);
 
@@ -178,7 +178,7 @@ class acm
 			if ($fp = @fopen($this->cache_dir . "data{$var_name}." . PHP_EXT, 'wb'))
 			{
 				@flock($fp, LOCK_EX);
-				fwrite($fp, "<?php\n\$expired = (time() > " . (time() + $ttl) . ") ? true : false;\nif (\$expired) { return; }\n\$data =  " . (sizeof($var) ? "unserialize('" . serialize($var) . "');" : 'array();'));
+				fwrite($fp, "<?php\n\$expired = (time() > " . (time() + $ttl) . ") ? true : false;\nif (\$expired) { return; }\n\$data =  " . (sizeof($var) ? "unserialize(" . var_export(serialize($var), true) . ");" : 'array();'));
 				@flock($fp, LOCK_UN);
 				fclose($fp);
 
@@ -388,7 +388,7 @@ class acm
 			$file = "<?php\n/* " . str_replace('*/', '*\/', $query) . " */";
 			$file .= "\n\$expired = (time() > " . (time() + $ttl) . ") ? true : false;\nif (\$expired) { return; }\n";
 
-			fwrite($fp, $file . "\$this->sql_rowset[\$query_id] = " . (sizeof($this->sql_rowset[$query_id]) ? "unserialize('" . serialize($this->sql_rowset[$query_id]) . "');" : 'array();'));
+			fwrite($fp, $file . "\$this->sql_rowset[\$query_id] = " . (sizeof($this->sql_rowset[$query_id]) ? "unserialize(" . var_export(serialize($this->sql_rowset[$query_id]), true) . ");" : 'array();'));
 			@flock($fp, LOCK_UN);
 			fclose($fp);
 
