@@ -92,6 +92,7 @@ class posting_api
 		$post_contents = $data['post_contents'];
 		$topic_status = (int) $data['status'];
 		$topic_type = (int) $data['type'];
+		$approved = (bool) $data['approved'];
 
 		$shadow_forums = $data['shadow_forums'];
 
@@ -183,7 +184,7 @@ class posting_api
 		foreach ($shadow_forums as $shadow_forum_id)
 		{
 			$data['shadow_topic_id'] = $topic_id;
-			$data['forum_id'] = $forum_id;
+			$data['forum_id'] = $shadow_forum_id;
 			self::insert_shadow_topic($data); 
 		}
 
@@ -202,11 +203,11 @@ class posting_api
 		$user_id = (int) $data['user_id'];
 		$forum_id = (int) $data['forum_id'];
 		$topic_title = $data['title'];
-		$post_contents = $data['post_contents'];
 		$topic_status = (int) $data['status'];
 		$topic_type = (int) $data['type'];
 		$time = ($data['time']) ? (int) $data['time'] : time();
 		$shadow_topic_id = (int) $data['shadow_topic_id'];
+		$approved = (bool) $data['approved'];
 
 		if (isset($data['username']))
 		{
@@ -227,7 +228,7 @@ class posting_api
 			FROM ' . FORUMS_TABLE . '
 			WHERE forum_id = ' . (int) $forum_id;
 		$result = $db->sql_query($sql);
-		$row = $db->sql_fetchrow($query);
+		$row = $db->sql_fetchrow($result);
 		$db->sql_freeresult($result);
 
 		// throw our topic to the dogs
@@ -491,7 +492,7 @@ class posting_api
 				$forum_array['forum_last_post_time'] = 0;
 			}
 	
-			$db->sql_handle_data('UPDATE', FORUMS_TABLE, $forum_data, "forum_id = $forum_id");	
+			$db->sql_handle_data('UPDATE', FORUMS_TABLE, $forum_array, "forum_id = $forum_id");	
 		}
 
 		// let's not get too hasty, we can kill off the shadows later,
@@ -560,6 +561,8 @@ class posting_api
 		}
 		$db->sql_freeresult($result);
 
+		$topic_ids = array_keys($forum_lookup);
+
 		// goodnight, posts
 		$db->sql_query('DELETE FROM ' . POSTS_TABLE . ' WHERE ' . $db->sql_in_set('topic_id', $topic_ids));
 
@@ -621,7 +624,7 @@ class posting_api
 				$forum_array['forum_last_post_time'] = 0;
 			}
 	
-			$db->sql_handle_data('UPDATE', FORUMS_TABLE, $forum_data, "forum_id = $forum_id");
+			$db->sql_handle_data('UPDATE', FORUMS_TABLE, $forum_array, "forum_id = $forum_id");
 		}
 
 		// mangle the topics table now :)
@@ -706,7 +709,7 @@ class posting_api
 		}
 
 		// we killed all the posts in a topic, time to kill the topics!
-		if (sizeof($empty_topics))
+		if (sizeof($empty_topic_ids))
 		{
 			self::delete_topics(array('topic_ids' => $empty_topic_ids));
 		}
@@ -754,10 +757,6 @@ class posting_api
 		{
 			$topic_id = $topic_row['topic_id'];
 			$from_forum_id = (int) $topic_row['forum_id'];
-			$topic_status = (int) $topic_row['topic_status'];
-
-			$from_forum_ids[$topic_id] = $from_forum_id;
-
 			$to_forum_id = $to_forum_ids[$topic_id];
 
 			// we are iterating one topic at a time...
