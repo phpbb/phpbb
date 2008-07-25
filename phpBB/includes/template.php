@@ -139,8 +139,6 @@ class template
 	public function display($handle, $include_once = true)
 	{
 		global $user, $phpbb_hook;
-		// $user _is_ used the included files.
-		$user;
 
 		if (!empty($phpbb_hook) && $phpbb_hook->call_hook(array(__CLASS__, __FUNCTION__), $handle, $include_once))
 		{
@@ -158,9 +156,22 @@ class template
 			}
 		}*/
 
-		$filename = $this->_tpl_load($handle);
-
-		($include_once) ? include_once($filename) : include($filename);
+		if (($filename = $this->_tpl_load($handle)) !== false)
+		{
+			// $user _is_ used the included files.
+			$user;
+			($include_once) ? include_once($filename) : include($filename);
+		}
+		else if (($code = $this->_tpl_eval($handle)) !== false)
+		{
+			$code = ' ?> ' . $code . ' <?php ';
+			eval($code);
+		}
+		else
+		{
+			// if we could not eval AND the file exists, something horrific has occured 
+			return false;
+		}
 
 		return true;
 	}
@@ -191,17 +202,44 @@ class template
 	*/
 	private function _tpl_load(&$handle)
 	{
-		global $user, $config;
+		global $config;
 
 		$filename = $this->cachepath . str_replace('/', '.', $this->filename[$handle]) . '.' . PHP_EXT;
 
 		$recompile = (($config['load_tplcompile'] && @filemtime($filename) < filemtime($this->files[$handle])) || !file_exists($filename) || @filesize($filename) === 0) ? true : false;
 
 		// Recompile page if the original template is newer, otherwise load the compiled version
-		if (!$recompile)
+		if ($recompile)
 		{
-			return $filename;
+			if (!class_exists('template_compile'))
+			{
+				include(PHPBB_ROOT_PATH . 'includes/functions_template.' . PHP_EXT);
+			}
+
+			$compile = new template_compile($this);
+
+			// If we don't have a file assigned to this handle, die.
+			if (!isset($this->files[$handle]))
+			{
+				trigger_error("template->_tpl_load(): No file specified for handle $handle", E_USER_ERROR);
+			}
+
+			if ($compile->_tpl_load_file($handle) === false)
+			{
+				return false;
+			}
 		}
+
+		return $filename;
+	}
+
+	/**
+	* This code should only run when some high level error prevents us from writing to the cache.
+	* @access private
+	*/
+	private function _tpl_eval(&$handle)
+	{
+//		global $user, $config;
 
 		if (!class_exists('template_compile'))
 		{
@@ -213,18 +251,15 @@ class template
 		// If we don't have a file assigned to this handle, die.
 		if (!isset($this->files[$handle]))
 		{
-			trigger_error("template->_tpl_load(): No file specified for handle $handle", E_USER_ERROR);
+			trigger_error("template->_tpl_eval(): No file specified for handle $handle", E_USER_ERROR);
 		}
 
-		// Just compile if no user object is present (happens within the installer)
-		if (!$user)
+		if (($code = $compile->_tpl_gen_src($handle)) === false)
 		{
-			$compile->_tpl_load_file($handle);
-			return $filename;
+			return false;
 		}
 
-		$compile->_tpl_load_file($handle);
-		return $filename;
+		return $code;
 	}
 
 	/**
@@ -452,6 +487,21 @@ class template
 			{
 				include($filename);
 				return;
+			}
+			else
+			{
+				if (!class_exists('template_compile'))
+				{
+					include(PHPBB_ROOT_PATH . 'includes/functions_template.' . PHP_EXT);
+				}
+
+				$compile = new template_compile($this);
+
+				if (($code = $compile->_tpl_gen_src($handle)) !== false)
+				{
+					$code = ' ?> ' . $code . ' <?php ';
+					eval($code);
+				}
 			}
 		}
 	}

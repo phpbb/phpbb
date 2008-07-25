@@ -39,6 +39,7 @@ class template_filter extends php_user_filter
 			$data = $this->chunk . substr($bucket->data, 0, $last_nl);
 			$this->chunk = substr($bucket->data, $last_nl);
 			$bucket->data = $this->compile($data);
+			$bucket->datalen = strlen($bucket->data);
 			$consumed += $bucket->datalen;
 			stream_bucket_append($out, $bucket);
 		}
@@ -441,6 +442,7 @@ class template_filter extends php_user_filter
 			return 'unset(' . (($match[1]) ? $this->generate_block_data_ref(substr($match[1], 0, -1), true, true) . '[\'' . $match[2] . '\']' : '$this->_tpldata[\'DEFINE\'][\'.\'][\'' . $match[2] . '\']') . ');';
 		}
 
+		$varrefs = array();
 		// Are we a string?
 		if ($match[3] && $match[5])
 		{
@@ -451,6 +453,11 @@ class template_filter extends php_user_filter
 
 			// Now replace the php code
 			$match[4] = "'" . str_replace(array('<?php echo ', '; ?>'), array("' . ", " . '"), $match[4]) . "'";
+		}
+		// is this a template variable?
+		else if (preg_match('#^((?:[a-z0-9\-_]+\.)+)?(\$)?(?=[A-Z])([A-Z0-9\-_]+)#s', $match[4], $varrefs))
+		{
+			$match[4] = (!empty($varrefs[1])) ? $this->generate_block_data_ref(substr($varrefs[1], 0, -1), true, $varrefs[2]) . '[\'' . $varrefs[3] . '\']' : (($varrefs[2]) ? '$this->_tpldata[\'DEFINE\'][\'.\'][\'' . $varrefs[3] . '\']' : '$this->_rootref[\'' . $varrefs[3] . '\']');
 		}
 		else
 		{
@@ -639,7 +646,7 @@ stream_filter_register('template', 'template_filter');
 * psoTFX, phpBB Development Team - Completion of file caching, decompilation
 * routines and implementation of conditionals/keywords and associated changes
 *
-* The interface was inspired by PHPLib templates,  and the template file (formats are
+* The interface was inspired by PHPLib templates, and the template file (formats are
 * quite similar)
 *
 * The keyword/conditional implementation is currently based on sections of code from
@@ -679,8 +686,20 @@ class template_compile
 		}
 
 		// Actually compile the code now.
-		$this->compile_write($handle, $this->template->files[$handle]);
+		return $this->compile_write($handle, $this->template->files[$handle]);
 
+	}
+
+	public function _tpl_gen_src($handle)
+	{
+		// Try and open template for read
+		if (!file_exists($this->template->files[$handle]))
+		{
+			trigger_error("template->_tpl_load_file(): File {$this->template->files[$handle]} does not exist or is empty", E_USER_ERROR);
+		}
+
+		// Actually compile the code now.
+		return $this->compile_gen(/*$handle, */$this->template->files[$handle]);
 	}
 
 	/**
@@ -694,9 +713,9 @@ class template_compile
 		$source_handle = @fopen($source_file, 'rb');
 		$destination_handle = @fopen($filename, 'wb');
 
-		if(!$source_handle || !$destination_handle)
+		if (!$source_handle || !$destination_handle)
 		{
-			return;
+			return false;
 		}
 
 		stream_filter_append($destination_handle, 'template');
@@ -711,6 +730,37 @@ class template_compile
 		@fclose($destination_handle);
 		@fclose($source_handle);
 		@chmod($filename, 0666);
+
+		return true;
+	}
+
+	/**
+	* Generate source for eval()
+	* @access private
+	*/
+	private function compile_gen(/*$handle, */$source_file)
+	{
+		$source_handle = @fopen($source_file, 'rb');
+		$destination_handle = @fopen('php://temp' ,'r+b');
+
+		if (!$source_handle || !$destination_handle)
+		{
+			return false;
+		}
+
+		stream_filter_append($destination_handle, 'template');
+
+		while (!feof($source_handle))
+		{
+			@fwrite($destination_handle, fread($source_handle, self::BUFFER));
+		}
+		@fwrite($destination_handle, "\n");
+		@fwrite($destination_handle, "\n");
+		
+		@fclose($source_handle);
+
+		rewind($destination_handle);
+		return stream_get_contents($destination_handle);
 	}
 }
 
