@@ -78,7 +78,7 @@ switch ($mode)
 			redirect(append_sid('index'));
 		}
 
-		login_box(request_var('redirect', 'index' . PHP_EXT));
+		login_box(request_var('redirect', 'index'));
 	break;
 
 	case 'logout':
