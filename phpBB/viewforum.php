@@ -107,7 +107,9 @@ if ($forum_data['forum_type'] == FORUM_LINK && $forum_data['forum_link'])
 		$db->sql_query($sql);
 	}
 
-	redirect($forum_data['forum_link']);
+	// We redirect to the url. The third parameter indicates that external redirects are allowed.
+	redirect($forum_data['forum_link'], false, true);
+	exit;
 }
 
 // Build navigation links
