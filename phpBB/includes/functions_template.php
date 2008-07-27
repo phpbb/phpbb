@@ -28,22 +28,42 @@ class template_filter extends php_user_filter
 
 	private $block_names = array();
 	private $block_else_level = array();
-	
+
 	private $chunk;
 
-	function filter($in, $out, &$consumed/*, $closing*/)
+	function filter($in, $out, &$consumed, $closing)
 	{
+		$written = false;
+
 		while ($bucket = stream_bucket_make_writeable($in))
 		{
-			$last_nl = strrpos($bucket->data, "\n");
-			$data = $this->chunk . substr($bucket->data, 0, $last_nl);
-			$this->chunk = substr($bucket->data, $last_nl);
+			$consumed += $bucket->datalen;
+
+			$data = $this->chunk . $bucket->data;
+			$last_nl = strrpos($data, "\n");
+			$this->chunk = substr($data, $last_nl);
+			$data = substr($data, 0, $last_nl);
+
+			if (!strlen($data))
+			{
+				continue;
+			}
+
+			$written = true;
+
 			$bucket->data = $this->compile($data);
 			$bucket->datalen = strlen($bucket->data);
-			$consumed += $bucket->datalen;
 			stream_bucket_append($out, $bucket);
 		}
-		return PSFS_PASS_ON;
+
+		if ($closing && strlen($this->chunk))
+		{
+			$written = true;
+			$bucket = stream_bucket_new($this->stream, $this->compile($this->chunk));
+			stream_bucket_append($out, $bucket);
+		}
+
+		return $written ? PSFS_PASS_ON : PSFS_FEED_ME;
 	}
 
 	public function onCreate()
@@ -54,7 +74,7 @@ class template_filter extends php_user_filter
 
 	private function compile($data)
 	{
-		return preg_replace_callback($this->regex, array($this, 'replace'), $data);
+		return str_replace('?><?php', '', preg_replace_callback($this->regex, array($this, 'replace'), $data));
 	}
 
 	private function replace($matches)
@@ -150,19 +170,19 @@ class template_filter extends php_user_filter
 		// transform vars prefixed by L_ into their language variable pendant if nothing is set within the tpldata array
 		if (strpos($text_blocks, '{L_') !== false)
 		{
-			$text_blocks = preg_replace('#\{L_([a-z0-9\-_]*)\}#is', "<?php echo ((isset(\$this->_rootref['L_\\1'])) ? \$this->_rootref['L_\\1'] : ((isset(\$user->lang['\\1'])) ? \$user->lang['\\1'] : '{ \\1 }')); ?>", $text_blocks);
+			$text_blocks = preg_replace('#\{L_([a-z0-9\-_]*)\}#is', "<?php echo ((isset(\$_rootref['L_\\1'])) ? \$_rootref['L_\\1'] : ((isset(\$_lang['\\1'])) ? \$_lang['\\1'] : '{ \\1 }')); ?>", $text_blocks);
 		}
 
 		// Handle addslashed language variables prefixed with LA_
 		// If a template variable already exist, it will be used in favor of it...
 		if (strpos($text_blocks, '{LA_') !== false)
 		{
-			$text_blocks = preg_replace('#\{LA_([a-z0-9\-_]*)\}#is', "<?php echo ((isset(\$this->_rootref['LA_\\1'])) ? \$this->_rootref['LA_\\1'] : ((isset(\$this->_rootref['L_\\1'])) ? addslashes(\$this->_rootref['L_\\1']) : ((isset(\$user->lang['\\1'])) ? addslashes(\$user->lang['\\1']) : '{ \\1 }'))); ?>", $text_blocks);
+			$text_blocks = preg_replace('#\{LA_([a-z0-9\-_]*)\}#is', "<?php echo ((isset(\$_rootref['LA_\\1'])) ? \$_rootref['LA_\\1'] : ((isset(\$_rootref['L_\\1'])) ? addslashes(\$_rootref['L_\\1']) : ((isset(\$_lang['\\1'])) ? addslashes(\$_lang['\\1']) : '{ \\1 }'))); ?>", $text_blocks);
 		}
 
 		// Handle remaining varrefs
-		$text_blocks = preg_replace('#\{([a-z0-9\-_]*)\}#is', "<?php echo (isset(\$this->_rootref['\\1'])) ? \$this->_rootref['\\1'] : ''; ?>", $text_blocks);
-		$text_blocks = preg_replace('#\{\$([a-z0-9\-_]*)\}#is', "<?php echo (isset(\$this->_tpldata['DEFINE']['.']['\\1'])) ? \$this->_tpldata['DEFINE']['.']['\\1'] : ''; ?>", $text_blocks);
+		$text_blocks = preg_replace('#\{([a-z0-9\-_]*)\}#is', "<?php echo (isset(\$_rootref['\\1'])) ? \$_rootref['\\1'] : ''; ?>", $text_blocks);
+		$text_blocks = preg_replace('#\{\$([a-z0-9\-_]*)\}#is', "<?php echo (isset(\$_tpldata['DEFINE']['.']['\\1'])) ? \$_tpldata['DEFINE']['.']['\\1'] : ''; ?>", $text_blocks);
 
 		return $text_blocks;
 	}
@@ -237,8 +257,8 @@ class template_filter extends php_user_filter
 		if (sizeof($block) < 2)
 		{
 			// Block is not nested.
-			$tag_template_php = '$_' . $tag_args . "_count = (isset(\$this->_tpldata['$tag_args'])) ? sizeof(\$this->_tpldata['$tag_args']) : 0;";
-			$varref = "\$this->_tpldata['$tag_args']";
+			$tag_template_php = '$_' . $tag_args . "_count = (isset(\$_tpldata['$tag_args'])) ? sizeof(\$_tpldata['$tag_args']) : 0;";
+			$varref = "\$_tpldata['$tag_args']";
 		}
 		else
 		{
@@ -387,7 +407,7 @@ class template_filter extends php_user_filter
 					$varrefs = array();
 					if (preg_match('#^((?:[a-z0-9\-_]+\.)+)?(\$)?(?=[A-Z])([A-Z0-9\-_]+)#s', $token, $varrefs))
 					{
-						$token = (!empty($varrefs[1])) ? $this->generate_block_data_ref(substr($varrefs[1], 0, -1), true, $varrefs[2]) . '[\'' . $varrefs[3] . '\']' : (($varrefs[2]) ? '$this->_tpldata[\'DEFINE\'][\'.\'][\'' . $varrefs[3] . '\']' : '$this->_rootref[\'' . $varrefs[3] . '\']');
+						$token = (!empty($varrefs[1])) ? $this->generate_block_data_ref(substr($varrefs[1], 0, -1), true, $varrefs[2]) . '[\'' . $varrefs[3] . '\']' : (($varrefs[2]) ? '$_tpldata[\'DEFINE\'][\'.\'][\'' . $varrefs[3] . '\']' : '$_rootref[\'' . $varrefs[3] . '\']');
 					}
 					else if (preg_match('#^\.((?:[a-z0-9\-_]+\.?)+)$#s', $token, $varrefs))
 					{
@@ -408,7 +428,7 @@ class template_filter extends php_user_filter
 						}
 						else
 						{
-							$varref = '$this->_tpldata';
+							$varref = '$_tpldata';
 
 							// Add the block reference for the last child.
 							$varref .= "['" . $blocks[0] . "']";
@@ -439,7 +459,7 @@ class template_filter extends php_user_filter
 
 		if (!$op)
 		{
-			return 'unset(' . (($match[1]) ? $this->generate_block_data_ref(substr($match[1], 0, -1), true, true) . '[\'' . $match[2] . '\']' : '$this->_tpldata[\'DEFINE\'][\'.\'][\'' . $match[2] . '\']') . ');';
+			return 'unset(' . (($match[1]) ? $this->generate_block_data_ref(substr($match[1], 0, -1), true, true) . '[\'' . $match[2] . '\']' : '$_tpldata[\'DEFINE\'][\'.\'][\'' . $match[2] . '\']') . ');';
 		}
 
 		$varrefs = array();
@@ -457,7 +477,7 @@ class template_filter extends php_user_filter
 		// is this a template variable?
 		else if (preg_match('#^((?:[a-z0-9\-_]+\.)+)?(\$)?(?=[A-Z])([A-Z0-9\-_]+)#s', $match[4], $varrefs))
 		{
-			$match[4] = (!empty($varrefs[1])) ? $this->generate_block_data_ref(substr($varrefs[1], 0, -1), true, $varrefs[2]) . '[\'' . $varrefs[3] . '\']' : (($varrefs[2]) ? '$this->_tpldata[\'DEFINE\'][\'.\'][\'' . $varrefs[3] . '\']' : '$this->_rootref[\'' . $varrefs[3] . '\']');
+			$match[4] = (!empty($varrefs[1])) ? $this->generate_block_data_ref(substr($varrefs[1], 0, -1), true, $varrefs[2]) . '[\'' . $varrefs[3] . '\']' : (($varrefs[2]) ? '$_tpldata[\'DEFINE\'][\'.\'][\'' . $varrefs[3] . '\']' : '$_rootref[\'' . $varrefs[3] . '\']');
 		}
 		else
 		{
@@ -481,7 +501,7 @@ class template_filter extends php_user_filter
 			}
 		}
 
-		return (($match[1]) ? $this->generate_block_data_ref(substr($match[1], 0, -1), true, true) . '[\'' . $match[2] . '\']' : '$this->_tpldata[\'DEFINE\'][\'.\'][\'' . $match[2] . '\']') . ' = ' . $match[4] . ';';
+		return (($match[1]) ? $this->generate_block_data_ref(substr($match[1], 0, -1), true, true) . '[\'' . $match[2] . '\']' : '$_tpldata[\'DEFINE\'][\'.\'][\'' . $match[2] . '\']') . ' = ' . $match[4] . ';';
 	}
 
 	/**
@@ -573,7 +593,7 @@ class template_filter extends php_user_filter
 	/**
 	* Generates a reference to the given variable inside the given (possibly nested)
 	* block namespace. This is a string of the form:
-	* ' . $this->_tpldata['parent'][$_parent_i]['$child1'][$_child1_i]['$child2'][$_child2_i]...['varname'] . '
+	* ' . $_tpldata['parent'][$_parent_i]['$child1'][$_child1_i]['$child2'][$_child2_i]...['varname'] . '
 	* It's ready to be inserted into an "echo" line in one of the templates.
 	* NOTE: expects a trailing "." on the namespace.
 	* @access private
@@ -597,7 +617,7 @@ class template_filter extends php_user_filter
 	/**
 	* Generates a reference to the array of data values for the given
 	* (possibly nested) block namespace. This is a string of the form:
-	* $this->_tpldata['parent'][$_parent_i]['$child1'][$_child1_i]['$child2'][$_child2_i]...['$childN']
+	* $_tpldata['parent'][$_parent_i]['$child1'][$_child1_i]['$child2'][$_child2_i]...['$childN']
 	*
 	* If $include_last_iterator is true, then [$_childN_i] will be appended to the form shown above.
 	* NOTE: does not expect a trailing "." on the blockname.
@@ -612,7 +632,7 @@ class template_filter extends php_user_filter
 		// DEFINE is not an element of any referenced variable, we must use _tpldata to access it
 		if ($defop)
 		{
-			$varref = '$this->_tpldata[\'DEFINE\']';
+			$varref = '$_tpldata[\'DEFINE\']';
 			// Build up the string with everything but the last child.
 			for ($i = 0; $i < $blockcount; $i++)
 			{
@@ -661,16 +681,15 @@ stream_filter_register('template', 'template_filter');
 */
 class template_compile
 {
-	const BUFFER = 8192;
 
 	private $template;
 
 	/**
-	* constuctor
+	* Constructor
 	*/
-	function __construct(template &$template)
+	function __construct(template $template)
 	{
-		$this->template = &$template;
+		$this->template = $template;
 	}
 
 	/**
@@ -718,17 +737,13 @@ class template_compile
 			return false;
 		}
 
-		stream_filter_append($destination_handle, 'template');
+		stream_filter_append($source_handle, 'template');
+		stream_copy_to_stream($source_handle, $destination_handle);
 
-		@flock($destination_handle, LOCK_EX);
-		while (!feof($source_handle))
-		{
-			@fwrite($destination_handle, fread($source_handle, self::BUFFER));
-		}
-		@fwrite($destination_handle, "\n");
+		@fclose($source_handle);
 		@flock($destination_handle, LOCK_UN);
 		@fclose($destination_handle);
-		@fclose($source_handle);
+
 		@chmod($filename, 0666);
 
 		return true;
@@ -748,15 +763,9 @@ class template_compile
 			return false;
 		}
 
-		stream_filter_append($destination_handle, 'template');
+		stream_filter_append($source_handle, 'template');
+		stream_copy_to_stream($source_handle, $destination_handle);
 
-		while (!feof($source_handle))
-		{
-			@fwrite($destination_handle, fread($source_handle, self::BUFFER));
-		}
-		@fwrite($destination_handle, "\n");
-		@fwrite($destination_handle, "\n");
-		
 		@fclose($source_handle);
 
 		rewind($destination_handle);

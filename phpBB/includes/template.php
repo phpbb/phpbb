@@ -156,10 +156,15 @@ class template
 			}
 		}*/
 
+		$_tpldata	= &$this->_tpldata;
+		$_rootref	= &$this->_rootref;
+		$_lang		= &$user->lang;
+
+		// These _are_ used the included files.
+		$_tpldata; $_rootref; $_lang;
+
 		if (($filename = $this->_tpl_load($handle)) !== false)
 		{
-			// $user _is_ used the included files.
-			$user;
 			($include_once) ? include_once($filename) : include($filename);
 		}
 		else if (($code = $this->_tpl_eval($handle)) !== false)
@@ -346,7 +351,7 @@ class template
 			{
 				unset($this->_tpldata[$blockname][($s_row_count - 1)]['S_LAST_ROW']);
 			}
-			
+
 			// Add a new iteration to this block with the variable assignments we were given.
 			$this->_tpldata[$blockname][] = $vararray;
 		}
@@ -389,7 +394,7 @@ class template
 			// Nested blocks are not supported
 			return false;
 		}
-		
+
 		// Change key to zero (change first position) if false and to last position if true
 		if ($key === false || $key === true)
 		{
@@ -478,10 +483,14 @@ class template
 
 		if ($include)
 		{
-
 			global $user;
-			// $user _is_ used the included files.
-			$user;
+
+			$_tpldata	= &$this->_tpldata;
+			$_rootref	= &$this->_rootref;
+			$_lang		= &$user->lang;
+
+			// These _are_ used the included files.
+			$_tpldata; $_rootref; $_lang;
 
 			if ($filename)
 			{
