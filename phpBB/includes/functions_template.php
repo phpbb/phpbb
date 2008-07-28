@@ -738,6 +738,8 @@ class template_compile
 		}
 
 		stream_filter_append($source_handle, 'template');
+
+		@flock($destination_handle);
 		stream_copy_to_stream($source_handle, $destination_handle);
 
 		@fclose($source_handle);
