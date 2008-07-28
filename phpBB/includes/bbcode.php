@@ -134,10 +134,21 @@ class bbcode
 		{
 			$this->template_bitfield = new bitfield($user->theme['bbcode_bitfield']);
 			$this->template_filename = $phpbb_root_path . 'styles/' . $user->theme['template_path'] . '/template/bbcode.html';
-
+			
 			if (!@file_exists($this->template_filename))
 			{
-				trigger_error('The file ' . $this->template_filename . ' is missing.', E_USER_ERROR);
+				if (isset($user->theme['template_inherits_id']) && $user->theme['template_inherits_id'])
+				{
+					$this->template_filename = $phpbb_root_path . 'styles/' . $user->theme['template_inherit_path'] . '/template/bbcode.html';
+					if (!@file_exists($this->template_filename))
+					{
+						trigger_error('The file ' . $this->template_filename . ' is missing.', E_USER_ERROR);
+					}
+				}
+				else
+				{
+					trigger_error('The file ' . $this->template_filename . ' is missing.', E_USER_ERROR);
+				}
 			}
 		}
 

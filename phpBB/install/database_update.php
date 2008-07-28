@@ -531,6 +531,17 @@ $database_update_info = array(
 	),
 	// No changes from 3.0.2-RC2 to 3.0.2
 	'3.0.2-RC2'		=> array(),
+
+	// Changes from 3.0.2 to the next version
+	'3.0.2'			=> array(
+		// Add the following columns
+		'add_columns'		=> array(
+			STYLES_TEMPLATE_TABLE			=> array(
+				'template_inherits_id'		=> array('UINT:4', 0),
+				'template_inherit_path'		=> array('VCHAR', NULL),
+			),
+		),
+	),
 );
 
 // Determine mapping database type
