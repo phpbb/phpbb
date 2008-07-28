@@ -74,11 +74,14 @@ class template_filter extends php_user_filter
 
 	private function compile($data)
 	{
+		$data = preg_replace('#<(?:[\\?%]|script)#s', '<?php echo\'\\0\';?>', $data);
 		return str_replace('?><?php', '', preg_replace_callback($this->regex, array($this, 'replace'), $data));
 	}
 
 	private function replace($matches)
 	{
+		global $config;
+
 		if (isset($matches[3]))
 		{
 			return $this->compile_var_tags($matches[0]);
@@ -129,14 +132,18 @@ class template_filter extends php_user_filter
 				return '<?php ' . $this->compile_tag_include($matches[2]) . ' ?>';
 			break;
 
-/*			case 'INCLUDEPHP':
-				$this->compile_blocks[] = ($config['tpl_allow_php']) ? '<?php ' . $this->compile_tag_include_php(array_shift($includephp_blocks)) . ' ?>' : '';
+			case 'INCLUDEPHP':
+				return ($config['tpl_allow_php']) ? '<?php ' . $this->compile_tag_include_php($matches[2]) . ' ?>' : '';
 			break;
 
 			case 'PHP':
-				$this->compile_blocks[] = ($config['tpl_allow_php']) ? '<?php ' . array_shift($php_blocks) . ' ?>' : '';
+				return ($config['tpl_allow_php']) ? '<?php ' : '<!-- ';
 			break;
-*/
+
+			case 'ENDPHP':
+				return ($config['tpl_allow_php']) ? ' ?>' : ' -->';
+			break;
+
 			default:
 				return $matches[0];
 			break;
@@ -737,9 +744,9 @@ class template_compile
 			return false;
 		}
 
-		stream_filter_append($source_handle, 'template');
+		@flock($destination_handle, LOCK_EX);
 
-		@flock($destination_handle);
+		stream_filter_append($source_handle, 'template');
 		stream_copy_to_stream($source_handle, $destination_handle);
 
 		@fclose($source_handle);
