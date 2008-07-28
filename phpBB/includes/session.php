@@ -1854,7 +1854,7 @@ class user extends session
 
 			if ((@include $language_filename) === false)
 			{
-				trigger_error('Language file ' . basename($language_filename) . ' couldn\'t be opened.', E_USER_ERROR);
+				trigger_error('Language file ' . $language_filename . ' couldn\'t be opened.', E_USER_ERROR);
 			}
 		}
 		else if ($use_db)

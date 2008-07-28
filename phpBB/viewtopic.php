@@ -176,6 +176,7 @@ $sql_array = array(
 
 	'FROM'		=> array(
 		FORUMS_TABLE	=> 'f',
+		TOPICS_TABLE	=> 't',
 	)
 );
 
@@ -239,7 +240,6 @@ else
 }
 
 $sql_array['WHERE'] .= ')';
-$sql_array['FROM'][TOPICS_TABLE] = 't';
 
 // Join to forum table on topic forum_id unless topic forum_id is zero
 // whereupon we join on the forum_id passed as a parameter ... this
