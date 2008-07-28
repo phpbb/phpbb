@@ -463,9 +463,9 @@ class acp_main
 			$template->assign_var('S_REMOVE_INSTALL', true);
 		}
 
-		if (file_exists($phpbb_root_path . 'config.' . $phpEx) && is_writeable($phpbb_root_path . 'config.' . $phpEx))
+		if (file_exists($phpbb_root_path . 'config.' . $phpEx) && is_writable($phpbb_root_path . 'config.' . $phpEx))
 		{
-			$template->assign_var('S_WRITEABLE_CONFIG', true);
+			$template->assign_var('S_WRITABLE_CONFIG', true);
 		}
 
 		$this->tpl_name = 'acp_main';
