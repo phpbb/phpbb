@@ -167,7 +167,7 @@ class acp_main
 						$result = $db->sql_query($sql);
 						set_config('upload_dir_size', (int) $db->sql_fetchfield('stat'), true);
 						$db->sql_freeresult($result);
-						
+
 						if (!function_exists('update_last_username'))
 						{
 							include(PHPBB_ROOT_PATH . 'includes/functions_user.' . PHP_EXT);
@@ -198,7 +198,7 @@ class acp_main
 						add_log('admin', 'LOG_RESYNC_POSTCOUNTS');
 
 					break;
-			
+
 					case 'date':
 						if (!$auth->acl_get('a_board'))
 						{
@@ -208,7 +208,7 @@ class acp_main
 						set_config('board_startdate', time() - 1);
 						add_log('admin', 'LOG_RESET_DATE');
 					break;
-				
+
 					case 'db_track':
 						if ($db->truncate)
 						{
@@ -227,7 +227,7 @@ class acp_main
 							FROM ' . FORUMS_TABLE . '
 							WHERE forum_type <> ' . FORUM_CAT;
 						$result = $db->sql_query($sql);
-				
+
 						$forum_ids = array();
 						while ($row = $db->sql_fetchrow($result))
 						{
@@ -277,7 +277,7 @@ class acp_main
 								$db->sql_multi_insert(TOPICS_POSTED_TABLE, $sql_ary);
 							}
 						}
-			
+
 						add_log('admin', 'LOG_RESYNC_POST_MARKING');
 					break;
 
@@ -316,7 +316,7 @@ class acp_main
 		$files_per_day = sprintf('%.2f', $total_files / $boarddays);
 
 		$upload_dir_size = get_formatted_filesize($config['upload_dir_size']);
-	
+
 		$avatar_dir_size = 0;
 
 		if ($avatar_dir = @opendir(PHPBB_ROOT_PATH . $config['avatar_path']))
@@ -457,6 +457,11 @@ class acp_main
 		if (file_exists(PHPBB_ROOT_PATH . 'install'))
 		{
 			$template->assign_var('S_REMOVE_INSTALL', true);
+		}
+
+		if (file_exists(PHPBB_ROOT_PATH . 'config.' . PHP_EXT) && is_writeable(PHPBB_ROOT_PATH . 'config.' . PHP_EXT))
+		{
+			$template->assign_var('S_WRITEABLE_CONFIG', true);
 		}
 
 		$this->tpl_name = 'acp_main';
