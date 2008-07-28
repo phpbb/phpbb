@@ -992,8 +992,8 @@ inherit_from = {INHERIT_FROM}
 		$filemtime = array();
 		if ($template_row['template_storedb'])
 		{
-			$ids =  array();
-			if (isset($template_row['template_inherits_id']) &&  $template_row['template_inherits_id'])
+			$ids = array();
+			if (isset($template_row['template_inherits_id']) && $template_row['template_inherits_id'])
 			{
 				$ids[] = $template_row['template_inherits_id'];
 			}
@@ -1040,7 +1040,7 @@ inherit_from = {INHERIT_FROM}
 			$file_tpl = "{$phpbb_root_path}styles/{$template_row['template_path']}/template/$tpl_file.html";
 			$inherited = false;
 			
-			if (isset($template_row['template_inherits_id']) &&  $template_row['template_inherits_id'])
+			if (isset($template_row['template_inherits_id']) && $template_row['template_inherits_id'])
 			{
 				if (!$template_row['template_storedb'])
 				{
@@ -2162,6 +2162,14 @@ inherit_from = {INHERIT_FROM}
 			$style_default = request_var('style_default', 0);
 			$store_db = request_var('store_db', 0);
 
+			$sql = "SELECT {$mode}_id 
+				FROM $sql_from
+				WHERE {$mode}_id <> $style_id 
+				AND {$mode}_name = '" . $db->sql_escape(strtolower($name)) . "'";
+			$result = $db->sql_query($sql);
+			$conflict = $db->sql_fetchrow($result);
+			$db->sql_freeresult($result);
+			
 			if ($mode == 'style' && (!$template_id || !$theme_id || !$imageset_id))
 			{
 				$error[] = $user->lang['STYLE_ERR_NO_IDS'];
@@ -2172,7 +2180,7 @@ inherit_from = {INHERIT_FROM}
 				$error[] = $user->lang['DEACTIVATE_DEFAULT'];
 			}
 
-			if (!$name)
+			if (!$name || $conflict)
 			{
 				$error[] = $user->lang[$l_type . '_ERR_STYLE_NAME'];
 			}
@@ -3372,7 +3380,7 @@ inherit_from = {INHERIT_FROM}
 	* @visibility public
 	* @param string $mode The element type to check - only template is supported
 	* @param int $id The template id
-	* @returns false if no component inherits, array with name, path and id  for each subtemplate otherwise
+	* @returns false if no component inherits, array with name, path and id for each subtemplate otherwise
 	*/
 	function check_inheritance($mode, $id)
 	{
