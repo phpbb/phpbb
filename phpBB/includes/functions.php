@@ -356,6 +356,11 @@ function phpbb_hash($password)
 
 /**
 * Check for correct password
+*
+* @param string $password The password in plain text
+* @param string $hash The stored password hash
+*
+* @return bool Returns true if the password is correct, false if not.
 */
 function phpbb_check_hash($password, $hash)
 {

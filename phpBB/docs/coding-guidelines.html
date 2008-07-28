@@ -690,7 +690,29 @@ $sql = 'UPDATE ' . SOME_TABLE . '
 $db-&gt;sql_query($sql);
 	</pre></div>
 
-	<p>The <code>$db-&gt;sql_build_array()</code> function supports the following modes: <code>INSERT</code> (example above), <code>INSERT_SELECT</code> (building query for <code>INSERT INTO table (...) SELECT value, column ...</code> statements), <code>MULTI_INSERT</code> (for returning extended inserts), <code>UPDATE</code> (example above) and <code>SELECT</code> (for building WHERE statement [AND logic]).</p>
+	<p>The <code>$db-&gt;sql_build_array()</code> function supports the following modes: <code>INSERT</code> (example above), <code>INSERT_SELECT</code> (building query for <code>INSERT INTO table (...) SELECT value, column ...</code> statements), <code>UPDATE</code> (example above) and <code>SELECT</code> (for building WHERE statement [AND logic]).</p>
+
+	<h4>sql_multi_insert():</h4>
+
+	<p>If you want to insert multiple statements at once, please use the separate <code>sql_multi_insert()</code> method. An example:</p>
+
+	<div class="codebox"><pre>
+$sql_ary = array();
+
+$sql_ary[] = array(
+	'somedata'		=&gt; $my_string_1,
+	'otherdata'		=&gt; $an_int_1,
+	'moredata'		=&gt; $another_int_1,
+);
+
+$sql_ary[] = array(
+	'somedata'		=&gt; $my_string_2,
+	'otherdata'		=&gt; $an_int_2,
+	'moredata'		=&gt; $another_int_2,
+);
+
+$db->sql_multi_insert(SOME_TABLE, $sql_ary);
+	</pre></div>
 
 	<h4>sql_in_set():</h4>
 
@@ -2200,6 +2222,13 @@ if (utf8_case_fold_nfc($string1) == utf8_case_fold_nfc($string2))
 		<div class="inner"><span class="corners-top"><span></span></span>
 
 		<div class="content">
+
+<h3>Revision 8596+</h3>
+
+<ul>
+	<li>Removed sql_build_array('MULTI_INSERT'... statements.</li>
+	<li>Added sql_multi_insert() explanation.</li>
+</ul>
 
 <h3>Revision 1.31</h3>
 
