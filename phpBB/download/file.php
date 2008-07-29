@@ -320,7 +320,7 @@ function send_avatar_to_browser($file, $browser)
 			header("Content-Length: $size");
 		}
 
-		if (@readfile($file_path) === false)
+		if (@readfile($file_path) == false)
 		{
 			$fp = @fopen($file_path, 'rb');
 
