@@ -2221,22 +2221,29 @@ function avatar_process_user(&$error, $custom_userdata = false)
 		// Do we actually have any data to update?
 		if (sizeof($sql_ary))
 		{
+			$ext_new = $ext_old = '';
+			if (isset($sql_ary['user_avatar']))
+			{
+				$userdata = ($custom_userdata === false) ? $user->data : $custom_userdata;
+				$ext_new = (empty($sql_ary['user_avatar'])) ? '' : substr(strrchr($sql_ary['user_avatar'], '.'), 1);
+				$ext_old = (empty($userdata['user_avatar'])) ? '' : substr(strrchr($userdata['user_avatar'], '.'), 1);
+
+				if ($userdata['user_avatar_type'] == AVATAR_UPLOAD)
+				{
+					// Delete old avatar if present
+					if ((!empty($userdata['user_avatar']) && empty($sql_ary['user_avatar']))
+					   || ( !empty($userdata['user_avatar']) && !empty($sql_ary['user_avatar']) && $ext_new !== $ext_old))
+					{
+						avatar_delete('user', $userdata);
+					}
+				}
+			}
+			
 			$sql = 'UPDATE ' . USERS_TABLE . '
 				SET ' . $db->sql_build_array('UPDATE', $sql_ary) . '
 				WHERE user_id = ' . (($custom_userdata === false) ? $user->data['user_id'] : $custom_userdata['user_id']);
 			$db->sql_query($sql);
 
-			if (isset($sql_ary['user_avatar']))
-			{
-				$userdata = ($custom_userdata === false) ? $user->data : $custom_userdata;
-
-				// Delete old avatar if present
-				if ((!empty($userdata['user_avatar']) && empty($sql_ary['user_avatar']) && $userdata['user_avatar_type'] == AVATAR_UPLOAD)
-				   || ( !empty($userdata['user_avatar']) && !empty($sql_ary['user_avatar']) && $userdata['user_avatar_type'] == AVATAR_UPLOAD && $sql_ary['user_avatar_type'] != AVATAR_UPLOAD))
-				{
-					avatar_delete('user', $userdata);
-				}
-			}
 		}
 	}
 
