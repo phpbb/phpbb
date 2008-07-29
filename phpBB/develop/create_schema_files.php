@@ -1609,7 +1609,7 @@ function get_schema_struct()
 			'bbcode_bitfield'		=> array('VCHAR:255', 'kNg='),
 			'template_storedb'		=> array('BOOL', 0),
 			'template_inherits_id'		=> array('UINT:4', 0),
-			'template_inherit_path'		=> array('VCHAR', NULL),
+			'template_inherit_path'		=> array('VCHAR', ''),
 		),
 		'PRIMARY_KEY'	=> 'template_id',
 		'KEYS'			=> array(
