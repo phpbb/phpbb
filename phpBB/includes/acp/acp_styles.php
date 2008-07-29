@@ -2096,6 +2096,14 @@ parse_css_file = {PARSE_CSS_FILE}
 			$style_default = request_var('style_default', 0);
 			$store_db = request_var('store_db', 0);
 
+			$sql = "SELECT {$mode}_id 
+				FROM $sql_from
+				WHERE {$mode}_id <> $style_id 
+				AND {$mode}_name = '" . $db->sql_escape(strtolower($name)) . "'";
+			$result = $db->sql_query($sql);
+			$conflict = $db->sql_fetchrow($result);
+			$db->sql_freeresult($result);
+			
 			if ($mode == 'style' && (!$template_id || !$theme_id || !$imageset_id))
 			{
 				$error[] = $user->lang['STYLE_ERR_NO_IDS'];
@@ -2106,7 +2114,7 @@ parse_css_file = {PARSE_CSS_FILE}
 				$error[] = $user->lang['DEACTIVATE_DEFAULT'];
 			}
 
-			if (!$name)
+			if (!$name || $conflict)
 			{
 				$error[] = $user->lang[$l_type . '_ERR_STYLE_NAME'];
 			}
