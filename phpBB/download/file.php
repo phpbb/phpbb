@@ -75,20 +75,19 @@ if (isset($_GET['avatar']))
 	}
 	
 	
-	if ($exit)
+	if (!$exit)
 	{
-		file_gc();
+		if (!$filename)
+		{
+			// no way such an avatar could exist. They are not following the rules, stop the show.
+			header("HTTP/1.0 403 Forbidden");
+		}
+		else
+		{
+			send_avatar_to_browser(($avatar_group ? 'g' : '') . $filename . '.' . $ext, $browser);
+		}
 	}
-	
-	if (!$filename)
-	{
-		// no way such an avatar could exist. They are not following the rules, stop the show.
-		header("HTTP/1.0 403 Forbidden");
-	}
-	else
-	{
-		send_avatar_to_browser(($avatar_group ? 'g' : '') . $filename . '.' . $ext, $browser);
-	}
+	file_gc();
 }
 
 // implicit else: we are not in avatar mode

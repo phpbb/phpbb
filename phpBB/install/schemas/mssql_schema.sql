@@ -1295,7 +1295,9 @@ CREATE TABLE [phpbb_styles_template] (
 	[template_copyright] [varchar] (255) DEFAULT ('') NOT NULL ,
 	[template_path] [varchar] (100) DEFAULT ('') NOT NULL ,
 	[bbcode_bitfield] [varchar] (255) DEFAULT ('kNg=') NOT NULL ,
-	[template_storedb] [int] DEFAULT (0) NOT NULL 
+	[template_storedb] [int] DEFAULT (0) NOT NULL ,
+	[template_inherits_id] [int] DEFAULT (0) NOT NULL ,
+	[template_inherit_path] [varchar] (255) NOT NULL 
 ) ON [PRIMARY]
 GO
 

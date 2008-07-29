@@ -972,6 +972,8 @@ CREATE TABLE phpbb_styles_template (
 	template_path varchar(100) DEFAULT '' NOT NULL,
 	bbcode_bitfield varchar(255) DEFAULT 'kNg=' NOT NULL,
 	template_storedb INT2 DEFAULT '0' NOT NULL CHECK (template_storedb >= 0),
+	template_inherits_id INT4 DEFAULT '0' NOT NULL CHECK (template_inherits_id >= 0),
+	template_inherit_path varchar(255) NOT NULL,
 	PRIMARY KEY (template_id)
 );
 
