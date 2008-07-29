@@ -143,7 +143,7 @@ function user_update_name($old_name, $new_name)
 }
 
 /**
-* Adds an user
+* Adds a user
 *
 * @param mixed $user_row An array containing the following keys (and the appropriate values): username, group_id (the group to place the user in), user_email and the user_type(usually 0). Additional entries not overridden by defaults will be forwarded.
 * @param string $cp_data custom profile fields, see custom_profile::build_insert_sql_array
