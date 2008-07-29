@@ -80,7 +80,11 @@ class acp_captcha
 			$captcha_vars = array_keys($captcha_vars);
 			foreach ($captcha_vars as $captcha_var)
 			{
-				set_config($captcha_var, request_var($captcha_var, 0));
+				$value = request_var($captcha_var, 0);
+				if ($value >= 0)
+				{
+					set_config($captcha_var, $value);
+				}
 			}
 			trigger_error($user->lang['CONFIG_UPDATED'] . adm_back_link($this->u_action));
 		}
