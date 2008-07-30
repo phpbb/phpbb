@@ -1044,7 +1044,7 @@ inherit_from = {INHERIT_FROM}
 			{
 				if (!$template_row['template_storedb'])
 				{
-					if (!file_exists($file))
+					if (!file_exists($file_tpl))
 					{
 						$file_tpl = "{$phpbb_root_path}styles/{$template_row['template_inherit_path']}/template/$tpl_file.html";
 						$inherited = true;
@@ -2759,6 +2759,7 @@ inherit_from = {INHERIT_FROM}
 			'S_LOCATION'		=> (isset($installcfg['inherit_from']) && $installcfg['inherit_from']) ? false : true,
 			'S_STYLE'			=> ($mode == 'style') ? true : false,
 			'S_TEMPLATE'		=> ($mode == 'template') ? true : false,
+			'S_SUPERTEMPLATE'	=> (isset($installcfg['inherit_from'])) ? $installcfg['inherit_from'] : '',
 			'S_THEME'			=> ($mode == 'theme') ? true : false,
 
 			'S_STORE_DB'			=> (isset($style_row[$mode . '_storedb'])) ? $style_row[$mode . '_storedb'] : 0,
