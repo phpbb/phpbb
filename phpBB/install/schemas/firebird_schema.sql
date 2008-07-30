@@ -1078,7 +1078,7 @@ CREATE TABLE phpbb_styles_template (
 	bbcode_bitfield VARCHAR(255) CHARACTER SET NONE DEFAULT 'kNg=' NOT NULL,
 	template_storedb INTEGER DEFAULT 0 NOT NULL,
 	template_inherits_id INTEGER DEFAULT 0 NOT NULL,
-	template_inherit_path VARCHAR(255) CHARACTER SET NONE NOT NULL
+	template_inherit_path VARCHAR(255) CHARACTER SET NONE DEFAULT '' NOT NULL
 );;
 
 ALTER TABLE phpbb_styles_template ADD PRIMARY KEY (template_id);;

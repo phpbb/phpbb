@@ -1432,7 +1432,7 @@ CREATE TABLE phpbb_styles_template (
 	bbcode_bitfield varchar2(255) DEFAULT 'kNg=' NOT NULL,
 	template_storedb number(1) DEFAULT '0' NOT NULL,
 	template_inherits_id number(4) DEFAULT '0' NOT NULL,
-	template_inherit_path varchar2(255) NOT NULL,
+	template_inherit_path varchar2(255) DEFAULT '' ,
 	CONSTRAINT pk_phpbb_styles_template PRIMARY KEY (template_id),
 	CONSTRAINT u_phpbb_tmplte_nm UNIQUE (template_name)
 )

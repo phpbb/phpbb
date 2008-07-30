@@ -715,7 +715,7 @@ CREATE TABLE phpbb_styles_template (
 	bbcode_bitfield varchar(255) NOT NULL DEFAULT 'kNg=',
 	template_storedb INTEGER UNSIGNED NOT NULL DEFAULT '0',
 	template_inherits_id INTEGER UNSIGNED NOT NULL DEFAULT '0',
-	template_inherit_path varchar(255) NOT NULL 
+	template_inherit_path varchar(255) NOT NULL DEFAULT ''
 );
 
 CREATE UNIQUE INDEX phpbb_styles_template_tmplte_nm ON phpbb_styles_template (template_name);
