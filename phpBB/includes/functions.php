@@ -1715,6 +1715,7 @@ function generate_board_url($without_script_path = false)
 		$script_path = $config['script_path'];
 
 		$url = $server_protocol . $server_name;
+		$cookie_secure = $config['cookie_secure'];
 	}
 	else
 	{
@@ -1725,7 +1726,7 @@ function generate_board_url($without_script_path = false)
 		$script_path = $user->page['root_script_path'];
 	}
 
-	if ($server_port && (($config['cookie_secure'] && $server_port <> 443) || (!$config['cookie_secure'] && $server_port <> 80)))
+	if ($server_port && (($cookie_secure && $server_port <> 443) || (!$cookie_secure && $server_port <> 80)))
 	{
 		// HTTP HOST can carry a port number (we fetch $user->host, but for old versions this may be true)
 		if (strpos($server_name, ':') === false)
