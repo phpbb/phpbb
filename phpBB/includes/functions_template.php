@@ -442,11 +442,64 @@ class template_filter extends php_user_filter
 						}
 						$token = "sizeof($varref)";
 					}
+					else if (!empty($token))
+					{
+						$token = '(' . $token . ')';
+						/**
+						* If we need to really secure the usage, or force specific types on specific operations... the following would be the code
+
+						if (!isset($tokens[$i - 1]))
+						{
+							unset($tokens[$i]);
+							break;
+						}
+
+						$prev_token = trim($tokens[$i - 1]);
+
+						switch ($prev_token)
+						{
+							// Integer
+							case '<':
+							case '>':
+							case '<=':
+							case '>=':
+							case '%':
+								$token = ( ((double) $token) != 0) ? (double) $token : (int) $token;
+							break;
+
+							case '==':
+							case '!=':
+								$int_token = (((double) $token) != 0) ? (double) $token : (int) $token;
+								if ($int_token && $int_token == $token)
+								{
+									$token = $int_token;
+									break;
+								}
+
+								// It is a string...
+								$token = '(' . $token . ')';
+							break;
+
+							case '!':
+							case '||':
+							case '&&':
+							default:
+								unset($tokens[$i]);
+								break;
+							break;
+						}
+						*/
+					}
 
 				break;
 			}
 		}
 
+		// If there are no valid tokens left or only control/compare characters left, we do skip this statement
+		if (!sizeof($tokens) || str_replace(array(' ', '=', '!', '<', '>', '&', '|', '%', '(', ')'), '', implode('', $tokens)) == '')
+		{
+			$tokens = array('false');
+		}
 		return (($elseif) ? '} else if (' : 'if (') . (implode(' ', $tokens) . ') { ');
 	}
 
