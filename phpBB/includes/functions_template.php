@@ -23,7 +23,7 @@ if (!defined('IN_PHPBB'))
  */
 class template_filter extends php_user_filter
 {
-	private $regex = '~<!-- ([A-Z][A-Z_0-9]+)(?: (.*?) ?)?-->|{((?:[a-z][a-z_0-9]+\.)*[A-Z][A-Z_0-9]+)}~';
+	private $regex = '~<!-- ([A-Z][A-Z_0-9]+)(?: (.*?) ?)?-->|{((?:[a-z][a-z_0-9]+\.)*\\$?[A-Z][A-Z_0-9]+)}~';
 	private $blocks = array();
 
 	private $block_names = array();
