@@ -300,13 +300,12 @@ class template_filter extends php_user_filter
 	}
 
 	/**
-	* Compile IF tags - much of this is from Smarty with
+	* Compile a general expression - much of this is from Smarty with
 	* some adaptions for our block level methods
 	* @access private
 	*/
-	private function compile_tag_if($tag_args, $elseif)
+	private function compile_expression($tag_args)
 	{
-		// Tokenize args for 'if' tag.
 		$match = array();
 		preg_match_all('/(?:
 			"[^"\\\\]*(?:\\\\.[^"\\\\]*)*"         |
@@ -400,9 +399,9 @@ class template_filter extends php_user_filter
 
 				case 'is':
 					$is_arg_start = ($tokens[$i-1] == ')') ? array_pop($is_arg_stack) : $i-1;
-					$is_arg	= implode('	', array_slice($tokens,	$is_arg_start, $i -	$is_arg_start));
+					$is_arg = implode(' ', array_slice($tokens, $is_arg_start, $i - $is_arg_start));
 
-					$new_tokens	= $this->_parse_is_expr($is_arg, array_slice($tokens, $i+1));
+					$new_tokens = $this->_parse_is_expr($is_arg, array_slice($tokens, $i+1));
 
 					array_splice($tokens, $is_arg_start, sizeof($tokens), $new_tokens);
 
@@ -442,64 +441,18 @@ class template_filter extends php_user_filter
 						}
 						$token = "sizeof($varref)";
 					}
-					else if (!empty($token))
-					{
-						$token = '(' . $token . ')';
-						/**
-						* If we need to really secure the usage, or force specific types on specific operations... the following would be the code
-
-						if (!isset($tokens[$i - 1]))
-						{
-							unset($tokens[$i]);
-							break;
-						}
-
-						$prev_token = trim($tokens[$i - 1]);
-
-						switch ($prev_token)
-						{
-							// Integer
-							case '<':
-							case '>':
-							case '<=':
-							case '>=':
-							case '%':
-								$token = ( ((double) $token) != 0) ? (double) $token : (int) $token;
-							break;
-
-							case '==':
-							case '!=':
-								$int_token = (((double) $token) != 0) ? (double) $token : (int) $token;
-								if ($int_token && $int_token == $token)
-								{
-									$token = $int_token;
-									break;
-								}
-
-								// It is a string...
-								$token = '(' . $token . ')';
-							break;
-
-							case '!':
-							case '||':
-							case '&&':
-							default:
-								unset($tokens[$i]);
-								break;
-							break;
-						}
-						*/
-					}
 
 				break;
 			}
 		}
 
-		// If there are no valid tokens left or only control/compare characters left, we do skip this statement
-		if (!sizeof($tokens) || str_replace(array(' ', '=', '!', '<', '>', '&', '|', '%', '(', ')'), '', implode('', $tokens)) == '')
-		{
-			$tokens = array('false');
-		}
+		return $tokens;
+	}
+
+
+	private function compile_tag_if($tag_args, $elseif)
+	{
+		$tokens = $this->compile_expression($tag_args);
 		return (($elseif) ? '} else if (' : 'if (') . (implode(' ', $tokens) . ') { ');
 	}
 
@@ -510,9 +463,9 @@ class template_filter extends php_user_filter
 	private function compile_tag_define($tag_args, $op)
 	{
 		$match = array();
-		preg_match('#^((?:[a-z0-9\-_]+\.)+)?\$(?=[A-Z])([A-Z0-9_\-]*)(?: = (\'?)([^\']*)(\'?))?$#', $tag_args, $match);
+		preg_match('#^((?:[a-z0-9\-_]+\.)+)?\$(?=[A-Z])([A-Z0-9_\-]*) = (.*?)$#', $tag_args, $match);
 
-		if (empty($match[2]) || (!isset($match[4]) && $op))
+		if (empty($match[2]) || (!isset($match[3]) && $op))
 		{
 			return '';
 		}
@@ -522,46 +475,9 @@ class template_filter extends php_user_filter
 			return 'unset(' . (($match[1]) ? $this->generate_block_data_ref(substr($match[1], 0, -1), true, true) . '[\'' . $match[2] . '\']' : '$_tpldata[\'DEFINE\'][\'.\'][\'' . $match[2] . '\']') . ');';
 		}
 
-		$varrefs = array();
-		// Are we a string?
-		if ($match[3] && $match[5])
-		{
-			$match[4] = str_replace(array('\\\'', '\\\\', '\''), array('\'', '\\', '\\\''), $match[4]);
+		$parsed_statement = implode(' ', $this->compile_expression($match[3]));
 
-			// Compile reference, we allow template variables in defines...
-			$match[4] = $this->compile($match[4]);
-
-			// Now replace the php code
-			$match[4] = "'" . str_replace(array('<?php echo ', '; ?>'), array("' . ", " . '"), $match[4]) . "'";
-		}
-		// is this a template variable?
-		else if (preg_match('#^((?:[a-z0-9\-_]+\.)+)?(\$)?(?=[A-Z])([A-Z0-9\-_]+)#s', $match[4], $varrefs))
-		{
-			$match[4] = (!empty($varrefs[1])) ? $this->generate_block_data_ref(substr($varrefs[1], 0, -1), true, $varrefs[2]) . '[\'' . $varrefs[3] . '\']' : (($varrefs[2]) ? '$_tpldata[\'DEFINE\'][\'.\'][\'' . $varrefs[3] . '\']' : '$_rootref[\'' . $varrefs[3] . '\']');
-		}
-		else
-		{
-			$type = array();
-			preg_match('#true|false|\.#i', $match[4], $type);
-
-			switch (strtolower($type[0]))
-			{
-				case 'true':
-				case 'false':
-					$match[4] = strtoupper($match[4]);
-				break;
-
-				case '.':
-					$match[4] = doubleval($match[4]);
-				break;
-
-				default:
-					$match[4] = intval($match[4]);
-				break;
-			}
-		}
-
-		return (($match[1]) ? $this->generate_block_data_ref(substr($match[1], 0, -1), true, true) . '[\'' . $match[2] . '\']' : '$_tpldata[\'DEFINE\'][\'.\'][\'' . $match[2] . '\']') . ' = ' . $match[4] . ';';
+		return (($match[1]) ? $this->generate_block_data_ref(substr($match[1], 0, -1), true, true) . '[\'' . $match[2] . '\']' : '$_tpldata[\'DEFINE\'][\'.\'][\'' . $match[2] . '\']') . ' = ' . $parsed_statement . ';';
 	}
 
 	/**
