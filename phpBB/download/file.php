@@ -16,6 +16,18 @@ if (!defined('PHPBB_ROOT_PATH')) define('PHPBB_ROOT_PATH', './../');
 if (!defined('PHP_EXT')) define('PHP_EXT', substr(strrchr(__FILE__, '.'), 1));
 include(PHPBB_ROOT_PATH . 'common.' . PHP_EXT);
 
+if (isset($_SERVER['CONTENT_TYPE']))
+{
+	if ($_SERVER['CONTENT_TYPE'] === 'application/x-java-archive')
+	{
+		exit;
+	}
+}
+else if (isset($_SERVER['HTTP_USER_AGENT']) && strpos($_SERVER['HTTP_USER_AGENT'], 'Java') !== false)
+{
+	exit;
+}
+
 if (isset($_GET['avatar']))
 {
 	// worst-case default
