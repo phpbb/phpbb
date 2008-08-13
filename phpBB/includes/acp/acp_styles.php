@@ -2437,6 +2437,10 @@ inherit_from = {INHERIT_FROM}
 		{
 			$content = '';
 		}
+		if (defined('DEBUG'))
+		{
+			$content = "/* BEGIN @include $filename */ \n $content \n /* END @include $filename */ \n";
+		}
 
 		return $content;
 	}
