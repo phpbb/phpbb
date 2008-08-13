@@ -15,6 +15,18 @@ define('IN_PHPBB', true);
 $phpbb_root_path = (defined('PHPBB_ROOT_PATH')) ? PHPBB_ROOT_PATH : './../';
 $phpEx = substr(strrchr(__FILE__, '.'), 1);
 
+if (isset($_SERVER['CONTENT_TYPE']))
+{
+	if ($_SERVER['CONTENT_TYPE'] === 'application/x-java-archive')
+	{
+		exit;
+	}
+}
+else if (isset($_SERVER['HTTP_USER_AGENT']) && strpos($_SERVER['HTTP_USER_AGENT'], 'Java') !== false)
+{
+	exit;
+}
+
 if (isset($_GET['avatar']))
 {
 	require($phpbb_root_path . 'config.' . $phpEx);
