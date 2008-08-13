@@ -31,9 +31,13 @@ $voted_id	= request_var('vote_id', array('' => 0));
 $start		= request_var('start', 0);
 $view		= request_var('view', '');
 
-$sort_days	= request_var('st', ((!empty($user->data['user_post_show_days'])) ? $user->data['user_post_show_days'] : 0));
-$sort_key	= request_var('sk', ((!empty($user->data['user_post_sortby_type'])) ? $user->data['user_post_sortby_type'] : 't'));
-$sort_dir	= request_var('sd', ((!empty($user->data['user_post_sortby_dir'])) ? $user->data['user_post_sortby_dir'] : 'a'));
+$default_sort_days	= (!empty($user->data['user_post_show_days'])) ? $user->data['user_post_show_days'] : 0;
+$default_sort_key	= (!empty($user->data['user_post_sortby_type'])) ? $user->data['user_post_sortby_type'] : 't';
+$default_sort_dir	= (!empty($user->data['user_post_sortby_dir'])) ? $user->data['user_post_sortby_dir'] : 'a';
+
+$sort_days	= request_var('st', $default_sort_days);
+$sort_key	= request_var('sk', $default_sort_key);
+$sort_dir	= request_var('sd', $default_sort_dir);
 
 $update		= request_var('update', false);
 
@@ -388,7 +392,8 @@ $sort_by_text = array('a' => $user->lang['AUTHOR'], 't' => $user->lang['POST_TIM
 $sort_by_sql = array('a' => 'u.username_clean', 't' => 'p.post_time', 's' => 'p.post_subject');
 
 $s_limit_days = $s_sort_key = $s_sort_dir = $u_sort_param = '';
-gen_sort_selects($limit_days, $sort_by_text, $sort_days, $sort_key, $sort_dir, $s_limit_days, $s_sort_key, $s_sort_dir, $u_sort_param);
+
+gen_sort_selects($limit_days, $sort_by_text, $sort_days, $sort_key, $sort_dir, $s_limit_days, $s_sort_key, $s_sort_dir, $u_sort_param, $default_sort_days, $default_sort_key, $default_sort_dir);
 
 // Obtain correct post count and ordering SQL if user has
 // requested anything different
@@ -442,8 +447,8 @@ if ($start < 0 || $start > $total_posts)
 }
 
 // General Viewtopic URL for return links
-$viewtopic_url = append_sid('viewtopic', "f=$forum_id&amp;t=$topic_id&amp;start=$start&amp;$u_sort_param" . (($highlight_match) ? "&amp;hilit=$highlight" : ''));
-
+$viewtopic_url = append_sid('viewtopic', "f=$forum_id&amp;t=$topic_id&amp;start=$start" . ((strlen($u_sort_param)) ? "&amp;$u_sort_param" : '') . (($highlight_match) ? "&amp;hilit=$highlight" : ''));
+ 
 // Are we watching this topic?
 $s_watching_topic = array(
 	'link'			=> '',
@@ -523,7 +528,7 @@ $topic_mod .= ($allow_change_type && $auth->acl_get('f_announce', $forum_id) && 
 $topic_mod .= ($auth->acl_get('m_', $forum_id)) ? '<option value="topic_logs">' . $user->lang['VIEW_TOPIC_LOGS'] . '</option>' : '';
 
 // If we've got a hightlight set pass it on to pagination.
-$pagination = generate_pagination(append_sid('viewtopic', "f=$forum_id&amp;t=$topic_id&amp;$u_sort_param" . (($highlight_match) ? "&amp;hilit=$highlight" : '')), $total_posts, $config['posts_per_page'], $start);
+$pagination = generate_pagination(append_sid('viewtopic', "f=$forum_id&amp;t=$topic_id" . ((strlen($u_sort_param)) ? "&amp;$u_sort_param" : '') . (($highlight_match) ? "&amp;hilit=$highlight" : '')), $total_posts, $config['posts_per_page'], $start);
 
 // Navigation links
 generate_forum_nav($topic_data);
@@ -557,7 +562,8 @@ $template->assign_vars(array(
 	'PAGINATION' 	=> $pagination,
 	'PAGE_NUMBER' 	=> on_page($total_posts, $config['posts_per_page'], $start),
 	'TOTAL_POSTS'	=> ($total_posts == 1) ? $user->lang['VIEW_TOPIC_POST'] : sprintf($user->lang['VIEW_TOPIC_POSTS'], $total_posts),
-	'U_MCP' 		=> ($auth->acl_get('m_', $forum_id)) ? append_sid('mcp', "i=main&amp;mode=topic_view&amp;f=$forum_id&amp;t=$topic_id&amp;start=$start&amp;$u_sort_param", true, $user->session_id) : '',
+	'U_MCP' 		=> ($auth->acl_get('m_', $forum_id)) ? append_sid('mcp', "i=main&amp;mode=topic_view&amp;f=$forum_id&amp;t=$topic_id&amp;start=$start" . ((strlen($u_sort_param)) ? "&amp;$u_sort_param" : ''), true, $user->session_id) : '',
+
 	'MODERATORS'	=> (isset($forum_moderators[$forum_id]) && sizeof($forum_moderators[$forum_id])) ? implode(', ', $forum_moderators[$forum_id]) : '',
 
 	'POST_IMG' 			=> ($topic_data['forum_status'] == ITEM_LOCKED) ? $user->img('button_topic_locked', 'FORUM_LOCKED') : $user->img('button_topic_new', 'POST_NEW_TOPIC'),
