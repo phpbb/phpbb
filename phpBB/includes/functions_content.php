@@ -41,57 +41,56 @@ if (!defined('IN_PHPBB'))
 /**
 * Generate sort selection fields
 */
-function gen_sort_selects(&$limit_days, &$sort_by_text, &$sort_days, &$sort_key, &$sort_dir, &$s_limit_days, &$s_sort_key, &$s_sort_dir, &$u_sort_param)
+function gen_sort_selects(&$limit_days, &$sort_by_text, &$sort_days, &$sort_key, &$sort_dir, &$s_limit_days, &$s_sort_key, &$s_sort_dir, &$u_sort_param, $def_st = false, $def_sk = false, $def_sd = false)
 {
 	global $user;
 
 	$sort_dir_text = array('a' => $user->lang['ASCENDING'], 'd' => $user->lang['DESCENDING']);
 
-	// Check if the key is selectable. If not, we reset to the first key found.
-	// This ensures the values are always valid.
-	if (!isset($limit_days[$sort_days]))
+	$sorts = array(
+		'st'	=> array(
+			'selected'	=> $sort_days,
+			'default'	=> $def_st,
+			'options'	=> $limit_days,
+			'output'	=> &$s_limit_days,),
+		'sk'	=> array(
+			'selected'	=> $sort_key,
+			'default'	=> $def_sk,
+			'options'	=> $sort_by_text,
+			'output'	=> &$s_sort_key,),
+		'sd'	=> array(
+			'selected'	=> $sort_dir,
+			'default'	=> $def_sd,
+			'options'	=> $sort_dir_text,
+			'output'	=> &$s_sort_dir,),
+	);
+	$u_sort_param  = '';
+	foreach ($sorts as $name => $sort_ary)
 	{
-		@reset($limit_days);
-		$sort_days = key($limit_days);
+		// Check if the key is selectable. If not, we reset to the default or first key found.
+		// This ensures the values are always valid.
+		if (!isset($sort_ary['options'][$sort_ary['selected']]))
+		{
+			if ($sort_ary['default'] !== false)
+			{
+				$sort_ary['selected'] = $sort_ary['default'];
+			}
+			else
+			{
+				@reset($sort_ary['options']);
+				$sort_ary['selected'] = key($sort_ary['options']);
+			}
+		}
+		
+		$sort_ary['output'] = '<select name="' . $name . '" id="' . $name . '">';
+		foreach ($sort_ary['options'] as $option => $text)
+		{
+			$selected = ($sort_ary['selected']== $option) ? ' selected="selected"' : '';
+			$sort_ary['output'] .= '<option value="' . $option . '"' . $selected . '>' . $text . '</option>';
+		}
+		$sort_ary['output'] .= '</select>';
+		$u_sort_param .= ($sort_ary['selected'] !== $sort_ary['default']) ? ((strlen($u_sort_param)) ? '&amp;' : '') . "{$name}={$sort_ary['selected']}" : '';
 	}
-
-	if (!isset($sort_by_text[$sort_key]))
-	{
-		@reset($sort_by_text);
-		$sort_key = key($sort_by_text);
-	}
-
-	if (!isset($sort_dir_text[$sort_dir]))
-	{
-		@reset($sort_dir_text);
-		$sort_dir = key($sort_dir_text);
-	}
-
-	$s_limit_days = '<select name="st" id="st">';
-	foreach ($limit_days as $day => $text)
-	{
-		$selected = ($sort_days == $day) ? ' selected="selected"' : '';
-		$s_limit_days .= '<option value="' . $day . '"' . $selected . '>' . $text . '</option>';
-	}
-	$s_limit_days .= '</select>';
-
-	$s_sort_key = '<select name="sk" id="sk">';
-	foreach ($sort_by_text as $key => $text)
-	{
-		$selected = ($sort_key == $key) ? ' selected="selected"' : '';
-		$s_sort_key .= '<option value="' . $key . '"' . $selected . '>' . $text . '</option>';
-	}
-	$s_sort_key .= '</select>';
-
-	$s_sort_dir = '<select name="sd" id="sd">';
-	foreach ($sort_dir_text as $key => $value)
-	{
-		$selected = ($sort_dir == $key) ? ' selected="selected"' : '';
-		$s_sort_dir .= '<option value="' . $key . '"' . $selected . '>' . $value . '</option>';
-	}
-	$s_sort_dir .= '</select>';
-
-	$u_sort_param = "st=$sort_days&amp;sk=$sort_key&amp;sd=$sort_dir";
 
 	return;
 }
