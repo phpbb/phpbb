@@ -1322,7 +1322,7 @@ switch ($mode)
 			$user_list[] = (int) $row['user_id'];
 		}
 		$db->sql_freeresult($result);
-
+		$leaders_set = false;
 		// So, did we get any users?
 		if (sizeof($user_list))
 		{
@@ -1382,15 +1382,16 @@ switch ($mode)
 			// If we sort by last active date we need to adjust the id cache due to user_lastvisit not being the last active date...
 			if ($sort_key == 'l')
 			{
-				$lesser_than = ($sort_dir == 'a') ? -1 : 1;
 //				uasort($id_cache, create_function('$first, $second', "return (\$first['last_visit'] == \$second['last_visit']) ? 0 : ((\$first['last_visit'] < \$second['last_visit']) ? $lesser_than : ($lesser_than * -1));"));
-				usort($user_list, create_function('$first, $second', "global \$id_cache; return (\$id_cache[\$first]['last_visit'] == \$id_cache[\$second]['last_visit']) ? 0 : ((\$id_cache[\$first]['last_visit'] < \$id_cache[\$second]['last_visit']) ? $lesser_than : ($lesser_than * -1));"));
+				usort($user_list,  '_sort_last_active');
 			}
 
 			for ($i = 0, $end = sizeof($user_list); $i < $end; ++$i)
 			{
 				$user_id = $user_list[$i];
 				$row =& $id_cache[$user_id];
+				$is_leader = (isset($row['group_leader']) && $row['group_leader']) ? true : false;
+				$leaders_set = ($leaders_set || $is_leader);
 
 				$cp_row = array();
 				if ($config['load_cpf_memberlist'])
@@ -1402,7 +1403,7 @@ switch ($mode)
 					'ROW_NUMBER'		=> $i + ($start + 1),
 
 					'S_CUSTOM_PROFILE'	=> (isset($cp_row['row']) && sizeof($cp_row['row'])) ? true : false,
-					'S_GROUP_LEADER'	=> (isset($row['group_leader']) && $row['group_leader']) ? true : false,
+					'S_GROUP_LEADER'	=> $is_leader,
 
 					'U_VIEW_PROFILE'	=> append_sid('memberlist', 'mode=viewprofile&amp;u=' . $user_id))
 				);
@@ -1462,6 +1463,7 @@ switch ($mode)
 
 			'S_SHOW_GROUP'		=> ($mode == 'group') ? true : false,
 			'S_VIEWONLINE'		=> $auth->acl_get('u_viewonline'),
+			'S_LEADERS_SET'		=> $leaders_set,
 			'S_MODE_SELECT'		=> $s_sort_key,
 			'S_ORDER_SELECT'	=> $s_sort_dir,
 			'S_CHAR_OPTIONS'	=> $s_char_options,
@@ -1590,6 +1592,26 @@ function show_profile($data)
 
 		'L_VIEWING_PROFILE'	=> sprintf($user->lang['VIEWING_PROFILE'], $username),
 	);
+}
+
+function _sort_last_active($first, $second)
+{
+	global $id_cache, $sort_dir;
+	
+	$lesser_than = ($sort_dir === 'a') ? -1 : 1;
+	
+	if (isset($id_cache[$first]['group_leader']) && $id_cache[$first]['group_leader'] && (!isset($id_cache[$second]['group_leader']) || !$id_cache[$second]['group_leader']))
+	{
+		return 1;
+	}
+	else if (isset($id_cache[$second]['group_leader']) && (!isset($id_cache[$first]['group_leader']) || !$id_cache[$first]['group_leader']) && $id_cache[$second]['group_leader'])
+	{
+		return -1;
+	}
+	else
+	{
+		return $lesser_than * (int) ($id_cache[$first]['last_visit'] - $id_cache[$second]['last_visit']);
+	}
 }
 
 ?>

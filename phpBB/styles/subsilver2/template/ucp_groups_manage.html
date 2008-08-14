@@ -151,13 +151,15 @@
 			<td style="text-align: center;"></td>
 		</tr>
 	<!-- END leader -->
-	<tr>
-		<td class="row3" colspan="5"><b>{L_GROUP_APPROVED}</b></td>
-	</tr>
+
 	<!-- BEGIN member -->
 		<!-- IF member.S_PENDING -->
 			<tr>
 				<td class="row3" colspan="5"><b>{L_GROUP_PENDING}</b></td>
+			</tr>
+		<!-- ELSEIF member.S_APPROVED -->
+			<tr>
+				<td class="row3" colspan="5"><b>{L_GROUP_APPROVED}</b></td>
 			</tr>
 		<!-- ELSE -->
 			<!-- IF member.S_ROW_COUNT is even --><tr class="row1"><!-- ELSE --><tr class="row2"><!-- ENDIF -->
