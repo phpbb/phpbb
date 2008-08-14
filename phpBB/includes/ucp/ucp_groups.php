@@ -221,8 +221,9 @@ class ucp_groups
 									$messenger->im($row['user_jabber'], $row['username']);
 
 									$messenger->assign_vars(array(
-										'USERNAME'		=> htmlspecialchars_decode($row['username']),
-										'GROUP_NAME'	=> htmlspecialchars_decode($group_row[$group_id]['group_name']),
+										'USERNAME'			=> htmlspecialchars_decode($row['username']),
+										'GROUP_NAME'		=> htmlspecialchars_decode($group_row[$group_id]['group_name']),
+										'REQUEST_USERNAME'	=> $user->data['username'],
 
 										'U_PENDING'		=> generate_board_url() . "/ucp.$phpEx?i=groups&mode=manage&action=list&g=$group_id",
 										'U_GROUP'		=> generate_board_url() . "/memberlist.$phpEx?mode=group&g=$group_id")
@@ -434,6 +435,23 @@ class ucp_groups
 					{
 						trigger_error($user->lang['NOT_ALLOWED_MANAGE_GROUP'] . $return_page, E_USER_WARNING);
 					}
+					
+					$group_name = $group_row['group_name'];
+					$group_type = $group_row['group_type'];
+					$avatar_img = (!empty($group_row['group_avatar'])) ? get_user_avatar($group_row['group_avatar'], $group_row['group_avatar_type'], $group_row['group_avatar_width'], $group_row['group_avatar_height'], 'GROUP_AVATAR') : '<img src="' . $phpbb_root_path . 'adm/images/no_avatar.gif" alt="" />';
+
+					$template->assign_vars(array(
+						'GROUP_NAME'			=> ($group_type == GROUP_SPECIAL) ? $user->lang['G_' . $group_name] : $group_name,
+						'GROUP_INTERNAL_NAME'	=> $group_name,
+						'GROUP_COLOUR'			=> (isset($group_row['group_colour'])) ? $group_row['group_colour'] : '',
+						'GROUP_DESC_DISP'		=> generate_text_for_display($group_row['group_desc'], $group_row['group_desc_uid'], $group_row['group_desc_bitfield'], $group_row['group_desc_options']),
+						'GROUP_TYPE'			=> $group_row['group_type'],
+						
+						'AVATAR'				=> $avatar_img,
+						'AVATAR_IMAGE'			=> $avatar_img,
+						'AVATAR_WIDTH'			=> (isset($group_row['group_avatar_width'])) ? $group_row['group_avatar_width'] : '',
+						'AVATAR_HEIGHT'			=> (isset($group_row['group_avatar_height'])) ? $group_row['group_avatar_height'] : '',
+					));
 				}
 
 				switch ($action)
@@ -629,9 +647,7 @@ class ucp_groups
 						}
 						else
 						{
-							$group_name = $group_row['group_name'];
 							$group_desc_data = generate_text_for_edit($group_row['group_desc'], $group_row['group_desc_uid'], $group_row['group_desc_options']);
-							$group_type = $group_row['group_type'];
 							$group_rank = $group_row['group_rank'];
 						}
 
@@ -654,8 +670,6 @@ class ucp_groups
 						$type_closed	= ($group_type == GROUP_CLOSED) ? ' checked="checked"' : '';
 						$type_hidden	= ($group_type == GROUP_HIDDEN) ? ' checked="checked"' : '';
 
-						$avatar_img = (!empty($group_row['group_avatar'])) ? get_user_avatar($group_row['group_avatar'], $group_row['group_avatar_type'], $group_row['group_avatar_width'], $group_row['group_avatar_height'], 'GROUP_AVATAR') : '<img src="' . $phpbb_root_path . 'adm/images/no_avatar.gif" alt="" />';
-
 						$display_gallery = (isset($_POST['display_gallery'])) ? true : false;
 
 						if ($config['allow_avatar_local'] && $display_gallery)
@@ -664,7 +678,6 @@ class ucp_groups
 						}
 						
 						$avatars_enabled = ($can_upload || ($config['allow_avatar_local'] || $config['allow_avatar_remote'])) ? true : false;
-
 
 						$template->assign_vars(array(
 							'S_EDIT'			=> true,
@@ -678,23 +691,16 @@ class ucp_groups
 							'S_IN_GALLERY'		=> ($config['allow_avatar_local'] && $display_gallery) ? true : false,
 
 							'ERROR_MSG'				=> (sizeof($error)) ? implode('<br />', $error) : '',
-							'GROUP_NAME'			=> ($group_type == GROUP_SPECIAL) ? $user->lang['G_' . $group_name] : $group_name,
-							'GROUP_INTERNAL_NAME'	=> $group_name,
-							'GROUP_DESC'			=> $group_desc_data['text'],
 							'GROUP_RECEIVE_PM'		=> (isset($group_row['group_receive_pm']) && $group_row['group_receive_pm']) ? ' checked="checked"' : '',
 							'GROUP_MESSAGE_LIMIT'	=> (isset($group_row['group_message_limit'])) ? $group_row['group_message_limit'] : 0,
-							'GROUP_COLOUR'			=> (isset($group_row['group_colour'])) ? $group_row['group_colour'] : '',
-
+							
+							'GROUP_DESC'			=> $group_desc_data['text'],
 							'S_DESC_BBCODE_CHECKED'	=> $group_desc_data['allow_bbcode'],
 							'S_DESC_URLS_CHECKED'	=> $group_desc_data['allow_urls'],
 							'S_DESC_SMILIES_CHECKED'=> $group_desc_data['allow_smilies'],
 
 							'S_RANK_OPTIONS'		=> $rank_options,
-							'AVATAR'				=> $avatar_img,
-							'AVATAR_IMAGE'			=> $avatar_img,
 							'AVATAR_MAX_FILESIZE'	=> $config['avatar_filesize'],
-							'AVATAR_WIDTH'			=> (isset($group_row['group_avatar_width'])) ? $group_row['group_avatar_width'] : '',
-							'AVATAR_HEIGHT'			=> (isset($group_row['group_avatar_height'])) ? $group_row['group_avatar_height'] : '',
 
 							'GROUP_TYPE_FREE'		=> GROUP_FREE,
 							'GROUP_TYPE_OPEN'		=> GROUP_OPEN,
@@ -741,7 +747,7 @@ class ucp_groups
 							WHERE ug.group_id = $group_id
 								AND u.user_id = ug.user_id
 								AND ug.group_leader = 1
-							ORDER BY ug.group_leader DESC, ug.user_pending ASC, u.username_clean";
+							ORDER BY ug.user_pending DESC, u.username_clean";
 						$result = $db->sql_query($sql);
 
 						while ($row = $db->sql_fetchrow($result))
@@ -774,10 +780,11 @@ class ucp_groups
 							WHERE ug.group_id = $group_id
 								AND u.user_id = ug.user_id
 								AND ug.group_leader = 0
-							ORDER BY ug.group_leader DESC, ug.user_pending ASC, u.username_clean";
+							ORDER BY ug.user_pending DESC, u.username_clean";
 						$result = $db->sql_query_limit($sql, $config['topics_per_page'], $start);
 
 						$pending = false;
+						$approved = false;
 
 						while ($row = $db->sql_fetchrow($result))
 						{
@@ -786,8 +793,18 @@ class ucp_groups
 								$template->assign_block_vars('member', array(
 									'S_PENDING'		=> true)
 								);
+								$template->assign_var('S_PENDING_SET', true);
 
 								$pending = true;
+							}
+							else if (!$row['user_pending'] && !$approved)
+							{
+								$template->assign_block_vars('member', array(
+									'S_APPROVED'		=> true)
+								);
+								$template->assign_var('S_APPROVED_SET', true);
+
+								$approved = true;
 							}
 
 							$template->assign_block_vars('member', array(

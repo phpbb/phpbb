@@ -72,7 +72,7 @@
 			<span class="corners-bottom"><span></span></span></div>
 		</div>
 	<!-- ENDIF -->
-
+	<!-- IF S_LEADERS_SET -->
 	<div class="forumbg forumbg-table">
 		<div class="inner"><span class="corners-top"><span></span></span>
 
@@ -87,6 +87,7 @@
 		</tr>
 		</thead>
 		<tbody>
+	<!-- ENDIF -->
 		<!-- BEGIN memberrow -->
 			<!-- IF S_SHOW_GROUP -->
 				<!-- IF not memberrow.S_GROUP_LEADER and not $S_MEMBER_HEADER -->
@@ -95,12 +96,13 @@
 					<td colspan="<!-- IF U_SORT_ACTIVE -->5<!-- ELSE -->4<!-- ENDIF -->">&nbsp;</td>
 				</tr>
 				<!-- ENDIF -->
+<!-- IF S_LEADERS_SET -->
 		</tbody>
 		</table>
 
 	<span class="corners-bottom"><span></span></span></div>
 </div>
-
+<!-- ENDIF -->
 <div class="forumbg">
 	<div class="inner"><span class="corners-top"><span></span></span>
 
@@ -127,6 +129,20 @@
 		<!-- IF S_VIEWONLINE --><td>{memberrow.VISITED}&nbsp;</td><!-- ENDIF -->
 	</tr>
 		<!-- BEGINELSE -->
+	<div class="forumbg">
+	<div class="inner"><span class="corners-top"><span></span></span>
+
+	<table class="table1" cellspacing="1">
+	<thead>
+	<tr>
+		<th class="name">{L_GROUP_MEMBERS}</th>
+		<th class="posts">&nbsp;</th>
+		<th class="info">&nbsp;</th>
+		<th class="joined">&nbsp;</th>
+		<!-- IF U_SORT_ACTIVE --><th class="active">&nbsp;</th><!-- ENDIF -->
+	</tr>
+	</thead>
+	<tbody>
 	<tr class="bg1">
 		<td colspan="<!-- IF S_VIEWONLINE -->5<!-- ELSE -->4<!-- ENDIF -->">{L_NO_MEMBERS}</td>
 	</tr>
