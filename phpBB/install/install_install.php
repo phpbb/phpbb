@@ -1478,7 +1478,7 @@ class install_install extends module
 
 		include_once($phpbb_root_path . 'includes/acp/acp_modules.' . $phpEx);
 
-		$_module = &new acp_modules();
+		$_module = new acp_modules();
 		$module_classes = array('acp', 'mcp', 'ucp');
 
 		// Add categories

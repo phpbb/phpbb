@@ -1106,7 +1106,7 @@ class install_update extends module
 							'file2'		=> ($option == MERGE_NEW_FILE) ? implode("\n", $diff->merged_new_output()) : implode("\n", $diff->merged_orig_output()),
 						);
 
-						$diff = &new diff($tmp['file1'], $tmp['file2']);
+						$diff = new diff($tmp['file1'], $tmp['file2']);
 
 						unset($tmp);
 
@@ -1183,7 +1183,7 @@ class install_update extends module
 			trigger_error('Chosen diff mode is not supported', E_USER_ERROR);
 		}
 
-		$renderer = &new $render_class();
+		$renderer = new $render_class();
 
 		$template->assign_vars(array(
 			'DIFF_CONTENT'			=> $renderer->get_diff_content($diff),
@@ -1346,7 +1346,7 @@ class install_update extends module
 			);
 
 			// We need to diff the contents here to make sure the file is really the one we expect
-			$diff = &new diff($tmp['file1'], $tmp['file2'], false);
+			$diff = new diff($tmp['file1'], $tmp['file2'], false);
 			$empty = $diff->is_empty();
 
 			unset($tmp, $diff);
@@ -1381,7 +1381,7 @@ class install_update extends module
 		);
 
 		// We need to diff the contents here to make sure the file is really the one we expect
-		$diff = &new diff($tmp['file1'], $tmp['file2'], false);
+		$diff = new diff($tmp['file1'], $tmp['file2'], false);
 		$empty_1 = $diff->is_empty();
 
 		unset($tmp, $diff);
@@ -1392,7 +1392,7 @@ class install_update extends module
 		);
 
 		// We need to diff the contents here to make sure the file is really the one we expect
-		$diff = &new diff($tmp['file1'], $tmp['file2'], false);
+		$diff = new diff($tmp['file1'], $tmp['file2'], false);
 		$empty_2 = $diff->is_empty();
 
 		unset($tmp, $diff);
@@ -1428,7 +1428,7 @@ class install_update extends module
 			'file3'		=> file_get_contents($this->new_location . $original_file),
 		);
 
-		$diff = &new diff3($tmp['file1'], $tmp['file2'], $tmp['file3'], false);
+		$diff = new diff3($tmp['file1'], $tmp['file2'], $tmp['file3'], false);
 
 		unset($tmp);
 
@@ -1442,7 +1442,7 @@ class install_update extends module
 				'file2'		=> implode("\n", $diff->merged_orig_output()),
 			);
 
-			$diff = &new diff($tmp['file1'], $tmp['file2'], false);
+			$diff = new diff($tmp['file1'], $tmp['file2'], false);
 			$empty = $diff->is_empty();
 
 			if ($empty)
@@ -1465,7 +1465,7 @@ class install_update extends module
 		);
 
 		// now compare the merged output with the original file to see if the modified file is up to date
-		$diff = &new diff($tmp['file1'], $tmp['file2'], false);
+		$diff = new diff($tmp['file1'], $tmp['file2'], false);
 		$empty = $diff->is_empty();
 
 		if ($empty)
@@ -1634,11 +1634,11 @@ class install_update extends module
 			$file3 = array_shift($args);
 			$tmp['file3'] = (!empty($file3) && is_string($file3)) ? file_get_contents($file3) : $file3;
 
-			$diff = &new diff3($tmp['file1'], $tmp['file2'], $tmp['file3']);
+			$diff = new diff3($tmp['file1'], $tmp['file2'], $tmp['file3']);
 		}
 		else
 		{
-			$diff = &new diff($tmp['file1'], $tmp['file2']);
+			$diff = new diff($tmp['file1'], $tmp['file2']);
 		}
 
 		unset($tmp);
