@@ -34,6 +34,12 @@ class acp_modules
 	var $module_class = '';
 	var $parent_id;
 	var $u_action;
+	var $p_master;
+
+	function __construct(p_master $p_master)
+	{
+		$this->p_master = $p_master;
+	}
 
 	function main($id, $mode)
 	{
@@ -624,7 +630,7 @@ class acp_modules
 			if (!$ignore_acl && $row['module_auth'])
 			{
 				// We use zero as the forum id to check - global setting.
-				if (!p_master::module_auth($row['module_auth'], 0))
+				if (!$this->p_master->module_auth($row['module_auth'], 0))
 				{
 					continue;
 				}

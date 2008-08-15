@@ -118,7 +118,7 @@ class acp_ban
 	/**
 	* Display ban options
 	*/
-	function display_ban_options($mode)
+	static function display_ban_options($mode)
 	{
 		global $user, $db, $template;
 
