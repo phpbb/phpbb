@@ -459,6 +459,108 @@ function _hash_crypt_private($password, $setting, &$itoa64)
 	return $output;
 }
 
+/**
+* Global function for chmodding directories and files.
+* This function supports different modes to distinguish between writeable/non-writeable.
+* The function sets the appropiate execute bit on directories
+*
+* Supported modes are:
+*
+* rread (600):		Restrictive, only able to be read/write by the apache/site user.
+*					Used for files which only need to be accessible by phpBB itself and should never be accessible from the outside/web.
+* read (644):		Read-only permission for the site group/everyone. Used for ordinary files.
+* write (664):		Write-permission for the site group, read permission for everyone. Used for writeable files.
+* write-all (666):	Write-permission for everyone. Should only be used for temporary files.
+*
+* rwrite (0660):	Write-permission only for the site user/group. Used for files phpBB need to write to but within the cache/store/files directory.
+*
+* NOTE: If rwrite (restrictive write) is used, the function makes sure the file is writable by calling is_writable. If it is not, it falls back to 'write'
+* and then to 'write-all' to make sure the file is writable on every host setup.
+* NOTE: If rread (restrictive read) is used, the function makes sure the file is readable by calling is_readable. If it is not, it falls back to 'sread' (internal mode 640) and then to 'read'.
+*
+* @param $filename The file/directory to be chmodded
+* @param $mode The mode to set.
+* @return True on success, false if the mode was not set
+*/
+function phpbb_chmod($filename, $mode = 'read')
+{
+	switch ($mode)
+	{
+		case 'rread':
+			$chmod = 0600;
+		break;
+
+		// System-read, only used internally
+		case 'sread':
+			$chmod = 0640;
+		break;
+
+		case 'rwrite':
+			$chmod = 0660;
+		break;
+
+		case 'write':
+			$chmod = 0664;
+		break;
+
+		case 'write-all':
+			$chmod = 0666;
+		break;
+
+		case 'read':
+		default:
+			$chmod = 0644;
+		break;
+	}
+
+	// Return if the file no longer exist
+	if (!file_exists($filename))
+	{
+		return false;
+	}
+
+	// Add the execute bit if it is a directory
+	if (is_dir($filename))
+	{
+		// This line sets the correct execute bit on those "3-bits" being defined. 0644 becomes 0755 for example.
+		$chmod |= ($chmod & 7) ? 73 : (($chmod & 56) ? 72 : 64);
+	}
+
+	// Set mode
+	$result = @chmod($filename, $chmod);
+
+	// Check for is_writable
+	if ($mode == 'rwrite')
+	{
+		// We are in rwrite mode, so, make sure the file is writable
+		if (!is_writable($filename))
+		{
+			$result = phpbb_chmod($filename, 'write');
+
+			if (!is_writable($filename))
+			{
+				$result = phpbb_chmod($filename, 'write-all');
+			}
+		}
+	}
+
+	// Check for is_readable
+	if ($mode == 'rread')
+	{
+		if (!is_readable($filename))
+		{
+			$result = phpbb_chmod($filename, 'sread');
+
+			if (!is_readable($filename))
+			{
+				$result = phpbb_chmod($filename, 'read');
+			}
+		}
+	}
+
+	return $result;
+}
+
 // Compatibility functions
 
 if (!function_exists('array_combine'))

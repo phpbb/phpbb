@@ -279,7 +279,7 @@ class acp_attachments
 					{
 						$l_explain = (isset($user->lang[$vars['lang'] . '_EXPLAIN'])) ? $user->lang[$vars['lang'] . '_EXPLAIN'] : '';
 					}
-					
+
 					$content = build_cfg_template($type, $config_key, $this->new_config, $config_key, $vars);
 					if (empty($content))
 					{
@@ -1196,7 +1196,7 @@ class acp_attachments
 			if (!file_exists($phpbb_root_path . $upload_dir))
 			{
 				@mkdir($phpbb_root_path . $upload_dir, 0777);
-				@chmod($phpbb_root_path . $upload_dir, 0777);
+				phpbb_chmod($phpbb_root_path . $upload_dir, 'rwrite');
 			}
 		}
 
