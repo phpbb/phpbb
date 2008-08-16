@@ -50,7 +50,7 @@ class template_compile
 	{
 		$this->template = &$template;
 	}
-	
+
 	/**
 	* Load template source from file
 	* @access private
@@ -72,7 +72,7 @@ class template_compile
 		if ($store_in_db)
 		{
 			global $db, $user;
-			
+
 			$sql_ary = array(
 				'template_id'			=> $this->template->files_template[$handle],
 				'template_filename'		=> $this->template->filename[$handle],
@@ -80,7 +80,7 @@ class template_compile
 				'template_mtime'		=> time(),
 				'template_data'			=> trim(@file_get_contents($this->template->files[$handle])),
 			);
-			
+
 			$sql = 'INSERT INTO ' . STYLES_TEMPLATE_DATA_TABLE . ' ' . $db->sql_build_array('INSERT', $sql_ary);
 			$db->sql_query($sql);
 		}
@@ -518,50 +518,6 @@ class template_compile
 					else if (!empty($token))
 					{
 						$token = '(' . $token . ')';
-						/**
-						* If we need to really secure the usage, or force specific types on specific operations... the following would be the code
-
-						if (!isset($tokens[$i - 1]))
-						{
-							unset($tokens[$i]);
-							break;
-						}
-
-						$prev_token = trim($tokens[$i - 1]);
-
-						switch ($prev_token)
-						{
-							// Integer
-							case '<':
-							case '>':
-							case '<=':
-							case '>=':
-							case '%':
-								$token = ( ((double) $token) != 0) ? (double) $token : (int) $token;
-							break;
-
-							case '==':
-							case '!=':
-								$int_token = (((double) $token) != 0) ? (double) $token : (int) $token;
-								if ($int_token && $int_token == $token)
-								{
-									$token = $int_token;
-									break;
-								}
-
-								// It is a string...
-								$token = '(' . $token . ')';
-							break;
-
-							case '!':
-							case '||':
-							case '&&':
-							default:
-								unset($tokens[$i]);
-								break;
-							break;
-						}
-						*/
 					}
 
 				break;
