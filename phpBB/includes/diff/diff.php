@@ -324,7 +324,7 @@ class diff_op_copy extends diff_op
 
 	function &reverse()
 	{
-		$reverse = &new diff_op_copy($this->final, $this->orig);
+		$reverse = new diff_op_copy($this->final, $this->orig);
 		return $reverse;
 	}
 }
@@ -345,7 +345,7 @@ class diff_op_delete extends diff_op
 
 	function &reverse()
 	{
-		$reverse = &new diff_op_add($this->orig);
+		$reverse = new diff_op_add($this->orig);
 		return $reverse;
 	}
 }
@@ -366,7 +366,7 @@ class diff_op_add extends diff_op
 
 	function &reverse()
 	{
-		$reverse = &new diff_op_delete($this->final);
+		$reverse = new diff_op_delete($this->final);
 		return $reverse;
 	}
 }
@@ -387,7 +387,7 @@ class diff_op_change extends diff_op
 
 	function &reverse()
 	{
-		$reverse = &new diff_op_change($this->final, $this->orig);
+		$reverse = new diff_op_change($this->final, $this->orig);
 		return $reverse;
 	}
 }
