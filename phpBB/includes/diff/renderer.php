@@ -137,7 +137,7 @@ class diff_renderer
 						{
 							// Create a new block with as many lines as we need for the trailing context.
 							$context = array_slice($edit->orig, 0, $ntrail);
-							$block[] = &new diff_op_copy($context);
+							$block[] = new diff_op_copy($context);
 						}
 
 						$output .= $this->_block($x0, $ntrail + $xi - $x0, $y0, $ntrail + $yi - $y0, $block);
@@ -160,7 +160,7 @@ class diff_renderer
 
 					if ($context)
 					{
-						$block[] = &new diff_op_copy($context);
+						$block[] = new diff_op_copy($context);
 					}
 				}
 				$block[] = $edit;

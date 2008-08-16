@@ -160,7 +160,7 @@ class diff_engine
 
 			if ($copy)
 			{
-				$edits[] = &new diff_op_copy($copy);
+				$edits[] = new diff_op_copy($copy);
 			}
 
 			// Find deletes & adds.
@@ -178,15 +178,15 @@ class diff_engine
 
 			if ($delete && $add)
 			{
-				$edits[] = &new diff_op_change($delete, $add);
+				$edits[] = new diff_op_change($delete, $add);
 			}
 			else if ($delete)
 			{
-				$edits[] = &new diff_op_delete($delete);
+				$edits[] = new diff_op_delete($delete);
 			}
 			else if ($add)
 			{
-				$edits[] = &new diff_op_add($add);
+				$edits[] = new diff_op_add($add);
 			}
 		}
 
