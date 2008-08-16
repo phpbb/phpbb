@@ -27,7 +27,7 @@ if (!defined('PHPBB_INSTALLED') || empty($dbms) || empty($acm_type))
 
 if (version_compare(PHP_VERSION, '6.0.0-dev', '<'))
 {
-	set_magic_quotes_runtime(0);
+	@set_magic_quotes_runtime(0);
 }
 
 // Load Extensions
