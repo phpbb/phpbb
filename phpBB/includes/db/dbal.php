@@ -147,7 +147,13 @@ class dbal
 			$this->sql_freeresult($query_id);
 		}
 
-		return $this->_sql_close();
+		// Connection closed correctly. Set db_connect_id to false to prevent errors
+		if (($result = $this->_sql_close()))
+		{
+			$this->db_connect_id = false;
+		}
+
+		return $result;
 	}
 
 	/**

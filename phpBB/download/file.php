@@ -456,6 +456,10 @@ function send_file_to_browser($attachment, $upload_dir, $category)
 	{
 		header("Content-Length: $size");
 	}
+
+	// Close the db connection before sending the file
+	$db->sql_close();
+
 	if (!set_modified_headers($attachment['filetime'], $user->browser))
 	{
 		// Try to deliver in chunks
