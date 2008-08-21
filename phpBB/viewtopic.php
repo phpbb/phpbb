@@ -471,25 +471,31 @@ if (($config['email_enable'] || $config['jab_enable']) && $config['allow_topic_n
 // Bookmarks
 if ($config['allow_bookmarks'] && $user->data['is_registered'] && request_var('bookmark', 0))
 {
-	if (!$topic_data['bookmarked'])
+	if (check_link_hash(request_var('hash', ''),"topic_$topic_id"))
 	{
-		$sql = 'INSERT INTO ' . BOOKMARKS_TABLE . ' ' . $db->sql_build_array('INSERT', array(
-			'user_id'	=> $user->data['user_id'],
-			'topic_id'	=> $topic_id,
-		));
-		$db->sql_query($sql);
+		if (!$topic_data['bookmarked'])
+		{
+			$sql = 'INSERT INTO ' . BOOKMARKS_TABLE . ' ' . $db->sql_build_array('INSERT', array(
+				'user_id'	=> $user->data['user_id'],
+				'topic_id'	=> $topic_id,
+			));
+			$db->sql_query($sql);
+		}
+		else
+		{
+			$sql = 'DELETE FROM ' . BOOKMARKS_TABLE . "
+				WHERE user_id = {$user->data['user_id']}
+					AND topic_id = $topic_id";
+			$db->sql_query($sql);
+		}
+		$message = (($topic_data['bookmarked']) ? $user->lang['BOOKMARK_REMOVED'] : $user->lang['BOOKMARK_ADDED']) . '<br /><br />' . sprintf($user->lang['RETURN_TOPIC'], '<a href="' . $viewtopic_url . '">', '</a>');
 	}
 	else
 	{
-		$sql = 'DELETE FROM ' . BOOKMARKS_TABLE . "
-			WHERE user_id = {$user->data['user_id']}
-				AND topic_id = $topic_id";
-		$db->sql_query($sql);
+		$message = $user->lang['BOOKMARK_ERR'] . '<br /><br />' . sprintf($user->lang['RETURN_TOPIC'], '<a href="' . $viewtopic_url . '">', '</a>');
 	}
-
 	meta_refresh(3, $viewtopic_url);
 
-	$message = (($topic_data['bookmarked']) ? $user->lang['BOOKMARK_REMOVED'] : $user->lang['BOOKMARK_ADDED']) . '<br /><br />' . sprintf($user->lang['RETURN_TOPIC'], '<a href="' . $viewtopic_url . '">', '</a>');
 	trigger_error($message);
 }
 
@@ -616,12 +622,12 @@ $template->assign_vars(array(
 	'L_WATCH_TOPIC' 		=> $s_watching_topic['title'],
 	'S_WATCHING_TOPIC'		=> $s_watching_topic['is_watching'],
 
-	'U_BOOKMARK_TOPIC'		=> ($user->data['is_registered'] && $config['allow_bookmarks']) ? $viewtopic_url . '&amp;bookmark=1' : '',
+	'U_BOOKMARK_TOPIC'		=> ($user->data['is_registered'] && $config['allow_bookmarks']) ? $viewtopic_url . '&amp;bookmark=1&amp;hash=' . generate_link_hash("topic_$topic_id") : '',
 	'L_BOOKMARK_TOPIC'		=> ($user->data['is_registered'] && $config['allow_bookmarks'] && $topic_data['bookmarked']) ? $user->lang['BOOKMARK_TOPIC_REMOVE'] : $user->lang['BOOKMARK_TOPIC'],
 
 	'U_POST_NEW_TOPIC' 		=> ($auth->acl_get('f_post', $forum_id) || $user->data['user_id'] == ANONYMOUS) ? append_sid('posting', "mode=post&amp;f=$forum_id") : '',
 	'U_POST_REPLY_TOPIC' 	=> ($auth->acl_get('f_reply', $forum_id) || $user->data['user_id'] == ANONYMOUS) ? append_sid('posting', "mode=reply&amp;f=$forum_id&amp;t=$topic_id") : '',
-	'U_BUMP_TOPIC'			=> (bump_topic_allowed($forum_id, $topic_data['topic_bumped'], $topic_data['topic_last_post_time'], $topic_data['topic_poster'], $topic_data['topic_last_poster_id'])) ? append_sid('posting', "mode=bump&amp;f=$forum_id&amp;t=$topic_id") : '')
+	'U_BUMP_TOPIC'			=> (bump_topic_allowed($forum_id, $topic_data['topic_bumped'], $topic_data['topic_last_post_time'], $topic_data['topic_poster'], $topic_data['topic_last_poster_id'])) ? append_sid('posting', "mode=bump&amp;f=$forum_id&amp;t=$topic_id&amp;hash=" . generate_link_hash("topic_$topic_id")) : '')
 );
 
 // Does this topic contain a poll?

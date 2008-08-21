@@ -985,8 +985,8 @@ function watch_topic_forum($mode, &$s_watching, $user_id, $forum_id, $topic_id, 
 	$table_sql = ($mode == 'forum') ? FORUMS_WATCH_TABLE : TOPICS_WATCH_TABLE;
 	$where_sql = ($mode == 'forum') ? 'forum_id' : 'topic_id';
 	$match_id = ($mode == 'forum') ? $forum_id : $topic_id;
-
-	$u_url = ($mode == 'forum') ? 'f' : 'f=' . $forum_id . '&amp;t';
+	$u_url = "uid={$user->data['user_id']}&amp;hash=" . generate_link_hash("{$mode}_$topic_id");
+	$u_url .= ($mode == 'forum') ? '&amp;f' : '&amp;f=' . $forum_id . '&amp;t';
 
 	// Is user watching this thread?
 	if ($user_id != ANONYMOUS)
@@ -1007,8 +1007,16 @@ function watch_topic_forum($mode, &$s_watching, $user_id, $forum_id, $topic_id, 
 
 		if (!is_null($notify_status) && $notify_status !== '')
 		{
+		
 			if (isset($_GET['unwatch']))
 			{
+				$uid = request_var('uid', 0);
+				if ($uid != $user_id)
+				{
+					$redirect_url = append_sid("{$phpbb_root_path}view$mode.$phpEx", "$u_url=$match_id&amp;start=$start");
+					$message = $user->lang['ERR_UNWATCHING'] . '<br /><br />' . sprintf($user->lang['RETURN_' . strtoupper($mode)], '<a href="' . $redirect_url . '">', '</a>');
+					trigger_error($message);
+				}
 				if ($_GET['unwatch'] == $mode)
 				{
 					$is_watching = 0;
@@ -1044,19 +1052,25 @@ function watch_topic_forum($mode, &$s_watching, $user_id, $forum_id, $topic_id, 
 		{
 			if (isset($_GET['watch']))
 			{
-				if ($_GET['watch'] == $mode)
+				$token = request_var('hash', '');
+				$redirect_url = append_sid("view$mode", "$u_url=$match_id&amp;start=$start");
+	
+				if ($_GET['watch'] == $mode && check_link_hash($token, "{$mode}_$topic_id"))
 				{
 					$is_watching = true;
 
 					$sql = 'INSERT INTO ' . $table_sql . " (user_id, $where_sql, notify_status)
 						VALUES ($user_id, $match_id, 0)";
 					$db->sql_query($sql);
+					$message = $user->lang['ARE_WATCHING_' . strtoupper($mode)] . '<br /><br />' . sprintf($user->lang['RETURN_' . strtoupper($mode)], '<a href="' . $redirect_url . '">', '</a>');
 				}
-
-				$redirect_url = append_sid("view$mode", "$u_url=$match_id&amp;start=$start");
+				else
+				{
+					$message = $user->lang['ERR_WATCHING'] . '<br /><br />' . sprintf($user->lang['RETURN_' . strtoupper($mode)], '<a href="' . $redirect_url . '">', '</a>');
+				}
+				
 				meta_refresh(3, $redirect_url);
 
-				$message = $user->lang['ARE_WATCHING_' . strtoupper($mode)] . '<br /><br />' . sprintf($user->lang['RETURN_' . strtoupper($mode)], '<a href="' . $redirect_url . '">', '</a>');
 				trigger_error($message);
 			}
 			else
