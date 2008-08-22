@@ -755,7 +755,7 @@ class template_compile
 			@flock($fp, LOCK_UN);
 			@fclose($fp);
 
-			phpbb_chmod($filename, 'rwrite');
+			phpbb_chmod($filename, CHMOD_WRITE);
 		}
 
 		return;

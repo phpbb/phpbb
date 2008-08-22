@@ -277,7 +277,7 @@ class acp_language
 							{
 								trigger_error("Could not create directory $dir", E_USER_ERROR);
 							}
-							phpbb_chmod($dir, 'write-all');
+							@chmod($dir, 0777);
 						}
 					}
 				}

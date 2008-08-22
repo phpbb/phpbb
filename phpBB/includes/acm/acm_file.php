@@ -93,7 +93,7 @@ class acm
 			@flock($fp, LOCK_UN);
 			fclose($fp);
 
-			phpbb_chmod($this->cache_dir . 'data_global.' . $phpEx, 'rwrite');
+			phpbb_chmod($this->cache_dir . 'data_global.' . $phpEx, CHMOD_WRITE);
 		}
 		else
 		{
@@ -197,7 +197,7 @@ class acm
 				@flock($fp, LOCK_UN);
 				fclose($fp);
 
-				phpbb_chmod($this->cache_dir . "data{$var_name}.$phpEx", 'rwrite');
+				phpbb_chmod($this->cache_dir . "data{$var_name}.$phpEx", CHMOD_WRITE);
 			}
 		}
 		else
@@ -416,7 +416,7 @@ class acm
 			@flock($fp, LOCK_UN);
 			fclose($fp);
 
-			phpbb_chmod($filename, 'rwrite');
+			phpbb_chmod($filename, CHMOD_WRITE);
 
 			$query_result = $query_id;
 		}

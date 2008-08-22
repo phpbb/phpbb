@@ -139,7 +139,7 @@ class dbal
 		}
 
 		// Connection closed correctly. Set db_connect_id to false to prevent errors
-		if (($result = $this->_sql_close()))
+		if ($result = $this->_sql_close())
 		{
 			$this->db_connect_id = false;
 		}

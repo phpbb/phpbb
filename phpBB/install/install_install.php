@@ -438,14 +438,13 @@ class install_install extends module
 			if (!file_exists($phpbb_root_path . $dir))
 			{
 				@mkdir($phpbb_root_path . $dir, 0777);
-				phpbb_chmod($phpbb_root_path . $dir, 'rwrite');
+				phpbb_chmod($phpbb_root_path . $dir, CHMOD_READ | CHMOD_WRITE);
 			}
 
 			// Now really check
 			if (file_exists($phpbb_root_path . $dir) && is_dir($phpbb_root_path . $dir))
 			{
-				// Make writeable only for apache user
-				phpbb_chmod($phpbb_root_path . $dir, 'rwrite');
+				phpbb_chmod($phpbb_root_path . $dir, CHMOD_READ | CHMOD_WRITE);
 				$exists = true;
 			}
 
@@ -875,7 +874,7 @@ class install_install extends module
 		}
 		@fclose($fp);
 
-		phpbb_chmod($phpbb_root_path . 'cache/install_lock', 'write-all');
+		@chmod($phpbb_root_path . 'cache/install_lock', 0777);
 
 		$load_extensions = implode(',', $load_extensions);
 
@@ -928,8 +927,8 @@ class install_install extends module
 
 			if ($written)
 			{
-				// Readable by apache user/group, not by any other means
-				phpbb_chmod($phpbb_root_path . 'config.' . $phpEx, 'rread');
+				// We may revert back to chmod() if we see problems with users not able to change their config.php file directly
+				phpbb_chmod($phpbb_root_path . 'config.' . $phpEx, CHMOD_READ);
 			}
 		}
 

@@ -460,102 +460,136 @@ function _hash_crypt_private($password, $setting, &$itoa64)
 }
 
 /**
-* Global function for chmodding directories and files.
-* This function supports different modes to distinguish between writeable/non-writeable.
-* The function sets the appropiate execute bit on directories
+* Global function for chmodding directories and files for internal use
+* This function determines owner and group whom the file belongs to and user and group of PHP and then set safest possible file permissions.
+* The function determines owner and group from common.php file and sets the same to the provided file.
+* The function uses bit fields to build the permissions.
+* The function sets the appropiate execute bit on directories.
 *
-* Supported modes are:
+* Supported constants representing bit fields are:
 *
-* rread (600):		Restrictive, only able to be read/write by the apache/site user.
-*					Used for files which only need to be accessible by phpBB itself and should never be accessible from the outside/web.
-* read (644):		Read-only permission for the site group/everyone. Used for ordinary files.
-* write (664):		Write-permission for the site group, read permission for everyone. Used for writeable files.
-* write-all (666):	Write-permission for everyone. Should only be used for temporary files.
+* CHMOD_ALL - all permissions (7)
+* CHMOD_READ - read permission (4)
+* CHMOD_WRITE - write permission (2)
+* CHMOD_EXECUTE - execute permission (1)
 *
-* rwrite (0660):	Write-permission only for the site user/group. Used for files phpBB need to write to but within the cache/store/files directory.
-*
-* NOTE: If rwrite (restrictive write) is used, the function makes sure the file is writable by calling is_writable. If it is not, it falls back to 'write'
-* and then to 'write-all' to make sure the file is writable on every host setup.
-* NOTE: If rread (restrictive read) is used, the function makes sure the file is readable by calling is_readable. If it is not, it falls back to 'sread' (internal mode 640) and then to 'read'.
+* NOTE: The function uses POSIX extension and fileowner()/filegroup() functions. If any of them is disabled, this function tries to build proper permissions, by calling is_readable() and is_writable() functions.
 *
 * @param $filename The file/directory to be chmodded
-* @param $mode The mode to set.
-* @return True on success, false if the mode was not set
+* @param $perms Permissions to set
+* @return true on success, otherwise false
+*
+* @author faw, phpBB Group
 */
-function phpbb_chmod($filename, $mode = 'read')
+function phpbb_chmod($filename, $perms = CHMOD_READ)
 {
-	switch ($mode)
-	{
-		case 'rread':
-			$chmod = 0600;
-		break;
-
-		// System-read, only used internally
-		case 'sread':
-			$chmod = 0640;
-		break;
-
-		case 'rwrite':
-			$chmod = 0660;
-		break;
-
-		case 'write':
-			$chmod = 0664;
-		break;
-
-		case 'write-all':
-			$chmod = 0666;
-		break;
-
-		case 'read':
-		default:
-			$chmod = 0644;
-		break;
-	}
-
-	// Return if the file no longer exist
+	// Return if the file no longer exists.
 	if (!file_exists($filename))
 	{
 		return false;
 	}
 
-	// Add the execute bit if it is a directory
+	if (!function_exists('fileowner') || !function_exists('filegroup'))
+	{
+		$file_uid = $file_gid = false;
+		$common_php_owner = $common_php_group = false;
+	}
+	else
+	{
+		global $phpbb_root_path, $phpEx;
+
+		// Determine owner/group of common.php file and the filename we want to change here
+		$common_php_owner = fileowner($phpbb_root_path . 'common.' . $phpEx);
+		$common_php_group = filegroup($phpbb_root_path . 'common.' . $phpEx);
+
+		$file_uid = fileowner($filename);
+		$file_gid = filegroup($filename);
+
+		// Try to set the owner to the same common.php has
+		if ($common_php_owner !== $file_uid && $common_php_owner !== false && $file_uid !== false)
+		{
+			// Will most likely not work
+			if (@chown($filename, $common_php_owner));
+			{
+				$file_uid = fileowner($filename);
+			}
+		}
+
+		// Try to set the group to the same common.php has
+		if ($common_php_group !== $file_gid && $common_php_group !== false && $file_gid !== false)
+		{
+			if (@chgrp($filename, $common_php_group));
+			{
+				$file_gid = filegroup($filename);
+			}
+		}
+	}
+
+	// And the owner and the groups PHP is running under.
+	$php_uid = (function_exists('posix_getuid')) ? @posix_getuid() : false;
+	$php_gids = (function_exists('posix_getgroups')) ? @posix_getgroups() : false;
+
+	// Who is PHP?
+	if ($file_uid === false || $file_gid === false || $php_uid === false || $php_gids === false)
+	{
+		$php = null;
+	}
+	else if ($file_uid == $php_uid /* && $common_php_owner !== false && $common_php_owner === $file_uid*/)
+	{
+		$php = 'owner';
+	}
+	else if (in_array($file_gid, $php_gids))
+	{
+		$php = 'group';
+	}
+	else
+	{
+		$php = 'other';
+	}
+
+	// Owner always has read/write permission
+	$owner = CHMOD_READ | CHMOD_WRITE;
 	if (is_dir($filename))
 	{
-		// This line sets the correct execute bit on those "3-bits" being defined. 0644 becomes 0755 for example.
-		$chmod |= ($chmod & 7) ? 73 : (($chmod & 56) ? 72 : 64);
-	}
+		$owner |= CHMOD_EXECUTE;
 
-	// Set mode
-	$result = @chmod($filename, $chmod);
-
-	// Check for is_writable
-	if ($mode == 'rwrite')
-	{
-		// We are in rwrite mode, so, make sure the file is writable
-		if (!is_writable($filename))
+		// Only add execute bit to the permission if the dir needs to be readable
+		if ($perms & CHMOD_READ)
 		{
-			$result = phpbb_chmod($filename, 'write');
-
-			if (!is_writable($filename))
-			{
-				$result = phpbb_chmod($filename, 'write-all');
-			}
+			$perms |= CHMOD_EXECUTE;
 		}
 	}
 
-	// Check for is_readable
-	if ($mode == 'rread')
+	switch ($php)
 	{
-		if (!is_readable($filename))
-		{
-			$result = phpbb_chmod($filename, 'sread');
+		case null:
+		case 'owner':
+			$result = @chmod($filename, ($owner << 6) + (0 << 3) + (0 << 0));
 
-			if (!is_readable($filename))
+			if (!is_null($php) || (!is_readable($filename) && is_writable($filename)))
 			{
-				$result = phpbb_chmod($filename, 'read');
+				break;
 			}
-		}
+
+		case 'group':
+			$result = @chmod($filename, ($owner << 6) + ($perms << 3) + (0 << 0));
+
+			if (!is_null($php) || ((!($perms & CHMOD_READ) || is_readable($filename)) && (!($perms & CHMOD_WRITE) || is_writable($filename))))
+			{
+				break;
+			}
+
+		case 'other':
+			$result = @chmod($filename, ($owner << 6) + ($perms << 3) + ($perms << 0));
+
+			if (!is_null($php) || ((!($perms & CHMOD_READ) || is_readable($filename)) && (!($perms & CHMOD_WRITE) || is_writable($filename))))
+			{
+				break;
+			}
+
+		default:
+			return false;
+		break;
 	}
 
 	return $result;

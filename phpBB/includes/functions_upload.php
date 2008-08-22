@@ -263,11 +263,10 @@ class filespec
 	*
 	* @param string $destination_path Destination path, for example $config['avatar_path']
 	* @param bool $overwrite If set to true, an already existing file will be overwritten
-	* @param string $chmod Permission mask for chmodding the file after a successful move. The mode entered here reflects the mode of phpbb_chmod()
+	* @param string $chmod Permission mask for chmodding the file after a successful move. The mode entered here reflects the mode of {@inline phpbb_chmod()}
 	* @access public
-	* @see phpbb_chmod()
 	*/
-	function move_file($destination, $overwrite = false, $skip_image_check = false, $chmod = 'rwrite')
+	function move_file($destination, $overwrite = false, $skip_image_check = false, $chmod = false)
 	{
 		global $user, $phpbb_root_path;
 
@@ -275,6 +274,8 @@ class filespec
 		{
 			return false;
 		}
+
+		$chmod = ($chmod === false) ? CHMOD_READ | CHMOD_WRITE : $chmod;
 
 		// We need to trust the admin in specifying valid upload directories and an attacker not being able to overwrite it...
 		$this->destination_path = $phpbb_root_path . $destination;
@@ -346,15 +347,7 @@ class filespec
 				break;
 			}
 
-			// Backward compatibility - in versions prior to 3.0.3 $chmod was an octal
-			if (!is_string($chmod))
-			{
-				@chmod($this->destination_file, $chmod);
-			}
-			else
-			{
-				phpbb_chmod($this->destination_file, $chmod);
-			}
+			phpbb_chmod($this->destination_file, $chmod);
 		}
 
 		// Try to get real filesize from destination folder
