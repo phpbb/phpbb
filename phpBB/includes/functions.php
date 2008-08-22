@@ -2177,9 +2177,8 @@ function meta_refresh($time, $url)
 
 /**
 * Add a secret hash   for use in links/GET requests
-* @param string  $link_name The name of the link; has to match the name used in check_form_key, otherwise no restrictions apply
-* @param int  $length The length of the key to generate
-* @return sting the hash
+* @param string  $link_name The name of the link; has to match the name used in check_link_hash, otherwise no restrictions apply
+* @return string the hash
 
 */
 function generate_link_hash($link_name)
@@ -2196,8 +2195,7 @@ function generate_link_hash($link_name)
 /**
 * checks a link hash - for GET requests
 * @param string $token the submitted token 
-* @param string $link_name The name of the link; has to match the name used in check_form_key, otherwise no restrictions apply
-* @param int  $length The length of the key to check
+* @param string $link_name The name of the link
 * @return boolean true if all is fine
 */
 function check_link_hash($token, $link_name)
