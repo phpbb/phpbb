@@ -1199,7 +1199,7 @@ class acp_attachments
 			if (!file_exists(PHPBB_ROOT_PATH . $upload_dir))
 			{
 				@mkdir(PHPBB_ROOT_PATH . $upload_dir, 0777);
-				@chmod(PHPBB_ROOT_PATH . $upload_dir, 0777);
+				phpbb_chmod(PHPBB_ROOT_PATH . $upload_dir, CHMOD_READ | CHMOD_WRITE);
 			}
 		}
 

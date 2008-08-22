@@ -226,7 +226,7 @@ class compress_zip extends compress
 									{
 										trigger_error("Could not create directory $folder");
 									}
-									@chmod($str, 0777);
+									phpbb_chmod($str, CHMOD_READ | CHMOD_WRITE);
 								}
 							}
 						}
@@ -255,7 +255,7 @@ class compress_zip extends compress
 								{
 									trigger_error("Could not create directory $folder");
 								}
-								@chmod($str, 0777);
+								phpbb_chmod($str, CHMOD_READ | CHMOD_WRITE);
 							}
 						}
 					}
@@ -540,7 +540,7 @@ class compress_tar extends compress
 								{
 									trigger_error("Could not create directory $folder");
 								}
-								@chmod($str, 0777);
+								phpbb_chmod($str, CHMOD_READ | CHMOD_WRITE);
 							}
 						}
 					}
@@ -567,7 +567,7 @@ class compress_tar extends compress
 							{
 								trigger_error("Could not create directory $folder");
 							}
-							@chmod($str, 0777);
+							phpbb_chmod($str, CHMOD_READ | CHMOD_WRITE);
 						}
 					}
 
@@ -576,7 +576,7 @@ class compress_tar extends compress
 					{
 						trigger_error("Couldn't create file $filename");
 					}
-					@chmod($target_filename, 0777);
+					phpbb_chmod($target_filename, CHMOD_READ);
 
 					// Grab the file contents
 					fwrite($fp, ($filesize) ? $fzread($this->fp, ($filesize + 511) &~ 511) : '', $filesize);

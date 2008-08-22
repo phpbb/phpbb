@@ -727,7 +727,7 @@ function create_thumbnail($source, $destination, $mimetype)
 		return false;
 	}
 
-	@chmod($destination, 0666);
+	phpbb_chmod($destination, CHMOD_READ | CHMOD_WRITE);
 
 	return true;
 }

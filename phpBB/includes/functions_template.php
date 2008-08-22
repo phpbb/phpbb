@@ -722,7 +722,7 @@ class template_compile
 		@flock($destination_handle, LOCK_UN);
 		@fclose($destination_handle);
 
-		@chmod($filename, 0666);
+		phpbb_chmod($filename, CHMOD_WRITE);
 
 		return true;
 	}

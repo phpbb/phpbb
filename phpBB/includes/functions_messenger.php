@@ -695,7 +695,7 @@ class queue
 				@flock($fp, LOCK_UN);
 				fclose($fp);
 
-				@chmod($this->cache_file, 0666);
+				phpbb_chmod($this->cache_file, CHMOD_WRITE);
 			}
 		}
 
@@ -736,7 +736,7 @@ class queue
 			@flock($fp, LOCK_UN);
 			fclose($fp);
 
-			@chmod($this->cache_file, 0666);
+			phpbb_chmod($this->cache_file, CHMOD_WRITE);
 		}
 	}
 }
