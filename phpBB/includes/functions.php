@@ -566,7 +566,7 @@ function phpbb_chmod($filename, $perms = CHMOD_READ)
 		case 'owner':
 			$result = @chmod($filename, ($owner << 6) + (0 << 3) + (0 << 0));
 
-			if (!is_null($php) || (!is_readable($filename) && is_writable($filename)))
+			if (!is_null($php) || (is_readable($filename) && is_writable($filename)))
 			{
 				break;
 			}
