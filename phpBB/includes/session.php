@@ -1855,6 +1855,7 @@ class user extends session
 		// Make sure the language name is set (if the user setup did not happen it is not set)
 		if (!$this->lang_name)
 		{
+			global $config;
 			$this->lang_name = basename($config['default_lang']);
 		}
 
