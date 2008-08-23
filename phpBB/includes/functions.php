@@ -2228,7 +2228,7 @@ function generate_link_hash($link_name)
 
 /**
 * checks a link hash - for GET requests
-* @param string $token the submitted token 
+* @param string $token the submitted token
 * @param string $link_name The name of the link
 * @return boolean true if all is fine
 */

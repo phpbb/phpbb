@@ -593,7 +593,7 @@ class phpbb_db_tools
 
 	/**
 	* Private method for performing sql statements (either execute them or return them)
-	* @private
+	* @access private
 	*/
 	function _sql_run_sql($statements)
 	{
@@ -624,7 +624,7 @@ class phpbb_db_tools
 
 	/**
 	* Function to prepare some column information for better usage
-	* @private
+	* @access private
 	*/
 	function sql_prepare_column_data($table_name, $column_name, $column_data)
 	{

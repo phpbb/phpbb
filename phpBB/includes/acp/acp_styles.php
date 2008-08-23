@@ -685,7 +685,7 @@ inherit_from = {INHERIT_FROM}
 		{
 			trigger_error($user->lang['EDITOR_DISABLED'] . adm_back_link($this->u_action));
 		}
-		
+
 		$this->page_title = 'EDIT_TEMPLATE';
 
 		$filelist = $filelist_cats = array();
@@ -698,7 +698,7 @@ inherit_from = {INHERIT_FROM}
 
 		// make sure template_file path doesn't go upwards
 		$template_file = str_replace('..', '.', $template_file);
-		
+
 		// Retrieve some information about the template
 		$sql = 'SELECT template_storedb, template_path, template_name
 			FROM ' . STYLES_TEMPLATE_TABLE . "
@@ -711,7 +711,7 @@ inherit_from = {INHERIT_FROM}
 		{
 			trigger_error($user->lang['NO_TEMPLATE'] . adm_back_link($this->u_action), E_USER_WARNING);
 		}
-		
+
 		if ($save_changes && !check_form_key('acp_styles'))
 		{
 			trigger_error($user->lang['FORM_INVALID'] . adm_back_link($this->u_action), E_USER_WARNING);
@@ -998,17 +998,17 @@ inherit_from = {INHERIT_FROM}
 				$ids[] = $template_row['template_inherits_id'];
 			}
 			$ids[] = $template_row['template_id'];
-			
+
 			$filemtime 			= array();
 			$file_template_db	= array();
-			
+
 			foreach ($ids as $id)
 			{
 				$sql = 'SELECT template_filename, template_mtime
 					FROM ' . STYLES_TEMPLATE_DATA_TABLE . "
 					WHERE template_id = $id";
 				$result = $db->sql_query($sql);
-				
+
 				while ($row = $db->sql_fetchrow($result))
 				{
 					$filemtime[$row['template_filename']] = $row['template_mtime'];
@@ -1024,22 +1024,22 @@ inherit_from = {INHERIT_FROM}
 		foreach ($file_ary as $file)
 		{
 			$file 		= str_replace('/', '.', $file);
-			
+
 			// perform some dirty guessing to get the path right.
 			// We assume that three dots in a row were '../'
 			$tpl_file 	= str_replace('.', '/', $file);
 			$tpl_file 	= str_replace('///', '../', $tpl_file);
-			
+
 			$filename = "{$cache_prefix}_$file.html.$phpEx";
 
 			if (!file_exists("{$phpbb_root_path}cache/$filename"))
 			{
 				continue;
 			}
-			
+
 			$file_tpl = "{$phpbb_root_path}styles/{$template_row['template_path']}/template/$tpl_file.html";
 			$inherited = false;
-			
+
 			if (isset($template_row['template_inherits_id']) && $template_row['template_inherits_id'])
 			{
 				if (!$template_row['template_storedb'])
@@ -1059,7 +1059,7 @@ inherit_from = {INHERIT_FROM}
 					}
 				}
 			}
-			
+
 
 			$template->assign_block_vars('file', array(
 				'U_VIEWSOURCE'	=> $this->u_action . "&amp;action=cache&amp;id=$template_id&amp;source=$file",
@@ -1103,7 +1103,7 @@ inherit_from = {INHERIT_FROM}
 
 		// make sure theme_file path doesn't go upwards
 		$theme_file = str_replace('..', '.', $theme_file);
-		
+
 		// Retrieve some information about the theme
 		$sql = 'SELECT theme_storedb, theme_path, theme_name, theme_data
 			FROM ' . STYLES_THEME_TABLE . "
@@ -1284,7 +1284,7 @@ inherit_from = {INHERIT_FROM}
 		$imgsize	= request_var('imgsize', false);
 		$imgwidth	= request_var('imgwidth', 0);
 		$imgheight	= request_var('imgheight', 0);
-		
+
 		$imgname	= preg_replace('#[^a-z0-9\-+_]#i', '', $imgname);
 		$imgpath	= str_replace('..', '.', $imgpath);
 
@@ -1580,7 +1580,7 @@ inherit_from = {INHERIT_FROM}
 			{
 				$msg .= '<br />' . $values['template_name'];
 			}
-		
+
 			trigger_error($msg . adm_back_link($this->u_action), E_USER_WARNING);
 		}
 
@@ -2162,14 +2162,14 @@ inherit_from = {INHERIT_FROM}
 			$style_default = request_var('style_default', 0);
 			$store_db = request_var('store_db', 0);
 
-			$sql = "SELECT {$mode}_id 
+			$sql = "SELECT {$mode}_id
 				FROM $sql_from
-				WHERE {$mode}_id <> $style_id 
+				WHERE {$mode}_id <> $style_id
 				AND {$mode}_name = '" . $db->sql_escape(strtolower($name)) . "'";
 			$result = $db->sql_query($sql);
 			$conflict = $db->sql_fetchrow($result);
 			$db->sql_freeresult($result);
-			
+
 			if ($mode == 'style' && (!$template_id || !$theme_id || !$imageset_id))
 			{
 				$error[] = $user->lang['STYLE_ERR_NO_IDS'];
@@ -2207,7 +2207,7 @@ inherit_from = {INHERIT_FROM}
 					}
 				}
 			}
-			
+
 			if (!sizeof($error))
 			{
 				// Check length settings
@@ -2374,8 +2374,8 @@ inherit_from = {INHERIT_FROM}
 				$db->sql_freeresult($result);
 			}
 		}
-		
-		
+
+
 		if ($mode == 'template')
 		{
 			$super = array();
@@ -3116,7 +3116,7 @@ inherit_from = {INHERIT_FROM}
 
 		// we parse the cfg here (again)
 		$cfg_data = parse_cfg_file("$root_path$mode/$mode.cfg");
-		
+
 		switch ($mode)
 		{
 			case 'template':
@@ -3157,7 +3157,7 @@ inherit_from = {INHERIT_FROM}
 		$result = $db->sql_query($sql);
 		$row = $db->sql_fetchrow($result);
 		$db->sql_freeresult($result);
-		
+
 
 		if ($row)
 		{
@@ -3197,7 +3197,7 @@ inherit_from = {INHERIT_FROM}
 			$inherit_id = 0;
 			$inherit_path = '';
 		}
-		
+
 
 		if (sizeof($error))
 		{
@@ -3378,11 +3378,11 @@ inherit_from = {INHERIT_FROM}
 		// Return store_db in case it had to be altered
 		return $store_db;
 	}
-	
+
 	/**
 	* Checks downwards dependencies
 	*
-	* @visibility public
+	* @access public
 	* @param string $mode The element type to check - only template is supported
 	* @param int $id The template id
 	* @returns false if no component inherits, array with name, path and id for each subtemplate otherwise
@@ -3390,7 +3390,7 @@ inherit_from = {INHERIT_FROM}
 	function check_inheritance($mode, $id)
 	{
 		global $db;
-		
+
 		$l_type = strtoupper($mode);
 
 		switch ($mode)
@@ -3413,10 +3413,10 @@ inherit_from = {INHERIT_FROM}
 			WHERE {$mode}_inherits_id = " . (int) $id;
 		$result = $db->sql_query($sql);
 
-		$names = array(); 
+		$names = array();
 		while ($row = $db->sql_fetchrow($result))
 		{
-			
+
 			$names[$row["{$mode}_id"]] = array(
 				"{$mode}_id" => $row["{$mode}_id"],
 				"{$mode}_name" => $row["{$mode}_name"],
@@ -3434,11 +3434,11 @@ inherit_from = {INHERIT_FROM}
 			return false;
 		}
 	}
-	
+
 	/**
 	* Checks upwards dependencies
 	*
-	* @visibility public
+	* @access public
 	* @param string $mode The element type to check - only template is supported
 	* @param int $id The template id
 	* @returns false if the component does not inherit, array with name, path and id otherwise
@@ -3446,7 +3446,7 @@ inherit_from = {INHERIT_FROM}
 	function get_super($mode, $id)
 	{
 		global $db;
-		
+
 		$l_type = strtoupper($mode);
 
 		switch ($mode)
@@ -3463,13 +3463,13 @@ inherit_from = {INHERIT_FROM}
 				$sql_from = STYLES_IMAGESET_TABLE;
 			break;
 		}
-		
-		
-		$sql = "SELECT {$mode}_inherits_id 
+
+
+		$sql = "SELECT {$mode}_inherits_id
 			FROM $sql_from
 			WHERE {$mode}_id = " . (int) $id;
 		$result = $db->sql_query_limit($sql, 1);
-		
+
 		if ($row = $db->sql_fetchrow($result))
 		{
 			$db->sql_freeresult($result);
@@ -3478,10 +3478,10 @@ inherit_from = {INHERIT_FROM}
 		{
 			return false;
 		}
-		
+
 		$super_id = $row["{$mode}_inherits_id"];
-		
-		$sql = "SELECT {$mode}_id, {$mode}_name, {$mode}_path 
+
+		$sql = "SELECT {$mode}_id, {$mode}_name, {$mode}_path
 			FROM $sql_from
 			WHERE {$mode}_id = " . (int) $super_id;
 
@@ -3491,21 +3491,21 @@ inherit_from = {INHERIT_FROM}
 			$db->sql_freeresult($result);
 			return $row;
 		}
-		
+
 		return false;
 	}
-	
+
 	/**
 	* Moves a template set and its subtemplates to the database
 	*
-	* @visibility public
+	* @access public
 	* @param string $mode The component to move - only template is supported
 	* @param int $id The template id
 	*/
 	function store_in_db($mode, $id)
 	{
 		global $db, $user;
-		
+
 		$error = array();
 		$l_type = strtoupper($mode);
 		if ($super = $this->get_super($mode, $id))
@@ -3513,9 +3513,9 @@ inherit_from = {INHERIT_FROM}
 			$error[] = (sprintf($user->lang["{$l_type}_INHERITS"], $super['template_name']));
 			return $error;
 		}
-		
+
 		$sql = "SELECT {$mode}_id, {$mode}_name, {$mode}_path
-			FROM " . STYLES_TEMPLATE_TABLE . ' 
+			FROM " . STYLES_TEMPLATE_TABLE . '
 			WHERE template_id = ' . (int) $id;
 
 		$result = $db->sql_query_limit($sql, 1);
@@ -3540,14 +3540,14 @@ inherit_from = {INHERIT_FROM}
 		{
 			return $error;
 		}
-		
+
 		return false;
 	}
-	
+
 	/**
 	* Moves a template set to the database
 	*
-	* @visibility private
+	* @access private
 	* @param string $mode The component to move - only template is supported
 	* @param int $id The template id
 	* @param string $path TThe path to the template files
@@ -3555,28 +3555,28 @@ inherit_from = {INHERIT_FROM}
 	function _store_in_db($mode, $id, $path)
 	{
 		global $phpbb_root_path, $db;
-	
+
 		$filelist = filelist("{$phpbb_root_path}styles/{$path}/template", '', 'html');
 		$this->store_templates('insert', $id, $path, $filelist);
-		
+
 		// Okay, we do the query here -shouldn't be triggered often.
 		$sql = 'UPDATE ' . STYLES_TEMPLATE_TABLE . '
 						SET template_storedb = 1
 						WHERE template_id = ' . $id;
 		$db->sql_query($sql);
 	}
-	
+
 	/**
 	* Moves a template set and its subtemplates to the filesystem
 	*
-	* @visibility public
+	* @access public
 	* @param string $mode The component to move - only template is supported
 	* @param int $id The template id
 	*/
 	function store_in_fs($mode, $id)
 	{
 		global $db, $user;
-		
+
 		$error = array();
 		$l_type = strtoupper($mode);
 		if ($super = $this->get_super($mode, $id))
@@ -3584,7 +3584,7 @@ inherit_from = {INHERIT_FROM}
 			$error[] = (sprintf($user->lang["{$l_type}_INHERITS"], $super['template_name']));
 			return($error);
 		}
-		
+
 		$sql = "SELECT {$mode}_id, {$mode}_name, {$mode}_path
 			FROM " . STYLES_TEMPLATE_TABLE . '
 			WHERE template_id = ' . (int) $id;
@@ -3596,9 +3596,9 @@ inherit_from = {INHERIT_FROM}
 			if (!sizeof($error))
 			{
 				$subs = $this->check_inheritance($mode, $id);
-			
+
 				$this->_store_in_fs($mode, $id, $row["{$mode}_path"]);
-				
+
 				if ($subs && sizeof($subs))
 				{
 					foreach ($subs as $sub_id => $sub)
@@ -3615,11 +3615,11 @@ inherit_from = {INHERIT_FROM}
 		}
 		return false;
 	}
-	
+
 	/**
 	* Moves a template set to the filesystem
 	*
-	* @visibility private
+	* @access private
 	* @param string $mode The component to move - only template is supported
 	* @param int $id The template id
 	* @param string $path The path to the template
@@ -3627,7 +3627,7 @@ inherit_from = {INHERIT_FROM}
 	function _store_in_fs($mode, $id, $path)
 	{
 		global $phpbb_root_path, $db, $user, $safe_mode;
-		
+
 		$store_db = 0;
 		$error = array();
 		if (!$safe_mode && @is_writable("{$phpbb_root_path}styles/{$path}/template"))
@@ -3666,7 +3666,7 @@ inherit_from = {INHERIT_FROM}
 				SET template_storedb = 0
 				WHERE template_id = ' . $id;
 		$db->sql_query($sql);
-		
+
 		return false;
 	}
 

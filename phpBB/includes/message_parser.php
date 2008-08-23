@@ -391,7 +391,7 @@ class bbcode_firstpass extends bbcode
 
 	/**
 	* Parse code text from code tag
-	* @private
+	* @access private
 	*/
 	function bbcode_parse_code($stx, &$code)
 	{

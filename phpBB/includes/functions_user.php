@@ -147,7 +147,7 @@ function user_update_name($old_name, $new_name)
 *
 * @param mixed $user_row An array containing the following keys (and the appropriate values): username, group_id (the group to place the user in), user_email and the user_type(usually 0). Additional entries not overridden by defaults will be forwarded.
 * @param string $cp_data custom profile fields, see custom_profile::build_insert_sql_array
-* @return: the new user's ID.
+* @return the new user's ID.
 */
 function user_add($user_row, $cp_data = false)
 {
@@ -2314,7 +2314,7 @@ function avatar_process_user(&$error, $custom_userdata = false)
 					}
 				}
 			}
-			
+
 			$sql = 'UPDATE ' . USERS_TABLE . '
 				SET ' . $db->sql_build_array('UPDATE', $sql_ary) . '
 				WHERE user_id = ' . (($custom_userdata === false) ? $user->data['user_id'] : $custom_userdata['user_id']);
@@ -3087,7 +3087,7 @@ function group_validate_groupname($group_id, $group_name)
 /**
 * Set users default group
 *
-* @private
+* @access private
 */
 function group_set_user_default($group_id, $user_id_ary, $group_attributes = false, $update_listing = false)
 {

@@ -263,7 +263,8 @@ class filespec
 	*
 	* @param string $destination_path Destination path, for example $config['avatar_path']
 	* @param bool $overwrite If set to true, an already existing file will be overwritten
-	* @param string $chmod Permission mask for chmodding the file after a successful move. The mode entered here reflects the mode of {@inline phpbb_chmod()}
+	* @param string $chmod Permission mask for chmodding the file after a successful move. The mode entered here reflects the mode defined by {@link phpbb_chmod()}
+	*
 	* @access public
 	*/
 	function move_file($destination, $overwrite = false, $skip_image_check = false, $chmod = false)
