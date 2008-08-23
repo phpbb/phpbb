@@ -818,11 +818,11 @@ class p_master
 	{
 		global $user, $phpEx;
 
-		if (file_exists($user->lang_path . 'mods'))
+		if (file_exists($user->lang_path . $user->lang_name . '/mods'))
 		{
 			$add_files = array();
 
-			$dir = @opendir($user->lang_path . 'mods');
+			$dir = @opendir($user->lang_path . $user->lang_name . '/mods');
 
 			if ($dir)
 			{

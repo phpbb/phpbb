@@ -1382,7 +1382,7 @@ class user extends session
 	var $timezone;
 	var $dst;
 
-	var $lang_name;
+	var $lang_name = false;
 	var $lang_id = false;
 	var $lang_path;
 	var $img_lang;
@@ -1393,6 +1393,32 @@ class user extends session
 	var $keyvalues = array();
 
 	/**
+	* Constructor to set the lang path
+	*/
+	function user()
+	{
+		global $phpbb_root_path;
+
+		$this->lang_path = $phpbb_root_path . 'language/';
+	}
+
+	/**
+	* Function to set custom language path (able to use directory outside of phpBB)
+	*
+	* @param string $lang_path New language path used.
+	* @access public
+	*/
+	function set_custom_lang_path($lang_path)
+	{
+		$this->lang_path = $lang_path;
+
+		if (substr($this->lang_path, -1) != '/')
+		{
+			$this->lang_path .= '/';
+		}
+	}
+
+	/**
 	* Setup basic user-specific items (style, language, ...)
 	*/
 	function setup($lang_set = false, $style = false)
@@ -1401,8 +1427,7 @@ class user extends session
 
 		if ($this->data['user_id'] != ANONYMOUS)
 		{
-			$this->lang_name = (file_exists($phpbb_root_path . 'language/' . $this->data['user_lang'] . "/common.$phpEx")) ? $this->data['user_lang'] : basename($config['default_lang']);
-			$this->lang_path = $phpbb_root_path . 'language/' . $this->lang_name . '/';
+			$this->lang_name = (file_exists($this->lang_path . $this->data['user_lang'] . "/common.$phpEx")) ? $this->data['user_lang'] : basename($config['default_lang']);
 
 			$this->date_format = $this->data['user_dateformat'];
 			$this->timezone = $this->data['user_timezone'] * 3600;
@@ -1411,7 +1436,6 @@ class user extends session
 		else
 		{
 			$this->lang_name = basename($config['default_lang']);
-			$this->lang_path = $phpbb_root_path . 'language/' . $this->lang_name . '/';
 			$this->date_format = $config['default_dateformat'];
 			$this->timezone = $config['board_timezone'] * 3600;
 			$this->dst = $config['board_dst'] * 3600;
@@ -1431,10 +1455,9 @@ class user extends session
 					$accept_lang = substr($accept_lang, 0, 2) . '_' . strtoupper(substr($accept_lang, 3, 2));
 					$accept_lang = basename($accept_lang);
 
-					if (file_exists($phpbb_root_path . 'language/' . $accept_lang . "/common.$phpEx"))
+					if (file_exists($this->lang_path . $accept_lang . "/common.$phpEx"))
 					{
 						$this->lang_name = $config['default_lang'] = $accept_lang;
-						$this->lang_path = $phpbb_root_path . 'language/' . $accept_lang . '/';
 						break;
 					}
 					else
@@ -1443,10 +1466,9 @@ class user extends session
 						$accept_lang = substr($accept_lang, 0, 2);
 						$accept_lang = basename($accept_lang);
 
-						if (file_exists($phpbb_root_path . 'language/' . $accept_lang . "/common.$phpEx"))
+						if (file_exists($this->lang_path . $accept_lang . "/common.$phpEx"))
 						{
 							$this->lang_name = $config['default_lang'] = $accept_lang;
-							$this->lang_path = $phpbb_root_path . 'language/' . $accept_lang . '/';
 							break;
 						}
 					}
@@ -1458,9 +1480,9 @@ class user extends session
 		// We include common language file here to not load it every time a custom language file is included
 		$lang = &$this->lang;
 
-		if ((@include $this->lang_path . "common.$phpEx") === false)
+		if ((@include $this->lang_path . $this->lang_name . "/common.$phpEx") === false)
 		{
-			die('Language file ' . $this->lang_name . "/common.$phpEx" . " couldn't be opened.");
+			die('Language file ' . $this->lang_path . $this->lang_name . "/common.$phpEx" . " couldn't be opened.");
 		}
 
 		$this->add_lang($lang_set);
@@ -1830,12 +1852,10 @@ class user extends session
 	{
 		global $phpEx;
 
-		// Make sure the language path is set (if the user setup did not happen it is not set)
-		if (!$this->lang_path)
+		// Make sure the language name is set (if the user setup did not happen it is not set)
+		if (!$this->lang_name)
 		{
-			global $phpbb_root_path, $config;
-
-			$this->lang_path = $phpbb_root_path . 'language/' . basename($config['default_lang']) . '/';
+			$this->lang_name = basename($config['default_lang']);
 		}
 
 		// $lang == $this->lang
@@ -1845,11 +1865,11 @@ class user extends session
 		{
 			if ($use_help && strpos($lang_file, '/') !== false)
 			{
-				$language_filename = $this->lang_path . substr($lang_file, 0, stripos($lang_file, '/') + 1) . 'help_' . substr($lang_file, stripos($lang_file, '/') + 1) . '.' . $phpEx;
+				$language_filename = $this->lang_path . $this->lang_name . '/' . substr($lang_file, 0, stripos($lang_file, '/') + 1) . 'help_' . substr($lang_file, stripos($lang_file, '/') + 1) . '.' . $phpEx;
 			}
 			else
 			{
-				$language_filename = $this->lang_path . (($use_help) ? 'help_' : '') . $lang_file . '.' . $phpEx;
+				$language_filename = $this->lang_path . $this->lang_name . '/' . (($use_help) ? 'help_' : '') . $lang_file . '.' . $phpEx;
 			}
 
 			if ((@include $language_filename) === false)

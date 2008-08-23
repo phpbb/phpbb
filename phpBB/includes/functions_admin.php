@@ -97,7 +97,7 @@ function recalc_btree($sql_id, $sql_table, $module_class = '')
 			$item_data['left_id'] = $row['right_id'] + 1;
 			$item_data['right_id'] = $row['right_id'] + 2;
 		}
-	
+
 		$sql = "UPDATE $sql_table
 			SET left_id = {$item_data['left_id']}, right_id = {$item_data['right_id']}
 			WHERE $sql_id = " . $item_data[$sql_id];
@@ -916,7 +916,7 @@ function delete_attachments($mode, $ids, $resync = true)
 
 			while ($row = $db->sql_fetchrow($result))
 			{
-				$remaining[] = $row['post_msg_id'];		
+				$remaining[] = $row['post_msg_id'];
 			}
 			$db->sql_freeresult($result);
 
@@ -940,7 +940,7 @@ function delete_attachments($mode, $ids, $resync = true)
 
 			while ($row = $db->sql_fetchrow($result))
 			{
-				$remaining[] = $row['post_msg_id'];		
+				$remaining[] = $row['post_msg_id'];
 			}
 			$db->sql_freeresult($result);
 
@@ -978,7 +978,7 @@ function delete_attachments($mode, $ids, $resync = true)
 
 			while ($row = $db->sql_fetchrow($result))
 			{
-				$remaining[] = $row['topic_id'];		
+				$remaining[] = $row['topic_id'];
 			}
 			$db->sql_freeresult($result);
 
@@ -1015,7 +1015,7 @@ function delete_topic_shadows($max_age, $forum_id = '', $auto_sync = true)
 				. $where;
 			$db->sql_query($sql);
 		break;
-	
+
 		default:
 			$sql = 'SELECT t.topic_id
 				FROM ' . TOPICS_TABLE . ' t, ' . TOPICS_TABLE . ' t2
@@ -1213,7 +1213,7 @@ function sync($mode, $where_type = '', $where_ids = '', $resync_parents = false,
 							AND t1.forum_id = t2.forum_id";
 					$db->sql_query($sql);
 				break;
-			
+
 				default:
 					$sql = 'SELECT t1.topic_id
 						FROM ' .TOPICS_TABLE . ' t1, ' . TOPICS_TABLE . " t2
@@ -2369,7 +2369,7 @@ function view_log($mode, &$log, &$log_count, $limit = 0, $offset = 0, $forum_id 
 			$log_type = LOG_USERS;
 			$sql_forum = 'AND l.reportee_id = ' . (int) $user_id;
 		break;
-		
+
 		case 'users':
 			$log_type = LOG_USERS;
 			$sql_forum = '';
@@ -2379,7 +2379,7 @@ function view_log($mode, &$log, &$log_count, $limit = 0, $offset = 0, $forum_id 
 			$log_type = LOG_CRITICAL;
 			$sql_forum = '';
 		break;
-		
+
 		default:
 			return;
 	}
@@ -2637,7 +2637,7 @@ function update_foes($group_id = false, $user_id = false)
 				$db->sql_freeresult($result);
 
 				if (sizeof($users))
-				{				
+				{
 					$sql = 'DELETE FROM ' . ZEBRA_TABLE . '
 						WHERE ' . $db->sql_in_set('zebra_id', $users) . '
 							AND foe = 1';
@@ -2717,7 +2717,7 @@ function view_inactive_users(&$users, &$user_count, $limit = 0, $offset = 0, $li
 				$row['inactive_reason'] = $user->lang['INACTIVE_REASON_REMIND'];
 			break;
 		}
-	
+
 		$users[] = $row;
 	}
 
@@ -2897,7 +2897,7 @@ function get_remote_file($host, $directory, $filename, &$errstr, &$errno, $port 
 		@fputs($fsock, "GET $directory/$filename HTTP/1.1\r\n");
 		@fputs($fsock, "HOST: $host\r\n");
 		@fputs($fsock, "Connection: close\r\n\r\n");
-	
+
 		$file_info = '';
 		$get_info = false;
 
@@ -2936,7 +2936,7 @@ function get_remote_file($host, $directory, $filename, &$errstr, &$errno, $port 
 			return false;
 		}
 	}
-	
+
 	return $file_info;
 }
 
@@ -2972,7 +2972,7 @@ function tidy_warnings()
 		$sql = 'DELETE FROM ' . WARNINGS_TABLE . '
 			WHERE ' . $db->sql_in_set('warning_id', $warning_list);
 		$db->sql_query($sql);
-	
+
 		foreach ($user_list as $user_id => $value)
 		{
 			$sql = 'UPDATE ' . USERS_TABLE . " SET user_warnings = user_warnings - $value
@@ -3034,7 +3034,7 @@ function add_permission_language()
 	// Now search in acp and mods folder for permissions_ files.
 	foreach (array('acp/', 'mods/') as $path)
 	{
-		$dh = @opendir($user->lang_path . $path);
+		$dh = @opendir($user->lang_path . $user->lang_name . '/' . $path);
 
 		if ($dh)
 		{
