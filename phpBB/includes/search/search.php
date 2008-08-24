@@ -49,10 +49,10 @@ class search_backend
 
 			$words = array();
 
-			if (file_exists("{$user->lang_path}/search_ignore_words." . PHP_EXT))
+			if (file_exists("{$user->lang_path}{$user->lang_name}/search_ignore_words." . PHP_EXT))
 			{
 				// include the file containing ignore words
-				include("{$user->lang_path}/search_ignore_words." . PHP_EXT);
+				include("{$user->lang_path}{$user->lang_name}/search_ignore_words." . PHP_EXT);
 			}
 
 			$this->ignore_words = $words;
@@ -71,10 +71,10 @@ class search_backend
 
 			$synonyms = array();
 
-			if (file_exists("{$user->lang_path}/search_synonyms." . PHP_EXT))
+			if (file_exists("{$user->lang_path}{$user->lang_name}/search_synonyms." . PHP_EXT))
 			{
 				// include the file containing synonyms
-				include("{$user->lang_path}/search_synonyms." . PHP_EXT);
+				include("{$user->lang_path}{$user->lang_name}/search_synonyms." . PHP_EXT);
 			}
 
 			$this->match_synonym = array_keys($synonyms);

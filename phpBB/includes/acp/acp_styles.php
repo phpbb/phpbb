@@ -669,6 +669,11 @@ parse_css_file = {PARSE_CSS_FILE}
 	{
 		global $config, $db, $cache, $user, $template, $safe_mode;
 
+		if (defined('DISABLE_ACP_EDITOR'))
+		{
+			trigger_error($user->lang['EDITOR_DISABLED'] . adm_back_link($this->u_action));
+		}
+
 		$this->page_title = 'EDIT_TEMPLATE';
 
 		$filelist = $filelist_cats = array();
@@ -681,7 +686,7 @@ parse_css_file = {PARSE_CSS_FILE}
 
 		// make sure template_file path doesn't go upwards
 		$template_file = str_replace('..', '.', $template_file);
-		
+
 		// Retrieve some information about the template
 		$sql = 'SELECT template_storedb, template_path, template_name
 			FROM ' . STYLES_TEMPLATE_TABLE . "
@@ -694,7 +699,7 @@ parse_css_file = {PARSE_CSS_FILE}
 		{
 			trigger_error($user->lang['NO_TEMPLATE'] . adm_back_link($this->u_action), E_USER_WARNING);
 		}
-		
+
 		if ($save_changes && !check_form_key('acp_styles'))
 		{
 			trigger_error($user->lang['FORM_INVALID'] . adm_back_link($this->u_action), E_USER_WARNING);
@@ -993,12 +998,12 @@ parse_css_file = {PARSE_CSS_FILE}
 		foreach ($file_ary as $file)
 		{
 			$file 		= str_replace('/', '.', $file);
-			
+
 			// perform some dirty guessing to get the path right.
 			// We assume that three dots in a row were '../'
 			$tpl_file 	= str_replace('.', '/', $file);
 			$tpl_file 	= str_replace('///', '../', $tpl_file);
-			
+
 			$filename = "{$cache_prefix}_$file.html." . PHP_EXT;
 
 			if (!file_exists(PHPBB_ROOT_PATH . "cache/$filename"))
@@ -1047,7 +1052,7 @@ parse_css_file = {PARSE_CSS_FILE}
 
 		// make sure theme_file path doesn't go upwards
 		$theme_file = str_replace('..', '.', $theme_file);
-		
+
 		// Retrieve some information about the theme
 		$sql = 'SELECT theme_storedb, theme_path, theme_name, theme_data
 			FROM ' . STYLES_THEME_TABLE . "
@@ -1231,7 +1236,7 @@ parse_css_file = {PARSE_CSS_FILE}
 		$imgsize	= request_var('imgsize', false);
 		$imgwidth	= request_var('imgwidth', 0);
 		$imgheight	= request_var('imgheight', 0);
-		
+
 		$imgname	= preg_replace('#[^a-z0-9\-+_]#i', '', $imgname);
 		$imgpath	= str_replace('..', '.', $imgpath);
 
@@ -2096,14 +2101,14 @@ parse_css_file = {PARSE_CSS_FILE}
 			$style_default = request_var('style_default', 0);
 			$store_db = request_var('store_db', 0);
 
-			$sql = "SELECT {$mode}_id 
+			$sql = "SELECT {$mode}_id
 				FROM $sql_from
-				WHERE {$mode}_id <> $style_id 
+				WHERE {$mode}_id <> $style_id
 				AND {$mode}_name = '" . $db->sql_escape(strtolower($name)) . "'";
 			$result = $db->sql_query($sql);
 			$conflict = $db->sql_fetchrow($result);
 			$db->sql_freeresult($result);
-			
+
 			if ($mode == 'style' && (!$template_id || !$theme_id || !$imageset_id))
 			{
 				$error[] = $user->lang['STYLE_ERR_NO_IDS'];
@@ -2141,7 +2146,7 @@ parse_css_file = {PARSE_CSS_FILE}
 					}
 				}
 			}
-			
+
 			if (!sizeof($error))
 			{
 				// Check length settings
@@ -2911,7 +2916,7 @@ parse_css_file = {PARSE_CSS_FILE}
 				$sql = 'SELECT image_name, image_filename, image_lang, image_width, image_height
 					FROM ' . STYLES_IMAGESET_DATA_TABLE . '
 					WHERE imageset_id = ' . $theme['imageset_id'] . "
-					AND image_filename <> '' 
+					AND image_filename <> ''
 					AND image_lang IN ('" . $db->sql_escape($user_image_lang) . "', '')";
 				$result2 = $db->sql_query($sql);
 
@@ -2926,7 +2931,7 @@ parse_css_file = {PARSE_CSS_FILE}
 
 				$matches = array();
 				preg_match_all('#\{IMG_([A-Za-z0-9_]*?)_(WIDTH|HEIGHT|SRC)\}#', $specific_theme_data, $matches);
-			
+
 				$imgs = $find = $replace = array();
 				if (isset($matches[0]) && sizeof($matches[0]))
 				{
@@ -2934,13 +2939,13 @@ parse_css_file = {PARSE_CSS_FILE}
 					{
 						$img = strtolower($img);
 						$find[] = $matches[0][$i];
-			
+
 						if (!isset($img_array[$img]))
 						{
 							$replace[] = '';
 							continue;
 						}
-			
+
 						if (!isset($imgs[$img]))
 						{
 							$img_data = &$img_array[$img];
@@ -2951,26 +2956,26 @@ parse_css_file = {PARSE_CSS_FILE}
 								'height'	=> $img_data['image_height'],
 							);
 						}
-			
+
 						switch ($matches[2][$i])
 						{
 							case 'SRC':
 								$replace[] = $imgs[$img]['src'];
 							break;
-							
+
 							case 'WIDTH':
 								$replace[] = $imgs[$img]['width'];
 							break;
-				
+
 							case 'HEIGHT':
 								$replace[] = $imgs[$img]['height'];
 							break;
-			
+
 							default:
 								continue;
 						}
 					}
-			
+
 					if (sizeof($find))
 					{
 						$specific_theme_data = str_replace($find, $replace, $specific_theme_data);
@@ -3194,6 +3199,7 @@ parse_css_file = {PARSE_CSS_FILE}
 		$row = $db->sql_fetchrow($result);
 		$db->sql_freeresult($result);
 
+
 		if ($row)
 		{
 			// If it exist, we just use the style on installation
@@ -3381,7 +3387,6 @@ parse_css_file = {PARSE_CSS_FILE}
 		// Return store_db in case it had to be altered
 		return $store_db;
 	}
-
 }
 
 ?>
