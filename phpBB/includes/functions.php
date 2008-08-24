@@ -3131,7 +3131,7 @@ function msg_handler($errno, $msg_text, $errfile, $errline)
 				}
 
 				// Another quick fix for those having gzip compression enabled, but do not flush if the coder wants to catch "something". ;)
-				if ($config['gzip_compress'])
+				if (!empty($config['gzip_compress']))
 				{
 					if (@extension_loaded('zlib') && !headers_sent() && !ob_get_level())
 					{
@@ -3854,7 +3854,7 @@ function exit_handler()
 	}
 
 	// As a pre-caution... some setups display a blank page if the flush() is not there.
-	(!$config['gzip_compress']) ? @flush() : @ob_flush();
+	(empty($config['gzip_compress'])) ? @flush() : @ob_flush();
 
 	exit;
 }

@@ -230,6 +230,12 @@ include($phpbb_root_path . 'language/' . $language . '/acp/board.' . $phpEx);
 include($phpbb_root_path . 'language/' . $language . '/install.' . $phpEx);
 include($phpbb_root_path . 'language/' . $language . '/posting.' . $phpEx);
 
+// usually we would need every single constant here - and it would be consistent. For 3.0.x, use a dirty hack... :(
+
+// Define needed constants
+define('CHMOD_READ', 4);
+define('CHMOD_WRITE', 2);
+
 $mode = request_var('mode', 'overview');
 $sub = request_var('sub', '');
 
