@@ -177,10 +177,10 @@ define('REFERER_VALIDATE_HOST', 1);
 define('REFERER_VALIDATE_PATH', 2);
 
 // phpbb_chmod() permissions
-define('CHMOD_ALL', 7);
+@define('CHMOD_ALL', 7);
 @define('CHMOD_READ', 4);
 @define('CHMOD_WRITE', 2);
-define('CHMOD_EXECUTE', 1);
+@define('CHMOD_EXECUTE', 1);
 
 // Additional constants
 define('VOTE_CONVERTED', 127);
