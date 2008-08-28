@@ -16,6 +16,8 @@ if (!defined('PHPBB_ROOT_PATH')) define('PHPBB_ROOT_PATH', './../');
 if (!defined('PHP_EXT')) define('PHP_EXT', substr(strrchr(__FILE__, '.'), 1));
 include(PHPBB_ROOT_PATH . 'common.' . PHP_EXT);
 
+
+// Thank you sun. 
 if (isset($_SERVER['CONTENT_TYPE']))
 {
 	if ($_SERVER['CONTENT_TYPE'] === 'application/x-java-archive')
@@ -250,7 +252,7 @@ else if (($display_cat == ATTACHMENT_CATEGORY_NONE || $display_cat == ATTACHMENT
 	$db->sql_query($sql);
 }
 
-if ($display_cat == ATTACHMENT_CATEGORY_IMAGE && $mode === 'view' && (strpos($attachment['mimetype'], 'image') === 0) && strpos(strtolower($user->browser), 'msie') !== false)
+if ($display_cat == ATTACHMENT_CATEGORY_IMAGE && $mode === 'view' && (strpos($attachment['mimetype'], 'image') === 0) && ((strpos(strtolower($user->browser), 'msie') !== false) && (strpos(strtolower($user->browser), 'msie 8.0') === false)))
 {
 	wrap_img_in_html(append_sid('download/file', 'id=' . $attachment['attach_id']), $attachment['real_filename']);
 }
@@ -307,7 +309,7 @@ function send_avatar_to_browser($file, $browser)
 		$image_data = @getimagesize($file_path);
 		header('Content-Type: ' . image_type_to_mime_type($image_data[2]));
 
-		if (strpos(strtolower($browser), 'msie') !== false)
+		if (strpos(strtolower($browser), 'msie') !== false && strpos(strtolower($browser), 'msie 8.0') === false)
 		{
 			header('Content-Disposition: attachment; ' . header_filename($file));
 
@@ -437,9 +439,10 @@ function send_file_to_browser($attachment, $upload_dir, $category)
 	*/
 
 	// Send out the Headers. Do not set Content-Disposition to inline please, it is a security measure for users using the Internet Explorer.
-	header('Content-Type: ' . $attachment['mimetype']);
+	$is_ie8 = (strpos(strtolower($user->browser), 'msie 8.0') !== false);
+	header('Content-Type: ' . $attachment['mimetype'] . (($is_ie8) ? '; authoritative=true;' : ''));
 
-	if (empty($user->browser) || (strpos(strtolower($user->browser), 'msie') !== false))
+	if (empty($user->browser) || (!$is_ie8 && (strpos(strtolower($user->browser), 'msie') !== false)))
 	{
 		header('Content-Disposition: attachment; ' . header_filename(htmlspecialchars_decode($attachment['real_filename'])));
 		if (empty($user->browser) || (strpos(strtolower($user->browser), 'msie 6.0') !== false))
@@ -450,6 +453,10 @@ function send_file_to_browser($attachment, $upload_dir, $category)
 	else
 	{
 		header('Content-Disposition: ' . ((strpos($attachment['mimetype'], 'image') === 0) ? 'inline' : 'attachment') . '; ' . header_filename(htmlspecialchars_decode($attachment['real_filename'])));
+		if ($is_ie8 && (strpos($attachment['mimetype'], 'image') !== 0))
+		{
+			header('X-Download-Options: noopen');
+		}
 	}
 
 	if ($size)
@@ -622,7 +629,7 @@ function set_modified_headers($stamp, $browser)
 {
 	// let's see if we have to send the file at all
 	$last_load 	=  isset($_SERVER['HTTP_IF_MODIFIED_SINCE']) ? strtotime(trim($_SERVER['HTTP_IF_MODIFIED_SINCE'])) : false;
-	if (strpos(strtolower($browser), 'msie 6.0') === false)
+	if ((strpos(strtolower($browser), 'msie 6.0') === false) && (strpos(strtolower($browser), 'msie 8.0') === false))
 	{
 		if ($last_load !== false && $last_load <= $stamp)
 		{
