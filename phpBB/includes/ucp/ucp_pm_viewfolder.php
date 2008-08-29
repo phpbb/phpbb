@@ -511,7 +511,7 @@ function get_pm_from($folder_id, $folder, $user_id)
 		'S_TOPIC_ICONS'			=> ($config['enable_pm_icons']) ? true : false,
 
 		'U_POST_NEW_TOPIC'	=> ($auth->acl_get('u_sendpm')) ? append_sid('ucp', 'i=pm&amp;mode=compose') : '',
-		'S_PM_ACTION'		=> append_sid('ucp', "i=pm&amp;mode=view&amp;action=view_folder&amp;f=$folder_id"))
+		'S_PM_ACTION'		=> append_sid('ucp', "i=pm&amp;mode=view&amp;action=view_folder&amp;f=$folder_id" . (($start !== 0) ? "&amp;start=$start" : '')))
 	);
 
 	// Grab all pm data
