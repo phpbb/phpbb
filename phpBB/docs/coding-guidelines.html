@@ -76,7 +76,7 @@
 	<li><a href="#templating">Templating</a>
 	<ol style="list-style-type: lower-roman;">
 		<li><a href="#templates">General Templating</a></li>
-		<li><a href="#fallbacks">Template Fallbacks</a></li>
+		<li><a href="#inheritance">Template Inheritance</a></li>
 	</ol></li>
 	<li><a href="#charsets">Character Sets and Encodings</a></li>
 	<li><a href="#translation">Translation (<abbr title="Internationalisation">i18n</abbr>/<abbr title="Localisation">L10n</abbr>) Guidelines</a>
@@ -1004,12 +1004,15 @@ append_sid(&quot;{$phpbb_root_path}memberlist.$phpEx&quot;, 'mode=group&amp;amp;
 
 		<div class="content">
 	<a name="cfgfiles"></a><h3>3.i. Style Config Files</h3>
-	<p>Style cfg files are simple name-value lists with the information necessary for installing a style. Similar cfg files exist for templates, themes and imagesets. These follow the same principle and will not be introduced individually. The important part of the style configuration file is assigning an unique name.</p>
+	<p>Style cfg files are simple name-value lists with the information necessary for installing a style. Similar cfg files exist for templates, themes and imagesets. These follow the same principle and will not be introduced individually. Styles can use installed components by using the required_theme/required_template/required_imageset entries. The important part of the style configuration file is assigning an unique name.</p>
 	<div class="codebox"><pre>
-# General Information about this style
-name = prosilver
-copyright = &copy; phpBB Group, 2007
-version = 3.0.2
+        # General Information about this style
+        name = prosilver_duplicate
+        copyright = &copy; phpBB Group, 2007
+        version = 3.0.2
+        required_template = prosilver
+        required_theme = prosilver
+        required_imageset = prosilver
 	</pre></div>
 	<a name="genstyling"></a><h3>3.2. General Styling Rules</h3>
 <p>Templates should be produced in a consistent manner. Where appropriate they should be based off an existing copy, e.g. index, viewforum or viewtopic (the combination of which implement a range of conditional and variable forms). Please also note that the intendation and coding guidelines also apply to templates where possible.</p>
@@ -1468,22 +1471,22 @@ div
 &lt;/form&gt
 		</pre></div><br />
 		
-	<a name="fallbacks"></a><h3>4.ii. Template Fallbacks</h3>
+	<a name="inheritance"></a><h3>4.ii. Template Inheritance</h3>
 		<p>When basing a new template on an existing one, it is not necessary to provide all template files. By declaring the template  to be &quot;<strong>inheriting</strong>&quot; in the template configuration file.</p>
-		<p>The Limitation on this is that the base style has to installed and complete, meaning that it is not itself using a fallback.</p>
+		<p>The Limitation on this is that the base style has to installed and complete, meaning that it is not itself inheriting.</p>
 		<p>The effect of doing so is that the template engine will use the files in the new template where they exist, but fall back to files in the base template otherwise. Declaring a style to be inheriting also causes it to use some of the configuration settings of the base style, notably database storage.</p>
-		<p>We strongly encourage the use of fallbacks for styles based on the bundled styles, as it will ease the update procedure.</p>
+		<p>We strongly encourage the use of inheritance for styles based on the bundled styles, as it will ease the update procedure.</p>
 		<div class="codebox"><pre>
-		# General Information about this template
-		name = inherits
-		copyright = &copy; phpBB Group, 2007
-		version = 3.0.2
+        # General Information about this template
+        name = inherits
+        copyright = &copy; phpBB Group, 2007
+        version = 3.0.2
 
-		# Defining a different template bitfield
-		template_bitfield = lNg=
+        # Defining a different template bitfield
+        template_bitfield = lNg=
 
-		# Are we inheriting?
-		inherit_from = prosilver
+        # Are we inheriting?
+        inherit_from = prosilver
 		</pre></div>
 
 		</div>
@@ -2257,7 +2260,7 @@ if (utf8_case_fold_nfc($string1) == utf8_case_fold_nfc($string2))
 
 <ul>
 	<li>Added cfg files.</li>
-	<li>Added template <a href="#fallbacks">fallbacks</a>.</li>
+	<li>Added template <a href="#inheritance">inheritance</a>.</li>
 </ul>
 
 <h3>Revision 8596+</h3>
