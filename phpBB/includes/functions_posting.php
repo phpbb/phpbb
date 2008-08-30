@@ -1251,6 +1251,7 @@ function user_notification($mode, $subject, $topic_title, $forum_name, $forum_id
 			$msg_list_ary[$row['template']][$pos]['jabber']	= $row['user_jabber'];
 			$msg_list_ary[$row['template']][$pos]['name']	= $row['username'];
 			$msg_list_ary[$row['template']][$pos]['lang']	= $row['user_lang'];
+			$msg_list_ary[$row['template']][$pos]['user_id']= $row['user_id'];
 		}
 		unset($msg_users);
 
