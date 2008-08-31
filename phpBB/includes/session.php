@@ -1792,6 +1792,72 @@ class user extends session
 	}
 
 	/**
+	* More advanced language substitution
+	* Function to mimic sprintf() with the possibility of using phpBB's language system to substitute nullar/singular/plural forms.
+	* Params are the language key and the parameters to be substituted.
+	* This function/functionality is inspired by SHS` and Ashe.
+	*
+	* Example call: <samp>$user->lang('NUM_POSTS_IN_QUEUE', 1);</samp>
+	*/
+	function lang()
+	{
+		$args = func_get_args();
+		$key = $args[0];
+
+		// Return if language string does not exist
+		if (!isset($this->lang[$key]) || (!is_string($this->lang[$key]) && !is_array($this->lang[$key])))
+		{
+			return $key;
+		}
+
+		// If the language entry is a string, we simply mimic sprintf() behaviour
+		if (is_string($this->lang[$key]))
+		{
+			if (sizeof($args) == 1)
+			{
+				return $this->lang[$key];
+			}
+
+			// Replace key with language entry and simply pass along...
+			$args[0] = $this->lang[$key];
+			return call_user_func_array('sprintf', $args);
+		}
+
+		// It is an array... now handle different nullar/singular/plural forms
+		$key_found = false;
+
+		// We now get the first number passed and will select the key based upon this number
+		for ($i = 1, $num_args = sizeof($args); $i < $num_args; $i++)
+		{
+			if (is_int($args[$i]))
+			{
+				$numbers = array_keys($this->lang[$key]);
+
+				foreach ($numbers as $num)
+				{
+					if ($num > $args[$i])
+					{
+						break;
+					}
+
+					$key_found = $num;
+				}
+			}
+		}
+
+		// Ok, let's check if the key was found, else use the last entry (because it is mostly the plural form)
+		if ($key_found === false)
+		{
+			$numbers = array_keys($this->lang[$key]);
+			$key_found = end($numbers);
+		}
+
+		// Use the language string we determined and pass it to sprintf()
+		$args[0] = $this->lang[$key][$key_found];
+		return call_user_func_array('sprintf', $args);
+	}
+
+	/**
 	* Add Language Items - use_db and use_help are assigned where needed (only use them to force inclusion)
 	*
 	* @param mixed $lang_set specifies the language entries to include
