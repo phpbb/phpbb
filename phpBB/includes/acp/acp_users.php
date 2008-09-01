@@ -895,7 +895,6 @@ class acp_users
 				$sql = 'SELECT COUNT(post_id) as posts_in_queue
 					FROM ' . POSTS_TABLE . '
 					WHERE poster_id = ' . $user_id . '
-						AND post_postcount = 1
 						AND post_approved = 0';
 				$result = $db->sql_query($sql);
 				$user_row['posts_in_queue'] = (int) $db->sql_fetchfield('posts_in_queue');
