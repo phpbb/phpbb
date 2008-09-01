@@ -5,7 +5,7 @@
 <form method="post" action="{S_PROFILE_ACTION}" id="viewprofile">
 <div class="panel bg1<!-- IF S_ONLINE --> online<!-- ENDIF -->">
 	<div class="inner"><span class="corners-top"><span></span></span>
-	
+
 	<!-- IF AVATAR_IMG -->
 		<dl class="left-box">
 			<dt>{AVATAR_IMG}</dt>
@@ -55,7 +55,7 @@
 	<div class="column1">
 
 		<h3>{L_CONTACT_USER} {USERNAME}</h3>
-		
+
 		<dl class="details">
 		<!-- IF U_EMAIL --><dt>{L_EMAIL_ADDRESS}:</dt> <dd><a href="{U_EMAIL}">{L_SEND_EMAIL_USER} {USERNAME}</a></dd><!-- ENDIF -->
 		<!-- IF U_WWW --><dt>{L_WEBSITE}:</dt> <dd><a href="{U_WWW}" title="{L_VISIT_WEBSITE}: {U_WWW}">{U_WWW}</a></dd><!-- ENDIF -->
@@ -82,7 +82,11 @@
 			<dt>{L_WARNINGS}: </dt>
 			<dd><strong>{WARNINGS}</strong> [ <a href="{U_NOTES}">{L_VIEW_NOTES}</a> <!-- IF U_WARN --> | <a href="{U_WARN}">{L_WARN_USER}</a> <!-- ENDIF -->]</dd>
 			<!-- ENDIF -->
-			<dt>{L_TOTAL_POSTS}:</dt> <dd>{POSTS} | <strong><a href="{U_SEARCH_USER}">{L_SEARCH_USER_POSTS}</a></strong><!-- IF POSTS_PCT --><br />({POSTS_PCT} / {POSTS_DAY})<!-- ENDIF --></dd>
+			<dt>{L_TOTAL_POSTS}:</dt>
+				<dd>{POSTS} | <strong><a href="{U_SEARCH_USER}">{L_SEARCH_USER_POSTS}</a></strong>
+					<!-- IF POSTS_PCT --><br />({POSTS_PCT} / {POSTS_DAY})<!-- ENDIF -->
+					<!-- IF POSTS_IN_QUEUE and U_MCP_QUEUE --><br />(<a href="{U_MCP_QUEUE}">{L_POSTS_IN_QUEUE}</a>)<!-- ELSEIF POSTS_IN_QUEUE --><br />({L_POSTS_IN_QUEUE})<!-- ENDIF -->
+				</dd>
 			<!-- IF S_SHOW_ACTIVITY and POSTS -->
 				<dt>{L_ACTIVE_IN_FORUM}:</dt> <dd><!-- IF ACTIVE_FORUM --><strong><a href="{U_ACTIVE_FORUM}">{ACTIVE_FORUM}</a></strong><br />({ACTIVE_FORUM_POSTS} / {ACTIVE_FORUM_PCT})<!-- ELSE --> - <!-- ENDIF --></dd>
 				<dt>{L_ACTIVE_IN_TOPIC}:</dt> <dd><!-- IF ACTIVE_TOPIC --><strong><a href="{U_ACTIVE_TOPIC}">{ACTIVE_TOPIC}</a></strong><br />({ACTIVE_TOPIC_POSTS} / {ACTIVE_TOPIC_PCT})<!-- ELSE --> - <!-- ENDIF --></dd>

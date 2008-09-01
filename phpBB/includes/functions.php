@@ -2218,10 +2218,12 @@ function meta_refresh($time, $url)
 function generate_link_hash($link_name)
 {
 	global $user;
+
 	if (!isset($user->data["hash_$link_name"]))
 	{
 		$user->data["hash_$link_name"] = substr(sha1($user->data['user_form_salt'] . $link_name), 0, 8);
 	}
+
 	return $user->data["hash_$link_name"];
 }
 
@@ -2244,16 +2246,18 @@ function check_link_hash($token, $link_name)
 function add_form_key($form_name)
 {
 	global $config, $template, $user;
+
 	$now = time();
 	$token_sid = ($user->data['user_id'] == ANONYMOUS && !empty($config['form_token_sid_guests'])) ? $user->session_id : '';
 	$token = sha1($now . $user->data['user_form_salt'] . $form_name . $token_sid);
 
 	$s_fields = build_hidden_fields(array(
-			'creation_time' => $now,
-			'form_token'	=> $token,
+		'creation_time' => $now,
+		'form_token'	=> $token,
 	));
+
 	$template->assign_vars(array(
-			'S_FORM_TOKEN'	=> $s_fields,
+		'S_FORM_TOKEN'	=> $s_fields,
 	));
 }
 
@@ -2279,23 +2283,26 @@ function check_form_key($form_name, $timespan = false, $return_page = '', $trigg
 		$creation_time	= abs(request_var('creation_time', 0));
 		$token = request_var('form_token', '');
 
-		$diff = (time() - $creation_time);
+		$diff = time() - $creation_time;
 
-		if (($diff <= $timespan) || $timespan === -1)
+		// If creation_time and the time() now is zero we can assume it was not a human doing this (the check for if ($diff)...
+		if ($diff && ($diff <= $timespan || $timespan === -1))
 		{
 			$token_sid = ($user->data['user_id'] == ANONYMOUS && !empty($config['form_token_sid_guests'])) ? $user->session_id : '';
-
 			$key = sha1($creation_time . $user->data['user_form_salt'] . $form_name . $token_sid);
+
 			if ($key === $token)
 			{
 				return true;
 			}
 		}
 	}
+
 	if ($trigger)
 	{
 		trigger_error($user->lang['FORM_INVALID'] . $return_page);
 	}
+
 	return false;
 }
 

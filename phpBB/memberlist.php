@@ -129,7 +129,7 @@ switch ($mode)
 		$admin_memberships = group_memberships($admin_group_id, $admin_id_ary);
 
 		$admin_user_ids = array();
-		
+
 		if (!empty($admin_memberships))
 		{
 			// ok, we only need the user ids...
@@ -527,13 +527,33 @@ switch ($mode)
 			unset($module);
 		}
 
+		// If the user has m_approve permission or a_user permission, then list then display unapproved posts
+		if ($auth->acl_getf_global('m_approve') || $auth->acl_get('a_user'))
+		{
+			$sql = 'SELECT COUNT(post_id) as posts_in_queue
+				FROM ' . POSTS_TABLE . '
+				WHERE poster_id = ' . $user_id . '
+					AND post_postcount = 1
+					AND post_approved = 0';
+			$result = $db->sql_query($sql);
+			$member['posts_in_queue'] = (int) $db->sql_fetchfield('posts_in_queue');
+			$db->sql_freeresult($result);
+		}
+		else
+		{
+			$member['posts_in_queue'] = 0;
+		}
+
 		$template->assign_vars(array(
+			'L_POSTS_IN_QUEUE'	=> $user->lang('NUM_POSTS_IN_QUEUE', $member['posts_in_queue']),
+
 			'POSTS_DAY'			=> sprintf($user->lang['POST_DAY'], $posts_per_day),
 			'POSTS_PCT'			=> sprintf($user->lang['POST_PCT'], $percentage),
 
 			'OCCUPATION'	=> (!empty($member['user_occ'])) ? censor_text($member['user_occ']) : '',
 			'INTERESTS'		=> (!empty($member['user_interests'])) ? censor_text($member['user_interests']) : '',
 			'SIGNATURE'		=> $member['user_sig'],
+			'POSTS_IN_QUEUE'=> $member['posts_in_queue'],
 
 			'AVATAR_IMG'	=> $poster_avatar,
 			'PM_IMG'		=> $user->img('icon_contact_pm', $user->lang['SEND_PRIVATE_MESSAGE']),
@@ -552,6 +572,7 @@ switch ($mode)
 
 			'U_USER_ADMIN'			=> ($auth->acl_get('a_user')) ? append_sid("{$phpbb_root_path}adm/index.$phpEx", 'i=users&amp;mode=overview&amp;u=' . $user_id, true, $user->session_id) : '',
 			'U_USER_BAN'			=> ($auth->acl_get('m_ban')) ? append_sid("{$phpbb_root_path}mcp.$phpEx", 'i=ban&amp;mode=user&amp;u=' . $user_id, true, $user->session_id) : '',
+			'U_MCP_QUEUE'			=> ($auth->acl_getf_global('m_approve')) ? append_sid("{$phpbb_root_path}mcp.$phpEx", 'i=queue', true, $user->session_id) : '',
 
 			'U_SWITCH_PERMISSIONS'	=> ($auth->acl_get('a_switchperm') && $user->data['user_id'] != $user_id) ? append_sid("{$phpbb_root_path}ucp.$phpEx", "mode=switch_perm&amp;u={$user_id}") : '',
 
@@ -1149,7 +1170,7 @@ switch ($mode)
 			$sql_where .= " AND ug.user_pending = 0 AND u.user_id = ug.user_id AND ug.group_id = $group_id";
 			$sql_where_data = " AND u.user_id = ug.user_id AND ug.group_id = $group_id";
 		}
-		
+
 		// Sorting and order
 		if (!isset($sort_key_sql[$sort_key]))
 		{
@@ -1601,9 +1622,9 @@ function show_profile($data)
 function _sort_last_active($first, $second)
 {
 	global $id_cache, $sort_dir;
-	
+
 	$lesser_than = ($sort_dir === 'a') ? -1 : 1;
-	
+
 	if (isset($id_cache[$first]['group_leader']) && $id_cache[$first]['group_leader'] && (!isset($id_cache[$second]['group_leader']) || !$id_cache[$second]['group_leader']))
 	{
 		return 1;
