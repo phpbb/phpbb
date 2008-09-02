@@ -1833,7 +1833,7 @@ function change_database_data(&$no_updates, $version)
 		break;
 
 		// Changes from 3.0.2 to 3.0.3-RC1
-		case '3.0.3':
+		case '3.0.2':
 			set_config('enable_queue_trigger', '0');
 			set_config('queue_trigger_posts', '3');
 
