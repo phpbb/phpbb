@@ -1473,9 +1473,13 @@ div
 		
 	<a name="inheritance"></a><h3>4.ii. Template Inheritance</h3>
 		<p>When basing a new template on an existing one, it is not necessary to provide all template files. By declaring the template  to be &quot;<strong>inheriting</strong>&quot; in the template configuration file.</p>
-		<p>The Limitation on this is that the base style has to installed and complete, meaning that it is not itself inheriting.</p>
+
+		<p>The limitation on this is that the base style has to be installed and complete, meaning that it is not itself inheriting.</p>
+
 		<p>The effect of doing so is that the template engine will use the files in the new template where they exist, but fall back to files in the base template otherwise. Declaring a style to be inheriting also causes it to use some of the configuration settings of the base style, notably database storage.</p>
+
 		<p>We strongly encourage the use of inheritance for styles based on the bundled styles, as it will ease the update procedure.</p>
+
 		<div class="codebox"><pre>
         # General Information about this template
         name = inherits
