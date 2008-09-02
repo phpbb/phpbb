@@ -1605,9 +1605,17 @@ function submit_post($mode, $subject, $username, $topic_type, &$poll, &$data, $u
 		$data['post_approved'] = $topic_row['post_approved'];
 	}
 
+	// This variable indicates if the user is able to post or put into the queue - it is used later for all code decisions regarding approval
+	$post_approval = 1;
+
+	// Check the permissions for post approval, as well as the queue trigger where users are put on approval with a post count lower than specified. Moderators are not affected.
+	if (($config['enable_queue_trigger'] && $user->data['user_posts'] < $config['queue_trigger_posts'] && !$auth->acl_get('m_approve', $data['forum_id'])) || !$auth->acl_get('f_noapprove', $data['forum_id']))
+	{
+		$post_approval = 0;
+	}
+
 	// Start the transaction here
 	$db->sql_transaction('begin');
-
 
 	// Collect Information
 	switch ($post_mode)
@@ -1620,7 +1628,7 @@ function submit_post($mode, $subject, $username, $topic_type, &$poll, &$data, $u
 				'icon_id'			=> $data['icon_id'],
 				'poster_ip'			=> $user->ip,
 				'post_time'			=> $current_time,
-				'post_approved'		=> (!$auth->acl_get('f_noapprove', $data['forum_id']) && !$auth->acl_get('m_approve', $data['forum_id'])) ? 0 : 1,
+				'post_approved'		=> $post_approval,
 				'enable_bbcode'		=> $data['enable_bbcode'],
 				'enable_smilies'	=> $data['enable_smilies'],
 				'enable_magic_url'	=> $data['enable_urls'],
@@ -1686,7 +1694,7 @@ function submit_post($mode, $subject, $username, $topic_type, &$poll, &$data, $u
 				'forum_id'			=> ($topic_type == POST_GLOBAL) ? 0 : $data['forum_id'],
 				'poster_id'			=> $data['poster_id'],
 				'icon_id'			=> $data['icon_id'],
-				'post_approved'		=> (!$auth->acl_get('f_noapprove', $data['forum_id']) && !$auth->acl_get('m_approve', $data['forum_id'])) ? 0 : $data['post_approved'],
+				'post_approved'		=> (!$post_approval) ? 0 : $data['post_approved'],
 				'enable_bbcode'		=> $data['enable_bbcode'],
 				'enable_smilies'	=> $data['enable_smilies'],
 				'enable_magic_url'	=> $data['enable_urls'],
@@ -1720,7 +1728,7 @@ function submit_post($mode, $subject, $username, $topic_type, &$poll, &$data, $u
 				'topic_time'				=> $current_time,
 				'forum_id'					=> ($topic_type == POST_GLOBAL) ? 0 : $data['forum_id'],
 				'icon_id'					=> $data['icon_id'],
-				'topic_approved'			=> (!$auth->acl_get('f_noapprove', $data['forum_id']) && !$auth->acl_get('m_approve', $data['forum_id'])) ? 0 : 1,
+				'topic_approved'			=> $post_approval,
 				'topic_title'				=> $subject,
 				'topic_first_poster_name'	=> (!$user->data['is_registered'] && $username) ? $username : (($user->data['user_id'] != ANONYMOUS) ? $user->data['username'] : ''),
 				'topic_first_poster_colour'	=> $user->data['user_colour'],
@@ -1740,24 +1748,23 @@ function submit_post($mode, $subject, $username, $topic_type, &$poll, &$data, $u
 				);
 			}
 
-			$sql_data[USERS_TABLE]['stat'][] = "user_lastpost_time = $current_time" . (($auth->acl_get('f_postcount', $data['forum_id'])) ? ', user_posts = user_posts + 1' : '');
+			$sql_data[USERS_TABLE]['stat'][] = "user_lastpost_time = $current_time" . (($auth->acl_get('f_postcount', $data['forum_id']) && $post_approval) ? ', user_posts = user_posts + 1' : '');
 
 			if ($topic_type != POST_GLOBAL)
 			{
-				if ($auth->acl_get('f_noapprove', $data['forum_id']) || $auth->acl_get('m_approve', $data['forum_id']))
+				if ($post_approval)
 				{
 					$sql_data[FORUMS_TABLE]['stat'][] = 'forum_posts = forum_posts + 1';
 				}
-				$sql_data[FORUMS_TABLE]['stat'][] = 'forum_topics_real = forum_topics_real + 1' . (($auth->acl_get('f_noapprove', $data['forum_id']) || $auth->acl_get('m_approve', $data['forum_id'])) ? ', forum_topics = forum_topics + 1' : '');
+				$sql_data[FORUMS_TABLE]['stat'][] = 'forum_topics_real = forum_topics_real + 1' . (($post_approval) ? ', forum_topics = forum_topics + 1' : '');
 			}
 		break;
 
 		case 'reply':
-			$sql_data[TOPICS_TABLE]['stat'][] = 'topic_replies_real = topic_replies_real + 1, topic_bumped = 0, topic_bumper = 0' . (($auth->acl_get('f_noapprove', $data['forum_id']) || $auth->acl_get('m_approve', $data['forum_id'])) ? ', topic_replies = topic_replies + 1' : '') . ((!empty($data['attachment_data']) || (isset($data['topic_attachment']) && $data['topic_attachment'])) ? ', topic_attachment = 1' : '');
+			$sql_data[TOPICS_TABLE]['stat'][] = 'topic_replies_real = topic_replies_real + 1, topic_bumped = 0, topic_bumper = 0' . (($post_approval) ? ', topic_replies = topic_replies + 1' : '') . ((!empty($data['attachment_data']) || (isset($data['topic_attachment']) && $data['topic_attachment'])) ? ', topic_attachment = 1' : '');
+			$sql_data[USERS_TABLE]['stat'][] = "user_lastpost_time = $current_time" . (($auth->acl_get('f_postcount', $data['forum_id']) && $post_approval) ? ', user_posts = user_posts + 1' : '');
 
-			$sql_data[USERS_TABLE]['stat'][] = "user_lastpost_time = $current_time" . (($auth->acl_get('f_postcount', $data['forum_id'])) ? ', user_posts = user_posts + 1' : '');
-
-			if (($auth->acl_get('f_noapprove', $data['forum_id']) || $auth->acl_get('m_approve', $data['forum_id'])) && $topic_type != POST_GLOBAL)
+			if ($post_approval && $topic_type != POST_GLOBAL)
 			{
 				$sql_data[FORUMS_TABLE]['stat'][] = 'forum_posts = forum_posts + 1';
 			}
@@ -1769,7 +1776,7 @@ function submit_post($mode, $subject, $username, $topic_type, &$poll, &$data, $u
 			$sql_data[TOPICS_TABLE]['sql'] = array(
 				'forum_id'					=> ($topic_type == POST_GLOBAL) ? 0 : $data['forum_id'],
 				'icon_id'					=> $data['icon_id'],
-				'topic_approved'			=> (!$auth->acl_get('f_noapprove', $data['forum_id']) && !$auth->acl_get('m_approve', $data['forum_id'])) ? 0 : $data['topic_approved'],
+				'topic_approved'			=> (!$post_approval) ? 0 : $data['topic_approved'],
 				'topic_title'				=> $subject,
 				'topic_first_poster_name'	=> $username,
 				'topic_type'				=> $topic_type,
@@ -1784,7 +1791,7 @@ function submit_post($mode, $subject, $username, $topic_type, &$poll, &$data, $u
 			);
 
 			// Correctly set back the topic replies and forum posts... only if the topic was approved before and now gets disapproved
-			if (!$auth->acl_get('f_noapprove', $data['forum_id']) && !$auth->acl_get('m_approve', $data['forum_id']) && $data['topic_approved'])
+			if (!$post_approval && $data['topic_approved'])
 			{
 				// Do we need to grab some topic informations?
 				if (!sizeof($topic_row))
@@ -1806,6 +1813,12 @@ function submit_post($mode, $subject, $username, $topic_type, &$poll, &$data, $u
 
 				set_config('num_topics', $config['num_topics'] - 1, true);
 				set_config('num_posts', $config['num_posts'] - ($topic_row['topic_replies'] + 1), true);
+
+				// Only decrement this post, since this is the one non-approved now
+				if ($auth->acl_get('f_postcount', $data['forum_id']))
+				{
+					$sql_data[USERS_TABLE]['stat'][] = 'user_posts = user_posts - 1';
+				}
 			}
 
 		break;
@@ -1814,12 +1827,17 @@ function submit_post($mode, $subject, $username, $topic_type, &$poll, &$data, $u
 		case 'edit_last_post':
 
 			// Correctly set back the topic replies and forum posts... but only if the post was approved before.
-			if (!$auth->acl_get('f_noapprove', $data['forum_id']) && !$auth->acl_get('m_approve', $data['forum_id']) && $data['post_approved'])
+			if (!$post_approval && $data['post_approved'])
 			{
 				$sql_data[TOPICS_TABLE]['stat'][] = 'topic_replies = topic_replies - 1';
 				$sql_data[FORUMS_TABLE]['stat'][] = 'forum_posts = forum_posts - 1';
 
 				set_config('num_posts', $config['num_posts'] - 1, true);
+
+				if ($auth->acl_get('f_postcount', $data['forum_id']))
+				{
+					$sql_data[USERS_TABLE]['stat'][] = 'user_posts = user_posts - 1';
+				}
 			}
 
 		break;
@@ -2295,7 +2313,7 @@ function submit_post($mode, $subject, $username, $topic_type, &$poll, &$data, $u
 	}
 
 	// Update total post count, do not consider moderated posts/topics
-	if ($auth->acl_get('f_noapprove', $data['forum_id']) || $auth->acl_get('m_approve', $data['forum_id']))
+	if ($post_approval)
 	{
 		if ($post_mode == 'post')
 		{
@@ -2310,7 +2328,7 @@ function submit_post($mode, $subject, $username, $topic_type, &$poll, &$data, $u
 	}
 
 	// Update forum stats
-	$where_sql = array(POSTS_TABLE => 'post_id = ' . $data['post_id'], TOPICS_TABLE => 'topic_id = ' . $data['topic_id'], FORUMS_TABLE => 'forum_id = ' . $data['forum_id'], USERS_TABLE => 'user_id = ' . $user->data['user_id']);
+	$where_sql = array(POSTS_TABLE => 'post_id = ' . $data['post_id'], TOPICS_TABLE => 'topic_id = ' . $data['topic_id'], FORUMS_TABLE => 'forum_id = ' . $data['forum_id'], USERS_TABLE => 'user_id = ' . $poster_id);
 
 	foreach ($sql_data as $table => $update_ary)
 	{
@@ -2427,14 +2445,14 @@ function submit_post($mode, $subject, $username, $topic_type, &$poll, &$data, $u
 	}
 
 	// Send Notifications
-	if ($mode != 'edit' && $mode != 'delete' && ($auth->acl_get('f_noapprove', $data['forum_id']) || $auth->acl_get('m_approve', $data['forum_id'])))
+	if ($mode != 'edit' && $mode != 'delete' && $post_approval)
 	{
 		user_notification($mode, $subject, $data['topic_title'], $data['forum_name'], $data['forum_id'], $data['topic_id'], $data['post_id']);
 	}
 
 	$params = $add_anchor = '';
 
-	if ($auth->acl_get('f_noapprove', $data['forum_id']) || $auth->acl_get('m_approve', $data['forum_id']))
+	if ($post_approval)
 	{
 		$params .= '&amp;t=' . $data['topic_id'];
 

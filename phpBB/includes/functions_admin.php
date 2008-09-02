@@ -670,7 +670,7 @@ function delete_posts($where_type, $where_ids, $auto_sync = true, $posted_sync =
 		$topic_ids[] = $row['topic_id'];
 		$forum_ids[] = $row['forum_id'];
 
-		if ($row['post_postcount'] && $post_count_sync)
+		if ($row['post_postcount'] && $post_count_sync && $row['post_approved'])
 		{
 			$post_counts[$row['poster_id']] = (!empty($post_counts[$row['poster_id']])) ? $post_counts[$row['poster_id']] + 1 : 1;
 		}
@@ -709,6 +709,7 @@ function delete_posts($where_type, $where_ids, $auto_sync = true, $posted_sync =
 				WHERE user_id = ' . $poster_id . '
 				AND user_posts < ' . $substract;
 			$db->sql_query($sql);
+
 			$sql = 'UPDATE ' . USERS_TABLE . '
 				SET user_posts = user_posts - ' . $substract . '
 				WHERE user_id = ' . $poster_id . '

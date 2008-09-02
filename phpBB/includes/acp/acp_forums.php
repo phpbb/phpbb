@@ -1647,7 +1647,8 @@ class acp_forums
 		$sql = 'SELECT poster_id
 			FROM ' . POSTS_TABLE . '
 			WHERE forum_id = ' . $forum_id . '
-				AND post_postcount = 1';
+				AND post_postcount = 1
+				AND post_approved = 1';
 		$result = $db->sql_query($sql);
 
 		$post_counts = array();
@@ -1768,6 +1769,7 @@ class acp_forums
 					WHERE user_id = ' . $poster_id . '
 					AND user_posts < ' . $substract;
 				$db->sql_query($sql);
+
 				$sql = 'UPDATE ' . USERS_TABLE . '
 					SET user_posts = user_posts - ' . $substract . '
 					WHERE user_id = ' . $poster_id . '

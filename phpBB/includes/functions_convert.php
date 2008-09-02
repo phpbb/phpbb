@@ -1744,6 +1744,7 @@ function sync_post_count($offset, $limit)
 	$sql = 'SELECT COUNT(post_id) AS num_posts, poster_id
 			FROM ' . POSTS_TABLE . '
 			WHERE post_postcount = 1
+				AND post_approved = 1
 			GROUP BY poster_id
 			ORDER BY poster_id';
 	$result = $db->sql_query_limit($sql, $limit, $offset);

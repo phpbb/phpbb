@@ -999,10 +999,9 @@ if ($submit || $preview || $refresh)
 			}
 
 			$redirect_url = submit_post($mode, $post_data['post_subject'], $post_data['username'], $post_data['topic_type'], $poll, $data, $update_message);
-			$post_need_approval = (!$auth->acl_get('f_noapprove', $data['forum_id']) && !$auth->acl_get('m_approve', $data['forum_id'])) ? true : false;
 
-			// If the post need approval we will wait a lot longer.
-			if ($post_need_approval)
+			// Check the permissions for post approval, as well as the queue trigger where users are put on approval with a post count lower than specified. Moderators are not affected.
+			if (($config['enable_queue_trigger'] && $user->data['user_posts'] < $config['queue_trigger_posts'] && !$auth->acl_get('m_approve', $data['forum_id'])) || !$auth->acl_get('f_noapprove', $data['forum_id']))
 			{
 				meta_refresh(10, $redirect_url);
 				$message = ($mode == 'edit') ? $user->lang['POST_EDITED_MOD'] : $user->lang['POST_STORED_MOD'];

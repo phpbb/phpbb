@@ -481,6 +481,7 @@ function approve_post($post_id_list, $id, $mode)
 
 		$total_topics = $total_posts = 0;
 		$forum_topics_posts = $topic_approve_sql = $topic_replies_sql = $post_approve_sql = $topic_id_list = $forum_id_list = $approve_log = array();
+		$user_posts_sql = array();
 
 		$update_forum_information = false;
 
@@ -492,6 +493,9 @@ function approve_post($post_id_list, $id, $mode)
 			{
 				$forum_id_list[$post_data['forum_id']] = 1;
 			}
+
+			// User post update (we do not care about topic or post, since user posts are strictly connected to posts
+			$user_posts_sql[$post_data['poster_id']] = (empty($user_posts_sql[$post_data['poster_id']])) ? 1 : $user_posts_sql[$post_data['poster_id']] + 1;
 
 			// Topic or Post. ;)
 			if ($post_data['topic_first_post_id'] == $post_id)
@@ -608,6 +612,25 @@ function approve_post($post_id_list, $id, $mode)
 				$sql .= ($row['forum_posts']) ? "forum_posts = forum_posts + {$row['forum_posts']}" : '';
 				$sql .= " WHERE forum_id = $forum_id";
 
+				$db->sql_query($sql);
+			}
+		}
+
+		if (sizeof($user_posts_sql))
+		{
+			// Try to minimize the query count by merging users with the same post count additions
+			$user_posts_update = array();
+
+			foreach ($user_posts_sql as $user_id => $user_posts)
+			{
+				$user_posts_update[$user_posts][] = $user_id;
+			}
+
+			foreach ($user_posts_update as $user_posts => $user_id_ary)
+			{
+				$sql = 'UPDATE ' . USERS_TABLE . '
+					SET user_posts = user_posts + ' . $user_posts . '
+					WHERE ' . $db->sql_in_set('user_id', $user_id_ary);
 				$db->sql_query($sql);
 			}
 		}
