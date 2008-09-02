@@ -357,7 +357,7 @@ class dbal_oracle extends dbal
 			return false;
 		}
 
-		return ($this->query_result) ? $this->query_result : false;
+		return $this->query_result;
 	}
 
 	/**

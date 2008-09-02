@@ -169,7 +169,7 @@ class dbal_mysqli extends dbal
 			return false;
 		}
 
-		return ($this->query_result) ? $this->query_result : false;
+		return $this->query_result;
 	}
 
 	/**

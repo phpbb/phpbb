@@ -418,7 +418,7 @@ class ucp_profile
 
 					$now = getdate();
 					$s_birthday_year_options = '<option value="0"' . ((!$data['bday_year']) ? ' selected="selected"' : '') . '>--</option>';
-					for ($i = $now['year'] - 100; $i < $now['year']; $i++)
+					for ($i = $now['year'] - 100; $i <= $now['year']; $i++)
 					{
 						$selected = ($i == $data['bday_year']) ? ' selected="selected"' : '';
 						$s_birthday_year_options .= "<option value=\"$i\"$selected>$i</option>";
