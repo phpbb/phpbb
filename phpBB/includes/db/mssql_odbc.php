@@ -174,7 +174,7 @@ class dbal_mssql_odbc extends dbal
 			return false;
 		}
 
-		return ($this->query_result !== false) ? $this->query_result : false;
+		return $this->query_result;
 	}
 
 	/**

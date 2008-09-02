@@ -162,7 +162,7 @@ class dbal_mssql extends dbal
 			return false;
 		}
 
-		return ($this->query_result !== false) ? $this->query_result : false;
+		return $this->query_result;
 	}
 
 	/**
