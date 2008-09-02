@@ -532,7 +532,7 @@ $database_update_info = array(
 	// No changes from 3.0.2-RC2 to 3.0.2
 	'3.0.2-RC2'		=> array(),
 
-	// Changes from 3.0.2 to the next version
+	// Changes from 3.0.2 to 3.0.3-RC1
 	'3.0.2'			=> array(
 		// Add the following columns
 		'add_columns'		=> array(
@@ -1830,6 +1830,28 @@ function change_database_data(&$no_updates, $version)
 
 		// No changes from 3.0.2-RC2 to 3.0.2
 		case '3.0.2-RC2':
+		break;
+
+		// Changes from 3.0.2 to 3.0.3-RC1
+		case '3.0.3':
+			set_config('enable_queue_trigger', '0');
+			set_config('queue_trigger_posts', '3');
+
+			// Resync post counts
+			$sql = 'SELECT COUNT(p.post_id) AS num_posts, u.user_id
+				FROM ' . USERS_TABLE . ' u
+				LEFT JOIN  ' . POSTS_TABLE . ' p ON (u.user_id = p.poster_id AND p.post_postcount = 1 AND p.post_approved = 1)
+				GROUP BY u.user_id';
+			$result = _sql($sql, $errored, $error_ary);
+
+			while ($row = $db->sql_fetchrow($result))
+			{
+				$sql = 'UPDATE ' . USERS_TABLE . " SET user_posts = {$row['num_posts']} WHERE user_id = {$row['user_id']}";
+				_sql($sql, $errored, $error_ary);
+			}
+			$db->sql_freeresult($result);
+
+			$no_updates = false;
 		break;
 	}
 }

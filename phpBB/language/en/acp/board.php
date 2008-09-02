@@ -137,6 +137,11 @@ $lang = array_merge($lang, array(
 	'ALLOW_POST_FLASH'					=> 'Allow use of <code>[FLASH]</code> BBCode tag in posts',
 	'ALLOW_POST_FLASH_EXPLAIN'			=> 'If disallowed the <code>[FLASH]</code> BBCode tag is disabled in posts. Otherwise the permission system controls which users can use the <code>[FLASH]</code> BBCode tag.',
 
+	'ENABLE_QUEUE_TRIGGER'			=> 'Enable queued posts',
+	'ENABLE_QUEUE_TRIGGER_EXPLAIN'	=> 'Ability to put registered users posts to post approval if their post count is lower than the specified value below. This setting has no effect on the permission setting for post/topic approval.',
+	'QUEUE_TRIGGER_POSTS'			=> 'Maximum post count for queued posts',
+	'QUEUE_TRIGGER_POSTS_EXPLAIN'	=> 'If queued posts is enabled, this is the post count the user need to reach in order to post without post approval. If the users post count is below this number, the post is stored in the queue automatically.',
+
 	'BUMP_INTERVAL'					=> 'Bump interval',
 	'BUMP_INTERVAL_EXPLAIN'			=> 'Number of minutes, hours or days between the last post to a topic and the ability to bump this topic.',
 	'CHAR_LIMIT'					=> 'Maximum characters per post',
