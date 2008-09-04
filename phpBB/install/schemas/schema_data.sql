@@ -75,6 +75,7 @@ INSERT INTO phpbb_config (config_name, config_value) VALUES ('coppa_enable', '0'
 INSERT INTO phpbb_config (config_name, config_value) VALUES ('coppa_fax', '');
 INSERT INTO phpbb_config (config_name, config_value) VALUES ('coppa_mail', '');
 INSERT INTO phpbb_config (config_name, config_value) VALUES ('database_gc', '604800');
+INSERT INTO phpbb_config (config_name, config_value) VALUES ('dbms_version', '');
 INSERT INTO phpbb_config (config_name, config_value) VALUES ('default_dateformat', 'D M d, Y g:i a');
 INSERT INTO phpbb_config (config_name, config_value) VALUES ('default_style', '1');
 INSERT INTO phpbb_config (config_name, config_value) VALUES ('display_last_edited', '1');
@@ -87,6 +88,7 @@ INSERT INTO phpbb_config (config_name, config_value) VALUES ('email_package_size
 INSERT INTO phpbb_config (config_name, config_value) VALUES ('enable_confirm', '1');
 INSERT INTO phpbb_config (config_name, config_value) VALUES ('enable_pm_icons', '1');
 INSERT INTO phpbb_config (config_name, config_value) VALUES ('enable_post_confirm', '1');
+INSERT INTO phpbb_config (config_name, config_value) VALUES ('enable_queue_trigger', '0');
 INSERT INTO phpbb_config (config_name, config_value) VALUES ('flood_interval', '15');
 INSERT INTO phpbb_config (config_name, config_value) VALUES ('force_server_vars', '0');
 INSERT INTO phpbb_config (config_name, config_value) VALUES ('form_token_lifetime', '7200');
@@ -182,6 +184,7 @@ INSERT INTO phpbb_config (config_name, config_value) VALUES ('pm_max_msgs', '50'
 INSERT INTO phpbb_config (config_name, config_value) VALUES ('posts_per_page', '10');
 INSERT INTO phpbb_config (config_name, config_value) VALUES ('print_pm', '1');
 INSERT INTO phpbb_config (config_name, config_value) VALUES ('queue_interval', '600');
+INSERT INTO phpbb_config (config_name, config_value) VALUES ('queue_trigger_posts', '3');
 INSERT INTO phpbb_config (config_name, config_value) VALUES ('ranks_path', 'images/ranks');
 INSERT INTO phpbb_config (config_name, config_value) VALUES ('require_activation', '0');
 INSERT INTO phpbb_config (config_name, config_value) VALUES ('referer_validation', '1');
