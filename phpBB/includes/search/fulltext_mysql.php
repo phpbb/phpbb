@@ -623,6 +623,7 @@ class fulltext_mysql extends search_backend
 
 		if (!isset($this->stats['post_subject']))
 		{
+			//$alter[] = 'MODIFY post_subject varchar(100) COLLATE utf8_unicode_ci DEFAULT \'\' NOT NULL';
 			$alter[] = 'ADD FULLTEXT (post_subject)';
 		}
 
