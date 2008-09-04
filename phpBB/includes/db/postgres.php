@@ -26,7 +26,6 @@ include_once(PHPBB_ROOT_PATH . 'includes/db/dbal.' . PHP_EXT);
 class dbal_postgres extends dbal
 {
 	var $last_query_text = '';
-	var $pgsql_version;
 
 	var $dbms_type = 'postgres';
 
@@ -83,26 +82,17 @@ class dbal_postgres extends dbal
 
 		if ($this->db_connect_id)
 		{
-			// determine what version of PostgreSQL is running, we can be more efficient if they are running 8.2+
-			$this->pgsql_version = @pg_parameter_status($this->db_connect_id, 'server_version');
-
-			if (!empty($this->pgsql_version) && $this->pgsql_version[0] >= '8')
+			if (version_compare($this->sql_server_info(true), '8.2', '>='))
 			{
-				if ($this->pgsql_version[2] >= '1')
-				{
-					$this->multi_table_deletion = true;
-				}
-
-				if ($this->pgsql_version[2] >= '2')
-				{
-					$this->multi_insert = true;
-				}
+				$this->multi_table_deletion = true;
+				$this->multi_insert = true;
 			}
 
 			if ($schema !== '')
 			{
 				@pg_query($this->db_connect_id, 'SET search_path TO ' . $schema);
 			}
+
 			return $this->db_connect_id;
 		}
 
@@ -111,10 +101,28 @@ class dbal_postgres extends dbal
 
 	/**
 	* Version information about used database
+	* @param bool $raw if true, only return the fetched sql_server_version
+	* @return string sql server version
 	*/
-	function sql_server_info()
+	function sql_server_info($raw = false)
 	{
-		return 'PostgreSQL ' . $this->pgsql_version;
+		global $cache;
+
+		if (empty($cache) || ($this->sql_server_version = $cache->get('pgsql_version')) === false)
+		{
+			$query_id = @pg_query($this->db_connect_id, 'SELECT VERSION() AS version');
+			$row = @pg_fetch_assoc($query_id, null);
+			@pg_free_result($query_id);
+
+			$this->sql_server_version = (!empty($row['version'])) ? trim(substr($row['version'], 10)) : 0;
+
+			if (!empty($cache))
+			{
+				$cache->put('pgsql_version', $this->sql_server_version);
+			}
+		}
+
+		return ($raw) ? $this->sql_server_version : 'PostgreSQL ' . $this->sql_server_version;
 	}
 
 	/**

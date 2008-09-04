@@ -75,6 +75,11 @@ class dbal
 	var $one_char;
 
 	/**
+	* Exact version of the DBAL, directly queried
+	*/
+	var $sql_server_version = false;
+
+	/**
 	* Constructor
 	*/
 	function __construct()

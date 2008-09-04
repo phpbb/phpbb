@@ -1378,6 +1378,10 @@ class install_install extends module
 
 			'UPDATE ' . $data['table_prefix'] . "forums
 				SET forum_last_post_time = $current_time",
+
+			'UPDATE ' . $data['table_prefix'] . "config
+				SET config_value = '" . $db->sql_escape($db->sql_server_info(true)) . "'
+				WHERE config_name = 'dbms_version'",
 		);
 
 		if (@extension_loaded('gd') || can_load_dll('gd'))

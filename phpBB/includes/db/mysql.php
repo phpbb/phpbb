@@ -52,26 +52,18 @@ class dbal_mysql extends dbal
 			if (@mysql_select_db($this->dbname, $this->db_connect_id))
 			{
 				@mysql_query("SET NAMES 'utf8'", $this->db_connect_id);
+
 				// enforce strict mode on databases that support it
-				if (version_compare(mysql_get_server_info($this->db_connect_id), '5.0.2', '>='))
+				if (version_compare($this->sql_server_info(true), '5.0.2', '>='))
 				{
-					$result = @mysql_query('SELECT @@session.sql_mode AS sql_mode', $this->db_connect_id);
-					$row = @mysql_fetch_assoc($result);
-					@mysql_free_result($result);
-					$modes = array_map('trim', explode(',', $row['sql_mode']));
-
-					// TRADITIONAL includes STRICT_ALL_TABLES and STRICT_TRANS_TABLES
-					if (!in_array('TRADITIONAL', $modes))
+					if (!in_array('STRICT_ALL_TABLES', $modes))
 					{
-						if (!in_array('STRICT_ALL_TABLES', $modes))
-						{
-							$modes[] = 'STRICT_ALL_TABLES';
-						}
+						$modes[] = 'STRICT_ALL_TABLES';
+					}
 
-						if (!in_array('STRICT_TRANS_TABLES', $modes))
-						{
-							$modes[] = 'STRICT_TRANS_TABLES';
-						}
+					if (!in_array('STRICT_TRANS_TABLES', $modes))
+					{
+						$modes[] = 'STRICT_TRANS_TABLES';
 					}
 
 					$mode = implode(',', $modes);
@@ -87,10 +79,28 @@ class dbal_mysql extends dbal
 
 	/**
 	* Version information about used database
+	* @param bool $raw if true, only return the fetched sql_server_version
+	* @return string sql server version
 	*/
-	function sql_server_info()
+	function sql_server_info($raw = false)
 	{
-		return 'MySQL ' . mysql_get_server_info($this->db_connect_id);
+		global $cache;
+
+		if (empty($cache) || ($this->sql_server_version = $cache->get('mysql_version')) === false)
+		{
+			$result = @mysql_query('SELECT VERSION() AS version', $this->db_connect_id);
+			$row = @mysql_fetch_assoc($result);
+			@mysql_free_result($result);
+
+			$this->sql_server_version = $row['version'];
+
+			if (!empty($cache))
+			{
+				$cache->put('mysql_version', $this->sql_server_version);
+			}
+		}
+
+		return ($raw) ? $this->sql_server_version : 'MySQL ' . $this->sql_server_version;
 	}
 
 	/**
@@ -366,13 +376,9 @@ class dbal_mysql extends dbal
 		if ($test_prof === null)
 		{
 			$test_prof = $test_extend = false;
-			if (strpos($this->mysql_version, 'community') !== false)
+			if (version_compare($this->sql_server_info(true), '5.0.37', '>=') && version_compare($this->sql_server_info(true), '5.1', '<'))
 			{
-				$ver = substr($this->mysql_version, 0, strpos($this->mysql_version, '-'));
-				if (version_compare($ver, '5.0.37', '>=') && version_compare($ver, '5.1', '<'))
-				{
-					$test_prof = true;
-				}
+				$test_prof = true;
 			}
 
 			if (version_compare($ver, '4.1.1', '>='))

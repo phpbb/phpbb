@@ -41,26 +41,42 @@ class dbal_firebird extends dbal
 		$this->persistency = $persistency;
 		$this->user = $sqluser;
 		$this->server = $sqlserver . (($port) ? ':' . $port : '');
-		$this->dbname = $database;
+		$this->dbname = str_replace('\\', '/', $database);
 
-		$this->db_connect_id = ($this->persistency) ? @ibase_pconnect($this->server . ':' . $this->dbname, $this->user, $sqlpassword, false, false, 3) : @ibase_connect($this->server . ':' . $this->dbname, $this->user, $sqlpassword, false, false, 3);
+		// There are three possibilities to connect to an interbase db
+		if (!$this->server)
+		{
+			$use_database = $this->dbname;
+		}
+		else if (strpos($this->server, '//') === 0)
+		{
+			$use_database = $this->server . $this->dbname;
+		}
+		else
+		{
+			$use_database = $this->server . ':' . $this->dbname;
+		}
 
-		$this->service_handle = (strtolower($this->user) == 'sysdba') ? @ibase_service_attach($this->server, $this->user, $sqlpassword) : false;
+		$this->db_connect_id = ($this->persistency) ? @ibase_pconnect($use_database, $this->user, $sqlpassword, false, false, 3) : @ibase_connect($use_database, $this->user, $sqlpassword, false, false, 3);
+
+		$this->service_handle = (strtolower($this->user) == 'sysdba' && $this->server) ? @ibase_service_attach($this->server, $this->user, $sqlpassword) : false;
 
 		return ($this->db_connect_id) ? $this->db_connect_id : $this->sql_error('');
 	}
 
 	/**
 	* Version information about used database
+	* @param bool $raw if true, only return the fetched sql_server_version
+	* @return string sql server version
 	*/
-	function sql_server_info()
+	function sql_server_info($raw = false)
 	{
 		if ($this->service_handle !== false)
 		{
 			return @ibase_server_info($this->service_handle, IBASE_SVC_SERVER_VERSION);
 		}
 
-		return 'Firebird/Interbase';
+		return ($raw) ? '2.0' : 'Firebird/Interbase';
 	}
 
 	/**
