@@ -36,7 +36,7 @@ class acp_modules
 	var $u_action;
 	var $p_master;
 
-	function __construct(p_master $p_master)
+	function __construct(p_master $p_master = null)
 	{
 		$this->p_master = $p_master;
 	}

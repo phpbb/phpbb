@@ -475,13 +475,6 @@
 			<dd><!-- IF S_INSTALL --><b id="imageset_id">{IMAGESET_NAME}</b><!-- ELSE --><select id="imageset_id" name="imageset_id">{S_IMAGESET_OPTIONS}</select><!-- ENDIF --></dd>
 		</dl>
 	<!-- ENDIF -->
-	<!-- IF S_TEMPLATE or S_THEME -->
-		<dl>
-			<dt><label for="store_db">{L_LOCATION}:</label><br /><span>{L_LOCATION_EXPLAIN}</span></dt>
-			<dd><label><input type="radio" class="radio" name="store_db" value="0"<!-- IF not S_STORE_DB --> id="store_db" checked="checked"<!-- ENDIF --> /> {L_STORE_FILESYSTEM}</label>
-				<label><input type="radio" class="radio" name="store_db" value="1"<!-- IF S_STORE_DB --> id="store_db" checked="checked"<!-- ENDIF --> /> {L_STORE_DATABASE}</label></dd>
-		</dl>
-	<!-- ENDIF -->
 	<!-- IF S_STYLE -->
 		</fieldset>
 

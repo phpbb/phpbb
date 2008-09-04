@@ -2372,9 +2372,6 @@ function login_box($redirect = '', $l_explain = '', $l_success = '', $admin = fa
 		// Set custom template for admin area
 		$template->set_custom_template(PHPBB_ADMIN_PATH . 'style', 'admin');
 		$template->assign_var('T_TEMPLATE_PATH', PHPBB_ADMIN_PATH . 'style');
-
-		// the acp template is never stored in the database
-		$user->theme['template_storedb'] = false;
 	}
 
 	// Print out error if user tries to authenticate as an administrator without having the privileges...

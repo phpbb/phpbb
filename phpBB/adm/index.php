@@ -59,9 +59,6 @@ $mode			= request_var('mode', '');
 $template->set_custom_template(PHPBB_ADMIN_PATH . 'style', 'admin');
 $template->assign_var('T_TEMPLATE_PATH', PHPBB_ADMIN_PATH . 'style');
 
-// the acp template is never stored in the database
-$user->theme['template_storedb'] = false;
-
 // Instantiate new module
 $module = new p_master();
 

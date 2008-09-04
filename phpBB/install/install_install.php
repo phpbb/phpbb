@@ -1955,7 +1955,7 @@ class install_install extends module
 			'TITLE'		=> $lang['INSTALL_CONGRATS'],
 			'BODY'		=> sprintf($lang['INSTALL_CONGRATS_EXPLAIN'], $config['version'], append_sid('install/index', 'mode=convert&amp;language=' . $data['language']), '../docs/README.html'),
 			'L_SUBMIT'	=> $lang['INSTALL_LOGIN'],
-			'U_ACTION'	=> append_sid(CONFIG_ADM_FOLDER . '/index'),
+			'U_ACTION'	=> append_sid('adm/index'),
 		));
 	}
 

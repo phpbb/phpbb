@@ -808,25 +808,10 @@ $schema_data['phpbb_styles_template'] = array(
 		'template_copyright'	=> array('VCHAR_UNI', ''),
 		'template_path'			=> array('VCHAR:100', ''),
 		'bbcode_bitfield'		=> array('VCHAR:255', 'kNg='),
-		'template_storedb'		=> array('BOOL', 0),
 	),
 	'PRIMARY_KEY'	=> 'template_id',
 	'KEYS'			=> array(
 		'tmplte_nm'				=> array('UNIQUE', 'template_name'),
-	),
-);
-
-$schema_data['phpbb_styles_template_data'] = array(
-	'COLUMNS'		=> array(
-		'template_id'			=> array('USINT', 0),
-		'template_filename'		=> array('VCHAR:100', ''),
-		'template_included'		=> array('TEXT', ''),
-		'template_mtime'		=> array('TIMESTAMP', 0),
-		'template_data'			=> array('MTEXT_UNI', ''),
-	),
-	'KEYS'			=> array(
-		'tid'					=> array('INDEX', 'template_id'),
-		'tfn'					=> array('INDEX', 'template_filename'),
 	),
 );
 

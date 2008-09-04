@@ -128,9 +128,6 @@ class install_update extends module
 		// Set custom template again. ;)
 		$template->set_custom_template('../adm/style', 'admin');
 
-		// still, the acp template is never stored in the database
-		$user->theme['template_storedb'] = false;
-
 		// Get current and latest version
 		if (($latest_version = $cache->get('_version_info')) === false)
 		{
