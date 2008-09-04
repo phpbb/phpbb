@@ -390,6 +390,13 @@ $lang = array_merge($lang, array(
 	'NO_USERS'					=> 'The requested users do not exist.',
 	'NO_USER_SPECIFIED'			=> 'No username was specified.',
 
+	// Nullar/Singular/Plural language entry. The key numbers define the number range in which a certain grammatical expression is valid.
+	'NUM_POSTS_IN_QUEUE'		=> array(
+		0			=> 'No posts in queue',		// 0
+		1			=> '1 post in queue',		// 1
+		2			=> '%d posts in queue',		// 2+
+	),
+
 	'OCCUPATION'				=> 'Occupation',
 	'OFFLINE'					=> 'Offline',
 	'ONLINE'					=> 'Online',

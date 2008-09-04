@@ -185,7 +185,7 @@ class acp_main
 
 						$sql = 'SELECT COUNT(p.post_id) AS num_posts, u.user_id
 							FROM ' . USERS_TABLE . ' u
-							LEFT JOIN  ' . POSTS_TABLE . ' p ON (u.user_id = p.poster_id AND p.post_postcount = 1)
+							LEFT JOIN  ' . POSTS_TABLE . ' p ON (u.user_id = p.poster_id AND p.post_postcount = 1 AND p.post_approved = 1)
 							GROUP BY u.user_id';
 						$result = $db->sql_query($sql);
 

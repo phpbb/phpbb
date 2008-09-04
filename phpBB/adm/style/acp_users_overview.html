@@ -30,7 +30,7 @@
 </dl>
 <dl>
 	<dt><label>{L_POSTS}:</label></dt>
-	<dd><strong>{USER_POSTS}</strong></dd>
+	<dd><strong>{USER_POSTS}</strong><!-- IF POSTS_IN_QUEUE and U_MCP_QUEUE --> (<a href="{U_MCP_QUEUE}">{L_POSTS_IN_QUEUE}</a>)<!-- ELSEIF POSTS_IN_QUEUE --> ({L_POSTS_IN_QUEUE})<!-- ENDIF --></dd>
 </dl>
 <dl>
 	<dt><label>{L_WARNINGS}:</label></dt>
@@ -138,7 +138,7 @@
 	</p>
 
 	</fieldset>
-	
+
 	</form>
 
 <!-- ENDIF -->

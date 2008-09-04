@@ -158,6 +158,8 @@ class acp_board
 						'enable_post_confirm'	=> array('lang' => 'VISUAL_CONFIRM_POST',	'validate' => 'bool',	'type' => 'radio:yes_no', 'explain' => true),
 
 						'legend2'				=> 'POSTING',
+						'enable_queue_trigger'	=> array('lang' => 'ENABLE_QUEUE_TRIGGER',	'validate' => 'bool',		'type' => 'radio:yes_no', 'explain' => true),
+						'queue_trigger_posts'	=> array('lang' => 'QUEUE_TRIGGER_POSTS',	'validate' => 'int:0:250',	'type' => 'text:4:4', 'explain' => true),
 						'bump_type'				=> false,
 						'edit_time'				=> array('lang' => 'EDIT_TIME',				'validate' => 'int:0',		'type' => 'text:5:5', 'explain' => true, 'append' => ' ' . $user->lang['MINUTES']),
 						'display_last_edited'	=> array('lang' => 'DISPLAY_LAST_EDITED',	'validate' => 'bool',		'type' => 'radio:yes_no', 'explain' => true),
@@ -552,14 +554,14 @@ class acp_board
 			{
 				$l_explain = (isset($user->lang[$vars['lang'] . '_EXPLAIN'])) ? $user->lang[$vars['lang'] . '_EXPLAIN'] : '';
 			}
-			
+
 			$content = build_cfg_template($type, $config_key, $this->new_config, $config_key, $vars);
-			
+
 			if (empty($content))
 			{
 				continue;
 			}
-			
+
 			$template->assign_block_vars('options', array(
 				'KEY'			=> $config_key,
 				'TITLE'			=> (isset($user->lang[$vars['lang']])) ? $user->lang[$vars['lang']] : $vars['lang'],
@@ -670,7 +672,7 @@ class acp_board
 
 		return h_radio('config[ip_check]', $radio_ary, $value, $key);
 	}
-	
+
 	/**
 	* Select referer validation
 	*/
@@ -680,7 +682,7 @@ class acp_board
 
 		return h_radio('config[referer_validation]', $radio_ary, $value, $key);
 	}
-	
+
 	/**
 	* Select account activation method
 	*/
