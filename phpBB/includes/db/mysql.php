@@ -51,14 +51,12 @@ class dbal_mysql extends dbal
 			if (@mysql_select_db($this->dbname, $this->db_connect_id))
 			{
 				// Determine what version we are using and if it natively supports UNICODE
-				$this->sql_server_info();
-
-				if (version_compare($this->sql_server_version, '4.1.3', '>='))
+				if (version_compare($this->sql_server_info(true), '4.1.3', '>='))
 				{
 					@mysql_query("SET NAMES 'utf8'", $this->db_connect_id);
 
 					// enforce strict mode on databases that support it
-					if (version_compare($this->sql_server_version, '5.0.2', '>='))
+					if (version_compare($this->sql_server_info(true), '5.0.2', '>='))
 					{
 						$result = @mysql_query('SELECT @@session.sql_mode AS sql_mode', $this->db_connect_id);
 						$row = @mysql_fetch_assoc($result);
@@ -83,7 +81,7 @@ class dbal_mysql extends dbal
 						@mysql_query("SET SESSION sql_mode='{$mode}'", $this->db_connect_id);
 					}
 				}
-				else if (version_compare($this->sql_server_version, '4.0.0', '<'))
+				else if (version_compare($this->sql_server_info(true), '4.0.0', '<'))
 				{
 					$this->sql_layer = 'mysql';
 				}
