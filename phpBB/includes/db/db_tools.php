@@ -265,7 +265,7 @@ class phpbb_db_tools
 			break;
 
 			case 'mysql4':
-				if (version_compare($this->db->mysql_version, '4.1.3', '>='))
+				if (version_compare($this->db->sql_server_info(true), '4.1.3', '>='))
 				{
 					$this->sql_layer = 'mysql_41';
 				}

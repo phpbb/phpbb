@@ -1157,7 +1157,7 @@ class install_install extends module
 		// If mysql is chosen, we need to adjust the schema filename slightly to reflect the correct version. ;)
 		if ($data['dbms'] == 'mysql')
 		{
-			if (version_compare($db->mysql_version, '4.1.3', '>='))
+			if (version_compare($db->sql_server_info(true), '4.1.3', '>='))
 			{
 				$available_dbms[$data['dbms']]['SCHEMA'] .= '_41';
 			}
@@ -1363,6 +1363,10 @@ class install_install extends module
 
 			'UPDATE ' . $data['table_prefix'] . "forums
 				SET forum_last_post_time = $current_time",
+
+			'UPDATE ' . $data['table_prefix'] . "config
+				SET config_value = '" . $db->sql_escape($db->sql_server_info(true)) . "'
+				WHERE config_name = 'dbms_version'",
 		);
 
 		if (@extension_loaded('gd') || can_load_dll('gd'))

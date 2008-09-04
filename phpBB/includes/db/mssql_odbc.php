@@ -73,24 +73,38 @@ class dbal_mssql_odbc extends dbal
 
 	/**
 	* Version information about used database
+	* @param bool $raw if true, only return the fetched sql_server_version
+	* @return string sql server version
 	*/
-	function sql_server_info()
+	function sql_server_info($raw = false)
 	{
-		$result_id = @odbc_exec($this->db_connect_id, "SELECT SERVERPROPERTY('productversion'), SERVERPROPERTY('productlevel'), SERVERPROPERTY('edition')");
+		global $cache;
 
-		$row = false;
-		if ($result_id)
+		if (empty($cache) || ($this->sql_server_version = $cache->get('mssqlodbc_version')) === false)
 		{
-			$row = @odbc_fetch_array($result_id);
-			@odbc_free_result($result_id);
+			$result_id = @odbc_exec($this->db_connect_id, "SELECT SERVERPROPERTY('productversion'), SERVERPROPERTY('productlevel'), SERVERPROPERTY('edition')");
+
+			$row = false;
+			if ($result_id)
+			{
+				$row = @odbc_fetch_array($result_id);
+				@odbc_free_result($result_id);
+			}
+
+			$this->sql_server_version = ($row) ? trim(implode(' ', $row)) : 0;
+
+			if (!empty($cache))
+			{
+				$cache->put('mssqlodbc_version', $this->sql_server_version);
+			}
 		}
 
-		if ($row)
+		if ($raw)
 		{
-			return 'MSSQL (ODBC)<br />' . implode(' ', $row);
+			return $this->sql_server_version;
 		}
 
-		return 'MSSQL (ODBC)';
+		return ($this->sql_server_version) ? 'MSSQL (ODBC)<br />' . $this->sql_server_version : 'MSSQL (ODBC)';
 	}
 
 	/**

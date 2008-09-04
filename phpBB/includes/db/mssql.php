@@ -62,24 +62,38 @@ class dbal_mssql extends dbal
 
 	/**
 	* Version information about used database
+	* @param bool $raw if true, only return the fetched sql_server_version
+	* @return string sql server version
 	*/
-	function sql_server_info()
+	function sql_server_info($raw = false)
 	{
-		$result_id = @mssql_query("SELECT SERVERPROPERTY('productversion'), SERVERPROPERTY('productlevel'), SERVERPROPERTY('edition')", $this->db_connect_id);
+		global $cache;
 
-		$row = false;
-		if ($result_id)
+		if (empty($cache) || ($this->sql_server_version = $cache->get('mssql_version')) === false)
 		{
-			$row = @mssql_fetch_assoc($result_id);
-			@mssql_free_result($result_id);
+			$result_id = @mssql_query("SELECT SERVERPROPERTY('productversion'), SERVERPROPERTY('productlevel'), SERVERPROPERTY('edition')", $this->db_connect_id);
+
+			$row = false;
+			if ($result_id)
+			{
+				$row = @mssql_fetch_assoc($result_id);
+				@mssql_free_result($result_id);
+			}
+
+			$this->sql_server_version = ($row) ? trim(implode(' ', $row)) : 0;
+
+			if (!empty($cache))
+			{
+				$cache->put('mssql_version', $this->sql_server_version);
+			}
 		}
 
-		if ($row)
+		if ($raw)
 		{
-			return 'MSSQL<br />' . implode(' ', $row);
+			return $this->sql_server_version;
 		}
 
-		return 'MSSQL';
+		return ($this->sql_server_version) ? 'MSSQL<br />' . $this->sql_server_version : 'MSSQL';
 	}
 
 	/**

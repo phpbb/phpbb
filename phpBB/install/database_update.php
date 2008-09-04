@@ -552,7 +552,7 @@ switch ($db->sql_layer)
 	break;
 
 	case 'mysql4':
-		if (version_compare($db->mysql_version, '4.1.3', '>='))
+		if (version_compare($db->sql_server_info(true), '4.1.3', '>='))
 		{
 			$map_dbms = 'mysql_41';
 		}
@@ -1836,6 +1836,9 @@ function change_database_data(&$no_updates, $version)
 		case '3.0.2':
 			set_config('enable_queue_trigger', '0');
 			set_config('queue_trigger_posts', '3');
+
+			// Not prefilling yet
+			set_config('dbms_version', '');
 
 			// Resync post counts
 			$sql = 'SELECT COUNT(p.post_id) AS num_posts, u.user_id

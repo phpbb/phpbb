@@ -620,7 +620,7 @@ class mysql_extractor extends base_extractor
 
 		if ($new_extract === null)
 		{
-			if ($db->sql_layer === 'mysqli' || version_compare($db->mysql_version, '3.23.20', '>='))
+			if ($db->sql_layer === 'mysqli' || version_compare($db->sql_server_info(true), '3.23.20', '>='))
 			{
 				$new_extract = true;
 			}

@@ -1710,7 +1710,7 @@ function phpbb_check_username_collisions()
 		break;
 	
 		case 'mysql4':
-			if (version_compare($db->mysql_version, '4.1.3', '>='))
+			if (version_compare($db->sql_server_info(true), '4.1.3', '>='))
 			{
 				$map_dbms = 'mysql_41';
 			}

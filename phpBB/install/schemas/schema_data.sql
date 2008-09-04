@@ -75,6 +75,7 @@ INSERT INTO phpbb_config (config_name, config_value) VALUES ('coppa_enable', '0'
 INSERT INTO phpbb_config (config_name, config_value) VALUES ('coppa_fax', '');
 INSERT INTO phpbb_config (config_name, config_value) VALUES ('coppa_mail', '');
 INSERT INTO phpbb_config (config_name, config_value) VALUES ('database_gc', '604800');
+INSERT INTO phpbb_config (config_name, config_value) VALUES ('dbms_version', '');
 INSERT INTO phpbb_config (config_name, config_value) VALUES ('default_dateformat', 'D M d, Y g:i a');
 INSERT INTO phpbb_config (config_name, config_value) VALUES ('default_style', '1');
 INSERT INTO phpbb_config (config_name, config_value) VALUES ('display_last_edited', '1');
