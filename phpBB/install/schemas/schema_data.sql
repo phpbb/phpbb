@@ -437,7 +437,7 @@ INSERT INTO phpbb_acl_roles (role_name, role_description, role_type, role_order)
 INSERT INTO phpbb_styles (style_name, style_copyright, style_active, template_id, theme_id) VALUES ('prosilver', '&copy; phpBB Group', 1, 1, 1);
 
 # -- phpbb_styles_template
-INSERT INTO phpbb_styles_template (template_name, template_copyright, template_path, bbcode_bitfield, template_storedb) VALUES ('prosilver', '&copy; phpBB Group', 'prosilver', 'lNg=', 0);
+INSERT INTO phpbb_styles_template (template_name, template_copyright, template_path, bbcode_bitfield) VALUES ('prosilver', '&copy; phpBB Group', 'prosilver', 'lNg=');
 
 # -- phpbb_styles_theme
 INSERT INTO phpbb_styles_theme (theme_name, theme_copyright, theme_path, theme_storedb, theme_data) VALUES ('prosilver', '&copy; phpBB Group', 'prosilver', 1, '');
