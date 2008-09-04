@@ -24,6 +24,9 @@ if (!defined('IN_PHPBB'))
 * PHPBB_ADMIN_PATH
 */
 
+// phpBB Version
+define('PHPBB_VERSION', '3.0.3-RC1');
+
 // QA-related
 // define('PHPBB_QA', 1);
 
