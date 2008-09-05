@@ -66,14 +66,14 @@ class session
 		$find = array('"', "'", '<', '>');
 		$replace = array('%22', '%27', '%3C', '%3E');
 
-		foreach ($args as $key => $argument)
+		foreach ($args as $argument)
 		{
 			if (strpos($argument, 'sid=') === 0)
 			{
 				continue;
 			}
 
-			$use_args[str_replace($find, $replace, $key)] = str_replace($find, $replace, $argument);
+			$use_args[] = str_replace($find, $replace, $argument);
 		}
 		unset($args);
 
