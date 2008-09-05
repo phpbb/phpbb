@@ -2044,7 +2044,7 @@ function redirect($url, $return = false, $disable_cd_check = false)
 				$url = substr($url, 1);
 			}
 
-			$url = $dir . '/' . $url;
+			$url = (!empty($dir) ? $dir . '/' : '') . $url;
 			$url = generate_board_url() . '/' . $url;
 		}
 	}
