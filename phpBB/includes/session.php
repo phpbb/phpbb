@@ -73,7 +73,7 @@ class session
 				continue;
 			}
 
-			$use_args[str_replace($find, $replace, $key)] = str_replace($find, $replace, $argument);
+			$use_args[] = str_replace($find, $replace, $argument);
 		}
 		unset($args);
 
