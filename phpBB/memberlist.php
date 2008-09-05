@@ -1212,6 +1212,7 @@ switch ($mode)
 
 		// We do not use request_var() here directly to save some calls (not all variables are set)
 		$check_params = array(
+			'start'			=> array('start', 0),
 			'g'				=> array('g', 0),
 			'sk'			=> array('sk', $default_key),
 			'sd'			=> array('sd', 'a'),
