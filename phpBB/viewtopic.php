@@ -1084,7 +1084,7 @@ while ($row = $db->sql_fetchrow($result))
 				'msn'			=> ($row['user_msnm'] && $auth->acl_get('u_sendim')) ? append_sid('memberlist', "mode=contact&amp;action=msnm&amp;u=$poster_id") : '',
 				'yim'			=> ($row['user_yim']) ? 'http://edit.yahoo.com/config/send_webmesg?.target=' . urlencode($row['user_yim']) . '&amp;.src=pg' : '',
 				'jabber'		=> ($row['user_jabber'] && $auth->acl_get('u_sendim')) ? append_sid('memberlist', "mode=contact&amp;action=jabber&amp;u=$poster_id") : '',
-				'search'		=> ($auth->acl_get('u_search')) ? append_sid('search', 'search_author=' . urlencode($row['username']) .'&amp;sr=posts') : '',
+				'search'		=> ($auth->acl_get('u_search')) ? append_sid('search', "author_id=$poster_id&amp;sr=posts") : '',
 			);
 
 			get_user_rank($row['user_rank'], $row['user_posts'], $user_cache[$poster_id]['rank_title'], $user_cache[$poster_id]['rank_image'], $user_cache[$poster_id]['rank_image_src']);
@@ -1506,8 +1506,8 @@ for ($i = 0, $end = sizeof($post_list); $i < $end; ++$i)
 }
 unset($rowset, $user_cache);
 
-// Update topic view and if necessary attachment view counters ... but only if this is the first 'page view'
-if (isset($user->data['session_page']) && strpos($user->data['session_page'], '&t=' . $topic_id) === false)
+// Update topic view and if necessary attachment view counters ... but only for humans and if this is the first 'page view'
+if (isset($user->data['session_page']) && !$user->data['is_bot'] && strpos($user->data['session_page'], '&t=' . $topic_id) === false)
 {
 	$sql = 'UPDATE ' . TOPICS_TABLE . '
 		SET topic_views = topic_views + 1, topic_last_view_time = ' . time() . "
@@ -1581,7 +1581,7 @@ if (empty($_REQUEST['f']))
 }
 
 // Output the page
-page_header($user->lang['VIEW_TOPIC'] .' - ' . $topic_data['topic_title']);
+page_header($user->lang['VIEW_TOPIC'] . ' - ' . $topic_data['topic_title']);
 
 $template->set_filenames(array(
 	'body' => ($view == 'print') ? 'viewtopic_print.html' : 'viewtopic_body.html')

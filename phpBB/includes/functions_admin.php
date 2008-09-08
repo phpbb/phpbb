@@ -551,7 +551,7 @@ function delete_topics($where_type, $where_ids, $auto_sync = true, $post_count_s
 		'posts' => ($call_delete_posts) ? delete_posts($where_type, $where_ids, false, true, $post_count_sync, false) : 0,
 	);
 
-	$sql = 'SELECT topic_id, forum_id, topic_approved
+	$sql = 'SELECT topic_id, forum_id, topic_approved, topic_moved_id
 		FROM ' . TOPICS_TABLE . '
 		WHERE ' . $where_clause;
 	$result = $db->sql_query($sql);
@@ -561,7 +561,7 @@ function delete_topics($where_type, $where_ids, $auto_sync = true, $post_count_s
 		$forum_ids[] = $row['forum_id'];
 		$topic_ids[] = $row['topic_id'];
 
-		if ($row['topic_approved'])
+		if ($row['topic_approved'] && !$row['topic_moved_id'])
 		{
 			$approved_topics++;
 		}

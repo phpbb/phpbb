@@ -814,6 +814,13 @@ function disapprove_post($post_id_list, $id, $mode)
 			// If the reason is defined within the language file, we will use the localized version, else just use the database entry...
 			$disapprove_reason = (strtolower($row['reason_title']) != 'other') ? ((isset($user->lang['report_reasons']['DESCRIPTION'][strtoupper($row['reason_title'])])) ? $user->lang['report_reasons']['DESCRIPTION'][strtoupper($row['reason_title'])] : $row['reason_description']) : '';
 			$disapprove_reason .= ($reason) ? "\n\n" . $reason : '';
+
+			if (isset($user->lang['report_reasons']['DESCRIPTION'][strtoupper($row['reason_title'])]))
+			{
+				$disapprove_reason_lang = strtoupper($row['reason_title']);
+			}
+
+			$email_disapprove_reason = $disapprove_reason;
 		}
 	}
 
@@ -933,11 +940,42 @@ function disapprove_post($post_id_list, $id, $mode)
 		// Notify Poster?
 		if ($notify_poster)
 		{
+			$lang_reasons = array();
+
 			foreach ($post_info as $post_id => $post_data)
 			{
 				if ($post_data['poster_id'] == ANONYMOUS)
 				{
 					continue;
+				}
+
+				if (isset($disapprove_reason_lang))
+				{
+					// Okay we need to get the reason from the posters language
+					if (!isset($lang_reasons[$post_data['user_lang']]))
+					{
+						// Assign the current users translation as the default, this is not ideal but getting the board default adds another layer of complexity.
+						$lang_reasons[$post_data['user_lang']] = $user->lang['report_reasons']['DESCRIPTION'][$disapprove_reason_lang];
+
+						// Only load up the language pack if the language is different to the current one
+						if ($post_data['user_lang'] != $user->lang_name && file_exists($phpbb_root_path . '/language/' . $post_data['user_lang'] . '/mcp.' . $phpEx))
+						{
+							// Load up the language pack
+							$lang = array();
+							@include($phpbb_root_path . '/language/' . $post_data['user_lang'] . '/mcp.' . $phpEx);
+
+							// If we find the reason in this language pack use it
+							if (isset($lang['report_reasons']['DESCRIPTION'][$disapprove_reason_lang]))
+							{
+								$lang_reasons[$post_data['user_lang']] = $lang['report_reasons']['DESCRIPTION'][$disapprove_reason_lang];
+							}
+
+							unset($lang); // Free memory
+						}
+					}
+
+					$email_disapprove_reason = $lang_reasons[$post_data['user_lang']];
+					$email_disapprove_reason .= ($reason) ? "\n\n" . $reason : '';
 				}
 
 				$email_template = ($post_data['post_id'] == $post_data['topic_first_post_id'] && $post_data['post_id'] == $post_data['topic_last_post_id']) ? 'topic_disapproved' : 'post_disapproved';
@@ -949,15 +987,17 @@ function disapprove_post($post_id_list, $id, $mode)
 
 				$messenger->assign_vars(array(
 					'USERNAME'		=> htmlspecialchars_decode($post_data['username']),
-					'REASON'		=> htmlspecialchars_decode($disapprove_reason),
+					'REASON'		=> htmlspecialchars_decode($email_disapprove_reason),
 					'POST_SUBJECT'	=> htmlspecialchars_decode(censor_text($post_data['post_subject'])),
 					'TOPIC_TITLE'	=> htmlspecialchars_decode(censor_text($post_data['topic_title'])))
 				);
 
 				$messenger->send($post_data['user_notify_type']);
 			}
+
+			unset($lang_reasons);
 		}
-		unset($post_info, $disapprove_reason);
+		unset($post_info, $disapprove_reason, $email_disapprove_reason, $disapprove_reason_lang);
 
 		$messenger->save_queue();
 

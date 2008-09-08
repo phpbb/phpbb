@@ -554,7 +554,8 @@ function close_report($report_id_list, $mode, $action)
 				{
 					$sql = 'UPDATE ' . TOPICS_TABLE . '
 						SET topic_reported = 0
-						WHERE ' . $db->sql_in_set('topic_id', $close_report_topics);
+						WHERE ' . $db->sql_in_set('topic_id', $close_report_topics) . '
+							OR ' . $db->sql_in_set('topic_moved_id', $close_report_topics);
 					$db->sql_query($sql);
 				}
 			}

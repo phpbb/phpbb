@@ -633,7 +633,7 @@ class acp_users
 
 							if (sizeof($topic_id_ary))
 							{
-								sync('reported', 'topic_id', $topic_id_ary);
+								sync('topic_reported', 'topic_id', $topic_id_ary);
 								sync('topic', 'topic_id', $topic_id_ary);
 							}
 
@@ -1092,7 +1092,7 @@ class acp_users
 						'website'		=> array(
 							array('string', true, 12, 255),
 							array('match', true, '#^http[s]?://(.*?\.)*?[a-z0-9\-]+\.[a-z]{2,4}#i')),
-						'location'		=> array('string', true, 2, 255),
+						'location'		=> array('string', true, 2, 100),
 						'occupation'	=> array('string', true, 2, 500),
 						'interests'		=> array('string', true, 2, 500),
 						'bday_day'		=> array('num', true, 1, 31),
