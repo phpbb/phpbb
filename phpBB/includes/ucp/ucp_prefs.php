@@ -294,7 +294,7 @@ class ucp_prefs
 					'bbcode'	=> request_var('bbcode', $user->optionget('bbcode')),
 					'smilies'	=> request_var('smilies', $user->optionget('smilies')),
 					'sig'		=> request_var('sig', $user->optionget('attachsig')),
-					'notify'	=> request_var('notify', $user->data['user_notify']),
+					'notify'	=> request_var('notify', (bool) $user->data['user_notify']),
 				);
 				add_form_key('ucp_prefs_post');
 
