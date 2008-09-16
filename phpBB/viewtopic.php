@@ -178,11 +178,17 @@ if ($view && !$post_id)
 $sql_array = array(
 	'SELECT'	=> 't.*, f.*',
 
-	'FROM'		=> array(
-		FORUMS_TABLE	=> 'f',
-		TOPICS_TABLE	=> 't',
-	)
+	'FROM'		=> array(FORUMS_TABLE => 'f'),
 );
+
+// The FROM-Order is quite important here, else t.* columns can not be correctly bound. 
+if ($post_id)
+{
+	$sql_array['FROM'][POSTS_TABLE] = 'p';
+}
+
+// Topics table need to be the last in the chain
+$sql_array['FROM'][TOPICS_TABLE] = 't';
 
 if ($user->data['is_registered'])
 {
@@ -226,7 +232,6 @@ if (!$post_id)
 else
 {
 	$sql_array['WHERE'] = "p.post_id = $post_id AND t.topic_id = p.topic_id" . ((!$auth->acl_get('m_approve', $forum_id)) ? ' AND p.post_approved = 1' : '');
-	$sql_array['FROM'][POSTS_TABLE] = 'p';
 }
 
 $sql_array['WHERE'] .= ' AND (f.forum_id = t.forum_id';
