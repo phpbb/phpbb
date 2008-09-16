@@ -87,27 +87,12 @@
 
 	<ul>
 		<li>[Fix] Correctly set topic starter if first post in topic removed (Bug #30575 - Patch by blueray2048)</li>
-		<li>[Change] No longer allow the direct use of MULTI_INSERT in sql_build_array. sql_multi_insert() must be used.</li>
-		<li>[Change] Display warning in ACP if config.php file is left writable.</li>
-		<li>[Change] More restrictive chmod to new files being created. (phpbb_chmod() function mostly by faw)</li>
-		<li>[Feature] Allow limited inheritance for templates sets.</li>
-		<li>[Feature] Allow hard disabling of the template editor.</li>
 		<li>[Fix] Delete avatar files (Bug #29985).</li>
 		<li>[Fix] Preserve selection in the MCP. (Bug #31265).</li>
 		<li>[Fix] Added VST - Venezuela Standard Time (Bug #30545).</li>
 		<li>[Fix] Close DB connections in file.php.</li>
-		<li>[Change] Set headers to allow browsers to better cache attachments (Mylek pointed this out)</li>
-		<li>[Change] Hide parameters if they equal the default in viewforum/viewtopic (Bug #31185)</li>
-		<li>[Change] Various improvements to group listings (Bugs #32155, #32145, #32085, #26675, #26265)</li>
 		<li>[Fix] Correctly return results for nested cached queries (Bug #31445 - Patch by faw).</li>
-		<li>[Change] Set headers for IE 8 in file.php</li>
 		<li>[Fix] Allow export of PM pages greater one. (#33155)</li>
-		<li>[Feature] Allow setting custom language path through $user-&gt;set_custom_lang_path(). $user-&gt;lang_path now also do not include the user language, but only the path.</li>
-		<li>[Change] Do not count queued posts to user_posts</li>
-		<li>[Feature] Ability to define nullar/singular/plural language entries</li>
-		<li>[Feature] Ability to mimic sprintf() calls with $user-&gt;lang() with the ability to correctly assign nullar/singular/plural language entries</li>
-		<li>[Feature] Added the possibility to force user posts put in queue if post count is lower than an admin defined value. Guest posting is not affected by this setting.</li>
-		<li>[Change] Allow setting birth year to current year.</li>
 		<li>[Fix] Display coloured username of last poster in list of subscribed forums (prosilver).</li>
 		<li>[Fix] Added missing UCP language string <em>NO_AUTH_READ_HOLD_MESSAGE</em>.</li>
 		<li>[Fix] Do not jump back to page 1 when hiding member search in memberlist. (Bug #32515 - Patch by paul)</li>
@@ -122,9 +107,26 @@
 		<li>[Fix] Send localised disapproval reasons in the recipients local language. (Bug #31645)</li>
 		<li>[Fix] Language typos/fixes. (Bug #27625, #30755)</li>
 		<li>[Fix] Added missing terms parameter to search pagination. (Bug #34085)</li>
-		<li>[Change] Do not use the topics posted table when performing an egosearch.</li>
 		<li>[Fix] Wrong table order in query obtaining posts if post id given.</li>
+		<li>[Fix] Do not display reported topic icon for shadow topics. (Bug #13970)</li>
 
+		<li>[Change] No longer allow the direct use of MULTI_INSERT in sql_build_array. sql_multi_insert() must be used.</li>
+		<li>[Change] Display warning in ACP if config.php file is left writable.</li>
+		<li>[Change] More restrictive chmod to new files being created. (phpbb_chmod() function mostly by faw)</li>
+		<li>[Change] Set headers to allow browsers to better cache attachments (Mylek pointed this out)</li>
+		<li>[Change] Hide parameters if they equal the default in viewforum/viewtopic (Bug #31185)</li>
+		<li>[Change] Various improvements to group listings (Bugs #32155, #32145, #32085, #26675, #26265)</li>
+		<li>[Change] Set headers for IE 8 in file.php</li>
+		<li>[Change] Do not count queued posts to user_posts.</li>
+		<li>[Change] Allow setting birth year to current year.</li>
+		<li>[Change] Do not use the topics posted table when performing an egosearch.</li>
+
+		<li>[Feature] Allow limited inheritance for template sets.</li>
+		<li>[Feature] Allow hard disabling of the template editor.</li>
+		<li>[Feature] Allow setting custom language path through $user-&gt;set_custom_lang_path(). $user-&gt;lang_path now also do not include the user language, but only the path.</li>
+		<li>[Feature] Ability to define nullar/singular/plural language entries</li>
+		<li>[Feature] Ability to mimic sprintf() calls with $user-&gt;lang() with the ability to correctly assign nullar/singular/plural language entries.</li>
+		<li>[Feature] Added the possibility to force user posts put in queue if post count is lower than an admin defined value. Guest posting is not affected by this setting.</li>
 	</ul>
 
 	<a name="v301"></a><h3>1.ii. Changes since 3.0.1</h3>
