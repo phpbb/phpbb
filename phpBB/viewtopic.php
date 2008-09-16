@@ -828,7 +828,7 @@ if (!empty($topic_data['poll_start']))
 			'POLL_OPTION_RESULT' 	=> $poll_option['poll_option_total'],
 			'POLL_OPTION_PERCENT' 	=> $option_pct_txt,
 			'POLL_OPTION_PCT'		=> round($option_pct * 100),
-			'POLL_OPTION_IMG' 		=> $user->img('poll_center', $option_pct_txt, round($option_pct * 250)),
+			'POLL_OPTION_IMG' 		=> $user->img('poll_center', $option_pct_txt, '', round($option_pct * 250)),
 			'POLL_OPTION_VOTED'		=> (in_array($poll_option['poll_option_id'], $cur_voted_id)) ? true : false)
 		);
 	}

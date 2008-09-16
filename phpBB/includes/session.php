@@ -2077,7 +2077,7 @@ class user extends session
 	/**
 	* Specify/Get image
 	*/
-	function img($img, $alt = '', $width = false, $suffix = '', $type = 'full_tag')
+	function img($img, $alt = '', $type = 'full_tag', $width = false)
 	{
 		static $imgs;
 
