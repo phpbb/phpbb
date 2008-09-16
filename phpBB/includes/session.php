@@ -177,7 +177,7 @@ class session
 			}
 			else if (!empty($config['cookie_domain']))
 			{
-				$host = (strpos($config['cookie_domain']) === 0) ? substr($config['cookie_domain'], 1) : $config['cookie_domain'];
+				$host = (strpos($config['cookie_domain'], '.') === 0) ? substr($config['cookie_domain'], 1) : $config['cookie_domain'];
 			}
 			else
 			{
@@ -214,8 +214,15 @@ class session
 		$this->browser				= (!empty($_SERVER['HTTP_USER_AGENT'])) ? htmlspecialchars((string) $_SERVER['HTTP_USER_AGENT']) : '';
 		$this->referer				= (!empty($_SERVER['HTTP_REFERER'])) ? htmlspecialchars((string) $_SERVER['HTTP_REFERER']) : '';
 		$this->forwarded_for		= (!empty($_SERVER['HTTP_X_FORWARDED_FOR'])) ? (string) $_SERVER['HTTP_X_FORWARDED_FOR'] : '';
+<<<<<<< .mine
+		$this->host					= $this->get_validated_hostname();
+=======
+>>>>>>> .r8847
 
+<<<<<<< .mine
+=======
 		$this->host					= $this->extract_current_hostname();
+>>>>>>> .r8847
 		$this->page					= $this->extract_current_page($phpbb_root_path);
 
 		// if the forwarded for header shall be checked we have to validate its contents
