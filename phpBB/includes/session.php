@@ -2097,6 +2097,7 @@ class user extends session
 
 	/**
 	* Specify/Get image
+	* $suffix is no longer used - we know it. ;) It is there for backward compatibility.
 	*/
 	function img($img, $alt = '', $width = false, $suffix = '', $type = 'full_tag')
 	{
