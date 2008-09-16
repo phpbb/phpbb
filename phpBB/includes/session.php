@@ -175,7 +175,7 @@ class session
 			}
 			else if (!empty($config['cookie_domain']))
 			{
-				$host = (strpos($config['cookie_domain']) === 0) ? substr($config['cookie_domain'], 1) : $config['cookie_domain'];
+				$host = (strpos($config['cookie_domain'], '.') === 0) ? substr($config['cookie_domain'], 1) : $config['cookie_domain'];
 			}
 			else
 			{
