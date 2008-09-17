@@ -34,8 +34,10 @@ class dbal_mssql extends dbal
 	{
 		$this->persistency = $persistency;
 		$this->user = $sqluser;
-		$this->server = $sqlserver . (($port) ? ':' . $port : '');
 		$this->dbname = $database;
+
+		$port_delimiter = (defined('PHP_OS') && substr(PHP_OS, 0, 3) === 'WIN') ? ',' : ':';
+		$this->server = $sqlserver . (($port) ? $port_delimiter . $port : '');
 
 		@ini_set('mssql.charset', 'UTF-8');
 		@ini_set('mssql.textlimit', 2147483647);
