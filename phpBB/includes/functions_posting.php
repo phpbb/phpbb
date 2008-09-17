@@ -688,6 +688,10 @@ function create_thumbnail($source, $destination, $mimetype)
 					return false;
 				}
 
+				// Preserve alpha transparency (png for example)
+				@imagealphablending($new_image, false);
+				@imagesavealpha($new_image, true);
+
 				imagecopyresampled($new_image, $image, 0, 0, 0, 0, $new_width, $new_height, $width, $height);
 			}
 
