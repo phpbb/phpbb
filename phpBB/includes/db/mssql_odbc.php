@@ -40,8 +40,10 @@ class dbal_mssql_odbc extends dbal
 	{
 		$this->persistency = $persistency;
 		$this->user = $sqluser;
-		$this->server = $sqlserver . (($port) ? ':' . $port : '');
 		$this->dbname = $database;
+
+		$port_delimiter = (defined('PHP_OS') && substr(PHP_OS, 0, 3) === 'WIN') ? ',' : ':';
+		$this->server = $sqlserver . (($port) ? $port_delimiter . $port : '');
 
 		$max_size = @ini_get('odbc.defaultlrl');
 		if (!empty($max_size))
