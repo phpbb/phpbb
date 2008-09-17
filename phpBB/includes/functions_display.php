@@ -772,7 +772,8 @@ function topic_status(&$topic_row, $replies, $unread_topic, &$folder_img, &$fold
 				$folder = 'topic_read';
 				$folder_new = 'topic_unread';
 
-				if ($config['hot_threshold'] && $replies >= $config['hot_threshold'] && $topic_row['topic_status'] != ITEM_LOCKED)
+				// Hot topic threshold is for posts in a topic, which is replies + the first post. ;)
+				if ($config['hot_threshold'] && ($replies + 1) >= $config['hot_threshold'] && $topic_row['topic_status'] != ITEM_LOCKED)
 				{
 					$folder .= '_hot';
 					$folder_new .= '_hot';
