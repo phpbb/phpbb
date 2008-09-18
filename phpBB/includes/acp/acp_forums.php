@@ -1817,7 +1817,7 @@ class acp_forums
 		$row = $db->sql_fetchrow($result);
 		$db->sql_freeresult($result);
 
-		set_config('upload_dir_size', (int) $row['stat'], true);
+		set_config('upload_dir_size', (float) $row['stat'], true);
 
 		return array();
 	}
