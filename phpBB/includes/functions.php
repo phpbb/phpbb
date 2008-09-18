@@ -3597,8 +3597,10 @@ function page_header($page_title = '', $display_online_list = true)
 		'T_STYLESHEET_LINK'		=> (!$user->theme['theme_storedb']) ? PHPBB_ROOT_PATH . 'styles/' . $user->theme['theme_path'] . '/theme/stylesheet.css' : PHPBB_ROOT_PATH . 'style.' . PHP_EXT . "?sid=$user->session_id&amp;id=" . $user->theme['style_id'] . '&amp;lang=' . $user->data['user_lang'], //PHPBB_ROOT_PATH . "store/{$user->theme['theme_id']}_{$user->theme['imageset_id']}_{$user->lang_name}.css"
 		'T_STYLESHEET_NAME'		=> $user->theme['theme_name'],
 
-		'SITE_LOGO_IMG'			=> $user->img('site_logo'))
-	);
+		'SITE_LOGO_IMG'			=> $user->img('site_logo'),
+
+		'A_COOKIE_SETTINGS'		=> addslashes('; path=' . $config['cookie_path'] . ((!$config['cookie_domain'] || $config['cookie_domain'] == 'localhost' || $config['cookie_domain'] == '127.0.0.1') ? '' : '; domain=' . $config['cookie_domain']) . ((!$config['cookie_secure']) ? '' : '; secure')),
+	));
 
 	// application/xhtml+xml not used because of IE
 	header('Content-type: text/html; charset=UTF-8');
