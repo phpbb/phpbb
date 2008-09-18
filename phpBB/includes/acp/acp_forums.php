@@ -922,9 +922,8 @@ class acp_forums
 		$range_test_ary = array(
 			array('lang' => 'FORUM_TOPICS_PAGE', 'value' => $forum_data['forum_topics_per_page'], 'column_type' => 'TINT:0'),
 		);
+
 		validate_range($range_test_ary, $errors);
-
-
 
 		// Set forum flags
 		// 1 = link tracking
@@ -1206,7 +1205,14 @@ class acp_forums
 
 			if ($row['parent_id'] != $forum_data_sql['parent_id'])
 			{
-				$errors = $this->move_forum($forum_data_sql['forum_id'], $forum_data_sql['parent_id']);
+				if ($row['forum_id'] != $forum_data_sql['parent_id'])
+				{
+					$errors = $this->move_forum($forum_data_sql['forum_id'], $forum_data_sql['parent_id']);
+				}
+				else
+				{
+					$forum_data_sql['parent_id'] = $row['parent_id'];
+				}
 			}
 
 			if (sizeof($errors))
