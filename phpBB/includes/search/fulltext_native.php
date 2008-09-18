@@ -447,11 +447,14 @@ class fulltext_native extends search_backend
 			'FROM'		=> array(
 				SEARCH_WORDMATCH_TABLE	=> array(),
 				SEARCH_WORDLIST_TABLE	=> array(),
-				POSTS_TABLE				=> 'p'
+//				POSTS_TABLE				=> 'p'
 			),
-			'LEFT_JOIN'	=> array()
+			'LEFT_JOIN' => array(array(
+				'FROM'	=> array(POSTS_TABLE => 'p'),
+				'ON'	=> 'm0.post_id = p.post_id',
+			)),
 		);
-		$sql_where[] = 'm0.post_id = p.post_id';
+//		$sql_where[] = 'm0.post_id = p.post_id';
 
 		$title_match = '';
 		$group_by = true;
