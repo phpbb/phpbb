@@ -64,6 +64,7 @@ class ucp_activate
 				'user_password'		=> $user_row['user_newpasswd'],
 				'user_newpasswd'	=> '',
 				'user_pass_convert'	=> 0,
+				'user_login_attempts'	=> 0,
 			);
 
 			$sql = 'UPDATE ' . USERS_TABLE . '
