@@ -166,7 +166,7 @@ class acp_main
 							FROM ' . ATTACHMENTS_TABLE . '
 							WHERE is_orphan = 0';
 						$result = $db->sql_query($sql);
-						set_config('upload_dir_size', (int) $db->sql_fetchfield('stat'), true);
+						set_config('upload_dir_size', (float) $db->sql_fetchfield('stat'), true);
 						$db->sql_freeresult($result);
 
 						if (!function_exists('update_last_username'))
