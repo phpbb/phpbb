@@ -977,6 +977,8 @@ function delete_pm($user_id, $msg_ids, $folder_id)
 		return false;
 	}
 
+	$db->sql_transaction('begin');
+
 	// if no one has read the message yet (meaning it is in users outbox)
 	// then mark the message as deleted...
 	if ($folder_id == PRIVMSGS_OUTBOX)
@@ -1054,10 +1056,20 @@ function delete_pm($user_id, $msg_ids, $folder_id)
 
 	if (sizeof($delete_ids))
 	{
+		// Check if there are any attachments we need to remove
+		if (!function_exists('delete_attachments'))
+		{
+			include(PHPBB_ROOT_PATH . 'includes/functions_admin.' . PHP_EXT);
+		}
+
+		delete_attachments('message', $delete_ids, false);
+
 		$sql = 'DELETE FROM ' . PRIVMSGS_TABLE . '
 			WHERE ' . $db->sql_in_set('msg_id', $delete_ids);
 		$db->sql_query($sql);
 	}
+
+	$db->sql_transaction('commit');
 
 	return true;
 }
