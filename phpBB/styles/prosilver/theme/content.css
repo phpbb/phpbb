@@ -467,12 +467,11 @@ blockquote dl.codebox {
 }
 
 dl.codebox code {
-	/* Also see tweaks.css */
 	overflow: auto;
 	display: block;
 	height: auto;
 	max-height: 200px;
-	white-space: normal;
+	/* white-space: normal; */
 	padding-top: 5px;
 	font: 0.9em Monaco, "Andale Mono","Courier New", Courier, mono;
 	line-height: 1.3em;

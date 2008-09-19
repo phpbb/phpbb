@@ -570,10 +570,6 @@ class bbcode
 			// no break;
 
 			default:
-				$code = str_replace("\t", '&nbsp; &nbsp;', $code);
-				$code = str_replace('  ', '&nbsp; ', $code);
-				$code = str_replace('  ', ' &nbsp;', $code);
-
 				// remove newline at the beginning
 				if (!empty($code) && $code[0] == "\n")
 				{
