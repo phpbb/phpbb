@@ -344,11 +344,6 @@ class module
 
 		foreach ($module as $row)
 		{
-			// Check any module pre-reqs
-			if ($row['module_reqs'] != '')
-			{
-			}
-
 			// Module order not specified or module already assigned at this position?
 			if (!isset($row['module_order']) || isset($this->module_ary[$row['module_order']]))
 			{
