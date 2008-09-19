@@ -71,8 +71,7 @@
 		</dl>
 	<!-- END profile_fields -->
 	</fieldset>
-
-<!-- IF S_CONFIRM_CODE -->
+<!-- IF S_CAPTCHA -->
 	<span class="corners-bottom"><span></span></span></div>
 </div>
 
@@ -83,15 +82,10 @@
 	<p>{L_CONFIRM_EXPLAIN}</p>
 
 	<fieldset class="fields2">
-	<dl>
-		<dt><label for="confirm_code">{L_CONFIRM_CODE}:</label></dt>
-		<dd>{CONFIRM_IMG}</dd>
-		<dd><input type="text" name="confirm_code" id="confirm_code" size="8" maxlength="8" class="inputbox narrow" title="{L_CONFIRM_CODE}" /></dd>
-		<dd>{L_CONFIRM_CODE_EXPLAIN}</dd>
-	</dl>
+		{S_CAPTCHA}
 	</fieldset>
-<!-- ENDIF -->
 
+<!-- ENDIF -->
 <!-- IF S_COPPA -->
 	<span class="corners-bottom"><span></span></span></div>
 </div>

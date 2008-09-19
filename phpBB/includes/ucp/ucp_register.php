@@ -37,7 +37,6 @@ class ucp_register
 
 		include(PHPBB_ROOT_PATH . 'includes/functions_profile_fields.' . PHP_EXT);
 
-		$confirm_id		= request_var('confirm_id', '');
 		$coppa			= (isset($_REQUEST['coppa'])) ? ((!empty($_REQUEST['coppa'])) ? 1 : 0) : false;
 		$agreed			= (!empty($_POST['agreed'])) ? 1 : 0;
 		$submit			= (isset($_POST['submit'])) ? true : false;
@@ -53,7 +52,14 @@ class ucp_register
 			add_form_key('ucp_register_terms');
 		}
 
-
+		
+		if ($config['enable_confirm'])
+		{
+			include(PHPBB_ROOT_PATH . 'includes/captcha/captcha_factory.' . PHP_EXT);
+			$captcha = phpbb_captcha_factory::get_instance($config['captcha_plugin']);
+			$captcha->init(CONFIRM_REG);
+		}
+			
 		if ($change_lang || $user_lang != $config['default_lang'])
 		{
 			$use_lang = ($change_lang) ? basename($change_lang) : basename($user_lang);
@@ -88,8 +94,8 @@ class ucp_register
 		{
 			$add_lang = ($change_lang) ? '&amp;change_lang=' . urlencode($change_lang) : '';
 			$add_coppa = ($coppa !== false) ? '&amp;coppa=' . $coppa : '';
-
-			$s_hidden_fields = ($confirm_id) ? array('confirm_id' => $confirm_id) : array();
+			
+			$s_hidden_fields = array();
 
 			// If we change the language, we want to pass on some more possible parameter.
 			if ($change_lang)
@@ -99,11 +105,14 @@ class ucp_register
 					'username'			=> utf8_normalize_nfc(request_var('username', '', true)),
 					'email'				=> strtolower(request_var('email', '')),
 					'email_confirm'		=> strtolower(request_var('email_confirm', '')),
-					'confirm_code'		=> request_var('confirm_code', ''),
-					'confirm_id'		=> request_var('confirm_id', ''),
 					'lang'				=> $user->lang_name,
 					'tz'				=> request_var('tz', (float) $config['board_timezone']),
 				));
+				
+				if ($config['enable_confirm'])
+				{
+					$s_hidden_fields = array_merge($s_hidden_fields, $captcha->get_hidden_fields());
+				}
 			}
 
 			if ($coppa === false && $config['coppa_enable'])
@@ -167,7 +176,6 @@ class ucp_register
 			'password_confirm'	=> request_var('password_confirm', '', true),
 			'email'				=> strtolower(request_var('email', '')),
 			'email_confirm'		=> strtolower(request_var('email_confirm', '')),
-			'confirm_code'		=> request_var('confirm_code', ''),
 			'lang'				=> basename(request_var('lang', $user->lang_name)),
 			'tz'				=> request_var('tz', (float) $timezone),
 		);
@@ -187,7 +195,6 @@ class ucp_register
 					array('string', false, 6, 60),
 					array('email')),
 				'email_confirm'		=> array('string', false, 6, 60),
-				'confirm_code'		=> array('string', !$config['enable_confirm'], 5, 8),
 				'tz'				=> array('num', false, -14, 14),
 				'lang'				=> array('match', false, '#^[a-z_\-]{2,}$#i'),
 			));
@@ -198,6 +205,22 @@ class ucp_register
 			// Replace "error" strings with their real, localised form
 			$error = preg_replace('#^([A-Z_]+)$#e', "(!empty(\$user->lang['\\1'])) ? \$user->lang['\\1'] : '\\1'", $error);
 
+			if ($config['enable_confirm'])
+			{
+				$vc_response = $captcha->validate();
+				if ($vc_response)
+				{
+					$error[] = $vc_response;
+				}
+				else
+				{
+					$captcha->reset();
+				}
+				if ($config['max_reg_attempts'] && $captcha->get_attempt_count() > $config['max_reg_attempts'])
+				{
+					$error[] = $user->lang['TOO_MANY_REGISTERS'];
+				}
+			}
 			// DNSBL check
 			if ($config['check_dnsbl'])
 			{
@@ -209,50 +232,6 @@ class ucp_register
 
 			// validate custom profile fields
 			$cp->submit_cp_field('register', $user->get_iso_lang_id(), $cp_data, $error);
-
-			// Visual Confirmation handling
-			$wrong_confirm = false;
-			if ($config['enable_confirm'])
-			{
-				if (!$confirm_id)
-				{
-					$error[] = $user->lang['CONFIRM_CODE_WRONG'];
-					$wrong_confirm = true;
-				}
-				else
-				{
-					$sql = 'SELECT code
-						FROM ' . CONFIRM_TABLE . "
-						WHERE confirm_id = '" . $db->sql_escape($confirm_id) . "'
-							AND session_id = '" . $db->sql_escape($user->session_id) . "'
-							AND confirm_type = " . CONFIRM_REG;
-					$result = $db->sql_query($sql);
-					$row = $db->sql_fetchrow($result);
-					$db->sql_freeresult($result);
-
-					if ($row)
-					{
-						if (strcasecmp($row['code'], $data['confirm_code']) === 0)
-						{
-							$sql = 'DELETE FROM ' . CONFIRM_TABLE . "
-								WHERE confirm_id = '" . $db->sql_escape($confirm_id) . "'
-									AND session_id = '" . $db->sql_escape($user->session_id) . "'
-									AND confirm_type = " . CONFIRM_REG;
-							$db->sql_query($sql);
-						}
-						else
-						{
-							$error[] = $user->lang['CONFIRM_CODE_WRONG'];
-							$wrong_confirm = true;
-						}
-					}
-					else
-					{
-						$error[] = $user->lang['CONFIRM_CODE_WRONG'];
-						$wrong_confirm = true;
-					}
-				}
-			}
 
 			if (!sizeof($error))
 			{
@@ -451,57 +430,16 @@ class ucp_register
 			if ($change_lang)
 			{
 				$str = '&amp;change_lang=' . $change_lang;
-				$sql = 'SELECT code
-						FROM ' . CONFIRM_TABLE . "
-						WHERE confirm_id = '" . $db->sql_escape($confirm_id) . "'
-							AND session_id = '" . $db->sql_escape($user->session_id) . "'
-							AND confirm_type = " . CONFIRM_REG;
-				$result = $db->sql_query($sql);
-				if (!$row = $db->sql_fetchrow($result))
-				{
-					$confirm_id = '';
-				}
-				$db->sql_freeresult($result);
 			}
 			else
 			{
 				$str = '';
 			}
-			if (!$change_lang || !$confirm_id)
-			{
-				$user->confirm_gc(CONFIRM_REG);
-
-				$sql = 'SELECT COUNT(session_id) AS attempts
-					FROM ' . CONFIRM_TABLE . "
-					WHERE session_id = '" . $db->sql_escape($user->session_id) . "'
-						AND confirm_type = " . CONFIRM_REG;
-				$result = $db->sql_query($sql);
-				$attempts = (int) $db->sql_fetchfield('attempts');
-				$db->sql_freeresult($result);
-
-				if ($config['max_reg_attempts'] && $attempts > $config['max_reg_attempts'])
-				{
-					trigger_error('TOO_MANY_REGISTERS');
-				}
-
-				$code = gen_rand_string(mt_rand(5, 8));
-				$confirm_id = md5(unique_id($user->ip));
-				$seed = hexdec(substr(unique_id(), 4, 10));
-
-				// compute $seed % 0x7fffffff
-				$seed -= 0x7fffffff * floor($seed / 0x7fffffff);
-
-				$sql = 'INSERT INTO ' . CONFIRM_TABLE . ' ' . $db->sql_build_array('INSERT', array(
-					'confirm_id'	=> (string) $confirm_id,
-					'session_id'	=> (string) $user->session_id,
-					'confirm_type'	=> (int) CONFIRM_REG,
-					'code'			=> (string) $code,
-					'seed'			=> (int) $seed)
-				);
-				$db->sql_query($sql);
-			}
-			$confirm_image = '<img src="' . append_sid('ucp', 'mode=confirm&amp;id=' . $confirm_id . '&amp;type=' . CONFIRM_REG . $str) . '" alt="" title="" />';
-			$s_hidden_fields .= '<input type="hidden" name="confirm_id" value="' . $confirm_id . '" />';
+			
+			$template->assign_vars(array(
+				'L_CONFIRM_EXPLAIN'		=> sprintf($user->lang['CONFIRM_EXPLAIN'], '<a href="mailto:' . htmlspecialchars($config['board_contact']) . '">', '</a>'),
+				'S_CAPTCHA'				=> $captcha->get_template(),
+			));
 		}
 
 		//
@@ -516,7 +454,7 @@ class ucp_register
 				$l_reg_cond = $user->lang['UCP_ADMIN_ACTIVATE'];
 			break;
 		}
-
+		
 		$template->assign_vars(array(
 			'ERROR'				=> (sizeof($error)) ? implode('<br />', $error) : '',
 			'USERNAME'			=> $data['username'],
@@ -524,16 +462,13 @@ class ucp_register
 			'PASSWORD_CONFIRM'	=> $data['password_confirm'],
 			'EMAIL'				=> $data['email'],
 			'EMAIL_CONFIRM'		=> $data['email_confirm'],
-			'CONFIRM_IMG'		=> $confirm_image,
 
-			'L_CONFIRM_EXPLAIN'			=> sprintf($user->lang['CONFIRM_EXPLAIN'], '<a href="mailto:' . htmlspecialchars($config['board_contact']) . '">', '</a>'),
 			'L_REG_COND'				=> $l_reg_cond,
 			'L_USERNAME_EXPLAIN'		=> sprintf($user->lang[$config['allow_name_chars'] . '_EXPLAIN'], $config['min_name_chars'], $config['max_name_chars']),
 			'L_PASSWORD_EXPLAIN'		=> sprintf($user->lang[$config['pass_complex'] . '_EXPLAIN'], $config['min_pass_chars'], $config['max_pass_chars']),
 
 			'S_LANG_OPTIONS'	=> language_select($data['lang']),
 			'S_TZ_OPTIONS'		=> tz_select($data['tz']),
-			'S_CONFIRM_CODE'	=> ($config['enable_confirm']) ? true : false,
 			'S_COPPA'			=> $coppa,
 			'S_HIDDEN_FIELDS'	=> $s_hidden_fields,
 			'S_UCP_ACTION'		=> append_sid('ucp', 'mode=register'),

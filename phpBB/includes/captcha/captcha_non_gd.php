@@ -85,7 +85,7 @@ class captcha
 			}
 			else
 			{
-				for ($j = 0; $j < $this->width; $j++)
+				for ($j = 0; $j < self::width; $j++)
 				{
 					$image .= chr(mt_rand(140, 255));
 				}
@@ -93,7 +93,7 @@ class captcha
 		}
 		unset($hold_chars);
 
-		$image = self::create_png($image, $this->width, $this->height);
+		$image = self::create_png($image, self::width, self::height);
 
 		// Output image
 		header('Content-Type: image/png');
@@ -149,7 +149,7 @@ class captcha
 	* png because it's a fully recognised open standard and supported
 	* by practically all modern browsers and OSs
 	*/
-	function create_png($raw_image, $width, $height)
+	static function create_png($raw_image, $width, $height)
 	{
 		// SIG
 		$image = pack('C8', 137, 80, 78, 71, 13, 10, 26, 10);

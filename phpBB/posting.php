@@ -45,7 +45,13 @@ $mode		= ($delete && !$preview && !$refresh && $submit) ? 'delete' : request_var
 $error = $post_data = array();
 $current_time = time();
 
-
+if ($config['enable_post_confirm'] && !$user->data['is_registered'])
+{
+	include(PHPBB_ROOT_PATH . 'includes/captcha/captcha_factory.' . PHP_EXT);
+	$captcha = phpbb_captcha_factory::get_instance($config['captcha_plugin']);
+	$captcha->init(CONFIRM_POST);
+}
+	
 // Was cancel pressed? If so then redirect to the appropriate page
 if ($cancel || ($current_time - $lastclick < 2 && $submit))
 {
@@ -741,21 +747,10 @@ if ($submit || $preview || $refresh)
 
 	if ($config['enable_post_confirm'] && !$user->data['is_registered'] && in_array($mode, array('quote', 'post', 'reply')))
 	{
-		$confirm_id = request_var('confirm_id', '');
-		$confirm_code = request_var('confirm_code', '');
-
-		$sql = 'SELECT code
-			FROM ' . CONFIRM_TABLE . "
-			WHERE confirm_id = '" . $db->sql_escape($confirm_id) . "'
-				AND session_id = '" . $db->sql_escape($user->session_id) . "'
-				AND confirm_type = " . CONFIRM_POST;
-		$result = $db->sql_query($sql);
-		$confirm_row = $db->sql_fetchrow($result);
-		$db->sql_freeresult($result);
-
-		if (empty($confirm_row['code']) || strcasecmp($confirm_row['code'], $confirm_code) !== 0)
+		$vc_response = $captcha->validate();
+		if ($vc_response)
 		{
-			$error[] = $user->lang['CONFIRM_CODE_WRONG'];
+			$error += $vc_response;
 		}
 		else
 		{
@@ -999,7 +994,10 @@ if ($submit || $preview || $refresh)
 			}
 
 			$redirect_url = submit_post($mode, $post_data['post_subject'], $post_data['username'], $post_data['topic_type'], $poll, $data, $update_message);
-
+			if ($config['enable_post_confirm'] && !$user->data['is_registered'] && in_array($mode, array('quote', 'post', 'reply')))
+			{
+				$captcha->reset();
+			}
 			// Check the permissions for post approval, as well as the queue trigger where users are put on approval with a post count lower than specified. Moderators are not affected.
 			if (($config['enable_queue_trigger'] && $user->data['user_posts'] < $config['queue_trigger_posts'] && !$auth->acl_get('m_approve', $data['forum_id'])) || !$auth->acl_get('f_noapprove', $data['forum_id']))
 			{
@@ -1220,34 +1218,11 @@ generate_forum_rules($post_data);
 
 if ($config['enable_post_confirm'] && !$user->data['is_registered'] && $solved_captcha === false && ($mode == 'post' || $mode == 'reply' || $mode == 'quote'))
 {
-	// Show confirm image
-	$sql = 'DELETE FROM ' . CONFIRM_TABLE . "
-		WHERE session_id = '" . $db->sql_escape($user->session_id) . "'
-			AND confirm_type = " . CONFIRM_POST;
-	$db->sql_query($sql);
-
-	// Generate code
-	$code = gen_rand_string(mt_rand(5, 8));
-	$confirm_id = md5(unique_id($user->ip));
-	$seed = hexdec(substr(unique_id(), 4, 10));
-
-	// compute $seed % 0x7fffffff
-	$seed -= 0x7fffffff * floor($seed / 0x7fffffff);
-
-	$sql = 'INSERT INTO ' . CONFIRM_TABLE . ' ' . $db->sql_build_array('INSERT', array(
-		'confirm_id'	=> (string) $confirm_id,
-		'session_id'	=> (string) $user->session_id,
-		'confirm_type'	=> (int) CONFIRM_POST,
-		'code'			=> (string) $code,
-		'seed'			=> (int) $seed)
-	);
-	$db->sql_query($sql);
+	$captcha->reset();
 
 	$template->assign_vars(array(
 		'S_CONFIRM_CODE'			=> true,
-		'CONFIRM_ID'				=> $confirm_id,
-		'CONFIRM_IMAGE'				=> '<img src="' . append_sid('ucp', 'mode=confirm&amp;id=' . $confirm_id . '&amp;type=' . CONFIRM_POST) . '" alt="" title="" />',
-		'L_POST_CONFIRM_EXPLAIN'	=> sprintf($user->lang['POST_CONFIRM_EXPLAIN'], '<a href="mailto:' . htmlspecialchars($config['board_contact']) . '">', '</a>'),
+		'CONFIRM'					=> $captcha->get_template(),
 	));
 }
 
@@ -1258,10 +1233,7 @@ $s_hidden_fields .= ($draft_id || isset($_REQUEST['draft_loaded'])) ? '<input ty
 // Add the confirm id/code pair to the hidden fields, else an error is displayed on next submit/preview
 if ($solved_captcha !== false)
 {
-	$s_hidden_fields .= build_hidden_fields(array(
-		'confirm_id'		=> request_var('confirm_id', ''),
-		'confirm_code'		=> request_var('confirm_code', ''))
-	);
+	$s_hidden_fields .= build_hidden_fields($captcha->get_hidden_fields());
 }
 
 $form_enctype = (@ini_get('file_uploads') == '0' || strtolower(@ini_get('file_uploads')) == 'off' || !$config['allow_attachments'] || !$auth->acl_get('u_attach') || !$auth->acl_get('f_attach', $forum_id)) ? '' : ' enctype="multipart/form-data"';

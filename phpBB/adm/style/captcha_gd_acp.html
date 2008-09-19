@@ -1,0 +1,53 @@
+<!-- INCLUDE overall_header.html -->
+
+<a name="maincontent"></a>
+
+<h1>{L_ACP_VC_SETTINGS}</h1>
+
+<p>{L_ACP_VC_SETTINGS_EXPLAIN}</p>
+
+
+<form id="acp_captcha" method="post" action="{U_ACTION}">
+
+<fieldset>
+<legend>{L_GENERAL_OPTIONS}</legend>
+
+<dl>
+	<dt><label for="captcha_gd_foreground_noise">{L_CAPTCHA_GD_FOREGROUND_NOISE}:</label><br /><span>{L_CAPTCHA_GD_FOREGROUND_NOISE_EXPLAIN}</span></dt>
+	<dd><label><input id="captcha_gd_foreground_noise" name="captcha_gd_foreground_noise" value="1" class="radio" type="radio"<!-- IF CAPTCHA_GD_FOREGROUND_NOISE --> checked="checked"<!-- ENDIF --> /> {L_YES}</label>
+		<label><input name="captcha_gd_foreground_noise" value="0" class="radio" type="radio"<!-- IF not CAPTCHA_GD_FOREGROUND_NOISE --> checked="checked"<!-- ENDIF --> /> {L_NO}</label></dd>
+</dl>
+<dl>
+	<dt><label for="captcha_gd_x_grid">{L_CAPTCHA_GD_X_GRID}:</label><br /><span>{L_CAPTCHA_GD_X_GRID_EXPLAIN}</span></dt>
+	<dd><input id="captcha_gd_x_grid" name="captcha_gd_x_grid" value="{CAPTCHA_GD_X_GRID}" type="text" /></dd>
+</dl>
+<dl>
+	<dt><label for="captcha_gd_y_grid">{L_CAPTCHA_GD_Y_GRID}:</label><br /><span>{L_CAPTCHA_GD_Y_GRID_EXPLAIN}</span></dt>
+	<dd><input id="captcha_gd_y_grid" name="captcha_gd_y_grid" value="{CAPTCHA_GD_Y_GRID}" type="text" /></dd>
+</dl>
+
+
+</fieldset>
+<fieldset>
+	<legend>{L_PREVIEW}</legend>
+<!-- IF PREVIEW -->
+	<div class="successbox">
+		<h3>{L_WARNING}</h3>
+		<p>{L_CAPTCHA_PREVIEW_MSG}</p>
+	</div>
+<!-- ENDIF -->
+{CAPTCHA_PREVIEW}
+</fieldset>
+
+<fieldset class="submit-buttons">
+	<legend>{L_SUBMIT}</legend>
+	<input class="button1" type="submit" id="submit" name="submit" value="{L_SUBMIT}" />&nbsp;
+	<input class="button2" type="reset" id="reset" name="reset" value="{L_RESET}" />&nbsp;
+	<input type="hidden" name="select_captcha" value="{CAPTCHA_NAME}" />
+	<input type="hidden" name="configure" value="1" />
+
+	{S_FORM_TOKEN}
+</fieldset>
+</form>
+
+<!-- INCLUDE overall_footer.html -->
