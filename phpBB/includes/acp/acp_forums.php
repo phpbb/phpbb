@@ -154,8 +154,11 @@ class acp_forums
 					if ($forum_data['forum_type'] == FORUM_LINK)
 					{
 						$forum_data['display_on_index'] = request_var('link_display_on_index', false);
+					}
 
-						// Linked forums are not able to be locked...
+					// Linked forums and categories are not able to be locked...
+					if ($forum_data['forum_type'] == FORUM_LINK || $forum_data['forum_type'] == FORUM_CAT)
+					{
 						$forum_data['forum_status'] = ITEM_UNLOCKED;
 					}
 
