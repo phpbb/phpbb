@@ -791,8 +791,8 @@ function delete_posts($where_type, $where_ids, $auto_sync = true, $posted_sync =
 /**
 * Delete Attachments
 *
-* @param string $mode can be: post|topic|attach|user
-* @param mixed $ids can be: post_ids, topic_ids, attach_ids, user_ids
+* @param string $mode can be: post|message|topic|attach|user
+* @param mixed $ids can be: post_ids, message_ids, topic_ids, attach_ids, user_ids
 * @param bool $resync set this to false if you are deleting posts or topics
 */
 function delete_attachments($mode, $ids, $resync = true)
@@ -814,42 +814,55 @@ function delete_attachments($mode, $ids, $resync = true)
 		return false;
 	}
 
-	$sql_id = ($mode == 'user') ? 'poster_id' : (($mode == 'post') ? 'post_msg_id' : (($mode == 'topic') ? 'topic_id' : 'attach_id'));
-
-	$post_ids = $topic_ids = $physical = array();
-
-	// Collect post and topics ids for later use
-	if ($mode == 'attach' || $mode == 'user' || ($mode == 'topic' && $resync))
+	switch ($mode)
 	{
-		$sql = 'SELECT post_msg_id as post_id, topic_id, physical_filename, thumbnail, filesize
+		case 'post':
+		case 'message':
+			$sql_id = 'post_msg_id';
+		break;
+
+		case 'topic':
+			$sql_id = 'topic_id';
+		break;
+
+		case 'user':
+			$sql_id = 'poster_id';
+		break;
+
+		case 'attach':
+		default:
+			$sql_id = 'attach_id';
+			$mode = 'attach';
+		break;
+	}
+
+	$post_ids = $message_ids = $topic_ids = $physical = array();
+
+	// Collect post and topic ids for later use if we need to touch remaining entries (if resync is enabled)
+	$sql = 'SELECT post_msg_id, topic_id, in_message, physical_filename, thumbnail, filesize, is_orphan
 			FROM ' . ATTACHMENTS_TABLE . '
 			WHERE ' . $db->sql_in_set($sql_id, $ids);
-		$result = $db->sql_query($sql);
+	$result = $db->sql_query($sql);
 
-		while ($row = $db->sql_fetchrow($result))
-		{
-			$post_ids[] = $row['post_id'];
-			$topic_ids[] = $row['topic_id'];
-			$physical[] = array('filename' => $row['physical_filename'], 'thumbnail' => $row['thumbnail'], 'filesize' => $row['filesize']);
-		}
-		$db->sql_freeresult($result);
-	}
-
-	if ($mode == 'post')
+	while ($row = $db->sql_fetchrow($result))
 	{
-		$sql = 'SELECT topic_id, physical_filename, thumbnail, filesize
-			FROM ' . ATTACHMENTS_TABLE . '
-			WHERE ' . $db->sql_in_set('post_msg_id', $ids) . '
-				AND in_message = 0';
-		$result = $db->sql_query($sql);
-
-		while ($row = $db->sql_fetchrow($result))
+		// We only need to store post/message/topic ids if resync is enabled and the file is not orphaned
+		if ($resync && !$row['is_orphan'])
 		{
-			$topic_ids[] = $row['topic_id'];
-			$physical[] = array('filename' => $row['physical_filename'], 'thumbnail' => $row['thumbnail'], 'filesize' => $row['filesize']);
+			if (!$row['in_message'])
+			{
+				$post_ids[] = $row['post_msg_id'];
+				$topic_ids[] = $row['topic_id'];
+			}
+			else
+			{
+				$message_ids[] = $row['post_msg_id'];
+			}
 		}
-		$db->sql_freeresult($result);
+
+		$physical[] = array('filename' => $row['physical_filename'], 'thumbnail' => $row['thumbnail'], 'filesize' => $row['filesize'], 'is_orphan' => $row['is_orphan']);
 	}
+	$db->sql_freeresult($result);
 
 	// Delete attachments
 	$sql = 'DELETE FROM ' . ATTACHMENTS_TABLE . '
@@ -866,8 +879,9 @@ function delete_attachments($mode, $ids, $resync = true)
 	$space_removed = $files_removed = 0;
 	foreach ($physical as $file_ary)
 	{
-		if (phpbb_unlink($file_ary['filename'], 'file', true))
+		if (phpbb_unlink($file_ary['filename'], 'file', true) && !$file_ary['is_orphan'])
 		{
+			// Only non-orphaned files count to the file size
 			$space_removed += $file_ary['filesize'];
 			$files_removed++;
 		}
@@ -877,121 +891,71 @@ function delete_attachments($mode, $ids, $resync = true)
 			phpbb_unlink($file_ary['filename'], 'thumbnail', true);
 		}
 	}
-	set_config('upload_dir_size', $config['upload_dir_size'] - $space_removed, true);
-	set_config('num_files', $config['num_files'] - $files_removed, true);
 
-	if ($mode == 'topic' && !$resync)
+	if ($space_removed || $files_removed)
+	{
+		set_config('upload_dir_size', $config['upload_dir_size'] - $space_removed, true);
+		set_config('num_files', $config['num_files'] - $files_removed, true);
+	}
+
+	// If we do not resync, we do not need to adjust any message, post, topic or user entries
+	if (!$resync)
 	{
 		return $num_deleted;
 	}
 
-	if ($mode == 'post')
-	{
-		$post_ids = $ids;
-	}
+	// No more use for the original ids
 	unset($ids);
 
+	// Now, we need to resync posts, messages, topics. We go through every one of them
 	$post_ids = array_unique($post_ids);
+	$message_ids = array_unique($message_ids);
 	$topic_ids = array_unique($topic_ids);
 
-	// Update post indicators
+	// Update post indicators for posts now no longer having attachments
 	if (sizeof($post_ids))
 	{
-		if ($mode == 'post' || $mode == 'topic')
-		{
-			$sql = 'UPDATE ' . POSTS_TABLE . '
-				SET post_attachment = 0
-				WHERE ' . $db->sql_in_set('post_id', $post_ids);
-			$db->sql_query($sql);
-		}
-
-		if ($mode == 'user' || $mode == 'attach')
-		{
-			$remaining = array();
-
-			$sql = 'SELECT post_msg_id
-				FROM ' . ATTACHMENTS_TABLE . '
-				WHERE ' . $db->sql_in_set('post_msg_id', $post_ids) . '
-					AND in_message = 0';
-			$result = $db->sql_query($sql);
-
-			while ($row = $db->sql_fetchrow($result))
-			{
-				$remaining[] = $row['post_msg_id'];
-			}
-			$db->sql_freeresult($result);
-
-			$unset_ids = array_diff($post_ids, $remaining);
-
-			if (sizeof($unset_ids))
-			{
-				$sql = 'UPDATE ' . POSTS_TABLE . '
-					SET post_attachment = 0
-					WHERE ' . $db->sql_in_set('post_id', $unset_ids);
-				$db->sql_query($sql);
-			}
-
-			$remaining = array();
-
-			$sql = 'SELECT post_msg_id
-				FROM ' . ATTACHMENTS_TABLE . '
-				WHERE ' . $db->sql_in_set('post_msg_id', $post_ids) . '
-					AND in_message = 1';
-			$result = $db->sql_query($sql);
-
-			while ($row = $db->sql_fetchrow($result))
-			{
-				$remaining[] = $row['post_msg_id'];
-			}
-			$db->sql_freeresult($result);
-
-			$unset_ids = array_diff($post_ids, $remaining);
-
-			if (sizeof($unset_ids))
-			{
-				$sql = 'UPDATE ' . PRIVMSGS_TABLE . '
-					SET message_attachment = 0
-					WHERE ' . $db->sql_in_set('msg_id', $unset_ids);
-				$db->sql_query($sql);
-			}
-		}
+		$sql = 'UPDATE ' . POSTS_TABLE . '
+			SET post_attachment = 0
+			WHERE ' . $db->sql_in_set('post_id', $post_ids);
+		$db->sql_query($sql);
 	}
 
+	// Update message table if messages are affected
+	if (sizeof($message_ids))
+	{
+		$sql = 'UPDATE ' . PRIVMSGS_TABLE . '
+			SET message_attachment = 0
+			WHERE ' . $db->sql_in_set('msg_id', $message_ids);
+		$db->sql_query($sql);
+	}
+
+	// Now update the topics. This is a bit trickier, because there could be posts still having attachments within the topic
 	if (sizeof($topic_ids))
 	{
-		// Update topic indicator
-		if ($mode == 'topic')
+		// Just check which topics are still having an assigned attachment not orphaned by querying the attachments table (much less entries expected)
+		$sql = 'SELECT topic_id
+			FROM ' . ATTACHMENTS_TABLE . '
+			WHERE ' . $db->sql_in_set('topic_id', $topic_ids) . '
+				AND is_orphan = 0';
+		$result = $db->sql_query($sql);
+
+		$remaining_ids = array();
+		while ($row = $db->sql_fetchrow($result))
+		{
+			$remaining_ids[] = $row['topic_id'];
+		}
+		$db->sql_freeresult($result);
+
+		// Now only unset those ids remaining
+		$topic_ids = array_diff($topic_ids, $remaining_ids);
+
+		if (sizeof($topic_ids))
 		{
 			$sql = 'UPDATE ' . TOPICS_TABLE . '
 				SET topic_attachment = 0
 				WHERE ' . $db->sql_in_set('topic_id', $topic_ids);
 			$db->sql_query($sql);
-		}
-
-		if ($mode == 'post' || $mode == 'user' || $mode == 'attach')
-		{
-			$remaining = array();
-
-			$sql = 'SELECT topic_id
-				FROM ' . ATTACHMENTS_TABLE . '
-				WHERE ' . $db->sql_in_set('topic_id', $topic_ids);
-			$result = $db->sql_query($sql);
-
-			while ($row = $db->sql_fetchrow($result))
-			{
-				$remaining[] = $row['topic_id'];
-			}
-			$db->sql_freeresult($result);
-
-			$unset_ids = array_diff($topic_ids, $remaining);
-
-			if (sizeof($unset_ids))
-			{
-				$sql = 'UPDATE ' . TOPICS_TABLE . '
-					SET topic_attachment = 0
-					WHERE ' . $db->sql_in_set('topic_id', $unset_ids);
-				$db->sql_query($sql);
-			}
 		}
 	}
 
