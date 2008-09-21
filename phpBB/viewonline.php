@@ -138,7 +138,7 @@ while ($row = $db->sql_fetchrow($result))
 	{
 		$view_online = $s_user_hidden = false;
 		$user_colour = ($row['user_colour']) ? ' style="color:#' . $row['user_colour'] . '" class="username-coloured"' : '';
-		
+
 		$username_full = ($row['user_type'] != USER_IGNORE) ? get_username_string('full', $row['user_id'], $row['username'], $row['user_colour']) : '<span' . $user_colour . '>' . $row['username'] . '</span>';
 
 		if (!$row['session_viewonline'])
@@ -334,7 +334,7 @@ while ($row = $db->sql_fetchrow($result))
 		'U_USER_IP'			=> append_sid('viewonline', 'mode=lookup' . (($mode != 'lookup' || $row['session_id'] != $session_id) ? '&amp;s=' . $row['session_id'] : '') . "&amp;sg=$show_guests&amp;start=$start&amp;sk=$sort_key&amp;sd=$sort_dir"),
 		'U_WHOIS'			=> append_sid('viewonline', 'mode=whois&amp;s=' . $row['session_id']),
 		'U_FORUM_LOCATION'	=> $location_url,
-		
+
 		'S_USER_HIDDEN'		=> $s_user_hidden,
 		'S_GUEST'			=> ($row['user_id'] == ANONYMOUS) ? true : false,
 		'S_USER_TYPE'		=> $row['user_type'],

@@ -453,7 +453,7 @@ if ($start < 0 || $start > $total_posts)
 
 // General Viewtopic URL for return links
 $viewtopic_url = append_sid('viewtopic', "f=$forum_id&amp;t=$topic_id&amp;start=$start" . ((strlen($u_sort_param)) ? "&amp;$u_sort_param" : '') . (($highlight_match) ? "&amp;hilit=$highlight" : ''));
- 
+
 // Are we watching this topic?
 $s_watching_topic = array(
 	'link'			=> '',

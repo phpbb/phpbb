@@ -118,7 +118,7 @@ switch ($cron_type)
 	break;
 
 	case 'tidy_search':
-		
+
 		// Select the search method
 		$search_type = basename($config['search_type']);
 

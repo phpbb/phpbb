@@ -82,7 +82,7 @@ $user_image_lang = (file_exists(PHPBB_ROOT_PATH . 'styles/' . $theme['imageset_p
 $sql = 'SELECT *
 	FROM ' . STYLES_IMAGESET_DATA_TABLE . '
 	WHERE imageset_id = ' . $theme['imageset_id'] . "
-	AND image_filename <> '' 
+	AND image_filename <> ''
 	AND image_lang IN ('" . $db->sql_escape($user_image_lang) . "', '')";
 $result = $db->sql_query($sql, 3600);
 
@@ -222,7 +222,7 @@ if (isset($matches[0]) && sizeof($matches[0]))
 			case 'SRC':
 				$replace[] = $imgs[$img]['src'];
 			break;
-			
+
 			case 'WIDTH':
 				$replace[] = $imgs[$img]['width'];
 			break;
