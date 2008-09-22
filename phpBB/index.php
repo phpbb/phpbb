@@ -117,7 +117,7 @@ $template->assign_vars(array(
 	'S_LOGIN_ACTION'			=> append_sid('ucp', 'mode=login'),
 	'S_DISPLAY_BIRTHDAY_LIST'	=> ($config['load_birthdays']) ? true : false,
 
-	'U_MARK_FORUMS'		=> ($user->data['is_registered'] || $config['load_anon_lastread']) ? append_sid('index', 'mark=forums') : '',
+	'U_MARK_FORUMS'		=> ($user->data['is_registered'] || $config['load_anon_lastread']) ? append_sid('index', 'hash=' . generate_link_hash('global') . '&amp;mark=forums') : '',
 	'U_MCP'				=> ($auth->acl_get('m_') || $auth->acl_getf_global('m_')) ? append_sid('mcp', 'i=main&amp;mode=front', true, $user->session_id) : '')
 );
 
