@@ -232,22 +232,29 @@ function display_forums($root_data = '', $display_moderators = true, $return_mod
 	if ($mark_read == 'forums' || $mark_read == 'all')
 	{
 		$redirect = build_url('mark');
-
-		if ($mark_read == 'all')
+		$token = request_var('hash', '');
+		if (check_link_hash($token, 'global'))
 		{
-			markread('all');
-
-			$message = sprintf($user->lang['RETURN_INDEX'], '<a href="' . $redirect . '">', '</a>');
+			if ($mark_read == 'all')
+			{
+				markread('all');
+				$message = sprintf($user->lang['RETURN_INDEX'], '<a href="' . $redirect . '">', '</a>');
+			}
+			else
+			{
+				markread('topics', $forum_ids);
+				$message = sprintf($user->lang['RETURN_FORUM'], '<a href="' . $redirect . '">', '</a>');
+			}
+			meta_refresh(3, $redirect);
+			trigger_error($user->lang['FORUMS_MARKED'] . '<br /><br />' . $message);
 		}
 		else
 		{
-			markread('topics', $forum_ids);
-
-			$message = sprintf($user->lang['RETURN_FORUM'], '<a href="' . $redirect . '">', '</a>');
+			$message = sprintf($user->lang['RETURN_PAGE'], '<a href="' . $redirect . '">', '</a>');
+			meta_refresh(3, $redirect);
+			trigger_error($message);
 		}
-
-		meta_refresh(3, $redirect);
-		trigger_error($user->lang['FORUMS_MARKED'] . '<br /><br />' . $message);
+		
 	}
 
 	// Grab moderators ... if necessary
@@ -444,7 +451,7 @@ function display_forums($root_data = '', $display_moderators = true, $return_mod
 	}
 
 	$template->assign_vars(array(
-		'U_MARK_FORUMS'		=> ($user->data['is_registered'] || $config['load_anon_lastread']) ? append_sid("{$phpbb_root_path}viewforum.$phpEx", 'f=' . $root_data['forum_id'] . '&amp;mark=forums') : '',
+		'U_MARK_FORUMS'		=> ($user->data['is_registered'] || $config['load_anon_lastread']) ? append_sid("{$phpbb_root_path}viewforum.$phpEx",  'hash=' . generate_link_hash('global') . '&amp;f=' . $root_data['forum_id'] . '&amp;mark=forums') : '',
 		'S_HAS_SUBFORUM'	=> ($visible_forums) ? true : false,
 		'L_SUBFORUM'		=> ($visible_forums == 1) ? $user->lang['SUBFORUM'] : $user->lang['SUBFORUMS'],
 		'LAST_POST_IMG'		=> $user->img('icon_topic_latest', 'VIEW_LATEST_POST'))
@@ -989,7 +996,7 @@ function watch_topic_forum($mode, &$s_watching, $user_id, $forum_id, $topic_id, 
 	$table_sql = ($mode == 'forum') ? FORUMS_WATCH_TABLE : TOPICS_WATCH_TABLE;
 	$where_sql = ($mode == 'forum') ? 'forum_id' : 'topic_id';
 	$match_id = ($mode == 'forum') ? $forum_id : $topic_id;
-	$u_url = "uid={$user->data['user_id']}&amp;hash=" . generate_link_hash("{$mode}_$topic_id");
+	$u_url = "uid={$user->data['user_id']}&amp;hash=" . generate_link_hash("{$mode}_$match_id");
 	$u_url .= ($mode == 'forum') ? '&amp;f' : '&amp;f=' . $forum_id . '&amp;t';
 
 	// Is user watching this thread?
@@ -1059,7 +1066,7 @@ function watch_topic_forum($mode, &$s_watching, $user_id, $forum_id, $topic_id, 
 				$token = request_var('hash', '');
 				$redirect_url = append_sid("{$phpbb_root_path}view$mode.$phpEx", "$u_url=$match_id&amp;start=$start");
 	
-				if ($_GET['watch'] == $mode && check_link_hash($token, "{$mode}_$topic_id"))
+				if ($_GET['watch'] == $mode && check_link_hash($token, "{$mode}_$match_id"))
 				{
 					$is_watching = true;
 
