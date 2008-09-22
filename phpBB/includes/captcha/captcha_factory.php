@@ -1,4 +1,4 @@
-<?
+<?php
 /**
 *
 * @package VC
@@ -18,10 +18,12 @@ if (!defined('IN_PHPBB'))
 
 if (!interface_exists('phpbb_captcha_plugin'))
 {
-	include(PHPBB_ROOT_PATH . "includes/captcha/captcha_plugin." . PHP_EXT);
+	include(PHPBB_ROOT_PATH . 'includes/captcha/captcha_plugin.' . PHP_EXT);
 }
 
-/** A small class until we get the autoloader done */
+/**
+* A small class until we get the autoloader done
+*/
 class phpbb_captcha_factory
 {
 	/**
@@ -36,7 +38,7 @@ class phpbb_captcha_factory
 		}
 		return call_user_func(array($name, 'get_instance'));
 	}
-	
+
 	/**
 	* Call the garbage collector
 	*/
@@ -49,16 +51,17 @@ class phpbb_captcha_factory
 		}
 		call_user_func(array($name, 'garbage_collect'), 0);
 	}
-	
+
 	/**
 	* return a list of all discovered CAPTCHA plugins
 	*/
 	public static function get_captcha_types()
 	{
-		$captchas = array();
-		$captchas['available'] = array();
-		$captchas['unavailable'] = array();
-	
+		$captchas = array(
+			'available'		=> array(),
+			'unavailable'	=> array(),
+		);
+
 		$dp = @opendir(PHPBB_ROOT_PATH . 'includes/captcha/plugins');
 
 		if ($dp)
@@ -88,3 +91,5 @@ class phpbb_captcha_factory
 		return $captchas;
 	}
 }
+
+?>
