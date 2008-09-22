@@ -750,7 +750,7 @@ if ($submit || $preview || $refresh)
 		$vc_response = $captcha->validate();
 		if ($vc_response)
 		{
-			$error += $vc_response;
+			$error[] = $vc_response;
 		}
 		else
 		{

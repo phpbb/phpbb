@@ -185,7 +185,7 @@ abstract class phpbb_default_captcha implements phpbb_captcha_plugin
 		if (strlen($error))
 		{
 			// okay, inorect answer. Let's ask a new question
-			$this->reset();
+			$this->generate_code();
 			return $error;
 		}
 		else

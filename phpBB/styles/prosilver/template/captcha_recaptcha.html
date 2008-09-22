@@ -1,0 +1,19 @@
+<!-- IF S_RECAPTCHA_AVAILABLE -->
+	<dl>
+		<script type="text/javascript" src="{RECAPTCHA_SERVER}/challenge?k={RECAPTCHA_PUBKEY}{RECAPTCHA_ERRORGET}">
+		// <![CDATA[
+		var RecaptchaOptions = {
+		   lang : {L_RECAPTCHA_LANG}
+		};
+		// ]]>
+		</script>
+
+	<noscript>
+  		<iframe src="{RECAPTCHA_SERVER}/noscript?k={RECAPTCHA_PUBKEY}{RECAPTCHA_ERRORGET}" height="300" width="500" frameborder="0"></iframe><br/>
+  		<textarea name="recaptcha_challenge_field" rows="3" cols="40"></textarea>
+  		<input type="hidden" name="recaptcha_response_field" value="manual_challenge"/>
+	</noscript>
+	</dl>
+<!-- ELSE -->
+{L_RECAPTCHA_NOT_AVAILABLE}
+<!-- ENDIF -->
