@@ -1302,7 +1302,7 @@ $template->assign_vars(array(
 	'S_EDIT_REASON'				=> ($mode == 'edit' && $auth->acl_get('m_edit', $forum_id)) ? true : false,
 	'S_DISPLAY_USERNAME'		=> (!$user->data['is_registered'] || ($mode == 'edit' && $post_data['poster_id'] == ANONYMOUS)) ? true : false,
 	'S_SHOW_TOPIC_ICONS'		=> $s_topic_icons,
-	'S_DELETE_ALLOWED'			=> ($mode == 'edit' && (($post_id == $post_data['topic_last_post_id'] && $post_data['poster_id'] == $user->data['user_id'] && $auth->acl_get('f_delete', $forum_id)) || $auth->acl_get('m_delete', $forum_id))) ? true : false,
+	'S_DELETE_ALLOWED'			=> ($mode == 'edit' && (($post_id == $post_data['topic_last_post_id'] && $post_data['poster_id'] == $user->data['user_id'] && $auth->acl_get('f_delete', $forum_id) && !$post_data['post_edit_locked'] && ($post_data['post_time'] > time() - ($config['edit_time'] * 60) || !$config['edit_time'])) || $auth->acl_get('m_delete', $forum_id))) ? true : false,
 	'S_BBCODE_ALLOWED'			=> $bbcode_status,
 	'S_BBCODE_CHECKED'			=> ($bbcode_checked) ? ' checked="checked"' : '',
 	'S_SMILIES_ALLOWED'			=> $smilies_status,
@@ -1411,11 +1411,11 @@ function upload_popup($forum_style = 0)
 */
 function handle_post_delete($forum_id, $topic_id, $post_id, &$post_data)
 {
-	global $user, $db, $auth;
+	global $user, $db, $auth, $config;
 	global $phpbb_root_path, $phpEx;
 
 	// If moderator removing post or user itself removing post, present a confirmation screen
-	if ($auth->acl_get('m_delete', $forum_id) || ($post_data['poster_id'] == $user->data['user_id'] && $user->data['is_registered'] && $auth->acl_get('f_delete', $forum_id) && $post_id == $post_data['topic_last_post_id']))
+	if ($auth->acl_get('m_delete', $forum_id) || ($post_data['poster_id'] == $user->data['user_id'] && $user->data['is_registered'] && $auth->acl_get('f_delete', $forum_id) && $post_id == $post_data['topic_last_post_id'] && !$post_data['post_edit_locked'] && ($post_data['post_time'] > time() - ($config['edit_time'] * 60) || !$config['edit_time'])))
 	{
 		$s_hidden_fields = build_hidden_fields(array(
 			'p'		=> $post_id,
