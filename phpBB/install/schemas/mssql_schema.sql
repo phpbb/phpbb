@@ -545,6 +545,7 @@ CREATE TABLE [phpbb_groups] (
 	[group_sig_chars] [int] DEFAULT (0) NOT NULL ,
 	[group_receive_pm] [int] DEFAULT (0) NOT NULL ,
 	[group_message_limit] [int] DEFAULT (0) NOT NULL ,
+	[group_max_recipients] [int] DEFAULT (0) NOT NULL ,
 	[group_legend] [int] DEFAULT (1) NOT NULL 
 ) ON [PRIMARY]
 GO

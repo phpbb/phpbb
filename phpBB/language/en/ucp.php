@@ -391,7 +391,7 @@ $lang = array_merge($lang, array(
 
 	'TIMEZONE'					=> 'Timezone',
 	'TO'						=> 'To',
-	'TOO_MANY_RECIPIENTS'		=> 'Too many recipients.',
+	'TOO_MANY_RECIPIENTS'		=> 'You tried to send a private message to too many recipients.',
 	'TOO_MANY_REGISTERS'		=> 'You have exceeded the maximum number of registration attempts for this session. Please try again later.',
 
 	'UCP'						=> 'User Control Panel',

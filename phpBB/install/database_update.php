@@ -540,6 +540,9 @@ $database_update_info = array(
 				'template_inherits_id'		=> array('UINT:4', 0),
 				'template_inherit_path'		=> array('VCHAR', ''),
 			),
+			GROUPS_TABLE					=> array(
+				'group_max_recipients'		=> array('UINT', 0),
+			),
 		),
 	),
 );
@@ -1413,7 +1416,7 @@ if (function_exists('exit_handler'))
 */
 function change_database_data(&$no_updates, $version)
 {
-	global $db, $map_dbms, $errored, $error_ary, $config, $phpbb_root_path;
+	global $db, $map_dbms, $errored, $error_ary, $config, $phpbb_root_path, $phpEx;
 
 	switch ($version)
 	{
@@ -1837,22 +1840,94 @@ function change_database_data(&$no_updates, $version)
 			set_config('enable_queue_trigger', '0');
 			set_config('queue_trigger_posts', '3');
 
+			set_config('pm_max_recipients', '0');
+
+			// Set maximum number of recipients for the registered users, bots, guests group
+			$sql = 'UPDATE ' . GROUPS_TABLE . ' SET group_max_recipients = 5
+				WHERE ' . $db->sql_in_set('group_name', array('GUESTS', 'REGISTERED', 'REGISTERED_COPPA', 'BOTS'));
+			_sql($sql, $errored, $error_ary);
+
 			// Not prefilling yet
 			set_config('dbms_version', '');
 
-			// Resync post counts
-			$sql = 'SELECT COUNT(p.post_id) AS num_posts, u.user_id
-				FROM ' . USERS_TABLE . ' u
-				LEFT JOIN  ' . POSTS_TABLE . ' p ON (u.user_id = p.poster_id AND p.post_postcount = 1 AND p.post_approved = 1)
-				GROUP BY u.user_id';
-			$result = _sql($sql, $errored, $error_ary);
+			// Add new permission u_masspm_group and duplicate settings from u_masspm
+			include_once($phpbb_root_path . 'includes/acp/auth.' . $phpEx);
+			$auth_admin = new auth_admin();
 
-			while ($row = $db->sql_fetchrow($result))
+			// Only add the new permission if it does not already exist
+			if (empty($auth_admin->acl_options['id']['u_masspm_group']))
 			{
-				$sql = 'UPDATE ' . USERS_TABLE . " SET user_posts = {$row['num_posts']} WHERE user_id = {$row['user_id']}";
-				_sql($sql, $errored, $error_ary);
+				$auth_admin->acl_add_option(array('global' => array('u_masspm_group')));
+
+				// Now the tricky part, filling the permission
+				$old_id = $auth_admin->acl_options['id']['u_masspm'];
+				$new_id = $auth_admin->acl_options['id']['u_masspm_group'];
+
+				$tables = array(ACL_GROUPS_TABLE, ACL_ROLES_DATA_TABLE, ACL_USERS_TABLE);
+
+				foreach ($tables as $table)
+				{
+					$sql = 'SELECT *
+						FROM ' . $table . '
+						WHERE auth_option_id = ' . $old_id;
+					$result = _sql($sql, $errored, $error_ary);
+
+					$sql_ary = array();
+					while ($row = $db->sql_fetchrow($result))
+					{
+						$row['auth_option_id'] = $new_id;
+						$sql_ary[] = $row;
+					}
+					$db->sql_freeresult($result);
+
+					if (sizeof($sql_ary))
+					{
+						$db->sql_multi_insert($table, $sql_ary);
+					}
+				}
+
+				// Remove any old permission entries
+				$auth_admin->acl_clear_prefetch();
 			}
-			$db->sql_freeresult($result);
+
+			/**
+			* Do not resync post counts here. An admin may later do this from the ACP
+			$start = 0;
+
+			do
+			{
+				@flush();
+
+				$sql = 'SELECT COUNT(p.post_id) AS num_posts, u.user_id
+					FROM ' . USERS_TABLE . ' u
+					LEFT JOIN  ' . POSTS_TABLE . ' p ON (u.user_id = p.poster_id AND p.post_postcount = 1 AND p.post_approved = 1)
+					GROUP BY u.user_id
+					ORDER BY u.user_id ASC';
+				$result = $db->sql_query_limit($sql, 200, $start);
+
+				if ($row = $db->sql_fetchrow($result))
+				{
+					$i = 0;
+
+					do
+					{
+						$sql = 'UPDATE ' . USERS_TABLE . " SET user_posts = {$row['num_posts']} WHERE user_id = {$row['user_id']}";
+						_sql($sql, $errored, $error_ary);
+
+						$i++;
+					}
+					while ($row = $db->sql_fetchrow($result));
+
+					$start = ($i < 200) ? 0 : $start + 200;
+				}
+				else
+				{
+					$start = 0;
+				}
+				$db->sql_freeresult($result);
+			}
+			while ($start);
+			*/
 
 			$no_updates = false;
 		break;

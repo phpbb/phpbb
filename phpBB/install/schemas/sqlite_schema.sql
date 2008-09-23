@@ -304,6 +304,7 @@ CREATE TABLE phpbb_groups (
 	group_sig_chars INTEGER UNSIGNED NOT NULL DEFAULT '0',
 	group_receive_pm INTEGER UNSIGNED NOT NULL DEFAULT '0',
 	group_message_limit INTEGER UNSIGNED NOT NULL DEFAULT '0',
+	group_max_recipients INTEGER UNSIGNED NOT NULL DEFAULT '0',
 	group_legend INTEGER UNSIGNED NOT NULL DEFAULT '1'
 );
 

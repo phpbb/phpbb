@@ -440,6 +440,7 @@ CREATE TABLE phpbb_groups (
 	group_sig_chars INTEGER DEFAULT 0 NOT NULL,
 	group_receive_pm INTEGER DEFAULT 0 NOT NULL,
 	group_message_limit INTEGER DEFAULT 0 NOT NULL,
+	group_max_recipients INTEGER DEFAULT 0 NOT NULL,
 	group_legend INTEGER DEFAULT 1 NOT NULL
 );;
 
