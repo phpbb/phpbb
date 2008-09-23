@@ -641,7 +641,7 @@ function mcp_move_topic($topic_ids)
 		{
 			// Get the list of forums to resync, add a log entry
 			$forum_ids[] = $row['forum_id'];
-			add_log('mod', $to_forum_id, $topic_id, 'LOG_MOVE', $row['forum_name']);
+			add_log('mod', $to_forum_id, $topic_id, 'LOG_MOVE', $row['forum_name'], $forum_data['forum_name']);
 
 			// If we have moved a global announcement, we need to correct the topic type
 			if ($row['topic_type'] == POST_GLOBAL)

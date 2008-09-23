@@ -2398,8 +2398,14 @@ function view_log($mode, &$log, &$log_count, $limit = 0, $offset = 0, $forum_id 
 
 			if (isset($user->lang[$row['log_operation']]))
 			{
-				// We supress the warning about inappropriate number of passed parameters here due to possible changes within LOG strings from one version to another.
-				$log[$i]['action'] = @vsprintf($log[$i]['action'], $log_data_ary);
+				// Check if there are more occurrences of % than arguments, if there are we fill out the arguments array
+				// It doesn't matter if we add more arguments than placeholders
+				if (substr_count($log[$i]['action'], '%') - sizeof($log_data_ary))
+				{
+					$log_data_ary = array_merge($log_data_ary, array_fill(0, substr_count($log[$i]['action'], '%') - sizeof($log_data_ary), ''));
+				}
+
+				$log[$i]['action'] = vsprintf($log[$i]['action'], $log_data_ary);
 
 				// If within the admin panel we do not censor text out
 				if (defined('IN_ADMIN'))
