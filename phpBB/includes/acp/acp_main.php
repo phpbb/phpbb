@@ -203,7 +203,7 @@ class acp_main
 								do
 								{
 									$sql = 'UPDATE ' . USERS_TABLE . " SET user_posts = {$row['num_posts']} WHERE user_id = {$row['user_id']}";
-									_sql($sql, $errored, $error_ary);
+									$db->sql_query($sql);
 
 									$i++;
 								}
