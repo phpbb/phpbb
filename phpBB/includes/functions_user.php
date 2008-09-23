@@ -314,8 +314,6 @@ function user_delete($mode, $user_id, $post_username = false)
 		return false;
 	}
 
-	$db->sql_transaction('begin');
-
 	// Before we begin, we will remove the reports the user issued.
 	$sql = 'SELECT r.post_id, p.topic_id
 		FROM ' . REPORTS_TABLE . ' r, ' . POSTS_TABLE . ' p
@@ -384,6 +382,8 @@ function user_delete($mode, $user_id, $post_username = false)
 	{
 		case 'retain':
 
+			$db->sql_transaction('begin');
+
 			if ($post_username === false)
 			{
 				$post_username = $user->lang['GUEST'];
@@ -431,6 +431,9 @@ function user_delete($mode, $user_id, $post_username = false)
 					$db->sql_query($sql);
 				}
 			}
+
+			$db->sql_transaction('commit');
+
 		break;
 
 		case 'remove':
@@ -483,6 +486,8 @@ function user_delete($mode, $user_id, $post_username = false)
 
 		break;
 	}
+
+	$db->sql_transaction('begin');
 
 	$table_ary = array(USERS_TABLE, USER_GROUP_TABLE, TOPICS_WATCH_TABLE, FORUMS_WATCH_TABLE, ACL_USERS_TABLE, TOPICS_TRACK_TABLE, TOPICS_POSTED_TABLE, FORUMS_TRACK_TABLE, PROFILE_FIELDS_DATA_TABLE, MODERATOR_CACHE_TABLE, DRAFTS_TABLE, BOOKMARKS_TABLE);
 
@@ -552,6 +557,8 @@ function user_delete($mode, $user_id, $post_username = false)
 		$db->sql_query($sql);
 	}
 
+	$db->sql_transaction('commit');
+
 	// Reset newest user info if appropriate
 	if ($config['newest_user_id'] == $user_id)
 	{
@@ -563,8 +570,6 @@ function user_delete($mode, $user_id, $post_username = false)
 	{
 		set_config('num_users', $config['num_users'] - 1, true);
 	}
-
-	$db->sql_transaction('commit');
 
 	return false;
 }
@@ -2274,12 +2279,13 @@ function group_create(&$group_id, $type, $name, $desc, $group_attributes, $allow
 		'group_receive_pm'		=> 'int',
 		'group_legend'			=> 'int',
 		'group_message_limit'	=> 'int',
+		'group_max_recipients'	=> 'int',
 
 		'group_founder_manage'	=> 'int',
 	);
 
 	// Those are group-only attributes
-	$group_only_ary = array('group_receive_pm', 'group_legend', 'group_message_limit', 'group_founder_manage');
+	$group_only_ary = array('group_receive_pm', 'group_legend', 'group_message_limit', 'group_max_recipients', 'group_founder_manage');
 
 	// Check data. Limit group name length.
 	if (!utf8_strlen($name) || utf8_strlen($name) > 60)

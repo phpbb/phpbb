@@ -183,17 +183,40 @@ class acp_main
 							trigger_error($user->lang['NO_AUTH_OPERATION'] . adm_back_link($this->u_action), E_USER_WARNING);
 						}
 
-						$sql = 'SELECT COUNT(p.post_id) AS num_posts, u.user_id
-							FROM ' . USERS_TABLE . ' u
-							LEFT JOIN  ' . POSTS_TABLE . ' p ON (u.user_id = p.poster_id AND p.post_postcount = 1 AND p.post_approved = 1)
-							GROUP BY u.user_id';
-						$result = $db->sql_query($sql);
+						// Resync post counts
+						$start = 0;
 
-						while ($row = $db->sql_fetchrow($result))
+						do
 						{
-							$db->sql_query('UPDATE ' . USERS_TABLE . " SET user_posts = {$row['num_posts']} WHERE user_id = {$row['user_id']}");
+							$sql = 'SELECT COUNT(p.post_id) AS num_posts, u.user_id
+								FROM ' . USERS_TABLE . ' u
+								LEFT JOIN  ' . POSTS_TABLE . ' p ON (u.user_id = p.poster_id AND p.post_postcount = 1 AND p.post_approved = 1)
+								GROUP BY u.user_id
+								ORDER BY u.user_id ASC';
+							$result = $db->sql_query_limit($sql, 200, $start);
+
+							if ($row = $db->sql_fetchrow($result))
+							{
+								$i = 0;
+
+								do
+								{
+									$sql = 'UPDATE ' . USERS_TABLE . " SET user_posts = {$row['num_posts']} WHERE user_id = {$row['user_id']}";
+									_sql($sql, $errored, $error_ary);
+
+									$i++;
+								}
+								while ($row = $db->sql_fetchrow($result));
+
+								$start = ($i < 200) ? 0 : $start + 200;
+							}
+							else
+							{
+								$start = 0;
+							}
+							$db->sql_freeresult($result);
 						}
-						$db->sql_freeresult($result);
+						while ($start);
 
 						add_log('admin', 'LOG_RESYNC_POSTCOUNTS');
 

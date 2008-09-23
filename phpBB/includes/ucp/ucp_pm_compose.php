@@ -44,6 +44,11 @@ function compose_pm($id, $mode, $action)
 	// Do NOT use request_var or specialchars here
 	$address_list	= isset($_REQUEST['address_list']) ? $_REQUEST['address_list'] : array();
 
+	if (!is_array($address_list))
+	{
+		$address_list = array();
+	}
+
 	$submit		= (isset($_POST['post'])) ? true : false;
 	$preview	= (isset($_POST['preview'])) ? true : false;
 	$save		= (isset($_POST['save'])) ? true : false;
@@ -78,7 +83,8 @@ function compose_pm($id, $mode, $action)
 	// Output PM_TO box if message composing
 	if ($action != 'edit')
 	{
-		if ($config['allow_mass_pm'] && $auth->acl_get('u_masspm'))
+		// Add groups to PM box
+		if ($config['allow_mass_pm'] && $auth->acl_get('u_masspm_group'))
 		{
 			$sql = 'SELECT g.group_id, g.group_name, g.group_type
 				FROM ' . GROUPS_TABLE . ' g';
@@ -111,7 +117,7 @@ function compose_pm($id, $mode, $action)
 		$template->assign_vars(array(
 			'S_SHOW_PM_BOX'		=> true,
 			'S_ALLOW_MASS_PM'	=> ($config['allow_mass_pm'] && $auth->acl_get('u_masspm')) ? true : false,
-			'S_GROUP_OPTIONS'	=> ($config['allow_mass_pm'] && $auth->acl_get('u_masspm')) ? $group_options : '',
+			'S_GROUP_OPTIONS'	=> ($config['allow_mass_pm'] && $auth->acl_get('u_masspm_group')) ? $group_options : '',
 			'U_FIND_USERNAME'	=> append_sid('memberlist', "mode=searchuser&amp;form=postform&amp;field=username_list&amp;select_single=$select_single"),
 		));
 	}
@@ -280,7 +286,24 @@ function compose_pm($id, $mode, $action)
 
 			if (($action == 'reply' || $action == 'quote' || $action == 'quotepost') && !sizeof($address_list) && !$refresh && !$submit && !$preview)
 			{
-				$address_list = array('u' => array($post['author_id'] => 'to'));
+				if ($action == 'quotepost')
+				{
+					$address_list = array('u' => array($post['author_id'] => 'to'));
+				}
+				else
+				{
+					// We try to include every previously listed member from the TO Header
+					$address_list = rebuild_header(array('to' => $post['to_address']));
+
+					// Add the author (if he is already listed then this is no shame (it will be overwritten))
+					$address_list['u'][$post['author_id']] = 'to';
+
+					// Now, make sure the user itself is not listed. ;)
+					if (isset($address_list['u'][$user->data['user_id']]))
+					{
+						unset($address_list['u'][$user->data['user_id']]);
+					}
+				}
 			}
 			else if ($action == 'edit' && !sizeof($address_list) && !$refresh && !$submit && !$preview)
 			{
@@ -314,7 +337,7 @@ function compose_pm($id, $mode, $action)
 		$check_value = 0;
 	}
 
-	if (($to_group_id || isset($address_list['g'])) && (!$config['allow_mass_pm'] || !$auth->acl_get('u_masspm')))
+	if (($to_group_id || isset($address_list['g'])) && (!$config['allow_mass_pm'] || !$auth->acl_get('u_masspm_group')))
 	{
 		trigger_error('NO_AUTH_GROUP_MESSAGE');
 	}
@@ -379,14 +402,43 @@ function compose_pm($id, $mode, $action)
 		redirect(append_sid('ucp', 'i=pm&amp;mode=view&amp;action=view_message&amp;p=' . $msg_id));
 	}
 
+	// Get maximum number of allowed recipients
+	$sql = 'SELECT MAX(g.group_max_recipients) as max_recipients
+		FROM ' . GROUPS_TABLE . ' g, ' . USER_GROUP_TABLE . ' ug
+		WHERE ug.user_id = ' . $user->data['user_id'] . '
+			AND ug.user_pending = 0
+			AND ug.group_id = g.group_id';
+	$result = $db->sql_query($sql);
+	$max_recipients = (int) $db->sql_fetchfield('max_recipients');
+	$db->sql_freeresult($result);
+
+	$max_recipients = (!$max_recipients) ? $config['pm_max_recipients'] : $max_recipients;
+
+	// Damn php and globals - i know, this is horrible
+	global $refresh, $submit, $preview;
+
 	// Handle User/Group adding/removing
 	handle_message_list_actions($address_list, $error, $remove_u, $remove_g, $add_to, $add_bcc);
 
-	// Check for too many recipients
+	// Check mass pm to group permission
+	if ((!$config['allow_mass_pm'] || !$auth->acl_get('u_masspm_group')) && !empty($address_list['g']))
+	{
+		$address_list = array();
+		$error[] = $user->lang['NO_AUTH_GROUP_MESSAGE'];
+	}
+
+	// Check mass pm to users permission
 	if ((!$config['allow_mass_pm'] || !$auth->acl_get('u_masspm')) && num_recipients($address_list) > 1)
 	{
-		$address_list = get_recipient_pos($address_list, 1);
-		$error[] = $user->lang['TOO_MANY_RECIPIENTS'];
+		$address_list = get_recipients($address_list, 1);
+		$error[] = $user->lang('TOO_MANY_RECIPIENTS', 1);
+	}
+
+	// Check for too many recipients
+	if (!empty($address_list['u']) && $max_recipients && sizeof($address_list['u']) > $max_recipients)
+	{
+		$address_list = get_recipients($address_list, $max_recipients);
+		$error[] = $user->lang('TOO_MANY_RECIPIENTS', $max_recipients);
 	}
 
 	// Always check if the submitted attachment data is valid and belongs to the user.
@@ -948,6 +1000,7 @@ function compose_pm($id, $mode, $action)
 		'URL_STATUS'			=> ($url_status) ? $user->lang['URL_IS_ON'] : $user->lang['URL_IS_OFF'],
 		'MINI_POST_IMG'			=> $user->img('icon_post_target', $user->lang['PM']),
 		'ERROR'					=> (sizeof($error)) ? implode('<br />', $error) : '',
+		'MAX_RECIPIENTS'		=> ($config['allow_mass_pm'] && ($auth->acl_get('u_masspm') || $auth->acl_get('u_masspm_group'))) ? $max_recipients : 0,
 
 		'S_COMPOSE_PM'			=> true,
 		'S_EDIT_POST'			=> ($action == 'edit'),
@@ -1026,13 +1079,32 @@ function handle_message_list_actions(&$address_list, &$error, $remove_u, $remove
 		}
 	}
 
+	// Add Selected Groups
+	$group_list = request_var('group_list', array(0));
+
+	// Build usernames to add
+	$usernames = (isset($_REQUEST['username'])) ? array(request_var('username', '', true)) : array();
+	$username_list = request_var('username_list', '', true);
+	if ($username_list)
+	{
+		$usernames = array_merge($usernames, explode("\n", $username_list));
+	}
+
+	// If add to or add bcc not pressed, users could still have usernames listed they want to add...
+	if (!$add_to && !$add_bcc && (sizeof($group_list) || sizeof($usernames)))
+	{
+		$add_to = true;
+
+		global $refresh, $submit, $preview;
+
+		$refresh = $preview = true;
+		$submit = false;
+	}
+
 	// Add User/Group [TO]
 	if ($add_to || $add_bcc)
 	{
 		$type = ($add_to) ? 'to' : 'bcc';
-
-		// Add Selected Groups
-		$group_list = request_var('group_list', array(0));
 
 		if (sizeof($group_list))
 		{
@@ -1044,14 +1116,6 @@ function handle_message_list_actions(&$address_list, &$error, $remove_u, $remove
 
 		// User ID's to add...
 		$user_id_ary = array();
-
-		// Build usernames to add
-		$usernames = (isset($_REQUEST['username'])) ? array(request_var('username', '', true)) : array();
-		$username_list = request_var('username_list', '', true);
-		if ($username_list)
-		{
-			$usernames = array_merge($usernames, explode("\n", $username_list));
-		}
 
 		// Reveal the correct user_ids
 		if (sizeof($usernames))
@@ -1067,7 +1131,7 @@ function handle_message_list_actions(&$address_list, &$error, $remove_u, $remove
 		}
 
 		// Add Friends if specified
-		$friend_list = (is_array($_REQUEST['add_' . $type])) ? array_map('intval', array_keys($_REQUEST['add_' . $type])) : array();
+		$friend_list = (isset($_REQUEST['add_' . $type]) && is_array($_REQUEST['add_' . $type])) ? array_map('intval', array_keys($_REQUEST['add_' . $type])) : array();
 		$user_id_ary = array_merge($user_id_ary, $friend_list);
 
 		foreach ($user_id_ary as $user_id)
@@ -1143,22 +1207,22 @@ function num_recipients($address_list)
 }
 
 /**
-* Get recipient at position 'pos'
+* Get number of 'num_recipients' recipients from first position
 */
-function get_recipient_pos($address_list, $position = 1)
+function get_recipients($address_list, $num_recipients = 1)
 {
 	$recipient = array();
 
-	$count = 1;
+	$count = 0;
 	foreach ($address_list as $field => $adr_ary)
 	{
 		foreach ($adr_ary as $id => $type)
 		{
-			if ($count == $position)
+			if ($count >= $num_recipients)
 			{
-				$recipient[$field][$id] = $type;
 				break 2;
 			}
+			$recipient[$field][$id] = $type;
 			$count++;
 		}
 	}

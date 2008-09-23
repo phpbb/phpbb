@@ -958,11 +958,11 @@ function disapprove_post($post_id_list, $id, $mode)
 						$lang_reasons[$post_data['user_lang']] = $user->lang['report_reasons']['DESCRIPTION'][$disapprove_reason_lang];
 
 						// Only load up the language pack if the language is different to the current one
-						if ($post_data['user_lang'] != $user->lang_name && file_exists($phpbb_root_path . '/language/' . $post_data['user_lang'] . '/mcp.' . $phpEx))
+						if ($post_data['user_lang'] != $user->lang_name && file_exists(PHPBB_ROOT_PATH . '/language/' . $post_data['user_lang'] . '/mcp.' . PHP_EXT))
 						{
 							// Load up the language pack
 							$lang = array();
-							@include($phpbb_root_path . '/language/' . $post_data['user_lang'] . '/mcp.' . $phpEx);
+							@include(PHPBB_ROOT_PATH . '/language/' . $post_data['user_lang'] . '/mcp.' . PHP_EXT);
 
 							// If we find the reason in this language pack use it
 							if (isset($lang['report_reasons']['DESCRIPTION'][$disapprove_reason_lang]))
