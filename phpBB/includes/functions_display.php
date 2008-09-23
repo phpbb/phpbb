@@ -205,6 +205,12 @@ function display_forums($root_data = '', $display_moderators = true, $return_mod
 			$subforums[$parent_id][$forum_id]['display'] = ($row['display_on_index']) ? true : false;
 			$subforums[$parent_id][$forum_id]['name'] = $row['forum_name'];
 			$subforums[$parent_id][$forum_id]['orig_forum_last_post_time'] = $row['forum_last_post_time'];
+			$subforums[$parent_id][$forum_id]['children'] = array();
+
+			if (isset($subforums[$parent_id][$row['parent_id']]) && !$row['display_on_index'])
+			{
+				$subforums[$parent_id][$row['parent_id']]['children'][] = $forum_id;
+			}
 
 			$forum_rows[$parent_id]['forum_topics'] += $row['forum_topics'];
 
@@ -303,6 +309,14 @@ function display_forums($root_data = '', $display_moderators = true, $return_mod
 			foreach ($subforums[$forum_id] as $subforum_id => $subforum_row)
 			{
 				$subforum_unread = (isset($forum_tracking_info[$subforum_id]) && $subforum_row['orig_forum_last_post_time'] > $forum_tracking_info[$subforum_id]) ? true : false;
+
+				if (!$subforum_unread && !empty($subforum_row['children']))
+				{
+					foreach ($subforum_row['children'] as $child_id)
+					{
+						$subforum_unread = (isset($forum_tracking_info[$child_id]) && $subforums[$forum_id][$child_id]['orig_forum_last_post_time'] > $forum_tracking_info[$child_id]) ? true : false;
+					}
+				}
 
 				if ($subforum_row['display'] && $subforum_row['name'])
 				{
