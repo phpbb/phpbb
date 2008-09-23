@@ -476,6 +476,7 @@ if ($keywords || $author || $author_id || $search_id || $submit)
 	$u_search = append_sid('search', $u_sort_param . $u_show_results);
 	$u_search .= ($search_id) ? '&amp;search_id=' . $search_id : '';
 	$u_search .= ($u_hilit) ? '&amp;keywords=' . urlencode(htmlspecialchars_decode($search->search_query)) : '';
+	$u_search .= ($search_terms != 'all') ? '&amp;terms=' . $search_terms : '';
 	$u_search .= ($topic_id) ? '&amp;t=' . $topic_id : '';
 	$u_search .= ($author) ? '&amp;author=' . urlencode(htmlspecialchars_decode($author)) : '';
 	$u_search .= ($author_id) ? '&amp;author_id=' . $author_id : '';
@@ -542,7 +543,7 @@ if ($keywords || $author || $author_id || $search_id || $submit)
 
 			if ($user->data['is_registered'])
 			{
-				if ($config['load_db_track'])
+				if ($config['load_db_track'] && $author_id !== $user->data['user_id'])
 				{
 					$sql_from .= ' LEFT JOIN ' . TOPICS_POSTED_TABLE . ' tp ON (tp.user_id = ' . $user->data['user_id'] . '
 						AND t.topic_id = tp.topic_id)';
@@ -772,6 +773,11 @@ if ($keywords || $author || $author_id || $search_id || $submit)
 
 			if ($show_results == 'topics')
 			{
+				if ($config['load_db_track'] && $author_id === $user->data['user_id'])
+				{
+					$row['topic_posted'] = 1;
+				}
+
 				$folder_img = $folder_alt = $topic_type = '';
 				topic_status($row, $replies, (isset($topic_tracking_info[$forum_id][$row['topic_id']]) && $row['topic_last_post_time'] > $topic_tracking_info[$forum_id][$row['topic_id']]) ? true : false, $folder_img, $folder_alt, $topic_type);
 
