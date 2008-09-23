@@ -37,7 +37,7 @@ $template->assign_var('S_IN_UCP', true);
 
 $module = new p_master();
 
-// Basic "global" modes
+// Go through basic "global" modes
 switch ($mode)
 {
 	case 'activate':
@@ -69,7 +69,6 @@ switch ($mode)
 
 	case 'confirm':
 		$module->load('ucp', 'confirm');
-		exit;
 	break;
 
 	case 'login':
@@ -233,26 +232,57 @@ switch ($mode)
 		trigger_error($message);
 
 	break;
+
+	default:
+
+		// Only registered users can go beyond this point
+		if (!$user->data['is_registered'])
+		{
+			if ($user->data['is_bot'])
+			{
+				redirect(append_sid('index'));
+			}
+
+			login_box('', $user->lang['LOGIN_EXPLAIN_UCP']);
+		}
+
+		// Instantiate module system and generate list of available modules
+		$module->list_modules('ucp');
+
+		// Check if the zebra module is set
+		if ($module->is_active('zebra', 'friends'))
+		{
+			_display_friends();
+		}
+
+		// Do not display subscribed topics/forums if not allowed
+		if (!$config['allow_topic_notify'] && !$config['allow_forum_notify'])
+		{
+			$module->set_display('main', 'subscribed', false);
+		}
+
+		// Select the active module
+		$module->set_active($id, $mode);
+
+		// Load and execute the relevant module
+		$module->load_active();
+
+		// Assign data to the template engine for the list of modules
+		$module->assign_tpl_vars(append_sid('ucp'));
+
+		// Generate the page, do not display/query online list
+		$module->display($module->get_page_title(), false);
+
+	break;
 }
 
-// Only registered users can go beyond this point
-if (!$user->data['is_registered'])
+/**
+* Output listing of friends online
+*/
+function _display_friends()
 {
-	if ($user->data['is_bot'])
-	{
-		redirect(append_sid('index'));
-	}
+	global $config, $db, $template, $user, $auth;
 
-	login_box('', $user->lang['LOGIN_EXPLAIN_UCP']);
-}
-
-// Instantiate module system and generate list of available modules
-$module->list_modules('ucp');
-
-// Check if the zebra module is set
-if ($module->is_active('zebra', 'friends'))
-{
-	// Output listing of friends online
 	$update_time = $config['load_online_time'] * 60;
 
 	$sql = $db->sql_build_query('SELECT_DISTINCT', array(
@@ -296,24 +326,6 @@ if ($module->is_active('zebra', 'friends'))
 	}
 	$db->sql_freeresult($result);
 }
-
-// Do not display subscribed topics/forums if not allowed
-if (!$config['allow_topic_notify'] && !$config['allow_forum_notify'])
-{
-	$module->set_display('main', 'subscribed', false);
-}
-
-// Select the active module
-$module->set_active($id, $mode);
-
-// Load and execute the relevant module
-$module->load_active();
-
-// Assign data to the template engine for the list of modules
-$module->assign_tpl_vars(append_sid('ucp'));
-
-// Generate the page, do not display/query online list
-$module->display($module->get_page_title(), false);
 
 /**
 * Function for assigning a template var if the zebra module got included
