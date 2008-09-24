@@ -1209,7 +1209,6 @@ switch ($mode)
 
 		// We do not use request_var() here directly to save some calls (not all variables are set)
 		$check_params = array(
-			'start'			=> array('start', 0),
 			'g'				=> array('g', 0),
 			'sk'			=> array('sk', $default_key),
 			'sd'			=> array('sd', 'a'),
@@ -1250,8 +1249,7 @@ switch ($mode)
 				$sort_params[] = $param;
 			}
 		}
-
-		$u_hide_find_member = append_sid('memberlist', implode('&amp;', $params));
+		$u_hide_find_member = append_sid('memberlist', "start=$start" . implode('&amp;', $params));
 
 		$params[] = "mode=$mode";
 		$sort_params[] = "mode=$mode";
@@ -1465,7 +1463,7 @@ switch ($mode)
 			'JABBER_IMG'	=> $user->img('icon_contact_jabber', $user->lang['JABBER']),
 			'SEARCH_IMG'	=> $user->img('icon_user_search', $user->lang['SEARCH']),
 
-			'U_FIND_MEMBER'			=> ($config['load_search'] || $auth->acl_get('a_')) ? append_sid('memberlist', 'mode=searchuser') : '',
+			'U_FIND_MEMBER'			=> ($config['load_search'] || $auth->acl_get('a_')) ? append_sid('memberlist', 'mode=searchuser' . (($start) ? "&amp;start=$start" : '')) : '',
 			'U_HIDE_FIND_MEMBER'	=> ($mode == 'searchuser') ? $u_hide_find_member : '',
 			'U_SORT_USERNAME'		=> $sort_url . '&amp;sk=a&amp;sd=' . (($sort_key == 'a' && $sort_dir == 'a') ? 'd' : 'a'),
 			'U_SORT_FROM'			=> $sort_url . '&amp;sk=b&amp;sd=' . (($sort_key == 'b' && $sort_dir == 'a') ? 'd' : 'a'),
@@ -1619,15 +1617,15 @@ function _sort_last_active($first, $second)
 {
 	global $id_cache, $sort_dir;
 
-	$lesser_than = ($sort_dir === 'a') ? -1 : 1;
+	$lesser_than = ($sort_dir === 'd') ? -1 : 1;
 
 	if (isset($id_cache[$first]['group_leader']) && $id_cache[$first]['group_leader'] && (!isset($id_cache[$second]['group_leader']) || !$id_cache[$second]['group_leader']))
 	{
-		return 1;
+		return -1;
 	}
 	else if (isset($id_cache[$second]['group_leader']) && (!isset($id_cache[$first]['group_leader']) || !$id_cache[$first]['group_leader']) && $id_cache[$second]['group_leader'])
 	{
-		return -1;
+		return 1;
 	}
 	else
 	{

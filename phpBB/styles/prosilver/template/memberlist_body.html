@@ -109,11 +109,19 @@
 	<table class="table1" cellspacing="1">
 	<thead>
 	<tr>
+	<!-- IF not S_LEADERS_SET -->
+		<th class="name"><span class="rank-img"><a href="{U_SORT_RANK}">{L_RANK}</a></span><a href="{U_SORT_USERNAME}"><!-- IF S_SHOW_GROUP -->{L_GROUP_MEMBERS}<!-- ELSE -->{L_USERNAME}<!-- ENDIF --></a></th>
+			<th class="posts"><a href="{U_SORT_POSTS}#memberlist">{L_POSTS}</a></th>
+			<th class="info"><a href="{U_SORT_WEBSITE}#memberlist">{L_WEBSITE}</a>{L_COMMA_SEPARATOR}<a href="{U_SORT_LOCATION}">{L_LOCATION}</a></th>
+			<th class="joined"><a href="{U_SORT_JOINED}#memberlist">{L_JOINED}</a></th>
+			<!-- IF U_SORT_ACTIVE --><th class="active"><a href="{U_SORT_ACTIVE}#memberlist">{L_LAST_ACTIVE}</a></th><!-- ENDIF -->
+	<!-- ELSE -->
 		<th class="name">{L_GROUP_MEMBERS}</th>
 		<th class="posts">&nbsp;</th>
 		<th class="info">&nbsp;</th>
 		<th class="joined">&nbsp;</th>
 		<!-- IF U_SORT_ACTIVE --><th class="active">&nbsp;</th><!-- ENDIF -->
+	<!-- ENDIF -->
 	</tr>
 	</thead>
 	<tbody>
