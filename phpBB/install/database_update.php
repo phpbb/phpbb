@@ -1893,32 +1893,30 @@ function change_database_data(&$no_updates, $version)
 			/**
 			* Do not resync post counts here. An admin may later do this from the ACP
 			$start = 0;
+			$step = ($config['num_posts']) ? (max((int) ($config['num_posts'] / 5), 20000)) : 20000;
+
+			$sql = 'UPDATE ' . USERS_TABLE . ' SET user_posts = 0';
+			_sql($sql, $errored, $error_ary);
 
 			do
 			{
-				@flush();
-
-				$sql = 'SELECT COUNT(p.post_id) AS num_posts, u.user_id
-					FROM ' . USERS_TABLE . ' u
-					LEFT JOIN  ' . POSTS_TABLE . ' p ON (u.user_id = p.poster_id AND p.post_postcount = 1 AND p.post_approved = 1)
-					GROUP BY u.user_id
-					ORDER BY u.user_id ASC';
-				$result = $db->sql_query_limit($sql, 200, $start);
+				$sql = 'SELECT COUNT(post_id) AS num_posts, poster_id
+					FROM ' . POSTS_TABLE . '
+					WHERE post_id BETWEEN ' . ($start + 1) . ' AND ' . ($start + $step) . '
+						AND post_postcount = 1 AND post_approved = 1
+					GROUP BY poster_id';
+				$result = _sql($sql, $errored, $error_ary);
 
 				if ($row = $db->sql_fetchrow($result))
 				{
-					$i = 0;
-
 					do
 					{
-						$sql = 'UPDATE ' . USERS_TABLE . " SET user_posts = {$row['num_posts']} WHERE user_id = {$row['user_id']}";
+						$sql = 'UPDATE ' . USERS_TABLE . " SET user_posts = user_posts + {$row['num_posts']} WHERE user_id = {$row['poster_id']}";
 						_sql($sql, $errored, $error_ary);
-
-						$i++;
 					}
 					while ($row = $db->sql_fetchrow($result));
 
-					$start = ($i < 200) ? 0 : $start + 200;
+					$start += $step;
 				}
 				else
 				{
