@@ -1623,15 +1623,15 @@ function _sort_last_active($first, $second)
 {
 	global $id_cache, $sort_dir;
 
-	$lesser_than = ($sort_dir === 'a') ? -1 : 1;
+	$lesser_than = ($sort_dir === 'd') ? -1 : 1;
 
 	if (isset($id_cache[$first]['group_leader']) && $id_cache[$first]['group_leader'] && (!isset($id_cache[$second]['group_leader']) || !$id_cache[$second]['group_leader']))
 	{
-		return 1;
+		return -1;
 	}
 	else if (isset($id_cache[$second]['group_leader']) && (!isset($id_cache[$first]['group_leader']) || !$id_cache[$first]['group_leader']) && $id_cache[$second]['group_leader'])
 	{
-		return -1;
+		return 1;
 	}
 	else
 	{
