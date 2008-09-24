@@ -237,7 +237,7 @@ function display_forums($root_data = '', $display_moderators = true, $return_mod
 	// Handle marking posts
 	if ($mark_read == 'forums' || $mark_read == 'all')
 	{
-		$redirect = build_url('mark');
+		$redirect = build_url('mark', 'hash');
 		$token = request_var('hash', '');
 		if (check_link_hash($token, 'global'))
 		{
@@ -1010,7 +1010,7 @@ function watch_topic_forum($mode, &$s_watching, $user_id, $forum_id, $topic_id, 
 	$table_sql = ($mode == 'forum') ? FORUMS_WATCH_TABLE : TOPICS_WATCH_TABLE;
 	$where_sql = ($mode == 'forum') ? 'forum_id' : 'topic_id';
 	$match_id = ($mode == 'forum') ? $forum_id : $topic_id;
-	$u_url = "uid={$user->data['user_id']}&amp;hash=" . generate_link_hash("{$mode}_$match_id");
+	$u_url = "uid={$user->data['user_id']}";
 	$u_url .= ($mode == 'forum') ? '&amp;f' : '&amp;f=' . $forum_id . '&amp;t';
 
 	// Is user watching this thread?
@@ -1119,7 +1119,7 @@ function watch_topic_forum($mode, &$s_watching, $user_id, $forum_id, $topic_id, 
 
 	if ($can_watch)
 	{
-		$s_watching['link'] = append_sid("{$phpbb_root_path}view$mode.$phpEx", "$u_url=$match_id&amp;" . (($is_watching) ? 'unwatch' : 'watch') . "=$mode&amp;start=$start");
+		$s_watching['link'] = append_sid("{$phpbb_root_path}view$mode.$phpEx", "$u_url=$match_id&amp;" . (($is_watching) ? 'unwatch' : 'watch') . "=$mode&amp;start=$start&amp;hash=" . generate_link_hash("{$mode}_$match_id"));
 		$s_watching['title'] = $user->lang[(($is_watching) ? 'STOP' : 'START') . '_WATCHING_' . strtoupper($mode)];
 		$s_watching['is_watching'] = $is_watching;
 	}
