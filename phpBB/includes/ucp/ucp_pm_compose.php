@@ -415,9 +415,6 @@ function compose_pm($id, $mode, $action)
 
 	$max_recipients = (!$max_recipients) ? $config['pm_max_recipients'] : $max_recipients;
 
-	// Damn php and globals - i know, this is horrible
-	global $refresh, $submit, $preview;
-
 	// Handle User/Group adding/removing
 	handle_message_list_actions($address_list, $error, $remove_u, $remove_g, $add_to, $add_bcc);
 
