@@ -25,6 +25,10 @@ function compose_pm($id, $mode, $action)
 	global $template, $db, $auth, $user;
 	global $phpbb_root_path, $phpEx, $config;
 
+	// Damn php and globals - i know, this is horrible
+	// Needed for handle_message_list_actions()
+	global $refresh, $submit, $preview;
+
 	include($phpbb_root_path . 'includes/functions_posting.' . $phpEx);
 	include($phpbb_root_path . 'includes/functions_display.' . $phpEx);
 	include($phpbb_root_path . 'includes/message_parser.' . $phpEx);
