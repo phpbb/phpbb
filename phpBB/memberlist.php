@@ -1212,7 +1212,6 @@ switch ($mode)
 
 		// We do not use request_var() here directly to save some calls (not all variables are set)
 		$check_params = array(
-			'start'			=> array('start', 0),
 			'g'				=> array('g', 0),
 			'sk'			=> array('sk', $default_key),
 			'sd'			=> array('sd', 'a'),
@@ -1254,7 +1253,7 @@ switch ($mode)
 			}
 		}
 
-		$u_hide_find_member = append_sid("{$phpbb_root_path}memberlist.$phpEx", implode('&amp;', $params));
+		$u_hide_find_member = append_sid("{$phpbb_root_path}memberlist.$phpEx", "start=$start" . implode('&amp;', $params));
 
 		$params[] = "mode=$mode";
 		$sort_params[] = "mode=$mode";
@@ -1469,7 +1468,7 @@ switch ($mode)
 			'JABBER_IMG'	=> $user->img('icon_contact_jabber', $user->lang['JABBER']),
 			'SEARCH_IMG'	=> $user->img('icon_user_search', $user->lang['SEARCH']),
 
-			'U_FIND_MEMBER'			=> ($config['load_search'] || $auth->acl_get('a_')) ? append_sid("{$phpbb_root_path}memberlist.$phpEx", 'mode=searchuser') : '',
+			'U_FIND_MEMBER'			=> ($config['load_search'] || $auth->acl_get('a_')) ? append_sid("{$phpbb_root_path}memberlist.$phpEx", 'mode=searchuser' . (($start) ? "&amp;start=$start" : '')) : '',
 			'U_HIDE_FIND_MEMBER'	=> ($mode == 'searchuser') ? $u_hide_find_member : '',
 			'U_SORT_USERNAME'		=> $sort_url . '&amp;sk=a&amp;sd=' . (($sort_key == 'a' && $sort_dir == 'a') ? 'd' : 'a'),
 			'U_SORT_FROM'			=> $sort_url . '&amp;sk=b&amp;sd=' . (($sort_key == 'b' && $sort_dir == 'a') ? 'd' : 'a'),
