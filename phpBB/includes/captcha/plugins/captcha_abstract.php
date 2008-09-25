@@ -262,7 +262,7 @@ abstract class phpbb_default_captcha implements phpbb_captcha_plugin
 		global $db, $user;
 
 		$sql = 'DELETE FROM ' . CONFIRM_TABLE . "
-				WHERE confirm_id = '" . $db->sql_escape($confirm_id) . "'
+				WHERE confirm_id = '" . $db->sql_escape($this->confirm_id) . "'
 					AND session_id = '" . $db->sql_escape($user->session_id) . "'
 					AND confirm_type = " . $this->type;
 		$db->sql_query($sql);

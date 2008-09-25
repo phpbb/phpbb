@@ -79,7 +79,7 @@ class acp_captcha
 						$old_captcha->uninstall();
 						set_config('captcha_plugin', $selected);
 						$new_captcha = phpbb_captcha_factory::get_instance($config['captcha_plugin']);
-						$old_captcha->install();
+						$new_captcha->install();
 					}
 					else
 					{
