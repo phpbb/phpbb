@@ -226,7 +226,7 @@ function mcp_topic_view($id, $mode, $action)
 
 			'S_POST_REPORTED'	=> ($row['post_reported']) ? true : false,
 			'S_POST_UNAPPROVED'	=> ($row['post_approved']) ? false : true,
-			'S_CHECKED'			=> (!$submitted_id_list || !in_array(intval($row['post_id']), $submitted_id_list) || in_array(intval($row['post_id']), $checked_ids)) ? true : false,
+			'S_CHECKED'			=> (($submitted_id_list && !in_array(intval($row['post_id']), $submitted_id_list)) || in_array(intval($row['post_id']), $checked_ids)) ? true : false,
 			'S_HAS_ATTACHMENTS'	=> (!empty($attachments[$row['post_id']])) ? true : false,
 
 			'U_POST_DETAILS'	=> "$url&amp;i=$id&amp;p={$row['post_id']}&amp;mode=post_details" . (($forum_id) ? "&amp;f=$forum_id" : ''),

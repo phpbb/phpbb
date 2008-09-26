@@ -24,6 +24,10 @@ function compose_pm($id, $mode, $action)
 {
 	global $template, $db, $auth, $user, $config;
 
+	// Damn php and globals - i know, this is horrible
+	// Needed for handle_message_list_actions()
+	global $refresh, $submit, $preview;
+
 	include(PHPBB_ROOT_PATH . 'includes/functions_posting.' . PHP_EXT);
 	include(PHPBB_ROOT_PATH . 'includes/functions_display.' . PHP_EXT);
 	include(PHPBB_ROOT_PATH . 'includes/message_parser.' . PHP_EXT);
