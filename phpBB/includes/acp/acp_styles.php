@@ -100,9 +100,7 @@ parse_css_file = {PARSE_CSS_FILE}
 # You can use this function to inherit templates from another template.
 # The template of the given name has to be installed.
 # Templates cannot inherit from inheriting templates.
-#
-inherit_from = {INHERIT_FROM}
-';
+#';
 
 		$this->imageset_keys = array(
 			'logos' => array(
@@ -940,7 +938,7 @@ inherit_from = {INHERIT_FROM}
 			trigger_error($user->lang['TEMPLATE_CACHE_CLEARED'] . adm_back_link($this->u_action . "&amp;action=cache&amp;id=$template_id"));
 		}
 
-		$cache_prefix = 'tpl_' . $template_row['template_path'];
+		$cache_prefix = 'tpl_' . str_replace('_', '-', $template_row['template_path']);
 
 		// Someone wants to see the cached source ... so we'll highlight it,
 		// add line numbers and indent it appropriately. This could be nasty
@@ -1784,7 +1782,7 @@ inherit_from = {INHERIT_FROM}
 				trigger_error($user->lang['NO_' . $l_prefix] . adm_back_link($this->u_action), E_USER_WARNING);
 			}
 
-			$var_ary = array('style_id', 'style_name', 'style_copyright', 'template_id', 'template_name', 'template_path', 'template_copyright', 'template_storedb', 'bbcode_bitfield', 'theme_id', 'theme_name', 'theme_path', 'theme_copyright', 'theme_storedb', 'theme_mtime', 'theme_data', 'imageset_id', 'imageset_name', 'imageset_path', 'imageset_copyright');
+			$var_ary = array('style_id', 'style_name', 'style_copyright', 'template_id', 'template_name', 'template_path', 'template_copyright', 'template_storedb', 'template_inherits_id', 'bbcode_bitfield', 'theme_id', 'theme_name', 'theme_path', 'theme_copyright', 'theme_storedb', 'theme_mtime', 'theme_data', 'imageset_id', 'imageset_name', 'imageset_path', 'imageset_copyright');
 
 			foreach ($var_ary as $var)
 			{
@@ -1816,7 +1814,23 @@ inherit_from = {INHERIT_FROM}
 			if ($mode == 'template' || $inc_template)
 			{
 				$template_cfg = str_replace(array('{MODE}', '{NAME}', '{COPYRIGHT}', '{VERSION}'), array($mode, $style_row['template_name'], $style_row['template_copyright'], $config['version']), $this->template_cfg);
-				$template_cfg .= "\nbbcode_bitfield = {$style_row['bbcode_bitfield']}";
+
+				$use_template_name = '';
+
+				// Add the inherit from variable, depending on it's use...
+				if ($style_row['template_inherits_id'])
+				{
+					// Get the template name
+					$sql = 'SELECT template_name
+						FROM ' . STYLES_TEMPLATE_TABLE . '
+						WHERE template_id = ' . (int) $style_row['template_inherits_id'];
+					$result = $db->sql_query($sql);
+					$use_template_name = (string) $db->sql_fetchfield('template_name');
+					$db->sql_freeresult($result);
+				}
+
+				$template_cfg .= ($use_template_name) ? "\ninherit_from = $use_template_name" : "\n#inherit_from = ";
+				$template_cfg .= "\n\nbbcode_bitfield = {$style_row['bbcode_bitfield']}";
 
 				$data[] = array(
 					'src'		=> $template_cfg,
@@ -2565,7 +2579,7 @@ inherit_from = {INHERIT_FROM}
 	{
 		global $phpbb_root_path, $phpEx, $user;
 
-		$cache_prefix = 'tpl_' . $template_path;
+		$cache_prefix = 'tpl_' . str_replace('_', '-', $template_path);
 
 		if (!($dp = @opendir("{$phpbb_root_path}cache")))
 		{
@@ -2601,7 +2615,7 @@ inherit_from = {INHERIT_FROM}
 	{
 		global $phpbb_root_path, $phpEx, $user;
 
-		$cache_prefix = 'tpl_' . $template_row['template_path'];
+		$cache_prefix = 'tpl_' . str_replace('_', '-', $template_row['template_path']);
 
 		if (!$file_ary || !is_array($file_ary))
 		{
@@ -2701,6 +2715,23 @@ inherit_from = {INHERIT_FROM}
 						if (!$style_row[$element . '_name'])
 						{
 							$style_row[$element . '_name'] = $reqd_template;
+						}
+
+						// Merge other information to installcfg... if present
+						$cfg_file = $phpbb_root_path . 'styles/' . $install_path . '/' . $element . '/' . $element . '.cfg';
+
+						if (file_exists($cfg_file))
+						{
+							$cfg_contents = parse_cfg_file($cfg_file);
+
+							// Merge only specific things. We may need them later.
+							foreach (array('inherit_from', 'parse_css_file') as $key)
+							{
+								if (!empty($cfg_contents[$key]) && !isset($installcfg[$key]))
+								{
+									$installcfg[$key] = $cfg_contents[$key];
+								}
+							}
 						}
 					}
 
@@ -3182,7 +3213,7 @@ inherit_from = {INHERIT_FROM}
 			$db->sql_freeresult($result);
 			if (!$row)
 			{
-				$error[] = sprintf($user->lang[$l_type . '_ERR_REQUIRED_OR_INCOMPLETE'], $inherit_from);
+				$error[] = sprintf($user->lang[$l_type . '_ERR_REQUIRED_OR_INCOMPLETE'], $cfg_data['inherit_from']);
 			}
 			else
 			{
