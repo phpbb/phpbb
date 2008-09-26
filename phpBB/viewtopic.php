@@ -476,7 +476,7 @@ if (($config['email_enable'] || $config['jab_enable']) && $config['allow_topic_n
 // Bookmarks
 if ($config['allow_bookmarks'] && $user->data['is_registered'] && request_var('bookmark', 0))
 {
-	if (check_link_hash(request_var('hash', ''),"topic_$topic_id"))
+	if (check_link_hash(request_var('hash', ''), "topic_$topic_id"))
 	{
 		if (!$topic_data['bookmarked'])
 		{
