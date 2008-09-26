@@ -146,7 +146,7 @@ class auth
 
 	/**
 	* Get forums with the specified permission setting
-	* if the option is prefixed with !, then the result becomes nagated
+	* if the option is prefixed with !, then the result becomes negated
 	*
 	* @param bool $clean set to true if only values needs to be returned which are set/unset
 	*/
