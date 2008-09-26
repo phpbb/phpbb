@@ -50,7 +50,7 @@
 		</ul>
 		<!-- ENDIF -->
 
-		<h3>{POST_SUBJECT}</h3>
+		<h3><a href="{U_VIEW_POST}">{POST_SUBJECT}</a></h3>
 		<p class="author">{MINI_POST_IMG} {L_POSTED} {L_POST_BY_AUTHOR} {POST_AUTHOR_FULL} {L_POSTED_ON_DATE}  {POST_DATE}</p>
 
 		<!-- IF S_POST_UNAPPROVED -->
@@ -152,7 +152,7 @@
 	<div class="panel">
 		<div class="inner"><span class="corners-top"><span></span></span>
 
-		<p><!-- IF S_MCP_QUEUE -->{RETURN_QUEUE} | {RETURN_TOPIC_SIMPLE} | {RETURN_POST}<!-- ELSEIF S_MCP_REPORT -->{RETURN_REPORTS} | <a href="{U_VIEW_TOPIC}">{L_VIEW_TOPIC}</a><!-- ELSE -->{RETURN_TOPIC}<!-- ENDIF --></p>
+		<p><!-- IF S_MCP_QUEUE -->{RETURN_QUEUE} | {RETURN_TOPIC_SIMPLE} | {RETURN_POST}<!-- ELSEIF S_MCP_REPORT -->{RETURN_REPORTS} | <a href="{U_VIEW_POST}">{L_VIEW_POST}</a> | <a href="{U_VIEW_TOPIC}">{L_VIEW_TOPIC}</a> | <a href="{U_VIEW_FORUM}">{L_VIEW_FORUM}</a><!-- ELSE -->{RETURN_TOPIC}<!-- ENDIF --></p>
 
 		<span class="corners-bottom"><span></span></span></div>
 	</div>

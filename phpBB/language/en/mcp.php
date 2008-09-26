@@ -346,6 +346,7 @@ $lang = array_merge($lang, array(
 	'USER_WARNING_ADDED'			=> 'User warned successfully.',
 
 	'VIEW_DETAILS'			=> 'View details',
+	'VIEW_POST'				=> 'View post',
 
 	'WARNED_USERS'			=> 'Warned users',
 	'WARNED_USERS_EXPLAIN'	=> 'This is a list of users with unexpired warnings issued to them.',
