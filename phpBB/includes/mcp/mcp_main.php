@@ -781,7 +781,7 @@ function mcp_delete_topic($topic_ids)
 
 		foreach ($data as $topic_id => $row)
 		{
-			add_log('mod', $row['forum_id'], 0, 'LOG_TOPIC_DELETED', $row['topic_title']);
+			add_log('mod', $row['forum_id'], $topic_id, 'LOG_DELETED_TOPIC', $row['topic_title']);
 		}
 
 		$return = delete_topics('topic_id', $topic_ids);
