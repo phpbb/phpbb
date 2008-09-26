@@ -314,7 +314,12 @@ function display_forums($root_data = '', $display_moderators = true, $return_mod
 				{
 					foreach ($subforum_row['children'] as $child_id)
 					{
-						$subforum_unread = (isset($forum_tracking_info[$child_id]) && $subforums[$forum_id][$child_id]['orig_forum_last_post_time'] > $forum_tracking_info[$child_id]) ? true : false;
+						if (isset($forum_tracking_info[$child_id]) && $subforums[$forum_id][$child_id]['orig_forum_last_post_time'] > $forum_tracking_info[$child_id])
+						{
+							// Once we found an unread child forum, we can drop out of this loop
+							$subforum_unread = true;
+							break;
+						}
 					}
 				}
 
