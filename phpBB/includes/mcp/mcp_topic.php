@@ -371,11 +371,11 @@ function split_topic($action, $topic_id, $to_forum_id, $subject)
 		return;
 	}
 
-	$forum_info = get_forum_data(array($to_forum_id), 'm_split');
+	$forum_info = get_forum_data(array($to_forum_id), 'f_post');
 
 	if (!sizeof($forum_info))
 	{
-		$template->assign_var('MESSAGE', $user->lang['NOT_MODERATOR']);
+		$template->assign_var('MESSAGE', $user->lang['USER_CANNOT_POST']);
 		return;
 	}
 

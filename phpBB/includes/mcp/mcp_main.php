@@ -779,7 +779,7 @@ function mcp_delete_topic($topic_ids)
 
 		foreach ($data as $topic_id => $row)
 		{
-			add_log('mod', $row['forum_id'], 0, 'LOG_TOPIC_DELETED', $row['topic_title']);
+			add_log('mod', $row['forum_id'], $topic_id, 'LOG_DELETE_' . ($row['topic_moved_id'] ? 'SHADOW_' : '') . 'TOPIC', $row['topic_title']);
 		}
 
 		$return = delete_topics('topic_id', $topic_ids);
@@ -789,8 +789,17 @@ function mcp_delete_topic($topic_ids)
 		confirm_box(false, (sizeof($topic_ids) == 1) ? 'DELETE_TOPIC' : 'DELETE_TOPICS', $s_hidden_fields);
 	}
 
-	$redirect = request_var('redirect', 'index.' . PHP_EXT);
-	$redirect = reapply_sid($redirect);
+	if (!isset($_REQUEST['quickmod']))
+	{
+		$redirect = request_var('redirect', 'index.' . PHP_EXT);
+		$redirect = reapply_sid($redirect);
+		$redirect_message = 'PAGE';
+	}
+	else
+	{
+		$redirect = append_sid('viewforum', 'f=' . $forum_id);
+		$redirect_message = 'FORUM';
+	}
 
 	if (!$success_msg)
 	{
@@ -798,9 +807,8 @@ function mcp_delete_topic($topic_ids)
 	}
 	else
 	{
-		$redirect_url = append_sid('viewforum', 'f=' . $forum_id);
-		meta_refresh(3, $redirect_url);
-		trigger_error($user->lang[$success_msg] . '<br /><br />' . sprintf($user->lang['RETURN_FORUM'], '<a href="' . $redirect_url . '">', '</a>'));
+		meta_refresh(3, $redirect);
+		trigger_error($user->lang[$success_msg] . '<br /><br />' . sprintf($user->lang['RETURN_' . $redirect_message], '<a href="' . $redirect . '">', '</a>'));
 	}
 }
 

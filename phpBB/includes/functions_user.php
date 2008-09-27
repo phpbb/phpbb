@@ -938,7 +938,7 @@ function user_ban($mode, $ban, $ban_len, $ban_len_other, $ban_exclude, $ban_reas
 	$sql = "SELECT $type
 		FROM " . BANLIST_TABLE . "
 		WHERE $sql_where
-			AND ban_exclude = $ban_exclude";
+			AND ban_exclude = " . (int) $ban_exclude;
 	$result = $db->sql_query($sql);
 
 	// Reset $sql_where, because we use it later...

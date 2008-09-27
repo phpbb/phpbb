@@ -10,18 +10,16 @@
 		<div class="inner"><span class="corners-top"><span></span></span>
 
 		<div class="postbody" id="pr{history_row.MSG_ID}">
-			<!-- IF history_row.U_QUOTE -->
+			<!-- IF history_row.U_QUOTE or history_row.MESSAGE_AUTHOR_QUOTE -->
 			<ul class="profile-icons">
-				<li class="quote-icon"><a href="{history_row.U_QUOTE}" title="{L_QUOTE} {history_row.MESSAGE_AUTHOR}"><span>{L_QUOTE} {history_row.MESSAGE_AUTHOR}</span></a></li>
+				<li class="quote-icon"><a <!-- IF history_row.U_QUOTE -->href="{history_row.U_QUOTE}"<!-- ELSE -->href="#postingbox" onclick="addquote({history_row.MSG_ID}, '{history_row.MESSAGE_AUTHOR_QUOTE}');"<!-- ENDIF -->" title="{L_QUOTE} {history_row.MESSAGE_AUTHOR}"><span>{L_QUOTE} {history_row.MESSAGE_AUTHOR}</span></a></li>
 			</ul>
 			<!-- ENDIF -->
 
 			<h3><a href="{history_row.U_VIEW_MESSAGE}" <!-- IF history_row.S_CURRENT_MSG -->class="current"<!-- ENDIF -->>{history_row.SUBJECT}</a></h3>
 			<p class="author<!-- IF history_row.S_CURRENT_MSG --> current<!-- ENDIF -->">{history_row.MINI_POST_IMG} {L_SENT_AT}: <strong>{history_row.SENT_DATE}</strong><br />
 				{L_MESSAGE_BY_AUTHOR} {history_row.MESSAGE_AUTHOR_FULL}</p>
-			<div class="content<!-- IF history_row.S_CURRENT_MSG --> current<!-- ENDIF -->" id="message_{history_row.MSG_ID}">
-				{history_row.MESSAGE}
-			</div>
+			<div class="content<!-- IF history_row.S_CURRENT_MSG --> current<!-- ENDIF -->" id="message_{history_row.MSG_ID}">{history_row.MESSAGE}</div>
 		</div>
 
 		<span class="corners-bottom"><span></span></span></div>
