@@ -113,7 +113,7 @@ if ($forum_data['forum_type'] == FORUM_LINK && $forum_data['forum_link'])
 
 	// We redirect to the url. The third parameter indicates that external redirects are allowed.
 	redirect($forum_data['forum_link'], false, true);
-	exit;
+	return;
 }
 
 // Build navigation links

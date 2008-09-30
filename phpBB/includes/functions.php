@@ -3228,6 +3228,9 @@ function msg_handler($errno, $msg_text, $errfile, $errline)
 			echo '</html>';
 
 			exit_handler();
+
+			// On a fatal error (and E_USER_ERROR *is* fatal) we never want other scripts to continue and force an exit here.
+			exit;
 		break;
 
 		case E_USER_WARNING:

@@ -166,7 +166,7 @@ if ($quickmod)
 		case 'delete_post':
 		case 'delete_topic':
 			$module->load('mcp', 'main', 'quickmod');
-			exit;
+			return;
 		break;
 
 		case 'topic_logs':
@@ -183,7 +183,8 @@ if ($quickmod)
 		break;
 
 		default:
-			trigger_error("$action not allowed as quickmod");
+			trigger_error("$action not allowed as quickmod", E_USER_ERROR);
+		break;
 	}
 }
 else
