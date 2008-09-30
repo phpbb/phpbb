@@ -120,7 +120,7 @@ switch ($mode)
 		else
 		{
 			upload_popup();
-			exit;
+			return;
 		}
 	break;
 
@@ -151,7 +151,7 @@ if (!$post_data)
 if ($mode == 'popup')
 {
 	upload_popup($post_data['forum_style']);
-	exit;
+	return;
 }
 
 $user->setup(array('posting', 'mcp', 'viewtopic'), $post_data['forum_style']);
@@ -282,7 +282,7 @@ if ($mode == 'edit' && !$auth->acl_get('m_edit', $forum_id))
 if ($mode == 'delete')
 {
 	handle_post_delete($forum_id, $topic_id, $post_id, $post_data);
-	exit;
+	return;
 }
 
 // Handle bump mode...

@@ -238,7 +238,7 @@ function bump_topic_allowed($forum_id, $topic_bumped, $last_post_time, $topic_po
 function get_context($text, $words, $length = 400)
 {
 	// first replace all whitespaces with single spaces
-	$text = preg_replace('/ +/', ' ', strtr($text, "\t\n\r\x0C ", '     '), $text);
+	$text = preg_replace('/ +/', ' ', strtr($text, "\t\n\r\x0C ", '     '));
 
 	$word_indizes = array();
 	if (sizeof($words))
