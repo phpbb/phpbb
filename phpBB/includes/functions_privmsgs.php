@@ -1339,12 +1339,17 @@ function submit_pm($mode, $subject, &$data, $put_in_outbox = true)
 
 		if (isset($data['address_list']['g']) && sizeof($data['address_list']['g']))
 		{
+			// We need to check the PM status of group members (do they want to receive PM's?)
+			// Only check if not a moderator or admin, since they are allowed to override this user setting
+			$sql_allow_pm = (!$auth->acl_gets('a_', 'm_') && !$auth->acl_getf_global('m_')) ? ' AND u.user_allow_pm = 1' : '';
+
 			$sql = 'SELECT u.user_type, ug.group_id, ug.user_id
 				FROM ' . USERS_TABLE . ' u, ' . USER_GROUP_TABLE . ' ug
 				WHERE ' . $db->sql_in_set('ug.group_id', array_keys($data['address_list']['g'])) . '
 					AND ug.user_pending = 0
 					AND u.user_id = ug.user_id
-					AND u.user_type IN (' . USER_NORMAL . ', ' . USER_FOUNDER . ')';
+					AND u.user_type IN (' . USER_NORMAL . ', ' . USER_FOUNDER . ')' . 
+					$sql_allow_pm;
 			$result = $db->sql_query($sql);
 
 			while ($row = $db->sql_fetchrow($result))

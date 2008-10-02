@@ -351,7 +351,7 @@ class dbal_firebird extends dbal
 	*/
 	function sql_escape($msg)
 	{
-		return str_replace("'", "''", $msg);
+		return str_replace(array("'", "\0"), array("''", ''), $msg);
 	}
 
 	/**
