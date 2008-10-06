@@ -1036,11 +1036,11 @@ function compose_pm($id, $mode, $action)
 	// Build custom bbcodes array
 	display_custom_bbcodes();
 
+	// Show attachment box for adding attachments if true
+	$allowed = ($auth->acl_get('u_pm_attach') && $config['allow_pm_attach'] && $form_enctype);
+
 	// Attachment entry
-	if ($auth->acl_get('u_pm_attach') && $config['allow_pm_attach'] && $form_enctype)
-	{
-		posting_gen_attachment_entry($attachment_data, $filename_data);
-	}
+	posting_gen_attachment_entry($attachment_data, $filename_data, $allowed);
 
 	// Message History
 	if ($action == 'reply' || $action == 'quote' || $action == 'forward')

@@ -765,20 +765,20 @@ function posting_gen_inline_attachments(&$attachment_data)
 /**
 * Generate inline attachment entry
 */
-function posting_gen_attachment_entry($attachment_data, &$filename_data)
+function posting_gen_attachment_entry($attachment_data, &$filename_data, $show_attach_box = true)
 {
-	global $template, $config, $phpbb_root_path, $phpEx, $user;
+	global $template, $config, $phpbb_root_path, $phpEx, $user, $auth;
 
+	// Some default template variables
 	$template->assign_vars(array(
-		'S_SHOW_ATTACH_BOX'	=> true)
-	);
+		'S_SHOW_ATTACH_BOX'	=> $show_attach_box,
+		'S_HAS_ATTACHMENTS'	=> sizeof($attachment_data),
+		'FILESIZE'			=> $config['max_filesize'],
+		'FILE_COMMENT'		=> (isset($filename_data['filecomment'])) ? $filename_data['filecomment'] : '',
+	));
 
 	if (sizeof($attachment_data))
 	{
-		$template->assign_vars(array(
-			'S_HAS_ATTACHMENTS'	=> true)
-		);
-
 		// We display the posted attachments within the desired order.
 		($config['display_order']) ? krsort($attachment_data) : ksort($attachment_data);
 
@@ -807,11 +807,6 @@ function posting_gen_attachment_entry($attachment_data, &$filename_data)
 			);
 		}
 	}
-
-	$template->assign_vars(array(
-		'FILE_COMMENT'	=> $filename_data['filecomment'],
-		'FILESIZE'		=> $config['max_filesize'])
-	);
 
 	return sizeof($attachment_data);
 }
