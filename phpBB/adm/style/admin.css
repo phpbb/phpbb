@@ -1333,18 +1333,21 @@ fieldset.permissions .permissions-switch {
 fieldset.permissions .padding {
 }
 
+.permissions-switch {
+	margin-top: -6px;
+	font-size: .9em;
+}
+
 .permissions-switch a {
 	text-decoration: underline;
-	font-size: 0.90em;
 }
 
 .permissions-reset {
-	margin-top: -6px;
 	padding-bottom: 10px;
 }
 
 .permissions-reset a {
-	font-size: .8em;
+	font-size: .85em;
 }
 
 /* Tabbed menu */
