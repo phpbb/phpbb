@@ -690,7 +690,7 @@ class queue
 		}
 		else
 		{
-			if ($fp = @fopen($this->cache_file, 'w'))
+			if ($fp = @fopen($this->cache_file, 'wb'))
 			{
 				@flock($fp, LOCK_EX);
 				fwrite($fp, "<?php\n\$this->queue_data = unserialize(" . var_export(serialize($this->queue_data), true) . ");\n\n?>");

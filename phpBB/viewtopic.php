@@ -181,7 +181,7 @@ $sql_array = array(
 	'FROM'		=> array(FORUMS_TABLE => 'f'),
 );
 
-// The FROM-Order is quite important here, else t.* columns can not be correctly bound. 
+// The FROM-Order is quite important here, else t.* columns can not be correctly bound.
 if ($post_id)
 {
 	$sql_array['FROM'][POSTS_TABLE] = 'p';
