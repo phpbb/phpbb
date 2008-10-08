@@ -1326,12 +1326,11 @@ if (($mode == 'post' || ($mode == 'edit' && $post_id == $post_data['topic_first_
 	);
 }
 
+// Show attachment box for adding attachments if true
+$allowed = ($auth->acl_get('f_attach', $forum_id) && $auth->acl_get('u_attach') && $config['allow_attachments'] && $form_enctype);
+
 // Attachment entry
-// Not using acl_gets here, because it is using OR logic
-if ($auth->acl_get('f_attach', $forum_id) && $auth->acl_get('u_attach') && $config['allow_attachments'] && $form_enctype)
-{
-	posting_gen_attachment_entry($attachment_data, $filename_data);
-}
+posting_gen_attachment_entry($attachment_data, $filename_data, $allowed);
 
 // Output page ...
 page_header($page_title);

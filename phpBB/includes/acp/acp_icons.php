@@ -72,6 +72,13 @@ class acp_icons
 
 			foreach ($imglist as $path => $img_ary)
 			{
+				if (empty($img_ary))
+				{
+					continue;
+				}
+
+				asort($img_ary, SORT_STRING);
+
 				foreach ($img_ary as $img)
 				{
 					$img_size = getimagesize(PHPBB_ROOT_PATH . $img_path . '/' . $path . $img);
@@ -98,6 +105,11 @@ class acp_icons
 					}
 				}
 				closedir($dir);
+
+				if (!empty($_paks))
+				{
+					asort($_paks, SORT_STRING);
+				}
 			}
 		}
 
