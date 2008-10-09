@@ -133,6 +133,7 @@
 		<li>[Fix] Implemented strict check for cached user permissions and existing ACL options. This fix makes sure cached permissions are valid, even if they got already cached.</li>
 		<li>[Fix] Do not show link to user/group profiles if user has no permission to view the linked page and gets a denied message anyway. (Bug #15088)</li>
 		<li>[Fix] Do not display last post link and sort display options for search engines. (Bug #15088)</li>
+		<li>[Fix] Make sure users still get notifications if they set to only be notified by Jabber, but Jabber service disabled. (Bug #29715 - Patch by Paul)</li>
 
 		<li>[Change] No longer allow the direct use of MULTI_INSERT in sql_build_array. sql_multi_insert() must be used.</li>
 		<li>[Change] Display warning in ACP if config.php file is left writable.</li>

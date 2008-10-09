@@ -85,6 +85,19 @@ class acp_jabber
 
 				$jabber->disconnect();
 			}
+			else
+			{
+				// This feature is disabled.
+				// We update the user table to be sure all users that have IM as notify type are set to both  as notify type
+				$sql_ary = array(
+					'user_notify_type'		=> NOTIFY_BOTH,
+				);
+
+				$sql = 'UPDATE ' . USERS_TABLE . '
+					SET ' . $db->sql_build_array('UPDATE', $sql_ary) . '
+					WHERE user_notify_type = ' . NOTIFY_IM;
+				$db->sql_query($sql);
+			}
 
 			set_config('jab_enable', $jab_enable);
 			set_config('jab_host', $jab_host);
