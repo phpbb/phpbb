@@ -60,7 +60,7 @@
 				<!-- IF forumrow.LAST_POST_TIME -->
 					<p class="topicdetails">{forumrow.LAST_POST_TIME}</p>
 					<p class="topicdetails">{forumrow.LAST_POSTER_FULL}
-						<a href="{forumrow.U_LAST_POST}">{LAST_POST_IMG}</a>
+						<!-- IF not S_IS_BOT --><a href="{forumrow.U_LAST_POST}">{LAST_POST_IMG}</a><!-- ENDIF -->
 					</p>
 				<!-- ELSE -->
 					<p class="topicdetails">{L_NO_POSTS}</p>
