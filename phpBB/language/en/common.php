@@ -552,6 +552,8 @@ $lang = array_merge($lang, array(
 	'THE_TEAM'			=> 'The team',
 	'TIME'				=> 'Time',
 
+	'TOO_LONG'						=> 'The value you entered is too long',
+
 	'TOO_LONG_AIM'					=> 'The screenname you entered is too long.',
 	'TOO_LONG_CONFIRM_CODE'			=> 'The confirm code you entered is too long.',
 	'TOO_LONG_DATEFORMAT'			=> 'The date format you entered is too long.',
@@ -571,6 +573,8 @@ $lang = array_merge($lang, array(
 	'TOO_LONG_YIM'					=> 'The Yahoo! Messenger name you entered is too long.',
 
 	'TOO_MANY_VOTE_OPTIONS'			=> 'You have tried to vote for too many options.',
+
+	'TOO_SHORT'						=> 'The value you entered is too short.',
 
 	'TOO_SHORT_AIM'					=> 'The screenname you entered is too short.',
 	'TOO_SHORT_CONFIRM_CODE'		=> 'The confirm code you entered is too short.',
