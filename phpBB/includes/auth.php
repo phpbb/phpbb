@@ -71,7 +71,46 @@ class auth
 			$this->acl_cache($userdata);
 		}
 
-		$user_permissions = explode("\n", $userdata['user_permissions']);
+		// Fill ACL array
+		$this->_fill_acl($userdata['user_permissions']);
+
+		// Verify bitstring length with options provided...
+		$renew = false;
+		$global_length = sizeof($this->acl_options['global']);
+		$local_length = sizeof($this->acl_options['local']);
+
+		// Specify comparing length (bitstring is padded to 31 bits)
+		$global_length = ($global_length % 31) ? ($global_length - ($global_length % 31) + 31) : $global_length;
+		$local_length = ($local_length % 31) ? ($local_length - ($local_length % 31) + 31) : $local_length;
+
+		// You thought we are finished now? Noooo... now compare them.
+		foreach ($this->acl as $forum_id => $bitstring)
+		{
+			if (($forum_id && strlen($bitstring) != $local_length) || (!$forum_id && strlen($bitstring) != $global_length))
+			{
+				$renew = true;
+				break;
+			}
+		}
+
+		// If a bitstring within the list does not match the options, we have a user with incorrect permissions set and need to renew them
+		if ($renew)
+		{
+			$this->acl_cache($userdata);
+			$this->_fill_acl($userdata['user_permissions']);
+		}
+
+		return;
+	}
+
+	/**
+	* Fill ACL array with relevant bitstrings from user_permissions column
+	* @access private
+	*/
+	function _fill_acl($user_permissions)
+	{
+		$this->acl = array();
+		$user_permissions = explode("\n", $user_permissions);
 
 		foreach ($user_permissions as $f => $seq)
 		{
@@ -92,8 +131,6 @@ class auth
 				}
 			}
 		}
-
-		return;
 	}
 
 	/**
@@ -169,7 +206,7 @@ class auth
 
 				$sql = 'SELECT forum_id
 					FROM ' . FORUMS_TABLE;
-				
+
 				if (sizeof($this->acl))
 				{
 					$sql .= ' WHERE ' . $db->sql_in_set('forum_id', array_keys($this->acl), true);
@@ -184,7 +221,7 @@ class auth
 				$db->sql_freeresult($result);
 			}
 		}
-		
+
 		if (isset($this->acl_options['local'][$opt]))
 		{
 			foreach ($this->acl as $f => $bitstring)
@@ -418,7 +455,7 @@ class auth
 
 				// The line number indicates the id, therefore we have to add empty lines for those ids not present
 				$hold_str .= str_repeat("\n", $f - $last_f);
-			
+
 				// Convert bitstring for storage - we do not use binary/bytes because PHP's string functions are not fully binary safe
 				for ($i = 0, $bit_length = strlen($bitstring); $i < $bit_length; $i += 31)
 				{
@@ -549,7 +586,7 @@ class auth
 		// Now the role settings - user-specific
 		$sql_ary[] = 'SELECT a.user_id, a.forum_id, r.auth_option_id, r.auth_setting, r.auth_option_id' . $sql_opts_select . '
 			FROM ' . ACL_USERS_TABLE . ' a, ' . ACL_ROLES_DATA_TABLE . ' r' . $sql_opts_from . '
-			WHERE a.auth_role_id = r.role_id ' . 
+			WHERE a.auth_role_id = r.role_id ' .
 				(($sql_opts_from) ? 'AND r.auth_option_id = ao.auth_option_id ' : '') .
 				(($sql_user) ? 'AND a.' . $sql_user : '') . "
 				$sql_forum
@@ -607,7 +644,7 @@ class auth
 					if ($row['auth_setting'] == ACL_NEVER)
 					{
 						$flag = substr($option, 0, strpos($option, '_') + 1);
-	
+
 						if (isset($hold_ary[$row['user_id']][$row['forum_id']][$flag]) && $hold_ary[$row['user_id']][$row['forum_id']][$flag] == ACL_YES)
 						{
 							unset($hold_ary[$row['user_id']][$row['forum_id']][$flag]);
@@ -827,7 +864,7 @@ class auth
 			{
 				$flag = substr($this->acl_options['option'][$option_id], 0, strpos($this->acl_options['option'][$option_id], '_') + 1);
 				$flag = (int) $this->acl_options['id'][$flag];
-		
+
 				if (isset($hold_ary[$flag]) && $hold_ary[$flag] == ACL_YES)
 				{
 					unset($hold_ary[$flag]);
