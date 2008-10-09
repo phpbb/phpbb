@@ -259,7 +259,7 @@ function display_forums($root_data = '', $display_moderators = true, $return_mod
 			meta_refresh(3, $redirect);
 			trigger_error($message);
 		}
-		
+
 	}
 
 	// Grab moderators ... if necessary
@@ -654,7 +654,7 @@ function topic_generate_pagination($replies, $url)
 */
 function get_moderators(&$forum_moderators, $forum_id = false)
 {
-	global $config, $template, $db;
+	global $config, $template, $db, $user, $auth;
 
 	// Have we disabled the display of moderators? If so, then return
 	// from whence we came ...
@@ -713,7 +713,16 @@ function get_moderators(&$forum_moderators, $forum_id = false)
 		}
 		else
 		{
-			$forum_moderators[$row['forum_id']][] = '<a' . (($row['group_colour']) ? ' style="color:#' . $row['group_colour'] . ';"' : '') . ' href="' . append_sid('memberlist', 'mode=group&amp;g=' . $row['group_id']) . '">' . (($row['group_type'] == GROUP_SPECIAL) ? $user->lang['G_' . $row['group_name']] : $row['group_name']) . '</a>';
+			$group_name = (($row['group_type'] == GROUP_SPECIAL) ? $user->lang['G_' . $row['group_name']] : $row['group_name']);
+
+			if ($user->data['user_id'] != ANONYMOUS && !$auth->acl_get('u_viewprofile'))
+			{
+				$forum_moderators[$row['forum_id']][] = '<span' . (($row['group_colour']) ? ' style="color:#' . $row['group_colour'] . ';"' : '') . '>' . $group_name . '</span>';
+			}
+			else
+			{
+				$forum_moderators[$row['forum_id']][] = '<a' . (($row['group_colour']) ? ' style="color:#' . $row['group_colour'] . ';"' : '') . ' href="' . append_sid('memberlist', 'mode=group&amp;g=' . $row['group_id']) . '">' . $group_name . '</a>';
+			}
 		}
 	}
 	$db->sql_freeresult($result);
@@ -1034,7 +1043,7 @@ function watch_topic_forum($mode, &$s_watching, $user_id, $forum_id, $topic_id, 
 
 		if (!is_null($notify_status) && $notify_status !== '')
 		{
-		
+
 			if (isset($_GET['unwatch']))
 			{
 				$uid = request_var('uid', 0);
@@ -1081,7 +1090,7 @@ function watch_topic_forum($mode, &$s_watching, $user_id, $forum_id, $topic_id, 
 			{
 				$token = request_var('hash', '');
 				$redirect_url = append_sid("view$mode", "$u_url=$match_id&amp;start=$start");
-	
+
 				if ($_GET['watch'] == $mode && check_link_hash($token, "{$mode}_$match_id"))
 				{
 					$is_watching = true;
@@ -1095,7 +1104,7 @@ function watch_topic_forum($mode, &$s_watching, $user_id, $forum_id, $topic_id, 
 				{
 					$message = $user->lang['ERR_WATCHING'] . '<br /><br />' . sprintf($user->lang['RETURN_' . strtoupper($mode)], '<a href="' . $redirect_url . '">', '</a>');
 				}
-				
+
 				meta_refresh(3, $redirect_url);
 
 				trigger_error($message);

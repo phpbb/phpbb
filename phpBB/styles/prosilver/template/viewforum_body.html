@@ -145,7 +145,7 @@
 				<dd class="posts">{topicrow.REPLIES} <dfn>{L_REPLIES}</dfn></dd>
 				<dd class="views">{topicrow.VIEWS} <dfn>{L_VIEWS}</dfn></dd>
 				<dd class="lastpost"><span><dfn>{L_LAST_POST} </dfn>{L_POST_BY_AUTHOR} {topicrow.LAST_POST_AUTHOR_FULL}
-					<a href="{topicrow.U_LAST_POST}">{LAST_POST_IMG}</a> <br />{L_POSTED_ON_DATE} {topicrow.LAST_POST_TIME}</span>
+					<!-- IF not S_IS_BOT --><a href="{topicrow.U_LAST_POST}">{LAST_POST_IMG}</a> <!-- ENDIF --><br />{L_POSTED_ON_DATE} {topicrow.LAST_POST_TIME}</span>
 				</dd>
 			</dl>
 		</li>
@@ -171,9 +171,11 @@
 		<fieldset class="display-options">
 			<!-- IF PREVIOUS_PAGE --><a href="{PREVIOUS_PAGE}" class="left-box {S_CONTENT_FLOW_BEGIN}">{L_PREVIOUS}</a><!-- ENDIF -->
 			<!-- IF NEXT_PAGE --><a href="{NEXT_PAGE}" class="right-box {S_CONTENT_FLOW_END}">{L_NEXT}</a><!-- ENDIF -->
-			<label>{L_DISPLAY_TOPICS}: {S_SELECT_SORT_DAYS}</label> 
-			<label>{L_SORT_BY} {S_SELECT_SORT_KEY}</label> 
+	<!-- IF not S_IS_BOT -->
+			<label>{L_DISPLAY_TOPICS}: {S_SELECT_SORT_DAYS}</label>
+			<label>{L_SORT_BY} {S_SELECT_SORT_KEY}</label>
 			<label>{S_SELECT_SORT_DIR} <input type="submit" name="sort" value="{L_GO}" class="button2" /></label>
+	<!-- ENDIF -->
 		</fieldset>
 	</form>
 	<hr />
@@ -202,7 +204,7 @@
 <!-- INCLUDE jumpbox.html -->
 
 <!-- IF S_DISPLAY_ONLINE_LIST -->
-	<h3><a href="{U_VIEWONLINE}">{L_WHO_IS_ONLINE}</a></h3>
+	<h3><!-- IF U_VIEWONLINE --><a href="{U_VIEWONLINE}">{L_WHO_IS_ONLINE}</a><!-- ELSE -->{L_WHO_IS_ONLINE}<!-- ENDIF --></h3>
 	<p>{LOGGED_IN_USER_LIST}</p>
 <!-- ENDIF -->
 
