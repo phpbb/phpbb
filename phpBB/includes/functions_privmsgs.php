@@ -1773,6 +1773,16 @@ function message_history($msg_id, $user_id, $message_row, $folder, $in_post_mode
 
 		$message = censor_text($message);
 
+		$decoded_message = false;
+
+		if ($in_post_mode && $auth->acl_get('u_sendpm') && $author_id != ANONYMOUS && $author_id != $user->data['user_id'])
+		{
+			$decoded_message = $message;
+			decode_message($decoded_message, $row['bbcode_uid']);
+
+			$decoded_message = bbcode_nl2br($decoded_message);
+		}
+
 		if ($row['bbcode_bitfield'])
 		{
 			$bbcode->bbcode_second_pass($message, $row['bbcode_uid'], $row['bbcode_bitfield']);
@@ -1791,16 +1801,17 @@ function message_history($msg_id, $user_id, $message_row, $folder, $in_post_mode
 		}
 
 		$template->assign_block_vars('history_row', array(
-			'MESSAGE_AUTHOR_QUOTE'		=> (($in_post_mode && $auth->acl_get('u_sendpm') && $author_id != ANONYMOUS && $author_id != $user->data['user_id']) ? addslashes(get_username_string('username', $author_id, $row['username'], $row['user_colour'], $row['username'])) : ''),
+			'MESSAGE_AUTHOR_QUOTE'		=> (($decoded_message) ? addslashes(get_username_string('username', $author_id, $row['username'], $row['user_colour'], $row['username'])) : ''),
 			'MESSAGE_AUTHOR_FULL'		=> get_username_string('full', $author_id, $row['username'], $row['user_colour'], $row['username']),
 			'MESSAGE_AUTHOR_COLOUR'		=> get_username_string('colour', $author_id, $row['username'], $row['user_colour'], $row['username']),
 			'MESSAGE_AUTHOR'			=> get_username_string('username', $author_id, $row['username'], $row['user_colour'], $row['username']),
 			'U_MESSAGE_AUTHOR'			=> get_username_string('profile', $author_id, $row['username'], $row['user_colour'], $row['username']),
 
-			'SUBJECT'		=> $subject,
-			'SENT_DATE'		=> $user->format_date($row['message_time']),
-			'MESSAGE'		=> $message,
-			'FOLDER'		=> implode(', ', $row['folder']),
+			'SUBJECT'			=> $subject,
+			'SENT_DATE'			=> $user->format_date($row['message_time']),
+			'MESSAGE'			=> $message,
+			'FOLDER'			=> implode(', ', $row['folder']),
+			'DECODED_MESSAGE'	=> $decoded_message,
 
 			'S_CURRENT_MSG'		=> ($row['msg_id'] == $msg_id),
 			'S_AUTHOR_DELETED'	=> ($author_id == ANONYMOUS) ? true : false,
