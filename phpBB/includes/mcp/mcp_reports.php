@@ -65,7 +65,7 @@ class mcp_reports
 		{
 			case 'report_details':
 
-				$user->add_lang(array('posting', 'viewforum'));
+				$user->add_lang(array('posting', 'viewforum', 'viewtopic'));
 
 				$post_id = request_var('p', 0);
 
