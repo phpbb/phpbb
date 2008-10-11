@@ -52,11 +52,13 @@
 
 	<fieldset>
 		<textarea name="warning" id="warning" class="inputbox" cols="40" rows="3">{L_WARNING_POST_DEFAULT}</textarea>
+		<!-- IF S_CAN_NOTIFY -->
 		<br /><br />
 		<dl class="panel">
 			<dt>&nbsp;</dt>
 			<dd><label><input type="checkbox" name="notify_user" checked="checked" /> {L_NOTIFY_USER_WARN}</label></dd>
 		</dl>
+		<!-- ENDIF -->
 	</fieldset>
 
 	<span class="corners-bottom"><span></span></span></div>
