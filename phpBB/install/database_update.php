@@ -1927,6 +1927,12 @@ function change_database_data(&$no_updates, $version)
 			while ($start);
 			*/
 
+			$sql = 'UPDATE ' . MODULES_TABLE . '
+				SET module_auth = \'acl_a_email && cfg_email_enable\'
+				WHERE module_class = \'acp\'
+					AND module_basename = \'email\'';
+			_sql($sql, $errored, $error_ary);
+
 			$no_updates = false;
 		break;
 	}
