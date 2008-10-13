@@ -819,7 +819,7 @@ if (!empty($topic_data['poll_start']))
 	foreach ($poll_info as $poll_option)
 	{
 		$option_pct = ($poll_total > 0) ? $poll_option['poll_option_total'] / $poll_total : 0;
-		$option_pct_txt = sprintf("%.1d%%", ($option_pct * 100));
+		$option_pct_txt = sprintf("%.1d%%", round($option_pct * 100));
 
 		$template->assign_block_vars('poll_option', array(
 			'POLL_OPTION_ID' 		=> $poll_option['poll_option_id'],
