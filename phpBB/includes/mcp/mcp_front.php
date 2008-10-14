@@ -27,7 +27,7 @@ function mcp_front_view($id, $mode, $action)
 	// Latest 5 unapproved
 	if ($module->loaded('queue'))
 	{
-		$forum_list = get_forum_list('m_approve');
+		$forum_list = array_intersect(get_forum_list('f_read'), get_forum_list('m_approve'));
 		$post_list = array();
 		$forum_names = array();
 
@@ -143,7 +143,7 @@ function mcp_front_view($id, $mode, $action)
 	// Latest 5 reported
 	if ($module->loaded('reports'))
 	{
-		$forum_list = get_forum_list('m_report');
+		$forum_list = array_intersect(get_forum_list('f_read'), get_forum_list('m_report'));
 
 		$template->assign_var('S_SHOW_REPORTS', (!empty($forum_list)) ? true : false);
 
@@ -246,7 +246,7 @@ function mcp_front_view($id, $mode, $action)
 	// Latest 5 logs
 	if ($module->loaded('logs'))
 	{
-		$forum_list = get_forum_list('m_');
+		$forum_list = array_intersect(get_forum_list('f_read'), get_forum_list('m_'));
 
 		if (!empty($forum_list))
 		{

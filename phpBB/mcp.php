@@ -612,7 +612,7 @@ function mcp_sorting($mode, &$sort_days, &$sort_key, &$sort_dir, &$sort_by_sql, 
 
 			$sql = 'SELECT COUNT(post_id) AS total
 				FROM ' . POSTS_TABLE . "
-				$where_sql " . $db->sql_in_set('forum_id', ($forum_id) ? array($forum_id) : get_forum_list('m_approve')) . '
+				$where_sql " . $db->sql_in_set('forum_id', ($forum_id) ? array($forum_id) : array_intersect(get_forum_list('f_read'), get_forum_list('m_approve'))) . '
 					AND post_approved = 0';
 
 			if ($min_time)
@@ -628,7 +628,7 @@ function mcp_sorting($mode, &$sort_days, &$sort_key, &$sort_dir, &$sort_by_sql, 
 
 			$sql = 'SELECT COUNT(topic_id) AS total
 				FROM ' . TOPICS_TABLE . "
-				$where_sql " . $db->sql_in_set('forum_id', ($forum_id) ? array($forum_id) : get_forum_list('m_approve')) . '
+				$where_sql " . $db->sql_in_set('forum_id', ($forum_id) ? array($forum_id) : array_intersect(get_forum_list('f_read'), get_forum_list('m_approve'))) . '
 					AND topic_approved = 0';
 
 			if ($min_time)
@@ -654,7 +654,7 @@ function mcp_sorting($mode, &$sort_days, &$sort_key, &$sort_dir, &$sort_by_sql, 
 			}
 			else
 			{
-				$where_sql .= ' ' . $db->sql_in_set('p.forum_id', get_forum_list('!m_report'), true, true);
+				$where_sql .= ' ' . $db->sql_in_set('p.forum_id', get_forum_list(array('!f_read', '!m_report')), true, true);
 			}
 
 			if ($mode == 'reports')
@@ -680,7 +680,7 @@ function mcp_sorting($mode, &$sort_days, &$sort_key, &$sort_dir, &$sort_by_sql, 
 
 			$sql = 'SELECT COUNT(log_id) AS total
 				FROM ' . LOG_TABLE . "
-				$where_sql " . $db->sql_in_set('forum_id', ($forum_id) ? array($forum_id) : get_forum_list('m_')) . '
+				$where_sql " . $db->sql_in_set('forum_id', ($forum_id) ? array($forum_id) : array_intersect(get_forum_list('f_read'), get_forum_list('m_'))) . '
 					AND log_time >= ' . $min_time . '
 					AND log_type = ' . LOG_MOD;
 		break;
