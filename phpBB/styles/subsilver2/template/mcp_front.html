@@ -20,7 +20,7 @@
 			<td class="row1" width="15%" valign="top"><span class="gen"><!-- IF unapproved.U_FORUM --><a href="{unapproved.U_FORUM}">{unapproved.FORUM_NAME}</a><!-- ELSE -->{unapproved.FORUM_NAME}<!-- ENDIF --></span><!-- IF unapproved.U_MCP_FORUM --><br /><span class="gensmall">[ <a href="{unapproved.U_MCP_FORUM}">{L_MODERATE}</a> ]</span><!-- ENDIF --></td>
 			<td class="row2" valign="top"><span class="gen"><a href="{unapproved.U_TOPIC}">{unapproved.TOPIC_TITLE}</a></span><br /><span class="gensmall">[ <a href="{unapproved.U_MCP_TOPIC}">{L_MODERATE}</a> ]</span></td>
 			<td class="row1" valign="top"><span class="gen">{unapproved.SUBJECT}</span><br /><span class="gensmall">[ <a href="{unapproved.U_POST_DETAILS}">{L_VIEW_DETAILS}</a> ]</span></td>
-			<td class="row2" align="center" width="15%" nowrap="nowrap" valign="top"><span class="gen"><!-- IF unapproved.U_AUTHOR --><a href="{unapproved.U_AUTHOR}">{unapproved.AUTHOR}</a><!-- ELSE -->{unapproved.AUTHOR}<!-- ENDIF --></span></td>
+			<td class="row2" align="center" width="15%" nowrap="nowrap" valign="top"><span class="gen">{unapproved.AUTHOR_FULL}</span></td>
 			<td class="row1" align="center" width="15%" nowrap="nowrap" valign="top"><span class="gensmall">{unapproved.POST_TIME}</span></td>
 			<td class="row2" align="center"><input type="checkbox" class="radio" name="post_id_list[]" value="{unapproved.POST_ID}" /></td>
 		</tr>
