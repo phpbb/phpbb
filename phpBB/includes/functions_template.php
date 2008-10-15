@@ -463,7 +463,7 @@ class template_filter extends php_user_filter
 	private function compile_tag_define($tag_args, $op)
 	{
 		$match = array();
-		preg_match('#^((?:[a-z0-9\-_]+\.)+)?\$(?=[A-Z])([A-Z0-9_\-]*) = (.*?)$#', $tag_args, $match);
+		preg_match('#^((?:[a-z0-9\-_]+\.)+)?\$(?=[A-Z])([A-Z0-9_\-]*)(?: = (.*?))?$#', $tag_args, $match);
 
 		if (empty($match[2]) || (!isset($match[3]) && $op))
 		{
