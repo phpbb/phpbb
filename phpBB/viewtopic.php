@@ -446,7 +446,7 @@ if ($hilit_words)
 }
 
 // Make sure $start is set to the last page if it exceeds the amount
-if ($start < 0 || $start > $total_posts)
+if ($start < 0 || $start >= $total_posts)
 {
 	$start = ($start < 0) ? 0 : floor(($total_posts - 1) / $config['posts_per_page']) * $config['posts_per_page'];
 }
