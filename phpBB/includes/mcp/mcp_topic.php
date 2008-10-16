@@ -114,9 +114,16 @@ function mcp_topic_view($id, $mode, $action)
 	{
 		$posts_per_page = $total;
 	}
+
 	if ((!empty($sort_days_old) && $sort_days_old != $sort_days) || $total <= $posts_per_page)
 	{
 		$start = 0;
+	}
+
+	// Make sure $start is set to the last page if it exceeds the amount
+	if ($start < 0 || $start >= $total)
+	{
+		$start = ($start < 0) ? 0 : floor(($total - 1) / $posts_per_page) * $posts_per_page;
 	}
 
 	$sql = 'SELECT u.username, u.username_clean, u.user_colour, p.*
