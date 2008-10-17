@@ -1118,6 +1118,7 @@ class install_install extends module
 
 		// HTTP_HOST is having the correct browser url in most cases...
 		$server_name = (!empty($_SERVER['HTTP_HOST'])) ? strtolower($_SERVER['HTTP_HOST']) : ((!empty($_SERVER['SERVER_NAME'])) ? $_SERVER['SERVER_NAME'] : getenv('SERVER_NAME'));
+		$referer = (!empty($_SERVER['HTTP_REFERRER'])) ? strtolower($_SERVER['HTTP_REFERRER']) : getenv('HTTP_REFERRER');
 
 		// HTTP HOST can carry a port number...
 		if (strpos($server_name, ':') !== false)
@@ -1374,6 +1375,15 @@ class install_install extends module
 			$sql_ary[] = 'UPDATE ' . $data['table_prefix'] . "config
 				SET config_value = '1'
 				WHERE config_name = 'captcha_gd'";
+		}
+
+		$ref = substr($referer, strpos($referer, '://') + 3);
+
+		if (!(stripos($ref, $server_name) === 0))
+		{
+			$sql_ary[] = 'UPDATE ' . $data['table_prefix'] . "config
+				SET config_value = '0'
+				WHERE config_name = 'referer_validation'";
 		}
 
 		// We set a (semi-)unique cookie name to bypass login issues related to the cookie name.
