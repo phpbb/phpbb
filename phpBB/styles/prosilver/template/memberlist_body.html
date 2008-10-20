@@ -115,7 +115,7 @@
 			<th class="info"><a href="{U_SORT_WEBSITE}#memberlist">{L_WEBSITE}</a>{L_COMMA_SEPARATOR}<a href="{U_SORT_LOCATION}">{L_LOCATION}</a></th>
 			<th class="joined"><a href="{U_SORT_JOINED}#memberlist">{L_JOINED}</a></th>
 			<!-- IF U_SORT_ACTIVE --><th class="active"><a href="{U_SORT_ACTIVE}#memberlist">{L_LAST_ACTIVE}</a></th><!-- ENDIF -->
-	<!-- ELSE -->
+	<!-- ELSEIF S_SHOW_GROUP -->
 		<th class="name">{L_GROUP_MEMBERS}</th>
 		<th class="posts">&nbsp;</th>
 		<th class="info">&nbsp;</th>
@@ -137,20 +137,6 @@
 		<!-- IF S_VIEWONLINE --><td>{memberrow.VISITED}&nbsp;</td><!-- ENDIF -->
 	</tr>
 		<!-- BEGINELSE -->
-	<div class="forumbg">
-	<div class="inner"><span class="corners-top"><span></span></span>
-
-	<table class="table1" cellspacing="1">
-	<thead>
-	<tr>
-		<th class="name">{L_GROUP_MEMBERS}</th>
-		<th class="posts">&nbsp;</th>
-		<th class="info">&nbsp;</th>
-		<th class="joined">&nbsp;</th>
-		<!-- IF U_SORT_ACTIVE --><th class="active">&nbsp;</th><!-- ENDIF -->
-	</tr>
-	</thead>
-	<tbody>
 	<tr class="bg1">
 		<td colspan="<!-- IF S_VIEWONLINE -->5<!-- ELSE -->4<!-- ENDIF -->">{L_NO_MEMBERS}</td>
 	</tr>
