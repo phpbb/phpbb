@@ -607,7 +607,7 @@ class bbcode_firstpass extends bbcode
 				else if (preg_match('#^list(=[0-9a-z]+)?$#i', $buffer, $m))
 				{
 					// sub-list, add a closing tag
-					if (empty($m[1]) || preg_match('/^(?:disc|square|circle)$/i', $m[1]))
+					if (empty($m[1]) || preg_match('/^=(?:disc|square|circle)$/i', $m[1]))
 					{
 						array_push($list_end_tags, '/list:u:' . $this->bbcode_uid);
 					}
