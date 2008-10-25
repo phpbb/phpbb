@@ -896,8 +896,9 @@ class install_update extends module
 							'S_FTP_UPLOAD'		=> true,
 							'UPLOAD_METHOD'		=> $method,
 							'U_ACTION'			=> append_sid($this->p_master->module_url, "mode=$mode&amp;sub=update_files"),
-							'S_HIDDEN_FIELDS'	=> $s_hidden_fields)
-						);
+							'U_DOWNLOAD_METHOD'	=> append_sid($this->p_master->module_url, "mode=$mode&amp;sub=update_files&amp;download=1"),
+							'S_HIDDEN_FIELDS'	=> $s_hidden_fields,
+						));
 
 						return;
 					}

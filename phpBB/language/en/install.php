@@ -397,6 +397,7 @@ $lang = array_merge($lang, array(
 	'DONE'								=> 'Done',
 	'DOWNLOAD'							=> 'Download',
 	'DOWNLOAD_AS'						=> 'Download as',
+	'DOWNLOAD_UPDATE_METHOD_BUTTON'		=> 'Download modified files archive (recommended)',
 	'DOWNLOAD_UPDATE_METHOD'			=> 'Download modified files archive',
 	'DOWNLOAD_UPDATE_METHOD_EXPLAIN'	=> 'Once downloaded you should unpack the archive. You will find the modified files you need to upload to your phpBB root directory within it. Please upload the files to their respective locations then. After you have uploaded all files, please check the files again with the other button below.',
 
@@ -497,6 +498,8 @@ $lang = array_merge($lang, array(
 	'STATUS_UP_TO_DATE'			=> 'Already updated file',
 
 	'TOGGLE_DISPLAY'			=> 'View/Hide file list',
+	'TRY_DOWNLOAD_METHOD'		=> 'You may want to try the download modified files method.<br />This method always works and is also the recommended update path.',
+	'TRY_DOWNLOAD_METHOD_BUTTON'=> 'Try this method now',
 
 	'UPDATE_COMPLETED'				=> 'Update completed',
 	'UPDATE_DATABASE'				=> 'Update database',
