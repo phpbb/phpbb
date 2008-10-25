@@ -1891,7 +1891,7 @@ function change_database_data(&$no_updates, $version)
 			}
 
 			/**
-			* Do not resync post counts here. An admin may later do this from the ACP
+			* Do not resync post counts here. An admin may do this later from the ACP
 			$start = 0;
 			$step = ($config['num_posts']) ? (max((int) ($config['num_posts'] / 5), 20000)) : 20000;
 
