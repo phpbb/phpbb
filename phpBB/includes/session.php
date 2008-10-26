@@ -1204,7 +1204,6 @@ class session
 		}
 
 		$dnsbl_check = array(
-			'list.dsbl.org'			=> 'http://dsbl.org/listing?',
 			'sbl-xbl.spamhaus.org'	=> 'http://www.spamhaus.org/query/bl?ip=',
 		);
 
