@@ -381,7 +381,7 @@ $lang = array_merge($lang, array(
 	'BROWSER_VALID'					=> 'Validate browser',
 	'BROWSER_VALID_EXPLAIN'			=> 'Enables browser validation for each session improving security.',
 	'CHECK_DNSBL'					=> 'Check IP against DNS Blackhole List',
-	'CHECK_DNSBL_EXPLAIN'			=> 'If enabled the user’s IP address is checked against the following DNSBL services on registration and posting: <a href="http://spamcop.net">spamcop.net</a>, <a href="http://dsbl.org">dsbl.org</a> and <a href="http://www.spamhaus.org">www.spamhaus.org</a>. This lookup may take a while, depending on the server’s configuration. If slowdowns are experienced or too many false positives reported it is recommended to disable this check.',
+	'CHECK_DNSBL_EXPLAIN'			=> 'If enabled the user’s IP address is checked against the following DNSBL services on registration and posting: <a href="http://spamcop.net">spamcop.net</a> and <a href="http://www.spamhaus.org">www.spamhaus.org</a>. This lookup may take a while, depending on the server’s configuration. If slowdowns are experienced or too many false positives reported it is recommended to disable this check.',
 	'CLASS_B'						=> 'A.B',
 	'CLASS_C'						=> 'A.B.C',
 	'EMAIL_CHECK_MX'				=> 'Check e-mail domain for valid MX record',

@@ -329,7 +329,7 @@ function mcp_topic_view($id, $mode, $action)
 */
 function split_topic($action, $topic_id, $to_forum_id, $subject)
 {
-	global $db, $template, $user, $auth;
+	global $db, $template, $user, $auth, $config;
 
 	$post_id_list	= request_var('post_id_list', array(0));
 	$forum_id		= request_var('forum_id', 0);

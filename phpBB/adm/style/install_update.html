@@ -186,7 +186,7 @@
 				<p>{L_NO_UPDATE_FILES_EXPLAIN}</p><br />
 
 				<strong>{NO_UPDATE_FILES}</strong>
-				
+
 			</div>
 		<!-- ENDIF -->
 
@@ -226,7 +226,7 @@
 							<!-- IF files.S_CUSTOM -->
 								<dd style="margin-left: 60%;"><label><input type="checkbox" name="no_update[]" value="{files.FILENAME}" class="radio" /> {L_DO_NOT_UPDATE}</label></dd>
 							<!-- ENDIF -->
-							
+
 							<!-- IF files.STATUS eq 'modified' -->
 							</dl>
 							<dl>
@@ -295,7 +295,7 @@
 		<p>{L_UPDATE_METHOD_EXPLAIN}</p>
 
 		<fieldset class="submit-buttons">
-			<input class="button1" type="submit" name="ftp_upload" value="{L_FTP_UPDATE_METHOD}" />&nbsp; &nbsp;<input class="button1" type="submit" name="download" value="{L_DOWNLOAD_UPDATE_METHOD}" />
+			<input class="button1" type="submit" name="ftp_upload" value="{L_FTP_UPDATE_METHOD}" />&nbsp; &nbsp;<input class="button1" type="submit" name="download" value="{L_DOWNLOAD_UPDATE_METHOD_BUTTON}" />
 		</fieldset>
 
 		</form>
@@ -360,9 +360,18 @@
 			<p>{L_CONNECTION_SUCCESS}</p>
 		</div>
 	<!-- ELSEIF S_CONNECTION_FAILED -->
+		<div class="successbox">
+			<p>{L_TRY_DOWNLOAD_METHOD}</p>
+
+			<fieldset class="quick">
+				<input class="button1" type="submit" name="download" value="{L_TRY_DOWNLOAD_METHOD_BUTTON}" />
+			</fieldset>
+		</div>
+
 		<div class="errorbox">
 			<p>{L_CONNECTION_FAILED}<br />{ERROR_MSG}</p>
 		</div>
+
 	<!-- ENDIF -->
 
 	<fieldset>
@@ -378,7 +387,7 @@
 	</dl>
 	<!-- END data -->
 	</fieldset>
-	
+
 	<fieldset class="submit-buttons">
 		{S_HIDDEN_FIELDS}
 		<input class="button2" type="submit" name="check_again" value="{L_BACK}" />
