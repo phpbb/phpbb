@@ -170,7 +170,7 @@ $lang = array_merge($lang, array(
 	'IMG_FORUM_UNREAD_SUBFORUM'	=> 'Subforum new posts',
 	'IMG_SUBFORUM_READ'			=> 'Legend subforum',
 	'IMG_SUBFORUM_UNREAD'		=> 'Legend subforum new posts',
-	
+
 	'IMG_TOPIC_MOVED'			=> 'Topic moved',
 
 	'IMG_TOPIC_READ'				=> 'Topic',
@@ -381,7 +381,7 @@ $lang = array_merge($lang, array(
 	'TEMPLATE_ERR_NAME_EXIST'	=> 'A template set with that name already exists.',
 	'TEMPLATE_ERR_NAME_LONG'	=> 'The template name can be no longer than 30 characters.',
 	'TEMPLATE_ERR_NOT_TEMPLATE'	=> 'The archive you specified does not contain a valid template set.',
-	'TEMPLATE_ERR_REQUIRED_OR_INCOMPLETE' => 'The new template set requires the template %s to be installed and not inheriting itself. ',
+	'TEMPLATE_ERR_REQUIRED_OR_INCOMPLETE' => 'The new template set requires the template %s to be installed and not inheriting itself.',
 	'TEMPLATE_ERR_STYLE_NAME'	=> 'You must supply a name for this template.',
 	'TEMPLATE_EXPORT'			=> 'Export templates',
 	'TEMPLATE_EXPORT_EXPLAIN'	=> 'Here you can export a template set in the form of an archive. This archive will contain all the files necessary to install the templates on another board. You may select whether to download the file directly or to place it in your store folder for download later or via FTP.',
