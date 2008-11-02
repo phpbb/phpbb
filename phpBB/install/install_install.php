@@ -1185,19 +1185,17 @@ class install_install extends module
 		$remove_remarks = $available_dbms[$data['dbms']]['COMMENTS'];
 		$delimiter = $available_dbms[$data['dbms']]['DELIM'];
 
-
 		include(PHPBB_ROOT_PATH . 'includes/db/db_tools.php');
 		include(PHPBB_ROOT_PATH . 'install/schemas/schema_data.php');
 
-		// we must do this so that we can handle the errors
-		phpbb_db_tools::$return_statements = true;
+		// we must set return_statements to true so that we can handle the errors
+		$db_tools = new phpbb_db_tools($db, true);
 
 		foreach ($schema_data as $table_name => $table_data)
 		{
 			// Change prefix
 			$table_name = preg_replace('#phpbb_#i', $data['table_prefix'], $table_name);
-
-			$statements = phpbb_db_tools::sql_create_table($table_name, $table_data);
+			$statements = $db_tools->sql_create_table($table_name, $table_data);
 
 			foreach ($statements as $sql)
 			{
