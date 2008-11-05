@@ -1935,6 +1935,16 @@ function change_database_data(&$no_updates, $version)
 
 			$no_updates = false;
 		break;
+
+		// Changes from 3.0.3-RC1 to 3.0.3-RC2
+		case '3.0.3-RC1':
+			$sql = 'UPDATE ' . LOG_TABLE . "
+				SET log_operation = 'LOG_DELETE_TOPIC'
+				WHERE log_operation = 'LOG_TOPIC_DELETED'";
+			_sql($sql, $errored, $error_ary);
+
+			$no_updates = false;
+		break;
 	}
 }
 
