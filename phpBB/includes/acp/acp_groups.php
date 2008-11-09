@@ -218,6 +218,15 @@ class acp_groups
 				}
 				else
 				{
+                    if (!$group_id)
+					{
+						trigger_error($user->lang['NO_GROUP'] . adm_back_link($this->u_action), E_USER_WARNING);
+					}
+                    else if ($action === 'delete' && $group_row['group_type'] == GROUP_SPECIAL)
+                    {
+                        trigger_error($user->lang['NO_AUTH_OPERATION'] . adm_back_link($this->u_action), E_USER_WARNING);
+                    }
+                    
 					confirm_box(false, $user->lang['CONFIRM_OPERATION'], build_hidden_fields(array(
 						'mark'		=> $mark_ary,
 						'g'			=> $group_id,
