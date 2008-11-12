@@ -8,7 +8,7 @@
 *
 */
 
-$updates_to_version = '3.0.3-RC1';
+$updates_to_version = '3.0.3';
 
 // Return if we "just include it" to find out for which version the database update is responsible for
 if (defined('IN_PHPBB') && defined('IN_INSTALL'))
