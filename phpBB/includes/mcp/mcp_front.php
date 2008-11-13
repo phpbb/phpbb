@@ -26,7 +26,7 @@ function mcp_front_view($id, $mode, $action)
 	// Latest 5 unapproved
 	if ($module->loaded('queue'))
 	{
-		$forum_list = get_forum_list('m_approve');
+		$forum_list = array_values(array_intersect(get_forum_list('f_read'), get_forum_list('m_approve')));
 		$post_list = array();
 		$forum_names = array();
 
@@ -80,7 +80,7 @@ function mcp_front_view($id, $mode, $action)
 
 			if ($total)
 			{
-				$sql = 'SELECT p.post_id, p.post_subject, p.post_time, p.poster_id, p.post_username, u.username, u.username_clean, t.topic_id, t.topic_title, t.topic_first_post_id, p.forum_id
+				$sql = 'SELECT p.post_id, p.post_subject, p.post_time, p.poster_id, p.post_username, u.username, u.username_clean, u.user_colour, t.topic_id, t.topic_title, t.topic_first_post_id, p.forum_id
 					FROM ' . POSTS_TABLE . ' p, ' . TOPICS_TABLE . ' t, ' . USERS_TABLE . ' u
 					WHERE ' . $db->sql_in_set('p.post_id', $post_list) . '
 						AND t.topic_id = p.topic_id
@@ -102,12 +102,15 @@ function mcp_front_view($id, $mode, $action)
 						'U_MCP_TOPIC'		=> append_sid('mcp', 'i=main&amp;mode=topic_view&amp;f=' . $row['forum_id'] . '&amp;t=' . $row['topic_id']),
 						'U_FORUM'			=> (!$global_topic) ? append_sid('viewforum', 'f=' . $row['forum_id']) : '',
 						'U_TOPIC'			=> append_sid('viewtopic', 'f=' . $row['forum_id'] . '&amp;t=' . $row['topic_id']),
-						'U_AUTHOR'			=> ($row['poster_id'] == ANONYMOUS) ? '' : append_sid('memberlist', 'mode=viewprofile&amp;u=' . $row['poster_id']),
+
+						'AUTHOR_FULL'		=> get_username_string('full', $row['poster_id'], $row['username'], $row['user_colour']),
+						'AUTHOR'			=> get_username_string('username', $row['poster_id'], $row['username'], $row['user_colour']),
+						'AUTHOR_COLOUR'		=> get_username_string('colour', $row['poster_id'], $row['username'], $row['user_colour']),
+						'U_AUTHOR'			=> get_username_string('profile', $row['poster_id'], $row['username'], $row['user_colour']),
 
 						'FORUM_NAME'	=> (!$global_topic) ? $forum_names[$row['forum_id']] : $user->lang['GLOBAL_ANNOUNCEMENT'],
 						'POST_ID'		=> $row['post_id'],
 						'TOPIC_TITLE'	=> $row['topic_title'],
-						'AUTHOR'		=> ($row['poster_id'] == ANONYMOUS) ? (($row['post_username']) ? $row['post_username'] : $user->lang['GUEST']) : $row['username'],
 						'SUBJECT'		=> ($row['post_subject']) ? $row['post_subject'] : $user->lang['NO_SUBJECT'],
 						'POST_TIME'		=> $user->format_date($row['post_time']))
 					);
@@ -139,7 +142,7 @@ function mcp_front_view($id, $mode, $action)
 	// Latest 5 reported
 	if ($module->loaded('reports'))
 	{
-		$forum_list = get_forum_list('m_report');
+		$forum_list = array_values(array_intersect(get_forum_list('f_read'), get_forum_list('m_report')));
 
 		$template->assign_var('S_SHOW_REPORTS', (!empty($forum_list)) ? true : false);
 
@@ -242,7 +245,7 @@ function mcp_front_view($id, $mode, $action)
 	// Latest 5 logs
 	if ($module->loaded('logs'))
 	{
-		$forum_list = get_forum_list('m_');
+		$forum_list = array_values(array_intersect(get_forum_list('f_read'), get_forum_list('m_')));
 
 		if (!empty($forum_list))
 		{

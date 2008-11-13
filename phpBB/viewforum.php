@@ -506,8 +506,10 @@ if (sizeof($shadow_topic_list))
 			'topic_moved_id'	=> $rowset[$orig_topic_id]['topic_moved_id'],
 			'topic_status'		=> $rowset[$orig_topic_id]['topic_status'],
 			'topic_type'		=> $rowset[$orig_topic_id]['topic_type'],
-			'topic_reported'	=> $rowset[$orig_topic_id]['topic_reported'],
 		));
+
+		// Shadow topics are never reported
+		$row['topic_reported'] = 0;
 
 		$rowset[$orig_topic_id] = $row;
 	}

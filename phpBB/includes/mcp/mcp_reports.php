@@ -246,6 +246,17 @@ class mcp_reports
 
 				$forum_info = array();
 				$forum_list_reports = get_forum_list('m_report', false, true);
+				$forum_list_read = array_flip(get_forum_list('f_read', true, true)); // Flipped so we can isset() the forum IDs
+
+				// Remove forums we cannot read
+				foreach ($forum_list_reports as $k => $forum_data)
+				{
+					if (!isset($forum_list_read[$forum_data['forum_id']]))
+					{
+						unset($forum_list_reports[$k]);
+					}
+				}
+				unset($forum_list_read);
 
 				if ($topic_id && $forum_id)
 				{

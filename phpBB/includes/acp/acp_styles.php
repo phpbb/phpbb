@@ -633,7 +633,7 @@ parse_css_file = {PARSE_CSS_FILE}
 	{
 		global $config, $db, $cache, $user, $template, $safe_mode;
 
-		if (defined('DISABLE_ACP_EDITOR'))
+		if (defined('PHPBB_DISABLE_ACP_EDITOR'))
 		{
 			trigger_error($user->lang['EDITOR_DISABLED'] . adm_back_link($this->u_action));
 		}

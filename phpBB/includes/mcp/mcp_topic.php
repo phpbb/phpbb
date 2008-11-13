@@ -113,9 +113,16 @@ function mcp_topic_view($id, $mode, $action)
 	{
 		$posts_per_page = $total;
 	}
+
 	if ((!empty($sort_days_old) && $sort_days_old != $sort_days) || $total <= $posts_per_page)
 	{
 		$start = 0;
+	}
+
+	// Make sure $start is set to the last page if it exceeds the amount
+	if ($start < 0 || $start >= $total)
+	{
+		$start = ($start < 0) ? 0 : floor(($total - 1) / $posts_per_page) * $posts_per_page;
 	}
 
 	$sql = 'SELECT u.username, u.username_clean, u.user_colour, p.*
@@ -491,6 +498,9 @@ function split_topic($action, $topic_id, $to_forum_id, $subject)
 		$db->sql_query($sql);
 
 		$success_msg = 'TOPIC_SPLIT_SUCCESS';
+
+		// Update forum statistics
+		set_config('num_topics', $config['num_topics'] + 1, true);
 
 		// Link back to both topics
 		$return_link = sprintf($user->lang['RETURN_TOPIC'], '<a href="' . append_sid('viewtopic', 'f=' . $post_info['forum_id'] . '&amp;t=' . $post_info['topic_id']) . '">', '</a>') . '<br /><br />' . sprintf($user->lang['RETURN_NEW_TOPIC'], '<a href="' . append_sid('viewtopic', 'f=' . $to_forum_id . '&amp;t=' . $to_topic_id) . '">', '</a>');

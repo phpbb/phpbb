@@ -45,9 +45,11 @@
 <tr>
 	<td class="row1" align="center"><textarea name="warning" rows="10" cols="76">{L_WARNING_POST_DEFAULT}</textarea></td>
 </tr>
+<!-- IF S_CAN_NOTIFY -->
 <tr>
 	<td class="row1" align="center"><input type="checkbox" class="radio" name="notify_user" checked="checked" /><span class="genmed">{L_NOTIFY_USER_WARN}</span></td>
 </tr>
+<!-- ENDIF -->
 <tr>
 	<td class="cat" align="center"><input class="btnmain" type="submit" name="action[add_warning]" value="{L_SUBMIT}" />&nbsp;&nbsp;<input class="btnlite" type="reset" value="{L_RESET}" /></td>
 </tr>

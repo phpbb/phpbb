@@ -545,7 +545,7 @@ $lang = array_merge($lang, array(
 	'THE_TEAM'			=> 'The team',
 	'TIME'				=> 'Time',
 
-	'TOO_LONG'						=> 'The value you entered is too long',
+	'TOO_LONG'						=> 'The value you entered is too long.',
 
 	'TOO_LONG_AIM'					=> 'The screenname you entered is too long.',
 	'TOO_LONG_CONFIRM_CODE'			=> 'The confirm code you entered is too long.',

@@ -446,7 +446,7 @@ if ($hilit_words)
 }
 
 // Make sure $start is set to the last page if it exceeds the amount
-if ($start < 0 || $start > $total_posts)
+if ($start < 0 || $start >= $total_posts)
 {
 	$start = ($start < 0) ? 0 : floor(($total_posts - 1) / $config['posts_per_page']) * $config['posts_per_page'];
 }
@@ -820,7 +820,7 @@ if (!empty($topic_data['poll_start']))
 	foreach ($poll_info as $poll_option)
 	{
 		$option_pct = ($poll_total > 0) ? $poll_option['poll_option_total'] / $poll_total : 0;
-		$option_pct_txt = sprintf("%.1d%%", ($option_pct * 100));
+		$option_pct_txt = sprintf("%.1d%%", round($option_pct * 100));
 
 		$template->assign_block_vars('poll_option', array(
 			'POLL_OPTION_ID' 		=> $poll_option['poll_option_id'],

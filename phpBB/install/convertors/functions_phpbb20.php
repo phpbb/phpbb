@@ -457,7 +457,7 @@ function phpbb_get_birthday($birthday = '')
 		}
 
 		// The birthday mod from niels is using this code to transform to day/month/year
-		return gmdate('d-m-Y', $birthday * 86400 + 1);
+		return sprintf('%2d-%2d-%4d', gmdate('n', $birthday * 86400 + 1), gmdate('j', $birthday * 86400 + 1), gmdate('Y', $birthday * 86400 + 1));
 	}
 }
 
