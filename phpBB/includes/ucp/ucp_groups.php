@@ -413,6 +413,9 @@ class ucp_groups
 				$this->page_title = 'UCP_USERGROUPS_MANAGE';
 				$action		= (isset($_POST['addusers'])) ? 'addusers' : request_var('action', '');
 				$group_id	= request_var('g', 0);
+				
+				include(PHPBB_ROOT_PATH . 'includes/functions_display.' . PHP_EXT);
+
 				add_form_key('ucp_groups');
 
 				if ($group_id)
@@ -437,6 +440,7 @@ class ucp_groups
 					
 					$group_name = $group_row['group_name'];
 					$group_type = $group_row['group_type'];
+
 					$avatar_img = (!empty($group_row['group_avatar'])) ? get_user_avatar($group_row['group_avatar'], $group_row['group_avatar_type'], $group_row['group_avatar_width'], $group_row['group_avatar_height'], 'GROUP_AVATAR') : '<img src="' . PHPBB_ROOT_PATH . PHPBB_ADMIN_PATH . 'images/no_avatar.gif" alt="" />';
 
 					$template->assign_vars(array(
@@ -456,8 +460,6 @@ class ucp_groups
 				switch ($action)
 				{
 					case 'edit':
-
-						include(PHPBB_ROOT_PATH . 'includes/functions_display.' . PHP_EXT);
 
 						if (!$group_id)
 						{
