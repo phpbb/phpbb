@@ -2387,7 +2387,7 @@ function view_log($mode, &$log, &$log_count, $limit = 0, $offset = 0, $forum_id 
 			{
 				// Check if there are more occurrences of % than arguments, if there are we fill out the arguments array
 				// It doesn't matter if we add more arguments than placeholders
-				if (substr_count($log[$i]['action'], '%') - sizeof($log_data_ary))
+				if ((substr_count($log[$i]['action'], '%') - sizeof($log_data_ary)) > 0)
 				{
 					$log_data_ary = array_merge($log_data_ary, array_fill(0, substr_count($log[$i]['action'], '%') - sizeof($log_data_ary), ''));
 				}
