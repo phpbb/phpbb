@@ -501,7 +501,8 @@ function generate_text_for_edit($text, $uid, $flags)
 */
 function make_clickable_callback($type, $whitespace, $url, $relative_url, $class)
 {
-	$orig_url		= $url . $relative_url;
+	$orig_url		= $url;
+	$orig_relative	= $relative_url;
 	$append			= '';
 	$url			= htmlspecialchars_decode($url);
 	$relative_url	= htmlspecialchars_decode($relative_url);
@@ -565,8 +566,6 @@ function make_clickable_callback($type, $whitespace, $url, $relative_url, $class
 			{
 				$url = substr($url, 0, -1);
 			}
-			// appends last_char to orig_url to retrieve real original url
-			$orig_url = substr($orig_url, 0, -1);
 		break;
 
 		// set last_char to empty here, so the variable can be used later to
@@ -591,7 +590,7 @@ function make_clickable_callback($type, $whitespace, $url, $relative_url, $class
 			// don't touch it and let MAGIC_URL_FULL take care of it.
 			if (!$relative_url)
 			{
-				return $whitespace . $orig_url . '/' . $last_char; // slash is taken away by relative url pattern
+				return $whitespace . $orig_url . '/' . $orig_relative; // slash is taken away by relative url pattern
 			}
 		break;
 
