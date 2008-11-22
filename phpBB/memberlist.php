@@ -238,7 +238,7 @@ switch ($mode)
 			}
 
 			$rank_title = $rank_img = '';
-			get_user_rank($row['user_rank'], $row['user_posts'], $rank_title, $rank_img, $rank_img_src);
+			get_user_rank($row['user_id'], $row['user_rank'], $row['user_posts'], $rank_title, $rank_img, $rank_img_src);
 
 			$template->assign_block_vars($which_row, array(
 				'USER_ID'		=> $row['user_id'],
@@ -1533,7 +1533,7 @@ function show_profile($data)
 	$user_id = $data['user_id'];
 
 	$rank_title = $rank_img = $rank_img_src = '';
-	get_user_rank($data['user_rank'], $data['user_posts'], $rank_title, $rank_img, $rank_img_src);
+	get_user_rank($user_id, $data['user_rank'], $data['user_posts'], $rank_title, $rank_img, $rank_img_src);
 
 	if (!empty($data['user_allow_viewemail']) || $auth->acl_get('a_email'))
 	{

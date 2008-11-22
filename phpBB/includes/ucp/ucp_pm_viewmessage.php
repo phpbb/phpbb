@@ -295,7 +295,7 @@ function get_user_information($user_id, $user_row)
 
 	$user_row['avatar'] = ($user->optionget('viewavatars')) ? get_user_avatar($user_row['user_avatar'], $user_row['user_avatar_type'], $user_row['user_avatar_width'], $user_row['user_avatar_height']) : '';
 
-	get_user_rank($user_row['user_rank'], $user_row['user_posts'], $user_row['rank_title'], $user_row['rank_image'], $user_row['rank_image_src']);
+	get_user_rank($user_id, $user_row['user_rank'], $user_row['user_posts'], $user_row['rank_title'], $user_row['rank_image'], $user_row['rank_image_src']);
 
 	if (!empty($user_row['user_allow_viewemail']) || $auth->acl_get('a_email'))
 	{

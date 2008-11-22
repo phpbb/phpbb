@@ -1048,7 +1048,7 @@ while ($row = $db->sql_fetchrow($result))
 				'allow_pm'			=> 0,
 			);
 
-			get_user_rank($row['user_rank'], $row['user_posts'], $user_cache[$poster_id]['rank_title'], $user_cache[$poster_id]['rank_image'], $user_cache[$poster_id]['rank_image_src']);
+			get_user_rank($poster_id, $row['user_rank'], $row['user_posts'], $user_cache[$poster_id]['rank_title'], $user_cache[$poster_id]['rank_image'], $user_cache[$poster_id]['rank_image_src']);
 		}
 		else
 		{
@@ -1095,7 +1095,7 @@ while ($row = $db->sql_fetchrow($result))
 				'search'		=> ($auth->acl_get('u_search')) ? append_sid('search', "author_id=$poster_id&amp;sr=posts") : '',
 			);
 
-			get_user_rank($row['user_rank'], $row['user_posts'], $user_cache[$poster_id]['rank_title'], $user_cache[$poster_id]['rank_image'], $user_cache[$poster_id]['rank_image_src']);
+			get_user_rank($poster_id, $row['user_rank'], $row['user_posts'], $user_cache[$poster_id]['rank_title'], $user_cache[$poster_id]['rank_image'], $user_cache[$poster_id]['rank_image_src']);
 
 			if (!empty($row['user_allow_viewemail']) || $auth->acl_get('a_email'))
 			{

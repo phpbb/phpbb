@@ -1141,6 +1141,7 @@ function watch_topic_forum($mode, &$s_watching, $user_id, $forum_id, $topic_id, 
 /**
 * Get user rank title and image
 *
+* @param int $user_id the users user id
 * @param int $user_rank the current stored users rank id
 * @param int $user_posts the users number of posts
 * @param string &$rank_title the rank title will be stored here after execution
@@ -1148,7 +1149,7 @@ function watch_topic_forum($mode, &$s_watching, $user_id, $forum_id, $topic_id, 
 * @param string &$rank_img_src the rank image source is stored here after execution
 *
 */
-function get_user_rank($user_rank, $user_posts, &$rank_title, &$rank_img, &$rank_img_src)
+function get_user_rank($user_id, $user_rank, $user_posts, &$rank_title, &$rank_img, &$rank_img_src)
 {
 	global $ranks, $config;
 
@@ -1164,7 +1165,7 @@ function get_user_rank($user_rank, $user_posts, &$rank_title, &$rank_img, &$rank
 		$rank_img = (!empty($ranks['special'][$user_rank]['rank_image'])) ? '<img src="' . PHPBB_ROOT_PATH . $config['ranks_path'] . '/' . $ranks['special'][$user_rank]['rank_image'] . '" alt="' . $ranks['special'][$user_rank]['rank_title'] . '" title="' . $ranks['special'][$user_rank]['rank_title'] . '" />' : '';
 		$rank_img_src = (!empty($ranks['special'][$user_rank]['rank_image'])) ? PHPBB_ROOT_PATH . $config['ranks_path'] . '/' . $ranks['special'][$user_rank]['rank_image'] : '';
 	}
-	else
+	else if ($user_id != ANONYMOUS)
 	{
 		if (!empty($ranks['normal']))
 		{
