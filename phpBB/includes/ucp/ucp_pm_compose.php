@@ -418,6 +418,26 @@ function compose_pm($id, $mode, $action)
 
 	$max_recipients = (!$max_recipients) ? $config['pm_max_recipients'] : $max_recipients;
 
+	// If this is a quote/reply "to all"... we may increase the max_recpients to the number of original recipients
+	if (($action == 'reply' || $action == 'quote') && $max_recipients)
+	{
+		// We try to include every previously listed member from the TO Header
+		$list = rebuild_header(array('to' => $post['to_address']));
+
+		// Can be an empty array too ;)
+		$list = (!empty($list['u'])) ? $list['u'] : array();
+		$list[$post['author_id']] = 'to';
+
+		if (isset($list[$user->data['user_id']]))
+		{
+			unset($list[$user->data['user_id']]);
+		}
+
+		$max_recipients = ($max_recipients < sizeof($list)) ? sizeof($list) : $max_recipients;
+
+		unset($list);
+	}
+
 	// Handle User/Group adding/removing
 	handle_message_list_actions($address_list, $error, $remove_u, $remove_g, $add_to, $add_bcc);
 

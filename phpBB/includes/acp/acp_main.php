@@ -483,7 +483,8 @@ class acp_main
 
 		if (!defined('PHPBB_DISABLE_CONFIG_CHECK') && file_exists(PHPBB_ROOT_PATH . 'config.' . PHP_EXT) && is_writable(PHPBB_ROOT_PATH . 'config.' . PHP_EXT))
 		{
-			$template->assign_var('S_WRITABLE_CONFIG', true);
+			// World-Writable? (000x)
+			$template->assign_var('S_WRITABLE_CONFIG', (bool) (@fileperms(PHPBB_ROOT_PATH . 'config.' . PHP_EXT) & 0x0002));
 		}
 
 		$this->tpl_name = 'acp_main';

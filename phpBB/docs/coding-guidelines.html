@@ -1000,8 +1000,18 @@ append_sid('memberlist', 'mode=group&amp;amp;g=' . $row['group_id'])
 		<div class="inner"><span class="corners-top"><span></span></span>
 
 		<div class="content">
-
-<h4>General things</h4>
+	<a name="cfgfiles"></a><h3>3.i. Style Config Files</h3>
+	<p>Style cfg files are simple name-value lists with the information necessary for installing a style. Similar cfg files exist for templates, themes and imagesets. These follow the same principle and will not be introduced individually. Styles can use installed components by using the required_theme/required_template/required_imageset entries. The important part of the style configuration file is assigning an unique name.</p>
+	<div class="codebox"><pre>
+        # General Information about this style
+        name = prosilver_duplicate
+        copyright = &copy; phpBB Group, 2007
+        version = 3.0.3
+        required_template = prosilver
+        required_theme = prosilver
+        required_imageset = prosilver
+	</pre></div>
+	<a name="genstyling"></a><h3>3.2. General Styling Rules</h3>
 <p>Templates should be produced in a consistent manner. Where appropriate they should be based off an existing copy, e.g. index, viewforum or viewtopic (the combination of which implement a range of conditional and variable forms). Please also note that the intendation and coding guidelines also apply to templates where possible.</p>
 
 <p>The outer table class <code>forumline</code> has gone and is replaced with <code>tablebg</code>.</p>
@@ -1068,6 +1078,8 @@ append_sid('memberlist', 'mode=group&amp;amp;g=' . $row['group_id'])
 		<div class="inner"><span class="corners-top"><span></span></span>
 
 		<div class="content">
+
+	<a name="templates"></a><h3>4.i. General Templating</h3>
 
 <h4>File naming</h4>
 <p>Firstly templates now take the suffix &quot;.html&quot; rather than &quot;.tpl&quot;. This was done simply to make the lifes of some people easier wrt syntax highlighting, etc.</p>
@@ -1456,6 +1468,29 @@ div
 	&lt;/fieldset&gt
 &lt;/form&gt
 		</pre></div><br />
+
+	<a name="inheritance"></a><h3>4.ii. Template Inheritance</h3>
+		<p>When basing a new template on an existing one, it is not necessary to provide all template files. By declaring the template  to be &quot;<strong>inheriting</strong>&quot; in the template configuration file.</p>
+
+		<p>The limitation on this is that the base style has to be installed and complete, meaning that it is not itself inheriting.</p>
+
+		<p>The effect of doing so is that the template engine will use the files in the new template where they exist, but fall back to files in the base template otherwise. Declaring a style to be inheriting also causes it to use some of the configuration settings of the base style, notably database storage.</p>
+
+		<p>We strongly encourage the use of inheritance for styles based on the bundled styles, as it will ease the update procedure.</p>
+
+		<div class="codebox"><pre>
+        # General Information about this template
+        name = inherits
+        copyright = &copy; phpBB Group, 2007
+        version = 3.0.3
+
+        # Defining a different template bitfield
+        template_bitfield = lNg=
+
+        # Are we inheriting?
+        inherit_from = prosilver
+		</pre></div>
+
 		</div>
 
 		<div class="back2top"><a href="#wrap" class="top">Back to Top</a></div>

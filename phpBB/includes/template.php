@@ -67,7 +67,7 @@ class template
 	public function set_custom_template($template_path, $template_name)
 	{
 		$this->root = $template_path;
-		$this->cachepath = PHPBB_ROOT_PATH . 'cache/ctpl_' . $template_name . '_';
+		$this->cachepath = PHPBB_ROOT_PATH . 'cache/ctpl_' . str_replace('_', '-', $template_name) . '_';
 
 		return true;
 	}
@@ -174,7 +174,7 @@ class template
 		}
 		else
 		{
-			// if we could not eval AND the file exists, something horrific has occured 
+			// if we could not eval AND the file exists, something horrific has occured
 			return false;
 		}
 

@@ -688,7 +688,7 @@ parse_css_file = {PARSE_CSS_FILE}
 			}
 			fwrite($fp, $template_data);
 			fclose($fp);
-			
+
 			// destroy the cached version of the template (filename without extension)
 			$this->clear_template_cache($template_info, array(substr($template_file, 0, -5)));
 
@@ -826,7 +826,7 @@ parse_css_file = {PARSE_CSS_FILE}
 			trigger_error($user->lang['TEMPLATE_CACHE_CLEARED'] . adm_back_link($this->u_action . "&amp;action=cache&amp;id=$template_id"));
 		}
 
-		$cache_prefix = 'tpl_' . $template_row['template_path'];
+		$cache_prefix = 'tpl_' . str_replace('_', '-', $template_row['template_path']);
 
 		// Someone wants to see the cached source ... so we'll highlight it,
 		// add line numbers and indent it appropriately. This could be nasty
@@ -1638,7 +1638,6 @@ parse_css_file = {PARSE_CSS_FILE}
 			if ($mode == 'template' || $inc_template)
 			{
 				$template_cfg = str_replace(array('{MODE}', '{NAME}', '{COPYRIGHT}', '{VERSION}'), array($mode, $style_row['template_name'], $style_row['template_copyright'], $config['version']), $this->template_cfg);
-				$template_cfg .= "\nbbcode_bitfield = {$style_row['bbcode_bitfield']}";
 
 				$data[] = array(
 					'src'		=> $template_cfg,
@@ -2193,7 +2192,7 @@ parse_css_file = {PARSE_CSS_FILE}
 	{
 		global $user;
 
-		$cache_prefix = 'tpl_' . $template_path;
+		$cache_prefix = 'tpl_' . str_replace('_', '-', $template_path);
 
 		if (!($dp = @opendir(PHPBB_ROOT_PATH . 'cache')))
 		{
@@ -2229,7 +2228,7 @@ parse_css_file = {PARSE_CSS_FILE}
 	{
 		global $user;
 
-		$cache_prefix = 'tpl_' . $template_row['template_path'];
+		$cache_prefix = 'tpl_' . str_replace('_', '-', $template_row['template_path']);
 
 		if (!$file_ary || !is_array($file_ary))
 		{

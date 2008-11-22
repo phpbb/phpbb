@@ -289,7 +289,7 @@ if ($mode == 'delete')
 if ($mode == 'bump')
 {
 	if ($bump_time = bump_topic_allowed($forum_id, $post_data['topic_bumped'], $post_data['topic_last_post_time'], $post_data['topic_poster'], $post_data['topic_last_poster_id'])
-	   && check_link_hash(request_var('hash', ''),"topic_{$post_data['topic_id']}"))
+	   && check_link_hash(request_var('hash', ''), "topic_{$post_data['topic_id']}"))
 	{
 		$db->sql_transaction('begin');
 

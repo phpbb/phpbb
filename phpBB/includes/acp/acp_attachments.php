@@ -768,6 +768,8 @@ class acp_attachments
 
 						$s_forum_id_options = '';
 
+						/** @todo use in-built function **/
+
 						$sql = 'SELECT forum_id, forum_name, parent_id, forum_type, left_id, right_id
 							FROM ' . FORUMS_TABLE . '
 							ORDER BY left_id ASC';
@@ -798,7 +800,7 @@ class acp_attachments
 							}
 							else if ($row['left_id'] > $right + 1)
 							{
-								$padding = $padding_store[$row['parent_id']];
+								$padding = empty($padding_store[$row['parent_id']]) ? '' : $padding_store[$row['parent_id']];
 							}
 
 							$right = $row['right_id'];
@@ -1171,7 +1173,7 @@ class acp_attachments
 					$location .= '/';
 				}
 
-				if (@is_readable($location . 'mogrify' . $exe) && @filesize($location . 'mogrify' . $exe) > 3000)
+				if (@file_exists($location) && @is_readable($location . 'mogrify' . $exe) && @filesize($location . 'mogrify' . $exe) > 3000)
 				{
 					$imagick = str_replace('\\', '/', $location);
 					continue;

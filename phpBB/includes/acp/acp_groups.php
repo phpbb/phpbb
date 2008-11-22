@@ -87,7 +87,7 @@ class acp_groups
 				// Approve, demote or promote
 				$group_name = ($group_row['group_type'] == GROUP_SPECIAL) ? $user->lang['G_' . $group_row['group_name']] : $group_row['group_name'];
 				$error = group_user_attributes($action, $group_id, $mark_ary, false, $group_name);
-				
+
 				if (!$error)
 				{
 					switch ($action)
@@ -111,7 +111,7 @@ class acp_groups
 				{
 					trigger_error($user->lang[$error] . adm_back_link($this->u_action . '&amp;action=list&amp;g=' . $group_id), E_USER_WARNING);
 				}
-				
+
 			break;
 
 			case 'default':
@@ -179,7 +179,7 @@ class acp_groups
 
 			case 'deleteusers':
 			case 'delete':
-    			if (!$group_id)
+				if (!$group_id)
 				{
 					trigger_error($user->lang['NO_GROUP'] . adm_back_link($this->u_action), E_USER_WARNING);
 				}
@@ -187,6 +187,7 @@ class acp_groups
 				{
 					trigger_error($user->lang['NO_AUTH_OPERATION'] . adm_back_link($this->u_action), E_USER_WARNING);
 				}
+
 				if (confirm_box(true))
 				{
 					$error = '';
@@ -751,14 +752,14 @@ class acp_groups
 			foreach ($row_ary as $group_id => $row)
 			{
 				$group_name = (!empty($user->lang['G_' . $row['group_name']]))? $user->lang['G_' . $row['group_name']] : $row['group_name'];
-				
+
 				$template->assign_block_vars('groups', array(
 					'U_LIST'		=> "{$this->u_action}&amp;action=list&amp;g=$group_id",
 					'U_EDIT'		=> "{$this->u_action}&amp;action=edit&amp;g=$group_id",
 					'U_DELETE'		=> ($auth->acl_get('a_groupdel')) ? "{$this->u_action}&amp;action=delete&amp;g=$group_id" : '',
 
 					'S_GROUP_SPECIAL'	=> ($row['group_type'] == GROUP_SPECIAL) ? true : false,
-					
+
 					'GROUP_NAME'	=> $group_name,
 					'TOTAL_MEMBERS'	=> $row['total_members'],
 					)

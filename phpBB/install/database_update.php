@@ -8,7 +8,7 @@
 *
 */
 
-$updates_to_version = '3.0.3-RC1';
+$updates_to_version = '3.0.3';
 
 // Return if we "just include it" to find out for which version the database update is responsuble for
 if (defined('IN_PHPBB') && defined('IN_INSTALL'))
@@ -78,7 +78,7 @@ if (version_compare(PHP_VERSION, '6.0.0-dev', '>='))
 }
 else
 {
-	set_magic_quotes_runtime(0);
+	@set_magic_quotes_runtime(0);
 	define('STRIP', (get_magic_quotes_gpc()) ? true : false);
 }
 
@@ -340,6 +340,9 @@ $unsigned_types = array('UINT', 'UINT:', 'USINT', 'BOOL', 'TIMESTAMP');
 
 // Only an example, but also commented out
 $database_update_info = array(
+
+	// No changes from 3.0.3-RC1 to 3.0.3
+	'3.0.3-RC1'		=> array(),
 );
 
 // Determine mapping database type
