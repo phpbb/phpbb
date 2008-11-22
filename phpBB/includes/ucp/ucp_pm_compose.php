@@ -424,7 +424,9 @@ function compose_pm($id, $mode, $action)
 	{
 		// We try to include every previously listed member from the TO Header
 		$list = rebuild_header(array('to' => $post['to_address']));
-		$list = $list['u'];
+
+		// Can be an empty array too ;)
+		$list = (!empty($list['u'])) ? $list['u'] : array();
 		$list[$post['author_id']] = 'to';
 
 		if (isset($list[$user->data['user_id']]))
