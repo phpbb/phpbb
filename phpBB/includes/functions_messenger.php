@@ -97,6 +97,12 @@ class messenger
 	*/
 	function im($address, $realname = '')
 	{
+		// IM-Addresses could be empty
+		if (!$address)
+		{
+			return;
+		}
+
 		$pos = isset($this->addresses['im']) ? sizeof($this->addresses['im']) : 0;
 		$this->addresses['im'][$pos]['uid'] = trim($address);
 		$this->addresses['im'][$pos]['name'] = trim($realname);
@@ -439,6 +445,11 @@ class messenger
 		global $config, $db, $user;
 
 		if (empty($config['jab_enable']) || empty($config['jab_host']) || empty($config['jab_username']) || empty($config['jab_password']))
+		{
+			return false;
+		}
+
+		if (empty($this->addresses['im']))
 		{
 			return false;
 		}
