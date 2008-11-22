@@ -211,7 +211,7 @@ class template
 
 		$filename = $this->cachepath . str_replace('/', '.', $this->filename[$handle]) . '.' . PHP_EXT;
 
-		$recompile = (($config['load_tplcompile'] && @filemtime($filename) < filemtime($this->files[$handle])) || !file_exists($filename) || @filesize($filename) === 0) ? true : false;
+		$recompile = (!file_exists($filename) || @filesize($filename) === 0 || ($config['load_tplcompile'] && @filemtime($filename) < filemtime($this->files[$handle]))) ? true : false;
 
 		// Recompile page if the original template is newer, otherwise load the compiled version
 		if ($recompile)
@@ -311,23 +311,6 @@ class template
 				$str = &$str[sizeof($str) - 1];
 			}
 
-			$s_row_count = isset($str[$blocks[$blockcount]]) ? sizeof($str[$blocks[$blockcount]]) : 0;
-			$vararray['S_ROW_COUNT'] = $s_row_count;
-
-			// Assign S_FIRST_ROW
-			if (!$s_row_count)
-			{
-				$vararray['S_FIRST_ROW'] = true;
-			}
-
-			// Now the tricky part, we always assign S_LAST_ROW and remove the entry before
-			// This is much more clever than going through the complete template data on display (phew)
-			$vararray['S_LAST_ROW'] = true;
-			if ($s_row_count > 0)
-			{
-				unset($str[$blocks[$blockcount]][($s_row_count - 1)]['S_LAST_ROW']);
-			}
-
 			// Now we add the block that we're actually assigning to.
 			// We're adding a new iteration to this block with the given
 			// variable assignments.
@@ -336,21 +319,6 @@ class template
 		else
 		{
 			// Top-level block.
-			$s_row_count = (isset($this->_tpldata[$blockname])) ? sizeof($this->_tpldata[$blockname]) : 0;
-			$vararray['S_ROW_COUNT'] = $s_row_count;
-
-			// Assign S_FIRST_ROW
-			if (!$s_row_count)
-			{
-				$vararray['S_FIRST_ROW'] = true;
-			}
-
-			// We always assign S_LAST_ROW and remove the entry before
-			$vararray['S_LAST_ROW'] = true;
-			if ($s_row_count > 0)
-			{
-				unset($this->_tpldata[$blockname][($s_row_count - 1)]['S_LAST_ROW']);
-			}
 
 			// Add a new iteration to this block with the variable assignments we were given.
 			$this->_tpldata[$blockname][] = $vararray;
@@ -427,28 +395,13 @@ class template
 		// Insert Block
 		if ($mode == 'insert')
 		{
-			// Make sure we are not exceeding the last iteration
-			if ($key >= sizeof($this->_tpldata[$blockname]))
-			{
-				$key = sizeof($this->_tpldata[$blockname]);
-				unset($this->_tpldata[$blockname][($key - 1)]['S_LAST_ROW']);
-				$vararray['S_LAST_ROW'] = true;
-			}
-			else if ($key === 0)
-			{
-				unset($this->_tpldata[$blockname][0]['S_FIRST_ROW']);
-				$vararray['S_FIRST_ROW'] = true;
-			}
-
 			// Re-position template blocks
 			for ($i = sizeof($this->_tpldata[$blockname]); $i > $key; $i--)
 			{
 				$this->_tpldata[$blockname][$i] = $this->_tpldata[$blockname][$i-1];
-				$this->_tpldata[$blockname][$i]['S_ROW_COUNT'] = $i;
 			}
 
 			// Insert vararray at given position
-			$vararray['S_ROW_COUNT'] = $key;
 			$this->_tpldata[$blockname][$key] = $vararray;
 
 			return true;

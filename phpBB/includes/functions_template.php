@@ -413,7 +413,34 @@ class template_filter extends php_user_filter
 					$varrefs = array();
 					if (preg_match('#^((?:[a-z0-9\-_]+\.)+)?(\$)?(?=[A-Z])([A-Z0-9\-_]+)#s', $token, $varrefs))
 					{
-						$token = (!empty($varrefs[1])) ? $this->generate_block_data_ref(substr($varrefs[1], 0, -1), true, $varrefs[2]) . '[\'' . $varrefs[3] . '\']' : (($varrefs[2]) ? '$_tpldata[\'DEFINE\'][\'.\'][\'' . $varrefs[3] . '\']' : '$_rootref[\'' . $varrefs[3] . '\']');
+						if (!empty($varrefs[1]))
+						{
+							$namespace = substr($varrefs[1], 0, -1);
+							$namespace = (strpos($namespace, '.') === false) ? $namespace : strrchr($namespace, '.');
+
+							// S_ROW_COUNT is deceptive, it returns the current row number now the number of rows
+							// hence S_ROW_COUNT is deprecated in favour of S_ROW_NUM
+							if ($varrefs[3] == 'S_ROW_NUM' || $varrefs[3] == 'S_ROW_COUNT')
+							{
+								$token = "\$_${namespace}_i";
+							}
+							else if ($varrefs[3] == 'S_FIRST_ROW')
+							{
+								$token = "(\$_${namespace}_i == 0)";
+							}
+							else if ($varrefs[3] == 'S_LAST_ROW')
+							{
+								$token = "(\$_${namespace}_i == \$_${namespace}_count - 1)";
+							}
+							else
+							{
+								$token = $this->generate_block_data_ref(substr($varrefs[1], 0, -1), true, $varrefs[2]) . '[\'' . $varrefs[3] . '\']';
+							}
+						}
+						else
+						{
+							$token = ($varrefs[2]) ? '$_tpldata[\'DEFINE\'][\'.\'][\'' . $varrefs[3] . '\']' : '$_rootref[\'' . $varrefs[3] . '\']';
+						}
 					}
 					else if (preg_match('#^\.((?:[a-z0-9\-_]+\.?)+)$#s', $token, $varrefs))
 					{
@@ -439,7 +466,7 @@ class template_filter extends php_user_filter
 							// Add the block reference for the last child.
 							$varref .= "['" . $blocks[0] . "']";
 						}
-						$token = "sizeof($varref)";
+						$token = "isset($varref) && sizeof($varref)";
 					}
 
 				break;
@@ -579,12 +606,29 @@ class template_filter extends php_user_filter
 		// Strip the trailing period.
 		$namespace = substr($namespace, 0, -1);
 
-		// Get a reference to the data block for this namespace.
-		$varref = $this->generate_block_data_ref($namespace, true, $defop);
-		// Prepend the necessary code to stick this in an echo line.
+		// S_ROW_COUNT is deceptive, it returns the current row number now the number of rows
+		// hence S_ROW_COUNT is deprecated in favour of S_ROW_NUM
+		if ($varname == 'S_ROW_NUM' || $varname == 'S_ROW_COUNT')
+		{
+			$varref = "\$_${namespace}_i";
+		}
+		else if ($varname == 'S_FIRST_ROW')
+		{
+			$varref = "(\$_${namespace}_i == 0)";
+		}
+		else if ($varname == 'S_LAST_ROW')
+		{
+			$varref = "(\$_${namespace}_i == \$_${namespace}_count - 1)";
+		}
+		else
+		{
+			// Get a reference to the data block for this namespace.
+			$varref = $this->generate_block_data_ref($namespace, true, $defop);
+			// Prepend the necessary code to stick this in an echo line.
 
-		// Append the variable reference.
-		$varref .= "['$varname']";
+			// Append the variable reference.
+			$varref .= "['$varname']";
+		}
 		$varref = ($echo) ? "<?php echo $varref; ?>" : ((isset($varref)) ? $varref : '');
 
 		return $varref;

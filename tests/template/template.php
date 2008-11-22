@@ -44,9 +44,25 @@ class phpbb_template_template_test extends PHPUnit_Framework_TestCase
 
 	protected function setUp()
 	{
+		// Test the engine can be used
+		$this->setup_engine();
 
+		if (!is_writable(dirname($this->template->cachepath)))
+		{
+			$this->markTestSkipped("Template cache directory is not writable.");
+		}
+
+		$this->error_reporting = error_reporting(error_reporting() & ~E_NOTICE);
 	}
 
+	protected function tearDown()
+	{
+		error_reporting($this->error_reporting);
+	}
+
+	/**
+	 * @todo put test data into templates/xyz.test
+	 */
 	public static function template_data()
 	{
 		return array(
@@ -92,19 +108,19 @@ class phpbb_template_template_test extends PHPUnit_Framework_TestCase
 				'loop.html',
 				array(),
 				array('loop' => array(array(), array())),
-				"loop\nloop\nloop",
+				"loop\nloop\nloop\nloop",
 			),
 			array(
 				'loop_vars.html',
 				array(),
 				array('loop' => array(array('VARIABLE' => 'x'))),
-				"first\n0\nx\nlast",
+				"first\n0\n0\nx\nlast",
 			),
 			array(
 				'loop_vars.html',
 				array(),
 				array('loop' => array(array('VARIABLE' => 'x'), array('VARIABLE' => 'y'))),
-				"first\n0\nx\n1\ny\nlast",
+				"first\n0\n0\nx\n1\n1\ny\nlast",
 			),
 			array(
 				'define.html',
@@ -138,7 +154,7 @@ class phpbb_template_template_test extends PHPUnit_Framework_TestCase
 			}
 		}
 
-		$this->assertEquals($expected, $this->display('test'), "Testing $file.html");
+		$this->assertEquals($expected, $this->display('test'), "Testing $file");
 	}
 }
 ?>
