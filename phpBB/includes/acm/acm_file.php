@@ -93,6 +93,12 @@ class acm
 			@flock($fp, LOCK_UN);
 			fclose($fp);
 
+			if (!function_exists('phpbb_chmod'))
+			{
+				global $phpbb_root_path;
+				include($phpbb_root_path . 'includes/functions.' . $phpEx);
+			}
+
 			phpbb_chmod($this->cache_dir . 'data_global.' . $phpEx, CHMOD_WRITE);
 		}
 		else
@@ -196,6 +202,12 @@ class acm
 				fwrite($fp, "<?php\n\$expired = (time() > " . (time() + $ttl) . ") ? true : false;\nif (\$expired) { return; }\n\n\$data = unserialize(" . var_export(serialize($var), true) . ");\n\n?>");
 				@flock($fp, LOCK_UN);
 				fclose($fp);
+
+				if (!function_exists('phpbb_chmod'))
+				{
+					global $phpbb_root_path;
+					include($phpbb_root_path . 'includes/functions.' . $phpEx);
+				}
 
 				phpbb_chmod($this->cache_dir . "data{$var_name}.$phpEx", CHMOD_WRITE);
 			}
@@ -415,6 +427,12 @@ class acm
 			fwrite($fp, $file . "\n\$this->sql_rowset[\$query_id] = unserialize(" . var_export(serialize($this->sql_rowset[$query_id]), true) . ");\n\n?>");
 			@flock($fp, LOCK_UN);
 			fclose($fp);
+
+			if (!function_exists('phpbb_chmod'))
+			{
+				global $phpbb_root_path;
+				include($phpbb_root_path . 'includes/functions.' . $phpEx);
+			}
 
 			phpbb_chmod($filename, CHMOD_WRITE);
 
