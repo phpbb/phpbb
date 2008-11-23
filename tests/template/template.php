@@ -126,6 +126,12 @@ class phpbb_template_template_test extends PHPUnit_Framework_TestCase
 				"first\n0\n0\n2\nx\n1\n1\n2\ny\nlast\n0\n1",
 			),
 			array(
+				'loop_advanced.html',
+				array(),
+				array('loop' => array(array(), array(), array(), array(), array(), array(), array())),
+				"101234561\n101234561\n101234561\n1234561\n1\n101\n234\n10\n561\n561",
+			),
+			array(
 				'define.html',
 				array(),
 				array(),
@@ -143,7 +149,7 @@ class phpbb_template_template_test extends PHPUnit_Framework_TestCase
 				array(),
 				'value',
 			),
-		);			
+		);
 	}
 
 	private function run_template($file, array $vars, array $block_vars, $expected, $cache_file)
