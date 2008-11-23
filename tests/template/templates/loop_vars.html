@@ -9,10 +9,15 @@
 
 {loop.VARIABLE}
 
+<!-- IF loop.VARIABLE -->set<!-- ENDIF -->
+
 <!-- IF loop.S_LAST_ROW -->last<!-- ENDIF -->
 <!-- BEGIN inner -->
 
 {inner.S_ROW_NUM}
 
+<!-- IF inner.S_LAST_ROW and inner.S_ROW_NUM and inner.S_NUM_ROWS -->last inner<!-- ENDIF -->
+
 <!-- END inner -->
 <!-- END loop -->
+<!-- IF .loop.inner -->inner loop<!-- ENDIF -->
