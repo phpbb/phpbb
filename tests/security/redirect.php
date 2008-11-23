@@ -19,14 +19,6 @@ define('PHP_EXT', 'php');
 require_once '../phpBB/includes/functions.php';
 require_once '../phpBB/includes/session.php';
 
-if (!isset($config))
-{
-	$config = array();
-}
-$config += array(
-	'force_server_vars'	=> 0,
-);
-
 class phpbb_security_redirect_test extends PHPUnit_Extensions_OutputTestCase
 {
 	protected $error_triggered = false;
@@ -41,6 +33,13 @@ class phpbb_security_redirect_test extends PHPUnit_Extensions_OutputTestCase
 			array("http://localhost/phpBB/memberlist.php\n\rConnection: close", 'Tried to redirect to potentially insecure url.', false),
 			array('javascript:test', false, 'http://localhost/phpBB/../tests/javascript:test'),
 			array('http://localhost/phpBB/index.php;url=', 'Tried to redirect to potentially insecure url.', false),
+		);
+	}
+
+	protected function setUp()
+	{
+		$GLOBALS['config'] = array(
+			'force_server_vars'	=> 0,
 		);
 	}
 

@@ -18,19 +18,9 @@ require_once '../phpBB/includes/constants.php';
 require_once '../phpBB/includes/functions.php';
 require_once '../phpBB/includes/template.php';
 
-if (!isset($config))
-{
-	$config = array();
-}
-$config += array(
-	'load_tplcompile' => true
-);
-
 class phpbb_template_template_test extends PHPUnit_Framework_TestCase
 {
 	private $template;
-	private static $ran_non_cached = false;
-
 	private function display($handle)
 	{
 		ob_start();
@@ -41,18 +31,10 @@ class phpbb_template_template_test extends PHPUnit_Framework_TestCase
 		return $contents;
 	}
 
-	private function setup_engine($clear_cache = false)
+	private function setup_engine()
 	{
 		$this->template = new template;
 		$this->template->set_custom_template(dirname(__FILE__) . '/templates/', 'tests');
-
-		if ($clear_cache)
-		{
-			foreach (glob($this->template->cachepath . '*') as $file)
-			{
-				unlink($file);
-			}
-		}
 	}
 
 	protected function setUp()
@@ -64,6 +46,15 @@ class phpbb_template_template_test extends PHPUnit_Framework_TestCase
 		{
 			$this->markTestSkipped("Template cache directory is not writable.");
 		}
+
+		foreach (glob($this->template->cachepath . '*') as $file)
+		{
+			unlink($file);
+		}
+
+		$GLOBALS['config'] = array(
+			'load_tplcompile' => true
+		);
 	}
 
 	/**
@@ -158,37 +149,12 @@ class phpbb_template_template_test extends PHPUnit_Framework_TestCase
 	/**
 	* @dataProvider template_data
 	*/
-	public function test_template_no_cache($file, array $vars, array $block_vars, $expected)
-	{
-		$this->setup_engine(true);
-		$this->template->set_filenames(array('test' => $file));
-		$this->template->assign_vars($vars);
-
-		foreach ($block_vars as $block => $loops)
-		{
-			foreach ($loops as $_vars)
-			{
-				$this->template->assign_block_vars($block, $_vars);
-			}
-		}
-
-		$this->assertEquals($expected, $this->display('test'), "Testing $file");
-
-		self::$ran_non_cached = true;
-	}
-
-	/**
-	* @dataProvider template_data
-	*/
 	public function test_template($file, array $vars, array $block_vars, $expected)
 	{
-		if (!self::$ran_non_cached)
-		{
-			$this->fail('Non cached tests failed to run first');
-			return;
-		}
+		$cache_file = $this->template->cachepath . str_replace('/', '.', $file) . '.' . PHP_EXT;
 
-		$this->setup_engine();
+		$this->assertFileNotExists($cache_file);
+
 		$this->template->set_filenames(array('test' => $file));
 		$this->template->assign_vars($vars);
 
@@ -201,6 +167,24 @@ class phpbb_template_template_test extends PHPUnit_Framework_TestCase
 		}
 
 		$this->assertEquals($expected, $this->display('test'), "Testing $file");
+		$this->assertFileExists($cache_file);
+
+		// Reset the engine state
+		$this->setup_engine();
+
+		$this->template->set_filenames(array('test' => $file));
+		$this->template->assign_vars($vars);
+
+		foreach ($block_vars as $block => $loops)
+		{
+			foreach ($loops as $_vars)
+			{
+				$this->template->assign_block_vars($block, $_vars);
+			}
+		}
+
+		$this->assertEquals($expected, $this->display('test'), "Testing $file");
+		$this->assertFileExists($cache_file);
 	}
 }
 ?>
