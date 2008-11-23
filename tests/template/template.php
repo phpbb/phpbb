@@ -18,7 +18,11 @@ require_once '../phpBB/includes/constants.php';
 require_once '../phpBB/includes/functions.php';
 require_once '../phpBB/includes/template.php';
 
-$config = array(
+if (!isset($config))
+{
+	$config = array();
+}
+$config += array(
 	'load_tplcompile' => true
 );
 
