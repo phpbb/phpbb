@@ -29,6 +29,7 @@ $config += array(
 class phpbb_template_template_test extends PHPUnit_Framework_TestCase
 {
 	private $template;
+	private static $ran_non_cached = false;
 
 	private function display($handle)
 	{
@@ -40,10 +41,18 @@ class phpbb_template_template_test extends PHPUnit_Framework_TestCase
 		return $contents;
 	}
 
-	private function setup_engine()
+	private function setup_engine($clear_cache = false)
 	{
 		$this->template = new template;
 		$this->template->set_custom_template(dirname(__FILE__) . '/templates/', 'tests');
+
+		if ($clear_cache)
+		{
+			foreach (glob($this->template->cachepath . '*') as $file)
+			{
+				unlink($file);
+			}
+		}
 	}
 
 	protected function setUp()
@@ -55,13 +64,6 @@ class phpbb_template_template_test extends PHPUnit_Framework_TestCase
 		{
 			$this->markTestSkipped("Template cache directory is not writable.");
 		}
-
-		$this->error_reporting = error_reporting(error_reporting() & ~E_NOTICE);
-	}
-
-	protected function tearDown()
-	{
-		error_reporting($this->error_reporting);
 	}
 
 	/**
@@ -127,6 +129,12 @@ class phpbb_template_template_test extends PHPUnit_Framework_TestCase
 				"first\n0\n0\nx\n1\n1\ny\nlast",
 			),
 			array(
+				'loop_vars.html',
+				array(),
+				array('loop' => array(array('VARIABLE' => 'x'), array('VARIABLE' => 'y')), 'loop.inner' => array(array(), array())),
+				"first\n0\n0\nx\n1\n1\ny\nlast\n0\n1",
+			),
+			array(
 				'define.html',
 				array(),
 				array(),
@@ -138,7 +146,35 @@ class phpbb_template_template_test extends PHPUnit_Framework_TestCase
 				array(),
 				trim(str_repeat("pass\n", 38)),
 			),
+			array(
+				'include.html',
+				array('VARIABLE' => 'value'),
+				array(),
+				'value',
+			),
 		);			
+	}
+
+	/**
+	* @dataProvider template_data
+	*/
+	public function test_template_no_cache($file, array $vars, array $block_vars, $expected)
+	{
+		$this->setup_engine(true);
+		$this->template->set_filenames(array('test' => $file));
+		$this->template->assign_vars($vars);
+
+		foreach ($block_vars as $block => $loops)
+		{
+			foreach ($loops as $_vars)
+			{
+				$this->template->assign_block_vars($block, $_vars);
+			}
+		}
+
+		$this->assertEquals($expected, $this->display('test'), "Testing $file");
+
+		self::$ran_non_cached = true;
 	}
 
 	/**
@@ -146,6 +182,12 @@ class phpbb_template_template_test extends PHPUnit_Framework_TestCase
 	*/
 	public function test_template($file, array $vars, array $block_vars, $expected)
 	{
+		if (!self::$ran_non_cached)
+		{
+			$this->fail('Non cached tests failed to run first');
+			return;
+		}
+
 		$this->setup_engine();
 		$this->template->set_filenames(array('test' => $file));
 		$this->template->assign_vars($vars);
