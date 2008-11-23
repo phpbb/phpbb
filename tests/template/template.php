@@ -146,6 +146,23 @@ class phpbb_template_template_test extends PHPUnit_Framework_TestCase
 		);			
 	}
 
+	private function run_template($file, array $vars, array $block_vars, $expected, $cache_file)
+	{
+		$this->template->set_filenames(array('test' => $file));
+		$this->template->assign_vars($vars);
+
+		foreach ($block_vars as $block => $loops)
+		{
+			foreach ($loops as $_vars)
+			{
+				$this->template->assign_block_vars($block, $_vars);
+			}
+		}
+
+		$this->assertEquals($expected, $this->display('test'), "Testing $file");
+		$this->assertFileExists($cache_file);
+	}
+
 	/**
 	* @dataProvider template_data
 	*/
@@ -155,36 +172,12 @@ class phpbb_template_template_test extends PHPUnit_Framework_TestCase
 
 		$this->assertFileNotExists($cache_file);
 
-		$this->template->set_filenames(array('test' => $file));
-		$this->template->assign_vars($vars);
-
-		foreach ($block_vars as $block => $loops)
-		{
-			foreach ($loops as $_vars)
-			{
-				$this->template->assign_block_vars($block, $_vars);
-			}
-		}
-
-		$this->assertEquals($expected, $this->display('test'), "Testing $file");
-		$this->assertFileExists($cache_file);
+		$this->run_template($file, $vars, $block_vars, $expected, $cache_file);
 
 		// Reset the engine state
 		$this->setup_engine();
 
-		$this->template->set_filenames(array('test' => $file));
-		$this->template->assign_vars($vars);
-
-		foreach ($block_vars as $block => $loops)
-		{
-			foreach ($loops as $_vars)
-			{
-				$this->template->assign_block_vars($block, $_vars);
-			}
-		}
-
-		$this->assertEquals($expected, $this->display('test'), "Testing $file");
-		$this->assertFileExists($cache_file);
+		$this->run_template($file, $vars, $block_vars, $expected, $cache_file);
 	}
 }
 ?>
