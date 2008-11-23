@@ -28,10 +28,44 @@ class p_master
 	var $p_mode;
 	var $p_parent;
 
+	var $include_path = false;
 	var $active_module = false;
 	var $active_module_row_id = false;
 	var $acl_forum_id = false;
 	var $module_ary = array();
+
+	/**
+	* Constuctor
+	* Set module include path
+	*/
+	public function __construct($include_path = false)
+	{
+		$this->include_path = ($include_path !== false) ? $include_path : PHPBB_ROOT_PATH . 'includes/';
+
+		// Make sure the path ends with /
+		if (substr($this->include_path, -1) !== '/')
+		{
+			$this->include_path .= '/';
+		}
+	}
+
+	/**
+	* Set custom include path for modules
+	* Schema for inclusion is include_path . modulebase
+	*
+	* @param string $include_path include path to be used.
+	* @access public
+	*/
+	public function set_custom_include_path($include_path)
+	{
+		$this->include_path = $include_path;
+
+		// Make sure the path ends with /
+		if (substr($this->include_path, -1) !== '/')
+		{
+			$this->include_path .= '/';
+		}
+	}
 
 	/**
 	* List modules
@@ -394,7 +428,7 @@ class p_master
 	{
 		global $user;
 
-		$module_path = PHPBB_ROOT_PATH . 'includes/' . $this->p_class;
+		$module_path = $this->include_path . $this->p_class;
 		$icat = request_var('icat', '');
 
 		if ($this->active_module === false)
