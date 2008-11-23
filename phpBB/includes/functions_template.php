@@ -427,6 +427,10 @@ class template_filter extends php_user_filter
 									$token = "\$_${namespace}_i";
 								break;
 
+								case 'S_NUM_ROWS':
+									$token = "\$_${namespace}_count";
+								break;
+
 								case 'S_FIRST_ROW':
 									$token = "(\$_${namespace}_i == 0)";
 								break;
@@ -616,6 +620,10 @@ class template_filter extends php_user_filter
 			case 'S_ROW_NUM':
 			case 'S_ROW_COUNT':
 				$varref = "\$_${namespace}_i";
+			break;
+
+			case 'S_NUM_ROWS':
+				$varref = "\$_${namespace}_count";
 			break;
 
 			case 'S_FIRST_ROW':

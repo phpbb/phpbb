@@ -111,19 +111,19 @@ class phpbb_template_template_test extends PHPUnit_Framework_TestCase
 				'loop_vars.html',
 				array(),
 				array('loop' => array(array('VARIABLE' => 'x'))),
-				"first\n0\n0\nx\nlast",
+				"first\n0\n0\n1\nx\nlast",
 			),
 			array(
 				'loop_vars.html',
 				array(),
 				array('loop' => array(array('VARIABLE' => 'x'), array('VARIABLE' => 'y'))),
-				"first\n0\n0\nx\n1\n1\ny\nlast",
+				"first\n0\n0\n2\nx\n1\n1\n2\ny\nlast",
 			),
 			array(
 				'loop_vars.html',
 				array(),
 				array('loop' => array(array('VARIABLE' => 'x'), array('VARIABLE' => 'y')), 'loop.inner' => array(array(), array())),
-				"first\n0\n0\nx\n1\n1\ny\nlast\n0\n1",
+				"first\n0\n0\n2\nx\n1\n1\n2\ny\nlast\n0\n1",
 			),
 			array(
 				'define.html',
