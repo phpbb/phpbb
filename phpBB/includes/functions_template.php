@@ -420,21 +420,24 @@ class template_filter extends php_user_filter
 
 							// S_ROW_COUNT is deceptive, it returns the current row number now the number of rows
 							// hence S_ROW_COUNT is deprecated in favour of S_ROW_NUM
-							if ($varrefs[3] == 'S_ROW_NUM' || $varrefs[3] == 'S_ROW_COUNT')
+							switch ($varrefs[3])
 							{
-								$token = "\$_${namespace}_i";
-							}
-							else if ($varrefs[3] == 'S_FIRST_ROW')
-							{
-								$token = "(\$_${namespace}_i == 0)";
-							}
-							else if ($varrefs[3] == 'S_LAST_ROW')
-							{
-								$token = "(\$_${namespace}_i == \$_${namespace}_count - 1)";
-							}
-							else
-							{
-								$token = $this->generate_block_data_ref(substr($varrefs[1], 0, -1), true, $varrefs[2]) . '[\'' . $varrefs[3] . '\']';
+								case 'S_ROW_NUM':
+								case 'S_ROW_COUNT':
+									$token = "\$_${namespace}_i";
+								break;
+
+								case 'S_FIRST_ROW':
+									$token = "(\$_${namespace}_i == 0)";
+								break;
+
+								case 'S_LAST_ROW':
+									$token = "(\$_${namespace}_i == \$_${namespace}_count - 1)";
+								break;
+
+								default:
+									$token = $this->generate_block_data_ref(substr($varrefs[1], 0, -1), true, $varrefs[2]) . '[\'' . $varrefs[3] . '\']';
+								break;
 							}
 						}
 						else
@@ -608,26 +611,29 @@ class template_filter extends php_user_filter
 
 		// S_ROW_COUNT is deceptive, it returns the current row number now the number of rows
 		// hence S_ROW_COUNT is deprecated in favour of S_ROW_NUM
-		if ($varname == 'S_ROW_NUM' || $varname == 'S_ROW_COUNT')
+		switch ($varname)
 		{
-			$varref = "\$_${namespace}_i";
-		}
-		else if ($varname == 'S_FIRST_ROW')
-		{
-			$varref = "(\$_${namespace}_i == 0)";
-		}
-		else if ($varname == 'S_LAST_ROW')
-		{
-			$varref = "(\$_${namespace}_i == \$_${namespace}_count - 1)";
-		}
-		else
-		{
-			// Get a reference to the data block for this namespace.
-			$varref = $this->generate_block_data_ref($namespace, true, $defop);
-			// Prepend the necessary code to stick this in an echo line.
+			case 'S_ROW_NUM':
+			case 'S_ROW_COUNT':
+				$varref = "\$_${namespace}_i";
+			break;
 
-			// Append the variable reference.
-			$varref .= "['$varname']";
+			case 'S_FIRST_ROW':
+				$varref = "(\$_${namespace}_i == 0)";
+			break;
+
+			case 'S_LAST_ROW':
+				$varref = "(\$_${namespace}_i == \$_${namespace}_count - 1)";
+			break;
+
+			default:
+				// Get a reference to the data block for this namespace.
+				$varref = $this->generate_block_data_ref($namespace, true, $defop);
+				// Prepend the necessary code to stick this in an echo line.
+
+				// Append the variable reference.
+				$varref .= "['$varname']";
+			break;
 		}
 		$varref = ($echo) ? "<?php echo $varref; ?>" : ((isset($varref)) ? $varref : '');
 
