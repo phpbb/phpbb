@@ -19,6 +19,503 @@ if (!defined('IN_PHPBB'))
 // Common global functions
 
 /**
+* Replacement for a superglobal (like $_GET or $_POST) which calls
+* trigger_error on any operation, overloads the [] operator using SPL.
+* @package phpBB3
+*/
+class deactivated_super_global implements ArrayAccess, Countable, IteratorAggregate
+{
+	/**
+	* Holds the error message
+	*/
+	private $message;
+
+	/**
+	* Constructor generates an error message fitting the super global to be
+	* used within the other functions.
+	*
+	* @param	string	$name	Name of the super global this is a replacement for - e.g. '_GET'
+	*/
+	public function __construct($name)
+	{
+		$this->message = 'Illegal use of $' . $name . '. You must use the request class or request_var() to access input data. Found in %s on line %d. This error message was generated';
+	}
+
+	/**
+	* Calls trigger_error with the file and line number the super global was used in
+	*/
+	private function error()
+	{
+		$file = '';
+		$line = 0;
+
+		$backtrace = debug_backtrace();
+		if (isset($backtrace[1]))
+		{
+			$file = $backtrace[1]['file'];
+			$line = $backtrace[1]['line'];
+		}
+		trigger_error(sprintf($this->message, $file, $line), E_USER_ERROR);
+	}
+
+	/**
+	* Part of the ArrayAccess implementation, will always result in a FATAL error
+	*/
+	public function offsetExists($offset)
+	{
+		$this->error();
+	}
+
+	/**
+	* Part of the ArrayAccess implementation, will always result in a FATAL error
+	*/
+	public function offsetGet($offset)
+	{
+		$this->error();
+	}
+
+	/**
+	* Part of the ArrayAccess implementation, will always result in a FATAL error
+	*/
+	public function offsetSet($offset, $value)
+	{
+		$this->error();
+	}
+
+	/**
+	* Part of the ArrayAccess implementation, will always result in a FATAL error
+	*/
+	public function offsetUnset($offset)
+	{
+		$this->error();
+	}
+
+	/**
+	* Part of the Countable implementation, will always result in a FATAL error
+	*/
+	public function count()
+	{
+		$this->error();
+	}
+
+	/**
+	* Part of the Traversable/IteratorAggregate implementation, will always result in a FATAL error
+	*/
+	public function getIterator()
+	{
+		$this->error();
+	}
+}
+
+/**
+* All application input is accessed through this class. It provides a method
+* to disable access to input data through super globals. This should force MOD
+* authors to read about data validation.
+* @package phpBB3
+*/
+class request
+{
+	const POST = 0;
+	const GET = 1;
+	const REQUEST = 2;
+	const COOKIE = 3;
+
+	protected static $initialised = false;
+	protected static $super_globals_disabled = false;
+
+	/**
+	* The names of super global variables that this class should protect
+	* if super globals are disabled
+	*/
+	protected static $super_globals = array(request::POST => '_POST', request::GET => '_GET', request::REQUEST => '_REQUEST', request::COOKIE => '_COOKIE');
+
+	/**
+	* An associative array that has the value of super global constants as
+	* keys and holds their data as values.
+	*/
+	protected static $input;
+
+	/**
+	* Initialises the request class, that means it stores all input data in
+	* self::$input
+	*/
+	public static function init()
+	{
+		if (!self::$initialised)
+		{
+			foreach (self::$super_globals as $const => $super_global)
+			{
+				self::$input[$const] = $GLOBALS[$super_global];
+			}
+	
+			self::$initialised = true;
+		}
+	}
+
+	/**
+	* Resets the request class.
+	* This will simply forget about all input data and read it again from the
+	* super globals, if super globals were disabled, all data will be gone.
+	*/
+	public static function reset()
+	{
+		self::$input = array();
+		self::$initialised = false;
+		self::$super_globals_disabled = false;
+	}
+
+	/**
+	* Getter for $super_globals_disabled
+	* @return	bool	Whether super globals are disabled or not.
+	*/
+	public static function super_globals_disabled()
+	{
+		return self::$super_globals_disabled;
+	}
+
+	/**
+	* Disables access of super globals specified in $super_globals.
+	* This is achieved by overwriting the super globals with instances of
+	* {@link deactivated_super_global deactivated_super_global}
+	*/
+	public static function disable_super_globals()
+	{
+		if (!self::$initialised)
+		{
+			self::init();
+		}
+
+		foreach (self::$super_globals as $const => $super_global)
+		{
+			unset($GLOBALS[$super_global]);
+			$GLOBALS[$super_global] = new deactivated_super_global($super_global);
+		}
+
+		self::$super_globals_disabled = true;
+	}
+
+	/**
+	* Enables access of super globals specified in $super_globals if they were
+	* disabled by {@link disable_super_globals disable_super_globals}.
+	* This is achieved by making the super globals point to the data stored
+	* within this class in {@link input input}.
+	*/
+	public static function enable_super_globals()
+	{
+		if (!self::$initialised)
+		{
+			self::init();
+		}
+
+		if (self::$super_globals_disabled)
+		{
+			foreach (self::$super_globals as $const => $super_global)
+			{
+				$GLOBALS[$super_global] = self::$input[$const];
+			}
+	
+			self::$super_globals_disabled = false;
+		}
+	}
+
+	/**
+	* Recursively applies addslashes to a variable.
+	*
+	* @param	mixed	$var	Variable passed by reference to which slashes
+	*							will be added.
+	*/
+	protected static function addslashes_recursively(&$var)
+	{
+		if (is_string($var))
+		{
+			$var = addslashes($var);
+		}
+		else if (is_array($var))
+		{
+			$var_copy = $var;
+			foreach ($var_copy as $key => $value)
+			{
+				if (is_string($key))
+				{
+					$key = addslashes($key);
+				}
+				self::addslashes_recursively($var[$key]);
+			}
+		}
+	}
+
+	/**
+	* This function allows overwriting or setting a value in one of the super
+	* global arrays.
+	* Changes which are performed on the super globals directly will not have
+	* any effect on the results of other methods this class provides. Using
+	* this function should be avoided if possible! It will consume twice the
+	* the amount of memory of the value
+	*
+	* @param	string	$var_name	The name of the variable that shall be
+	*								overwritten
+	* @param	mixed	$value		The value which the variable shall contain.
+	*								If this is null the variable will be unset.
+	* @param	request::POST|request::GET|request::REQUEST|request::COOKIE	$super_global
+	*								Specifies which super global shall be changed
+	*/
+	public static function overwrite($var_name, $value, $super_global = request::REQUEST)
+	{
+		if (!self::$initialised)
+		{
+			self::init();
+		}
+
+		if (!isset(self::$super_globals[$super_global]))
+		{
+			return;
+		}
+
+		if (STRIP)
+		{
+			self::addslashes_recursively($value);
+		}
+
+		// setting to null means unsetting
+		if ($value === null)
+		{
+			unset(self::$input[$super_global][$var_name]);
+			if (!self::super_globals_disabled())
+			{
+				unset($GLOBALS[self::$super_globals[$super_global]][$var_name]);
+			}
+		}
+		else
+		{
+			self::$input[$super_global][$var_name] = $value;
+			if (!self::super_globals_disabled())
+			{
+				$GLOBALS[self::$super_globals[$super_global]][$var_name] = $value;
+			}
+		}
+
+		if (!self::super_globals_disabled())
+		{
+			unset($GLOBALS[self::$super_globals[$super_global]][$var_name]);
+			$GLOBALS[self::$super_globals[$super_global]][$var_name] = $value;
+		}
+	}
+
+	/**
+	* Recursively sets a variable to a given type using {@link set_var set_var}
+	* This function is only used from within {@link request::variable request::variable}.
+	*
+	* @param	string	$var		The value which shall be sanitised (passed
+									by reference).
+	* @param	mixed	$default	Specifies the type $var shall have. If it
+	*								is an array and $var is not one, then an
+	*								empty array is returned. Otherwise var
+	*								is cast to the same type, and if $default
+	*								is an array all keys and values are cast
+	*								recursively using this function too.
+	* @param	bool	$multibyte	Indicates whether string values may contain
+	*								UTF-8 characters. Default is false, causing
+	*								all bytes outside the ASCII range (0-127)
+	*								to be replaced with question marks.
+	*/
+	protected static function recursive_set_var(&$var, $default, $multibyte)
+	{
+		if (is_array($var) !== is_array($default))
+		{
+			$var = (is_array($default)) ? array() : $default;
+			return;
+		}
+
+		if (!is_array($default))
+		{
+			$type = gettype($default);
+			set_var($var, $var, $type, $multibyte);
+		}
+		else
+		{
+			// make sure there is at least one key/value pair to use get the
+			// types from
+			if (!sizeof($default))
+			{
+				$var = array();
+				return;
+			}
+
+			list($default_key, $default_value) = each($default);
+			$value_type = gettype($default_value);
+			$key_type = gettype($default_key);
+
+			$_var = $var;
+			$var = array();
+	
+			foreach ($_var as $k => $v)
+			{
+				set_var($k, $k, $key_type, $multibyte);
+
+				self::recursive_set_var($v, $default_value, $multibyte);
+				set_var($var[$k], $v, $value_type, $multibyte);
+			}
+		}
+	}
+
+	/**
+	* Central type safe input handling function.
+	* All variables in GET or POST requests should be retrieved through this
+	* function to maximise security.
+	*
+	* @param	string|array	$var_name	The form variable's name from which data
+	*								shall be retrieved. If the value is an array this
+	*								may be an array of indizes which will give direct
+	*								access to a value at any depth. E.g. if the value
+	*								of "var" is array(1 => "a") then specifying
+	*								array("var", 1) as the name will return "a".
+	* @param	mixed	$default	A default value that is returned if the variable
+	*								was not set. This function will always return a
+	*								a value of the same type as the default.
+	* @param	bool	$multibyte	If $default is a string this paramater has to be
+	*								true if the variable may contain any UTF-8 characters
+	*								Default is false, causing all bytes outside the ASCII
+	*								range (0-127) to be replaced with question marks
+	* @param	request::POST|request::GET|request::REQUEST|request::COOKIE	$super_global
+	*								Specifies which super global should be used
+	* @return	mixed				The value of $_REQUEST[$var_name] run through
+	*								{@link set_var set_var} to ensure that the type is the
+	*								the same as that of $default. If the variable is not set
+	*								$default is returned.
+	*/
+	public static function variable($var_name, $default, $multibyte = false, $super_global = request::REQUEST)
+	{
+		$path = false;
+
+		if (!self::$initialised)
+		{
+			self::init();
+		}
+
+		// deep direct access to multi dimensional arrays
+		if (is_array($var_name))
+		{
+			$path = $var_name;
+			// make sure at least the variable name is specified
+			if (!sizeof($path))
+			{
+				return (is_array($default)) ? array() : $default;
+			}
+			// the variable name is the first element on the path
+			$var_name = array_shift($path);
+		}
+
+		if (!isset(self::$input[$super_global][$var_name]))
+		{
+			return (is_array($default)) ? array() : $default;
+		}
+		$var = self::$input[$super_global][$var_name];
+
+		// make sure cookie does not overwrite get/post
+		if ($super_global != request::COOKIE && isset(self::$input[request::COOKIE][$var_name]))
+		{
+			if (!isset(self::$input[request::GET][$var_name]) && !isset(self::$input[request::POST][$var_name]))
+			{
+				return (is_array($default)) ? array() : $default;
+			}
+			$var = isset(self::$input[request::POST][$var_name]) ? self::$input[request::POST][$var_name] : self::$input[request::GET][$var_name];
+		}
+
+		if ($path)
+		{
+			// walk through the array structure and find the element we are looking for
+			foreach ($path as $key)
+			{
+				if (is_array($var) && isset($var[$key]))
+				{
+					$var = $var[$key];
+				}
+				else
+				{
+					return (is_array($default)) ? array() : $default;
+				}
+			}
+		}
+
+		self::recursive_set_var($var, $default, $multibyte);
+
+		return $var;
+	}
+
+	/**
+	* Checks whether a certain variable was sent via POST.
+	* To make sure that a request was sent using POST you should call this function
+	* on at least one variable.
+	*
+	* @param	string	$name	The name of the form variable which should have a
+	*							_p suffix to indicate the check in the code that
+	*							creates the form too.
+	* @return	bool			True if the variable was set in a POST request,
+	*							false otherwise.
+	*/
+	public static function is_set_post($name)
+	{
+		return self::is_set($name, request::POST);
+	}
+
+	/**
+	* Checks whether a certain variable is set in one of the super global
+	* arrays.
+	*
+	* @param	string	$var			Name of the variable
+	* @param	request::POST|request::GET|request::REQUEST|request::COOKIE	$super_global
+	*									Specifies the super global which shall be checked
+	* @return	bool					True if the variable was sent as input
+	*/
+	public static function is_set($var, $super_global = request::REQUEST)
+	{
+		if (!self::$initialised)
+		{
+			self::init();
+		}
+
+		return isset(self::$input[$super_global][$var]);
+	}
+
+	/**
+	* Returns all variable names for a given super global
+	*
+	* @param	request::POST|request::GET|request::REQUEST|request::COOKIE	$super_global
+	*					The super global from which names shall be taken
+	* @return	array	All variable names that are set for the super global.
+	*					Pay attention when using these, they are unsanitised!
+	*/
+	public static function variable_names($super_global = request::REQUEST)
+	{
+		if (!self::$initialised)
+		{
+			self::init();
+		}
+
+		if (!isset(self::$input[$super_global]))
+		{
+			return array();
+		}
+
+		return array_keys(self::$input[$super_global]);
+	}
+}
+
+/**
+* Wrapper function of request::variable which exists for backwards
+* compatability.
+* See {@link request::variable request::variable} for documentation of this
+* function's use.
+* @param	bool	$cookie	This param is mapped to request::COOKIE as the last
+*							param for request::variable for backwards
+*							compatability reasons.
+*/
+function request_var($var_name, $default, $multibyte = false, $cookie = false)
+{
+	return request::variable($var_name, $default, $multibyte, ($cookie) ? request::COOKIE : request::REQUEST);
+}
+
+/**
 * set_var
 *
 * Set variable, used by {@link request_var the request_var function}
@@ -32,7 +529,7 @@ function set_var(&$result, $var, $type, $multibyte = false)
 
 	if ($type == 'string')
 	{
-		$result = trim(htmlspecialchars(str_replace(array("\r\n", "\r", "\0"), array("\n", "\n", ''), $result), ENT_COMPAT, 'UTF-8'));
+		$result = trim(utf8_htmlspecialchars(str_replace(array("\r\n", "\r", "\0"), array("\n", "\n", ''), $result)));
 
 		if (!empty($result))
 		{
@@ -53,122 +550,6 @@ function set_var(&$result, $var, $type, $multibyte = false)
 
 		$result = (STRIP) ? stripslashes($result) : $result;
 	}
-}
-
-/**
-* Central type safe input handling function.
-* All variables in GET or POST requests should be retrieved through this
-* function to maximise security.
-*
-* @param	string	$var_name	The name of the variable from the form that is
-*								to be retrieved.
-* @param	mixed	$default	A default value that is returned if the variable
-*								was not set. This function will always return a
-*								a value of the same type as the default.
-* @param	bool	$multibyte	If $default is a string this paramater has to be
-*								true if the variable may contain any UTF-8 characters
-*								Default is fault, causing all bytes outside the ASCII
-*								range (0-127) to be replaced with question marks
-* @param	bool	$cookie		True if the variable shall be retrieved from $_COOKIE
-*								instead of $_REQUEST. False by default.
-* @return	mixed				The value of $_REQUEST[$var_name] run through
-*								{@link set_var set_var} to ensure that the type is the
-*								the same as that of $default. If the variable is not set
-*								$default is returned.
-*/
-function request_var($var_name, $default, $multibyte = false, $cookie = false)
-{
-	if (!$cookie && isset($_COOKIE[$var_name]))
-	{
-		if (!isset($_GET[$var_name]) && !isset($_POST[$var_name]))
-		{
-			return (is_array($default)) ? array() : $default;
-		}
-		$_REQUEST[$var_name] = isset($_POST[$var_name]) ? $_POST[$var_name] : $_GET[$var_name];
-	}
-
-	if (!isset($_REQUEST[$var_name]) || (is_array($_REQUEST[$var_name]) && !is_array($default)) || (is_array($default) && !is_array($_REQUEST[$var_name])))
-	{
-		return (is_array($default)) ? array() : $default;
-	}
-
-	$var = $_REQUEST[$var_name];
-	if (!is_array($default))
-	{
-		$type = gettype($default);
-	}
-	else
-	{
-		list($key_type, $type) = each($default);
-		$type = gettype($type);
-		$key_type = gettype($key_type);
-		if ($type == 'array')
-		{
-			reset($default);
-			$default = current($default);
-			list($sub_key_type, $sub_type) = each($default);
-			$sub_type = gettype($sub_type);
-			$sub_type = ($sub_type == 'array') ? 'NULL' : $sub_type;
-			$sub_key_type = gettype($sub_key_type);
-		}
-	}
-
-	if (is_array($var))
-	{
-		$_var = $var;
-		$var = array();
-
-		foreach ($_var as $k => $v)
-		{
-			set_var($k, $k, $key_type);
-			if ($type == 'array' && is_array($v))
-			{
-				foreach ($v as $_k => $_v)
-				{
-					if (is_array($_v))
-					{
-						$_v = null;
-					}
-					set_var($_k, $_k, $sub_key_type);
-					set_var($var[$k][$_k], $_v, $sub_type, $multibyte);
-				}
-			}
-			else
-			{
-				if ($type == 'array' || is_array($v))
-				{
-					$v = null;
-				}
-				set_var($var[$k], $v, $type, $multibyte);
-			}
-		}
-	}
-	else
-	{
-		set_var($var, $var, $type, $multibyte);
-	}
-
-	return $var;
-}
-
-/**
-* Checks whether a certain variable was sent via POST.
-* To make sure that a request was sent using POST you should call this function
-* on at least one variable. The function will perform referrer validation
-* as an additional measure against CSRF.
-*
-* @param	string	$name	The name of the form variable which should have a
-*							_p suffix to indicate the check in the code that
-*							creates the form too.
-* @return	bool			True if the variable was set in a POST request,
-*							false otherwise.
-*/
-function isset_post($name)
-{
-	/**
-	* @todo validate referrer
-	*/
-	return isset($_POST[$name]);
 }
 
 /**
@@ -926,7 +1307,7 @@ function markread($mode, $forum_id = false, $topic_id = false, $post_time = 0, $
 			}
 			else if ($config['load_anon_lastread'] || $user->data['is_registered'])
 			{
-				$tracking_topics = (isset($_COOKIE[$config['cookie_name'] . '_track'])) ? ((STRIP) ? stripslashes($_COOKIE[$config['cookie_name'] . '_track']) : $_COOKIE[$config['cookie_name'] . '_track']) : '';
+				$tracking_topics = request::variable($config['cookie_name'] . '_track', '', false, request::COOKIE);
 				$tracking_topics = ($tracking_topics) ? tracking_unserialize($tracking_topics) : array();
 
 				unset($tracking_topics['tf']);
@@ -935,7 +1316,7 @@ function markread($mode, $forum_id = false, $topic_id = false, $post_time = 0, $
 				$tracking_topics['l'] = base_convert(time() - $config['board_startdate'], 10, 36);
 
 				$user->set_cookie('track', tracking_serialize($tracking_topics), time() + 31536000);
-				$_COOKIE[$config['cookie_name'] . '_track'] = (STRIP) ? addslashes(tracking_serialize($tracking_topics)) : tracking_serialize($tracking_topics);
+				request::overwrite($config['cookie_name'] . '_track', tracking_serialize($tracking_topics), request::COOKIE);
 
 				unset($tracking_topics);
 
@@ -1005,7 +1386,7 @@ function markread($mode, $forum_id = false, $topic_id = false, $post_time = 0, $
 		}
 		else if ($config['load_anon_lastread'] || $user->data['is_registered'])
 		{
-			$tracking = (isset($_COOKIE[$config['cookie_name'] . '_track'])) ? ((STRIP) ? stripslashes($_COOKIE[$config['cookie_name'] . '_track']) : $_COOKIE[$config['cookie_name'] . '_track']) : '';
+			$tracking = request::variable($config['cookie_name'] . '_track', '', false, request::COOKIE);
 			$tracking = ($tracking) ? tracking_unserialize($tracking) : array();
 
 			foreach ($forum_id as $f_id)
@@ -1036,7 +1417,7 @@ function markread($mode, $forum_id = false, $topic_id = false, $post_time = 0, $
 			}
 
 			$user->set_cookie('track', tracking_serialize($tracking), time() + 31536000);
-			$_COOKIE[$config['cookie_name'] . '_track'] = (STRIP) ? addslashes(tracking_serialize($tracking)) : tracking_serialize($tracking);
+			request::overwrite($config['cookie_name'] . '_track', tracking_serialize($tracking), request::COOKIE);
 
 			unset($tracking);
 		}
@@ -1077,7 +1458,7 @@ function markread($mode, $forum_id = false, $topic_id = false, $post_time = 0, $
 		}
 		else if ($config['load_anon_lastread'] || $user->data['is_registered'])
 		{
-			$tracking = (isset($_COOKIE[$config['cookie_name'] . '_track'])) ? ((STRIP) ? stripslashes($_COOKIE[$config['cookie_name'] . '_track']) : $_COOKIE[$config['cookie_name'] . '_track']) : '';
+			$tracking = request::variable($config['cookie_name'] . '_track', '', false, request::COOKIE);
 			$tracking = ($tracking) ? tracking_unserialize($tracking) : array();
 
 			$topic_id36 = base_convert($topic_id, 10, 36);
@@ -1092,7 +1473,7 @@ function markread($mode, $forum_id = false, $topic_id = false, $post_time = 0, $
 
 			// If the cookie grows larger than 10000 characters we will remove the smallest value
 			// This can result in old topics being unread - but most of the time it should be accurate...
-			if (isset($_COOKIE[$config['cookie_name'] . '_track']) && strlen($_COOKIE[$config['cookie_name'] . '_track']) > 10000)
+			if (strlen(request::variable($config['cookie_name'] . '_track', '', false, request::COOKIE)) > 10000)
 			{
 				//echo 'Cookie grown too large' . print_r($tracking, true);
 
@@ -1132,7 +1513,7 @@ function markread($mode, $forum_id = false, $topic_id = false, $post_time = 0, $
 			}
 
 			$user->set_cookie('track', tracking_serialize($tracking), time() + 31536000);
-			$_COOKIE[$config['cookie_name'] . '_track'] = (STRIP) ? addslashes(tracking_serialize($tracking)) : tracking_serialize($tracking);
+			request::overwrite($config['cookie_name'] . '_track', tracking_serialize($tracking));
 		}
 
 		return;
@@ -1314,7 +1695,7 @@ function get_complete_topic_tracking($forum_id, $topic_ids, $global_announce_lis
 
 		if (!isset($tracking_topics) || !sizeof($tracking_topics))
 		{
-			$tracking_topics = (isset($_COOKIE[$config['cookie_name'] . '_track'])) ? ((STRIP) ? stripslashes($_COOKIE[$config['cookie_name'] . '_track']) : $_COOKIE[$config['cookie_name'] . '_track']) : '';
+			$tracking_topics = request::variable($config['cookie_name'] . '_track', '', false, request::COOKIE);
 			$tracking_topics = ($tracking_topics) ? tracking_unserialize($tracking_topics) : array();
 		}
 
@@ -1397,7 +1778,7 @@ function update_forum_tracking_info($forum_id, $forum_last_post_time, $f_mark_ti
 		}
 		else if ($config['load_anon_lastread'] || $user->data['is_registered'])
 		{
-			$tracking_topics = (isset($_COOKIE[$config['cookie_name'] . '_track'])) ? ((STRIP) ? stripslashes($_COOKIE[$config['cookie_name'] . '_track']) : $_COOKIE[$config['cookie_name'] . '_track']) : '';
+			$tracking_topics = request::variable($config['cookie_name'] . '_track', '', false, request::COOKIE);
 			$tracking_topics = ($tracking_topics) ? tracking_unserialize($tracking_topics) : array();
 
 			if (!$user->data['is_registered'])
@@ -2218,7 +2599,7 @@ function check_form_key($form_name, $timespan = false, $return_page = '', $trigg
 		$timespan = ($config['form_token_lifetime'] == -1) ? -1 : max(30, $config['form_token_lifetime']);
 	}
 
-	if (isset($_POST['creation_time']) && isset($_POST['form_token']))
+	if (request::is_set_post('creation_time') && request::is_set_post('form_token'))
 	{
 		$creation_time	= abs(request_var('creation_time', 0));
 		$token = request_var('form_token', '');
@@ -2263,16 +2644,16 @@ function confirm_box($check, $title = '', $hidden = '', $html_body = 'confirm_bo
 {
 	global $user, $template, $db;
 
-	if (isset($_POST['cancel']))
+	if (request::is_set_post('cancel'))
 	{
 		return false;
 	}
 
 	$confirm = false;
-	if (isset($_POST['confirm']))
+	if (request::is_set_post('confirm'))
 	{
 		// language frontier
-		if ($_POST['confirm'] === $user->lang['YES'])
+		if (request_var('confirm', '') === $user->lang['YES'])
 		{
 			$confirm = true;
 		}
@@ -2394,7 +2775,7 @@ function login_box($redirect = '', $l_explain = '', $l_success = '', $admin = fa
 		trigger_error('NO_AUTH_ADMIN');
 	}
 
-	if (isset($_POST['login']))
+	if (request::is_set_post('login'))
 	{
 		// Get credential
 		if ($admin)
@@ -2418,8 +2799,8 @@ function login_box($redirect = '', $l_explain = '', $l_success = '', $admin = fa
 		}
 
 		$username	= request_var('username', '', true);
-		$autologin	= (!empty($_POST['autologin'])) ? true : false;
-		$viewonline = (!empty($_POST['viewonline'])) ? 0 : 1;
+		$autologin	= request::variable('autologin', false, false, request::POST);
+		$viewonline = (request::variable('viewonline', false, false, request::POST)) ? 0 : 1;
 		$admin 		= ($admin) ? 1 : 0;
 		$viewonline = ($admin) ? $user->data['session_viewonline'] : $viewonline;
 
@@ -2502,7 +2883,7 @@ function login_box($redirect = '', $l_explain = '', $l_success = '', $admin = fa
 					$user->lang[$result['error_msg']],
 					($config['email_enable']) ? '<a href="' . append_sid('ucp', 'mode=sendpassword') . '">' : '',
 					($config['email_enable']) ? '</a>' : '',
-					($config['board_contact']) ? '<a href="mailto:' . htmlspecialchars($config['board_contact']) . '">' : '',
+					($config['board_contact']) ? '<a href="mailto:' . utf8_htmlspecialchars($config['board_contact']) . '">' : '',
 					($config['board_contact']) ? '</a>' : ''
 				);
 			break;
@@ -2514,7 +2895,7 @@ function login_box($redirect = '', $l_explain = '', $l_success = '', $admin = fa
 				// Assign admin contact to some error messages
 				if ($result['error_msg'] == 'LOGIN_ERROR_USERNAME' || $result['error_msg'] == 'LOGIN_ERROR_PASSWORD')
 				{
-					$err = (!$config['board_contact']) ? sprintf($user->lang[$result['error_msg']], '', '') : sprintf($user->lang[$result['error_msg']], '<a href="mailto:' . htmlspecialchars($config['board_contact']) . '">', '</a>');
+					$err = (!$config['board_contact']) ? sprintf($user->lang[$result['error_msg']], '', '') : sprintf($user->lang[$result['error_msg']], '<a href="mailto:' . utf8_htmlspecialchars($config['board_contact']) . '">', '</a>');
 				}
 
 			break;
@@ -2532,7 +2913,7 @@ function login_box($redirect = '', $l_explain = '', $l_success = '', $admin = fa
 			$redirect .= ($user->page['page_dir']) ? $user->page['page_dir'] . '/' : '';
 		}
 
-		$redirect .= $user->page['page_name'] . (($user->page['query_string']) ? '?' . htmlspecialchars($user->page['query_string']) : '');
+		$redirect .= $user->page['page_name'] . (($user->page['query_string']) ? '?' . utf8_htmlspecialchars($user->page['query_string']) : '');
 	}
 
 	// Assign credential for username/password pair
@@ -2692,7 +3073,7 @@ function _build_hidden_fields($key, $value, $specialchar, $stripslashes)
 	if (!is_array($value))
 	{
 		$value = ($stripslashes) ? stripslashes($value) : $value;
-		$value = ($specialchar) ? htmlspecialchars($value, ENT_COMPAT, 'UTF-8') : $value;
+		$value = ($specialchar) ? utf8_htmlspecialchars($value) : $value;
 
 		$hidden_fields .= '<input type="hidden" name="' . $key . '" value="' . $value . '" />' . "\n";
 	}
@@ -2701,7 +3082,7 @@ function _build_hidden_fields($key, $value, $specialchar, $stripslashes)
 		foreach ($value as $_key => $_value)
 		{
 			$_key = ($stripslashes) ? stripslashes($_key) : $_key;
-			$_key = ($specialchar) ? htmlspecialchars($_key, ENT_COMPAT, 'UTF-8') : $_key;
+			$_key = ($specialchar) ? utf8_htmlspecialchars($_key) : $_key;
 
 			$hidden_fields .= _build_hidden_fields($key . '[' . $_key . ']', $_value, $specialchar, $stripslashes);
 		}
@@ -2726,7 +3107,7 @@ function build_hidden_fields($field_ary, $specialchar = false, $stripslashes = f
 	foreach ($field_ary as $name => $vars)
 	{
 		$name = ($stripslashes) ? stripslashes($name) : $name;
-		$name = ($specialchar) ? htmlspecialchars($name, ENT_COMPAT, 'UTF-8') : $name;
+		$name = ($specialchar) ? utf8_htmlspecialchars($name) : $name;
 
 		$s_hidden_fields .= _build_hidden_fields($name, $vars, $specialchar, $stripslashes);
 	}
@@ -3289,15 +3670,15 @@ function page_header($page_title = '', $display_online_list = true)
 	// Get users online list ... if required
 	$l_online_users = $online_userlist = $l_online_record = '';
 
+	$forum = request_var('f', 0);
+
 	if ($config['load_online'] && $config['load_online_time'] && $display_online_list)
 	{
 		$logged_visible_online = $logged_hidden_online = $guests_online = $prev_user_id = 0;
 		$prev_session_ip = $reading_sql = '';
 
-		if (!empty($_REQUEST['f']))
+		if ($forum)
 		{
-			$f = request_var('f', 0);
-
 			$reading_sql = ' AND s.session_page ' . $db->sql_like_expression("{$db->any_char}_f_={$f}x{$db->any_char}");
 		}
 
@@ -3384,7 +3765,7 @@ function page_header($page_title = '', $display_online_list = true)
 			$online_userlist = $user->lang['NO_ONLINE_USERS'];
 		}
 
-		if (empty($_REQUEST['f']))
+		if (!$forum)
 		{
 			$online_userlist = $user->lang['REGISTERED_USERS'] . ' ' . $online_userlist;
 		}
@@ -3605,7 +3986,7 @@ function page_footer($run_cron = true)
 		$mtime = explode(' ', microtime());
 		$totaltime = $mtime[0] + $mtime[1] - $starttime;
 
-		if (!empty($_REQUEST['explain']) && $auth->acl_get('a_') && defined('DEBUG_EXTRA') && method_exists($db, 'sql_report'))
+		if (request::variable('explain', false) && $auth->acl_get('a_') && defined('DEBUG_EXTRA') && method_exists($db, 'sql_report'))
 		{
 			$db->sql_report('display');
 		}
@@ -3713,6 +4094,12 @@ function garbage_collection()
 function exit_handler()
 {
 	global $phpbb_hook, $config;
+
+	// needs to be run prior to the hook
+	if (request::super_globals_disabled())
+	{
+		request::enable_super_globals();
+	}
 
 	if (!empty($phpbb_hook) && $phpbb_hook->call_hook(__FUNCTION__))
 	{
