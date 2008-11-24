@@ -25,7 +25,7 @@
 	<ul class="topiclist cplist">
 
 	<!-- BEGIN topicrow -->
-		<li class="row<!-- IF topicrow.S_TOPIC_REPORTED --> reported<!-- ELSEIF topicrow.S_ROW_COUNT is odd --> bg1<!-- ELSE --> bg2<!-- ENDIF -->">
+		<li class="row<!-- IF topicrow.S_TOPIC_REPORTED --> reported<!-- ELSEIF topicrow.S_ROW_NUM is odd --> bg1<!-- ELSE --> bg2<!-- ENDIF -->">
 			<!-- IF topicrow.S_DELETED_TOPIC -->
 				<dl><dt><strong>{L_DELETED_TOPIC}</strong></dt>
 				<dd class="mark"><input type="checkbox" name="t[{topicrow.TOPIC_ID}]" id="t{topicrow.TOPIC_ID}" /></dd>

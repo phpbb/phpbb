@@ -297,7 +297,7 @@ class ucp_groups
 				$result = $db->sql_query($sql);
 
 				$group_id_ary = array();
-				$leader_count = $member_count = $pending_count = 0;
+
 				while ($row = $db->sql_fetchrow($result))
 				{
 					$block = ($row['group_leader']) ? 'leader' : (($row['user_pending']) ? 'pending' : 'member');
@@ -335,8 +335,7 @@ class ucp_groups
 
 						'U_VIEW_GROUP'	=> append_sid('memberlist', 'mode=group&amp;g=' . $row['group_id']),
 
-						'S_GROUP_DEFAULT'	=> ($row['group_id'] == $user->data['group_id']) ? true : false,
-						'S_ROW_COUNT'		=> ${$block . '_count'}++)
+						'S_GROUP_DEFAULT'	=> ($row['group_id'] == $user->data['group_id']) ? true : false)
 					);
 
 					$group_id_ary[] = $row['group_id'];
@@ -353,7 +352,6 @@ class ucp_groups
 					ORDER BY group_type DESC, group_name";
 				$result = $db->sql_query($sql);
 
-				$nonmember_count = 0;
 				while ($row = $db->sql_fetchrow($result))
 				{
 					switch ($row['group_type'])
@@ -389,9 +387,7 @@ class ucp_groups
 						'S_CAN_JOIN'	=> ($row['group_type'] == GROUP_OPEN || $row['group_type'] == GROUP_FREE) ? true : false,
 						'GROUP_COLOUR'	=> $row['group_colour'],
 
-						'U_VIEW_GROUP'	=> append_sid('memberlist', 'mode=group&amp;g=' . $row['group_id']),
-
-						'S_ROW_COUNT'	=> $nonmember_count++)
+						'U_VIEW_GROUP'	=> append_sid('memberlist', 'mode=group&amp;g=' . $row['group_id']))
 					);
 				}
 				$db->sql_freeresult($result);

@@ -10,7 +10,7 @@
 					<dt><label>{L_TO}:</label></dt>
 					<dd>
 						<!-- BEGIN to_recipient -->
-							<!-- IF not to_recipient.S_FIRST_ROW and to_recipient.S_ROW_COUNT mod 2 eq 0 --></dd><dd><!-- ENDIF -->
+							<!-- IF not to_recipient.S_FIRST_ROW and to_recipient.S_ROW_NUM mod 2 eq 0 --></dd><dd><!-- ENDIF -->
 							<!-- IF to_recipient.IS_GROUP --><a href="{to_recipient.U_VIEW}"><strong>{to_recipient.NAME}</strong></a>&nbsp;<!-- ELSE -->{to_recipient.NAME_FULL}&nbsp;<!-- ENDIF -->
 							<!-- IF not S_EDIT_POST --><input type="submit" name="remove_{to_recipient.TYPE}[{to_recipient.UG_ID}]" value="x" class="button2" />&nbsp;<!-- ENDIF -->
 						<!-- END to_recipient -->
@@ -22,7 +22,7 @@
 					<dt><label>{L_BCC}:</label></dt>
 					<dd>
 						<!-- BEGIN bcc_recipient -->
-							<!-- IF not bcc_recipient.S_FIRST_ROW and bcc_recipient.S_ROW_COUNT mod 2 eq 0 --></dd><dd><!-- ENDIF -->
+							<!-- IF not bcc_recipient.S_FIRST_ROW and bcc_recipient.S_ROW_NUM mod 2 eq 0 --></dd><dd><!-- ENDIF -->
 							<!-- IF bcc_recipient.IS_GROUP --><a href="{bcc_recipient.U_VIEW}"><strong>{bcc_recipient.NAME}</strong></a><!-- ELSE -->{bcc_recipient.NAME_FULL}&nbsp;<!-- ENDIF -->
 							<!-- IF not S_EDIT_POST --><input type="submit" name="remove_{bcc_recipient.TYPE}[{bcc_recipient.UG_ID}]" value="x" class="button2" />&nbsp;<!-- ENDIF -->
 						<!-- END bcc_recipient -->
@@ -43,7 +43,7 @@
 				<!-- IF .to_recipient -->
 					<dd>
 						<!-- BEGIN to_recipient -->
-							<!-- IF not to_recipient.S_FIRST_ROW and to_recipient.S_ROW_COUNT mod 2 eq 0 --></dd><dd><!-- ENDIF -->
+							<!-- IF not to_recipient.S_FIRST_ROW and to_recipient.S_ROW_NUM mod 2 eq 0 --></dd><dd><!-- ENDIF -->
 							<!-- IF to_recipient.IS_GROUP --><a href="{to_recipient.U_VIEW}"><strong>{to_recipient.NAME}</strong></a><!-- ELSE -->{to_recipient.NAME_FULL}&nbsp;<!-- ENDIF -->
 							<!-- IF not S_EDIT_POST --><input type="submit" name="remove_{to_recipient.TYPE}[{to_recipient.UG_ID}]" value="x" class="button2" />&nbsp;<!-- ENDIF -->
 						<!-- END to_recipient -->

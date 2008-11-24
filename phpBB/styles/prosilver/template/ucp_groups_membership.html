@@ -24,7 +24,7 @@
 		<!-- IF not leader.GROUP_SPECIAL -->
 			<!-- DEFINE $SHOW_BUTTONS = 1 -->
 		<!-- ENDIF -->
-		<li class="row<!-- IF leader.S_ROW_COUNT is odd --> bg1<!-- ELSE --> bg2<!-- ENDIF -->">
+		<li class="row<!-- IF leader.S_ROW_NUM is odd --> bg1<!-- ELSE --> bg2<!-- ENDIF -->">
 			<dl>
 				<dt><!-- IF S_CHANGE_DEFAULT --><input title="{L_CHANGE_DEFAULT_GROUP}" type="radio" name="default"<!-- IF leader.S_GROUP_DEFAULT --> checked="checked"<!-- ENDIF --> value="{leader.GROUP_ID}" /> <!-- ENDIF -->
 				<a href="{leader.U_VIEW_GROUP}" class="forumtitle"<!-- IF leader.GROUP_COLOUR --> style="color:#{leader.GROUP_COLOUR}"<!-- ENDIF -->>{leader.GROUP_NAME}</a>
@@ -53,7 +53,7 @@
 		<!-- IF not member.GROUP_SPECIAL -->
 			<!-- DEFINE $SHOW_BUTTONS = 1 -->
 		<!-- ENDIF -->		
-		<li class="row<!-- IF member.S_ROW_COUNT is odd --> bg1<!-- ELSE --> bg2<!-- ENDIF -->">
+		<li class="row<!-- IF member.S_ROW_NUM is odd --> bg1<!-- ELSE --> bg2<!-- ENDIF -->">
 			<dl>
 				<dt><!-- IF S_CHANGE_DEFAULT --><input title="{L_CHANGE_DEFAULT_GROUP}" type="radio" name="default"<!-- IF member.S_GROUP_DEFAULT --> checked="checked"<!-- ENDIF --> value="{member.GROUP_ID}" /> <!-- ENDIF -->
 				<a href="{member.U_VIEW_GROUP}" class="forumtitle"<!-- IF member.GROUP_COLOUR --> style="color:#{member.GROUP_COLOUR}"<!-- ENDIF -->>{member.GROUP_NAME}</a>
@@ -86,7 +86,7 @@
 		<!-- IF not pending.GROUP_SPECIAL -->
 			<!-- DEFINE $SHOW_BUTTONS = 1 -->
 		<!-- ENDIF -->			
-		<li class="row<!-- IF pending.S_ROW_COUNT is odd --> bg1<!-- ELSE --> bg2<!-- ENDIF -->">
+		<li class="row<!-- IF pending.S_ROW_NUM is odd --> bg1<!-- ELSE --> bg2<!-- ENDIF -->">
 			<dl>
 				<dt>
 				<a href="{pending.U_VIEW_GROUP}" class="forumtitle"<!-- IF pending.GROUP_COLOUR --> style="color:#{pending.GROUP_COLOUR}"<!-- ENDIF -->>{pending.GROUP_NAME}</a>
@@ -118,7 +118,7 @@
 		<!-- IF nonmember.S_CAN_JOIN -->
 			<!-- DEFINE $SHOW_BUTTONS = 1 -->
 		<!-- ENDIF -->		
-		<li class="row<!-- IF nonmember.S_ROW_COUNT is odd --> bg1<!-- ELSE --> bg2<!-- ENDIF -->">
+		<li class="row<!-- IF nonmember.S_ROW_NUM is odd --> bg1<!-- ELSE --> bg2<!-- ENDIF -->">
 			<dl>
 				<dt>
 				<a href="{nonmember.U_VIEW_GROUP}" class="forumtitle"<!-- IF nonmember.GROUP_COLOUR --> style="color:#{nonmember.GROUP_COLOUR}"<!-- ENDIF -->>{nonmember.GROUP_NAME}</a>

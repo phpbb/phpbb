@@ -30,7 +30,7 @@
 		<ul class="topiclist cplist">
 
 		<!-- BEGIN attachrow -->
-		<li class="row<!-- IF attachrow.S_ROW_COUNT is odd --> bg1<!-- ELSE --> bg2<!-- ENDIF -->">
+		<li class="row<!-- IF attachrow.S_ROW_NUM is odd --> bg1<!-- ELSE --> bg2<!-- ENDIF -->">
 			<dl>
 				<dt style="width: 40%"><a href="{attachrow.U_VIEW_ATTACHMENT}" class="topictitle">{attachrow.FILENAME}</a> ({attachrow.SIZE})<br />
 					<!-- IF attachrow.S_IN_MESSAGE -->{L_PM}: <!-- ELSE -->{L_TOPIC}: <!-- ENDIF --><a href="{attachrow.U_VIEW_TOPIC}">{attachrow.TOPIC_TITLE}</a></dt>

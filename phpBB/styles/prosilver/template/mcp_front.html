@@ -24,7 +24,7 @@
 			<ul class="topiclist cplist">
 
 			<!-- BEGIN unapproved -->
-			<li class="row<!-- IF unapproved.S_ROW_COUNT is odd --> bg1<!-- ELSE --> bg2<!-- ENDIF -->">
+			<li class="row<!-- IF unapproved.S_ROW_NUM is odd --> bg1<!-- ELSE --> bg2<!-- ENDIF -->">
 				<dl>
 					<dt>
 						<a href="{unapproved.U_POST_DETAILS}" class="topictitle">{unapproved.SUBJECT}</a> {unapproved.ATTACH_ICON_IMG}<br />
@@ -78,7 +78,7 @@
 			<ul class="topiclist cplist">
 
 			<!-- BEGIN report -->
-			<li class="row<!-- IF report.S_ROW_COUNT is odd --> bg1<!-- ELSE --> bg2<!-- ENDIF -->">
+			<li class="row<!-- IF report.S_ROW_NUM is odd --> bg1<!-- ELSE --> bg2<!-- ENDIF -->">
 				<dl>
 					<dt>
 						<a href="{report.U_POST_DETAILS}#reports" class="topictitle">{report.SUBJECT}</a> {report.ATTACH_ICON_IMG}<br />
@@ -119,7 +119,7 @@
 		</thead>
 		<tbody>
 	<!-- BEGIN log -->
-		<tr class="<!-- IF log.S_ROW_COUNT is even -->bg1<!-- ELSE -->bg2<!-- ENDIF -->">
+		<tr class="<!-- IF log.S_ROW_NUM is even -->bg1<!-- ELSE -->bg2<!-- ENDIF -->">
 			<td>{log.ACTION}</td>
 			<td><span>{log.USERNAME}</span></td>
 			<td><span>{log.IP}</span></td>

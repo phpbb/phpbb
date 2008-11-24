@@ -238,7 +238,7 @@
 			</thead>
 			<tbody>
 			<!-- BEGIN userrow -->
-			<tr class="<!-- IF userrow.S_ROW_COUNT is odd -->bg1<!-- ELSE -->bg2<!-- ENDIF -->">
+			<tr class="<!-- IF userrow.S_ROW_NUM is odd -->bg1<!-- ELSE -->bg2<!-- ENDIF -->">
 				<td><!-- IF userrow.U_PROFILE --><a href="{userrow.U_PROFILE}">{userrow.USERNAME}</a><!-- ELSE -->{userrow.USERNAME}<!-- ENDIF --></td>
 				<td class="posts"><a href="{userrow.U_SEARCHPOSTS}" title="{L_SEARCH_POSTS_BY} {userrow.USERNAME}">{userrow.NUM_POSTS}</a></td>
 			</tr>
@@ -259,7 +259,7 @@
 			</thead>
 			<tbody>
 			<!-- BEGIN iprow -->
-			<tr class="<!-- IF iprow.S_ROW_COUNT is odd -->bg1<!-- ELSE -->bg2<!-- ENDIF -->">
+			<tr class="<!-- IF iprow.S_ROW_NUM is odd -->bg1<!-- ELSE -->bg2<!-- ENDIF -->">
 				<td><!-- IF iprow.HOSTNAME --><a href="{iprow.U_WHOIS}">{iprow.HOSTNAME}</a> ({iprow.IP})<!-- ELSE --><a href="{iprow.U_WHOIS}">{iprow.IP}</a> (<a href="{iprow.U_LOOKUP_IP}">{L_LOOKUP_IP}</a>)<!-- ENDIF --></td>
 				<td class="posts">{iprow.NUM_POSTS}</td>
 			</tr>

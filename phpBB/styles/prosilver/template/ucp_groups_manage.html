@@ -92,7 +92,7 @@
 	</thead>
 	<tbody>
 	<!-- BEGIN leader -->
-		<tr class="<!-- IF leader.S_ROW_COUNT is even -->bg1<!-- ELSE -->bg2<!-- ENDIF -->">
+		<tr class="<!-- IF leader.S_ROW_NUM is even -->bg1<!-- ELSE -->bg2<!-- ENDIF -->">
 			<td class="name">{leader.USERNAME_FULL}</td>
 			<td><!-- IF leader.S_GROUP_DEFAULT -->{L_YES}<!-- ELSE -->{L_NO}<!-- ENDIF --></td>
 			<td class="posts">{leader.USER_POSTS}</td>
@@ -134,7 +134,7 @@
 			</thead>
 			<tbody>
 		<!-- ELSE -->
-			<tr class="<!-- IF member.S_ROW_COUNT is even -->bg1<!-- ELSE -->bg2<!-- ENDIF -->">
+			<tr class="<!-- IF member.S_ROW_NUM is even -->bg1<!-- ELSE -->bg2<!-- ENDIF -->">
 				<td class="name">{member.USERNAME_FULL}</td>
 				<td><!-- IF member.S_GROUP_DEFAULT -->{L_YES}<!-- ELSE -->{L_NO}<!-- ENDIF --></td>
 				<td class="posts">{member.USER_POSTS}</td>
@@ -209,7 +209,7 @@
 		<ul class="topiclist cplist">
 
 		<!-- BEGIN leader -->
-		<li class="row<!-- IF attachrow.S_ROW_COUNT is odd --> bg1<!-- ELSE --> bg2<!-- ENDIF -->">
+		<li class="row<!-- IF attachrow.S_ROW_NUM is odd --> bg1<!-- ELSE --> bg2<!-- ENDIF -->">
 			<dl>
 				<dt><a href="{leader.U_EDIT}" class="topictitle"<!-- IF leader.GROUP_COLOUR --> style="color: #{leader.GROUP_COLOUR};"<!-- ENDIF -->>{leader.GROUP_NAME}</a>
 					<!-- IF leader.GROUP_DESC --><br />{leader.GROUP_DESC}<!-- ENDIF --></dt>
