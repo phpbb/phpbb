@@ -10,8 +10,7 @@
 
 define('IN_PHPBB', true);
 
-require_once 'PHPUnit/Framework.php';
-require_once 'PHPUnit/Extensions/OutputTestCase.php';
+require_once 'test_framework/framework.php';
 
 define('PHPBB_ROOT_PATH', './../phpBB/');
 define('PHP_EXT', 'php');
@@ -19,10 +18,8 @@ define('PHP_EXT', 'php');
 require_once '../phpBB/includes/functions.php';
 require_once '../phpBB/includes/session.php';
 
-class phpbb_security_redirect_test extends PHPUnit_Extensions_OutputTestCase
+class phpbb_security_redirect_test extends phpbb_test_case
 {
-	protected $error_triggered = false;
-
 	public static function provider()
 	{
 		// array(Input -> redirect(), expected triggered error (else false), expected returned result url (else false))
@@ -44,49 +41,24 @@ class phpbb_security_redirect_test extends PHPUnit_Extensions_OutputTestCase
 	}
 
 	/**
-	* Own error handler to catch trigger_error() calls within phpBB
-	*/
-	public function own_error_handler($errno, $errstr, $errfile, $errline)
-	{
-		echo $errstr;
-		$this->error_triggered = true;
-	}
-
-	/**
 	* @dataProvider provider
 	*/
 	public function test_redirect($test, $expected_error, $expected_result)
 	{
 		global $user;
 
-		set_error_handler(array($this, 'own_error_handler'));
+		if ($expected_error !== false)
+		{
+			$this->setExpectedTriggerError(E_USER_ERROR, $expected_error);
+		}
+
 		$result = redirect($test, true);
 
-		// If we expect no error and a returned result, we set the output string to be expected and check if an error was triggered (then fail instantly)
+		// only verify result if we did not expect an error
 		if ($expected_error === false)
 		{
-			$this->expectOutputString($expected_result);
-			print $result;
-
-			if ($this->error_triggered)
-			{
-				$this->fail();
-			}
+			$this->assertEquals($expected_result, $result);
 		}
-		// If we expect an error, we set the expected output string to the error and check if there was an error triggered.
-		else
-		{
-			$this->expectOutputString($expected_error);
-
-			if (!$this->error_triggered)
-			{
-				$this->fail();
-			}
-
-			$this->error_triggered = false;
-		}
-
-		restore_error_handler();
 	}
 }
 
