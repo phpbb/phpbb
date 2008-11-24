@@ -562,7 +562,7 @@ if ($keywords || $author || $author_id || $search_id || $submit)
 
 			if ($config['load_anon_lastread'] || ($user->data['is_registered'] && !$config['load_db_lastread']))
 			{
-				$tracking_topics = (isset($_COOKIE[$config['cookie_name'] . '_track'])) ? ((STRIP) ? stripslashes($_COOKIE[$config['cookie_name'] . '_track']) : $_COOKIE[$config['cookie_name'] . '_track']) : '';
+				$tracking_topics = request::variable($config['cookie_name'] . '_track', '', false, request::COOKIE);
 				$tracking_topics = ($tracking_topics) ? tracking_unserialize($tracking_topics) : array();
 			}
 
@@ -1038,11 +1038,17 @@ for ($i = 100; $i <= 1000 ; $i += 100)
 
 $s_hidden_fields = array('t' => $topic_id);
 
+/**
+* @todo get rid of this global $_SID voodoo!
+*/
 if ($_SID)
 {
 	$s_hidden_fields['sid'] = $_SID;
 }
 
+/**
+* @todo get rid of this global $_EXTRA_URL voodoo, too!
+*/
 if (!empty($_EXTRA_URL))
 {
 	foreach ($_EXTRA_URL as $url_param)

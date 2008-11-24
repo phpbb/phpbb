@@ -32,9 +32,9 @@ class acp_icons
 
 		// Set up general vars
 		$action = request_var('action', '');
-		$action = (isset($_POST['add'])) ? 'add' : $action;
-		$action = (isset($_POST['edit'])) ? 'edit' : $action;
-		$action = (isset($_POST['import'])) ? 'import' : $action;
+		$action = (request::is_set_post('add')) ? 'add' : $action;
+		$action = (request::is_set_post('edit')) ? 'edit' : $action;
+		$action = (request::is_set_post('import')) ? 'import' : $action;
 		$icon_id = request_var('id', 0);
 
 		$mode = ($mode == 'smilies') ? 'smilies' : 'icons';
@@ -309,20 +309,20 @@ class acp_icons
 			case 'modify':
 
 				// Get items to create/modify
-				$images = (isset($_POST['image'])) ? array_keys(request_var('image', array('' => 0))) : array();
+				$images = array_keys(request::variable('image', array('' => 0), false, request::POST));
 				
 				// Now really get the items
-				$image_id		= (isset($_POST['id'])) ? request_var('id', array('' => 0)) : array();
-				$image_order	= (isset($_POST['order'])) ? request_var('order', array('' => 0)) : array();
-				$image_width	= (isset($_POST['width'])) ? request_var('width', array('' => 0)) : array();
-				$image_height	= (isset($_POST['height'])) ? request_var('height', array('' => 0)) : array();
-				$image_add		= (isset($_POST['add_img'])) ? request_var('add_img', array('' => 0)) : array();
-				$image_emotion	= utf8_normalize_nfc(request_var('emotion', array('' => ''), true));
-				$image_code		= utf8_normalize_nfc(request_var('code', array('' => ''), true));
-				$image_display_on_posting = (isset($_POST['display_on_posting'])) ? request_var('display_on_posting', array('' => 0)) : array();
+				$image_id					= request::variable('id',					array('' => 0), false, request::POST);
+				$image_order				= request::variable('order',				array('' => 0), false, request::POST);
+				$image_width				= request::variable('width',				array('' => 0), false, request::POST);
+				$image_height				= request::variable('height',				array('' => 0), false, request::POST);
+				$image_add					= request::variable('add_img',				array('' => 0), false, request::POST);
+				$image_display_on_posting	= request::variable('display_on_posting',	array('' => 0), false, request::POST);
+				$image_emotion				= utf8_normalize_nfc(request_var('emotion',	array('' => ''), true));
+				$image_code					= utf8_normalize_nfc(request_var('code',		array('' => ''), true));
 
 				// Ok, add the relevant bits if we are adding new codes to existing emoticons...
-				if (!empty($_POST['add_additional_code']))
+				if (request::variable('add_additional_code', false, false, request::POST))
 				{
 					$add_image			= request_var('add_image', '');
 					$add_code			= utf8_normalize_nfc(request_var('add_code', '', true));
@@ -338,7 +338,7 @@ class acp_icons
 						$image_width[$add_image] = request_var('add_width', 0);
 						$image_height[$add_image] = request_var('add_height', 0);
 
-						if (!empty($_POST['add_display_on_posting']))
+						if (request::variable('add_display_on_posting', false, false, request::POST))
 						{
 							$image_display_on_posting[$add_image] = 1;
 						}

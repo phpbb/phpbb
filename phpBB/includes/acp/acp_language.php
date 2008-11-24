@@ -34,30 +34,40 @@ class acp_language
 		global $config, $db, $user, $auth, $template, $cache;
 		global $safe_mode, $file_uploads;
 
+		/**
+		* @todo make this work with the request class, might require some additional functionality
+		* inside the request class. Reducing some of the redundance of this code would certainly
+		* not hurt either.
+		*/
+		request::enable_super_globals();
+
 		include_once(PHPBB_ROOT_PATH . 'includes/functions_user.' . PHP_EXT);
 
 		$this->default_variables();
 
 		// Check and set some common vars
 
-		$action		= (isset($_POST['update_details'])) ? 'update_details' : '';
-		$action		= (isset($_POST['download_file'])) ? 'download_file' : $action;
-		$action		= (isset($_POST['upload_file'])) ? 'upload_file' : $action;
-		$action		= (isset($_POST['upload_data'])) ? 'upload_data' : $action;
-		$action		= (isset($_POST['submit_file'])) ? 'submit_file' : $action;
-		$action		= (isset($_POST['remove_store'])) ? 'details' : $action;
+		$action		= (request::is_set_post('update_details')) ? 'update_details' : '';
+		$action		= (request::is_set_post('download_file')) ? 'download_file' : $action;
+		$action		= (request::is_set_post('upload_file')) ? 'upload_file' : $action;
+		$action		= (request::is_set_post('upload_data')) ? 'upload_data' : $action;
+		$action		= (request::is_set_post('submit_file')) ? 'submit_file' : $action;
+		$action		= (request::is_set_post('remove_store')) ? 'details' : $action;
 
-		$submit = (empty($action) && !isset($_POST['update']) && !isset($_POST['test_connection'])) ? false : true;
+		$submit = (empty($action) && !request::is_set_post('update') && !request::is_set_post('test_connection')) ? false : true;
 		$action = (empty($action)) ? request_var('action', '') : $action;
 
 		$form_name = 'acp_lang';
 		add_form_key('acp_lang');
 
 		$lang_id = request_var('id', 0);
-		if (isset($_POST['missing_file']))
+		if (request::is_set_post('missing_file'))
 		{
 			$missing_file = request_var('missing_file', array('' => 0));
-			list($_REQUEST['language_file'], ) = array_keys($missing_file);
+			/**
+			* @todo Do NOT overwrite a request variable.
+			*/
+			request::overwrite('language_file', key($missing_file));
 		}
 
 		$selected_lang_file = request_var('language_file', '|common.' . PHP_EXT);
@@ -114,11 +124,12 @@ class acp_language
 				$requested_data = call_user_func(array($method, 'data'));
 				foreach ($requested_data as $data => $default)
 				{
+					$default_value = request_var($data, '');
 					$template->assign_block_vars('data', array(
 						'DATA'		=> $data,
 						'NAME'		=> $user->lang[strtoupper($method . '_' . $data)],
 						'EXPLAIN'	=> $user->lang[strtoupper($method . '_' . $data) . '_EXPLAIN'],
-						'DEFAULT'	=> (!empty($_REQUEST[$data])) ? request_var($data, '') : $default
+						'DEFAULT'	=> (empty($default_value)) ? $default : $default_value
 					));
 				}
 
@@ -129,6 +140,9 @@ class acp_language
 					'method'		=> $method)
 				);
 
+				/**
+				* @todo Do not use $_POST here, but request::variable which needs to support more dimensions
+				*/
 				$hidden_data .= build_hidden_fields(array('entry' => $_POST['entry']), true, STRIP);
 
 				$template->assign_vars(array(
@@ -488,7 +502,7 @@ class acp_language
 						}
 				}
 				
-				if (isset($_POST['remove_store']))
+				if (request::is_set_post('remove_store'))
 				{
 					$store_filename = $this->get_filename($lang_iso, $this->language_directory, $this->language_file, true, true);
 

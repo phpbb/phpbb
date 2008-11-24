@@ -266,7 +266,7 @@ class acp_modules
 				$module_data['module_langname'] = utf8_normalize_nfc(request_var('module_langname', (string) $module_row['module_langname'], true));
 				$module_data['module_mode'] = request_var('module_mode', (string) $module_row['module_mode']);
 
-				$submit = (isset($_POST['submit'])) ? true : false;
+				$submit = request::is_set_post('submit');
 
 				if ($submit)
 				{

@@ -28,7 +28,7 @@ class ucp_zebra
 	{
 		global $config, $db, $user, $auth, $template;
 
-		$submit	= (isset($_POST['submit']) || isset($_GET['add']) || isset($_GET['remove'])) ? true : false;
+		$submit	= request::is_set_post('submit') || request::is_set('add', request::GET) || request::is_set('remove', request::GET);
 		$s_hidden_fields = '';
 
 		$l_mode = strtoupper($mode);

@@ -31,10 +31,10 @@ $template->assign_var('S_IN_MCP', true);
 // Basic parameter data
 $id = request_var('i', '');
 
-if (isset($_REQUEST['mode']) && is_array($_REQUEST['mode']))
+$mode = request_var('mode', array(''));
+if (!empty($mode))
 {
-	$mode = request_var('mode', array(''));
-	list($mode, ) = each($mode);
+	$mode = key($mode);
 }
 else
 {
@@ -52,19 +52,18 @@ if (!$user->data['is_registered'])
 	login_box('', $user->lang['LOGIN_EXPLAIN_MCP']);
 }
 
-$quickmod = (isset($_REQUEST['quickmod'])) ? true : false;
-$action = request_var('action', '');
-$action_ary = request_var('action', array('' => 0));
-
-$forum_action = request_var('forum_action', '');
-if ($forum_action !== '' && !empty($_POST['sort']))
-{
-	$action = $forum_action;
-}
+$quickmod		= request::is_set('quickmod');
+$action			= request_var('action', '');
+$action_ary		= request_var('action', array('' => 0));
+$forum_action	= request_var('forum_action', '');
 
 if (sizeof($action_ary))
 {
-	list($action, ) = each($action_ary);
+	$action = key($action_ary);
+}
+else if (!empty($forum_action) && request::variable('sort', false, false, request::POST))
+{
+	$action = $forum_action;
 }
 unset($action_ary);
 

@@ -32,7 +32,7 @@ class acp_words
 
 		// Set up general vars
 		$action = request_var('action', '');
-		$action = (isset($_POST['add'])) ? 'add' : ((isset($_POST['save'])) ? 'save' : $action);
+		$action = (request::is_set_post('add')) ? 'add' : ((request::is_set_post('save')) ? 'save' : $action);
 
 		$s_hidden_fields = '';
 		$word_info = array();

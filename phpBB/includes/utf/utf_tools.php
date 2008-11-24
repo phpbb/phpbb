@@ -1356,6 +1356,8 @@ function utf8_case_fold_nfc($text, $option = 'full')
 * A wrapper function for the normalizer which takes care of including the class if required and modifies the passed strings
 * to be in NFC (Normalization Form Composition).
 *
+* @todo allow arbitrary array depth
+*
 * @param	mixed	$strings	a string or an array of strings to normalize
 * @return	mixed				the normalized content, preserving array keys if array given.
 */

@@ -35,7 +35,7 @@ class acp_email
 		add_form_key($form_key);
 
 		// Set some vars
-		$submit = (isset($_POST['submit'])) ? true : false;
+		$submit = request::is_set_post('submit');
 		$error = array();
 
 		$usernames	= request_var('usernames', '', true);
@@ -48,7 +48,7 @@ class acp_email
 		{
 			// Error checking needs to go here ... if no subject and/or no message then skip
 			// over the send and return to the form
-			$use_queue		= (isset($_POST['send_immediately'])) ? false : true;
+			$use_queue		= request::is_set_post('send_immediately');
 			$priority		= request_var('mail_priority_flag', MAIL_NORMAL_PRIORITY);
 
 			if (!check_form_key($form_key))

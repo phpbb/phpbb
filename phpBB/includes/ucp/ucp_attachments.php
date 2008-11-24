@@ -33,8 +33,8 @@ class ucp_attachments
 		$sort_key	= request_var('sk', 'a');
 		$sort_dir	= request_var('sd', 'a');
 
-		$delete		= (isset($_POST['delete'])) ? true : false;
-		$confirm	= (isset($_POST['confirm'])) ? true : false;
+		$delete		= request::is_set_post('delete');
+		$confirm	= request::is_set_post('confirm');
 		$delete_ids	= array_keys(request_var('attachment', array(0)));
 
 		if ($delete && sizeof($delete_ids))

@@ -27,7 +27,7 @@ function message_options($id, $mode, $global_privmsgs_rules, $global_rule_condit
 
 	add_form_key('ucp_pm_options');
 	// Change "full folder" setting - what to do if folder is full
-	if (isset($_POST['fullfolder']))
+	if (request::is_set_post('fullfolder'))
 	{
 		check_form_key('ucp_pm_options', $config['form_token_lifetime'], $redirect_url);
 		$full_action = request_var('full_action', 0);
@@ -68,7 +68,7 @@ function message_options($id, $mode, $global_privmsgs_rules, $global_rule_condit
 	}
 	
 	// Add Folder
-	if (isset($_POST['addfolder']))
+	if (request::is_set_post('addfolder'))
 	{
 		if (check_form_key('ucp_pm_options'))
 		{
@@ -120,7 +120,7 @@ function message_options($id, $mode, $global_privmsgs_rules, $global_rule_condit
 	}
 
 	// Rename folder
-	if (isset($_POST['rename_folder']))
+	if (request::is_set_post('rename_folder'))
 	{
 		if (check_form_key('ucp_pm_options'))
 		{
@@ -165,7 +165,7 @@ function message_options($id, $mode, $global_privmsgs_rules, $global_rule_condit
 	}
 
 	// Remove Folder
-	if (isset($_POST['remove_folder']))
+	if (request::is_set_post('remove_folder'))
 	{
 		$remove_folder_id = request_var('remove_folder_id', 0);
 
@@ -276,7 +276,7 @@ function message_options($id, $mode, $global_privmsgs_rules, $global_rule_condit
 	}
 
 	// Add Rule
-	if (isset($_POST['add_rule']))
+	if (request::is_set_post('add_rule'))
 	{
 		if (check_form_key('ucp_pm_options'))
 		{
@@ -345,7 +345,7 @@ function message_options($id, $mode, $global_privmsgs_rules, $global_rule_condit
 	}
 
 	// Remove Rule
-	if (isset($_POST['delete_rule']) && !isset($_POST['cancel']))
+	if (request::is_set_post('delete_rule') && !request::is_set_post('cancel'))
 	{
 		$delete_id = array_keys(request_var('delete_rule', array(0 => 0)));
 		$delete_id = (!empty($delete_id[0])) ? $delete_id[0] : 0;
@@ -494,7 +494,7 @@ function message_options($id, $mode, $global_privmsgs_rules, $global_rule_condit
 	$rule_option	= request_var('rule_option', 0);
 	$cond_option	= request_var('cond_option', '');
 	$action_option	= request_var('action_option', '');
-	$back = (isset($_REQUEST['back'])) ? request_var('back', array('' => 0)) : array();
+	$back = request_var('back', array('' => 0));
 
 	if (sizeof($back))
 	{

@@ -33,7 +33,7 @@ class acp_database
 		$this->page_title = 'ACP_DATABASE';
 
 		$action	= request_var('action', '');
-		$submit = (isset($_POST['submit'])) ? true : false;
+		$submit = request::is_set_post('submit');
 
 		$template->assign_vars(array(
 			'MODE'	=> $mode

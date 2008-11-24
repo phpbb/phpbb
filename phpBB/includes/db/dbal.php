@@ -632,7 +632,7 @@ class dbal
 	{
 		global $cache, $starttime, $user;
 
-		if (empty($_REQUEST['explain']))
+		if (!request::variable('explain', false))
 		{
 			return false;
 		}

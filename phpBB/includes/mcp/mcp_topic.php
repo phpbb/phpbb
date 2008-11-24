@@ -45,7 +45,7 @@ function mcp_topic_view($id, $mode, $action)
 	$forum_id		= request_var('f', 0);
 	$to_topic_id	= request_var('to_topic_id', 0);
 	$to_forum_id	= request_var('to_forum_id', 0);
-	$sort			= isset($_POST['sort']) ? true : false;
+	$sort			= request::is_set_post('sort');
 	$submitted_id_list	= request_var('post_ids', array(0));
 	$checked_ids = $post_id_list = request_var('post_id_list', array(0));
 

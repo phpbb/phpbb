@@ -33,7 +33,7 @@ class acp_jabber
 		include_once(PHPBB_ROOT_PATH . 'includes/functions_jabber.' . PHP_EXT);
 
 		$action	= request_var('action', '');
-		$submit = (isset($_POST['submit'])) ? true : false;
+		$submit = request::is_set_post('submit');
 
 		if ($mode != 'settings')
 		{

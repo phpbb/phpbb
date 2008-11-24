@@ -559,7 +559,7 @@ class install_install extends module
 		$available_dbms = get_available_dbms(false, true);
 
 		// Has the user opted to test the connection?
-		if (isset($_POST['testdb']))
+		if (request::is_set_post('testdb'))
 		{
 			if (!isset($available_dbms[$data['dbms']]) || !$available_dbms[$data['dbms']]['AVAILABLE'])
 			{
@@ -700,7 +700,7 @@ class install_install extends module
 
 		$data['default_lang'] = ($data['default_lang'] !== '') ? $data['default_lang'] : $data['language'];
 
-		if (isset($_POST['check']))
+		if (request::is_set_post('check'))
 		{
 			$error = array();
 
@@ -954,7 +954,7 @@ class install_install extends module
 			}
 		}
 
-		if (isset($_POST['dldone']))
+		if (request::is_set_post('dldone'))
 		{
 			// Do a basic check to make sure that the file has been uploaded
 			// Note that all we check is that the file has _something_ in it
@@ -981,7 +981,7 @@ class install_install extends module
 		{
 			// OK, so it didn't work let's try the alternatives
 
-			if (isset($_POST['dlconfig']))
+			if (request::is_set_post('dlconfig'))
 			{
 				// They want a copy of the file to download, so send the relevant headers and dump out the data
 				header('Content-Type: text/x-delimtext; name="config.' . PHP_EXT . '"');

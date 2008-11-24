@@ -240,9 +240,10 @@ class session
 		}
 
 		// Add forum to the page for tracking online users - also adding a "x" to the end to properly identify the number
-		$this->page['page'] .= (isset($_REQUEST['f'])) ? ((strpos($this->page['page'], '?') !== false) ? '&' : '?') . '_f_=' . (int) $_REQUEST['f'] . 'x' : '';
+		$forum = request_var('f', 0);
+		$this->page['page'] .= ($forum) ? ((strpos($this->page['page'], '?') !== false) ? '&' : '?') . '_f_=' . $forum . 'x' : '';
 
-		if (isset($_COOKIE[$config['cookie_name'] . '_sid']) || isset($_COOKIE[$config['cookie_name'] . '_u']))
+		if (request::is_set($config['cookie_name'] . '_sid', request::COOKIE) || request::is_set($config['cookie_name'] . '_u', request::COOKIE))
 		{
 			$this->cookie_data['u'] = request_var($config['cookie_name'] . '_u', 0, false, true);
 			$this->cookie_data['k'] = request_var($config['cookie_name'] . '_k', '', false, true);
@@ -287,7 +288,7 @@ class session
 		}
 
 		// Is session_id is set or session_id is set and matches the url param if required
-		if (!empty($this->session_id) && (!defined('NEED_SID') || (isset($_GET['sid']) && $this->session_id === $_GET['sid'])))
+		if (!empty($this->session_id) && (!defined('NEED_SID') || $this->session_id === request::variable('sid', '', false, request::GET)))
 		{
 			$sql = 'SELECT u.*, s.*
 				FROM ' . SESSIONS_TABLE . ' s, ' . USERS_TABLE . " u
@@ -1496,7 +1497,7 @@ class user extends session
 		$this->add_lang($lang_set);
 		unset($lang_set);
 
-		if (!empty($_GET['style']) && $auth->acl_get('a_styles'))
+		if (request::variable('style', false, false, request::GET) && $auth->acl_get('a_styles'))
 		{
 			global $SID, $_EXTRA_URL;
 

@@ -28,11 +28,11 @@ class acp_bots
 		global $config, $db, $user, $auth, $template, $cache;
 
 		$action = request_var('action', '');
-		$submit = (isset($_POST['submit'])) ? true : false;
+		$submit = request::is_set_post('submit');
 		$mark	= request_var('mark', array(0));
 		$bot_id	= request_var('id', 0);
 
-		if (isset($_POST['add']))
+		if (request::is_set_post('add'))
 		{
 			$action = 'add';
 		}

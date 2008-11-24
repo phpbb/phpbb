@@ -576,21 +576,15 @@ function mcp_move_topic($topic_ids)
 			}
 		}
 	}
-	else if (isset($_POST['confirm']))
+	else if (request::is_set_post('confirm'))
 	{
 		$additional_msg = $user->lang['FORUM_NOT_EXIST'];
 	}
 
-	if (!$to_forum_id || $additional_msg)
-	{
-		unset($_POST['confirm']);
-		unset($_REQUEST['confirm_key']);
-	}
-
-	if (confirm_box(true))
+	if ($to_forum_id && !$additional_msg && confirm_box(true))
 	{
 		$topic_data = get_topic_data($topic_ids);
-		$leave_shadow = (isset($_POST['move_leave_shadow'])) ? true : false;
+		$leave_shadow = request::is_set_post('move_leave_shadow');
 
 		$topics_moved = sizeof($topic_ids);
 		$topics_authed_moved = 0;
@@ -789,7 +783,7 @@ function mcp_delete_topic($topic_ids)
 		confirm_box(false, (sizeof($topic_ids) == 1) ? 'DELETE_TOPIC' : 'DELETE_TOPICS', $s_hidden_fields);
 	}
 
-	if (!isset($_REQUEST['quickmod']))
+	if (!request::is_set('quickmod'))
 	{
 		$redirect = request_var('redirect', 'index.' . PHP_EXT);
 		$redirect = reapply_sid($redirect);
@@ -982,18 +976,12 @@ function mcp_fork_topic($topic_ids)
 			}
 		}
 	}
-	else if (isset($_POST['confirm']))
+	else if (request::is_set_post('confirm'))
 	{
 		$additional_msg = $user->lang['FORUM_NOT_EXIST'];
 	}
 
-	if ($additional_msg)
-	{
-		unset($_POST['confirm']);
-		unset($_REQUEST['confirm_key']);
-	}
-
-	if (confirm_box(true))
+	if (!$additional_msg && confirm_box(true))
 	{
 		$topic_data = get_topic_data($topic_ids, 'f_post');
 

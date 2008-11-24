@@ -348,7 +348,7 @@ if ($topic_data['forum_password'])
 }
 
 // Redirect to login or to the correct post upon emailed notification links
-if (isset($_GET['e']))
+if (request::is_set('e', request::GET))
 {
 	$jump_to = request_var('e', 0);
 
@@ -417,7 +417,7 @@ if ($sort_days)
 
 	$limit_posts_time = "AND p.post_time >= $min_post_time ";
 
-	if (isset($_POST['sort']))
+	if (request::is_set_post('sort'))
 	{
 		$start = 0;
 	}
@@ -673,10 +673,10 @@ if (!empty($topic_data['poll_start']))
 		// Cookie based guest tracking ... I don't like this but hum ho
 		// it's oft requested. This relies on "nice" users who don't feel
 		// the need to delete cookies to mess with results.
-		if (isset($_COOKIE[$config['cookie_name'] . '_poll_' . $topic_id]))
+		$cur_voted_list = request::variable($config['cookie_name'] . '_poll_' . $topic_id, '', false, request::COOKIE);
+		if (!empty($cur_voted_list))
 		{
-			$cur_voted_id = explode(',', $_COOKIE[$config['cookie_name'] . '_poll_' . $topic_id]);
-			$cur_voted_id = array_map('intval', $cur_voted_id);
+			$cur_voted_id = array_map('intval', explode(',', $cur_voted_list));
 		}
 	}
 
@@ -1580,12 +1580,15 @@ else if (!$all_marked_read)
 	}
 }
 
-// We overwrite $_REQUEST['f'] if there is no forum specified
+/**
+* @todo Do NOT overwrite a request variable.
+*/
+// We overwrite the 'f' request variable if there is no forum specified
 // to be able to display the correct online list.
 // One downside is that the user currently viewing this topic/post is not taken into account.
-if (empty($_REQUEST['f']))
+if (empty(request::variable('f', '')))
 {
-	$_REQUEST['f'] = $forum_id;
+	request::overwrite('f', $forum_id);
 }
 
 // Output the page

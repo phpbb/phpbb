@@ -31,7 +31,7 @@ class acp_reasons
 
 		// Set up general vars
 		$action = request_var('action', '');
-		$submit = (isset($_POST['submit'])) ? true : false;
+		$submit = request::is_set_post('submit');
 		$reason_id = request_var('id', 0);
 
 		$this->tpl_name = 'acp_reasons';

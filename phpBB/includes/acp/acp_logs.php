@@ -33,8 +33,8 @@ class acp_logs
 		$action		= request_var('action', '');
 		$forum_id	= request_var('f', 0);
 		$start		= request_var('start', 0);
-		$deletemark = (!empty($_POST['delmarked'])) ? true : false;
-		$deleteall	= (!empty($_POST['delall'])) ? true : false;
+		$deletemark = request::variable('delmarked', false, false, request::POST);
+		$deleteall	= request::variable('delall', false, false, request::POST);
 		$marked		= request_var('mark', array(0));
 
 		// Sort keys

@@ -37,14 +37,14 @@ class acp_groups
 		include(PHPBB_ROOT_PATH . 'includes/functions_user.' . PHP_EXT);
 
 		// Check and set some common vars
-		$action		= (isset($_POST['add'])) ? 'add' : ((isset($_POST['addusers'])) ? 'addusers' : request_var('action', ''));
+		$action		= (request::is_set_post('add')) ? 'add' : ((request::is_set_post('addusers')) ? 'addusers' : request_var('action', ''));
 		$group_id	= request_var('g', 0);
 		$mark_ary	= request_var('mark', array(0));
 		$name_ary	= request_var('usernames', '', true);
 		$leader		= request_var('leader', 0);
 		$default	= request_var('default', 0);
 		$start		= request_var('start', 0);
-		$update		= (isset($_POST['update'])) ? true : false;
+		$update		= request::is_set_post('update');
 
 
 		// Clear some vars
@@ -303,8 +303,8 @@ class acp_groups
 					$submit_ary = array(
 						'colour'			=> request_var('group_colour', ''),
 						'rank'				=> request_var('group_rank', 0),
-						'receive_pm'		=> isset($_REQUEST['group_receive_pm']) ? 1 : 0,
-						'legend'			=> isset($_REQUEST['group_legend']) ? 1 : 0,
+						'receive_pm'		=> request::is_set('group_receive_pm') ? 1 : 0,
+						'legend'			=> request::is_set('group_legend') ? 1 : 0,
 						'message_limit'		=> request_var('group_message_limit', 0),
 						'max_recipients'	=> request_var('group_max_recipients', 0),
 						'founder_manage'	=> 0,
@@ -312,7 +312,7 @@ class acp_groups
 
 					if ($user->data['user_type'] == USER_FOUNDER)
 					{
-						$submit_ary['founder_manage'] = isset($_REQUEST['group_founder_manage']) ? 1 : 0;
+						$submit_ary['founder_manage'] = request::is_set('group_founder_manage') ? 1 : 0;
 					}
 
 					if (!empty($_FILES['uploadfile']['tmp_name']) || $data['uploadurl'] || $data['remotelink'])
@@ -519,7 +519,7 @@ class acp_groups
 
 				$avatar_img = (!empty($group_row['group_avatar'])) ? get_user_avatar($group_row['group_avatar'], $group_row['group_avatar_type'], $group_row['group_avatar_width'], $group_row['group_avatar_height'], 'GROUP_AVATAR') : '<img src="' . PHPBB_ADMIN_PATH . 'images/no_avatar.gif" alt="" />';
 
-				$display_gallery = (isset($_POST['display_gallery'])) ? true : false;
+				$display_gallery = request::is_set_post('display_gallery');
 
 				if ($config['allow_avatar_local'] && $display_gallery)
 				{

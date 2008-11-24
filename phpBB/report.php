@@ -28,7 +28,7 @@ $reason_id		= request_var('reason_id', 0);
 $report_text	= utf8_normalize_nfc(request_var('report_text', '', true));
 $user_notify	= ($user->data['is_registered']) ? request_var('notify', 0) : false;
 
-$submit = (isset($_POST['submit'])) ? true : false;
+$submit = request::is_set_post('submit');
 
 if (!$post_id)
 {
@@ -38,7 +38,7 @@ if (!$post_id)
 $redirect_url = append_sid('viewtopic', "f=$forum_id&amp;p=$post_id") . "#p$post_id";
 
 // Has the report been cancelled?
-if (isset($_POST['cancel']))
+if (request::is_set_post('cancel'))
 {
 	redirect($redirect_url);
 }

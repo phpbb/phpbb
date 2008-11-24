@@ -33,9 +33,9 @@ class ucp_profile
 
 		$user->add_lang('posting');
 
-		$preview	= (!empty($_POST['preview'])) ? true : false;
-		$submit		= (!empty($_POST['submit'])) ? true : false;
-		$delete		= (!empty($_POST['delete'])) ? true : false;
+		$preview	= request::variable('preview', false, false, request::POST);
+		$submit		= request::variable('submit', false, false, request::POST);
+		$delete		= request::variable('delete', false, false, request::POST);
 		$error = $data = array();
 		$s_hidden_fields = '';
 

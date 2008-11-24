@@ -29,7 +29,7 @@ class ucp_prefs
 	{
 		global $config, $db, $user, $auth, $template;
 
-		$submit = (isset($_POST['submit'])) ? true : false;
+		$submit = request::is_set_post('submit');
 		$error = $data = array();
 		$s_hidden_fields = '';
 

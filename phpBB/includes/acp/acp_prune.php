@@ -55,7 +55,7 @@ class acp_prune
 
 		$all_forums = request_var('all_forums', 0);
 		$forum_id = request_var('f', array(0));
-		$submit = (isset($_POST['submit'])) ? true : false;
+		$submit = request::is_set_post('submit');
 
 		if ($all_forums)
 		{
@@ -231,7 +231,7 @@ class acp_prune
 
 		$user->add_lang('memberlist');
 
-		$prune = (isset($_POST['prune'])) ? true : false;
+		$prune = request::is_set_post('prune');
 
 		if ($prune)
 		{

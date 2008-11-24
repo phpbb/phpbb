@@ -18,8 +18,8 @@ if (!defined('IN_PHPBB'))
 /**
 * Private Message Class
 *
-* $_REQUEST['folder'] display folder with the id used
-* $_REQUEST['folder'] inbox|outbox|sentbox display folder with the associated name
+* _REQUEST['folder'] display folder with the id used
+* _REQUEST['folder'] inbox|outbox|sentbox display folder with the associated name
 *
 *	Display Messages (default to inbox) - mode=view
 *	Display single message - mode=view&p=[msg_id] or &p=[msg_id] (short linkage)
@@ -195,8 +195,8 @@ class ucp_pm
 
 
 				// First Handle Mark actions and moving messages
-				$submit_mark	= (isset($_POST['submit_mark'])) ? true : false;
-				$move_pm		= (isset($_POST['move_pm'])) ? true : false;
+				$submit_mark	= request::is_set_post('submit_mark');
+				$move_pm		= request::is_set_post('move_pm');
 				$mark_option	= request_var('mark_option', '');
 				$dest_folder	= request_var('dest_folder', PRIVMSGS_NO_BOX);
 
@@ -211,7 +211,7 @@ class ucp_pm
 				// Move PM
 				if ($move_pm)
 				{
-					$move_msg_ids	= (isset($_POST['marked_msg_id'])) ? request_var('marked_msg_id', array(0)) : array();
+					$move_msg_ids	= request::variable('marked_msg_id', array(0), false, request::POST);
 					$cur_folder_id	= request_var('cur_folder_id', PRIVMSGS_NO_BOX);
 
 					if (move_pm($user->data['user_id'], $user->data['message_limit'], $move_msg_ids, $dest_folder, $cur_folder_id))

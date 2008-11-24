@@ -31,8 +31,8 @@ class acp_ranks
 
 		// Set up general vars
 		$action = request_var('action', '');
-		$action = (isset($_POST['add'])) ? 'add' : $action;
-		$action = (isset($_POST['save'])) ? 'save' : $action;
+		$action = (request::is_set_post('add')) ? 'add' : $action;
+		$action = (request::is_set_post('save')) ? 'save' : $action;
 		$rank_id = request_var('id', 0);
 
 		$this->tpl_name = 'acp_ranks';

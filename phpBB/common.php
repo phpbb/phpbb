@@ -200,6 +200,9 @@ require(PHPBB_ROOT_PATH . 'includes/utf/utf_tools.' . PHP_EXT);
 // Set PHP error handler to ours
 set_error_handler(defined('PHPBB_MSG_HANDLER') ? PHPBB_MSG_HANDLER : 'msg_handler');
 
+// enforce the use of the request class
+request::disable_super_globals();
+
 // Instantiate some basic classes
 $user		= new user();
 $auth		= new auth();

@@ -38,9 +38,9 @@ class acp_inactive
 		$user->add_lang('memberlist');
 
 		$action = request_var('action', '');
-		$mark	= (isset($_REQUEST['mark'])) ? request_var('mark', array(0)) : array();
+		$mark	= request_var('mark', array(0));
 		$start	= request_var('start', 0);
-		$submit = isset($_POST['submit']);
+		$submit = request::is_set_post('submit');
 
 		// Sort keys
 		$sort_days	= request_var('st', 0);

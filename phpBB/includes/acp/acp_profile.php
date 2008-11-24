@@ -38,7 +38,7 @@ class acp_profile
 		$this->tpl_name = 'acp_profile';
 		$this->page_title = 'ACP_CUSTOM_PROFILE_FIELDS';
 
-		$action = (isset($_POST['create'])) ? 'create' : request_var('action', '');
+		$action = (request::is_set_post('create')) ? 'create' : request_var('action', '');
 
 		$error = array();
 		$s_hidden_fields = '';
@@ -287,8 +287,8 @@ class acp_profile
 				$field_id = request_var('field_id', 0);
 				$step = request_var('step', 1);
 
-				$submit = (isset($_REQUEST['next']) || isset($_REQUEST['prev'])) ? true : false;
-				$save = (isset($_REQUEST['save'])) ? true : false;
+				$submit = (request::is_set('next') || request::is_set('prev')) ? true : false;
+				$save = request::is_set('save');
 
 				// The language id of default language
 				$this->edit_lang_id = $this->lang_defs['iso'][$config['default_lang']];
@@ -399,7 +399,7 @@ class acp_profile
 				$cp->vars['lang_default_value']	= utf8_normalize_nfc(request_var('lang_default_value', $field_row['lang_default_value'], true));
 
 				// Field option...
-				if (isset($_REQUEST['field_option']))
+				if (request::is_set('field_option'))
 				{
 					$field_option = request_var('field_option', '');
 
@@ -463,7 +463,7 @@ class acp_profile
 					}
 					else if ($field_type == FIELD_TEXT && $key == 'field_length')
 					{
-						if (isset($_REQUEST['rows']))
+						if (request::is_set('rows'))
 						{
 							$cp->vars['rows'] = request_var('rows', 0);
 							$cp->vars['columns'] = request_var('columns', 0);
@@ -487,16 +487,27 @@ class acp_profile
 							$cp->vars['field_default_value_day'] = $now['mday'];
 							$cp->vars['field_default_value_month'] = $now['mon'];
 							$cp->vars['field_default_value_year'] = $now['year'];
-							$var = $_POST['field_default_value'] = 'now';
+
+							$var = 'now';
+							/**
+							* @todo Do NOT overwrite a request variable.
+							*/
+							request::overwrite('field_default_value', $var, request::REQUEST);
+							request::overwrite('field_default_value', $var, request::POST);
 						}
 						else
 						{
-							if (isset($_REQUEST['field_default_value_day']))
+							if (request::is_set('field_default_value_day'))
 							{
 								$cp->vars['field_default_value_day'] = request_var('field_default_value_day', 0);
 								$cp->vars['field_default_value_month'] = request_var('field_default_value_month', 0);
 								$cp->vars['field_default_value_year'] = request_var('field_default_value_year', 0);
-								$var = $_POST['field_default_value'] = sprintf('%2d-%2d-%4d', $cp->vars['field_default_value_day'], $cp->vars['field_default_value_month'], $cp->vars['field_default_value_year']);
+								$var = sprintf('%2d-%2d-%4d', $cp->vars['field_default_value_day'], $cp->vars['field_default_value_month'], $cp->vars['field_default_value_year']);
+								/**
+								* @todo Do NOT overwrite a request variable.
+								*/
+								request::overwrite('field_default_value', $var, request::REQUEST);
+								request::overwrite('field_default_value', $var, request::POST);
 							}
 							else
 							{
@@ -622,7 +633,7 @@ class acp_profile
 					}
 				}
 
-				$step = (isset($_REQUEST['next'])) ? $step + 1 : ((isset($_REQUEST['prev'])) ? $step - 1 : $step);
+				$step = (request::is_set('next')) ? $step + 1 : ((request::is_set('prev')) ? $step - 1 : $step);
 
 				if (sizeof($error))
 				{
@@ -642,7 +653,7 @@ class acp_profile
 
 					foreach ($key_ary as $key)
 					{
-						if ($field_type == FIELD_TEXT && $key == 'field_length' && isset($_REQUEST['rows']))
+						if ($field_type == FIELD_TEXT && $key == 'field_length' && request::is_set('rows'))
 						{
 							$cp->vars['rows'] = request_var('rows', 0);
 							$cp->vars['columns'] = request_var('columns', 0);
@@ -656,21 +667,21 @@ class acp_profile
 							{
 								$_new_key_ary[$key] = 'now';
 							}
-							else if (isset($_REQUEST['field_default_value_day']))
+							else if (request::is_set('field_default_value_day'))
 							{
 								$cp->vars['field_default_value_day'] = request_var('field_default_value_day', 0);
 								$cp->vars['field_default_value_month'] = request_var('field_default_value_month', 0);
 								$cp->vars['field_default_value_year'] = request_var('field_default_value_year', 0);
-								$_new_key_ary[$key]  = sprintf('%2d-%2d-%4d', $cp->vars['field_default_value_day'], $cp->vars['field_default_value_month'], $cp->vars['field_default_value_year']);
+								$_new_key_ary[$key] = sprintf('%2d-%2d-%4d', $cp->vars['field_default_value_day'], $cp->vars['field_default_value_month'], $cp->vars['field_default_value_year']);
 							}
 						}
-						else if ($field_type == FIELD_BOOL && $key == 'l_lang_options' && isset($_REQUEST['l_lang_options']))
+						else if ($field_type == FIELD_BOOL && $key == 'l_lang_options' && request::is_set('l_lang_options'))
 						{
 							$_new_key_ary[$key] = utf8_normalize_nfc(request_var($key, array(array('')), true));
 						}
 						else
 						{
-							if (!isset($_REQUEST[$key]))
+							if (!request::is_set($key))
 							{
 								$var = false;
 							}
@@ -680,7 +691,11 @@ class acp_profile
 							}
 							else
 							{
-								$_new_key_ary[$key] = (is_array($_REQUEST[$key])) ? utf8_normalize_nfc(request_var($key, array(''), true)) : utf8_normalize_nfc(request_var($key, '', true));
+								$_new_key_ary[$key] = utf8_normalize_nfc(request_var($key, array(''), true));
+								if (!sizeof($_new_key_ary[$key]))
+								{
+									$_new_key_ary[$key] = utf8_normalize_nfc(request_var($key, '', true));
+								}
 							}
 						}
 					}

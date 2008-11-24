@@ -59,7 +59,7 @@ class acp_permissions
 		// Set some vars
 		$action = request_var('action', array('' => 0));
 		$action = key($action);
-		$action = (isset($_POST['psubmit'])) ? 'apply_permissions' : $action;
+		$action = (request::is_set_post('psubmit')) ? 'apply_permissions' : $action;
 
 		$all_forums = request_var('all_forums', 0);
 		$subforum_id = request_var('subforum_id', 0);
@@ -229,8 +229,8 @@ class acp_permissions
 						trigger_error($user->lang['FORM_INVALID']. adm_back_link($this->u_action), E_USER_WARNING);
 					}
 					// All users/groups selected?
-					$all_users = (isset($_POST['all_users'])) ? true : false;
-					$all_groups = (isset($_POST['all_groups'])) ? true : false;
+					$all_users = request::is_set_post('all_users');
+					$all_groups = request::is_set_post('all_groups');
 
 					if ($all_users || $all_groups)
 					{
@@ -257,7 +257,7 @@ class acp_permissions
 				break;
 
 				case 'apply_permissions':
-					if (!isset($_POST['setting']))
+					if (!request::is_set_post('setting'))
 					{
 						trigger_error($user->lang['NO_AUTH_SETTING_FOUND'] . adm_back_link($this->u_action), E_USER_WARNING);
 					}
@@ -270,7 +270,7 @@ class acp_permissions
 				break;
 
 				case 'apply_all_permissions':
-					if (!isset($_POST['setting']))
+					if (!request::is_set_post('setting'))
 					{
 						trigger_error($user->lang['NO_AUTH_SETTING_FOUND'] . adm_back_link($this->u_action), E_USER_WARNING);
 					}
@@ -376,8 +376,8 @@ class acp_permissions
 				case 'usergroup':
 				case 'usergroup_view':
 
-					$all_users = (isset($_POST['all_users'])) ? true : false;
-					$all_groups = (isset($_POST['all_groups'])) ? true : false;
+					$all_users = request::is_set_post('all_users');
+					$all_groups = request::is_set_post('all_groups');
 
 					if ((sizeof($user_id) && !$all_users) || (sizeof($group_id) && !$all_groups))
 					{
@@ -632,18 +632,14 @@ class acp_permissions
 		list($ug_id, ) = each($psubmit);
 		list($forum_id, ) = each($psubmit[$ug_id]);
 
-		if (empty($_POST['setting']) || empty($_POST['setting'][$ug_id]) || empty($_POST['setting'][$ug_id][$forum_id]) || !is_array($_POST['setting'][$ug_id][$forum_id]))
+		$auth_settings = request::variable('setting', array(0 => array(0 => array('' => 0))), false, request::POST);
+		if (!isset($auth_settings[$ug_id][$forum_id]) || !sizeof($auth_settings[$ug_id][$forum_id])))
 		{
 			trigger_error('WRONG_PERMISSION_SETTING_FORMAT', E_USER_WARNING);
 		}
 
-		// We obtain and check $_POST['setting'][$ug_id][$forum_id] directly and not using request_var() because request_var()
-		// currently does not support the amount of dimensions required. ;)
-		//		$auth_settings = request_var('setting', array(0 => array(0 => array('' => 0))));
-		$auth_settings = array_map('intval', $_POST['setting'][$ug_id][$forum_id]);
-
 		// Do we have a role we want to set?
-		$assigned_role = (isset($_POST['role'][$ug_id][$forum_id])) ? (int) $_POST['role'][$ug_id][$forum_id] : 0;
+		$assigned_role = request::variable(array('role', $ug_id, $forum_id), 0, false, request::POST));
 
 		// Do the admin want to set these permissions to other items too?
 		$inherit = request_var('inherit', array(0 => array(0)));
@@ -713,23 +709,21 @@ class acp_permissions
 			trigger_error($user->lang['NO_AUTH_OPERATION'] . adm_back_link($this->u_action), E_USER_WARNING);
 		}
 
-		$auth_settings = (isset($_POST['setting'])) ? $_POST['setting'] : array();
-		$auth_roles = (isset($_POST['role'])) ? $_POST['role'] : array();
+		$auth_settings = request::variable('setting', array(0 => array(0 => array('' => 0))), false, request::POST);
+		$auth_roles = request::variable('role', array(0 => array(0 => 0)), false, request::POST);
 		$ug_ids = $forum_ids = array();
 
 		// We need to go through the auth settings
 		foreach ($auth_settings as $ug_id => $forum_auth_row)
 		{
-			$ug_id = (int) $ug_id;
 			$ug_ids[] = $ug_id;
 
 			foreach ($forum_auth_row as $forum_id => $auth_options)
 			{
-				$forum_id = (int) $forum_id;
 				$forum_ids[] = $forum_id;
 
 				// Check role...
-				$assigned_role = (isset($auth_roles[$ug_id][$forum_id])) ? (int) $auth_roles[$ug_id][$forum_id] : 0;
+				$assigned_role = (isset($auth_roles[$ug_id][$forum_id])) ? $auth_roles[$ug_id][$forum_id] : 0;
 
 				// If the auth settings differ from the assigned role, then do not set a role...
 				if ($assigned_role)

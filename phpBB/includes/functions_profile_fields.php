@@ -562,19 +562,19 @@ class custom_profile
 		// checkbox - only testing for isset
 		if ($profile_row['field_type'] == FIELD_BOOL && $profile_row['field_length'] == 2)
 		{
-			$value = (isset($_REQUEST[$profile_row['field_ident']])) ? true : ((!isset($user->profile_fields[$user_ident]) || $preview) ? $default_value : $user->profile_fields[$user_ident]);
+			$value = (request::is_set($profile_row['field_ident'])) ? true : ((!isset($user->profile_fields[$user_ident]) || $preview) ? $default_value : $user->profile_fields[$user_ident]);
 		}
 		else if ($profile_row['field_type'] == FIELD_INT)
 		{
-			if (isset($_REQUEST[$profile_row['field_ident']]))
+			if (request::is_set($profile_row['field_ident']))
 			{
-				$value = ($_REQUEST[$profile_row['field_ident']] === '') ? NULL : request_var($profile_row['field_ident'], $default_value);
+				$value = (request_var($profile_row['field_ident'], '') === '') ? null : request_var($profile_row['field_ident'], $default_value);
 			}
 			else
 			{
 				if (!$preview && isset($user->profile_fields[$user_ident]) && is_null($user->profile_fields[$user_ident]))
 				{
-					$value = NULL;
+					$value = null;
 				}
 				else if (!isset($user->profile_fields[$user_ident]) || $preview)
 				{
@@ -590,7 +590,7 @@ class custom_profile
 		}
 		else
 		{
-			$value = (isset($_REQUEST[$profile_row['field_ident']])) ? request_var($profile_row['field_ident'], $default_value, true) : ((!isset($user->profile_fields[$user_ident]) || $preview) ? $default_value : $user->profile_fields[$user_ident]);
+			$value = (request::is_set($profile_row['field_ident'])) ? request_var($profile_row['field_ident'], $default_value, true) : ((!isset($user->profile_fields[$user_ident]) || $preview) ? $default_value : $user->profile_fields[$user_ident]);
 			
 			if (gettype($value) == 'string')
 			{
@@ -633,7 +633,7 @@ class custom_profile
 
 		$now = getdate();
 
-		if (!isset($_REQUEST[$profile_row['field_ident'] . '_day']))
+		if (!request::is_set($profile_row['field_ident'] . '_day'))
 		{
 			if ($profile_row['field_default_value'] == 'now')
 			{
@@ -845,7 +845,7 @@ class custom_profile
 		{
 			case FIELD_DATE:
 
-				if (!isset($_REQUEST[$var_name . '_day']))
+				if (!request::is_set($var_name . '_day'))
 				{
 					if ($profile_row['field_default_value'] == 'now')
 					{
@@ -868,7 +868,7 @@ class custom_profile
 				// Checkbox
 				if ($profile_row['field_length'] == 2)
 				{
-					$var = (isset($_REQUEST[$var_name])) ? 1 : 0;
+					$var = request::is_set($var_name) ? 1 : 0;
 				}
 				else
 				{
@@ -882,7 +882,7 @@ class custom_profile
 			break;
 
 			case FIELD_INT:
-				if (isset($_REQUEST[$var_name]) && $_REQUEST[$var_name] === '')
+				if (request::is_set($var_name) && request_var($var_name, '') === '')
 				{
 					$var = NULL;
 				}

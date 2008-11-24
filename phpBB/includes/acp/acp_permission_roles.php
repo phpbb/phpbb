@@ -37,10 +37,10 @@ class acp_permission_roles
 
 		$this->tpl_name = 'acp_permission_roles';
 
-		$submit = (isset($_POST['submit'])) ? true : false;
+		$submit = request::is_set_post('submit');
 		$role_id = request_var('role_id', 0);
 		$action = request_var('action', '');
-		$action = (isset($_POST['add'])) ? 'add' : $action;
+		$action = (request::is_set_post('add')) ? 'add' : $action;
 
 		$form_name = 'acp_permissions';
 		add_form_key($form_name);

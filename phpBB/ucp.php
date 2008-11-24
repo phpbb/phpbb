@@ -58,7 +58,7 @@ switch ($mode)
 	break;
 
 	case 'register':
-		if ($user->data['is_registered'] || isset($_REQUEST['not_agreed']))
+		if ($user->data['is_registered'] || request::is_set('not_agreed'))
 		{
 			redirect(append_sid('index'));
 		}
@@ -81,7 +81,7 @@ switch ($mode)
 	break;
 
 	case 'logout':
-		if ($user->data['user_id'] != ANONYMOUS && isset($_GET['sid']) && !is_array($_GET['sid']) && $_GET['sid'] === $user->session_id)
+		if ($user->data['user_id'] != ANONYMOUS && request::variable('sid', '', false, request::GET) === $user->session_id)
 		{
 			$user->session_kill();
 			$user->session_begin();
@@ -140,7 +140,8 @@ switch ($mode)
 		{
 			$set_time = time() - 31536000;
 
-			foreach ($_COOKIE as $cookie_name => $cookie_data)
+			$cookies = request::variable_names(request::COOKIE);
+			foreach ($cookies as $cookie_name)
 			{
 				$cookie_name = str_replace($config['cookie_name'] . '_', '', $cookie_name);
 

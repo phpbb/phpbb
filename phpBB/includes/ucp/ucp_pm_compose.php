@@ -44,28 +44,21 @@ function compose_pm($id, $mode, $action)
 	$msg_id			= request_var('p', 0);
 	$draft_id		= request_var('d', 0);
 	$lastclick		= request_var('lastclick', 0);
+	$address_list	= request_var('address_list', array('' => array(0 => '')));
 
-	// Do NOT use request_var or specialchars here
-	$address_list	= isset($_REQUEST['address_list']) ? $_REQUEST['address_list'] : array();
+	$submit		= request::is_set_post('post');
+	$preview	= request::is_set_post('preview');
+	$save		= request::is_set_post('save');
+	$load		= request::is_set_post('load');
+	$cancel		= (request::is_set_post('cancel') && !$save) ? true : false;
+	$delete		= request::is_set_post('delete');
 
-	if (!is_array($address_list))
-	{
-		$address_list = array();
-	}
+	$remove_u	= request::is_set('remove_u');
+	$remove_g	= request::is_set('remove_g');
+	$add_to		= request::is_set('add_to');
+	$add_bcc	= request::is_set('add_bcc');
 
-	$submit		= (isset($_POST['post'])) ? true : false;
-	$preview	= (isset($_POST['preview'])) ? true : false;
-	$save		= (isset($_POST['save'])) ? true : false;
-	$load		= (isset($_POST['load'])) ? true : false;
-	$cancel		= (isset($_POST['cancel']) && !isset($_POST['save'])) ? true : false;
-	$delete		= (isset($_POST['delete'])) ? true : false;
-
-	$remove_u	= (isset($_REQUEST['remove_u'])) ? true : false;
-	$remove_g	= (isset($_REQUEST['remove_g'])) ? true : false;
-	$add_to		= (isset($_REQUEST['add_to'])) ? true : false;
-	$add_bcc	= (isset($_REQUEST['add_bcc'])) ? true : false;
-
-	$refresh	= isset($_POST['add_file']) || isset($_POST['delete_file']) || $save || $load
+	$refresh	= request::is_set_post('add_file') || request::is_set_post('delete_file') || $save || $load
 		|| $remove_u || $remove_g || $add_to || $add_bcc;
 
 	$action		= ($delete && !$preview && !$refresh && $submit) ? 'delete' : $action;
@@ -625,10 +618,10 @@ function compose_pm($id, $mode, $action)
 
 		$icon_id			= request_var('icon', 0);
 
-		$enable_bbcode 		= (!$bbcode_status || isset($_POST['disable_bbcode'])) ? false : true;
-		$enable_smilies		= (!$smilies_status || isset($_POST['disable_smilies'])) ? false : true;
-		$enable_urls 		= (isset($_POST['disable_magic_url'])) ? 0 : 1;
-		$enable_sig			= (!$config['allow_sig'] ||!$config['allow_sig_pm']) ? false : ((isset($_POST['attach_sig'])) ? true : false);
+		$enable_bbcode 		= (!$bbcode_status || request::is_set_post('disable_bbcode')) ? false : true;
+		$enable_smilies		= (!$smilies_status || request::is_set_post'disable_smilies')) ? false : true;
+		$enable_urls 		= (request::is_set_post('disable_magic_url')) ? 0 : 1;
+		$enable_sig			= (!$config['allow_sig'] ||!$config['allow_sig_pm']) ? false : request::is_set_post('attach_sig');
 
 		if ($submit)
 		{
@@ -1002,7 +995,7 @@ function compose_pm($id, $mode, $action)
 
 	$s_hidden_fields = '<input type="hidden" name="lastclick" value="' . $current_time . '" />';
 	$s_hidden_fields .= (isset($check_value)) ? '<input type="hidden" name="status_switch" value="' . $check_value . '" />' : '';
-	$s_hidden_fields .= ($draft_id || isset($_REQUEST['draft_loaded'])) ? '<input type="hidden" name="draft_loaded" value="' . ((isset($_REQUEST['draft_loaded'])) ? intval($_REQUEST['draft_loaded']) : $draft_id) . '" />' : '';
+	$s_hidden_fields .= ($draft_id || request::is_set('draft_loaded')) ? '<input type="hidden" name="draft_loaded" value="' . request_var('draft_loaded', (int) $draft_id) . '" />' : '';
 
 	$form_enctype = (@ini_get('file_uploads') == '0' || strtolower(@ini_get('file_uploads')) == 'off' || !$config['allow_pm_attach'] || !$auth->acl_get('u_pm_attach')) ? '' : ' enctype="multipart/form-data"';
 
@@ -1047,7 +1040,7 @@ function compose_pm($id, $mode, $action)
 		'S_HIDDEN_ADDRESS_FIELD'	=> $s_hidden_address_field,
 		'S_HIDDEN_FIELDS'			=> $s_hidden_fields,
 
-		'S_CLOSE_PROGRESS_WINDOW'	=> isset($_POST['add_file']),
+		'S_CLOSE_PROGRESS_WINDOW'	=> request::is_set_post('add_file'),
 		'U_PROGRESS_BAR'			=> append_sid('posting', 'f=0&amp;mode=popup'),
 		'UA_PROGRESS_BAR'			=> addslashes(append_sid('posting', 'f=0&amp;mode=popup')),
 	));
@@ -1079,32 +1072,25 @@ function handle_message_list_actions(&$address_list, &$error, $remove_u, $remove
 	global $auth, $db, $user;
 
 	// Delete User [TO/BCC]
-	if ($remove_u && !empty($_REQUEST['remove_u']) && is_array($_REQUEST['remove_u']))
+	$remove_user_id = request_var('remove_u', array(0 => false));
+	if ($remove_u && sizeof($remove_user_id))
 	{
-		$remove_user_id = array_keys($_REQUEST['remove_u']);
-
-		if (isset($remove_user_id[0]))
-		{
-			unset($address_list['u'][(int) $remove_user_id[0]]);
-		}
+		unset($address_list['u'][(int) key($remove_user_id)]);
 	}
 
 	// Delete Group [TO/BCC]
-	if ($remove_g && !empty($_REQUEST['remove_g']) && is_array($_REQUEST['remove_g']))
+	$remove_group_id = request_var('remove_g', array(0 => false));
+	if ($remove_g && sizeof($remove_group_id))
 	{
-		$remove_group_id = array_keys($_REQUEST['remove_g']);
-
-		if (isset($remove_group_id[0]))
-		{
-			unset($address_list['g'][(int) $remove_group_id[0]]);
-		}
+		unset($address_list['g'][(int) key($remove_group_id)]);
 	}
 
 	// Add Selected Groups
 	$group_list = request_var('group_list', array(0));
 
 	// Build usernames to add
-	$usernames = (isset($_REQUEST['username'])) ? array(request_var('username', '', true)) : array();
+	$username = request_var('username', '', true)
+	$usernames = ($username) ? array($username) : array();
 	$username_list = request_var('username_list', '', true);
 	if ($username_list)
 	{
@@ -1152,7 +1138,7 @@ function handle_message_list_actions(&$address_list, &$error, $remove_u, $remove
 		}
 
 		// Add Friends if specified
-		$friend_list = (isset($_REQUEST['add_' . $type]) && is_array($_REQUEST['add_' . $type])) ? array_map('intval', array_keys($_REQUEST['add_' . $type])) : array();
+		$friend_list = array_keys(request_var('add_' . $type, array(0 => false)));
 		$user_id_ary = array_merge($user_id_ary, $friend_list);
 
 		foreach ($user_id_ary as $user_id)

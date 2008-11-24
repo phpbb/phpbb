@@ -208,7 +208,7 @@ class install_update extends module
 		$this->include_file('includes/diff/renderer.' . PHP_EXT);
 
 		// Make sure we stay at the file check if checking the files again
-		if (!empty($_POST['check_again']))
+		if (request::variable('check_again', false, false, request::POST))
 		{
 			$sub = $this->p_master->sub = 'file_check';
 		}
@@ -297,7 +297,7 @@ class install_update extends module
 				$action = request_var('action', '');
 
 				// We are directly within an update. To make sure our update list is correct we check its status.
-				$update_list = (!empty($_POST['check_again'])) ? false : $cache->get('_update_list');
+				$update_list = (request::variable('check_again', false, false, request::POST)) ? false : $cache->get('_update_list');
 				$modified = ($update_list !== false) ? @filemtime($cache->cache_dir . 'data_update_list.' . PHP_EXT) : 0;
 
 				// Make sure the list is up-to-date
@@ -644,7 +644,7 @@ class install_update extends module
 							{
 								$cache->put('_diff_files', $file_list);
 
-								if (!empty($_REQUEST['download']))
+								if (request_var('download', false))
 								{
 									$params[] = 'download=1';
 								}
@@ -747,7 +747,7 @@ class install_update extends module
 				$file_list['status'] = -1;
 				$cache->put('_diff_files', $file_list);
 
-				if (!empty($_REQUEST['download']))
+				if (request_var('download', false))
 				{
 					$this->include_file('includes/functions_compress.' . PHP_EXT);
 
@@ -823,7 +823,7 @@ class install_update extends module
 
 					// Choose FTP, if not available use fsock...
 					$method = basename(request_var('method', ''));
-					$submit = (isset($_POST['submit'])) ? true : false;
+					$submit = request::is_set_post('submit');
 					$test_ftp_connection = request_var('test_connection', '');
 
 					if (!$method || !class_exists($method))
@@ -881,7 +881,7 @@ class install_update extends module
 								'DATA'		=> $data,
 								'NAME'		=> $user->lang[strtoupper($method . '_' . $data)],
 								'EXPLAIN'	=> $user->lang[strtoupper($method . '_' . $data) . '_EXPLAIN'],
-								'DEFAULT'	=> (!empty($_REQUEST[$data])) ? request_var($data, '') : $default
+								'DEFAULT'	=> (request_var($data, false)) ? request_var($data, '') : $default
 							));
 						}
 

@@ -52,7 +52,7 @@ class acp_search
 	{
 		global $db, $user, $auth, $template, $cache, $config;
 
-		$submit = (isset($_POST['submit'])) ? true : false;
+		$submit = request::is_set_post('submit');
 
 		$search_types = $this->get_search_types();
 
@@ -99,7 +99,7 @@ class acp_search
 		unset($search);
 		unset($error);
 
-		$cfg_array = (isset($_REQUEST['config'])) ? request_var('config', array('' => ''), true) : array();
+		$cfg_array = request_var('config', array('' => ''), true);
 		$updated = request_var('updated', false);
 
 		foreach ($settings as $config_name => $var_type)
@@ -228,9 +228,9 @@ class acp_search
 	{
 		global $db, $user, $auth, $template, $cache, $config;
 
-		if (isset($_REQUEST['action']) && is_array($_REQUEST['action']))
+		$action = request_var('action', array('' => false));
+		if (sizeof($action))
 		{
-			$action = request_var('action', array('' => false));
 			$action = key($action);
 		}
 		else
@@ -239,7 +239,7 @@ class acp_search
 		}
 		$this->state = explode(',', $config['search_indexing_state']);
 
-		if (isset($_POST['cancel']))
+		if (request::is_set_post('cancel'))
 		{
 			$action = '';
 			$this->state = array();

@@ -100,9 +100,15 @@ function login_db(&$username, &$password)
 	/*if ($row['user_pass_convert'])
 	{
 		// in phpBB2 passwords were used exactly as they were sent, with addslashes applied
+		$disabled = request::super_globals_disabled();
+		request::enable_super_globals();
 		$password_old_format = isset($_REQUEST['password']) ? (string) $_REQUEST['password'] : '';
 		$password_old_format = (!STRIP) ? addslashes($password_old_format) : $password_old_format;
 		$password_new_format = '';
+		if ($disabled)
+		{
+			request::disable_super_globals();
+		}
 
 		set_var($password_new_format, stripslashes($password_old_format), 'string');
 

@@ -381,7 +381,7 @@ class install_convert extends module
 			$this->p_master->error($lang['DEV_NO_TEST_FILE'], __LINE__, __FILE__);
 		}
 
-		$submit = (isset($_POST['submit'])) ? true : false;
+		$submit = request::is_set_post('submit');
 
 		$src_dbms			= request_var('src_dbms', $convertor_data['dbms']);
 		$src_dbhost			= request_var('src_dbhost', $convertor_data['dbhost']);
@@ -805,7 +805,7 @@ class install_convert extends module
 
 		if (!$current_table && !$skip_rows)
 		{
-			if (empty($_REQUEST['confirm']))
+			if (!request::variable('confirm', false))
 			{
 				// If avatars / ranks / smilies folders are specified make sure they are writable
 				$bad_folders = array();
@@ -966,7 +966,7 @@ class install_convert extends module
 				));
 
 				return;
-			} // if (empty($_REQUEST['confirm']))
+			} // if (!request::variable('confirm', false))
 
 			$template->assign_block_vars('checks', array(
 				'S_LEGEND'		=> true,

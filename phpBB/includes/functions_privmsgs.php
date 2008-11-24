@@ -870,7 +870,7 @@ function handle_mark_actions($user_id, $mark_action)
 
 	$msg_ids		= request_var('marked_msg_id', array(0));
 	$cur_folder_id	= request_var('cur_folder_id', PRIVMSGS_NO_BOX);
-	$confirm		= (isset($_POST['confirm'])) ? true : false;
+	$confirm		= request::is_set_post('confirm');
 
 	if (!sizeof($msg_ids))
 	{

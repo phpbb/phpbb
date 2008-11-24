@@ -36,7 +36,7 @@ class acp_captcha
 		$configure = request_var('configure', false);
 		
 		// Oh, they are just here for the view
-		if (isset($_GET['captcha_demo']))
+		if (request::is_set('captcha_demo', request::GET))
 		{
 			$this->deliver_demo($selected);
 		}
@@ -109,7 +109,7 @@ class acp_captcha
 				
 				foreach ($config_vars as $config_var => $template_var)
 				{
-					$template->assign_var($template_var, (isset($_REQUEST[$config_var])) ? request_var($config_var, '') : $config[$config_var]) ;
+					$template->assign_var($template_var, request_var($config_var, $config[$config_var])) ;
 				}
 
 				$template->assign_vars(array(

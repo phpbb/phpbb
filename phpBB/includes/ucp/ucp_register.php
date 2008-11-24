@@ -37,9 +37,9 @@ class ucp_register
 
 		include(PHPBB_ROOT_PATH . 'includes/functions_profile_fields.' . PHP_EXT);
 
-		$coppa			= (isset($_REQUEST['coppa'])) ? ((!empty($_REQUEST['coppa'])) ? 1 : 0) : false;
-		$agreed			= (!empty($_POST['agreed'])) ? 1 : 0;
-		$submit			= (isset($_POST['submit'])) ? true : false;
+		$coppa			= request::is_set('coppa') ? ((request_var('coppa', false)) ? 1 : 0) : false;
+		$agreed			= request::variable('agreed', false, false, request::POST) ? 1 : 0;
+		$submit			= request::is_set_post('submit');
 		$change_lang	= request_var('change_lang', '');
 		$user_lang		= request_var('lang', $user->lang_name);
 
@@ -71,7 +71,7 @@ class ucp_register
 					$submit = false;
 
 					// Setting back agreed to let the user view the agreement in his/her language
-					$agreed = (empty($_GET['change_lang'])) ? 0 : $agreed;
+					$agreed = (request::is_set_post('change_lang')) ? 0 : $agreed;
 				}
 
 				$user->lang_name = $lang = $use_lang;

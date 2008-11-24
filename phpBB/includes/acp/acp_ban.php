@@ -29,8 +29,8 @@ class acp_ban
 
 		include(PHPBB_ROOT_PATH . 'includes/functions_user.' . PHP_EXT);
 
-		$bansubmit	= (isset($_POST['bansubmit'])) ? true : false;
-		$unbansubmit = (isset($_POST['unbansubmit'])) ? true : false;
+		$bansubmit	= request::is_set_post('bansubmit');
+		$unbansubmit = request::is_set_post('unbansubmit');
 		$current_time = time();
 
 		$user->add_lang(array('acp/ban', 'acp/users'));

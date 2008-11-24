@@ -30,13 +30,13 @@ else if (isset($_SERVER['HTTP_USER_AGENT']) && strpos($_SERVER['HTTP_USER_AGENT'
 	exit;
 }
 
-if (isset($_GET['avatar']))
+if (request::is_set('avatar', request::GET))
 {
 	// worst-case default
 	$browser = (!empty($_SERVER['HTTP_USER_AGENT'])) ? htmlspecialchars((string) $_SERVER['HTTP_USER_AGENT']) : 'msie 6.0';
 
 	$config = cache::obtain_config();
-	$filename = $_GET['avatar'];
+	$filename = request::variable('avatar', '', false, request::GET);
 	$avatar_group = false;
 	$exit = false;
 	

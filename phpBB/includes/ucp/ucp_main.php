@@ -204,7 +204,7 @@ class ucp_main
 
 				add_form_key('ucp_front_subscribed');
 
-				$unwatch = (isset($_POST['unwatch'])) ? true : false;
+				$unwatch = request::is_set_post('unwatch');
 
 				if ($unwatch)
 				{
@@ -287,7 +287,7 @@ class ucp_main
 					}
 					else
 					{
-						$tracking_topics = (isset($_COOKIE[$config['cookie_name'] . '_track'])) ? ((STRIP) ? stripslashes($_COOKIE[$config['cookie_name'] . '_track']) : $_COOKIE[$config['cookie_name'] . '_track']) : '';
+						$tracking_topics = request::variable($config['cookie_name'] . '_track', '', false, request::COOKIE);
 						$tracking_topics = ($tracking_topics) ? tracking_unserialize($tracking_topics) : array();
 					}
 
@@ -386,10 +386,10 @@ class ucp_main
 
 				$user->add_lang('viewforum');
 
-				if (isset($_POST['unbookmark']))
+				if (request::is_set_post('unbookmark'))
 				{
 					$s_hidden_fields = array('unbookmark' => 1);
-					$topics = (isset($_POST['t'])) ? array_keys(request_var('t', array(0 => 0))) : array();
+					$topics = array_keys(request::variable('t', array(0 => 0), false, request::POST));
 					$url = $this->u_action;
 
 					if (!sizeof($topics))
@@ -432,10 +432,10 @@ class ucp_main
 
 				$user->add_lang('posting');
 
-				$edit		= (isset($_REQUEST['edit'])) ? true : false;
-				$submit		= (isset($_POST['submit'])) ? true : false;
-				$draft_id	= ($edit) ? intval($_REQUEST['edit']) : 0;
-				$delete		= (isset($_POST['delete'])) ? true : false;
+				$edit		= request::is_set('edit');
+				$draft_id	= request::variable('edit', 0);
+				$submit		= request::is_set_post('submit');
+				$delete		= request::is_set_post('delete');
 
 				$s_hidden_fields = ($edit) ? '<input type="hidden" name="edit" value="' . $draft_id . '" />' : '';
 				$draft_subject = $draft_message = '';
@@ -614,7 +614,7 @@ class ucp_main
 		$template->assign_vars(array(
 			'L_TITLE'			=> $user->lang['UCP_MAIN_' . strtoupper($mode)],
 
-			'S_DISPLAY_MARK_ALL'	=> ($mode == 'watched' || ($mode == 'drafts' && !isset($_GET['edit']))) ? true : false,
+			'S_DISPLAY_MARK_ALL'	=> ($mode == 'watched' || ($mode == 'drafts' && !request::is_set('edit', request::GET))) ? true : false,
 			'S_HIDDEN_FIELDS'		=> (isset($s_hidden_fields)) ? $s_hidden_fields : '',
 			'S_UCP_ACTION'			=> $this->u_action,
 

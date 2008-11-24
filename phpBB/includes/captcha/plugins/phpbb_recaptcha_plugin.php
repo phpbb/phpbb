@@ -96,7 +96,7 @@ class phpbb_recaptcha extends phpbb_default_captcha implements phpbb_captcha_plu
 		{
 			foreach ($captcha_vars as $captcha_var => $template_var)
 			{
-				$var = (isset($_REQUEST[$captcha_var])) ? request_var($captcha_var, '') : ((isset($config[$captcha_var])) ? $config[$captcha_var] : '');
+				$var = request_var($captcha_var, (isset($config[$captcha_var])) ? (string) $config[$captcha_var] : '');
 				$template->assign_var($template_var, $var);
 			}
 			$template->assign_vars(array(

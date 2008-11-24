@@ -875,7 +875,7 @@ $submit = (isset($HTTP_POST_VARS['submit'])) ? true : false;
 	<p class="good">// Use request var and define a default variable (use the correct type)</p>
 	<div class="codebox"><pre>
 $start = request_var('start', 0);
-$submit = (isset($_POST['submit'])) ? true : false;
+$submit = request::is_set_post('submit');
 	</pre></div>
 
 	<p class="bad">// $start is an int, the following use of request_var therefore is not allowed</p>

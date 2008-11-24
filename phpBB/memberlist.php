@@ -56,7 +56,7 @@ switch ($mode)
 }
 
 $start	= request_var('start', 0);
-$submit = (isset($_POST['submit'])) ? true : false;
+$submit = request::is_set_post('submit');
 
 $default_key = 'c';
 $sort_key = request_var('sk', $default_key);
@@ -741,8 +741,8 @@ switch ($mode)
 		$email_lang = request_var('lang', $config['default_lang']);
 		$subject	= utf8_normalize_nfc(request_var('subject', '', true));
 		$message	= utf8_normalize_nfc(request_var('message', '', true));
-		$cc			= (isset($_POST['cc_email'])) ? true : false;
-		$submit		= (isset($_POST['submit'])) ? true : false;
+		$cc			= request::is_set_post('cc_email');
+		$submit		= request::is_set_post('submit');
 
 		if ($submit)
 		{
@@ -948,7 +948,7 @@ switch ($mode)
 		// We validate form and field here, only id/class allowed
 		$form = (!preg_match('/^[a-z0-9_-]+$/i', $form)) ? '' : $form;
 		$field = (!preg_match('/^[a-z0-9_-]+$/i', $field)) ? '' : $field;
-		if (($mode == 'searchuser' || sizeof(array_intersect(array_keys($_GET), $search_params)) > 0) && ($config['load_search'] || $auth->acl_get('a_')))
+		if (($mode == 'searchuser' || sizeof(array_intersect(request::variable_names(request::GET), $search_params)) > 0) && ($config['load_search'] || $auth->acl_get('a_')))
 		{
 			$username	= request_var('username', '', true);
 			$email		= strtolower(request_var('email', ''));
@@ -1238,7 +1238,7 @@ switch ($mode)
 
 		foreach ($check_params as $key => $call)
 		{
-			if (!isset($_REQUEST[$key]))
+			if (!request::is_set($key))
 			{
 				continue;
 			}

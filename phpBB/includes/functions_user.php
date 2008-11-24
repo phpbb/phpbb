@@ -2170,7 +2170,7 @@ function avatar_process_user(&$error, $custom_userdata = false)
 			$sql_ary['user_avatar'] = $category . '/' . $sql_ary['user_avatar'];
 		}
 	}
-	else if (isset($_POST['delete']) && $change_avatar)
+	else if (request::is_set_post('delete') && $change_avatar)
 	{
 		$sql_ary['user_avatar'] = '';
 		$sql_ary['user_avatar_type'] = $sql_ary['user_avatar_width'] = $sql_ary['user_avatar_height'] = 0;
