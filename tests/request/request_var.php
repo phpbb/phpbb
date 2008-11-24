@@ -10,12 +10,89 @@
 
 define('IN_PHPBB', true);
 
-require_once 'PHPUnit/Framework.php';
+require_once 'test_framework/framework.php';
 
 require_once '../phpBB/includes/functions.php';
 
-class phpbb_request_request_var_test extends PHPUnit_Framework_TestCase
+class phpbb_request_request_var_test extends phpbb_test_case
 {
+	/**
+	* @dataProvider request_variables
+	*/
+	public function test_post($variable_value, $default, $multibyte, $expected)
+	{
+		$variable_name = 'name';
+
+		$_POST[$variable_name] = $variable_value;
+		$_REQUEST[$variable_name] = $variable_value;
+
+		// reread data from super globals
+		request::reset();
+
+		$result = request_var($variable_name, $default, $multibyte);
+
+		$label = 'Requesting POST variable, converting from ' . gettype($variable_value) . ' to ' . gettype($default) . (($multibyte) ? ' multibyte' : '');
+		$this->assertEquals($expected, $result, $label);
+	}
+
+	/**
+	* @dataProvider request_variables
+	*/
+	public function test_get($variable_value, $default, $multibyte, $expected)
+	{
+		$variable_name = 'name';
+
+		$_GET[$variable_name] = $variable_value;
+		$_REQUEST[$variable_name] = $variable_value;
+
+		// reread data from super globals
+		request::reset();
+
+		$result = request_var($variable_name, $default, $multibyte);
+
+		$label = 'Requesting GET variable, converting from ' . gettype($variable_value) . ' to ' . gettype($default) . (($multibyte) ? ' multibyte' : '');
+		$this->assertEquals($expected, $result, $label);
+	}
+
+	/**
+	* @dataProvider deep_access
+	*/
+	public function test_deep_multi_dim_array_access($path, $default, $expected)
+	{
+		$_REQUEST['var'] = array(
+			0 => array(
+				'b' => array(
+					true => array(
+						5 => 'c',
+						6 => 'd',
+					),
+				),
+			),
+			2 => array(
+				3 => array(
+					false => 5,
+				),
+			),
+		);
+
+		// reread data from super globals
+		request::reset();
+
+		$result = request_var($path, $default);
+		$this->assertEquals($expected, $result, 'Testing deep access to multidimensional input arrays: ' . $path);
+	}
+
+	public static function deep_access()
+	{
+		return array(
+			// array(path, default, expected result)
+			array(array('var', 0, 'b', true, 5), '', 'c'),
+			array(array('var', 0, 'b', true, 6), '', 'd'),
+			array(array('var', 2, 3, false), 0, 5),
+			array(array('var', 0, 'b', true), array(0 => ''), array(5 => 'c', 6 => 'd')),
+		);
+	}
+
 	public static function request_variables()
 	{
 		return array(
@@ -81,9 +158,7 @@ class phpbb_request_request_var_test extends PHPUnit_Framework_TestCase
 				// input:
 				'',
 				// default:
-				array(
-					array(0)
-				),
+				array(array(0)),
 				false,
 				// expected:
 				array()
@@ -95,9 +170,7 @@ class phpbb_request_request_var_test extends PHPUnit_Framework_TestCase
 					'abc' => 'abc'
 				),
 				// default:
-				array(
-					'' => array('')
-				),
+				array('' => array('')),
 				false,
 				// expected:
 				array(
@@ -112,9 +185,7 @@ class phpbb_request_request_var_test extends PHPUnit_Framework_TestCase
 					'abc' => 'abc'
 				),
 				// default:
-				array(
-					'' => array(0)
-				),
+				array('' => array(0)),
 				false,
 				// expected:
 				array(
@@ -122,39 +193,51 @@ class phpbb_request_request_var_test extends PHPUnit_Framework_TestCase
 					'abc' => array()
 				)
 			),
+			array(
+				// input:
+				array(
+					0 => array(0 => array(3, '4', 'ab'), 1 => array()),
+					1 => array(array(3, 4)),
+				),
+				// default:
+				array(0 => array(0 => array(0))),
+				false,
+				// expected:
+				array(
+					0 => array(0 => array(3, 4, 0), 1 => array()),
+					1 => array(array(3, 4))
+				)
+			),
+			array(
+				// input:
+				array(
+					'ü' => array(array('c' => 'd')),
+					'ä' => array(4 => array('a' => 2, 'ö' => 3)),
+				),
+				// default:
+				array('' => array(0 => array('' => 0))),
+				false,
+				// expected:
+				array(
+					'??' => array(4 => array('a' => 2, '??' => 3)),
+				)
+			),
+			array(
+				// input:
+				array(
+					'ü' => array(array('c' => 'd')),
+					'ä' => array(4 => array('a' => 2, 'ö' => 3)),
+				),
+				// default:
+				array('' => array(0 => array('' => 0))),
+				true,
+				// expected:
+				array(
+					'ü' => array(array('c' => 0)),
+					'ä' => array(4 => array('a' => 2, 'ö' => 3)),
+				)
+			),
 		);
 	}
 
-	/**
-	* @dataProvider request_variables
-	*/
-	public function test_post($variable_value, $default, $multibyte, $expected)
-	{
-		$variable_name = 'name';
-
-		$_POST[$variable_name] = $variable_value;
-		$_REQUEST[$variable_name] = $variable_value;
-
-		$result = request_var($variable_name, $default, $multibyte);
-
-		$label = 'Requesting POST variable, converting from ' . gettype($variable_value) . ' to ' . gettype($default) . (($multibyte) ? ' multibyte' : '');
-		$this->assertEquals($expected, $result, $label);
-	}
-
-	/**
-	* @dataProvider request_variables
-	*/
-	public function test_get($variable_value, $default, $multibyte, $expected)
-	{
-		$variable_name = 'name';
-
-		$_GET[$variable_name] = $variable_value;
-		$_REQUEST[$variable_name] = $variable_value;
-
-		$result = request_var($variable_name, $default, $multibyte);
-
-		$label = 'Requesting GET variable, converting from ' . gettype($variable_value) . ' to ' . gettype($default) . (($multibyte) ? ' multibyte' : '');
-		$this->assertEquals($expected, $result, $label);
-	}
 }
-?>
