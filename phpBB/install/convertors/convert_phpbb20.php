@@ -229,6 +229,9 @@ if (!$get_info)
 	@define('DEFAULT_AVATAR_X_CUSTOM', get_config_value('avatar_max_width'));
 	@define('DEFAULT_AVATAR_Y_CUSTOM', get_config_value('avatar_max_height'));
 
+	// additional table used only during conversion
+	@define('USERCONV_TABLE', $table_prefix . 'userconv');
+
 /**
 *	Description on how to use the convertor framework.
 *
@@ -316,7 +319,7 @@ if (!$get_info)
 		// username_clean in phpBB3 which is not possible, so we'll give the admin a list
 		// of user ids and usernames and let him deicde what he wants to do with them
 		'execute_first'	=> '
-			phpbb_check_username_collisions();
+			phpbb_create_userconv_table();
 			import_avatar_gallery();
 			if (defined("MOD_ATTACHMENT")) phpbb_import_attach_config();
 			phpbb_insert_forums();
@@ -339,6 +342,14 @@ if (!$get_info)
 		'),
 
 		'schema' => array(
+			array(
+				'target'	=> USERCONV_TABLE,
+				'query_first'   => array('target', $convert->truncate_statement . USERCONV_TABLE),
+
+
+				array('user_id',			'users.user_id', 	''),
+				array('username_clean',		'users.username',	array('function1' => 'phpbb_set_encoding', 'function2' => 'utf8_clean_string')),
+			),
 
 			array(
 				'target'		=> (defined('MOD_ATTACHMENT')) ? ATTACHMENTS_TABLE : '',
@@ -419,6 +430,7 @@ if (!$get_info)
 
 			array(
 				'target'		=> BANLIST_TABLE,
+				'execute_first'	=> 'phpbb_check_username_collisions();',
 				'query_first'	=> array('target', $convert->truncate_statement . BANLIST_TABLE),
 
 				array('ban_ip',					'banlist.ban_ip',					'decode_ban_ip'),

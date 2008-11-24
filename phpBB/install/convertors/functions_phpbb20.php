@@ -1698,7 +1698,7 @@ function phpbb_disallowed_username($username)
 * Checks whether there are any usernames on the old board that would map to the same
 * username_clean on phpBB3. Prints out a list if any exist and exits.
 */
-function phpbb_check_username_collisions()
+function phpbb_create_userconv_table()
 {
 	global $db, $src_db, $convert, $table_prefix, $user, $lang;
 
@@ -1735,53 +1735,53 @@ function phpbb_check_username_collisions()
 	}
 
 	// create a temporary table in which we store the clean usernames
-	$drop_sql = 'DROP TABLE ' . $table_prefix . 'userconv';
+	$drop_sql = 'DROP TABLE ' . USERCONV_TABLE;
 	switch ($map_dbms)
 	{
 		case 'firebird':
-			$create_sql = 'CREATE TABLE ' . $table_prefix . 'userconv (
+			$create_sql = 'CREATE TABLE ' . USERCONV_TABLE . ' (
 				user_id INTEGER NOT NULL,
 				username_clean VARCHAR(255) CHARACTER SET UTF8 DEFAULT \'\' NOT NULL COLLATE UNICODE
 			)';
 		break;
 
 		case 'mssql':
-			$create_sql = 'CREATE TABLE [' . $table_prefix . 'userconv] (
+			$create_sql = 'CREATE TABLE [' . USERCONV_TABLE . '] (
 				[user_id] [int] NOT NULL ,
 				[username_clean] [varchar] (255) DEFAULT (\'\') NOT NULL
 			)';
 		break;
 
 		case 'mysql_40':
-			$create_sql = 'CREATE TABLE ' . $table_prefix . 'userconv (
+			$create_sql = 'CREATE TABLE ' . USERCONV_TABLE . ' (
 				user_id mediumint(8) NOT NULL,
 				username_clean blob NOT NULL
 			)';
 		break;
 
 		case 'mysql_41':
-			$create_sql = 'CREATE TABLE ' . $table_prefix . 'userconv (
+			$create_sql = 'CREATE TABLE ' . USERCONV_TABLE . ' (
 				user_id mediumint(8) NOT NULL,
 				username_clean varchar(255) DEFAULT \'\' NOT NULL
 			) CHARACTER SET `utf8` COLLATE `utf8_bin`';
 		break;
 
 		case 'oracle':
-			$create_sql = 'CREATE TABLE ' . $table_prefix . 'userconv (
+			$create_sql = 'CREATE TABLE ' . USERCONV_TABLE . ' (
 				user_id number(8) NOT NULL,
 				username_clean varchar2(255) DEFAULT \'\'
 			)';
 		break;
 
 		case 'postgres':
-			$create_sql = 'CREATE TABLE ' . $table_prefix . 'userconv (
+			$create_sql = 'CREATE TABLE ' . USERCONV_TABLE . ' (
 				user_id INT4 DEFAULT \'0\',
 				username_clean varchar_ci DEFAULT \'\' NOT NULL
 			)';
 		break;
 
 		case 'sqlite':
-			$create_sql = 'CREATE TABLE ' . $table_prefix . 'userconv (
+			$create_sql = 'CREATE TABLE ' . USERCONV_TABLE . ' (
 				user_id INTEGER NOT NULL DEFAULT \'0\',
 				username_clean varchar(255) NOT NULL DEFAULT \'\'
 			)';
@@ -1792,37 +1792,15 @@ function phpbb_check_username_collisions()
 	$db->sql_query($drop_sql);
 	$db->sql_return_on_error(false);
 	$db->sql_query($create_sql);
+}
 
-	// now select all user_ids and usernames and then convert the username (this can take quite a while!)
-	$sql = 'SELECT user_id, username
-		FROM ' . $convert->src_table_prefix . 'users';
-	$result = $src_db->sql_query($sql);
-
-	$insert_ary = array();
-	$i = 0;
-	while ($row = $src_db->sql_fetchrow($result))
-	{
-		$clean_name = utf8_clean_string(phpbb_set_default_encoding($row['username']));
-		$insert_ary[] = array('user_id' => (int) $row['user_id'], 'username_clean' => (string) $clean_name);
-
-		if ($i % 1000 == 999)
-		{
-			$db->sql_multi_insert($table_prefix . 'userconv', $insert_ary);
-			$insert_ary = array();
-		}
-		$i++;
-	}
-	$src_db->sql_freeresult($result);
-
-	if (sizeof($insert_ary))
-	{
-		$db->sql_multi_insert($table_prefix . 'userconv', $insert_ary);
-	}
-	unset($insert_ary);
+function phpbb_check_username_collisions()
+{
+	global $db, $src_db, $convert, $table_prefix, $user, $lang;
 
 	// now find the clean version of the usernames that collide
 	$sql = 'SELECT username_clean
-		FROM ' . $table_prefix . 'userconv
+		FROM ' . USERCONV_TABLE .'
 		GROUP BY username_clean
 		HAVING COUNT(user_id) > 1';
 	$result = $db->sql_query($sql);
@@ -1838,7 +1816,7 @@ function phpbb_check_username_collisions()
 	if (sizeof($colliding_names))
 	{
 		$sql = 'SELECT user_id, username_clean
-			FROM ' . $table_prefix . 'userconv
+			FROM ' . USERCONV_TABLE . '
 			WHERE ' . $db->sql_in_set('username_clean', $colliding_names);
 		$result = $db->sql_query($sql);
 		unset($colliding_names);
@@ -1881,6 +1859,7 @@ function phpbb_check_username_collisions()
 		$convert->p_master->error('<span style="color:red">' . $user->lang['COLLIDING_USERNAMES_FOUND'] . '</span></b><br /><br />' . $list . '<b>', __LINE__, __FILE__);
 	}
 
+	$drop_sql = 'DROP TABLE ' . USERCONV_TABLE;
 	$db->sql_query($drop_sql);
 }
 
