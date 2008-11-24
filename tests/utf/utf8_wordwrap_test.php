@@ -10,10 +10,10 @@
 
 define('IN_PHPBB', true);
 
-require_once 'PHPUnit/Framework.php';
+require_once 'test_framework/framework.php';
 require_once '../phpBB/includes/utf/utf_tools.php';
 
-class phpbb_utf_utf8_wordwrap_test extends PHPUnit_Framework_TestCase
+class phpbb_utf_utf8_wordwrap_test extends phpbb_test_case
 {
 	public function test_utf8_wordwrap_ascii()
 	{

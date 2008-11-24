@@ -12,13 +12,13 @@ define('IN_PHPBB', true);
 define('PHP_EXT', 'php');
 define('PHPBB_ROOT_PATH', '../phpBB/');
 
-require_once 'PHPUnit/Framework.php';
+require_once 'test_framework/framework.php';
 
 require_once '../phpBB/includes/constants.php';
 require_once '../phpBB/includes/functions.php';
 require_once '../phpBB/includes/template.php';
 
-class phpbb_template_template_test extends PHPUnit_Framework_TestCase
+class phpbb_template_template_test extends phpbb_test_case
 {
 	private $template;
 	private function display($handle)

@@ -10,7 +10,7 @@
 
 define('IN_PHPBB', true);
 
-require_once 'PHPUnit/Framework.php';
+require_once 'test_framework/framework.php';
 require_once '../phpBB/includes/bbcode/bbcode_parser_base.php';
 require_once '../phpBB/includes/bbcode/bbcode_parser.php';
 

@@ -10,12 +10,12 @@
 
 define('IN_PHPBB', true);
 
-require_once 'PHPUnit/Framework.php';
+require_once 'test_framework/framework.php';
 
 require_once '../phpBB/includes/functions.php';
 require_once '../phpBB/includes/functions_content.php';
 
-class phpbb_text_processing_make_clickable_test extends PHPUnit_Framework_TestCase
+class phpbb_text_processing_make_clickable_test extends phpbb_test_case
 {
 	public static function make_clickable_data()
 	{

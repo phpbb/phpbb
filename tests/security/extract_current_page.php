@@ -10,12 +10,12 @@
 
 define('IN_PHPBB', true);
 
-require_once 'PHPUnit/Framework.php';
+require_once 'test_framework/framework.php';
 
 require_once '../phpBB/includes/functions.php';
 require_once '../phpBB/includes/session.php';
 
-class phpbb_security_extract_current_page_test extends PHPUnit_Framework_TestCase
+class phpbb_security_extract_current_page_test extends phpbb_test_case
 {
 	public static function security_variables()
 	{

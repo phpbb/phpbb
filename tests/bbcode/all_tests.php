@@ -15,7 +15,7 @@ if (!defined('PHPUnit_MAIN_METHOD'))
 	define('PHPUnit_MAIN_METHOD', 'phpbb_bbcode_all_tests::main');
 }
 
-require_once 'PHPUnit/Framework.php';
+require_once 'test_framework/framework.php';
 require_once 'PHPUnit/TextUI/TestRunner.php';
 
 require_once 'bbcode/parser_test.php';
