@@ -22,19 +22,39 @@ if (!defined('IN_PHPBB'))
 */
 class template
 {
-	/** variable that holds all the data we'll be substituting into
+	/** 
+	* variable that holds all the data we'll be substituting into
 	* the compiled templates. Takes form:
 	* --> $this->_tpldata[block][iteration#][child][iteration#][child2][iteration#][variablename] == value
 	* if it's a root-level variable, it'll be like this:
 	* --> $this->_tpldata[.][0][varname] == value
+	* @var array
 	*/
 	private $_tpldata = array('.' => array(0 => array()));
+
+	/**
+	* @var array Reference to template->_tpldata['.'][0]
+	*/
 	private $_rootref;
 
-	// Root dir and hash of filenames for each template handle.
+	/**
+	* @var string Root dir for template.
+	*/
 	private $root = '';
+
+	/**
+	* @var string Path of the cache directory for the template
+	*/
 	public $cachepath = '';
+
+	/**
+	* @var array Hash of handle => file path pairs
+	*/
 	public $files = array();
+
+	/**
+	* @var array Hash of handle => filename pairs
+	*/
 	public $filename = array();
 
 	/**
@@ -56,26 +76,24 @@ class template
 		}
 
 		$this->_rootref = &$this->_tpldata['.'][0];
-
-		return true;
 	}
 
 	/**
 	* Set custom template location (able to use directory outside of phpBB)
 	* @access public
+	* @param string $template_path Path to template directory
+	* @param string	$template_name Name of template
 	*/
 	public function set_custom_template($template_path, $template_name)
 	{
 		$this->root = $template_path;
 		$this->cachepath = PHPBB_ROOT_PATH . 'cache/ctpl_' . str_replace('_', '-', $template_name) . '_';
-
-		return true;
 	}
 
 	/**
 	* Sets the template filenames for handles. $filename_array
-	* should be a hash of handle => filename pairs.
 	* @access public
+	* @param array $filname_array Should be a hash of handle => filename pairs.
 	*/
 	public function set_filenames(array $filename_array)
 	{
@@ -97,7 +115,7 @@ class template
 	* Destroy template data set
 	* @access public
 	*/
-	function __destruct()
+	public function __destruct()
 	{
 		$this->_tpldata = array('.' => array(0 => array()));
 	}
@@ -105,6 +123,7 @@ class template
 	/**
 	* Reset/empty complete block
 	* @access public
+	* @param string $blockname Name of block to destroy
 	*/
 	public function destroy_block_vars($blockname)
 	{
@@ -128,13 +147,14 @@ class template
 			// Top-level block.
 			unset($this->_tpldata[$blockname]);
 		}
-
-		return true;
 	}
 
 	/**
 	* Display handle
 	* @access public
+	* @param string $handle Handle to display
+	* @param bool $include_once Allow multiple inclusions
+	* @return bool True on success, false on failure
 	*/
 	public function display($handle, $include_once = true)
 	{
@@ -184,6 +204,11 @@ class template
 	/**
 	* Display the handle and assign the output to a template variable or return the compiled result.
 	* @access public
+	* @param string $handle Handle to operate on
+	* @param string $template_var Template variable to assign compiled handle to
+	* @param bool $return_content If true return compiled handle, otherwise assign to $template_var
+	* @param bool $include_once Allow multiple inclusions of the file
+	* @return bool|string If $return_content is true return string of the compiled handle, otherwise return true
 	*/
 	public function assign_display($handle, $template_var = '', $return_content = true, $include_once = false)
 	{
@@ -204,8 +229,11 @@ class template
 	/**
 	* Load a compiled template if possible, if not, recompile it
 	* @access private
+	* @param string $handle Handle of the template to load
+	* @return string|bool Return filename on success otherwise false
+	* @uses template_compile is used to compile uncached templates
 	*/
-	private function _tpl_load(&$handle)
+	private function _tpl_load($handle)
 	{
 		global $config;
 
@@ -241,11 +269,12 @@ class template
 	/**
 	* This code should only run when some high level error prevents us from writing to the cache.
 	* @access private
+	* @param string $handle Template handle to compile
+	* @return string|bool Return compiled code on success otherwise false
+	* @uses template_compile is used to compile template
 	*/
-	private function _tpl_eval(&$handle)
+	private function _tpl_eval($handle)
 	{
-//		global $user, $config;
-
 		if (!class_exists('template_compile'))
 		{
 			include(PHPBB_ROOT_PATH . 'includes/functions_template.' . PHP_EXT);
@@ -270,6 +299,7 @@ class template
 	/**
 	* Assign key variable pairs from an array
 	* @access public
+	* @param array $vararray A hash of variable name => value pairs
 	*/
 	public function assign_vars(array $vararray)
 	{
@@ -277,24 +307,24 @@ class template
 		{
 			$this->_rootref[$key] = $val;
 		}
-
-		return true;
 	}
 
 	/**
 	* Assign a single variable to a single key
 	* @access public
+	* @param string $varname Variable name
+	* @param string $varval Value to assign to variable
 	*/
 	public function assign_var($varname, $varval)
 	{
 		$this->_rootref[$varname] = $varval;
-
-		return true;
 	}
 
 	/**
 	* Assign key variable pairs from an array to a specified block
 	* @access public
+	* @param string $blockname Name of block to assign $vararray to
+	* @param array $vararray A hash of variable name => value pairs
 	*/
 	public function assign_block_vars($blockname, array $vararray)
 	{
@@ -323,15 +353,12 @@ class template
 			// Add a new iteration to this block with the variable assignments we were given.
 			$this->_tpldata[$blockname][] = $vararray;
 		}
-
-		return true;
 	}
 
 	/**
 	* Change already assigned key variable pair (one-dimensional - single loop entry)
 	*
 	* An example of how to use this function:
-	* {@example alter_block_array.php}
 	*
 	* @param	string	$blockname	the blockname, for example 'loop'
 	* @param	array	$vararray	the var array to insert/add or merge
@@ -425,8 +452,11 @@ class template
 	/**
 	* Include a separate template
 	* @access private
+	* @param string $filename Template filename to include
+	* @param bool $include True to include the file, false to just load it
+	* @uses template_compile is used to compile uncached templates
 	*/
-	public function _tpl_include($filename, $include = true)
+	private function _tpl_include($filename, $include = true)
 	{
 		$handle = $filename;
 		$this->filename[$handle] = $filename;

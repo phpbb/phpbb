@@ -21,6 +21,9 @@ require_once '../phpBB/includes/template.php';
 class phpbb_template_template_test extends phpbb_test_case
 {
 	private $template;
+
+	const PRESERVE_CACHE = true;
+
 	private function display($handle)
 	{
 		ob_start();
@@ -78,6 +81,13 @@ class phpbb_template_template_test extends phpbb_test_case
 			),
 			*/
 			array(
+				'basic.html',
+				array(),
+				array(),
+				array(),
+				"pass\npass\n<!-- DUMMY var -->",
+			),
+			array(
 				'variable.html',
 				array('VARIABLE' => 'value'),
 				array(),
@@ -129,9 +139,16 @@ class phpbb_template_template_test extends phpbb_test_case
 			array(
 				'loop.html',
 				array(),
-				array('loop' => array(array(), array())),
+				array('loop' => array(array(), array()), 'loop.block' => array(array())),
 				array(),
 				"loop\nloop\nloop\nloop",
+			),
+			array(
+				'loop.html',
+				array(),
+				array('loop' => array(array(), array()), 'loop.block' => array(array()), 'block' => array(array(), array())),
+				array(),
+				"loop\nloop\nloop\nloop\n\nloop#0-block#0\nloop#0-block#1\nloop#1-block#0\nloop#1-block#1",
 			),
 			array(
 				'loop_vars.html',
@@ -164,9 +181,9 @@ class phpbb_template_template_test extends phpbb_test_case
 			array(
 				'define.html',
 				array(),
+				array('loop' => array(array(), array(), array(), array(), array(), array(), array())),
 				array(),
-				array(),
-				"xyz\nabc",
+				"xyz\nabc\n\n00\n11\n22\n33\n44\n55\n66\n\n144\n144",
 			),
 			array(
 				'expressions.html',
@@ -210,6 +227,27 @@ class phpbb_template_template_test extends phpbb_test_case
 				array(),
 				"on\non\non\non\noff\noff\noff\noff\non\non\non\non\n\noff\noff\noff\non\non\non\noff\noff\noff\non\non\non",
 			),
+			array(
+				'lang.html',
+				array(),
+				array(),
+				array(),
+				"{ VARIABLE }\n{ VARIABLE }",
+			),
+			array(
+				'lang.html',
+				array('L_VARIABLE' => "Value'"),
+				array(),
+				array(),
+				"Value'\nValue\'",
+			),
+			array(
+				'lang.html',
+				array('LA_VARIABLE' => "Value'"),
+				array(),
+				array(),
+				"{ VARIABLE }\nValue'",
+			),
 		);
 	}
 
@@ -233,6 +271,12 @@ class phpbb_template_template_test extends phpbb_test_case
 
 		$this->assertEquals($expected, $this->display('test'), "Testing $file");
 		$this->assertFileExists($cache_file);
+
+		// For debugging
+		if (self::PRESERVE_CACHE)
+		{
+			copy($cache_file, str_replace('ctpl_', 'tests_ctpl_', $cache_file));
+		}
 	}
 
 	/**
