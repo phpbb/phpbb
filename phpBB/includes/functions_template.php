@@ -559,7 +559,7 @@ class template_filter extends php_user_filter
 				{
 					$expr_end++;
 					$expr_arg = $tokens[$expr_end++];
-					$expr = "!(($is_arg / $expr_arg) % $expr_arg)";
+					$expr = "!(($is_arg / $expr_arg) & 1)";
 				}
 				else
 				{
@@ -572,7 +572,7 @@ class template_filter extends php_user_filter
 				{
 					$expr_end++;
 					$expr_arg = $tokens[$expr_end++];
-					$expr = "(($is_arg / $expr_arg) % $expr_arg)";
+					$expr = "(($is_arg / $expr_arg) & 1)";
 				}
 				else
 				{
