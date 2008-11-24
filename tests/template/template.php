@@ -203,6 +203,13 @@ class phpbb_template_template_test extends phpbb_test_case
 				array('loop.inner'),
 				"first\n0\n0\n2\nx\nset\n1\n1\n2\ny\nset\nlast",
 			),
+			array(
+				'loop_expressions.html',
+				array(),
+				array('loop' => array(array(), array(), array(), array(), array(), array(), array(), array(), array(), array(), array(), array())),
+				array(),
+				"on\non\non\non\noff\noff\noff\noff\non\non\non\non\n\noff\noff\noff\non\non\non\noff\noff\noff\non\non\non",
+			),
 		);
 	}
 
