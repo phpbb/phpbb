@@ -1434,9 +1434,10 @@ function mail_encode($str)
 	{
 		$text = '';
 
-		while (sizeof($array) && intval((strlen($text . $array[0]) + 2) / 3) << 2 <= $split_length)
+		while (sizeof($array) && intval((strlen($text . current($array)) + 2) / 3) << 2 <= $split_length)
 		{
-			$text .= array_shift($array);
+			$text .= current($array);
+			unset($array[key($array)]);
 		}
 
 		$str .= $start . base64_encode($text) . $end . ' ';
