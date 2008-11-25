@@ -268,6 +268,13 @@ class phpbb_template_template_test extends phpbb_test_case
 		$this->template->set_filenames(array('test' => ''));
 	}
 
+	public function test_invalid_handle()
+	{
+		$this->setExpectedTriggerError(E_USER_ERROR, sprintf("template->_tpl_load(): No file specified for handle test"));
+		$this->display('test');
+	}
+
+
 	private function run_template($file, array $vars, array $block_vars, array $destroy, $expected, $cache_file)
 	{
 		$this->template->set_filenames(array('test' => $file));
