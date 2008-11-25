@@ -251,7 +251,7 @@ class phpbb_template_template_test extends phpbb_test_case
 		);
 	}
 
-	public function test_missing()
+	public function test_missing_file()
 	{
 		$filename = 'file_not_found.html';
 
@@ -260,6 +260,12 @@ class phpbb_template_template_test extends phpbb_test_case
 
 		$this->setExpectedTriggerError(E_USER_ERROR, sprintf('template->_tpl_load_file(): File %s does not exist or is empty', realpath($this->template_path) . '/' . $filename));
 		$this->display('test');
+	}
+
+	public function test_empty_file()
+	{
+		$this->setExpectedTriggerError(E_USER_ERROR, sprintf("template->set_filenames: Empty filename specified for test"));
+		$this->template->set_filenames(array('test' => ''));
 	}
 
 	private function run_template($file, array $vars, array $block_vars, array $destroy, $expected, $cache_file)
