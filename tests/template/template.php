@@ -21,18 +21,16 @@ require_once '../phpBB/includes/template.php';
 class phpbb_template_template_test extends phpbb_test_case
 {
 	private $template;
+	private $template_path;
 
 	// Keep the contents of the cache for debugging?
-	const PRESERVE_CACHE = true;
+	const PRESERVE_CACHE = false;
 
 	private function display($handle)
 	{
 		ob_start();
 		$this->assertTrue($this->template->display($handle, false));
-		$contents = self::trim_template_result(ob_get_contents());
-		ob_end_clean();
-
-		return $contents;
+		return self::trim_template_result(ob_get_clean());
 	}
 
 	private static function trim_template_result($result)
@@ -42,8 +40,9 @@ class phpbb_template_template_test extends phpbb_test_case
 
 	private function setup_engine()
 	{
+		$this->template_path = dirname(__FILE__) . '/templates';
 		$this->template = new template;
-		$this->template->set_custom_template(dirname(__FILE__) . '/templates/', 'tests');
+		$this->template->set_custom_template($this->template_path, 'tests');
 	}
 
 	protected function setUp()
@@ -250,6 +249,17 @@ class phpbb_template_template_test extends phpbb_test_case
 				"{ VARIABLE }\nValue'",
 			),
 		);
+	}
+
+	public function test_missing()
+	{
+		$filename = 'file_not_found.html';
+
+		$this->template->set_filenames(array('test' => $filename));
+		$this->assertFileNotExists($this->template_path . '/' . $filename, 'Testing missing file, file cannot exist');
+
+		$this->setExpectedTriggerError(E_USER_ERROR, sprintf('template->_tpl_load_file(): File %s does not exist or is empty', realpath($this->template_path) . '/' . $filename));
+		$this->display('test');
 	}
 
 	private function run_template($file, array $vars, array $block_vars, array $destroy, $expected, $cache_file)
