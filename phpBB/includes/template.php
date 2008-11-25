@@ -386,14 +386,47 @@ class template
 	{
 		if (strpos($blockname, '.') !== false)
 		{
-			// Nested blocks are not supported
-			return false;
+			// Nested block.
+			$blocks = explode('.', $blockname);
+			$blockcount = sizeof($blocks) - 1;
+
+			$block = &$this->_tpldata;
+			for ($i = 0; $i < $blockcount; $i++)
+			{
+				if (($pos = strpos($blocks[$i], '[')) !== false)
+				{
+					$name = substr($blocks[$i], 0, $pos);
+
+					if (strpos($blocks[$i], '[]') === $pos)
+					{
+						$index = sizeof($block[$name]) - 1;
+					}
+					else
+					{
+						$index = min((int) substr($blocks[$i], $pos + 1, -1), sizeof($block[$name]) - 1);
+					}
+				}
+				else
+				{
+					$name = $blocks[$i];
+					$index = sizeof($block[$name]) - 1;
+				}
+				$block = &$block[$name];
+				$block = &$block[$index];
+			}
+
+			$block = &$block[$blocks[$i]]; // Traverse the last block
+		}
+		else
+		{
+			// Top-level block.
+			$block = &$this->_tpldata[$blockname];
 		}
 
 		// Change key to zero (change first position) if false and to last position if true
 		if ($key === false || $key === true)
 		{
-			$key = ($key === false) ? 0 : sizeof($this->_tpldata[$blockname]);
+			$key = ($key === false) ? 0 : sizeof($block);
 		}
 
 		// Get correct position if array given
@@ -403,7 +436,7 @@ class template
 			list($search_key, $search_value) = @each($key);
 
 			$key = NULL;
-			foreach ($this->_tpldata[$blockname] as $i => $val_ary)
+			foreach ($block as $i => $val_ary)
 			{
 				if ($val_ary[$search_key] === $search_value)
 				{
@@ -423,13 +456,13 @@ class template
 		if ($mode == 'insert')
 		{
 			// Re-position template blocks
-			for ($i = sizeof($this->_tpldata[$blockname]); $i > $key; $i--)
+			for ($i = sizeof($block); $i > $key; $i--)
 			{
-				$this->_tpldata[$blockname][$i] = $this->_tpldata[$blockname][$i-1];
+				$block[$i] = $block[$i-1];
 			}
 
 			// Insert vararray at given position
-			$this->_tpldata[$blockname][$key] = $vararray;
+			$block[$key] = $vararray;
 
 			return true;
 		}
@@ -437,12 +470,13 @@ class template
 		// Which block to change?
 		if ($mode == 'change')
 		{
-			if ($key == sizeof($this->_tpldata[$blockname]))
+			if ($key == sizeof($block))
 			{
 				$key--;
 			}
 
-			$this->_tpldata[$blockname][$key] = array_merge($this->_tpldata[$blockname][$key], $vararray);
+			$block[$key] = array_merge($block[$key], $vararray);
+
 			return true;
 		}
 

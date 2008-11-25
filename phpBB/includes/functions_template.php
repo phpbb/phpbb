@@ -458,6 +458,10 @@ class template_filter extends php_user_filter
 									$token = "(\$_${namespace}_i == \$_${namespace}_count - 1)";
 								break;
 
+								case 'S_BLOCK_NAME':
+									$token = "'$namespace'";
+								break;
+
 								default:
 									$token = $this->generate_block_data_ref(substr($varrefs[1], 0, -1), true, $varrefs[2]) . '[\'' . $varrefs[3] . '\']';
 								break;
@@ -637,6 +641,8 @@ class template_filter extends php_user_filter
 		// Strip the trailing period.
 		$namespace = substr($namespace, 0, -1);
 
+		$expr = true;
+
 		// S_ROW_COUNT is deceptive, it returns the current row number now the number of rows
 		// hence S_ROW_COUNT is deprecated in favour of S_ROW_NUM
 		switch ($varname)
@@ -658,6 +664,10 @@ class template_filter extends php_user_filter
 				$varref = "(\$_${namespace}_i == \$_${namespace}_count - 1)";
 			break;
 
+			case 'S_BLOCK_NAME':
+				$varref = "'$namespace'";
+			break;
+
 			default:
 				// Get a reference to the data block for this namespace.
 				$varref = $this->generate_block_data_ref($namespace, true, $defop);
@@ -665,9 +675,12 @@ class template_filter extends php_user_filter
 
 				// Append the variable reference.
 				$varref .= "['$varname']";
+
+				$expr = false;
 			break;
 		}
-		$varref = ($echo) ? "<?php echo $varref; ?>" : ((isset($varref)) ? $varref : '');
+		// @todo Test the !$expr more
+		$varref = ($echo) ? "<?php echo $varref; ?>" : (($expr || isset($varref)) ? $varref : '');
 
 		return $varref;
 	}
