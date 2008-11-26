@@ -64,10 +64,10 @@ $lang = array_merge($lang, array(
 	'DELETE_PROFILE_FIELD_CONFIRM'	=> 'Are you sure you want to delete this profile field?',
 	'DISPLAY_AT_PROFILE'			=> 'Display in user control panel',
 	'DISPLAY_AT_PROFILE_EXPLAIN'	=> 'The user is able to change this profile field within the user control panel.',
-	'DISPLAY_AT_REGISTER'			=> 'Display at registration screen',
-	'DISPLAY_AT_REGISTER_EXPLAIN'	=> 'If this option is enabled, the field will be displayed on registration and able to be changed within the user control panel.',
+	'DISPLAY_AT_REGISTER'			=> 'Display on registration screen',
+	'DISPLAY_AT_REGISTER_EXPLAIN'	=> 'If this option is enabled, the field will be displayed on registration.',
 	'DISPLAY_PROFILE_FIELD'			=> 'Display profile field',
-	'DISPLAY_PROFILE_FIELD_EXPLAIN'	=> 'The profile field will be shown in all places allowed within the load settings. Setting this to “no” will hide the field from topic pages, profiles and the memberlist.',
+	'DISPLAY_PROFILE_FIELD_EXPLAIN'	=> 'The profile field will be shown in all locations allowed within the load settings. Setting this to “no” will hide the field from topic pages, profiles and the memberlist.',
 	'DROPDOWN_ENTRIES_EXPLAIN'		=> 'Enter your options now, every option in one line.',
 
 	'EDIT_DROPDOWN_LANG_EXPLAIN'	=> 'Please note that you are able to change your options text and also able to add new options to the end. It is not advised to add new options between existing options - this could result in wrong options assigned to your users. This can also happen if you remove options in-between. Removing options from the end result in users having assigned this item now reverting back to the default one.',
@@ -95,7 +95,7 @@ $lang = array_merge($lang, array(
 	'FIRST_OPTION'				=> 'First option',
 
 	'HIDE_PROFILE_FIELD'			=> 'Hide profile field',
-	'HIDE_PROFILE_FIELD_EXPLAIN'	=> 'Only administrators and moderators are able to see/fill out this profile field. If this option is enabled, the profile field will be only displayed in users’ profiles.',
+	'HIDE_PROFILE_FIELD_EXPLAIN'	=> 'Hide the profile field from all other users except the user, administrators and moderators who are still able to see this field. If the Display in user control panel option is disabled, the user will not be able to see or change this field and the field can only be changed by administrators.',
 
 	'INVALID_CHARS_FIELD_IDENT'	=> 'Field identification can only contain lowercase a-z and _',
 	'INVALID_FIELD_IDENT_LEN'	=> 'Field identification can only be 17 characters long',
@@ -124,7 +124,7 @@ $lang = array_merge($lang, array(
 	'RADIO_BUTTONS'				=> 'Radio buttons',
 	'REMOVED_PROFILE_FIELD'		=> 'Successfully removed profile field.',
 	'REQUIRED_FIELD'			=> 'Required field',
-	'REQUIRED_FIELD_EXPLAIN'	=> 'Force profile field to be filled out or specified by user. This will display the profile field at registration and within the user control panel.',
+	'REQUIRED_FIELD_EXPLAIN'	=> 'Force profile field to be filled out or specified by user or administrator. If display at registration screen option is disabled, the field will only be required when the user edits their profile.',
 	'ROWS'						=> 'Rows',
 
 	'SAVE'							=> 'Save',
@@ -148,7 +148,7 @@ $lang = array_merge($lang, array(
 
 	'USER_FIELD_NAME'	=> 'Field name/title presented to the user',
 
-	'VISIBILITY_OPTION'				=> 'Visibility option',
+	'VISIBILITY_OPTION'				=> 'Visibility options',
 ));
 
 ?>

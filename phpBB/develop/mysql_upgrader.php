@@ -1,10 +1,10 @@
 <?php
-/** 
+/**
 *
 * @package phpBB3
 * @version $Id$
-* @copyright (c) 2006 phpBB Group 
-* @license http://opensource.org/licenses/gpl-license.php GNU Public License 
+* @copyright (c) 2006 phpBB Group
+* @license http://opensource.org/licenses/gpl-license.php GNU Public License
 *
 * This file creates SQL statements to upgrade phpBB on MySQL 3.x/4.0.x to 4.1.x/5.x
 *
@@ -127,7 +127,7 @@ foreach ($schema_data as $table_name => $table_data)
 	$line = "ALTER TABLE {$table_name} $newline";
 
 	// Table specific so we don't get overlap
-	$modded_array = array(); 
+	$modded_array = array();
 
 	// Write columns one by one...
 	foreach ($table_data['COLUMNS'] as $column_name => $column_data)
@@ -876,6 +876,7 @@ function get_schema_struct()
 			'field_validation'		=> array('VCHAR_UNI:20', ''),
 			'field_required'		=> array('BOOL', 0),
 			'field_show_on_reg'		=> array('BOOL', 0),
+			'field_show_profile'	=> array('BOOL', 0),
 			'field_hide'			=> array('BOOL', 0),
 			'field_no_view'			=> array('BOOL', 0),
 			'field_active'			=> array('BOOL', 0),
