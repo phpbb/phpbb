@@ -1674,7 +1674,7 @@ class fulltext_native extends search_backend
 		</dl>
 		<dl>
 			<dt><label for="fulltext_native_common_thres">' . $user->lang['COMMON_WORD_THRESHOLD'] . ':</label><br /><span>' . $user->lang['COMMON_WORD_THRESHOLD_EXPLAIN'] . '</span></dt>
-			<dd><input id="fulltext_native_common_thres" type="text" size="3" maxlength="3" name="config[fulltext_native_common_thres]" value="' . (int) $config['fulltext_native_common_thres'] . '" /> %</dd>
+			<dd><input id="fulltext_native_common_thres" type="text" size="3" maxlength="3" name="config[fulltext_native_common_thres]" value="' . (double) $config['fulltext_native_common_thres'] . '" /> %</dd>
 		</dl>
 		';
 
