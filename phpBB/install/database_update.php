@@ -8,7 +8,7 @@
 *
 */
 
-$updates_to_version = '3.0.3';
+$updates_to_version = '3.0.4-RC1';
 
 // Return if we "just include it" to find out for which version the database update is responsible for
 if (defined('IN_PHPBB') && defined('IN_INSTALL'))
@@ -554,6 +554,36 @@ $database_update_info = array(
 		'add_columns'		=> array(
 			PROFILE_FIELDS_TABLE			=> array(
 				'field_show_profile'		=> array('BOOL', 0),
+			),
+		),
+		'change_columns'	=> array(
+			STYLES_TABLE				=> array(
+				'style_id'				=> array('UINT', NULL, 'auto_increment'),
+				'template_id'			=> array('UINT', 0),
+				'theme_id'				=> array('UINT', 0),
+				'imageset_id'			=> array('UINT', 0),
+			),
+			STYLES_IMAGESET_TABLE		=> array(
+				'imageset_id'				=> array('UINT', NULL, 'auto_increment'),
+			),
+			STYLES_IMAGESET_DATA_TABLE	=> array(
+				'image_id'				=> array('UINT', NULL, 'auto_increment'),
+				'imageset_id'			=> array('UINT', 0),
+			),
+			STYLES_THEME_TABLE			=> array(
+				'theme_id'				=> array('UINT', NULL, 'auto_increment'),
+			),
+			STYLES_TEMPLATE_TABLE		=> array(
+				'template_id'			=> array('UINT', NULL, 'auto_increment'),
+			),
+			STYLES_TEMPLATE_DATA_TABLE	=> array(
+				'template_id'			=> array('UINT', 0),
+			),
+			FORUMS_TABLE				=> array(
+				'forum_style'			=> array('USINT', 0),
+			),
+			USERS_TABLE					=> array(
+				'user_style'			=> array('UINT', 0),
 			),
 		),
 	),

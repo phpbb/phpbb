@@ -485,7 +485,7 @@ CREATE TABLE phpbb_forums (
 	forum_desc_uid varchar2(8) DEFAULT '' ,
 	forum_link varchar2(765) DEFAULT '' ,
 	forum_password varchar2(120) DEFAULT '' ,
-	forum_style number(4) DEFAULT '0' NOT NULL,
+	forum_style number(8) DEFAULT '0' NOT NULL,
 	forum_image varchar2(255) DEFAULT '' ,
 	forum_rules clob DEFAULT '' ,
 	forum_rules_link varchar2(765) DEFAULT '' ,
@@ -1388,13 +1388,13 @@ END;
 	Table: 'phpbb_styles'
 */
 CREATE TABLE phpbb_styles (
-	style_id number(4) NOT NULL,
+	style_id number(8) NOT NULL,
 	style_name varchar2(765) DEFAULT '' ,
 	style_copyright varchar2(765) DEFAULT '' ,
 	style_active number(1) DEFAULT '1' NOT NULL,
-	template_id number(4) DEFAULT '0' NOT NULL,
-	theme_id number(4) DEFAULT '0' NOT NULL,
-	imageset_id number(4) DEFAULT '0' NOT NULL,
+	template_id number(8) DEFAULT '0' NOT NULL,
+	theme_id number(8) DEFAULT '0' NOT NULL,
+	imageset_id number(8) DEFAULT '0' NOT NULL,
 	CONSTRAINT pk_phpbb_styles PRIMARY KEY (style_id),
 	CONSTRAINT u_phpbb_style_name UNIQUE (style_name)
 )
@@ -1427,7 +1427,7 @@ END;
 	Table: 'phpbb_styles_template'
 */
 CREATE TABLE phpbb_styles_template (
-	template_id number(4) NOT NULL,
+	template_id number(8) NOT NULL,
 	template_name varchar2(765) DEFAULT '' ,
 	template_copyright varchar2(765) DEFAULT '' ,
 	template_path varchar2(100) DEFAULT '' ,
@@ -1461,7 +1461,7 @@ END;
 	Table: 'phpbb_styles_template_data'
 */
 CREATE TABLE phpbb_styles_template_data (
-	template_id number(4) DEFAULT '0' NOT NULL,
+	template_id number(8) DEFAULT '0' NOT NULL,
 	template_filename varchar2(100) DEFAULT '' ,
 	template_included clob DEFAULT '' ,
 	template_mtime number(11) DEFAULT '0' NOT NULL,
@@ -1478,7 +1478,7 @@ CREATE INDEX phpbb_styles_template_data_tfn ON phpbb_styles_template_data (templ
 	Table: 'phpbb_styles_theme'
 */
 CREATE TABLE phpbb_styles_theme (
-	theme_id number(4) NOT NULL,
+	theme_id number(8) NOT NULL,
 	theme_name varchar2(765) DEFAULT '' ,
 	theme_copyright varchar2(765) DEFAULT '' ,
 	theme_path varchar2(100) DEFAULT '' ,
@@ -1511,7 +1511,7 @@ END;
 	Table: 'phpbb_styles_imageset'
 */
 CREATE TABLE phpbb_styles_imageset (
-	imageset_id number(4) NOT NULL,
+	imageset_id number(8) NOT NULL,
 	imageset_name varchar2(765) DEFAULT '' ,
 	imageset_copyright varchar2(765) DEFAULT '' ,
 	imageset_path varchar2(100) DEFAULT '' ,
@@ -1541,13 +1541,13 @@ END;
 	Table: 'phpbb_styles_imageset_data'
 */
 CREATE TABLE phpbb_styles_imageset_data (
-	image_id number(4) NOT NULL,
+	image_id number(8) NOT NULL,
 	image_name varchar2(200) DEFAULT '' ,
 	image_filename varchar2(200) DEFAULT '' ,
 	image_lang varchar2(30) DEFAULT '' ,
 	image_height number(4) DEFAULT '0' NOT NULL,
 	image_width number(4) DEFAULT '0' NOT NULL,
-	imageset_id number(4) DEFAULT '0' NOT NULL,
+	imageset_id number(8) DEFAULT '0' NOT NULL,
 	CONSTRAINT pk_phpbb_styles_imageset_data PRIMARY KEY (image_id)
 )
 /
@@ -1739,7 +1739,7 @@ CREATE TABLE phpbb_users (
 	user_timezone number(5, 2) DEFAULT '0' NOT NULL,
 	user_dst number(1) DEFAULT '0' NOT NULL,
 	user_dateformat varchar2(90) DEFAULT 'd M Y H:i' NOT NULL,
-	user_style number(4) DEFAULT '0' NOT NULL,
+	user_style number(8) DEFAULT '0' NOT NULL,
 	user_rank number(8) DEFAULT '0' NOT NULL,
 	user_colour varchar2(6) DEFAULT '' ,
 	user_new_privmsg number(4) DEFAULT '0' NOT NULL,
