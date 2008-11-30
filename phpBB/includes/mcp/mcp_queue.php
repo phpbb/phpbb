@@ -505,8 +505,12 @@ function approve_post($post_id_list, $id, $mode)
 				$forum_id_list[$post_data['forum_id']] = 1;
 			}
 
-			// User post update (we do not care about topic or post, since user posts are strictly connected to posts
-			$user_posts_sql[$post_data['poster_id']] = (empty($user_posts_sql[$post_data['poster_id']])) ? 1 : $user_posts_sql[$post_data['poster_id']] + 1;
+			// User post update (we do not care about topic or post, since user posts are strictly connected to posts)
+			// But we care about forums where post counts get not increased. ;)
+			if ($post_data['post_postcount'])
+			{
+				$user_posts_sql[$post_data['poster_id']] = (empty($user_posts_sql[$post_data['poster_id']])) ? 1 : $user_posts_sql[$post_data['poster_id']] + 1;
+			}
 
 			// Topic or Post. ;)
 			if ($post_data['topic_first_post_id'] == $post_id)
