@@ -21,7 +21,7 @@
 				<!-- IF TOTAL --> {TOTAL}<!-- ENDIF -->
 				<!-- IF PAGE_NUMBER --><!-- IF PAGINATION --> &bull; <a href="#" onclick="jumpto(); return false;" title="{L_JUMP_TO_PAGE}">{PAGE_NUMBER}</a> &bull; <span>{PAGINATION}</span><!-- ELSE --> &bull; {PAGE_NUMBER}<!-- ENDIF --><!-- ENDIF -->
 			</li>
-		</ul>	
+		</ul>
 		<ul class="topiclist">
 			<li class="header">
 				<dl>
@@ -38,12 +38,12 @@
 		<!-- IF postrow.S_DELETED_TOPIC -->
 			<li><p class="notopics">{L_DELETED_TOPIC}</p></li>
 		<!-- ELSE -->
-	
+
 		<li class="row<!-- IF postrow.S_ROW_COUNT is odd --> bg1<!-- ELSE --> bg2<!-- ENDIF -->">
 			<dl>
 				<dt>
 					<a href="{postrow.U_VIEW_DETAILS}" class="topictitle">{postrow.POST_SUBJECT}</a> <br />
-					<span>{L_POSTED} {L_POST_BY_AUTHOR} {postrow.POST_AUTHOR_FULL} {L_POSTED_ON_DATE}  {postrow.POST_TIME}</span>
+					<span>{L_POSTED} {L_POST_BY_AUTHOR} {postrow.POST_AUTHOR_FULL} &raquo; {postrow.POST_TIME}</span>
 				</dt>
 				<dd class="moderation">
 					<span>
@@ -51,8 +51,8 @@
 						{L_FORUM}: <a href="{postrow.U_VIEWFORUM}">{postrow.FORUM_NAME}</a>
 					</span>
 				</dd>
-				
-			
+
+
 		 		<dd class="mark"><input type="checkbox" name="post_id_list[]" value="{postrow.POST_ID}" /></dd>
 			</dl>
 		</li>
@@ -62,7 +62,7 @@
 
 		<fieldset class="display-options">
 			<!-- IF NEXT_PAGE --><a href="{NEXT_PAGE}" class="right-box {S_CONTENT_FLOW_END}">{L_NEXT}</a><!-- ENDIF -->
-			<!-- IF PREVIOUS_PAGE --><a href="{PREVIOUS_PAGE}" class="left-box {S_CONTENT_FLOW_BEGIN}">{L_PREVIOUS}</a><!-- ENDIF -->		
+			<!-- IF PREVIOUS_PAGE --><a href="{PREVIOUS_PAGE}" class="left-box {S_CONTENT_FLOW_BEGIN}">{L_PREVIOUS}</a><!-- ENDIF -->
 			<label>{L_DISPLAY_POSTS}: {S_SELECT_SORT_DAYS}</label>
 			<label>{L_SORT_BY} {S_SELECT_SORT_KEY}</label><label>{S_SELECT_SORT_DIR}</label>
 			<!-- IF TOPIC_ID --><label><input type="checkbox" class="radio" name="t" value="{TOPIC_ID}" checked="checked" />&nbsp; <strong>{L_ONLY_TOPIC}</strong></label><!-- ENDIF -->
@@ -76,7 +76,7 @@
 				<!-- IF TOTAL -->{TOTAL}<!-- ENDIF -->
 				<!-- IF PAGE_NUMBER --><!-- IF PAGINATION --> &bull; <a href="#" onclick="jumpto(); return false;" title="{L_JUMP_TO_PAGE}">{PAGE_NUMBER}</a> &bull; <span>{PAGINATION}</span><!-- ELSE --> &bull; {PAGE_NUMBER}<!-- ENDIF --><!-- ENDIF -->
 			</li>
-		</ul>		
+		</ul>
 	<!-- ELSE -->
 		<p class="notopics"><strong><!-- IF S_TOPICS -->{L_NO_TOPICS_QUEUE}<!-- ELSE -->{L_UNAPPROVED_POSTS_ZERO_TOTAL}<!-- ENDIF --></strong></p>
 	<!-- ENDIF -->

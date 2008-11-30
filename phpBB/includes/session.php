@@ -1851,22 +1851,36 @@ class user extends session
 		$args = func_get_args();
 		$key = $args[0];
 
+		if (is_array($key))
+		{
+			$lang = &$this->lang[array_shift($key)];
+
+			foreach ($key as $_key)
+			{
+				$lang = &$lang[$_key];
+			}
+		}
+		else
+		{
+			$lang = &$this->lang[$key];
+		}
+
 		// Return if language string does not exist
-		if (!isset($this->lang[$key]) || (!is_string($this->lang[$key]) && !is_array($this->lang[$key])))
+		if (!isset($lang) || (!is_string($lang) && !is_array($lang)))
 		{
 			return $key;
 		}
 
 		// If the language entry is a string, we simply mimic sprintf() behaviour
-		if (is_string($this->lang[$key]))
+		if (is_string($lang))
 		{
 			if (sizeof($args) == 1)
 			{
-				return $this->lang[$key];
+				return $lang;
 			}
 
 			// Replace key with language entry and simply pass along...
-			$args[0] = $this->lang[$key];
+			$args[0] = $lang;
 			return call_user_func_array('sprintf', $args);
 		}
 
@@ -1878,7 +1892,7 @@ class user extends session
 		{
 			if (is_int($args[$i]))
 			{
-				$numbers = array_keys($this->lang[$key]);
+				$numbers = array_keys($lang);
 
 				foreach ($numbers as $num)
 				{
@@ -1895,12 +1909,12 @@ class user extends session
 		// Ok, let's check if the key was found, else use the last entry (because it is mostly the plural form)
 		if ($key_found === false)
 		{
-			$numbers = array_keys($this->lang[$key]);
+			$numbers = array_keys($lang);
 			$key_found = end($numbers);
 		}
 
 		// Use the language string we determined and pass it to sprintf()
-		$args[0] = $this->lang[$key][$key_found];
+		$args[0] = $lang[$key_found];
 		return call_user_func_array('sprintf', $args);
 	}
 
@@ -2001,50 +2015,75 @@ class user extends session
 
 	/**
 	* Format user date
+	*
+	* @param int $gmepoch unix timestamp
+	* @param string $format date format in date() notation. | used to indicate relative dates, for example |d m Y|, h:i is translated to Today, h:i.
+	* @param bool $forcedate force non-relative date format.
+	*
+	* @return mixed translated date
 	*/
 	function format_date($gmepoch, $format = false, $forcedate = false)
 	{
 		static $midnight;
+		static $date_cache;
 
-		$lang_dates = $this->lang['datetime'];
 		$format = (!$format) ? $this->date_format : $format;
+		$delta = time() - $gmepoch;
 
-		// Short representation of month in format
-		if ((strpos($format, '\M') === false && strpos($format, 'M') !== false) || (strpos($format, '\r') === false && strpos($format, 'r') !== false))
+		if (!isset($date_cache[$format]))
 		{
-			$lang_dates['May'] = $lang_dates['May_short'];
+			// Is the user requesting a friendly date format (i.e. 'Today 12:42')?
+			$date_cache[$format] = array(
+				'is_short'		=> strpos($format, '|'),
+				'zone_offset'	=> $this->timezone + $this->dst,
+				'format_short'	=> substr($format, 0, strpos($format, '|')) . '||' . substr(strrchr($format, '|'), 1),
+				'format_long'	=> str_replace('|', '', $format),
+				'lang'			=> $this->lang['datetime'],
+			);
+
+			// Short representation of month in format? Some languages use different terms for the long and short format of May
+			if ((strpos($format, '\M') === false && strpos($format, 'M') !== false) || (strpos($format, '\r') === false && strpos($format, 'r') !== false))
+			{
+				$date_cache[$format]['lang']['May'] = $this->lang['datetime']['May_short'];
+			}
 		}
 
-		unset($lang_dates['May_short']);
+		// Show date < 1 hour ago as 'xx min ago'
+		if ($delta <= 3600 && $delta && $date_cache[$format]['is_short'] !== false && !$forcedate && isset($this->lang['datetime']['AGO']))
+		{
+			return $this->lang(array('datetime', 'AGO'), (int) floor($delta / 60));
+		}
 
 		if (!$midnight)
 		{
-			list($d, $m, $y) = explode(' ', gmdate('j n Y', time() + $this->timezone + $this->dst));
-			$midnight = gmmktime(0, 0, 0, $m, $d, $y) - $this->timezone - $this->dst;
+			list($d, $m, $y) = explode(' ', gmdate('j n Y', time() + $date_cache[$format]['zone_offset']));
+			$midnight = gmmktime(0, 0, 0, $m, $d, $y) - $date_cache[$format]['zone_offset'];
 		}
 
-		if (strpos($format, '|') === false || ($gmepoch < $midnight - 86400 && !$forcedate) || ($gmepoch > $midnight + 172800 && !$forcedate))
+		if ($date_cache[$format]['is_short'] !== false && !$forcedate)
 		{
-			return strtr(@gmdate(str_replace('|', '', $format), $gmepoch + $this->timezone + $this->dst), $lang_dates);
+			$day = false;
+
+			if ($gmepoch > $midnight + 86400)
+			{
+				$day = 'TOMORROW';
+			}
+			else if ($gmepoch > $midnight)
+			{
+				$day = 'TODAY';
+			}
+			else if ($gmepoch > $midnight - 86400)
+			{
+				$day = 'YESTERDAY';
+			}
+
+			if ($day !== false)
+			{
+				return str_replace('||', $this->lang['datetime'][$day], strtr(@gmdate($date_cache[$format]['format_short'], $gmepoch + $date_cache[$format]['zone_offset']), $date_cache[$format]['lang']));
+			}
 		}
 
-		if ($gmepoch > $midnight + 86400 && !$forcedate)
-		{
-			$format = substr($format, 0, strpos($format, '|')) . '||' . substr(strrchr($format, '|'), 1);
-			return str_replace('||', $this->lang['datetime']['TOMORROW'], strtr(@gmdate($format, $gmepoch + $this->timezone + $this->dst), $lang_dates));
-		}
-		else if ($gmepoch > $midnight && !$forcedate)
-		{
-			$format = substr($format, 0, strpos($format, '|')) . '||' . substr(strrchr($format, '|'), 1);
-			return str_replace('||', $this->lang['datetime']['TODAY'], strtr(@gmdate($format, $gmepoch + $this->timezone + $this->dst), $lang_dates));
-		}
-		else if ($gmepoch > $midnight - 86400 && !$forcedate)
-		{
-			$format = substr($format, 0, strpos($format, '|')) . '||' . substr(strrchr($format, '|'), 1);
-			return str_replace('||', $this->lang['datetime']['YESTERDAY'], strtr(@gmdate($format, $gmepoch + $this->timezone + $this->dst), $lang_dates));
-		}
-
-		return strtr(@gmdate(str_replace('|', '', $format), $gmepoch + $this->timezone + $this->dst), $lang_dates);
+		return strtr(@gmdate($date_cache[$format]['format_long'], $gmepoch + $date_cache[$format]['zone_offset']), $date_cache[$format]['lang']);
 	}
 
 	/**

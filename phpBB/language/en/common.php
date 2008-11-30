@@ -697,6 +697,12 @@ $lang = array_merge($lang, array(
 		'TODAY'		=> 'Today',
 		'TOMORROW'	=> 'Tomorrow',
 		'YESTERDAY'	=> 'Yesterday',
+		'AGO'		=> array(
+			0		=> '%d minutes ago',
+			1		=> '%d minute ago',
+			2		=> '%d minutes ago',
+			60		=> '1 hour ago',
+		),
 
 		'Sunday'	=> 'Sunday',
 		'Monday'	=> 'Monday',
