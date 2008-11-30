@@ -462,7 +462,7 @@ function _hash_crypt_private($password, $setting, &$itoa64)
 /**
 * Global function for chmodding directories and files for internal use
 * This function determines owner and group whom the file belongs to and user and group of PHP and then set safest possible file permissions.
-* The function determines owner and group from common.php file and sets the same to the provided file.
+* The function determines owner and group from common.php file and sets the same to the provided file. Permissions are mapped to the group, user always has rw(x) permission.
 * The function uses bit fields to build the permissions.
 * The function sets the appropiate execute bit on directories.
 *
@@ -532,7 +532,7 @@ function phpbb_chmod($filename, $perms = CHMOD_READ)
 	// Who is PHP?
 	if ($file_uid === false || $file_gid === false || $php_uid === false || $php_gids === false)
 	{
-		$php = null;
+		$php = NULL;
 	}
 	else if ($file_uid == $php_uid /* && $common_php_owner !== false && $common_php_owner === $file_uid*/)
 	{
@@ -564,12 +564,15 @@ function phpbb_chmod($filename, $perms = CHMOD_READ)
 	{
 		case null:
 		case 'owner':
+			/* ATTENTION: if php is owner or NULL we set it to group here. This is the most failsafe combination for the vast majority of server setups.
+
 			$result = @chmod($filename, ($owner << 6) + (0 << 3) + (0 << 0));
 
 			if (!is_null($php) || (is_readable($filename) && is_writable($filename)))
 			{
 				break;
 			}
+		*/
 
 		case 'group':
 			$result = @chmod($filename, ($owner << 6) + ($perms << 3) + (0 << 0));
