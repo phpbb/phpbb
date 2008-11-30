@@ -21,7 +21,7 @@
 				<!-- IF TOTAL -->{TOTAL_REPORTS}<!-- ENDIF -->
 				<!-- IF PAGE_NUMBER --><!-- IF PAGINATION --> &bull; <a href="#" onclick="jumpto(); return false;" title="{L_JUMP_TO_PAGE}">{PAGE_NUMBER}</a> &bull; <span>{PAGINATION}</span><!-- ELSE --> &bull; {PAGE_NUMBER}<!-- ENDIF --><!-- ENDIF -->
 			</li>
-		</ul>	
+		</ul>
 		<ul class="topiclist">
 			<li class="header">
 				<dl>
@@ -38,7 +38,7 @@
 				<dl>
 					<dt>
 						<a href="{postrow.U_VIEW_DETAILS}" class="topictitle">{postrow.POST_SUBJECT}</a> {postrow.ATTACH_ICON_IMG}<br />
-						<span>{L_POSTED} {L_POST_BY_AUTHOR} {postrow.POST_AUTHOR_FULL} {L_POSTED_ON_DATE}  {postrow.POST_TIME}</span>
+						<span>{L_POSTED} {L_POST_BY_AUTHOR} {postrow.POST_AUTHOR_FULL} &raquo; {postrow.POST_TIME}</span>
 					</dt>
 					<dd class="moderation">
 						<span>{postrow.REPORTER_FULL} {L_REPORTED_ON_DATE} {postrow.REPORT_TIME}<br />
@@ -74,7 +74,7 @@
 </div>
 
 <!-- IF .postrow -->
-	<fieldset class="display-actions">		
+	<fieldset class="display-actions">
 		<input class="button2" type="submit" value="{L_DELETE_REPORTS}" name="action[delete]" />
 		<!-- IF not S_CLOSED -->&nbsp;<input class="button1" type="submit" name="action[close]" value="{L_CLOSE_REPORTS}" /><!-- ENDIF -->
 		<div><a href="#" onclick="marklist('mcp', 'report_id_list', true); return false;">{L_MARK_ALL}</a> :: <a href="#" onclick="marklist('mcp', 'report_id_list', false); return false;">{L_UNMARK_ALL}</a></div>

@@ -25,7 +25,7 @@ class ucp_main
 {
 	var $p_master;
 	var $u_action;
-	
+
 	function __construct(&$p_master)
 	{
 		$this->p_master = &$p_master;
@@ -70,7 +70,7 @@ class ucp_main
 				$sql = 'SELECT forum_id
 					FROM ' . FORUMS_TABLE . '
 					WHERE forum_type = ' . FORUM_POST;
-	
+
 				if (sizeof($forum_ary))
 				{
 					$sql .= ' AND ' . $db->sql_in_set('forum_id', $forum_ary, true);
@@ -258,7 +258,7 @@ class ucp_main
 				{
 					$forbidden_forums = $auth->acl_getf('!f_read', true);
 					$forbidden_forums = array_unique(array_keys($forbidden_forums));
-					
+
 					$sql_array = array(
 						'SELECT'	=> 'f.*',
 
@@ -339,6 +339,7 @@ class ucp_main
 							'FORUM_IMAGE'			=> ($row['forum_image']) ? '<img src="' . PHPBB_ROOT_PATH . $row['forum_image'] . '" alt="' . $user->lang[$folder_alt] . '" />' : '',
 							'FORUM_IMAGE_SRC'		=> ($row['forum_image']) ? PHPBB_ROOT_PATH . $row['forum_image'] : '',
 							'FORUM_NAME'			=> $row['forum_name'],
+							'FORUM_DESC'			=> generate_text_for_display($row['forum_desc'], $row['forum_desc_uid'], $row['forum_desc_bitfield'], $row['forum_desc_options']),
 							'LAST_POST_SUBJECT'		=> $row['forum_last_post_subject'],
 							'LAST_POST_TIME'		=> $last_post_time,
 
@@ -420,7 +421,7 @@ class ucp_main
 				}
 				$forbidden_forums = $auth->acl_getf('!f_read', true);
 				$forbidden_forums = array_unique(array_keys($forbidden_forums));
-				
+
 				$this->assign_topiclist('bookmarks', $forbidden_forums);
 
 			break;
@@ -676,7 +677,7 @@ class ucp_main
 				'WHERE'		=> 'tw.user_id = ' . $user->data['user_id'] . '
 					AND t.topic_id = tw.topic_id
 					AND ' . $db->sql_in_set('t.forum_id', $forbidden_forum_ary, true, true),
-					
+
 
 				'ORDER_BY'	=> 't.topic_last_post_time DESC'
 			);

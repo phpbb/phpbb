@@ -13,6 +13,7 @@
 		<li class="header">
 			<dl class="icon">
 				<dt>{L_WATCHED_FORUMS}</dt>
+				<dd class="lastpost">{L_LAST_POST}</dd>
 				<dd class="mark">{L_MARK}</dd>
 			</dl>
 		</li>
@@ -22,10 +23,11 @@
 	<!-- BEGIN forumrow -->
 		<li class="row<!-- IF forumrow.S_ROW_NUM is odd --> bg1<!-- ELSE --> bg2<!-- ENDIF -->">
 			<dl class="icon" style="background-image: url({forumrow.FORUM_FOLDER_IMG_SRC}); background-repeat: no-repeat;">
-				<dt><a href="{forumrow.U_VIEWFORUM}" class="forumtitle">{forumrow.FORUM_NAME}</a><br />
-				<!-- IF forumrow.LAST_POST_TIME -->{L_LAST_POST} {forumrow.LAST_POST_AUTHOR_FULL} <a href="{forumrow.U_LAST_POST}">{LAST_POST_IMG}</a> {L_POSTED_ON_DATE} {forumrow.LAST_POST_TIME}
-				<!-- ELSE -->{L_NO_POSTS}<!-- ENDIF -->
-				</dt>
+				<dt><a href="{forumrow.U_VIEWFORUM}" class="forumtitle">{forumrow.FORUM_NAME}</a><br />{forumrow.FORUM_DESC}</dt>
+				<dd class="lastpost"><!-- IF forumrow.LAST_POST_TIME --><span><dfn>{L_LAST_POST} </dfn>{L_POST_BY_AUTHOR} {forumrow.LAST_POST_AUTHOR_FULL}
+					<a href="{topicrow.U_LAST_POST}">{LAST_POST_IMG}</a> <br />{forumrow.LAST_POST_TIME}</span>
+					<!-- ELSE -->{L_NO_POSTS}<br />&nbsp;<!-- ENDIF -->
+				</dd>
 				<dd class="mark"><input type="checkbox" name="f[{forumrow.FORUM_ID}]" id="f{forumrow.FORUM_ID}" /></dd>
 			</dl>
 		</li>
@@ -41,6 +43,7 @@
 			<dl class="icon">
 				<dt>{L_WATCHED_TOPICS}</dt>
 				<dd class="lastpost">{L_LAST_POST}</dd>
+				<dd class="mark">{L_MARK}</dd>
 			</dl>
 		</li>
 	</ul>
@@ -54,10 +57,10 @@
 					<!-- IF topicrow.S_TOPIC_UNAPPROVED or topicrow.S_POSTS_UNAPPROVED --><a href="{topicrow.U_MCP_QUEUE}">{topicrow.UNAPPROVED_IMG}</a> <!-- ENDIF -->
 					<!-- IF topicrow.S_TOPIC_REPORTED --><a href="{topicrow.U_MCP_REPORT}">{REPORTED_IMG}</a><!-- ENDIF --><br />
 					<!-- IF topicrow.PAGINATION --><strong class="pagination"><span>{topicrow.PAGINATION}</span></strong><!-- ENDIF -->
-					<!-- IF topicrow.ATTACH_ICON_IMG -->{topicrow.ATTACH_ICON_IMG} <!-- ENDIF -->{L_POST_BY_AUTHOR} {topicrow.TOPIC_AUTHOR_FULL} {L_POSTED_ON_DATE} {topicrow.FIRST_POST_TIME} 
+					<!-- IF topicrow.ATTACH_ICON_IMG -->{topicrow.ATTACH_ICON_IMG} <!-- ENDIF -->{L_POST_BY_AUTHOR} {topicrow.TOPIC_AUTHOR_FULL} &raquo; {topicrow.FIRST_POST_TIME}
 				</dt>
 				<dd class="lastpost"><span><dfn>{L_LAST_POST} </dfn>{L_POST_BY_AUTHOR} {topicrow.LAST_POST_AUTHOR_FULL}
-					<a href="{topicrow.U_LAST_POST}">{LAST_POST_IMG}</a> <br />{L_POSTED_ON_DATE} {topicrow.LAST_POST_TIME}</span>
+					<a href="{topicrow.U_LAST_POST}">{LAST_POST_IMG}</a> <br />{topicrow.LAST_POST_TIME}</span>
 				</dd>
 				<dd class="mark"><input type="checkbox" name="t[{topicrow.TOPIC_ID}]" id="t{topicrow.TOPIC_ID}" /></dd>
 			</dl>
@@ -73,12 +76,12 @@
 <!-- ELSEIF S_TOPIC_NOTIFY -->
 	<p><strong>{L_NO_WATCHED_TOPICS}</strong></p>
 <!-- ENDIF -->
-	
+
 	<span class="corners-bottom"><span></span></span></div>
 </div>
 
 <!-- IF .topicrow or .forumrow -->
-	<fieldset class="display-actions">	
+	<fieldset class="display-actions">
 		<input type="submit" name="unwatch" value="{L_UNWATCH_MARKED}" class="button2" />
 		<div><a href="#" onclick="marklist('ucp', 't', true); marklist('ucp', 'f', true); return false;">{L_MARK_ALL}</a> &bull; <a href="#" onclick="marklist('ucp', 't', false); marklist('ucp', 'f', false); return false;">{L_UNMARK_ALL}</a></div>
 		{S_FORM_TOKEN}

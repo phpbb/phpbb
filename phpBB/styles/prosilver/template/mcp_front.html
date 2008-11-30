@@ -29,7 +29,7 @@
 					<dt>
 						<a href="{unapproved.U_POST_DETAILS}" class="topictitle">{unapproved.SUBJECT}</a> {unapproved.ATTACH_ICON_IMG}<br />
 						<!-- IF report.PAGINATION --><strong class="pagination"><span>{report.PAGINATION}</span></strong><!-- ENDIF -->
-						{L_POSTED} {L_POST_BY_AUTHOR} {unapproved.AUTHOR_FULL} {L_POSTED_ON_DATE} {unapproved.POST_TIME}
+						{L_POSTED} {L_POST_BY_AUTHOR} {unapproved.AUTHOR_FULL} &raquo; {unapproved.POST_TIME}
 					</dt>
 					<dd class="moderation"><span>
 						{L_TOPIC}: <a href="{unapproved.U_TOPIC}">{unapproved.TOPIC_TITLE}</a> [<a href="{unapproved.U_MCP_TOPIC}">{L_MODERATE}</a>]<br />
@@ -82,7 +82,7 @@
 				<dl>
 					<dt>
 						<a href="{report.U_POST_DETAILS}#reports" class="topictitle">{report.SUBJECT}</a> {report.ATTACH_ICON_IMG}<br />
-						<span>{L_POSTED} {L_POST_BY_AUTHOR} {report.AUTHOR_FULL} {L_POSTED_ON_DATE}  {report.POST_TIME}</span>
+						<span>{L_POSTED} {L_POST_BY_AUTHOR} {report.AUTHOR_FULL} &raquo; {report.POST_TIME}</span>
 					</dt>
 					<dd class="moderation">
 						<span>{L_REPORTED} {L_POST_BY_AUTHOR} {report.REPORTER_FULL} {L_REPORTED_ON_DATE} {report.REPORT_TIME}<br />
@@ -103,7 +103,7 @@
 <!-- IF S_SHOW_LOGS -->
 	<div class="panel">
 		<div class="inner"><span class="corners-top"><span></span></span>
-	
+
 		<h3>{L_LATEST_LOGS}</h3>
 
 		<table class="table1" cellspacing="0">
