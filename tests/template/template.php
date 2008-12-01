@@ -63,6 +63,10 @@ class phpbb_template_template_test extends phpbb_test_case
 		$GLOBALS['config'] = array(
 			'load_tplcompile' => true
 		);
+
+		// Strange things occur if we do not do not clear the cache before
+		// running our tests. Thanks Nils for working this out :)
+		clearstatcache();
 	}
 
 	/**
