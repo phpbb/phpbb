@@ -835,7 +835,7 @@ class template_compile
 
 		phpbb_chmod($filename, CHMOD_WRITE);
 
-		clearstatcache(false, $filename);
+		clearstatcache();
 
 		return true;
 	}
