@@ -914,6 +914,7 @@ function phpbb_chmod($filename, $perms = CHMOD_READ)
 			// Will most likely not work
 			if (@chown($filename, $common_php_owner));
 			{
+				clearstatcache(false, $filename);
 				$file_uid = fileowner($filename);
 			}
 		}
@@ -923,6 +924,7 @@ function phpbb_chmod($filename, $perms = CHMOD_READ)
 		{
 			if (@chgrp($filename, $common_php_group));
 			{
+				clearstatcache(false, $filename);
 				$file_gid = filegroup($filename);
 			}
 		}
@@ -971,6 +973,8 @@ function phpbb_chmod($filename, $perms = CHMOD_READ)
 
 			$result = @chmod($filename, ($owner << 6) + (0 << 3) + (0 << 0));
 
+			clearstatcache(false, $filename);
+
 			if (!is_null($php) || (is_readable($filename) && is_writable($filename)))
 			{
 				break;
@@ -980,6 +984,8 @@ function phpbb_chmod($filename, $perms = CHMOD_READ)
 		case 'group':
 			$result = @chmod($filename, ($owner << 6) + ($perms << 3) + (0 << 0));
 
+			clearstatcache(false, $filename);
+
 			if (!is_null($php) || ((!($perms & CHMOD_READ) || is_readable($filename)) && (!($perms & CHMOD_WRITE) || is_writable($filename))))
 			{
 				break;
@@ -987,6 +993,8 @@ function phpbb_chmod($filename, $perms = CHMOD_READ)
 
 		case 'other':
 			$result = @chmod($filename, ($owner << 6) + ($perms << 3) + ($perms << 0));
+
+			clearstatcache(false, $filename);
 
 			if (!is_null($php) || ((!($perms & CHMOD_READ) || is_readable($filename)) && (!($perms & CHMOD_WRITE) || is_writable($filename))))
 			{
