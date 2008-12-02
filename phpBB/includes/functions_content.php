@@ -1140,6 +1140,7 @@ function truncate_string($string, $max_length = 60, $max_store_length = 255, $al
 
 /**
 * Get username details for placing into templates.
+* This function caches all modes on first call, except for no_profile - determined by $user_id/$guest_username combination.
 *
 * @param string $mode Can be profile (for getting an url to the profile), username (for obtaining the username), colour (for obtaining the user colour), full (for obtaining a html string representing a coloured link to the users profile) or no_profile (the same as full but forcing no profile link)
 * @param int $user_id The users id
@@ -1149,12 +1150,30 @@ function truncate_string($string, $max_length = 60, $max_store_length = 255, $al
 * @param string $custom_profile_url optional parameter to specify a profile url. The user id get appended to this url as &amp;u={user_id}
 *
 * @return string A string consisting of what is wanted based on $mode.
+* @author BartVB, Acyd Burn
 */
 function get_username_string($mode, $user_id, $username, $username_colour = '', $guest_username = false, $custom_profile_url = false)
 {
+	static $_profile_cache;
+	static $_base_profile_url;
+
+	$cache_key = $user_id . (string) $guest_username;
+
+	// If the get_username_string() function had been executed once with an (to us) unkown mode, all modes are pre-filled and we can just grab it.
+	if (isset($_profile_cache[$cache_key][$mode]))
+	{
+		// If the mode is 'no_profile', we simply construct the TPL code due to calls to this mode being very very rare
+		if ($mode == 'no_profile')
+		{
+			$tpl = (!$_profile_cache[$cache_key][$mode]['colour']) ? '{USERNAME}' : '<span style="color: {USERNAME_COLOUR};" class="username-coloured">{USERNAME}</span>';
+			return str_replace(array('{USERNAME_COLOUR}', '{USERNAME}'), array($_profile_cache[$cache_key][$mode]['colour'], $_profile_cache[$cache_key][$mode]['username']), $tpl);
+		}
+
+		return $_profile_cache[$cache_key][$mode];
+	}
+
 	global $user, $auth;
 
-	$profile_url = '';
 	$username_colour = ($username_colour) ? '#' . $username_colour : '';
 
 	if ($guest_username === false)
@@ -1166,64 +1185,42 @@ function get_username_string($mode, $user_id, $username, $username_colour = '', 
 		$username = ($user_id && $user_id != ANONYMOUS) ? $username : ((!empty($guest_username)) ? $guest_username : $user->lang['GUEST']);
 	}
 
-	// Only show the link if not anonymous
-	if ($mode != 'no_profile' && $user_id && $user_id != ANONYMOUS)
+	// Build cache for all modes
+	$_profile_cache[$cache_key]['colour'] = $username_colour;
+	$_profile_cache[$cache_key]['username'] = $username;
+	$_profile_cache[$cache_key]['no_profile'] = true;
+
+	// Profile url - only show if not anonymous and permission to view profile if registered user
+	// For anonymous the link leads to a login page.
+	if ($user_id && $user_id != ANONYMOUS && ($user->data['user_id'] == ANONYMOUS || $auth->acl_get('u_viewprofile')))
 	{
-		// Do not show the link if the user is already logged in but do not have u_viewprofile permissions (relevant for bots mostly).
-		// For all others the link leads to a login page or the profile.
-		if ($user->data['user_id'] != ANONYMOUS && !$auth->acl_get('u_viewprofile'))
+		if (empty($_base_profile_url))
 		{
-			$profile_url = '';
+			$_base_profile_url = append_sid('memberlist', 'mode=viewprofile&amp;u={USER_ID}');
 		}
-		else
-		{
-			$profile_url = ($custom_profile_url !== false) ? $custom_profile_url . '&amp;u=' . (int) $user_id : append_sid('memberlist', 'mode=viewprofile&amp;u=' . (int) $user_id);
-		}
+
+		$profile_url = ($custom_profile_url !== false) ? $custom_profile_url . '&amp;u=' . (int) $user_id : str_replace('={USER_ID}', '=' . (int) $user_id, $_base_profile_url);
+		$tpl = (!$username_colour) ? '<a href="{PROFILE_URL}">{USERNAME}</a>' : '<a href="{PROFILE_URL}" style="color: {USERNAME_COLOUR};" class="username-coloured">{USERNAME}</a>';
+		$_profile_cache[$cache_key]['full'] = str_replace(array('{PROFILE_URL}', '{USERNAME_COLOUR}', '{USERNAME}'), array($profile_url, $username_colour, $username), $tpl);
 	}
 	else
 	{
+		$tpl = (!$username_colour) ? '{USERNAME}' : '<span style="color: {USERNAME_COLOUR};" class="username-coloured">{USERNAME}</span>';
+		$_profile_cache[$cache_key]['full'] = str_replace(array('{USERNAME_COLOUR}', '{USERNAME}'), array($username_colour, $username), $tpl);
 		$profile_url = '';
 	}
 
-	switch ($mode)
+	// Use the profile url from above
+	$_profile_cache[$cache_key]['profile'] = $profile_url;
+
+	// If - by any chance - no_profile is called before any other mode, we need to do the calculation here
+	if ($mode == 'no_profile')
 	{
-		case 'profile':
-			return $profile_url;
-		break;
-
-		case 'username':
-			return $username;
-		break;
-
-		case 'colour':
-			return $username_colour;
-		break;
-
-		case 'no_profile':
-		case 'full':
-		default:
-
-			$tpl = '';
-			if (!$profile_url && !$username_colour)
-			{
-				$tpl = '{USERNAME}';
-			}
-			else if (!$profile_url && $username_colour)
-			{
-				$tpl = '<span style="color: {USERNAME_COLOUR};" class="username-coloured">{USERNAME}</span>';
-			}
-			else if ($profile_url && !$username_colour)
-			{
-				$tpl = '<a href="{PROFILE_URL}">{USERNAME}</a>';
-			}
-			else if ($profile_url && $username_colour)
-			{
-				$tpl = '<a href="{PROFILE_URL}" style="color: {USERNAME_COLOUR};" class="username-coloured">{USERNAME}</a>';
-			}
-
-			return str_replace(array('{PROFILE_URL}', '{USERNAME_COLOUR}', '{USERNAME}'), array($profile_url, $username_colour, $username), $tpl);
-		break;
+		$tpl = (!$_profile_cache[$cache_key]['colour']) ? '{USERNAME}' : '<span style="color: {USERNAME_COLOUR};" class="username-coloured">{USERNAME}</span>';
+		return str_replace(array('{USERNAME_COLOUR}', '{USERNAME}'), array($_profile_cache[$cache_key]['colour'], $_profile_cache[$cache_key]['username']), $tpl);
 	}
+
+	return $_profile_cache[$cache_key][$mode];
 }
 
 /**
