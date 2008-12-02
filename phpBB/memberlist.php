@@ -1301,7 +1301,7 @@ switch ($mode)
 
 				if (!$config['coppa_enable'])
 				{
-					$sql .= " WHERE group_name <> 'REGISTERED_COPPA'";
+					$sql .= " AND g.group_name <> 'REGISTERED_COPPA'";
 				}
 
 				$sql .= ' ORDER BY g.group_name ASC';
