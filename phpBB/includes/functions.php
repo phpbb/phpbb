@@ -2154,6 +2154,33 @@ function append_sid($url, $params = false, $is_amp = true, $session_id = false)
 		}
 	}
 
+	$params_is_array = is_array($params);
+
+	// Get anchor
+	$anchor = '';
+	if (strpos($url, '#') !== false)
+	{
+		list($url, $anchor) = explode('#', $url, 2);
+		$anchor = '#' . $anchor;
+	}
+	else if (!$params_is_array && strpos($params, '#') !== false)
+	{
+		list($params, $anchor) = explode('#', $params, 2);
+		$anchor = '#' . $anchor;
+	}
+
+	// Handle really simple cases quickly
+	if ($_SID == '' && $session_id === false && empty($_EXTRA_URL) && !$params_is_array && !$anchor)
+	{
+		if ($params === false)
+		{
+			return $url;
+		}
+
+		$url_delim = (strpos($url, '?') === false) ? '?' : (($is_amp) ? '&amp;' : '&');
+		return $url . ($params !== false ? $url_delim. $params : '');
+	}
+
 	// Assign sid if session id is not specified
 	if ($session_id === false)
 	{
@@ -2165,18 +2192,6 @@ function append_sid($url, $params = false, $is_amp = true, $session_id = false)
 
 	// Appending custom url parameter?
 	$append_url = (!empty($_EXTRA_URL)) ? implode($amp_delim, $_EXTRA_URL) : '';
-
-	$anchor = '';
-	if (strpos($url, '#') !== false)
-	{
-		list($url, $anchor) = explode('#', $url, 2);
-		$anchor = '#' . $anchor;
-	}
-	else if (!is_array($params) && strpos($params, '#') !== false)
-	{
-		list($params, $anchor) = explode('#', $params, 2);
-		$anchor = '#' . $anchor;
-	}
 
 	// Use the short variant if possible ;)
 	if ($params === false)
