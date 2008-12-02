@@ -2537,12 +2537,17 @@ function build_url($strip_vars = false)
 
 /**
 * Meta refresh assignment
+* Adds META template variable with meta http tag.
+*
+* @param int $time Time in seconds for meta refresh tag
+* @param string $url URL to redirect to. The url will go through redirect() first before the template variable is assigned
+* @param bool $disable_cd_check If true, meta_refresh() will redirect to an external domain. If false, the redirect point to the boards url if it does not match the current domain. Default is false.
 */
-function meta_refresh($time, $url)
+function meta_refresh($time, $url, $disable_cd_check = false)
 {
 	global $template;
 
-	$url = redirect($url, true);
+	$url = redirect($url, true, $disable_cd_check);
 	$url = str_replace('&', '&amp;', $url);
 
 	// For XHTML compatibility we change back & to &amp;
