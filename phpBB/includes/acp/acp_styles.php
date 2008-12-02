@@ -2176,6 +2176,12 @@ parse_css_file = {PARSE_CSS_FILE}
 			$style_default = request_var('style_default', 0);
 			$store_db = request_var('store_db', 0);
 
+			// If the admin selected the style to be the default style, but forgot to activate it... we will do it for him
+			if ($style_default)
+			{
+				$style_active = 1;
+			}
+
 			$sql = "SELECT {$mode}_id, {$mode}_name
 				FROM $sql_from
 				WHERE {$mode}_id <> $style_id
