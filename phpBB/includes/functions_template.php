@@ -437,7 +437,7 @@ class template_filter extends php_user_filter
 							$namespace = substr($varrefs[1], 0, -1);
 							$namespace = (strpos($namespace, '.') === false) ? $namespace : strrchr($namespace, '.');
 
-							// S_ROW_COUNT is deceptive, it returns the current row number now the number of rows
+							// S_ROW_COUNT is deceptive, it returns the current row number not the number of rows
 							// hence S_ROW_COUNT is deprecated in favour of S_ROW_NUM
 							switch ($varrefs[3])
 							{
@@ -643,7 +643,7 @@ class template_filter extends php_user_filter
 
 		$expr = true;
 
-		// S_ROW_COUNT is deceptive, it returns the current row number now the number of rows
+		// S_ROW_COUNT is deceptive, it returns the current row number not the number of rows
 		// hence S_ROW_COUNT is deprecated in favour of S_ROW_NUM
 		switch ($varname)
 		{
