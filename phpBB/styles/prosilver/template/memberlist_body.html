@@ -91,7 +91,7 @@
 		<!-- BEGIN memberrow -->
 			<!-- IF S_SHOW_GROUP -->
 				<!-- IF not memberrow.S_GROUP_LEADER and not $S_MEMBER_HEADER -->
-				<!-- IF memberrow.S_FIRST_ROW -->
+				<!-- IF S_LEADERS_SET and memberrow.S_FIRST_ROW -->
 				<tr class="bg1">
 					<td colspan="<!-- IF U_SORT_ACTIVE -->5<!-- ELSE -->4<!-- ENDIF -->">&nbsp;</td>
 				</tr>
