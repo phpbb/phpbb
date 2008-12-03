@@ -1165,8 +1165,8 @@ function get_username_string($mode, $user_id, $username, $username_colour = '', 
 		// If the mode is 'no_profile', we simply construct the TPL code due to calls to this mode being very very rare
 		if ($mode == 'no_profile')
 		{
-			$tpl = (!$_profile_cache[$cache_key][$mode]['colour']) ? '{USERNAME}' : '<span style="color: {USERNAME_COLOUR};" class="username-coloured">{USERNAME}</span>';
-			return str_replace(array('{USERNAME_COLOUR}', '{USERNAME}'), array($_profile_cache[$cache_key][$mode]['colour'], $_profile_cache[$cache_key][$mode]['username']), $tpl);
+			$tpl = (!$_profile_cache[$cache_key]['colour']) ? '{USERNAME}' : '<span style="color: {USERNAME_COLOUR};" class="username-coloured">{USERNAME}</span>';
+			return str_replace(array('{USERNAME_COLOUR}', '{USERNAME}'), array($_profile_cache[$cache_key]['colour'], $_profile_cache[$cache_key]['username']), $tpl);
 		}
 
 		return $_profile_cache[$cache_key][$mode];
