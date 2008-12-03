@@ -2132,10 +2132,20 @@ function submit_post($mode, $subject, $username, $topic_type, &$poll, &$data, $u
 			// this post is the latest post in the forum, better update
 			if ($row['forum_last_post_id'] == $data['post_id'])
 			{
-				if ($post_approved && $row['forum_last_post_subject'] !== $subject)
+				// If post approved and subject changed, or poster is anonymous, we need to update the forum_last* rows
+				if ($post_approved && ($row['forum_last_post_subject'] !== $subject || $data['poster_id'] == ANONYMOUS))
 				{
-					// the only data that can really be changed is the post's subject
-					$sql_data[FORUMS_TABLE]['stat'][] = 'forum_last_post_subject = \'' . $db->sql_escape($subject) . '\'';
+					// the post's subject changed
+					if ($row['forum_last_post_subject'] !== $subject)
+					{
+						$sql_data[FORUMS_TABLE]['stat'][] = 'forum_last_post_subject = \'' . $db->sql_escape($subject) . '\'';
+					}
+
+					// Update the user name if poster is anonymous... just in case an admin changed it
+					if ($data['poster_id'] == ANONYMOUS)
+					{
+						$sql_data[FORUMS_TABLE]['stat'][] = "forum_last_poster_name = '" . $db->sql_escape($username) . "'";
+					}
 				}
 				else if ($data['post_approved'] !== $post_approved)
 				{
@@ -2272,6 +2282,12 @@ function submit_post($mode, $subject, $username, $topic_type, &$poll, &$data, $u
 		{
 			// only the subject can be changed from edit
 			$sql_data[TOPICS_TABLE]['stat'][] = "topic_last_post_subject = '" . $db->sql_escape($subject) . "'";
+
+			// Maybe not only the subject, but also changing anonymous usernames. ;)
+			if ($data['poster_id'] == ANONYMOUS)
+			{
+				$sql_data[TOPICS_TABLE]['stat'][] = "topic_last_poster_name = '" . $db->sql_escape($username) . "'";
+			}
 		}
 	}
 	else if (!$data['post_approved'] && ($post_mode == 'edit_last_post' || $post_mode == 'edit_topic' || ($post_mode == 'edit_first_post' && !$data['topic_replies'])))
