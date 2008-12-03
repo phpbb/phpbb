@@ -99,6 +99,7 @@
 		<li>[Fix] Adjusted phpbb_chmod() to always set permissions for group bit.</li>
 		<li>[Fix] Do not increment users post count after post approval if post had been posted in a forum with no post count increasing set (Bug #37865)</li>
 		<li>[Fix] Extend vertical line for last post column if no posts in forum (Bug #37125)</li>
+		<li>[Fix] correctly update last topic/forum information if changing guest usernames through editing posts (Bug #38095)</li>
 		<li>[Change] Alllow applications to set custom module inclusion path (idea by HoL)</li>
 		<li>[Change] Handle checking for duplicate usernames in chunks (Bug #17285 - Patch by A_Jelly_Doughnut)</li>
 		<li>[Change] Better handling and finer control for custom profile fields visibility options. (Patch by Highway of Life)</li>
@@ -107,7 +108,8 @@
 		<li>[Change] Performance increase for get_username_string() (Bug #37545 - Patch by BartVB)</li>
 		<li>[Change] Slight performance increase for common parameter calls to append_sid() (Bug #37555 - Patch by BartVB)</li>
 		<li>[Feature] Added 'AGO' setting to relative date strings. For example: posted 14 minutes ago. (Patch by BartVB)</li>
-		<li>[Sec] Fixed an issue where deactivated accounts could be re-activated without the required privileges.(Thanks Jorick)</li>
+		<li>[Sec] Fixed an issue where deactivated accounts could be re-activated without the required privileges. (Reported by Jorick)</li>
+		<li>[Sec] Ask for forum password if post within passworded forum quoted in private message. (Reported by nickvergessen)</li>
 	</ul>
 
 	<a name="v302"></a><h3>1.ii. Changes since 3.0.2</h3>
