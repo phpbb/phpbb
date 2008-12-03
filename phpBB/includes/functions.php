@@ -147,7 +147,7 @@ class request
 			{
 				self::$input[$const] = $GLOBALS[$super_global];
 			}
-	
+
 			self::$initialised = true;
 		}
 	}
@@ -213,7 +213,7 @@ class request
 			{
 				$GLOBALS[$super_global] = self::$input[$const];
 			}
-	
+
 			self::$super_globals_disabled = false;
 		}
 	}
@@ -347,7 +347,7 @@ class request
 
 			$_var = $var;
 			$var = array();
-	
+
 			foreach ($_var as $k => $v)
 			{
 				set_var($k, $k, $key_type, $multibyte);
@@ -2125,14 +2125,15 @@ function append_sid($url, $params = false, $is_amp = true, $session_id = false)
 	global $_SID, $_EXTRA_URL, $phpbb_hook;
 	static $parsed_urls = array();
 
-	// Adjust internal url before calling the hook - we are able to just leave out any path and extension.
-	// In this case the root path and extension are added before going through this function.
+	// The following code is used to make sure such calls like append_sid('viewtopic') (ommitting phpbb_root_path and php_ext) work as intended
 	if (isset($parsed_urls[$url]))
 	{
+		// Set an url like 'viewtopic' to PHPBB_ROOT_PATH . 'viewtopic.' . PHP_EXT
 		$url = $parsed_urls[$url];
 	}
 	else
 	{
+		// If we detect an url without root path and extension, and also not a relative or absolute path, we add it and put it to the parsed urls
 		if (strpos($url, '.' . PHP_EXT) === false && $url[0] != '.' && $url[0] != '/')
 		{
 			$parsed_urls[$url] = $url = PHPBB_ROOT_PATH . $url . '.' . PHP_EXT;
