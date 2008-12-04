@@ -697,7 +697,7 @@ class fulltext_native extends search_backend
 		if ($left_join_topics)
 		{
 			$sql_array['LEFT_JOIN'][$left_join_topics] = array(
-				'FROM'	=> TOPICS_TABLE => 't',
+				'FROM'	=> array(TOPICS_TABLE => 't'),
 				'ON'	=> 'p.topic_id = t.topic_id'
 			);
 		}
