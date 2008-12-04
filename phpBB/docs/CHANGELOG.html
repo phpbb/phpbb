@@ -101,6 +101,8 @@
 		<li>[Fix] Extend vertical line for last post column if no posts in forum (Bug #37125)</li>
 		<li>[Fix] correctly update last topic/forum information if changing guest usernames through editing posts (Bug #38095)</li>
 		<li>[Fix] fix postcount resync for situations where low and high post ids are higher than step value, resulting in users having 0 posts. (Bug #38195)</li>
+		<li>[Fix] Use a left join for the topics table on search to avoid trouble with FROM syntax on some databases (Bug #37005)</li>
+		<li>[Fix] Do not show 'Forward' button if the user cannot send PM's</li>
 		<li>[Change] Alllow applications to set custom module inclusion path (idea by HoL)</li>
 		<li>[Change] Handle checking for duplicate usernames in chunks (Bug #17285 - Patch by A_Jelly_Doughnut)</li>
 		<li>[Change] Better handling and finer control for custom profile fields visibility options. (Patch by Highway of Life)</li>
@@ -111,7 +113,6 @@
 		<li>[Feature] Added 'AGO' setting to relative date strings. For example: posted 14 minutes ago. (Patch by BartVB)</li>
 		<li>[Sec] Fixed an issue where deactivated accounts could be re-activated without the required privileges. (Reported by Jorick)</li>
 		<li>[Sec] Ask for forum password if post within passworded forum quoted in private message. (Reported by nickvergessen)</li>
-		<li>[Fix] Use a left join for the topics table on search to avoid trouble with FROM syntax on some databases (Bug #37005)</li>
 	</ul>
 
 	<a name="v302"></a><h3>1.ii. Changes since 3.0.2</h3>
