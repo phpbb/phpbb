@@ -100,6 +100,7 @@
 		<li>[Fix] Do not increment users post count after post approval if post had been posted in a forum with no post count increasing set (Bug #37865)</li>
 		<li>[Fix] Extend vertical line for last post column if no posts in forum (Bug #37125)</li>
 		<li>[Fix] correctly update last topic/forum information if changing guest usernames through editing posts (Bug #38095)</li>
+		<li>[Fix] fix postcount resync for situations where low and high post ids are higher than step value, resulting in users having 0 posts. (Bug #38195)</li>
 		<li>[Change] Alllow applications to set custom module inclusion path (idea by HoL)</li>
 		<li>[Change] Handle checking for duplicate usernames in chunks (Bug #17285 - Patch by A_Jelly_Doughnut)</li>
 		<li>[Change] Better handling and finer control for custom profile fields visibility options. (Patch by Highway of Life)</li>

@@ -185,12 +185,36 @@ class acp_main
 						}
 
 						// Resync post counts
-						$start = 0;
-						$step = ($config['num_posts']) ? (max((int) ($config['num_posts'] / 5), 20000)) : 20000;
+						$start = $max_post_id = 0;
 
+						// Find the maximum post ID, we can only stop the cycle when we've reached it
+						$sql = 'SELECT MAX(forum_last_post_id) as max_post_id
+							FROM ' . FORUMS_TABLE;
+						$result = $db->sql_query($sql);
+						$max_post_id = (int) $db->sql_fetchfield('max_post_id');
+						$db->sql_freeresult($result);
+
+						// No maximum post id? :o
+						if (!$max_post_id)
+						{
+							$sql = 'SELECT MAX(post_id)
+								FROM ' . POSTS_TABLE;
+							$result = $db->sql_query($sql);
+							$max_post_id = (int) $db->sql_fetchfield('max_post_id');
+							$db->sql_freeresult($result);
+						}
+
+						// Still no maximum post id? Then we are finished
+						if (!$max_post_id)
+						{
+							add_log('admin', 'LOG_RESYNC_POSTCOUNTS');
+							break;
+						}
+
+						$step = ($config['num_posts']) ? (max((int) ($config['num_posts'] / 5), 20000)) : 20000;
 						$db->sql_query('UPDATE ' . USERS_TABLE . ' SET user_posts = 0');
 
-						do
+						while ($start < $max_post_id)
 						{
 							$sql = 'SELECT COUNT(post_id) AS num_posts, poster_id
 								FROM ' . POSTS_TABLE . '
@@ -207,16 +231,11 @@ class acp_main
 									$db->sql_query($sql);
 								}
 								while ($row = $db->sql_fetchrow($result));
-
-								$start += $step;
-							}
-							else
-							{
-								$start = 0;
 							}
 							$db->sql_freeresult($result);
+
+							$start += $step;
 						}
-						while ($start);
 
 						add_log('admin', 'LOG_RESYNC_POSTCOUNTS');
 
