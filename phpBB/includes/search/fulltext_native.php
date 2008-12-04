@@ -455,6 +455,7 @@ class fulltext_native extends search_backend
 		);
 
 		$title_match = '';
+		$left_join_topics = false;
 		$group_by = true;
 		// Build some display specific sql strings
 		switch ($fields)
@@ -464,7 +465,7 @@ class fulltext_native extends search_backend
 				$group_by = false;
 			// no break
 			case 'firstpost':
-				$sql_array['FROM'][TOPICS_TABLE] = 't';
+				$left_join_topics = true;
 				$sql_where[] = 'p.post_id = t.topic_first_post_id';
 			break;
 
@@ -476,11 +477,7 @@ class fulltext_native extends search_backend
 
 		if ($type == 'topics')
 		{
-			if (!isset($sql_array['FROM'][TOPICS_TABLE]))
-			{
-				$sql_array['FROM'][TOPICS_TABLE] = 't';
-				$sql_where[] = 'p.topic_id = t.topic_id';
-			}
+			$left_join_topics = true;
 			$group_by = true;
 		}
 
@@ -688,17 +685,21 @@ class fulltext_native extends search_backend
 			break;
 
 			case 't':
-				if (!isset($sql_array['FROM'][TOPICS_TABLE]))
-				{
-					$sql_array['FROM'][TOPICS_TABLE] = 't';
-					$sql_where[] = 'p.topic_id = t.topic_id';
-				}
+				$left_join_topics = true;
 			break;
 
 			case 'f':
 				$sql_array['FROM'][FORUMS_TABLE] = 'f';
 				$sql_where[] = 'f.forum_id = p.forum_id';
 			break;
+		}
+		
+		if ($left_join_topics)
+		{
+			$sql_array['LEFT_JOIN'][$left_join_topics] = array(
+				'FROM'	=> TOPICS_TABLE => 't',
+				'ON'	=> 'p.topic_id = t.topic_id'
+			);
 		}
 
 		$sql_array['WHERE'] = implode(' AND ', $sql_where);
