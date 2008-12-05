@@ -191,7 +191,7 @@ class dbal_oracle extends dbal
 					$out .= ' ' . $val[1] . '(';
 					$in_array = array();
 
-					// constuct each IN() clause	
+					// constuct each IN() clause
 					foreach ($in_clause as $in_values)
 					{
 						$in_array[] = $val[2] . ' ' . (isset($val[6]) ? $val[6] : '') . 'IN(' . implode(', ', $in_values) . ')';

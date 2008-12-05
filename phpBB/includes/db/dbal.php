@@ -503,7 +503,8 @@ class dbal
 
 				$sql = str_replace('_', ' ', $query) . ' ' . $array['SELECT'] . ' FROM ';
 
-				$table_array = array();
+				// Build table array. We also build an alias array for later checks.
+				$table_array = $aliases = array();
 				foreach ($array['FROM'] as $table_name => $alias)
 				{
 					if (is_array($alias))
@@ -511,12 +512,56 @@ class dbal
 						foreach ($alias as $multi_alias)
 						{
 							$table_array[] = $table_name . ' ' . $multi_alias;
+							$aliases[] = $multi_alias;
 						}
 					}
 					else
 					{
 						$table_array[] = $table_name . ' ' . $alias;
+						$aliases[] = $alias;
 					}
+				}
+
+				// We run the following code to determine if we need to re-order the table array. ;)
+				// The reason for this is that for multiple tables in the FROM statement the last table need to match the first LEFT JOIN'ed table.
+				// DBMS who rely on this (at the moment i only spotted it on multi-aliases): Oracle, PostgreSQL and MSSQL
+				$first_join_match = false;
+
+				if (!empty($array['LEFT_JOIN']) && sizeof($array['FROM']) > 1)
+				{
+					// Take first LEFT JOIN
+					$join = current($array['LEFT_JOIN']);
+
+					// Determine the table used there (even if there are more than one used, we only want to have one
+					preg_match('/(' . implode('|', $aliases) . ')\.[^\s]+/U', str_replace(array('(', ')', 'AND', 'OR', ' '), '', $join['ON']), $matches);
+
+					if (!empty($matches[1]))
+					{
+						$first_join_match = trim($matches[1]);
+					}
+				}
+
+				// If there is a first join match, we need to make sure the table order is correct
+				if ($first_join_match !== false)
+				{
+					$table_array = $last = array();
+
+					foreach ($array['FROM'] as $table_name => $alias)
+					{
+						if (is_array($alias))
+						{
+							foreach ($alias as $multi_alias)
+							{
+								($multi_alias === $first_join_match) ? $last[] = $table_name . ' ' . $multi_alias : $table_array[] = $table_name . ' ' . $multi_alias;
+							}
+						}
+						else
+						{
+							($alias === $first_join_match) ? $last[] = $table_name . ' ' . $alias : $table_array[] = $table_name . ' ' . $alias;
+						}
+					}
+
+					$table_array = array_merge($table_array, $last);
 				}
 
 				$sql .= $this->_sql_custom_build('FROM', implode(', ', $table_array));
