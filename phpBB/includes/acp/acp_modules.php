@@ -658,6 +658,8 @@ class acp_modules
 
 			$iteration++;
 		}
+		$db->sql_freeresult($result);
+
 		unset($padding_store);
 
 		return $module_list;
