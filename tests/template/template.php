@@ -65,6 +65,17 @@ class phpbb_template_template_test extends phpbb_test_case
 		);
 	}
 
+	protected function tearDown()
+	{
+		if (is_object($this->template))
+		{
+			foreach (glob($this->template->cachepath . '*') as $file)
+			{
+				unlink($file);
+			}
+		}
+	}
+
 	/**
 	 * @todo put test data into templates/xyz.test
 	 */
