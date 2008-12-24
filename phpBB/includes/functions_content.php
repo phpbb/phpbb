@@ -1159,72 +1159,87 @@ function truncate_string($string, $max_length = 60, $max_store_length = 255, $al
 function get_username_string($mode, $user_id, $username, $username_colour = '', $guest_username = false, $custom_profile_url = false)
 {
 	static $_profile_cache;
-	static $_base_profile_url;
 
-	$cache_key = $user_id;
-
-	// If the get_username_string() function had been executed once with an (to us) unkown mode, all modes are pre-filled and we can just grab it.
-	if ($user_id && $user_id != ANONYMOUS && isset($_profile_cache[$cache_key][$mode]))
+	// We cache some common variables we need within this function
+	if (empty($_profile_cache))
 	{
-		// If the mode is 'no_profile', we simply construct the TPL code due to calls to this mode being very very rare
-		if ($mode == 'no_profile')
-		{
-			$tpl = (!$_profile_cache[$cache_key]['colour']) ? '{USERNAME}' : '<span style="color: {USERNAME_COLOUR};" class="username-coloured">{USERNAME}</span>';
-			return str_replace(array('{USERNAME_COLOUR}', '{USERNAME}'), array($_profile_cache[$cache_key]['colour'], $_profile_cache[$cache_key]['username']), $tpl);
-		}
+		global $phpbb_root_path, $phpEx;
 
-		return $_profile_cache[$cache_key][$mode];
+		$_profile_cache['base_url'] = append_sid("{$phpbb_root_path}memberlist.$phpEx", 'mode=viewprofile&amp;u={USER_ID}');
+		$_profile_cache['tpl_noprofile'] = '{USERNAME}';
+		$_profile_cache['tpl_noprofile_colour'] = '<span style="color: {USERNAME_COLOUR};" class="username-coloured">{USERNAME}</span>';
+		$_profile_cache['tpl_profile'] = '<a href="{PROFILE_URL}">{USERNAME}</a>';
+		$_profile_cache['tpl_profile_colour'] = '<a href="{PROFILE_URL}" style="color: {USERNAME_COLOUR};" class="username-coloured">{USERNAME}</a>';
 	}
 
-	global $phpbb_root_path, $phpEx, $user, $auth;
+	global $user, $auth;
 
-	$username_colour = ($username_colour) ? '#' . $username_colour : '';
-
-	if ($guest_username === false)
+	// This switch makes sure we only run code required for the mode
+	switch ($mode)
 	{
-		$username = ($username) ? $username : $user->lang['GUEST'];
+		case 'full':
+		case 'noprofile':
+		case 'colour':
+
+			// Build correct username colour
+			$username_colour = ($username_colour) ? '#' . $username_colour : '';
+
+			// Return colour
+			if ($mode == 'colour')
+			{
+				return $username_colour;
+			}
+
+		// no break;
+
+		case 'username':
+
+			// Build correct username
+			if ($guest_username === false)
+			{
+				$username = ($username) ? $username : $user->lang['GUEST'];
+			}
+			else
+			{
+				$username = ($user_id && $user_id != ANONYMOUS) ? $username : ((!empty($guest_username)) ? $guest_username : $user->lang['GUEST']);
+			}
+
+			// Return username
+			if ($mode == 'username')
+			{
+				return $username;
+			}
+
+		// no break;
+
+		case 'profile':
+
+			// Build correct profile url - only show if not anonymous and permission to view profile if registered user
+			// For anonymous the link leads to a login page.
+			if ($user_id && $user_id != ANONYMOUS && ($user->data['user_id'] == ANONYMOUS || $auth->acl_get('u_viewprofile')))
+			{
+				$profile_url = ($custom_profile_url !== false) ? $custom_profile_url . '&amp;u=' . (int) $user_id : str_replace(array('={USER_ID}', '=%7BUSER_ID%7D'), '=' . (int) $user_id, $_profile_cache['base_url']);
+			}
+			else
+			{
+				$profile_url = '';
+			}
+
+			// Return profile
+			if ($mode == 'profile')
+			{
+				return $profile_url;
+			}
+
+		// no break;
 	}
-	else
+
+	if (($mode == 'full' && !$profile_url) || $mode == 'no_profile')
 	{
-		$username = ($user_id && $user_id != ANONYMOUS) ? $username : ((!empty($guest_username)) ? $guest_username : $user->lang['GUEST']);
+		return str_replace(array('{USERNAME_COLOUR}', '{USERNAME}'), array($username_colour, $username), (!$username_colour) ? $_profile_cache['tpl_noprofile'] : $_profile_cache['tpl_noprofile_colour']);
 	}
 
-	// Build cache for all modes
-	$_profile_cache[$cache_key]['colour'] = $username_colour;
-	$_profile_cache[$cache_key]['username'] = $username;
-	$_profile_cache[$cache_key]['no_profile'] = true;
-
-	// Profile url - only show if not anonymous and permission to view profile if registered user
-	// For anonymous the link leads to a login page.
-	if ($user_id && $user_id != ANONYMOUS && ($user->data['user_id'] == ANONYMOUS || $auth->acl_get('u_viewprofile')))
-	{
-		if (empty($_base_profile_url))
-		{
-			$_base_profile_url = append_sid("{$phpbb_root_path}memberlist.$phpEx", 'mode=viewprofile&amp;u={USER_ID}');
-		}
-
-		$profile_url = ($custom_profile_url !== false) ? $custom_profile_url . '&amp;u=' . (int) $user_id : str_replace('={USER_ID}', '=' . (int) $user_id, $_base_profile_url);
-		$tpl = (!$username_colour) ? '<a href="{PROFILE_URL}">{USERNAME}</a>' : '<a href="{PROFILE_URL}" style="color: {USERNAME_COLOUR};" class="username-coloured">{USERNAME}</a>';
-		$_profile_cache[$cache_key]['full'] = str_replace(array('{PROFILE_URL}', '{USERNAME_COLOUR}', '{USERNAME}'), array($profile_url, $username_colour, $username), $tpl);
-	}
-	else
-	{
-		$tpl = (!$username_colour) ? '{USERNAME}' : '<span style="color: {USERNAME_COLOUR};" class="username-coloured">{USERNAME}</span>';
-		$_profile_cache[$cache_key]['full'] = str_replace(array('{USERNAME_COLOUR}', '{USERNAME}'), array($username_colour, $username), $tpl);
-		$profile_url = '';
-	}
-
-	// Use the profile url from above
-	$_profile_cache[$cache_key]['profile'] = $profile_url;
-
-	// If - by any chance - no_profile is called before any other mode, we need to do the calculation here
-	if ($mode == 'no_profile')
-	{
-		$tpl = (!$_profile_cache[$cache_key]['colour']) ? '{USERNAME}' : '<span style="color: {USERNAME_COLOUR};" class="username-coloured">{USERNAME}</span>';
-		return str_replace(array('{USERNAME_COLOUR}', '{USERNAME}'), array($_profile_cache[$cache_key]['colour'], $_profile_cache[$cache_key]['username']), $tpl);
-	}
-
-	return $_profile_cache[$cache_key][$mode];
+	return str_replace(array('{PROFILE_URL}', '{USERNAME_COLOUR}', '{USERNAME}'), array($profile_url, $username_colour, $username), (!$username_colour) ? $_profile_cache['tpl_profile'] : $_profile_cache['tpl_profile_colour']);
 }
 
 /**
