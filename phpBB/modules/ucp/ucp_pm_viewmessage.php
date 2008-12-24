@@ -46,7 +46,7 @@ function view_message($id, $mode, $folder_id, $msg_id, $folder, $message_row)
 	}
 
 	// Grab icons
-	$icons = cache::obtain_icons();
+	$icons = phpbb_cache::obtain_icons();
 
 	$bbcode = false;
 

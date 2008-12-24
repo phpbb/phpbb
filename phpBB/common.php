@@ -217,15 +217,6 @@ $db->sql_connect($dbhost, $dbuser, $dbpasswd, $dbname, $dbport, false, defined('
 unset($dbpasswd);
 
 // Grab global variables, re-cache if necessary
-$config = cache::obtain_config();
-
-// Add own hook handler
-require(PHPBB_ROOT_PATH . 'includes/hooks/index.' . PHP_EXT);
-$phpbb_hook = new phpbb_hook(array('exit_handler', 'phpbb_user_session_handler', 'append_sid', array('template', 'display')));
-
-foreach (cache::obtain_hooks() as $hook)
-{
-	@include(PHPBB_ROOT_PATH . 'includes/hooks/' . $hook . '.' . PHP_EXT);
-}
+$config = phpbb_cache::obtain_config();
 
 ?>

@@ -134,7 +134,7 @@ function mcp_forum_view($id, $mode, $action, $forum_info)
 	));
 
 	// Grab icons
-	$icons = cache::obtain_icons();
+	$icons = phpbb_cache::obtain_icons();
 
 	$topic_rows = array();
 

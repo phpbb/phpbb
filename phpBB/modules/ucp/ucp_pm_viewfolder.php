@@ -33,7 +33,7 @@ function view_folder($id, $mode, $folder_id, $folder)
 		$user->add_lang('viewforum');
 
 		// Grab icons
-		$icons = cache::obtain_icons();
+		$icons = phpbb_cache::obtain_icons();
 
 		$color_rows = array('marked', 'replied');
 

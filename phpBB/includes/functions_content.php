@@ -682,7 +682,7 @@ function censor_text($text)
 		}
 		else
 		{
-			$censors = cache::obtain_word_list();
+			$censors = phpbb_cache::obtain_word_list();
 		}
 	}
 
@@ -754,7 +754,7 @@ function parse_attachments($forum_id, &$message, &$attachments, &$update_count, 
 
 	if (empty($extensions) || !is_array($extensions))
 	{
-		$extensions = cache::obtain_attach_extensions($forum_id);
+		$extensions = phpbb_cache::obtain_extensions_forum($forum_id);
 	}
 
 	// Look for missing attachment information...
@@ -1069,7 +1069,7 @@ function extension_allowed($forum_id, $extension, &$extensions)
 	if (empty($extensions))
 	{
 		global $cache;
-		$extensions = cache::obtain_attach_extensions($forum_id);
+		$extensions = phpbb_cache::obtain_extensions_forum($forum_id);
 	}
 
 	return (!isset($extensions['_allowed_'][$extension])) ? false : true;

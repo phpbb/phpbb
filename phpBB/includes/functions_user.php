@@ -1420,7 +1420,7 @@ function validate_username($username, $allowed_username = false)
 		return 'USERNAME_TAKEN';
 	}
 
-	$bad_usernames = cache::obtain_disallowed_usernames();
+	$bad_usernames = phpbb_cache::obtain_disallowed_usernames();
 
 	foreach ($bad_usernames as $bad_username)
 	{

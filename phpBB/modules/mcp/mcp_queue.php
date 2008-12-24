@@ -140,7 +140,7 @@ class mcp_queue
 
 				if ($post_info['post_attachment'] && $auth->acl_get('u_download') && $auth->acl_get('f_download', $post_info['forum_id']))
 				{
-					$extensions = cache::obtain_attach_extensions($post_info['forum_id']);
+					$extensions = phpbb_cache::obtain_extensions_forum($post_info['forum_id']);
 
 					$sql = 'SELECT *
 						FROM ' . ATTACHMENTS_TABLE . '

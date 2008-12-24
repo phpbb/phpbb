@@ -149,7 +149,7 @@ class mcp_reports
 
 				if ($post_info['post_attachment'] && $auth->acl_get('u_download') && $auth->acl_get('f_download', $post_info['forum_id']))
 				{
-					$extensions = cache::obtain_attach_extensions($post_info['forum_id']);
+					$extensions = phpbb_cache::obtain_extensions_forum($post_info['forum_id']);
 
 					$sql = 'SELECT *
 						FROM ' . ATTACHMENTS_TABLE . '
@@ -425,7 +425,7 @@ class mcp_reports
 					'PAGE_NUMBER'			=> on_page($total, $config['topics_per_page'], $start),
 					'TOPIC_ID'				=> $topic_id,
 					'TOTAL'					=> $total,
-					'TOTAL_REPORTS'			=> ($total == 1) ? $user->lang['LIST_REPORT'] : sprintf($user->lang['LIST_REPORTS'], $total),					
+					'TOTAL_REPORTS'			=> ($total == 1) ? $user->lang['LIST_REPORT'] : sprintf($user->lang['LIST_REPORTS'], $total),
 					)
 				);
 
@@ -610,13 +610,13 @@ function close_report($report_id_list, $mode, $action)
 				$messenger->send($reporter['user_notify_type']);
 			}
 		}
-		
+
 		foreach ($post_info as $post)
 		{
 			$forum_ids[$post['forum_id']] = $post['forum_id'];
 			$topic_ids[$post['topic_id']] = $post['topic_id'];
 		}
-		
+
 		unset($notify_reporters, $post_info, $reports);
 
 		$messenger->save_queue();
@@ -648,7 +648,7 @@ function close_report($report_id_list, $mode, $action)
 		{
 			$return_topic = sprintf($user->lang['RETURN_TOPIC'], '<a href="' . append_sid('viewtopic', 't=' . current($topic_ids) . '&amp;f=' . current($forum_ids)) . '">', '</a>') . '<br /><br />';
 		}
-		
+
 		trigger_error($user->lang[$success_msg] . '<br /><br />' . $return_forum . $return_topic . sprintf($user->lang['RETURN_PAGE'], "<a href=\"$redirect\">", '</a>'));
 	}
 }

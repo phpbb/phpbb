@@ -17,7 +17,7 @@ if (!defined('PHP_EXT')) define('PHP_EXT', substr(strrchr(__FILE__, '.'), 1));
 include(PHPBB_ROOT_PATH . 'common.' . PHP_EXT);
 
 
-// Thank you sun. 
+// Thank you sun.
 if (isset($_SERVER['CONTENT_TYPE']))
 {
 	if ($_SERVER['CONTENT_TYPE'] === 'application/x-java-archive')
@@ -35,11 +35,11 @@ if (request::is_set('avatar', request::GET))
 	// worst-case default
 	$browser = (!empty($_SERVER['HTTP_USER_AGENT'])) ? htmlspecialchars((string) $_SERVER['HTTP_USER_AGENT']) : 'msie 6.0';
 
-	$config = cache::obtain_config();
+	$config = phpbb_cache::obtain_config();
 	$filename = request::variable('avatar', '', false, request::GET);
 	$avatar_group = false;
 	$exit = false;
-	
+
 	if ($filename[0] === 'g')
 	{
 		$avatar_group = true;
@@ -66,8 +66,8 @@ if (request::is_set('avatar', request::GET))
 		header("HTTP/1.0 403 Forbidden");
 		$exit = true;
 	}
-	
-	
+
+
 	if (!$exit)
 	{
 		if (!$filename)
@@ -133,7 +133,7 @@ if ($attachment['is_orphan'])
 	}
 
 	// Obtain all extensions...
-	$extensions = cache::obtain_attach_extensions(true);
+	$extensions = phpbb_cache::obtain_extensions();
 }
 else
 {

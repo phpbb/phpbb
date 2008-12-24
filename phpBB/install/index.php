@@ -249,22 +249,6 @@ $auth = new auth();
 $cache = new acm();
 $template = new template();
 
-// Add own hook handler, if present. :o
-if (file_exists(PHPBB_ROOT_PATH . 'includes/hooks/index.' . PHP_EXT))
-{
-	require(PHPBB_ROOT_PATH . 'includes/hooks/index.' . PHP_EXT);
-	$phpbb_hook = new phpbb_hook(array('exit_handler', 'phpbb_user_session_handler', 'append_sid', array('template', 'display')));
-
-	foreach (cache::obtain_hooks() as $hook)
-	{
-		@include(PHPBB_ROOT_PATH . 'includes/hooks/' . $hook . '.' . PHP_EXT);
-	}
-}
-else
-{
-	$phpbb_hook = false;
-}
-
 // Set some standard variables we want to force
 $config = array(
 	'load_tplcompile'	=> '1'
