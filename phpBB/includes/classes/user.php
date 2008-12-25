@@ -105,8 +105,9 @@ class phpbb_user extends phpbb_session
 	/**
 	* Constructor to set the lang path. Calls parrent::__construct()
 	*
-	* @param string $auth_method The authentication method to use, for example 'db'
-	* @param string $custom_lang_path An optional language pack path.
+	* @param string	$auth_method		The authentication method to use, for example 'db'
+	* @param string	$custom_lang_path	An optional language pack path.
+	* @access public
 	*/
 	public function __construct($auth_method, $custom_lang_path = false)
 	{
@@ -128,7 +129,8 @@ class phpbb_user extends phpbb_session
 	/**
 	* Initialize user session
 	*
-	* @param bool $update_session_page If true the session page gets updated. This can be set to false to circumvent certain scripts to update the users last visited page.
+	* @param bool	$update_session_page	If true the session page gets updated.
+	* 										This can be set to false to circumvent certain scripts to update the users last visited page.
 	* @access public
 	*/
 	public function init($update_session_page = true)
@@ -140,7 +142,7 @@ class phpbb_user extends phpbb_session
 	/**
 	* Function to set custom language path (able to use directory outside of phpBB)
 	*
-	* @param string $lang_path New language path used.
+	* @param string	$lang_path	New language path used.
 	* @access public
 	*/
 	public function set_custom_lang_path($lang_path)
@@ -156,8 +158,11 @@ class phpbb_user extends phpbb_session
 	/**
 	* Setup basic user-specific items (style, language, ...)
 	*
-	* @param string|array $lang_set Language set to setup. Can be a string or an array of language files without a path and extension. Format must match {@link add_lang() add_lang}.
-	* @param int $style If not set to false this specifies the style id to use. The page will then use the specified style id instead of the default one.
+	* @param string|array	$lang_set	Language set to setup.
+	* 									Can be a string or an array of language files without a path and extension.
+	* 									Format must match {@link add_lang() add_lang}.
+	* @param int			$style		If not set to false this specifies the style id to use.
+	* 									The page will then use the specified style id instead of the default one.
 	* @access public
 	*/
 	public function setup($lang_set = false, $style = false)
@@ -534,10 +539,10 @@ class phpbb_user extends phpbb_session
 	* 	phpbb::$user->lang('NUM_POSTS_IN_QUEUE', 1);
 	* </code>
 	*
-	* @param string $key The language key to use
-	* @param mixed $parameter,... An unlimited number of parameter to apply.
+	* @param string	$key			The language key to use
+	* @param mixed	$parameter,...	An unlimited number of parameter to apply.
 	*
-	* @return string Substituted language string
+	* @return string	Substituted language string
 	* @see sprintf()
 	* @access public
 	*/
@@ -625,9 +630,9 @@ class phpbb_user extends phpbb_session
 	*	$lang_set = array('help' => 'faq', 'db' => array('help:faq', 'posting'))
 	* </code>
 	*
-	* @param mixed $lang_set specifies the language entries to include
-	* @param bool $use_db internal variable for recursion, do not use
-	* @param bool $use_help internal variable for recursion, do not use
+	* @param mixed	$lang_set	specifies the language entries to include
+	* @param bool	$use_db		internal variable for recursion, do not use
+	* @param bool	$use_help	internal variable for recursion, do not use
 	* @access public
 	*/
 	public function add_lang($lang_set, $use_db = false, $use_help = false)
@@ -668,11 +673,11 @@ class phpbb_user extends phpbb_session
 	/**
 	* Set language entry (called by {@link add_lang() add_lang})
 	*
-	* @param array &$lang A reference to the language array phpbb::$user->lang
-	* @param array &$help A reference to the language help array phpbb::$user->help
-	* @param string $lang_file Language filename
-	* @param bool $use_db True if the database is used for obtaining the information
-	* @param bool $use_help True if we fetch help entries instead of language entries
+	* @param array	&$lang		A reference to the language array phpbb::$user->lang
+	* @param array	&$help		A reference to the language help array phpbb::$user->help
+	* @param string	$lang_file	Language filename
+	* @param bool	$use_db		True if the database is used for obtaining the information
+	* @param bool	$use_help	True if we fetch help entries instead of language entries
 	* @access private
 	*/
 	private function set_lang(&$lang, &$help, $lang_file, $use_db = false, $use_help = false)
@@ -739,11 +744,13 @@ class phpbb_user extends phpbb_session
 	/**
 	* Format user date
 	*
-	* @param int $gmepoch unix timestamp to format
-	* @param string $format date format in date() notation. | used to indicate relative dates, for example |d m Y|, h:i is translated to Today, h:i.
-	* @param bool $forcedate force non-relative date format.
-	* @staticvar int $midnight Midnight time offset
-	* @staticvar array $date_cache array to cache commonly needed structures within this function
+	* @param int		$gmepoch	Unix timestamp to format
+	* @param string		$format		Date format in date() notation.
+	* 								The character | used to indicate relative dates, for example |d m Y|, h:i is translated to Today, h:i.
+	* @param bool		$forcedate	Force non-relative date format.
+	*
+	* @staticvar int	$midnight	Midnight time offset
+	* @staticvar array	$date_cache	Array to cache commonly needed structures within this function
 	*
 	* @return mixed translated date
 	* @access public
@@ -816,6 +823,7 @@ class phpbb_user extends phpbb_session
 
 	/**
 	* Get language id currently used by the user
+	*
 	* @return int language id
 	* @access public
 	*/
@@ -844,8 +852,9 @@ class phpbb_user extends phpbb_session
 	/**
 	* Get users profile fields
 	*
-	* @param int $user_id user id. If not specified the current users profile fields are grabbed.
-	* @return array profile fields. If the current user then they are also stored as property $profile_fields.
+	* @param int	$user_id	User id. If not specified the current users profile fields are grabbed.
+	*
+	* @return array	Profile fields. If the current user then they are also stored as property $profile_fields.
 	* @access public
 	*/
 	public function get_profile_fields($user_id = false)
@@ -875,11 +884,13 @@ class phpbb_user extends phpbb_session
 	/**
 	* Specify/Get image from style imageset
 	*
-	* @param string $img the imageset image key name
-	* @param string $alt an optional alternative image attribute. If a corresponding language key exist it will be used: phpbb::$user->lang[$alt]
-	* @param string $type the preferred type to return. Allowed types are: full_tag, src, width, height
-	* @param int $width set image width
-	* @return mixed returns the preferred type from $type
+	* @param string	$img	The imageset image key name
+	* @param string	$alt	An optional alternative image attribute.
+	* 						If a corresponding language key exist it will be used: phpbb::$user->lang[$alt]
+	* @param string	$type	The preferred type to return. Allowed types are: full_tag, src, width, height
+	* @param int	$width	Set image width
+	*
+	* @return mixed	returns the preferred type from $type
 	* @access public
 	*/
 	public function img($img, $alt = '', $type = 'full_tag', $width = false)
@@ -929,9 +940,11 @@ class phpbb_user extends phpbb_session
 	/**
 	* Get option bit field from user options.
 	*
-	* @param string $key the option key from {@link $keyoptions keyoptions}
-	* @param int $data optional user options bitfield. If not specified then {@link $data $data['user_options']} is used.
-	* @return bool corresponding option value returned. Is the option enabled or disabled.
+	* @param string	$key	The option key from {@link $keyoptions keyoptions}
+	* @param int	$data	Optional user options bitfield.
+	* 						If not specified then {@link $data $data['user_options']} is used.
+	*
+	* @return bool	Corresponding option value returned. Is the option enabled or disabled.
 	* @access public
 	*/
 	public function optionget($key, $data = false)
@@ -952,10 +965,13 @@ class phpbb_user extends phpbb_session
 	/**
 	* Set option bit field for user options.
 	*
-	* @param string $key the option key from {@link $keyoptions keyoptions}
-	* @param bool $value true to enable the option, false to disable it
-	* @param int $data optional user options bitfield. If not specified then {@link $data $data['user_options']} is used.
-	* @return bool the new user options bitfield is returned if $data is specified, else: false is returned if user options not changed, true if changed.
+	* @param string	$key	The option key from {@link $keyoptions keyoptions}
+	* @param bool	$value	True to enable the option, false to disable it
+	* @param int	$data	Optional user options bitfield.
+	* 						If not specified then {@link $data $data['user_options']} is used.
+	*
+	* @return bool	The new user options bitfield is returned if $data is specified.
+	* 				Else: false is returned if user options not changed, true if changed.
 	* @access public
 	*/
 	public function optionset($key, $value, $data = false)
@@ -987,12 +1003,13 @@ class phpbb_user extends phpbb_session
 	/**
 	* User login. Log the user in.
 	*
-	* @param string $username the specified user name
-	* @param string $password the specified password
-	* @param bool $autologin enable/disable persistent login
-	* @param bool $viewonline If false then the user will be logged in as hidden
-	* @param bool $admin If true the user requests an admin login
-	* @return array login result array. This array returns results to the login script to show errors, notices, confirmations.
+	* @param string	$username	The specified user name
+	* @param string	$password	The specified password
+	* @param bool	$autologin	Enable/disable persistent login
+	* @param bool	$viewonline	If false then the user will be logged in as hidden
+	* @param bool	$admin		If true the user requests an admin login
+	*
+	* @return array	Login result array. This array returns results to the login script to show errors, notices, confirmations.
 	* @access public
 	*/
 	public function login($username, $password, $autologin = false, $viewonline = 1, $admin = 0)

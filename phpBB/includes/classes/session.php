@@ -79,6 +79,7 @@ abstract class phpbb_session
 
 	/**
 	* Init session. Empties the user data and assigns the system object (phpbb::$instances['system'])
+	* @access public
 	*/
 	public function __construct()
 	{
@@ -96,7 +97,7 @@ abstract class phpbb_session
 	/**
 	* Specifiy the need for a session id within the URL
 	*
-	* @param bool $need_sid Specify if the session id is needed or not. Default is false.
+	* @param bool	$need_sid	Specify if the session id is needed or not. Default is false.
 	* @access public
 	*/
 	public function need_sid($need_sid = false)
@@ -114,8 +115,10 @@ abstract class phpbb_session
 	* running on a system which makes such information readily available) and
 	* halt if it's above an admin definable limit.
 	*
-	* @param bool $update_session_page If true the session page gets updated. This can be set to false to circumvent certain scripts to update the users last visited page.
-	* @return bool True if the session exist or has been created, else False.
+	* @param bool	$update_session_page	If true the session page gets updated.
+	* 										This can be set to false to circumvent certain scripts to update the users last visited page.
+	*
+	* @return bool	True if the session exist or has been created, else False.
 	* @access public
 	*/
 	public function session_begin($update_session_page = true)
@@ -165,11 +168,12 @@ abstract class phpbb_session
 	* garbage collection, (search)bot checking, banned user comparison. Basically
 	* though this method will result in a new session for a specific user.
 	*
-	* @param int $user_id The user id to create the session for.
-	* @param bool $set_admin Set the users admin field to identify him/her as an admin?
-	* @param bool $persist_login Allow persistent login
-	* @param bool $viewonline If false then the user will be logged in as hidden
-	* @return bool True if session got created successfully.
+	* @param int	$user_id		The user id to create the session for.
+	* @param bool	$set_admin		Set the users admin field to identify him/her as an admin?
+	* @param bool	$persist_login	Allow persistent login
+	* @param bool	$viewonline		If false then the user will be logged in as hidden
+	*
+	* @return bool	True if session got created successfully.
 	* @access public
 	*/
 	public function session_create($user_id = false, $set_admin = false, $persist_login = false, $viewonline = true)
@@ -484,7 +488,7 @@ abstract class phpbb_session
 	* and update the users information from the relevant session data. It will then
 	* grab guest user information.
 	*
-	* @param bool $new_session If true a new session will be generated after the original one got killed.
+	* @param bool	$new_session	If true a new session will be generated after the original one got killed.
 	* @access public
 	*/
 	public function session_kill($new_session = true)
@@ -633,9 +637,10 @@ abstract class phpbb_session
 	/**
 	* Sets a cookie of the given name with the specified data for the given length of time. If no time is specified, a session cookie will be set.
 	*
-	* @param string $name		Name of the cookie, will be automatically prefixed with the phpBB cookie name. track becomes [cookie_name]_track then.
-	* @param string $cookiedata	The data to hold within the cookie
-	* @param int $cookietime	The expiration time as UNIX timestamp. If 0 is provided, a session cookie is set.
+	* @param string	$name		Name of the cookie, will be automatically prefixed with the phpBB cookie name. Track becomes [cookie_name]_track then.
+	* @param string	$cookiedata	The data to hold within the cookie
+	* @param int	$cookietime	The expiration time as UNIX timestamp. If 0 is provided, a session cookie is set.
+	*
 	* @access public
 	*/
 	public function set_cookie($name, $cookiedata, $cookietime)
@@ -655,11 +660,13 @@ abstract class phpbb_session
 	* this routine does not return on finding a banned user, it outputs a relevant
 	* message and stops execution.
 	*
-	* @param int $user_id The user id to check. If false then do not check user ids
-	* @param string|array $user_ips Can contain a string with one IP or an array of multiple IPs. If false then no ips are checked.
-	* @param int $user_email The email address to check
-	* @param bool $return If false then the banned message is displayed and script halted
-	* @return bool|string True if banned and no reason given. False if not banned. A ban reason if banned and ban reason given. Check for !== false.
+	* @param int			$user_id	The user id to check. If false then do not check user ids
+	* @param string|array	$user_ips	Can contain a string with one IP or an array of multiple IPs. If false then no ips are checked.
+	* @param int			$user_email	The email address to check
+	* @param bool			$return		If false then the banned message is displayed and script halted
+	*
+	* @return bool|string	True if banned and no reason given.
+	* 						False if not banned. A ban reason if banned and ban reason given. Check for !== false.
 	* @access public
 	*/
 	public function check_ban($user_id = false, $user_ips = false, $user_email = false, $return = false)
@@ -848,10 +855,12 @@ abstract class phpbb_session
 	*
 	* Only IPv4 (rbldns does not support AAAA records/IPv6 lookups)
 	*
+	* @param string	$mode	Possible modes are: register and post
+	* 						spamhaus.org is used for both modes. Spamcop.net is additionally used for register.
+	* @param string	$ip		The ip to check. If false then the current IP is used
+	*
+	* @return bool|array	False if ip is not blacklisted, else an array([checked server], [lookup])
 	* @author satmd (from the php manual)
-	* @param string $mode register/post - spamcop for example is ommitted for posting
-	* @param string $ip The ip to check. If false then the current IP is used
-	* @return bool|array false if ip is not blacklisted, else an array([checked server], [lookup])
 	* @access public
 	*/
 	public function check_dnsbl($mode, $ip = false)
@@ -910,9 +919,9 @@ abstract class phpbb_session
 	* browsers or locations. As with _any_ non-secure-socket no passphrase login this
 	* remains vulnerable to exploit.
 	*
-	* @param int $user_id The user id. If false the current users user id will be used
-	* @param string $key A login key. If false then the current users login key stored within the cookie will be used
-	* @param string $user_ip The users ip. If false, then the current users IP will be used
+	* @param int	$user_id	The user id. If false the current users user id will be used
+	* @param string	$key		A login key. If false then the current users login key stored within the cookie will be used
+	* @param string	$user_ip	The users ip. If false, then the current users IP will be used
 	* @access public
 	*/
 	public function set_login_key($user_id = false, $key = false, $user_ip = false)
@@ -958,7 +967,7 @@ abstract class phpbb_session
 	* This method removes all current login keys for a specified (or the current)
 	* user. It will be called on password change to render old keys unusable
 	*
-	* @param int $user_id The user id. If false then the current users user id is used.
+	* @param int	$user_id	The user id. If false then the current users user id is used.
 	* @access public
 	*/
 	public function reset_login_keys($user_id = false)
@@ -1002,7 +1011,7 @@ abstract class phpbb_session
 	/**
 	* Check if a valid, non-expired session exist. Also make sure it errors out correctly if we do not have a db-setup yet. ;)
 	*
-	* @return bool true if a valid, non-expired session exist
+	* @return bool	True if a valid, non-expired session exist
 	* @access private
 	*/
 	private function session_exist()
@@ -1093,8 +1102,9 @@ abstract class phpbb_session
 	/**
 	* Check if the request originated from the same page.
 	*
-	* @param bool $check_script_path If true, the path will be checked as well
-	* @return bool True if the referer is valid
+	* @param bool	$check_script_path	If true, the path will be checked as well
+	*
+	* @return bool	True if the referer is valid
 	* @access private
 	*/
 	private function validate_referer($check_script_path = false)
@@ -1135,7 +1145,7 @@ abstract class phpbb_session
 	/**
 	* Fill data array with a "faked" user account
 	*
-	* @return array default user data array
+	* @return array	Default user data array
 	* @access private
 	*/
 	private function default_data()
@@ -1153,7 +1163,7 @@ abstract class phpbb_session
 	* see if we have any useragent and/or IP matches. If we do, this is a
 	* bot, act accordingly
 	*
-	* @return bool True if it is a bot.
+	* @return bool	True if it is a bot.
 	* @access private
 	*/
 	private function check_bot()
@@ -1195,8 +1205,9 @@ abstract class phpbb_session
 	/**
 	* Check if session is valid by comparing ip, forwarded for, browser and referer
 	*
-	* @param bool $log_failure If true then a non-match will be logged. Can cause huge logs.
-	* @return bool true if the session is valid
+	* @param bool	$log_failure If true then a non-match will be logged. Can cause huge logs.
+	*
+	* @return bool	True if the session is valid
 	* @access private
 	*/
 	private function session_valid($log_failure = true)
