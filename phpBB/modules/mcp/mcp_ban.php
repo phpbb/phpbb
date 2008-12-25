@@ -32,8 +32,8 @@ class mcp_ban
 		// Include the admin banning interface...
 		include(PHPBB_ROOT_PATH . 'includes/acp/acp_ban.' . PHP_EXT);
 
-		$bansubmit		= request::is_set_post('bansubmit');
-		$unbansubmit	= request::is_set_post('unbansubmit');
+		$bansubmit		= phpbb_request::is_set_post('bansubmit');
+		$unbansubmit	= phpbb_request::is_set_post('unbansubmit');
 		$current_time	= time();
 
 		$user->add_lang(array('acp/ban', 'acp/users'));
@@ -171,7 +171,7 @@ class mcp_ban
 				case 'user':
 					$pre_fill = (string) $db->sql_fetchfield('username');
 				break;
-				
+
 				case 'ip':
 					$pre_fill = (string) $db->sql_fetchfield('user_ip');
 				break;

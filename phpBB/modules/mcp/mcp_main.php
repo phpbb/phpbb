@@ -576,7 +576,7 @@ function mcp_move_topic($topic_ids)
 			}
 		}
 	}
-	else if (request::is_set_post('confirm'))
+	else if (phpbb_request::is_set_post('confirm'))
 	{
 		$additional_msg = $user->lang['FORUM_NOT_EXIST'];
 	}
@@ -584,7 +584,7 @@ function mcp_move_topic($topic_ids)
 	if ($to_forum_id && !$additional_msg && confirm_box(true))
 	{
 		$topic_data = get_topic_data($topic_ids);
-		$leave_shadow = request::is_set_post('move_leave_shadow');
+		$leave_shadow = phpbb_request::is_set_post('move_leave_shadow');
 
 		$topics_moved = sizeof($topic_ids);
 		$topics_authed_moved = 0;
@@ -783,7 +783,7 @@ function mcp_delete_topic($topic_ids)
 		confirm_box(false, (sizeof($topic_ids) == 1) ? 'DELETE_TOPIC' : 'DELETE_TOPICS', $s_hidden_fields);
 	}
 
-	if (!request::is_set('quickmod'))
+	if (!phpbb_request::is_set('quickmod'))
 	{
 		$redirect = request_var('redirect', 'index.' . PHP_EXT);
 		$redirect = reapply_sid($redirect);
@@ -976,7 +976,7 @@ function mcp_fork_topic($topic_ids)
 			}
 		}
 	}
-	else if (request::is_set_post('confirm'))
+	else if (phpbb_request::is_set_post('confirm'))
 	{
 		$additional_msg = $user->lang['FORUM_NOT_EXIST'];
 	}

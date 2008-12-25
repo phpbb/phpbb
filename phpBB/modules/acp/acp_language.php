@@ -39,7 +39,7 @@ class acp_language
 		* inside the request class. Reducing some of the redundance of this code would certainly
 		* not hurt either.
 		*/
-		request::enable_super_globals();
+		phpbb_request::enable_super_globals();
 
 		include_once(PHPBB_ROOT_PATH . 'includes/functions_user.' . PHP_EXT);
 
@@ -47,27 +47,27 @@ class acp_language
 
 		// Check and set some common vars
 
-		$action		= (request::is_set_post('update_details')) ? 'update_details' : '';
-		$action		= (request::is_set_post('download_file')) ? 'download_file' : $action;
-		$action		= (request::is_set_post('upload_file')) ? 'upload_file' : $action;
-		$action		= (request::is_set_post('upload_data')) ? 'upload_data' : $action;
-		$action		= (request::is_set_post('submit_file')) ? 'submit_file' : $action;
-		$action		= (request::is_set_post('remove_store')) ? 'details' : $action;
+		$action		= (phpbb_request::is_set_post('update_details')) ? 'update_details' : '';
+		$action		= (phpbb_request::is_set_post('download_file')) ? 'download_file' : $action;
+		$action		= (phpbb_request::is_set_post('upload_file')) ? 'upload_file' : $action;
+		$action		= (phpbb_request::is_set_post('upload_data')) ? 'upload_data' : $action;
+		$action		= (phpbb_request::is_set_post('submit_file')) ? 'submit_file' : $action;
+		$action		= (phpbb_request::is_set_post('remove_store')) ? 'details' : $action;
 
-		$submit = (empty($action) && !request::is_set_post('update') && !request::is_set_post('test_connection')) ? false : true;
+		$submit = (empty($action) && !phpbb_request::is_set_post('update') && !phpbb_request::is_set_post('test_connection')) ? false : true;
 		$action = (empty($action)) ? request_var('action', '') : $action;
 
 		$form_name = 'acp_lang';
 		add_form_key('acp_lang');
 
 		$lang_id = request_var('id', 0);
-		if (request::is_set_post('missing_file'))
+		if (phpbb_request::is_set_post('missing_file'))
 		{
 			$missing_file = request_var('missing_file', array('' => 0));
 			/**
 			* @todo Do NOT overwrite a request variable.
 			*/
-			request::overwrite('language_file', key($missing_file));
+			phpbb_request::overwrite('language_file', key($missing_file));
 		}
 
 		$selected_lang_file = request_var('language_file', '|common.' . PHP_EXT);
@@ -141,7 +141,7 @@ class acp_language
 				);
 
 				/**
-				* @todo Do not use $_POST here, but request::variable which needs to support more dimensions
+				* @todo Do not use $_POST here, but phpbb_request::variable which needs to support more dimensions
 				*/
 				$hidden_data .= build_hidden_fields(array('entry' => $_POST['entry']), true, STRIP);
 
@@ -194,7 +194,7 @@ class acp_language
 			case 'submit_file':
 			case 'download_file':
 			case 'upload_data':
-				
+
 				if (!$submit || !check_form_key($form_name))
 				{
 					trigger_error($user->lang['FORM_INVALID']. adm_back_link($this->u_action), E_USER_WARNING);
@@ -274,16 +274,16 @@ class acp_language
 				if (!$safe_mode)
 				{
 					$mkdir_ary = array('language', 'language/' . $row['lang_iso']);
-					
+
 					if ($this->language_directory)
 					{
 						$mkdir_ary[] = 'language/' . $row['lang_iso'] . '/' . $this->language_directory;
 					}
-				
+
 					foreach ($mkdir_ary as $dir)
 					{
 						$dir = PHPBB_ROOT_PATH . 'store/' . $dir;
-			
+
 						if (!is_dir($dir))
 						{
 							if (!@mkdir($dir, 0777))
@@ -329,7 +329,7 @@ class acp_language
 							}
 
 							$entry = "\tarray(\n";
-							
+
 							foreach ($value as $_key => $_value)
 							{
 								$entry .= "\t\t" . (int) $_key . "\t=> '" . $this->prepare_lang_entry($_value) . "',\n";
@@ -446,7 +446,7 @@ class acp_language
 				{
 					trigger_error($user->lang['NO_LANG_ID'] . adm_back_link($this->u_action), E_USER_WARNING);
 				}
-				
+
 				$this->page_title = 'LANGUAGE_PACK_DETAILS';
 
 				$sql = 'SELECT *
@@ -455,7 +455,7 @@ class acp_language
 				$result = $db->sql_query($sql);
 				$lang_entries = $db->sql_fetchrow($result);
 				$db->sql_freeresult($result);
-				
+
 				$lang_iso = $lang_entries['lang_iso'];
 				$missing_vars = $missing_files = array();
 
@@ -501,8 +501,8 @@ class acp_language
 							trigger_error($user->lang['WRONG_LANGUAGE_FILE'] . adm_back_link($this->u_action . '&amp;action=details&amp;id=' . $lang_id), E_USER_WARNING);
 						}
 				}
-				
-				if (request::is_set_post('remove_store'))
+
+				if (phpbb_request::is_set_post('remove_store'))
 				{
 					$store_filename = $this->get_filename($lang_iso, $this->language_directory, $this->language_file, true, true);
 
@@ -545,7 +545,7 @@ class acp_language
 						if (file_exists(PHPBB_ROOT_PATH . $this->get_filename($lang_iso, '', $file)))
 						{
 							$missing_vars[$file] = $this->compare_language_files($config['default_lang'], $lang_iso, '', $file);
-							
+
 							if (sizeof($missing_vars[$file]))
 							{
 								$is_missing_var = true;
@@ -563,7 +563,7 @@ class acp_language
 						if (file_exists(PHPBB_ROOT_PATH . $this->get_filename($lang_iso, 'acp', $file)))
 						{
 							$missing_vars['acp/' . $file] = $this->compare_language_files($config['default_lang'], $lang_iso, 'acp', $file);
-							
+
 							if (sizeof($missing_vars['acp/' . $file]))
 							{
 								$is_missing_var = true;
@@ -582,7 +582,7 @@ class acp_language
 							if (file_exists(PHPBB_ROOT_PATH . $this->get_filename($lang_iso, 'mods', $file)))
 							{
 								$missing_vars['mods/' . $file] = $this->compare_language_files($config['default_lang'], $lang_iso, 'mods', $file);
-								
+
 								if (sizeof($missing_vars['mods/' . $file]))
 								{
 									$is_missing_var = true;
@@ -594,7 +594,7 @@ class acp_language
 							}
 						}
 					}
-				
+
 					// More missing files... for example email templates?
 					foreach ($email_files as $file)
 					{
@@ -1059,7 +1059,7 @@ class acp_language
 				$compress->add_data('', 'language/' . $row['lang_iso'] . '/index.html');
 				$compress->add_data('', 'language/' . $row['lang_iso'] . '/email/index.html');
 				$compress->add_data('', 'language/' . $row['lang_iso'] . '/acp/index.html');
-				
+
 				if (sizeof($mod_files))
 				{
 					$compress->add_data('', 'language/' . $row['lang_iso'] . '/mods/index.html');
@@ -1219,7 +1219,7 @@ $lang = array_merge($lang, array(
 	function get_filename($lang_iso, $directory, $filename, $check_store = false, $only_return_filename = false)
 	{
 		global $safe_mode;
-		
+
 		$check_filename = "language/$lang_iso/" . (($directory) ? $directory . '/' : '') . $filename;
 
 		if ($check_store)

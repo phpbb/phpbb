@@ -32,9 +32,9 @@ class acp_icons
 
 		// Set up general vars
 		$action = request_var('action', '');
-		$action = (request::is_set_post('add')) ? 'add' : $action;
-		$action = (request::is_set_post('edit')) ? 'edit' : $action;
-		$action = (request::is_set_post('import')) ? 'import' : $action;
+		$action = (phpbb_request::is_set_post('add')) ? 'add' : $action;
+		$action = (phpbb_request::is_set_post('edit')) ? 'edit' : $action;
+		$action = (phpbb_request::is_set_post('import')) ? 'import' : $action;
 		$icon_id = request_var('id', 0);
 
 		$mode = ($mode == 'smilies') ? 'smilies' : 'icons';
@@ -167,19 +167,19 @@ class acp_icons
 						}
 					}
 				}
-				
+
 				$sql = "SELECT *
 					FROM $table
 					ORDER BY {$fields}_order " . (($icon_id || $action == 'add') ? 'DESC' : 'ASC');
 				$result = $db->sql_query($sql);
-				
+
 				$data = array();
 				$after = false;
 				$display = 0;
 				$order_lists = array('', '');
 				$add_order_lists = array('', '');
 				$display_count = 0;
-				
+
 				while ($row = $db->sql_fetchrow($result))
 				{
 					if ($action == 'add')
@@ -233,12 +233,12 @@ class acp_icons
 				$colspan = (($mode == 'smilies') ? '7' : '5');
 				$colspan += ($icon_id) ? 1 : 0;
 				$colspan += ($action == 'add') ? 2 : 0;
-				
+
 				$template->assign_vars(array(
 					'S_EDIT'		=> true,
 					'S_SMILIES'		=> ($mode == 'smilies') ? true : false,
 					'S_ADD'			=> ($action == 'add') ? true : false,
-					
+
 					'S_ORDER_LIST_DISPLAY'		=> $order_list . $order_lists[1],
 					'S_ORDER_LIST_UNDISPLAY'	=> $order_list . $order_lists[0],
 					'S_ORDER_LIST_DISPLAY_COUNT'	=> $display_count + 1,
@@ -285,10 +285,10 @@ class acp_icons
 						'S_ADD_CODE'		=> true,
 
 						'S_IMG_OPTIONS'		=> $smiley_options,
-						
+
 						'S_ADD_ORDER_LIST_DISPLAY'		=> $add_order_list . $add_order_lists[1],
 						'S_ADD_ORDER_LIST_UNDISPLAY'	=> $add_order_list . $add_order_lists[0],
-						
+
 						'IMG_SRC'			=> PHPBB_ROOT_PATH . $img_path . '/' . $default_row['smiley_url'],
 						'IMG_PATH'			=> $img_path,
 						'PHPBB_ROOT_PATH'	=> PHPBB_ROOT_PATH,
@@ -302,27 +302,27 @@ class acp_icons
 				}
 
 				return;
-	
+
 			break;
 
 			case 'create':
 			case 'modify':
 
 				// Get items to create/modify
-				$images = array_keys(request::variable('image', array('' => 0), false, request::POST));
-				
+				$images = array_keys(phpbb_request::variable('image', array('' => 0), false, phpbb_request::POST));
+
 				// Now really get the items
-				$image_id					= request::variable('id',					array('' => 0), false, request::POST);
-				$image_order				= request::variable('order',				array('' => 0), false, request::POST);
-				$image_width				= request::variable('width',				array('' => 0), false, request::POST);
-				$image_height				= request::variable('height',				array('' => 0), false, request::POST);
-				$image_add					= request::variable('add_img',				array('' => 0), false, request::POST);
-				$image_display_on_posting	= request::variable('display_on_posting',	array('' => 0), false, request::POST);
+				$image_id					= phpbb_request::variable('id',					array('' => 0), false, phpbb_request::POST);
+				$image_order				= phpbb_request::variable('order',				array('' => 0), false, phpbb_request::POST);
+				$image_width				= phpbb_request::variable('width',				array('' => 0), false, phpbb_request::POST);
+				$image_height				= phpbb_request::variable('height',				array('' => 0), false, phpbb_request::POST);
+				$image_add					= phpbb_request::variable('add_img',			array('' => 0), false, phpbb_request::POST);
+				$image_display_on_posting	= phpbb_request::variable('display_on_posting',	array('' => 0), false, phpbb_request::POST);
 				$image_emotion				= utf8_normalize_nfc(request_var('emotion',	array('' => ''), true));
 				$image_code					= utf8_normalize_nfc(request_var('code',		array('' => ''), true));
 
 				// Ok, add the relevant bits if we are adding new codes to existing emoticons...
-				if (request::variable('add_additional_code', false, false, request::POST))
+				if (phpbb_request::variable('add_additional_code', false, false, phpbb_request::POST))
 				{
 					$add_image			= request_var('add_image', '');
 					$add_code			= utf8_normalize_nfc(request_var('add_code', '', true));
@@ -338,7 +338,7 @@ class acp_icons
 						$image_width[$add_image] = request_var('add_width', 0);
 						$image_height[$add_image] = request_var('add_height', 0);
 
-						if (request::variable('add_display_on_posting', false, false, request::POST))
+						if (phpbb_request::variable('add_display_on_posting', false, false, phpbb_request::POST))
 						{
 							$image_display_on_posting[$add_image] = 1;
 						}
@@ -425,13 +425,13 @@ class acp_icons
 							$db->sql_query($sql);
 							$icons_updated++;
 						}
-						
+
  					}
 				}
-				
+
 				$cache->destroy('_icons');
 				$cache->destroy('sql', $table);
-				
+
 				$level = E_USER_NOTICE;
 				switch ($icons_updated)
 				{
@@ -439,11 +439,11 @@ class acp_icons
 						$suc_lang = "{$lang}_NONE";
 						$level = E_USER_WARNING;
 						break;
-						
+
 					case 1:
 						$suc_lang = "{$lang}_ONE";
 						break;
-						
+
 					default:
 						$suc_lang = $lang;
 				}

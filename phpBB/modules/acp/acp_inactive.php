@@ -40,7 +40,7 @@ class acp_inactive
 		$action = request_var('action', '');
 		$mark	= request_var('mark', array(0));
 		$start	= request_var('start', 0);
-		$submit = request::is_set_post('submit');
+		$submit = phpbb_request::is_set_post('submit');
 
 		// Sort keys
 		$sort_days	= request_var('st', 0);
@@ -66,7 +66,7 @@ class acp_inactive
 						FROM ' . USERS_TABLE . '
 						WHERE ' . $db->sql_in_set('user_id', $mark);
 					$result = $db->sql_query($sql);
-				
+
 					$user_affected = array();
 					while ($row = $db->sql_fetchrow($result))
 					{
@@ -196,7 +196,7 @@ class acp_inactive
 						unset($usernames);
 					}
 					$db->sql_freeresult($result);
-		
+
 				break;
 			}
 		}
@@ -246,7 +246,7 @@ class acp_inactive
 			'S_SORT_DIR'	=> $s_sort_dir,
 			'S_ON_PAGE'		=> on_page($inactive_count, $config['topics_per_page'], $start),
 			'PAGINATION'	=> generate_pagination($this->u_action . "&amp;$u_sort_param", $inactive_count, $config['topics_per_page'], $start, true),
-			
+
 			'U_ACTION'		=> $this->u_action . '&amp;start=' . $start,
 		));
 

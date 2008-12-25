@@ -31,7 +31,7 @@ class ucp_remind
 
 		$username	= request_var('username', '', true);
 		$email		= strtolower(request_var('email', ''));
-		$submit		= request::is_set_post('submit');
+		$submit		= phpbb_request::is_set_post('submit');
 
 		if ($submit)
 		{

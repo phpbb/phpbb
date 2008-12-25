@@ -38,8 +38,8 @@ class acp_disallow
 		$form_key = 'acp_disallow';
 		add_form_key($form_key);
 
-		$disallow = request::is_set_post('disallow');
-		$allow = request::is_set_post('allow');
+		$disallow = phpbb_request::is_set_post('disallow');
+		$allow = phpbb_request::is_set_post('allow');
 
 		if (($allow || $disallow) && !check_form_key($form_key))
 		{

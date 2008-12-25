@@ -677,7 +677,7 @@ class dbal
 	{
 		global $cache, $starttime, $user;
 
-		if (!request::variable('explain', false))
+		if (!phpbb_request::variable('explain', false))
 		{
 			return false;
 		}

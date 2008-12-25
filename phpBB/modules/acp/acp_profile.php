@@ -38,7 +38,7 @@ class acp_profile
 		$this->tpl_name = 'acp_profile';
 		$this->page_title = 'ACP_CUSTOM_PROFILE_FIELDS';
 
-		$action = (request::is_set_post('create')) ? 'create' : request_var('action', '');
+		$action = (phpbb_request::is_set_post('create')) ? 'create' : request_var('action', '');
 
 		$error = array();
 		$s_hidden_fields = '';
@@ -76,7 +76,7 @@ class acp_profile
 			FROM ' . PROFILE_LANG_TABLE . '
 			ORDER BY lang_id';
 		$result = $db->sql_query($sql);
-	
+
 		while ($row = $db->sql_fetchrow($result))
 		{
 			// Which languages are available for each item
@@ -204,7 +204,7 @@ class acp_profile
 						'field_id'	=> $field_id,
 					)));
 				}
-	
+
 			break;
 
 			case 'activate':
@@ -214,7 +214,7 @@ class acp_profile
 				{
 					trigger_error($user->lang['NO_FIELD_ID'] . adm_back_link($this->u_action), E_USER_WARNING);
 				}
-	
+
 				$sql = 'SELECT lang_id
 					FROM ' . LANG_TABLE . "
 					WHERE lang_iso = '" . $db->sql_escape($config['default_lang']) . "'";
@@ -251,7 +251,7 @@ class acp_profile
 				{
 					trigger_error($user->lang['NO_FIELD_ID'] . adm_back_link($this->u_action), E_USER_WARNING);
 				}
-	
+
 				$sql = 'UPDATE ' . PROFILE_FIELDS_TABLE . "
 					SET field_active = 0
 					WHERE field_id = $field_id";
@@ -283,12 +283,12 @@ class acp_profile
 
 			case 'create':
 			case 'edit':
-		
+
 				$field_id = request_var('field_id', 0);
 				$step = request_var('step', 1);
 
-				$submit = (request::is_set('next') || request::is_set('prev')) ? true : false;
-				$save = request::is_set('save');
+				$submit = (phpbb_request::is_set('next') || phpbb_request::is_set('prev')) ? true : false;
+				$save = phpbb_request::is_set('save');
 
 				// The language id of default language
 				$this->edit_lang_id = $this->lang_defs['iso'][$config['default_lang']];
@@ -352,9 +352,9 @@ class acp_profile
 				{
 					// We are adding a new field, define basic params
 					$lang_options = $field_row = array();
-		
+
 					$field_type = request_var('field_type', 0);
-			
+
 					if (!$field_type)
 					{
 						trigger_error($user->lang['NO_FIELD_TYPE'] . adm_back_link($this->u_action), E_USER_WARNING);
@@ -399,7 +399,7 @@ class acp_profile
 				$cp->vars['lang_default_value']	= utf8_normalize_nfc(request_var('lang_default_value', $field_row['lang_default_value'], true));
 
 				// Field option...
-				if (request::is_set('field_option'))
+				if (phpbb_request::is_set('field_option'))
 				{
 					$field_option = request_var('field_option', '');
 
@@ -463,7 +463,7 @@ class acp_profile
 					}
 					else if ($field_type == FIELD_TEXT && $key == 'field_length')
 					{
-						if (request::is_set('rows'))
+						if (phpbb_request::is_set('rows'))
 						{
 							$cp->vars['rows'] = request_var('rows', 0);
 							$cp->vars['columns'] = request_var('columns', 0);
@@ -479,7 +479,7 @@ class acp_profile
 					else if ($field_type == FIELD_DATE && $key == 'field_default_value')
 					{
 						$always_now = request_var('always_now', -1);
-						
+
 						if ($always_now == 1 || ($always_now === -1 && $var == 'now'))
 						{
 							$now = getdate();
@@ -492,12 +492,12 @@ class acp_profile
 							/**
 							* @todo Do NOT overwrite a request variable.
 							*/
-							request::overwrite('field_default_value', $var, request::REQUEST);
-							request::overwrite('field_default_value', $var, request::POST);
+							phpbb_request::overwrite('field_default_value', $var, phpbb_request::REQUEST);
+							phpbb_request::overwrite('field_default_value', $var, phpbb_request::POST);
 						}
 						else
 						{
-							if (request::is_set('field_default_value_day'))
+							if (phpbb_request::is_set('field_default_value_day'))
 							{
 								$cp->vars['field_default_value_day'] = request_var('field_default_value_day', 0);
 								$cp->vars['field_default_value_month'] = request_var('field_default_value_month', 0);
@@ -506,14 +506,14 @@ class acp_profile
 								/**
 								* @todo Do NOT overwrite a request variable.
 								*/
-								request::overwrite('field_default_value', $var, request::REQUEST);
-								request::overwrite('field_default_value', $var, request::POST);
+								phpbb_request::overwrite('field_default_value', $var, phpbb_request::REQUEST);
+								phpbb_request::overwrite('field_default_value', $var, phpbb_request::POST);
 							}
 							else
 							{
 								list($cp->vars['field_default_value_day'], $cp->vars['field_default_value_month'], $cp->vars['field_default_value_year']) = explode('-', $var);
 							}
-						}	
+						}
 					}
 					/* else if ($field_type == FIELD_BOOL && $key == 'field_default_value')
 					{
@@ -542,7 +542,7 @@ class acp_profile
 					}
 					$db->sql_freeresult($result);
 
-		
+
 					$sql = 'SELECT lang_id, lang_name, lang_explain, lang_default_value
 						FROM ' . PROFILE_LANG_TABLE . '
 						WHERE lang_id <> ' . $this->edit_lang_id . "
@@ -559,7 +559,7 @@ class acp_profile
 					}
 					$db->sql_freeresult($result);
 				}
-		
+
 				foreach ($exclude[3] as $key)
 				{
 					$cp->vars[$key] = utf8_normalize_nfc(request_var($key, array(0 => ''), true));
@@ -578,7 +578,7 @@ class acp_profile
 						{
 							$cp->vars[$key][$lang_id] = explode("\n", $options);
 						}
-						
+
 					}
 				}
 
@@ -633,7 +633,7 @@ class acp_profile
 					}
 				}
 
-				$step = (request::is_set('next')) ? $step + 1 : ((request::is_set('prev')) ? $step - 1 : $step);
+				$step = (phpbb_request::is_set('next')) ? $step + 1 : ((phpbb_request::is_set('prev')) ? $step - 1 : $step);
 
 				if (sizeof($error))
 				{
@@ -653,7 +653,7 @@ class acp_profile
 
 					foreach ($key_ary as $key)
 					{
-						if ($field_type == FIELD_TEXT && $key == 'field_length' && request::is_set('rows'))
+						if ($field_type == FIELD_TEXT && $key == 'field_length' && phpbb_request::is_set('rows'))
 						{
 							$cp->vars['rows'] = request_var('rows', 0);
 							$cp->vars['columns'] = request_var('columns', 0);
@@ -667,7 +667,7 @@ class acp_profile
 							{
 								$_new_key_ary[$key] = 'now';
 							}
-							else if (request::is_set('field_default_value_day'))
+							else if (phpbb_request::is_set('field_default_value_day'))
 							{
 								$cp->vars['field_default_value_day'] = request_var('field_default_value_day', 0);
 								$cp->vars['field_default_value_month'] = request_var('field_default_value_month', 0);
@@ -675,13 +675,13 @@ class acp_profile
 								$_new_key_ary[$key] = sprintf('%2d-%2d-%4d', $cp->vars['field_default_value_day'], $cp->vars['field_default_value_month'], $cp->vars['field_default_value_year']);
 							}
 						}
-						else if ($field_type == FIELD_BOOL && $key == 'l_lang_options' && request::is_set('l_lang_options'))
+						else if ($field_type == FIELD_BOOL && $key == 'l_lang_options' && phpbb_request::is_set('l_lang_options'))
 						{
 							$_new_key_ary[$key] = utf8_normalize_nfc(request_var($key, array(array('')), true));
 						}
 						else
 						{
-							if (!request::is_set($key))
+							if (!phpbb_request::is_set($key))
 							{
 								$var = false;
 							}
@@ -722,7 +722,7 @@ class acp_profile
 
 					'L_TITLE'			=> $user->lang['STEP_' . $step . '_TITLE_' . strtoupper($action)],
 					'L_EXPLAIN'			=> $user->lang['STEP_' . $step . '_EXPLAIN_' . strtoupper($action)],
-					
+
 					'U_ACTION'			=> $this->u_action . "&amp;action=$action&amp;step=$step",
 					'U_BACK'			=> $this->u_action)
 				);
@@ -732,7 +732,7 @@ class acp_profile
 				{
 					// Create basic options - only small differences between field types
 					case 1:
-	
+
 						// Build common create options
 						$template->assign_vars(array(
 							'S_STEP_ONE'		=> true,
@@ -759,7 +759,7 @@ class acp_profile
 								'LANG_DEFAULT_VALUE'		=> $cp->vars['lang_default_value'])
 							);
 						}
-			
+
 						if ($field_type == FIELD_BOOL || $field_type == FIELD_DROPDOWN)
 						{
 							// Initialize these array elements if we are creating a new field
@@ -788,11 +788,11 @@ class acp_profile
 								'SECOND_LANG_OPTION'		=> ($field_type == FIELD_BOOL) ? $cp->vars['lang_options'][1] : '')
 							);
 						}
-					
+
 					break;
 
 					case 2:
-						
+
 						$template->assign_vars(array(
 							'S_STEP_TWO'		=> true,
 							'L_NEXT_STEP'			=> (sizeof($this->lang_defs['iso']) == 1) ? $user->lang['SAVE'] : $user->lang['PROFILE_LANG_OPTIONS'])
@@ -830,7 +830,7 @@ class acp_profile
 								);
 							}
 						}
-		
+
 					break;
 				}
 
@@ -842,7 +842,7 @@ class acp_profile
 
 			break;
 		}
-		
+
 		$sql = 'SELECT *
 			FROM ' . PROFILE_FIELDS_TABLE . '
 			ORDER BY field_order';
@@ -918,14 +918,14 @@ class acp_profile
 			$languages[$row['lang_id']] = $row['lang_iso'];
 		}
 		$db->sql_freeresult($result);
-		
+
 		$options = array();
 		$options['lang_name'] = 'string';
 		if ($cp->vars['lang_explain'])
 		{
 			$options['lang_explain'] = 'text';
 		}
-	
+
 		switch ($field_type)
 		{
 			case FIELD_BOOL:
@@ -935,7 +935,7 @@ class acp_profile
 			case FIELD_DROPDOWN:
 				$options['lang_options'] = 'optionfield';
 			break;
-			
+
 			case FIELD_TEXT:
 			case FIELD_STRING:
 				if ($cp->vars['lang_default_value'])
@@ -944,7 +944,7 @@ class acp_profile
 				}
 			break;
 		}
-	
+
 		$lang_options = array();
 
 		foreach ($options as $field => $field_type)
@@ -970,7 +970,7 @@ class acp_profile
 				if ($field == 'lang_options')
 				{
 					$var = (!isset($cp->vars['l_lang_options'][$lang_id]) || !is_array($cp->vars['l_lang_options'][$lang_id])) ? $cp->vars['lang_options'] : $cp->vars['l_lang_options'][$lang_id];
-					
+
 					switch ($field_type)
 					{
 						case 'two_options':
@@ -991,7 +991,7 @@ class acp_profile
 							);
 						break;
 					}
-				
+
 					if (isset($user->lang['CP_' . strtoupper($field) . '_EXPLAIN']))
 					{
 						$lang_options[$lang_id]['fields'][$field]['EXPLAIN'] = $user->lang['CP_' . strtoupper($field) . '_EXPLAIN'];
@@ -1005,7 +1005,7 @@ class acp_profile
 						'TITLE'		=> $user->lang['CP_' . strtoupper($field)],
 						'FIELD'		=> ($field_type == 'string') ? '<dd><input class="medium" type="text" name="l_' . $field . '[' . $lang_id . ']" value="' . ((isset($value[$lang_id])) ? $value[$lang_id] : $var) . '" /></dd>' : '<dd><textarea name="l_' . $field . '[' . $lang_id . ']" rows="3" cols="80">' . ((isset($value[$lang_id])) ? $value[$lang_id] : $var) . '</textarea></dd>'
 					);
-			
+
 					if (isset($user->lang['CP_' . strtoupper($field) . '_EXPLAIN']))
 					{
 						$lang_options[$lang_id]['fields'][$field]['EXPLAIN'] = $user->lang['CP_' . strtoupper($field) . '_EXPLAIN'];
@@ -1078,7 +1078,7 @@ class acp_profile
 				WHERE field_id = $field_id";
 			$db->sql_query($sql);
 		}
-		
+
 		if ($action == 'create')
 		{
 			$field_ident = 'pf_' . $field_ident;
@@ -1095,7 +1095,7 @@ class acp_profile
 		{
 			$sql_ary['field_id'] = $field_id;
 			$sql_ary['lang_id'] = $default_lang_id;
-		
+
 			$profile_sql[] = 'INSERT INTO ' . PROFILE_LANG_TABLE . ' ' . $db->sql_build_array('INSERT', $sql_ary);
 		}
 		else
@@ -1168,7 +1168,7 @@ class acp_profile
 						AND lang_id = " . (int) $default_lang_id;
 				$db->sql_query($sql);
 			}
-			
+
 			foreach ($cp->vars['lang_options'] as $option_id => $value)
 			{
 				$sql_ary = array(
@@ -1271,7 +1271,7 @@ class acp_profile
 					$lang_id = $sql['lang_id'];
 					$option_id = $sql['option_id'];
 					unset($sql['lang_id'], $sql['field_id'], $sql['option_id']);
-					
+
 					$this->update_insert(PROFILE_FIELDS_LANG_TABLE, $sql, array(
 						'lang_id'	=> $lang_id,
 						'field_id'	=> $field_id,
@@ -1291,7 +1291,7 @@ class acp_profile
 				$db->sql_query($sql);
 			}
 		}
-		
+
 		$db->sql_transaction('commit');
 
 		if ($action == 'edit')
@@ -1337,7 +1337,7 @@ class acp_profile
 		if (!$row)
 		{
 			$sql_ary = array_merge($where_fields, $sql_ary);
-			
+
 			if (sizeof($sql_ary))
 			{
 				$db->sql_query("INSERT INTO $table " . $db->sql_build_array('INSERT', $sql_ary));
@@ -1387,7 +1387,7 @@ class acp_profile
 					case FIELD_BOOL:
 						$sql .= 'TINYINT(2) ';
 					break;
-				
+
 					case FIELD_DROPDOWN:
 						$sql .= 'MEDIUMINT(8) ';
 					break;

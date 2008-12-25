@@ -37,9 +37,9 @@ class ucp_register
 
 		include(PHPBB_ROOT_PATH . 'includes/functions_profile_fields.' . PHP_EXT);
 
-		$coppa			= request::is_set('coppa') ? ((request_var('coppa', false)) ? 1 : 0) : false;
-		$agreed			= request::variable('agreed', false, false, request::POST) ? 1 : 0;
-		$submit			= request::is_set_post('submit');
+		$coppa			= phpbb_request::is_set('coppa') ? ((request_var('coppa', false)) ? 1 : 0) : false;
+		$agreed			= phpbb_request::variable('agreed', false, false, phpbb_request::POST) ? 1 : 0;
+		$submit			= phpbb_request::is_set_post('submit');
 		$change_lang	= request_var('change_lang', '');
 		$user_lang		= request_var('lang', $user->lang_name);
 
@@ -52,14 +52,14 @@ class ucp_register
 			add_form_key('ucp_register_terms');
 		}
 
-		
+
 		if ($config['enable_confirm'])
 		{
 			include(PHPBB_ROOT_PATH . 'includes/captcha/captcha_factory.' . PHP_EXT);
 			$captcha = phpbb_captcha_factory::get_instance($config['captcha_plugin']);
 			$captcha->init(CONFIRM_REG);
 		}
-			
+
 		if ($change_lang || $user_lang != $config['default_lang'])
 		{
 			$use_lang = ($change_lang) ? basename($change_lang) : basename($user_lang);
@@ -71,7 +71,7 @@ class ucp_register
 					$submit = false;
 
 					// Setting back agreed to let the user view the agreement in his/her language
-					$agreed = (request::is_set_post('change_lang')) ? 0 : $agreed;
+					$agreed = (phpbb_request::is_set_post('change_lang')) ? 0 : $agreed;
 				}
 
 				$user->lang_name = $lang = $use_lang;
@@ -94,7 +94,7 @@ class ucp_register
 		{
 			$add_lang = ($change_lang) ? '&amp;change_lang=' . urlencode($change_lang) : '';
 			$add_coppa = ($coppa !== false) ? '&amp;coppa=' . $coppa : '';
-			
+
 			$s_hidden_fields = array();
 
 			// If we change the language, we want to pass on some more possible parameter.
@@ -108,7 +108,7 @@ class ucp_register
 					'lang'				=> $user->lang_name,
 					'tz'				=> request_var('tz', (float) $config['board_timezone']),
 				));
-				
+
 				if ($config['enable_confirm'])
 				{
 					$s_hidden_fields = array_merge($s_hidden_fields, $captcha->get_hidden_fields());
@@ -435,7 +435,7 @@ class ucp_register
 			{
 				$str = '';
 			}
-			
+
 			$template->assign_vars(array(
 				'L_CONFIRM_EXPLAIN'		=> sprintf($user->lang['CONFIRM_EXPLAIN'], '<a href="mailto:' . htmlspecialchars($config['board_contact']) . '">', '</a>'),
 				'S_CAPTCHA'				=> $captcha->get_template(),
@@ -454,7 +454,7 @@ class ucp_register
 				$l_reg_cond = $user->lang['UCP_ADMIN_ACTIVATE'];
 			break;
 		}
-		
+
 		$template->assign_vars(array(
 			'ERROR'				=> (sizeof($error)) ? implode('<br />', $error) : '',
 			'USERNAME'			=> $data['username'],

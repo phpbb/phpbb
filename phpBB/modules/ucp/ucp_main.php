@@ -204,7 +204,7 @@ class ucp_main
 
 				add_form_key('ucp_front_subscribed');
 
-				$unwatch = request::is_set_post('unwatch');
+				$unwatch = phpbb_request::is_set_post('unwatch');
 
 				if ($unwatch)
 				{
@@ -287,7 +287,7 @@ class ucp_main
 					}
 					else
 					{
-						$tracking_topics = request::variable($config['cookie_name'] . '_track', '', false, request::COOKIE);
+						$tracking_topics = phpbb_request::variable($config['cookie_name'] . '_track', '', false, phpbb_request::COOKIE);
 						$tracking_topics = ($tracking_topics) ? tracking_unserialize($tracking_topics) : array();
 					}
 
@@ -387,10 +387,10 @@ class ucp_main
 
 				$user->add_lang('viewforum');
 
-				if (request::is_set_post('unbookmark'))
+				if (phpbb_request::is_set_post('unbookmark'))
 				{
 					$s_hidden_fields = array('unbookmark' => 1);
-					$topics = array_keys(request::variable('t', array(0 => 0), false, request::POST));
+					$topics = array_keys(phpbb_request::variable('t', array(0 => 0), false, phpbb_request::POST));
 					$url = $this->u_action;
 
 					if (!sizeof($topics))
@@ -433,10 +433,10 @@ class ucp_main
 
 				$user->add_lang('posting');
 
-				$edit		= request::is_set('edit');
-				$draft_id	= request::variable('edit', 0);
-				$submit		= request::is_set_post('submit');
-				$delete		= request::is_set_post('delete');
+				$edit		= phpbb_request::is_set('edit');
+				$draft_id	= phpbb_request::variable('edit', 0);
+				$submit		= phpbb_request::is_set_post('submit');
+				$delete		= phpbb_request::is_set_post('delete');
 
 				$s_hidden_fields = ($edit) ? '<input type="hidden" name="edit" value="' . $draft_id . '" />' : '';
 				$draft_subject = $draft_message = '';
@@ -615,7 +615,7 @@ class ucp_main
 		$template->assign_vars(array(
 			'L_TITLE'			=> $user->lang['UCP_MAIN_' . strtoupper($mode)],
 
-			'S_DISPLAY_MARK_ALL'	=> ($mode == 'watched' || ($mode == 'drafts' && !request::is_set('edit', request::GET))) ? true : false,
+			'S_DISPLAY_MARK_ALL'	=> ($mode == 'watched' || ($mode == 'drafts' && !phpbb_request::is_set('edit', phpbb_request::GET))) ? true : false,
 			'S_HIDDEN_FIELDS'		=> (isset($s_hidden_fields)) ? $s_hidden_fields : '',
 			'S_UCP_ACTION'			=> $this->u_action,
 

@@ -23,7 +23,7 @@ class acp_permissions
 {
 	var $u_action;
 	var $permission_dropdown;
-	
+
 	function main($id, $mode)
 	{
 		global $db, $user, $auth, $template, $cache, $config;
@@ -59,7 +59,7 @@ class acp_permissions
 		// Set some vars
 		$action = request_var('action', array('' => 0));
 		$action = key($action);
-		$action = (request::is_set_post('psubmit')) ? 'apply_permissions' : $action;
+		$action = (phpbb_request::is_set_post('psubmit')) ? 'apply_permissions' : $action;
 
 		$all_forums = request_var('all_forums', 0);
 		$subforum_id = request_var('subforum_id', 0);
@@ -93,7 +93,7 @@ class acp_permissions
 			}
 			$db->sql_freeresult($result);
 		}
-		
+
 		// Map usernames to ids and vice versa
 		if ($usernames)
 		{
@@ -111,7 +111,7 @@ class acp_permissions
 			}
 		}
 		unset($username);
-		
+
 		// Build forum ids (of all forums are checked or subforum listing used)
 		if ($all_forums)
 		{
@@ -229,8 +229,8 @@ class acp_permissions
 						trigger_error($user->lang['FORM_INVALID']. adm_back_link($this->u_action), E_USER_WARNING);
 					}
 					// All users/groups selected?
-					$all_users = request::is_set_post('all_users');
-					$all_groups = request::is_set_post('all_groups');
+					$all_users = phpbb_request::is_set_post('all_users');
+					$all_groups = phpbb_request::is_set_post('all_groups');
 
 					if ($all_users || $all_groups)
 					{
@@ -257,7 +257,7 @@ class acp_permissions
 				break;
 
 				case 'apply_permissions':
-					if (!request::is_set_post('setting'))
+					if (!phpbb_request::is_set_post('setting'))
 					{
 						trigger_error($user->lang['NO_AUTH_SETTING_FOUND'] . adm_back_link($this->u_action), E_USER_WARNING);
 					}
@@ -270,7 +270,7 @@ class acp_permissions
 				break;
 
 				case 'apply_all_permissions':
-					if (!request::is_set_post('setting'))
+					if (!phpbb_request::is_set_post('setting'))
 					{
 						trigger_error($user->lang['NO_AUTH_SETTING_FOUND'] . adm_back_link($this->u_action), E_USER_WARNING);
 					}
@@ -376,8 +376,8 @@ class acp_permissions
 				case 'usergroup':
 				case 'usergroup_view':
 
-					$all_users = request::is_set_post('all_users');
-					$all_groups = request::is_set_post('all_groups');
+					$all_users = phpbb_request::is_set_post('all_users');
+					$all_groups = phpbb_request::is_set_post('all_groups');
 
 					if ((sizeof($user_id) && !$all_users) || (sizeof($group_id) && !$all_groups))
 					{
@@ -527,7 +527,7 @@ class acp_permissions
 				}
 				continue;
 			}
-			
+
 			if ($branch_there)
 			{
 				$s_options .= ' [' . $user->lang['PLUS_SUBFORUMS'] . ']';
@@ -538,14 +538,14 @@ class acp_permissions
 
 		return $s_options;
 	}
-	
+
 	/**
 	* Build dropdown field for changing permission types
 	*/
 	function build_permission_dropdown($options, $default_option, $permission_scope)
 	{
 		global $user, $auth;
-		
+
 		$s_dropdown_options = '';
 		foreach ($options as $setting)
 		{
@@ -625,21 +625,21 @@ class acp_permissions
 		{
 			trigger_error($user->lang['NO_AUTH_OPERATION'] . adm_back_link($this->u_action), E_USER_WARNING);
 		}
-		
+
 		$ug_id = $forum_id = 0;
 
 		// We loop through the auth settings defined in our submit
 		list($ug_id, ) = each($psubmit);
 		list($forum_id, ) = each($psubmit[$ug_id]);
 
-		$auth_settings = request::variable('setting', array(0 => array(0 => array('' => 0))), false, request::POST);
+		$auth_settings = phpbb_request::variable('setting', array(0 => array(0 => array('' => 0))), false, phpbb_request::POST);
 		if (!isset($auth_settings[$ug_id][$forum_id]) || !sizeof($auth_settings[$ug_id][$forum_id])))
 		{
 			trigger_error('WRONG_PERMISSION_SETTING_FORMAT', E_USER_WARNING);
 		}
 
 		// Do we have a role we want to set?
-		$assigned_role = request::variable(array('role', $ug_id, $forum_id), 0, false, request::POST));
+		$assigned_role = phpbb_request::variable(array('role', $ug_id, $forum_id), 0, false, phpbb_request::POST));
 
 		// Do the admin want to set these permissions to other items too?
 		$inherit = request_var('inherit', array(0 => array(0)));
@@ -709,8 +709,8 @@ class acp_permissions
 			trigger_error($user->lang['NO_AUTH_OPERATION'] . adm_back_link($this->u_action), E_USER_WARNING);
 		}
 
-		$auth_settings = request::variable('setting', array(0 => array(0 => array('' => 0))), false, request::POST);
-		$auth_roles = request::variable('role', array(0 => array(0 => 0)), false, request::POST);
+		$auth_settings = phpbb_request::variable('setting', array(0 => array(0 => array('' => 0))), false, phpbb_request::POST);
+		$auth_roles = phpbb_request::variable('role', array(0 => array(0 => 0)), false, phpbb_request::POST);
 		$ug_ids = $forum_ids = array();
 
 		// We need to go through the auth settings
@@ -802,7 +802,7 @@ class acp_permissions
 	function remove_permissions($mode, $permission_type, &$auth_admin, &$user_id, &$group_id, &$forum_id)
 	{
 		global $user, $db, $auth;
-			
+
 		// User or group to be set?
 		$ug_type = (sizeof($user_id)) ? 'user' : 'group';
 

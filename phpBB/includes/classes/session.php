@@ -128,7 +128,7 @@ abstract class phpbb_session
 		$this->cookie_data			= array('u' => 0, 'k' => '');
 		$this->update_session_page	= $update_session_page;
 
-		if (request::is_set(phpbb::$config['cookie_name'] . '_sid', request::COOKIE) || request::is_set(phpbb::$config['cookie_name'] . '_u', request::COOKIE))
+		if (phpbb_request::is_set(phpbb::$config['cookie_name'] . '_sid', phpbb_request::COOKIE) || phpbb_request::is_set(phpbb::$config['cookie_name'] . '_u', phpbb_request::COOKIE))
 		{
 			$this->cookie_data['u'] = request_var(phpbb::$config['cookie_name'] . '_u', 0, false, true);
 			$this->cookie_data['k'] = request_var(phpbb::$config['cookie_name'] . '_k', '', false, true);
@@ -1017,7 +1017,7 @@ abstract class phpbb_session
 	private function session_exist()
 	{
 		// If session is empty or does not match the session within the URL (if required - set by NEED_SID), then we need a new session
-		if (empty($this->session_id) || ($this->need_sid && $this->session_id !== request::variable('sid', '', false, request::GET)))
+		if (empty($this->session_id) || ($this->need_sid && $this->session_id !== phpbb_request::variable('sid', '', false, phpbb_request::GET)))
 		{
 			return false;
 		}

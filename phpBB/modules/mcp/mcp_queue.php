@@ -484,7 +484,7 @@ function approve_post($post_id_list, $id, $mode)
 
 	if (confirm_box(true))
 	{
-		$notify_poster = request::is_set('notify_poster');
+		$notify_poster = phpbb_request::is_set('notify_poster');
 
 		// If Topic -> total_topics = total_topics+1, total_posts = total_posts+1, forum_topics = forum_topics+1, forum_posts = forum_posts+1
 		// If Post -> total_posts = total_posts+1, forum_posts = forum_posts+1, topic_replies = topic_replies+1
@@ -807,7 +807,7 @@ function disapprove_post($post_id_list, $id, $mode)
 		'redirect'		=> $redirect)
 	);
 
-	$notify_poster = request::is_set('notify_poster');
+	$notify_poster = phpbb_request::is_set('notify_poster');
 	$disapprove_reason = '';
 
 	if ($reason_id)

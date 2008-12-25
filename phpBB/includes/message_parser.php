@@ -1317,8 +1317,8 @@ class parse_message extends bbcode_firstpass
 		$this->filename_data['filecomment'] = utf8_normalize_nfc(request_var('filecomment', '', true));
 		$upload_file = (isset($_FILES[$form_name]) && $_FILES[$form_name]['name'] != 'none' && trim($_FILES[$form_name]['name'])) ? true : false;
 
-		$add_file		= request::is_set_post('add_file');
-		$delete_file	= request::is_set_post('delete_file');
+		$add_file		= phpbb_request::is_set_post('add_file');
+		$delete_file	= phpbb_request::is_set_post('delete_file');
 
 		// First of all adjust comments if changed
 		$actual_comment_list = utf8_normalize_nfc(request_var('comment_list', array(''), true));
@@ -1500,7 +1500,7 @@ class parse_message extends bbcode_firstpass
 		global $user, $db, $config;
 
 		$this->filename_data['filecomment'] = utf8_normalize_nfc(request_var('filecomment', '', true));
-		$attachment_data = request::variable('attachment_data', array(0 => array('' => '')), true, request::POST);
+		$attachment_data = phpbb_request::variable('attachment_data', array(0 => array('' => '')), true, phpbb_request::POST);
 		$this->attachment_data = array();
 
 		$check_user_id = ($check_user_id === false) ? $user->data['user_id'] : $check_user_id;

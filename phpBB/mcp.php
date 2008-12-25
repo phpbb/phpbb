@@ -52,7 +52,7 @@ if (!$user->data['is_registered'])
 	login_box('', $user->lang['LOGIN_EXPLAIN_MCP']);
 }
 
-$quickmod		= request::is_set('quickmod');
+$quickmod		= phpbb_request::is_set('quickmod');
 $action			= request_var('action', '');
 $action_ary		= request_var('action', array('' => 0));
 $forum_action	= request_var('forum_action', '');
@@ -61,7 +61,7 @@ if (sizeof($action_ary))
 {
 	$action = key($action_ary);
 }
-else if (!empty($forum_action) && request::variable('sort', false, false, request::POST))
+else if (!empty($forum_action) && phpbb_request::variable('sort', false, false, phpbb_request::POST))
 {
 	$action = $forum_action;
 }

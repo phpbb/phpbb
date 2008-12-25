@@ -33,9 +33,9 @@ class ucp_profile
 
 		$user->add_lang('posting');
 
-		$preview	= request::variable('preview', false, false, request::POST);
-		$submit		= request::variable('submit', false, false, request::POST);
-		$delete		= request::variable('delete', false, false, request::POST);
+		$preview	= phpbb_request::variable('preview', false, false, phpbb_request::POST);
+		$submit		= phpbb_request::variable('submit', false, false, phpbb_request::POST);
+		$delete		= phpbb_request::variable('delete', false, false, phpbb_request::POST);
 		$error = $data = array();
 		$s_hidden_fields = '';
 

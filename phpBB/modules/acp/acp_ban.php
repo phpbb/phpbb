@@ -29,8 +29,8 @@ class acp_ban
 
 		include(PHPBB_ROOT_PATH . 'includes/functions_user.' . PHP_EXT);
 
-		$bansubmit	= request::is_set_post('bansubmit');
-		$unbansubmit = request::is_set_post('unbansubmit');
+		$bansubmit	= phpbb_request::is_set_post('bansubmit');
+		$unbansubmit = phpbb_request::is_set_post('unbansubmit');
 		$current_time = time();
 
 		$user->add_lang(array('acp/ban', 'acp/users'));
@@ -109,7 +109,7 @@ class acp_ban
 			'L_NO_BAN_CELL'			=> $l_no_ban_cell,
 
 			'S_USERNAME_BAN'	=> ($mode == 'user') ? true : false,
-			
+
 			'U_ACTION'			=> $this->u_action,
 			'U_FIND_USERNAME'	=> append_sid('memberlist', 'mode=searchuser&amp;form=acp_ban&amp;field=ban'),
 		));

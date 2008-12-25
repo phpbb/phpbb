@@ -46,19 +46,19 @@ function compose_pm($id, $mode, $action)
 	$lastclick		= request_var('lastclick', 0);
 	$address_list	= request_var('address_list', array('' => array(0 => '')));
 
-	$submit		= request::is_set_post('post');
-	$preview	= request::is_set_post('preview');
-	$save		= request::is_set_post('save');
-	$load		= request::is_set_post('load');
-	$cancel		= (request::is_set_post('cancel') && !$save) ? true : false;
-	$delete		= request::is_set_post('delete');
+	$submit		= phpbb_request::is_set_post('post');
+	$preview	= phpbb_request::is_set_post('preview');
+	$save		= phpbb_request::is_set_post('save');
+	$load		= phpbb_request::is_set_post('load');
+	$cancel		= (phpbb_request::is_set_post('cancel') && !$save) ? true : false;
+	$delete		= phpbb_request::is_set_post('delete');
 
-	$remove_u	= request::is_set('remove_u');
-	$remove_g	= request::is_set('remove_g');
-	$add_to		= request::is_set('add_to');
-	$add_bcc	= request::is_set('add_bcc');
+	$remove_u	= phpbb_request::is_set('remove_u');
+	$remove_g	= phpbb_request::is_set('remove_g');
+	$add_to		= phpbb_request::is_set('add_to');
+	$add_bcc	= phpbb_request::is_set('add_bcc');
 
-	$refresh	= request::is_set_post('add_file') || request::is_set_post('delete_file') || $save || $load
+	$refresh	= phpbb_request::is_set_post('add_file') || phpbb_request::is_set_post('delete_file') || $save || $load
 		|| $remove_u || $remove_g || $add_to || $add_bcc;
 
 	$action		= ($delete && !$preview && !$refresh && $submit) ? 'delete' : $action;
@@ -637,10 +637,10 @@ function compose_pm($id, $mode, $action)
 
 		$icon_id			= request_var('icon', 0);
 
-		$enable_bbcode 		= (!$bbcode_status || request::is_set_post('disable_bbcode')) ? false : true;
-		$enable_smilies		= (!$smilies_status || request::is_set_post'disable_smilies')) ? false : true;
-		$enable_urls 		= (request::is_set_post('disable_magic_url')) ? 0 : 1;
-		$enable_sig			= (!$config['allow_sig'] ||!$config['allow_sig_pm']) ? false : request::is_set_post('attach_sig');
+		$enable_bbcode 		= (!$bbcode_status || phpbb_request::is_set_post('disable_bbcode')) ? false : true;
+		$enable_smilies		= (!$smilies_status || phpbb_request::is_set_post'disable_smilies')) ? false : true;
+		$enable_urls 		= (phpbb_request::is_set_post('disable_magic_url')) ? 0 : 1;
+		$enable_sig			= (!$config['allow_sig'] ||!$config['allow_sig_pm']) ? false : phpbb_request::is_set_post('attach_sig');
 
 		if ($submit)
 		{
@@ -1014,7 +1014,7 @@ function compose_pm($id, $mode, $action)
 
 	$s_hidden_fields = '<input type="hidden" name="lastclick" value="' . $current_time . '" />';
 	$s_hidden_fields .= (isset($check_value)) ? '<input type="hidden" name="status_switch" value="' . $check_value . '" />' : '';
-	$s_hidden_fields .= ($draft_id || request::is_set('draft_loaded')) ? '<input type="hidden" name="draft_loaded" value="' . request_var('draft_loaded', (int) $draft_id) . '" />' : '';
+	$s_hidden_fields .= ($draft_id || phpbb_request::is_set('draft_loaded')) ? '<input type="hidden" name="draft_loaded" value="' . request_var('draft_loaded', (int) $draft_id) . '" />' : '';
 
 	$form_enctype = (@ini_get('file_uploads') == '0' || strtolower(@ini_get('file_uploads')) == 'off' || !$config['allow_pm_attach'] || !$auth->acl_get('u_pm_attach')) ? '' : ' enctype="multipart/form-data"';
 
@@ -1059,7 +1059,7 @@ function compose_pm($id, $mode, $action)
 		'S_HIDDEN_ADDRESS_FIELD'	=> $s_hidden_address_field,
 		'S_HIDDEN_FIELDS'			=> $s_hidden_fields,
 
-		'S_CLOSE_PROGRESS_WINDOW'	=> request::is_set_post('add_file'),
+		'S_CLOSE_PROGRESS_WINDOW'	=> phpbb_request::is_set_post('add_file'),
 		'U_PROGRESS_BAR'			=> append_sid('posting', 'f=0&amp;mode=popup'),
 		'UA_PROGRESS_BAR'			=> addslashes(append_sid('posting', 'f=0&amp;mode=popup')),
 	));

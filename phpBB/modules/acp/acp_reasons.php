@@ -31,7 +31,7 @@ class acp_reasons
 
 		// Set up general vars
 		$action = request_var('action', '');
-		$submit = request::is_set_post('submit');
+		$submit = phpbb_request::is_set_post('submit');
 		$reason_id = request_var('id', 0);
 
 		$this->tpl_name = 'acp_reasons';
@@ -113,7 +113,7 @@ class acp_reasons
 							$result = $db->sql_query($sql);
 							$max_order = (int) $db->sql_fetchfield('max_reason_order');
 							$db->sql_freeresult($result);
-							
+
 							$sql_ary = array(
 								'reason_title'			=> (string) $reason_row['reason_title'],
 								'reason_description'	=> (string) $reason_row['reason_description'],
@@ -171,7 +171,7 @@ class acp_reasons
 					'U_ACTION'		=> $this->u_action . "&amp;id=$reason_id&amp;action=$action",
 					'U_BACK'		=> $this->u_action,
 					'ERROR_MSG'		=> (sizeof($error)) ? implode('<br />', $error) : '',
-					
+
 					'REASON_TITLE'			=> $reason_row['reason_title'],
 					'REASON_DESCRIPTION'	=> $reason_row['reason_description'],
 
@@ -271,7 +271,7 @@ class acp_reasons
 			do
 			{
 				++$order;
-				
+
 				if ($row['reason_order'] != $order)
 				{
 					$sql = 'UPDATE ' . REPORTS_REASONS_TABLE . "

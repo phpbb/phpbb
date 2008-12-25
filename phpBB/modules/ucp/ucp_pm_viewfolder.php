@@ -24,7 +24,7 @@ function view_folder($id, $mode, $folder_id, $folder)
 {
 	global $user, $template, $auth, $db, $cache, $config;
 
-	$submit_export = request::is_set_post('submit_export');
+	$submit_export = phpbb_request::is_set_post('submit_export');
 
 	$folder_info = get_pm_from($folder_id, $folder, $user->data['user_id']);
 
@@ -473,7 +473,7 @@ function get_pm_from($folder_id, $folder, $user_id)
 	{
 		$min_post_time = time() - ($sort_days * 86400);
 
-		if (request::is_set_post('sort'))
+		if (phpbb_request::is_set_post('sort'))
 		{
 			$start = 0;
 		}

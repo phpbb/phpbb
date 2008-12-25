@@ -229,7 +229,7 @@ class phpbb_user extends phpbb_session
 		$this->add_lang($lang_set);
 		unset($lang_set);
 
-		if (request::variable('style', false, false, request::GET) && phpbb::$acl->acl_get('a_styles'))
+		if (phpbb_request::variable('style', false, false, phpbb_request::GET) && phpbb::$acl->acl_get('a_styles'))
 		{
 			$style = request_var('style', 0);
 			$this->extra_url = array('style=' . $style);

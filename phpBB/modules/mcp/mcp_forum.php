@@ -33,10 +33,10 @@ function mcp_forum_view($id, $mode, $action, $forum_info)
 	if ($merge_select)
 	{
 		// Fixes a "bug" that makes forum_view use the same ordering as topic_view
-		request::overwrite('sk', null, request::POST);
-		request::overwrite('sd', null, request::POST);
-		request::overwrite('sk', null, request::REQUEST);
-		request::overwrite('sd', null, request::REQUEST);
+		phpbb_request::overwrite('sk', null, phpbb_request::POST);
+		phpbb_request::overwrite('sd', null, phpbb_request::POST);
+		phpbb_request::overwrite('sk', null, phpbb_request::REQUEST);
+		phpbb_request::overwrite('sd', null, phpbb_request::REQUEST);
 	}
 
 	$forum_id			= $forum_info['forum_id'];

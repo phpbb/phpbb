@@ -37,10 +37,10 @@ class acp_permission_roles
 
 		$this->tpl_name = 'acp_permission_roles';
 
-		$submit = request::is_set_post('submit');
+		$submit = phpbb_request::is_set_post('submit');
 		$role_id = request_var('role_id', 0);
 		$action = request_var('action', '');
-		$action = (request::is_set_post('add')) ? 'add' : $action;
+		$action = (phpbb_request::is_set_post('add')) ? 'add' : $action;
 
 		$form_name = 'acp_permissions';
 		add_form_key($form_name);
@@ -277,7 +277,7 @@ class acp_permission_roles
 					{
 						trigger_error($user->lang['NO_ROLE_SELECTED'] . adm_back_link($this->u_action), E_USER_WARNING);
 					}
-					
+
 					$sql = 'SELECT *
 						FROM ' . ACL_ROLES_TABLE . '
 						WHERE role_id = ' . $role_id;

@@ -32,7 +32,7 @@ class acp_board
 		$user->add_lang('acp/board');
 
 		$action	= request_var('action', '');
-		$submit = request::is_set_post('submit');
+		$submit = phpbb_request::is_set_post('submit');
 
 		$form_key = 'acp_board';
 		add_form_key($form_key);
@@ -371,7 +371,7 @@ class acp_board
 		}
 
 		$this->new_config = $config;
-		$cfg_array = (request::is_set('config')) ? utf8_normalize_nfc(request_var('config', array('' => ''), true)) : $this->new_config;
+		$cfg_array = (phpbb_request::is_set('config')) ? utf8_normalize_nfc(request_var('config', array('' => ''), true)) : $this->new_config;
 		$error = array();
 
 		// We validate the complete config if whished

@@ -35,7 +35,7 @@ class acp_email
 		add_form_key($form_key);
 
 		// Set some vars
-		$submit = request::is_set_post('submit');
+		$submit = phpbb_request::is_set_post('submit');
 		$error = array();
 
 		$usernames	= request_var('usernames', '', true);
@@ -48,7 +48,7 @@ class acp_email
 		{
 			// Error checking needs to go here ... if no subject and/or no message then skip
 			// over the send and return to the form
-			$use_queue		= request::is_set_post('send_immediately');
+			$use_queue		= phpbb_request::is_set_post('send_immediately');
 			$priority		= request_var('mail_priority_flag', MAIL_NORMAL_PRIORITY);
 
 			if (!check_form_key($form_key))
@@ -107,7 +107,7 @@ class acp_email
 					$db->sql_freeresult($result);
 					trigger_error($user->lang['NO_USER'] . adm_back_link($this->u_action), E_USER_WARNING);
 				}
-	
+
 				$i = $j = 0;
 
 				// Send with BCC, no more than 50 recipients for one mail (to not exceed the limit)
@@ -172,7 +172,7 @@ class acp_email
 					$messenger->headers('X-AntiAbuse: User_id - ' . $user->data['user_id']);
 					$messenger->headers('X-AntiAbuse: Username - ' . $user->data['username']);
 					$messenger->headers('X-AntiAbuse: User IP - ' . $user->ip);
-			
+
 					$messenger->subject(htmlspecialchars_decode($subject));
 					$messenger->set_mail_priority($priority);
 
@@ -180,7 +180,7 @@ class acp_email
 						'CONTACT_EMAIL' => $config['board_contact'],
 						'MESSAGE'		=> htmlspecialchars_decode($message))
 					);
-	
+
 					if (!($messenger->send($used_method)))
 					{
 						$errored = true;
@@ -238,7 +238,7 @@ class acp_email
 
 		$select_list = '<option value="0"' . ((!$group_id) ? ' selected="selected"' : '') . '>' . $user->lang['ALL_USERS'] . '</option>';
 		$select_list .= group_select_options($group_id, $exclude);
-		
+
 		$s_priority_options = '<option value="' . MAIL_LOW_PRIORITY . '">' . $user->lang['MAIL_LOW_PRIORITY'] . '</option>';
 		$s_priority_options .= '<option value="' . MAIL_NORMAL_PRIORITY . '" selected="selected">' . $user->lang['MAIL_NORMAL_PRIORITY'] . '</option>';
 		$s_priority_options .= '<option value="' . MAIL_HIGH_PRIORITY . '">' . $user->lang['MAIL_HIGH_PRIORITY'] . '</option>';

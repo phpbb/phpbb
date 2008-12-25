@@ -208,7 +208,7 @@ class install_update extends module
 		$this->include_file('includes/diff/renderer.' . PHP_EXT);
 
 		// Make sure we stay at the file check if checking the files again
-		if (request::variable('check_again', false, false, request::POST))
+		if (phpbb_request::variable('check_again', false, false, phpbb_request::POST))
 		{
 			$sub = $this->p_master->sub = 'file_check';
 		}
@@ -297,7 +297,7 @@ class install_update extends module
 				$action = request_var('action', '');
 
 				// We are directly within an update. To make sure our update list is correct we check its status.
-				$update_list = (request::variable('check_again', false, false, request::POST)) ? false : $cache->get('_update_list');
+				$update_list = (phpbb_request::variable('check_again', false, false, phpbb_request::POST)) ? false : $cache->get('_update_list');
 				$modified = ($update_list !== false) ? @filemtime($cache->cache_dir . 'data_update_list.' . PHP_EXT) : 0;
 
 				// Make sure the list is up-to-date
@@ -823,7 +823,7 @@ class install_update extends module
 
 					// Choose FTP, if not available use fsock...
 					$method = basename(request_var('method', ''));
-					$submit = request::is_set_post('submit');
+					$submit = phpbb_request::is_set_post('submit');
 					$test_ftp_connection = request_var('test_connection', '');
 
 					if (!$method || !class_exists($method))

@@ -36,7 +36,7 @@ class acp_forums
 		add_form_key($form_key);
 
 		$action		= request_var('action', '');
-		$update		= request::is_set_post('update');
+		$update		= phpbb_request::is_set_post('update');
 		$forum_id	= request_var('f', 0);
 
 		$this->parent_id	= request_var('parent_id', 0);

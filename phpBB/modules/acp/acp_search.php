@@ -52,7 +52,7 @@ class acp_search
 	{
 		global $db, $user, $auth, $template, $cache, $config;
 
-		$submit = request::is_set_post('submit');
+		$submit = phpbb_request::is_set_post('submit');
 
 		$search_types = $this->get_search_types();
 
@@ -239,7 +239,7 @@ class acp_search
 		}
 		$this->state = explode(',', $config['search_indexing_state']);
 
-		if (request::is_set_post('cancel'))
+		if (phpbb_request::is_set_post('cancel'))
 		{
 			$action = '';
 			$this->state = array();

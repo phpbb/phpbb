@@ -870,7 +870,7 @@ function handle_mark_actions($user_id, $mark_action)
 
 	$msg_ids		= request_var('marked_msg_id', array(0));
 	$cur_folder_id	= request_var('cur_folder_id', PRIVMSGS_NO_BOX);
-	$confirm		= request::is_set_post('confirm');
+	$confirm		= phpbb_request::is_set_post('confirm');
 
 	if (!sizeof($msg_ids))
 	{
@@ -1348,7 +1348,7 @@ function submit_pm($mode, $subject, &$data, $put_in_outbox = true)
 				WHERE ' . $db->sql_in_set('ug.group_id', array_keys($data['address_list']['g'])) . '
 					AND ug.user_pending = 0
 					AND u.user_id = ug.user_id
-					AND u.user_type IN (' . USER_NORMAL . ', ' . USER_FOUNDER . ')' . 
+					AND u.user_type IN (' . USER_NORMAL . ', ' . USER_FOUNDER . ')' .
 					$sql_allow_pm;
 			$result = $db->sql_query($sql);
 

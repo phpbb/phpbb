@@ -23,7 +23,7 @@ if (!defined('IN_PHPBB'))
 class acp_words
 {
 	var $u_action;
-	
+
 	function main($id, $mode)
 	{
 		global $db, $user, $auth, $template, $cache, $config;
@@ -32,7 +32,7 @@ class acp_words
 
 		// Set up general vars
 		$action = request_var('action', '');
-		$action = (request::is_set_post('add')) ? 'add' : ((request::is_set_post('save')) ? 'save' : $action);
+		$action = (phpbb_request::is_set_post('add')) ? 'add' : ((phpbb_request::is_set_post('save')) ? 'save' : $action);
 
 		$s_hidden_fields = '';
 		$word_info = array();
@@ -47,7 +47,7 @@ class acp_words
 		{
 			case 'edit':
 				$word_id = request_var('id', 0);
-				
+
 				if (!$word_id)
 				{
 					trigger_error($user->lang['NO_WORD'] . adm_back_link($this->u_action), E_USER_WARNING);
@@ -72,7 +72,7 @@ class acp_words
 					'REPLACEMENT'		=> (isset($word_info['replacement'])) ? $word_info['replacement'] : '',
 					'S_HIDDEN_FIELDS'	=> $s_hidden_fields)
 				);
-				
+
 				return;
 
 			break;
@@ -86,7 +86,7 @@ class acp_words
 				$word_id		= request_var('id', 0);
 				$word			= utf8_normalize_nfc(request_var('word', '', true));
 				$replacement	= utf8_normalize_nfc(request_var('replacement', '', true));
-				
+
 				if (!$word || !$replacement)
 				{
 					trigger_error($user->lang['ENTER_WORD'] . adm_back_link($this->u_action), E_USER_WARNING);
@@ -96,7 +96,7 @@ class acp_words
 					'word'			=> $word,
 					'replacement'	=> $replacement
 				);
-				
+
 				if ($word_id)
 				{
 					$db->sql_query('UPDATE ' . WORDS_TABLE . ' SET ' . $db->sql_build_array('UPDATE', $sql_ary) . ' WHERE word_id = ' . $word_id);

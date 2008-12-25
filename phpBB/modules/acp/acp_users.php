@@ -42,7 +42,7 @@ class acp_users
 		$user_id	= request_var('u', 0);
 		$action		= request_var('action', '');
 
-		$submit		= (request::is_set_post('update') && !request::is_set_post('cancel')) ? true : false;
+		$submit		= (phpbb_request::is_set_post('update') && !phpbb_request::is_set_post('cancel')) ? true : false;
 
 		$form_name = 'acp_users';
 		add_form_key($form_name);
@@ -937,8 +937,8 @@ class acp_users
 
 				// Set up general vars
 				$start		= request_var('start', 0);
-				$deletemark = request::is_set_post('delmarked');
-				$deleteall	= request::is_set_post('delall');
+				$deletemark = phpbb_request::is_set_post('delmarked');
+				$deleteall	= phpbb_request::is_set_post('delall');
 				$marked		= request_var('mark', array(0));
 				$message	= utf8_normalize_nfc(request_var('message', '', true));
 
@@ -1474,7 +1474,7 @@ class acp_users
 				// Generate users avatar
 				$avatar_img = ($user_row['user_avatar']) ? get_user_avatar($user_row['user_avatar'], $user_row['user_avatar_type'], $user_row['user_avatar_width'], $user_row['user_avatar_height']) : '<img src="' . PHPBB_ADMIN_PATH . 'images/no_avatar.gif" alt="" />';
 
-				$display_gallery = request::is_set_post('display_gallery');
+				$display_gallery = phpbb_request::is_set_post('display_gallery');
 				$avatar_select = basename(request_var('avatar_select', ''));
 				$category = basename(request_var('category', ''));
 
@@ -1551,7 +1551,7 @@ class acp_users
 				$enable_urls	= ($config['allow_sig_links']) ? ((request_var('disable_magic_url', false)) ? false : true) : false;
 				$signature		= utf8_normalize_nfc(request_var('signature', (string) $user_row['user_sig'], true));
 
-				$preview		= request::is_set_post('preview');
+				$preview		= phpbb_request::is_set_post('preview');
 
 				if ($submit || $preview)
 				{
@@ -1636,7 +1636,7 @@ class acp_users
 			case 'attach':
 
 				$start		= request_var('start', 0);
-				$deletemark = request::is_set_post('delmarked');
+				$deletemark = phpbb_request::is_set_post('delmarked');
 				$marked		= request_var('mark', array(0));
 
 				// Sort keys

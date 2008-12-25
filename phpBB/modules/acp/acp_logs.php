@@ -33,8 +33,8 @@ class acp_logs
 		$action		= request_var('action', '');
 		$forum_id	= request_var('f', 0);
 		$start		= request_var('start', 0);
-		$deletemark = request::variable('delmarked', false, false, request::POST);
-		$deleteall	= request::variable('delall', false, false, request::POST);
+		$deletemark = phpbb_request::variable('delmarked', false, false, phpbb_request::POST);
+		$deleteall	= phpbb_request::variable('delall', false, false, phpbb_request::POST);
 		$marked		= request_var('mark', array(0));
 
 		// Sort keys
@@ -112,7 +112,7 @@ class acp_logs
 		if ($mode == 'mod')
 		{
 			$forum_box = '<option value="0">' . $user->lang['ALL_FORUMS'] . '</option>' . make_forum_select($forum_id);
-			
+
 			$template->assign_vars(array(
 				'S_SHOW_FORUMS'			=> true,
 				'S_FORUM_BOX'			=> $forum_box)
@@ -142,7 +142,7 @@ class acp_logs
 		foreach ($log_data as $row)
 		{
 			$data = array();
-				
+
 			$checks = array('viewtopic', 'viewlogs', 'viewforum');
 			foreach ($checks as $check)
 			{

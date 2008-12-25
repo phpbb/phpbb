@@ -106,7 +106,7 @@ class custom_profile
 		{
 			case FIELD_DATE:
 				$field_validate = explode('-', $field_value);
-				
+
 				$day = (isset($field_validate[0])) ? (int) $field_validate[0] : 0;
 				$month = (isset($field_validate[1])) ? (int) $field_validate[1] : 0;
 				$year = (isset($field_validate[2])) ? (int) $field_validate[2] : 0;
@@ -154,14 +154,14 @@ class custom_profile
 					return 'FIELD_TOO_LARGE';
 				}
 			break;
-		
+
 			case FIELD_DROPDOWN:
 				if ($field_value == $field_data['field_novalue'] && $field_data['field_required'])
 				{
 					return 'FIELD_REQUIRED';
 				}
 			break;
-			
+
 			case FIELD_STRING:
 			case FIELD_TEXT:
 				if (empty($field_value) && !$field_data['field_required'])
@@ -205,7 +205,7 @@ class custom_profile
 		global $db, $user, $auth;
 
 		$this->profile_cache = array();
-		
+
 		// Display hidden/no_view fields for admin/moderator
 		$sql = 'SELECT l.*, f.*
 			FROM ' . PROFILE_LANG_TABLE . ' l, ' . PROFILE_FIELDS_TABLE . ' f
@@ -318,12 +318,12 @@ class custom_profile
 					case 'FIELD_TOO_SMALL':
 						$error = sprintf($user->lang[$cp_result], $row['lang_name'], $row['field_minlen']);
 					break;
-					
+
 					case 'FIELD_TOO_LONG':
 					case 'FIELD_TOO_LARGE':
 						$error = sprintf($user->lang[$cp_result], $row['lang_name'], $row['field_maxlen']);
 					break;
-					
+
 					case 'FIELD_INVALID_CHARS':
 						switch ($row['field_validation'])
 						{
@@ -341,7 +341,7 @@ class custom_profile
 						}
 					break;
 				}
-				
+
 				if ($error != '')
 				{
 					$cp_error[] = $error;
@@ -436,7 +436,7 @@ class custom_profile
 					'S_PROFILE_' . strtoupper($ident)		=> true
 				);
 			}
-		
+
 			return $tpl_fields;
 		}
 		else
@@ -562,11 +562,11 @@ class custom_profile
 		// checkbox - only testing for isset
 		if ($profile_row['field_type'] == FIELD_BOOL && $profile_row['field_length'] == 2)
 		{
-			$value = (request::is_set($profile_row['field_ident'])) ? true : ((!isset($user->profile_fields[$user_ident]) || $preview) ? $default_value : $user->profile_fields[$user_ident]);
+			$value = (phpbb_request::is_set($profile_row['field_ident'])) ? true : ((!isset($user->profile_fields[$user_ident]) || $preview) ? $default_value : $user->profile_fields[$user_ident]);
 		}
 		else if ($profile_row['field_type'] == FIELD_INT)
 		{
-			if (request::is_set($profile_row['field_ident']))
+			if (phpbb_request::is_set($profile_row['field_ident']))
 			{
 				$value = (request_var($profile_row['field_ident'], '') === '') ? null : request_var($profile_row['field_ident'], $default_value);
 			}
@@ -590,8 +590,8 @@ class custom_profile
 		}
 		else
 		{
-			$value = (request::is_set($profile_row['field_ident'])) ? request_var($profile_row['field_ident'], $default_value, true) : ((!isset($user->profile_fields[$user_ident]) || $preview) ? $default_value : $user->profile_fields[$user_ident]);
-			
+			$value = (phpbb_request::is_set($profile_row['field_ident'])) ? request_var($profile_row['field_ident'], $default_value, true) : ((!isset($user->profile_fields[$user_ident]) || $preview) ? $default_value : $user->profile_fields[$user_ident]);
+
 			if (gettype($value) == 'string')
 			{
 				$value = utf8_normalize_nfc($value);
@@ -633,7 +633,7 @@ class custom_profile
 
 		$now = getdate();
 
-		if (!request::is_set($profile_row['field_ident'] . '_day'))
+		if (!phpbb_request::is_set($profile_row['field_ident'] . '_day'))
 		{
 			if ($profile_row['field_default_value'] == 'now')
 			{
@@ -674,7 +674,7 @@ class custom_profile
 			$profile_row['s_year_options'] .= '<option value="' . $i . '"' . (($i == $year) ? ' selected="selected"' : '') . ">$i</option>";
 		}
 		unset($now);
-		
+
 		$profile_row['field_value'] = 0;
 		$template->assign_block_vars(self::$profile_types[$profile_row['field_type']], array_change_key_case($profile_row, CASE_UPPER));
 	}
@@ -827,7 +827,7 @@ class custom_profile
 			$cp_data['pf_' . $row['field_ident']] = (in_array($row['field_type'], array(FIELD_TEXT, FIELD_STRING))) ? $row['lang_default_value'] : $row['field_default_value'];
 		}
 		$db->sql_freeresult($result);
-		
+
 		return $cp_data;
 	}
 
@@ -838,14 +838,14 @@ class custom_profile
 	private function get_profile_field($profile_row)
 	{
 		global $config;
-		
+
 		$var_name = 'pf_' . $profile_row['field_ident'];
-		
+
 		switch ($profile_row['field_type'])
 		{
 			case FIELD_DATE:
 
-				if (!request::is_set($var_name . '_day'))
+				if (!phpbb_request::is_set($var_name . '_day'))
 				{
 					if ($profile_row['field_default_value'] == 'now')
 					{
@@ -860,7 +860,7 @@ class custom_profile
 					$month = request_var($var_name . '_month', 0);
 					$year = request_var($var_name . '_year', 0);
 				}
-				
+
 				$var = sprintf('%2d-%2d-%4d', $day, $month, $year);
 			break;
 
@@ -868,7 +868,7 @@ class custom_profile
 				// Checkbox
 				if ($profile_row['field_length'] == 2)
 				{
-					$var = request::is_set($var_name) ? 1 : 0;
+					$var = phpbb_request::is_set($var_name) ? 1 : 0;
 				}
 				else
 				{
@@ -882,7 +882,7 @@ class custom_profile
 			break;
 
 			case FIELD_INT:
-				if (request::is_set($var_name) && request_var($var_name, '') === '')
+				if (phpbb_request::is_set($var_name) && request_var($var_name, '') === '')
 				{
 					$var = NULL;
 				}
@@ -931,7 +931,7 @@ class custom_profile_admin extends custom_profile
 
 		return $validate_options;
 	}
-	
+
 	/**
 	* Get string options for second step in ACP
 	*/

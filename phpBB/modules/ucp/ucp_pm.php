@@ -195,8 +195,8 @@ class ucp_pm
 
 
 				// First Handle Mark actions and moving messages
-				$submit_mark	= request::is_set_post('submit_mark');
-				$move_pm		= request::is_set_post('move_pm');
+				$submit_mark	= phpbb_request::is_set_post('submit_mark');
+				$move_pm		= phpbb_request::is_set_post('move_pm');
 				$mark_option	= request_var('mark_option', '');
 				$dest_folder	= request_var('dest_folder', PRIVMSGS_NO_BOX);
 
@@ -211,7 +211,7 @@ class ucp_pm
 				// Move PM
 				if ($move_pm)
 				{
-					$move_msg_ids	= request::variable('marked_msg_id', array(0), false, request::POST);
+					$move_msg_ids	= phpbb_request::variable('marked_msg_id', array(0), false, phpbb_request::POST);
 					$cur_folder_id	= request_var('cur_folder_id', PRIVMSGS_NO_BOX);
 
 					if (move_pm($user->data['user_id'], $user->data['message_limit'], $move_msg_ids, $dest_folder, $cur_folder_id))

@@ -34,13 +34,13 @@ class acp_captcha
 
 		$selected = request_var('select_captcha', $config['captcha_plugin']);
 		$configure = request_var('configure', false);
-		
+
 		// Oh, they are just here for the view
-		if (request::is_set('captcha_demo', request::GET))
+		if (phpbb_request::is_set('captcha_demo', phpbb_request::GET))
 		{
 			$this->deliver_demo($selected);
 		}
-		
+
 		// Delegate
 		if ($configure)
 		{
@@ -106,7 +106,7 @@ class acp_captcha
 				}
 
 				$demo_captcha = phpbb_captcha_factory::get_instance($selected);
-				
+
 				foreach ($config_vars as $config_var => $template_var)
 				{
 					$template->assign_var($template_var, request_var($config_var, $config[$config_var])) ;
@@ -117,28 +117,28 @@ class acp_captcha
 					'CAPTCHA_SELECT'	=> $captcha_select,
 				));
 			}
-			
+
 		}
 	}
-	
-	
+
+
 	/**
 	* Entry point for delivering image CAPTCHAs in the ACP.
 	*/
 	function deliver_demo($selected)
 	{
 		global $db, $user, $config;
-		
+
 		$captcha = phpbb_captcha_factory::get_instance($selected);
 		$captcha->init(CONFIRM_REG);
 		$captcha->execute_demo();
 		garbage_collection();
 		exit_handler();
 	}
-	
-	
-	
-	
+
+
+
+
 }
 
 ?>

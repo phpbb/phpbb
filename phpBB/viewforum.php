@@ -75,7 +75,7 @@ if (!$forum_data)
 $user->setup('viewforum', $forum_data['forum_style']);
 
 // Redirect to login upon emailed notification links
-if (request::is_set('e', request::GET) && !$user->data['is_registered'])
+if (phpbb_request::is_set('e', phpbb_request::GET) && !$user->data['is_registered'])
 {
 	login_box('', $user->lang['LOGIN_NOTIFY_FORUM']);
 }
@@ -238,7 +238,7 @@ if ($sort_days)
 	$topics_count = (int) $db->sql_fetchfield('num_topics');
 	$db->sql_freeresult($result);
 
-	if (request::is_set_post('sort'))
+	if (phpbb_request::is_set_post('sort'))
 	{
 		$start = 0;
 	}

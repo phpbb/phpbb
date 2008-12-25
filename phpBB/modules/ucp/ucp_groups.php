@@ -33,19 +33,19 @@ class ucp_groups
 		$return_page = '<br /><br />' . sprintf($user->lang['RETURN_PAGE'], '<a href="' . $this->u_action . '">', '</a>');
 
 		$mark_ary	= request_var('mark', array(0));
-		$submit		= request::variable('submit', false, false, request::POST);
-		$delete		= request::variable('delete', false, false, request::POST);
+		$submit		= phpbb_request::variable('submit', false, false, phpbb_request::POST);
+		$delete		= phpbb_request::variable('delete', false, false, phpbb_request::POST);
 		$error = $data = array();
 
 		switch ($mode)
 		{
 			case 'membership':
-		
+
 				$this->page_title = 'UCP_USERGROUPS_MEMBER';
 
-				if ($submit || request::is_set_post('change_default'))
+				if ($submit || phpbb_request::is_set_post('change_default'))
 				{
-					$action = (request::is_set_post('change_default')) ? 'change_default' : request_var('action', '');
+					$action = (phpbb_request::is_set_post('change_default')) ? 'change_default' : request_var('action', '');
 					$group_id = ($action == 'change_default') ? request_var('default', 0) : request_var('selected', 0);
 
 					if (!$group_id)
@@ -407,9 +407,9 @@ class ucp_groups
 			case 'manage':
 
 				$this->page_title = 'UCP_USERGROUPS_MANAGE';
-				$action		= (request::is_set_post('addusers')) ? 'addusers' : request_var('action', '');
+				$action		= (phpbb_request::is_set_post('addusers')) ? 'addusers' : request_var('action', '');
 				$group_id	= request_var('g', 0);
-				
+
 				include(PHPBB_ROOT_PATH . 'includes/functions_display.' . PHP_EXT);
 
 				add_form_key('ucp_groups');
@@ -433,7 +433,7 @@ class ucp_groups
 					{
 						trigger_error($user->lang['NOT_ALLOWED_MANAGE_GROUP'] . $return_page, E_USER_WARNING);
 					}
-					
+
 					$group_name = $group_row['group_name'];
 					$group_type = $group_row['group_type'];
 
@@ -445,7 +445,7 @@ class ucp_groups
 						'GROUP_COLOUR'			=> (isset($group_row['group_colour'])) ? $group_row['group_colour'] : '',
 						'GROUP_DESC_DISP'		=> generate_text_for_display($group_row['group_desc'], $group_row['group_desc_uid'], $group_row['group_desc_bitfield'], $group_row['group_desc_options']),
 						'GROUP_TYPE'			=> $group_row['group_type'],
-						
+
 						'AVATAR'				=> $avatar_img,
 						'AVATAR_IMAGE'			=> $avatar_img,
 						'AVATAR_WIDTH'			=> (isset($group_row['group_avatar_width'])) ? $group_row['group_avatar_width'] : '',
@@ -478,7 +478,7 @@ class ucp_groups
 
 						$data = $submit_ary = array();
 
-						$update	= request::is_set_post('update');
+						$update	= phpbb_request::is_set_post('update');
 
 						$error = array();
 
@@ -501,7 +501,7 @@ class ucp_groups
 							$submit_ary = array(
 								'colour'		=> request_var('group_colour', ''),
 								'rank'			=> request_var('group_rank', 0),
-								'receive_pm'	=> request::is_set('group_receive_pm') ? 1 : 0,
+								'receive_pm'	=> phpbb_request::is_set('group_receive_pm') ? 1 : 0,
 								'message_limit'	=> request_var('group_message_limit', 0),
 								'max_recipients'=> request_var('group_max_recipients', 0),
 							);
@@ -599,7 +599,7 @@ class ucp_groups
 								// Only set the rank, colour, etc. if it's changed or if we're adding a new
 								// group. This prevents existing group members being updated if no changes
 								// were made.
-						
+
 								$group_attributes = array();
 								$test_variables = array('rank', 'colour', 'avatar', 'avatar_type', 'avatar_width', 'avatar_height', 'receive_pm', 'legend', 'message_limit', 'max_recipients');
 								foreach ($test_variables as $test)
@@ -668,13 +668,13 @@ class ucp_groups
 						$type_closed	= ($group_type == GROUP_CLOSED) ? ' checked="checked"' : '';
 						$type_hidden	= ($group_type == GROUP_HIDDEN) ? ' checked="checked"' : '';
 
-						$display_gallery = request::is_set_post('display_gallery');
+						$display_gallery = phpbb_request::is_set_post('display_gallery');
 
 						if ($config['allow_avatar_local'] && $display_gallery)
 						{
 							avatar_gallery($category, $avatar_select, 4);
 						}
-						
+
 						$avatars_enabled = ($can_upload || ($config['allow_avatar_local'] || $config['allow_avatar_remote'])) ? true : false;
 
 						$template->assign_vars(array(
@@ -692,7 +692,7 @@ class ucp_groups
 							'GROUP_RECEIVE_PM'		=> (isset($group_row['group_receive_pm']) && $group_row['group_receive_pm']) ? ' checked="checked"' : '',
 							'GROUP_MESSAGE_LIMIT'	=> (isset($group_row['group_message_limit'])) ? $group_row['group_message_limit'] : 0,
 							'GROUP_MAX_RECIPIENTS'	=> (isset($group_row['group_max_recipients'])) ? $group_row['group_max_recipients'] : 0,
-							
+
 							'GROUP_DESC'			=> $group_desc_data['text'],
 							'S_DESC_BBCODE_CHECKED'	=> $group_desc_data['allow_bbcode'],
 							'S_DESC_URLS_CHECKED'	=> $group_desc_data['allow_urls'],
@@ -891,7 +891,7 @@ class ucp_groups
 							if (!sizeof($mark_ary))
 							{
 								$start = 0;
-				
+
 								do
 								{
 									$sql = 'SELECT user_id
@@ -1022,7 +1022,7 @@ class ucp_groups
 						$group_name = ($group_row['group_type'] == GROUP_SPECIAL) ? $user->lang['G_' . $group_row['group_name']] : $group_row['group_name'];
 
 						$default = request_var('default', 0);
-						
+
 						if (confirm_box(true))
 						{
 							// Add user/s to group

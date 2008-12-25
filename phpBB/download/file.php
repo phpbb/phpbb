@@ -30,13 +30,13 @@ else if (isset($_SERVER['HTTP_USER_AGENT']) && strpos($_SERVER['HTTP_USER_AGENT'
 	exit;
 }
 
-if (request::is_set('avatar', request::GET))
+if (phpbb_request::is_set('avatar', phpbb_request::GET))
 {
 	// worst-case default
 	$browser = (!empty($_SERVER['HTTP_USER_AGENT'])) ? htmlspecialchars((string) $_SERVER['HTTP_USER_AGENT']) : 'msie 6.0';
 
 	$config = phpbb_cache::obtain_config();
-	$filename = request::variable('avatar', '', false, request::GET);
+	$filename = phpbb_request::variable('avatar', '', false, phpbb_request::GET);
 	$avatar_group = false;
 	$exit = false;
 
