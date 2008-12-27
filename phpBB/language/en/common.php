@@ -107,8 +107,10 @@ $lang = array_merge($lang, array(
 	'BOARD_DISABLE'			=> 'Sorry but this board is currently unavailable.',
 	'BOARD_DISABLED'		=> 'This board is currently disabled.',
 	'BOARD_UNAVAILABLE'		=> 'Sorry but the board is temporarily unavailable, please try again in a few minutes.',
-	'BROWSING_FORUM_GUEST'	=> 'Users browsing this forum: %1$s and %2$d guest',
-	'BROWSING_FORUM_GUESTS'	=> 'Users browsing this forum: %1$s and %2$d guests',
+	'BROWSING_FORUM_GUESTS'	=> array(
+		0		=> 'Users browsing this forum: %1$s and %2$d guest',
+		2		=> 'Users browsing this forum: %1$s and %2$d guests',
+	),
 	'BYTES'					=> 'Bytes',
 
 	'CANCEL'				=> 'Cancel',
@@ -236,11 +238,15 @@ $lang = array_merge($lang, array(
 	'GROUP_ERR_USER_LONG'		=> 'Group names cannot exceed 60 characters. The specified group name is too long.',
 	'GUEST'						=> 'Guest',
 	'GUEST_USERS_ONLINE'		=> 'There are %d guest users online',
-	'GUEST_USERS_TOTAL'			=> '%d guests',
 	'GUEST_USERS_ZERO_ONLINE'	=> 'There are 0 guest users online',
-	'GUEST_USERS_ZERO_TOTAL'	=> '0 guests',
 	'GUEST_USER_ONLINE'			=> 'There is %d guest user online',
-	'GUEST_USER_TOTAL'			=> '%d guest',
+
+	'GUEST_USER_COUNT'			=> array(
+		0		=> '%d guests',
+		1		=> '%d guest',
+		2		=> '%d guests',
+	),
+
 	'G_ADMINISTRATORS'			=> 'Administrators',
 	'G_BOTS'					=> 'Bots',
 	'G_GUESTS'					=> 'Guests',
@@ -249,11 +255,13 @@ $lang = array_merge($lang, array(
 	'G_GLOBAL_MODERATORS'		=> 'Global moderators',
 
 	'HIDDEN_USERS_ONLINE'		=> '%d hidden users online',
-	'HIDDEN_USERS_TOTAL'		=> '%d hidden and ',
 	'HIDDEN_USERS_ZERO_ONLINE'	=> '0 hidden users online',
-	'HIDDEN_USERS_ZERO_TOTAL'	=> '0 hidden and ',
 	'HIDDEN_USER_ONLINE'		=> '%d hidden user online',
-	'HIDDEN_USER_TOTAL'			=> '%d hidden and ',
+
+	'HIDDEN_USER_COUNT'			=> array(
+		0			=> '%d hidden and ',
+	),
+
 	'HIDE_GUESTS'				=> 'Hide guests',
 	'HIDE_ME'					=> 'Hide my online status this session',
 	'HOURS'						=> 'Hours',
@@ -327,8 +335,10 @@ $lang = array_merge($lang, array(
 	'MESSAGE_BODY'			=> 'Message body',
 	'MINUTES'				=> 'Minutes',
 	'MODERATE'				=> 'Moderate',
-	'MODERATOR'				=> 'Moderator',
-	'MODERATORS'			=> 'Moderators',
+	'MODERATORS'			=> array(
+		0	=> 'Moderator',
+		2	=> 'Moderators',
+	),
 	'MONTH'					=> 'Month',
 	'MOVE'					=> 'Move',
 	'MSNM'					=> 'MSNM/WLM',
@@ -337,8 +347,11 @@ $lang = array_merge($lang, array(
 	'NEWEST_USER'				=> 'Our newest member <strong>%s</strong>',
 	'NEW_MESSAGE'				=> 'New message',
 	'NEW_MESSAGES'				=> 'New messages',
-	'NEW_PM'					=> '<strong>%d</strong> new message',
-	'NEW_PMS'					=> '<strong>%d</strong> new messages',
+	'NEW_PM'					=> array(
+		0		=> '<strong>%d</strong> new messages',
+		1		=> '<strong>%d</strong> new message',
+		2		=> '<strong>%d</strong> new messages',
+	),
 	'NEW_POST'					=> 'New post',
 	'NEW_POSTS'					=> 'New posts',
 	'NEXT'						=> 'Next',		// Used in pagination
@@ -401,9 +414,12 @@ $lang = array_merge($lang, array(
 	'OFFLINE'					=> 'Offline',
 	'ONLINE'					=> 'Online',
 	'ONLINE_BUDDIES'			=> 'Online friends',
-	'ONLINE_USERS_TOTAL'		=> 'In total there are <strong>%d</strong> users online :: ',
-	'ONLINE_USERS_ZERO_TOTAL'	=> 'In total there are <strong>0</strong> users online :: ',
-	'ONLINE_USER_TOTAL'			=> 'In total there is <strong>%d</strong> user online :: ',
+
+	'ONLINE_USER_COUNT'			=> array(
+		0		=> 'In total there are <strong>0</strong> users online :: ',
+		1		=> 'In total there is <strong>%d</strong> user online :: ',
+		2		=> 'In total there are <strong>%d</strong> users online :: ',
+	),
 	'OPTIONS'					=> 'Options',
 
 	'PAGE_OF'				=> 'Page <strong>%1$d</strong> of <strong>%2$d</strong>',
@@ -455,11 +471,13 @@ $lang = array_merge($lang, array(
 	'REGISTER'					=> 'Register',
 	'REGISTERED_USERS'			=> 'Registered users:',
 	'REG_USERS_ONLINE'			=> 'There are %d registered users and ',
-	'REG_USERS_TOTAL'			=> '%d registered, ',
 	'REG_USERS_ZERO_ONLINE'		=> 'There are 0 registered users and ',
-	'REG_USERS_ZERO_TOTAL'		=> '0 registered, ',
+
+	'REG_USER_COUNT'			=> array(
+		0			=> '%d registered, ',
+	),
+
 	'REG_USER_ONLINE'			=> 'There is %d registered user and ',
-	'REG_USER_TOTAL'			=> '%d registered, ',
 	'REMOVE'					=> 'Remove',
 	'REMOVE_INSTALL'			=> 'Please delete, move or rename the install directory before you use your board. If this directory is still present, only the Administration Control Panel (ACP) will be accessible.',
 	'REPLIES'					=> 'Replies',
@@ -535,8 +553,10 @@ $lang = array_merge($lang, array(
 	'START_WATCHING_TOPIC'		=> 'Subscribe topic',
 	'STOP_WATCHING_FORUM'		=> 'Unsubscribe forum',
 	'STOP_WATCHING_TOPIC'		=> 'Unsubscribe topic',
-	'SUBFORUM'					=> 'Subforum',
-	'SUBFORUMS'					=> 'Subforums',
+	'SUBFORUMS'					=> array(
+		0	=> 'Subforum',
+		2	=> 'Subforums',
+	),
 	'SUBJECT'					=> 'Subject',
 	'SUBMIT'					=> 'Submit',
 
@@ -602,14 +622,18 @@ $lang = array_merge($lang, array(
 	'TOTAL_NO_PM'		=> '0 private messages in total',
 	'TOTAL_PM'			=> '1 private message in total',
 	'TOTAL_PMS'			=> '%d private messages in total',
-	'TOTAL_POSTS'		=> 'Total posts',
-	'TOTAL_POSTS_OTHER'	=> 'Total posts <strong>%d</strong>',
-	'TOTAL_POSTS_ZERO'	=> 'Total posts <strong>0</strong>',
 	'TOPIC_REPORTED'	=> 'This topic has been reported',
-	'TOTAL_TOPICS_OTHER'=> 'Total topics <strong>%d</strong>',
-	'TOTAL_TOPICS_ZERO'	=> 'Total topics <strong>0</strong>',
-	'TOTAL_USERS_OTHER'	=> 'Total members <strong>%d</strong>',
-	'TOTAL_USERS_ZERO'	=> 'Total members <strong>0</strong>',
+	'TOTAL_POSTS'		=> 'Total posts',
+
+	'TOTAL_POSTS_COUNT'	=> array(
+		0		=> 'Total posts <strong>%d</strong>',
+	),
+	'TOTAL_TOPICS_COUNT'=> array(
+		0		=> 'Total topics <strong>%d</strong>',
+	),
+	'TOTAL_USERS_COUNT'	=> array(
+		0		=> 'Total members <strong>%d</strong>',
+	),
 	'TRACKED_PHP_ERROR'	=> 'Tracked PHP errors: %s',
 
 	'UNABLE_GET_IMAGE_SIZE'	=> 'It was not possible to determine the dimensions of the image.',
@@ -617,8 +641,11 @@ $lang = array_merge($lang, array(
 	'UNKNOWN_BROWSER'		=> 'Unknown browser',
 	'UNMARK_ALL'			=> 'Unmark all',
 	'UNREAD_MESSAGES'		=> 'Unread messages',
-	'UNREAD_PM'				=> '<strong>%d</strong> unread message',
-	'UNREAD_PMS'			=> '<strong>%d</strong> unread messages',
+	'UNREAD_PM'				=> array(
+		0		=> '<strong>%d</strong> unread messages',
+		1		=> '<strong>%d</strong> unread message',
+		2		=> '<strong>%d</strong> unread messages',
+	),
 	'UNWATCHED_FORUMS'			=> 'You are no longer subscribed to the selected forums.',
 	'UNWATCHED_TOPICS'			=> 'You are no longer subscribed to the selected topics.',
 	'UNWATCHED_FORUMS_TOPICS'	=> 'You are no longer subscribed to the selected entries.',
@@ -651,8 +678,10 @@ $lang = array_merge($lang, array(
 	'VIEW_LATEST_POST'			=> 'View the latest post',
 	'VIEW_NEWEST_POST'			=> 'View first unread post',
 	'VIEW_NOTES'				=> 'View user notes',
-	'VIEW_ONLINE_TIME'			=> 'based on users active over the past %d minute',
-	'VIEW_ONLINE_TIMES'			=> 'based on users active over the past %d minutes',
+	'VIEW_ONLINE_TIME'			=> array(
+		0		=> 'based on users active over the past %d minute',
+		2		=> 'based on users active over the past %d minutes',
+	),
 	'VIEW_TOPIC'				=> 'View topic',
 	'VIEW_TOPIC_ANNOUNCEMENT'	=> 'Announcement: ',
 	'VIEW_TOPIC_GLOBAL'			=> 'Global Announcement: ',
