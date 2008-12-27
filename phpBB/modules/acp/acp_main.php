@@ -149,7 +149,7 @@ class acp_main
 
 						$sql = 'SELECT COUNT(user_id) AS stat
 							FROM ' . USERS_TABLE . '
-							WHERE user_type IN (' . USER_NORMAL . ',' . USER_FOUNDER . ')';
+							WHERE user_type IN (' . phpbb::USER_NORMAL . ',' . phpbb::USER_FOUNDER . ')';
 						$result = $db->sql_query($sql);
 						set_config('num_users', (int) $db->sql_fetchfield('stat'), true);
 						$db->sql_freeresult($result);
@@ -323,7 +323,7 @@ class acp_main
 					break;
 
 					case 'purge_cache':
-						if ((int) $user->data['user_type'] !== USER_FOUNDER)
+						if ((int) $user->data['user_type'] !== phpbb::USER_FOUNDER)
 						{
 							trigger_error($user->lang['NO_AUTH_OPERATION'] . adm_back_link($this->u_action), E_USER_WARNING);
 						}
@@ -440,7 +440,7 @@ class acp_main
 			'U_INACTIVE_USERS'	=> append_sid(PHPBB_ADMIN_PATH . 'index.' . PHP_EXT, 'i=inactive&amp;mode=list'),
 
 			'S_ACTION_OPTIONS'	=> ($auth->acl_get('a_board')) ? true : false,
-			'S_FOUNDER'			=> ($user->data['user_type'] == USER_FOUNDER) ? true : false,
+			'S_FOUNDER'			=> ($user->data['user_type'] == phpbb::USER_FOUNDER) ? true : false,
 			)
 		);
 

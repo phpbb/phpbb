@@ -1144,7 +1144,7 @@ function write_pm_addresses($check_ary, $author_id, $plaintext = false)
 			$sql = 'SELECT user_id, username, user_colour
 				FROM ' . USERS_TABLE . '
 				WHERE ' . $db->sql_in_set('user_id', $u) . '
-					AND user_type IN (' . USER_NORMAL . ', ' . USER_FOUNDER . ')';
+					AND user_type IN (' . phpbb::USER_NORMAL . ', ' . phpbb::USER_FOUNDER . ')';
 			$result = $db->sql_query($sql);
 
 			while ($row = $db->sql_fetchrow($result))
@@ -1348,7 +1348,7 @@ function submit_pm($mode, $subject, &$data, $put_in_outbox = true)
 				WHERE ' . $db->sql_in_set('ug.group_id', array_keys($data['address_list']['g'])) . '
 					AND ug.user_pending = 0
 					AND u.user_id = ug.user_id
-					AND u.user_type IN (' . USER_NORMAL . ', ' . USER_FOUNDER . ')' .
+					AND u.user_type IN (' . phpbb::USER_NORMAL . ', ' . phpbb::USER_FOUNDER . ')' .
 					$sql_allow_pm;
 			$result = $db->sql_query($sql);
 

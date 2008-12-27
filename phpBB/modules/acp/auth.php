@@ -58,7 +58,7 @@ class auth_admin extends auth
 			$cache->put('_acl_options', $this->acl_options);
 		}
 	}
-	
+
 	/**
 	* Get permission mask
 	* This function only supports getting permissions of one type (for example a_)
@@ -69,9 +69,9 @@ class auth_admin extends auth
 	* @param mixed $forum_id forum_ids to search for. Defining a forum id also means getting local settings
 	* @param string $auth_option the auth_option defines the permission setting to look for (a_ for example)
 	* @param local|global $scope the scope defines the permission scope. If local, a forum_id is additionally required
-	* @param ACL_NEVER|ACL_NO|ACL_YES $acl_fill defines the mode those permissions not set are getting filled with
+	* @param phpbb::ACL_NEVER|phpbb::ACL_NO|phpbb::ACL_YES $acl_fill defines the mode those permissions not set are getting filled with
 	*/
-	public function get_mask($mode, $user_id = false, $group_id = false, $forum_id = false, $auth_option = false, $scope = false, $acl_fill = ACL_NEVER)
+	public function get_mask($mode, $user_id = false, $group_id = false, $forum_id = false, $auth_option = false, $scope = false, $acl_fill = phpbb::ACL_NEVER)
 	{
 		global $db, $user;
 
@@ -140,7 +140,7 @@ class auth_admin extends auth
 					$auth2 = &$auth;
 				}
 
-				
+
 				$hold_ary[$userdata['user_id']] = array();
 				foreach ($forum_ids as $f_id)
 				{
@@ -345,7 +345,7 @@ class auth_admin extends auth
 
 		// Build js roles array (role data assignments)
 		$s_role_js_array = '';
-		
+
 		if (sizeof($roles))
 		{
 			$s_role_js_array = array();
@@ -797,7 +797,7 @@ class auth_admin extends auth
 		reset($auth);
 		$flag = key($auth);
 		$flag = substr($flag, 0, strpos($flag, '_') + 1);
-		
+
 		// This ID (the any-flag) is set if one or more permissions are true...
 		$any_option_id = (int) $this->acl_options['id'][$flag];
 
@@ -846,9 +846,9 @@ class auth_admin extends auth
 		// Ok, include the any-flag if one or more auth options are set to yes...
 		foreach ($auth as $auth_option => $setting)
 		{
-			if ($setting == ACL_YES && (!isset($auth[$flag]) || $auth[$flag] == ACL_NEVER))
+			if ($setting == phpbb::ACL_YES && (!isset($auth[$flag]) || $auth[$flag] == phpbb::ACL_NEVER))
 			{
-				$auth[$flag] = ACL_YES;
+				$auth[$flag] = phpbb::ACL_YES;
 			}
 		}
 
@@ -876,7 +876,7 @@ class auth_admin extends auth
 				{
 					$auth_option_id = (int) $this->acl_options['id'][$auth_option];
 
-					if ($setting != ACL_NO)
+					if ($setting != phpbb::ACL_NO)
 					{
 						foreach ($ug_id as $id)
 						{
@@ -911,7 +911,7 @@ class auth_admin extends auth
 		reset($auth);
 		$flag = key($auth);
 		$flag = substr($flag, 0, strpos($flag, '_') + 1);
-		
+
 		// Remove any-flag from auth ary
 		if (isset($auth[$flag]))
 		{
@@ -921,9 +921,9 @@ class auth_admin extends auth
 		// Re-set any flag...
 		foreach ($auth as $auth_option => $setting)
 		{
-			if ($setting == ACL_YES && (!isset($auth[$flag]) || $auth[$flag] == ACL_NEVER))
+			if ($setting == phpbb::ACL_YES && (!isset($auth[$flag]) || $auth[$flag] == phpbb::ACL_NEVER))
 			{
-				$auth[$flag] = ACL_YES;
+				$auth[$flag] = phpbb::ACL_YES;
 			}
 		}
 
@@ -932,7 +932,7 @@ class auth_admin extends auth
 		{
 			$auth_option_id = (int) $this->acl_options['id'][$auth_option];
 
-			if ($setting != ACL_NO)
+			if ($setting != phpbb::ACL_NO)
 			{
 				$sql_ary[] = array(
 					'role_id'			=> (int) $role_id,
@@ -948,7 +948,7 @@ class auth_admin extends auth
 			$sql_ary[] = array(
 				'role_id'			=> (int) $role_id,
 				'auth_option_id'	=> (int) $this->acl_options['id'][$flag],
-				'auth_setting'		=> ACL_NEVER
+				'auth_setting'		=> phpbb::ACL_NEVER
 			);
 		}
 
@@ -1004,7 +1004,7 @@ class auth_admin extends auth
 			while ($row = $db->sql_fetchrow($result))
 			{
 				$option_id_ary[] = $row['auth_option_id'];
-				$auth_id_ary[$row['auth_option']] = ACL_NO;
+				$auth_id_ary[$row['auth_option']] = phpbb::ACL_NO;
 			}
 			$db->sql_freeresult($result);
 
@@ -1062,7 +1062,7 @@ class auth_admin extends auth
 		{
 			$where_sql[] = $db->sql_in_set('auth_option_id', array_map('intval', $option_id_ary));
 		}
-		
+
 		$sql = "DELETE FROM $table
 			WHERE " . implode(' AND ', $where_sql);
 		$db->sql_query($sql);
@@ -1085,7 +1085,7 @@ class auth_admin extends auth
 				'S_YES'		=> ($cat_array['S_YES'] && !$cat_array['S_NEVER'] && !$cat_array['S_NO']) ? true : false,
 				'S_NEVER'	=> ($cat_array['S_NEVER'] && !$cat_array['S_YES'] && !$cat_array['S_NO']) ? true : false,
 				'S_NO'		=> ($cat_array['S_NO'] && !$cat_array['S_NEVER'] && !$cat_array['S_YES']) ? true : false,
-							
+
 				'CAT_NAME'	=> $user->lang['permission_cat'][$cat])
 			);
 
@@ -1110,8 +1110,8 @@ class auth_admin extends auth
 				if ($s_view)
 				{
 					$template->assign_block_vars($tpl_cat . '.' . $tpl_mask, array(
-						'S_YES'		=> ($allowed == ACL_YES) ? true : false,
-						'S_NEVER'	=> ($allowed == ACL_NEVER) ? true : false,
+						'S_YES'		=> ($allowed == phpbb::ACL_YES) ? true : false,
+						'S_NEVER'	=> ($allowed == phpbb::ACL_NEVER) ? true : false,
 
 						'UG_ID'			=> $ug_id,
 						'FORUM_ID'		=> $forum_id,
@@ -1127,9 +1127,9 @@ class auth_admin extends auth
 				else
 				{
 					$template->assign_block_vars($tpl_cat . '.' . $tpl_mask, array(
-						'S_YES'		=> ($allowed == ACL_YES) ? true : false,
-						'S_NEVER'	=> ($allowed == ACL_NEVER) ? true : false,
-						'S_NO'		=> ($allowed == ACL_NO) ? true : false,
+						'S_YES'		=> ($allowed == phpbb::ACL_YES) ? true : false,
+						'S_NEVER'	=> ($allowed == phpbb::ACL_NEVER) ? true : false,
+						'S_NO'		=> ($allowed == phpbb::ACL_NO) ? true : false,
 
 						'UG_ID'			=> $ug_id,
 						'FORUM_ID'		=> $forum_id,
@@ -1174,9 +1174,9 @@ class auth_admin extends auth
 						'lang'	=> '{ acl_' . $permission . ' }'
 					);
 				}
-			
+
 				$cat = $user->lang['acl_' . $permission]['cat'];
-			
+
 				// Build our categories array
 				if (!isset($categories[$cat]))
 				{
@@ -1199,9 +1199,9 @@ class auth_admin extends auth
 					);
 				}
 
-				$content_array[$forum_id][$cat]['S_YES'] |= ($auth_setting == ACL_YES) ? true : false;
-				$content_array[$forum_id][$cat]['S_NEVER'] |= ($auth_setting == ACL_NEVER) ? true : false;
-				$content_array[$forum_id][$cat]['S_NO'] |= ($auth_setting == ACL_NO) ? true : false;
+				$content_array[$forum_id][$cat]['S_YES'] |= ($auth_setting == phpbb::ACL_YES) ? true : false;
+				$content_array[$forum_id][$cat]['S_NEVER'] |= ($auth_setting == phpbb::ACL_NEVER) ? true : false;
+				$content_array[$forum_id][$cat]['S_NO'] |= ($auth_setting == phpbb::ACL_NO) ? true : false;
 
 				$content_array[$forum_id][$cat]['permissions'][$permission] = $auth_setting;
 			}
@@ -1233,12 +1233,12 @@ class auth_admin extends auth
 		{
 			if (strpos($opt, 'a_') === 0)
 			{
-				$hold_ary[0][$this->acl_options['id'][$opt]] = ACL_NEVER;
+				$hold_ary[0][$this->acl_options['id'][$opt]] = phpbb::ACL_NEVER;
 			}
 		}
 
 		// Force a_switchperm to be allowed
-		$hold_ary[0][$this->acl_options['id']['a_switchperm']] = ACL_YES;
+		$hold_ary[0][$this->acl_options['id']['a_switchperm']] = phpbb::ACL_YES;
 
 		$user_permissions = $this->build_bitstring($hold_ary);
 

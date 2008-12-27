@@ -833,7 +833,7 @@ class template_compile
 		@flock($destination_handle, LOCK_UN);
 		@fclose($destination_handle);
 
-		phpbb_chmod($filename, CHMOD_WRITE);
+		phpbb_chmod($filename, phpbb::CHMOD_WRITE);
 
 		clearstatcache();
 

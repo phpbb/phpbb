@@ -96,7 +96,7 @@ function login_apache(&$username, &$password)
 		if ($row)
 		{
 			// User inactive...
-			if ($row['user_type'] == USER_INACTIVE || $row['user_type'] == USER_IGNORE)
+			if ($row['user_type'] == phpbb::USER_INACTIVE || $row['user_type'] == phpbb::USER_IGNORE)
 			{
 				return array(
 					'status'		=> LOGIN_ERROR_ACTIVE,
@@ -104,7 +104,7 @@ function login_apache(&$username, &$password)
 					'user_row'		=> $row,
 				);
 			}
-	
+
 			// Successful login...
 			return array(
 				'status'		=> LOGIN_SUCCESS,
@@ -160,7 +160,7 @@ function autologin_apache()
 
 		if ($row)
 		{
-			return ($row['user_type'] == USER_INACTIVE || $row['user_type'] == USER_IGNORE) ? array() : $row;
+			return ($row['user_type'] == phpbb::USER_INACTIVE || $row['user_type'] == phpbb::USER_IGNORE) ? array() : $row;
 		}
 
 		if (!function_exists('user_add'))
@@ -213,7 +213,7 @@ function user_row_apache($username, $password)
 		'user_password'	=> phpbb_hash($password),
 		'user_email'	=> '',
 		'group_id'		=> (int) $row['group_id'],
-		'user_type'		=> USER_NORMAL,
+		'user_type'		=> phpbb::USER_NORMAL,
 		'user_ip'		=> $user->ip,
 	);
 }

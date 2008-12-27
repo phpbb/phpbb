@@ -309,7 +309,7 @@ switch ($mode)
 		$sql = "SELECT user_id, username, user_email, user_lang, $sql_field
 			FROM " . USERS_TABLE . "
 			WHERE user_id = $user_id
-				AND user_type IN (" . USER_NORMAL . ', ' . USER_FOUNDER . ')';
+				AND user_type IN (" . phpbb::USER_NORMAL . ', ' . phpbb::USER_FOUNDER . ')';
 		$result = $db->sql_query($sql);
 		$row = $db->sql_fetchrow($result);
 		$db->sql_freeresult($result);
@@ -416,13 +416,13 @@ switch ($mode)
 
 		// a_user admins and founder are able to view inactive users and bots to be able to manage them more easily
 		// Normal users are able to see at least users having only changed their profile settings but not yet reactivated.
-		if (!$auth->acl_get('a_user') && $user->data['user_type'] != USER_FOUNDER)
+		if (!$auth->acl_get('a_user') && $user->data['user_type'] != phpbb::USER_FOUNDER)
 		{
-			if ($member['user_type'] == USER_IGNORE)
+			if ($member['user_type'] == phpbb::USER_IGNORE)
 			{
 				trigger_error('NO_USER');
 			}
-			else if ($member['user_type'] == USER_INACTIVE && $member['user_inactive_reason'] != INACTIVE_PROFILE)
+			else if ($member['user_type'] == phpbb::USER_INACTIVE && $member['user_inactive_reason'] != INACTIVE_PROFILE)
 			{
 				trigger_error('NO_USER');
 			}
@@ -595,7 +595,7 @@ switch ($mode)
 		}
 
 		// Inactive reason/account?
-		if ($member['user_type'] == USER_INACTIVE)
+		if ($member['user_type'] == phpbb::USER_INACTIVE)
 		{
 			$user->add_lang('acp/common');
 
@@ -672,7 +672,7 @@ switch ($mode)
 			$sql = 'SELECT username, user_email, user_allow_viewemail, user_lang, user_jabber, user_notify_type
 				FROM ' . USERS_TABLE . "
 				WHERE user_id = $user_id
-					AND user_type IN (" . USER_NORMAL . ', ' . USER_FOUNDER . ')';
+					AND user_type IN (" . phpbb::USER_NORMAL . ', ' . phpbb::USER_FOUNDER . ')';
 			$result = $db->sql_query($sql);
 			$row = $db->sql_fetchrow($result);
 			$db->sql_freeresult($result);
@@ -1189,7 +1189,7 @@ switch ($mode)
 		{
 			$sql = 'SELECT COUNT(u.user_id) AS total_users
 				FROM ' . USERS_TABLE . " u$sql_from
-				WHERE u.user_type IN (" . USER_NORMAL . ', ' . USER_FOUNDER . ")
+				WHERE u.user_type IN (" . phpbb::USER_NORMAL . ', ' . phpbb::USER_FOUNDER . ")
 				$sql_where";
 			$result = $db->sql_query($sql);
 			$total_users = (int) $db->sql_fetchfield('total_users');
@@ -1352,7 +1352,7 @@ switch ($mode)
 		$sql = "SELECT u.user_id
 			FROM " . USERS_TABLE . " u
 				$sql_from
-			WHERE u.user_type IN (" . USER_NORMAL . ', ' . USER_FOUNDER . ")
+			WHERE u.user_type IN (" . phpbb::USER_NORMAL . ', ' . phpbb::USER_FOUNDER . ")
 				$sql_where
 			ORDER BY $order_by";
 		$result = $db->sql_query_limit($sql, $config['topics_per_page'], $start);

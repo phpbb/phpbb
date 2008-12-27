@@ -29,7 +29,7 @@ class phpbb_user extends phpbb_session
 	/**
 	* @var array required phpBB objects
 	*/
-	public $phpbb_required = array('config', 'acl', 'db', 'template', 'security', 'system', 'acm', 'api:user');
+	public $phpbb_required = array('config', 'acl', 'db', 'template', 'security', 'server-vars', 'acm', 'api:user');
 
 	/**
 	* @var array Optional phpBB objects

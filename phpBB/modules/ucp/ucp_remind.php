@@ -48,12 +48,12 @@ class ucp_remind
 				trigger_error('NO_EMAIL_USER');
 			}
 
-			if ($user_row['user_type'] == USER_IGNORE)
+			if ($user_row['user_type'] == phpbb::USER_IGNORE)
 			{
 				trigger_error('NO_USER');
 			}
 
-			if ($user_row['user_type'] == USER_INACTIVE)
+			if ($user_row['user_type'] == phpbb::USER_INACTIVE)
 			{
 				if ($user_row['user_inactive_reason'] == INACTIVE_MANUAL)
 				{

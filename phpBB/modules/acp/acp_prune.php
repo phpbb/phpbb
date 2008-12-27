@@ -436,7 +436,7 @@ class acp_prune
 		$sql = 'SELECT user_id, username
 			FROM ' . USERS_TABLE . '
 			WHERE user_id <> ' . ANONYMOUS . '
-				AND user_type <> ' . USER_FOUNDER . "
+				AND user_type <> ' . phpbb::USER_FOUNDER . "
 			$where_sql";
 		$result = $db->sql_query($sql);
 

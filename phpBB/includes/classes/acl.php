@@ -382,13 +382,13 @@ class auth
 		// Key 0 in $hold_ary are global options, all others are forum_ids
 
 		// If this user is founder we're going to force fill the admin options ...
-		if ($userdata['user_type'] == USER_FOUNDER)
+		if ($userdata['user_type'] == phpbb::USER_FOUNDER)
 		{
 			foreach ($this->acl_options['global'] as $opt => $id)
 			{
 				if (strpos($opt, 'a_') === 0)
 				{
-					$hold_ary[0][$this->acl_options['id'][$opt]] = ACL_YES;
+					$hold_ary[0][$this->acl_options['id'][$opt]] = phpbb::ACL_YES;
 				}
 			}
 		}
@@ -437,14 +437,14 @@ class auth
 
 						// If one option is allowed, the global permission for this option has to be allowed too
 						// example: if the user has the a_ permission this means he has one or more a_* permissions
-						if ($auth_ary[$this->acl_options['id'][$opt]] == ACL_YES && (!isset($bitstring[$this->acl_options[$ary_key][$option_key]]) || $bitstring[$this->acl_options[$ary_key][$option_key]] == ACL_NEVER))
+						if ($auth_ary[$this->acl_options['id'][$opt]] == phpbb::ACL_YES && (!isset($bitstring[$this->acl_options[$ary_key][$option_key]]) || $bitstring[$this->acl_options[$ary_key][$option_key]] == phpbb::ACL_NEVER))
 						{
-							$bitstring[$this->acl_options[$ary_key][$option_key]] = ACL_YES;
+							$bitstring[$this->acl_options[$ary_key][$option_key]] = phpbb::ACL_YES;
 						}
 					}
 					else
 					{
-						$bitstring[$id] = ACL_NEVER;
+						$bitstring[$id] = phpbb::ACL_NEVER;
 					}
 				}
 
@@ -637,22 +637,22 @@ class auth
 				$option = ($sql_opts_select) ? $row['auth_option'] : $this->acl_options['option'][$row['auth_option_id']];
 
 				// @todo: use the ref technique to reduce opcode generation
-				if (!isset($hold_ary[$row['user_id']][$row['forum_id']][$option]) || (isset($hold_ary[$row['user_id']][$row['forum_id']][$option]) && $hold_ary[$row['user_id']][$row['forum_id']][$option] != ACL_NEVER))
+				if (!isset($hold_ary[$row['user_id']][$row['forum_id']][$option]) || (isset($hold_ary[$row['user_id']][$row['forum_id']][$option]) && $hold_ary[$row['user_id']][$row['forum_id']][$option] != phpbb::ACL_NEVER))
 				{
 					$hold_ary[$row['user_id']][$row['forum_id']][$option] = $row['auth_setting'];
 
 					// If we detect ACL_NEVER, we will unset the flag option (within building the bitstring it is correctly set again)
-					if ($row['auth_setting'] == ACL_NEVER)
+					if ($row['auth_setting'] == phpbb::ACL_NEVER)
 					{
 						$flag = substr($option, 0, strpos($option, '_') + 1);
 
-						if (isset($hold_ary[$row['user_id']][$row['forum_id']][$flag]) && $hold_ary[$row['user_id']][$row['forum_id']][$flag] == ACL_YES)
+						if (isset($hold_ary[$row['user_id']][$row['forum_id']][$flag]) && $hold_ary[$row['user_id']][$row['forum_id']][$flag] == phpbb::ACL_YES)
 						{
 							unset($hold_ary[$row['user_id']][$row['forum_id']][$flag]);
 
-/*							if (in_array(ACL_YES, $hold_ary[$row['user_id']][$row['forum_id']]))
+/*							if (in_array(phpbb::ACL_YES, $hold_ary[$row['user_id']][$row['forum_id']]))
 							{
-								$hold_ary[$row['user_id']][$row['forum_id']][$flag] = ACL_YES;
+								$hold_ary[$row['user_id']][$row['forum_id']][$flag] = phpbb::ACL_YES;
 							}
 */
 						}
@@ -856,24 +856,24 @@ class auth
 	*/
 	private function _set_group_hold_ary(&$hold_ary, $option_id, $setting)
 	{
-		if (!isset($hold_ary[$option_id]) || (isset($hold_ary[$option_id]) && $hold_ary[$option_id] != ACL_NEVER))
+		if (!isset($hold_ary[$option_id]) || (isset($hold_ary[$option_id]) && $hold_ary[$option_id] != phpbb::ACL_NEVER))
 		{
 			$hold_ary[$option_id] = $setting;
 
 			// If we detect ACL_NEVER, we will unset the flag option (within building the bitstring it is correctly set again)
-			if ($setting == ACL_NEVER)
+			if ($setting == phpbb::ACL_NEVER)
 			{
 				$flag = substr($this->acl_options['option'][$option_id], 0, strpos($this->acl_options['option'][$option_id], '_') + 1);
 				$flag = (int) $this->acl_options['id'][$flag];
 
-				if (isset($hold_ary[$flag]) && $hold_ary[$flag] == ACL_YES)
+				if (isset($hold_ary[$flag]) && $hold_ary[$flag] == phpbb::ACL_YES)
 				{
 					unset($hold_ary[$flag]);
 
 /*					This is uncommented, because i suspect this being slightly wrong due to mixed permission classes being possible
-					if (in_array(ACL_YES, $hold_ary))
+					if (in_array(phpbb::ACL_YES, $hold_ary))
 					{
-						$hold_ary[$flag] = ACL_YES;
+						$hold_ary[$flag] = phpbb::ACL_YES;
 					}*/
 				}
 			}

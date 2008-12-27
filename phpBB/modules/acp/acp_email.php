@@ -87,7 +87,7 @@ class acp_email
 								AND ug.user_pending = 0
 								AND u.user_id = ug.user_id
 								AND u.user_allow_massemail = 1
-								AND u.user_type IN (' . USER_NORMAL . ', ' . USER_FOUNDER . ')
+								AND u.user_type IN (' . phpbb::USER_NORMAL . ', ' . phpbb::USER_FOUNDER . ')
 							ORDER BY u.user_lang, u.user_notify_type';
 					}
 					else
@@ -95,7 +95,7 @@ class acp_email
 						$sql = 'SELECT username, username_clean, user_email, user_jabber, user_notify_type, user_lang
 							FROM ' . USERS_TABLE . '
 							WHERE user_allow_massemail = 1
-								AND user_type IN (' . USER_NORMAL . ', ' . USER_FOUNDER . ')
+								AND user_type IN (' . phpbb::USER_NORMAL . ', ' . phpbb::USER_FOUNDER . ')
 							ORDER BY user_lang, user_notify_type';
 					}
 				}

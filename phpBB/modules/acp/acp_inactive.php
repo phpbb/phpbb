@@ -82,7 +82,7 @@ class acp_inactive
 							$sql = 'SELECT user_id, username, user_email, user_lang
 								FROM ' . USERS_TABLE . '
 								WHERE ' . $db->sql_in_set('user_id', $mark) . '
-									AND user_type = ' . USER_INACTIVE;
+									AND user_type = ' . phpbb::USER_INACTIVE;
 							$result = $db->sql_query($sql);
 
 							$inactive_users = array();

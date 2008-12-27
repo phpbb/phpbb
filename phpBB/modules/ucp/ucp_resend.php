@@ -55,17 +55,17 @@ class ucp_resend
 				trigger_error('NO_EMAIL_USER');
 			}
 
-			if ($user_row['user_type'] == USER_IGNORE)
+			if ($user_row['user_type'] == phpbb::USER_IGNORE)
 			{
 				trigger_error('NO_USER');
 			}
 
-			if (!$user_row['user_actkey'] && $user_row['user_type'] != USER_INACTIVE)
+			if (!$user_row['user_actkey'] && $user_row['user_type'] != phpbb::USER_INACTIVE)
 			{
 				trigger_error('ACCOUNT_ALREADY_ACTIVATED');
 			}
 
-			if (!$user_row['user_actkey'] || ($user_row['user_type'] == USER_INACTIVE && $user_row['user_inactive_reason'] == INACTIVE_MANUAL))
+			if (!$user_row['user_actkey'] || ($user_row['user_type'] == phpbb::USER_INACTIVE && $user_row['user_inactive_reason'] == INACTIVE_MANUAL))
 			{
 				trigger_error('ACCOUNT_DEACTIVATED');
 			}

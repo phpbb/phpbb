@@ -1,249 +1,507 @@
 <?php
 /**
 *
-* @package phpBB3
+* @package plugins
 * @version $Id$
-* @copyright (c) 2007 phpBB Group
+* @copyright (c) 2008 phpBB Group
 * @license http://opensource.org/licenses/gpl-license.php GNU Public License
 *
 */
 
 /**
-* @ignore
+* Class used by plugins/modules/etc. for installation/uninstallation
 */
-if (!defined('IN_PHPBB'))
+class phpbb_install
 {
-	exit;
+	public function install() {}
+	public function uninstall() {}
 }
 
 /**
-* phpBB Hook Class
-* @package phpBB3
+* Main class handling plugins/hooks
 */
-class phpbb_hook
+class phpbb_plugins
 {
-	/**
-	* Registered hooks
-	*/
-	var $hooks = array();
+	public $phpbb_required = array();
+	public $phpbb_optional = array();
+
+	public $plugin_path = false;
+	public $plugins = array();
+
+	private $hooks = array();
+	private $current_plugin = false;
 
 	/**
-	* Results returned by functions called
-	*/
-	var $hook_result = array();
-
-	/**
-	* internal pointer
-	*/
-	var $current_hook = NULL;
-
-	/**
-	* Initialize hook class.
 	*
-	* @param array $valid_hooks array containing the hookable functions/methods
+	* @return
+	* @param string $plugin_path
 	*/
-	function __construct($valid_hooks)
+	public function init($plugin_path)
 	{
-		foreach ($valid_hooks as $_null => $method)
+		$this->plugin_path = $plugin_path;
+		$this->plugins = array();
+
+		// search for plugin files
+		if ($dh = @opendir($this->plugin_path))
 		{
-			$this->add_hook($method);
-		}
-
-		if (function_exists('phpbb_hook_register'))
-		{
-			phpbb_hook_register($this);
-		}
-	}
-
-	/**
-	* Register function/method to be called within hook
-	* This function is normally called by the modification/application to attach/register the functions.
-	*
-	* @param mixed $definition Declaring function (with __FUNCTION__) or class with array(__CLASS__, __FUNCTION__)
-	* @param mixed $hook The replacement function/method to be called. Passing function name or array with object/class definition
-	* @param string $mode Specify the priority/chain mode. 'normal' -> hook gets appended to the chain. 'standalone' -> only the specified hook gets called - later hooks are not able to overwrite this (E_NOTICE is triggered then). 'first' -> hook is called as the first one within the chain. 'last' -> hook is called as the last one within the chain.
-	*/
-	function register($definition, $hook, $mode = 'normal')
-	{
-		$class = (!is_array($definition)) ? '__global' : $definition[0];
-		$function = (!is_array($definition)) ? $definition : $definition[1];
-
-		// Method able to be hooked?
-		if (isset($this->hooks[$class][$function]))
-		{
-			switch ($mode)
+			while (($file = readdir($dh)) !== false)
 			{
-				case 'standalone':
-					if (!isset($this->hooks[$class][$function]['standalone']))
-					{
-						$this->hooks[$class][$function] = array('standalone' => $hook);
-					}
-					else
-					{
-						trigger_error('Hook not able to be called standalone, previous hook already standalone.', E_NOTICE);
-					}
-				break;
-
-				case 'first':
-				case 'last':
-					$this->hooks[$class][$function][$mode][] = $hook;
-				break;
-
-				case 'normal':
-				default:
-					$this->hooks[$class][$function]['normal'][] = $hook;
-				break;
-			}
-		}
-	}
-
-	/**
-	* Calling all functions/methods attached to a specified hook.
-	* Called by the function allowing hooks...
-	*
-	* @param mixed $definition Declaring function (with __FUNCTION__) or class with array(__CLASS__, __FUNCTION__)
-	* @return bool False if no hook got executed, true otherwise
-	*/
-	function call_hook($definition)
-	{
-		$class = (!is_array($definition)) ? '__global' : $definition[0];
-		$function = (!is_array($definition)) ? $definition : $definition[1];
-
-		if (!empty($this->hooks[$class][$function]))
-		{
-			// Developer tries to call a hooked function within the hooked function...
-			if ($this->current_hook !== NULL && $this->current_hook['class'] === $class && $this->current_hook['function'] === $function)
-			{
-				return false;
-			}
-
-			// Call the hook with the arguments attached and store result
-			$arguments = func_get_args();
-			$this->current_hook = array('class' => $class, 'function' => $function);
-			$arguments[0] = &$this;
-
-			// Call the hook chain...
-			if (isset($this->hooks[$class][$function]['standalone']))
-			{
-				$this->hook_result[$class][$function] = call_user_func_array($this->hooks[$class][$function]['standalone'], $arguments);
-			}
-			else
-			{
-				foreach (array('first', 'normal', 'last') as $mode)
+				// If is directory and a PHP file with the same name as the directory within this dir?
+				if ($file[0] != '.' && is_readable($this->plugin_path . $file) && is_dir($this->plugin_path . $file) && file_exists($this->plugin_path . $file . '/' . $file . '.' . PHP_EXT))
 				{
-					if (!isset($this->hooks[$class][$function][$mode]))
+					$this->add_plugin($file);
+				}
+			}
+			closedir($dh);
+		}
+	}
+
+	/**
+	*
+	* @return
+	* @param string $phpbb_name
+	*/
+	public function add_plugin($phpbb_name)
+	{
+		if (!file_exists($this->plugin_path . $phpbb_name . '/' . $phpbb_name . '.' . PHP_EXT))
+		{
+			return false;
+		}
+
+		// Include desired plugin
+		require_once $this->plugin_path . $phpbb_name . '/' . $phpbb_name . '.' . PHP_EXT;
+
+		// Create new setup for this plugin
+		$this->plugins[$phpbb_name] = new phpbb_plugin_structure($phpbb_name);
+		$this->current_plugin = $this->plugins[$phpbb_name];
+
+		// Setup plugin
+		$this->current_plugin->setup->setup_plugin($this);
+	}
+
+	public function setup()
+	{
+		if (empty($this->plugins))
+		{
+			return false;
+		}
+
+		foreach ($this->plugins as $name => $plugin)
+		{
+			// Add includes
+			foreach ($plugin->includes as $file)
+			{
+				include_once $this->plugin_path . $name . '/' . $file . '.' . PHP_EXT;
+			}
+
+			// Setup objects
+			foreach ($plugin->objects as $key => $class)
+			{
+				$object = new $class();
+
+				if (!property_exists($object, 'phpbb_plugin') && !property_exists($object, 'class_plugin'))
+				{
+					trigger_error('Class ' . get_class($object) . ' does not define public $phpbb_plugin and public $class_plugin.', E_USER_ERROR);
+				}
+
+				if (property_exists($object, 'phpbb_plugin') && !empty($object->phpbb_plugin))
+				{
+					// Is the plugin the mod author wants to influence pluggable?
+					if (!is_subclass_of(phpbb::get_instance($object->phpbb_plugin), 'phpbb_plugin_support'))
 					{
-						continue;
+						trigger_error('The phpBB Class ' . get_class(phpbb::get_instance($object->phpbb_plugin)) . ' defined in ' . get_class($object) . ' is not pluggable.', E_USER_ERROR);
 					}
 
-					foreach ($this->hooks[$class][$function][$mode] as $hook)
+					$instance = phpbb::get_instance($object->phpbb_plugin);
+				}
+				else
+				{
+					$instance = ${$object->object_plugin};
+
+					if (!is_subclass_of($instance, 'phpbb_plugin_support'))
 					{
-						$this->hook_result[$class][$function] = call_user_func_array($hook, $arguments);
+						trigger_error('The Class ' . get_class($instance) . ' defined in ' . get_class($object) . ' is not pluggable.', E_USER_ERROR);
 					}
+				}
+
+				// Setup/Register plugin...
+				$object->setup_plugin($instance);
+//				$plugin->objects[$key] = $object;
+			}
+
+			// Now setup the functions... this is a special case...
+			foreach ($plugin->functions as $params)
+			{
+				$function = array_shift($params);
+				$hook = array_shift($params);
+				$mode = (!empty($params)) ? array_shift($params) : phpbb::FUNCTION_INJECT;
+				$action = (!empty($params)) ? array_shift($params) : 'default';
+
+				// Check if the function is already overridden.
+				if ($mode == phpbb::FUNCTION_OVERRIDE && isset($this->hooks[$function][$mode]))
+				{
+					trigger_error('Function ' . $function . ' is already overwriten by ' . $this->hooks[$function][$mode] . '.', E_USER_ERROR);
+				}
+
+				if ($mode == phpbb::FUNCTION_OVERRIDE)
+				{
+					$this->hooks[$function][$mode] = $hook;
+				}
+				else
+				{
+					$this->hooks[$function][$mode][$action][] = $hook;
 				}
 			}
 
-			$this->current_hook = NULL;
-			return true;
+			// Call init method?
+			if (method_exists($plugin->setup, 'init'))
+			{
+				$plugin->setup->init();
+			}
 		}
+	}
 
-		$this->current_hook = NULL;
-		return false;
+	public function register_includes()
+	{
+		$arguments = func_get_args();
+		$this->current_plugin->includes = $arguments;
+	}
+
+	public function register_plugins()
+	{
+		$arguments = func_get_args();
+		$this->current_plugin->objects = $arguments;
+	}
+
+	public function register_function()
+	{
+		$arguments = func_get_args();
+		$this->current_plugin->functions[] = $arguments;
+	}
+
+	public function function_override($function)
+	{
+		return isset($this->hooks[$function][phpbb::FUNCTION_OVERRIDE]);
+	}
+
+	public function function_inject($function, $action = 'default')
+	{
+		return isset($this->hooks[$function][phpbb::FUNCTION_INJECT][$action]);
+	}
+
+	public function call_override()
+	{
+		$arguments = func_get_args();
+		$function = array_shift($arguments);
+
+		return call_user_func_array($this->hooks[$function][phpbb::FUNCTION_OVERRIDE], $arguments);
 	}
 
 	/**
-	* Get result from previously called functions/methods for the same hook
+	* Call injected function.
 	*
-	* @param mixed $definition Declaring function (with __FUNCTION__) or class with array(__CLASS__, __FUNCTION__)
-	* @return mixed False if nothing returned if there is no result, else array('result' => ... )
+	* Arguments are layed out in the following way:
+	*	action: The action:
+	*		'default':	If $action is default, then the hook is called in the beginning, original parameter passed by reference
+	*		'return':	If $action is return, then the hook is called at the end and the result will be returned. The hook expects the $result as the first parameter, all other parameters passed by name
+	*		If $action is not default and not return it could be a custom string. Please refer to the plugin documentation to determine possible combinations. Parameters are passed by reference.
+	*
+	* @param string $function Original function name this method is called from
+	* @param array $arguments Arguments
 	*/
-	function previous_hook_result($definition)
+	public function call_inject($function, $arguments)
 	{
-		$class = (!is_array($definition)) ? '__global' : $definition[0];
-		$function = (!is_array($definition)) ? $definition : $definition[1];
+		$result = NULL;
 
-		if (!empty($this->hooks[$class][$function]) && isset($this->hook_result[$class][$function]))
+		if (!is_array($arguments))
 		{
-			return array('result' => $this->hook_result[$class][$function]);
+			$action = $arguments;
+			$arguments = array();
+		}
+		else
+		{
+			$action = array_shift($arguments);
 		}
 
-		return false;
-	}
-
-	/**
-	* Check if the called functions/methods returned something.
-	*
-	* @param mixed $definition Declaring function (with __FUNCTION__) or class with array(__CLASS__, __FUNCTION__)
-	* @return bool True if results are there, false if not
-	*/
-	function hook_return($definition)
-	{
-		$class = (!is_array($definition)) ? '__global' : $definition[0];
-		$function = (!is_array($definition)) ? $definition : $definition[1];
-
-		if (!empty($this->hooks[$class][$function]) && isset($this->hook_result[$class][$function]))
+		// Return action... handle like override
+		if ($action == 'return')
 		{
-			return true;
-		}
+			$result = array_shift($arguments);
 
-		return false;
-	}
+			foreach ($this->hooks[$function][phpbb::FUNCTION_INJECT][$action] as $key => $hook)
+			{
+				$args = array_merge(array($result), $arguments);
+				$result = call_user_func_array($hook, $args);
+			}
 
-	/**
-	* Give actual result from called functions/methods back.
-	*
-	* @param mixed $definition Declaring function (with __FUNCTION__) or class with array(__CLASS__, __FUNCTION__)
-	* @return mixed The result
-	*/
-	function hook_return_result($definition)
-	{
-		$class = (!is_array($definition)) ? '__global' : $definition[0];
-		$function = (!is_array($definition)) ? $definition : $definition[1];
-
-		if (!empty($this->hooks[$class][$function]) && isset($this->hook_result[$class][$function]))
-		{
-			$result = $this->hook_result[$class][$function];
-			unset($this->hook_result[$class][$function]);
 			return $result;
 		}
 
-		return;
+		foreach ($this->hooks[$function][phpbb::FUNCTION_INJECT][$action] as $key => $hook)
+		{
+			call_user_func_array($hook, $arguments);
+		}
 	}
+}
+
+// Object used to hold plugin information. Per plugin one instance
+class phpbb_plugin_structure
+{
+	public $phpbb_name;
+	public $name;
+	public $description;
+	public $author;
+	public $version;
+
+	public $includes = array();
+	public $objects = array();
+	public $functions = array();
 
 	/**
-	* Add new function to the allowed hooks.
 	*
-	* @param mixed $definition Declaring function (with __FUNCTION__) or class with array(__CLASS__, __FUNCTION__)
+	* @return
+	* @param string $phpbb_name
 	*/
-	function add_hook($definition)
+	public function __construct($phpbb_name)
 	{
-		if (!is_array($definition))
+		$this->phpbb_name = $phpbb_name;
+
+		$class = 'phpbb_' . $phpbb_name . '_info';
+		$this->setup = new $class();
+
+		foreach (array('name', 'description', 'author', 'version') as $required_property)
 		{
-			$definition = array('__global', $definition);
+			$this->$required_property = $this->setup->$required_property;
+		}
+	}
+}
+
+interface phpbb_plugin_info
+{
+	public function setup_plugin(phpbb_plugins $object);
+}
+
+interface phpbb_plugin_setup
+{
+	function setup_plugin(phpbb_plugin_support $object);
+}
+
+
+abstract class phpbb_plugin_support
+{
+	private $plugin_methods;
+	private $plugin_attributes;
+
+	public function register_method($name, $method, $object, $mode = phpbb::PLUGIN_ADD, $action = 'default')
+	{
+		// Method reachable by:
+		// For plugin_add: plugin_methods[method] = object
+		// For plugin_override: plugin_methods[name][mode][method] = object
+		// For plugin_inject: plugin_methods[name][mode][action][method] = object
+
+		// Set to PLUGIN_ADD if method does not exist
+		if ($name === false || !method_exists($this, $name))
+		{
+			$mode = phpbb::PLUGIN_ADD;
 		}
 
-		$this->hooks[$definition[0]][$definition[1]] = array();
+		// But if it exists and we try to add one, then print out an error
+		if ($mode == phpbb::PLUGIN_ADD && (method_exists($this, $method) || isset($this->plugin_methods[$method])))
+		{
+			trigger_error('Method ' . $method. ' in class ' . get_class($object) . ' is not able to be added, because it conflicts with the existing method ' . $method . ' in ' . get_class($this) . '.', E_USER_ERROR);
+		}
+
+		// Check if the same method name is already used for $name for overriding the method.
+		if ($mode == phpbb::PLUGIN_OVERRIDE && isset($this->plugin_methods[$name][$mode][$method]))
+		{
+			trigger_error('Method ' . $method . ' in class ' . get_class($object) . ' is not able to override . ' . $name . ' in ' . get_class($this) . ', because it is already overridden in ' . get_class($this->plugin_methods[$name][$mode][$method]) . '.', E_USER_ERROR);
+		}
+
+		// Check if another method is already defined...
+		if ($mode == phpbb::PLUGIN_INJECT && isset($this->plugin_methods[$name][$mode][$action][$method]))
+		{
+			trigger_error('Method ' . $method . ' in class ' . get_class($object) . ' for ' . $name . ' is already defined in class ' . get_class($this->plugin_methods[$name][$mode][$action][$method]), E_USER_ERROR);
+		}
+
+		if (($function_signature = $this->valid_parameter($object, $method, $mode, $action)) !== true)
+		{
+			trigger_error('Method ' . $method . ' in class ' . get_class($object) . ' has invalid function signature. Please use: ' . $function_signature, E_USER_ERROR);
+		}
+
+		if ($mode == phpbb::PLUGIN_ADD)
+		{
+			$this->plugin_methods[$method] = $object;
+		}
+		else if ($mode == phpbb::PLUGIN_OVERRIDE)
+		{
+			$this->plugin_methods[$name][$mode][$method] = $object;
+		}
+		else
+		{
+			$this->plugin_methods[$name][$mode][$action][$method] = $object;
+		}
+	}
+
+	public function register_attribute($name, $object)
+	{
+		if (property_exists($this, $name))
+		{
+			unset($this->$name);
+		}
+
+		if (isset($this->plugin_attributes[$name]))
+		{
+			trigger_error('Attribute ' . $name . ' in class ' . get_class($object) . ' already defined in class ' . get_class($this->plugin_attributes[$name]), E_USER_ERROR);
+		}
+
+		$this->plugin_attributes[$name] = $object;
+	}
+
+	protected function method_override($name)
+	{
+		return isset($this->plugin_methods[$name][phpbb::PLUGIN_OVERRIDE]);
+	}
+
+	protected function method_inject($name, $action = 'default')
+	{
+		return isset($this->plugin_methods[$name][phpbb::PLUGIN_INJECT][$action]);
+	}
+
+	public function call_override()
+	{
+		$arguments = func_get_args();
+		$name = array_shift($arguments);
+
+		list($method, $object) = each($this->plugin_methods[$name][phpbb::PLUGIN_OVERRIDE]);
+		return call_user_func_array(array($object, $method), array_merge(array($this), $arguments));
 	}
 
 	/**
-	* Remove function from the allowed hooks.
+	* Call injected method.
 	*
-	* @param mixed $definition Declaring function (with __FUNCTION__) or class with array(__CLASS__, __FUNCTION__)
+	* Arguments are layed out in the following way:
+	*	action: The action:
+	*		'default':	If $action is default, then the plugin is called in the beginning, original parameter passed by reference
+	*		'return':	If $action is return, then the plugin is called at the end and the result will be returned. The plugin expects the $result as the first parameter, all other parameters passed by name
+	*		If $action is not default and not return it could be a custom string. Please refer to the plugin documentation to determine possible combinations. Parameters are passed by reference.
+	*
+	* @param string $name Original method name this method is called from
+	* @param array $arguments Arguments
 	*/
-	function remove_hook($definition)
+	public function call_inject($name, $arguments)
 	{
-		$class = (!is_array($definition)) ? '__global' : $definition[0];
-		$function = (!is_array($definition)) ? $definition : $definition[1];
+		$result = NULL;
 
-		if (isset($this->hooks[$class][$function]))
+		if (!is_array($arguments))
 		{
-			unset($this->hooks[$class][$function]);
+			$action = $arguments;
+			$arguments = array();
+		}
+		else
+		{
+			$action = array_shift($arguments);
+		}
 
-			if (isset($this->hook_result[$class][$function]))
+		// Return action... handle like override
+		if ($action == 'return')
+		{
+			$result = array_shift($arguments);
+
+			foreach ($this->plugin_methods[$name][phpbb::PLUGIN_INJECT][$action] as $method => $object)
 			{
-				unset($this->hook_result[$class][$function]);
+				$args = array_merge(array($this, $result), $arguments);
+				$result = call_user_func_array(array($object, $method), $args);
+			}
+
+			return $result;
+		}
+
+		foreach ($this->plugin_methods[$name][phpbb::PLUGIN_INJECT][$action] as $method => $object)
+		{
+			call_user_func_array(array($object, $method), array_merge(array($this), $arguments));
+		}
+	}
+
+	// Getter/Setter
+	public function __get($name)
+	{
+		return $this->plugin_attributes[$name]->$name;
+	}
+
+	public function __set($name, $value)
+	{
+		return $this->plugin_attributes[$name]->$name = $value;
+	}
+
+	public function __isset($name)
+	{
+		return isset($this->plugin_attributes[$name]->$name);
+	}
+
+	public function __unset($name)
+	{
+		unset($this->plugin_attributes[$name]->$name);
+	}
+
+	public function __call($name, $arguments)
+	{
+		array_unshift($arguments, $this);
+		return call_user_func_array(array($this->plugin_methods[$name], $name), $arguments);
+	}
+
+	private function valid_parameter($object, $method, $mode, $action)
+	{
+		// We cache the results... no worry. These checks are quite resource intensive, but will hopefully educate and guide developers
+
+		// Check for correct first parameter. This must be an instance of phpbb_$phpbb_plugin
+		$instance_of = 'phpbb_' . $object->phpbb_plugin;
+
+		// Define the required function layout
+		$function_layout = 'public function ' . $method . '(' . $instance_of . ' $object';
+
+		// Result for PLUGIN_INJECT and action == 'return'
+		if ($mode == phpbb::PLUGIN_INJECT && $action == 'return')
+		{
+			$function_layout .= ', $result';
+		}
+
+		$function_layout .= ', [...]) { [...] }';
+
+		$reflection = new ReflectionMethod($object, $method);
+		$parameters = $reflection->getParameters();
+		$first_param = array_shift($parameters);
+
+		// Try to get class
+		if (empty($first_param))
+		{
+			return $function_layout;
+		}
+
+		try
+		{
+			$first_param->getClass()->name;
+		}
+		catch (Exception $e)
+		{
+			return $function_layout;
+		}
+
+		if ($first_param->getClass()->name !== $instance_of || $first_param->getName() !== 'object')
+		{
+			return $function_layout;
+		}
+
+		if ($mode == phpbb::PLUGIN_INJECT && $action == 'return')
+		{
+			$first_param = array_shift($parameters);
+
+			if (empty($first_param) || $first_param->getName() !== 'result' || $first_param->isOptional())
+			{
+				return $function_layout;
 			}
 		}
+
+		return true;
 	}
 }
 

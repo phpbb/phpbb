@@ -157,7 +157,7 @@ function auto_id($pad = 0)
 */
 function set_user_type($user_active)
 {
-	return ($user_active) ? USER_NORMAL : USER_INACTIVE;
+	return ($user_active) ? phpbb::USER_NORMAL : phpbb::USER_INACTIVE;
 }
 
 /**
@@ -1461,7 +1461,7 @@ function compare_table($tables, $tablename, &$prefixes)
 * @param mixed $forum_id forum ids (array|int|0) -> 0 == all forums
 * @param mixed $ug_id [int] user_id|group_id : [string] usergroup name
 * @param mixed $acl_list [string] acl entry : [array] acl entries : [string] role entry
-* @param int $setting ACL_YES|ACL_NO|ACL_NEVER
+* @param int $setting phpbb::ACL_YES|ACL_NO|ACL_NEVER
 */
 function mass_auth($ug_type, $forum_id, $ug_id, $acl_list, $setting = ACL_NO)
 {
@@ -1850,7 +1850,7 @@ function add_bots()
 	foreach ($bots as $bot_name => $bot_ary)
 	{
 		$user_row = array(
-			'user_type'				=> USER_IGNORE,
+			'user_type'				=> phpbb::USER_IGNORE,
 			'group_id'				=> $group_id,
 			'username'				=> $bot_name,
 			'user_regdate'			=> time(),
@@ -1890,7 +1890,7 @@ function update_dynamic_config()
 	// Get latest username
 	$sql = 'SELECT user_id, username, user_colour
 		FROM ' . USERS_TABLE . '
-		WHERE user_type IN (' . USER_NORMAL . ', ' . USER_FOUNDER . ')';
+		WHERE user_type IN (' . phpbb::USER_NORMAL . ', ' . phpbb::USER_FOUNDER . ')';
 
 	if (!empty($config['increment_user_id']))
 	{
@@ -1934,7 +1934,7 @@ function update_dynamic_config()
 
 	$sql = 'SELECT COUNT(user_id) AS stat
 		FROM ' . USERS_TABLE . '
-		WHERE user_type IN (' . USER_NORMAL . ',' . USER_FOUNDER . ')';
+		WHERE user_type IN (' . phpbb::USER_NORMAL . ',' . phpbb::USER_FOUNDER . ')';
 	$result = $db->sql_query($sql);
 	$row = $db->sql_fetchrow($result);
 	$db->sql_freeresult($result);
@@ -2056,11 +2056,11 @@ function fix_empty_primary_groups()
 
 	// Set group ids for users not already having it
 	$sql = 'UPDATE ' . USERS_TABLE . ' SET group_id = ' . get_group_id('registered') . '
-		WHERE group_id = 0 AND user_type = ' . USER_INACTIVE;
+		WHERE group_id = 0 AND user_type = ' . phpbb::USER_INACTIVE;
 	$db->sql_query($sql);
 
 	$sql = 'UPDATE ' . USERS_TABLE . ' SET group_id = ' . get_group_id('registered') . '
-		WHERE group_id = 0 AND user_type = ' . USER_NORMAL;
+		WHERE group_id = 0 AND user_type = ' . phpbb::USER_NORMAL;
 	$db->sql_query($sql);
 
 	$db->sql_query('UPDATE ' . USERS_TABLE . ' SET group_id = ' . get_group_id('guests') . ' WHERE user_id = ' . ANONYMOUS);

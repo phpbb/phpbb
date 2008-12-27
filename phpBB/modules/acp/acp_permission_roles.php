@@ -262,7 +262,7 @@ class acp_permission_roles
 					$auth_options = array();
 					while ($row = $db->sql_fetchrow($result))
 					{
-						$auth_options[$row['auth_option']] = ACL_NO;
+						$auth_options[$row['auth_option']] = phpbb::ACL_NO;
 					}
 					$db->sql_freeresult($result);
 				}
@@ -329,7 +329,7 @@ class acp_permission_roles
 				{
 					if (!isset($auth_options[$row['auth_option']]))
 					{
-						$auth_options[$row['auth_option']] = ACL_NO;
+						$auth_options[$row['auth_option']] = phpbb::ACL_NO;
 					}
 				}
 				$db->sql_freeresult($result);
@@ -482,9 +482,9 @@ class acp_permission_roles
 			foreach ($cat_array['permissions'] as $permission => $allowed)
 			{
 				$template->assign_block_vars('auth.mask', array(
-					'S_YES'		=> ($allowed == ACL_YES) ? true : false,
-					'S_NEVER'	=> ($allowed == ACL_NEVER) ? true : false,
-					'S_NO'		=> ($allowed == ACL_NO) ? true : false,
+					'S_YES'		=> ($allowed == phpbb::ACL_YES) ? true : false,
+					'S_NEVER'	=> ($allowed == phpbb::ACL_NEVER) ? true : false,
+					'S_NO'		=> ($allowed == phpbb::ACL_NO) ? true : false,
 
 					'FIELD_NAME'	=> $permission,
 					'PERMISSION'	=> $user->lang['acl_' . $permission]['lang'])
@@ -511,7 +511,7 @@ class acp_permission_roles
 		$auth_settings = array();
 		while ($row = $db->sql_fetchrow($result))
 		{
-			$auth_settings[$row['auth_option']] = ACL_NO;
+			$auth_settings[$row['auth_option']] = phpbb::ACL_NO;
 		}
 		$db->sql_freeresult($result);
 

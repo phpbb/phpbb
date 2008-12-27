@@ -2,7 +2,7 @@
 /**
 * Rebuild BOTS
 *
-* You should make a backup from your whole database. Things can and will go wrong. 
+* You should make a backup from your whole database. Things can and will go wrong.
 * This will only work if no BOTs were added.
 *
 */
@@ -74,9 +74,9 @@ $bots = array(
 	'Yahoo [Bot]'				=> array('Yahoo! Slurp', ''),
 	'YahooSeeker [Bot]'			=> array('YahooSeeker/', ''),
 );
-	
+
 $bot_ids = array();
-user_get_id_name($bot_ids, array_keys($bots), USER_IGNORE);
+user_get_id_name($bot_ids, array_keys($bots), phpbb::USER_IGNORE);
 foreach($bot_ids as $bot)
 {
 	user_delete('remove', $bot);
@@ -119,7 +119,7 @@ function add_bots($bots)
 	foreach ($bots as $bot_name => $bot_ary)
 	{
 		$user_row = array(
-			'user_type'				=> USER_IGNORE,
+			'user_type'				=> phpbb::USER_IGNORE,
 			'group_id'				=> $group_id,
 			'username'				=> $bot_name,
 			'user_regdate'			=> time(),

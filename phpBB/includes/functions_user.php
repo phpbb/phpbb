@@ -91,7 +91,7 @@ function update_last_username()
 	// Get latest username
 	$sql = 'SELECT user_id, username, user_colour
 		FROM ' . USERS_TABLE . '
-		WHERE user_type IN (' . USER_NORMAL . ', ' . USER_FOUNDER . ')
+		WHERE user_type IN (' . phpbb::USER_NORMAL . ', ' . phpbb::USER_FOUNDER . ')
 		ORDER BY user_id DESC';
 	$result = $db->sql_query_limit($sql, 1);
 	$row = $db->sql_fetchrow($result);
@@ -276,7 +276,7 @@ function user_add($user_row, $cp_data = false)
 	group_set_user_default($user_row['group_id'], array($user_id), false);
 
 	// set the newest user and adjust the user count if the user is a normal user and no activation mail is sent
-	if ($user_row['user_type'] == USER_NORMAL)
+	if ($user_row['user_type'] == phpbb::USER_NORMAL)
 	{
 		set_config('newest_user_id', $user_id, true);
 		set_config('newest_username', $user_row['username'], true);
@@ -390,7 +390,7 @@ function user_delete($mode, $user_id, $post_username = false)
 			}
 
 			// If the user is inactive and newly registered we assume no posts from this user being there...
-			if ($user_row['user_type'] == USER_INACTIVE && $user_row['user_inactive_reason'] == INACTIVE_REGISTER && !$user_row['user_posts'])
+			if ($user_row['user_type'] == phpbb::USER_INACTIVE && $user_row['user_inactive_reason'] == INACTIVE_REGISTER && !$user_row['user_posts'])
 			{
 			}
 			else
@@ -566,7 +566,7 @@ function user_delete($mode, $user_id, $post_username = false)
 	}
 
 	// Decrement number of users if this user is active
-	if ($user_row['user_type'] != USER_INACTIVE && $user_row['user_type'] != USER_IGNORE)
+	if ($user_row['user_type'] != phpbb::USER_INACTIVE && $user_row['user_type'] != phpbb::USER_IGNORE)
 	{
 		set_config('num_users', $config['num_users'] - 1, true);
 	}
@@ -605,14 +605,14 @@ function user_active_flip($mode, $user_id_ary, $reason = INACTIVE_MANUAL)
 	{
 		$sql_ary = array();
 
-		if ($row['user_type'] == USER_IGNORE || $row['user_type'] == USER_FOUNDER ||
-			($mode == 'activate' && $row['user_type'] != USER_INACTIVE) ||
-			($mode == 'deactivate' && $row['user_type'] == USER_INACTIVE))
+		if ($row['user_type'] == phpbb::USER_IGNORE || $row['user_type'] == phpbb::USER_FOUNDER ||
+			($mode == 'activate' && $row['user_type'] != phpbb::USER_INACTIVE) ||
+			($mode == 'deactivate' && $row['user_type'] == phpbb::USER_INACTIVE))
 		{
 			continue;
 		}
 
-		if ($row['user_type'] == USER_INACTIVE)
+		if ($row['user_type'] == phpbb::USER_INACTIVE)
 		{
 			$activated++;
 		}
@@ -625,9 +625,9 @@ function user_active_flip($mode, $user_id_ary, $reason = INACTIVE_MANUAL)
 		}
 
 		$sql_ary += array(
-			'user_type'				=> ($row['user_type'] == USER_NORMAL) ? USER_INACTIVE : USER_NORMAL,
-			'user_inactive_time'	=> ($row['user_type'] == USER_NORMAL) ? time() : 0,
-			'user_inactive_reason'	=> ($row['user_type'] == USER_NORMAL) ? $reason : 0,
+			'user_type'				=> ($row['user_type'] == phpbb::USER_NORMAL) ? phpbb::USER_INACTIVE : phpbb::USER_NORMAL,
+			'user_inactive_time'	=> ($row['user_type'] == phpbb::USER_NORMAL) ? time() : 0,
+			'user_inactive_reason'	=> ($row['user_type'] == phpbb::USER_NORMAL) ? $reason : 0,
 		);
 
 		$sql_statements[$row['user_id']] = $sql_ary;
@@ -720,7 +720,7 @@ function user_ban($mode, $ban, $ban_len, $ban_len_other, $ban_exclude, $ban_reas
 		// Create a list of founder...
 		$sql = 'SELECT user_id, user_email, username_clean
 			FROM ' . USERS_TABLE . '
-			WHERE user_type = ' . USER_FOUNDER;
+			WHERE user_type = ' . phpbb::USER_FOUNDER;
 		$result = $db->sql_query($sql);
 
 		while ($row = $db->sql_fetchrow($result))
@@ -3244,7 +3244,7 @@ function group_update_listings($group_id)
 					break 3;
 				}
 
-				if ($setting != ACL_YES)
+				if ($setting != phpbb::ACL_YES)
 				{
 					continue;
 				}

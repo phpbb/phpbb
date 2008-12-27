@@ -19,102 +19,21 @@ if (!defined('IN_PHPBB'))
 // Common global functions
 
 /**
-* Replacement for a superglobal (like $_GET or $_POST) which calls
-* trigger_error on any operation, overloads the [] operator using SPL.
-* @package phpBB3
-*/
-class deactivated_super_global implements ArrayAccess, Countable, IteratorAggregate
-{
-	/**
-	* Holds the error message
-	*/
-	private $message;
-
-	/**
-	* Constructor generates an error message fitting the super global to be
-	* used within the other functions.
-	*
-	* @param	string	$name	Name of the super global this is a replacement for - e.g. '_GET'
-	*/
-	public function __construct($name)
-	{
-		$this->message = 'Illegal use of $' . $name . '. You must use the request class or request_var() to access input data. Found in %s on line %d. This error message was generated';
-	}
-
-	/**
-	* Calls trigger_error with the file and line number the super global was used in
-	*/
-	private function error()
-	{
-		$file = '';
-		$line = 0;
-
-		$backtrace = debug_backtrace();
-		if (isset($backtrace[1]))
-		{
-			$file = $backtrace[1]['file'];
-			$line = $backtrace[1]['line'];
-		}
-		trigger_error(sprintf($this->message, $file, $line), E_USER_ERROR);
-	}
-
-	/**
-	* Part of the ArrayAccess implementation, will always result in a FATAL error
-	*/
-	public function offsetExists($offset)
-	{
-		$this->error();
-	}
-
-	/**
-	* Part of the ArrayAccess implementation, will always result in a FATAL error
-	*/
-	public function offsetGet($offset)
-	{
-		$this->error();
-	}
-
-	/**
-	* Part of the ArrayAccess implementation, will always result in a FATAL error
-	*/
-	public function offsetSet($offset, $value)
-	{
-		$this->error();
-	}
-
-	/**
-	* Part of the ArrayAccess implementation, will always result in a FATAL error
-	*/
-	public function offsetUnset($offset)
-	{
-		$this->error();
-	}
-
-	/**
-	* Part of the Countable implementation, will always result in a FATAL error
-	*/
-	public function count()
-	{
-		$this->error();
-	}
-
-	/**
-	* Part of the Traversable/IteratorAggregate implementation, will always result in a FATAL error
-	*/
-	public function getIterator()
-	{
-		$this->error();
-	}
-}
-
-/**
-* Wrapper function of phpbb_request::variable which exists for backwards
-* compatability.
-* See {@link phpbb_request::variable phpbb_request::variable} for documentation of this
-* function's use.
-* @param	bool	$cookie	This param is mapped to phpbb_request::COOKIE as the last
-*							param for phpbb_request::variable for backwards
-*							compatability reasons.
+* Wrapper function of phpbb_request::variable which exists for backwards compatability.
+* See {@link phpbb_request::variable phpbb_request::variable} for documentation of this function's use.
+*
+* @param string|array	$var_name	The form variable's name from which data shall be retrieved.
+* 									If the value is an array this may be an array of indizes which will give
+* 									direct access to a value at any depth. E.g. if the value of "var" is array(1 => "a")
+* 									then specifying array("var", 1) as the name will return "a".
+* @param mixed			$default	A default value that is returned if the variable was not set.
+* 									This function will always return a value of the same type as the default.
+* @param bool			$multibyte	If $default is a string this paramater has to be true if the variable may contain any UTF-8 characters
+*									Default is false, causing all bytes outside the ASCII range (0-127) to be replaced with question marks
+* @param bool			$cookie		This param is mapped to phpbb_request::COOKIE as the last param for phpbb_request::variable for backwards compatability reasons.
+*
+* @return mixed	The value of $_REQUEST[$var_name] run through {@link set_var set_var} to ensure that the type is the
+*				the same as that of $default. If the variable is not set $default is returned.
 */
 function request_var($var_name, $default, $multibyte = false, $cookie = false)
 {
@@ -122,66 +41,36 @@ function request_var($var_name, $default, $multibyte = false, $cookie = false)
 }
 
 /**
-* Set config value. Creates missing config entry.
+* Set config value.
+* Creates missing config entry if update did not succeed and phpbb::$config for this entry empty.
+*
+* @param string	$config_name	The configuration keys name
+* @param string	$config_value	The configuration value
+* @param bool	$is_dynamic		True if the configuration entry is not cached
 */
 function set_config($config_name, $config_value, $is_dynamic = false)
 {
-	global $db, $cache, $config;
-
 	$sql = 'UPDATE ' . CONFIG_TABLE . "
-		SET config_value = '" . $db->sql_escape($config_value) . "'
-		WHERE config_name = '" . $db->sql_escape($config_name) . "'";
-	$db->sql_query($sql);
+		SET config_value = '" . phpbb::$db->sql_escape($config_value) . "'
+		WHERE config_name = '" . phpbb::$db->sql_escape($config_name) . "'";
+	phpbb::$db->sql_query($sql);
 
-	if (!$db->sql_affectedrows() && !isset($config[$config_name]))
+	if (!phpbb::$db->sql_affectedrows() && !isset(phpbb::$config[$config_name]))
 	{
-		$sql = 'INSERT INTO ' . CONFIG_TABLE . ' ' . $db->sql_build_array('INSERT', array(
-			'config_name'	=> $config_name,
-			'config_value'	=> $config_value,
-			'is_dynamic'	=> ($is_dynamic) ? 1 : 0));
-		$db->sql_query($sql);
+		$sql = 'INSERT INTO ' . CONFIG_TABLE . ' ' . phpbb::$db->sql_build_array('INSERT', array(
+			'config_name'	=> (string) $config_name,
+			'config_value'	=> (string) $config_value,
+			'is_dynamic'	=> (int) $is_dynamic,
+		));
+		phpbb::$db->sql_query($sql);
 	}
 
-	$config[$config_name] = $config_value;
+	phpbb::$config[$config_name] = $config_value;
 
 	if (!$is_dynamic)
 	{
-		$cache->destroy('config');
+		phpbb::$acm->destroy('#config');
 	}
-}
-
-/**
-* Generates an alphanumeric random string of given length
-*/
-function gen_rand_string($num_chars = 8)
-{
-	$rand_str = unique_id();
-	$rand_str = str_replace('0', 'Z', strtoupper(base_convert($rand_str, 16, 35)));
-
-	return substr($rand_str, 0, $num_chars);
-}
-
-/**
-* Return unique id
-* @param string $extra additional entropy
-*/
-function unique_id($extra = 'c')
-{
-	static $dss_seeded = false;
-	global $config;
-
-	$val = $config['rand_seed'] . microtime();
-	$val = md5($val);
-	$config['rand_seed'] = md5($config['rand_seed'] . $val . $extra);
-
-	if ($dss_seeded !== true && ($config['rand_seed_last_update'] < time() - rand(1,10)))
-	{
-		set_config('rand_seed', $config['rand_seed'], true);
-		set_config('rand_seed_last_update', time(), true);
-		$dss_seeded = true;
-	}
-
-	return substr($val, 4, 16);
 }
 
 /**
@@ -240,200 +129,6 @@ function still_on_time($extra_time = 15)
 }
 
 /**
-*
-* @version Version 0.1 / $Id$
-*
-* Portable PHP password hashing framework.
-*
-* Written by Solar Designer <solar at openwall.com> in 2004-2006 and placed in
-* the public domain.
-*
-* There's absolutely no warranty.
-*
-* The homepage URL for this framework is:
-*
-*	http://www.openwall.com/phpass/
-*
-* Please be sure to update the Version line if you edit this file in any way.
-* It is suggested that you leave the main version number intact, but indicate
-* your project name (after the slash) and add your own revision information.
-*
-* Please do not change the "private" password hashing method implemented in
-* here, thereby making your hashes incompatible.  However, if you must, please
-* change the hash type identifier (the "$P$") to something different.
-*
-* Obviously, since this code is in the public domain, the above are not
-* requirements (there can be none), but merely suggestions.
-*
-*
-* Hash the password
-*/
-function phpbb_hash($password)
-{
-	$itoa64 = './0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz';
-
-	$random_state = unique_id();
-	$random = '';
-	$count = 6;
-
-	if (($fh = @fopen('/dev/urandom', 'rb')))
-	{
-		$random = fread($fh, $count);
-		fclose($fh);
-	}
-
-	if (strlen($random) < $count)
-	{
-		$random = '';
-
-		for ($i = 0; $i < $count; $i += 16)
-		{
-			$random_state = md5(unique_id() . $random_state);
-			$random .= pack('H*', md5($random_state));
-		}
-		$random = substr($random, 0, $count);
-	}
-
-	$hash = _hash_crypt_private($password, _hash_gensalt_private($random, $itoa64), $itoa64);
-
-	if (strlen($hash) == 34)
-	{
-		return $hash;
-	}
-
-	return md5($password);
-}
-
-/**
-* Check for correct password
-*
-* @param string $password The password in plain text
-* @param string $hash The stored password hash
-*
-* @return bool Returns true if the password is correct, false if not.
-*/
-function phpbb_check_hash($password, $hash)
-{
-	$itoa64 = './0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz';
-	if (strlen($hash) == 34)
-	{
-		return (_hash_crypt_private($password, $hash, $itoa64) === $hash) ? true : false;
-	}
-
-	return (md5($password) === $hash) ? true : false;
-}
-
-/**
-* Generate salt for hash generation
-*/
-function _hash_gensalt_private($input, &$itoa64, $iteration_count_log2 = 6)
-{
-	if ($iteration_count_log2 < 4 || $iteration_count_log2 > 31)
-	{
-		$iteration_count_log2 = 8;
-	}
-
-	$output = '$H$';
-	$output .= $itoa64[min($iteration_count_log2 + 5, 30)];
-	$output .= _hash_encode64($input, 6, $itoa64);
-
-	return $output;
-}
-
-/**
-* Encode hash
-*/
-function _hash_encode64($input, $count, &$itoa64)
-{
-	$output = '';
-	$i = 0;
-
-	do
-	{
-		$value = ord($input[$i++]);
-		$output .= $itoa64[$value & 0x3f];
-
-		if ($i < $count)
-		{
-			$value |= ord($input[$i]) << 8;
-		}
-
-		$output .= $itoa64[($value >> 6) & 0x3f];
-
-		if ($i++ >= $count)
-		{
-			break;
-		}
-
-		if ($i < $count)
-		{
-			$value |= ord($input[$i]) << 16;
-		}
-
-		$output .= $itoa64[($value >> 12) & 0x3f];
-
-		if ($i++ >= $count)
-		{
-			break;
-		}
-
-		$output .= $itoa64[($value >> 18) & 0x3f];
-	}
-	while ($i < $count);
-
-	return $output;
-}
-
-/**
-* The crypt function/replacement
-*/
-function _hash_crypt_private($password, $setting, &$itoa64)
-{
-	$output = '*';
-
-	// Check for correct hash
-	if (substr($setting, 0, 3) != '$H$')
-	{
-		return $output;
-	}
-
-	$count_log2 = strpos($itoa64, $setting[3]);
-
-	if ($count_log2 < 7 || $count_log2 > 30)
-	{
-		return $output;
-	}
-
-	$count = 1 << $count_log2;
-	$salt = substr($setting, 4, 8);
-
-	if (strlen($salt) != 8)
-	{
-		return $output;
-	}
-
-	/**
-	* We're kind of forced to use MD5 here since it's the only
-	* cryptographic primitive available in all versions of PHP
-	* currently in use.  To implement our own low-level crypto
-	* in PHP would result in much worse performance and
-	* consequently in lower iteration counts and hashes that are
-	* quicker to crack (by non-PHP code).
-	*/
-	$hash = md5($salt . $password, true);
-	do
-	{
-		$hash = md5($hash . $password, true);
-	}
-	while (--$count);
-
-	$output = substr($setting, 0, 12);
-	$output .= _hash_encode64($hash, 16, $itoa64);
-
-	return $output;
-}
-
-/**
 * Global function for chmodding directories and files for internal use
 * This function determines owner and group whom the file belongs to and user and group of PHP and then set safest possible file permissions.
 * The function determines owner and group from common.php file and sets the same to the provided file. Permissions are mapped to the group, user always has rw(x) permission.
@@ -442,10 +137,10 @@ function _hash_crypt_private($password, $setting, &$itoa64)
 *
 * Supported constants representing bit fields are:
 *
-* CHMOD_ALL - all permissions (7)
-* CHMOD_READ - read permission (4)
-* CHMOD_WRITE - write permission (2)
-* CHMOD_EXECUTE - execute permission (1)
+* phpbb::CHMOD_ALL - all permissions (7)
+* phpbb::CHMOD_READ - read permission (4)
+* phpbb::CHMOD_WRITE - write permission (2)
+* phpbb::CHMOD_EXECUTE - execute permission (1)
 *
 * NOTE: The function uses POSIX extension and fileowner()/filegroup() functions. If any of them is disabled, this function tries to build proper permissions, by calling is_readable() and is_writable() functions.
 *
@@ -455,7 +150,7 @@ function _hash_crypt_private($password, $setting, &$itoa64)
 *
 * @author faw, phpBB Group
 */
-function phpbb_chmod($filename, $perms = CHMOD_READ)
+function phpbb_chmod($filename, $perms = phpbb::CHMOD_READ)
 {
 	// Return if the file no longer exists.
 	if (!file_exists($filename))
@@ -522,15 +217,15 @@ function phpbb_chmod($filename, $perms = CHMOD_READ)
 	}
 
 	// Owner always has read/write permission
-	$owner = CHMOD_READ | CHMOD_WRITE;
+	$owner = phpbb::CHMOD_READ | phpbb::CHMOD_WRITE;
 	if (is_dir($filename))
 	{
-		$owner |= CHMOD_EXECUTE;
+		$owner |= phpbb::CHMOD_EXECUTE;
 
 		// Only add execute bit to the permission if the dir needs to be readable
-		if ($perms & CHMOD_READ)
+		if ($perms & phpbb::CHMOD_READ)
 		{
-			$perms |= CHMOD_EXECUTE;
+			$perms |= phpbb::CHMOD_EXECUTE;
 		}
 	}
 
@@ -555,7 +250,7 @@ function phpbb_chmod($filename, $perms = CHMOD_READ)
 
 			clearstatcache();
 
-			if (!is_null($php) || ((!($perms & CHMOD_READ) || is_readable($filename)) && (!($perms & CHMOD_WRITE) || is_writable($filename))))
+			if (!is_null($php) || ((!($perms & phpbb::CHMOD_READ) || is_readable($filename)) && (!($perms & phpbb::CHMOD_WRITE) || is_writable($filename))))
 			{
 				break;
 			}
@@ -565,7 +260,7 @@ function phpbb_chmod($filename, $perms = CHMOD_READ)
 
 			clearstatcache();
 
-			if (!is_null($php) || ((!($perms & CHMOD_READ) || is_readable($filename)) && (!($perms & CHMOD_WRITE) || is_writable($filename))))
+			if (!is_null($php) || ((!($perms & phpbb::CHMOD_READ) || is_readable($filename)) && (!($perms & phpbb::CHMOD_WRITE) || is_writable($filename))))
 			{
 				break;
 			}
@@ -576,211 +271,6 @@ function phpbb_chmod($filename, $perms = CHMOD_READ)
 	}
 
 	return $result;
-}
-
-/*
-* Checks if a path ($path) is absolute or relative
-*
-* @param string $path Path to check absoluteness of
-* @return boolean
-*/
-function is_absolute($path)
-{
-	return ($path[0] == '/' || (DIRECTORY_SEPARATOR == '\\' && preg_match('#^[a-z]:/#i', $path))) ? true : false;
-}
-
-/**
-* @author Chris Smith <chris@project-minerva.org>
-* @copyright 2006 Project Minerva Team
-* @param string $path The path which we should attempt to resolve.
-* @return mixed
-*/
-function phpbb_own_realpath($path)
-{
-	// Now to perform funky shizzle
-
-	// Switch to use UNIX slashes
-	$path = str_replace(DIRECTORY_SEPARATOR, '/', $path);
-	$path_prefix = '';
-
-	// Determine what sort of path we have
-	if (is_absolute($path))
-	{
-		$absolute = true;
-
-		if ($path[0] == '/')
-		{
-			// Absolute path, *NIX style
-			$path_prefix = '';
-		}
-		else
-		{
-			// Absolute path, Windows style
-			// Remove the drive letter and colon
-			$path_prefix = $path[0] . ':';
-			$path = substr($path, 2);
-		}
-	}
-	else
-	{
-		// Relative Path
-		// Prepend the current working directory
-		if (function_exists('getcwd'))
-		{
-			// This is the best method, hopefully it is enabled!
-			$path = str_replace(DIRECTORY_SEPARATOR, '/', getcwd()) . '/' . $path;
-			$absolute = true;
-			if (preg_match('#^[a-z]:#i', $path))
-			{
-				$path_prefix = $path[0] . ':';
-				$path = substr($path, 2);
-			}
-			else
-			{
-				$path_prefix = '';
-			}
-		}
-		else if (isset($_SERVER['SCRIPT_FILENAME']) && !empty($_SERVER['SCRIPT_FILENAME']))
-		{
-			// Warning: If chdir() has been used this will lie!
-			// Warning: This has some problems sometime (CLI can create them easily)
-			$path = str_replace(DIRECTORY_SEPARATOR, '/', dirname($_SERVER['SCRIPT_FILENAME'])) . '/' . $path;
-			$absolute = true;
-			$path_prefix = '';
-		}
-		else
-		{
-			// We have no way of getting the absolute path, just run on using relative ones.
-			$absolute = false;
-			$path_prefix = '.';
-		}
-	}
-
-	// Remove any repeated slashes
-	$path = preg_replace('#/{2,}#', '/', $path);
-
-	// Remove the slashes from the start and end of the path
-	$path = trim($path, '/');
-
-	// Break the string into little bits for us to nibble on
-	$bits = explode('/', $path);
-
-	// Remove any . in the path, renumber array for the loop below
-	$bits = array_values(array_diff($bits, array('.')));
-
-	// Lets get looping, run over and resolve any .. (up directory)
-	for ($i = 0, $max = sizeof($bits); $i < $max; $i++)
-	{
-		// @todo Optimise
-		if ($bits[$i] == '..' )
-		{
-			if (isset($bits[$i - 1]))
-			{
-				if ($bits[$i - 1] != '..')
-				{
-					// We found a .. and we are able to traverse upwards, lets do it!
-					unset($bits[$i]);
-					unset($bits[$i - 1]);
-					$i -= 2;
-					$max -= 2;
-					$bits = array_values($bits);
-				}
-			}
-			else if ($absolute) // ie. !isset($bits[$i - 1]) && $absolute
-			{
-				// We have an absolute path trying to descend above the root of the filesystem
-				// ... Error!
-				return false;
-			}
-		}
-	}
-
-	// Prepend the path prefix
-	array_unshift($bits, $path_prefix);
-
-	$resolved = '';
-
-	$max = sizeof($bits) - 1;
-
-	// Check if we are able to resolve symlinks, Windows cannot.
-	$symlink_resolve = (function_exists('readlink')) ? true : false;
-
-	foreach ($bits as $i => $bit)
-	{
-		if (@is_dir("$resolved/$bit") || ($i == $max && @is_file("$resolved/$bit")))
-		{
-			// Path Exists
-			if ($symlink_resolve && is_link("$resolved/$bit") && ($link = readlink("$resolved/$bit")))
-			{
-				// Resolved a symlink.
-				$resolved = $link . (($i == $max) ? '' : '/');
-				continue;
-			}
-		}
-		else
-		{
-			// Something doesn't exist here!
-			// This is correct realpath() behaviour but sadly open_basedir and safe_mode make this problematic
-			// return false;
-		}
-		$resolved .= $bit . (($i == $max) ? '' : '/');
-	}
-
-	// @todo If the file exists fine and open_basedir only has one path we should be able to prepend it
-	// because we must be inside that basedir, the question is where...
-	// @internal The slash in is_dir() gets around an open_basedir restriction
-	if (!@file_exists($resolved) || (!is_dir($resolved . '/') && !is_file($resolved)))
-	{
-		return false;
-	}
-
-	// Put the slashes back to the native operating systems slashes
-	$resolved = str_replace('/', DIRECTORY_SEPARATOR, $resolved);
-
-	// Check for DIRECTORY_SEPARATOR at the end (and remove it!)
-	if (substr($resolved, -1) == DIRECTORY_SEPARATOR)
-	{
-		return substr($resolved, 0, -1);
-	}
-
-	return $resolved; // We got here, in the end!
-}
-
-if (!function_exists('realpath'))
-{
-	/**
-	* A wrapper for realpath
-	* @ignore
-	*/
-	function phpbb_realpath($path)
-	{
-		return phpbb_own_realpath($path);
-	}
-}
-else
-{
-	/**
-	* A wrapper for realpath
-	*/
-	function phpbb_realpath($path)
-	{
-		$realpath = realpath($path);
-
-		// Strangely there are provider not disabling realpath but returning strange values. :o
-		// We at least try to cope with them.
-		if ($realpath === $path || $realpath === false)
-		{
-			return phpbb_own_realpath($path);
-		}
-
-		// Check for DIRECTORY_SEPARATOR at the end (and remove it!)
-		if (substr($realpath, -1) == DIRECTORY_SEPARATOR)
-		{
-			$realpath = substr($realpath, 0, -1);
-		}
-
-		return $realpath;
-	}
 }
 
 // functions used for building option fields
@@ -1668,498 +1158,10 @@ function on_page($num_items, $per_page, $start)
 	return sprintf($user->lang['PAGE_OF'], $on_page, max(ceil($num_items / $per_page), 1));
 }
 
-// Server functions (building urls, redirecting...)
-
-/**
-* Append session id to url.
-* This function supports hooks.
-*
-* @param string $url The url the session id needs to be appended to (can have params)
-* @param mixed $params String or array of additional url parameters
-* @param bool $is_amp Is url using &amp; (true) or & (false)
-* @param string $session_id Possibility to use a custom session id instead of the global one
-*
-* Examples:
-* <code>
-* append_sid(PHPBB_ROOT_PATH . 'viewtopic.' . PHP_EXT . '?t=1&amp;f=2');
-* append_sid(PHPBB_ROOT_PATH . 'viewtopic.' . PHP_EXT, 't=1&amp;f=2');
-* append_sid('viewtopic', 't=1&amp;f=2'); // short notation of the above example
-* append_sid('viewtopic', 't=1&f=2', false);
-* append_sid('viewtopic', array('t' => 1, 'f' => 2));
-* </code>
-*
-*/
-function append_sid($url, $params = false, $is_amp = true, $session_id = false)
-{
-	global $_SID, $_EXTRA_URL, $phpbb_hook;
-	static $parsed_urls = array();
-
-	// The following code is used to make sure such calls like append_sid('viewtopic') (ommitting phpbb_root_path and php_ext) work as intended
-	if (isset($parsed_urls[$url]))
-	{
-		// Set an url like 'viewtopic' to PHPBB_ROOT_PATH . 'viewtopic.' . PHP_EXT
-		$url = $parsed_urls[$url];
-	}
-	else
-	{
-		// If we detect an url without root path and extension, and also not a relative or absolute path, we add it and put it to the parsed urls
-		if (strpos($url, '.' . PHP_EXT) === false && $url[0] != '.' && $url[0] != '/')
-		{
-			$parsed_urls[$url] = $url = PHPBB_ROOT_PATH . $url . '.' . PHP_EXT;
-		}
-	}
-
-	if (empty($params))
-	{
-		$params = false;
-	}
-
-	// Developers using the hook function need to globalise the $_SID and $_EXTRA_URL on their own and also handle it appropiatly.
-	// They could mimick most of what is within this function
-	if (!empty($phpbb_hook) && $phpbb_hook->call_hook(__FUNCTION__, $url, $params, $is_amp, $session_id))
-	{
-		if ($phpbb_hook->hook_return(__FUNCTION__))
-		{
-			return $phpbb_hook->hook_return_result(__FUNCTION__);
-		}
-	}
-
-	$params_is_array = is_array($params);
-
-	// Get anchor
-	$anchor = '';
-	if (strpos($url, '#') !== false)
-	{
-		list($url, $anchor) = explode('#', $url, 2);
-		$anchor = '#' . $anchor;
-	}
-	else if (!$params_is_array && strpos($params, '#') !== false)
-	{
-		list($params, $anchor) = explode('#', $params, 2);
-		$anchor = '#' . $anchor;
-	}
-
-	// Handle really simple cases quickly
-	if ($_SID == '' && $session_id === false && empty($_EXTRA_URL) && !$params_is_array && !$anchor)
-	{
-		if ($params === false)
-		{
-			return $url;
-		}
-
-		$url_delim = (strpos($url, '?') === false) ? '?' : (($is_amp) ? '&amp;' : '&');
-		return $url . ($params !== false ? $url_delim. $params : '');
-	}
-
-	// Assign sid if session id is not specified
-	if ($session_id === false)
-	{
-		$session_id = $_SID;
-	}
-
-	$amp_delim = ($is_amp) ? '&amp;' : '&';
-	$url_delim = (strpos($url, '?') === false) ? '?' : $amp_delim;
-
-	// Appending custom url parameter?
-	$append_url = (!empty($_EXTRA_URL)) ? implode($amp_delim, $_EXTRA_URL) : '';
-
-	// Use the short variant if possible ;)
-	if ($params === false)
-	{
-		// Append session id
-		if (!$session_id)
-		{
-			return $url . (($append_url) ? $url_delim . $append_url : '') . $anchor;
-		}
-		else
-		{
-			return $url . (($append_url) ? $url_delim . $append_url . $amp_delim : $url_delim) . 'sid=' . $session_id . $anchor;
-		}
-	}
-
-	// Build string if parameters are specified as array
-	if (is_array($params))
-	{
-		$output = array();
-
-		foreach ($params as $key => $item)
-		{
-			if ($item === NULL)
-			{
-				continue;
-			}
-
-			if ($key == '#')
-			{
-				$anchor = '#' . $item;
-				continue;
-			}
-
-			$output[] = $key . '=' . $item;
-		}
-
-		$params = implode($amp_delim, $output);
-	}
-
-	// Append session id and parameters (even if they are empty)
-	// If parameters are empty, the developer can still append his/her parameters without caring about the delimiter
-	return $url . (($append_url) ? $url_delim . $append_url . $amp_delim : $url_delim) . $params . ((!$session_id) ? '' : $amp_delim . 'sid=' . $session_id) . $anchor;
-}
-
-/**
-* Generate board url (example: http://www.example.com/phpBB)
-* @param bool $without_script_path if set to true the script path gets not appended (example: http://www.example.com)
-*/
-function generate_board_url($without_script_path = false)
-{
-	global $config, $user;
-
-	$server_name = $user->host;
-	$server_port = (!empty($_SERVER['SERVER_PORT'])) ? (int) $_SERVER['SERVER_PORT'] : (int) getenv('SERVER_PORT');
-
-	// Forcing server vars is the only way to specify/override the protocol
-	if ($config['force_server_vars'] || !$server_name)
-	{
-		$server_protocol = ($config['server_protocol']) ? $config['server_protocol'] : (($config['cookie_secure']) ? 'https://' : 'http://');
-		$server_name = $config['server_name'];
-		$server_port = (int) $config['server_port'];
-		$script_path = $config['script_path'];
-
-		$url = $server_protocol . $server_name;
-		$cookie_secure = $config['cookie_secure'];
-	}
-	else
-	{
-		// Do not rely on cookie_secure, users seem to think that it means a secured cookie instead of an encrypted connection
-		$cookie_secure = (isset($_SERVER['HTTPS']) && $_SERVER['HTTPS'] == 'on') ? 1 : 0;
-		$url = (($cookie_secure) ? 'https://' : 'http://') . $server_name;
-
-		$script_path = $user->page['root_script_path'];
-	}
-
-	if ($server_port && (($cookie_secure && $server_port <> 443) || (!$cookie_secure && $server_port <> 80)))
-	{
-		// HTTP HOST can carry a port number (we fetch $user->host, but for old versions this may be true)
-		if (strpos($server_name, ':') === false)
-		{
-			$url .= ':' . $server_port;
-		}
-	}
-
-	if (!$without_script_path)
-	{
-		$url .= $script_path;
-	}
-
-	// Strip / from the end
-	if (substr($url, -1, 1) == '/')
-	{
-		$url = substr($url, 0, -1);
-	}
-
-	return $url;
-}
-
-/**
-* Redirects the user to another page then exits the script nicely
-* This function is intended for urls within the board. It's not meant to redirect to cross-domains.
-*
-* @param string $url The url to redirect to
-* @param bool $return If true, do not redirect but return the sanitized URL. Default is no return.
-* @param bool $disable_cd_check If true, redirect() will redirect to an external domain. If false, the redirect point to the boards url if it does not match the current domain. Default is false.
-*/
-function redirect($url, $return = false, $disable_cd_check = false)
-{
-	global $db, $cache, $config, $user;
-
-	if (empty($user->lang))
-	{
-		$user->add_lang('common');
-	}
-
-	if (!$return)
-	{
-		garbage_collection();
-	}
-
-	// Make sure no &amp;'s are in, this will break the redirect
-	$url = str_replace('&amp;', '&', $url);
-
-	// Determine which type of redirect we need to handle...
-	$url_parts = parse_url($url);
-
-	if ($url_parts === false)
-	{
-		// Malformed url, redirect to current page...
-		$url = generate_board_url() . '/' . $user->page['page'];
-	}
-	else if (!empty($url_parts['scheme']) && !empty($url_parts['host']))
-	{
-		// Attention: only able to redirect within the same domain if $disable_cd_check is false (yourdomain.com -> www.yourdomain.com will not work)
-		if (!$disable_cd_check && $url_parts['host'] !== $user->host)
-		{
-			$url = generate_board_url();
-		}
-	}
-	else if ($url[0] == '/')
-	{
-		// Absolute uri, prepend direct url...
-		$url = generate_board_url(true) . $url;
-	}
-	else
-	{
-		// Relative uri
-		$pathinfo = pathinfo($url);
-
-		// Is the uri pointing to the current directory?
-		if ($pathinfo['dirname'] == '.')
-		{
-			$url = str_replace('./', '', $url);
-
-			// Strip / from the beginning
-			if ($url && substr($url, 0, 1) == '/')
-			{
-				$url = substr($url, 1);
-			}
-
-			if ($user->page['page_dir'])
-			{
-				$url = generate_board_url() . '/' . $user->page['page_dir'] . '/' . $url;
-			}
-			else
-			{
-				$url = generate_board_url() . '/' . $url;
-			}
-		}
-		else
-		{
-			// Used ./ before, but PHPBB_ROOT_PATH is working better with urls within another root path
-			$root_dirs = explode('/', str_replace('\\', '/', phpbb_realpath(PHPBB_ROOT_PATH)));
-			$page_dirs = explode('/', str_replace('\\', '/', phpbb_realpath($pathinfo['dirname'])));
-			$intersection = array_intersect_assoc($root_dirs, $page_dirs);
-
-			$root_dirs = array_diff_assoc($root_dirs, $intersection);
-			$page_dirs = array_diff_assoc($page_dirs, $intersection);
-
-			$dir = str_repeat('../', sizeof($root_dirs)) . implode('/', $page_dirs);
-
-			// Strip / from the end
-			if ($dir && substr($dir, -1, 1) == '/')
-			{
-				$dir = substr($dir, 0, -1);
-			}
-
-			// Strip / from the beginning
-			if ($dir && substr($dir, 0, 1) == '/')
-			{
-				$dir = substr($dir, 1);
-			}
-
-			$url = str_replace($pathinfo['dirname'] . '/', '', $url);
-
-			// Strip / from the beginning
-			if (substr($url, 0, 1) == '/')
-			{
-				$url = substr($url, 1);
-			}
-
-			$url = (!empty($dir) ? $dir . '/' : '') . $url;
-			$url = generate_board_url() . '/' . $url;
-		}
-	}
-
-	// Make sure no linebreaks are there... to prevent http response splitting for PHP < 4.4.2
-	if (strpos(urldecode($url), "\n") !== false || strpos(urldecode($url), "\r") !== false || strpos($url, ';') !== false)
-	{
-		trigger_error('Tried to redirect to potentially insecure url.', E_USER_ERROR);
-	}
-
-	// Now, also check the protocol and for a valid url the last time...
-	$allowed_protocols = array('http', 'https', 'ftp', 'ftps');
-	$url_parts = parse_url($url);
-
-	if ($url_parts === false || empty($url_parts['scheme']) || !in_array($url_parts['scheme'], $allowed_protocols))
-	{
-		trigger_error('Tried to redirect to potentially insecure url.', E_USER_ERROR);
-	}
-
-	if ($return)
-	{
-		return $url;
-	}
-
-	// Redirect via an HTML form for PITA webservers
-	if (@preg_match('#Microsoft|WebSTAR|Xitami#', getenv('SERVER_SOFTWARE')))
-	{
-		header('Refresh: 0; URL=' . $url);
-
-		echo '<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">';
-		echo '<html xmlns="http://www.w3.org/1999/xhtml" dir="' . $user->lang['DIRECTION'] . '" lang="' . $user->lang['USER_LANG'] . '" xml:lang="' . $user->lang['USER_LANG'] . '">';
-		echo '<head>';
-		echo '<meta http-equiv="content-type" content="text/html; charset=utf-8" />';
-		echo '<meta http-equiv="refresh" content="0; url=' . str_replace('&', '&amp;', $url) . '" />';
-		echo '<title>' . $user->lang['REDIRECT'] . '</title>';
-		echo '</head>';
-		echo '<body>';
-		echo '<div style="text-align: center;">' . sprintf($user->lang['URL_REDIRECT'], '<a href="' . str_replace('&', '&amp;', $url) . '">', '</a>') . '</div>';
-		echo '</body>';
-		echo '</html>';
-
-		exit;
-	}
-
-	// Behave as per HTTP/1.1 spec for others
-	header('Location: ' . $url);
-	exit;
-}
-
-/**
-* Re-Apply session id after page reloads
-*/
-function reapply_sid($url)
-{
-	if ($url === 'index.' . PHP_EXT)
-	{
-		return append_sid('index.' . PHP_EXT);
-	}
-	else if ($url === PHPBB_ROOT_PATH . 'index.' . PHP_EXT)
-	{
-		return append_sid('index');
-	}
-
-	// Remove previously added sid
-	if (strpos($url, '?sid=') !== false)
-	{
-		$url = preg_replace('/(\?)sid=[a-z0-9]+(&amp;|&)?/', '\1', $url);
-	}
-	else if (strpos($url, '&sid=') !== false)
-	{
-		$url = preg_replace('/&sid=[a-z0-9]+(&)?/', '\1', $url);
-	}
-	else if (strpos($url, '&amp;sid=') !== false)
-	{
-		$url = preg_replace('/&amp;sid=[a-z0-9]+(&amp;)?/', '\1', $url);
-	}
-
-	return append_sid($url);
-}
-
-/**
-* Returns url from the session/current page with an re-appended SID with optionally stripping vars from the url
-*/
-function build_url($strip_vars = false)
-{
-	global $user;
-
-	// Append SID
-	$redirect = append_sid($user->page['page'], false, false);
-
-	// Add delimiter if not there...
-	if (strpos($redirect, '?') === false)
-	{
-		$redirect .= '?';
-	}
-
-	// Strip vars...
-	if ($strip_vars !== false && strpos($redirect, '?') !== false)
-	{
-		if (!is_array($strip_vars))
-		{
-			$strip_vars = array($strip_vars);
-		}
-
-		$query = $_query = array();
-
-		$args = substr($redirect, strpos($redirect, '?') + 1);
-		$args = ($args) ? explode('&', $args) : array();
-		$redirect = substr($redirect, 0, strpos($redirect, '?'));
-
-		foreach ($args as $argument)
-		{
-			$arguments = explode('=', $argument);
-			$key = $arguments[0];
-			unset($arguments[0]);
-
-			$query[$key] = implode('=', $arguments);
-		}
-
-		// Strip the vars off
-		foreach ($strip_vars as $strip)
-		{
-			if (isset($query[$strip]))
-			{
-				unset($query[$strip]);
-			}
-		}
-
-		// Glue the remaining parts together... already urlencoded
-		foreach ($query as $key => $value)
-		{
-			$_query[] = $key . '=' . $value;
-		}
-		$query = implode('&', $_query);
-
-		$redirect .= ($query) ? '?' . $query : '';
-	}
-
-	return PHPBB_ROOT_PATH . str_replace('&', '&amp;', $redirect);
-}
-
-/**
-* Meta refresh assignment
-* Adds META template variable with meta http tag.
-*
-* @param int $time Time in seconds for meta refresh tag
-* @param string $url URL to redirect to. The url will go through redirect() first before the template variable is assigned
-* @param bool $disable_cd_check If true, meta_refresh() will redirect to an external domain. If false, the redirect point to the boards url if it does not match the current domain. Default is false.
-*/
-function meta_refresh($time, $url, $disable_cd_check = false)
-{
-	global $template;
-
-	$url = redirect($url, true, $disable_cd_check);
-	$url = str_replace('&', '&amp;', $url);
-
-	// For XHTML compatibility we change back & to &amp;
-	$template->assign_vars(array(
-		'META' => '<meta http-equiv="refresh" content="' . $time . ';url=' . $url . '" />')
-	);
-
-	return $url;
-}
 
 //Form validation
 
 
-/**
-* Add a secret hash   for use in links/GET requests
-* @param string  $link_name The name of the link; has to match the name used in check_link_hash, otherwise no restrictions apply
-* @return string the hash
-
-*/
-function generate_link_hash($link_name)
-{
-	global $user;
-
-	if (!isset($user->data["hash_$link_name"]))
-	{
-		$user->data["hash_$link_name"] = substr(sha1($user->data['user_form_salt'] . $link_name), 0, 8);
-	}
-
-	return $user->data["hash_$link_name"];
-}
-
-
-/**
-* checks a link hash - for GET requests
-* @param string $token the submitted token
-* @param string $link_name The name of the link
-* @return boolean true if all is fine
-*/
-function check_link_hash($token, $link_name)
-{
-	return $token === generate_link_hash($link_name);
-}
 
 /**
 * Add a secret token to the form (requires the S_FORM_TOKEN template variable)
@@ -2446,7 +1448,7 @@ function login_box($redirect = '', $l_explain = '', $l_success = '', $admin = fa
 			$redirect = reapply_sid($redirect);
 
 			// Special case... the user is effectively banned, but we allow founders to login
-			if (defined('IN_CHECK_BAN') && $result['user_row']['user_type'] != USER_FOUNDER)
+			if (defined('IN_CHECK_BAN') && $result['user_row']['user_type'] != phpbb::USER_FOUNDER)
 			{
 				return;
 			}
@@ -3341,7 +2343,7 @@ function page_header($page_title = '', $display_online_list = true)
 
 					if (($row['session_viewonline']) || $auth->acl_get('u_viewonline'))
 					{
-						$user_online_link = get_username_string(($row['user_type'] <> USER_IGNORE) ? 'full' : 'no_profile', $row['user_id'], $row['username'], $row['user_colour']);
+						$user_online_link = get_username_string(($row['user_type'] <> phpbb::USER_IGNORE) ? 'full' : 'no_profile', $row['user_id'], $row['username'], $row['user_colour']);
 						$online_userlist .= ($online_userlist != '') ? ', ' . $user_online_link : $user_online_link;
 					}
 				}
@@ -3714,25 +2716,6 @@ function exit_handler()
 	(empty($config['gzip_compress'])) ? @flush() : @ob_flush();
 
 	exit;
-}
-
-/**
-* Handler for init calls in phpBB. This function is called in user::setup();
-* This function supports hooks.
-*/
-function phpbb_user_session_handler()
-{
-	global $phpbb_hook;
-
-	if (!empty($phpbb_hook) && $phpbb_hook->call_hook(__FUNCTION__))
-	{
-		if ($phpbb_hook->hook_return(__FUNCTION__))
-		{
-			return $phpbb_hook->hook_return_result(__FUNCTION__);
-		}
-	}
-
-	return;
 }
 
 ?>

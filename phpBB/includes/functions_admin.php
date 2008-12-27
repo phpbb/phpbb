@@ -2163,8 +2163,8 @@ function cache_moderators()
 			),
 
 			'WHERE'		=> '(o.auth_option_id = a.auth_option_id OR o.auth_option_id = r.auth_option_id)
-				AND ((a.auth_setting = ' . ACL_NEVER . ' AND r.auth_setting IS NULL)
-					OR r.auth_setting = ' . ACL_NEVER . ')
+				AND ((a.auth_setting = ' . phpbb::ACL_NEVER . ' AND r.auth_setting IS NULL)
+					OR r.auth_setting = ' . phpbb::ACL_NEVER . ')
 				AND a.group_id = ug.group_id
 				AND ' . $db->sql_in_set('ug.user_id', $ug_id_ary) . "
 				AND ug.user_pending = 0
@@ -2256,7 +2256,7 @@ function cache_moderators()
 				foreach ($auth_ary as $auth_option => $setting)
 				{
 					// Make sure at least one ACL_YES option is set...
-					if ($setting == ACL_YES)
+					if ($setting == phpbb::ACL_YES)
 					{
 						$flag = true;
 						break;
@@ -2633,7 +2633,7 @@ function view_inactive_users(&$users, &$user_count, $limit = 0, $offset = 0, $li
 
 	$sql = 'SELECT COUNT(user_id) AS user_count
 		FROM ' . USERS_TABLE . '
-		WHERE user_type = ' . USER_INACTIVE .
+		WHERE user_type = ' . phpbb::USER_INACTIVE .
 		(($limit_days) ? " AND user_inactive_time >= $limit_days" : '');
 	$result = $db->sql_query($sql);
 	$user_count = (int) $db->sql_fetchfield('user_count');
@@ -2646,7 +2646,7 @@ function view_inactive_users(&$users, &$user_count, $limit = 0, $offset = 0, $li
 
 	$sql = 'SELECT user_id, username, user_regdate, user_lastvisit, user_inactive_time, user_inactive_reason
 		FROM ' . USERS_TABLE . '
-		WHERE user_type = ' . USER_INACTIVE .
+		WHERE user_type = ' . phpbb::USER_INACTIVE .
 		(($limit_days) ? " AND user_inactive_time >= $limit_days" : '') . "
 		ORDER BY $sort_by";
 	$result = $db->sql_query_limit($sql, $limit, $offset);

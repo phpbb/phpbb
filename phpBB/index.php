@@ -87,7 +87,7 @@ if ($config['load_birthdays'] && $config['allow_birthdays'])
 	$sql = 'SELECT user_id, username, user_colour, user_birthday
 		FROM ' . USERS_TABLE . "
 		WHERE user_birthday LIKE '" . $db->sql_escape(sprintf('%2d-%2d-', $now['mday'], $now['mon'])) . "%'
-			AND user_type IN (" . USER_NORMAL . ', ' . USER_FOUNDER . ')';
+			AND user_type IN (" . phpbb::USER_NORMAL . ', ' . phpbb::USER_FOUNDER . ')';
 	$result = $db->sql_query($sql);
 
 	while ($row = $db->sql_fetchrow($result))

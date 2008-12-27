@@ -222,7 +222,7 @@ class acp_bots
 
 
 							$user_id = user_add(array(
-								'user_type'				=> (int) USER_IGNORE,
+								'user_type'				=> (int) phpbb::USER_IGNORE,
 								'group_id'				=> (int) $group_row['group_id'],
 								'username'				=> (string) $bot_row['bot_name'],
 								'user_regdate'			=> time(),

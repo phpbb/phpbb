@@ -180,7 +180,7 @@ function login_db(&$username, &$password)
 		}
 
 		// User inactive...
-		if ($row['user_type'] == USER_INACTIVE || $row['user_type'] == USER_IGNORE)
+		if ($row['user_type'] == phpbb::USER_INACTIVE || $row['user_type'] == phpbb::USER_IGNORE)
 		{
 			return array(
 				'status'		=> LOGIN_ERROR_ACTIVE,

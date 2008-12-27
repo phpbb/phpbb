@@ -152,7 +152,7 @@ class acp_users
 		);
 
 		// Prevent normal users/admins change/view founders if they are not a founder by themselves
-		if ($user->data['user_type'] != USER_FOUNDER && $user_row['user_type'] == USER_FOUNDER)
+		if ($user->data['user_type'] != phpbb::USER_FOUNDER && $user_row['user_type'] == phpbb::USER_FOUNDER)
 		{
 			trigger_error($user->lang['NOT_MANAGE_FOUNDER'] . adm_back_link($this->u_action), E_USER_WARNING);
 		}
@@ -172,7 +172,7 @@ class acp_users
 				if ($submit)
 				{
 					// You can't delete the founder
-					if ($delete && $user_row['user_type'] != USER_FOUNDER)
+					if ($delete && $user_row['user_type'] != phpbb::USER_FOUNDER)
 					{
 						if (!$auth->acl_get('a_userdel'))
 						{
@@ -223,7 +223,7 @@ class acp_users
 								trigger_error($user->lang['CANNOT_BAN_YOURSELF'] . adm_back_link($this->u_action . '&amp;u=' . $user_id), E_USER_WARNING);
 							}
 
-							if ($user_row['user_type'] == USER_FOUNDER)
+							if ($user_row['user_type'] == phpbb::USER_FOUNDER)
 							{
 								trigger_error($user->lang['CANNOT_BAN_FOUNDER'] . adm_back_link($this->u_action . '&amp;u=' . $user_id), E_USER_WARNING);
 							}
@@ -290,12 +290,12 @@ class acp_users
 								trigger_error($user->lang['FORM_INVALID'] . adm_back_link($this->u_action . '&amp;u=' . $user_id), E_USER_WARNING);
 							}
 
-							if ($user_row['user_type'] == USER_FOUNDER)
+							if ($user_row['user_type'] == phpbb::USER_FOUNDER)
 							{
 								trigger_error($user->lang['CANNOT_FORCE_REACT_FOUNDER'] . adm_back_link($this->u_action . '&amp;u=' . $user_id), E_USER_WARNING);
 							}
 
-							if ($user_row['user_type'] == USER_IGNORE)
+							if ($user_row['user_type'] == phpbb::USER_IGNORE)
 							{
 								trigger_error($user->lang['CANNOT_FORCE_REACT_BOT'] . adm_back_link($this->u_action . '&amp;u=' . $user_id), E_USER_WARNING);
 							}
@@ -310,9 +310,9 @@ class acp_users
 								$key_len = 54 - (strlen($server_url));
 								$key_len = ($key_len > 6) ? $key_len : 6;
 								$user_actkey = substr($user_actkey, 0, $key_len);
-								$email_template = ($user_row['user_type'] == USER_NORMAL) ? 'user_reactivate_account' : 'user_resend_inactive';
+								$email_template = ($user_row['user_type'] == phpbb::USER_NORMAL) ? 'user_reactivate_account' : 'user_resend_inactive';
 
-								if ($user_row['user_type'] == USER_NORMAL)
+								if ($user_row['user_type'] == phpbb::USER_NORMAL)
 								{
 									user_active_flip('deactivate', $user_id, INACTIVE_REMIND);
 
@@ -372,20 +372,20 @@ class acp_users
 								trigger_error($user->lang['FORM_INVALID'] . adm_back_link($this->u_action . '&amp;u=' . $user_id), E_USER_WARNING);
 							}
 
-							if ($user_row['user_type'] == USER_FOUNDER)
+							if ($user_row['user_type'] == phpbb::USER_FOUNDER)
 							{
 								trigger_error($user->lang['CANNOT_DEACTIVATE_FOUNDER'] . adm_back_link($this->u_action . '&amp;u=' . $user_id), E_USER_WARNING);
 							}
 
-							if ($user_row['user_type'] == USER_IGNORE)
+							if ($user_row['user_type'] == phpbb::USER_IGNORE)
 							{
 								trigger_error($user->lang['CANNOT_DEACTIVATE_BOT'] . adm_back_link($this->u_action . '&amp;u=' . $user_id), E_USER_WARNING);
 							}
 
 							user_active_flip('flip', $user_id);
 
-							$message = ($user_row['user_type'] == USER_INACTIVE) ? 'USER_ADMIN_ACTIVATED' : 'USER_ADMIN_DEACTIVED';
-							$log = ($user_row['user_type'] == USER_INACTIVE) ? 'LOG_USER_ACTIVE' : 'LOG_USER_INACTIVE';
+							$message = ($user_row['user_type'] == phpbb::USER_INACTIVE) ? 'USER_ADMIN_ACTIVATED' : 'USER_ADMIN_DEACTIVED';
+							$log = ($user_row['user_type'] == phpbb::USER_INACTIVE) ? 'LOG_USER_ACTIVE' : 'LOG_USER_INACTIVE';
 
 							add_log('admin', $log, $user_row['username']);
 							add_log('user', $user_id, $log . '_USER');
@@ -654,7 +654,7 @@ class acp_users
 					// Handle registration info updates
 					$data = array(
 						'username'			=> utf8_normalize_nfc(request_var('user', $user_row['username'], true)),
-						'user_founder'		=> request_var('user_founder', ($user_row['user_type'] == USER_FOUNDER) ? 1 : 0),
+						'user_founder'		=> request_var('user_founder', ($user_row['user_type'] == phpbb::USER_FOUNDER) ? 1 : 0),
 						'email'				=> strtolower(request_var('user_email', $user_row['user_email'])),
 						'email_confirm'		=> strtolower(request_var('email_confirm', '')),
 						'new_password'		=> request_var('new_password', '', true),
@@ -718,33 +718,33 @@ class acp_users
 					{
 						$sql_ary = array();
 
-						if ($user_row['user_type'] != USER_FOUNDER || $user->data['user_type'] == USER_FOUNDER)
+						if ($user_row['user_type'] != phpbb::USER_FOUNDER || $user->data['user_type'] == phpbb::USER_FOUNDER)
 						{
 							// Only allow founders updating the founder status...
-							if ($user->data['user_type'] == USER_FOUNDER)
+							if ($user->data['user_type'] == phpbb::USER_FOUNDER)
 							{
 								// Setting a normal member to be a founder
-								if ($data['user_founder'] && $user_row['user_type'] != USER_FOUNDER)
+								if ($data['user_founder'] && $user_row['user_type'] != phpbb::USER_FOUNDER)
 								{
 									// Make sure the user is not setting an Inactive or ignored user to be a founder
-									if ($user_row['user_type'] == USER_IGNORE)
+									if ($user_row['user_type'] == phpbb::USER_IGNORE)
 									{
 										trigger_error($user->lang['CANNOT_SET_FOUNDER_IGNORED'] . adm_back_link($this->u_action . '&amp;u=' . $user_id), E_USER_WARNING);
 									}
 
-									if ($user_row['user_type'] == USER_INACTIVE)
+									if ($user_row['user_type'] == phpbb::USER_INACTIVE)
 									{
 										trigger_error($user->lang['CANNOT_SET_FOUNDER_INACTIVE'] . adm_back_link($this->u_action . '&amp;u=' . $user_id), E_USER_WARNING);
 									}
 
-									$sql_ary['user_type'] = USER_FOUNDER;
+									$sql_ary['user_type'] = phpbb::USER_FOUNDER;
 								}
-								else if (!$data['user_founder'] && $user_row['user_type'] == USER_FOUNDER)
+								else if (!$data['user_founder'] && $user_row['user_type'] == phpbb::USER_FOUNDER)
 								{
 									// Check if at least one founder is present
 									$sql = 'SELECT user_id
 										FROM ' . USERS_TABLE . '
-										WHERE user_type = ' . USER_FOUNDER . '
+										WHERE user_type = ' . phpbb::USER_FOUNDER . '
 											AND user_id <> ' . $user_id;
 									$result = $db->sql_query_limit($sql, 1);
 									$row = $db->sql_fetchrow($result);
@@ -752,7 +752,7 @@ class acp_users
 
 									if ($row)
 									{
-										$sql_ary['user_type'] = USER_NORMAL;
+										$sql_ary['user_type'] = phpbb::USER_NORMAL;
 									}
 									else
 									{
@@ -825,19 +825,19 @@ class acp_users
 				{
 					$quick_tool_ary = array();
 
-					if ($user_row['user_type'] != USER_FOUNDER)
+					if ($user_row['user_type'] != phpbb::USER_FOUNDER)
 					{
 						$quick_tool_ary += array('banuser' => 'BAN_USER', 'banemail' => 'BAN_EMAIL', 'banip' => 'BAN_IP');
 					}
 
-					if ($user_row['user_type'] != USER_FOUNDER && $user_row['user_type'] != USER_IGNORE)
+					if ($user_row['user_type'] != phpbb::USER_FOUNDER && $user_row['user_type'] != phpbb::USER_IGNORE)
 					{
-						$quick_tool_ary += array('active' => (($user_row['user_type'] == USER_INACTIVE) ? 'ACTIVATE' : 'DEACTIVATE'));
+						$quick_tool_ary += array('active' => (($user_row['user_type'] == phpbb::USER_INACTIVE) ? 'ACTIVATE' : 'DEACTIVATE'));
 					}
 
 					$quick_tool_ary += array('delsig' => 'DEL_SIG', 'delavatar' => 'DEL_AVATAR', 'moveposts' => 'MOVE_POSTS', 'delposts' => 'DEL_POSTS', 'delattach' => 'DEL_ATTACH');
 
-					if ($config['email_enable'] && ($user_row['user_type'] == USER_NORMAL || $user_row['user_type'] == USER_INACTIVE))
+					if ($config['email_enable'] && ($user_row['user_type'] == phpbb::USER_NORMAL || $user_row['user_type'] == phpbb::USER_INACTIVE))
 					{
 						$quick_tool_ary['reactivate'] = 'FORCE';
 					}
@@ -866,7 +866,7 @@ class acp_users
 				$last_visit = (!empty($user_row['session_time'])) ? $user_row['session_time'] : $user_row['user_lastvisit'];
 
 				$inactive_reason = '';
-				if ($user_row['user_type'] == USER_INACTIVE)
+				if ($user_row['user_type'] == phpbb::USER_INACTIVE)
 				{
 					$inactive_reason = $user->lang['INACTIVE_REASON_UNKNOWN'];
 
@@ -903,14 +903,14 @@ class acp_users
 					'L_NAME_CHARS_EXPLAIN'		=> sprintf($user->lang[$config['allow_name_chars'] . '_EXPLAIN'], $config['min_name_chars'], $config['max_name_chars']),
 					'L_CHANGE_PASSWORD_EXPLAIN'	=> sprintf($user->lang[$config['pass_complex'] . '_EXPLAIN'], $config['min_pass_chars'], $config['max_pass_chars']),
 					'L_POSTS_IN_QUEUE'			=> $user->lang('NUM_POSTS_IN_QUEUE', $user_row['posts_in_queue']),
-					'S_FOUNDER'					=> ($user->data['user_type'] == USER_FOUNDER) ? true : false,
+					'S_FOUNDER'					=> ($user->data['user_type'] == phpbb::USER_FOUNDER) ? true : false,
 
 					'S_OVERVIEW'		=> true,
 					'S_USER_IP'			=> ($user_row['user_ip']) ? true : false,
-					'S_USER_FOUNDER'	=> ($user_row['user_type'] == USER_FOUNDER) ? true : false,
+					'S_USER_FOUNDER'	=> ($user_row['user_type'] == phpbb::USER_FOUNDER) ? true : false,
 					'S_ACTION_OPTIONS'	=> $s_action_options,
 					'S_OWN_ACCOUNT'		=> ($user_id == $user->data['user_id']) ? true : false,
-					'S_USER_INACTIVE'	=> ($user_row['user_type'] == USER_INACTIVE) ? true : false,
+					'S_USER_INACTIVE'	=> ($user_row['user_type'] == phpbb::USER_INACTIVE) ? true : false,
 
 					'U_SHOW_IP'		=> $this->u_action . "&amp;u=$user_id&amp;ip=" . (($ip == 'ip') ? 'hostname' : 'ip'),
 					'U_WHOIS'		=> $this->u_action . "&amp;action=whois&amp;user_ip={$user_row['user_ip']}",
@@ -1801,7 +1801,7 @@ class acp_users
 					$founder_manage = (int) $db->sql_fetchfield('group_founder_manage');
 					$db->sql_freeresult($result);
 
-					if ($user->data['user_type'] != USER_FOUNDER && $founder_manage)
+					if ($user->data['user_type'] != phpbb::USER_FOUNDER && $founder_manage)
 					{
 						trigger_error($user->lang['NOT_ALLOWED_MANAGE_GROUP'] . adm_back_link($this->u_action . '&amp;u=' . $user_id), E_USER_WARNING);
 					}
@@ -1921,7 +1921,7 @@ class acp_users
 					}
 
 					// Do not display those groups not allowed to be managed
-					if ($user->data['user_type'] != USER_FOUNDER && $row['group_founder_manage'])
+					if ($user->data['user_type'] != phpbb::USER_FOUNDER && $row['group_founder_manage'])
 					{
 						continue;
 					}
@@ -1992,7 +1992,7 @@ class acp_users
 
 					while ($row = $db->sql_fetchrow($result))
 					{
-						$hold_ary = $auth_admin->get_mask('view', $user_id, false, false, $row['auth_option'], 'global', ACL_NEVER);
+						$hold_ary = $auth_admin->get_mask('view', $user_id, false, false, $row['auth_option'], 'global', phpbb::ACL_NEVER);
 						$auth_admin->display_mask('view', $row['auth_option'], $hold_ary, 'user', false, false);
 					}
 					$db->sql_freeresult($result);
@@ -2010,7 +2010,7 @@ class acp_users
 
 					while ($row = $db->sql_fetchrow($result))
 					{
-						$hold_ary = $auth_admin->get_mask('view', $user_id, false, $forum_id, $row['auth_option'], 'local', ACL_NEVER);
+						$hold_ary = $auth_admin->get_mask('view', $user_id, false, $forum_id, $row['auth_option'], 'local', phpbb::ACL_NEVER);
 						$auth_admin->display_mask('view', $row['auth_option'], $hold_ary, 'user', true, false);
 					}
 					$db->sql_freeresult($result);

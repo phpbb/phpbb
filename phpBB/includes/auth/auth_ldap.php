@@ -187,7 +187,7 @@ function login_ldap(&$username, &$password)
 				unset($ldap_result);
 
 				// User inactive...
-				if ($row['user_type'] == USER_INACTIVE || $row['user_type'] == USER_IGNORE)
+				if ($row['user_type'] == phpbb::USER_INACTIVE || $row['user_type'] == phpbb::USER_IGNORE)
 				{
 					return array(
 						'status'		=> LOGIN_ERROR_ACTIVE,
@@ -225,7 +225,7 @@ function login_ldap(&$username, &$password)
 					'user_password'	=> phpbb_hash($password),
 					'user_email'	=> (!empty($config['ldap_email'])) ? $ldap_result[0][$config['ldap_email']][0] : '',
 					'group_id'		=> (int) $row['group_id'],
-					'user_type'		=> USER_NORMAL,
+					'user_type'		=> phpbb::USER_NORMAL,
 					'user_ip'		=> $user->ip,
 				);
 

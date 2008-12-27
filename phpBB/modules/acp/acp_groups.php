@@ -67,7 +67,7 @@ class acp_groups
 			}
 
 			// Check if the user is allowed to manage this group if set to founder only.
-			if ($user->data['user_type'] != USER_FOUNDER && $group_row['group_founder_manage'])
+			if ($user->data['user_type'] != phpbb::USER_FOUNDER && $group_row['group_founder_manage'])
 			{
 				trigger_error($user->lang['NOT_ALLOWED_MANAGE_GROUP'] . adm_back_link($this->u_action), E_USER_WARNING);
 			}
@@ -310,7 +310,7 @@ class acp_groups
 						'founder_manage'	=> 0,
 					);
 
-					if ($user->data['user_type'] == USER_FOUNDER)
+					if ($user->data['user_type'] == phpbb::USER_FOUNDER)
 					{
 						$submit_ary['founder_manage'] = phpbb_request::is_set('group_founder_manage') ? 1 : 0;
 					}
@@ -426,7 +426,7 @@ class acp_groups
 								$db->sql_freeresult($result);
 
 								// Check the group if non-founder
-								if ($check_row && ($user->data['user_type'] == USER_FOUNDER || $check_row['group_founder_manage'] == 0))
+								if ($check_row && ($user->data['user_type'] == phpbb::USER_FOUNDER || $check_row['group_founder_manage'] == 0))
 								{
 									// From the mysql documentation:
 									// Prior to MySQL 4.0.14, the target table of the INSERT statement cannot appear in the FROM clause of the SELECT part of the query. This limitation is lifted in 4.0.14.
@@ -549,7 +549,7 @@ class acp_groups
 					'S_SPECIAL_GROUP'	=> ($group_type == GROUP_SPECIAL) ? true : false,
 					'S_DISPLAY_GALLERY'	=> ($config['allow_avatar_local'] && !$display_gallery) ? true : false,
 					'S_IN_GALLERY'		=> ($config['allow_avatar_local'] && $display_gallery) ? true : false,
-					'S_USER_FOUNDER'	=> ($user->data['user_type'] == USER_FOUNDER) ? true : false,
+					'S_USER_FOUNDER'	=> ($user->data['user_type'] == phpbb::USER_FOUNDER) ? true : false,
 
 					'ERROR_MSG'				=> (sizeof($error)) ? implode('<br />', $error) : '',
 					'GROUP_NAME'			=> ($group_type == GROUP_SPECIAL) ? $user->lang['G_' . $group_name] : $group_name,
@@ -568,7 +568,7 @@ class acp_groups
 					'S_DESC_SMILIES_CHECKED'=> $group_desc_data['allow_smilies'],
 
 					'S_RANK_OPTIONS'		=> $rank_options,
-					'S_GROUP_OPTIONS'		=> group_select_options(false, false, (($user->data['user_type'] == USER_FOUNDER) ? false : 0)),
+					'S_GROUP_OPTIONS'		=> group_select_options(false, false, (($user->data['user_type'] == phpbb::USER_FOUNDER) ? false : 0)),
 					'AVATAR'				=> $avatar_img,
 					'AVATAR_IMAGE'			=> $avatar_img,
 					'AVATAR_MAX_FILESIZE'	=> $config['avatar_filesize'],

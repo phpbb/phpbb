@@ -277,13 +277,13 @@ class ucp_register
 					$key_len = ($key_len < 6) ? 6 : $key_len;
 					$user_actkey = substr($user_actkey, 0, $key_len);
 
-					$user_type = USER_INACTIVE;
+					$user_type = phpbb::USER_INACTIVE;
 					$user_inactive_reason = INACTIVE_REGISTER;
 					$user_inactive_time = time();
 				}
 				else
 				{
-					$user_type = USER_NORMAL;
+					$user_type = phpbb::USER_NORMAL;
 					$user_actkey = '';
 					$user_inactive_reason = 0;
 					$user_inactive_time = 0;
@@ -375,7 +375,7 @@ class ucp_register
 						$admin_ary = (!empty($admin_ary[0]['a_user'])) ? $admin_ary[0]['a_user'] : array();
 
 						// Also include founders
-						$where_sql = ' WHERE user_type = ' . USER_FOUNDER;
+						$where_sql = ' WHERE user_type = ' . phpbb::USER_FOUNDER;
 
 						if (sizeof($admin_ary))
 						{

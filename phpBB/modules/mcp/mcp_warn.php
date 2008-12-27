@@ -212,7 +212,7 @@ class mcp_warn
 		}
 
 		// There is no point issuing a warning to ignored users (ie anonymous and bots)
-		if ($user_row['user_type'] == USER_IGNORE)
+		if ($user_row['user_type'] == phpbb::USER_IGNORE)
 		{
 			trigger_error('CANNOT_WARN_ANONYMOUS');
 		}

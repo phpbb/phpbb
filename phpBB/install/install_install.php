@@ -458,13 +458,13 @@ class install_install extends module
 			if (!file_exists(PHPBB_ROOT_PATH . $dir))
 			{
 				@mkdir(PHPBB_ROOT_PATH . $dir, 0777);
-				phpbb_chmod(PHPBB_ROOT_PATH . $dir, CHMOD_READ | CHMOD_WRITE);
+				phpbb_chmod(PHPBB_ROOT_PATH . $dir, phpbb::CHMOD_READ | phpbb::CHMOD_WRITE);
 			}
 
 			// Now really check
 			if (file_exists(PHPBB_ROOT_PATH . $dir) && is_dir(PHPBB_ROOT_PATH . $dir))
 			{
-				phpbb_chmod(PHPBB_ROOT_PATH . $dir, CHMOD_READ | CHMOD_WRITE);
+				phpbb_chmod(PHPBB_ROOT_PATH . $dir, phpbb::CHMOD_READ | phpbb::CHMOD_WRITE);
 				$exists = true;
 			}
 
@@ -950,7 +950,7 @@ class install_install extends module
 			if ($written)
 			{
 				// We may revert back to chmod() if we see problems with users not able to change their config.php file directly
-				phpbb_chmod(PHPBB_ROOT_PATH . 'config.' . PHP_EXT, CHMOD_READ);
+				phpbb_chmod(PHPBB_ROOT_PATH . 'config.' . PHP_EXT, phpbb::CHMOD_READ | phpbb::CHMOD_WRITE);
 			}
 		}
 
@@ -1871,7 +1871,7 @@ class install_install extends module
 		foreach ($this->bot_list as $bot_name => $bot_ary)
 		{
 			$user_row = array(
-				'user_type'				=> USER_IGNORE,
+				'user_type'				=> phpbb::USER_IGNORE,
 				'group_id'				=> $group_id,
 				'username'				=> $bot_name,
 				'user_regdate'			=> time(),

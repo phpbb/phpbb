@@ -114,13 +114,13 @@ class ucp_zebra
 							$sql = 'SELECT user_id, user_type
 								FROM ' . USERS_TABLE . '
 								WHERE ' . $db->sql_in_set('username_clean', $data['add']) . '
-									AND user_type <> ' . USER_INACTIVE;
+									AND user_type <> ' . phpbb::USER_INACTIVE;
 							$result = $db->sql_query($sql);
 
 							$user_id_ary = array();
 							while ($row = $db->sql_fetchrow($result))
 							{
-								if ($row['user_id'] != ANONYMOUS && $row['user_type'] != USER_IGNORE)
+								if ($row['user_id'] != ANONYMOUS && $row['user_type'] != phpbb::USER_IGNORE)
 								{
 									$user_id_ary[] = $row['user_id'];
 								}

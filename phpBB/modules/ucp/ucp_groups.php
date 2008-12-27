@@ -429,7 +429,7 @@ class ucp_groups
 					}
 
 					// Check if the user is allowed to manage this group if set to founder only.
-					if ($user->data['user_type'] != USER_FOUNDER && $group_row['group_founder_manage'])
+					if ($user->data['user_type'] != phpbb::USER_FOUNDER && $group_row['group_founder_manage'])
 					{
 						trigger_error($user->lang['NOT_ALLOWED_MANAGE_GROUP'] . $return_page, E_USER_WARNING);
 					}

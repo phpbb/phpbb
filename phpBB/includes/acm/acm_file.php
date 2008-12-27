@@ -89,7 +89,7 @@ class acm
 				include(PHPBB_ROOT_PATH . 'includes/functions.' . PHP_EXT);
 			}
 
-			phpbb_chmod($this->cache_dir . 'data_global.' . PHP_EXT, CHMOD_WRITE);
+			phpbb_chmod($this->cache_dir . 'data_global.' . PHP_EXT, phpbb::CHMOD_WRITE);
 		}
 		else
 		{
@@ -192,7 +192,7 @@ class acm
 					include(PHPBB_ROOT_PATH . 'includes/functions.' . PHP_EXT);
 				}
 
-				phpbb_chmod($this->cache_dir . "data{$var_name}." . PHP_EXT, CHMOD_WRITE);
+				phpbb_chmod($this->cache_dir . "data{$var_name}." . PHP_EXT, phpbb::CHMOD_WRITE);
 			}
 		}
 		else
@@ -407,7 +407,7 @@ class acm
 				include(PHPBB_ROOT_PATH . 'includes/functions.' . PHP_EXT);
 			}
 
-			phpbb_chmod($filename, CHMOD_WRITE);
+			phpbb_chmod($filename, phpbb::CHMOD_WRITE);
 
 			$query_result = $query_id;
 		}
