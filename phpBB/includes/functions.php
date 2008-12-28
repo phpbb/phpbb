@@ -273,6 +273,39 @@ function phpbb_chmod($filename, $perms = phpbb::CHMOD_READ)
 	return $result;
 }
 
+	/**
+	* Add a secret hash   for use in links/GET requests
+	* @param string  $link_name The name of the link; has to match the name used in check_link_hash, otherwise no restrictions apply
+	* @return string the hash
+	*/
+/*
+	should use our hashing instead of a "custom" one
+
+	function generate_link_hash($link_name)
+	{
+		global $user;
+
+		if (!isset($user->data["hash_$link_name"]))
+		{
+			$user->data["hash_$link_name"] = substr(sha1($user->data['user_form_salt'] . $link_name), 0, 8);
+		}
+
+		return $user->data["hash_$link_name"];
+	}
+*/
+
+	/**
+	* checks a link hash - for GET requests
+	* @param string $token the submitted token
+	* @param string $link_name The name of the link
+	* @return boolean true if all is fine
+	*/
+/*
+	function check_link_hash($token, $link_name)
+	{
+		return $token === generate_link_hash($link_name);
+	}
+*/
 // functions used for building option fields
 
 /**
@@ -2248,6 +2281,7 @@ function msg_handler($errno, $msg_text, $errfile, $errline)
 
 /**
 * Generate page header
+* @plugin-support override, default, return
 */
 function page_header($page_title = '', $display_online_list = true)
 {

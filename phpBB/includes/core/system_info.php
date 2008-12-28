@@ -151,7 +151,8 @@ class phpbb_system_info extends phpbb_plugin_support implements ArrayAccess
 	* page:				Current page from phpBB root, for example: adm/index.php?i=10&b=2
 	* forum:			Current forum id (determined by {@link request_var() request_var('f', 0)})
 	*
-	* @return array	Array containing page information.
+	* @return array		Array containing page information.
+	* @plugin-support	return
 	* @access protected
 	*/
 	protected function get_page()

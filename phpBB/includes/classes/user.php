@@ -106,10 +106,10 @@ class phpbb_user extends phpbb_session
 	* Constructor to set the lang path. Calls parrent::__construct()
 	*
 	* @param string	$auth_method		The authentication method to use, for example 'db'
-	* @param string	$custom_lang_path	An optional language pack path.
+	* @param string	$lang_path			Language pack path
 	* @access public
 	*/
-	public function __construct($auth_method, $custom_lang_path = false)
+	public function __construct($auth_method, $lang_path)
 	{
 		parent::__construct();
 
@@ -123,7 +123,13 @@ class phpbb_user extends phpbb_session
 		}
 
 		// Set language path
-		$this->lang_path = ($custom_lang_path === false) ? PHPBB_ROOT_PATH . 'language/' : $this->set_custom_lang_path($custom_lang_path);
+		$this->lang_path = $lang_path;
+
+		// Make sure last character is a directory separator
+		if (substr($this->lang_path, -1) != DIRECTORY_SEPARATOR)
+		{
+			$this->lang_path .= DIRECTORY_SEPARATOR;
+		}
 	}
 
 	/**
@@ -137,22 +143,6 @@ class phpbb_user extends phpbb_session
 	{
 		$this->session_begin($update_session_page);
 		phpbb::$acl->init($this->data);
-	}
-
-	/**
-	* Function to set custom language path (able to use directory outside of phpBB)
-	*
-	* @param string	$lang_path	New language path used.
-	* @access public
-	*/
-	public function set_custom_lang_path($lang_path)
-	{
-		$this->lang_path = $lang_path;
-
-		if (substr($this->lang_path, -1) != '/')
-		{
-			$this->lang_path .= '/';
-		}
 	}
 
 	/**

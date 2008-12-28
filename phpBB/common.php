@@ -91,7 +91,7 @@ phpbb::register('template');
 phpbb::register('acl');
 
 // Register user object
-phpbb::register('user', false, false, phpbb::$config['auth_method']);
+phpbb::register('user', false, false, phpbb::$config['auth_method'], PHPBB_ROOT_PATH . 'languages/');
 
 // Register API
 phpbb::register('api');
