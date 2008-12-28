@@ -14,8 +14,7 @@
 define('IN_PHPBB', true);
 if (!defined('PHPBB_ROOT_PATH')) define('PHPBB_ROOT_PATH', './../');
 if (!defined('PHP_EXT')) define('PHP_EXT', substr(strrchr(__FILE__, '.'), 1));
-include(PHPBB_ROOT_PATH . 'common.' . PHP_EXT);
-
+include(PHPBB_ROOT_PATH . 'includes/core/bootstrap.' . PHP_EXT);
 
 // Thank you sun.
 if (isset($_SERVER['CONTENT_TYPE']))
@@ -35,7 +34,7 @@ if (phpbb_request::is_set('avatar', phpbb_request::GET))
 	// worst-case default
 	$browser = (!empty($_SERVER['HTTP_USER_AGENT'])) ? htmlspecialchars((string) $_SERVER['HTTP_USER_AGENT']) : 'msie 6.0';
 
-	$config = phpbb_cache::obtain_config();
+	phpbb::$config = phpbb_cache::obtain_config();
 	$filename = phpbb_request::variable('avatar', '', false, phpbb_request::GET);
 	$avatar_group = false;
 	$exit = false;
@@ -98,7 +97,7 @@ if (!$download_id)
 	trigger_error('NO_ATTACHMENT_SELECTED');
 }
 
-if (!$config['allow_attachments'] && !$config['allow_pm_attach'])
+if (!phpbb::$config['allow_attachments'] && !phpbb::$config['allow_pm_attach'])
 {
 	trigger_error('ATTACHMENT_FUNCTIONALITY_DISABLED');
 }
@@ -115,7 +114,7 @@ if (!$attachment)
 	trigger_error('ERROR_NO_ATTACHMENT');
 }
 
-if ((!$attachment['in_message'] && !$config['allow_attachments']) || ($attachment['in_message'] && !$config['allow_pm_attach']))
+if ((!$attachment['in_message'] && !phpbb::$config['allow_attachments']) || ($attachment['in_message'] && !phpbb::$config['allow_pm_attach']))
 {
 	trigger_error('ATTACHMENT_FUNCTIONALITY_DISABLED');
 }
@@ -262,17 +261,17 @@ else
 	if ($download_mode == PHYSICAL_LINK)
 	{
 		// This presenting method should no longer be used
-		if (!@is_dir(PHPBB_ROOT_PATH . $config['upload_path']))
+		if (!@is_dir(PHPBB_ROOT_PATH . phpbb::$config['upload_path']))
 		{
 			trigger_error($user->lang['PHYSICAL_DOWNLOAD_NOT_POSSIBLE']);
 		}
 
-		redirect(PHPBB_ROOT_PATH . $config['upload_path'] . '/' . $attachment['physical_filename']);
+		redirect(PHPBB_ROOT_PATH . phpbb::$config['upload_path'] . '/' . $attachment['physical_filename']);
 		file_gc();
 	}
 	else
 	{
-		send_file_to_browser($attachment, $config['upload_path'], $display_cat);
+		send_file_to_browser($attachment, phpbb::$config['upload_path'], $display_cat);
 		file_gc();
 	}
 }
@@ -284,10 +283,8 @@ else
 */
 function send_avatar_to_browser($file, $browser)
 {
-	global $config;
-
-	$prefix = $config['avatar_salt'] . '_';
-	$image_dir = $config['avatar_path'];
+	$prefix = phpbb::$config['avatar_salt'] . '_';
+	$image_dir = phpbb::$config['avatar_path'];
 
 	// Adjust image_dir path (no trailing slash)
 	if (substr($image_dir, -1, 1) == '/' || substr($image_dir, -1, 1) == '\\')
@@ -382,7 +379,7 @@ function wrap_img_in_html($src, $title)
 */
 function send_file_to_browser($attachment, $upload_dir, $category)
 {
-	global $user, $db, $config;
+	global $user, $db;
 
 	$filename = PHPBB_ROOT_PATH . $upload_dir . '/' . $attachment['physical_filename'];
 
@@ -515,9 +512,9 @@ function header_filename($file)
 */
 function download_allowed()
 {
-	global $config, $user, $db;
+	global $user, $db;
 
-	if (!$config['secure_downloads'])
+	if (!phpbb::$config['secure_downloads'])
 	{
 		return true;
 	}
@@ -526,7 +523,7 @@ function download_allowed()
 
 	if (!$url)
 	{
-		return ($config['secure_allow_empty_referer']) ? true : false;
+		return (phpbb::$config['secure_allow_empty_referer']) ? true : false;
 	}
 
 	// Split URL into domain and script part
@@ -534,13 +531,13 @@ function download_allowed()
 
 	if ($url === false)
 	{
-		return ($config['secure_allow_empty_referer']) ? true : false;
+		return (phpbb::$config['secure_allow_empty_referer']) ? true : false;
 	}
 
 	$hostname = $url['host'];
 	unset($url);
 
-	$allowed = ($config['secure_allow_deny']) ? false : true;
+	$allowed = (phpbb::$config['secure_allow_deny']) ? false : true;
 	$iplist = array();
 
 	if (($ip_ary = @gethostbynamel($hostname)) !== false)
@@ -558,9 +555,9 @@ function download_allowed()
 	$server_name = $user->host;
 
 	// Forcing server vars is the only way to specify/override the protocol
-	if ($config['force_server_vars'] || !$server_name)
+	if (phpbb::$config['force_server_vars'] || !$server_name)
 	{
-		$server_name = $config['server_name'];
+		$server_name = phpbb::$config['server_name'];
 	}
 
 	if (preg_match('#^.*?' . preg_quote($server_name, '#') . '.*?$#i', $hostname))
@@ -588,12 +585,12 @@ function download_allowed()
 					{
 						if ($row['ip_exclude'])
 						{
-							$allowed = ($config['secure_allow_deny']) ? false : true;
+							$allowed = (phpbb::$config['secure_allow_deny']) ? false : true;
 							break 2;
 						}
 						else
 						{
-							$allowed = ($config['secure_allow_deny']) ? true : false;
+							$allowed = (phpbb::$config['secure_allow_deny']) ? true : false;
 						}
 					}
 				}
@@ -605,12 +602,12 @@ function download_allowed()
 				{
 					if ($row['ip_exclude'])
 					{
-						$allowed = ($config['secure_allow_deny']) ? false : true;
+						$allowed = (phpbb::$config['secure_allow_deny']) ? false : true;
 						break;
 					}
 					else
 					{
-						$allowed = ($config['secure_allow_deny']) ? true : false;
+						$allowed = (phpbb::$config['secure_allow_deny']) ? true : false;
 					}
 				}
 			}

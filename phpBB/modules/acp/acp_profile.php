@@ -28,7 +28,7 @@ class acp_profile
 
 	function main($id, $mode)
 	{
-		global $config, $db, $user, $auth, $template;
+		global $db, $user, $auth, $template;
 
 		include(PHPBB_ROOT_PATH . 'includes/functions_posting.' . PHP_EXT);
 		include(PHPBB_ROOT_PATH . 'includes/functions_user.' . PHP_EXT);
@@ -217,7 +217,7 @@ class acp_profile
 
 				$sql = 'SELECT lang_id
 					FROM ' . LANG_TABLE . "
-					WHERE lang_iso = '" . $db->sql_escape($config['default_lang']) . "'";
+					WHERE lang_iso = '" . $db->sql_escape(phpbb::$config['default_lang']) . "'";
 				$result = $db->sql_query($sql);
 				$default_lang_id = (int) $db->sql_fetchfield('lang_id');
 				$db->sql_freeresult($result);
@@ -291,7 +291,7 @@ class acp_profile
 				$save = phpbb_request::is_set('save');
 
 				// The language id of default language
-				$this->edit_lang_id = $this->lang_defs['iso'][$config['default_lang']];
+				$this->edit_lang_id = $this->lang_defs['iso'][phpbb::$config['default_lang']];
 
 				// We are editing... we need to grab basic things
 				if ($action == 'edit')
@@ -741,7 +741,7 @@ class acp_profile
 							'S_FIELD_HIDE'		=> ($cp->vars['field_hide']) ? true : false,
 							'S_FIELD_NO_VIEW'	=> ($cp->vars['field_no_view']) ? true : false,
 
-							'L_LANG_SPECIFIC'	=> sprintf($user->lang['LANG_SPECIFIC_OPTIONS'], $config['default_lang']),
+							'L_LANG_SPECIFIC'	=> sprintf($user->lang['LANG_SPECIFIC_OPTIONS'], phpbb::$config['default_lang']),
 							'FIELD_TYPE'		=> $user->lang['FIELD_' . strtoupper(custom_profile::$profile_types[$field_type])],
 							'FIELD_IDENT'		=> $cp->vars['field_ident'],
 							'LANG_NAME'			=> $cp->vars['lang_name'],
@@ -902,9 +902,9 @@ class acp_profile
 	*/
 	function build_language_options(&$cp, $field_type, $action = 'create')
 	{
-		global $user, $config, $db;
+		global $user, $db;
 
-		$default_lang_id = (!empty($this->edit_lang_id)) ? $this->edit_lang_id : $this->lang_defs['iso'][$config['default_lang']];
+		$default_lang_id = (!empty($this->edit_lang_id)) ? $this->edit_lang_id : $this->lang_defs['iso'][phpbb::$config['default_lang']];
 
 		$sql = 'SELECT lang_id, lang_iso
 			FROM ' . LANG_TABLE . '
@@ -1022,14 +1022,14 @@ class acp_profile
 	*/
 	function save_profile_field(&$cp, $field_type, $action = 'create')
 	{
-		global $db, $config, $user;
+		global $db, $user;
 
 		$field_id = request_var('field_id', 0);
 
 		// Collect all information, if something is going wrong, abort the operation
 		$profile_sql = $profile_lang = $empty_lang = $profile_lang_fields = array();
 
-		$default_lang_id = (!empty($this->edit_lang_id)) ? $this->edit_lang_id : $this->lang_defs['iso'][$config['default_lang']];
+		$default_lang_id = (!empty($this->edit_lang_id)) ? $this->edit_lang_id : $this->lang_defs['iso'][phpbb::$config['default_lang']];
 
 		if ($action == 'create')
 		{

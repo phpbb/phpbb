@@ -34,7 +34,7 @@ class mcp_reports
 	function main($id, $mode)
 	{
 		global $auth, $db, $user, $template;
-		global $config, $action;
+		global $action;
 
 		include_once(PHPBB_ROOT_PATH . 'includes/functions_posting.' . PHP_EXT);
 
@@ -121,7 +121,7 @@ class mcp_reports
 
 				$topic_tracking_info = $extensions = $attachments = array();
 				// Get topic tracking info
-				if ($config['load_db_lastread'])
+				if (phpbb::$config['load_db_lastread'])
 				{
 					$tmp_topic_data = array($post_info['topic_id'] => $post_info);
 					$topic_tracking_info = get_topic_tracking($post_info['forum_id'], $post_info['topic_id'], $tmp_topic_data, array($post_info['forum_id'] => $post_info['forum_mark_time']));
@@ -351,7 +351,7 @@ class mcp_reports
 						AND t.topic_id = p.topic_id
 						$limit_time_sql
 					ORDER BY $sort_order_sql";
-				$result = $db->sql_query_limit($sql, $config['topics_per_page'], $start);
+				$result = $db->sql_query_limit($sql, phpbb::$config['topics_per_page'], $start);
 
 				$i = 0;
 				$report_ids = array();
@@ -421,8 +421,8 @@ class mcp_reports
 					'S_FORUM_OPTIONS'		=> $forum_options,
 					'S_CLOSED'				=> ($mode == 'reports_closed') ? true : false,
 
-					'PAGINATION'			=> generate_pagination($this->u_action . "&amp;f=$forum_id&amp;t=$topic_id&amp;st=$sort_days&amp;sk=$sort_key&amp;sd=$sort_dir", $total, $config['topics_per_page'], $start),
-					'PAGE_NUMBER'			=> on_page($total, $config['topics_per_page'], $start),
+					'PAGINATION'			=> generate_pagination($this->u_action . "&amp;f=$forum_id&amp;t=$topic_id&amp;st=$sort_days&amp;sk=$sort_key&amp;sd=$sort_dir", $total, phpbb::$config['topics_per_page'], $start),
+					'PAGE_NUMBER'			=> on_page($total, phpbb::$config['topics_per_page'], $start),
 					'TOPIC_ID'				=> $topic_id,
 					'TOTAL'					=> $total,
 					'TOTAL_REPORTS'			=> ($total == 1) ? $user->lang['LIST_REPORT'] : sprintf($user->lang['LIST_REPORTS'], $total),
@@ -440,7 +440,7 @@ class mcp_reports
 */
 function close_report($report_id_list, $mode, $action)
 {
-	global $db, $template, $user, $config;
+	global $db, $template, $user;
 
 	$sql = 'SELECT r.post_id
 		FROM ' . REPORTS_TABLE . ' r

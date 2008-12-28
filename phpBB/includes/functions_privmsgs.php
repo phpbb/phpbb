@@ -221,7 +221,7 @@ function get_folder($user_id, $folder_id = false)
 */
 function clean_sentbox($num_sentbox_messages)
 {
-	global $db, $user, $config;
+	global $db, $user;
 
 	// Check Message Limit
 	if ($user->data['message_limit'] && $num_sentbox_messages > $user->data['message_limit'])
@@ -250,7 +250,7 @@ function clean_sentbox($num_sentbox_messages)
 */
 function check_rule(&$rules, &$rule_row, &$message_row, $user_id)
 {
-	global $user, $config;
+	global $user;
 
 	if (!isset($rules[$rule_row['rule_check']][$rule_row['rule_connection']]))
 	{
@@ -365,7 +365,7 @@ function update_pm_counts()
 */
 function place_pm_into_folder(&$global_privmsgs_rules, $release = false)
 {
-	global $db, $user, $config;
+	global $db, $user;
 
 	if (!$user->data['user_new_privmsg'])
 	{
@@ -588,7 +588,7 @@ function place_pm_into_folder(&$global_privmsgs_rules, $release = false)
 	if (sizeof($move_into_folder))
 	{
 		// Determine Full Folder Action - we need the move to folder id later eventually
-		$full_folder_action = ($user->data['user_full_folder'] == FULL_FOLDER_NONE) ? ($config['full_folder_action'] - (FULL_FOLDER_NONE*(-1))) : $user->data['user_full_folder'];
+		$full_folder_action = ($user->data['user_full_folder'] == FULL_FOLDER_NONE) ? (phpbb::$config['full_folder_action'] - (FULL_FOLDER_NONE*(-1))) : $user->data['user_full_folder'];
 
 		$sql_folder = array_keys($move_into_folder);
 		if ($full_folder_action >= 0)
@@ -632,12 +632,12 @@ function place_pm_into_folder(&$global_privmsgs_rules, $release = false)
 		// But we are making sure that the other way around works too (more messages in queue than allowed to be stored)
 		if ($user->data['message_limit'] && $folder[$folder_id] && ($folder[$folder_id] + sizeof($msg_ary)) > $user->data['message_limit'])
 		{
-			$full_folder_action = ($user->data['user_full_folder'] == FULL_FOLDER_NONE) ? ($config['full_folder_action'] - (FULL_FOLDER_NONE*(-1))) : $user->data['user_full_folder'];
+			$full_folder_action = ($user->data['user_full_folder'] == FULL_FOLDER_NONE) ? (phpbb::$config['full_folder_action'] - (FULL_FOLDER_NONE*(-1))) : $user->data['user_full_folder'];
 
 			// If destination folder itself is full...
 			if ($full_folder_action >= 0 && ($folder[$full_folder_action] + sizeof($msg_ary)) > $user->data['message_limit'])
 			{
-				$full_folder_action = $config['full_folder_action'] - (FULL_FOLDER_NONE*(-1));
+				$full_folder_action = phpbb::$config['full_folder_action'] - (FULL_FOLDER_NONE*(-1));
 			}
 
 			// If Full Folder Action is to move to another folder, we simply adjust the destination folder
@@ -1258,7 +1258,7 @@ function write_pm_addresses($check_ary, $author_id, $plaintext = false)
 */
 function get_folder_status($folder_id, $folder)
 {
-	global $db, $user, $config;
+	global $db, $user;
 
 	if (isset($folder[$folder_id]))
 	{
@@ -1291,7 +1291,7 @@ function get_folder_status($folder_id, $folder)
 */
 function submit_pm($mode, $subject, &$data, $put_in_outbox = true)
 {
-	global $db, $auth, $config, $template, $user;
+	global $db, $auth, $template, $user;
 
 	// We do not handle erasing pms here
 	if ($mode == 'delete')
@@ -1543,7 +1543,7 @@ function submit_pm($mode, $subject, &$data, $put_in_outbox = true)
 			else
 			{
 				// insert attachment into db
-				if (!@file_exists(PHPBB_ROOT_PATH . $config['upload_path'] . '/' . basename($orphan_rows[$attach_row['attach_id']]['physical_filename'])))
+				if (!@file_exists(PHPBB_ROOT_PATH . phpbb::$config['upload_path'] . '/' . basename($orphan_rows[$attach_row['attach_id']]['physical_filename'])))
 				{
 					continue;
 				}
@@ -1569,8 +1569,8 @@ function submit_pm($mode, $subject, &$data, $put_in_outbox = true)
 
 		if ($space_taken && $files_added)
 		{
-			set_config('upload_dir_size', $config['upload_dir_size'] + $space_taken, true);
-			set_config('num_files', $config['num_files'] + $files_added, true);
+			set_config('upload_dir_size', phpbb::$config['upload_dir_size'] + $space_taken, true);
+			set_config('num_files', phpbb::$config['num_files'] + $files_added, true);
 		}
 	}
 
@@ -1600,7 +1600,7 @@ function submit_pm($mode, $subject, &$data, $put_in_outbox = true)
 */
 function pm_notification($mode, $author, $recipients, $subject, $message)
 {
-	global $db, $user, $config, $auth;
+	global $db, $user, $auth;
 
 	$subject = censor_text($subject);
 
@@ -1687,7 +1687,7 @@ function pm_notification($mode, $author, $recipients, $subject, $message)
 */
 function message_history($msg_id, $user_id, $message_row, $folder, $in_post_mode = false)
 {
-	global $db, $user, $config, $template, $auth, $bbcode;
+	global $db, $user, $template, $auth, $bbcode;
 
 	// Get History Messages (could be newer)
 	$sql = 'SELECT t.*, p.*, u.*
@@ -1841,7 +1841,7 @@ function message_history($msg_id, $user_id, $message_row, $folder, $in_post_mode
 */
 function set_user_message_limit()
 {
-	global $user, $db, $config;
+	global $user, $db;
 
 	// Get maximum about from user memberships - if it is 0, there is no limit set and we use the maximum value within the config.
 	$sql = 'SELECT MAX(g.group_message_limit) as max_message_limit
@@ -1853,7 +1853,7 @@ function set_user_message_limit()
 	$message_limit = (int) $db->sql_fetchfield('max_message_limit');
 	$db->sql_freeresult($result);
 
-	$user->data['message_limit'] = (!$message_limit) ? $config['pm_max_msgs'] : $message_limit;
+	$user->data['message_limit'] = (!$message_limit) ? phpbb::$config['pm_max_msgs'] : $message_limit;
 }
 
 ?>

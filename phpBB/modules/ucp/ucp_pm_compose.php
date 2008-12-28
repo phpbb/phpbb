@@ -22,7 +22,7 @@ if (!defined('IN_PHPBB'))
 */
 function compose_pm($id, $mode, $action)
 {
-	global $template, $db, $auth, $user, $config;
+	global $template, $db, $auth, $user;
 
 	// Damn php and globals - i know, this is horrible
 	// Needed for handle_message_list_actions()
@@ -62,7 +62,7 @@ function compose_pm($id, $mode, $action)
 		|| $remove_u || $remove_g || $add_to || $add_bcc;
 
 	$action		= ($delete && !$preview && !$refresh && $submit) ? 'delete' : $action;
-	$select_single = ($config['allow_mass_pm'] && $auth->acl_get('u_masspm')) ? false : true;
+	$select_single = (phpbb::$config['allow_mass_pm'] && $auth->acl_get('u_masspm')) ? false : true;
 
 	$error = array();
 	$current_time = time();
@@ -81,7 +81,7 @@ function compose_pm($id, $mode, $action)
 	if ($action != 'edit')
 	{
 		// Add groups to PM box
-		if ($config['allow_mass_pm'] && $auth->acl_get('u_masspm_group'))
+		if (phpbb::$config['allow_mass_pm'] && $auth->acl_get('u_masspm_group'))
 		{
 			$sql = 'SELECT g.group_id, g.group_name, g.group_type
 				FROM ' . GROUPS_TABLE . ' g';
@@ -113,8 +113,8 @@ function compose_pm($id, $mode, $action)
 
 		$template->assign_vars(array(
 			'S_SHOW_PM_BOX'		=> true,
-			'S_ALLOW_MASS_PM'	=> ($config['allow_mass_pm'] && $auth->acl_get('u_masspm')) ? true : false,
-			'S_GROUP_OPTIONS'	=> ($config['allow_mass_pm'] && $auth->acl_get('u_masspm_group')) ? $group_options : '',
+			'S_ALLOW_MASS_PM'	=> (phpbb::$config['allow_mass_pm'] && $auth->acl_get('u_masspm')) ? true : false,
+			'S_GROUP_OPTIONS'	=> (phpbb::$config['allow_mass_pm'] && $auth->acl_get('u_masspm_group')) ? $group_options : '',
 			'U_FIND_USERNAME'	=> append_sid('memberlist', "mode=searchuser&amp;form=postform&amp;field=username_list&amp;select_single=$select_single"),
 		));
 	}
@@ -206,7 +206,7 @@ function compose_pm($id, $mode, $action)
 		break;
 	}
 
-	if ($action == 'forward' && (!$config['forward_pm'] || !$auth->acl_get('u_pm_forward')))
+	if ($action == 'forward' && (!phpbb::$config['forward_pm'] || !$auth->acl_get('u_pm_forward')))
 	{
 		trigger_error('NO_AUTH_FORWARD_MESSAGE');
 	}
@@ -353,14 +353,14 @@ function compose_pm($id, $mode, $action)
 		$check_value = 0;
 	}
 
-	if (($to_group_id || isset($address_list['g'])) && (!$config['allow_mass_pm'] || !$auth->acl_get('u_masspm_group')))
+	if (($to_group_id || isset($address_list['g'])) && (!phpbb::$config['allow_mass_pm'] || !$auth->acl_get('u_masspm_group')))
 	{
 		trigger_error('NO_AUTH_GROUP_MESSAGE');
 	}
 
 	if ($action == 'edit' && !$refresh && !$preview && !$submit)
 	{
-		if (!($message_time > time() - ($config['pm_edit_time'] * 60) || !$config['pm_edit_time']))
+		if (!($message_time > time() - (phpbb::$config['pm_edit_time'] * 60) || !phpbb::$config['pm_edit_time']))
 		{
 			trigger_error('CANNOT_EDIT_MESSAGE_TIME');
 		}
@@ -428,7 +428,7 @@ function compose_pm($id, $mode, $action)
 	$max_recipients = (int) $db->sql_fetchfield('max_recipients');
 	$db->sql_freeresult($result);
 
-	$max_recipients = (!$max_recipients) ? $config['pm_max_recipients'] : $max_recipients;
+	$max_recipients = (!$max_recipients) ? phpbb::$config['pm_max_recipients'] : $max_recipients;
 
 	// If this is a quote/reply "to all"... we may increase the max_recpients to the number of original recipients
 	if (($action == 'reply' || $action == 'quote') && $max_recipients)
@@ -454,14 +454,14 @@ function compose_pm($id, $mode, $action)
 	handle_message_list_actions($address_list, $error, $remove_u, $remove_g, $add_to, $add_bcc);
 
 	// Check mass pm to group permission
-	if ((!$config['allow_mass_pm'] || !$auth->acl_get('u_masspm_group')) && !empty($address_list['g']))
+	if ((!phpbb::$config['allow_mass_pm'] || !$auth->acl_get('u_masspm_group')) && !empty($address_list['g']))
 	{
 		$address_list = array();
 		$error[] = $user->lang['NO_AUTH_GROUP_MESSAGE'];
 	}
 
 	// Check mass pm to users permission
-	if ((!$config['allow_mass_pm'] || !$auth->acl_get('u_masspm')) && num_recipients($address_list) > 1)
+	if ((!phpbb::$config['allow_mass_pm'] || !$auth->acl_get('u_masspm')) && num_recipients($address_list) > 1)
 	{
 		$address_list = get_recipients($address_list, 1);
 		$error[] = $user->lang('TOO_MANY_RECIPIENTS', 1);
@@ -494,9 +494,9 @@ function compose_pm($id, $mode, $action)
 
 	if (!in_array($action, array('quote', 'edit', 'delete', 'forward')))
 	{
-		$enable_sig		= ($config['allow_sig'] && $config['allow_sig_pm'] && $auth->acl_get('u_sig') && $user->optionget('attachsig'));
-		$enable_smilies	= ($config['allow_smilies'] && $auth->acl_get('u_pm_smilies') && $user->optionget('smilies'));
-		$enable_bbcode	= ($config['allow_bbcode'] && $auth->acl_get('u_pm_bbcode') && $user->optionget('bbcode'));
+		$enable_sig		= (phpbb::$config['allow_sig'] && phpbb::$config['allow_sig_pm'] && $auth->acl_get('u_sig') && $user->optionget('attachsig'));
+		$enable_smilies	= (phpbb::$config['allow_smilies'] && $auth->acl_get('u_pm_smilies') && $user->optionget('smilies'));
+		$enable_bbcode	= (phpbb::$config['allow_bbcode'] && $auth->acl_get('u_pm_bbcode') && $user->optionget('bbcode'));
 		$enable_urls	= true;
 	}
 
@@ -526,11 +526,11 @@ function compose_pm($id, $mode, $action)
 		$message_parser->bbcode_uid = $bbcode_uid;
 	}
 
-	$bbcode_status	= ($config['allow_bbcode'] && $config['auth_bbcode_pm'] && $auth->acl_get('u_pm_bbcode')) ? true : false;
-	$smilies_status	= ($config['allow_smilies'] && $config['auth_smilies_pm'] && $auth->acl_get('u_pm_smilies')) ? true : false;
-	$img_status		= ($config['auth_img_pm'] && $auth->acl_get('u_pm_img')) ? true : false;
-	$flash_status	= ($config['auth_flash_pm'] && $auth->acl_get('u_pm_flash')) ? true : false;
-	$url_status		= ($config['allow_post_links']) ? true : false;
+	$bbcode_status	= (phpbb::$config['allow_bbcode'] && phpbb::$config['auth_bbcode_pm'] && $auth->acl_get('u_pm_bbcode')) ? true : false;
+	$smilies_status	= (phpbb::$config['allow_smilies'] && phpbb::$config['auth_smilies_pm'] && $auth->acl_get('u_pm_smilies')) ? true : false;
+	$img_status		= (phpbb::$config['auth_img_pm'] && $auth->acl_get('u_pm_img')) ? true : false;
+	$flash_status	= (phpbb::$config['auth_flash_pm'] && $auth->acl_get('u_pm_flash')) ? true : false;
+	$url_status		= (phpbb::$config['allow_post_links']) ? true : false;
 
 	// Save Draft
 	if ($save && $auth->acl_get('u_savedrafts'))
@@ -640,7 +640,7 @@ function compose_pm($id, $mode, $action)
 		$enable_bbcode 		= (!$bbcode_status || phpbb_request::is_set_post('disable_bbcode')) ? false : true;
 		$enable_smilies		= (!$smilies_status || phpbb_request::is_set_post'disable_smilies')) ? false : true;
 		$enable_urls 		= (phpbb_request::is_set_post('disable_magic_url')) ? 0 : 1;
-		$enable_sig			= (!$config['allow_sig'] ||!$config['allow_sig_pm']) ? false : phpbb_request::is_set_post('attach_sig');
+		$enable_sig			= (!phpbb::$config['allow_sig'] ||!phpbb::$config['allow_sig_pm']) ? false : phpbb_request::is_set_post('attach_sig');
 
 		if ($submit)
 		{
@@ -662,7 +662,7 @@ function compose_pm($id, $mode, $action)
 		}
 
 		// Parse message
-		$message_parser->parse($enable_bbcode, ($config['allow_post_links']) ? $enable_urls : false, $enable_smilies, $img_status, $flash_status, true, $config['allow_post_links']);
+		$message_parser->parse($enable_bbcode, (phpbb::$config['allow_post_links']) ? $enable_urls : false, $enable_smilies, $img_status, $flash_status, true, phpbb::$config['allow_post_links']);
 
 		// On a refresh we do not care about message parsing errors
 		if (sizeof($message_parser->warn_msg) && !$refresh)
@@ -670,14 +670,14 @@ function compose_pm($id, $mode, $action)
 			$error[] = implode('<br />', $message_parser->warn_msg);
 		}
 
-		if ($action != 'edit' && !$preview && !$refresh && $config['flood_interval'] && !$auth->acl_get('u_ignoreflood'))
+		if ($action != 'edit' && !$preview && !$refresh && phpbb::$config['flood_interval'] && !$auth->acl_get('u_ignoreflood'))
 		{
 			// Flood check
 			$last_post_time = $user->data['user_lastpost_time'];
 
 			if ($last_post_time)
 			{
-				if ($last_post_time && ($current_time - $last_post_time) < intval($config['flood_interval']))
+				if ($last_post_time && ($current_time - $last_post_time) < intval(phpbb::$config['flood_interval']))
 				{
 					$error[] = $user->lang['FLOOD_ERROR'];
 				}
@@ -746,7 +746,7 @@ function compose_pm($id, $mode, $action)
 		$preview_signature_bitfield = $user->data['user_sig_bbcode_bitfield'];
 
 		// Signature
-		if ($enable_sig && $config['allow_sig'] && $preview_signature)
+		if ($enable_sig && phpbb::$config['allow_sig'] && $preview_signature)
 		{
 			$parse_sig = new parse_message($preview_signature);
 			$parse_sig->bbcode_uid = $preview_signature_uid;
@@ -805,7 +805,7 @@ function compose_pm($id, $mode, $action)
 		if ($action == 'quotepost')
 		{
 			$post_id = request_var('p', 0);
-			if ($config['allow_post_links'])
+			if (phpbb::$config['allow_post_links'])
 			{
 				$message_link = "[url=" . generate_board_url() . '/viewtopic.' . PHP_EXT . "?p={$post_id}#p{$post_id}]{$user->lang['SUBJECT']}: {$message_subject}[/url]\n\n";
 			}
@@ -830,7 +830,7 @@ function compose_pm($id, $mode, $action)
 	{
 		$fwd_to_field = write_pm_addresses(array('to' => $post['to_address']), 0, true);
 
-		if ($config['allow_post_links'])
+		if (phpbb::$config['allow_post_links'])
 		{
 			$quote_username_text = '[url=' . generate_board_url() . '/memberlist.' . PHP_EXT . "?mode=viewprofile&amp;u={$post['author_id']}]{$quote_username}[/url]";
 		}
@@ -861,7 +861,7 @@ function compose_pm($id, $mode, $action)
 
 	// Generate PM Icons
 	$s_pm_icons = false;
-	if ($config['enable_pm_icons'])
+	if (phpbb::$config['enable_pm_icons'])
 	{
 		$s_pm_icons = posting_gen_topic_icons($action, $icon_id);
 	}
@@ -976,8 +976,8 @@ function compose_pm($id, $mode, $action)
 	$s_hidden_address_field = build_address_field($address_list);
 
 
-	$bbcode_checked		= (isset($enable_bbcode)) ? !$enable_bbcode : (($config['allow_bbcode'] && $auth->acl_get('u_pm_bbcode')) ? !$user->optionget('bbcode') : 1);
-	$smilies_checked	= (isset($enable_smilies)) ? !$enable_smilies : (($config['allow_smilies'] && $auth->acl_get('u_pm_smilies')) ? !$user->optionget('smilies') : 1);
+	$bbcode_checked		= (isset($enable_bbcode)) ? !$enable_bbcode : ((phpbb::$config['allow_bbcode'] && $auth->acl_get('u_pm_bbcode')) ? !$user->optionget('bbcode') : 1);
+	$smilies_checked	= (isset($enable_smilies)) ? !$enable_smilies : ((phpbb::$config['allow_smilies'] && $auth->acl_get('u_pm_smilies')) ? !$user->optionget('smilies') : 1);
 	$urls_checked		= (isset($enable_urls)) ? !$enable_urls : 0;
 	$sig_checked		= $enable_sig;
 
@@ -1016,13 +1016,13 @@ function compose_pm($id, $mode, $action)
 	$s_hidden_fields .= (isset($check_value)) ? '<input type="hidden" name="status_switch" value="' . $check_value . '" />' : '';
 	$s_hidden_fields .= ($draft_id || phpbb_request::is_set('draft_loaded')) ? '<input type="hidden" name="draft_loaded" value="' . request_var('draft_loaded', (int) $draft_id) . '" />' : '';
 
-	$form_enctype = (@ini_get('file_uploads') == '0' || strtolower(@ini_get('file_uploads')) == 'off' || !$config['allow_pm_attach'] || !$auth->acl_get('u_pm_attach')) ? '' : ' enctype="multipart/form-data"';
+	$form_enctype = (@ini_get('file_uploads') == '0' || strtolower(@ini_get('file_uploads')) == 'off' || !phpbb::$config['allow_pm_attach'] || !$auth->acl_get('u_pm_attach')) ? '' : ' enctype="multipart/form-data"';
 
 	// Start assigning vars for main posting page ...
 	$template->assign_vars(array(
 		'L_POST_A'					=> $page_title,
 		'L_ICON'					=> $user->lang['PM_ICON'],
-		'L_MESSAGE_BODY_EXPLAIN'	=> (intval($config['max_post_chars'])) ? sprintf($user->lang['MESSAGE_BODY_EXPLAIN'], intval($config['max_post_chars'])) : '',
+		'L_MESSAGE_BODY_EXPLAIN'	=> (intval(phpbb::$config['max_post_chars'])) ? sprintf($user->lang['MESSAGE_BODY_EXPLAIN'], intval(phpbb::$config['max_post_chars'])) : '',
 
 		'SUBJECT'				=> (isset($message_subject)) ? $message_subject : '',
 		'MESSAGE'				=> $message_text,
@@ -1033,7 +1033,7 @@ function compose_pm($id, $mode, $action)
 		'URL_STATUS'			=> ($url_status) ? $user->lang['URL_IS_ON'] : $user->lang['URL_IS_OFF'],
 		'MINI_POST_IMG'			=> $user->img('icon_post_target', $user->lang['PM']),
 		'ERROR'					=> (sizeof($error)) ? implode('<br />', $error) : '',
-		'MAX_RECIPIENTS'		=> ($config['allow_mass_pm'] && ($auth->acl_get('u_masspm') || $auth->acl_get('u_masspm_group'))) ? $max_recipients : 0,
+		'MAX_RECIPIENTS'		=> (phpbb::$config['allow_mass_pm'] && ($auth->acl_get('u_masspm') || $auth->acl_get('u_masspm_group'))) ? $max_recipients : 0,
 
 		'S_COMPOSE_PM'			=> true,
 		'S_EDIT_POST'			=> ($action == 'edit'),
@@ -1042,7 +1042,7 @@ function compose_pm($id, $mode, $action)
 		'S_BBCODE_CHECKED'		=> ($bbcode_checked) ? ' checked="checked"' : '',
 		'S_SMILIES_ALLOWED'		=> $smilies_status,
 		'S_SMILIES_CHECKED'		=> ($smilies_checked) ? ' checked="checked"' : '',
-		'S_SIG_ALLOWED'			=> ($config['allow_sig'] && $config['allow_sig_pm'] && $auth->acl_get('u_sig')),
+		'S_SIG_ALLOWED'			=> (phpbb::$config['allow_sig'] && phpbb::$config['allow_sig_pm'] && $auth->acl_get('u_sig')),
 		'S_SIGNATURE_CHECKED'	=> ($sig_checked) ? ' checked="checked"' : '',
 		'S_LINKS_ALLOWED'		=> $url_status,
 		'S_MAGIC_URL_CHECKED'	=> ($urls_checked) ? ' checked="checked"' : '',
@@ -1068,7 +1068,7 @@ function compose_pm($id, $mode, $action)
 	display_custom_bbcodes();
 
 	// Show attachment box for adding attachments if true
-	$allowed = ($auth->acl_get('u_pm_attach') && $config['allow_pm_attach'] && $form_enctype);
+	$allowed = ($auth->acl_get('u_pm_attach') && phpbb::$config['allow_pm_attach'] && $form_enctype);
 
 	// Attachment entry
 	posting_gen_attachment_entry($attachment_data, $filename_data, $allowed);

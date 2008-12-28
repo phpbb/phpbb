@@ -418,7 +418,7 @@ function remote_avatar_dims()
 
 function import_avatar_gallery($gallery_name = '', $subdirs_as_galleries = false)
 {
-	global $config, $convert, $user;
+	global $convert, $user;
 
 	$relative_path = empty($convert->convertor['source_path_absolute']);
 
@@ -432,7 +432,7 @@ function import_avatar_gallery($gallery_name = '', $subdirs_as_galleries = false
 	if (is_dir($src_path))
 	{
 		// Do not die on failure... safe mode restrictions may be in effect.
-		copy_dir($convert->convertor['avatar_gallery_path'], path($config['avatar_gallery_path']) . $gallery_name, !$subdirs_as_galleries, false, false, $relative_path);
+		copy_dir($convert->convertor['avatar_gallery_path'], path(phpbb::$config['avatar_gallery_path']) . $gallery_name, !$subdirs_as_galleries, false, false, $relative_path);
 
 		// only doing 1 level deep. (ibf 1.x)
 		// notes: ibf has 2 tiers: directly in the avatar directory for base gallery (handled in the above statement), plus subdirs(handled below).
@@ -478,7 +478,7 @@ function import_avatar_gallery($gallery_name = '', $subdirs_as_galleries = false
 				$dir = $dirlist[$i];
 
 				// Do not die on failure... safe mode restrictions may be in effect.
-				copy_dir(path($convert->convertor['avatar_gallery_path'], $relative_path) . $dir, path($config['avatar_gallery_path']) . $dir, true, false, false, $relative_path);
+				copy_dir(path($convert->convertor['avatar_gallery_path'], $relative_path) . $dir, path(phpbb::$config['avatar_gallery_path']) . $dir, true, false, false, $relative_path);
 			}
 		}
 	}
@@ -486,13 +486,13 @@ function import_avatar_gallery($gallery_name = '', $subdirs_as_galleries = false
 
 function import_attachment_files($category_name = '')
 {
-	global $config, $convert, $db, $user;
+	global $convert, $db, $user;
 
 	$sql = 'SELECT config_value AS upload_path
 		FROM ' . CONFIG_TABLE . "
 		WHERE config_name = 'upload_path'";
 	$result = $db->sql_query($sql);
-	$config['upload_path'] = $db->sql_fetchfield('upload_path');
+	phpbb::$config['upload_path'] = $db->sql_fetchfield('upload_path');
 	$db->sql_freeresult($result);
 
 	$relative_path = empty($convert->convertor['source_path_absolute']);
@@ -504,7 +504,7 @@ function import_attachment_files($category_name = '')
 
 	if (is_dir(relative_base(path($convert->convertor['upload_path'], $relative_path), $relative_path)))
 	{
-		copy_dir($convert->convertor['upload_path'], path($config['upload_path']) . $category_name, true, false, true, $relative_path);
+		copy_dir($convert->convertor['upload_path'], path(phpbb::$config['upload_path']) . $category_name, true, false, true, $relative_path);
 	}
 }
 
@@ -542,7 +542,7 @@ function base64_unpack($string)
 
 function _import_check($config_var, $source, $use_target)
 {
-	global $convert, $config;
+	global $convert;
 
 	$result = array(
 		'orig_source'	=> $source,
@@ -551,7 +551,7 @@ function _import_check($config_var, $source, $use_target)
 	);
 
 	// copy file will prepend PHPBB_ROOT_PATH
-	$target = $config[$config_var] . '/' . basename(($use_target === false) ? $source : $use_target);
+	$target = phpbb::$config[$config_var] . '/' . basename(($use_target === false) ? $source : $use_target);
 
 	if (!empty($convert->convertor[$config_var]) && strpos($source, $convert->convertor[$config_var]) !== 0)
 	{
@@ -584,7 +584,7 @@ function import_attachment($source, $use_target = false)
 		return '';
 	}
 
-	global $convert, $config, $user;
+	global $convert, $user;
 
 	if (empty($convert->convertor['upload_path']))
 	{
@@ -606,7 +606,7 @@ function import_attachment($source, $use_target = false)
 			{
 				$thumb_source = $convert->convertor['upload_path'] . $thumb_source;
 			}
-			$thumb_target = $config['upload_path'] . '/thumb_' . $result['target'];
+			$thumb_target = phpbb::$config['upload_path'] . '/thumb_' . $result['target'];
 
 			if (file_exists(relative_base($thumb_source, $result['relative_path'], __LINE__, __FILE__)))
 			{
@@ -625,7 +625,7 @@ function import_rank($source, $use_target = false)
 		return '';
 	}
 
-	global $convert, $config, $user;
+	global $convert, $user;
 
 	if (!isset($convert->convertor['ranks_path']))
 	{
@@ -643,7 +643,7 @@ function import_smiley($source, $use_target = false)
 		return '';
 	}
 
-	global $convert, $config, $user;
+	global $convert, $user;
 
 	if (!isset($convert->convertor['smilies_path']))
 	{
@@ -663,7 +663,7 @@ function import_avatar($source, $use_target = false, $user_id = false)
 		return;
 	}
 
-	global $convert, $config, $user;
+	global $convert, $user;
 
 	if (!isset($convert->convertor['avatar_path']))
 	{
@@ -672,7 +672,7 @@ function import_avatar($source, $use_target = false, $user_id = false)
 
 	if ($use_target === false && $user_id !== false)
 	{
-		$use_target = $config['avatar_salt'] . '_' . $user_id . '.' . substr(strrchr($source, '.'), 1);
+		$use_target = phpbb::$config['avatar_salt'] . '_' . $user_id . '.' . substr(strrchr($source, '.'), 1);
 	}
 
 	$result = _import_check('avatar_path', $source, $use_target);
@@ -741,7 +741,7 @@ function get_smiley_dim($source, $axis)
 		return $smiley_cache[$source][$axis];
 	}
 
-	global $convert, $config, $user;
+	global $convert, $user;
 
 	$orig_source = $source;
 
@@ -856,7 +856,7 @@ function get_upload_avatar_dim($source, $axis)
 		$source = substr($source, 7);
 	}
 
-	global $convert, $config, $user;
+	global $convert, $user;
 
 	if (!isset($convert->convertor['avatar_path']))
 	{
@@ -898,7 +898,7 @@ function get_gallery_avatar_dim($source, $axis)
 		return $avatar_cache[$source][$axis];
 	}
 
-	global $convert, $config, $user;
+	global $convert, $user;
 
 	$orig_source = $source;
 
@@ -1111,7 +1111,7 @@ function words_unique(&$words)
 */
 function add_user_group($group_id, $user_id, $group_leader=false)
 {
-	global $convert, $config, $user, $db;
+	global $convert, $user, $db;
 
 	$sql = 'INSERT INTO ' . USER_GROUP_TABLE . ' ' . $db->sql_build_array('INSERT', array(
 		'group_id'		=> $group_id,
@@ -1131,7 +1131,7 @@ function add_user_group($group_id, $user_id, $group_leader=false)
 */
 function user_group_auth($group, $select_query, $use_src_db)
 {
-	global $convert, $config, $user, $db, $src_db, $same_db;
+	global $convert, $user, $db, $src_db, $same_db;
 
 	if (!in_array($group, array('guests', 'registered', 'registered_coppa', 'global_moderators', 'administrators', 'bots')))
 	{
@@ -1187,7 +1187,7 @@ function get_config()
 		return $convert_config;
 	}
 
-	global $src_db, $same_db, $config;
+	global $src_db, $same_db;
 	global $convert;
 
 	if ($convert->config_schema['table_format'] != 'file')
@@ -1261,7 +1261,7 @@ function get_config()
 */
 function restore_config($schema)
 {
-	global $db, $config;
+	global $db;
 
 	$convert_config = get_config();
 	foreach ($schema['settings'] as $config_name => $src)
@@ -1354,8 +1354,6 @@ function extract_variables_from_file($_filename)
 
 function get_path($src_path, $src_url, $test_file)
 {
-	global $config;
-
 	$board_config = get_config();
 
 	$test_file = preg_replace('/\.php$/i', '.' . PHP_EXT, $test_file);
@@ -1465,7 +1463,7 @@ function compare_table($tables, $tablename, &$prefixes)
 */
 function mass_auth($ug_type, $forum_id, $ug_id, $acl_list, $setting = ACL_NO)
 {
-	global $db, $convert, $user, $config;
+	global $db, $convert, $user;
 	static $acl_option_ids, $group_ids;
 
 	if (($ug_type == 'group' || $ug_type == 'group_role') && is_string($ug_id))
@@ -1764,7 +1762,7 @@ function sync_post_count($offset, $limit)
 */
 function add_bots()
 {
-	global $db, $convert, $user, $config;
+	global $db, $convert, $user;
 
 	$db->sql_query($convert->truncate_statement . BOTS_TABLE);
 
@@ -1857,7 +1855,7 @@ function add_bots()
 			'user_password'			=> '',
 			'user_colour'			=> '9E8DA7',
 			'user_email'			=> '',
-			'user_lang'				=> $config['default_lang'],
+			'user_lang'				=> phpbb::$config['default_lang'],
 			'user_style'			=> 1,
 			'user_timezone'			=> 0,
 			'user_allow_massemail'	=> 0,
@@ -1885,16 +1883,16 @@ function add_bots()
 */
 function update_dynamic_config()
 {
-	global $db, $config;
+	global $db;
 
 	// Get latest username
 	$sql = 'SELECT user_id, username, user_colour
 		FROM ' . USERS_TABLE . '
 		WHERE user_type IN (' . phpbb::USER_NORMAL . ', ' . phpbb::USER_FOUNDER . ')';
 
-	if (!empty($config['increment_user_id']))
+	if (!empty(phpbb::$config['increment_user_id']))
 	{
-		$sql .= ' AND user_id <> ' . $config['increment_user_id'];
+		$sql .= ' AND user_id <> ' . phpbb::$config['increment_user_id'];
 	}
 
 	$sql .= ' ORDER BY user_id DESC';
@@ -1976,7 +1974,7 @@ function update_dynamic_config()
 */
 function update_topics_posted()
 {
-	global $db, $config;
+	global $db;
 
 	if ($db->truncate)
 	{
@@ -2249,7 +2247,7 @@ function convert_bbcode($message, $convert_size = true, $extended_bbcodes = fals
 
 function copy_file($src, $trg, $overwrite = false, $die_on_failure = true, $source_relative_path = true)
 {
-	global $convert, $config, $user, $db;
+	global $convert, $user, $db;
 
 	if (substr($trg, -1) == '/')
 	{
@@ -2303,7 +2301,7 @@ function copy_file($src, $trg, $overwrite = false, $die_on_failure = true, $sour
 
 function copy_dir($src, $trg, $copy_subdirs = true, $overwrite = false, $die_on_failure = true, $source_relative_path = true)
 {
-	global $convert, $config, $user, $db;
+	global $convert, $user, $db;
 
 	$dirlist = $filelist = $bad_dirs = array();
 	$src = path($src, $source_relative_path);
@@ -2319,7 +2317,7 @@ function copy_dir($src, $trg, $copy_subdirs = true, $overwrite = false, $die_on_
 
 	if (!@is_writable($trg_path))
 	{
-		$bad_dirs[] = path($config['script_path']) . $trg;
+		$bad_dirs[] = path(phpbb::$config['script_path']) . $trg;
 	}
 
 	if ($handle = @opendir($src_path))
@@ -2412,7 +2410,7 @@ function copy_dir($src, $trg, $copy_subdirs = true, $overwrite = false, $die_on_
 
 function relative_base($path, $is_relative = true, $line = false, $file = false)
 {
-	global $convert, $config, $user, $db;
+	global $convert, $user, $db;
 
 	if (!$is_relative)
 	{
@@ -2440,9 +2438,7 @@ function get_smiley_display()
 
 function fill_dateformat($user_dateformat)
 {
-	global $config;
-
-	return ((empty($user_dateformat)) ? $config['default_dateformat'] : $user_dateformat);
+	return ((empty($user_dateformat)) ? phpbb::$config['default_dateformat'] : $user_dateformat);
 }
 
 

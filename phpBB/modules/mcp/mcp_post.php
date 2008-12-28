@@ -21,7 +21,7 @@ if (!defined('IN_PHPBB'))
 */
 function mcp_post_details($id, $mode, $action)
 {
-	global $template, $db, $user, $auth, $config;
+	global $template, $db, $user, $auth;
 
 	$user->add_lang('posting');
 
@@ -112,7 +112,7 @@ function mcp_post_details($id, $mode, $action)
 	$topic_tracking_info = array();
 
 	// Get topic tracking info
-	if ($config['load_db_lastread'])
+	if (phpbb::$config['load_db_lastread'])
 	{
 		$tmp_topic_data = array($post_info['topic_id'] => $post_info);
 		$topic_tracking_info = get_topic_tracking($post_info['forum_id'], $post_info['topic_id'], $tmp_topic_data, array($post_info['forum_id'] => $post_info['forum_mark_time']));
@@ -228,7 +228,7 @@ function mcp_post_details($id, $mode, $action)
 	// Get User Notes
 	$log_data = array();
 	$log_count = 0;
-	view_log('user', $log_data, $log_count, $config['posts_per_page'], 0, 0, 0, $post_info['user_id']);
+	view_log('user', $log_data, $log_count, phpbb::$config['posts_per_page'], 0, 0, 0, $post_info['user_id']);
 
 	if ($log_count)
 	{
@@ -394,7 +394,7 @@ function mcp_post_details($id, $mode, $action)
 */
 function change_poster(&$post_info, $userdata)
 {
-	global $auth, $db, $config;
+	global $auth, $db;
 
 	if (empty($userdata) || $userdata['user_id'] == $post_info['user_id'])
 	{
@@ -434,7 +434,7 @@ function change_poster(&$post_info, $userdata)
 	markread('post', $post_info['forum_id'], $post_info['topic_id'], time(), $userdata['user_id']);
 
 	// Remove the dotted topic option if the old user has no more posts within this topic
-	if ($config['load_db_track'] && $post_info['user_id'] != ANONYMOUS)
+	if (phpbb::$config['load_db_track'] && $post_info['user_id'] != ANONYMOUS)
 	{
 		$sql = 'SELECT topic_id
 			FROM ' . POSTS_TABLE . '
@@ -465,7 +465,7 @@ function change_poster(&$post_info, $userdata)
 	}
 
 	// refresh search cache of this post
-	$search_type = basename($config['search_type']);
+	$search_type = basename(phpbb::$config['search_type']);
 
 	if (file_exists(PHPBB_ROOT_PATH . 'includes/search/' . $search_type . '.' . PHP_EXT))
 	{

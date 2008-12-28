@@ -243,9 +243,7 @@ $auth = new auth();
 $template = new template();
 
 // Set some standard variables we want to force
-$config = array(
-	'load_tplcompile'	=> '1'
-);
+phpbb::$config['load_tplcompile'] = '1';
 
 $template->set_custom_template('../adm/style', 'admin');
 $template->assign_var('T_TEMPLATE_PATH', '../adm/style');
@@ -284,7 +282,7 @@ class module
 	*/
 	function create($module_type, $module_url, $selected_mod = false, $selected_submod = false)
 	{
-		global $db, $config;
+		global $db;
 
 		$module = array();
 

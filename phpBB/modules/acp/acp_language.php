@@ -31,7 +31,7 @@ class acp_language
 
 	function main($id, $mode)
 	{
-		global $config, $db, $user, $auth, $template;
+		global $db, $user, $auth, $template;
 		global $safe_mode, $file_uploads;
 
 		/**
@@ -460,15 +460,15 @@ class acp_language
 				$missing_vars = $missing_files = array();
 
 				// Get email templates
-				$email_files = filelist(PHPBB_ROOT_PATH . 'language/' . $config['default_lang'], 'email', 'txt');
+				$email_files = filelist(PHPBB_ROOT_PATH . 'language/' . phpbb::$config['default_lang'], 'email', 'txt');
 				$email_files = $email_files['email/'];
 
 				// Get acp files
-				$acp_files = filelist(PHPBB_ROOT_PATH . 'language/' . $config['default_lang'], 'acp', PHP_EXT);
+				$acp_files = filelist(PHPBB_ROOT_PATH . 'language/' . phpbb::$config['default_lang'], 'acp', PHP_EXT);
 				$acp_files = $acp_files['acp/'];
 
 				// Get mod files
-				$mods_files = filelist(PHPBB_ROOT_PATH . 'language/' . $config['default_lang'], 'mods', PHP_EXT);
+				$mods_files = filelist(PHPBB_ROOT_PATH . 'language/' . phpbb::$config['default_lang'], 'mods', PHP_EXT);
 				$mods_files = (isset($mods_files['mods/'])) ? $mods_files['mods/'] : array();
 
 				// Check if our current filename matches the files
@@ -536,7 +536,7 @@ class acp_language
 				);
 
 				// If current lang is different from the default lang, then first try to grab missing/additional vars
-				if ($lang_iso != $config['default_lang'])
+				if ($lang_iso != phpbb::$config['default_lang'])
 				{
 					$is_missing_var = false;
 
@@ -544,7 +544,7 @@ class acp_language
 					{
 						if (file_exists(PHPBB_ROOT_PATH . $this->get_filename($lang_iso, '', $file)))
 						{
-							$missing_vars[$file] = $this->compare_language_files($config['default_lang'], $lang_iso, '', $file);
+							$missing_vars[$file] = $this->compare_language_files(phpbb::$config['default_lang'], $lang_iso, '', $file);
 
 							if (sizeof($missing_vars[$file]))
 							{
@@ -562,7 +562,7 @@ class acp_language
 					{
 						if (file_exists(PHPBB_ROOT_PATH . $this->get_filename($lang_iso, 'acp', $file)))
 						{
-							$missing_vars['acp/' . $file] = $this->compare_language_files($config['default_lang'], $lang_iso, 'acp', $file);
+							$missing_vars['acp/' . $file] = $this->compare_language_files(phpbb::$config['default_lang'], $lang_iso, 'acp', $file);
 
 							if (sizeof($missing_vars['acp/' . $file]))
 							{
@@ -581,7 +581,7 @@ class acp_language
 						{
 							if (file_exists(PHPBB_ROOT_PATH . $this->get_filename($lang_iso, 'mods', $file)))
 							{
-								$missing_vars['mods/' . $file] = $this->compare_language_files($config['default_lang'], $lang_iso, 'mods', $file);
+								$missing_vars['mods/' . $file] = $this->compare_language_files(phpbb::$config['default_lang'], $lang_iso, 'mods', $file);
 
 								if (sizeof($missing_vars['mods/' . $file]))
 								{
@@ -774,7 +774,7 @@ class acp_language
 				$row = $db->sql_fetchrow($result);
 				$db->sql_freeresult($result);
 
-				if ($row['lang_iso'] == $config['default_lang'])
+				if ($row['lang_iso'] == phpbb::$config['default_lang'])
 				{
 					trigger_error($user->lang['NO_REMOVE_DEFAULT_LANG'] . adm_back_link($this->u_action), E_USER_WARNING);
 				}
@@ -782,7 +782,7 @@ class acp_language
 				$db->sql_query('DELETE FROM ' . LANG_TABLE . ' WHERE lang_id = ' . $lang_id);
 
 				$sql = 'UPDATE ' . USERS_TABLE . "
-					SET user_lang = '" . $db->sql_escape($config['default_lang']) . "'
+					SET user_lang = '" . $db->sql_escape(phpbb::$config['default_lang']) . "'
 					WHERE user_lang = '" . $db->sql_escape($row['lang_iso']) . "'";
 				$db->sql_query($sql);
 
@@ -914,7 +914,7 @@ class acp_language
 				// Now let's copy the default language entries for custom profile fields for this new language - makes admin's life easier.
 				$sql = 'SELECT lang_id
 					FROM ' . LANG_TABLE . "
-					WHERE lang_iso = '" . $db->sql_escape($config['default_lang']) . "'";
+					WHERE lang_iso = '" . $db->sql_escape(phpbb::$config['default_lang']) . "'";
 				$result = $db->sql_query($sql);
 				$default_lang_id = (int) $db->sql_fetchfield('lang_id');
 				$db->sql_freeresult($result);
@@ -1097,7 +1097,7 @@ class acp_language
 		while ($row = $db->sql_fetchrow($result))
 		{
 			$installed[] = $row['lang_iso'];
-			$tagstyle = ($row['lang_iso'] == $config['default_lang']) ? '*' : '';
+			$tagstyle = ($row['lang_iso'] == phpbb::$config['default_lang']) ? '*' : '';
 
 			$template->assign_block_vars('lang', array(
 				'U_DETAILS'			=> $this->u_action . "&amp;action=details&amp;id={$row['lang_id']}",

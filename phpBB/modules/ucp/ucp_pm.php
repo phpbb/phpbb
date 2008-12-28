@@ -43,7 +43,7 @@ class ucp_pm
 
 	function main($id, $mode)
 	{
-		global $user, $template, $auth, $db, $config;
+		global $user, $template, $auth, $db;
 
 		if (!$user->data['is_registered'])
 		{
@@ -51,7 +51,7 @@ class ucp_pm
 		}
 
 		// Is PM disabled?
-		if (!$config['allow_privmsg'])
+		if (!phpbb::$config['allow_privmsg'])
 		{
 			trigger_error('PM_DISABLED');
 		}

@@ -33,7 +33,7 @@ class mcp_main
 
 	function main($id, $mode)
 	{
-		global $auth, $db, $user, $template, $action, $config;
+		global $auth, $db, $user, $template, $action;
 
 		$quickmod = ($mode == 'quickmod') ? true : false;
 
@@ -931,7 +931,7 @@ function mcp_delete_post($post_ids)
 */
 function mcp_fork_topic($topic_ids)
 {
-	global $auth, $user, $db, $template, $config;
+	global $auth, $user, $db, $template;
 
 	if (!check_ids($topic_ids, TOPICS_TABLE, 'topic_id', array('m_')))
 	{
@@ -1174,8 +1174,8 @@ function mcp_fork_topic($topic_ids)
 		}
 
 		sync('forum', 'forum_id', $to_forum_id);
-		set_config('num_topics', $config['num_topics'] + sizeof($new_topic_id_list), true);
-		set_config('num_posts', $config['num_posts'] + $total_posts, true);
+		set_config('num_topics', phpbb::$config['num_topics'] + sizeof($new_topic_id_list), true);
+		set_config('num_posts', phpbb::$config['num_posts'] + $total_posts, true);
 
 		foreach ($new_topic_id_list as $topic_id => $new_topic_id)
 		{

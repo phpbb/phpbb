@@ -1438,7 +1438,7 @@ class install_install extends module
 	*/
 	function build_search_index($mode, $sub)
 	{
-		global $db, $lang, $config;
+		global $db, $lang;
 
 		// Obtain any submitted data
 		$data = $this->get_submitted_data();
@@ -1468,7 +1468,7 @@ class install_install extends module
 		include_once(PHPBB_ROOT_PATH . 'includes/constants.' . PHP_EXT);
 		include_once(PHPBB_ROOT_PATH . 'includes/search/fulltext_native.' . PHP_EXT);
 
-		// Fill the config array - it is needed by those functions we call
+		/* Fill the config array - it is needed by those functions we call
 		$sql = 'SELECT *
 			FROM ' . CONFIG_TABLE;
 		$result = $db->sql_query($sql);
@@ -1479,7 +1479,7 @@ class install_install extends module
 			$config[$row['config_name']] = $row['config_value'];
 		}
 		$db->sql_freeresult($result);
-
+*/
 		$error = false;
 		$search = new fulltext_native($error);
 
@@ -1833,7 +1833,7 @@ class install_install extends module
 	*/
 	function add_bots($mode, $sub)
 	{
-		global $db, $lang, $config;
+		global $db, $lang;
 
 		// Obtain any submitted data
 		$data = $this->get_submitted_data();
@@ -1842,13 +1842,6 @@ class install_install extends module
 		$sql = 'SELECT *
 			FROM ' . CONFIG_TABLE;
 		$result = $db->sql_query($sql);
-
-		$config = array();
-		while ($row = $db->sql_fetchrow($result))
-		{
-			$config[$row['config_name']] = $row['config_value'];
-		}
-		$db->sql_freeresult($result);
 
 		$sql = 'SELECT group_id
 			FROM ' . GROUPS_TABLE . "
@@ -1911,7 +1904,7 @@ class install_install extends module
 	*/
 	function email_admin($mode, $sub)
 	{
-		global $auth, $config, $db, $lang, $template, $user;
+		global $auth, $db, $lang, $template, $user;
 
 		$this->page_title = $lang['STAGE_FINAL'];
 
@@ -1922,13 +1915,6 @@ class install_install extends module
 			FROM ' . CONFIG_TABLE;
 		$result = $db->sql_query($sql);
 
-		$config = array();
-		while ($row = $db->sql_fetchrow($result))
-		{
-			$config[$row['config_name']] = $row['config_value'];
-		}
-		$db->sql_freeresult($result);
-
 		$user->session_begin();
 		$auth->login($data['admin_name'], $data['admin_pass1'], false, true, true);
 
@@ -1937,7 +1923,7 @@ class install_install extends module
 		// So it's time to send an email to the administrator confirming the details
 		// they entered
 
-		if ($config['email_enable'])
+		if (phpbb::$config['email_enable'])
 		{
 			include_once(PHPBB_ROOT_PATH . 'includes/functions_messenger.' . PHP_EXT);
 
@@ -1947,7 +1933,7 @@ class install_install extends module
 
 			$messenger->to($data['board_email1'], $data['admin_name']);
 
-			$messenger->headers('X-AntiAbuse: Board servername - ' . $config['server_name']);
+			$messenger->headers('X-AntiAbuse: Board servername - ' . phpbb::$config['server_name']);
 			$messenger->headers('X-AntiAbuse: User_id - ' . $user->data['user_id']);
 			$messenger->headers('X-AntiAbuse: Username - ' . $user->data['username']);
 			$messenger->headers('X-AntiAbuse: User IP - ' . $user->ip);
@@ -1961,11 +1947,11 @@ class install_install extends module
 		}
 
 		// And finally, add a note to the log
-		add_log('admin', 'LOG_INSTALL_INSTALLED', $config['version']);
+		add_log('admin', 'LOG_INSTALL_INSTALLED', phpbb::$config['version']);
 
 		$template->assign_vars(array(
 			'TITLE'		=> $lang['INSTALL_CONGRATS'],
-			'BODY'		=> sprintf($lang['INSTALL_CONGRATS_EXPLAIN'], $config['version'], append_sid('install/index', 'mode=convert&amp;language=' . $data['language']), '../docs/README.html'),
+			'BODY'		=> sprintf($lang['INSTALL_CONGRATS_EXPLAIN'], phpbb::$config['version'], append_sid('install/index', 'mode=convert&amp;language=' . $data['language']), '../docs/README.html'),
 			'L_SUBMIT'	=> $lang['INSTALL_LOGIN'],
 			'U_ACTION'	=> append_sid('adm/index'),
 		));

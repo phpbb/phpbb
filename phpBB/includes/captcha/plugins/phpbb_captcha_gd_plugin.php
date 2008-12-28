@@ -50,7 +50,7 @@ class phpbb_captcha_gd extends phpbb_default_captcha implements phpbb_captcha_pl
 
 	function acp_page($id, &$module)
 	{
-		global $config, $db, $template, $user;
+		global $db, $template, $user;
 
 		$captcha_vars = array(
 			'captcha_gd_x_grid'				=> 'CAPTCHA_GD_X_GRID',
@@ -87,7 +87,7 @@ class phpbb_captcha_gd extends phpbb_default_captcha implements phpbb_captcha_pl
 		{
 			foreach ($captcha_vars as $captcha_var => $template_var)
 			{
-				$var = request_var($captcha_var, (int) $config[$captcha_var]);
+				$var = request_var($captcha_var, (int) phpbb::$config[$captcha_var]);
 				$template->assign_var($template_var, $var);
 			}
 			$template->assign_vars(array(

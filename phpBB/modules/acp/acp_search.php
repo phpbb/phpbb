@@ -50,7 +50,7 @@ class acp_search
 
 	function settings($id, $mode)
 	{
-		global $db, $user, $auth, $template, $config;
+		global $db, $user, $auth, $template;
 
 		$submit = phpbb_request::is_set_post('submit');
 
@@ -76,7 +76,7 @@ class acp_search
 			}
 
 			$name = ucfirst(strtolower(str_replace('_', ' ', $type)));
-			$selected = ($config['search_type'] == $type) ? ' selected="selected"' : '';
+			$selected = (phpbb::$config['search_type'] == $type) ? ' selected="selected"' : '';
 			$search_options .= '<option value="' . $type . '"' . $selected . '>' . $name . '</option>';
 
 			if (method_exists($search, 'acp'))
@@ -126,7 +126,7 @@ class acp_search
 			}
 
 			// only change config if anything was actually changed
-			if ($submit && ($config[$config_name] != $config_value))
+			if ($submit && (phpbb::$config[$config_name] != $config_value))
 			{
 				set_config($config_name, $config_value);
 				$updated = true;
@@ -141,7 +141,7 @@ class acp_search
 				add_log('admin', 'LOG_CONFIG_SEARCH');
 			}
 
-			if (isset($cfg_array['search_type']) && in_array($cfg_array['search_type'], $search_types, true) && ($cfg_array['search_type'] != $config['search_type']))
+			if (isset($cfg_array['search_type']) && in_array($cfg_array['search_type'], $search_types, true) && ($cfg_array['search_type'] != phpbb::$config['search_type']))
 			{
 				$search = null;
 				$error = false;
@@ -184,7 +184,7 @@ class acp_search
 
 			$search = null;
 			$error = false;
-			if (!$this->init_search($config['search_type'], $search, $error))
+			if (!$this->init_search(phpbb::$config['search_type'], $search, $error))
 			{
 				if ($updated)
 				{
@@ -210,14 +210,14 @@ class acp_search
 		$this->page_title = 'ACP_SEARCH_SETTINGS';
 
 		$template->assign_vars(array(
-			'LIMIT_SEARCH_LOAD'		=> (float) $config['limit_search_load'],
-			'MIN_SEARCH_AUTHOR_CHARS'	=> (int) $config['min_search_author_chars'],
-			'SEARCH_INTERVAL'		=> (float) $config['search_interval'],
-			'SEARCH_GUEST_INTERVAL'	=> (float) $config['search_anonymous_interval'],
-			'SEARCH_STORE_RESULTS'	=> (int) $config['search_store_results'],
+			'LIMIT_SEARCH_LOAD'		=> (float) phpbb::$config['limit_search_load'],
+			'MIN_SEARCH_AUTHOR_CHARS'	=> (int) phpbb::$config['min_search_author_chars'],
+			'SEARCH_INTERVAL'		=> (float) phpbb::$config['search_interval'],
+			'SEARCH_GUEST_INTERVAL'	=> (float) phpbb::$config['search_anonymous_interval'],
+			'SEARCH_STORE_RESULTS'	=> (int) phpbb::$config['search_store_results'],
 
 			'S_SEARCH_TYPES'		=> $search_options,
-			'S_YES_SEARCH'			=> (bool) $config['load_search'],
+			'S_YES_SEARCH'			=> (bool) phpbb::$config['load_search'],
 			'S_SETTINGS'			=> true,
 
 			'U_ACTION'				=> $this->u_action)
@@ -226,7 +226,7 @@ class acp_search
 
 	function index($id, $mode)
 	{
-		global $db, $user, $auth, $template, $config;
+		global $db, $user, $auth, $template;
 
 		$action = request_var('action', array('' => false));
 		if (sizeof($action))
@@ -237,7 +237,7 @@ class acp_search
 		{
 			$action = request_var('action', '');
 		}
-		$this->state = explode(',', $config['search_indexing_state']);
+		$this->state = explode(',', phpbb::$config['search_indexing_state']);
 
 		if (phpbb_request::is_set_post('cancel'))
 		{
@@ -407,10 +407,10 @@ class acp_search
 
 						// pretend the number of posts was as big as the number of ids we indexed so far
 						// just an estimation as it includes deleted posts
-						$num_posts = $config['num_posts'];
-						$config['num_posts'] = min($config['num_posts'], $post_counter);
+						$num_posts = phpbb::$config['num_posts'];
+						phpbb::$config['num_posts'] = min(phpbb::$config['num_posts'], $post_counter);
 						$this->search->tidy();
-						$config['num_posts'] = $num_posts;
+						phpbb::$config['num_posts'] = $num_posts;
 
 						if ($post_counter <= $this->max_post_id)
 						{
@@ -471,7 +471,7 @@ class acp_search
 				'L_NAME'			=> $name,
 				'NAME'				=> $type,
 
-				'S_ACTIVE'			=> ($type == $config['search_type']) ? true : false,
+				'S_ACTIVE'			=> ($type == phpbb::$config['search_type']) ? true : false,
 				'S_HIDDEN_FIELDS'	=> build_hidden_fields(array('search_type' => $type)),
 				'S_INDEXED'			=> (bool) $search->index_created(),
 				'S_STATS'			=> (bool) sizeof($statistics))

@@ -26,7 +26,7 @@ class acp_attachments
 
 	function main($id, $mode)
 	{
-		global $db, $user, $auth, $template, $config;
+		global $db, $user, $auth, $template;
 
 		$user->add_lang(array('posting', 'viewtopic', 'acp/attachments'));
 
@@ -127,7 +127,7 @@ class acp_attachments
 					)
 				);
 
-				$this->new_config = $config;
+				$this->new_config = phpbb::$config;
 				$cfg_array = (phpbb_request::is_set('config')) ? request_var('config', array('' => '')) : $this->new_config;
 				$error = array();
 
@@ -517,7 +517,7 @@ class acp_attachments
 						$max_filesize	= ($size_select == 'kb') ? round($max_filesize * 1024) : (($size_select == 'mb') ? round($max_filesize * 1048576) : $max_filesize);
 						$allow_group	= phpbb_request::is_set_post('allow_group');
 
-						if ($max_filesize == $config['max_filesize'])
+						if ($max_filesize == phpbb::$config['max_filesize'])
 						{
 							$max_filesize = 0;
 						}
@@ -684,13 +684,13 @@ class acp_attachments
 
 						if ($ext_group_row['max_filesize'] == 0)
 						{
-							$ext_group_row['max_filesize'] = (int) $config['max_filesize'];
+							$ext_group_row['max_filesize'] = (int) phpbb::$config['max_filesize'];
 						}
 
 						$size_format = ($ext_group_row['max_filesize'] >= 1048576) ? 'mb' : (($ext_group_row['max_filesize'] >= 1024) ? 'kb' : 'b');
 						$ext_group_row['max_filesize'] = get_formatted_filesize($ext_group_row['max_filesize'], false);
 
-						$img_path = $config['upload_icons_path'];
+						$img_path = phpbb::$config['upload_icons_path'];
 
 						$filename_list = '';
 						$no_image_select = false;
@@ -1006,8 +1006,8 @@ class acp_attachments
 
 						if ($files_added)
 						{
-							set_config('upload_dir_size', $config['upload_dir_size'] + $space_taken, true);
-							set_config('num_files', $config['num_files'] + $files_added, true);
+							set_config('upload_dir_size', phpbb::$config['upload_dir_size'] + $space_taken, true);
+							set_config('num_files', phpbb::$config['num_files'] + $files_added, true);
 						}
 					}
 				}

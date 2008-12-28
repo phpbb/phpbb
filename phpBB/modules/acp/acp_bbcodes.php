@@ -25,7 +25,7 @@ class acp_bbcodes
 
 	function main($id, $mode)
 	{
-		global $db, $user, $auth, $template, $config;
+		global $db, $user, $auth, $template;
 
 		$user->add_lang('acp/posting');
 

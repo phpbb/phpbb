@@ -48,21 +48,21 @@ $return_chars	= request_var('ch', ($topic_id) ? -1 : 300);
 $search_forum	= request_var('fid', array(0));
 
 // Is user able to search? Has search been disabled?
-if (!$auth->acl_get('u_search') || !$auth->acl_getf_global('f_search') || !$config['load_search'])
+if (!$auth->acl_get('u_search') || !$auth->acl_getf_global('f_search') || !phpbb::$config['load_search'])
 {
 	$template->assign_var('S_NO_SEARCH', true);
 	trigger_error('NO_SEARCH');
 }
 
 // Check search load limit
-if ($user->load && $config['limit_search_load'] && ($user->load > doubleval($config['limit_search_load'])))
+if ($user->load && phpbb::$config['limit_search_load'] && ($user->load > doubleval(phpbb::$config['limit_search_load'])))
 {
 	$template->assign_var('S_NO_SEARCH', true);
 	trigger_error('NO_SEARCH_TIME');
 }
 
 // Check flood limit ... if applicable
-$interval = ($user->data['user_id'] == ANONYMOUS) ? $config['search_anonymous_interval'] : $config['search_interval'];
+$interval = ($user->data['user_id'] == ANONYMOUS) ? phpbb::$config['search_anonymous_interval'] : phpbb::$config['search_interval'];
 if ($interval && !$auth->acl_get('u_ignoreflood'))
 {
 	if ($user->data['user_last_search'] > time() - $interval)
@@ -103,9 +103,9 @@ if ($keywords || $author || $author_id || $search_id || $submit)
 	}
 	else if ($author)
 	{
-		if ((strpos($author, '*') !== false) && (utf8_strlen(str_replace(array('*', '%'), '', $author)) < $config['min_search_author_chars']))
+		if ((strpos($author, '*') !== false) && (utf8_strlen(str_replace(array('*', '%'), '', $author)) < phpbb::$config['min_search_author_chars']))
 		{
-			trigger_error(sprintf($user->lang['TOO_FEW_AUTHOR_CHARS'], $config['min_search_author_chars']));
+			trigger_error(sprintf($user->lang['TOO_FEW_AUTHOR_CHARS'], phpbb::$config['min_search_author_chars']));
 		}
 
 		$sql_where = (strpos($author, '*') !== false) ? ' username_clean ' . $db->sql_like_expression(str_replace('*', $db->any_char, utf8_clean_string($author))) : " username_clean = '" . $db->sql_escape(utf8_clean_string($author)) . "'";
@@ -219,7 +219,7 @@ if ($keywords || $author || $author_id || $search_id || $submit)
 	}
 
 	// Select which method we'll use to obtain the post_id or topic_id information
-	$search_type = basename($config['search_type']);
+	$search_type = basename(phpbb::$config['search_type']);
 
 	if (!file_exists(PHPBB_ROOT_PATH . 'includes/search/' . $search_type . '.' . PHP_EXT))
 	{
@@ -383,7 +383,7 @@ if ($keywords || $author || $author_id || $search_id || $submit)
 	}
 
 	// show_results should not change after this
-	$per_page = ($show_results == 'posts') ? $config['posts_per_page'] : $config['topics_per_page'];
+	$per_page = ($show_results == 'posts') ? phpbb::$config['posts_per_page'] : phpbb::$config['topics_per_page'];
 	$total_match_count = 0;
 
 	if ($search_id)
@@ -543,14 +543,14 @@ if ($keywords || $author || $author_id || $search_id || $submit)
 
 			if ($user->data['is_registered'])
 			{
-				if ($config['load_db_track'] && $author_id !== $user->data['user_id'])
+				if (phpbb::$config['load_db_track'] && $author_id !== $user->data['user_id'])
 				{
 					$sql_from .= ' LEFT JOIN ' . TOPICS_POSTED_TABLE . ' tp ON (tp.user_id = ' . $user->data['user_id'] . '
 						AND t.topic_id = tp.topic_id)';
 					$sql_select .= ', tp.topic_posted';
 				}
 
-				if ($config['load_db_lastread'])
+				if (phpbb::$config['load_db_lastread'])
 				{
 					$sql_from .= ' LEFT JOIN ' . TOPICS_TRACK_TABLE . ' tt ON (tt.user_id = ' . $user->data['user_id'] . '
 							AND t.topic_id = tt.topic_id)
@@ -560,9 +560,9 @@ if ($keywords || $author || $author_id || $search_id || $submit)
 				}
 			}
 
-			if ($config['load_anon_lastread'] || ($user->data['is_registered'] && !$config['load_db_lastread']))
+			if (phpbb::$config['load_anon_lastread'] || ($user->data['is_registered'] && !phpbb::$config['load_db_lastread']))
 			{
-				$tracking_topics = phpbb_request::variable($config['cookie_name'] . '_track', '', false, phpbb_request::COOKIE);
+				$tracking_topics = phpbb_request::variable(phpbb::$config['cookie_name'] . '_track', '', false, phpbb_request::COOKIE);
 				$tracking_topics = ($tracking_topics) ? tracking_unserialize($tracking_topics) : array();
 			}
 
@@ -588,7 +588,7 @@ if ($keywords || $author || $author_id || $search_id || $submit)
 
 				$rowset[$row['topic_id']] = $row;
 
-				if (!isset($forums[$row['forum_id']]) && $user->data['is_registered'] && $config['load_db_lastread'])
+				if (!isset($forums[$row['forum_id']]) && $user->data['is_registered'] && phpbb::$config['load_db_lastread'])
 				{
 					$forums[$row['forum_id']]['mark_time'] = $row['f_mark_time'];
 				}
@@ -624,17 +624,17 @@ if ($keywords || $author || $author_id || $search_id || $submit)
 
 			foreach ($forums as $forum_id => $forum)
 			{
-				if ($user->data['is_registered'] && $config['load_db_lastread'])
+				if ($user->data['is_registered'] && phpbb::$config['load_db_lastread'])
 				{
 					$topic_tracking_info[$forum_id] = get_topic_tracking($forum_id, $forum['topic_list'], $forum['rowset'], array($forum_id => $forum['mark_time']), ($forum_id) ? false : $forum['topic_list']);
 				}
-				else if ($config['load_anon_lastread'] || $user->data['is_registered'])
+				else if (phpbb::$config['load_anon_lastread'] || $user->data['is_registered'])
 				{
 					$topic_tracking_info[$forum_id] = get_complete_topic_tracking($forum_id, $forum['topic_list'], ($forum_id) ? false : $forum['topic_list']);
 
 					if (!$user->data['is_registered'])
 					{
-						$user->data['user_lastmark'] = (isset($tracking_topics['l'])) ? (int) (base_convert($tracking_topics['l'], 36, 10) + $config['board_startdate']) : 0;
+						$user->data['user_lastmark'] = (isset($tracking_topics['l'])) ? (int) (base_convert($tracking_topics['l'], 36, 10) + phpbb::$config['board_startdate']) : 0;
 					}
 				}
 			}
@@ -665,7 +665,7 @@ if ($keywords || $author || $author_id || $search_id || $submit)
 					$bbcode_bitfield = $bbcode_bitfield | base64_decode($row['bbcode_bitfield']);
 
 					// Does this post have an attachment? If so, add it to the list
-					if ($row['post_attachment'] && $config['allow_attachments'])
+					if ($row['post_attachment'] && phpbb::$config['allow_attachments'])
 					{
 						$attach_list[$row['forum_id']][] = $row['post_id'];
 					}
@@ -773,7 +773,7 @@ if ($keywords || $author || $author_id || $search_id || $submit)
 
 			if ($show_results == 'topics')
 			{
-				if ($config['load_db_track'] && $author_id === $user->data['user_id'])
+				if (phpbb::$config['load_db_track'] && $author_id === $user->data['user_id'])
 				{
 					$row['topic_posted'] = 1;
 				}

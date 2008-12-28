@@ -22,7 +22,7 @@ if (!defined('IN_PHPBB'))
 */
 function view_folder($id, $mode, $folder_id, $folder)
 {
-	global $user, $template, $auth, $db, $config;
+	global $user, $template, $auth, $db;
 
 	$submit_export = phpbb_request::is_set_post('submit_export');
 
@@ -228,12 +228,12 @@ function view_folder($id, $mode, $folder_id, $folder)
 					'SUBJECT'			=> censor_text($row['message_subject']),
 					'FOLDER'			=> (isset($folder[$row['folder_id']])) ? $folder[$row['folder_id']]['folder_name'] : '',
 					'U_FOLDER'			=> (isset($folder[$row['folder_id']])) ? append_sid('ucp', 'folder=' . $row['folder_id']) : '',
-					'PM_ICON_IMG'		=> (!empty($icons[$row['icon_id']])) ? '<img src="' . $config['icons_path'] . '/' . $icons[$row['icon_id']]['img'] . '" width="' . $icons[$row['icon_id']]['width'] . '" height="' . $icons[$row['icon_id']]['height'] . '" alt="" title="" />' : '',
-					'PM_ICON_URL'		=> (!empty($icons[$row['icon_id']])) ? $config['icons_path'] . '/' . $icons[$row['icon_id']]['img'] : '',
+					'PM_ICON_IMG'		=> (!empty($icons[$row['icon_id']])) ? '<img src="' . phpbb::$config['icons_path'] . '/' . $icons[$row['icon_id']]['img'] . '" width="' . $icons[$row['icon_id']]['width'] . '" height="' . $icons[$row['icon_id']]['height'] . '" alt="" title="" />' : '',
+					'PM_ICON_URL'		=> (!empty($icons[$row['icon_id']])) ? phpbb::$config['icons_path'] . '/' . $icons[$row['icon_id']]['img'] : '',
 					'FOLDER_IMG'		=> $user->img($folder_img, $folder_alt),
 					'FOLDER_IMG_SRC'	=> $user->img($folder_img, $folder_alt, 'src'),
 					'PM_IMG'			=> ($row_indicator) ? $user->img('pm_' . $row_indicator, '') : '',
-					'ATTACH_ICON_IMG'	=> ($auth->acl_get('u_pm_download') && $row['message_attachment'] && $config['allow_pm_attach']) ? $user->img('icon_topic_attach', $user->lang['TOTAL_ATTACHMENTS']) : '',
+					'ATTACH_ICON_IMG'	=> ($auth->acl_get('u_pm_download') && $row['message_attachment'] && phpbb::$config['allow_pm_attach']) ? $user->img('icon_topic_attach', $user->lang['TOTAL_ATTACHMENTS']) : '',
 
 					'S_PM_DELETED'		=> ($row['pm_deleted']) ? true : false,
 					'S_AUTHOR_DELETED'	=> ($row['author_id'] == ANONYMOUS) ? true : false,
@@ -249,7 +249,7 @@ function view_folder($id, $mode, $folder_id, $folder)
 				'S_SHOW_RECIPIENTS'		=> ($folder_id == PRIVMSGS_OUTBOX || $folder_id == PRIVMSGS_SENTBOX) ? true : false,
 				'S_SHOW_COLOUR_LEGEND'	=> true,
 
-				'S_PM_ICONS'			=> ($config['enable_pm_icons']) ? true : false)
+				'S_PM_ICONS'			=> (phpbb::$config['enable_pm_icons']) ? true : false)
 			);
 		}
 	}
@@ -438,7 +438,7 @@ function view_folder($id, $mode, $folder_id, $folder)
 */
 function get_pm_from($folder_id, $folder, $user_id)
 {
-	global $user, $db, $template, $config, $auth;
+	global $user, $db, $template, $auth;
 
 	$start = request_var('start', 0);
 
@@ -497,8 +497,8 @@ function get_pm_from($folder_id, $folder, $user_id)
 	}
 
 	$template->assign_vars(array(
-		'PAGINATION'		=> generate_pagination(append_sid('ucp', "i=pm&amp;mode=view&amp;action=view_folder&amp;f=$folder_id&amp;$u_sort_param"), $pm_count, $config['topics_per_page'], $start),
-		'PAGE_NUMBER'		=> on_page($pm_count, $config['topics_per_page'], $start),
+		'PAGINATION'		=> generate_pagination(append_sid('ucp', "i=pm&amp;mode=view&amp;action=view_folder&amp;f=$folder_id&amp;$u_sort_param"), $pm_count, phpbb::$config['topics_per_page'], $start),
+		'PAGE_NUMBER'		=> on_page($pm_count, phpbb::$config['topics_per_page'], $start),
 		'TOTAL_MESSAGES'	=> (($pm_count == 1) ? $user->lang['VIEW_PM_MESSAGE'] : sprintf($user->lang['VIEW_PM_MESSAGES'], $pm_count)),
 
 		'POST_IMG'		=> (!$auth->acl_get('u_sendpm')) ? $user->img('button_topic_locked', 'PM_LOCKED') : $user->img('button_pm_new', 'POST_PM'),
@@ -508,7 +508,7 @@ function get_pm_from($folder_id, $folder, $user_id)
 		'S_SELECT_SORT_DIR'		=> $s_sort_dir,
 		'S_SELECT_SORT_KEY'		=> $s_sort_key,
 		'S_SELECT_SORT_DAYS'	=> $s_limit_days,
-		'S_TOPIC_ICONS'			=> ($config['enable_pm_icons']) ? true : false,
+		'S_TOPIC_ICONS'			=> (phpbb::$config['enable_pm_icons']) ? true : false,
 
 		'U_POST_NEW_TOPIC'	=> ($auth->acl_get('u_sendpm')) ? append_sid('ucp', 'i=pm&amp;mode=compose') : '',
 		'S_PM_ACTION'		=> append_sid('ucp', "i=pm&amp;mode=view&amp;action=view_folder&amp;f=$folder_id" . (($start !== 0) ? "&amp;start=$start" : '')))
@@ -519,14 +519,14 @@ function get_pm_from($folder_id, $folder, $user_id)
 
 	// If the user is trying to reach late pages, start searching from the end
 	$store_reverse = false;
-	$sql_limit = $config['topics_per_page'];
+	$sql_limit = phpbb::$config['topics_per_page'];
 	if ($start > $pm_count / 2)
 	{
 		$store_reverse = true;
 
-		if ($start + $config['topics_per_page'] > $pm_count)
+		if ($start + phpbb::$config['topics_per_page'] > $pm_count)
 		{
-			$sql_limit = min($config['topics_per_page'], max(1, $pm_count - $start));
+			$sql_limit = min(phpbb::$config['topics_per_page'], max(1, $pm_count - $start));
 		}
 
 		// Select the sort order

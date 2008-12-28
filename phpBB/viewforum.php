@@ -45,7 +45,7 @@ $sql_from = FORUMS_TABLE . ' f';
 $lastread_select = '';
 
 // Grab appropriate forum data
-if ($config['load_db_lastread'] && $user->data['is_registered'])
+if (phpbb::$config['load_db_lastread'] && $user->data['is_registered'])
 {
 	$sql_from .= ' LEFT JOIN ' . FORUMS_TRACK_TABLE . ' ft ON (ft.user_id = ' . $user->data['user_id'] . '
 		AND ft.forum_id = f.forum_id)';
@@ -130,7 +130,7 @@ $active_forum_ary = $moderators = array();
 
 if ($forum_data['left_id'] != $forum_data['right_id'] - 1)
 {
-	list($active_forum_ary, $moderators) = display_forums($forum_data, $config['load_moderators'], $config['load_moderators']);
+	list($active_forum_ary, $moderators) = display_forums($forum_data, phpbb::$config['load_moderators'], phpbb::$config['load_moderators']);
 }
 else
 {
@@ -163,7 +163,7 @@ if (!$auth->acl_get('f_read', $forum_id))
 {
 	$template->assign_vars(array(
 		'S_NO_READ_ACCESS'		=> true,
-		'S_AUTOLOGIN_ENABLED'	=> ($config['allow_autologin']) ? true : false,
+		'S_AUTOLOGIN_ENABLED'	=> (phpbb::$config['allow_autologin']) ? true : false,
 		'S_LOGIN_ACTION'		=> append_sid('ucp', 'mode=login') . '&amp;redirect=' . urlencode(str_replace('&amp;', '&', build_url(array('_f_')))),
 	));
 
@@ -187,7 +187,7 @@ if ($mark_read == 'topics')
 // Is a forum specific topic count required?
 if ($forum_data['forum_topics_per_page'])
 {
-	$config['topics_per_page'] = $forum_data['forum_topics_per_page'];
+	phpbb::$config['topics_per_page'] = $forum_data['forum_topics_per_page'];
 }
 
 // Do the forum Prune thang - cron type job ...
@@ -203,7 +203,7 @@ $s_watching_forum = array(
 	'is_watching'	=> false,
 );
 
-if (($config['email_enable'] || $config['jab_enable']) && $config['allow_forum_notify'] && $forum_data['forum_type'] == FORUM_POST && $auth->acl_get('f_subscribe', $forum_id))
+if ((phpbb::$config['email_enable'] || phpbb::$config['jab_enable']) && phpbb::$config['allow_forum_notify'] && $forum_data['forum_type'] == FORUM_POST && $auth->acl_get('f_subscribe', $forum_id))
 {
 	$notify_status = (isset($forum_data['notify_status'])) ? $forum_data['notify_status'] : NULL;
 	watch_topic_forum('forum', $s_watching_forum, $user->data['user_id'], $forum_id, 0, $notify_status);
@@ -256,7 +256,7 @@ else
 // Make sure $start is set to the last page if it exceeds the amount
 if ($start < 0 || $start > $topics_count)
 {
-	$start = ($start < 0) ? 0 : floor(($topics_count - 1) / $config['topics_per_page']) * $config['topics_per_page'];
+	$start = ($start < 0) ? 0 : floor(($topics_count - 1) / phpbb::$config['topics_per_page']) * phpbb::$config['topics_per_page'];
 }
 
 // Basic pagewide vars
@@ -301,7 +301,7 @@ $template->assign_vars(array(
 	'S_WATCH_FORUM_TITLE'	=> $s_watching_forum['title'],
 	'S_WATCHING_FORUM'		=> $s_watching_forum['is_watching'],
 	'S_FORUM_ACTION'		=> append_sid('viewforum', "f=$forum_id&amp;start=$start"),
-	'S_DISPLAY_SEARCHBOX'	=> ($auth->acl_get('u_search') && $auth->acl_get('f_search', $forum_id) && $config['load_search']) ? true : false,
+	'S_DISPLAY_SEARCHBOX'	=> ($auth->acl_get('u_search') && $auth->acl_get('f_search', $forum_id) && phpbb::$config['load_search']) ? true : false,
 	'S_SEARCHBOX_ACTION'	=> append_sid('search', 'fid[]=' . $forum_id),
 	'S_SINGLE_MODERATOR'	=> (!empty($moderators[$forum_id]) && sizeof($moderators[$forum_id]) > 1) ? false : true,
 	'S_IS_LOCKED'			=> ($forum_data['forum_status'] == ITEM_LOCKED) ? true : false,
@@ -310,7 +310,7 @@ $template->assign_vars(array(
 	'U_MCP'				=> ($auth->acl_get('m_', $forum_id)) ? append_sid('mcp', "f=$forum_id&amp;i=main&amp;mode=forum_view", true, $user->session_id) : '',
 	'U_POST_NEW_TOPIC'	=> ($auth->acl_get('f_post', $forum_id) || $user->data['user_id'] == ANONYMOUS) ? append_sid('posting', 'mode=post&amp;f=' . $forum_id) : '',
 	'U_VIEW_FORUM'		=> append_sid('viewforum', "f=$forum_id" . ((strlen($u_sort_param)) ? "&amp;$u_sort_param" : '') . "&amp;start=$start"),
-	'U_MARK_TOPICS'		=> ($user->data['is_registered'] || $config['load_anon_lastread']) ? append_sid('viewforum', 'hash=' . generate_link_hash('global') . "&amp;f=$forum_id&amp;mark=topics") : '',
+	'U_MARK_TOPICS'		=> ($user->data['is_registered'] || phpbb::$config['load_anon_lastread']) ? append_sid('viewforum', 'hash=' . generate_link_hash('global') . "&amp;f=$forum_id&amp;mark=topics") : '',
 ));
 
 // Grab icons
@@ -331,13 +331,13 @@ $sql_approved = ($auth->acl_get('m_approve', $forum_id)) ? '' : 'AND t.topic_app
 
 if ($user->data['is_registered'])
 {
-	if ($config['load_db_track'])
+	if (phpbb::$config['load_db_track'])
 	{
 		$sql_array['LEFT_JOIN'][] = array('FROM' => array(TOPICS_POSTED_TABLE => 'tp'), 'ON' => 'tp.topic_id = t.topic_id AND tp.user_id = ' . $user->data['user_id']);
 		$sql_array['SELECT'] .= ', tp.topic_posted';
 	}
 
-	if ($config['load_db_lastread'])
+	if (phpbb::$config['load_db_lastread'])
 	{
 		$sql_array['LEFT_JOIN'][] = array('FROM' => array(TOPICS_TRACK_TABLE => 'tt'), 'ON' => 'tt.topic_id = t.topic_id AND tt.user_id = ' . $user->data['user_id']);
 		$sql_array['SELECT'] .= ', tt.mark_time';
@@ -384,14 +384,14 @@ if ($forum_data['forum_type'] == FORUM_POST)
 
 // If the user is trying to reach late pages, start searching from the end
 $store_reverse = false;
-$sql_limit = $config['topics_per_page'];
+$sql_limit = phpbb::$config['topics_per_page'];
 if ($start > $topics_count / 2)
 {
 	$store_reverse = true;
 
-	if ($start + $config['topics_per_page'] > $topics_count)
+	if ($start + phpbb::$config['topics_per_page'] > $topics_count)
 	{
-		$sql_limit = min($config['topics_per_page'], max(1, $topics_count - $start));
+		$sql_limit = min(phpbb::$config['topics_per_page'], max(1, $topics_count - $start));
 	}
 
 	// Select the sort order
@@ -524,8 +524,8 @@ if ($s_display_active)
 }
 
 $template->assign_vars(array(
-	'PAGINATION'	=> generate_pagination(append_sid('viewforum', "f=$forum_id" . ((strlen($u_sort_param)) ? "&amp;$u_sort_param" : '')), $topics_count, $config['topics_per_page'], $start),
-	'PAGE_NUMBER'	=> on_page($topics_count, $config['topics_per_page'], $start),
+	'PAGINATION'	=> generate_pagination(append_sid('viewforum', "f=$forum_id" . ((strlen($u_sort_param)) ? "&amp;$u_sort_param" : '')), $topics_count, phpbb::$config['topics_per_page'], $start),
+	'PAGE_NUMBER'	=> on_page($topics_count, phpbb::$config['topics_per_page'], $start),
 	'TOTAL_TOPICS'	=> ($s_display_active) ? false : (($topics_count == 1) ? $user->lang['VIEW_FORUM_TOPIC'] : sprintf($user->lang['VIEW_FORUM_TOPICS'], $topics_count)))
 );
 
@@ -545,18 +545,18 @@ if (sizeof($topic_list))
 		$topic_forum_list = array();
 		foreach ($rowset as $t_id => $row)
 		{
-			$topic_forum_list[$row['forum_id']]['forum_mark_time'] = ($config['load_db_lastread'] && $user->data['is_registered'] && isset($row['forum_mark_time'])) ? $row['forum_mark_time'] : 0;
+			$topic_forum_list[$row['forum_id']]['forum_mark_time'] = (phpbb::$config['load_db_lastread'] && $user->data['is_registered'] && isset($row['forum_mark_time'])) ? $row['forum_mark_time'] : 0;
 			$topic_forum_list[$row['forum_id']]['topics'][] = $t_id;
 		}
 
-		if ($config['load_db_lastread'] && $user->data['is_registered'])
+		if (phpbb::$config['load_db_lastread'] && $user->data['is_registered'])
 		{
 			foreach ($topic_forum_list as $f_id => $topic_row)
 			{
 				$topic_tracking_info += get_topic_tracking($f_id, $topic_row['topics'], $rowset, array($f_id => $topic_row['forum_mark_time']), false);
 			}
 		}
-		else if ($config['load_anon_lastread'] || $user->data['is_registered'])
+		else if (phpbb::$config['load_anon_lastread'] || $user->data['is_registered'])
 		{
 			foreach ($topic_forum_list as $f_id => $topic_row)
 			{
@@ -568,20 +568,20 @@ if (sizeof($topic_list))
 	}
 	else
 	{
-		if ($config['load_db_lastread'] && $user->data['is_registered'])
+		if (phpbb::$config['load_db_lastread'] && $user->data['is_registered'])
 		{
 			$topic_tracking_info = get_topic_tracking($forum_id, $topic_list, $rowset, array($forum_id => $forum_data['mark_time']), $global_announce_list);
 			$mark_time_forum = (!empty($forum_data['mark_time'])) ? $forum_data['mark_time'] : $user->data['user_lastmark'];
 		}
-		else if ($config['load_anon_lastread'] || $user->data['is_registered'])
+		else if (phpbb::$config['load_anon_lastread'] || $user->data['is_registered'])
 		{
 			$topic_tracking_info = get_complete_topic_tracking($forum_id, $topic_list, $global_announce_list);
 
 			if (!$user->data['is_registered'])
 			{
-				$user->data['user_lastmark'] = (isset($tracking_topics['l'])) ? (int) (base_convert($tracking_topics['l'], 36, 10) + $config['board_startdate']) : 0;
+				$user->data['user_lastmark'] = (isset($tracking_topics['l'])) ? (int) (base_convert($tracking_topics['l'], 36, 10) + phpbb::$config['board_startdate']) : 0;
 			}
-			$mark_time_forum = (isset($tracking_topics['f'][$forum_id])) ? (int) (base_convert($tracking_topics['f'][$forum_id], 36, 10) + $config['board_startdate']) : $user->data['user_lastmark'];
+			$mark_time_forum = (isset($tracking_topics['f'][$forum_id])) ? (int) (base_convert($tracking_topics['f'][$forum_id], 36, 10) + phpbb::$config['board_startdate']) : $user->data['user_lastmark'];
 		}
 	}
 

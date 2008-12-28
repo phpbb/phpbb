@@ -221,10 +221,10 @@ function size_select_options($size_compare)
 */
 function group_select_options($group_id, $exclude_ids = false, $manage_founder = false)
 {
-	global $db, $user, $config;
+	global $db, $user;
 
 	$exclude_sql = ($exclude_ids !== false && sizeof($exclude_ids)) ? 'WHERE ' . $db->sql_in_set('group_id', array_map('intval', $exclude_ids), true) : '';
-	$sql_and = (!$config['coppa_enable']) ? (($exclude_sql) ? ' AND ' : ' WHERE ') . "group_name <> 'REGISTERED_COPPA'" : '';
+	$sql_and = (!phpbb::$config['coppa_enable']) ? (($exclude_sql) ? ' AND ' : ' WHERE ') . "group_name <> 'REGISTERED_COPPA'" : '';
 	$sql_founder = ($manage_founder !== false) ? (($exclude_sql || $sql_and) ? ' AND ' : ' WHERE ') . 'group_founder_manage = ' . (int) $manage_founder : '';
 
 	$sql = 'SELECT group_id, group_name, group_type
@@ -525,7 +525,7 @@ function move_posts($post_ids, $topic_id, $auto_sync = true)
 */
 function delete_topics($where_type, $where_ids, $auto_sync = true, $post_count_sync = true, $call_delete_posts = true)
 {
-	global $db, $config;
+	global $db;
 
 	$approved_topics = 0;
 	$forum_ids = $topic_ids = array();
@@ -619,7 +619,7 @@ function delete_topics($where_type, $where_ids, $auto_sync = true, $post_count_s
 
 	if ($approved_topics)
 	{
-		set_config('num_topics', $config['num_topics'] - $approved_topics, true);
+		set_config('num_topics', phpbb::$config['num_topics'] - $approved_topics, true);
 	}
 
 	return $return;
@@ -630,7 +630,7 @@ function delete_topics($where_type, $where_ids, $auto_sync = true, $post_count_s
 */
 function delete_posts($where_type, $where_ids, $auto_sync = true, $posted_sync = true, $post_count_sync = true, $call_delete_topics = true)
 {
-	global $db, $config;
+	global $db;
 
 	if ($where_type === 'range')
 	{
@@ -738,7 +738,7 @@ function delete_posts($where_type, $where_ids, $auto_sync = true, $posted_sync =
 	}
 
 	// Remove the message from the search index
-	$search_type = basename($config['search_type']);
+	$search_type = basename(phpbb::$config['search_type']);
 
 	if (!file_exists(PHPBB_ROOT_PATH . 'includes/search/' . $search_type . '.' . PHP_EXT))
 	{
@@ -776,7 +776,7 @@ function delete_posts($where_type, $where_ids, $auto_sync = true, $posted_sync =
 
 	if ($approved_posts)
 	{
-		set_config('num_posts', $config['num_posts'] - $approved_posts, true);
+		set_config('num_posts', phpbb::$config['num_posts'] - $approved_posts, true);
 	}
 
 	// We actually remove topics now to not be inconsistent (the delete_topics function calls this function too)
@@ -797,7 +797,7 @@ function delete_posts($where_type, $where_ids, $auto_sync = true, $posted_sync =
 */
 function delete_attachments($mode, $ids, $resync = true)
 {
-	global $db, $config;
+	global $db;
 
 	if (is_array($ids) && sizeof($ids))
 	{
@@ -894,8 +894,8 @@ function delete_attachments($mode, $ids, $resync = true)
 
 	if ($space_removed || $files_removed)
 	{
-		set_config('upload_dir_size', $config['upload_dir_size'] - $space_removed, true);
-		set_config('num_files', $config['num_files'] - $files_removed, true);
+		set_config('upload_dir_size', phpbb::$config['upload_dir_size'] - $space_removed, true);
+		set_config('num_files', phpbb::$config['num_files'] - $files_removed, true);
 	}
 
 	// If we do not resync, we do not need to adjust any message, post, topic or user entries
@@ -1014,9 +1014,9 @@ function delete_topic_shadows($max_age, $forum_id = '', $auto_sync = true)
 */
 function update_posted_info(&$topic_ids)
 {
-	global $db, $config;
+	global $db;
 
-	if (empty($topic_ids) || !$config['load_db_track'])
+	if (empty($topic_ids) || !phpbb::$config['load_db_track'])
 	{
 		return;
 	}
@@ -1065,7 +1065,7 @@ function update_posted_info(&$topic_ids)
 */
 function phpbb_unlink($filename, $mode = 'file', $entry_removed = false)
 {
-	global $db, $config;
+	global $db;
 
 	// Because of copying topics or modifications a physical filename could be assigned more than once. If so, do not remove the file itself.
 	$sql = 'SELECT COUNT(attach_id) AS num_entries
@@ -1082,7 +1082,7 @@ function phpbb_unlink($filename, $mode = 'file', $entry_removed = false)
 	}
 
 	$filename = ($mode == 'thumbnail') ? 'thumb_' . basename($filename) : basename($filename);
-	return @unlink(PHPBB_ROOT_PATH . $config['upload_path'] . '/' . $filename);
+	return @unlink(PHPBB_ROOT_PATH . phpbb::$config['upload_path'] . '/' . $filename);
 }
 
 /**
@@ -2900,9 +2900,9 @@ function get_remote_file($host, $directory, $filename, &$errstr, &$errno, $port 
 */
 function tidy_warnings()
 {
-	global $db, $config;
+	global $db;
 
-	$expire_date = time() - ($config['warnings_expire_days'] * 86400);
+	$expire_date = time() - (phpbb::$config['warnings_expire_days'] * 86400);
 	$warning_list = $user_list = array();
 
 	$sql = 'SELECT * FROM ' . WARNINGS_TABLE . "

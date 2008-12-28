@@ -21,7 +21,7 @@ if (!defined('IN_PHPBB'))
 */
 function mcp_forum_view($id, $mode, $action, $forum_info)
 {
-	global $template, $db, $user, $auth, $module, $config;
+	global $template, $db, $user, $auth, $module;
 
 	$user->add_lang(array('viewtopic', 'viewforum'));
 
@@ -90,7 +90,7 @@ function mcp_forum_view($id, $mode, $action, $forum_info)
 
 	make_jumpbox($url . "&amp;i=$id&amp;action=$action&amp;mode=$mode" . (($merge_select) ? $selected_ids : ''), $forum_id, false, 'm_', true);
 
-	$topics_per_page = ($forum_info['forum_topics_per_page']) ? $forum_info['forum_topics_per_page'] : $config['topics_per_page'];
+	$topics_per_page = ($forum_info['forum_topics_per_page']) ? $forum_info['forum_topics_per_page'] : phpbb::$config['topics_per_page'];
 
 	$sort_days = $total = 0;
 	$sort_key = $sort_dir = '';
@@ -138,7 +138,7 @@ function mcp_forum_view($id, $mode, $action, $forum_info)
 
 	$topic_rows = array();
 
-	if ($config['load_db_lastread'])
+	if (phpbb::$config['load_db_lastread'])
 	{
 		$read_tracking_join = ' LEFT JOIN ' . TOPICS_TRACK_TABLE . ' tt ON (tt.topic_id = t.topic_id AND tt.user_id = ' . $user->data['user_id'] . ')';
 		$read_tracking_select = ', tt.mark_time';
@@ -184,7 +184,7 @@ function mcp_forum_view($id, $mode, $action, $forum_info)
 	// Get topic tracking info
 	if (sizeof($topic_list))
 	{
-		if ($config['load_db_lastread'])
+		if (phpbb::$config['load_db_lastread'])
 		{
 			$topic_tracking_info = get_topic_tracking($forum_id, $topic_list, $topic_rows, array($forum_id => $forum_info['mark_time']), array());
 		}

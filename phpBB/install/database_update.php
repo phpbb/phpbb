@@ -371,23 +371,15 @@ header('Content-type: text/html; charset=UTF-8');
 <?php
 
 // To let set_config() calls succeed, we need to make the config array available globally
-$config = array();
-$sql = 'SELECT *
-	FROM ' . CONFIG_TABLE;
-$result = $db->sql_query($sql);
+phpbb::$acm->destroy('#config');
+$config = phpbb_cache::obtain_config();
 
-while ($row = $db->sql_fetchrow($result))
-{
-	$config[$row['config_name']] = $row['config_value'];
-}
-$db->sql_freeresult($result);
-
-echo $lang['PREVIOUS_VERSION'] . ' :: <strong>' . $config['version'] . '</strong><br />';
+echo $lang['PREVIOUS_VERSION'] . ' :: <strong>' . phpbb::$config['version'] . '</strong><br />';
 echo $lang['UPDATED_VERSION'] . ' :: <strong>' . $updates_to_version . '</strong></p>';
 
-$current_version = str_replace('rc', 'RC', strtolower($config['version']));
+$current_version = str_replace('rc', 'RC', strtolower(phpbb::$config['version']));
 $latest_version = str_replace('rc', 'RC', strtolower($updates_to_version));
-$orig_version = $config['version'];
+$orig_version = phpbb::$config['version'];
 
 // If the latest version and the current version are 'unequal', we will update the version_update_from, else we do not update anything.
 if ($inline_update)
@@ -708,7 +700,7 @@ if (function_exists('exit_handler'))
 */
 function change_database_data($version)
 {
-	global $db, $map_dbms, $errored, $error_ary, $config;
+	global $db, $map_dbms, $errored, $error_ary;
 
 	switch ($version)
 	{

@@ -21,7 +21,7 @@ if (!defined('IN_PHPBB'))
 */
 function mcp_topic_view($id, $mode, $action)
 {
-	global $template, $db, $user, $auth, $config;
+	global $template, $db, $user, $auth;
 
 	$url = append_sid(PHPBB_ROOT_PATH. 'mcp.' . PHP_EXT . '?' . extra_url());
 
@@ -108,7 +108,7 @@ function mcp_topic_view($id, $mode, $action)
 		$total = $topic_info['topic_replies'] + 1;
 	}
 
-	$posts_per_page = max(0, request_var('posts_per_page', intval($config['posts_per_page'])));
+	$posts_per_page = max(0, request_var('posts_per_page', intval(phpbb::$config['posts_per_page'])));
 	if ($posts_per_page == 0)
 	{
 		$posts_per_page = $total;
@@ -154,7 +154,7 @@ function mcp_topic_view($id, $mode, $action)
 	$topic_tracking_info = array();
 
 	// Get topic tracking info
-	if ($config['load_db_lastread'])
+	if (phpbb::$config['load_db_lastread'])
 	{
 		$tmp_topic_data = array($topic_id => $topic_info);
 		$topic_tracking_info = get_topic_tracking($topic_info['forum_id'], $topic_id, $tmp_topic_data, array($topic_info['forum_id'] => $topic_info['forum_mark_time']));
@@ -336,7 +336,7 @@ function mcp_topic_view($id, $mode, $action)
 */
 function split_topic($action, $topic_id, $to_forum_id, $subject)
 {
-	global $db, $template, $user, $auth, $config;
+	global $db, $template, $user, $auth;
 
 	$post_id_list	= request_var('post_id_list', array(0));
 	$forum_id		= request_var('forum_id', 0);
@@ -500,7 +500,7 @@ function split_topic($action, $topic_id, $to_forum_id, $subject)
 		$success_msg = 'TOPIC_SPLIT_SUCCESS';
 
 		// Update forum statistics
-		set_config('num_topics', $config['num_topics'] + 1, true);
+		set_config('num_topics', phpbb::$config['num_topics'] + 1, true);
 
 		// Link back to both topics
 		$return_link = sprintf($user->lang['RETURN_TOPIC'], '<a href="' . append_sid('viewtopic', 'f=' . $post_info['forum_id'] . '&amp;t=' . $post_info['topic_id']) . '">', '</a>') . '<br /><br />' . sprintf($user->lang['RETURN_NEW_TOPIC'], '<a href="' . append_sid('viewtopic', 'f=' . $to_forum_id . '&amp;t=' . $to_topic_id) . '">', '</a>');

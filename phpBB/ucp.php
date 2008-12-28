@@ -124,7 +124,7 @@ switch ($mode)
 		$template->assign_vars(array(
 			'S_AGREEMENT'			=> true,
 			'AGREEMENT_TITLE'		=> $user->lang[$title],
-			'AGREEMENT_TEXT'		=> sprintf($user->lang[$message], $config['sitename'], generate_board_url()),
+			'AGREEMENT_TEXT'		=> sprintf($user->lang[$message], phpbb::$config['sitename'], generate_board_url()),
 			'U_BACK'				=> append_sid('ucp', 'mode=login'),
 			'L_BACK'				=> $user->lang['BACK_TO_LOGIN'])
 		);
@@ -143,7 +143,7 @@ switch ($mode)
 			$cookies = phpbb_request::variable_names(phpbb_request::COOKIE);
 			foreach ($cookies as $cookie_name)
 			{
-				$cookie_name = str_replace($config['cookie_name'] . '_', '', $cookie_name);
+				$cookie_name = str_replace(phpbb::$config['cookie_name'] . '_', '', $cookie_name);
 
 				// Polls are stored as {cookie_name}_poll_{topic_id}, cookie_name_ got removed, therefore checking for poll_
 				if (strpos($cookie_name, 'poll_') !== 0)
@@ -257,7 +257,7 @@ switch ($mode)
 		}
 
 		// Do not display subscribed topics/forums if not allowed
-		if (!$config['allow_topic_notify'] && !$config['allow_forum_notify'])
+		if (!phpbb::$config['allow_topic_notify'] && !phpbb::$config['allow_forum_notify'])
 		{
 			$module->set_display('main', 'subscribed', false);
 		}
@@ -282,9 +282,9 @@ switch ($mode)
 */
 function _display_friends()
 {
-	global $config, $db, $template, $user, $auth;
+	global $db, $template, $user, $auth;
 
-	$update_time = $config['load_online_time'] * 60;
+	$update_time = phpbb::$config['load_online_time'] * 60;
 
 	$sql = $db->sql_build_query('SELECT_DISTINCT', array(
 		'SELECT'	=> 'u.user_id, u.username, u.username_clean, u.user_colour, MAX(s.session_time) as online_time, MIN(s.session_viewonline) AS viewonline',

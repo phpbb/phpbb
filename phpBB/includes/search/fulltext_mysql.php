@@ -36,9 +36,7 @@ class fulltext_mysql extends search_backend
 
 	function __construct(&$error)
 	{
-		global $config;
-
-		$this->word_length = array('min' => $config['fulltext_mysql_min_word_len'], 'max' => $config['fulltext_mysql_max_word_len']);
+		$this->word_length = array('min' => phpbb::$config['fulltext_mysql_min_word_len'], 'max' => phpbb::$config['fulltext_mysql_max_word_len']);
 
 		$error = false;
 	}
@@ -96,8 +94,6 @@ class fulltext_mysql extends search_backend
 	*/
 	public function split_keywords(&$keywords, $terms)
 	{
-		global $config;
-
 		if ($terms == 'all')
 		{
 			$match		= array('#\sand\s#iu', '#\sor\s#iu', '#\snot\s#iu', '#\+#', '#-#', '#\|#');
@@ -155,7 +151,7 @@ class fulltext_mysql extends search_backend
 
 			// check word length
 			$clean_len = utf8_strlen(str_replace('*', '', $clean_word));
-			if (($clean_len < $config['fulltext_mysql_min_word_len']) || ($clean_len > $config['fulltext_mysql_max_word_len']))
+			if (($clean_len < phpbb::$config['fulltext_mysql_min_word_len']) || ($clean_len > phpbb::$config['fulltext_mysql_max_word_len']))
 			{
 				$this->common_words[] = $word;
 				unset($this->split_words[$i]);
@@ -210,8 +206,6 @@ class fulltext_mysql extends search_backend
 	*/
 	private function split_message($text)
 	{
-		global $config;
-
 		// Split words
 		$text = preg_replace('#([^\p{L}\p{N}\'*])#u', '$1$1', str_replace('\'\'', '\' \'', trim($text)));
 
@@ -224,7 +218,7 @@ class fulltext_mysql extends search_backend
 		for ($i = 0, $n = sizeof($text); $i < $n; $i++)
 		{
 			$text[$i] = trim($text[$i]);
-			if (utf8_strlen($text[$i]) < $config['fulltext_mysql_min_word_len'] || utf8_strlen($text[$i]) > $config['fulltext_mysql_max_word_len'])
+			if (utf8_strlen($text[$i]) < phpbb::$config['fulltext_mysql_min_word_len'] || utf8_strlen($text[$i]) > phpbb::$config['fulltext_mysql_max_word_len'])
 			{
 				unset($text[$i]);
 			}
@@ -256,7 +250,7 @@ class fulltext_mysql extends search_backend
 	*/
 	public function keyword_search($type, &$fields, &$terms, &$sort_by_sql, &$sort_key, &$sort_dir, &$sort_days, &$ex_fid_ary, &$m_approve_fid_ary, &$topic_id, &$author_ary, &$id_ary, $start, $per_page)
 	{
-		global $config, $db;
+		global $db;
 
 		// No keywords? No posts.
 		if (!$this->search_query)
@@ -369,7 +363,7 @@ class fulltext_mysql extends search_backend
 			WHERE MATCH ($sql_match) AGAINST ('" . $db->sql_escape(htmlspecialchars_decode($this->search_query)) . "' IN BOOLEAN MODE)
 				$sql_where_options
 			ORDER BY $sql_sort";
-		$result = $db->sql_query_limit($sql, $config['search_block_size'], $start);
+		$result = $db->sql_query_limit($sql, phpbb::$config['search_block_size'], $start);
 
 		while ($row = $db->sql_fetchrow($result))
 		{
@@ -415,7 +409,7 @@ class fulltext_mysql extends search_backend
 	*/
 	public function author_search($type, $firstpost_only, &$sort_by_sql, &$sort_key, &$sort_dir, &$sort_days, &$ex_fid_ary, &$m_approve_fid_ary, &$topic_id, &$author_ary, &$id_ary, $start, $per_page)
 	{
-		global $config, $db;
+		global $db;
 
 		// No author? No posts.
 		if (!sizeof($author_ary))
@@ -524,7 +518,7 @@ class fulltext_mysql extends search_backend
 		}
 
 		// Only read one block of posts from the db and then cache it
-		$result = $db->sql_query_limit($sql, $config['search_block_size'], $start);
+		$result = $db->sql_query_limit($sql, phpbb::$config['search_block_size'], $start);
 
 		while ($row = $db->sql_fetchrow($result))
 		{
@@ -593,7 +587,7 @@ class fulltext_mysql extends search_backend
 	*/
 	public function tidy()
 	{
-		global $db, $config;
+		global $db;
 
 		// destroy too old cached search results
 		$this->destroy_cache(array());
@@ -772,7 +766,7 @@ class fulltext_mysql extends search_backend
 	*/
 	function acp()
 	{
-		global $user, $config;
+		global $user;
 
 		$tpl = '';
 

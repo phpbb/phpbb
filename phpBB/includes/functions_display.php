@@ -21,7 +21,7 @@ if (!defined('IN_PHPBB'))
 */
 function display_forums($root_data = '', $display_moderators = true, $return_moderators = false)
 {
-	global $db, $auth, $user, $template, $config;
+	global $db, $auth, $user, $template;
 
 	$forum_rows = $subforums = $forum_ids = $forum_ids_moderator = $forum_moderators = $active_forum_ary = array();
 	$parent_id = $visible_forums = 0;
@@ -61,19 +61,19 @@ function display_forums($root_data = '', $display_moderators = true, $return_mod
 		'LEFT_JOIN'	=> array(),
 	);
 
-	if ($config['load_db_lastread'] && $user->data['is_registered'])
+	if (phpbb::$config['load_db_lastread'] && $user->data['is_registered'])
 	{
 		$sql_array['LEFT_JOIN'][] = array('FROM' => array(FORUMS_TRACK_TABLE => 'ft'), 'ON' => 'ft.user_id = ' . $user->data['user_id'] . ' AND ft.forum_id = f.forum_id');
 		$sql_array['SELECT'] .= ', ft.mark_time';
 	}
-	else if ($config['load_anon_lastread'] || $user->data['is_registered'])
+	else if (phpbb::$config['load_anon_lastread'] || $user->data['is_registered'])
 	{
-		$tracking_topics = phpbb_request::variable($config['cookie_name'] . '_track', '', false, phpbb_request::COOKIE);
+		$tracking_topics = phpbb_request::variable(phpbb::$config['cookie_name'] . '_track', '', false, phpbb_request::COOKIE);
 		$tracking_topics = ($tracking_topics) ? tracking_unserialize($tracking_topics) : array();
 
 		if (!$user->data['is_registered'])
 		{
-			$user->data['user_lastmark'] = (isset($tracking_topics['l'])) ? (int) (base_convert($tracking_topics['l'], 36, 10) + $config['board_startdate']) : 0;
+			$user->data['user_lastmark'] = (isset($tracking_topics['l'])) ? (int) (base_convert($tracking_topics['l'], 36, 10) + phpbb::$config['board_startdate']) : 0;
 		}
 	}
 
@@ -140,17 +140,17 @@ function display_forums($root_data = '', $display_moderators = true, $return_mod
 
 		$forum_ids[] = $forum_id;
 
-		if ($config['load_db_lastread'] && $user->data['is_registered'])
+		if (phpbb::$config['load_db_lastread'] && $user->data['is_registered'])
 		{
 			$forum_tracking_info[$forum_id] = (!empty($row['mark_time'])) ? $row['mark_time'] : $user->data['user_lastmark'];
 		}
-		else if ($config['load_anon_lastread'] || $user->data['is_registered'])
+		else if (phpbb::$config['load_anon_lastread'] || $user->data['is_registered'])
 		{
 			if (!$user->data['is_registered'])
 			{
-				$user->data['user_lastmark'] = (isset($tracking_topics['l'])) ? (int) (base_convert($tracking_topics['l'], 36, 10) + $config['board_startdate']) : 0;
+				$user->data['user_lastmark'] = (isset($tracking_topics['l'])) ? (int) (base_convert($tracking_topics['l'], 36, 10) + phpbb::$config['board_startdate']) : 0;
 			}
-			$forum_tracking_info[$forum_id] = (isset($tracking_topics['f'][$forum_id])) ? (int) (base_convert($tracking_topics['f'][$forum_id], 36, 10) + $config['board_startdate']) : $user->data['user_lastmark'];
+			$forum_tracking_info[$forum_id] = (isset($tracking_topics['f'][$forum_id])) ? (int) (base_convert($tracking_topics['f'][$forum_id], 36, 10) + phpbb::$config['board_startdate']) : $user->data['user_lastmark'];
 		}
 
 		$row['forum_topics'] = ($auth->acl_get('m_approve', $forum_id)) ? $row['forum_topics_real'] : $row['forum_topics'];
@@ -469,7 +469,7 @@ function display_forums($root_data = '', $display_moderators = true, $return_mod
 	}
 
 	$template->assign_vars(array(
-		'U_MARK_FORUMS'		=> ($user->data['is_registered'] || $config['load_anon_lastread']) ? append_sid('viewforum', 'hash=' . generate_link_hash('global') . '&amp;f=' . $root_data['forum_id'] . '&amp;mark=forums') : '',
+		'U_MARK_FORUMS'		=> ($user->data['is_registered'] || phpbb::$config['load_anon_lastread']) ? append_sid('viewforum', 'hash=' . generate_link_hash('global') . '&amp;f=' . $root_data['forum_id'] . '&amp;mark=forums') : '',
 		'S_HAS_SUBFORUM'	=> ($visible_forums) ? true : false,
 		'L_SUBFORUM'		=> ($visible_forums == 1) ? $user->lang['SUBFORUM'] : $user->lang['SUBFORUMS'],
 		'LAST_POST_IMG'		=> $user->img('icon_topic_latest', 'VIEW_LATEST_POST'))
@@ -612,10 +612,10 @@ function get_forum_parents(&$forum_data)
 */
 function topic_generate_pagination($replies, $url)
 {
-	global $config, $user;
+	global $user;
 
 	// Make sure $per_page is a valid value
-	$per_page = ($config['posts_per_page'] <= 0) ? 1 : $config['posts_per_page'];
+	$per_page = (phpbb::$config['posts_per_page'] <= 0) ? 1 : phpbb::$config['posts_per_page'];
 
 	if (($replies + 1) > $per_page)
 	{
@@ -654,11 +654,11 @@ function topic_generate_pagination($replies, $url)
 */
 function get_moderators(&$forum_moderators, $forum_id = false)
 {
-	global $config, $template, $db, $user, $auth;
+	global $template, $db, $user, $auth;
 
 	// Have we disabled the display of moderators? If so, then return
 	// from whence we came ...
-	if (!$config['load_moderators'])
+	if (!phpbb::$config['load_moderators'])
 	{
 		return;
 	}
@@ -739,7 +739,7 @@ function get_moderators(&$forum_moderators, $forum_id = false)
 */
 function gen_forum_auth_level($mode, $forum_id, $forum_status)
 {
-	global $template, $auth, $user, $config;
+	global $template, $auth, $user;
 
 	$locked = ($forum_status == ITEM_LOCKED && !$auth->acl_get('m_edit', $forum_id)) ? true : false;
 
@@ -750,7 +750,7 @@ function gen_forum_auth_level($mode, $forum_id, $forum_status)
 		($user->data['is_registered'] && $auth->acl_gets('f_delete', 'm_delete', $forum_id) && !$locked) ? $user->lang['RULES_DELETE_CAN'] : $user->lang['RULES_DELETE_CANNOT'],
 	);
 
-	if ($config['allow_attachments'])
+	if (phpbb::$config['allow_attachments'])
 	{
 		$rules[] = ($auth->acl_get('f_attach', $forum_id) && $auth->acl_get('u_attach') && !$locked) ? $user->lang['RULES_ATTACH_CAN'] : $user->lang['RULES_ATTACH_CANNOT'];
 	}
@@ -768,7 +768,7 @@ function gen_forum_auth_level($mode, $forum_id, $forum_status)
 */
 function topic_status(&$topic_row, $replies, $unread_topic, &$folder_img, &$folder_alt, &$topic_type)
 {
-	global $user, $config;
+	global $user;
 
 	$folder = $folder_new = '';
 
@@ -806,7 +806,7 @@ function topic_status(&$topic_row, $replies, $unread_topic, &$folder_img, &$fold
 				$folder_new = 'topic_unread';
 
 				// Hot topic threshold is for posts in a topic, which is replies + the first post. ;)
-				if ($config['hot_threshold'] && ($replies + 1) >= $config['hot_threshold'] && $topic_row['topic_status'] != ITEM_LOCKED)
+				if (phpbb::$config['hot_threshold'] && ($replies + 1) >= phpbb::$config['hot_threshold'] && $topic_row['topic_status'] != ITEM_LOCKED)
 				{
 					$folder .= '_hot';
 					$folder_new .= '_hot';
@@ -1151,7 +1151,7 @@ function watch_topic_forum($mode, &$s_watching, $user_id, $forum_id, $topic_id, 
 */
 function get_user_rank($user_id, $user_rank, $user_posts, &$rank_title, &$rank_img, &$rank_img_src)
 {
-	global $ranks, $config;
+	global $ranks;
 
 	if (empty($ranks))
 	{
@@ -1161,8 +1161,8 @@ function get_user_rank($user_id, $user_rank, $user_posts, &$rank_title, &$rank_i
 	if (!empty($user_rank))
 	{
 		$rank_title = (isset($ranks['special'][$user_rank]['rank_title'])) ? $ranks['special'][$user_rank]['rank_title'] : '';
-		$rank_img = (!empty($ranks['special'][$user_rank]['rank_image'])) ? '<img src="' . PHPBB_ROOT_PATH . $config['ranks_path'] . '/' . $ranks['special'][$user_rank]['rank_image'] . '" alt="' . $ranks['special'][$user_rank]['rank_title'] . '" title="' . $ranks['special'][$user_rank]['rank_title'] . '" />' : '';
-		$rank_img_src = (!empty($ranks['special'][$user_rank]['rank_image'])) ? PHPBB_ROOT_PATH . $config['ranks_path'] . '/' . $ranks['special'][$user_rank]['rank_image'] : '';
+		$rank_img = (!empty($ranks['special'][$user_rank]['rank_image'])) ? '<img src="' . PHPBB_ROOT_PATH . phpbb::$config['ranks_path'] . '/' . $ranks['special'][$user_rank]['rank_image'] . '" alt="' . $ranks['special'][$user_rank]['rank_title'] . '" title="' . $ranks['special'][$user_rank]['rank_title'] . '" />' : '';
+		$rank_img_src = (!empty($ranks['special'][$user_rank]['rank_image'])) ? PHPBB_ROOT_PATH . phpbb::$config['ranks_path'] . '/' . $ranks['special'][$user_rank]['rank_image'] : '';
 	}
 	else if ($user_id != ANONYMOUS)
 	{
@@ -1173,8 +1173,8 @@ function get_user_rank($user_id, $user_rank, $user_posts, &$rank_title, &$rank_i
 				if ($user_posts >= $rank['rank_min'])
 				{
 					$rank_title = $rank['rank_title'];
-					$rank_img = (!empty($rank['rank_image'])) ? '<img src="' . PHPBB_ROOT_PATH . $config['ranks_path'] . '/' . $rank['rank_image'] . '" alt="' . $rank['rank_title'] . '" title="' . $rank['rank_title'] . '" />' : '';
-					$rank_img_src = (!empty($rank['rank_image'])) ? PHPBB_ROOT_PATH . $config['ranks_path'] . '/' . $rank['rank_image'] : '';
+					$rank_img = (!empty($rank['rank_image'])) ? '<img src="' . PHPBB_ROOT_PATH . phpbb::$config['ranks_path'] . '/' . $rank['rank_image'] . '" alt="' . $rank['rank_title'] . '" title="' . $rank['rank_title'] . '" />' : '';
+					$rank_img_src = (!empty($rank['rank_image'])) ? PHPBB_ROOT_PATH . phpbb::$config['ranks_path'] . '/' . $rank['rank_image'] : '';
 					break;
 				}
 			}
@@ -1195,7 +1195,7 @@ function get_user_rank($user_id, $user_rank, $user_posts, &$rank_title, &$rank_i
 */
 function get_user_avatar($avatar, $avatar_type, $avatar_width, $avatar_height, $alt = 'USER_AVATAR')
 {
-	global $user, $config;
+	global $user;
 
 	if (empty($avatar) || !$avatar_type)
 	{
@@ -1211,7 +1211,7 @@ function get_user_avatar($avatar, $avatar_type, $avatar_width, $avatar_height, $
 		break;
 
 		case AVATAR_GALLERY:
-			$avatar_img = PHPBB_ROOT_PATH . $config['avatar_gallery_path'] . '/';
+			$avatar_img = PHPBB_ROOT_PATH . phpbb::$config['avatar_gallery_path'] . '/';
 		break;
 	}
 

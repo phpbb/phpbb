@@ -25,7 +25,7 @@ class acp_bots
 
 	function main($id, $mode)
 	{
-		global $config, $db, $user, $auth, $template;
+		global $db, $user, $auth, $template;
 
 		$action = request_var('action', '');
 		$submit = phpbb_request::is_set_post('submit');
@@ -147,8 +147,8 @@ class acp_bots
 					'bot_agent'		=> request_var('bot_agent', ''),
 					'bot_ip'		=> request_var('bot_ip', ''),
 					'bot_active'	=> request_var('bot_active', true),
-					'bot_lang'		=> request_var('bot_lang', $config['default_lang']),
-					'bot_style'		=> request_var('bot_style' , $config['default_style']),
+					'bot_lang'		=> request_var('bot_lang', phpbb::$config['default_lang']),
+					'bot_style'		=> request_var('bot_style' , phpbb::$config['default_style']),
 				);
 
 				if ($submit)

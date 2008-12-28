@@ -70,7 +70,7 @@ class install_update extends module
 
 	function main($mode, $sub)
 	{
-		global $template, $user, $db, $config, $auth;
+		global $template, $user, $db, $auth;
 
 		$this->tpl_name = 'install_update';
 		$this->page_title = 'UPDATE_INSTALLATION';
@@ -98,20 +98,8 @@ class install_update extends module
 		// We do not need this any longer, unset for safety purposes
 		unset($dbpasswd);
 
-		$config = array();
-
-		$sql = 'SELECT config_name, config_value
-			FROM ' . CONFIG_TABLE;
-		$result = $db->sql_query($sql);
-
-		while ($row = $db->sql_fetchrow($result))
-		{
-			$config[$row['config_name']] = $row['config_value'];
-		}
-		$db->sql_freeresult($result);
-
 		// Force template recompile
-		$config['load_tplcompile'] = 1;
+		phpbb::$config['load_tplcompile'] = 1;
 
 		// First of all, init the user session
 		$user->session_begin();
@@ -140,7 +128,7 @@ class install_update extends module
 		}
 
 		// For the current version we trick a bit. ;)
-		$this->current_version = (!empty($config['version_update_from'])) ? $config['version_update_from'] : $config['version'];
+		$this->current_version = (!empty(phpbb::$config['version_update_from'])) ? phpbb::$config['version_update_from'] : phpbb::$config['version'];
 
 		$up_to_date = (version_compare(str_replace('rc', 'RC', strtolower($this->current_version)), str_replace('rc', 'RC', strtolower($this->latest_version)), '<')) ? false : true;
 
@@ -149,7 +137,7 @@ class install_update extends module
 		{
 			$template->assign_vars(array(
 				'S_ERROR'		=> true,
-				'ERROR_MSG'		=> ($up_to_date) ? $user->lang['NO_UPDATE_FILES_UP_TO_DATE'] : sprintf($user->lang['NO_UPDATE_FILES_OUTDATED'], $config['version'], $this->current_version, $this->latest_version))
+				'ERROR_MSG'		=> ($up_to_date) ? $user->lang['NO_UPDATE_FILES_UP_TO_DATE'] : sprintf($user->lang['NO_UPDATE_FILES_OUTDATED'], phpbb::$config['version'], $this->current_version, $this->latest_version))
 			);
 
 			return;
@@ -163,7 +151,7 @@ class install_update extends module
 		{
 			$template->assign_vars(array(
 				'S_ERROR'		=> true,
-				'ERROR_MSG'		=> sprintf($user->lang['INCOMPATIBLE_UPDATE_FILES'], $config['version'], $this->update_info['version']['from'], $this->update_info['version']['to']))
+				'ERROR_MSG'		=> sprintf($user->lang['INCOMPATIBLE_UPDATE_FILES'], phpbb::$config['version'], $this->update_info['version']['from'], $this->update_info['version']['to']))
 			);
 
 			return;
@@ -278,7 +266,7 @@ class install_update extends module
 				// Redirect the user to the database update script with some explanations...
 				$template->assign_vars(array(
 					'S_DB_UPDATE'			=> true,
-					'S_DB_UPDATE_FINISHED'	=> ($config['version'] == $this->update_info['version']['to']) ? true : false,
+					'S_DB_UPDATE_FINISHED'	=> (phpbb::$config['version'] == $this->update_info['version']['to']) ? true : false,
 					'U_DB_UPDATE'			=> append_sid('install/database_update', 'type=1&amp;language=' . $user->data['user_lang']),
 					'U_DB_UPDATE_ACTION'	=> append_sid($this->p_master->module_url, "mode=$mode&amp;sub=update_db"),
 					'U_ACTION'				=> append_sid($this->p_master->module_url, "mode=$mode&amp;sub=file_check"),
@@ -785,7 +773,7 @@ class install_update extends module
 
 						// To ease the update process create a file location map
 						$update_list = phpbb::$acm->get('update_list');
-						$script_path = ($config['force_server_vars']) ? (($config['script_path'] == '/') ? '/' : $config['script_path'] . '/') : $user->page['root_script_path'];
+						$script_path = (phpbb::$config['force_server_vars']) ? ((phpbb::$config['script_path'] == '/') ? '/' : phpbb::$config['script_path'] . '/') : $user->page['root_script_path'];
 
 						foreach ($update_list as $status => $files)
 						{

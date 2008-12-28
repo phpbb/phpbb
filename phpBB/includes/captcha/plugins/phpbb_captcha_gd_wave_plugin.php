@@ -50,8 +50,8 @@ class phpbb_captcha_gd_wave extends phpbb_default_captcha implements phpbb_captc
 
 	function acp_page($id, &$module)
 	{
-		global $config, $db, $template, $user;
-		
+		global $db, $template, $user;
+
 		trigger_error($user->lang['CAPTCHA_NO_OPTIONS'] . adm_back_link($module->u_action));
 	}
 }

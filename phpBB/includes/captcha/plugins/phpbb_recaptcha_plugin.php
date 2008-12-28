@@ -28,7 +28,7 @@ class phpbb_recaptcha extends phpbb_default_captcha implements phpbb_captcha_plu
 
 	function init($type)
 	{
-		global $config, $db, $user;
+		global $db, $user;
 
 		$user->add_lang('recaptcha');
 		parent::init($type);
@@ -44,9 +44,9 @@ class phpbb_recaptcha extends phpbb_default_captcha implements phpbb_captcha_plu
 
 	static function is_available()
 	{
-		global $config, $user;
+		global $user;
 		$user->add_lang('recaptcha');
-		return (isset($config['recaptcha_pubkey']) && !empty($config['recaptcha_pubkey']));
+		return (isset(phpbb::$config['recaptcha_pubkey']) && !empty(phpbb::$config['recaptcha_pubkey']));
 	}
 
 	static function get_name()
@@ -61,7 +61,7 @@ class phpbb_recaptcha extends phpbb_default_captcha implements phpbb_captcha_plu
 
 	function acp_page($id, &$module)
 	{
-		global $config, $db, $template, $user;
+		global $db, $template, $user;
 
 		$captcha_vars = array(
 			'recaptcha_pubkey'				=> 'RECAPTCHA_PUBKEY',
@@ -96,7 +96,7 @@ class phpbb_recaptcha extends phpbb_default_captcha implements phpbb_captcha_plu
 		{
 			foreach ($captcha_vars as $captcha_var => $template_var)
 			{
-				$var = request_var($captcha_var, (isset($config[$captcha_var])) ? (string) $config[$captcha_var] : '');
+				$var = request_var($captcha_var, (isset(phpbb::$config[$captcha_var])) ? (string) phpbb::$config[$captcha_var] : '');
 				$template->assign_var($template_var, $var);
 			}
 			$template->assign_vars(array(
@@ -122,7 +122,7 @@ class phpbb_recaptcha extends phpbb_default_captcha implements phpbb_captcha_plu
 
 	function get_template()
 	{
-		global $config, $user, $template;
+		global $user, $template;
 
 		$template->set_filenames(array(
 			'captcha' => 'captcha_recaptcha.html')
@@ -130,7 +130,7 @@ class phpbb_recaptcha extends phpbb_default_captcha implements phpbb_captcha_plu
 
 		$template->assign_vars(array(
 			'RECAPTCHA_SERVER'			=> self::recaptcha_server,
-			'RECAPTCHA_PUBKEY'			=> isset($config['recaptcha_pubkey']) ? $config['recaptcha_pubkey'] : '',
+			'RECAPTCHA_PUBKEY'			=> isset(phpbb::$config['recaptcha_pubkey']) ? phpbb::$config['recaptcha_pubkey'] : '',
 			'RECAPTCHA_ERRORGET'		=> '',
 			'S_RECAPTCHA_AVAILABLE'		=> self::is_available(),
 		));
@@ -260,7 +260,7 @@ class phpbb_recaptcha extends phpbb_default_captcha implements phpbb_captcha_plu
 	*/
 	protected function recaptcha_check_answer($extra_params = array())
 	{
-		global $config, $user;
+		global $user;
 
 		// discard spam submissions
 		if ($this->challenge == null || strlen($this->challenge) == 0 || $this->response == null || strlen($this->response) == 0)
@@ -269,7 +269,7 @@ class phpbb_recaptcha extends phpbb_default_captcha implements phpbb_captcha_plu
 		}
 
 		$response = $this->_recaptcha_http_post(self::recaptcha_verify_server, '/verify', array(
-			'privatekey'	=> $config['recaptcha_privkey'],
+			'privatekey'	=> phpbb::$config['recaptcha_privkey'],
 			'remoteip'		=> $user->ip,
 			'challenge'		=> $this->challenge,
 			'response'		=> $this->response,

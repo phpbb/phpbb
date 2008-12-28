@@ -31,7 +31,7 @@ class acp_users
 
 	function main($id, $mode)
 	{
-		global $config, $db, $user, $auth, $template, $file_uploads;
+		global $db, $user, $auth, $template, $file_uploads;
 
 		$user->add_lang(array('posting', 'ucp', 'acp/users'));
 		$this->tpl_name = 'acp_users';
@@ -300,7 +300,7 @@ class acp_users
 								trigger_error($user->lang['CANNOT_FORCE_REACT_BOT'] . adm_back_link($this->u_action . '&amp;u=' . $user_id), E_USER_WARNING);
 							}
 
-							if ($config['email_enable'])
+							if (phpbb::$config['email_enable'])
 							{
 								include_once(PHPBB_ROOT_PATH . 'includes/functions_messenger.' . PHP_EXT);
 
@@ -338,13 +338,13 @@ class acp_users
 
 								$messenger->to($user_row['user_email'], $user_row['username']);
 
-								$messenger->headers('X-AntiAbuse: Board servername - ' . $config['server_name']);
+								$messenger->headers('X-AntiAbuse: Board servername - ' . phpbb::$config['server_name']);
 								$messenger->headers('X-AntiAbuse: User_id - ' . $user->data['user_id']);
 								$messenger->headers('X-AntiAbuse: Username - ' . $user->data['username']);
 								$messenger->headers('X-AntiAbuse: User IP - ' . $user->ip);
 
 								$messenger->assign_vars(array(
-									'WELCOME_MSG'	=> htmlspecialchars_decode(sprintf($user->lang['WELCOME_SUBJECT'], $config['sitename'])),
+									'WELCOME_MSG'	=> htmlspecialchars_decode(sprintf($user->lang['WELCOME_SUBJECT'], phpbb::$config['sitename'])),
 									'USERNAME'		=> htmlspecialchars_decode($user_row['username']),
 									'U_ACTIVATE'	=> "$server_url/ucp." . PHP_EXT . "?mode=activate&u={$user_row['user_id']}&k=$user_actkey")
 								);
@@ -664,9 +664,9 @@ class acp_users
 					// Validation data - we do not check the password complexity setting here
 					$check_ary = array(
 						'new_password'		=> array(
-							array('string', true, $config['min_pass_chars'], $config['max_pass_chars']),
+							array('string', true, phpbb::$config['min_pass_chars'], phpbb::$config['max_pass_chars']),
 							array('password')),
-						'password_confirm'	=> array('string', true, $config['min_pass_chars'], $config['max_pass_chars']),
+						'password_confirm'	=> array('string', true, phpbb::$config['min_pass_chars'], phpbb::$config['max_pass_chars']),
 					);
 
 					// Check username if altered
@@ -674,7 +674,7 @@ class acp_users
 					{
 						$check_ary += array(
 							'username'			=> array(
-								array('string', false, $config['min_name_chars'], $config['max_name_chars']),
+								array('string', false, phpbb::$config['min_name_chars'], phpbb::$config['max_name_chars']),
 								array('username', $user_row['username'])
 							),
 						);
@@ -837,7 +837,7 @@ class acp_users
 
 					$quick_tool_ary += array('delsig' => 'DEL_SIG', 'delavatar' => 'DEL_AVATAR', 'moveposts' => 'MOVE_POSTS', 'delposts' => 'DEL_POSTS', 'delattach' => 'DEL_ATTACH');
 
-					if ($config['email_enable'] && ($user_row['user_type'] == phpbb::USER_NORMAL || $user_row['user_type'] == phpbb::USER_INACTIVE))
+					if (phpbb::$config['email_enable'] && ($user_row['user_type'] == phpbb::USER_NORMAL || $user_row['user_type'] == phpbb::USER_INACTIVE))
 					{
 						$quick_tool_ary['reactivate'] = 'FORCE';
 					}
@@ -849,7 +849,7 @@ class acp_users
 					$s_action_options .= '<option value="' . $value . '">' . $user->lang['USER_ADMIN_' . $lang] . '</option>';
 				}
 
-				if ($config['load_onlinetrack'])
+				if (phpbb::$config['load_onlinetrack'])
 				{
 					$sql = 'SELECT MAX(session_time) AS session_time, MIN(session_viewonline) AS session_viewonline
 						FROM ' . SESSIONS_TABLE . "
@@ -900,8 +900,8 @@ class acp_users
 				$db->sql_freeresult($result);
 
 				$template->assign_vars(array(
-					'L_NAME_CHARS_EXPLAIN'		=> sprintf($user->lang[$config['allow_name_chars'] . '_EXPLAIN'], $config['min_name_chars'], $config['max_name_chars']),
-					'L_CHANGE_PASSWORD_EXPLAIN'	=> sprintf($user->lang[$config['pass_complex'] . '_EXPLAIN'], $config['min_pass_chars'], $config['max_pass_chars']),
+					'L_NAME_CHARS_EXPLAIN'		=> sprintf($user->lang[phpbb::$config['allow_name_chars'] . '_EXPLAIN'], phpbb::$config['min_name_chars'], phpbb::$config['max_name_chars']),
+					'L_CHANGE_PASSWORD_EXPLAIN'	=> sprintf($user->lang[phpbb::$config['pass_complex'] . '_EXPLAIN'], phpbb::$config['min_pass_chars'], phpbb::$config['max_pass_chars']),
 					'L_POSTS_IN_QUEUE'			=> $user->lang('NUM_POSTS_IN_QUEUE', $user_row['posts_in_queue']),
 					'S_FOUNDER'					=> ($user->data['user_type'] == phpbb::USER_FOUNDER) ? true : false,
 
@@ -1007,12 +1007,12 @@ class acp_users
 				// Grab log data
 				$log_data = array();
 				$log_count = 0;
-				view_log('user', $log_data, $log_count, $config['topics_per_page'], $start, 0, 0, $user_id, $sql_where, $sql_sort);
+				view_log('user', $log_data, $log_count, phpbb::$config['topics_per_page'], $start, 0, 0, $user_id, $sql_where, $sql_sort);
 
 				$template->assign_vars(array(
 					'S_FEEDBACK'	=> true,
-					'S_ON_PAGE'		=> on_page($log_count, $config['topics_per_page'], $start),
-					'PAGINATION'	=> generate_pagination($this->u_action . "&amp;u=$user_id&amp;$u_sort_param", $log_count, $config['topics_per_page'], $start, true),
+					'S_ON_PAGE'		=> on_page($log_count, phpbb::$config['topics_per_page'], $start),
+					'PAGINATION'	=> generate_pagination($this->u_action . "&amp;u=$user_id&amp;$u_sort_param", $log_count, phpbb::$config['topics_per_page'], $start, true),
 
 					'S_LIMIT_DAYS'	=> $s_limit_days,
 					'S_SORT_KEY'	=> $s_sort_key,
@@ -1403,7 +1403,7 @@ class acp_users
 
 				$template->assign_vars(array(
 					'S_PREFS'			=> true,
-					'S_JABBER_DISABLED'	=> ($config['jab_enable'] && $user_row['user_jabber'] && @extension_loaded('xml')) ? false : true,
+					'S_JABBER_DISABLED'	=> (phpbb::$config['jab_enable'] && $user_row['user_jabber'] && @extension_loaded('xml')) ? false : true,
 
 					'VIEW_EMAIL'		=> $data['viewemail'],
 					'MASS_EMAIL'		=> $data['massemail'],
@@ -1436,8 +1436,8 @@ class acp_users
 					'DATE_FORMAT'			=> $data['dateformat'],
 					'S_DATEFORMAT_OPTIONS'	=> $dateformat_options,
 					'S_CUSTOM_DATEFORMAT'	=> $s_custom,
-					'DEFAULT_DATEFORMAT'	=> $config['default_dateformat'],
-					'A_DEFAULT_DATEFORMAT'	=> addslashes($config['default_dateformat']),
+					'DEFAULT_DATEFORMAT'	=> phpbb::$config['default_dateformat'],
+					'A_DEFAULT_DATEFORMAT'	=> addslashes(phpbb::$config['default_dateformat']),
 
 					'S_LANG_OPTIONS'	=> language_select($data['lang']),
 					'S_STYLE_OPTIONS'	=> style_select($data['style']),
@@ -1452,7 +1452,7 @@ class acp_users
 				include(PHPBB_ROOT_PATH . 'includes/functions_display.' . PHP_EXT);
 				include(PHPBB_ROOT_PATH . 'includes/functions_user.' . PHP_EXT);
 
-				$can_upload = (file_exists(PHPBB_ROOT_PATH . $config['avatar_path']) && @is_writable(PHPBB_ROOT_PATH . $config['avatar_path']) && $file_uploads) ? true : false;
+				$can_upload = (file_exists(PHPBB_ROOT_PATH . phpbb::$config['avatar_path']) && @is_writable(PHPBB_ROOT_PATH . phpbb::$config['avatar_path']) && $file_uploads) ? true : false;
 
 				if ($submit)
 				{
@@ -1478,24 +1478,24 @@ class acp_users
 				$avatar_select = basename(request_var('avatar_select', ''));
 				$category = basename(request_var('category', ''));
 
-				if ($config['allow_avatar_local'] && $display_gallery)
+				if (phpbb::$config['allow_avatar_local'] && $display_gallery)
 				{
 					avatar_gallery($category, $avatar_select, 4);
 				}
 
 				$template->assign_vars(array(
 					'S_AVATAR'			=> true,
-					'S_CAN_UPLOAD'		=> ($can_upload && $config['allow_avatar_upload']) ? true : false,
-					'S_ALLOW_REMOTE'	=> ($config['allow_avatar_remote']) ? true : false,
-					'S_DISPLAY_GALLERY'	=> ($config['allow_avatar_local'] && !$display_gallery) ? true : false,
-					'S_IN_GALLERY'		=> ($config['allow_avatar_local'] && $display_gallery) ? true : false,
+					'S_CAN_UPLOAD'		=> ($can_upload && phpbb::$config['allow_avatar_upload']) ? true : false,
+					'S_ALLOW_REMOTE'	=> (phpbb::$config['allow_avatar_remote']) ? true : false,
+					'S_DISPLAY_GALLERY'	=> (phpbb::$config['allow_avatar_local'] && !$display_gallery) ? true : false,
+					'S_IN_GALLERY'		=> (phpbb::$config['allow_avatar_local'] && $display_gallery) ? true : false,
 
 					'AVATAR_IMAGE'			=> $avatar_img,
-					'AVATAR_MAX_FILESIZE'	=> $config['avatar_filesize'],
+					'AVATAR_MAX_FILESIZE'	=> phpbb::$config['avatar_filesize'],
 					'USER_AVATAR_WIDTH'		=> $user_row['user_avatar_width'],
 					'USER_AVATAR_HEIGHT'	=> $user_row['user_avatar_height'],
 
-					'L_AVATAR_EXPLAIN'	=> sprintf($user->lang['AVATAR_EXPLAIN'], $config['avatar_max_width'], $config['avatar_max_height'], round($config['avatar_filesize'] / 1024)))
+					'L_AVATAR_EXPLAIN'	=> sprintf($user->lang['AVATAR_EXPLAIN'], phpbb::$config['avatar_max_width'], phpbb::$config['avatar_max_height'], round(phpbb::$config['avatar_filesize'] / 1024)))
 				);
 
 			break;
@@ -1546,9 +1546,9 @@ class acp_users
 				include_once(PHPBB_ROOT_PATH . 'includes/functions_posting.' . PHP_EXT);
 				include_once(PHPBB_ROOT_PATH . 'includes/functions_display.' . PHP_EXT);
 
-				$enable_bbcode	= ($config['allow_sig_bbcode']) ? ((request_var('disable_bbcode', !$user->optionget('bbcode'))) ? false : true) : false;
-				$enable_smilies	= ($config['allow_sig_smilies']) ? ((request_var('disable_smilies', !$user->optionget('smilies'))) ? false : true) : false;
-				$enable_urls	= ($config['allow_sig_links']) ? ((request_var('disable_magic_url', false)) ? false : true) : false;
+				$enable_bbcode	= (phpbb::$config['allow_sig_bbcode']) ? ((request_var('disable_bbcode', !$user->optionget('bbcode'))) ? false : true) : false;
+				$enable_smilies	= (phpbb::$config['allow_sig_smilies']) ? ((request_var('disable_smilies', !$user->optionget('smilies'))) ? false : true) : false;
+				$enable_urls	= (phpbb::$config['allow_sig_links']) ? ((request_var('disable_magic_url', false)) ? false : true) : false;
 				$signature		= utf8_normalize_nfc(request_var('signature', (string) $user_row['user_sig'], true));
 
 				$preview		= phpbb_request::is_set_post('preview');
@@ -1560,7 +1560,7 @@ class acp_users
 					$message_parser = new parse_message($signature);
 
 					// Allowing Quote BBCode
-					$message_parser->parse($enable_bbcode, $enable_urls, $enable_smilies, $config['allow_sig_img'], $config['allow_sig_flash'], true, $config['allow_sig_links'], true, 'sig');
+					$message_parser->parse($enable_bbcode, $enable_urls, $enable_smilies, phpbb::$config['allow_sig_img'], phpbb::$config['allow_sig_flash'], true, phpbb::$config['allow_sig_links'], true, 'sig');
 
 					if (sizeof($message_parser->warn_msg))
 					{
@@ -1613,19 +1613,19 @@ class acp_users
 					'S_SMILIES_CHECKED'		=> (!$enable_smilies) ? ' checked="checked"' : '',
 					'S_MAGIC_URL_CHECKED'	=> (!$enable_urls) ? ' checked="checked"' : '',
 
-					'BBCODE_STATUS'			=> ($config['allow_sig_bbcode']) ? sprintf($user->lang['BBCODE_IS_ON'], '<a href="' . append_sid('faq', 'mode=bbcode') . '">', '</a>') : sprintf($user->lang['BBCODE_IS_OFF'], '<a href="' . append_sid('faq', 'mode=bbcode') . '">', '</a>'),
-					'SMILIES_STATUS'		=> ($config['allow_sig_smilies']) ? $user->lang['SMILIES_ARE_ON'] : $user->lang['SMILIES_ARE_OFF'],
-					'IMG_STATUS'			=> ($config['allow_sig_img']) ? $user->lang['IMAGES_ARE_ON'] : $user->lang['IMAGES_ARE_OFF'],
-					'FLASH_STATUS'			=> ($config['allow_sig_flash']) ? $user->lang['FLASH_IS_ON'] : $user->lang['FLASH_IS_OFF'],
-					'URL_STATUS'			=> ($config['allow_sig_links']) ? $user->lang['URL_IS_ON'] : $user->lang['URL_IS_OFF'],
+					'BBCODE_STATUS'			=> (phpbb::$config['allow_sig_bbcode']) ? sprintf($user->lang['BBCODE_IS_ON'], '<a href="' . append_sid('faq', 'mode=bbcode') . '">', '</a>') : sprintf($user->lang['BBCODE_IS_OFF'], '<a href="' . append_sid('faq', 'mode=bbcode') . '">', '</a>'),
+					'SMILIES_STATUS'		=> (phpbb::$config['allow_sig_smilies']) ? $user->lang['SMILIES_ARE_ON'] : $user->lang['SMILIES_ARE_OFF'],
+					'IMG_STATUS'			=> (phpbb::$config['allow_sig_img']) ? $user->lang['IMAGES_ARE_ON'] : $user->lang['IMAGES_ARE_OFF'],
+					'FLASH_STATUS'			=> (phpbb::$config['allow_sig_flash']) ? $user->lang['FLASH_IS_ON'] : $user->lang['FLASH_IS_OFF'],
+					'URL_STATUS'			=> (phpbb::$config['allow_sig_links']) ? $user->lang['URL_IS_ON'] : $user->lang['URL_IS_OFF'],
 
-					'L_SIGNATURE_EXPLAIN'	=> sprintf($user->lang['SIGNATURE_EXPLAIN'], $config['max_sig_chars']),
+					'L_SIGNATURE_EXPLAIN'	=> sprintf($user->lang['SIGNATURE_EXPLAIN'], phpbb::$config['max_sig_chars']),
 
-					'S_BBCODE_ALLOWED'		=> $config['allow_sig_bbcode'],
-					'S_SMILIES_ALLOWED'		=> $config['allow_sig_smilies'],
-					'S_BBCODE_IMG'			=> ($config['allow_sig_img']) ? true : false,
-					'S_BBCODE_FLASH'		=> ($config['allow_sig_flash']) ? true : false,
-					'S_LINKS_ALLOWED'		=> ($config['allow_sig_links']) ? true : false)
+					'S_BBCODE_ALLOWED'		=> phpbb::$config['allow_sig_bbcode'],
+					'S_SMILIES_ALLOWED'		=> phpbb::$config['allow_sig_smilies'],
+					'S_BBCODE_IMG'			=> (phpbb::$config['allow_sig_img']) ? true : false,
+					'S_BBCODE_FLASH'		=> (phpbb::$config['allow_sig_flash']) ? true : false,
+					'S_LINKS_ALLOWED'		=> (phpbb::$config['allow_sig_links']) ? true : false)
 				);
 
 				// Assigning custom bbcodes
@@ -1739,7 +1739,7 @@ class acp_users
 					WHERE a.poster_id = ' . $user_id . "
 						AND a.is_orphan = 0
 					ORDER BY $order_by";
-				$result = $db->sql_query_limit($sql, $config['posts_per_page'], $start);
+				$result = $db->sql_query_limit($sql, phpbb::$config['posts_per_page'], $start);
 
 				while ($row = $db->sql_fetchrow($result))
 				{
@@ -1775,11 +1775,11 @@ class acp_users
 
 				$template->assign_vars(array(
 					'S_ATTACHMENTS'		=> true,
-					'S_ON_PAGE'			=> on_page($num_attachments, $config['topics_per_page'], $start),
+					'S_ON_PAGE'			=> on_page($num_attachments, phpbb::$config['topics_per_page'], $start),
 					'S_SORT_KEY'		=> $s_sort_key,
 					'S_SORT_DIR'		=> $s_sort_dir,
 
-					'PAGINATION'		=> generate_pagination($this->u_action . "&amp;u=$user_id&amp;sk=$sort_key&amp;sd=$sort_dir", $num_attachments, $config['topics_per_page'], $start, true))
+					'PAGINATION'		=> generate_pagination($this->u_action . "&amp;u=$user_id&amp;sk=$sort_key&amp;sd=$sort_dir", $num_attachments, phpbb::$config['topics_per_page'], $start, true))
 				);
 
 			break;
@@ -1915,7 +1915,7 @@ class acp_users
 				$s_group_options = '';
 				while ($row = $db->sql_fetchrow($result))
 				{
-					if (!$config['coppa_enable'] && $row['group_name'] == 'REGISTERED_COPPA')
+					if (!phpbb::$config['coppa_enable'] && $row['group_name'] == 'REGISTERED_COPPA')
 					{
 						continue;
 					}

@@ -194,16 +194,16 @@ class bbcode_firstpass extends bbcode
 	*/
 	function bbcode_size($stx, $in)
 	{
-		global $user, $config;
+		global $user;
 
 		if (!$this->check_bbcode('size', $in))
 		{
 			return $in;
 		}
 
-		if ($config['max_' . $this->mode . '_font_size'] && $config['max_' . $this->mode . '_font_size'] < $stx)
+		if (phpbb::$config['max_' . $this->mode . '_font_size'] && phpbb::$config['max_' . $this->mode . '_font_size'] < $stx)
 		{
-			$this->warn_msg[] = sprintf($user->lang['MAX_FONT_SIZE_EXCEEDED'], $config['max_' . $this->mode . '_font_size']);
+			$this->warn_msg[] = sprintf($user->lang['MAX_FONT_SIZE_EXCEEDED'], phpbb::$config['max_' . $this->mode . '_font_size']);
 
 			return '[size=' . $stx . ']' . $in . '[/size]';
 		}
@@ -274,7 +274,7 @@ class bbcode_firstpass extends bbcode
 	*/
 	function bbcode_img($in)
 	{
-		global $user, $config;
+		global $user;
 
 		if (!$this->check_bbcode('img', $in))
 		{
@@ -298,7 +298,7 @@ class bbcode_firstpass extends bbcode
 			$in = 'http://' . $in;
 		}
 
-		if ($config['max_' . $this->mode . '_img_height'] || $config['max_' . $this->mode . '_img_width'])
+		if (phpbb::$config['max_' . $this->mode . '_img_height'] || phpbb::$config['max_' . $this->mode . '_img_width'])
 		{
 			$stats = @getimagesize($in);
 
@@ -309,16 +309,16 @@ class bbcode_firstpass extends bbcode
 			}
 			else
 			{
-				if ($config['max_' . $this->mode . '_img_height'] && $config['max_' . $this->mode . '_img_height'] < $stats[1])
+				if (phpbb::$config['max_' . $this->mode . '_img_height'] && phpbb::$config['max_' . $this->mode . '_img_height'] < $stats[1])
 				{
 					$error = true;
-					$this->warn_msg[] = sprintf($user->lang['MAX_IMG_HEIGHT_EXCEEDED'], $config['max_' . $this->mode . '_img_height']);
+					$this->warn_msg[] = sprintf($user->lang['MAX_IMG_HEIGHT_EXCEEDED'], phpbb::$config['max_' . $this->mode . '_img_height']);
 				}
 
-				if ($config['max_' . $this->mode . '_img_width'] && $config['max_' . $this->mode . '_img_width'] < $stats[0])
+				if (phpbb::$config['max_' . $this->mode . '_img_width'] && phpbb::$config['max_' . $this->mode . '_img_width'] < $stats[0])
 				{
 					$error = true;
-					$this->warn_msg[] = sprintf($user->lang['MAX_IMG_WIDTH_EXCEEDED'], $config['max_' . $this->mode . '_img_width']);
+					$this->warn_msg[] = sprintf($user->lang['MAX_IMG_WIDTH_EXCEEDED'], phpbb::$config['max_' . $this->mode . '_img_width']);
 				}
 			}
 		}
@@ -336,7 +336,7 @@ class bbcode_firstpass extends bbcode
 	*/
 	function bbcode_flash($width, $height, $in)
 	{
-		global $user, $config;
+		global $user;
 
 		if (!$this->check_bbcode('flash', $in))
 		{
@@ -353,18 +353,18 @@ class bbcode_firstpass extends bbcode
 		}
 
 		// Apply the same size checks on flash files as on images
-		if ($config['max_' . $this->mode . '_img_height'] || $config['max_' . $this->mode . '_img_width'])
+		if (phpbb::$config['max_' . $this->mode . '_img_height'] || phpbb::$config['max_' . $this->mode . '_img_width'])
 		{
-			if ($config['max_' . $this->mode . '_img_height'] && $config['max_' . $this->mode . '_img_height'] < $height)
+			if (phpbb::$config['max_' . $this->mode . '_img_height'] && phpbb::$config['max_' . $this->mode . '_img_height'] < $height)
 			{
 				$error = true;
-				$this->warn_msg[] = sprintf($user->lang['MAX_FLASH_HEIGHT_EXCEEDED'], $config['max_' . $this->mode . '_img_height']);
+				$this->warn_msg[] = sprintf($user->lang['MAX_FLASH_HEIGHT_EXCEEDED'], phpbb::$config['max_' . $this->mode . '_img_height']);
 			}
 
-			if ($config['max_' . $this->mode . '_img_width'] && $config['max_' . $this->mode . '_img_width'] < $width)
+			if (phpbb::$config['max_' . $this->mode . '_img_width'] && phpbb::$config['max_' . $this->mode . '_img_width'] < $width)
 			{
 				$error = true;
-				$this->warn_msg[] = sprintf($user->lang['MAX_FLASH_WIDTH_EXCEEDED'], $config['max_' . $this->mode . '_img_width']);
+				$this->warn_msg[] = sprintf($user->lang['MAX_FLASH_WIDTH_EXCEEDED'], phpbb::$config['max_' . $this->mode . '_img_width']);
 			}
 		}
 
@@ -685,7 +685,7 @@ class bbcode_firstpass extends bbcode
 	*/
 	function bbcode_quote($in)
 	{
-		global $config, $user;
+		global $user;
 
 		/**
 		* If you change this code, make sure the cases described within the following reports are still working:
@@ -752,10 +752,10 @@ class bbcode_firstpass extends bbcode
 					$this->parsed_items['quote']++;
 
 					// the buffer holds a valid opening tag
-					if ($config['max_quote_depth'] && sizeof($close_tags) >= $config['max_quote_depth'])
+					if (phpbb::$config['max_quote_depth'] && sizeof($close_tags) >= phpbb::$config['max_quote_depth'])
 					{
 						// there are too many nested quotes
-						$error_ary['quote_depth'] = sprintf($user->lang['QUOTE_DEPTH_EXCEEDED'], $config['max_quote_depth']);
+						$error_ary['quote_depth'] = sprintf($user->lang['QUOTE_DEPTH_EXCEEDED'], phpbb::$config['max_quote_depth']);
 
 						$out .= $buffer . $tok;
 						$tok = '[]';
@@ -916,8 +916,6 @@ class bbcode_firstpass extends bbcode
 	*/
 	function validate_url($var1, $var2)
 	{
-		global $config;
-
 		$var1 = str_replace("\r\n", "\n", str_replace('\"', '"', trim($var1)));
 		$var2 = str_replace("\r\n", "\n", str_replace('\"', '"', trim($var2)));
 
@@ -979,11 +977,11 @@ class bbcode_firstpass extends bbcode
 	*/
 	function path_in_domain($url)
 	{
-		global $config, $user;
+		global $user;
 
-		if ($config['force_server_vars'])
+		if (phpbb::$config['force_server_vars'])
 		{
-			$check_path = $config['script_path'];
+			$check_path = phpbb::$config['script_path'];
 		}
 		else
 		{
@@ -996,9 +994,9 @@ class bbcode_firstpass extends bbcode
 			$server_name = $user->host;
 
 			// Forcing server vars is the only way to specify/override the protocol
-			if ($config['force_server_vars'] || !$server_name)
+			if (phpbb::$config['force_server_vars'] || !$server_name)
 			{
-				$server_name = $config['server_name'];
+				$server_name = phpbb::$config['server_name'];
 			}
 
 			// Check again in correct order...
@@ -1061,7 +1059,7 @@ class parse_message extends bbcode_firstpass
 	*/
 	function parse($allow_bbcode, $allow_magic_url, $allow_smilies, $allow_img_bbcode = true, $allow_flash_bbcode = true, $allow_quote_bbcode = true, $allow_url_bbcode = true, $update_this_message = true, $mode = 'post')
 	{
-		global $config, $db, $user;
+		global $db, $user;
 
 		$mode = ($mode != 'post') ? 'sig' : 'post';
 
@@ -1091,13 +1089,13 @@ class parse_message extends bbcode_firstpass
 		$this->message = preg_replace($match, $replace, trim($this->message));
 
 		// Message length check. 0 disables this check completely.
-		if ($config['max_' . $mode . '_chars'] > 0)
+		if (phpbb::$config['max_' . $mode . '_chars'] > 0)
 		{
 			$msg_len = ($mode == 'post') ? utf8_strlen($this->message) : utf8_strlen(preg_replace('#\[\/?[a-z\*\+\-]+(=[\S]+)?\]#ius', ' ', $this->message));
 
-			if ((!$msg_len && $mode !== 'sig') || $config['max_' . $mode . '_chars'] && $msg_len > $config['max_' . $mode . '_chars'])
+			if ((!$msg_len && $mode !== 'sig') || phpbb::$config['max_' . $mode . '_chars'] && $msg_len > phpbb::$config['max_' . $mode . '_chars'])
 			{
-				$this->warn_msg[] = (!$msg_len) ? $user->lang['TOO_FEW_CHARS'] : sprintf($user->lang['TOO_MANY_CHARS_' . strtoupper($mode)], $msg_len, $config['max_' . $mode . '_chars']);
+				$this->warn_msg[] = (!$msg_len) ? $user->lang['TOO_FEW_CHARS'] : sprintf($user->lang['TOO_MANY_CHARS_' . strtoupper($mode)], $msg_len, phpbb::$config['max_' . $mode . '_chars']);
 				return (!$update_this_message) ? $return_message : $this->warn_msg;
 			}
 		}
@@ -1128,7 +1126,7 @@ class parse_message extends bbcode_firstpass
 		// Parse smilies
 		if ($allow_smilies)
 		{
-			$this->smilies($config['max_' . $mode . '_smilies']);
+			$this->smilies(phpbb::$config['max_' . $mode . '_smilies']);
 		}
 
 		$num_urls = 0;
@@ -1145,16 +1143,16 @@ class parse_message extends bbcode_firstpass
 		{
 			$this->magic_url(generate_board_url());
 
-			if ($config['max_' . $mode . '_urls'])
+			if (phpbb::$config['max_' . $mode . '_urls'])
 			{
 				$num_urls += preg_match_all('#\<!-- ([lmwe]) --\>.*?\<!-- \1 --\>#', $this->message, $matches);
 			}
 		}
 
 		// Check number of links
-		if ($config['max_' . $mode . '_urls'] && $num_urls > $config['max_' . $mode . '_urls'])
+		if (phpbb::$config['max_' . $mode . '_urls'] && $num_urls > phpbb::$config['max_' . $mode . '_urls'])
 		{
-			$this->warn_msg[] = sprintf($user->lang['TOO_MANY_URLS'], $config['max_' . $mode . '_urls']);
+			$this->warn_msg[] = sprintf($user->lang['TOO_MANY_URLS'], phpbb::$config['max_' . $mode . '_urls']);
 			return (!$update_this_message) ? $return_message : $this->warn_msg;
 		}
 
@@ -1309,7 +1307,7 @@ class parse_message extends bbcode_firstpass
 	*/
 	function parse_attachments($form_name, $mode, $forum_id, $submit, $preview, $refresh, $is_message = false)
 	{
-		global $config, $auth, $user, $db;
+		global $auth, $user, $db;
 
 		$error = array();
 
@@ -1337,7 +1335,7 @@ class parse_message extends bbcode_firstpass
 		}
 
 		$cfg = array();
-		$cfg['max_attachments'] = ($is_message) ? $config['max_attachments_pm'] : $config['max_attachments'];
+		$cfg['max_attachments'] = ($is_message) ? phpbb::$config['max_attachments_pm'] : phpbb::$config['max_attachments'];
 		$forum_id = ($is_message) ? 0 : $forum_id;
 
 		if ($submit && in_array($mode, array('post', 'reply', 'quote', 'edit')) && $upload_file)
@@ -1497,7 +1495,7 @@ class parse_message extends bbcode_firstpass
 	*/
 	function get_submitted_attachment_data($check_user_id = false)
 	{
-		global $user, $db, $config;
+		global $user, $db;
 
 		$this->filename_data['filecomment'] = utf8_normalize_nfc(request_var('filecomment', '', true));
 		$attachment_data = phpbb_request::variable('attachment_data', array(0 => array('' => '')), true, phpbb_request::POST);
@@ -1584,7 +1582,7 @@ class parse_message extends bbcode_firstpass
 	*/
 	function parse_poll(&$poll)
 	{
-		global $auth, $user, $config;
+		global $auth, $user;
 
 		$poll_max_options = $poll['poll_max_options'];
 
@@ -1593,7 +1591,7 @@ class parse_message extends bbcode_firstpass
 		$this->message = $poll['poll_option_text'];
 		$bbcode_bitfield = $this->bbcode_bitfield;
 
-		$poll['poll_option_text'] = $this->parse($poll['enable_bbcode'], ($config['allow_post_links']) ? $poll['enable_urls'] : false, $poll['enable_smilies'], $poll['img_status'], false, false, $config['allow_post_links'], false);
+		$poll['poll_option_text'] = $this->parse($poll['enable_bbcode'], (phpbb::$config['allow_post_links']) ? $poll['enable_urls'] : false, $poll['enable_smilies'], $poll['img_status'], false, false, phpbb::$config['allow_post_links'], false);
 
 		$bbcode_bitfield = base64_encode(base64_decode($bbcode_bitfield) | base64_decode($this->bbcode_bitfield));
 		$this->message = $tmp_message;
@@ -1616,7 +1614,7 @@ class parse_message extends bbcode_firstpass
 			{
 				$this->warn_msg[] = $user->lang['POLL_TITLE_TOO_LONG'];
 			}
-			$poll['poll_title'] = $this->parse($poll['enable_bbcode'], ($config['allow_post_links']) ? $poll['enable_urls'] : false, $poll['enable_smilies'], $poll['img_status'], false, false, $config['allow_post_links'], false);
+			$poll['poll_title'] = $this->parse($poll['enable_bbcode'], (phpbb::$config['allow_post_links']) ? $poll['enable_urls'] : false, $poll['enable_smilies'], $poll['img_status'], false, false, phpbb::$config['allow_post_links'], false);
 			if (strlen($poll['poll_title']) > 255)
 			{
 				$this->warn_msg[] = $user->lang['POLL_TITLE_COMP_TOO_LONG'];
@@ -1631,7 +1629,7 @@ class parse_message extends bbcode_firstpass
 		{
 			$this->warn_msg[] = $user->lang['TOO_FEW_POLL_OPTIONS'];
 		}
-		else if ($poll['poll_options_size'] > (int) $config['max_poll_options'])
+		else if ($poll['poll_options_size'] > (int) phpbb::$config['max_poll_options'])
 		{
 			$this->warn_msg[] = $user->lang['TOO_MANY_POLL_OPTIONS'];
 		}
@@ -1640,7 +1638,7 @@ class parse_message extends bbcode_firstpass
 			$this->warn_msg[] = $user->lang['TOO_MANY_USER_OPTIONS'];
 		}
 
-		$poll['poll_max_options'] = ($poll['poll_max_options'] < 1) ? 1 : (($poll['poll_max_options'] > $config['max_poll_options']) ? $config['max_poll_options'] : $poll['poll_max_options']);
+		$poll['poll_max_options'] = ($poll['poll_max_options'] < 1) ? 1 : (($poll['poll_max_options'] > phpbb::$config['max_poll_options']) ? phpbb::$config['max_poll_options'] : $poll['poll_max_options']);
 	}
 }
 

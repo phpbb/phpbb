@@ -26,7 +26,7 @@ class ucp_groups
 
 	function main($id, $mode)
 	{
-		global $db, $user, $auth, $template, $config;
+		global $db, $user, $auth, $template;
 
 		$user->add_lang('groups');
 
@@ -485,7 +485,7 @@ class ucp_groups
 						$avatar_select = basename(request_var('avatar_select', ''));
 						$category = basename(request_var('category', ''));
 
-						$can_upload = (file_exists(PHPBB_ROOT_PATH . $config['avatar_path']) && @is_writable(PHPBB_ROOT_PATH . $config['avatar_path']) && $file_uploads) ? true : false;
+						$can_upload = (file_exists(PHPBB_ROOT_PATH . phpbb::$config['avatar_path']) && @is_writable(PHPBB_ROOT_PATH . phpbb::$config['avatar_path']) && $file_uploads) ? true : false;
 
 						// Did we submit?
 						if ($update)
@@ -536,14 +536,14 @@ class ucp_groups
 									}
 								}
 							}
-							else if ($avatar_select && $config['allow_avatar_local'])
+							else if ($avatar_select && phpbb::$config['allow_avatar_local'])
 							{
 								// check avatar gallery
-								if (is_dir(PHPBB_ROOT_PATH . $config['avatar_gallery_path'] . '/' . $category))
+								if (is_dir(PHPBB_ROOT_PATH . phpbb::$config['avatar_gallery_path'] . '/' . $category))
 								{
 									$submit_ary['avatar_type'] = AVATAR_GALLERY;
 
-									list($submit_ary['avatar_width'], $submit_ary['avatar_height']) = getimagesize(PHPBB_ROOT_PATH . $config['avatar_gallery_path'] . '/' . $category . '/' . $avatar_select);
+									list($submit_ary['avatar_width'], $submit_ary['avatar_height']) = getimagesize(PHPBB_ROOT_PATH . phpbb::$config['avatar_gallery_path'] . '/' . $category . '/' . $avatar_select);
 									$submit_ary['avatar'] = $category . '/' . $avatar_select;
 								}
 							}
@@ -555,21 +555,21 @@ class ucp_groups
 							else if ($data['width'] && $data['height'])
 							{
 								// Only update the dimensions?
-								if ($config['avatar_max_width'] || $config['avatar_max_height'])
+								if (phpbb::$config['avatar_max_width'] || phpbb::$config['avatar_max_height'])
 								{
-									if ($data['width'] > $config['avatar_max_width'] || $data['height'] > $config['avatar_max_height'])
+									if ($data['width'] > phpbb::$config['avatar_max_width'] || $data['height'] > phpbb::$config['avatar_max_height'])
 									{
-										$error[] = sprintf($user->lang['AVATAR_WRONG_SIZE'], $config['avatar_min_width'], $config['avatar_min_height'], $config['avatar_max_width'], $config['avatar_max_height'], $data['width'], $data['height']);
+										$error[] = sprintf($user->lang['AVATAR_WRONG_SIZE'], phpbb::$config['avatar_min_width'], phpbb::$config['avatar_min_height'], phpbb::$config['avatar_max_width'], phpbb::$config['avatar_max_height'], $data['width'], $data['height']);
 									}
 								}
 
 								if (!sizeof($error))
 								{
-									if ($config['avatar_min_width'] || $config['avatar_min_height'])
+									if (phpbb::$config['avatar_min_width'] || phpbb::$config['avatar_min_height'])
 									{
-										if ($data['width'] < $config['avatar_min_width'] || $data['height'] < $config['avatar_min_height'])
+										if ($data['width'] < phpbb::$config['avatar_min_width'] || $data['height'] < phpbb::$config['avatar_min_height'])
 										{
-											$error[] = sprintf($user->lang['AVATAR_WRONG_SIZE'], $config['avatar_min_width'], $config['avatar_min_height'], $config['avatar_max_width'], $config['avatar_max_height'], $data['width'], $data['height']);
+											$error[] = sprintf($user->lang['AVATAR_WRONG_SIZE'], phpbb::$config['avatar_min_width'], phpbb::$config['avatar_min_height'], phpbb::$config['avatar_max_width'], phpbb::$config['avatar_max_height'], $data['width'], $data['height']);
 										}
 									}
 								}
@@ -670,12 +670,12 @@ class ucp_groups
 
 						$display_gallery = phpbb_request::is_set_post('display_gallery');
 
-						if ($config['allow_avatar_local'] && $display_gallery)
+						if (phpbb::$config['allow_avatar_local'] && $display_gallery)
 						{
 							avatar_gallery($category, $avatar_select, 4);
 						}
 
-						$avatars_enabled = ($can_upload || ($config['allow_avatar_local'] || $config['allow_avatar_remote'])) ? true : false;
+						$avatars_enabled = ($can_upload || (phpbb::$config['allow_avatar_local'] || phpbb::$config['allow_avatar_remote'])) ? true : false;
 
 						$template->assign_vars(array(
 							'S_EDIT'			=> true,
@@ -685,8 +685,8 @@ class ucp_groups
 							'S_ERROR'			=> (sizeof($error)) ? true : false,
 							'S_SPECIAL_GROUP'	=> ($group_type == GROUP_SPECIAL) ? true : false,
 							'S_AVATARS_ENABLED'	=> $avatars_enabled,
-							'S_DISPLAY_GALLERY'	=> ($config['allow_avatar_local'] && !$display_gallery) ? true : false,
-							'S_IN_GALLERY'		=> ($config['allow_avatar_local'] && $display_gallery) ? true : false,
+							'S_DISPLAY_GALLERY'	=> (phpbb::$config['allow_avatar_local'] && !$display_gallery) ? true : false,
+							'S_IN_GALLERY'		=> (phpbb::$config['allow_avatar_local'] && $display_gallery) ? true : false,
 
 							'ERROR_MSG'				=> (sizeof($error)) ? implode('<br />', $error) : '',
 							'GROUP_RECEIVE_PM'		=> (isset($group_row['group_receive_pm']) && $group_row['group_receive_pm']) ? ' checked="checked"' : '',
@@ -699,7 +699,7 @@ class ucp_groups
 							'S_DESC_SMILIES_CHECKED'=> $group_desc_data['allow_smilies'],
 
 							'S_RANK_OPTIONS'		=> $rank_options,
-							'AVATAR_MAX_FILESIZE'	=> $config['avatar_filesize'],
+							'AVATAR_MAX_FILESIZE'	=> phpbb::$config['avatar_filesize'],
 
 							'GROUP_TYPE_FREE'		=> GROUP_FREE,
 							'GROUP_TYPE_OPEN'		=> GROUP_OPEN,
@@ -714,7 +714,7 @@ class ucp_groups
 
 							'U_SWATCH'			=> append_sid(CONFIG_ADM_FOLDER . '/swatch', 'form=ucp&amp;name=group_colour'),
 							'S_UCP_ACTION'		=> $this->u_action . "&amp;action=$action&amp;g=$group_id",
-							'L_AVATAR_EXPLAIN'	=> sprintf($user->lang['AVATAR_EXPLAIN'], $config['avatar_max_width'], $config['avatar_max_height'], $config['avatar_filesize'] / 1024),
+							'L_AVATAR_EXPLAIN'	=> sprintf($user->lang['AVATAR_EXPLAIN'], phpbb::$config['avatar_max_width'], phpbb::$config['avatar_max_height'], phpbb::$config['avatar_filesize'] / 1024),
 						));
 
 					break;
@@ -780,7 +780,7 @@ class ucp_groups
 								AND u.user_id = ug.user_id
 								AND ug.group_leader = 0
 							ORDER BY ug.user_pending DESC, u.username_clean";
-						$result = $db->sql_query_limit($sql, $config['topics_per_page'], $start);
+						$result = $db->sql_query_limit($sql, phpbb::$config['topics_per_page'], $start);
 
 						$pending = false;
 						$approved = false;
@@ -830,8 +830,8 @@ class ucp_groups
 						$template->assign_vars(array(
 							'S_LIST'			=> true,
 							'S_ACTION_OPTIONS'	=> $s_action_options,
-							'S_ON_PAGE'			=> on_page($total_members, $config['topics_per_page'], $start),
-							'PAGINATION'		=> generate_pagination($this->u_action . "&amp;action=$action&amp;g=$group_id", $total_members, $config['topics_per_page'], $start),
+							'S_ON_PAGE'			=> on_page($total_members, phpbb::$config['topics_per_page'], $start),
+							'PAGINATION'		=> generate_pagination($this->u_action . "&amp;action=$action&amp;g=$group_id", $total_members, phpbb::$config['topics_per_page'], $start),
 
 							'U_ACTION'			=> $this->u_action . "&amp;g=$group_id",
 							'U_FIND_USERNAME'	=> append_sid('memberlist', 'mode=searchuser&amp;form=ucp&amp;field=usernames'),

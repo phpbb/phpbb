@@ -26,7 +26,7 @@ class ucp_zebra
 
 	function main($id, $mode)
 	{
-		global $config, $db, $user, $auth, $template;
+		global $db, $user, $auth, $template;
 
 		$submit = phpbb_request::is_set_post('submit') || phpbb_request::is_set('add', phpbb_request::GET) || phpbb_request::is_set('remove', phpbb_request::GET);
 		$s_hidden_fields = '';

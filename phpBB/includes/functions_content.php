@@ -110,10 +110,10 @@ function gen_sort_selects(&$limit_days, &$sort_by_text, &$sort_days, &$sort_key,
 */
 function make_jumpbox($action, $forum_id = false, $select_all = false, $acl_list = false, $force_display = false)
 {
-	global $config, $auth, $template, $user, $db;
+	global $auth, $template, $user, $db;
 
 	// We only return if the jumpbox is not forced to be displayed (in case it is needed for functionality)
-	if (!$config['load_jumpbox'] && $force_display === false)
+	if (!phpbb::$config['load_jumpbox'] && $force_display === false)
 	{
 		return;
 	}
@@ -209,7 +209,7 @@ function make_jumpbox($action, $forum_id = false, $select_all = false, $acl_list
 */
 function bump_topic_allowed($forum_id, $topic_bumped, $last_post_time, $topic_poster, $last_topic_poster)
 {
-	global $config, $auth, $user;
+	global $auth, $user;
 
 	// Check permission and make sure the last post was not already bumped
 	if (!$auth->acl_get('f_bump', $forum_id) || $topic_bumped)
@@ -218,7 +218,7 @@ function bump_topic_allowed($forum_id, $topic_bumped, $last_post_time, $topic_po
 	}
 
 	// Check bump time range, is the user really allowed to bump the topic at this time?
-	$bump_time = ($config['bump_type'] == 'm') ? $config['bump_interval'] * 60 : (($config['bump_type'] == 'h') ? $config['bump_interval'] * 3600 : $config['bump_interval'] * 86400);
+	$bump_time = (phpbb::$config['bump_type'] == 'm') ? phpbb::$config['bump_interval'] * 60 : ((phpbb::$config['bump_type'] == 'h') ? phpbb::$config['bump_interval'] * 3600 : phpbb::$config['bump_interval'] * 86400);
 
 	// Check bump time
 	if ($last_post_time + $bump_time > time())
@@ -356,8 +356,6 @@ function get_context($text, $words, $length = 400)
 */
 function decode_message(&$message, $bbcode_uid = '')
 {
-	global $config;
-
 	if ($bbcode_uid)
 	{
 		$match = array('<br />', "[/*:m:$bbcode_uid]", ":u:$bbcode_uid", ":o:$bbcode_uid", ":$bbcode_uid");
@@ -673,10 +671,10 @@ function censor_text($text)
 	// We moved the word censor checks in here because we call this function quite often - and then only need to do the check once
 	if (!isset($censors) || !is_array($censors))
 	{
-		global $config, $user, $auth;
+		global $user, $auth;
 
 		// We check here if the user is having viewing censors disabled (and also allowed to do so).
-		if (!$user->optionget('viewcensors') && $config['allow_nocensors'] && $auth->acl_get('u_chgcensors'))
+		if (!$user->optionget('viewcensors') && phpbb::$config['allow_nocensors'] && $auth->acl_get('u_chgcensors'))
 		{
 			$censors = array();
 		}
@@ -710,15 +708,15 @@ function bbcode_nl2br($text)
 */
 function smiley_text($text, $force_option = false)
 {
-	global $config, $user;
+	global $user;
 
-	if ($force_option || !$config['allow_smilies'] || !$user->optionget('viewsmilies'))
+	if ($force_option || !phpbb::$config['allow_smilies'] || !$user->optionget('viewsmilies'))
 	{
 		return preg_replace('#<!\-\- s(.*?) \-\-><img src="\{SMILIES_PATH\}\/.*? \/><!\-\- s\1 \-\->#', '\1', $text);
 	}
 	else
 	{
-		return preg_replace('#<!\-\- s(.*?) \-\-><img src="\{SMILIES_PATH\}\/(.*?) \/><!\-\- s\1 \-\->#', '<img src="' . PHPBB_ROOT_PATH . $config['smilies_path'] . '/\2 />', $text);
+		return preg_replace('#<!\-\- s(.*?) \-\-><img src="\{SMILIES_PATH\}\/(.*?) \/><!\-\- s\1 \-\->#', '<img src="' . PHPBB_ROOT_PATH . phpbb::$config['smilies_path'] . '/\2 />', $text);
 	}
 }
 
@@ -739,7 +737,7 @@ function parse_attachments($forum_id, &$message, &$attachments, &$update_count, 
 	}
 
 	global $template, $user;
-	global $extensions, $config;
+	global $extensions;
 
 	//
 	$compiled_attachments = array();
@@ -802,7 +800,7 @@ function parse_attachments($forum_id, &$message, &$attachments, &$update_count, 
 	}
 
 	// Sort correctly
-	if ($config['display_order'])
+	if (phpbb::$config['display_order'])
 	{
 		// Ascending sort
 		krsort($attachments);
@@ -827,8 +825,8 @@ function parse_attachments($forum_id, &$message, &$attachments, &$update_count, 
 
 		// Some basics...
 		$attachment['extension'] = strtolower(trim($attachment['extension']));
-		$filename = PHPBB_ROOT_PATH . $config['upload_path'] . '/' . basename($attachment['physical_filename']);
-		$thumbnail_filename = PHPBB_ROOT_PATH . $config['upload_path'] . '/thumb_' . basename($attachment['physical_filename']);
+		$filename = PHPBB_ROOT_PATH . phpbb::$config['upload_path'] . '/' . basename($attachment['physical_filename']);
+		$thumbnail_filename = PHPBB_ROOT_PATH . phpbb::$config['upload_path'] . '/thumb_' . basename($attachment['physical_filename']);
 
 		$upload_icon = '';
 
@@ -840,7 +838,7 @@ function parse_attachments($forum_id, &$message, &$attachments, &$update_count, 
 			}
 			else if ($extensions[$attachment['extension']]['upload_icon'])
 			{
-				$upload_icon = '<img src="' . PHPBB_ROOT_PATH . $config['upload_icons_path'] . '/' . trim($extensions[$attachment['extension']]['upload_icon']) . '" alt="" />';
+				$upload_icon = '<img src="' . PHPBB_ROOT_PATH . phpbb::$config['upload_icons_path'] . '/' . trim($extensions[$attachment['extension']]['upload_icon']) . '" alt="" />';
 			}
 		}
 
@@ -883,9 +881,9 @@ function parse_attachments($forum_id, &$message, &$attachments, &$update_count, 
 				}
 				else
 				{
-					if ($config['img_display_inlined'])
+					if (phpbb::$config['img_display_inlined'])
 					{
-						if ($config['img_link_width'] || $config['img_link_height'])
+						if (phpbb::$config['img_link_width'] || phpbb::$config['img_link_height'])
 						{
 							$dimension = @getimagesize($filename);
 
@@ -896,7 +894,7 @@ function parse_attachments($forum_id, &$message, &$attachments, &$update_count, 
 							}
 							else
 							{
-								$display_cat = ($dimension[0] <= $config['img_link_width'] && $dimension[1] <= $config['img_link_height']) ? ATTACHMENT_CATEGORY_IMAGE : ATTACHMENT_CATEGORY_NONE;
+								$display_cat = ($dimension[0] <= phpbb::$config['img_link_width'] && $dimension[1] <= phpbb::$config['img_link_height']) ? ATTACHMENT_CATEGORY_IMAGE : ATTACHMENT_CATEGORY_NONE;
 							}
 						}
 					}
@@ -1033,7 +1031,7 @@ function parse_attachments($forum_id, &$message, &$attachments, &$update_count, 
 	foreach ($matches[0] as $num => $capture)
 	{
 		// Flip index if we are displaying the reverse way
-		$index = ($config['display_order']) ? ($tpl_size-($matches[1][$num] + 1)) : $matches[1][$num];
+		$index = (phpbb::$config['display_order']) ? ($tpl_size-($matches[1][$num] + 1)) : $matches[1][$num];
 
 		$replace['from'][] = $matches[0][$num];
 		$replace['to'][] = (isset($attachments[$index])) ? $attachments[$index] : sprintf($user->lang['MISSING_INLINE_ATTACHMENT'], $matches[2][array_search($index, $matches[1])]);

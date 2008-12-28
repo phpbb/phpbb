@@ -33,7 +33,7 @@ class mcp_warn
 
 	function main($id, $mode)
 	{
-		global $auth, $db, $user, $template, $config;
+		global $auth, $db, $user, $template;
 
 		$action = request_var('action', array('' => ''));
 
@@ -75,7 +75,7 @@ class mcp_warn
 	*/
 	function mcp_warn_front_view()
 	{
-		global $template, $db, $user, $auth, $config;
+		global $template, $db, $user, $auth;
 
 		$template->assign_vars(array(
 			'U_FIND_USERNAME'	=> append_sid('memberlist', 'mode=searchuser&amp;form=mcp&amp;field=username&amp;select_single=true'),
@@ -133,7 +133,7 @@ class mcp_warn
 	*/
 	function mcp_warn_list_view($action)
 	{
-		global $template, $db, $user, $auth, $config;
+		global $template, $db, $user, $auth;
 
 		$user->add_lang('memberlist');
 
@@ -156,7 +156,7 @@ class mcp_warn
 		$users = array();
 		$user_count = 0;
 
-		view_warned_users($users, $user_count, $config['topics_per_page'], $start, $sql_where, $sql_sort);
+		view_warned_users($users, $user_count, phpbb::$config['topics_per_page'], $start, $sql_where, $sql_sort);
 
 		foreach ($users as $row)
 		{
@@ -180,8 +180,8 @@ class mcp_warn
 			'S_SELECT_SORT_KEY'		=> $s_sort_key,
 			'S_SELECT_SORT_DAYS'	=> $s_limit_days,
 
-			'PAGE_NUMBER'		=> on_page($user_count, $config['topics_per_page'], $start),
-			'PAGINATION'		=> generate_pagination(append_sid('mcp', "i=warn&amp;mode=list&amp;st=$st&amp;sk=$sk&amp;sd=$sd"), $user_count, $config['topics_per_page'], $start),
+			'PAGE_NUMBER'		=> on_page($user_count, phpbb::$config['topics_per_page'], $start),
+			'PAGINATION'		=> generate_pagination(append_sid('mcp', "i=warn&amp;mode=list&amp;st=$st&amp;sk=$sk&amp;sd=$sd"), $user_count, phpbb::$config['topics_per_page'], $start),
 			'TOTAL_USERS'		=> ($user_count == 1) ? $user->lang['LIST_USER'] : sprintf($user->lang['LIST_USERS'], $user_count),
 		));
 	}
@@ -191,7 +191,7 @@ class mcp_warn
 	*/
 	function mcp_warn_post_view($action)
 	{
-		global $template, $db, $user, $auth, $config;
+		global $template, $db, $user, $auth;
 
 		$post_id = request_var('p', 0);
 		$forum_id = request_var('f', 0);
@@ -246,7 +246,7 @@ class mcp_warn
 		}
 
 		// Check if can send a notification
-		if ($config['allow_privmsg'])
+		if (phpbb::$config['allow_privmsg'])
 		{
 			$auth2 = new auth();
 			$auth2->acl($user_row);
@@ -332,7 +332,7 @@ class mcp_warn
 	*/
 	function mcp_warn_user_view($action)
 	{
-		global $config, $module;
+		global $module;
 		global $template, $db, $user, $auth;
 
 		$user_id = request_var('u', 0);
@@ -369,7 +369,7 @@ class mcp_warn
 		}
 
 		// Check if can send a notification
-		if ($config['allow_privmsg'])
+		if (phpbb::$config['allow_privmsg'])
 		{
 			$auth2 = new auth();
 			$auth2->acl($user_row);
@@ -438,14 +438,14 @@ class mcp_warn
 */
 function add_warning($user_row, $warning, $send_pm = true, $post_id = 0)
 {
-	global $template, $db, $user, $auth, $config;
+	global $template, $db, $user, $auth;
 
 	if ($send_pm)
 	{
 		include_once(PHPBB_ROOT_PATH . 'includes/functions_privmsgs.' . PHP_EXT);
 		include_once(PHPBB_ROOT_PATH . 'includes/message_parser.' . PHP_EXT);
 
-		$user_row['user_lang'] = (file_exists(PHPBB_ROOT_PATH . 'language/' . $user_row['user_lang'] . '/mcp.' . PHP_EXT)) ? $user_row['user_lang'] : $config['default_lang'];
+		$user_row['user_lang'] = (file_exists(PHPBB_ROOT_PATH . 'language/' . $user_row['user_lang'] . '/mcp.' . PHP_EXT)) ? $user_row['user_lang'] : phpbb::$config['default_lang'];
 		include(PHPBB_ROOT_PATH . 'language/' . basename($user_row['user_lang']) . '/mcp.' . PHP_EXT);
 
 		$message_parser = new parse_message();

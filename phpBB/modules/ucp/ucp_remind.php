@@ -27,7 +27,7 @@ class ucp_remind
 
 	function main($id, $mode)
 	{
-		global $db, $user, $auth, $template, $config;
+		global $db, $user, $auth, $template;
 
 		$username	= request_var('username', '', true);
 		$email		= strtolower(request_var('email', ''));
@@ -78,7 +78,7 @@ class ucp_remind
 
 			$key_len = 54 - strlen($server_url);
 			$key_len = max(6, $key_len); // we want at least 6
-			$key_len = ($config['max_pass_chars']) ? min($key_len, $config['max_pass_chars']) : $key_len; // we want at most $config['max_pass_chars']
+			$key_len = (phpbb::$config['max_pass_chars']) ? min($key_len, phpbb::$config['max_pass_chars']) : $key_len; // we want at most phpbb::$config['max_pass_chars']
 			$user_actkey = substr(gen_rand_string(10), 0, $key_len);
 			$user_password = gen_rand_string(8);
 

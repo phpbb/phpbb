@@ -27,7 +27,7 @@ $session_id	= request_var('s', '');
 $start		= request_var('start', 0);
 $sort_key	= request_var('sk', 'b');
 $sort_dir	= request_var('sd', 'd');
-$show_guests= ($config['load_online_guests']) ? request_var('sg', 0) : 0;
+$show_guests= (phpbb::$config['load_online_guests']) ? request_var('sg', 0) : 0;
 
 // Can this user view profiles/memberlist?
 if (!$auth->acl_gets('u_viewprofile', 'a_user', 'a_useradd', 'a_userdel'))
@@ -102,7 +102,7 @@ if (!$show_guests)
 		$sql = 'SELECT COUNT(DISTINCT session_ip) as num_guests
 				FROM ' . SESSIONS_TABLE . '
 				WHERE session_user_id = ' . ANONYMOUS . '
-					AND session_time >= ' . (time() - ($config['load_online_time'] * 60));
+					AND session_time >= ' . (time() - (phpbb::$config['load_online_time'] * 60));
 	}
 	else
 	{
@@ -111,7 +111,7 @@ if (!$show_guests)
 				SELECT DISTINCT session_ip
 					FROM ' . SESSIONS_TABLE . '
 					WHERE session_user_id = ' . ANONYMOUS . '
-						AND session_time >= ' . (time() - ($config['load_online_time'] * 60)) .
+						AND session_time >= ' . (time() - (phpbb::$config['load_online_time'] * 60)) .
 			')';
 		break;
 	}
@@ -124,7 +124,7 @@ if (!$show_guests)
 $sql = 'SELECT u.user_id, u.username, u.username_clean, u.user_type, u.user_colour, s.session_id, s.session_time, s.session_page, s.session_ip, s.session_browser, s.session_viewonline
 	FROM ' . USERS_TABLE . ' u, ' . SESSIONS_TABLE . ' s
 	WHERE u.user_id = s.session_user_id
-		AND s.session_time >= ' . (time() - ($config['load_online_time'] * 60)) .
+		AND s.session_time >= ' . (time() - (phpbb::$config['load_online_time'] * 60)) .
 		((!$show_guests) ? ' AND s.session_user_id <> ' . ANONYMOUS : '') . '
 	ORDER BY ' . $order_by;
 $result = $db->sql_query($sql);
@@ -162,7 +162,7 @@ while ($row = $db->sql_fetchrow($result))
 			$counter++;
 		}
 
-		if (!$view_online || $counter > $start + $config['topics_per_page'] || $counter <= $start)
+		if (!$view_online || $counter > $start + phpbb::$config['topics_per_page'] || $counter <= $start)
 		{
 			continue;
 		}
@@ -173,7 +173,7 @@ while ($row = $db->sql_fetchrow($result))
 		$guest_counter++;
 		$counter++;
 
-		if ($counter > $start + $config['topics_per_page'] || $counter <= $start)
+		if ($counter > $start + phpbb::$config['topics_per_page'] || $counter <= $start)
 		{
 			continue;
 		}
@@ -369,7 +369,7 @@ foreach ($vars_online as $l_prefix => $var_ary)
 }
 unset($vars_online);
 
-$pagination = generate_pagination(append_sid('viewonline', "sg=$show_guests&amp;sk=$sort_key&amp;sd=$sort_dir"), $counter, $config['topics_per_page'], $start);
+$pagination = generate_pagination(append_sid('viewonline', "sg=$show_guests&amp;sk=$sort_key&amp;sd=$sort_dir"), $counter, phpbb::$config['topics_per_page'], $start);
 
 // Grab group details for legend display
 if ($auth->acl_gets('a_group', 'a_groupadd', 'a_groupdel'))
@@ -418,7 +418,7 @@ $template->assign_vars(array(
 	'TOTAL_GUEST_USERS_ONLINE'		=> sprintf($l_g_user_s, $guest_counter),
 	'LEGEND'						=> $legend,
 	'PAGINATION'					=> $pagination,
-	'PAGE_NUMBER'					=> on_page($counter, $config['topics_per_page'], $start),
+	'PAGE_NUMBER'					=> on_page($counter, phpbb::$config['topics_per_page'], $start),
 
 	'U_SORT_USERNAME'		=> append_sid('viewonline', 'sk=a&amp;sd=' . (($sort_key == 'a' && $sort_dir == 'a') ? 'd' : 'a') . '&amp;sg=' . ((int) $show_guests)),
 	'U_SORT_UPDATED'		=> append_sid('viewonline', 'sk=b&amp;sd=' . (($sort_key == 'b' && $sort_dir == 'a') ? 'd' : 'a') . '&amp;sg=' . ((int) $show_guests)),
@@ -426,11 +426,11 @@ $template->assign_vars(array(
 
 	'U_SWITCH_GUEST_DISPLAY'	=> append_sid('viewonline', 'sg=' . ((int) !$show_guests)),
 	'L_SWITCH_GUEST_DISPLAY'	=> ($show_guests) ? $user->lang['HIDE_GUESTS'] : $user->lang['DISPLAY_GUESTS'],
-	'S_SWITCH_GUEST_DISPLAY'	=> ($config['load_online_guests']) ? true : false)
+	'S_SWITCH_GUEST_DISPLAY'	=> (phpbb::$config['load_online_guests']) ? true : false)
 );
 
 // We do not need to load the who is online box here. ;)
-$config['load_online'] = false;
+phpbb::$config['load_online'] = false;
 
 // Output the page
 page_header($user->lang['WHO_IS_ONLINE']);

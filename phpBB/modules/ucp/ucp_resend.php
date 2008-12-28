@@ -27,7 +27,7 @@ class ucp_resend
 
 	function main($id, $mode)
 	{
-		global $db, $user, $auth, $template, $config;
+		global $db, $user, $auth, $template;
 
 		$username	= request_var('username', '', true);
 		$email		= strtolower(request_var('email', ''));
@@ -88,18 +88,18 @@ class ucp_resend
 			include_once(PHPBB_ROOT_PATH . 'includes/functions_messenger.' . PHP_EXT);
 			$messenger = new messenger(false);
 
-			if ($config['require_activation'] == USER_ACTIVATION_SELF || $coppa)
+			if (phpbb::$config['require_activation'] == USER_ACTIVATION_SELF || $coppa)
 			{
 				$messenger->template(($coppa) ? 'coppa_resend_inactive' : 'user_resend_inactive', $user_row['user_lang']);
 				$messenger->to($user_row['user_email'], $user_row['username']);
 
-				$messenger->headers('X-AntiAbuse: Board servername - ' . $config['server_name']);
+				$messenger->headers('X-AntiAbuse: Board servername - ' . phpbb::$config['server_name']);
 				$messenger->headers('X-AntiAbuse: User_id - ' . $user->data['user_id']);
 				$messenger->headers('X-AntiAbuse: Username - ' . $user->data['username']);
 				$messenger->headers('X-AntiAbuse: User IP - ' . $user->ip);
 
 				$messenger->assign_vars(array(
-					'WELCOME_MSG'	=> htmlspecialchars_decode(sprintf($user->lang['WELCOME_SUBJECT'], $config['sitename'])),
+					'WELCOME_MSG'	=> htmlspecialchars_decode(sprintf($user->lang['WELCOME_SUBJECT'], phpbb::$config['sitename'])),
 					'USERNAME'		=> htmlspecialchars_decode($user_row['username']),
 					'U_ACTIVATE'	=> generate_board_url() . '/ucp.' . PHP_EXT . "?mode=activate&u={$user_row['user_id']}&k={$user_row['user_actkey']}")
 				);
@@ -107,16 +107,16 @@ class ucp_resend
 				if ($coppa)
 				{
 					$messenger->assign_vars(array(
-						'FAX_INFO'		=> $config['coppa_fax'],
-						'MAIL_INFO'		=> $config['coppa_mail'],
-						'EMAIL_ADDRESS'	=> $user_row['user_email'])
-					);
+						'FAX_INFO'		=> phpbb::$config['coppa_fax'],
+						'MAIL_INFO'		=> phpbb::$config['coppa_mail'],
+						'EMAIL_ADDRESS'	=> $user_row['user_email'],
+					));
 				}
 
 				$messenger->send(NOTIFY_EMAIL);
 			}
 
-			if ($config['require_activation'] == USER_ACTIVATION_ADMIN)
+			if (phpbb::$config['require_activation'] == USER_ACTIVATION_ADMIN)
 			{
 				// Grab an array of user_id's with a_user permissions ... these users can activate a user
 				$admin_ary = $auth->acl_get_list(false, 'a_user', false);
@@ -145,7 +145,7 @@ class ucp_resend
 
 			meta_refresh(3, append_sid('index'));
 
-			$message = ($config['require_activation'] == USER_ACTIVATION_ADMIN) ? $user->lang['ACIVATION_EMAIL_SENT_ADMIN'] : $user->lang['ACTIVATION_EMAIL_SENT'];
+			$message = (phpbb::$config['require_activation'] == USER_ACTIVATION_ADMIN) ? $user->lang['ACIVATION_EMAIL_SENT_ADMIN'] : $user->lang['ACTIVATION_EMAIL_SENT'];
 			$message .= '<br /><br />' . sprintf($user->lang['RETURN_INDEX'], '<a href="' . append_sid('index') . '">', '</a>');
 			trigger_error($message);
 		}

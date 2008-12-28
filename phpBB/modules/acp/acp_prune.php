@@ -51,7 +51,7 @@ class acp_prune
 	*/
 	function prune_forums($id, $mode)
 	{
-		global $db, $user, $auth, $template, $config;
+		global $db, $user, $auth, $template;
 
 		$all_forums = request_var('all_forums', 0);
 		$forum_id = request_var('f', array(0));
@@ -227,7 +227,7 @@ class acp_prune
 	*/
 	function prune_users($id, $mode)
 	{
-		global $db, $user, $auth, $template, $config;
+		global $db, $user, $auth, $template;
 
 		$user->add_lang('memberlist');
 

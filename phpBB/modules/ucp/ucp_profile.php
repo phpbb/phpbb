@@ -29,7 +29,7 @@ class ucp_profile
 
 	function main($id, $mode)
 	{
-		global $config, $db, $user, $auth, $template;
+		global $db, $user, $auth, $template;
 
 		$user->add_lang('posting');
 
@@ -59,19 +59,19 @@ class ucp_profile
 					// Do not check cur_password, it is the old one.
 					$check_ary = array(
 						'new_password'		=> array(
-							array('string', true, $config['min_pass_chars'], $config['max_pass_chars']),
+							array('string', true, phpbb::$config['min_pass_chars'], phpbb::$config['max_pass_chars']),
 							array('password')),
-						'password_confirm'	=> array('string', true, $config['min_pass_chars'], $config['max_pass_chars']),
+						'password_confirm'	=> array('string', true, phpbb::$config['min_pass_chars'], phpbb::$config['max_pass_chars']),
 						'email'				=> array(
 							array('string', false, 6, 60),
 							array('email')),
 						'email_confirm'		=> array('string', true, 6, 60),
 					);
 
-					if ($auth->acl_get('u_chgname') && $config['allow_namechange'])
+					if ($auth->acl_get('u_chgname') && phpbb::$config['allow_namechange'])
 					{
 						$check_ary['username'] = array(
-							array('string', false, $config['min_name_chars'], $config['max_name_chars']),
+							array('string', false, phpbb::$config['min_name_chars'], phpbb::$config['max_name_chars']),
 							array('username'),
 						);
 					}
@@ -83,7 +83,7 @@ class ucp_profile
 						$error[] = 'NEW_PASSWORD_ERROR';
 					}
 
-					if (($data['new_password'] || ($auth->acl_get('u_chgemail') && $data['email'] != $user->data['user_email']) || ($data['username'] != $user->data['username'] && $auth->acl_get('u_chgname') && $config['allow_namechange'])) && !phpbb_check_hash($data['cur_password'], $user->data['user_password']))
+					if (($data['new_password'] || ($auth->acl_get('u_chgemail') && $data['email'] != $user->data['user_email']) || ($data['username'] != $user->data['username'] && $auth->acl_get('u_chgname') && phpbb::$config['allow_namechange'])) && !phpbb_check_hash($data['cur_password'], $user->data['user_password']))
 					{
 						$error[] = 'CUR_PASSWORD_ERROR';
 					}
@@ -107,15 +107,15 @@ class ucp_profile
 					if (!sizeof($error))
 					{
 						$sql_ary = array(
-							'username'			=> ($auth->acl_get('u_chgname') && $config['allow_namechange']) ? $data['username'] : $user->data['username'],
-							'username_clean'	=> ($auth->acl_get('u_chgname') && $config['allow_namechange']) ? utf8_clean_string($data['username']) : $user->data['username_clean'],
+							'username'			=> ($auth->acl_get('u_chgname') && phpbb::$config['allow_namechange']) ? $data['username'] : $user->data['username'],
+							'username_clean'	=> ($auth->acl_get('u_chgname') && phpbb::$config['allow_namechange']) ? utf8_clean_string($data['username']) : $user->data['username_clean'],
 							'user_email'		=> ($auth->acl_get('u_chgemail')) ? $data['email'] : $user->data['user_email'],
 							'user_email_hash'	=> ($auth->acl_get('u_chgemail')) ? hexdec(crc32($data['email']) . strlen($data['email'])) : $user->data['user_email_hash'],
 							'user_password'		=> ($auth->acl_get('u_chgpasswd') && $data['new_password']) ? phpbb_hash($data['new_password']) : $user->data['user_password'],
 							'user_passchg'		=> ($auth->acl_get('u_chgpasswd') && $data['new_password']) ? time() : 0,
 						);
 
-						if ($auth->acl_get('u_chgname') && $config['allow_namechange'] && $data['username'] != $user->data['username'])
+						if ($auth->acl_get('u_chgname') && phpbb::$config['allow_namechange'] && $data['username'] != $user->data['username'])
 						{
 							add_log('user', $user->data['user_id'], 'LOG_USER_UPDATE_NAME', $user->data['username'], $data['username']);
 						}
@@ -133,9 +133,9 @@ class ucp_profile
 
 						$message = 'PROFILE_UPDATED';
 
-						if ($config['email_enable'] && $data['email'] != $user->data['user_email'] && $user->data['user_type'] != phpbb::USER_FOUNDER && ($config['require_activation'] == USER_ACTIVATION_SELF || $config['require_activation'] == USER_ACTIVATION_ADMIN))
+						if (phpbb::$config['email_enable'] && $data['email'] != $user->data['user_email'] && $user->data['user_type'] != phpbb::USER_FOUNDER && (phpbb::$config['require_activation'] == USER_ACTIVATION_SELF || phpbb::$config['require_activation'] == USER_ACTIVATION_ADMIN))
 						{
-							$message = ($config['require_activation'] == USER_ACTIVATION_SELF) ? 'ACCOUNT_EMAIL_CHANGED' : 'ACCOUNT_EMAIL_CHANGED_ADMIN';
+							$message = (phpbb::$config['require_activation'] == USER_ACTIVATION_SELF) ? 'ACCOUNT_EMAIL_CHANGED' : 'ACCOUNT_EMAIL_CHANGED_ADMIN';
 
 							include_once(PHPBB_ROOT_PATH . 'includes/functions_messenger.' . PHP_EXT);
 
@@ -148,12 +148,12 @@ class ucp_profile
 
 							$messenger = new messenger(false);
 
-							$template_file = ($config['require_activation'] == USER_ACTIVATION_ADMIN) ? 'user_activate_inactive' : 'user_activate';
+							$template_file = (phpbb::$config['require_activation'] == USER_ACTIVATION_ADMIN) ? 'user_activate_inactive' : 'user_activate';
 							$messenger->template($template_file, $user->data['user_lang']);
 
 							$messenger->to($data['email'], $data['username']);
 
-							$messenger->headers('X-AntiAbuse: Board servername - ' . $config['server_name']);
+							$messenger->headers('X-AntiAbuse: Board servername - ' . phpbb::$config['server_name']);
 							$messenger->headers('X-AntiAbuse: User_id - ' . $user->data['user_id']);
 							$messenger->headers('X-AntiAbuse: Username - ' . $user->data['username']);
 							$messenger->headers('X-AntiAbuse: User IP - ' . $user->ip);
@@ -165,7 +165,7 @@ class ucp_profile
 
 							$messenger->send(NOTIFY_EMAIL);
 
-							if ($config['require_activation'] == USER_ACTIVATION_ADMIN)
+							if (phpbb::$config['require_activation'] == USER_ACTIVATION_ADMIN)
 							{
 								// Grab an array of user_id's with a_user permissions ... these users can activate a user
 								$admin_ary = $auth->acl_get_list(false, 'a_user', false);
@@ -217,7 +217,7 @@ class ucp_profile
 						}
 
 						// Need to update config, forum, topic, posting, messages, etc.
-						if ($data['username'] != $user->data['username'] && $auth->acl_get('u_chgname') && $config['allow_namechange'])
+						if ($data['username'] != $user->data['username'] && $auth->acl_get('u_chgname') && phpbb::$config['allow_namechange'])
 						{
 							user_update_name($user->data['username'], $data['username']);
 						}
@@ -253,11 +253,11 @@ class ucp_profile
 					'NEW_PASSWORD'		=> $data['new_password'],
 					'CUR_PASSWORD'		=> '',
 
-					'L_USERNAME_EXPLAIN'		=> sprintf($user->lang[$config['allow_name_chars'] . '_EXPLAIN'], $config['min_name_chars'], $config['max_name_chars']),
-					'L_CHANGE_PASSWORD_EXPLAIN'	=> sprintf($user->lang[$config['pass_complex'] . '_EXPLAIN'], $config['min_pass_chars'], $config['max_pass_chars']),
+					'L_USERNAME_EXPLAIN'		=> sprintf($user->lang[phpbb::$config['allow_name_chars'] . '_EXPLAIN'], phpbb::$config['min_name_chars'], phpbb::$config['max_name_chars']),
+					'L_CHANGE_PASSWORD_EXPLAIN'	=> sprintf($user->lang[phpbb::$config['pass_complex'] . '_EXPLAIN'], phpbb::$config['min_pass_chars'], phpbb::$config['max_pass_chars']),
 
-					'S_FORCE_PASSWORD'	=> ($auth->acl_get('u_chgpasswd') && $config['chg_passforce'] && $user->data['user_passchg'] < time() - ($config['chg_passforce'] * 86400)) ? true : false,
-					'S_CHANGE_USERNAME' => ($config['allow_namechange'] && $auth->acl_get('u_chgname')) ? true : false,
+					'S_FORCE_PASSWORD'	=> ($auth->acl_get('u_chgpasswd') && phpbb::$config['chg_passforce'] && $user->data['user_passchg'] < time() - (phpbb::$config['chg_passforce'] * 86400)) ? true : false,
+					'S_CHANGE_USERNAME' => (phpbb::$config['allow_namechange'] && $auth->acl_get('u_chgname')) ? true : false,
 					'S_CHANGE_EMAIL'	=> ($auth->acl_get('u_chgemail')) ? true : false,
 					'S_CHANGE_PASSWORD'	=> ($auth->acl_get('u_chgpasswd')) ? true : false)
 				);
@@ -283,7 +283,7 @@ class ucp_profile
 					'interests'		=> utf8_normalize_nfc(request_var('interests', $user->data['user_interests'], true)),
 				);
 
-				if ($config['allow_birthdays'])
+				if (phpbb::$config['allow_birthdays'])
 				{
 					$data['bday_day'] = $data['bday_month'] = $data['bday_year'] = 0;
 
@@ -320,7 +320,7 @@ class ucp_profile
 						'interests'		=> array('string', true, 2, 500),
 					);
 
-					if ($config['allow_birthdays'])
+					if (phpbb::$config['allow_birthdays'])
 					{
 						$validate_array = array_merge($validate_array, array(
 							'bday_day'		=> array('num', true, 1, 31),
@@ -349,7 +349,7 @@ class ucp_profile
 					{
 						$data['notify'] = $user->data['user_notify_type'];
 
-						if (!$config['jab_enable'] || !$data['jabber'] || !@extension_loaded('xml'))
+						if (!phpbb::$config['jab_enable'] || !$data['jabber'] || !@extension_loaded('xml'))
 						{
 							// User has not filled in a jabber address (Or one of the modules is disabled or jabber is disabled)
 							// Disable notify by Jabber now for this user.
@@ -369,7 +369,7 @@ class ucp_profile
 							'user_notify_type'	=> $data['notify'],
 						);
 
-						if ($config['allow_birthdays'])
+						if (phpbb::$config['allow_birthdays'])
 						{
 							$sql_ary['user_birthday'] = $data['user_birthday'];
 						}
@@ -409,7 +409,7 @@ class ucp_profile
 					$error = preg_replace('#^([A-Z_]+)$#e', "(!empty(\$user->lang['\\1'])) ? \$user->lang['\\1'] : '\\1'", $error);
 				}
 
-				if ($config['allow_birthdays'])
+				if (phpbb::$config['allow_birthdays'])
 				{
 					$s_birthday_day_options = '<option value="0"' . ((!$data['bday_day']) ? ' selected="selected"' : '') . '>--</option>';
 					for ($i = 1; $i < 32; $i++)
@@ -474,9 +474,9 @@ class ucp_profile
 				include(PHPBB_ROOT_PATH . 'includes/functions_posting.' . PHP_EXT);
 				include(PHPBB_ROOT_PATH . 'includes/functions_display.' . PHP_EXT);
 
-				$enable_bbcode	= ($config['allow_sig_bbcode']) ? ((request_var('disable_bbcode', !$user->optionget('bbcode'))) ? false : true) : false;
-				$enable_smilies	= ($config['allow_sig_smilies']) ? ((request_var('disable_smilies', !$user->optionget('smilies'))) ? false : true) : false;
-				$enable_urls	= ($config['allow_sig_links']) ? ((request_var('disable_magic_url', false)) ? false : true) : false;
+				$enable_bbcode	= (phpbb::$config['allow_sig_bbcode']) ? ((request_var('disable_bbcode', !$user->optionget('bbcode'))) ? false : true) : false;
+				$enable_smilies	= (phpbb::$config['allow_sig_smilies']) ? ((request_var('disable_smilies', !$user->optionget('smilies'))) ? false : true) : false;
+				$enable_urls	= (phpbb::$config['allow_sig_links']) ? ((request_var('disable_magic_url', false)) ? false : true) : false;
 
 				$signature		= utf8_normalize_nfc(request_var('signature', (string) $user->data['user_sig'], true));
 
@@ -491,7 +491,7 @@ class ucp_profile
 						$message_parser = new parse_message($signature);
 
 						// Allowing Quote BBCode
-						$message_parser->parse($enable_bbcode, $enable_urls, $enable_smilies, $config['allow_sig_img'], $config['allow_sig_flash'], true, $config['allow_sig_links'], true, 'sig');
+						$message_parser->parse($enable_bbcode, $enable_urls, $enable_smilies, phpbb::$config['allow_sig_img'], phpbb::$config['allow_sig_flash'], true, phpbb::$config['allow_sig_links'], true, 'sig');
 
 						if (sizeof($message_parser->warn_msg))
 						{
@@ -544,19 +544,19 @@ class ucp_profile
 					'S_SMILIES_CHECKED' 	=> (!$enable_smilies) ? ' checked="checked"' : '',
 					'S_MAGIC_URL_CHECKED' 	=> (!$enable_urls) ? ' checked="checked"' : '',
 
-					'BBCODE_STATUS'			=> ($config['allow_sig_bbcode']) ? sprintf($user->lang['BBCODE_IS_ON'], '<a href="' . append_sid('faq', 'mode=bbcode') . '">', '</a>') : sprintf($user->lang['BBCODE_IS_OFF'], '<a href="' . append_sid('faq', 'mode=bbcode') . '">', '</a>'),
-					'SMILIES_STATUS'		=> ($config['allow_sig_smilies']) ? $user->lang['SMILIES_ARE_ON'] : $user->lang['SMILIES_ARE_OFF'],
-					'IMG_STATUS'			=> ($config['allow_sig_img']) ? $user->lang['IMAGES_ARE_ON'] : $user->lang['IMAGES_ARE_OFF'],
-					'FLASH_STATUS'			=> ($config['allow_sig_flash']) ? $user->lang['FLASH_IS_ON'] : $user->lang['FLASH_IS_OFF'],
-					'URL_STATUS'			=> ($config['allow_sig_links']) ? $user->lang['URL_IS_ON'] : $user->lang['URL_IS_OFF'],
+					'BBCODE_STATUS'			=> (phpbb::$config['allow_sig_bbcode']) ? sprintf($user->lang['BBCODE_IS_ON'], '<a href="' . append_sid('faq', 'mode=bbcode') . '">', '</a>') : sprintf($user->lang['BBCODE_IS_OFF'], '<a href="' . append_sid('faq', 'mode=bbcode') . '">', '</a>'),
+					'SMILIES_STATUS'		=> (phpbb::$config['allow_sig_smilies']) ? $user->lang['SMILIES_ARE_ON'] : $user->lang['SMILIES_ARE_OFF'],
+					'IMG_STATUS'			=> (phpbb::$config['allow_sig_img']) ? $user->lang['IMAGES_ARE_ON'] : $user->lang['IMAGES_ARE_OFF'],
+					'FLASH_STATUS'			=> (phpbb::$config['allow_sig_flash']) ? $user->lang['FLASH_IS_ON'] : $user->lang['FLASH_IS_OFF'],
+					'URL_STATUS'			=> (phpbb::$config['allow_sig_links']) ? $user->lang['URL_IS_ON'] : $user->lang['URL_IS_OFF'],
 
-					'L_SIGNATURE_EXPLAIN'	=> sprintf($user->lang['SIGNATURE_EXPLAIN'], $config['max_sig_chars']),
+					'L_SIGNATURE_EXPLAIN'	=> sprintf($user->lang['SIGNATURE_EXPLAIN'], phpbb::$config['max_sig_chars']),
 
-					'S_BBCODE_ALLOWED'		=> $config['allow_sig_bbcode'],
-					'S_SMILIES_ALLOWED'		=> $config['allow_sig_smilies'],
-					'S_BBCODE_IMG'			=> ($config['allow_sig_img']) ? true : false,
-					'S_BBCODE_FLASH'		=> ($config['allow_sig_flash']) ? true : false,
-					'S_LINKS_ALLOWED'		=> ($config['allow_sig_links']) ? true : false)
+					'S_BBCODE_ALLOWED'		=> phpbb::$config['allow_sig_bbcode'],
+					'S_SMILIES_ALLOWED'		=> phpbb::$config['allow_sig_smilies'],
+					'S_BBCODE_IMG'			=> (phpbb::$config['allow_sig_img']) ? true : false,
+					'S_BBCODE_FLASH'		=> (phpbb::$config['allow_sig_flash']) ? true : false,
+					'S_LINKS_ALLOWED'		=> (phpbb::$config['allow_sig_links']) ? true : false)
 				);
 
 				// Build custom bbcodes array
@@ -572,7 +572,7 @@ class ucp_profile
 				$avatar_select = basename(request_var('avatar_select', ''));
 				$category = basename(request_var('category', ''));
 
-				$can_upload = ($config['allow_avatar_upload'] && file_exists(PHPBB_ROOT_PATH . $config['avatar_path']) && @is_writable(PHPBB_ROOT_PATH . $config['avatar_path']) && $auth->acl_get('u_chgavatar') && (@ini_get('file_uploads') || strtolower(@ini_get('file_uploads')) == 'on')) ? true : false;
+				$can_upload = (phpbb::$config['allow_avatar_upload'] && file_exists(PHPBB_ROOT_PATH . phpbb::$config['avatar_path']) && @is_writable(PHPBB_ROOT_PATH . phpbb::$config['avatar_path']) && $auth->acl_get('u_chgavatar') && (@ini_get('file_uploads') || strtolower(@ini_get('file_uploads')) == 'on')) ? true : false;
 
 				add_form_key('ucp_avatar');
 
@@ -598,22 +598,22 @@ class ucp_profile
 				$template->assign_vars(array(
 					'ERROR'			=> (sizeof($error)) ? implode('<br />', $error) : '',
 					'AVATAR'		=> get_user_avatar($user->data['user_avatar'], $user->data['user_avatar_type'], $user->data['user_avatar_width'], $user->data['user_avatar_height']),
-					'AVATAR_SIZE'	=> $config['avatar_filesize'],
+					'AVATAR_SIZE'	=> phpbb::$config['avatar_filesize'],
 
 					'U_GALLERY'		=> append_sid('ucp', 'i=profile&amp;mode=avatar&amp;display_gallery=1'),
 
 					'S_FORM_ENCTYPE'	=> ($can_upload) ? ' enctype="multipart/form-data"' : '',
 
-					'L_AVATAR_EXPLAIN'	=> sprintf($user->lang['AVATAR_EXPLAIN'], $config['avatar_max_width'], $config['avatar_max_height'], $config['avatar_filesize'] / 1024),
+					'L_AVATAR_EXPLAIN'	=> sprintf($user->lang['AVATAR_EXPLAIN'], phpbb::$config['avatar_max_width'], phpbb::$config['avatar_max_height'], phpbb::$config['avatar_filesize'] / 1024),
 				));
 
-				if ($display_gallery && $auth->acl_get('u_chgavatar') && $config['allow_avatar_local'])
+				if ($display_gallery && $auth->acl_get('u_chgavatar') && phpbb::$config['allow_avatar_local'])
 				{
 					avatar_gallery($category, $avatar_select, 4);
 				}
 				else
 				{
-					$avatars_enabled = ($can_upload || ($auth->acl_get('u_chgavatar') && ($config['allow_avatar_local'] || $config['allow_avatar_remote']))) ? true : false;
+					$avatars_enabled = ($can_upload || ($auth->acl_get('u_chgavatar') && (phpbb::$config['allow_avatar_local'] || phpbb::$config['allow_avatar_remote']))) ? true : false;
 
 					$template->assign_vars(array(
 						'AVATAR_WIDTH'	=> request_var('width', $user->data['user_avatar_width']),
@@ -622,8 +622,8 @@ class ucp_profile
 						'S_AVATARS_ENABLED'		=> $avatars_enabled,
 						'S_UPLOAD_AVATAR_FILE'	=> $can_upload,
 						'S_UPLOAD_AVATAR_URL'	=> $can_upload,
-						'S_LINK_AVATAR'			=> ($auth->acl_get('u_chgavatar') && $config['allow_avatar_remote']) ? true : false,
-						'S_DISPLAY_GALLERY'		=> ($auth->acl_get('u_chgavatar') && $config['allow_avatar_local']) ? true : false)
+						'S_LINK_AVATAR'			=> ($auth->acl_get('u_chgavatar') && phpbb::$config['allow_avatar_remote']) ? true : false,
+						'S_DISPLAY_GALLERY'		=> ($auth->acl_get('u_chgavatar') && phpbb::$config['allow_avatar_local']) ? true : false)
 					);
 				}
 

@@ -33,7 +33,7 @@ class mcp_logs
 
 	function main($id, $mode)
 	{
-		global $auth, $db, $user, $template, $config;
+		global $auth, $db, $user, $template;
 
 		$user->add_lang('acp/common');
 
@@ -166,12 +166,12 @@ class mcp_logs
 		// Grab log data
 		$log_data = array();
 		$log_count = 0;
-		view_log('mod', $log_data, $log_count, $config['topics_per_page'], $start, $forum_list, $topic_id, 0, $sql_where, $sql_sort);
+		view_log('mod', $log_data, $log_count, phpbb::$config['topics_per_page'], $start, $forum_list, $topic_id, 0, $sql_where, $sql_sort);
 
 		$template->assign_vars(array(
-			'PAGE_NUMBER'		=> on_page($log_count, $config['topics_per_page'], $start),
+			'PAGE_NUMBER'		=> on_page($log_count, phpbb::$config['topics_per_page'], $start),
 			'TOTAL'				=> ($log_count == 1) ? $user->lang['TOTAL_LOG'] : sprintf($user->lang['TOTAL_LOGS'], $log_count),
-			'PAGINATION'		=> generate_pagination($this->u_action . "&amp;$u_sort_param", $log_count, $config['topics_per_page'], $start),
+			'PAGINATION'		=> generate_pagination($this->u_action . "&amp;$u_sort_param", $log_count, phpbb::$config['topics_per_page'], $start),
 
 			'L_TITLE'			=> $user->lang['MCP_LOGS'],
 
@@ -187,7 +187,7 @@ class mcp_logs
 		foreach ($log_data as $row)
 		{
 			$data = array();
-				
+
 			$checks = array('viewtopic', 'viewforum');
 			foreach ($checks as $check)
 			{

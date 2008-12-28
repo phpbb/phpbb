@@ -27,7 +27,7 @@ class ucp_attachments
 
 	function main($id, $mode)
 	{
-		global $template, $user, $db, $config;
+		global $template, $user, $db;
 
 		$start		= request_var('start', 0);
 		$sort_key	= request_var('sk', 'a');
@@ -127,7 +127,7 @@ class ucp_attachments
 			WHERE a.poster_id = ' . $user->data['user_id'] . "
 				AND a.is_orphan = 0
 			ORDER BY $order_by";
-		$result = $db->sql_query_limit($sql, $config['topics_per_page'], $start);
+		$result = $db->sql_query_limit($sql, phpbb::$config['topics_per_page'], $start);
 
 		$row_count = 0;
 		if ($row = $db->sql_fetchrow($result))
@@ -172,8 +172,8 @@ class ucp_attachments
 		$db->sql_freeresult($result);
 
 		$template->assign_vars(array(
-			'PAGE_NUMBER'			=> on_page($num_attachments, $config['topics_per_page'], $start),
-			'PAGINATION'			=> generate_pagination($this->u_action . "&amp;sk=$sort_key&amp;sd=$sort_dir", $num_attachments, $config['topics_per_page'], $start),
+			'PAGE_NUMBER'			=> on_page($num_attachments, phpbb::$config['topics_per_page'], $start),
+			'PAGINATION'			=> generate_pagination($this->u_action . "&amp;sk=$sort_key&amp;sd=$sort_dir", $num_attachments, phpbb::$config['topics_per_page'], $start),
 			'TOTAL_ATTACHMENTS'		=> $num_attachments,
 
 			'L_TITLE'				=> $user->lang['UCP_ATTACHMENTS'],

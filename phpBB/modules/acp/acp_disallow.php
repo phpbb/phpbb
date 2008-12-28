@@ -25,7 +25,7 @@ class acp_disallow
 
 	function main($id, $mode)
 	{
-		global $db, $user, $auth, $template, $config;
+		global $db, $user, $auth, $template;
 
 		include(PHPBB_ROOT_PATH . 'includes/functions_user.' . PHP_EXT);
 

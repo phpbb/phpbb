@@ -27,7 +27,7 @@ class ucp_activate
 
 	function main($id, $mode)
 	{
-		global $db, $user, $auth, $template, $config;
+		global $db, $user, $auth, $template;
 
 		$user_id = request_var('u', 0);
 		$key = request_var('k', '');
@@ -85,7 +85,7 @@ class ucp_activate
 			$db->sql_query($sql);
 		}
 
-		if ($config['require_activation'] == USER_ACTIVATION_ADMIN && !$update_password)
+		if (phpbb::$config['require_activation'] == USER_ACTIVATION_ADMIN && !$update_password)
 		{
 			include_once(PHPBB_ROOT_PATH . 'includes/functions_messenger.' . PHP_EXT);
 
@@ -95,7 +95,7 @@ class ucp_activate
 
 			$messenger->to($user_row['user_email'], $user_row['username']);
 
-			$messenger->headers('X-AntiAbuse: Board servername - ' . $config['server_name']);
+			$messenger->headers('X-AntiAbuse: Board servername - ' . phpbb::$config['server_name']);
 			$messenger->headers('X-AntiAbuse: User_id - ' . $user->data['user_id']);
 			$messenger->headers('X-AntiAbuse: Username - ' . $user->data['username']);
 			$messenger->headers('X-AntiAbuse: User IP - ' . $user->ip);

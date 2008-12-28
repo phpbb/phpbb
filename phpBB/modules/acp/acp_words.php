@@ -26,7 +26,7 @@ class acp_words
 
 	function main($id, $mode)
 	{
-		global $db, $user, $auth, $template, $config;
+		global $db, $user, $auth, $template;
 
 		$user->add_lang('acp/posting');
 

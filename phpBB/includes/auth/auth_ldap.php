@@ -27,21 +27,21 @@ if (!defined('IN_PHPBB'))
 */
 function init_ldap()
 {
-	global $config, $user;
+	global $user;
 
 	if (!@extension_loaded('ldap'))
 	{
 		return $user->lang['LDAP_NO_LDAP_EXTENSION'];
 	}
 
-	$config['ldap_port'] = (int) $config['ldap_port'];
-	if ($config['ldap_port'])
+	phpbb::$config['ldap_port'] = (int) phpbb::$config['ldap_port'];
+	if (phpbb::$config['ldap_port'])
 	{
-		$ldap = @ldap_connect($config['ldap_server'], $config['ldap_port']);
+		$ldap = @ldap_connect(phpbb::$config['ldap_server'], phpbb::$config['ldap_port']);
 	}
 	else
 	{
-		$ldap = @ldap_connect($config['ldap_server']);
+		$ldap = @ldap_connect(phpbb::$config['ldap_server']);
 	}
 
 	if (!$ldap)
@@ -52,9 +52,9 @@ function init_ldap()
 	@ldap_set_option($ldap, LDAP_OPT_PROTOCOL_VERSION, 3);
 	@ldap_set_option($ldap, LDAP_OPT_REFERRALS, 0);
 
-	if ($config['ldap_user'] || $config['ldap_password'])
+	if (phpbb::$config['ldap_user'] || phpbb::$config['ldap_password'])
 	{
-		if (!@ldap_bind($ldap, htmlspecialchars_decode($config['ldap_user']), htmlspecialchars_decode($config['ldap_password'])))
+		if (!@ldap_bind($ldap, htmlspecialchars_decode(phpbb::$config['ldap_user']), htmlspecialchars_decode(phpbb::$config['ldap_password'])))
 		{
 			return $user->lang['LDAP_INCORRECT_USER_PASSWORD'];
 		}
@@ -63,9 +63,9 @@ function init_ldap()
 	// ldap_connect only checks whether the specified server is valid, so the connection might still fail
 	$search = @ldap_search(
 		$ldap,
-		$config['ldap_base_dn'],
+		phpbb::$config['ldap_base_dn'],
 		ldap_user_filter($user->data['username']),
-		(empty($config['ldap_email'])) ? array($config['ldap_uid']) : array($config['ldap_uid'], $config['ldap_email']),
+		(empty(phpbb::$config['ldap_email'])) ? array(phpbb::$config['ldap_uid']) : array(phpbb::$config['ldap_uid'], phpbb::$config['ldap_email']),
 		0,
 		1
 	);
@@ -85,7 +85,7 @@ function init_ldap()
 		return sprintf($user->lang['LDAP_NO_IDENTITY'], $user->data['username']);
 	}
 
-	if (!empty($config['ldap_email']) && !isset($result[0][$config['ldap_email']]))
+	if (!empty(phpbb::$config['ldap_email']) && !isset($result[0][phpbb::$config['ldap_email']]))
 	{
 		return $user->lang['LDAP_NO_EMAIL'];
 	}
@@ -98,7 +98,7 @@ function init_ldap()
 */
 function login_ldap(&$username, &$password)
 {
-	global $db, $config, $user;
+	global $db, $user;
 
 	// do not allow empty password
 	if (!$password)
@@ -128,14 +128,14 @@ function login_ldap(&$username, &$password)
 		);
 	}
 
-	$config['ldap_port'] = (int) $config['ldap_port'];
-	if ($config['ldap_port'])
+	phpbb::$config['ldap_port'] = (int) phpbb::$config['ldap_port'];
+	if (phpbb::$config['ldap_port'])
 	{
-		$ldap = @ldap_connect($config['ldap_server'], $config['ldap_port']);
+		$ldap = @ldap_connect(phpbb::$config['ldap_server'], phpbb::$config['ldap_port']);
 	}
 	else
 	{
-		$ldap = @ldap_connect($config['ldap_server']);
+		$ldap = @ldap_connect(phpbb::$config['ldap_server']);
 	}
 
 	if (!$ldap)
@@ -150,9 +150,9 @@ function login_ldap(&$username, &$password)
 	@ldap_set_option($ldap, LDAP_OPT_PROTOCOL_VERSION, 3);
 	@ldap_set_option($ldap, LDAP_OPT_REFERRALS, 0);
 
-	if ($config['ldap_user'] || $config['ldap_password'])
+	if (phpbb::$config['ldap_user'] || phpbb::$config['ldap_password'])
 	{
-		if (!@ldap_bind($ldap, $config['ldap_user'], htmlspecialchars_decode($config['ldap_password'])))
+		if (!@ldap_bind($ldap, phpbb::$config['ldap_user'], htmlspecialchars_decode(phpbb::$config['ldap_password'])))
 		{
 			return $user->lang['LDAP_NO_SERVER_CONNECTION'];
 		}
@@ -160,9 +160,9 @@ function login_ldap(&$username, &$password)
 
 	$search = @ldap_search(
 		$ldap,
-		$config['ldap_base_dn'],
+		phpbb::$config['ldap_base_dn'],
 		ldap_user_filter($username),
-		(empty($config['ldap_email'])) ? array($config['ldap_uid']) : array($config['ldap_uid'], $config['ldap_email']),
+		(empty(phpbb::$config['ldap_email'])) ? array(phpbb::$config['ldap_uid']) : array(phpbb::$config['ldap_uid'], phpbb::$config['ldap_email']),
 		0,
 		1
 	);
@@ -223,7 +223,7 @@ function login_ldap(&$username, &$password)
 				$ldap_user_row = array(
 					'username'		=> $username,
 					'user_password'	=> phpbb_hash($password),
-					'user_email'	=> (!empty($config['ldap_email'])) ? $ldap_result[0][$config['ldap_email']][0] : '',
+					'user_email'	=> (!empty(phpbb::$config['ldap_email'])) ? $ldap_result[0][phpbb::$config['ldap_email']][0] : '',
 					'group_id'		=> (int) $row['group_id'],
 					'user_type'		=> phpbb::USER_NORMAL,
 					'user_ip'		=> $user->ip,
@@ -271,12 +271,10 @@ function login_ldap(&$username, &$password)
 */
 function ldap_user_filter($username)
 {
-	global $config;
-
-	$filter = '(' . $config['ldap_uid'] . '=' . ldap_escape(htmlspecialchars_decode($username)) . ')';
-	if ($config['ldap_user_filter'])
+	$filter = '(' . phpbb::$config['ldap_uid'] . '=' . ldap_escape(htmlspecialchars_decode($username)) . ')';
+	if (phpbb::$config['ldap_user_filter'])
 	{
-		$filter = "(&$filter({$config['ldap_user_filter']}))";
+		$filter = "(&$filter({phpbb::$config['ldap_user_filter']}))";
 	}
 	return $filter;
 }

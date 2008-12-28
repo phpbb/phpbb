@@ -21,7 +21,7 @@ if (!defined('IN_PHPBB'))
 */
 function message_options($id, $mode, $global_privmsgs_rules, $global_rule_conditions)
 {
-	global $user, $template, $auth, $config, $db;
+	global $user, $template, $auth, $db;
 
 	$redirect_url = append_sid('ucp', "i=pm&amp;mode=options");
 
@@ -29,7 +29,7 @@ function message_options($id, $mode, $global_privmsgs_rules, $global_rule_condit
 	// Change "full folder" setting - what to do if folder is full
 	if (phpbb_request::is_set_post('fullfolder'))
 	{
-		check_form_key('ucp_pm_options', $config['form_token_lifetime'], $redirect_url);
+		check_form_key('ucp_pm_options', phpbb::$config['form_token_lifetime'], $redirect_url);
 		$full_action = request_var('full_action', 0);
 
 		$set_folder_id = 0;
@@ -97,7 +97,7 @@ function message_options($id, $mode, $global_privmsgs_rules, $global_rule_condit
 				$num_folder = (int) $db->sql_fetchfield('num_folder');
 				$db->sql_freeresult($result);
 
-				if ($num_folder >= $config['pm_max_boxes'])
+				if ($num_folder >= phpbb::$config['pm_max_boxes'])
 				{
 					trigger_error('MAX_FOLDER_REACHED');
 				}
@@ -429,7 +429,7 @@ function message_options($id, $mode, $global_privmsgs_rules, $global_rule_condit
 	if ($user->data['user_full_folder'] == FULL_FOLDER_NONE)
 	{
 		// -3 here to let the correct folder id be selected
-		$to_folder_id = $config['full_folder_action'] - 3;
+		$to_folder_id = phpbb::$config['full_folder_action'] - 3;
 	}
 	else
 	{
@@ -453,7 +453,7 @@ function message_options($id, $mode, $global_privmsgs_rules, $global_rule_condit
 
 	if ($user->data['user_full_folder'] == FULL_FOLDER_NONE)
 	{
-		switch ($config['full_folder_action'])
+		switch (phpbb::$config['full_folder_action'])
 		{
 			case 1:
 				$s_delete_checked = ' checked="checked"';
@@ -472,10 +472,10 @@ function message_options($id, $mode, $global_privmsgs_rules, $global_rule_condit
 		'S_DELETE_CHECKED'		=> $s_delete_checked,
 		'S_HOLD_CHECKED'		=> $s_hold_checked,
 		'S_MOVE_CHECKED'		=> $s_move_checked,
-		'S_MAX_FOLDER_REACHED'	=> ($num_user_folder >= $config['pm_max_boxes']) ? true : false,
-		'S_MAX_FOLDER_ZERO'		=> ($config['pm_max_boxes'] == 0) ? true : false,
+		'S_MAX_FOLDER_REACHED'	=> ($num_user_folder >= phpbb::$config['pm_max_boxes']) ? true : false,
+		'S_MAX_FOLDER_ZERO'		=> (phpbb::$config['pm_max_boxes'] == 0) ? true : false,
 
-		'DEFAULT_ACTION'		=> ($config['full_folder_action'] == 1) ? $user->lang['DELETE_OLDEST_MESSAGES'] : $user->lang['HOLD_NEW_MESSAGES'],
+		'DEFAULT_ACTION'		=> (phpbb::$config['full_folder_action'] == 1) ? $user->lang['DELETE_OLDEST_MESSAGES'] : $user->lang['HOLD_NEW_MESSAGES'],
 
 		'U_FIND_USERNAME'		=> append_sid('memberlist', 'mode=searchuser&amp;form=ucp&amp;field=rule_string&amp;select_single=true'),
 	));

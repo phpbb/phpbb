@@ -31,7 +31,7 @@ class acp_styles
 
 	function main($id, $mode)
 	{
-		global $db, $user, $auth, $template, $config;
+		global $db, $user, $auth, $template;
 
 		// Hardcoded template bitfield to add for new templates
 		$bitfield = new bitfield();
@@ -192,7 +192,7 @@ parse_css_file = {PARSE_CSS_FILE}
 					case 'activate':
 					case 'deactivate':
 
-						if ($style_id == $config['default_style'])
+						if ($style_id == phpbb::$config['default_style'])
 						{
 							trigger_error($user->lang['DEACTIVATE_DEFAULT'] . adm_back_link($this->u_action), E_USER_WARNING);
 						}
@@ -206,7 +206,7 @@ parse_css_file = {PARSE_CSS_FILE}
 						if ($action == 'deactivate')
 						{
 							$sql = 'UPDATE ' . USERS_TABLE . '
-								SET user_style = ' . $config['default_style'] . "
+								SET user_style = ' . phpbb::$config['default_style'] . "
 								WHERE user_style = $style_id";
 							$db->sql_query($sql);
 
@@ -474,7 +474,7 @@ parse_css_file = {PARSE_CSS_FILE}
 	*/
 	function frontend($mode, $options, $actions)
 	{
-		global $user, $template, $db, $config;
+		global $user, $template, $db;
 
 		$sql_from = '';
 		$style_count = array();
@@ -557,7 +557,7 @@ parse_css_file = {PARSE_CSS_FILE}
 			}
 
 			$template->assign_block_vars('installed', array(
-				'S_DEFAULT_STYLE'		=> ($mode == 'style' && $row['style_id'] == $config['default_style']) ? true : false,
+				'S_DEFAULT_STYLE'		=> ($mode == 'style' && $row['style_id'] == phpbb::$config['default_style']) ? true : false,
 				'U_EDIT'				=> $this->u_action . '&amp;action=' . (($mode == 'style') ? 'details' : 'edit') . '&amp;id=' . $row[$mode . '_id'],
 				'U_STYLE_ACT_DEACT'		=> $this->u_action . '&amp;action=' . $stylevis . '&amp;id=' . $row[$mode . '_id'],
 				'L_STYLE_ACT_DEACT'		=> $user->lang['STYLE_' . strtoupper($stylevis)],
@@ -631,7 +631,7 @@ parse_css_file = {PARSE_CSS_FILE}
 	*/
 	function edit_template($template_id)
 	{
-		global $config, $db, $user, $template, $safe_mode;
+		global $db, $user, $template, $safe_mode;
 
 		if (defined('PHPBB_DISABLE_ACP_EDITOR'))
 		{
@@ -801,7 +801,7 @@ parse_css_file = {PARSE_CSS_FILE}
 	*/
 	function template_cache($template_id)
 	{
-		global $config, $db, $user, $template;
+		global $db, $user, $template;
 
 		$source		= str_replace('/', '.', request_var('source', ''));
 		$file_ary	= array_diff(request_var('delete', array('')), array(''));
@@ -920,7 +920,7 @@ parse_css_file = {PARSE_CSS_FILE}
 	*/
 	function edit_theme($theme_id)
 	{
-		global $config, $db, $user, $template, $safe_mode;
+		global $db, $user, $template, $safe_mode;
 
 		$this->page_title = 'EDIT_THEME';
 
@@ -1376,7 +1376,7 @@ parse_css_file = {PARSE_CSS_FILE}
 	*/
 	function remove($mode, $style_id)
 	{
-		global $db, $template, $user, $config;
+		global $db, $template, $user;
 
 		$new_id = request_var('new_id', 0);
 		$update = phpbb_request::is_set_post('update');
@@ -1461,7 +1461,7 @@ parse_css_file = {PARSE_CSS_FILE}
 					WHERE forum_style = $style_id";
 				$db->sql_query($sql);
 
-				if ($style_id == $config['default_style'])
+				if ($style_id == phpbb::$config['default_style'])
 				{
 					set_config('default_style', $new_id);
 				}
@@ -1512,7 +1512,7 @@ parse_css_file = {PARSE_CSS_FILE}
 	*/
 	function export($mode, $style_id)
 	{
-		global $db, $template, $user, $config;
+		global $db, $template, $user;
 
 		$update = phpbb_request::is_set_post('update');
 
@@ -1620,7 +1620,7 @@ parse_css_file = {PARSE_CSS_FILE}
 
 			if ($mode == 'style')
 			{
-				$style_cfg = str_replace(array('{MODE}', '{NAME}', '{COPYRIGHT}', '{VERSION}'), array($mode, $style_row['style_name'], $style_row['style_copyright'], $config['version']), $this->style_cfg);
+				$style_cfg = str_replace(array('{MODE}', '{NAME}', '{COPYRIGHT}', '{VERSION}'), array($mode, $style_row['style_name'], $style_row['style_copyright'], phpbb::$config['version']), $this->style_cfg);
 
 				$style_cfg .= (!$inc_template) ? "\nrequired_template = {$style_row['template_name']}" : '';
 				$style_cfg .= (!$inc_theme) ? "\nrequired_theme = {$style_row['theme_name']}" : '';
@@ -1637,7 +1637,7 @@ parse_css_file = {PARSE_CSS_FILE}
 			// Export template core code
 			if ($mode == 'template' || $inc_template)
 			{
-				$template_cfg = str_replace(array('{MODE}', '{NAME}', '{COPYRIGHT}', '{VERSION}'), array($mode, $style_row['template_name'], $style_row['template_copyright'], $config['version']), $this->template_cfg);
+				$template_cfg = str_replace(array('{MODE}', '{NAME}', '{COPYRIGHT}', '{VERSION}'), array($mode, $style_row['template_name'], $style_row['template_copyright'], phpbb::$config['version']), $this->template_cfg);
 
 				$data[] = array(
 					'src'		=> $template_cfg,
@@ -1657,7 +1657,7 @@ parse_css_file = {PARSE_CSS_FILE}
 			// Export theme core code
 			if ($mode == 'theme' || $inc_theme)
 			{
-				$theme_cfg = str_replace(array('{MODE}', '{NAME}', '{COPYRIGHT}', '{VERSION}'), array($mode, $style_row['theme_name'], $style_row['theme_copyright'], $config['version']), $this->theme_cfg);
+				$theme_cfg = str_replace(array('{MODE}', '{NAME}', '{COPYRIGHT}', '{VERSION}'), array($mode, $style_row['theme_name'], $style_row['theme_copyright'], phpbb::$config['version']), $this->theme_cfg);
 
 				// Read old cfg file
 				$items = phpbb_cache::obtain_cfg_item($style_row, 'theme');
@@ -1695,7 +1695,7 @@ parse_css_file = {PARSE_CSS_FILE}
 			// Export imageset core code
 			if ($mode == 'imageset' || $inc_imageset)
 			{
-				$imageset_cfg = str_replace(array('{MODE}', '{NAME}', '{COPYRIGHT}', '{VERSION}'), array($mode, $style_row['imageset_name'], $style_row['imageset_copyright'], $config['version']), $this->imageset_cfg);
+				$imageset_cfg = str_replace(array('{MODE}', '{NAME}', '{COPYRIGHT}', '{VERSION}'), array($mode, $style_row['imageset_name'], $style_row['imageset_copyright'], phpbb::$config['version']), $this->imageset_cfg);
 
 				$imageset_main = array();
 
@@ -1764,7 +1764,7 @@ parse_css_file = {PARSE_CSS_FILE}
 
 				foreach ($imageset_lang as $lang => $imageset_localized)
 				{
-					$imageset_cfg = str_replace(array('{MODE}', '{NAME}', '{COPYRIGHT}', '{VERSION}'), array($mode, $style_row['imageset_name'], $style_row['imageset_copyright'], $config['version']), $this->imageset_cfg);
+					$imageset_cfg = str_replace(array('{MODE}', '{NAME}', '{COPYRIGHT}', '{VERSION}'), array($mode, $style_row['imageset_name'], $style_row['imageset_copyright'], phpbb::$config['version']), $this->imageset_cfg);
 
 					foreach ($this->imageset_keys as $topic => $key_array)
 					{
@@ -1909,7 +1909,7 @@ parse_css_file = {PARSE_CSS_FILE}
 	*/
 	function details($mode, $style_id)
 	{
-		global $template, $db, $config, $user, $safe_mode;
+		global $template, $db, $user, $safe_mode;
 
 		$update = phpbb_request::is_set_post('update');
 		$l_type = strtoupper($mode);
@@ -1948,7 +1948,7 @@ parse_css_file = {PARSE_CSS_FILE}
 			trigger_error($user->lang['NO_' . $l_type] . adm_back_link($this->u_action), E_USER_WARNING);
 		}
 
-		$style_row['style_default'] = ($mode == 'style' && $config['default_style'] == $style_id) ? 1 : 0;
+		$style_row['style_default'] = ($mode == 'style' && phpbb::$config['default_style'] == $style_id) ? 1 : 0;
 
 		if ($update)
 		{
@@ -1975,7 +1975,7 @@ parse_css_file = {PARSE_CSS_FILE}
 				$error[] = $user->lang['STYLE_ERR_NO_IDS'];
 			}
 
-			if ($mode == 'style' && $style_row['style_active'] && !$style_active && $config['default_style'] == $style_id)
+			if ($mode == 'style' && $style_row['style_active'] && !$style_active && phpbb::$config['default_style'] == $style_id)
 			{
 				$error[] = $user->lang['DEACTIVATE_DEFAULT'];
 			}
@@ -2260,7 +2260,7 @@ parse_css_file = {PARSE_CSS_FILE}
 	*/
 	function install($mode)
 	{
-		global $config, $db, $user, $template;
+		global $db, $user, $template;
 
 		$l_type = strtoupper($mode);
 
@@ -2415,7 +2415,7 @@ parse_css_file = {PARSE_CSS_FILE}
 	*/
 	function add($mode)
 	{
-		global $config, $db, $user, $template;
+		global $db, $user, $template;
 
 		$l_type = strtoupper($mode);
 		$element_ary = array('template' => STYLES_TEMPLATE_TABLE, 'theme' => STYLES_THEME_TABLE, 'imageset' => STYLES_IMAGESET_TABLE);
@@ -2563,7 +2563,7 @@ parse_css_file = {PARSE_CSS_FILE}
 
 	function generate_stylesheets($theme)
 	{
-		global $db, $config;
+		global $db;
 
 		// get all the lang_dirs
 		$sql = 'SELECT lang_dir
@@ -2590,7 +2590,7 @@ parse_css_file = {PARSE_CSS_FILE}
 				$theme['imageset_id'] = $theme_row['imageset_id'];
 				$theme['template_path'] = $theme_row['template_path'];
 
-				$user_image_lang = (file_exists(PHPBB_ROOT_PATH . 'styles/' . $theme['imageset_path'] . '/imageset/' . $lang_dir)) ? $lang_dir : $config['default_lang'];
+				$user_image_lang = (file_exists(PHPBB_ROOT_PATH . 'styles/' . $theme['imageset_path'] . '/imageset/' . $lang_dir)) ? $lang_dir : phpbb::$config['default_lang'];
 
 				// Parse Theme Data
 				$replace = array(
@@ -2750,7 +2750,7 @@ parse_css_file = {PARSE_CSS_FILE}
 	*/
 	function install_style(&$error, $action, $root_path, &$id, $name, $path, $copyright, $active, $default, &$style_row, $template_root_path = false, $template_path = false, $theme_root_path = false, $theme_path = false, $imageset_root_path = false, $imageset_path = false)
 	{
-		global $config, $db, $user;
+		global $db, $user;
 
 		$element_ary = array('template', 'theme', 'imageset');
 
@@ -2829,7 +2829,7 @@ parse_css_file = {PARSE_CSS_FILE}
 		{
 			$sql = 'UPDATE ' . USERS_TABLE . "
 				SET user_style = $id
-				WHERE user_style = " . $config['default_style'];
+				WHERE user_style = " . phpbb::$config['default_style'];
 			$db->sql_query($sql);
 
 			set_config('default_style', $id);

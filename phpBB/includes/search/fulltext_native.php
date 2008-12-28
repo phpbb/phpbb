@@ -46,9 +46,7 @@ class fulltext_native extends search_backend
 	*/
 	function __construct(&$error)
 	{
-		global $config;
-
-		$this->word_length = array('min' => $config['fulltext_native_min_chars'], 'max' => $config['fulltext_native_max_chars']);
+		$this->word_length = array('min' => phpbb::$config['fulltext_native_min_chars'], 'max' => phpbb::$config['fulltext_native_max_chars']);
 
 		/**
 		* Load the UTF tools
@@ -404,7 +402,7 @@ class fulltext_native extends search_backend
 	*/
 	public function keyword_search($type, &$fields, &$terms, &$sort_by_sql, &$sort_key, &$sort_dir, &$sort_days, &$ex_fid_ary, &$m_approve_fid_ary, &$topic_id, &$author_ary, &$id_ary, $start, $per_page)
 	{
-		global $config, $db;
+		global $db;
 
 		// No keywords? No posts.
 		if (empty($this->search_query))
@@ -702,7 +700,7 @@ class fulltext_native extends search_backend
 		unset($sql_where, $sql_sort, $group_by);
 
 		$sql = $db->sql_build_query('SELECT', $sql_array);
-		$result = $db->sql_query_limit($sql, $config['search_block_size'], $start);
+		$result = $db->sql_query_limit($sql, phpbb::$config['search_block_size'], $start);
 
 		while ($row = $db->sql_fetchrow($result))
 		{
@@ -758,7 +756,7 @@ class fulltext_native extends search_backend
 	*/
 	public function author_search($type, $firstpost_only, &$sort_by_sql, &$sort_key, &$sort_dir, &$sort_days, &$ex_fid_ary, &$m_approve_fid_ary, &$topic_id, &$author_ary, &$id_ary, $start, $per_page)
 	{
-		global $config, $db;
+		global $db;
 
 		// No author? No posts.
 		if (!sizeof($author_ary))
@@ -921,7 +919,7 @@ class fulltext_native extends search_backend
 		}
 
 		// Only read one block of posts from the db and then cache it
-		$result = $db->sql_query_limit($sql, $config['search_block_size'], $start);
+		$result = $db->sql_query_limit($sql, phpbb::$config['search_block_size'], $start);
 
 		while ($row = $db->sql_fetchrow($result))
 		{
@@ -1046,9 +1044,9 @@ class fulltext_native extends search_backend
 	*/
 	public function index($mode, $post_id, &$message, &$subject, $poster_id, $forum_id)
 	{
-		global $config, $db, $user;
+		global $db, $user;
 
-		if (!$config['fulltext_native_load_upd'])
+		if (!phpbb::$config['fulltext_native_load_upd'])
 		{
 			/**
 			* The search indexer is disabled, return
@@ -1100,7 +1098,7 @@ class fulltext_native extends search_backend
 
 		// Get unique words from the above arrays
 		$unique_add_words = array_unique(array_merge($words['add']['post'], $words['add']['title']));
-		
+
 		// We now have unique arrays of all words to be added and removed and
 		// individual arrays of added and removed words for text and title. What
 		// we need to do now is add the new words (if they don't already exist)
@@ -1265,11 +1263,11 @@ class fulltext_native extends search_backend
 	*/
 	public function tidy()
 	{
-		global $db, $config;
+		global $db;
 
 		// Is the fulltext indexer disabled? If yes then we need not
 		// carry on ... it's okay ... I know when I'm not wanted boo hoo
-		if (!$config['fulltext_native_load_upd'])
+		if (!phpbb::$config['fulltext_native_load_upd'])
 		{
 			set_config('search_last_gc', time(), true);
 			return;
@@ -1278,13 +1276,13 @@ class fulltext_native extends search_backend
 		$destroy_cache_words = array();
 
 		// Remove common words
-		if ($config['num_posts'] >= 100 && $config['fulltext_native_common_thres'])
+		if (phpbb::$config['num_posts'] >= 100 && phpbb::$config['fulltext_native_common_thres'])
 		{
-			$common_threshold = ((double) $config['fulltext_native_common_thres']) / 100.0;
+			$common_threshold = ((double) phpbb::$config['fulltext_native_common_thres']) / 100.0;
 			// First, get the IDs of common words
 			$sql = 'SELECT word_id, word_text
 				FROM ' . SEARCH_WORDLIST_TABLE . '
-				WHERE word_count > ' . floor($config['num_posts'] * $common_threshold) . '
+				WHERE word_count > ' . floor(phpbb::$config['num_posts'] * $common_threshold) . '
 					OR word_common = 1';
 			$result = $db->sql_query($sql);
 
@@ -1631,7 +1629,7 @@ class fulltext_native extends search_backend
 	*/
 	public function acp()
 	{
-		global $user, $config;
+		global $user;
 
 
 		/**
@@ -1641,19 +1639,19 @@ class fulltext_native extends search_backend
 		$tpl = '
 		<dl>
 			<dt><label for="fulltext_native_load_upd">' . $user->lang['YES_SEARCH_UPDATE'] . ':</label><br /><span>' . $user->lang['YES_SEARCH_UPDATE_EXPLAIN'] . '</span></dt>
-			<dd><label><input type="radio" id="fulltext_native_load_upd" name="config[fulltext_native_load_upd]" value="1"' . (($config['fulltext_native_load_upd']) ? ' checked="checked"' : '') . ' class="radio" /> ' . $user->lang['YES'] . '</label><label><input type="radio" name="config[fulltext_native_load_upd]" value="0"' . ((!$config['fulltext_native_load_upd']) ? ' checked="checked"' : '') . ' class="radio" /> ' . $user->lang['NO'] . '</label></dd>
+			<dd><label><input type="radio" id="fulltext_native_load_upd" name="config[fulltext_native_load_upd]" value="1"' . ((phpbb::$config['fulltext_native_load_upd']) ? ' checked="checked"' : '') . ' class="radio" /> ' . $user->lang['YES'] . '</label><label><input type="radio" name="config[fulltext_native_load_upd]" value="0"' . ((!phpbb::$config['fulltext_native_load_upd']) ? ' checked="checked"' : '') . ' class="radio" /> ' . $user->lang['NO'] . '</label></dd>
 		</dl>
 		<dl>
 			<dt><label for="fulltext_native_min_chars">' . $user->lang['MIN_SEARCH_CHARS'] . ':</label><br /><span>' . $user->lang['MIN_SEARCH_CHARS_EXPLAIN'] . '</span></dt>
-			<dd><input id="fulltext_native_min_chars" type="text" size="3" maxlength="3" name="config[fulltext_native_min_chars]" value="' . (int) $config['fulltext_native_min_chars'] . '" /></dd>
+			<dd><input id="fulltext_native_min_chars" type="text" size="3" maxlength="3" name="config[fulltext_native_min_chars]" value="' . (int) phpbb::$config['fulltext_native_min_chars'] . '" /></dd>
 		</dl>
 		<dl>
 			<dt><label for="fulltext_native_max_chars">' . $user->lang['MAX_SEARCH_CHARS'] . ':</label><br /><span>' . $user->lang['MAX_SEARCH_CHARS_EXPLAIN'] . '</span></dt>
-			<dd><input id="fulltext_native_max_chars" type="text" size="3" maxlength="3" name="config[fulltext_native_max_chars]" value="' . (int) $config['fulltext_native_max_chars'] . '" /></dd>
+			<dd><input id="fulltext_native_max_chars" type="text" size="3" maxlength="3" name="config[fulltext_native_max_chars]" value="' . (int) phpbb::$config['fulltext_native_max_chars'] . '" /></dd>
 		</dl>
 		<dl>
 			<dt><label for="fulltext_native_common_thres">' . $user->lang['COMMON_WORD_THRESHOLD'] . ':</label><br /><span>' . $user->lang['COMMON_WORD_THRESHOLD_EXPLAIN'] . '</span></dt>
-			<dd><input id="fulltext_native_common_thres" type="text" size="3" maxlength="3" name="config[fulltext_native_common_thres]" value="' . (int) $config['fulltext_native_common_thres'] . '" /> %</dd>
+			<dd><input id="fulltext_native_common_thres" type="text" size="3" maxlength="3" name="config[fulltext_native_common_thres]" value="' . (int) phpbb::$config['fulltext_native_common_thres'] . '" /> %</dd>
 		</dl>
 		';
 

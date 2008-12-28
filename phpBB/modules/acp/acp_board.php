@@ -27,7 +27,7 @@ class acp_board
 
 	function main($id, $mode)
 	{
-		global $db, $user, $auth, $template, $config;
+		global $db, $user, $auth, $template;
 
 		$user->add_lang('acp/board');
 
@@ -370,7 +370,7 @@ class acp_board
 			$user->add_lang($display_vars['lang']);
 		}
 
-		$this->new_config = $config;
+		$this->new_config = phpbb::$config;
 		$cfg_array = (phpbb_request::is_set('config')) ? utf8_normalize_nfc(request_var('config', array('' => ''), true)) : $this->new_config;
 		$error = array();
 
@@ -452,7 +452,7 @@ class acp_board
 							// Check if we need to create config fields for this plugin and save config when submit was pressed
 							foreach ($fields['config'] as $field)
 							{
-								if (!isset($config[$field]))
+								if (!isset(phpbb::$config[$field]))
 								{
 									set_config($field, '');
 								}
@@ -689,10 +689,10 @@ class acp_board
 	*/
 	function select_acc_activation($value, $key = '')
 	{
-		global $user, $config;
+		global $user;
 
 		$radio_ary = array(USER_ACTIVATION_DISABLE => 'ACC_DISABLE', USER_ACTIVATION_NONE => 'ACC_NONE');
-		if ($config['email_enable'])
+		if (phpbb::$config['email_enable'])
 		{
 			$radio_ary += array(USER_ACTIVATION_SELF => 'ACC_USER', USER_ACTIVATION_ADMIN => 'ACC_ADMIN');
 		}
@@ -791,14 +791,14 @@ class acp_board
 	*/
 	function dateformat_select($value, $key)
 	{
-		global $user, $config;
+		global $user;
 
 		// Let the format_date function operate with the acp values
 		$old_tz = $user->timezone;
 		$old_dst = $user->dst;
 
-		$user->timezone = $config['board_timezone'];
-		$user->dst = $config['board_dst'];
+		$user->timezone = phpbb::$config['board_timezone'];
+		$user->dst = phpbb::$config['board_dst'];
 
 		$dateformat_options = '';
 

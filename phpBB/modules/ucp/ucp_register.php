@@ -27,10 +27,10 @@ class ucp_register
 
 	function main($id, $mode)
 	{
-		global $config, $db, $user, $auth, $template;
+		global $db, $user, $auth, $template;
 
 		//
-		if ($config['require_activation'] == USER_ACTIVATION_DISABLE)
+		if (phpbb::$config['require_activation'] == USER_ACTIVATION_DISABLE)
 		{
 			trigger_error('UCP_REGISTER_DISABLE');
 		}
@@ -53,14 +53,14 @@ class ucp_register
 		}
 
 
-		if ($config['enable_confirm'])
+		if (phpbb::$config['enable_confirm'])
 		{
 			include(PHPBB_ROOT_PATH . 'includes/captcha/captcha_factory.' . PHP_EXT);
-			$captcha = phpbb_captcha_factory::get_instance($config['captcha_plugin']);
+			$captcha = phpbb_captcha_factory::get_instance(phpbb::$config['captcha_plugin']);
 			$captcha->init(CONFIRM_REG);
 		}
 
-		if ($change_lang || $user_lang != $config['default_lang'])
+		if ($change_lang || $user_lang != phpbb::$config['default_lang'])
 		{
 			$use_lang = ($change_lang) ? basename($change_lang) : basename($user_lang);
 
@@ -90,7 +90,7 @@ class ucp_register
 		$error = $cp_data = $cp_error = array();
 
 
-		if (!$agreed || ($coppa === false && $config['coppa_enable']) || ($coppa && !$config['coppa_enable']))
+		if (!$agreed || ($coppa === false && phpbb::$config['coppa_enable']) || ($coppa && !phpbb::$config['coppa_enable']))
 		{
 			$add_lang = ($change_lang) ? '&amp;change_lang=' . urlencode($change_lang) : '';
 			$add_coppa = ($coppa !== false) ? '&amp;coppa=' . $coppa : '';
@@ -106,16 +106,16 @@ class ucp_register
 					'email'				=> strtolower(request_var('email', '')),
 					'email_confirm'		=> strtolower(request_var('email_confirm', '')),
 					'lang'				=> $user->lang_name,
-					'tz'				=> request_var('tz', (float) $config['board_timezone']),
+					'tz'				=> request_var('tz', (float) phpbb::$config['board_timezone']),
 				));
 
-				if ($config['enable_confirm'])
+				if (phpbb::$config['enable_confirm'])
 				{
 					$s_hidden_fields = array_merge($s_hidden_fields, $captcha->get_hidden_fields());
 				}
 			}
 
-			if ($coppa === false && $config['coppa_enable'])
+			if ($coppa === false && phpbb::$config['coppa_enable'])
 			{
 				$now = getdate();
 				$coppa_birthday = $user->format_date(mktime($now['hours'] + $user->data['user_dst'], $now['minutes'], $now['seconds'], $now['mon'], $now['mday'] - 1, $now['year'] - 13), $user->lang['DATE_FORMAT']);
@@ -136,7 +136,7 @@ class ucp_register
 			else
 			{
 				$template->assign_vars(array(
-					'L_TERMS_OF_USE'	=> sprintf($user->lang['TERMS_OF_USE_CONTENT'], $config['sitename'], generate_board_url()),
+					'L_TERMS_OF_USE'	=> sprintf($user->lang['TERMS_OF_USE_CONTENT'], phpbb::$config['sitename'], generate_board_url()),
 
 					'S_SHOW_COPPA'		=> false,
 					'S_REGISTRATION'	=> true,
@@ -155,19 +155,19 @@ class ucp_register
 		$timezone = date('Z') / 3600;
 		$is_dst = date('I');
 
-		if ($config['board_timezone'] == $timezone || $config['board_timezone'] == ($timezone - 1))
+		if (phpbb::$config['board_timezone'] == $timezone || phpbb::$config['board_timezone'] == ($timezone - 1))
 		{
 			$timezone = ($is_dst) ? $timezone - 1 : $timezone;
 
 			if (!isset($user->lang['tz_zones'][(string) $timezone]))
 			{
-				$timezone = $config['board_timezone'];
+				$timezone = phpbb::$config['board_timezone'];
 			}
 		}
 		else
 		{
-			$is_dst = $config['board_dst'];
-			$timezone = $config['board_timezone'];
+			$is_dst = phpbb::$config['board_dst'];
+			$timezone = phpbb::$config['board_timezone'];
 		}
 
 		$data = array(
@@ -185,12 +185,12 @@ class ucp_register
 		{
 			$error = validate_data($data, array(
 				'username'			=> array(
-					array('string', false, $config['min_name_chars'], $config['max_name_chars']),
+					array('string', false, phpbb::$config['min_name_chars'], phpbb::$config['max_name_chars']),
 					array('username', '')),
 				'new_password'		=> array(
-					array('string', false, $config['min_pass_chars'], $config['max_pass_chars']),
+					array('string', false, phpbb::$config['min_pass_chars'], phpbb::$config['max_pass_chars']),
 					array('password')),
-				'password_confirm'	=> array('string', false, $config['min_pass_chars'], $config['max_pass_chars']),
+				'password_confirm'	=> array('string', false, phpbb::$config['min_pass_chars'], phpbb::$config['max_pass_chars']),
 				'email'				=> array(
 					array('string', false, 6, 60),
 					array('email')),
@@ -205,7 +205,7 @@ class ucp_register
 			// Replace "error" strings with their real, localised form
 			$error = preg_replace('#^([A-Z_]+)$#e', "(!empty(\$user->lang['\\1'])) ? \$user->lang['\\1'] : '\\1'", $error);
 
-			if ($config['enable_confirm'])
+			if (phpbb::$config['enable_confirm'])
 			{
 				$vc_response = $captcha->validate();
 				if ($vc_response)
@@ -216,13 +216,13 @@ class ucp_register
 				{
 					$captcha->reset();
 				}
-				if ($config['max_reg_attempts'] && $captcha->get_attempt_count() > $config['max_reg_attempts'])
+				if (phpbb::$config['max_reg_attempts'] && $captcha->get_attempt_count() > phpbb::$config['max_reg_attempts'])
 				{
 					$error[] = $user->lang['TOO_MANY_REGISTERS'];
 				}
 			}
 			// DNSBL check
-			if ($config['check_dnsbl'])
+			if (phpbb::$config['check_dnsbl'])
 			{
 				if (($dnsbl = $user->check_dnsbl('register')) !== false)
 				{
@@ -269,8 +269,8 @@ class ucp_register
 				$group_id = $row['group_id'];
 
 				if (($coppa ||
-					$config['require_activation'] == USER_ACTIVATION_SELF ||
-					$config['require_activation'] == USER_ACTIVATION_ADMIN) && $config['email_enable'])
+					phpbb::$config['require_activation'] == USER_ACTIVATION_SELF ||
+					phpbb::$config['require_activation'] == USER_ACTIVATION_ADMIN) && phpbb::$config['email_enable'])
 				{
 					$user_actkey = gen_rand_string(10);
 					$key_len = 54 - (strlen($server_url));
@@ -314,17 +314,17 @@ class ucp_register
 					trigger_error('NO_USER', E_USER_ERROR);
 				}
 
-				if ($coppa && $config['email_enable'])
+				if ($coppa && phpbb::$config['email_enable'])
 				{
 					$message = $user->lang['ACCOUNT_COPPA'];
 					$email_template = 'coppa_welcome_inactive';
 				}
-				else if ($config['require_activation'] == USER_ACTIVATION_SELF && $config['email_enable'])
+				else if (phpbb::$config['require_activation'] == USER_ACTIVATION_SELF && phpbb::$config['email_enable'])
 				{
 					$message = $user->lang['ACCOUNT_INACTIVE'];
 					$email_template = 'user_welcome_inactive';
 				}
-				else if ($config['require_activation'] == USER_ACTIVATION_ADMIN && $config['email_enable'])
+				else if (phpbb::$config['require_activation'] == USER_ACTIVATION_ADMIN && phpbb::$config['email_enable'])
 				{
 					$message = $user->lang['ACCOUNT_INACTIVE_ADMIN'];
 					$email_template = 'admin_welcome_inactive';
@@ -335,7 +335,7 @@ class ucp_register
 					$email_template = 'user_welcome';
 				}
 
-				if ($config['email_enable'])
+				if (phpbb::$config['email_enable'])
 				{
 					include_once(PHPBB_ROOT_PATH . 'includes/functions_messenger.' . PHP_EXT);
 
@@ -345,13 +345,13 @@ class ucp_register
 
 					$messenger->to($data['email'], $data['username']);
 
-					$messenger->headers('X-AntiAbuse: Board servername - ' . $config['server_name']);
+					$messenger->headers('X-AntiAbuse: Board servername - ' . phpbb::$config['server_name']);
 					$messenger->headers('X-AntiAbuse: User_id - ' . $user->data['user_id']);
 					$messenger->headers('X-AntiAbuse: Username - ' . $user->data['username']);
 					$messenger->headers('X-AntiAbuse: User IP - ' . $user->ip);
 
 					$messenger->assign_vars(array(
-						'WELCOME_MSG'	=> htmlspecialchars_decode(sprintf($user->lang['WELCOME_SUBJECT'], $config['sitename'])),
+						'WELCOME_MSG'	=> htmlspecialchars_decode(sprintf($user->lang['WELCOME_SUBJECT'], phpbb::$config['sitename'])),
 						'USERNAME'		=> htmlspecialchars_decode($data['username']),
 						'PASSWORD'		=> htmlspecialchars_decode($data['new_password']),
 						'U_ACTIVATE'	=> "$server_url/ucp." . PHP_EXT . "?mode=activate&u=$user_id&k=$user_actkey")
@@ -360,15 +360,15 @@ class ucp_register
 					if ($coppa)
 					{
 						$messenger->assign_vars(array(
-							'FAX_INFO'		=> $config['coppa_fax'],
-							'MAIL_INFO'		=> $config['coppa_mail'],
-							'EMAIL_ADDRESS'	=> $data['email'])
-						);
+							'FAX_INFO'		=> phpbb::$config['coppa_fax'],
+							'MAIL_INFO'		=> phpbb::$config['coppa_mail'],
+							'EMAIL_ADDRESS'	=> $data['email'],
+						));
 					}
 
 					$messenger->send(NOTIFY_EMAIL);
 
-					if ($config['require_activation'] == USER_ACTIVATION_ADMIN)
+					if (phpbb::$config['require_activation'] == USER_ACTIVATION_ADMIN)
 					{
 						// Grab an array of user_id's with a_user permissions ... these users can activate a user
 						$admin_ary = $auth->acl_get_list(false, 'a_user', false);
@@ -415,7 +415,7 @@ class ucp_register
 			'change_lang'	=> 0,
 		);
 
-		if ($config['coppa_enable'])
+		if (phpbb::$config['coppa_enable'])
 		{
 			$s_hidden_fields['coppa'] = $coppa;
 		}
@@ -425,7 +425,7 @@ class ucp_register
 
 		// Visual Confirmation - Show images
 
-		if ($config['enable_confirm'])
+		if (phpbb::$config['enable_confirm'])
 		{
 			if ($change_lang)
 			{
@@ -437,14 +437,14 @@ class ucp_register
 			}
 
 			$template->assign_vars(array(
-				'L_CONFIRM_EXPLAIN'		=> sprintf($user->lang['CONFIRM_EXPLAIN'], '<a href="mailto:' . htmlspecialchars($config['board_contact']) . '">', '</a>'),
+				'L_CONFIRM_EXPLAIN'		=> sprintf($user->lang['CONFIRM_EXPLAIN'], '<a href="mailto:' . htmlspecialchars(phpbb::$config['board_contact']) . '">', '</a>'),
 				'S_CAPTCHA'				=> $captcha->get_template(),
 			));
 		}
 
 		//
 		$l_reg_cond = '';
-		switch ($config['require_activation'])
+		switch (phpbb::$config['require_activation'])
 		{
 			case USER_ACTIVATION_SELF:
 				$l_reg_cond = $user->lang['UCP_EMAIL_ACTIVATE'];
@@ -464,8 +464,8 @@ class ucp_register
 			'EMAIL_CONFIRM'		=> $data['email_confirm'],
 
 			'L_REG_COND'				=> $l_reg_cond,
-			'L_USERNAME_EXPLAIN'		=> sprintf($user->lang[$config['allow_name_chars'] . '_EXPLAIN'], $config['min_name_chars'], $config['max_name_chars']),
-			'L_PASSWORD_EXPLAIN'		=> sprintf($user->lang[$config['pass_complex'] . '_EXPLAIN'], $config['min_pass_chars'], $config['max_pass_chars']),
+			'L_USERNAME_EXPLAIN'		=> sprintf($user->lang[phpbb::$config['allow_name_chars'] . '_EXPLAIN'], phpbb::$config['min_name_chars'], phpbb::$config['max_name_chars']),
+			'L_PASSWORD_EXPLAIN'		=> sprintf($user->lang[phpbb::$config['pass_complex'] . '_EXPLAIN'], phpbb::$config['min_pass_chars'], phpbb::$config['max_pass_chars']),
 
 			'S_LANG_OPTIONS'	=> language_select($data['lang']),
 			'S_TZ_OPTIONS'		=> tz_select($data['tz']),

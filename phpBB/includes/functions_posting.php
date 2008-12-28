@@ -21,7 +21,7 @@ if (!defined('IN_PHPBB'))
 */
 function generate_smilies($mode, $forum_id)
 {
-	global $auth, $db, $user, $config, $template;
+	global $auth, $db, $user, $template;
 
 	if ($mode == 'window')
 	{
@@ -88,7 +88,7 @@ function generate_smilies($mode, $forum_id)
 			$template->assign_block_vars('smiley', array(
 				'SMILEY_CODE'	=> $row['code'],
 				'A_SMILEY_CODE'	=> addslashes($row['code']),
-				'SMILEY_IMG'	=> PHPBB_ROOT_PATH . $config['smilies_path'] . '/' . $row['smiley_url'],
+				'SMILEY_IMG'	=> PHPBB_ROOT_PATH . phpbb::$config['smilies_path'] . '/' . $row['smiley_url'],
 				'SMILEY_WIDTH'	=> $row['smiley_width'],
 				'SMILEY_HEIGHT'	=> $row['smiley_height'],
 				'SMILEY_DESC'	=> $row['emotion'])
@@ -245,7 +245,7 @@ function update_post_information($type, $ids, $return_update_sql = false)
 */
 function posting_gen_topic_icons($mode, $icon_id)
 {
-	global $config, $template;
+	global $template;
 
 	// Grab icons
 	$icons = phpbb_cache::obtain_icons();
@@ -263,7 +263,7 @@ function posting_gen_topic_icons($mode, $icon_id)
 			{
 				$template->assign_block_vars('topic_icon', array(
 					'ICON_ID'		=> $id,
-					'ICON_IMG'		=> PHPBB_ROOT_PATH . $config['icons_path'] . '/' . $data['img'],
+					'ICON_IMG'		=> PHPBB_ROOT_PATH . phpbb::$config['icons_path'] . '/' . $data['img'],
 					'ICON_WIDTH'	=> $data['width'],
 					'ICON_HEIGHT'	=> $data['height'],
 
@@ -347,7 +347,7 @@ function posting_gen_topic_types($forum_id, $cur_topic_type = POST_NORMAL)
 */
 function upload_attachment($form_name, $forum_id, $local = false, $local_storage = '', $is_message = false, $local_filedata = false)
 {
-	global $auth, $user, $config, $db;
+	global $auth, $user, $db;
 
 	$filedata = array(
 		'error'	=> array()
@@ -356,9 +356,9 @@ function upload_attachment($form_name, $forum_id, $local = false, $local_storage
 	include_once(PHPBB_ROOT_PATH . 'includes/functions_upload.' . PHP_EXT);
 	$upload = new fileupload();
 
-	if ($config['check_attachment_content'])
+	if (phpbb::$config['check_attachment_content'])
 	{
-		$upload->set_disallowed_content(explode('|', $config['mime_triggers']));
+		$upload->set_disallowed_content(explode('|', phpbb::$config['mime_triggers']));
 	}
 
 	if (!$local)
@@ -400,12 +400,12 @@ function upload_attachment($form_name, $forum_id, $local = false, $local_storage
 	}
 
 	// Do we have to create a thumbnail?
-	$filedata['thumbnail'] = ($cat_id == ATTACHMENT_CATEGORY_IMAGE && $config['img_create_thumbnail']) ? 1 : 0;
+	$filedata['thumbnail'] = ($cat_id == ATTACHMENT_CATEGORY_IMAGE && phpbb::$config['img_create_thumbnail']) ? 1 : 0;
 
 	// Check Image Size, if it is an image
 	if (!$auth->acl_get('a_') && !$auth->acl_get('m_', $forum_id) && $cat_id == ATTACHMENT_CATEGORY_IMAGE)
 	{
-		$file->upload->set_allowed_dimensions(0, 0, $config['img_max_width'], $config['img_max_height']);
+		$file->upload->set_allowed_dimensions(0, 0, phpbb::$config['img_max_width'], phpbb::$config['img_max_height']);
 	}
 
 	// Admins and mods are allowed to exceed the allowed filesize
@@ -417,7 +417,7 @@ function upload_attachment($form_name, $forum_id, $local = false, $local_storage
 		}
 		else
 		{
-			$allowed_filesize = ($is_message) ? $config['max_filesize_pm'] : $config['max_filesize'];
+			$allowed_filesize = ($is_message) ? phpbb::$config['max_filesize_pm'] : phpbb::$config['max_filesize'];
 		}
 
 		$file->upload->set_max_filesize($allowed_filesize);
@@ -428,7 +428,7 @@ function upload_attachment($form_name, $forum_id, $local = false, $local_storage
 	// Are we uploading an image *and* this image being within the image category? Only then perform additional image checks.
 	$no_image = ($cat_id == ATTACHMENT_CATEGORY_IMAGE) ? false : true;
 
-	$file->move_file($config['upload_path'], false, $no_image);
+	$file->move_file(phpbb::$config['upload_path'], false, $no_image);
 
 	if (sizeof($file->error))
 	{
@@ -447,9 +447,9 @@ function upload_attachment($form_name, $forum_id, $local = false, $local_storage
 	$filedata['filetime'] = time();
 
 	// Check our complete quota
-	if ($config['attachment_quota'])
+	if (phpbb::$config['attachment_quota'])
 	{
-		if ($config['upload_dir_size'] + $file->get('filesize') > $config['attachment_quota'])
+		if (phpbb::$config['upload_dir_size'] + $file->get('filesize') > phpbb::$config['attachment_quota'])
 		{
 			$filedata['error'][] = $user->lang['ATTACH_QUOTA_REACHED'];
 			$filedata['post_attach'] = false;
@@ -461,7 +461,7 @@ function upload_attachment($form_name, $forum_id, $local = false, $local_storage
 	}
 
 	// Check free disk space
-	if ($free_space = @disk_free_space(PHPBB_ROOT_PATH . $config['upload_path']))
+	if ($free_space = @disk_free_space(PHPBB_ROOT_PATH . phpbb::$config['upload_path']))
 	{
 		if ($free_space <= $file->get('filesize'))
 		{
@@ -494,10 +494,8 @@ function upload_attachment($form_name, $forum_id, $local = false, $local_storage
 */
 function get_img_size_format($width, $height)
 {
-	global $config;
-
 	// Maximum Width the Image can take
-	$max_width = ($config['img_max_thumb_width']) ? $config['img_max_thumb_width'] : 400;
+	$max_width = (phpbb::$config['img_max_thumb_width']) ? phpbb::$config['img_max_thumb_width'] : 400;
 
 	if ($width > $height)
 	{
@@ -585,9 +583,7 @@ function get_supported_image_types($type = false)
 */
 function create_thumbnail($source, $destination, $mimetype)
 {
-	global $config;
-
-	$min_filesize = (int) $config['img_min_thumb_filesize'];
+	$min_filesize = (int) phpbb::$config['img_min_thumb_filesize'];
 	$img_filesize = (file_exists($source)) ? @filesize($source) : false;
 
 	if (!$img_filesize || $img_filesize <= $min_filesize)
@@ -620,14 +616,14 @@ function create_thumbnail($source, $destination, $mimetype)
 	$used_imagick = false;
 
 	// Only use imagemagick if defined and the passthru function not disabled
-	if ($config['img_imagick'] && function_exists('passthru'))
+	if (phpbb::$config['img_imagick'] && function_exists('passthru'))
 	{
-		if (substr($config['img_imagick'], -1) !== '/')
+		if (substr(phpbb::$config['img_imagick'], -1) !== '/')
 		{
-			$config['img_imagick'] .= '/';
+			phpbb::$config['img_imagick'] .= '/';
 		}
 
-		@passthru(escapeshellcmd($config['img_imagick']) . 'convert' . ((defined('PHP_OS') && preg_match('#^win#i', PHP_OS)) ? '.exe' : '') . ' -quality 85 -antialias -sample ' . $new_width . 'x' . $new_height . ' "' . str_replace('\\', '/', $source) . '" +profile "*" "' . str_replace('\\', '/', $destination) . '"');
+		@passthru(escapeshellcmd(phpbb::$config['img_imagick']) . 'convert' . ((defined('PHP_OS') && preg_match('#^win#i', PHP_OS)) ? '.exe' : '') . ' -quality 85 -antialias -sample ' . $new_width . 'x' . $new_height . ' "' . str_replace('\\', '/', $source) . '" +profile "*" "' . str_replace('\\', '/', $destination) . '"');
 
 		if (file_exists($destination))
 		{
@@ -765,20 +761,20 @@ function posting_gen_inline_attachments(&$attachment_data)
 */
 function posting_gen_attachment_entry($attachment_data, &$filename_data, $show_attach_box = true)
 {
-	global $template, $config, $user, $auth;
+	global $template, $user, $auth;
 
 	// Some default template variables
 	$template->assign_vars(array(
 		'S_SHOW_ATTACH_BOX'	=> $show_attach_box,
 		'S_HAS_ATTACHMENTS'	=> sizeof($attachment_data),
-		'FILESIZE'			=> $config['max_filesize'],
+		'FILESIZE'			=> phpbb::$config['max_filesize'],
 		'FILE_COMMENT'		=> (isset($filename_data['filecomment'])) ? $filename_data['filecomment'] : '',
 	));
 
 	if (sizeof($attachment_data))
 	{
 		// We display the posted attachments within the desired order.
-		($config['display_order']) ? krsort($attachment_data) : ksort($attachment_data);
+		(phpbb::$config['display_order']) ? krsort($attachment_data) : ksort($attachment_data);
 
 		foreach ($attachment_data as $count => $attach_row)
 		{
@@ -932,7 +928,7 @@ function load_drafts($topic_id = 0, $forum_id = 0, $id = 0)
 */
 function topic_review($topic_id, $forum_id, $mode = 'topic_review', $cur_post_id = 0, $show_quote_button = true)
 {
-	global $user, $auth, $db, $template, $bbcode, $config;
+	global $user, $auth, $db, $template, $bbcode;
 
 	// Go ahead and pull all data for this topic
 	$sql = 'SELECT p.post_id
@@ -942,7 +938,7 @@ function topic_review($topic_id, $forum_id, $mode = 'topic_review', $cur_post_id
 			' . (($mode == 'post_review') ? " AND p.post_id > $cur_post_id" : '') . '
 		ORDER BY p.post_time ';
 	$sql .= ($mode == 'post_review') ? 'ASC' : 'DESC';
-	$result = $db->sql_query_limit($sql, $config['posts_per_page']);
+	$result = $db->sql_query_limit($sql, phpbb::$config['posts_per_page']);
 
 	$post_list = array();
 
@@ -1102,7 +1098,7 @@ function topic_review($topic_id, $forum_id, $mode = 'topic_review', $cur_post_id
 */
 function user_notification($mode, $subject, $topic_title, $forum_name, $forum_id, $topic_id, $post_id)
 {
-	global $db, $user, $config, $auth;
+	global $db, $user, $auth;
 
 	$topic_notification = ($mode == 'reply' || $mode == 'quote') ? true : false;
 	$forum_notification = ($mode == 'post') ? true : false;
@@ -1112,7 +1108,7 @@ function user_notification($mode, $subject, $topic_title, $forum_name, $forum_id
 		trigger_error('WRONG_NOTIFICATION_MODE');
 	}
 
-	if (($topic_notification && !$config['allow_topic_notify']) || ($forum_notification && !$config['allow_forum_notify']))
+	if (($topic_notification && !phpbb::$config['allow_topic_notify']) || ($forum_notification && !phpbb::$config['allow_forum_notify']))
 	{
 		return;
 	}
@@ -1329,7 +1325,7 @@ function user_notification($mode, $subject, $topic_title, $forum_name, $forum_id
 */
 function delete_post($forum_id, $topic_id, $post_id, &$data)
 {
-	global $db, $user, $auth, $config;
+	global $db, $user, $auth;
 
 	// Specify our post mode
 	$post_mode = 'delete';
@@ -1515,7 +1511,7 @@ function delete_post($forum_id, $topic_id, $post_id, &$data)
 	}
 
 	// Adjust posted info for this user by looking for a post by him/her within this topic...
-	if ($post_mode != 'delete_topic' && $config['load_db_track'] && $data['poster_id'] != ANONYMOUS)
+	if ($post_mode != 'delete_topic' && phpbb::$config['load_db_track'] && $data['poster_id'] != ANONYMOUS)
 	{
 		$sql = 'SELECT poster_id
 			FROM ' . POSTS_TABLE . '
@@ -1550,7 +1546,7 @@ function delete_post($forum_id, $topic_id, $post_id, &$data)
 */
 function submit_post($mode, $subject, $username, $topic_type, &$poll, &$data, $update_message = true)
 {
-	global $db, $auth, $user, $config, $template;
+	global $db, $auth, $user, $template;
 
 	// We do not handle erasing posts here
 	if ($mode == 'delete')
@@ -1603,7 +1599,7 @@ function submit_post($mode, $subject, $username, $topic_type, &$poll, &$data, $u
 	$post_approval = 1;
 
 	// Check the permissions for post approval, as well as the queue trigger where users are put on approval with a post count lower than specified. Moderators are not affected.
-	if ((($config['enable_queue_trigger'] && $user->data['user_posts'] < $config['queue_trigger_posts']) || !$auth->acl_get('f_noapprove', $data['forum_id'])) && !$auth->acl_get('m_approve', $data['forum_id']))
+	if (((phpbb::$config['enable_queue_trigger'] && $user->data['user_posts'] < phpbb::$config['queue_trigger_posts']) || !$auth->acl_get('f_noapprove', $data['forum_id'])) && !$auth->acl_get('m_approve', $data['forum_id']))
 	{
 		$post_approval = 0;
 	}
@@ -1805,8 +1801,8 @@ function submit_post($mode, $subject, $username, $topic_type, &$poll, &$data, $u
 				$sql_data[FORUMS_TABLE]['stat'][] = 'forum_topics = forum_topics - 1';
 				$sql_data[FORUMS_TABLE]['stat'][] = 'forum_posts = forum_posts - ' . ($topic_row['topic_replies'] + 1);
 
-				set_config('num_topics', $config['num_topics'] - 1, true);
-				set_config('num_posts', $config['num_posts'] - ($topic_row['topic_replies'] + 1), true);
+				set_config('num_topics', phpbb::$config['num_topics'] - 1, true);
+				set_config('num_posts', phpbb::$config['num_posts'] - ($topic_row['topic_replies'] + 1), true);
 
 				// Only decrement this post, since this is the one non-approved now
 				if ($auth->acl_get('f_postcount', $data['forum_id']))
@@ -1826,7 +1822,7 @@ function submit_post($mode, $subject, $username, $topic_type, &$poll, &$data, $u
 				$sql_data[TOPICS_TABLE]['stat'][] = 'topic_replies = topic_replies - 1';
 				$sql_data[FORUMS_TABLE]['stat'][] = 'forum_posts = forum_posts - 1';
 
-				set_config('num_posts', $config['num_posts'] - 1, true);
+				set_config('num_posts', phpbb::$config['num_posts'] - 1, true);
 
 				if ($auth->acl_get('f_postcount', $data['forum_id']))
 				{
@@ -2067,7 +2063,7 @@ function submit_post($mode, $subject, $username, $topic_type, &$poll, &$data, $u
 			else
 			{
 				// insert attachment into db
-				if (!@file_exists(PHPBB_ROOT_PATH . $config['upload_path'] . '/' . basename($orphan_rows[$attach_row['attach_id']]['physical_filename'])))
+				if (!@file_exists(PHPBB_ROOT_PATH . phpbb::$config['upload_path'] . '/' . basename($orphan_rows[$attach_row['attach_id']]['physical_filename'])))
 				{
 					continue;
 				}
@@ -2093,8 +2089,8 @@ function submit_post($mode, $subject, $username, $topic_type, &$poll, &$data, $u
 
 		if ($space_taken && $files_added)
 		{
-			set_config('upload_dir_size', $config['upload_dir_size'] + $space_taken, true);
-			set_config('num_files', $config['num_files'] + $files_added, true);
+			set_config('upload_dir_size', phpbb::$config['upload_dir_size'] + $space_taken, true);
+			set_config('num_files', phpbb::$config['num_files'] + $files_added, true);
 		}
 	}
 
@@ -2327,13 +2323,13 @@ function submit_post($mode, $subject, $username, $topic_type, &$poll, &$data, $u
 	{
 		if ($post_mode == 'post')
 		{
-			set_config('num_topics', $config['num_topics'] + 1, true);
-			set_config('num_posts', $config['num_posts'] + 1, true);
+			set_config('num_topics', phpbb::$config['num_topics'] + 1, true);
+			set_config('num_posts', phpbb::$config['num_posts'] + 1, true);
 		}
 
 		if ($post_mode == 'reply')
 		{
-			set_config('num_posts', $config['num_posts'] + 1, true);
+			set_config('num_posts', phpbb::$config['num_posts'] + 1, true);
 		}
 	}
 
@@ -2374,7 +2370,7 @@ function submit_post($mode, $subject, $username, $topic_type, &$poll, &$data, $u
 	if ($update_message && $data['enable_indexing'])
 	{
 		// Select the search method and do some additional checks to ensure it can actually be utilised
-		$search_type = basename($config['search_type']);
+		$search_type = basename(phpbb::$config['search_type']);
 
 		if (!file_exists(PHPBB_ROOT_PATH . 'includes/search/' . $search_type . '.' . PHP_EXT))
 		{
@@ -2426,7 +2422,7 @@ function submit_post($mode, $subject, $username, $topic_type, &$poll, &$data, $u
 	markread('topic', $data['forum_id'], $data['topic_id'], time());
 
 	//
-	if ($config['load_db_lastread'] && $user->data['is_registered'])
+	if (phpbb::$config['load_db_lastread'] && $user->data['is_registered'])
 	{
 		$sql = 'SELECT mark_time
 			FROM ' . FORUMS_TRACK_TABLE . '
@@ -2436,12 +2432,12 @@ function submit_post($mode, $subject, $username, $topic_type, &$poll, &$data, $u
 		$f_mark_time = (int) $db->sql_fetchfield('mark_time');
 		$db->sql_freeresult($result);
 	}
-	else if ($config['load_anon_lastread'] || $user->data['is_registered'])
+	else if (phpbb::$config['load_anon_lastread'] || $user->data['is_registered'])
 	{
 		$f_mark_time = false;
 	}
 
-	if (($config['load_db_lastread'] && $user->data['is_registered']) || $config['load_anon_lastread'] || $user->data['is_registered'])
+	if ((phpbb::$config['load_db_lastread'] && $user->data['is_registered']) || phpbb::$config['load_anon_lastread'] || $user->data['is_registered'])
 	{
 		// Update forum info
 		$sql = 'SELECT forum_last_post_time

@@ -48,10 +48,10 @@ if ($sid)
 	$db->sql_freeresult($result);
 }
 
-$recompile = $config['load_tplcompile'];
+$recompile = phpbb::$config['load_tplcompile'];
 if (!$user)
 {
-	$id			= $config['default_style'];
+	$id			= phpbb::$config['default_style'];
 	$recompile	= false;
 	$user		= array('user_id' => ANONYMOUS);
 }
@@ -74,10 +74,10 @@ if (!$theme)
 
 if ($user['user_id'] == ANONYMOUS)
 {
-	$user['user_lang'] = $config['default_lang'];
+	$user['user_lang'] = phpbb::$config['default_lang'];
 }
 
-$user_image_lang = (file_exists(PHPBB_ROOT_PATH . 'styles/' . $theme['imageset_path'] . '/imageset/' . $user['user_lang'])) ? $user['user_lang'] : $config['default_lang'];
+$user_image_lang = (file_exists(PHPBB_ROOT_PATH . 'styles/' . $theme['imageset_path'] . '/imageset/' . $user['user_lang'])) ? $user['user_lang'] : phpbb::$config['default_lang'];
 
 $sql = 'SELECT *
 	FROM ' . STYLES_IMAGESET_DATA_TABLE . '
@@ -94,7 +94,7 @@ while ($row = $db->sql_fetchrow($result))
 $db->sql_freeresult($result);
 
 // gzip_compression
-if ($config['gzip_compress'])
+if (phpbb::$config['gzip_compress'])
 {
 	// IE6 is not able to compress the style (do not ask us why!)
 	$browser = (!empty($_SERVER['HTTP_USER_AGENT'])) ? strtolower(htmlspecialchars((string) $_SERVER['HTTP_USER_AGENT'])) : '';

@@ -94,7 +94,7 @@ echo 'done';
 */
 function add_bots($bots)
 {
-	global $db, $config;
+	global $db;
 
 	$sql = 'SELECT group_id FROM ' . GROUPS_TABLE . " WHERE group_name = 'BOTS'";
 	$result = $db->sql_query($sql);
@@ -126,7 +126,7 @@ function add_bots($bots)
 			'user_password'			=> '',
 			'user_colour'			=> '9E8DA7',
 			'user_email'			=> '',
-			'user_lang'				=> $config['default_lang'],
+			'user_lang'				=> phpbb::$config['default_lang'],
 			'user_style'			=> 1,
 			'user_timezone'			=> 0,
 			'user_allow_massemail'	=> 0,

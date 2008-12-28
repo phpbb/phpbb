@@ -26,7 +26,7 @@ class acp_forums
 
 	function main($id, $mode)
 	{
-		global $db, $user, $auth, $template, $config;
+		global $db, $user, $auth, $template;
 
 		$user->add_lang('acp/forums');
 		$this->tpl_name = 'acp_forums';
@@ -1628,7 +1628,7 @@ class acp_forums
 	*/
 	function delete_forum_content($forum_id)
 	{
-		global $db, $config;
+		global $db;
 
 		include_once(PHPBB_ROOT_PATH . 'includes/functions_posting.' . PHP_EXT);
 

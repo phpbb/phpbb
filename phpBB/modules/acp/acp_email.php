@@ -25,7 +25,7 @@ class acp_email
 
 	function main($id, $mode)
 	{
-		global $config, $db, $user, $auth, $template;
+		global $db, $user, $auth, $template;
 
 		$user->add_lang('acp/email');
 		$this->tpl_name = 'acp_email';
@@ -168,7 +168,7 @@ class acp_email
 
 					$messenger->template('admin_send_email', $used_lang);
 
-					$messenger->headers('X-AntiAbuse: Board servername - ' . $config['server_name']);
+					$messenger->headers('X-AntiAbuse: Board servername - ' . phpbb::$config['server_name']);
 					$messenger->headers('X-AntiAbuse: User_id - ' . $user->data['user_id']);
 					$messenger->headers('X-AntiAbuse: Username - ' . $user->data['username']);
 					$messenger->headers('X-AntiAbuse: User IP - ' . $user->ip);
@@ -177,7 +177,7 @@ class acp_email
 					$messenger->set_mail_priority($priority);
 
 					$messenger->assign_vars(array(
-						'CONTACT_EMAIL' => $config['board_contact'],
+						'CONTACT_EMAIL' => phpbb::$config['board_contact'],
 						'MESSAGE'		=> htmlspecialchars_decode($message))
 					);
 

@@ -34,9 +34,7 @@ class messenger
 	*/
 	function __construct($use_queue = true)
 	{
-		global $config;
-
-		$this->use_queue = (!$config['email_package_size']) ? false : $use_queue;
+		$this->use_queue = (!phpbb::$config['email_package_size']) ? false : $use_queue;
 		$this->subject = '';
 	}
 
@@ -55,14 +53,12 @@ class messenger
 	*/
 	function to($address, $realname = '')
 	{
-		global $config;
-
 		$pos = isset($this->addresses['to']) ? sizeof($this->addresses['to']) : 0;
 
 		$this->addresses['to'][$pos]['email'] = trim($address);
 
 		// If empty sendmail_path on windows, PHP changes the to line
-		if (!$config['smtp_delivery'] && DIRECTORY_SEPARATOR == '\\')
+		if (!phpbb::$config['smtp_delivery'] && DIRECTORY_SEPARATOR == '\\')
 		{
 			$this->addresses['to'][$pos]['name'] = '';
 		}
@@ -153,8 +149,6 @@ class messenger
 	*/
 	function template($template_file, $template_lang = '')
 	{
-		global $config;
-
 		if (!trim($template_file))
 		{
 			trigger_error('No template file set', E_USER_ERROR);
@@ -162,7 +156,7 @@ class messenger
 
 		if (!trim($template_lang))
 		{
-			$template_lang = basename($config['default_lang']);
+			$template_lang = basename(phpbb::$config['default_lang']);
 		}
 
 		if (empty($this->tpl_msg[$template_lang . $template_file]))
@@ -200,12 +194,12 @@ class messenger
 	*/
 	function send($method = NOTIFY_EMAIL, $break = false)
 	{
-		global $config, $user;
+		global $user;
 
 		// We add some standard variables we always use, no need to specify them always
 		$this->vars['U_BOARD'] = (!isset($this->vars['U_BOARD'])) ? generate_board_url() : $this->vars['U_BOARD'];
-		$this->vars['EMAIL_SIG'] = (!isset($this->vars['EMAIL_SIG'])) ? str_replace('<br />', "\n", "-- \n" . htmlspecialchars_decode($config['board_email_sig'])) : $this->vars['EMAIL_SIG'];
-		$this->vars['SITENAME'] = (!isset($this->vars['SITENAME'])) ? htmlspecialchars_decode($config['sitename']) : $this->vars['SITENAME'];
+		$this->vars['EMAIL_SIG'] = (!isset($this->vars['EMAIL_SIG'])) ? str_replace('<br />', "\n", "-- \n" . htmlspecialchars_decode(phpbb::$config['board_email_sig'])) : $this->vars['EMAIL_SIG'];
+		$this->vars['SITENAME'] = (!isset($this->vars['SITENAME'])) ? htmlspecialchars_decode(phpbb::$config['sitename']) : $this->vars['SITENAME'];
 
 		// Escape all quotes, else the eval will fail.
 		$this->msg = str_replace ("'", "\'", $this->msg);
@@ -262,7 +256,7 @@ class messenger
 	*/
 	public static function error($type, $msg)
 	{
-		global $user, $config;
+		global $user;
 
 		// Session doesn't exist, create it
 		if (!isset($user->session_id) || $user->session_id === '')
@@ -276,7 +270,7 @@ class messenger
 		switch ($type)
 		{
 			case 'EMAIL':
-				$message = '<strong>EMAIL/' . (($config['smtp_delivery']) ? 'SMTP' : 'PHP/' . $config['email_function_name'] . '()') . '</strong>';
+				$message = '<strong>EMAIL/' . ((phpbb::$config['smtp_delivery']) ? 'SMTP' : 'PHP/' . phpbb::$config['email_function_name'] . '()') . '</strong>';
 			break;
 
 			default:
@@ -293,9 +287,7 @@ class messenger
 	*/
 	function save_queue()
 	{
-		global $config;
-
-		if ($config['email_package_size'] && $this->use_queue && !empty($this->queue))
+		if (phpbb::$config['email_package_size'] && $this->use_queue && !empty($this->queue))
 		{
 			$this->queue->save();
 			return;
@@ -307,8 +299,6 @@ class messenger
 	*/
 	private function build_header($to, $cc, $bcc)
 	{
-		global $config;
-
 		$headers = array();
 
 		$headers[] = 'From: ' . $this->from;
@@ -324,10 +314,10 @@ class messenger
 		}
 
 		$headers[] = 'Reply-To: ' . $this->replyto;
-		$headers[] = 'Return-Path: <' . $config['board_email'] . '>';
-		$headers[] = 'Sender: <' . $config['board_email'] . '>';
+		$headers[] = 'Return-Path: <' . phpbb::$config['board_email'] . '>';
+		$headers[] = 'Sender: <' . phpbb::$config['board_email'] . '>';
 		$headers[] = 'MIME-Version: 1.0';
-		$headers[] = 'Message-ID: <' . md5(unique_id(time())) . '@' . $config['server_name'] . '>';
+		$headers[] = 'Message-ID: <' . md5(unique_id(time())) . '@' . phpbb::$config['server_name'] . '>';
 		$headers[] = 'Date: ' . date('r', time());
 		$headers[] = 'Content-Type: text/plain; charset=UTF-8'; // format=flowed
 		$headers[] = 'Content-Transfer-Encoding: 8bit'; // 7bit
@@ -354,32 +344,32 @@ class messenger
 	*/
 	private function msg_email()
 	{
-		global $config, $user;
+		global $user;
 
-		if (empty($config['email_enable']))
+		if (empty(phpbb::$config['email_enable']))
 		{
 			return false;
 		}
 
 		$use_queue = false;
-		if ($config['email_package_size'] && $this->use_queue)
+		if (phpbb::$config['email_package_size'] && $this->use_queue)
 		{
 			if (empty($this->queue))
 			{
 				$this->queue = new queue();
-				$this->queue->init('email', $config['email_package_size']);
+				$this->queue->init('email', phpbb::$config['email_package_size']);
 			}
 			$use_queue = true;
 		}
 
 		if (empty($this->replyto))
 		{
-			$this->replyto = '<' . $config['board_contact'] . '>';
+			$this->replyto = '<' . phpbb::$config['board_contact'] . '>';
 		}
 
 		if (empty($this->from))
 		{
-			$this->from = '<' . $config['board_contact'] . '>';
+			$this->from = '<' . phpbb::$config['board_contact'] . '>';
 		}
 
 		// Build to, cc and bcc strings
@@ -406,14 +396,14 @@ class messenger
 			$mail_to = ($to == '') ? 'undisclosed-recipients:;' : $to;
 			$err_msg = '';
 
-			if ($config['smtp_delivery'])
+			if (phpbb::$config['smtp_delivery'])
 			{
 				$result = smtpmail($this->addresses, mail_encode($this->subject), wordwrap(utf8_wordwrap($this->msg), 997, "\n", true), $err_msg, $headers);
 			}
 			else
 			{
 				ob_start();
-				$result = $config['email_function_name']($mail_to, mail_encode($this->subject), wordwrap(utf8_wordwrap($this->msg), 997, "\n", true), $headers);
+				$result = phpbb::$config['email_function_name']($mail_to, mail_encode($this->subject), wordwrap(utf8_wordwrap($this->msg), 997, "\n", true), $headers);
 				$err_msg = ob_get_clean();
 			}
 
@@ -442,9 +432,9 @@ class messenger
 	*/
 	private function msg_jabber()
 	{
-		global $config, $db, $user;
+		global $db, $user;
 
-		if (empty($config['jab_enable']) || empty($config['jab_host']) || empty($config['jab_username']) || empty($config['jab_password']))
+		if (empty(phpbb::$config['jab_enable']) || empty(phpbb::$config['jab_host']) || empty(phpbb::$config['jab_username']) || empty(phpbb::$config['jab_password']))
 		{
 			return false;
 		}
@@ -455,12 +445,12 @@ class messenger
 		}
 
 		$use_queue = false;
-		if ($config['jab_package_size'] && $this->use_queue)
+		if (phpbb::$config['jab_package_size'] && $this->use_queue)
 		{
 			if (empty($this->queue))
 			{
 				$this->queue = new queue();
-				$this->queue->init('jabber', $config['jab_package_size']);
+				$this->queue->init('jabber', phpbb::$config['jab_package_size']);
 			}
 			$use_queue = true;
 		}
@@ -475,7 +465,7 @@ class messenger
 		if (!$use_queue)
 		{
 			include_once(PHPBB_ROOT_PATH . 'includes/functions_jabber.' . PHP_EXT);
-			$this->jabber = new jabber($config['jab_host'], $config['jab_port'], $config['jab_username'], $config['jab_password'], $config['jab_use_ssl']);
+			$this->jabber = new jabber(phpbb::$config['jab_host'], phpbb::$config['jab_port'], phpbb::$config['jab_username'], phpbb::$config['jab_password'], phpbb::$config['jab_use_ssl']);
 
 			if (!$this->jabber->connect())
 			{
@@ -553,7 +543,7 @@ class queue
 	*/
 	public function process()
 	{
-		global $db, $config, $user;
+		global $db, $user;
 
 		set_config('last_queue_run', time(), true);
 
@@ -564,7 +554,7 @@ class queue
 			return;
 		}
 
-		if (!file_exists($this->cache_file) || (file_exists($this->cache_file . '.lock') && filemtime($this->cache_file) > time() - $config['queue_interval']))
+		if (!file_exists($this->cache_file) || (file_exists($this->cache_file . '.lock') && filemtime($this->cache_file) > time() - phpbb::$config['queue_interval']))
 		{
 			return;
 		}
@@ -597,7 +587,7 @@ class queue
 			{
 				case 'email':
 					// Delete the email queued objects if mailing is disabled
-					if (!$config['email_enable'])
+					if (!phpbb::$config['email_enable'])
 					{
 						unset($this->queue_data['email']);
 						continue 2;
@@ -605,14 +595,14 @@ class queue
 				break;
 
 				case 'jabber':
-					if (!$config['jab_enable'])
+					if (!phpbb::$config['jab_enable'])
 					{
 						unset($this->queue_data['jabber']);
 						continue 2;
 					}
 
 					include_once(PHPBB_ROOT_PATH . 'includes/functions_jabber.' . PHP_EXT);
-					$this->jabber = new jabber($config['jab_host'], $config['jab_port'], $config['jab_username'], $config['jab_password'], $config['jab_use_ssl']);
+					$this->jabber = new jabber(phpbb::$config['jab_host'], phpbb::$config['jab_port'], phpbb::$config['jab_username'], phpbb::$config['jab_password'], phpbb::$config['jab_use_ssl']);
 
 					if (!$this->jabber->connect())
 					{
@@ -643,14 +633,14 @@ class queue
 						$err_msg = '';
 						$to = (!$to) ? 'undisclosed-recipients:;' : $to;
 
-						if ($config['smtp_delivery'])
+						if (phpbb::$config['smtp_delivery'])
 						{
 							$result = smtpmail($addresses, mail_encode($subject), wordwrap(utf8_wordwrap($msg), 997, "\n", true), $err_msg, $headers);
 						}
 						else
 						{
 							ob_start();
-							$result = $config['email_function_name']($to, mail_encode($subject), wordwrap(utf8_wordwrap($msg), 997, "\n", true), $headers);
+							$result = phpbb::$config['email_function_name']($to, mail_encode($subject), wordwrap(utf8_wordwrap($msg), 997, "\n", true), $headers);
 							$err_msg = ob_get_clean();
 						}
 
@@ -757,7 +747,7 @@ class queue
 */
 function smtpmail($addresses, $subject, $message, &$err_msg, $headers = '')
 {
-	global $config, $user;
+	global $user;
 
 	// Fix any bare linefeeds in the message to make it RFC821 Compliant.
 	$message = preg_replace("#(?<!\r)\n#si", "\r\n", $message);
@@ -837,11 +827,11 @@ function smtpmail($addresses, $subject, $message, &$err_msg, $headers = '')
 	$errno = 0;
 	$errstr = '';
 
-	$smtp->add_backtrace('Connecting to ' . $config['smtp_host'] . ':' . $config['smtp_port']);
+	$smtp->add_backtrace('Connecting to ' . phpbb::$config['smtp_host'] . ':' . phpbb::$config['smtp_port']);
 
 	// Ok we have error checked as much as we can to this point let's get on it already.
 	ob_start();
-	$smtp->socket = fsockopen($config['smtp_host'], $config['smtp_port'], $errno, $errstr, 20);
+	$smtp->socket = fsockopen(phpbb::$config['smtp_host'], phpbb::$config['smtp_port'], $errno, $errstr, 20);
 	$error_contents = ob_get_clean();
 
 	if (!$smtp->socket)
@@ -864,7 +854,7 @@ function smtpmail($addresses, $subject, $message, &$err_msg, $headers = '')
 	}
 
 	// Let me in. This function handles the complete authentication process
-	if ($err_msg = $smtp->log_into_server($config['smtp_host'], $config['smtp_username'], $config['smtp_password'], $config['smtp_auth_method']))
+	if ($err_msg = $smtp->log_into_server(phpbb::$config['smtp_host'], phpbb::$config['smtp_username'], phpbb::$config['smtp_password'], phpbb::$config['smtp_auth_method']))
 	{
 		$smtp->close_session($err_msg);
 		return false;
@@ -872,7 +862,7 @@ function smtpmail($addresses, $subject, $message, &$err_msg, $headers = '')
 
 	// From this point onward most server response codes should be 250
 	// Specify who the mail is from....
-	$smtp->server_send('MAIL FROM:<' . $config['board_email'] . '>');
+	$smtp->server_send('MAIL FROM:<' . phpbb::$config['board_email'] . '>');
 	if ($err_msg = $smtp->server_parse('250', __LINE__))
 	{
 		$smtp->close_session($err_msg);
@@ -1075,8 +1065,6 @@ class smtp_class
 		// severe problems and is not fixable!
 		if ($default_auth_method == 'POP-BEFORE-SMTP' && $username && $password)
 		{
-			global $config;
-
 			$errno = 0;
 			$errstr = '';
 
@@ -1088,7 +1076,7 @@ class smtp_class
 
 			// We need to close the previous session, else the server is not
 			// able to get our ip for matching...
-			if (!$this->socket = @fsockopen($config['smtp_host'], $config['smtp_port'], $errno, $errstr, 10))
+			if (!$this->socket = @fsockopen(phpbb::$config['smtp_host'], phpbb::$config['smtp_port'], $errno, $errstr, 10))
 			{
 				if ($errstr)
 				{
@@ -1290,7 +1278,7 @@ class smtp_class
 	*/
 	private function digest_md5($username, $password)
 	{
-		global $config, $user;
+		global $user;
 
 		$this->server_send('AUTH DIGEST-MD5');
 		if ($err_msg = $this->server_parse('334', __LINE__))
@@ -1365,7 +1353,7 @@ class smtp_class
 			}
 			$cnonce = base64_encode($str);
 
-			$digest_uri = 'smtp/' . $config['smtp_host'];
+			$digest_uri = 'smtp/' . phpbb::$config['smtp_host'];
 
 			$auth_1 = sprintf('%s:%s:%s', pack('H32', md5(sprintf('%s:%s:%s', $username, $md5_challenge['realm'], $password))), $md5_challenge['nonce'], $cnonce);
 			$auth_2 = 'AUTHENTICATE:' . $digest_uri;

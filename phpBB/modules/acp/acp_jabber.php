@@ -26,7 +26,7 @@ class acp_jabber
 
 	function main($id, $mode)
 	{
-		global $db, $user, $auth, $template, $config;
+		global $db, $user, $auth, $template;
 
 		$user->add_lang('acp/board');
 
@@ -43,13 +43,13 @@ class acp_jabber
 		$this->tpl_name = 'acp_jabber';
 		$this->page_title = 'ACP_JABBER_SETTINGS';
 
-		$jab_enable			= request_var('jab_enable', $config['jab_enable']);
-		$jab_host			= request_var('jab_host', $config['jab_host']);
-		$jab_port			= request_var('jab_port', $config['jab_port']);
-		$jab_username		= request_var('jab_username', $config['jab_username']);
-		$jab_password		= request_var('jab_password', $config['jab_password']);
-		$jab_package_size	= request_var('jab_package_size', $config['jab_package_size']);
-		$jab_use_ssl		= request_var('jab_use_ssl', $config['jab_use_ssl']);
+		$jab_enable			= request_var('jab_enable', phpbb::$config['jab_enable']);
+		$jab_host			= request_var('jab_host', phpbb::$config['jab_host']);
+		$jab_port			= request_var('jab_port', phpbb::$config['jab_port']);
+		$jab_username		= request_var('jab_username', phpbb::$config['jab_username']);
+		$jab_password		= request_var('jab_password', phpbb::$config['jab_password']);
+		$jab_package_size	= request_var('jab_package_size', phpbb::$config['jab_package_size']);
+		$jab_use_ssl		= request_var('jab_use_ssl', phpbb::$config['jab_use_ssl']);
 
 		$form_name = 'acp_jabber';
 		add_form_key($form_name);

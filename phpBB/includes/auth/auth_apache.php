@@ -192,7 +192,7 @@ function autologin_apache()
 */
 function user_row_apache($username, $password)
 {
-	global $db, $config, $user;
+	global $db, $user;
 	// first retrieve default group id
 	$sql = 'SELECT group_id
 		FROM ' . GROUPS_TABLE . "

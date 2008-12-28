@@ -21,7 +21,7 @@ if (!defined('IN_PHPBB'))
 */
 function mcp_front_view($id, $mode, $action)
 {
-	global $template, $db, $user, $auth, $module, $config;
+	global $template, $db, $user, $auth, $module;
 
 	// Latest 5 unapproved
 	if ($module->loaded('queue'))
@@ -33,7 +33,7 @@ function mcp_front_view($id, $mode, $action)
 		$forum_id = request_var('f', 0);
 
 		$template->assign_var('S_SHOW_UNAPPROVED', (!empty($forum_list)) ? true : false);
-		
+
 		if (!empty($forum_list))
 		{
 			$sql = 'SELECT COUNT(post_id) AS total

@@ -27,7 +27,7 @@ class ucp_prefs
 
 	function main($id, $mode)
 	{
-		global $config, $db, $user, $auth, $template;
+		global $db, $user, $auth, $template;
 
 		$submit = phpbb_request::is_set_post('submit');
 		$error = $data = array();
@@ -53,7 +53,7 @@ class ucp_prefs
 					'allowpm'		=> request_var('allowpm', (bool) $user->data['user_allow_pm']),
 				);
 
-				if ($data['notifymethod'] == NOTIFY_IM && (!$config['jab_enable'] || !$user->data['user_jabber'] || !@extension_loaded('xml')))
+				if ($data['notifymethod'] == NOTIFY_IM && (!phpbb::$config['jab_enable'] || !$user->data['user_jabber'] || !@extension_loaded('xml')))
 				{
 					// Jabber isnt enabled, or no jabber field filled in. Update the users table to be sure its correct.
 					$data['notifymethod'] = NOTIFY_BOTH;
@@ -61,7 +61,7 @@ class ucp_prefs
 
 				if ($submit)
 				{
-					$data['style'] = ($config['override_user_style']) ? $config['default_style'] : $data['style'];
+					$data['style'] = (phpbb::$config['override_user_style']) ? phpbb::$config['default_style'] : $data['style'];
 
 					$error = validate_data($data, array(
 						'dateformat'	=> array('string', false, 1, 30),
@@ -145,14 +145,14 @@ class ucp_prefs
 					'A_DATE_FORMAT'			=> addslashes($data['dateformat']),
 					'S_DATEFORMAT_OPTIONS'	=> $dateformat_options,
 					'S_CUSTOM_DATEFORMAT'	=> $s_custom,
-					'DEFAULT_DATEFORMAT'	=> $config['default_dateformat'],
-					'A_DEFAULT_DATEFORMAT'	=> addslashes($config['default_dateformat']),
+					'DEFAULT_DATEFORMAT'	=> phpbb::$config['default_dateformat'],
+					'A_DEFAULT_DATEFORMAT'	=> addslashes(phpbb::$config['default_dateformat']),
 
 					'S_LANG_OPTIONS'		=> language_select($data['lang']),
-					'S_STYLE_OPTIONS'		=> ($config['override_user_style']) ? '' : style_select($data['style']),
+					'S_STYLE_OPTIONS'		=> (phpbb::$config['override_user_style']) ? '' : style_select($data['style']),
 					'S_TZ_OPTIONS'			=> tz_select($data['tz'], true),
 					'S_CAN_HIDE_ONLINE'		=> ($auth->acl_get('u_hideonline')) ? true : false,
-					'S_SELECT_NOTIFY'		=> ($config['jab_enable'] && $user->data['user_jabber'] && @extension_loaded('xml')) ? true : false)
+					'S_SELECT_NOTIFY'		=> (phpbb::$config['jab_enable'] && $user->data['user_jabber'] && @extension_loaded('xml')) ? true : false)
 				);
 
 			break;

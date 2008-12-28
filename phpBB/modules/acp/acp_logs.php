@@ -25,7 +25,7 @@ class acp_logs
 
 	function main($id, $mode)
 	{
-		global $db, $user, $auth, $template, $config;
+		global $db, $user, $auth, $template;
 
 		$user->add_lang('mcp');
 
@@ -122,15 +122,15 @@ class acp_logs
 		// Grab log data
 		$log_data = array();
 		$log_count = 0;
-		view_log($mode, $log_data, $log_count, $config['topics_per_page'], $start, $forum_id, 0, 0, $sql_where, $sql_sort);
+		view_log($mode, $log_data, $log_count, phpbb::$config['topics_per_page'], $start, $forum_id, 0, 0, $sql_where, $sql_sort);
 
 		$template->assign_vars(array(
 			'L_TITLE'		=> $l_title,
 			'L_EXPLAIN'		=> $l_title_explain,
 			'U_ACTION'		=> $this->u_action,
 
-			'S_ON_PAGE'		=> on_page($log_count, $config['topics_per_page'], $start),
-			'PAGINATION'	=> generate_pagination($this->u_action . "&amp;$u_sort_param", $log_count, $config['topics_per_page'], $start, true),
+			'S_ON_PAGE'		=> on_page($log_count, phpbb::$config['topics_per_page'], $start),
+			'PAGINATION'	=> generate_pagination($this->u_action . "&amp;$u_sort_param", $log_count, phpbb::$config['topics_per_page'], $start, true),
 
 			'S_LIMIT_DAYS'	=> $s_limit_days,
 			'S_SORT_KEY'	=> $s_sort_key,

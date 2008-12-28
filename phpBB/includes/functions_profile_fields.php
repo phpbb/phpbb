@@ -837,8 +837,6 @@ class custom_profile
 	*/
 	private function get_profile_field($profile_row)
 	{
-		global $config;
-
 		$var_name = 'pf_' . $profile_row['field_ident'];
 
 		switch ($profile_row['field_type'])
@@ -988,9 +986,9 @@ class custom_profile_admin extends custom_profile
 	*/
 	public function get_bool_options()
 	{
-		global $user, $config, $lang_defs;
+		global $user, $lang_defs;
 
-		$default_lang_id = $lang_defs['iso'][$config['default_lang']];
+		$default_lang_id = $lang_defs['iso'][phpbb::$config['default_lang']];
 
 		$profile_row = array(
 			'var_name'				=> 'field_default_value',
@@ -1018,9 +1016,9 @@ class custom_profile_admin extends custom_profile
 	*/
 	public function get_dropdown_options()
 	{
-		global $user, $config, $lang_defs;
+		global $user, $lang_defs;
 
-		$default_lang_id = $lang_defs['iso'][$config['default_lang']];
+		$default_lang_id = $lang_defs['iso'][phpbb::$config['default_lang']];
 
 		$profile_row[0] = array(
 			'var_name'				=> 'field_default_value',
@@ -1052,9 +1050,9 @@ class custom_profile_admin extends custom_profile
 	*/
 	public function get_date_options()
 	{
-		global $user, $config, $lang_defs;
+		global $user, $lang_defs;
 
-		$default_lang_id = $lang_defs['iso'][$config['default_lang']];
+		$default_lang_id = $lang_defs['iso'][phpbb::$config['default_lang']];
 
 		$profile_row = array(
 			'var_name'				=> 'field_default_value',

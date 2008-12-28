@@ -95,7 +95,7 @@ function get_available_dbms($dbms = false, $return_unavailable = false, $only_20
 		'db2'		=> array(
 			'LABEL'			=> 'IBM DB2',
 			'SCHEMA'		=> 'db2',
-			'MODULE'		=> 'ibm_db2', 
+			'MODULE'		=> 'ibm_db2',
 			'DELIM'			=> ';',
 			'COMMENTS'		=> 'remove_comments',
 			'DRIVER'		=> 'db2',
@@ -195,7 +195,7 @@ function get_available_dbms($dbms = false, $return_unavailable = false, $only_20
 function dbms_select($default = '', $only_20x_options = false)
 {
 	global $lang;
-	
+
 	$available_dbms = get_available_dbms(false, false, $only_20x_options);
 	$dbms_options = '';
 	foreach ($available_dbms as $dbms_name => $details)
@@ -277,7 +277,7 @@ function get_tables($db)
 */
 function connect_check_db($error_connect, &$error, $dbms_details, $table_prefix, $dbhost, $dbuser, $dbpasswd, $dbname, $dbport, $prefix_may_exist = false, $load_dbal = true, $unicode_check = true)
 {
-	global $config, $lang;
+	global $lang;
 
 	$dbms = $dbms_details['DRIVER'];
 
@@ -476,7 +476,7 @@ function connect_check_db($error_connect, &$error, $dbms_details, $table_prefix,
 					unset($final);
 				}
 			break;
-			
+
 			case 'oracle':
 				if ($unicode_check)
 				{
@@ -503,7 +503,7 @@ function connect_check_db($error_connect, &$error, $dbms_details, $table_prefix,
 					}
 				}
 			break;
-			
+
 			case 'postgres':
 				if ($unicode_check)
 				{

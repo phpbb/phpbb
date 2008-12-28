@@ -26,7 +26,7 @@ class acp_icons
 
 	function main($id, $mode)
 	{
-		global $db, $user, $auth, $template, $config;
+		global $db, $user, $auth, $template;
 
 		$user->add_lang('acp/posting');
 
@@ -48,14 +48,14 @@ class acp_icons
 				$table = SMILIES_TABLE;
 				$lang = 'SMILIES';
 				$fields = 'smiley';
-				$img_path = $config['smilies_path'];
+				$img_path = phpbb::$config['smilies_path'];
 			break;
 
 			case 'icons':
 				$table = ICONS_TABLE;
 				$lang = 'ICONS';
 				$fields = 'icons';
-				$img_path = $config['icons_path'];
+				$img_path = phpbb::$config['icons_path'];
 			break;
 		}
 

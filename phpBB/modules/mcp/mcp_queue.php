@@ -34,7 +34,7 @@ class mcp_queue
 	function main($id, $mode)
 	{
 		global $auth, $db, $user, $template;
-		global $config, $action;
+		global $action;
 
 		include_once(PHPBB_ROOT_PATH . 'includes/functions_posting.' . PHP_EXT);
 
@@ -112,7 +112,7 @@ class mcp_queue
 				$extensions = $attachments = $topic_tracking_info = array();
 
 				// Get topic tracking info
-				if ($config['load_db_lastread'])
+				if (phpbb::$config['load_db_lastread'])
 				{
 					$tmp_topic_data = array($post_info['topic_id'] => $post_info);
 					$topic_tracking_info = get_topic_tracking($post_info['forum_id'], $post_info['topic_id'], $tmp_topic_data, array($post_info['forum_id'] => $post_info['forum_mark_time']));
@@ -320,7 +320,7 @@ class mcp_queue
 							AND t.topic_first_post_id <> p.post_id
 							$limit_time_sql
 						ORDER BY $sort_order_sql";
-					$result = $db->sql_query_limit($sql, $config['topics_per_page'], $start);
+					$result = $db->sql_query_limit($sql, phpbb::$config['topics_per_page'], $start);
 
 					$i = 0;
 					$post_ids = array();
@@ -371,7 +371,7 @@ class mcp_queue
 							AND topic_approved = 0
 							$limit_time_sql
 						ORDER BY $sort_order_sql";
-					$result = $db->sql_query_limit($sql, $config['topics_per_page'], $start);
+					$result = $db->sql_query_limit($sql, phpbb::$config['topics_per_page'], $start);
 
 					$rowset = array();
 					while ($row = $db->sql_fetchrow($result))
@@ -445,8 +445,8 @@ class mcp_queue
 					'S_MCP_ACTION'			=> build_url(array('t', 'f', 'sd', 'st', 'sk')),
 					'S_TOPICS'				=> ($mode == 'unapproved_posts') ? false : true,
 
-					'PAGINATION'			=> generate_pagination($this->u_action . "&amp;f=$forum_id&amp;st=$sort_days&amp;sk=$sort_key&amp;sd=$sort_dir", $total, $config['topics_per_page'], $start),
-					'PAGE_NUMBER'			=> on_page($total, $config['topics_per_page'], $start),
+					'PAGINATION'			=> generate_pagination($this->u_action . "&amp;f=$forum_id&amp;st=$sort_days&amp;sk=$sort_key&amp;sd=$sort_dir", $total, phpbb::$config['topics_per_page'], $start),
+					'PAGE_NUMBER'			=> on_page($total, phpbb::$config['topics_per_page'], $start),
 					'TOPIC_ID'				=> $topic_id,
 					'TOTAL'					=> ($total == 1) ? (($mode == 'unapproved_posts') ? $user->lang['VIEW_TOPIC_POST'] : $user->lang['VIEW_FORUM_TOPIC']) : sprintf((($mode == 'unapproved_posts') ? $user->lang['VIEW_TOPIC_POSTS'] : $user->lang['VIEW_FORUM_TOPICS']), $total),
 				));
@@ -462,7 +462,7 @@ class mcp_queue
 */
 function approve_post($post_id_list, $id, $mode)
 {
-	global $db, $template, $user, $config;
+	global $db, $template, $user;
 
 	if (!check_ids($post_id_list, POSTS_TABLE, 'post_id', array('m_approve')))
 	{
@@ -651,12 +651,12 @@ function approve_post($post_id_list, $id, $mode)
 
 		if ($total_topics)
 		{
-			set_config('num_topics', $config['num_topics'] + $total_topics, true);
+			set_config('num_topics', phpbb::$config['num_topics'] + $total_topics, true);
 		}
 
 		if ($total_posts)
 		{
-			set_config('num_posts', $config['num_posts'] + $total_posts, true);
+			set_config('num_posts', phpbb::$config['num_posts'] + $total_posts, true);
 		}
 		unset($topic_approve_sql, $topic_replies_sql, $post_approve_sql);
 
@@ -703,7 +703,7 @@ function approve_post($post_id_list, $id, $mode)
 		$messenger->save_queue();
 
 		// Send out normal user notifications
-		$email_sig = str_replace('<br />', "\n", "-- \n" . $config['board_email_sig']);
+		$email_sig = str_replace('<br />', "\n", "-- \n" . phpbb::$config['board_email_sig']);
 
 		foreach ($post_info as $post_id => $post_data)
 		{
@@ -787,7 +787,7 @@ function approve_post($post_id_list, $id, $mode)
 */
 function disapprove_post($post_id_list, $id, $mode)
 {
-	global $db, $template, $user, $config;
+	global $db, $template, $user;
 
 	if (!check_ids($post_id_list, POSTS_TABLE, 'post_id', array('m_approve')))
 	{

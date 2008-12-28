@@ -43,7 +43,7 @@ class acp_modules
 
 	function main($id, $mode)
 	{
-		global $db, $user, $auth, $template, $module, $config;
+		global $db, $user, $auth, $template, $module;
 
 		// Set a global define for modules we might include (the author is able to prevent execution of code by checking this constant)
 		define('MODULE_INCLUDE', true);
@@ -601,7 +601,7 @@ class acp_modules
 	*/
 	function make_module_select($select_id = false, $ignore_id = false, $ignore_acl = false, $ignore_nonpost = false, $ignore_emptycat = true, $ignore_noncat = false)
 	{
-		global $db, $user, $auth, $config;
+		global $db, $user, $auth;
 
 		$sql = 'SELECT module_id, module_enabled, module_basename, parent_id, module_langname, left_id, right_id, module_auth
 			FROM ' . MODULES_TABLE . "

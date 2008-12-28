@@ -89,7 +89,7 @@ adm_page_footer();
 */
 function adm_page_header($page_title)
 {
-	global $config, $db, $user, $template;
+	global $db, $user, $template;
 	global $SID, $_SID;
 
 	if (defined('HEADER_INC'))
@@ -100,7 +100,7 @@ function adm_page_header($page_title)
 	define('HEADER_INC', true);
 
 	// gzip_compression
-	if ($config['gzip_compress'])
+	if (phpbb::$config['gzip_compress'])
 	{
 		if (@extension_loaded('zlib') && !headers_sent())
 		{
@@ -126,12 +126,12 @@ function adm_page_header($page_title)
 		'S_USER_LOGGED_IN'		=> ($user->data['user_id'] != ANONYMOUS && !$user->data['is_bot']),
 
 		'T_IMAGES_PATH'			=> PHPBB_ROOT_PATH . 'images/',
-		'T_SMILIES_PATH'		=> PHPBB_ROOT_PATH . $config['smilies_path'] . '/',
-		'T_AVATAR_PATH'			=> PHPBB_ROOT_PATH . $config['avatar_path'] . '/',
-		'T_AVATAR_GALLERY_PATH'	=> PHPBB_ROOT_PATH . $config['avatar_gallery_path'] . '/',
-		'T_ICONS_PATH'			=> PHPBB_ROOT_PATH . $config['icons_path'] . '/',
-		'T_RANKS_PATH'			=> PHPBB_ROOT_PATH . $config['ranks_path'] . '/',
-		'T_UPLOAD_PATH'			=> PHPBB_ROOT_PATH . $config['upload_path'] . '/',
+		'T_SMILIES_PATH'		=> PHPBB_ROOT_PATH . phpbb::$config['smilies_path'] . '/',
+		'T_AVATAR_PATH'			=> PHPBB_ROOT_PATH . phpbb::$config['avatar_path'] . '/',
+		'T_AVATAR_GALLERY_PATH'	=> PHPBB_ROOT_PATH . phpbb::$config['avatar_gallery_path'] . '/',
+		'T_ICONS_PATH'			=> PHPBB_ROOT_PATH . phpbb::$config['icons_path'] . '/',
+		'T_RANKS_PATH'			=> PHPBB_ROOT_PATH . phpbb::$config['ranks_path'] . '/',
+		'T_UPLOAD_PATH'			=> PHPBB_ROOT_PATH . phpbb::$config['upload_path'] . '/',
 
 		'ICON_MOVE_UP'				=> '<img src="' . PHPBB_ADMIN_PATH . 'images/icon_up.gif" alt="' . $user->lang['MOVE_UP'] . '" title="' . $user->lang['MOVE_UP'] . '" />',
 		'ICON_MOVE_UP_DISABLED'		=> '<img src="' . PHPBB_ADMIN_PATH . 'images/icon_up_disabled.gif" alt="' . $user->lang['MOVE_UP'] . '" title="' . $user->lang['MOVE_UP'] . '" />',
@@ -166,7 +166,7 @@ function adm_page_header($page_title)
 */
 function adm_page_footer($copyright_html = true)
 {
-	global $db, $config, $template, $user, $auth;
+	global $db, $template, $user, $auth;
 	global $starttime;
 
 	// Output page creation time
@@ -180,7 +180,7 @@ function adm_page_footer($copyright_html = true)
 			$db->sql_report('display');
 		}
 
-		$debug_output = sprintf('Time : %.3fs | ' . $db->sql_num_queries() . ' Queries | GZIP : ' . (($config['gzip_compress']) ? 'On' : 'Off') . (($user->load) ? ' | Load : ' . $user->load : ''), $totaltime);
+		$debug_output = sprintf('Time : %.3fs | ' . $db->sql_num_queries() . ' Queries | GZIP : ' . ((phpbb::$config['gzip_compress']) ? 'On' : 'Off') . (($user->load) ? ' | Load : ' . $user->load : ''), $totaltime);
 
 		if ($auth->acl_get('a_') && defined('DEBUG_EXTRA'))
 		{
@@ -204,7 +204,7 @@ function adm_page_footer($copyright_html = true)
 		'DEBUG_OUTPUT'		=> (defined('DEBUG')) ? $debug_output : '',
 		'TRANSLATION_INFO'	=> (!empty($user->lang['TRANSLATION_INFO'])) ? $user->lang['TRANSLATION_INFO'] : '',
 		'S_COPYRIGHT_HTML'	=> $copyright_html,
-		'VERSION'			=> $config['version'])
+		'VERSION'			=> phpbb::$config['version'])
 	);
 
 	$template->display('body');

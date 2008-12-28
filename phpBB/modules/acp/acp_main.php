@@ -25,7 +25,7 @@ class acp_main
 
 	function main($id, $mode)
 	{
-		global $config, $db, $user, $auth, $template;
+		global $db, $user, $auth, $template;
 
 		// Show restore permissions notice
 		if ($user->data['user_perm_from'] && $auth->acl_get('a_switchperm'))
@@ -210,7 +210,7 @@ class acp_main
 							break;
 						}
 
-						$step = ($config['num_posts']) ? (max((int) ($config['num_posts'] / 5), 20000)) : 20000;
+						$step = (phpbb::$config['num_posts']) ? (max((int) (phpbb::$config['num_posts'] / 5), 20000)) : 20000;
 						$db->sql_query('UPDATE ' . USERS_TABLE . ' SET user_posts = 0');
 
 						while ($start < $max_post_id)
@@ -341,31 +341,31 @@ class acp_main
 		}
 
 		// Get forum statistics
-		$total_posts = $config['num_posts'];
-		$total_topics = $config['num_topics'];
-		$total_users = $config['num_users'];
-		$total_files = $config['num_files'];
+		$total_posts = phpbb::$config['num_posts'];
+		$total_topics = phpbb::$config['num_topics'];
+		$total_users = phpbb::$config['num_users'];
+		$total_files = phpbb::$config['num_files'];
 
-		$start_date = $user->format_date($config['board_startdate']);
+		$start_date = $user->format_date(phpbb::$config['board_startdate']);
 
-		$boarddays = (time() - $config['board_startdate']) / 86400;
+		$boarddays = (time() - phpbb::$config['board_startdate']) / 86400;
 
 		$posts_per_day = sprintf('%.2f', $total_posts / $boarddays);
 		$topics_per_day = sprintf('%.2f', $total_topics / $boarddays);
 		$users_per_day = sprintf('%.2f', $total_users / $boarddays);
 		$files_per_day = sprintf('%.2f', $total_files / $boarddays);
 
-		$upload_dir_size = get_formatted_filesize($config['upload_dir_size']);
+		$upload_dir_size = get_formatted_filesize(phpbb::$config['upload_dir_size']);
 
 		$avatar_dir_size = 0;
 
-		if ($avatar_dir = @opendir(PHPBB_ROOT_PATH . $config['avatar_path']))
+		if ($avatar_dir = @opendir(PHPBB_ROOT_PATH . phpbb::$config['avatar_path']))
 		{
 			while (($file = readdir($avatar_dir)) !== false)
 			{
 				if ($file[0] != '.' && $file != 'CVS' && strpos($file, 'index.') === false)
 				{
-					$avatar_dir_size += filesize(PHPBB_ROOT_PATH . $config['avatar_path'] . '/' . $file);
+					$avatar_dir_size += filesize(PHPBB_ROOT_PATH . phpbb::$config['avatar_path'] . '/' . $file);
 				}
 			}
 			closedir($avatar_dir);
@@ -398,7 +398,7 @@ class acp_main
 			$files_per_day = $total_files;
 		}
 
-		if ($config['allow_attachments'] || $config['allow_pm_attach'])
+		if (phpbb::$config['allow_attachments'] || phpbb::$config['allow_pm_attach'])
 		{
 			$sql = 'SELECT COUNT(attach_id) AS total_orphan
 				FROM ' . ATTACHMENTS_TABLE . '
@@ -430,9 +430,9 @@ class acp_main
 			'UPLOAD_DIR_SIZE'	=> $upload_dir_size,
 			'TOTAL_ORPHAN'		=> $total_orphan,
 			'S_TOTAL_ORPHAN'	=> ($total_orphan === false) ? false : true,
-			'GZIP_COMPRESSION'	=> ($config['gzip_compress']) ? $user->lang['ON'] : $user->lang['OFF'],
+			'GZIP_COMPRESSION'	=> (phpbb::$config['gzip_compress']) ? $user->lang['ON'] : $user->lang['OFF'],
 			'DATABASE_INFO'		=> $db->sql_server_info(),
-			'BOARD_VERSION'		=> $config['version'],
+			'BOARD_VERSION'		=> phpbb::$config['version'],
 
 			'U_ACTION'			=> $this->u_action,
 			'U_ADMIN_LOG'		=> append_sid(PHPBB_ADMIN_PATH . 'index.' . PHP_EXT, 'i=logs&amp;mode=admin'),
@@ -482,7 +482,7 @@ class acp_main
 			}
 
 			$option_ary = array('activate' => 'ACTIVATE', 'delete' => 'DELETE');
-			if ($config['email_enable'])
+			if (phpbb::$config['email_enable'])
 			{
 				$option_ary += array('remind' => 'REMIND');
 			}

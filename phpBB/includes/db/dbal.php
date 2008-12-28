@@ -600,7 +600,7 @@ class dbal
 	*/
 	function sql_error($sql = '')
 	{
-		global $auth, $user, $config;
+		global $auth, $user;
 
 		// Set var to retrieve errored status
 		$this->sql_error_triggered = true;
@@ -634,9 +634,9 @@ class dbal
 				}
 				else
 				{
-					if (!empty($config['board_contact']))
+					if (!empty(phpbb::$config['board_contact']))
 					{
-						$message .= '<br /><br />' . sprintf($user->lang['SQL_ERROR_OCCURRED'], '<a href="mailto:' . htmlspecialchars($config['board_contact']) . '">', '</a>');
+						$message .= '<br /><br />' . sprintf($user->lang['SQL_ERROR_OCCURRED'], '<a href="mailto:' . htmlspecialchars(phpbb::$config['board_contact']) . '">', '</a>');
 					}
 					else
 					{

@@ -200,7 +200,7 @@ if ($user->data['is_registered'])
 		'ON'	=> 'tw.user_id = ' . $user->data['user_id'] . ' AND t.topic_id = tw.topic_id'
 	);
 
-	if ($config['allow_bookmarks'])
+	if (phpbb::$config['allow_bookmarks'])
 	{
 		$sql_array['SELECT'] .= ', bm.topic_id as bookmarked';
 		$sql_array['LEFT_JOIN'][] = array(
@@ -209,7 +209,7 @@ if ($user->data['is_registered'])
 		);
 	}
 
-	if ($config['load_db_lastread'])
+	if (phpbb::$config['load_db_lastread'])
 	{
 		$sql_array['SELECT'] .= ', tt.mark_time, ft.mark_time as forum_mark_time';
 
@@ -369,7 +369,7 @@ if (phpbb_request::is_set('e', phpbb_request::GET))
 // What is start equal to?
 if ($post_id)
 {
-	$start = floor(($topic_data['prev_posts']) / $config['posts_per_page']) * $config['posts_per_page'];
+	$start = floor(($topic_data['prev_posts']) / phpbb::$config['posts_per_page']) * phpbb::$config['posts_per_page'];
 }
 
 // Get topic tracking info
@@ -378,13 +378,13 @@ if (!isset($topic_tracking_info))
 	$topic_tracking_info = array();
 
 	// Get topic tracking info
-	if ($config['load_db_lastread'] && $user->data['is_registered'])
+	if (phpbb::$config['load_db_lastread'] && $user->data['is_registered'])
 	{
 		$tmp_topic_data = array($topic_id => $topic_data);
 		$topic_tracking_info = get_topic_tracking($forum_id, $topic_id, $tmp_topic_data, array($forum_id => $topic_data['forum_mark_time']));
 		unset($tmp_topic_data);
 	}
-	else if ($config['load_anon_lastread'] || $user->data['is_registered'])
+	else if (phpbb::$config['load_anon_lastread'] || $user->data['is_registered'])
 	{
 		$topic_tracking_info = get_complete_topic_tracking($forum_id, $topic_id);
 	}
@@ -448,7 +448,7 @@ if ($hilit_words)
 // Make sure $start is set to the last page if it exceeds the amount
 if ($start < 0 || $start >= $total_posts)
 {
-	$start = ($start < 0) ? 0 : floor(($total_posts - 1) / $config['posts_per_page']) * $config['posts_per_page'];
+	$start = ($start < 0) ? 0 : floor(($total_posts - 1) / phpbb::$config['posts_per_page']) * phpbb::$config['posts_per_page'];
 }
 
 // General Viewtopic URL for return links
@@ -461,12 +461,12 @@ $s_watching_topic = array(
 	'is_watching'	=> false,
 );
 
-if (($config['email_enable'] || $config['jab_enable']) && $config['allow_topic_notify'] && $user->data['is_registered'])
+if ((phpbb::$config['email_enable'] || phpbb::$config['jab_enable']) && phpbb::$config['allow_topic_notify'] && $user->data['is_registered'])
 {
 	watch_topic_forum('topic', $s_watching_topic, $user->data['user_id'], $forum_id, $topic_id, $topic_data['notify_status'], $start);
 
 	// Reset forum notification if forum notify is set
-	if ($config['allow_forum_notify'] && $auth->acl_get('f_subscribe', $forum_id))
+	if (phpbb::$config['allow_forum_notify'] && $auth->acl_get('f_subscribe', $forum_id))
 	{
 		$s_watching_forum = $s_watching_topic;
 		watch_topic_forum('forum', $s_watching_forum, $user->data['user_id'], $forum_id, 0);
@@ -474,7 +474,7 @@ if (($config['email_enable'] || $config['jab_enable']) && $config['allow_topic_n
 }
 
 // Bookmarks
-if ($config['allow_bookmarks'] && $user->data['is_registered'] && request_var('bookmark', 0))
+if (phpbb::$config['allow_bookmarks'] && $user->data['is_registered'] && request_var('bookmark', 0))
 {
 	if (check_link_hash(request_var('hash', ''), "topic_$topic_id"))
 	{
@@ -539,7 +539,7 @@ $topic_mod .= ($allow_change_type && $auth->acl_get('f_announce', $forum_id) && 
 $topic_mod .= ($auth->acl_get('m_', $forum_id)) ? '<option value="topic_logs">' . $user->lang['VIEW_TOPIC_LOGS'] . '</option>' : '';
 
 // If we've got a hightlight set pass it on to pagination.
-$pagination = generate_pagination(append_sid('viewtopic', "f=$forum_id&amp;t=$topic_id" . ((strlen($u_sort_param)) ? "&amp;$u_sort_param" : '') . (($highlight_match) ? "&amp;hilit=$highlight" : '')), $total_posts, $config['posts_per_page'], $start);
+$pagination = generate_pagination(append_sid('viewtopic', "f=$forum_id&amp;t=$topic_id" . ((strlen($u_sort_param)) ? "&amp;$u_sort_param" : '') . (($highlight_match) ? "&amp;hilit=$highlight" : '')), $total_posts, phpbb::$config['posts_per_page'], $start);
 
 // Navigation links
 generate_forum_nav($topic_data);
@@ -571,7 +571,7 @@ $template->assign_vars(array(
 	'TOPIC_AUTHOR'			=> get_username_string('username', $topic_data['topic_poster'], $topic_data['topic_first_poster_name'], $topic_data['topic_first_poster_colour']),
 
 	'PAGINATION' 	=> $pagination,
-	'PAGE_NUMBER' 	=> on_page($total_posts, $config['posts_per_page'], $start),
+	'PAGE_NUMBER' 	=> on_page($total_posts, phpbb::$config['posts_per_page'], $start),
 	'TOTAL_POSTS'	=> ($total_posts == 1) ? $user->lang['VIEW_TOPIC_POST'] : sprintf($user->lang['VIEW_TOPIC_POSTS'], $total_posts),
 	'U_MCP' 		=> ($auth->acl_get('m_', $forum_id)) ? append_sid('mcp', "i=main&amp;mode=topic_view&amp;f=$forum_id&amp;t=$topic_id&amp;start=$start" . ((strlen($u_sort_param)) ? "&amp;$u_sort_param" : ''), true, $user->session_id) : '',
 
@@ -608,7 +608,7 @@ $template->assign_vars(array(
 	'S_MOD_ACTION' 			=> append_sid('mcp', "f=$forum_id&amp;t=$topic_id&amp;quickmod=1&amp;redirect=" . urlencode(str_replace('&amp;', '&', $viewtopic_url)), true, $user->session_id),
 
 	'S_VIEWTOPIC'			=> true,
-	'S_DISPLAY_SEARCHBOX'	=> ($auth->acl_get('u_search') && $auth->acl_get('f_search', $forum_id) && $config['load_search']) ? true : false,
+	'S_DISPLAY_SEARCHBOX'	=> ($auth->acl_get('u_search') && $auth->acl_get('f_search', $forum_id) && phpbb::$config['load_search']) ? true : false,
 	'S_SEARCHBOX_ACTION'	=> append_sid('search', 't=' . $topic_id),
 
 	'S_DISPLAY_POST_INFO'	=> ($topic_data['forum_type'] == FORUM_POST && ($auth->acl_get('f_post', $forum_id) || $user->data['user_id'] == ANONYMOUS)) ? true : false,
@@ -621,14 +621,14 @@ $template->assign_vars(array(
 	'U_VIEW_OLDER_TOPIC'	=> append_sid('viewtopic', "f=$forum_id&amp;t=$topic_id&amp;view=previous"),
 	'U_VIEW_NEWER_TOPIC'	=> append_sid('viewtopic', "f=$forum_id&amp;t=$topic_id&amp;view=next"),
 	'U_PRINT_TOPIC'			=> ($auth->acl_get('f_print', $forum_id)) ? $viewtopic_url . '&amp;view=print' : '',
-	'U_EMAIL_TOPIC'			=> ($auth->acl_get('f_email', $forum_id) && $config['email_enable']) ? append_sid('memberlist', "mode=email&amp;t=$topic_id") : '',
+	'U_EMAIL_TOPIC'			=> ($auth->acl_get('f_email', $forum_id) && phpbb::$config['email_enable']) ? append_sid('memberlist', "mode=email&amp;t=$topic_id") : '',
 
 	'U_WATCH_TOPIC' 		=> $s_watching_topic['link'],
 	'L_WATCH_TOPIC' 		=> $s_watching_topic['title'],
 	'S_WATCHING_TOPIC'		=> $s_watching_topic['is_watching'],
 
-	'U_BOOKMARK_TOPIC'		=> ($user->data['is_registered'] && $config['allow_bookmarks']) ? $viewtopic_url . '&amp;bookmark=1&amp;hash=' . generate_link_hash("topic_$topic_id") : '',
-	'L_BOOKMARK_TOPIC'		=> ($user->data['is_registered'] && $config['allow_bookmarks'] && $topic_data['bookmarked']) ? $user->lang['BOOKMARK_TOPIC_REMOVE'] : $user->lang['BOOKMARK_TOPIC'],
+	'U_BOOKMARK_TOPIC'		=> ($user->data['is_registered'] && phpbb::$config['allow_bookmarks']) ? $viewtopic_url . '&amp;bookmark=1&amp;hash=' . generate_link_hash("topic_$topic_id") : '',
+	'L_BOOKMARK_TOPIC'		=> ($user->data['is_registered'] && phpbb::$config['allow_bookmarks'] && $topic_data['bookmarked']) ? $user->lang['BOOKMARK_TOPIC_REMOVE'] : $user->lang['BOOKMARK_TOPIC'],
 
 	'U_POST_NEW_TOPIC' 		=> ($auth->acl_get('f_post', $forum_id) || $user->data['user_id'] == ANONYMOUS) ? append_sid('posting', "mode=post&amp;f=$forum_id") : '',
 	'U_POST_REPLY_TOPIC' 	=> ($auth->acl_get('f_reply', $forum_id) || $user->data['user_id'] == ANONYMOUS) ? append_sid('posting', "mode=reply&amp;f=$forum_id&amp;t=$topic_id") : '',
@@ -673,7 +673,7 @@ if (!empty($topic_data['poll_start']))
 		// Cookie based guest tracking ... I don't like this but hum ho
 		// it's oft requested. This relies on "nice" users who don't feel
 		// the need to delete cookies to mess with results.
-		$cur_voted_list = phpbb_request::variable($config['cookie_name'] . '_poll_' . $topic_id, '', false, phpbb_request::COOKIE);
+		$cur_voted_list = phpbb_request::variable(phpbb::$config['cookie_name'] . '_poll_' . $topic_id, '', false, phpbb_request::COOKIE);
 		if (!empty($cur_voted_list))
 		{
 			$cur_voted_id = array_map('intval', explode(',', $cur_voted_list));
@@ -858,15 +858,15 @@ if (!empty($topic_data['poll_start']))
 
 // If the user is trying to reach the second half of the topic, fetch it starting from the end
 $store_reverse = false;
-$sql_limit = $config['posts_per_page'];
+$sql_limit = phpbb::$config['posts_per_page'];
 
 if ($start > $total_posts / 2)
 {
 	$store_reverse = true;
 
-	if ($start + $config['posts_per_page'] > $total_posts)
+	if ($start + phpbb::$config['posts_per_page'] > $total_posts)
 	{
-		$sql_limit = min($config['posts_per_page'], max(1, $total_posts - $start));
+		$sql_limit = min(phpbb::$config['posts_per_page'], max(1, $total_posts - $start));
 	}
 
 	// Select the sort order
@@ -956,7 +956,7 @@ while ($row = $db->sql_fetchrow($result))
 	$poster_id = $row['poster_id'];
 
 	// Does post have an attachment? If so, add it to the list
-	if ($row['post_attachment'] && $config['allow_attachments'])
+	if ($row['post_attachment'] && phpbb::$config['allow_attachments'])
 	{
 		$attach_list[] = $row['post_id'];
 
@@ -1002,7 +1002,7 @@ while ($row = $db->sql_fetchrow($result))
 	$bbcode_bitfield = $bbcode_bitfield | base64_decode($row['bbcode_bitfield']);
 
 	// Is a signature attached? Are we going to display it?
-	if ($row['enable_sig'] && $config['allow_sig'] && $user->optionget('viewsigs'))
+	if ($row['enable_sig'] && phpbb::$config['allow_sig'] && $user->optionget('viewsigs'))
 	{
 		$bbcode_bitfield = $bbcode_bitfield | base64_decode($row['user_sig_bbcode_bitfield']);
 	}
@@ -1055,7 +1055,7 @@ while ($row = $db->sql_fetchrow($result))
 			$user_sig = '';
 
 			// We add the signature to every posters entry because enable_sig is post dependant
-			if ($row['user_sig'] && $config['allow_sig'] && $user->optionget('viewsigs'))
+			if ($row['user_sig'] && phpbb::$config['allow_sig'] && $user->optionget('viewsigs'))
 			{
 				$user_sig = $row['user_sig'];
 			}
@@ -1099,7 +1099,7 @@ while ($row = $db->sql_fetchrow($result))
 
 			if (!empty($row['user_allow_viewemail']) || $auth->acl_get('a_email'))
 			{
-				$user_cache[$poster_id]['email'] = ($config['board_email_form'] && $config['email_enable']) ? append_sid('memberlist', "mode=email&amp;u=$poster_id") : (($config['board_hide_emails'] && !$auth->acl_get('a_email')) ? '' : 'mailto:' . $row['user_email']);
+				$user_cache[$poster_id]['email'] = (phpbb::$config['board_email_form'] && phpbb::$config['email_enable']) ? append_sid('memberlist', "mode=email&amp;u=$poster_id") : ((phpbb::$config['board_hide_emails'] && !$auth->acl_get('a_email')) ? '' : 'mailto:' . $row['user_email']);
 			}
 			else
 			{
@@ -1117,7 +1117,7 @@ while ($row = $db->sql_fetchrow($result))
 				$user_cache[$poster_id]['icq'] = '';
 			}
 
-			if ($config['allow_birthdays'] && !empty($row['user_birthday']))
+			if (phpbb::$config['allow_birthdays'] && !empty($row['user_birthday']))
 			{
 				list($bday_day, $bday_month, $bday_year) = array_map('intval', explode('-', $row['user_birthday']));
 
@@ -1142,7 +1142,7 @@ while ($row = $db->sql_fetchrow($result))
 $db->sql_freeresult($result);
 
 // Load custom profile fields
-if ($config['load_cpf_viewtopic'])
+if (phpbb::$config['load_cpf_viewtopic'])
 {
 	include(PHPBB_ROOT_PATH . 'includes/functions_profile_fields.' . PHP_EXT);
 	$cp = new custom_profile();
@@ -1152,7 +1152,7 @@ if ($config['load_cpf_viewtopic'])
 }
 
 // Generate online information for user
-if ($config['load_onlinetrack'] && sizeof($id_cache))
+if (phpbb::$config['load_onlinetrack'] && sizeof($id_cache))
 {
 	$sql = 'SELECT session_user_id, MAX(session_time) as online_time, MIN(session_viewonline) AS viewonline
 		FROM ' . SESSIONS_TABLE . '
@@ -1160,7 +1160,7 @@ if ($config['load_onlinetrack'] && sizeof($id_cache))
 		GROUP BY session_user_id';
 	$result = $db->sql_query($sql);
 
-	$update_time = $config['load_online_time'] * 60;
+	$update_time = phpbb::$config['load_online_time'] * 60;
 	while ($row = $db->sql_fetchrow($result))
 	{
 		$user_cache[$row['session_user_id']]['online'] = (time() - $update_time < $row['online_time'] && (($row['viewonline']) || $auth->acl_get('u_viewonline'))) ? true : false;
@@ -1311,7 +1311,7 @@ for ($i = 0, $end = sizeof($post_list); $i < $end; ++$i)
 	}
 
 	// Editing information
-	if (($row['post_edit_count'] && $config['display_last_edited']) || $row['post_edit_reason'])
+	if (($row['post_edit_count'] && phpbb::$config['display_last_edited']) || $row['post_edit_reason'])
 	{
 		// Get usernames for all following posts if not already stored
 		if (!sizeof($post_edit_list) && ($row['post_edit_reason'] || ($row['post_edit_user'] && !isset($user_cache[$row['post_edit_user']]))))
@@ -1392,7 +1392,7 @@ for ($i = 0, $end = sizeof($post_list); $i < $end; ++$i)
 	$cp_row = array();
 
 	//
-	if ($config['load_cpf_viewtopic'])
+	if (phpbb::$config['load_cpf_viewtopic'])
 	{
 		$cp_row = (isset($profile_fields_cache[$poster_id])) ? $cp->generate_profile_fields_template('show', false, $profile_fields_cache[$poster_id]) : array();
 	}
@@ -1435,17 +1435,17 @@ for ($i = 0, $end = sizeof($post_list); $i < $end; ++$i)
 		'POST_ICON_IMG_WIDTH'	=> ($topic_data['enable_icons'] && !empty($row['icon_id'])) ? $icons[$row['icon_id']]['width'] : '',
 		'POST_ICON_IMG_HEIGHT'	=> ($topic_data['enable_icons'] && !empty($row['icon_id'])) ? $icons[$row['icon_id']]['height'] : '',
 		'ICQ_STATUS_IMG'		=> $user_cache[$poster_id]['icq_status_img'],
-		'ONLINE_IMG'			=> ($poster_id == ANONYMOUS || !$config['load_onlinetrack']) ? '' : (($user_cache[$poster_id]['online']) ? $user->img('icon_user_online', 'ONLINE') : $user->img('icon_user_offline', 'OFFLINE')),
-		'S_ONLINE'				=> ($poster_id == ANONYMOUS || !$config['load_onlinetrack']) ? false : (($user_cache[$poster_id]['online']) ? true : false),
+		'ONLINE_IMG'			=> ($poster_id == ANONYMOUS || !phpbb::$config['load_onlinetrack']) ? '' : (($user_cache[$poster_id]['online']) ? $user->img('icon_user_online', 'ONLINE') : $user->img('icon_user_offline', 'OFFLINE')),
+		'S_ONLINE'				=> ($poster_id == ANONYMOUS || !phpbb::$config['load_onlinetrack']) ? false : (($user_cache[$poster_id]['online']) ? true : false),
 
-		'U_EDIT'			=> (!$user->data['is_registered']) ? '' : ((($user->data['user_id'] == $poster_id && $auth->acl_get('f_edit', $forum_id) && ($row['post_time'] > time() - ($config['edit_time'] * 60) || !$config['edit_time'])) || $auth->acl_get('m_edit', $forum_id)) ? append_sid('posting', "mode=edit&amp;f=$forum_id&amp;p={$row['post_id']}") : ''),
+		'U_EDIT'			=> (!$user->data['is_registered']) ? '' : ((($user->data['user_id'] == $poster_id && $auth->acl_get('f_edit', $forum_id) && ($row['post_time'] > time() - (phpbb::$config['edit_time'] * 60) || !phpbb::$config['edit_time'])) || $auth->acl_get('m_edit', $forum_id)) ? append_sid('posting', "mode=edit&amp;f=$forum_id&amp;p={$row['post_id']}") : ''),
 		'U_QUOTE'			=> ($auth->acl_get('f_reply', $forum_id)) ? append_sid('posting', "mode=quote&amp;f=$forum_id&amp;p={$row['post_id']}") : '',
 		'U_INFO'			=> ($auth->acl_get('m_info', $forum_id)) ? append_sid('mcp', "i=main&amp;mode=post_details&amp;f=$forum_id&amp;p=" . $row['post_id'], true, $user->session_id) : '',
-		'U_DELETE'			=> (!$user->data['is_registered']) ? '' : ((($user->data['user_id'] == $poster_id && $auth->acl_get('f_delete', $forum_id) && $topic_data['topic_last_post_id'] == $row['post_id'] && !$row['post_edit_locked'] && ($row['post_time'] > time() - ($config['edit_time'] * 60) || !$config['edit_time'])) || $auth->acl_get('m_delete', $forum_id)) ? append_sid('posting', "mode=delete&amp;f=$forum_id&amp;p={$row['post_id']}") : ''),
+		'U_DELETE'			=> (!$user->data['is_registered']) ? '' : ((($user->data['user_id'] == $poster_id && $auth->acl_get('f_delete', $forum_id) && $topic_data['topic_last_post_id'] == $row['post_id'] && !$row['post_edit_locked'] && ($row['post_time'] > time() - (phpbb::$config['edit_time'] * 60) || !phpbb::$config['edit_time'])) || $auth->acl_get('m_delete', $forum_id)) ? append_sid('posting', "mode=delete&amp;f=$forum_id&amp;p={$row['post_id']}") : ''),
 
 		'U_PROFILE'		=> $user_cache[$poster_id]['profile'],
 		'U_SEARCH'		=> $user_cache[$poster_id]['search'],
-		'U_PM'			=> ($poster_id != ANONYMOUS && $config['allow_privmsg'] && $auth->acl_get('u_sendpm') && ($user_cache[$poster_id]['allow_pm'] || $auth->acl_gets('a_', 'm_') || $auth->acl_getf_global('m_'))) ? append_sid('ucp', 'i=pm&amp;mode=compose&amp;action=quotepost&amp;p=' . $row['post_id']) : '',
+		'U_PM'			=> ($poster_id != ANONYMOUS && phpbb::$config['allow_privmsg'] && $auth->acl_get('u_sendpm') && ($user_cache[$poster_id]['allow_pm'] || $auth->acl_gets('a_', 'm_') || $auth->acl_getf_global('m_'))) ? append_sid('ucp', 'i=pm&amp;mode=compose&amp;action=quotepost&amp;p=' . $row['post_id']) : '',
 		'U_EMAIL'		=> $user_cache[$poster_id]['email'],
 		'U_WWW'			=> $user_cache[$poster_id]['www'],
 		'U_ICQ'			=> $user_cache[$poster_id]['icq'],
@@ -1563,7 +1563,7 @@ if ($all_marked_read)
 }
 else if (!$all_marked_read)
 {
-	$last_page = ((floor($start / $config['posts_per_page']) + 1) == max(ceil($total_posts / $config['posts_per_page']), 1)) ? true : false;
+	$last_page = ((floor($start / phpbb::$config['posts_per_page']) + 1) == max(ceil($total_posts / phpbb::$config['posts_per_page']), 1)) ? true : false;
 
 	// What can happen is that we are at the last displayed page. If so, we also display the #unread link based in $post_unread
 	if ($last_page && $post_unread)

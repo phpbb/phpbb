@@ -31,7 +31,7 @@ class acp_inactive
 
 	function main($id, $mode)
 	{
-		global $config, $db, $user, $auth, $template;
+		global $db, $user, $auth, $template;
 
 		include(PHPBB_ROOT_PATH . 'includes/functions_user.' . PHP_EXT);
 
@@ -76,7 +76,7 @@ class acp_inactive
 
 					if ($action == 'activate')
 					{
-						if ($config['require_activation'] == USER_ACTIVATION_ADMIN)
+						if (phpbb::$config['require_activation'] == USER_ACTIVATION_ADMIN)
 						{
 							// Get those 'being activated'...
 							$sql = 'SELECT user_id, username, user_email, user_lang
@@ -95,7 +95,7 @@ class acp_inactive
 
 						user_active_flip('activate', $mark);
 
-						if ($config['require_activation'] == USER_ACTIVATION_ADMIN && !empty($inactive_users))
+						if (phpbb::$config['require_activation'] == USER_ACTIVATION_ADMIN && !empty($inactive_users))
 						{
 							include_once(PHPBB_ROOT_PATH . 'includes/functions_messenger.' . PHP_EXT);
 
@@ -107,7 +107,7 @@ class acp_inactive
 
 								$messenger->to($row['user_email'], $row['username']);
 
-								$messenger->headers('X-AntiAbuse: Board servername - ' . $config['server_name']);
+								$messenger->headers('X-AntiAbuse: Board servername - ' . phpbb::$config['server_name']);
 								$messenger->headers('X-AntiAbuse: User_id - ' . $user->data['user_id']);
 								$messenger->headers('X-AntiAbuse: Username - ' . $user->data['username']);
 
@@ -153,7 +153,7 @@ class acp_inactive
 				break;
 
 				case 'remind':
-					if (empty($config['email_enable']))
+					if (empty(phpbb::$config['email_enable']))
 					{
 						trigger_error($user->lang['EMAIL_DISABLED'] . adm_back_link($this->u_action), E_USER_WARNING);
 					}
@@ -216,7 +216,7 @@ class acp_inactive
 		$inactive = array();
 		$inactive_count = 0;
 
-		$start = view_inactive_users($inactive, $inactive_count, $config['topics_per_page'], $start, $sql_where, $sql_sort);
+		$start = view_inactive_users($inactive, $inactive_count, phpbb::$config['topics_per_page'], $start, $sql_where, $sql_sort);
 
 		foreach ($inactive as $row)
 		{
@@ -232,7 +232,7 @@ class acp_inactive
 		}
 
 		$option_ary = array('activate' => 'ACTIVATE', 'delete' => 'DELETE');
-		if ($config['email_enable'])
+		if (phpbb::$config['email_enable'])
 		{
 			$option_ary += array('remind' => 'REMIND');
 		}
@@ -244,8 +244,8 @@ class acp_inactive
 			'S_LIMIT_DAYS'	=> $s_limit_days,
 			'S_SORT_KEY'	=> $s_sort_key,
 			'S_SORT_DIR'	=> $s_sort_dir,
-			'S_ON_PAGE'		=> on_page($inactive_count, $config['topics_per_page'], $start),
-			'PAGINATION'	=> generate_pagination($this->u_action . "&amp;$u_sort_param", $inactive_count, $config['topics_per_page'], $start, true),
+			'S_ON_PAGE'		=> on_page($inactive_count, phpbb::$config['topics_per_page'], $start),
+			'PAGINATION'	=> generate_pagination($this->u_action . "&amp;$u_sort_param", $inactive_count, phpbb::$config['topics_per_page'], $start, true),
 
 			'U_ACTION'		=> $this->u_action . '&amp;start=' . $start,
 		));

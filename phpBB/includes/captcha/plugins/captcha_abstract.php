@@ -32,7 +32,7 @@ abstract class phpbb_default_captcha implements phpbb_captcha_plugin
 
 	function init($type)
 	{
-		global $config, $db, $user;
+		global $db, $user;
 
 		// read input
 		$this->confirm_id = request_var('confirm_id', '');
@@ -76,7 +76,7 @@ abstract class phpbb_default_captcha implements phpbb_captcha_plugin
 
 	function get_template()
 	{
-		global $config, $user, $template;
+		global $user, $template;
 
 		$template->set_filenames(array(
 			'captcha' => 'captcha_default.html')
@@ -92,7 +92,7 @@ abstract class phpbb_default_captcha implements phpbb_captcha_plugin
 
 	function get_demo_template($id)
 	{
-		global $config, $user, $template;
+		global $user, $template;
 
 		$template->set_filenames(array(
 			'captcha_demo' => 'captcha_default_acp_demo.html')
@@ -121,7 +121,7 @@ abstract class phpbb_default_captcha implements phpbb_captcha_plugin
 
 	static function garbage_collect($type)
 	{
-		global $db, $config;
+		global $db;
 
 		$sql = 'SELECT DISTINCT c.session_id
 				FROM ' . CONFIRM_TABLE . ' c
@@ -161,7 +161,7 @@ abstract class phpbb_default_captcha implements phpbb_captcha_plugin
 
 	function validate()
 	{
-		global $config, $db, $user;
+		global $db, $user;
 
 		$this->confirm_code = request_var('confirm_code', '');
 

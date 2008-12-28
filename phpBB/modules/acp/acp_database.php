@@ -25,7 +25,7 @@ class acp_database
 
 	function main($id, $mode)
 	{
-		global $db, $user, $auth, $template, $table_prefix, $config;
+		global $db, $user, $auth, $template, $table_prefix;
 
 		$user->add_lang('acp/database');
 

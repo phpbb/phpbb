@@ -33,7 +33,7 @@ class mcp_notes
 
 	function main($id, $mode)
 	{
-		global $auth, $db, $user, $template, $config;
+		global $auth, $db, $user, $template;
 
 		$action = request_var('action', array('' => ''));
 
@@ -71,7 +71,7 @@ class mcp_notes
 	*/
 	function mcp_notes_user_view($action)
 	{
-		global $template, $db, $user, $auth, $config;
+		global $template, $db, $user, $auth;
 
 		$user_id = request_var('u', 0);
 		$username = request_var('username', '', true);
@@ -193,7 +193,7 @@ class mcp_notes
 
 		$log_data = array();
 		$log_count = 0;
-		view_log('user', $log_data, $log_count, $config['posts_per_page'], $start, 0, 0, $user_id, $sql_where, $sql_sort);
+		view_log('user', $log_data, $log_count, phpbb::$config['posts_per_page'], $start, 0, 0, $user_id, $sql_where, $sql_sort);
 
 		if ($log_count)
 		{
@@ -220,8 +220,8 @@ class mcp_notes
 
 			'L_TITLE'			=> $user->lang['MCP_NOTES_USER'],
 
-			'PAGE_NUMBER'		=> on_page($log_count, $config['posts_per_page'], $start),
-			'PAGINATION'		=> generate_pagination($this->u_action . "&amp;st=$st&amp;sk=$sk&amp;sd=$sd", $log_count, $config['posts_per_page'], $start),
+			'PAGE_NUMBER'		=> on_page($log_count, phpbb::$config['posts_per_page'], $start),
+			'PAGINATION'		=> generate_pagination($this->u_action . "&amp;st=$st&amp;sk=$sk&amp;sd=$sd", $log_count, phpbb::$config['posts_per_page'], $start),
 			'TOTAL_REPORTS'		=> ($log_count == 1) ? $user->lang['LIST_REPORT'] : sprintf($user->lang['LIST_REPORTS'], $log_count),
 
 			'USERNAME'			=> $userrow['username'],

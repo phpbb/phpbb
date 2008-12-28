@@ -33,7 +33,7 @@ class ucp_main
 
 	function main($id, $mode)
 	{
-		global $config, $db, $user, $auth, $template;
+		global $db, $user, $auth, $template;
 
 		switch ($mode)
 		{
@@ -44,14 +44,14 @@ class ucp_main
 				$sql_from = TOPICS_TABLE . ' t ';
 				$sql_select = '';
 
-				if ($config['load_db_track'])
+				if (phpbb::$config['load_db_track'])
 				{
 					$sql_from .= ' LEFT JOIN ' . TOPICS_POSTED_TABLE . ' tp ON (tp.topic_id = t.topic_id
 						AND tp.user_id = ' . $user->data['user_id'] . ')';
 					$sql_select .= ', tp.topic_posted';
 				}
 
-				if ($config['load_db_lastread'])
+				if (phpbb::$config['load_db_lastread'])
 				{
 					$sql_from .= ' LEFT JOIN ' . TOPICS_TRACK_TABLE . ' tt ON (tt.topic_id = t.topic_id
 						AND tt.user_id = ' . $user->data['user_id'] . ')';
@@ -100,7 +100,7 @@ class ucp_main
 				}
 
 				$topic_tracking_info = array();
-				if ($config['load_db_lastread'])
+				if (phpbb::$config['load_db_lastread'])
 				{
 					$topic_tracking_info = get_topic_tracking(0, $topic_list, $rowset, false, $topic_list);
 				}
@@ -163,7 +163,7 @@ class ucp_main
 					);
 				}
 
-				if ($config['load_user_activity'])
+				if (phpbb::$config['load_user_activity'])
 				{
 					if (!function_exists('display_user_activity'))
 					{
@@ -175,7 +175,7 @@ class ucp_main
 				// Do the relevant calculations
 				$memberdays = max(1, round((time() - $user->data['user_regdate']) / 86400));
 				$posts_per_day = $user->data['user_posts'] / $memberdays;
-				$percentage = ($config['num_posts']) ? min(100, ($user->data['user_posts'] / $config['num_posts']) * 100) : 0;
+				$percentage = (phpbb::$config['num_posts']) ? min(100, ($user->data['user_posts'] / phpbb::$config['num_posts']) * 100) : 0;
 
 				$template->assign_vars(array(
 					'USER_COLOR'		=> (!empty($user->data['user_colour'])) ? $user->data['user_colour'] : '',
@@ -254,7 +254,7 @@ class ucp_main
 
 				$forbidden_forums = array();
 
-				if ($config['allow_forum_notify'])
+				if (phpbb::$config['allow_forum_notify'])
 				{
 					$forbidden_forums = $auth->acl_getf('!f_read', true);
 					$forbidden_forums = array_unique(array_keys($forbidden_forums));
@@ -274,7 +274,7 @@ class ucp_main
 						'ORDER_BY'	=> 'left_id'
 					);
 
-					if ($config['load_db_lastread'])
+					if (phpbb::$config['load_db_lastread'])
 					{
 						$sql_array['LEFT_JOIN'] = array(
 							array(
@@ -287,7 +287,7 @@ class ucp_main
 					}
 					else
 					{
-						$tracking_topics = phpbb_request::variable($config['cookie_name'] . '_track', '', false, phpbb_request::COOKIE);
+						$tracking_topics = phpbb_request::variable(phpbb::$config['cookie_name'] . '_track', '', false, phpbb_request::COOKIE);
 						$tracking_topics = ($tracking_topics) ? tracking_unserialize($tracking_topics) : array();
 					}
 
@@ -298,13 +298,13 @@ class ucp_main
 					{
 						$forum_id = $row['forum_id'];
 
-						if ($config['load_db_lastread'])
+						if (phpbb::$config['load_db_lastread'])
 						{
 							$forum_check = (!empty($row['mark_time'])) ? $row['mark_time'] : $user->data['user_lastmark'];
 						}
 						else
 						{
-							$forum_check = (isset($tracking_topics['f'][$forum_id])) ? (int) (base_convert($tracking_topics['f'][$forum_id], 36, 10) + $config['board_startdate']) : $user->data['user_lastmark'];
+							$forum_check = (isset($tracking_topics['f'][$forum_id])) ? (int) (base_convert($tracking_topics['f'][$forum_id], 36, 10) + phpbb::$config['board_startdate']) : $user->data['user_lastmark'];
 						}
 
 						$unread_forum = ($row['forum_last_post_time'] > $forum_check) ? true : false;
@@ -356,7 +356,7 @@ class ucp_main
 				}
 
 				// Subscribed Topics
-				if ($config['allow_topic_notify'])
+				if (phpbb::$config['allow_topic_notify'])
 				{
 					if (empty($forbidden_forums))
 					{
@@ -367,15 +367,15 @@ class ucp_main
 				}
 
 				$template->assign_vars(array(
-					'S_TOPIC_NOTIFY'		=> $config['allow_topic_notify'],
-					'S_FORUM_NOTIFY'		=> $config['allow_forum_notify'],
+					'S_TOPIC_NOTIFY'		=> phpbb::$config['allow_topic_notify'],
+					'S_FORUM_NOTIFY'		=> phpbb::$config['allow_forum_notify'],
 				));
 
 			break;
 
 			case 'bookmarks':
 
-				if (!$config['allow_bookmarks'])
+				if (!phpbb::$config['allow_bookmarks'])
 				{
 					$template->assign_vars(array(
 						'S_NO_DISPLAY_BOOKMARKS'	=> true)
@@ -633,7 +633,7 @@ class ucp_main
 	*/
 	function assign_topiclist($mode = 'subscribed', $forbidden_forum_ary = array())
 	{
-		global $user, $db, $template, $config, $auth;
+		global $user, $db, $template, $auth;
 
 		$table = ($mode == 'subscribed') ? TOPICS_WATCH_TABLE : BOOKMARKS_TABLE;
 		$start = request_var('start', 0);
@@ -658,8 +658,8 @@ class ucp_main
 		if ($topics_count)
 		{
 			$template->assign_vars(array(
-				'PAGINATION'	=> generate_pagination($this->u_action, $topics_count, $config['topics_per_page'], $start),
-				'PAGE_NUMBER'	=> on_page($topics_count, $config['topics_per_page'], $start),
+				'PAGINATION'	=> generate_pagination($this->u_action, $topics_count, phpbb::$config['topics_per_page'], $start),
+				'PAGE_NUMBER'	=> on_page($topics_count, phpbb::$config['topics_per_page'], $start),
 				'TOTAL_TOPICS'	=> ($topics_count == 1) ? $user->lang['VIEW_FORUM_TOPIC'] : sprintf($user->lang['VIEW_FORUM_TOPICS'], $topics_count))
 			);
 		}
@@ -705,21 +705,21 @@ class ucp_main
 
 		$sql_array['LEFT_JOIN'][] = array('FROM' => array(FORUMS_TABLE => 'f'), 'ON' => 't.forum_id = f.forum_id');
 
-		if ($config['load_db_lastread'])
+		if (phpbb::$config['load_db_lastread'])
 		{
 			$sql_array['LEFT_JOIN'][] = array('FROM' => array(FORUMS_TRACK_TABLE => 'ft'), 'ON' => 'ft.forum_id = t.forum_id AND ft.user_id = ' . $user->data['user_id']);
 			$sql_array['LEFT_JOIN'][] = array('FROM' => array(TOPICS_TRACK_TABLE => 'tt'), 'ON' => 'tt.topic_id = t.topic_id AND tt.user_id = ' . $user->data['user_id']);
 			$sql_array['SELECT'] .= ', tt.mark_time, ft.mark_time AS forum_mark_time';
 		}
 
-		if ($config['load_db_track'])
+		if (phpbb::$config['load_db_track'])
 		{
 			$sql_array['LEFT_JOIN'][] = array('FROM' => array(TOPICS_POSTED_TABLE => 'tp'), 'ON' => 'tp.topic_id = t.topic_id AND tp.user_id = ' . $user->data['user_id']);
 			$sql_array['SELECT'] .= ', tp.topic_posted';
 		}
 
 		$sql = $db->sql_build_query('SELECT', $sql_array);
-		$result = $db->sql_query_limit($sql, $config['topics_per_page'], $start);
+		$result = $db->sql_query_limit($sql, phpbb::$config['topics_per_page'], $start);
 
 		$topic_list = $topic_forum_list = $global_announce_list = $rowset = array();
 		while ($row = $db->sql_fetchrow($result))
@@ -729,7 +729,7 @@ class ucp_main
 			$topic_list[] = $topic_id;
 			$rowset[$topic_id] = $row;
 
-			$topic_forum_list[$row['forum_id']]['forum_mark_time'] = ($config['load_db_lastread']) ? $row['forum_mark_time'] : 0;
+			$topic_forum_list[$row['forum_id']]['forum_mark_time'] = (phpbb::$config['load_db_lastread']) ? $row['forum_mark_time'] : 0;
 			$topic_forum_list[$row['forum_id']]['topics'][] = $topic_id;
 
 			if ($row['topic_type'] == POST_GLOBAL)
@@ -740,7 +740,7 @@ class ucp_main
 		$db->sql_freeresult($result);
 
 		$topic_tracking_info = array();
-		if ($config['load_db_lastread'])
+		if (phpbb::$config['load_db_lastread'])
 		{
 			foreach ($topic_forum_list as $f_id => $topic_row)
 			{

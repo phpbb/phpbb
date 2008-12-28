@@ -26,13 +26,13 @@ class acp_captcha
 
 	function main($id, $mode)
 	{
-		global $db, $user, $auth, $template, $config;
+		global $db, $user, $auth, $template;
 
 		$user->add_lang('acp/board');
 
 		include(PHPBB_ROOT_PATH . 'includes/captcha/captcha_factory.' . PHP_EXT);
 
-		$selected = request_var('select_captcha', $config['captcha_plugin']);
+		$selected = request_var('select_captcha', phpbb::$config['captcha_plugin']);
 		$configure = request_var('configure', false);
 
 		// Oh, they are just here for the view
@@ -70,15 +70,15 @@ class acp_captcha
 				{
 					set_config($config_var, request_var($config_var, false));
 				}
-				if ($selected !== $config['captcha_plugin'])
+				if ($selected !== phpbb::$config['captcha_plugin'])
 				{
 					// sanity check
 					if (isset($captchas['available'][$selected]))
 					{
-						$old_captcha = phpbb_captcha_factory::get_instance($config['captcha_plugin']);
+						$old_captcha = phpbb_captcha_factory::get_instance(phpbb::$config['captcha_plugin']);
 						$old_captcha->uninstall();
 						set_config('captcha_plugin', $selected);
-						$new_captcha = phpbb_captcha_factory::get_instance($config['captcha_plugin']);
+						$new_captcha = phpbb_captcha_factory::get_instance(phpbb::$config['captcha_plugin']);
 						$new_captcha->install();
 					}
 					else
@@ -127,7 +127,7 @@ class acp_captcha
 	*/
 	function deliver_demo($selected)
 	{
-		global $db, $user, $config;
+		global $db, $user;
 
 		$captcha = phpbb_captcha_factory::get_instance($selected);
 		$captcha->init(CONFIRM_REG);

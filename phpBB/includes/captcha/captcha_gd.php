@@ -32,7 +32,6 @@ class captcha
 	*/
 	public static function execute($code, $seed)
 	{
-		global $config;
 		srand($seed);
 		mt_srand($seed);
 
@@ -79,9 +78,9 @@ class captcha
 			$width_avail -= $offset[$i];
 		}
 
-		if ($config['captcha_gd_x_grid'])
+		if (phpbb::$config['captcha_gd_x_grid'])
 		{
-			$grid = (int) $config['captcha_gd_x_grid'];
+			$grid = (int) phpbb::$config['captcha_gd_x_grid'];
 			for ($y = 0; $y < self::height; $y += mt_rand($grid - 2, $grid + 2))
 			{
 				$current_colour = $scheme[array_rand($scheme)];
@@ -89,9 +88,9 @@ class captcha
 			}
 		}
 
-		if ($config['captcha_gd_y_grid'])
+		if (phpbb::$config['captcha_gd_y_grid'])
 		{
-			$grid = (int) $config['captcha_gd_y_grid'];
+			$grid = (int) phpbb::$config['captcha_gd_y_grid'];
 			for ($x = 0; $x < self::width; $x += mt_rand($grid - 2, $grid + 2))
 			{
 				$current_colour = $scheme[array_rand($scheme)];
@@ -109,8 +108,8 @@ class captcha
 			$characters[$i]->drawchar($sizes[$i], $xoffset, $yoffset, $img, $colour->get_resource('background'), $scheme);
 			$xoffset += $dimm[2];
 		}
-		
-		if ($config['captcha_gd_foreground_noise'])
+
+		if (phpbb::$config['captcha_gd_foreground_noise'])
 		{
 			self::noise_line($img, 0, 0, self::width, self::height, $colour->get_resource('background'), $scheme, $bg_colours);
 		}
@@ -1123,7 +1122,7 @@ class colour_manager
 		{
 			$mode = $this->mode;
 		}
-		
+
 		if (!is_array($colour))
 		{
 			if (isset($this->named_rgb[$colour]))
@@ -1317,7 +1316,7 @@ class colour_manager
 		}
 
 		// This is a hard problem. I chicken out and try to maintain readability at the cost of less randomness.
-		
+
 		while ($count > 0)
 		{
 			$colour[1] = ($colour[1] + mt_rand(40,60)) % 99;

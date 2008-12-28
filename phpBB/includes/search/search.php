@@ -152,9 +152,9 @@ class search_backend
 	*/
 	protected function save_ids($search_key, $keywords, $author_ary, $result_count, &$id_ary, $start, $sort_dir)
 	{
-		global $config, $db, $user;
+		global $db, $user;
 
-		$length = min(sizeof($id_ary), $config['search_block_size']);
+		$length = min(sizeof($id_ary), phpbb::$config['search_block_size']);
 
 		// nothing to cache so exit
 		if (!$length)
@@ -222,10 +222,10 @@ class search_backend
 			$store += $store_ids;
 
 			// if the cache is too big
-			if (sizeof($store) - 2 > 20 * $config['search_block_size'])
+			if (sizeof($store) - 2 > 20 * phpbb::$config['search_block_size'])
 			{
 				// remove everything in front of two blocks in front of the current start index
-				for ($i = 0, $n = $id_range[0] - 2 * $config['search_block_size']; $i < $n; $i++)
+				for ($i = 0, $n = $id_range[0] - 2 * phpbb::$config['search_block_size']; $i < $n; $i++)
 				{
 					if (isset($store[$i]))
 					{
@@ -235,7 +235,7 @@ class search_backend
 
 				// remove everything after two blocks after the current stop index
 				end($id_range);
-				for ($i = $store[-1] - 1, $n = current($id_range) + 2 * $config['search_block_size']; $i > $n; $i--)
+				for ($i = $store[-1] - 1, $n = current($id_range) + 2 * phpbb::$config['search_block_size']; $i > $n; $i--)
 				{
 					if (isset($store[$i]))
 					{
@@ -243,7 +243,7 @@ class search_backend
 					}
 				}
 			}
-			phpbb::$acm->put('search_results_' . $search_key, $store, $config['search_store_results']);
+			phpbb::$acm->put('search_results_' . $search_key, $store, phpbb::$config['search_store_results']);
 
 			$sql = 'UPDATE ' . SEARCH_RESULTS_TABLE . '
 				SET search_time = ' . time() . '
@@ -261,7 +261,7 @@ class search_backend
 	*/
 	public function destroy_cache($words, $authors = false)
 	{
-		global $db, $config;
+		global $db;
 
 		// clear all searches that searched for the specified words
 		if (sizeof($words))
@@ -307,7 +307,7 @@ class search_backend
 
 		$sql = 'DELETE
 			FROM ' . SEARCH_RESULTS_TABLE . '
-			WHERE search_time < ' . (time() - $config['search_store_results']);
+			WHERE search_time < ' . (time() - phpbb::$config['search_store_results']);
 		$db->sql_query($sql);
 	}
 }

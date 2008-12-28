@@ -34,17 +34,17 @@ echo base64_decode('R0lGODlhAQABAIAAAP///wAAACH5BAEAAAAALAAAAAABAAEAAAICRAEAOw==
 // flush();
 
 //
-if (!isset($config['cron_lock']))
+if (!isset(phpbb::$config['cron_lock']))
 {
 	set_config('cron_lock', '0', true);
 }
 
 // make sure cron doesn't run multiple times in parallel
-if ($config['cron_lock'])
+if (phpbb::$config['cron_lock'])
 {
 	// if the other process is running more than an hour already we have to assume it
 	// aborted without cleaning the lock
-	$time = explode(' ', $config['cron_lock']);
+	$time = explode(' ', phpbb::$config['cron_lock']);
 	$time = $time[0];
 
 	if ($time + 3600 >= time())
@@ -57,7 +57,7 @@ define('CRON_ID', time() . ' ' . unique_id());
 
 $sql = 'UPDATE ' . CONFIG_TABLE . "
 	SET config_value = '" . $db->sql_escape(CRON_ID) . "'
-	WHERE config_name = 'cron_lock' AND config_value = '" . $db->sql_escape($config['cron_lock']) . "'";
+	WHERE config_name = 'cron_lock' AND config_value = '" . $db->sql_escape(phpbb::$config['cron_lock']) . "'";
 $db->sql_query($sql);
 
 // another cron process altered the table between script start and UPDATE query so exit
@@ -74,13 +74,13 @@ switch ($cron_type)
 {
 	case 'queue':
 
-		if (time() - $config['queue_interval'] <= $config['last_queue_run'] || !file_exists(PHPBB_ROOT_PATH . 'cache/queue.' . PHP_EXT))
+		if (time() - phpbb::$config['queue_interval'] <= phpbb::$config['last_queue_run'] || !file_exists(PHPBB_ROOT_PATH . 'cache/queue.' . PHP_EXT))
 		{
 			break;
 		}
 
 		// A user reported using the mail() function while using shutdown does not work. We do not want to risk that.
-		if ($use_shutdown_function && !$config['smtp_delivery'])
+		if ($use_shutdown_function && !phpbb::$config['smtp_delivery'])
 		{
 			$use_shutdown_function = false;
 		}
@@ -101,7 +101,7 @@ switch ($cron_type)
 
 	case 'tidy_cache':
 
-		if (time() - $config['cache_gc'] <= $config['cache_last_gc'] || !method_exists(phpbb::$acm, 'tidy'))
+		if (time() - phpbb::$config['cache_gc'] <= phpbb::$config['cache_last_gc'] || !method_exists(phpbb::$acm, 'tidy'))
 		{
 			break;
 		}
@@ -120,9 +120,9 @@ switch ($cron_type)
 	case 'tidy_search':
 
 		// Select the search method
-		$search_type = basename($config['search_type']);
+		$search_type = basename(phpbb::$config['search_type']);
 
-		if (time() - $config['search_gc'] <= $config['search_last_gc'] || !file_exists(PHPBB_ROOT_PATH . 'includes/search/' . $search_type . '.' . PHP_EXT))
+		if (time() - phpbb::$config['search_gc'] <= phpbb::$config['search_last_gc'] || !file_exists(PHPBB_ROOT_PATH . 'includes/search/' . $search_type . '.' . PHP_EXT))
 		{
 			break;
 		}
@@ -151,7 +151,7 @@ switch ($cron_type)
 
 	case 'tidy_warnings':
 
-		if (time() - $config['warnings_gc'] <= $config['warnings_last_gc'])
+		if (time() - phpbb::$config['warnings_gc'] <= phpbb::$config['warnings_last_gc'])
 		{
 			break;
 		}
@@ -171,7 +171,7 @@ switch ($cron_type)
 
 	case 'tidy_database':
 
-		if (time() - $config['database_gc'] <= $config['database_last_gc'])
+		if (time() - phpbb::$config['database_gc'] <= phpbb::$config['database_last_gc'])
 		{
 			break;
 		}
@@ -191,7 +191,7 @@ switch ($cron_type)
 
 	case 'tidy_sessions':
 
-		if (time() - $config['session_gc'] <= $config['session_last_gc'])
+		if (time() - phpbb::$config['session_gc'] <= phpbb::$config['session_last_gc'])
 		{
 			break;
 		}

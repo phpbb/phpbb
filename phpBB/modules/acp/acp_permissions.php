@@ -26,7 +26,7 @@ class acp_permissions
 
 	function main($id, $mode)
 	{
-		global $db, $user, $auth, $template, $config;
+		global $db, $user, $auth, $template;
 
 		include_once(PHPBB_ROOT_PATH . 'includes/functions_user.' . PHP_EXT);
 		include_once(PHPBB_ROOT_PATH . 'includes/acp/auth.' . PHP_EXT);
@@ -79,7 +79,7 @@ class acp_permissions
 		if ($select_all_groups)
 		{
 			// Add default groups to selection
-			$sql_and = (!$config['coppa_enable']) ? " AND group_name <> 'REGISTERED_COPPA'" : '';
+			$sql_and = (!phpbb::$config['coppa_enable']) ? " AND group_name <> 'REGISTERED_COPPA'" : '';
 
 			$sql = 'SELECT group_id
 				FROM ' . GROUPS_TABLE . '
