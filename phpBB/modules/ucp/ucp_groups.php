@@ -26,7 +26,7 @@ class ucp_groups
 
 	function main($id, $mode)
 	{
-		global $db, $user, $auth, $cache, $template, $config;
+		global $db, $user, $auth, $template, $config;
 
 		$user->add_lang('groups');
 
@@ -612,7 +612,7 @@ class ucp_groups
 
 								if (!($error = group_create($group_id, $group_type, $group_name, $group_desc, $group_attributes, $allow_desc_bbcode, $allow_desc_urls, $allow_desc_smilies)))
 								{
-									$cache->destroy('sql', GROUPS_TABLE);
+									phpbb::$acm->destroy_sql(GROUPS_TABLE);
 
 									$message = ($action == 'edit') ? 'GROUP_UPDATED' : 'GROUP_CREATED';
 									trigger_error($user->lang[$message] . $return_page);

@@ -25,7 +25,7 @@ class acp_email
 
 	function main($id, $mode)
 	{
-		global $config, $db, $user, $auth, $template, $cache;
+		global $config, $db, $user, $auth, $template;
 
 		$user->add_lang('acp/email');
 		$this->tpl_name = 'acp_email';

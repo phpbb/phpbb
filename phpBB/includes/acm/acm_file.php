@@ -17,35 +17,136 @@ if (!defined('IN_PHPBB'))
 }
 
 /**
-* ACM File Based Caching
+* Define file-based cache.
 * @package acm
 */
-class acm
+class phpbb_acm_file extends phpbb_acm_abstract
 {
-	private $vars = array();
-	private $var_expires = array();
-	private $is_modified = false;
-
-	public $sql_rowset = array();
+	/**
+	* @var string The cache directory to use
+	*/
 	public $cache_dir = '';
 
 	/**
-	* Set cache path
+	* @var array|bool The cache types this class supports. True indicates support for all types.
 	*/
-	function __construct()
+	public $supported = true;
+
+	/**
+	* Set cache directory
+	*
+	* @param string	$cache_prefix	The cache prefix the instance is responsible for
+	* @access public
+	*/
+	public function __construct($cache_prefix)
 	{
 		$this->cache_dir = PHPBB_ROOT_PATH . 'cache/';
+		$this->cache_prefix = $cache_prefix;
 	}
 
 	/**
-	* Load global cache
+	* {@link phpbb_acm_abstract::get() get()}
 	*/
-	private function load()
+	public function get($var_name)
+	{
+		if ($var_name[0] === '#')
+		{
+			$var_name = substr($var_name, 1);
+			return $this->get_global($var_name);
+		}
+
+		if (!$this->exists($var_name))
+		{
+			return false;
+		}
+
+		@include($this->cache_dir . $this->cache_prefix . '_' . $var_name . '.' . PHP_EXT);
+
+		// If no data there, then the file expired...
+		if ($expired)
+		{
+			// Destroy
+			$this->destroy($var_name);
+			return false;
+		}
+
+		return $data;
+	}
+
+	/**
+	* {@link phpbb_acm_abstract::put() put()}
+	*/
+	public function put($var_name, $data, $ttl = 31536000)
+	{
+		if ($var_name[0] === '#')
+		{
+			$var_name = substr($var_name, 1);
+			return $this->put_global($var_name, $data, $ttl);
+		}
+
+		$filename = $this->cache_dir . $this->cache_prefix . '_' . $var_name . '.' . PHP_EXT;
+
+		if ($fp = @fopen($filename, 'wb'))
+		{
+			@flock($fp, LOCK_EX);
+			fwrite($fp, "<?php\n\$expired = (time() > " . (time() + $ttl) . ") ? true : false;\nif (\$expired) { return; }\n\$data =  " . (sizeof($data) ? "unserialize(" . var_export(serialize($data), true) . ");" : 'array();'));
+			@flock($fp, LOCK_UN);
+			fclose($fp);
+
+			if (!function_exists('phpbb_chmod'))
+			{
+				include(PHPBB_ROOT_PATH . 'includes/functions.' . PHP_EXT);
+			}
+
+			phpbb_chmod($filename, phpbb::CHMOD_WRITE);
+		}
+
+		return $data;
+	}
+
+
+	/**
+	* {@link phpbb_acm_abstract::exists() exists()}
+	*/
+	public function exists($var_name)
+	{
+		if ($var_name[0] === '#')
+		{
+			$var_name = substr($var_name, 1);
+			return $this->exists_global($var_name);
+		}
+
+		return file_exists($this->cache_dir . $this->cache_prefix . '_' . $var_name . '.' . PHP_EXT);
+	}
+
+	/**
+	* {@link phpbb_acm_abstract::destroy() destroy()}
+	*/
+	public function destroy($var_name)
+	{
+		if ($var_name[0] === '#')
+		{
+			$var_name = substr($var_name, 1);
+			$this->destroy_global($var_name);
+		}
+
+		if (!$this->exists($var_name))
+		{
+			return false;
+		}
+
+		$this->remove_file($this->cache_dir . $this->cache_prefix . '_' . $var_name . '.' . PHP_EXT, true);
+	}
+
+	/**
+	* {@link phpbb_acm_abstract::load() load()}
+	*/
+	public function load()
 	{
 		// grab the global cache
-		if (file_exists($this->cache_dir . 'data_global.' . PHP_EXT))
+		if (file_exists($this->cache_dir . $this->cache_prefix . '_global.' . PHP_EXT))
 		{
-			@include($this->cache_dir . 'data_global.' . PHP_EXT);
+			@include($this->cache_dir . $this->cache_prefix . '_global.' . PHP_EXT);
 			return true;
 		}
 
@@ -53,31 +154,18 @@ class acm
 	}
 
 	/**
-	* Unload cache object
+	* {@link phpbb_acm_abstract::unload() unload()}
 	*/
 	public function unload()
-	{
-		$this->save();
-		unset($this->vars);
-		unset($this->var_expires);
-		unset($this->sql_rowset);
-
-		$this->vars = array();
-		$this->var_expires = array();
-		$this->sql_rowset = array();
-	}
-
-	/**
-	* Save modified objects
-	*/
-	private function save()
 	{
 		if (!$this->is_modified)
 		{
 			return;
 		}
 
-		if ($fp = @fopen($this->cache_dir . 'data_global.' . PHP_EXT, 'wb'))
+		$filename = $this->cache_dir . $this->cache_prefix . '_global.' . PHP_EXT;
+
+		if ($fp = @fopen($filename, 'wb'))
 		{
 			@flock($fp, LOCK_EX);
 			fwrite($fp, "<?php\n\$this->vars = unserialize(" . var_export(serialize($this->vars), true) . ");\n\$this->var_expires = unserialize(" . var_export(serialize($this->var_expires), true) . ");");
@@ -89,7 +177,7 @@ class acm
 				include(PHPBB_ROOT_PATH . 'includes/functions.' . PHP_EXT);
 			}
 
-			phpbb_chmod($this->cache_dir . 'data_global.' . PHP_EXT, phpbb::CHMOD_WRITE);
+			phpbb_chmod($filename, phpbb::CHMOD_WRITE);
 		}
 		else
 		{
@@ -99,16 +187,20 @@ class acm
 				trigger_error($this->cache_dir . ' is NOT writable.', E_USER_ERROR);
 			}
 
-			trigger_error('Not able to open ' . $this->cache_dir . 'data_global.' . PHP_EXT, E_USER_ERROR);
+			trigger_error('Not able to open ' . $filename, E_USER_ERROR);
 		}
 
 		$this->is_modified = false;
+
+		// To reset the global vars
+		$this->vars = $this->var_expires = array();
 	}
 
 	/**
-	* Tidy cache
+	* Tidy local cache data. Also see {@link phpbb_acm_abstract::tidy() tidy()}
+	* @access protected
 	*/
-	public function tidy()
+	protected function tidy_local()
 	{
 		$dir = @opendir($this->cache_dir);
 
@@ -119,96 +211,28 @@ class acm
 
 		while (($entry = readdir($dir)) !== false)
 		{
-			if (!preg_match('/^(sql_|data_(?!global))/', $entry))
+			if (strpos($entry, $this->cache_prefix . '_') !== 0 || strpos($entry, $this->cache_prefix . '_global') === 0)
 			{
 				continue;
 			}
 
 			$expired = true;
 			@include($this->cache_dir . $entry);
+
 			if ($expired)
 			{
 				$this->remove_file($this->cache_dir . $entry);
 			}
 		}
 		closedir($dir);
-
-		if (file_exists($this->cache_dir . 'data_global.' . PHP_EXT))
-		{
-			if (!sizeof($this->vars))
-			{
-				$this->load();
-			}
-
-			foreach ($this->var_expires as $var_name => $expires)
-			{
-				if (time() > $expires)
-				{
-					$this->destroy($var_name);
-				}
-			}
-		}
-
-		set_config('cache_last_gc', time(), true);
 	}
 
 	/**
-	* Get saved cache object
+	* Purge local cache data. Also see {@link phpbb_acm_abstract::purge() purge()}
+	* @access protected
 	*/
-	public function get($var_name)
+	protected function purge_local()
 	{
-		if ($var_name[0] === '_')
-		{
-			if (!$this->_exists($var_name))
-			{
-				return false;
-			}
-
-			@include($this->cache_dir . "data{$var_name}." . PHP_EXT);
-			return (isset($data)) ? $data : false;
-		}
-		else
-		{
-			return ($this->_exists($var_name)) ? $this->vars[$var_name] : false;
-		}
-	}
-
-	/**
-	* Put data into cache
-	*/
-	function put($var_name, $var, $ttl = 31536000)
-	{
-		if ($var_name[0] === '_')
-		{
-			if ($fp = @fopen($this->cache_dir . "data{$var_name}." . PHP_EXT, 'wb'))
-			{
-				@flock($fp, LOCK_EX);
-				fwrite($fp, "<?php\n\$expired = (time() > " . (time() + $ttl) . ") ? true : false;\nif (\$expired) { return; }\n\$data =  " . (sizeof($var) ? "unserialize(" . var_export(serialize($var), true) . ");" : 'array();'));
-				@flock($fp, LOCK_UN);
-				fclose($fp);
-
-				if (!function_exists('phpbb_chmod'))
-				{
-					include(PHPBB_ROOT_PATH . 'includes/functions.' . PHP_EXT);
-				}
-
-				phpbb_chmod($this->cache_dir . "data{$var_name}." . PHP_EXT, phpbb::CHMOD_WRITE);
-			}
-		}
-		else
-		{
-			$this->vars[$var_name] = $var;
-			$this->var_expires[$var_name] = time() + $ttl;
-			$this->is_modified = true;
-		}
-	}
-
-	/**
-	* Purge cache data
-	*/
-	public function purge()
-	{
-		// Purge all phpbb cache files
 		$dir = @opendir($this->cache_dir);
 
 		if (!$dir)
@@ -218,7 +242,7 @@ class acm
 
 		while (($entry = readdir($dir)) !== false)
 		{
-			if (strpos($entry, 'sql_') !== 0 && strpos($entry, 'data_') !== 0 && strpos($entry, 'ctpl_') !== 0 && strpos($entry, 'tpl_') !== 0)
+			if (strpos($entry, $this->cache_prefix . '_') !== 0 || strpos($entry, $this->cache_prefix . '_global') === 0)
 			{
 				continue;
 			}
@@ -226,232 +250,27 @@ class acm
 			$this->remove_file($this->cache_dir . $entry);
 		}
 		closedir($dir);
-
-		unset($this->vars);
-		unset($this->var_expires);
-		unset($this->sql_rowset);
-
-		$this->vars = array();
-		$this->var_expires = array();
-		$this->sql_rowset = array();
-
-		$this->is_modified = false;
 	}
 
 	/**
-	* Destroy cache data
+	* Get modified date for cache entry
+	*
+	* @param string	$var_name	The cache variable name
+	* @access public
 	*/
-	public function destroy($var_name, $table = '')
+	public function get_modified_date($var_name)
 	{
-		if ($var_name === 'sql' && !empty($table))
-		{
-			if (!is_array($table))
-			{
-				$table = array($table);
-			}
-
-			$dir = @opendir($this->cache_dir);
-
-			if (!$dir)
-			{
-				return;
-			}
-
-			while (($entry = readdir($dir)) !== false)
-			{
-				if (strpos($entry, 'sql_') !== 0)
-				{
-					continue;
-				}
-
-				// The following method is more failproof than simply assuming the query is on line 3 (which it should be)
-				$check_line = @file_get_contents($this->cache_dir . $entry);
-
-				if (empty($check_line))
-				{
-					continue;
-				}
-
-				// Now get the contents between /* and */
-				$check_line = substr($check_line, strpos($check_line, '/* ') + 3, strpos($check_line, ' */') - strpos($check_line, '/* ') - 3);
-
-				$found = false;
-				foreach ($table as $check_table)
-				{
-					// Better catch partial table names than no table names. ;)
-					if (strpos($check_line, $check_table) !== false)
-					{
-						$found = true;
-						break;
-					}
-				}
-
-				if ($found)
-				{
-					$this->remove_file($this->cache_dir . $entry);
-				}
-			}
-			closedir($dir);
-
-			return;
-		}
-
-		if (!$this->_exists($var_name))
-		{
-			return;
-		}
-
-		if ($var_name[0] === '_')
-		{
-			$this->remove_file($this->cache_dir . 'data' . $var_name . '.' . PHP_EXT, true);
-		}
-		else if (isset($this->vars[$var_name]))
-		{
-			$this->is_modified = true;
-			unset($this->vars[$var_name]);
-			unset($this->var_expires[$var_name]);
-
-			// We save here to let the following cache hits succeed
-			$this->save();
-		}
-	}
-
-	/**
-	* Check if a given cache entry exist
-	*/
-	private function _exists($var_name)
-	{
-		if ($var_name[0] === '_')
-		{
-			return file_exists($this->cache_dir . 'data' . $var_name . '.' . PHP_EXT);
-		}
-		else
-		{
-			if (!sizeof($this->vars))
-			{
-				$this->load();
-			}
-
-			if (!isset($this->var_expires[$var_name]))
-			{
-				return false;
-			}
-
-			return (time() > $this->var_expires[$var_name]) ? false : isset($this->vars[$var_name]);
-		}
-	}
-
-	/**
-	* Load cached sql query
-	*/
-	public function sql_load($query)
-	{
-		// Remove extra spaces and tabs
-		$query = preg_replace('/[\n\r\s\t]+/', ' ', $query);
-		$query_id = sizeof($this->sql_rowset);
-
-		if (!file_exists($this->cache_dir . 'sql_' . md5($query) . '.' . PHP_EXT))
-		{
-			return false;
-		}
-
-		@include($this->cache_dir . 'sql_' . md5($query) . '.' . PHP_EXT);
-
-		if (!isset($expired))
-		{
-			return false;
-		}
-		else if ($expired)
-		{
-			$this->remove_file($this->cache_dir . 'sql_' . md5($query) . '.' . PHP_EXT, true);
-			return false;
-		}
-
-
-		return $query_id;
-	}
-
-	/**
-	* Save sql query
-	*/
-	public function sql_save($query, &$query_result, $ttl)
-	{
-		global $db;
-
-		// Remove extra spaces and tabs
-		$query = preg_replace('/[\n\r\s\t]+/', ' ', $query);
-		$filename = $this->cache_dir . 'sql_' . md5($query) . '.' . PHP_EXT;
-
-		if ($fp = @fopen($filename, 'wb'))
-		{
-			@flock($fp, LOCK_EX);
-
-			$query_id = sizeof($this->sql_rowset);
-			$this->sql_rowset[$query_id] = array();
-
-			while ($row = $db->sql_fetchrow($query_result))
-			{
-				$this->sql_rowset[$query_id][] = $row;
-			}
-			$db->sql_freeresult($query_result);
-
-			$file = "<?php\n/* " . str_replace('*/', '*\/', $query) . " */";
-			$file .= "\n\$expired = (time() > " . (time() + $ttl) . ") ? true : false;\nif (\$expired) { return; }\n";
-
-			fwrite($fp, $file . "\$this->sql_rowset[\$query_id] = " . (sizeof($this->sql_rowset[$query_id]) ? "unserialize(" . var_export(serialize($this->sql_rowset[$query_id]), true) . ");" : 'array();'));
-			@flock($fp, LOCK_UN);
-			fclose($fp);
-
-			if (!function_exists('phpbb_chmod'))
-			{
-				include(PHPBB_ROOT_PATH . 'includes/functions.' . PHP_EXT);
-			}
-
-			phpbb_chmod($filename, phpbb::CHMOD_WRITE);
-
-			$query_result = $query_id;
-		}
-	}
-
-	/**
-	* Fetch row from cache (database)
-	*/
-	public function sql_fetchrow($query_id)
-	{
-		list(, $row) = each($this->sql_rowset[$query_id]);
-
-		return ($row !== NULL) ? $row : false;
-	}
-
-	/**
-	* Fetch a field from the current row of a cached database result (database)
-	*/
-	public function sql_fetchfield($query_id, $field)
-	{
-		$row = current($this->sql_rowset[$query_id]);
-
-		return ($row !== false && isset($row[$field])) ? $row[$field] : false;
-	}
-
-	/**
-	* Free memory used for a cached database result (database)
-	*/
-	public function sql_freeresult($query_id)
-	{
-		if (!isset($this->sql_rowset[$query_id]))
-		{
-			return false;
-		}
-
-		unset($this->sql_rowset[$query_id]);
-
-		return true;
+		return @filemtime($this->cache_dir . $this->cache_prefix . '_' . $var_name . '.' . PHP_EXT);
 	}
 
 	/**
 	* Removes/unlinks file
+	*
+	* @param string	$filename	The filename to remove
+	* @param bool	$check		If true the cache directory is checked for correct directory permissions.
+	* @access protected
 	*/
-	private function remove_file($filename, $check = false)
+	protected function remove_file($filename, $check = false)
 	{
 		if ($check && !@is_writable($this->cache_dir))
 		{
@@ -460,6 +279,72 @@ class acm
 		}
 
 		return @unlink($filename);
+	}
+}
+
+/**
+* Special implementation for cache type 'sql'
+* @package acm
+*/
+class phpbb_acm_file_sql extends phpbb_acm_file
+{
+	/**
+	* {@link phpbb_acm_abstract::destroy() destroy()}
+	*/
+	public function destroy($var_name)
+	{
+		if ($var_name[0] === '#')
+		{
+			$var_name = substr($var_name, 1);
+			$this->destroy_global($var_name);
+		}
+
+		$table = (!is_array($var_name)) ? array($var_name) : $var_name;
+		$dir = @opendir($this->cache_dir);
+
+		if (!$dir)
+		{
+			return;
+		}
+
+		while (($entry = readdir($dir)) !== false)
+		{
+			if (strpos($entry, $this->cache_prefix . '_') !== 0)
+			{
+				continue;
+			}
+
+			// The following method is more failproof than simply assuming the query is on line 3 (which it should be)
+			@include($this->cache_dir . $entry);
+
+			if (empty($data))
+			{
+				$this->remove_file($this->cache_dir . $entry);
+				continue;
+			}
+
+			// Get the query
+			$data = $data['query'];
+
+			$found = false;
+			foreach ($table as $check_table)
+			{
+				// Better catch partial table names than no table names. ;)
+				if (strpos($data, $check_table) !== false)
+				{
+					$found = true;
+					break;
+				}
+			}
+
+			if ($found)
+			{
+				$this->remove_file($this->cache_dir . $entry);
+			}
+		}
+		closedir($dir);
+
+		return;
 	}
 }
 

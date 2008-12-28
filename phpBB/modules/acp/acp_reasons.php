@@ -25,7 +25,7 @@ class acp_reasons
 
 	function main($id, $mode)
 	{
-		global $db, $user, $auth, $template, $cache, $config;
+		global $db, $user, $auth, $template, $config;
 
 		$user->add_lang(array('mcp', 'acp/posting'));
 

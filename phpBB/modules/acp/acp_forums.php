@@ -26,7 +26,7 @@ class acp_forums
 
 	function main($id, $mode)
 	{
-		global $db, $user, $auth, $template, $cache, $config;
+		global $db, $user, $auth, $template, $config;
 
 		$user->add_lang('acp/forums');
 		$this->tpl_name = 'acp_forums';
@@ -96,7 +96,7 @@ class acp_forums
 					}
 
 					$auth->acl_clear_prefetch();
-					$cache->destroy('sql', FORUMS_TABLE);
+					phpbb::$acm->destroy_sql(FORUMS_TABLE);
 
 					trigger_error($user->lang['FORUM_DELETED'] . adm_back_link($this->u_action . '&amp;parent_id=' . $this->parent_id));
 
@@ -246,7 +246,7 @@ class acp_forums
 						}
 
 						$auth->acl_clear_prefetch();
-						$cache->destroy('sql', FORUMS_TABLE);
+						phpbb::$acm->destroy_sql(FORUMS_TABLE);
 
 						$acl_url = '&amp;mode=setting_forum_local&amp;forum_id[]=' . $forum_data['forum_id'];
 
@@ -298,7 +298,7 @@ class acp_forums
 				if ($move_forum_name !== false)
 				{
 					add_log('admin', 'LOG_FORUM_' . strtoupper($action), $row['forum_name'], $move_forum_name);
-					$cache->destroy('sql', FORUMS_TABLE);
+					phpbb::$acm->destroy_sql(FORUMS_TABLE);
 				}
 
 			break;
@@ -404,7 +404,7 @@ class acp_forums
 				sync('forum', 'forum_id', $forum_id, false, true);
 
 				add_log('admin', 'LOG_FORUM_SYNC', $row['forum_name']);
-				$cache->destroy('sql', FORUMS_TABLE);
+				phpbb::$acm->destroy_sql(FORUMS_TABLE);
 
 				$template->assign_var('L_FORUM_RESYNCED', sprintf($user->lang['FORUM_RESYNCED'], $row['forum_name']));
 
@@ -887,7 +887,7 @@ class acp_forums
 	*/
 	function update_forum_data(&$forum_data)
 	{
-		global $db, $user, $cache;
+		global $db, $user;
 
 		$errors = array();
 
@@ -1138,7 +1138,7 @@ class acp_forums
 							}
 							$db->sql_freeresult($result);
 
-							$cache->destroy('_extensions');
+							phpbb::$acm->destroy('extensions');
 						}
 					}
 					else if ($action_subforums == 'move')
@@ -1387,7 +1387,7 @@ class acp_forums
 	*/
 	function delete_forum($forum_id, $action_posts = 'delete', $action_subforums = 'delete', $posts_to_id = 0, $subforums_to_id = 0)
 	{
-		global $db, $user, $cache;
+		global $db, $user;
 
 		$forum_data = $this->get_forum_info($forum_id);
 
@@ -1577,7 +1577,7 @@ class acp_forums
 		}
 		$db->sql_freeresult($result);
 
-		$cache->destroy('_extensions');
+		phpbb::$acm->destroy('extensions');
 
 		$log_action = implode('_', array($log_action_posts, $log_action_forums));
 

@@ -656,12 +656,16 @@ function set_modified_headers($stamp, $browser)
 
 function file_gc()
 {
-	global $cache, $db;
-	if (!empty($cache))
+	if (phpbb::registered('acm'))
 	{
-		$cache->unload();
+		phpbb::$acm->unload();
 	}
-	$db->sql_close();
+
+	if (phpbb::registered('db'))
+	{
+		phpbb::$db->sql_close();
+	}
+
 	exit;
 }
 

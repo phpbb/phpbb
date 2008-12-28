@@ -245,7 +245,7 @@ function update_post_information($type, $ids, $return_update_sql = false)
 */
 function posting_gen_topic_icons($mode, $icon_id)
 {
-	global $config, $template, $cache;
+	global $config, $template;
 
 	// Grab icons
 	$icons = phpbb_cache::obtain_icons();
@@ -347,7 +347,7 @@ function posting_gen_topic_types($forum_id, $cur_topic_type = POST_NORMAL)
 */
 function upload_attachment($form_name, $forum_id, $local = false, $local_storage = '', $is_message = false, $local_filedata = false)
 {
-	global $auth, $user, $config, $db, $cache;
+	global $auth, $user, $config, $db;
 
 	$filedata = array(
 		'error'	=> array()
@@ -932,7 +932,7 @@ function load_drafts($topic_id = 0, $forum_id = 0, $id = 0)
 */
 function topic_review($topic_id, $forum_id, $mode = 'topic_review', $cur_post_id = 0, $show_quote_button = true)
 {
-	global $user, $auth, $db, $template, $bbcode, $cache, $config;
+	global $user, $auth, $db, $template, $bbcode, $config;
 
 	// Go ahead and pull all data for this topic
 	$sql = 'SELECT p.post_id

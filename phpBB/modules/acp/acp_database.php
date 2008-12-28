@@ -25,7 +25,7 @@ class acp_database
 
 	function main($id, $mode)
 	{
-		global $cache, $db, $user, $auth, $template, $table_prefix, $config;
+		global $db, $user, $auth, $template, $table_prefix, $config;
 
 		$user->add_lang('acp/database');
 
@@ -399,7 +399,7 @@ class acp_database
 							$close($fp);
 
 							// Purge the cache due to updated data
-							$cache->purge();
+							phpbb::$acm->purge();
 
 							add_log('admin', 'LOG_DB_RESTORE');
 							trigger_error($user->lang['RESTORE_SUCCESS'] . adm_back_link($this->u_action));

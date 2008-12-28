@@ -28,7 +28,7 @@ class acp_profile
 
 	function main($id, $mode)
 	{
-		global $config, $db, $user, $auth, $template, $cache;
+		global $config, $db, $user, $auth, $template;
 
 		include(PHPBB_ROOT_PATH . 'includes/functions_posting.' . PHP_EXT);
 		include(PHPBB_ROOT_PATH . 'includes/functions_user.' . PHP_EXT);

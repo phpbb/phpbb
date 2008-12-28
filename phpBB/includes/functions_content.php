@@ -673,7 +673,7 @@ function censor_text($text)
 	// We moved the word censor checks in here because we call this function quite often - and then only need to do the check once
 	if (!isset($censors) || !is_array($censors))
 	{
-		global $config, $user, $auth, $cache;
+		global $config, $user, $auth;
 
 		// We check here if the user is having viewing censors disabled (and also allowed to do so).
 		if (!$user->optionget('viewcensors') && $config['allow_nocensors'] && $auth->acl_get('u_chgcensors'))
@@ -738,7 +738,7 @@ function parse_attachments($forum_id, &$message, &$attachments, &$update_count, 
 		return;
 	}
 
-	global $template, $cache, $user;
+	global $template, $user;
 	global $extensions, $config;
 
 	//
@@ -1068,7 +1068,6 @@ function extension_allowed($forum_id, $extension, &$extensions)
 {
 	if (empty($extensions))
 	{
-		global $cache;
 		$extensions = phpbb_cache::obtain_extensions_forum($forum_id);
 	}
 

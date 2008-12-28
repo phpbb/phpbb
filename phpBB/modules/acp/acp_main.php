@@ -328,8 +328,7 @@ class acp_main
 							trigger_error($user->lang['NO_AUTH_OPERATION'] . adm_back_link($this->u_action), E_USER_WARNING);
 						}
 
-						global $cache;
-						$cache->purge();
+						phpbb::$acm->purge();
 
 						// Clear permissions
 						$auth->acl_clear_prefetch();

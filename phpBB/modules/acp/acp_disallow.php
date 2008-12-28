@@ -25,7 +25,7 @@ class acp_disallow
 
 	function main($id, $mode)
 	{
-		global $db, $user, $auth, $template, $cache, $config;
+		global $db, $user, $auth, $template, $config;
 
 		include(PHPBB_ROOT_PATH . 'includes/functions_user.' . PHP_EXT);
 
@@ -58,7 +58,7 @@ class acp_disallow
 			$sql = 'INSERT INTO ' . DISALLOW_TABLE . ' ' . $db->sql_build_array('INSERT', array('disallow_username' => $disallowed_user));
 			$db->sql_query($sql);
 
-			$cache->destroy('_disallowed_usernames');
+			phpbb::$acm->destroy('disallowed_usernames');
 
 			$message = $user->lang['DISALLOW_SUCCESSFUL'];
 			add_log('admin', 'LOG_DISALLOW_ADD', str_replace('%', '*', $disallowed_user));
@@ -78,7 +78,7 @@ class acp_disallow
 				WHERE disallow_id = ' . $disallowed_id;
 			$db->sql_query($sql);
 
-			$cache->destroy('_disallowed_usernames');
+			phpbb::$acm->destroy('disallowed_usernames');
 
 			add_log('admin', 'LOG_DISALLOW_DELETE');
 

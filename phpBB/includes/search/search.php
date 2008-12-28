@@ -94,9 +94,7 @@ class search_backend
 	*/
 	protected function obtain_ids($search_key, &$result_count, &$id_ary, $start, $per_page, $sort_dir)
 	{
-		global $cache;
-
-		if (!($stored_ids = $cache->get('_search_results_' . $search_key)))
+		if (!($stored_ids = phpbb::$acm->get('search_results_' . $search_key)))
 		{
 			// no search results cached for this search_key
 			return self::SEARCH_RESULT_NOT_IN_CACHE;
@@ -154,7 +152,7 @@ class search_backend
 	*/
 	protected function save_ids($search_key, $keywords, $author_ary, $result_count, &$id_ary, $start, $sort_dir)
 	{
-		global $cache, $config, $db, $user;
+		global $config, $db, $user;
 
 		$length = min(sizeof($id_ary), $config['search_block_size']);
 
@@ -168,7 +166,7 @@ class search_backend
 
 		// create a new resultset if there is none for this search_key yet
 		// or add the ids to the existing resultset
-		if (!($store = $cache->get('_search_results_' . $search_key)))
+		if (!($store = phpbb::$acm->get('search_results_' . $search_key)))
 		{
 			// add the current keywords to the recent searches in the cache which are listed on the search page
 			if (!empty($keywords) || sizeof($author_ary))
@@ -245,7 +243,7 @@ class search_backend
 					}
 				}
 			}
-			$cache->put('_search_results_' . $search_key, $store, $config['search_store_results']);
+			phpbb::$acm->put('search_results_' . $search_key, $store, $config['search_store_results']);
 
 			$sql = 'UPDATE ' . SEARCH_RESULTS_TABLE . '
 				SET search_time = ' . time() . '
@@ -263,7 +261,7 @@ class search_backend
 	*/
 	public function destroy_cache($words, $authors = false)
 	{
-		global $db, $cache, $config;
+		global $db, $config;
 
 		// clear all searches that searched for the specified words
 		if (sizeof($words))
@@ -281,7 +279,7 @@ class search_backend
 
 			while ($row = $db->sql_fetchrow($result))
 			{
-				$cache->destroy('_search_results_' . $row['search_key']);
+				phpbb::$acm->destroy('search_results_' . $row['search_key']);
 			}
 			$db->sql_freeresult($result);
 		}
@@ -302,7 +300,7 @@ class search_backend
 
 			while ($row = $db->sql_fetchrow($result))
 			{
-				$cache->destroy('_search_results_' . $row['search_key']);
+				phpbb::$acm->destroy('search_results_' . $row['search_key']);
 			}
 			$db->sql_freeresult($result);
 		}

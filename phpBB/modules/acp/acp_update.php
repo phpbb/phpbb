@@ -25,7 +25,7 @@ class acp_update
 
 	function main($id, $mode)
 	{
-		global $config, $db, $user, $auth, $template, $cache;
+		global $config, $db, $user, $auth, $template;
 
 		$user->add_lang('install');
 

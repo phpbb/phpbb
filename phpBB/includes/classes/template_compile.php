@@ -22,7 +22,7 @@ if (!defined('IN_PHPBB'))
  * @package phpBB3
  *
  */
-class template_filter extends php_user_filter
+class phpbb_template_filter extends php_user_filter
 {
 	/**
 	* @var string Replaceable tokens regex
@@ -93,8 +93,6 @@ class template_filter extends php_user_filter
 
 	private function replace($matches)
 	{
-		global $config;
-
 		if (isset($matches[3]))
 		{
 			return $this->compile_var_tags($matches[0]);
@@ -146,15 +144,15 @@ class template_filter extends php_user_filter
 			break;
 
 			case 'INCLUDEPHP':
-				return ($config['tpl_allow_php']) ? '<?php ' . $this->compile_tag_include_php($matches[2]) . ' ?>' : '';
+				return (phpbb::$config['tpl_allow_php']) ? '<?php ' . $this->compile_tag_include_php($matches[2]) . ' ?>' : '';
 			break;
 
 			case 'PHP':
-				return ($config['tpl_allow_php']) ? '<?php ' : '<!-- ';
+				return (phpbb::$config['tpl_allow_php']) ? '<?php ' : '<!-- ';
 			break;
 
 			case 'ENDPHP':
-				return ($config['tpl_allow_php']) ? ' ?>' : ' -->';
+				return (phpbb::$config['tpl_allow_php']) ? ' ?>' : ' -->';
 			break;
 
 			default:
@@ -437,7 +435,7 @@ class template_filter extends php_user_filter
 							$namespace = substr($varrefs[1], 0, -1);
 							$namespace = (strpos($namespace, '.') === false) ? $namespace : strrchr($namespace, '.');
 
-							// S_ROW_COUNT is deceptive, it returns the current row number not the number of rows
+							// S_ROW_COUNT is deceptive, it returns the current row number now the number of rows
 							// hence S_ROW_COUNT is deprecated in favour of S_ROW_NUM
 							switch ($varrefs[3])
 							{
@@ -643,7 +641,7 @@ class template_filter extends php_user_filter
 
 		$expr = true;
 
-		// S_ROW_COUNT is deceptive, it returns the current row number not the number of rows
+		// S_ROW_COUNT is deceptive, it returns the current row number now the number of rows
 		// hence S_ROW_COUNT is deprecated in favour of S_ROW_NUM
 		switch ($varname)
 		{
@@ -731,7 +729,7 @@ class template_filter extends php_user_filter
 	}
 }
 
-stream_filter_register('template', 'template_filter');
+stream_filter_register('phpbb_template', 'phpbb_template_filter');
 
 /**
 * Extension of template class - Functions needed for compiling templates only.
@@ -753,7 +751,7 @@ stream_filter_register('template', 'template_filter');
 * @package phpBB3
 * @uses template_filter As a PHP stream filter to perform compilation of templates
 */
-class template_compile
+class phpbb_template_compile
 {
 	/**
 	* @var template Reference to the {@link template template} object performing compilation
@@ -764,7 +762,7 @@ class template_compile
 	* Constructor
 	* @param template $template {@link template Template} object performing compilation
 	*/
-	function __construct(template $template)
+	function __construct(phpbb_template $template)
 	{
 		$this->template = $template;
 	}
@@ -826,7 +824,7 @@ class template_compile
 
 		@flock($destination_handle, LOCK_EX);
 
-		stream_filter_append($source_handle, 'template');
+		stream_filter_append($source_handle, 'phpbb_template');
 		stream_copy_to_stream($source_handle, $destination_handle);
 
 		@fclose($source_handle);
@@ -856,7 +854,7 @@ class template_compile
 			return false;
 		}
 
-		stream_filter_append($source_handle, 'template');
+		stream_filter_append($source_handle, 'phpbb_template');
 		stream_copy_to_stream($source_handle, $destination_handle);
 
 		@fclose($source_handle);

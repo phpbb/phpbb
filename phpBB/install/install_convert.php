@@ -90,7 +90,7 @@ class install_convert extends module
 
 	function main($mode, $sub)
 	{
-		global $lang, $template, $cache, $config, $language, $table_prefix;
+		global $lang, $template, $config, $language, $table_prefix;
 		global $convert;
 
 		$this->tpl_name = 'install_convert';
@@ -213,7 +213,7 @@ class install_convert extends module
 
 				// If we reached this step (conversion completed) we want to purge the cache and log the user out.
 				// This is for making sure the session get not screwed due to the 3.0.x users table being completely new.
-				$cache->purge();
+				phpbb::$acm->purge();
 
 				require(PHPBB_ROOT_PATH . 'config.' . PHP_EXT);
 				require(PHPBB_ROOT_PATH . 'includes/constants.' . PHP_EXT);
@@ -333,7 +333,7 @@ class install_convert extends module
 	*/
 	function get_convert_settings($sub)
 	{
-		global $lang, $language, $template, $db, $config, $cache;
+		global $lang, $language, $template, $db, $config;
 
 		require(PHPBB_ROOT_PATH . 'config.' . PHP_EXT);
 		require(PHPBB_ROOT_PATH . 'includes/constants.' . PHP_EXT);
@@ -581,7 +581,7 @@ class install_convert extends module
 	*/
 	function convert_data($sub)
 	{
-		global $template, $user, $db, $lang, $config, $cache;
+		global $template, $user, $db, $lang, $config;
 		global $convert, $convert_row, $message_parser, $skip_rows, $language;
 
 		require(PHPBB_ROOT_PATH . 'config.' . PHP_EXT);
@@ -1438,7 +1438,7 @@ class install_convert extends module
 	*/
 	function sync_forums($sync_batch)
 	{
-		global $template, $user, $db, $config, $cache;
+		global $template, $user, $db, $config;
 		global $convert;
 
 		$template->assign_block_vars('checks', array(
@@ -1578,7 +1578,7 @@ class install_convert extends module
 	*/
 	function final_jump($final_jump)
 	{
-		global $template, $user, $src_db, $same_db, $db, $config, $cache;
+		global $template, $user, $src_db, $same_db, $db, $config;
 		global $convert;
 
 		$template->assign_block_vars('checks', array(
@@ -1617,7 +1617,7 @@ class install_convert extends module
 	*/
 	function jump($jump, $last_statement)
 	{
-		global $template, $user, $src_db, $same_db, $db, $config, $cache;
+		global $template, $user, $src_db, $same_db, $db, $config;
 		global $convert;
 
 		$template->assign_block_vars('checks', array(
@@ -1743,7 +1743,7 @@ class install_convert extends module
 			// TODO: sync() is likely going to bomb out on forums with a considerable amount of topics.
 			// TODO: the sync function is able to handle FROM-TO values, we should use them here (batch processing)
 			sync('forum', '', '', false, true);
-			$cache->destroy('sql', FORUMS_TABLE);
+			phpbb::$acm->destroy_sql(FORUMS_TABLE);
 
 			$template->assign_block_vars('checks', array(
 				'TITLE'		=> $user->lang['SYNC_FORUMS'],
@@ -1920,7 +1920,7 @@ class install_convert extends module
 	*/
 	function process_row(&$schema, &$sql_data, &$insert_values)
 	{
-		global $template, $user, $db, $lang, $config, $cache;
+		global $template, $user, $db, $lang, $config;
 		global $convert, $convert_row;
 
 		$sql_flag = false;

@@ -69,7 +69,7 @@ phpbb_request::disable_super_globals();
 if (!empty($dbms))
 {
 	// Register DB object.
-	phpbb::assign('db', phpbb_db_dbal::connect($dbms, $dbhost, $dbuser, $dbpasswd, $dbname, $dbport, false, defined('PHPBB_DB_NEW_LINK') ? PHPBB_DB_NEW_LINK : false));
+	//phpbb::assign('db', phpbb_db_dbal::connect($dbms, $dbhost, $dbuser, $dbpasswd, $dbname, $dbport, false, defined('PHPBB_DB_NEW_LINK') ? PHPBB_DB_NEW_LINK : false));
 }
 
 // We do not need the db password any longer, unset for safety purposes

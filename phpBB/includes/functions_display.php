@@ -1155,7 +1155,6 @@ function get_user_rank($user_id, $user_rank, $user_posts, &$rank_title, &$rank_i
 
 	if (empty($ranks))
 	{
-		global $cache;
 		$ranks = phpbb_cache::obtain_ranks();
 	}
 

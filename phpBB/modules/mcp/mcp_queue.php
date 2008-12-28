@@ -33,7 +33,7 @@ class mcp_queue
 
 	function main($id, $mode)
 	{
-		global $auth, $db, $user, $template, $cache;
+		global $auth, $db, $user, $template;
 		global $config, $action;
 
 		include_once(PHPBB_ROOT_PATH . 'includes/functions_posting.' . PHP_EXT);

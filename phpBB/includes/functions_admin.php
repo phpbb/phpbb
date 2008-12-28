@@ -2118,10 +2118,10 @@ function remove_comments(&$output)
 */
 function cache_moderators()
 {
-	global $db, $cache, $auth;
+	global $db, $auth;
 
 	// Remove cached sql results
-	$cache->destroy('sql', MODERATOR_CACHE_TABLE);
+	phpbb::$acm->destroy_sql(MODERATOR_CACHE_TABLE);
 
 	// Clear table
 	if ($db->truncate)

@@ -166,7 +166,7 @@ function adm_page_header($page_title)
 */
 function adm_page_footer($copyright_html = true)
 {
-	global $db, $config, $template, $user, $auth, $cache;
+	global $db, $config, $template, $user, $auth;
 	global $starttime;
 
 	// Output page creation time

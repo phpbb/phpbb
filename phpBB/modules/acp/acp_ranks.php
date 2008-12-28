@@ -25,7 +25,7 @@ class acp_ranks
 
 	function main($id, $mode)
 	{
-		global $db, $user, $auth, $template, $cache, $config;
+		global $db, $user, $auth, $template, $config;
 
 		$user->add_lang('acp/posting');
 
@@ -88,7 +88,7 @@ class acp_ranks
 				}
 				$db->sql_query($sql);
 
-				$cache->destroy('_ranks');
+				phpbb::$acm->destroy('ranks');
 
 				trigger_error($message . adm_back_link($this->u_action));
 
@@ -119,7 +119,7 @@ class acp_ranks
 						WHERE user_rank = $rank_id";
 					$db->sql_query($sql);
 
-					$cache->destroy('_ranks');
+					phpbb::$acm->destroy('ranks');
 
 					add_log('admin', 'LOG_RANK_REMOVED', $rank_title);
 				}

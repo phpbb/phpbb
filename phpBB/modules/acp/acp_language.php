@@ -31,7 +31,7 @@ class acp_language
 
 	function main($id, $mode)
 	{
-		global $config, $db, $user, $auth, $template, $cache;
+		global $config, $db, $user, $auth, $template;
 		global $safe_mode, $file_uploads;
 
 		/**
@@ -796,7 +796,7 @@ class acp_language
 				$sql = 'DELETE FROM ' . STYLES_IMAGESET_DATA_TABLE . " WHERE image_lang = '" . $db->sql_escape($row['lang_iso']) . "'";
 				$result = $db->sql_query($sql);
 
-				$cache->destroy('sql', STYLES_IMAGESET_DATA_TABLE);
+				phpbb::$acm->destroy_sql(STYLES_IMAGESET_DATA_TABLE);
 
 				add_log('admin', 'LOG_LANGUAGE_PACK_DELETED', $row['lang_english_name']);
 
@@ -908,7 +908,7 @@ class acp_language
 				if (sizeof($sql_ary))
 				{
 					$db->sql_multi_insert(STYLES_IMAGESET_DATA_TABLE, $sql_ary);
-					$cache->destroy('sql', STYLES_IMAGESET_DATA_TABLE);
+					phpbb::$acm->destroy_sql(STYLES_IMAGESET_DATA_TABLE);
 				}
 
 				// Now let's copy the default language entries for custom profile fields for this new language - makes admin's life easier.

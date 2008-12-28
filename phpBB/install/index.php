@@ -240,7 +240,6 @@ set_error_handler(defined('PHPBB_MSG_HANDLER') ? PHPBB_MSG_HANDLER : 'msg_handle
 
 $user = new user();
 $auth = new auth();
-$cache = new acm();
 $template = new template();
 
 // Set some standard variables we want to force

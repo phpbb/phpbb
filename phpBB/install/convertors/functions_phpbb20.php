@@ -71,8 +71,8 @@ function phpbb_insert_forums()
 	$result = $src_db->sql_query($sql);
 	$prune_enabled = (int) $src_db->sql_fetchfield('config_value');
 	$src_db->sql_freeresult($result);
-	
-	
+
+
 	// Insert categories
 	$sql = 'SELECT cat_id, cat_title
 		FROM ' . $convert->src_table_prefix . 'categories
@@ -543,7 +543,7 @@ function phpbb_copy_table_fields()
 */
 function phpbb_convert_authentication($mode)
 {
-	global $db, $src_db, $same_db, $convert, $user, $config, $cache;
+	global $db, $src_db, $same_db, $convert, $user, $config;
 
 	if ($mode == 'start')
 	{
@@ -968,12 +968,12 @@ function phpbb_convert_authentication($mode)
 	{
 		// And now the moderators
 		// We make sure that they have at least standard access to the forums they moderate in addition to the moderating permissions
-		
+
 		$mod_post_map = array(
 			'auth_announce'		=> 'f_announce',
 			'auth_sticky'		=> 'f_sticky'
 		);
-		
+
 		foreach ($user_access as $forum_id => $access_map)
 		{
 			$forum_id = (int) $forum_id;
@@ -1223,7 +1223,7 @@ function phpbb_replace_size($matches)
 */
 function phpbb_prepare_message($message)
 {
-	global $db, $convert, $user, $config, $cache, $convert_row, $message_parser;
+	global $db, $convert, $user, $config, $convert_row, $message_parser;
 
 	if (!$message)
 	{
@@ -1247,7 +1247,7 @@ function phpbb_prepare_message($message)
 	{
 		$message = preg_replace('/\[quote="(.*?)"\]/s', '[quote=&quot;\1&quot;]', $message);
 		$message = preg_replace('/\[quote=\\\"(.*?)\\\"\]/s', '[quote=&quot;\1&quot;]', $message);
-		
+
 		// let's hope that this solves more problems than it causes. Deal with escaped quotes.
 		$message = str_replace('\"', '&quot;', $message);
 		$message = str_replace('\&quot;', '&quot;', $message);
@@ -1276,7 +1276,7 @@ function phpbb_prepare_message($message)
 
 	// parse($allow_bbcode, $allow_magic_url, $allow_smilies, $allow_img_bbcode = true, $allow_flash_bbcode = true, $allow_quote_bbcode = true, $allow_url_bbcode = true, $update_this_message = true, $mode = 'post')
 	$message_parser->parse($enable_bbcode, $enable_magic_url, $enable_smilies);
-	
+
 	if (sizeof($message_parser->warn_msg))
 	{
 		$msg_id = isset($convert->row['post_id']) ? $convert->row['post_id'] : $convert->row['privmsgs_id'];
@@ -1328,7 +1328,7 @@ function phpbb_get_files_dir()
 		return;
 	}
 
-	global $src_db, $same_db, $convert, $user, $config, $cache;
+	global $src_db, $same_db, $convert, $user, $config;
 
 	if ($convert->mysql_convert && $same_db)
 	{
@@ -1367,10 +1367,10 @@ function phpbb_get_files_dir()
 */
 function phpbb_copy_thumbnails()
 {
-	global $db, $convert, $user, $config, $cache;
+	global $db, $convert, $user, $config;
 
 	$src_path = $convert->options['forum_path'] . '/' . phpbb_get_files_dir() . '/thumbs/';
-	
+
 	if ($handle = @opendir($src_path))
 	{
 		while ($entry = readdir($handle))
@@ -1449,13 +1449,13 @@ function phpbb_attachment_forum_perms($forum_permissions)
 			$pos--;
 			continue;
 		}
-		
+
 		$forum_auth = substr($forum_permissions, $pos, $auth_len);
 		$forum_id = base64_unpack($forum_auth);
 
 		$forum_ids[] = (int) $forum_id;
 	}
-	
+
 	if (sizeof($forum_ids))
 	{
 		return attachment_forum_perms($forum_ids);
@@ -1534,7 +1534,7 @@ function phpbb_import_avatar($user_avatar)
 function phpbb_get_avatar_height($user_avatar)
 {
 	global $convert_row;
-	
+
 	if (empty($convert_row['user_avatar_type']))
 	{
 		return 0;
@@ -1554,7 +1554,7 @@ function phpbb_get_avatar_width($user_avatar)
 	{
 		return 0;
 	}
-	
+
 	return get_avatar_width($user_avatar, 'phpbb_avatar_type', $convert_row['user_avatar_type']);
 }
 

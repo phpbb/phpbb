@@ -83,7 +83,6 @@ else
 }
 
 $user = new user();
-$cache = new acm();
 $db = new $sql_db();
 
 // Connect to DB
@@ -652,7 +651,7 @@ _write_result($no_updates, $errored, $error_ary);
 if (!$inline_update)
 {
 	// Purge the cache...
-	$cache->purge();
+	phpbb::$acm->purge();
 ?>
 
 	<p style="color:red"><?php echo $lang['UPDATE_FILES_NOTICE']; ?></p>
@@ -676,7 +675,7 @@ else
 add_log('admin', 'LOG_UPDATE_DATABASE', $orig_version, $updates_to_version);
 
 // Now we purge the session table as well as all cache files
-$cache->purge();
+phpbb::$acm->purge();
 
 ?>
 

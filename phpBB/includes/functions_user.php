@@ -113,7 +113,7 @@ function update_last_username()
 */
 function user_update_name($old_name, $new_name)
 {
-	global $config, $db, $cache;
+	global $config, $db;
 
 	$update_ary = array(
 		FORUMS_TABLE			=> array('forum_last_poster_name'),
@@ -139,7 +139,7 @@ function user_update_name($old_name, $new_name)
 	}
 
 	// Because some tables/caches use username-specific data we need to purge this here.
-	$cache->destroy('sql', MODERATOR_CACHE_TABLE);
+	phpbb::$acm->destroy_sql(MODERATOR_CACHE_TABLE);
 }
 
 /**
@@ -300,7 +300,7 @@ function user_add($user_row, $cp_data = false)
 */
 function user_delete($mode, $user_id, $post_username = false)
 {
-	global $cache, $config, $db, $user, $auth;
+	global $config, $db, $user, $auth;
 
 	$sql = 'SELECT *
 		FROM ' . USERS_TABLE . '
@@ -498,7 +498,7 @@ function user_delete($mode, $user_id, $post_username = false)
 		$db->sql_query($sql);
 	}
 
-	$cache->destroy('sql', MODERATOR_CACHE_TABLE);
+	phpbb::$acm->destroy_sql(MODERATOR_CACHE_TABLE);
 
 	// Remove any undelivered mails...
 	$sql = 'SELECT msg_id, user_id
@@ -674,7 +674,7 @@ function user_active_flip($mode, $user_id_ary, $reason = INACTIVE_MANUAL)
 */
 function user_ban($mode, $ban, $ban_len, $ban_len_other, $ban_exclude, $ban_reason, $ban_give_reason = '')
 {
-	global $db, $user, $auth, $cache;
+	global $db, $user, $auth;
 
 	// Delete stale bans
 	$sql = 'DELETE FROM ' . BANLIST_TABLE . '
@@ -1053,13 +1053,13 @@ function user_ban($mode, $ban, $ban_len, $ban_len_other, $ban_exclude, $ban_reas
 		add_log('admin', $log_entry . strtoupper($mode), $ban_reason, $ban_list_log);
 		add_log('mod', 0, 0, $log_entry . strtoupper($mode), $ban_reason, $ban_list_log);
 
-		$cache->destroy('sql', BANLIST_TABLE);
+		phpbb::$acm->destroy_sql(BANLIST_TABLE);
 
 		return true;
 	}
 
 	// There was nothing to ban/exclude. But destroying the cache because of the removal of stale bans.
-	$cache->destroy('sql', BANLIST_TABLE);
+	phpbb::$acm->destroy_sql(BANLIST_TABLE);
 
 	return false;
 }
@@ -1069,7 +1069,7 @@ function user_ban($mode, $ban, $ban_len, $ban_len_other, $ban_exclude, $ban_reas
 */
 function user_unban($mode, $ban)
 {
-	global $db, $user, $auth, $cache;
+	global $db, $user, $auth;
 
 	// Delete stale bans
 	$sql = 'DELETE FROM ' . BANLIST_TABLE . '
@@ -1126,7 +1126,7 @@ function user_unban($mode, $ban)
 		add_log('mod', 0, 0, 'LOG_UNBAN_' . strtoupper($mode), $l_unban_list);
 	}
 
-	$cache->destroy('sql', BANLIST_TABLE);
+	phpbb::$acm->destroy_sql(BANLIST_TABLE);
 
 	return false;
 }
@@ -1344,7 +1344,7 @@ function validate_match($string, $optional = false, $match = '')
 */
 function validate_username($username, $allowed_username = false)
 {
-	global $config, $db, $user, $cache;
+	global $config, $db, $user;
 
 	$clean_username = utf8_clean_string($username);
 	$allowed_username = ($allowed_username === false) ? $user->data['username_clean'] : utf8_clean_string($allowed_username);
@@ -1947,7 +1947,7 @@ function get_avatar_filename($avatar_entry)
 */
 function avatar_gallery($category, $avatar_select, $items_per_column, $block_var = 'avatar_row')
 {
-	global $user, $cache, $template, $config;
+	global $user, $template, $config;
 
 	$avatar_list = array();
 

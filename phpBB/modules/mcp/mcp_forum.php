@@ -21,7 +21,7 @@ if (!defined('IN_PHPBB'))
 */
 function mcp_forum_view($id, $mode, $action, $forum_info)
 {
-	global $template, $db, $user, $auth, $cache, $module, $config;
+	global $template, $db, $user, $auth, $module, $config;
 
 	$user->add_lang(array('viewtopic', 'viewforum'));
 

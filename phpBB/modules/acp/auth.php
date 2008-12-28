@@ -27,9 +27,9 @@ class auth_admin extends auth
 	*/
 	function __construct()
 	{
-		global $db, $cache;
+		global $db;
 
-		if (($this->acl_options = $cache->get('_acl_options')) === false)
+		if (($this->acl_options = phpbb::$acm->get('acl_options')) === false)
 		{
 			$sql = 'SELECT auth_option_id, auth_option, is_global, is_local
 				FROM ' . ACL_OPTIONS_TABLE . '
@@ -55,7 +55,7 @@ class auth_admin extends auth
 			}
 			$db->sql_freeresult($result);
 
-			$cache->put('_acl_options', $this->acl_options);
+			phpbb::$acm->put('acl_options', $this->acl_options);
 		}
 	}
 
@@ -687,7 +687,7 @@ class auth_admin extends auth
 	*/
 	public function acl_add_option(array $options)
 	{
-		global $db, $cache;
+		global $db;
 
 		$cur_options = array();
 
@@ -757,7 +757,7 @@ class auth_admin extends auth
 
 		$db->sql_multi_insert(ACL_OPTIONS_TABLE, $sql_ary);
 
-		$cache->destroy('_acl_options');
+		phpbb::$acm->destroy('acl_options');
 		$this->acl_clear_prefetch();
 
 		// Because we just changed the options and also purged the options cache, we instantly update/regenerate it for later calls to succeed.

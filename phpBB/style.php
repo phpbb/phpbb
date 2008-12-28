@@ -162,7 +162,7 @@ if ($recache)
 		WHERE theme_id = {$theme['theme_id']}";
 	$db->sql_query($sql);
 
-	$cache->destroy('sql', STYLES_THEME_TABLE);
+	phpbb::$acm->destroy_sql(STYLES_THEME_TABLE);
 }
 
 // Only set the expire time if the theme changed data is older than 30 minutes - to cope with changes from the ACP

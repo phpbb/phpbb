@@ -25,7 +25,7 @@ class acp_bbcodes
 
 	function main($id, $mode)
 	{
-		global $db, $user, $auth, $template, $cache, $config;
+		global $db, $user, $auth, $template, $config;
 
 		$user->add_lang('acp/posting');
 
@@ -167,8 +167,8 @@ class acp_bbcodes
 				{
 					trigger_error($user->lang['BBCODE_TAG_DEF_TOO_LONG'] . adm_back_link($this->u_action), E_USER_WARNING);
 				}
-				
-				
+
+
 				if (strlen($bbcode_helpline) > 255)
 				{
 					trigger_error($user->lang['BBCODE_HELPLINE_TOO_LONG'] . adm_back_link($this->u_action), E_USER_WARNING);
@@ -217,7 +217,7 @@ class acp_bbcodes
 					$sql_ary['bbcode_id'] = (int) $bbcode_id;
 
 					$db->sql_query('INSERT INTO ' . BBCODES_TABLE . $db->sql_build_array('INSERT', $sql_ary));
-					$cache->destroy('sql', BBCODES_TABLE);
+					phpbb::$acm->destroy_sql(BBCODES_TABLE);
 
 					$lang = 'BBCODE_ADDED';
 					$log_action = 'LOG_BBCODE_ADD';
@@ -228,7 +228,7 @@ class acp_bbcodes
 						SET ' . $db->sql_build_array('UPDATE', $sql_ary) . '
 						WHERE bbcode_id = ' . $bbcode_id;
 					$db->sql_query($sql);
-					$cache->destroy('sql', BBCODES_TABLE);
+					phpbb::$acm->destroy_sql(BBCODES_TABLE);
 
 					$lang = 'BBCODE_EDITED';
 					$log_action = 'LOG_BBCODE_EDIT';
@@ -254,7 +254,7 @@ class acp_bbcodes
 					if (confirm_box(true))
 					{
 						$db->sql_query('DELETE FROM ' . BBCODES_TABLE . " WHERE bbcode_id = $bbcode_id");
-						$cache->destroy('sql', BBCODES_TABLE);
+						phpbb::$acm->destroy_sql(BBCODES_TABLE);
 						add_log('admin', 'LOG_BBCODE_DELETE', $row['bbcode_tag']);
 					}
 					else

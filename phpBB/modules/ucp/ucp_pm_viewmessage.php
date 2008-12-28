@@ -21,7 +21,7 @@ if (!defined('IN_PHPBB'))
 */
 function view_message($id, $mode, $folder_id, $msg_id, $folder, $message_row)
 {
-	global $user, $template, $auth, $db, $cache, $config;
+	global $user, $template, $auth, $db, $config;
 
 	$user->add_lang(array('viewtopic', 'memberlist'));
 
@@ -249,7 +249,7 @@ function view_message($id, $mode, $folder_id, $msg_id, $folder, $message_row)
 */
 function get_user_information($user_id, $user_row)
 {
-	global $db, $auth, $user, $cache, $config;
+	global $db, $auth, $user, $config;
 
 	if (!$user_id)
 	{

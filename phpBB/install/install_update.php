@@ -70,7 +70,7 @@ class install_update extends module
 
 	function main($mode, $sub)
 	{
-		global $template, $user, $db, $config, $cache, $auth;
+		global $template, $user, $db, $config, $auth;
 
 		$this->tpl_name = 'install_update';
 		$this->page_title = 'UPDATE_INSTALLATION';
@@ -122,17 +122,17 @@ class install_update extends module
 		// If we are within the intro page we need to make sure we get up-to-date version info
 		if ($sub == 'intro')
 		{
-			$cache->destroy('_version_info');
+			phpbb::$acm->destroy('version_info');
 		}
 
 		// Set custom template again. ;)
 		$template->set_custom_template('../adm/style', 'admin');
 
 		// Get current and latest version
-		if (($latest_version = $cache->get('_version_info')) === false)
+		if (($latest_version = phpbb::$acm->get('version_info')) === false)
 		{
 			$this->latest_version = $this->get_file('version_info');
-			$cache->put('_version_info', $this->latest_version);
+			phpbb::$acm->put('version_info', $this->latest_version);
 		}
 		else
 		{
@@ -224,8 +224,8 @@ class install_update extends module
 				));
 
 				// Make sure the update list is destroyed.
-				$cache->destroy('_update_list');
-				$cache->destroy('_diff_files');
+				phpbb::$acm->destroy('update_list');
+				phpbb::$acm->destroy('diff_files');
 			break;
 
 			case 'version_check':
@@ -273,7 +273,7 @@ class install_update extends module
 				}
 
 				// Just a precaution
-				$cache->purge();
+				phpbb::$acm->purge();
 
 				// Redirect the user to the database update script with some explanations...
 				$template->assign_vars(array(
@@ -289,7 +289,7 @@ class install_update extends module
 			case 'file_check':
 
 				// Make sure the previous file collection is no longer valid...
-				$cache->destroy('_diff_files');
+				phpbb::$acm->destroy('diff_files');
 
 				$this->page_title = 'STAGE_FILE_CHECK';
 
@@ -297,8 +297,8 @@ class install_update extends module
 				$action = request_var('action', '');
 
 				// We are directly within an update. To make sure our update list is correct we check its status.
-				$update_list = (phpbb_request::variable('check_again', false, false, phpbb_request::POST)) ? false : $cache->get('_update_list');
-				$modified = ($update_list !== false) ? @filemtime($cache->cache_dir . 'data_update_list.' . PHP_EXT) : 0;
+				$update_list = (phpbb_request::variable('check_again', false, false, phpbb_request::POST)) ? false : phpbb::$acm->get('update_list');
+				$modified = ($update_list !== false) ? phpbb::$acm->get_modified_date('data', 'update_list') : 0;
 
 				// Make sure the list is up-to-date
 				if ($update_list !== false)
@@ -326,7 +326,7 @@ class install_update extends module
 				if ($get_new_list)
 				{
 					$this->get_update_structure($update_list);
-					$cache->put('_update_list', $update_list);
+					phpbb::$acm->put('update_list', $update_list);
 
 					// Refresh the page if we are still not finished...
 					if ($update_list['status'] != -1)
@@ -497,7 +497,7 @@ class install_update extends module
 								WHERE theme_id = ' . $theme['theme_id'];
 							$db->sql_query($sql);
 
-							$cache->destroy('sql', STYLES_THEME_TABLE);
+							phpbb::$acm->destroy_sql(STYLES_THEME_TABLE);
 						}
 					}
 
@@ -505,7 +505,7 @@ class install_update extends module
 					$db->sql_query('DELETE FROM ' . CONFIG_TABLE . " WHERE config_name = 'version_update_from'");
 					$db->sql_return_on_error(false);
 
-					$cache->purge();
+					phpbb::$acm->purge();
 				}
 
 			break;
@@ -544,7 +544,7 @@ class install_update extends module
 				}
 
 				// Before the user is choosing his preferred method, let's create the content list...
-				$update_list = $cache->get('_update_list');
+				$update_list = phpbb::$acm->get('update_list');
 
 				if ($update_list === false)
 				{
@@ -601,7 +601,7 @@ class install_update extends module
 
 				// Before we do anything, let us diff the files and store the raw file information "somewhere"
 				$get_files = false;
-				$file_list = $cache->get('_diff_files');
+				$file_list = phpbb::$acm->get('diff_files');
 
 				if ($file_list === false || $file_list['status'] != -1)
 				{
@@ -642,7 +642,7 @@ class install_update extends module
 							// Refresh if we reach 5 diffs...
 							if ($processed >= 5)
 							{
-								$cache->put('_diff_files', $file_list);
+								phpbb::$acm->put('diff_files', $file_list);
 
 								if (request_var('download', false))
 								{
@@ -687,8 +687,8 @@ class install_update extends module
 										break;
 									}
 
-									$file_list[$file_struct['filename']] = '_file_' . md5($file_struct['filename']);
-									$cache->put($file_list[$file_struct['filename']], base64_encode($contents));
+									$file_list[$file_struct['filename']] = 'file_' . md5($file_struct['filename']);
+									phpbb::$acm->put($file_list[$file_struct['filename']], base64_encode($contents));
 
 									$file_list['status']++;
 									$processed++;
@@ -732,8 +732,8 @@ class install_update extends module
 										break;
 									}
 
-									$file_list[$file_struct['filename']] = '_file_' . md5($file_struct['filename']);
-									$cache->put($file_list[$file_struct['filename']], base64_encode($contents));
+									$file_list[$file_struct['filename']] = 'file_' . md5($file_struct['filename']);
+									phpbb::$acm->put($file_list[$file_struct['filename']], base64_encode($contents));
 
 									$file_list['status']++;
 									$processed++;
@@ -745,7 +745,7 @@ class install_update extends module
 				}
 
 				$file_list['status'] = -1;
-				$cache->put('_diff_files', $file_list);
+				phpbb::$acm->put('diff_files', $file_list);
 
 				if (request_var('download', false))
 				{
@@ -784,7 +784,7 @@ class install_update extends module
 						);
 
 						// To ease the update process create a file location map
-						$update_list = $cache->get('_update_list');
+						$update_list = phpbb::$acm->get('update_list');
 						$script_path = ($config['force_server_vars']) ? (($config['script_path'] == '/') ? '/' : $config['script_path'] . '/') : $user->page['root_script_path'];
 
 						foreach ($update_list as $status => $files)
@@ -974,7 +974,7 @@ class install_update extends module
 
 							case 'modified':
 
-								$contents = base64_decode($cache->get($file_list[$file_struct['filename']]));
+								$contents = base64_decode(phpbb::$acm->get($file_list[$file_struct['filename']]));
 
 								if ($update_mode == 'download')
 								{
@@ -990,7 +990,7 @@ class install_update extends module
 
 							case 'conflict':
 
-								$contents = base64_decode($cache->get($file_list[$file_struct['filename']]));
+								$contents = base64_decode(phpbb::$acm->get($file_list[$file_struct['filename']]));
 
 								if ($update_mode == 'download')
 								{

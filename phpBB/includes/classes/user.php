@@ -412,7 +412,7 @@ class phpbb_user extends phpbb_session
 			{
 				phpbb::$db->sql_multi_insert(STYLES_IMAGESET_DATA_TABLE, $sql_ary);
 				phpbb::$db->sql_transaction('commit');
-				phpbb::$acm->destroy('sql', STYLES_IMAGESET_DATA_TABLE);
+				phpbb::$acm->destroy_sql(STYLES_IMAGESET_DATA_TABLE);
 
 				add_log('admin', 'LOG_IMAGESET_LANG_REFRESHED', $this->theme['imageset_name'], $this->img_lang);
 			}

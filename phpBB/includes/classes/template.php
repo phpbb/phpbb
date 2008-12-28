@@ -20,9 +20,12 @@ if (!defined('IN_PHPBB'))
 * Base Template class.
 * @package phpBB3
 */
-class template
+class phpbb_template
 {
-	/** 
+	public $phpbb_required = array('user', 'config');
+	public $phpbb_optional = array();
+
+	/**
 	* variable that holds all the data we'll be substituting into
 	* the compiled templates. Takes form:
 	* --> $this->_tpldata[block][iteration#][child][iteration#][child2][iteration#][variablename] == value
@@ -63,16 +66,14 @@ class template
 	*/
 	public function set_template()
 	{
-		global $user;
-
-		if (file_exists(PHPBB_ROOT_PATH . 'styles/' . $user->theme['template_path'] . '/template'))
+		if (file_exists(PHPBB_ROOT_PATH . 'styles/' . phpbb::$user->theme['template_path'] . '/template'))
 		{
-			$this->root = PHPBB_ROOT_PATH . 'styles/' . $user->theme['template_path'] . '/template';
-			$this->cachepath = PHPBB_ROOT_PATH . 'cache/tpl_' . $user->theme['template_path'] . '_';
+			$this->root = PHPBB_ROOT_PATH . 'styles/' . phpbb::$user->theme['template_path'] . '/template';
+			$this->cachepath = PHPBB_ROOT_PATH . 'cache/tpl_' . phpbb::$user->theme['template_path'] . '_';
 		}
 		else
 		{
-			trigger_error('Template path could not be found: styles/' . $user->theme['template_path'] . '/template', E_USER_ERROR);
+			trigger_error('Template path could not be found: styles/' . phpbb::$user->theme['template_path'] . '/template', E_USER_ERROR);
 		}
 
 		$this->_rootref = &$this->_tpldata['.'][0];
@@ -158,8 +159,7 @@ class template
 	*/
 	public function display($handle, $include_once = true)
 	{
-		global $user, $phpbb_hook;
-
+/*
 		if (!empty($phpbb_hook) && $phpbb_hook->call_hook(array(__CLASS__, __FUNCTION__), $handle, $include_once))
 		{
 			if ($phpbb_hook->hook_return(array(__CLASS__, __FUNCTION__)))
@@ -167,7 +167,7 @@ class template
 				return $phpbb_hook->hook_return_result(array(__CLASS__, __FUNCTION__));
 			}
 		}
-
+*/
 /*		if (defined('IN_ERROR_HANDLER'))
 		{
 			if ((E_NOTICE & error_reporting()) == E_NOTICE)
@@ -178,7 +178,7 @@ class template
 
 		$_tpldata	= &$this->_tpldata;
 		$_rootref	= &$this->_rootref;
-		$_lang		= &$user->lang;
+		$_lang		= &phpbb::$user->lang;
 
 		// These _are_ used the included files.
 		$_tpldata; $_rootref; $_lang;
@@ -235,21 +235,19 @@ class template
 	*/
 	private function _tpl_load($handle)
 	{
-		global $config;
-
 		$filename = $this->cachepath . str_replace('/', '.', $this->filename[$handle]) . '.' . PHP_EXT;
 
-		$recompile = (!file_exists($filename) || @filesize($filename) === 0 || ($config['load_tplcompile'] && @filemtime($filename) < filemtime($this->files[$handle]))) ? true : false;
+		$recompile = (!file_exists($filename) || @filesize($filename) === 0 || (phpbb::$config['load_tplcompile'] && @filemtime($filename) < filemtime($this->files[$handle]))) ? true : false;
+
+		if (defined('DEBUG_EXTRA'))
+		{
+			$recompile = true;
+		}
 
 		// Recompile page if the original template is newer, otherwise load the compiled version
 		if ($recompile)
 		{
-			if (!class_exists('template_compile'))
-			{
-				include(PHPBB_ROOT_PATH . 'includes/functions_template.' . PHP_EXT);
-			}
-
-			$compile = new template_compile($this);
+			$compile = new phpbb_template_compile($this);
 
 			// If we don't have a file assigned to this handle, die.
 			if (!isset($this->files[$handle]))
@@ -275,12 +273,7 @@ class template
 	*/
 	private function _tpl_eval($handle)
 	{
-		if (!class_exists('template_compile'))
-		{
-			include(PHPBB_ROOT_PATH . 'includes/functions_template.' . PHP_EXT);
-		}
-
-		$compile = new template_compile($this);
+		$compile = new phpbb_template_compile($this);
 
 		// If we don't have a file assigned to this handle, die.
 		if (!isset($this->files[$handle]))
@@ -500,11 +493,9 @@ class template
 
 		if ($include)
 		{
-			global $user;
-
 			$_tpldata	= &$this->_tpldata;
 			$_rootref	= &$this->_rootref;
-			$_lang		= &$user->lang;
+			$_lang		= &phpbb::$user->lang;
 
 			// These _are_ used the included files.
 			$_tpldata; $_rootref; $_lang;
@@ -516,12 +507,7 @@ class template
 			}
 			else
 			{
-				if (!class_exists('template_compile'))
-				{
-					include(PHPBB_ROOT_PATH . 'includes/functions_template.' . PHP_EXT);
-				}
-
-				$compile = new template_compile($this);
+				$compile = new phpbb_template_compile($this);
 
 				if (($code = $compile->_tpl_gen_src($handle)) !== false)
 				{

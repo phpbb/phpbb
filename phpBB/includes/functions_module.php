@@ -78,13 +78,13 @@ class p_master
 	*/
 	function list_modules($p_class)
 	{
-		global $auth, $db, $user, $cache, $config;
+		global $auth, $db, $user, $config;
 
 		// Sanitise for future path use, it's escaped as appropriate for queries
 		$this->p_class = str_replace(array('.', '/', '\\'), '', basename($p_class));
 
 		// Get cached modules
-		if (($this->module_cache = $cache->get('_modules_' . $this->p_class)) === false)
+		if (($this->module_cache = phpbb::$acm->get('modules_' . $this->p_class)) === false)
 		{
 			// Get modules
 			$sql = 'SELECT *
@@ -108,7 +108,7 @@ class p_master
 			}
 			unset($rows);
 
-			$cache->put('_modules_' . $this->p_class, $this->module_cache);
+			phpbb::$acm->put('modules_' . $this->p_class, $this->module_cache);
 		}
 
 		if (empty($this->module_cache))

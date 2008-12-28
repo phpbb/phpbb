@@ -101,18 +101,18 @@ switch ($cron_type)
 
 	case 'tidy_cache':
 
-		if (time() - $config['cache_gc'] <= $config['cache_last_gc'] || !method_exists($cache, 'tidy'))
+		if (time() - $config['cache_gc'] <= $config['cache_last_gc'] || !method_exists(phpbb::$acm, 'tidy'))
 		{
 			break;
 		}
 
 		if ($use_shutdown_function)
 		{
-			register_shutdown_function(array(&$cache, 'tidy'));
+			register_shutdown_function(array(&phpbb::$acm, 'tidy'));
 		}
 		else
 		{
-			$cache->tidy();
+			phpbb::$acm->tidy();
 		}
 
 	break;

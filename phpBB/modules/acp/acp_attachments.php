@@ -26,7 +26,7 @@ class acp_attachments
 
 	function main($id, $mode)
 	{
-		global $db, $user, $auth, $template, $cache, $config;
+		global $db, $user, $auth, $template, $config;
 
 		$user->add_lang(array('posting', 'viewtopic', 'acp/attachments'));
 
@@ -396,7 +396,7 @@ class acp_attachments
 						$notify[] = $user->lang['EXTENSIONS_UPDATED'];
 					}
 
-					$cache->destroy('_extensions');
+					phpbb::$acm->destroy('extensions');
 				}
 
 				$template->assign_vars(array(
@@ -575,7 +575,7 @@ class acp_attachments
 						$db->sql_query($sql);
 					}
 
-					$cache->destroy('_extensions');
+					phpbb::$acm->destroy('extensions');
 
 					if (!sizeof($error))
 					{
@@ -621,7 +621,7 @@ class acp_attachments
 
 							add_log('admin', 'LOG_ATTACH_EXTGROUP_DEL', $group_name);
 
-							$cache->destroy('_extensions');
+							phpbb::$acm->destroy('extensions');
 
 							trigger_error($user->lang['EXTENSION_GROUP_DELETED'] . adm_back_link($this->u_action));
 						}

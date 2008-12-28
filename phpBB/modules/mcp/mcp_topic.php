@@ -21,7 +21,7 @@ if (!defined('IN_PHPBB'))
 */
 function mcp_topic_view($id, $mode, $action)
 {
-	global $template, $db, $user, $auth, $cache, $config;
+	global $template, $db, $user, $auth, $config;
 
 	$url = append_sid(PHPBB_ROOT_PATH. 'mcp.' . PHP_EXT . '?' . extra_url());
 

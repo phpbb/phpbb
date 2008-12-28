@@ -22,7 +22,7 @@ if (!defined('IN_PHPBB'))
 */
 function view_folder($id, $mode, $folder_id, $folder)
 {
-	global $user, $template, $auth, $db, $cache, $config;
+	global $user, $template, $auth, $db, $config;
 
 	$submit_export = phpbb_request::is_set_post('submit_export');
 

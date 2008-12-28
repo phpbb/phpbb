@@ -31,7 +31,7 @@ class acp_styles
 
 	function main($id, $mode)
 	{
-		global $db, $user, $auth, $template, $cache, $config;
+		global $db, $user, $auth, $template, $config;
 
 		// Hardcoded template bitfield to add for new templates
 		$bitfield = new bitfield();
@@ -300,7 +300,7 @@ parse_css_file = {PARSE_CSS_FILE}
 									WHERE theme_id = $style_id";
 								$db->sql_query($sql);
 
-								$cache->destroy('sql', STYLES_THEME_TABLE);
+								phpbb::$acm->destroy_sql(STYLES_THEME_TABLE);
 
 								add_log('admin', 'LOG_THEME_REFRESHED', $theme_row['theme_name']);
 								trigger_error($user->lang['THEME_REFRESHED'] . adm_back_link($this->u_action));
@@ -447,7 +447,7 @@ parse_css_file = {PARSE_CSS_FILE}
 
 							$db->sql_transaction('commit');
 
-							$cache->destroy('sql', STYLES_IMAGESET_DATA_TABLE);
+							phpbb::$acm->destroy_sql(STYLES_IMAGESET_DATA_TABLE);
 
 							add_log('admin', 'LOG_IMAGESET_REFRESHED', $imageset_row['imageset_name']);
 							trigger_error($user->lang['IMAGESET_REFRESHED'] . adm_back_link($this->u_action));
@@ -631,7 +631,7 @@ parse_css_file = {PARSE_CSS_FILE}
 	*/
 	function edit_template($template_id)
 	{
-		global $config, $db, $cache, $user, $template, $safe_mode;
+		global $config, $db, $user, $template, $safe_mode;
 
 		if (defined('PHPBB_DISABLE_ACP_EDITOR'))
 		{
@@ -692,7 +692,7 @@ parse_css_file = {PARSE_CSS_FILE}
 			// destroy the cached version of the template (filename without extension)
 			$this->clear_template_cache($template_info, array(substr($template_file, 0, -5)));
 
-			$cache->destroy('sql', STYLES_TABLE);
+			phpbb::$acm->destroy_sql(STYLES_TABLE);
 
 			add_log('admin', 'LOG_TEMPLATE_EDIT', $template_info['template_name'], $template_file);
 			trigger_error($user->lang['TEMPLATE_FILE_UPDATED'] . $additional . adm_back_link($this->u_action . "&amp;action=edit&amp;id=$template_id&amp;text_rows=$text_rows&amp;template_file=$template_file"));
@@ -801,7 +801,7 @@ parse_css_file = {PARSE_CSS_FILE}
 	*/
 	function template_cache($template_id)
 	{
-		global $config, $db, $cache, $user, $template;
+		global $config, $db, $user, $template;
 
 		$source		= str_replace('/', '.', request_var('source', ''));
 		$file_ary	= array_diff(request_var('delete', array('')), array(''));
@@ -920,7 +920,7 @@ parse_css_file = {PARSE_CSS_FILE}
 	*/
 	function edit_theme($theme_id)
 	{
-		global $config, $db, $cache, $user, $template, $safe_mode;
+		global $config, $db, $user, $template, $safe_mode;
 
 		$this->page_title = 'EDIT_THEME';
 
@@ -981,7 +981,7 @@ parse_css_file = {PARSE_CSS_FILE}
 					WHERE theme_id = ' . $theme_id;
 				$db->sql_query($sql);
 
-				$cache->destroy('sql', STYLES_THEME_TABLE);
+				phpbb::$acm->destroy_sql(STYLES_THEME_TABLE);
 
 				// notify the user if the theme was not stored in the db before his modification
 				if (!$theme_info['theme_storedb'])
@@ -990,7 +990,7 @@ parse_css_file = {PARSE_CSS_FILE}
 					$message .= '<br />' . $user->lang['EDIT_THEME_STORED_DB'];
 				}
 			}
-			$cache->destroy('sql', STYLES_THEME_TABLE);
+			phpbb::$acm->destroy_sql(STYLES_THEME_TABLE);
 			add_log('admin', (!$theme_info['theme_storedb']) ? 'LOG_THEME_EDIT_FILE' : 'LOG_THEME_EDIT', $theme_info['theme_name'], (!$theme_info['theme_storedb']) ? $theme_file : '');
 
 			trigger_error($message . adm_back_link($this->u_action . "&amp;action=edit&amp;id=$theme_id&amp;template_file=$theme_file&amp;text_rows=$text_rows"));
@@ -1107,7 +1107,7 @@ parse_css_file = {PARSE_CSS_FILE}
 	*/
 	function edit_imageset($imageset_id)
 	{
-		global $db, $user, $cache, $template;
+		global $db, $user, $template;
 
 		$this->page_title = 'EDIT_IMAGESET';
 
@@ -1232,7 +1232,7 @@ parse_css_file = {PARSE_CSS_FILE}
 						$db->sql_query('INSERT INTO ' . STYLES_IMAGESET_DATA_TABLE . ' ' . $db->sql_build_array('INSERT', $sql_ary));
 					}
 
-					$cache->destroy('sql', STYLES_IMAGESET_DATA_TABLE);
+					phpbb::$acm->destroy_sql(STYLES_IMAGESET_DATA_TABLE);
 
 					add_log('admin', 'LOG_IMAGESET_EDIT', $imageset_name);
 
@@ -1376,7 +1376,7 @@ parse_css_file = {PARSE_CSS_FILE}
 	*/
 	function remove($mode, $style_id)
 	{
-		global $db, $template, $user, $cache, $config;
+		global $db, $template, $user, $config;
 
 		$new_id = request_var('new_id', 0);
 		$update = phpbb_request::is_set_post('update');
@@ -1480,7 +1480,7 @@ parse_css_file = {PARSE_CSS_FILE}
 				$db->sql_query($sql);
 			}
 
-			$cache->destroy('sql', STYLES_TABLE);
+			phpbb::$acm->destroy_sql(STYLES_TABLE);
 
 			add_log('admin', 'LOG_' . $l_prefix . '_DELETE', $style_row[$mode . '_name']);
 			$message = ($mode != 'style') ? $l_prefix . '_DELETED_FS' : $l_prefix . '_DELETED';
@@ -1512,7 +1512,7 @@ parse_css_file = {PARSE_CSS_FILE}
 	*/
 	function export($mode, $style_id)
 	{
-		global $db, $template, $user, $cache, $config;
+		global $db, $template, $user, $config;
 
 		$update = phpbb_request::is_set_post('update');
 
@@ -1909,7 +1909,7 @@ parse_css_file = {PARSE_CSS_FILE}
 	*/
 	function details($mode, $style_id)
 	{
-		global $template, $db, $config, $user, $safe_mode, $cache;
+		global $template, $db, $config, $user, $safe_mode;
 
 		$update = phpbb_request::is_set_post('update');
 		$l_type = strtoupper($mode);
@@ -2056,7 +2056,7 @@ parse_css_file = {PARSE_CSS_FILE}
 				}
 			}
 
-			$cache->destroy('sql', STYLES_TABLE);
+			phpbb::$acm->destroy_sql(STYLES_TABLE);
 
 			add_log('admin', 'LOG_' . $l_type . '_EDIT_DETAILS', $name);
 			if (sizeof($error))
@@ -2260,7 +2260,7 @@ parse_css_file = {PARSE_CSS_FILE}
 	*/
 	function install($mode)
 	{
-		global $config, $db, $cache, $user, $template;
+		global $config, $db, $user, $template;
 
 		$l_type = strtoupper($mode);
 
@@ -2373,7 +2373,7 @@ parse_css_file = {PARSE_CSS_FILE}
 
 			if (!sizeof($error))
 			{
-				$cache->destroy('sql', STYLES_TABLE);
+				phpbb::$acm->destroy_sql(STYLES_TABLE);
 
 				trigger_error($user->lang[$l_type . '_ADDED'] . adm_back_link($this->u_action));
 			}
@@ -2415,7 +2415,7 @@ parse_css_file = {PARSE_CSS_FILE}
 	*/
 	function add($mode)
 	{
-		global $config, $db, $cache, $user, $template;
+		global $config, $db, $user, $template;
 
 		$l_type = strtoupper($mode);
 		$element_ary = array('template' => STYLES_TEMPLATE_TABLE, 'theme' => STYLES_THEME_TABLE, 'imageset' => STYLES_IMAGESET_TABLE);
@@ -2503,7 +2503,7 @@ parse_css_file = {PARSE_CSS_FILE}
 
 			if (!sizeof($error))
 			{
-				$cache->destroy('sql', STYLES_TABLE);
+				phpbb::$acm->destroy_sql(STYLES_TABLE);
 
 				trigger_error($user->lang[$l_type . '_ADDED'] . adm_back_link($this->u_action));
 			}

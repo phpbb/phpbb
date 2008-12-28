@@ -26,7 +26,7 @@ class acp_icons
 
 	function main($id, $mode)
 	{
-		global $db, $user, $auth, $template, $cache, $config;
+		global $db, $user, $auth, $template, $config;
 
 		$user->add_lang('acp/posting');
 
@@ -429,8 +429,8 @@ class acp_icons
  					}
 				}
 
-				$cache->destroy('_icons');
-				$cache->destroy('sql', $table);
+				phpbb::$acm->destroy('icons');
+				phpbb::$acm->destroy_sql($table);
 
 				$level = E_USER_NOTICE;
 				switch ($icons_updated)
@@ -607,8 +607,8 @@ class acp_icons
 						}
 					}
 
-					$cache->destroy('_icons');
-					$cache->destroy('sql', $table);
+					phpbb::$acm->destroy('icons');
+					phpbb::$acm->destroy_sql($table);
 
 					trigger_error($user->lang[$lang . '_IMPORT_SUCCESS'] . adm_back_link($this->u_action));
 				}
@@ -729,8 +729,8 @@ class acp_icons
 
 					$notice = $user->lang[$lang . '_DELETED'];
 
-					$cache->destroy('_icons');
-					$cache->destroy('sql', $table);
+					phpbb::$acm->destroy('icons');
+					phpbb::$acm->destroy_sql($table);
 				}
 				else
 				{
@@ -781,8 +781,8 @@ class acp_icons
 					$db->sql_query($sql);
 				}
 
-				$cache->destroy('_icons');
-				$cache->destroy('sql', $table);
+				phpbb::$acm->destroy('icons');
+				phpbb::$acm->destroy_sql($table);
 
 			break;
 		}

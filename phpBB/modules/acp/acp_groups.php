@@ -25,7 +25,7 @@ class acp_groups
 
 	function main($id, $mode)
 	{
-		global $config, $db, $user, $auth, $template, $cache, $file_uploads;
+		global $config, $db, $user, $auth, $template, $file_uploads;
 
 		$user->add_lang('acp/groups');
 		$this->tpl_name = 'acp_groups';
@@ -458,7 +458,7 @@ class acp_groups
 								}
 							}
 
-							$cache->destroy('sql', GROUPS_TABLE);
+							phpbb::$acm->destroy_sql(GROUPS_TABLE);
 
 							$message = ($action == 'edit') ? 'GROUP_UPDATED' : 'GROUP_CREATED';
 							trigger_error($user->lang[$message] . adm_back_link($this->u_action));

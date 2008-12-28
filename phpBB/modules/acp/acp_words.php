@@ -26,7 +26,7 @@ class acp_words
 
 	function main($id, $mode)
 	{
-		global $db, $user, $auth, $template, $cache, $config;
+		global $db, $user, $auth, $template, $config;
 
 		$user->add_lang('acp/posting');
 
@@ -106,7 +106,7 @@ class acp_words
 					$db->sql_query('INSERT INTO ' . WORDS_TABLE . ' ' . $db->sql_build_array('INSERT', $sql_ary));
 				}
 
-				$cache->destroy('_word_censors');
+				phpbb::$acm->destroy('word_censors');
 
 				$log_action = ($word_id) ? 'LOG_WORD_EDIT' : 'LOG_WORD_ADD';
 				add_log('admin', $log_action, $word);
@@ -138,7 +138,7 @@ class acp_words
 						WHERE word_id = $word_id";
 					$db->sql_query($sql);
 
-					$cache->destroy('_word_censors');
+					phpbb::$acm->destroy('word_censors');
 
 					add_log('admin', 'LOG_WORD_DELETE', $deleted_word);
 

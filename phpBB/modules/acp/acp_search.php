@@ -50,7 +50,7 @@ class acp_search
 
 	function settings($id, $mode)
 	{
-		global $db, $user, $auth, $template, $cache, $config;
+		global $db, $user, $auth, $template, $config;
 
 		$submit = phpbb_request::is_set_post('submit');
 
@@ -226,7 +226,7 @@ class acp_search
 
 	function index($id, $mode)
 	{
-		global $db, $user, $auth, $template, $cache, $config;
+		global $db, $user, $auth, $template, $config;
 
 		$action = request_var('action', array('' => false));
 		if (sizeof($action))

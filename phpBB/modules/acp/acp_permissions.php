@@ -26,7 +26,7 @@ class acp_permissions
 
 	function main($id, $mode)
 	{
-		global $db, $user, $auth, $template, $cache, $config;
+		global $db, $user, $auth, $template, $config;
 
 		include_once(PHPBB_ROOT_PATH . 'includes/functions_user.' . PHP_EXT);
 		include_once(PHPBB_ROOT_PATH . 'includes/acp/auth.' . PHP_EXT);
