@@ -17,72 +17,254 @@ if (!defined('IN_PHPBB'))
 }
 
 /**
+* DBAL Factory
+* Only used to instantiate a new DB object
+*
+* @package dbal
+* @static
+*/
+abstract class phpbb_db_dbal
+{
+	/**
+	* Get new database object
+	*
+	* @param string	$dbms	Database module to call
+	* @return object	Database object
+	* @access public
+	*/
+	public static function new_instance($dbms)
+	{
+		$class = 'phpbb_dbal_' . $dbms;
+
+		if (!class_exists($class))
+		{
+			include PHPBB_ROOT_PATH . 'includes/db/' . $dbms . '.' . PHP_EXT;
+		}
+
+		// Instantiate class
+		$db = new $class();
+
+		// Fill default sql layer
+		$db->sql_layer = $dbms;
+
+		return $db;
+	}
+
+	/**
+	* Get new database object and connect to database
+	*
+	* @param string	$dbms			Database module to call
+	* @param string	$server			DB server address to connect to
+	* @param string	$user			DB user name
+	* @param string	$password		DB password to use
+	* @param string	$database		Database name to connect to
+	* @param int	$port			DB Port
+	* @param bool	$persistency	Open persistent DB connection if true
+	* @param bool	$new_link		If set to true a new connection is opened instead of re-using old connections
+	*
+	* @return object	Database object
+	* @access public
+	*/
+	public static function connect($dbms, $server, $user, $password, $database, $port = false, $persistency = false, $new_link = false)
+	{
+		$class = 'phpbb_dbal_' . $dbms;
+
+		if (!class_exists($class))
+		{
+			include PHPBB_ROOT_PATH . 'includes/db/' . $dbms . '.' . PHP_EXT;
+		}
+
+		// Instantiate class
+		$db = new $class();
+
+		// Fill default sql layer
+		$db->sql_layer = $dbms;
+
+		// Connect to DB
+		$db->sql_connect($server, $user, $password, $database, $port, $persistency, $new_link);
+
+		// Return db object
+		return $db;
+	}
+}
+
+/**
 * Database Abstraction Layer
 * @package dbal
 */
-class dbal
+abstract class phpbb_dbal
 {
-	var $db_connect_id;
-	var $query_result;
-	var $return_on_error = false;
-	var $transaction = false;
-	var $sql_time = 0;
-	var $num_queries = array();
-	var $open_queries = array();
-
-	var $curtime = 0;
-	var $query_hold = '';
-	var $html_hold = '';
-	var $sql_report = '';
-
-	var $persistency = false;
-	var $user = '';
-	var $server = '';
-	var $dbname = '';
-
-	// Set to true if error triggered
-	var $sql_error_triggered = false;
-
-	// Holding the last sql query on sql error
-	var $sql_error_sql = '';
-	// Holding the error information - only populated if sql_error_triggered is set
-	var $sql_error_returned = array();
-
-	// Holding transaction count
-	var $transactions = 0;
-
-	// Supports multi inserts?
-	var $multi_insert = false;
-
-	// Supports COUNT(DISTINCT ...)?
-	var $count_distinct = true;
-
-	// Supports multiple table deletion
-	var $multi_table_deletion = false;
-
-	// Supports table truncation
-	var $truncate = true;
+	/**
+	* @var array required phpBB objects
+	*/
+	public $phpbb_required = array('config');
 
 	/**
-	* Current sql layer
+	* @var array Optional phpBB objects
 	*/
-	var $sql_layer = '';
+	public $phpbb_optional = array('acm', 'user', 'acl');
 
 	/**
-	* Wildcards for matching any (%) or exactly one (_) character within LIKE expressions
+	* @var string Current sql layer name
 	*/
-	var $any_char;
-	var $one_char;
+	public $sql_layer = '';
 
 	/**
-	* Exact version of the DBAL, directly queried
+	* @var string Exact version of the DBAL, directly queried
 	*/
-	var $sql_server_version = false;
+	public $sql_server_version = false;
 
 	/**
-	* Constructor
+	* @var mixed Database connection id/resource
 	*/
-	function __construct()
+	public $db_connect_id;
+
+	/**
+	* @var mixed Database query result id/resource
+	*/
+	public $query_result;
+
+	/**
+	* @var bool Persistent connection
+	*/
+	public $persistency = false;
+
+	/**
+	* @var string DB user name
+	*/
+	public $user = '';
+
+	/**
+	* @var string DB server address connected to
+	*/
+	public $server = '';
+
+	/**
+	* @var string Database name connected to
+	*/
+	public $dbname = '';
+
+	/**
+	* @var int Database port used
+	*/
+	public $port = 0;
+
+	/**
+	* @var bool Is true if in transaction
+	*/
+	public $transaction = false;
+
+	/**
+	* @var int Holding transaction count
+	*/
+	public $transactions = 0;
+
+	/**
+	* Stores number of queries
+	*
+	* Keys are:
+	* <ul>
+	* <li>cached: Number of cached queries executed</li>
+	* <li>normal: Number of non-cached queries executed</li>
+	* <li>total: Total number of queries executed</li>
+	* </ul>
+	*
+	* @var array
+	*/
+	public $num_queries = array();
+
+	/**
+	* Stores opened queries.
+	*
+	* The key is returned by {@link phpbb_dbal::sql_get_result_key() sql_get_result_key()}.
+	* The value is the {@link phpbb_dbal::$query_result Database query result id/resource}.
+	*
+	* @var array
+	*/
+	public $open_queries = array();
+
+	/**
+	* @var string Wildcard for matching any (%) character within LIKE expressions
+	*/
+	protected $any_char;
+
+	/**
+	* @var string Wildcard for matching exactly one (_) character within LIKE expressions
+	*/
+	protected $one_char;
+
+	/**
+	* @var array Storing cached result rowset
+	*/
+	protected $cache_rowset = array();
+
+	/**
+	* @var int Storing cached result rowset index
+	*/
+	protected $cache_index = 0;
+
+	/**
+	* @var bool If true then methods do not call {@link phpbb_dbal::sql_error() sql_error()} on SQL error, but return silently.
+	*/
+	public $return_on_error = false;
+
+	/**
+	* @var bool This is set to true if an error had been triggered.
+	*/
+	public $sql_error_triggered = false;
+
+	/**
+	* @var string Holds the last sql query on triggered sql error.
+	*/
+	public $sql_error_sql = '';
+
+	/**
+	* @var array Holds the SQL error information - only populated if {@link phpbb_dbal::$sql_error_triggered sql_error_triggered} is set to true.
+	*/
+	public $sql_error_returned = array();
+
+	/**
+	* Database features
+	*
+	* <ul>
+	* <li>multi_insert: Supports multi inserts</li>
+	* <li>count_distinct: Supports COUNT(DISTINGT ...)</li>
+	* <li>multi_table_deletion: Supports multiple table deletion</li>
+	* <li>truncate: Supports table truncation</li>
+	* </ul>
+	*
+	* @var array
+	*/
+	public $features = array(
+		'multi_insert'			=> true,
+		'count_distinct'		=> true,
+		'multi_table_deletion'	=> true,
+		'truncate'				=> true,
+	);
+
+	/**
+	* @var int Passed time for executing SQL queries
+	*/
+	public $sql_time = 0;
+
+	/**
+	* @var int Current timestamp
+	*/
+	public $curtime = 0;
+
+	/**#@+
+	* @var string String to hold information for {@link phpbb_dbal::sql_report() SQL report}.
+	*/
+	protected $query_hold = '';
+	protected $html_hold = '';
+	protected $sql_report = '';
+	/**#@-*/
+
+	/**
+	* Constructor. Set default values.
+	* @access public
+	*/
+	public function __construct()
 	{
 		$this->num_queries = array(
 			'cached'		=> 0,
@@ -90,19 +272,299 @@ class dbal
 			'total'			=> 0,
 		);
 
-		// Fill default sql layer based on the class being called.
-		// This can be changed by the specified layer itself later if needed.
-		$this->sql_layer = substr(get_class($this), 5);
-
 		// Do not change this please! This variable is used to easy the use of it - and is hardcoded.
 		$this->any_char = chr(0) . '%';
 		$this->one_char = chr(0) . '_';
+
+		$this->cache_rowset = array();
+		$this->cache_index = 0;
 	}
 
 	/**
-	* return on error or display error message
+	* Connect to SQL Server.
+	*
+	* @param string	$server			DB server address to connect to
+	* @param string	$user			DB user name
+	* @param string	$password		DB password to use
+	* @param string	$database		Database name to connect to
+	* @param int	$port			DB Port
+	* @param bool	$persistency	Open persistent DB connection if true
+	* @param bool	$new_link		If set to true a new connection is opened instead of re-using old connections
+	*
+	* @return mixed	Database connection id/resource
+	* @access public
 	*/
-	function sql_return_on_error($fail = false)
+	abstract public function sql_connect($server, $user, $password, $database, $port = false, $persistency = false , $new_link = false);
+
+	/**
+	* Version information about used database
+	*
+	* @param bool	$raw	If true, only return the fetched sql_server_version without any additional strings
+	*
+	* @return string	Sql server version
+	* @access public
+	*/
+	abstract public function sql_server_info($raw = false);
+
+	/**
+	* Return number of affected rows.
+	*
+	* @return int	Number of affected rows. False if there is no valid database connection id.
+	* @access public
+	*/
+	abstract public function sql_affectedrows();
+
+	/**
+	* Get last inserted id after insert statement
+	*
+	* @return int	Last inserted id. False if there is no valid database connection id.
+	* @access public
+	*/
+	abstract public function sql_nextid();
+
+	/**
+	* Escape string used in sql query.
+	*
+	* @param string	$msg	Text to escape
+	*
+	* @return string	Escaped text
+	* @access public
+	*/
+	abstract public function sql_escape($msg);
+
+	/**
+	* Expose a DBMS specific function.
+	*
+	* Supported types are:
+	* <ul>
+	* <li>length_varchar: Get expression to return length of VARCHAR</li>
+	* <li>length_text: Get expression to return length of TEXT</li>
+	* </ul>
+	*
+	* @param string	$type	Type to return DB-specific code for
+	* @param string	$col	Column name to operate on
+	*
+	* @return string	DB-specific code able to be used in SQL query
+	* @access public
+	*/
+	abstract public function sql_function($type, $col);
+
+	/**
+	* Handle data by using prepared statements.
+	*
+	* @param string	$type	The type to handle. Possible values are: INSERT, UPDATE
+	* @param string	$table	The table to use insert or update
+	* @param mixed	$data	The data to insert/update in an array (key == column, value == value)
+	* @param string $where	An optional where-statement
+	* @access public
+	*/
+	abstract public function sql_handle_data($type, $table, $data, $where = '');
+
+	/**
+	* DB-specific base query method. Called by {@link phpbb_dbal::sql_query() sql_query()}.
+	*
+	* @param string	$query		Contains the SQL query which shall be executed
+	*
+	* @return mixed	Returns the query result resource. When casted to bool the returned value returns true on success and false on failure
+	* @access protected
+	*/
+	abstract protected function _sql_query($query);
+
+	/**
+	* DB-specific method to Build LIMIT query and run it. Called by {@link phpbb_dbal::sql_query_limit() sql_query_limit}.
+	*
+	* @param string	$query	SQL query LIMIT should be applied to
+	* @param int	$total	Total number of rows returned
+	* @param int	$offset	Offset to read from
+	* @param int	$cache_ttl	Either 0 to avoid caching or the time in seconds which the result shall be kept in cache
+	*
+	* @return mixed	Returns the query result resource. When casted to bool the returned value returns true on success and false on failure
+	* @access protected
+	*/
+	abstract protected function _sql_query_limit($query, $total, $offset, $cache_ttl);
+
+	/**
+	* DB-specific method to close sql connection. Called by {@link phpbb_dbal::sql_close() sql_close()}.
+	* @access protected
+	*/
+	abstract protected function _sql_close();
+
+	/**
+	* DB-specific SQL Transaction. Called by {@link phpbb_dbal::sql_transaction() sql_transaction()}.
+	*
+	* @param string	$status	The status code. See {@link phpbb_dbal::sql_transaction() sql_transaction()} for status codes.
+	*
+	* @return mixed	The result returned by the DB
+	* @access protected
+	*/
+	abstract protected function _sql_transaction($status);
+
+	/**
+	* Fetch current row. Called by {@link phpbb_dbal::sql_fetchrow() sql_fetchrow()}.
+	*
+	* @param mixed	$query_id	Query result resource
+	*
+	* @return array|bool	The current row or false if an error occurred
+	* @access protected
+	*/
+	abstract protected function _sql_fetchrow($query_id);
+
+	/**
+	* Free query result. Called by {@link phpbb_dbal::sql_freeresult() sql_freeresult()}.
+	*
+	* @param mixed	$query_id	Query result resource
+	*
+	* @return mixed	The DB result
+	* @access protected
+	*/
+	abstract protected function _sql_freeresult($query_id);
+
+	/**
+	* Correctly adjust LIKE expression for special characters. Called by {@link phpbb_dbal::sql_like_expression() sql_like_expression()}.
+	*
+	* @param string	$expression	The expression to use. Every wildcard is escaped, except {@link phpbb_dbal::$any_char $any_char} and {@link phpbb_dbal::$one_char $one_char}
+	*
+	* @return string	LIKE expression including the keyword!
+	* @access protected
+	*/
+	abstract protected function _sql_like_expression($expression);
+
+	/**
+	* Build DB-specific query bits for {@link phpbb_dbal::sql_build_query() sql_build_query()}.
+	*
+	* Currently used stages are ($stage: $data)
+	* <ul>
+	* <li>FROM: implode(', ', $table_array)</li>
+	* <li>WHERE: Full WHERE-Statement without WHERE keyword</li>
+	* </ul>
+	*
+	* @param string	$stage	The current stage build_query needs db-specific data for. Currently used are: FROM and WHERE.
+	* @param string	$data	Data to operate with
+	*
+	* @return string	$data in it's original form or adjusted to meet DB-specific standard
+	* @access protected
+	*/
+	abstract protected function _sql_custom_build($stage, $data);
+
+	/**
+	* Return sql error array. Called by {@link phpbb_dbal::sql_error() sql_error()}.
+	*
+	* @return array	Array with two keys. 'code' for the error code and 'message' for the error message.
+	* @access protected
+	*/
+	abstract protected function _sql_error();
+
+	/**
+	* Run DB-specific code to build SQL Report to explain queries, show statistics and runtime information. Called by {@link phpbb_dbal::sql_report() sql_report()}.
+	*
+	* This function only executes if the GET parameter 'explain' is true and DEBUG_EXTRA enabled.
+	*
+	* @param string	$mode	The mode to handle. 'display' is used for displaying the report, all other modes are internal.
+	* @param string $query	Query to document/explain. Only used internally to build the plan.
+	*
+	* @access protected
+	*/
+	abstract protected function _sql_report($mode, $query = '');
+
+	/**
+	* Base query method
+	*
+	* @param string	$query		Contains the SQL query which shall be executed
+	* @param int	$cache_ttl	Either 0 to avoid caching or the time in seconds which the result shall be kept in cache
+	*
+	* @return mixed	Returns the query result resource. When casted to bool the returned value returns true on success and false on failure
+	* @access public
+	*/
+	public function sql_query($query = '', $cache_ttl = 0)
+	{
+		if (empty($query))
+		{
+			return false;
+		}
+
+		// EXPLAIN only in extra debug mode
+		if (defined('DEBUG_EXTRA'))
+		{
+			$this->sql_report('start', $query);
+		}
+
+		$this->query_result = false;
+
+		if ($cache_ttl)
+		{
+			$this->sql_get_cache($query);
+		}
+
+		$this->sql_add_num_queries($this->query_result);
+
+		if ($this->query_result !== false)
+		{
+			if (defined('DEBUG_EXTRA'))
+			{
+				$this->sql_report('fromcache', $query);
+			}
+
+			return $this->query_result;
+		}
+
+		if (($this->query_result = $this->_sql_query($query)) === false)
+		{
+			$this->sql_error($query);
+		}
+
+		if (defined('DEBUG_EXTRA'))
+		{
+			$this->sql_report('stop', $query);
+		}
+
+		if ($cache_ttl)
+		{
+			$this->sql_put_cache($query, $cache_ttl);
+		}
+
+		if ($cache_ttl || strpos($query, 'SELECT') === 0)
+		{
+			if (($key = $this->sql_get_result_key($this->query_result)) !== false)
+			{
+				$this->open_queries[$key] = $this->query_result;
+			}
+		}
+
+		return $this->query_result;
+	}
+
+	/**
+	* Build LIMIT query and run it.
+	*
+	* @param string	$query	SQL query LIMIT should be applied to
+	* @param int	$total	Total number of rows returned
+	* @param int	$offset	Offset to read from
+	* @param int	$cache_ttl	Either 0 to avoid caching or the time in seconds which the result shall be kept in cache
+	*
+	* @return mixed	Returns the query result resource. When casted to bool the returned value returns true on success and false on failure
+	* @access public
+	*/
+	public function sql_query_limit($query, $total, $offset = 0, $cache_ttl = 0)
+	{
+		if (empty($query))
+		{
+			return false;
+		}
+
+		// Never use a negative total or offset
+		$total = ($total < 0) ? 0 : $total;
+		$offset = ($offset < 0) ? 0 : $offset;
+
+		return $this->_sql_query_limit($query, $total, $offset, $cache_ttl);
+	}
+
+	/**
+	* Switch for "return on error" or "display error message". Affects {@link phpbb_dbal::$return_on_error $return_on_error}.
+	*
+	* @param bool	$fail	True to return on SQL error. False to display error message on SQL error.
+	* @access public
+	*/
+	public function sql_return_on_error($fail = false)
 	{
 		$this->sql_error_triggered = false;
 		$this->sql_error_sql = '';
@@ -111,27 +573,28 @@ class dbal
 	}
 
 	/**
-	* Return number of sql queries and cached sql queries used
+	* Return number of sql queries and cached sql queries used.
+	*
+	* @param bool	$cached	True to return cached queries executed. False to return non-cached queries executed.
+	*
+	* @return int	Number of queries executed
+	* @access public
 	*/
-	function sql_num_queries($cached = false)
+	public function sql_num_queries($cached = false)
 	{
 		return ($cached) ? $this->num_queries['cached'] : $this->num_queries['normal'];
 	}
 
 	/**
-	* Add to query count
+	* DBAL garbage collection, close sql connection.
+	*
+	* Iterates through {@link phpbb_dbal::$open_queries open queries} and closes them.
+	* For connection close {@link phpbb_dbal::_sql_close() the DB-specific method} is called.
+	*
+	* @return bool	False if there was no db connection to close or an error occurred, else true
+	* @access public
 	*/
-	function sql_add_num_queries($cached = false)
-	{
-		$this->num_queries['cached'] += ($cached !== false) ? 1 : 0;
-		$this->num_queries['normal'] += ($cached !== false) ? 0 : 1;
-		$this->num_queries['total'] += 1;
-	}
-
-	/**
-	* DBAL garbage collection, close sql connection
-	*/
-	function sql_close()
+	public function sql_close()
 	{
 		if (!$this->db_connect_id)
 		{
@@ -147,9 +610,9 @@ class dbal
 			while ($this->transaction);
 		}
 
-		foreach ($this->open_queries as $query_id)
+		foreach ($this->open_queries as $key => $query_result)
 		{
-			$this->sql_freeresult($query_id);
+			$this->sql_freeresult($query_result);
 		}
 
 		// Connection closed correctly. Set db_connect_id to false to prevent errors
@@ -162,93 +625,21 @@ class dbal
 	}
 
 	/**
-	* Build LIMIT query
-	* Doing some validation here.
-	*/
-	function sql_query_limit($query, $total, $offset = 0, $cache_ttl = 0)
-	{
-		if (empty($query))
-		{
-			return false;
-		}
-
-		// Never use a negative total or offset
-		$total = ($total < 0) ? 0 : $total;
-		$offset = ($offset < 0) ? 0 : $offset;
-
-		return $this->_sql_query_limit($query, $total, $offset, $cache_ttl);
-	}
-
-	/**
-	* Fetch all rows
-	*/
-	function sql_fetchrowset($query_id = false)
-	{
-		if ($query_id === false)
-		{
-			$query_id = $this->query_result;
-		}
-
-		if ($query_id !== false)
-		{
-			$result = array();
-			while ($row = $this->sql_fetchrow($query_id))
-			{
-				$result[] = $row;
-			}
-
-			return $result;
-		}
-
-		return false;
-	}
-
-	/**
-	* Fetch field
-	*/
-	function sql_fetchfield($field, $query_id = false)
-	{
-		global $cache;
-
-		if ($query_id === false)
-		{
-			$query_id = $this->query_result;
-		}
-
-		if ($query_id !== false)
-		{
-			if (!is_object($query_id) && isset($cache->sql_rowset[$query_id]))
-			{
-				return $cache->sql_fetchfield($query_id, $field);
-			}
-
-			$row = $this->sql_fetchrow($query_id);
-			return (isset($row[$field])) ? $row[$field] : false;
-		}
-
-		return false;
-	}
-
-	/**
-	* Correctly adjust LIKE expression for special characters
-	* Some DBMS are handling them in a different way
+	* SQL Transaction.
 	*
-	* @param string $expression The expression to use. Every wildcard is escaped, except $this->any_char and $this->one_char
-	* @return string LIKE expression including the keyword!
+	* Standard status codes are:
+	* <ul>
+	* <li>begin: Begin transaction</li>
+	* <li>commit: Commit/end transaction</li>
+	* <li>rollback: Rollback transaction</li>
+	* </ul>
+	*
+	* @param string	$status	The status code.
+	*
+	* @return mixed	The result returned by the DB
+	* @access public
 	*/
-	function sql_like_expression($expression)
-	{
-		$expression = str_replace(array('_', '%'), array("\_", "\%"), $expression);
-		$expression = str_replace(array(chr(0) . "\_", chr(0) . "\%"), array('_', '%'), $expression);
-
-		return $this->_sql_like_expression('LIKE \'' . $this->sql_escape($expression) . '\'');
-	}
-
-	/**
-	* SQL Transaction
-	* @access private
-	*/
-	function sql_transaction($status = 'begin')
+	public function sql_transaction($status = 'begin')
 	{
 		switch ($status)
 		{
@@ -311,13 +702,144 @@ class dbal
 	}
 
 	/**
-	* Build sql statement from array for insert/update/select statements
+	* Fetch current row.
+	*
+	* @param mixed	$query_id	Query result resource
+	*
+	* @return array|bool	The current row or false if an error occurred
+	* @access public
+	*/
+	public function sql_fetchrow($query_id = false)
+	{
+		if ($query_id === false)
+		{
+			$query_id = $this->query_result;
+		}
+
+		if ($this->sql_cache_exists($query_id))
+		{
+			return $this->sql_cache_fetchrow($query_id);
+		}
+
+		return ($query_id !== false) ? $this->_sql_fetchrow($query_id) : false;
+	}
+
+	/**
+	* Fetch rowset (all rows).
+	*
+	* @param mixed	$query_id	Query result resource
+	*
+	* @return array|bool	The complete rowset or false if an error occurred
+	* @access public
+	*/
+	public function sql_fetchrowset($query_id = false)
+	{
+		if ($query_id === false)
+		{
+			$query_id = $this->query_result;
+		}
+
+		if ($query_id !== false)
+		{
+			$result = array();
+			while ($row = $this->sql_fetchrow($query_id))
+			{
+				$result[] = $row;
+			}
+
+			return $result;
+		}
+
+		return false;
+	}
+
+	/**
+	* Fetch field from current row.
+	*
+	* @param string	$field	Field/Column name to fetch data from.
+	* @param mixed	$query_id	Query result resource
+	*
+	* @return mixed	The fields value
+	* @access public
+	*/
+	public function sql_fetchfield($field, $query_id = false)
+	{
+		if ($query_id === false)
+		{
+			$query_id = $this->query_result;
+		}
+
+		if ($query_id !== false)
+		{
+			if ($this->sql_cache_exists($query_id))
+			{
+				return $this->sql_cache_fetchfield($query_id, $field);
+			}
+
+			$row = $this->sql_fetchrow($query_id);
+			return (isset($row[$field])) ? $row[$field] : false;
+		}
+
+		return false;
+	}
+
+	/**
+	* Free query result.
+	*
+	* @param mixed	$query_id	Query result resource
+	*
+	* @return mixed	The DB result
+	* @access public
+	*/
+	public function sql_freeresult($query_id)
+	{
+		if ($query_id === false)
+		{
+			$query_id = $this->query_result;
+		}
+
+		if ($this->sql_cache_exists($query_id))
+		{
+			return $this->sql_cache_freeresult($query_id);
+		}
+
+		if (($key = $this->sql_get_result_key($query_id)) !== false)
+		{
+			unset($this->open_queries[$key]);
+		}
+
+		return $this->_sql_freeresult($query_id);
+	}
+
+	/**
+	* Correctly adjust LIKE expression for special characters, some DBMS are handling them in a different way.
+	*
+	* @param string	$expression	The expression to use. Every wildcard is escaped, except {@link phpbb_dbal::$any_char $any_char} and {@link phpbb_dbal::$one_char $one_char}
+	*
+	* @return string	LIKE expression including the keyword!
+	* @access public
+	*/
+	public function sql_like_expression($expression)
+	{
+		$expression = str_replace(array('_', '%'), array("\_", "\%"), $expression);
+		$expression = str_replace(array(chr(0) . "\_", chr(0) . "\%"), array('_', '%'), $expression);
+
+		return $this->_sql_like_expression('LIKE \'' . $this->sql_escape($expression) . '\'');
+	}
+
+	/**
+	* Build sql statement from array for insert/update/select statements.
 	*
 	* Idea for this from Ikonboard
 	* Possible query values: INSERT, INSERT_SELECT, UPDATE, SELECT
 	*
+	* @param string	$mode		The mode to handle
+	* @param array	$assoc_ary	The SQL array to insert/update/select (key == column, value == data)
+	*
+	* @return string	Query able to be used in SQL queries
+	* @access public
 	*/
-	function sql_build_array($query, $assoc_ary = false)
+	public function sql_build_array($mode, $assoc_ary = false)
 	{
 		if (!is_array($assoc_ary))
 		{
@@ -325,8 +847,9 @@ class dbal
 		}
 
 		$fields = $values = array();
+		$query = '';
 
-		if ($query == 'INSERT' || $query == 'INSERT_SELECT')
+		if ($mode == 'INSERT' || $mode == 'INSERT_SELECT')
 		{
 			foreach ($assoc_ary as $key => $var)
 			{
@@ -343,36 +866,36 @@ class dbal
 				}
 			}
 
-			$query = ($query == 'INSERT') ? ' (' . implode(', ', $fields) . ') VALUES (' . implode(', ', $values) . ')' : ' (' . implode(', ', $fields) . ') SELECT ' . implode(', ', $values) . ' ';
+			$query = ($mode == 'INSERT') ? ' (' . implode(', ', $fields) . ') VALUES (' . implode(', ', $values) . ')' : ' (' . implode(', ', $fields) . ') SELECT ' . implode(', ', $values) . ' ';
 		}
-		else if ($query == 'MULTI_INSERT')
+		else if ($mode == 'MULTI_INSERT')
 		{
 			trigger_error('The MULTI_INSERT query value is no longer supported. Please use sql_multi_insert() instead.', E_USER_ERROR);
 		}
-		else if ($query == 'UPDATE' || $query == 'SELECT')
+		else if ($mode == 'UPDATE' || $mode == 'SELECT')
 		{
-			$values = array();
 			foreach ($assoc_ary as $key => $var)
 			{
 				$values[] = "$key = " . $this->_sql_validate_value($var);
 			}
-			$query = implode(($query == 'UPDATE') ? ', ' : ' AND ', $values);
+			$query = implode(($mode == 'UPDATE') ? ', ' : ' AND ', $values);
 		}
 
 		return $query;
 	}
 
 	/**
-	* Build IN or NOT IN sql comparison string, uses <> or = on single element
-	* arrays to improve comparison speed
+	* Build IN or NOT IN sql comparison string, uses <> or = on single element to improve comparison speed
 	*
+	* @param string	$field				Name of the sql column that shall be compared
+	* @param array	$array				Array of values that are allowed (IN) or not allowed (NOT IN)
+	* @param bool	$negate				True for NOT IN (), false for IN () (default)
+	* @param bool	$allow_empty_set	If true, allow $array to be empty - this function will return 1=1 or 1=0 then.
+	*
+	* @return string	SQL statement able to be used in SQL queries
 	* @access public
-	* @param	string	$field				name of the sql column that shall be compared
-	* @param	array	$array				array of values that are allowed (IN) or not allowed (NOT IN)
-	* @param	bool	$negate				true for NOT IN (), false for IN () (default)
-	* @param	bool	$allow_empty_set	If true, allow $array to be empty, this function will return 1=1 or 1=0 then. Default to false.
 	*/
-	function sql_in_set($field, $array, $negate = false, $allow_empty_set = false)
+	public function sql_in_set($field, $array, $negate = false, $allow_empty_set = false)
 	{
 		if (!sizeof($array))
 		{
@@ -417,20 +940,21 @@ class dbal
 	/**
 	* Run more than one insert statement.
 	*
-	* @param string $table table name to run the statements on
-	* @param array &$sql_ary multi-dimensional array holding the statement data.
+	* @param string	$table		Table name to run the statements on
+	* @param array	&$sql_ary	Multi-dimensional array holding the statement data.
 	*
-	* @return bool false if no statements were executed.
+	* @return bool	False if no statements were executed.
 	* @access public
+	* @todo use sql_prepare_data()
 	*/
-	function sql_multi_insert($table, &$sql_ary)
+	public function sql_multi_insert($table, &$sql_ary)
 	{
 		if (!sizeof($sql_ary))
 		{
 			return false;
 		}
 
-		if ($this->multi_insert)
+		if ($this->features['multi_insert'])
 		{
 			$ary = array();
 			foreach ($sql_ary as $id => $_sql_ary)
@@ -469,31 +993,17 @@ class dbal
 	}
 
 	/**
-	* Function for validating values
-	* @access private
-	*/
-	function _sql_validate_value($var)
-	{
-		if (is_null($var))
-		{
-			return 'NULL';
-		}
-		else if (is_string($var))
-		{
-			return "'" . $this->sql_escape($var) . "'";
-		}
-		else
-		{
-			return (is_bool($var)) ? intval($var) : $var;
-		}
-	}
-
-	/**
 	* Build sql statement from array for select and select distinct statements
 	*
-	* Possible query values: SELECT, SELECT_DISTINCT
+	* @todo add more in-depth explanation about all possible array keys and their effects.
+	*
+	* @param string	$query	Query value. Possible query values: SELECT, SELECT_DISTINCT
+	* @param string	$array	Array to build statement from
+	*
+	* @return string	SQL Statement
+	* @access public
 	*/
-	function sql_build_query($query, $array)
+	public function sql_build_query($query, $array)
 	{
 		$sql = '';
 		switch ($query)
@@ -503,8 +1013,7 @@ class dbal
 
 				$sql = str_replace('_', ' ', $query) . ' ' . $array['SELECT'] . ' FROM ';
 
-				// Build table array. We also build an alias array for later checks.
-				$table_array = $aliases = array();
+				$table_array = array();
 				foreach ($array['FROM'] as $table_name => $alias)
 				{
 					if (is_array($alias))
@@ -512,56 +1021,12 @@ class dbal
 						foreach ($alias as $multi_alias)
 						{
 							$table_array[] = $table_name . ' ' . $multi_alias;
-							$aliases[] = $multi_alias;
 						}
 					}
 					else
 					{
 						$table_array[] = $table_name . ' ' . $alias;
-						$aliases[] = $alias;
 					}
-				}
-
-				// We run the following code to determine if we need to re-order the table array. ;)
-				// The reason for this is that for multiple tables in the FROM statement the last table need to match the first LEFT JOIN'ed table.
-				// DBMS who rely on this (at the moment i only spotted it on multi-aliases): Oracle, PostgreSQL and MSSQL
-				$first_join_match = false;
-
-				if (!empty($array['LEFT_JOIN']) && sizeof($array['FROM']) > 1)
-				{
-					// Take first LEFT JOIN
-					$join = current($array['LEFT_JOIN']);
-
-					// Determine the table used there (even if there are more than one used, we only want to have one
-					preg_match('/(' . implode('|', $aliases) . ')\.[^\s]+/U', str_replace(array('(', ')', 'AND', 'OR', ' '), '', $join['ON']), $matches);
-
-					if (!empty($matches[1]))
-					{
-						$first_join_match = trim($matches[1]);
-					}
-				}
-
-				// If there is a first join match, we need to make sure the table order is correct
-				if ($first_join_match !== false)
-				{
-					$table_array = $last = array();
-
-					foreach ($array['FROM'] as $table_name => $alias)
-					{
-						if (is_array($alias))
-						{
-							foreach ($alias as $multi_alias)
-							{
-								($multi_alias === $first_join_match) ? $last[] = $table_name . ' ' . $multi_alias : $table_array[] = $table_name . ' ' . $multi_alias;
-							}
-						}
-						else
-						{
-							($alias === $first_join_match) ? $last[] = $table_name . ' ' . $alias : $table_array[] = $table_name . ' ' . $alias;
-						}
-					}
-
-					$table_array = array_merge($table_array, $last);
 				}
 
 				$sql .= $this->_sql_custom_build('FROM', implode(', ', $table_array));
@@ -596,12 +1061,17 @@ class dbal
 	}
 
 	/**
-	* display sql error page
+	* Display SQL Error message.
+	*
+	* The DB-specific information is retrieved by {@link phpbb_dbal::_sql_error() _sql_error()}.
+	*
+	* @param string	$sql	SQL statement which triggered the error
+	*
+	* @return mixed	Returns sql error array if {@link phpbb_dbal::$return_on_error $return_on_error} is true. Else script is halted.
+	* @access public
 	*/
-	function sql_error($sql = '')
+	public function sql_error($sql = '')
 	{
-		global $auth, $user;
-
 		// Set var to retrieve errored status
 		$this->sql_error_triggered = true;
 		$this->sql_error_sql = $sql;
@@ -615,20 +1085,16 @@ class dbal
 			// Show complete SQL error and path to administrators only
 			// Additionally show complete error on installation or if extended debug mode is enabled
 			// The DEBUG_EXTRA constant is for development only!
-			if ((isset($auth) && $auth->acl_get('a_')) || defined('IN_INSTALL') || defined('DEBUG_EXTRA'))
+			if ((phpbb::registered('acl') && phpbb::$acl->acl_get('a_')) || defined('IN_INSTALL') || defined('DEBUG_EXTRA'))
 			{
-				// Print out a nice backtrace...
-				$backtrace = get_backtrace();
-
 				$message .= ($sql) ? '<br /><br />SQL<br /><br />' . htmlspecialchars($sql) : '';
-				$message .= ($backtrace) ? '<br /><br />BACKTRACE<br />' . $backtrace : '';
 				$message .= '<br />';
 			}
 			else
 			{
 				// If error occurs in initiating the session we need to use a pre-defined language string
 				// This could happen if the connection could not be established for example (then we are not able to grab the default language)
-				if (!isset($user->lang['SQL_ERROR_OCCURRED']))
+				if (!phpbb::registered('user'))
 				{
 					$message .= '<br /><br />An sql error occurred while fetching this page. Please contact an administrator if this problem persists.';
 				}
@@ -636,11 +1102,11 @@ class dbal
 				{
 					if (!empty(phpbb::$config['board_contact']))
 					{
-						$message .= '<br /><br />' . sprintf($user->lang['SQL_ERROR_OCCURRED'], '<a href="mailto:' . htmlspecialchars(phpbb::$config['board_contact']) . '">', '</a>');
+						$message .= '<br /><br />' . phpbb::$user->lang('SQL_ERROR_OCCURRED', '<a href="mailto:' . htmlspecialchars(phpbb::$config['board_contact']) . '">', '</a>');
 					}
 					else
 					{
-						$message .= '<br /><br />' . sprintf($user->lang['SQL_ERROR_OCCURRED'], '', '');
+						$message .= '<br /><br />' . phpbb::$user->lang('SQL_ERROR_OCCURRED', '', '');
 					}
 				}
 			}
@@ -671,11 +1137,18 @@ class dbal
 	}
 
 	/**
-	* Explain queries
+	* Build SQL Report to explain queries, show statistics and runtime information.
+	*
+	* This function only executes if the GET parameter 'explain' is true and DEBUG_EXTRA enabled.
+	*
+	* @param string	$mode	The mode to handle. 'display' is used for displaying the report, all other modes are internal.
+	* @param string $query	Query to document/explain. Only used internally to build the plan.
+	*
+	* @access public
 	*/
-	function sql_report($mode, $query = '')
+	public function sql_report($mode, $query = '')
 	{
-		global $cache, $starttime, $user;
+		global $starttime;
 
 		if (!phpbb_request::variable('explain', false))
 		{
@@ -690,11 +1163,12 @@ class dbal
 		switch ($mode)
 		{
 			case 'display':
-				if (!empty($cache))
-				{
-					$cache->unload();
-				}
 				$this->sql_close();
+
+				if (phpbb::registered('acm'))
+				{
+					phpbb::$acm->unload();
+				}
 
 				$mtime = explode(' ', microtime());
 				$totaltime = $mtime[0] + $mtime[1] - $starttime;
@@ -711,7 +1185,7 @@ class dbal
 					<body id="errorpage">
 					<div id="wrap">
 						<div id="page-header">
-							<a href="' . build_url('explain') . '">Return to previous page</a>
+							<a href="' . phpbb::$url->build_url('explain') . '">Return to previous page</a>
 						</div>
 						<div id="page-body">
 							<div id="acp">
@@ -860,11 +1334,205 @@ class dbal
 
 		return true;
 	}
-}
 
-/**
-* This variable holds the class name to use later
-*/
-$sql_db = (!empty($dbms)) ? 'dbal_' . basename($dbms) : 'dbal';
+	/**
+	* Get stored data from SQL cache and fill the relevant cach rowset.
+	*
+	* @param string	$query	The query cached.
+	*
+	* @return bool	True if the caching was successful, else false
+	* @access private
+	*/
+	private function sql_get_cache($query)
+	{
+		if (!phpbb::registered('acm') || !phpbb::$acm->supported('sql'))
+		{
+			return false;
+		}
+
+		// Remove extra spaces and tabs
+		$var_name = preg_replace('/[\n\r\s\t]+/', ' ', $query);
+		$var_name = md5($this->sql_layer . '_' . $var_name);
+
+		$data = phpbb::$acm->get($var_name, 'sql');
+
+		if ($data !== false)
+		{
+			$this->query_result = ++$this->cache_index;
+			$this->cache_rowset[$this->query_result] = $data['rowset'];
+
+			return true;
+		}
+
+		return false;
+	}
+
+	/**
+	* Put query to cache.
+	*
+	* @param string	$query		The query cached.
+	* @param int	$cache_ttl	Cache lifetime in seconds.
+	*
+	* @return bool	True if the caching was successful, else false
+	* @access private
+	*/
+	private function sql_put_cache($query, $cache_ttl)
+	{
+		if (!phpbb::registered('acm') || !phpbb::$acm->supported('sql'))
+		{
+			return false;
+		}
+
+		// Prepare the data
+		$var_name = preg_replace('/[\n\r\s\t]+/', ' ', $query);
+		$var_name = md5($this->sql_layer . '_' . $var_name);
+
+		$data = array(
+			'query'		=> $query,
+			'rowset'	=> array(),
+		);
+
+		while ($row = $this->sql_fetchrow($this->query_result))
+		{
+			$data['rowset'][] = $row;
+		}
+		$this->sql_freeresult($this->query_result);
+
+		phpbb::$acm->put($var_name, $data, $cache_ttl, 'sql');
+
+		$this->query_result = ++$this->cache_index;
+		$this->cache_rowset[$this->query_result] = $data['rowset'];
+		@reset($this->cache_rowset[$this->query_result]);
+
+		return true;
+	}
+
+	/**
+	* Check if an sql cache exist for a specific query id.
+	*
+	* @param int	$query_id	The query_id to check (int)
+	*
+	* @return bool	True if an cache entry exists.
+	* @access private
+	*/
+	private function sql_cache_exists($query_id)
+	{
+		return is_int($query_id) && isset($this->cache_rowset[$query_id]);
+	}
+
+	/**
+	* Fetch row from cache (database). Used in {@link phpbb_dbal::sql_fetchrow() sql_fetchrow()}.
+	*
+	* @param int	$query_id	The query_id to fetch from.
+	*
+	* @return array	The result row
+	* @access private
+	*/
+	private function sql_cache_fetchrow($query_id)
+	{
+		list(, $row) = each($this->cache_rowset[$query_id]);
+		return ($row !== NULL) ? $row : false;
+	}
+
+	/**
+	* Fetch a field from the current row of a cached database result (database). Used in {@link phpbb_dbal::sql_fetchfield() sql_fetchfield()}.
+	*
+	* @param int	$query_id	The query_id to fetch from.
+	* @param string	$field		The column name.
+	*
+	* @return array	The field data
+	* @access private
+	*/
+	private function sql_cache_fetchfield($query_id, $field)
+	{
+		$row = current($this->cache_rowset[$query_id]);
+		return ($row !== false && isset($row[$field])) ? $row[$field] : false;
+	}
+
+	/**
+	* Free memory used for a cached database result (database). Used in {@link phpbb_dbal::sql_freeresult() sql_freeresult()}.
+	*
+	* @param int	$query_id	The query_id.
+	*
+	* @return bool	True on success
+	* @access private
+	*/
+	private function sql_cache_freeresult($query_id)
+	{
+		if (!isset($this->cache_rowset[$query_id]))
+		{
+			return false;
+		}
+
+		if (($key = $this->sql_get_result_key($query_id)) !== false)
+		{
+			unset($this->open_queries[$key]);
+		}
+
+		unset($this->cache_rowset[$query_id]);
+		return true;
+	}
+
+	/**
+	* Function for validating SQL values
+	*
+	* @param mixed	Value. Typecasted to it's type.
+	*
+	* @return mixed	Typecasted value.
+	* @access private
+	*/
+	private function _sql_validate_value($var)
+	{
+		if (is_null($var))
+		{
+			return 'NULL';
+		}
+		else if (is_string($var))
+		{
+			return "'" . $this->sql_escape($var) . "'";
+		}
+		else
+		{
+			return (is_bool($var)) ? intval($var) : $var;
+		}
+	}
+
+	/**
+	* Add "one" to query count.
+	*
+	* @param bool	$cached	If true, add one to cached query count. Otherwise to non-cached query count
+	* @access private
+	*/
+	private function sql_add_num_queries($cached = false)
+	{
+		$this->num_queries['cached'] += ($cached !== false) ? 1 : 0;
+		$this->num_queries['normal'] += ($cached !== false) ? 0 : 1;
+		$this->num_queries['total'] += 1;
+	}
+
+	/**
+	* Get SQL result key for storing open connection
+	*
+	* @param string	$query_result	Query result id/resource/object
+	*
+	* @return mixed	Key usable as array key. False if storing is not possible.
+	* @access private
+	*/
+	private function sql_get_result_key($query_result)
+	{
+		$key = $query_result;
+
+		if (is_object($query_result))
+		{
+			$key = false;
+		}
+		else if (is_resource($query_result))
+		{
+			$key = (int) $query_result;
+		}
+
+		return $key;
+	}
+}
 
 ?>
