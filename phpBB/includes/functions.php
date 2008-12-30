@@ -78,19 +78,17 @@ function set_config($config_name, $config_value, $is_dynamic = false)
 */
 function get_formatted_filesize($bytes, $add_size_lang = true)
 {
-	global $user;
-
 	if ($bytes >= pow(2, 20))
 	{
-		return ($add_size_lang) ? round($bytes / 1024 / 1024, 2) . ' ' . $user->lang['MIB'] : round($bytes / 1024 / 1024, 2);
+		return ($add_size_lang) ? round($bytes / 1024 / 1024, 2) . ' ' . phpbb::$user->lang['MIB'] : round($bytes / 1024 / 1024, 2);
 	}
 
 	if ($bytes >= pow(2, 10))
 	{
-		return ($add_size_lang) ? round($bytes / 1024, 2) . ' ' . $user->lang['KIB'] : round($bytes / 1024, 2);
+		return ($add_size_lang) ? round($bytes / 1024, 2) . ' ' . phpbb::$user->lang['KIB'] : round($bytes / 1024, 2);
 	}
 
-	return ($add_size_lang) ? ($bytes) . ' ' . $user->lang['BYTES'] : ($bytes);
+	return ($add_size_lang) ? ($bytes) . ' ' . phpbb::$user->lang['BYTES'] : ($bytes);
 }
 
 /**
@@ -2608,7 +2606,7 @@ function page_footer($run_cron = true)
 		$mtime = explode(' ', microtime());
 		$totaltime = $mtime[0] + $mtime[1] - $starttime;
 
-		if (request::variable('explain', false) && /*phpbb::$acl->acl_get('a_') &&*/ defined('DEBUG_EXTRA') && method_exists(phpbb::$db, 'sql_report'))
+		if (phpbb_request::variable('explain', false) && /*phpbb::$acl->acl_get('a_') &&*/ defined('DEBUG_EXTRA') && method_exists(phpbb::$db, 'sql_report'))
 		{
 			phpbb::$db->sql_report('display');
 		}

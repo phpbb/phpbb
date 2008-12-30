@@ -126,9 +126,9 @@ class phpbb_user extends phpbb_session
 		$this->lang_path = $lang_path;
 
 		// Make sure last character is a directory separator
-		if (substr($this->lang_path, -1) != DIRECTORY_SEPARATOR)
+		if (substr($this->lang_path, -1) != '/')
 		{
-			$this->lang_path .= DIRECTORY_SEPARATOR;
+			$this->lang_path .= '/';
 		}
 	}
 
@@ -324,11 +324,7 @@ class phpbb_user extends phpbb_session
 				'theme_storedb'	=> 1
 			);
 
-			$sql = 'UPDATE ' . STYLES_THEME_TABLE . '
-				SET ' . phpbb::$db->sql_build_array('UPDATE', $sql_ary) . '
-				WHERE theme_id = ' . $this->theme['theme_id'];
-			phpbb::$db->sql_query($sql);
-
+			phpbb::$db->sql_handle_data('UPDATE', STYLES_THEME_TABLE, $sql_ary, 'theme_id = ' . $this->theme['theme_id']);
 			unset($sql_ary);
 		}
 
@@ -425,7 +421,7 @@ class phpbb_user extends phpbb_session
 
 		// Call phpbb_user_session_handler() in case external application want to "bend" some variables or replace classes...
 		// After calling it we continue script execution...
-		phpbb_user_session_handler();
+		// phpbb_user_session_handler();
 
 		// If this function got called from the error handler we are finished here.
 		if (defined('IN_ERROR_HANDLER'))

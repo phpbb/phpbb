@@ -69,7 +69,7 @@ phpbb_request::disable_super_globals();
 if (!empty($dbms))
 {
 	// Register DB object.
-	//phpbb::assign('db', phpbb_db_dbal::connect($dbms, $dbhost, $dbuser, $dbpasswd, $dbname, $dbport, false, defined('PHPBB_DB_NEW_LINK') ? PHPBB_DB_NEW_LINK : false));
+	phpbb::assign('db', phpbb_db_dbal::connect($dbms, $dbhost, $dbuser, $dbpasswd, $dbname, $dbport, false, defined('PHPBB_DB_NEW_LINK') ? PHPBB_DB_NEW_LINK : false));
 }
 
 // We do not need the db password any longer, unset for safety purposes
@@ -91,10 +91,10 @@ phpbb::register('template');
 phpbb::register('acl');
 
 // Register user object
-phpbb::register('user', false, false, phpbb::$config['auth_method'], PHPBB_ROOT_PATH . 'languages/');
+phpbb::register('user', false, false, phpbb::$config['auth_method'], PHPBB_ROOT_PATH . 'language/');
 
 // Register API
-phpbb::register('api');
+// phpbb::register('api');
 
 // Register Plugins
 phpbb::$plugins->init(PHPBB_ROOT_PATH . 'plugins/');

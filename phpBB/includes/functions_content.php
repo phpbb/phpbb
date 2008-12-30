@@ -671,10 +671,8 @@ function censor_text($text)
 	// We moved the word censor checks in here because we call this function quite often - and then only need to do the check once
 	if (!isset($censors) || !is_array($censors))
 	{
-		global $user, $auth;
-
 		// We check here if the user is having viewing censors disabled (and also allowed to do so).
-		if (!$user->optionget('viewcensors') && phpbb::$config['allow_nocensors'] && $auth->acl_get('u_chgcensors'))
+		if (!phpbb::$user->optionget('viewcensors') && phpbb::$config['allow_nocensors'] && phpbb::$acl->acl_get('u_chgcensors'))
 		{
 			$censors = array();
 		}
@@ -708,9 +706,7 @@ function bbcode_nl2br($text)
 */
 function smiley_text($text, $force_option = false)
 {
-	global $user;
-
-	if ($force_option || !phpbb::$config['allow_smilies'] || !$user->optionget('viewsmilies'))
+	if ($force_option || !phpbb::$config['allow_smilies'] || !phpbb::$user->optionget('viewsmilies'))
 	{
 		return preg_replace('#<!\-\- s(.*?) \-\-><img src="\{SMILIES_PATH\}\/.*? \/><!\-\- s\1 \-\->#', '\1', $text);
 	}
@@ -1156,7 +1152,7 @@ function get_username_string($mode, $user_id, $username, $username_colour = '', 
 	// We cache some common variables we need within this function
 	if (empty($_profile_cache))
 	{
-		$_profile_cache['base_url'] = append_sid('memberlist', 'mode=viewprofile&amp;u={USER_ID}');
+		$_profile_cache['base_url'] = phpbb::$url->append_sid('memberlist', 'mode=viewprofile&amp;u={USER_ID}');
 		$_profile_cache['tpl_noprofile'] = '{USERNAME}';
 		$_profile_cache['tpl_noprofile_colour'] = '<span style="color: {USERNAME_COLOUR};" class="username-coloured">{USERNAME}</span>';
 		$_profile_cache['tpl_profile'] = '<a href="{PROFILE_URL}">{USERNAME}</a>';
@@ -1188,11 +1184,11 @@ function get_username_string($mode, $user_id, $username, $username_colour = '', 
 			// Build correct username
 			if ($guest_username === false)
 			{
-				$username = ($username) ? $username : $user->lang['GUEST'];
+				$username = ($username) ? $username : phpbb::$user->lang['GUEST'];
 			}
 			else
 			{
-				$username = ($user_id && $user_id != ANONYMOUS) ? $username : ((!empty($guest_username)) ? $guest_username : $user->lang['GUEST']);
+				$username = ($user_id && $user_id != ANONYMOUS) ? $username : ((!empty($guest_username)) ? $guest_username : phpbb::$user->lang['GUEST']);
 			}
 
 			// Return username
@@ -1207,7 +1203,7 @@ function get_username_string($mode, $user_id, $username, $username_colour = '', 
 
 			// Build correct profile url - only show if not anonymous and permission to view profile if registered user
 			// For anonymous the link leads to a login page.
-			if ($user_id && $user_id != ANONYMOUS && ($user->data['user_id'] == ANONYMOUS || $auth->acl_get('u_viewprofile')))
+			if ($user_id && $user_id != ANONYMOUS && (phpbb::$user->data['user_id'] == ANONYMOUS || phpbb::$acl->acl_get('u_viewprofile')))
 			{
 				$profile_url = ($custom_profile_url !== false) ? $custom_profile_url . '&amp;u=' . (int) $user_id : str_replace(array('={USER_ID}', '=%7BUSER_ID%7D'), '=' . (int) $user_id, $_profile_cache['base_url']);
 			}
