@@ -180,9 +180,6 @@ class phpbb_template
 		$_rootref	= &$this->_rootref;
 		$_lang		= &phpbb::$user->lang;
 
-		// These _are_ used the included files.
-		$_tpldata; $_rootref; $_lang;
-
 		if (($filename = $this->_tpl_load($handle)) !== false)
 		{
 			($include_once) ? include_once($filename) : include($filename);
@@ -496,9 +493,6 @@ class phpbb_template
 			$_tpldata	= &$this->_tpldata;
 			$_rootref	= &$this->_rootref;
 			$_lang		= &phpbb::$user->lang;
-
-			// These _are_ used the included files.
-			$_tpldata; $_rootref; $_lang;
 
 			if ($filename)
 			{

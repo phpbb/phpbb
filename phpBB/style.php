@@ -15,19 +15,10 @@ define('IN_PHPBB', true);
 if (!defined('PHPBB_ROOT_PATH')) define('PHPBB_ROOT_PATH', './');
 if (!defined('PHP_EXT')) define('PHP_EXT', substr(strrchr(__FILE__, '.'), 1));
 
-$sid = (isset($_GET['sid']) && !is_array($_GET['sid'])) ? htmlspecialchars($_GET['sid']) : '';
 $id = (isset($_GET['id'])) ? intval($_GET['id']) : 0;
 
-if (strspn($sid, 'abcdefABCDEF0123456789') !== strlen($sid))
-{
-	$sid = '';
-}
-
 // This is a simple script to grab and output the requested CSS data stored in the DB
-// We include a session_id check to try and limit 3rd party linking ... unless they
-// happen to have a current session it will output nothing. We will also cache the
-// resulting CSS data for five minutes ... anything to reduce the load on the SQL
-// server a little
+// We cache the resulting CSS data for five minutes
 if (!$id)
 {
 	exit;
@@ -35,36 +26,15 @@ if (!$id)
 
 include(PHPBB_ROOT_PATH . 'common.' . PHP_EXT);
 
-$user = false;
-
-if ($sid)
-{
-	$sql = 'SELECT u.user_id, u.user_lang
-		FROM ' . SESSIONS_TABLE . ' s, ' . USERS_TABLE . " u
-		WHERE s.session_id = '" . $db->sql_escape($sid) . "'
-			AND s.session_user_id = u.user_id";
-	$result = $db->sql_query($sql);
-	$user = $db->sql_fetchrow($result);
-	$db->sql_freeresult($result);
-}
-
-$recompile = phpbb::$config['load_tplcompile'];
-if (!$user)
-{
-	$id			= phpbb::$config['default_style'];
-	$recompile	= false;
-	$user		= array('user_id' => ANONYMOUS);
-}
-
 $sql = 'SELECT s.style_id, c.theme_id, c.theme_data, c.theme_path, c.theme_name, c.theme_mtime, i.*, t.template_path
 	FROM ' . STYLES_TABLE . ' s, ' . STYLES_TEMPLATE_TABLE . ' t, ' . STYLES_THEME_TABLE . ' c, ' . STYLES_IMAGESET_TABLE . ' i
 	WHERE s.style_id = ' . $id . '
 		AND t.template_id = s.template_id
 		AND c.theme_id = s.theme_id
 		AND i.imageset_id = s.imageset_id';
-$result = $db->sql_query($sql, 300);
-$theme = $db->sql_fetchrow($result);
-$db->sql_freeresult($result);
+$result = phpbb::$db->sql_query($sql, 300);
+$theme = phpbb::$db->sql_fetchrow($result);
+phpbb::$db->sql_freeresult($result);
 
 if (!$theme)
 {
@@ -72,34 +42,27 @@ if (!$theme)
 	exit_handler();
 }
 
-if ($user['user_id'] == ANONYMOUS)
-{
-	$user['user_lang'] = phpbb::$config['default_lang'];
-}
-
-$user_image_lang = (file_exists(PHPBB_ROOT_PATH . 'styles/' . $theme['imageset_path'] . '/imageset/' . $user['user_lang'])) ? $user['user_lang'] : phpbb::$config['default_lang'];
+$user_lang = basename(request_var('lang', phpbb::$config['default_lang']));
+$user_image_lang = (file_exists(PHPBB_ROOT_PATH . 'styles/' . $theme['imageset_path'] . '/imageset/' . $user_lang)) ? $user_lang : phpbb::$config['default_lang'];
 
 $sql = 'SELECT *
 	FROM ' . STYLES_IMAGESET_DATA_TABLE . '
 	WHERE imageset_id = ' . $theme['imageset_id'] . "
 	AND image_filename <> ''
-	AND image_lang IN ('" . $db->sql_escape($user_image_lang) . "', '')";
-$result = $db->sql_query($sql, 3600);
+	AND image_lang IN ('" . phpbb::$db->sql_escape($user_image_lang) . "', '')";
+$result = phpbb::$db->sql_query($sql, 3600);
 
 $img_array = array();
-while ($row = $db->sql_fetchrow($result))
+while ($row = phpbb::$db->sql_fetchrow($result))
 {
 	$img_array[$row['image_name']] = $row;
 }
-$db->sql_freeresult($result);
+phpbb::$db->sql_freeresult($result);
 
 // gzip_compression
 if (phpbb::$config['gzip_compress'])
 {
-	// IE6 is not able to compress the style (do not ask us why!)
-	$browser = (!empty($_SERVER['HTTP_USER_AGENT'])) ? strtolower(htmlspecialchars((string) $_SERVER['HTTP_USER_AGENT'])) : '';
-
-	if ($browser && strpos($browser, 'msie 6.0') === false && @extension_loaded('zlib') && !headers_sent())
+	if (strpos(strtolower(phpbb::$user->system['browser']), 'msie 6.0') === false && @extension_loaded('zlib') && !headers_sent())
 	{
 		ob_start('ob_gzhandler');
 	}
@@ -110,7 +73,7 @@ $expire_time = 7 * 86400;
 $recache = false;
 
 // Re-cache stylesheet data if necessary
-if ($recompile || empty($theme['theme_data']))
+if (phpbb::$config['load_tplcompile'] || empty($theme['theme_data']))
 {
 	$recache = (empty($theme['theme_data'])) ? true : false;
 	$update_time = time();
@@ -141,11 +104,12 @@ if ($recompile || empty($theme['theme_data']))
 	}
 }
 
+// We store new data within database
 if ($recache)
 {
 	if (!class_exists('acp_styles'))
 	{
-		include(PHPBB_ROOT_PATH . 'includes/acp/acp_styles.' . PHP_EXT);
+		include PHPBB_ROOT_PATH . 'modules/acp/acp_styles.' . PHP_EXT;
 	}
 
 	$theme['theme_data'] = acp_styles::db_theme_data($theme);
@@ -157,11 +121,7 @@ if ($recache)
 		'theme_data'	=> $theme['theme_data']
 	);
 
-	// @TODO: rewrite with the new param db functions
-	$sql = 'UPDATE ' . STYLES_THEME_TABLE . ' SET ' . $db->sql_build_array('UPDATE', $sql_ary) . "
-		WHERE theme_id = {$theme['theme_id']}";
-	$db->sql_query($sql);
-
+	phpbb::$db->sql_handle_data('UPDATE', STYLES_THEME_TABLE, $sql_ary, 'theme_id = ' . $theme['theme_id']);
 	phpbb::$acm->destroy_sql(STYLES_THEME_TABLE);
 }
 
@@ -184,11 +144,12 @@ $replace = array(
 	'{T_IMAGESET_PATH}'			=> PHPBB_ROOT_PATH . 'styles/' . $theme['imageset_path'] . '/imageset',
 	'{T_IMAGESET_LANG_PATH}'	=> PHPBB_ROOT_PATH . 'styles/' . $theme['imageset_path'] . '/imageset/' . $user_image_lang,
 	'{T_STYLESHEET_NAME}'		=> $theme['theme_name'],
-	'{S_USER_LANG}'				=> $user['user_lang']
+	'{S_USER_LANG}'				=> $user_lang,
 );
 
 $theme['theme_data'] = str_replace(array_keys($replace), array_values($replace), $theme['theme_data']);
 
+// Replace IMG_*_WIDTH/HEIGHT/SRC tags
 $matches = array();
 preg_match_all('#\{IMG_([A-Za-z0-9_]*?)_(WIDTH|HEIGHT|SRC)\}#', $theme['theme_data'], $matches);
 
@@ -210,6 +171,7 @@ if (isset($matches[0]) && sizeof($matches[0]))
 		{
 			$img_data = &$img_array[$img];
 			$imgsrc = ($img_data['image_lang'] ? $img_data['image_lang'] . '/' : '') . $img_data['image_filename'];
+
 			$imgs[$img] = array(
 				'src'		=> PHPBB_ROOT_PATH . 'styles/' . $theme['imageset_path'] . '/imageset/' . $imgsrc,
 				'width'		=> $img_data['image_width'],

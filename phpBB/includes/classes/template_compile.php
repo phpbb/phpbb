@@ -17,11 +17,10 @@ if (!defined('IN_PHPBB'))
 }
 
 /**
- * The template filter that does the actual compilation
- * @see template_compile
- * @package phpBB3
- *
- */
+* The template filter that does the actual compilation
+* @see template_compile
+* @package phpBB3
+*/
 class phpbb_template_filter extends php_user_filter
 {
 	/**
@@ -184,25 +183,33 @@ class phpbb_template_filter extends php_user_filter
 			$text_blocks = str_replace($var_val[0], $new, $text_blocks);
 		}
 
+		// Handle special language tags L_ and LA_
+		$this->compile_language_tags($text_blocks);
+
 		// This will handle the remaining root-level varrefs
+		$text_blocks = preg_replace('#\{([a-z0-9\-_]*)\}#is', "<?php echo (isset(\$_rootref['\\1'])) ? \$_rootref['\\1'] : ''; ?>", $text_blocks);
+		$text_blocks = preg_replace('#\{\$([a-z0-9\-_]*)\}#is', "<?php echo (isset(\$_tpldata['DEFINE']['.']['\\1'])) ? \$_tpldata['DEFINE']['.']['\\1'] : ''; ?>", $text_blocks);
+
+		return $text_blocks;
+	}
+
+	/**
+	* Handlse special language tags L_ and LA_
+	*/
+	private function compile_language_tags(&$text_blocks)
+	{
 		// transform vars prefixed by L_ into their language variable pendant if nothing is set within the tpldata array
 		if (strpos($text_blocks, '{L_') !== false)
 		{
-			$text_blocks = preg_replace('#\{L_([a-z0-9\-_]*)\}#is', "<?php echo ((isset(\$_rootref['L_\\1'])) ? \$_rootref['L_\\1'] : ((isset(\$_lang['\\1'])) ? \$_lang['\\1'] : '{ \\1 }')); ?>", $text_blocks);
+			$text_blocks = preg_replace('#\{L_([a-z0-9\-_]*)\}#is', "<?php echo (isset(\$_rootref['L_\\1'])) ? \$_rootref['L_\\1'] : (isset(\$_lang['\\1']) ? \$_lang['\\1'] : '{ \\1 }'); ?>", $text_blocks);
 		}
 
 		// Handle addslashed language variables prefixed with LA_
 		// If a template variable already exist, it will be used in favor of it...
 		if (strpos($text_blocks, '{LA_') !== false)
 		{
-			$text_blocks = preg_replace('#\{LA_([a-z0-9\-_]*)\}#is', "<?php echo ((isset(\$_rootref['LA_\\1'])) ? \$_rootref['LA_\\1'] : ((isset(\$_rootref['L_\\1'])) ? addslashes(\$_rootref['L_\\1']) : ((isset(\$_lang['\\1'])) ? addslashes(\$_lang['\\1']) : '{ \\1 }'))); ?>", $text_blocks);
+			$text_blocks = preg_replace('#\{LA_([a-z0-9\-_]*)\}#is', "<?php echo (isset(\$_rootref['LA_\\1'])) ? \$_rootref['LA_\\1'] : ((isset(\$_rootref['L_\\1'])) ? addslashes(\$_rootref['L_\\1']) : (isset(\$_lang['\\1']) ? addslashes(\$_lang['\\1']) : '{ \\1 }')); ?>", $text_blocks);
 		}
-
-		// Handle remaining varrefs
-		$text_blocks = preg_replace('#\{([a-z0-9\-_]*)\}#is', "<?php echo (isset(\$_rootref['\\1'])) ? \$_rootref['\\1'] : ''; ?>", $text_blocks);
-		$text_blocks = preg_replace('#\{\$([a-z0-9\-_]*)\}#is', "<?php echo (isset(\$_tpldata['DEFINE']['.']['\\1'])) ? \$_tpldata['DEFINE']['.']['\\1'] : ''; ?>", $text_blocks);
-
-		return $text_blocks;
 	}
 
 	/**
@@ -508,7 +515,13 @@ class phpbb_template_filter extends php_user_filter
 	private function compile_tag_if($tag_args, $elseif)
 	{
 		$tokens = $this->compile_expression($tag_args);
-		return (($elseif) ? '} else if (' : 'if (') . (implode(' ', $tokens) . ') { ');
+
+		// @todo We suppress notices within IF statements until we find a way to correctly check them
+		$tpl = ($elseif) ? '} else if (@(' : 'if (@(';
+		$tpl .= implode(' ', $tokens);
+		$tpl .= ')) { ';
+
+		return $tpl;
 	}
 
 	/**

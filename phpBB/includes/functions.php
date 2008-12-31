@@ -2575,7 +2575,7 @@ function page_header($page_title = '', $display_online_list = true)
 		'T_ICONS_PATH'			=> PHPBB_ROOT_PATH . phpbb::$config['icons_path'] . '/',
 		'T_RANKS_PATH'			=> PHPBB_ROOT_PATH . phpbb::$config['ranks_path'] . '/',
 		'T_UPLOAD_PATH'			=> PHPBB_ROOT_PATH . phpbb::$config['upload_path'] . '/',
-		'T_STYLESHEET_LINK'		=> (!phpbb::$user->theme['theme_storedb']) ? PHPBB_ROOT_PATH . 'styles/' . phpbb::$user->theme['theme_path'] . '/theme/stylesheet.css' : phpbb::$url->get(PHPBB_ROOT_PATH . 'style.' . PHP_EXT . '?sid=' . phpbb::$user->session_id . '&amp;id=' . phpbb::$user->theme['style_id'] . '&amp;lang=' . phpbb::$user->data['user_lang']), //PHPBB_ROOT_PATH . "store/{$user->theme['theme_id']}_{$user->theme['imageset_id']}_{$user->lang_name}.css"
+		'T_STYLESHEET_LINK'		=> (!phpbb::$user->theme['theme_storedb']) ? PHPBB_ROOT_PATH . 'styles/' . phpbb::$user->theme['theme_path'] . '/theme/stylesheet.css' : phpbb::$url->get(PHPBB_ROOT_PATH . 'style.' . PHP_EXT . '?id=' . phpbb::$user->theme['style_id'] . '&amp;lang=' . phpbb::$user->data['user_lang']), //PHPBB_ROOT_PATH . "store/{$user->theme['theme_id']}_{$user->theme['imageset_id']}_{$user->lang_name}.css"
 		'T_STYLESHEET_NAME'		=> phpbb::$user->theme['theme_name'],
 
 		'SITE_LOGO_IMG'			=> phpbb::$user->img('site_logo'),
@@ -2712,9 +2712,9 @@ function garbage_collection()
 function exit_handler()
 {
 	// needs to be run prior to the hook
-	if (request::super_globals_disabled())
+	if (phpbb_request::super_globals_disabled())
 	{
-		request::enable_super_globals();
+		phpbb_request::enable_super_globals();
 	}
 
 	// As a pre-caution... some setups display a blank page if the flush() is not there.
