@@ -1178,7 +1178,7 @@ function get_username_string($mode, $user_id, $username, $username_colour = '', 
 	switch ($mode)
 	{
 		case 'full':
-		case 'noprofile':
+		case 'no_profile':
 		case 'colour':
 
 			// Build correct username colour
