@@ -501,6 +501,11 @@ function user_delete($mode, $user_id, $post_username = false)
 
 	$cache->destroy('sql', MODERATOR_CACHE_TABLE);
 
+	// Delete the user_id from the banlist
+	$sql = 'DELETE FROM ' . BANLIST_TABLE . ' 
+		WHERE ban_userid = ' . $user_id;
+	$db->sql_query($sql);
+
 	// Remove any undelivered mails...
 	$sql = 'SELECT msg_id, user_id
 		FROM ' . PRIVMSGS_TO_TABLE . '
