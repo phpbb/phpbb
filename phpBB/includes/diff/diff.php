@@ -17,7 +17,7 @@ if (!defined('IN_PHPBB'))
 }
 
 /**
-* Code from pear.php.net, Text_Diff-1.0.0 package
+* Code from pear.php.net, Text_Diff-1.1.0 package
 * http://pear.php.net/package/Text_Diff/
 *
 * Modified by phpBB Group to meet our coding standards
@@ -58,6 +58,48 @@ class diff
 	function get_diff()
 	{
 		return $this->_edits;
+	}
+
+	/**
+	* returns the number of new (added) lines in a given diff.
+	*
+	* @since Text_Diff 1.1.0
+	*
+	* @return integer The number of new lines
+	*/
+	function count_added_lines()
+	{
+		$count = 0;
+
+		foreach ($this->_edits as $edit)
+		{
+			if (is_a($edit, 'diff_op_add') || is_a($edit, 'diff_op_change'))
+			{
+				$count += $edit->nfinal();
+			}
+		}
+		return $count;
+	}
+
+	/**
+	* Returns the number of deleted (removed) lines in a given diff.
+	*
+	* @since Text_Diff 1.1.0
+	*
+	* @return integer The number of deleted lines
+	*/
+	function count_deleted_lines()
+	{
+		$count = 0;
+
+		foreach ($this->_edits as $edit)
+		{
+			if (is_a($edit, 'diff_op_delete') || is_a($edit, 'diff_op_change'))
+			{
+				$count += $edit->norig();
+			}
+		}
+		return $count;
 	}
 
 	/**
