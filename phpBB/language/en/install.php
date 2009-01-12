@@ -381,7 +381,7 @@ $lang = array_merge($lang, array(
 	'COMPLETE_LOGIN_TO_BOARD'		=> 'You should now <a href="../ucp.php?mode=login">login to your board</a> and check if everything is working fine. Do not forget to delete, rename or move your install directory!',
 	'CONTINUE_UPDATE_NOW'			=> 'Continue the update process now',		// Shown within the database update script at the end if called from the updater
 	'CONTINUE_UPDATE'				=> 'Continue update now',					// Shown after file upload to indicate the update process is not yet finished
-	'CURRENT_FILE'					=> 'Beginning of current original file',
+	'CURRENT_FILE'					=> 'Begin of Conflict - Original File code before update',
 	'CURRENT_VERSION'				=> 'Current version',
 
 	'DATABASE_TYPE'						=> 'Database type',
@@ -391,7 +391,7 @@ $lang = array_merge($lang, array(
 	'DESTINATION'						=> 'Destination file',
 	'DIFF_INLINE'						=> 'Inline',
 	'DIFF_RAW'							=> 'Raw unified diff',
-	'DIFF_SEP_EXPLAIN'					=> 'End of current original file / Beginning of new updated file',
+	'DIFF_SEP_EXPLAIN'					=> 'Code block used within the updated/new file',
 	'DIFF_SIDE_BY_SIDE'					=> 'Side by Side',
 	'DIFF_UNIFIED'						=> 'Unified diff',
 	'DO_NOT_UPDATE'						=> 'Do not update this file',
@@ -399,6 +399,8 @@ $lang = array_merge($lang, array(
 	'DOWNLOAD'							=> 'Download',
 	'DOWNLOAD_AS'						=> 'Download as',
 	'DOWNLOAD_UPDATE_METHOD_BUTTON'		=> 'Download modified files archive (recommended)',
+	'DOWNLOAD_CONFLICTS'				=> 'Download conflicts for this file',
+	'DOWNLOAD_CONFLICTS_EXPLAIN'		=> 'Search for &lt;&lt;&lt; to spot conflicts',
 	'DOWNLOAD_UPDATE_METHOD'			=> 'Download modified files archive',
 	'DOWNLOAD_UPDATE_METHOD_EXPLAIN'	=> 'Once downloaded you should unpack the archive. You will find the modified files you need to upload to your phpBB root directory within it. Please upload the files to their respective locations then. After you have uploaded all files, please check the files again with the other button below.',
 
@@ -443,13 +445,13 @@ $lang = array_merge($lang, array(
 
 	'MERGE_NO_MERGE_NEW_OPTION'	=> 'Do not merge - use new file',
 	'MERGE_NO_MERGE_MOD_OPTION'	=> 'Do not merge - use currently installed file',
-	'MERGE_MOD_FILE_OPTION'		=> 'Merge differences and use modified code within conflicting block',
-	'MERGE_NEW_FILE_OPTION'		=> 'Merge differences and use new file code within conflicting block',
+	'MERGE_MOD_FILE_OPTION'		=> 'Merge modifications (Loose new phpBB code within conflicting block)',
+	'MERGE_NEW_FILE_OPTION'		=> 'Merge modifications (Loose modified code within conflicting block)',
 	'MERGE_SELECT_ERROR'		=> 'Conflicting file merge modes are not correctly selected.',
 	'MERGING_FILES'				=> 'Merging differences',
 	'MERGING_FILES_EXPLAIN'		=> 'Currently collecting final file changes.<br /><br />Please wait until phpBB has completed all operations on changed files.',
 
-	'NEW_FILE'						=> 'End of new updated file',
+	'NEW_FILE'						=> 'End of Conflict',
 	'NEW_USERNAME'					=> 'New username',
 	'NO_AUTH_UPDATE'				=> 'Not authorised to update',
 	'NO_ERRORS'						=> 'No errors',
