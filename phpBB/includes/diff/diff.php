@@ -107,7 +107,7 @@ class diff
 	*
 	* Example:
 	* <code>
-	* $diff = &new diff($lines1, $lines2);
+	* $diff = new diff($lines1, $lines2);
 	* $rev = $diff->reverse();
 	* </code>
 	*
