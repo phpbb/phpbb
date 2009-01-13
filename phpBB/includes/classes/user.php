@@ -133,16 +133,78 @@ class phpbb_user extends phpbb_session
 	}
 
 	/**
-	* Initialize user session
-	*
-	* @param bool	$update_session_page	If true the session page gets updated.
-	* 										This can be set to false to circumvent certain scripts to update the users last visited page.
-	* @access public
+	* Determine and set language
 	*/
-	public function init($update_session_page = true)
+	public function set_language($lang_name = '')
 	{
-		$this->session_begin($update_session_page);
-		phpbb::$acl->init($this->data);
+		// Try to determine language from browser
+		if (!$lang_name && !empty($_SERVER['HTTP_ACCEPT_LANGUAGE']))
+		{
+			$accept_lang_ary = explode(',', strtolower($_SERVER['HTTP_ACCEPT_LANGUAGE']));
+
+			foreach ($accept_lang_ary as $accept_lang)
+			{
+				// Set correct format ... guess full xx_yy form
+				$accept_lang = substr($accept_lang, 0, 2) . '_' . substr($accept_lang, 3, 2);
+
+				if (file_exists($this->lang_path . basename($accept_lang)))
+				{
+					$lang_name = $accept_lang;
+					break;
+				}
+				else
+				{
+					// No match on xx_yy so try xx
+					$accept_lang = substr($accept_lang, 0, 2);
+					if (file_exists($this->lang_path . basename($accept_lang)))
+					{
+						$lang_name = $accept_lang;
+						break;
+					}
+				}
+			}
+		}
+
+		// Still no luck?
+		$lang_name = (!$lang_name && isset(phpbb::$config['default_lang'])) ? phpbb::$config['default_lang'] : basename($lang_name);
+
+		// No appropriate language found ... so let's use the first one in the language
+		// dir, this may or may not be English
+		if (!$lang_name)
+		{
+			$dir = @opendir($this->lang_path);
+
+			if (!$dir)
+			{
+				trigger_error('Unable to access the language directory', E_USER_ERROR);
+			}
+
+			while (($file = readdir($dir)) !== false)
+			{
+				$path = $this->lang_path . $file;
+
+				if (!is_file($path) && !is_link($path) && file_exists($path . '/iso.txt'))
+				{
+					$lang_name = $file;
+					break;
+				}
+			}
+			closedir($dir);
+		}
+
+		// Update language name if changed
+		if ($this->lang_name !== $lang_name)
+		{
+			$this->lang_name = $lang_name;
+		}
+
+		// We include common language file here to not load it every time a custom language file is included
+		$lang = &$this->lang;
+
+		if ((include $this->lang_path . $this->lang_name . "/common." . PHP_EXT) === false)
+		{
+			die('Language file ' . $this->lang_path . $this->lang_name . "/common." . PHP_EXT . " couldn't be opened.");
+		}
 	}
 
 	/**
@@ -170,51 +232,9 @@ class phpbb_user extends phpbb_session
 			$this->date_format = phpbb::$config['default_dateformat'];
 			$this->timezone = phpbb::$config['board_timezone'] * 3600;
 			$this->dst = phpbb::$config['board_dst'] * 3600;
-
-			/**
-			* If a guest user is surfing, we try to guess his/her language first by obtaining the browser language
-			* If re-enabled we need to make sure only those languages installed are checked
-			* Commented out so we do not loose the code.
-
-			if (isset($_SERVER['HTTP_ACCEPT_LANGUAGE']))
-			{
-				$accept_lang_ary = explode(',', $_SERVER['HTTP_ACCEPT_LANGUAGE']);
-
-				foreach ($accept_lang_ary as $accept_lang)
-				{
-					// Set correct format ... guess full xx_YY form
-					$accept_lang = substr($accept_lang, 0, 2) . '_' . strtoupper(substr($accept_lang, 3, 2));
-					$accept_lang = basename($accept_lang);
-
-					if (file_exists($this->lang_path . $accept_lang . "/common." . PHP_EXT))
-					{
-						$this->lang_name = phpbb::$config['default_lang'] = $accept_lang;
-						break;
-					}
-					else
-					{
-						// No match on xx_YY so try xx
-						$accept_lang = substr($accept_lang, 0, 2);
-						$accept_lang = basename($accept_lang);
-
-						if (file_exists($this->lang_path . $accept_lang . "/common." . PHP_EXT))
-						{
-							$this->lang_name = phpbb::$config['default_lang'] = $accept_lang;
-							break;
-						}
-					}
-				}
-			}
-			*/
 		}
 
-		// We include common language file here to not load it every time a custom language file is included
-		$lang = &$this->lang;
-
-		if ((include $this->lang_path . $this->lang_name . "/common." . PHP_EXT) === false)
-		{
-			die('Language file ' . $this->lang_path . $this->lang_name . "/common." . PHP_EXT . " couldn't be opened.");
-		}
+		$this->set_language($this->lang_name);
 
 		$this->add_lang($lang_set);
 		unset($lang_set);
