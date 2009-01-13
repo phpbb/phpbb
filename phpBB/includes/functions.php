@@ -1862,7 +1862,7 @@ function get_backtrace()
 {
 	$output = '<div style="font-family: monospace;">';
 	$backtrace = debug_backtrace();
-	$path = phpbb_realpath(PHPBB_ROOT_PATH);
+	$path = phpbb::$url->realpath(PHPBB_ROOT_PATH);
 
 	foreach ($backtrace as $number => $trace)
 	{
