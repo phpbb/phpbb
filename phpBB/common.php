@@ -18,8 +18,8 @@ if (!defined('IN_PHPBB'))
 	exit;
 }
 
-// Init Framework
-require_once PHPBB_ROOT_PATH . 'includes/core/bootstrap.' . PHP_EXT;
+// Init Framework - do not change to require_once ;)
+require PHPBB_ROOT_PATH . 'includes/core/bootstrap.' . PHP_EXT;
 
 // Run through remaining Framework states
 if (defined('PHPBB_CONFIG_MISSING') || !defined('PHPBB_INSTALLED'))
