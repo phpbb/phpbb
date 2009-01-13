@@ -544,22 +544,42 @@ abstract class phpbb_plugin_support
 	*/
 	public function __get($name)
 	{
-		return $this->plugin_attributes[$name]->$name;
+		if (isset($this->plugin_attributes[$name]))
+		{
+			return $this->plugin_attributes[$name]->$name;
+		}
+
+		return $this->$name;
 	}
 
 	public function __set($name, $value)
 	{
-		return $this->plugin_attributes[$name]->$name = $value;
+		if (isset($this->plugin_attributes[$name]))
+		{
+			return $this->plugin_attributes[$name]->$name = $value;
+		}
+
+		return $this->$name = $value;
 	}
 
 	public function __isset($name)
 	{
-		return isset($this->plugin_attributes[$name]->$name);
+		if (isset($this->plugin_attributes[$name]))
+		{
+			return isset($this->plugin_attributes[$name]->$name);
+		}
+
+		return isset($this->$name);
 	}
 
 	public function __unset($name)
 	{
-		unset($this->plugin_attributes[$name]->$name);
+		if (isset($this->plugin_attributes[$name]))
+		{
+			unset($this->plugin_attributes[$name]->$name);
+		}
+
+		unset($this->$name);
 	}
 	/**#@-*/
 
@@ -569,8 +589,13 @@ abstract class phpbb_plugin_support
 	*/
 	public function __call($name, $arguments)
 	{
-		array_unshift($arguments, $this);
-		return call_user_func_array(array($this->plugin_methods[$name], $name), $arguments);
+		if (isset($this->plugin_methods[$name]) && !is_array($this->plugin_methods[$name]))
+		{
+			array_unshift($arguments, $this);
+			return call_user_func_array(array($this->plugin_methods[$name], $name), $arguments);
+		}
+
+		trigger_error('Call to undefined method ' . $name . '() in ' . get_class($this) . '.', E_USER_ERROR);
 	}
 
 	/**
