@@ -21,7 +21,8 @@ include(PHPBB_ROOT_PATH . 'common.' . PHP_EXT);
 include(PHPBB_ROOT_PATH . 'includes/functions_display.' . PHP_EXT);
 
 // Start session management
-phpbb::$user->init();
+phpbb::$user->session_begin();
+phpbb::$acl->init(phpbb::$user->data);
 phpbb::$user->setup('viewforum');
 
 display_forums('', phpbb::$config['load_moderators']);
