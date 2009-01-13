@@ -389,7 +389,7 @@ class phpbb_acl
 		// Key 0 in $hold_ary are global options, all others are forum_ids
 
 		// If this user is founder we're going to force fill the admin options ...
-		if ($userdata['user_type'] == USER_FOUNDER)
+		if ($userdata['user_type'] == phpbb::USER_FOUNDER)
 		{
 			foreach ($this->acl_options['global'] as $opt => $id)
 			{
