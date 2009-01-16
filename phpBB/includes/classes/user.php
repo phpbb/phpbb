@@ -198,6 +198,12 @@ class phpbb_user extends phpbb_session
 			$this->lang_name = $lang_name;
 		}
 
+		// Set data language in case we have a user where this is not set
+		if (empty($this->data['user_lang']))
+		{
+			$this->data['user_lang'] = $this->lang_name;
+		}
+
 		// We include common language file here to not load it every time a custom language file is included
 		$lang = &$this->lang;
 
@@ -344,7 +350,7 @@ class phpbb_user extends phpbb_session
 				'theme_storedb'	=> 1
 			);
 
-			phpbb::$db->sql_handle_data('UPDATE', STYLES_THEME_TABLE, $sql_ary, 'theme_id = ' . $this->theme['theme_id']);
+			phpbb::$db->sql_query('UPDATE ' . STYLES_THEME_TABLE . ' SET ' . phpbb::$db->sql_build_array('UPDATE', $sql_ary) . ' WHERE theme_id = ' . $this->theme['theme_id']);
 			unset($sql_ary);
 		}
 
