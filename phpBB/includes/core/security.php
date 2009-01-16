@@ -78,6 +78,7 @@ class phpbb_security extends phpbb_plugin_support
 			return substr($val, 4, 16);
 		}
 
+
 		$val = phpbb::$config['rand_seed'] . microtime();
 		$val = md5($val);
 		phpbb::$config['rand_seed'] = md5(phpbb::$config['rand_seed'] . $val . $extra);
@@ -90,7 +91,7 @@ class phpbb_security extends phpbb_plugin_support
 			$this->dss_seeded = true;
 		}
 
-		$result = substr($val, 4, 16);
+		return substr($val, 4, 16);
 	}
 
 	/**
