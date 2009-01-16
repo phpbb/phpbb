@@ -18,109 +18,17 @@ define('IN_INSTALL', true);
 if (!defined('PHPBB_ROOT_PATH')) define('PHPBB_ROOT_PATH', './../');
 if (!defined('PHP_EXT')) define('PHP_EXT', substr(strrchr(__FILE__, '.'), 1));
 
-// Report all errors, except notices
-error_reporting(E_ALL ^ E_NOTICE);
+// Include bootstrap
+include PHPBB_ROOT_PATH . 'includes/core/bootstrap.' . PHP_EXT;
 
-// @todo Review this test and see if we can find out what it is which prevents PHP 4.2.x from even displaying the page with requirements on it
-if (version_compare(PHP_VERSION, '5.2.0') < 0)
-{
-	die('You are running an unsupported PHP version. Please upgrade to PHP 5.2.0 or higher before trying to install phpBB 3.0');
-}
+// Includes functions for the installer
+require PHPBB_ROOT_PATH . 'includes/functions_install.' . PHP_EXT;
 
-/*
-* Remove variables created by register_globals from the global scope
-* Thanks to Matt Kavanagh
-*/
-function deregister_globals()
-{
-	$not_unset = array(
-		'GLOBALS'	=> true,
-		'_GET'		=> true,
-		'_POST'		=> true,
-		'_COOKIE'	=> true,
-		'_REQUEST'	=> true,
-		'_SERVER'	=> true,
-		'_SESSION'	=> true,
-		'_ENV'		=> true,
-		'_FILES'	=> true,
-		'phpEx'		=> true,
-		'phpbb_root_path'	=> true
-	);
-
-	// Not only will array_merge and array_keys give a warning if
-	// a parameter is not an array, array_merge will actually fail.
-	// So we check if _SESSION has been initialised.
-	if (!isset($_SESSION) || !is_array($_SESSION))
-	{
-		$_SESSION = array();
-	}
-
-	// Merge all into one extremely huge array; unset this later
-	$input = array_merge(
-		array_keys($_GET),
-		array_keys($_POST),
-		array_keys($_COOKIE),
-		array_keys($_SERVER),
-		array_keys($_SESSION),
-		array_keys($_ENV),
-		array_keys($_FILES)
-	);
-
-	foreach ($input as $varname)
-	{
-		if (isset($not_unset[$varname]))
-		{
-			// Hacking attempt. No point in continuing unless it's a COOKIE
-			if ($varname !== 'GLOBALS' || isset($_GET['GLOBALS']) || isset($_POST['GLOBALS']) || isset($_SERVER['GLOBALS']) || isset($_SESSION['GLOBALS']) || isset($_ENV['GLOBALS']) || isset($_FILES['GLOBALS']))
-			{
-				exit;
-			}
-			else
-			{
-				$cookie = &$_COOKIE;
-				while (isset($cookie['GLOBALS']))
-				{
-					foreach ($cookie['GLOBALS'] as $registered_var => $value)
-					{
-						if (!isset($not_unset[$registered_var]))
-						{
-							unset($GLOBALS[$registered_var]);
-						}
-					}
-					$cookie = &$cookie['GLOBALS'];
-				}
-			}
-		}
-
-		unset($GLOBALS[$varname]);
-	}
-
-	unset($input);
-}
-
-// If we are on PHP >= 6.0.0 we do not need some code
-if (version_compare(PHP_VERSION, '6.0.0-dev', '>='))
-{
-	/**
-	* @ignore
-	*/
-	define('STRIP', false);
-}
-else
-{
-	@set_magic_quotes_runtime(0);
-
-	// Be paranoid with passed vars
-	if (@ini_get('register_globals') == '1' || strtolower(@ini_get('register_globals')) == 'on')
-	{
-		deregister_globals();
-	}
-
-	define('STRIP', (get_magic_quotes_gpc()) ? true : false);
-}
-
-// Try to override some limits - maybe it helps some...
+// Set time limit to 0
 @set_time_limit(0);
+
+/**
+* @todo get memory limit and display notice if it is too low for a conversion (only within conversion)
 $mem_limit = @ini_get('memory_limit');
 if (!empty($mem_limit))
 {
@@ -146,25 +54,9 @@ else
 	$mem_limit = '128M';
 }
 @ini_set('memory_limit', $mem_limit);
+*/
 
-// Include essential scripts
-require(PHPBB_ROOT_PATH . 'includes/functions.' . PHP_EXT);
-
-if (file_exists(PHPBB_ROOT_PATH . 'includes/functions_content.' . PHP_EXT))
-{
-	require(PHPBB_ROOT_PATH . 'includes/functions_content.' . PHP_EXT);
-}
-
-include(PHPBB_ROOT_PATH . 'includes/auth.' . PHP_EXT);
-include(PHPBB_ROOT_PATH . 'includes/session.' . PHP_EXT);
-include(PHPBB_ROOT_PATH . 'includes/template.' . PHP_EXT);
-include(PHPBB_ROOT_PATH . 'includes/acm/acm_file.' . PHP_EXT);
-include(PHPBB_ROOT_PATH . 'includes/cache.' . PHP_EXT);
-include(PHPBB_ROOT_PATH . 'includes/functions_admin.' . PHP_EXT);
-include(PHPBB_ROOT_PATH . 'includes/utf/utf_tools.' . PHP_EXT);
-require(PHPBB_ROOT_PATH . 'includes/functions_install.' . PHP_EXT);
-
-// Try and load an appropriate language if required
+/* Try and load an appropriate language if required
 $language = basename(request_var('language', ''));
 
 if (!empty($_SERVER['HTTP_ACCEPT_LANGUAGE']) && !$language)
@@ -230,7 +122,26 @@ include(PHPBB_ROOT_PATH . 'language/' . $language . '/acp/board.' . PHP_EXT);
 include(PHPBB_ROOT_PATH . 'language/' . $language . '/install.' . PHP_EXT);
 include(PHPBB_ROOT_PATH . 'language/' . $language . '/posting.' . PHP_EXT);
 
-// usually we would need every single constant here - and it would be consistent. For 3.0.x, use a dirty hack... :(
+*/
+
+// Initialize some common config variables
+phpbb::$config += array(
+	'load_tplcompile'	=> true,
+	'cookie_name'		=> '',
+);
+
+// Register the template and the user object
+phpbb::register('template');
+phpbb::register('user', false, false, 'db', PHPBB_ROOT_PATH . 'language/');
+
+// Init "loose" user session
+phpbb::$user->session_begin();
+
+// Now set users language
+phpbb::$user->set_language(request_var('language', ''));
+
+// And also add the install language file
+phpbb::$user->add_lang('install');
 
 $mode = request_var('mode', 'overview');
 $sub = request_var('sub', '');
@@ -238,15 +149,8 @@ $sub = request_var('sub', '');
 // Set PHP error handler to ours
 set_error_handler(defined('PHPBB_MSG_HANDLER') ? PHPBB_MSG_HANDLER : 'msg_handler');
 
-$user = new user();
-$auth = new auth();
-$template = new template();
-
-// Set some standard variables we want to force
-phpbb::$config['load_tplcompile'] = '1';
-
-$template->set_custom_template('../adm/style', 'admin');
-$template->assign_var('T_TEMPLATE_PATH', '../adm/style');
+phpbb::$template->set_custom_template('../adm/style', 'admin');
+phpbb::$template->assign_var('T_TEMPLATE_PATH', '../adm/style');
 
 $install = new module();
 
@@ -257,7 +161,7 @@ $install->load();
 $install->page_header();
 $install->generate_navigation();
 
-$template->set_filenames(array(
+phpbb::$template->set_filenames(array(
 	'body' => $install->get_tpl_name())
 );
 
@@ -282,8 +186,6 @@ class module
 	*/
 	function create($module_type, $module_url, $selected_mod = false, $selected_submod = false)
 	{
-		global $db;
-
 		$module = array();
 
 		// Grab module information using Bart's "neat-o-module" system (tm)
@@ -393,22 +295,18 @@ class module
 		}
 
 		define('HEADER_INC', true);
-		global $template, $lang, $stage;
+		global $stage;
 
-		$template->assign_vars(array(
-			'L_CHANGE'				=> $lang['CHANGE'],
-			'L_INSTALL_PANEL'		=> $lang['INSTALL_PANEL'],
-			'L_SELECT_LANG'			=> $lang['SELECT_LANG'],
-			'L_SKIP'				=> $lang['SKIP'],
+		phpbb::$template->assign_vars(array(
 			'PAGE_TITLE'			=> $this->get_page_title(),
 			'T_IMAGE_PATH'			=> PHPBB_ROOT_PATH . 'adm/images/',
 
-			'S_CONTENT_DIRECTION' 	=> $lang['DIRECTION'],
-			'S_CONTENT_FLOW_BEGIN'	=> ($lang['DIRECTION'] == 'ltr') ? 'left' : 'right',
-			'S_CONTENT_FLOW_END'	=> ($lang['DIRECTION'] == 'ltr') ? 'right' : 'left',
+			'S_CONTENT_DIRECTION' 	=> phpbb::$user->lang['DIRECTION'],
+			'S_CONTENT_FLOW_BEGIN'	=> (phpbb::$user->lang['DIRECTION'] == 'ltr') ? 'left' : 'right',
+			'S_CONTENT_FLOW_END'	=> (phpbb::$user->lang['DIRECTION'] == 'ltr') ? 'right' : 'left',
 			'S_CONTENT_ENCODING' 	=> 'UTF-8',
 
-			'S_USER_LANG'			=> $lang['USER_LANG'],
+			'S_USER_LANG'			=> phpbb::$user->lang['USER_LANG'],
 			)
 		);
 
@@ -425,14 +323,12 @@ class module
 	*/
 	function page_footer()
 	{
-		global $db, $template;
-
-		$template->display('body');
+		phpbb::$template->display('body');
 
 		// Close our DB connection.
-		if (!empty($db) && is_object($db))
+		if (phpbb::registered('db'))
 		{
-			$db->sql_close();
+			phpbb::$db->sql_close();
 		}
 
 		if (function_exists('exit_handler'))
@@ -454,52 +350,12 @@ class module
 	*/
 	function get_page_title()
 	{
-		global $lang;
-
 		if (!isset($this->module->page_title))
 		{
 			return '';
 		}
 
-		return (isset($lang[$this->module->page_title])) ? $lang[$this->module->page_title] : $this->module->page_title;
-	}
-
-	/**
-	* Generate an HTTP/1.1 header to redirect the user to another page
-	* This is used during the installation when we do not have a database available to call the normal redirect function
-	* @param string $page The page to redirect to relative to the installer root path
-	*/
-	function redirect($page)
-	{
-		// HTTP_HOST is having the correct browser url in most cases...
-		$server_name = (!empty($_SERVER['HTTP_HOST'])) ? strtolower($_SERVER['HTTP_HOST']) : ((!empty($_SERVER['SERVER_NAME'])) ? $_SERVER['SERVER_NAME'] : getenv('SERVER_NAME'));
-		$server_port = (!empty($_SERVER['SERVER_PORT'])) ? (int) $_SERVER['SERVER_PORT'] : (int) getenv('SERVER_PORT');
-		$secure = (isset($_SERVER['HTTPS']) && $_SERVER['HTTPS'] == 'on') ? 1 : 0;
-
-		$script_name = (!empty($_SERVER['PHP_SELF'])) ? $_SERVER['PHP_SELF'] : getenv('PHP_SELF');
-		if (!$script_name)
-		{
-			$script_name = (!empty($_SERVER['REQUEST_URI'])) ? $_SERVER['REQUEST_URI'] : getenv('REQUEST_URI');
-		}
-
-		// Replace backslashes and doubled slashes (could happen on some proxy setups)
-		$script_name = str_replace(array('\\', '//'), '/', $script_name);
-		$script_path = trim(dirname($script_name));
-
-		$url = (($secure) ? 'https://' : 'http://') . $server_name;
-
-		if ($server_port && (($secure && $server_port <> 443) || (!$secure && $server_port <> 80)))
-		{
-			// HTTP HOST can carry a port number...
-			if (strpos($server_name, ':') === false)
-			{
-				$url .= ':' . $server_port;
-			}
-		}
-
-		$url .= $script_path . '/' . $page;
-		header('Location: ' . $url);
-		exit;
+		return (isset(phpbb::$user->lang[$this->module->page_title])) ? phpbb::$user->lang[$this->module->page_title] : $this->module->page_title;
 	}
 
 	/**
@@ -507,8 +363,6 @@ class module
 	*/
 	function generate_navigation()
 	{
-		global $lang, $template, $language;
-
 		if (is_array($this->module_ary))
 		{
 			@ksort($this->module_ary);
@@ -517,11 +371,11 @@ class module
 				$cat = $cat_ary['name'];
 				$l_cat = (!empty($lang['CAT_' . $cat])) ? $lang['CAT_' . $cat] : preg_replace('#_#', ' ', $cat);
 				$cat = strtolower($cat);
-				$url = $this->module_url . "?mode=$cat&amp;language=$language";
+				$url = $this->module_url . "?mode=$cat&amp;language=" . phpbb::$user->lang_name;
 
 				if ($this->mode == $cat)
 				{
-					$template->assign_block_vars('t_block1', array(
+					phpbb::$template->assign_block_vars('t_block1', array(
 						'L_TITLE'		=> $l_cat,
 						'S_SELECTED'	=> true,
 						'U_TITLE'		=> $url,
@@ -532,11 +386,11 @@ class module
 						$subs = $this->module_ary[$this->id]['subs'];
 						foreach ($subs as $option)
 						{
-							$l_option = (!empty($lang['SUB_' . $option])) ? $lang['SUB_' . $option] : preg_replace('#_#', ' ', $option);
+							$l_option = (!empty(phpbb::$user->lang['SUB_' . $option])) ? phpbb::$user->lang['SUB_' . $option] : preg_replace('#_#', ' ', $option);
 							$option = strtolower($option);
-							$url = $this->module_url . '?mode=' . $this->mode . "&amp;sub=$option&amp;language=$language";
+							$url = $this->module_url . '?mode=' . $this->mode . "&amp;sub=$option&amp;language=" . phpbb::$user->lang_name;
 
-							$template->assign_block_vars('l_block1', array(
+							phpbb::$template->assign_block_vars('l_block1', array(
 								'L_TITLE'		=> $l_option,
 								'S_SELECTED'	=> ($this->sub == $option),
 								'U_TITLE'		=> $url,
@@ -550,11 +404,11 @@ class module
 						$matched = false;
 						foreach ($subs as $option)
 						{
-							$l_option = (!empty($lang['STAGE_' . $option])) ? $lang['STAGE_' . $option] : preg_replace('#_#', ' ', $option);
+							$l_option = (!empty(phpbb::$user->lang['STAGE_' . $option])) ? phpbb::$user->lang['STAGE_' . $option] : preg_replace('#_#', ' ', $option);
 							$option = strtolower($option);
 							$matched = ($this->sub == $option) ? true : $matched;
 
-							$template->assign_block_vars('l_block2', array(
+							phpbb::$template->assign_block_vars('l_block2', array(
 								'L_TITLE'		=> $l_option,
 								'S_SELECTED'	=> ($this->sub == $option),
 								'S_COMPLETE'	=> !$matched,
@@ -564,7 +418,7 @@ class module
 				}
 				else
 				{
-					$template->assign_block_vars('t_block1', array(
+					phpbb::$template->assign_block_vars('t_block1', array(
 						'L_TITLE'		=> $l_cat,
 						'S_SELECTED'	=> false,
 						'U_TITLE'		=> $url,
@@ -578,106 +432,38 @@ class module
 	* Output an error message
 	* If skip is true, return and continue execution, else exit
 	*/
-	function error($error, $line, $file, $skip = false)
+	function error($error, $line, $file)
 	{
-		global $lang, $db, $template;
+		phpbb::$template->assign_block_vars('checks', array(
+			'S_LEGEND'	=> true,
+			'LEGEND'	=> phpbb::$user->lang['INST_ERR'],
+		));
 
-		if ($skip)
-		{
-			$template->assign_block_vars('checks', array(
-				'S_LEGEND'	=> true,
-				'LEGEND'	=> $lang['INST_ERR'],
-			));
+		phpbb::$template->assign_block_vars('checks', array(
+			'TITLE'		=> basename($file) . ' [ ' . $line . ' ]',
+			'RESULT'	=> '<b style="color:red">' . $error . '</b>',
+		));
 
-			$template->assign_block_vars('checks', array(
-				'TITLE'		=> basename($file) . ' [ ' . $line . ' ]',
-				'RESULT'	=> '<b style="color:red">' . $error . '</b>',
-			));
-
-			return;
-		}
-
-		echo '<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">';
-		echo '<html xmlns="http://www.w3.org/1999/xhtml" dir="ltr">';
-		echo '<head>';
-		echo '<meta http-equiv="content-type" content="text/html; charset=utf-8" />';
-		echo '<title>' . $lang['INST_ERR_FATAL'] . '</title>';
-		echo '<link href="../adm/style/admin.css" rel="stylesheet" type="text/css" media="screen" />';
-		echo '</head>';
-		echo '<body id="errorpage">';
-		echo '<div id="wrap">';
-		echo '	<div id="page-header">';
-		echo '	</div>';
-		echo '	<div id="page-body">';
-		echo '		<div id="acp">';
-		echo '		<div class="panel">';
-		echo '			<span class="corners-top"><span></span></span>';
-		echo '			<div id="content">';
-		echo '				<h1>' . $lang['INST_ERR_FATAL'] . '</h1>';
-		echo '		<p>' . $lang['INST_ERR_FATAL'] . "</p>\n";
-		echo '		<p>' . basename($file) . ' [ ' . $line . " ]</p>\n";
-		echo '		<p><b>' . $error . "</b></p>\n";
-		echo '			</div>';
-		echo '			<span class="corners-bottom"><span></span></span>';
-		echo '		</div>';
-		echo '		</div>';
-		echo '	</div>';
-		echo '	<div id="page-footer">';
-		echo '		Powered by phpBB &copy; 2000, 2002, 2005, 2007 <a href="http://www.phpbb.com/">phpBB Group</a>';
-		echo '	</div>';
-		echo '</div>';
-		echo '</body>';
-		echo '</html>';
-
-		if (!empty($db) && is_object($db))
-		{
-			$db->sql_close();
-		}
-
-		exit_handler();
+		return;
 	}
 
 	/**
 	* Output an error message for a database related problem
 	* If skip is true, return and continue execution, else exit
 	*/
-	function db_error($error, $sql, $line, $file, $skip = false)
+	function db_error($error, $sql, $line, $file)
 	{
-		global $lang, $db, $template;
-
-		if ($skip)
-		{
-			$template->assign_block_vars('checks', array(
-				'S_LEGEND'	=> true,
-				'LEGEND'	=> $lang['INST_ERR_FATAL'],
-			));
-
-			$template->assign_block_vars('checks', array(
-				'TITLE'		=> basename($file) . ' [ ' . $line . ' ]',
-				'RESULT'	=> '<b style="color:red">' . $error . '</b><br />&#187; SQL:' . $sql,
-			));
-
-			return;
-		}
-
-		$template->set_filenames(array(
-			'body' => 'install_error.html')
-		);
-		$this->page_header();
-		$this->generate_navigation();
-
-		$template->assign_vars(array(
-			'MESSAGE_TITLE'		=> $lang['INST_ERR_FATAL_DB'],
-			'MESSAGE_TEXT'		=> '<p>' . basename($file) . ' [ ' . $line . ' ]</p><p>SQL : ' . $sql . '</p><p><b>' . $error . '</b></p>',
+		phpbb::$template->assign_block_vars('checks', array(
+			'S_LEGEND'	=> true,
+			'LEGEND'	=> phpbb::$user->lang['INST_ERR_FATAL'],
 		));
 
-		// Rollback if in transaction
-		if ($db->transaction)
-		{
-			$db->sql_transaction('rollback');
-		}
+		phpbb::$template->assign_block_vars('checks', array(
+			'TITLE'		=> basename($file) . ' [ ' . $line . ' ]',
+			'RESULT'	=> '<b style="color:red">' . $error . '</b><br />&#187; SQL:' . $sql,
+		));
 
-		$this->page_footer();
+		return;
 	}
 
 	/**
@@ -685,7 +471,6 @@ class module
 	*/
 	function input_field($name, $type, $value='', $options='')
 	{
-		global $lang;
 		$tpl_type = explode(':', $type);
 		$tpl = '';
 
@@ -713,8 +498,8 @@ class module
 				$tpl_type_cond = explode('_', $tpl_type[1]);
 				$type_no = ($tpl_type_cond[0] == 'disabled' || $tpl_type_cond[0] == 'enabled') ? false : true;
 
-				$tpl_no = '<label><input type="radio" name="' . $name . '" value="0"' . $key_no . ' class="radio" /> ' . (($type_no) ? $lang['NO'] : $lang['DISABLED']) . '</label>';
-				$tpl_yes = '<label><input type="radio" name="' . $name . '" value="1"' . $key_yes . ' class="radio" /> ' . (($type_no) ? $lang['YES'] : $lang['ENABLED']) . '</label>';
+				$tpl_no = '<label><input type="radio" name="' . $name . '" value="0"' . $key_no . ' class="radio" /> ' . (($type_no) ? phpbb::$user->lang['NO'] : phpbb::$user->lang['DISABLED']) . '</label>';
+				$tpl_yes = '<label><input type="radio" name="' . $name . '" value="1"' . $key_yes . ' class="radio" /> ' . (($type_no) ? phpbb::$user->lang['YES'] : phpbb::$user->lang['ENABLED']) . '</label>';
 
 				$tpl = ($tpl_type_cond[0] == 'yes' || $tpl_type_cond[0] == 'enabled') ? $tpl_yes . '&nbsp;&nbsp;' . $tpl_no : $tpl_no . '&nbsp;&nbsp;' . $tpl_yes;
 			break;

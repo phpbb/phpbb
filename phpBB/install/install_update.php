@@ -70,7 +70,7 @@ class install_update extends module
 
 	function main($mode, $sub)
 	{
-		global $template, $user, $db, $auth;
+		require PHPBB_ROOT_PATH . 'common.' . PHP_EXT;
 
 		$this->tpl_name = 'install_update';
 		$this->page_title = 'UPDATE_INSTALLATION';
@@ -79,33 +79,13 @@ class install_update extends module
 		$this->old_location = PHPBB_ROOT_PATH . 'install/update/old/';
 		$this->new_location = PHPBB_ROOT_PATH . 'install/update/new/';
 
-		// Init DB
-		require(PHPBB_ROOT_PATH . 'config.' . PHP_EXT);
-		require(PHPBB_ROOT_PATH . 'includes/db/' . $dbms . '.' . PHP_EXT);
-		require(PHPBB_ROOT_PATH . 'includes/constants.' . PHP_EXT);
-
-		// Special options for conflicts/modified files
-		define('MERGE_NO_MERGE_NEW', 1);
-		define('MERGE_NO_MERGE_MOD', 2);
-		define('MERGE_NEW_FILE', 3);
-		define('MERGE_MOD_FILE', 4);
-
-		$db = new $sql_db();
-
-		// Connect to DB
-		$db->sql_connect($dbhost, $dbuser, $dbpasswd, $dbname, $dbport, false, false);
-
-		// We do not need this any longer, unset for safety purposes
-		unset($dbpasswd);
-
 		// Force template recompile
 		phpbb::$config['load_tplcompile'] = 1;
 
-		// First of all, init the user session
-		$user->session_begin();
-		$auth->acl($user->data);
-
-		$user->setup('install');
+		// Start session management
+		phpbb::$user->session_begin();
+		phpbb::$acl->init(phpbb::$user->data);
+		phpbb::$user->setup('viewforum');
 
 		// If we are within the intro page we need to make sure we get up-to-date version info
 		if ($sub == 'intro')

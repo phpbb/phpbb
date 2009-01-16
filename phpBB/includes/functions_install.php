@@ -18,6 +18,9 @@ if (!defined('IN_PHPBB'))
 
 /**
 * Determine if we are able to load a specified PHP module and do so if possible
+*
+* @param string	$dll	Name of the DLL without extension. For example 'sqlite'.
+* @return bool	Returns true of successfully loaded, else false.
 */
 function can_load_dll($dll)
 {
@@ -25,112 +28,72 @@ function can_load_dll($dll)
 }
 
 /**
-* Returns an array of available DBMS with some data, if a DBMS is specified it will only
-* return data for that DBMS and will load its extension if necessary.
+* Returns an array of available DBMS with some data, if a DBMS is specified it will only return data for that DBMS and will load its extension if necessary.
+*
 */
-function get_available_dbms($dbms = false, $return_unavailable = false, $only_20x_options = false)
+function get_available_dbms($dbms = false, $return_unavailable = false, $only_30x_options = false)
 {
-	global $lang;
 	$available_dbms = array(
 		'firebird'	=> array(
 			'LABEL'			=> 'FireBird',
-			'SCHEMA'		=> 'firebird',
 			'MODULE'		=> 'interbase',
-			'DELIM'			=> ';;',
-			'COMMENTS'		=> 'remove_remarks',
-			'DRIVER'		=> 'firebird',
 			'AVAILABLE'		=> true,
-			'2.0.x'			=> false,
+			'3.0.x'			=> true,
 		),
 		'mysqli'	=> array(
 			'LABEL'			=> 'MySQL with MySQLi Extension',
-			'SCHEMA'		=> 'mysql',
 			'MODULE'		=> 'mysqli',
-			'DELIM'			=> ';',
-			'COMMENTS'		=> 'remove_remarks',
 			'DRIVER'		=> 'mysqli',
 			'AVAILABLE'		=> true,
-			'2.0.x'			=> true,
+			'3.0.x'			=> true,
 		),
 		'mysql'		=> array(
 			'LABEL'			=> 'MySQL',
-			'SCHEMA'		=> 'mysql',
 			'MODULE'		=> 'mysql',
-			'DELIM'			=> ';',
-			'COMMENTS'		=> 'remove_remarks',
-			'DRIVER'		=> 'mysql',
 			'AVAILABLE'		=> true,
-			'2.0.x'			=> true,
+			'3.0.x'			=> true,
 		),
 		'mssql'		=> array(
 			'LABEL'			=> 'MS SQL Server 2000+',
-			'SCHEMA'		=> 'mssql',
 			'MODULE'		=> 'mssql',
-			'DELIM'			=> 'GO',
-			'COMMENTS'		=> 'remove_comments',
-			'DRIVER'		=> 'mssql',
 			'AVAILABLE'		=> true,
-			'2.0.x'			=> true,
+			'3.0.x'			=> true,
 		),
 		'mssql_odbc'=>	array(
 			'LABEL'			=> 'MS SQL Server [ ODBC ]',
-			'SCHEMA'		=> 'mssql',
 			'MODULE'		=> 'odbc',
-			'DELIM'			=> 'GO',
-			'COMMENTS'		=> 'remove_comments',
-			'DRIVER'		=> 'mssql_odbc',
 			'AVAILABLE'		=> true,
-			'2.0.x'			=> true,
+			'3.0.x'			=> true,
 		),
 		'mssql_2005'=>	array(
 			'LABEL'			=> 'MS SQL Server [ 2005 ]',
-			'SCHEMA'		=> 'mssql',
 			'MODULE'		=> 'sqlsrv',
-			'DELIM'			=> 'GO',
-			'COMMENTS'		=> 'remove_comments',
-			'DRIVER'		=> 'mssql_2005',
 			'AVAILABLE'		=> true,
-			'2.0.x'			=> true,
+			'3.0.x'			=> true,
 		),
 		'db2'		=> array(
 			'LABEL'			=> 'IBM DB2',
-			'SCHEMA'		=> 'db2',
 			'MODULE'		=> 'ibm_db2',
-			'DELIM'			=> ';',
-			'COMMENTS'		=> 'remove_comments',
-			'DRIVER'		=> 'db2',
 			'AVAILABLE'		=> true,
-			'2.0.x'			=> false,
+			'3.0.x'			=> false,
 		),
 		'oracle'	=>	array(
 			'LABEL'			=> 'Oracle',
-			'SCHEMA'		=> 'oracle',
 			'MODULE'		=> 'oci8',
-			'DELIM'			=> '/',
-			'COMMENTS'		=> 'remove_comments',
-			'DRIVER'		=> 'oracle',
 			'AVAILABLE'		=> true,
-			'2.0.x'			=> false,
+			'3.0.x'			=> true,
 		),
 		'postgres' => array(
 			'LABEL'			=> 'PostgreSQL 7.x/8.x',
-			'SCHEMA'		=> 'postgres',
 			'MODULE'		=> 'pgsql',
-			'DELIM'			=> ';',
-			'COMMENTS'		=> 'remove_comments',
-			'DRIVER'		=> 'postgres',
 			'AVAILABLE'		=> true,
-			'2.0.x'			=> true,
+			'3.0.x'			=> true,
 		),
 		'sqlite'		=> array(
 			'LABEL'			=> 'SQLite',
-			'SCHEMA'		=> 'sqlite',
 			'MODULE'		=> 'sqlite',
-			'DELIM'			=> ';',
-			'COMMENTS'		=> 'remove_remarks',
-			'DRIVER'		=> 'sqlite',
 			'AVAILABLE'		=> true,
-			'2.0.x'			=> false,
+			'3.0.x'			=> true,
 		),
 	);
 
@@ -149,7 +112,7 @@ function get_available_dbms($dbms = false, $return_unavailable = false, $only_20
 	// now perform some checks whether they are really available
 	foreach ($available_dbms as $db_name => $db_ary)
 	{
-		if ($only_20x_options && !$db_ary['2.0.x'])
+		if ($only_30x_options && !$db_ary['3.0.x'])
 		{
 			if ($return_unavailable)
 			{
@@ -186,23 +149,24 @@ function get_available_dbms($dbms = false, $return_unavailable = false, $only_20
 	{
 		$available_dbms['ANY_DB_SUPPORT'] = $any_db_support;
 	}
+
 	return $available_dbms;
 }
 
 /**
 * Generate the drop down of available database options
 */
-function dbms_select($default = '', $only_20x_options = false)
+function dbms_select($default = '', $only_30x_options = false)
 {
-	global $lang;
+	$available_dbms = get_available_dbms(false, false, $only_30x_options);
 
-	$available_dbms = get_available_dbms(false, false, $only_20x_options);
 	$dbms_options = '';
 	foreach ($available_dbms as $dbms_name => $details)
 	{
 		$selected = ($dbms_name == $default) ? ' selected="selected"' : '';
-		$dbms_options .= '<option value="' . $dbms_name . '"' . $selected .'>' . $lang['DLL_' . strtoupper($dbms_name)] . '</option>';
+		$dbms_options .= '<option value="' . $dbms_name . '"' . $selected .'>' . phpbb::$user->lang['DLL_' . strtoupper($dbms_name)] . '</option>';
 	}
+
 	return $dbms_options;
 }
 
@@ -275,34 +239,26 @@ function get_tables($db)
 * @param	array	$dbms should be of the format of an element of the array returned by {@link get_available_dbms get_available_dbms()}
 *					necessary extensions should be loaded already
 */
-function connect_check_db($error_connect, &$error, $dbms_details, $table_prefix, $dbhost, $dbuser, $dbpasswd, $dbname, $dbport, $prefix_may_exist = false, $load_dbal = true, $unicode_check = true)
+function connect_check_db($error_connect, &$error, $dbms_details, $table_prefix, $dbhost, $dbuser, $dbpasswd, $dbname, $dbport, $prefix_may_exist = false, $unicode_check = true)
 {
-	global $lang;
-
 	$dbms = $dbms_details['DRIVER'];
 
-	if ($load_dbal)
-	{
-		// Include the DB layer
-		include(PHPBB_ROOT_PATH . 'includes/db/' . $dbms . '.' . PHP_EXT);
-	}
+	phpbb::assign('checkdb', phpbb_db_dbal::new_instance($dbms));
+	$db = phpbb::get_instance('checkdb');
 
-	// Instantiate it and set return on error true
-	$sql_db = 'dbal_' . $dbms;
-	$db = new $sql_db();
 	$db->sql_return_on_error(true);
 
 	// Check that we actually have a database name before going any further.....
 	if ($dbms_details['DRIVER'] != 'sqlite' && $dbms_details['DRIVER'] != 'oracle' && $dbname === '')
 	{
-		$error[] = $lang['INST_ERR_DB_NO_NAME'];
+		$error[] = phpbb::$user->lang['INST_ERR_DB_NO_NAME'];
 		return false;
 	}
 
 	// Make sure we don't have a daft user who thinks having the SQLite database in the forum directory is a good idea
-	if ($dbms_details['DRIVER'] == 'sqlite' && stripos(phpbb_realpath($dbhost), phpbb_realpath('../')) === 0)
+	if ($dbms_details['DRIVER'] == 'sqlite' && stripos(phpbb::$url->realpath($dbhost), phpbb::$url->realpath('../')) === 0)
 	{
-		$error[] = $lang['INST_ERR_DB_FORUM_PATH'];
+		$error[] = phpbb::$user->lang['INST_ERR_DB_FORUM_PATH'];
 		return false;
 	}
 
@@ -313,7 +269,7 @@ function connect_check_db($error_connect, &$error, $dbms_details, $table_prefix,
 		case 'mysqli':
 			if (strspn($table_prefix, '-./\\') !== 0)
 			{
-				$error[] = $lang['INST_ERR_PREFIX_INVALID'];
+				$error[] = phpbb::$user->lang['INST_ERR_PREFIX_INVALID'];
 				return false;
 			}
 
@@ -345,7 +301,7 @@ function connect_check_db($error_connect, &$error, $dbms_details, $table_prefix,
 
 	if (strlen($table_prefix) > $prefix_length)
 	{
-		$error[] = sprintf($lang['INST_ERR_PREFIX_TOO_LONG'], $prefix_length);
+		$error[] = phpbb::$user->lang('INST_ERR_PREFIX_TOO_LONG', $prefix_length);
 		return false;
 	}
 
@@ -353,7 +309,7 @@ function connect_check_db($error_connect, &$error, $dbms_details, $table_prefix,
 	if (is_array($db->sql_connect($dbhost, $dbuser, $dbpasswd, $dbname, $dbport, false, true)))
 	{
 		$db_error = $db->sql_error();
-		$error[] = $lang['INST_ERR_DB_CONNECT'] . '<br />' . (($db_error['message']) ? $db_error['message'] : $lang['INST_ERR_DB_NO_ERROR']);
+		$error[] = phpbb::$user->lang['INST_ERR_DB_CONNECT'] . '<br />' . (($db_error['message']) ? $db_error['message'] : phpbb::$user->lang['INST_ERR_DB_NO_ERROR']);
 	}
 	else
 	{
@@ -369,7 +325,7 @@ function connect_check_db($error_connect, &$error, $dbms_details, $table_prefix,
 
 			if (sizeof($table_intersect))
 			{
-				$error[] = $lang['INST_ERR_PREFIX'];
+				$error[] = phpbb::$user->lang['INST_ERR_PREFIX'];
 			}
 		}
 
@@ -377,23 +333,23 @@ function connect_check_db($error_connect, &$error, $dbms_details, $table_prefix,
 		switch ($dbms_details['DRIVER'])
 		{
 			case 'mysql':
-				if (version_compare(mysql_get_server_info($db->db_connect_id), '4.1.3', '<'))
+				if (version_compare($db->sql_server_info(true), '4.1.3', '<'))
 				{
-					$error[] = $lang['INST_ERR_DB_NO_MYSQL'];
+					$error[] = phpbb::$user->lang['INST_ERR_DB_NO_MYSQL'];
 				}
 			break;
 
 			case 'mysqli':
-				if (version_compare(mysqli_get_server_info($db->db_connect_id), '4.1.3', '<'))
+				if (version_compare($db->sql_server_info(true), '4.1.3', '<'))
 				{
-					$error[] = $lang['INST_ERR_DB_NO_MYSQLI'];
+					$error[] = phpbb::$user->lang['INST_ERR_DB_NO_MYSQLI'];
 				}
 			break;
 
 			case 'sqlite':
-				if (version_compare(sqlite_libversion(), '2.8.2', '<'))
+				if (version_compare($db->sql_server_info(true), '2.8.2', '<'))
 				{
-					$error[] = $lang['INST_ERR_DB_NO_SQLITE'];
+					$error[] = phpbb::$user->lang['INST_ERR_DB_NO_SQLITE'];
 				}
 			break;
 
@@ -405,7 +361,7 @@ function connect_check_db($error_connect, &$error, $dbms_details, $table_prefix,
 					preg_match('#V([\d.]+)#', $val, $match);
 					if ($match[1] < 2)
 					{
-						$error[] = $lang['INST_ERR_DB_NO_FIREBIRD'];
+						$error[] = phpbb::$user->lang['INST_ERR_DB_NO_FIREBIRD'];
 					}
 					$db_info = @ibase_db_info($db->service_handle, $dbname, IBASE_STS_HDR_PAGES);
 
@@ -413,7 +369,7 @@ function connect_check_db($error_connect, &$error, $dbms_details, $table_prefix,
 					$page_size = intval($regs[1]);
 					if ($page_size < 8192)
 					{
-						$error[] = $lang['INST_ERR_DB_NO_FIREBIRD_PS'];
+						$error[] = phpbb::$user->lang['INST_ERR_DB_NO_FIREBIRD_PS'];
 					}
 				}
 				else
@@ -429,7 +385,7 @@ function connect_check_db($error_connect, &$error, $dbms_details, $table_prefix,
 					// if its a UDF, its too old
 					if ($row)
 					{
-						$error[] = $lang['INST_ERR_DB_NO_FIREBIRD'];
+						$error[] = phpbb::$user->lang['INST_ERR_DB_NO_FIREBIRD'];
 					}
 					else
 					{
@@ -438,7 +394,7 @@ function connect_check_db($error_connect, &$error, $dbms_details, $table_prefix,
 						$result = $db->sql_query($sql);
 						if (!$result) // This can only fail if char_length is not defined
 						{
-							$error[] = $lang['INST_ERR_DB_NO_FIREBIRD'];
+							$error[] = phpbb::$user->lang['INST_ERR_DB_NO_FIREBIRD'];
 						}
 						$db->sql_freeresult($result);
 					}
@@ -467,7 +423,7 @@ function connect_check_db($error_connect, &$error, $dbms_details, $table_prefix,
 
 					if (ibase_errmsg() !== false)
 					{
-						$error[] = $lang['INST_ERR_DB_NO_FIREBIRD_PS'];
+						$error[] = phpbb::$user->lang['INST_ERR_DB_NO_FIREBIRD_PS'];
 					}
 
 					// Kill the old table
@@ -494,12 +450,12 @@ function connect_check_db($error_connect, &$error, $dbms_details, $table_prefix,
 
 					if (version_compare($stats['NLS_RDBMS_VERSION'], '9.2', '<'))
 					{
-						$error[] = $lang['INST_ERR_DB_NO_ORACLE'];
+						$error[] = phpbb::$user->lang['INST_ERR_DB_NO_ORACLE'];
 					}
 
 					if ($stats['NLS_CHARACTERSET'] !== 'AL32UTF8')
 					{
-						$error[] = $lang['INST_ERR_DB_NO_ORACLE_NLS'];
+						$error[] = phpbb::$user->lang['INST_ERR_DB_NO_ORACLE_NLS'];
 					}
 				}
 			break;
@@ -514,7 +470,7 @@ function connect_check_db($error_connect, &$error, $dbms_details, $table_prefix,
 
 					if ($row['server_encoding'] !== 'UNICODE' && $row['server_encoding'] !== 'UTF8')
 					{
-						$error[] = $lang['INST_ERR_DB_NO_POSTGRES'];
+						$error[] = phpbb::$user->lang['INST_ERR_DB_NO_POSTGRES'];
 					}
 				}
 			break;
@@ -527,49 +483,6 @@ function connect_check_db($error_connect, &$error, $dbms_details, $table_prefix,
 		return true;
 	}
 	return false;
-}
-
-/**
-* remove_remarks will strip the sql comment lines out of an uploaded sql file
-*/
-function remove_remarks(&$sql)
-{
-	$sql = preg_replace('/\n{2,}/', "\n", preg_replace('/^#.*$/m', "\n", $sql));
-}
-
-/**
-* split_sql_file will split an uploaded sql file into single sql statements.
-* Note: expects trim() to have already been run on $sql.
-*/
-function split_sql_file($sql, $delimiter)
-{
-	$sql = str_replace("\r" , '', $sql);
-	$data = preg_split('/' . preg_quote($delimiter, '/') . '$/m', $sql);
-
-	$data = array_map('trim', $data);
-
-	// The empty case
-	$end_data = end($data);
-
-	if (empty($end_data))
-	{
-		unset($data[key($data)]);
-	}
-
-	return $data;
-}
-
-/**
-* For replacing {L_*} strings with preg_replace_callback
-*/
-function adjust_language_keys_callback($matches)
-{
-	if (!empty($matches[1]))
-	{
-		global $lang, $db;
-
-		return (!empty($lang[$matches[1]])) ? $db->sql_escape($lang[$matches[1]]) : $db->sql_escape($matches[1]);
-	}
 }
 
 ?>

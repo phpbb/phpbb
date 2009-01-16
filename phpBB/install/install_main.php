@@ -43,34 +43,32 @@ class install_main extends module
 
 	function main($mode, $sub)
 	{
-		global $lang, $template, $language;
-
 		switch ($sub)
 		{
 			case 'intro' :
-				$title = $lang['SUB_INTRO'];
-				$body = $lang['OVERVIEW_BODY'];
+				$title = phpbb::$user->lang['SUB_INTRO'];
+				$body = phpbb::$user->lang['OVERVIEW_BODY'];
 			break;
 
 			case 'license' :
-				$title = $lang['GPL'];
-				$body = implode("<br/>\n", file('../docs/COPYING'));
+				$title = phpbb::$user->lang['GPL'];
+				$body = implode("<br />\n", file('../docs/COPYING'));
 			break;
 
 			case 'support' :
-				$title = $lang['SUB_SUPPORT'];
-				$body = $lang['SUPPORT_BODY'];
+				$title = phpbb::$user->lang['SUB_SUPPORT'];
+				$body = phpbb::$user->lang['SUPPORT_BODY'];
 			break;
 		}
 
-		$this->tpl_name = 'install_main';
+		$this->tpl_name = 'install/main';
 		$this->page_title = $title;
 
-		$template->assign_vars(array(
+		phpbb::$template->assign_vars(array(
 			'TITLE'		=> $title,
 			'BODY'		=> $body,
 
-			'S_LANG_SELECT'	=> '<select id="language" name="language">' . $this->p_master->inst_language_select($language) . '</select>',
+			'S_LANG_SELECT'	=> '<select id="language" name="language">' . $this->p_master->inst_language_select(phpbb::$user->lang_name) . '</select>',
 		));
 	}
 }
