@@ -91,7 +91,7 @@ class phpbb_dbal_mysqli extends phpbb_dbal
 			$row = @mysqli_fetch_assoc($result);
 			@mysqli_free_result($result);
 
-			$this->sql_server_version = $row['version'];
+			$this->sql_server_version = trim($row['version']);
 
 			if (phpbb::registered('acm'))
 			{
@@ -225,6 +225,7 @@ class phpbb_dbal_mysqli extends phpbb_dbal
 
 	/**
 	* Handle data by using prepared statements. See {@link phpbb_dbal::sql_handle_data() sql_handle_data()} for details.
+	* @todo implement correctly by using types. ;)
 	*/
 	public function sql_handle_data($type, $table, $data, $where = '')
 	{
@@ -245,7 +246,7 @@ class phpbb_dbal_mysqli extends phpbb_dbal
 
 			if ($where !== '')
 			{
-				$query .= $where;
+				$query .= ' WHERE ' . $where;
 			}
 
 			$stmt = mysqli_prepare($this->db_connect_id, $query);

@@ -186,12 +186,12 @@ abstract class phpbb_dbal
 	/**
 	* @var string Wildcard for matching any (%) character within LIKE expressions
 	*/
-	protected $any_char;
+	public $any_char;
 
 	/**
 	* @var string Wildcard for matching exactly one (_) character within LIKE expressions
 	*/
-	protected $one_char;
+	public $one_char;
 
 	/**
 	* @var array Storing cached result rowset

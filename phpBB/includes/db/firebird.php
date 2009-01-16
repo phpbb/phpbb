@@ -75,7 +75,84 @@ class dbal_firebird extends dbal
 		{
 			return @ibase_server_info($this->service_handle, IBASE_SVC_SERVER_VERSION);
 		}
+/*				// check the version of FB, use some hackery if we can't get access to the server info
+				if ($db->service_handle !== false && strtolower($dbuser) == 'sysdba')
+				{
+					$val = @ibase_server_info($db->service_handle, IBASE_SVC_SERVER_VERSION);
+					preg_match('#V([\d.]+)#', $val, $match);
+					if ($match[1] < 2)
+					{
+						$error[] = $lang['INST_ERR_DB_NO_FIREBIRD'];
+					}
+					$db_info = @ibase_db_info($db->service_handle, $dbname, IBASE_STS_HDR_PAGES);
 
+					preg_match('/^\\s*Page size\\s*(\\d+)/m', $db_info, $regs);
+					$page_size = intval($regs[1]);
+					if ($page_size < 8192)
+					{
+						$error[] = $lang['INST_ERR_DB_NO_FIREBIRD_PS'];
+					}
+				}
+				else
+				{
+					$sql = "SELECT *
+						FROM RDB$FUNCTIONS
+						WHERE RDB$SYSTEM_FLAG IS NULL
+							AND RDB$FUNCTION_NAME = 'CHAR_LENGTH'";
+					$result = $db->sql_query($sql);
+					$row = $db->sql_fetchrow($result);
+					$db->sql_freeresult($result);
+
+					// if its a UDF, its too old
+					if ($row)
+					{
+						$error[] = $lang['INST_ERR_DB_NO_FIREBIRD'];
+					}
+					else
+					{
+						$sql = "SELECT FIRST 0 char_length('')
+							FROM RDB\$DATABASE";
+						$result = $db->sql_query($sql);
+						if (!$result) // This can only fail if char_length is not defined
+						{
+							$error[] = $lang['INST_ERR_DB_NO_FIREBIRD'];
+						}
+						$db->sql_freeresult($result);
+					}
+
+					// Setup the stuff for our random table
+					$char_array = array_merge(range('A', 'Z'), range('0', '9'));
+					$char_len = mt_rand(7, 9);
+					$char_array_len = sizeof($char_array) - 1;
+
+					$final = '';
+
+					for ($i = 0; $i < $char_len; $i++)
+					{
+						$final .= $char_array[mt_rand(0, $char_array_len)];
+					}
+
+					// Create some random table
+					$sql = 'CREATE TABLE ' . $final . " (
+						FIELD1 VARCHAR(255) CHARACTER SET UTF8 DEFAULT '' NOT NULL COLLATE UNICODE,
+						FIELD2 INTEGER DEFAULT 0 NOT NULL);";
+					$db->sql_query($sql);
+
+					// Create an index that should fail if the page size is less than 8192
+					$sql = 'CREATE INDEX ' . $final . ' ON ' . $final . '(FIELD1, FIELD2);';
+					$db->sql_query($sql);
+
+					if (ibase_errmsg() !== false)
+					{
+						$error[] = $lang['INST_ERR_DB_NO_FIREBIRD_PS'];
+					}
+
+					// Kill the old table
+					$db->sql_query('DROP TABLE ' . $final . ';');
+
+					unset($final);
+				}
+*/
 		return ($raw) ? '2.0' : 'Firebird/Interbase';
 	}
 
