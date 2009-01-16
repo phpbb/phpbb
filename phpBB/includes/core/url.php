@@ -425,7 +425,7 @@ class phpbb_url extends phpbb_plugin_support
 			$cookie_secure = (isset($_SERVER['HTTPS']) && $_SERVER['HTTPS'] == 'on') ? 1 : 0;
 			$url = (($cookie_secure) ? 'https://' : 'http://') . $server_name;
 
-			$script_path = phpbb::$user->system['page']['root_script_path'];
+			$script_path = phpbb::$user->page['root_script_path'];
 		}
 
 		if ($server_port && (($cookie_secure && $server_port <> 443) || (!$cookie_secure && $server_port <> 80)))
@@ -484,7 +484,7 @@ class phpbb_url extends phpbb_plugin_support
 		if ($url_parts === false)
 		{
 			// Malformed url, redirect to current page...
-			$url = $this->generate_board_url() . '/' . phpbb::$user->system['page']['page'];
+			$url = $this->generate_board_url() . '/' . phpbb::$user->page['page'];
 		}
 		else if (!empty($url_parts['scheme']) && !empty($url_parts['host']))
 		{
@@ -515,9 +515,9 @@ class phpbb_url extends phpbb_plugin_support
 					$url = substr($url, 1);
 				}
 
-				if (phpbb::$user->system['page']['page_dir'])
+				if (phpbb::$user->page['page_dir'])
 				{
-					$url = $this->generate_board_url() . '/' . phpbb::$user->system['page']['page_dir'] . '/' . $url;
+					$url = $this->generate_board_url() . '/' . phpbb::$user->page['page_dir'] . '/' . $url;
 				}
 				else
 				{
@@ -683,7 +683,7 @@ class phpbb_url extends phpbb_plugin_support
 	public function build_url($strip_vars = false)
 	{
 		// Append SID
-		$redirect = $this->append_sid(phpbb::$user->system['page']['page'], false, false);
+		$redirect = $this->append_sid(phpbb::$user->page['page'], false, false);
 
 		// Add delimiter if not there...
 		if (strpos($redirect, '?') === false)
