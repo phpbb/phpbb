@@ -368,7 +368,7 @@ class acp_permissions
 
 					$template->assign_vars(array(
 						'S_SELECT_GROUP'		=> true,
-						'S_GROUP_OPTIONS'		=> group_select_options(false, false, (($user->data['user_type'] == phpbb::USER_FOUNDER) ? false : 0)))
+						'S_GROUP_OPTIONS'		=> group_select_options(false, false, ((phpbb::$user->is_founder) ? false : 0)))
 					);
 
 				break;
@@ -414,7 +414,7 @@ class acp_permissions
 						'S_SELECT_USERGROUP_VIEW'	=> ($victim == 'usergroup_view') ? true : false,
 						'S_DEFINED_USER_OPTIONS'	=> $items['user_ids_options'],
 						'S_DEFINED_GROUP_OPTIONS'	=> $items['group_ids_options'],
-						'S_ADD_GROUP_OPTIONS'		=> group_select_options(false, $items['group_ids'], (($user->data['user_type'] == phpbb::USER_FOUNDER) ? false : 0)),
+						'S_ADD_GROUP_OPTIONS'		=> group_select_options(false, $items['group_ids'], ((phpbb::$user->is_founder) ? false : 0)),
 						'U_FIND_USERNAME'			=> append_sid('memberlist', 'mode=searchuser&amp;form=add_user&amp;field=username&amp;select_single=true'),
 					));
 

@@ -293,7 +293,7 @@ parse_css_file = {PARSE_CSS_FILE}
 								// Save CSS contents
 								$sql_ary = array(
 									'theme_mtime'	=> (int) filemtime(PHPBB_ROOT_PATH . "styles/{$theme_row['theme_path']}/theme/stylesheet.css"),
-									'theme_data'	=> $this->db_theme_data($theme_row)
+									'theme_data'	=> self::db_theme_data($theme_row)
 								);
 
 								$sql = 'UPDATE ' . STYLES_THEME_TABLE . ' SET ' . $db->sql_build_array('UPDATE', $sql_ary) . "
@@ -974,7 +974,7 @@ parse_css_file = {PARSE_CSS_FILE}
 				$sql_ary = array(
 					'theme_mtime'		=> time(),
 					'theme_storedb'		=> 1,
-					'theme_data'		=> $this->db_theme_data($theme_info, $theme_data),
+					'theme_data'		=> self::db_theme_data($theme_info, $theme_data),
 				);
 				$sql = 'UPDATE ' . STYLES_THEME_TABLE . '
 					SET ' . $db->sql_build_array('UPDATE', $sql_ary) . '
@@ -2123,7 +2123,7 @@ parse_css_file = {PARSE_CSS_FILE}
 	/**
 	* Load css file contents
 	*/
-	function load_css_file($path, $filename)
+	static function load_css_file($path, $filename)
 	{
 		$file = PHPBB_ROOT_PATH . "styles/$path/theme/$filename";
 
@@ -2149,7 +2149,7 @@ parse_css_file = {PARSE_CSS_FILE}
 	*
 	* @return string Stylesheet data for theme_data column in the theme table
 	*/
-	function db_theme_data($theme_row, $stylesheet = false, $root_path = '')
+	static function db_theme_data($theme_row, $stylesheet = false, $root_path = '')
 	{
 		if (!$root_path)
 		{
@@ -2173,7 +2173,7 @@ parse_css_file = {PARSE_CSS_FILE}
 		{
 			foreach ($matches[0] as $idx => $match)
 			{
-				$stylesheet = str_replace($match, acp_styles::load_css_file($theme_row['theme_path'], $matches[1][$idx]), $stylesheet);
+				$stylesheet = str_replace($match, self::load_css_file($theme_row['theme_path'], $matches[1][$idx]), $stylesheet);
 			}
 		}
 
@@ -2939,7 +2939,7 @@ parse_css_file = {PARSE_CSS_FILE}
 
 				$sql_ary += array(
 					'theme_storedb'	=> $store_db,
-					'theme_data'	=> ($store_db) ? $this->db_theme_data($sql_ary, false, $root_path) : '',
+					'theme_data'	=> ($store_db) ? self::db_theme_data($sql_ary, false, $root_path) : '',
 					'theme_mtime'	=> (int) filemtime(PHPBB_ROOT_PATH . "styles/$path/theme/stylesheet.css")
 				);
 			break;

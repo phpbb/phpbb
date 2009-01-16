@@ -323,7 +323,7 @@ function display_forums($root_data = '', $display_moderators = true, $return_mod
 				if ($subforum_row['display'] && $subforum_row['name'])
 				{
 					$subforums_list[] = array(
-						'link'		=> append_sid('viewforum', 'f=' . $subforum_id),
+						'link'		=> phpbb::$url->append_sid('viewforum', 'f=' . $subforum_id),
 						'name'		=> $subforum_row['name'],
 						'unread'	=> $subforum_unread,
 					);
@@ -465,7 +465,7 @@ function display_forums($root_data = '', $display_moderators = true, $return_mod
 	}
 
 	phpbb::$template->assign_vars(array(
-		'U_MARK_FORUMS'		=> (phpbb::$user->is_registered || phpbb::$config['load_anon_lastread']) ? append_sid('viewforum', 'hash=' . phpbb::$security->hash_link('global') . '&amp;f=' . $root_data['forum_id'] . '&amp;mark=forums') : '',
+		'U_MARK_FORUMS'		=> (phpbb::$user->is_registered || phpbb::$config['load_anon_lastread']) ? phpbb::$url->append_sid('viewforum', 'hash=' . generate_link_hash('global') . '&amp;f=' . $root_data['forum_id'] . '&amp;mark=forums') : '',
 		'S_HAS_SUBFORUM'	=> ($visible_forums) ? true : false,
 		'L_SUBFORUM'		=> phpbb::$user->lang('SUBFORUMS', $visible_forums),
 		'LAST_POST_IMG'		=> phpbb::$user->img('icon_topic_latest', 'VIEW_LATEST_POST'))
@@ -538,7 +538,7 @@ function generate_forum_nav(&$forum_data)
 				'S_IS_POST'		=> ($parent_type == FORUM_POST) ? true : false,
 				'FORUM_NAME'	=> $parent_name,
 				'FORUM_ID'		=> $parent_forum_id,
-				'U_VIEW_FORUM'	=> append_sid('viewforum', 'f=' . $parent_forum_id))
+				'U_VIEW_FORUM'	=> phpbb::$url->append_sid('viewforum', 'f=' . $parent_forum_id))
 			);
 		}
 	}
@@ -549,7 +549,7 @@ function generate_forum_nav(&$forum_data)
 		'S_IS_POST'		=> ($forum_data['forum_type'] == FORUM_POST) ? true : false,
 		'FORUM_NAME'	=> $forum_data['forum_name'],
 		'FORUM_ID'		=> $forum_data['forum_id'],
-		'U_VIEW_FORUM'	=> append_sid('viewforum', 'f=' . $forum_data['forum_id']))
+		'U_VIEW_FORUM'	=> phpbb::$url->append_sid('viewforum', 'f=' . $forum_data['forum_id']))
 	);
 
 	$template->assign_vars(array(
@@ -999,8 +999,8 @@ function display_user_activity(&$userdata)
 		'ACTIVE_TOPIC'			=> censor_text($active_t_name),
 		'ACTIVE_TOPIC_POSTS'	=> ($active_t_count == 1) ? sprintf($user->lang['USER_POST'], 1) : sprintf($user->lang['USER_POSTS'], $active_t_count),
 		'ACTIVE_TOPIC_PCT'		=> sprintf($l_active_pct, $active_t_pct),
-		'U_ACTIVE_FORUM'		=> append_sid('viewforum', 'f=' . $active_f_id),
-		'U_ACTIVE_TOPIC'		=> append_sid('viewtopic', 't=' . $active_t_id),
+		'U_ACTIVE_FORUM'		=> phpbb::$url->append_sid('viewforum', 'f=' . $active_f_id),
+		'U_ACTIVE_TOPIC'		=> phpbb::$url->append_sid('viewtopic', 't=' . $active_t_id),
 		'S_SHOW_ACTIVITY'		=> true,
 	));
 }
@@ -1043,7 +1043,7 @@ function watch_topic_forum($mode, &$s_watching, $user_id, $forum_id, $topic_id, 
 				$uid = request_var('uid', 0);
 				if ($uid != $user_id)
 				{
-					$redirect_url = append_sid("view$mode", "$u_url=$match_id&amp;start=$start");
+					$redirect_url = phpbb::$url->append_sid("view$mode", "$u_url=$match_id&amp;start=$start");
 					$message = $user->lang['ERR_UNWATCHING'] . '<br /><br />' . sprintf($user->lang['RETURN_' . strtoupper($mode)], '<a href="' . $redirect_url . '">', '</a>');
 					trigger_error($message);
 				}
@@ -1057,7 +1057,7 @@ function watch_topic_forum($mode, &$s_watching, $user_id, $forum_id, $topic_id, 
 					$db->sql_query($sql);
 				}
 
-				$redirect_url = append_sid("view$mode", "$u_url=$match_id&amp;start=$start");
+				$redirect_url = phpbb::$url->append_sid("view$mode", "$u_url=$match_id&amp;start=$start");
 
 				meta_refresh(3, $redirect_url);
 
@@ -1083,7 +1083,7 @@ function watch_topic_forum($mode, &$s_watching, $user_id, $forum_id, $topic_id, 
 			if (phpbb_request::is_set('watch', phpbb_request::GET))
 			{
 				$token = request_var('hash', '');
-				$redirect_url = append_sid("view$mode", "$u_url=$match_id&amp;start=$start");
+				$redirect_url = phpbb::$url->append_sid("view$mode", "$u_url=$match_id&amp;start=$start");
 
 				if (phpbb_request::variable('watch', '', false, phpbb_request::GET) == $mode && check_link_hash($token, "{$mode}_$match_id"))
 				{
@@ -1124,7 +1124,7 @@ function watch_topic_forum($mode, &$s_watching, $user_id, $forum_id, $topic_id, 
 
 	if ($can_watch)
 	{
-		$s_watching['link'] = append_sid("view$mode", "$u_url=$match_id&amp;" . (($is_watching) ? 'unwatch' : 'watch') . "=$mode&amp;start=$start&amp;hash=" . generate_link_hash("{$mode}_$match_id"));
+		$s_watching['link'] = phpbb::$url->append_sid("view$mode", "$u_url=$match_id&amp;" . (($is_watching) ? 'unwatch' : 'watch') . "=$mode&amp;start=$start&amp;hash=" . generate_link_hash("{$mode}_$match_id"));
 		$s_watching['title'] = $user->lang[(($is_watching) ? 'STOP' : 'START') . '_WATCHING_' . strtoupper($mode)];
 		$s_watching['is_watching'] = $is_watching;
 	}

@@ -2287,11 +2287,9 @@ function cache_moderators()
 */
 function view_log($mode, &$log, &$log_count, $limit = 0, $offset = 0, $forum_id = 0, $topic_id = 0, $user_id = 0, $limit_days = 0, $sort_by = 'l.log_time DESC')
 {
-	global $db, $user, $auth;
-
 	$topic_id_list = $reportee_id_list = $is_auth = $is_mod = array();
 
-	$profile_url = (defined('IN_ADMIN')) ? append_sid(PHPBB_ADMIN_PATH . 'index.' . PHP_EXT, 'i=users&amp;mode=overview') : append_sid('memberlist', 'mode=viewprofile');
+	$profile_url = (defined('IN_ADMIN')) ? phpbb::$url->append_sid(PHPBB_ADMIN_PATH . 'index.' . PHP_EXT, 'i=users&amp;mode=overview') : phpbb::$url->append_sid('memberlist', 'mode=viewprofile');
 
 	switch ($mode)
 	{
@@ -2309,7 +2307,7 @@ function view_log($mode, &$log, &$log_count, $limit = 0, $offset = 0, $forum_id 
 			}
 			else if (is_array($forum_id))
 			{
-				$sql_forum = 'AND ' . $db->sql_in_set('l.forum_id', array_map('intval', $forum_id));
+				$sql_forum = 'AND ' . phpbb::$db->sql_in_set('l.forum_id', array_map('intval', $forum_id));
 			}
 			else
 			{
@@ -2343,11 +2341,11 @@ function view_log($mode, &$log, &$log_count, $limit = 0, $offset = 0, $forum_id 
 			" . (($limit_days) ? "AND l.log_time >= $limit_days" : '') . "
 			$sql_forum
 		ORDER BY $sort_by";
-	$result = $db->sql_query_limit($sql, $limit, $offset);
+	$result = phpbb::$db->sql_query_limit($sql, $limit, $offset);
 
 	$i = 0;
 	$log = array();
-	while ($row = $db->sql_fetchrow($result))
+	while ($row = phpbb::$db->sql_fetchrow($result))
 	{
 		if ($row['topic_id'])
 		{
@@ -2375,15 +2373,15 @@ function view_log($mode, &$log, &$log_count, $limit = 0, $offset = 0, $forum_id 
 			'forum_id'			=> $row['forum_id'],
 			'topic_id'			=> $row['topic_id'],
 
-			'viewforum'			=> ($row['forum_id'] && $auth->acl_get('f_read', $row['forum_id'])) ? append_sid('viewforum', 'f=' . $row['forum_id']) : false,
-			'action'			=> (isset($user->lang[$row['log_operation']])) ? $user->lang[$row['log_operation']] : '{' . ucfirst(str_replace('_', ' ', $row['log_operation'])) . '}',
+			'viewforum'			=> ($row['forum_id'] && phpbb::$acl->acl_get('f_read', $row['forum_id'])) ? phpbb::$url->append_sid('viewforum', 'f=' . $row['forum_id']) : false,
+			'action'			=> (isset(phpbb::$user->lang[$row['log_operation']])) ? phpbb::$user->lang[$row['log_operation']] : '{' . ucfirst(str_replace('_', ' ', $row['log_operation'])) . '}',
 		);
 
 		if (!empty($row['log_data']))
 		{
 			$log_data_ary = unserialize($row['log_data']);
 
-			if (isset($user->lang[$row['log_operation']]))
+			if (isset(phpbb::$user->lang[$row['log_operation']]))
 			{
 				// Check if there are more occurrences of % than arguments, if there are we fill out the arguments array
 				// It doesn't matter if we add more arguments than placeholders
@@ -2417,7 +2415,7 @@ function view_log($mode, &$log, &$log_count, $limit = 0, $offset = 0, $forum_id 
 
 		$i++;
 	}
-	$db->sql_freeresult($result);
+	phpbb::$db->sql_freeresult($result);
 
 	if (sizeof($topic_id_list))
 	{
@@ -2427,25 +2425,25 @@ function view_log($mode, &$log, &$log_count, $limit = 0, $offset = 0, $forum_id 
 		// although it's also used to determine if the topic still exists in the database
 		$sql = 'SELECT topic_id, forum_id
 			FROM ' . TOPICS_TABLE . '
-			WHERE ' . $db->sql_in_set('topic_id', array_map('intval', $topic_id_list));
-		$result = $db->sql_query($sql);
+			WHERE ' . phpbb::$db->sql_in_set('topic_id', array_map('intval', $topic_id_list));
+		$result = phpbb::$db->sql_query($sql);
 
 		$default_forum_id = 0;
 
-		while ($row = $db->sql_fetchrow($result))
+		while ($row = phpbb::$db->sql_fetchrow($result))
 		{
 			if (!$row['forum_id'])
 			{
-				if ($auth->acl_getf_global('f_read'))
+				if (phpbb::$acl->acl_getf_global('f_read'))
 				{
 					if (!$default_forum_id)
 					{
 						$sql = 'SELECT forum_id
 							FROM ' . FORUMS_TABLE . '
 							WHERE forum_type = ' . FORUM_POST;
-						$f_result = $db->sql_query_limit($sql, 1);
-						$default_forum_id = (int) $db->sql_fetchfield('forum_id', $f_result);
-						$db->sql_freeresult($f_result);
+						$f_result = phpbb::$db->sql_query_limit($sql, 1);
+						$default_forum_id = (int) phpbb::$db->sql_fetchfield('forum_id', $f_result);
+						phpbb::$db->sql_freeresult($f_result);
 					}
 
 					$is_auth[$row['topic_id']] = $default_forum_id;
@@ -2453,23 +2451,23 @@ function view_log($mode, &$log, &$log_count, $limit = 0, $offset = 0, $forum_id 
 			}
 			else
 			{
-				if ($auth->acl_get('f_read', $row['forum_id']))
+				if (phpbb::$acl->acl_get('f_read', $row['forum_id']))
 				{
 					$is_auth[$row['topic_id']] = $row['forum_id'];
 				}
 			}
 
-			if ($auth->acl_gets('a_', 'm_', $row['forum_id']))
+			if (phpbb::$acl->acl_gets('a_', 'm_', $row['forum_id']))
 			{
 				$is_mod[$row['topic_id']] = $row['forum_id'];
 			}
 		}
-		$db->sql_freeresult($result);
+		phpbb::$db->sql_freeresult($result);
 
 		foreach ($log as $key => $row)
 		{
-			$log[$key]['viewtopic'] = (isset($is_auth[$row['topic_id']])) ? append_sid('viewtopic', 'f=' . $is_auth[$row['topic_id']] . '&amp;t=' . $row['topic_id']) : false;
-			$log[$key]['viewlogs'] = (isset($is_mod[$row['topic_id']])) ? append_sid('mcp', 'i=logs&amp;mode=topic_logs&amp;t=' . $row['topic_id'], true, $user->session_id) : false;
+			$log[$key]['viewtopic'] = (isset($is_auth[$row['topic_id']])) ? phpbb::$url->append_sid('viewtopic', 'f=' . $is_auth[$row['topic_id']] . '&amp;t=' . $row['topic_id']) : false;
+			$log[$key]['viewlogs'] = (isset($is_mod[$row['topic_id']])) ? phpbb::$url->append_sid('mcp', 'i=logs&amp;mode=topic_logs&amp;t=' . $row['topic_id'], true, phpbb::$user->session_id) : false;
 		}
 	}
 
@@ -2480,14 +2478,14 @@ function view_log($mode, &$log, &$log_count, $limit = 0, $offset = 0, $forum_id 
 
 		$sql = 'SELECT user_id, username, user_colour
 			FROM ' . USERS_TABLE . '
-			WHERE ' . $db->sql_in_set('user_id', $reportee_id_list);
-		$result = $db->sql_query($sql);
+			WHERE ' . phpbb::$db->sql_in_set('user_id', $reportee_id_list);
+		$result = phpbb::$db->sql_query($sql);
 
-		while ($row = $db->sql_fetchrow($result))
+		while ($row = phpbb::$db->sql_fetchrow($result))
 		{
 			$reportee_names_list[$row['user_id']] = $row;
 		}
-		$db->sql_freeresult($result);
+		phpbb::$db->sql_freeresult($result);
 
 		foreach ($log as $key => $row)
 		{
@@ -2506,9 +2504,9 @@ function view_log($mode, &$log, &$log_count, $limit = 0, $offset = 0, $forum_id 
 		WHERE l.log_type = $log_type
 			AND l.log_time >= $limit_days
 			$sql_forum";
-	$result = $db->sql_query($sql);
-	$log_count = (int) $db->sql_fetchfield('total_entries');
-	$db->sql_freeresult($result);
+	$result = phpbb::$db->sql_query($sql);
+	$log_count = (int) phpbb::$db->sql_fetchfield('total_entries');
+	phpbb::$db->sql_freeresult($result);
 
 	return;
 }
@@ -2629,15 +2627,13 @@ function update_foes($group_id = false, $user_id = false)
 */
 function view_inactive_users(&$users, &$user_count, $limit = 0, $offset = 0, $limit_days = 0, $sort_by = 'user_inactive_time DESC')
 {
-	global $db, $user;
-
 	$sql = 'SELECT COUNT(user_id) AS user_count
 		FROM ' . USERS_TABLE . '
 		WHERE user_type = ' . phpbb::USER_INACTIVE .
 		(($limit_days) ? " AND user_inactive_time >= $limit_days" : '');
-	$result = $db->sql_query($sql);
-	$user_count = (int) $db->sql_fetchfield('user_count');
-	$db->sql_freeresult($result);
+	$result = phpbb::$db->sql_query($sql);
+	$user_count = (int) phpbb::$db->sql_fetchfield('user_count');
+	phpbb::$db->sql_freeresult($result);
 
 	if ($offset >= $user_count)
 	{
@@ -2649,27 +2645,27 @@ function view_inactive_users(&$users, &$user_count, $limit = 0, $offset = 0, $li
 		WHERE user_type = ' . phpbb::USER_INACTIVE .
 		(($limit_days) ? " AND user_inactive_time >= $limit_days" : '') . "
 		ORDER BY $sort_by";
-	$result = $db->sql_query_limit($sql, $limit, $offset);
+	$result = phpbb::$db->sql_query_limit($sql, $limit, $offset);
 
-	while ($row = $db->sql_fetchrow($result))
+	while ($row = phpbb::$db->sql_fetchrow($result))
 	{
-		$row['inactive_reason'] = $user->lang['INACTIVE_REASON_UNKNOWN'];
+		$row['inactive_reason'] = phpbb::$user->lang['INACTIVE_REASON_UNKNOWN'];
 		switch ($row['user_inactive_reason'])
 		{
 			case INACTIVE_REGISTER:
-				$row['inactive_reason'] = $user->lang['INACTIVE_REASON_REGISTER'];
+				$row['inactive_reason'] = phpbb::$user->lang['INACTIVE_REASON_REGISTER'];
 			break;
 
 			case INACTIVE_PROFILE:
-				$row['inactive_reason'] = $user->lang['INACTIVE_REASON_PROFILE'];
+				$row['inactive_reason'] = phpbb::$user->lang['INACTIVE_REASON_PROFILE'];
 			break;
 
 			case INACTIVE_MANUAL:
-				$row['inactive_reason'] = $user->lang['INACTIVE_REASON_MANUAL'];
+				$row['inactive_reason'] = phpbb::$user->lang['INACTIVE_REASON_MANUAL'];
 			break;
 
 			case INACTIVE_REMIND:
-				$row['inactive_reason'] = $user->lang['INACTIVE_REASON_REMIND'];
+				$row['inactive_reason'] = phpbb::$user->lang['INACTIVE_REASON_REMIND'];
 			break;
 		}
 
@@ -2711,18 +2707,18 @@ function view_warned_users(&$users, &$user_count, $limit = 0, $offset = 0, $limi
 */
 function get_database_size()
 {
-	global $db, $user, $table_prefix;
+	global $table_prefix;
 
 	$database_size = false;
 
 	// This code is heavily influenced by a similar routine in phpMyAdmin 2.2.0
-	switch ($db->dbms_type)
+	switch (phpbb::$db->dbms_type)
 	{
 		case 'mysql':
 			$sql = 'SELECT VERSION() AS mysql_version';
-			$result = $db->sql_query($sql);
-			$row = $db->sql_fetchrow($result);
-			$db->sql_freeresult($result);
+			$result = phpbb::$db->sql_query($sql);
+			$row = phpbb::$db->sql_fetchrow($result);
+			phpbb::$db->sql_freeresult($result);
 
 			if ($row)
 			{
@@ -2730,14 +2726,14 @@ function get_database_size()
 
 				if (preg_match('#(3\.23|[45]\.)#', $version))
 				{
-					$db_name = (preg_match('#^(?:3\.23\.(?:[6-9]|[1-9]{2}))|[45]\.#', $version)) ? "`{$db->dbname}`" : $db->dbname;
+					$db_name = (preg_match('#^(?:3\.23\.(?:[6-9]|[1-9]{2}))|[45]\.#', $version)) ? "`" . phpbb::$db->dbname . "`" : phpbb::$db->dbname;
 
 					$sql = 'SHOW TABLE STATUS
 						FROM ' . $db_name;
-					$result = $db->sql_query($sql, 7200);
+					$result = phpbb::$db->sql_query($sql, 7200);
 
 					$database_size = 0;
-					while ($row = $db->sql_fetchrow($result))
+					while ($row = phpbb::$db->sql_fetchrow($result))
 					{
 						if ((isset($row['Type']) && $row['Type'] != 'MRG_MyISAM') || (isset($row['Engine']) && ($row['Engine'] == 'MyISAM' || $row['Engine'] == 'InnoDB')))
 						{
@@ -2754,7 +2750,7 @@ function get_database_size()
 							}
 						}
 					}
-					$db->sql_freeresult($result);
+					phpbb::$db->sql_freeresult($result);
 				}
 			}
 		break;
@@ -2783,22 +2779,22 @@ function get_database_size()
 		case 'mssql':
 			$sql = 'SELECT ((SUM(size) * 8.0) * 1024.0) as dbsize
 				FROM sysfiles';
-			$result = $db->sql_query($sql, 7200);
-			$database_size = ($row = $db->sql_fetchrow($result)) ? $row['dbsize'] : false;
-			$db->sql_freeresult($result);
+			$result = phpbb::$db->sql_query($sql, 7200);
+			$database_size = ($row = phpbb::$db->sql_fetchrow($result)) ? $row['dbsize'] : false;
+			phpbb::$db->sql_freeresult($result);
 		break;
 
 		case 'postgres':
 			$sql = "SELECT proname
 				FROM pg_proc
 				WHERE proname = 'pg_database_size'";
-			$result = $db->sql_query($sql);
-			$row = $db->sql_fetchrow($result);
-			$db->sql_freeresult($result);
+			$result = phpbb::$db->sql_query($sql);
+			$row = phpbb::$db->sql_fetchrow($result);
+			phpbb::$db->sql_freeresult($result);
 
 			if ($row['proname'] == 'pg_database_size')
 			{
-				$database = $db->dbname;
+				$database = phpbb::$db->dbname;
 				if (strpos($database, '.') !== false)
 				{
 					list($database, ) = explode('.', $database);
@@ -2807,16 +2803,16 @@ function get_database_size()
 				$sql = "SELECT oid
 					FROM pg_database
 					WHERE datname = '$database'";
-				$result = $db->sql_query($sql);
-				$row = $db->sql_fetchrow($result);
-				$db->sql_freeresult($result);
+				$result = phpbb::$db->sql_query($sql);
+				$row = phpbb::$db->sql_fetchrow($result);
+				phpbb::$db->sql_freeresult($result);
 
 				$oid = $row['oid'];
 
 				$sql = 'SELECT pg_database_size(' . $oid . ') as size';
-				$result = $db->sql_query($sql);
-				$row = $db->sql_fetchrow($result);
-				$db->sql_freeresult($result);
+				$result = phpbb::$db->sql_query($sql);
+				$row = phpbb::$db->sql_fetchrow($result);
+				phpbb::$db->sql_freeresult($result);
 
 				$database_size = $row['size'];
 			}
@@ -2825,13 +2821,13 @@ function get_database_size()
 		case 'oracle':
 			$sql = 'SELECT SUM(bytes) as dbsize
 				FROM user_segments';
-			$result = $db->sql_query($sql, 7200);
-			$database_size = ($row = $db->sql_fetchrow($result)) ? $row['dbsize'] : false;
-			$db->sql_freeresult($result);
+			$result = phpbb::$db->sql_query($sql, 7200);
+			$database_size = ($row = phpbb::$db->sql_fetchrow($result)) ? $row['dbsize'] : false;
+			phpbb::$db->sql_freeresult($result);
 		break;
 	}
 
-	$database_size = ($database_size !== false) ? get_formatted_filesize($database_size) : $user->lang['NOT_AVAILABLE'];
+	$database_size = ($database_size !== false) ? get_formatted_filesize($database_size) : phpbb::$user->lang['NOT_AVAILABLE'];
 
 	return $database_size;
 }

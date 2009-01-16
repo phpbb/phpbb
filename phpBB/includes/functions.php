@@ -277,20 +277,18 @@ function phpbb_chmod($filename, $perms = phpbb::CHMOD_READ)
 	* @return string the hash
 	*/
 /*
-	should use our hashing instead of a "custom" one
-
+@todo should use our hashing instead of a "custom" one
+*/
 	function generate_link_hash($link_name)
 	{
-		global $user;
-
-		if (!isset($user->data["hash_$link_name"]))
+		if (!isset(phpbb::$user->data["hash_$link_name"]))
 		{
-			$user->data["hash_$link_name"] = substr(sha1($user->data['user_form_salt'] . $link_name), 0, 8);
+			phpbb::$user->data["hash_$link_name"] = substr(sha1(phpbb::$user->data['user_form_salt'] . $link_name), 0, 8);
 		}
 
-		return $user->data["hash_$link_name"];
+		return phpbb::$user->data["hash_$link_name"];
 	}
-*/
+
 
 	/**
 	* checks a link hash - for GET requests
@@ -298,12 +296,12 @@ function phpbb_chmod($filename, $perms = phpbb::CHMOD_READ)
 	* @param string $link_name The name of the link
 	* @return boolean true if all is fine
 	*/
-/*
+
 	function check_link_hash($token, $link_name)
 	{
 		return $token === generate_link_hash($link_name);
 	}
-*/
+
 // functions used for building option fields
 
 /**
@@ -311,20 +309,18 @@ function phpbb_chmod($filename, $perms = phpbb::CHMOD_READ)
 */
 function language_select($default = '')
 {
-	global $db;
-
 	$sql = 'SELECT lang_iso, lang_local_name
 		FROM ' . LANG_TABLE . '
 		ORDER BY lang_english_name';
-	$result = $db->sql_query($sql);
+	$result = phpbb::$db->sql_query($sql);
 
 	$lang_options = '';
-	while ($row = $db->sql_fetchrow($result))
+	while ($row = phpbb::$db->sql_fetchrow($result))
 	{
 		$selected = ($row['lang_iso'] == $default) ? ' selected="selected"' : '';
 		$lang_options .= '<option value="' . $row['lang_iso'] . '"' . $selected . '>' . $row['lang_local_name'] . '</option>';
 	}
-	$db->sql_freeresult($result);
+	phpbb::$db->sql_freeresult($result);
 
 	return $lang_options;
 }
@@ -334,22 +330,20 @@ function language_select($default = '')
 */
 function style_select($default = '', $all = false)
 {
-	global $db;
-
 	$sql_where = (!$all) ? 'WHERE style_active = 1 ' : '';
 	$sql = 'SELECT style_id, style_name
 		FROM ' . STYLES_TABLE . "
 		$sql_where
 		ORDER BY style_name";
-	$result = $db->sql_query($sql);
+	$result = phpbb::$db->sql_query($sql);
 
 	$style_options = '';
-	while ($row = $db->sql_fetchrow($result))
+	while ($row = phpbb::$db->sql_fetchrow($result))
 	{
 		$selected = ($row['style_id'] == $default) ? ' selected="selected"' : '';
 		$style_options .= '<option value="' . $row['style_id'] . '"' . $selected . '>' . $row['style_name'] . '</option>';
 	}
-	$db->sql_freeresult($result);
+	phpbb::$db->sql_freeresult($result);
 
 	return $style_options;
 }
@@ -359,10 +353,8 @@ function style_select($default = '', $all = false)
 */
 function tz_select($default = '', $truncate = false)
 {
-	global $user;
-
 	$tz_select = '';
-	foreach ($user->lang['tz_zones'] as $offset => $zone)
+	foreach (phpbb::$user->lang['tz_zones'] as $offset => $zone)
 	{
 		if ($truncate)
 		{
@@ -393,20 +385,18 @@ function tz_select($default = '', $truncate = false)
 */
 function markread($mode, $forum_id = false, $topic_id = false, $post_time = 0, $user_id = 0)
 {
-	global $db, $user;
-
 	if ($mode == 'all')
 	{
 		if ($forum_id === false || !sizeof($forum_id))
 		{
-			if (phpbb::$config['load_db_lastread'] && $user->data['is_registered'])
+			if (phpbb::$config['load_db_lastread'] && phpbb::$user->data['is_registered'])
 			{
 				// Mark all forums read (index page)
-				$db->sql_query('DELETE FROM ' . TOPICS_TRACK_TABLE . " WHERE user_id = {$user->data['user_id']}");
-				$db->sql_query('DELETE FROM ' . FORUMS_TRACK_TABLE . " WHERE user_id = {$user->data['user_id']}");
-				$db->sql_query('UPDATE ' . USERS_TABLE . ' SET user_lastmark = ' . time() . " WHERE user_id = {$user->data['user_id']}");
+				phpbb::$db->sql_query('DELETE FROM ' . TOPICS_TRACK_TABLE . ' WHERE user_id = ' . phpbb::$user->data['user_id']);
+				phpbb::$db->sql_query('DELETE FROM ' . FORUMS_TRACK_TABLE . ' WHERE user_id = ' . phpbb::$user->data['user_id']);
+				phpbb::$db->sql_query('UPDATE ' . USERS_TABLE . ' SET user_lastmark = ' . time() . ' WHERE user_id = ' . phpbb::$user->data['user_id']);
 			}
-			else if (phpbb::$config['load_anon_lastread'] || $user->data['is_registered'])
+			else if (phpbb::$config['load_anon_lastread'] || phpbb::$user->data['is_registered'])
 			{
 				$tracking_topics = phpbb_request::variable(phpbb::$config['cookie_name'] . '_track', '', false, phpbb_request::COOKIE);
 				$tracking_topics = ($tracking_topics) ? tracking_unserialize($tracking_topics) : array();
@@ -416,14 +406,14 @@ function markread($mode, $forum_id = false, $topic_id = false, $post_time = 0, $
 				unset($tracking_topics['f']);
 				$tracking_topics['l'] = base_convert(time() - phpbb::$config['board_startdate'], 10, 36);
 
-				$user->set_cookie('track', tracking_serialize($tracking_topics), time() + 31536000);
+				phpbb::$user->set_cookie('track', tracking_serialize($tracking_topics), time() + 31536000);
 				phpbb_request::overwrite(phpbb::$config['cookie_name'] . '_track', tracking_serialize($tracking_topics), phpbb_request::COOKIE);
 
 				unset($tracking_topics);
 
-				if ($user->data['is_registered'])
+				if (phpbb::$user->data['is_registered'])
 				{
-					$db->sql_query('UPDATE ' . USERS_TABLE . ' SET user_lastmark = ' . time() . " WHERE user_id = {$user->data['user_id']}");
+					phpbb::$db->sql_query('UPDATE ' . USERS_TABLE . ' SET user_lastmark = ' . time() . ' WHERE user_id = ' . phpbb::$user->data['user_id']);
 				}
 			}
 		}
@@ -441,33 +431,33 @@ function markread($mode, $forum_id = false, $topic_id = false, $post_time = 0, $
 		// Add 0 to forums array to mark global announcements correctly
 		$forum_id[] = 0;
 
-		if (phpbb::$config['load_db_lastread'] && $user->data['is_registered'])
+		if (phpbb::$config['load_db_lastread'] && phpbb::$user->data['is_registered'])
 		{
-			$sql = 'DELETE FROM ' . TOPICS_TRACK_TABLE . "
-				WHERE user_id = {$user->data['user_id']}
-					AND " . $db->sql_in_set('forum_id', $forum_id);
-			$db->sql_query($sql);
+			$sql = 'DELETE FROM ' . TOPICS_TRACK_TABLE . '
+				WHERE user_id = ' . phpbb::$user->data['user_id'] . '
+					AND ' . phpbb::$db->sql_in_set('forum_id', $forum_id);
+			phpbb::$db->sql_query($sql);
 
 			$sql = 'SELECT forum_id
-				FROM ' . FORUMS_TRACK_TABLE . "
-				WHERE user_id = {$user->data['user_id']}
-					AND " . $db->sql_in_set('forum_id', $forum_id);
-			$result = $db->sql_query($sql);
+				FROM ' . FORUMS_TRACK_TABLE . '
+				WHERE user_id = ' . phpbb::$user->data['user_id'] . '
+					AND ' . phpbb::$db->sql_in_set('forum_id', $forum_id);
+			$result = phpbb::$db->sql_query($sql);
 
 			$sql_update = array();
-			while ($row = $db->sql_fetchrow($result))
+			while ($row = phpbb::$db->sql_fetchrow($result))
 			{
 				$sql_update[] = $row['forum_id'];
 			}
-			$db->sql_freeresult($result);
+			phpbb::$db->sql_freeresult($result);
 
 			if (sizeof($sql_update))
 			{
 				$sql = 'UPDATE ' . FORUMS_TRACK_TABLE . '
-					SET mark_time = ' . time() . "
-					WHERE user_id = {$user->data['user_id']}
-						AND " . $db->sql_in_set('forum_id', $sql_update);
-				$db->sql_query($sql);
+					SET mark_time = ' . time() . '
+					WHERE user_id = ' . phpbb::$user->data['user_id'] . '
+						AND ' . phpbb::$db->sql_in_set('forum_id', $sql_update);
+				phpbb::$db->sql_query($sql);
 			}
 
 			if ($sql_insert = array_diff($forum_id, $sql_update))
@@ -476,16 +466,16 @@ function markread($mode, $forum_id = false, $topic_id = false, $post_time = 0, $
 				foreach ($sql_insert as $f_id)
 				{
 					$sql_ary[] = array(
-						'user_id'	=> (int) $user->data['user_id'],
+						'user_id'	=> (int) phpbb::$user->data['user_id'],
 						'forum_id'	=> (int) $f_id,
 						'mark_time'	=> time()
 					);
 				}
 
-				$db->sql_multi_insert(FORUMS_TRACK_TABLE, $sql_ary);
+				phpbb::$db->sql_multi_insert(FORUMS_TRACK_TABLE, $sql_ary);
 			}
 		}
-		else if (phpbb::$config['load_anon_lastread'] || $user->data['is_registered'])
+		else if (phpbb::$config['load_anon_lastread'] || phpbb::$user->data['is_registered'])
 		{
 			$tracking = phpbb_request::variable(phpbb::$config['cookie_name'] . '_track', '', false, phpbb_request::COOKIE);
 			$tracking = ($tracking) ? tracking_unserialize($tracking) : array();
@@ -517,7 +507,7 @@ function markread($mode, $forum_id = false, $topic_id = false, $post_time = 0, $
 				unset($tracking['tf']);
 			}
 
-			$user->set_cookie('track', tracking_serialize($tracking), time() + 31536000);
+			phpbb::$user->set_cookie('track', tracking_serialize($tracking), time() + 31536000);
 			phpbb_request::overwrite(phpbb::$config['cookie_name'] . '_track', tracking_serialize($tracking), phpbb_request::COOKIE);
 
 			unset($tracking);
@@ -532,32 +522,32 @@ function markread($mode, $forum_id = false, $topic_id = false, $post_time = 0, $
 			return;
 		}
 
-		if (phpbb::$config['load_db_lastread'] && $user->data['is_registered'])
+		if (phpbb::$config['load_db_lastread'] && phpbb::$user->data['is_registered'])
 		{
 			$sql = 'UPDATE ' . TOPICS_TRACK_TABLE . '
-				SET mark_time = ' . (($post_time) ? $post_time : time()) . "
-				WHERE user_id = {$user->data['user_id']}
-					AND topic_id = $topic_id";
-			$db->sql_query($sql);
+				SET mark_time = ' . (($post_time) ? $post_time : time()) . '
+				WHERE user_id = ' . phpbb::$user->data['user_id'] . '
+					AND topic_id = ' . $topic_id;
+			phpbb::$db->sql_query($sql);
 
 			// insert row
-			if (!$db->sql_affectedrows())
+			if (!phpbb::$db->sql_affectedrows())
 			{
-				$db->sql_return_on_error(true);
+				phpbb::$db->sql_return_on_error(true);
 
 				$sql_ary = array(
-					'user_id'		=> (int) $user->data['user_id'],
+					'user_id'		=> (int) phpbb::$user->data['user_id'],
 					'topic_id'		=> (int) $topic_id,
 					'forum_id'		=> (int) $forum_id,
 					'mark_time'		=> ($post_time) ? (int) $post_time : time(),
 				);
 
-				$db->sql_query('INSERT INTO ' . TOPICS_TRACK_TABLE . ' ' . $db->sql_build_array('INSERT', $sql_ary));
+				phpbb::$db->sql_query('INSERT INTO ' . TOPICS_TRACK_TABLE . ' ' . phpbb::$db->sql_build_array('INSERT', $sql_ary));
 
-				$db->sql_return_on_error(false);
+				phpbb::$db->sql_return_on_error(false);
 			}
 		}
-		else if (phpbb::$config['load_anon_lastread'] || $user->data['is_registered'])
+		else if (phpbb::$config['load_anon_lastread'] || phpbb::$user->data['is_registered'])
 		{
 			$tracking = phpbb_request::variable(phpbb::$config['cookie_name'] . '_track', '', false, phpbb_request::COOKIE);
 			$tracking = ($tracking) ? tracking_unserialize($tracking) : array();
@@ -602,10 +592,10 @@ function markread($mode, $forum_id = false, $topic_id = false, $post_time = 0, $
 					}
 				}
 
-				if ($user->data['is_registered'])
+				if (phpbb::$user->data['is_registered'])
 				{
-					$user->data['user_lastmark'] = intval(base_convert(max($time_keys) + phpbb::$config['board_startdate'], 36, 10));
-					$db->sql_query('UPDATE ' . USERS_TABLE . ' SET user_lastmark = ' . $user->data['user_lastmark'] . " WHERE user_id = {$user->data['user_id']}");
+					phpbb::$user->data['user_lastmark'] = intval(base_convert(max($time_keys) + phpbb::$config['board_startdate'], 36, 10));
+					phpbb::$db->sql_query('UPDATE ' . USERS_TABLE . ' SET user_lastmark = ' . phpbb::$user->data['user_lastmark'] . ' WHERE user_id = ' . phpbb::$user->data['user_id']);
 				}
 				else
 				{
@@ -613,7 +603,7 @@ function markread($mode, $forum_id = false, $topic_id = false, $post_time = 0, $
 				}
 			}
 
-			$user->set_cookie('track', tracking_serialize($tracking), time() + 31536000);
+			phpbb::$user->set_cookie('track', tracking_serialize($tracking), time() + 31536000);
 			phpbb_request::overwrite(phpbb::$config['cookie_name'] . '_track', tracking_serialize($tracking));
 		}
 
@@ -626,11 +616,11 @@ function markread($mode, $forum_id = false, $topic_id = false, $post_time = 0, $
 			return;
 		}
 
-		$use_user_id = (!$user_id) ? $user->data['user_id'] : $user_id;
+		$use_user_id = (!$user_id) ? phpbb::$user->data['user_id'] : $user_id;
 
 		if (phpbb::$config['load_db_track'] && $use_user_id != ANONYMOUS)
 		{
-			$db->sql_return_on_error(true);
+			phpbb::$db->sql_return_on_error(true);
 
 			$sql_ary = array(
 				'user_id'		=> (int) $use_user_id,
@@ -638,9 +628,9 @@ function markread($mode, $forum_id = false, $topic_id = false, $post_time = 0, $
 				'topic_posted'	=> 1
 			);
 
-			$db->sql_query('INSERT INTO ' . TOPICS_POSTED_TABLE . ' ' . $db->sql_build_array('INSERT', $sql_ary));
+			phpbb::$db->sql_query('INSERT INTO ' . TOPICS_POSTED_TABLE . ' ' . phpbb::$db->sql_build_array('INSERT', $sql_ary));
 
-			$db->sql_return_on_error(false);
+			phpbb::$db->sql_return_on_error(false);
 		}
 
 		return;
@@ -652,8 +642,6 @@ function markread($mode, $forum_id = false, $topic_id = false, $post_time = 0, $
 */
 function get_topic_tracking($forum_id, $topic_ids, &$rowset, $forum_mark_time, $global_announce_list = false)
 {
-	global $user;
-
 	$last_read = array();
 
 	if (!is_array($topic_ids))
@@ -680,15 +668,13 @@ function get_topic_tracking($forum_id, $topic_ids, &$rowset, $forum_mark_time, $
 		{
 			if (!isset($forum_mark_time[0]))
 			{
-				global $db;
-
 				$sql = 'SELECT mark_time
-					FROM ' . FORUMS_TRACK_TABLE . "
-					WHERE user_id = {$user->data['user_id']}
-						AND forum_id = 0";
-				$result = $db->sql_query($sql);
-				$row = $db->sql_fetchrow($result);
-				$db->sql_freeresult($result);
+					FROM ' . FORUMS_TRACK_TABLE . '
+					WHERE user_id = ' . phpbb::$user->data['user_id'] . '
+						AND forum_id = 0';
+				$result = phpbb::$db->sql_query($sql);
+				$row = phpbb::$db->sql_fetchrow($result);
+				phpbb::$db->sql_freeresult($result);
 
 				if ($row)
 				{
@@ -709,7 +695,7 @@ function get_topic_tracking($forum_id, $topic_ids, &$rowset, $forum_mark_time, $
 			$mark_time[$forum_id] = $forum_mark_time[$forum_id];
 		}
 
-		$user_lastmark = (isset($mark_time[$forum_id])) ? $mark_time[$forum_id] : $user->data['user_lastmark'];
+		$user_lastmark = (isset($mark_time[$forum_id])) ? $mark_time[$forum_id] : phpbb::$user->data['user_lastmark'];
 
 		foreach ($topic_ids as $topic_id)
 		{
@@ -732,8 +718,6 @@ function get_topic_tracking($forum_id, $topic_ids, &$rowset, $forum_mark_time, $
 */
 function get_complete_topic_tracking($forum_id, $topic_ids, $global_announce_list = false)
 {
-	global $user;
-
 	$last_read = array();
 
 	if (!is_array($topic_ids))
@@ -741,41 +725,39 @@ function get_complete_topic_tracking($forum_id, $topic_ids, $global_announce_lis
 		$topic_ids = array($topic_ids);
 	}
 
-	if (phpbb::$config['load_db_lastread'] && $user->data['is_registered'])
+	if (phpbb::$config['load_db_lastread'] && phpbb::$user->data['is_registered'])
 	{
-		global $db;
-
 		$sql = 'SELECT topic_id, mark_time
-			FROM ' . TOPICS_TRACK_TABLE . "
-			WHERE user_id = {$user->data['user_id']}
-				AND " . $db->sql_in_set('topic_id', $topic_ids);
-		$result = $db->sql_query($sql);
+			FROM ' . TOPICS_TRACK_TABLE . '
+			WHERE user_id = ' . phpbb::$user->data['user_id'] . '
+				AND ' . phpbb::$db->sql_in_set('topic_id', $topic_ids);
+		$result = phpbb::$db->sql_query($sql);
 
-		while ($row = $db->sql_fetchrow($result))
+		while ($row = phpbb::$db->sql_fetchrow($result))
 		{
 			$last_read[$row['topic_id']] = $row['mark_time'];
 		}
-		$db->sql_freeresult($result);
+		phpbb::$db->sql_freeresult($result);
 
 		$topic_ids = array_diff($topic_ids, array_keys($last_read));
 
 		if (sizeof($topic_ids))
 		{
 			$sql = 'SELECT forum_id, mark_time
-				FROM ' . FORUMS_TRACK_TABLE . "
-				WHERE user_id = {$user->data['user_id']}
-					AND forum_id " .
+				FROM ' . FORUMS_TRACK_TABLE . '
+				WHERE user_id = ' . phpbb::$user->data['user_id'] . '
+					AND forum_id ' .
 					(($global_announce_list && sizeof($global_announce_list)) ? "IN (0, $forum_id)" : "= $forum_id");
-			$result = $db->sql_query($sql);
+			$result = phpbb::$db->sql_query($sql);
 
 			$mark_time = array();
-			while ($row = $db->sql_fetchrow($result))
+			while ($row = phpbb::$db->sql_fetchrow($result))
 			{
 				$mark_time[$row['forum_id']] = $row['mark_time'];
 			}
-			$db->sql_freeresult($result);
+			phpbb::$db->sql_freeresult($result);
 
-			$user_lastmark = (isset($mark_time[$forum_id])) ? $mark_time[$forum_id] : $user->data['user_lastmark'];
+			$user_lastmark = (isset($mark_time[$forum_id])) ? $mark_time[$forum_id] : phpbb::$user->data['user_lastmark'];
 
 			foreach ($topic_ids as $topic_id)
 			{
@@ -790,7 +772,7 @@ function get_complete_topic_tracking($forum_id, $topic_ids, $global_announce_lis
 			}
 		}
 	}
-	else if (phpbb::$config['load_anon_lastread'] || $user->data['is_registered'])
+	else if (phpbb::$config['load_anon_lastread'] || phpbb::$user->data['is_registered'])
 	{
 		global $tracking_topics;
 
@@ -800,13 +782,13 @@ function get_complete_topic_tracking($forum_id, $topic_ids, $global_announce_lis
 			$tracking_topics = ($tracking_topics) ? tracking_unserialize($tracking_topics) : array();
 		}
 
-		if (!$user->data['is_registered'])
+		if (!phpbb::$user->data['is_registered'])
 		{
 			$user_lastmark = (isset($tracking_topics['l'])) ? base_convert($tracking_topics['l'], 36, 10) + phpbb::$config['board_startdate'] : 0;
 		}
 		else
 		{
-			$user_lastmark = $user->data['user_lastmark'];
+			$user_lastmark = phpbb::$user->data['user_lastmark'];
 		}
 
 		foreach ($topic_ids as $topic_id)
@@ -868,32 +850,32 @@ function get_complete_topic_tracking($forum_id, $topic_ids, $global_announce_lis
 */
 function update_forum_tracking_info($forum_id, $forum_last_post_time, $f_mark_time = false, $mark_time_forum = false)
 {
-	global $db, $tracking_topics, $user;
+	global $tracking_topics;
 
 	// Determine the users last forum mark time if not given.
 	if ($mark_time_forum === false)
 	{
-		if (phpbb::$config['load_db_lastread'] && $user->data['is_registered'])
+		if (phpbb::$config['load_db_lastread'] && phpbb::$user->data['is_registered'])
 		{
-			$mark_time_forum = (!empty($f_mark_time)) ? $f_mark_time : $user->data['user_lastmark'];
+			$mark_time_forum = (!empty($f_mark_time)) ? $f_mark_time : phpbb::$user->data['user_lastmark'];
 		}
-		else if (phpbb::$config['load_anon_lastread'] || $user->data['is_registered'])
+		else if (phpbb::$config['load_anon_lastread'] || phpbb::$user->data['is_registered'])
 		{
 			$tracking_topics = phpbb_request::variable(phpbb::$config['cookie_name'] . '_track', '', false, phpbb_request::COOKIE);
 			$tracking_topics = ($tracking_topics) ? tracking_unserialize($tracking_topics) : array();
 
-			if (!$user->data['is_registered'])
+			if (!phpbb::$user->data['is_registered'])
 			{
-				$user->data['user_lastmark'] = (isset($tracking_topics['l'])) ? (int) (base_convert($tracking_topics['l'], 36, 10) + phpbb::$config['board_startdate']) : 0;
+				phpbb::$user->data['user_lastmark'] = (isset($tracking_topics['l'])) ? (int) (base_convert($tracking_topics['l'], 36, 10) + phpbb::$config['board_startdate']) : 0;
 			}
 
-			$mark_time_forum = (isset($tracking_topics['f'][$forum_id])) ? (int) (base_convert($tracking_topics['f'][$forum_id], 36, 10) + phpbb::$config['board_startdate']) : $user->data['user_lastmark'];
+			$mark_time_forum = (isset($tracking_topics['f'][$forum_id])) ? (int) (base_convert($tracking_topics['f'][$forum_id], 36, 10) + phpbb::$config['board_startdate']) : phpbb::$user->data['user_lastmark'];
 		}
 	}
 
 	// Check the forum for any left unread topics.
 	// If there are none, we mark the forum as read.
-	if (phpbb::$config['load_db_lastread'] && $user->data['is_registered'])
+	if (phpbb::$config['load_db_lastread'] && phpbb::$user->data['is_registered'])
 	{
 		if ($mark_time_forum >= $forum_last_post_time)
 		{
@@ -903,18 +885,18 @@ function update_forum_tracking_info($forum_id, $forum_last_post_time, $f_mark_ti
 		else
 		{
 			$sql = 'SELECT t.forum_id FROM ' . TOPICS_TABLE . ' t
-				LEFT JOIN ' . TOPICS_TRACK_TABLE . ' tt ON (tt.topic_id = t.topic_id AND tt.user_id = ' . $user->data['user_id'] . ')
+				LEFT JOIN ' . TOPICS_TRACK_TABLE . ' tt ON (tt.topic_id = t.topic_id AND tt.user_id = ' . phpbb::$user->data['user_id'] . ')
 				WHERE t.forum_id = ' . $forum_id . '
 					AND t.topic_last_post_time > ' . $mark_time_forum . '
 					AND t.topic_moved_id = 0
 					AND (tt.topic_id IS NULL OR tt.mark_time < t.topic_last_post_time)
 				GROUP BY t.forum_id';
-			$result = $db->sql_query_limit($sql, 1);
-			$row = $db->sql_fetchrow($result);
-			$db->sql_freeresult($result);
+			$result = phpbb::$db->sql_query_limit($sql, 1);
+			$row = phpbb::$db->sql_fetchrow($result);
+			phpbb::$db->sql_freeresult($result);
 		}
 	}
-	else if (phpbb::$config['load_anon_lastread'] || $user->data['is_registered'])
+	else if (phpbb::$config['load_anon_lastread'] || phpbb::$user->data['is_registered'])
 	{
 		// Get information from cookie
 		$row = false;
@@ -931,12 +913,12 @@ function update_forum_tracking_info($forum_id, $forum_last_post_time, $f_mark_ti
 				WHERE forum_id = ' . $forum_id . '
 					AND topic_last_post_time > ' . $mark_time_forum . '
 					AND topic_moved_id = 0';
-			$result = $db->sql_query($sql);
+			$result = phpbb::$db->sql_query($sql);
 
 			$check_forum = $tracking_topics['tf'][$forum_id];
 			$unread = false;
 
-			while ($row = $db->sql_fetchrow($result))
+			while ($row = phpbb::$db->sql_fetchrow($result))
 			{
 				if (!isset($check_forum[base_convert($row['topic_id'], 10, 36)]))
 				{
@@ -944,7 +926,7 @@ function update_forum_tracking_info($forum_id, $forum_last_post_time, $f_mark_ti
 					break;
 				}
 			}
-			$db->sql_freeresult($result);
+			phpbb::$db->sql_freeresult($result);
 
 			$row = $unread;
 		}
@@ -1092,12 +1074,12 @@ function tracking_unserialize($string, $max_depth = 3)
 */
 function generate_pagination($base_url, $num_items, $per_page, $start_item, $add_prevnext_text = false, $tpl_prefix = '')
 {
-	global $template, $user;
+	global $template;
 
 	// Make sure $per_page is a valid value
 	$per_page = ($per_page <= 0) ? 1 : $per_page;
 
-	$seperator = '<span class="page-sep">' . $user->lang['COMMA_SEPARATOR'] . '</span>';
+	$seperator = '<span class="page-sep">' . phpbb::$user->lang['COMMA_SEPARATOR'] . '</span>';
 	$total_pages = ceil($num_items / $per_page);
 
 	if ($total_pages == 1 || !$num_items)
@@ -1148,12 +1130,12 @@ function generate_pagination($base_url, $num_items, $per_page, $start_item, $add
 	{
 		if ($on_page != 1)
 		{
-			$page_string = '<a href="' . $base_url . "{$url_delim}start=" . (($on_page - 2) * $per_page) . '">' . $user->lang['PREVIOUS'] . '</a>&nbsp;&nbsp;' . $page_string;
+			$page_string = '<a href="' . $base_url . "{$url_delim}start=" . (($on_page - 2) * $per_page) . '">' . phpbb::$user->lang['PREVIOUS'] . '</a>&nbsp;&nbsp;' . $page_string;
 		}
 
 		if ($on_page != $total_pages)
 		{
-			$page_string .= '&nbsp;&nbsp;<a href="' . $base_url . "{$url_delim}start=" . ($on_page * $per_page) . '">' . $user->lang['NEXT'] . '</a>';
+			$page_string .= '&nbsp;&nbsp;<a href="' . $base_url . "{$url_delim}start=" . ($on_page * $per_page) . '">' . phpbb::$user->lang['NEXT'] . '</a>';
 		}
 	}
 
@@ -1175,7 +1157,7 @@ function generate_pagination($base_url, $num_items, $per_page, $start_item, $add
 */
 function on_page($num_items, $per_page, $start)
 {
-	global $template, $user;
+	global $template;
 
 	// Make sure $per_page is a valid value
 	$per_page = ($per_page <= 0) ? 1 : $per_page;
@@ -1186,7 +1168,7 @@ function on_page($num_items, $per_page, $start)
 		'ON_PAGE'		=> $on_page)
 	);
 
-	return sprintf($user->lang['PAGE_OF'], $on_page, max(ceil($num_items / $per_page), 1));
+	return phpbb::$user->lang('PAGE_OF', $on_page, max(ceil($num_items / $per_page), 1));
 }
 
 
@@ -1200,11 +1182,11 @@ function on_page($num_items, $per_page, $start)
 */
 function add_form_key($form_name)
 {
-	global $template, $user;
+	global $template;
 
 	$now = time();
-	$token_sid = ($user->data['user_id'] == ANONYMOUS && !empty(phpbb::$config['form_token_sid_guests'])) ? $user->session_id : '';
-	$token = sha1($now . $user->data['user_form_salt'] . $form_name . $token_sid);
+	$token_sid = (phpbb::$user->data['user_id'] == ANONYMOUS && !empty(phpbb::$config['form_token_sid_guests'])) ? phpbb::$user->session_id : '';
+	$token = sha1($now . phpbb::$user->data['user_form_salt'] . $form_name . $token_sid);
 
 	$s_fields = build_hidden_fields(array(
 		'creation_time' => $now,
@@ -1225,8 +1207,6 @@ function add_form_key($form_name)
 */
 function check_form_key($form_name, $timespan = false, $return_page = '', $trigger = false)
 {
-	global $user;
-
 	if ($timespan === false)
 	{
 		// we enforce a minimum value of half a minute here.
@@ -1243,8 +1223,8 @@ function check_form_key($form_name, $timespan = false, $return_page = '', $trigg
 		// If creation_time and the time() now is zero we can assume it was not a human doing this (the check for if ($diff)...
 		if ($diff && ($diff <= $timespan || $timespan === -1))
 		{
-			$token_sid = ($user->data['user_id'] == ANONYMOUS && !empty(phpbb::$config['form_token_sid_guests'])) ? $user->session_id : '';
-			$key = sha1($creation_time . $user->data['user_form_salt'] . $form_name . $token_sid);
+			$token_sid = (phpbb::$user->data['user_id'] == ANONYMOUS && !empty(phpbb::$config['form_token_sid_guests'])) ? phpbb::$user->session_id : '';
+			$key = sha1($creation_time . phpbb::$user->data['user_form_salt'] . $form_name . $token_sid);
 
 			if ($key === $token)
 			{
@@ -1255,7 +1235,7 @@ function check_form_key($form_name, $timespan = false, $return_page = '', $trigg
 
 	if ($trigger)
 	{
-		trigger_error($user->lang['FORM_INVALID'] . $return_page);
+		trigger_error(phpbb::$user->lang['FORM_INVALID'] . $return_page);
 	}
 
 	return false;
@@ -1276,7 +1256,7 @@ function check_form_key($form_name, $timespan = false, $return_page = '', $trigg
 */
 function confirm_box($check, $title = '', $hidden = '', $html_body = 'confirm_body.html', $u_action = '')
 {
-	global $user, $template, $db;
+	global $template;
 
 	if (phpbb_request::is_set_post('cancel'))
 	{
@@ -1287,7 +1267,7 @@ function confirm_box($check, $title = '', $hidden = '', $html_body = 'confirm_bo
 	if (phpbb_request::is_set_post('confirm'))
 	{
 		// language frontier
-		if (request_var('confirm', '') === $user->lang['YES'])
+		if (request_var('confirm', '') === phpbb::$user->lang['YES'])
 		{
 			$confirm = true;
 		}
@@ -1299,15 +1279,15 @@ function confirm_box($check, $title = '', $hidden = '', $html_body = 'confirm_bo
 		$session_id = request_var('sess', '');
 		$confirm_key = request_var('confirm_key', '');
 
-		if ($user_id != $user->data['user_id'] || $session_id != $user->session_id || !$confirm_key || !$user->data['user_last_confirm_key'] || $confirm_key != $user->data['user_last_confirm_key'])
+		if ($user_id != phpbb::$user->data['user_id'] || $session_id != phpbb::$user->session_id || !$confirm_key || !phpbb::$user->data['user_last_confirm_key'] || $confirm_key != phpbb::$user->data['user_last_confirm_key'])
 		{
 			return false;
 		}
 
 		// Reset user_last_confirm_key
 		$sql = 'UPDATE ' . USERS_TABLE . " SET user_last_confirm_key = ''
-			WHERE user_id = " . $user->data['user_id'];
-		$db->sql_query($sql);
+			WHERE user_id = " . phpbb::$user->data['user_id'];
+		phpbb::$db->sql_query($sql);
 
 		return true;
 	}
@@ -1317,21 +1297,21 @@ function confirm_box($check, $title = '', $hidden = '', $html_body = 'confirm_bo
 	}
 
 	$s_hidden_fields = build_hidden_fields(array(
-		'user_id'	=> $user->data['user_id'],
-		'sess'		=> $user->session_id,
-		'sid'		=> $user->session_id)
-	);
+		'user_id'	=> phpbb::$user->data['user_id'],
+		'sess'		=> phpbb::$user->session_id,
+		'sid'		=> phpbb::$user->session_id,
+	));
 
 	// generate activation key
 	$confirm_key = gen_rand_string(10);
 
-	if (defined('IN_ADMIN') && isset($user->data['session_admin']) && $user->data['session_admin'])
+	if (defined('IN_ADMIN') && isset(phpbb::$user->data['session_admin']) && phpbb::$user->data['session_admin'])
 	{
-		adm_page_header((!isset($user->lang[$title])) ? $user->lang['CONFIRM'] : $user->lang[$title]);
+		adm_page_header((!isset(phpbb::$user->lang[$title])) ? phpbb::$user->lang['CONFIRM'] : phpbb::$user->lang[$title]);
 	}
 	else
 	{
-		page_header((!isset($user->lang[$title])) ? $user->lang['CONFIRM'] : $user->lang[$title]);
+		page_header((!isset(phpbb::$user->lang[$title])) ? phpbb::$user->lang['CONFIRM'] : phpbb::$user->lang[$title]);
 	}
 
 	$template->set_filenames(array(
@@ -1346,24 +1326,24 @@ function confirm_box($check, $title = '', $hidden = '', $html_body = 'confirm_bo
 	}
 
 	// re-add sid / transform & to &amp; for user->page (user->page is always using &)
-	$use_page = ($u_action) ? PHPBB_ROOT_PATH . $u_action : PHPBB_ROOT_PATH . str_replace('&', '&amp;', $user->page['page']);
+	$use_page = ($u_action) ? PHPBB_ROOT_PATH . $u_action : PHPBB_ROOT_PATH . str_replace('&', '&amp;', phpbb::$user->page['page']);
 	$u_action = reapply_sid($use_page);
 	$u_action .= ((strpos($u_action, '?') === false) ? '?' : '&amp;') . 'confirm_key=' . $confirm_key;
 
 	$template->assign_vars(array(
-		'MESSAGE_TITLE'		=> (!isset($user->lang[$title])) ? $user->lang['CONFIRM'] : $user->lang[$title],
-		'MESSAGE_TEXT'		=> (!isset($user->lang[$title . '_CONFIRM'])) ? $title : $user->lang[$title . '_CONFIRM'],
+		'MESSAGE_TITLE'		=> (!isset(phpbb::$user->lang[$title])) ? phpbb::$user->lang['CONFIRM'] : phpbb::$user->lang[$title],
+		'MESSAGE_TEXT'		=> (!isset(phpbb::$user->lang[$title . '_CONFIRM'])) ? $title : phpbb::$user->lang[$title . '_CONFIRM'],
 
-		'YES_VALUE'			=> $user->lang['YES'],
+		'YES_VALUE'			=> phpbb::$user->lang['YES'],
 		'S_CONFIRM_ACTION'	=> $u_action,
 		'S_HIDDEN_FIELDS'	=> $hidden . $s_hidden_fields)
 	);
 
-	$sql = 'UPDATE ' . USERS_TABLE . " SET user_last_confirm_key = '" . $db->sql_escape($confirm_key) . "'
-		WHERE user_id = " . $user->data['user_id'];
-	$db->sql_query($sql);
+	$sql = 'UPDATE ' . USERS_TABLE . " SET user_last_confirm_key = '" . phpbb::$db->sql_escape($confirm_key) . "'
+		WHERE user_id = " . phpbb::$user->data['user_id'];
+	phpbb::$db->sql_query($sql);
 
-	if (defined('IN_ADMIN') && isset($user->data['session_admin']) && $user->data['session_admin'])
+	if (defined('IN_ADMIN') && isset(phpbb::$user->data['session_admin']) && phpbb::$user->data['session_admin'])
 	{
 		adm_page_footer();
 	}
@@ -1378,16 +1358,16 @@ function confirm_box($check, $title = '', $hidden = '', $html_body = 'confirm_bo
 */
 function login_box($redirect = '', $l_explain = '', $l_success = '', $admin = false, $s_display = true)
 {
-	global $db, $user, $template, $auth;
+	global $template, $auth;
 
 	include(PHPBB_ROOT_PATH . 'includes/captcha/captcha_factory.' . PHP_EXT);
 
 	$err = '';
 
 	// Make sure user->setup() has been called
-	if (empty($user->lang))
+	if (empty(phpbb::$user->lang))
 	{
-		$user->setup();
+		phpbb::$user->setup();
 	}
 
 	if (defined('ADMIN_START'))
@@ -1402,7 +1382,7 @@ function login_box($redirect = '', $l_explain = '', $l_success = '', $admin = fa
 	{
 		// Not authd
 		// anonymous/inactive users are never able to go to the ACP even if they have the relevant permissions
-		if ($user->data['is_registered'])
+		if (phpbb::$user->data['is_registered'])
 		{
 			add_log('admin', 'LOG_ADMIN_AUTH_FAIL');
 		}
@@ -1418,7 +1398,7 @@ function login_box($redirect = '', $l_explain = '', $l_success = '', $admin = fa
 
 			if (strspn($credential, 'abcdef0123456789') !== strlen($credential) || strlen($credential) != 32)
 			{
-				if ($user->data['is_registered'])
+				if (phpbb::$user->data['is_registered'])
 				{
 					add_log('admin', 'LOG_ADMIN_AUTH_FAIL');
 				}
@@ -1436,10 +1416,10 @@ function login_box($redirect = '', $l_explain = '', $l_success = '', $admin = fa
 		$autologin	= phpbb_request::variable('autologin', false, false, phpbb_request::POST);
 		$viewonline = (phpbb_request::variable('viewonline', false, false, phpbb_request::POST)) ? 0 : 1;
 		$admin 		= ($admin) ? 1 : 0;
-		$viewonline = ($admin) ? $user->data['session_viewonline'] : $viewonline;
+		$viewonline = ($admin) ? phpbb::$user->data['session_viewonline'] : $viewonline;
 
 		// Check if the supplied username is equal to the one stored within the database if re-authenticating
-		if ($admin && utf8_clean_string($username) != utf8_clean_string($user->data['username']))
+		if ($admin && utf8_clean_string($username) != utf8_clean_string(phpbb::$user->data['username']))
 		{
 			// We log the attempt to use a different username...
 			add_log('admin', 'LOG_ADMIN_AUTH_FAIL');
@@ -1447,7 +1427,7 @@ function login_box($redirect = '', $l_explain = '', $l_success = '', $admin = fa
 		}
 
 		// If authentication is successful we redirect user to previous page
-		$result = $auth->login($username, $password, $autologin, $viewonline, $admin);
+		$result = phpbb::$user->login($username, $password, $autologin, $viewonline, $admin);
 
 		// If admin authentication and login, we will log if it was a success or not...
 		// We also break the operation on the first non-success login - it could be argued that the user already knows
@@ -1461,7 +1441,7 @@ function login_box($redirect = '', $l_explain = '', $l_success = '', $admin = fa
 			{
 				// Only log the failed attempt if a real user tried to.
 				// anonymous/inactive users are never able to go to the ACP even if they have the relevant permissions
-				if ($user->data['is_registered'])
+				if (phpbb::$user->data['is_registered'])
 				{
 					add_log('admin', 'LOG_ADMIN_AUTH_FAIL');
 				}
@@ -1472,11 +1452,11 @@ function login_box($redirect = '', $l_explain = '', $l_success = '', $admin = fa
 		if ($result['status'] == LOGIN_SUCCESS)
 		{
 			$redirect = request_var('redirect', PHPBB_ROOT_PATH . 'index.' . PHP_EXT);
-			$message = ($l_success) ? $l_success : $user->lang['LOGIN_REDIRECT'];
-			$l_redirect = ($admin) ? $user->lang['PROCEED_TO_ACP'] : (($redirect === PHPBB_ROOT_PATH . 'index.' . PHP_EXT || $redirect === "index." . PHP_EXT) ? $user->lang['RETURN_INDEX'] : $user->lang['RETURN_PAGE']);
+			$message = ($l_success) ? $l_success : phpbb::$user->lang['LOGIN_REDIRECT'];
+			$l_redirect = ($admin) ? phpbb::$user->lang['PROCEED_TO_ACP'] : (($redirect === PHPBB_ROOT_PATH . 'index.' . PHP_EXT || $redirect === "index." . PHP_EXT) ? phpbb::$user->lang['RETURN_INDEX'] : phpbb::$user->lang['RETURN_PAGE']);
 
 			// append/replace SID (may change during the session for AOL users)
-			$redirect = reapply_sid($redirect);
+			$redirect = phpbb::$url->reapply_sid($redirect);
 
 			// Special case... the user is effectively banned, but we allow founders to login
 			if (defined('IN_CHECK_BAN') && $result['user_row']['user_type'] != phpbb::USER_FOUNDER)
@@ -1484,7 +1464,7 @@ function login_box($redirect = '', $l_explain = '', $l_success = '', $admin = fa
 				return;
 			}
 
-			$redirect = meta_refresh(3, $redirect);
+			$redirect = phpbb::$url->meta_refresh(3, $redirect);
 			trigger_error($message . '<br /><br />' . sprintf($l_redirect, '<a href="' . $redirect . '">', '</a>'));
 		}
 
@@ -1508,13 +1488,13 @@ function login_box($redirect = '', $l_explain = '', $l_success = '', $admin = fa
 					'CONFIRM'					=> $captcha->get_template(''),
 				));
 
-				$err = $user->lang[$result['error_msg']];
+				$err = phpbb::$user->lang[$result['error_msg']];
 
 			break;
 
 			case LOGIN_ERROR_PASSWORD_CONVERT:
 				$err = sprintf(
-					$user->lang[$result['error_msg']],
+					phpbb::$user->lang[$result['error_msg']],
 					(phpbb::$config['email_enable']) ? '<a href="' . append_sid('ucp', 'mode=sendpassword') . '">' : '',
 					(phpbb::$config['email_enable']) ? '</a>' : '',
 					(phpbb::$config['board_contact']) ? '<a href="mailto:' . utf8_htmlspecialchars(phpbb::$config['board_contact']) . '">' : '',
@@ -1524,12 +1504,12 @@ function login_box($redirect = '', $l_explain = '', $l_success = '', $admin = fa
 
 			// Username, password, etc...
 			default:
-				$err = $user->lang[$result['error_msg']];
+				$err = phpbb::$user->lang[$result['error_msg']];
 
 				// Assign admin contact to some error messages
 				if ($result['error_msg'] == 'LOGIN_ERROR_USERNAME' || $result['error_msg'] == 'LOGIN_ERROR_PASSWORD')
 				{
-					$err = (!phpbb::$config['board_contact']) ? sprintf($user->lang[$result['error_msg']], '', '') : sprintf($user->lang[$result['error_msg']], '<a href="mailto:' . utf8_htmlspecialchars(phpbb::$config['board_contact']) . '">', '</a>');
+					$err = (!phpbb::$config['board_contact']) ? sprintf(phpbb::$user->lang[$result['error_msg']], '', '') : sprintf(phpbb::$user->lang[$result['error_msg']], '<a href="mailto:' . utf8_htmlspecialchars(phpbb::$config['board_contact']) . '">', '</a>');
 				}
 
 			break;
@@ -1544,10 +1524,10 @@ function login_box($redirect = '', $l_explain = '', $l_success = '', $admin = fa
 
 		if (!$admin && !defined('ADMIN_START'))
 		{
-			$redirect .= ($user->page['page_dir']) ? $user->page['page_dir'] . '/' : '';
+			$redirect .= (phpbb::$user->page['page_dir']) ? phpbb::$user->page['page_dir'] . '/' : '';
 		}
 
-		$redirect .= $user->page['page_name'] . (($user->page['query_string']) ? '?' . utf8_htmlspecialchars($user->page['query_string']) : '');
+		$redirect .= phpbb::$user->page['page_name'] . ((phpbb::$user->page['query_string']) ? '?' . utf8_htmlspecialchars(phpbb::$user->page['query_string']) : '');
 	}
 
 	// Assign credential for username/password pair
@@ -1555,7 +1535,7 @@ function login_box($redirect = '', $l_explain = '', $l_success = '', $admin = fa
 
 	$s_hidden_fields = array(
 		'redirect'	=> $redirect,
-		'sid'		=> $user->session_id,
+		'sid'		=> phpbb::$user->session_id,
 	);
 
 	if ($admin)
@@ -1575,12 +1555,12 @@ function login_box($redirect = '', $l_explain = '', $l_success = '', $admin = fa
 		'U_PRIVACY'				=> append_sid('ucp', 'mode=privacy'),
 
 		'S_DISPLAY_FULL_LOGIN'	=> ($s_display) ? true : false,
-		'S_LOGIN_ACTION'		=> (!$admin && !defined('ADMIN_START'))  ? append_sid('ucp', 'mode=login') : append_sid(PHPBB_ADMIN_PATH . 'index.' . PHP_EXT, false, true, $user->session_id),
+		'S_LOGIN_ACTION'		=> (!$admin && !defined('ADMIN_START'))  ? append_sid('ucp', 'mode=login') : append_sid(PHPBB_ADMIN_PATH . 'index.' . PHP_EXT, false, true, phpbb::$user->session_id),
 		'S_HIDDEN_FIELDS' 		=> $s_hidden_fields,
 
 		'S_ADMIN_AUTH'			=> $admin,
 		'S_ACP_LOGIN'			=> defined('ADMIN_START'),
-		'USERNAME'				=> ($admin) ? $user->data['username'] : '',
+		'USERNAME'				=> ($admin) ? phpbb::$user->data['username'] : '',
 
 		'USERNAME_CREDENTIAL'	=> 'username',
 		'PASSWORD_CREDENTIAL'	=> ($admin) ? 'password_' . $credential : 'password',
@@ -1592,22 +1572,22 @@ function login_box($redirect = '', $l_explain = '', $l_success = '', $admin = fa
 			'body' => 'acp_login.html')
 		);
 		$template->assign_block_vars('t_block1', array(
-			'L_TITLE'		=> $user->lang['LOGIN'],
+			'L_TITLE'		=> phpbb::$user->lang['LOGIN'],
 			'S_SELECTED'	=> true,
 			'U_TITLE'		=> '',
 		));
-		adm_page_header($user->lang['LOGIN'], false);
+		adm_page_header(phpbb::$user->lang['LOGIN'], false);
 	}
 	else
 	{
 		$template->set_filenames(array(
 			'body' => 'login_body.html')
 		);
-		page_header($user->lang['LOGIN'], false);
+		page_header(phpbb::$user->lang['LOGIN'], false);
 	}
 
 	make_jumpbox(append_sid('viewforum'));
-	if (defined('ADMIN_START') && isset($user->data['session_admin']) && $user->data['session_admin'])
+	if (defined('ADMIN_START') && isset(phpbb::$user->data['session_admin']) && phpbb::$user->data['session_admin'])
 	{
 		adm_page_footer();
 	}
@@ -1623,18 +1603,18 @@ function login_box($redirect = '', $l_explain = '', $l_success = '', $admin = fa
 */
 function login_forum_box($forum_data)
 {
-	global $db, $user, $template;
+	global $template;
 
 	$password = request_var('password', '', true);
 
 	$sql = 'SELECT forum_id
 		FROM ' . FORUMS_ACCESS_TABLE . '
 		WHERE forum_id = ' . $forum_data['forum_id'] . '
-			AND user_id = ' . $user->data['user_id'] . "
-			AND session_id = '" . $db->sql_escape($user->session_id) . "'";
-	$result = $db->sql_query($sql);
-	$row = $db->sql_fetchrow($result);
-	$db->sql_freeresult($result);
+			AND user_id = ' . phpbb::$user->data['user_id'] . "
+			AND session_id = '" . phpbb::$db->sql_escape(phpbb::$user->session_id) . "'";
+	$result = phpbb::$db->sql_query($sql);
+	$row = phpbb::$db->sql_fetchrow($result);
+	phpbb::$db->sql_freeresult($result);
 
 	if ($row)
 	{
@@ -1648,41 +1628,41 @@ function login_forum_box($forum_data)
 			FROM ' . FORUMS_ACCESS_TABLE . ' f
 			LEFT JOIN ' . SESSIONS_TABLE . ' s ON (f.session_id = s.session_id)
 			WHERE s.session_id IS NULL';
-		$result = $db->sql_query($sql);
+		$result = phpbb::$db->sql_query($sql);
 
-		if ($row = $db->sql_fetchrow($result))
+		if ($row = phpbb::$db->sql_fetchrow($result))
 		{
 			$sql_in = array();
 			do
 			{
 				$sql_in[] = (string) $row['session_id'];
 			}
-			while ($row = $db->sql_fetchrow($result));
+			while ($row = phpbb::$db->sql_fetchrow($result));
 
 			// Remove expired sessions
 			$sql = 'DELETE FROM ' . FORUMS_ACCESS_TABLE . '
-				WHERE ' . $db->sql_in_set('session_id', $sql_in);
-			$db->sql_query($sql);
+				WHERE ' . phpbb::$db->sql_in_set('session_id', $sql_in);
+			phpbb::$db->sql_query($sql);
 		}
-		$db->sql_freeresult($result);
+		phpbb::$db->sql_freeresult($result);
 
 		if (phpbb_check_hash($password, $forum_data['forum_password']))
 		{
 			$sql_ary = array(
 				'forum_id'		=> (int) $forum_data['forum_id'],
-				'user_id'		=> (int) $user->data['user_id'],
-				'session_id'	=> (string) $user->session_id,
+				'user_id'		=> (int) phpbb::$user->data['user_id'],
+				'session_id'	=> (string) phpbb::$user->session_id,
 			);
 
-			$db->sql_query('INSERT INTO ' . FORUMS_ACCESS_TABLE . ' ' . $db->sql_build_array('INSERT', $sql_ary));
+			phpbb::$db->sql_query('INSERT INTO ' . FORUMS_ACCESS_TABLE . ' ' . phpbb::$db->sql_build_array('INSERT', $sql_ary));
 
 			return true;
 		}
 
-		$template->assign_var('LOGIN_ERROR', $user->lang['WRONG_PASSWORD']);
+		$template->assign_var('LOGIN_ERROR', phpbb::$user->lang['WRONG_PASSWORD']);
 	}
 
-	page_header($user->lang['LOGIN']);
+	page_header(phpbb::$user->lang['LOGIN']);
 
 	$template->assign_vars(array(
 		'S_HIDDEN_FIELDS'		=> build_hidden_fields(array('f' => $forum_data['forum_id'])))
@@ -1802,8 +1782,6 @@ function parse_cfg_file($filename, $lines = false)
 */
 function add_log()
 {
-	global $db, $user;
-
 	$args = func_get_args();
 
 	$mode			= array_shift($args);
@@ -1814,8 +1792,8 @@ function add_log()
 	$data			= (!sizeof($args)) ? '' : serialize($args);
 
 	$sql_ary = array(
-		'user_id'		=> (empty($user->data)) ? ANONYMOUS : $user->data['user_id'],
-		'log_ip'		=> $user->ip,
+		'user_id'		=> (empty(phpbb::$user->data)) ? ANONYMOUS : phpbb::$user->data['user_id'],
+		'log_ip'		=> phpbb::$user->ip,
 		'log_time'		=> time(),
 		'log_operation'	=> $action,
 		'log_data'		=> $data,
@@ -1850,9 +1828,9 @@ function add_log()
 			return false;
 	}
 
-	$db->sql_query('INSERT INTO ' . LOG_TABLE . ' ' . $db->sql_build_array('INSERT', $sql_ary));
+	phpbb::$db->sql_query('INSERT INTO ' . LOG_TABLE . ' ' . phpbb::$db->sql_build_array('INSERT', $sql_ary));
 
-	return $db->sql_nextid();
+	return phpbb::$db->sql_nextid();
 }
 
 /**
@@ -2217,25 +2195,25 @@ function msg_handler($errno, $msg_text, $errfile, $errline)
 
 			define('IN_ERROR_HANDLER', true);
 
-			if (empty($user->data))
+			if (empty(phpbb::$user->data))
 			{
-				$user->session_begin();
+				phpbb::$user->session_begin();
 			}
 
 			// We re-init the auth array to get correct results on login/logout
-			$auth->acl($user->data);
+			phpbb::$acl->init(phpbb::$user->data);
 
-			if (empty($user->lang))
+			if (empty(phpbb::$user->lang))
 			{
-				$user->setup();
+				phpbb::$user->setup();
 			}
 
-			$msg_text = (!empty($user->lang[$msg_text])) ? $user->lang[$msg_text] : $msg_text;
-			$msg_title = (!isset($msg_title)) ? $user->lang['INFORMATION'] : ((!empty($user->lang[$msg_title])) ? $user->lang[$msg_title] : $msg_title);
+			$msg_text = (!empty(phpbb::$user->lang[$msg_text])) ? phpbb::$user->lang[$msg_text] : $msg_text;
+			$msg_title = (!isset($msg_title)) ? phpbb::$user->lang['INFORMATION'] : ((!empty(phpbb::$user->lang[$msg_title])) ? phpbb::$user->lang[$msg_title] : $msg_title);
 
 			if (!defined('HEADER_INC'))
 			{
-				if (defined('ADMIN_START') || (defined('IN_ADMIN') && isset($user->data['session_admin']) && $user->data['session_admin']))
+				if (defined('ADMIN_START') || (defined('IN_ADMIN') && isset(phpbb::$user->data['session_admin']) && phpbb::$user->data['session_admin']))
 				{
 					adm_page_header($msg_title);
 				}
@@ -2245,11 +2223,11 @@ function msg_handler($errno, $msg_text, $errfile, $errline)
 				}
 			}
 
-			$template->set_filenames(array(
+			phpbb::$template->set_filenames(array(
 				'body' => 'message_body.html')
 			);
 
-			$template->assign_vars(array(
+			phpbb::$template->assign_vars(array(
 				'MESSAGE_TITLE'		=> $msg_title,
 				'MESSAGE_TEXT'		=> $msg_text,
 				'S_USER_WARNING'	=> ($errno == E_USER_WARNING) ? true : false,
@@ -2259,7 +2237,7 @@ function msg_handler($errno, $msg_text, $errfile, $errline)
 			// We do not want the cron script to be called on error messages
 			define('IN_CRON', true);
 
-			if (defined('ADMIN_START') || (defined('IN_ADMIN') && isset($user->data['session_admin']) && $user->data['session_admin']))
+			if (defined('ADMIN_START') || (defined('IN_ADMIN') && isset(phpbb::$user->data['session_admin']) && phpbb::$user->data['session_admin']))
 			{
 				adm_page_footer();
 			}
@@ -2335,7 +2313,7 @@ function page_header($page_title = '', $display_online_list = true)
 		// Get number of online guests
 		if (!phpbb::$config['load_online_guests'])
 		{
-			if (phpbb::$db->count_distinct)
+			if (phpbb::$db->features['count_distinct'])
 			{
 				$sql = 'SELECT COUNT(DISTINCT s.session_ip) as num_guests
 					FROM ' . SESSIONS_TABLE . ' s
@@ -2390,7 +2368,7 @@ function page_header($page_title = '', $display_online_list = true)
 
 					if (($row['session_viewonline']) || phpbb::$acl->acl_get('u_viewonline'))
 					{
-						$user_online_link = get_username_string(($row['user_type'] <> USER_IGNORE) ? 'full' : 'no_profile', $row['user_id'], $row['username'], $row['user_colour']);
+						$user_online_link = get_username_string(($row['user_type'] <> phpbb::USER_IGNORE) ? 'full' : 'no_profile', $row['user_id'], $row['username'], $row['user_colour']);
 						$online_userlist[] = $user_online_link;
 					}
 				}
@@ -2502,7 +2480,7 @@ function page_header($page_title = '', $display_online_list = true)
 		'SITENAME'						=> phpbb::$config['sitename'],
 		'SITE_DESCRIPTION'				=> phpbb::$config['site_desc'],
 		'PAGE_TITLE'					=> $page_title,
-		'SCRIPT_NAME'					=> str_replace('.' . PHP_EXT, '', phpbb::$user->system['page']['page_name']),
+		'SCRIPT_NAME'					=> str_replace('.' . PHP_EXT, '', phpbb::$user->page['page_name']),
 		'LAST_VISIT_DATE'				=> phpbb::$user->lang('YOU_LAST_VISIT', $s_last_visit),
 		'LAST_VISIT_YOU'				=> $s_last_visit,
 		'CURRENT_TIME'					=> phpbb::$user->lang('CURRENT_TIME', phpbb::$user->format_date(time(), false, true)),

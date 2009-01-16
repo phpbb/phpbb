@@ -133,7 +133,7 @@ class ucp_profile
 
 						$message = 'PROFILE_UPDATED';
 
-						if (phpbb::$config['email_enable'] && $data['email'] != $user->data['user_email'] && $user->data['user_type'] != phpbb::USER_FOUNDER && (phpbb::$config['require_activation'] == USER_ACTIVATION_SELF || phpbb::$config['require_activation'] == USER_ACTIVATION_ADMIN))
+						if (phpbb::$config['email_enable'] && $data['email'] != $user->data['user_email'] && !phpbb::$user->is_founder && (phpbb::$config['require_activation'] == USER_ACTIVATION_SELF || phpbb::$config['require_activation'] == USER_ACTIVATION_ADMIN))
 						{
 							$message = (phpbb::$config['require_activation'] == USER_ACTIVATION_SELF) ? 'ACCOUNT_EMAIL_CHANGED' : 'ACCOUNT_EMAIL_CHANGED_ADMIN';
 

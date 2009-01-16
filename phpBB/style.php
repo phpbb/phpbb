@@ -121,7 +121,7 @@ if ($recache)
 		'theme_data'	=> $theme['theme_data']
 	);
 
-	phpbb::$db->sql_handle_data('UPDATE', STYLES_THEME_TABLE, $sql_ary, 'theme_id = ' . $theme['theme_id']);
+	phpbb::$db->sql_query('UPDATE ' . STYLES_THEME_TABLE . ' SET ' . phpbb::$db->sql_build_array('UPDATE', $sql_ary) . ' WHERE theme_id = ' . $theme['theme_id']);
 	phpbb::$acm->destroy_sql(STYLES_THEME_TABLE);
 }
 

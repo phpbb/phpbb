@@ -19,29 +19,29 @@ if (!defined('PHPBB_ROOT_PATH')) define('PHPBB_ROOT_PATH', './../');
 if (!defined('PHP_EXT')) define('PHP_EXT', substr(strrchr(__FILE__, '.'), 1));
 if (!defined('PHPBB_ADMIN_PATH')) define('PHPBB_ADMIN_PATH', './');
 
-include(PHPBB_ROOT_PATH . 'common.' . PHP_EXT);
-require(PHPBB_ROOT_PATH . 'includes/functions_admin.' . PHP_EXT);
-require(PHPBB_ROOT_PATH . 'includes/functions_module.' . PHP_EXT);
+include PHPBB_ROOT_PATH . 'common.' . PHP_EXT;
+require PHPBB_ROOT_PATH . 'includes/functions_admin.' . PHP_EXT;
+require PHPBB_ROOT_PATH . 'includes/functions_module.' . PHP_EXT;
 
 // Start session management
-$user->session_begin();
-$auth->acl($user->data);
-$user->setup('acp/common');
+phpbb::$user->session_begin();
+phpbb::$acl->init(phpbb::$user->data);
+phpbb::$user->setup('acp/common');
 // End session management
 
 // Have they authenticated (again) as an admin for this session?
-if ($user->data['user_id'] != ANONYMOUS &&  (!isset($user->data['session_admin']) || !$user->data['session_admin']))
+if (phpbb::$user->data['user_id'] != ANONYMOUS &&  (!isset(phpbb::$user->data['session_admin']) || !phpbb::$user->data['session_admin']))
 {
-	login_box('', $user->lang['LOGIN_ADMIN_CONFIRM'], $user->lang['LOGIN_ADMIN_SUCCESS'], true, false);
+	login_box('', phpbb::$user->lang['LOGIN_ADMIN_CONFIRM'], phpbb::$user->lang['LOGIN_ADMIN_SUCCESS'], true, false);
 }
-else if ($user->data['user_id'] == ANONYMOUS)
+else if (phpbb::$user->data['user_id'] == ANONYMOUS)
 {
 	login_box('');
 }
 
 // Is user any type of admin? No, then stop here, each script needs to
 // check specific permissions but this is a catchall
-if (!$auth->acl_get('a_'))
+if (!phpbb::$acl->acl_get('a_'))
 {
 	trigger_error('NO_ADMIN');
 }
@@ -56,8 +56,8 @@ $module_id		= request_var('i', '');
 $mode			= request_var('mode', '');
 
 // Set custom template for admin area
-$template->set_custom_template(PHPBB_ADMIN_PATH . 'style', 'admin');
-$template->assign_var('T_TEMPLATE_PATH', PHPBB_ADMIN_PATH . 'style');
+phpbb::$template->set_custom_template(PHPBB_ADMIN_PATH . 'style', 'admin');
+phpbb::$template->assign_var('T_TEMPLATE_PATH', PHPBB_ADMIN_PATH . 'style');
 
 // Instantiate new module
 $module = new p_master();
@@ -70,7 +70,7 @@ $module->set_active($module_id, $mode);
 
 // Assign data to the template engine for the list of modules
 // We do this before loading the active module for correct menu display in trigger_error
-$module->assign_tpl_vars(append_sid(PHPBB_ADMIN_PATH . 'index.' . PHP_EXT));
+$module->assign_tpl_vars(phpbb::$url->append_sid(PHPBB_ADMIN_PATH . 'index.' . PHP_EXT));
 
 // Load and execute the relevant module
 $module->load_active();
@@ -78,7 +78,7 @@ $module->load_active();
 // Generate the page
 adm_page_header($module->get_page_title());
 
-$template->set_filenames(array(
+phpbb::$template->set_filenames(array(
 	'body' => $module->get_tpl_name(),
 ));
 
@@ -89,9 +89,6 @@ adm_page_footer();
 */
 function adm_page_header($page_title)
 {
-	global $db, $user, $template;
-	global $SID, $_SID;
-
 	if (defined('HEADER_INC'))
 	{
 		return;
@@ -108,22 +105,20 @@ function adm_page_header($page_title)
 		}
 	}
 
-	$template->assign_vars(array(
+	phpbb::$template->assign_vars(array(
 		'PAGE_TITLE'			=> $page_title,
-		'USERNAME'				=> ($user->data['user_id'] != ANONYMOUS) ? $user->data['username'] : '',
+		'USERNAME'				=> (phpbb::$user->data['user_id'] != ANONYMOUS) ? phpbb::$user->data['username'] : '',
 
-		'SID'					=> $SID,
-		'_SID'					=> $_SID,
-		'SESSION_ID'			=> $user->session_id,
+		'SESSION_ID'			=> phpbb::$user->session_id,
 		'ROOT_PATH'				=> PHPBB_ADMIN_PATH,
 
-		'U_LOGOUT'				=> append_sid('ucp', 'mode=logout'),
-		'U_ADM_LOGOUT'			=> append_sid(PHPBB_ADMIN_PATH . 'index.' . PHP_EXT, 'action=admlogout'),
-		'U_ADM_INDEX'			=> append_sid(PHPBB_ADMIN_PATH . 'index.' . PHP_EXT),
-		'U_INDEX'				=> append_sid('index'),
+		'U_LOGOUT'				=> phpbb::$url->append_sid('ucp', 'mode=logout'),
+		'U_ADM_LOGOUT'			=> phpbb::$url->append_sid(PHPBB_ADMIN_PATH . 'index.' . PHP_EXT, 'action=admlogout'),
+		'U_ADM_INDEX'			=> phpbb::$url->append_sid(PHPBB_ADMIN_PATH . 'index.' . PHP_EXT),
+		'U_INDEX'				=> phpbb::$url->append_sid('index'),
 
-		'S_USER_ADMIN'			=> $user->data['session_admin'],
-		'S_USER_LOGGED_IN'		=> ($user->data['user_id'] != ANONYMOUS && !$user->data['is_bot']),
+		'S_USER_ADMIN'			=> phpbb::$user->data['session_admin'],
+		'S_USER_LOGGED_IN'		=> (phpbb::$user->data['user_id'] != ANONYMOUS && !phpbb::$user->is_bot),
 
 		'T_IMAGES_PATH'			=> PHPBB_ROOT_PATH . 'images/',
 		'T_SMILIES_PATH'		=> PHPBB_ROOT_PATH . phpbb::$config['smilies_path'] . '/',
@@ -133,22 +128,22 @@ function adm_page_header($page_title)
 		'T_RANKS_PATH'			=> PHPBB_ROOT_PATH . phpbb::$config['ranks_path'] . '/',
 		'T_UPLOAD_PATH'			=> PHPBB_ROOT_PATH . phpbb::$config['upload_path'] . '/',
 
-		'ICON_MOVE_UP'				=> '<img src="' . PHPBB_ADMIN_PATH . 'images/icon_up.gif" alt="' . $user->lang['MOVE_UP'] . '" title="' . $user->lang['MOVE_UP'] . '" />',
-		'ICON_MOVE_UP_DISABLED'		=> '<img src="' . PHPBB_ADMIN_PATH . 'images/icon_up_disabled.gif" alt="' . $user->lang['MOVE_UP'] . '" title="' . $user->lang['MOVE_UP'] . '" />',
-		'ICON_MOVE_DOWN'			=> '<img src="' . PHPBB_ADMIN_PATH . 'images/icon_down.gif" alt="' . $user->lang['MOVE_DOWN'] . '" title="' . $user->lang['MOVE_DOWN'] . '" />',
-		'ICON_MOVE_DOWN_DISABLED'	=> '<img src="' . PHPBB_ADMIN_PATH . 'images/icon_down_disabled.gif" alt="' . $user->lang['MOVE_DOWN'] . '" title="' . $user->lang['MOVE_DOWN'] . '" />',
-		'ICON_EDIT'					=> '<img src="' . PHPBB_ADMIN_PATH . 'images/icon_edit.gif" alt="' . $user->lang['EDIT'] . '" title="' . $user->lang['EDIT'] . '" />',
-		'ICON_EDIT_DISABLED'		=> '<img src="' . PHPBB_ADMIN_PATH . 'images/icon_edit_disabled.gif" alt="' . $user->lang['EDIT'] . '" title="' . $user->lang['EDIT'] . '" />',
-		'ICON_DELETE'				=> '<img src="' . PHPBB_ADMIN_PATH . 'images/icon_delete.gif" alt="' . $user->lang['DELETE'] . '" title="' . $user->lang['DELETE'] . '" />',
-		'ICON_DELETE_DISABLED'		=> '<img src="' . PHPBB_ADMIN_PATH . 'images/icon_delete_disabled.gif" alt="' . $user->lang['DELETE'] . '" title="' . $user->lang['DELETE'] . '" />',
-		'ICON_SYNC'					=> '<img src="' . PHPBB_ADMIN_PATH . 'images/icon_sync.gif" alt="' . $user->lang['RESYNC'] . '" title="' . $user->lang['RESYNC'] . '" />',
-		'ICON_SYNC_DISABLED'		=> '<img src="' . PHPBB_ADMIN_PATH . 'images/icon_sync_disabled.gif" alt="' . $user->lang['RESYNC'] . '" title="' . $user->lang['RESYNC'] . '" />',
+		'ICON_MOVE_UP'				=> '<img src="' . PHPBB_ADMIN_PATH . 'images/icon_up.gif" alt="' . phpbb::$user->lang['MOVE_UP'] . '" title="' . phpbb::$user->lang['MOVE_UP'] . '" />',
+		'ICON_MOVE_UP_DISABLED'		=> '<img src="' . PHPBB_ADMIN_PATH . 'images/icon_up_disabled.gif" alt="' . phpbb::$user->lang['MOVE_UP'] . '" title="' . phpbb::$user->lang['MOVE_UP'] . '" />',
+		'ICON_MOVE_DOWN'			=> '<img src="' . PHPBB_ADMIN_PATH . 'images/icon_down.gif" alt="' . phpbb::$user->lang['MOVE_DOWN'] . '" title="' . phpbb::$user->lang['MOVE_DOWN'] . '" />',
+		'ICON_MOVE_DOWN_DISABLED'	=> '<img src="' . PHPBB_ADMIN_PATH . 'images/icon_down_disabled.gif" alt="' . phpbb::$user->lang['MOVE_DOWN'] . '" title="' . phpbb::$user->lang['MOVE_DOWN'] . '" />',
+		'ICON_EDIT'					=> '<img src="' . PHPBB_ADMIN_PATH . 'images/icon_edit.gif" alt="' . phpbb::$user->lang['EDIT'] . '" title="' . phpbb::$user->lang['EDIT'] . '" />',
+		'ICON_EDIT_DISABLED'		=> '<img src="' . PHPBB_ADMIN_PATH . 'images/icon_edit_disabled.gif" alt="' . phpbb::$user->lang['EDIT'] . '" title="' . phpbb::$user->lang['EDIT'] . '" />',
+		'ICON_DELETE'				=> '<img src="' . PHPBB_ADMIN_PATH . 'images/icon_delete.gif" alt="' . phpbb::$user->lang['DELETE'] . '" title="' . phpbb::$user->lang['DELETE'] . '" />',
+		'ICON_DELETE_DISABLED'		=> '<img src="' . PHPBB_ADMIN_PATH . 'images/icon_delete_disabled.gif" alt="' . phpbb::$user->lang['DELETE'] . '" title="' . phpbb::$user->lang['DELETE'] . '" />',
+		'ICON_SYNC'					=> '<img src="' . PHPBB_ADMIN_PATH . 'images/icon_sync.gif" alt="' . phpbb::$user->lang['RESYNC'] . '" title="' . phpbb::$user->lang['RESYNC'] . '" />',
+		'ICON_SYNC_DISABLED'		=> '<img src="' . PHPBB_ADMIN_PATH . 'images/icon_sync_disabled.gif" alt="' . phpbb::$user->lang['RESYNC'] . '" title="' . phpbb::$user->lang['RESYNC'] . '" />',
 
-		'S_USER_LANG'			=> $user->lang['USER_LANG'],
-		'S_CONTENT_DIRECTION'	=> $user->lang['DIRECTION'],
+		'S_USER_LANG'			=> phpbb::$user->lang['USER_LANG'],
+		'S_CONTENT_DIRECTION'	=> phpbb::$user->lang['DIRECTION'],
 		'S_CONTENT_ENCODING'	=> 'UTF-8',
-		'S_CONTENT_FLOW_BEGIN'	=> ($user->lang['DIRECTION'] == 'ltr') ? 'left' : 'right',
-		'S_CONTENT_FLOW_END'	=> ($user->lang['DIRECTION'] == 'ltr') ? 'right' : 'left',
+		'S_CONTENT_FLOW_BEGIN'	=> (phpbb::$user->lang['DIRECTION'] == 'ltr') ? 'left' : 'right',
+		'S_CONTENT_FLOW_END'	=> (phpbb::$user->lang['DIRECTION'] == 'ltr') ? 'right' : 'left',
 	));
 
 	// application/xhtml+xml not used because of IE
@@ -166,7 +161,6 @@ function adm_page_header($page_title)
 */
 function adm_page_footer($copyright_html = true)
 {
-	global $db, $template, $user, $auth;
 	global $starttime;
 
 	// Output page creation time
@@ -175,14 +169,14 @@ function adm_page_footer($copyright_html = true)
 		$mtime = explode(' ', microtime());
 		$totaltime = $mtime[0] + $mtime[1] - $starttime;
 
-		if (phpbb_request::variable('explain', false) && $auth->acl_get('a_') && defined('DEBUG_EXTRA') && method_exists($db, 'sql_report'))
+		if (phpbb_request::variable('explain', false) && phpbb::$acl->acl_get('a_') && defined('DEBUG_EXTRA') && method_exists(phpbb::$db, 'sql_report'))
 		{
-			$db->sql_report('display');
+			phpbb::$db->sql_report('display');
 		}
 
-		$debug_output = sprintf('Time : %.3fs | ' . $db->sql_num_queries() . ' Queries | GZIP : ' . ((phpbb::$config['gzip_compress']) ? 'On' : 'Off') . (($user->load) ? ' | Load : ' . $user->load : ''), $totaltime);
+		$debug_output = sprintf('Time : %.3fs | ' . phpbb::$db->sql_num_queries() . ' Queries | GZIP : ' . ((phpbb::$config['gzip_compress']) ? 'On' : 'Off') . ((phpbb::$user->system['load']) ? ' | Load : ' . phpbb::$user->system['load'] : ''), $totaltime);
 
-		if ($auth->acl_get('a_') && defined('DEBUG_EXTRA'))
+		if (phpbb::$acl->acl_get('a_') && defined('DEBUG_EXTRA'))
 		{
 			if (function_exists('memory_get_usage'))
 			{
@@ -196,18 +190,18 @@ function adm_page_footer($copyright_html = true)
 				}
 			}
 
-			$debug_output .= ' | <a href="' . build_url() . '&amp;explain=1">Explain</a>';
+			$debug_output .= ' | <a href="' . phpbb::$url->build_url() . '&amp;explain=1">Explain</a>';
 		}
 	}
 
-	$template->assign_vars(array(
+	phpbb::$template->assign_vars(array(
 		'DEBUG_OUTPUT'		=> (defined('DEBUG')) ? $debug_output : '',
-		'TRANSLATION_INFO'	=> (!empty($user->lang['TRANSLATION_INFO'])) ? $user->lang['TRANSLATION_INFO'] : '',
+		'TRANSLATION_INFO'	=> (!empty(phpbb::$user->lang['TRANSLATION_INFO'])) ? phpbb::$user->lang['TRANSLATION_INFO'] : '',
 		'S_COPYRIGHT_HTML'	=> $copyright_html,
 		'VERSION'			=> phpbb::$config['version'])
 	);
 
-	$template->display('body');
+	phpbb::$template->display('body');
 
 	garbage_collection();
 	exit_handler();
@@ -218,8 +212,7 @@ function adm_page_footer($copyright_html = true)
 */
 function adm_back_link($u_action)
 {
-	global $user;
-	return '<br /><br /><a href="' . $u_action . '">&laquo; ' . $user->lang['BACK_TO_PREV'] . '</a>';
+	return '<br /><br /><a href="' . $u_action . '">&laquo; ' . phpbb::$user->lang['BACK_TO_PREV'] . '</a>';
 }
 
 /**
@@ -227,13 +220,11 @@ function adm_back_link($u_action)
 */
 function build_select($option_ary, $option_default = false)
 {
-	global $user;
-
 	$html = '';
 	foreach ($option_ary as $value => $title)
 	{
 		$selected = ($option_default !== false && $value == $option_default) ? ' selected="selected"' : '';
-		$html .= '<option value="' . $value . '"' . $selected . '>' . $user->lang[$title] . '</option>';
+		$html .= '<option value="' . $value . '"' . $selected . '>' . phpbb::$user->lang[$title] . '</option>';
 	}
 
 	return $html;
@@ -244,14 +235,12 @@ function build_select($option_ary, $option_default = false)
 */
 function h_radio($name, &$input_ary, $input_default = false, $id = false, $key = false)
 {
-	global $user;
-
 	$html = '';
 	$id_assigned = false;
 	foreach ($input_ary as $value => $title)
 	{
 		$selected = ($input_default !== false && $value == $input_default) ? ' checked="checked"' : '';
-		$html .= '<label><input type="radio" name="' . $name . '"' . (($id && !$id_assigned) ? ' id="' . $id . '"' : '') . ' value="' . $value . '"' . $selected . (($key) ? ' accesskey="' . $key . '"' : '') . ' class="radio" /> ' . $user->lang[$title] . '</label>';
+		$html .= '<label><input type="radio" name="' . $name . '"' . (($id && !$id_assigned) ? ' id="' . $id . '"' : '') . ' value="' . $value . '"' . $selected . (($key) ? ' accesskey="' . $key . '"' : '') . ' class="radio" /> ' . phpbb::$user->lang[$title] . '</label>';
 		$id_assigned = true;
 	}
 
@@ -263,7 +252,7 @@ function h_radio($name, &$input_ary, $input_default = false, $id = false, $key =
 */
 function build_cfg_template($tpl_type, $key, &$new, $config_key, $vars)
 {
-	global $user, $module;
+	global $module;
 
 	$tpl = '';
 	$name = 'config[' . $config_key . ']';
@@ -299,8 +288,8 @@ function build_cfg_template($tpl_type, $key, &$new, $config_key, $vars)
 			$tpl_type_cond = explode('_', $tpl_type[1]);
 			$type_no = ($tpl_type_cond[0] == 'disabled' || $tpl_type_cond[0] == 'enabled') ? false : true;
 
-			$tpl_no = '<label><input type="radio" name="' . $name . '" value="0"' . $key_no . ' class="radio" /> ' . (($type_no) ? $user->lang['NO'] : $user->lang['DISABLED']) . '</label>';
-			$tpl_yes = '<label><input type="radio" id="' . $key . '" name="' . $name . '" value="1"' . $key_yes . ' class="radio" /> ' . (($type_no) ? $user->lang['YES'] : $user->lang['ENABLED']) . '</label>';
+			$tpl_no = '<label><input type="radio" name="' . $name . '" value="0"' . $key_no . ' class="radio" /> ' . (($type_no) ? phpbb::$user->lang['NO'] : phpbb::$user->lang['DISABLED']) . '</label>';
+			$tpl_yes = '<label><input type="radio" id="' . $key . '" name="' . $name . '" value="1"' . $key_yes . ' class="radio" /> ' . (($type_no) ? phpbb::$user->lang['YES'] : phpbb::$user->lang['ENABLED']) . '</label>';
 
 			$tpl = ($tpl_type_cond[0] == 'yes' || $tpl_type_cond[0] == 'enabled') ? $tpl_yes . $tpl_no : $tpl_no . $tpl_yes;
 		break;
@@ -378,8 +367,6 @@ function build_cfg_template($tpl_type, $key, &$new, $config_key, $vars)
 */
 function validate_config_vars($config_vars, &$cfg_array, &$error)
 {
-	global $user;
-
 	$type	= 0;
 	$min	= 1;
 	$max	= 2;
@@ -409,11 +396,11 @@ function validate_config_vars($config_vars, &$cfg_array, &$error)
 
 				if (isset($validator[$min]) && $length < $validator[$min])
 				{
-					$error[] = sprintf($user->lang['SETTING_TOO_SHORT'], $user->lang[$config_definition['lang']], $validator[$min]);
+					$error[] = sprintf(phpbb::$user->lang['SETTING_TOO_SHORT'], phpbb::$user->lang[$config_definition['lang']], $validator[$min]);
 				}
 				else if (isset($validator[$max]) && $length > $validator[2])
 				{
-					$error[] = sprintf($user->lang['SETTING_TOO_LONG'], $user->lang[$config_definition['lang']], $validator[$max]);
+					$error[] = sprintf(phpbb::$user->lang['SETTING_TOO_LONG'], phpbb::$user->lang[$config_definition['lang']], $validator[$max]);
 				}
 			break;
 
@@ -426,11 +413,11 @@ function validate_config_vars($config_vars, &$cfg_array, &$error)
 
 				if (isset($validator[$min]) && $cfg_array[$config_name] < $validator[$min])
 				{
-					$error[] = sprintf($user->lang['SETTING_TOO_LOW'], $user->lang[$config_definition['lang']], $validator[$min]);
+					$error[] = sprintf(phpbb::$user->lang['SETTING_TOO_LOW'], phpbb::$user->lang[$config_definition['lang']], $validator[$min]);
 				}
 				else if (isset($validator[$max]) && $cfg_array[$config_name] > $validator[$max])
 				{
-					$error[] = sprintf($user->lang['SETTING_TOO_BIG'], $user->lang[$config_definition['lang']], $validator[$max]);
+					$error[] = sprintf(phpbb::$user->lang['SETTING_TOO_BIG'], phpbb::$user->lang[$config_definition['lang']], $validator[$max]);
 				}
 			break;
 
@@ -474,7 +461,7 @@ function validate_config_vars($config_vars, &$cfg_array, &$error)
 
 				if (!file_exists(PHPBB_ROOT_PATH . 'language/' . $cfg_array[$config_name] . '/'))
 				{
-					$error[] = $user->lang['WRONG_DATA_LANG'];
+					$error[] = phpbb::$user->lang['WRONG_DATA_LANG'];
 				}
 			break;
 
@@ -522,12 +509,12 @@ function validate_config_vars($config_vars, &$cfg_array, &$error)
 
 				if (!file_exists(PHPBB_ROOT_PATH . $cfg_array[$config_name]))
 				{
-					$error[] = sprintf($user->lang['DIRECTORY_DOES_NOT_EXIST'], $cfg_array[$config_name]);
+					$error[] = sprintf(phpbb::$user->lang['DIRECTORY_DOES_NOT_EXIST'], $cfg_array[$config_name]);
 				}
 
 				if (file_exists(PHPBB_ROOT_PATH . $cfg_array[$config_name]) && !is_dir(PHPBB_ROOT_PATH . $cfg_array[$config_name]))
 				{
-					$error[] = sprintf($user->lang['DIRECTORY_NOT_DIR'], $cfg_array[$config_name]);
+					$error[] = sprintf(phpbb::$user->lang['DIRECTORY_NOT_DIR'], $cfg_array[$config_name]);
 				}
 
 				// Check if the path is writable
@@ -535,7 +522,7 @@ function validate_config_vars($config_vars, &$cfg_array, &$error)
 				{
 					if (file_exists(PHPBB_ROOT_PATH . $cfg_array[$config_name]) && !@is_writable(PHPBB_ROOT_PATH . $cfg_array[$config_name]))
 					{
-						$error[] = sprintf($user->lang['DIRECTORY_NOT_WRITABLE'], $cfg_array[$config_name]);
+						$error[] = sprintf(phpbb::$user->lang['DIRECTORY_NOT_WRITABLE'], $cfg_array[$config_name]);
 					}
 				}
 
@@ -553,8 +540,6 @@ function validate_config_vars($config_vars, &$cfg_array, &$error)
 */
 function validate_range($value_ary, &$error)
 {
-	global $user;
-
 	$column_types = array(
 		'BOOL'	=> array('php_type' => 'int', 		'min' => 0, 				'max' => 1),
 		'USINT'	=> array('php_type' => 'int',		'min' => 0, 				'max' => 65535),
@@ -584,7 +569,7 @@ function validate_range($value_ary, &$error)
 				$max = (isset($column[1])) ? min($column[1],$type['max']) : $type['max'];
 				if (strlen($value['value']) > $max)
 				{
-					$error[] = sprintf($user->lang['SETTING_TOO_LONG'], $user->lang[$value['lang']], $max);
+					$error[] = sprintf(phpbb::$user->lang['SETTING_TOO_LONG'], phpbb::$user->lang[$value['lang']], $max);
 				}
 			break;
 
@@ -593,11 +578,11 @@ function validate_range($value_ary, &$error)
 				$max = (isset($column[2])) ? min($column[2],$type['max']) : $type['max'];
 				if ($value['value'] < $min)
 				{
-					$error[] = sprintf($user->lang['SETTING_TOO_LOW'], $user->lang[$value['lang']], $min);
+					$error[] = sprintf(phpbb::$user->lang['SETTING_TOO_LOW'], phpbb::$user->lang[$value['lang']], $min);
 				}
 				else if ($value['value'] > $max)
 				{
-					$error[] = sprintf($user->lang['SETTING_TOO_BIG'], $user->lang[$value['lang']], $max);
+					$error[] = sprintf(phpbb::$user->lang['SETTING_TOO_BIG'], phpbb::$user->lang[$value['lang']], $max);
 				}
 			break;
 		}

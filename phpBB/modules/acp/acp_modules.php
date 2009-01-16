@@ -43,12 +43,12 @@ class acp_modules
 
 	function main($id, $mode)
 	{
-		global $db, $user, $auth, $template, $module;
+		global $auth, $template, $module;
 
 		// Set a global define for modules we might include (the author is able to prevent execution of code by checking this constant)
 		define('MODULE_INCLUDE', true);
 
-		$user->add_lang('acp/modules');
+		phpbb::$user->add_lang('acp/modules');
 		$this->tpl_name = 'acp_modules';
 
 		// module class
@@ -56,11 +56,11 @@ class acp_modules
 
 		if ($this->module_class == 'ucp')
 		{
-			$user->add_lang('ucp');
+			phpbb::$user->add_lang('ucp');
 		}
 		else if ($this->module_class == 'mcp')
 		{
-			$user->add_lang('mcp');
+			phpbb::$user->add_lang('mcp');
 		}
 
 		if ($module->p_class != $this->module_class)
@@ -80,7 +80,7 @@ class acp_modules
 			case 'delete':
 				if (!$module_id)
 				{
-					trigger_error($user->lang['NO_MODULE_ID'] . adm_back_link($this->u_action . '&amp;parent_id=' . $this->parent_id), E_USER_WARNING);
+					trigger_error(phpbb::$user->lang['NO_MODULE_ID'] . adm_back_link($this->u_action . '&amp;parent_id=' . $this->parent_id), E_USER_WARNING);
 				}
 
 				if (confirm_box(true))
@@ -91,9 +91,9 @@ class acp_modules
 						$sql = 'SELECT parent_id
 							FROM ' . MODULES_TABLE . '
 							WHERE module_id = ' . $module_id;
-						$result = $db->sql_query($sql);
-						$this->parent_id = (int) $db->sql_fetchfield('parent_id');
-						$db->sql_freeresult($result);
+						$result = phpbb::$db->sql_query($sql);
+						$this->parent_id = (int) phpbb::$db->sql_fetchfield('parent_id');
+						phpbb::$db->sql_freeresult($result);
 					}
 
 					$errors = $this->delete_module($module_id);
@@ -101,7 +101,7 @@ class acp_modules
 					if (!sizeof($errors))
 					{
 						$this->remove_cache_file();
-						trigger_error($user->lang['MODULE_DELETED'] . adm_back_link($this->u_action . '&amp;parent_id=' . $this->parent_id));
+						trigger_error(phpbb::$user->lang['MODULE_DELETED'] . adm_back_link($this->u_action . '&amp;parent_id=' . $this->parent_id));
 					}
 				}
 				else
@@ -121,29 +121,29 @@ class acp_modules
 			case 'disable':
 				if (!$module_id)
 				{
-					trigger_error($user->lang['NO_MODULE_ID'] . adm_back_link($this->u_action . '&amp;parent_id=' . $this->parent_id), E_USER_WARNING);
+					trigger_error(phpbb::$user->lang['NO_MODULE_ID'] . adm_back_link($this->u_action . '&amp;parent_id=' . $this->parent_id), E_USER_WARNING);
 				}
 
 				$sql = 'SELECT *
 					FROM ' . MODULES_TABLE . "
-					WHERE module_class = '" . $db->sql_escape($this->module_class) . "'
+					WHERE module_class = '" . phpbb::$db->sql_escape($this->module_class) . "'
 						AND module_id = $module_id";
-				$result = $db->sql_query($sql);
-				$row = $db->sql_fetchrow($result);
-				$db->sql_freeresult($result);
+				$result = phpbb::$db->sql_query($sql);
+				$row = phpbb::$db->sql_fetchrow($result);
+				phpbb::$db->sql_freeresult($result);
 
 				if (!$row)
 				{
-					trigger_error($user->lang['NO_MODULE'] . adm_back_link($this->u_action . '&amp;parent_id=' . $this->parent_id), E_USER_WARNING);
+					trigger_error(phpbb::$user->lang['NO_MODULE'] . adm_back_link($this->u_action . '&amp;parent_id=' . $this->parent_id), E_USER_WARNING);
 				}
 
 				$sql = 'UPDATE ' . MODULES_TABLE . '
 					SET module_enabled = ' . (($action == 'enable') ? 1 : 0) . "
-					WHERE module_class = '" . $db->sql_escape($this->module_class) . "'
+					WHERE module_class = '" . phpbb::$db->sql_escape($this->module_class) . "'
 						AND module_id = $module_id";
-				$db->sql_query($sql);
+				phpbb::$db->sql_query($sql);
 
-				add_log('admin', 'LOG_MODULE_' . strtoupper($action), $this->lang_name($row['module_langname']));
+				add_log('admin', 'LOG_MODULE_' . strtoupper($action), phpbb::$user->lang($row['module_langname']));
 				$this->remove_cache_file();
 
 			break;
@@ -152,27 +152,27 @@ class acp_modules
 			case 'move_down':
 				if (!$module_id)
 				{
-					trigger_error($user->lang['NO_MODULE_ID'] . adm_back_link($this->u_action . '&amp;parent_id=' . $this->parent_id), E_USER_WARNING);
+					trigger_error(phpbb::$user->lang['NO_MODULE_ID'] . adm_back_link($this->u_action . '&amp;parent_id=' . $this->parent_id), E_USER_WARNING);
 				}
 
 				$sql = 'SELECT *
 					FROM ' . MODULES_TABLE . "
-					WHERE module_class = '" . $db->sql_escape($this->module_class) . "'
+					WHERE module_class = '" . phpbb::$db->sql_escape($this->module_class) . "'
 						AND module_id = $module_id";
-				$result = $db->sql_query($sql);
-				$row = $db->sql_fetchrow($result);
-				$db->sql_freeresult($result);
+				$result = phpbb::$db->sql_query($sql);
+				$row = phpbb::$db->sql_fetchrow($result);
+				phpbb::$db->sql_freeresult($result);
 
 				if (!$row)
 				{
-					trigger_error($user->lang['NO_MODULE'] . adm_back_link($this->u_action . '&amp;parent_id=' . $this->parent_id), E_USER_WARNING);
+					trigger_error(phpbb::$user->lang['NO_MODULE'] . adm_back_link($this->u_action . '&amp;parent_id=' . $this->parent_id), E_USER_WARNING);
 				}
 
 				$move_module_name = $this->move_module_by($row, $action, 1);
 
 				if ($move_module_name !== false)
 				{
-					add_log('admin', 'LOG_MODULE_' . strtoupper($action), $this->lang_name($row['module_langname']), $move_module_name);
+					add_log('admin', 'LOG_MODULE_' . strtoupper($action), phpbb::$user->lang($row['module_langname']), $move_module_name);
 					$this->remove_cache_file();
 				}
 
@@ -213,7 +213,7 @@ class acp_modules
 						{
 							$this->remove_cache_file();
 
-							trigger_error($user->lang['MODULE_ADDED'] . adm_back_link($this->u_action . '&amp;parent_id=' . $this->parent_id));
+							trigger_error(phpbb::$user->lang['MODULE_ADDED'] . adm_back_link($this->u_action . '&amp;parent_id=' . $this->parent_id));
 						}
 					}
 				}
@@ -234,7 +234,7 @@ class acp_modules
 
 				if (!$module_id)
 				{
-					trigger_error($user->lang['NO_MODULE_ID'] . adm_back_link($this->u_action . '&amp;parent_id=' . $this->parent_id), E_USER_WARNING);
+					trigger_error(phpbb::$user->lang['NO_MODULE_ID'] . adm_back_link($this->u_action . '&amp;parent_id=' . $this->parent_id), E_USER_WARNING);
 				}
 
 				$module_row = $this->get_module_row($module_id);
@@ -272,7 +272,7 @@ class acp_modules
 				{
 					if (!$module_data['module_langname'])
 					{
-						trigger_error($user->lang['NO_MODULE_LANGNAME'] . adm_back_link($this->u_action . '&amp;parent_id=' . $this->parent_id), E_USER_WARNING);
+						trigger_error(phpbb::$user->lang['NO_MODULE_LANGNAME'] . adm_back_link($this->u_action . '&amp;parent_id=' . $this->parent_id), E_USER_WARNING);
 					}
 
 					$module_type = request_var('module_type', 'category');
@@ -301,7 +301,7 @@ class acp_modules
 					{
 						$this->remove_cache_file();
 
-						trigger_error((($action == 'add') ? $user->lang['MODULE_ADDED'] : $user->lang['MODULE_EDITED']) . adm_back_link($this->u_action . '&amp;parent_id=' . $this->parent_id));
+						trigger_error((($action == 'add') ? phpbb::$user->lang['MODULE_ADDED'] : phpbb::$user->lang['MODULE_EDITED']) . adm_back_link($this->u_action . '&amp;parent_id=' . $this->parent_id));
 					}
 				}
 
@@ -321,7 +321,7 @@ class acp_modules
 					}
 
 					// Name options
-					$s_name_options .= '<option value="' . $option . '"' . (($option == $module_data['module_basename']) ? ' selected="selected"' : '') . '>' . $this->lang_name($values['title']) . ' [' . $this->module_class . '_' . $option . ']</option>';
+					$s_name_options .= '<option value="' . $option . '"' . (($option == $module_data['module_basename']) ? ' selected="selected"' : '') . '>' . phpbb::$user->lang($values['title']) . ' [' . $this->module_class . '_' . $option . ']</option>';
 
 					$template->assign_block_vars('m_names', array('NAME' => $option, 'A_NAME' => addslashes($option)));
 
@@ -330,19 +330,19 @@ class acp_modules
 					{
 						if ($option == $module_data['module_basename'])
 						{
-							$s_mode_options .= '<option value="' . $m_mode . '"' . (($m_mode == $module_data['module_mode']) ? ' selected="selected"' : '') . '>' . $this->lang_name($m_values['title']) . '</option>';
+							$s_mode_options .= '<option value="' . $m_mode . '"' . (($m_mode == $module_data['module_mode']) ? ' selected="selected"' : '') . '>' . phpbb::$user->lang($m_values['title']) . '</option>';
 						}
 
 						$template->assign_block_vars('m_names.modes', array(
 							'OPTION'		=> $m_mode,
-							'VALUE'			=> $this->lang_name($m_values['title']),
+							'VALUE'			=> phpbb::$user->lang($m_values['title']),
 							'A_OPTION'		=> addslashes($m_mode),
-							'A_VALUE'		=> addslashes($this->lang_name($m_values['title'])))
+							'A_VALUE'		=> addslashes(phpbb::$user->lang($m_values['title'])))
 						);
 					}
 				}
 
-				$s_cat_option = '<option value="0"' . (($module_data['parent_id'] == 0) ? ' selected="selected"' : '') . '>' . $user->lang['NO_PARENT'] . '</option>';
+				$s_cat_option = '<option value="0"' . (($module_data['parent_id'] == 0) ? ' selected="selected"' : '') . '>' . phpbb::$user->lang['NO_PARENT'] . '</option>';
 
 				$template->assign_vars(array_merge(array(
 					'S_EDIT_MODULE'		=> true,
@@ -353,9 +353,9 @@ class acp_modules
 					'U_BACK'			=> $this->u_action . '&amp;parent_id=' . $this->parent_id,
 					'U_EDIT_ACTION'		=> $this->u_action . '&amp;parent_id=' . $this->parent_id,
 
-					'L_TITLE'			=> $user->lang[strtoupper($action) . '_MODULE'],
+					'L_TITLE'			=> phpbb::$user->lang[strtoupper($action) . '_MODULE'],
 
-					'MODULENAME'		=> $this->lang_name($module_data['module_langname']),
+					'MODULENAME'		=> phpbb::$user->lang($module_data['module_langname']),
 					'ACTION'			=> $action,
 					'MODULE_ID'			=> $module_id,
 
@@ -397,7 +397,7 @@ class acp_modules
 
 			foreach ($modules_nav as $row)
 			{
-				$langname = $this->lang_name($row['module_langname']);
+				$langname = phpbb::$user->lang($row['module_langname']);
 
 				if ($row['module_id'] == $this->parent_id)
 				{
@@ -416,23 +416,23 @@ class acp_modules
 		$sql = 'SELECT *
 			FROM ' . MODULES_TABLE . "
 			WHERE parent_id = {$this->parent_id}
-				AND module_class = '" . $db->sql_escape($this->module_class) . "'
+				AND module_class = '" . phpbb::$db->sql_escape($this->module_class) . "'
 			ORDER BY left_id";
-		$result = $db->sql_query($sql);
+		$result = phpbb::$db->sql_query($sql);
 
-		if ($row = $db->sql_fetchrow($result))
+		if ($row = phpbb::$db->sql_fetchrow($result))
 		{
 			do
 			{
-				$langname = $this->lang_name($row['module_langname']);
+				$langname = phpbb::$user->lang($row['module_langname']);
 
 				if (!$row['module_enabled'])
 				{
-					$module_image = '<img src="images/icon_folder_lock.gif" alt="' . $user->lang['DEACTIVATED_MODULE'] .'" />';
+					$module_image = '<img src="images/icon_folder_lock.gif" alt="' . phpbb::$user->lang['DEACTIVATED_MODULE'] .'" />';
 				}
 				else
 				{
-					$module_image = (!$row['module_basename'] || $row['left_id'] + 1 != $row['right_id']) ? '<img src="images/icon_subfolder.gif" alt="' . $user->lang['CATEGORY'] . '" />' : '<img src="images/icon_folder.gif" alt="' . $user->lang['MODULE'] . '" />';
+					$module_image = (!$row['module_basename'] || $row['left_id'] + 1 != $row['right_id']) ? '<img src="images/icon_subfolder.gif" alt="' . phpbb::$user->lang['CATEGORY'] . '" />' : '<img src="images/icon_folder.gif" alt="' . phpbb::$user->lang['MODULE'] . '" />';
 				}
 
 				$url = $this->u_action . '&amp;parent_id=' . $this->parent_id . '&amp;m=' . $row['module_id'];
@@ -455,7 +455,7 @@ class acp_modules
 					'U_DISABLE'			=> $url . '&amp;action=disable')
 				);
 			}
-			while ($row = $db->sql_fetchrow($result));
+			while ($row = phpbb::$db->sql_fetchrow($result));
 		}
 		else if ($this->parent_id)
 		{
@@ -475,7 +475,7 @@ class acp_modules
 				'U_DISABLE'			=> $url . '&amp;action=disable')
 			);
 		}
-		$db->sql_freeresult($result);
+		phpbb::$db->sql_freeresult($result);
 
 		// Quick adding module
 		$module_infos = $this->get_module_infos();
@@ -485,12 +485,12 @@ class acp_modules
 		foreach ($module_infos as $option => $values)
 		{
 			// Name options
-			$s_install_options .= '<optgroup label="' . $this->lang_name($values['title']) . ' [' . $this->module_class . '_' . $option . ']">';
+			$s_install_options .= '<optgroup label="' . phpbb::$user->lang($values['title']) . ' [' . $this->module_class . '_' . $option . ']">';
 
 			// Build module modes
 			foreach ($values['modes'] as $m_mode => $m_values)
 			{
-				$s_install_options .= '<option value="' . $option . '::' . $m_mode . '">&nbsp; &nbsp;' . $this->lang_name($m_values['title']) . '</option>';
+				$s_install_options .= '<option value="' . $option . '::' . $m_mode . '">&nbsp; &nbsp;' . phpbb::$user->lang($m_values['title']) . '</option>';
 			}
 
 			$s_install_options .= '</optgroup>';
@@ -512,19 +512,17 @@ class acp_modules
 	*/
 	function get_module_row($module_id)
 	{
-		global $db, $user;
-
 		$sql = 'SELECT *
 			FROM ' . MODULES_TABLE . "
-			WHERE module_class = '" . $db->sql_escape($this->module_class) . "'
+			WHERE module_class = '" . phpbb::$db->sql_escape($this->module_class) . "'
 				AND module_id = $module_id";
-		$result = $db->sql_query($sql);
-		$row = $db->sql_fetchrow($result);
-		$db->sql_freeresult($result);
+		$result = phpbb::$db->sql_query($sql);
+		$row = phpbb::$db->sql_fetchrow($result);
+		phpbb::$db->sql_freeresult($result);
 
 		if (!$row)
 		{
-			trigger_error($user->lang['NO_MODULE'] . adm_back_link($this->u_action . '&amp;parent_id=' . $this->parent_id), E_USER_WARNING);
+			trigger_error(phpbb::$user->lang['NO_MODULE'] . adm_back_link($this->u_action . '&amp;parent_id=' . $this->parent_id), E_USER_WARNING);
 		}
 
 		return $row;
@@ -537,7 +535,7 @@ class acp_modules
 	{
 		$module_class = ($module_class === false) ? $this->module_class : $module_class;
 
-		$directory = PHPBB_ROOT_PATH . 'includes/' . $module_class . '/info/';
+		$directory = PHPBB_ROOT_PATH . 'modules/' . $module_class . '/info/';
 		$fileinfo = array();
 
 		if (!$module)
@@ -601,19 +599,19 @@ class acp_modules
 	*/
 	function make_module_select($select_id = false, $ignore_id = false, $ignore_acl = false, $ignore_nonpost = false, $ignore_emptycat = true, $ignore_noncat = false)
 	{
-		global $db, $user, $auth;
+		global $auth;
 
 		$sql = 'SELECT module_id, module_enabled, module_basename, parent_id, module_langname, left_id, right_id, module_auth
 			FROM ' . MODULES_TABLE . "
-			WHERE module_class = '" . $db->sql_escape($this->module_class) . "'
+			WHERE module_class = '" . phpbb::$db->sql_escape($this->module_class) . "'
 			ORDER BY left_id ASC";
-		$result = $db->sql_query($sql);
+		$result = phpbb::$db->sql_query($sql);
 
 		$right = $iteration = 0;
 		$padding_store = array('0' => '');
 		$module_list = $padding = '';
 
-		while ($row = $db->sql_fetchrow($result))
+		while ($row = phpbb::$db->sql_fetchrow($result))
 		{
 			if ($row['left_id'] < $right)
 			{
@@ -656,12 +654,12 @@ class acp_modules
 
 			$selected = (is_array($select_id)) ? ((in_array($row['module_id'], $select_id)) ? ' selected="selected"' : '') : (($row['module_id'] == $select_id) ? ' selected="selected"' : '');
 
-			$langname = $this->lang_name($row['module_langname']);
+			$langname = phpbb::$user->lang($row['module_langname']);
 			$module_list .= '<option value="' . $row['module_id'] . '"' . $selected . ((!$row['module_enabled']) ? ' class="disabled"' : '') . '>' . $padding . $langname . '</option>';
 
 			$iteration++;
 		}
-		$db->sql_freeresult($result);
+		phpbb::$db->sql_freeresult($result);
 
 		unset($padding_store);
 
@@ -673,8 +671,6 @@ class acp_modules
 	*/
 	function get_module_branch($module_id, $type = 'all', $order = 'descending', $include_module = true)
 	{
-		global $db;
-
 		switch ($type)
 		{
 			case 'parents':
@@ -695,13 +691,13 @@ class acp_modules
 		$sql = 'SELECT m2.*
 			FROM ' . MODULES_TABLE . ' m1
 			LEFT JOIN ' . MODULES_TABLE . " m2 ON ($condition)
-			WHERE m1.module_class = '" . $db->sql_escape($this->module_class) . "'
-				AND m2.module_class = '" . $db->sql_escape($this->module_class) . "'
+			WHERE m1.module_class = '" . phpbb::$db->sql_escape($this->module_class) . "'
+				AND m2.module_class = '" . phpbb::$db->sql_escape($this->module_class) . "'
 				AND m1.module_id = $module_id
 			ORDER BY m2.left_id " . (($order == 'descending') ? 'ASC' : 'DESC');
-		$result = $db->sql_query($sql);
+		$result = phpbb::$db->sql_query($sql);
 
-		while ($row = $db->sql_fetchrow($result))
+		while ($row = phpbb::$db->sql_fetchrow($result))
 		{
 			if (!$include_module && $row['module_id'] == $module_id)
 			{
@@ -710,7 +706,7 @@ class acp_modules
 
 			$rows[] = $row;
 		}
-		$db->sql_freeresult($result);
+		phpbb::$db->sql_freeresult($result);
 
 		return $rows;
 	}
@@ -730,24 +726,12 @@ class acp_modules
 	}
 
 	/**
-	* Return correct language name
-	*/
-	function lang_name($module_langname)
-	{
-		global $user;
-
-		return (!empty($user->lang[$module_langname])) ? $user->lang[$module_langname] : $module_langname;
-	}
-
-	/**
 	* Update/Add module
 	*
 	* @param bool $run_inline if set to true errors will be returned and no logs being written
 	*/
 	function update_module_data(&$module_data, $run_inline = false)
 	{
-		global $db, $user;
-
 		if (!isset($module_data['module_id']))
 		{
 			// no module_id means we're creating a new category/module
@@ -755,11 +739,11 @@ class acp_modules
 			{
 				$sql = 'SELECT left_id, right_id
 					FROM ' . MODULES_TABLE . "
-					WHERE module_class = '" . $db->sql_escape($module_data['module_class']) . "'
+					WHERE module_class = '" . phpbb::$db->sql_escape($module_data['module_class']) . "'
 						AND module_id = " . (int) $module_data['parent_id'];
-				$result = $db->sql_query($sql);
-				$row = $db->sql_fetchrow($result);
-				$db->sql_freeresult($result);
+				$result = phpbb::$db->sql_query($sql);
+				$row = phpbb::$db->sql_fetchrow($result);
+				phpbb::$db->sql_freeresult($result);
 
 				if (!$row)
 				{
@@ -768,7 +752,7 @@ class acp_modules
 						return 'PARENT_NO_EXIST';
 					}
 
-					trigger_error($user->lang['PARENT_NO_EXIST'] . adm_back_link($this->u_action . '&amp;parent_id=' . $this->parent_id), E_USER_WARNING);
+					trigger_error(phpbb::$user->lang['PARENT_NO_EXIST'] . adm_back_link($this->u_action . '&amp;parent_id=' . $this->parent_id), E_USER_WARNING);
 				}
 
 				// Workaround
@@ -777,15 +761,15 @@ class acp_modules
 
 				$sql = 'UPDATE ' . MODULES_TABLE . "
 					SET left_id = left_id + 2, right_id = right_id + 2
-					WHERE module_class = '" . $db->sql_escape($module_data['module_class']) . "'
+					WHERE module_class = '" . phpbb::$db->sql_escape($module_data['module_class']) . "'
 						AND left_id > {$row['right_id']}";
-				$db->sql_query($sql);
+				phpbb::$db->sql_query($sql);
 
 				$sql = 'UPDATE ' . MODULES_TABLE . "
 					SET right_id = right_id + 2
-					WHERE module_class = '" . $db->sql_escape($module_data['module_class']) . "'
+					WHERE module_class = '" . phpbb::$db->sql_escape($module_data['module_class']) . "'
 						AND {$row['left_id']} BETWEEN left_id AND right_id";
-				$db->sql_query($sql);
+				phpbb::$db->sql_query($sql);
 
 				$module_data['left_id'] = (int) $row['right_id'];
 				$module_data['right_id'] = (int) $row['right_id'] + 1;
@@ -794,23 +778,23 @@ class acp_modules
 			{
 				$sql = 'SELECT MAX(right_id) AS right_id
 					FROM ' . MODULES_TABLE . "
-					WHERE module_class = '" . $db->sql_escape($module_data['module_class']) . "'";
-				$result = $db->sql_query($sql);
-				$row = $db->sql_fetchrow($result);
-				$db->sql_freeresult($result);
+					WHERE module_class = '" . phpbb::$db->sql_escape($module_data['module_class']) . "'";
+				$result = phpbb::$db->sql_query($sql);
+				$row = phpbb::$db->sql_fetchrow($result);
+				phpbb::$db->sql_freeresult($result);
 
 				$module_data['left_id'] = (int) $row['right_id'] + 1;
 				$module_data['right_id'] = (int) $row['right_id'] + 2;
 			}
 
-			$sql = 'INSERT INTO ' . MODULES_TABLE . ' ' . $db->sql_build_array('INSERT', $module_data);
-			$db->sql_query($sql);
+			$sql = 'INSERT INTO ' . MODULES_TABLE . ' ' . phpbb::$db->sql_build_array('INSERT', $module_data);
+			phpbb::$db->sql_query($sql);
 
-			$module_data['module_id'] = $db->sql_nextid();
+			$module_data['module_id'] = phpbb::$db->sql_nextid();
 
 			if (!$run_inline)
 			{
-				add_log('admin', 'LOG_MODULE_ADD', $this->lang_name($module_data['module_langname']));
+				add_log('admin', 'LOG_MODULE_ADD', phpbb::$user->lang($module_data['module_langname']));
 			}
 		}
 		else
@@ -824,7 +808,7 @@ class acp_modules
 
 				if (sizeof($branch))
 				{
-					return array($user->lang['NO_CATEGORY_TO_MODULE']);
+					return array(phpbb::$user->lang['NO_CATEGORY_TO_MODULE']);
 				}
 			}
 
@@ -837,14 +821,14 @@ class acp_modules
 			unset($update_ary['module_id']);
 
 			$sql = 'UPDATE ' . MODULES_TABLE . '
-				SET ' . $db->sql_build_array('UPDATE', $update_ary) . "
-				WHERE module_class = '" . $db->sql_escape($module_data['module_class']) . "'
+				SET ' . phpbb::$db->sql_build_array('UPDATE', $update_ary) . "
+				WHERE module_class = '" . phpbb::$db->sql_escape($module_data['module_class']) . "'
 					AND module_id = " . (int) $module_data['module_id'];
-			$db->sql_query($sql);
+			phpbb::$db->sql_query($sql);
 
 			if (!$run_inline)
 			{
-				add_log('admin', 'LOG_MODULE_EDIT', $this->lang_name($module_data['module_langname']));
+				add_log('admin', 'LOG_MODULE_EDIT', phpbb::$user->lang($module_data['module_langname']));
 			}
 		}
 
@@ -856,8 +840,6 @@ class acp_modules
 	*/
 	function move_module($from_module_id, $to_parent_id)
 	{
-		global $db;
-
 		$moved_modules = $this->get_module_branch($from_module_id, 'children', 'descending');
 		$from_data = $moved_modules[0];
 		$diff = sizeof($moved_modules) * 2;
@@ -871,17 +853,17 @@ class acp_modules
 		// Resync parents
 		$sql = 'UPDATE ' . MODULES_TABLE . "
 			SET right_id = right_id - $diff
-			WHERE module_class = '" . $db->sql_escape($this->module_class) . "'
+			WHERE module_class = '" . phpbb::$db->sql_escape($this->module_class) . "'
 				AND left_id < " . (int) $from_data['right_id'] . '
 				AND right_id > ' . (int) $from_data['right_id'];
-		$db->sql_query($sql);
+		phpbb::$db->sql_query($sql);
 
 		// Resync righthand side of tree
 		$sql = 'UPDATE ' . MODULES_TABLE . "
 			SET left_id = left_id - $diff, right_id = right_id - $diff
-			WHERE module_class = '" . $db->sql_escape($this->module_class) . "'
+			WHERE module_class = '" . phpbb::$db->sql_escape($this->module_class) . "'
 				AND left_id > " . (int) $from_data['right_id'];
-		$db->sql_query($sql);
+		phpbb::$db->sql_query($sql);
 
 		if ($to_parent_id > 0)
 		{
@@ -890,18 +872,18 @@ class acp_modules
 			// Resync new parents
 			$sql = 'UPDATE ' . MODULES_TABLE . "
 				SET right_id = right_id + $diff
-				WHERE module_class = '" . $db->sql_escape($this->module_class) . "'
+				WHERE module_class = '" . phpbb::$db->sql_escape($this->module_class) . "'
 					AND " . (int) $to_data['right_id'] . ' BETWEEN left_id AND right_id
-					AND ' . $db->sql_in_set('module_id', $moved_ids, true);
-			$db->sql_query($sql);
+					AND ' . phpbb::$db->sql_in_set('module_id', $moved_ids, true);
+			phpbb::$db->sql_query($sql);
 
 			// Resync the righthand side of the tree
 			$sql = 'UPDATE ' . MODULES_TABLE . "
 				SET left_id = left_id + $diff, right_id = right_id + $diff
-				WHERE module_class = '" . $db->sql_escape($this->module_class) . "'
+				WHERE module_class = '" . phpbb::$db->sql_escape($this->module_class) . "'
 					AND left_id > " . (int) $to_data['right_id'] . '
-					AND ' . $db->sql_in_set('module_id', $moved_ids, true);
-			$db->sql_query($sql);
+					AND ' . phpbb::$db->sql_in_set('module_id', $moved_ids, true);
+			phpbb::$db->sql_query($sql);
 
 			// Resync moved branch
 			$to_data['right_id'] += $diff;
@@ -918,20 +900,20 @@ class acp_modules
 		{
 			$sql = 'SELECT MAX(right_id) AS right_id
 				FROM ' . MODULES_TABLE . "
-				WHERE module_class = '" . $db->sql_escape($this->module_class) . "'
-					AND " . $db->sql_in_set('module_id', $moved_ids, true);
-			$result = $db->sql_query($sql);
-			$row = $db->sql_fetchrow($result);
-			$db->sql_freeresult($result);
+				WHERE module_class = '" . phpbb::$db->sql_escape($this->module_class) . "'
+					AND " . phpbb::$db->sql_in_set('module_id', $moved_ids, true);
+			$result = phpbb::$db->sql_query($sql);
+			$row = phpbb::$db->sql_fetchrow($result);
+			phpbb::$db->sql_freeresult($result);
 
 			$diff = '+ ' . (int) ($row['right_id'] - $from_data['left_id'] + 1);
 		}
 
 		$sql = 'UPDATE ' . MODULES_TABLE . "
 			SET left_id = left_id $diff, right_id = right_id $diff
-			WHERE module_class = '" . $db->sql_escape($this->module_class) . "'
-				AND " . $db->sql_in_set('module_id', $moved_ids);
-		$db->sql_query($sql);
+			WHERE module_class = '" . phpbb::$db->sql_escape($this->module_class) . "'
+				AND " . phpbb::$db->sql_in_set('module_id', $moved_ids);
+		phpbb::$db->sql_query($sql);
 	}
 
 	/**
@@ -939,23 +921,21 @@ class acp_modules
 	*/
 	function delete_module($module_id)
 	{
-		global $db, $user;
-
 		$row = $this->get_module_row($module_id);
 
 		$branch = $this->get_module_branch($module_id, 'children', 'descending', false);
 
 		if (sizeof($branch))
 		{
-			return array($user->lang['CANNOT_REMOVE_MODULE']);
+			return array(phpbb::$user->lang['CANNOT_REMOVE_MODULE']);
 		}
 
 		// If not move
 		$diff = 2;
 		$sql = 'DELETE FROM ' . MODULES_TABLE . "
-			WHERE module_class = '" . $db->sql_escape($this->module_class) . "'
+			WHERE module_class = '" . phpbb::$db->sql_escape($this->module_class) . "'
 				AND module_id = $module_id";
-		$db->sql_query($sql);
+		phpbb::$db->sql_query($sql);
 
 		$row['right_id'] = (int) $row['right_id'];
 		$row['left_id'] = (int) $row['left_id'];
@@ -963,17 +943,17 @@ class acp_modules
 		// Resync tree
 		$sql = 'UPDATE ' . MODULES_TABLE . "
 			SET right_id = right_id - $diff
-			WHERE module_class = '" . $db->sql_escape($this->module_class) . "'
+			WHERE module_class = '" . phpbb::$db->sql_escape($this->module_class) . "'
 				AND left_id < {$row['right_id']} AND right_id > {$row['right_id']}";
-		$db->sql_query($sql);
+		phpbb::$db->sql_query($sql);
 
 		$sql = 'UPDATE ' . MODULES_TABLE . "
 			SET left_id = left_id - $diff, right_id = right_id - $diff
-			WHERE module_class = '" . $db->sql_escape($this->module_class) . "'
+			WHERE module_class = '" . phpbb::$db->sql_escape($this->module_class) . "'
 				AND left_id > {$row['right_id']}";
-		$db->sql_query($sql);
+		phpbb::$db->sql_query($sql);
 
-		add_log('admin', 'LOG_MODULE_REMOVED', $this->lang_name($row['module_langname']));
+		add_log('admin', 'LOG_MODULE_REMOVED', phpbb::$user->lang($row['module_langname']));
 
 		return array();
 
@@ -984,8 +964,6 @@ class acp_modules
 	*/
 	function move_module_by($module_row, $action = 'move_up', $steps = 1)
 	{
-		global $db;
-
 		/**
 		* Fetch all the siblings between the module's current spot
 		* and where we want to move it to. If there are less than $steps
@@ -994,17 +972,17 @@ class acp_modules
 		*/
 		$sql = 'SELECT module_id, left_id, right_id, module_langname
 			FROM ' . MODULES_TABLE . "
-			WHERE module_class = '" . $db->sql_escape($this->module_class) . "'
+			WHERE module_class = '" . phpbb::$db->sql_escape($this->module_class) . "'
 				AND parent_id = " . (int) $module_row['parent_id'] . '
 				AND ' . (($action == 'move_up') ? 'right_id < ' . (int) $module_row['right_id'] . ' ORDER BY right_id DESC' : 'left_id > ' . (int) $module_row['left_id'] . ' ORDER BY left_id ASC');
-		$result = $db->sql_query_limit($sql, $steps);
+		$result = phpbb::$db->sql_query_limit($sql, $steps);
 
 		$target = array();
-		while ($row = $db->sql_fetchrow($result))
+		while ($row = phpbb::$db->sql_fetchrow($result))
 		{
 			$target = $row;
 		}
-		$db->sql_freeresult($result);
+		phpbb::$db->sql_freeresult($result);
 
 		if (!sizeof($target))
 		{
@@ -1052,14 +1030,14 @@ class acp_modules
 				WHEN right_id BETWEEN {$move_up_left} AND {$move_up_right} THEN -{$diff_up}
 				ELSE {$diff_down}
 			END
-			WHERE module_class = '" . $db->sql_escape($this->module_class) . "'
+			WHERE module_class = '" . phpbb::$db->sql_escape($this->module_class) . "'
 				AND left_id BETWEEN {$left_id} AND {$right_id}
 				AND right_id BETWEEN {$left_id} AND {$right_id}";
-		$db->sql_query($sql);
+		phpbb::$db->sql_query($sql);
 
 		$this->remove_cache_file();
 
-		return $this->lang_name($target['module_langname']);
+		return phpbb::$user->lang($target['module_langname']);
 	}
 }
 

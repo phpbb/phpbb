@@ -14,9 +14,9 @@
 define('IN_PHPBB', true);
 if (!defined('PHPBB_ROOT_PATH')) define('PHPBB_ROOT_PATH', './');
 if (!defined('PHP_EXT')) define('PHP_EXT', substr(strrchr(__FILE__, '.'), 1));
-include(PHPBB_ROOT_PATH . 'common.' . PHP_EXT);
-require(PHPBB_ROOT_PATH . 'includes/functions_user.' . PHP_EXT);
-require(PHPBB_ROOT_PATH . 'includes/functions_module.' . PHP_EXT);
+include PHPBB_ROOT_PATH . 'common.' . PHP_EXT;
+require PHPBB_ROOT_PATH . 'includes/functions_user.' . PHP_EXT;
+require PHPBB_ROOT_PATH . 'includes/functions_module.' . PHP_EXT;
 
 // Basic parameter data
 $id 	= request_var('i', '');
@@ -28,12 +28,12 @@ if ($mode == 'login' || $mode == 'logout' || $mode == 'confirm')
 }
 
 // Start session management
-$user->session_begin();
-$auth->acl($user->data);
-$user->setup('ucp');
+phpbb::$user->session_begin();
+phpbb::$acl->init(phpbb::$user->data);
+phpbb::$user->setup('ucp');
 
 // Setting a variable to let the style designer know where he is...
-$template->assign_var('S_IN_UCP', true);
+phpbb::$template->assign_var('S_IN_UCP', true);
 
 $module = new p_master();
 
@@ -72,28 +72,28 @@ switch ($mode)
 	break;
 
 	case 'login':
-		if ($user->data['is_registered'])
+		if (phpbb::$user->is_registered)
 		{
-			redirect(append_sid('index'));
+			phpbb::$url->redirect(phpbb::$url->append_sid('index'));
 		}
 
 		login_box(request_var('redirect', 'index'));
 	break;
 
 	case 'logout':
-		if ($user->data['user_id'] != ANONYMOUS && phpbb_request::variable('sid', '', false, phpbb_request::GET) === $user->session_id)
+		if (phpbb::$user->data['user_id'] != ANONYMOUS && phpbb_request::variable('sid', '', false, phpbb_request::GET) === phpbb::$user->session_id)
 		{
-			$user->session_kill();
-			$user->session_begin();
-			$message = $user->lang['LOGOUT_REDIRECT'];
+			phpbb::$user->session_kill();
+			phpbb::$user->session_begin();
+			$message = phpbb::$user->lang['LOGOUT_REDIRECT'];
 		}
 		else
 		{
-			$message = ($user->data['user_id'] == ANONYMOUS) ? $user->lang['LOGOUT_REDIRECT'] : $user->lang['LOGOUT_FAILED'];
+			$message = (phpbb::$user->data['user_id'] == ANONYMOUS) ? phpbb::$user->lang['LOGOUT_REDIRECT'] : phpbb::$user->lang['LOGOUT_FAILED'];
 		}
-		meta_refresh(3, append_sid('index'));
+		phpbb::$url->meta_refresh(3, phpbb::$url->append_sid('index'));
 
-		$message = $message . '<br /><br />' . sprintf($user->lang['RETURN_INDEX'], '<a href="' . append_sid('index') . '">', '</a> ');
+		$message = $message . '<br /><br />' . phpbb::$user->lang('RETURN_INDEX', '<a href="' . phpbb::$url->append_sid('index') . '">', '</a> ');
 		trigger_error($message);
 
 	break;

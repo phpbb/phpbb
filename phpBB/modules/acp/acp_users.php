@@ -152,7 +152,7 @@ class acp_users
 		);
 
 		// Prevent normal users/admins change/view founders if they are not a founder by themselves
-		if ($user->data['user_type'] != phpbb::USER_FOUNDER && $user_row['user_type'] == phpbb::USER_FOUNDER)
+		if (!phpbb::$user->is_founder && $user_row['user_type'] == phpbb::USER_FOUNDER)
 		{
 			trigger_error($user->lang['NOT_MANAGE_FOUNDER'] . adm_back_link($this->u_action), E_USER_WARNING);
 		}
@@ -718,10 +718,10 @@ class acp_users
 					{
 						$sql_ary = array();
 
-						if ($user_row['user_type'] != phpbb::USER_FOUNDER || $user->data['user_type'] == phpbb::USER_FOUNDER)
+						if ($user_row['user_type'] != phpbb::USER_FOUNDER || phpbb::$user->is_founder)
 						{
 							// Only allow founders updating the founder status...
-							if ($user->data['user_type'] == phpbb::USER_FOUNDER)
+							if (phpbb::$user->is_founder)
 							{
 								// Setting a normal member to be a founder
 								if ($data['user_founder'] && $user_row['user_type'] != phpbb::USER_FOUNDER)
@@ -903,7 +903,7 @@ class acp_users
 					'L_NAME_CHARS_EXPLAIN'		=> sprintf($user->lang[phpbb::$config['allow_name_chars'] . '_EXPLAIN'], phpbb::$config['min_name_chars'], phpbb::$config['max_name_chars']),
 					'L_CHANGE_PASSWORD_EXPLAIN'	=> sprintf($user->lang[phpbb::$config['pass_complex'] . '_EXPLAIN'], phpbb::$config['min_pass_chars'], phpbb::$config['max_pass_chars']),
 					'L_POSTS_IN_QUEUE'			=> $user->lang('NUM_POSTS_IN_QUEUE', $user_row['posts_in_queue']),
-					'S_FOUNDER'					=> ($user->data['user_type'] == phpbb::USER_FOUNDER) ? true : false,
+					'S_FOUNDER'					=> phpbb::$user->is_founder,
 
 					'S_OVERVIEW'		=> true,
 					'S_USER_IP'			=> ($user_row['user_ip']) ? true : false,
@@ -1801,7 +1801,7 @@ class acp_users
 					$founder_manage = (int) $db->sql_fetchfield('group_founder_manage');
 					$db->sql_freeresult($result);
 
-					if ($user->data['user_type'] != phpbb::USER_FOUNDER && $founder_manage)
+					if (!phpbb::$user->is_founder && $founder_manage)
 					{
 						trigger_error($user->lang['NOT_ALLOWED_MANAGE_GROUP'] . adm_back_link($this->u_action . '&amp;u=' . $user_id), E_USER_WARNING);
 					}
@@ -1921,7 +1921,7 @@ class acp_users
 					}
 
 					// Do not display those groups not allowed to be managed
-					if ($user->data['user_type'] != phpbb::USER_FOUNDER && $row['group_founder_manage'])
+					if (!phpbb::$user->is_founder && $row['group_founder_manage'])
 					{
 						continue;
 					}

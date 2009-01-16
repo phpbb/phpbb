@@ -40,7 +40,7 @@ class p_master
 	*/
 	public function __construct($include_path = false)
 	{
-		$this->include_path = ($include_path !== false) ? $include_path : PHPBB_ROOT_PATH . 'includes/';
+		$this->include_path = ($include_path !== false) ? $include_path : PHPBB_ROOT_PATH . 'modules/';
 
 		// Make sure the path ends with /
 		if (substr($this->include_path, -1) !== '/')
@@ -78,8 +78,6 @@ class p_master
 	*/
 	function list_modules($p_class)
 	{
-		global $auth, $db, $user;
-
 		// Sanitise for future path use, it's escaped as appropriate for queries
 		$this->p_class = str_replace(array('.', '/', '\\'), '', basename($p_class));
 
@@ -89,16 +87,16 @@ class p_master
 			// Get modules
 			$sql = 'SELECT *
 				FROM ' . MODULES_TABLE . "
-				WHERE module_class = '" . $db->sql_escape($this->p_class) . "'
+				WHERE module_class = '" . phpbb::$db->sql_escape($this->p_class) . "'
 				ORDER BY left_id ASC";
-			$result = $db->sql_query($sql);
+			$result = phpbb::$db->sql_query($sql);
 
 			$rows = array();
-			while ($row = $db->sql_fetchrow($result))
+			while ($row = phpbb::$db->sql_fetchrow($result))
 			{
 				$rows[$row['module_id']] = $row;
 			}
-			$db->sql_freeresult($result);
+			phpbb::$db->sql_freeresult($result);
 
 			$this->module_cache = array();
 			foreach ($rows as $module_id => $row)
@@ -243,7 +241,7 @@ class p_master
 
 				'url_extra'	=> (function_exists($url_func)) ? $url_func($row['module_mode'], $row) : '',
 
-				'lang'		=> ($row['module_basename'] && function_exists($lang_func)) ? $lang_func($row['module_mode'], $row['module_langname']) : ((!empty($user->lang[$row['module_langname']])) ? $user->lang[$row['module_langname']] : $row['module_langname']),
+				'lang'		=> ($row['module_basename'] && function_exists($lang_func)) ? $lang_func($row['module_mode'], $row['module_langname']) : phpbb::$user->lang($row['module_langname']),
 				'langname'	=> $row['module_langname'],
 
 				'left'		=> $row['left_id'],
@@ -310,8 +308,6 @@ class p_master
 	*/
 	function module_auth($module_auth, $forum_id = false)
 	{
-		global $auth;
-
 		$module_auth = trim($module_auth);
 
 		// Generally allowed to access module if module_auth is empty
@@ -358,7 +354,7 @@ class p_master
 		$forum_id = ($forum_id === false) ? $this->acl_forum_id : $forum_id;
 
 		$is_auth = false;
-		eval('$is_auth = (int) (' . preg_replace(array('#acl_([a-z0-9_]+)(,\$id)?#', '#\$id#', '#aclf_([a-z0-9_]+)#', '#cfg_([a-z0-9_]+)#', '#request_([a-zA-Z0-9_]+)#'), array('(int) $auth->acl_get(\'\\1\'\\2)', '(int) $forum_id', '(int) $auth->acl_getf_global(\'\\1\')', '(int) phpbb::$config[\'\\1\']', 'phpbb_request::variable(\'\\1\', false)'), $module_auth) . ');');
+		eval('$is_auth = (int) (' . preg_replace(array('#acl_([a-z0-9_]+)(,\$id)?#', '#\$id#', '#aclf_([a-z0-9_]+)#', '#cfg_([a-z0-9_]+)#', '#request_([a-zA-Z0-9_]+)#'), array('(int) phpbb::$acl->acl_get(\'\\1\'\\2)', '(int) $forum_id', '(int) phpbb::$acl->acl_getf_global(\'\\1\')', '(int) phpbb::$config[\'\\1\']', 'phpbb_request::variable(\'\\1\', false)'), $module_auth) . ');');
 
 		return $is_auth;
 	}
@@ -426,8 +422,6 @@ class p_master
 	*/
 	function load_active($mode = false, $module_url = false, $execute_module = true)
 	{
-		global $user;
-
 		$module_path = $this->include_path . $this->p_class;
 		$icat = request_var('icat', '');
 
@@ -471,7 +465,7 @@ class p_master
 				}
 
 				// Not being able to overwrite ;)
-				$this->module->u_action = append_sid(PHPBB_ADMIN_PATH . 'index.' . PHP_EXT, "i={$this->p_name}") . (($icat) ? '&amp;icat=' . $icat : '') . "&amp;mode={$this->p_mode}";
+				$this->module->u_action = phpbb::$url->append_sid(PHPBB_ADMIN_PATH . 'index.' . PHP_EXT, "i={$this->p_name}") . (($icat) ? '&amp;icat=' . $icat : '') . "&amp;mode={$this->p_mode}";
 			}
 			else
 			{
@@ -482,10 +476,10 @@ class p_master
 				}
 				else
 				{
-					$this->module->u_action = PHPBB_ROOT_PATH . (($user->page['page_dir']) ? $user->page['page_dir'] . '/' : '') . $user->page['page_name'];
+					$this->module->u_action = PHPBB_ROOT_PATH . ((phpbb::$user->page['page_dir']) ? phpbb::$user->page['page_dir'] . '/' : '') . phpbb::$user->page['page_name'];
 				}
 
-				$this->module->u_action = append_sid($this->module->u_action, "i={$this->p_name}") . (($icat) ? '&amp;icat=' . $icat : '') . "&amp;mode={$this->p_mode}";
+				$this->module->u_action = phpbb::$url->append_sid($this->module->u_action, "i={$this->p_name}") . (($icat) ? '&amp;icat=' . $icat : '') . "&amp;mode={$this->p_mode}";
 			}
 
 			// Add url_extra parameter to u_action url
@@ -560,8 +554,6 @@ class p_master
 	*/
 	function get_parents($parent_id, $left_id, $right_id, &$all_parents)
 	{
-		global $db;
-
 		$parents = array();
 
 		if ($parent_id > 0)
@@ -646,8 +638,6 @@ class p_master
 	*/
 	function assign_tpl_vars($module_url)
 	{
-		global $template;
-
 		$current_id = $right_id = false;
 
 		// Make sure the module_url has a question mark set, effectively determining the delimiter to use
@@ -747,7 +737,7 @@ class p_master
 					'U_TITLE'		=> $u_title
 				);
 
-				$template->assign_block_vars($use_tabular_offset, array_merge($tpl_ary, array_change_key_case($item_ary, CASE_UPPER)));
+				phpbb::$template->assign_block_vars($use_tabular_offset, array_merge($tpl_ary, array_change_key_case($item_ary, CASE_UPPER)));
 			}
 
 			$tpl_ary = array(
@@ -756,7 +746,7 @@ class p_master
 				'U_TITLE'		=> $u_title
 			);
 
-			$template->assign_block_vars($linear_offset, array_merge($tpl_ary, array_change_key_case($item_ary, CASE_UPPER)));
+			phpbb::$template->assign_block_vars($linear_offset, array_merge($tpl_ary, array_change_key_case($item_ary, CASE_UPPER)));
 
 			$current_depth = $depth;
 		}
@@ -775,14 +765,12 @@ class p_master
 	*/
 	function get_page_title()
 	{
-		global $user;
-
 		if (!isset($this->module->page_title))
 		{
 			return '';
 		}
 
-		return (isset($user->lang[$this->module->page_title])) ? $user->lang[$this->module->page_title] : $this->module->page_title;
+		return phpbb::$user->lang($this->module->page_title);
 	}
 
 	/**
@@ -804,10 +792,8 @@ class p_master
 	*/
 	function display($page_title, $display_online_list = true)
 	{
-		global $template, $user;
-
 		// Generate the page
-		if (defined('IN_ADMIN') && isset($user->data['session_admin']) && $user->data['session_admin'])
+		if (defined('IN_ADMIN') && isset(phpbb::$user->data['session_admin']) && phpbb::$user->data['session_admin'])
 		{
 			adm_page_header($page_title);
 		}
@@ -816,11 +802,11 @@ class p_master
 			page_header($page_title, $display_online_list);
 		}
 
-		$template->set_filenames(array(
+		phpbb::$template->set_filenames(array(
 			'body' => $this->get_tpl_name())
 		);
 
-		if (defined('IN_ADMIN') && isset($user->data['session_admin']) && $user->data['session_admin'])
+		if (defined('IN_ADMIN') && isset(phpbb::$user->data['session_admin']) && phpbb::$user->data['session_admin'])
 		{
 			adm_page_footer();
 		}
@@ -849,13 +835,11 @@ class p_master
 	*/
 	function add_mod_info($module_class)
 	{
-		global $user;
-
-		if (file_exists($user->lang_path . $user->lang_name . '/mods'))
+		if (file_exists(phpbb::$user->lang_path . phpbb::$user->lang_name . '/mods'))
 		{
 			$add_files = array();
 
-			$dir = @opendir($user->lang_path . $user->lang_name . '/mods');
+			$dir = @opendir(phpbb::$user->lang_path . phpbb::$user->lang_name . '/mods');
 
 			if ($dir)
 			{
@@ -871,7 +855,7 @@ class p_master
 
 			if (sizeof($add_files))
 			{
-				$user->add_lang($add_files);
+				phpbb::$user->add_lang($add_files);
 			}
 		}
 	}
