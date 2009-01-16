@@ -341,11 +341,12 @@ $schema_data['phpbb_groups'] = array(
 		'group_sig_chars'		=> array('UINT', 0),
 		'group_receive_pm'		=> array('BOOL', 0),
 		'group_message_limit'	=> array('UINT', 0),
+		'group_max_recipients'	=> array('UINT', 0),
 		'group_legend'			=> array('BOOL', 1),
 	),
 	'PRIMARY_KEY'	=> 'group_id',
 	'KEYS'			=> array(
-		'group_legend'			=> array('INDEX', 'group_legend'),
+		'group_legend_name'		=> array('INDEX', array('group_legend', 'group_name')),
 	),
 );
 
@@ -604,6 +605,7 @@ $schema_data['phpbb_profile_fields'] = array(
 		'field_validation'		=> array('VCHAR_UNI:20', ''),
 		'field_required'		=> array('BOOL', 0),
 		'field_show_on_reg'		=> array('BOOL', 0),
+		'field_show_profile'	=> array('BOOL', 0),
 		'field_hide'			=> array('BOOL', 0),
 		'field_no_view'			=> array('BOOL', 0),
 		'field_active'			=> array('BOOL', 0),
@@ -736,7 +738,7 @@ $schema_data['phpbb_sessions'] = array(
 	'PRIMARY_KEY'	=> 'session_id',
 	'KEYS'			=> array(
 		'session_time'		=> array('INDEX', 'session_time'),
-		'session_uid'		=> array('INDEX', 'session_user_id'),
+		'session_user_id'	=> array('INDEX', 'session_user_id'),
 		'session_fid'		=> array('INDEX', 'session_forum_id'),
 	),
 );
@@ -808,6 +810,9 @@ $schema_data['phpbb_styles_template'] = array(
 		'template_copyright'	=> array('VCHAR_UNI', ''),
 		'template_path'			=> array('VCHAR:100', ''),
 		'bbcode_bitfield'		=> array('VCHAR:255', 'kNg='),
+		'template_storedb'		=> array('BOOL', 0),
+		'template_inherits_id'		=> array('UINT:4', 0),
+		'template_inherit_path'		=> array('VCHAR', ''),
 	),
 	'PRIMARY_KEY'	=> 'template_id',
 	'KEYS'			=> array(
@@ -1071,9 +1076,6 @@ $schema_data['phpbb_zebra'] = array(
 		'foe'					=> array('BOOL', 0),
 	),
 	'PRIMARY_KEY'	=> array('user_id', 'zebra_id'),
-	'KEYS'			=> array(
-		'zebra_user'			=> array('INDEX', array('zebra_id', 'user_id')),
-	),
 );
 
 ?>
