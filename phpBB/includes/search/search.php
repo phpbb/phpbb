@@ -45,14 +45,12 @@ class search_backend
 	{
 		if (!sizeof($this->ignore_words))
 		{
-			global $user;
-
 			$words = array();
 
-			if (file_exists("{$user->lang_path}{$user->lang_name}/search_ignore_words." . PHP_EXT))
+			if (file_exists(phpbb::$user->lang_path . phpbb::$user->lang_name . '/search_ignore_words.' . PHP_EXT))
 			{
 				// include the file containing ignore words
-				include("{$user->lang_path}{$user->lang_name}/search_ignore_words." . PHP_EXT);
+				include(phpbb::$user->lang_path . phpbb::$user->lang_name . '/search_ignore_words.' . PHP_EXT);
 			}
 
 			$this->ignore_words = $words;
@@ -67,14 +65,12 @@ class search_backend
 	{
 		if (!sizeof($this->match_synonym))
 		{
-			global $user;
-
 			$synonyms = array();
 
-			if (file_exists("{$user->lang_path}{$user->lang_name}/search_synonyms." . PHP_EXT))
+			if (file_exists(phpbb::$user->lang_path . phpbb::$user->lang_name . '/search_synonyms.' . PHP_EXT))
 			{
 				// include the file containing synonyms
-				include("{$user->lang_path}{$user->lang_name}/search_synonyms." . PHP_EXT);
+				include(phpbb::$user->lang_path . phpbb::$user->lang_name . '/search_synonyms.' . PHP_EXT);
 			}
 
 			$this->match_synonym = array_keys($synonyms);
@@ -152,8 +148,6 @@ class search_backend
 	*/
 	protected function save_ids($search_key, $keywords, $author_ary, $result_count, &$id_ary, $start, $sort_dir)
 	{
-		global $db, $user;
-
 		$length = min(sizeof($id_ary), phpbb::$config['search_block_size']);
 
 		// nothing to cache so exit
@@ -173,10 +167,10 @@ class search_backend
 			{
 				$sql = 'SELECT search_time
 					FROM ' . SEARCH_RESULTS_TABLE . '
-					WHERE search_key = \'' . $db->sql_escape($search_key) . '\'';
-				$result = $db->sql_query($sql);
+					WHERE search_key = \'' . phpbb::$db->sql_escape($search_key) . '\'';
+				$result = phpbb::$db->sql_query($sql);
 
-				if (!$db->sql_fetchrow($result))
+				if (!phpbb::$db->sql_fetchrow($result))
 				{
 					$sql_ary = array(
 						'search_key'		=> $search_key,
@@ -185,16 +179,16 @@ class search_backend
 						'search_authors'	=> ' ' . implode(' ', $author_ary) . ' '
 					);
 
-					$sql = 'INSERT INTO ' . SEARCH_RESULTS_TABLE . ' ' . $db->sql_build_array('INSERT', $sql_ary);
-					$db->sql_query($sql);
+					$sql = 'INSERT INTO ' . SEARCH_RESULTS_TABLE . ' ' . phpbb::$db->sql_build_array('INSERT', $sql_ary);
+					phpbb::$db->sql_query($sql);
 				}
-				$db->sql_freeresult($result);
+				phpbb::$db->sql_freeresult($result);
 			}
 
 			$sql = 'UPDATE ' . USERS_TABLE . '
 				SET user_last_search = ' . time() . '
-				WHERE user_id = ' . $user->data['user_id'];
-			$db->sql_query($sql);
+				WHERE user_id = ' . phpbb::$user->data['user_id'];
+			phpbb::$db->sql_query($sql);
 
 			$store = array(-1 => $result_count, -2 => $sort_dir);
 			$id_range = range($start, $start + $length - 1);
@@ -247,8 +241,8 @@ class search_backend
 
 			$sql = 'UPDATE ' . SEARCH_RESULTS_TABLE . '
 				SET search_time = ' . time() . '
-				WHERE search_key = \'' . $db->sql_escape($search_key) . '\'';
-			$db->sql_query($sql);
+				WHERE search_key = \'' . phpbb::$db->sql_escape($search_key) . '\'';
+			phpbb::$db->sql_query($sql);
 		}
 
 		unset($store);
@@ -261,27 +255,25 @@ class search_backend
 	*/
 	public function destroy_cache($words, $authors = false)
 	{
-		global $db;
-
 		// clear all searches that searched for the specified words
 		if (sizeof($words))
 		{
 			$sql_where = '';
 			foreach ($words as $word)
 			{
-				$sql_where .= " OR search_keywords " . $db->sql_like_expression($db->any_char . $word . $db->any_char);
+				$sql_where .= " OR search_keywords " . phpbb::$db->sql_like_expression(phpbb::$db->any_char . $word . phpbb::$db->any_char);
 			}
 
 			$sql = 'SELECT search_key
 				FROM ' . SEARCH_RESULTS_TABLE . "
 				WHERE search_keywords LIKE '%*%' $sql_where";
-			$result = $db->sql_query($sql);
+			$result = phpbb::$db->sql_query($sql);
 
-			while ($row = $db->sql_fetchrow($result))
+			while ($row = phpbb::$db->sql_fetchrow($result))
 			{
 				phpbb::$acm->destroy('search_results_' . $row['search_key']);
 			}
-			$db->sql_freeresult($result);
+			phpbb::$db->sql_freeresult($result);
 		}
 
 		// clear all searches that searched for the specified authors
@@ -296,19 +288,19 @@ class search_backend
 			$sql = 'SELECT search_key
 				FROM ' . SEARCH_RESULTS_TABLE . "
 				WHERE $sql_where";
-			$result = $db->sql_query($sql);
+			$result = phpbb::$db->sql_query($sql);
 
-			while ($row = $db->sql_fetchrow($result))
+			while ($row = phpbb::$db->sql_fetchrow($result))
 			{
 				phpbb::$acm->destroy('search_results_' . $row['search_key']);
 			}
-			$db->sql_freeresult($result);
+			phpbb::$db->sql_freeresult($result);
 		}
 
 		$sql = 'DELETE
 			FROM ' . SEARCH_RESULTS_TABLE . '
 			WHERE search_time < ' . (time() - phpbb::$config['search_store_results']);
-		$db->sql_query($sql);
+		phpbb::$db->sql_query($sql);
 	}
 }
 

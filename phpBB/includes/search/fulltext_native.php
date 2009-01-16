@@ -79,8 +79,6 @@ class fulltext_native extends search_backend
 	*/
 	public function split_keywords($keywords, $terms)
 	{
-		global $db, $user;
-
 		$keywords = trim($this->cleanup($keywords, '+-|()*'));
 
 		// allow word|word|word without brackets
@@ -193,11 +191,11 @@ class fulltext_native extends search_backend
 		{
 			$sql = 'SELECT word_id, word_text, word_common
 				FROM ' . SEARCH_WORDLIST_TABLE . '
-				WHERE ' . $db->sql_in_set('word_text', $exact_words);
-			$result = $db->sql_query($sql);
+				WHERE ' . phpbb::$db->sql_in_set('word_text', $exact_words);
+			$result = phpbb::$db->sql_query($sql);
 
 			// store an array of words and ids, remove common words
-			while ($row = $db->sql_fetchrow($result))
+			while ($row = phpbb::$db->sql_fetchrow($result))
 			{
 				if ($row['word_common'])
 				{
@@ -208,7 +206,7 @@ class fulltext_native extends search_backend
 
 				$words[$row['word_text']] = (int) $row['word_id'];
 			}
-			$db->sql_freeresult($result);
+			phpbb::$db->sql_freeresult($result);
 		}
 		unset($exact_words);
 
@@ -279,7 +277,7 @@ class fulltext_native extends search_backend
 				{
 					if (strpos($word_part, '*') !== false)
 					{
-						$id_words[] = '\'' . $db->sql_escape(str_replace('*', '%', $word_part)) . '\'';
+						$id_words[] = '\'' . phpbb::$db->sql_escape(str_replace('*', '%', $word_part)) . '\'';
 						$non_common_words[] = $word_part;
 					}
 					else if (isset($words[$word_part]))
@@ -312,7 +310,7 @@ class fulltext_native extends search_backend
 				// throw an error if we shall not ignore unexistant words
 				else if (!$ignore_no_id && sizeof($non_common_words))
 				{
-					trigger_error(sprintf($user->lang['WORDS_IN_NO_POST'], implode(', ', $non_common_words)));
+					trigger_error(phpbb::$user->lang('WORDS_IN_NO_POST', implode(', ', $non_common_words)));
 				}
 				unset($non_common_words);
 			}
@@ -324,7 +322,7 @@ class fulltext_native extends search_backend
 					$len = utf8_strlen(str_replace('*', '', $word));
 					if ($len >= $this->word_length['min'] && $len <= $this->word_length['max'])
 					{
-						$this->{$mode . '_ids'}[] = '\'' . $db->sql_escape(str_replace('*', '%', $word)) . '\'';
+						$this->{$mode . '_ids'}[] = '\'' . phpbb::$db->sql_escape(str_replace('*', '%', $word)) . '\'';
 					}
 					else
 					{
@@ -344,7 +342,7 @@ class fulltext_native extends search_backend
 					$len = utf8_strlen($word);
 					if ($len >= $this->word_length['min'] && $len <= $this->word_length['max'])
 					{
-						trigger_error(sprintf($user->lang['WORD_IN_NO_POST'], $word));
+						trigger_error(phpbb::$db->lang('WORD_IN_NO_POST', $word));
 					}
 					else
 					{
@@ -402,8 +400,6 @@ class fulltext_native extends search_backend
 	*/
 	public function keyword_search($type, &$fields, &$terms, &$sort_by_sql, &$sort_key, &$sort_dir, &$sort_days, &$ex_fid_ary, &$m_approve_fid_ary, &$topic_id, &$author_ary, &$id_ary, $start, $per_page)
 	{
-		global $db;
-
 		// No keywords? No posts.
 		if (empty($this->search_query))
 		{
@@ -512,7 +508,7 @@ class fulltext_native extends search_backend
 					}
 				}
 
-				$sql_where[] = $db->sql_in_set("m$m_num.word_id", $word_ids);
+				$sql_where[] = phpbb::$db->sql_in_set("m$m_num.word_id", $word_ids);
 
 				unset($word_id_sql);
 				unset($word_ids);
@@ -566,7 +562,7 @@ class fulltext_native extends search_backend
 		{
 			$sql_array['LEFT_JOIN'][] = array(
 				'FROM'	=> array(SEARCH_WORDMATCH_TABLE => 'm' . $m_num),
-				'ON'	=> $db->sql_in_set("m$m_num.word_id", $this->must_not_contain_ids) . (($title_match) ? " AND m$m_num.$title_match" : '') . " AND m$m_num.post_id = m0.post_id"
+				'ON'	=> phpbb::$db->sql_in_set("m$m_num.word_id", $this->must_not_contain_ids) . (($title_match) ? " AND m$m_num.$title_match" : '') . " AND m$m_num.post_id = m0.post_id"
 			);
 
 			$sql_where[] = "m$m_num.word_id IS NULL";
@@ -607,7 +603,7 @@ class fulltext_native extends search_backend
 		}
 		else if ($m_approve_fid_ary !== array(-1))
 		{
-			$sql_where[] = '(p.post_approved = 1 OR ' . $db->sql_in_set('p.forum_id', $m_approve_fid_ary, true) . ')';
+			$sql_where[] = '(p.post_approved = 1 OR ' . phpbb::$db->sql_in_set('p.forum_id', $m_approve_fid_ary, true) . ')';
 		}
 
 		if ($topic_id)
@@ -617,12 +613,12 @@ class fulltext_native extends search_backend
 
 		if (sizeof($author_ary))
 		{
-			$sql_where[] = $db->sql_in_set('p.poster_id', $author_ary);
+			$sql_where[] = phpbb::$db->sql_in_set('p.poster_id', $author_ary);
 		}
 
 		if (sizeof($ex_fid_ary))
 		{
-			$sql_where[] = $db->sql_in_set('p.forum_id', $ex_fid_ary, true);
+			$sql_where[] = phpbb::$db->sql_in_set('p.forum_id', $ex_fid_ary, true);
 		}
 
 		if ($sort_days)
@@ -639,26 +635,26 @@ class fulltext_native extends search_backend
 			$sql = '';
 			$sql_array_count = $sql_array;
 
-			if ($db->dbms_type === 'mysql')
+			if (phpbb::$db->dbms_type === 'mysql')
 			{
 				$sql_array['SELECT'] = 'SQL_CALC_FOUND_ROWS ' . $sql_array['SELECT'];
 				$is_mysql = true;
 			}
 			else
 			{
-				if (!$db->count_distinct)
+				if (!phpbb::$db->count_distinct)
 				{
 					$sql_array_count['SELECT'] = ($type == 'posts') ? 'DISTINCT p.post_id' : 'DISTINCT p.topic_id';
 					$sql = 'SELECT COUNT(' . (($type == 'posts') ? 'post_id' : 'topic_id') . ') as total_results
-							FROM (' . $db->sql_build_query('SELECT', $sql_array_count) . ')';
+							FROM (' . phpbb::$db->sql_build_query('SELECT', $sql_array_count) . ')';
 				}
 
 				$sql_array_count['SELECT'] = ($type == 'posts') ? 'COUNT(DISTINCT p.post_id) AS total_results' : 'COUNT(DISTINCT p.topic_id) AS total_results';
-				$sql = (!$sql) ? $db->sql_build_query('SELECT', $sql_array_count) : $sql;
+				$sql = (!$sql) ? phpbb::$db->sql_build_query('SELECT', $sql_array_count) : $sql;
 
-				$result = $db->sql_query($sql);
-				$total_results = (int) $db->sql_fetchfield('total_results');
-				$db->sql_freeresult($result);
+				$result = phpbb::$db->sql_query($sql);
+				$total_results = (int) phpbb::$db->sql_fetchfield('total_results');
+				phpbb::$db->sql_freeresult($result);
 
 				if (!$total_results)
 				{
@@ -699,14 +695,14 @@ class fulltext_native extends search_backend
 
 		unset($sql_where, $sql_sort, $group_by);
 
-		$sql = $db->sql_build_query('SELECT', $sql_array);
-		$result = $db->sql_query_limit($sql, phpbb::$config['search_block_size'], $start);
+		$sql = phpbb::$db->sql_build_query('SELECT', $sql_array);
+		$result = phpbb::$db->sql_query_limit($sql, phpbb::$config['search_block_size'], $start);
 
-		while ($row = $db->sql_fetchrow($result))
+		while ($row = phpbb::$db->sql_fetchrow($result))
 		{
 			$id_ary[] = $row[(($type == 'posts') ? 'post_id' : 'topic_id')];
 		}
-		$db->sql_freeresult($result);
+		phpbb::$db->sql_freeresult($result);
 
 		if (!sizeof($id_ary))
 		{
@@ -717,9 +713,9 @@ class fulltext_native extends search_backend
 		if (!$total_results && $is_mysql)
 		{
 			$sql = 'SELECT FOUND_ROWS() as total_results';
-			$result = $db->sql_query($sql);
-			$total_results = (int) $db->sql_fetchfield('total_results');
-			$db->sql_freeresult($result);
+			$result = phpbb::$db->sql_query($sql);
+			$total_results = (int) phpbb::$db->sql_fetchfield('total_results');
+			phpbb::$db->sql_freeresult($result);
 
 			if (!$total_results)
 			{
@@ -756,8 +752,6 @@ class fulltext_native extends search_backend
 	*/
 	public function author_search($type, $firstpost_only, &$sort_by_sql, &$sort_key, &$sort_dir, &$sort_days, &$ex_fid_ary, &$m_approve_fid_ary, &$topic_id, &$author_ary, &$id_ary, $start, $per_page)
 	{
-		global $db;
-
 		// No author? No posts.
 		if (!sizeof($author_ary))
 		{
@@ -789,8 +783,8 @@ class fulltext_native extends search_backend
 		$id_ary = array();
 
 		// Create some display specific sql strings
-		$sql_author		= $db->sql_in_set('p.poster_id', $author_ary);
-		$sql_fora		= (sizeof($ex_fid_ary)) ? ' AND ' . $db->sql_in_set('p.forum_id', $ex_fid_ary, true) : '';
+		$sql_author		= phpbb::$db->sql_in_set('p.poster_id', $author_ary);
+		$sql_fora		= (sizeof($ex_fid_ary)) ? ' AND ' . phpbb::$db->sql_in_set('p.forum_id', $ex_fid_ary, true) : '';
 		$sql_time		= ($sort_days) ? ' AND p.post_time >= ' . (time() - ($sort_days * 86400)) : '';
 		$sql_topic_id	= ($topic_id) ? ' AND p.topic_id = ' . (int) $topic_id : '';
 		$sql_firstpost = ($firstpost_only) ? ' AND p.post_id = t.topic_first_post_id' : '';
@@ -826,7 +820,7 @@ class fulltext_native extends search_backend
 		}
 		else
 		{
-			$m_approve_fid_sql = ' AND (p.post_approved = 1 OR ' . $db->sql_in_set('p.forum_id', $m_approve_fid_ary, true) . ')';
+			$m_approve_fid_sql = ' AND (p.post_approved = 1 OR ' . phpbb::$db->sql_in_set('p.forum_id', $m_approve_fid_ary, true) . ')';
 		}
 
 		$select = ($type == 'posts') ? 'p.post_id' : 't.topic_id';
@@ -835,7 +829,7 @@ class fulltext_native extends search_backend
 		// If the cache was completely empty count the results
 		if (!$total_results)
 		{
-			if ($db->dbms_type === 'mysql')
+			if (phpbb::$db->dbms_type === 'mysql')
 			{
 					$select = 'SQL_CALC_FOUND_ROWS ' . $select;
 					$is_mysql = true;
@@ -855,7 +849,7 @@ class fulltext_native extends search_backend
 				}
 				else
 				{
-					if ($db->count_distinct)
+					if (phpbb::$db->count_distinct)
 					{
 						$sql = 'SELECT COUNT(DISTINCT t.topic_id) as total_results';
 					}
@@ -872,12 +866,12 @@ class fulltext_native extends search_backend
 							$m_approve_fid_sql
 							$sql_fora
 							AND t.topic_id = p.topic_id
-							$sql_time" . (($db->count_distinct) ? '' : ')');
+							$sql_time" . ((phpbb::$db->count_distinct) ? '' : ')');
 				}
-				$result = $db->sql_query($sql);
+				$result = phpbb::$db->sql_query($sql);
 
-				$total_results = (int) $db->sql_fetchfield('total_results');
-				$db->sql_freeresult($result);
+				$total_results = (int) phpbb::$db->sql_fetchfield('total_results');
+				phpbb::$db->sql_freeresult($result);
 
 				if (!$total_results)
 				{
@@ -919,20 +913,20 @@ class fulltext_native extends search_backend
 		}
 
 		// Only read one block of posts from the db and then cache it
-		$result = $db->sql_query_limit($sql, phpbb::$config['search_block_size'], $start);
+		$result = phpbb::$db->sql_query_limit($sql, phpbb::$config['search_block_size'], $start);
 
-		while ($row = $db->sql_fetchrow($result))
+		while ($row = phpbb::$db->sql_fetchrow($result))
 		{
 			$id_ary[] = $row[$field];
 		}
-		$db->sql_freeresult($result);
+		phpbb::$db->sql_freeresult($result);
 
 		if (!$total_results && $is_mysql)
 		{
 			$sql = 'SELECT FOUND_ROWS() as total_results';
-			$result = $db->sql_query($sql);
-			$total_results = (int) $db->sql_fetchfield('total_results');
-			$db->sql_freeresult($result);
+			$result = phpbb::$db->sql_query($sql);
+			$total_results = (int) phpbb::$db->sql_fetchfield('total_results');
+			phpbb::$db->sql_freeresult($result);
 
 			if (!$total_results)
 			{
@@ -965,8 +959,6 @@ class fulltext_native extends search_backend
 	*/
 	private function split_message($text)
 	{
-		global $user;
-
 		$match = $words = array();
 
 		/**
@@ -1044,8 +1036,6 @@ class fulltext_native extends search_backend
 	*/
 	public function index($mode, $post_id, &$message, &$subject, $poster_id, $forum_id)
 	{
-		global $db, $user;
-
 		if (!phpbb::$config['fulltext_native_load_upd'])
 		{
 			/**
@@ -1072,14 +1062,14 @@ class fulltext_native extends search_backend
 				FROM ' . SEARCH_WORDLIST_TABLE . ' w, ' . SEARCH_WORDMATCH_TABLE . " m
 				WHERE m.post_id = $post_id
 					AND w.word_id = m.word_id";
-			$result = $db->sql_query($sql);
+			$result = phpbb::$db->sql_query($sql);
 
-			while ($row = $db->sql_fetchrow($result))
+			while ($row = phpbb::$db->sql_fetchrow($result))
 			{
 				$which = ($row['title_match']) ? 'title' : 'post';
 				$cur_words[$which][$row['word_text']] = $row['word_id'];
 			}
-			$db->sql_freeresult($result);
+			phpbb::$db->sql_freeresult($result);
 
 			$words['add']['post'] = array_diff($split_text, array_keys($cur_words['post']));
 			$words['add']['title'] = array_diff($split_title, array_keys($cur_words['title']));
@@ -1107,18 +1097,18 @@ class fulltext_native extends search_backend
 		{
 			$sql = 'SELECT word_id, word_text
 				FROM ' . SEARCH_WORDLIST_TABLE . '
-				WHERE ' . $db->sql_in_set('word_text', $unique_add_words);
-			$result = $db->sql_query($sql);
+				WHERE ' . phpbb::$db->sql_in_set('word_text', $unique_add_words);
+			$result = phpbb::$db->sql_query($sql);
 
 			$word_ids = array();
-			while ($row = $db->sql_fetchrow($result))
+			while ($row = phpbb::$db->sql_fetchrow($result))
 			{
 				$word_ids[$row['word_text']] = $row['word_id'];
 			}
-			$db->sql_freeresult($result);
+			phpbb::$db->sql_freeresult($result);
 			$new_words = array_diff($unique_add_words, array_keys($word_ids));
 
-			$db->sql_transaction('begin');
+			phpbb::$db->sql_transaction('begin');
 			if (sizeof($new_words))
 			{
 				$sql_ary = array();
@@ -1127,15 +1117,15 @@ class fulltext_native extends search_backend
 				{
 					$sql_ary[] = array('word_text' => (string) $word, 'word_count' => 0);
 				}
-				$db->sql_return_on_error(true);
-				$db->sql_multi_insert(SEARCH_WORDLIST_TABLE, $sql_ary);
-				$db->sql_return_on_error(false);
+				phpbb::$db->sql_return_on_error(true);
+				phpbb::$db->sql_multi_insert(SEARCH_WORDLIST_TABLE, $sql_ary);
+				phpbb::$db->sql_return_on_error(false);
 			}
 			unset($new_words, $sql_ary);
 		}
 		else
 		{
-			$db->sql_transaction('begin');
+			phpbb::$db->sql_transaction('begin');
 		}
 
 		// now update the search match table, remove links to removed words and add links to new words
@@ -1152,22 +1142,22 @@ class fulltext_native extends search_backend
 				}
 
 				$sql = 'DELETE FROM ' . SEARCH_WORDMATCH_TABLE . '
-					WHERE ' . $db->sql_in_set('word_id', $sql_in) . '
+					WHERE ' . phpbb::$db->sql_in_set('word_id', $sql_in) . '
 						AND post_id = ' . intval($post_id) . "
 						AND title_match = $title_match";
-				$db->sql_query($sql);
+				phpbb::$db->sql_query($sql);
 
 				$sql = 'UPDATE ' . SEARCH_WORDLIST_TABLE . '
 					SET word_count = word_count - 1
-					WHERE ' . $db->sql_in_set('word_id', $sql_in) . '
+					WHERE ' . phpbb::$db->sql_in_set('word_id', $sql_in) . '
 						AND word_count > 0';
-				$db->sql_query($sql);
+				phpbb::$db->sql_query($sql);
 
 				unset($sql_in);
 			}
 		}
 
-		$db->sql_return_on_error(true);
+		phpbb::$db->sql_return_on_error(true);
 		foreach ($words['add'] as $word_in => $word_ary)
 		{
 			$title_match = ($word_in == 'title') ? 1 : 0;
@@ -1177,18 +1167,18 @@ class fulltext_native extends search_backend
 				$sql = 'INSERT INTO ' . SEARCH_WORDMATCH_TABLE . ' (post_id, word_id, title_match)
 					SELECT ' . (int) $post_id . ', word_id, ' . (int) $title_match . '
 					FROM ' . SEARCH_WORDLIST_TABLE . '
-					WHERE ' . $db->sql_in_set('word_text', $word_ary);
-				$db->sql_query($sql);
+					WHERE ' . phpbb::$db->sql_in_set('word_text', $word_ary);
+				phpbb::$db->sql_query($sql);
 
 				$sql = 'UPDATE ' . SEARCH_WORDLIST_TABLE . '
 					SET word_count = word_count + 1
-					WHERE ' . $db->sql_in_set('word_text', $word_ary);
-				$db->sql_query($sql);
+					WHERE ' . phpbb::$db->sql_in_set('word_text', $word_ary);
+				phpbb::$db->sql_query($sql);
 			}
 		}
-		$db->sql_return_on_error(false);
+		phpbb::$db->sql_return_on_error(false);
 
-		$db->sql_transaction('commit');
+		phpbb::$db->sql_transaction('commit');
 
 		// destroy cached search results containing any of the words removed or added
 		$this->destroy_cache(array_unique(array_merge($words['add']['post'], $words['add']['title'], $words['del']['post'], $words['del']['title'])), array($poster_id));
@@ -1203,18 +1193,16 @@ class fulltext_native extends search_backend
 	*/
 	public function index_remove($post_ids, $author_ids, $forum_ids)
 	{
-		global $db;
-
 		if (sizeof($post_ids))
 		{
 			$sql = 'SELECT w.word_id, w.word_text, m.title_match
 				FROM ' . SEARCH_WORDMATCH_TABLE . ' m, ' . SEARCH_WORDLIST_TABLE . ' w
-				WHERE ' . $db->sql_in_set('m.post_id', $post_ids) . '
+				WHERE ' . phpbb::$db->sql_in_set('m.post_id', $post_ids) . '
 					AND w.word_id = m.word_id';
-			$result = $db->sql_query($sql);
+			$result = phpbb::$db->sql_query($sql);
 
 			$message_word_ids = $title_word_ids = $word_texts = array();
-			while ($row = $db->sql_fetchrow($result))
+			while ($row = phpbb::$db->sql_fetchrow($result))
 			{
 				if ($row['title_match'])
 				{
@@ -1226,32 +1214,32 @@ class fulltext_native extends search_backend
 				}
 				$word_texts[] = $row['word_text'];
 			}
-			$db->sql_freeresult($result);
+			phpbb::$db->sql_freeresult($result);
 
 			if (sizeof($title_word_ids))
 			{
 				$sql = 'UPDATE ' . SEARCH_WORDLIST_TABLE . '
 					SET word_count = word_count - 1
-					WHERE ' . $db->sql_in_set('word_id', $title_word_ids) . '
+					WHERE ' . phpbb::$db->sql_in_set('word_id', $title_word_ids) . '
 						AND word_count > 0';
-				$db->sql_query($sql);
+				phpbb::$db->sql_query($sql);
 			}
 
 			if (sizeof($message_word_ids))
 			{
 				$sql = 'UPDATE ' . SEARCH_WORDLIST_TABLE . '
 					SET word_count = word_count - 1
-					WHERE ' . $db->sql_in_set('word_id', $message_word_ids) . '
+					WHERE ' . phpbb::$db->sql_in_set('word_id', $message_word_ids) . '
 						AND word_count > 0';
-				$db->sql_query($sql);
+				phpbb::$db->sql_query($sql);
 			}
 
 			unset($title_word_ids);
 			unset($message_word_ids);
 
 			$sql = 'DELETE FROM ' . SEARCH_WORDMATCH_TABLE . '
-				WHERE ' . $db->sql_in_set('post_id', $post_ids);
-			$db->sql_query($sql);
+				WHERE ' . phpbb::$db->sql_in_set('post_id', $post_ids);
+			phpbb::$db->sql_query($sql);
 		}
 
 		$this->destroy_cache(array_unique($word_texts), $author_ids);
@@ -1263,8 +1251,6 @@ class fulltext_native extends search_backend
 	*/
 	public function tidy()
 	{
-		global $db;
-
 		// Is the fulltext indexer disabled? If yes then we need not
 		// carry on ... it's okay ... I know when I'm not wanted boo hoo
 		if (!phpbb::$config['fulltext_native_load_upd'])
@@ -1284,23 +1270,23 @@ class fulltext_native extends search_backend
 				FROM ' . SEARCH_WORDLIST_TABLE . '
 				WHERE word_count > ' . floor(phpbb::$config['num_posts'] * $common_threshold) . '
 					OR word_common = 1';
-			$result = $db->sql_query($sql);
+			$result = phpbb::$db->sql_query($sql);
 
 			$sql_in = array();
-			while ($row = $db->sql_fetchrow($result))
+			while ($row = phpbb::$db->sql_fetchrow($result))
 			{
 				$sql_in[] = $row['word_id'];
 				$destroy_cache_words[] = $row['word_text'];
 			}
-			$db->sql_freeresult($result);
+			phpbb::$db->sql_freeresult($result);
 
 			if (sizeof($sql_in))
 			{
 				// Flag the words
 				$sql = 'UPDATE ' . SEARCH_WORDLIST_TABLE . '
 					SET word_common = 1
-					WHERE ' . $db->sql_in_set('word_id', $sql_in);
-				$db->sql_query($sql);
+					WHERE ' . phpbb::$db->sql_in_set('word_id', $sql_in);
+				phpbb::$db->sql_query($sql);
 
 				// by setting search_last_gc to the new time here we make sure that if a user reloads because the
 				// following query takes too long, he won't run into it again
@@ -1308,8 +1294,8 @@ class fulltext_native extends search_backend
 
 				// Delete the matches
 				$sql = 'DELETE FROM ' . SEARCH_WORDMATCH_TABLE . '
-					WHERE ' . $db->sql_in_set('word_id', $sql_in);
-				$db->sql_query($sql);
+					WHERE ' . phpbb::$db->sql_in_set('word_id', $sql_in);
+				phpbb::$db->sql_query($sql);
 			}
 			unset($sql_in);
 		}
@@ -1328,19 +1314,17 @@ class fulltext_native extends search_backend
 	*/
 	public function delete_index($acp_module, $u_action)
 	{
-		global $db;
-
-		if ($db->truncate)
+		if (phpbb::$db->features['truncate'])
 		{
-			$db->sql_query('TRUNCATE TABLE ' . SEARCH_WORDLIST_TABLE);
-			$db->sql_query('TRUNCATE TABLE ' . SEARCH_WORDMATCH_TABLE);
-			$db->sql_query('TRUNCATE TABLE ' . SEARCH_RESULTS_TABLE);
+			phpbb::$db->sql_query('TRUNCATE TABLE ' . SEARCH_WORDLIST_TABLE);
+			phpbb::$db->sql_query('TRUNCATE TABLE ' . SEARCH_WORDMATCH_TABLE);
+			phpbb::$db->sql_query('TRUNCATE TABLE ' . SEARCH_RESULTS_TABLE);
 		}
 		else
 		{
-			$db->sql_query('DELETE FROM ' . SEARCH_WORDLIST_TABLE);
-			$db->sql_query('DELETE FROM ' . SEARCH_WORDMATCH_TABLE);
-			$db->sql_query('DELETE FROM ' . SEARCH_RESULTS_TABLE);
+			phpbb::$db->sql_query('DELETE FROM ' . SEARCH_WORDLIST_TABLE);
+			phpbb::$db->sql_query('DELETE FROM ' . SEARCH_WORDMATCH_TABLE);
+			phpbb::$db->sql_query('DELETE FROM ' . SEARCH_RESULTS_TABLE);
 		}
 	}
 
@@ -1362,33 +1346,30 @@ class fulltext_native extends search_backend
 	*/
 	public function index_stats()
 	{
-		global $user;
-
 		if (!sizeof($this->stats))
 		{
 			$this->get_stats();
 		}
 
 		return array(
-			$user->lang['TOTAL_WORDS']		=> $this->stats['total_words'],
-			$user->lang['TOTAL_MATCHES']	=> $this->stats['total_matches']);
+			phpbb::$db->lang['TOTAL_WORDS']		=> $this->stats['total_words'],
+			phpbb::$db->lang['TOTAL_MATCHES']	=> $this->stats['total_matches'],
+		);
 	}
 
 	private function get_stats()
 	{
-		global $db;
-
 		$sql = 'SELECT COUNT(*) as total_words
 			FROM ' . SEARCH_WORDLIST_TABLE;
-		$result = $db->sql_query($sql);
-		$this->stats['total_words'] = (int) $db->sql_fetchfield('total_words');
-		$db->sql_freeresult($result);
+		$result = phpbb::$db->sql_query($sql);
+		$this->stats['total_words'] = (int) phpbb::$db->sql_fetchfield('total_words');
+		phpbb::$db->sql_freeresult($result);
 
 		$sql = 'SELECT COUNT(*) as total_matches
 			FROM ' . SEARCH_WORDMATCH_TABLE;
-		$result = $db->sql_query($sql);
-		$this->stats['total_matches'] = (int) $db->sql_fetchfield('total_matches');
-		$db->sql_freeresult($result);
+		$result = phpbb::$db->sql_query($sql);
+		$this->stats['total_matches'] = (int) phpbb::$db->sql_fetchfield('total_matches');
+		phpbb::$db->sql_freeresult($result);
 	}
 
 	/**
@@ -1629,28 +1610,25 @@ class fulltext_native extends search_backend
 	*/
 	public function acp()
 	{
-		global $user;
-
-
 		/**
 		* if we need any options, copied from fulltext_native for now, will have to be adjusted or removed
 		*/
 
 		$tpl = '
 		<dl>
-			<dt><label for="fulltext_native_load_upd">' . $user->lang['YES_SEARCH_UPDATE'] . ':</label><br /><span>' . $user->lang['YES_SEARCH_UPDATE_EXPLAIN'] . '</span></dt>
-			<dd><label><input type="radio" id="fulltext_native_load_upd" name="config[fulltext_native_load_upd]" value="1"' . ((phpbb::$config['fulltext_native_load_upd']) ? ' checked="checked"' : '') . ' class="radio" /> ' . $user->lang['YES'] . '</label><label><input type="radio" name="config[fulltext_native_load_upd]" value="0"' . ((!phpbb::$config['fulltext_native_load_upd']) ? ' checked="checked"' : '') . ' class="radio" /> ' . $user->lang['NO'] . '</label></dd>
+			<dt><label for="fulltext_native_load_upd">' . phpbb::$db->lang['YES_SEARCH_UPDATE'] . ':</label><br /><span>' . phpbb::$db->lang['YES_SEARCH_UPDATE_EXPLAIN'] . '</span></dt>
+			<dd><label><input type="radio" id="fulltext_native_load_upd" name="config[fulltext_native_load_upd]" value="1"' . ((phpbb::$config['fulltext_native_load_upd']) ? ' checked="checked"' : '') . ' class="radio" /> ' . phpbb::$db->lang['YES'] . '</label><label><input type="radio" name="config[fulltext_native_load_upd]" value="0"' . ((!phpbb::$config['fulltext_native_load_upd']) ? ' checked="checked"' : '') . ' class="radio" /> ' . phpbb::$db->lang['NO'] . '</label></dd>
 		</dl>
 		<dl>
-			<dt><label for="fulltext_native_min_chars">' . $user->lang['MIN_SEARCH_CHARS'] . ':</label><br /><span>' . $user->lang['MIN_SEARCH_CHARS_EXPLAIN'] . '</span></dt>
+			<dt><label for="fulltext_native_min_chars">' . phpbb::$db->lang['MIN_SEARCH_CHARS'] . ':</label><br /><span>' . phpbb::$db->lang['MIN_SEARCH_CHARS_EXPLAIN'] . '</span></dt>
 			<dd><input id="fulltext_native_min_chars" type="text" size="3" maxlength="3" name="config[fulltext_native_min_chars]" value="' . (int) phpbb::$config['fulltext_native_min_chars'] . '" /></dd>
 		</dl>
 		<dl>
-			<dt><label for="fulltext_native_max_chars">' . $user->lang['MAX_SEARCH_CHARS'] . ':</label><br /><span>' . $user->lang['MAX_SEARCH_CHARS_EXPLAIN'] . '</span></dt>
+			<dt><label for="fulltext_native_max_chars">' . phpbb::$db->lang['MAX_SEARCH_CHARS'] . ':</label><br /><span>' . phpbb::$db->lang['MAX_SEARCH_CHARS_EXPLAIN'] . '</span></dt>
 			<dd><input id="fulltext_native_max_chars" type="text" size="3" maxlength="3" name="config[fulltext_native_max_chars]" value="' . (int) phpbb::$config['fulltext_native_max_chars'] . '" /></dd>
 		</dl>
 		<dl>
-			<dt><label for="fulltext_native_common_thres">' . $user->lang['COMMON_WORD_THRESHOLD'] . ':</label><br /><span>' . $user->lang['COMMON_WORD_THRESHOLD_EXPLAIN'] . '</span></dt>
+			<dt><label for="fulltext_native_common_thres">' . phpbb::$db->lang['COMMON_WORD_THRESHOLD'] . ':</label><br /><span>' . phpbb::$db->lang['COMMON_WORD_THRESHOLD_EXPLAIN'] . '</span></dt>
 			<dd><input id="fulltext_native_common_thres" type="text" size="3" maxlength="3" name="config[fulltext_native_common_thres]" value="' . (int) phpbb::$config['fulltext_native_common_thres'] . '" /> %</dd>
 		</dl>
 		';
