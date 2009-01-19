@@ -792,28 +792,13 @@ class p_master
 	*/
 	function display($page_title, $display_online_list = true)
 	{
-		// Generate the page
-		if (defined('IN_ADMIN') && isset(phpbb::$user->data['session_admin']) && phpbb::$user->data['session_admin'])
-		{
-			adm_page_header($page_title);
-		}
-		else
-		{
-			page_header($page_title, $display_online_list);
-		}
+		page_header($page_title, $display_online_list);
 
 		phpbb::$template->set_filenames(array(
 			'body' => $this->get_tpl_name())
 		);
 
-		if (defined('IN_ADMIN') && isset(phpbb::$user->data['session_admin']) && phpbb::$user->data['session_admin'])
-		{
-			adm_page_footer();
-		}
-		else
-		{
-			page_footer();
-		}
+		page_footer();
 	}
 
 	/**

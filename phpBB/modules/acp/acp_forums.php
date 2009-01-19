@@ -1913,7 +1913,7 @@ class acp_forums
 	{
 		global $template, $user;
 
-		adm_page_header($user->lang['SYNC_IN_PROGRESS']);
+		page_header($user->lang['SYNC_IN_PROGRESS']);
 
 		$template->set_filenames(array(
 			'body'	=> 'progress_bar.html')
@@ -1924,7 +1924,7 @@ class acp_forums
 			'L_PROGRESS_EXPLAIN'	=> ($start && $total) ? sprintf($user->lang['SYNC_IN_PROGRESS_EXPLAIN'], $start, $total) : $user->lang['SYNC_IN_PROGRESS'])
 		);
 
-		adm_page_footer();
+		page_footer();
 	}
 }
 

@@ -62,7 +62,7 @@ class acp_main
 			{
 				phpbb::$user->unset_admin();
 				$redirect_url = phpbb::$url->append_sid(PHPBB_ROOT_PATH . 'index.' . PHP_EXT);
-				meta_refresh(3, $redirect_url);
+				phpbb::$url->meta_refresh(3, $redirect_url);
 				trigger_error(phpbb::$user->lang['ADM_LOGGED_OUT'] . '<br /><br />' . sprintf(phpbb::$user->lang['RETURN_INDEX'], '<a href="' . $redirect_url . '">', '</a>'));
 			}
 

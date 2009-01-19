@@ -519,7 +519,7 @@ class acp_search
 
 		$l_type = ($type == 'create') ? 'INDEXING_IN_PROGRESS' : 'DELETING_INDEX_IN_PROGRESS';
 
-		adm_page_header($user->lang[$l_type]);
+		page_header($user->lang[$l_type]);
 
 		$template->set_filenames(array(
 			'body'	=> 'progress_bar.html')
@@ -530,7 +530,7 @@ class acp_search
 			'L_PROGRESS_EXPLAIN'	=> $user->lang[$l_type . '_EXPLAIN'])
 		);
 
-		adm_page_footer();
+		page_footer();
 	}
 
 	function close_popup_js()

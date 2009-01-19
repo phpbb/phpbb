@@ -833,7 +833,7 @@ parse_css_file = {PARSE_CSS_FILE}
 		// on larger source files ...
 		if ($source && file_exists(PHPBB_ROOT_PATH . "cache/{$cache_prefix}_$source.html." . PHP_EXT))
 		{
-			adm_page_header($user->lang['TEMPLATE_CACHE']);
+			page_header($user->lang['TEMPLATE_CACHE']);
 
 			$template->set_filenames(array(
 				'body'	=> 'viewsource.html')
@@ -872,7 +872,7 @@ parse_css_file = {PARSE_CSS_FILE}
 				unset($code[$key]);
 			}
 
-			adm_page_footer();
+			page_footer();
 		}
 
 		// Get a list of cached template files and then retrieve additional information about them

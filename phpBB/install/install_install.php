@@ -601,7 +601,7 @@ class install_install extends module
 			}
 			else
 			{
-				$connect_test = connect_check_db(true, $error, $available_dbms[$data['dbms']], $data['table_prefix'], $data['dbhost'], $data['dbuser'], htmlspecialchars_decode($data['dbpasswd']), $data['dbname'], $data['dbport']);
+				$connect_test = connect_check_db($available_dbms[$data['dbms']], $data['table_prefix'], $data['dbhost'], $data['dbuser'], htmlspecialchars_decode($data['dbpasswd']), $data['dbname'], $data['dbport'], $error);
 			}
 
 			if ($connect_test)
@@ -965,9 +965,6 @@ class install_install extends module
 		// we do not return statements, we simply let them execute
 		$db_tools = new phpbb_db_tools(phpbb::$db);
 
-		// Before we can load the schema data we need (for a new installation) create custom data for the beginning of schema creation and the end
-		$db_tools->sql_install_begin();
-
 		foreach ($schema_data as $table_name => $table_data)
 		{
 			// Change prefix, we always have phpbb_, therefore we can do a substr() here
@@ -976,8 +973,6 @@ class install_install extends module
 			// Now create the table
 			$db_tools->sql_create_table($table_name, $table_data);
 		}
-
-		$db_tools->sql_install_end();
 
 		// Now get the schema data
 		include PHPBB_ROOT_PATH . 'install/schemas/schema_data.' . PHP_EXT;

@@ -419,7 +419,7 @@ class install_convert extends module
 			}
 			else
 			{
-				$connect_test = connect_check_db(true, $error, $available_dbms[$src_dbms], $src_table_prefix, $src_dbhost, $src_dbuser, htmlspecialchars_decode($src_dbpasswd), $src_dbname, $src_dbport, true, ($src_dbms == $dbms) ? false : true, false);
+				$connect_test = connect_check_db($available_dbms[$src_dbms], $src_table_prefix, $src_dbhost, $src_dbuser, htmlspecialchars_decode($src_dbpasswd), $src_dbname, $src_dbport, $error, ($src_dbms == $dbms) ? false : true);
 			}
 
 			// The forum prefix of the old and the new forum can only be the same if two different databases are used.

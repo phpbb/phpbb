@@ -151,12 +151,16 @@ $lang = array_merge($lang, array(
 	'DISPLAY_TOPICS'		=> 'Display topics from previous',
 	'DOWNLOADED'			=> 'Downloaded',
 	'DOWNLOADING_FILE'		=> 'Downloading file',
-	'DOWNLOAD_COUNT'		=> 'Downloaded %d time',
-	'DOWNLOAD_COUNTS'		=> 'Downloaded %d times',
-	'DOWNLOAD_COUNT_NONE'	=> 'Not downloaded yet',
-	'VIEWED_COUNT'			=> 'Viewed %d time',
-	'VIEWED_COUNTS'			=> 'Viewed %d times',
-	'VIEWED_COUNT_NONE'		=> 'Not viewed yet',
+	'DOWNLOAD_COUNT'		=> array(
+		0		=> 'Not downloaded yet',
+		1		=> 'Downloaded %d time',
+		2		=> 'Downloaded %d times',
+	),
+	'VIEWED_COUNT'			=> array(
+		0		=> 'Not viewed yet',
+		1		=> 'Viewed %d time',
+		2		=> 'Viewed %d times',
+	),
 
 	'EDIT_POST'							=> 'Edit post',
 	'EMAIL'								=> 'E-mail',

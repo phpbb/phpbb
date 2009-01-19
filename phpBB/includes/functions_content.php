@@ -43,9 +43,7 @@ if (!defined('IN_PHPBB'))
 */
 function gen_sort_selects(&$limit_days, &$sort_by_text, &$sort_days, &$sort_key, &$sort_dir, &$s_limit_days, &$s_sort_key, &$s_sort_dir, &$u_sort_param, $def_st = false, $def_sk = false, $def_sd = false)
 {
-	global $user;
-
-	$sort_dir_text = array('a' => $user->lang['ASCENDING'], 'd' => $user->lang['DESCENDING']);
+	$sort_dir_text = array('a' => phpbb::$user->lang['ASCENDING'], 'd' => phpbb::$user->lang['DESCENDING']);
 
 	$sorts = array(
 		'st'	=> array(
@@ -110,8 +108,6 @@ function gen_sort_selects(&$limit_days, &$sort_by_text, &$sort_days, &$sort_key,
 */
 function make_jumpbox($action, $forum_id = false, $select_all = false, $acl_list = false, $force_display = false)
 {
-	global $auth, $template, $user, $db;
-
 	// We only return if the jumpbox is not forced to be displayed (in case it is needed for functionality)
 	if (!phpbb::$config['load_jumpbox'] && $force_display === false)
 	{
@@ -121,7 +117,7 @@ function make_jumpbox($action, $forum_id = false, $select_all = false, $acl_list
 	$sql = 'SELECT forum_id, forum_name, parent_id, forum_type, left_id, right_id
 		FROM ' . FORUMS_TABLE . '
 		ORDER BY left_id ASC';
-	$result = $db->sql_query($sql, 600);
+	$result = phpbb::$db->sql_query($sql, 600);
 
 	$right = $padding = 0;
 	$padding_store = array('0' => 0);
@@ -132,7 +128,7 @@ function make_jumpbox($action, $forum_id = false, $select_all = false, $acl_list
 	// This is the result of forums not displayed at index, having list permissions and a parent of a forum with no permissions.
 	// If this happens, the padding could be "broken"
 
-	while ($row = $db->sql_fetchrow($result))
+	while ($row = phpbb::$db->sql_fetchrow($result))
 	{
 		if ($row['left_id'] < $right)
 		{
@@ -154,22 +150,22 @@ function make_jumpbox($action, $forum_id = false, $select_all = false, $acl_list
 			continue;
 		}
 
-		if (!$auth->acl_get('f_list', $row['forum_id']))
+		if (!phpbb::$acl->acl_get('f_list', $row['forum_id']))
 		{
 			// if the user does not have permissions to list this forum skip
 			continue;
 		}
 
-		if ($acl_list && !$auth->acl_gets($acl_list, $row['forum_id']))
+		if ($acl_list && !phpbb::$acl->acl_gets($acl_list, $row['forum_id']))
 		{
 			continue;
 		}
 
 		if (!$display_jumpbox)
 		{
-			$template->assign_block_vars('jumpbox_forums', array(
+			phpbb::$template->assign_block_vars('jumpbox_forums', array(
 				'FORUM_ID'		=> ($select_all) ? 0 : -1,
-				'FORUM_NAME'	=> ($select_all) ? $user->lang['ALL_FORUMS'] : $user->lang['SELECT_FORUM'],
+				'FORUM_NAME'	=> ($select_all) ? phpbb::$user->lang['ALL_FORUMS'] : phpbb::$user->lang['SELECT_FORUM'],
 				'S_FORUM_COUNT'	=> $iteration)
 			);
 
@@ -177,7 +173,7 @@ function make_jumpbox($action, $forum_id = false, $select_all = false, $acl_list
 			$display_jumpbox = true;
 		}
 
-		$template->assign_block_vars('jumpbox_forums', array(
+		phpbb::$template->assign_block_vars('jumpbox_forums', array(
 			'FORUM_ID'		=> $row['forum_id'],
 			'FORUM_NAME'	=> $row['forum_name'],
 			'SELECTED'		=> ($row['forum_id'] == $forum_id) ? ' selected="selected"' : '',
@@ -189,17 +185,17 @@ function make_jumpbox($action, $forum_id = false, $select_all = false, $acl_list
 
 		for ($i = 0; $i < $padding; $i++)
 		{
-			$template->assign_block_vars('jumpbox_forums.level', array());
+			phpbb::$template->assign_block_vars('jumpbox_forums.level', array());
 		}
 		$iteration++;
 	}
-	$db->sql_freeresult($result);
+	phpbb::$db->sql_freeresult($result);
 	unset($padding_store);
 
-	$template->assign_vars(array(
+	phpbb::$template->assign_vars(array(
 		'S_DISPLAY_JUMPBOX'	=> $display_jumpbox,
-		'S_JUMPBOX_ACTION'	=> $action)
-	);
+		'S_JUMPBOX_ACTION'	=> phpbb::$url->append_sid($action),
+	));
 
 	return;
 }
@@ -209,10 +205,8 @@ function make_jumpbox($action, $forum_id = false, $select_all = false, $acl_list
 */
 function bump_topic_allowed($forum_id, $topic_bumped, $last_post_time, $topic_poster, $last_topic_poster)
 {
-	global $auth, $user;
-
 	// Check permission and make sure the last post was not already bumped
-	if (!$auth->acl_get('f_bump', $forum_id) || $topic_bumped)
+	if (!phpbb::$acl->acl_get('f_bump', $forum_id) || $topic_bumped)
 	{
 		return false;
 	}
@@ -227,7 +221,7 @@ function bump_topic_allowed($forum_id, $topic_bumped, $last_post_time, $topic_po
 	}
 
 	// Check bumper, only topic poster and last poster are allowed to bump
-	if ($topic_poster != $user->data['user_id'] && $last_topic_poster != $user->data['user_id'])
+	if ($topic_poster != phpbb::$user->data['user_id'] && $last_topic_poster != phpbb::$user->data['user_id'])
 	{
 		return false;
 	}
@@ -732,16 +726,15 @@ function parse_attachments($forum_id, &$message, &$attachments, &$update_count, 
 		return;
 	}
 
-	global $template, $user;
 	global $extensions;
 
 	//
 	$compiled_attachments = array();
 
 	// @todo: do we really need this check?
-	if (!isset($template->filename['attachment_tpl']))
+	if (!isset(phpbb::$template->filename['attachment_tpl']))
 	{
-		$template->set_filenames(array(
+		phpbb::$template->set_filenames(array(
 			'attachment_tpl'	=> 'attachment.html')
 		);
 	}
@@ -765,16 +758,14 @@ function parse_attachments($forum_id, &$message, &$attachments, &$update_count, 
 	// Grab attachments (security precaution)
 	if (sizeof($attach_ids))
 	{
-		global $db;
-
 		$new_attachment_data = array();
 
 		$sql = 'SELECT *
 			FROM ' . ATTACHMENTS_TABLE . '
-			WHERE ' . $db->sql_in_set('attach_id', array_keys($attach_ids));
-		$result = $db->sql_query($sql);
+			WHERE ' . phpbb::$db->sql_in_set('attach_id', array_keys($attach_ids));
+		$result = phpbb::$db->sql_query($sql);
 
-		while ($row = $db->sql_fetchrow($result))
+		while ($row = phpbb::$db->sql_fetchrow($result))
 		{
 			if (!isset($attach_ids[$row['attach_id']]))
 			{
@@ -789,7 +780,7 @@ function parse_attachments($forum_id, &$message, &$attachments, &$update_count, 
 
 			$new_attachment_data[$attach_ids[$row['attach_id']]] = $row;
 		}
-		$db->sql_freeresult($result);
+		phpbb::$db->sql_freeresult($result);
 
 		$attachments = $new_attachment_data;
 		unset($new_attachment_data);
@@ -815,7 +806,7 @@ function parse_attachments($forum_id, &$message, &$attachments, &$update_count, 
 		}
 
 		// We need to reset/empty the _file block var, because this function might be called more than once
-		$template->destroy_block_vars('_file');
+		phpbb::$template->destroy_block_vars('_file');
 
 		$block_array = array();
 
@@ -828,9 +819,9 @@ function parse_attachments($forum_id, &$message, &$attachments, &$update_count, 
 
 		if (isset($extensions[$attachment['extension']]))
 		{
-			if ($user->img('icon_topic_attach', '') && !$extensions[$attachment['extension']]['upload_icon'])
+			if (phpbb::$user->img('icon_topic_attach', '') && !$extensions[$attachment['extension']]['upload_icon'])
 			{
-				$upload_icon = $user->img('icon_topic_attach', '');
+				$upload_icon = phpbb::$user->img('icon_topic_attach', '');
 			}
 			else if ($extensions[$attachment['extension']]['upload_icon'])
 			{
@@ -839,7 +830,7 @@ function parse_attachments($forum_id, &$message, &$attachments, &$update_count, 
 		}
 
 		$filesize = $attachment['filesize'];
-		$size_lang = ($filesize >= 1048576) ? $user->lang['MIB'] : (($filesize >= 1024) ? $user->lang['KIB'] : $user->lang['BYTES']);
+		$size_lang = ($filesize >= 1048576) ? phpbb::$user->lang['MIB'] : (($filesize >= 1024) ? phpbb::$user->lang['KIB'] : phpbb::$user->lang['BYTES']);
 		$filesize = get_formatted_filesize($filesize, false);
 
 		$comment = bbcode_nl2br(censor_text($attachment['attach_comment']));
@@ -860,7 +851,7 @@ function parse_attachments($forum_id, &$message, &$attachments, &$update_count, 
 
 			$block_array += array(
 				'S_DENIED'			=> true,
-				'DENIED_MESSAGE'	=> sprintf($user->lang['EXTENSION_DISABLED_AFTER_POSTING'], $attachment['extension'])
+				'DENIED_MESSAGE'	=> phpbb::$user->lang('EXTENSION_DISABLED_AFTER_POSTING', $attachment['extension']),
 			);
 		}
 
@@ -902,12 +893,12 @@ function parse_attachments($forum_id, &$message, &$attachments, &$update_count, 
 			}
 
 			// Make some descisions based on user options being set.
-			if (($display_cat == ATTACHMENT_CATEGORY_IMAGE || $display_cat == ATTACHMENT_CATEGORY_THUMB) && !$user->optionget('viewimg'))
+			if (($display_cat == ATTACHMENT_CATEGORY_IMAGE || $display_cat == ATTACHMENT_CATEGORY_THUMB) && !phpbb::$user->optionget('viewimg'))
 			{
 				$display_cat = ATTACHMENT_CATEGORY_NONE;
 			}
 
-			if ($display_cat == ATTACHMENT_CATEGORY_FLASH && !$user->optionget('viewflash'))
+			if ($display_cat == ATTACHMENT_CATEGORY_FLASH && !phpbb::$user->optionget('viewflash'))
 			{
 				$display_cat = ATTACHMENT_CATEGORY_NONE;
 			}
@@ -1001,17 +992,15 @@ function parse_attachments($forum_id, &$message, &$attachments, &$update_count, 
 				break;
 			}
 
-			$l_download_count = (!isset($attachment['download_count']) || $attachment['download_count'] == 0) ? $user->lang[$l_downloaded_viewed . '_NONE'] : (($attachment['download_count'] == 1) ? sprintf($user->lang[$l_downloaded_viewed], $attachment['download_count']) : sprintf($user->lang[$l_downloaded_viewed . 'S'], $attachment['download_count']));
-
 			$block_array += array(
 				'U_DOWNLOAD_LINK'		=> $download_link,
-				'L_DOWNLOAD_COUNT'		=> $l_download_count
+				'L_DOWNLOAD_COUNT'		=> phpbb::$user->lang($l_downloaded_viewed, $attachment['download_count']),
 			);
 		}
 
-		$template->assign_block_vars('_file', $block_array);
+		phpbb::$template->assign_block_vars('_file', $block_array);
 
-		$compiled_attachments[] = $template->assign_display('attachment_tpl');
+		$compiled_attachments[] = phpbb::$template->assign_display('attachment_tpl');
 	}
 
 	$attachments = $compiled_attachments;
@@ -1030,7 +1019,7 @@ function parse_attachments($forum_id, &$message, &$attachments, &$update_count, 
 		$index = (phpbb::$config['display_order']) ? ($tpl_size-($matches[1][$num] + 1)) : $matches[1][$num];
 
 		$replace['from'][] = $matches[0][$num];
-		$replace['to'][] = (isset($attachments[$index])) ? $attachments[$index] : sprintf($user->lang['MISSING_INLINE_ATTACHMENT'], $matches[2][array_search($index, $matches[1])]);
+		$replace['to'][] = (isset($attachments[$index])) ? $attachments[$index] : sprintf(phpbb::$user->lang['MISSING_INLINE_ATTACHMENT'], $matches[2][array_search($index, $matches[1])]);
 
 		$unset_tpl[] = $index;
 	}
@@ -1158,8 +1147,6 @@ function get_username_string($mode, $user_id, $username, $username_colour = '', 
 		$_profile_cache['tpl_profile'] = '<a href="{PROFILE_URL}">{USERNAME}</a>';
 		$_profile_cache['tpl_profile_colour'] = '<a href="{PROFILE_URL}" style="color: {USERNAME_COLOUR};" class="username-coloured">{USERNAME}</a>';
 	}
-
-	global $user, $auth;
 
 	// This switch makes sure we only run code required for the mode
 	switch ($mode)
