@@ -16,8 +16,6 @@ if (!defined('IN_PHPBB'))
 	exit;
 }
 
-include_once(PHPBB_ROOT_PATH . 'includes/db/dbal.' . PHP_EXT);
-
 /**
 * MySQL Database Abstraction Layer
 * Compatible with:
@@ -25,78 +23,115 @@ include_once(PHPBB_ROOT_PATH . 'includes/db/dbal.' . PHP_EXT);
 * MySQL 5.0+
 * @package dbal
 */
-class dbal_mysql extends dbal
+class phpbb_dbal_mysql extends phpbb_dbal
 {
-	var $multi_insert = true;
-
-	// Supports multiple table deletion
-	var $multi_table_deletion = true;
-
-	var $dbms_type = 'mysql';
+	/**
+	* @var string Database type. No distinction between versions or used extensions.
+	*/
+	public $dbms_type = 'mysql';
 
 	/**
-	* Connect to server
-	* @access public
+	* @var array Database type map, column layout information
 	*/
-	function sql_connect($sqlserver, $sqluser, $sqlpassword, $database, $port = false, $persistency = false, $new_link = false)
+	public $dbms_type_map = array(
+		'INT:'		=> 'int(%d)',
+		'BINT'		=> 'bigint(20)',
+		'UINT'		=> 'mediumint(8) UNSIGNED',
+		'UINT:'		=> 'int(%d) UNSIGNED',
+		'TINT:'		=> 'tinyint(%d)',
+		'USINT'		=> 'smallint(4) UNSIGNED',
+		'BOOL'		=> 'tinyint(1) UNSIGNED',
+		'VCHAR'		=> 'varchar(255)',
+		'VCHAR:'	=> 'varchar(%d)',
+		'CHAR:'		=> 'char(%d)',
+		'XSTEXT'	=> 'text',
+		'XSTEXT_UNI'=> 'varchar(100)',
+		'STEXT'		=> 'text',
+		'STEXT_UNI'	=> 'varchar(255)',
+		'TEXT'		=> 'text',
+		'TEXT_UNI'	=> 'text',
+		'MTEXT'		=> 'mediumtext',
+		'MTEXT_UNI'	=> 'mediumtext',
+		'TIMESTAMP'	=> 'int(11) UNSIGNED',
+		'DECIMAL'	=> 'decimal(5,2)',
+		'DECIMAL:'	=> 'decimal(%d,2)',
+		'PDECIMAL'	=> 'decimal(6,3)',
+		'PDECIMAL:'	=> 'decimal(%d,3)',
+		'VCHAR_UNI'	=> 'varchar(255)',
+		'VCHAR_UNI:'=> 'varchar(%d)',
+		'VARBINARY'	=> 'varbinary(255)',
+	);
+
+	/**
+	* Connect to server. See {@link phpbb_dbal::sql_connect() sql_connect()} for details.
+	*/
+	public function sql_connect($server, $user, $password, $database, $port = false, $persistency = false , $new_link = false)
 	{
 		$this->persistency = $persistency;
-		$this->user = $sqluser;
-		$this->server = $sqlserver . (($port) ? ':' . $port : '');
+		$this->user = $user;
+		$this->server = $server . (($port) ? ':' . $port : '');
 		$this->dbname = $database;
 
-		$this->db_connect_id = ($this->persistency) ? @mysql_pconnect($this->server, $this->user, $sqlpassword, $new_link) : @mysql_connect($this->server, $this->user, $sqlpassword, $new_link);
+		$this->db_connect_id = ($this->persistency) ? @mysql_pconnect($this->server, $this->user, $password, $new_link) : @mysql_connect($this->server, $this->user, $password, $new_link);
 
-		if ($this->db_connect_id && $this->dbname != '')
+		if (!$this->db_connect_id || !$this->dbname)
 		{
-			if (@mysql_select_db($this->dbname, $this->db_connect_id))
-			{
-				@mysql_query("SET NAMES 'utf8'", $this->db_connect_id);
-
-				// enforce strict mode on databases that support it
-				if (version_compare($this->sql_server_info(true), '5.0.2', '>='))
-				{
-					if (!in_array('STRICT_ALL_TABLES', $modes))
-					{
-						$modes[] = 'STRICT_ALL_TABLES';
-					}
-
-					if (!in_array('STRICT_TRANS_TABLES', $modes))
-					{
-						$modes[] = 'STRICT_TRANS_TABLES';
-					}
-
-					$mode = implode(',', $modes);
-					@mysql_query("SET SESSION sql_mode='{$mode}'", $this->db_connect_id);
-				}
-
-				return $this->db_connect_id;
-			}
+			return $this->sql_error('');
 		}
 
-		return $this->sql_error('');
+		if (!@mysql_select_db($this->dbname, $this->db_connect_id))
+		{
+			return $this->sql_error('');
+		}
+
+		@mysql_query("SET NAMES 'utf8'", $this->db_connect_id);
+
+		// enforce strict mode on databases that support it
+		if (version_compare($this->sql_server_info(true), '5.0.2', '>='))
+		{
+			$result = @mysql_query('SELECT @@session.sql_mode AS sql_mode', $this->db_connect_id);
+			$row = @mysql_fetch_assoc($result);
+			@mysql_free_result($result);
+
+			$modes = array_map('trim', explode(',', $row['sql_mode']));
+
+			// TRADITIONAL includes STRICT_ALL_TABLES and STRICT_TRANS_TABLES
+			if (!in_array('TRADITIONAL', $modes))
+			{
+				if (!in_array('STRICT_ALL_TABLES', $modes))
+				{
+					$modes[] = 'STRICT_ALL_TABLES';
+				}
+
+				if (!in_array('STRICT_TRANS_TABLES', $modes))
+				{
+					$modes[] = 'STRICT_TRANS_TABLES';
+				}
+			}
+
+			$mode = implode(',', $modes);
+			@mysql_query("SET SESSION sql_mode='{$mode}'", $this->db_connect_id);
+		}
+
+		return $this->db_connect_id;
 	}
 
 	/**
-	* Version information about used database
-	* @param bool $raw if true, only return the fetched sql_server_version
-	* @return string sql server version
+	* Version information about used database. See {@link phpbb_dbal::sql_server_info() sql_server_info()} for details.
 	*/
-	function sql_server_info($raw = false)
+	public function sql_server_info($raw = false)
 	{
-		global $cache;
-
-		if (empty($cache) || ($this->sql_server_version = $cache->get('mysql_version')) === false)
+		if (!phpbb::registered('acm') || ($this->sql_server_version = phpbb::$acm->get('#mysql_version')) === false)
 		{
 			$result = @mysql_query('SELECT VERSION() AS version', $this->db_connect_id);
 			$row = @mysql_fetch_assoc($result);
 			@mysql_free_result($result);
 
-			$this->sql_server_version = $row['version'];
+			$this->sql_server_version = trim($row['version']);
 
-			if (!empty($cache))
+			if (phpbb::registered('acm'))
 			{
-				$cache->put('mysql_version', $this->sql_server_version);
+				phpbb::$acm->put('#mysql_version', $this->sql_server_version);
 			}
 		}
 
@@ -104,10 +139,41 @@ class dbal_mysql extends dbal
 	}
 
 	/**
-	* SQL Transaction
-	* @access private
+	* DB-specific base query method. See {@link phpbb_dbal::_sql_query() _sql_query()} for details.
 	*/
-	function _sql_transaction($status = 'begin')
+	protected function _sql_query($query)
+	{
+		return @mysql_query($query, $this->db_connect_id);
+	}
+
+	/**
+	* Build LIMIT query and run it. See {@link phpbb_dbal::_sql_query_limit() _sql_query_limit()} for details.
+	*/
+	protected function _sql_query_limit($query, $total, $offset, $cache_ttl)
+	{
+		// if $total is set to 0 we do not want to limit the number of rows
+		if ($total == 0)
+		{
+			// MySQL 4.1+ no longer supports -1 in limit queries
+			$total = '18446744073709551615';
+		}
+
+		$query .= "\n LIMIT " . ((!empty($offset)) ? $offset . ', ' . $total : $total);
+		return $this->sql_query($query, $cache_ttl);
+	}
+
+	/**
+	* Close sql connection. See {@link phpbb_dbal::_sql_close() _sql_close()} for details.
+	*/
+	protected function _sql_close()
+	{
+		return @mysql_close($this->db_connect_id);
+	}
+
+	/**
+	* SQL Transaction. See {@link phpbb_dbal::_sql_transaction() _sql_transaction()} for details.
+	*/
+	protected function _sql_transaction($status)
 	{
 		switch ($status)
 		{
@@ -128,149 +194,49 @@ class dbal_mysql extends dbal
 	}
 
 	/**
-	* Base query method
-	*
-	* @param	string	$query		Contains the SQL query which shall be executed
-	* @param	int		$cache_ttl	Either 0 to avoid caching or the time in seconds which the result shall be kept in cache
-	* @return	mixed				When casted to bool the returned value returns true on success and false on failure
-	*
-	* @access	public
+	* Return number of affected rows. See {@link phpbb_dbal::sql_affectedrows() sql_affectedrows()} for details.
 	*/
-	function sql_query($query = '', $cache_ttl = 0)
-	{
-		if ($query != '')
-		{
-			global $cache;
-
-			// EXPLAIN only in extra debug mode
-			if (defined('DEBUG_EXTRA'))
-			{
-				$this->sql_report('start', $query);
-			}
-
-			$this->query_result = ($cache_ttl && method_exists($cache, 'sql_load')) ? $cache->sql_load($query) : false;
-			$this->sql_add_num_queries($this->query_result);
-
-			if ($this->query_result === false)
-			{
-				if (($this->query_result = @mysql_query($query, $this->db_connect_id)) === false)
-				{
-					$this->sql_error($query);
-				}
-
-				if (defined('DEBUG_EXTRA'))
-				{
-					$this->sql_report('stop', $query);
-				}
-
-				if ($cache_ttl && method_exists($cache, 'sql_save'))
-				{
-					$this->open_queries[(int) $this->query_result] = $this->query_result;
-					$cache->sql_save($query, $this->query_result, $cache_ttl);
-				}
-				else if (strpos($query, 'SELECT') === 0 && $this->query_result)
-				{
-					$this->open_queries[(int) $this->query_result] = $this->query_result;
-				}
-			}
-			else if (defined('DEBUG_EXTRA'))
-			{
-				$this->sql_report('fromcache', $query);
-			}
-		}
-		else
-		{
-			return false;
-		}
-
-		return $this->query_result;
-	}
-
-	/**
-	* Build LIMIT query
-	*/
-	function _sql_query_limit($query, $total, $offset = 0, $cache_ttl = 0)
-	{
-		$this->query_result = false;
-
-		// if $total is set to 0 we do not want to limit the number of rows
-		if ($total == 0)
-		{
-			// Having a value of -1 was always a bug
-			$total = '18446744073709551615';
-		}
-
-		$query .= "\n LIMIT " . ((!empty($offset)) ? $offset . ', ' . $total : $total);
-
-		return $this->sql_query($query, $cache_ttl);
-	}
-
-	/**
-	* Return number of affected rows
-	*/
-	function sql_affectedrows()
+	public function sql_affectedrows()
 	{
 		return ($this->db_connect_id) ? @mysql_affected_rows($this->db_connect_id) : false;
 	}
 
 	/**
-	* Fetch current row
+	* Get last inserted id after insert statement. See {@link phpbb_dbal::sql_nextid() sql_nextid()} for details.
 	*/
-	function sql_fetchrow($query_id = false)
-	{
-		global $cache;
-
-		if ($query_id === false)
-		{
-			$query_id = $this->query_result;
-		}
-
-		if (isset($cache->sql_rowset[$query_id]))
-		{
-			return $cache->sql_fetchrow($query_id);
-		}
-
-		return ($query_id !== false) ? @mysql_fetch_assoc($query_id) : false;
-	}
-
-	/**
-	* Get last inserted id after insert statement
-	*/
-	function sql_nextid()
+	public function sql_nextid()
 	{
 		return ($this->db_connect_id) ? @mysql_insert_id($this->db_connect_id) : false;
 	}
 
 	/**
-	* Free sql result
+	* Fetch current row. See {@link phpbb_dbal::_sql_fetchrow() _sql_fetchrow()} for details.
 	*/
-	function sql_freeresult($query_id = false)
+	protected function _sql_fetchrow($query_id)
 	{
-		global $cache;
-
-		if ($query_id === false)
-		{
-			$query_id = $this->query_result;
-		}
-
-		if (isset($cache->sql_rowset[$query_id]))
-		{
-			return $cache->sql_freeresult($query_id);
-		}
-
-		if (isset($this->open_queries[(int) $query_id]))
-		{
-			unset($this->open_queries[(int) $query_id]);
-			return @mysql_free_result($query_id);
-		}
-
-		return false;
+		return @mysql_fetch_assoc($query_id);
 	}
 
 	/**
-	* Escape string used in sql query
+	* Free query result. See {@link phpbb_dbal::_sql_freeresult() _sql_freeresult()} for details.
 	*/
-	function sql_escape($msg)
+	protected function _sql_freeresult($query_id)
+	{
+		return @mysql_free_result($query_id);
+	}
+
+	/**
+	* Correctly adjust LIKE expression for special characters. See {@link phpbb_dbal::_sql_like_expression() _sql_like_expression()} for details.
+	*/
+	protected function _sql_like_expression($expression)
+	{
+		return $expression;
+	}
+
+	/**
+	* Escape string used in sql query. See {@link phpbb_dbal::sql_escape() sql_escape()} for details.
+	*/
+	public function sql_escape($msg)
 	{
 		if (!$this->db_connect_id)
 		{
@@ -281,9 +247,9 @@ class dbal_mysql extends dbal
 	}
 
 	/**
-	* Expose a DBMS specific function
+	* Expose a DBMS specific function. See {@link phpbb_dbal::sql_function() sql_function()} for details.
 	*/
-	function sql_function($type, $col)
+	public function sql_function($type, $col)
 	{
 		switch ($type)
 		{
@@ -294,35 +260,27 @@ class dbal_mysql extends dbal
 		}
 	}
 
-	function sql_handle_data($type, $table, $data, $where = '')
+	/**
+	* Handle data by using prepared statements. See {@link phpbb_dbal::sql_handle_data() sql_handle_data()} for details.
+	* @todo implement correctly by using types. ;)
+	*/
+	public function sql_handle_data($type, $table, $data, $where = '')
 	{
 		if ($type === 'UPDATE')
 		{
-			$this->sql_query('INSERT INTO ' . $table . ' ' .
-				$this->sql_build_array('INSERT', $data));
+			$where = ($where) ? ' WHERE ' . $where : '';
+			$this->sql_query('UPDATE ' . $table . ' SET ' . $db->sql_build_array('UPDATE', $data) . $where);
 		}
 		else
 		{
-			$this->sql_query('UPDATE ' . $table . '
-				SET ' . $db->sql_build_array('UPDATE', $data) .
-				$where);
+			$this->sql_query('INSERT INTO ' . $table . ' ' . $this->sql_build_array('INSERT', $data));
 		}
 	}
 
 	/**
-	* Build LIKE expression
-	* @access private
+	* Build DB-specific query bits. See {@link phpbb_dbal::_sql_custom_build() _sql_custom_build()} for details.
 	*/
-	function _sql_like_expression($expression)
-	{
-		return $expression;
-	}
-
-	/**
-	* Build db-specific query data
-	* @access private
-	*/
-	function _sql_custom_build($stage, $data)
+	protected function _sql_custom_build($stage, $data)
 	{
 		switch ($stage)
 		{
@@ -333,12 +291,11 @@ class dbal_mysql extends dbal
 
 		return $data;
 	}
-	
+
 	/**
-	* return sql error array
-	* @access private
+	* return sql error array. See {@link phpbb_dbal::_sql_error() _sql_error()} for details.
 	*/
-	function _sql_error()
+	protected function _sql_error()
 	{
 		if (!$this->db_connect_id)
 		{
@@ -355,19 +312,9 @@ class dbal_mysql extends dbal
 	}
 
 	/**
-	* Close sql connection
-	* @access private
+	* Run DB-specific code to build SQL Report to explain queries, show statistics and runtime information. See {@link phpbb_dbal::_sql_report() _sql_report()} for details.
 	*/
-	function _sql_close()
-	{
-		return @mysql_close($this->db_connect_id);
-	}
-
-	/**
-	* Build db-specific report
-	* @access private
-	*/
-	function _sql_report($mode, $query = '')
+	protected function _sql_report($mode, $query = '')
 	{
 		static $test_prof;
 		static $test_extend;
@@ -381,7 +328,7 @@ class dbal_mysql extends dbal
 				$test_prof = true;
 			}
 
-			if (version_compare($ver, '4.1.1', '>='))
+			if (version_compare($this->sql_server_info(true), '4.1.1', '>='))
 			{
 				$test_extend = true;
 			}
@@ -444,7 +391,6 @@ class dbal_mysql extends dbal
 							$this->html_hold .= '</table>';
 						}
 					}
-
 
 					if ($test_prof)
 					{

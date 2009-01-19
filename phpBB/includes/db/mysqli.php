@@ -31,6 +31,38 @@ class phpbb_dbal_mysqli extends phpbb_dbal
 	public $dbms_type = 'mysql';
 
 	/**
+	* @var array Database type map, column layout information
+	*/
+	public $dbms_type_map = array(
+		'INT:'		=> 'int(%d)',
+		'BINT'		=> 'bigint(20)',
+		'UINT'		=> 'mediumint(8) UNSIGNED',
+		'UINT:'		=> 'int(%d) UNSIGNED',
+		'TINT:'		=> 'tinyint(%d)',
+		'USINT'		=> 'smallint(4) UNSIGNED',
+		'BOOL'		=> 'tinyint(1) UNSIGNED',
+		'VCHAR'		=> 'varchar(255)',
+		'VCHAR:'	=> 'varchar(%d)',
+		'CHAR:'		=> 'char(%d)',
+		'XSTEXT'	=> 'text',
+		'XSTEXT_UNI'=> 'varchar(100)',
+		'STEXT'		=> 'text',
+		'STEXT_UNI'	=> 'varchar(255)',
+		'TEXT'		=> 'text',
+		'TEXT_UNI'	=> 'text',
+		'MTEXT'		=> 'mediumtext',
+		'MTEXT_UNI'	=> 'mediumtext',
+		'TIMESTAMP'	=> 'int(11) UNSIGNED',
+		'DECIMAL'	=> 'decimal(5,2)',
+		'DECIMAL:'	=> 'decimal(%d,2)',
+		'PDECIMAL'	=> 'decimal(6,3)',
+		'PDECIMAL:'	=> 'decimal(%d,3)',
+		'VCHAR_UNI'	=> 'varchar(255)',
+		'VCHAR_UNI:'=> 'varchar(%d)',
+		'VARBINARY'	=> 'varbinary(255)',
+	);
+
+	/**
 	* Connect to server. See {@link phpbb_dbal::sql_connect() sql_connect()} for details.
 	*/
 	public function sql_connect($server, $user, $password, $database, $port = false, $persistency = false , $new_link = false)
@@ -44,40 +76,41 @@ class phpbb_dbal_mysqli extends phpbb_dbal
 		// Persistant connections not supported by the mysqli extension?
 		$this->db_connect_id = @mysqli_connect($this->server, $this->user, $password, $this->dbname, $this->port);
 
-		if ($this->db_connect_id && $this->dbname != '')
+		if (!$this->db_connect_id || !$this->dbname)
 		{
-			@mysqli_query($this->db_connect_id, "SET NAMES 'utf8'");
-
-			// enforce strict mode on databases that support it
-			if (version_compare($this->sql_server_info(true), '5.0.2', '>='))
-			{
-				$result = @mysqli_query($this->db_connect_id, 'SELECT @@session.sql_mode AS sql_mode');
-				$row = @mysqli_fetch_assoc($result);
-				@mysqli_free_result($result);
-
-				$modes = array_map('trim', explode(',', $row['sql_mode']));
-
-				// TRADITIONAL includes STRICT_ALL_TABLES and STRICT_TRANS_TABLES
-				if (!in_array('TRADITIONAL', $modes))
-				{
-					if (!in_array('STRICT_ALL_TABLES', $modes))
-					{
-						$modes[] = 'STRICT_ALL_TABLES';
-					}
-
-					if (!in_array('STRICT_TRANS_TABLES', $modes))
-					{
-						$modes[] = 'STRICT_TRANS_TABLES';
-					}
-				}
-
-				$mode = implode(',', $modes);
-				@mysqli_query($this->db_connect_id, "SET SESSION sql_mode='{$mode}'");
-			}
-			return $this->db_connect_id;
+			return $this->sql_error('');
 		}
 
-		return $this->sql_error('');
+		@mysqli_query($this->db_connect_id, "SET NAMES 'utf8'");
+
+		// enforce strict mode on databases that support it
+		if (version_compare($this->sql_server_info(true), '5.0.2', '>='))
+		{
+			$result = @mysqli_query($this->db_connect_id, 'SELECT @@session.sql_mode AS sql_mode');
+			$row = @mysqli_fetch_assoc($result);
+			@mysqli_free_result($result);
+
+			$modes = array_map('trim', explode(',', $row['sql_mode']));
+
+			// TRADITIONAL includes STRICT_ALL_TABLES and STRICT_TRANS_TABLES
+			if (!in_array('TRADITIONAL', $modes))
+			{
+				if (!in_array('STRICT_ALL_TABLES', $modes))
+				{
+					$modes[] = 'STRICT_ALL_TABLES';
+				}
+
+				if (!in_array('STRICT_TRANS_TABLES', $modes))
+				{
+					$modes[] = 'STRICT_TRANS_TABLES';
+				}
+			}
+
+			$mode = implode(',', $modes);
+			@mysqli_query($this->db_connect_id, "SET SESSION sql_mode='{$mode}'");
+		}
+
+		return $this->db_connect_id;
 	}
 
 	/**
@@ -302,18 +335,20 @@ class phpbb_dbal_mysqli extends phpbb_dbal
 	protected function _sql_report($mode, $query = '')
 	{
 		static $test_prof;
+		static $test_extend;
 
 		// current detection method, might just switch to see the existance of INFORMATION_SCHEMA.PROFILING
 		if ($test_prof === null)
 		{
-			$test_prof = false;
-			if (strpos(mysqli_get_server_info($this->db_connect_id), 'community') !== false)
+			$test_prof = $test_extend = false;
+			if (version_compare($this->sql_server_info(true), '5.0.37', '>=') && version_compare($this->sql_server_info(true), '5.1', '<'))
 			{
-				$ver = mysqli_get_server_version($this->db_connect_id);
-				if ($ver >= 50037 && $ver < 50100)
-				{
-					$test_prof = true;
-				}
+				$test_prof = true;
+			}
+
+			if (version_compare($this->sql_server_info(true), '4.1.1', '>='))
+			{
+				$test_extend = true;
 			}
 		}
 
@@ -341,7 +376,7 @@ class phpbb_dbal_mysqli extends phpbb_dbal
 						@mysqli_query($this->db_connect_id, 'SET profiling = 1;');
 					}
 
-					if ($result = @mysqli_query($this->db_connect_id, "EXPLAIN $explain_query"))
+					if ($result = @mysqli_query($this->db_connect_id, 'EXPLAIN ' . (($test_extend) ? 'EXTENDED ' : '') . "$explain_query"))
 					{
 						while ($row = @mysqli_fetch_assoc($result))
 						{
@@ -353,6 +388,26 @@ class phpbb_dbal_mysqli extends phpbb_dbal
 					if ($html_table)
 					{
 						$this->html_hold .= '</table>';
+					}
+
+					if ($test_extend)
+					{
+						$html_table = false;
+
+						if ($result = @mysqli_query($this->db_connect_id, 'SHOW WARNINGS'))
+						{
+							$this->html_hold .= '<br />';
+							while ($row = @mysqli_fetch_assoc($result))
+							{
+								$html_table = $this->sql_report('add_select_row', $query, $html_table, $row);
+							}
+						}
+						@mysqli_free_result($result);
+
+						if ($html_table)
+						{
+							$this->html_hold .= '</table>';
+						}
 					}
 
 					if ($test_prof)

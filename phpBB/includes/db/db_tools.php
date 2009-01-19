@@ -18,313 +18,65 @@ if (!defined('IN_PHPBB'))
 
 /**
 * Database Tools for handling cross-db actions such as altering columns, etc.
-* Currently not supported is returning SQL for creating tables.
 *
 * @package dbal
-* @note currently not used within phpBB3, but may be utilized later.
 */
 class phpbb_db_tools
 {
+	/**
+	* @var object DB object
+	*/
 	public $db = NULL;
 
-	public $dbms_type_map = array(
-		'mysql'	=> array(
-			'INT:'		=> 'int(%d)',
-			'BINT'		=> 'bigint(20)',
-			'UINT'		=> 'mediumint(8) UNSIGNED',
-			'UINT:'		=> 'int(%d) UNSIGNED',
-			'TINT:'		=> 'tinyint(%d)',
-			'USINT'		=> 'smallint(4) UNSIGNED',
-			'BOOL'		=> 'tinyint(1) UNSIGNED',
-			'VCHAR'		=> 'varchar(255)',
-			'VCHAR:'	=> 'varchar(%d)',
-			'CHAR:'		=> 'char(%d)',
-			'XSTEXT'	=> 'text',
-			'XSTEXT_UNI'=> 'varchar(100)',
-			'STEXT'		=> 'text',
-			'STEXT_UNI'	=> 'varchar(255)',
-			'TEXT'		=> 'text',
-			'TEXT_UNI'	=> 'text',
-			'MTEXT'		=> 'mediumtext',
-			'MTEXT_UNI'	=> 'mediumtext',
-			'TIMESTAMP'	=> 'int(11) UNSIGNED',
-			'DECIMAL'	=> 'decimal(5,2)',
-			'DECIMAL:'	=> 'decimal(%d,2)',
-			'PDECIMAL'	=> 'decimal(6,3)',
-			'PDECIMAL:'	=> 'decimal(%d,3)',
-			'VCHAR_UNI'	=> 'varchar(255)',
-			'VCHAR_UNI:'=> 'varchar(%d)',
-			'VARBINARY'	=> 'varbinary(255)',
-		),
-
-		'firebird'	=> array(
-			'INT:'		=> 'INTEGER',
-			'BINT'		=> 'DOUBLE PRECISION',
-			'UINT'		=> 'INTEGER',
-			'UINT:'		=> 'INTEGER',
-			'TINT:'		=> 'INTEGER',
-			'USINT'		=> 'INTEGER',
-			'BOOL'		=> 'INTEGER',
-			'VCHAR'		=> 'VARCHAR(255) CHARACTER SET NONE',
-			'VCHAR:'	=> 'VARCHAR(%d) CHARACTER SET NONE',
-			'CHAR:'		=> 'CHAR(%d) CHARACTER SET NONE',
-			'XSTEXT'	=> 'BLOB SUB_TYPE TEXT CHARACTER SET NONE',
-			'STEXT'		=> 'BLOB SUB_TYPE TEXT CHARACTER SET NONE',
-			'TEXT'		=> 'BLOB SUB_TYPE TEXT CHARACTER SET NONE',
-			'MTEXT'		=> 'BLOB SUB_TYPE TEXT CHARACTER SET NONE',
-			'XSTEXT_UNI'=> 'VARCHAR(100) CHARACTER SET UTF8',
-			'STEXT_UNI'	=> 'VARCHAR(255) CHARACTER SET UTF8',
-			'TEXT_UNI'	=> 'BLOB SUB_TYPE TEXT CHARACTER SET UTF8',
-			'MTEXT_UNI'	=> 'BLOB SUB_TYPE TEXT CHARACTER SET UTF8',
-			'TIMESTAMP'	=> 'INTEGER',
-			'DECIMAL'	=> 'DOUBLE PRECISION',
-			'DECIMAL:'	=> 'DOUBLE PRECISION',
-			'PDECIMAL'	=> 'DOUBLE PRECISION',
-			'PDECIMAL:'	=> 'DOUBLE PRECISION',
-			'VCHAR_UNI'	=> 'VARCHAR(255) CHARACTER SET UTF8',
-			'VCHAR_UNI:'=> 'VARCHAR(%d) CHARACTER SET UTF8',
-			'VARBINARY'	=> 'CHAR(255) CHARACTER SET NONE',
-		),
-
-		'mssql'		=> array(
-			'INT:'		=> '[int]',
-			'BINT'		=> '[float]',
-			'UINT'		=> '[int]',
-			'UINT:'		=> '[int]',
-			'TINT:'		=> '[int]',
-			'USINT'		=> '[int]',
-			'BOOL'		=> '[int]',
-			'VCHAR'		=> '[varchar] (255)',
-			'VCHAR:'	=> '[varchar] (%d)',
-			'CHAR:'		=> '[char] (%d)',
-			'XSTEXT'	=> '[varchar] (1000)',
-			'STEXT'		=> '[varchar] (3000)',
-			'TEXT'		=> '[varchar] (8000)',
-			'MTEXT'		=> '[text]',
-			'XSTEXT_UNI'=> '[varchar] (100)',
-			'STEXT_UNI'	=> '[varchar] (255)',
-			'TEXT_UNI'	=> '[varchar] (4000)',
-			'MTEXT_UNI'	=> '[text]',
-			'TIMESTAMP'	=> '[int]',
-			'DECIMAL'	=> '[float]',
-			'DECIMAL:'	=> '[float]',
-			'PDECIMAL'	=> '[float]',
-			'PDECIMAL:'	=> '[float]',
-			'VCHAR_UNI'	=> '[varchar] (255)',
-			'VCHAR_UNI:'=> '[varchar] (%d)',
-			'VARBINARY'	=> '[varchar] (255)',
-		),
-
-		'oracle'	=> array(
-			'INT:'		=> 'number(%d)',
-			'BINT'		=> 'number(20)',
-			'UINT'		=> 'number(8)',
-			'UINT:'		=> 'number(%d)',
-			'TINT:'		=> 'number(%d)',
-			'USINT'		=> 'number(4)',
-			'BOOL'		=> 'number(1)',
-			'VCHAR'		=> 'varchar2(255)',
-			'VCHAR:'	=> 'varchar2(%d)',
-			'CHAR:'		=> 'char(%d)',
-			'XSTEXT'	=> 'varchar2(1000)',
-			'STEXT'		=> 'varchar2(3000)',
-			'TEXT'		=> 'clob',
-			'MTEXT'		=> 'clob',
-			'XSTEXT_UNI'=> 'varchar2(300)',
-			'STEXT_UNI'	=> 'varchar2(765)',
-			'TEXT_UNI'	=> 'clob',
-			'MTEXT_UNI'	=> 'clob',
-			'TIMESTAMP'	=> 'number(11)',
-			'DECIMAL'	=> 'number(5, 2)',
-			'DECIMAL:'	=> 'number(%d, 2)',
-			'PDECIMAL'	=> 'number(6, 3)',
-			'PDECIMAL:'	=> 'number(%d, 3)',
-			'VCHAR_UNI'	=> 'varchar2(255)',
-			'VCHAR_UNI:'=> array('varchar2(%d)', 'limit' => array('mult', 3, 765, 'clob')),
-			'VARBINARY'	=> 'raw(255)',
-		),
-
-		'sqlite'	=> array(
-			'INT:'		=> 'int(%d)',
-			'BINT'		=> 'bigint(20)',
-			'UINT'		=> 'INTEGER UNSIGNED', //'mediumint(8) UNSIGNED',
-			'UINT:'		=> 'INTEGER UNSIGNED', // 'int(%d) UNSIGNED',
-			'TINT:'		=> 'tinyint(%d)',
-			'USINT'		=> 'INTEGER UNSIGNED', //'mediumint(4) UNSIGNED',
-			'BOOL'		=> 'INTEGER UNSIGNED', //'tinyint(1) UNSIGNED',
-			'VCHAR'		=> 'varchar(255)',
-			'VCHAR:'	=> 'varchar(%d)',
-			'CHAR:'		=> 'char(%d)',
-			'XSTEXT'	=> 'text(65535)',
-			'STEXT'		=> 'text(65535)',
-			'TEXT'		=> 'text(65535)',
-			'MTEXT'		=> 'mediumtext(16777215)',
-			'XSTEXT_UNI'=> 'text(65535)',
-			'STEXT_UNI'	=> 'text(65535)',
-			'TEXT_UNI'	=> 'text(65535)',
-			'MTEXT_UNI'	=> 'mediumtext(16777215)',
-			'TIMESTAMP'	=> 'INTEGER UNSIGNED', //'int(11) UNSIGNED',
-			'DECIMAL'	=> 'decimal(5,2)',
-			'DECIMAL:'	=> 'decimal(%d,2)',
-			'PDECIMAL'	=> 'decimal(6,3)',
-			'PDECIMAL:'	=> 'decimal(%d,3)',
-			'VCHAR_UNI'	=> 'varchar(255)',
-			'VCHAR_UNI:'=> 'varchar(%d)',
-			'VARBINARY'	=> 'blob',
-		),
-
-		'db2'		=> array(
-			'INT:'		=> 'integer',
-			'BINT'		=> 'float',
-			'UINT'		=> 'integer',
-			'UINT:'		=> 'integer',
-			'TINT:'		=> 'smallint',
-			'USINT'		=> 'smallint',
-			'BOOL'		=> 'smallint',
-			'VCHAR'		=> 'varchar(255)',
-			'VCHAR:'	=> 'varchar(%d)',
-			'CHAR:'		=> 'char(%d)',
-			'XSTEXT'	=> 'clob(65K)',
-			'STEXT'		=> 'varchar(3000)',
-			'TEXT'		=> 'clob(65K)',
-			'MTEXT'		=> 'clob(16M)',
-			'XSTEXT_UNI'=> 'varchar(100)',
-			'STEXT_UNI'	=> 'varchar(255)',
-			'TEXT_UNI'	=> 'clob(65K)',
-			'MTEXT_UNI'	=> 'clob(16M)',
-			'TIMESTAMP'	=> 'integer',
-			'DECIMAL'	=> 'float',
-			'VCHAR_UNI'	=> 'varchar(255)',
-			'VCHAR_UNI:'=> 'varchar(%d)',
-			'VARBINARY'	=> 'varchar(255)',
-		),
-
-		'postgres'	=> array(
-			'INT:'		=> 'INT4',
-			'BINT'		=> 'INT8',
-			'UINT'		=> 'INT4', // unsigned
-			'UINT:'		=> 'INT4', // unsigned
-			'USINT'		=> 'INT2', // unsigned
-			'BOOL'		=> 'INT2', // unsigned
-			'TINT:'		=> 'INT2',
-			'VCHAR'		=> 'varchar(255)',
-			'VCHAR:'	=> 'varchar(%d)',
-			'CHAR:'		=> 'char(%d)',
-			'XSTEXT'	=> 'varchar(1000)',
-			'STEXT'		=> 'varchar(3000)',
-			'TEXT'		=> 'varchar(8000)',
-			'MTEXT'		=> 'TEXT',
-			'XSTEXT_UNI'=> 'varchar(100)',
-			'STEXT_UNI'	=> 'varchar(255)',
-			'TEXT_UNI'	=> 'varchar(4000)',
-			'MTEXT_UNI'	=> 'TEXT',
-			'TIMESTAMP'	=> 'INT4', // unsigned
-			'DECIMAL'	=> 'decimal(5,2)',
-			'DECIMAL:'	=> 'decimal(%d,2)',
-			'PDECIMAL'	=> 'decimal(6,3)',
-			'PDECIMAL:'	=> 'decimal(%d,3)',
-			'VCHAR_UNI'	=> 'varchar(255)',
-			'VCHAR_UNI:'=> 'varchar(%d)',
-			'VARBINARY'	=> 'bytea',
-		),
-	);
-
-	// A list of types being unsigned for better reference in some db's
+	/**
+	* A list of types being unsigned for better reference in some db's
+	* @var array
+	*/
 	public $unsigned_types = array('UINT', 'UINT:', 'USINT', 'BOOL', 'TIMESTAMP');
-	public $supported_dbms = array('firebird', 'mssql', 'mysql', 'oracle', 'postgres', 'sqlite', 'db2');
 
 	/**
-	* Set this to true if you only want to return the 'to-be-executed' SQL statement(s) (as an array).
+	* A list of supported DBMS. We change this class to support more DBMS, the DBMS itself only need to follow some rules.
+	* @var array
+	*/
+	public $supported_dbms = array('mysql', 'mssql', 'sqlite', 'oracle', 'firebird', 'db2', 'postgres');
+
+	/**
+	* This is set to true if user only wants to return the 'to-be-executed' SQL statement(s) (as an array).
+	* This mode has no effect on some methods (inserting of data for example). This is expressed within the methods command.
 	*/
 	public $return_statements = false;
 
-	public function __construct($db, $return_statements = false)
+	/**
+	* Constructor. Set DB Object and set {@link $return_statements return_statements}.
+	*
+	* @param phpbb_dbal	$db					DBAL object
+	* @param bool		$return_statements	True if only statements should be returned and no SQL being executed
+	*/
+	public function __construct(phpbb_dbal $db, $return_statements = false)
 	{
 		$this->db = $db;
 		$this->return_statements = $return_statements;
-	}
 
-	/**
-	* Return/Execute specific SQL commands needed for some databases
-	*/
-	public function sql_install_begin()
-	{
-		$statements = array();
-
-		switch ($this->db->dbms_type)
+		if (!in_array($this->db->dbms_type, $this->supported_dbms))
 		{
-			case 'oracle':
-			/*
-				CREATE TABLESPACE "PHPBB"
-				LOGGING
-				DATAFILE \'E:\ORACLE\ORADATA\LOCAL\PHPBB.ora\'
-				SIZE 10M
-				AUTOEXTEND ON NEXT 10M
-				MAXSIZE 100M;
-
-				CREATE USER "PHPBB"
-				PROFILE "DEFAULT"
-				IDENTIFIED BY "phpbb_password"
-				DEFAULT TABLESPACE "PHPBB"
-				QUOTA UNLIMITED ON "PHPBB"
-				ACCOUNT UNLOCK;
-
-				GRANT ANALYZE ANY TO "PHPBB";
-				GRANT CREATE SEQUENCE TO "PHPBB";
-				GRANT CREATE SESSION TO "PHPBB";
-				GRANT CREATE TABLE TO "PHPBB";
-				GRANT CREATE TRIGGER TO "PHPBB";
-				GRANT CREATE VIEW TO "PHPBB";
-				GRANT "CONNECT" TO "PHPBB";
-
-				COMMIT;
-				DISCONNECT;
-			*/
-			break;
-
-			case 'postgres':
-				// Create Domain
-/*				$statements[] = 'CREATE DOMAIN varchar_ci AS varchar(255) NOT NULL DEFAULT \'\'::character varying;';
-
-				// Operation functions
-				$statements[] = 'CREATE FUNCTION _varchar_ci_equal(varchar_ci, varchar_ci) RETURNS boolean AS \'SELECT LOWER($1) = LOWER($2)\' LANGUAGE SQL STRICT';
-				$statements[] = 'CREATE FUNCTION _varchar_ci_not_equal(varchar_ci, varchar_ci) RETURNS boolean AS \'SELECT LOWER($1) != LOWER($2)\' LANGUAGE SQL STRICT';
-				$statements[] = 'CREATE FUNCTION _varchar_ci_less_than(varchar_ci, varchar_ci) RETURNS boolean AS \'SELECT LOWER($1) < LOWER($2)\' LANGUAGE SQL STRICT';
-				$statements[] = 'CREATE FUNCTION _varchar_ci_less_equal(varchar_ci, varchar_ci) RETURNS boolean AS \'SELECT LOWER($1) <= LOWER($2)\' LANGUAGE SQL STRICT';
-				$statements[] = 'CREATE FUNCTION _varchar_ci_greater_than(varchar_ci, varchar_ci) RETURNS boolean AS \'SELECT LOWER($1) > LOWER($2)\' LANGUAGE SQL STRICT';
-				$statements[] = 'CREATE FUNCTION _varchar_ci_greater_equals(varchar_ci, varchar_ci) RETURNS boolean AS \'SELECT LOWER($1) >= LOWER($2)\' LANGUAGE SQL STRICT';
-
-				// Operators
-				$statements[] = 'CREATE OPERATOR <( PROCEDURE = _varchar_ci_less_than, LEFTARG = varchar_ci, RIGHTARG = varchar_ci, COMMUTATOR = >, NEGATOR = >=, RESTRICT = scalarltsel, JOIN = scalarltjoinsel)';
-				$statements[] = 'CREATE OPERATOR <=( PROCEDURE = _varchar_ci_less_equal, LEFTARG = varchar_ci, RIGHTARG = varchar_ci, COMMUTATOR = >=, NEGATOR = >, RESTRICT = scalarltsel, JOIN = scalarltjoinsel)';
-				$statements[] = 'CREATE OPERATOR >( PROCEDURE = _varchar_ci_greater_than, LEFTARG = varchar_ci, RIGHTARG = varchar_ci, COMMUTATOR = <, NEGATOR = <=, RESTRICT = scalargtsel, JOIN = scalargtjoinsel);';
-				$statements[] = 'CREATE OPERATOR >=( PROCEDURE = _varchar_ci_greater_equals, LEFTARG = varchar_ci, RIGHTARG = varchar_ci, COMMUTATOR = <=, NEGATOR = <, RESTRICT = scalargtsel, JOIN = scalargtjoinsel)';
-				$statements[] = 'CREATE OPERATOR <>( PROCEDURE = _varchar_ci_not_equal, LEFTARG = varchar_ci, RIGHTARG = varchar_ci, COMMUTATOR = <>, NEGATOR = =, RESTRICT = neqsel, JOIN = neqjoinsel)';
-				$statements[] = 'CREATE OPERATOR =( PROCEDURE = _varchar_ci_equal, LEFTARG = varchar_ci, RIGHTARG = varchar_ci, COMMUTATOR = =, NEGATOR = <>, RESTRICT = eqsel, JOIN = eqjoinsel, HASHES, MERGES, SORT1= <)';
-*/
-			break;
+			trigger_error('DBMS Type ' . $this->db->dbms_type . ' not supported by DB Tools.', E_USER_ERROR);
 		}
-
-		return $this->_sql_run_sql($statements);
-	}
-
-	public function sql_install_end()
-	{
-		return;
 	}
 
 	/**
-	* Create table
-	* For more information have a look at /install/schemas/schema_data.php
+	* Create SQL Table
+	*
+	* @param string	$table_name	The table name to create
+	* @param array	$table_data	Array containing table data. For a sample layout see {@example }
+	* @return array	Statements if $return_statements is true.
 	*/
 	public function sql_create_table($table_name, $table_data)
 	{
 		// holds the DDL for a column
 		$columns = $statements = array();
 
+		// Begin transaction
 		$statements[] = 'begin';
-
-		$table_sql = 'CREATE TABLE ' . $table_name . ' (' . "\n";
 
 		// Determine if we have created a PRIMARY KEY in the earliest
 		$primary_key_gen = false;
@@ -335,6 +87,10 @@ class phpbb_db_tools
 		// Determine if the table requires a sequence
 		$create_sequence = false;
 
+		// Begin table sql statement
+		$table_sql = 'CREATE TABLE ' . $table_name . ' (' . "\n";
+
+		// Iterate through the columns to create a table
 		foreach ($table_data['COLUMNS'] as $column_name => $column_data)
 		{
 			// here lies an array, filled with information compiled on the column's data
@@ -343,8 +99,7 @@ class phpbb_db_tools
 			// here we add the definition of the new column to the list of columns
 			$columns[] = "\t {$column_name} " . $prepared_column['column_type_sql'];
 
-			// see if we have found a primary key set due to a column definition,
-			// if we have found it, we can stop looking
+			// see if we have found a primary key set due to a column definition if we have found it, we can stop looking
 			if (!$primary_key_gen)
 			{
 				$primary_key_gen = isset($prepared_column['primary_key_set']) && $prepared_column['primary_key_set'];
@@ -366,6 +121,7 @@ class phpbb_db_tools
 		// this makes up all the columns in the create table statement
 		$table_sql .= implode(",\n", $columns);
 
+		// Close the table for two DBMS and add to the statements
 		switch ($this->db->dbms_type)
 		{
 			case 'firebird':
@@ -500,30 +256,29 @@ class phpbb_db_tools
 			}
 		}
 
+		// Commit Transaction
 		$statements[] = 'commit';
 
 		return $this->_sql_run_sql($statements);
 	}
 
 	/**
-	* Handle passed database update array.
-	* Expected structure...
-	* Key being one of the following
-	*	change_columns: Column changes (only type, not name)
-	*	add_columns: Add columns to a table
-	*	drop_keys: Dropping keys
-	*	drop_columns: Removing/Dropping columns
-	*	add_primary_keys: adding primary keys
-	*	add_unique_index: adding an unique index
-	*	add_index: adding an index
+	* Handle passed database update array. Update table schema.
 	*
-	* The values are in this format:
-	*	{KEY}		=> array(
-	*		{TABLE NAME}		=> array(
-	*			{COLUMN NAME}		=> array({COLUMN TYPE}, {DEFAULT VALUE}, {OPTIONAL VARIABLES}),
-	*			{KEY/INDEX NAME}	=> array({COLUMN NAMES}),
-	*		)
-	*	}
+	* Key being one of the following
+	* <pre>
+	* change_columns - Column changes (only type, not name)
+	* add_columns - Add columns to a table
+	* drop_keys - Dropping keys
+	* drop_columns - Removing/Dropping columns
+	* add_primary_keys - adding primary keys
+	* add_unique_index - adding an unique index
+	* add_index - adding an index
+	* </pre>
+	*
+	* For a complete definition of the layout please see {@example }
+	*
+	* @param array	$schema_changes	The schema array
 	*/
 	public function sql_schema_changes($schema_changes)
 	{
@@ -661,12 +416,11 @@ class phpbb_db_tools
 	}
 
 	/**
-	* 'table'		=> 'phpbb_styles_theme',
-	* 'columns'	=> array('theme_name', 'theme_copyright', 'theme_path', 'theme_storedb', 'theme_data'),
-	* 'data'		=> array(
-	* 	array('prosilver', '&copy; phpBB Group', 'prosilver', 1, ''),
-	* ),
-	* 'store_auto_increment'	=> 'THEME_ID',
+	* Insert SQL data into tables (INSERT). This function DOES NOT SUPPORT $return_statements. SQL queries are executed as is.
+	* For a complete definition of the layout see {@example }
+	*
+	* @param array	$schema_data	The schema data array
+	* @param array	&$data			A replacement array for replacing template variables within the schema
 	*/
 	public function sql_insert_data($schema_data, &$data)
 	{
@@ -693,6 +447,13 @@ class phpbb_db_tools
 		}
 	}
 
+	/**
+	* Update SQL data in tables (UPDATE). This function DOES NOT SUPPORT $return_statements. SQL queries are executed as is.
+	* For a complete definition of the layout see {@example }
+	*
+	* @param array	$schema_data	The schema data array
+	* @param array	&$data			A replacement array for replacing template variables within the schema
+	*/
 	public function sql_update_data($schema_data, &$data)
 	{
 		// Go through the data array...
@@ -739,43 +500,12 @@ class phpbb_db_tools
 		$this->db->sql_query($sql);
 	}
 
-	private function _sql_get_special_row($value, &$data)
-	{
-		if (is_array($value))
-		{
-			if (isset($value['auto_increment']))
-			{
-				$auto_key = explode(':', $value['auto_increment'], 2);
-				$value_key = $auto_key[0];
-				$auto_key = (int) $auto_key[1];
-
-				if (isset($this->stored_increments[$value_key][$auto_key]))
-				{
-					$value = $this->stored_increments[$value_key][$auto_key];
-				}
-			}
-			else
-			{
-				$value = NULL;
-			}
-		}
-		else if (strpos($value, '{') === 0 && strpos($value, '}') === strlen($value) - 1)
-		{
-			if (strpos($value, '{L_') === 0 && isset(phpbb::$user->lang[substr($value, 3, -1)]))
-			{
-				$value = phpbb::$user->lang[substr($value, 3, -1)];
-			}
-			else if (isset($data[substr($value, 1, -1)]))
-			{
-				$value = $data[substr($value, 1, -1)];
-			}
-		}
-
-		return $value;
-	}
-
 	/**
 	* Check if a specified column exist
+	*
+	* @param string	$table			Table to check the column at
+	* @param string	$column_name	The column to check
+	*
 	* @return bool True if column exists, else false
 	*/
 	public function sql_column_exists($table, $column_name)
@@ -1593,6 +1323,41 @@ class phpbb_db_tools
 		return $this->_sql_run_sql($statements);
 	}
 
+	private function _sql_get_special_row($value, &$data)
+	{
+		if (is_array($value))
+		{
+			if (isset($value['auto_increment']))
+			{
+				$auto_key = explode(':', $value['auto_increment'], 2);
+				$value_key = $auto_key[0];
+				$auto_key = (int) $auto_key[1];
+
+				if (isset($this->stored_increments[$value_key][$auto_key]))
+				{
+					$value = $this->stored_increments[$value_key][$auto_key];
+				}
+			}
+			else
+			{
+				$value = NULL;
+			}
+		}
+		else if (strpos($value, '{') === 0 && strpos($value, '}') === strlen($value) - 1)
+		{
+			if (strpos($value, '{L_') === 0 && isset(phpbb::$user->lang[substr($value, 3, -1)]))
+			{
+				$value = phpbb::$user->lang[substr($value, 3, -1)];
+			}
+			else if (isset($data[substr($value, 1, -1)]))
+			{
+				$value = $data[substr($value, 1, -1)];
+			}
+		}
+
+		return $value;
+	}
+
 	/**
 	* Private method for performing sql statements (either execute them or return them)
 	* @access private
@@ -1635,9 +1400,9 @@ class phpbb_db_tools
 		{
 			list($orig_column_type, $column_length) = explode(':', $column_data[0]);
 
-			if (!is_array($this->dbms_type_map[$this->db->dbms_type][$orig_column_type . ':']))
+			if (!is_array($this->db->dbms_type_map[$orig_column_type . ':']))
 			{
-				$column_type = sprintf($this->dbms_type_map[$this->db->dbms_type][$orig_column_type . ':'], $column_length);
+				$column_type = sprintf($this->db->dbms_type_map[$orig_column_type . ':'], $column_length);
 			}
 
 			$orig_column_type .= ':';
@@ -1645,7 +1410,7 @@ class phpbb_db_tools
 		else
 		{
 			$orig_column_type = $column_data[0];
-			$column_type = $this->dbms_type_map[$this->db->dbms_type][$column_data[0]];
+			$column_type = $this->db->dbms_type_map[$column_data[0]];
 		}
 
 		// Adjust default value if db-dependant specified
