@@ -133,6 +133,16 @@ class phpbb_plugins
 	private $current_plugin = false;
 
 	/**
+	* Plugins/Functions already set up
+	*/
+	private $already_parsed_plugins = array();
+
+	/**
+	* @var array Collection of assigned functions and their params (merged from plugins and custom additions)
+	*/
+	private $functions = array();
+
+	/**
 	* Init plugins
 	*
 	* Search {@link $plugin_path plugin path} for plugins and include the information for later processing.
@@ -159,6 +169,8 @@ class phpbb_plugins
 			}
 			closedir($dh);
 		}
+
+		$this->already_parsed_plugins = array('plugin' => array(), 'hook' => array());
 	}
 
 	/**
@@ -196,13 +208,13 @@ class phpbb_plugins
 	*/
 	public function setup()
 	{
-		if (empty($this->plugins))
-		{
-			return false;
-		}
-
 		foreach ($this->plugins as $name => $plugin)
 		{
+			if (isset($this->already_parsed_plugins['plugin'][$name]))
+			{
+				continue;
+			}
+
 			// Add includes
 			foreach ($plugin->includes as $file)
 			{
@@ -244,29 +256,45 @@ class phpbb_plugins
 				// Setup/Register plugin...
 				$object->setup_plugin($instance);
 			}
+		}
 
-			// Now setup hooks... this is a special case...
-			foreach ($plugin->functions as $params)
+		// Now setup hooks... this is a special case...
+		foreach ($this->functions as $key => $params)
+		{
+			if (isset($this->already_parsed_plugins['hook'][$key]))
 			{
-				$function = array_shift($params);
-				$hook = array_shift($params);
-				$mode = (!empty($params)) ? array_shift($params) : phpbb::FUNCTION_INJECT;
-				$action = (!empty($params)) ? array_shift($params) : 'default';
+				continue;
+			}
 
-				// Check if the function is already overridden.
-				if ($mode == phpbb::FUNCTION_OVERRIDE && isset($this->hooks[$function][$mode]))
-				{
-					trigger_error('Function ' . $function . ' is already overridden by ' . $this->hooks[$function][$mode] . '.', E_USER_ERROR);
-				}
+			$function = array_shift($params);
+			$hook = array_shift($params);
+			$mode = (!empty($params)) ? array_shift($params) : phpbb::FUNCTION_INJECT;
+			$action = (!empty($params)) ? array_shift($params) : 'default';
 
-				if ($mode == phpbb::FUNCTION_OVERRIDE)
-				{
-					$this->hooks[$function][$mode] = $hook;
-				}
-				else
-				{
-					$this->hooks[$function][$mode][$action][] = $hook;
-				}
+			// Check if the function is already overridden.
+			if ($mode == phpbb::FUNCTION_OVERRIDE && isset($this->hooks[$function][$mode]))
+			{
+				trigger_error('Function ' . $function . ' is already overridden by ' . $this->hooks[$function][$mode] . '.', E_USER_ERROR);
+			}
+
+			if ($mode == phpbb::FUNCTION_OVERRIDE)
+			{
+				$this->hooks[$function][$mode] = $hook;
+			}
+			else
+			{
+				$this->hooks[$function][$mode][$action][] = $hook;
+			}
+
+			$this->already_parsed_plugins['hook'][$key] = true;
+		}
+
+		// Init method call and setting as finished
+		foreach ($this->plugins as $name => $plugin)
+		{
+			if (isset($this->already_parsed_plugins['plugin'][$name]))
+			{
+				continue;
 			}
 
 			// Call plugins init method?
@@ -274,6 +302,8 @@ class phpbb_plugins
 			{
 				$plugin->setup->init();
 			}
+
+			$this->already_parsed_plugins['plugin'][$name] = true;
 		}
 	}
 
@@ -332,7 +362,7 @@ class phpbb_plugins
 	public function register_function()
 	{
 		$arguments = func_get_args();
-		$this->current_plugin->functions[] = $arguments;
+		$this->current_plugin->functions[] = $this->functions[] = $arguments;
 	}
 
 	/**

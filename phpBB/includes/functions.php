@@ -1305,14 +1305,7 @@ function confirm_box($check, $title = '', $hidden = '', $html_body = 'confirm_bo
 	// generate activation key
 	$confirm_key = gen_rand_string(10);
 
-	if (defined('IN_ADMIN') && isset(phpbb::$user->data['session_admin']) && phpbb::$user->data['session_admin'])
-	{
-		adm_page_header((!isset(phpbb::$user->lang[$title])) ? phpbb::$user->lang['CONFIRM'] : phpbb::$user->lang[$title]);
-	}
-	else
-	{
-		page_header((!isset(phpbb::$user->lang[$title])) ? phpbb::$user->lang['CONFIRM'] : phpbb::$user->lang[$title]);
-	}
+	page_header((!isset(phpbb::$user->lang[$title])) ? phpbb::$user->lang['CONFIRM'] : phpbb::$user->lang[$title]);
 
 	$template->set_filenames(array(
 		'body' => $html_body)
@@ -1343,14 +1336,7 @@ function confirm_box($check, $title = '', $hidden = '', $html_body = 'confirm_bo
 		WHERE user_id = " . phpbb::$user->data['user_id'];
 	phpbb::$db->sql_query($sql);
 
-	if (defined('IN_ADMIN') && isset(phpbb::$user->data['session_admin']) && phpbb::$user->data['session_admin'])
-	{
-		adm_page_footer();
-	}
-	else
-	{
-		page_footer();
-	}
+	page_footer();
 }
 
 /**
@@ -1358,10 +1344,6 @@ function confirm_box($check, $title = '', $hidden = '', $html_body = 'confirm_bo
 */
 function login_box($redirect = '', $l_explain = '', $l_success = '', $admin = false, $s_display = true)
 {
-	global $template, $auth;
-
-	include(PHPBB_ROOT_PATH . 'includes/captcha/captcha_factory.' . PHP_EXT);
-
 	$err = '';
 
 	// Make sure user->setup() has been called
@@ -1370,23 +1352,17 @@ function login_box($redirect = '', $l_explain = '', $l_success = '', $admin = fa
 		phpbb::$user->setup();
 	}
 
-	if (defined('ADMIN_START'))
-	{
-		// Set custom template for admin area
-		$template->set_custom_template(PHPBB_ADMIN_PATH . 'style', 'admin');
-		$template->assign_var('T_TEMPLATE_PATH', PHPBB_ADMIN_PATH . 'style');
-	}
-
 	// Print out error if user tries to authenticate as an administrator without having the privileges...
-	if ($admin && !$auth->acl_get('a_'))
+	if ($admin && !phpbb::$acl->acl_get('a_'))
 	{
 		// Not authd
 		// anonymous/inactive users are never able to go to the ACP even if they have the relevant permissions
-		if (phpbb::$user->data['is_registered'])
+		if (phpbb::$user->is_registered)
 		{
 			add_log('admin', 'LOG_ADMIN_AUTH_FAIL');
 		}
-		trigger_error('NO_AUTH_ADMIN');
+
+		$admin = false;
 	}
 
 	if (phpbb_request::is_set_post('login'))
@@ -1398,18 +1374,19 @@ function login_box($redirect = '', $l_explain = '', $l_success = '', $admin = fa
 
 			if (strspn($credential, 'abcdef0123456789') !== strlen($credential) || strlen($credential) != 32)
 			{
-				if (phpbb::$user->data['is_registered'])
+				if (phpbb::$user->is_registered)
 				{
 					add_log('admin', 'LOG_ADMIN_AUTH_FAIL');
 				}
+
 				trigger_error('NO_AUTH_ADMIN');
 			}
 
-			$password	= request_var('password_' . $credential, '', true);
+			$password = request_var('password_' . $credential, '', true);
 		}
 		else
 		{
-			$password	= request_var('password', '', true);
+			$password = request_var('password', '', true);
 		}
 
 		$username	= request_var('username', '', true);
@@ -1441,7 +1418,7 @@ function login_box($redirect = '', $l_explain = '', $l_success = '', $admin = fa
 			{
 				// Only log the failed attempt if a real user tried to.
 				// anonymous/inactive users are never able to go to the ACP even if they have the relevant permissions
-				if (phpbb::$user->data['is_registered'])
+				if (phpbb::$user->is_registered)
 				{
 					add_log('admin', 'LOG_ADMIN_AUTH_FAIL');
 				}
@@ -1451,9 +1428,10 @@ function login_box($redirect = '', $l_explain = '', $l_success = '', $admin = fa
 		// The result parameter is always an array, holding the relevant information...
 		if ($result['status'] == LOGIN_SUCCESS)
 		{
-			$redirect = request_var('redirect', PHPBB_ROOT_PATH . 'index.' . PHP_EXT);
+			$redirect = request_var('redirect', phpbb::$user->page['page']);
+
 			$message = ($l_success) ? $l_success : phpbb::$user->lang['LOGIN_REDIRECT'];
-			$l_redirect = ($admin) ? phpbb::$user->lang['PROCEED_TO_ACP'] : (($redirect === PHPBB_ROOT_PATH . 'index.' . PHP_EXT || $redirect === "index." . PHP_EXT) ? phpbb::$user->lang['RETURN_INDEX'] : phpbb::$user->lang['RETURN_PAGE']);
+			$l_redirect = ($admin) ? phpbb::$user->lang['PROCEED_TO_ACP'] : (($redirect === PHPBB_ROOT_PATH . 'index.' . PHP_EXT || $redirect === 'index.' . PHP_EXT) ? phpbb::$user->lang['RETURN_INDEX'] : phpbb::$user->lang['RETURN_PAGE']);
 
 			// append/replace SID (may change during the session for AOL users)
 			$redirect = phpbb::$url->reapply_sid($redirect);
@@ -1464,7 +1442,7 @@ function login_box($redirect = '', $l_explain = '', $l_success = '', $admin = fa
 				return;
 			}
 
-			$redirect = phpbb::$url->meta_refresh(3, $redirect);
+			// $redirect = phpbb::$url->meta_refresh(3, $redirect);
 			trigger_error($message . '<br /><br />' . sprintf($l_redirect, '<a href="' . $redirect . '">', '</a>'));
 		}
 
@@ -1531,7 +1509,7 @@ function login_box($redirect = '', $l_explain = '', $l_success = '', $admin = fa
 	}
 
 	// Assign credential for username/password pair
-	$credential = ($admin) ? md5(unique_id()) : false;
+	$credential = ($admin) ? md5(phpbb::$security->unique_id()) : false;
 
 	$s_hidden_fields = array(
 		'redirect'	=> $redirect,
@@ -1545,17 +1523,17 @@ function login_box($redirect = '', $l_explain = '', $l_success = '', $admin = fa
 
 	$s_hidden_fields = build_hidden_fields($s_hidden_fields);
 
-	$template->assign_vars(array(
+	phpbb::$template->assign_vars(array(
 		'LOGIN_ERROR'		=> $err,
 		'LOGIN_EXPLAIN'		=> $l_explain,
 
-		'U_SEND_PASSWORD' 		=> (phpbb::$config['email_enable']) ? append_sid('ucp', 'mode=sendpassword') : '',
-		'U_RESEND_ACTIVATION'	=> (phpbb::$config['require_activation'] != USER_ACTIVATION_NONE && phpbb::$config['email_enable']) ? append_sid('ucp', 'mode=resend_act') : '',
-		'U_TERMS_USE'			=> append_sid('ucp', 'mode=terms'),
-		'U_PRIVACY'				=> append_sid('ucp', 'mode=privacy'),
+		'U_SEND_PASSWORD' 		=> (phpbb::$config['email_enable']) ? phpbb::$url->append_sid('ucp', 'mode=sendpassword') : '',
+		'U_RESEND_ACTIVATION'	=> (phpbb::$config['require_activation'] != USER_ACTIVATION_NONE && phpbb::$config['email_enable']) ? phpbb::$url->append_sid('ucp', 'mode=resend_act') : '',
+		'U_TERMS_USE'			=> phpbb::$url->append_sid('ucp', 'mode=terms'),
+		'U_PRIVACY'				=> phpbb::$url->append_sid('ucp', 'mode=privacy'),
 
 		'S_DISPLAY_FULL_LOGIN'	=> ($s_display) ? true : false,
-		'S_LOGIN_ACTION'		=> (!$admin && !defined('ADMIN_START'))  ? append_sid('ucp', 'mode=login') : append_sid(PHPBB_ADMIN_PATH . 'index.' . PHP_EXT, false, true, phpbb::$user->session_id),
+		'S_LOGIN_ACTION'		=> (!$admin && !defined('ADMIN_START'))  ? phpbb::$url->append_sid('ucp', 'mode=login') : phpbb::$url->append_sid(PHPBB_ADMIN_PATH . 'index.' . PHP_EXT, false, true, phpbb::$user->session_id),
 		'S_HIDDEN_FIELDS' 		=> $s_hidden_fields,
 
 		'S_ADMIN_AUTH'			=> $admin,
@@ -1566,36 +1544,14 @@ function login_box($redirect = '', $l_explain = '', $l_success = '', $admin = fa
 		'PASSWORD_CREDENTIAL'	=> ($admin) ? 'password_' . $credential : 'password',
 	));
 
-	if (defined('ADMIN_START'))
-	{
-		$template->set_filenames(array(
-			'body' => 'acp_login.html')
-		);
-		$template->assign_block_vars('t_block1', array(
-			'L_TITLE'		=> phpbb::$user->lang['LOGIN'],
-			'S_SELECTED'	=> true,
-			'U_TITLE'		=> '',
-		));
-		adm_page_header(phpbb::$user->lang['LOGIN'], false);
-	}
-	else
-	{
-		$template->set_filenames(array(
-			'body' => 'login_body.html')
-		);
-		page_header(phpbb::$user->lang['LOGIN'], false);
-	}
+	phpbb::$template->set_filenames(array(
+		'body' => 'login_body.html')
+	);
 
-	make_jumpbox(append_sid('viewforum'));
-	if (defined('ADMIN_START') && isset(phpbb::$user->data['session_admin']) && phpbb::$user->data['session_admin'])
-	{
-		adm_page_footer();
-	}
-	else
-	{
-		page_footer();
-	}
+	page_header(phpbb::$user->lang['LOGIN'], false);
+	make_jumpbox('viewforum');
 
+	page_footer();
 }
 
 /**
@@ -2213,14 +2169,7 @@ function msg_handler($errno, $msg_text, $errfile, $errline)
 
 			if (!defined('HEADER_INC'))
 			{
-				if (defined('ADMIN_START') || (defined('IN_ADMIN') && isset(phpbb::$user->data['session_admin']) && phpbb::$user->data['session_admin']))
-				{
-					adm_page_header($msg_title);
-				}
-				else
-				{
-					page_header($msg_title);
-				}
+				page_header($msg_title);
 			}
 
 			phpbb::$template->set_filenames(array(
@@ -2237,14 +2186,7 @@ function msg_handler($errno, $msg_text, $errfile, $errline)
 			// We do not want the cron script to be called on error messages
 			define('IN_CRON', true);
 
-			if (defined('ADMIN_START') || (defined('IN_ADMIN') && isset(phpbb::$user->data['session_admin']) && phpbb::$user->data['session_admin']))
-			{
-				adm_page_footer();
-			}
-			else
-			{
-				page_footer();
-			}
+			page_footer();
 
 			exit_handler();
 		break;
@@ -2298,6 +2240,7 @@ function page_header($page_title = '', $display_online_list = true)
 
 	// Get users online list ... if required
 	$online_userlist = array();
+	$l_online_users = $l_online_record = '';
 	$forum = request_var('f', 0);
 
 	if (phpbb::$config['load_online'] && phpbb::$config['load_online_time'] && $display_online_list)

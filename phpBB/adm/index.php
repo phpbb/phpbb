@@ -59,6 +59,13 @@ $mode			= request_var('mode', '');
 phpbb::$template->set_custom_template(PHPBB_ADMIN_PATH . 'style', 'admin');
 phpbb::$template->assign_var('T_TEMPLATE_PATH', PHPBB_ADMIN_PATH . 'style');
 
+// Define page header/footer to use
+phpbb::$plugins->register_function('page_header', 'adm_page_header', phpbb::FUNCTION_OVERRIDE);
+phpbb::$plugins->register_function('page_footer', 'adm_page_footer', phpbb::FUNCTION_OVERRIDE);
+
+// And make the calls available
+phpbb::$plugins->setup();
+
 // Instantiate new module
 $module = new p_master();
 
@@ -76,13 +83,13 @@ $module->assign_tpl_vars(phpbb::$url->append_sid(PHPBB_ADMIN_PATH . 'index.' . P
 $module->load_active();
 
 // Generate the page
-adm_page_header($module->get_page_title());
+page_header($module->get_page_title());
 
 phpbb::$template->set_filenames(array(
 	'body' => $module->get_tpl_name(),
 ));
 
-adm_page_footer();
+page_footer();
 
 /**
 * Header for acp pages
