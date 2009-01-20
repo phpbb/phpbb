@@ -61,42 +61,12 @@ if (defined('IN_CRON'))
 // Set some default configuration parameter if the config file does not exist
 if (!file_exists(PHPBB_ROOT_PATH . 'config.' . PHP_EXT))
 {
-	define('CONFIG_ADM_FOLDER', 'adm');
-	define('CONFIG_ACM_TYPE', 'file');
-
+	// phpbb::$base_config['config_set'] = false
 	// This allows common.php or an installation script to do specific actions if the configuration is missing
-	define('PHPBB_CONFIG_MISSING', true);
 }
 else
 {
 	require PHPBB_ROOT_PATH . 'config.' . PHP_EXT;
-}
-
-// Set default configuration variables if phpBB is not installed
-if (!defined('PHPBB_INSTALLED'))
-{
-	$dbms = $dbhost = $dbport = $dbname = $dbuser = $dbpasswd = '';
-	$table_prefix = 'phpbb_';
-}
-
-if (defined('DEBUG_EXTRA'))
-{
-	$base_memory_usage = 0;
-	if (function_exists('memory_get_usage'))
-	{
-		$base_memory_usage = memory_get_usage();
-	}
-}
-
-// Load Extensions
-if (!empty($load_extensions))
-{
-	$load_extensions = explode(',', $load_extensions);
-
-	foreach ($load_extensions as $extension)
-	{
-		@dl(trim($extension));
-	}
 }
 
 // Register autoload function

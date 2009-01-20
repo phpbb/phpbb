@@ -21,9 +21,9 @@ if (!empty($setmodules))
 	// If phpBB is already installed we do not include this module
 	if (@file_exists(PHPBB_ROOT_PATH . 'config.' . PHP_EXT) && !file_exists(PHPBB_ROOT_PATH . 'cache/install_lock'))
 	{
-		include_once(PHPBB_ROOT_PATH . 'config.' . PHP_EXT);
+		include PHPBB_ROOT_PATH . 'config.' . PHP_EXT;
 
-		if (defined('PHPBB_INSTALLED'))
+		if (phpbb::$base_config['installed'])
 		{
 			return;
 		}
@@ -800,6 +800,7 @@ class install_install extends module
 		// Time to convert the data provided into a config file
 		$config_data = "<?php\n";
 		$config_data .= "// phpBB 3.0.x auto-generated configuration file\n// Do not change anything in this file!\n";
+		$config_data .= "if (class_exists('phpbb') && defined('IN_PHPBB'))\n{\n\tphpbb::set_config(array(\n";
 
 		$config_data_array = array(
 			'dbms'			=> $available_dbms[$data['dbms']]['DRIVER'],
@@ -809,21 +810,18 @@ class install_install extends module
 			'dbuser'		=> $data['dbuser'],
 			'dbpasswd'		=> htmlspecialchars_decode($data['dbpasswd']),
 			'table_prefix'	=> $data['table_prefix'],
+			'admin_folder'	=> 'adm',
 			'acm_type'		=> 'file',
-			'load_extensions'	=> $load_extensions,
+			'extensions'	=> $load_extensions,
 		);
 
 		foreach ($config_data_array as $key => $value)
 		{
-			$config_data .= "\${$key} = '" . str_replace("'", "\\'", str_replace('\\', '\\\\', $value)) . "';\n";
+			$config_data .= "\t\t'{$key}' => '" . str_replace("'", "\\'", str_replace('\\', '\\\\', $value)) . "',\n";
 		}
 		unset($config_data_array);
 
-		$config_data .= "\n// If you rename your admin folder, please change this value\n";
-		$config_data .= "@define('CONFIG_ADM_FOLDER', 'adm');\n";
-		$config_data .= "@define('PHPBB_INSTALLED', true);\n";
-		$config_data .= "@define('DEBUG', true);\n";
-		$config_data .= "@define('DEBUG_EXTRA', true);\n";
+		$config_data .= "\n\t\t'debug' => true,\n\t\t'debug_extra' => true,\n\n\t\t// DO NOT CHANGE\n\t\t'installed' => true,\n\t));\n}\n";
 		$config_data .= '?' . '>'; // Done this to prevent highlighting editors getting confused!
 
 		// Attempt to write out the config file directly. If it works, this is the easiest way to do it ...

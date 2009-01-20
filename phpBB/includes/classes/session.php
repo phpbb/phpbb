@@ -1265,7 +1265,7 @@ abstract class phpbb_session
 		if ($user_ip !== $session_ip || $user_browser !== $session_browser || $user_forwarded_for !== $session_forwarded_for || !$referer_valid)
 		{
 			// Added logging temporarly to help debug bugs...
-			if (defined('DEBUG_EXTRA') && $this->data['user_id'] != ANONYMOUS && $log_failure)
+			if (phpbb::$base_config['debug_extra'] && $this->data['user_id'] != ANONYMOUS && $log_failure)
 			{
 				if ($referer_valid)
 				{

@@ -81,7 +81,24 @@ abstract class phpbb
 	* @var array The phpBB configuration array
 	*/
 	public static $config = array();
-	/**#@-*/
+
+	/**
+	* @var array The base configuration array
+	*/
+	public static $base_config = array(
+		'table_prefix'		=> 'phpbb_',
+		'admin_folder'		=> 'adm',
+		'acm_type'			=> 'file',
+
+		'config_set'		=> false,
+		'extensions_set'	=> false,
+
+		'memory_usage'		=> 0,
+
+		'debug'				=> false,
+		'debug_extra'		=> false,
+		'installed'			=> false,
+	);
 
 	/**#@+
 	* Permission constant
@@ -142,6 +159,33 @@ abstract class phpbb
 	public static function error_handler($errno, $errstr, $errfile, $errline)
 	{
 		throw new ErrorException($errstr, 0, $errno, $errfile, $errline);
+	}
+
+	/**
+	* Set base configuration - called from config.php file
+	*/
+	public static function set_config($config)
+	{
+		phpbb::$base_config = array_merge(phpbb::$base_config, $config);
+		phpbb::$base_config['config_set'] = true;
+
+		if (phpbb::$base_config['debug_extra'] && function_exists('memory_get_usage'))
+		{
+			phpbb::$base_config['memory_usage'] = memory_get_usage();
+		}
+
+		// Load Extensions
+		if (!empty(phpbb::$base_config['extensions']) && !phpbb::$base_config['extensions_set'])
+		{
+			$load_extensions = explode(',', phpbb::$base_config['extensions']);
+
+			foreach ($load_extensions as $extension)
+			{
+				@dl(trim($extension));
+			}
+
+			phpbb::$base_config['extensions_set'] = true;
+		}
 	}
 
 	/**

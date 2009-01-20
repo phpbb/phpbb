@@ -171,26 +171,25 @@ function adm_page_footer($copyright_html = true)
 	global $starttime;
 
 	// Output page creation time
-	if (defined('DEBUG'))
+	if (phpbb::$base_config['debug'])
 	{
 		$mtime = explode(' ', microtime());
 		$totaltime = $mtime[0] + $mtime[1] - $starttime;
 
-		if (phpbb_request::variable('explain', false) && phpbb::$acl->acl_get('a_') && defined('DEBUG_EXTRA') && method_exists(phpbb::$db, 'sql_report'))
+		if (phpbb_request::variable('explain', false) && phpbb::$acl->acl_get('a_') && phpbb::$base_config['debug_extra'] && method_exists(phpbb::$db, 'sql_report'))
 		{
 			phpbb::$db->sql_report('display');
 		}
 
 		$debug_output = sprintf('Time : %.3fs | ' . phpbb::$db->sql_num_queries() . ' Queries | GZIP : ' . ((phpbb::$config['gzip_compress']) ? 'On' : 'Off') . ((phpbb::$user->system['load']) ? ' | Load : ' . phpbb::$user->system['load'] : ''), $totaltime);
 
-		if (phpbb::$acl->acl_get('a_') && defined('DEBUG_EXTRA'))
+		if (phpbb::$acl->acl_get('a_') && phpbb::$base_config['debug_extra'])
 		{
 			if (function_exists('memory_get_usage'))
 			{
 				if ($memory_usage = memory_get_usage())
 				{
-					global $base_memory_usage;
-					$memory_usage -= $base_memory_usage;
+					$memory_usage -= phpbb::$base_config['memory_usage'];
 					$memory_usage = get_formatted_filesize($memory_usage);
 
 					$debug_output .= ' | Memory Usage: ' . $memory_usage;
@@ -202,7 +201,7 @@ function adm_page_footer($copyright_html = true)
 	}
 
 	phpbb::$template->assign_vars(array(
-		'DEBUG_OUTPUT'		=> (defined('DEBUG')) ? $debug_output : '',
+		'DEBUG_OUTPUT'		=> (phpbb::$base_config['debug']) ? $debug_output : '',
 		'TRANSLATION_INFO'	=> (!empty(phpbb::$user->lang['TRANSLATION_INFO'])) ? phpbb::$user->lang['TRANSLATION_INFO'] : '',
 		'S_COPYRIGHT_HTML'	=> $copyright_html,
 		'VERSION'			=> phpbb::$config['version'])

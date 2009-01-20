@@ -437,7 +437,7 @@ class ucp_groups
 					$group_name = $group_row['group_name'];
 					$group_type = $group_row['group_type'];
 
-					$avatar_img = (!empty($group_row['group_avatar'])) ? get_user_avatar($group_row['group_avatar'], $group_row['group_avatar_type'], $group_row['group_avatar_width'], $group_row['group_avatar_height'], 'GROUP_AVATAR') : '<img src="' . PHPBB_ROOT_PATH . CONFIG_ADM_FOLDER . '/images/no_avatar.gif" alt="" />';
+					$avatar_img = (!empty($group_row['group_avatar'])) ? get_user_avatar($group_row['group_avatar'], $group_row['group_avatar_type'], $group_row['group_avatar_width'], $group_row['group_avatar_height'], 'GROUP_AVATAR') : '<img src="' . PHPBB_ROOT_PATH . phpbb::$base_config['admin_folder'] . '/images/no_avatar.gif" alt="" />';
 
 					$template->assign_vars(array(
 						'GROUP_NAME'			=> ($group_type == GROUP_SPECIAL) ? $user->lang['G_' . $group_name] : $group_name,
@@ -712,7 +712,7 @@ class ucp_groups
 							'GROUP_CLOSED'		=> $type_closed,
 							'GROUP_HIDDEN'		=> $type_hidden,
 
-							'U_SWATCH'			=> append_sid(CONFIG_ADM_FOLDER . '/swatch', 'form=ucp&amp;name=group_colour'),
+							'U_SWATCH'			=> append_sid(phpbb::$base_config['admin_folder'] . '/swatch', 'form=ucp&amp;name=group_colour'),
 							'S_UCP_ACTION'		=> $this->u_action . "&amp;action=$action&amp;g=$group_id",
 							'L_AVATAR_EXPLAIN'	=> sprintf($user->lang['AVATAR_EXPLAIN'], phpbb::$config['avatar_max_width'], phpbb::$config['avatar_max_height'], phpbb::$config['avatar_filesize'] / 1024),
 						));

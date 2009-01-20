@@ -236,7 +236,7 @@ class phpbb_template
 
 		$recompile = (!file_exists($filename) || @filesize($filename) === 0 || (phpbb::$config['load_tplcompile'] && @filemtime($filename) < filemtime($this->files[$handle]))) ? true : false;
 
-		if (defined('DEBUG_EXTRA'))
+		if (phpbb::$base_config['debug_extra'])
 		{
 			$recompile = true;
 		}

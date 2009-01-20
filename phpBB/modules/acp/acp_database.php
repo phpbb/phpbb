@@ -25,7 +25,7 @@ class acp_database
 
 	function main($id, $mode)
 	{
-		global $db, $user, $auth, $template, $table_prefix;
+		global $db, $user, $auth, $template;
 
 		$user->add_lang('acp/database');
 
@@ -116,7 +116,7 @@ class acp_database
 							break;
 						}
 
-						$extractor->write_start($table_prefix);
+						$extractor->write_start();
 
 						foreach ($table as $table_name)
 						{
@@ -175,7 +175,7 @@ class acp_database
 						asort($tables);
 						foreach ($tables as $table_name)
 						{
-							if (strlen($table_prefix) === 0 || stripos($table_name, $table_prefix) === 0)
+							if (strlen(phpbb::$base_config['table_prefix']) === 0 || stripos($table_name, phpbb::$base_config['table_prefix']) === 0)
 							{
 								$template->assign_block_vars('tables', array(
 									'TABLE'	=> $table_name
@@ -600,11 +600,11 @@ class base_extractor
 */
 class mysql_extractor extends base_extractor
 {
-	function write_start($table_prefix)
+	function write_start()
 	{
 		$sql_data = "#\n";
 		$sql_data .= "# phpBB Backup Script\n";
-		$sql_data .= "# Dump of tables for $table_prefix\n";
+		$sql_data .= "# Dump of tables for " . phpbb::$base_config['table_prefix'] . "\n";
 		$sql_data .= "# DATE : " . gmdate("d-m-Y H:i:s", $this->time) . " GMT\n";
 		$sql_data .= "#\n";
 		$this->flush($sql_data);

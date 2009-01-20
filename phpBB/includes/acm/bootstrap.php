@@ -17,15 +17,6 @@ if (!defined('IN_PHPBB'))
 }
 
 /**
-* Define missing ACM config variable... if not initialized yet
-* @ignore
-*/
-if (!defined('CONFIG_ACM_TYPE'))
-{
-	define('CONFIG_ACM_TYPE', 'file');
-}
-
-/**
 * Base cache class.
 *
 * A prefix of # for $var_name indicates global data.
@@ -63,6 +54,9 @@ class phpbb_acm
 	/**
 	* Magic method for calling type-specific functions.
 	* Functions directly supported are: get(), put(), exists(), destroy()
+	*
+	* The type is added to the methods name, for getting sql data just use get_sql() for example.
+	*
 	* see {@link phpbb_acm_abstract phpbb_acm_abstract} for more information
 	*
 	* @access public
@@ -176,8 +170,10 @@ class phpbb_acm
 	* @return bool	Returns true on success, else false.
 	* @access public
 	*/
-	public function register($cache_type, $cache_append = false, $cache_object = CONFIG_ACM_TYPE)
+	public function register($cache_type, $cache_append = false, $cache_object = false)
 	{
+		$cache_object = ($cache_object === false) ? basename(phpbb::$base_config['acm_type']) : basename($cache_object);
+
 		// We need to init every cache type...
 		if (!isset($this->cache_types[$cache_type]))
 		{

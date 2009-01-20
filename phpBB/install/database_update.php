@@ -337,7 +337,7 @@ function change_database_data($version)
 */
 function _sql($sql, &$errored, &$error_ary, $echo_dot = true)
 {
-	if (defined('DEBUG_EXTRA'))
+	if (phpbb::$base_config['debug_extra'])
 	{
 		echo "<br />\n{$sql}\n<br />";
 	}

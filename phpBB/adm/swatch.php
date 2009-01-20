@@ -23,7 +23,7 @@ $auth->acl($user->data);
 $user->setup();
 
 // Set custom template for admin area
-$template->set_custom_template(PHPBB_ROOT_PATH . CONFIG_ADM_FOLDER . '/style', 'admin');
+$template->set_custom_template(PHPBB_ROOT_PATH . phpbb::$base_config['admin_folder'] . '/style', 'admin');
 
 $template->set_filenames(array(
 	'body' => 'colour_swatch.html')

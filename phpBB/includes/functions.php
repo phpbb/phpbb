@@ -2026,7 +2026,7 @@ function msg_handler($errno, $msg_text, $errfile, $errline)
 
 			// Check the error reporting level and return if the error level does not match
 			// If DEBUG is defined the default level is E_ALL
-			if (($errno & ((defined('DEBUG')) ? E_ALL | E_STRICT : error_reporting())) == 0)
+			if (($errno & ((phpbb::$base_config['debug']) ? E_ALL | E_STRICT : error_reporting())) == 0)
 			{
 				return;
 			}
@@ -2122,7 +2122,7 @@ function msg_handler($errno, $msg_text, $errfile, $errline)
 
 			echo '			<div>' . $msg_text;
 
-			if ((phpbb::registered('acl') && phpbb::$acl->acl_get('a_')) || defined('IN_INSTALL') || defined('DEBUG_EXTRA'))
+			if ((phpbb::registered('acl') && phpbb::$acl->acl_get('a_')) || defined('IN_INSTALL') || phpbb::$base_config['debug_extra'])
 			{
 				echo ($backtrace = get_backtrace()) ? '<br /><br />BACKTRACE' . $backtrace : '';
 			}
@@ -2522,26 +2522,25 @@ function page_footer($run_cron = true)
 	global $starttime;
 
 	// Output page creation time
-	if (defined('DEBUG'))
+	if (phpbb::$base_config['debug'])
 	{
 		$mtime = explode(' ', microtime());
 		$totaltime = $mtime[0] + $mtime[1] - $starttime;
 
-		if (phpbb_request::variable('explain', false) && /*phpbb::$acl->acl_get('a_') &&*/ defined('DEBUG_EXTRA') && method_exists(phpbb::$db, 'sql_report'))
+		if (phpbb_request::variable('explain', false) && /*phpbb::$acl->acl_get('a_') &&*/ phpbb::$base_config['debug_extra'] && method_exists(phpbb::$db, 'sql_report'))
 		{
 			phpbb::$db->sql_report('display');
 		}
 
 		$debug_output = sprintf('Time : %.3fs | ' . phpbb::$db->sql_num_queries() . ' Queries | GZIP : ' . ((phpbb::$config['gzip_compress']) ? 'On' : 'Off') . ((phpbb::$user->system['load']) ? ' | Load : ' . phpbb::$user->system['load'] : ''), $totaltime);
 
-		if (/*phpbb::$acl->acl_get('a_') &&*/ defined('DEBUG_EXTRA'))
+		if (/*phpbb::$acl->acl_get('a_') &&*/ phpbb::$base_config['debug_extra'])
 		{
 			if (function_exists('memory_get_usage'))
 			{
 				if ($memory_usage = memory_get_usage())
 				{
-					global $base_memory_usage;
-					$memory_usage -= $base_memory_usage;
+					$memory_usage -= phpbb::$base_config['memory_usage'];
 					$memory_usage = get_formatted_filesize($memory_usage);
 
 					$debug_output .= ' | Memory Usage: ' . $memory_usage;
@@ -2553,10 +2552,10 @@ function page_footer($run_cron = true)
 	}
 
 	phpbb::$template->assign_vars(array(
-		'DEBUG_OUTPUT'			=> (defined('DEBUG')) ? $debug_output : '',
+		'DEBUG_OUTPUT'			=> (phpbb::$base_config['debug']) ? $debug_output : '',
 		'TRANSLATION_INFO'		=> (!empty(phpbb::$user->lang['TRANSLATION_INFO'])) ? phpbb::$user->lang['TRANSLATION_INFO'] : '',
 
-		'U_ACP' => (phpbb::$acl->acl_get('a_') && !empty(phpbb::$user->is_registered)) ? phpbb::$url->append_sid(CONFIG_ADM_FOLDER . '/index', false, true, phpbb::$user->session_id) : '',
+		'U_ACP' => (phpbb::$acl->acl_get('a_') && !empty(phpbb::$user->is_registered)) ? phpbb::$url->append_sid(phpbb::$base_config['admin_folder'] . '/index', false, true, phpbb::$user->session_id) : '',
 	));
 
 	// Call cron-type script

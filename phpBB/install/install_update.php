@@ -24,7 +24,7 @@ if (!empty($setmodules))
 	{
 		include_once(PHPBB_ROOT_PATH . 'config.' . PHP_EXT);
 
-		if (!defined('PHPBB_INSTALLED'))
+		if (!phpbb::$base_config['installed'])
 		{
 			return;
 		}

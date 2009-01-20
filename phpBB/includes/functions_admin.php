@@ -2707,8 +2707,6 @@ function view_warned_users(&$users, &$user_count, $limit = 0, $offset = 0, $limi
 */
 function get_database_size()
 {
-	global $table_prefix;
-
 	$database_size = false;
 
 	// This code is heavily influenced by a similar routine in phpMyAdmin 2.2.0
@@ -2737,9 +2735,9 @@ function get_database_size()
 					{
 						if ((isset($row['Type']) && $row['Type'] != 'MRG_MyISAM') || (isset($row['Engine']) && ($row['Engine'] == 'MyISAM' || $row['Engine'] == 'InnoDB')))
 						{
-							if ($table_prefix != '')
+							if (phpbb::$base_config['table_prefix'] != '')
 							{
-								if (strpos($row['Name'], $table_prefix) !== false)
+								if (strpos($row['Name'], phpbb::$base_config['table_prefix']) !== false)
 								{
 									$database_size += $row['Data_length'] + $row['Index_length'];
 								}

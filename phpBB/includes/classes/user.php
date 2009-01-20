@@ -457,7 +457,7 @@ class phpbb_user extends phpbb_session
 
 		// Disable board if the install/ directory is still present
 		// For the brave development army we do not care about this, else we need to comment out this everytime we develop locally
-		if (!defined('DEBUG_EXTRA') && !defined('ADMIN_START') && !defined('IN_INSTALL') && !defined('IN_LOGIN') && file_exists(PHPBB_ROOT_PATH . 'install'))
+		if (!phpbb::$base_config['debug_extra'] && !defined('ADMIN_START') && !defined('IN_INSTALL') && !defined('IN_LOGIN') && file_exists(PHPBB_ROOT_PATH . 'install'))
 		{
 			// Adjust the message slightly according to the permissions
 			if (phpbb::$acl->acl_gets('a_', 'm_') || phpbb::$acl->acl_getf_global('m_'))

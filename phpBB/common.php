@@ -22,7 +22,7 @@ if (!defined('IN_PHPBB'))
 require PHPBB_ROOT_PATH . 'includes/core/bootstrap.' . PHP_EXT;
 
 // Run through remaining Framework states
-if (defined('PHPBB_CONFIG_MISSING') || !defined('PHPBB_INSTALLED'))
+if (!phpbb::$base_config['config_set'] || !phpbb::$base_config['installed'])
 {
 	// Redirect the user to the installer
 	// We have to generate a full HTTP/1.1 header here since we can't guarantee to have any of the information
@@ -66,16 +66,16 @@ phpbb_request::disable_super_globals();
 
 // @todo Syndicate config variables somehow and check them here. It would be also nice to not have so many global vars from the config file (means: re-think layout of config file, maybe require phpbb:: to be set)
 
-if (!empty($dbms))
+if (!empty(phpbb::$base_config['dbms']))
 {
 	// Register DB object.
-	phpbb::assign('db', phpbb_db_dbal::connect($dbms, $dbhost, $dbuser, $dbpasswd, $dbname, $dbport, false, defined('PHPBB_DB_NEW_LINK') ? PHPBB_DB_NEW_LINK : false));
+	phpbb::assign('db', phpbb_db_dbal::connect(phpbb::$base_config['dbms'], phpbb::$base_config['dbhost'], phpbb::$base_config['dbuser'], phpbb::$base_config['dbpasswd'], phpbb::$base_config['dbname'], phpbb::$base_config['dbport'], false, defined('PHPBB_DB_NEW_LINK') ? PHPBB_DB_NEW_LINK : false));
 }
 
 // We do not need the db password any longer, unset for safety purposes
-if (!empty($dbpasswd))
+if (!empty(phpbb::$base_config['dbpasswd']))
 {
-	unset($dbpasswd);
+	unset(phpbb::$base_config['dbpasswd']);
 }
 
 // Register Cache Manager
