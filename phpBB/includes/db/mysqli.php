@@ -328,7 +328,6 @@ class phpbb_dbal_mysqli extends phpbb_dbal
 		);
 	}
 
-
 	/**
 	* Run DB-specific code to build SQL Report to explain queries, show statistics and runtime information. See {@link phpbb_dbal::_sql_report() _sql_report()} for details.
 	*/

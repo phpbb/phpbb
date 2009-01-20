@@ -457,7 +457,7 @@ abstract class phpbb_dbal
 	/**
 	* Run DB-specific code to build SQL Report to explain queries, show statistics and runtime information. Called by {@link phpbb_dbal::sql_report() sql_report()}.
 	*
-	* This function only executes if the GET parameter 'explain' is true and DEBUG_EXTRA enabled.
+	* This function only executes if the GET parameter 'explain' is true and phpbb::$base_config['debug_extra'] enabled.
 	*
 	* @param string	$mode	The mode to handle. 'display' is used for displaying the report, all other modes are internal.
 	* @param string $query	Query to document/explain. Only used internally to build the plan.
@@ -483,7 +483,7 @@ abstract class phpbb_dbal
 		}
 
 		// EXPLAIN only in extra debug mode
-		if (defined('DEBUG_EXTRA'))
+		if (phpbb::$base_config['debug_extra'])
 		{
 			$this->sql_report('start', $query);
 		}
@@ -499,7 +499,7 @@ abstract class phpbb_dbal
 
 		if ($this->query_result !== false)
 		{
-			if (defined('DEBUG_EXTRA'))
+			if (phpbb::$base_config['debug_extra'])
 			{
 				$this->sql_report('fromcache', $query);
 			}
@@ -512,7 +512,7 @@ abstract class phpbb_dbal
 			$this->sql_error($query);
 		}
 
-		if (defined('DEBUG_EXTRA'))
+		if (phpbb::$base_config['debug_extra'])
 		{
 			$this->sql_report('stop', $query);
 		}
@@ -1084,8 +1084,8 @@ abstract class phpbb_dbal
 
 			// Show complete SQL error and path to administrators only
 			// Additionally show complete error on installation or if extended debug mode is enabled
-			// The DEBUG_EXTRA constant is for development only!
-			if ((phpbb::registered('acl') && phpbb::$acl->acl_get('a_')) || defined('IN_INSTALL') || defined('DEBUG_EXTRA'))
+			// The phpbb::$base_config['debug_extra'] variable is for development only!
+			if ((phpbb::registered('acl') && phpbb::$acl->acl_get('a_')) || defined('IN_INSTALL') || phpbb::$base_config['debug_extra'])
 			{
 				$message .= ($sql) ? '<br /><br />SQL<br /><br />' . htmlspecialchars($sql) : '';
 				$message .= '<br />';
@@ -1139,7 +1139,7 @@ abstract class phpbb_dbal
 	/**
 	* Build SQL Report to explain queries, show statistics and runtime information.
 	*
-	* This function only executes if the GET parameter 'explain' is true and DEBUG_EXTRA enabled.
+	* This function only executes if the GET parameter 'explain' is true and phpbb::$base_config['debug_extra'] enabled.
 	*
 	* @param string	$mode	The mode to handle. 'display' is used for displaying the report, all other modes are internal.
 	* @param string $query	Query to document/explain. Only used internally to build the plan.
@@ -1354,7 +1354,7 @@ abstract class phpbb_dbal
 		$var_name = preg_replace('/[\n\r\s\t]+/', ' ', $query);
 		$var_name = md5($this->sql_layer . '_' . $var_name);
 
-		$data = phpbb::$acm->get($var_name, 'sql');
+		$data = phpbb::$acm->get_sql($var_name);
 
 		if ($data !== false)
 		{
@@ -1398,7 +1398,7 @@ abstract class phpbb_dbal
 		}
 		$this->sql_freeresult($this->query_result);
 
-		phpbb::$acm->put($var_name, $data, $cache_ttl, 'sql');
+		phpbb::$acm->put_sql($var_name, $data, $cache_ttl);
 
 		$this->query_result = ++$this->cache_index;
 		$this->cache_rowset[$this->query_result] = $data['rowset'];
