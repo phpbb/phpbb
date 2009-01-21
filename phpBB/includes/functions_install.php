@@ -70,8 +70,8 @@ function get_available_dbms($dbms = false, $return_unavailable = false, $only_30
 			'3.0.x'			=> true,
 		),
 		'mssql_2005'=>	array(
-			'LABEL'			=> 'MS SQL Server [ 2005 ]',
-			'MODULE'		=> 'sqlsrv',
+			'LABEL'			=> 'MS SQL Server [ 2005/2008 ]',
+			'MODULE'		=> array('sqlsrv', 'sqlsrv_ts'),
 			'DRIVER'		=> 'mssql_2005',
 			'AVAILABLE'		=> true,
 			'3.0.x'			=> true,
@@ -118,6 +118,8 @@ function get_available_dbms($dbms = false, $return_unavailable = false, $only_30
 		}
 	}
 
+	$any_db_support = false;
+
 	// now perform some checks whether they are really available
 	foreach ($available_dbms as $db_name => $db_ary)
 	{
@@ -136,21 +138,34 @@ function get_available_dbms($dbms = false, $return_unavailable = false, $only_30
 
 		$dll = $db_ary['MODULE'];
 
-		if (!@extension_loaded($dll))
+		if (!is_array($dll))
 		{
-			if (!can_load_dll($dll))
+			$dll = array($dll);
+		}
+
+		$is_available = false;
+		foreach ($dll as $test_dll)
+		{
+			if (@extension_loaded($test_dll) || can_load_dll($test_dll))
 			{
-				if ($return_unavailable)
-				{
-					$available_dbms[$db_name]['AVAILABLE'] = false;
-				}
-				else
-				{
-					unset($available_dbms[$db_name]);
-				}
-				continue;
+				$is_available = true;
+				break;
 			}
 		}
+
+		if (!$is_available)
+		{
+			if ($return_unavailable)
+			{
+				$available_dbms[$db_name]['AVAILABLE'] = false;
+			}
+			else
+			{
+				unset($available_dbms[$db_name]);
+			}
+			continue;
+		}
+
 		$any_db_support = true;
 	}
 
@@ -343,21 +358,21 @@ function connect_check_db($dbms_details, $table_prefix, $dbhost, $dbuser, $dbpas
 		case 'mysql':
 			if (version_compare($db->sql_server_info(true), '4.1.3', '<'))
 			{
-				$error[] = phpbb::$user->lang['INST_ERR_DB_NO_MYSQL'];
+				$error[] = phpbb::$user->lang['INST_ERR_DB_MYSQL_VERSION'];
 			}
 		break;
 
 		case 'mysqli':
 			if (version_compare($db->sql_server_info(true), '4.1.3', '<'))
 			{
-				$error[] = phpbb::$user->lang['INST_ERR_DB_NO_MYSQLI'];
+				$error[] = phpbb::$user->lang['INST_ERR_DB_MYSQLI_VERSION'];
 			}
 		break;
 
 		case 'sqlite':
 			if (version_compare($db->sql_server_info(true), '2.8.2', '<'))
 			{
-				$error[] = phpbb::$user->lang['INST_ERR_DB_NO_SQLITE'];
+				$error[] = phpbb::$user->lang['INST_ERR_DB_SQLITE_VERSION'];
 			}
 		break;
 
@@ -369,7 +384,7 @@ function connect_check_db($dbms_details, $table_prefix, $dbhost, $dbuser, $dbpas
 				preg_match('#V([\d.]+)#', $val, $match);
 				if ($match[1] < 2)
 				{
-					$error[] = phpbb::$user->lang['INST_ERR_DB_NO_FIREBIRD'];
+					$error[] = phpbb::$user->lang['INST_ERR_DB_FIREBIRD_VERSION'];
 				}
 				$db_info = @ibase_db_info($db->service_handle, $dbname, IBASE_STS_HDR_PAGES);
 
@@ -383,9 +398,9 @@ function connect_check_db($dbms_details, $table_prefix, $dbhost, $dbuser, $dbpas
 			else
 			{
 				$sql = "SELECT *
-					FROM RDB$FUNCTIONS
-					WHERE RDB$SYSTEM_FLAG IS NULL
-						AND RDB$FUNCTION_NAME = 'CHAR_LENGTH'";
+					FROM RDB\$FUNCTIONS
+					WHERE RDB\$SYSTEM_FLAG IS NULL
+						AND RDB\$FUNCTION_NAME = 'CHAR_LENGTH'";
 				$result = $db->sql_query($sql);
 				$row = $db->sql_fetchrow($result);
 				$db->sql_freeresult($result);
@@ -393,7 +408,7 @@ function connect_check_db($dbms_details, $table_prefix, $dbhost, $dbuser, $dbpas
 				// if its a UDF, its too old
 				if ($row)
 				{
-					$error[] = phpbb::$user->lang['INST_ERR_DB_NO_FIREBIRD'];
+					$error[] = phpbb::$user->lang['INST_ERR_DB_FIREBIRD_VERSION'];
 				}
 				else
 				{
@@ -402,7 +417,7 @@ function connect_check_db($dbms_details, $table_prefix, $dbhost, $dbuser, $dbpas
 					$result = $db->sql_query($sql);
 					if (!$result) // This can only fail if char_length is not defined
 					{
-						$error[] = phpbb::$user->lang['INST_ERR_DB_NO_FIREBIRD'];
+						$error[] = phpbb::$user->lang['INST_ERR_DB_FIREBIRD_VERSION'];
 					}
 					$db->sql_freeresult($result);
 				}
@@ -456,7 +471,7 @@ function connect_check_db($dbms_details, $table_prefix, $dbhost, $dbuser, $dbpas
 
 			if (version_compare($stats['NLS_RDBMS_VERSION'], '9.2', '<'))
 			{
-				$error[] = phpbb::$user->lang['INST_ERR_DB_NO_ORACLE'];
+				$error[] = phpbb::$user->lang['INST_ERR_DB_ORACLE_VERSION'];
 			}
 
 			if ($stats['NLS_CHARACTERSET'] !== 'AL32UTF8')
@@ -466,14 +481,22 @@ function connect_check_db($dbms_details, $table_prefix, $dbhost, $dbuser, $dbpas
 		break;
 
 		case 'postgres':
-			$sql = "SHOW server_encoding;";
-			$result = $db->sql_query($sql);
-			$row = $db->sql_fetchrow($result);
-			$db->sql_freeresult($result);
 
-			if ($row['server_encoding'] !== 'UNICODE' && $row['server_encoding'] !== 'UTF8')
+			if (version_compare($db->sql_server_info(true), '8.2', '<'))
 			{
-				$error[] = phpbb::$user->lang['INST_ERR_DB_NO_POSTGRES'];
+				$error[] = phpbb::$user->lang['INST_ERR_DB_POSTGRES_VERSION'];
+			}
+			else
+			{
+				$sql = "SHOW server_encoding;";
+				$result = $db->sql_query($sql);
+				$row = $db->sql_fetchrow($result);
+				$db->sql_freeresult($result);
+
+				if ($row['server_encoding'] !== 'UNICODE' && $row['server_encoding'] !== 'UTF8')
+				{
+					$error[] = phpbb::$user->lang['INST_ERR_DB_NO_POSTGRES_UTF8'];
+				}
 			}
 		break;
 

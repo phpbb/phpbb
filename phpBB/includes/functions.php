@@ -2006,16 +2006,25 @@ function msg_handler($errno, $msg_text, $errfile, $errline)
 {
 	global $msg_title, $msg_long_text;
 
-	// Do not display notices if we suppress them via @
-	if (error_reporting() == 0)
-	{
-		return;
-	}
-
 	// Message handler is stripping text. In case we need it, we are able to define long text...
 	if (isset($msg_long_text) && $msg_long_text && !$msg_text)
 	{
 		$msg_text = $msg_long_text;
+	}
+
+	// Store information for later use
+	phpbb::$last_notice = array(
+		'file'		=> $errfile,
+		'line'		=> $errline,
+		'message'	=> $msg_text,
+		'php_error'	=> (!empty($php_errormsg)) ? $php_errormsg : '',
+		'errno'		=> $errno,
+	);
+
+	// Do not display notices if we suppress them via @
+	if (error_reporting() == 0)
+	{
+		return;
 	}
 
 	switch ($errno)

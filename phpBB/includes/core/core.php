@@ -100,6 +100,16 @@ abstract class phpbb
 		'installed'			=> false,
 	);
 
+	/**
+	* @var array Last notice occurred in message handler
+	*/
+	public static $last_notice = array(
+		'file'		=> '',
+		'line'		=> 0,
+		'message'	=> '',
+		'errno'		=> E_NOTICE,
+	);
+
 	/**#@+
 	* Permission constant
 	*/

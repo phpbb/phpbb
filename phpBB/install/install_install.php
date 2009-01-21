@@ -769,7 +769,8 @@ class install_install extends module
 		// Create a list of any PHP modules we wish to have loaded
 		$load_extensions = array();
 		$available_dbms = get_available_dbms($data['dbms']);
-		$check_exts = array_merge(array($available_dbms[$data['dbms']]['MODULE']), $this->php_dlls_other);
+
+		$check_exts = array_merge($this->php_dlls_other);
 
 		foreach ($check_exts as $dll)
 		{
@@ -782,6 +783,37 @@ class install_install extends module
 
 				$load_extensions[] = $dll . '.' . PHP_SHLIB_SUFFIX;
 			}
+		}
+
+		$db_module = $available_dbms[$data['dbms']]['MODULE'];
+
+		if (!is_array($db_module))
+		{
+			$db_module = array($db_module);
+		}
+
+		$load_dll = true;
+		foreach ($db_module as $dll)
+		{
+			if (@extension_loaded($dll))
+			{
+				$load_dll = false;
+				break;
+			}
+
+			if (!can_load_dll($dll))
+			{
+				$load_dll = false;
+				break;
+			}
+
+			$load_dll = true;
+		}
+
+		if ($load_dll)
+		{
+			$dll = current($db_module);
+			$load_extensions[] = $dll . '.' . PHP_SHLIB_SUFFIX;
 		}
 
 		// Create a lock file to indicate that there is an install in progress
