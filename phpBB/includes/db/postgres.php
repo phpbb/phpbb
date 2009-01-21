@@ -16,99 +16,128 @@ if (!defined('IN_PHPBB'))
 	exit;
 }
 
-include_once(PHPBB_ROOT_PATH . 'includes/db/dbal.' . PHP_EXT);
-
 /**
 * PostgreSQL Database Abstraction Layer
-* Minimum Requirement is Version 7.3+
+* Minimum Requirement: 8.2+
 * @package dbal
 */
-class dbal_postgres extends dbal
+class phpbb_dbal_postgres extends phpbb_dbal
 {
-	var $last_query_text = '';
-
-	var $dbms_type = 'postgres';
+	/**
+	* @var string Database type. No distinction between versions or used extensions.
+	*/
+	public $dbms_type = 'postgres';
 
 	/**
-	* Connect to server
+	* @var array Database type map, column layout information
 	*/
-	function sql_connect($sqlserver, $sqluser, $sqlpassword, $database, $port = false, $persistency = false, $new_link = false)
+	public $dbms_type_map = array(
+		'INT:'		=> 'INT4',
+		'BINT'		=> 'INT8',
+		'UINT'		=> 'INT4', // unsigned
+		'UINT:'		=> 'INT4', // unsigned
+		'USINT'		=> 'INT2', // unsigned
+		'BOOL'		=> 'INT2', // unsigned
+		'TINT:'		=> 'INT2',
+		'VCHAR'		=> 'varchar(255)',
+		'VCHAR:'	=> 'varchar(%d)',
+		'CHAR:'		=> 'char(%d)',
+		'XSTEXT'	=> 'varchar(1000)',
+		'STEXT'		=> 'varchar(3000)',
+		'TEXT'		=> 'varchar(8000)',
+		'MTEXT'		=> 'TEXT',
+		'XSTEXT_UNI'=> 'varchar(100)',
+		'STEXT_UNI'	=> 'varchar(255)',
+		'TEXT_UNI'	=> 'varchar(4000)',
+		'MTEXT_UNI'	=> 'TEXT',
+		'TIMESTAMP'	=> 'INT4', // unsigned
+		'DECIMAL'	=> 'decimal(5,2)',
+		'DECIMAL:'	=> 'decimal(%d,2)',
+		'PDECIMAL'	=> 'decimal(6,3)',
+		'PDECIMAL:'	=> 'decimal(%d,3)',
+		'VCHAR_UNI'	=> 'varchar(255)',
+		'VCHAR_UNI:'=> 'varchar(%d)',
+		'VARBINARY'	=> 'bytea',
+	);
+
+	/**
+	* @var string PostgreSQL schema (if supplied with $database -> database.schema)
+	*/
+	public $schema = '';
+
+	/**
+	* Connect to server. See {@link phpbb_dbal::sql_connect() sql_connect()} for details.
+	*/
+	public function sql_connect($server, $user, $password, $database, $port = false, $persistency = false , $new_link = false)
 	{
+		$this->persistency = $persistency;
+		$this->user = $user;
+		$this->server = $server;
+		$this->dbname = $database;
+		$this->port = $port;
+
 		$connect_string = '';
 
-		if ($sqluser)
+		if ($this->user)
 		{
-			$connect_string .= "user=$sqluser ";
+			$connect_string .= 'user=' . $this->user . ' ';
 		}
 
-		if ($sqlpassword)
+		if ($password)
 		{
-			$connect_string .= "password=$sqlpassword ";
+			$connect_string .= 'password=' . $password . ' ';
 		}
 
-		if ($sqlserver)
+		if ($this->server)
 		{
-			if (strpos($sqlserver, ':') !== false)
+			if (strpos($this->server, ':') !== false)
 			{
-				list($sqlserver, $port) = explode(':', $sqlserver);
+				list($this->server, $this->port) = explode(':', $this->server, 2);
 			}
 
-			if ($sqlserver !== 'localhost')
+			if ($this->server !== 'localhost')
 			{
-				$connect_string .= "host=$sqlserver ";
+				$connect_string .= 'host=' . $this->server . ' ';
 			}
-		
-			if ($port)
+
+			if ($this->port)
 			{
-				$connect_string .= "port=$port ";
+				$connect_string .= 'port=' . $this->port . ' ';
 			}
 		}
 
-		$schema = '';
+		$this->schema = '';
 
-		if ($database)
+		if ($this->dbname)
 		{
-			$this->dbname = $database;
-			if (strpos($database, '.') !== false)
+			if (strpos($this->dbname, '.') !== false)
 			{
-				list($database, $schema) = explode('.', $database);
+				list($this->dbname, $this->schema) = explode('.', $this->dbname, 2);
 			}
-			$connect_string .= "dbname=$database";
+			$connect_string .= 'dbname=' . $this->dbname;
 		}
 
-		$this->persistency = $persistency;
+		$this->db_connect_id = ($this->persistency) ? @pg_pconnect($connect_string, ($new_link) ? PGSQL_CONNECT_FORCE_NEW : false) : @pg_connect($connect_string, ($new_link) ? PGSQL_CONNECT_FORCE_NEW : false);
 
-		$this->db_connect_id = ($this->persistency) ? @pg_pconnect($connect_string, $new_link) : @pg_connect($connect_string, $new_link);
-
-		if ($this->db_connect_id)
+		if (!$this->db_connect_id)
 		{
-			if (version_compare($this->sql_server_info(true), '8.2', '>='))
-			{
-				$this->multi_table_deletion = true;
-				$this->multi_insert = true;
-			}
-
-			if ($schema !== '')
-			{
-				@pg_query($this->db_connect_id, 'SET search_path TO ' . $schema);
-			}
-
-			return $this->db_connect_id;
+			return $this->sql_error(htmlspecialchars_decode(phpbb::$last_notice['message']));
 		}
 
-		return $this->sql_error('');
+		if ($this->schema)
+		{
+			@pg_query($this->db_connect_id, 'SET search_path TO ' . $this->schema);
+		}
+
+		return $this->db_connect_id;
 	}
 
 	/**
-	* Version information about used database
-	* @param bool $raw if true, only return the fetched sql_server_version
-	* @return string sql server version
+	* Version information about used database. See {@link phpbb_dbal::sql_server_info() sql_server_info()} for details.
 	*/
-	function sql_server_info($raw = false)
+	public function sql_server_info($raw = false)
 	{
-		global $cache;
-
-		if (empty($cache) || ($this->sql_server_version = $cache->get('pgsql_version')) === false)
+		if (!phpbb::registered('acm') || ($this->sql_server_version = phpbb::$acm->get('#pgsql_version')) === false)
 		{
 			$query_id = @pg_query($this->db_connect_id, 'SELECT VERSION() AS version');
 			$row = @pg_fetch_assoc($query_id, null);
@@ -116,9 +145,9 @@ class dbal_postgres extends dbal
 
 			$this->sql_server_version = (!empty($row['version'])) ? trim(substr($row['version'], 10)) : 0;
 
-			if (!empty($cache))
+			if (phpbb::registered('acm'))
 			{
-				$cache->put('pgsql_version', $this->sql_server_version);
+				phpbb::$acm->put('#pgsql_version', $this->sql_server_version);
 			}
 		}
 
@@ -126,10 +155,40 @@ class dbal_postgres extends dbal
 	}
 
 	/**
-	* SQL Transaction
-	* @access private
+	* DB-specific base query method. See {@link phpbb_dbal::_sql_query() _sql_query()} for details.
 	*/
-	function _sql_transaction($status = 'begin')
+	protected function _sql_query($query)
+	{
+		return @pg_query($this->db_connect_id, $query);
+	}
+
+	/**
+	* Build LIMIT query and run it. See {@link phpbb_dbal::_sql_query_limit() _sql_query_limit()} for details.
+	*/
+	protected function _sql_query_limit($query, $total, $offset, $cache_ttl)
+	{
+		// if $total is set to 0 we do not want to limit the number of rows
+		if ($total == 0)
+		{
+			$total = -1;
+		}
+
+		$query .= "\n LIMIT $total OFFSET $offset";
+		return $this->sql_query($query, $cache_ttl);
+	}
+
+	/**
+	* Close sql connection. See {@link phpbb_dbal::_sql_close() _sql_close()} for details.
+	*/
+	protected function _sql_close()
+	{
+		return @pg_close($this->db_connect_id);
+	}
+
+	/**
+	* SQL Transaction. See {@link phpbb_dbal::_sql_transaction() _sql_transaction()} for details.
+	*/
+	protected function _sql_transaction($status)
 	{
 		switch ($status)
 		{
@@ -150,188 +209,74 @@ class dbal_postgres extends dbal
 	}
 
 	/**
-	* Base query method
-	*
-	* @param	string	$query		Contains the SQL query which shall be executed
-	* @param	int		$cache_ttl	Either 0 to avoid caching or the time in seconds which the result shall be kept in cache
-	* @return	mixed				When casted to bool the returned value returns true on success and false on failure
-	*
-	* @access	public
+	* Return number of affected rows. See {@link phpbb_dbal::sql_affectedrows() sql_affectedrows()} for details.
 	*/
-	function sql_query($query = '', $cache_ttl = 0)
-	{
-		if ($query != '')
-		{
-			global $cache;
-
-			// EXPLAIN only in extra debug mode
-			if (defined('DEBUG_EXTRA'))
-			{
-				$this->sql_report('start', $query);
-			}
-
-			$this->last_query_text = $query;
-			$this->query_result = ($cache_ttl && method_exists($cache, 'sql_load')) ? $cache->sql_load($query) : false;
-			$this->sql_add_num_queries($this->query_result);
-
-			if ($this->query_result === false)
-			{
-				if (($this->query_result = pg_query($this->db_connect_id, $query)) === false)
-				{
-					$this->sql_error($query);
-				}
-
-				if (defined('DEBUG_EXTRA'))
-				{
-					$this->sql_report('stop', $query);
-				}
-
-				if ($cache_ttl && method_exists($cache, 'sql_save'))
-				{
-					$this->open_queries[(int) $this->query_result] = $this->query_result;
-					$cache->sql_save($query, $this->query_result, $cache_ttl);
-				}
-				else if (strpos($query, 'SELECT') === 0 && $this->query_result)
-				{
-					$this->open_queries[(int) $this->query_result] = $this->query_result;
-				}
-			}
-			else if (defined('DEBUG_EXTRA'))
-			{
-				$this->sql_report('fromcache', $query);
-			}
-		}
-		else
-		{
-			return false;
-		}
-
-		return $this->query_result;
-	}
-
-	/**
-	* Build db-specific query data
-	* @access private
-	*/
-	function _sql_custom_build($stage, $data)
-	{
-		return $data;
-	}
-
-	/**
-	* Build LIMIT query
-	*/
-	function _sql_query_limit($query, $total, $offset = 0, $cache_ttl = 0)
-	{
-		$this->query_result = false;
-
-		// if $total is set to 0 we do not want to limit the number of rows
-		if ($total == 0)
-		{
-			$total = -1;
-		}
-
-		$query .= "\n LIMIT $total OFFSET $offset";
-
-		return $this->sql_query($query, $cache_ttl);
-	}
-
-	/**
-	* Return number of affected rows
-	*/
-	function sql_affectedrows()
+	public function sql_affectedrows()
 	{
 		return ($this->query_result) ? @pg_affected_rows($this->query_result) : false;
 	}
 
 	/**
-	* Fetch current row
+	* Get last inserted id after insert statement. See {@link phpbb_dbal::sql_nextid() sql_nextid()} for details.
 	*/
-	function sql_fetchrow($query_id = false)
+	public function sql_nextid()
 	{
-		global $cache;
-
-		if ($query_id === false)
+		if (!$this->db_connect_id)
 		{
-			$query_id = $this->query_result;
+			return false;
 		}
 
-		if (isset($cache->sql_rowset[$query_id]))
+		$query = "SELECT lastval() AS last_value";
+		$temp_q_id = @pg_query($this->db_connect_id, $query);
+
+		if (!$temp_q_id)
 		{
-			return $cache->sql_fetchrow($query_id);
+			return false;
 		}
 
-		return ($query_id !== false) ? @pg_fetch_assoc($query_id, null) : false;
+		$temp_result = @pg_fetch_assoc($temp_q_id, NULL);
+		@pg_free_result($query_id);
+
+		return ($temp_result) ? $temp_result['last_value'] : false;
 	}
 
 	/**
-	* Get last inserted id after insert statement
+	* Fetch current row. See {@link phpbb_dbal::_sql_fetchrow() _sql_fetchrow()} for details.
 	*/
-	function sql_nextid()
+	protected function _sql_fetchrow($query_id)
 	{
-		$query_id = $this->query_result;
-
-		if ($query_id !== false && $this->last_query_text != '')
-		{
-			if (preg_match("/^INSERT[\t\n ]+INTO[\t\n ]+([a-z0-9\_\-]+)/is", $this->last_query_text, $tablename))
-			{
-				$query = "SELECT currval('" . $tablename[1] . "_seq') AS last_value";
-				$temp_q_id = @pg_query($this->db_connect_id, $query);
-
-				if (!$temp_q_id)
-				{
-					return false;
-				}
-
-				$temp_result = @pg_fetch_assoc($temp_q_id, NULL);
-				@pg_free_result($query_id);
-
-				return ($temp_result) ? $temp_result['last_value'] : false;
-			}
-		}
-
-		return false;
+		return @pg_fetch_assoc($query_id, null);
 	}
 
 	/**
-	* Free sql result
+	* Free query result. See {@link phpbb_dbal::_sql_freeresult() _sql_freeresult()} for details.
 	*/
-	function sql_freeresult($query_id = false)
+	protected function _sql_freeresult($query_id)
 	{
-		global $cache;
-
-		if ($query_id === false)
-		{
-			$query_id = $this->query_result;
-		}
-
-		if (isset($cache->sql_rowset[$query_id]))
-		{
-			return $cache->sql_freeresult($query_id);
-		}
-
-		if (isset($this->open_queries[(int) $query_id]))
-		{
-			unset($this->open_queries[(int) $query_id]);
-			return @pg_free_result($query_id);
-		}
-
-		return false;
+		return @pg_free_result($query_id);
 	}
 
 	/**
-	* Escape string used in sql query
+	* Correctly adjust LIKE expression for special characters. See {@link phpbb_dbal::_sql_like_expression() _sql_like_expression()} for details.
+	*/
+	protected function _sql_like_expression($expression)
+	{
+		return $expression;
+	}
+
+	/**
+	* Escape string used in sql query. See {@link phpbb_dbal::sql_escape() sql_escape()} for details.
 	* Note: Do not use for bytea values if we may use them at a later stage
 	*/
-	function sql_escape($msg)
+	public function sql_escape($msg)
 	{
 		return @pg_escape_string($msg);
 	}
 
 	/**
-	* Expose a DBMS specific function
+	* Expose a DBMS specific function. See {@link phpbb_dbal::sql_function() sql_function()} for details.
 	*/
-	function sql_function($type, $col)
+	public function sql_function($type, $col)
 	{
 		switch ($type)
 		{
@@ -342,7 +287,10 @@ class dbal_postgres extends dbal
 		}
 	}
 
-	function sql_handle_data($type, $table, $data, $where = '')
+/*
+	/**
+	* Handle data by using prepared statements. See {@link phpbb_dbal::sql_handle_data() sql_handle_data()} for details.
+	public function sql_handle_data($type, $table, $data, $where = '')
 	{
 		// for now, stmtname is an empty string, it might change to something more unique in the future
 		if ($type === 'INSERT')
@@ -364,7 +312,7 @@ class dbal_postgres extends dbal
 			{
 				$query .= $where;
 			}
-			
+
 			$stmt = pg_prepare($this->db_connect_id, '', $query);
 		}
 
@@ -376,21 +324,20 @@ class dbal_postgres extends dbal
 
 		call_user_func_array('pg_execute', $data);
 	}
+*/
 
 	/**
-	* Build LIKE expression
-	* @access private
+	* Build DB-specific query bits. See {@link phpbb_dbal::_sql_custom_build() _sql_custom_build()} for details.
 	*/
-	function _sql_like_expression($expression)
+	protected function _sql_custom_build($stage, $data)
 	{
-		return $expression;
+		return $data;
 	}
 
 	/**
-	* return sql error array
-	* @access private
+	* return sql error array. See {@link phpbb_dbal::_sql_error() _sql_error()} for details.
 	*/
-	function _sql_error()
+	protected function _sql_error()
 	{
 		return array(
 			'message'	=> (!$this->db_connect_id) ? @pg_last_error() : @pg_last_error($this->db_connect_id),
@@ -399,19 +346,9 @@ class dbal_postgres extends dbal
 	}
 
 	/**
-	* Close sql connection
-	* @access private
+	* Run DB-specific code to build SQL Report to explain queries, show statistics and runtime information. See {@link phpbb_dbal::_sql_report() _sql_report()} for details.
 	*/
-	function _sql_close()
-	{
-		return @pg_close($this->db_connect_id);
-	}
-
-	/**
-	* Build db-specific report
-	* @access private
-	*/
-	function _sql_report($mode, $query = '')
+	protected function _sql_report($mode, $query = '')
 	{
 		switch ($mode)
 		{
