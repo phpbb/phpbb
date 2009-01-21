@@ -16,57 +16,88 @@ if (!defined('IN_PHPBB'))
 	exit;
 }
 
-include_once(PHPBB_ROOT_PATH . 'includes/db/dbal.' . PHP_EXT);
-
 /**
 * MSSQL Database Abstraction Layer
 * Minimum Requirement is MSSQL 2000+
 * @package dbal
 */
-class dbal_mssql extends dbal
+class phpbb_dbal_mssql extends phpbb_dbal
 {
-	var $dbms_type = 'mssql';
+	/**
+	* @var string Database type. No distinction between versions or used extensions.
+	*/
+	public $dbms_type = 'mssql';
 
 	/**
-	* Connect to server
+	* @var array Database type map, column layout information
 	*/
-	function sql_connect($sqlserver, $sqluser, $sqlpassword, $database, $port = false, $persistency = false, $new_link = false)
+	public $dbms_type_map = array(
+		'INT:'		=> '[int]',
+		'BINT'		=> '[float]',
+		'UINT'		=> '[int]',
+		'UINT:'		=> '[int]',
+		'TINT:'		=> '[int]',
+		'USINT'		=> '[int]',
+		'BOOL'		=> '[int]',
+		'VCHAR'		=> '[varchar] (255)',
+		'VCHAR:'	=> '[varchar] (%d)',
+		'CHAR:'		=> '[char] (%d)',
+		'XSTEXT'	=> '[varchar] (1000)',
+		'STEXT'		=> '[varchar] (3000)',
+		'TEXT'		=> '[varchar] (8000)',
+		'MTEXT'		=> '[text]',
+		'XSTEXT_UNI'=> '[varchar] (100)',
+		'STEXT_UNI'	=> '[varchar] (255)',
+		'TEXT_UNI'	=> '[varchar] (4000)',
+		'MTEXT_UNI'	=> '[text]',
+		'TIMESTAMP'	=> '[int]',
+		'DECIMAL'	=> '[float]',
+		'DECIMAL:'	=> '[float]',
+		'PDECIMAL'	=> '[float]',
+		'PDECIMAL:'	=> '[float]',
+		'VCHAR_UNI'	=> '[varchar] (255)',
+		'VCHAR_UNI:'=> '[varchar] (%d)',
+		'VARBINARY'	=> '[varchar] (255)',
+	);
+
+	/**
+	* Connect to server. See {@link phpbb_dbal::sql_connect() sql_connect()} for details.
+	*/
+	public function sql_connect($server, $user, $password, $database, $port = false, $persistency = false , $new_link = false)
 	{
 		$this->persistency = $persistency;
-		$this->user = $sqluser;
+		$this->user = $user;
 		$this->dbname = $database;
+		$this->port = $port;
 
 		$port_delimiter = (defined('PHP_OS') && substr(PHP_OS, 0, 3) === 'WIN') ? ',' : ':';
-		$this->server = $sqlserver . (($port) ? $port_delimiter . $port : '');
+		$this->server = $server . (($this->port) ? $port_delimiter . $this->port : '');
 
 		@ini_set('mssql.charset', 'UTF-8');
 		@ini_set('mssql.textlimit', 2147483647);
 		@ini_set('mssql.textsize', 2147483647);
 
-		$this->db_connect_id = ($this->persistency) ? @mssql_pconnect($this->server, $this->user, $sqlpassword, $new_link) : @mssql_connect($this->server, $this->user, $sqlpassword, $new_link);
+		$this->db_connect_id = ($this->persistency) ? @mssql_pconnect($this->server, $this->user, $password, $new_link) : @mssql_connect($this->server, $this->user, $password, $new_link);
 
-		if ($this->db_connect_id && $this->dbname != '')
+		if (!$this->db_connect_id || !$this->dbname)
 		{
-			if (!@mssql_select_db($this->dbname, $this->db_connect_id))
-			{
-				@mssql_close($this->db_connect_id);
-				return false;
-			}
+			return $this->sql_error(phpbb::$last_notice['message']);
 		}
 
-		return ($this->db_connect_id) ? $this->db_connect_id : $this->sql_error('');
+		if (!@mssql_select_db($this->dbname, $this->db_connect_id))
+		{
+			return $this->sql_error('');
+		}
+
+		return $this->db_connect_id;
 	}
 
 	/**
-	* Version information about used database
-	* @param bool $raw if true, only return the fetched sql_server_version
-	* @return string sql server version
+	* Version information about used database. See {@link phpbb_dbal::sql_server_info() sql_server_info()} for details.
 	*/
-	function sql_server_info($raw = false)
+	public function sql_server_info($raw = false)
 	{
-		global $cache;
-
-		if (empty($cache) || ($this->sql_server_version = $cache->get('mssql_version')) === false)
+		if (!phpbb::registered('acm') || ($this->sql_server_version = phpbb::$acm->get('#mssql_version')) === false)
 		{
 			$result_id = @mssql_query("SELECT SERVERPROPERTY('productversion'), SERVERPROPERTY('productlevel'), SERVERPROPERTY('edition')", $this->db_connect_id);
 
@@ -79,9 +110,9 @@ class dbal_mssql extends dbal
 
 			$this->sql_server_version = ($row) ? trim(implode(' ', $row)) : 0;
 
-			if (!empty($cache))
+			if (phpbb::registered('acm'))
 			{
-				$cache->put('mssql_version', $this->sql_server_version);
+				phpbb::$acm->put('#mssql_version', $this->sql_server_version);
 			}
 		}
 
@@ -94,95 +125,18 @@ class dbal_mssql extends dbal
 	}
 
 	/**
-	* SQL Transaction
-	* @access private
+	* DB-specific base query method. See {@link phpbb_dbal::_sql_query() _sql_query()} for details.
 	*/
-	function _sql_transaction($status = 'begin')
+	protected function _sql_query($query)
 	{
-		switch ($status)
-		{
-			case 'begin':
-				return @mssql_query('BEGIN TRANSACTION', $this->db_connect_id);
-			break;
-
-			case 'commit':
-				return @mssql_query('COMMIT TRANSACTION', $this->db_connect_id);
-			break;
-
-			case 'rollback':
-				return @mssql_query('ROLLBACK TRANSACTION', $this->db_connect_id);
-			break;
-		}
-
-		return true;
+		return @mssql_query($query, $this->db_connect_id);
 	}
 
 	/**
-	* Base query method
-	*
-	* @param	string	$query		Contains the SQL query which shall be executed
-	* @param	int		$cache_ttl	Either 0 to avoid caching or the time in seconds which the result shall be kept in cache
-	* @return	mixed				When casted to bool the returned value returns true on success and false on failure
-	*
-	* @access	public
+	* Build LIMIT query and run it. See {@link phpbb_dbal::_sql_query_limit() _sql_query_limit()} for details.
 	*/
-	function sql_query($query = '', $cache_ttl = 0)
+	protected function _sql_query_limit($query, $total, $offset, $cache_ttl)
 	{
-		if ($query != '')
-		{
-			global $cache;
-
-			// EXPLAIN only in extra debug mode
-			if (defined('DEBUG_EXTRA'))
-			{
-				$this->sql_report('start', $query);
-			}
-
-			$this->query_result = ($cache_ttl && method_exists($cache, 'sql_load')) ? $cache->sql_load($query) : false;
-			$this->sql_add_num_queries($this->query_result);
-
-			if ($this->query_result === false)
-			{
-				if (($this->query_result = @mssql_query($query, $this->db_connect_id)) === false)
-				{
-					$this->sql_error($query);
-				}
-
-				if (defined('DEBUG_EXTRA'))
-				{
-					$this->sql_report('stop', $query);
-				}
-
-				if ($cache_ttl && method_exists($cache, 'sql_save'))
-				{
-					$this->open_queries[(int) $this->query_result] = $this->query_result;
-					$cache->sql_save($query, $this->query_result, $cache_ttl);
-				}
-				else if (strpos($query, 'SELECT') === 0 && $this->query_result)
-				{
-					$this->open_queries[(int) $this->query_result] = $this->query_result;
-				}
-			}
-			else if (defined('DEBUG_EXTRA'))
-			{
-				$this->sql_report('fromcache', $query);
-			}
-		}
-		else
-		{
-			return false;
-		}
-
-		return $this->query_result;
-	}
-
-	/**
-	* Build LIMIT query
-	*/
-	function _sql_query_limit($query, $total, $offset = 0, $cache_ttl = 0)
-	{
-		$this->query_result = false;
-
 		// Since TOP is only returning a set number of rows we won't need it if total is set to 0 (return all rows)
 		if ($total)
 		{
@@ -209,35 +163,69 @@ class dbal_mssql extends dbal
 	}
 
 	/**
-	* Return number of affected rows
+	* Close sql connection. See {@link phpbb_dbal::_sql_close() _sql_close()} for details.
 	*/
-	function sql_affectedrows()
+	protected function _sql_close()
+	{
+		return @mssql_close($this->db_connect_id);
+	}
+
+	/**
+	* SQL Transaction. See {@link phpbb_dbal::_sql_transaction() _sql_transaction()} for details.
+	*/
+	protected function _sql_transaction($status)
+	{
+		switch ($status)
+		{
+			case 'begin':
+				return @mssql_query('BEGIN TRANSACTION', $this->db_connect_id);
+			break;
+
+			case 'commit':
+				return @mssql_query('COMMIT TRANSACTION', $this->db_connect_id);
+			break;
+
+			case 'rollback':
+				return @mssql_query('ROLLBACK TRANSACTION', $this->db_connect_id);
+			break;
+		}
+
+		return true;
+	}
+
+	/**
+	* Return number of affected rows. See {@link phpbb_dbal::sql_affectedrows() sql_affectedrows()} for details.
+	*/
+	public function sql_affectedrows()
 	{
 		return ($this->db_connect_id) ? @mssql_rows_affected($this->db_connect_id) : false;
 	}
 
 	/**
-	* Fetch current row
+	* Get last inserted id after insert statement. See {@link phpbb_dbal::sql_nextid() sql_nextid()} for details.
 	*/
-	function sql_fetchrow($query_id = false)
+	public function sql_nextid()
 	{
-		global $cache;
+		$result_id = @mssql_query('SELECT SCOPE_IDENTITY()', $this->db_connect_id);
 
-		if ($query_id === false)
+		if ($result_id)
 		{
-			$query_id = $this->query_result;
+			if ($row = @mssql_fetch_assoc($result_id))
+			{
+				@mssql_free_result($result_id);
+				return $row['computed'];
+			}
+			@mssql_free_result($result_id);
 		}
 
-		if (isset($cache->sql_rowset[$query_id]))
-		{
-			return $cache->sql_fetchrow($query_id);
-		}
+		return false;
+	}
 
-		if ($query_id === false)
-		{
-			return false;
-		}
-
+	/**
+	* Fetch current row. See {@link phpbb_dbal::_sql_fetchrow() _sql_fetchrow()} for details.
+	*/
+	protected function _sql_fetchrow($query_id)
+	{
 		$row = @mssql_fetch_assoc($query_id);
 
 		// I hope i am able to remove this later... hopefully only a PHP or MSSQL bug
@@ -253,62 +241,33 @@ class dbal_mssql extends dbal
 	}
 
 	/**
-	* Get last inserted id after insert statement
+	* Free query result. See {@link phpbb_dbal::_sql_freeresult() _sql_freeresult()} for details.
 	*/
-	function sql_nextid()
+	protected function _sql_freeresult($query_id)
 	{
-		$result_id = @mssql_query('SELECT SCOPE_IDENTITY()', $this->db_connect_id);
-		if ($result_id)
-		{
-			if ($row = @mssql_fetch_assoc($result_id))
-			{
-				@mssql_free_result($result_id);
-				return $row['computed'];
-			}
-			@mssql_free_result($result_id);
-		}
-
-		return false;
+		return @mssql_free_result($query_id);
 	}
 
 	/**
-	* Free sql result
+	* Correctly adjust LIKE expression for special characters. See {@link phpbb_dbal::_sql_like_expression() _sql_like_expression()} for details.
 	*/
-	function sql_freeresult($query_id = false)
+	protected function _sql_like_expression($expression)
 	{
-		global $cache;
-
-		if ($query_id === false)
-		{
-			$query_id = $this->query_result;
-		}
-
-		if (isset($cache->sql_rowset[$query_id]))
-		{
-			return $cache->sql_freeresult($query_id);
-		}
-
-		if (isset($this->open_queries[$query_id]))
-		{
-			unset($this->open_queries[$query_id]);
-			return @mssql_free_result($query_id);
-		}
-
-		return false;
+		return $expression . " ESCAPE '\\'";
 	}
 
 	/**
-	* Escape string used in sql query
+	* Escape string used in sql query. See {@link phpbb_dbal::sql_escape() sql_escape()} for details.
 	*/
-	function sql_escape($msg)
+	public function sql_escape($msg)
 	{
 		return str_replace(array("'", "\0"), array("''", ''), $msg);
 	}
 
 	/**
-	* Expose a DBMS specific function
+	* Expose a DBMS specific function. See {@link phpbb_dbal::sql_function() sql_function()} for details.
 	*/
-	function sql_function($type, $col)
+	public function sql_function($type, $col)
 	{
 		switch ($type)
 		{
@@ -319,35 +278,25 @@ class dbal_mssql extends dbal
 		}
 	}
 
-	function sql_handle_data($type, $table, $data, $where = '')
+	/**
+	* Handle data by using prepared statements. See {@link phpbb_dbal::sql_handle_data() sql_handle_data()} for details.
+	public function sql_handle_data($type, $table, $data, $where = '')
 	{
-		if ($type === 'UPDATE')
-		{
-			$this->sql_query('INSERT INTO ' . $table . ' ' .
-				$this->sql_build_array('INSERT', $data));
-		}
-		else
-		{
-			$this->sql_query('UPDATE ' . $table . '
-				SET ' . $db->sql_build_array('UPDATE', $data) .
-				$where);
-		}
+	}
+	*/
+
+	/**
+	* Build DB-specific query bits. See {@link phpbb_dbal::_sql_custom_build() _sql_custom_build()} for details.
+	*/
+	protected function _sql_custom_build($stage, $data)
+	{
+		return $data;
 	}
 
 	/**
-	* Build LIKE expression
-	* @access private
+	* return sql error array. See {@link phpbb_dbal::_sql_error() _sql_error()} for details.
 	*/
-	function _sql_like_expression($expression)
-	{
-		return $expression . " ESCAPE '\\'";
-	}
-
-	/**
-	* return sql error array
-	* @access private
-	*/
-	function _sql_error()
+	protected function _sql_error()
 	{
 		$error = array(
 			'message'	=> @mssql_get_last_message(),
@@ -368,7 +317,7 @@ class dbal_mssql extends dbal
 			FROM master.dbo.sysmessages
 			WHERE error = ' . $error['code'];
 		$result_id = @mssql_query($sql);
-		
+
 		if ($result_id)
 		{
 			$row = @mssql_fetch_assoc($result_id);
@@ -383,28 +332,9 @@ class dbal_mssql extends dbal
 	}
 
 	/**
-	* Build db-specific query data
-	* @access private
+	* Run DB-specific code to build SQL Report to explain queries, show statistics and runtime information. See {@link phpbb_dbal::_sql_report() _sql_report()} for details.
 	*/
-	function _sql_custom_build($stage, $data)
-	{
-		return $data;
-	}
-
-	/**
-	* Close sql connection
-	* @access private
-	*/
-	function _sql_close()
-	{
-		return @mssql_close($this->db_connect_id);
-	}
-
-	/**
-	* Build db-specific report
-	* @access private
-	*/
-	function _sql_report($mode, $query = '')
+	protected function _sql_report($mode, $query = '')
 	{
 		switch ($mode)
 		{
