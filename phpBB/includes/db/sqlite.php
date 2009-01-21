@@ -250,20 +250,10 @@ class phpbb_dbal_sqlite extends phpbb_dbal
 
 	/**
 	* Handle data by using prepared statements. See {@link phpbb_dbal::sql_handle_data() sql_handle_data()} for details.
-	* @todo implement correctly by using types. ;)
-	*/
 	public function sql_handle_data($type, $table, $data, $where = '')
 	{
-		if ($type === 'UPDATE')
-		{
-			$where = ($where) ? ' WHERE ' . $where : '';
-			$this->sql_query('UPDATE ' . $table . ' SET ' . $db->sql_build_array('UPDATE', $data) . $where);
-		}
-		else
-		{
-			$this->sql_query('INSERT INTO ' . $table . ' ' . $this->sql_build_array('INSERT', $data));
-		}
 	}
+	*/
 
 	/**
 	* Build DB-specific query bits. See {@link phpbb_dbal::_sql_custom_build() _sql_custom_build()} for details.
