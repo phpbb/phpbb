@@ -2035,6 +2035,11 @@ function change_database_data(&$no_updates, $version)
 		// Changes from 3.0.4-RC1 to 3.0.4
 		case '3.0.4-RC1':
 		break;
+		
+		// Changes from 3.0.4 to 3.0.4dev
+		case '3.0.4':
+			set_config('captcha_gd_wave', 0);
+		break;
 	}
 }
 

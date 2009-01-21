@@ -27,6 +27,7 @@ class captcha
 	var $width = 360;
 	var $height = 96;
 
+
 	/**
 	* Create the image containing $code with a seed of $seed
 	*/
@@ -34,7 +35,7 @@ class captcha
 	{
 		global $config;
 		srand($seed);
-		mt_srand($seed);
+		//mt_srand($seed);
 
 		// Create image
 		$img = imagecreatetruecolor($this->width, $this->height);
@@ -98,8 +99,8 @@ class captcha
 				imagedashedline($img, mt_rand($x -3, $x + 3), mt_rand(0, 4), mt_rand($x -3, $x + 3), mt_rand($this->height - 5, $this->height), $current_colour);
 			}
 		}
-
 		$xoffset = 5;
+	
 		for ($i = 0; $i < $code_len; ++$i)
 		{
 			$dimm = $bounding_boxes[$i];
@@ -109,12 +110,14 @@ class captcha
 			$characters[$i]->drawchar($sizes[$i], $xoffset, $yoffset, $img, $colour->get_resource('background'), $scheme);
 			$xoffset += $dimm[2];
 		}
-		
+		if ($config['captcha_gd_wave'])
+		{
+			$this->wave($img);
+		}
 		if ($config['captcha_gd_foreground_noise'])
 		{
 			$this->noise_line($img, 0, 0, $this->width, $this->height, $colour->get_resource('background'), $scheme, $bg_colours);
 		}
-
 		// Send image
 		header('Content-Type: image/png');
 		header('Cache-control: no-cache, no-store');
@@ -122,6 +125,38 @@ class captcha
 		imagedestroy($img);
 	}
 
+	/**
+	* Sinus
+	*/
+	function wave($img)
+	{
+		global $config;
+		
+		$period_x = mt_rand(8,18);
+		$period_y = mt_rand(5,14);
+		$amp_x = mt_rand(5,10);
+		$amp_y = mt_rand(2,4); 
+		$socket = mt_rand(0,100);
+		
+		$dampen_x = mt_rand($this->width/5, $this->width/2);
+		$dampen_y = mt_rand($this->height/5, $this->height/2);
+		$direction_x = (mt_rand (0, 1));
+		$direction_y = (mt_rand (0, 1));
+
+		for ($i = 0; $i < $this->width; $i++)
+		{
+			$dir = ($direction_x) ? $i : ($this->width - $i);
+			imagecopy($img, $img, $i-1, sin($socket+ $i/($period_x + $dir/$dampen_x)) * $amp_x, $i, 0, 1, $this->height);
+		}
+		$socket = mt_rand(0,100);
+		for ($i = 0; $i < $this->height; $i++)
+		{
+			$dir = ($direction_y) ? $i : ($this->height - $i);
+			imagecopy($img, $img ,sin($socket + $i/($period_y + ($dir)/$dampen_y)) * $amp_y, $i-1, 0, $i, $this->width, 1);
+		}
+		return $img;
+	}
+	
 	/**
 	* Noise line
 	*/
