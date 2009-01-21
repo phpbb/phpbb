@@ -357,8 +357,20 @@ abstract class phpbb_dbal
 	* @param mixed	$data	The data to insert/update in an array (key == column, value == value)
 	* @param string $where	An optional where-statement
 	* @access public
+	* @todo implement correctly by using types and only overwrite if DB supports prepared statements
 	*/
-	abstract public function sql_handle_data($type, $table, $data, $where = '');
+	public function sql_handle_data($type, $table, $data, $where = '')
+	{
+		if ($type === 'UPDATE')
+		{
+			$where = ($where) ? ' WHERE ' . $where : '';
+			$this->sql_query('UPDATE ' . $table . ' SET ' . $db->sql_build_array('UPDATE', $data) . $where);
+		}
+		else
+		{
+			$this->sql_query('INSERT INTO ' . $table . ' ' . $this->sql_build_array('INSERT', $data));
+		}
+	}
 
 	/**
 	* DB-specific base query method. Called by {@link phpbb_dbal::sql_query() sql_query()}.
@@ -1080,7 +1092,10 @@ abstract class phpbb_dbal
 
 		if (!$this->return_on_error)
 		{
-			$message = 'SQL ERROR [ ' . $this->sql_layer . ' ]<br /><br />' . $this->sql_error_returned['message'] . ' [' . $this->sql_error_returned['code'] . ']';
+			$sql_message = $this->sql_error_returned['message'];
+			$sql_code = $this->sql_error_returned['code'];
+
+			$message = 'SQL ERROR [ ' . $this->sql_layer . ' ]' . (($sql_message) ? '<br /><br />' . $sql_message : '') . (($sql_code) ? ' [' . $sql_code . ']' : '');
 
 			// Show complete SQL error and path to administrators only
 			// Additionally show complete error on installation or if extended debug mode is enabled

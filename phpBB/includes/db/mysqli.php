@@ -258,8 +258,6 @@ class phpbb_dbal_mysqli extends phpbb_dbal
 
 	/**
 	* Handle data by using prepared statements. See {@link phpbb_dbal::sql_handle_data() sql_handle_data()} for details.
-	* @todo implement correctly by using types. ;)
-	*/
 	public function sql_handle_data($type, $table, $data, $where = '')
 	{
 		if ($type === 'INSERT')
@@ -293,6 +291,7 @@ class phpbb_dbal_mysqli extends phpbb_dbal
 
 		mysqli_stmt_close($stmt);
 	}
+*/
 
 	/**
 	* Build DB-specific query bits. See {@link phpbb_dbal::_sql_custom_build() _sql_custom_build()} for details.
