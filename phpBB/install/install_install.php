@@ -506,13 +506,13 @@ class install_install extends module
 			if (!file_exists(PHPBB_ROOT_PATH . $dir))
 			{
 				@mkdir(PHPBB_ROOT_PATH . $dir, 0777);
-				phpbb_chmod(PHPBB_ROOT_PATH . $dir, phpbb::CHMOD_READ | phpbb::CHMOD_WRITE);
+				phpbb::$system->chmod(PHPBB_ROOT_PATH . $dir, phpbb::CHMOD_READ | phpbb::CHMOD_WRITE);
 			}
 
 			// Now really check
 			if (file_exists(PHPBB_ROOT_PATH . $dir) && is_dir(PHPBB_ROOT_PATH . $dir))
 			{
-				phpbb_chmod(PHPBB_ROOT_PATH . $dir, phpbb::CHMOD_READ | phpbb::CHMOD_WRITE);
+				phpbb::$system->chmod(PHPBB_ROOT_PATH . $dir, phpbb::CHMOD_READ | phpbb::CHMOD_WRITE);
 				$exists = true;
 			}
 
@@ -827,7 +827,7 @@ class install_install extends module
 		}
 		@fclose($fp);
 
-		@chmod(PHPBB_ROOT_PATH . 'cache/install_lock', 0666);
+		phpbb::$system->chmod(PHPBB_ROOT_PATH . 'cache/install_lock', phpbb::CHMOD_READ | phpbb::CHMOD_WRITE);
 
 		$load_extensions = implode(',', $load_extensions);
 
@@ -880,8 +880,7 @@ class install_install extends module
 
 			if ($written)
 			{
-				// We may revert back to chmod() if we see problems with users not able to change their config.php file directly
-				phpbb_chmod(PHPBB_ROOT_PATH . 'config.' . PHP_EXT, phpbb::CHMOD_READ | phpbb::CHMOD_WRITE);
+				@chmod(PHPBB_ROOT_PATH . 'config.' . PHP_EXT, 0644);
 			}
 		}
 

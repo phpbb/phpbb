@@ -93,12 +93,7 @@ class phpbb_acm_file extends phpbb_acm_abstract
 			@flock($fp, LOCK_UN);
 			fclose($fp);
 
-			if (!function_exists('phpbb_chmod'))
-			{
-				include(PHPBB_ROOT_PATH . 'includes/functions.' . PHP_EXT);
-			}
-
-			phpbb_chmod($filename, phpbb::CHMOD_WRITE);
+			phpbb::$system->chmod($filename, phpbb::CHMOD_READ | phpbb::CHMOD_WRITE);
 		}
 
 		return $data;
@@ -172,12 +167,7 @@ class phpbb_acm_file extends phpbb_acm_abstract
 			@flock($fp, LOCK_UN);
 			fclose($fp);
 
-			if (!function_exists('phpbb_chmod'))
-			{
-				include(PHPBB_ROOT_PATH . 'includes/functions.' . PHP_EXT);
-			}
-
-			phpbb_chmod($filename, phpbb::CHMOD_WRITE);
+			phpbb::$system->chmod($filename, phpbb::CHMOD_READ | phpbb::CHMOD_WRITE);
 		}
 		else
 		{

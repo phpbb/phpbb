@@ -2,7 +2,7 @@
 /**
 *
 * @package core
-* @version $Id: request.php 9212 2008-12-21 19:15:55Z acydburn $
+* @version $Id$
 * @copyright (c) 2008 phpBB Group
 * @license http://opensource.org/licenses/gpl-license.php GNU Public License
 *

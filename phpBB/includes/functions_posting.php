@@ -727,7 +727,7 @@ function create_thumbnail($source, $destination, $mimetype)
 		return false;
 	}
 
-	phpbb_chmod($destination, phpbb::CHMOD_READ | phpbb::CHMOD_WRITE);
+	phpbb::$system->chmod($destination, phpbb::CHMOD_READ | phpbb::CHMOD_WRITE);
 
 	return true;
 }

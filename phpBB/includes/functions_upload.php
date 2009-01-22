@@ -263,7 +263,7 @@ class filespec
 	*
 	* @param string $destination_path Destination path, for example phpbb::$config['avatar_path']
 	* @param bool $overwrite If set to true, an already existing file will be overwritten
-	* @param string $chmod Permission mask for chmodding the file after a successful move. The mode entered here reflects the mode defined by {@link phpbb_chmod()}
+	* @param string $chmod Permission mask for chmodding the file after a successful move. The mode entered here is the octal permission mask.
 	*
 	* @access public
 	*/
@@ -348,7 +348,7 @@ class filespec
 				break;
 			}
 
-			phpbb_chmod($this->destination_file, $chmod);
+			phpbb::$system->chmod($this->destination_file, $chmod);
 		}
 
 		// Try to get real filesize from destination folder

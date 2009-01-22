@@ -226,7 +226,7 @@ class compress_zip extends compress
 									{
 										trigger_error("Could not create directory $folder");
 									}
-									phpbb_chmod($str, phpbb::CHMOD_READ | phpbb::CHMOD_WRITE);
+									phpbb::$system->chmod($str, phpbb::CHMOD_READ | phpbb::CHMOD_WRITE);
 								}
 							}
 						}
@@ -255,7 +255,7 @@ class compress_zip extends compress
 								{
 									trigger_error("Could not create directory $folder");
 								}
-								phpbb_chmod($str, phpbb::CHMOD_READ | phpbb::CHMOD_WRITE);
+								phpbb::$system->chmod($str, phpbb::CHMOD_READ | phpbb::CHMOD_WRITE);
 							}
 						}
 					}
@@ -540,7 +540,7 @@ class compress_tar extends compress
 								{
 									trigger_error("Could not create directory $folder");
 								}
-								phpbb_chmod($str, phpbb::CHMOD_READ | phpbb::CHMOD_WRITE);
+								phpbb::$system->chmod($str, phpbb::CHMOD_READ | phpbb::CHMOD_WRITE);
 							}
 						}
 					}
@@ -567,7 +567,7 @@ class compress_tar extends compress
 							{
 								trigger_error("Could not create directory $folder");
 							}
-							phpbb_chmod($str, phpbb::CHMOD_READ | phpbb::CHMOD_WRITE);
+							phpbb::$system->chmod($str, phpbb::CHMOD_READ | phpbb::CHMOD_WRITE);
 						}
 					}
 
@@ -576,7 +576,7 @@ class compress_tar extends compress
 					{
 						trigger_error("Couldn't create file $filename");
 					}
-					phpbb_chmod($target_filename, phpbb::CHMOD_READ | phpbb::CHMOD_WRITE);
+					phpbb::$system->chmod($target_filename, phpbb::CHMOD_READ | phpbb::CHMOD_WRITE);
 
 					// Grab the file contents
 					fwrite($fp, ($filesize) ? $fzread($this->fp, ($filesize + 511) &~ 511) : '', $filesize);
