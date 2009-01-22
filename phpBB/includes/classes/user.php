@@ -2,7 +2,7 @@
 /**
 *
 * @package phpBB3
-* @version $Id: user.php 9205 2008-12-18 18:08:57Z acydburn $
+* @version $Id$
 * @copyright (c) 2005, 2008 phpBB Group
 * @license http://opensource.org/licenses/gpl-license.php GNU Public License
 *
@@ -225,6 +225,17 @@ class phpbb_user extends phpbb_session
 	*/
 	public function setup($lang_set = false, $style = false)
 	{
+		// Check if there is a valid session
+		if (empty($this->data))
+		{
+			$this->session_begin();
+
+			if (phpbb::registered('acl'))
+			{
+				phpbb::$acl->init($this->data);
+			}
+		}
+
 		if ($this->data['user_id'] != ANONYMOUS)
 		{
 			$this->lang_name = (file_exists($this->lang_path . $this->data['user_lang'] . "/common." . PHP_EXT)) ? $this->data['user_lang'] : basename(phpbb::$config['default_lang']);
