@@ -2076,6 +2076,12 @@ function msg_handler($errno, $msg_text, $errfile, $errline)
 
 			if (phpbb::registered('user'))
 			{
+				// Setup language
+				if (empty(phpbb::$user->lang))
+				{
+					phpbb::$user->setup();
+				}
+
 				$msg_text = (!empty(phpbb::$user->lang[$msg_text])) ? phpbb::$user->lang[$msg_text] : $msg_text;
 				$msg_title = (!isset($msg_title)) ? phpbb::$user->lang['GENERAL_ERROR'] : ((!empty(phpbb::$user->lang[$msg_title])) ? phpbb::$user->lang[$msg_title] : $msg_title);
 
