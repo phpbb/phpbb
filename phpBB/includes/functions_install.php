@@ -505,6 +505,19 @@ function connect_check_db($dbms_details, $table_prefix, $dbhost, $dbuser, $dbpas
 			* @todo check odbc.defaultlrl (min 128K) and odbc.defaultbinmode (1)
 			*/
 		break;
+
+		case 'db2':
+			if (version_compare($db->sql_server_info(true), '8.2.2', '<'))
+			{
+				$error[] = phpbb::$user->lang['INST_ERR_DB_DB2_VERSION'];
+			}
+
+			// Now check the extension version
+			if (!function_exists('db2_escape_string'))
+			{
+				$error[] = phpbb::$user->lang['INST_ERR_DB_DB2_EXT_VERSION'];
+			}
+		break;
 	}
 
 	if (sizeof($error))

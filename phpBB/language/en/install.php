@@ -235,7 +235,10 @@ $lang = array_merge($lang, array(
 	'INST_ERR_DB_SQLITE_VERSION'	=> 'The version of the SQLite extension you have installed is too old, it must be upgraded to at least 2.8.2.',
 	'INST_ERR_DB_ORACLE_VERSION'	=> 'The version of Oracle installed on the target server must be at least 9.2, phpBB 3.1 cannot be installed on an older version.',
 	'INST_ERR_DB_FIREBIRD_VERSION'	=> 'The version of Firebird installed on this machine is older than 2.0, please upgrade to a newer version.',
-	'INST_ERR_DB_POSTGRES_VERSION'	=> 'The version of PostgreSQL installed on this machine is older than 8.2, please upgrade to a newer version.',
+	'INST_ERR_DB_POSTGRES_VERSION'	=> 'The version of PostgreSQL installed on the target server is older than 8.2, please upgrade to a newer version.',
+	'INST_ERR_DB_DB2_VERSION'		=> 'The version of DB2 installed on the target server is older than 8.2.2, please upgrade to a newer version.',
+	'INST_ERR_DB_DB2_EXT_VERSION'	=> 'The version of the IBM_DB2 extension installed on this machine is older than 1.6.0, please install a newer version.',
+
 	'INST_ERR_DB_NO_ORACLE_NLS'		=> 'You must configure Oracle so that the <var>NLS_CHARACTERSET</var> parameter is set to <var>ALU32UTF8</var>.',
 	'INST_ERR_DB_NO_FIREBIRD_PS'	=> 'The database you selected for Firebird has a page size less than 8192, it must be at least 8192.',
 	'INST_ERR_DB_NO_POSTGRES_UTF8'	=> 'The database you have selected was not created in <var>UNICODE</var> or <var>UTF8</var> encoding. Try installing with a database in <var>UNICODE</var> or <var>UTF8</var> encoding.',
