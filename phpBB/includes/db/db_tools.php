@@ -424,6 +424,25 @@ class phpbb_db_tools
 	*/
 	public function sql_insert_data($schema_data, &$data)
 	{
+		// Go through the columns and define our type and column name for each column
+		$keys = $types = array();
+
+		foreach ($schema_data['columns'] as $column)
+		{
+			if (strpos($column, ':') === false)
+			{
+				$types[] = false;
+				$keys[] = $column;
+				continue;
+			}
+
+			list($type, $column) = explode(':', $column, 2);
+			$types[] = $type;
+			$keys[] = $column;
+		}
+
+		$size = sizeof($keys);
+
 		// Go through the data array...
 		foreach ($schema_data['data'] as $key => $row)
 		{
@@ -432,12 +451,19 @@ class phpbb_db_tools
 			{
 				// Special case...
 				$row[$_key] = $this->_sql_get_special_row($value, $data);
+
+				if ($types[$_key] === false)
+				{
+					settype($row[$_key], gettype($row[$_key]));
+				}
+				else
+				{
+					settype($row[$_key], $types[$_key]);
+				}
 			}
 
 			// Build SQL array for INSERT
-			$sql_ary = array_combine(array_values($schema_data['columns']), $row);
-			$sql = 'INSERT INTO ' . $schema_data['table'] . ' ' . $this->db->sql_build_array('INSERT', $sql_ary);
-
+			$sql = 'INSERT INTO ' . $schema_data['table'] . ' ' . $this->db->sql_build_array('INSERT', array_combine($keys, $row));
 			$this->db->sql_query($sql);
 
 			if (!empty($schema_data['store_auto_increment']))

@@ -47,7 +47,7 @@ $schema_data[] = array(
 // phpbb_config
 $schema_data[] = array(
 	'table'		=> 'phpbb_config',
-	'columns'	=> array('config_name', 'config_value'),
+	'columns'	=> array('string:config_name', 'string:config_value'),
 	'data'		=> array(
 		array('active_sessions', '0'),
 		array('allow_attachments', '1'),
@@ -311,7 +311,7 @@ $schema_data[] = array(
 // Dynamic config values
 $schema_data[] = array(
 	'table'		=> 'phpbb_config',
-	'columns'	=> array('config_name', 'config_value', 'is_dynamic'),
+	'columns'	=> array('string:config_name', 'string:config_value', 'is_dynamic'),
 	'data'		=> array(
 		array('cache_last_gc', '0', 1),
 		array('cron_lock', '0', 1),

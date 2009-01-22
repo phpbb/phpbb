@@ -130,6 +130,8 @@ class install_install extends module
 
 				include PHPBB_ROOT_PATH . 'common.' . PHP_EXT;
 
+				phpbb::$acm->purge();
+
 				$this->build_search_index($mode, $sub);
 				$this->add_modules($mode, $sub);
 				$this->add_language($mode, $sub);
