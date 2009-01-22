@@ -3,7 +3,7 @@
 *
 * @package dbal
 * @version $Id$
-* @copyright (c) 2005 phpBB Group
+* @copyright (c) 2009 phpBB Group
 * @license http://opensource.org/licenses/gpl-license.php GNU Public License
 *
 */
@@ -264,7 +264,7 @@ class phpbb_dbal_db2 extends phpbb_dbal
 	*/
 	public function sql_nextid()
 	{
-		if (function_exists('db2_last_insert_id')
+		if (function_exists('db2_last_insert_id'))
 		{
 			return @db2_last_insert_id($this->db_connect_id);
 		}
