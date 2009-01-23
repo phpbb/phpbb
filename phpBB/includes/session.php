@@ -2036,7 +2036,6 @@ class user extends session
 			// Is the user requesting a friendly date format (i.e. 'Today 12:42')?
 			$date_cache[$format] = array(
 				'is_short'		=> strpos($format, '|'),
-				'zone_offset'	=> $this->timezone + $this->dst,
 				'format_short'	=> substr($format, 0, strpos($format, '|')) . '||' . substr(strrchr($format, '|'), 1),
 				'format_long'	=> str_replace('|', '', $format),
 				'lang'			=> $this->lang['datetime'],
@@ -2049,6 +2048,9 @@ class user extends session
 			}
 		}
 
+		// Zone offset
+		$zone_offset = $this->timezone + $this->dst;
+
 		// Show date <= 1 hour ago as 'xx min ago'
 		// A small tolerence is given for times in the future but in the same minute are displayed as '< than a minute ago'
 		if ($delta <= 3600 && ($delta >= -5 || (($now / 60) % 60) == (($gmepoch / 60) % 60)) && $date_cache[$format]['is_short'] !== false && !$forcedate && isset($this->lang['datetime']['AGO']))
@@ -2058,8 +2060,8 @@ class user extends session
 
 		if (!$midnight)
 		{
-			list($d, $m, $y) = explode(' ', gmdate('j n Y', time() + $date_cache[$format]['zone_offset']));
-			$midnight = gmmktime(0, 0, 0, $m, $d, $y) - $date_cache[$format]['zone_offset'];
+			list($d, $m, $y) = explode(' ', gmdate('j n Y', time() + $zone_offset));
+			$midnight = gmmktime(0, 0, 0, $m, $d, $y) - $zone_offset;
 		}
 
 		if ($date_cache[$format]['is_short'] !== false && !$forcedate && !($gmepoch < $midnight - 86400 || $gmepoch > $midnight + 172800))
@@ -2081,11 +2083,11 @@ class user extends session
 
 			if ($day !== false)
 			{
-				return str_replace('||', $this->lang['datetime'][$day], strtr(@gmdate($date_cache[$format]['format_short'], $gmepoch + $date_cache[$format]['zone_offset']), $date_cache[$format]['lang']));
+				return str_replace('||', $this->lang['datetime'][$day], strtr(@gmdate($date_cache[$format]['format_short'], $gmepoch + $zone_offset), $date_cache[$format]['lang']));
 			}
 		}
 
-		return strtr(@gmdate($date_cache[$format]['format_long'], $gmepoch + $date_cache[$format]['zone_offset']), $date_cache[$format]['lang']);
+		return strtr(@gmdate($date_cache[$format]['format_long'], $gmepoch + $zone_offset), $date_cache[$format]['lang']);
 	}
 
 	/**
