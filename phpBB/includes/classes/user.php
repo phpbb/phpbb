@@ -818,7 +818,7 @@ class phpbb_user extends phpbb_session
 			$midnight = gmmktime(0, 0, 0, $m, $d, $y) - $date_cache[$format]['zone_offset'];
 		}
 
-		if ($date_cache[$format]['is_short'] !== false && !$forcedate)
+		if ($date_cache[$format]['is_short'] !== false && !$forcedate && !($gmepoch < $midnight - 86400 || $gmepoch > $midnight + 172800))
 		{
 			$day = false;
 
