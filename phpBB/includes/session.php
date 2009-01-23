@@ -2050,7 +2050,7 @@ class user extends session
 		}
 
 		// Show date <= 1 hour ago as 'xx min ago'
-		// A small tolerence is given for times in the future and times in the future but in the same minute are displayed as '< than a minute ago'
+		// A small tolerence is given for times in the future but in the same minute are displayed as '< than a minute ago'
 		if ($delta <= 3600 && ($delta >= -5 || (($now / 60) % 60) == (($gmepoch / 60) % 60)) && $date_cache[$format]['is_short'] !== false && !$forcedate && isset($this->lang['datetime']['AGO']))
 		{
 			return $this->lang(array('datetime', 'AGO'), max(0, (int) floor($delta / 60)));
@@ -2062,7 +2062,7 @@ class user extends session
 			$midnight = gmmktime(0, 0, 0, $m, $d, $y) - $date_cache[$format]['zone_offset'];
 		}
 
-		if ($date_cache[$format]['is_short'] !== false && !$forcedate)
+		if ($date_cache[$format]['is_short'] !== false && !$forcedate && !($gmepoch < $midnight - 86400 || $gmepoch > $midnight + 172800))
 		{
 			$day = false;
 
