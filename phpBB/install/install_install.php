@@ -543,7 +543,7 @@ class install_install extends module
 		{
 			if (!isset($available_dbms[$data['dbms']]) || !$available_dbms[$data['dbms']]['AVAILABLE'])
 			{
-				$error['db'][] = $lang['INST_ERR_NO_DB'];
+				$error[] = $lang['INST_ERR_NO_DB'];
 				$connect_test = false;
 			}
 			else
