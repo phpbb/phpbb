@@ -695,6 +695,7 @@ class bbcode_firstpass extends bbcode
 		* [quote="[i]test[/i]"]test[/quote] (correct: parsed)
 		* [quote="[quote]test[/quote]"]test[/quote] (correct: parsed - Username displayed as [quote]test[/quote])
 		* #20735 - [quote]test[/[/b]quote] test [/quote][/quote] test - (correct: quoted: "test[/[/b]quote] test" / non-quoted: "[/quote] test" - also failed if layout distorted)
+		* #40565 - [quote="a"]a[/quote][quote="a]a[/quote] (correct: first quote tag parsed, second quote tag unparsed)
 		*/
 
 		$in = str_replace("\r\n", "\n", str_replace('\"', '"', trim($in)));
@@ -857,6 +858,8 @@ class bbcode_firstpass extends bbcode
 			}
 		}
 		while ($in);
+
+		$out .= $buffer;
 
 		if (sizeof($close_tags))
 		{
