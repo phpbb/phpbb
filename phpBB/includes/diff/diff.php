@@ -511,9 +511,9 @@ class diff3 extends diff
 			if ($edit->is_conflict())
 			{
 				// Start conflict label
-				$label_start	= array('<<< ' . $label1);
-				$label_mid		= array('=== ' . $label_sep);
-				$label_end		= array('>>> ' . $label2);
+				$label_start	= array('<<<<<<< ' . $label1);
+				$label_mid		= array('======= ' . $label_sep);
+				$label_end		= array('>>>>>>> ' . $label2);
 
 				$lines = array_merge($lines, $label_start, $edit->final1, $label_mid, $edit->final2, $label_end);
 			}
