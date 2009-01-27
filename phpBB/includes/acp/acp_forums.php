@@ -888,7 +888,7 @@ class acp_forums
 	*/
 	function update_forum_data(&$forum_data)
 	{
-		global $db, $user, $cache;
+		global $db, $user, $cache, $phpbb_root_path;
 
 		$errors = array();
 
@@ -925,6 +925,11 @@ class acp_forums
 		$range_test_ary = array(
 			array('lang' => 'FORUM_TOPICS_PAGE', 'value' => $forum_data['forum_topics_per_page'], 'column_type' => 'TINT:0'),
 		);
+
+		if (!file_exists($phpbb_root_path . $forum_data['forum_image']))
+		{
+			$errors[] = $user->lang['FORUM_IMAGE_NO_EXIST'];
+		}
 
 		validate_range($range_test_ary, $errors);
 
