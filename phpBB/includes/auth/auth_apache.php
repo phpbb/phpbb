@@ -104,7 +104,7 @@ function login_apache(&$username, &$password)
 					'user_row'		=> $row,
 				);
 			}
-	
+
 			// Successful login...
 			return array(
 				'status'		=> LOGIN_SUCCESS,
@@ -227,6 +227,18 @@ function user_row_apache($username, $password)
 */
 function validate_session_apache(&$user)
 {
+	// We only need to check authenticated users. For anonymous user as well as bots the session of course did not expire.
+	if ($user['user_id'] == ANONYMOUS)
+	{
+		return true;
+	}
+
+	// Checking for a bot is a bit mroe complicated... but we are able to check this with the user type (anonymous has the same as bots)
+	if ($user['user_type'] == USER_IGNORE)
+	{
+		return true;
+	}
+
 	if (!isset($_SERVER['PHP_AUTH_USER']))
 	{
 		return false;
