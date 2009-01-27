@@ -3369,7 +3369,7 @@ function obtain_guest_count($forum_id = 0)
 				AND s.session_time >= ' . ($time - ((int) ($time % 60))) .
 			$reading_sql;
 	}
-	$result = $db->sql_query($sql, 60);
+	$result = $db->sql_query($sql);
 	$guests_online = (int) $db->sql_fetchfield('num_guests');
 	$db->sql_freeresult($result);
 
