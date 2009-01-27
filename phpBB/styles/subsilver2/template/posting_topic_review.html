@@ -15,6 +15,9 @@
 
 			<!-- IF topic_review_row.S_ROW_COUNT is even --><tr class="row1"><!-- ELSE --><tr class="row2"><!-- ENDIF -->
 
+				<!-- IF topic_review_row.S_IGNORE_POST -->
+				<td colspan="2">{topic_review_row.L_IGNORE_POST}</td>
+				<!-- ELSE -->
 				<td rowspan="2" align="{S_CONTENT_FLOW_BEGIN}" valign="top"><a id="pr{topic_review_row.POST_ID}"></a>
 					<table width="150" cellspacing="0">
 					<tr>
@@ -81,6 +84,7 @@
 					</tr>
 					</table>
 				</td>
+				<!-- ENDIF -->
 			</tr>
 			<tr>
 				<td class="spacer" colspan="2"><img src="images/spacer.gif" alt="" width="1" height="1" /></td>
