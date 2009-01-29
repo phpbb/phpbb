@@ -227,27 +227,22 @@ function user_row_apache($username, $password)
 */
 function validate_session_apache(&$user)
 {
-	// We only need to check authenticated users. For anonymous user as well as bots the session of course did not expire.
-	if ($user['user_id'] == ANONYMOUS)
+	// Check if PHP_AUTH_USER is set and handle this case
+	if (isset($_SERVER['PHP_AUTH_USER']))
 	{
-		return true;
+		$php_auth_user = '';
+		set_var($php_auth_user, $_SERVER['PHP_AUTH_USER'], 'string', true);
+
+		return ($php_auth_user === $user['username']) ? true : false;
 	}
 
-	// Checking for a bot is a bit mroe complicated... but we are able to check this with the user type (anonymous has the same as bots)
+	// PHP_AUTH_USER is not set. A valid session is now determined by the user type (anonymous/bot or not)
 	if ($user['user_type'] == USER_IGNORE)
 	{
 		return true;
 	}
 
-	if (!isset($_SERVER['PHP_AUTH_USER']))
-	{
-		return false;
-	}
-
-	$php_auth_user = '';
-	set_var($php_auth_user, $_SERVER['PHP_AUTH_USER'], 'string', true);
-
-	return ($php_auth_user === $user['username']) ? true : false;
+	return false;
 }
 
 ?>
