@@ -8,7 +8,7 @@
 *
 */
 
-$updates_to_version = '3.0.4';
+$updates_to_version = '3.0.5-dev';
 
 // Return if we "just include it" to find out for which version the database update is responsible for
 if (defined('IN_PHPBB') && defined('IN_INSTALL'))
@@ -590,6 +590,9 @@ $database_update_info = array(
 
 	// Changes from 3.0.4-RC1 to 3.0.4
 	'3.0.4-RC1'		=> array(),
+	
+	// Changes from 3.0.4 to 3.0.5-dev
+	'3.0.4'			=> array(),
 );
 
 // Determine mapping database type
@@ -2028,17 +2031,38 @@ function change_database_data(&$no_updates, $version)
 
 				_sql('UPDATE ' . PROFILE_FIELDS_TABLE . ' SET ' . $db->sql_build_array('UPDATE', $sql_ary) . ' WHERE field_id = ' . $row['field_id'], $errored, $error_ary);
 			}
-
 			$no_updates = false;
+		
 		break;
 
 		// Changes from 3.0.4-RC1 to 3.0.4
 		case '3.0.4-RC1':
 		break;
 		
-		// Changes from 3.0.4 to 3.0.4dev
+		// Changes from 3.0.4 to 3.0.5-dev
 		case '3.0.4':
+
 			set_config('captcha_gd_wave', 0);
+			
+			$sql = 'SELECT user_id, user_password 
+					FROM ' . USERS_TABLE . ' 
+					WHERE user_pass_convert = 1';
+			$result = _sql($sql, $errored, $error_ary);
+
+			while ($row = $db->sql_fetchrow($result))
+			{
+				if (strlen($row['user_password']) == 32)
+				{
+					$sql_ary = array(
+						'user_password'	=> phpbb_hash($row['user_password']),
+					);
+
+					_sql('UPDATE ' . USERS_TABLE . ' SET ' . $db->sql_build_array('UPDATE', $sql_ary) . ' WHERE user_id = ' . $row['user_id'], $errored, $error_ary);
+				}
+			}
+
+			$no_updates = false;
+
 		break;
 	}
 }

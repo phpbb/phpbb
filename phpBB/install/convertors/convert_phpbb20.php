@@ -865,7 +865,7 @@ if (!$get_info)
 				array('user_regdate',			'users.user_regdate',				''),
 				array('username',				'users.username',					'phpbb_set_default_encoding'), // recode to utf8 with default lang
 				array('username_clean',			'users.username',					array('function1' => 'phpbb_set_default_encoding', 'function2' => 'utf8_clean_string')),
-				array('user_password',			'users.user_password',				''),
+				array('user_password',			'users.user_password',				'phpbb_hash'),
 				array('user_pass_convert',		1,									''),
 				array('user_posts',				'users.user_posts',					'intval'),
 				array('user_email',				'users.user_email',					'strtolower'),
