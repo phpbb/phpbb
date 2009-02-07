@@ -1151,16 +1151,9 @@ function user_ipwhois($ip)
 		return '';
 	}
 
-	$match = array(
-		'#RIPE\.NET#is'				=> 'whois.ripe.net',
-		'#whois\.apnic\.net#is'		=> 'whois.apnic.net',
-		'#nic\.ad\.jp#is'			=> 'whois.nic.ad.jp',
-		'#whois\.registro\.br#is'	=> 'whois.registro.br'
-	);
-
 	if (($fsk = @fsockopen('whois.arin.net', 43)))
 	{
-		fputs($fsk, "$ip\n");
+		fputs($fsk, "$ip\r\n");
 		while (!feof($fsk))
 		{
 			$ipwhois .= fgets($fsk, 1024);
@@ -1168,22 +1161,38 @@ function user_ipwhois($ip)
 		@fclose($fsk);
 	}
 
-	foreach (array_keys($match) as $server)
+	$match = array();
+
+	// Test for referrals from ARIN to other whois databases, roll on rwhois
+	if (preg_match('#ReferralServer: whois://(.+)#im', $ipwhois, $match))
 	{
-		if (preg_match($server, $ipwhois))
+		if (strpos($match[1], ':') !== false)
 		{
-			$ipwhois = '';
-			if (($fsk = @fsockopen($match[$server], 43)))
-			{
-				fputs($fsk, "$ip\n");
-				while (!feof($fsk))
-				{
-					$ipwhois .= fgets($fsk, 1024);
-				}
-				@fclose($fsk);
-			}
-			break;
+			$pos	= strrpos($match[1], ':');
+			$server	= substr($match[1], 0, $pos);
+			$port	= (int) substr($match[1], $pos + 1);
+			unset($pos);
 		}
+		else
+		{
+			$server	= $match[1];
+			$port	= 43;
+		}
+
+		$buffer = '';
+
+		if (($fsk = @fsockopen($server, $port)))
+		{
+			fputs($fsk, "$ip\r\n");
+			while (!feof($fsk))
+			{
+				$buffer .= fgets($fsk, 1024);
+			}
+			@fclose($fsk);
+		}
+
+		// Use the result from ARIN if we don't get any result here
+		$ipwhois = (empty($buffer)) ? $ipwhois : $buffer;
 	}
 
 	$ipwhois = htmlspecialchars($ipwhois);
