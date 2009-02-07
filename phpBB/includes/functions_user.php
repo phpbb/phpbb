@@ -1139,6 +1139,8 @@ function user_unban($mode, $ban)
 
 /**
 * Whois facility
+*
+* @link http://tools.ietf.org/html/rfc3912 RFC3912: WHOIS Protocol Specification
 */
 function user_ipwhois($ip)
 {
@@ -1153,6 +1155,7 @@ function user_ipwhois($ip)
 
 	if (($fsk = @fsockopen('whois.arin.net', 43)))
 	{
+		// CRLF as per RFC3912
 		fputs($fsk, "$ip\r\n");
 		while (!feof($fsk))
 		{
