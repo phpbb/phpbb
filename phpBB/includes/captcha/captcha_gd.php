@@ -53,11 +53,12 @@ class captcha
 		$bg_colours = array_splice($scheme, mt_rand(6, 12));
 
 		// Generate code characters
-		$characters = $sizes = $bounding_boxes = array();
+		$characters = $sizes = $bounding_boxes = $noise = array();
 		$width_avail = $this->width - 15;
 		$code_len = strlen($code);
 
 		$captcha_bitmaps = $this->captcha_bitmaps();
+		$noise_bitmaps = $this->captcha_noise_bitmaps();
 		for ($i = 0; $i < $code_len; ++$i)
 		{
 			$characters[$i] = new char_cube3d($captcha_bitmaps, $code[$i]);
@@ -70,6 +71,7 @@ class captcha
 			$bounding_boxes[$i] = $box;
 		}
 
+ 
 		// Redistribute leftover x-space
 		$offset = array();
 		for ($i = 0; $i < $code_len; ++$i)
@@ -109,6 +111,26 @@ class captcha
 
 			$characters[$i]->drawchar($sizes[$i], $xoffset, $yoffset, $img, $colour->get_resource('background'), $scheme);
 			$xoffset += $dimm[2];
+		}
+		if ($config['captcha_gd_3d_noise'])
+		{
+			for ($i = 0; $i < $code_len; ++$i)
+			{
+				$noise[$i] = new char_cube3d($noise_bitmaps, mt_rand(1, 1 + count($noise_bitmaps)));
+
+				list($min, $max) = $noise[$i]->range();
+				//$box = $noise[$i]->dimensions($sizes[$i]);
+			}
+			$xoffset = 0;
+			for ($i = 0; $i < $code_len; ++$i)
+			{
+				$dimm = $bounding_boxes[$i];
+				$xoffset += ($offset[$i] - $dimm[0]);
+				$yoffset = mt_rand(-$dimm[1], $this->height - $dimm[3]);
+	 
+				$noise[$i]->drawchar($sizes[$i], $xoffset, $yoffset, $img, $colour->get_resource('background'), $scheme);
+				$xoffset += $dimm[2];
+			}
 		}
 		if ($config['captcha_gd_wave'])
 		{
@@ -206,6 +228,45 @@ class captcha
 		imagesetthickness($img, 1);
 	}
 
+
+	function captcha_noise_bitmaps()
+	{
+		return array(
+			'width'		=> 9,
+			'height'	=> 5,
+			'data'		=> array(
+
+			1 => array(
+				array(1,0,0,0,1,0,0,0,0),
+				array(1,0,0,0,0,1,0,0,0),
+				array(1,0,0,0,0,1,0,0,0),
+				array(1,0,0,0,0,1,0,0,0),
+				array(1,0,0,0,0,0,1,0,0),
+			),
+			2 => array(
+				array(1,1,1,1,1,1,1,1,1),
+				array(0,0,0,0,0,0,0,1,0),
+				array(0,0,0,0,0,0,0,0,0),
+				array(0,0,0,0,0,0,0,0,0),
+				array(0,0,0,0,0,0,0,0,0),
+			),
+			3 => array(
+				array(1,0,0,0,0,0,0,0,0),
+				array(1,0,0,0,0,0,0,0,0),
+				array(1,0,0,0,0,0,0,0,0),
+				array(1,0,0,0,0,0,0,0,0),
+				array(1,0,0,0,0,0,0,0,0),
+			),
+			4 => array(
+				array(1,0,1,0,1,0,0,1,1),
+				array(0,0,0,0,0,0,0,1,0),
+				array(1,0,1,0,1,0,1,0,0),
+				array(0,0,0,0,0,0,0,0,0),
+				array(1,0,1,0,1,0,1,0,0),
+			),
+	));
+	}
+	
 	/**
 	* Return bitmaps
 	*/

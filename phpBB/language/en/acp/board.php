@@ -245,7 +245,9 @@ $lang = array_merge($lang, array(
 	'CAPTCHA_GD_Y_GRID_EXPLAIN'				=> 'Use lower settings of this to make the GD based CAPTCHA harder. 0 will disable y-axis background noise.',
 	'CAPTCHA_GD_WAVE'						=> 'GD CAPTCHA wave distortion',
 	'CAPTCHA_GD_WAVE_EXPLAIN'				=> 'This applies a wave distortion to the CAPTCHA.',
-
+ 	'CAPTCHA_GD_3D_NOISE'					=> 'Add 3D-noise objects',
+	'CAPTCHA_GD_3D_NOISE_EXPLAIN'			=> 'This adds additional objects to the CAPTCHA, over the letters.',
+ 
 	'CAPTCHA_PREVIEW_MSG'					=> 'Your changes to the visual confirmation setting were not saved. This is just a preview.',
 	'CAPTCHA_PREVIEW_EXPLAIN'				=> 'The CAPTCHA as it will look like using the current settings. Use the preview button to refresh. Note that captchas are randomized and will differ from one view to the next.',
 	'VISUAL_CONFIRM_POST'					=> 'Enable visual confirmation for guest postings',

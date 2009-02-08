@@ -28,13 +28,14 @@ class acp_captcha
 		global $config, $phpbb_root_path, $phpbb_admin_path, $phpEx;
 
 		$user->add_lang('acp/board');
-
 		$captcha_vars = array(
 			'captcha_gd_x_grid'				=> 'CAPTCHA_GD_X_GRID',
 			'captcha_gd_y_grid'				=> 'CAPTCHA_GD_Y_GRID',
 			'captcha_gd_foreground_noise'	=> 'CAPTCHA_GD_FOREGROUND_NOISE',
 			'captcha_gd'					=> 'CAPTCHA_GD_PREVIEWED',
 			'captcha_gd_wave'				=> 'CAPTCHA_GD_WAVE',
+			'captcha_gd_3d_noise'			=> 'CAPTCHA_GD_3D_NOISE',
+
 		);
 
 		if (isset($_GET['demo']))

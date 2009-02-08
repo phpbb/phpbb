@@ -2043,6 +2043,8 @@ function change_database_data(&$no_updates, $version)
 		case '3.0.4':
 
 			set_config('captcha_gd_wave', 0);
+			set_config('captcha_gd_3d_noise', 1);
+
 			
 			$sql = 'SELECT user_id, user_password 
 					FROM ' . USERS_TABLE . ' 
