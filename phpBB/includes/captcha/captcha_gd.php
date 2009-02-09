@@ -58,7 +58,6 @@ class captcha
 		$code_len = strlen($code);
 
 		$captcha_bitmaps = $this->captcha_bitmaps();
-		$noise_bitmaps = $this->captcha_noise_bitmaps();
 		for ($i = 0; $i < $code_len; ++$i)
 		{
 			$characters[$i] = new char_cube3d($captcha_bitmaps, $code[$i]);
@@ -114,6 +113,7 @@ class captcha
 		}
 		if ($config['captcha_gd_3d_noise'])
 		{
+			$noise_bitmaps = $this->captcha_noise_bitmaps();
 			for ($i = 0; $i < $code_len; ++$i)
 			{
 				$noise[$i] = new char_cube3d($noise_bitmaps, mt_rand(1, count($noise_bitmaps['data'])));
