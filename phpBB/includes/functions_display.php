@@ -860,7 +860,7 @@ function display_custom_bbcodes()
 	$i = 0;
 	while ($row = $db->sql_fetchrow($result))
 	{
-		// If the helpline is defined within the language file, we will use the localized version, else just use the database entry...
+		// If the helpline is defined within the language file, we will use the localised version, else just use the database entry...
 		if (isset($user->lang[strtoupper($row['bbcode_helpline'])]))
 		{
 			$row['bbcode_helpline'] = $user->lang[strtoupper($row['bbcode_helpline'])];
