@@ -111,6 +111,7 @@ class acp_inactive
 								$messenger->headers('X-AntiAbuse: Board servername - ' . $config['server_name']);
 								$messenger->headers('X-AntiAbuse: User_id - ' . $user->data['user_id']);
 								$messenger->headers('X-AntiAbuse: Username - ' . $user->data['username']);
+								$messenger->headers('X-AntiAbuse: User IP - ' . $user->ip);
 
 								$messenger->assign_vars(array(
 									'USERNAME'	=> htmlspecialchars_decode($row['username']))
@@ -161,7 +162,11 @@ class acp_inactive
 
 					$sql = 'SELECT user_id, username, user_email, user_lang, user_jabber, user_notify_type, user_regdate, user_actkey
 						FROM ' . USERS_TABLE . '
-						WHERE ' . $db->sql_in_set('user_id', $mark);
+						WHERE ' . $db->sql_in_set('user_id', $mark) . '
+							AND user_inactive_reason';
+
+					$sql .= ($config['require_activation'] == USER_ACTIVATION_ADMIN) ? ' = ' . INACTIVE_REMIND : ' <> ' . INACTIVE_MANUAL;
+
 					$result = $db->sql_query($sql);
 
 					if ($row = $db->sql_fetchrow($result))
@@ -179,9 +184,14 @@ class acp_inactive
 							$messenger->to($row['user_email'], $row['username']);
 							$messenger->im($row['user_jabber'], $row['username']);
 
+							$messenger->headers('X-AntiAbuse: Board servername - ' . $config['server_name']);
+							$messenger->headers('X-AntiAbuse: User_id - ' . $user->data['user_id']);
+							$messenger->headers('X-AntiAbuse: Username - ' . $user->data['username']);
+							$messenger->headers('X-AntiAbuse: User IP - ' . $user->ip);
+
 							$messenger->assign_vars(array(
 								'USERNAME'		=> htmlspecialchars_decode($row['username']),
-								'REGISTER_DATE'	=> $user->format_date($row['user_regdate']),
+								'REGISTER_DATE'	=> $user->format_date($row['user_regdate'], false, true),
 								'U_ACTIVATE'	=> generate_board_url() . "/ucp.$phpEx?mode=activate&u=" . $row['user_id'] . '&k=' . $row['user_actkey'])
 							);
 
