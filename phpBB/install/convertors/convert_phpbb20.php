@@ -494,7 +494,7 @@ if (!$get_info)
 				array('topic_moved_id',			0,									''),
 				array('topic_type',				'topics.topic_type',				'phpbb_convert_topic_type'),
 				array('topic_first_post_id',	'topics.topic_first_post_id',		''),
-				array('topic_last_view_time',	'posts.post_time',					''),
+				array('topic_last_view_time',	'posts.post_time',					'intval'),
 				array('poll_title',				'vote_desc.vote_text',				array('function1' => 'null_to_str', 'function2' => 'phpbb_set_encoding', 'function3' => 'utf8_htmlspecialchars')),
 				array('poll_start',				'vote_desc.vote_start',				'null_to_zero'),
 				array('poll_length',			'vote_desc.vote_length',			'null_to_zero'),
