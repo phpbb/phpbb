@@ -66,7 +66,7 @@ class ucp_profile
 						'email_confirm'		=> array('string', true, 6, 60),
 					);
 
-					if ($auth->acl_get('u_chgname') && phpbb::$config['allow_namechange'])
+					if (phpbb::$acl->acl_get('u_chgname') && phpbb::$config['allow_namechange'])
 					{
 						$check_ary['username'] = array(
 							array('string', false, phpbb::$config['min_name_chars'], phpbb::$config['max_name_chars']),
@@ -76,23 +76,23 @@ class ucp_profile
 
 					$error = validate_data($data, $check_ary);
 
-					if ($auth->acl_get('u_chgpasswd') && $data['new_password'] && $data['password_confirm'] != $data['new_password'])
+					if (phpbb::$acl->acl_get('u_chgpasswd') && $data['new_password'] && $data['password_confirm'] != $data['new_password'])
 					{
 						$error[] = 'NEW_PASSWORD_ERROR';
 					}
 
-					if (($data['new_password'] || ($auth->acl_get('u_chgemail') && $data['email'] != phpbb::$user->data['user_email']) || ($data['username'] != phpbb::$user->data['username'] && $auth->acl_get('u_chgname') && phpbb::$config['allow_namechange'])) && !phpbb_check_hash($data['cur_password'], phpbb::$user->data['user_password']))
+					if (($data['new_password'] || (phpbb::$acl->acl_get('u_chgemail') && $data['email'] != phpbb::$user->data['user_email']) || ($data['username'] != phpbb::$user->data['username'] && phpbb::$acl->acl_get('u_chgname') && phpbb::$config['allow_namechange'])) && !phpbb_check_hash($data['cur_password'], phpbb::$user->data['user_password']))
 					{
 						$error[] = 'CUR_PASSWORD_ERROR';
 					}
 
 					// Only check the new password against the previous password if there have been no errors
-					if (!sizeof($error) && $auth->acl_get('u_chgpasswd') && $data['new_password'] && phpbb_check_hash($data['new_password'], phpbb::$user->data['user_password']))
+					if (!sizeof($error) && phpbb::$acl->acl_get('u_chgpasswd') && $data['new_password'] && phpbb_check_hash($data['new_password'], phpbb::$user->data['user_password']))
 					{
 						$error[] = 'SAME_PASSWORD_ERROR';
 					}
 
-					if ($auth->acl_get('u_chgemail') && $data['email'] != phpbb::$user->data['user_email'] && $data['email_confirm'] != $data['email'])
+					if (phpbb::$acl->acl_get('u_chgemail') && $data['email'] != phpbb::$user->data['user_email'] && $data['email_confirm'] != $data['email'])
 					{
 						$error[] = 'NEW_EMAIL_ERROR';
 					}
@@ -105,26 +105,26 @@ class ucp_profile
 					if (!sizeof($error))
 					{
 						$sql_ary = array(
-							'username'			=> ($auth->acl_get('u_chgname') && phpbb::$config['allow_namechange']) ? $data['username'] : phpbb::$user->data['username'],
-							'username_clean'	=> ($auth->acl_get('u_chgname') && phpbb::$config['allow_namechange']) ? utf8_clean_string($data['username']) : phpbb::$user->data['username_clean'],
-							'user_email'		=> ($auth->acl_get('u_chgemail')) ? $data['email'] : phpbb::$user->data['user_email'],
-							'user_email_hash'	=> ($auth->acl_get('u_chgemail')) ? hexdec(crc32($data['email']) . strlen($data['email'])) : phpbb::$user->data['user_email_hash'],
-							'user_password'		=> ($auth->acl_get('u_chgpasswd') && $data['new_password']) ? phpbb_hash($data['new_password']) : phpbb::$user->data['user_password'],
-							'user_passchg'		=> ($auth->acl_get('u_chgpasswd') && $data['new_password']) ? time() : 0,
+							'username'			=> (phpbb::$acl->acl_get('u_chgname') && phpbb::$config['allow_namechange']) ? $data['username'] : phpbb::$user->data['username'],
+							'username_clean'	=> (phpbb::$acl->acl_get('u_chgname') && phpbb::$config['allow_namechange']) ? utf8_clean_string($data['username']) : phpbb::$user->data['username_clean'],
+							'user_email'		=> (phpbb::$acl->acl_get('u_chgemail')) ? $data['email'] : phpbb::$user->data['user_email'],
+							'user_email_hash'	=> (phpbb::$acl->acl_get('u_chgemail')) ? hexdec(crc32($data['email']) . strlen($data['email'])) : phpbb::$user->data['user_email_hash'],
+							'user_password'		=> (phpbb::$acl->acl_get('u_chgpasswd') && $data['new_password']) ? phpbb_hash($data['new_password']) : phpbb::$user->data['user_password'],
+							'user_passchg'		=> (phpbb::$acl->acl_get('u_chgpasswd') && $data['new_password']) ? time() : 0,
 						);
 
-						if ($auth->acl_get('u_chgname') && phpbb::$config['allow_namechange'] && $data['username'] != phpbb::$user->data['username'])
+						if (phpbb::$acl->acl_get('u_chgname') && phpbb::$config['allow_namechange'] && $data['username'] != phpbb::$user->data['username'])
 						{
 							add_log('user', phpbb::$user->data['user_id'], 'LOG_USER_UPDATE_NAME', phpbb::$user->data['username'], $data['username']);
 						}
 
-						if ($auth->acl_get('u_chgpasswd') && $data['new_password'] && !phpbb_check_hash($data['new_password'], phpbb::$user->data['user_password']))
+						if (phpbb::$acl->acl_get('u_chgpasswd') && $data['new_password'] && !phpbb_check_hash($data['new_password'], phpbb::$user->data['user_password']))
 						{
 							phpbb::$user->reset_login_keys();
 							add_log('user', phpbb::$user->data['user_id'], 'LOG_USER_NEW_PASSWORD', $data['username']);
 						}
 
-						if ($auth->acl_get('u_chgemail') && $data['email'] != phpbb::$user->data['user_email'])
+						if (phpbb::$acl->acl_get('u_chgemail') && $data['email'] != phpbb::$user->data['user_email'])
 						{
 							add_log('user', phpbb::$user->data['user_id'], 'LOG_USER_UPDATE_EMAIL', $data['username'], phpbb::$user->data['user_email'], $data['email']);
 						}
@@ -166,7 +166,7 @@ class ucp_profile
 							if (phpbb::$config['require_activation'] == USER_ACTIVATION_ADMIN)
 							{
 								// Grab an array of user_id's with a_user permissions ... these users can activate a user
-								$admin_ary = $auth->acl_get_list(false, 'a_user', false);
+								$admin_ary = phpbb::$acl->acl_get_list(false, 'a_user', false);
 								$admin_ary = (!empty($admin_ary[0]['a_user'])) ? $admin_ary[0]['a_user'] : array();
 
 								// Also include founders
@@ -215,7 +215,7 @@ class ucp_profile
 						}
 
 						// Need to update config, forum, topic, posting, messages, etc.
-						if ($data['username'] != phpbb::$user->data['username'] && $auth->acl_get('u_chgname') && phpbb::$config['allow_namechange'])
+						if ($data['username'] != phpbb::$user->data['username'] && phpbb::$acl->acl_get('u_chgname') && phpbb::$config['allow_namechange'])
 						{
 							user_update_name(phpbb::$user->data['username'], $data['username']);
 						}
@@ -254,10 +254,10 @@ class ucp_profile
 					'L_USERNAME_EXPLAIN'		=> sprintf(phpbb::$user->lang[phpbb::$config['allow_name_chars'] . '_EXPLAIN'], phpbb::$config['min_name_chars'], phpbb::$config['max_name_chars']),
 					'L_CHANGE_PASSWORD_EXPLAIN'	=> sprintf(phpbb::$user->lang[phpbb::$config['pass_complex'] . '_EXPLAIN'], phpbb::$config['min_pass_chars'], phpbb::$config['max_pass_chars']),
 
-					'S_FORCE_PASSWORD'	=> ($auth->acl_get('u_chgpasswd') && phpbb::$config['chg_passforce'] && phpbb::$user->data['user_passchg'] < time() - (phpbb::$config['chg_passforce'] * 86400)) ? true : false,
-					'S_CHANGE_USERNAME' => (phpbb::$config['allow_namechange'] && $auth->acl_get('u_chgname')) ? true : false,
-					'S_CHANGE_EMAIL'	=> ($auth->acl_get('u_chgemail')) ? true : false,
-					'S_CHANGE_PASSWORD'	=> ($auth->acl_get('u_chgpasswd')) ? true : false)
+					'S_FORCE_PASSWORD'	=> (phpbb::$acl->acl_get('u_chgpasswd') && phpbb::$config['chg_passforce'] && phpbb::$user->data['user_passchg'] < time() - (phpbb::$config['chg_passforce'] * 86400)) ? true : false,
+					'S_CHANGE_USERNAME' => (phpbb::$config['allow_namechange'] && phpbb::$acl->acl_get('u_chgname')) ? true : false,
+					'S_CHANGE_EMAIL'	=> (phpbb::$acl->acl_get('u_chgemail')) ? true : false,
+					'S_CHANGE_PASSWORD'	=> (phpbb::$acl->acl_get('u_chgpasswd')) ? true : false)
 				);
 			break;
 
@@ -464,7 +464,7 @@ class ucp_profile
 
 			case 'signature':
 
-				if (!$auth->acl_get('u_sig'))
+				if (!phpbb::$acl->acl_get('u_sig'))
 				{
 					trigger_error('NO_AUTH_SIGNATURE');
 				}
@@ -570,7 +570,7 @@ class ucp_profile
 				$avatar_select = basename(request_var('avatar_select', ''));
 				$category = basename(request_var('category', ''));
 
-				$can_upload = (phpbb::$config['allow_avatar_upload'] && file_exists(PHPBB_ROOT_PATH . phpbb::$config['avatar_path']) && @is_writable(PHPBB_ROOT_PATH . phpbb::$config['avatar_path']) && $auth->acl_get('u_chgavatar') && (@ini_get('file_uploads') || strtolower(@ini_get('file_uploads')) == 'on')) ? true : false;
+				$can_upload = (phpbb::$config['allow_avatar_upload'] && file_exists(PHPBB_ROOT_PATH . phpbb::$config['avatar_path']) && @is_writable(PHPBB_ROOT_PATH . phpbb::$config['avatar_path']) && phpbb::$acl->acl_get('u_chgavatar') && (@ini_get('file_uploads') || strtolower(@ini_get('file_uploads')) == 'on')) ? true : false;
 
 				add_form_key('ucp_avatar');
 
@@ -605,13 +605,13 @@ class ucp_profile
 					'L_AVATAR_EXPLAIN'	=> sprintf(phpbb::$user->lang['AVATAR_EXPLAIN'], phpbb::$config['avatar_max_width'], phpbb::$config['avatar_max_height'], phpbb::$config['avatar_filesize'] / 1024),
 				));
 
-				if ($display_gallery && $auth->acl_get('u_chgavatar') && phpbb::$config['allow_avatar_local'])
+				if ($display_gallery && phpbb::$acl->acl_get('u_chgavatar') && phpbb::$config['allow_avatar_local'])
 				{
 					avatar_gallery($category, $avatar_select, 4);
 				}
 				else
 				{
-					$avatars_enabled = ($can_upload || ($auth->acl_get('u_chgavatar') && (phpbb::$config['allow_avatar_local'] || phpbb::$config['allow_avatar_remote']))) ? true : false;
+					$avatars_enabled = ($can_upload || (phpbb::$acl->acl_get('u_chgavatar') && (phpbb::$config['allow_avatar_local'] || phpbb::$config['allow_avatar_remote']))) ? true : false;
 
 					$template->assign_vars(array(
 						'AVATAR_WIDTH'	=> request_var('width', phpbb::$user->data['user_avatar_width']),
@@ -620,8 +620,8 @@ class ucp_profile
 						'S_AVATARS_ENABLED'		=> $avatars_enabled,
 						'S_UPLOAD_AVATAR_FILE'	=> $can_upload,
 						'S_UPLOAD_AVATAR_URL'	=> $can_upload,
-						'S_LINK_AVATAR'			=> ($auth->acl_get('u_chgavatar') && phpbb::$config['allow_avatar_remote']) ? true : false,
-						'S_DISPLAY_GALLERY'		=> ($auth->acl_get('u_chgavatar') && phpbb::$config['allow_avatar_local']) ? true : false)
+						'S_LINK_AVATAR'			=> (phpbb::$acl->acl_get('u_chgavatar') && phpbb::$config['allow_avatar_remote']) ? true : false,
+						'S_DISPLAY_GALLERY'		=> (phpbb::$acl->acl_get('u_chgavatar') && phpbb::$config['allow_avatar_local']) ? true : false)
 					);
 				}
 

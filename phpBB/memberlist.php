@@ -19,7 +19,7 @@ include(PHPBB_ROOT_PATH . 'includes/functions_display.' . PHP_EXT);
 
 // Start session management
 phpbb::$user->session_begin();
-$auth->acl(phpbb::$user->data);
+phpbb::$acl->init(phpbb::$user->data);
 phpbb::$user->setup(array('memberlist', 'groups'));
 
 // Grab data
@@ -43,7 +43,7 @@ switch ($mode)
 
 	default:
 		// Can this user view profiles/memberlist?
-		if (!$auth->acl_gets('u_viewprofile', 'a_user', 'a_useradd', 'a_userdel'))
+		if (!phpbb::$acl->acl_gets('u_viewprofile', 'a_user', 'a_useradd', 'a_userdel'))
 		{
 			if (phpbb::$user->data['user_id'] != ANONYMOUS)
 			{
@@ -77,7 +77,7 @@ switch ($mode)
 		$page_title = phpbb::$user->lang['THE_TEAM'];
 		$template_html = 'memberlist_leaders.html';
 
-		$user_ary = $auth->acl_get_list(false, array('a_', 'm_'), false);
+		$user_ary = phpbb::$acl->acl_get_list(false, array('a_', 'm_'), false);
 
 		$admin_id_ary = $global_mod_id_ary = $mod_id_ary = $forum_id_ary = array();
 		foreach ($user_ary as $forum_id => $forum_ary)
@@ -205,7 +205,7 @@ switch ($mode)
 					{
 						if (isset($forums[$forum_id]))
 						{
-							if ($auth->acl_get('f_list', $forum_id))
+							if (phpbb::$acl->acl_get('f_list', $forum_id))
 							{
 								$s_forum_select .= '<option value="">' . $forums[$forum_id] . '</option>';
 							}
@@ -226,7 +226,7 @@ switch ($mode)
 			}
 
 			// The person is moderating several "public" forums, therefore the person should be listed, but not giving the real group name if hidden.
-			if ($row['group_type'] == GROUP_HIDDEN && !$auth->acl_gets('a_group', 'a_groupadd', 'a_groupdel') && $row['ug_user_id'] != phpbb::$user->data['user_id'])
+			if ($row['group_type'] == GROUP_HIDDEN && !phpbb::$acl->acl_gets('a_group', 'a_groupadd', 'a_groupdel') && $row['ug_user_id'] != phpbb::$user->data['user_id'])
 			{
 				$group_name = phpbb::$user->lang['GROUP_UNDISCLOSED'];
 				$u_group = '';
@@ -251,7 +251,7 @@ switch ($mode)
 				'RANK_IMG_SRC'	=> $rank_img_src,
 
 				'U_GROUP'			=> $u_group,
-				'U_PM'				=> (phpbb::$config['allow_privmsg'] && $auth->acl_get('u_sendpm') && ($row['user_allow_pm'] || $auth->acl_gets('a_', 'm_') || $auth->acl_getf_global('m_'))) ? append_sid('ucp', 'i=pm&amp;mode=compose&amp;u=' . $row['user_id']) : '',
+				'U_PM'				=> (phpbb::$config['allow_privmsg'] && phpbb::$acl->acl_get('u_sendpm') && ($row['user_allow_pm'] || phpbb::$acl->acl_gets('a_', 'm_') || phpbb::$acl->acl_getf_global('m_'))) ? append_sid('ucp', 'i=pm&amp;mode=compose&amp;u=' . $row['user_id']) : '',
 
 				'USERNAME_FULL'		=> get_username_string('full', $row['user_id'], $row['username'], $row['user_colour']),
 				'USERNAME'			=> get_username_string('username', $row['user_id'], $row['username'], $row['user_colour']),
@@ -271,7 +271,7 @@ switch ($mode)
 		$page_title = phpbb::$user->lang['IM_USER'];
 		$template_html = 'memberlist_im.html';
 
-		if (!$auth->acl_get('u_sendim'))
+		if (!phpbb::$acl->acl_get('u_sendim'))
 		{
 			trigger_error('NOT_AUTHORISED');
 		}
@@ -416,7 +416,7 @@ switch ($mode)
 
 		// a_user admins and founder are able to view inactive users and bots to be able to manage them more easily
 		// Normal users are able to see at least users having only changed their profile settings but not yet reactivated.
-		if (!$auth->acl_get('a_user') && !phpbb::$user->is_founder)
+		if (!phpbb::$acl->acl_get('a_user') && !phpbb::$user->is_founder)
 		{
 			if ($member['user_type'] == phpbb::USER_IGNORE)
 			{
@@ -434,7 +434,7 @@ switch ($mode)
 		$sql = 'SELECT g.group_id, g.group_name, g.group_type
 			FROM ' . GROUPS_TABLE . ' g, ' . USER_GROUP_TABLE . " ug
 			WHERE ug.user_id = $user_id
-				AND g.group_id = ug.group_id" . ((!$auth->acl_gets('a_group', 'a_groupadd', 'a_groupdel')) ? ' AND g.group_type <> ' . GROUP_HIDDEN : '') . '
+				AND g.group_id = ug.group_id" . ((!phpbb::$acl->acl_gets('a_group', 'a_groupadd', 'a_groupdel')) ? ' AND g.group_type <> ' . GROUP_HIDDEN : '') . '
 				AND ug.user_pending = 0
 			ORDER BY g.group_type, g.group_name';
 		$result = $db->sql_query($sql);
@@ -528,7 +528,7 @@ switch ($mode)
 		}
 
 		// If the user has m_approve permission or a_user permission, then list then display unapproved posts
-		if ($auth->acl_getf_global('m_approve') || $auth->acl_get('a_user'))
+		if (phpbb::$acl->acl_getf_global('m_approve') || phpbb::$acl->acl_get('a_user'))
 		{
 			$sql = 'SELECT COUNT(post_id) as posts_in_queue
 				FROM ' . POSTS_TABLE . '
@@ -569,10 +569,10 @@ switch ($mode)
 			'S_GROUP_OPTIONS'	=> $group_options,
 			'S_CUSTOM_FIELDS'	=> (isset($profile_fields['row']) && sizeof($profile_fields['row'])) ? true : false,
 
-			'U_USER_ADMIN'			=> ($auth->acl_get('a_user')) ? append_sid(phpbb::$base_config['admin_folder'] . '/index', 'i=users&amp;mode=overview&amp;u=' . $user_id, true, phpbb::$user->session_id) : '',
-			'U_USER_BAN'			=> ($auth->acl_get('m_ban') && $user_id != phpbb::$user->data['user_id']) ? append_sid('mcp', 'i=ban&amp;mode=user&amp;u=' . $user_id, true, phpbb::$user->session_id) : '',
-			'U_SWITCH_PERMISSIONS'	=> ($auth->acl_get('a_switchperm') && phpbb::$user->data['user_id'] != $user_id) ? append_sid('ucp', "mode=switch_perm&amp;u={$user_id}") : '',
-			'U_MCP_QUEUE'			=> ($auth->acl_getf_global('m_approve')) ? append_sid('mcp', 'i=queue', true, phpbb::$user->session_id) : '',
+			'U_USER_ADMIN'			=> (phpbb::$acl->acl_get('a_user')) ? append_sid(phpbb::$base_config['admin_folder'] . '/index', 'i=users&amp;mode=overview&amp;u=' . $user_id, true, phpbb::$user->session_id) : '',
+			'U_USER_BAN'			=> (phpbb::$acl->acl_get('m_ban') && $user_id != phpbb::$user->data['user_id']) ? append_sid('mcp', 'i=ban&amp;mode=user&amp;u=' . $user_id, true, phpbb::$user->session_id) : '',
+			'U_SWITCH_PERMISSIONS'	=> (phpbb::$acl->acl_get('a_switchperm') && phpbb::$user->data['user_id'] != $user_id) ? append_sid('ucp', "mode=switch_perm&amp;u={$user_id}") : '',
+			'U_MCP_QUEUE'			=> (phpbb::$acl->acl_getf_global('m_approve')) ? append_sid('mcp', 'i=queue', true, phpbb::$user->session_id) : '',
 
 			'S_ZEBRA'			=> (phpbb::$user->data['user_id'] != $user_id && phpbb::$user->data['is_registered'] && $zebra_enabled) ? true : false,
 			'U_ADD_FRIEND'		=> (!$friend) ? append_sid('ucp', 'i=zebra&amp;add=' . urlencode(htmlspecialchars_decode($member['username']))) : '',
@@ -645,7 +645,7 @@ switch ($mode)
 			trigger_error('EMAIL_DISABLED');
 		}
 
-		if (!$auth->acl_get('u_sendemail'))
+		if (!phpbb::$acl->acl_get('u_sendemail'))
 		{
 			trigger_error('NO_EMAIL');
 		}
@@ -683,7 +683,7 @@ switch ($mode)
 			}
 
 			// Can we send email to this user?
-			if (!$row['user_allow_viewemail'] && !$auth->acl_get('a_user'))
+			if (!$row['user_allow_viewemail'] && !phpbb::$acl->acl_get('a_user'))
 			{
 				trigger_error('NO_EMAIL');
 			}
@@ -705,12 +705,12 @@ switch ($mode)
 
 			if ($row['forum_id'])
 			{
-				if (!$auth->acl_get('f_read', $row['forum_id']))
+				if (!phpbb::$acl->acl_get('f_read', $row['forum_id']))
 				{
 					trigger_error('SORRY_AUTH_READ');
 				}
 
-				if (!$auth->acl_get('f_email', $row['forum_id']))
+				if (!phpbb::$acl->acl_get('f_email', $row['forum_id']))
 				{
 					trigger_error('NO_EMAIL');
 				}
@@ -718,12 +718,12 @@ switch ($mode)
 			else
 			{
 				// If global announcement, we need to check if the user is able to at least read and email in one forum...
-				if (!$auth->acl_getf_global('f_read'))
+				if (!phpbb::$acl->acl_getf_global('f_read'))
 				{
 					trigger_error('SORRY_AUTH_READ');
 				}
 
-				if (!$auth->acl_getf_global('f_email'))
+				if (!phpbb::$acl->acl_getf_global('f_email'))
 				{
 					trigger_error('NO_EMAIL');
 				}
@@ -903,7 +903,7 @@ switch ($mode)
 		// Sorting
 		$sort_key_text = array('a' => phpbb::$user->lang['SORT_USERNAME'], 'b' => phpbb::$user->lang['SORT_LOCATION'], 'c' => phpbb::$user->lang['SORT_JOINED'], 'd' => phpbb::$user->lang['SORT_POST_COUNT'], 'e' => phpbb::$user->lang['SORT_EMAIL'], 'f' => phpbb::$user->lang['WEBSITE'], 'g' => phpbb::$user->lang['ICQ'], 'h' => phpbb::$user->lang['AIM'], 'i' => phpbb::$user->lang['MSNM'], 'j' => phpbb::$user->lang['YIM'], 'k' => phpbb::$user->lang['JABBER']);
 
-		if ($auth->acl_get('u_viewonline'))
+		if (phpbb::$acl->acl_get('u_viewonline'))
 		{
 			$sort_key_text['l'] = phpbb::$user->lang['SORT_LAST_ACTIVE'];
 		}
@@ -911,7 +911,7 @@ switch ($mode)
 
 		$sort_key_sql = array('a' => 'u.username_clean', 'b' => 'u.user_from', 'c' => 'u.user_regdate', 'd' => 'u.user_posts', 'e' => 'u.user_email', 'f' => 'u.user_website', 'g' => 'u.user_icq', 'h' => 'u.user_aim', 'i' => 'u.user_msnm', 'j' => 'u.user_yim', 'k' => 'u.user_jabber');
 
-		if ($auth->acl_get('u_viewonline'))
+		if (phpbb::$acl->acl_get('u_viewonline'))
 		{
 			$sort_key_sql['l'] = 'u.user_lastvisit';
 		}
@@ -948,7 +948,7 @@ switch ($mode)
 		// We validate form and field here, only id/class allowed
 		$form = (!preg_match('/^[a-z0-9_-]+$/i', $form)) ? '' : $form;
 		$field = (!preg_match('/^[a-z0-9_-]+$/i', $field)) ? '' : $field;
-		if (($mode == 'searchuser' || sizeof(array_intersect(phpbb_request::variable_names(phpbb_request::GET), $search_params)) > 0) && (phpbb::$config['load_search'] || $auth->acl_get('a_')))
+		if (($mode == 'searchuser' || sizeof(array_intersect(phpbb_request::variable_names(phpbb_request::GET), $search_params)) > 0) && (phpbb::$config['load_search'] || phpbb::$acl->acl_get('a_')))
 		{
 			$username	= request_var('username', '', true);
 			$email		= strtolower(request_var('email', ''));
@@ -1001,7 +1001,7 @@ switch ($mode)
 			$sql_where .= ($jabber) ? ' AND u.user_jabber ' . $db->sql_like_expression(str_replace('*', $db->any_char, $jabber)) . ' ' : '';
 			$sql_where .= (is_numeric($count)) ? ' AND u.user_posts ' . $find_key_match[$count_select] . ' ' . (int) $count . ' ' : '';
 			$sql_where .= (sizeof($joined) > 1) ? " AND u.user_regdate " . $find_key_match[$joined_select] . ' ' . gmmktime(0, 0, 0, intval($joined[1]), intval($joined[2]), intval($joined[0])) : '';
-			$sql_where .= ($auth->acl_get('u_viewonline') && sizeof($active) > 1) ? " AND u.user_lastvisit " . $find_key_match[$active_select] . ' ' . gmmktime(0, 0, 0, $active[1], intval($active[2]), intval($active[0])) : '';
+			$sql_where .= (phpbb::$acl->acl_get('u_viewonline') && sizeof($active) > 1) ? " AND u.user_lastvisit " . $find_key_match[$active_select] . ' ' . gmmktime(0, 0, 0, $active[1], intval($active[2]), intval($active[0])) : '';
 			$sql_where .= ($search_group_id) ? " AND u.user_id = ug.user_id AND ug.group_id = $search_group_id AND ug.user_pending = 0 " : '';
 
 			if ($search_group_id)
@@ -1009,7 +1009,7 @@ switch ($mode)
 				$sql_from = ', ' . USER_GROUP_TABLE . ' ug ';
 			}
 
-			if ($ipdomain && $auth->acl_getf_global('m_info'))
+			if ($ipdomain && phpbb::$acl->acl_getf_global('m_info'))
 			{
 				if (strspn($ipdomain, 'abcdefghijklmnopqrstuvwxyz'))
 				{
@@ -1036,7 +1036,7 @@ switch ($mode)
 				}
 				else
 				{
-					$ip_forums = array_keys($auth->acl_getf('m_info', true));
+					$ip_forums = array_keys(phpbb::$acl->acl_getf('m_info', true));
 
 					$sql = 'SELECT DISTINCT poster_id
 						FROM ' . POSTS_TABLE . '
@@ -1113,7 +1113,7 @@ switch ($mode)
 					$group_row['l_group_type'] = 'HIDDEN';
 
 					// Check for membership or special permissions
-					if (!$auth->acl_gets('a_group', 'a_groupadd', 'a_groupdel') && $group_row['user_id'] != phpbb::$user->data['user_id'])
+					if (!phpbb::$acl->acl_gets('a_group', 'a_groupadd', 'a_groupdel') && $group_row['user_id'] != phpbb::$user->data['user_id'])
 					{
 						trigger_error('NO_GROUP');
 					}
@@ -1159,7 +1159,7 @@ switch ($mode)
 				'RANK_IMG'		=> $rank_img,
 				'RANK_IMG_SRC'	=> $rank_img_src,
 
-				'U_PM'			=> ($auth->acl_get('u_sendpm') && $auth->acl_get('u_masspm_group') && $group_row['group_receive_pm'] && phpbb::$config['allow_privmsg'] && phpbb::$config['allow_mass_pm']) ? append_sid('ucp', 'i=pm&amp;mode=compose&amp;g=' . $group_id) : '',)
+				'U_PM'			=> (phpbb::$acl->acl_get('u_sendpm') && phpbb::$acl->acl_get('u_masspm_group') && $group_row['group_receive_pm'] && phpbb::$config['allow_privmsg'] && phpbb::$config['allow_mass_pm']) ? append_sid('ucp', 'i=pm&amp;mode=compose&amp;g=' . $group_id) : '',)
 			);
 
 			$sql_select = ', ug.group_leader';
@@ -1265,7 +1265,7 @@ switch ($mode)
 		unset($search_params, $sort_params);
 
 		// Some search user specific data
-		if ($mode == 'searchuser' && (phpbb::$config['load_search'] || $auth->acl_get('a_')))
+		if ($mode == 'searchuser' && (phpbb::$config['load_search'] || phpbb::$acl->acl_get('a_')))
 		{
 			$group_selected = request_var('search_group_id', 0);
 			$s_group_select = '<option value="0"' . ((!$group_selected) ? ' selected="selected"' : '') . '>&nbsp;</option>';
@@ -1275,7 +1275,7 @@ switch ($mode)
 			* @todo add this to a separate function (function is responsible for returning the groups the user is able to see based on the users group membership)
 			*/
 
-			if ($auth->acl_gets('a_group', 'a_groupadd', 'a_groupdel'))
+			if (phpbb::$acl->acl_gets('a_group', 'a_groupadd', 'a_groupdel'))
 			{
 				$sql = 'SELECT group_id, group_name, group_type
 					FROM ' . GROUPS_TABLE;
@@ -1333,7 +1333,7 @@ switch ($mode)
 				'COUNT'		=> $count,
 				'IP'		=> $ipdomain,
 
-				'S_IP_SEARCH_ALLOWED'	=> ($auth->acl_getf_global('m_info')) ? true : false,
+				'S_IP_SEARCH_ALLOWED'	=> (phpbb::$acl->acl_getf_global('m_info')) ? true : false,
 				'S_IN_SEARCH_POPUP'		=> ($form && $field) ? true : false,
 				'S_SEARCH_USER'			=> true,
 				'S_FORM_NAME'			=> $form,
@@ -1485,7 +1485,7 @@ switch ($mode)
 			'JABBER_IMG'	=> phpbb::$user->img('icon_contact_jabber', 'JABBER'),
 			'SEARCH_IMG'	=> phpbb::$user->img('icon_user_search', 'SEARCH'),
 
-			'U_FIND_MEMBER'			=> (phpbb::$config['load_search'] || $auth->acl_get('a_')) ? append_sid('memberlist', 'mode=searchuser' . (($start) ? "&amp;start=$start" : '') . (!empty($params) ? '&amp;' . implode('&amp;', $params) : '')) : '',
+			'U_FIND_MEMBER'			=> (phpbb::$config['load_search'] || phpbb::$acl->acl_get('a_')) ? append_sid('memberlist', 'mode=searchuser' . (($start) ? "&amp;start=$start" : '') . (!empty($params) ? '&amp;' . implode('&amp;', $params) : '')) : '',
 			'U_HIDE_FIND_MEMBER'	=> ($mode == 'searchuser') ? $u_hide_find_member : '',
 			'U_SORT_USERNAME'		=> $sort_url . '&amp;sk=a&amp;sd=' . (($sort_key == 'a' && $sort_dir == 'a') ? 'd' : 'a'),
 			'U_SORT_FROM'			=> $sort_url . '&amp;sk=b&amp;sd=' . (($sort_key == 'b' && $sort_dir == 'a') ? 'd' : 'a'),
@@ -1498,12 +1498,12 @@ switch ($mode)
 			'U_SORT_AIM'			=> $sort_url . '&amp;sk=h&amp;sd=' . (($sort_key == 'h' && $sort_dir == 'a') ? 'd' : 'a'),
 			'U_SORT_MSN'			=> $sort_url . '&amp;sk=i&amp;sd=' . (($sort_key == 'i' && $sort_dir == 'a') ? 'd' : 'a'),
 			'U_SORT_YIM'			=> $sort_url . '&amp;sk=j&amp;sd=' . (($sort_key == 'j' && $sort_dir == 'a') ? 'd' : 'a'),
-			'U_SORT_ACTIVE'			=> ($auth->acl_get('u_viewonline')) ? $sort_url . '&amp;sk=l&amp;sd=' . (($sort_key == 'l' && $sort_dir == 'a') ? 'd' : 'a') : '',
+			'U_SORT_ACTIVE'			=> (phpbb::$acl->acl_get('u_viewonline')) ? $sort_url . '&amp;sk=l&amp;sd=' . (($sort_key == 'l' && $sort_dir == 'a') ? 'd' : 'a') : '',
 			'U_SORT_RANK'			=> $sort_url . '&amp;sk=m&amp;sd=' . (($sort_key == 'm' && $sort_dir == 'a') ? 'd' : 'a'),
 			'U_LIST_CHAR'			=> $sort_url . '&amp;sk=a&amp;sd=' . (($sort_key == 'l' && $sort_dir == 'a') ? 'd' : 'a'),
 
 			'S_SHOW_GROUP'		=> ($mode == 'group') ? true : false,
-			'S_VIEWONLINE'		=> $auth->acl_get('u_viewonline'),
+			'S_VIEWONLINE'		=> phpbb::$acl->acl_get('u_viewonline'),
 			'S_LEADERS_SET'		=> $leaders_set,
 			'S_MODE_SELECT'		=> $s_sort_key,
 			'S_ORDER_SELECT'	=> $s_sort_dir,
@@ -1533,9 +1533,9 @@ function show_profile($data)
 	$rank_title = $rank_img = $rank_img_src = '';
 	get_user_rank($user_id, $data['user_rank'], $data['user_posts'], $rank_title, $rank_img, $rank_img_src);
 
-	if (!empty($data['user_allow_viewemail']) || $auth->acl_get('a_email'))
+	if (!empty($data['user_allow_viewemail']) || phpbb::$acl->acl_get('a_email'))
 	{
-		$email = (phpbb::$config['board_email_form'] && phpbb::$config['email_enable']) ? append_sid('memberlist', 'mode=email&amp;u=' . $user_id) : ((phpbb::$config['board_hide_emails'] && !$auth->acl_get('a_email')) ? '' : 'mailto:' . $data['user_email']);
+		$email = (phpbb::$config['board_email_form'] && phpbb::$config['email_enable']) ? append_sid('memberlist', 'mode=email&amp;u=' . $user_id) : ((phpbb::$config['board_hide_emails'] && !phpbb::$acl->acl_get('a_email')) ? '' : 'mailto:' . $data['user_email']);
 	}
 	else
 	{
@@ -1545,14 +1545,14 @@ function show_profile($data)
 	if (phpbb::$config['load_onlinetrack'])
 	{
 		$update_time = phpbb::$config['load_online_time'] * 60;
-		$online = (time() - $update_time < $data['session_time'] && ((isset($data['session_viewonline']) && $data['session_viewonline']) || $auth->acl_get('u_viewonline'))) ? true : false;
+		$online = (time() - $update_time < $data['session_time'] && ((isset($data['session_viewonline']) && $data['session_viewonline']) || phpbb::$acl->acl_get('u_viewonline'))) ? true : false;
 	}
 	else
 	{
 		$online = false;
 	}
 
-	if ($data['user_allow_viewonline'] || $auth->acl_get('u_viewonline'))
+	if ($data['user_allow_viewonline'] || phpbb::$acl->acl_get('u_viewonline'))
 	{
 		$last_visit = (!empty($data['session_time'])) ? $data['session_time'] : $data['user_lastvisit'];
 	}
@@ -1609,17 +1609,17 @@ function show_profile($data)
 		'ICQ_STATUS_IMG'	=> (!empty($data['user_icq'])) ? '<img src="http://web.icq.com/whitepages/online?icq=' . $data['user_icq'] . '&amp;img=5" width="18" height="18" />' : '',
 		'S_JABBER_ENABLED'	=> (phpbb::$config['jab_enable']) ? true : false,
 
-		'U_SEARCH_USER'	=> ($auth->acl_get('u_search')) ? append_sid('search', "author_id=$user_id&amp;sr=posts") : '',
-		'U_NOTES'		=> $auth->acl_getf_global('m_') ? append_sid('mcp', 'i=notes&amp;mode=user_notes&amp;u=' . $user_id, true, phpbb::$user->session_id) : '',
-		'U_WARN'		=> $auth->acl_get('m_warn') ? append_sid('mcp', 'i=warn&amp;mode=warn_user&amp;u=' . $user_id, true, phpbb::$user->session_id) : '',
-		'U_PM'			=> (phpbb::$config['allow_privmsg'] && $auth->acl_get('u_sendpm') && ($data['user_allow_pm'] || $auth->acl_gets('a_', 'm_') || $auth->acl_getf_global('m_'))) ? append_sid('ucp', 'i=pm&amp;mode=compose&amp;u=' . $user_id) : '',
+		'U_SEARCH_USER'	=> (phpbb::$acl->acl_get('u_search')) ? append_sid('search', "author_id=$user_id&amp;sr=posts") : '',
+		'U_NOTES'		=> phpbb::$acl->acl_getf_global('m_') ? append_sid('mcp', 'i=notes&amp;mode=user_notes&amp;u=' . $user_id, true, phpbb::$user->session_id) : '',
+		'U_WARN'		=> phpbb::$acl->acl_get('m_warn') ? append_sid('mcp', 'i=warn&amp;mode=warn_user&amp;u=' . $user_id, true, phpbb::$user->session_id) : '',
+		'U_PM'			=> (phpbb::$config['allow_privmsg'] && phpbb::$acl->acl_get('u_sendpm') && ($data['user_allow_pm'] || phpbb::$acl->acl_gets('a_', 'm_') || phpbb::$acl->acl_getf_global('m_'))) ? append_sid('ucp', 'i=pm&amp;mode=compose&amp;u=' . $user_id) : '',
 		'U_EMAIL'		=> $email,
 		'U_WWW'			=> (!empty($data['user_website'])) ? $data['user_website'] : '',
 		'U_ICQ'			=> ($data['user_icq']) ? 'http://www.icq.com/people/webmsg.php?to=' . urlencode($data['user_icq']) : '',
-		'U_AIM'			=> ($data['user_aim'] && $auth->acl_get('u_sendim')) ? append_sid('memberlist', 'mode=contact&amp;action=aim&amp;u=' . $user_id) : '',
+		'U_AIM'			=> ($data['user_aim'] && phpbb::$acl->acl_get('u_sendim')) ? append_sid('memberlist', 'mode=contact&amp;action=aim&amp;u=' . $user_id) : '',
 		'U_YIM'			=> ($data['user_yim']) ? 'http://edit.yahoo.com/config/send_webmesg?.target=' . urlencode($data['user_yim']) . '&amp;.src=pg' : '',
-		'U_MSN'			=> ($data['user_msnm'] && $auth->acl_get('u_sendim')) ? append_sid('memberlist', 'mode=contact&amp;action=msnm&amp;u=' . $user_id) : '',
-		'U_JABBER'		=> ($data['user_jabber'] && $auth->acl_get('u_sendim')) ? append_sid('memberlist', 'mode=contact&amp;action=jabber&amp;u=' . $user_id) : '',
+		'U_MSN'			=> ($data['user_msnm'] && phpbb::$acl->acl_get('u_sendim')) ? append_sid('memberlist', 'mode=contact&amp;action=msnm&amp;u=' . $user_id) : '',
+		'U_JABBER'		=> ($data['user_jabber'] && phpbb::$acl->acl_get('u_sendim')) ? append_sid('memberlist', 'mode=contact&amp;action=jabber&amp;u=' . $user_id) : '',
 		'LOCATION'		=> ($data['user_from']) ? $data['user_from'] : '',
 
 		'USER_ICQ'			=> $data['user_icq'],

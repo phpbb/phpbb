@@ -186,7 +186,7 @@ switch ($mode)
 		$user_row = $db->sql_fetchrow($result);
 		$db->sql_freeresult($result);
 
-		if (!$auth->acl_get('a_switchperm') || !$user_row || $user_id == phpbb::$user->data['user_id'])
+		if (!phpbb::$acl->acl_get('a_switchperm') || !$user_row || $user_id == phpbb::$user->data['user_id'])
 		{
 			redirect(append_sid('index'));
 		}
@@ -208,12 +208,12 @@ switch ($mode)
 
 	case 'restore_perm':
 
-		if (!phpbb::$user->data['user_perm_from'] || !$auth->acl_get('a_switchperm'))
+		if (!phpbb::$user->data['user_perm_from'] || !phpbb::$acl->acl_get('a_switchperm'))
 		{
 			redirect(append_sid('index'));
 		}
 
-		$auth->acl_cache(phpbb::$user->data);
+		phpbb::$acl->acl_cache(phpbb::$user->data);
 
 		$sql = 'UPDATE ' . USERS_TABLE . "
 			SET user_perm_from = 0
@@ -312,7 +312,7 @@ function _display_friends()
 
 	while ($row = $db->sql_fetchrow($result))
 	{
-		$which = (time() - $update_time < $row['online_time'] && ($row['viewonline'] || $auth->acl_get('u_viewonline'))) ? 'online' : 'offline';
+		$which = (time() - $update_time < $row['online_time'] && ($row['viewonline'] || phpbb::$acl->acl_get('u_viewonline'))) ? 'online' : 'offline';
 
 		$template->assign_block_vars("friends_{$which}", array(
 			'USER_ID'		=> $row['user_id'],

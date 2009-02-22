@@ -558,7 +558,7 @@ function mcp_move_topic($topic_ids)
 			{
 				$additional_msg = phpbb::$user->lang['FORUM_NOT_POSTABLE'];
 			}
-			else if (!$auth->acl_get('f_post', $to_forum_id))
+			else if (!phpbb::$acl->acl_get('f_post', $to_forum_id))
 			{
 				$additional_msg = phpbb::$user->lang['USER_CANNOT_POST'];
 			}
@@ -956,7 +956,7 @@ function mcp_fork_topic($topic_ids)
 			{
 				$additional_msg = phpbb::$user->lang['FORUM_NOT_POSTABLE'];
 			}
-			else if (!$auth->acl_get('f_post', $to_forum_id))
+			else if (!phpbb::$acl->acl_get('f_post', $to_forum_id))
 			{
 				$additional_msg = phpbb::$user->lang['USER_CANNOT_POST'];
 			}

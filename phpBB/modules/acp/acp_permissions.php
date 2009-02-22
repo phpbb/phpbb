@@ -45,7 +45,7 @@ class acp_permissions
 
 			$this->tpl_name = 'permission_trace';
 
-			if ($user_id && isset($auth_admin->acl_options['id'][$permission]) && $auth->acl_get('a_viewauth'))
+			if ($user_id && isset($auth_admin->acl_options['id'][$permission]) && phpbb::$acl->acl_get('a_viewauth'))
 			{
 				$this->page_title = sprintf(phpbb::$user->lang['TRACE_PERMISSION'], phpbb::$user->lang['acl_' . $permission]['lang']);
 				$this->permission_trace($user_id, $forum_id, $permission);
@@ -429,8 +429,8 @@ class acp_permissions
 
 				'S_SELECT_VICTIM'		=> true,
 				'S_ALLOW_ALL_SELECT'	=> (sizeof($forum_id) > 5) ? false : true,
-				'S_CAN_SELECT_USER'		=> ($auth->acl_get('a_authusers')) ? true : false,
-				'S_CAN_SELECT_GROUP'	=> ($auth->acl_get('a_authgroups')) ? true : false,
+				'S_CAN_SELECT_USER'		=> (phpbb::$acl->acl_get('a_authusers')) ? true : false,
+				'S_CAN_SELECT_GROUP'	=> (phpbb::$acl->acl_get('a_authgroups')) ? true : false,
 				'S_HIDDEN_FIELDS'		=> $s_hidden_fields)
 			);
 
@@ -543,7 +543,7 @@ class acp_permissions
 		$s_dropdown_options = '';
 		foreach ($options as $setting)
 		{
-			if (!$auth->acl_get('a_' . str_replace('_', '', $setting) . 'auth'))
+			if (!phpbb::$acl->acl_get('a_' . str_replace('_', '', $setting) . 'auth'))
 			{
 				continue;
 			}
@@ -611,7 +611,7 @@ class acp_permissions
 		$ug_type = (sizeof($user_id)) ? 'user' : 'group';
 
 		// Check the permission setting again
-		if (!$auth->acl_get('a_' . str_replace('_', '', $permission_type) . 'auth') || !$auth->acl_get('a_auth' . $ug_type . 's'))
+		if (!phpbb::$acl->acl_get('a_' . str_replace('_', '', $permission_type) . 'auth') || !phpbb::$acl->acl_get('a_auth' . $ug_type . 's'))
 		{
 			trigger_error(phpbb::$user->lang['NO_AUTH_OPERATION'] . adm_back_link($this->u_action), E_USER_WARNING);
 		}
@@ -692,7 +692,7 @@ class acp_permissions
 		$ug_type = (sizeof($user_id)) ? 'user' : 'group';
 
 		// Check the permission setting again
-		if (!$auth->acl_get('a_' . str_replace('_', '', $permission_type) . 'auth') || !$auth->acl_get('a_auth' . $ug_type . 's'))
+		if (!phpbb::$acl->acl_get('a_' . str_replace('_', '', $permission_type) . 'auth') || !phpbb::$acl->acl_get('a_auth' . $ug_type . 's'))
 		{
 			trigger_error(phpbb::$user->lang['NO_AUTH_OPERATION'] . adm_back_link($this->u_action), E_USER_WARNING);
 		}
@@ -791,7 +791,7 @@ class acp_permissions
 		$ug_type = (sizeof($user_id)) ? 'user' : 'group';
 
 		// Check the permission setting again
-		if (!$auth->acl_get('a_' . str_replace('_', '', $permission_type) . 'auth') || !$auth->acl_get('a_auth' . $ug_type . 's'))
+		if (!phpbb::$acl->acl_get('a_' . str_replace('_', '', $permission_type) . 'auth') || !phpbb::$acl->acl_get('a_auth' . $ug_type . 's'))
 		{
 			trigger_error(phpbb::$user->lang['NO_AUTH_OPERATION'] . adm_back_link($this->u_action), E_USER_WARNING);
 		}
@@ -941,7 +941,7 @@ class acp_permissions
 		if (sizeof($groups))
 		{
 			// Get group auth settings
-			$hold_ary = $auth->acl_group_raw_data(array_keys($groups), $permission, $forum_id);
+			$hold_ary = phpbb::$acl->acl_group_raw_data(array_keys($groups), $permission, $forum_id);
 
 			foreach ($hold_ary as $group_id => $forum_ary)
 			{
@@ -983,7 +983,7 @@ class acp_permissions
 		}
 
 		// Get user specific permission... globally or for this forum
-		$hold_ary = $auth->acl_user_raw_data($user_id, $permission, $forum_id);
+		$hold_ary = phpbb::$acl->acl_user_raw_data($user_id, $permission, $forum_id);
 		$auth_setting = (!sizeof($hold_ary)) ? phpbb::ACL_NO : $hold_ary[$user_id][$forum_id][$permission];
 
 		switch ($auth_setting)
@@ -1016,7 +1016,7 @@ class acp_permissions
 			'S_TOTAL_NEVER'		=> ($total == phpbb::ACL_NEVER) ? true : false)
 		);
 
-		if ($forum_id != 0 && isset($auth->acl_options['global'][$permission]))
+		if ($forum_id != 0 && isset(phpbb::$acl->acl_options['global'][$permission]))
 		{
 			if ($user_id != phpbb::$user->data['user_id'])
 			{
@@ -1026,7 +1026,7 @@ class acp_permissions
 			}
 			else
 			{
-				$auth_setting = $auth->acl_get($permission);
+				$auth_setting = phpbb::$acl->acl_get($permission);
 			}
 
 			if ($auth_setting)

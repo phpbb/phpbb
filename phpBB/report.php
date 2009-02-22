@@ -19,7 +19,7 @@ include(PHPBB_ROOT_PATH . 'includes/functions_display.' . PHP_EXT);
 
 // Start session management
 phpbb::$user->session_begin();
-$auth->acl(phpbb::$user->data);
+phpbb::$acl->init(phpbb::$user->data);
 phpbb::$user->setup('mcp');
 
 $forum_id		= request_var('f', 0);
@@ -77,7 +77,7 @@ $acl_check_ary = array('f_list' => 'POST_NOT_EXIST', 'f_read' => 'USER_CANNOT_RE
 
 foreach ($acl_check_ary as $acl => $error)
 {
-	if (!$auth->acl_get($acl, $forum_id))
+	if (!phpbb::$acl->acl_get($acl, $forum_id))
 	{
 		trigger_error($error);
 	}

@@ -632,7 +632,7 @@ function user_active_flip($mode, $user_id_ary, $reason = INACTIVE_MANUAL)
 			phpbb::$db->sql_query($sql);
 		}
 
-		$auth->acl_clear_prefetch(array_keys($sql_statements));
+		phpbb::$acl->acl_clear_prefetch(array_keys($sql_statements));
 	}
 
 	if ($deactivated)
@@ -2098,7 +2098,7 @@ function avatar_process_user(&$error, $custom_userdata = false)
 	}
 
 	$data['user_id'] = $userdata['user_id'];
-	$change_avatar = ($custom_userdata === false) ? $auth->acl_get('u_chgavatar') : true;
+	$change_avatar = ($custom_userdata === false) ? phpbb::$acl->acl_get('u_chgavatar') : true;
 	$avatar_select = basename(request_var('avatar_select', ''));
 
 	// Can we upload?
@@ -2565,7 +2565,7 @@ function group_user_add($group_id, $user_id_ary = false, $username_ary = false, 
 	phpbb::$db->sql_transaction('commit');
 
 	// Clear permissions cache of relevant users
-	$auth->acl_clear_prefetch($user_id_ary);
+	phpbb::$acl->acl_clear_prefetch($user_id_ary);
 
 	if (!$group_name)
 	{
@@ -2688,7 +2688,7 @@ function group_user_del($group_id, $user_id_ary = false, $username_ary = false, 
 	phpbb::$db->sql_query($sql);
 
 	// Clear permissions cache of relevant users
-	$auth->acl_clear_prefetch($user_id_ary);
+	phpbb::$acl->acl_clear_prefetch($user_id_ary);
 
 	if (!$group_name)
 	{
@@ -2907,7 +2907,7 @@ function group_user_attributes($action, $group_id, $user_id_ary = false, $userna
 	}
 
 	// Clear permissions cache of relevant users
-	$auth->acl_clear_prefetch($user_id_ary);
+	phpbb::$acl->acl_clear_prefetch($user_id_ary);
 
 	add_log('admin', $log, $group_name, implode(', ', $username_ary));
 
@@ -3157,7 +3157,7 @@ function group_memberships($group_id_ary = false, $user_id_ary = false, $return_
 */
 function group_update_listings($group_id)
 {
-	$hold_ary = $auth->acl_group_raw_data($group_id, array('a_', 'm_'));
+	$hold_ary = phpbb::$acl->acl_group_raw_data($group_id, array('a_', 'm_'));
 
 	if (!sizeof($hold_ary))
 	{

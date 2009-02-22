@@ -18,7 +18,7 @@ include(PHPBB_ROOT_PATH . 'common.' . PHP_EXT);
 
 // Start session management
 phpbb::$user->session_begin();
-$auth->acl(phpbb::$user->data);
+phpbb::$acl->init(phpbb::$user->data);
 phpbb::$user->setup();
 
 $mode = request_var('mode', '');

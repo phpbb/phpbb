@@ -109,7 +109,7 @@ class mcp_notes
 		$usernote	= utf8_normalize_nfc(request_var('usernote', '', true));
 
 		// Handle any actions
-		if (($deletemark || $deleteall) && $auth->acl_get('a_clearlogs'))
+		if (($deletemark || $deleteall) && phpbb::$acl->acl_get('a_clearlogs'))
 		{
 			$where_sql = '';
 			if ($deletemark && $marked)
@@ -209,7 +209,7 @@ class mcp_notes
 
 		$template->assign_vars(array(
 			'U_POST_ACTION'			=> $this->u_action,
-			'S_CLEAR_ALLOWED'		=> ($auth->acl_get('a_clearlogs')) ? true : false,
+			'S_CLEAR_ALLOWED'		=> (phpbb::$acl->acl_get('a_clearlogs')) ? true : false,
 			'S_SELECT_SORT_DIR'		=> $s_sort_dir,
 			'S_SELECT_SORT_KEY'		=> $s_sort_key,
 			'S_SELECT_SORT_DAYS'	=> $s_limit_days,

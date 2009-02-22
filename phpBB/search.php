@@ -18,7 +18,7 @@ include(PHPBB_ROOT_PATH . 'common.' . PHP_EXT);
 
 // Start session management
 phpbb::$user->session_begin();
-$auth->acl(phpbb::$user->data);
+phpbb::$acl->init(phpbb::$user->data);
 phpbb::$user->setup('search');
 
 // Define initial vars
@@ -48,7 +48,7 @@ $return_chars	= request_var('ch', ($topic_id) ? -1 : 300);
 $search_forum	= request_var('fid', array(0));
 
 // Is user able to search? Has search been disabled?
-if (!$auth->acl_get('u_search') || !$auth->acl_getf_global('f_search') || !phpbb::$config['load_search'])
+if (!phpbb::$acl->acl_get('u_search') || !phpbb::$acl->acl_getf_global('f_search') || !phpbb::$config['load_search'])
 {
 	$template->assign_var('S_NO_SEARCH', true);
 	trigger_error('NO_SEARCH');
@@ -63,7 +63,7 @@ if (phpbb::$user->system['load'] && phpbb::$config['limit_search_load'] && (phpb
 
 // Check flood limit ... if applicable
 $interval = (phpbb::$user->is_guest) ? phpbb::$config['search_anonymous_interval'] : phpbb::$config['search_interval'];
-if ($interval && !$auth->acl_get('u_ignoreflood'))
+if ($interval && !phpbb::$acl->acl_get('u_ignoreflood'))
 {
 	if (phpbb::$user->data['user_last_search'] > time() - $interval)
 	{
@@ -146,11 +146,11 @@ if ($keywords || $author || $author_id || $search_id || $submit)
 	// Which forums should not be searched? Author searches are also carried out in unindexed forums
 	if (empty($keywords) && sizeof($author_id_ary))
 	{
-		$ex_fid_ary = array_keys($auth->acl_getf('!f_read', true));
+		$ex_fid_ary = array_keys(phpbb::$acl->acl_getf('!f_read', true));
 	}
 	else
 	{
-		$ex_fid_ary = array_unique(array_merge(array_keys($auth->acl_getf('!f_read', true)), array_keys($auth->acl_getf('!f_search', true))));
+		$ex_fid_ary = array_unique(array_merge(array_keys(phpbb::$acl->acl_getf('!f_read', true)), array_keys(phpbb::$acl->acl_getf('!f_search', true))));
 	}
 
 	$not_in_fid = (sizeof($ex_fid_ary)) ? 'WHERE ' . $db->sql_in_set('f.forum_id', $ex_fid_ary, true) . " OR (f.forum_password <> '' AND fa.user_id <> " . (int) phpbb::$user->data['user_id'] . ')' : "";
@@ -197,14 +197,14 @@ if ($keywords || $author || $author_id || $search_id || $submit)
 	$db->sql_freeresult($result);
 
 	// find out in which forums the user is allowed to view approved posts
-	if ($auth->acl_get('m_approve'))
+	if (phpbb::$acl->acl_get('m_approve'))
 	{
 		$m_approve_fid_ary = array(-1);
 		$m_approve_fid_sql = '';
 	}
-	else if ($auth->acl_getf_global('m_approve'))
+	else if (phpbb::$acl->acl_getf_global('m_approve'))
 	{
-		$m_approve_fid_ary = array_diff(array_keys($auth->acl_getf('!m_approve', true)), $ex_fid_ary);
+		$m_approve_fid_ary = array_diff(array_keys(phpbb::$acl->acl_getf('!m_approve', true)), $ex_fid_ary);
 		$m_approve_fid_sql = ' AND (p.post_approved = 1' . ((sizeof($m_approve_fid_ary)) ? ' OR ' . $db->sql_in_set('p.forum_id', $m_approve_fid_ary, true) : '') . ')';
 	}
 	else
@@ -697,7 +697,7 @@ if ($keywords || $author || $author_id || $search_id || $submit)
 
 				foreach ($use_attach_list as $forum_id => $_list)
 				{
-					if ($auth->acl_get('u_download') && $auth->acl_get('f_download', $forum_id))
+					if (phpbb::$acl->acl_get('u_download') && phpbb::$acl->acl_get('f_download', $forum_id))
 					{
 						$attach_list = array_merge($attach_list, $_list);
 					}
@@ -745,7 +745,7 @@ if ($keywords || $author || $author_id || $search_id || $submit)
 				if (!isset($g_forum_id))
 				{
 					// Get a list of forums the user cannot read
-					$forum_ary = array_unique(array_keys($auth->acl_getf('!f_read', true)));
+					$forum_ary = array_unique(array_keys(phpbb::$acl->acl_getf('!f_read', true)));
 
 					// Determine first forum the user is able to read (must not be a category)
 					$sql = 'SELECT forum_id
@@ -769,7 +769,7 @@ if ($keywords || $author || $author_id || $search_id || $submit)
 
 			$view_topic_url = append_sid('viewtopic', "f=$u_forum_id&amp;t=$result_topic_id" . (($u_hilit) ? "&amp;hilit=$u_hilit" : ''));
 
-			$replies = ($auth->acl_get('m_approve', $forum_id)) ? $row['topic_replies_real'] : $row['topic_replies'];
+			$replies = (phpbb::$acl->acl_get('m_approve', $forum_id)) ? $row['topic_replies_real'] : $row['topic_replies'];
 
 			if ($show_results == 'topics')
 			{
@@ -783,8 +783,8 @@ if ($keywords || $author || $author_id || $search_id || $submit)
 
 				$unread_topic = (isset($topic_tracking_info[$forum_id][$row['topic_id']]) && $row['topic_last_post_time'] > $topic_tracking_info[$forum_id][$row['topic_id']]) ? true : false;
 
-				$topic_unapproved = (!$row['topic_approved'] && $auth->acl_get('m_approve', $forum_id)) ? true : false;
-				$posts_unapproved = ($row['topic_approved'] && $row['topic_replies'] < $row['topic_replies_real'] && $auth->acl_get('m_approve', $forum_id)) ? true : false;
+				$topic_unapproved = (!$row['topic_approved'] && phpbb::$acl->acl_get('m_approve', $forum_id)) ? true : false;
+				$posts_unapproved = ($row['topic_approved'] && $row['topic_replies'] < $row['topic_replies_real'] && phpbb::$acl->acl_get('m_approve', $forum_id)) ? true : false;
 				$u_mcp_queue = ($topic_unapproved || $posts_unapproved) ? append_sid('mcp', 'i=queue&amp;mode=' . (($topic_unapproved) ? 'approve_details' : 'unapproved_posts') . "&amp;t=$result_topic_id", true, phpbb::$user->session_id) : '';
 
 				$row['topic_title'] = preg_replace('#(?!<.*)(?<!\w)(' . $hilit . ')(?!\w|[^<>]*(?:</s(?:cript|tyle))?>)#is', '<span class="posthilit">$1</span>', $row['topic_title']);
@@ -813,7 +813,7 @@ if ($keywords || $author || $author_id || $search_id || $submit)
 					'TOPIC_ICON_IMG'		=> (!empty($icons[$row['icon_id']])) ? $icons[$row['icon_id']]['img'] : '',
 					'TOPIC_ICON_IMG_WIDTH'	=> (!empty($icons[$row['icon_id']])) ? $icons[$row['icon_id']]['width'] : '',
 					'TOPIC_ICON_IMG_HEIGHT'	=> (!empty($icons[$row['icon_id']])) ? $icons[$row['icon_id']]['height'] : '',
-					'ATTACH_ICON_IMG'		=> ($auth->acl_get('u_download') && $auth->acl_get('f_download', $forum_id) && $row['topic_attachment']) ? phpbb::$user->img('icon_topic_attach', phpbb::$user->lang['TOTAL_ATTACHMENTS']) : '',
+					'ATTACH_ICON_IMG'		=> (phpbb::$acl->acl_get('u_download') && phpbb::$acl->acl_get('f_download', $forum_id) && $row['topic_attachment']) ? phpbb::$user->img('icon_topic_attach', phpbb::$user->lang['TOTAL_ATTACHMENTS']) : '',
 					'UNAPPROVED_IMG'		=> ($topic_unapproved || $posts_unapproved) ? phpbb::$user->img('icon_topic_unapproved', ($topic_unapproved) ? 'TOPIC_UNAPPROVED' : 'POSTS_UNAPPROVED') : '',
 
 					'S_TOPIC_GLOBAL'		=> (!$forum_id) ? true : false,
@@ -821,7 +821,7 @@ if ($keywords || $author || $author_id || $search_id || $submit)
 					'S_USER_POSTED'			=> (!empty($row['mark_type'])) ? true : false,
 					'S_UNREAD_TOPIC'		=> $unread_topic,
 
-					'S_TOPIC_REPORTED'		=> (!empty($row['topic_reported']) && $auth->acl_get('m_report', $forum_id)) ? true : false,
+					'S_TOPIC_REPORTED'		=> (!empty($row['topic_reported']) && phpbb::$acl->acl_get('m_report', $forum_id)) ? true : false,
 					'S_TOPIC_UNAPPROVED'	=> $topic_unapproved,
 					'S_POSTS_UNAPPROVED'	=> $posts_unapproved,
 
@@ -983,7 +983,7 @@ while ($row = $db->sql_fetchrow($result))
 
 	$right = $row['right_id'];
 
-	if ($auth->acl_gets('!f_search', '!f_list', $row['forum_id']))
+	if (phpbb::$acl->acl_gets('!f_search', '!f_list', $row['forum_id']))
 	{
 		// if the user does not have permissions to search or see this forum skip only this forum/category
 		continue;
@@ -1070,7 +1070,7 @@ $template->assign_vars(array(
 ));
 
 // only show recent searches to search administrators
-if ($auth->acl_get('a_search'))
+if (phpbb::$acl->acl_get('a_search'))
 {
 	$sql = 'SELECT search_time, search_keywords
 		FROM ' . SEARCH_RESULTS_TABLE . '

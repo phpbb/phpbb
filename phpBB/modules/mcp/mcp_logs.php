@@ -101,7 +101,7 @@ class mcp_logs
 		}
 
 		// Delete entries if requested and able
-		if (($deletemark || $deleteall) && $auth->acl_get('a_clearlogs'))
+		if (($deletemark || $deleteall) && phpbb::$acl->acl_get('a_clearlogs'))
 		{
 			if (confirm_box(true))
 			{
@@ -174,7 +174,7 @@ class mcp_logs
 			'L_TITLE'			=> phpbb::$user->lang['MCP_LOGS'],
 
 			'U_POST_ACTION'			=> $this->u_action,
-			'S_CLEAR_ALLOWED'		=> ($auth->acl_get('a_clearlogs')) ? true : false,
+			'S_CLEAR_ALLOWED'		=> (phpbb::$acl->acl_get('a_clearlogs')) ? true : false,
 			'S_SELECT_SORT_DIR'		=> $s_sort_dir,
 			'S_SELECT_SORT_KEY'		=> $s_sort_key,
 			'S_SELECT_SORT_DAYS'	=> $s_limit_days,

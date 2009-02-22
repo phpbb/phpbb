@@ -115,7 +115,7 @@ class ucp_pm
 
 				get_folder(phpbb::$user->data['user_id']);
 
-				if (!$auth->acl_get('u_sendpm'))
+				if (!phpbb::$acl->acl_get('u_sendpm'))
 				{
 					trigger_error('NO_AUTH_SEND_MESSAGE');
 				}
@@ -180,7 +180,7 @@ class ucp_pm
 					$action = 'view_message';
 				}
 
-				if (!$auth->acl_get('u_readpm'))
+				if (!phpbb::$acl->acl_get('u_readpm'))
 				{
 					trigger_error('NO_AUTH_READ_MESSAGE');
 				}

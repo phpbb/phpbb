@@ -78,7 +78,7 @@ class ucp_groups
 								trigger_error(phpbb::$user->lang['ALREADY_DEFAULT_GROUP'] . $return_page);
 							}
 
-							if (!$auth->acl_get('u_chggrp'))
+							if (!phpbb::$acl->acl_get('u_chggrp'))
 							{
 								trigger_error(phpbb::$user->lang['NOT_AUTHORISED'] . $return_page);
 							}
@@ -113,7 +113,7 @@ class ucp_groups
 						case 'resign':
 
 							// User tries to resign from default group but is not allowed to change it?
-							if ($group_id == phpbb::$user->data['group_id'] && !$auth->acl_get('u_chggrp'))
+							if ($group_id == phpbb::$user->data['group_id'] && !phpbb::$acl->acl_get('u_chggrp'))
 							{
 								trigger_error(phpbb::$user->lang['NOT_RESIGN_FROM_DEFAULT_GROUP'] . $return_page);
 							}
@@ -341,7 +341,7 @@ class ucp_groups
 				$db->sql_freeresult($result);
 
 				// Hide hidden groups unless user is an admin with group privileges
-				$sql_and = ($auth->acl_gets('a_group', 'a_groupadd', 'a_groupdel')) ? '<> ' . GROUP_SPECIAL : 'NOT IN (' . GROUP_SPECIAL . ', ' . GROUP_HIDDEN . ')';
+				$sql_and = (phpbb::$acl->acl_gets('a_group', 'a_groupadd', 'a_groupdel')) ? '<> ' . GROUP_SPECIAL : 'NOT IN (' . GROUP_SPECIAL . ', ' . GROUP_HIDDEN . ')';
 
 				$sql = 'SELECT group_id, group_name, group_colour, group_desc, group_desc_uid, group_desc_bitfield, group_desc_options, group_type, group_founder_manage
 					FROM ' . GROUPS_TABLE . '
@@ -380,7 +380,7 @@ class ucp_groups
 						'GROUP_NAME'	=> ($row['group_type'] == GROUP_SPECIAL) ? phpbb::$user->lang['G_' . $row['group_name']] : $row['group_name'],
 						'GROUP_DESC'	=> ($row['group_type'] <> GROUP_SPECIAL) ? generate_text_for_display($row['group_desc'], $row['group_desc_uid'], $row['group_desc_bitfield'], $row['group_desc_options']) : phpbb::$user->lang['GROUP_IS_SPECIAL'],
 						'GROUP_SPECIAL'	=> ($row['group_type'] <> GROUP_SPECIAL) ? false : true,
-						'GROUP_CLOSED'	=> ($row['group_type'] <> GROUP_CLOSED || $auth->acl_gets('a_group', 'a_groupadd', 'a_groupdel')) ? false : true,
+						'GROUP_CLOSED'	=> ($row['group_type'] <> GROUP_CLOSED || phpbb::$acl->acl_gets('a_group', 'a_groupadd', 'a_groupdel')) ? false : true,
 						'GROUP_STATUS'	=> phpbb::$user->lang['GROUP_IS_' . $group_status],
 						'S_CAN_JOIN'	=> ($row['group_type'] == GROUP_OPEN || $row['group_type'] == GROUP_FREE) ? true : false,
 						'GROUP_COLOUR'	=> $row['group_colour'],
@@ -391,7 +391,7 @@ class ucp_groups
 				$db->sql_freeresult($result);
 
 				$template->assign_vars(array(
-					'S_CHANGE_DEFAULT'	=> ($auth->acl_get('u_chggrp')) ? true : false,
+					'S_CHANGE_DEFAULT'	=> (phpbb::$acl->acl_get('u_chggrp')) ? true : false,
 					'S_LEADER_COUNT'	=> $leader_count,
 					'S_MEMBER_COUNT'	=> $member_count,
 					'S_PENDING_COUNT'	=> $pending_count,

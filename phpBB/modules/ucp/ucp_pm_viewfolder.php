@@ -231,7 +231,7 @@ function view_folder($id, $mode, $folder_id, $folder)
 					'FOLDER_IMG'		=> phpbb::$user->img($folder_img, $folder_alt),
 					'FOLDER_IMG_SRC'	=> phpbb::$user->img($folder_img, $folder_alt, 'src'),
 					'PM_IMG'			=> ($row_indicator) ? phpbb::$user->img('pm_' . $row_indicator, '') : '',
-					'ATTACH_ICON_IMG'	=> ($auth->acl_get('u_pm_download') && $row['message_attachment'] && phpbb::$config['allow_pm_attach']) ? phpbb::$user->img('icon_topic_attach', 'TOTAL_ATTACHMENTS') : '',
+					'ATTACH_ICON_IMG'	=> (phpbb::$acl->acl_get('u_pm_download') && $row['message_attachment'] && phpbb::$config['allow_pm_attach']) ? phpbb::$user->img('icon_topic_attach', 'TOTAL_ATTACHMENTS') : '',
 
 					'S_PM_DELETED'		=> ($row['pm_deleted']) ? true : false,
 					'S_AUTHOR_DELETED'	=> ($row['author_id'] == ANONYMOUS) ? true : false,
@@ -497,16 +497,16 @@ function get_pm_from($folder_id, $folder, $user_id)
 		'PAGE_NUMBER'		=> on_page($pm_count, phpbb::$config['topics_per_page'], $start),
 		'TOTAL_MESSAGES'	=> (($pm_count == 1) ? phpbb::$user->lang['VIEW_PM_MESSAGE'] : sprintf(phpbb::$user->lang['VIEW_PM_MESSAGES'], $pm_count)),
 
-		'POST_IMG'		=> (!$auth->acl_get('u_sendpm')) ? phpbb::$user->img('button_topic_locked', 'PM_LOCKED') : phpbb::$user->img('button_pm_new', 'POST_PM'),
+		'POST_IMG'		=> (!phpbb::$acl->acl_get('u_sendpm')) ? phpbb::$user->img('button_topic_locked', 'PM_LOCKED') : phpbb::$user->img('button_pm_new', 'POST_PM'),
 
-		'L_NO_MESSAGES'	=> (!$auth->acl_get('u_sendpm')) ? phpbb::$user->lang['POST_PM_LOCKED'] : phpbb::$user->lang['NO_MESSAGES'],
+		'L_NO_MESSAGES'	=> (!phpbb::$acl->acl_get('u_sendpm')) ? phpbb::$user->lang['POST_PM_LOCKED'] : phpbb::$user->lang['NO_MESSAGES'],
 
 		'S_SELECT_SORT_DIR'		=> $s_sort_dir,
 		'S_SELECT_SORT_KEY'		=> $s_sort_key,
 		'S_SELECT_SORT_DAYS'	=> $s_limit_days,
 		'S_TOPIC_ICONS'			=> (phpbb::$config['enable_pm_icons']) ? true : false,
 
-		'U_POST_NEW_TOPIC'	=> ($auth->acl_get('u_sendpm')) ? append_sid('ucp', 'i=pm&amp;mode=compose') : '',
+		'U_POST_NEW_TOPIC'	=> (phpbb::$acl->acl_get('u_sendpm')) ? append_sid('ucp', 'i=pm&amp;mode=compose') : '',
 		'S_PM_ACTION'		=> append_sid('ucp', "i=pm&amp;mode=view&amp;action=view_folder&amp;f=$folder_id" . (($start !== 0) ? "&amp;start=$start" : '')))
 	);
 

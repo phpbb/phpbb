@@ -19,7 +19,7 @@ include(PHPBB_ROOT_PATH . 'includes/functions_display.' . PHP_EXT);
 
 // Start session
 phpbb::$user->session_begin();
-$auth->acl(phpbb::$user->data);
+phpbb::$acl->init(phpbb::$user->data);
 
 // Start initial var setup
 $forum_id	= request_var('f', 0);
@@ -81,7 +81,7 @@ if (phpbb_request::is_set('e', phpbb_request::GET) && !phpbb::$user->is_register
 }
 
 // Permissions check
-if (!$auth->acl_gets('f_list', 'f_read', $forum_id) || ($forum_data['forum_type'] == FORUM_LINK && $forum_data['forum_link'] && !$auth->acl_get('f_read', $forum_id)))
+if (!phpbb::$acl->acl_gets('f_list', 'f_read', $forum_id) || ($forum_data['forum_type'] == FORUM_LINK && $forum_data['forum_link'] && !phpbb::$acl->acl_get('f_read', $forum_id)))
 {
 	if (!phpbb::$user->is_guest)
 	{
@@ -120,7 +120,7 @@ if ($forum_data['forum_type'] == FORUM_LINK && $forum_data['forum_link'])
 generate_forum_nav($forum_data);
 
 // Forum Rules
-if ($auth->acl_get('f_read', $forum_id))
+if (phpbb::$acl->acl_get('f_read', $forum_id))
 {
 	generate_forum_rules($forum_data);
 }
@@ -159,7 +159,7 @@ if (!($forum_data['forum_type'] == FORUM_POST || (($forum_data['forum_flags'] & 
 
 // Ok, if someone has only list-access, we only display the forum list.
 // We also make this circumstance available to the template in case we want to display a notice. ;)
-if (!$auth->acl_get('f_read', $forum_id))
+if (!phpbb::$acl->acl_get('f_read', $forum_id))
 {
 	$template->assign_vars(array(
 		'S_NO_READ_ACCESS'		=> true,
@@ -203,7 +203,7 @@ $s_watching_forum = array(
 	'is_watching'	=> false,
 );
 
-if ((phpbb::$config['email_enable'] || phpbb::$config['jab_enable']) && phpbb::$config['allow_forum_notify'] && $forum_data['forum_type'] == FORUM_POST && $auth->acl_get('f_subscribe', $forum_id))
+if ((phpbb::$config['email_enable'] || phpbb::$config['jab_enable']) && phpbb::$config['allow_forum_notify'] && $forum_data['forum_type'] == FORUM_POST && phpbb::$acl->acl_get('f_subscribe', $forum_id))
 {
 	$notify_status = (isset($forum_data['notify_status'])) ? $forum_data['notify_status'] : NULL;
 	watch_topic_forum('forum', $s_watching_forum, phpbb::$user->data['user_id'], $forum_id, 0, $notify_status);
@@ -233,7 +233,7 @@ if ($sort_days)
 		WHERE forum_id = $forum_id
 			AND ((topic_type <> " . POST_GLOBAL . " AND topic_last_post_time >= $min_post_time)
 				OR topic_type = " . POST_ANNOUNCE . ")
-		" . (($auth->acl_get('m_approve', $forum_id)) ? '' : 'AND topic_approved = 1');
+		" . ((phpbb::$acl->acl_get('m_approve', $forum_id)) ? '' : 'AND topic_approved = 1');
 	$result = $db->sql_query($sql);
 	$topics_count = (int) $db->sql_fetchfield('num_topics');
 	$db->sql_freeresult($result);
@@ -249,7 +249,7 @@ if ($sort_days)
 }
 else
 {
-	$topics_count = ($auth->acl_get('m_approve', $forum_id)) ? $forum_data['forum_topics_real'] : $forum_data['forum_topics'];
+	$topics_count = (phpbb::$acl->acl_get('m_approve', $forum_id)) ? $forum_data['forum_topics_real'] : $forum_data['forum_topics'];
 	$sql_limit_time = '';
 }
 
@@ -288,10 +288,10 @@ $template->assign_vars(array(
 
 	'L_NO_TOPICS' 			=> ($forum_data['forum_status'] == ITEM_LOCKED) ? phpbb::$user->lang['POST_FORUM_LOCKED'] : phpbb::$user->lang['NO_TOPICS'],
 
-	'S_DISPLAY_POST_INFO'	=> ($forum_data['forum_type'] == FORUM_POST && ($auth->acl_get('f_post', $forum_id) || phpbb::$user->is_guest)) ? true : false,
+	'S_DISPLAY_POST_INFO'	=> ($forum_data['forum_type'] == FORUM_POST && (phpbb::$acl->acl_get('f_post', $forum_id) || phpbb::$user->is_guest)) ? true : false,
 
 	'S_IS_POSTABLE'			=> ($forum_data['forum_type'] == FORUM_POST) ? true : false,
-	'S_USER_CAN_POST'		=> ($auth->acl_get('f_post', $forum_id)) ? true : false,
+	'S_USER_CAN_POST'		=> (phpbb::$acl->acl_get('f_post', $forum_id)) ? true : false,
 	'S_DISPLAY_ACTIVE'		=> $s_display_active,
 	'S_SELECT_SORT_DIR'		=> $s_sort_dir,
 	'S_SELECT_SORT_KEY'		=> $s_sort_key,
@@ -301,14 +301,14 @@ $template->assign_vars(array(
 	'S_WATCH_FORUM_TITLE'	=> $s_watching_forum['title'],
 	'S_WATCHING_FORUM'		=> $s_watching_forum['is_watching'],
 	'S_FORUM_ACTION'		=> append_sid('viewforum', "f=$forum_id&amp;start=$start"),
-	'S_DISPLAY_SEARCHBOX'	=> ($auth->acl_get('u_search') && $auth->acl_get('f_search', $forum_id) && phpbb::$config['load_search']) ? true : false,
+	'S_DISPLAY_SEARCHBOX'	=> (phpbb::$acl->acl_get('u_search') && phpbb::$acl->acl_get('f_search', $forum_id) && phpbb::$config['load_search']) ? true : false,
 	'S_SEARCHBOX_ACTION'	=> append_sid('search', 'fid[]=' . $forum_id),
 	'S_SINGLE_MODERATOR'	=> (!empty($moderators[$forum_id]) && sizeof($moderators[$forum_id]) > 1) ? false : true,
 	'S_IS_LOCKED'			=> ($forum_data['forum_status'] == ITEM_LOCKED) ? true : false,
 	'S_VIEWFORUM'			=> true,
 
-	'U_MCP'				=> ($auth->acl_get('m_', $forum_id)) ? append_sid('mcp', "f=$forum_id&amp;i=main&amp;mode=forum_view", true, phpbb::$user->session_id) : '',
-	'U_POST_NEW_TOPIC'	=> ($auth->acl_get('f_post', $forum_id) || phpbb::$user->is_guest) ? append_sid('posting', 'mode=post&amp;f=' . $forum_id) : '',
+	'U_MCP'				=> (phpbb::$acl->acl_get('m_', $forum_id)) ? append_sid('mcp', "f=$forum_id&amp;i=main&amp;mode=forum_view", true, phpbb::$user->session_id) : '',
+	'U_POST_NEW_TOPIC'	=> (phpbb::$acl->acl_get('f_post', $forum_id) || phpbb::$user->is_guest) ? append_sid('posting', 'mode=post&amp;f=' . $forum_id) : '',
 	'U_VIEW_FORUM'		=> append_sid('viewforum', "f=$forum_id" . ((strlen($u_sort_param)) ? "&amp;$u_sort_param" : '') . "&amp;start=$start"),
 	'U_MARK_TOPICS'		=> (phpbb::$user->is_registered || phpbb::$config['load_anon_lastread']) ? append_sid('viewforum', 'hash=' . generate_link_hash('global') . "&amp;f=$forum_id&amp;mark=topics") : '',
 ));
@@ -327,7 +327,7 @@ $sql_array = array(
 	'LEFT_JOIN'	=> array(),
 );
 
-$sql_approved = ($auth->acl_get('m_approve', $forum_id)) ? '' : 'AND t.topic_approved = 1';
+$sql_approved = (phpbb::$acl->acl_get('m_approve', $forum_id)) ? '' : 'AND t.topic_approved = 1';
 
 if (phpbb::$user->is_registered)
 {
@@ -491,7 +491,7 @@ if (sizeof($shadow_topic_list))
 		}
 
 		// Do not include those topics the user has no permission to access
-		if (!$auth->acl_get('f_read', $row['forum_id']))
+		if (!phpbb::$acl->acl_get('f_read', $row['forum_id']))
 		{
 			// We need to remove any trace regarding this topic. :)
 			unset($rowset[$orig_topic_id]);
@@ -595,7 +595,7 @@ if (sizeof($topic_list))
 		$s_type_switch_test = ($row['topic_type'] == POST_ANNOUNCE || $row['topic_type'] == POST_GLOBAL) ? 1 : 0;
 
 		// Replies
-		$replies = ($auth->acl_get('m_approve', $forum_id)) ? $row['topic_replies_real'] : $row['topic_replies'];
+		$replies = (phpbb::$acl->acl_get('m_approve', $forum_id)) ? $row['topic_replies_real'] : $row['topic_replies'];
 
 		if ($row['topic_status'] == ITEM_MOVED)
 		{
@@ -614,8 +614,8 @@ if (sizeof($topic_list))
 		// Generate all the URIs ...
 		$view_topic_url = append_sid('viewtopic', 'f=' . (($row['forum_id']) ? $row['forum_id'] : $forum_id) . '&amp;t=' . $topic_id);
 
-		$topic_unapproved = (!$row['topic_approved'] && $auth->acl_get('m_approve', $forum_id)) ? true : false;
-		$posts_unapproved = ($row['topic_approved'] && $row['topic_replies'] < $row['topic_replies_real'] && $auth->acl_get('m_approve', $forum_id)) ? true : false;
+		$topic_unapproved = (!$row['topic_approved'] && phpbb::$acl->acl_get('m_approve', $forum_id)) ? true : false;
+		$posts_unapproved = ($row['topic_approved'] && $row['topic_replies'] < $row['topic_replies_real'] && phpbb::$acl->acl_get('m_approve', $forum_id)) ? true : false;
 		$u_mcp_queue = ($topic_unapproved || $posts_unapproved) ? append_sid('mcp', 'i=queue&amp;mode=' . (($topic_unapproved) ? 'approve_details' : 'unapproved_posts') . "&amp;t=$topic_id", true, phpbb::$user->session_id) : '';
 
 		// Send vars to template
@@ -648,13 +648,13 @@ if (sizeof($topic_list))
 			'TOPIC_ICON_IMG'		=> (!empty($icons[$row['icon_id']])) ? $icons[$row['icon_id']]['img'] : '',
 			'TOPIC_ICON_IMG_WIDTH'	=> (!empty($icons[$row['icon_id']])) ? $icons[$row['icon_id']]['width'] : '',
 			'TOPIC_ICON_IMG_HEIGHT'	=> (!empty($icons[$row['icon_id']])) ? $icons[$row['icon_id']]['height'] : '',
-			'ATTACH_ICON_IMG'		=> ($auth->acl_get('u_download') && $auth->acl_get('f_download', $forum_id) && $row['topic_attachment']) ? phpbb::$user->img('icon_topic_attach', 'TOTAL_ATTACHMENTS') : '',
+			'ATTACH_ICON_IMG'		=> (phpbb::$acl->acl_get('u_download') && phpbb::$acl->acl_get('f_download', $forum_id) && $row['topic_attachment']) ? phpbb::$user->img('icon_topic_attach', 'TOTAL_ATTACHMENTS') : '',
 			'UNAPPROVED_IMG'		=> ($topic_unapproved || $posts_unapproved) ? phpbb::$user->img('icon_topic_unapproved', ($topic_unapproved) ? 'TOPIC_UNAPPROVED' : 'POSTS_UNAPPROVED') : '',
 
 			'S_TOPIC_TYPE'			=> $row['topic_type'],
 			'S_USER_POSTED'			=> (isset($row['topic_posted']) && $row['topic_posted']) ? true : false,
 			'S_UNREAD_TOPIC'		=> $unread_topic,
-			'S_TOPIC_REPORTED'		=> (!empty($row['topic_reported']) && $auth->acl_get('m_report', $forum_id)) ? true : false,
+			'S_TOPIC_REPORTED'		=> (!empty($row['topic_reported']) && phpbb::$acl->acl_get('m_report', $forum_id)) ? true : false,
 			'S_TOPIC_UNAPPROVED'	=> $topic_unapproved,
 			'S_POSTS_UNAPPROVED'	=> $posts_unapproved,
 			'S_HAS_POLL'			=> ($row['poll_start']) ? true : false,

@@ -1322,7 +1322,7 @@ class parse_message extends bbcode_firstpass
 
 		if ($submit && in_array($mode, array('post', 'reply', 'quote', 'edit')) && $upload_file)
 		{
-			if ($num_attachments < $cfg['max_attachments'] || $auth->acl_get('a_') || $auth->acl_get('m_', $forum_id))
+			if ($num_attachments < $cfg['max_attachments'] || phpbb::$acl->acl_get('a_') || phpbb::$acl->acl_get('m_', $forum_id))
 			{
 				$filedata = upload_attachment($form_name, $forum_id, false, '', $is_message);
 				$error = $filedata['error'];
@@ -1424,7 +1424,7 @@ class parse_message extends bbcode_firstpass
 			}
 			else if (($add_file || $preview) && $upload_file)
 			{
-				if ($num_attachments < $cfg['max_attachments'] || $auth->acl_gets('m_', 'a_', $forum_id))
+				if ($num_attachments < $cfg['max_attachments'] || phpbb::$acl->acl_gets('m_', 'a_', $forum_id))
 				{
 					$filedata = upload_attachment($form_name, $forum_id, false, '', $is_message);
 					$error = array_merge($error, $filedata['error']);

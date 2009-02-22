@@ -22,7 +22,7 @@ include(PHPBB_ROOT_PATH . 'includes/message_parser.' . PHP_EXT);
 
 // Start session management
 phpbb::$user->session_begin();
-$auth->acl(phpbb::$user->data);
+phpbb::$acl->init(phpbb::$user->data);
 
 
 // Grab only parameters needed here
@@ -177,7 +177,7 @@ if (phpbb::$user->is_bot)
 }
 
 // Is the user able to read within this forum?
-if (!$auth->acl_get('f_read', $forum_id))
+if (!phpbb::$acl->acl_get('f_read', $forum_id))
 {
 	if (phpbb::$user->data['user_id'] != ANONYMOUS)
 	{
@@ -193,14 +193,14 @@ $is_authed = false;
 switch ($mode)
 {
 	case 'post':
-		if ($auth->acl_get('f_post', $forum_id))
+		if (phpbb::$acl->acl_get('f_post', $forum_id))
 		{
 			$is_authed = true;
 		}
 	break;
 
 	case 'bump':
-		if ($auth->acl_get('f_bump', $forum_id))
+		if (phpbb::$acl->acl_get('f_bump', $forum_id))
 		{
 			$is_authed = true;
 		}
@@ -213,21 +213,21 @@ switch ($mode)
 	// no break;
 
 	case 'reply':
-		if ($auth->acl_get('f_reply', $forum_id))
+		if (phpbb::$acl->acl_get('f_reply', $forum_id))
 		{
 			$is_authed = true;
 		}
 	break;
 
 	case 'edit':
-		if (phpbb::$user->is_registered && $auth->acl_gets('f_edit', 'm_edit', $forum_id))
+		if (phpbb::$user->is_registered && phpbb::$acl->acl_gets('f_edit', 'm_edit', $forum_id))
 		{
 			$is_authed = true;
 		}
 	break;
 
 	case 'delete':
-		if (phpbb::$user->is_registered && $auth->acl_gets('f_delete', 'm_delete', $forum_id))
+		if (phpbb::$user->is_registered && phpbb::$acl->acl_gets('f_delete', 'm_delete', $forum_id))
 		{
 			$is_authed = true;
 		}
@@ -253,14 +253,14 @@ if ($post_data['forum_type'] != FORUM_POST && in_array($mode, array('post', 'bum
 }
 
 // Forum/Topic locked?
-if (($post_data['forum_status'] == ITEM_LOCKED || (isset($post_data['topic_status']) && $post_data['topic_status'] == ITEM_LOCKED)) && !$auth->acl_get('m_edit', $forum_id))
+if (($post_data['forum_status'] == ITEM_LOCKED || (isset($post_data['topic_status']) && $post_data['topic_status'] == ITEM_LOCKED)) && !phpbb::$acl->acl_get('m_edit', $forum_id))
 {
 	trigger_error(($post_data['forum_status'] == ITEM_LOCKED) ? 'FORUM_LOCKED' : 'TOPIC_LOCKED');
 }
 
 // Can we edit this post ... if we're a moderator with rights then always yes
 // else it depends on editing times, lock status and if we're the correct user
-if ($mode == 'edit' && !$auth->acl_get('m_edit', $forum_id))
+if ($mode == 'edit' && !phpbb::$acl->acl_get('m_edit', $forum_id))
 {
 	if (phpbb::$user->data['user_id'] != $post_data['poster_id'])
 	{
@@ -433,7 +433,7 @@ if ($mode != 'edit')
 $post_data['enable_magic_url'] = $post_data['drafts'] = false;
 
 // User own some drafts?
-if (phpbb::$user->is_registered && $auth->acl_get('u_savedrafts') && ($mode == 'reply' || $mode == 'post' || $mode == 'quote'))
+if (phpbb::$user->is_registered && phpbb::$acl->acl_get('u_savedrafts') && ($mode == 'reply' || $mode == 'post' || $mode == 'quote'))
 {
 	$sql = 'SELECT draft_id
 		FROM ' . DRAFTS_TABLE . '
@@ -471,15 +471,15 @@ if ($mode == 'edit' && $post_data['bbcode_uid'])
 }
 
 // HTML, BBCode, Smilies, Images and Flash status
-$bbcode_status	= (phpbb::$config['allow_bbcode'] && $auth->acl_get('f_bbcode', $forum_id)) ? true : false;
-$smilies_status	= ($bbcode_status && phpbb::$config['allow_smilies'] && $auth->acl_get('f_smilies', $forum_id)) ? true : false;
-$img_status		= ($bbcode_status && $auth->acl_get('f_img', $forum_id)) ? true : false;
+$bbcode_status	= (phpbb::$config['allow_bbcode'] && phpbb::$acl->acl_get('f_bbcode', $forum_id)) ? true : false;
+$smilies_status	= ($bbcode_status && phpbb::$config['allow_smilies'] && phpbb::$acl->acl_get('f_smilies', $forum_id)) ? true : false;
+$img_status		= ($bbcode_status && phpbb::$acl->acl_get('f_img', $forum_id)) ? true : false;
 $url_status		= (phpbb::$config['allow_post_links']) ? true : false;
-$flash_status	= ($bbcode_status && $auth->acl_get('f_flash', $forum_id) && phpbb::$config['allow_post_flash']) ? true : false;
-$quote_status	= ($auth->acl_get('f_reply', $forum_id)) ? true : false;
+$flash_status	= ($bbcode_status && phpbb::$acl->acl_get('f_flash', $forum_id) && phpbb::$config['allow_post_flash']) ? true : false;
+$quote_status	= (phpbb::$acl->acl_get('f_reply', $forum_id)) ? true : false;
 
 // Save Draft
-if ($save && phpbb::$user->is_registered && $auth->acl_get('u_savedrafts') && ($mode == 'reply' || $mode == 'post' || $mode == 'quote'))
+if ($save && phpbb::$user->is_registered && phpbb::$acl->acl_get('u_savedrafts') && ($mode == 'reply' || $mode == 'post' || $mode == 'quote'))
 {
 	$subject = utf8_normalize_nfc(request_var('subject', '', true));
 	$subject = (!$subject && $mode != 'post') ? $post_data['topic_title'] : $subject;
@@ -541,7 +541,7 @@ if ($save && phpbb::$user->is_registered && $auth->acl_get('u_savedrafts') && ($
 }
 
 // Load requested Draft
-if ($draft_id && ($mode == 'reply' || $mode == 'quote' || $mode == 'post') && phpbb::$user->is_registered && $auth->acl_get('u_savedrafts'))
+if ($draft_id && ($mode == 'reply' || $mode == 'quote' || $mode == 'post') && phpbb::$user->is_registered && phpbb::$acl->acl_get('u_savedrafts'))
 {
 	$sql = 'SELECT draft_subject, draft_message
 		FROM ' . DRAFTS_TABLE . "
@@ -581,7 +581,7 @@ if ($submit || $preview || $refresh)
 	$message_parser->message		= utf8_normalize_nfc(request_var('message', '', true));
 
 	$post_data['username']			= utf8_normalize_nfc(request_var('username', $post_data['username'], true));
-	$post_data['post_edit_reason']	= (!empty($edit_reason) && $mode == 'edit' && $auth->acl_get('m_edit', $forum_id)) ? $edit_reason : '';
+	$post_data['post_edit_reason']	= (!empty($edit_reason) && $mode == 'edit' && phpbb::$acl->acl_get('m_edit', $forum_id)) ? $edit_reason : '';
 
 	$post_data['orig_topic_type']	= $post_data['topic_type'];
 	$post_data['topic_type']		= request_var('topic_type', (($mode != 'post') ? (int) $post_data['topic_type'] : POST_NORMAL));
@@ -591,7 +591,7 @@ if ($submit || $preview || $refresh)
 	$post_data['enable_bbcode']		= (!$bbcode_status || phpbb_request::is_set_post('disable_bbcode')) ? false : true;
 	$post_data['enable_smilies']	= (!$smilies_status || phpbb_request::is_set_post('disable_smilies')) ? false : true;
 	$post_data['enable_urls']		= phpbb_request::is_set_post('disable_magic_url');
-	$post_data['enable_sig']		= (!phpbb::$config['allow_sig'] || !$auth->acl_get('f_sigs', $forum_id) || !$auth->acl_get('u_sig')) ? false : ((phpbb_request::is_set_post('attach_sig') && phpbb::$user->is_registered) ? true : false);
+	$post_data['enable_sig']		= (!phpbb::$config['allow_sig'] || !phpbb::$acl->acl_get('f_sigs', $forum_id) || !phpbb::$acl->acl_get('u_sig')) ? false : ((phpbb_request::is_set_post('attach_sig') && phpbb::$user->is_registered) ? true : false);
 
 	if (phpbb::$config['allow_topic_notify'] && phpbb::$user->is_registered)
 	{
@@ -618,7 +618,7 @@ if ($submit || $preview || $refresh)
 
 	// Delete Poll
 	if ($poll_delete && $mode == 'edit' && sizeof($post_data['poll_options']) &&
-		((!$post_data['poll_last_vote'] && $post_data['poster_id'] == phpbb::$user->data['user_id'] && $auth->acl_get('f_delete', $forum_id)) || $auth->acl_get('m_delete', $forum_id)))
+		((!$post_data['poll_last_vote'] && $post_data['poster_id'] == phpbb::$user->data['user_id'] && phpbb::$acl->acl_get('f_delete', $forum_id)) || phpbb::$acl->acl_get('m_delete', $forum_id)))
 	{
 		if ($submit && check_form_key('posting'))
 		{
@@ -654,7 +654,7 @@ if ($submit || $preview || $refresh)
 		$post_data['poll_length']		= request_var('poll_length', 0);
 		$post_data['poll_option_text']	= utf8_normalize_nfc(request_var('poll_option_text', '', true));
 		$post_data['poll_max_options']	= request_var('poll_max_options', 1);
-		$post_data['poll_vote_change']	= ($auth->acl_get('f_votechg', $forum_id) && phpbb_request::is_set_post('poll_vote_change')) ? 1 : 0;
+		$post_data['poll_vote_change']	= (phpbb::$acl->acl_get('f_votechg', $forum_id) && phpbb_request::is_set_post('poll_vote_change')) ? 1 : 0;
 	}
 
 	// If replying/quoting and last post id has changed
@@ -706,7 +706,7 @@ if ($submit || $preview || $refresh)
 		$message_parser->bbcode_bitfield = $post_data['bbcode_bitfield'];
 	}
 
-	if ($mode != 'edit' && !$preview && !$refresh && phpbb::$config['flood_interval'] && !$auth->acl_get('f_ignoreflood', $forum_id))
+	if ($mode != 'edit' && !$preview && !$refresh && phpbb::$config['flood_interval'] && !phpbb::$acl->acl_get('f_ignoreflood', $forum_id))
 	{
 		// Flood check
 		$last_post_time = 0;
@@ -775,8 +775,8 @@ if ($submit || $preview || $refresh)
 	$post_data['poll_last_vote'] = (isset($post_data['poll_last_vote'])) ? $post_data['poll_last_vote'] : 0;
 
 	if ($post_data['poll_option_text'] &&
-		($mode == 'post' || ($mode == 'edit' && $post_id == $post_data['topic_first_post_id']/* && (!$post_data['poll_last_vote'] || $auth->acl_get('m_edit', $forum_id))*/))
-		&& $auth->acl_get('f_poll', $forum_id))
+		($mode == 'post' || ($mode == 'edit' && $post_id == $post_data['topic_first_post_id']/* && (!$post_data['poll_last_vote'] || phpbb::$acl->acl_get('m_edit', $forum_id))*/))
+		&& phpbb::$acl->acl_get('f_poll', $forum_id))
 	{
 		$poll = array(
 			'poll_title'		=> $post_data['poll_title'],
@@ -827,7 +827,7 @@ if ($submit || $preview || $refresh)
 			break;
 		}
 
-		if (!$auth->acl_get($auth_option, $forum_id))
+		if (!phpbb::$acl->acl_get($auth_option, $forum_id))
 		{
 			// There is a special case where a user edits his post whereby the topic type got changed by an admin/mod.
 			// Another case would be a mod not having sticky permissions for example but edit permissions.
@@ -883,7 +883,7 @@ if ($submit || $preview || $refresh)
 					$forum_type = (int) $db->sql_fetchfield('forum_type');
 					$db->sql_freeresult($result);
 
-					if ($forum_type != FORUM_POST || !$auth->acl_get('f_post', $to_forum_id))
+					if ($forum_type != FORUM_POST || !phpbb::$acl->acl_get('f_post', $to_forum_id))
 					{
 						$to_forum_id = 0;
 					}
@@ -903,7 +903,7 @@ if ($submit || $preview || $refresh)
 				}
 				else
 				{
-					if (!$auth->acl_get('f_post', $to_forum_id))
+					if (!phpbb::$acl->acl_get('f_post', $to_forum_id))
 					{
 						// This will only be triggered if the user tried to trick the forum.
 						trigger_error('NOT_AUTHORISED');
@@ -918,7 +918,7 @@ if ($submit || $preview || $refresh)
 		{
 			// Lock/Unlock Topic
 			$change_topic_status = $post_data['topic_status'];
-			$perm_lock_unlock = ($auth->acl_get('m_lock', $forum_id) || ($auth->acl_get('f_user_lock', $forum_id) && phpbb::$user->is_registered && !empty($post_data['topic_poster']) && phpbb::$user->data['user_id'] == $post_data['topic_poster'] && $post_data['topic_status'] == ITEM_UNLOCKED)) ? true : false;
+			$perm_lock_unlock = (phpbb::$acl->acl_get('m_lock', $forum_id) || (phpbb::$acl->acl_get('f_user_lock', $forum_id) && phpbb::$user->is_registered && !empty($post_data['topic_poster']) && phpbb::$user->data['user_id'] == $post_data['topic_poster'] && $post_data['topic_status'] == ITEM_UNLOCKED)) ? true : false;
 
 			if ($post_data['topic_status'] == ITEM_LOCKED && !$topic_lock && $perm_lock_unlock)
 			{
@@ -937,17 +937,17 @@ if ($submit || $preview || $refresh)
 						AND topic_moved_id = 0";
 				$db->sql_query($sql);
 
-				$user_lock = ($auth->acl_get('f_user_lock', $forum_id) && phpbb::$user->is_registered && phpbb::$user->data['user_id'] == $post_data['topic_poster']) ? 'USER_' : '';
+				$user_lock = (phpbb::$acl->acl_get('f_user_lock', $forum_id) && phpbb::$user->is_registered && phpbb::$user->data['user_id'] == $post_data['topic_poster']) ? 'USER_' : '';
 
 				add_log('mod', $forum_id, $topic_id, 'LOG_' . $user_lock . (($change_topic_status == ITEM_LOCKED) ? 'LOCK' : 'UNLOCK'), $post_data['topic_title']);
 			}
 
 			// Lock/Unlock Post Edit
-			if ($mode == 'edit' && $post_data['post_edit_locked'] == ITEM_LOCKED && !$post_lock && $auth->acl_get('m_edit', $forum_id))
+			if ($mode == 'edit' && $post_data['post_edit_locked'] == ITEM_LOCKED && !$post_lock && phpbb::$acl->acl_get('m_edit', $forum_id))
 			{
 				$post_data['post_edit_locked'] = ITEM_UNLOCKED;
 			}
-			else if ($mode == 'edit' && $post_data['post_edit_locked'] == ITEM_UNLOCKED && $post_lock && $auth->acl_get('m_edit', $forum_id))
+			else if ($mode == 'edit' && $post_data['post_edit_locked'] == ITEM_UNLOCKED && $post_lock && phpbb::$acl->acl_get('m_edit', $forum_id))
 			{
 				$post_data['post_edit_locked'] = ITEM_LOCKED;
 			}
@@ -1001,7 +1001,7 @@ if ($submit || $preview || $refresh)
 				$captcha->reset();
 			}
 			// Check the permissions for post approval, as well as the queue trigger where users are put on approval with a post count lower than specified. Moderators are not affected.
-			if (((phpbb::$config['enable_queue_trigger'] && phpbb::$user->data['user_posts'] < phpbb::$config['queue_trigger_posts']) || !$auth->acl_get('f_noapprove', $data['forum_id'])) && !$auth->acl_get('m_approve', $data['forum_id']))
+			if (((phpbb::$config['enable_queue_trigger'] && phpbb::$user->data['user_posts'] < phpbb::$config['queue_trigger_posts']) || !phpbb::$acl->acl_get('f_noapprove', $data['forum_id'])) && !phpbb::$acl->acl_get('m_approve', $data['forum_id']))
 			{
 				meta_refresh(10, $redirect_url);
 				$message = ($mode == 'edit') ? phpbb::$user->lang['POST_EDITED_MOD'] : phpbb::$user->lang['POST_STORED_MOD'];
@@ -1033,7 +1033,7 @@ if (!sizeof($error) && $preview)
 	$preview_signature_bitfield = ($mode == 'edit') ? $post_data['user_sig_bbcode_bitfield'] : phpbb::$user->data['user_sig_bbcode_bitfield'];
 
 	// Signature
-	if ($post_data['enable_sig'] && phpbb::$config['allow_sig'] && $preview_signature && $auth->acl_get('f_sigs', $forum_id))
+	if ($post_data['enable_sig'] && phpbb::$config['allow_sig'] && $preview_signature && phpbb::$acl->acl_get('f_sigs', $forum_id))
 	{
 		$parse_sig = new parse_message($preview_signature);
 		$parse_sig->bbcode_uid = $preview_signature_uid;
@@ -1052,8 +1052,8 @@ if (!sizeof($error) && $preview)
 	$preview_subject = censor_text($post_data['post_subject']);
 
 	// Poll Preview
-	if (!$poll_delete && ($mode == 'post' || ($mode == 'edit' && $post_id == $post_data['topic_first_post_id']/* && (!$post_data['poll_last_vote'] || $auth->acl_get('m_edit', $forum_id))*/))
-	&& $auth->acl_get('f_poll', $forum_id))
+	if (!$poll_delete && ($mode == 'post' || ($mode == 'edit' && $post_id == $post_data['topic_first_post_id']/* && (!$post_data['poll_last_vote'] || phpbb::$acl->acl_get('m_edit', $forum_id))*/))
+	&& phpbb::$acl->acl_get('f_poll', $forum_id))
 	{
 		$parse_poll = new parse_message($post_data['poll_title']);
 		$parse_poll->bbcode_uid = $message_parser->bbcode_uid;
@@ -1174,7 +1174,7 @@ if ($mode == 'post' || ($mode == 'edit' && $post_id == $post_data['topic_first_p
 }
 
 $s_topic_icons = false;
-if ($post_data['enable_icons'] && $auth->acl_get('f_icons', $forum_id))
+if ($post_data['enable_icons'] && phpbb::$acl->acl_get('f_icons', $forum_id))
 {
 	$s_topic_icons = posting_gen_topic_icons($mode, $post_data['icon_id']);
 }
@@ -1238,7 +1238,7 @@ if ($solved_captcha !== false)
 	$s_hidden_fields .= build_hidden_fields($captcha->get_hidden_fields());
 }
 
-$form_enctype = (@ini_get('file_uploads') == '0' || strtolower(@ini_get('file_uploads')) == 'off' || !phpbb::$config['allow_attachments'] || !$auth->acl_get('u_attach') || !$auth->acl_get('f_attach', $forum_id)) ? '' : ' enctype="multipart/form-data"';
+$form_enctype = (@ini_get('file_uploads') == '0' || strtolower(@ini_get('file_uploads')) == 'off' || !phpbb::$config['allow_attachments'] || !phpbb::$acl->acl_get('u_attach') || !phpbb::$acl->acl_get('f_attach', $forum_id)) ? '' : ' enctype="multipart/form-data"';
 add_form_key('posting');
 
 
@@ -1273,27 +1273,27 @@ $template->assign_vars(array(
 	'S_PRIVMSGS'				=> false,
 	'S_CLOSE_PROGRESS_WINDOW'	=> phpbb_request::is_set_post('add_file'),
 	'S_EDIT_POST'				=> ($mode == 'edit') ? true : false,
-	'S_EDIT_REASON'				=> ($mode == 'edit' && $auth->acl_get('m_edit', $forum_id)) ? true : false,
+	'S_EDIT_REASON'				=> ($mode == 'edit' && phpbb::$acl->acl_get('m_edit', $forum_id)) ? true : false,
 	'S_DISPLAY_USERNAME'		=> (!phpbb::$user->is_registered || ($mode == 'edit' && $post_data['poster_id'] == ANONYMOUS)) ? true : false,
 	'S_SHOW_TOPIC_ICONS'		=> $s_topic_icons,
-	'S_DELETE_ALLOWED'			=> ($mode == 'edit' && (($post_id == $post_data['topic_last_post_id'] && $post_data['poster_id'] == phpbb::$user->data['user_id'] && $auth->acl_get('f_delete', $forum_id) && !$post_data['post_edit_locked'] && ($post_data['post_time'] > time() - (phpbb::$config['edit_time'] * 60) || !phpbb::$config['edit_time'])) || $auth->acl_get('m_delete', $forum_id))) ? true : false,
+	'S_DELETE_ALLOWED'			=> ($mode == 'edit' && (($post_id == $post_data['topic_last_post_id'] && $post_data['poster_id'] == phpbb::$user->data['user_id'] && phpbb::$acl->acl_get('f_delete', $forum_id) && !$post_data['post_edit_locked'] && ($post_data['post_time'] > time() - (phpbb::$config['edit_time'] * 60) || !phpbb::$config['edit_time'])) || phpbb::$acl->acl_get('m_delete', $forum_id))) ? true : false,
 	'S_BBCODE_ALLOWED'			=> $bbcode_status,
 	'S_BBCODE_CHECKED'			=> ($bbcode_checked) ? ' checked="checked"' : '',
 	'S_SMILIES_ALLOWED'			=> $smilies_status,
 	'S_SMILIES_CHECKED'			=> ($smilies_checked) ? ' checked="checked"' : '',
-	'S_SIG_ALLOWED'				=> ($auth->acl_get('f_sigs', $forum_id) && phpbb::$config['allow_sig'] && phpbb::$user->is_registered) ? true : false,
+	'S_SIG_ALLOWED'				=> (phpbb::$acl->acl_get('f_sigs', $forum_id) && phpbb::$config['allow_sig'] && phpbb::$user->is_registered) ? true : false,
 	'S_SIGNATURE_CHECKED'		=> ($sig_checked) ? ' checked="checked"' : '',
 	'S_NOTIFY_ALLOWED'			=> (!phpbb::$user->is_registered || ($mode == 'edit' && phpbb::$user->data['user_id'] != $post_data['poster_id']) || !phpbb::$config['allow_topic_notify'] || !phpbb::$config['email_enable']) ? false : true,
 	'S_NOTIFY_CHECKED'			=> ($notify_checked) ? ' checked="checked"' : '',
-	'S_LOCK_TOPIC_ALLOWED'		=> (($mode == 'edit' || $mode == 'reply' || $mode == 'quote') && ($auth->acl_get('m_lock', $forum_id) || ($auth->acl_get('f_user_lock', $forum_id) && phpbb::$user->is_registered && !empty($post_data['topic_poster']) && phpbb::$user->data['user_id'] == $post_data['topic_poster'] && $post_data['topic_status'] == ITEM_UNLOCKED))) ? true : false,
+	'S_LOCK_TOPIC_ALLOWED'		=> (($mode == 'edit' || $mode == 'reply' || $mode == 'quote') && (phpbb::$acl->acl_get('m_lock', $forum_id) || (phpbb::$acl->acl_get('f_user_lock', $forum_id) && phpbb::$user->is_registered && !empty($post_data['topic_poster']) && phpbb::$user->data['user_id'] == $post_data['topic_poster'] && $post_data['topic_status'] == ITEM_UNLOCKED))) ? true : false,
 	'S_LOCK_TOPIC_CHECKED'		=> ($lock_topic_checked) ? ' checked="checked"' : '',
-	'S_LOCK_POST_ALLOWED'		=> ($mode == 'edit' && $auth->acl_get('m_edit', $forum_id)) ? true : false,
+	'S_LOCK_POST_ALLOWED'		=> ($mode == 'edit' && phpbb::$acl->acl_get('m_edit', $forum_id)) ? true : false,
 	'S_LOCK_POST_CHECKED'		=> ($lock_post_checked) ? ' checked="checked"' : '',
 	'S_LINKS_ALLOWED'			=> $url_status,
 	'S_MAGIC_URL_CHECKED'		=> ($urls_checked) ? ' checked="checked"' : '',
 	'S_TYPE_TOGGLE'				=> $topic_type_toggle,
-	'S_SAVE_ALLOWED'			=> ($auth->acl_get('u_savedrafts') && phpbb::$user->is_registered && $mode != 'edit') ? true : false,
-	'S_HAS_DRAFTS'				=> ($auth->acl_get('u_savedrafts') && phpbb::$user->is_registered && $post_data['drafts']) ? true : false,
+	'S_SAVE_ALLOWED'			=> (phpbb::$acl->acl_get('u_savedrafts') && phpbb::$user->is_registered && $mode != 'edit') ? true : false,
+	'S_HAS_DRAFTS'				=> (phpbb::$acl->acl_get('u_savedrafts') && phpbb::$user->is_registered && $post_data['drafts']) ? true : false,
 	'S_FORM_ENCTYPE'			=> $form_enctype,
 
 	'S_BBCODE_IMG'			=> $img_status,
@@ -1309,13 +1309,13 @@ $template->assign_vars(array(
 display_custom_bbcodes();
 
 // Poll entry
-if (($mode == 'post' || ($mode == 'edit' && $post_id == $post_data['topic_first_post_id']/* && (!$post_data['poll_last_vote'] || $auth->acl_get('m_edit', $forum_id))*/))
-	&& $auth->acl_get('f_poll', $forum_id))
+if (($mode == 'post' || ($mode == 'edit' && $post_id == $post_data['topic_first_post_id']/* && (!$post_data['poll_last_vote'] || phpbb::$acl->acl_get('m_edit', $forum_id))*/))
+	&& phpbb::$acl->acl_get('f_poll', $forum_id))
 {
 	$template->assign_vars(array(
 		'S_SHOW_POLL_BOX'		=> true,
-		'S_POLL_VOTE_CHANGE'	=> ($auth->acl_get('f_votechg', $forum_id)),
-		'S_POLL_DELETE'			=> ($mode == 'edit' && sizeof($post_data['poll_options']) && ((!$post_data['poll_last_vote'] && $post_data['poster_id'] == phpbb::$user->data['user_id'] && $auth->acl_get('f_delete', $forum_id)) || $auth->acl_get('m_delete', $forum_id))),
+		'S_POLL_VOTE_CHANGE'	=> (phpbb::$acl->acl_get('f_votechg', $forum_id)),
+		'S_POLL_DELETE'			=> ($mode == 'edit' && sizeof($post_data['poll_options']) && ((!$post_data['poll_last_vote'] && $post_data['poster_id'] == phpbb::$user->data['user_id'] && phpbb::$acl->acl_get('f_delete', $forum_id)) || phpbb::$acl->acl_get('m_delete', $forum_id))),
 		'S_POLL_DELETE_CHECKED'	=> (!empty($poll_delete)) ? true : false,
 
 		'L_POLL_OPTIONS_EXPLAIN'	=> sprintf(phpbb::$user->lang['POLL_OPTIONS_' . (($mode == 'edit') ? 'EDIT_' : '') . 'EXPLAIN'], phpbb::$config['max_poll_options']),
@@ -1329,7 +1329,7 @@ if (($mode == 'post' || ($mode == 'edit' && $post_id == $post_data['topic_first_
 }
 
 // Show attachment box for adding attachments if true
-$allowed = ($auth->acl_get('f_attach', $forum_id) && $auth->acl_get('u_attach') && phpbb::$config['allow_attachments'] && $form_enctype);
+$allowed = (phpbb::$acl->acl_get('f_attach', $forum_id) && phpbb::$acl->acl_get('u_attach') && phpbb::$config['allow_attachments'] && $form_enctype);
 
 // Attachment entry
 posting_gen_attachment_entry($attachment_data, $filename_data, $allowed);
@@ -1383,7 +1383,7 @@ function upload_popup($forum_style = 0)
 function handle_post_delete($forum_id, $topic_id, $post_id, &$post_data)
 {
 	// If moderator removing post or user itself removing post, present a confirmation screen
-	if ($auth->acl_get('m_delete', $forum_id) || ($post_data['poster_id'] == phpbb::$user->data['user_id'] && phpbb::$user->is_registered && $auth->acl_get('f_delete', $forum_id) && $post_id == $post_data['topic_last_post_id'] && !$post_data['post_edit_locked'] && ($post_data['post_time'] > time() - (phpbb::$config['edit_time'] * 60) || !phpbb::$config['edit_time'])))
+	if (phpbb::$acl->acl_get('m_delete', $forum_id) || ($post_data['poster_id'] == phpbb::$user->data['user_id'] && phpbb::$user->is_registered && phpbb::$acl->acl_get('f_delete', $forum_id) && $post_id == $post_data['topic_last_post_id'] && !$post_data['post_edit_locked'] && ($post_data['post_time'] > time() - (phpbb::$config['edit_time'] * 60) || !phpbb::$config['edit_time'])))
 	{
 		$s_hidden_fields = build_hidden_fields(array(
 			'p'		=> $post_id,
@@ -1434,12 +1434,12 @@ function handle_post_delete($forum_id, $topic_id, $post_id, &$post_data)
 	}
 
 	// If we are here the user is not able to delete - present the correct error message
-	if ($post_data['poster_id'] != phpbb::$user->data['user_id'] && $auth->acl_get('f_delete', $forum_id))
+	if ($post_data['poster_id'] != phpbb::$user->data['user_id'] && phpbb::$acl->acl_get('f_delete', $forum_id))
 	{
 		trigger_error('DELETE_OWN_POSTS');
 	}
 
-	if ($post_data['poster_id'] == phpbb::$user->data['user_id'] && $auth->acl_get('f_delete', $forum_id) && $post_id != $post_data['topic_last_post_id'])
+	if ($post_data['poster_id'] == phpbb::$user->data['user_id'] && phpbb::$acl->acl_get('f_delete', $forum_id) && $post_id != $post_data['topic_last_post_id'])
 	{
 		trigger_error('CANNOT_DELETE_REPLIED');
 	}

@@ -19,7 +19,7 @@ include(PHPBB_ROOT_PATH . 'common.' . PHP_EXT);
 
 // Start session management
 phpbb::$user->session_begin(false);
-$auth->acl(phpbb::$user->data);
+phpbb::$acl->init(phpbb::$user->data);
 phpbb::$user->setup();
 
 // Set custom template for admin area

@@ -18,7 +18,7 @@ include(PHPBB_ROOT_PATH . 'common.' . PHP_EXT);
 
 // Do not update users last page entry
 phpbb::$user->session_begin(false);
-$auth->acl(phpbb::$user->data);
+phpbb::$acl->init(phpbb::$user->data);
 
 $cron_type = request_var('cron_type', '');
 $use_shutdown_function = (@function_exists('register_shutdown_function')) ? true : false;

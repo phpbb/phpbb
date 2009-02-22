@@ -58,7 +58,7 @@ class acp_forums
 
 			case 'delete':
 
-				if (!$auth->acl_get('a_forumdel'))
+				if (!phpbb::$acl->acl_get('a_forumdel'))
 				{
 					trigger_error(phpbb::$user->lang['NO_PERMISSION_FORUM_DELETE'] . adm_back_link($this->u_action . '&amp;parent_id=' . $this->parent_id), E_USER_WARNING);
 				}
@@ -67,7 +67,7 @@ class acp_forums
 
 			case 'add':
 
-				if (!$auth->acl_get('a_forumadd'))
+				if (!phpbb::$acl->acl_get('a_forumadd'))
 				{
 					trigger_error(phpbb::$user->lang['NO_PERMISSION_FORUM_ADD'] . adm_back_link($this->u_action . '&amp;parent_id=' . $this->parent_id), E_USER_WARNING);
 				}
@@ -93,7 +93,7 @@ class acp_forums
 						break;
 					}
 
-					$auth->acl_clear_prefetch();
+					phpbb::$acl->acl_clear_prefetch();
 					phpbb::$acm->destroy_sql(FORUMS_TABLE);
 
 					trigger_error(phpbb::$user->lang['FORUM_DELETED'] . adm_back_link($this->u_action . '&amp;parent_id=' . $this->parent_id));
@@ -181,7 +181,7 @@ class acp_forums
 
 						// Copy permissions?
 						if ($forum_perm_from && !empty($forum_perm_from) && $forum_perm_from != $forum_data['forum_id'] &&
-							(($action != 'edit') || empty($forum_id) || ($auth->acl_get('a_fauth') && $auth->acl_get('a_authusers') && $auth->acl_get('a_authgroups') && $auth->acl_get('a_mauth'))))
+							(($action != 'edit') || empty($forum_id) || (phpbb::$acl->acl_get('a_fauth') && phpbb::$acl->acl_get('a_authusers') && phpbb::$acl->acl_get('a_authgroups') && phpbb::$acl->acl_get('a_mauth'))))
 						{
 							// if we edit a forum delete current permissions first
 							if ($action == 'edit')
@@ -243,7 +243,7 @@ class acp_forums
 							cache_moderators();
 						}
 
-						$auth->acl_clear_prefetch();
+						phpbb::$acl->acl_clear_prefetch();
 						phpbb::$acm->destroy_sql(FORUMS_TABLE);
 
 						$acl_url = '&amp;mode=setting_forum_local&amp;forum_id[]=' . $forum_data['forum_id'];
@@ -251,13 +251,13 @@ class acp_forums
 						$message = ($action == 'add') ? phpbb::$user->lang['FORUM_CREATED'] : phpbb::$user->lang['FORUM_UPDATED'];
 
 						// Redirect to permissions
-						if ($auth->acl_get('a_fauth'))
+						if (phpbb::$acl->acl_get('a_fauth'))
 						{
 							$message .= '<br /><br />' . sprintf(phpbb::$user->lang['REDIRECT_ACL'], '<a href="' . append_sid(PHPBB_ADMIN_PATH . 'index.' . PHP_EXT, 'i=permissions' . $acl_url) . '">', '</a>');
 						}
 
 						// redirect directly to permission settings screen if authed
-						if ($action == 'add' && !$forum_perm_from && $auth->acl_get('a_fauth'))
+						if ($action == 'add' && !$forum_perm_from && phpbb::$acl->acl_get('a_fauth'))
 						{
 							meta_refresh(4, append_sid(PHPBB_ADMIN_PATH . 'index.' . PHP_EXT, 'i=permissions' . $acl_url));
 						}
@@ -681,7 +681,7 @@ class acp_forums
 					'S_PRUNE_STICKY'			=> ($forum_data['forum_flags'] & FORUM_FLAG_PRUNE_STICKY) ? true : false,
 					'S_DISPLAY_ACTIVE_TOPICS'	=> ($forum_data['forum_flags'] & FORUM_FLAG_ACTIVE_TOPICS) ? true : false,
 					'S_ENABLE_POST_REVIEW'		=> ($forum_data['forum_flags'] & FORUM_FLAG_POST_REVIEW) ? true : false,
-					'S_CAN_COPY_PERMISSIONS'	=> ($action != 'edit' || empty($forum_id) || ($auth->acl_get('a_fauth') && $auth->acl_get('a_authusers') && $auth->acl_get('a_authgroups') && $auth->acl_get('a_mauth'))) ? true : false,
+					'S_CAN_COPY_PERMISSIONS'	=> ($action != 'edit' || empty($forum_id) || (phpbb::$acl->acl_get('a_fauth') && phpbb::$acl->acl_get('a_authusers') && phpbb::$acl->acl_get('a_authgroups') && phpbb::$acl->acl_get('a_mauth'))) ? true : false,
 				));
 
 				return;

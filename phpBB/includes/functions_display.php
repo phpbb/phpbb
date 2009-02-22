@@ -507,7 +507,7 @@ function generate_forum_rules(&$forum_data)
 */
 function generate_forum_nav(&$forum_data)
 {
-	if (!$auth->acl_get('f_list', $forum_data['forum_id']))
+	if (!phpbb::$acl->acl_get('f_list', $forum_data['forum_id']))
 	{
 		return;
 	}
@@ -523,7 +523,7 @@ function generate_forum_nav(&$forum_data)
 			list($parent_name, $parent_type) = array_values($parent_data);
 
 			// Skip this parent if the user does not have the permission to view it
-			if (!$auth->acl_get('f_list', $parent_forum_id))
+			if (!phpbb::$acl->acl_get('f_list', $parent_forum_id))
 			{
 				continue;
 			}
@@ -725,18 +725,18 @@ function get_moderators(&$forum_moderators, $forum_id = false)
 */
 function gen_forum_auth_level($mode, $forum_id, $forum_status)
 {
-	$locked = ($forum_status == ITEM_LOCKED && !$auth->acl_get('m_edit', $forum_id)) ? true : false;
+	$locked = ($forum_status == ITEM_LOCKED && !phpbb::$acl->acl_get('m_edit', $forum_id)) ? true : false;
 
 	$rules = array(
-		($auth->acl_get('f_post', $forum_id) && !$locked) ? phpbb::$user->lang['RULES_POST_CAN'] : phpbb::$user->lang['RULES_POST_CANNOT'],
-		($auth->acl_get('f_reply', $forum_id) && !$locked) ? phpbb::$user->lang['RULES_REPLY_CAN'] : phpbb::$user->lang['RULES_REPLY_CANNOT'],
-		(phpbb::$user->is_registered && $auth->acl_gets('f_edit', 'm_edit', $forum_id) && !$locked) ? phpbb::$user->lang['RULES_EDIT_CAN'] : phpbb::$user->lang['RULES_EDIT_CANNOT'],
-		(phpbb::$user->is_registered && $auth->acl_gets('f_delete', 'm_delete', $forum_id) && !$locked) ? phpbb::$user->lang['RULES_DELETE_CAN'] : phpbb::$user->lang['RULES_DELETE_CANNOT'],
+		(phpbb::$acl->acl_get('f_post', $forum_id) && !$locked) ? phpbb::$user->lang['RULES_POST_CAN'] : phpbb::$user->lang['RULES_POST_CANNOT'],
+		(phpbb::$acl->acl_get('f_reply', $forum_id) && !$locked) ? phpbb::$user->lang['RULES_REPLY_CAN'] : phpbb::$user->lang['RULES_REPLY_CANNOT'],
+		(phpbb::$user->is_registered && phpbb::$acl->acl_gets('f_edit', 'm_edit', $forum_id) && !$locked) ? phpbb::$user->lang['RULES_EDIT_CAN'] : phpbb::$user->lang['RULES_EDIT_CANNOT'],
+		(phpbb::$user->is_registered && phpbb::$acl->acl_gets('f_delete', 'm_delete', $forum_id) && !$locked) ? phpbb::$user->lang['RULES_DELETE_CAN'] : phpbb::$user->lang['RULES_DELETE_CANNOT'],
 	);
 
 	if (phpbb::$config['allow_attachments'])
 	{
-		$rules[] = ($auth->acl_get('f_attach', $forum_id) && $auth->acl_get('u_attach') && !$locked) ? phpbb::$user->lang['RULES_ATTACH_CAN'] : phpbb::$user->lang['RULES_ATTACH_CANNOT'];
+		$rules[] = (phpbb::$acl->acl_get('f_attach', $forum_id) && phpbb::$acl->acl_get('u_attach') && !$locked) ? phpbb::$user->lang['RULES_ATTACH_CAN'] : phpbb::$user->lang['RULES_ATTACH_CANNOT'];
 	}
 
 	foreach ($rules as $rule)
@@ -894,7 +894,7 @@ function display_user_activity(&$userdata)
 	$forum_ary = array();
 
 	// Do not include those forums the user is not having read access to...
-	$forum_read_ary = $auth->acl_getf('!f_read');
+	$forum_read_ary = phpbb::$acl->acl_getf('!f_read');
 
 	foreach ($forum_read_ary as $forum_id => $not_allowed)
 	{

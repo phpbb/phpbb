@@ -80,7 +80,7 @@ class ucp_prefs
 							'user_allow_pm'			=> $data['allowpm'],
 							'user_allow_viewemail'	=> $data['viewemail'],
 							'user_allow_massemail'	=> $data['massemail'],
-							'user_allow_viewonline'	=> ($auth->acl_get('u_hideonline')) ? !$data['hideonline'] : phpbb::$user->data['user_allow_viewonline'],
+							'user_allow_viewonline'	=> (phpbb::$acl->acl_get('u_hideonline')) ? !$data['hideonline'] : phpbb::$user->data['user_allow_viewonline'],
 							'user_notify_type'		=> $data['notifymethod'],
 							'user_notify_pm'		=> $data['notifypm'],
 							'user_options'			=> phpbb::$user->data['user_options'],
@@ -149,7 +149,7 @@ class ucp_prefs
 					'S_LANG_OPTIONS'		=> language_select($data['lang']),
 					'S_STYLE_OPTIONS'		=> (phpbb::$config['override_user_style']) ? '' : style_select($data['style']),
 					'S_TZ_OPTIONS'			=> tz_select($data['tz'], true),
-					'S_CAN_HIDE_ONLINE'		=> ($auth->acl_get('u_hideonline')) ? true : false,
+					'S_CAN_HIDE_ONLINE'		=> (phpbb::$acl->acl_get('u_hideonline')) ? true : false,
 					'S_SELECT_NOTIFY'		=> (phpbb::$config['jab_enable'] && phpbb::$user->data['user_jabber'] && @extension_loaded('xml')) ? true : false)
 				);
 
@@ -198,7 +198,7 @@ class ucp_prefs
 						phpbb::$user->optionset('viewsigs', $data['sigs']);
 						phpbb::$user->optionset('viewavatars', $data['avatars']);
 
-						if ($auth->acl_get('u_chgcensors'))
+						if (phpbb::$acl->acl_get('u_chgcensors'))
 						{
 							phpbb::$user->optionset('viewcensors', $data['wordcensor']);
 						}
@@ -280,7 +280,7 @@ class ucp_prefs
 					'S_AVATARS'			=> $data['avatars'],
 					'S_DISABLE_CENSORS'	=> $data['wordcensor'],
 
-					'S_CHANGE_CENSORS'		=> ($auth->acl_get('u_chgcensors')) ? true : false,
+					'S_CHANGE_CENSORS'		=> (phpbb::$acl->acl_get('u_chgcensors')) ? true : false,
 
 					'S_TOPIC_SORT_DAYS'		=> $s_limit_topic_days,
 					'S_TOPIC_SORT_KEY'		=> $s_sort_topic_key,

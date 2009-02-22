@@ -44,7 +44,7 @@ function mcp_post_details($id, $mode, $action)
 	{
 		case 'whois':
 
-			if ($auth->acl_get('m_info', $post_info['forum_id']))
+			if (phpbb::$acl->acl_get('m_info', $post_info['forum_id']))
 			{
 				$ip = request_var('ip', '');
 				include(PHPBB_ROOT_PATH . 'includes/functions_user.' . PHP_EXT);
@@ -88,7 +88,7 @@ function mcp_post_details($id, $mode, $action)
 				trigger_error('NO_USER');
 			}
 
-			if ($auth->acl_get('m_chgposter', $post_info['forum_id']))
+			if (phpbb::$acl->acl_get('m_chgposter', $post_info['forum_id']))
 			{
 				if (check_form_key('mcp_post_details'))
 				{
@@ -136,7 +136,7 @@ function mcp_post_details($id, $mode, $action)
 	$message = bbcode_nl2br($message);
 	$message = smiley_text($message);
 
-	if ($post_info['post_attachment'] && $auth->acl_get('u_download') && $auth->acl_get('f_download', $post_info['forum_id']))
+	if ($post_info['post_attachment'] && phpbb::$acl->acl_get('u_download') && phpbb::$acl->acl_get('f_download', $post_info['forum_id']))
 	{
 		$extensions = phpbb_cache::obtain_extensions_forum($post_info['forum_id']);
 
@@ -178,23 +178,23 @@ function mcp_post_details($id, $mode, $action)
 		'U_POST_ACTION'			=> "$url&amp;i=$id&amp;mode=post_details", // Use this for action parameters
 		'U_APPROVE_ACTION'		=> append_sid('mcp', "i=queue&amp;p=$post_id&amp;f={$post_info['forum_id']}"),
 
-		'S_CAN_VIEWIP'			=> $auth->acl_get('m_info', $post_info['forum_id']),
-		'S_CAN_CHGPOSTER'		=> $auth->acl_get('m_chgposter', $post_info['forum_id']),
-		'S_CAN_LOCK_POST'		=> $auth->acl_get('m_lock', $post_info['forum_id']),
-		'S_CAN_DELETE_POST'		=> $auth->acl_get('m_delete', $post_info['forum_id']),
+		'S_CAN_VIEWIP'			=> phpbb::$acl->acl_get('m_info', $post_info['forum_id']),
+		'S_CAN_CHGPOSTER'		=> phpbb::$acl->acl_get('m_chgposter', $post_info['forum_id']),
+		'S_CAN_LOCK_POST'		=> phpbb::$acl->acl_get('m_lock', $post_info['forum_id']),
+		'S_CAN_DELETE_POST'		=> phpbb::$acl->acl_get('m_delete', $post_info['forum_id']),
 
 		'S_POST_REPORTED'		=> ($post_info['post_reported']) ? true : false,
 		'S_POST_UNAPPROVED'		=> (!$post_info['post_approved']) ? true : false,
 		'S_POST_LOCKED'			=> ($post_info['post_edit_locked']) ? true : false,
 		'S_USER_NOTES'			=> true,
-		'S_CLEAR_ALLOWED'		=> ($auth->acl_get('a_clearlogs')) ? true : false,
+		'S_CLEAR_ALLOWED'		=> (phpbb::$acl->acl_get('a_clearlogs')) ? true : false,
 
-		'U_EDIT'				=> ($auth->acl_get('m_edit', $post_info['forum_id'])) ? append_sid('posting', "mode=edit&amp;f={$post_info['forum_id']}&amp;p={$post_info['post_id']}") : '',
+		'U_EDIT'				=> (phpbb::$acl->acl_get('m_edit', $post_info['forum_id'])) ? append_sid('posting', "mode=edit&amp;f={$post_info['forum_id']}&amp;p={$post_info['post_id']}") : '',
 		'U_FIND_USERNAME'		=> append_sid('memberlist', 'mode=searchuser&amp;form=mcp_chgposter&amp;field=username&amp;select_single=true'),
 		'U_MCP_APPROVE'			=> append_sid('mcp', 'i=queue&amp;mode=approve_details&amp;f=' . $post_info['forum_id'] . '&amp;p=' . $post_id),
 		'U_MCP_REPORT'			=> append_sid('mcp', 'i=reports&amp;mode=report_details&amp;f=' . $post_info['forum_id'] . '&amp;p=' . $post_id),
 		'U_MCP_USER_NOTES'		=> append_sid('mcp', 'i=notes&amp;mode=user_notes&amp;u=' . $post_info['user_id']),
-		'U_MCP_WARN_USER'		=> ($auth->acl_get('m_warn')) ? append_sid('mcp', 'i=warn&amp;mode=warn_user&amp;u=' . $post_info['user_id']) : '',
+		'U_MCP_WARN_USER'		=> (phpbb::$acl->acl_get('m_warn')) ? append_sid('mcp', 'i=warn&amp;mode=warn_user&amp;u=' . $post_info['user_id']) : '',
 		'U_VIEW_POST'			=> append_sid('viewtopic', 'f=' . $post_info['forum_id'] . '&amp;p=' . $post_info['post_id'] . '#p' . $post_info['post_id']),
 		'U_VIEW_TOPIC'			=> append_sid('viewtopic', 'f=' . $post_info['forum_id'] . '&amp;t=' . $post_info['topic_id']),
 
@@ -216,11 +216,11 @@ function mcp_post_details($id, $mode, $action)
 		'POST_SUBJECT'			=> $post_info['post_subject'],
 		'POST_DATE'				=> phpbb::$user->format_date($post_info['post_time']),
 		'POST_IP'				=> $post_info['poster_ip'],
-		'POST_IPADDR'			=> ($auth->acl_get('m_info', $post_info['forum_id']) && request_var('lookup', '')) ? @gethostbyaddr($post_info['poster_ip']) : '',
+		'POST_IPADDR'			=> (phpbb::$acl->acl_get('m_info', $post_info['forum_id']) && request_var('lookup', '')) ? @gethostbyaddr($post_info['poster_ip']) : '',
 		'POST_ID'				=> $post_info['post_id'],
 
-		'U_LOOKUP_IP'			=> ($auth->acl_get('m_info', $post_info['forum_id'])) ? "$url&amp;i=$id&amp;mode=$mode&amp;lookup={$post_info['poster_ip']}#ip" : '',
-		'U_WHOIS'				=> ($auth->acl_get('m_info', $post_info['forum_id'])) ? append_sid('mcp', "i=$id&amp;mode=$mode&amp;action=whois&amp;p=$post_id&amp;ip={$post_info['poster_ip']}") : '',
+		'U_LOOKUP_IP'			=> (phpbb::$acl->acl_get('m_info', $post_info['forum_id'])) ? "$url&amp;i=$id&amp;mode=$mode&amp;lookup={$post_info['poster_ip']}#ip" : '',
+		'U_WHOIS'				=> (phpbb::$acl->acl_get('m_info', $post_info['forum_id'])) ? append_sid('mcp', "i=$id&amp;mode=$mode&amp;action=whois&amp;p=$post_id&amp;ip={$post_info['poster_ip']}") : '',
 	));
 
 	// Get User Notes
@@ -244,7 +244,7 @@ function mcp_post_details($id, $mode, $action)
 	}
 
 	// Get Reports
-	if ($auth->acl_get('m_', $post_info['forum_id']))
+	if (phpbb::$acl->acl_get('m_', $post_info['forum_id']))
 	{
 		$sql = 'SELECT r.*, re.*, u.user_id, u.username
 			FROM ' . REPORTS_TABLE . ' r, ' . USERS_TABLE . ' u, ' . REPORTS_REASONS_TABLE . " re
@@ -284,7 +284,7 @@ function mcp_post_details($id, $mode, $action)
 	}
 
 	// Get IP
-	if ($auth->acl_get('m_info', $post_info['forum_id']))
+	if (phpbb::$acl->acl_get('m_info', $post_info['forum_id']))
 	{
 		$rdns_ip_num = request_var('rdns', '');
 

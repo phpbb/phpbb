@@ -44,7 +44,7 @@ class acp_logs
 		$this->log_type = constant('LOG_' . strtoupper($mode));
 
 		// Delete entries if requested and able
-		if (($deletemark || $deleteall) && $auth->acl_get('a_clearlogs'))
+		if (($deletemark || $deleteall) && phpbb::$acl->acl_get('a_clearlogs'))
 		{
 			if (confirm_box(true))
 			{
@@ -133,7 +133,7 @@ class acp_logs
 			'S_LIMIT_DAYS'	=> $s_limit_days,
 			'S_SORT_KEY'	=> $s_sort_key,
 			'S_SORT_DIR'	=> $s_sort_dir,
-			'S_CLEARLOGS'	=> $auth->acl_get('a_clearlogs'),
+			'S_CLEARLOGS'	=> phpbb::$acl->acl_get('a_clearlogs'),
 			)
 		);
 

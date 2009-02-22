@@ -18,7 +18,7 @@ include(PHPBB_ROOT_PATH . 'common.' . PHP_EXT);
 
 // Start session management
 phpbb::$user->session_begin();
-$auth->acl(phpbb::$user->data);
+phpbb::$acl->init(phpbb::$user->data);
 phpbb::$user->setup('memberlist');
 
 // Get and set some variables
@@ -30,7 +30,7 @@ $sort_dir	= request_var('sd', 'd');
 $show_guests= (phpbb::$config['load_online_guests']) ? request_var('sg', 0) : 0;
 
 // Can this user view profiles/memberlist?
-if (!$auth->acl_gets('u_viewprofile', 'a_user', 'a_useradd', 'a_userdel'))
+if (!phpbb::$acl->acl_gets('u_viewprofile', 'a_user', 'a_useradd', 'a_userdel'))
 {
 	if (!phpbb::$user->is_guest)
 	{
@@ -52,7 +52,7 @@ if (!isset($sort_key_text[$sort_key]))
 $order_by = $sort_key_sql[$sort_key] . ' ' . (($sort_dir == 'a') ? 'ASC' : 'DESC');
 
 // Whois requested
-if ($mode == 'whois' && $auth->acl_get('a_') && $session_id)
+if ($mode == 'whois' && phpbb::$acl->acl_get('a_') && $session_id)
 {
 	include(PHPBB_ROOT_PATH . 'includes/functions_user.' . PHP_EXT);
 
@@ -143,7 +143,7 @@ while ($row = $db->sql_fetchrow($result))
 
 		if (!$row['session_viewonline'])
 		{
-			$view_online = ($auth->acl_get('u_viewonline')) ? true : false;
+			$view_online = (phpbb::$acl->acl_get('u_viewonline')) ? true : false;
 			$logged_hidden_online++;
 
 			$username_full = '<em>' . $username_full . '</em>';
@@ -210,7 +210,7 @@ while ($row = $db->sql_fetchrow($result))
 			preg_match('#_f_=([0-9]+)x#i', $row['session_page'], $forum_id);
 			$forum_id = (sizeof($forum_id)) ? (int) $forum_id[1] : 0;
 
-			if ($forum_id && $auth->acl_get('f_list', $forum_id))
+			if ($forum_id && phpbb::$acl->acl_get('f_list', $forum_id))
 			{
 				$location = '';
 				$location_url = append_sid('viewforum', 'f=' . $forum_id);
@@ -327,8 +327,8 @@ while ($row = $db->sql_fetchrow($result))
 		'USERNAME_FULL'		=> $username_full,
 		'LASTUPDATE'		=> phpbb::$user->format_date($row['session_time']),
 		'FORUM_LOCATION'	=> $location,
-		'USER_IP'			=> ($auth->acl_get('a_')) ? (($mode == 'lookup' && $session_id == $row['session_id']) ? gethostbyaddr($row['session_ip']) : $row['session_ip']) : '',
-		'USER_BROWSER'		=> ($auth->acl_get('a_user')) ? $row['session_browser'] : '',
+		'USER_IP'			=> (phpbb::$acl->acl_get('a_')) ? (($mode == 'lookup' && $session_id == $row['session_id']) ? gethostbyaddr($row['session_ip']) : $row['session_ip']) : '',
+		'USER_BROWSER'		=> (phpbb::$acl->acl_get('a_user')) ? $row['session_browser'] : '',
 
 		'U_USER_PROFILE'	=> ($row['user_type'] != phpbb::USER_IGNORE) ? get_username_string('profile', $row['user_id'], '') : '',
 		'U_USER_IP'			=> append_sid('viewonline', 'mode=lookup' . (($mode != 'lookup' || $row['session_id'] != $session_id) ? '&amp;s=' . $row['session_id'] : '') . "&amp;sg=$show_guests&amp;start=$start&amp;sk=$sort_key&amp;sd=$sort_dir"),
@@ -372,7 +372,7 @@ unset($vars_online);
 $pagination = generate_pagination(append_sid('viewonline', "sg=$show_guests&amp;sk=$sort_key&amp;sd=$sort_dir"), $counter, phpbb::$config['topics_per_page'], $start);
 
 // Grab group details for legend display
-if ($auth->acl_gets('a_group', 'a_groupadd', 'a_groupdel'))
+if (phpbb::$acl->acl_gets('a_group', 'a_groupadd', 'a_groupdel'))
 {
 	$sql = 'SELECT group_id, group_name, group_colour, group_type
 		FROM ' . GROUPS_TABLE . '

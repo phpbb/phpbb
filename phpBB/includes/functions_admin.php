@@ -142,10 +142,10 @@ function make_forum_select($select_id = false, $ignore_id = false, $ignore_acl =
 		$right = $row['right_id'];
 		$disabled = false;
 
-		if ($acl && !$auth->acl_gets($acl, $row['forum_id']))
+		if ($acl && !phpbb::$acl->acl_gets($acl, $row['forum_id']))
 		{
 			// List permission?
-			if ($auth->acl_get('f_list', $row['forum_id']))
+			if (phpbb::$acl->acl_get('f_list', $row['forum_id']))
 			{
 				$disabled = true;
 			}
@@ -291,7 +291,7 @@ function get_forum_list($acl_list = 'f_list', $id_only = true, $postable_only = 
 			continue;
 		}
 
-		if ($acl_list == '' || ($acl_list != '' && $auth->acl_gets($acl_list, $row['forum_id'])))
+		if ($acl_list == '' || ($acl_list != '' && phpbb::$acl->acl_gets($acl_list, $row['forum_id'])))
 		{
 			$rowset[] = ($id_only) ? $row['forum_id'] : $row;
 		}
@@ -2104,7 +2104,7 @@ function cache_moderators()
 	$hold_ary = $ug_id_ary = $sql_ary = array();
 
 	// Grab all users having moderative options...
-	$hold_ary = $auth->acl_user_raw_data(false, 'm_%', false);
+	$hold_ary = phpbb::$acl->acl_user_raw_data(false, 'm_%', false);
 
 	// Add users?
 	if (sizeof($hold_ary))
@@ -2185,7 +2185,7 @@ function cache_moderators()
 	}
 
 	// Now to the groups...
-	$hold_ary = $auth->acl_group_raw_data(false, 'm_%', false);
+	$hold_ary = phpbb::$acl->acl_group_raw_data(false, 'm_%', false);
 
 	if (sizeof($hold_ary))
 	{
@@ -2569,7 +2569,7 @@ function update_foes($group_id = false, $user_id = false)
 
 	// update foes for everyone
 	$perms = array();
-	foreach ($auth->acl_get_list(false, array('a_', 'm_'), false) as $forum_id => $forum_ary)
+	foreach (phpbb::$acl->acl_get_list(false, array('a_', 'm_'), false) as $forum_id => $forum_ary)
 	{
 		foreach ($forum_ary as $auth_option => $user_ary)
 		{

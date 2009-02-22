@@ -20,7 +20,7 @@ include(PHPBB_ROOT_PATH . 'includes/bbcode.' . PHP_EXT);
 
 // Start session management
 phpbb::$user->session_begin();
-$auth->acl(phpbb::$user->data);
+phpbb::$acl->init(phpbb::$user->data);
 
 // Initial var setup
 $forum_id	= request_var('f', 0);
@@ -80,7 +80,7 @@ if ($view && !$post_id)
 		$sql = 'SELECT post_id, topic_id, forum_id
 			FROM ' . POSTS_TABLE . "
 			WHERE topic_id = $topic_id
-				" . (($auth->acl_get('m_approve', $forum_id)) ? '' : 'AND post_approved = 1') . "
+				" . ((phpbb::$acl->acl_get('m_approve', $forum_id)) ? '' : 'AND post_approved = 1') . "
 				AND post_time > $topic_last_read
 			ORDER BY post_time ASC";
 		$result = $db->sql_query_limit($sql, 1);
@@ -133,7 +133,7 @@ if ($view && !$post_id)
 				WHERE forum_id = ' . $row['forum_id'] . "
 					AND topic_moved_id = 0
 					AND topic_last_post_time $sql_condition {$row['topic_last_post_time']}
-					" . (($auth->acl_get('m_approve', $row['forum_id'])) ? '' : 'AND topic_approved = 1') . "
+					" . ((phpbb::$acl->acl_get('m_approve', $row['forum_id'])) ? '' : 'AND topic_approved = 1') . "
 				ORDER BY topic_last_post_time $sql_ordering";
 			$result = $db->sql_query_limit($sql, 1);
 			$row = $db->sql_fetchrow($result);
@@ -231,7 +231,7 @@ if (!$post_id)
 }
 else
 {
-	$sql_array['WHERE'] = "p.post_id = $post_id AND t.topic_id = p.topic_id" . ((!$auth->acl_get('m_approve', $forum_id)) ? ' AND p.post_approved = 1' : '');
+	$sql_array['WHERE'] = "p.post_id = $post_id AND t.topic_id = p.topic_id" . ((!phpbb::$acl->acl_get('m_approve', $forum_id)) ? ' AND p.post_approved = 1' : '');
 }
 
 $sql_array['WHERE'] .= ' AND (f.forum_id = t.forum_id';
@@ -279,7 +279,7 @@ if ($post_id)
 
 		if ($sort_dir == $check_sort)
 		{
-			$topic_data['prev_posts'] = ($auth->acl_get('m_approve', $forum_id)) ? $topic_data['topic_replies_real'] : $topic_data['topic_replies'];
+			$topic_data['prev_posts'] = (phpbb::$acl->acl_get('m_approve', $forum_id)) ? $topic_data['topic_replies_real'] : $topic_data['topic_replies'];
 		}
 		else
 		{
@@ -292,7 +292,7 @@ if ($post_id)
 			FROM ' . POSTS_TABLE . ' p1, ' . POSTS_TABLE . " p2
 			WHERE p1.topic_id = {$topic_data['topic_id']}
 				AND p2.post_id = {$post_id}
-				" . ((!$auth->acl_get('m_approve', $forum_id)) ? 'AND p1.post_approved = 1' : '') . '
+				" . ((!phpbb::$acl->acl_get('m_approve', $forum_id)) ? 'AND p1.post_approved = 1' : '') . '
 				AND ' . (($sort_dir == 'd') ? 'p1.post_time >= p2.post_time' : 'p1.post_time <= p2.post_time');
 
 		$result = $db->sql_query($sql);
@@ -307,7 +307,7 @@ $forum_id = (int) $topic_data['forum_id'];
 $topic_id = (int) $topic_data['topic_id'];
 
 //
-$topic_replies = ($auth->acl_get('m_approve', $forum_id)) ? $topic_data['topic_replies_real'] : $topic_data['topic_replies'];
+$topic_replies = (phpbb::$acl->acl_get('m_approve', $forum_id)) ? $topic_data['topic_replies_real'] : $topic_data['topic_replies'];
 
 // Check sticky/announcement time limit
 if (($topic_data['topic_type'] == POST_STICKY || $topic_data['topic_type'] == POST_ANNOUNCE) && $topic_data['topic_time_limit'] && ($topic_data['topic_time'] + $topic_data['topic_time_limit']) < time())
@@ -324,13 +324,13 @@ if (($topic_data['topic_type'] == POST_STICKY || $topic_data['topic_type'] == PO
 // Setup look and feel
 phpbb::$user->setup('viewtopic', $topic_data['forum_style']);
 
-if (!$topic_data['topic_approved'] && !$auth->acl_get('m_approve', $forum_id))
+if (!$topic_data['topic_approved'] && !phpbb::$acl->acl_get('m_approve', $forum_id))
 {
 	trigger_error('NO_TOPIC');
 }
 
 // Start auth check
-if (!$auth->acl_get('f_read', $forum_id))
+if (!phpbb::$acl->acl_get('f_read', $forum_id))
 {
 	if (!phpbb::$user->is_guest)
 	{
@@ -410,7 +410,7 @@ if ($sort_days)
 		FROM ' . POSTS_TABLE . "
 		WHERE topic_id = $topic_id
 			AND post_time >= $min_post_time
-		" . (($auth->acl_get('m_approve', $forum_id)) ? '' : 'AND post_approved = 1');
+		" . ((phpbb::$acl->acl_get('m_approve', $forum_id)) ? '' : 'AND post_approved = 1');
 	$result = $db->sql_query($sql);
 	$total_posts = (int) $db->sql_fetchfield('num_posts');
 	$db->sql_freeresult($result);
@@ -466,7 +466,7 @@ if ((phpbb::$config['email_enable'] || phpbb::$config['jab_enable']) && phpbb::$
 	watch_topic_forum('topic', $s_watching_topic, phpbb::$user->data['user_id'], $forum_id, $topic_id, $topic_data['notify_status'], $start);
 
 	// Reset forum notification if forum notify is set
-	if (phpbb::$config['allow_forum_notify'] && $auth->acl_get('f_subscribe', $forum_id))
+	if (phpbb::$config['allow_forum_notify'] && phpbb::$acl->acl_get('f_subscribe', $forum_id))
 	{
 		$s_watching_forum = $s_watching_topic;
 		watch_topic_forum('forum', $s_watching_forum, phpbb::$user->data['user_id'], $forum_id, 0);
@@ -522,21 +522,21 @@ $s_forum_rules = '';
 gen_forum_auth_level('topic', $forum_id, $topic_data['forum_status']);
 
 // Quick mod tools
-$allow_change_type = ($auth->acl_get('m_', $forum_id) || (phpbb::$user->is_registered && phpbb::$user->data['user_id'] == $topic_data['topic_poster'])) ? true : false;
+$allow_change_type = (phpbb::$acl->acl_get('m_', $forum_id) || (phpbb::$user->is_registered && phpbb::$user->data['user_id'] == $topic_data['topic_poster'])) ? true : false;
 
 $topic_mod = '';
-$topic_mod .= ($auth->acl_get('m_lock', $forum_id) || ($auth->acl_get('f_user_lock', $forum_id) && phpbb::$user->is_registered && phpbb::$user->data['user_id'] == $topic_data['topic_poster'] && $topic_data['topic_status'] == ITEM_UNLOCKED)) ? (($topic_data['topic_status'] == ITEM_UNLOCKED) ? '<option value="lock">' . phpbb::$user->lang['LOCK_TOPIC'] . '</option>' : '<option value="unlock">' . phpbb::$user->lang['UNLOCK_TOPIC'] . '</option>') : '';
-$topic_mod .= ($auth->acl_get('m_delete', $forum_id)) ? '<option value="delete_topic">' . phpbb::$user->lang['DELETE_TOPIC'] . '</option>' : '';
-$topic_mod .= ($auth->acl_get('m_move', $forum_id) && $topic_data['topic_status'] != ITEM_MOVED) ? '<option value="move">' . phpbb::$user->lang['MOVE_TOPIC'] . '</option>' : '';
-$topic_mod .= ($auth->acl_get('m_split', $forum_id)) ? '<option value="split">' . phpbb::$user->lang['SPLIT_TOPIC'] . '</option>' : '';
-$topic_mod .= ($auth->acl_get('m_merge', $forum_id)) ? '<option value="merge">' . phpbb::$user->lang['MERGE_POSTS'] . '</option>' : '';
-$topic_mod .= ($auth->acl_get('m_merge', $forum_id)) ? '<option value="merge_topic">' . phpbb::$user->lang['MERGE_TOPIC'] . '</option>' : '';
-$topic_mod .= ($auth->acl_get('m_move', $forum_id)) ? '<option value="fork">' . phpbb::$user->lang['FORK_TOPIC'] . '</option>' : '';
-$topic_mod .= ($allow_change_type && $auth->acl_gets('f_sticky', 'f_announce', $forum_id) && $topic_data['topic_type'] != POST_NORMAL) ? '<option value="make_normal">' . phpbb::$user->lang['MAKE_NORMAL'] . '</option>' : '';
-$topic_mod .= ($allow_change_type && $auth->acl_get('f_sticky', $forum_id) && $topic_data['topic_type'] != POST_STICKY) ? '<option value="make_sticky">' . phpbb::$user->lang['MAKE_STICKY'] . '</option>' : '';
-$topic_mod .= ($allow_change_type && $auth->acl_get('f_announce', $forum_id) && $topic_data['topic_type'] != POST_ANNOUNCE) ? '<option value="make_announce">' . phpbb::$user->lang['MAKE_ANNOUNCE'] . '</option>' : '';
-$topic_mod .= ($allow_change_type && $auth->acl_get('f_announce', $forum_id) && $topic_data['topic_type'] != POST_GLOBAL) ? '<option value="make_global">' . phpbb::$user->lang['MAKE_GLOBAL'] . '</option>' : '';
-$topic_mod .= ($auth->acl_get('m_', $forum_id)) ? '<option value="topic_logs">' . phpbb::$user->lang['VIEW_TOPIC_LOGS'] . '</option>' : '';
+$topic_mod .= (phpbb::$acl->acl_get('m_lock', $forum_id) || (phpbb::$acl->acl_get('f_user_lock', $forum_id) && phpbb::$user->is_registered && phpbb::$user->data['user_id'] == $topic_data['topic_poster'] && $topic_data['topic_status'] == ITEM_UNLOCKED)) ? (($topic_data['topic_status'] == ITEM_UNLOCKED) ? '<option value="lock">' . phpbb::$user->lang['LOCK_TOPIC'] . '</option>' : '<option value="unlock">' . phpbb::$user->lang['UNLOCK_TOPIC'] . '</option>') : '';
+$topic_mod .= (phpbb::$acl->acl_get('m_delete', $forum_id)) ? '<option value="delete_topic">' . phpbb::$user->lang['DELETE_TOPIC'] . '</option>' : '';
+$topic_mod .= (phpbb::$acl->acl_get('m_move', $forum_id) && $topic_data['topic_status'] != ITEM_MOVED) ? '<option value="move">' . phpbb::$user->lang['MOVE_TOPIC'] . '</option>' : '';
+$topic_mod .= (phpbb::$acl->acl_get('m_split', $forum_id)) ? '<option value="split">' . phpbb::$user->lang['SPLIT_TOPIC'] . '</option>' : '';
+$topic_mod .= (phpbb::$acl->acl_get('m_merge', $forum_id)) ? '<option value="merge">' . phpbb::$user->lang['MERGE_POSTS'] . '</option>' : '';
+$topic_mod .= (phpbb::$acl->acl_get('m_merge', $forum_id)) ? '<option value="merge_topic">' . phpbb::$user->lang['MERGE_TOPIC'] . '</option>' : '';
+$topic_mod .= (phpbb::$acl->acl_get('m_move', $forum_id)) ? '<option value="fork">' . phpbb::$user->lang['FORK_TOPIC'] . '</option>' : '';
+$topic_mod .= ($allow_change_type && phpbb::$acl->acl_gets('f_sticky', 'f_announce', $forum_id) && $topic_data['topic_type'] != POST_NORMAL) ? '<option value="make_normal">' . phpbb::$user->lang['MAKE_NORMAL'] . '</option>' : '';
+$topic_mod .= ($allow_change_type && phpbb::$acl->acl_get('f_sticky', $forum_id) && $topic_data['topic_type'] != POST_STICKY) ? '<option value="make_sticky">' . phpbb::$user->lang['MAKE_STICKY'] . '</option>' : '';
+$topic_mod .= ($allow_change_type && phpbb::$acl->acl_get('f_announce', $forum_id) && $topic_data['topic_type'] != POST_ANNOUNCE) ? '<option value="make_announce">' . phpbb::$user->lang['MAKE_ANNOUNCE'] . '</option>' : '';
+$topic_mod .= ($allow_change_type && phpbb::$acl->acl_get('f_announce', $forum_id) && $topic_data['topic_type'] != POST_GLOBAL) ? '<option value="make_global">' . phpbb::$user->lang['MAKE_GLOBAL'] . '</option>' : '';
+$topic_mod .= (phpbb::$acl->acl_get('m_', $forum_id)) ? '<option value="topic_logs">' . phpbb::$user->lang['VIEW_TOPIC_LOGS'] . '</option>' : '';
 
 // If we've got a hightlight set pass it on to pagination.
 $pagination = generate_pagination(append_sid('viewtopic', "f=$forum_id&amp;t=$topic_id" . ((strlen($u_sort_param)) ? "&amp;$u_sort_param" : '') . (($highlight_match) ? "&amp;hilit=$highlight" : '')), $total_posts, phpbb::$config['posts_per_page'], $start);
@@ -573,7 +573,7 @@ $template->assign_vars(array(
 	'PAGINATION' 	=> $pagination,
 	'PAGE_NUMBER' 	=> on_page($total_posts, phpbb::$config['posts_per_page'], $start),
 	'TOTAL_POSTS'	=> ($total_posts == 1) ? phpbb::$user->lang['VIEW_TOPIC_POST'] : sprintf(phpbb::$user->lang['VIEW_TOPIC_POSTS'], $total_posts),
-	'U_MCP' 		=> ($auth->acl_get('m_', $forum_id)) ? append_sid('mcp', "i=main&amp;mode=topic_view&amp;f=$forum_id&amp;t=$topic_id&amp;start=$start" . ((strlen($u_sort_param)) ? "&amp;$u_sort_param" : ''), true, phpbb::$user->session_id) : '',
+	'U_MCP' 		=> (phpbb::$acl->acl_get('m_', $forum_id)) ? append_sid('mcp', "i=main&amp;mode=topic_view&amp;f=$forum_id&amp;t=$topic_id&amp;start=$start" . ((strlen($u_sort_param)) ? "&amp;$u_sort_param" : ''), true, phpbb::$user->session_id) : '',
 
 	'MODERATORS'	=> (isset($forum_moderators[$forum_id]) && sizeof($forum_moderators[$forum_id])) ? implode(', ', $forum_moderators[$forum_id]) : '',
 
@@ -608,11 +608,11 @@ $template->assign_vars(array(
 	'S_MOD_ACTION' 			=> append_sid('mcp', "f=$forum_id&amp;t=$topic_id&amp;quickmod=1&amp;redirect=" . urlencode(str_replace('&amp;', '&', $viewtopic_url)), true, phpbb::$user->session_id),
 
 	'S_VIEWTOPIC'			=> true,
-	'S_DISPLAY_SEARCHBOX'	=> ($auth->acl_get('u_search') && $auth->acl_get('f_search', $forum_id) && phpbb::$config['load_search']) ? true : false,
+	'S_DISPLAY_SEARCHBOX'	=> (phpbb::$acl->acl_get('u_search') && phpbb::$acl->acl_get('f_search', $forum_id) && phpbb::$config['load_search']) ? true : false,
 	'S_SEARCHBOX_ACTION'	=> append_sid('search', 't=' . $topic_id),
 
-	'S_DISPLAY_POST_INFO'	=> ($topic_data['forum_type'] == FORUM_POST && ($auth->acl_get('f_post', $forum_id) || phpbb::$user->is_guest)) ? true : false,
-	'S_DISPLAY_REPLY_INFO'	=> ($topic_data['forum_type'] == FORUM_POST && ($auth->acl_get('f_reply', $forum_id) || phpbb::$user->is_guest)) ? true : false,
+	'S_DISPLAY_POST_INFO'	=> ($topic_data['forum_type'] == FORUM_POST && (phpbb::$acl->acl_get('f_post', $forum_id) || phpbb::$user->is_guest)) ? true : false,
+	'S_DISPLAY_REPLY_INFO'	=> ($topic_data['forum_type'] == FORUM_POST && (phpbb::$acl->acl_get('f_reply', $forum_id) || phpbb::$user->is_guest)) ? true : false,
 
 	'U_TOPIC'				=> "{$server_path}viewtopic." . PHP_EXT . "?f=$forum_id&amp;t=$topic_id",
 	'U_FORUM'				=> $server_path,
@@ -620,8 +620,8 @@ $template->assign_vars(array(
 	'U_VIEW_FORUM' 			=> append_sid('viewforum', 'f=' . $forum_id),
 	'U_VIEW_OLDER_TOPIC'	=> append_sid('viewtopic', "f=$forum_id&amp;t=$topic_id&amp;view=previous"),
 	'U_VIEW_NEWER_TOPIC'	=> append_sid('viewtopic', "f=$forum_id&amp;t=$topic_id&amp;view=next"),
-	'U_PRINT_TOPIC'			=> ($auth->acl_get('f_print', $forum_id)) ? $viewtopic_url . '&amp;view=print' : '',
-	'U_EMAIL_TOPIC'			=> ($auth->acl_get('f_email', $forum_id) && phpbb::$config['email_enable']) ? append_sid('memberlist', "mode=email&amp;t=$topic_id") : '',
+	'U_PRINT_TOPIC'			=> (phpbb::$acl->acl_get('f_print', $forum_id)) ? $viewtopic_url . '&amp;view=print' : '',
+	'U_EMAIL_TOPIC'			=> (phpbb::$acl->acl_get('f_email', $forum_id) && phpbb::$config['email_enable']) ? append_sid('memberlist', "mode=email&amp;t=$topic_id") : '',
 
 	'U_WATCH_TOPIC' 		=> $s_watching_topic['link'],
 	'L_WATCH_TOPIC' 		=> $s_watching_topic['title'],
@@ -630,8 +630,8 @@ $template->assign_vars(array(
 	'U_BOOKMARK_TOPIC'		=> (phpbb::$user->is_registered && phpbb::$config['allow_bookmarks']) ? $viewtopic_url . '&amp;bookmark=1&amp;hash=' . generate_link_hash("topic_$topic_id") : '',
 	'L_BOOKMARK_TOPIC'		=> (phpbb::$user->is_registered && phpbb::$config['allow_bookmarks'] && $topic_data['bookmarked']) ? phpbb::$user->lang['BOOKMARK_TOPIC_REMOVE'] : phpbb::$user->lang['BOOKMARK_TOPIC'],
 
-	'U_POST_NEW_TOPIC' 		=> ($auth->acl_get('f_post', $forum_id) || phpbb::$user->is_guest) ? append_sid('posting', "mode=post&amp;f=$forum_id") : '',
-	'U_POST_REPLY_TOPIC' 	=> ($auth->acl_get('f_reply', $forum_id) || phpbb::$user->is_guest) ? append_sid('posting', "mode=reply&amp;f=$forum_id&amp;t=$topic_id") : '',
+	'U_POST_NEW_TOPIC' 		=> (phpbb::$acl->acl_get('f_post', $forum_id) || phpbb::$user->is_guest) ? append_sid('posting', "mode=post&amp;f=$forum_id") : '',
+	'U_POST_REPLY_TOPIC' 	=> (phpbb::$acl->acl_get('f_reply', $forum_id) || phpbb::$user->is_guest) ? append_sid('posting', "mode=reply&amp;f=$forum_id&amp;t=$topic_id") : '',
 	'U_BUMP_TOPIC'			=> (bump_topic_allowed($forum_id, $topic_data['topic_bumped'], $topic_data['topic_last_post_time'], $topic_data['topic_poster'], $topic_data['topic_last_poster_id'])) ? append_sid('posting', "mode=bump&amp;f=$forum_id&amp;t=$topic_id&amp;hash=" . generate_link_hash("topic_$topic_id")) : '')
 );
 
@@ -680,8 +680,8 @@ if (!empty($topic_data['poll_start']))
 		}
 	}
 
-	$s_can_vote = (((!sizeof($cur_voted_id) && $auth->acl_get('f_vote', $forum_id)) ||
-		($auth->acl_get('f_votechg', $forum_id) && $topic_data['poll_vote_change'])) &&
+	$s_can_vote = (((!sizeof($cur_voted_id) && phpbb::$acl->acl_get('f_vote', $forum_id)) ||
+		(phpbb::$acl->acl_get('f_votechg', $forum_id) && $topic_data['poll_vote_change'])) &&
 		(($topic_data['poll_length'] != 0 && $topic_data['poll_start'] + $topic_data['poll_length'] > time()) || $topic_data['poll_length'] == 0) &&
 		$topic_data['topic_status'] != ITEM_LOCKED &&
 		$topic_data['forum_status'] != ITEM_LOCKED) ? true : false;
@@ -890,7 +890,7 @@ $i = $i_total = 0;
 $sql = 'SELECT p.post_id
 	FROM ' . POSTS_TABLE . ' p' . (($sort_by_sql[$sort_key][0] == 'u') ? ', ' . USERS_TABLE . ' u': '') . "
 	WHERE p.topic_id = $topic_id
-		" . ((!$auth->acl_get('m_approve', $forum_id)) ? 'AND p.post_approved = 1' : '') . "
+		" . ((!phpbb::$acl->acl_get('m_approve', $forum_id)) ? 'AND p.post_approved = 1' : '') . "
 		" . (($sort_by_sql[$sort_key][0] == 'u') ? 'AND u.user_id = p.poster_id': '') . "
 		$limit_posts_time
 	ORDER BY $sql_sort_order";
@@ -1088,18 +1088,18 @@ while ($row = $db->sql_fetchrow($result))
 				'online'		=> false,
 				'profile'		=> append_sid('memberlist', "mode=viewprofile&amp;u=$poster_id"),
 				'www'			=> $row['user_website'],
-				'aim'			=> ($row['user_aim'] && $auth->acl_get('u_sendim')) ? append_sid('memberlist', "mode=contact&amp;action=aim&amp;u=$poster_id") : '',
-				'msn'			=> ($row['user_msnm'] && $auth->acl_get('u_sendim')) ? append_sid('memberlist', "mode=contact&amp;action=msnm&amp;u=$poster_id") : '',
+				'aim'			=> ($row['user_aim'] && phpbb::$acl->acl_get('u_sendim')) ? append_sid('memberlist', "mode=contact&amp;action=aim&amp;u=$poster_id") : '',
+				'msn'			=> ($row['user_msnm'] && phpbb::$acl->acl_get('u_sendim')) ? append_sid('memberlist', "mode=contact&amp;action=msnm&amp;u=$poster_id") : '',
 				'yim'			=> ($row['user_yim']) ? 'http://edit.yahoo.com/config/send_webmesg?.target=' . urlencode($row['user_yim']) . '&amp;.src=pg' : '',
-				'jabber'		=> ($row['user_jabber'] && $auth->acl_get('u_sendim')) ? append_sid('memberlist', "mode=contact&amp;action=jabber&amp;u=$poster_id") : '',
-				'search'		=> ($auth->acl_get('u_search')) ? append_sid('search', "author_id=$poster_id&amp;sr=posts") : '',
+				'jabber'		=> ($row['user_jabber'] && phpbb::$acl->acl_get('u_sendim')) ? append_sid('memberlist', "mode=contact&amp;action=jabber&amp;u=$poster_id") : '',
+				'search'		=> (phpbb::$acl->acl_get('u_search')) ? append_sid('search', "author_id=$poster_id&amp;sr=posts") : '',
 			);
 
 			get_user_rank($poster_id, $row['user_rank'], $row['user_posts'], $user_cache[$poster_id]['rank_title'], $user_cache[$poster_id]['rank_image'], $user_cache[$poster_id]['rank_image_src']);
 
-			if (!empty($row['user_allow_viewemail']) || $auth->acl_get('a_email'))
+			if (!empty($row['user_allow_viewemail']) || phpbb::$acl->acl_get('a_email'))
 			{
-				$user_cache[$poster_id]['email'] = (phpbb::$config['board_email_form'] && phpbb::$config['email_enable']) ? append_sid('memberlist', "mode=email&amp;u=$poster_id") : ((phpbb::$config['board_hide_emails'] && !$auth->acl_get('a_email')) ? '' : 'mailto:' . $row['user_email']);
+				$user_cache[$poster_id]['email'] = (phpbb::$config['board_email_form'] && phpbb::$config['email_enable']) ? append_sid('memberlist', "mode=email&amp;u=$poster_id") : ((phpbb::$config['board_hide_emails'] && !phpbb::$acl->acl_get('a_email')) ? '' : 'mailto:' . $row['user_email']);
 			}
 			else
 			{
@@ -1163,7 +1163,7 @@ if (phpbb::$config['load_onlinetrack'] && sizeof($id_cache))
 	$update_time = phpbb::$config['load_online_time'] * 60;
 	while ($row = $db->sql_fetchrow($result))
 	{
-		$user_cache[$row['session_user_id']]['online'] = (time() - $update_time < $row['online_time'] && (($row['viewonline']) || $auth->acl_get('u_viewonline'))) ? true : false;
+		$user_cache[$row['session_user_id']]['online'] = (time() - $update_time < $row['online_time'] && (($row['viewonline']) || phpbb::$acl->acl_get('u_viewonline'))) ? true : false;
 	}
 	$db->sql_freeresult($result);
 }
@@ -1172,7 +1172,7 @@ unset($id_cache);
 // Pull attachment data
 if (sizeof($attach_list))
 {
-	if ($auth->acl_get('u_download') && $auth->acl_get('f_download', $forum_id))
+	if (phpbb::$acl->acl_get('u_download') && phpbb::$acl->acl_get('f_download', $forum_id))
 	{
 		$sql = 'SELECT *
 			FROM ' . ATTACHMENTS_TABLE . '
@@ -1438,14 +1438,14 @@ for ($i = 0, $end = sizeof($post_list); $i < $end; ++$i)
 		'ONLINE_IMG'			=> ($poster_id == ANONYMOUS || !phpbb::$config['load_onlinetrack']) ? '' : (($user_cache[$poster_id]['online']) ? phpbb::$user->img('icon_user_online', 'ONLINE') : phpbb::$user->img('icon_user_offline', 'OFFLINE')),
 		'S_ONLINE'				=> ($poster_id == ANONYMOUS || !phpbb::$config['load_onlinetrack']) ? false : (($user_cache[$poster_id]['online']) ? true : false),
 
-		'U_EDIT'			=> (!phpbb::$user->is_registered) ? '' : (((phpbb::$user->data['user_id'] == $poster_id && $auth->acl_get('f_edit', $forum_id) && ($row['post_time'] > time() - (phpbb::$config['edit_time'] * 60) || !phpbb::$config['edit_time'])) || $auth->acl_get('m_edit', $forum_id)) ? append_sid('posting', "mode=edit&amp;f=$forum_id&amp;p={$row['post_id']}") : ''),
-		'U_QUOTE'			=> ($auth->acl_get('f_reply', $forum_id)) ? append_sid('posting', "mode=quote&amp;f=$forum_id&amp;p={$row['post_id']}") : '',
-		'U_INFO'			=> ($auth->acl_get('m_info', $forum_id)) ? append_sid('mcp', "i=main&amp;mode=post_details&amp;f=$forum_id&amp;p=" . $row['post_id'], true, phpbb::$user->session_id) : '',
-		'U_DELETE'			=> (!phpbb::$user->is_registered) ? '' : (((phpbb::$user->data['user_id'] == $poster_id && $auth->acl_get('f_delete', $forum_id) && $topic_data['topic_last_post_id'] == $row['post_id'] && !$row['post_edit_locked'] && ($row['post_time'] > time() - (phpbb::$config['edit_time'] * 60) || !phpbb::$config['edit_time'])) || $auth->acl_get('m_delete', $forum_id)) ? append_sid('posting', "mode=delete&amp;f=$forum_id&amp;p={$row['post_id']}") : ''),
+		'U_EDIT'			=> (!phpbb::$user->is_registered) ? '' : (((phpbb::$user->data['user_id'] == $poster_id && phpbb::$acl->acl_get('f_edit', $forum_id) && ($row['post_time'] > time() - (phpbb::$config['edit_time'] * 60) || !phpbb::$config['edit_time'])) || phpbb::$acl->acl_get('m_edit', $forum_id)) ? append_sid('posting', "mode=edit&amp;f=$forum_id&amp;p={$row['post_id']}") : ''),
+		'U_QUOTE'			=> (phpbb::$acl->acl_get('f_reply', $forum_id)) ? append_sid('posting', "mode=quote&amp;f=$forum_id&amp;p={$row['post_id']}") : '',
+		'U_INFO'			=> (phpbb::$acl->acl_get('m_info', $forum_id)) ? append_sid('mcp', "i=main&amp;mode=post_details&amp;f=$forum_id&amp;p=" . $row['post_id'], true, phpbb::$user->session_id) : '',
+		'U_DELETE'			=> (!phpbb::$user->is_registered) ? '' : (((phpbb::$user->data['user_id'] == $poster_id && phpbb::$acl->acl_get('f_delete', $forum_id) && $topic_data['topic_last_post_id'] == $row['post_id'] && !$row['post_edit_locked'] && ($row['post_time'] > time() - (phpbb::$config['edit_time'] * 60) || !phpbb::$config['edit_time'])) || phpbb::$acl->acl_get('m_delete', $forum_id)) ? append_sid('posting', "mode=delete&amp;f=$forum_id&amp;p={$row['post_id']}") : ''),
 
 		'U_PROFILE'		=> $user_cache[$poster_id]['profile'],
 		'U_SEARCH'		=> $user_cache[$poster_id]['search'],
-		'U_PM'			=> ($poster_id != ANONYMOUS && phpbb::$config['allow_privmsg'] && $auth->acl_get('u_sendpm') && ($user_cache[$poster_id]['allow_pm'] || $auth->acl_gets('a_', 'm_') || $auth->acl_getf_global('m_'))) ? append_sid('ucp', 'i=pm&amp;mode=compose&amp;action=quotepost&amp;p=' . $row['post_id']) : '',
+		'U_PM'			=> ($poster_id != ANONYMOUS && phpbb::$config['allow_privmsg'] && phpbb::$acl->acl_get('u_sendpm') && ($user_cache[$poster_id]['allow_pm'] || phpbb::$acl->acl_gets('a_', 'm_') || phpbb::$acl->acl_getf_global('m_'))) ? append_sid('ucp', 'i=pm&amp;mode=compose&amp;action=quotepost&amp;p=' . $row['post_id']) : '',
 		'U_EMAIL'		=> $user_cache[$poster_id]['email'],
 		'U_WWW'			=> $user_cache[$poster_id]['www'],
 		'U_ICQ'			=> $user_cache[$poster_id]['icq'],
@@ -1454,21 +1454,21 @@ for ($i = 0, $end = sizeof($post_list); $i < $end; ++$i)
 		'U_YIM'			=> $user_cache[$poster_id]['yim'],
 		'U_JABBER'		=> $user_cache[$poster_id]['jabber'],
 
-		'U_REPORT'			=> ($auth->acl_get('f_report', $forum_id)) ? append_sid('report', 'f=' . $forum_id . '&amp;p=' . $row['post_id']) : '',
-		'U_MCP_REPORT'		=> ($auth->acl_get('m_report', $forum_id)) ? append_sid('mcp', 'i=reports&amp;mode=report_details&amp;f=' . $forum_id . '&amp;p=' . $row['post_id'], true, phpbb::$user->session_id) : '',
-		'U_MCP_APPROVE'		=> ($auth->acl_get('m_approve', $forum_id)) ? append_sid('mcp', 'i=queue&amp;mode=approve_details&amp;f=' . $forum_id . '&amp;p=' . $row['post_id'], true, phpbb::$user->session_id) : '',
+		'U_REPORT'			=> (phpbb::$acl->acl_get('f_report', $forum_id)) ? append_sid('report', 'f=' . $forum_id . '&amp;p=' . $row['post_id']) : '',
+		'U_MCP_REPORT'		=> (phpbb::$acl->acl_get('m_report', $forum_id)) ? append_sid('mcp', 'i=reports&amp;mode=report_details&amp;f=' . $forum_id . '&amp;p=' . $row['post_id'], true, phpbb::$user->session_id) : '',
+		'U_MCP_APPROVE'		=> (phpbb::$acl->acl_get('m_approve', $forum_id)) ? append_sid('mcp', 'i=queue&amp;mode=approve_details&amp;f=' . $forum_id . '&amp;p=' . $row['post_id'], true, phpbb::$user->session_id) : '',
 		'U_MINI_POST'		=> append_sid('viewtopic', 'p=' . $row['post_id']) . (($topic_data['topic_type'] == POST_GLOBAL) ? '&amp;f=' . $forum_id : '') . '#p' . $row['post_id'],
 		'U_NEXT_POST_ID'	=> ($i < $i_total && isset($rowset[$post_list[$i + 1]])) ? $rowset[$post_list[$i + 1]]['post_id'] : '',
 		'U_PREV_POST_ID'	=> $prev_post_id,
-		'U_NOTES'			=> ($auth->acl_getf_global('m_')) ? append_sid('mcp', 'i=notes&amp;mode=user_notes&amp;u=' . $poster_id, true, phpbb::$user->session_id) : '',
-		'U_WARN'			=> ($auth->acl_get('m_warn') && $poster_id != phpbb::$user->data['user_id'] && $poster_id != ANONYMOUS) ? append_sid('mcp', 'i=warn&amp;mode=warn_post&amp;f=' . $forum_id . '&amp;p=' . $row['post_id'], true, phpbb::$user->session_id) : '',
+		'U_NOTES'			=> (phpbb::$acl->acl_getf_global('m_')) ? append_sid('mcp', 'i=notes&amp;mode=user_notes&amp;u=' . $poster_id, true, phpbb::$user->session_id) : '',
+		'U_WARN'			=> (phpbb::$acl->acl_get('m_warn') && $poster_id != phpbb::$user->data['user_id'] && $poster_id != ANONYMOUS) ? append_sid('mcp', 'i=warn&amp;mode=warn_post&amp;f=' . $forum_id . '&amp;p=' . $row['post_id'], true, phpbb::$user->session_id) : '',
 
 		'POST_ID'			=> $row['post_id'],
 		'POSTER_ID'			=> $poster_id,
 
 		'S_HAS_ATTACHMENTS'	=> (!empty($attachments[$row['post_id']])) ? true : false,
 		'S_POST_UNAPPROVED'	=> ($row['post_approved']) ? false : true,
-		'S_POST_REPORTED'	=> ($row['post_reported'] && $auth->acl_get('m_report', $forum_id)) ? true : false,
+		'S_POST_REPORTED'	=> ($row['post_reported'] && phpbb::$acl->acl_get('m_report', $forum_id)) ? true : false,
 		'S_DISPLAY_NOTICE'	=> $display_notice && $row['post_attachment'],
 		'S_FRIEND'			=> ($row['friend']) ? true : false,
 		'S_UNREAD_POST'		=> $post_unread,

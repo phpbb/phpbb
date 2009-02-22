@@ -733,7 +733,7 @@ function define_cond_option($hardcoded, $cond_option, $rule_option, $global_rule
 			$sql = 'SELECT g.group_id, g.group_name, g.group_type
 					FROM ' . GROUPS_TABLE . ' g ';
 
-			if (!$auth->acl_gets('a_group', 'a_groupadd', 'a_groupdel'))
+			if (!phpbb::$acl->acl_gets('a_group', 'a_groupadd', 'a_groupdel'))
 			{
 				$sql .= 'LEFT JOIN ' . USER_GROUP_TABLE . ' ug
 					ON (

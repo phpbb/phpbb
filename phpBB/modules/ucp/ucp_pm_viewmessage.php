@@ -95,7 +95,7 @@ function view_message($id, $mode, $folder_id, $msg_id, $folder, $message_row)
 
 	if ($message_row['message_attachment'] && phpbb::$config['allow_pm_attach'])
 	{
-		if ($auth->acl_get('u_pm_download'))
+		if (phpbb::$acl->acl_get('u_pm_download'))
 		{
 			$sql = 'SELECT *
 				FROM ' . ATTACHMENTS_TABLE . "
@@ -143,7 +143,7 @@ function view_message($id, $mode, $folder_id, $msg_id, $folder, $message_row)
 
 	$user_info['sig'] = '';
 
-	$signature = ($message_row['enable_sig'] && phpbb::$config['allow_sig'] && $auth->acl_get('u_sig') && phpbb::$user->optionget('viewsigs')) ? $user_info['user_sig'] : '';
+	$signature = ($message_row['enable_sig'] && phpbb::$config['allow_sig'] && phpbb::$acl->acl_get('u_sig') && phpbb::$user->optionget('viewsigs')) ? $user_info['user_sig'] : '';
 
 	// End signature parsing, only if needed
 	if ($signature)
@@ -198,19 +198,19 @@ function view_message($id, $mode, $folder_id, $msg_id, $folder, $message_row)
 		'EDITED_MESSAGE'	=> $l_edited_by,
 		'MESSAGE_ID'		=> $message_row['msg_id'],
 
-		'U_PM'			=> (phpbb::$config['allow_privmsg'] && $auth->acl_get('u_sendpm') && ($user_info['user_allow_pm'] || $auth->acl_gets('a_', 'm_') || $auth->acl_getf_global('m_'))) ? append_sid('ucp', 'i=pm&amp;mode=compose&amp;u=' . $author_id) : '',
+		'U_PM'			=> (phpbb::$config['allow_privmsg'] && phpbb::$acl->acl_get('u_sendpm') && ($user_info['user_allow_pm'] || phpbb::$acl->acl_gets('a_', 'm_') || phpbb::$acl->acl_getf_global('m_'))) ? append_sid('ucp', 'i=pm&amp;mode=compose&amp;u=' . $author_id) : '',
 		'U_WWW'			=> (!empty($user_info['user_website'])) ? $user_info['user_website'] : '',
 		'U_ICQ'			=> ($user_info['user_icq']) ? 'http://www.icq.com/people/webmsg.php?to=' . urlencode($user_info['user_icq']) : '',
-		'U_AIM'			=> ($user_info['user_aim'] && $auth->acl_get('u_sendim')) ? append_sid('memberlist', 'mode=contact&amp;action=aim&amp;u=' . $author_id) : '',
+		'U_AIM'			=> ($user_info['user_aim'] && phpbb::$acl->acl_get('u_sendim')) ? append_sid('memberlist', 'mode=contact&amp;action=aim&amp;u=' . $author_id) : '',
 		'U_YIM'			=> ($user_info['user_yim']) ? 'http://edit.yahoo.com/config/send_webmesg?.target=' . urlencode($user_info['user_yim']) . '&amp;.src=pg' : '',
-		'U_MSN'			=> ($user_info['user_msnm'] && $auth->acl_get('u_sendim')) ? append_sid('memberlist', 'mode=contact&amp;action=msnm&amp;u=' . $author_id) : '',
-		'U_JABBER'		=> ($user_info['user_jabber'] && $auth->acl_get('u_sendim')) ? append_sid('memberlist', 'mode=contact&amp;action=jabber&amp;u=' . $author_id) : '',
+		'U_MSN'			=> ($user_info['user_msnm'] && phpbb::$acl->acl_get('u_sendim')) ? append_sid('memberlist', 'mode=contact&amp;action=msnm&amp;u=' . $author_id) : '',
+		'U_JABBER'		=> ($user_info['user_jabber'] && phpbb::$acl->acl_get('u_sendim')) ? append_sid('memberlist', 'mode=contact&amp;action=jabber&amp;u=' . $author_id) : '',
 
-		'U_DELETE'			=> ($auth->acl_get('u_pm_delete')) ? "$url&amp;mode=compose&amp;action=delete&amp;f=$folder_id&amp;p=" . $message_row['msg_id'] : '',
+		'U_DELETE'			=> (phpbb::$acl->acl_get('u_pm_delete')) ? "$url&amp;mode=compose&amp;action=delete&amp;f=$folder_id&amp;p=" . $message_row['msg_id'] : '',
 		'U_EMAIL'			=> $user_info['email'],
-		'U_QUOTE'			=> ($auth->acl_get('u_sendpm') && $author_id != ANONYMOUS) ? "$url&amp;mode=compose&amp;action=quote&amp;f=$folder_id&amp;p=" . $message_row['msg_id'] : '',
-		'U_EDIT'			=> (($message_row['message_time'] > time() - (phpbb::$config['pm_edit_time'] * 60) || !phpbb::$config['pm_edit_time']) && $folder_id == PRIVMSGS_OUTBOX && $auth->acl_get('u_pm_edit')) ? "$url&amp;mode=compose&amp;action=edit&amp;f=$folder_id&amp;p=" . $message_row['msg_id'] : '',
-		'U_POST_REPLY_PM'	=> ($auth->acl_get('u_sendpm') && $author_id != ANONYMOUS) ? "$url&amp;mode=compose&amp;action=reply&amp;f=$folder_id&amp;p=" . $message_row['msg_id'] : '',
+		'U_QUOTE'			=> (phpbb::$acl->acl_get('u_sendpm') && $author_id != ANONYMOUS) ? "$url&amp;mode=compose&amp;action=quote&amp;f=$folder_id&amp;p=" . $message_row['msg_id'] : '',
+		'U_EDIT'			=> (($message_row['message_time'] > time() - (phpbb::$config['pm_edit_time'] * 60) || !phpbb::$config['pm_edit_time']) && $folder_id == PRIVMSGS_OUTBOX && phpbb::$acl->acl_get('u_pm_edit')) ? "$url&amp;mode=compose&amp;action=edit&amp;f=$folder_id&amp;p=" . $message_row['msg_id'] : '',
+		'U_POST_REPLY_PM'	=> (phpbb::$acl->acl_get('u_sendpm') && $author_id != ANONYMOUS) ? "$url&amp;mode=compose&amp;action=reply&amp;f=$folder_id&amp;p=" . $message_row['msg_id'] : '',
 		'U_PREVIOUS_PM'		=> "$url&amp;f=$folder_id&amp;p=" . $message_row['msg_id'] . "&amp;view=previous",
 		'U_NEXT_PM'			=> "$url&amp;f=$folder_id&amp;p=" . $message_row['msg_id'] . "&amp;view=next",
 
@@ -219,8 +219,8 @@ function view_message($id, $mode, $folder_id, $msg_id, $folder, $message_row)
 		'S_AUTHOR_DELETED'	=> ($author_id == ANONYMOUS) ? true : false,
 		'S_SPECIAL_FOLDER'	=> in_array($folder_id, array(PRIVMSGS_NO_BOX, PRIVMSGS_OUTBOX)),
 
-		'U_PRINT_PM'		=> (phpbb::$config['print_pm'] && $auth->acl_get('u_pm_printpm')) ? "$url&amp;f=$folder_id&amp;p=" . $message_row['msg_id'] . "&amp;view=print" : '',
-		'U_FORWARD_PM'		=> (phpbb::$config['forward_pm'] && $auth->acl_get('u_sendpm') && $auth->acl_get('u_pm_forward')) ? "$url&amp;mode=compose&amp;action=forward&amp;f=$folder_id&amp;p=" . $message_row['msg_id'] : '')
+		'U_PRINT_PM'		=> (phpbb::$config['print_pm'] && phpbb::$acl->acl_get('u_pm_printpm')) ? "$url&amp;f=$folder_id&amp;p=" . $message_row['msg_id'] . "&amp;view=print" : '',
+		'U_FORWARD_PM'		=> (phpbb::$config['forward_pm'] && phpbb::$acl->acl_get('u_sendpm') && phpbb::$acl->acl_get('u_pm_forward')) ? "$url&amp;mode=compose&amp;action=forward&amp;f=$folder_id&amp;p=" . $message_row['msg_id'] : '')
 	);
 
 	// Display not already displayed Attachments for this post, we already parsed them. ;)
@@ -297,9 +297,9 @@ function get_user_information($user_id, $user_row)
 
 	get_user_rank($user_id, $user_row['user_rank'], $user_row['user_posts'], $user_row['rank_title'], $user_row['rank_image'], $user_row['rank_image_src']);
 
-	if (!empty($user_row['user_allow_viewemail']) || $auth->acl_get('a_email'))
+	if (!empty($user_row['user_allow_viewemail']) || phpbb::$acl->acl_get('a_email'))
 	{
-		$user_row['email'] = (phpbb::$config['board_email_form'] && phpbb::$config['email_enable']) ? append_sid('memberlist', "mode=email&amp;u=$user_id") : (((phpbb::$config['board_hide_emails'] && !$auth->acl_get('a_email')) || empty($user_row['user_email'])) ? '' : 'mailto:' . $user_row['user_email']);
+		$user_row['email'] = (phpbb::$config['board_email_form'] && phpbb::$config['email_enable']) ? append_sid('memberlist', "mode=email&amp;u=$user_id") : (((phpbb::$config['board_hide_emails'] && !phpbb::$acl->acl_get('a_email')) || empty($user_row['user_email'])) ? '' : 'mailto:' . $user_row['user_email']);
 	}
 
 	return $user_row;

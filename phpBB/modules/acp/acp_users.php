@@ -174,7 +174,7 @@ class acp_users
 					// You can't delete the founder
 					if ($delete && $user_row['user_type'] != phpbb::USER_FOUNDER)
 					{
-						if (!$auth->acl_get('a_userdel'))
+						if (!phpbb::$acl->acl_get('a_userdel'))
 						{
 							trigger_error(phpbb::$user->lang['NO_AUTH_OPERATION'] . adm_back_link($this->u_action . '&amp;u=' . $user_id), E_USER_WARNING);
 						}
@@ -806,7 +806,7 @@ class acp_users
 						}
 
 						// Let the users permissions being updated
-						$auth->acl_clear_prefetch($user_id);
+						phpbb::$acl->acl_clear_prefetch($user_id);
 
 						add_log('admin', 'LOG_USER_USER_UPDATE', $data['username']);
 
@@ -914,9 +914,9 @@ class acp_users
 
 					'U_SHOW_IP'		=> $this->u_action . "&amp;u=$user_id&amp;ip=" . (($ip == 'ip') ? 'hostname' : 'ip'),
 					'U_WHOIS'		=> $this->u_action . "&amp;action=whois&amp;user_ip={$user_row['user_ip']}",
-					'U_MCP_QUEUE'	=> ($auth->acl_getf_global('m_approve')) ? append_sid('mcp', 'i=queue', true, phpbb::$user->session_id) : '',
+					'U_MCP_QUEUE'	=> (phpbb::$acl->acl_getf_global('m_approve')) ? append_sid('mcp', 'i=queue', true, phpbb::$user->session_id) : '',
 
-					'U_SWITCH_PERMISSIONS'	=> ($auth->acl_get('a_switchperm') && phpbb::$user->data['user_id'] != $user_row['user_id']) ? append_sid('ucp', "mode=switch_perm&amp;u={$user_row['user_id']}") : '',
+					'U_SWITCH_PERMISSIONS'	=> (phpbb::$acl->acl_get('a_switchperm') && phpbb::$user->data['user_id'] != $user_row['user_id']) ? append_sid('ucp', "mode=switch_perm&amp;u={$user_row['user_id']}") : '',
 
 					'POSTS_IN_QUEUE'	=> $user_row['posts_in_queue'],
 					'USER'				=> $user_row['username'],
@@ -948,7 +948,7 @@ class acp_users
 				$sort_dir	= request_var('sd', 'd');
 
 				// Delete entries if requested and able
-				if (($deletemark || $deleteall) && $auth->acl_get('a_clearlogs'))
+				if (($deletemark || $deleteall) && phpbb::$acl->acl_get('a_clearlogs'))
 				{
 					if (!check_form_key($form_name))
 					{
@@ -1017,7 +1017,7 @@ class acp_users
 					'S_LIMIT_DAYS'	=> $s_limit_days,
 					'S_SORT_KEY'	=> $s_sort_key,
 					'S_SORT_DIR'	=> $s_sort_dir,
-					'S_CLEARLOGS'	=> $auth->acl_get('a_clearlogs'))
+					'S_CLEARLOGS'	=> phpbb::$acl->acl_get('a_clearlogs'))
 				);
 
 				foreach ($log_data as $row)

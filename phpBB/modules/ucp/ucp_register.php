@@ -369,7 +369,7 @@ class ucp_register
 					if (phpbb::$config['require_activation'] == USER_ACTIVATION_ADMIN)
 					{
 						// Grab an array of user_id's with a_user permissions ... these users can activate a user
-						$admin_ary = $auth->acl_get_list(false, 'a_user', false);
+						$admin_ary = phpbb::$acl->acl_get_list(false, 'a_user', false);
 						$admin_ary = (!empty($admin_ary[0]['a_user'])) ? $admin_ary[0]['a_user'] : array();
 
 						// Also include founders

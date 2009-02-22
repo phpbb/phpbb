@@ -20,7 +20,7 @@ require(PHPBB_ROOT_PATH . 'includes/functions_module.' . PHP_EXT);
 
 // Start session management
 phpbb::$user->session_begin();
-$auth->acl(phpbb::$user->data);
+phpbb::$acl->init(phpbb::$user->data);
 phpbb::$user->setup('mcp');
 
 $module = new p_master();
@@ -105,7 +105,7 @@ else if ($topic_id)
 }
 
 // If the user doesn't have any moderator powers (globally or locally) he can't access the mcp
-if (!$auth->acl_getf_global('m_'))
+if (!phpbb::$acl->acl_getf_global('m_'))
 {
 	// Except he is using one of the quickmod tools for users
 	$user_quickmod_actions = array(
@@ -117,7 +117,7 @@ if (!$auth->acl_getf_global('m_'))
 	);
 
 	$allow_user = false;
-	if ($quickmod && isset($user_quickmod_actions[$action]) && phpbb::$user->is_registered && $auth->acl_gets($user_quickmod_actions[$action], $forum_id))
+	if ($quickmod && isset($user_quickmod_actions[$action]) && phpbb::$user->is_registered && phpbb::$acl->acl_gets($user_quickmod_actions[$action], $forum_id))
 	{
 		$topic_info = get_topic_data(array($topic_id));
 		if ($topic_info[$topic_id]['topic_poster'] == phpbb::$user->data['user_id'])
@@ -133,7 +133,7 @@ if (!$auth->acl_getf_global('m_'))
 }
 
 // if the user cannot read the forum he tries to access then we won't allow mcp access either
-if ($forum_id && !$auth->acl_get('f_read', $forum_id))
+if ($forum_id && !phpbb::$acl->acl_get('f_read', $forum_id))
 {
 	trigger_error('NOT_AUTHORISED');
 }
@@ -400,7 +400,7 @@ function get_topic_data($topic_ids, $acl_list = false, $read_tracking = false)
 
 			$rowset[$row['topic_id']] = $row;
 
-			if ($acl_list && !$auth->acl_gets($acl_list, $row['forum_id']))
+			if ($acl_list && !phpbb::$acl->acl_gets($acl_list, $row['forum_id']))
 			{
 				continue;
 			}
@@ -412,7 +412,7 @@ function get_topic_data($topic_ids, $acl_list = false, $read_tracking = false)
 
 	foreach ($cache_topic_ids as $id)
 	{
-		if (!$acl_list || $auth->acl_gets($acl_list, $rowset[$id]['forum_id']))
+		if (!$acl_list || phpbb::$acl->acl_gets($acl_list, $rowset[$id]['forum_id']))
 		{
 			$topics[$id] = $rowset[$id];
 		}
@@ -481,12 +481,12 @@ function get_post_data($post_ids, $acl_list = false, $read_tracking = false)
 			$row['forum_id'] = request_var('f', 0);
 		}
 
-		if ($acl_list && !$auth->acl_gets($acl_list, $row['forum_id']))
+		if ($acl_list && !phpbb::$acl->acl_gets($acl_list, $row['forum_id']))
 		{
 			continue;
 		}
 
-		if (!$row['post_approved'] && !$auth->acl_get('m_approve', $row['forum_id']))
+		if (!$row['post_approved'] && !phpbb::$acl->acl_get('m_approve', $row['forum_id']))
 		{
 			// Moderators without the permission to approve post should at least not see them. ;)
 			continue;
@@ -534,12 +534,12 @@ function get_forum_data($forum_id, $acl_list = 'f_list', $read_tracking = false)
 
 	while ($row = $db->sql_fetchrow($result))
 	{
-		if ($acl_list && !$auth->acl_gets($acl_list, $row['forum_id']))
+		if ($acl_list && !phpbb::$acl->acl_gets($acl_list, $row['forum_id']))
 		{
 			continue;
 		}
 
-		if ($auth->acl_get('m_approve', $row['forum_id']))
+		if (phpbb::$acl->acl_get('m_approve', $row['forum_id']))
 		{
 			$row['forum_topics'] = $row['forum_topics_real'];
 		}
@@ -574,7 +574,7 @@ function mcp_sorting($mode, &$sort_days, &$sort_key, &$sort_dir, &$sort_by_sql, 
 					AND topic_type NOT IN (" . POST_ANNOUNCE . ', ' . POST_GLOBAL . ")
 					AND topic_last_post_time >= $min_time";
 
-			if (!$auth->acl_get('m_approve', $forum_id))
+			if (!phpbb::$acl->acl_get('m_approve', $forum_id))
 			{
 				$sql .= 'AND topic_approved = 1';
 			}
@@ -590,7 +590,7 @@ function mcp_sorting($mode, &$sort_days, &$sort_key, &$sort_dir, &$sort_by_sql, 
 				$where_sql topic_id = $topic_id
 					AND post_time >= $min_time";
 
-			if (!$auth->acl_get('m_approve', $forum_id))
+			if (!phpbb::$acl->acl_get('m_approve', $forum_id))
 			{
 				$sql .= 'AND post_approved = 1';
 			}
@@ -688,7 +688,7 @@ function mcp_sorting($mode, &$sort_days, &$sort_key, &$sort_dir, &$sort_by_sql, 
 			$limit_days = array(0 => phpbb::$user->lang['ALL_TOPICS'], 1 => phpbb::$user->lang['1_DAY'], 7 => phpbb::$user->lang['7_DAYS'], 14 => phpbb::$user->lang['2_WEEKS'], 30 => phpbb::$user->lang['1_MONTH'], 90 => phpbb::$user->lang['3_MONTHS'], 180 => phpbb::$user->lang['6_MONTHS'], 365 => phpbb::$user->lang['1_YEAR']);
 			$sort_by_text = array('a' => phpbb::$user->lang['AUTHOR'], 't' => phpbb::$user->lang['POST_TIME'], 'tt' => phpbb::$user->lang['TOPIC_TIME'], 'r' => phpbb::$user->lang['REPLIES'], 's' => phpbb::$user->lang['SUBJECT'], 'v' => phpbb::$user->lang['VIEWS']);
 
-			$sort_by_sql = array('a' => 't.topic_first_poster_name', 't' => 't.topic_last_post_time', 'tt' => 't.topic_time', 'r' => (($auth->acl_get('m_approve', $forum_id)) ? 't.topic_replies_real' : 't.topic_replies'), 's' => 't.topic_title', 'v' => 't.topic_views');
+			$sort_by_sql = array('a' => 't.topic_first_poster_name', 't' => 't.topic_last_post_time', 'tt' => 't.topic_time', 'r' => ((phpbb::$acl->acl_get('m_approve', $forum_id)) ? 't.topic_replies_real' : 't.topic_replies'), 's' => 't.topic_title', 'v' => 't.topic_views');
 			$limit_time_sql = ($min_time) ? "AND t.topic_last_post_time >= $min_time" : '';
 		break;
 
@@ -771,12 +771,12 @@ function check_ids(&$ids, $table, $sql_id, $acl_list = false, $single_forum = fa
 
 	while ($row = $db->sql_fetchrow($result))
 	{
-		if ($acl_list && $row['forum_id'] && !$auth->acl_gets($acl_list, $row['forum_id']))
+		if ($acl_list && $row['forum_id'] && !phpbb::$acl->acl_gets($acl_list, $row['forum_id']))
 		{
 			continue;
 		}
 
-		if ($acl_list && !$row['forum_id'] && !$auth->acl_getf_global($acl_list))
+		if ($acl_list && !$row['forum_id'] && !phpbb::$acl->acl_getf_global($acl_list))
 		{
 			continue;
 		}

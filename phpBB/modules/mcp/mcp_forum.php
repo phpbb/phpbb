@@ -110,21 +110,21 @@ function mcp_forum_view($id, $mode, $action, $forum_info)
 		'LAST_POST_IMG'			=> phpbb::$user->img('icon_topic_latest', 'VIEW_LATEST_POST'),
 		'NEWEST_POST_IMG'		=> phpbb::$user->img('icon_topic_newest', 'VIEW_NEWEST_POST'),
 
-		'S_CAN_REPORT'			=> $auth->acl_get('m_report', $forum_id),
-		'S_CAN_DELETE'			=> $auth->acl_get('m_delete', $forum_id),
-		'S_CAN_MERGE'			=> $auth->acl_get('m_merge', $forum_id),
-		'S_CAN_MOVE'			=> $auth->acl_get('m_move', $forum_id),
-		'S_CAN_FORK'			=> $auth->acl_get('m_', $forum_id),
-		'S_CAN_LOCK'			=> $auth->acl_get('m_lock', $forum_id),
-		'S_CAN_SYNC'			=> $auth->acl_get('m_', $forum_id),
-		'S_CAN_APPROVE'			=> $auth->acl_get('m_approve', $forum_id),
+		'S_CAN_REPORT'			=> phpbb::$acl->acl_get('m_report', $forum_id),
+		'S_CAN_DELETE'			=> phpbb::$acl->acl_get('m_delete', $forum_id),
+		'S_CAN_MERGE'			=> phpbb::$acl->acl_get('m_merge', $forum_id),
+		'S_CAN_MOVE'			=> phpbb::$acl->acl_get('m_move', $forum_id),
+		'S_CAN_FORK'			=> phpbb::$acl->acl_get('m_', $forum_id),
+		'S_CAN_LOCK'			=> phpbb::$acl->acl_get('m_lock', $forum_id),
+		'S_CAN_SYNC'			=> phpbb::$acl->acl_get('m_', $forum_id),
+		'S_CAN_APPROVE'			=> phpbb::$acl->acl_get('m_approve', $forum_id),
 		'S_MERGE_SELECT'		=> ($merge_select) ? true : false,
-		'S_CAN_MAKE_NORMAL'		=> $auth->acl_gets('f_sticky', 'f_announce', $forum_id),
-		'S_CAN_MAKE_STICKY'		=> $auth->acl_get('f_sticky', $forum_id),
-		'S_CAN_MAKE_ANNOUNCE'	=> $auth->acl_get('f_announce', $forum_id),
+		'S_CAN_MAKE_NORMAL'		=> phpbb::$acl->acl_gets('f_sticky', 'f_announce', $forum_id),
+		'S_CAN_MAKE_STICKY'		=> phpbb::$acl->acl_get('f_sticky', $forum_id),
+		'S_CAN_MAKE_ANNOUNCE'	=> phpbb::$acl->acl_get('f_announce', $forum_id),
 
 		'U_VIEW_FORUM'			=> append_sid('viewforum', 'f=' . $forum_id),
-		'U_VIEW_FORUM_LOGS'		=> ($auth->acl_gets('a_', 'm_', $forum_id) && $module->loaded('logs')) ? append_sid('mcp', 'i=logs&amp;mode=forum_logs&amp;f=' . $forum_id) : '',
+		'U_VIEW_FORUM_LOGS'		=> (phpbb::$acl->acl_gets('a_', 'm_', $forum_id) && $module->loaded('logs')) ? append_sid('mcp', 'i=logs&amp;mode=forum_logs&amp;f=' . $forum_id) : '',
 
 		'S_MCP_ACTION'			=> $url . "&amp;i=$id&amp;forum_action=$action&amp;mode=$mode&amp;start=$start" . (($merge_select) ? $selected_ids : ''),
 
@@ -151,7 +151,7 @@ function mcp_forum_view($id, $mode, $action, $forum_info)
 	$sql = "SELECT t.topic_id
 		FROM " . TOPICS_TABLE . " t
 		WHERE t.forum_id IN($forum_id, 0)
-			" . (($auth->acl_get('m_approve', $forum_id)) ? '' : 'AND t.topic_approved = 1') . "
+			" . ((phpbb::$acl->acl_get('m_approve', $forum_id)) ? '' : 'AND t.topic_approved = 1') . "
 			$limit_time_sql
 		ORDER BY t.topic_type DESC, $sort_order_sql";
 	$result = $db->sql_query_limit($sql, $topics_per_page, $start);
@@ -200,7 +200,7 @@ function mcp_forum_view($id, $mode, $action, $forum_info)
 
 		$row = &$topic_rows[$topic_id];
 
-		$replies = ($auth->acl_get('m_approve', $forum_id)) ? $row['topic_replies_real'] : $row['topic_replies'];
+		$replies = (phpbb::$acl->acl_get('m_approve', $forum_id)) ? $row['topic_replies_real'] : $row['topic_replies'];
 
 		if ($row['topic_status'] == ITEM_MOVED)
 		{
@@ -217,12 +217,12 @@ function mcp_forum_view($id, $mode, $action, $forum_info)
 
 		$topic_title = censor_text($row['topic_title']);
 
-		$topic_unapproved = (!$row['topic_approved'] && $auth->acl_get('m_approve', $row['forum_id'])) ? true : false;
-		$posts_unapproved = ($row['topic_approved'] && $row['topic_replies'] < $row['topic_replies_real'] && $auth->acl_get('m_approve', $row['forum_id'])) ? true : false;
+		$topic_unapproved = (!$row['topic_approved'] && phpbb::$acl->acl_get('m_approve', $row['forum_id'])) ? true : false;
+		$posts_unapproved = ($row['topic_approved'] && $row['topic_replies'] < $row['topic_replies_real'] && phpbb::$acl->acl_get('m_approve', $row['forum_id'])) ? true : false;
 		$u_mcp_queue = ($topic_unapproved || $posts_unapproved) ? $url . '&amp;i=queue&amp;mode=' . (($topic_unapproved) ? 'approve_details' : 'unapproved_posts') . '&amp;t=' . $row['topic_id'] : '';
 
 		$topic_row = array(
-			'ATTACH_ICON_IMG'		=> ($auth->acl_get('u_download') && $auth->acl_get('f_download', $row['forum_id']) && $row['topic_attachment']) ? phpbb::$user->img('icon_topic_attach', 'TOTAL_ATTACHMENTS') : '',
+			'ATTACH_ICON_IMG'		=> (phpbb::$acl->acl_get('u_download') && phpbb::$acl->acl_get('f_download', $row['forum_id']) && $row['topic_attachment']) ? phpbb::$user->img('icon_topic_attach', 'TOTAL_ATTACHMENTS') : '',
 			'TOPIC_FOLDER_IMG'		=> phpbb::$user->img($folder_img, $folder_alt),
 			'TOPIC_FOLDER_IMG_SRC'	=> phpbb::$user->img($folder_img, $folder_alt, 'src'),
 			'TOPIC_ICON_IMG'		=> (!empty($icons[$row['icon_id']])) ? $icons[$row['icon_id']]['img'] : '',
@@ -242,13 +242,13 @@ function mcp_forum_view($id, $mode, $action, $forum_info)
 
 			'TOPIC_TYPE'		=> $topic_type,
 			'TOPIC_TITLE'		=> $topic_title,
-			'REPLIES'			=> ($auth->acl_get('m_approve', $row['forum_id'])) ? $row['topic_replies_real'] : $row['topic_replies'],
+			'REPLIES'			=> (phpbb::$acl->acl_get('m_approve', $row['forum_id'])) ? $row['topic_replies_real'] : $row['topic_replies'],
 			'LAST_POST_TIME'	=> phpbb::$user->format_date($row['topic_last_post_time']),
 			'FIRST_POST_TIME'	=> phpbb::$user->format_date($row['topic_time']),
 			'LAST_POST_SUBJECT'	=> $row['topic_last_post_subject'],
 			'LAST_VIEW_TIME'	=> phpbb::$user->format_date($row['topic_last_view_time']),
 
-			'S_TOPIC_REPORTED'		=> (!empty($row['topic_reported']) && empty($row['topic_moved_id']) && $auth->acl_get('m_report', $row['forum_id'])) ? true : false,
+			'S_TOPIC_REPORTED'		=> (!empty($row['topic_reported']) && empty($row['topic_moved_id']) && phpbb::$acl->acl_get('m_report', $row['forum_id'])) ? true : false,
 			'S_TOPIC_UNAPPROVED'	=> $topic_unapproved,
 			'S_POSTS_UNAPPROVED'	=> $posts_unapproved,
 			'S_UNREAD_TOPIC'		=> $unread_topic,
@@ -258,7 +258,7 @@ function mcp_forum_view($id, $mode, $action, $forum_info)
 		{
 			$topic_row = array_merge($topic_row, array(
 				'U_VIEW_TOPIC'		=> append_sid('viewtopic', "t={$row['topic_moved_id']}"),
-				'U_DELETE_TOPIC'	=> ($auth->acl_get('m_delete', $forum_id)) ? append_sid('mcp', "i=$id&amp;f=$forum_id&amp;topic_id_list[]={$row['topic_id']}&amp;mode=forum_view&amp;action=delete_topic") : '',
+				'U_DELETE_TOPIC'	=> (phpbb::$acl->acl_get('m_delete', $forum_id)) ? append_sid('mcp', "i=$id&amp;f=$forum_id&amp;topic_id_list[]={$row['topic_id']}&amp;mode=forum_view&amp;action=delete_topic") : '',
 				'S_MOVED_TOPIC'		=> true,
 				'TOPIC_ID'			=> $row['topic_moved_id'],
 			));
@@ -279,7 +279,7 @@ function mcp_forum_view($id, $mode, $action, $forum_info)
 				'S_SELECT_TOPIC'	=> ($merge_select && !in_array($row['topic_id'], $source_topic_ids)) ? true : false,
 				'U_SELECT_TOPIC'	=> $u_select_topic,
 				'U_MCP_QUEUE'		=> $u_mcp_queue,
-				'U_MCP_REPORT'		=> ($auth->acl_get('m_report', $forum_id)) ? append_sid('mcp', 'i=main&amp;mode=topic_view&amp;t=' . $row['topic_id'] . '&amp;action=reports') : '',
+				'U_MCP_REPORT'		=> (phpbb::$acl->acl_get('m_report', $forum_id)) ? append_sid('mcp', 'i=main&amp;mode=topic_view&amp;t=' . $row['topic_id'] . '&amp;action=reports') : '',
 				'TOPIC_ID'			=> $row['topic_id'],
 				'S_TOPIC_CHECKED'	=> ($topic_id_list && in_array($row['topic_id'], $topic_id_list)) ? true : false,
 			));

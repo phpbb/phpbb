@@ -195,7 +195,7 @@ class acp_groups
 					switch ($action)
 					{
 						case 'delete':
-							if (!$auth->acl_get('a_groupdel'))
+							if (!phpbb::$acl->acl_get('a_groupdel'))
 							{
 								trigger_error(phpbb::$user->lang['NO_AUTH_OPERATION'] . adm_back_link($this->u_action), E_USER_WARNING);
 							}
@@ -267,7 +267,7 @@ class acp_groups
 					trigger_error(phpbb::$user->lang['NO_GROUP'] . adm_back_link($this->u_action), E_USER_WARNING);
 				}
 
-				if ($action == 'add' && !$auth->acl_get('a_groupadd'))
+				if ($action == 'add' && !phpbb::$acl->acl_get('a_groupadd'))
 				{
 					trigger_error(phpbb::$user->lang['NO_AUTH_OPERATION'] . adm_back_link($this->u_action), E_USER_WARNING);
 				}
@@ -416,7 +416,7 @@ class acp_groups
 							// If the user has the a_authgroups permission and at least one additional permission ability set the permissions are fully transferred.
 							// We do not limit on one auth category because this can lead to incomplete permissions being tricky to fix for the admin, roles being assigned or added non-default permissions.
 							// Since the user only has the option to copy permissions from non leader managed groups this seems to be a good compromise.
-							if ($group_perm_from && $action == 'add' && $auth->acl_get('a_authgroups') && $auth->acl_gets('a_aauth', 'a_fauth', 'a_mauth', 'a_uauth'))
+							if ($group_perm_from && $action == 'add' && phpbb::$acl->acl_get('a_authgroups') && phpbb::$acl->acl_gets('a_aauth', 'a_fauth', 'a_mauth', 'a_uauth'))
 							{
 								$sql = 'SELECT group_founder_manage
 									FROM ' . GROUPS_TABLE . '
@@ -455,7 +455,7 @@ class acp_groups
 									// Now insert the data
 									$db->sql_multi_insert(ACL_GROUPS_TABLE, $groups_sql_ary);
 
-									$auth->acl_clear_prefetch();
+									phpbb::$acl->acl_clear_prefetch();
 								}
 							}
 
@@ -543,7 +543,7 @@ class acp_groups
 				$template->assign_vars(array(
 					'S_EDIT'			=> true,
 					'S_ADD_GROUP'		=> ($action == 'add') ? true : false,
-					'S_GROUP_PERM'		=> ($action == 'add' && $auth->acl_get('a_authgroups') && $auth->acl_gets('a_aauth', 'a_fauth', 'a_mauth', 'a_uauth')) ? true : false,
+					'S_GROUP_PERM'		=> ($action == 'add' && phpbb::$acl->acl_get('a_authgroups') && phpbb::$acl->acl_gets('a_aauth', 'a_fauth', 'a_mauth', 'a_uauth')) ? true : false,
 					'S_INCLUDE_SWATCH'	=> true,
 					'S_CAN_UPLOAD'		=> $can_upload,
 					'S_ERROR'			=> (sizeof($error)) ? true : false,
@@ -701,7 +701,7 @@ class acp_groups
 
 		$template->assign_vars(array(
 			'U_ACTION'		=> $this->u_action,
-			'S_GROUP_ADD'	=> ($auth->acl_get('a_groupadd')) ? true : false)
+			'S_GROUP_ADD'	=> (phpbb::$acl->acl_get('a_groupadd')) ? true : false)
 		);
 
 		// Get us all the groups
@@ -757,7 +757,7 @@ class acp_groups
 				$template->assign_block_vars('groups', array(
 					'U_LIST'		=> "{$this->u_action}&amp;action=list&amp;g=$group_id",
 					'U_EDIT'		=> "{$this->u_action}&amp;action=edit&amp;g=$group_id",
-					'U_DELETE'		=> ($auth->acl_get('a_groupdel')) ? "{$this->u_action}&amp;action=delete&amp;g=$group_id" : '',
+					'U_DELETE'		=> (phpbb::$acl->acl_get('a_groupdel')) ? "{$this->u_action}&amp;action=delete&amp;g=$group_id" : '',
 
 					'S_GROUP_SPECIAL'	=> ($row['group_type'] == GROUP_SPECIAL) ? true : false,
 

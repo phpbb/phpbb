@@ -61,7 +61,7 @@ class ucp_main
 				$folder_new = 'global_unread';
 
 				// Get cleaned up list... return only those forums not having the f_read permission
-				$forum_ary = $auth->acl_getf('!f_read', true);
+				$forum_ary = phpbb::$acl->acl_getf('!f_read', true);
 				$forum_ary = array_unique(array_keys($forum_ary));
 
 				// Determine first forum the user is able to read into - for global announcement link
@@ -148,7 +148,7 @@ class ucp_main
 
 						'TOPIC_FOLDER_IMG'		=> phpbb::$user->img($folder_img, $folder_alt),
 						'TOPIC_FOLDER_IMG_SRC'	=> phpbb::$user->img($folder_img, $folder_alt, 'src'),
-						'ATTACH_ICON_IMG'		=> ($auth->acl_get('u_download') && $auth->acl_get('f_download', $forum_id) && $row['topic_attachment']) ? phpbb::$user->img('icon_topic_attach', '') : '',
+						'ATTACH_ICON_IMG'		=> (phpbb::$acl->acl_get('u_download') && phpbb::$acl->acl_get('f_download', $forum_id) && $row['topic_attachment']) ? phpbb::$user->img('icon_topic_attach', '') : '',
 
 						'S_USER_POSTED'		=> (!empty($row['topic_posted']) && $row['topic_posted']) ? true : false,
 						'S_UNREAD'			=> $unread_topic,
@@ -189,7 +189,7 @@ class ucp_main
 
 //					'S_GROUP_OPTIONS'	=> $group_options,
 
-					'U_SEARCH_USER'		=> ($auth->acl_get('u_search')) ? append_sid('search', 'author_id=' . phpbb::$user->data['user_id'] . '&amp;sr=posts') : '',
+					'U_SEARCH_USER'		=> (phpbb::$acl->acl_get('u_search')) ? append_sid('search', 'author_id=' . phpbb::$user->data['user_id'] . '&amp;sr=posts') : '',
 				));
 
 			break;
@@ -254,7 +254,7 @@ class ucp_main
 
 				if (phpbb::$config['allow_forum_notify'])
 				{
-					$forbidden_forums = $auth->acl_getf('!f_read', true);
+					$forbidden_forums = phpbb::$acl->acl_getf('!f_read', true);
 					$forbidden_forums = array_unique(array_keys($forbidden_forums));
 
 					$sql_array = array(
@@ -358,7 +358,7 @@ class ucp_main
 				{
 					if (empty($forbidden_forums))
 					{
-						$forbidden_forums = $auth->acl_getf('!f_read', true);
+						$forbidden_forums = phpbb::$acl->acl_getf('!f_read', true);
 						$forbidden_forums = array_unique(array_keys($forbidden_forums));
 					}
 					$this->assign_topiclist('subscribed', $forbidden_forums);
@@ -417,7 +417,7 @@ class ucp_main
 						confirm_box(false, 'REMOVE_SELECTED_BOOKMARKS', build_hidden_fields($s_hidden_fields));
 					}
 				}
-				$forbidden_forums = $auth->acl_getf('!f_read', true);
+				$forbidden_forums = phpbb::$acl->acl_getf('!f_read', true);
 				$forbidden_forums = array_unique(array_keys($forbidden_forums));
 
 				$this->assign_topiclist('bookmarks', $forbidden_forums);
@@ -555,7 +555,7 @@ class ucp_main
 					$link_topic = $link_forum = $link_pm = false;
 					$insert_url = $view_url = $title = '';
 
-					if (isset($topic_rows[$draft['topic_id']]) && $auth->acl_get('f_read', $topic_rows[$draft['topic_id']]['forum_id']))
+					if (isset($topic_rows[$draft['topic_id']]) && phpbb::$acl->acl_get('f_read', $topic_rows[$draft['topic_id']]['forum_id']))
 					{
 						$link_topic = true;
 						$view_url = append_sid('viewtopic', 'f=' . $topic_rows[$draft['topic_id']]['forum_id'] . '&amp;t=' . $draft['topic_id']);
@@ -563,7 +563,7 @@ class ucp_main
 
 						$insert_url = append_sid('posting', 'f=' . $topic_rows[$draft['topic_id']]['forum_id'] . '&amp;t=' . $draft['topic_id'] . '&amp;mode=reply&amp;d=' . $draft['draft_id']);
 					}
-					else if ($auth->acl_get('f_read', $draft['forum_id']))
+					else if (phpbb::$acl->acl_get('f_read', $draft['forum_id']))
 					{
 						$link_forum = true;
 						$view_url = append_sid('viewforum', 'f=' . $draft['forum_id']);
@@ -761,7 +761,7 @@ class ucp_main
 			$unread_topic = (isset($topic_tracking_info[$topic_id]) && $row['topic_last_post_time'] > $topic_tracking_info[$topic_id]) ? true : false;
 
 			// Replies
-			$replies = ($auth->acl_get('m_approve', $forum_id)) ? $row['topic_replies_real'] : $row['topic_replies'];
+			$replies = (phpbb::$acl->acl_get('m_approve', $forum_id)) ? $row['topic_replies_real'] : $row['topic_replies'];
 
 			if ($row['topic_status'] == ITEM_MOVED && !empty($row['topic_moved_id']))
 			{
@@ -808,7 +808,7 @@ class ucp_main
 				'TOPIC_ICON_IMG'		=> (!empty($icons[$row['icon_id']])) ? $icons[$row['icon_id']]['img'] : '',
 				'TOPIC_ICON_IMG_WIDTH'	=> (!empty($icons[$row['icon_id']])) ? $icons[$row['icon_id']]['width'] : '',
 				'TOPIC_ICON_IMG_HEIGHT'	=> (!empty($icons[$row['icon_id']])) ? $icons[$row['icon_id']]['height'] : '',
-				'ATTACH_ICON_IMG'		=> ($auth->acl_get('u_download') && $auth->acl_get('f_download', $forum_id) && $row['topic_attachment']) ? phpbb::$user->img('icon_topic_attach', phpbb::$user->lang['TOTAL_ATTACHMENTS']) : '',
+				'ATTACH_ICON_IMG'		=> (phpbb::$acl->acl_get('u_download') && phpbb::$acl->acl_get('f_download', $forum_id) && $row['topic_attachment']) ? phpbb::$user->img('icon_topic_attach', phpbb::$user->lang['TOTAL_ATTACHMENTS']) : '',
 
 				'S_TOPIC_TYPE'			=> $row['topic_type'],
 				'S_USER_POSTED'			=> (!empty($row['topic_posted'])) ? true : false,

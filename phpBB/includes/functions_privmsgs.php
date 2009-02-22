@@ -1313,7 +1313,7 @@ function submit_pm($mode, $subject, &$data, $put_in_outbox = true)
 		{
 			// We need to check the PM status of group members (do they want to receive PM's?)
 			// Only check if not a moderator or admin, since they are allowed to override this user setting
-			$sql_allow_pm = (!$auth->acl_gets('a_', 'm_') && !$auth->acl_getf_global('m_')) ? ' AND u.user_allow_pm = 1' : '';
+			$sql_allow_pm = (!phpbb::$acl->acl_gets('a_', 'm_') && !phpbb::$acl->acl_getf_global('m_')) ? ' AND u.user_allow_pm = 1' : '';
 
 			$sql = 'SELECT u.user_type, ug.group_id, ug.user_id
 				FROM ' . USERS_TABLE . ' u, ' . USER_GROUP_TABLE . ' ug
@@ -1743,7 +1743,7 @@ function message_history($msg_id, $user_id, $message_row, $folder, $in_post_mode
 
 		$decoded_message = false;
 
-		if ($in_post_mode && $auth->acl_get('u_sendpm') && $author_id != ANONYMOUS && $author_id != phpbb::$user->data['user_id'])
+		if ($in_post_mode && phpbb::$acl->acl_get('u_sendpm') && $author_id != ANONYMOUS && $author_id != phpbb::$user->data['user_id'])
 		{
 			$decoded_message = $message;
 			decode_message($decoded_message, $row['bbcode_uid']);
@@ -1787,8 +1787,8 @@ function message_history($msg_id, $user_id, $message_row, $folder, $in_post_mode
 
 			'MSG_ID'			=> $row['msg_id'],
 			'U_VIEW_MESSAGE'	=> "$url&amp;f=$folder_id&amp;p=" . $row['msg_id'],
-			'U_QUOTE'			=> (!$in_post_mode && $auth->acl_get('u_sendpm') && $author_id != ANONYMOUS && $author_id != phpbb::$user->data['user_id']) ? "$url&amp;mode=compose&amp;action=quote&amp;f=" . $folder_id . "&amp;p=" . $row['msg_id'] : '',
-			'U_POST_REPLY_PM'	=> ($author_id != phpbb::$user->data['user_id'] && $author_id != ANONYMOUS && $auth->acl_get('u_sendpm')) ? "$url&amp;mode=compose&amp;action=reply&amp;f=$folder_id&amp;p=" . $row['msg_id'] : '')
+			'U_QUOTE'			=> (!$in_post_mode && phpbb::$acl->acl_get('u_sendpm') && $author_id != ANONYMOUS && $author_id != phpbb::$user->data['user_id']) ? "$url&amp;mode=compose&amp;action=quote&amp;f=" . $folder_id . "&amp;p=" . $row['msg_id'] : '',
+			'U_POST_REPLY_PM'	=> ($author_id != phpbb::$user->data['user_id'] && $author_id != ANONYMOUS && phpbb::$acl->acl_get('u_sendpm')) ? "$url&amp;mode=compose&amp;action=reply&amp;f=$folder_id&amp;p=" . $row['msg_id'] : '')
 		);
 		unset($rowset[$id]);
 		$prev_id = $id;

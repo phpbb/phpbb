@@ -137,7 +137,7 @@ class mcp_queue
 				$message = bbcode_nl2br($message);
 				$message = smiley_text($message);
 
-				if ($post_info['post_attachment'] && $auth->acl_get('u_download') && $auth->acl_get('f_download', $post_info['forum_id']))
+				if ($post_info['post_attachment'] && phpbb::$acl->acl_get('u_download') && phpbb::$acl->acl_get('f_download', $post_info['forum_id']))
 				{
 					$extensions = phpbb_cache::obtain_extensions_forum($post_info['forum_id']);
 
@@ -180,17 +180,17 @@ class mcp_queue
 				$template->assign_vars(array(
 					'S_MCP_QUEUE'			=> true,
 					'U_APPROVE_ACTION'		=> append_sid('mcp', "i=queue&amp;p=$post_id&amp;f=$forum_id"),
-					'S_CAN_VIEWIP'			=> $auth->acl_get('m_info', $post_info['forum_id']),
+					'S_CAN_VIEWIP'			=> phpbb::$acl->acl_get('m_info', $post_info['forum_id']),
 					'S_POST_REPORTED'		=> $post_info['post_reported'],
 					'S_POST_UNAPPROVED'		=> !$post_info['post_approved'],
 					'S_POST_LOCKED'			=> $post_info['post_edit_locked'],
 					'S_USER_NOTES'			=> true,
 
-					'U_EDIT'				=> ($auth->acl_get('m_edit', $post_info['forum_id'])) ? append_sid('posting', "mode=edit&amp;f={$post_info['forum_id']}&amp;p={$post_info['post_id']}") : '',
+					'U_EDIT'				=> (phpbb::$acl->acl_get('m_edit', $post_info['forum_id'])) ? append_sid('posting', "mode=edit&amp;f={$post_info['forum_id']}&amp;p={$post_info['post_id']}") : '',
 					'U_MCP_APPROVE'			=> append_sid('mcp', 'i=queue&amp;mode=approve_details&amp;f=' . $post_info['forum_id'] . '&amp;p=' . $post_id),
 					'U_MCP_REPORT'			=> append_sid('mcp', 'i=reports&amp;mode=report_details&amp;f=' . $post_info['forum_id'] . '&amp;p=' . $post_id),
 					'U_MCP_USER_NOTES'		=> append_sid('mcp', 'i=notes&amp;mode=user_notes&amp;u=' . $post_info['user_id']),
-					'U_MCP_WARN_USER'		=> ($auth->acl_get('m_warn')) ? append_sid('mcp', 'i=warn&amp;mode=warn_user&amp;u=' . $post_info['user_id']) : '',
+					'U_MCP_WARN_USER'		=> (phpbb::$acl->acl_get('m_warn')) ? append_sid('mcp', 'i=warn&amp;mode=warn_user&amp;u=' . $post_info['user_id']) : '',
 					'U_VIEW_POST'			=> $post_url,
 					'U_VIEW_TOPIC'			=> $topic_url,
 
@@ -212,10 +212,10 @@ class mcp_queue
 					'POST_SUBJECT'			=> $post_info['post_subject'],
 					'POST_DATE'				=> phpbb::$user->format_date($post_info['post_time']),
 					'POST_IP'				=> $post_info['poster_ip'],
-					'POST_IPADDR'			=> ($auth->acl_get('m_info', $post_info['forum_id']) && request_var('lookup', '')) ? @gethostbyaddr($post_info['poster_ip']) : '',
+					'POST_IPADDR'			=> (phpbb::$acl->acl_get('m_info', $post_info['forum_id']) && request_var('lookup', '')) ? @gethostbyaddr($post_info['poster_ip']) : '',
 					'POST_ID'				=> $post_info['post_id'],
 
-					'U_LOOKUP_IP'			=> ($auth->acl_get('m_info', $post_info['forum_id'])) ? append_sid('mcp', 'i=queue&amp;mode=approve_details&amp;f=' . $post_info['forum_id'] . '&amp;p=' . $post_id . '&amp;lookup=' . $post_info['poster_ip']) . '#ip' : '',
+					'U_LOOKUP_IP'			=> (phpbb::$acl->acl_get('m_info', $post_info['forum_id'])) ? append_sid('mcp', 'i=queue&amp;mode=approve_details&amp;f=' . $post_info['forum_id'] . '&amp;p=' . $post_id . '&amp;lookup=' . $post_info['poster_ip']) . '#ip' : '',
 				));
 
 			break;

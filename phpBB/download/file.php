@@ -89,7 +89,7 @@ $thumbnail = request_var('t', false);
 
 // Start session management, do not update session page.
 phpbb::$user->session_begin(false);
-$auth->acl(phpbb::$user->data);
+phpbb::$acl->init(phpbb::$user->data);
 phpbb::$user->setup('viewtopic');
 
 if (!$download_id)
@@ -124,9 +124,9 @@ $row = array();
 if ($attachment['is_orphan'])
 {
 	// We allow admins having attachment permissions to see orphan attachments...
-	$own_attachment = ($auth->acl_get('a_attach') || $attachment['poster_id'] == phpbb::$user->data['user_id']) ? true : false;
+	$own_attachment = (phpbb::$acl->acl_get('a_attach') || $attachment['poster_id'] == phpbb::$user->data['user_id']) ? true : false;
 
-	if (!$own_attachment || ($attachment['in_message'] && !$auth->acl_get('u_pm_download')) || (!$attachment['in_message'] && !$auth->acl_get('u_download')))
+	if (!$own_attachment || ($attachment['in_message'] && !phpbb::$acl->acl_get('u_pm_download')) || (!$attachment['in_message'] && !phpbb::$acl->acl_get('u_download')))
 	{
 		trigger_error('ERROR_NO_ATTACHMENT');
 	}
@@ -148,9 +148,9 @@ else
 		$db->sql_freeresult($result);
 
 		// Global announcement?
-		$f_download = (!$row) ? $auth->acl_getf_global('f_download') : $auth->acl_get('f_download', $row['forum_id']);
+		$f_download = (!$row) ? phpbb::$acl->acl_getf_global('f_download') : phpbb::$acl->acl_get('f_download', $row['forum_id']);
 
-		if ($auth->acl_get('u_download') && $f_download)
+		if (phpbb::$acl->acl_get('u_download') && $f_download)
 		{
 			if ($row && $row['forum_password'])
 			{
@@ -166,7 +166,7 @@ else
 	else
 	{
 		$row['forum_id'] = false;
-		if (!$auth->acl_get('u_pm_download'))
+		if (!phpbb::$acl->acl_get('u_pm_download'))
 		{
 			header('HTTP/1.0 403 forbidden');
 			trigger_error('SORRY_AUTH_VIEW_ATTACH');

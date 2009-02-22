@@ -117,7 +117,7 @@ class ucp_resend
 			if (phpbb::$config['require_activation'] == USER_ACTIVATION_ADMIN)
 			{
 				// Grab an array of user_id's with a_user permissions ... these users can activate a user
-				$admin_ary = $auth->acl_get_list(false, 'a_user', false);
+				$admin_ary = phpbb::$acl->acl_get_list(false, 'a_user', false);
 
 				$sql = 'SELECT user_id, username, user_email, user_lang, user_jabber, user_notify_type
 					FROM ' . USERS_TABLE . '

@@ -19,7 +19,7 @@ include(PHPBB_ROOT_PATH . 'includes/functions_user.' . PHP_EXT);
 
 // Start session management
 phpbb::$user->session_begin();
-$auth->acl(phpbb::$user->data);
+phpbb::$acl->init(phpbb::$user->data);
 phpbb::$user->setup();
 
 $bots = array(

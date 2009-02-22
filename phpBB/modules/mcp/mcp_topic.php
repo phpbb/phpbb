@@ -73,7 +73,7 @@ function mcp_topic_view($id, $mode, $action)
 	}
 
 	// Approve posts?
-	if ($action == 'approve' && $auth->acl_get('m_approve', $topic_info['forum_id']))
+	if ($action == 'approve' && phpbb::$acl->acl_get('m_approve', $topic_info['forum_id']))
 	{
 		include(PHPBB_ROOT_PATH . 'includes/mcp/mcp_queue.' . PHP_EXT);
 		include_once(PHPBB_ROOT_PATH . 'includes/functions_posting.' . PHP_EXT);
@@ -127,7 +127,7 @@ function mcp_topic_view($id, $mode, $action)
 		FROM ' . POSTS_TABLE . ' p, ' . USERS_TABLE . ' u
 		WHERE ' . (($action == 'reports') ? 'p.post_reported = 1 AND ' : '') . '
 			p.topic_id = ' . $topic_id . ' ' .
-			((!$auth->acl_get('m_approve', $topic_info['forum_id'])) ? ' AND p.post_approved = 1 ' : '') . '
+			((!phpbb::$acl->acl_get('m_approve', $topic_info['forum_id'])) ? ' AND p.post_approved = 1 ' : '') . '
 			AND p.poster_id = u.user_id ' .
 			$limit_time_sql . '
 		ORDER BY ' . $sort_order_sql;
@@ -172,7 +172,7 @@ function mcp_topic_view($id, $mode, $action)
 		$extensions = phpbb_cache::obtain_extensions_forum($topic_info['forum_id']);
 
 		// Get attachments...
-		if ($auth->acl_get('u_download') && $auth->acl_get('f_download', $topic_info['forum_id']))
+		if (phpbb::$acl->acl_get('u_download') && phpbb::$acl->acl_get('f_download', $topic_info['forum_id']))
 		{
 			$sql = 'SELECT *
 				FROM ' . ATTACHMENTS_TABLE . '
@@ -235,8 +235,8 @@ function mcp_topic_view($id, $mode, $action)
 			'S_HAS_ATTACHMENTS'	=> (!empty($attachments[$row['post_id']])) ? true : false,
 
 			'U_POST_DETAILS'	=> "$url&amp;i=$id&amp;p={$row['post_id']}&amp;mode=post_details" . (($forum_id) ? "&amp;f=$forum_id" : ''),
-			'U_MCP_APPROVE'		=> ($auth->acl_get('m_approve', $topic_info['forum_id'])) ? append_sid('mcp', 'i=queue&amp;mode=approve_details&amp;f=' . $topic_info['forum_id'] . '&amp;p=' . $row['post_id']) : '',
-			'U_MCP_REPORT'		=> ($auth->acl_get('m_report', $topic_info['forum_id'])) ? append_sid('mcp', 'i=reports&amp;mode=report_details&amp;f=' . $topic_info['forum_id'] . '&amp;p=' . $row['post_id']) : '')
+			'U_MCP_APPROVE'		=> (phpbb::$acl->acl_get('m_approve', $topic_info['forum_id'])) ? append_sid('mcp', 'i=queue&amp;mode=approve_details&amp;f=' . $topic_info['forum_id'] . '&amp;p=' . $row['post_id']) : '',
+			'U_MCP_REPORT'		=> (phpbb::$acl->acl_get('m_report', $topic_info['forum_id'])) ? append_sid('mcp', 'i=reports&amp;mode=report_details&amp;f=' . $topic_info['forum_id'] . '&amp;p=' . $row['post_id']) : '')
 		);
 
 		// Display not already displayed Attachments for this post, we already parsed them. ;)
@@ -256,7 +256,7 @@ function mcp_topic_view($id, $mode, $action)
 	// Display topic icons for split topic
 	$s_topic_icons = false;
 
-	if ($auth->acl_get('m_split', $topic_info['forum_id']))
+	if (phpbb::$acl->acl_get('m_split', $topic_info['forum_id']))
 	{
 		include_once(PHPBB_ROOT_PATH . 'includes/functions_posting.' . PHP_EXT);
 		$s_topic_icons = posting_gen_topic_icons('', $icon_id);
@@ -274,7 +274,7 @@ function mcp_topic_view($id, $mode, $action)
 			{
 				$to_topic_info = $to_topic_info[$to_topic_id];
 
-				if (!$to_topic_info['enable_icons'] || $auth->acl_get('!f_icons', $topic_info['forum_id']))
+				if (!$to_topic_info['enable_icons'] || phpbb::$acl->acl_get('!f_icons', $topic_info['forum_id']))
 				{
 					$s_topic_icons = false;
 				}
@@ -303,12 +303,12 @@ function mcp_topic_view($id, $mode, $action)
 
 		'S_MCP_ACTION'		=> "$url&amp;i=$id&amp;mode=$mode&amp;action=$action&amp;start=$start",
 		'S_FORUM_SELECT'	=> ($to_forum_id) ? make_forum_select($to_forum_id, false, false, true, true, true) : make_forum_select($topic_info['forum_id'], false, false, true, true, true),
-		'S_CAN_SPLIT'		=> ($auth->acl_get('m_split', $topic_info['forum_id'])) ? true : false,
-		'S_CAN_MERGE'		=> ($auth->acl_get('m_merge', $topic_info['forum_id'])) ? true : false,
-		'S_CAN_DELETE'		=> ($auth->acl_get('m_delete', $topic_info['forum_id'])) ? true : false,
-		'S_CAN_APPROVE'		=> ($has_unapproved_posts && $auth->acl_get('m_approve', $topic_info['forum_id'])) ? true : false,
-		'S_CAN_LOCK'		=> ($auth->acl_get('m_lock', $topic_info['forum_id'])) ? true : false,
-		'S_CAN_REPORT'		=> ($auth->acl_get('m_report', $topic_info['forum_id'])) ? true : false,
+		'S_CAN_SPLIT'		=> (phpbb::$acl->acl_get('m_split', $topic_info['forum_id'])) ? true : false,
+		'S_CAN_MERGE'		=> (phpbb::$acl->acl_get('m_merge', $topic_info['forum_id'])) ? true : false,
+		'S_CAN_DELETE'		=> (phpbb::$acl->acl_get('m_delete', $topic_info['forum_id'])) ? true : false,
+		'S_CAN_APPROVE'		=> ($has_unapproved_posts && phpbb::$acl->acl_get('m_approve', $topic_info['forum_id'])) ? true : false,
+		'S_CAN_LOCK'		=> (phpbb::$acl->acl_get('m_lock', $topic_info['forum_id'])) ? true : false,
+		'S_CAN_REPORT'		=> (phpbb::$acl->acl_get('m_report', $topic_info['forum_id'])) ? true : false,
 		'S_REPORT_VIEW'		=> ($action == 'reports') ? true : false,
 		'S_MERGE_VIEW'		=> ($action == 'merge') ? true : false,
 		'S_SPLIT_VIEW'		=> ($action == 'split') ? true : false,
@@ -442,7 +442,7 @@ function split_topic($action, $topic_id, $to_forum_id, $subject)
 			while ($row = $db->sql_fetchrow($result))
 			{
 				// If split from selected post (split_beyond), we split the unapproved items too.
-				if (!$row['post_approved'] && !$auth->acl_get('m_approve', $row['forum_id']))
+				if (!$row['post_approved'] && !phpbb::$acl->acl_get('m_approve', $row['forum_id']))
 				{
 //					continue;
 				}

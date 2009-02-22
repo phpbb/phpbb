@@ -148,7 +148,7 @@ class mcp_ban
 			'U_FIND_USERNAME'	=> append_sid('memberlist', 'mode=searchuser&amp;form=mcp_ban&amp;field=ban'),
 		));
 
-		if ($mode === 'email' && !$auth->acl_get('a_user'))
+		if ($mode === 'email' && !phpbb::$acl->acl_get('a_user'))
 		{
 			return;
 		}

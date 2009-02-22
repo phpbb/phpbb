@@ -295,7 +295,7 @@ function posting_gen_topic_types($forum_id, $cur_topic_type = POST_NORMAL)
 		// We do not have a special post global announcement permission
 		$auth_key = ($auth_key == 'global') ? 'announce' : $auth_key;
 
-		if ($auth->acl_get('f_' . $auth_key, $forum_id))
+		if (phpbb::$acl->acl_get('f_' . $auth_key, $forum_id))
 		{
 			$toggle = true;
 
@@ -323,8 +323,8 @@ function posting_gen_topic_types($forum_id, $cur_topic_type = POST_NORMAL)
 		}
 
 		$template->assign_vars(array(
-			'S_TOPIC_TYPE_STICKY'	=> ($auth->acl_get('f_sticky', $forum_id)),
-			'S_TOPIC_TYPE_ANNOUNCE'	=> ($auth->acl_get('f_announce', $forum_id)))
+			'S_TOPIC_TYPE_STICKY'	=> (phpbb::$acl->acl_get('f_sticky', $forum_id)),
+			'S_TOPIC_TYPE_ANNOUNCE'	=> (phpbb::$acl->acl_get('f_announce', $forum_id)))
 		);
 	}
 
@@ -395,13 +395,13 @@ function upload_attachment($form_name, $forum_id, $local = false, $local_storage
 	$filedata['thumbnail'] = ($cat_id == ATTACHMENT_CATEGORY_IMAGE && phpbb::$config['img_create_thumbnail']) ? 1 : 0;
 
 	// Check Image Size, if it is an image
-	if (!$auth->acl_get('a_') && !$auth->acl_get('m_', $forum_id) && $cat_id == ATTACHMENT_CATEGORY_IMAGE)
+	if (!phpbb::$acl->acl_get('a_') && !phpbb::$acl->acl_get('m_', $forum_id) && $cat_id == ATTACHMENT_CATEGORY_IMAGE)
 	{
 		$file->upload->set_allowed_dimensions(0, 0, phpbb::$config['img_max_width'], phpbb::$config['img_max_height']);
 	}
 
 	// Admins and mods are allowed to exceed the allowed filesize
-	if (!$auth->acl_get('a_') && !$auth->acl_get('m_', $forum_id))
+	if (!phpbb::$acl->acl_get('a_') && !phpbb::$acl->acl_get('m_', $forum_id))
 	{
 		if (!empty($extensions[$file->get('extension')]['max_filesize']))
 		{
@@ -865,9 +865,9 @@ function load_drafts($topic_id = 0, $forum_id = 0, $id = 0)
 
 		if (isset($topic_rows[$draft['topic_id']])
 			&& (
-				($topic_rows[$draft['topic_id']]['forum_id'] && $auth->acl_get('f_read', $topic_rows[$draft['topic_id']]['forum_id']))
+				($topic_rows[$draft['topic_id']]['forum_id'] && phpbb::$acl->acl_get('f_read', $topic_rows[$draft['topic_id']]['forum_id']))
 				||
-				(!$topic_rows[$draft['topic_id']]['forum_id'] && $auth->acl_getf_global('f_read'))
+				(!$topic_rows[$draft['topic_id']]['forum_id'] && phpbb::$acl->acl_getf_global('f_read'))
 			))
 		{
 			$topic_forum_id = ($topic_rows[$draft['topic_id']]['forum_id']) ? $topic_rows[$draft['topic_id']]['forum_id'] : $forum_id;
@@ -878,7 +878,7 @@ function load_drafts($topic_id = 0, $forum_id = 0, $id = 0)
 
 			$insert_url = append_sid('posting', 'f=' . $topic_forum_id . '&amp;t=' . $draft['topic_id'] . '&amp;mode=reply&amp;d=' . $draft['draft_id']);
 		}
-		else if ($draft['forum_id'] && $auth->acl_get('f_read', $draft['forum_id']))
+		else if ($draft['forum_id'] && phpbb::$acl->acl_get('f_read', $draft['forum_id']))
 		{
 			$link_forum = true;
 			$view_url = append_sid('viewforum', 'f=' . $draft['forum_id']);
@@ -920,7 +920,7 @@ function topic_review($topic_id, $forum_id, $mode = 'topic_review', $cur_post_id
 	$sql = 'SELECT p.post_id
 		FROM ' . POSTS_TABLE . ' p' . "
 		WHERE p.topic_id = $topic_id
-			" . ((!$auth->acl_get('m_approve', $forum_id)) ? 'AND p.post_approved = 1' : '') . '
+			" . ((!phpbb::$acl->acl_get('m_approve', $forum_id)) ? 'AND p.post_approved = 1' : '') . '
 			' . (($mode == 'post_review') ? " AND p.post_id > $cur_post_id" : '') . '
 		ORDER BY p.post_time ';
 	$sql .= ($mode == 'post_review') ? 'ASC' : 'DESC';
@@ -978,7 +978,7 @@ function topic_review($topic_id, $forum_id, $mode = 'topic_review', $cur_post_id
 
 	// Grab extensions
 	$extensions = $attachments = array();
-	if ($has_attachments && $auth->acl_get('u_download') && $auth->acl_get('f_download', $forum_id))
+	if ($has_attachments && phpbb::$acl->acl_get('u_download') && phpbb::$acl->acl_get('f_download', $forum_id))
 	{
 		$extensions = phpbb_cache::obtain_extensions_forum($forum_id);
 
@@ -1014,7 +1014,7 @@ function topic_review($topic_id, $forum_id, $mode = 'topic_review', $cur_post_id
 
 		$decoded_message = false;
 
-		if ($show_quote_button && $auth->acl_get('f_reply', $forum_id))
+		if ($show_quote_button && phpbb::$acl->acl_get('f_reply', $forum_id))
 		{
 			$decoded_message = $message;
 			decode_message($decoded_message, $row['bbcode_uid']);
@@ -1053,8 +1053,8 @@ function topic_review($topic_id, $forum_id, $mode = 'topic_review', $cur_post_id
 			'DECODED_MESSAGE'	=> $decoded_message,
 			'POST_ID'			=> $row['post_id'],
 			'U_MINI_POST'		=> append_sid('viewtopic', 'p=' . $row['post_id']) . '#p' . $row['post_id'],
-			'U_MCP_DETAILS'		=> ($auth->acl_get('m_info', $forum_id)) ? append_sid('mcp', 'i=main&amp;mode=post_details&amp;f=' . $forum_id . '&amp;p=' . $row['post_id'], true, phpbb::$user->session_id) : '',
-			'POSTER_QUOTE'		=> ($show_quote_button && $auth->acl_get('f_reply', $forum_id)) ? addslashes(get_username_string('username', $poster_id, $row['username'], $row['user_colour'], $row['post_username'])) : '')
+			'U_MCP_DETAILS'		=> (phpbb::$acl->acl_get('m_info', $forum_id)) ? append_sid('mcp', 'i=main&amp;mode=post_details&amp;f=' . $forum_id . '&amp;p=' . $row['post_id'], true, phpbb::$user->session_id) : '',
+			'POSTER_QUOTE'		=> ($show_quote_button && phpbb::$acl->acl_get('f_reply', $forum_id)) ? addslashes(get_username_string('username', $poster_id, $row['username'], $row['user_colour'], $row['post_username'])) : '')
 		);
 
 		// Display not already displayed Attachments for this post, we already parsed them. ;)
@@ -1182,7 +1182,7 @@ function user_notification($mode, $subject, $topic_title, $forum_name, $forum_id
 	}
 
 	// Make sure users are allowed to read the forum
-	foreach ($auth->acl_get_list(array_keys($notify_rows), 'f_read', $forum_id) as $forum_id => $forum_ary)
+	foreach (phpbb::$acl->acl_get_list(array_keys($notify_rows), 'f_read', $forum_id) as $forum_id => $forum_ary)
 	{
 		foreach ($forum_ary as $auth_option => $user_ary)
 		{
@@ -1444,7 +1444,7 @@ function delete_post($forum_id, $topic_id, $post_id, &$data)
 				$sql = 'SELECT MAX(post_id) as last_post_id
 					FROM ' . POSTS_TABLE . "
 					WHERE topic_id = $topic_id " .
-						((!$auth->acl_get('m_approve', $forum_id)) ? 'AND post_approved = 1' : '');
+						((!phpbb::$acl->acl_get('m_approve', $forum_id)) ? 'AND post_approved = 1' : '');
 				$result = $db->sql_query($sql);
 				$row = $db->sql_fetchrow($result);
 				$db->sql_freeresult($result);
@@ -1457,7 +1457,7 @@ function delete_post($forum_id, $topic_id, $post_id, &$data)
 			$sql = 'SELECT post_id
 				FROM ' . POSTS_TABLE . "
 				WHERE topic_id = $topic_id " .
-					((!$auth->acl_get('m_approve', $forum_id)) ? 'AND post_approved = 1' : '') . '
+					((!phpbb::$acl->acl_get('m_approve', $forum_id)) ? 'AND post_approved = 1' : '') . '
 					AND post_time > ' . $data['post_time'] . '
 				ORDER BY post_time ASC';
 			$result = $db->sql_query_limit($sql, 1);
@@ -1579,7 +1579,7 @@ function submit_post($mode, $subject, $username, $topic_type, &$poll, &$data, $u
 	$post_approval = 1;
 
 	// Check the permissions for post approval, as well as the queue trigger where users are put on approval with a post count lower than specified. Moderators are not affected.
-	if (((phpbb::$config['enable_queue_trigger'] && phpbb::$user->data['user_posts'] < phpbb::$config['queue_trigger_posts']) || !$auth->acl_get('f_noapprove', $data['forum_id'])) && !$auth->acl_get('m_approve', $data['forum_id']))
+	if (((phpbb::$config['enable_queue_trigger'] && phpbb::$user->data['user_posts'] < phpbb::$config['queue_trigger_posts']) || !phpbb::$acl->acl_get('f_noapprove', $data['forum_id'])) && !phpbb::$acl->acl_get('m_approve', $data['forum_id']))
 	{
 		$post_approval = 0;
 	}
@@ -1610,7 +1610,7 @@ function submit_post($mode, $subject, $username, $topic_type, &$poll, &$data, $u
 				'post_attachment'	=> (!empty($data['attachment_data'])) ? 1 : 0,
 				'bbcode_bitfield'	=> $data['bbcode_bitfield'],
 				'bbcode_uid'		=> $data['bbcode_uid'],
-				'post_postcount'	=> ($auth->acl_get('f_postcount', $data['forum_id'])) ? 1 : 0,
+				'post_postcount'	=> (phpbb::$acl->acl_get('f_postcount', $data['forum_id'])) ? 1 : 0,
 				'post_edit_locked'	=> $data['post_edit_locked']
 			);
 		break;
@@ -1628,7 +1628,7 @@ function submit_post($mode, $subject, $username, $topic_type, &$poll, &$data, $u
 			// If normal edit display edit info
 
 			// Display edit info if edit reason given or user is editing his post, which is not the last within the topic.
-			if ($data['post_edit_reason'] || (!$auth->acl_get('m_edit', $data['forum_id']) && ($post_mode == 'edit' || $post_mode == 'edit_first_post')))
+			if ($data['post_edit_reason'] || (!phpbb::$acl->acl_get('m_edit', $data['forum_id']) && ($post_mode == 'edit' || $post_mode == 'edit_first_post')))
 			{
 				$data['post_edit_reason']		= truncate_string($data['post_edit_reason'], 255, 255, false);
 
@@ -1640,7 +1640,7 @@ function submit_post($mode, $subject, $username, $topic_type, &$poll, &$data, $u
 
 				$sql_data[POSTS_TABLE]['stat'][] = 'post_edit_count = post_edit_count + 1';
 			}
-			else if (!$data['post_edit_reason'] && $mode == 'edit' && $auth->acl_get('m_edit', $data['forum_id']))
+			else if (!$data['post_edit_reason'] && $mode == 'edit' && phpbb::$acl->acl_get('m_edit', $data['forum_id']))
 			{
 				$sql_data[POSTS_TABLE]['sql'] = array(
 					'post_edit_reason'	=> '',
@@ -1718,7 +1718,7 @@ function submit_post($mode, $subject, $username, $topic_type, &$poll, &$data, $u
 				);
 			}
 
-			$sql_data[USERS_TABLE]['stat'][] = "user_lastpost_time = $current_time" . (($auth->acl_get('f_postcount', $data['forum_id']) && $post_approval) ? ', user_posts = user_posts + 1' : '');
+			$sql_data[USERS_TABLE]['stat'][] = "user_lastpost_time = $current_time" . ((phpbb::$acl->acl_get('f_postcount', $data['forum_id']) && $post_approval) ? ', user_posts = user_posts + 1' : '');
 
 			if ($topic_type != POST_GLOBAL)
 			{
@@ -1732,7 +1732,7 @@ function submit_post($mode, $subject, $username, $topic_type, &$poll, &$data, $u
 
 		case 'reply':
 			$sql_data[TOPICS_TABLE]['stat'][] = 'topic_replies_real = topic_replies_real + 1, topic_bumped = 0, topic_bumper = 0' . (($post_approval) ? ', topic_replies = topic_replies + 1' : '') . ((!empty($data['attachment_data']) || (isset($data['topic_attachment']) && $data['topic_attachment'])) ? ', topic_attachment = 1' : '');
-			$sql_data[USERS_TABLE]['stat'][] = "user_lastpost_time = $current_time" . (($auth->acl_get('f_postcount', $data['forum_id']) && $post_approval) ? ', user_posts = user_posts + 1' : '');
+			$sql_data[USERS_TABLE]['stat'][] = "user_lastpost_time = $current_time" . ((phpbb::$acl->acl_get('f_postcount', $data['forum_id']) && $post_approval) ? ', user_posts = user_posts + 1' : '');
 
 			if ($post_approval && $topic_type != POST_GLOBAL)
 			{
@@ -1785,7 +1785,7 @@ function submit_post($mode, $subject, $username, $topic_type, &$poll, &$data, $u
 				set_config('num_posts', phpbb::$config['num_posts'] - ($topic_row['topic_replies'] + 1), true);
 
 				// Only decrement this post, since this is the one non-approved now
-				if ($auth->acl_get('f_postcount', $data['forum_id']))
+				if (phpbb::$acl->acl_get('f_postcount', $data['forum_id']))
 				{
 					$sql_data[USERS_TABLE]['stat'][] = 'user_posts = user_posts - 1';
 				}
@@ -1804,7 +1804,7 @@ function submit_post($mode, $subject, $username, $topic_type, &$poll, &$data, $u
 
 				set_config('num_posts', phpbb::$config['num_posts'] - 1, true);
 
-				if ($auth->acl_get('f_postcount', $data['forum_id']))
+				if (phpbb::$acl->acl_get('f_postcount', $data['forum_id']))
 				{
 					$sql_data[USERS_TABLE]['stat'][] = 'user_posts = user_posts - 1';
 				}

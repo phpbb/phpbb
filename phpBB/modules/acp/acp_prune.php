@@ -108,7 +108,7 @@ class acp_prune
 
 					do
 					{
-						if (!$auth->acl_get('f_list', $row['forum_id']))
+						if (!phpbb::$acl->acl_get('f_list', $row['forum_id']))
 						{
 							continue;
 						}
@@ -293,7 +293,7 @@ class acp_prune
 					$template->assign_block_vars('users', array(
 						'USERNAME'			=> $usernames[$user_id],
 						'U_PROFILE'			=> append_sid('memberlist', 'mode=viewprofile&amp;u=' . $user_id),
-						'U_USER_ADMIN'		=> ($auth->acl_get('a_user')) ? append_sid(PHPBB_ADMIN_PATH . 'index.' . PHP_EXT, 'i=users&amp;mode=overview&amp;u=' . $user_id, true, phpbb::$user->session_id) : '',
+						'U_USER_ADMIN'		=> (phpbb::$acl->acl_get('a_user')) ? append_sid(PHPBB_ADMIN_PATH . 'index.' . PHP_EXT, 'i=users&amp;mode=overview&amp;u=' . $user_id, true, phpbb::$user->session_id) : '',
 					));
 				}
 

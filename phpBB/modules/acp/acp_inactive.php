@@ -123,7 +123,7 @@ class acp_inactive
 					{
 						if (confirm_box(true))
 						{
-							if (!$auth->acl_get('a_userdel'))
+							if (!phpbb::$acl->acl_get('a_userdel'))
 							{
 								trigger_error(phpbb::$user->lang['NO_AUTH_OPERATION'] . adm_back_link($this->u_action), E_USER_WARNING);
 							}
