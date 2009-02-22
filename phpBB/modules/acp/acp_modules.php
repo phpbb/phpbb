@@ -323,7 +323,7 @@ class acp_modules
 					// Name options
 					$s_name_options .= '<option value="' . $option . '"' . (($option == $module_data['module_basename']) ? ' selected="selected"' : '') . '>' . phpbb::$user->lang($values['title']) . ' [' . $this->module_class . '_' . $option . ']</option>';
 
-					$template->assign_block_vars('m_names', array('NAME' => $option, 'A_NAME' => addslashes($option)));
+					phpbb::$template->assign_block_vars('m_names', array('NAME' => $option, 'A_NAME' => addslashes($option)));
 
 					// Build module modes
 					foreach ($values['modes'] as $m_mode => $m_values)
@@ -333,18 +333,18 @@ class acp_modules
 							$s_mode_options .= '<option value="' . $m_mode . '"' . (($m_mode == $module_data['module_mode']) ? ' selected="selected"' : '') . '>' . phpbb::$user->lang($m_values['title']) . '</option>';
 						}
 
-						$template->assign_block_vars('m_names.modes', array(
+						phpbb::$template->assign_block_vars('m_names.modes', array(
 							'OPTION'		=> $m_mode,
 							'VALUE'			=> phpbb::$user->lang($m_values['title']),
 							'A_OPTION'		=> addslashes($m_mode),
-							'A_VALUE'		=> addslashes(phpbb::$user->lang($m_values['title'])))
-						);
+							'A_VALUE'		=> addslashes(phpbb::$user->lang($m_values['title'])),
+						));
 					}
 				}
 
 				$s_cat_option = '<option value="0"' . (($module_data['parent_id'] == 0) ? ' selected="selected"' : '') . '>' . phpbb::$user->lang['NO_PARENT'] . '</option>';
 
-				$template->assign_vars(array_merge(array(
+				phpbb::$template->assign_vars(array_merge(array(
 					'S_EDIT_MODULE'		=> true,
 					'S_IS_CAT'			=> $is_cat,
 					'S_CAT_OPTIONS'		=> $s_cat_option . $this->make_module_select($module_data['parent_id'], ($action == 'edit') ? $module_row['module_id'] : false, false, false, false, true),
@@ -365,10 +365,10 @@ class acp_modules
 
 				if (sizeof($errors))
 				{
-					$template->assign_vars(array(
+					phpbb::$template->assign_vars(array(
 						'S_ERROR'	=> true,
-						'ERROR_MSG'	=> implode('<br />', $errors))
-					);
+						'ERROR_MSG'	=> implode('<br />', $errors),
+					));
 				}
 
 				return;
@@ -379,10 +379,10 @@ class acp_modules
 		// Default management page
 		if (sizeof($errors))
 		{
-			$template->assign_vars(array(
+			phpbb::$template->assign_vars(array(
 				'S_ERROR'	=> true,
-				'ERROR_MSG'	=> implode('<br />', $errors))
-			);
+				'ERROR_MSG'	=> implode('<br />', $errors),
+			));
 		}
 
 		if (!$this->parent_id)
@@ -437,7 +437,7 @@ class acp_modules
 
 				$url = $this->u_action . '&amp;parent_id=' . $this->parent_id . '&amp;m=' . $row['module_id'];
 
-				$template->assign_block_vars('modules', array(
+				phpbb::$template->assign_block_vars('modules', array(
 					'MODULE_IMAGE'		=> $module_image,
 					'MODULE_TITLE'		=> $langname,
 					'MODULE_ENABLED'	=> ($row['module_enabled']) ? true : false,
@@ -452,8 +452,8 @@ class acp_modules
 					'U_EDIT'			=> $url . '&amp;action=edit',
 					'U_DELETE'			=> $url . '&amp;action=delete',
 					'U_ENABLE'			=> $url . '&amp;action=enable',
-					'U_DISABLE'			=> $url . '&amp;action=disable')
-				);
+					'U_DISABLE'			=> $url . '&amp;action=disable',
+				));
 			}
 			while ($row = phpbb::$db->sql_fetchrow($result));
 		}
@@ -463,7 +463,7 @@ class acp_modules
 
 			$url = $this->u_action . '&amp;parent_id=' . $this->parent_id . '&amp;m=' . $row['module_id'];
 
-			$template->assign_vars(array(
+			phpbb::$template->assign_vars(array(
 				'S_NO_MODULES'		=> true,
 				'MODULE_TITLE'		=> $langname,
 				'MODULE_ENABLED'	=> ($row['module_enabled']) ? true : false,
@@ -472,8 +472,8 @@ class acp_modules
 				'U_EDIT'			=> $url . '&amp;action=edit',
 				'U_DELETE'			=> $url . '&amp;action=delete',
 				'U_ENABLE'			=> $url . '&amp;action=enable',
-				'U_DISABLE'			=> $url . '&amp;action=disable')
-			);
+				'U_DISABLE'			=> $url . '&amp;action=disable',
+			));
 		}
 		phpbb::$db->sql_freeresult($result);
 
@@ -496,15 +496,14 @@ class acp_modules
 			$s_install_options .= '</optgroup>';
 		}
 
-		$template->assign_vars(array(
+		phpbb::$template->assign_vars(array(
 			'U_SEL_ACTION'		=> $this->u_action,
 			'U_ACTION'			=> $this->u_action . '&amp;parent_id=' . $this->parent_id,
 			'NAVIGATION'		=> $navigation,
 			'MODULE_BOX'		=> $module_box,
 			'PARENT_ID'			=> $this->parent_id,
 			'S_INSTALL_OPTIONS'	=> $s_install_options,
-			)
-		);
+		));
 	}
 
 	/**

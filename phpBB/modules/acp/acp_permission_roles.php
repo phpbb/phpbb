@@ -70,10 +70,10 @@ class acp_permission_roles
 			break;
 		}
 
-		$template->assign_vars(array(
+		phpbb::$template->assign_vars(array(
 			'L_TITLE'		=> phpbb::$user->lang[$this->page_title],
-			'L_EXPLAIN'		=> phpbb::$user->lang[$this->page_title . '_EXPLAIN'])
-		);
+			'L_EXPLAIN'		=> phpbb::$user->lang[$this->page_title . '_EXPLAIN'],
+		));
 
 		// Take action... admin submitted something
 		if ($submit || $action == 'remove')
@@ -303,7 +303,7 @@ class acp_permission_roles
 					trigger_error(phpbb::$user->lang['NO_ROLE_SELECTED'] . adm_back_link($this->u_action), E_USER_WARNING);
 				}
 
-				$template->assign_vars(array(
+				phpbb::$template->assign_vars(array(
 					'S_EDIT'			=> true,
 
 					'U_ACTION'			=> $this->u_action . "&amp;action={$action}&amp;role_id={$role_id}",
@@ -312,8 +312,7 @@ class acp_permission_roles
 					'ROLE_NAME'			=> $role_row['role_name'],
 					'ROLE_DESCRIPTION'	=> $role_row['role_description'],
 					'L_ACL_TYPE'		=> phpbb::$user->lang['ACL_TYPE_' . strtoupper($permission_type)],
-					)
-				);
+				));
 
 				// We need to fill the auth options array with ACL_NO options ;)
 				$sql = 'SELECT auth_option_id, auth_option
@@ -347,10 +346,10 @@ class acp_permission_roles
 					{
 						$role_name = (!empty(phpbb::$user->lang[$role_row['role_name']])) ? phpbb::$user->lang[$role_row['role_name']] : $role_row['role_name'];
 
-						$template->assign_vars(array(
+						phpbb::$template->assign_vars(array(
 							'S_DISPLAY_ROLE_MASK'	=> true,
-							'L_ROLE_ASSIGNED_TO'	=> sprintf(phpbb::$user->lang['ROLE_ASSIGNED_TO'], $role_name))
-						);
+							'L_ROLE_ASSIGNED_TO'	=> sprintf(phpbb::$user->lang['ROLE_ASSIGNED_TO'], $role_name),
+						));
 
 						$auth_admin->display_role_mask($hold_ary);
 					}
@@ -411,7 +410,7 @@ class acp_permission_roles
 		{
 			$role_name = (!empty(phpbb::$user->lang[$row['role_name']])) ? phpbb::$user->lang[$row['role_name']] : $row['role_name'];
 
-			$template->assign_block_vars('roles', array(
+			phpbb::$template->assign_block_vars('roles', array(
 				'ROLE_NAME'				=> $role_name,
 				'ROLE_DESCRIPTION'		=> (!empty(phpbb::$user->lang[$row['role_description']])) ? phpbb::$user->lang[$row['role_description']] : nl2br($row['role_description']),
 
@@ -419,29 +418,29 @@ class acp_permission_roles
 				'U_REMOVE'			=> $this->u_action . '&amp;action=remove&amp;role_id=' . $row['role_id'],
 				'U_MOVE_UP'			=> $this->u_action . '&amp;action=move_up&amp;order=' . $row['role_order'],
 				'U_MOVE_DOWN'		=> $this->u_action . '&amp;action=move_down&amp;order=' . $row['role_order'],
-				'U_DISPLAY_ITEMS'	=> ($row['role_id'] == $display_item) ? '' : $this->u_action . '&amp;display_item=' . $row['role_id'] . '#assigned_to')
-			);
+				'U_DISPLAY_ITEMS'	=> ($row['role_id'] == $display_item) ? '' : $this->u_action . '&amp;display_item=' . $row['role_id'] . '#assigned_to',
+			));
 
 			$s_role_options .= '<option value="' . $row['role_id'] . '">' . $role_name . '</option>';
 
 			if ($display_item == $row['role_id'])
 			{
-				$template->assign_vars(array(
-					'L_ROLE_ASSIGNED_TO'	=> sprintf(phpbb::$user->lang['ROLE_ASSIGNED_TO'], $role_name))
-				);
+				phpbb::$template->assign_vars(array(
+					'L_ROLE_ASSIGNED_TO'	=> sprintf(phpbb::$user->lang['ROLE_ASSIGNED_TO'], $role_name),
+				));
 			}
 		}
 		phpbb::$db->sql_freeresult($result);
 
-		$template->assign_vars(array(
-			'S_ROLE_OPTIONS'		=> $s_role_options)
-		);
+		phpbb::$template->assign_vars(array(
+			'S_ROLE_OPTIONS'		=> $s_role_options,
+		));
 
 		if ($display_item)
 		{
-			$template->assign_vars(array(
-				'S_DISPLAY_ROLE_MASK'	=> true)
-			);
+			phpbb::$template->assign_vars(array(
+				'S_DISPLAY_ROLE_MASK'	=> true,
+			));
 
 			$hold_ary = $auth_admin->get_role_mask($display_item);
 			$auth_admin->display_role_mask($hold_ary);
@@ -462,29 +461,29 @@ class acp_permission_roles
 
 		$content_array = $content_array[0];
 
-		$template->assign_var('S_NUM_PERM_COLS', sizeof($categories));
+		phpbb::$template->assign_var('S_NUM_PERM_COLS', sizeof($categories));
 
 		// Assign to template
 		foreach ($content_array as $cat => $cat_array)
 		{
-			$template->assign_block_vars('auth', array(
+			phpbb::$template->assign_block_vars('auth', array(
 				'CAT_NAME'	=> phpbb::$user->lang['permission_cat'][$cat],
 
 				'S_YES'		=> ($cat_array['S_YES'] && !$cat_array['S_NEVER'] && !$cat_array['S_NO']) ? true : false,
 				'S_NEVER'	=> ($cat_array['S_NEVER'] && !$cat_array['S_YES'] && !$cat_array['S_NO']) ? true : false,
-				'S_NO'		=> ($cat_array['S_NO'] && !$cat_array['S_NEVER'] && !$cat_array['S_YES']) ? true : false)
-			);
+				'S_NO'		=> ($cat_array['S_NO'] && !$cat_array['S_NEVER'] && !$cat_array['S_YES']) ? true : false,
+			));
 
 			foreach ($cat_array['permissions'] as $permission => $allowed)
 			{
-				$template->assign_block_vars('auth.mask', array(
+				phpbb::$template->assign_block_vars('auth.mask', array(
 					'S_YES'		=> ($allowed == phpbb::ACL_YES) ? true : false,
 					'S_NEVER'	=> ($allowed == phpbb::ACL_NEVER) ? true : false,
 					'S_NO'		=> ($allowed == phpbb::ACL_NO) ? true : false,
 
 					'FIELD_NAME'	=> $permission,
-					'PERMISSION'	=> phpbb::$user->lang['acl_' . $permission]['lang'])
-				);
+					'PERMISSION'	=> phpbb::$user->lang['acl_' . $permission]['lang'],
+				));
 			}
 		}
 	}

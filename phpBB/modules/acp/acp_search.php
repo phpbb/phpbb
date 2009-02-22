@@ -81,10 +81,10 @@ class acp_search
 
 				if (!$submit)
 				{
-					$template->assign_block_vars('backend', array(
+					phpbb::$template->assign_block_vars('backend', array(
 						'NAME'		=> $name,
-						'SETTINGS'	=> $vars['tpl'])
-					);
+						'SETTINGS'	=> $vars['tpl'],
+					));
 				}
 				else if (is_array($vars['config']))
 				{
@@ -205,7 +205,7 @@ class acp_search
 		$this->tpl_name = 'acp_search';
 		$this->page_title = 'ACP_SEARCH_SETTINGS';
 
-		$template->assign_vars(array(
+		phpbb::$template->assign_vars(array(
 			'LIMIT_SEARCH_LOAD'		=> (float) phpbb::$config['limit_search_load'],
 			'MIN_SEARCH_AUTHOR_CHARS'	=> (int) phpbb::$config['min_search_author_chars'],
 			'SEARCH_INTERVAL'		=> (float) phpbb::$config['search_interval'],
@@ -216,8 +216,8 @@ class acp_search
 			'S_YES_SEARCH'			=> (bool) phpbb::$config['load_search'],
 			'S_SETTINGS'			=> true,
 
-			'U_ACTION'				=> $this->u_action)
-		);
+			'U_ACTION'				=> $this->u_action,
+		));
 	}
 
 	function index($id, $mode)
@@ -461,24 +461,24 @@ class acp_search
 				}
 			}
 
-			$template->assign_block_vars('backend', array(
+			phpbb::$template->assign_block_vars('backend', array(
 				'L_NAME'			=> $name,
 				'NAME'				=> $type,
 
 				'S_ACTIVE'			=> ($type == phpbb::$config['search_type']) ? true : false,
 				'S_HIDDEN_FIELDS'	=> build_hidden_fields(array('search_type' => $type)),
 				'S_INDEXED'			=> (bool) $search->index_created(),
-				'S_STATS'			=> (bool) sizeof($statistics))
-			);
+				'S_STATS'			=> (bool) sizeof($statistics),
+			));
 
 			foreach ($statistics as $statistic)
 			{
-				$template->assign_block_vars('backend.data', array(
+				phpbb::$template->assign_block_vars('backend.data', array(
 					'STATISTIC_1'	=> $statistic['statistic_1'],
 					'VALUE_1'		=> $statistic['value_1'],
 					'STATISTIC_2'	=> (isset($statistic['statistic_2'])) ? $statistic['statistic_2'] : '',
-					'VALUE_2'		=> (isset($statistic['value_2'])) ? $statistic['value_2'] : '')
-				);
+					'VALUE_2'		=> (isset($statistic['value_2'])) ? $statistic['value_2'] : '',
+				));
 			}
 		}
 		unset($search);
@@ -489,7 +489,7 @@ class acp_search
 		$this->tpl_name = 'acp_search';
 		$this->page_title = 'ACP_SEARCH_INDEX';
 
-		$template->assign_vars(array(
+		phpbb::$template->assign_vars(array(
 			'S_INDEX'				=> true,
 			'U_ACTION'				=> $this->u_action,
 			'U_PROGRESS_BAR'		=> append_sid(PHPBB_ADMIN_PATH . 'index.' . PHP_EXT, "i=$id&amp;mode=$mode&amp;action=progress_bar"),
@@ -498,12 +498,12 @@ class acp_search
 
 		if (isset($this->state[1]))
 		{
-			$template->assign_vars(array(
+			phpbb::$template->assign_vars(array(
 				'S_CONTINUE_INDEXING'	=> $this->state[1],
 				'U_CONTINUE_INDEXING'	=> $this->u_action . '&amp;action=' . $this->state[1],
 				'L_CONTINUE'			=> ($this->state[1] == 'create') ? phpbb::$user->lang['CONTINUE_INDEXING'] : phpbb::$user->lang['CONTINUE_DELETING_INDEX'],
-				'L_CONTINUE_EXPLAIN'	=> ($this->state[1] == 'create') ? phpbb::$user->lang['CONTINUE_INDEXING_EXPLAIN'] : phpbb::$user->lang['CONTINUE_DELETING_INDEX_EXPLAIN'])
-			);
+				'L_CONTINUE_EXPLAIN'	=> ($this->state[1] == 'create') ? phpbb::$user->lang['CONTINUE_INDEXING_EXPLAIN'] : phpbb::$user->lang['CONTINUE_DELETING_INDEX_EXPLAIN'],
+			));
 		}
 	}
 
@@ -513,14 +513,14 @@ class acp_search
 
 		page_header(phpbb::$user->lang[$l_type]);
 
-		$template->set_filenames(array(
-			'body'	=> 'progress_bar.html')
-		);
+		phpbb::$template->set_filenames(array(
+			'body'	=> 'progress_bar.html',
+		));
 
-		$template->assign_vars(array(
+		phpbb::$template->assign_vars(array(
 			'L_PROGRESS'			=> phpbb::$user->lang[$l_type],
-			'L_PROGRESS_EXPLAIN'	=> phpbb::$user->lang[$l_type . '_EXPLAIN'])
-		);
+			'L_PROGRESS_EXPLAIN'	=> phpbb::$user->lang[$l_type . '_EXPLAIN'],
+		));
 
 		page_footer();
 	}

@@ -242,7 +242,7 @@ class ucp_profile
 					$error = preg_replace('#^([A-Z_]+)$#e', "phpbb::\$user->lang('\\1')", $error);
 				}
 
-				$template->assign_vars(array(
+				phpbb::$template->assign_vars(array(
 					'ERROR'				=> (sizeof($error)) ? implode('<br />', $error) : '',
 
 					'USERNAME'			=> $data['username'],
@@ -257,8 +257,8 @@ class ucp_profile
 					'S_FORCE_PASSWORD'	=> (phpbb::$acl->acl_get('u_chgpasswd') && phpbb::$config['chg_passforce'] && phpbb::$user->data['user_passchg'] < time() - (phpbb::$config['chg_passforce'] * 86400)) ? true : false,
 					'S_CHANGE_USERNAME' => (phpbb::$config['allow_namechange'] && phpbb::$acl->acl_get('u_chgname')) ? true : false,
 					'S_CHANGE_EMAIL'	=> (phpbb::$acl->acl_get('u_chgemail')) ? true : false,
-					'S_CHANGE_PASSWORD'	=> (phpbb::$acl->acl_get('u_chgpasswd')) ? true : false)
-				);
+					'S_CHANGE_PASSWORD'	=> (phpbb::$acl->acl_get('u_chgpasswd')) ? true : false,
+				));
 			break;
 
 			case 'profile_info':
@@ -433,7 +433,7 @@ class ucp_profile
 					}
 					unset($now);
 
-					$template->assign_vars(array(
+					phpbb::$template->assign_vars(array(
 						'S_BIRTHDAY_DAY_OPTIONS'	=> $s_birthday_day_options,
 						'S_BIRTHDAY_MONTH_OPTIONS'	=> $s_birthday_month_options,
 						'S_BIRTHDAY_YEAR_OPTIONS'	=> $s_birthday_year_options,
@@ -441,7 +441,7 @@ class ucp_profile
 					));
 				}
 
-				$template->assign_vars(array(
+				phpbb::$template->assign_vars(array(
 					'ERROR'		=> (sizeof($error)) ? implode('<br />', $error) : '',
 
 					'ICQ'		=> $data['icq'],
@@ -533,7 +533,7 @@ class ucp_profile
 
 				decode_message($signature, phpbb::$user->data['user_sig_bbcode_uid']);
 
-				$template->assign_vars(array(
+				phpbb::$template->assign_vars(array(
 					'ERROR'				=> (sizeof($error)) ? implode('<br />', $error) : '',
 					'SIGNATURE'			=> $signature,
 					'SIGNATURE_PREVIEW'	=> $signature_preview,
@@ -554,8 +554,8 @@ class ucp_profile
 					'S_SMILIES_ALLOWED'		=> phpbb::$config['allow_sig_smilies'],
 					'S_BBCODE_IMG'			=> (phpbb::$config['allow_sig_img']) ? true : false,
 					'S_BBCODE_FLASH'		=> (phpbb::$config['allow_sig_flash']) ? true : false,
-					'S_LINKS_ALLOWED'		=> (phpbb::$config['allow_sig_links']) ? true : false)
-				);
+					'S_LINKS_ALLOWED'		=> (phpbb::$config['allow_sig_links']) ? true : false,
+				));
 
 				// Build custom bbcodes array
 				display_custom_bbcodes();
@@ -593,7 +593,7 @@ class ucp_profile
 					$error = preg_replace('#^([A-Z_]+)$#e', "phpbb::\$user->lang('\\1')", $error);
 				}
 
-				$template->assign_vars(array(
+				phpbb::$template->assign_vars(array(
 					'ERROR'			=> (sizeof($error)) ? implode('<br />', $error) : '',
 					'AVATAR'		=> get_user_avatar(phpbb::$user->data['user_avatar'], phpbb::$user->data['user_avatar_type'], phpbb::$user->data['user_avatar_width'], phpbb::$user->data['user_avatar_height']),
 					'AVATAR_SIZE'	=> phpbb::$config['avatar_filesize'],
@@ -613,7 +613,7 @@ class ucp_profile
 				{
 					$avatars_enabled = ($can_upload || (phpbb::$acl->acl_get('u_chgavatar') && (phpbb::$config['allow_avatar_local'] || phpbb::$config['allow_avatar_remote']))) ? true : false;
 
-					$template->assign_vars(array(
+					phpbb::$template->assign_vars(array(
 						'AVATAR_WIDTH'	=> request_var('width', phpbb::$user->data['user_avatar_width']),
 						'AVATAR_HEIGHT'	=> request_var('height', phpbb::$user->data['user_avatar_height']),
 
@@ -621,19 +621,19 @@ class ucp_profile
 						'S_UPLOAD_AVATAR_FILE'	=> $can_upload,
 						'S_UPLOAD_AVATAR_URL'	=> $can_upload,
 						'S_LINK_AVATAR'			=> (phpbb::$acl->acl_get('u_chgavatar') && phpbb::$config['allow_avatar_remote']) ? true : false,
-						'S_DISPLAY_GALLERY'		=> (phpbb::$acl->acl_get('u_chgavatar') && phpbb::$config['allow_avatar_local']) ? true : false)
-					);
+						'S_DISPLAY_GALLERY'		=> (phpbb::$acl->acl_get('u_chgavatar') && phpbb::$config['allow_avatar_local']) ? true : false,
+					));
 				}
 
 			break;
 		}
 
-		$template->assign_vars(array(
+		phpbb::$template->assign_vars(array(
 			'L_TITLE'	=> phpbb::$user->lang['UCP_PROFILE_' . strtoupper($mode)],
 
 			'S_HIDDEN_FIELDS'	=> $s_hidden_fields,
-			'S_UCP_ACTION'		=> $this->u_action)
-		);
+			'S_UCP_ACTION'		=> $this->u_action,
+		));
 
 		// Set desired template
 		$this->tpl_name = 'ucp_profile_' . $mode;

@@ -510,7 +510,7 @@ parse_css_file = {PARSE_CSS_FILE}
 
 		$this->page_title = 'ACP_' . $l_prefix . 'S';
 
-		$template->assign_vars(array(
+		phpbb::$template->assign_vars(array(
 			'S_FRONTEND'		=> true,
 			'S_STYLE'			=> ($mode == 'style') ? true : false,
 
@@ -523,8 +523,7 @@ parse_css_file = {PARSE_CSS_FILE}
 			'L_CREATE'			=> phpbb::$user->lang['CREATE_' . $l_prefix],
 
 			'U_ACTION'			=> $this->u_action,
-			)
-		);
+		));
 
 		$sql = "SELECT *
 			FROM $sql_from";
@@ -552,7 +551,7 @@ parse_css_file = {PARSE_CSS_FILE}
 				$s_actions[] = '<a href="' . $this->u_action . "&amp;action=$option&amp;id=" . $row[$mode . '_id'] . '">' . phpbb::$user->lang[strtoupper($option)] . '</a>';
 			}
 
-			$template->assign_block_vars('installed', array(
+			phpbb::$template->assign_block_vars('installed', array(
 				'S_DEFAULT_STYLE'		=> ($mode == 'style' && $row['style_id'] == phpbb::$config['default_style']) ? true : false,
 				'U_EDIT'				=> $this->u_action . '&amp;action=' . (($mode == 'style') ? 'details' : 'edit') . '&amp;id=' . $row[$mode . '_id'],
 				'U_STYLE_ACT_DEACT'		=> $this->u_action . '&amp;action=' . $stylevis . '&amp;id=' . $row[$mode . '_id'],
@@ -563,8 +562,7 @@ parse_css_file = {PARSE_CSS_FILE}
 
 				'NAME'					=> $row[$mode . '_name'],
 				'STYLE_COUNT'			=> ($mode == 'style' && isset($style_count[$row['style_id']])) ? $style_count[$row['style_id']] : 0,
-				)
-			);
+			));
 		}
 		phpbb::$db->sql_freeresult($result);
 
@@ -605,18 +603,18 @@ parse_css_file = {PARSE_CSS_FILE}
 		{
 			foreach ($new_ary as $cfg)
 			{
-				$template->assign_block_vars('uninstalled', array(
+				phpbb::$template->assign_block_vars('uninstalled', array(
 					'NAME'			=> $cfg['name'],
 					'COPYRIGHT'		=> $cfg['copyright'],
-					'U_INSTALL'		=> $this->u_action . '&amp;action=install&amp;path=' . urlencode($cfg['path']))
-				);
+					'U_INSTALL'		=> $this->u_action . '&amp;action=install&amp;path=' . urlencode($cfg['path']),
+				));
 			}
 		}
 		unset($new_ary);
 
-		$template->assign_vars(array(
-			'S_BASIS_OPTIONS'		=> $basis_options)
-		);
+		phpbb::$template->assign_vars(array(
+			'S_BASIS_OPTIONS'		=> $basis_options,
+		));
 
 	}
 
@@ -766,7 +764,7 @@ parse_css_file = {PARSE_CSS_FILE}
 			}
 		}
 
-		$template->assign_vars(array(
+		phpbb::$template->assign_vars(array(
 			'S_EDIT_TEMPLATE'	=> true,
 			'S_HIDDEN_FIELDS'	=> build_hidden_fields(array('template_file' => $template_file)),
 			'S_TEMPLATES'		=> $tpl_options,
@@ -786,8 +784,8 @@ parse_css_file = {PARSE_CSS_FILE}
 			'SELECTED_TEMPLATE'	=> $template_info['template_name'],
 			'TEMPLATE_FILE'		=> $template_file,
 			'TEMPLATE_DATA'		=> utf8_htmlspecialchars($template_data),
-			'TEXT_ROWS'			=> $text_rows)
-		);
+			'TEXT_ROWS'			=> $text_rows,
+		));
 	}
 
 	/**
@@ -829,13 +827,13 @@ parse_css_file = {PARSE_CSS_FILE}
 		{
 			page_header(phpbb::$user->lang['TEMPLATE_CACHE']);
 
-			$template->set_filenames(array(
-				'body'	=> 'viewsource.html')
-			);
+			phpbb::$template->set_filenames(array(
+				'body'	=> 'viewsource.html',
+			));
 
-			$template->assign_vars(array(
-				'FILENAME'	=> str_replace('.', '/', $source) . '.html')
-			);
+			phpbb::$template->assign_vars(array(
+				'FILENAME'	=> str_replace('.', '/', $source) . '.html',
+			));
 
 			$code = str_replace(array("\r\n", "\r"), array("\n", "\n"), file_get_contents(PHPBB_ROOT_PATH . "cache/{$cache_prefix}_$source.html." . PHP_EXT));
 
@@ -859,10 +857,10 @@ parse_css_file = {PARSE_CSS_FILE}
 
 			foreach ($code as $key => $line)
 			{
-				$template->assign_block_vars('source', array(
+				phpbb::$template->assign_block_vars('source', array(
 					'LINENUM'	=> $key + 1,
-					'LINE'		=> preg_replace('#([^ ;])&nbsp;([^ &])#', '$1 $2', $line))
-				);
+					'LINE'		=> preg_replace('#([^ ;])&nbsp;([^ &])#', '$1 $2', $line),
+				));
 				unset($code[$key]);
 			}
 
@@ -888,23 +886,23 @@ parse_css_file = {PARSE_CSS_FILE}
 				continue;
 			}
 
-			$template->assign_block_vars('file', array(
+			phpbb::$template->assign_block_vars('file', array(
 				'U_VIEWSOURCE'	=> $this->u_action . "&amp;action=cache&amp;id=$template_id&amp;source=$file",
 
 				'CACHED'		=> phpbb::$user->format_date(filemtime(PHPBB_ROOT_PATH . "cache/$filename")),
 				'FILENAME'		=> $file,
 				'FILESIZE'		=> sprintf('%.1f ' . phpbb::$user->lang['KIB'], filesize(PHPBB_ROOT_PATH . "cache/$filename") / 1024),
-				'MODIFIED'		=> phpbb::$user->format_date(filemtime(PHPBB_ROOT_PATH . "styles/{$template_row['template_path']}/template/$tpl_file.html")))
-			);
+				'MODIFIED'		=> phpbb::$user->format_date(filemtime(PHPBB_ROOT_PATH . "styles/{$template_row['template_path']}/template/$tpl_file.html")),
+			));
 		}
 
-		$template->assign_vars(array(
+		phpbb::$template->assign_vars(array(
 			'S_CACHE'			=> true,
 			'S_TEMPLATE'		=> true,
 
 			'U_ACTION'			=> $this->u_action . "&amp;action=cache&amp;id=$template_id",
-			'U_BACK'			=> $this->u_action)
-		);
+			'U_BACK'			=> $this->u_action,
+		));
 	}
 
 	/**
@@ -1068,7 +1066,7 @@ parse_css_file = {PARSE_CSS_FILE}
 			}
 		}
 
-		$template->assign_vars(array(
+		phpbb::$template->assign_vars(array(
 			'S_EDIT_THEME'		=> true,
 			'S_HIDDEN_FIELDS'	=> build_hidden_fields(array('template_file' => $theme_file)),
 			'S_THEME_IN_DB'		=> $theme_info['theme_storedb'],
@@ -1089,8 +1087,8 @@ parse_css_file = {PARSE_CSS_FILE}
 			'SELECTED_TEMPLATE'	=> $theme_info['theme_name'],
 			'TEMPLATE_FILE'		=> $theme_file,
 			'TEMPLATE_DATA'		=> utf8_htmlspecialchars($theme_data),
-			'TEXT_ROWS'			=> $text_rows)
-		);
+			'TEXT_ROWS'			=> $text_rows,
+		));
 	}
 
 
@@ -1228,7 +1226,7 @@ parse_css_file = {PARSE_CSS_FILE}
 
 					add_log('admin', 'LOG_IMAGESET_EDIT', $imageset_name);
 
-					$template->assign_var('SUCCESS', true);
+					phpbb::$template->assign_var('SUCCESS', true);
 
 					$image_filename = $imgfilename;
 					$image_width	= $imgwidth;
@@ -1282,8 +1280,8 @@ parse_css_file = {PARSE_CSS_FILE}
 		$img_options = '';
 		foreach ($this->imageset_keys as $category => $img_ary)
 		{
-			$template->assign_block_vars('category', array(
-				'NAME'			=> phpbb::$user->lang['IMG_CAT_' . strtoupper($category)]
+			phpbb::$template->assign_block_vars('category', array(
+				'NAME'			=> phpbb::$user->lang['IMG_CAT_' . strtoupper($category)],
 			));
 
 			foreach ($img_ary as $img)
@@ -1292,19 +1290,19 @@ parse_css_file = {PARSE_CSS_FILE}
 				{
 					foreach ($langs as $language)
 					{
-						$template->assign_block_vars('category.images', array(
+						phpbb::$template->assign_block_vars('category.images', array(
 							'SELECTED'			=> ($img == $imgname && $language == $imgnamelang),
 							'VALUE'				=> $img . '-' . $language,
-							'TEXT'				=> phpbb::$user->lang['IMG_' . strtoupper($img)] . ' [ ' . $language . ' ]'
+							'TEXT'				=> phpbb::$user->lang['IMG_' . strtoupper($img)] . ' [ ' . $language . ' ]',
 						));
 					}
 				}
 				else
 				{
-					$template->assign_block_vars('category.images', array(
+					phpbb::$template->assign_block_vars('category.images', array(
 						'SELECTED'			=> ($img == $imgname),
 						'VALUE'				=> $img,
-						'TEXT'				=> (($category == 'custom') ? $img : phpbb::$user->lang['IMG_' . strtoupper($img)])
+						'TEXT'				=> (($category == 'custom') ? $img : phpbb::$user->lang['IMG_' . strtoupper($img)]),
 					));
 				}
 			}
@@ -1320,8 +1318,8 @@ parse_css_file = {PARSE_CSS_FILE}
 		{
 			if ($type !== 'lang' || $sql_extra)
 			{
-				$template->assign_block_vars('imagesetlist', array(
-					'TYPE'	=> ($type == 'lang')
+				phpbb::$template->assign_block_vars('imagesetlist', array(
+					'TYPE'	=> ($type == 'lang'),
 				));
 			}
 
@@ -1334,10 +1332,10 @@ parse_css_file = {PARSE_CSS_FILE}
 					$image_found = true;
 					$img_val = htmlspecialchars($img);
 				}
-				$template->assign_block_vars('imagesetlist.images', array(
+				phpbb::$template->assign_block_vars('imagesetlist.images', array(
 					'SELECTED'			=> $selected,
 					'TEXT'				=> $imgtext,
-					'VALUE'				=> htmlspecialchars($img)
+					'VALUE'				=> htmlspecialchars($img),
 				));
 			}
 		}
@@ -1345,7 +1343,7 @@ parse_css_file = {PARSE_CSS_FILE}
 		$imgsize_bool = (!empty($imgname) && $image_width && $image_height) ? true : false;
 		$image_request = '../styles/' . $imageset_path . '/imageset/' . ($image_lang ? $imgnamelang . '/' : '') . $image_filename;
 
-		$template->assign_vars(array(
+		phpbb::$template->assign_vars(array(
 			'S_EDIT_IMAGESET'	=> true,
 			'L_TITLE'			=> phpbb::$user->lang[$this->page_title],
 			'L_EXPLAIN'			=> phpbb::$user->lang[$this->page_title . '_EXPLAIN'],
@@ -1359,7 +1357,7 @@ parse_css_file = {PARSE_CSS_FILE}
 			'A_NAME'			=> addslashes($imageset_name),
 			'ERROR'				=> !$valid_name,
 			'IMG_SRC'			=> ($image_found) ? '../styles/' . $imageset_path . '/imageset/' . $img_val : 'images/no_image.png',
-			'IMAGE_SELECT'		=> $image_found
+			'IMAGE_SELECT'		=> $image_found,
 		));
 	}
 
@@ -1479,7 +1477,7 @@ parse_css_file = {PARSE_CSS_FILE}
 
 		$this->page_title = 'DELETE_' . $l_prefix;
 
-		$template->assign_vars(array(
+		phpbb::$template->assign_vars(array(
 			'S_DELETE'			=> true,
 			'S_REPLACE_OPTIONS'	=> $s_options,
 
@@ -1493,8 +1491,7 @@ parse_css_file = {PARSE_CSS_FILE}
 			'U_BACK'		=> $this->u_action,
 
 			'NAME'			=> $style_row[$mode . '_name'],
-			)
-		);
+		));
 	}
 
 	/**
@@ -1874,7 +1871,7 @@ parse_css_file = {PARSE_CSS_FILE}
 			$format_buttons .= '<label><input type="radio"' . ((!$format_buttons) ? ' id="format"' : '') . ' class="radio" value="' . $method . '" name="format"' . (($method == $format) ? ' checked="checked"' : '') . ' /> ' . $method . '</label>';
 		}
 
-		$template->assign_vars(array(
+		phpbb::$template->assign_vars(array(
 			'S_EXPORT'		=> true,
 			'S_ERROR_MSG'	=> (sizeof($error)) ? true : false,
 			'S_STYLE'		=> ($mode == 'style') ? true : false,
@@ -1888,8 +1885,8 @@ parse_css_file = {PARSE_CSS_FILE}
 
 			'ERROR_MSG'			=> (sizeof($error)) ? implode('<br />', $error) : '',
 			'NAME'				=> $style_row[$mode . '_name'],
-			'FORMAT_BUTTONS'	=> $format_buttons)
-		);
+			'FORMAT_BUTTONS'	=> $format_buttons,
+		));
 	}
 
 	/**
@@ -2078,7 +2075,7 @@ parse_css_file = {PARSE_CSS_FILE}
 
 		$this->page_title = 'EDIT_DETAILS_' . $l_type;
 
-		$template->assign_vars(array(
+		phpbb::$template->assign_vars(array(
 			'S_DETAILS'				=> true,
 			'S_ERROR_MSG'			=> (sizeof($error)) ? true : false,
 			'S_STYLE'				=> ($mode == 'style') ? true : false,
@@ -2104,8 +2101,7 @@ parse_css_file = {PARSE_CSS_FILE}
 			'ERROR_MSG'		=> (sizeof($error)) ? implode('<br />', $error) : '',
 			'NAME'			=> $style_row[$mode . '_name'],
 			'COPYRIGHT'		=> $style_row[$mode . '_copyright'],
-			)
-		);
+		));
 	}
 
 	/**
@@ -2363,7 +2359,7 @@ parse_css_file = {PARSE_CSS_FILE}
 
 		$this->page_title = 'INSTALL_' . $l_type;
 
-		$template->assign_vars(array(
+		phpbb::$template->assign_vars(array(
 			'S_DETAILS'			=> true,
 			'S_INSTALL'			=> true,
 			'S_ERROR_MSG'		=> (sizeof($error)) ? true : false,
@@ -2388,8 +2384,8 @@ parse_css_file = {PARSE_CSS_FILE}
 			'COPYRIGHT'			=> $style_row[$mode . '_copyright'],
 			'TEMPLATE_NAME'		=> ($mode == 'style') ? $style_row['template_name'] : '',
 			'THEME_NAME'		=> ($mode == 'style') ? $style_row['theme_name'] : '',
-			'IMAGESET_NAME'		=> ($mode == 'style') ? $style_row['imageset_name'] : '')
-		);
+			'IMAGESET_NAME'		=> ($mode == 'style') ? $style_row['imageset_name'] : '',
+		));
 	}
 
 	/**
@@ -2510,7 +2506,7 @@ parse_css_file = {PARSE_CSS_FILE}
 
 		$this->page_title = 'ADD_' . $l_type;
 
-		$template->assign_vars(array(
+		phpbb::$template->assign_vars(array(
 			'S_DETAILS'			=> true,
 			'S_ADD'				=> true,
 			'S_ERROR_MSG'		=> (sizeof($error)) ? true : false,
@@ -2536,8 +2532,8 @@ parse_css_file = {PARSE_CSS_FILE}
 
 			'ERROR_MSG'			=> (sizeof($error)) ? implode('<br />', $error) : '',
 			'NAME'				=> $style_row[$mode . '_name'],
-			'COPYRIGHT'			=> $style_row[$mode . '_copyright'])
-		);
+			'COPYRIGHT'			=> $style_row[$mode . '_copyright'],
+		));
 
 	}
 

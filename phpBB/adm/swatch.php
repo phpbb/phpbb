@@ -23,11 +23,11 @@ phpbb::$acl->init(phpbb::$user->data);
 phpbb::$user->setup();
 
 // Set custom template for admin area
-$template->set_custom_template(PHPBB_ROOT_PATH . phpbb::$base_config['admin_folder'] . '/style', 'admin');
+phpbb::$template->set_custom_template(PHPBB_ROOT_PATH . phpbb::$base_config['admin_folder'] . '/style', 'admin');
 
-$template->set_filenames(array(
-	'body' => 'colour_swatch.html')
-);
+phpbb::$template->set_filenames(array(
+	'body' => 'colour_swatch.html',
+));
 
 $form = request_var('form', '');
 $name = request_var('name', '');
@@ -36,7 +36,7 @@ $name = request_var('name', '');
 $form = (!preg_match('/^[a-z0-9_-]+$/i', $form)) ? '' : $form;
 $name = (!preg_match('/^[a-z0-9_-]+$/i', $name)) ? '' : $name;
 
-$template->assign_vars(array(
+phpbb::$template->assign_vars(array(
 	'OPENER'		=> $form,
 	'NAME'			=> $name,
 	'T_IMAGES_PATH'	=> PHPBB_ROOT_PATH . 'images/',
@@ -46,7 +46,7 @@ $template->assign_vars(array(
 	'S_CONTENT_ENCODING'	=> 'UTF-8',
 ));
 
-$template->display('body');
+phpbb::$template->display('body');
 
 garbage_collection();
 

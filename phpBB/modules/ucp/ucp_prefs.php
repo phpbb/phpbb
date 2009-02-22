@@ -125,7 +125,7 @@ class ucp_prefs
 				}
 				$dateformat_options .= '>' . phpbb::$user->lang['CUSTOM_DATEFORMAT'] . '</option>';
 
-				$template->assign_vars(array(
+				phpbb::$template->assign_vars(array(
 					'ERROR'				=> (sizeof($error)) ? implode('<br />', $error) : '',
 
 					'S_NOTIFY_EMAIL'	=> ($data['notifymethod'] == NOTIFY_EMAIL) ? true : false,
@@ -150,8 +150,8 @@ class ucp_prefs
 					'S_STYLE_OPTIONS'		=> (phpbb::$config['override_user_style']) ? '' : style_select($data['style']),
 					'S_TZ_OPTIONS'			=> tz_select($data['tz'], true),
 					'S_CAN_HIDE_ONLINE'		=> (phpbb::$acl->acl_get('u_hideonline')) ? true : false,
-					'S_SELECT_NOTIFY'		=> (phpbb::$config['jab_enable'] && phpbb::$user->data['user_jabber'] && @extension_loaded('xml')) ? true : false)
-				);
+					'S_SELECT_NOTIFY'		=> (phpbb::$config['jab_enable'] && phpbb::$user->data['user_jabber'] && @extension_loaded('xml')) ? true : false,
+				));
 
 			break;
 
@@ -270,7 +270,7 @@ class ucp_prefs
 					${'s_sort_' . $sort_option . '_dir'} .= '</select>';
 				}
 
-				$template->assign_vars(array(
+				phpbb::$template->assign_vars(array(
 					'ERROR'				=> (sizeof($error)) ? implode('<br />', $error) : '',
 
 					'S_IMAGES'			=> $data['images'],
@@ -287,8 +287,8 @@ class ucp_prefs
 					'S_TOPIC_SORT_DIR'		=> $s_sort_topic_dir,
 					'S_POST_SORT_DAYS'		=> $s_limit_post_days,
 					'S_POST_SORT_KEY'		=> $s_sort_post_key,
-					'S_POST_SORT_DIR'		=> $s_sort_post_dir)
-				);
+					'S_POST_SORT_DIR'		=> $s_sort_post_dir,
+				));
 
 			break;
 
@@ -331,21 +331,21 @@ class ucp_prefs
 					trigger_error($message);
 				}
 
-				$template->assign_vars(array(
+				phpbb::$template->assign_vars(array(
 					'S_BBCODE'	=> $data['bbcode'],
 					'S_SMILIES'	=> $data['smilies'],
 					'S_SIG'		=> $data['sig'],
-					'S_NOTIFY'	=> $data['notify'])
-				);
+					'S_NOTIFY'	=> $data['notify'],
+				));
 			break;
 		}
 
-		$template->assign_vars(array(
+		phpbb::$template->assign_vars(array(
 			'L_TITLE'			=> phpbb::$user->lang['UCP_PREFS_' . strtoupper($mode)],
 
 			'S_HIDDEN_FIELDS'	=> $s_hidden_fields,
-			'S_UCP_ACTION'		=> $this->u_action)
-		);
+			'S_UCP_ACTION'		=> $this->u_action,
+		));
 
 		$this->tpl_name = 'ucp_prefs_' . $mode;
 		$this->page_title = 'UCP_PREFS_' . strtoupper($mode);

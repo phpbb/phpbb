@@ -241,7 +241,7 @@ class acp_email
 		$s_priority_options .= '<option value="' . MAIL_NORMAL_PRIORITY . '" selected="selected">' . phpbb::$user->lang['MAIL_NORMAL_PRIORITY'] . '</option>';
 		$s_priority_options .= '<option value="' . MAIL_HIGH_PRIORITY . '">' . phpbb::$user->lang['MAIL_HIGH_PRIORITY'] . '</option>';
 
-		$template->assign_vars(array(
+		phpbb::$template->assign_vars(array(
 			'S_WARNING'				=> (sizeof($error)) ? true : false,
 			'WARNING_MSG'			=> (sizeof($error)) ? implode('<br />', $error) : '',
 			'U_ACTION'				=> $this->u_action,

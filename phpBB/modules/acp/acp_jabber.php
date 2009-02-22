@@ -108,7 +108,7 @@ class acp_jabber
 			trigger_error($message . adm_back_link($this->u_action));
 		}
 
-		$template->assign_vars(array(
+		phpbb::$template->assign_vars(array(
 			'U_ACTION'				=> $this->u_action,
 			'JAB_ENABLE'			=> $jab_enable,
 			'L_JAB_SERVER_EXPLAIN'	=> sprintf(phpbb::$user->lang['JAB_SERVER_EXPLAIN'], '<a href="http://www.jabber.org/">', '</a>'),

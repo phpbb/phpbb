@@ -463,7 +463,7 @@ function message_options($id, $mode, $global_privmsgs_rules, $global_rule_condit
 		}
 	}
 
-	$template->assign_vars(array(
+	phpbb::$template->assign_vars(array(
 		'S_FULL_FOLDER_OPTIONS'	=> $s_full_folder_options,
 		'S_TO_FOLDER_OPTIONS'	=> $s_to_folder_options,
 		'S_FOLDER_OPTIONS'		=> $s_folder_options,
@@ -537,7 +537,7 @@ function message_options($id, $mode, $global_privmsgs_rules, $global_rule_condit
 		if (!isset($global_rule_conditions[$rule_option]))
 		{
 			$cond_option = 'none';
-			$template->assign_var('NONE_CONDITION', true);
+			phpbb::$template->assign_var('NONE_CONDITION', true);
 		}
 		else
 		{
@@ -567,13 +567,13 @@ function define_check_option($hardcoded, $check_option, $check_lang)
 		}
 	}
 
-	$template->assign_vars(array(
+	phpbb::$template->assign_vars(array(
 		'S_CHECK_DEFINED'	=> true,
 		'S_CHECK_SELECT'	=> ($hardcoded) ? false : true,
 		'CHECK_CURRENT'		=> isset($check_lang[$check_option]) ? $check_lang[$check_option] : '',
 		'S_CHECK_OPTIONS'	=> $s_check_options,
-		'CHECK_OPTION'		=> $check_option)
-	);
+		'CHECK_OPTION'		=> $check_option,
+	));
 }
 
 /**
@@ -612,13 +612,13 @@ function define_action_option($hardcoded, $action_option, $action_lang, $folder)
 		}
 	}
 
-	$template->assign_vars(array(
+	phpbb::$template->assign_vars(array(
 		'S_ACTION_DEFINED'	=> true,
 		'S_ACTION_SELECT'	=> ($hardcoded) ? false : true,
 		'ACTION_CURRENT'	=> $l_action,
 		'S_ACTION_OPTIONS'	=> $s_action_options,
-		'ACTION_OPTION'		=> $action_option)
-	);
+		'ACTION_OPTION'		=> $action_option,
+	));
 }
 
 /**
@@ -635,13 +635,13 @@ function define_rule_option($hardcoded, $rule_option, $rule_lang, $check_ary)
 		}
 	}
 
-	$template->assign_vars(array(
+	phpbb::$template->assign_vars(array(
 		'S_RULE_DEFINED'	=> true,
 		'S_RULE_SELECT'		=> !$hardcoded,
 		'RULE_CURRENT'		=> isset($rule_lang[$rule_option]) ? $rule_lang[$rule_option] : '',
 		'S_RULE_OPTIONS'	=> $s_rule_options,
-		'RULE_OPTION'		=> $rule_option)
-	);
+		'RULE_OPTION'		=> $rule_option,
+	));
 }
 
 /**
@@ -649,18 +649,18 @@ function define_rule_option($hardcoded, $rule_option, $rule_lang, $check_ary)
 */
 function define_cond_option($hardcoded, $cond_option, $rule_option, $global_rule_conditions)
 {
-	$template->assign_vars(array(
+	phpbb::$template->assign_vars(array(
 		'S_COND_DEFINED'	=> true,
-		'S_COND_SELECT'		=> (!$hardcoded && isset($global_rule_conditions[$rule_option])) ? true : false)
-	);
+		'S_COND_SELECT'		=> (!$hardcoded && isset($global_rule_conditions[$rule_option])) ? true : false,
+	));
 
 	// Define COND_OPTION
 	if (!isset($global_rule_conditions[$rule_option]))
 	{
-		$template->assign_vars(array(
+		phpbb::$template->assign_vars(array(
 			'COND_OPTION'	=> 'none',
-			'COND_CURRENT'	=> false)
-		);
+			'COND_CURRENT'	=> false,
+		));
 		return;
 	}
 
@@ -673,12 +673,12 @@ function define_cond_option($hardcoded, $cond_option, $rule_option, $global_rule
 		case 'text':
 			$rule_string = utf8_normalize_nfc(request_var('rule_string', '', true));
 
-			$template->assign_vars(array(
+			phpbb::$template->assign_vars(array(
 				'S_TEXT_CONDITION'	=> true,
 				'CURRENT_STRING'	=> $rule_string,
 				'CURRENT_USER_ID'	=> 0,
-				'CURRENT_GROUP_ID'	=> 0)
-			);
+				'CURRENT_GROUP_ID'	=> 0,
+			));
 
 			$current_value = $rule_string;
 		break;
@@ -716,12 +716,12 @@ function define_cond_option($hardcoded, $cond_option, $rule_option, $global_rule
 				}
 			}
 
-			$template->assign_vars(array(
+			phpbb::$template->assign_vars(array(
 				'S_USER_CONDITION'	=> true,
 				'CURRENT_STRING'	=> $rule_string,
 				'CURRENT_USER_ID'	=> $rule_user_id,
-				'CURRENT_GROUP_ID'	=> 0)
-			);
+				'CURRENT_GROUP_ID'	=> 0,
+			));
 
 			$current_value = $rule_string;
 		break;
@@ -769,13 +769,13 @@ function define_cond_option($hardcoded, $cond_option, $rule_option, $global_rule
 			}
 			phpbb::$db->sql_freeresult($result);
 
-			$template->assign_vars(array(
+			phpbb::$template->assign_vars(array(
 				'S_GROUP_CONDITION'	=> true,
 				'S_GROUP_OPTIONS'	=> $s_group_options,
 				'CURRENT_STRING'	=> $rule_string,
 				'CURRENT_USER_ID'	=> 0,
-				'CURRENT_GROUP_ID'	=> $rule_group_id)
-			);
+				'CURRENT_GROUP_ID'	=> $rule_group_id,
+			));
 
 			$current_value = $rule_string;
 		break;
@@ -784,10 +784,10 @@ function define_cond_option($hardcoded, $cond_option, $rule_option, $global_rule
 			return;
 	}
 
-	$template->assign_vars(array(
+	phpbb::$template->assign_vars(array(
 		'COND_OPTION'	=> $condition,
-		'COND_CURRENT'	=> $current_value)
-	);
+		'COND_CURRENT'	=> $current_value,
+	));
 }
 
 /**
@@ -804,15 +804,15 @@ function show_defined_rules($user_id, $check_lang, $rule_lang, $action_lang, $fo
 	$count = 0;
 	while ($row = phpbb::$db->sql_fetchrow($result))
 	{
-		$template->assign_block_vars('rule', array(
+		phpbb::$template->assign_block_vars('rule', array(
 			'COUNT'		=> ++$count,
 			'RULE_ID'	=> $row['rule_id'],
 			'CHECK'		=> $check_lang[$row['rule_check']],
 			'RULE'		=> $rule_lang[$row['rule_connection']],
 			'STRING'	=> $row['rule_string'],
 			'ACTION'	=> $action_lang[$row['rule_action']],
-			'FOLDER'	=> ($row['rule_action'] == ACTION_PLACE_INTO_FOLDER) ? $folder[$row['rule_folder_id']]['folder_name'] : '')
-		);
+			'FOLDER'	=> ($row['rule_action'] == ACTION_PLACE_INTO_FOLDER) ? $folder[$row['rule_folder_id']]['folder_name'] : '',
+		));
 	}
 	phpbb::$db->sql_freeresult($result);
 }

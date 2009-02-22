@@ -124,11 +124,11 @@ class acp_language
 				foreach ($requested_data as $data => $default)
 				{
 					$default_value = request_var($data, '');
-					$template->assign_block_vars('data', array(
+					phpbb::$template->assign_block_vars('data', array(
 						'DATA'		=> $data,
 						'NAME'		=> phpbb::$user->lang[strtoupper($method . '_' . $data)],
 						'EXPLAIN'	=> phpbb::$user->lang[strtoupper($method . '_' . $data) . '_EXPLAIN'],
-						'DEFAULT'	=> (empty($default_value)) ? $default : $default_value
+						'DEFAULT'	=> (empty($default_value)) ? $default : $default_value,
 					));
 				}
 
@@ -144,7 +144,7 @@ class acp_language
 				*/
 				$hidden_data .= build_hidden_fields(array('entry' => $_POST['entry']), true, STRIP);
 
-				$template->assign_vars(array(
+				phpbb::$template->assign_vars(array(
 					'S_UPLOAD'	=> true,
 					'NAME'		=> $method,
 					'U_ACTION'	=> $this->u_action . "&amp;id=$lang_id&amp;action=upload_data",
@@ -152,7 +152,7 @@ class acp_language
 					'HIDDEN'	=> $hidden_data,
 
 					'S_CONNECTION_SUCCESS'		=> (request_var('test_connection', '') && $test_connection === true) ? true : false,
-					'S_CONNECTION_FAILED'		=> (request_var('test_connection', '') && $test_connection !== true) ? true : false
+					'S_CONNECTION_FAILED'		=> (request_var('test_connection', '') && $test_connection !== true) ? true : false,
 				));
 			break;
 
@@ -517,12 +517,12 @@ class acp_language
 
 				foreach ($methods as $method)
 				{
-					$template->assign_block_vars('buttons', array(
-						'VALUE' => $method
+					phpbb::$template->assign_block_vars('buttons', array(
+						'VALUE' => $method,
 					));
 				}
 
-				$template->assign_vars(array(
+				phpbb::$template->assign_vars(array(
 					'S_DETAILS'			=> true,
 					'U_ACTION'			=> $this->u_action . "&amp;action=details&amp;id=$lang_id",
 					'U_BACK'			=> $this->u_action,
@@ -530,9 +530,8 @@ class acp_language
 					'LANG_ENGLISH_NAME'	=> $lang_entries['lang_english_name'],
 					'LANG_ISO'			=> $lang_entries['lang_iso'],
 					'LANG_AUTHOR'		=> $lang_entries['lang_author'],
-					'ALLOW_UPLOAD'		=> sizeof($methods)
-					)
-				);
+					'ALLOW_UPLOAD'		=> sizeof($methods),
+				));
 
 				// If current lang is different from the default lang, then first try to grab missing/additional vars
 				if ($lang_iso != phpbb::$config['default_lang'])
@@ -605,20 +604,20 @@ class acp_language
 
 					if (sizeof($missing_files))
 					{
-						$template->assign_vars(array(
+						phpbb::$template->assign_vars(array(
 							'S_MISSING_FILES'		=> true,
 							'L_MISSING_FILES'		=> sprintf(phpbb::$user->lang['THOSE_MISSING_LANG_FILES'], $lang_entries['lang_local_name']),
-							'MISSING_FILES'			=> implode('<br />', $missing_files))
-						);
+							'MISSING_FILES'			=> implode('<br />', $missing_files),
+						));
 					}
 
 					if ($is_missing_var)
 					{
-						$template->assign_vars(array(
+						phpbb::$template->assign_vars(array(
 							'S_MISSING_VARS'			=> true,
 							'L_MISSING_VARS_EXPLAIN'	=> sprintf(phpbb::$user->lang['THOSE_MISSING_LANG_VARIABLES'], $lang_entries['lang_local_name']),
-							'U_MISSING_ACTION'			=> $this->u_action . "&amp;action=$action&amp;id=$lang_id")
-						);
+							'U_MISSING_ACTION'			=> $this->u_action . "&amp;action=$action&amp;id=$lang_id",
+						));
 
 						foreach ($missing_vars as $file => $vars)
 						{
@@ -627,11 +626,11 @@ class acp_language
 								continue;
 							}
 
-							$template->assign_block_vars('missing', array(
+							phpbb::$template->assign_block_vars('missing', array(
 								'FILE'			=> $file,
 								'TPL'			=> $this->print_language_entries($vars, '', false),
-								'KEY'			=> (strpos($file, '/') === false) ? '|' . $file : str_replace('/', '|', $file))
-							);
+								'KEY'			=> (strpos($file, '/') === false) ? '|' . $file : str_replace('/', '|', $file),
+							));
 						}
 					}
 				}
@@ -722,14 +721,13 @@ class acp_language
 				}
 
 				// Normal language pack entries
-				$template->assign_vars(array(
+				phpbb::$template->assign_vars(array(
 					'U_ENTRY_ACTION'		=> $this->u_action . "&amp;action=details&amp;id=$lang_id#entries",
 					'S_EMAIL_FILE'			=> $is_email_file,
 					'S_FROM_STORE'			=> $file_from_store,
 					'S_LANG_OPTIONS'		=> $s_lang_options,
 					'PRINT_MESSAGE'			=> $print_message,
-					)
-				);
+				));
 
 				if (!$is_email_file)
 				{
@@ -743,14 +741,14 @@ class acp_language
 
 					$tpl .= $this->print_language_entries($lang);
 
-					$template->assign_var('TPL', $tpl);
+					phpbb::$template->assign_var('TPL', $tpl);
 					unset($tpl);
 				}
 				else
 				{
-					$template->assign_vars(array(
-						'LANG'		=> $lang)
-					);
+					phpbb::$template->assign_vars(array(
+						'LANG'		=> $lang,
+					));
 
 					unset($lang);
 				}
@@ -991,12 +989,12 @@ class acp_language
 						$radio_buttons .= '<label><input type="radio"' . ((!$radio_buttons) ? ' id="use_method"' : '') . ' class="radio" value="' . $method . '" name="use_method" /> ' . $method . '</label>';
 					}
 
-					$template->assign_vars(array(
+					phpbb::$template->assign_vars(array(
 						'S_SELECT_METHOD'		=> true,
 						'U_BACK'				=> $this->u_action,
 						'U_ACTION'				=> $this->u_action . "&amp;action=$action&amp;id=$lang_id",
-						'RADIO_BUTTONS'			=> $radio_buttons)
-					);
+						'RADIO_BUTTONS'			=> $radio_buttons,
+					));
 
 					return;
 				}
@@ -1098,7 +1096,7 @@ class acp_language
 			$installed[] = $row['lang_iso'];
 			$tagstyle = ($row['lang_iso'] == phpbb::$config['default_lang']) ? '*' : '';
 
-			$template->assign_block_vars('lang', array(
+			phpbb::$template->assign_block_vars('lang', array(
 				'U_DETAILS'			=> $this->u_action . "&amp;action=details&amp;id={$row['lang_id']}",
 				'U_DOWNLOAD'		=> $this->u_action . "&amp;action=download&amp;id={$row['lang_id']}",
 				'U_DELETE'			=> $this->u_action . "&amp;action=delete&amp;id={$row['lang_id']}",
@@ -1147,12 +1145,12 @@ class acp_language
 		{
 			foreach ($new_ary as $iso => $lang_ary)
 			{
-				$template->assign_block_vars('notinst', array(
+				phpbb::$template->assign_block_vars('notinst', array(
 					'ISO'			=> htmlspecialchars($lang_ary['iso']),
 					'LOCAL_NAME'	=> htmlspecialchars($lang_ary['local_name'], ENT_COMPAT, 'UTF-8'),
 					'NAME'			=> htmlspecialchars($lang_ary['name'], ENT_COMPAT, 'UTF-8'),
-					'U_INSTALL'		=> $this->u_action . '&amp;action=install&amp;iso=' . urlencode($lang_ary['iso']))
-				);
+					'U_INSTALL'		=> $this->u_action . '&amp;action=install&amp;iso=' . urlencode($lang_ary['iso']),
+				));
 			}
 		}
 

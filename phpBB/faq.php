@@ -43,28 +43,28 @@ foreach (phpbb::$user->help as $help_ary)
 {
 	if ($help_ary[0] == '--')
 	{
-		$template->assign_block_vars('faq_block', array(
-			'BLOCK_TITLE'		=> $help_ary[1])
-		);
+		phpbb::$template->assign_block_vars('faq_block', array(
+			'BLOCK_TITLE'		=> $help_ary[1],
+		));
 
 		continue;
 	}
 
-	$template->assign_block_vars('faq_block.faq_row', array(
+	phpbb::$template->assign_block_vars('faq_block.faq_row', array(
 		'FAQ_QUESTION'		=> $help_ary[0],
-		'FAQ_ANSWER'		=> $help_ary[1])
-	);
+		'FAQ_ANSWER'		=> $help_ary[1],
+	));
 }
 
 // Lets build a page ...
-$template->assign_vars(array(
+phpbb::$template->assign_vars(array(
 	'L_FAQ_TITLE'	=> $l_title,
-	'L_BACK_TO_TOP'	=> phpbb::$user->lang['BACK_TO_TOP'])
-);
+	'L_BACK_TO_TOP'	=> phpbb::$user->lang['BACK_TO_TOP'],
+));
 
 page_header($l_title);
 
-$template->set_filenames(array(
+phpbb::$template->set_filenames(array(
 	'body' => 'faq_body.html')
 );
 make_jumpbox(append_sid('viewforum'));

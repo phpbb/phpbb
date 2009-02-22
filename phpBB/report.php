@@ -146,22 +146,22 @@ if ($submit && $reason_id)
 // Generate the reasons
 display_reasons($reason_id);
 
-$template->assign_vars(array(
+phpbb::$template->assign_vars(array(
 	'REPORT_TEXT'		=> $report_text,
 	'S_REPORT_ACTION'	=> append_sid('report', 'f=' . $forum_id . '&amp;p=' . $post_id),
 
 	'S_NOTIFY'			=> $user_notify,
-	'S_CAN_NOTIFY'		=> (phpbb::$user->is_registered) ? true : false)
-);
+	'S_CAN_NOTIFY'		=> (phpbb::$user->is_registered) ? true : false,
+));
 
 generate_forum_nav($forum_data);
 
 // Start output of page
 page_header(phpbb::$user->lang['REPORT_POST']);
 
-$template->set_filenames(array(
-	'body' => 'report_body.html')
-);
+phpbb::$template->set_filenames(array(
+	'body' => 'report_body.html',
+));
 
 page_footer();
 

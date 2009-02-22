@@ -130,7 +130,7 @@ class ucp_main
 						$folder_img .= '_mine';
 					}
 
-					$template->assign_block_vars('topicrow', array(
+					phpbb::$template->assign_block_vars('topicrow', array(
 						'FORUM_ID'					=> $forum_id,
 						'TOPIC_ID'					=> $topic_id,
 						'TOPIC_AUTHOR'				=> get_username_string('username', $row['topic_poster'], $row['topic_first_poster_name'], $row['topic_first_poster_colour']),
@@ -157,8 +157,8 @@ class ucp_main
 						'U_LAST_POST'			=> append_sid('viewtopic', "f=$g_forum_id&amp;t=$topic_id&amp;p=" . $row['topic_last_post_id']) . '#p' . $row['topic_last_post_id'],
 						'U_LAST_POST_AUTHOR'	=> get_username_string('profile', $row['topic_last_poster_id'], $row['topic_last_poster_name'], $row['topic_last_poster_colour']),
 						'U_NEWEST_POST'			=> append_sid('viewtopic', "f=$g_forum_id&amp;t=$topic_id&amp;view=unread") . '#unread',
-						'U_VIEW_TOPIC'			=> append_sid('viewtopic', "f=$g_forum_id&amp;t=$topic_id"))
-					);
+						'U_VIEW_TOPIC'			=> append_sid('viewtopic', "f=$g_forum_id&amp;t=$topic_id"),
+					));
 				}
 
 				if (phpbb::$config['load_user_activity'])
@@ -175,7 +175,7 @@ class ucp_main
 				$posts_per_day = phpbb::$user->data['user_posts'] / $memberdays;
 				$percentage = (phpbb::$config['num_posts']) ? min(100, (phpbb::$user->data['user_posts'] / phpbb::$config['num_posts']) * 100) : 0;
 
-				$template->assign_vars(array(
+				phpbb::$template->assign_vars(array(
 					'USER_COLOR'		=> (!empty(phpbb::$user->data['user_colour'])) ? phpbb::$user->data['user_colour'] : '',
 					'JOINED'			=> phpbb::$user->format_date(phpbb::$user->data['user_regdate']),
 					'VISITED'			=> (empty($last_visit)) ? ' - ' : phpbb::$user->format_date($last_visit),
@@ -330,7 +330,7 @@ class ucp_main
 							$last_post_time = $last_post_url = '';
 						}
 
-						$template->assign_block_vars('forumrow', array(
+						phpbb::$template->assign_block_vars('forumrow', array(
 							'FORUM_ID'				=> $forum_id,
 							'FORUM_FOLDER_IMG'		=> phpbb::$user->img($folder_image, $folder_alt),
 							'FORUM_FOLDER_IMG_SRC'	=> phpbb::$user->img($folder_image, $folder_alt, 'src'),
@@ -347,8 +347,8 @@ class ucp_main
 							'U_LAST_POST_AUTHOR'		=> get_username_string('profile', $row['forum_last_poster_id'], $row['forum_last_poster_name'], $row['forum_last_poster_colour']),
 
 							'U_LAST_POST'			=> $last_post_url,
-							'U_VIEWFORUM'			=> append_sid('viewforum', 'f=' . $row['forum_id']))
-						);
+							'U_VIEWFORUM'			=> append_sid('viewforum', 'f=' . $row['forum_id']),
+						));
 					}
 					phpbb::$db->sql_freeresult($result);
 				}
@@ -364,7 +364,7 @@ class ucp_main
 					$this->assign_topiclist('subscribed', $forbidden_forums);
 				}
 
-				$template->assign_vars(array(
+				phpbb::$template->assign_vars(array(
 					'S_TOPIC_NOTIFY'		=> phpbb::$config['allow_topic_notify'],
 					'S_FORUM_NOTIFY'		=> phpbb::$config['allow_forum_notify'],
 				));
@@ -375,9 +375,9 @@ class ucp_main
 
 				if (!phpbb::$config['allow_bookmarks'])
 				{
-					$template->assign_vars(array(
-						'S_NO_DISPLAY_BOOKMARKS'	=> true)
-					);
+					phpbb::$template->assign_vars(array(
+						'S_NO_DISPLAY_BOOKMARKS'	=> true,
+					));
 					break;
 				}
 
@@ -427,7 +427,7 @@ class ucp_main
 			case 'drafts':
 
 				$pm_drafts = ($this->p_master->p_name == 'pm') ? true : false;
-				$template->assign_var('S_SHOW_DRAFTS', true);
+				phpbb::$template->assign_var('S_SHOW_DRAFTS', true);
 
 				phpbb::$user->add_lang('posting');
 
@@ -491,12 +491,12 @@ class ucp_main
 						}
 						else
 						{
-							$template->assign_var('ERROR', ($draft_message == '') ? phpbb::$user->lang['EMPTY_DRAFT'] : (($draft_subject == '') ? phpbb::$user->lang['EMPTY_DRAFT_TITLE'] : ''));
+							phpbb::$template->assign_var('ERROR', ($draft_message == '') ? phpbb::$user->lang['EMPTY_DRAFT'] : (($draft_subject == '') ? phpbb::$user->lang['EMPTY_DRAFT_TITLE'] : ''));
 						}
 					}
 					else
 					{
-						$template->assign_var('ERROR', phpbb::$user->lang['FORM_INVALID']);
+						phpbb::$template->assign_var('ERROR', phpbb::$user->lang['FORM_INVALID']);
 					}
 				}
 
@@ -547,7 +547,7 @@ class ucp_main
 				}
 				unset($topic_ids);
 
-				$template->assign_var('S_EDIT_DRAFT', $edit);
+				phpbb::$template->assign_var('S_EDIT_DRAFT', $edit);
 
 				$row_count = 0;
 				foreach ($draftrows as $draft)
@@ -598,19 +598,19 @@ class ucp_main
 					);
 					$row_count++;
 
-					($edit) ? $template->assign_vars($template_row) : $template->assign_block_vars('draftrow', $template_row);
+					($edit) ? phpbb::$template->assign_vars($template_row) : phpbb::$template->assign_block_vars('draftrow', $template_row);
 				}
 
 				if (!$edit)
 				{
-					$template->assign_var('S_DRAFT_ROWS', $row_count);
+					phpbb::$template->assign_var('S_DRAFT_ROWS', $row_count);
 				}
 
 			break;
 		}
 
 
-		$template->assign_vars(array(
+		phpbb::$template->assign_vars(array(
 			'L_TITLE'			=> phpbb::$user->lang['UCP_MAIN_' . strtoupper($mode)],
 
 			'S_DISPLAY_MARK_ALL'	=> ($mode == 'watched' || ($mode == 'drafts' && !phpbb_request::is_set('edit', phpbb_request::GET))) ? true : false,
@@ -653,11 +653,11 @@ class ucp_main
 
 		if ($topics_count)
 		{
-			$template->assign_vars(array(
+			phpbb::$template->assign_vars(array(
 				'PAGINATION'	=> generate_pagination($this->u_action, $topics_count, phpbb::$config['topics_per_page'], $start),
 				'PAGE_NUMBER'	=> on_page($topics_count, phpbb::$config['topics_per_page'], $start),
-				'TOTAL_TOPICS'	=> ($topics_count == 1) ? phpbb::$user->lang['VIEW_FORUM_TOPIC'] : sprintf(phpbb::$user->lang['VIEW_FORUM_TOPICS'], $topics_count))
-			);
+				'TOTAL_TOPICS'	=> ($topics_count == 1) ? phpbb::$user->lang['VIEW_FORUM_TOPIC'] : sprintf(phpbb::$user->lang['VIEW_FORUM_TOPICS'], $topics_count),
+			));
 		}
 
 		if ($mode == 'subscribed')
@@ -775,7 +775,7 @@ class ucp_main
 			$view_topic_url = append_sid('viewtopic', "f=$forum_id&amp;t=$topic_id");
 
 			// Send vars to template
-			$template->assign_block_vars('topicrow', array(
+			phpbb::$template->assign_block_vars('topicrow', array(
 				'FORUM_ID'					=> $forum_id,
 				'TOPIC_ID'					=> $topic_id,
 				'FIRST_POST_TIME'			=> phpbb::$user->format_date($row['topic_time']),

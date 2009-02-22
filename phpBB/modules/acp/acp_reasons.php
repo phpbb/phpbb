@@ -164,7 +164,7 @@ class acp_reasons
 					$translated = true;
 				}
 
-				$template->assign_vars(array(
+				phpbb::$template->assign_vars(array(
 					'L_TITLE'		=> phpbb::$user->lang['REASON_' . $l_title],
 					'U_ACTION'		=> $this->u_action . "&amp;id=$reason_id&amp;action=$action",
 					'U_BACK'		=> $this->u_action,
@@ -180,8 +180,7 @@ class acp_reasons
 					'S_EDIT_REASON'			=> true,
 					'S_TRANSLATED'			=> $translated,
 					'S_ERROR'				=> (sizeof($error)) ? true : false,
-					)
-				);
+				));
 
 				return;
 			break;
@@ -282,10 +281,9 @@ class acp_reasons
 		}
 		phpbb::$db->sql_freeresult($result);
 
-		$template->assign_vars(array(
+		phpbb::$template->assign_vars(array(
 			'U_ACTION'			=> $this->u_action,
-			)
-		);
+		));
 
 		// Reason count
 		$sql = 'SELECT reason_id, COUNT(reason_id) AS reason_count
@@ -319,7 +317,7 @@ class acp_reasons
 				$translated = true;
 			}
 
-			$template->assign_block_vars('reasons', array(
+			phpbb::$template->assign_block_vars('reasons', array(
 				'REASON_TITLE'			=> $row['reason_title'],
 				'REASON_DESCRIPTION'	=> $row['reason_description'],
 				'REASON_COUNT'			=> (isset($reason_count[$row['reason_id']])) ? $reason_count[$row['reason_id']] : 0,
@@ -330,8 +328,8 @@ class acp_reasons
 				'U_EDIT'		=> $this->u_action . '&amp;action=edit&amp;id=' . $row['reason_id'],
 				'U_DELETE'		=> (!$other_reason) ? $this->u_action . '&amp;action=delete&amp;id=' . $row['reason_id'] : '',
 				'U_MOVE_UP'		=> $this->u_action . '&amp;action=move_up&amp;order=' . $row['reason_order'],
-				'U_MOVE_DOWN'	=> $this->u_action . '&amp;action=move_down&amp;order=' . $row['reason_order'])
-			);
+				'U_MOVE_DOWN'	=> $this->u_action . '&amp;action=move_down&amp;order=' . $row['reason_order'],
+			));
 		}
 		phpbb::$db->sql_freeresult($result);
 	}

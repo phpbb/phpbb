@@ -134,20 +134,20 @@ if ($forum_data['left_id'] != $forum_data['right_id'] - 1)
 }
 else
 {
-	$template->assign_var('S_HAS_SUBFORUM', false);
+	phpbb::$template->assign_var('S_HAS_SUBFORUM', false);
 	get_moderators($moderators, $forum_id);
 }
 
 // Dump out the page header and load viewforum template
 page_header(phpbb::$user->lang['VIEW_FORUM'] . ' - ' . $forum_data['forum_name']);
 
-$template->set_filenames(array(
-	'body' => 'viewforum_body.html')
-);
+phpbb::$template->set_filenames(array(
+	'body' => 'viewforum_body.html',
+));
 
 make_jumpbox(append_sid('viewforum'), $forum_id);
 
-$template->assign_vars(array(
+phpbb::$template->assign_vars(array(
 	'U_VIEW_FORUM'			=> append_sid('viewforum', "f=$forum_id&amp;start=$start"),
 ));
 
@@ -161,7 +161,7 @@ if (!($forum_data['forum_type'] == FORUM_POST || (($forum_data['forum_flags'] & 
 // We also make this circumstance available to the template in case we want to display a notice. ;)
 if (!phpbb::$acl->acl_get('f_read', $forum_id))
 {
-	$template->assign_vars(array(
+	phpbb::$template->assign_vars(array(
 		'S_NO_READ_ACCESS'		=> true,
 		'S_AUTOLOGIN_ENABLED'	=> (phpbb::$config['allow_autologin']) ? true : false,
 		'S_LOGIN_ACTION'		=> append_sid('ucp', 'mode=login') . '&amp;redirect=' . urlencode(str_replace('&amp;', '&', build_url(array('_f_')))),
@@ -193,7 +193,7 @@ if ($forum_data['forum_topics_per_page'])
 // Do the forum Prune thang - cron type job ...
 if ($forum_data['prune_next'] < time() && $forum_data['enable_prune'])
 {
-	$template->assign_var('RUN_CRON_TASK', '<img src="' . append_sid('cron', 'cron_type=prune_forum&amp;f=' . $forum_id) . '" alt="cron" width="1" height="1" />');
+	phpbb::$template->assign_var('RUN_CRON_TASK', '<img src="' . append_sid('cron', 'cron_type=prune_forum&amp;f=' . $forum_id) . '" alt="cron" width="1" height="1" />');
 }
 
 // Forum rules and subscription info
@@ -245,7 +245,7 @@ if ($sort_days)
 	$sql_limit_time = "AND t.topic_last_post_time >= $min_post_time";
 
 	// Make sure we have information about day selection ready
-	$template->assign_var('S_SORT_DAYS', true);
+	phpbb::$template->assign_var('S_SORT_DAYS', true);
 }
 else
 {
@@ -265,7 +265,7 @@ $post_alt = ($forum_data['forum_status'] == ITEM_LOCKED) ? phpbb::$user->lang['F
 // Display active topics?
 $s_display_active = ($forum_data['forum_type'] == FORUM_CAT && ($forum_data['forum_flags'] & FORUM_FLAG_ACTIVE_TOPICS)) ? true : false;
 
-$template->assign_vars(array(
+phpbb::$template->assign_vars(array(
 	'MODERATORS'	=> (!empty($moderators[$forum_id])) ? implode(', ', $moderators[$forum_id]) : '',
 
 	'POST_IMG'					=> ($forum_data['forum_status'] == ITEM_LOCKED) ? phpbb::$user->img('button_topic_locked', $post_alt) : phpbb::$user->img('button_topic_new', $post_alt),
@@ -523,11 +523,11 @@ if ($s_display_active)
 	$topics_count = 1;
 }
 
-$template->assign_vars(array(
+phpbb::$template->assign_vars(array(
 	'PAGINATION'	=> generate_pagination(append_sid('viewforum', "f=$forum_id" . ((strlen($u_sort_param)) ? "&amp;$u_sort_param" : '')), $topics_count, phpbb::$config['topics_per_page'], $start),
 	'PAGE_NUMBER'	=> on_page($topics_count, phpbb::$config['topics_per_page'], $start),
-	'TOTAL_TOPICS'	=> ($s_display_active) ? false : (($topics_count == 1) ? phpbb::$user->lang['VIEW_FORUM_TOPIC'] : sprintf(phpbb::$user->lang['VIEW_FORUM_TOPICS'], $topics_count)))
-);
+	'TOTAL_TOPICS'	=> ($s_display_active) ? false : (($topics_count == 1) ? phpbb::$user->lang['VIEW_FORUM_TOPIC'] : sprintf(phpbb::$user->lang['VIEW_FORUM_TOPICS'], $topics_count)),
+));
 
 $topic_list = ($store_reverse) ? array_merge($announcement_list, array_reverse($topic_list)) : array_merge($announcement_list, $topic_list);
 $topic_tracking_info = $tracking_topics = array();
@@ -619,7 +619,7 @@ if (sizeof($topic_list))
 		$u_mcp_queue = ($topic_unapproved || $posts_unapproved) ? append_sid('mcp', 'i=queue&amp;mode=' . (($topic_unapproved) ? 'approve_details' : 'unapproved_posts') . "&amp;t=$topic_id", true, phpbb::$user->session_id) : '';
 
 		// Send vars to template
-		$template->assign_block_vars('topicrow', array(
+		phpbb::$template->assign_block_vars('topicrow', array(
 			'FORUM_ID'					=> $forum_id,
 			'TOPIC_ID'					=> $topic_id,
 			'TOPIC_AUTHOR'				=> get_username_string('username', $row['topic_poster'], $row['topic_first_poster_name'], $row['topic_first_poster_colour']),
@@ -672,8 +672,8 @@ if (sizeof($topic_list))
 			'U_MCP_REPORT'			=> append_sid('mcp', 'i=reports&amp;mode=reports&amp;f=' . $forum_id . '&amp;t=' . $topic_id, true, phpbb::$user->session_id),
 			'U_MCP_QUEUE'			=> $u_mcp_queue,
 
-			'S_TOPIC_TYPE_SWITCH'	=> ($s_type_switch == $s_type_switch_test) ? -1 : $s_type_switch_test)
-		);
+			'S_TOPIC_TYPE_SWITCH'	=> ($s_type_switch == $s_type_switch_test) ? -1 : $s_type_switch_test,
+		));
 
 		$s_type_switch = ($row['topic_type'] == POST_ANNOUNCE || $row['topic_type'] == POST_GLOBAL) ? 1 : 0;
 

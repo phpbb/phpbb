@@ -323,7 +323,7 @@ class ucp_groups
 						break;
 					}
 
-					$template->assign_block_vars($block, array(
+					phpbb::$template->assign_block_vars($block, array(
 						'GROUP_ID'		=> $row['group_id'],
 						'GROUP_NAME'	=> ($row['group_type'] == GROUP_SPECIAL) ? phpbb::$user->lang['G_' . $row['group_name']] : $row['group_name'],
 						'GROUP_DESC'	=> ($row['group_type'] <> GROUP_SPECIAL) ? generate_text_for_display($row['group_desc'], $row['group_desc_uid'], $row['group_desc_bitfield'], $row['group_desc_options']) : phpbb::$user->lang['GROUP_IS_SPECIAL'],
@@ -333,8 +333,8 @@ class ucp_groups
 
 						'U_VIEW_GROUP'	=> append_sid('memberlist', 'mode=group&amp;g=' . $row['group_id']),
 
-						'S_GROUP_DEFAULT'	=> ($row['group_id'] == phpbb::$user->data['group_id']) ? true : false)
-					);
+						'S_GROUP_DEFAULT'	=> ($row['group_id'] == phpbb::$user->data['group_id']) ? true : false,
+					));
 
 					$group_id_ary[] = $row['group_id'];
 				}
@@ -375,7 +375,7 @@ class ucp_groups
 						break;
 					}
 
-					$template->assign_block_vars('nonmember', array(
+					phpbb::$template->assign_block_vars('nonmember', array(
 						'GROUP_ID'		=> $row['group_id'],
 						'GROUP_NAME'	=> ($row['group_type'] == GROUP_SPECIAL) ? phpbb::$user->lang['G_' . $row['group_name']] : $row['group_name'],
 						'GROUP_DESC'	=> ($row['group_type'] <> GROUP_SPECIAL) ? generate_text_for_display($row['group_desc'], $row['group_desc_uid'], $row['group_desc_bitfield'], $row['group_desc_options']) : phpbb::$user->lang['GROUP_IS_SPECIAL'],
@@ -385,20 +385,20 @@ class ucp_groups
 						'S_CAN_JOIN'	=> ($row['group_type'] == GROUP_OPEN || $row['group_type'] == GROUP_FREE) ? true : false,
 						'GROUP_COLOUR'	=> $row['group_colour'],
 
-						'U_VIEW_GROUP'	=> append_sid('memberlist', 'mode=group&amp;g=' . $row['group_id']))
-					);
+						'U_VIEW_GROUP'	=> append_sid('memberlist', 'mode=group&amp;g=' . $row['group_id']),
+					));
 				}
 				phpbb::$db->sql_freeresult($result);
 
-				$template->assign_vars(array(
+				phpbb::$template->assign_vars(array(
 					'S_CHANGE_DEFAULT'	=> (phpbb::$acl->acl_get('u_chggrp')) ? true : false,
 					'S_LEADER_COUNT'	=> $leader_count,
 					'S_MEMBER_COUNT'	=> $member_count,
 					'S_PENDING_COUNT'	=> $pending_count,
 					'S_NONMEMBER_COUNT'	=> $nonmember_count,
 
-					'S_UCP_ACTION'			=> $this->u_action)
-				);
+					'S_UCP_ACTION'			=> $this->u_action,
+				));
 
 			break;
 
@@ -437,7 +437,7 @@ class ucp_groups
 
 					$avatar_img = (!empty($group_row['group_avatar'])) ? get_user_avatar($group_row['group_avatar'], $group_row['group_avatar_type'], $group_row['group_avatar_width'], $group_row['group_avatar_height'], 'GROUP_AVATAR') : '<img src="' . PHPBB_ROOT_PATH . phpbb::$base_config['admin_folder'] . '/images/no_avatar.gif" alt="" />';
 
-					$template->assign_vars(array(
+					phpbb::$template->assign_vars(array(
 						'GROUP_NAME'			=> ($group_type == GROUP_SPECIAL) ? phpbb::$user->lang['G_' . $group_name] : $group_name,
 						'GROUP_INTERNAL_NAME'	=> $group_name,
 						'GROUP_COLOUR'			=> (isset($group_row['group_colour'])) ? $group_row['group_colour'] : '',
@@ -675,7 +675,7 @@ class ucp_groups
 
 						$avatars_enabled = ($can_upload || (phpbb::$config['allow_avatar_local'] || phpbb::$config['allow_avatar_remote'])) ? true : false;
 
-						$template->assign_vars(array(
+						phpbb::$template->assign_vars(array(
 							'S_EDIT'			=> true,
 							'S_INCLUDE_SWATCH'	=> true,
 							'S_CAN_UPLOAD'		=> $can_upload,
@@ -749,7 +749,7 @@ class ucp_groups
 
 						while ($row = phpbb::$db->sql_fetchrow($result))
 						{
-							$template->assign_block_vars('leader', array(
+							phpbb::$template->assign_block_vars('leader', array(
 								'USERNAME'			=> $row['username'],
 								'USERNAME_COLOUR'	=> $row['user_colour'],
 								'USERNAME_FULL'		=> get_username_string('full', $row['user_id'], $row['username'], $row['user_colour']),
@@ -757,8 +757,8 @@ class ucp_groups
 								'S_GROUP_DEFAULT'	=> ($row['group_id'] == $group_id) ? true : false,
 								'JOINED'			=> ($row['user_regdate']) ? phpbb::$user->format_date($row['user_regdate']) : ' - ',
 								'USER_POSTS'		=> $row['user_posts'],
-								'USER_ID'			=> $row['user_id'])
-							);
+								'USER_ID'			=> $row['user_id'],
+							));
 						}
 						phpbb::$db->sql_freeresult($result);
 
@@ -787,24 +787,24 @@ class ucp_groups
 						{
 							if ($row['user_pending'] && !$pending)
 							{
-								$template->assign_block_vars('member', array(
-									'S_PENDING'		=> true)
-								);
-								$template->assign_var('S_PENDING_SET', true);
+								phpbb::$template->assign_block_vars('member', array(
+									'S_PENDING'		=> true,
+								));
+								phpbb::$template->assign_var('S_PENDING_SET', true);
 
 								$pending = true;
 							}
 							else if (!$row['user_pending'] && !$approved)
 							{
-								$template->assign_block_vars('member', array(
-									'S_APPROVED'		=> true)
-								);
-								$template->assign_var('S_APPROVED_SET', true);
+								phpbb::$template->assign_block_vars('member', array(
+									'S_APPROVED'		=> true,
+								));
+								phpbb::$template->assign_var('S_APPROVED_SET', true);
 
 								$approved = true;
 							}
 
-							$template->assign_block_vars('member', array(
+							phpbb::$template->assign_block_vars('member', array(
 								'USERNAME'			=> $row['username'],
 								'USERNAME_COLOUR'	=> $row['user_colour'],
 								'USERNAME_FULL'		=> get_username_string('full', $row['user_id'], $row['username'], $row['user_colour']),
@@ -812,8 +812,8 @@ class ucp_groups
 								'S_GROUP_DEFAULT'	=> ($row['group_id'] == $group_id) ? true : false,
 								'JOINED'			=> ($row['user_regdate']) ? phpbb::$user->format_date($row['user_regdate']) : ' - ',
 								'USER_POSTS'		=> $row['user_posts'],
-								'USER_ID'			=> $row['user_id'])
-							);
+								'USER_ID'			=> $row['user_id'],
+							));
 						}
 						phpbb::$db->sql_freeresult($result);
 
@@ -825,7 +825,7 @@ class ucp_groups
 							$s_action_options .= '<option value="' . $option . '">' . phpbb::$user->lang['GROUP_' . $lang] . '</option>';
 						}
 
-						$template->assign_vars(array(
+						phpbb::$template->assign_vars(array(
 							'S_LIST'			=> true,
 							'S_ACTION_OPTIONS'	=> $s_action_options,
 							'S_ON_PAGE'			=> on_page($total_members, phpbb::$config['topics_per_page'], $start),
@@ -1061,7 +1061,7 @@ class ucp_groups
 
 						while ($value = phpbb::$db->sql_fetchrow($result))
 						{
-							$template->assign_block_vars('leader', array(
+							phpbb::$template->assign_block_vars('leader', array(
 								'GROUP_NAME'	=> ($value['group_type'] == GROUP_SPECIAL) ? phpbb::$user->lang['G_' . $value['group_name']] : $value['group_name'],
 								'GROUP_DESC'	=> generate_text_for_display($value['group_desc'], $value['group_desc_uid'], $value['group_desc_bitfield'], $value['group_desc_options']),
 								'GROUP_TYPE'	=> $value['group_type'],
@@ -1069,8 +1069,8 @@ class ucp_groups
 								'GROUP_COLOUR'	=> $value['group_colour'],
 
 								'U_LIST'	=> $this->u_action . "&amp;action=list&amp;g={$value['group_id']}",
-								'U_EDIT'	=> $this->u_action . "&amp;action=edit&amp;g={$value['group_id']}")
-							);
+								'U_EDIT'	=> $this->u_action . "&amp;action=edit&amp;g={$value['group_id']}",
+							));
 						}
 						phpbb::$db->sql_freeresult($result);
 

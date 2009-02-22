@@ -713,7 +713,7 @@ class acp_profile
 					}
 				}
 
-				$template->assign_vars(array(
+				phpbb::$template->assign_vars(array(
 					'S_EDIT'			=> true,
 					'S_EDIT_MODE'		=> ($action == 'edit') ? true : false,
 					'ERROR_MSG'			=> (sizeof($error)) ? implode('<br />', $error) : '',
@@ -722,8 +722,8 @@ class acp_profile
 					'L_EXPLAIN'			=> phpbb::$user->lang['STEP_' . $step . '_EXPLAIN_' . strtoupper($action)],
 
 					'U_ACTION'			=> $this->u_action . "&amp;action=$action&amp;step=$step",
-					'U_BACK'			=> $this->u_action)
-				);
+					'U_BACK'			=> $this->u_action,
+				));
 
 				// Now go through the steps
 				switch ($step)
@@ -732,7 +732,7 @@ class acp_profile
 					case 1:
 
 						// Build common create options
-						$template->assign_vars(array(
+						phpbb::$template->assign_vars(array(
 							'S_STEP_ONE'		=> true,
 							'S_FIELD_REQUIRED'	=> ($cp->vars['field_required']) ? true : false,
 							'S_SHOW_ON_REG'		=> ($cp->vars['field_show_on_reg']) ? true : false,
@@ -743,19 +743,19 @@ class acp_profile
 							'FIELD_TYPE'		=> phpbb::$user->lang['FIELD_' . strtoupper(custom_profile::$profile_types[$field_type])],
 							'FIELD_IDENT'		=> $cp->vars['field_ident'],
 							'LANG_NAME'			=> $cp->vars['lang_name'],
-							'LANG_EXPLAIN'		=> $cp->vars['lang_explain'])
-						);
+							'LANG_EXPLAIN'		=> $cp->vars['lang_explain'],
+						));
 
 						// String and Text needs to set default values here...
 						if ($field_type == FIELD_STRING || $field_type == FIELD_TEXT)
 						{
-							$template->assign_vars(array(
+							phpbb::$template->assign_vars(array(
 								'S_TEXT'		=> ($field_type == FIELD_TEXT) ? true : false,
 								'S_STRING'		=> ($field_type == FIELD_STRING) ? true : false,
 
 								'L_DEFAULT_VALUE_EXPLAIN'	=> phpbb::$user->lang[strtoupper(custom_profile::$profile_types[$field_type]) . '_DEFAULT_VALUE_EXPLAIN'],
-								'LANG_DEFAULT_VALUE'		=> $cp->vars['lang_default_value'])
-							);
+								'LANG_DEFAULT_VALUE'		=> $cp->vars['lang_default_value'],
+							));
 						}
 
 						if ($field_type == FIELD_BOOL || $field_type == FIELD_DROPDOWN)
@@ -776,25 +776,25 @@ class acp_profile
 								}
 							}
 
-							$template->assign_vars(array(
+							phpbb::$template->assign_vars(array(
 								'S_BOOL'		=> ($field_type == FIELD_BOOL) ? true : false,
 								'S_DROPDOWN'	=> ($field_type == FIELD_DROPDOWN) ? true : false,
 
 								'L_LANG_OPTIONS_EXPLAIN'	=> phpbb::$user->lang[strtoupper(custom_profile::$profile_types[$field_type]) . '_ENTRIES_EXPLAIN'],
 								'LANG_OPTIONS'				=> ($field_type == FIELD_DROPDOWN) ? implode("\n", $cp->vars['lang_options']) : '',
 								'FIRST_LANG_OPTION'			=> ($field_type == FIELD_BOOL) ? $cp->vars['lang_options'][0] : '',
-								'SECOND_LANG_OPTION'		=> ($field_type == FIELD_BOOL) ? $cp->vars['lang_options'][1] : '')
-							);
+								'SECOND_LANG_OPTION'		=> ($field_type == FIELD_BOOL) ? $cp->vars['lang_options'][1] : '',
+							));
 						}
 
 					break;
 
 					case 2:
 
-						$template->assign_vars(array(
+						phpbb::$template->assign_vars(array(
 							'S_STEP_TWO'		=> true,
-							'L_NEXT_STEP'			=> (sizeof($this->lang_defs['iso']) == 1) ? phpbb::$user->lang['SAVE'] : phpbb::$user->lang['PROFILE_LANG_OPTIONS'])
-						);
+							'L_NEXT_STEP'			=> (sizeof($this->lang_defs['iso']) == 1) ? phpbb::$user->lang['SAVE'] : phpbb::$user->lang['PROFILE_LANG_OPTIONS'],
+						));
 
 						// Build options based on profile type
 						$function = 'get_' . custom_profile::$profile_types[$field_type] . '_options';
@@ -802,7 +802,7 @@ class acp_profile
 
 						foreach ($options as $num => $option_ary)
 						{
-							$template->assign_block_vars('option', $option_ary);
+							phpbb::$template->assign_block_vars('option', $option_ary);
 						}
 
 					break;
@@ -810,31 +810,31 @@ class acp_profile
 					// Define remaining language variables
 					case 3:
 
-						$template->assign_var('S_STEP_THREE', true);
+						phpbb::$template->assign_var('S_STEP_THREE', true);
 						$options = $this->build_language_options($cp, $field_type, $action);
 
 						foreach ($options as $lang_id => $lang_ary)
 						{
-							$template->assign_block_vars('options', array(
-								'LANGUAGE'		=> sprintf(phpbb::$user->lang[(($lang_id == $this->edit_lang_id) ? 'DEFAULT_' : '') . 'ISO_LANGUAGE'], $lang_ary['lang_iso']))
-							);
+							phpbb::$template->assign_block_vars('options', array(
+								'LANGUAGE'		=> sprintf(phpbb::$user->lang[(($lang_id == $this->edit_lang_id) ? 'DEFAULT_' : '') . 'ISO_LANGUAGE'], $lang_ary['lang_iso']),
+							));
 
 							foreach ($lang_ary['fields'] as $field_ident => $field_ary)
 							{
-								$template->assign_block_vars('options.field', array(
+								phpbb::$template->assign_block_vars('options.field', array(
 									'L_TITLE'		=> $field_ary['TITLE'],
 									'L_EXPLAIN'		=> (isset($field_ary['EXPLAIN'])) ? $field_ary['EXPLAIN'] : '',
-									'FIELD'			=> $field_ary['FIELD'])
-								);
+									'FIELD'			=> $field_ary['FIELD'],
+								));
 							}
 						}
 
 					break;
 				}
 
-				$template->assign_vars(array(
-					'S_HIDDEN_FIELDS'	=> $s_hidden_fields)
-				);
+				phpbb::$template->assign_vars(array(
+					'S_HIDDEN_FIELDS'	=> $s_hidden_fields,
+				));
 
 				return;
 
@@ -860,7 +860,7 @@ class acp_profile
 				$s_one_need_edit = true;
 			}
 
-			$template->assign_block_vars('fields', array(
+			phpbb::$template->assign_block_vars('fields', array(
 				'FIELD_IDENT'		=> $row['field_ident'],
 				'FIELD_TYPE'		=> phpbb::$user->lang['FIELD_' . strtoupper(custom_profile::$profile_types[$row['field_type']])],
 
@@ -872,15 +872,15 @@ class acp_profile
 				'U_MOVE_UP'					=> $this->u_action . "&amp;action=move_up&amp;order={$row['field_order']}",
 				'U_MOVE_DOWN'				=> $this->u_action . "&amp;action=move_down&amp;order={$row['field_order']}",
 
-				'S_NEED_EDIT'				=> $s_need_edit)
-			);
+				'S_NEED_EDIT'				=> $s_need_edit,
+			));
 		}
 		phpbb::$db->sql_freeresult($result);
 
 		// At least one option field needs editing?
 		if ($s_one_need_edit)
 		{
-			$template->assign_var('S_NEED_EDIT', true);
+			phpbb::$template->assign_var('S_NEED_EDIT', true);
 		}
 
 		$s_select_type = '';
@@ -889,10 +889,10 @@ class acp_profile
 			$s_select_type .= '<option value="' . $key . '">' . phpbb::$user->lang['FIELD_' . strtoupper($value)] . '</option>';
 		}
 
-		$template->assign_vars(array(
+		phpbb::$template->assign_vars(array(
 			'U_ACTION'			=> $this->u_action,
-			'S_TYPE_OPTIONS'	=> $s_select_type)
-		);
+			'S_TYPE_OPTIONS'	=> $s_select_type,
+		));
 	}
 
 	/**

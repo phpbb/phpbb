@@ -191,7 +191,7 @@ function get_folder($user_id, $folder_id = false)
 	{
 		$folder_id_name = ($f_id == PRIVMSGS_INBOX) ? 'inbox' : (($f_id == PRIVMSGS_OUTBOX) ? 'outbox' : 'sentbox');
 
-		$template->assign_block_vars('folder', array(
+		phpbb::$template->assign_block_vars('folder', array(
 			'FOLDER_ID'			=> $f_id,
 			'FOLDER_NAME'		=> $folder_ary['folder_name'],
 			'NUM_MESSAGES'		=> $folder_ary['num_messages'],
@@ -201,8 +201,8 @@ function get_folder($user_id, $folder_id = false)
 
 			'S_CUR_FOLDER'		=> ($f_id === $folder_id) ? true : false,
 			'S_UNREAD_MESSAGES'	=> ($folder_ary['unread_messages']) ? true : false,
-			'S_CUSTOM_FOLDER'	=> ($f_id > 0) ? true : false)
-		);
+			'S_CUSTOM_FOLDER'	=> ($f_id > 0) ? true : false,
+		));
 	}
 
 	if ($folder_id !== false && !isset($folder[$folder_id]))
@@ -1189,7 +1189,7 @@ function write_pm_addresses($check_ary, $author_id, $plaintext = false)
 
 		if (sizeof($address) && !$plaintext)
 		{
-			$template->assign_var('S_' . strtoupper($check_type) . '_RECIPIENT', true);
+			phpbb::$template->assign_var('S_' . strtoupper($check_type) . '_RECIPIENT', true);
 
 			foreach ($address as $type => $adr_ary)
 			{
@@ -1218,7 +1218,7 @@ function write_pm_addresses($check_ary, $author_id, $plaintext = false)
 						));
 					}
 
-					$template->assign_block_vars($check_type . '_recipient', $tpl_ary);
+					phpbb::$template->assign_block_vars($check_type . '_recipient', $tpl_ary);
 				}
 			}
 		}
@@ -1768,7 +1768,7 @@ function message_history($msg_id, $user_id, $message_row, $folder, $in_post_mode
 			$previous_history_pm = $prev_id;
 		}
 
-		$template->assign_block_vars('history_row', array(
+		phpbb::$template->assign_block_vars('history_row', array(
 			'MESSAGE_AUTHOR_QUOTE'		=> (($decoded_message) ? addslashes(get_username_string('username', $author_id, $row['username'], $row['user_colour'], $row['username'])) : ''),
 			'MESSAGE_AUTHOR_FULL'		=> get_username_string('full', $author_id, $row['username'], $row['user_colour'], $row['username']),
 			'MESSAGE_AUTHOR_COLOUR'		=> get_username_string('colour', $author_id, $row['username'], $row['user_colour'], $row['username']),
@@ -1788,13 +1788,13 @@ function message_history($msg_id, $user_id, $message_row, $folder, $in_post_mode
 			'MSG_ID'			=> $row['msg_id'],
 			'U_VIEW_MESSAGE'	=> "$url&amp;f=$folder_id&amp;p=" . $row['msg_id'],
 			'U_QUOTE'			=> (!$in_post_mode && phpbb::$acl->acl_get('u_sendpm') && $author_id != ANONYMOUS && $author_id != phpbb::$user->data['user_id']) ? "$url&amp;mode=compose&amp;action=quote&amp;f=" . $folder_id . "&amp;p=" . $row['msg_id'] : '',
-			'U_POST_REPLY_PM'	=> ($author_id != phpbb::$user->data['user_id'] && $author_id != ANONYMOUS && phpbb::$acl->acl_get('u_sendpm')) ? "$url&amp;mode=compose&amp;action=reply&amp;f=$folder_id&amp;p=" . $row['msg_id'] : '')
-		);
+			'U_POST_REPLY_PM'	=> ($author_id != phpbb::$user->data['user_id'] && $author_id != ANONYMOUS && phpbb::$acl->acl_get('u_sendpm')) ? "$url&amp;mode=compose&amp;action=reply&amp;f=$folder_id&amp;p=" . $row['msg_id'] : '',
+		));
 		unset($rowset[$id]);
 		$prev_id = $id;
 	}
 
-	$template->assign_vars(array(
+	phpbb::$template->assign_vars(array(
 		'QUOTE_IMG'			=> phpbb::$user->img('icon_post_quote', 'REPLY_WITH_QUOTE'),
 		'HISTORY_TITLE'		=> $title,
 

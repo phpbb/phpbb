@@ -133,7 +133,7 @@ class mcp_ban
 
 		acp_ban::display_ban_options($mode);
 
-		$template->assign_vars(array(
+		phpbb::$template->assign_vars(array(
 			'L_TITLE'				=> $this->page_title,
 			'L_EXPLAIN'				=> $l_ban_explain,
 			'L_UNBAN_TITLE'			=> $l_unban_title,
@@ -206,7 +206,7 @@ class mcp_ban
 
 		if ($pre_fill)
 		{
-			$template->assign_var('BAN_QUANTIFIER', $pre_fill);
+			phpbb::$template->assign_var('BAN_QUANTIFIER', $pre_fill);
 		}
 	}
 }

@@ -71,13 +71,13 @@ class custom_profile
 			// Some types are multivalue, we can't give them a field_id as we would not know which to pick
 			$type = (int) $row['field_type'];
 
-			$template->assign_block_vars('profile_fields', array(
+			phpbb::$template->assign_block_vars('profile_fields', array(
 				'LANG_NAME'		=> $row['lang_name'],
 				'LANG_EXPLAIN'	=> $row['lang_explain'],
 				'FIELD'			=> $tpl_snippet,
 				'FIELD_ID'		=> ($type == FIELD_DATE || ($type == FIELD_BOOL && $row['field_length'] == '1')) ? '' : 'pf_' . $row['field_ident'],
-				'S_REQUIRED'	=> ($row['field_required']) ? true : false)
-			);
+				'S_REQUIRED'	=> ($row['field_required']) ? true : false,
+			));
 		}
 		phpbb::$db->sql_freeresult($result);
 	}
@@ -602,7 +602,7 @@ class custom_profile
 	private function generate_int($profile_row, $preview = false)
 	{
 		$profile_row['field_value'] = $this->get_var('int', $profile_row, $profile_row['field_default_value'], $preview);
-		$template->assign_block_vars(self::$profile_types[$profile_row['field_type']], array_change_key_case($profile_row, CASE_UPPER));
+		phpbb::$template->assign_block_vars(self::$profile_types[$profile_row['field_type']], array_change_key_case($profile_row, CASE_UPPER));
 	}
 
 	/**
@@ -659,7 +659,7 @@ class custom_profile
 		unset($now);
 
 		$profile_row['field_value'] = 0;
-		$template->assign_block_vars(self::$profile_types[$profile_row['field_type']], array_change_key_case($profile_row, CASE_UPPER));
+		phpbb::$template->assign_block_vars(self::$profile_types[$profile_row['field_type']], array_change_key_case($profile_row, CASE_UPPER));
 	}
 
 	/**
@@ -671,7 +671,7 @@ class custom_profile
 		$value = $this->get_var('int', $profile_row, $profile_row['field_default_value'], $preview);
 
 		$profile_row['field_value'] = $value;
-		$template->assign_block_vars(self::$profile_types[$profile_row['field_type']], array_change_key_case($profile_row, CASE_UPPER));
+		phpbb::$template->assign_block_vars(self::$profile_types[$profile_row['field_type']], array_change_key_case($profile_row, CASE_UPPER));
 
 		if ($profile_row['field_length'] == 1)
 		{
@@ -682,11 +682,11 @@ class custom_profile
 
 			foreach ($this->options_lang[$profile_row['field_id']][$profile_row['lang_id']] as $option_id => $option_value)
 			{
-				$template->assign_block_vars('bool.options', array(
+				phpbb::$template->assign_block_vars('bool.options', array(
 					'OPTION_ID'	=> $option_id,
 					'CHECKED'	=> ($value == $option_id) ? ' checked="checked"' : '',
-					'VALUE'		=> $option_value)
-				);
+					'VALUE'		=> $option_value,
+				));
 			}
 		}
 	}
@@ -698,7 +698,7 @@ class custom_profile
 	private function generate_string($profile_row, $preview = false)
 	{
 		$profile_row['field_value'] = $this->get_var('string', $profile_row, $profile_row['lang_default_value'], $preview);
-		$template->assign_block_vars(self::$profile_types[$profile_row['field_type']], array_change_key_case($profile_row, CASE_UPPER));
+		phpbb::$template->assign_block_vars(self::$profile_types[$profile_row['field_type']], array_change_key_case($profile_row, CASE_UPPER));
 	}
 
 	/**
@@ -712,7 +712,7 @@ class custom_profile
 		$profile_row['field_cols'] = $field_length[1];
 
 		$profile_row['field_value'] = $this->get_var('string', $profile_row, $profile_row['lang_default_value'], $preview);
-		$template->assign_block_vars(self::$profile_types[$profile_row['field_type']], array_change_key_case($profile_row, CASE_UPPER));
+		phpbb::$template->assign_block_vars(self::$profile_types[$profile_row['field_type']], array_change_key_case($profile_row, CASE_UPPER));
 	}
 
 	/**
@@ -729,15 +729,15 @@ class custom_profile
 		}
 
 		$profile_row['field_value'] = $value;
-		$template->assign_block_vars(self::$profile_types[$profile_row['field_type']], array_change_key_case($profile_row, CASE_UPPER));
+		phpbb::$template->assign_block_vars(self::$profile_types[$profile_row['field_type']], array_change_key_case($profile_row, CASE_UPPER));
 
 		foreach ($this->options_lang[$profile_row['field_id']][$profile_row['lang_id']] as $option_id => $option_value)
 		{
-			$template->assign_block_vars('dropdown.options', array(
+			phpbb::$template->assign_block_vars('dropdown.options', array(
 				'OPTION_ID'	=> $option_id,
 				'SELECTED'	=> ($value == $option_id) ? ' selected="selected"' : '',
-				'VALUE'		=> $option_value)
-			);
+				'VALUE'		=> $option_value,
+			));
 		}
 	}
 
@@ -751,14 +751,14 @@ class custom_profile
 		$preview = ($mode == 'preview') ? true : false;
 
 		// set template filename
-		$template->set_filenames(array(
-			'cp_body'		=> 'custom_profile_fields.html')
-		);
+		phpbb::$template->set_filenames(array(
+			'cp_body'		=> 'custom_profile_fields.html',
+		));
 
 		// empty previously filled blockvars
 		foreach (self::$profile_types as $field_case => $field_type)
 		{
-			$template->destroy_block_vars($field_type);
+			phpbb::$template->destroy_block_vars($field_type);
 		}
 
 		// Assign template variables
@@ -766,7 +766,7 @@ class custom_profile
 		$this->$type_func($profile_row, $preview);
 
 		// Return templated data
-		return $template->assign_display('cp_body');
+		return phpbb::$template->assign_display('cp_body');
 	}
 
 	/**

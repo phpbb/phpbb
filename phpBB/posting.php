@@ -334,7 +334,7 @@ if ($mode == 'bump')
 // Subject length limiting to 60 characters if first post...
 if ($mode == 'post' || ($mode == 'edit' && $post_data['topic_first_post_id'] == $post_data['post_id']))
 {
-	$template->assign_var('S_NEW_MESSAGE', true);
+	phpbb::$template->assign_var('S_NEW_MESSAGE', true);
 }
 
 // Determine some vars
@@ -556,7 +556,7 @@ if ($draft_id && ($mode == 'reply' || $mode == 'quote' || $mode == 'post') && ph
 		$post_data['post_subject'] = $row['draft_subject'];
 		$message_parser->message = $row['draft_message'];
 
-		$template->assign_var('S_DRAFT_LOADED', true);
+		phpbb::$template->assign_var('S_DRAFT_LOADED', true);
 	}
 	else
 	{
@@ -667,7 +667,7 @@ if ($submit || $preview || $refresh)
 		{
 			if (topic_review($topic_id, $forum_id, 'post_review', $post_data['topic_cur_post_id']))
 			{
-				$template->assign_var('S_POST_REVIEW', true);
+				phpbb::$template->assign_var('S_POST_REVIEW', true);
 			}
 
 			$submit = false;
@@ -893,10 +893,10 @@ if ($submit || $preview || $refresh)
 				{
 					include_once(PHPBB_ROOT_PATH . 'includes/functions_admin.' . PHP_EXT);
 
-					$template->assign_vars(array(
+					phpbb::$template->assign_vars(array(
 						'S_FORUM_SELECT'	=> make_forum_select(false, false, false, true, true, true),
-						'S_UNGLOBALISE'		=> true)
-					);
+						'S_UNGLOBALISE'		=> true,
+					));
 
 					$submit = false;
 					$refresh = true;
@@ -1066,15 +1066,15 @@ if (!sizeof($error) && $preview)
 			$poll_end = ($post_data['poll_length'] * 86400) + (($post_data['poll_start']) ? $post_data['poll_start'] : time());
 		}
 
-		$template->assign_vars(array(
+		phpbb::$template->assign_vars(array(
 			'S_HAS_POLL_OPTIONS'	=> (sizeof($post_data['poll_options'])),
 			'S_IS_MULTI_CHOICE'		=> ($post_data['poll_max_options'] > 1) ? true : false,
 
 			'POLL_QUESTION'		=> $parse_poll->message,
 
 			'L_POLL_LENGTH'		=> ($post_data['poll_length']) ? sprintf(phpbb::$user->lang['POLL_RUN_TILL'], phpbb::$user->format_date($poll_end)) : '',
-			'L_MAX_VOTES'		=> ($post_data['poll_max_options'] == 1) ? phpbb::$user->lang['MAX_OPTION_SELECT'] : sprintf(phpbb::$user->lang['MAX_OPTIONS_SELECT'], $post_data['poll_max_options']))
-		);
+			'L_MAX_VOTES'		=> ($post_data['poll_max_options'] == 1) ? phpbb::$user->lang['MAX_OPTION_SELECT'] : sprintf(phpbb::$user->lang['MAX_OPTIONS_SELECT'], $post_data['poll_max_options']),
+		));
 
 		$parse_poll->message = implode("\n", $post_data['poll_options']);
 		$parse_poll->format_display($post_data['enable_bbcode'], $post_data['enable_urls'], $post_data['enable_smilies']);
@@ -1083,10 +1083,10 @@ if (!sizeof($error) && $preview)
 
 		foreach ($preview_poll_options as $key => $option)
 		{
-			$template->assign_block_vars('poll_option', array(
+			phpbb::$template->assign_block_vars('poll_option', array(
 				'POLL_OPTION_CAPTION'	=> $option,
-				'POLL_OPTION_ID'		=> $key + 1)
-			);
+				'POLL_OPTION_ID'		=> $key + 1,
+			));
 		}
 		unset($preview_poll_options);
 	}
@@ -1094,7 +1094,7 @@ if (!sizeof($error) && $preview)
 	// Attachment Preview
 	if (sizeof($message_parser->attachment_data))
 	{
-		$template->assign_var('S_HAS_ATTACHMENTS', true);
+		phpbb::$template->assign_var('S_HAS_ATTACHMENTS', true);
 
 		$update_count = array();
 		$attachment_data = $message_parser->attachment_data;
@@ -1103,22 +1103,22 @@ if (!sizeof($error) && $preview)
 
 		foreach ($attachment_data as $i => $attachment)
 		{
-			$template->assign_block_vars('attachment', array(
-				'DISPLAY_ATTACHMENT'	=> $attachment)
-			);
+			phpbb::$template->assign_block_vars('attachment', array(
+				'DISPLAY_ATTACHMENT'	=> $attachment,
+			));
 		}
 		unset($attachment_data);
 	}
 
 	if (!sizeof($error))
 	{
-		$template->assign_vars(array(
+		phpbb::$template->assign_vars(array(
 			'PREVIEW_SUBJECT'		=> $preview_subject,
 			'PREVIEW_MESSAGE'		=> $preview_message,
 			'PREVIEW_SIGNATURE'		=> $preview_signature,
 
-			'S_DISPLAY_PREVIEW'		=> true)
-		);
+			'S_DISPLAY_PREVIEW'		=> true,
+		));
 	}
 }
 
@@ -1222,7 +1222,7 @@ if (phpbb::$config['enable_post_confirm'] && !phpbb::$user->is_registered && $so
 {
 	$captcha->reset();
 
-	$template->assign_vars(array(
+	phpbb::$template->assign_vars(array(
 		'S_CONFIRM_CODE'			=> true,
 		'CONFIRM'					=> $captcha->get_template(),
 	));
@@ -1243,7 +1243,7 @@ add_form_key('posting');
 
 
 // Start assigning vars for main posting page ...
-$template->assign_vars(array(
+phpbb::$template->assign_vars(array(
 	'L_POST_A'					=> $page_title,
 	'L_ICON'					=> ($mode == 'reply' || $mode == 'quote' || ($mode == 'edit' && $post_id != $post_data['topic_first_post_id'])) ? phpbb::$user->lang['POST_ICON'] : phpbb::$user->lang['TOPIC_ICON'],
 	'L_MESSAGE_BODY_EXPLAIN'	=> (intval(phpbb::$config['max_post_chars'])) ? sprintf(phpbb::$user->lang['MESSAGE_BODY_EXPLAIN'], intval(phpbb::$config['max_post_chars'])) : '',
@@ -1302,8 +1302,8 @@ $template->assign_vars(array(
 	'S_BBCODE_QUOTE'		=> $quote_status,
 
 	'S_POST_ACTION'			=> $s_action,
-	'S_HIDDEN_FIELDS'		=> $s_hidden_fields)
-);
+	'S_HIDDEN_FIELDS'		=> $s_hidden_fields,
+));
 
 // Build custom bbcodes array
 display_custom_bbcodes();
@@ -1312,7 +1312,7 @@ display_custom_bbcodes();
 if (($mode == 'post' || ($mode == 'edit' && $post_id == $post_data['topic_first_post_id']/* && (!$post_data['poll_last_vote'] || phpbb::$acl->acl_get('m_edit', $forum_id))*/))
 	&& phpbb::$acl->acl_get('f_poll', $forum_id))
 {
-	$template->assign_vars(array(
+	phpbb::$template->assign_vars(array(
 		'S_SHOW_POLL_BOX'		=> true,
 		'S_POLL_VOTE_CHANGE'	=> (phpbb::$acl->acl_get('f_votechg', $forum_id)),
 		'S_POLL_DELETE'			=> ($mode == 'edit' && sizeof($post_data['poll_options']) && ((!$post_data['poll_last_vote'] && $post_data['poster_id'] == phpbb::$user->data['user_id'] && phpbb::$acl->acl_get('f_delete', $forum_id)) || phpbb::$acl->acl_get('m_delete', $forum_id))),
@@ -1324,8 +1324,8 @@ if (($mode == 'post' || ($mode == 'edit' && $post_id == $post_data['topic_first_
 // 		'POLL_TITLE'			=> (isset($post_data['poll_title'])) ? $post_data['poll_title'] : '',
 		'POLL_OPTIONS'			=> (!empty($post_data['poll_options'])) ? implode("\n", $post_data['poll_options']) : '',
 		'POLL_MAX_OPTIONS'		=> (isset($post_data['poll_max_options'])) ? (int) $post_data['poll_max_options'] : 1,
-		'POLL_LENGTH'			=> $post_data['poll_length'])
-	);
+		'POLL_LENGTH'			=> $post_data['poll_length'],
+	));
 }
 
 // Show attachment box for adding attachments if true
@@ -1337,9 +1337,9 @@ posting_gen_attachment_entry($attachment_data, $filename_data, $allowed);
 // Output page ...
 page_header($page_title);
 
-$template->set_filenames(array(
-	'body' => 'posting_body.html')
-);
+phpbb::$template->set_filenames(array(
+	'body' => 'posting_body.html',
+));
 
 make_jumpbox(append_sid('viewforum'));
 
@@ -1348,7 +1348,7 @@ if ($mode == 'reply' || $mode == 'quote')
 {
 	if (topic_review($topic_id, $forum_id))
 	{
-		$template->assign_var('S_DISPLAY_REVIEW', true);
+		phpbb::$template->assign_var('S_DISPLAY_REVIEW', true);
 	}
 }
 
@@ -1363,15 +1363,15 @@ function upload_popup($forum_style = 0)
 
 	page_header(phpbb::$user->lang['PROGRESS_BAR']);
 
-	$template->set_filenames(array(
-		'popup'	=> 'posting_progress_bar.html')
-	);
+	phpbb::$template->set_filenames(array(
+		'popup'	=> 'posting_progress_bar.html',
+	));
 
-	$template->assign_vars(array(
-		'PROGRESS_BAR'	=> phpbb::$user->img('upload_bar', 'UPLOAD_IN_PROGRESS'))
-	);
+	phpbb::$template->assign_vars(array(
+		'PROGRESS_BAR'	=> phpbb::$user->img('upload_bar', 'UPLOAD_IN_PROGRESS'),
+	));
 
-	$template->display('popup');
+	phpbb::$template->display('popup');
 
 	garbage_collection();
 	exit_handler();

@@ -109,7 +109,7 @@ function compose_pm($id, $mode, $action)
 			phpbb::$db->sql_freeresult($result);
 		}
 
-		$template->assign_vars(array(
+		phpbb::$template->assign_vars(array(
 			'S_SHOW_PM_BOX'		=> true,
 			'S_ALLOW_MASS_PM'	=> (phpbb::$config['allow_mass_pm'] && phpbb::$acl->acl_get('u_masspm')) ? true : false,
 			'S_GROUP_OPTIONS'	=> (phpbb::$config['allow_mass_pm'] && phpbb::$acl->acl_get('u_masspm_group')) ? $group_options : '',
@@ -366,7 +366,7 @@ function compose_pm($id, $mode, $action)
 
 	if ($action == 'post')
 	{
-		$template->assign_var('S_NEW_MESSAGE', true);
+		phpbb::$template->assign_var('S_NEW_MESSAGE', true);
 	}
 
 	if (!isset($icon_id))
@@ -609,7 +609,7 @@ function compose_pm($id, $mode, $action)
 			$message_parser->message = $row['draft_message'];
 			$message_subject = $row['draft_subject'];
 
-			$template->assign_var('S_DRAFT_LOADED', true);
+			phpbb::$template->assign_var('S_DRAFT_LOADED', true);
 		}
 		else
 		{
@@ -762,7 +762,7 @@ function compose_pm($id, $mode, $action)
 		// Attachment Preview
 		if (sizeof($message_parser->attachment_data))
 		{
-			$template->assign_var('S_HAS_ATTACHMENTS', true);
+			phpbb::$template->assign_var('S_HAS_ATTACHMENTS', true);
 
 			$update_count = array();
 			$attachment_data = $message_parser->attachment_data;
@@ -771,9 +771,9 @@ function compose_pm($id, $mode, $action)
 
 			foreach ($attachment_data as $i => $attachment)
 			{
-				$template->assign_block_vars('attachment', array(
-					'DISPLAY_ATTACHMENT'	=> $attachment)
-				);
+				phpbb::$template->assign_block_vars('attachment', array(
+					'DISPLAY_ATTACHMENT'	=> $attachment,
+				));
 			}
 			unset($attachment_data);
 		}
@@ -782,13 +782,13 @@ function compose_pm($id, $mode, $action)
 
 		if (!sizeof($error))
 		{
-			$template->assign_vars(array(
+			phpbb::$template->assign_vars(array(
 				'PREVIEW_SUBJECT'		=> $preview_subject,
 				'PREVIEW_MESSAGE'		=> $preview_message,
 				'PREVIEW_SIGNATURE'		=> $preview_signature,
 
-				'S_DISPLAY_PREVIEW'		=> true)
-			);
+				'S_DISPLAY_PREVIEW'		=> true,
+			));
 		}
 		unset($message_text);
 	}
@@ -965,7 +965,7 @@ function compose_pm($id, $mode, $action)
 					));
 				}
 
-				$template->assign_block_vars($field . '_recipient', $tpl_ary);
+				phpbb::$template->assign_block_vars($field . '_recipient', $tpl_ary);
 			}
 		}
 	}
@@ -1017,7 +1017,7 @@ function compose_pm($id, $mode, $action)
 	$form_enctype = (@ini_get('file_uploads') == '0' || strtolower(@ini_get('file_uploads')) == 'off' || !phpbb::$config['allow_pm_attach'] || !phpbb::$acl->acl_get('u_pm_attach')) ? '' : ' enctype="multipart/form-data"';
 
 	// Start assigning vars for main posting page ...
-	$template->assign_vars(array(
+	phpbb::$template->assign_vars(array(
 		'L_POST_A'					=> $page_title,
 		'L_ICON'					=> phpbb::$user->lang['PM_ICON'],
 		'L_MESSAGE_BODY_EXPLAIN'	=> (intval(phpbb::$config['max_post_chars'])) ? sprintf(phpbb::$user->lang['MESSAGE_BODY_EXPLAIN'], intval(phpbb::$config['max_post_chars'])) : '',
@@ -1076,7 +1076,7 @@ function compose_pm($id, $mode, $action)
 	{
 		if (message_history($msg_id, phpbb::$user->data['user_id'], $post, array(), true))
 		{
-			$template->assign_var('S_DISPLAY_HISTORY', true);
+			phpbb::$template->assign_var('S_DISPLAY_HISTORY', true);
 		}
 	}
 }

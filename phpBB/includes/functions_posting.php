@@ -41,9 +41,9 @@ function generate_smilies($mode, $forum_id)
 
 		page_header(phpbb::$user->lang['SMILIES']);
 
-		$template->set_filenames(array(
-			'body' => 'posting_smilies.html')
-		);
+		phpbb::$template->set_filenames(array(
+			'body' => 'posting_smilies.html',
+		));
 	}
 
 	$display_link = false;
@@ -83,23 +83,23 @@ function generate_smilies($mode, $forum_id)
 	{
 		foreach ($smilies as $row)
 		{
-			$template->assign_block_vars('smiley', array(
+			phpbb::$template->assign_block_vars('smiley', array(
 				'SMILEY_CODE'	=> $row['code'],
 				'A_SMILEY_CODE'	=> addslashes($row['code']),
 				'SMILEY_IMG'	=> PHPBB_ROOT_PATH . phpbb::$config['smilies_path'] . '/' . $row['smiley_url'],
 				'SMILEY_WIDTH'	=> $row['smiley_width'],
 				'SMILEY_HEIGHT'	=> $row['smiley_height'],
-				'SMILEY_DESC'	=> $row['emotion'])
-			);
+				'SMILEY_DESC'	=> $row['emotion'],
+			));
 		}
 	}
 
 	if ($mode == 'inline' && $display_link)
 	{
-		$template->assign_vars(array(
+		phpbb::$template->assign_vars(array(
 			'S_SHOW_SMILEY_LINK' 	=> true,
-			'U_MORE_SMILIES' 		=> append_sid('posting', 'mode=smilies&amp;f=' . $forum_id))
-		);
+			'U_MORE_SMILIES' 		=> append_sid('posting', 'mode=smilies&amp;f=' . $forum_id),
+		));
 	}
 
 	if ($mode == 'window')
@@ -246,7 +246,7 @@ function posting_gen_topic_icons($mode, $icon_id)
 
 	if (!$icon_id)
 	{
-		$template->assign_var('S_NO_ICON_CHECKED', ' checked="checked"');
+		phpbb::$template->assign_var('S_NO_ICON_CHECKED', ' checked="checked"');
 	}
 
 	if (sizeof($icons))
@@ -255,15 +255,15 @@ function posting_gen_topic_icons($mode, $icon_id)
 		{
 			if ($data['display'])
 			{
-				$template->assign_block_vars('topic_icon', array(
+				phpbb::$template->assign_block_vars('topic_icon', array(
 					'ICON_ID'		=> $id,
 					'ICON_IMG'		=> PHPBB_ROOT_PATH . phpbb::$config['icons_path'] . '/' . $data['img'],
 					'ICON_WIDTH'	=> $data['width'],
 					'ICON_HEIGHT'	=> $data['height'],
 
 					'S_CHECKED'			=> ($id == $icon_id) ? true : false,
-					'S_ICON_CHECKED'	=> ($id == $icon_id) ? ' checked="checked"' : '')
-				);
+					'S_ICON_CHECKED'	=> ($id == $icon_id) ? ' checked="checked"' : '',
+				));
 			}
 		}
 
@@ -319,13 +319,13 @@ function posting_gen_topic_types($forum_id, $cur_topic_type = POST_NORMAL)
 
 		foreach ($topic_type_array as $array)
 		{
-			$template->assign_block_vars('topic_type', $array);
+			phpbb::$template->assign_block_vars('topic_type', $array);
 		}
 
-		$template->assign_vars(array(
+		phpbb::$template->assign_vars(array(
 			'S_TOPIC_TYPE_STICKY'	=> (phpbb::$acl->acl_get('f_sticky', $forum_id)),
-			'S_TOPIC_TYPE_ANNOUNCE'	=> (phpbb::$acl->acl_get('f_announce', $forum_id)))
-		);
+			'S_TOPIC_TYPE_ANNOUNCE'	=> (phpbb::$acl->acl_get('f_announce', $forum_id)),
+		));
 	}
 
 	return $toggle;
@@ -738,7 +738,7 @@ function posting_gen_inline_attachments(&$attachment_data)
 			$s_inline_attachment_options .= '<option value="' . $i . '">' . basename($attachment['real_filename']) . '</option>';
 		}
 
-		$template->assign_var('S_INLINE_ATTACHMENT_OPTIONS', $s_inline_attachment_options);
+		phpbb::$template->assign_var('S_INLINE_ATTACHMENT_OPTIONS', $s_inline_attachment_options);
 
 		return true;
 	}
@@ -752,7 +752,7 @@ function posting_gen_inline_attachments(&$attachment_data)
 function posting_gen_attachment_entry($attachment_data, &$filename_data, $show_attach_box = true)
 {
 	// Some default template variables
-	$template->assign_vars(array(
+	phpbb::$template->assign_vars(array(
 		'S_SHOW_ATTACH_BOX'	=> $show_attach_box,
 		'S_HAS_ATTACHMENTS'	=> sizeof($attachment_data),
 		'FILESIZE'			=> phpbb::$config['max_filesize'],
@@ -776,7 +776,7 @@ function posting_gen_attachment_entry($attachment_data, &$filename_data, $show_a
 
 			$download_link = append_sid('download/file', 'mode=view&amp;id=' . (int) $attach_row['attach_id'], true, ($attach_row['is_orphan']) ? phpbb::$user->session_id : false);
 
-			$template->assign_block_vars('attach_row', array(
+			phpbb::$template->assign_block_vars('attach_row', array(
 				'FILENAME'			=> basename($attach_row['real_filename']),
 				'A_FILENAME'		=> addslashes(basename($attach_row['real_filename'])),
 				'FILE_COMMENT'		=> $attach_row['attach_comment'],
@@ -785,8 +785,8 @@ function posting_gen_attachment_entry($attachment_data, &$filename_data, $show_a
 				'ASSOC_INDEX'		=> $count,
 
 				'U_VIEW_ATTACHMENT'	=> $download_link,
-				'S_HIDDEN'			=> $hidden)
-			);
+				'S_HIDDEN'			=> $hidden,
+			));
 		}
 	}
 
@@ -856,7 +856,7 @@ function load_drafts($topic_id = 0, $forum_id = 0, $id = 0)
 	}
 	unset($topic_ids);
 
-	$template->assign_var('S_SHOW_DRAFTS', true);
+	phpbb::$template->assign_var('S_SHOW_DRAFTS', true);
 
 	foreach ($draft_rows as $draft)
 	{
@@ -893,7 +893,7 @@ function load_drafts($topic_id = 0, $forum_id = 0, $id = 0)
 			$insert_url = append_sid('ucp', "i=$id&amp;mode=compose&amp;d={$draft['draft_id']}");
 		}
 
-		$template->assign_block_vars('draftrow', array(
+		phpbb::$template->assign_block_vars('draftrow', array(
 			'DRAFT_ID'		=> $draft['draft_id'],
 			'DATE'			=> phpbb::$user->format_date($draft['save_time']),
 			'DRAFT_SUBJECT'	=> $draft['draft_subject'],
@@ -904,8 +904,8 @@ function load_drafts($topic_id = 0, $forum_id = 0, $id = 0)
 
 			'S_LINK_PM'		=> $link_pm,
 			'S_LINK_TOPIC'	=> $link_topic,
-			'S_LINK_FORUM'	=> $link_forum)
-		);
+			'S_LINK_FORUM'	=> $link_forum,
+		));
 	}
 }
 
@@ -1037,7 +1037,7 @@ function topic_review($topic_id, $forum_id, $mode = 'topic_review', $cur_post_id
 
 		$post_subject = censor_text($post_subject);
 
-		$template->assign_block_vars($mode . '_row', array(
+		phpbb::$template->assign_block_vars($mode . '_row', array(
 			'POST_AUTHOR_FULL'		=> get_username_string('full', $poster_id, $row['username'], $row['user_colour'], $row['post_username']),
 			'POST_AUTHOR_COLOUR'	=> get_username_string('colour', $poster_id, $row['username'], $row['user_colour'], $row['post_username']),
 			'POST_AUTHOR'			=> get_username_string('username', $poster_id, $row['username'], $row['user_colour'], $row['post_username']),
@@ -1053,17 +1053,17 @@ function topic_review($topic_id, $forum_id, $mode = 'topic_review', $cur_post_id
 			'POST_ID'			=> $row['post_id'],
 			'U_MINI_POST'		=> append_sid('viewtopic', 'p=' . $row['post_id']) . '#p' . $row['post_id'],
 			'U_MCP_DETAILS'		=> (phpbb::$acl->acl_get('m_info', $forum_id)) ? append_sid('mcp', 'i=main&amp;mode=post_details&amp;f=' . $forum_id . '&amp;p=' . $row['post_id'], true, phpbb::$user->session_id) : '',
-			'POSTER_QUOTE'		=> ($show_quote_button && phpbb::$acl->acl_get('f_reply', $forum_id)) ? addslashes(get_username_string('username', $poster_id, $row['username'], $row['user_colour'], $row['post_username'])) : '')
-		);
+			'POSTER_QUOTE'		=> ($show_quote_button && phpbb::$acl->acl_get('f_reply', $forum_id)) ? addslashes(get_username_string('username', $poster_id, $row['username'], $row['user_colour'], $row['post_username'])) : '',
+		));
 
 		// Display not already displayed Attachments for this post, we already parsed them. ;)
 		if (!empty($attachments[$row['post_id']]))
 		{
 			foreach ($attachments[$row['post_id']] as $attachment)
 			{
-				$template->assign_block_vars($mode . '_row.attachment', array(
-					'DISPLAY_ATTACHMENT'	=> $attachment)
-				);
+				phpbb::$template->assign_block_vars($mode . '_row.attachment', array(
+					'DISPLAY_ATTACHMENT'	=> $attachment,
+				));
 			}
 		}
 
@@ -1072,7 +1072,7 @@ function topic_review($topic_id, $forum_id, $mode = 'topic_review', $cur_post_id
 
 	if ($mode == 'topic_review')
 	{
-		$template->assign_var('QUOTE_IMG', phpbb::$user->img('icon_post_quote', 'REPLY_WITH_QUOTE'));
+		phpbb::$template->assign_var('QUOTE_IMG', phpbb::$user->img('icon_post_quote', 'REPLY_WITH_QUOTE'));
 	}
 
 	return true;

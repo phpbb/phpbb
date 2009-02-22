@@ -190,7 +190,7 @@ class acp_ranks
 				$filename_list = '<option value=""' . (($edit_img == '') ? ' selected="selected"' : '') . '>----------</option>' . $filename_list;
 				unset($existing_imgs, $imglist);
 
-				$template->assign_vars(array(
+				phpbb::$template->assign_vars(array(
 					'S_EDIT'			=> true,
 					'U_BACK'			=> $this->u_action,
 					'RANKS_PATH'		=> PHPBB_ROOT_PATH . phpbb::$config['ranks_path'],
@@ -200,8 +200,8 @@ class acp_ranks
 					'S_FILENAME_LIST'	=> $filename_list,
 					'RANK_IMAGE'		=> ($edit_img) ? PHPBB_ROOT_PATH . phpbb::$config['ranks_path'] . '/' . $edit_img : PHPBB_ADMIN_PATH . 'images/spacer.gif',
 					'S_SPECIAL_RANK'	=> (!isset($ranks['rank_special']) || $ranks['rank_special']) ? true : false,
-					'MIN_POSTS'			=> (isset($ranks['rank_min']) && !$ranks['rank_special']) ? $ranks['rank_min'] : 0)
-				);
+					'MIN_POSTS'			=> (isset($ranks['rank_min']) && !$ranks['rank_special']) ? $ranks['rank_min'] : 0,
+				));
 
 
 				return;
@@ -209,9 +209,9 @@ class acp_ranks
 			break;
 		}
 
-		$template->assign_vars(array(
-			'U_ACTION'		=> $this->u_action)
-		);
+		phpbb::$template->assign_vars(array(
+			'U_ACTION'		=> $this->u_action,
+		));
 
 		$sql = 'SELECT *
 			FROM ' . RANKS_TABLE . '
@@ -220,7 +220,7 @@ class acp_ranks
 
 		while ($row = phpbb::$db->sql_fetchrow($result))
 		{
-			$template->assign_block_vars('ranks', array(
+			phpbb::$template->assign_block_vars('ranks', array(
 				'S_RANK_IMAGE'		=> ($row['rank_image']) ? true : false,
 				'S_SPECIAL_RANK'	=> ($row['rank_special']) ? true : false,
 
@@ -229,8 +229,8 @@ class acp_ranks
 				'MIN_POSTS'			=> $row['rank_min'],
 
 				'U_EDIT'			=> $this->u_action . '&amp;action=edit&amp;id=' . $row['rank_id'],
-				'U_DELETE'			=> $this->u_action . '&amp;action=delete&amp;id=' . $row['rank_id'])
-			);
+				'U_DELETE'			=> $this->u_action . '&amp;action=delete&amp;id=' . $row['rank_id'],
+			));
 		}
 		phpbb::$db->sql_freeresult($result);
 

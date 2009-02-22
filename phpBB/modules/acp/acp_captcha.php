@@ -107,10 +107,10 @@ class acp_captcha
 
 				foreach ($config_vars as $config_var => $template_var)
 				{
-					$template->assign_var($template_var, request_var($config_var, phpbb::$config[$config_var])) ;
+					phpbb::$template->assign_var($template_var, request_var($config_var, phpbb::$config[$config_var])) ;
 				}
 
-				$template->assign_vars(array(
+				phpbb::$template->assign_vars(array(
 					'CAPTCHA_PREVIEW'	=> $demo_captcha->get_demo_template($id),
 					'CAPTCHA_SELECT'	=> $captcha_select,
 				));

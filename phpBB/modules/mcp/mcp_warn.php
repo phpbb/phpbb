@@ -73,7 +73,7 @@ class mcp_warn
 	*/
 	function mcp_warn_front_view()
 	{
-		$template->assign_vars(array(
+		phpbb::$template->assign_vars(array(
 			'U_FIND_USERNAME'	=> append_sid('memberlist', 'mode=searchuser&amp;form=mcp&amp;field=username&amp;select_single=true'),
 			'U_POST_ACTION'		=> append_sid('mcp', 'i=warn&amp;mode=warn_user'),
 		));
@@ -87,7 +87,7 @@ class mcp_warn
 
 		foreach ($highest as $row)
 		{
-			$template->assign_block_vars('highest', array(
+			phpbb::$template->assign_block_vars('highest', array(
 				'U_NOTES'		=> append_sid('mcp', 'i=notes&amp;mode=user_notes&amp;u=' . $row['user_id']),
 
 				'USERNAME_FULL'		=> get_username_string('full', $row['user_id'], $row['username'], $row['user_colour']),
@@ -109,7 +109,7 @@ class mcp_warn
 
 		while ($row = phpbb::$db->sql_fetchrow($result))
 		{
-			$template->assign_block_vars('latest', array(
+			phpbb::$template->assign_block_vars('latest', array(
 				'U_NOTES'		=> append_sid('mcp', 'i=notes&amp;mode=user_notes&amp;u=' . $row['user_id']),
 
 				'USERNAME_FULL'		=> get_username_string('full', $row['user_id'], $row['username'], $row['user_colour']),
@@ -154,7 +154,7 @@ class mcp_warn
 
 		foreach ($users as $row)
 		{
-			$template->assign_block_vars('user', array(
+			phpbb::$template->assign_block_vars('user', array(
 				'U_NOTES'		=> append_sid('mcp', 'i=notes&amp;mode=user_notes&amp;u=' . $row['user_id']),
 
 				'USERNAME_FULL'		=> get_username_string('full', $row['user_id'], $row['username'], $row['user_colour']),
@@ -167,7 +167,7 @@ class mcp_warn
 			));
 		}
 
-		$template->assign_vars(array(
+		phpbb::$template->assign_vars(array(
 			'U_POST_ACTION'			=> $this->u_action,
 			'S_CLEAR_ALLOWED'		=> (phpbb::$acl->acl_get('a_clearlogs')) ? true : false,
 			'S_SELECT_SORT_DIR'		=> $s_sort_dir,
@@ -299,7 +299,7 @@ class mcp_warn
 		$rank_title = $rank_img = '';
 		$avatar_img = get_user_avatar($user_row['user_avatar'], $user_row['user_avatar_type'], $user_row['user_avatar_width'], $user_row['user_avatar_height']);
 
-		$template->assign_vars(array(
+		phpbb::$template->assign_vars(array(
 			'U_POST_ACTION'		=> $this->u_action,
 
 			'POST'				=> $message,
@@ -404,7 +404,7 @@ class mcp_warn
 		$avatar_img = get_user_avatar($user_row['user_avatar'], $user_row['user_avatar_type'], $user_row['user_avatar_width'], $user_row['user_avatar_height']);
 
 		// OK, they didn't submit a warning so lets build the page for them to do so
-		$template->assign_vars(array(
+		phpbb::$template->assign_vars(array(
 			'U_POST_ACTION'		=> $this->u_action,
 
 			'USERNAME'			=> $user_row['username'],

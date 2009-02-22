@@ -167,7 +167,7 @@ function view_message($id, $mode, $folder_id, $msg_id, $folder, $message_row)
 
 	$url = append_sid('ucp', 'i=pm');
 
-	$template->assign_vars(array(
+	phpbb::$template->assign_vars(array(
 		'MESSAGE_AUTHOR_FULL'		=> get_username_string('full', $author_id, $user_info['username'], $user_info['user_colour'], $user_info['username']),
 		'MESSAGE_AUTHOR_COLOUR'		=> get_username_string('colour', $author_id, $user_info['username'], $user_info['user_colour'], $user_info['username']),
 		'MESSAGE_AUTHOR'			=> get_username_string('username', $author_id, $user_info['username'], $user_info['user_colour'], $user_info['username']),
@@ -220,17 +220,17 @@ function view_message($id, $mode, $folder_id, $msg_id, $folder, $message_row)
 		'S_SPECIAL_FOLDER'	=> in_array($folder_id, array(PRIVMSGS_NO_BOX, PRIVMSGS_OUTBOX)),
 
 		'U_PRINT_PM'		=> (phpbb::$config['print_pm'] && phpbb::$acl->acl_get('u_pm_printpm')) ? "$url&amp;f=$folder_id&amp;p=" . $message_row['msg_id'] . "&amp;view=print" : '',
-		'U_FORWARD_PM'		=> (phpbb::$config['forward_pm'] && phpbb::$acl->acl_get('u_sendpm') && phpbb::$acl->acl_get('u_pm_forward')) ? "$url&amp;mode=compose&amp;action=forward&amp;f=$folder_id&amp;p=" . $message_row['msg_id'] : '')
-	);
+		'U_FORWARD_PM'		=> (phpbb::$config['forward_pm'] && phpbb::$acl->acl_get('u_sendpm') && phpbb::$acl->acl_get('u_pm_forward')) ? "$url&amp;mode=compose&amp;action=forward&amp;f=$folder_id&amp;p=" . $message_row['msg_id'] : '',
+	));
 
 	// Display not already displayed Attachments for this post, we already parsed them. ;)
 	if (isset($attachments) && sizeof($attachments))
 	{
 		foreach ($attachments as $attachment)
 		{
-			$template->assign_block_vars('attachment', array(
-				'DISPLAY_ATTACHMENT'	=> $attachment)
-			);
+			phpbb::$template->assign_block_vars('attachment', array(
+				'DISPLAY_ATTACHMENT'	=> $attachment,
+			));
 		}
 	}
 
@@ -239,7 +239,7 @@ function view_message($id, $mode, $folder_id, $msg_id, $folder, $message_row)
 		// Message History
 		if (message_history($msg_id, phpbb::$user->data['user_id'], $message_row, $folder))
 		{
-			$template->assign_var('S_DISPLAY_HISTORY', true);
+			phpbb::$template->assign_var('S_DISPLAY_HISTORY', true);
 		}
 	}
 }

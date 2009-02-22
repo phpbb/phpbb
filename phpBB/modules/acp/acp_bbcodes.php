@@ -94,7 +94,7 @@ class acp_bbcodes
 			case 'edit':
 			case 'add':
 
-				$template->assign_vars(array(
+				phpbb::$template->assign_vars(array(
 					'S_EDIT_BBCODE'		=> true,
 					'U_BACK'			=> $this->u_action,
 					'U_ACTION'			=> $this->u_action . '&amp;action=' . (($action == 'add') ? 'create' : 'modify') . (($bbcode_id) ? "&amp;bbcode=$bbcode_id" : ''),
@@ -103,15 +103,15 @@ class acp_bbcodes
 					'BBCODE_MATCH'			=> $bbcode_match,
 					'BBCODE_TPL'			=> $bbcode_tpl,
 					'BBCODE_HELPLINE'		=> $bbcode_helpline,
-					'DISPLAY_ON_POSTING'	=> $display_on_posting)
-				);
+					'DISPLAY_ON_POSTING'	=> $display_on_posting,
+				));
 
 				foreach (phpbb::$user->lang['tokens'] as $token => $token_explain)
 				{
-					$template->assign_block_vars('token', array(
+					phpbb::$template->assign_block_vars('token', array(
 						'TOKEN'		=> '{' . $token . '}',
-						'EXPLAIN'	=> $token_explain)
-					);
+						'EXPLAIN'	=> $token_explain,
+					));
 				}
 
 				return;
@@ -269,9 +269,9 @@ class acp_bbcodes
 			break;
 		}
 
-		$template->assign_vars(array(
-			'U_ACTION'		=> $this->u_action . '&amp;action=add')
-		);
+		phpbb::$template->assign_vars(array(
+			'U_ACTION'		=> $this->u_action . '&amp;action=add',
+		));
 
 		$sql = 'SELECT *
 			FROM ' . BBCODES_TABLE . '
@@ -280,11 +280,11 @@ class acp_bbcodes
 
 		while ($row = phpbb::$db->sql_fetchrow($result))
 		{
-			$template->assign_block_vars('bbcodes', array(
+			phpbb::$template->assign_block_vars('bbcodes', array(
 				'BBCODE_TAG'		=> $row['bbcode_tag'],
 				'U_EDIT'			=> $this->u_action . '&amp;action=edit&amp;bbcode=' . $row['bbcode_id'],
-				'U_DELETE'			=> $this->u_action . '&amp;action=delete&amp;bbcode=' . $row['bbcode_id'])
-			);
+				'U_DELETE'			=> $this->u_action . '&amp;action=delete&amp;bbcode=' . $row['bbcode_id'],
+			));
 		}
 		phpbb::$db->sql_freeresult($result);
 	}

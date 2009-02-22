@@ -62,14 +62,14 @@ class acp_words
 
 			case 'add':
 
-				$template->assign_vars(array(
+				phpbb::$template->assign_vars(array(
 					'S_EDIT_WORD'		=> true,
 					'U_ACTION'			=> $this->u_action,
 					'U_BACK'			=> $this->u_action,
 					'WORD'				=> (isset($word_info['word'])) ? $word_info['word'] : '',
 					'REPLACEMENT'		=> (isset($word_info['replacement'])) ? $word_info['replacement'] : '',
-					'S_HIDDEN_FIELDS'	=> $s_hidden_fields)
-				);
+					'S_HIDDEN_FIELDS'	=> $s_hidden_fields,
+				));
 
 				return;
 
@@ -156,10 +156,10 @@ class acp_words
 		}
 
 
-		$template->assign_vars(array(
+		phpbb::$template->assign_vars(array(
 			'U_ACTION'			=> $this->u_action,
-			'S_HIDDEN_FIELDS'	=> $s_hidden_fields)
-		);
+			'S_HIDDEN_FIELDS'	=> $s_hidden_fields,
+		));
 
 		$sql = 'SELECT *
 			FROM ' . WORDS_TABLE . '
@@ -168,12 +168,12 @@ class acp_words
 
 		while ($row = phpbb::$db->sql_fetchrow($result))
 		{
-			$template->assign_block_vars('words', array(
+			phpbb::$template->assign_block_vars('words', array(
 				'WORD'			=> $row['word'],
 				'REPLACEMENT'	=> $row['replacement'],
 				'U_EDIT'		=> $this->u_action . '&amp;action=edit&amp;id=' . $row['word_id'],
-				'U_DELETE'		=> $this->u_action . '&amp;action=delete&amp;id=' . $row['word_id'])
-			);
+				'U_DELETE'		=> $this->u_action . '&amp;action=delete&amp;id=' . $row['word_id'],
+			));
 		}
 		phpbb::$db->sql_freeresult($result);
 	}

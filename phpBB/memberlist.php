@@ -240,7 +240,7 @@ switch ($mode)
 			$rank_title = $rank_img = '';
 			get_user_rank($row['user_id'], $row['user_rank'], $row['user_posts'], $rank_title, $rank_img, $rank_img_src);
 
-			$template->assign_block_vars($which_row, array(
+			phpbb::$template->assign_block_vars($which_row, array(
 				'USER_ID'		=> $row['user_id'],
 				'FORUMS'		=> $s_forum_select,
 				'RANK_TITLE'	=> $rank_title,
@@ -261,9 +261,9 @@ switch ($mode)
 		}
 		phpbb::$db->sql_freeresult($result);
 
-		$template->assign_vars(array(
-			'PM_IMG'		=> phpbb::$user->img('icon_contact_pm', phpbb::$user->lang['SEND_PRIVATE_MESSAGE']))
-		);
+		phpbb::$template->assign_vars(array(
+			'PM_IMG'		=> phpbb::$user->img('icon_contact_pm', phpbb::$user->lang['SEND_PRIVATE_MESSAGE']),
+		));
 	break;
 
 	case 'contact':
@@ -372,7 +372,7 @@ switch ($mode)
 		}
 
 		// Send vars to the template
-		$template->assign_vars(array(
+		phpbb::$template->assign_vars(array(
 			'IM_CONTACT'	=> $row[$sql_field],
 			'A_IM_CONTACT'	=> addslashes($row[$sql_field]),
 
@@ -389,8 +389,8 @@ switch ($mode)
 			'L_IM_SENT_JABBER'	=> sprintf(phpbb::$user->lang['IM_SENT_JABBER'], $row['username']),
 
 			$s_select			=> true,
-			'S_IM_ACTION'		=> $s_action)
-		);
+			'S_IM_ACTION'		=> $s_action,
+		));
 
 	break;
 
@@ -500,7 +500,7 @@ switch ($mode)
 
 		$poster_avatar = get_user_avatar($member['user_avatar'], $member['user_avatar_type'], $member['user_avatar_width'], $member['user_avatar_height']);
 
-		$template->assign_vars(show_profile($member));
+		phpbb::$template->assign_vars(show_profile($member));
 
 		// Custom Profile Fields
 		$profile_fields = array();
@@ -543,7 +543,7 @@ switch ($mode)
 			$member['posts_in_queue'] = 0;
 		}
 
-		$template->assign_vars(array(
+		phpbb::$template->assign_vars(array(
 			'L_POSTS_IN_QUEUE'	=> phpbb::$user->lang('NUM_POSTS_IN_QUEUE', $member['posts_in_queue']),
 
 			'POSTS_DAY'			=> sprintf(phpbb::$user->lang['POST_DAY'], $posts_per_day),
@@ -583,14 +583,14 @@ switch ($mode)
 
 		if (!empty($profile_fields['row']))
 		{
-			$template->assign_vars($profile_fields['row']);
+			phpbb::$template->assign_vars($profile_fields['row']);
 		}
 
 		if (!empty($profile_fields['blockrow']))
 		{
 			foreach ($profile_fields['blockrow'] as $field_data)
 			{
-				$template->assign_block_vars('custom_fields', $field_data);
+				phpbb::$template->assign_block_vars('custom_fields', $field_data);
 			}
 		}
 
@@ -620,10 +620,10 @@ switch ($mode)
 				break;
 			}
 
-			$template->assign_vars(array(
+			phpbb::$template->assign_vars(array(
 				'S_USER_INACTIVE'		=> true,
-				'USER_INACTIVE_REASON'	=> $inactive_reason)
-			);
+				'USER_INACTIVE_REASON'	=> $inactive_reason,
+			));
 		}
 
 		// Now generate page title
@@ -868,29 +868,29 @@ switch ($mode)
 
 		if ($user_id)
 		{
-			$template->assign_vars(array(
+			phpbb::$template->assign_vars(array(
 				'S_SEND_USER'	=> true,
 				'USERNAME'		=> $row['username'],
 
 				'L_EMAIL_BODY_EXPLAIN'	=> phpbb::$user->lang['EMAIL_BODY_EXPLAIN'],
-				'S_POST_ACTION'			=> append_sid('memberlist', 'mode=email&amp;u=' . $user_id))
-			);
+				'S_POST_ACTION'			=> append_sid('memberlist', 'mode=email&amp;u=' . $user_id),
+			));
 		}
 		else
 		{
-			$template->assign_vars(array(
+			phpbb::$template->assign_vars(array(
 				'EMAIL'				=> $email,
 				'NAME'				=> $name,
 				'S_LANG_OPTIONS'	=> language_select($email_lang),
 
 				'L_EMAIL_BODY_EXPLAIN'	=> phpbb::$user->lang['EMAIL_TOPIC_EXPLAIN'],
-				'S_POST_ACTION'			=> append_sid('memberlist', 'mode=email&amp;t=' . $topic_id))
-			);
+				'S_POST_ACTION'			=> append_sid('memberlist', 'mode=email&amp;t=' . $topic_id),
+			));
 		}
 
-		$template->assign_vars(array(
-			'ERROR_MESSAGE'		=> (sizeof($error)) ? implode('<br />', $error) : '')
-		);
+		phpbb::$template->assign_vars(array(
+			'ERROR_MESSAGE'		=> (sizeof($error)) ? implode('<br />', $error) : '',
+		));
 
 	break;
 
@@ -1148,7 +1148,7 @@ switch ($mode)
 				$rank_img_src = '';
 			}
 
-			$template->assign_vars(array(
+			phpbb::$template->assign_vars(array(
 				'GROUP_DESC'	=> generate_text_for_display($group_row['group_desc'], $group_row['group_desc_uid'], $group_row['group_desc_bitfield'], $group_row['group_desc_options']),
 				'GROUP_NAME'	=> ($group_row['group_type'] == GROUP_SPECIAL) ? phpbb::$user->lang['G_' . $group_row['group_name']] : $group_row['group_name'],
 				'GROUP_COLOR'	=> $group_row['group_colour'],
@@ -1159,8 +1159,8 @@ switch ($mode)
 				'RANK_IMG'		=> $rank_img,
 				'RANK_IMG_SRC'	=> $rank_img_src,
 
-				'U_PM'			=> (phpbb::$acl->acl_get('u_sendpm') && phpbb::$acl->acl_get('u_masspm_group') && $group_row['group_receive_pm'] && phpbb::$config['allow_privmsg'] && phpbb::$config['allow_mass_pm']) ? append_sid('ucp', 'i=pm&amp;mode=compose&amp;g=' . $group_id) : '',)
-			);
+				'U_PM'			=> (phpbb::$acl->acl_get('u_sendpm') && phpbb::$acl->acl_get('u_masspm_group') && $group_row['group_receive_pm'] && phpbb::$config['allow_privmsg'] && phpbb::$config['allow_mass_pm']) ? append_sid('ucp', 'i=pm&amp;mode=compose&amp;g=' . $group_id) : '',
+			));
 
 			$sql_select = ', ug.group_leader';
 			$sql_from = ', ' . USER_GROUP_TABLE . ' ug ';
@@ -1320,7 +1320,7 @@ switch ($mode)
 				trigger_error('NO_GROUP');
 			}
 
-			$template->assign_vars(array(
+			phpbb::$template->assign_vars(array(
 				'USERNAME'	=> $username,
 				'EMAIL'		=> $email,
 				'ICQ'		=> $icq,
@@ -1344,8 +1344,8 @@ switch ($mode)
 				'S_JOINED_TIME_OPTIONS'	=> $s_find_join_time,
 				'S_ACTIVE_TIME_OPTIONS'	=> $s_find_active_time,
 				'S_GROUP_SELECT'		=> $s_group_select,
-				'S_USER_SEARCH_ACTION'	=> append_sid('memberlist', "mode=searchuser&amp;form=$form&amp;field=$field"))
-			);
+				'S_USER_SEARCH_ACTION'	=> append_sid('memberlist', "mode=searchuser&amp;form=$form&amp;field=$field"),
+			));
 		}
 
 		// Get us some users :D
@@ -1454,13 +1454,13 @@ switch ($mode)
 					$memberrow = array_merge($memberrow, $cp_row['row']);
 				}
 
-				$template->assign_block_vars('memberrow', $memberrow);
+				phpbb::$template->assign_block_vars('memberrow', $memberrow);
 
 				if (isset($cp_row['blockrow']) && sizeof($cp_row['blockrow']))
 				{
 					foreach ($cp_row['blockrow'] as $field_data)
 					{
-						$template->assign_block_vars('memberrow.custom_fields', $field_data);
+						phpbb::$template->assign_block_vars('memberrow.custom_fields', $field_data);
 					}
 				}
 
@@ -1469,7 +1469,7 @@ switch ($mode)
 		}
 
 		// Generate page
-		$template->assign_vars(array(
+		phpbb::$template->assign_vars(array(
 			'PAGINATION'	=> generate_pagination($pagination_url, $total_users, phpbb::$config['topics_per_page'], $start),
 			'PAGE_NUMBER'	=> on_page($total_users, phpbb::$config['topics_per_page'], $start),
 			'TOTAL_USERS'	=> ($total_users == 1) ? phpbb::$user->lang['LIST_USER'] : sprintf(phpbb::$user->lang['LIST_USERS'], $total_users),
@@ -1508,14 +1508,14 @@ switch ($mode)
 			'S_MODE_SELECT'		=> $s_sort_key,
 			'S_ORDER_SELECT'	=> $s_sort_dir,
 			'S_CHAR_OPTIONS'	=> $s_char_options,
-			'S_MODE_ACTION'		=> $pagination_url)
-		);
+			'S_MODE_ACTION'		=> $pagination_url,
+		));
 }
 
 // Output the page
 page_header($page_title);
 
-$template->set_filenames(array(
+phpbb::$template->set_filenames(array(
 	'body' => $template_html)
 );
 make_jumpbox(append_sid('viewforum'));

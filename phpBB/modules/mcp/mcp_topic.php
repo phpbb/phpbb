@@ -215,7 +215,7 @@ function mcp_topic_view($id, $mode, $action)
 
 		$post_unread = (isset($topic_tracking_info[$topic_id]) && $row['post_time'] > $topic_tracking_info[$topic_id]) ? true : false;
 
-		$template->assign_block_vars('postrow', array(
+		phpbb::$template->assign_block_vars('postrow', array(
 			'POST_AUTHOR_FULL'		=> get_username_string('full', $row['poster_id'], $row['username'], $row['user_colour'], $row['post_username']),
 			'POST_AUTHOR_COLOUR'	=> get_username_string('colour', $row['poster_id'], $row['username'], $row['user_colour'], $row['post_username']),
 			'POST_AUTHOR'			=> get_username_string('username', $row['poster_id'], $row['username'], $row['user_colour'], $row['post_username']),
@@ -236,17 +236,17 @@ function mcp_topic_view($id, $mode, $action)
 
 			'U_POST_DETAILS'	=> "$url&amp;i=$id&amp;p={$row['post_id']}&amp;mode=post_details" . (($forum_id) ? "&amp;f=$forum_id" : ''),
 			'U_MCP_APPROVE'		=> (phpbb::$acl->acl_get('m_approve', $topic_info['forum_id'])) ? append_sid('mcp', 'i=queue&amp;mode=approve_details&amp;f=' . $topic_info['forum_id'] . '&amp;p=' . $row['post_id']) : '',
-			'U_MCP_REPORT'		=> (phpbb::$acl->acl_get('m_report', $topic_info['forum_id'])) ? append_sid('mcp', 'i=reports&amp;mode=report_details&amp;f=' . $topic_info['forum_id'] . '&amp;p=' . $row['post_id']) : '')
-		);
+			'U_MCP_REPORT'		=> (phpbb::$acl->acl_get('m_report', $topic_info['forum_id'])) ? append_sid('mcp', 'i=reports&amp;mode=report_details&amp;f=' . $topic_info['forum_id'] . '&amp;p=' . $row['post_id']) : '',
+		));
 
 		// Display not already displayed Attachments for this post, we already parsed them. ;)
 		if (!empty($attachments[$row['post_id']]))
 		{
 			foreach ($attachments[$row['post_id']] as $attachment)
 			{
-				$template->assign_block_vars('postrow.attachment', array(
-					'DISPLAY_ATTACHMENT'	=> $attachment)
-				);
+				phpbb::$template->assign_block_vars('postrow.attachment', array(
+					'DISPLAY_ATTACHMENT'	=> $attachment,
+				));
 			}
 		}
 
@@ -287,7 +287,7 @@ function mcp_topic_view($id, $mode, $action)
 		'post_ids'	=> $post_id_list,
 	));
 
-	$template->assign_vars(array(
+	phpbb::$template->assign_vars(array(
 		'TOPIC_TITLE'		=> $topic_info['topic_title'],
 		'U_VIEW_TOPIC'		=> append_sid('viewtopic', 'f=' . $topic_info['forum_id'] . '&amp;t=' . $topic_info['topic_id']),
 
@@ -340,7 +340,7 @@ function split_topic($action, $topic_id, $to_forum_id, $subject)
 
 	if (!sizeof($post_id_list))
 	{
-		$template->assign_var('MESSAGE', phpbb::$user->lang['NO_POST_SELECTED']);
+		phpbb::$template->assign_var('MESSAGE', phpbb::$user->lang['NO_POST_SELECTED']);
 		return;
 	}
 
@@ -354,7 +354,7 @@ function split_topic($action, $topic_id, $to_forum_id, $subject)
 
 	if (!sizeof($post_info))
 	{
-		$template->assign_var('MESSAGE', phpbb::$user->lang['NO_POST_SELECTED']);
+		phpbb::$template->assign_var('MESSAGE', phpbb::$user->lang['NO_POST_SELECTED']);
 		return;
 	}
 
@@ -364,13 +364,13 @@ function split_topic($action, $topic_id, $to_forum_id, $subject)
 	// Make some tests
 	if (!$subject)
 	{
-		$template->assign_var('MESSAGE', phpbb::$user->lang['EMPTY_SUBJECT']);
+		phpbb::$template->assign_var('MESSAGE', phpbb::$user->lang['EMPTY_SUBJECT']);
 		return;
 	}
 
 	if ($to_forum_id <= 0)
 	{
-		$template->assign_var('MESSAGE', phpbb::$user->lang['NO_DESTINATION_FORUM']);
+		phpbb::$template->assign_var('MESSAGE', phpbb::$user->lang['NO_DESTINATION_FORUM']);
 		return;
 	}
 
@@ -378,7 +378,7 @@ function split_topic($action, $topic_id, $to_forum_id, $subject)
 
 	if (!sizeof($forum_info))
 	{
-		$template->assign_var('MESSAGE', phpbb::$user->lang['USER_CANNOT_POST']);
+		phpbb::$template->assign_var('MESSAGE', phpbb::$user->lang['USER_CANNOT_POST']);
 		return;
 	}
 
@@ -386,7 +386,7 @@ function split_topic($action, $topic_id, $to_forum_id, $subject)
 
 	if ($forum_info['forum_type'] != FORUM_POST)
 	{
-		$template->assign_var('MESSAGE', phpbb::$user->lang['FORUM_NOT_POSTABLE']);
+		phpbb::$template->assign_var('MESSAGE', phpbb::$user->lang['FORUM_NOT_POSTABLE']);
 		return;
 	}
 
@@ -527,7 +527,7 @@ function merge_posts($topic_id, $to_topic_id)
 {
 	if (!$to_topic_id)
 	{
-		$template->assign_var('MESSAGE', phpbb::$user->lang['NO_FINAL_TOPIC_SELECTED']);
+		phpbb::$template->assign_var('MESSAGE', phpbb::$user->lang['NO_FINAL_TOPIC_SELECTED']);
 		return;
 	}
 
@@ -535,7 +535,7 @@ function merge_posts($topic_id, $to_topic_id)
 
 	if (!sizeof($topic_data))
 	{
-		$template->assign_var('MESSAGE', phpbb::$user->lang['NO_FINAL_TOPIC_SELECTED']);
+		phpbb::$template->assign_var('MESSAGE', phpbb::$user->lang['NO_FINAL_TOPIC_SELECTED']);
 		return;
 	}
 
@@ -546,7 +546,7 @@ function merge_posts($topic_id, $to_topic_id)
 
 	if (!sizeof($post_id_list))
 	{
-		$template->assign_var('MESSAGE', phpbb::$user->lang['NO_POST_SELECTED']);
+		phpbb::$template->assign_var('MESSAGE', phpbb::$user->lang['NO_POST_SELECTED']);
 		return;
 	}
 

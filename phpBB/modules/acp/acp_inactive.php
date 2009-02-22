@@ -218,15 +218,15 @@ class acp_inactive
 
 		foreach ($inactive as $row)
 		{
-			$template->assign_block_vars('inactive', array(
+			phpbb::$template->assign_block_vars('inactive', array(
 				'INACTIVE_DATE'	=> phpbb::$user->format_date($row['user_inactive_time']),
 				'JOINED'		=> phpbb::$user->format_date($row['user_regdate']),
 				'LAST_VISIT'	=> (!$row['user_lastvisit']) ? ' - ' : phpbb::$user->format_date($row['user_lastvisit']),
 				'REASON'		=> $row['inactive_reason'],
 				'USER_ID'		=> $row['user_id'],
 				'USERNAME'		=> $row['username'],
-				'U_USER_ADMIN'	=> append_sid(PHPBB_ADMIN_PATH . 'index.' . PHP_EXT, "i=users&amp;mode=overview&amp;u={$row['user_id']}"))
-			);
+				'U_USER_ADMIN'	=> append_sid(PHPBB_ADMIN_PATH . 'index.' . PHP_EXT, "i=users&amp;mode=overview&amp;u={$row['user_id']}"),
+			));
 		}
 
 		$option_ary = array('activate' => 'ACTIVATE', 'delete' => 'DELETE');
@@ -235,7 +235,7 @@ class acp_inactive
 			$option_ary += array('remind' => 'REMIND');
 		}
 
-		$template->assign_vars(array(
+		phpbb::$template->assign_vars(array(
 			'S_INACTIVE_USERS'		=> true,
 			'S_INACTIVE_OPTIONS'	=> build_select($option_ary),
 

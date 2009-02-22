@@ -1002,7 +1002,7 @@ function generate_pagination($base_url, $num_items, $per_page, $start_item, $add
 		}
 	}
 
-	$template->assign_vars(array(
+	phpbb::$template->assign_vars(array(
 		$tpl_prefix . 'BASE_URL'		=> $base_url,
 		'A_' . $tpl_prefix . 'BASE_URL'	=> addslashes($base_url),
 		$tpl_prefix . 'PER_PAGE'		=> $per_page,
@@ -1026,9 +1026,9 @@ function on_page($num_items, $per_page, $start)
 
 	$on_page = floor($start / $per_page) + 1;
 
-	$template->assign_vars(array(
-		'ON_PAGE'		=> $on_page)
-	);
+	phpbb::$template->assign_vars(array(
+		'ON_PAGE'		=> $on_page,
+	));
 
 	return phpbb::$user->lang('PAGE_OF', $on_page, max(ceil($num_items / $per_page), 1));
 }
@@ -1054,7 +1054,7 @@ function add_form_key($form_name)
 		'form_token'	=> $token,
 	));
 
-	$template->assign_vars(array(
+	phpbb::$template->assign_vars(array(
 		'S_FORM_TOKEN'	=> $s_fields,
 	));
 }
@@ -1167,9 +1167,9 @@ function confirm_box($check, $title = '', $hidden = '', $html_body = 'confirm_bo
 
 	page_header((!isset(phpbb::$user->lang[$title])) ? phpbb::$user->lang['CONFIRM'] : phpbb::$user->lang[$title]);
 
-	$template->set_filenames(array(
-		'body' => $html_body)
-	);
+	phpbb::$template->set_filenames(array(
+		'body' => $html_body,
+	));
 
 	// If activation key already exist, we better do not re-use the key (something very strange is going on...)
 	if (request_var('confirm_key', ''))
@@ -1183,14 +1183,14 @@ function confirm_box($check, $title = '', $hidden = '', $html_body = 'confirm_bo
 	$u_action = reapply_sid($use_page);
 	$u_action .= ((strpos($u_action, '?') === false) ? '?' : '&amp;') . 'confirm_key=' . $confirm_key;
 
-	$template->assign_vars(array(
+	phpbb::$template->assign_vars(array(
 		'MESSAGE_TITLE'		=> (!isset(phpbb::$user->lang[$title])) ? phpbb::$user->lang['CONFIRM'] : phpbb::$user->lang[$title],
 		'MESSAGE_TEXT'		=> (!isset(phpbb::$user->lang[$title . '_CONFIRM'])) ? $title : phpbb::$user->lang[$title . '_CONFIRM'],
 
 		'YES_VALUE'			=> phpbb::$user->lang['YES'],
 		'S_CONFIRM_ACTION'	=> $u_action,
-		'S_HIDDEN_FIELDS'	=> $hidden . $s_hidden_fields)
-	);
+		'S_HIDDEN_FIELDS'	=> $hidden . $s_hidden_fields,
+	));
 
 	$sql = 'UPDATE ' . USERS_TABLE . " SET user_last_confirm_key = '" . phpbb::$db->sql_escape($confirm_key) . "'
 		WHERE user_id = " . phpbb::$user->data['user_id'];
@@ -1321,7 +1321,7 @@ function login_box($redirect = '', $l_explain = '', $l_success = '', $admin = fa
 				$captcha->init(CONFIRM_LOGIN);
 				$captcha->reset();
 
-				$template->assign_vars(array(
+				phpbb::$template->assign_vars(array(
 					'S_CONFIRM_CODE'			=> true,
 					'CONFIRM'					=> $captcha->get_template(''),
 				));
@@ -1405,8 +1405,8 @@ function login_box($redirect = '', $l_explain = '', $l_success = '', $admin = fa
 	));
 
 	phpbb::$template->set_filenames(array(
-		'body' => 'login_body.html')
-	);
+		'body' => 'login_body.html',
+	));
 
 	page_header(phpbb::$user->lang['LOGIN'], false);
 	make_jumpbox('viewforum');
@@ -1473,18 +1473,18 @@ function login_forum_box($forum_data)
 			return true;
 		}
 
-		$template->assign_var('LOGIN_ERROR', phpbb::$user->lang['WRONG_PASSWORD']);
+		phpbb::$template->assign_var('LOGIN_ERROR', phpbb::$user->lang['WRONG_PASSWORD']);
 	}
 
 	page_header(phpbb::$user->lang['LOGIN']);
 
-	$template->assign_vars(array(
-		'S_HIDDEN_FIELDS'		=> build_hidden_fields(array('f' => $forum_data['forum_id'])))
-	);
+	phpbb::$template->assign_vars(array(
+		'S_HIDDEN_FIELDS'		=> build_hidden_fields(array('f' => $forum_data['forum_id'])),
+	));
 
-	$template->set_filenames(array(
-		'body' => 'login_forum.html')
-	);
+	phpbb::$template->set_filenames(array(
+		'body' => 'login_forum.html',
+	));
 
 	page_footer();
 }

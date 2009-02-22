@@ -64,16 +64,16 @@ if ($mode == 'whois' && phpbb::$acl->acl_get('a_') && $session_id)
 
 	if ($row = phpbb::$db->sql_fetchrow($result))
 	{
-		$template->assign_var('WHOIS', user_ipwhois($row['session_ip']));
+		phpbb::$template->assign_var('WHOIS', user_ipwhois($row['session_ip']));
 	}
 	phpbb::$db->sql_freeresult($result);
 
 	// Output the page
 	page_header(phpbb::$user->lang['WHO_IS_ONLINE']);
 
-	$template->set_filenames(array(
-		'body' => 'viewonline_whois.html')
-	);
+	phpbb::$template->set_filenames(array(
+		'body' => 'viewonline_whois.html',
+	));
 	make_jumpbox(append_sid('viewforum'));
 
 	page_footer();
@@ -321,7 +321,7 @@ while ($row = phpbb::$db->sql_fetchrow($result))
 		break;
 	}
 
-	$template->assign_block_vars('user_row', array(
+	phpbb::$template->assign_block_vars('user_row', array(
 		'USERNAME' 			=> $row['username'],
 		'USERNAME_COLOUR'	=> $row['user_colour'],
 		'USERNAME_FULL'		=> $username_full,
@@ -413,7 +413,7 @@ phpbb::$db->sql_freeresult($result);
 meta_refresh(60, append_sid('viewonline', "sg=$show_guests&amp;sk=$sort_key&amp;sd=$sort_dir&amp;start=$start"));
 
 // Send data to template
-$template->assign_vars(array(
+phpbb::$template->assign_vars(array(
 	'TOTAL_REGISTERED_USERS_ONLINE'	=> sprintf($l_r_user_s, $logged_visible_online) . sprintf($l_h_user_s, $logged_hidden_online),
 	'TOTAL_GUEST_USERS_ONLINE'		=> sprintf($l_g_user_s, $guest_counter),
 	'LEGEND'						=> $legend,
@@ -426,8 +426,8 @@ $template->assign_vars(array(
 
 	'U_SWITCH_GUEST_DISPLAY'	=> append_sid('viewonline', 'sg=' . ((int) !$show_guests)),
 	'L_SWITCH_GUEST_DISPLAY'	=> ($show_guests) ? phpbb::$user->lang['HIDE_GUESTS'] : phpbb::$user->lang['DISPLAY_GUESTS'],
-	'S_SWITCH_GUEST_DISPLAY'	=> (phpbb::$config['load_online_guests']) ? true : false)
-);
+	'S_SWITCH_GUEST_DISPLAY'	=> (phpbb::$config['load_online_guests']) ? true : false,
+));
 
 // We do not need to load the who is online box here. ;)
 phpbb::$config['load_online'] = false;
@@ -435,9 +435,9 @@ phpbb::$config['load_online'] = false;
 // Output the page
 page_header(phpbb::$user->lang['WHO_IS_ONLINE']);
 
-$template->set_filenames(array(
-	'body' => 'viewonline_body.html')
-);
+phpbb::$template->set_filenames(array(
+	'body' => 'viewonline_body.html',
+));
 make_jumpbox(append_sid('viewforum'));
 
 page_footer();

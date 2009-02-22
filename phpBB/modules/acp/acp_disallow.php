@@ -95,10 +95,10 @@ class acp_disallow
 		}
 		phpbb::$db->sql_freeresult($result);
 
-		$template->assign_vars(array(
+		phpbb::$template->assign_vars(array(
 			'U_ACTION'				=> $this->u_action,
-			'S_DISALLOWED_NAMES'	=> $disallow_select)
-		);
+			'S_DISALLOWED_NAMES'	=> $disallow_select,
+		));
 	}
 }
 

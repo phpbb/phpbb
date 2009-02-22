@@ -33,8 +33,8 @@ class acp_database
 		$action	= request_var('action', '');
 		$submit = phpbb_request::is_set_post('submit');
 
-		$template->assign_vars(array(
-			'MODE'	=> $mode
+		phpbb::$template->assign_vars(array(
+			'MODE'	=> $mode,
 		));
 
 		switch ($mode)
@@ -175,15 +175,15 @@ class acp_database
 						{
 							if (strlen(phpbb::$base_config['table_prefix']) === 0 || stripos($table_name, phpbb::$base_config['table_prefix']) === 0)
 							{
-								$template->assign_block_vars('tables', array(
-									'TABLE'	=> $table_name
+								phpbb::$template->assign_block_vars('tables', array(
+									'TABLE'	=> $table_name,
 								));
 							}
 						}
 						unset($tables);
 
-						$template->assign_vars(array(
-							'U_ACTION'	=> $this->u_action . '&amp;action=download'
+						phpbb::$template->assign_vars(array(
+							'U_ACTION'	=> $this->u_action . '&amp;action=download',
 						));
 
 						$available_methods = array('gzip' => 'zlib', 'bzip2' => 'bz2');
@@ -195,13 +195,13 @@ class acp_database
 								continue;
 							}
 
-							$template->assign_block_vars('methods', array(
-								'TYPE'	=> $type
+							phpbb::$template->assign_block_vars('methods', array(
+								'TYPE'	=> $type,
 							));
 						}
 
-						$template->assign_block_vars('methods', array(
-							'TYPE'	=> 'text'
+						phpbb::$template->assign_block_vars('methods', array(
+							'TYPE'	=> 'text',
 						));
 					break;
 				}
@@ -430,10 +430,10 @@ class acp_database
 
 									if ($supported == 'true')
 									{
-										$template->assign_block_vars('files', array(
+										phpbb::$template->assign_block_vars('files', array(
 											'FILE'		=> $file,
 											'NAME'		=> gmdate("d-m-Y H:i:s", $matches[1]),
-											'SUPPORTED'	=> $supported
+											'SUPPORTED'	=> $supported,
 										));
 									}
 								}
@@ -441,8 +441,8 @@ class acp_database
 							closedir($dh);
 						}
 
-						$template->assign_vars(array(
-							'U_ACTION'	=> $this->u_action . '&amp;action=submit'
+						phpbb::$template->assign_vars(array(
+							'U_ACTION'	=> $this->u_action . '&amp;action=submit',
 						));
 					break;
 				}

@@ -114,20 +114,20 @@ switch ($mode)
 			login_box();
 		}
 
-		$template->set_filenames(array(
-			'body'		=> 'ucp_agreement.html')
-		);
+		phpbb::$template->set_filenames(array(
+			'body'		=> 'ucp_agreement.html',
+		));
 
 		// Disable online list
 		page_header(phpbb::$user->lang[$title], false);
 
-		$template->assign_vars(array(
+		phpbb::$template->assign_vars(array(
 			'S_AGREEMENT'			=> true,
 			'AGREEMENT_TITLE'		=> phpbb::$user->lang[$title],
 			'AGREEMENT_TEXT'		=> sprintf(phpbb::$user->lang[$message], phpbb::$config['sitename'], generate_board_url()),
 			'U_BACK'				=> append_sid('ucp', 'mode=login'),
-			'L_BACK'				=> phpbb::$user->lang['BACK_TO_LOGIN'])
-		);
+			'L_BACK'				=> phpbb::$user->lang['BACK_TO_LOGIN'],
+		));
 
 		page_footer();
 
@@ -314,14 +314,14 @@ function _display_friends()
 	{
 		$which = (time() - $update_time < $row['online_time'] && ($row['viewonline'] || phpbb::$acl->acl_get('u_viewonline'))) ? 'online' : 'offline';
 
-		$template->assign_block_vars("friends_{$which}", array(
+		phpbb::$template->assign_block_vars("friends_{$which}", array(
 			'USER_ID'		=> $row['user_id'],
 
 			'U_PROFILE'		=> get_username_string('profile', $row['user_id'], $row['username'], $row['user_colour']),
 			'USER_COLOUR'	=> get_username_string('colour', $row['user_id'], $row['username'], $row['user_colour']),
 			'USERNAME'		=> get_username_string('username', $row['user_id'], $row['username'], $row['user_colour']),
-			'USERNAME_FULL'	=> get_username_string('full', $row['user_id'], $row['username'], $row['user_colour']))
-		);
+			'USERNAME_FULL'	=> get_username_string('full', $row['user_id'], $row['username'], $row['user_colour']),
+		));
 	}
 	phpbb::$db->sql_freeresult($result);
 }
@@ -331,16 +331,16 @@ function _display_friends()
 */
 function _module_zebra($mode, &$module_row)
 {
-	$template->assign_var('S_ZEBRA_ENABLED', true);
+	phpbb::$template->assign_var('S_ZEBRA_ENABLED', true);
 
 	if ($mode == 'friends')
 	{
-		$template->assign_var('S_ZEBRA_FRIENDS_ENABLED', true);
+		phpbb::$template->assign_var('S_ZEBRA_FRIENDS_ENABLED', true);
 	}
 
 	if ($mode == 'foes')
 	{
-		$template->assign_var('S_ZEBRA_FOES_ENABLED', true);
+		phpbb::$template->assign_var('S_ZEBRA_FOES_ENABLED', true);
 	}
 }
 

@@ -72,30 +72,30 @@ abstract class phpbb_default_captcha implements phpbb_captcha_plugin
 
 	function get_template()
 	{
-		$template->set_filenames(array(
-			'captcha' => 'captcha_default.html')
-		);
+		phpbb::$template->set_filenames(array(
+			'captcha' => 'captcha_default.html',
+		));
 
-		$template->assign_vars(array(
+		phpbb::$template->assign_vars(array(
 			'CONFIRM_IMAGE'				=> append_sid('ucp', 'mode=confirm&amp;confirm_id=' . $this->confirm_id . '&amp;type=' . $this->type),
 			'CONFIRM_ID'				=> $this->confirm_id,
 		));
 
-		return $template->assign_display('captcha');
+		return phpbb::$template->assign_display('captcha');
 	}
 
 	function get_demo_template($id)
 	{
-		$template->set_filenames(array(
-			'captcha_demo' => 'captcha_default_acp_demo.html')
-		);
+		phpbb::$template->set_filenames(array(
+			'captcha_demo' => 'captcha_default_acp_demo.html',
+		));
 		// acp_captcha has a delivery function; let's use it
-		$template->assign_vars(array(
+		phpbb::$template->assign_vars(array(
 			'CONFIRM_IMAGE'		=> append_sid(PHPBB_ADMIN_PATH . 'index.' . PHP_EXT, 'captcha_demo=1&amp;mode=visual&amp;i=' . $id . '&amp;select_captcha=' . $this->get_class_name()),
 			'CONFIRM_ID'		=> $this->confirm_id,
 		));
 
-		return $template->assign_display('captcha_demo');
+		return phpbb::$template->assign_display('captcha_demo');
 	}
 
 	function get_hidden_fields()

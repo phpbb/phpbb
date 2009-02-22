@@ -92,9 +92,10 @@ class phpbb_recaptcha extends phpbb_default_captcha implements phpbb_captcha_plu
 			foreach ($captcha_vars as $captcha_var => $template_var)
 			{
 				$var = request_var($captcha_var, (isset(phpbb::$config[$captcha_var])) ? (string) phpbb::$config[$captcha_var] : '');
-				$template->assign_var($template_var, $var);
+				phpbb::$template->assign_var($template_var, $var);
 			}
-			$template->assign_vars(array(
+
+			phpbb::$template->assign_vars(array(
 				'CAPTCHA_PREVIEW'	=> $this->get_demo_template($id),
 				'CAPTCHA_NAME'		=> $this->get_class_name(),
 			));
@@ -117,18 +118,18 @@ class phpbb_recaptcha extends phpbb_default_captcha implements phpbb_captcha_plu
 
 	function get_template()
 	{
-		$template->set_filenames(array(
-			'captcha' => 'captcha_recaptcha.html')
-		);
+		phpbb::$template->set_filenames(array(
+			'captcha' => 'captcha_recaptcha.html',
+		));
 
-		$template->assign_vars(array(
+		phpbb::$template->assign_vars(array(
 			'RECAPTCHA_SERVER'			=> self::recaptcha_server,
 			'RECAPTCHA_PUBKEY'			=> isset(phpbb::$config['recaptcha_pubkey']) ? phpbb::$config['recaptcha_pubkey'] : '',
 			'RECAPTCHA_ERRORGET'		=> '',
 			'S_RECAPTCHA_AVAILABLE'		=> self::is_available(),
 		));
 
-		return $template->assign_display('captcha');
+		return phpbb::$template->assign_display('captcha');
 	}
 
 	function get_demo_template($id)

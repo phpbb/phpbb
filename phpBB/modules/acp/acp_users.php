@@ -59,10 +59,10 @@ class acp_users
 			$domain = gethostbyaddr($user_ip);
 			$ipwhois = user_ipwhois($user_ip);
 
-			$template->assign_vars(array(
+			phpbb::$template->assign_vars(array(
 				'MESSAGE_TITLE'		=> sprintf(phpbb::$user->lang['IP_WHOIS_FOR'], $domain),
-				'MESSAGE_TEXT'		=> nl2br($ipwhois))
-			);
+				'MESSAGE_TEXT'		=> nl2br($ipwhois),
+			));
 
 			return;
 		}
@@ -72,7 +72,7 @@ class acp_users
 		{
 			$this->page_title = 'SELECT_USER';
 
-			$template->assign_vars(array(
+			phpbb::$template->assign_vars(array(
 				'U_ACTION'			=> $this->u_action,
 				'ANONYMOUS_USER_ID'	=> ANONYMOUS,
 
@@ -143,13 +143,13 @@ class acp_users
 			$s_form_options .= '<option value="' . $module_mode . '"' . $selected . '>' . phpbb::$user->lang['ACP_USER_' . strtoupper($module_mode)] . '</option>';
 		}
 
-		$template->assign_vars(array(
+		phpbb::$template->assign_vars(array(
 			'U_BACK'			=> $this->u_action,
 			'U_MODE_SELECT'		=> append_sid(PHPBB_ADMIN_PATH . 'index.' . PHP_EXT, "i=$id&amp;u=$user_id"),
 			'U_ACTION'			=> $this->u_action . '&amp;u=' . $user_id,
 			'S_FORM_OPTIONS'	=> $s_form_options,
-			'MANAGED_USERNAME'	=> $user_row['username'])
-		);
+			'MANAGED_USERNAME'	=> $user_row['username'],
+		));
 
 		// Prevent normal users/admins change/view founders if they are not a founder by themselves
 		if (!phpbb::$user->is_founder && $user_row['user_type'] == phpbb::USER_FOUNDER)
@@ -509,12 +509,12 @@ class acp_users
 							{
 								$this->page_title = 'USER_ADMIN_MOVE_POSTS';
 
-								$template->assign_vars(array(
+								phpbb::$template->assign_vars(array(
 									'S_SELECT_FORUM'		=> true,
 									'U_ACTION'				=> $this->u_action . "&amp;action=$action&amp;u=$user_id",
 									'U_BACK'				=> $this->u_action . "&amp;u=$user_id",
-									'S_FORUM_OPTIONS'		=> make_forum_select(false, false, false, true))
-								);
+									'S_FORUM_OPTIONS'		=> make_forum_select(false, false, false, true),
+								));
 
 								return;
 							}
@@ -899,7 +899,7 @@ class acp_users
 				$user_row['posts_in_queue'] = (int) phpbb::$db->sql_fetchfield('posts_in_queue');
 				phpbb::$db->sql_freeresult($result);
 
-				$template->assign_vars(array(
+				phpbb::$template->assign_vars(array(
 					'L_NAME_CHARS_EXPLAIN'		=> sprintf(phpbb::$user->lang[phpbb::$config['allow_name_chars'] . '_EXPLAIN'], phpbb::$config['min_name_chars'], phpbb::$config['max_name_chars']),
 					'L_CHANGE_PASSWORD_EXPLAIN'	=> sprintf(phpbb::$user->lang[phpbb::$config['pass_complex'] . '_EXPLAIN'], phpbb::$config['min_pass_chars'], phpbb::$config['max_pass_chars']),
 					'L_POSTS_IN_QUEUE'			=> phpbb::$user->lang('NUM_POSTS_IN_QUEUE', $user_row['posts_in_queue']),
@@ -1009,7 +1009,7 @@ class acp_users
 				$log_count = 0;
 				view_log('user', $log_data, $log_count, phpbb::$config['topics_per_page'], $start, 0, 0, $user_id, $sql_where, $sql_sort);
 
-				$template->assign_vars(array(
+				phpbb::$template->assign_vars(array(
 					'S_FEEDBACK'	=> true,
 					'S_ON_PAGE'		=> on_page($log_count, phpbb::$config['topics_per_page'], $start),
 					'PAGINATION'	=> generate_pagination($this->u_action . "&amp;u=$user_id&amp;$u_sort_param", $log_count, phpbb::$config['topics_per_page'], $start, true),
@@ -1017,18 +1017,18 @@ class acp_users
 					'S_LIMIT_DAYS'	=> $s_limit_days,
 					'S_SORT_KEY'	=> $s_sort_key,
 					'S_SORT_DIR'	=> $s_sort_dir,
-					'S_CLEARLOGS'	=> phpbb::$acl->acl_get('a_clearlogs'))
-				);
+					'S_CLEARLOGS'	=> phpbb::$acl->acl_get('a_clearlogs'),
+				));
 
 				foreach ($log_data as $row)
 				{
-					$template->assign_block_vars('log', array(
+					phpbb::$template->assign_block_vars('log', array(
 						'USERNAME'		=> $row['username_full'],
 						'IP'			=> $row['ip'],
 						'DATE'			=> phpbb::$user->format_date($row['time']),
 						'ACTION'		=> nl2br($row['action']),
-						'ID'			=> $row['id'])
-					);
+						'ID'			=> $row['id'],
+					));
 				}
 
 			break;
@@ -1211,7 +1211,7 @@ class acp_users
 				}
 				unset($now);
 
-				$template->assign_vars(array(
+				phpbb::$template->assign_vars(array(
 					'ICQ'			=> $data['icq'],
 					'YIM'			=> $data['yim'],
 					'AIM'			=> $data['aim'],
@@ -1226,8 +1226,8 @@ class acp_users
 					'S_BIRTHDAY_MONTH_OPTIONS'	=> $s_birthday_month_options,
 					'S_BIRTHDAY_YEAR_OPTIONS'	=> $s_birthday_year_options,
 
-					'S_PROFILE'		=> true)
-				);
+					'S_PROFILE'		=> true,
+				));
 
 				// Get additional profile fields and assign them to the template block var 'profile_fields'
 				phpbb::$user->get_profile_fields($user_id);
@@ -1401,7 +1401,7 @@ class acp_users
 					${'s_sort_' . $sort_option . '_dir'} .= '</select>';
 				}
 
-				$template->assign_vars(array(
+				phpbb::$template->assign_vars(array(
 					'S_PREFS'			=> true,
 					'S_JABBER_DISABLED'	=> (phpbb::$config['jab_enable'] && $user_row['user_jabber'] && @extension_loaded('xml')) ? false : true,
 
@@ -1442,8 +1442,7 @@ class acp_users
 					'S_LANG_OPTIONS'	=> language_select($data['lang']),
 					'S_STYLE_OPTIONS'	=> style_select($data['style']),
 					'S_TZ_OPTIONS'		=> tz_select($data['tz'], true),
-					)
-				);
+				));
 
 			break;
 
@@ -1483,7 +1482,7 @@ class acp_users
 					avatar_gallery($category, $avatar_select, 4);
 				}
 
-				$template->assign_vars(array(
+				phpbb::$template->assign_vars(array(
 					'S_AVATAR'			=> true,
 					'S_CAN_UPLOAD'		=> ($can_upload && phpbb::$config['allow_avatar_upload']) ? true : false,
 					'S_ALLOW_REMOTE'	=> (phpbb::$config['allow_avatar_remote']) ? true : false,
@@ -1495,8 +1494,8 @@ class acp_users
 					'USER_AVATAR_WIDTH'		=> $user_row['user_avatar_width'],
 					'USER_AVATAR_HEIGHT'	=> $user_row['user_avatar_height'],
 
-					'L_AVATAR_EXPLAIN'	=> sprintf(phpbb::$user->lang['AVATAR_EXPLAIN'], phpbb::$config['avatar_max_width'], phpbb::$config['avatar_max_height'], round(phpbb::$config['avatar_filesize'] / 1024)))
-				);
+					'L_AVATAR_EXPLAIN'	=> sprintf(phpbb::$user->lang['AVATAR_EXPLAIN'], phpbb::$config['avatar_max_width'], phpbb::$config['avatar_max_height'], round(phpbb::$config['avatar_filesize'] / 1024)),
+				));
 
 			break;
 
@@ -1534,10 +1533,10 @@ class acp_users
 				}
 				phpbb::$db->sql_freeresult($result);
 
-				$template->assign_vars(array(
+				phpbb::$template->assign_vars(array(
 					'S_RANK'			=> true,
-					'S_RANK_OPTIONS'	=> $s_rank_options)
-				);
+					'S_RANK_OPTIONS'	=> $s_rank_options,
+				));
 
 			break;
 
@@ -1603,7 +1602,7 @@ class acp_users
 
 				decode_message($signature, $user_row['user_sig_bbcode_uid']);
 
-				$template->assign_vars(array(
+				phpbb::$template->assign_vars(array(
 					'S_SIGNATURE'		=> true,
 
 					'SIGNATURE'			=> $signature,
@@ -1625,8 +1624,8 @@ class acp_users
 					'S_SMILIES_ALLOWED'		=> phpbb::$config['allow_sig_smilies'],
 					'S_BBCODE_IMG'			=> (phpbb::$config['allow_sig_img']) ? true : false,
 					'S_BBCODE_FLASH'		=> (phpbb::$config['allow_sig_flash']) ? true : false,
-					'S_LINKS_ALLOWED'		=> (phpbb::$config['allow_sig_links']) ? true : false)
-				);
+					'S_LINKS_ALLOWED'		=> (phpbb::$config['allow_sig_links']) ? true : false,
+				));
 
 				// Assigning custom bbcodes
 				display_custom_bbcodes();
@@ -1752,7 +1751,7 @@ class acp_users
 						$view_topic = append_sid('viewtopic', "t={$row['topic_id']}&amp;p={$row['post_msg_id']}") . '#p' . $row['post_msg_id'];
 					}
 
-					$template->assign_block_vars('attach', array(
+					phpbb::$template->assign_block_vars('attach', array(
 						'REAL_FILENAME'		=> $row['real_filename'],
 						'COMMENT'			=> nl2br($row['attach_comment']),
 						'EXTENSION'			=> $row['extension'],
@@ -1768,19 +1767,19 @@ class acp_users
 						'S_IN_MESSAGE'		=> $row['in_message'],
 
 						'U_DOWNLOAD'		=> append_sid('download/file', 'mode=view&amp;id=' . $row['attach_id']),
-						'U_VIEW_TOPIC'		=> $view_topic)
-					);
+						'U_VIEW_TOPIC'		=> $view_topic,
+					));
 				}
 				phpbb::$db->sql_freeresult($result);
 
-				$template->assign_vars(array(
+				phpbb::$template->assign_vars(array(
 					'S_ATTACHMENTS'		=> true,
 					'S_ON_PAGE'			=> on_page($num_attachments, phpbb::$config['topics_per_page'], $start),
 					'S_SORT_KEY'		=> $s_sort_key,
 					'S_SORT_DIR'		=> $s_sort_dir,
 
-					'PAGINATION'		=> generate_pagination($this->u_action . "&amp;u=$user_id&amp;sk=$sort_key&amp;sd=$sort_dir", $num_attachments, phpbb::$config['topics_per_page'], $start, true))
-				);
+					'PAGINATION'		=> generate_pagination($this->u_action . "&amp;u=$user_id&amp;sk=$sort_key&amp;sd=$sort_dir", $num_attachments, phpbb::$config['topics_per_page'], $start, true),
+				));
 
 			break;
 
@@ -1935,15 +1934,15 @@ class acp_users
 				{
 					if ($current_type != $group_type)
 					{
-						$template->assign_block_vars('group', array(
+						phpbb::$template->assign_block_vars('group', array(
 							'S_NEW_GROUP_TYPE'		=> true,
-							'GROUP_TYPE'			=> phpbb::$user->lang['USER_GROUP_' . strtoupper($group_type)])
-						);
+							'GROUP_TYPE'			=> phpbb::$user->lang['USER_GROUP_' . strtoupper($group_type)],
+						));
 					}
 
 					foreach ($data_ary as $data)
 					{
-						$template->assign_block_vars('group', array(
+						phpbb::$template->assign_block_vars('group', array(
 							'U_EDIT_GROUP'		=> append_sid(PHPBB_ADMIN_PATH . 'index.' . PHP_EXT, "i=groups&amp;mode=manage&amp;action=edit&amp;u=$user_id&amp;g={$data['group_id']}&amp;back_link=acp_users_groups"),
 							'U_DEFAULT'			=> $this->u_action . "&amp;action=default&amp;u=$user_id&amp;g=" . $data['group_id'],
 							'U_DEMOTE_PROMOTE'	=> $this->u_action . '&amp;action=' . (($data['group_leader']) ? 'demote' : 'promote') . "&amp;u=$user_id&amp;g=" . $data['group_id'],
@@ -1954,15 +1953,14 @@ class acp_users
 
 							'S_NO_DEFAULT'		=> ($user_row['group_id'] != $data['group_id']) ? true : false,
 							'S_SPECIAL_GROUP'	=> ($group_type == 'special') ? true : false,
-							)
-						);
+						));
 					}
 				}
 
-				$template->assign_vars(array(
+				phpbb::$template->assign_vars(array(
 					'S_GROUPS'			=> true,
-					'S_GROUP_OPTIONS'	=> $s_group_options)
-				);
+					'S_GROUP_OPTIONS'	=> $s_group_options,
+				));
 
 			break;
 
@@ -2019,7 +2017,7 @@ class acp_users
 				$s_forum_options = '<option value="0"' . ((!$forum_id) ? ' selected="selected"' : '') . '>' . phpbb::$user->lang['VIEW_GLOBAL_PERMS'] . '</option>';
 				$s_forum_options .= make_forum_select($forum_id, false, true, false, false, false);
 
-				$template->assign_vars(array(
+				phpbb::$template->assign_vars(array(
 					'S_PERMISSIONS'				=> true,
 
 					'S_GLOBAL'					=> (!$forum_id) ? true : false,
@@ -2027,18 +2025,18 @@ class acp_users
 
 					'U_ACTION'					=> $this->u_action . '&amp;u=' . $user_id,
 					'U_USER_PERMISSIONS'		=> append_sid(PHPBB_ADMIN_PATH . 'index.' . PHP_EXT, 'i=permissions&amp;mode=setting_user_global&amp;user_id[]=' . $user_id),
-					'U_USER_FORUM_PERMISSIONS'	=> append_sid(PHPBB_ADMIN_PATH . 'index.' . PHP_EXT, 'i=permissions&amp;mode=setting_user_local&amp;user_id[]=' . $user_id))
-				);
+					'U_USER_FORUM_PERMISSIONS'	=> append_sid(PHPBB_ADMIN_PATH . 'index.' . PHP_EXT, 'i=permissions&amp;mode=setting_user_local&amp;user_id[]=' . $user_id),
+				));
 
 			break;
 
 		}
 
 		// Assign general variables
-		$template->assign_vars(array(
+		phpbb::$template->assign_vars(array(
 			'S_ERROR'			=> (sizeof($error)) ? true : false,
-			'ERROR_MSG'			=> (sizeof($error)) ? implode('<br />', $error) : '')
-		);
+			'ERROR_MSG'			=> (sizeof($error)) ? implode('<br />', $error) : '',
+		));
 	}
 
 	/**

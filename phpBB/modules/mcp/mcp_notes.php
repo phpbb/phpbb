@@ -45,7 +45,7 @@ class mcp_notes
 		switch ($mode)
 		{
 			case 'front':
-				$template->assign_vars(array(
+				phpbb::$template->assign_vars(array(
 					'U_FIND_USERNAME'	=> append_sid('memberlist', 'mode=searchuser&amp;form=mcp&amp;field=username&amp;select_single=true'),
 					'U_POST_ACTION'		=> append_sid('mcp', 'i=notes&amp;mode=user_notes'),
 
@@ -193,21 +193,21 @@ class mcp_notes
 
 		if ($log_count)
 		{
-			$template->assign_var('S_USER_NOTES', true);
+			phpbb::$template->assign_var('S_USER_NOTES', true);
 
 			foreach ($log_data as $row)
 			{
-				$template->assign_block_vars('usernotes', array(
+				phpbb::$template->assign_block_vars('usernotes', array(
 					'REPORT_BY'		=> $row['username_full'],
 					'REPORT_AT'		=> phpbb::$user->format_date($row['time']),
 					'ACTION'		=> $row['action'],
 					'IP'			=> $row['ip'],
-					'ID'			=> $row['id'])
-				);
+					'ID'			=> $row['id'],
+				));
 			}
 		}
 
-		$template->assign_vars(array(
+		phpbb::$template->assign_vars(array(
 			'U_POST_ACTION'			=> $this->u_action,
 			'S_CLEAR_ALLOWED'		=> (phpbb::$acl->acl_get('a_clearlogs')) ? true : false,
 			'S_SELECT_SORT_DIR'		=> $s_sort_dir,
@@ -229,8 +229,7 @@ class mcp_notes
 
 			'AVATAR_IMG'		=> $avatar_img,
 			'RANK_IMG'			=> $rank_img,
-			)
-		);
+		));
 	}
 
 }

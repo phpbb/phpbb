@@ -154,7 +154,7 @@ class acp_icons
 							}
 							$smiley_options .= '<option value="' . $row['smiley_url'] . '"' . (($selected) ? ' selected="selected"' : '') . '>' . $row['smiley_url'] . '</option>';
 
-							$template->assign_block_vars('smile', array(
+							phpbb::$template->assign_block_vars('smile', array(
 								'SMILEY_URL'	=> addslashes($row['smiley_url']),
 								'CODE'			=> addslashes($row['code']),
 								'EMOTION'		=> addslashes($row['emotion']),
@@ -232,7 +232,7 @@ class acp_icons
 				$colspan += ($icon_id) ? 1 : 0;
 				$colspan += ($action == 'add') ? 2 : 0;
 
-				$template->assign_vars(array(
+				phpbb::$template->assign_vars(array(
 					'S_EDIT'		=> true,
 					'S_SMILIES'		=> ($mode == 'smilies') ? true : false,
 					'S_ADD'			=> ($action == 'add') ? true : false,
@@ -260,7 +260,7 @@ class acp_icons
 
 				foreach ($data as $img => $img_row)
 				{
-					$template->assign_block_vars('items', array(
+					phpbb::$template->assign_block_vars('items', array(
 						'IMG'		=> $img,
 						'A_IMG'		=> addslashes($img),
 						'IMG_SRC'	=> PHPBB_ROOT_PATH . $img_path . '/' . $img,
@@ -279,7 +279,7 @@ class acp_icons
 				// Ok, another row for adding an addition code for a pre-existing image...
 				if ($action == 'add' && $mode == 'smilies' && sizeof($smilies))
 				{
-					$template->assign_vars(array(
+					phpbb::$template->assign_vars(array(
 						'S_ADD_CODE'		=> true,
 
 						'S_IMG_OPTIONS'		=> $smiley_options,
@@ -619,7 +619,7 @@ class acp_icons
 						$pak_options .= '<option value="' . $pak . '">' . htmlspecialchars($pak) . '</option>';
 					}
 
-					$template->assign_vars(array(
+					phpbb::$template->assign_vars(array(
 						'S_CHOOSE_PAK'		=> true,
 						'S_PAK_OPTIONS'		=> $pak_options,
 
@@ -632,8 +632,7 @@ class acp_icons
 
 						'U_BACK'		=> $this->u_action,
 						'U_ACTION'		=> $this->u_action . '&amp;action=import',
-						)
-					);
+					));
 				}
 			break;
 
@@ -642,13 +641,12 @@ class acp_icons
 				$this->page_title = 'EXPORT_' . $lang;
 				$this->tpl_name = 'message_body';
 
-				$template->assign_vars(array(
+				phpbb::$template->assign_vars(array(
 					'MESSAGE_TITLE'		=> phpbb::$user->lang['EXPORT_' . $lang],
 					'MESSAGE_TEXT'		=> sprintf(phpbb::$user->lang['EXPORT_' . $lang . '_EXPLAIN'], '<a href="' . $this->u_action . '&amp;action=send">', '</a>'),
 
 					'S_USER_NOTICE'		=> true,
-					)
-				);
+				));
 
 				return;
 
@@ -808,7 +806,7 @@ class acp_icons
 		}
 		phpbb::$db->sql_freeresult($result);
 
-		$template->assign_vars(array(
+		phpbb::$template->assign_vars(array(
 			'L_TITLE'			=> phpbb::$user->lang['ACP_' . $lang],
 			'L_EXPLAIN'			=> phpbb::$user->lang['ACP_' . $lang . '_EXPLAIN'],
 			'L_IMPORT'			=> phpbb::$user->lang['IMPORT_' . $lang],
@@ -825,8 +823,7 @@ class acp_icons
 			'U_ACTION'			=> $this->u_action,
 			'U_IMPORT'			=> $this->u_action . '&amp;action=import',
 			'U_EXPORT'			=> $this->u_action . '&amp;action=export',
-			)
-		);
+		));
 
 		$spacer = false;
 
@@ -839,7 +836,7 @@ class acp_icons
 		{
 			$alt_text = ($mode == 'smilies') ? $row['code'] : '';
 
-			$template->assign_block_vars('items', array(
+			phpbb::$template->assign_block_vars('items', array(
 				'S_SPACER'		=> (!$spacer && !$row['display_on_posting']) ? true : false,
 				'ALT_TEXT'		=> $alt_text,
 				'IMG_SRC'		=> PHPBB_ROOT_PATH . $img_path . '/' . $row[$fields . '_url'],
@@ -850,8 +847,8 @@ class acp_icons
 				'U_EDIT'		=> $this->u_action . '&amp;action=edit&amp;id=' . $row[$fields . '_id'],
 				'U_DELETE'		=> $this->u_action . '&amp;action=delete&amp;id=' . $row[$fields . '_id'],
 				'U_MOVE_UP'		=> $this->u_action . '&amp;action=move_up&amp;id=' . $row[$fields . '_id'],
-				'U_MOVE_DOWN'	=> $this->u_action . '&amp;action=move_down&amp;id=' . $row[$fields . '_id'])
-			);
+				'U_MOVE_DOWN'	=> $this->u_action . '&amp;action=move_down&amp;id=' . $row[$fields . '_id'],
+			));
 
 			if (!$spacer && !$row['display_on_posting'])
 			{

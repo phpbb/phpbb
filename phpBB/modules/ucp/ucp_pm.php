@@ -55,7 +55,7 @@ class ucp_pm
 		}
 
 		phpbb::$user->add_lang('posting');
-		$template->assign_var('S_PRIVMSGS', true);
+		phpbb::$template->assign_var('S_PRIVMSGS', true);
 
 		// Folder directly specified?
 		$folder_specified = request_var('folder', '');
@@ -98,13 +98,13 @@ class ucp_pm
 					}
 				}
 
-				$template->assign_vars(array(
+				phpbb::$template->assign_vars(array(
 					'MESSAGE'			=> $l_new_message,
 					'S_NOT_LOGGED_IN'	=> phpbb::$user->is_guest,
 					'CLICK_TO_VIEW'		=> sprintf(phpbb::$user->lang['CLICK_VIEW_PRIVMSG'], '<a href="' . append_sid('ucp', 'i=pm&amp;folder=inbox') . '" onclick="jump_to_inbox(this.href); return false;">', '</a>'),
 					'U_INBOX'			=> append_sid('ucp', 'i=pm&amp;folder=inbox'),
-					'UA_INBOX'			=> append_sid('ucp', 'i=pm&folder=inbox', false))
-				);
+					'UA_INBOX'			=> append_sid('ucp', 'i=pm&folder=inbox', false),
+				));
 
 				$tpl_file = 'ucp_pm_popup';
 			break;
@@ -330,7 +330,7 @@ class ucp_pm
 				// Header for message view - folder and so on
 				$folder_status = get_folder_status($folder_id, $folder);
 
-				$template->assign_vars(array(
+				phpbb::$template->assign_vars(array(
 					'CUR_FOLDER_ID'			=> $folder_id,
 					'CUR_FOLDER_NAME'		=> $folder_status['folder_name'],
 					'NUM_NOT_MOVED'			=> $num_not_moved,
@@ -358,8 +358,8 @@ class ucp_pm
 					'FOLDER_MAX_MESSAGES'		=> $folder_status['max'],
 					'FOLDER_CUR_MESSAGES'		=> $folder_status['cur'],
 					'FOLDER_REMAINING_MESSAGES'	=> $folder_status['remaining'],
-					'FOLDER_PERCENT'			=> $folder_status['percent'])
-				);
+					'FOLDER_PERCENT'			=> $folder_status['percent'],
+				));
 
 				if ($action == 'view_folder')
 				{
@@ -370,10 +370,10 @@ class ucp_pm
 				}
 				else if ($action == 'view_message')
 				{
-					$template->assign_vars(array(
+					phpbb::$template->assign_vars(array(
 						'S_VIEW_MESSAGE'	=> true,
-						'MSG_ID'			=> $msg_id)
-					);
+						'MSG_ID'			=> $msg_id,
+					));
 
 					if (!$msg_id)
 					{
@@ -393,10 +393,10 @@ class ucp_pm
 			break;
 		}
 
-		$template->assign_vars(array(
+		phpbb::$template->assign_vars(array(
 			'L_TITLE'			=> phpbb::$user->lang['UCP_PM_' . strtoupper($mode)],
-			'S_UCP_ACTION'		=> $this->u_action . ((isset($action)) ? "&amp;action=$action" : ''))
-		);
+			'S_UCP_ACTION'		=> $this->u_action . ((isset($action)) ? "&amp;action=$action" : ''),
+		));
 
 		// Set desired template
 		$this->tpl_name = $tpl_file;

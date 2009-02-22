@@ -60,7 +60,7 @@ class acp_update
 		$up_to_date_automatic = (version_compare(str_replace('rc', 'RC', strtolower($current_version)), str_replace('rc', 'RC', strtolower($latest_version)), '<')) ? false : true;
 		$up_to_date = (version_compare(str_replace('rc', 'RC', strtolower(phpbb::$config['version'])), str_replace('rc', 'RC', strtolower($latest_version)), '<')) ? false : true;
 
-		$template->assign_vars(array(
+		phpbb::$template->assign_vars(array(
 			'S_UP_TO_DATE'		=> $up_to_date,
 			'S_UP_TO_DATE_AUTO'	=> $up_to_date_automatic,
 			'S_VERSION_CHECK'	=> true,

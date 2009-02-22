@@ -558,7 +558,7 @@ $server_path = (!$view) ? PHPBB_ROOT_PATH : generate_board_url() . '/';
 $topic_data['topic_title'] = censor_text($topic_data['topic_title']);
 
 // Send vars to template
-$template->assign_vars(array(
+phpbb::$template->assign_vars(array(
 	'FORUM_ID' 		=> $forum_id,
 	'FORUM_NAME' 	=> $topic_data['forum_name'],
 	'FORUM_DESC'	=> generate_text_for_display($topic_data['forum_desc'], $topic_data['forum_desc_uid'], $topic_data['forum_desc_bitfield'], $topic_data['forum_desc_options']),
@@ -632,8 +632,8 @@ $template->assign_vars(array(
 
 	'U_POST_NEW_TOPIC' 		=> (phpbb::$acl->acl_get('f_post', $forum_id) || phpbb::$user->is_guest) ? append_sid('posting', "mode=post&amp;f=$forum_id") : '',
 	'U_POST_REPLY_TOPIC' 	=> (phpbb::$acl->acl_get('f_reply', $forum_id) || phpbb::$user->is_guest) ? append_sid('posting', "mode=reply&amp;f=$forum_id&amp;t=$topic_id") : '',
-	'U_BUMP_TOPIC'			=> (bump_topic_allowed($forum_id, $topic_data['topic_bumped'], $topic_data['topic_last_post_time'], $topic_data['topic_poster'], $topic_data['topic_last_poster_id'])) ? append_sid('posting', "mode=bump&amp;f=$forum_id&amp;t=$topic_id&amp;hash=" . generate_link_hash("topic_$topic_id")) : '')
-);
+	'U_BUMP_TOPIC'			=> (bump_topic_allowed($forum_id, $topic_data['topic_bumped'], $topic_data['topic_last_post_time'], $topic_data['topic_poster'], $topic_data['topic_last_poster_id'])) ? append_sid('posting', "mode=bump&amp;f=$forum_id&amp;t=$topic_id&amp;hash=" . generate_link_hash("topic_$topic_id")) : '',
+));
 
 // Does this topic contain a poll?
 if (!empty($topic_data['poll_start']))
@@ -822,20 +822,20 @@ if (!empty($topic_data['poll_start']))
 		$option_pct = ($poll_total > 0) ? $poll_option['poll_option_total'] / $poll_total : 0;
 		$option_pct_txt = sprintf("%.1d%%", round($option_pct * 100));
 
-		$template->assign_block_vars('poll_option', array(
+		phpbb::$template->assign_block_vars('poll_option', array(
 			'POLL_OPTION_ID' 		=> $poll_option['poll_option_id'],
 			'POLL_OPTION_CAPTION' 	=> $poll_option['poll_option_text'],
 			'POLL_OPTION_RESULT' 	=> $poll_option['poll_option_total'],
 			'POLL_OPTION_PERCENT' 	=> $option_pct_txt,
 			'POLL_OPTION_PCT'		=> round($option_pct * 100),
 			'POLL_OPTION_IMG' 		=> phpbb::$user->img('poll_center', $option_pct_txt, '', round($option_pct * 250)),
-			'POLL_OPTION_VOTED'		=> (in_array($poll_option['poll_option_id'], $cur_voted_id)) ? true : false)
-		);
+			'POLL_OPTION_VOTED'		=> (in_array($poll_option['poll_option_id'], $cur_voted_id)) ? true : false,
+		));
 	}
 
 	$poll_end = $topic_data['poll_length'] + $topic_data['poll_start'];
 
-	$template->assign_vars(array(
+	phpbb::$template->assign_vars(array(
 		'POLL_QUESTION'		=> $topic_data['poll_title'],
 		'TOTAL_VOTES' 		=> $poll_total,
 		'POLL_LEFT_CAP_IMG'	=> phpbb::$user->img('poll_left'),
@@ -850,8 +850,8 @@ if (!empty($topic_data['poll_start']))
 		'S_IS_MULTI_CHOICE'	=> ($topic_data['poll_max_options'] > 1) ? true : false,
 		'S_POLL_ACTION'		=> $viewtopic_url,
 
-		'U_VIEW_RESULTS'	=> $viewtopic_url . '&amp;view=viewpoll')
-	);
+		'U_VIEW_RESULTS'	=> $viewtopic_url . '&amp;view=viewpoll',
+	));
 
 	unset($poll_end, $poll_info, $voted_id);
 }
@@ -1250,9 +1250,9 @@ if ($bbcode_bitfield !== '')
 $i_total = sizeof($rowset) - 1;
 $prev_post_id = '';
 
-$template->assign_vars(array(
-	'S_NUM_POSTS' => sizeof($post_list))
-);
+phpbb::$template->assign_vars(array(
+	'S_NUM_POSTS' => sizeof($post_list),
+));
 
 // Output the posts
 $first_unread = $post_unread = false;
@@ -1486,13 +1486,13 @@ for ($i = 0, $end = sizeof($post_list); $i < $end; ++$i)
 	}
 
 	// Dump vars into template
-	$template->assign_block_vars('postrow', $postrow);
+	phpbb::$template->assign_block_vars('postrow', $postrow);
 
 	if (!empty($cp_row['blockrow']))
 	{
 		foreach ($cp_row['blockrow'] as $field_data)
 		{
-			$template->assign_block_vars('postrow.custom_fields', $field_data);
+			phpbb::$template->assign_block_vars('postrow.custom_fields', $field_data);
 		}
 	}
 
@@ -1501,9 +1501,9 @@ for ($i = 0, $end = sizeof($post_list); $i < $end; ++$i)
 	{
 		foreach ($attachments[$row['post_id']] as $attachment)
 		{
-			$template->assign_block_vars('postrow.attachment', array(
-				'DISPLAY_ATTACHMENT'	=> $attachment)
-			);
+			phpbb::$template->assign_block_vars('postrow.attachment', array(
+				'DISPLAY_ATTACHMENT'	=> $attachment,
+			));
 		}
 	}
 
@@ -1550,13 +1550,13 @@ if ($all_marked_read)
 {
 	if ($post_unread)
 	{
-		$template->assign_vars(array(
+		phpbb::$template->assign_vars(array(
 			'U_VIEW_UNREAD_POST'	=> '#unread',
 		));
 	}
 	else if (isset($topic_tracking_info[$topic_id]) && $topic_data['topic_last_post_time'] > $topic_tracking_info[$topic_id])
 	{
-		$template->assign_vars(array(
+		phpbb::$template->assign_vars(array(
 			'U_VIEW_UNREAD_POST'	=> append_sid('viewtopic', "f=$forum_id&amp;t=$topic_id&amp;view=unread") . '#unread',
 		));
 	}
@@ -1568,13 +1568,13 @@ else if (!$all_marked_read)
 	// What can happen is that we are at the last displayed page. If so, we also display the #unread link based in $post_unread
 	if ($last_page && $post_unread)
 	{
-		$template->assign_vars(array(
+		phpbb::$template->assign_vars(array(
 			'U_VIEW_UNREAD_POST'	=> '#unread',
 		));
 	}
 	else if (!$last_page)
 	{
-		$template->assign_vars(array(
+		phpbb::$template->assign_vars(array(
 			'U_VIEW_UNREAD_POST'	=> append_sid('viewtopic', "f=$forum_id&amp;t=$topic_id&amp;view=unread") . '#unread',
 		));
 	}
@@ -1594,9 +1594,9 @@ if (empty(phpbb_request::variable('f', '')))
 // Output the page
 page_header(phpbb::$user->lang['VIEW_TOPIC'] . ' - ' . $topic_data['topic_title']);
 
-$template->set_filenames(array(
-	'body' => ($view == 'print') ? 'viewtopic_print.html' : 'viewtopic_body.html')
-);
+phpbb::$template->set_filenames(array(
+	'body' => ($view == 'print') ? 'viewtopic_print.html' : 'viewtopic_body.html',
+));
 make_jumpbox(append_sid('viewforum'), $forum_id);
 
 page_footer();

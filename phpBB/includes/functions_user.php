@@ -1980,30 +1980,30 @@ function avatar_gallery($category, $avatar_select, $items_per_column, $block_var
 		$s_category_options .= '<option value="' . $cat . '"' . (($cat == $category) ? ' selected="selected"' : '') . '>' . $cat . '</option>';
 	}
 
-	$template->assign_vars(array(
+	phpbb::$template->assign_vars(array(
 		'S_AVATARS_ENABLED'		=> true,
 		'S_IN_AVATAR_GALLERY'	=> true,
-		'S_CAT_OPTIONS'			=> $s_category_options)
-	);
+		'S_CAT_OPTIONS'			=> $s_category_options,
+	));
 
 	$avatar_list = (isset($avatar_list[$category])) ? $avatar_list[$category] : array();
 
 	foreach ($avatar_list as $avatar_row_ary)
 	{
-		$template->assign_block_vars($block_var, array());
+		phpbb::$template->assign_block_vars($block_var, array());
 
 		foreach ($avatar_row_ary as $avatar_col_ary)
 		{
-			$template->assign_block_vars($block_var . '.avatar_column', array(
+			phpbb::$template->assign_block_vars($block_var . '.avatar_column', array(
 				'AVATAR_IMAGE'	=> PHPBB_ROOT_PATH . phpbb::$config['avatar_gallery_path'] . '/' . $avatar_col_ary['file'],
 				'AVATAR_NAME'	=> $avatar_col_ary['name'],
-				'AVATAR_FILE'	=> $avatar_col_ary['filename'])
-			);
+				'AVATAR_FILE'	=> $avatar_col_ary['filename'],
+			));
 
-			$template->assign_block_vars($block_var . '.avatar_option_column', array(
+			phpbb::$template->assign_block_vars($block_var . '.avatar_option_column', array(
 				'AVATAR_IMAGE'	=> PHPBB_ROOT_PATH . phpbb::$config['avatar_gallery_path'] . '/' . $avatar_col_ary['file'],
-				'S_OPTIONS_AVATAR'	=> $avatar_col_ary['filename'])
-			);
+				'S_OPTIONS_AVATAR'	=> $avatar_col_ary['filename'],
+			));
 		}
 	}
 

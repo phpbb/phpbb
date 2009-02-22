@@ -514,15 +514,15 @@ class acp_board
 		$this->tpl_name = 'acp_board';
 		$this->page_title = $display_vars['title'];
 
-		$template->assign_vars(array(
+		phpbb::$template->assign_vars(array(
 			'L_TITLE'			=> phpbb::$user->lang[$display_vars['title']],
 			'L_TITLE_EXPLAIN'	=> phpbb::$user->lang[$display_vars['title'] . '_EXPLAIN'],
 
 			'S_ERROR'			=> (sizeof($error)) ? true : false,
 			'ERROR_MSG'			=> implode('<br />', $error),
 
-			'U_ACTION'			=> $this->u_action)
-		);
+			'U_ACTION'			=> $this->u_action,
+		));
 
 		// Output relevant page
 		foreach ($display_vars['vars'] as $config_key => $vars)
@@ -534,10 +534,10 @@ class acp_board
 
 			if (strpos($config_key, 'legend') !== false)
 			{
-				$template->assign_block_vars('options', array(
+				phpbb::$template->assign_block_vars('options', array(
 					'S_LEGEND'		=> true,
-					'LEGEND'		=> (isset(phpbb::$user->lang[$vars])) ? phpbb::$user->lang[$vars] : $vars)
-				);
+					'LEGEND'		=> (isset(phpbb::$user->lang[$vars])) ? phpbb::$user->lang[$vars] : $vars,
+				));
 
 				continue;
 			}
@@ -561,21 +561,20 @@ class acp_board
 				continue;
 			}
 
-			$template->assign_block_vars('options', array(
+			phpbb::$template->assign_block_vars('options', array(
 				'KEY'			=> $config_key,
 				'TITLE'			=> (isset(phpbb::$user->lang[$vars['lang']])) ? phpbb::$user->lang[$vars['lang']] : $vars['lang'],
 				'S_EXPLAIN'		=> $vars['explain'],
 				'TITLE_EXPLAIN'	=> $l_explain,
 				'CONTENT'		=> $content,
-				)
-			);
+			));
 
 			unset($display_vars['vars'][$config_key]);
 		}
 
 		if ($mode == 'auth')
 		{
-			$template->assign_var('S_AUTH', true);
+			phpbb::$template->assign_var('S_AUTH', true);
 
 			foreach ($auth_plugins as $method)
 			{
@@ -588,9 +587,9 @@ class acp_board
 
 						if ($fields['tpl'])
 						{
-							$template->assign_block_vars('auth_tpl', array(
-								'TPL'	=> $fields['tpl'])
-							);
+							phpbb::$template->assign_block_vars('auth_tpl', array(
+								'TPL'	=> $fields['tpl'],
+							));
 						}
 						unset($fields);
 					}

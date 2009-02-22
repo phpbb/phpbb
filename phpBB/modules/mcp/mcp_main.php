@@ -490,11 +490,11 @@ function change_topic_type($action, $topic_ids)
 
 		if ($global_involved)
 		{
-			$template->assign_vars(array(
+			phpbb::$template->assign_vars(array(
 				'S_FORUM_SELECT'		=> make_forum_select(request_var('f', $forum_id), false, false, true, true),
 				'S_CAN_LEAVE_SHADOW'	=> false,
-				'ADDITIONAL_MSG'		=> (sizeof($topic_ids) == 1) ? phpbb::$user->lang['SELECT_FORUM_GLOBAL_ANNOUNCEMENT'] : phpbb::$user->lang['SELECT_FORUM_GLOBAL_ANNOUNCEMENTS'])
-			);
+				'ADDITIONAL_MSG'		=> (sizeof($topic_ids) == 1) ? phpbb::$user->lang['SELECT_FORUM_GLOBAL_ANNOUNCEMENT'] : phpbb::$user->lang['SELECT_FORUM_GLOBAL_ANNOUNCEMENTS'],
+			));
 
 			confirm_box(false, $l_new_type, build_hidden_fields($s_hidden_fields), 'mcp_move.html');
 		}
@@ -705,11 +705,11 @@ function mcp_move_topic($topic_ids)
 	}
 	else
 	{
-		$template->assign_vars(array(
+		phpbb::$template->assign_vars(array(
 			'S_FORUM_SELECT'		=> make_forum_select($to_forum_id, $forum_id, false, true, true, true),
 			'S_CAN_LEAVE_SHADOW'	=> true,
-			'ADDITIONAL_MSG'		=> $additional_msg)
-		);
+			'ADDITIONAL_MSG'		=> $additional_msg,
+		));
 
 		confirm_box(false, 'MOVE_TOPIC' . ((sizeof($topic_ids) == 1) ? '' : 'S'), $s_hidden_fields, 'mcp_move.html');
 	}
@@ -1172,11 +1172,11 @@ function mcp_fork_topic($topic_ids)
 	}
 	else
 	{
-		$template->assign_vars(array(
+		phpbb::$template->assign_vars(array(
 			'S_FORUM_SELECT'		=> make_forum_select($to_forum_id, false, false, true, true, true),
 			'S_CAN_LEAVE_SHADOW'	=> false,
-			'ADDITIONAL_MSG'		=> $additional_msg)
-		);
+			'ADDITIONAL_MSG'		=> $additional_msg,
+		));
 
 		confirm_box(false, 'FORK_TOPIC' . ((sizeof($topic_ids) == 1) ? '' : 'S'), $s_hidden_fields, 'mcp_move.html');
 	}

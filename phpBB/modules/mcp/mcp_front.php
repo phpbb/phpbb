@@ -32,7 +32,7 @@ function mcp_front_view($id, $mode, $action)
 
 		$forum_id = request_var('f', 0);
 
-		$template->assign_var('S_SHOW_UNAPPROVED', (!empty($forum_list)) ? true : false);
+		phpbb::$template->assign_var('S_SHOW_UNAPPROVED', (!empty($forum_list)) ? true : false);
 
 		if (!empty($forum_list))
 		{
@@ -96,7 +96,7 @@ function mcp_front_view($id, $mode, $action)
 						$row['forum_id'] = $global_id;
 					}
 
-					$template->assign_block_vars('unapproved', array(
+					phpbb::$template->assign_block_vars('unapproved', array(
 						'U_POST_DETAILS'	=> append_sid('mcp', 'i=queue&amp;mode=approve_details&amp;f=' . $row['forum_id'] . '&amp;p=' . $row['post_id']),
 						'U_MCP_FORUM'		=> (!$global_topic) ? append_sid('mcp', 'i=main&amp;mode=forum_view&amp;f=' . $row['forum_id']) : '',
 						'U_MCP_TOPIC'		=> append_sid('mcp', 'i=main&amp;mode=topic_view&amp;f=' . $row['forum_id'] . '&amp;t=' . $row['topic_id']),
@@ -112,29 +112,29 @@ function mcp_front_view($id, $mode, $action)
 						'POST_ID'		=> $row['post_id'],
 						'TOPIC_TITLE'	=> $row['topic_title'],
 						'SUBJECT'		=> ($row['post_subject']) ? $row['post_subject'] : phpbb::$user->lang['NO_SUBJECT'],
-						'POST_TIME'		=> phpbb::$user->format_date($row['post_time']))
-					);
+						'POST_TIME'		=> phpbb::$user->format_date($row['post_time']),
+					));
 				}
 				phpbb::$db->sql_freeresult($result);
 			}
 
-			$template->assign_vars(array(
+			phpbb::$template->assign_vars(array(
 				'S_MCP_QUEUE_ACTION'	=> append_sid('mcp', 'i=queue'),
 			));
 
 			if ($total == 0)
 			{
-				$template->assign_vars(array(
+				phpbb::$template->assign_vars(array(
 					'L_UNAPPROVED_TOTAL'		=> phpbb::$user->lang['UNAPPROVED_POSTS_ZERO_TOTAL'],
-					'S_HAS_UNAPPROVED_POSTS'	=> false)
-				);
+					'S_HAS_UNAPPROVED_POSTS'	=> false,
+				));
 			}
 			else
 			{
-				$template->assign_vars(array(
+				phpbb::$template->assign_vars(array(
 					'L_UNAPPROVED_TOTAL'		=> ($total == 1) ? phpbb::$user->lang['UNAPPROVED_POST_TOTAL'] : sprintf(phpbb::$user->lang['UNAPPROVED_POSTS_TOTAL'], $total),
-					'S_HAS_UNAPPROVED_POSTS'	=> true)
-				);
+					'S_HAS_UNAPPROVED_POSTS'	=> true,
+				));
 			}
 		}
 	}
@@ -144,7 +144,7 @@ function mcp_front_view($id, $mode, $action)
 	{
 		$forum_list = array_values(array_intersect(get_forum_list('f_read'), get_forum_list('m_report')));
 
-		$template->assign_var('S_SHOW_REPORTS', (!empty($forum_list)) ? true : false);
+		phpbb::$template->assign_var('S_SHOW_REPORTS', (!empty($forum_list)) ? true : false);
 
 		if (!empty($forum_list))
 		{
@@ -199,7 +199,7 @@ function mcp_front_view($id, $mode, $action)
 						$row['forum_id'] = $global_id;
 					}
 
-					$template->assign_block_vars('report', array(
+					phpbb::$template->assign_block_vars('report', array(
 						'U_POST_DETAILS'	=> append_sid('mcp', 'f=' . $row['forum_id'] . '&amp;p=' . $row['post_id'] . "&amp;i=reports&amp;mode=report_details"),
 						'U_MCP_FORUM'		=> (!$global_topic) ? append_sid('mcp', 'f=' . $row['forum_id'] . "&amp;i=$id&amp;mode=forum_view") : '',
 						'U_MCP_TOPIC'		=> append_sid('mcp', 'f=' . $row['forum_id'] . '&amp;t=' . $row['topic_id'] . "&amp;i=$id&amp;mode=topic_view"),
@@ -227,17 +227,17 @@ function mcp_front_view($id, $mode, $action)
 
 			if ($total == 0)
 			{
-				$template->assign_vars(array(
+				phpbb::$template->assign_vars(array(
 					'L_REPORTS_TOTAL'	=>	phpbb::$user->lang['REPORTS_ZERO_TOTAL'],
-					'S_HAS_REPORTS'		=>	false)
-				);
+					'S_HAS_REPORTS'		=>	false,
+				));
 			}
 			else
 			{
-				$template->assign_vars(array(
+				phpbb::$template->assign_vars(array(
 					'L_REPORTS_TOTAL'	=> ($total == 1) ? phpbb::$user->lang['REPORT_TOTAL'] : sprintf(phpbb::$user->lang['REPORTS_TOTAL'], $total),
-					'S_HAS_REPORTS'		=> true)
-				);
+					'S_HAS_REPORTS'		=> true,
+				));
 			}
 		}
 	}
@@ -258,24 +258,24 @@ function mcp_front_view($id, $mode, $action)
 
 			foreach ($log as $row)
 			{
-				$template->assign_block_vars('log', array(
+				phpbb::$template->assign_block_vars('log', array(
 					'USERNAME'		=> $row['username_full'],
 					'IP'			=> $row['ip'],
 					'TIME'			=> phpbb::$user->format_date($row['time']),
 					'ACTION'		=> $row['action'],
 					'U_VIEW_TOPIC'	=> (!empty($row['viewtopic'])) ? $row['viewtopic'] : '',
-					'U_VIEWLOGS'	=> (!empty($row['viewlogs'])) ? $row['viewlogs'] : '')
-				);
+					'U_VIEWLOGS'	=> (!empty($row['viewlogs'])) ? $row['viewlogs'] : '',
+				));
 			}
 		}
 
-		$template->assign_vars(array(
+		phpbb::$template->assign_vars(array(
 			'S_SHOW_LOGS'	=> (!empty($forum_list)) ? true : false,
-			'S_HAS_LOGS'	=> (!empty($log)) ? true : false)
-		);
+			'S_HAS_LOGS'	=> (!empty($log)) ? true : false,
+		));
 	}
 
-	$template->assign_var('S_MCP_ACTION', append_sid('mcp'));
+	phpbb::$template->assign_var('S_MCP_ACTION', append_sid('mcp'));
 	make_jumpbox(append_sid('mcp', 'i=main&amp;mode=forum_view'), 0, false, 'm_', true);
 }
 

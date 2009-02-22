@@ -86,9 +86,10 @@ class phpbb_captcha_gd extends phpbb_default_captcha implements phpbb_captcha_pl
 			foreach ($captcha_vars as $captcha_var => $template_var)
 			{
 				$var = request_var($captcha_var, (int) phpbb::$config[$captcha_var]);
-				$template->assign_var($template_var, $var);
+				phpbb::$template->assign_var($template_var, $var);
 			}
-			$template->assign_vars(array(
+
+			phpbb::$template->assign_vars(array(
 				'CAPTCHA_PREVIEW'	=> $this->get_demo_template($id),
 				'CAPTCHA_NAME'		=> $this->get_class_name(),
 			));

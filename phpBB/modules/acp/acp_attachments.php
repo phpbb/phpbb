@@ -66,11 +66,11 @@ class acp_attachments
 		$this->tpl_name = 'acp_attachments';
 		$this->page_title = $l_title;
 
-		$template->assign_vars(array(
+		phpbb::$template->assign_vars(array(
 			'L_TITLE'			=> phpbb::$user->lang[$l_title],
 			'L_TITLE_EXPLAIN'	=> phpbb::$user->lang[$l_title . '_EXPLAIN'],
-			'U_ACTION'			=> $this->u_action)
-		);
+			'U_ACTION'			=> $this->u_action,
+		));
 
 		switch ($mode)
 		{
@@ -175,7 +175,7 @@ class acp_attachments
 					}
 				}
 
-				$template->assign_var('S_ATTACHMENT_SETTINGS', true);
+				phpbb::$template->assign_var('S_ATTACHMENT_SETTINGS', true);
 
 				if ($action == 'imgmagick')
 				{
@@ -204,10 +204,10 @@ class acp_attachments
 					$this->new_config['img_create_thumbnail'] = 0;
 				}
 
-				$template->assign_vars(array(
+				phpbb::$template->assign_vars(array(
 					'U_SEARCH_IMAGICK'		=> $this->u_action . '&amp;action=imgmagick',
-					'S_THUMBNAIL_SUPPORT'	=> (!$this->new_config['img_imagick'] && (!isset($supported_types['format']) || !sizeof($supported_types['format']))) ? false : true)
-				);
+					'S_THUMBNAIL_SUPPORT'	=> (!$this->new_config['img_imagick'] && (!isset($supported_types['format']) || !sizeof($supported_types['format']))) ? false : true,
+				));
 
 				// Secure Download Options - Same procedure as with banning
 				$allow_deny = ($this->new_config['secure_allow_deny']) ? 'ALLOWED' : 'DISALLOWED';
@@ -230,7 +230,7 @@ class acp_attachments
 				}
 				phpbb::$db->sql_freeresult($result);
 
-				$template->assign_vars(array(
+				phpbb::$template->assign_vars(array(
 					'S_SECURE_DOWNLOADS'	=> $this->new_config['secure_downloads'],
 					'S_DEFINED_IPS'			=> ($defined_ips != '') ? true : false,
 					'S_WARNING'				=> (sizeof($error)) ? true : false,
@@ -240,8 +240,8 @@ class acp_attachments
 
 					'L_SECURE_TITLE'		=> phpbb::$user->lang['DEFINE_' . $allow_deny . '_IPS'],
 					'L_IP_EXCLUDE'			=> phpbb::$user->lang['EXCLUDE_FROM_' . $allow_deny . '_IP'],
-					'L_REMOVE_IPS'			=> phpbb::$user->lang['REMOVE_' . $allow_deny . '_IPS'])
-				);
+					'L_REMOVE_IPS'			=> phpbb::$user->lang['REMOVE_' . $allow_deny . '_IPS'],
+				));
 
 				// Output relevant options
 				foreach ($display_vars['vars'] as $config_key => $vars)
@@ -253,10 +253,10 @@ class acp_attachments
 
 					if (strpos($config_key, 'legend') !== false)
 					{
-						$template->assign_block_vars('options', array(
+						phpbb::$template->assign_block_vars('options', array(
 							'S_LEGEND'		=> true,
-							'LEGEND'		=> (isset(phpbb::$user->lang[$vars])) ? phpbb::$user->lang[$vars] : $vars)
-						);
+							'LEGEND'		=> (isset(phpbb::$user->lang[$vars])) ? phpbb::$user->lang[$vars] : $vars,
+						));
 
 						continue;
 					}
@@ -279,14 +279,13 @@ class acp_attachments
 						continue;
 					}
 
-					$template->assign_block_vars('options', array(
+					phpbb::$template->assign_block_vars('options', array(
 						'KEY'			=> $config_key,
 						'TITLE'			=> phpbb::$user->lang[$vars['lang']],
 						'S_EXPLAIN'		=> $vars['explain'],
 						'TITLE_EXPLAIN'	=> $l_explain,
 						'CONTENT'		=> $content,
-						)
-					);
+					));
 
 					unset($display_vars['vars'][$config_key]);
 				}
@@ -397,11 +396,11 @@ class acp_attachments
 					phpbb::$acm->destroy('extensions');
 				}
 
-				$template->assign_vars(array(
+				phpbb::$template->assign_vars(array(
 					'S_EXTENSIONS'			=> true,
 					'ADD_EXTENSION'			=> (isset($add_extension)) ? $add_extension : '',
-					'GROUP_SELECT_OPTIONS'	=> (phpbb_request::is_set_post('add_extension_check')) ? $this->group_select('add_group_select', $add_extension_group, 'extension_group') : $this->group_select('add_group_select', false, 'extension_group'))
-				);
+					'GROUP_SELECT_OPTIONS'	=> (phpbb_request::is_set_post('add_extension_check')) ? $this->group_select('add_group_select', $add_extension_group, 'extension_group') : $this->group_select('add_group_select', false, 'extension_group'),
+				));
 
 				$sql = 'SELECT *
 					FROM ' . EXTENSIONS_TABLE . '
@@ -422,12 +421,12 @@ class acp_attachments
 							$old_group_id = $current_group_id;
 						}
 
-						$template->assign_block_vars('extensions', array(
+						phpbb::$template->assign_block_vars('extensions', array(
 							'S_SPACER'		=> $s_spacer,
 							'EXTENSION_ID'	=> $row['extension_id'],
 							'EXTENSION'		=> $row['extension'],
-							'GROUP_OPTIONS'	=> $this->group_select('group_select[]', $row['group_id']))
-						);
+							'GROUP_OPTIONS'	=> $this->group_select('group_select[]', $row['group_id']),
+						));
 					}
 					while ($row = phpbb::$db->sql_fetchrow($result));
 				}
@@ -437,7 +436,7 @@ class acp_attachments
 
 			case 'ext_groups':
 
-				$template->assign_var('S_EXTENSION_GROUPS', true);
+				phpbb::$template->assign_var('S_EXTENSION_GROUPS', true);
 
 				if ($submit)
 				{
@@ -738,7 +737,7 @@ class acp_attachments
 							$s_extension_options .= '<option' . ((!$row['group_id']) ? ' class="disabled"' : '') . ' value="' . $row['extension_id'] . '"' . (($row['group_id'] == $group_id && $group_id) ? ' selected="selected"' : '') . '>' . $row['extension'] . '</option>';
 						}
 
-						$template->assign_vars(array(
+						phpbb::$template->assign_vars(array(
 							'PHPBB_ROOT_PATH'		=> PHPBB_ROOT_PATH,
 							'IMG_PATH'				=> $img_path,
 							'ACTION'				=> $action,
@@ -761,8 +760,8 @@ class acp_attachments
 							'U_EXTENSIONS'		=> append_sid(PHPBB_ADMIN_PATH . 'index.' . PHP_EXT, "i=$id&amp;mode=extensions"),
 							'U_BACK'			=> $this->u_action,
 
-							'L_LEGEND'			=> phpbb::$user->lang[strtoupper($action) . '_EXTENSION_GROUP'])
-						);
+							'L_LEGEND'			=> phpbb::$user->lang[strtoupper($action) . '_EXTENSION_GROUP'],
+						));
 
 						$s_forum_id_options = '';
 
@@ -833,9 +832,9 @@ class acp_attachments
 						phpbb::$db->sql_freeresult($result);
 						unset($padding_store);
 
-						$template->assign_vars(array(
-							'S_FORUM_ID_OPTIONS'	=> $s_forum_id_options)
-						);
+						phpbb::$template->assign_vars(array(
+							'S_FORUM_ID_OPTIONS'	=> $s_forum_id_options,
+						));
 
 					break;
 				}
@@ -850,7 +849,7 @@ class acp_attachments
 				{
 					$s_add_spacer = ($old_allow_group != $row['allow_group'] || $old_allow_pm != $row['allow_in_pm']) ? true : false;
 
-					$template->assign_block_vars('groups', array(
+					phpbb::$template->assign_block_vars('groups', array(
 						'S_ADD_SPACER'		=> $s_add_spacer,
 						'S_ALLOWED_IN_PM'	=> ($row['allow_in_pm']) ? true : false,
 						'S_GROUP_ALLOWED'	=> ($row['allow_group']) ? true : false,
@@ -860,8 +859,7 @@ class acp_attachments
 
 						'GROUP_NAME'	=> $row['group_name'],
 						'CATEGORY'		=> $cat_lang[$row['cat_id']],
-						)
-					);
+					));
 
 					$old_allow_group = $row['allow_group'];
 					$old_allow_pm = $row['allow_in_pm'];
@@ -923,7 +921,7 @@ class acp_attachments
 
 					if (sizeof($upload_list))
 					{
-						$template->assign_var('S_UPLOADING_FILES', true);
+						phpbb::$template->assign_var('S_UPLOADING_FILES', true);
 
 						$sql = 'SELECT forum_id, forum_name
 							FROM ' . FORUMS_TABLE;
@@ -960,11 +958,11 @@ class acp_attachments
 						{
 							$post_row = $post_info[$upload_list[$row['attach_id']]];
 
-							$template->assign_block_vars('upload', array(
+							phpbb::$template->assign_block_vars('upload', array(
 								'FILE_INFO'		=> sprintf(phpbb::$user->lang['UPLOADING_FILE_TO'], $row['real_filename'], $post_row['post_id']),
 								'S_DENIED'		=> (!phpbb::$acl->acl_get('f_attach', $post_row['forum_id'])) ? true : false,
-								'L_DENIED'		=> (!phpbb::$acl->acl_get('f_attach', $post_row['forum_id'])) ? sprintf(phpbb::$user->lang['UPLOAD_DENIED_FORUM'], $forum_names[$row['forum_id']]) : '')
-							);
+								'L_DENIED'		=> (!phpbb::$acl->acl_get('f_attach', $post_row['forum_id'])) ? sprintf(phpbb::$user->lang['UPLOAD_DENIED_FORUM'], $forum_names[$row['forum_id']]) : '',
+							));
 
 							if (!phpbb::$acl->acl_get('f_attach', $post_row['forum_id']))
 							{
@@ -1010,9 +1008,9 @@ class acp_attachments
 					}
 				}
 
-				$template->assign_vars(array(
-					'S_ORPHAN'		=> true)
-				);
+				phpbb::$template->assign_vars(array(
+					'S_ORPHAN'		=> true,
+				));
 
 				// Just get the files with is_orphan set and older than 3 hours
 				$sql = 'SELECT *
@@ -1024,15 +1022,15 @@ class acp_attachments
 
 				while ($row = phpbb::$db->sql_fetchrow($result))
 				{
-					$template->assign_block_vars('orphan', array(
+					phpbb::$template->assign_block_vars('orphan', array(
 						'FILESIZE'			=> get_formatted_filesize($row['filesize']),
 						'FILETIME'			=> phpbb::$user->format_date($row['filetime']),
 						'REAL_FILENAME'		=> basename($row['real_filename']),
 						'PHYSICAL_FILENAME'	=> basename($row['physical_filename']),
 						'ATTACH_ID'			=> $row['attach_id'],
 						'POST_IDS'			=> (!empty($post_ids[$row['attach_id']])) ? $post_ids[$row['attach_id']] : '',
-						'U_FILE'			=> append_sid('download/file', 'mode=view&amp;id=' . $row['attach_id']))
-					);
+						'U_FILE'			=> append_sid('download/file', 'mode=view&amp;id=' . $row['attach_id']),
+					));
 				}
 				phpbb::$db->sql_freeresult($result);
 
@@ -1041,18 +1039,18 @@ class acp_attachments
 
 		if (sizeof($error))
 		{
-			$template->assign_vars(array(
+			phpbb::$template->assign_vars(array(
 				'S_WARNING'		=> true,
-				'WARNING_MSG'	=> implode('<br />', $error))
-			);
+				'WARNING_MSG'	=> implode('<br />', $error),
+			));
 		}
 
 		if (sizeof($notify))
 		{
-			$template->assign_vars(array(
+			phpbb::$template->assign_vars(array(
 				'S_NOTIFY'		=> true,
-				'NOTIFY_MSG'	=> implode('<br />', $notify))
-			);
+				'NOTIFY_MSG'	=> implode('<br />', $notify),
+			));
 		}
 	}
 

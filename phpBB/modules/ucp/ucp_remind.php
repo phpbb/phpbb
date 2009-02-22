@@ -108,7 +108,7 @@ class ucp_remind
 			trigger_error($message);
 		}
 
-		$template->assign_vars(array(
+		phpbb::$template->assign_vars(array(
 			'USERNAME'			=> $username,
 			'EMAIL'				=> $email,
 			'S_PROFILE_ACTION'	=> append_sid('ucp', 'mode=sendpassword'),

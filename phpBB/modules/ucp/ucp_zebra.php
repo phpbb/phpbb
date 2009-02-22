@@ -202,7 +202,7 @@ class ucp_zebra
 					}
 					else
 					{
-						$template->assign_var('ERROR', implode('<br />', $error));
+						phpbb::$template->assign_var('ERROR', implode('<br />', $error));
 					}
 				}
 				else
@@ -233,7 +233,7 @@ class ucp_zebra
 		}
 		phpbb::$db->sql_freeresult($result);
 
-		$template->assign_vars(array(
+		phpbb::$template->assign_vars(array(
 			'L_TITLE'			=> phpbb::$user->lang['UCP_ZEBRA_' . $l_mode],
 
 			'U_FIND_USERNAME'	=> append_sid('memberlist', 'mode=searchuser&amp;form=ucp&amp;field=add'),

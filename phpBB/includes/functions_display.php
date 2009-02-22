@@ -286,8 +286,8 @@ function display_forums($root_data = '', $display_moderators = true, $return_mod
 				'FORUM_FOLDER_IMG_SRC'	=> '',
 				'FORUM_IMAGE'			=> ($row['forum_image']) ? '<img src="' . PHPBB_ROOT_PATH . $row['forum_image'] . '" alt="' . phpbb::$user->lang['FORUM_CAT'] . '" />' : '',
 				'FORUM_IMAGE_SRC'		=> ($row['forum_image']) ? PHPBB_ROOT_PATH . $row['forum_image'] : '',
-				'U_VIEWFORUM'			=> phpbb::$url->append_sid('viewforum', 'f=' . $row['forum_id']))
-			);
+				'U_VIEWFORUM'			=> phpbb::$url->append_sid('viewforum', 'f=' . $row['forum_id']),
+			));
 
 			continue;
 		}
@@ -457,8 +457,8 @@ function display_forums($root_data = '', $display_moderators = true, $return_mod
 			phpbb::$template->assign_block_vars('forumrow.subforum', array(
 				'U_SUBFORUM'	=> $subforum['link'],
 				'SUBFORUM_NAME'	=> $subforum['name'],
-				'S_UNREAD'		=> $subforum['unread'])
-			);
+				'S_UNREAD'		=> $subforum['unread'],
+			));
 		}
 
 		$last_catless = $catless;
@@ -468,8 +468,8 @@ function display_forums($root_data = '', $display_moderators = true, $return_mod
 		'U_MARK_FORUMS'		=> (phpbb::$user->is_registered || phpbb::$config['load_anon_lastread']) ? phpbb::$url->append_sid('viewforum', 'hash=' . generate_link_hash('global') . '&amp;f=' . $root_data['forum_id'] . '&amp;mark=forums') : '',
 		'S_HAS_SUBFORUM'	=> ($visible_forums) ? true : false,
 		'L_SUBFORUM'		=> phpbb::$user->lang('SUBFORUMS', $visible_forums),
-		'LAST_POST_IMG'		=> phpbb::$user->img('icon_topic_latest', 'VIEW_LATEST_POST'))
-	);
+		'LAST_POST_IMG'		=> phpbb::$user->img('icon_topic_latest', 'VIEW_LATEST_POST'),
+	));
 
 	if ($return_moderators)
 	{
@@ -494,11 +494,11 @@ function generate_forum_rules(&$forum_data)
 		$forum_data['forum_rules'] = generate_text_for_display($forum_data['forum_rules'], $forum_data['forum_rules_uid'], $forum_data['forum_rules_bitfield'], $forum_data['forum_rules_options']);
 	}
 
-	$template->assign_vars(array(
+	phpbb::$template->assign_vars(array(
 		'S_FORUM_RULES'	=> true,
 		'U_FORUM_RULES'	=> $forum_data['forum_rules_link'],
-		'FORUM_RULES'	=> $forum_data['forum_rules'])
-	);
+		'FORUM_RULES'	=> $forum_data['forum_rules'],
+	));
 }
 
 /**
@@ -528,31 +528,31 @@ function generate_forum_nav(&$forum_data)
 				continue;
 			}
 
-			$template->assign_block_vars('navlinks', array(
+			phpbb::$template->assign_block_vars('navlinks', array(
 				'S_IS_CAT'		=> ($parent_type == FORUM_CAT) ? true : false,
 				'S_IS_LINK'		=> ($parent_type == FORUM_LINK) ? true : false,
 				'S_IS_POST'		=> ($parent_type == FORUM_POST) ? true : false,
 				'FORUM_NAME'	=> $parent_name,
 				'FORUM_ID'		=> $parent_forum_id,
-				'U_VIEW_FORUM'	=> phpbb::$url->append_sid('viewforum', 'f=' . $parent_forum_id))
-			);
+				'U_VIEW_FORUM'	=> phpbb::$url->append_sid('viewforum', 'f=' . $parent_forum_id),
+			));
 		}
 	}
 
-	$template->assign_block_vars('navlinks', array(
+	phpbb::$template->assign_block_vars('navlinks', array(
 		'S_IS_CAT'		=> ($forum_data['forum_type'] == FORUM_CAT) ? true : false,
 		'S_IS_LINK'		=> ($forum_data['forum_type'] == FORUM_LINK) ? true : false,
 		'S_IS_POST'		=> ($forum_data['forum_type'] == FORUM_POST) ? true : false,
 		'FORUM_NAME'	=> $forum_data['forum_name'],
 		'FORUM_ID'		=> $forum_data['forum_id'],
-		'U_VIEW_FORUM'	=> phpbb::$url->append_sid('viewforum', 'f=' . $forum_data['forum_id']))
-	);
+		'U_VIEW_FORUM'	=> phpbb::$url->append_sid('viewforum', 'f=' . $forum_data['forum_id']),
+	));
 
-	$template->assign_vars(array(
+	phpbb::$template->assign_vars(array(
 		'FORUM_ID' 		=> $forum_data['forum_id'],
 		'FORUM_NAME'	=> $forum_data['forum_name'],
-		'FORUM_DESC'	=> generate_text_for_display($forum_data['forum_desc'], $forum_data['forum_desc_uid'], $forum_data['forum_desc_bitfield'], $forum_data['forum_desc_options']))
-	);
+		'FORUM_DESC'	=> generate_text_for_display($forum_data['forum_desc'], $forum_data['forum_desc_uid'], $forum_data['forum_desc_bitfield'], $forum_data['forum_desc_options']),
+	));
 
 	return;
 }
@@ -741,7 +741,7 @@ function gen_forum_auth_level($mode, $forum_id, $forum_status)
 
 	foreach ($rules as $rule)
 	{
-		$template->assign_block_vars('rules', array('RULE' => $rule));
+		phpbb::$template->assign_block_vars('rules', array('RULE' => $rule));
 	}
 
 	return;
@@ -838,7 +838,7 @@ function display_custom_bbcodes()
 	$i = 0;
 	while ($row = phpbb::$db->sql_fetchrow($result))
 	{
-		$template->assign_block_vars('custom_tags', array(
+		phpbb::$template->assign_block_vars('custom_tags', array(
 			'BBCODE_NAME'		=> "'[{$row['bbcode_tag']}]', '[/" . str_replace('=', '', $row['bbcode_tag']) . "]'",
 			'BBCODE_ID'			=> $num_predefined_bbcodes + ($i * 2),
 			'BBCODE_TAG'		=> $row['bbcode_tag'],
@@ -870,12 +870,12 @@ function display_reasons($reason_id = 0)
 			$row['reason_title'] = phpbb::$user->lang['report_reasons']['TITLE'][strtoupper($row['reason_title'])];
 		}
 
-		$template->assign_block_vars('reason', array(
+		phpbb::$template->assign_block_vars('reason', array(
 			'ID'			=> $row['reason_id'],
 			'TITLE'			=> $row['reason_title'],
 			'DESCRIPTION'	=> $row['reason_description'],
-			'S_SELECTED'	=> ($row['reason_id'] == $reason_id) ? true : false)
-		);
+			'S_SELECTED'	=> ($row['reason_id'] == $reason_id) ? true : false,
+		));
 	}
 	phpbb::$db->sql_freeresult($result);
 }
@@ -974,7 +974,7 @@ function display_user_activity(&$userdata)
 
 	$l_active_pct = ($userdata['user_id'] != ANONYMOUS && $userdata['user_id'] == phpbb::$user->data['user_id']) ? phpbb::$user->lang['POST_PCT_ACTIVE_OWN'] : phpbb::$user->lang['POST_PCT_ACTIVE'];
 
-	$template->assign_vars(array(
+	phpbb::$template->assign_vars(array(
 		'ACTIVE_FORUM'			=> $active_f_name,
 		'ACTIVE_FORUM_POSTS'	=> ($active_f_count == 1) ? sprintf(phpbb::$user->lang['USER_POST'], 1) : sprintf(phpbb::$user->lang['USER_POSTS'], $active_f_count),
 		'ACTIVE_FORUM_PCT'		=> sprintf($l_active_pct, $active_f_pct),

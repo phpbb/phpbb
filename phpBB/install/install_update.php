@@ -94,7 +94,7 @@ class install_update extends module
 		}
 
 		// Set custom template again. ;)
-		$template->set_custom_template('../adm/style', 'admin');
+		phpbb::$template->set_custom_template('../adm/style', 'admin');
 
 		// Get current and latest version
 		if (($latest_version = phpbb::$acm->get('version_info')) === false)
@@ -115,10 +115,10 @@ class install_update extends module
 		// Check for a valid update directory, else point the user to the phpbb.com website
 		if (!file_exists(PHPBB_ROOT_PATH . 'install/update') || !file_exists(PHPBB_ROOT_PATH . 'install/update/index.php') || !file_exists($this->old_location) || !file_exists($this->new_location))
 		{
-			$template->assign_vars(array(
+			phpbb::$template->assign_vars(array(
 				'S_ERROR'		=> true,
-				'ERROR_MSG'		=> ($up_to_date) ? phpbb::$user->lang['NO_UPDATE_FILES_UP_TO_DATE'] : sprintf(phpbb::$user->lang['NO_UPDATE_FILES_OUTDATED'], phpbb::$config['version'], $this->current_version, $this->latest_version))
-			);
+				'ERROR_MSG'		=> ($up_to_date) ? phpbb::$user->lang['NO_UPDATE_FILES_UP_TO_DATE'] : sprintf(phpbb::$user->lang['NO_UPDATE_FILES_OUTDATED'], phpbb::$config['version'], $this->current_version, $this->latest_version),
+			));
 
 			return;
 		}
@@ -129,10 +129,10 @@ class install_update extends module
 		// Since admins are able to run the update/checks more than once we only check if the current version is lower or equal than the version to which we update to.
 		if (version_compare(str_replace('rc', 'RC', strtolower($this->current_version)), str_replace('rc', 'RC', strtolower($this->update_info['version']['to'])), '>'))
 		{
-			$template->assign_vars(array(
+			phpbb::$template->assign_vars(array(
 				'S_ERROR'		=> true,
-				'ERROR_MSG'		=> sprintf(phpbb::$user->lang['INCOMPATIBLE_UPDATE_FILES'], phpbb::$config['version'], $this->update_info['version']['from'], $this->update_info['version']['to']))
-			);
+				'ERROR_MSG'		=> sprintf(phpbb::$user->lang['INCOMPATIBLE_UPDATE_FILES'], phpbb::$config['version'], $this->update_info['version']['from'], $this->update_info['version']['to']),
+			));
 
 			return;
 		}
@@ -142,10 +142,10 @@ class install_update extends module
 		{
 			$this->unequal_version = true;
 
-			$template->assign_vars(array(
+			phpbb::$template->assign_vars(array(
 				'S_WARNING'		=> true,
-				'WARNING_MSG'	=> sprintf(phpbb::$user->lang['OLD_UPDATE_FILES'], $this->update_info['version']['from'], $this->update_info['version']['to'], $this->latest_version))
-			);
+				'WARNING_MSG'	=> sprintf(phpbb::$user->lang['OLD_UPDATE_FILES'], $this->update_info['version']['from'], $this->update_info['version']['to'], $this->latest_version),
+			));
 		}
 
 		if ($this->test_update === false)
@@ -186,7 +186,7 @@ class install_update extends module
 			case 'intro':
 				$this->page_title = 'UPDATE_INSTALLATION';
 
-				$template->assign_vars(array(
+				phpbb::$template->assign_vars(array(
 					'S_INTRO'		=> true,
 					'U_ACTION'		=> append_sid($this->p_master->module_url, "mode=$mode&amp;sub=version_check"),
 				));
@@ -199,7 +199,7 @@ class install_update extends module
 			case 'version_check':
 				$this->page_title = 'STAGE_VERSION_CHECK';
 
-				$template->assign_vars(array(
+				phpbb::$template->assign_vars(array(
 					'S_UP_TO_DATE'		=> $up_to_date,
 					'S_VERSION_CHECK'	=> true,
 
@@ -207,13 +207,13 @@ class install_update extends module
 					'U_DB_UPDATE_ACTION'	=> append_sid($this->p_master->module_url, "mode=$mode&amp;sub=update_db"),
 
 					'LATEST_VERSION'	=> $this->latest_version,
-					'CURRENT_VERSION'	=> $this->current_version)
-				);
+					'CURRENT_VERSION'	=> $this->current_version,
+				));
 
 				// Print out version the update package updates to
 				if ($this->unequal_version)
 				{
-					$template->assign_var('PACKAGE_VERSION', $this->update_info['version']['to']);
+					phpbb::$template->assign_var('PACKAGE_VERSION', $this->update_info['version']['to']);
 				}
 
 			break;
@@ -244,7 +244,7 @@ class install_update extends module
 				phpbb::$acm->purge();
 
 				// Redirect the user to the database update script with some explanations...
-				$template->assign_vars(array(
+				phpbb::$template->assign_vars(array(
 					'S_DB_UPDATE'			=> true,
 					'S_DB_UPDATE_FINISHED'	=> (phpbb::$config['version'] == $this->update_info['version']['to']) ? true : false,
 					'U_DB_UPDATE'			=> append_sid('install/database_update', 'type=1&amp;language=' . phpbb::$user->data['user_lang']),
@@ -302,7 +302,7 @@ class install_update extends module
 						$refresh_url = append_sid($this->p_master->module_url, "mode=$mode&amp;sub=file_check");
 						meta_refresh(2, $refresh_url);
 
-						$template->assign_vars(array(
+						phpbb::$template->assign_vars(array(
 							'S_IN_PROGRESS'		=> true,
 							'S_COLLECTED'		=> (int) $update_list['status'],
 							'S_TO_COLLECT'		=> sizeof($this->update_info['files']),
@@ -322,10 +322,10 @@ class install_update extends module
 
 				if (sizeof($update_list['no_update']))
 				{
-					$template->assign_vars(array(
+					phpbb::$template->assign_vars(array(
 						'S_NO_UPDATE_FILES'		=> true,
-						'NO_UPDATE_FILES'		=> implode(', ', array_map('htmlspecialchars', $update_list['no_update'])))
-					);
+						'NO_UPDATE_FILES'		=> implode(', ', array_map('htmlspecialchars', $update_list['no_update'])),
+					));
 				}
 
 				// Now assign the list to the template
@@ -336,14 +336,13 @@ class install_update extends module
 						continue;
 					}
 
-					$template->assign_block_vars('files', array(
+					phpbb::$template->assign_block_vars('files', array(
 						'S_STATUS'		=> true,
 						'STATUS'		=> $status,
 						'L_STATUS'		=> phpbb::$user->lang['STATUS_' . strtoupper($status)],
 						'TITLE'			=> phpbb::$user->lang['FILES_' . strtoupper($status)],
 						'EXPLAIN'		=> phpbb::$user->lang['FILES_' . strtoupper($status) . '_EXPLAIN'],
-						)
-					);
+					));
 
 					foreach ($filelist as $file_struct)
 					{
@@ -363,7 +362,7 @@ class install_update extends module
 
 						$diff_url = append_sid($this->p_master->module_url, "mode=$mode&amp;sub=file_check&amp;action=diff&amp;status=$status&amp;file=" . urlencode($file_struct['filename']));
 
-						$template->assign_block_vars('files', array(
+						phpbb::$template->assign_block_vars('files', array(
 							'STATUS'			=> $status,
 
 							'FILENAME'			=> $filename,
@@ -396,7 +395,7 @@ class install_update extends module
 					}
 				}
 
-				$template->assign_vars(array(
+				phpbb::$template->assign_vars(array(
 					'S_FILE_CHECK'			=> true,
 					'S_ALL_UP_TO_DATE'		=> $all_up_to_date,
 					'S_VERSION_UP_TO_DATE'	=> $up_to_date,
@@ -620,7 +619,7 @@ class install_update extends module
 								$redirect_url = append_sid($this->p_master->module_url, "mode=$mode&amp;sub=update_files&amp;" . implode('&amp;', $params));
 								meta_refresh(3, $redirect_url);
 
-								$template->assign_vars(array(
+								phpbb::$template->assign_vars(array(
 									'S_IN_PROGRESS'			=> true,
 									'L_IN_PROGRESS'			=> phpbb::$user->lang['MERGING_FILES'],
 									'L_IN_PROGRESS_EXPLAIN'	=> phpbb::$user->lang['MERGING_FILES_EXPLAIN'],
@@ -744,12 +743,12 @@ class install_update extends module
 							$radio_buttons .= '<label><input type="radio"' . ((!$radio_buttons) ? ' id="use_method"' : '') . ' class="radio" value="' . $method . '" name="use_method" /> ' . $method . '</label>';
 						}
 
-						$template->assign_vars(array(
+						phpbb::$template->assign_vars(array(
 							'S_DOWNLOAD_FILES'		=> true,
 							'U_ACTION'				=> append_sid($this->p_master->module_url, "mode=$mode&amp;sub=update_files"),
 							'RADIO_BUTTONS'			=> $radio_buttons,
-							'S_HIDDEN_FIELDS'		=> $s_hidden_fields)
-						);
+							'S_HIDDEN_FIELDS'		=> $s_hidden_fields,
+						));
 
 						// To ease the update process create a file location map
 						$update_list = phpbb::$acm->get('update_list');
@@ -769,7 +768,7 @@ class install_update extends module
 									continue;
 								}
 
-								$template->assign_block_vars('location', array(
+								phpbb::$template->assign_block_vars('location', array(
 									'SOURCE'		=> htmlspecialchars($file_struct['filename']),
 									'DESTINATION'	=> $script_path . htmlspecialchars($file_struct['filename']),
 								));
@@ -845,7 +844,7 @@ class install_update extends module
 						$requested_data = call_user_func(array($method, 'data'));
 						foreach ($requested_data as $data => $default)
 						{
-							$template->assign_block_vars('data', array(
+							phpbb::$template->assign_block_vars('data', array(
 								'DATA'		=> $data,
 								'NAME'		=> phpbb::$user->lang[strtoupper($method . '_' . $data)],
 								'EXPLAIN'	=> phpbb::$user->lang[strtoupper($method . '_' . $data) . '_EXPLAIN'],
@@ -853,7 +852,7 @@ class install_update extends module
 							));
 						}
 
-						$template->assign_vars(array(
+						phpbb::$template->assign_vars(array(
 							'S_CONNECTION_SUCCESS'		=> ($test_ftp_connection && $test_connection === true) ? true : false,
 							'S_CONNECTION_FAILED'		=> ($test_ftp_connection && $test_connection !== true) ? true : false,
 							'ERROR_MSG'					=> ($test_ftp_connection && $test_connection !== true) ? phpbb::$user->lang[$test_connection] : '',
@@ -987,10 +986,10 @@ class install_update extends module
 				{
 					$transfer->close_session();
 
-					$template->assign_vars(array(
+					phpbb::$template->assign_vars(array(
 						'S_UPLOAD_SUCCESS'	=> true,
-						'U_ACTION'			=> append_sid($this->p_master->module_url, "mode=$mode&amp;sub=file_check"))
-					);
+						'U_ACTION'			=> append_sid($this->p_master->module_url, "mode=$mode&amp;sub=file_check"),
+					));
 					return;
 				}
 
@@ -1054,7 +1053,7 @@ class install_update extends module
 
 						$diff = $this->return_diff(array(), ($option == MERGE_NO_MERGE_NEW) ? $this->new_location . $original_file : PHPBB_ROOT_PATH . $file);
 
-						$template->assign_var('S_DIFF_NEW_FILE', true);
+						phpbb::$template->assign_var('S_DIFF_NEW_FILE', true);
 						$diff_mode = 'inline';
 						$this->page_title = 'VIEWING_FILE_CONTENTS';
 
@@ -1074,7 +1073,7 @@ class install_update extends module
 
 						unset($tmp);
 
-						$template->assign_var('S_DIFF_NEW_FILE', true);
+						phpbb::$template->assign_var('S_DIFF_NEW_FILE', true);
 						$diff_mode = 'inline';
 						$this->page_title = 'VIEWING_FILE_CONTENTS';
 
@@ -1084,10 +1083,10 @@ class install_update extends module
 
 						$diff = $this->return_diff($this->old_location . $original_file, PHPBB_ROOT_PATH . $file, $this->new_location . $original_file);
 
-						$template->assign_vars(array(
+						phpbb::$template->assign_vars(array(
 							'S_DIFF_CONFLICT_FILE'	=> true,
-							'NUM_CONFLICTS'			=> $diff->merged_output(false, false, false, true))
-						);
+							'NUM_CONFLICTS'			=> $diff->merged_output(false, false, false, true),
+						));
 
 						$diff = $this->return_diff(PHPBB_ROOT_PATH . $file, $diff->merged_output());
 					break;
@@ -1105,7 +1104,7 @@ class install_update extends module
 
 						$diff = $this->return_diff(array(), ($option == MERGE_NO_MERGE_NEW) ? $this->new_location . $original_file : PHPBB_ROOT_PATH . $file);
 
-						$template->assign_var('S_DIFF_NEW_FILE', true);
+						phpbb::$template->assign_var('S_DIFF_NEW_FILE', true);
 						$diff_mode = 'inline';
 						$this->page_title = 'VIEWING_FILE_CONTENTS';
 
@@ -1126,7 +1125,7 @@ class install_update extends module
 
 				$diff = $this->return_diff(array(), $this->new_location . $original_file);
 
-				$template->assign_var('S_DIFF_NEW_FILE', true);
+				phpbb::$template->assign_var('S_DIFF_NEW_FILE', true);
 				$diff_mode = 'inline';
 				$this->page_title = 'VIEWING_FILE_CONTENTS';
 
@@ -1149,7 +1148,7 @@ class install_update extends module
 
 		$renderer = new $render_class();
 
-		$template->assign_vars(array(
+		phpbb::$template->assign_vars(array(
 			'DIFF_CONTENT'			=> $renderer->get_diff_content($diff),
 			'DIFF_MODE'				=> $diff_mode,
 			'S_DIFF_MODE_OPTIONS'	=> $diff_mode_options,

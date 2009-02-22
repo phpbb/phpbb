@@ -112,10 +112,10 @@ class mcp_reports
 
 				if (topic_review($post_info['topic_id'], $post_info['forum_id'], 'topic_review', 0, false))
 				{
-					$template->assign_vars(array(
+					phpbb::$template->assign_vars(array(
 						'S_TOPIC_REVIEW'	=> true,
-						'TOPIC_TITLE'		=> $post_info['topic_title'])
-					);
+						'TOPIC_TITLE'		=> $post_info['topic_title'],
+					));
 				}
 
 				$topic_tracking_info = $extensions = $attachments = array();
@@ -172,18 +172,18 @@ class mcp_reports
 					// Display not already displayed Attachments for this post, we already parsed them. ;)
 					if (!empty($attachments))
 					{
-						$template->assign_var('S_HAS_ATTACHMENTS', true);
+						phpbb::$template->assign_var('S_HAS_ATTACHMENTS', true);
 
 						foreach ($attachments as $attachment)
 						{
-							$template->assign_block_vars('attachment', array(
-								'DISPLAY_ATTACHMENT'	=> $attachment)
-							);
+							phpbb::$template->assign_block_vars('attachment', array(
+								'DISPLAY_ATTACHMENT'	=> $attachment,
+							));
 						}
 					}
 				}
 
-				$template->assign_vars(array(
+				phpbb::$template->assign_vars(array(
 					'S_MCP_REPORT'			=> true,
 					'S_CLOSE_ACTION'		=> append_sid('mcp', 'i=reports&amp;mode=report_details&amp;f=' . $post_info['forum_id'] . '&amp;p=' . $post_id),
 					'S_CAN_VIEWIP'			=> phpbb::$acl->acl_get('m_info', $post_info['forum_id']),
@@ -382,7 +382,7 @@ class mcp_reports
 							$row['forum_id'] = $global_id;
 						}
 
-						$template->assign_block_vars('postrow', array(
+						phpbb::$template->assign_block_vars('postrow', array(
 							'U_VIEWFORUM'				=> (!$global_topic) ? append_sid('viewforum', 'f=' . $row['forum_id']) : '',
 							'U_VIEWPOST'				=> append_sid('viewtopic', 'f=' . $row['forum_id'] . '&amp;p=' . $row['post_id']) . '#p' . $row['post_id'],
 							'U_VIEW_DETAILS'			=> append_sid('mcp', "i=reports&amp;start=$start&amp;mode=report_details&amp;f={$row['forum_id']}&amp;r={$row['report_id']}"),
@@ -403,15 +403,15 @@ class mcp_reports
 							'POST_TIME'		=> phpbb::$user->format_date($row['post_time']),
 							'REPORT_ID'		=> $row['report_id'],
 							'REPORT_TIME'	=> phpbb::$user->format_date($row['report_time']),
-							'TOPIC_TITLE'	=> $row['topic_title'])
-						);
+							'TOPIC_TITLE'	=> $row['topic_title'],
+						));
 					}
 					phpbb::$db->sql_freeresult($result);
 					unset($report_ids, $row);
 				}
 
 				// Now display the page
-				$template->assign_vars(array(
+				phpbb::$template->assign_vars(array(
 					'L_EXPLAIN'				=> ($mode == 'reports') ? phpbb::$user->lang['MCP_REPORTS_OPEN_EXPLAIN'] : phpbb::$user->lang['MCP_REPORTS_CLOSED_EXPLAIN'],
 					'L_TITLE'				=> ($mode == 'reports') ? phpbb::$user->lang['MCP_REPORTS_OPEN'] : phpbb::$user->lang['MCP_REPORTS_CLOSED'],
 					'L_ONLY_TOPIC'			=> ($topic_id) ? sprintf(phpbb::$user->lang['ONLY_TOPIC'], $topic_info['topic_title']) : '',
@@ -425,8 +425,7 @@ class mcp_reports
 					'TOPIC_ID'				=> $topic_id,
 					'TOTAL'					=> $total,
 					'TOTAL_REPORTS'			=> ($total == 1) ? phpbb::$user->lang['LIST_REPORT'] : sprintf(phpbb::$user->lang['LIST_REPORTS'], $total),
-					)
-				);
+				));
 
 				$this->tpl_name = 'mcp_reports';
 			break;

@@ -540,7 +540,7 @@ class acp_groups
 					break;
 				}
 
-				$template->assign_vars(array(
+				phpbb::$template->assign_vars(array(
 					'S_EDIT'			=> true,
 					'S_ADD_GROUP'		=> ($action == 'add') ? true : false,
 					'S_GROUP_PERM'		=> ($action == 'add' && phpbb::$acl->acl_get('a_authgroups') && phpbb::$acl->acl_gets('a_aauth', 'a_fauth', 'a_mauth', 'a_uauth')) ? true : false,
@@ -562,7 +562,6 @@ class acp_groups
 					'GROUP_MESSAGE_LIMIT'	=> (isset($group_row['group_message_limit'])) ? $group_row['group_message_limit'] : 0,
 					'GROUP_MAX_RECIPIENTS'	=> (isset($group_row['group_max_recipients'])) ? $group_row['group_max_recipients'] : 0,
 					'GROUP_COLOUR'			=> (isset($group_row['group_colour'])) ? $group_row['group_colour'] : '',
-
 
 					'S_DESC_BBCODE_CHECKED'	=> $group_desc_data['allow_bbcode'],
 					'S_DESC_URLS_CHECKED'	=> $group_desc_data['allow_urls'],
@@ -591,8 +590,7 @@ class acp_groups
 					'U_SWATCH'			=> append_sid(PHPBB_ADMIN_PATH . 'swatch.' . PHP_EXT, 'form=settings&amp;name=group_colour'),
 					'U_ACTION'			=> "{$this->u_action}&amp;action=$action&amp;g=$group_id",
 					'L_AVATAR_EXPLAIN'	=> sprintf(phpbb::$user->lang['AVATAR_EXPLAIN'], phpbb::$config['avatar_max_width'], phpbb::$config['avatar_max_height'], round(phpbb::$config['avatar_filesize'] / 1024)),
-					)
-				);
+				));
 
 				return;
 			break;
@@ -617,15 +615,15 @@ class acp_groups
 
 				while ($row = phpbb::$db->sql_fetchrow($result))
 				{
-					$template->assign_block_vars('leader', array(
+					phpbb::$template->assign_block_vars('leader', array(
 						'U_USER_EDIT'		=> append_sid(PHPBB_ADMIN_PATH . 'index.' . PHP_EXT, "i=users&amp;action=edit&amp;u={$row['user_id']}"),
 
 						'USERNAME'			=> $row['username'],
 						'S_GROUP_DEFAULT'	=> ($row['group_id'] == $group_id) ? true : false,
 						'JOINED'			=> ($row['user_regdate']) ? phpbb::$user->format_date($row['user_regdate']) : ' - ',
 						'USER_POSTS'		=> $row['user_posts'],
-						'USER_ID'			=> $row['user_id'])
-					);
+						'USER_ID'			=> $row['user_id'],
+					));
 				}
 				phpbb::$db->sql_freeresult($result);
 
@@ -646,7 +644,7 @@ class acp_groups
 					$s_action_options .= '<option value="' . $option . '">' . phpbb::$user->lang['GROUP_' . $lang] . '</option>';
 				}
 
-				$template->assign_vars(array(
+				phpbb::$template->assign_vars(array(
 					'S_LIST'			=> true,
 					'S_GROUP_SPECIAL'	=> ($group_row['group_type'] == GROUP_SPECIAL) ? true : false,
 					'S_ACTION_OPTIONS'	=> $s_action_options,
@@ -676,22 +674,22 @@ class acp_groups
 				{
 					if ($row['user_pending'] && !$pending)
 					{
-						$template->assign_block_vars('member', array(
-							'S_PENDING'		=> true)
-						);
+						phpbb::$template->assign_block_vars('member', array(
+							'S_PENDING'		=> true,
+						));
 
 						$pending = true;
 					}
 
-					$template->assign_block_vars('member', array(
+					phpbb::$template->assign_block_vars('member', array(
 						'U_USER_EDIT'		=> append_sid(PHPBB_ADMIN_PATH . 'index.' . PHP_EXT, "i=users&amp;action=edit&amp;u={$row['user_id']}"),
 
 						'USERNAME'			=> $row['username'],
 						'S_GROUP_DEFAULT'	=> ($row['group_id'] == $group_id) ? true : false,
 						'JOINED'			=> ($row['user_regdate']) ? phpbb::$user->format_date($row['user_regdate']) : ' - ',
 						'USER_POSTS'		=> $row['user_posts'],
-						'USER_ID'			=> $row['user_id'])
-					);
+						'USER_ID'			=> $row['user_id'],
+					));
 				}
 				phpbb::$db->sql_freeresult($result);
 
@@ -699,10 +697,10 @@ class acp_groups
 			break;
 		}
 
-		$template->assign_vars(array(
+		phpbb::$template->assign_vars(array(
 			'U_ACTION'		=> $this->u_action,
-			'S_GROUP_ADD'	=> (phpbb::$acl->acl_get('a_groupadd')) ? true : false)
-		);
+			'S_GROUP_ADD'	=> (phpbb::$acl->acl_get('a_groupadd')) ? true : false,
+		));
 
 		// Get us all the groups
 		$sql = 'SELECT g.group_id, g.group_name, g.group_type
@@ -745,16 +743,16 @@ class acp_groups
 		{
 			if ($type == 'special')
 			{
-				$template->assign_block_vars('groups', array(
-					'S_SPECIAL'			=> true)
-				);
+				phpbb::$template->assign_block_vars('groups', array(
+					'S_SPECIAL'			=> true,
+				));
 			}
 
 			foreach ($row_ary as $group_id => $row)
 			{
 				$group_name = (!empty(phpbb::$user->lang['G_' . $row['group_name']]))? phpbb::$user->lang['G_' . $row['group_name']] : $row['group_name'];
 
-				$template->assign_block_vars('groups', array(
+				phpbb::$template->assign_block_vars('groups', array(
 					'U_LIST'		=> "{$this->u_action}&amp;action=list&amp;g=$group_id",
 					'U_EDIT'		=> "{$this->u_action}&amp;action=edit&amp;g=$group_id",
 					'U_DELETE'		=> (phpbb::$acl->acl_get('a_groupdel')) ? "{$this->u_action}&amp;action=delete&amp;g=$group_id" : '',
@@ -763,8 +761,7 @@ class acp_groups
 
 					'GROUP_NAME'	=> $group_name,
 					'TOTAL_MEMBERS'	=> $row['total_members'],
-					)
-				);
+				));
 			}
 		}
 	}

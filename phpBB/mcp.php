@@ -26,7 +26,7 @@ phpbb::$user->setup('mcp');
 $module = new p_master();
 
 // Setting a variable to let the style designer know where he is...
-$template->assign_var('S_IN_MCP', true);
+phpbb::$template->assign_var('S_IN_MCP', true);
 
 // Basic parameter data
 $id = request_var('i', '');
@@ -234,7 +234,7 @@ $module->load_active();
 $module->assign_tpl_vars(append_sid(PHPBB_ROOT_PATH . 'mcp.' . PHP_EXT));
 
 // Generate urls for letting the moderation control panel being accessed in different modes
-$template->assign_vars(array(
+phpbb::$template->assign_vars(array(
 	'U_MCP'			=> append_sid('mcp', 'i=main'),
 	'U_MCP_FORUM'	=> ($forum_id) ? append_sid('mcp', "i=main&amp;mode=forum_view&amp;f=$forum_id") : '',
 	'U_MCP_TOPIC'	=> ($forum_id && $topic_id) ? append_sid('mcp', "i=main&amp;mode=topic_view&amp;t=$topic_id") : '',
@@ -724,11 +724,11 @@ function mcp_sorting($mode, &$sort_days, &$sort_key, &$sort_dir, &$sort_by_sql, 
 	$s_limit_days = $s_sort_key = $s_sort_dir = $sort_url = '';
 	gen_sort_selects($limit_days, $sort_by_text, $sort_days, $sort_key, $sort_dir, $s_limit_days, $s_sort_key, $s_sort_dir, $sort_url);
 
-	$template->assign_vars(array(
+	phpbb::$template->assign_vars(array(
 		'S_SELECT_SORT_DIR'		=> $s_sort_dir,
 		'S_SELECT_SORT_KEY'		=> $s_sort_key,
-		'S_SELECT_SORT_DAYS'	=> $s_limit_days)
-	);
+		'S_SELECT_SORT_DAYS'	=> $s_limit_days,
+	));
 
 	if (($sort_days && $mode != 'viewlogs') || in_array($mode, array('reports', 'unapproved_topics', 'unapproved_posts')) || $where_sql != 'WHERE')
 	{

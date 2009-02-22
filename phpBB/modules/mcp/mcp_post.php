@@ -49,7 +49,7 @@ function mcp_post_details($id, $mode, $action)
 				$ip = request_var('ip', '');
 				include(PHPBB_ROOT_PATH . 'includes/functions_user.' . PHP_EXT);
 
-				$template->assign_vars(array(
+				phpbb::$template->assign_vars(array(
 					'RETURN_POST'	=> sprintf(phpbb::$user->lang['RETURN_POST'], '<a href="' . append_sid('mcp', "i=$id&amp;mode=$mode&amp;p=$post_id") . '">', '</a>'),
 					'U_RETURN_POST'	=> append_sid('mcp', "i=$id&amp;mode=$mode&amp;p=$post_id"),
 					'L_RETURN_POST'	=> sprintf(phpbb::$user->lang['RETURN_POST'], '', ''),
@@ -162,18 +162,18 @@ function mcp_post_details($id, $mode, $action)
 		// Display not already displayed Attachments for this post, we already parsed them. ;)
 		if (!empty($attachments))
 		{
-			$template->assign_var('S_HAS_ATTACHMENTS', true);
+			phpbb::$template->assign_var('S_HAS_ATTACHMENTS', true);
 
 			foreach ($attachments as $attachment)
 			{
-				$template->assign_block_vars('attachment', array(
-					'DISPLAY_ATTACHMENT'	=> $attachment)
-				);
+				phpbb::$template->assign_block_vars('attachment', array(
+					'DISPLAY_ATTACHMENT'	=> $attachment,
+				));
 			}
 		}
 	}
 
-	$template->assign_vars(array(
+	phpbb::$template->assign_vars(array(
 		'U_MCP_ACTION'			=> "$url&amp;i=main&amp;quickmod=1", // Use this for mode paramaters
 		'U_POST_ACTION'			=> "$url&amp;i=$id&amp;mode=post_details", // Use this for action parameters
 		'U_APPROVE_ACTION'		=> append_sid('mcp', "i=queue&amp;p=$post_id&amp;f={$post_info['forum_id']}"),
@@ -230,16 +230,16 @@ function mcp_post_details($id, $mode, $action)
 
 	if ($log_count)
 	{
-		$template->assign_var('S_USER_NOTES', true);
+		phpbb::$template->assign_var('S_USER_NOTES', true);
 
 		foreach ($log_data as $row)
 		{
-			$template->assign_block_vars('usernotes', array(
+			phpbb::$template->assign_block_vars('usernotes', array(
 				'REPORT_BY'		=> $row['username_full'],
 				'REPORT_AT'		=> phpbb::$user->format_date($row['time']),
 				'ACTION'		=> $row['action'],
-				'ID'			=> $row['id'])
-			);
+				'ID'			=> $row['id'],
+			));
 		}
 	}
 
@@ -256,7 +256,7 @@ function mcp_post_details($id, $mode, $action)
 
 		if ($row = phpbb::$db->sql_fetchrow($result))
 		{
-			$template->assign_var('S_SHOW_REPORTS', true);
+			phpbb::$template->assign_var('S_SHOW_REPORTS', true);
 
 			do
 			{
@@ -267,7 +267,7 @@ function mcp_post_details($id, $mode, $action)
 					$row['reason_title'] = phpbb::$user->lang['report_reasons']['TITLE'][strtoupper($row['reason_title'])];
 				}
 
-				$template->assign_block_vars('reports', array(
+				phpbb::$template->assign_block_vars('reports', array(
 					'REPORT_ID'		=> $row['report_id'],
 					'REASON_TITLE'	=> $row['reason_title'],
 					'REASON_DESC'	=> $row['reason_description'],
@@ -290,9 +290,9 @@ function mcp_post_details($id, $mode, $action)
 
 		if ($rdns_ip_num != 'all')
 		{
-			$template->assign_vars(array(
-				'U_LOOKUP_ALL'	=> "$url&amp;i=main&amp;mode=post_details&amp;rdns=all")
-			);
+			phpbb::$template->assign_vars(array(
+				'U_LOOKUP_ALL'	=> "$url&amp;i=main&amp;mode=post_details&amp;rdns=all",
+			));
 		}
 
 		// Get other users who've posted under this IP
@@ -330,14 +330,14 @@ function mcp_post_details($id, $mode, $action)
 
 			foreach ($users_ary as $user_id => $user_row)
 			{
-				$template->assign_block_vars('userrow', array(
+				phpbb::$template->assign_block_vars('userrow', array(
 					'USERNAME'		=> ($user_id == ANONYMOUS) ? phpbb::$user->lang['GUEST'] : $user_row['username'],
 					'NUM_POSTS'		=> $user_row['postings'],
 					'L_POST_S'		=> ($user_row['postings'] == 1) ? phpbb::$user->lang['POST'] : phpbb::$user->lang['POSTS'],
 
 					'U_PROFILE'		=> ($user_id == ANONYMOUS) ? '' : append_sid('memberlist', 'mode=viewprofile&amp;u=' . $user_id),
-					'U_SEARCHPOSTS' => append_sid('search', 'author_id=' . $user_id . '&amp;sr=topics'))
-				);
+					'U_SEARCHPOSTS' => append_sid('search', 'author_id=' . $user_id . '&amp;sr=topics'),
+				));
 			}
 		}
 
@@ -358,15 +358,15 @@ function mcp_post_details($id, $mode, $action)
 		{
 			$hostname = (($rdns_ip_num == $row['poster_ip'] || $rdns_ip_num == 'all') && $row['poster_ip']) ? @gethostbyaddr($row['poster_ip']) : '';
 
-			$template->assign_block_vars('iprow', array(
+			phpbb::$template->assign_block_vars('iprow', array(
 				'IP'			=> $row['poster_ip'],
 				'HOSTNAME'		=> $hostname,
 				'NUM_POSTS'		=> $row['postings'],
 				'L_POST_S'		=> ($row['postings'] == 1) ? phpbb::$user->lang['POST'] : phpbb::$user->lang['POSTS'],
 
 				'U_LOOKUP_IP'	=> ($rdns_ip_num == $row['poster_ip'] || $rdns_ip_num == 'all') ? '' : "$url&amp;i=$id&amp;mode=post_details&amp;rdns={$row['poster_ip']}#ip",
-				'U_WHOIS'		=> append_sid('mcp', "i=$id&amp;mode=$mode&amp;action=whois&amp;p=$post_id&amp;ip={$row['poster_ip']}"))
-			);
+				'U_WHOIS'		=> append_sid('mcp', "i=$id&amp;mode=$mode&amp;action=whois&amp;p=$post_id&amp;ip={$row['poster_ip']}"),
+			));
 		}
 		phpbb::$db->sql_freeresult($result);
 
@@ -382,7 +382,7 @@ function mcp_post_details($id, $mode, $action)
 			}
 		}
 
-		$template->assign_var('S_USER_SELECT', $user_select);
+		phpbb::$template->assign_var('S_USER_SELECT', $user_select);
 	}
 
 }

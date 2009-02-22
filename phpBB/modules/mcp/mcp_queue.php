@@ -102,10 +102,10 @@ class mcp_queue
 
 				if ($post_info['topic_first_post_id'] != $post_id && topic_review($post_info['topic_id'], $post_info['forum_id'], 'topic_review', 0, false))
 				{
-					$template->assign_vars(array(
+					phpbb::$template->assign_vars(array(
 						'S_TOPIC_REVIEW'	=> true,
-						'TOPIC_TITLE'		=> $post_info['topic_title'])
-					);
+						'TOPIC_TITLE'		=> $post_info['topic_title'],
+					));
 				}
 
 				$extensions = $attachments = $topic_tracking_info = array();
@@ -163,13 +163,13 @@ class mcp_queue
 					// Display not already displayed Attachments for this post, we already parsed them. ;)
 					if (!empty($attachments))
 					{
-						$template->assign_var('S_HAS_ATTACHMENTS', true);
+						phpbb::$template->assign_var('S_HAS_ATTACHMENTS', true);
 
 						foreach ($attachments as $attachment)
 						{
-							$template->assign_block_vars('attachment', array(
-								'DISPLAY_ATTACHMENT'	=> $attachment)
-							);
+							phpbb::$template->assign_block_vars('attachment', array(
+								'DISPLAY_ATTACHMENT'	=> $attachment,
+							));
 						}
 					}
 				}
@@ -177,7 +177,7 @@ class mcp_queue
 				$post_url = append_sid('viewtopic', 'f=' . $post_info['forum_id'] . '&amp;p=' . $post_info['post_id'] . '#p' . $post_info['post_id']);
 				$topic_url = append_sid('viewtopic', 'f=' . $post_info['forum_id'] . '&amp;t=' . $post_info['topic_id']);
 
-				$template->assign_vars(array(
+				phpbb::$template->assign_vars(array(
 					'S_MCP_QUEUE'			=> true,
 					'U_APPROVE_ACTION'		=> append_sid('mcp', "i=queue&amp;p=$post_id&amp;f=$forum_id"),
 					'S_CAN_VIEWIP'			=> phpbb::$acl->acl_get('m_info', $post_info['forum_id']),
@@ -413,7 +413,7 @@ class mcp_queue
 						$row['post_username'] = phpbb::$user->lang['GUEST'];
 					}
 
-					$template->assign_block_vars('postrow', array(
+					phpbb::$template->assign_block_vars('postrow', array(
 						'U_TOPIC'			=> append_sid('viewtopic', 'f=' . $row['forum_id'] . '&amp;t=' . $row['topic_id']),
 						'U_VIEWFORUM'		=> (!$global_topic) ? append_sid('viewforum', 'f=' . $row['forum_id']) : '',
 						'U_VIEWPOST'		=> append_sid('viewtopic', 'f=' . $row['forum_id'] . '&amp;p=' . $row['post_id']) . (($mode == 'unapproved_posts') ? '#p' . $row['post_id'] : ''),
@@ -428,13 +428,13 @@ class mcp_queue
 						'FORUM_NAME'	=> (!$global_topic) ? $forum_names[$row['forum_id']] : phpbb::$user->lang['GLOBAL_ANNOUNCEMENT'],
 						'POST_SUBJECT'	=> $row['post_subject'],
 						'TOPIC_TITLE'	=> $row['topic_title'],
-						'POST_TIME'		=> phpbb::$user->format_date($row['post_time']))
-					);
+						'POST_TIME'		=> phpbb::$user->format_date($row['post_time']),
+					));
 				}
 				unset($rowset, $forum_names);
 
 				// Now display the page
-				$template->assign_vars(array(
+				phpbb::$template->assign_vars(array(
 					'L_DISPLAY_ITEMS'		=> ($mode == 'unapproved_posts') ? phpbb::$user->lang['DISPLAY_POSTS'] : phpbb::$user->lang['DISPLAY_TOPICS'],
 					'L_EXPLAIN'				=> ($mode == 'unapproved_posts') ? phpbb::$user->lang['MCP_QUEUE_UNAPPROVED_POSTS_EXPLAIN'] : phpbb::$user->lang['MCP_QUEUE_UNAPPROVED_TOPICS_EXPLAIN'],
 					'L_TITLE'				=> ($mode == 'unapproved_posts') ? phpbb::$user->lang['MCP_QUEUE_UNAPPROVED_POSTS'] : phpbb::$user->lang['MCP_QUEUE_UNAPPROVED_TOPICS'],
@@ -749,10 +749,10 @@ function approve_post($post_id_list, $id, $mode)
 			}
 		}
 
-		$template->assign_vars(array(
+		phpbb::$template->assign_vars(array(
 			'S_NOTIFY_POSTER'	=> $show_notify,
-			'S_APPROVE'			=> true)
-		);
+			'S_APPROVE'			=> true,
+		));
 
 		confirm_box(false, 'APPROVE_POST' . ((sizeof($post_id_list) == 1) ? '' : 'S'), $s_hidden_fields, 'mcp_approve.html');
 	}
@@ -1040,12 +1040,12 @@ function disapprove_post($post_id_list, $id, $mode)
 			}
 		}
 
-		$template->assign_vars(array(
+		phpbb::$template->assign_vars(array(
 			'S_NOTIFY_POSTER'	=> $show_notify,
 			'S_APPROVE'			=> false,
 			'REASON'			=> $reason,
-			'ADDITIONAL_MSG'	=> $additional_msg)
-		);
+			'ADDITIONAL_MSG'	=> $additional_msg,
+		));
 
 		confirm_box(false, 'DISAPPROVE_POST' . ((sizeof($post_id_list) == 1) ? '' : 'S'), $s_hidden_fields, 'mcp_approve.html');
 	}

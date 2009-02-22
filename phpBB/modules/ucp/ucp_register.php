@@ -119,7 +119,7 @@ class ucp_register
 				$coppa_birthday = phpbb::$user->format_date(mktime($now['hours'] + phpbb::$user->data['user_dst'], $now['minutes'], $now['seconds'], $now['mon'], $now['mday'] - 1, $now['year'] - 13), phpbb::$user->lang['DATE_FORMAT']);
 				unset($now);
 
-				$template->assign_vars(array(
+				phpbb::$template->assign_vars(array(
 					'L_COPPA_NO'		=> sprintf(phpbb::$user->lang['UCP_COPPA_BEFORE'], $coppa_birthday),
 					'L_COPPA_YES'		=> sprintf(phpbb::$user->lang['UCP_COPPA_ON_AFTER'], $coppa_birthday),
 
@@ -133,15 +133,14 @@ class ucp_register
 			}
 			else
 			{
-				$template->assign_vars(array(
+				phpbb::$template->assign_vars(array(
 					'L_TERMS_OF_USE'	=> sprintf(phpbb::$user->lang['TERMS_OF_USE_CONTENT'], phpbb::$config['sitename'], generate_board_url()),
 
 					'S_SHOW_COPPA'		=> false,
 					'S_REGISTRATION'	=> true,
 					'S_HIDDEN_FIELDS'	=> build_hidden_fields($s_hidden_fields),
 					'S_UCP_ACTION'		=> append_sid('ucp', 'mode=register' . $add_lang . $add_coppa),
-					)
-				);
+				));
 			}
 
 			$this->tpl_name = 'ucp_agreement';
@@ -434,7 +433,7 @@ class ucp_register
 				$str = '';
 			}
 
-			$template->assign_vars(array(
+			phpbb::$template->assign_vars(array(
 				'L_CONFIRM_EXPLAIN'		=> sprintf(phpbb::$user->lang['CONFIRM_EXPLAIN'], '<a href="mailto:' . htmlspecialchars(phpbb::$config['board_contact']) . '">', '</a>'),
 				'S_CAPTCHA'				=> $captcha->get_template(),
 			));
@@ -453,7 +452,7 @@ class ucp_register
 			break;
 		}
 
-		$template->assign_vars(array(
+		phpbb::$template->assign_vars(array(
 			'ERROR'				=> (sizeof($error)) ? implode('<br />', $error) : '',
 			'USERNAME'			=> $data['username'],
 			'PASSWORD'			=> $data['new_password'],
@@ -470,8 +469,7 @@ class ucp_register
 			'S_COPPA'			=> $coppa,
 			'S_HIDDEN_FIELDS'	=> $s_hidden_fields,
 			'S_UCP_ACTION'		=> append_sid('ucp', 'mode=register'),
-			)
-		);
+		));
 
 		//
 		phpbb::$user->profile_fields = array();

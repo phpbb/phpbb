@@ -166,7 +166,7 @@ class mcp_logs
 		$log_count = 0;
 		view_log('mod', $log_data, $log_count, phpbb::$config['topics_per_page'], $start, $forum_list, $topic_id, 0, $sql_where, $sql_sort);
 
-		$template->assign_vars(array(
+		phpbb::$template->assign_vars(array(
 			'PAGE_NUMBER'		=> on_page($log_count, phpbb::$config['topics_per_page'], $start),
 			'TOTAL'				=> ($log_count == 1) ? phpbb::$user->lang['TOTAL_LOG'] : sprintf(phpbb::$user->lang['TOTAL_LOGS'], $log_count),
 			'PAGINATION'		=> generate_pagination($this->u_action . "&amp;$u_sort_param", $log_count, phpbb::$config['topics_per_page'], $start),
@@ -179,8 +179,7 @@ class mcp_logs
 			'S_SELECT_SORT_KEY'		=> $s_sort_key,
 			'S_SELECT_SORT_DAYS'	=> $s_limit_days,
 			'S_LOGS'				=> ($log_count > 0),
-			)
-		);
+		));
 
 		foreach ($log_data as $row)
 		{
@@ -195,15 +194,14 @@ class mcp_logs
 				}
 			}
 
-			$template->assign_block_vars('log', array(
+			phpbb::$template->assign_block_vars('log', array(
 				'USERNAME'		=> $row['username_full'],
 				'IP'			=> $row['ip'],
 				'DATE'			=> phpbb::$user->format_date($row['time']),
 				'ACTION'		=> $row['action'],
 				'DATA'			=> (sizeof($data)) ? implode(' | ', $data) : '',
 				'ID'			=> $row['id'],
-				)
-			);
+			));
 		}
 	}
 }

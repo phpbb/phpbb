@@ -85,9 +85,9 @@ class acp_prune
 				$prunedate_posted = time() - ($prune_posted * 86400);
 				$prunedate_viewed = time() - ($prune_viewed * 86400);
 
-				$template->assign_vars(array(
-					'S_PRUNED'		=> true)
-				);
+				phpbb::$template->assign_vars(array(
+					'S_PRUNED'		=> true,
+				));
 
 				$sql_forum = (sizeof($forum_id)) ? ' AND ' . phpbb::$db->sql_in_set('forum_id', $forum_id) : '';
 
@@ -136,11 +136,11 @@ class acp_prune
 
 						$prune_ids[] = $row['forum_id'];
 
-						$template->assign_block_vars('pruned', array(
+						phpbb::$template->assign_block_vars('pruned', array(
 							'FORUM_NAME'	=> $row['forum_name'],
 							'NUM_TOPICS'	=> $p_result['topics'],
-							'NUM_POSTS'		=> $p_result['posts'])
-						);
+							'NUM_POSTS'		=> $p_result['posts'],
+						));
 
 						$log_data .= (($log_data != '') ? ', ' : '') . $row['forum_name'];
 					}
@@ -176,11 +176,11 @@ class acp_prune
 		// display a select box to use for pruning.
 		if (!sizeof($forum_id))
 		{
-			$template->assign_vars(array(
+			phpbb::$template->assign_vars(array(
 				'U_ACTION'			=> $this->u_action,
 				'S_SELECT_FORUM'	=> true,
-				'S_FORUM_OPTIONS'	=> make_forum_select(false, false, false))
-			);
+				'S_FORUM_OPTIONS'	=> make_forum_select(false, false, false),
+			));
 		}
 		else
 		{
@@ -208,13 +208,13 @@ class acp_prune
 
 			$l_selected_forums = (sizeof($forum_id) == 1) ? 'SELECTED_FORUM' : 'SELECTED_FORUMS';
 
-			$template->assign_vars(array(
+			phpbb::$template->assign_vars(array(
 				'L_SELECTED_FORUMS'		=> phpbb::$user->lang[$l_selected_forums],
 				'U_ACTION'				=> $this->u_action,
 				'U_BACK'				=> $this->u_action,
 				'FORUM_LIST'			=> $forum_list,
-				'S_HIDDEN_FIELDS'		=> $s_hidden_fields)
-			);
+				'S_HIDDEN_FIELDS'		=> $s_hidden_fields,
+			));
 		}
 	}
 
@@ -290,14 +290,14 @@ class acp_prune
 				// Assign to template
 				foreach ($user_ids as $user_id)
 				{
-					$template->assign_block_vars('users', array(
+					phpbb::$template->assign_block_vars('users', array(
 						'USERNAME'			=> $usernames[$user_id],
 						'U_PROFILE'			=> append_sid('memberlist', 'mode=viewprofile&amp;u=' . $user_id),
 						'U_USER_ADMIN'		=> (phpbb::$acl->acl_get('a_user')) ? append_sid(PHPBB_ADMIN_PATH . 'index.' . PHP_EXT, 'i=users&amp;mode=overview&amp;u=' . $user_id, true, phpbb::$user->session_id) : '',
 					));
 				}
 
-				$template->assign_vars(array(
+				phpbb::$template->assign_vars(array(
 					'S_DEACTIVATE'		=> ($action == 'deactivate') ? true : false,
 					'S_DELETE'			=> ($action == 'delete') ? true : false,
 				));
@@ -345,7 +345,7 @@ class acp_prune
 			$s_find_active_time .= '<option value="' . $key . '">' . $value . '</option>';
 		}
 
-		$template->assign_vars(array(
+		phpbb::$template->assign_vars(array(
 			'U_ACTION'			=> $this->u_action,
 			'S_JOINED_OPTIONS'	=> $s_find_join_time,
 			'S_ACTIVE_OPTIONS'	=> $s_find_active_time,

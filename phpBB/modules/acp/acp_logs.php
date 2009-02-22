@@ -111,10 +111,10 @@ class acp_logs
 		{
 			$forum_box = '<option value="0">' . phpbb::$user->lang['ALL_FORUMS'] . '</option>' . make_forum_select($forum_id);
 
-			$template->assign_vars(array(
+			phpbb::$template->assign_vars(array(
 				'S_SHOW_FORUMS'			=> true,
-				'S_FORUM_BOX'			=> $forum_box)
-			);
+				'S_FORUM_BOX'			=> $forum_box,
+			));
 		}
 
 		// Grab log data
@@ -122,7 +122,7 @@ class acp_logs
 		$log_count = 0;
 		view_log($mode, $log_data, $log_count, phpbb::$config['topics_per_page'], $start, $forum_id, 0, 0, $sql_where, $sql_sort);
 
-		$template->assign_vars(array(
+		phpbb::$template->assign_vars(array(
 			'L_TITLE'		=> $l_title,
 			'L_EXPLAIN'		=> $l_title_explain,
 			'U_ACTION'		=> $this->u_action,
@@ -134,8 +134,7 @@ class acp_logs
 			'S_SORT_KEY'	=> $s_sort_key,
 			'S_SORT_DIR'	=> $s_sort_dir,
 			'S_CLEARLOGS'	=> phpbb::$acl->acl_get('a_clearlogs'),
-			)
-		);
+		));
 
 		foreach ($log_data as $row)
 		{
@@ -150,7 +149,7 @@ class acp_logs
 				}
 			}
 
-			$template->assign_block_vars('log', array(
+			phpbb::$template->assign_block_vars('log', array(
 				'USERNAME'			=> $row['username_full'],
 				'REPORTEE_USERNAME'	=> ($row['reportee_username'] && $row['user_id'] != $row['reportee_id']) ? $row['reportee_username_full'] : '',
 
@@ -159,8 +158,7 @@ class acp_logs
 				'ACTION'			=> $row['action'],
 				'DATA'				=> (sizeof($data)) ? implode(' | ', $data) : '',
 				'ID'				=> $row['id'],
-				)
-			);
+			));
 		}
 	}
 }

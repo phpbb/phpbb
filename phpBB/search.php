@@ -50,14 +50,14 @@ $search_forum	= request_var('fid', array(0));
 // Is user able to search? Has search been disabled?
 if (!phpbb::$acl->acl_get('u_search') || !phpbb::$acl->acl_getf_global('f_search') || !phpbb::$config['load_search'])
 {
-	$template->assign_var('S_NO_SEARCH', true);
+	phpbb::$template->assign_var('S_NO_SEARCH', true);
 	trigger_error('NO_SEARCH');
 }
 
 // Check search load limit
 if (phpbb::$user->system['load'] && phpbb::$config['limit_search_load'] && (phpbb::$user->system['load'] > doubleval(phpbb::$config['limit_search_load'])))
 {
-	$template->assign_var('S_NO_SEARCH', true);
+	phpbb::$template->assign_var('S_NO_SEARCH', true);
 	trigger_error('NO_SEARCH_TIME');
 }
 
@@ -67,7 +67,7 @@ if ($interval && !phpbb::$acl->acl_get('u_ignoreflood'))
 {
 	if (phpbb::$user->data['user_last_search'] > time() - $interval)
 	{
-		$template->assign_var('S_NO_SEARCH', true);
+		phpbb::$template->assign_var('S_NO_SEARCH', true);
 		trigger_error('NO_SEARCH_TIME');
 	}
 }
@@ -485,7 +485,7 @@ if ($keywords || $author || $author_id || $search_id || $submit)
 	$u_search .= ($search_fields != 'all') ? '&amp;sf=' . $search_fields : '';
 	$u_search .= ($return_chars != 300) ? '&amp;ch=' . $return_chars : '';
 
-	$template->assign_vars(array(
+	phpbb::$template->assign_vars(array(
 		'SEARCH_TITLE'		=> $l_search_title,
 		'SEARCH_MATCHES'	=> $l_search_matches,
 		'SEARCH_WORDS'		=> $search->search_query,
@@ -837,11 +837,11 @@ if ($keywords || $author || $author_id || $search_id || $submit)
 			{
 				if ((isset($zebra['foe']) && in_array($row['poster_id'], $zebra['foe'])) && (!$view || $view != 'show' || $post_id != $row['post_id']))
 				{
-					$template->assign_block_vars('searchresults', array(
+					phpbb::$template->assign_block_vars('searchresults', array(
 						'S_IGNORE_POST' => true,
 
-						'L_IGNORE_POST' => sprintf(phpbb::$user->lang['POST_BY_FOE'], $row['username'], "<a href=\"$u_search&amp;start=$start&amp;p=" . $row['post_id'] . '&amp;view=show#p' . $row['post_id'] . '">', '</a>'))
-					);
+						'L_IGNORE_POST' => sprintf(phpbb::$user->lang['POST_BY_FOE'], $row['username'], "<a href=\"$u_search&amp;start=$start&amp;p=" . $row['post_id'] . '&amp;view=show#p' . $row['post_id'] . '">', '</a>'),
+					));
 
 					continue;
 				}
@@ -894,7 +894,7 @@ if ($keywords || $author || $author_id || $search_id || $submit)
 				);
 			}
 
-			$template->assign_block_vars('searchresults', array_merge($tpl_ary, array(
+			phpbb::$template->assign_block_vars('searchresults', array_merge($tpl_ary, array(
 				'FORUM_ID'			=> $forum_id,
 				'TOPIC_ID'			=> $result_topic_id,
 				'POST_ID'			=> ($show_results == 'posts') ? $row['post_id'] : false,
@@ -912,7 +912,7 @@ if ($keywords || $author || $author_id || $search_id || $submit)
 
 		if ($topic_id && ($topic_id == $result_topic_id))
 		{
-			$template->assign_vars(array(
+			phpbb::$template->assign_vars(array(
 				'SEARCH_TOPIC'		=> $topic_title,
 				'U_SEARCH_TOPIC'	=> $view_topic_url
 			));
@@ -922,9 +922,9 @@ if ($keywords || $author || $author_id || $search_id || $submit)
 
 	page_header(($l_search_title) ? $l_search_title : phpbb::$user->lang['SEARCH']);
 
-	$template->set_filenames(array(
-		'body' => 'search_results.html')
-	);
+	phpbb::$template->set_filenames(array(
+		'body' => 'search_results.html',
+	));
 	make_jumpbox(append_sid('viewforum'));
 
 	page_footer();
@@ -1058,7 +1058,7 @@ if (!empty($_EXTRA_URL))
 	}
 }
 
-$template->assign_vars(array(
+phpbb::$template->assign_vars(array(
 	'S_SEARCH_ACTION'		=> append_sid('search', false, true, 0), // We force no ?sid= appending by using 0
 	'S_HIDDEN_FIELDS'		=> build_hidden_fields($s_hidden_fields),
 	'S_CHARACTER_OPTIONS'	=> $s_characters,
@@ -1082,7 +1082,7 @@ if (phpbb::$acl->acl_get('a_search'))
 	{
 		$keywords = $row['search_keywords'];
 
-		$template->assign_block_vars('recentsearch', array(
+		phpbb::$template->assign_block_vars('recentsearch', array(
 			'KEYWORDS'	=> $keywords,
 			'TIME'		=> phpbb::$user->format_date($row['search_time']),
 
@@ -1095,9 +1095,9 @@ if (phpbb::$acl->acl_get('a_search'))
 // Output the basic page
 page_header(phpbb::$user->lang['SEARCH']);
 
-$template->set_filenames(array(
-	'body' => 'search_body.html')
-);
+phpbb::$template->set_filenames(array(
+	'body' => 'search_body.html',
+));
 make_jumpbox(append_sid('viewforum'));
 
 page_footer();

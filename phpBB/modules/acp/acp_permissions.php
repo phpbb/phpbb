@@ -144,9 +144,9 @@ class acp_permissions
 		{
 			$this->page_title = 'ACP_PERMISSIONS';
 
-			$template->assign_vars(array(
-				'S_INTRO'		=> true)
-			);
+			phpbb::$template->assign_vars(array(
+				'S_INTRO'		=> true,
+			));
 
 			return;
 		}
@@ -201,10 +201,10 @@ class acp_permissions
 			break;
 		}
 
-		$template->assign_vars(array(
+		phpbb::$template->assign_vars(array(
 			'L_TITLE'		=> phpbb::$user->lang[$this->page_title],
-			'L_EXPLAIN'		=> phpbb::$user->lang[$this->page_title . '_EXPLAIN'])
-		);
+			'L_EXPLAIN'		=> phpbb::$user->lang[$this->page_title . '_EXPLAIN'],
+		));
 
 		// Get permission type
 		$permission_type = request_var('type', $this->permission_dropdown[0]);
@@ -304,10 +304,10 @@ class acp_permissions
 						continue 2;
 					}
 
-					$template->assign_vars(array(
+					phpbb::$template->assign_vars(array(
 						'S_SELECT_FORUM'		=> true,
-						'S_FORUM_OPTIONS'		=> make_forum_select(false, false, true, false, false))
-					);
+						'S_FORUM_OPTIONS'		=> make_forum_select(false, false, true, false, false),
+					));
 
 				break;
 
@@ -331,13 +331,13 @@ class acp_permissions
 					// Build subforum options
 					$s_subforum_options = $this->build_subforum_options($forum_list);
 
-					$template->assign_vars(array(
+					phpbb::$template->assign_vars(array(
 						'S_SELECT_FORUM'		=> true,
 						'S_FORUM_OPTIONS'		=> $s_forum_options,
 						'S_SUBFORUM_OPTIONS'	=> $s_subforum_options,
 						'S_FORUM_ALL'			=> true,
-						'S_FORUM_MULTIPLE'		=> true)
-					);
+						'S_FORUM_MULTIPLE'		=> true,
+					));
 
 				break;
 
@@ -349,7 +349,7 @@ class acp_permissions
 						continue 2;
 					}
 
-					$template->assign_vars(array(
+					phpbb::$template->assign_vars(array(
 						'S_SELECT_USER'			=> true,
 						'U_FIND_USERNAME'		=> append_sid('memberlist', 'mode=searchuser&amp;form=select_victim&amp;field=username&amp;select_single=true'),
 					));
@@ -364,10 +364,10 @@ class acp_permissions
 						continue 2;
 					}
 
-					$template->assign_vars(array(
+					phpbb::$template->assign_vars(array(
 						'S_SELECT_GROUP'		=> true,
-						'S_GROUP_OPTIONS'		=> group_select_options(false, false, ((phpbb::$user->is_founder) ? false : 0)))
-					);
+						'S_GROUP_OPTIONS'		=> group_select_options(false, false, ((phpbb::$user->is_founder) ? false : 0)),
+					));
 
 				break;
 
@@ -407,7 +407,7 @@ class acp_permissions
 						continue 2;
 					}
 
-					$template->assign_vars(array(
+					phpbb::$template->assign_vars(array(
 						'S_SELECT_USERGROUP'		=> ($victim == 'usergroup') ? true : false,
 						'S_SELECT_USERGROUP_VIEW'	=> ($victim == 'usergroup_view') ? true : false,
 						'S_DEFINED_USER_OPTIONS'	=> $items['user_ids_options'],
@@ -423,7 +423,7 @@ class acp_permissions
 			// If there are more than 5 forums selected the admin is not able to select all users/groups too.
 			// We need to see if the number of forums can be increased or need to be decreased.
 
-			$template->assign_vars(array(
+			phpbb::$template->assign_vars(array(
 				'U_ACTION'				=> $this->u_action,
 				'ANONYMOUS_USER_ID'		=> ANONYMOUS,
 
@@ -431,8 +431,8 @@ class acp_permissions
 				'S_ALLOW_ALL_SELECT'	=> (sizeof($forum_id) > 5) ? false : true,
 				'S_CAN_SELECT_USER'		=> (phpbb::$acl->acl_get('a_authusers')) ? true : false,
 				'S_CAN_SELECT_GROUP'	=> (phpbb::$acl->acl_get('a_authgroups')) ? true : false,
-				'S_HIDDEN_FIELDS'		=> $s_hidden_fields)
-			);
+				'S_HIDDEN_FIELDS'		=> $s_hidden_fields,
+			));
 
 			// Let the forum names being displayed
 			if (sizeof($forum_id))
@@ -450,10 +450,10 @@ class acp_permissions
 				}
 				phpbb::$db->sql_freeresult($result);
 
-				$template->assign_vars(array(
+				phpbb::$template->assign_vars(array(
 					'S_FORUM_NAMES'		=> (sizeof($forum_names)) ? true : false,
-					'FORUM_NAMES'		=> implode(', ', $forum_names))
-				);
+					'FORUM_NAMES'		=> implode(', ', $forum_names),
+				));
 			}
 
 			return;
@@ -465,28 +465,28 @@ class acp_permissions
 			trigger_error(phpbb::$user->lang['ONLY_FORUM_DEFINED'] . adm_back_link($this->u_action), E_USER_WARNING);
 		}
 
-		$template->assign_vars(array(
+		phpbb::$template->assign_vars(array(
 			'S_PERMISSION_DROPDOWN'		=> (sizeof($this->permission_dropdown) > 1) ? $this->build_permission_dropdown($this->permission_dropdown, $permission_type, $permission_scope) : false,
 			'L_PERMISSION_TYPE'			=> phpbb::$user->lang['ACL_TYPE_' . strtoupper($permission_type)],
 
 			'U_ACTION'					=> $this->u_action,
-			'S_HIDDEN_FIELDS'			=> $s_hidden_fields)
-		);
+			'S_HIDDEN_FIELDS'			=> $s_hidden_fields,
+		));
 
 		if (strpos($mode, 'setting_') === 0)
 		{
-			$template->assign_vars(array(
-				'S_SETTING_PERMISSIONS'		=> true)
-			);
+			phpbb::$template->assign_vars(array(
+				'S_SETTING_PERMISSIONS'		=> true,
+			));
 
 			$hold_ary = $auth_admin->get_mask('set', (sizeof($user_id)) ? $user_id : false, (sizeof($group_id)) ? $group_id : false, (sizeof($forum_id)) ? $forum_id : false, $permission_type, $permission_scope, phpbb::ACL_NO);
 			$auth_admin->display_mask('set', $permission_type, $hold_ary, ((sizeof($user_id)) ? 'user' : 'group'), (($permission_scope == 'local') ? true : false));
 		}
 		else
 		{
-			$template->assign_vars(array(
-				'S_VIEWING_PERMISSIONS'		=> true)
-			);
+			phpbb::$template->assign_vars(array(
+				'S_VIEWING_PERMISSIONS'		=> true,
+			));
 
 			$hold_ary = $auth_admin->get_mask('view', (sizeof($user_id)) ? $user_id : false, (sizeof($group_id)) ? $group_id : false, (sizeof($forum_id)) ? $forum_id : false, $permission_type, $permission_scope, phpbb::ACL_NEVER);
 			$auth_admin->display_mask('view', $permission_type, $hold_ary, ((sizeof($user_id)) ? 'user' : 'group'), (($permission_scope == 'local') ? true : false));
@@ -899,23 +899,23 @@ class acp_permissions
 
 		$back = request_var('back', 0);
 
-		$template->assign_vars(array(
+		phpbb::$template->assign_vars(array(
 			'PERMISSION'			=> phpbb::$user->lang['acl_' . $permission]['lang'],
 			'PERMISSION_USERNAME'	=> $userdata['username'],
 			'FORUM_NAME'			=> $forum_name,
 
 			'S_GLOBAL_TRACE'		=> ($forum_id) ? false : true,
 
-			'U_BACK'				=> ($back) ? build_url(array('f', 'back')) . "&amp;f=$back" : '')
-		);
+			'U_BACK'				=> ($back) ? build_url(array('f', 'back')) . "&amp;f=$back" : '',
+		));
 
-		$template->assign_block_vars('trace', array(
+		phpbb::$template->assign_block_vars('trace', array(
 			'WHO'			=> phpbb::$user->lang['DEFAULT'],
 			'INFORMATION'	=> phpbb::$user->lang['TRACE_DEFAULT'],
 
 			'S_SETTING_NO'		=> true,
-			'S_TOTAL_NO'		=> true)
-		);
+			'S_TOTAL_NO'		=> true,
+		));
 
 		$sql = 'SELECT DISTINCT g.group_name, g.group_id, g.group_type
 			FROM ' . GROUPS_TABLE . ' g
@@ -968,7 +968,7 @@ class acp_permissions
 					break;
 				}
 
-				$template->assign_block_vars('trace', array(
+				phpbb::$template->assign_block_vars('trace', array(
 					'WHO'			=> $row['group_name'],
 					'INFORMATION'	=> $information,
 
@@ -977,8 +977,8 @@ class acp_permissions
 					'S_SETTING_NEVER'	=> ($row['auth_setting'] == phpbb::ACL_NEVER) ? true : false,
 					'S_TOTAL_NO'		=> ($total == phpbb::ACL_NO) ? true : false,
 					'S_TOTAL_YES'		=> ($total == phpbb::ACL_YES) ? true : false,
-					'S_TOTAL_NEVER'		=> ($total == phpbb::ACL_NEVER) ? true : false)
-				);
+					'S_TOTAL_NEVER'		=> ($total == phpbb::ACL_NEVER) ? true : false,
+				));
 			}
 		}
 
@@ -1004,7 +1004,7 @@ class acp_permissions
 			break;
 		}
 
-		$template->assign_block_vars('trace', array(
+		phpbb::$template->assign_block_vars('trace', array(
 			'WHO'			=> $userdata['username'],
 			'INFORMATION'	=> $information,
 
@@ -1013,8 +1013,8 @@ class acp_permissions
 			'S_SETTING_NEVER'	=> ($auth_setting == phpbb::ACL_NEVER) ? true : false,
 			'S_TOTAL_NO'		=> false,
 			'S_TOTAL_YES'		=> ($total == phpbb::ACL_YES) ? true : false,
-			'S_TOTAL_NEVER'		=> ($total == phpbb::ACL_NEVER) ? true : false)
-		);
+			'S_TOTAL_NEVER'		=> ($total == phpbb::ACL_NEVER) ? true : false,
+		));
 
 		if ($forum_id != 0 && isset(phpbb::$acl->acl_options['global'][$permission]))
 		{
@@ -1042,7 +1042,7 @@ class acp_permissions
 			// If there is no auth information we do not need to worry the user by showing non-relevant data.
 			if ($auth_setting)
 			{
-				$template->assign_block_vars('trace', array(
+				phpbb::$template->assign_block_vars('trace', array(
 					'WHO'			=> sprintf(phpbb::$user->lang['TRACE_GLOBAL_SETTING'], $userdata['username']),
 					'INFORMATION'	=> sprintf($information, '<a href="' . $this->u_action . "&amp;u=$user_id&amp;f=0&amp;auth=$permission&amp;back=$forum_id\">", '</a>'),
 
@@ -1051,15 +1051,15 @@ class acp_permissions
 					'S_SETTING_NEVER'	=> !$auth_setting,
 					'S_TOTAL_NO'		=> false,
 					'S_TOTAL_YES'		=> ($total == phpbb::ACL_YES) ? true : false,
-					'S_TOTAL_NEVER'		=> ($total == phpbb::ACL_NEVER) ? true : false)
-				);
+					'S_TOTAL_NEVER'		=> ($total == phpbb::ACL_NEVER) ? true : false,
+				));
 			}
 		}
 
 		// Take founder status into account, overwriting the default values
 		if ($userdata['user_type'] == phpbb::USER_FOUNDER && strpos($permission, 'a_') === 0)
 		{
-			$template->assign_block_vars('trace', array(
+			phpbb::$template->assign_block_vars('trace', array(
 				'WHO'			=> $userdata['username'],
 				'INFORMATION'	=> phpbb::$user->lang['TRACE_USER_FOUNDER'],
 
@@ -1068,14 +1068,14 @@ class acp_permissions
 				'S_SETTING_NEVER'	=> ($auth_setting == phpbb::ACL_NEVER) ? true : false,
 				'S_TOTAL_NO'		=> false,
 				'S_TOTAL_YES'		=> true,
-				'S_TOTAL_NEVER'		=> false)
-			);
+				'S_TOTAL_NEVER'		=> false,
+			));
 
 			$total = phpbb::ACL_YES;
 		}
 
 		// Total value...
-		$template->assign_vars(array(
+		phpbb::$template->assign_vars(array(
 			'S_RESULT_NO'		=> ($total == phpbb::ACL_NO) ? true : false,
 			'S_RESULT_YES'		=> ($total == phpbb::ACL_YES) ? true : false,
 			'S_RESULT_NEVER'	=> ($total == phpbb::ACL_NEVER) ? true : false,

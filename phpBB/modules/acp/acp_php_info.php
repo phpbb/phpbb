@@ -74,7 +74,7 @@ class acp_php_info
 		preg_match_all('#<div class="center">(.*)</div>#siU', $output, $output);
 		$output = (!empty($output[1][0])) ? $output[1][0] : $orig_output;
 
-		$template->assign_var('PHPINFO', $output);
+		phpbb::$template->assign_var('PHPINFO', $output);
 	}
 }
 

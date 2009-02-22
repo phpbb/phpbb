@@ -97,7 +97,7 @@ class acp_ban
 
 		self::display_ban_options($mode);
 
-		$template->assign_vars(array(
+		phpbb::$template->assign_vars(array(
 			'L_TITLE'				=> $this->page_title,
 			'L_EXPLAIN'				=> $l_ban_explain,
 			'L_UNBAN_TITLE'			=> $l_unban_title,
@@ -187,7 +187,7 @@ class acp_ban
 		{
 			foreach ($ban_length as $ban_id => $length)
 			{
-				$template->assign_block_vars('ban_length', array(
+				phpbb::$template->assign_block_vars('ban_length', array(
 					'BAN_ID'	=> (int) $ban_id,
 					'LENGTH'	=> $length,
 					'A_LENGTH'	=> addslashes($length),
@@ -199,7 +199,7 @@ class acp_ban
 		{
 			foreach ($ban_reasons as $ban_id => $reason)
 			{
-				$template->assign_block_vars('ban_reason', array(
+				phpbb::$template->assign_block_vars('ban_reason', array(
 					'BAN_ID'	=> $ban_id,
 					'REASON'	=> $reason,
 					'A_REASON'	=> addslashes(htmlspecialchars_decode($reason)),
@@ -211,7 +211,7 @@ class acp_ban
 		{
 			foreach ($ban_give_reasons as $ban_id => $reason)
 			{
-				$template->assign_block_vars('ban_give_reason', array(
+				phpbb::$template->assign_block_vars('ban_give_reason', array(
 					'BAN_ID'	=> $ban_id,
 					'REASON'	=> $reason,
 					'A_REASON'	=> addslashes(htmlspecialchars_decode($reason)),
@@ -219,11 +219,11 @@ class acp_ban
 			}
 		}
 
-		$template->assign_vars(array(
+		phpbb::$template->assign_vars(array(
 			'S_BAN_END_OPTIONS'	=> $ban_end_options,
 			'S_BANNED_OPTIONS'	=> ($banned_options) ? true : false,
-			'BANNED_OPTIONS'	=> $banned_options)
-		);
+			'BANNED_OPTIONS'	=> $banned_options,
+		));
 	}
 }
 

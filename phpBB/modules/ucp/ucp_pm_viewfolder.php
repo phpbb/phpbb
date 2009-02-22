@@ -53,11 +53,11 @@ function view_folder($id, $mode, $folder_id, $folder)
 
 		foreach ($color_rows as $var)
 		{
-			$template->assign_block_vars('pm_colour_info', array(
+			phpbb::$template->assign_block_vars('pm_colour_info', array(
 				'IMG'	=> phpbb::$user->img("pm_{$var}", ''),
 				'CLASS'	=> "pm_{$var}_colour",
-				'LANG'	=> phpbb::$user->lang[strtoupper($var) . '_MESSAGE'])
-			);
+				'LANG'	=> phpbb::$user->lang[strtoupper($var) . '_MESSAGE'],
+			));
 		}
 
 		$mark_options = array('mark_important', 'delete_marked');
@@ -99,10 +99,10 @@ function view_folder($id, $mode, $folder_id, $folder)
 		}
 		phpbb::$db->sql_freeresult($result);
 
-		$template->assign_vars(array(
+		phpbb::$template->assign_vars(array(
 			'S_MARK_OPTIONS'		=> $s_mark_options,
-			'S_MOVE_MARKED_OPTIONS'	=> $s_folder_move_options)
-		);
+			'S_MOVE_MARKED_OPTIONS'	=> $s_folder_move_options,
+		));
 
 		// Okay, lets dump out the page ...
 		if (sizeof($folder_info['pm_list']))
@@ -212,7 +212,7 @@ function view_folder($id, $mode, $folder_id, $folder)
 				}
 
 				// Send vars to template
-				$template->assign_block_vars('messagerow', array(
+				phpbb::$template->assign_block_vars('messagerow', array(
 					'PM_CLASS'			=> ($row_indicator) ? 'pm_' . $row_indicator . '_colour' : '',
 
 					'MESSAGE_AUTHOR_FULL'		=> get_username_string('full', $row['author_id'], $row['username'], $row['user_colour'], $row['username']),
@@ -238,17 +238,17 @@ function view_folder($id, $mode, $folder_id, $folder)
 
 					'U_VIEW_PM'			=> ($row['pm_deleted']) ? '' : $view_message_url,
 					'U_REMOVE_PM'		=> ($row['pm_deleted']) ? $remove_message_url : '',
-					'RECIPIENTS'		=> ($folder_id == PRIVMSGS_OUTBOX || $folder_id == PRIVMSGS_SENTBOX) ? implode(', ', $address_list[$message_id]) : '')
-				);
+					'RECIPIENTS'		=> ($folder_id == PRIVMSGS_OUTBOX || $folder_id == PRIVMSGS_SENTBOX) ? implode(', ', $address_list[$message_id]) : '',
+				));
 			}
 			unset($folder_info['rowset']);
 
-			$template->assign_vars(array(
+			phpbb::$template->assign_vars(array(
 				'S_SHOW_RECIPIENTS'		=> ($folder_id == PRIVMSGS_OUTBOX || $folder_id == PRIVMSGS_SENTBOX) ? true : false,
 				'S_SHOW_COLOUR_LEGEND'	=> true,
 
-				'S_PM_ICONS'			=> (phpbb::$config['enable_pm_icons']) ? true : false)
-			);
+				'S_PM_ICONS'			=> (phpbb::$config['enable_pm_icons']) ? true : false,
+			));
 		}
 	}
 	else
@@ -259,7 +259,7 @@ function view_folder($id, $mode, $folder_id, $folder)
 
 		if ($export_type == 'CSV' && ($delimiter === '' || $enclosure === ''))
 		{
-			$template->assign_var('PROMPT', true);
+			phpbb::$template->assign_var('PROMPT', true);
 		}
 		else
 		{
@@ -492,7 +492,7 @@ function get_pm_from($folder_id, $folder, $user_id)
 		$sql_limit_time = '';
 	}
 
-	$template->assign_vars(array(
+	phpbb::$template->assign_vars(array(
 		'PAGINATION'		=> generate_pagination(append_sid('ucp', "i=pm&amp;mode=view&amp;action=view_folder&amp;f=$folder_id&amp;$u_sort_param"), $pm_count, phpbb::$config['topics_per_page'], $start),
 		'PAGE_NUMBER'		=> on_page($pm_count, phpbb::$config['topics_per_page'], $start),
 		'TOTAL_MESSAGES'	=> (($pm_count == 1) ? phpbb::$user->lang['VIEW_PM_MESSAGE'] : sprintf(phpbb::$user->lang['VIEW_PM_MESSAGES'], $pm_count)),
@@ -507,8 +507,8 @@ function get_pm_from($folder_id, $folder, $user_id)
 		'S_TOPIC_ICONS'			=> (phpbb::$config['enable_pm_icons']) ? true : false,
 
 		'U_POST_NEW_TOPIC'	=> (phpbb::$acl->acl_get('u_sendpm')) ? append_sid('ucp', 'i=pm&amp;mode=compose') : '',
-		'S_PM_ACTION'		=> append_sid('ucp', "i=pm&amp;mode=view&amp;action=view_folder&amp;f=$folder_id" . (($start !== 0) ? "&amp;start=$start" : '')))
-	);
+		'S_PM_ACTION'		=> append_sid('ucp', "i=pm&amp;mode=view&amp;action=view_folder&amp;f=$folder_id" . (($start !== 0) ? "&amp;start=$start" : '')),
+	));
 
 	// Grab all pm data
 	$rowset = $pm_list = array();

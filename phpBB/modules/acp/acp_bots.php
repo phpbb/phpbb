@@ -328,7 +328,7 @@ class acp_bots
 
 				$l_title = ($action == 'edit') ? 'EDIT' : 'ADD';
 
-				$template->assign_vars(array(
+				phpbb::$template->assign_vars(array(
 					'L_TITLE'		=> phpbb::$user->lang['BOT_' . $l_title],
 					'U_ACTION'		=> $this->u_action . "&amp;id=$bot_id&amp;action=$action",
 					'U_BACK'		=> $this->u_action,
@@ -343,8 +343,7 @@ class acp_bots
 					'S_STYLE_OPTIONS'	=> $style_select,
 					'S_LANG_OPTIONS'	=> $lang_select,
 					'S_ERROR'			=> (sizeof($error)) ? true : false,
-					)
-				);
+				));
 
 				return;
 
@@ -358,10 +357,10 @@ class acp_bots
 			$s_options .= '<option value="' . $value . '">' . phpbb::$user->lang[$lang] . '</option>';
 		}
 
-		$template->assign_vars(array(
+		phpbb::$template->assign_vars(array(
 			'U_ACTION'		=> $this->u_action,
-			'S_BOT_OPTIONS'	=> $s_options)
-		);
+			'S_BOT_OPTIONS'	=> $s_options,
+		));
 
 		$sql = 'SELECT b.bot_id, b.bot_name, b.bot_active, u.user_lastvisit
 			FROM ' . BOTS_TABLE . ' b, ' . USERS_TABLE . ' u
@@ -374,7 +373,7 @@ class acp_bots
 			$active_lang = (!$row['bot_active']) ? 'BOT_ACTIVATE' : 'BOT_DEACTIVATE';
 			$active_value = (!$row['bot_active']) ? 'activate' : 'deactivate';
 
-			$template->assign_block_vars('bots', array(
+			phpbb::$template->assign_block_vars('bots', array(
 				'BOT_NAME'		=> $row['bot_name'],
 				'BOT_ID'		=> $row['bot_id'],
 				'LAST_VISIT'	=> ($row['user_lastvisit']) ? phpbb::$user->format_date($row['user_lastvisit']) : phpbb::$user->lang['BOT_NEVER'],
@@ -382,8 +381,8 @@ class acp_bots
 				'U_ACTIVATE_DEACTIVATE'	=> $this->u_action . "&amp;id={$row['bot_id']}&amp;action=$active_value",
 				'L_ACTIVATE_DEACTIVATE'	=> phpbb::$user->lang[$active_lang],
 				'U_EDIT'				=> $this->u_action . "&amp;id={$row['bot_id']}&amp;action=edit",
-				'U_DELETE'				=> $this->u_action . "&amp;id={$row['bot_id']}&amp;action=delete")
-			);
+				'U_DELETE'				=> $this->u_action . "&amp;id={$row['bot_id']}&amp;action=delete",
+			));
 		}
 		phpbb::$db->sql_freeresult($result);
 	}

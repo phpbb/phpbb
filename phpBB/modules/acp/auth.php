@@ -369,7 +369,7 @@ class auth_admin extends auth
 			$s_role_js_array = implode('', $s_role_js_array);
 		}
 
-		$template->assign_var('S_ROLE_JS_ARRAY', $s_role_js_array);
+		phpbb::$template->assign_var('S_ROLE_JS_ARRAY', $s_role_js_array);
 		unset($s_role_js_array);
 
 		// Now obtain memberships
@@ -432,7 +432,7 @@ class auth_admin extends auth
 				$content_array = $categories = array();
 				self::build_permission_array($hold_ary[$forum_id], $content_array, $categories, array_keys($ug_names_ary));
 
-				$template->assign_block_vars($tpl_pmask, array(
+				phpbb::$template->assign_block_vars($tpl_pmask, array(
 					'NAME'			=> ($forum_id == 0) ? $forum_names_ary[0] : $forum_names_ary[$forum_id]['forum_name'],
 					'PADDING'		=> ($forum_id == 0) ? '' : $forum_names_ary[$forum_id]['padding'],
 
@@ -446,8 +446,8 @@ class auth_admin extends auth
 					'S_VIEW'		=> ($mode == 'view') ? true : false,
 					'S_NUM_OBJECTS'	=> sizeof($content_array),
 					'S_USER_MODE'	=> ($user_mode == 'user') ? true : false,
-					'S_GROUP_MODE'	=> ($user_mode == 'group') ? true : false)
-				);
+					'S_GROUP_MODE'	=> ($user_mode == 'group') ? true : false,
+				));
 
 				@reset($content_array);
 				while (list($ug_id, $ug_array) = each($content_array))
@@ -490,13 +490,13 @@ class auth_admin extends auth
 						$s_custom_permissions = false;
 					}
 
-					$template->assign_block_vars($tpl_pmask . '.' . $tpl_fmask, array(
+					phpbb::$template->assign_block_vars($tpl_pmask . '.' . $tpl_fmask, array(
 						'NAME'				=> $ug_names_ary[$ug_id],
 						'S_ROLE_OPTIONS'	=> $s_role_options,
 						'UG_ID'				=> $ug_id,
 						'S_CUSTOM'			=> $s_custom_permissions,
-						'FORUM_ID'			=> $forum_id)
-					);
+						'FORUM_ID'			=> $forum_id,
+					));
 
 					self::assign_cat_array($ug_array, $tpl_pmask . '.' . $tpl_fmask . '.' . $tpl_category, $tpl_mask, $ug_id, $forum_id, $show_trace, ($mode == 'view'));
 
@@ -518,7 +518,7 @@ class auth_admin extends auth
 				$content_array = $categories = array();
 				self::build_permission_array($hold_ary[$ug_id], $content_array, $categories, array_keys($forum_names_ary));
 
-				$template->assign_block_vars($tpl_pmask, array(
+				phpbb::$template->assign_block_vars($tpl_pmask, array(
 					'NAME'			=> $ug_name,
 					'CATEGORIES'	=> implode('</th><th>', $categories),
 
@@ -532,8 +532,8 @@ class auth_admin extends auth
 					'S_VIEW'		=> ($mode == 'view') ? true : false,
 					'S_NUM_OBJECTS'	=> sizeof($content_array),
 					'S_USER_MODE'	=> ($user_mode == 'user') ? true : false,
-					'S_GROUP_MODE'	=> ($user_mode == 'group') ? true : false)
-				);
+					'S_GROUP_MODE'	=> ($user_mode == 'group') ? true : false,
+				));
 
 				@reset($content_array);
 				while (list($forum_id, $forum_array) = each($content_array))
@@ -576,14 +576,14 @@ class auth_admin extends auth
 						$s_custom_permissions = false;
 					}
 
-					$template->assign_block_vars($tpl_pmask . '.' . $tpl_fmask, array(
+					phpbb::$template->assign_block_vars($tpl_pmask . '.' . $tpl_fmask, array(
 						'NAME'				=> ($forum_id == 0) ? $forum_names_ary[0] : $forum_names_ary[$forum_id]['forum_name'],
 						'PADDING'			=> ($forum_id == 0) ? '' : $forum_names_ary[$forum_id]['padding'],
 						'S_ROLE_OPTIONS'	=> $s_role_options,
 						'S_CUSTOM'			=> $s_custom_permissions,
 						'UG_ID'				=> $ug_id,
-						'FORUM_ID'			=> $forum_id)
-					);
+						'FORUM_ID'			=> $forum_id,
+					));
 
 					self::assign_cat_array($forum_array, $tpl_pmask . '.' . $tpl_fmask . '.' . $tpl_category, $tpl_mask, $ug_id, $forum_id, $show_trace, ($mode == 'view'));
 				}
@@ -622,10 +622,10 @@ class auth_admin extends auth
 		{
 			$auth_ary = $hold_ary[$forum_id];
 
-			$template->assign_block_vars('role_mask', array(
+			phpbb::$template->assign_block_vars('role_mask', array(
 				'NAME'				=> ($forum_id == 0) ? phpbb::$user->lang['GLOBAL_MASK'] : $forum_name,
-				'FORUM_ID'			=> $forum_id)
-			);
+				'FORUM_ID'			=> $forum_id,
+			));
 
 			if (isset($auth_ary['users']) && sizeof($auth_ary['users']))
 			{
@@ -637,11 +637,11 @@ class auth_admin extends auth
 
 				while ($row = phpbb::$db->sql_fetchrow($result))
 				{
-					$template->assign_block_vars('role_mask.users', array(
+					phpbb::$template->assign_block_vars('role_mask.users', array(
 						'USER_ID'		=> $row['user_id'],
 						'USERNAME'		=> $row['username'],
-						'U_PROFILE'		=> append_sid('memberlist', "mode=viewprofile&amp;u={$row['user_id']}"))
-					);
+						'U_PROFILE'		=> append_sid('memberlist', "mode=viewprofile&amp;u={$row['user_id']}"),
+					));
 				}
 				phpbb::$db->sql_freeresult($result);
 			}
@@ -656,11 +656,11 @@ class auth_admin extends auth
 
 				while ($row = phpbb::$db->sql_fetchrow($result))
 				{
-					$template->assign_block_vars('role_mask.groups', array(
+					phpbb::$template->assign_block_vars('role_mask.groups', array(
 						'GROUP_ID'		=> $row['group_id'],
 						'GROUP_NAME'	=> ($row['group_type'] == GROUP_SPECIAL) ? phpbb::$user->lang['G_' . $row['group_name']] : $row['group_name'],
-						'U_PROFILE'		=> append_sid('memberlist', "mode=group&amp;g={$row['group_id']}"))
-					);
+						'U_PROFILE'		=> append_sid('memberlist', "mode=group&amp;g={$row['group_id']}"),
+					));
 				}
 				phpbb::$db->sql_freeresult($result);
 			}
@@ -1061,13 +1061,13 @@ class auth_admin extends auth
 		@reset($category_array);
 		while (list($cat, $cat_array) = each($category_array))
 		{
-			$template->assign_block_vars($tpl_cat, array(
+			phpbb::$template->assign_block_vars($tpl_cat, array(
 				'S_YES'		=> ($cat_array['S_YES'] && !$cat_array['S_NEVER'] && !$cat_array['S_NO']) ? true : false,
 				'S_NEVER'	=> ($cat_array['S_NEVER'] && !$cat_array['S_YES'] && !$cat_array['S_NO']) ? true : false,
 				'S_NO'		=> ($cat_array['S_NO'] && !$cat_array['S_NEVER'] && !$cat_array['S_YES']) ? true : false,
 
-				'CAT_NAME'	=> phpbb::$user->lang['permission_cat'][$cat])
-			);
+				'CAT_NAME'	=> phpbb::$user->lang['permission_cat'][$cat],
+			));
 
 			/*	Sort permissions by name (more naturaly and user friendly than sorting by a primary key)
 			*	Commented out due to it's memory consumption and time needed
@@ -1089,7 +1089,7 @@ class auth_admin extends auth
 			{
 				if ($s_view)
 				{
-					$template->assign_block_vars($tpl_cat . '.' . $tpl_mask, array(
+					phpbb::$template->assign_block_vars($tpl_cat . '.' . $tpl_mask, array(
 						'S_YES'		=> ($allowed == phpbb::ACL_YES) ? true : false,
 						'S_NEVER'	=> ($allowed == phpbb::ACL_NEVER) ? true : false,
 
@@ -1101,12 +1101,12 @@ class auth_admin extends auth
 						'U_TRACE'		=> ($show_trace) ? append_sid(PHPBB_ADMIN_PATH . 'index.' . PHP_EXT, "i=permissions&amp;mode=trace&amp;u=$ug_id&amp;f=$forum_id&amp;auth=$permission") : '',
 						'UA_TRACE'		=> ($show_trace) ? append_sid(PHPBB_ADMIN_PATH . 'index.' . PHP_EXT, "i=permissions&mode=trace&u=$ug_id&f=$forum_id&auth=$permission", false) : '',
 
-						'PERMISSION'	=> phpbb::$user->lang['acl_' . $permission]['lang'])
-					);
+						'PERMISSION'	=> phpbb::$user->lang['acl_' . $permission]['lang'],
+					));
 				}
 				else
 				{
-					$template->assign_block_vars($tpl_cat . '.' . $tpl_mask, array(
+					phpbb::$template->assign_block_vars($tpl_cat . '.' . $tpl_mask, array(
 						'S_YES'		=> ($allowed == phpbb::ACL_YES) ? true : false,
 						'S_NEVER'	=> ($allowed == phpbb::ACL_NEVER) ? true : false,
 						'S_NO'		=> ($allowed == phpbb::ACL_NO) ? true : false,
@@ -1119,8 +1119,8 @@ class auth_admin extends auth
 						'U_TRACE'		=> ($show_trace) ? append_sid(PHPBB_ADMIN_PATH . 'index.' . PHP_EXT, "i=permissions&amp;mode=trace&amp;u=$ug_id&amp;f=$forum_id&amp;auth=$permission") : '',
 						'UA_TRACE'		=> ($show_trace) ? append_sid(PHPBB_ADMIN_PATH . 'index.' . PHP_EXT, "i=permissions&mode=trace&u=$ug_id&f=$forum_id&auth=$permission", false) : '',
 
-						'PERMISSION'	=> phpbb::$user->lang['acl_' . $permission]['lang'])
-					);
+						'PERMISSION'	=> phpbb::$user->lang['acl_' . $permission]['lang'],
+					));
 				}
 			}
 		}

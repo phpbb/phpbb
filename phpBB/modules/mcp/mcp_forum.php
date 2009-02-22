@@ -100,7 +100,7 @@ function mcp_forum_view($id, $mode, $action, $forum_info)
 	$forum_topics = ($total == -1) ? $forum_info['forum_topics'] : $total;
 	$limit_time_sql = ($sort_days) ? 'AND t.topic_last_post_time >= ' . (time() - ($sort_days * 86400)) : '';
 
-	$template->assign_vars(array(
+	phpbb::$template->assign_vars(array(
 		'ACTION'				=> $action,
 		'FORUM_NAME'			=> $forum_info['forum_name'],
 		'FORUM_DESCRIPTION'		=> generate_text_for_display($forum_info['forum_desc'], $forum_info['forum_desc_uid'], $forum_info['forum_desc_bitfield'], $forum_info['forum_desc_options']),
@@ -285,7 +285,7 @@ function mcp_forum_view($id, $mode, $action, $forum_info)
 			));
 		}
 
-		$template->assign_block_vars('topicrow', $topic_row);
+		phpbb::$template->assign_block_vars('topicrow', $topic_row);
 	}
 	unset($topic_rows);
 }
@@ -339,12 +339,12 @@ function merge_topics($forum_id, $topic_ids, $to_topic_id)
 {
 	if (!sizeof($topic_ids))
 	{
-		$template->assign_var('MESSAGE', phpbb::$user->lang['NO_TOPIC_SELECTED']);
+		phpbb::$template->assign_var('MESSAGE', phpbb::$user->lang['NO_TOPIC_SELECTED']);
 		return;
 	}
 	if (!$to_topic_id)
 	{
-		$template->assign_var('MESSAGE', phpbb::$user->lang['NO_FINAL_TOPIC_SELECTED']);
+		phpbb::$template->assign_var('MESSAGE', phpbb::$user->lang['NO_FINAL_TOPIC_SELECTED']);
 		return;
 	}
 
@@ -352,7 +352,7 @@ function merge_topics($forum_id, $topic_ids, $to_topic_id)
 
 	if (!sizeof($topic_data))
 	{
-		$template->assign_var('MESSAGE', phpbb::$user->lang['NO_FINAL_TOPIC_SELECTED']);
+		phpbb::$template->assign_var('MESSAGE', phpbb::$user->lang['NO_FINAL_TOPIC_SELECTED']);
 		return;
 	}
 
@@ -378,7 +378,7 @@ function merge_topics($forum_id, $topic_ids, $to_topic_id)
 
 	if (!sizeof($post_id_list))
 	{
-		$template->assign_var('MESSAGE', phpbb::$user->lang['NO_POST_SELECTED']);
+		phpbb::$template->assign_var('MESSAGE', phpbb::$user->lang['NO_POST_SELECTED']);
 		return;
 	}
 

@@ -130,7 +130,7 @@ class ucp_attachments
 		$row_count = 0;
 		if ($row = phpbb::$db->sql_fetchrow($result))
 		{
-			$template->assign_var('S_ATTACHMENT_ROWS', true);
+			phpbb::$template->assign_var('S_ATTACHMENT_ROWS', true);
 
 			do
 			{
@@ -143,7 +143,7 @@ class ucp_attachments
 					$view_topic = append_sid('viewtopic', "t={$row['topic_id']}&amp;p={$row['post_msg_id']}") . "#p{$row['post_msg_id']}";
 				}
 
-				$template->assign_block_vars('attachrow', array(
+				phpbb::$template->assign_block_vars('attachrow', array(
 					'ROW_NUMBER'		=> $row_count + ($start + 1),
 					'FILENAME'			=> $row['real_filename'],
 					'COMMENT'			=> bbcode_nl2br($row['attach_comment']),
@@ -160,8 +160,8 @@ class ucp_attachments
 					'S_IN_MESSAGE'		=> $row['in_message'],
 
 					'U_VIEW_ATTACHMENT'	=> append_sid('download/file', 'id=' . $row['attach_id']),
-					'U_VIEW_TOPIC'		=> $view_topic)
-				);
+					'U_VIEW_TOPIC'		=> $view_topic,
+				));
 
 				$row_count++;
 			}
@@ -169,7 +169,7 @@ class ucp_attachments
 		}
 		phpbb::$db->sql_freeresult($result);
 
-		$template->assign_vars(array(
+		phpbb::$template->assign_vars(array(
 			'PAGE_NUMBER'			=> on_page($num_attachments, phpbb::$config['topics_per_page'], $start),
 			'PAGINATION'			=> generate_pagination($this->u_action . "&amp;sk=$sort_key&amp;sd=$sort_dir", $num_attachments, phpbb::$config['topics_per_page'], $start),
 			'TOTAL_ATTACHMENTS'		=> $num_attachments,
@@ -188,8 +188,8 @@ class ucp_attachments
 			'S_DISPLAY_PAGINATION'	=> ($num_attachments) ? true : false,
 			'S_UCP_ACTION'			=> $this->u_action,
 			'S_SORT_OPTIONS' 		=> $s_sort_key,
-			'S_ORDER_SELECT'		=> $s_sort_dir)
-		);
+			'S_ORDER_SELECT'		=> $s_sort_dir,
+		));
 
 		$this->tpl_name = 'ucp_attachments';
 		$this->page_title = 'UCP_ATTACHMENTS';
