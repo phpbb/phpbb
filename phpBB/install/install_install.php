@@ -855,8 +855,7 @@ class install_install extends module
 		}
 		unset($config_data_array);
 
-		$config_data .= "\n\t\t'debug' => true,\n\t\t'debug_extra' => true,\n\n\t\t// DO NOT CHANGE\n\t\t'installed' => true,\n\t));\n}\n";
-		$config_data .= '?' . '>'; // Done this to prevent highlighting editors getting confused!
+		$config_data .= "\n\t\t'debug' => true,\n\t\t'debug_extra' => true,\n\n\t\t// DO NOT CHANGE\n\t\t'installed' => true,\n\t));\n}\n\n";
 
 		// Attempt to write out the config file directly. If it works, this is the easiest way to do it ...
 		if ((file_exists(PHPBB_ROOT_PATH . 'config.' . PHP_EXT) && is_writable(PHPBB_ROOT_PATH . 'config.' . PHP_EXT)) || is_writable(PHPBB_ROOT_PATH))

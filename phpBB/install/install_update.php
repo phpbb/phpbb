@@ -117,7 +117,7 @@ class install_update extends module
 		{
 			$template->assign_vars(array(
 				'S_ERROR'		=> true,
-				'ERROR_MSG'		=> ($up_to_date) ? $user->lang['NO_UPDATE_FILES_UP_TO_DATE'] : sprintf($user->lang['NO_UPDATE_FILES_OUTDATED'], phpbb::$config['version'], $this->current_version, $this->latest_version))
+				'ERROR_MSG'		=> ($up_to_date) ? phpbb::$user->lang['NO_UPDATE_FILES_UP_TO_DATE'] : sprintf(phpbb::$user->lang['NO_UPDATE_FILES_OUTDATED'], phpbb::$config['version'], $this->current_version, $this->latest_version))
 			);
 
 			return;
@@ -131,7 +131,7 @@ class install_update extends module
 		{
 			$template->assign_vars(array(
 				'S_ERROR'		=> true,
-				'ERROR_MSG'		=> sprintf($user->lang['INCOMPATIBLE_UPDATE_FILES'], phpbb::$config['version'], $this->update_info['version']['from'], $this->update_info['version']['to']))
+				'ERROR_MSG'		=> sprintf(phpbb::$user->lang['INCOMPATIBLE_UPDATE_FILES'], phpbb::$config['version'], $this->update_info['version']['from'], $this->update_info['version']['to']))
 			);
 
 			return;
@@ -144,7 +144,7 @@ class install_update extends module
 
 			$template->assign_vars(array(
 				'S_WARNING'		=> true,
-				'WARNING_MSG'	=> sprintf($user->lang['OLD_UPDATE_FILES'], $this->update_info['version']['from'], $this->update_info['version']['to'], $this->latest_version))
+				'WARNING_MSG'	=> sprintf(phpbb::$user->lang['OLD_UPDATE_FILES'], $this->update_info['version']['from'], $this->update_info['version']['to'], $this->latest_version))
 			);
 		}
 
@@ -162,10 +162,10 @@ class install_update extends module
 				$lang = array();
 				include($this->new_location . 'language/en/install.php');
 				// only add new keys to user's language in english
-				$new_keys = array_diff(array_keys($lang), array_keys($user->lang));
+				$new_keys = array_diff(array_keys($lang), array_keys(phpbb::$user->lang));
 				foreach ($new_keys as $i => $new_key)
 				{
-					$user->lang[$new_key] = $lang[$new_key];
+					phpbb::$user->lang[$new_key] = $lang[$new_key];
 				}
 			}
 		}
@@ -237,7 +237,7 @@ class install_update extends module
 				// Should not happen at all
 				if (!$valid)
 				{
-					trigger_error($user->lang['DATABASE_UPDATE_INFO_OLD'], E_USER_ERROR);
+					trigger_error(phpbb::$user->lang['DATABASE_UPDATE_INFO_OLD'], E_USER_ERROR);
 				}
 
 				// Just a precaution
@@ -247,7 +247,7 @@ class install_update extends module
 				$template->assign_vars(array(
 					'S_DB_UPDATE'			=> true,
 					'S_DB_UPDATE_FINISHED'	=> (phpbb::$config['version'] == $this->update_info['version']['to']) ? true : false,
-					'U_DB_UPDATE'			=> append_sid('install/database_update', 'type=1&amp;language=' . $user->data['user_lang']),
+					'U_DB_UPDATE'			=> append_sid('install/database_update', 'type=1&amp;language=' . phpbb::$user->data['user_lang']),
 					'U_DB_UPDATE_ACTION'	=> append_sid($this->p_master->module_url, "mode=$mode&amp;sub=update_db"),
 					'U_ACTION'				=> append_sid($this->p_master->module_url, "mode=$mode&amp;sub=file_check"),
 				));
@@ -306,8 +306,8 @@ class install_update extends module
 							'S_IN_PROGRESS'		=> true,
 							'S_COLLECTED'		=> (int) $update_list['status'],
 							'S_TO_COLLECT'		=> sizeof($this->update_info['files']),
-							'L_IN_PROGRESS'				=> $user->lang['COLLECTING_FILE_DIFFS'],
-							'L_IN_PROGRESS_EXPLAIN'		=> sprintf($user->lang['NUMBER_OF_FILES_COLLECTED'], (int) $update_list['status'], sizeof($this->update_info['files'])),
+							'L_IN_PROGRESS'				=> phpbb::$user->lang['COLLECTING_FILE_DIFFS'],
+							'L_IN_PROGRESS_EXPLAIN'		=> sprintf(phpbb::$user->lang['NUMBER_OF_FILES_COLLECTED'], (int) $update_list['status'], sizeof($this->update_info['files'])),
 						));
 
 						return;
@@ -339,9 +339,9 @@ class install_update extends module
 					$template->assign_block_vars('files', array(
 						'S_STATUS'		=> true,
 						'STATUS'		=> $status,
-						'L_STATUS'		=> $user->lang['STATUS_' . strtoupper($status)],
-						'TITLE'			=> $user->lang['FILES_' . strtoupper($status)],
-						'EXPLAIN'		=> $user->lang['FILES_' . strtoupper($status) . '_EXPLAIN'],
+						'L_STATUS'		=> phpbb::$user->lang['STATUS_' . strtoupper($status)],
+						'TITLE'			=> phpbb::$user->lang['FILES_' . strtoupper($status)],
+						'EXPLAIN'		=> phpbb::$user->lang['FILES_' . strtoupper($status) . '_EXPLAIN'],
 						)
 					);
 
@@ -376,7 +376,7 @@ class install_update extends module
 							'CUSTOM_ORIGINAL'	=> ($file_struct['custom']) ? $file_struct['original'] : '',
 
 							'U_SHOW_DIFF'		=> $diff_url,
-							'L_SHOW_DIFF'		=> ($status != 'up_to_date') ? $user->lang['SHOW_DIFF_' . strtoupper($status)] : '',
+							'L_SHOW_DIFF'		=> ($status != 'up_to_date') ? phpbb::$user->lang['SHOW_DIFF_' . strtoupper($status)] : '',
 
 							'U_VIEW_MOD_FILE'		=> $diff_url . '&amp;op=' . MERGE_MOD_FILE,
 							'U_VIEW_NEW_FILE'		=> $diff_url . '&amp;op=' . MERGE_NEW_FILE,
@@ -516,7 +516,7 @@ class install_update extends module
 
 				if ($update_list === false)
 				{
-					trigger_error($user->lang['NO_UPDATE_INFO'], E_USER_ERROR);
+					trigger_error(phpbb::$user->lang['NO_UPDATE_INFO'], E_USER_ERROR);
 				}
 
 				// Check if the conflicts data is valid
@@ -564,7 +564,7 @@ class install_update extends module
 				// Check number of conflicting files, they need to be equal. For modified files the number can differ
 				if (sizeof($update_list['conflict']) != sizeof($conflicts))
 				{
-					trigger_error($user->lang['MERGE_SELECT_ERROR'], E_USER_ERROR);
+					trigger_error(phpbb::$user->lang['MERGE_SELECT_ERROR'], E_USER_ERROR);
 				}
 
 				// Before we do anything, let us diff the files and store the raw file information "somewhere"
@@ -622,8 +622,8 @@ class install_update extends module
 
 								$template->assign_vars(array(
 									'S_IN_PROGRESS'			=> true,
-									'L_IN_PROGRESS'			=> $user->lang['MERGING_FILES'],
-									'L_IN_PROGRESS_EXPLAIN'	=> $user->lang['MERGING_FILES_EXPLAIN'],
+									'L_IN_PROGRESS'			=> phpbb::$user->lang['MERGING_FILES'],
+									'L_IN_PROGRESS_EXPLAIN'	=> phpbb::$user->lang['MERGING_FILES_EXPLAIN'],
 								));
 
 								return;
@@ -753,7 +753,7 @@ class install_update extends module
 
 						// To ease the update process create a file location map
 						$update_list = phpbb::$acm->get('update_list');
-						$script_path = (phpbb::$config['force_server_vars']) ? ((phpbb::$config['script_path'] == '/') ? '/' : phpbb::$config['script_path'] . '/') : $user->page['root_script_path'];
+						$script_path = (phpbb::$config['force_server_vars']) ? ((phpbb::$config['script_path'] == '/') ? '/' : phpbb::$config['script_path'] . '/') : phpbb::$user->page['root_script_path'];
 
 						foreach ($update_list as $status => $files)
 						{
@@ -847,8 +847,8 @@ class install_update extends module
 						{
 							$template->assign_block_vars('data', array(
 								'DATA'		=> $data,
-								'NAME'		=> $user->lang[strtoupper($method . '_' . $data)],
-								'EXPLAIN'	=> $user->lang[strtoupper($method . '_' . $data) . '_EXPLAIN'],
+								'NAME'		=> phpbb::$user->lang[strtoupper($method . '_' . $data)],
+								'EXPLAIN'	=> phpbb::$user->lang[strtoupper($method . '_' . $data) . '_EXPLAIN'],
 								'DEFAULT'	=> (request_var($data, false)) ? request_var($data, '') : $default
 							));
 						}
@@ -856,7 +856,7 @@ class install_update extends module
 						$template->assign_vars(array(
 							'S_CONNECTION_SUCCESS'		=> ($test_ftp_connection && $test_connection === true) ? true : false,
 							'S_CONNECTION_FAILED'		=> ($test_ftp_connection && $test_connection !== true) ? true : false,
-							'ERROR_MSG'					=> ($test_ftp_connection && $test_connection !== true) ? $user->lang[$test_connection] : '',
+							'ERROR_MSG'					=> ($test_ftp_connection && $test_connection !== true) ? phpbb::$user->lang[$test_connection] : '',
 
 							'S_FTP_UPLOAD'		=> true,
 							'UPLOAD_METHOD'		=> $method,
@@ -1004,8 +1004,6 @@ class install_update extends module
 	*/
 	function show_diff(&$update_list)
 	{
-		global $template, $user;
-
 		$this->tpl_name = 'install_update_diff';
 
 		// Got the diff template itself updated? If so, we are able to directly use it
@@ -1032,13 +1030,13 @@ class install_update extends module
 
 		if (empty($found_entry))
 		{
-			trigger_error($user->lang['FILE_DIFF_NOT_ALLOWED'], E_USER_ERROR);
+			trigger_error(phpbb::$user->lang['FILE_DIFF_NOT_ALLOWED'], E_USER_ERROR);
 		}
 
 		// If the status is 'up_to_date' then we do not need to show a diff
 		if ($status == 'up_to_date')
 		{
-			trigger_error($user->lang['FILE_ALREADY_UP_TO_DATE'], E_USER_ERROR);
+			trigger_error(phpbb::$user->lang['FILE_ALREADY_UP_TO_DATE'], E_USER_ERROR);
 		}
 
 		$original_file = ($found_entry['custom']) ? $found_entry['original'] : $file;
@@ -1138,7 +1136,7 @@ class install_update extends module
 		$diff_mode_options = '';
 		foreach (array('side_by_side', 'inline', 'unified', 'raw') as $option)
 		{
-			$diff_mode_options .= '<option value="' . $option . '"' . (($diff_mode == $option) ? ' selected="selected"' : '') . '>' . $user->lang['DIFF_' . strtoupper($option)] . '</option>';
+			$diff_mode_options .= '<option value="' . $option . '"' . (($diff_mode == $option) ? ' selected="selected"' : '') . '>' . phpbb::$user->lang['DIFF_' . strtoupper($option)] . '</option>';
 		}
 
 		// Now the correct renderer
@@ -1166,8 +1164,6 @@ class install_update extends module
 	*/
 	function get_update_structure(&$update_list)
 	{
-		global $user;
-
 		if ($update_list === false)
 		{
 			$update_list = array(
@@ -1213,7 +1209,7 @@ class install_update extends module
 				// Make sure the update files are consistent by checking if the file is in new_files...
 				if (!file_exists($this->new_location . $file))
 				{
-					trigger_error($user->lang['INCOMPLETE_UPDATE_FILES'], E_USER_ERROR);
+					trigger_error(phpbb::$user->lang['INCOMPLETE_UPDATE_FILES'], E_USER_ERROR);
 				}
 
 				// If the file exists within the old directory the file got removed and we will write it back
@@ -1293,8 +1289,6 @@ class install_update extends module
 	*/
 	function make_update_diff(&$update_list, $original_file, $file, $custom = false)
 	{
-		global $user;
-
 		$update_ary = array('filename' => $file, 'custom' => $custom);
 
 		if ($custom)
@@ -1338,7 +1332,7 @@ class install_update extends module
 		// Check for existance, else abort immediately
 		if (!file_exists($this->old_location . $original_file) || !file_exists($this->new_location . $original_file))
 		{
-			trigger_error($user->lang['INCOMPLETE_UPDATE_FILES'], E_USER_ERROR);
+			trigger_error(phpbb::$user->lang['INCOMPLETE_UPDATE_FILES'], E_USER_ERROR);
 		}
 
 		$tmp = array(
@@ -1470,8 +1464,6 @@ class install_update extends module
 	*/
 	function get_file($mode)
 	{
-		global $user, $db;
-
 		$errstr = '';
 		$errno = 0;
 
@@ -1510,7 +1502,7 @@ class install_update extends module
 				include(PHPBB_ROOT_PATH . 'install/update/index.php');
 
 				$info = (empty($update_info) || !is_array($update_info)) ? false : $update_info;
-				$errstr = ($info === false) ? $user->lang['WRONG_INFO_FILE_FORMAT'] : '';
+				$errstr = ($info === false) ? phpbb::$user->lang['WRONG_INFO_FILE_FORMAT'] : '';
 
 				if ($info !== false)
 				{

@@ -21,11 +21,9 @@ if (!defined('IN_PHPBB'))
 */
 function mcp_topic_view($id, $mode, $action)
 {
-	global $template, $db, $user, $auth;
-
 	$url = append_sid(PHPBB_ROOT_PATH. 'mcp.' . PHP_EXT . '?' . extra_url());
 
-	$user->add_lang('viewtopic');
+	phpbb::$user->add_lang('viewtopic');
 
 	$topic_id = request_var('t', 0);
 	$topic_info = get_topic_data(array($topic_id), false, true);
@@ -223,13 +221,13 @@ function mcp_topic_view($id, $mode, $action)
 			'POST_AUTHOR'			=> get_username_string('username', $row['poster_id'], $row['username'], $row['user_colour'], $row['post_username']),
 			'U_POST_AUTHOR'			=> get_username_string('profile', $row['poster_id'], $row['username'], $row['user_colour'], $row['post_username']),
 
-			'POST_DATE'		=> $user->format_date($row['post_time']),
+			'POST_DATE'		=> phpbb::$user->format_date($row['post_time']),
 			'POST_SUBJECT'	=> $post_subject,
 			'MESSAGE'		=> $message,
 			'POST_ID'		=> $row['post_id'],
-			'RETURN_TOPIC'	=> sprintf($user->lang['RETURN_TOPIC'], '<a href="' . append_sid('viewtopic', 't=' . $topic_id) . '">', '</a>'),
+			'RETURN_TOPIC'	=> sprintf(phpbb::$user->lang['RETURN_TOPIC'], '<a href="' . append_sid('viewtopic', 't=' . $topic_id) . '">', '</a>'),
 
-			'MINI_POST_IMG'			=> ($post_unread) ? $user->img('icon_post_target_unread', 'NEW_POST') : $user->img('icon_post_target', 'POST'),
+			'MINI_POST_IMG'			=> ($post_unread) ? phpbb::$user->img('icon_post_target_unread', 'NEW_POST') : phpbb::$user->img('icon_post_target', 'POST'),
 
 			'S_POST_REPORTED'	=> ($row['post_reported']) ? true : false,
 			'S_POST_UNAPPROVED'	=> ($row['post_approved']) ? false : true,
@@ -294,14 +292,14 @@ function mcp_topic_view($id, $mode, $action)
 		'U_VIEW_TOPIC'		=> append_sid('viewtopic', 'f=' . $topic_info['forum_id'] . '&amp;t=' . $topic_info['topic_id']),
 
 		'TO_TOPIC_ID'		=> $to_topic_id,
-		'TO_TOPIC_INFO'		=> ($to_topic_id) ? sprintf($user->lang['YOU_SELECTED_TOPIC'], $to_topic_id, '<a href="' . append_sid('viewtopic', 'f=' . $to_topic_info['forum_id'] . '&amp;t=' . $to_topic_id) . '">' . $to_topic_info['topic_title'] . '</a>') : '',
+		'TO_TOPIC_INFO'		=> ($to_topic_id) ? sprintf(phpbb::$user->lang['YOU_SELECTED_TOPIC'], $to_topic_id, '<a href="' . append_sid('viewtopic', 'f=' . $to_topic_info['forum_id'] . '&amp;t=' . $to_topic_id) . '">' . $to_topic_info['topic_title'] . '</a>') : '',
 
 		'SPLIT_SUBJECT'		=> $subject,
 		'POSTS_PER_PAGE'	=> $posts_per_page,
 		'ACTION'			=> $action,
 
-		'REPORTED_IMG'		=> $user->img('icon_topic_reported', 'POST_REPORTED'),
-		'UNAPPROVED_IMG'	=> $user->img('icon_topic_unapproved', 'POST_UNAPPROVED'),
+		'REPORTED_IMG'		=> phpbb::$user->img('icon_topic_reported', 'POST_REPORTED'),
+		'UNAPPROVED_IMG'	=> phpbb::$user->img('icon_topic_unapproved', 'POST_UNAPPROVED'),
 
 		'S_MCP_ACTION'		=> "$url&amp;i=$id&amp;mode=$mode&amp;action=$action&amp;start=$start",
 		'S_FORUM_SELECT'	=> ($to_forum_id) ? make_forum_select($to_forum_id, false, false, true, true, true) : make_forum_select($topic_info['forum_id'], false, false, true, true, true),
@@ -322,12 +320,12 @@ function mcp_topic_view($id, $mode, $action)
 
 		'U_SELECT_TOPIC'	=> "$url&amp;i=$id&amp;mode=forum_view&amp;action=merge_select" . (($forum_id) ? "&amp;f=$forum_id" : ''),
 
-		'RETURN_TOPIC'		=> sprintf($user->lang['RETURN_TOPIC'], '<a href="' . append_sid('viewtopic', "f={$topic_info['forum_id']}&amp;t={$topic_info['topic_id']}&amp;start=$start") . '">', '</a>'),
-		'RETURN_FORUM'		=> sprintf($user->lang['RETURN_FORUM'], '<a href="' . append_sid('viewforum', "f={$topic_info['forum_id']}&amp;start=$start") . '">', '</a>'),
+		'RETURN_TOPIC'		=> sprintf(phpbb::$user->lang['RETURN_TOPIC'], '<a href="' . append_sid('viewtopic', "f={$topic_info['forum_id']}&amp;t={$topic_info['topic_id']}&amp;start=$start") . '">', '</a>'),
+		'RETURN_FORUM'		=> sprintf(phpbb::$user->lang['RETURN_FORUM'], '<a href="' . append_sid('viewforum', "f={$topic_info['forum_id']}&amp;start=$start") . '">', '</a>'),
 
 		'PAGE_NUMBER'		=> on_page($total, $posts_per_page, $start),
 		'PAGINATION'		=> (!$posts_per_page) ? '' : generate_pagination(append_sid('mcp', "i=$id&amp;t={$topic_info['topic_id']}&amp;mode=$mode&amp;action=$action&amp;to_topic_id=$to_topic_id&amp;posts_per_page=$posts_per_page&amp;st=$sort_days&amp;sk=$sort_key&amp;sd=$sort_dir"), $total, $posts_per_page, $start),
-		'TOTAL_POSTS'		=> ($total == 1) ? $user->lang['VIEW_TOPIC_POST'] : sprintf($user->lang['VIEW_TOPIC_POSTS'], $total),
+		'TOTAL_POSTS'		=> ($total == 1) ? phpbb::$user->lang['VIEW_TOPIC_POST'] : sprintf(phpbb::$user->lang['VIEW_TOPIC_POSTS'], $total),
 	));
 }
 
@@ -336,15 +334,13 @@ function mcp_topic_view($id, $mode, $action)
 */
 function split_topic($action, $topic_id, $to_forum_id, $subject)
 {
-	global $db, $template, $user, $auth;
-
 	$post_id_list	= request_var('post_id_list', array(0));
 	$forum_id		= request_var('forum_id', 0);
 	$start			= request_var('start', 0);
 
 	if (!sizeof($post_id_list))
 	{
-		$template->assign_var('MESSAGE', $user->lang['NO_POST_SELECTED']);
+		$template->assign_var('MESSAGE', phpbb::$user->lang['NO_POST_SELECTED']);
 		return;
 	}
 
@@ -358,7 +354,7 @@ function split_topic($action, $topic_id, $to_forum_id, $subject)
 
 	if (!sizeof($post_info))
 	{
-		$template->assign_var('MESSAGE', $user->lang['NO_POST_SELECTED']);
+		$template->assign_var('MESSAGE', phpbb::$user->lang['NO_POST_SELECTED']);
 		return;
 	}
 
@@ -368,13 +364,13 @@ function split_topic($action, $topic_id, $to_forum_id, $subject)
 	// Make some tests
 	if (!$subject)
 	{
-		$template->assign_var('MESSAGE', $user->lang['EMPTY_SUBJECT']);
+		$template->assign_var('MESSAGE', phpbb::$user->lang['EMPTY_SUBJECT']);
 		return;
 	}
 
 	if ($to_forum_id <= 0)
 	{
-		$template->assign_var('MESSAGE', $user->lang['NO_DESTINATION_FORUM']);
+		$template->assign_var('MESSAGE', phpbb::$user->lang['NO_DESTINATION_FORUM']);
 		return;
 	}
 
@@ -382,7 +378,7 @@ function split_topic($action, $topic_id, $to_forum_id, $subject)
 
 	if (!sizeof($forum_info))
 	{
-		$template->assign_var('MESSAGE', $user->lang['USER_CANNOT_POST']);
+		$template->assign_var('MESSAGE', phpbb::$user->lang['USER_CANNOT_POST']);
 		return;
 	}
 
@@ -390,7 +386,7 @@ function split_topic($action, $topic_id, $to_forum_id, $subject)
 
 	if ($forum_info['forum_type'] != FORUM_POST)
 	{
-		$template->assign_var('MESSAGE', $user->lang['FORUM_NOT_POSTABLE']);
+		$template->assign_var('MESSAGE', phpbb::$user->lang['FORUM_NOT_POSTABLE']);
 		return;
 	}
 
@@ -503,7 +499,7 @@ function split_topic($action, $topic_id, $to_forum_id, $subject)
 		set_config('num_topics', phpbb::$config['num_topics'] + 1, true);
 
 		// Link back to both topics
-		$return_link = sprintf($user->lang['RETURN_TOPIC'], '<a href="' . append_sid('viewtopic', 'f=' . $post_info['forum_id'] . '&amp;t=' . $post_info['topic_id']) . '">', '</a>') . '<br /><br />' . sprintf($user->lang['RETURN_NEW_TOPIC'], '<a href="' . append_sid('viewtopic', 'f=' . $to_forum_id . '&amp;t=' . $to_topic_id) . '">', '</a>');
+		$return_link = sprintf(phpbb::$user->lang['RETURN_TOPIC'], '<a href="' . append_sid('viewtopic', 'f=' . $post_info['forum_id'] . '&amp;t=' . $post_info['topic_id']) . '">', '</a>') . '<br /><br />' . sprintf(phpbb::$user->lang['RETURN_NEW_TOPIC'], '<a href="' . append_sid('viewtopic', 'f=' . $to_forum_id . '&amp;t=' . $to_topic_id) . '">', '</a>');
 	}
 	else
 	{
@@ -520,7 +516,7 @@ function split_topic($action, $topic_id, $to_forum_id, $subject)
 	else
 	{
 		meta_refresh(3, append_sid('viewtopic', "f=$to_forum_id&amp;t=$to_topic_id"));
-		trigger_error($user->lang[$success_msg] . '<br /><br />' . $return_link);
+		trigger_error(phpbb::$user->lang[$success_msg] . '<br /><br />' . $return_link);
 	}
 }
 
@@ -529,11 +525,9 @@ function split_topic($action, $topic_id, $to_forum_id, $subject)
 */
 function merge_posts($topic_id, $to_topic_id)
 {
-	global $db, $template, $user, $auth;
-
 	if (!$to_topic_id)
 	{
-		$template->assign_var('MESSAGE', $user->lang['NO_FINAL_TOPIC_SELECTED']);
+		$template->assign_var('MESSAGE', phpbb::$user->lang['NO_FINAL_TOPIC_SELECTED']);
 		return;
 	}
 
@@ -541,7 +535,7 @@ function merge_posts($topic_id, $to_topic_id)
 
 	if (!sizeof($topic_data))
 	{
-		$template->assign_var('MESSAGE', $user->lang['NO_FINAL_TOPIC_SELECTED']);
+		$template->assign_var('MESSAGE', phpbb::$user->lang['NO_FINAL_TOPIC_SELECTED']);
 		return;
 	}
 
@@ -552,7 +546,7 @@ function merge_posts($topic_id, $to_topic_id)
 
 	if (!sizeof($post_id_list))
 	{
-		$template->assign_var('MESSAGE', $user->lang['NO_POST_SELECTED']);
+		$template->assign_var('MESSAGE', phpbb::$user->lang['NO_POST_SELECTED']);
 		return;
 	}
 
@@ -595,7 +589,7 @@ function merge_posts($topic_id, $to_topic_id)
 
 		if ($row)
 		{
-			$return_link .= sprintf($user->lang['RETURN_TOPIC'], '<a href="' . append_sid('viewtopic', 'f=' . $row['forum_id'] . '&amp;t=' . $topic_id) . '">', '</a>');
+			$return_link .= sprintf(phpbb::$user->lang['RETURN_TOPIC'], '<a href="' . append_sid('viewtopic', 'f=' . $row['forum_id'] . '&amp;t=' . $topic_id) . '">', '</a>');
 		}
 		else
 		{
@@ -609,7 +603,7 @@ function merge_posts($topic_id, $to_topic_id)
 		}
 
 		// Link to the new topic
-		$return_link .= (($return_link) ? '<br /><br />' : '') . sprintf($user->lang['RETURN_NEW_TOPIC'], '<a href="' . append_sid('viewtopic', 'f=' . $to_forum_id . '&amp;t=' . $to_topic_id) . '">', '</a>');
+		$return_link .= (($return_link) ? '<br /><br />' : '') . sprintf(phpbb::$user->lang['RETURN_NEW_TOPIC'], '<a href="' . append_sid('viewtopic', 'f=' . $to_forum_id . '&amp;t=' . $to_topic_id) . '">', '</a>');
 	}
 	else
 	{
@@ -626,7 +620,7 @@ function merge_posts($topic_id, $to_topic_id)
 	else
 	{
 		meta_refresh(3, append_sid('viewtopic', "f=$to_forum_id&amp;t=$to_topic_id"));
-		trigger_error($user->lang[$success_msg] . '<br /><br />' . $return_link);
+		trigger_error(phpbb::$user->lang[$success_msg] . '<br /><br />' . $return_link);
 	}
 }
 

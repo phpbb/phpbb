@@ -292,8 +292,6 @@ function user_add($user_row, $cp_data = false)
 */
 function user_delete($mode, $user_id, $post_username = false)
 {
-	global $user, $auth;
-
 	$sql = 'SELECT *
 		FROM ' . USERS_TABLE . '
 		WHERE user_id = ' . $user_id;
@@ -378,7 +376,7 @@ function user_delete($mode, $user_id, $post_username = false)
 
 			if ($post_username === false)
 			{
-				$post_username = $user->lang['GUEST'];
+				$post_username = phpbb::$user->lang['GUEST'];
 			}
 
 			// If the user is inactive and newly registered we assume no posts from this user being there...
@@ -573,8 +571,6 @@ function user_delete($mode, $user_id, $post_username = false)
 */
 function user_active_flip($mode, $user_id_ary, $reason = INACTIVE_MANUAL)
 {
-	global $user, $auth;
-
 	$deactivated = $activated = 0;
 	$sql_statements = array();
 
@@ -613,7 +609,7 @@ function user_active_flip($mode, $user_id_ary, $reason = INACTIVE_MANUAL)
 			$deactivated++;
 
 			// Remove the users session key...
-			$user->reset_login_keys($row['user_id']);
+			phpbb::$user->reset_login_keys($row['user_id']);
 		}
 
 		$sql_ary += array(
@@ -666,8 +662,6 @@ function user_active_flip($mode, $user_id_ary, $reason = INACTIVE_MANUAL)
 */
 function user_ban($mode, $ban, $ban_len, $ban_len_other, $ban_exclude, $ban_reason, $ban_give_reason = '')
 {
-	global $user, $auth;
-
 	// Delete stale bans
 	$sql = 'DELETE FROM ' . BANLIST_TABLE . '
 		WHERE ban_end < ' . time() . '
@@ -741,7 +735,7 @@ function user_ban($mode, $ban, $ban_len, $ban_len_other, $ban_exclude, $ban_reas
 				if ($username != '')
 				{
 					$clean_name = utf8_clean_string($username);
-					if ($clean_name == $user->data['username_clean'])
+					if ($clean_name == phpbb::$user->data['username_clean'])
 					{
 						trigger_error('CANNOT_BAN_YOURSELF', E_USER_WARNING);
 					}
@@ -766,11 +760,11 @@ function user_ban($mode, $ban, $ban_len, $ban_len_other, $ban_exclude, $ban_reas
 			// Do not allow banning yourself
 			if (sizeof($founder))
 			{
-				$sql .= ' AND ' . phpbb::$db->sql_in_set('user_id', array_merge(array_keys($founder), array($user->data['user_id'])), true);
+				$sql .= ' AND ' . phpbb::$db->sql_in_set('user_id', array_merge(array_keys($founder), array(phpbb::$user->data['user_id'])), true);
 			}
 			else
 			{
-				$sql .= ' AND user_id <> ' . $user->data['user_id'];
+				$sql .= ' AND user_id <> ' . phpbb::$user->data['user_id'];
 			}
 
 			$result = phpbb::$db->sql_query($sql);
@@ -1061,8 +1055,6 @@ function user_ban($mode, $ban, $ban_len, $ban_len_other, $ban_exclude, $ban_reas
 */
 function user_unban($mode, $ban)
 {
-	global $user, $auth;
-
 	// Delete stale bans
 	$sql = 'DELETE FROM ' . BANLIST_TABLE . '
 		WHERE ban_end < ' . time() . '
@@ -1185,8 +1177,6 @@ function user_ipwhois($ip)
 */
 function validate_data($data, $val_ary)
 {
-	global $user;
-
 	$error = array();
 
 	foreach ($val_ary as $var => $val_seq)
@@ -1204,7 +1194,7 @@ function validate_data($data, $val_ary)
 			if ($result = call_user_func_array('validate_' . $function, $validate))
 			{
 				// Since errors are checked later for their language file existence, we need to make sure custom errors are not adjusted.
-				$error[] = (empty($user->lang[$result . '_' . strtoupper($var)])) ? $result : $result . '_' . strtoupper($var);
+				$error[] = (empty(phpbb::$user->lang[$result . '_' . strtoupper($var)])) ? $result : $result . '_' . strtoupper($var);
 			}
 		}
 	}
@@ -1330,16 +1320,14 @@ function validate_match($string, $optional = false, $match = '')
 * Used for registering, changing names, and posting anonymously with a username
 *
 * @param string $username The username to check
-* @param string $allowed_username An allowed username, default being $user->data['username']
+* @param string $allowed_username An allowed username, default being phpbb::$user->data['username']
 *
 * @return	mixed	Either false if validation succeeded or a string which will be used as the error message (with the variable name appended)
 */
 function validate_username($username, $allowed_username = false)
 {
-	global $user;
-
 	$clean_username = utf8_clean_string($username);
-	$allowed_username = ($allowed_username === false) ? $user->data['username_clean'] : utf8_clean_string($allowed_username);
+	$allowed_username = ($allowed_username === false) ? phpbb::$user->data['username_clean'] : utf8_clean_string($allowed_username);
 
 	if ($allowed_username == $clean_username)
 	{
@@ -1432,8 +1420,6 @@ function validate_username($username, $allowed_username = false)
 */
 function validate_password($password)
 {
-	global $user;
-
 	if (!$password)
 	{
 		return false;
@@ -1496,16 +1482,14 @@ function validate_password($password)
 * Check to see if email address is banned or already present in the DB
 *
 * @param string $email The email to check
-* @param string $allowed_email An allowed email, default being $user->data['user_email']
+* @param string $allowed_email An allowed email, default being phpbb::$user->data['user_email']
 *
 * @return mixed Either false if validation succeeded or a string which will be used as the error message (with the variable name appended)
 */
 function validate_email($email, $allowed_email = false)
 {
-	global $user;
-
 	$email = strtolower($email);
-	$allowed_email = ($allowed_email === false) ? strtolower($user->data['user_email']) : strtolower($allowed_email);
+	$allowed_email = ($allowed_email === false) ? strtolower(phpbb::$user->data['user_email']) : strtolower($allowed_email);
 
 	if ($allowed_email == $email)
 	{
@@ -1529,7 +1513,7 @@ function validate_email($email, $allowed_email = false)
 		}
 	}
 
-	if (($ban_reason = $user->check_ban(false, false, $email, true)) !== false)
+	if (($ban_reason = phpbb::$user->check_ban(false, false, $email, true)) !== false)
 	{
 		return ($ban_reason === true) ? 'EMAIL_BANNED' : $ban_reason;
 	}
@@ -1760,8 +1744,6 @@ function validate_jabber($jid)
 */
 function avatar_delete($mode, $row, $clean_db = false)
 {
-	global $user;
-
 	// Check if the users avatar is actually *not* a group avatar
 	if ($mode == 'user')
 	{
@@ -1790,28 +1772,26 @@ function avatar_delete($mode, $row, $clean_db = false)
 */
 function avatar_remote($data, &$error)
 {
-	global $user;
-
 	if (!preg_match('#^(http|https|ftp)://#i', $data['remotelink']))
 	{
 		$data['remotelink'] = 'http://' . $data['remotelink'];
 	}
 	if (!preg_match('#^(http|https|ftp)://(?:(.*?\.)*?[a-z0-9\-]+?\.[a-z]{2,4}|(?:\d{1,3}\.){3,5}\d{1,3}):?([0-9]*?).*?\.(gif|jpg|jpeg|png)$#i', $data['remotelink']))
 	{
-		$error[] = $user->lang['AVATAR_URL_INVALID'];
+		$error[] = phpbb::$user->lang['AVATAR_URL_INVALID'];
 		return false;
 	}
 
 	// Make sure getimagesize works...
 	if (($image_data = @getimagesize($data['remotelink'])) === false && (empty($data['width']) || empty($data['height'])))
 	{
-		$error[] = $user->lang['UNABLE_GET_IMAGE_SIZE'];
+		$error[] = phpbb::$user->lang['UNABLE_GET_IMAGE_SIZE'];
 		return false;
 	}
 
 	if (!empty($image_data) && ($image_data[0] < 2 || $image_data[1] < 2))
 	{
-		$error[] = $user->lang['AVATAR_NO_SIZE'];
+		$error[] = phpbb::$user->lang['AVATAR_NO_SIZE'];
 		return false;
 	}
 
@@ -1820,7 +1800,7 @@ function avatar_remote($data, &$error)
 
 	if ($width < 2 || $height < 2)
 	{
-		$error[] = $user->lang['AVATAR_NO_SIZE'];
+		$error[] = phpbb::$user->lang['AVATAR_NO_SIZE'];
 		return false;
 	}
 
@@ -1833,11 +1813,11 @@ function avatar_remote($data, &$error)
 	{
 		if (!isset($types[$image_data[2]]))
 		{
-			$error[] = $user->lang['UNABLE_GET_IMAGE_SIZE'];
+			$error[] = phpbb::$user->lang['UNABLE_GET_IMAGE_SIZE'];
 		}
 		else
 		{
-			$error[] = sprintf($user->lang['IMAGE_FILETYPE_MISMATCH'], $types[$image_data[2]][0], $extension);
+			$error[] = sprintf(phpbb::$user->lang['IMAGE_FILETYPE_MISMATCH'], $types[$image_data[2]][0], $extension);
 		}
 		return false;
 	}
@@ -1846,7 +1826,7 @@ function avatar_remote($data, &$error)
 	{
 		if ($width > phpbb::$config['avatar_max_width'] || $height > phpbb::$config['avatar_max_height'])
 		{
-			$error[] = sprintf($user->lang['AVATAR_WRONG_SIZE'], phpbb::$config['avatar_min_width'], phpbb::$config['avatar_min_height'], phpbb::$config['avatar_max_width'], phpbb::$config['avatar_max_height'], $width, $height);
+			$error[] = sprintf(phpbb::$user->lang['AVATAR_WRONG_SIZE'], phpbb::$config['avatar_min_width'], phpbb::$config['avatar_min_height'], phpbb::$config['avatar_max_width'], phpbb::$config['avatar_max_height'], $width, $height);
 			return false;
 		}
 	}
@@ -1855,7 +1835,7 @@ function avatar_remote($data, &$error)
 	{
 		if ($width < phpbb::$config['avatar_min_width'] || $height < phpbb::$config['avatar_min_height'])
 		{
-			$error[] = sprintf($user->lang['AVATAR_WRONG_SIZE'], phpbb::$config['avatar_min_width'], phpbb::$config['avatar_min_height'], phpbb::$config['avatar_max_width'], phpbb::$config['avatar_max_height'], $width, $height);
+			$error[] = sprintf(phpbb::$user->lang['AVATAR_WRONG_SIZE'], phpbb::$config['avatar_min_width'], phpbb::$config['avatar_min_height'], phpbb::$config['avatar_max_width'], phpbb::$config['avatar_max_height'], $width, $height);
 			return false;
 		}
 	}
@@ -1868,8 +1848,6 @@ function avatar_remote($data, &$error)
 */
 function avatar_upload($data, &$error)
 {
-	global $user;
-
 	// Init upload class
 	include_once(PHPBB_ROOT_PATH . 'includes/functions_upload.' . PHP_EXT);
 	$upload = new fileupload('AVATAR_', array('jpg', 'jpeg', 'gif', 'png'), phpbb::$config['avatar_filesize'], phpbb::$config['avatar_min_width'], phpbb::$config['avatar_min_height'], phpbb::$config['avatar_max_width'], phpbb::$config['avatar_max_height'], explode('|', phpbb::$config['mime_triggers']));
@@ -1936,15 +1914,13 @@ function get_avatar_filename($avatar_entry)
 */
 function avatar_gallery($category, $avatar_select, $items_per_column, $block_var = 'avatar_row')
 {
-	global $user, $template;
-
 	$avatar_list = array();
 
 	$path = PHPBB_ROOT_PATH . phpbb::$config['avatar_gallery_path'];
 
 	if (!file_exists($path) || !is_dir($path))
 	{
-		$avatar_list = array($user->lang['NO_AVATAR_CATEGORY'] => array());
+		$avatar_list = array(phpbb::$user->lang['NO_AVATAR_CATEGORY'] => array());
 	}
 	else
 	{
@@ -1953,7 +1929,7 @@ function avatar_gallery($category, $avatar_select, $items_per_column, $block_var
 
 		if (!$dp)
 		{
-			return array($user->lang['NO_AVATAR_CATEGORY'] => array());
+			return array(phpbb::$user->lang['NO_AVATAR_CATEGORY'] => array());
 		}
 
 		while (($file = readdir($dp)) !== false)
@@ -1990,7 +1966,7 @@ function avatar_gallery($category, $avatar_select, $items_per_column, $block_var
 
 	if (!sizeof($avatar_list))
 	{
-		$avatar_list = array($user->lang['NO_AVATAR_CATEGORY'] => array());
+		$avatar_list = array(phpbb::$user->lang['NO_AVATAR_CATEGORY'] => array());
 	}
 
 	@ksort($avatar_list);
@@ -2040,8 +2016,6 @@ function avatar_gallery($category, $avatar_select, $items_per_column, $block_var
 */
 function avatar_get_dimensions($avatar, $avatar_type, &$error, $current_x = 0, $current_y = 0)
 {
-	global $user;
-
 	switch ($avatar_type)
 	{
 		case AVATAR_REMOTE :
@@ -2059,13 +2033,13 @@ function avatar_get_dimensions($avatar, $avatar_type, &$error, $current_x = 0, $
 	// Make sure getimagesize works...
 	if (($image_data = @getimagesize($avatar)) === false)
 	{
-		$error[] = $user->lang['UNABLE_GET_IMAGE_SIZE'];
+		$error[] = phpbb::$user->lang['UNABLE_GET_IMAGE_SIZE'];
 		return false;
 	}
 
 	if ($image_data[0] < 2 || $image_data[1] < 2)
 	{
-		$error[] = $user->lang['AVATAR_NO_SIZE'];
+		$error[] = phpbb::$user->lang['AVATAR_NO_SIZE'];
 		return false;
 	}
 
@@ -2093,8 +2067,6 @@ function avatar_get_dimensions($avatar, $avatar_type, &$error, $current_x = 0, $
 */
 function avatar_process_user(&$error, $custom_userdata = false)
 {
-	global $auth, $user;
-
 	$data = array(
 		'uploadurl'		=> request_var('uploadurl', ''),
 		'remotelink'	=> request_var('remotelink', ''),
@@ -2118,7 +2090,7 @@ function avatar_process_user(&$error, $custom_userdata = false)
 
 	if ($custom_userdata === false)
 	{
-		$userdata = &$user->data;
+		$userdata = &phpbb::$user->data;
 	}
 	else
 	{
@@ -2188,7 +2160,7 @@ function avatar_process_user(&$error, $custom_userdata = false)
 		{
 			if ($data['width'] > phpbb::$config['avatar_max_width'] || $data['height'] > phpbb::$config['avatar_max_height'])
 			{
-				$error[] = sprintf($user->lang['AVATAR_WRONG_SIZE'], phpbb::$config['avatar_min_width'], phpbb::$config['avatar_min_height'], phpbb::$config['avatar_max_width'], phpbb::$config['avatar_max_height'], $data['width'], $data['height']);
+				$error[] = sprintf(phpbb::$user->lang['AVATAR_WRONG_SIZE'], phpbb::$config['avatar_min_width'], phpbb::$config['avatar_min_height'], phpbb::$config['avatar_max_width'], phpbb::$config['avatar_max_height'], $data['width'], $data['height']);
 			}
 		}
 
@@ -2198,7 +2170,7 @@ function avatar_process_user(&$error, $custom_userdata = false)
 			{
 				if ($data['width'] < phpbb::$config['avatar_min_width'] || $data['height'] < phpbb::$config['avatar_min_height'])
 				{
-					$error[] = sprintf($user->lang['AVATAR_WRONG_SIZE'], phpbb::$config['avatar_min_width'], phpbb::$config['avatar_min_height'], phpbb::$config['avatar_max_width'], phpbb::$config['avatar_max_height'], $data['width'], $data['height']);
+					$error[] = sprintf(phpbb::$user->lang['AVATAR_WRONG_SIZE'], phpbb::$config['avatar_min_width'], phpbb::$config['avatar_min_height'], phpbb::$config['avatar_max_width'], phpbb::$config['avatar_max_height'], $data['width'], $data['height']);
 				}
 			}
 		}
@@ -2218,7 +2190,7 @@ function avatar_process_user(&$error, $custom_userdata = false)
 			$ext_new = $ext_old = '';
 			if (isset($sql_ary['user_avatar']))
 			{
-				$userdata = ($custom_userdata === false) ? $user->data : $custom_userdata;
+				$userdata = ($custom_userdata === false) ? phpbb::$user->data : $custom_userdata;
 				$ext_new = (empty($sql_ary['user_avatar'])) ? '' : substr(strrchr($sql_ary['user_avatar'], '.'), 1);
 				$ext_old = (empty($userdata['user_avatar'])) ? '' : substr(strrchr($userdata['user_avatar'], '.'), 1);
 
@@ -2235,7 +2207,7 @@ function avatar_process_user(&$error, $custom_userdata = false)
 
 			$sql = 'UPDATE ' . USERS_TABLE . '
 				SET ' . phpbb::$db->sql_build_array('UPDATE', $sql_ary) . '
-				WHERE user_id = ' . (($custom_userdata === false) ? $user->data['user_id'] : $custom_userdata['user_id']);
+				WHERE user_id = ' . (($custom_userdata === false) ? phpbb::$user->data['user_id'] : $custom_userdata['user_id']);
 			phpbb::$db->sql_query($sql);
 
 		}
@@ -2254,7 +2226,7 @@ function avatar_process_user(&$error, $custom_userdata = false)
 */
 function group_create(&$group_id, $type, $name, $desc, $group_attributes, $allow_desc_bbcode = false, $allow_desc_urls = false, $allow_desc_smilies = false)
 {
-	global $user, $file_upload;
+	global $file_upload;
 
 	$error = array();
 	$attribute_ary = array(
@@ -2279,18 +2251,18 @@ function group_create(&$group_id, $type, $name, $desc, $group_attributes, $allow
 	// Check data. Limit group name length.
 	if (!utf8_strlen($name) || utf8_strlen($name) > 60)
 	{
-		$error[] = (!utf8_strlen($name)) ? $user->lang['GROUP_ERR_USERNAME'] : $user->lang['GROUP_ERR_USER_LONG'];
+		$error[] = (!utf8_strlen($name)) ? phpbb::$user->lang['GROUP_ERR_USERNAME'] : phpbb::$user->lang['GROUP_ERR_USER_LONG'];
 	}
 
 	$err = group_validate_groupname($group_id, $name);
 	if (!empty($err))
 	{
-		$error[] = $user->lang[$err];
+		$error[] = phpbb::$user->lang[$err];
 	}
 
 	if (!in_array($type, array(GROUP_OPEN, GROUP_CLOSED, GROUP_HIDDEN, GROUP_SPECIAL, GROUP_FREE)))
 	{
-		$error[] = $user->lang['GROUP_ERR_TYPE'];
+		$error[] = phpbb::$user->lang['GROUP_ERR_TYPE'];
 	}
 
 	if (!sizeof($error))
@@ -2400,7 +2372,7 @@ function group_create(&$group_id, $type, $name, $desc, $group_attributes, $allow
 			group_set_user_default($group_id, $user_ary, $sql_ary);
 		}
 
-		$name = ($type == GROUP_SPECIAL) ? $user->lang['G_' . $name] : $name;
+		$name = ($type == GROUP_SPECIAL) ? phpbb::$user->lang['G_' . $name] : $name;
 		add_log('admin', $log, $name);
 
 		group_update_listings($group_id);
@@ -2520,8 +2492,6 @@ function group_delete($group_id, $group_name = false)
 */
 function group_user_add($group_id, $user_id_ary = false, $username_ary = false, $group_name = false, $default = false, $leader = 0, $pending = 0, $group_attributes = false)
 {
-	global $auth;
-
 	// We need both username and user_id info
 	$result = user_get_id_name($user_id_ary, $username_ary);
 
@@ -2621,8 +2591,6 @@ function group_user_add($group_id, $user_id_ary = false, $username_ary = false, 
 */
 function group_user_del($group_id, $user_id_ary = false, $username_ary = false, $group_name = false)
 {
-	global $auth;
-
 	$group_order = array('ADMINISTRATORS', 'GLOBAL_MODERATORS', 'REGISTERED_COPPA', 'REGISTERED', 'BOTS', 'GUESTS');
 
 	// We need both username and user_id info
@@ -2818,8 +2786,6 @@ function remove_default_rank($group_id, $user_ids)
 */
 function group_user_attributes($action, $group_id, $user_id_ary = false, $username_ary = false, $group_name = false, $group_attributes = false)
 {
-	global $auth;
-
 	// We need both username and user_id info
 	$result = user_get_id_name($user_id_ary, $username_ary);
 
@@ -3104,8 +3070,6 @@ function group_set_user_default($group_id, $user_id_ary, $group_attributes = fal
 */
 function get_group_name($group_id)
 {
-	global $user;
-
 	$sql = 'SELECT group_name, group_type
 		FROM ' . GROUPS_TABLE . '
 		WHERE group_id = ' . (int) $group_id;
@@ -3118,7 +3082,7 @@ function get_group_name($group_id)
 		return '';
 	}
 
-	return ($row['group_type'] == GROUP_SPECIAL) ? $user->lang['G_' . $row['group_name']] : $row['group_name'];
+	return ($row['group_type'] == GROUP_SPECIAL) ? phpbb::$user->lang['G_' . $row['group_name']] : $row['group_name'];
 }
 
 /**
@@ -3193,8 +3157,6 @@ function group_memberships($group_id_ary = false, $user_id_ary = false, $return_
 */
 function group_update_listings($group_id)
 {
-	global $auth;
-
 	$hold_ary = $auth->acl_group_raw_data($group_id, array('a_', 'm_'));
 
 	if (!sizeof($hold_ary))

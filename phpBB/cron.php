@@ -17,8 +17,8 @@ if (!defined('PHP_EXT')) define('PHP_EXT', substr(strrchr(__FILE__, '.'), 1));
 include(PHPBB_ROOT_PATH . 'common.' . PHP_EXT);
 
 // Do not update users last page entry
-$user->session_begin(false);
-$auth->acl($user->data);
+phpbb::$user->session_begin(false);
+$auth->acl(phpbb::$user->data);
 
 $cron_type = request_var('cron_type', '');
 $use_shutdown_function = (@function_exists('register_shutdown_function')) ? true : false;
@@ -58,7 +58,7 @@ define('CRON_ID', time() . ' ' . unique_id());
 $sql = 'UPDATE ' . CONFIG_TABLE . "
 	SET config_value = '" . $db->sql_escape(CRON_ID) . "'
 	WHERE config_name = 'cron_lock' AND config_value = '" . $db->sql_escape(phpbb::$config['cron_lock']) . "'";
-$db->sql_query($sql);
+phpbb::$db->sql_query($sql);
 
 // another cron process altered the table between script start and UPDATE query so exit
 if ($db->sql_affectedrows() != 1)
@@ -202,7 +202,7 @@ switch ($cron_type)
 		}
 		else
 		{
-			$user->session_gc();
+			phpbb::$user->session_gc();
 		}
 
 	break;
@@ -276,8 +276,6 @@ exit;
 */
 function unlock_cron()
 {
-	global $db;
-
 	$sql = 'UPDATE ' . CONFIG_TABLE . "
 		SET config_value = '0'
 		WHERE config_name = 'cron_lock' AND config_value = '" . $db->sql_escape(CRON_ID) . "'";

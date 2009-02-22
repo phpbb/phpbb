@@ -26,8 +26,6 @@ class ucp_zebra
 
 	function main($id, $mode)
 	{
-		global $db, $user, $auth, $template;
-
 		$submit = phpbb_request::is_set_post('submit') || phpbb_request::is_set('add', phpbb_request::GET) || phpbb_request::is_set('remove', phpbb_request::GET);
 		$s_hidden_fields = '';
 
@@ -62,7 +60,7 @@ class ucp_zebra
 						// may lead to complaints
 						$sql = 'SELECT z.*, u.username, u.username_clean
 							FROM ' . ZEBRA_TABLE . ' z, ' . USERS_TABLE . ' u
-							WHERE z.user_id = ' . $user->data['user_id'] . '
+							WHERE z.user_id = ' . phpbb::$user->data['user_id'] . '
 								AND u.user_id = z.zebra_id';
 						$result = $db->sql_query($sql);
 
@@ -86,7 +84,7 @@ class ucp_zebra
 
 						if (sizeof($data['add']) < $n && $mode == 'foes')
 						{
-							$error[] = $user->lang['NOT_ADDED_FOES_FRIENDS'];
+							$error[] = phpbb::$user->lang['NOT_ADDED_FOES_FRIENDS'];
 						}
 
 						// remove foes from the username array
@@ -95,16 +93,16 @@ class ucp_zebra
 
 						if (sizeof($data['add']) < $n && $mode == 'friends')
 						{
-							$error[] = $user->lang['NOT_ADDED_FRIENDS_FOES'];
+							$error[] = phpbb::$user->lang['NOT_ADDED_FRIENDS_FOES'];
 						}
 
 						// remove the user himself from the username array
 						$n = sizeof($data['add']);
-						$data['add'] = array_diff($data['add'], array(utf8_clean_string($user->data['username'])));
+						$data['add'] = array_diff($data['add'], array(utf8_clean_string(phpbb::$user->data['username'])));
 
 						if (sizeof($data['add']) < $n)
 						{
-							$error[] = $user->lang['NOT_ADDED_' . $l_mode . '_SELF'];
+							$error[] = phpbb::$user->lang['NOT_ADDED_' . $l_mode . '_SELF'];
 						}
 
 						unset($friends, $foes, $n);
@@ -126,7 +124,7 @@ class ucp_zebra
 								}
 								else
 								{
-									$error[] = $user->lang['NOT_ADDED_' . $l_mode . '_ANONYMOUS'];
+									$error[] = phpbb::$user->lang['NOT_ADDED_' . $l_mode . '_ANONYMOUS'];
 								}
 							}
 							$db->sql_freeresult($result);
@@ -149,7 +147,7 @@ class ucp_zebra
 
 									if (sizeof($perms))
 									{
-										$error[] = $user->lang['NOT_ADDED_FOES_MOD_ADMIN'];
+										$error[] = phpbb::$user->lang['NOT_ADDED_FOES_MOD_ADMIN'];
 									}
 
 									// This may not be right ... it may yield true when perms equate to deny
@@ -165,7 +163,7 @@ class ucp_zebra
 									foreach ($user_id_ary as $zebra_id)
 									{
 										$sql_ary[] = array(
-											'user_id'		=> (int) $user->data['user_id'],
+											'user_id'		=> (int) phpbb::$user->data['user_id'],
 											'zebra_id'		=> (int) $zebra_id,
 											$sql_mode		=> 1
 										);
@@ -179,7 +177,7 @@ class ucp_zebra
 							}
 							else if (!sizeof($error))
 							{
-								$error[] = $user->lang['USER_NOT_FOUND_OR_INACTIVE'];
+								$error[] = phpbb::$user->lang['USER_NOT_FOUND_OR_INACTIVE'];
 							}
 						}
 					}
@@ -189,7 +187,7 @@ class ucp_zebra
 						$data['usernames'] = array_map('intval', $data['usernames']);
 
 						$sql = 'DELETE FROM ' . ZEBRA_TABLE . '
-							WHERE user_id = ' . $user->data['user_id'] . '
+							WHERE user_id = ' . phpbb::$user->data['user_id'] . '
 								AND ' . $db->sql_in_set('zebra_id', $data['usernames']);
 						$db->sql_query($sql);
 
@@ -199,7 +197,7 @@ class ucp_zebra
 					if ($updated)
 					{
 						meta_refresh(3, $this->u_action);
-						$message = $user->lang[$l_mode . '_UPDATED'] . '<br />' . implode('<br />', $error) . ((sizeof($error)) ? '<br />' : '') . '<br />' . sprintf($user->lang['RETURN_UCP'], '<a href="' . $this->u_action . '">', '</a>');
+						$message = phpbb::$user->lang[$l_mode . '_UPDATED'] . '<br />' . implode('<br />', $error) . ((sizeof($error)) ? '<br />' : '') . '<br />' . sprintf(phpbb::$user->lang['RETURN_UCP'], '<a href="' . $this->u_action . '">', '</a>');
 						trigger_error($message);
 					}
 					else
@@ -209,7 +207,7 @@ class ucp_zebra
 				}
 				else
 				{
-					confirm_box(false, $user->lang['CONFIRM_OPERATION'], build_hidden_fields(array(
+					confirm_box(false, phpbb::$user->lang['CONFIRM_OPERATION'], build_hidden_fields(array(
 						'mode'		=> $mode,
 						'submit'	=> true,
 						'usernames'	=> $data['usernames'],
@@ -222,7 +220,7 @@ class ucp_zebra
 		$sql_and = ($mode == 'friends') ? 'z.friend = 1' : 'z.foe = 1';
 		$sql = 'SELECT z.*, u.username, u.username_clean
 			FROM ' . ZEBRA_TABLE . ' z, ' . USERS_TABLE . ' u
-			WHERE z.user_id = ' . $user->data['user_id'] . "
+			WHERE z.user_id = ' . phpbb::$user->data['user_id'] . "
 				AND $sql_and
 				AND u.user_id = z.zebra_id
 			ORDER BY u.username_clean ASC";
@@ -236,7 +234,7 @@ class ucp_zebra
 		$db->sql_freeresult($result);
 
 		$template->assign_vars(array(
-			'L_TITLE'			=> $user->lang['UCP_ZEBRA_' . $l_mode],
+			'L_TITLE'			=> phpbb::$user->lang['UCP_ZEBRA_' . $l_mode],
 
 			'U_FIND_USERNAME'	=> append_sid('memberlist', 'mode=searchuser&amp;form=ucp&amp;field=add'),
 

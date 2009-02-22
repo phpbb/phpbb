@@ -33,13 +33,11 @@ class ucp_main
 
 	function main($id, $mode)
 	{
-		global $db, $user, $auth, $template;
-
 		switch ($mode)
 		{
 			case 'front':
 
-				$user->add_lang('memberlist');
+				phpbb::$user->add_lang('memberlist');
 
 				$sql_from = TOPICS_TABLE . ' t ';
 				$sql_select = '';
@@ -47,18 +45,18 @@ class ucp_main
 				if (phpbb::$config['load_db_track'])
 				{
 					$sql_from .= ' LEFT JOIN ' . TOPICS_POSTED_TABLE . ' tp ON (tp.topic_id = t.topic_id
-						AND tp.user_id = ' . $user->data['user_id'] . ')';
+						AND tp.user_id = ' . phpbb::$user->data['user_id'] . ')';
 					$sql_select .= ', tp.topic_posted';
 				}
 
 				if (phpbb::$config['load_db_lastread'])
 				{
 					$sql_from .= ' LEFT JOIN ' . TOPICS_TRACK_TABLE . ' tt ON (tt.topic_id = t.topic_id
-						AND tt.user_id = ' . $user->data['user_id'] . ')';
+						AND tt.user_id = ' . phpbb::$user->data['user_id'] . ')';
 					$sql_select .= ', tt.mark_time';
 				}
 
-				$topic_type = $user->lang['VIEW_TOPIC_GLOBAL'];
+				$topic_type = phpbb::$user->lang['VIEW_TOPIC_GLOBAL'];
 				$folder = 'global_read';
 				$folder_new = 'global_unread';
 
@@ -138,19 +136,19 @@ class ucp_main
 						'TOPIC_AUTHOR'				=> get_username_string('username', $row['topic_poster'], $row['topic_first_poster_name'], $row['topic_first_poster_colour']),
 						'TOPIC_AUTHOR_COLOUR'		=> get_username_string('colour', $row['topic_poster'], $row['topic_first_poster_name'], $row['topic_first_poster_colour']),
 						'TOPIC_AUTHOR_FULL'			=> get_username_string('full', $row['topic_poster'], $row['topic_first_poster_name'], $row['topic_first_poster_colour']),
-						'FIRST_POST_TIME'			=> $user->format_date($row['topic_time']),
+						'FIRST_POST_TIME'			=> phpbb::$user->format_date($row['topic_time']),
 						'LAST_POST_SUBJECT'			=> censor_text($row['topic_last_post_subject']),
-						'LAST_POST_TIME'			=> $user->format_date($row['topic_last_post_time']),
-						'LAST_VIEW_TIME'			=> $user->format_date($row['topic_last_view_time']),
+						'LAST_POST_TIME'			=> phpbb::$user->format_date($row['topic_last_post_time']),
+						'LAST_VIEW_TIME'			=> phpbb::$user->format_date($row['topic_last_view_time']),
 						'LAST_POST_AUTHOR'			=> get_username_string('username', $row['topic_last_poster_id'], $row['topic_last_poster_name'], $row['topic_last_poster_colour']),
 						'LAST_POST_AUTHOR_COLOUR'	=> get_username_string('colour', $row['topic_last_poster_id'], $row['topic_last_poster_name'], $row['topic_last_poster_colour']),
 						'LAST_POST_AUTHOR_FULL'		=> get_username_string('full', $row['topic_last_poster_id'], $row['topic_last_poster_name'], $row['topic_last_poster_colour']),
 						'TOPIC_TITLE'				=> censor_text($row['topic_title']),
 						'TOPIC_TYPE'				=> $topic_type,
 
-						'TOPIC_FOLDER_IMG'		=> $user->img($folder_img, $folder_alt),
-						'TOPIC_FOLDER_IMG_SRC'	=> $user->img($folder_img, $folder_alt, 'src'),
-						'ATTACH_ICON_IMG'		=> ($auth->acl_get('u_download') && $auth->acl_get('f_download', $forum_id) && $row['topic_attachment']) ? $user->img('icon_topic_attach', '') : '',
+						'TOPIC_FOLDER_IMG'		=> phpbb::$user->img($folder_img, $folder_alt),
+						'TOPIC_FOLDER_IMG_SRC'	=> phpbb::$user->img($folder_img, $folder_alt, 'src'),
+						'ATTACH_ICON_IMG'		=> ($auth->acl_get('u_download') && $auth->acl_get('f_download', $forum_id) && $row['topic_attachment']) ? phpbb::$user->img('icon_topic_attach', '') : '',
 
 						'S_USER_POSTED'		=> (!empty($row['topic_posted']) && $row['topic_posted']) ? true : false,
 						'S_UNREAD'			=> $unread_topic,
@@ -169,29 +167,29 @@ class ucp_main
 					{
 						include_once(PHPBB_ROOT_PATH . 'includes/functions_display.' . PHP_EXT);
 					}
-					display_user_activity($user->data);
+					display_user_activity(phpbb::$user->data);
 				}
 
 				// Do the relevant calculations
-				$memberdays = max(1, round((time() - $user->data['user_regdate']) / 86400));
-				$posts_per_day = $user->data['user_posts'] / $memberdays;
-				$percentage = (phpbb::$config['num_posts']) ? min(100, ($user->data['user_posts'] / phpbb::$config['num_posts']) * 100) : 0;
+				$memberdays = max(1, round((time() - phpbb::$user->data['user_regdate']) / 86400));
+				$posts_per_day = phpbb::$user->data['user_posts'] / $memberdays;
+				$percentage = (phpbb::$config['num_posts']) ? min(100, (phpbb::$user->data['user_posts'] / phpbb::$config['num_posts']) * 100) : 0;
 
 				$template->assign_vars(array(
-					'USER_COLOR'		=> (!empty($user->data['user_colour'])) ? $user->data['user_colour'] : '',
-					'JOINED'			=> $user->format_date($user->data['user_regdate']),
-					'VISITED'			=> (empty($last_visit)) ? ' - ' : $user->format_date($last_visit),
-					'WARNINGS'			=> ($user->data['user_warnings']) ? $user->data['user_warnings'] : 0,
-					'POSTS'				=> ($user->data['user_posts']) ? $user->data['user_posts'] : 0,
-					'POSTS_DAY'			=> sprintf($user->lang['POST_DAY'], $posts_per_day),
-					'POSTS_PCT'			=> sprintf($user->lang['POST_PCT'], $percentage),
+					'USER_COLOR'		=> (!empty(phpbb::$user->data['user_colour'])) ? phpbb::$user->data['user_colour'] : '',
+					'JOINED'			=> phpbb::$user->format_date(phpbb::$user->data['user_regdate']),
+					'VISITED'			=> (empty($last_visit)) ? ' - ' : phpbb::$user->format_date($last_visit),
+					'WARNINGS'			=> (phpbb::$user->data['user_warnings']) ? phpbb::$user->data['user_warnings'] : 0,
+					'POSTS'				=> (phpbb::$user->data['user_posts']) ? phpbb::$user->data['user_posts'] : 0,
+					'POSTS_DAY'			=> sprintf(phpbb::$user->lang['POST_DAY'], $posts_per_day),
+					'POSTS_PCT'			=> sprintf(phpbb::$user->lang['POST_PCT'], $percentage),
 
 					'OCCUPATION'	=> (!empty($row['user_occ'])) ? $row['user_occ'] : '',
 					'INTERESTS'		=> (!empty($row['user_interests'])) ? $row['user_interests'] : '',
 
 //					'S_GROUP_OPTIONS'	=> $group_options,
 
-					'U_SEARCH_USER'		=> ($auth->acl_get('u_search')) ? append_sid('search', 'author_id=' . $user->data['user_id'] . '&amp;sr=posts') : '',
+					'U_SEARCH_USER'		=> ($auth->acl_get('u_search')) ? append_sid('search', 'author_id=' . phpbb::$user->data['user_id'] . '&amp;sr=posts') : '',
 				));
 
 			break;
@@ -200,7 +198,7 @@ class ucp_main
 
 				include(PHPBB_ROOT_PATH . 'includes/functions_display.' . PHP_EXT);
 
-				$user->add_lang('viewforum');
+				phpbb::$user->add_lang('viewforum');
 
 				add_form_key('ucp_front_subscribed');
 
@@ -221,7 +219,7 @@ class ucp_main
 							{
 								$sql = 'DELETE FROM ' . FORUMS_WATCH_TABLE . '
 									WHERE ' . $db->sql_in_set('forum_id', $forums) . '
-										AND user_id = ' . $user->data['user_id'];
+										AND user_id = ' . phpbb::$user->data['user_id'];
 								$db->sql_query($sql);
 
 								$l_unwatch .= '_FORUMS';
@@ -231,23 +229,23 @@ class ucp_main
 							{
 								$sql = 'DELETE FROM ' . TOPICS_WATCH_TABLE . '
 									WHERE ' . $db->sql_in_set('topic_id', $topics) . '
-										AND user_id = ' . $user->data['user_id'];
+										AND user_id = ' . phpbb::$user->data['user_id'];
 								$db->sql_query($sql);
 
 								$l_unwatch .= '_TOPICS';
 							}
-							$msg = $user->lang['UNWATCHED' . $l_unwatch];
+							$msg = phpbb::$user->lang['UNWATCHED' . $l_unwatch];
 						}
 						else
 						{
-							$msg = $user->lang['NO_WATCHED_SELECTED'];
+							$msg = phpbb::$user->lang['NO_WATCHED_SELECTED'];
 						}
 					}
 					else
 					{
-						$msg = $user->lang['FORM_INVALID'];
+						$msg = phpbb::$user->lang['FORM_INVALID'];
 					}
-					$message = $msg . '<br /><br />' . sprintf($user->lang['RETURN_UCP'], '<a href="' . append_sid('ucp', "i=$id&amp;mode=subscribed") . '">', '</a>');
+					$message = $msg . '<br /><br />' . sprintf(phpbb::$user->lang['RETURN_UCP'], '<a href="' . append_sid('ucp', "i=$id&amp;mode=subscribed") . '">', '</a>');
 					meta_refresh(3, append_sid('ucp', "i=$id&amp;mode=subscribed"));
 					trigger_error($message);
 				}
@@ -267,7 +265,7 @@ class ucp_main
 							FORUMS_TABLE		=> 'f'
 						),
 
-						'WHERE'		=> 'fw.user_id = ' . $user->data['user_id'] . '
+						'WHERE'		=> 'fw.user_id = ' . phpbb::$user->data['user_id'] . '
 							AND f.forum_id = fw.forum_id
 							AND ' . $db->sql_in_set('f.forum_id', $forbidden_forums, true, true),
 
@@ -279,7 +277,7 @@ class ucp_main
 						$sql_array['LEFT_JOIN'] = array(
 							array(
 								'FROM'	=> array(FORUMS_TRACK_TABLE => 'ft'),
-								'ON'	=> 'ft.user_id = ' . $user->data['user_id'] . ' AND ft.forum_id = f.forum_id'
+								'ON'	=> 'ft.user_id = ' . phpbb::$user->data['user_id'] . ' AND ft.forum_id = f.forum_id'
 							)
 						);
 
@@ -300,11 +298,11 @@ class ucp_main
 
 						if (phpbb::$config['load_db_lastread'])
 						{
-							$forum_check = (!empty($row['mark_time'])) ? $row['mark_time'] : $user->data['user_lastmark'];
+							$forum_check = (!empty($row['mark_time'])) ? $row['mark_time'] : phpbb::$user->data['user_lastmark'];
 						}
 						else
 						{
-							$forum_check = (isset($tracking_topics['f'][$forum_id])) ? (int) (base_convert($tracking_topics['f'][$forum_id], 36, 10) + phpbb::$config['board_startdate']) : $user->data['user_lastmark'];
+							$forum_check = (isset($tracking_topics['f'][$forum_id])) ? (int) (base_convert($tracking_topics['f'][$forum_id], 36, 10) + phpbb::$config['board_startdate']) : phpbb::$user->data['user_lastmark'];
 						}
 
 						$unread_forum = ($row['forum_last_post_time'] > $forum_check) ? true : false;
@@ -324,7 +322,7 @@ class ucp_main
 						// Create last post link information, if appropriate
 						if ($row['forum_last_post_id'])
 						{
-							$last_post_time = $user->format_date($row['forum_last_post_time']);
+							$last_post_time = phpbb::$user->format_date($row['forum_last_post_time']);
 							$last_post_url = append_sid('viewtopic', "f=$forum_id&amp;p=" . $row['forum_last_post_id']) . '#p' . $row['forum_last_post_id'];
 						}
 						else
@@ -334,9 +332,9 @@ class ucp_main
 
 						$template->assign_block_vars('forumrow', array(
 							'FORUM_ID'				=> $forum_id,
-							'FORUM_FOLDER_IMG'		=> $user->img($folder_image, $folder_alt),
-							'FORUM_FOLDER_IMG_SRC'	=> $user->img($folder_image, $folder_alt, 'src'),
-							'FORUM_IMAGE'			=> ($row['forum_image']) ? '<img src="' . PHPBB_ROOT_PATH . $row['forum_image'] . '" alt="' . $user->lang[$folder_alt] . '" />' : '',
+							'FORUM_FOLDER_IMG'		=> phpbb::$user->img($folder_image, $folder_alt),
+							'FORUM_FOLDER_IMG_SRC'	=> phpbb::$user->img($folder_image, $folder_alt, 'src'),
+							'FORUM_IMAGE'			=> ($row['forum_image']) ? '<img src="' . PHPBB_ROOT_PATH . $row['forum_image'] . '" alt="' . phpbb::$user->lang[$folder_alt] . '" />' : '',
 							'FORUM_IMAGE_SRC'		=> ($row['forum_image']) ? PHPBB_ROOT_PATH . $row['forum_image'] : '',
 							'FORUM_NAME'			=> $row['forum_name'],
 							'FORUM_DESC'			=> generate_text_for_display($row['forum_desc'], $row['forum_desc_uid'], $row['forum_desc_bitfield'], $row['forum_desc_options']),
@@ -385,7 +383,7 @@ class ucp_main
 
 				include(PHPBB_ROOT_PATH . 'includes/functions_display.' . PHP_EXT);
 
-				$user->add_lang('viewforum');
+				phpbb::$user->add_lang('viewforum');
 
 				if (phpbb_request::is_set_post('unbookmark'))
 				{
@@ -406,12 +404,12 @@ class ucp_main
 					if (confirm_box(true))
 					{
 						$sql = 'DELETE FROM ' . BOOKMARKS_TABLE . '
-							WHERE user_id = ' . $user->data['user_id'] . '
+							WHERE user_id = ' . phpbb::$user->data['user_id'] . '
 								AND ' . $db->sql_in_set('topic_id', $topics);
 						$db->sql_query($sql);
 
 						meta_refresh(3, $url);
-						$message = $user->lang['BOOKMARKS_REMOVED'] . '<br /><br />' . sprintf($user->lang['RETURN_UCP'], '<a href="' . $url . '">', '</a>');
+						$message = phpbb::$user->lang['BOOKMARKS_REMOVED'] . '<br /><br />' . sprintf(phpbb::$user->lang['RETURN_UCP'], '<a href="' . $url . '">', '</a>');
 						trigger_error($message);
 					}
 					else
@@ -431,7 +429,7 @@ class ucp_main
 				$pm_drafts = ($this->p_master->p_name == 'pm') ? true : false;
 				$template->assign_var('S_SHOW_DRAFTS', true);
 
-				$user->add_lang('posting');
+				phpbb::$user->add_lang('posting');
 
 				$edit		= phpbb_request::is_set('edit');
 				$draft_id	= phpbb_request::variable('edit', 0);
@@ -452,17 +450,17 @@ class ucp_main
 						{
 							$sql = 'DELETE FROM ' . DRAFTS_TABLE . '
 								WHERE ' . $db->sql_in_set('draft_id', $drafts) . '
-									AND user_id = ' . $user->data['user_id'];
+									AND user_id = ' . phpbb::$user->data['user_id'];
 							$db->sql_query($sql);
 						}
-						$msg = $user->lang['DRAFTS_DELETED'];
+						$msg = phpbb::$user->lang['DRAFTS_DELETED'];
 						unset($drafts);
 					}
 					else
 					{
-						$msg = $user->lang['FORM_INVALID'];
+						$msg = phpbb::$user->lang['FORM_INVALID'];
 					}
-					$message = $msg . '<br /><br />' . sprintf($user->lang['RETURN_UCP'], '<a href="' . $this->u_action . '">', '</a>');
+					$message = $msg . '<br /><br />' . sprintf(phpbb::$user->lang['RETURN_UCP'], '<a href="' . $this->u_action . '">', '</a>');
 					meta_refresh(3, $this->u_action);
 					trigger_error($message);
 				}
@@ -483,22 +481,22 @@ class ucp_main
 							$sql = 'UPDATE ' . DRAFTS_TABLE . '
 								SET ' . $db->sql_build_array('UPDATE', $draft_row) . "
 								WHERE draft_id = $draft_id
-									AND user_id = " . $user->data['user_id'];
+									AND user_id = " . phpbb::$user->data['user_id'];
 							$db->sql_query($sql);
 
-							$message = $user->lang['DRAFT_UPDATED'] . '<br /><br />' . sprintf($user->lang['RETURN_UCP'], '<a href="' . $this->u_action . '">', '</a>');
+							$message = phpbb::$user->lang['DRAFT_UPDATED'] . '<br /><br />' . sprintf(phpbb::$user->lang['RETURN_UCP'], '<a href="' . $this->u_action . '">', '</a>');
 
 							meta_refresh(3, $this->u_action);
 							trigger_error($message);
 						}
 						else
 						{
-							$template->assign_var('ERROR', ($draft_message == '') ? $user->lang['EMPTY_DRAFT'] : (($draft_subject == '') ? $user->lang['EMPTY_DRAFT_TITLE'] : ''));
+							$template->assign_var('ERROR', ($draft_message == '') ? phpbb::$user->lang['EMPTY_DRAFT'] : (($draft_subject == '') ? phpbb::$user->lang['EMPTY_DRAFT_TITLE'] : ''));
 						}
 					}
 					else
 					{
-						$template->assign_var('ERROR', $user->lang['FORM_INVALID']);
+						$template->assign_var('ERROR', phpbb::$user->lang['FORM_INVALID']);
 					}
 				}
 
@@ -506,7 +504,7 @@ class ucp_main
 				{
 					$sql = 'SELECT d.*, f.forum_name
 						FROM ' . DRAFTS_TABLE . ' d, ' . FORUMS_TABLE . ' f
-						WHERE d.user_id = ' . $user->data['user_id'] . ' ' .
+						WHERE d.user_id = ' . phpbb::$user->data['user_id'] . ' ' .
 							(($edit) ? "AND d.draft_id = $draft_id" : '') . '
 							AND f.forum_id = d.forum_id
 						ORDER BY d.save_time DESC';
@@ -514,7 +512,7 @@ class ucp_main
 				else
 				{
 					$sql = 'SELECT * FROM ' . DRAFTS_TABLE . '
-						WHERE user_id = ' . $user->data['user_id'] . ' ' .
+						WHERE user_id = ' . phpbb::$user->data['user_id'] . ' ' .
 							(($edit) ? "AND draft_id = $draft_id" : '') . '
 							AND forum_id = 0
 							AND topic_id = 0
@@ -580,7 +578,7 @@ class ucp_main
 					}
 
 					$template_row = array(
-						'DATE'			=> $user->format_date($draft['save_time']),
+						'DATE'			=> phpbb::$user->format_date($draft['save_time']),
 						'DRAFT_MESSAGE'	=> ($submit) ? $draft_message : $draft['draft_message'],
 						'DRAFT_SUBJECT'	=> ($submit) ? $draft_subject : $draft['draft_subject'],
 						'TITLE'			=> $title,
@@ -613,14 +611,14 @@ class ucp_main
 
 
 		$template->assign_vars(array(
-			'L_TITLE'			=> $user->lang['UCP_MAIN_' . strtoupper($mode)],
+			'L_TITLE'			=> phpbb::$user->lang['UCP_MAIN_' . strtoupper($mode)],
 
 			'S_DISPLAY_MARK_ALL'	=> ($mode == 'watched' || ($mode == 'drafts' && !phpbb_request::is_set('edit', phpbb_request::GET))) ? true : false,
 			'S_HIDDEN_FIELDS'		=> (isset($s_hidden_fields)) ? $s_hidden_fields : '',
 			'S_UCP_ACTION'			=> $this->u_action,
 
-			'LAST_POST_IMG'			=> $user->img('icon_topic_latest', 'VIEW_LATEST_POST'),
-			'NEWEST_POST_IMG'		=> $user->img('icon_topic_newest', 'VIEW_NEWEST_POST'),
+			'LAST_POST_IMG'			=> phpbb::$user->img('icon_topic_latest', 'VIEW_LATEST_POST'),
+			'NEWEST_POST_IMG'		=> phpbb::$user->img('icon_topic_newest', 'VIEW_NEWEST_POST'),
 		));
 
 		// Set desired template
@@ -633,8 +631,6 @@ class ucp_main
 	*/
 	function assign_topiclist($mode = 'subscribed', $forbidden_forum_ary = array())
 	{
-		global $user, $db, $template, $auth;
-
 		$table = ($mode == 'subscribed') ? TOPICS_WATCH_TABLE : BOOKMARKS_TABLE;
 		$start = request_var('start', 0);
 
@@ -647,7 +643,7 @@ class ucp_main
 			),
 
 			'WHERE'		=>	'i.topic_id = t.topic_id
-				AND i.user_id = ' . $user->data['user_id'] . '
+				AND i.user_id = ' . phpbb::$user->data['user_id'] . '
 				AND ' . $db->sql_in_set('t.forum_id', $forbidden_forum_ary, true, true),
 		);
 		$sql = $db->sql_build_query('SELECT', $sql_array);
@@ -660,7 +656,7 @@ class ucp_main
 			$template->assign_vars(array(
 				'PAGINATION'	=> generate_pagination($this->u_action, $topics_count, phpbb::$config['topics_per_page'], $start),
 				'PAGE_NUMBER'	=> on_page($topics_count, phpbb::$config['topics_per_page'], $start),
-				'TOTAL_TOPICS'	=> ($topics_count == 1) ? $user->lang['VIEW_FORUM_TOPIC'] : sprintf($user->lang['VIEW_FORUM_TOPICS'], $topics_count))
+				'TOTAL_TOPICS'	=> ($topics_count == 1) ? phpbb::$user->lang['VIEW_FORUM_TOPIC'] : sprintf(phpbb::$user->lang['VIEW_FORUM_TOPICS'], $topics_count))
 			);
 		}
 
@@ -674,7 +670,7 @@ class ucp_main
 					TOPICS_TABLE		=> 't'
 				),
 
-				'WHERE'		=> 'tw.user_id = ' . $user->data['user_id'] . '
+				'WHERE'		=> 'tw.user_id = ' . phpbb::$user->data['user_id'] . '
 					AND t.topic_id = tw.topic_id
 					AND ' . $db->sql_in_set('t.forum_id', $forbidden_forum_ary, true, true),
 
@@ -693,7 +689,7 @@ class ucp_main
 					BOOKMARKS_TABLE		=> 'b',
 				),
 
-				'WHERE'		=> 'b.user_id = ' . $user->data['user_id'] . '
+				'WHERE'		=> 'b.user_id = ' . phpbb::$user->data['user_id'] . '
 					AND ' . $db->sql_in_set('f.forum_id', $forbidden_forum_ary, true, true),
 
 				'ORDER_BY'	=> 't.topic_last_post_time DESC'
@@ -707,14 +703,14 @@ class ucp_main
 
 		if (phpbb::$config['load_db_lastread'])
 		{
-			$sql_array['LEFT_JOIN'][] = array('FROM' => array(FORUMS_TRACK_TABLE => 'ft'), 'ON' => 'ft.forum_id = t.forum_id AND ft.user_id = ' . $user->data['user_id']);
-			$sql_array['LEFT_JOIN'][] = array('FROM' => array(TOPICS_TRACK_TABLE => 'tt'), 'ON' => 'tt.topic_id = t.topic_id AND tt.user_id = ' . $user->data['user_id']);
+			$sql_array['LEFT_JOIN'][] = array('FROM' => array(FORUMS_TRACK_TABLE => 'ft'), 'ON' => 'ft.forum_id = t.forum_id AND ft.user_id = ' . phpbb::$user->data['user_id']);
+			$sql_array['LEFT_JOIN'][] = array('FROM' => array(TOPICS_TRACK_TABLE => 'tt'), 'ON' => 'tt.topic_id = t.topic_id AND tt.user_id = ' . phpbb::$user->data['user_id']);
 			$sql_array['SELECT'] .= ', tt.mark_time, ft.mark_time AS forum_mark_time';
 		}
 
 		if (phpbb::$config['load_db_track'])
 		{
-			$sql_array['LEFT_JOIN'][] = array('FROM' => array(TOPICS_POSTED_TABLE => 'tp'), 'ON' => 'tp.topic_id = t.topic_id AND tp.user_id = ' . $user->data['user_id']);
+			$sql_array['LEFT_JOIN'][] = array('FROM' => array(TOPICS_POSTED_TABLE => 'tp'), 'ON' => 'tp.topic_id = t.topic_id AND tp.user_id = ' . phpbb::$user->data['user_id']);
 			$sql_array['SELECT'] .= ', tp.topic_posted';
 		}
 
@@ -782,10 +778,10 @@ class ucp_main
 			$template->assign_block_vars('topicrow', array(
 				'FORUM_ID'					=> $forum_id,
 				'TOPIC_ID'					=> $topic_id,
-				'FIRST_POST_TIME'			=> $user->format_date($row['topic_time']),
+				'FIRST_POST_TIME'			=> phpbb::$user->format_date($row['topic_time']),
 				'LAST_POST_SUBJECT'			=> $row['topic_last_post_subject'],
-				'LAST_POST_TIME'			=> $user->format_date($row['topic_last_post_time']),
-				'LAST_VIEW_TIME'			=> $user->format_date($row['topic_last_view_time']),
+				'LAST_POST_TIME'			=> phpbb::$user->format_date($row['topic_last_post_time']),
+				'LAST_VIEW_TIME'			=> phpbb::$user->format_date($row['topic_last_view_time']),
 
 				'TOPIC_AUTHOR'				=> get_username_string('username', $row['topic_poster'], $row['topic_first_poster_name'], $row['topic_first_poster_colour']),
 				'TOPIC_AUTHOR_COLOUR'		=> get_username_string('colour', $row['topic_poster'], $row['topic_first_poster_name'], $row['topic_first_poster_colour']),
@@ -807,12 +803,12 @@ class ucp_main
 				'TOPIC_TYPE'		=> $topic_type,
 				'FORUM_NAME'		=> $row['forum_name'],
 
-				'TOPIC_FOLDER_IMG'		=> $user->img($folder_img, $folder_alt),
-				'TOPIC_FOLDER_IMG_SRC'	=> $user->img($folder_img, $folder_alt, 'src'),
+				'TOPIC_FOLDER_IMG'		=> phpbb::$user->img($folder_img, $folder_alt),
+				'TOPIC_FOLDER_IMG_SRC'	=> phpbb::$user->img($folder_img, $folder_alt, 'src'),
 				'TOPIC_ICON_IMG'		=> (!empty($icons[$row['icon_id']])) ? $icons[$row['icon_id']]['img'] : '',
 				'TOPIC_ICON_IMG_WIDTH'	=> (!empty($icons[$row['icon_id']])) ? $icons[$row['icon_id']]['width'] : '',
 				'TOPIC_ICON_IMG_HEIGHT'	=> (!empty($icons[$row['icon_id']])) ? $icons[$row['icon_id']]['height'] : '',
-				'ATTACH_ICON_IMG'		=> ($auth->acl_get('u_download') && $auth->acl_get('f_download', $forum_id) && $row['topic_attachment']) ? $user->img('icon_topic_attach', $user->lang['TOTAL_ATTACHMENTS']) : '',
+				'ATTACH_ICON_IMG'		=> ($auth->acl_get('u_download') && $auth->acl_get('f_download', $forum_id) && $row['topic_attachment']) ? phpbb::$user->img('icon_topic_attach', phpbb::$user->lang['TOTAL_ATTACHMENTS']) : '',
 
 				'S_TOPIC_TYPE'			=> $row['topic_type'],
 				'S_USER_POSTED'			=> (!empty($row['topic_posted'])) ? true : false,

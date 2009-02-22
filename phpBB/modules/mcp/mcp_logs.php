@@ -33,9 +33,7 @@ class mcp_logs
 
 	function main($id, $mode)
 	{
-		global $auth, $db, $user, $template;
-
-		$user->add_lang('acp/common');
+		phpbb::$user->add_lang('acp/common');
 
 		$action = request_var('action', array('' => ''));
 
@@ -134,7 +132,7 @@ class mcp_logs
 			}
 			else
 			{
-				confirm_box(false, $user->lang['CONFIRM_OPERATION'], build_hidden_fields(array(
+				confirm_box(false, phpbb::$user->lang['CONFIRM_OPERATION'], build_hidden_fields(array(
 					'f'			=> $forum_id,
 					't'			=> $topic_id,
 					'start'		=> $start,
@@ -152,8 +150,8 @@ class mcp_logs
 		}
 
 		// Sorting
-		$limit_days = array(0 => $user->lang['ALL_ENTRIES'], 1 => $user->lang['1_DAY'], 7 => $user->lang['7_DAYS'], 14 => $user->lang['2_WEEKS'], 30 => $user->lang['1_MONTH'], 90 => $user->lang['3_MONTHS'], 180 => $user->lang['6_MONTHS'], 365 => $user->lang['1_YEAR']);
-		$sort_by_text = array('u' => $user->lang['SORT_USERNAME'], 't' => $user->lang['SORT_DATE'], 'i' => $user->lang['SORT_IP'], 'o' => $user->lang['SORT_ACTION']);
+		$limit_days = array(0 => phpbb::$user->lang['ALL_ENTRIES'], 1 => phpbb::$user->lang['1_DAY'], 7 => phpbb::$user->lang['7_DAYS'], 14 => phpbb::$user->lang['2_WEEKS'], 30 => phpbb::$user->lang['1_MONTH'], 90 => phpbb::$user->lang['3_MONTHS'], 180 => phpbb::$user->lang['6_MONTHS'], 365 => phpbb::$user->lang['1_YEAR']);
+		$sort_by_text = array('u' => phpbb::$user->lang['SORT_USERNAME'], 't' => phpbb::$user->lang['SORT_DATE'], 'i' => phpbb::$user->lang['SORT_IP'], 'o' => phpbb::$user->lang['SORT_ACTION']);
 		$sort_by_sql = array('u' => 'u.username_clean', 't' => 'l.log_time', 'i' => 'l.log_ip', 'o' => 'l.log_operation');
 
 		$s_limit_days = $s_sort_key = $s_sort_dir = $u_sort_param = '';
@@ -170,10 +168,10 @@ class mcp_logs
 
 		$template->assign_vars(array(
 			'PAGE_NUMBER'		=> on_page($log_count, phpbb::$config['topics_per_page'], $start),
-			'TOTAL'				=> ($log_count == 1) ? $user->lang['TOTAL_LOG'] : sprintf($user->lang['TOTAL_LOGS'], $log_count),
+			'TOTAL'				=> ($log_count == 1) ? phpbb::$user->lang['TOTAL_LOG'] : sprintf(phpbb::$user->lang['TOTAL_LOGS'], $log_count),
 			'PAGINATION'		=> generate_pagination($this->u_action . "&amp;$u_sort_param", $log_count, phpbb::$config['topics_per_page'], $start),
 
-			'L_TITLE'			=> $user->lang['MCP_LOGS'],
+			'L_TITLE'			=> phpbb::$user->lang['MCP_LOGS'],
 
 			'U_POST_ACTION'			=> $this->u_action,
 			'S_CLEAR_ALLOWED'		=> ($auth->acl_get('a_clearlogs')) ? true : false,
@@ -193,14 +191,14 @@ class mcp_logs
 			{
 				if (isset($row[$check]) && $row[$check])
 				{
-					$data[] = '<a href="' . $row[$check] . '">' . $user->lang['LOGVIEW_' . strtoupper($check)] . '</a>';
+					$data[] = '<a href="' . $row[$check] . '">' . phpbb::$user->lang['LOGVIEW_' . strtoupper($check)] . '</a>';
 				}
 			}
 
 			$template->assign_block_vars('log', array(
 				'USERNAME'		=> $row['username_full'],
 				'IP'			=> $row['ip'],
-				'DATE'			=> $user->format_date($row['time']),
+				'DATE'			=> phpbb::$user->format_date($row['time']),
 				'ACTION'		=> $row['action'],
 				'DATA'			=> (sizeof($data)) ? implode(' | ', $data) : '',
 				'ID'			=> $row['id'],

@@ -31,7 +31,6 @@ class acp_language
 
 	function main($id, $mode)
 	{
-		global $db, $user, $auth, $template;
 		global $safe_mode, $file_uploads;
 
 		/**
@@ -77,7 +76,7 @@ class acp_language
 		$this->language_directory = basename($this->language_directory);
 		$this->language_file = basename($this->language_file);
 
-		$user->add_lang('acp/language');
+		phpbb::$user->add_lang('acp/language');
 		$this->tpl_name = 'acp_language';
 		$this->page_title = 'ACP_LANGUAGE_PACKS';
 
@@ -100,7 +99,7 @@ class acp_language
 				break;
 
 				default:
-					trigger_error($user->lang['INVALID_UPLOAD_METHOD'], E_USER_ERROR);
+					trigger_error(phpbb::$user->lang['INVALID_UPLOAD_METHOD'], E_USER_ERROR);
 				break;
 			}
 
@@ -127,8 +126,8 @@ class acp_language
 					$default_value = request_var($data, '');
 					$template->assign_block_vars('data', array(
 						'DATA'		=> $data,
-						'NAME'		=> $user->lang[strtoupper($method . '_' . $data)],
-						'EXPLAIN'	=> $user->lang[strtoupper($method . '_' . $data) . '_EXPLAIN'],
+						'NAME'		=> phpbb::$user->lang[strtoupper($method . '_' . $data)],
+						'EXPLAIN'	=> phpbb::$user->lang[strtoupper($method . '_' . $data) . '_EXPLAIN'],
 						'DEFAULT'	=> (empty($default_value)) ? $default : $default_value
 					));
 				}
@@ -161,12 +160,12 @@ class acp_language
 
 				if (!$submit || !check_form_key($form_name))
 				{
-					trigger_error($user->lang['FORM_INVALID']. adm_back_link($this->u_action), E_USER_WARNING);
+					trigger_error(phpbb::$user->lang['FORM_INVALID']. adm_back_link($this->u_action), E_USER_WARNING);
 				}
 
 				if (!$lang_id)
 				{
-					trigger_error($user->lang['NO_LANG_ID'] . adm_back_link($this->u_action), E_USER_WARNING);
+					trigger_error(phpbb::$user->lang['NO_LANG_ID'] . adm_back_link($this->u_action), E_USER_WARNING);
 				}
 
 				$sql = 'SELECT *
@@ -188,7 +187,7 @@ class acp_language
 
 				add_log('admin', 'LOG_LANGUAGE_PACK_UPDATED', $sql_ary['lang_english_name']);
 
-				trigger_error($user->lang['LANGUAGE_DETAILS_UPDATED'] . adm_back_link($this->u_action));
+				trigger_error(phpbb::$user->lang['LANGUAGE_DETAILS_UPDATED'] . adm_back_link($this->u_action));
 			break;
 
 			case 'submit_file':
@@ -197,22 +196,22 @@ class acp_language
 
 				if (!$submit || !check_form_key($form_name))
 				{
-					trigger_error($user->lang['FORM_INVALID']. adm_back_link($this->u_action), E_USER_WARNING);
+					trigger_error(phpbb::$user->lang['FORM_INVALID']. adm_back_link($this->u_action), E_USER_WARNING);
 				}
 
 				if (!$lang_id || empty($_POST['entry']))
 				{
-					trigger_error($user->lang['NO_LANG_ID'] . adm_back_link($this->u_action), E_USER_WARNING);
+					trigger_error(phpbb::$user->lang['NO_LANG_ID'] . adm_back_link($this->u_action), E_USER_WARNING);
 				}
 
 				if ($this->language_directory != 'email' && !is_array($_POST['entry']))
 				{
-					trigger_error($user->lang['NO_LANG_ID'] . adm_back_link($this->u_action), E_USER_WARNING);
+					trigger_error(phpbb::$user->lang['NO_LANG_ID'] . adm_back_link($this->u_action), E_USER_WARNING);
 				}
 
 				if (!$this->language_file || (!$this->language_directory && !in_array($this->language_file, $this->main_files)))
 				{
-					trigger_error($user->lang['NO_FILE_SELECTED'] . adm_back_link($this->u_action), E_USER_WARNING);
+					trigger_error(phpbb::$user->lang['NO_FILE_SELECTED'] . adm_back_link($this->u_action), E_USER_WARNING);
 				}
 
 				$sql = 'SELECT *
@@ -224,7 +223,7 @@ class acp_language
 
 				if (!$row)
 				{
-					trigger_error($user->lang['NO_LANG_ID'] . adm_back_link($this->u_action), E_USER_WARNING);
+					trigger_error(phpbb::$user->lang['NO_LANG_ID'] . adm_back_link($this->u_action), E_USER_WARNING);
 				}
 
 				// Before we attempt to write anything let's check if the admin really chose a correct filename
@@ -237,7 +236,7 @@ class acp_language
 
 						if (!in_array($this->language_file, $email_files))
 						{
-							trigger_error($user->lang['WRONG_LANGUAGE_FILE'] . adm_back_link($this->u_action . '&amp;action=details&amp;id=' . $lang_id), E_USER_WARNING);
+							trigger_error(phpbb::$user->lang['WRONG_LANGUAGE_FILE'] . adm_back_link($this->u_action . '&amp;action=details&amp;id=' . $lang_id), E_USER_WARNING);
 						}
 					break;
 
@@ -248,7 +247,7 @@ class acp_language
 
 						if (!in_array($this->language_file, $acp_files))
 						{
-							trigger_error($user->lang['WRONG_LANGUAGE_FILE'] . adm_back_link($this->u_action . '&amp;action=details&amp;id=' . $lang_id), E_USER_WARNING);
+							trigger_error(phpbb::$user->lang['WRONG_LANGUAGE_FILE'] . adm_back_link($this->u_action . '&amp;action=details&amp;id=' . $lang_id), E_USER_WARNING);
 						}
 					break;
 
@@ -259,14 +258,14 @@ class acp_language
 
 						if (!in_array($this->language_file, $mods_files))
 						{
-							trigger_error($user->lang['WRONG_LANGUAGE_FILE'] . adm_back_link($this->u_action . '&amp;action=details&amp;id=' . $lang_id), E_USER_WARNING);
+							trigger_error(phpbb::$user->lang['WRONG_LANGUAGE_FILE'] . adm_back_link($this->u_action . '&amp;action=details&amp;id=' . $lang_id), E_USER_WARNING);
 						}
 					break;
 
 					default:
 						if (!in_array($this->language_file, $this->main_files))
 						{
-							trigger_error($user->lang['WRONG_LANGUAGE_FILE'] . adm_back_link($this->u_action . '&amp;action=details&amp;id=' . $lang_id), E_USER_WARNING);
+							trigger_error(phpbb::$user->lang['WRONG_LANGUAGE_FILE'] . adm_back_link($this->u_action . '&amp;action=details&amp;id=' . $lang_id), E_USER_WARNING);
 						}
 					break;
 				}
@@ -301,7 +300,7 @@ class acp_language
 
 				if (!$fp)
 				{
-					trigger_error(sprintf($user->lang['UNABLE_TO_WRITE_FILE'], $filename) . adm_back_link($this->u_action . '&amp;id=' . $lang_id . '&amp;action=details&amp;language_file=' . urlencode($selected_lang_file)), E_USER_WARNING);
+					trigger_error(sprintf(phpbb::$user->lang['UNABLE_TO_WRITE_FILE'], $filename) . adm_back_link($this->u_action . '&amp;id=' . $lang_id . '&amp;action=details&amp;language_file=' . urlencode($selected_lang_file)), E_USER_WARNING);
 				}
 
 				if ($this->language_directory == 'email')
@@ -400,14 +399,14 @@ class acp_language
 
 					if ($method != 'ftp' && $method != 'ftp_fsock')
 					{
-						trigger_error($user->lang['INVALID_UPLOAD_METHOD'], E_USER_ERROR);
+						trigger_error(phpbb::$user->lang['INVALID_UPLOAD_METHOD'], E_USER_ERROR);
 					}
 
 					$transfer = new $method(request_var('host', ''), request_var('username', ''), request_var('password', ''), request_var('root_path', ''), request_var('port', ''), request_var('timeout', ''));
 
 					if (($result = $transfer->open_session()) !== true)
 					{
-						trigger_error($user->lang[$result] . adm_back_link($this->u_action . '&amp;action=details&amp;id=' . $lang_id . '&amp;language_file=' . urlencode($selected_lang_file)), E_USER_WARNING);
+						trigger_error(phpbb::$user->lang[$result] . adm_back_link($this->u_action . '&amp;action=details&amp;id=' . $lang_id . '&amp;language_file=' . urlencode($selected_lang_file)), E_USER_WARNING);
 					}
 
 					$transfer->rename($lang_path . $file, $lang_path . $file . '.bak');
@@ -419,7 +418,7 @@ class acp_language
 						$transfer->delete_file($lang_path . $file);
 						$transfer->rename($lang_path . $file . '.bak', $lang_path . $file);
 
-						trigger_error($user->lang['UPLOAD_FAILED'] . adm_back_link($this->u_action . '&amp;action=details&amp;id=' . $lang_id . '&amp;language_file=' . urlencode($selected_lang_file)), E_USER_WARNING);
+						trigger_error(phpbb::$user->lang['UPLOAD_FAILED'] . adm_back_link($this->u_action . '&amp;action=details&amp;id=' . $lang_id . '&amp;language_file=' . urlencode($selected_lang_file)), E_USER_WARNING);
 					}
 
 					$transfer->close_session();
@@ -432,7 +431,7 @@ class acp_language
 
 					add_log('admin', 'LOG_LANGUAGE_FILE_REPLACED', $file);
 
-					trigger_error($user->lang['UPLOAD_COMPLETED'] . adm_back_link($this->u_action . '&amp;action=details&amp;id=' . $lang_id . '&amp;language_file=' . urlencode($selected_lang_file)));
+					trigger_error(phpbb::$user->lang['UPLOAD_COMPLETED'] . adm_back_link($this->u_action . '&amp;action=details&amp;id=' . $lang_id . '&amp;language_file=' . urlencode($selected_lang_file)));
 				}
 
 				add_log('admin', 'LOG_LANGUAGE_FILE_SUBMITTED', $this->language_file);
@@ -444,7 +443,7 @@ class acp_language
 
 				if (!$lang_id)
 				{
-					trigger_error($user->lang['NO_LANG_ID'] . adm_back_link($this->u_action), E_USER_WARNING);
+					trigger_error(phpbb::$user->lang['NO_LANG_ID'] . adm_back_link($this->u_action), E_USER_WARNING);
 				}
 
 				$this->page_title = 'LANGUAGE_PACK_DETAILS';
@@ -477,28 +476,28 @@ class acp_language
 					case 'email':
 						if (!in_array($this->language_file, $email_files))
 						{
-							trigger_error($user->lang['WRONG_LANGUAGE_FILE'] . adm_back_link($this->u_action . '&amp;action=details&amp;id=' . $lang_id), E_USER_WARNING);
+							trigger_error(phpbb::$user->lang['WRONG_LANGUAGE_FILE'] . adm_back_link($this->u_action . '&amp;action=details&amp;id=' . $lang_id), E_USER_WARNING);
 						}
 					break;
 
 					case 'acp':
 						if (!in_array($this->language_file, $acp_files))
 						{
-							trigger_error($user->lang['WRONG_LANGUAGE_FILE'] . adm_back_link($this->u_action . '&amp;action=details&amp;id=' . $lang_id), E_USER_WARNING);
+							trigger_error(phpbb::$user->lang['WRONG_LANGUAGE_FILE'] . adm_back_link($this->u_action . '&amp;action=details&amp;id=' . $lang_id), E_USER_WARNING);
 						}
 					break;
 
 					case 'mods':
 						if (!in_array($this->language_file, $mods_files))
 						{
-							trigger_error($user->lang['WRONG_LANGUAGE_FILE'] . adm_back_link($this->u_action . '&amp;action=details&amp;id=' . $lang_id), E_USER_WARNING);
+							trigger_error(phpbb::$user->lang['WRONG_LANGUAGE_FILE'] . adm_back_link($this->u_action . '&amp;action=details&amp;id=' . $lang_id), E_USER_WARNING);
 						}
 					break;
 
 					default:
 						if (!in_array($this->language_file, $this->main_files))
 						{
-							trigger_error($user->lang['WRONG_LANGUAGE_FILE'] . adm_back_link($this->u_action . '&amp;action=details&amp;id=' . $lang_id), E_USER_WARNING);
+							trigger_error(phpbb::$user->lang['WRONG_LANGUAGE_FILE'] . adm_back_link($this->u_action . '&amp;action=details&amp;id=' . $lang_id), E_USER_WARNING);
 						}
 				}
 
@@ -608,7 +607,7 @@ class acp_language
 					{
 						$template->assign_vars(array(
 							'S_MISSING_FILES'		=> true,
-							'L_MISSING_FILES'		=> sprintf($user->lang['THOSE_MISSING_LANG_FILES'], $lang_entries['lang_local_name']),
+							'L_MISSING_FILES'		=> sprintf(phpbb::$user->lang['THOSE_MISSING_LANG_FILES'], $lang_entries['lang_local_name']),
 							'MISSING_FILES'			=> implode('<br />', $missing_files))
 						);
 					}
@@ -617,7 +616,7 @@ class acp_language
 					{
 						$template->assign_vars(array(
 							'S_MISSING_VARS'			=> true,
-							'L_MISSING_VARS_EXPLAIN'	=> sprintf($user->lang['THOSE_MISSING_LANG_VARIABLES'], $lang_entries['lang_local_name']),
+							'L_MISSING_VARS_EXPLAIN'	=> sprintf(phpbb::$user->lang['THOSE_MISSING_LANG_VARIABLES'], $lang_entries['lang_local_name']),
 							'U_MISSING_ACTION'			=> $this->u_action . "&amp;action=$action&amp;id=$lang_id")
 						);
 
@@ -638,7 +637,7 @@ class acp_language
 				}
 
 				// Main language files
-				$s_lang_options = '<option value="|common.' . PHP_EXT . '" class="sep">' . $user->lang['LANGUAGE_FILES'] . '</option>';
+				$s_lang_options = '<option value="|common.' . PHP_EXT . '" class="sep">' . phpbb::$user->lang['LANGUAGE_FILES'] . '</option>';
 				foreach ($this->main_files as $file)
 				{
 					if (strpos($file, 'help_') === 0)
@@ -653,7 +652,7 @@ class acp_language
 				}
 
 				// Help Files
-				$s_lang_options .= '<option value="|common.' . PHP_EXT . '" class="sep">' . $user->lang['HELP_FILES'] . '</option>';
+				$s_lang_options .= '<option value="|common.' . PHP_EXT . '" class="sep">' . phpbb::$user->lang['HELP_FILES'] . '</option>';
 				foreach ($this->main_files as $file)
 				{
 					if (strpos($file, 'help_') !== 0)
@@ -677,7 +676,7 @@ class acp_language
 						continue;
 					}
 
-					$s_lang_options .= '<option value="|common.' . PHP_EXT . '" class="sep">' . $user->lang[strtoupper($check) . '_FILES'] . '</option>';
+					$s_lang_options .= '<option value="|common.' . PHP_EXT . '" class="sep">' . phpbb::$user->lang[strtoupper($check) . '_FILES'] . '</option>';
 
 					foreach (${$check . '_files'} as $file)
 					{
@@ -699,7 +698,7 @@ class acp_language
 
 				if (!$file_from_store && !file_exists(PHPBB_ROOT_PATH . $no_store_filename))
 				{
-					$print_message = sprintf($user->lang['MISSING_LANGUAGE_FILE'], $no_store_filename);
+					$print_message = sprintf(phpbb::$user->lang['MISSING_LANGUAGE_FILE'], $no_store_filename);
 				}
 				else
 				{
@@ -764,7 +763,7 @@ class acp_language
 
 				if (!$lang_id)
 				{
-					trigger_error($user->lang['NO_LANG_ID'] . adm_back_link($this->u_action), E_USER_WARNING);
+					trigger_error(phpbb::$user->lang['NO_LANG_ID'] . adm_back_link($this->u_action), E_USER_WARNING);
 				}
 
 				$sql = 'SELECT *
@@ -776,7 +775,7 @@ class acp_language
 
 				if ($row['lang_iso'] == phpbb::$config['default_lang'])
 				{
-					trigger_error($user->lang['NO_REMOVE_DEFAULT_LANG'] . adm_back_link($this->u_action), E_USER_WARNING);
+					trigger_error(phpbb::$user->lang['NO_REMOVE_DEFAULT_LANG'] . adm_back_link($this->u_action), E_USER_WARNING);
 				}
 
 				$db->sql_query('DELETE FROM ' . LANG_TABLE . ' WHERE lang_id = ' . $lang_id);
@@ -800,7 +799,7 @@ class acp_language
 
 				add_log('admin', 'LOG_LANGUAGE_PACK_DELETED', $row['lang_english_name']);
 
-				trigger_error(sprintf($user->lang['LANGUAGE_PACK_DELETED'], $row['lang_english_name']) . adm_back_link($this->u_action));
+				trigger_error(sprintf(phpbb::$user->lang['LANGUAGE_PACK_DELETED'], $row['lang_english_name']) . adm_back_link($this->u_action));
 			break;
 
 			case 'install':
@@ -809,7 +808,7 @@ class acp_language
 
 				if (!$lang_iso || !file_exists(PHPBB_ROOT_PATH . "language/$lang_iso/iso.txt"))
 				{
-					trigger_error($user->lang['LANGUAGE_PACK_NOT_EXIST'] . adm_back_link($this->u_action), E_USER_WARNING);
+					trigger_error(phpbb::$user->lang['LANGUAGE_PACK_NOT_EXIST'] . adm_back_link($this->u_action), E_USER_WARNING);
 				}
 
 				$file = file(PHPBB_ROOT_PATH . "language/$lang_iso/iso.txt");
@@ -831,12 +830,12 @@ class acp_language
 
 				if ($row)
 				{
-					trigger_error($user->lang['LANGUAGE_PACK_ALREADY_INSTALLED'] . adm_back_link($this->u_action), E_USER_WARNING);
+					trigger_error(phpbb::$user->lang['LANGUAGE_PACK_ALREADY_INSTALLED'] . adm_back_link($this->u_action), E_USER_WARNING);
 				}
 
 				if (!$lang_pack['name'] || !$lang_pack['local_name'])
 				{
-					trigger_error($user->lang['INVALID_LANGUAGE_PACK'] . adm_back_link($this->u_action), E_USER_WARNING);
+					trigger_error(phpbb::$user->lang['INVALID_LANGUAGE_PACK'] . adm_back_link($this->u_action), E_USER_WARNING);
 				}
 
 				// Add language pack
@@ -949,7 +948,7 @@ class acp_language
 
 				add_log('admin', 'LOG_LANGUAGE_PACK_INSTALLED', $lang_pack['name']);
 
-				trigger_error(sprintf($user->lang['LANGUAGE_PACK_INSTALLED'], $lang_pack['name']) . adm_back_link($this->u_action));
+				trigger_error(sprintf(phpbb::$user->lang['LANGUAGE_PACK_INSTALLED'], $lang_pack['name']) . adm_back_link($this->u_action));
 
 			break;
 
@@ -957,7 +956,7 @@ class acp_language
 
 				if (!$lang_id)
 				{
-					trigger_error($user->lang['NO_LANG_ID'] . adm_back_link($this->u_action), E_USER_WARNING);
+					trigger_error(phpbb::$user->lang['NO_LANG_ID'] . adm_back_link($this->u_action), E_USER_WARNING);
 				}
 
 				$sql = 'SELECT *

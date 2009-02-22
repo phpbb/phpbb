@@ -439,8 +439,6 @@ class diff3 extends diff
 	*/
 	function merged_output($label1 = 'CURRENT_FILE', $label2 = 'NEW_FILE', $label_sep = 'DIFF_SEP_EXPLAIN', $get_conflicts = false, $merge_new = false)
 	{
-		global $user;
-
 		if ($get_conflicts)
 		{
 			foreach ($this->_edits as $edit)
@@ -454,9 +452,9 @@ class diff3 extends diff
 			return $this->_conflicting_blocks;
 		}
 
-		$label1 = (!empty($user->lang[$label1])) ? $user->lang[$label1] : $label1;
-		$label2 = (!empty($user->lang[$label2])) ? $user->lang[$label2] : $label2;
-		$label_sep = (!empty($user->lang[$label_sep])) ? $user->lang[$label_sep] : $label_sep;
+		$label1 = (!empty(phpbb::$user->lang[$label1])) ? phpbb::$user->lang[$label1] : $label1;
+		$label2 = (!empty(phpbb::$user->lang[$label2])) ? phpbb::$user->lang[$label2] : $label2;
+		$label_sep = (!empty(phpbb::$user->lang[$label_sep])) ? phpbb::$user->lang[$label_sep] : $label_sep;
 
 		$lines = array();
 

@@ -92,6 +92,26 @@ class phpbb_user extends phpbb_session
 	public $img_array = array();
 
 	/**
+	* @var bool Is true if the user is a logged in registered user
+	*/
+	public $is_registered = false;
+
+	/**
+	* @var bool Is true if the user is logged in and a search engine/bot
+	*/
+	public $is_bot = false;
+
+	/**
+	* @var bool Is true if user is founder
+	*/
+	public $is_founder = false;
+
+	/**
+	* @var bool Is true if user is anonymous/guest
+	*/
+	public $is_guest = true;
+
+	/**
 	* Ablility to add new option (id 7). Enabled user options is stored in $data['user_options'].
 	* @var array user options defining their possibilities to view flash, images, etc. User options only supports set/unset (true/false)
 	*/
@@ -539,7 +559,7 @@ class phpbb_user extends phpbb_session
 
 		// Does the user need to change their password? If so, redirect to the
 		// ucp profile reg_details page ... of course do not redirect if we're already in the ucp
-		if (!defined('IN_ADMIN') && !defined('ADMIN_START') && phpbb::$config['chg_passforce'] && $this->data['is_registered'] && phpbb::$acl->acl_get('u_chgpasswd') && $this->data['user_passchg'] < time() - (phpbb::$config['chg_passforce'] * 86400))
+		if (!defined('IN_ADMIN') && !defined('ADMIN_START') && phpbb::$config['chg_passforce'] && $this->is_registered && phpbb::$acl->acl_get('u_chgpasswd') && $this->data['user_passchg'] < time() - (phpbb::$config['chg_passforce'] * 86400))
 		{
 			if (strpos($this->page['query_string'], 'mode=reg_details') === false && $this->page['page_name'] != 'ucp.' . PHP_EXT)
 			{

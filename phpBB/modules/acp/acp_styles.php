@@ -31,8 +31,6 @@ class acp_styles
 
 	function main($id, $mode)
 	{
-		global $db, $user, $auth, $template;
-
 		// Hardcoded template bitfield to add for new templates
 		$bitfield = new bitfield();
 		$bitfield->set(0);
@@ -44,7 +42,7 @@ class acp_styles
 		define('TEMPLATE_BITFIELD', $bitfield->get_base64());
 		unset($bitfield);
 
-		$user->add_lang('acp/styles');
+		phpbb::$user->add_lang('acp/styles');
 
 		$this->tpl_name = 'acp_styles';
 		$this->page_title = 'ACP_CAT_STYLES';
@@ -194,7 +192,7 @@ parse_css_file = {PARSE_CSS_FILE}
 
 						if ($style_id == phpbb::$config['default_style'])
 						{
-							trigger_error($user->lang['DEACTIVATE_DEFAULT'] . adm_back_link($this->u_action), E_USER_WARNING);
+							trigger_error(phpbb::$user->lang['DEACTIVATE_DEFAULT'] . adm_back_link($this->u_action), E_USER_WARNING);
 						}
 
 						$sql = 'UPDATE ' . STYLES_TABLE . '
@@ -237,18 +235,18 @@ parse_css_file = {PARSE_CSS_FILE}
 
 						if (!$template_row)
 						{
-							trigger_error($user->lang['NO_TEMPLATE'] . adm_back_link($this->u_action), E_USER_WARNING);
+							trigger_error(phpbb::$user->lang['NO_TEMPLATE'] . adm_back_link($this->u_action), E_USER_WARNING);
 						}
 
 						if (confirm_box(true))
 						{
 							$this->clear_template_cache($template_row);
 
-							trigger_error($user->lang['TEMPLATE_CACHE_CLEARED'] . adm_back_link($this->u_action));
+							trigger_error(phpbb::$user->lang['TEMPLATE_CACHE_CLEARED'] . adm_back_link($this->u_action));
 						}
 						else
 						{
-							confirm_box(false, $user->lang['CONFIRM_TEMPLATE_CLEAR_CACHE'], build_hidden_fields(array(
+							confirm_box(false, phpbb::$user->lang['CONFIRM_TEMPLATE_CLEAR_CACHE'], build_hidden_fields(array(
 								'i'			=> $id,
 								'mode'		=> $mode,
 								'action'	=> $action,
@@ -278,12 +276,12 @@ parse_css_file = {PARSE_CSS_FILE}
 
 						if (!$theme_row)
 						{
-							trigger_error($user->lang['NO_THEME'] . adm_back_link($this->u_action), E_USER_WARNING);
+							trigger_error(phpbb::$user->lang['NO_THEME'] . adm_back_link($this->u_action), E_USER_WARNING);
 						}
 
 						if (!$theme_row['theme_storedb'])
 						{
-							trigger_error($user->lang['THEME_ERR_REFRESH_FS'] . adm_back_link($this->u_action), E_USER_WARNING);
+							trigger_error(phpbb::$user->lang['THEME_ERR_REFRESH_FS'] . adm_back_link($this->u_action), E_USER_WARNING);
 						}
 
 						if (confirm_box(true))
@@ -303,12 +301,12 @@ parse_css_file = {PARSE_CSS_FILE}
 								phpbb::$acm->destroy_sql(STYLES_THEME_TABLE);
 
 								add_log('admin', 'LOG_THEME_REFRESHED', $theme_row['theme_name']);
-								trigger_error($user->lang['THEME_REFRESHED'] . adm_back_link($this->u_action));
+								trigger_error(phpbb::$user->lang['THEME_REFRESHED'] . adm_back_link($this->u_action));
 							}
 						}
 						else
 						{
-							confirm_box(false, $user->lang['CONFIRM_THEME_REFRESH'], build_hidden_fields(array(
+							confirm_box(false, phpbb::$user->lang['CONFIRM_THEME_REFRESH'], build_hidden_fields(array(
 								'i'			=> $id,
 								'mode'		=> $mode,
 								'action'	=> $action,
@@ -336,7 +334,7 @@ parse_css_file = {PARSE_CSS_FILE}
 
 						if (!$imageset_row)
 						{
-							trigger_error($user->lang['NO_IMAGESET'] . adm_back_link($this->u_action), E_USER_WARNING);
+							trigger_error(phpbb::$user->lang['NO_IMAGESET'] . adm_back_link($this->u_action), E_USER_WARNING);
 						}
 
 						if (confirm_box(true))
@@ -450,11 +448,11 @@ parse_css_file = {PARSE_CSS_FILE}
 							phpbb::$acm->destroy_sql(STYLES_IMAGESET_DATA_TABLE);
 
 							add_log('admin', 'LOG_IMAGESET_REFRESHED', $imageset_row['imageset_name']);
-							trigger_error($user->lang['IMAGESET_REFRESHED'] . adm_back_link($this->u_action));
+							trigger_error(phpbb::$user->lang['IMAGESET_REFRESHED'] . adm_back_link($this->u_action));
 						}
 						else
 						{
-							confirm_box(false, $user->lang['CONFIRM_IMAGESET_REFRESH'], build_hidden_fields(array(
+							confirm_box(false, phpbb::$user->lang['CONFIRM_IMAGESET_REFRESH'], build_hidden_fields(array(
 								'i'			=> $id,
 								'mode'		=> $mode,
 								'action'	=> $action,
@@ -474,8 +472,6 @@ parse_css_file = {PARSE_CSS_FILE}
 	*/
 	function frontend($mode, $options, $actions)
 	{
-		global $user, $template, $db;
-
 		$sql_from = '';
 		$style_count = array();
 
@@ -518,13 +514,13 @@ parse_css_file = {PARSE_CSS_FILE}
 			'S_FRONTEND'		=> true,
 			'S_STYLE'			=> ($mode == 'style') ? true : false,
 
-			'L_TITLE'			=> $user->lang[$this->page_title],
-			'L_EXPLAIN'			=> $user->lang[$this->page_title . '_EXPLAIN'],
-			'L_NAME'			=> $user->lang[$l_prefix . '_NAME'],
-			'L_INSTALLED'		=> $user->lang['INSTALLED_' . $l_prefix],
-			'L_UNINSTALLED'		=> $user->lang['UNINSTALLED_' . $l_prefix],
-			'L_NO_UNINSTALLED'	=> $user->lang['NO_UNINSTALLED_' . $l_prefix],
-			'L_CREATE'			=> $user->lang['CREATE_' . $l_prefix],
+			'L_TITLE'			=> phpbb::$user->lang[$this->page_title],
+			'L_EXPLAIN'			=> phpbb::$user->lang[$this->page_title . '_EXPLAIN'],
+			'L_NAME'			=> phpbb::$user->lang[$l_prefix . '_NAME'],
+			'L_INSTALLED'		=> phpbb::$user->lang['INSTALLED_' . $l_prefix],
+			'L_UNINSTALLED'		=> phpbb::$user->lang['UNINSTALLED_' . $l_prefix],
+			'L_NO_UNINSTALLED'	=> phpbb::$user->lang['NO_UNINSTALLED_' . $l_prefix],
+			'L_CREATE'			=> phpbb::$user->lang['CREATE_' . $l_prefix],
 
 			'U_ACTION'			=> $this->u_action,
 			)
@@ -536,7 +532,7 @@ parse_css_file = {PARSE_CSS_FILE}
 
 		$installed = array();
 
-		$basis_options = '<option class="sep" value="">' . $user->lang['OPTIONAL_BASIS'] . '</option>';
+		$basis_options = '<option class="sep" value="">' . phpbb::$user->lang['OPTIONAL_BASIS'] . '</option>';
 		while ($row = $db->sql_fetchrow($result))
 		{
 			$installed[] = $row[$mode . '_name'];
@@ -547,20 +543,20 @@ parse_css_file = {PARSE_CSS_FILE}
 			$s_options = array();
 			foreach ($options as $option)
 			{
-				$s_options[] = '<a href="' . $this->u_action . "&amp;action=$option&amp;id=" . $row[$mode . '_id'] . '">' . $user->lang[strtoupper($option)] . '</a>';
+				$s_options[] = '<a href="' . $this->u_action . "&amp;action=$option&amp;id=" . $row[$mode . '_id'] . '">' . phpbb::$user->lang[strtoupper($option)] . '</a>';
 			}
 
 			$s_actions = array();
 			foreach ($actions as $option)
 			{
-				$s_actions[] = '<a href="' . $this->u_action . "&amp;action=$option&amp;id=" . $row[$mode . '_id'] . '">' . $user->lang[strtoupper($option)] . '</a>';
+				$s_actions[] = '<a href="' . $this->u_action . "&amp;action=$option&amp;id=" . $row[$mode . '_id'] . '">' . phpbb::$user->lang[strtoupper($option)] . '</a>';
 			}
 
 			$template->assign_block_vars('installed', array(
 				'S_DEFAULT_STYLE'		=> ($mode == 'style' && $row['style_id'] == phpbb::$config['default_style']) ? true : false,
 				'U_EDIT'				=> $this->u_action . '&amp;action=' . (($mode == 'style') ? 'details' : 'edit') . '&amp;id=' . $row[$mode . '_id'],
 				'U_STYLE_ACT_DEACT'		=> $this->u_action . '&amp;action=' . $stylevis . '&amp;id=' . $row[$mode . '_id'],
-				'L_STYLE_ACT_DEACT'		=> $user->lang['STYLE_' . strtoupper($stylevis)],
+				'L_STYLE_ACT_DEACT'		=> phpbb::$user->lang['STYLE_' . strtoupper($stylevis)],
 				'S_OPTIONS'				=> implode(' | ', $s_options),
 				'S_ACTIONS'				=> implode(' | ', $s_actions),
 				'U_PREVIEW'				=> ($mode == 'style') ? append_sid('index', "style=" . $row[$mode . '_id']) : '',
@@ -631,11 +627,11 @@ parse_css_file = {PARSE_CSS_FILE}
 	*/
 	function edit_template($template_id)
 	{
-		global $db, $user, $template, $safe_mode;
+		global $safe_mode;
 
 		if (defined('PHPBB_DISABLE_ACP_EDITOR'))
 		{
-			trigger_error($user->lang['EDITOR_DISABLED'] . adm_back_link($this->u_action));
+			trigger_error(phpbb::$user->lang['EDITOR_DISABLED'] . adm_back_link($this->u_action));
 		}
 
 		$this->page_title = 'EDIT_TEMPLATE';
@@ -661,12 +657,12 @@ parse_css_file = {PARSE_CSS_FILE}
 
 		if (!$template_info)
 		{
-			trigger_error($user->lang['NO_TEMPLATE'] . adm_back_link($this->u_action), E_USER_WARNING);
+			trigger_error(phpbb::$user->lang['NO_TEMPLATE'] . adm_back_link($this->u_action), E_USER_WARNING);
 		}
 
 		if ($save_changes && !check_form_key('acp_styles'))
 		{
-			trigger_error($user->lang['FORM_INVALID'] . adm_back_link($this->u_action), E_USER_WARNING);
+			trigger_error(phpbb::$user->lang['FORM_INVALID'] . adm_back_link($this->u_action), E_USER_WARNING);
 		}
 		else if (!$save_changes)
 		{
@@ -684,7 +680,7 @@ parse_css_file = {PARSE_CSS_FILE}
 			//if (!$safe_mode && !$template_info['template_storedb'] && file_exists($file) && @is_writable($file))
 			if (!($fp = @fopen($file, 'wb')))
 			{
-				trigger_error($user->lang['NO_TEMPLATE'] . adm_back_link($this->u_action), E_USER_WARNING);
+				trigger_error(phpbb::$user->lang['NO_TEMPLATE'] . adm_back_link($this->u_action), E_USER_WARNING);
 			}
 			fwrite($fp, $template_data);
 			fclose($fp);
@@ -695,7 +691,7 @@ parse_css_file = {PARSE_CSS_FILE}
 			phpbb::$acm->destroy_sql(STYLES_TABLE);
 
 			add_log('admin', 'LOG_TEMPLATE_EDIT', $template_info['template_name'], $template_file);
-			trigger_error($user->lang['TEMPLATE_FILE_UPDATED'] . $additional . adm_back_link($this->u_action . "&amp;action=edit&amp;id=$template_id&amp;text_rows=$text_rows&amp;template_file=$template_file"));
+			trigger_error(phpbb::$user->lang['TEMPLATE_FILE_UPDATED'] . $additional . adm_back_link($this->u_action . "&amp;action=edit&amp;id=$template_id&amp;text_rows=$text_rows&amp;template_file=$template_file"));
 		}
 
 		// Generate a category array containing template filenames
@@ -708,7 +704,7 @@ parse_css_file = {PARSE_CSS_FILE}
 		{
 			if (!file_exists($template_path . "/$template_file") || !($template_data = file_get_contents($template_path . "/$template_file")))
 			{
-				trigger_error($user->lang['NO_TEMPLATE'] . adm_back_link($this->u_action), E_USER_WARNING);
+				trigger_error(phpbb::$user->lang['NO_TEMPLATE'] . adm_back_link($this->u_action), E_USER_WARNING);
 			}
 		}
 
@@ -778,14 +774,14 @@ parse_css_file = {PARSE_CSS_FILE}
 			'U_ACTION'			=> $this->u_action . "&amp;action=edit&amp;id=$template_id&amp;text_rows=$text_rows",
 			'U_BACK'			=> $this->u_action,
 
-			'L_EDIT'			=> $user->lang['EDIT_TEMPLATE'],
-			'L_EDIT_EXPLAIN'	=> $user->lang['EDIT_TEMPLATE_EXPLAIN'],
-			'L_EDITOR'			=> $user->lang['TEMPLATE_EDITOR'],
-			'L_EDITOR_HEIGHT'	=> $user->lang['TEMPLATE_EDITOR_HEIGHT'],
-			'L_FILE'			=> $user->lang['TEMPLATE_FILE'],
-			'L_SELECT'			=> $user->lang['SELECT_TEMPLATE'],
-			'L_SELECTED'		=> $user->lang['SELECTED_TEMPLATE'],
-			'L_SELECTED_FILE'	=> $user->lang['SELECTED_TEMPLATE_FILE'],
+			'L_EDIT'			=> phpbb::$user->lang['EDIT_TEMPLATE'],
+			'L_EDIT_EXPLAIN'	=> phpbb::$user->lang['EDIT_TEMPLATE_EXPLAIN'],
+			'L_EDITOR'			=> phpbb::$user->lang['TEMPLATE_EDITOR'],
+			'L_EDITOR_HEIGHT'	=> phpbb::$user->lang['TEMPLATE_EDITOR_HEIGHT'],
+			'L_FILE'			=> phpbb::$user->lang['TEMPLATE_FILE'],
+			'L_SELECT'			=> phpbb::$user->lang['SELECT_TEMPLATE'],
+			'L_SELECTED'		=> phpbb::$user->lang['SELECTED_TEMPLATE'],
+			'L_SELECTED_FILE'	=> phpbb::$user->lang['SELECTED_TEMPLATE_FILE'],
 
 			'SELECTED_TEMPLATE'	=> $template_info['template_name'],
 			'TEMPLATE_FILE'		=> $template_file,
@@ -801,8 +797,6 @@ parse_css_file = {PARSE_CSS_FILE}
 	*/
 	function template_cache($template_id)
 	{
-		global $db, $user, $template;
-
 		$source		= str_replace('/', '.', request_var('source', ''));
 		$file_ary	= array_diff(request_var('delete', array('')), array(''));
 		$submit		= phpbb_request::is_set_post('submit');
@@ -816,14 +810,14 @@ parse_css_file = {PARSE_CSS_FILE}
 
 		if (!$template_row)
 		{
-			trigger_error($user->lang['NO_TEMPLATE'] . adm_back_link($this->u_action), E_USER_WARNING);
+			trigger_error(phpbb::$user->lang['NO_TEMPLATE'] . adm_back_link($this->u_action), E_USER_WARNING);
 		}
 
 		// User wants to delete one or more files ...
 		if ($submit && $file_ary)
 		{
 			$this->clear_template_cache($template_row, $file_ary);
-			trigger_error($user->lang['TEMPLATE_CACHE_CLEARED'] . adm_back_link($this->u_action . "&amp;action=cache&amp;id=$template_id"));
+			trigger_error(phpbb::$user->lang['TEMPLATE_CACHE_CLEARED'] . adm_back_link($this->u_action . "&amp;action=cache&amp;id=$template_id"));
 		}
 
 		$cache_prefix = 'tpl_' . str_replace('_', '-', $template_row['template_path']);
@@ -833,7 +827,7 @@ parse_css_file = {PARSE_CSS_FILE}
 		// on larger source files ...
 		if ($source && file_exists(PHPBB_ROOT_PATH . "cache/{$cache_prefix}_$source.html." . PHP_EXT))
 		{
-			page_header($user->lang['TEMPLATE_CACHE']);
+			page_header(phpbb::$user->lang['TEMPLATE_CACHE']);
 
 			$template->set_filenames(array(
 				'body'	=> 'viewsource.html')
@@ -897,10 +891,10 @@ parse_css_file = {PARSE_CSS_FILE}
 			$template->assign_block_vars('file', array(
 				'U_VIEWSOURCE'	=> $this->u_action . "&amp;action=cache&amp;id=$template_id&amp;source=$file",
 
-				'CACHED'		=> $user->format_date(filemtime(PHPBB_ROOT_PATH . "cache/$filename")),
+				'CACHED'		=> phpbb::$user->format_date(filemtime(PHPBB_ROOT_PATH . "cache/$filename")),
 				'FILENAME'		=> $file,
-				'FILESIZE'		=> sprintf('%.1f ' . $user->lang['KIB'], filesize(PHPBB_ROOT_PATH . "cache/$filename") / 1024),
-				'MODIFIED'		=> $user->format_date(filemtime(PHPBB_ROOT_PATH . "styles/{$template_row['template_path']}/template/$tpl_file.html")))
+				'FILESIZE'		=> sprintf('%.1f ' . phpbb::$user->lang['KIB'], filesize(PHPBB_ROOT_PATH . "cache/$filename") / 1024),
+				'MODIFIED'		=> phpbb::$user->format_date(filemtime(PHPBB_ROOT_PATH . "styles/{$template_row['template_path']}/template/$tpl_file.html")))
 			);
 		}
 
@@ -920,7 +914,7 @@ parse_css_file = {PARSE_CSS_FILE}
 	*/
 	function edit_theme($theme_id)
 	{
-		global $db, $user, $template, $safe_mode;
+		global $safe_mode;
 
 		$this->page_title = 'EDIT_THEME';
 
@@ -943,7 +937,7 @@ parse_css_file = {PARSE_CSS_FILE}
 
 		if (!($theme_info = $db->sql_fetchrow($result)))
 		{
-			trigger_error($user->lang['NO_THEME'] . adm_back_link($this->u_action), E_USER_WARNING);
+			trigger_error(phpbb::$user->lang['NO_THEME'] . adm_back_link($this->u_action), E_USER_WARNING);
 		}
 		$db->sql_freeresult($result);
 
@@ -956,14 +950,14 @@ parse_css_file = {PARSE_CSS_FILE}
 			// Get the filesystem location of the current file
 			$file = PHPBB_ROOT_PATH . "styles/{$theme_info['theme_path']}/theme/$theme_file";
 			$additional = '';
-			$message = $user->lang['THEME_UPDATED'];
+			$message = phpbb::$user->lang['THEME_UPDATED'];
 
 			// If the theme is stored on the filesystem try to write the file else store it in the database
 			if (!$safe_mode && !$theme_info['theme_storedb'] && file_exists($file) && @is_writable($file))
 			{
 				if (!($fp = @fopen($file, 'wb')))
 				{
-					trigger_error($user->lang['NO_THEME'] . adm_back_link($this->u_action), E_USER_WARNING);
+					trigger_error(phpbb::$user->lang['NO_THEME'] . adm_back_link($this->u_action), E_USER_WARNING);
 				}
 				fwrite($fp, $theme_data);
 				fclose($fp);
@@ -987,7 +981,7 @@ parse_css_file = {PARSE_CSS_FILE}
 				if (!$theme_info['theme_storedb'])
 				{
 					add_log('admin', 'LOG_THEME_EDIT_DETAILS', $theme_info['theme_name']);
-					$message .= '<br />' . $user->lang['EDIT_THEME_STORED_DB'];
+					$message .= '<br />' . phpbb::$user->lang['EDIT_THEME_STORED_DB'];
 				}
 			}
 			phpbb::$acm->destroy_sql(STYLES_THEME_TABLE);
@@ -1007,7 +1001,7 @@ parse_css_file = {PARSE_CSS_FILE}
 			{
 				if (!file_exists($theme_path . "/$theme_file") || !($theme_data = file_get_contents($theme_path . "/$theme_file")))
 				{
-					trigger_error($user->lang['NO_THEME'] . adm_back_link($this->u_action), E_USER_WARNING);
+					trigger_error(phpbb::$user->lang['NO_THEME'] . adm_back_link($this->u_action), E_USER_WARNING);
 				}
 			}
 		}
@@ -1083,14 +1077,14 @@ parse_css_file = {PARSE_CSS_FILE}
 			'U_ACTION'			=> $this->u_action . "&amp;action=edit&amp;id=$theme_id&amp;text_rows=$text_rows",
 			'U_BACK'			=> $this->u_action,
 
-			'L_EDIT'			=> $user->lang['EDIT_THEME'],
-			'L_EDIT_EXPLAIN'	=> $user->lang['EDIT_THEME_EXPLAIN'],
-			'L_EDITOR'			=> $user->lang['THEME_EDITOR'],
-			'L_EDITOR_HEIGHT'	=> $user->lang['THEME_EDITOR_HEIGHT'],
-			'L_FILE'			=> $user->lang['THEME_FILE'],
-			'L_SELECT'			=> $user->lang['SELECT_THEME'],
-			'L_SELECTED'		=> $user->lang['SELECTED_THEME'],
-			'L_SELECTED_FILE'	=> $user->lang['SELECTED_THEME_FILE'],
+			'L_EDIT'			=> phpbb::$user->lang['EDIT_THEME'],
+			'L_EDIT_EXPLAIN'	=> phpbb::$user->lang['EDIT_THEME_EXPLAIN'],
+			'L_EDITOR'			=> phpbb::$user->lang['THEME_EDITOR'],
+			'L_EDITOR_HEIGHT'	=> phpbb::$user->lang['THEME_EDITOR_HEIGHT'],
+			'L_FILE'			=> phpbb::$user->lang['THEME_FILE'],
+			'L_SELECT'			=> phpbb::$user->lang['SELECT_THEME'],
+			'L_SELECTED'		=> phpbb::$user->lang['SELECTED_THEME'],
+			'L_SELECTED_FILE'	=> phpbb::$user->lang['SELECTED_THEME_FILE'],
 
 			'SELECTED_TEMPLATE'	=> $theme_info['theme_name'],
 			'TEMPLATE_FILE'		=> $theme_file,
@@ -1107,8 +1101,6 @@ parse_css_file = {PARSE_CSS_FILE}
 	*/
 	function edit_imageset($imageset_id)
 	{
-		global $db, $user, $template;
-
 		$this->page_title = 'EDIT_IMAGESET';
 
 		$update		= phpbb_request::is_set_post('update');
@@ -1157,7 +1149,7 @@ parse_css_file = {PARSE_CSS_FILE}
 
 			if (!$imageset_row)
 			{
-				trigger_error($user->lang['NO_IMAGESET'] . adm_back_link($this->u_action), E_USER_WARNING);
+				trigger_error(phpbb::$user->lang['NO_IMAGESET'] . adm_back_link($this->u_action), E_USER_WARNING);
 			}
 
 			// Check to see whether the selected image exists in the table
@@ -1184,7 +1176,7 @@ parse_css_file = {PARSE_CSS_FILE}
 
 					if ($imgpath && !file_exists(PHPBB_ROOT_PATH . "styles/$imageset_path/imageset/$imgpath"))
 					{
-						trigger_error($user->lang['NO_IMAGE_ERROR'] . adm_back_link($this->u_action), E_USER_WARNING);
+						trigger_error(phpbb::$user->lang['NO_IMAGE_ERROR'] . adm_back_link($this->u_action), E_USER_WARNING);
 					}
 
 					if ($imgsize && $imgpath)
@@ -1291,7 +1283,7 @@ parse_css_file = {PARSE_CSS_FILE}
 		foreach ($this->imageset_keys as $category => $img_ary)
 		{
 			$template->assign_block_vars('category', array(
-				'NAME'			=> $user->lang['IMG_CAT_' . strtoupper($category)]
+				'NAME'			=> phpbb::$user->lang['IMG_CAT_' . strtoupper($category)]
 			));
 
 			foreach ($img_ary as $img)
@@ -1303,7 +1295,7 @@ parse_css_file = {PARSE_CSS_FILE}
 						$template->assign_block_vars('category.images', array(
 							'SELECTED'			=> ($img == $imgname && $language == $imgnamelang),
 							'VALUE'				=> $img . '-' . $language,
-							'TEXT'				=> $user->lang['IMG_' . strtoupper($img)] . ' [ ' . $language . ' ]'
+							'TEXT'				=> phpbb::$user->lang['IMG_' . strtoupper($img)] . ' [ ' . $language . ' ]'
 						));
 					}
 				}
@@ -1312,7 +1304,7 @@ parse_css_file = {PARSE_CSS_FILE}
 					$template->assign_block_vars('category.images', array(
 						'SELECTED'			=> ($img == $imgname),
 						'VALUE'				=> $img,
-						'TEXT'				=> (($category == 'custom') ? $img : $user->lang['IMG_' . strtoupper($img)])
+						'TEXT'				=> (($category == 'custom') ? $img : phpbb::$user->lang['IMG_' . strtoupper($img)])
 					));
 				}
 			}
@@ -1355,8 +1347,8 @@ parse_css_file = {PARSE_CSS_FILE}
 
 		$template->assign_vars(array(
 			'S_EDIT_IMAGESET'	=> true,
-			'L_TITLE'			=> $user->lang[$this->page_title],
-			'L_EXPLAIN'			=> $user->lang[$this->page_title . '_EXPLAIN'],
+			'L_TITLE'			=> phpbb::$user->lang[$this->page_title],
+			'L_EXPLAIN'			=> phpbb::$user->lang[$this->page_title . '_EXPLAIN'],
 			'IMAGE_OPTIONS'		=> $img_options,
 			'IMAGE_SIZE'		=> $image_width,
 			'IMAGE_HEIGHT'		=> $image_height,
@@ -1376,8 +1368,6 @@ parse_css_file = {PARSE_CSS_FILE}
 	*/
 	function remove($mode, $style_id)
 	{
-		global $db, $template, $user;
-
 		$new_id = request_var('new_id', 0);
 		$update = phpbb_request::is_set_post('update');
 		$sql_where = '';
@@ -1417,7 +1407,7 @@ parse_css_file = {PARSE_CSS_FILE}
 
 		if (!$style_row)
 		{
-			trigger_error($user->lang['NO_' . $l_prefix] . adm_back_link($this->u_action), E_USER_WARNING);
+			trigger_error(phpbb::$user->lang['NO_' . $l_prefix] . adm_back_link($this->u_action), E_USER_WARNING);
 		}
 
 		$sql = "SELECT {$mode}_id, {$mode}_name
@@ -1439,7 +1429,7 @@ parse_css_file = {PARSE_CSS_FILE}
 		}
 		else
 		{
-			trigger_error($user->lang['ONLY_' . $l_prefix] . adm_back_link($this->u_action), E_USER_WARNING);
+			trigger_error(phpbb::$user->lang['ONLY_' . $l_prefix] . adm_back_link($this->u_action), E_USER_WARNING);
 		}
 		$db->sql_freeresult($result);
 
@@ -1484,7 +1474,7 @@ parse_css_file = {PARSE_CSS_FILE}
 
 			add_log('admin', 'LOG_' . $l_prefix . '_DELETE', $style_row[$mode . '_name']);
 			$message = ($mode != 'style') ? $l_prefix . '_DELETED_FS' : $l_prefix . '_DELETED';
-			trigger_error($user->lang[$message] . adm_back_link($this->u_action));
+			trigger_error(phpbb::$user->lang[$message] . adm_back_link($this->u_action));
 		}
 
 		$this->page_title = 'DELETE_' . $l_prefix;
@@ -1493,11 +1483,11 @@ parse_css_file = {PARSE_CSS_FILE}
 			'S_DELETE'			=> true,
 			'S_REPLACE_OPTIONS'	=> $s_options,
 
-			'L_TITLE'			=> $user->lang[$this->page_title],
-			'L_EXPLAIN'			=> $user->lang[$this->page_title . '_EXPLAIN'],
-			'L_NAME'			=> $user->lang[$l_prefix . '_NAME'],
-			'L_REPLACE'			=> $user->lang['REPLACE_' . $l_prefix],
-			'L_REPLACE_EXPLAIN'	=> $user->lang['REPLACE_' . $l_prefix . '_EXPLAIN'],
+			'L_TITLE'			=> phpbb::$user->lang[$this->page_title],
+			'L_EXPLAIN'			=> phpbb::$user->lang[$this->page_title . '_EXPLAIN'],
+			'L_NAME'			=> phpbb::$user->lang[$l_prefix . '_NAME'],
+			'L_REPLACE'			=> phpbb::$user->lang['REPLACE_' . $l_prefix],
+			'L_REPLACE_EXPLAIN'	=> phpbb::$user->lang['REPLACE_' . $l_prefix . '_EXPLAIN'],
 
 			'U_ACTION'		=> $this->u_action . "&amp;action=delete&amp;id=$style_id",
 			'U_BACK'		=> $this->u_action,
@@ -1512,8 +1502,6 @@ parse_css_file = {PARSE_CSS_FILE}
 	*/
 	function export($mode, $style_id)
 	{
-		global $db, $template, $user;
-
 		$update = phpbb_request::is_set_post('update');
 
 		$inc_template = request_var('inc_template', 0);
@@ -1546,7 +1534,7 @@ parse_css_file = {PARSE_CSS_FILE}
 			case 'style':
 				if ($update && ($inc_template + $inc_theme + $inc_imageset) < 1)
 				{
-					$error[] = $user->lang['STYLE_ERR_MORE_ELEMENTS'];
+					$error[] = phpbb::$user->lang['STYLE_ERR_MORE_ELEMENTS'];
 				}
 
 				$name = 'style_name';
@@ -1603,7 +1591,7 @@ parse_css_file = {PARSE_CSS_FILE}
 
 			if (!$style_row)
 			{
-				trigger_error($user->lang['NO_' . $l_prefix] . adm_back_link($this->u_action), E_USER_WARNING);
+				trigger_error(phpbb::$user->lang['NO_' . $l_prefix] . adm_back_link($this->u_action), E_USER_WARNING);
 			}
 
 			$var_ary = array('style_id', 'style_name', 'style_copyright', 'template_id', 'template_name', 'template_path', 'template_copyright', 'bbcode_bitfield', 'theme_id', 'theme_name', 'theme_path', 'theme_copyright', 'theme_storedb', 'theme_mtime', 'theme_data', 'imageset_id', 'imageset_name', 'imageset_path', 'imageset_copyright');
@@ -1810,7 +1798,7 @@ parse_css_file = {PARSE_CSS_FILE}
 				break;
 
 				default:
-					$error[] = $user->lang[$l_prefix . '_ERR_ARCHIVE'];
+					$error[] = phpbb::$user->lang[$l_prefix . '_ERR_ARCHIVE'];
 			}
 
 			if (!sizeof($error))
@@ -1862,7 +1850,7 @@ parse_css_file = {PARSE_CSS_FILE}
 					exit;
 				}
 
-				trigger_error(sprintf($user->lang[$l_prefix . '_EXPORTED'], "store/$path$ext") . adm_back_link($this->u_action));
+				trigger_error(sprintf(phpbb::$user->lang[$l_prefix . '_EXPORTED'], "store/$path$ext") . adm_back_link($this->u_action));
 			}
 		}
 
@@ -1875,7 +1863,7 @@ parse_css_file = {PARSE_CSS_FILE}
 
 		if (!$style_row)
 		{
-			trigger_error($user->lang['NO_' . $l_prefix] . adm_back_link($this->u_action), E_USER_WARNING);
+			trigger_error(phpbb::$user->lang['NO_' . $l_prefix] . adm_back_link($this->u_action), E_USER_WARNING);
 		}
 
 		$this->page_title = $l_prefix . '_EXPORT';
@@ -1891,9 +1879,9 @@ parse_css_file = {PARSE_CSS_FILE}
 			'S_ERROR_MSG'	=> (sizeof($error)) ? true : false,
 			'S_STYLE'		=> ($mode == 'style') ? true : false,
 
-			'L_TITLE'		=> $user->lang[$this->page_title],
-			'L_EXPLAIN'		=> $user->lang[$this->page_title . '_EXPLAIN'],
-			'L_NAME'		=> $user->lang[$l_prefix . '_NAME'],
+			'L_TITLE'		=> phpbb::$user->lang[$this->page_title],
+			'L_EXPLAIN'		=> phpbb::$user->lang[$this->page_title . '_EXPLAIN'],
+			'L_NAME'		=> phpbb::$user->lang[$l_prefix . '_NAME'],
 
 			'U_ACTION'		=> $this->u_action . '&amp;action=export&amp;id=' . $style_id,
 			'U_BACK'		=> $this->u_action,
@@ -1909,7 +1897,7 @@ parse_css_file = {PARSE_CSS_FILE}
 	*/
 	function details($mode, $style_id)
 	{
-		global $template, $db, $user, $safe_mode;
+		global $safe_mode;
 
 		$update = phpbb_request::is_set_post('update');
 		$l_type = strtoupper($mode);
@@ -1945,7 +1933,7 @@ parse_css_file = {PARSE_CSS_FILE}
 
 		if (!$style_row)
 		{
-			trigger_error($user->lang['NO_' . $l_type] . adm_back_link($this->u_action), E_USER_WARNING);
+			trigger_error(phpbb::$user->lang['NO_' . $l_type] . adm_back_link($this->u_action), E_USER_WARNING);
 		}
 
 		$style_row['style_default'] = ($mode == 'style' && phpbb::$config['default_style'] == $style_id) ? 1 : 0;
@@ -1972,17 +1960,17 @@ parse_css_file = {PARSE_CSS_FILE}
 
 			if ($mode == 'style' && (!$template_id || !$theme_id || !$imageset_id))
 			{
-				$error[] = $user->lang['STYLE_ERR_NO_IDS'];
+				$error[] = phpbb::$user->lang['STYLE_ERR_NO_IDS'];
 			}
 
 			if ($mode == 'style' && $style_row['style_active'] && !$style_active && phpbb::$config['default_style'] == $style_id)
 			{
-				$error[] = $user->lang['DEACTIVATE_DEFAULT'];
+				$error[] = phpbb::$user->lang['DEACTIVATE_DEFAULT'];
 			}
 
 			if (!$name || $conflict)
 			{
-				$error[] = $user->lang[$l_type . '_ERR_STYLE_NAME'];
+				$error[] = phpbb::$user->lang[$l_type . '_ERR_STYLE_NAME'];
 			}
 
 			if (!sizeof($error))
@@ -1990,12 +1978,12 @@ parse_css_file = {PARSE_CSS_FILE}
 				// Check length settings
 				if (utf8_strlen($name) > 30)
 				{
-					$error[] = $user->lang[$l_type . '_ERR_NAME_LONG'];
+					$error[] = phpbb::$user->lang[$l_type . '_ERR_NAME_LONG'];
 				}
 
 				if (utf8_strlen($copyright) > 60)
 				{
-					$error[] = $user->lang[$l_type . '_ERR_COPY_LONG'];
+					$error[] = phpbb::$user->lang[$l_type . '_ERR_COPY_LONG'];
 				}
 			}
 		}
@@ -2065,7 +2053,7 @@ parse_css_file = {PARSE_CSS_FILE}
 			}
 			else
 			{
-				trigger_error($user->lang[$l_type . '_DETAILS_UPDATED'] . adm_back_link($this->u_action));
+				trigger_error(phpbb::$user->lang[$l_type . '_DETAILS_UPDATED'] . adm_back_link($this->u_action));
 			}
 		}
 
@@ -2107,11 +2095,11 @@ parse_css_file = {PARSE_CSS_FILE}
 			'U_ACTION'		=> $this->u_action . '&amp;action=details&amp;id=' . $style_id,
 			'U_BACK'		=> $this->u_action,
 
-			'L_TITLE'				=> $user->lang[$this->page_title],
-			'L_EXPLAIN'				=> $user->lang[$this->page_title . '_EXPLAIN'],
-			'L_NAME'				=> $user->lang[$l_type . '_NAME'],
-			'L_LOCATION'			=> ($mode == 'template' || $mode == 'theme') ? $user->lang[$l_type . '_LOCATION'] : '',
-			'L_LOCATION_EXPLAIN'	=> ($mode == 'template' || $mode == 'theme') ? $user->lang[$l_type . '_LOCATION_EXPLAIN'] : '',
+			'L_TITLE'				=> phpbb::$user->lang[$this->page_title],
+			'L_EXPLAIN'				=> phpbb::$user->lang[$this->page_title . '_EXPLAIN'],
+			'L_NAME'				=> phpbb::$user->lang[$l_type . '_NAME'],
+			'L_LOCATION'			=> ($mode == 'template' || $mode == 'theme') ? phpbb::$user->lang[$l_type . '_LOCATION'] : '',
+			'L_LOCATION_EXPLAIN'	=> ($mode == 'template' || $mode == 'theme') ? phpbb::$user->lang[$l_type . '_LOCATION_EXPLAIN'] : '',
 
 			'ERROR_MSG'		=> (sizeof($error)) ? implode('<br />', $error) : '',
 			'NAME'			=> $style_row[$mode . '_name'],
@@ -2190,13 +2178,11 @@ parse_css_file = {PARSE_CSS_FILE}
 	*/
 	function template_cache_filelist($template_path)
 	{
-		global $user;
-
 		$cache_prefix = 'tpl_' . str_replace('_', '-', $template_path);
 
 		if (!($dp = @opendir(PHPBB_ROOT_PATH . 'cache')))
 		{
-			trigger_error($user->lang['TEMPLATE_ERR_CACHE_READ'] . adm_back_link($this->u_action), E_USER_WARNING);
+			trigger_error(phpbb::$user->lang['TEMPLATE_ERR_CACHE_READ'] . adm_back_link($this->u_action), E_USER_WARNING);
 		}
 
 		$file_ary = array();
@@ -2226,14 +2212,12 @@ parse_css_file = {PARSE_CSS_FILE}
 	*/
 	function clear_template_cache($template_row, $file_ary = false)
 	{
-		global $user;
-
 		$cache_prefix = 'tpl_' . str_replace('_', '-', $template_row['template_path']);
 
 		if (!$file_ary || !is_array($file_ary))
 		{
 			$file_ary = $this->template_cache_filelist($template_row['template_path']);
-			$log_file_list = $user->lang['ALL_FILES'];
+			$log_file_list = phpbb::$user->lang['ALL_FILES'];
 		}
 		else
 		{
@@ -2260,8 +2244,6 @@ parse_css_file = {PARSE_CSS_FILE}
 	*/
 	function install($mode)
 	{
-		global $db, $user, $template;
-
 		$l_type = strtoupper($mode);
 
 		$error = $installcfg = $style_row = array();
@@ -2279,7 +2261,7 @@ parse_css_file = {PARSE_CSS_FILE}
 
 			if (!file_exists($cfg_file))
 			{
-				$error[] = $user->lang[$l_type . '_ERR_NOT_' . $l_type];
+				$error[] = phpbb::$user->lang[$l_type . '_ERR_NOT_' . $l_type];
 			}
 			else
 			{
@@ -2348,7 +2330,7 @@ parse_css_file = {PARSE_CSS_FILE}
 		}
 		else
 		{
-			trigger_error($user->lang['NO_' . $l_type] . adm_back_link($this->u_action), E_USER_WARNING);
+			trigger_error(phpbb::$user->lang['NO_' . $l_type] . adm_back_link($this->u_action), E_USER_WARNING);
 		}
 
 		$style_row['style_active'] = request_var('style_active', 1);
@@ -2375,7 +2357,7 @@ parse_css_file = {PARSE_CSS_FILE}
 			{
 				phpbb::$acm->destroy_sql(STYLES_TABLE);
 
-				trigger_error($user->lang[$l_type . '_ADDED'] . adm_back_link($this->u_action));
+				trigger_error(phpbb::$user->lang[$l_type . '_ADDED'] . adm_back_link($this->u_action));
 			}
 		}
 
@@ -2395,11 +2377,11 @@ parse_css_file = {PARSE_CSS_FILE}
 			'U_ACTION'			=> $this->u_action . "&amp;action=install&amp;path=" . urlencode($install_path),
 			'U_BACK'			=> $this->u_action,
 
-			'L_TITLE'				=> $user->lang[$this->page_title],
-			'L_EXPLAIN'				=> $user->lang[$this->page_title . '_EXPLAIN'],
-			'L_NAME'				=> $user->lang[$l_type . '_NAME'],
-			'L_LOCATION'			=> ($mode == 'template' || $mode == 'theme') ? $user->lang[$l_type . '_LOCATION'] : '',
-			'L_LOCATION_EXPLAIN'	=> ($mode == 'template' || $mode == 'theme') ? $user->lang[$l_type . '_LOCATION_EXPLAIN'] : '',
+			'L_TITLE'				=> phpbb::$user->lang[$this->page_title],
+			'L_EXPLAIN'				=> phpbb::$user->lang[$this->page_title . '_EXPLAIN'],
+			'L_NAME'				=> phpbb::$user->lang[$l_type . '_NAME'],
+			'L_LOCATION'			=> ($mode == 'template' || $mode == 'theme') ? phpbb::$user->lang[$l_type . '_LOCATION'] : '',
+			'L_LOCATION_EXPLAIN'	=> ($mode == 'template' || $mode == 'theme') ? phpbb::$user->lang[$l_type . '_LOCATION_EXPLAIN'] : '',
 
 			'ERROR_MSG'			=> (sizeof($error)) ? implode('<br />', $error) : '',
 			'NAME'				=> $style_row[$mode . '_name'],
@@ -2415,8 +2397,6 @@ parse_css_file = {PARSE_CSS_FILE}
 	*/
 	function add($mode)
 	{
-		global $db, $user, $template;
-
 		$l_type = strtoupper($mode);
 		$element_ary = array('template' => STYLES_TEMPLATE_TABLE, 'theme' => STYLES_THEME_TABLE, 'imageset' => STYLES_IMAGESET_TABLE);
 		$error = array();
@@ -2468,7 +2448,7 @@ parse_css_file = {PARSE_CSS_FILE}
 
 			if (!$row)
 			{
-				$error[] = $user->lang['NO_' . $l_type];
+				$error[] = phpbb::$user->lang['NO_' . $l_type];
 			}
 
 			if (!sizeof($error))
@@ -2487,7 +2467,7 @@ parse_css_file = {PARSE_CSS_FILE}
 
 			if ($mode == 'style' && (!$style_row['template_id'] || !$style_row['theme_id'] || !$style_row['imageset_id']))
 			{
-				$error[] = $user->lang['STYLE_ERR_NO_IDS'];
+				$error[] = phpbb::$user->lang['STYLE_ERR_NO_IDS'];
 			}
 		}
 
@@ -2505,7 +2485,7 @@ parse_css_file = {PARSE_CSS_FILE}
 			{
 				phpbb::$acm->destroy_sql(STYLES_TABLE);
 
-				trigger_error($user->lang[$l_type . '_ADDED'] . adm_back_link($this->u_action));
+				trigger_error(phpbb::$user->lang[$l_type . '_ADDED'] . adm_back_link($this->u_action));
 			}
 		}
 
@@ -2548,11 +2528,11 @@ parse_css_file = {PARSE_CSS_FILE}
 			'U_ACTION'			=> $this->u_action . '&amp;action=add&amp;basis=' . $basis,
 			'U_BACK'			=> $this->u_action,
 
-			'L_TITLE'				=> $user->lang[$this->page_title],
-			'L_EXPLAIN'				=> $user->lang[$this->page_title . '_EXPLAIN'],
-			'L_NAME'				=> $user->lang[$l_type . '_NAME'],
-			'L_LOCATION'			=> ($mode == 'template' || $mode == 'theme') ? $user->lang[$l_type . '_LOCATION'] : '',
-			'L_LOCATION_EXPLAIN'	=> ($mode == 'template' || $mode == 'theme') ? $user->lang[$l_type . '_LOCATION_EXPLAIN'] : '',
+			'L_TITLE'				=> phpbb::$user->lang[$this->page_title],
+			'L_EXPLAIN'				=> phpbb::$user->lang[$this->page_title . '_EXPLAIN'],
+			'L_NAME'				=> phpbb::$user->lang[$l_type . '_NAME'],
+			'L_LOCATION'			=> ($mode == 'template' || $mode == 'theme') ? phpbb::$user->lang[$l_type . '_LOCATION'] : '',
+			'L_LOCATION_EXPLAIN'	=> ($mode == 'template' || $mode == 'theme') ? phpbb::$user->lang[$l_type . '_LOCATION_EXPLAIN'] : '',
 
 			'ERROR_MSG'			=> (sizeof($error)) ? implode('<br />', $error) : '',
 			'NAME'				=> $style_row[$mode . '_name'],
@@ -2563,8 +2543,6 @@ parse_css_file = {PARSE_CSS_FILE}
 
 	function generate_stylesheets($theme)
 	{
-		global $db;
-
 		// get all the lang_dirs
 		$sql = 'SELECT lang_dir
 			FROM ' . LANG_TABLE;
@@ -2695,8 +2673,6 @@ parse_css_file = {PARSE_CSS_FILE}
 	*/
 	function test_installed($element, &$error, $root_path, $reqd_name, &$id, &$name, &$copyright)
 	{
-		global $db, $user;
-
 		switch ($element)
 		{
 			case 'template':
@@ -2730,7 +2706,7 @@ parse_css_file = {PARSE_CSS_FILE}
 		{
 			if (!($cfg = @file("$root_path$element/$element.cfg")))
 			{
-				$error[] = sprintf($user->lang['REQUIRES_' . $l_element], $reqd_name);
+				$error[] = sprintf(phpbb::$user->lang['REQUIRES_' . $l_element], $reqd_name);
 				return false;
 			}
 
@@ -2750,24 +2726,22 @@ parse_css_file = {PARSE_CSS_FILE}
 	*/
 	function install_style(&$error, $action, $root_path, &$id, $name, $path, $copyright, $active, $default, &$style_row, $template_root_path = false, $template_path = false, $theme_root_path = false, $theme_path = false, $imageset_root_path = false, $imageset_path = false)
 	{
-		global $db, $user;
-
 		$element_ary = array('template', 'theme', 'imageset');
 
 		if (!$name)
 		{
-			$error[] = $user->lang['STYLE_ERR_STYLE_NAME'];
+			$error[] = phpbb::$user->lang['STYLE_ERR_STYLE_NAME'];
 		}
 
 		// Check length settings
 		if (utf8_strlen($name) > 30)
 		{
-			$error[] = $user->lang['STYLE_ERR_NAME_LONG'];
+			$error[] = phpbb::$user->lang['STYLE_ERR_NAME_LONG'];
 		}
 
 		if (utf8_strlen($copyright) > 60)
 		{
-			$error[] = $user->lang['STYLE_ERR_COPY_LONG'];
+			$error[] = phpbb::$user->lang['STYLE_ERR_COPY_LONG'];
 		}
 
 		// Check if the name already exist
@@ -2780,7 +2754,7 @@ parse_css_file = {PARSE_CSS_FILE}
 
 		if ($row)
 		{
-			$error[] = $user->lang['STYLE_ERR_NAME_EXIST'];
+			$error[] = phpbb::$user->lang['STYLE_ERR_NAME_EXIST'];
 		}
 
 		if (sizeof($error))
@@ -2800,7 +2774,7 @@ parse_css_file = {PARSE_CSS_FILE}
 
 		if (!$style_row['template_id'] || !$style_row['theme_id'] || !$style_row['imageset_id'])
 		{
-			$error[] = $user->lang['STYLE_ERR_NO_IDS'];
+			$error[] = phpbb::$user->lang['STYLE_ERR_NO_IDS'];
 		}
 
 		if (sizeof($error))
@@ -2845,8 +2819,6 @@ parse_css_file = {PARSE_CSS_FILE}
 	*/
 	function install_element($mode, &$error, $action, $root_path, &$id, $name, $path, $copyright, $store_db = 0)
 	{
-		global $db, $user;
-
 		switch ($mode)
 		{
 			case 'template':
@@ -2866,18 +2838,18 @@ parse_css_file = {PARSE_CSS_FILE}
 
 		if (!$name)
 		{
-			$error[] = $user->lang[$l_type . '_ERR_STYLE_NAME'];
+			$error[] = phpbb::$user->lang[$l_type . '_ERR_STYLE_NAME'];
 		}
 
 		// Check length settings
 		if (utf8_strlen($name) > 30)
 		{
-			$error[] = $user->lang[$l_type . '_ERR_NAME_LONG'];
+			$error[] = phpbb::$user->lang[$l_type . '_ERR_NAME_LONG'];
 		}
 
 		if (utf8_strlen($copyright) > 60)
 		{
-			$error[] = $user->lang[$l_type . '_ERR_COPY_LONG'];
+			$error[] = phpbb::$user->lang[$l_type . '_ERR_COPY_LONG'];
 		}
 
 		// Check if the name already exist
@@ -2898,7 +2870,7 @@ parse_css_file = {PARSE_CSS_FILE}
 				return false;
 			}
 
-			$error[] = $user->lang[$l_type . '_ERR_NAME_EXIST'];
+			$error[] = phpbb::$user->lang[$l_type . '_ERR_NAME_EXIST'];
 		}
 
 		if (sizeof($error))

@@ -22,8 +22,6 @@ if (!defined('IN_PHPBB'))
 */
 function compose_pm($id, $mode, $action)
 {
-	global $template, $db, $auth, $user;
-
 	// Damn php and globals - i know, this is horrible
 	// Needed for handle_message_list_actions()
 	global $refresh, $submit, $preview;
@@ -91,10 +89,10 @@ function compose_pm($id, $mode, $action)
 				$sql .= ' LEFT JOIN ' . USER_GROUP_TABLE . ' ug
 					ON (
 						g.group_id = ug.group_id
-						AND ug.user_id = ' . $user->data['user_id'] . '
+						AND ug.user_id = ' . phpbb::$user->data['user_id'] . '
 						AND ug.user_pending = 0
 					)
-					WHERE (g.group_type <> ' . GROUP_HIDDEN . ' OR ug.user_id = ' . $user->data['user_id'] . ')';
+					WHERE (g.group_type <> ' . GROUP_HIDDEN . ' OR ug.user_id = ' . phpbb::$user->data['user_id'] . ')';
 			}
 
 			$sql .= ($auth->acl_gets('a_group', 'a_groupadd', 'a_groupdel')) ? ' WHERE ' : ' AND ';
@@ -106,7 +104,7 @@ function compose_pm($id, $mode, $action)
 			$group_options = '';
 			while ($row = $db->sql_fetchrow($result))
 			{
-				$group_options .= '<option' . (($row['group_type'] == GROUP_SPECIAL) ? ' class="sep"' : '') . ' value="' . $row['group_id'] . '">' . (($row['group_type'] == GROUP_SPECIAL) ? $user->lang['G_' . $row['group_name']] : $row['group_name']) . '</option>';
+				$group_options .= '<option' . (($row['group_type'] == GROUP_SPECIAL) ? ' class="sep"' : '') . ' value="' . $row['group_id'] . '">' . (($row['group_type'] == GROUP_SPECIAL) ? phpbb::$user->lang['G_' . $row['group_name']] : $row['group_name']) . '</option>';
 			}
 			$db->sql_freeresult($result);
 		}
@@ -158,7 +156,7 @@ function compose_pm($id, $mode, $action)
 			{
 				$sql = 'SELECT t.folder_id, p.*, u.username as quote_username
 					FROM ' . PRIVMSGS_TO_TABLE . ' t, ' . PRIVMSGS_TABLE . ' p, ' . USERS_TABLE . ' u
-					WHERE t.user_id = ' . $user->data['user_id'] . "
+					WHERE t.user_id = ' . phpbb::$user->data['user_id'] . "
 						AND p.author_id = u.user_id
 						AND t.msg_id = p.msg_id
 						AND p.msg_id = $msg_id";
@@ -174,7 +172,7 @@ function compose_pm($id, $mode, $action)
 			// check for outbox (not read) status, we do not allow editing if one user already having the message
 			$sql = 'SELECT p.*, t.folder_id
 				FROM ' . PRIVMSGS_TO_TABLE . ' t, ' . PRIVMSGS_TABLE . ' p
-				WHERE t.user_id = ' . $user->data['user_id'] . '
+				WHERE t.user_id = ' . phpbb::$user->data['user_id'] . '
 					AND t.folder_id = ' . PRIVMSGS_OUTBOX . "
 					AND t.msg_id = $msg_id
 					AND t.msg_id = p.msg_id";
@@ -193,7 +191,7 @@ function compose_pm($id, $mode, $action)
 
 			$sql = 'SELECT msg_id, pm_unread, pm_new, author_id, folder_id
 				FROM ' . PRIVMSGS_TO_TABLE . '
-				WHERE user_id = ' . $user->data['user_id'] . "
+				WHERE user_id = ' . phpbb::$user->data['user_id'] . "
 					AND msg_id = $msg_id";
 		break;
 
@@ -229,7 +227,7 @@ function compose_pm($id, $mode, $action)
 			{
 				$sql = 'SELECT p.*, t.folder_id
 					FROM ' . PRIVMSGS_TO_TABLE . ' t, ' . PRIVMSGS_TABLE . ' p
-					WHERE t.user_id = ' . $user->data['user_id'] . "
+					WHERE t.user_id = ' . phpbb::$user->data['user_id'] . "
 						AND t.msg_id = $msg_id
 						AND t.msg_id = p.msg_id";
 				$result = $db->sql_query($sql);
@@ -315,9 +313,9 @@ function compose_pm($id, $mode, $action)
 					$address_list['u'][$post['author_id']] = 'to';
 
 					// Now, make sure the user itself is not listed. ;)
-					if (isset($address_list['u'][$user->data['user_id']]))
+					if (isset($address_list['u'][phpbb::$user->data['user_id']]))
 					{
-						unset($address_list['u'][$user->data['user_id']]);
+						unset($address_list['u'][phpbb::$user->data['user_id']]);
 					}
 				}
 			}
@@ -381,7 +379,7 @@ function compose_pm($id, $mode, $action)
 	$message_parser->message = ($action == 'reply') ? '' : $message_text;
 	unset($message_text);
 
-	$s_action = append_sid('ucp', "i=$id&amp;mode=$mode&amp;action=$action", true, $user->session_id);
+	$s_action = append_sid('ucp', "i=$id&amp;mode=$mode&amp;action=$action", true, phpbb::$user->session_id);
 	$s_action .= ($msg_id) ? "&amp;p=$msg_id" : '';
 
 	// Delete triggered ?
@@ -393,14 +391,14 @@ function compose_pm($id, $mode, $action)
 		// Do we need to confirm ?
 		if (confirm_box(true))
 		{
-			delete_pm($user->data['user_id'], $msg_id, $folder_id);
+			delete_pm(phpbb::$user->data['user_id'], $msg_id, $folder_id);
 
 			// jump to next message in "history"? nope, not for the moment. But able to be included later.
 			$meta_info = append_sid('ucp', "i=pm&amp;folder=$folder_id");
-			$message = $user->lang['MESSAGE_DELETED'];
+			$message = phpbb::$user->lang['MESSAGE_DELETED'];
 
 			meta_refresh(3, $meta_info);
-			$message .= '<br /><br />' . sprintf($user->lang['RETURN_FOLDER'], '<a href="' . $meta_info . '">', '</a>');
+			$message .= '<br /><br />' . sprintf(phpbb::$user->lang['RETURN_FOLDER'], '<a href="' . $meta_info . '">', '</a>');
 			trigger_error($message);
 		}
 		else
@@ -421,7 +419,7 @@ function compose_pm($id, $mode, $action)
 	// Get maximum number of allowed recipients
 	$sql = 'SELECT MAX(g.group_max_recipients) as max_recipients
 		FROM ' . GROUPS_TABLE . ' g, ' . USER_GROUP_TABLE . ' ug
-		WHERE ug.user_id = ' . $user->data['user_id'] . '
+		WHERE ug.user_id = ' . phpbb::$user->data['user_id'] . '
 			AND ug.user_pending = 0
 			AND ug.group_id = g.group_id';
 	$result = $db->sql_query($sql);
@@ -440,9 +438,9 @@ function compose_pm($id, $mode, $action)
 		$list = (!empty($list['u'])) ? $list['u'] : array();
 		$list[$post['author_id']] = 'to';
 
-		if (isset($list[$user->data['user_id']]))
+		if (isset($list[phpbb::$user->data['user_id']]))
 		{
-			unset($list[$user->data['user_id']]);
+			unset($list[phpbb::$user->data['user_id']]);
 		}
 
 		$max_recipients = ($max_recipients < sizeof($list)) ? sizeof($list) : $max_recipients;
@@ -457,21 +455,21 @@ function compose_pm($id, $mode, $action)
 	if ((!phpbb::$config['allow_mass_pm'] || !$auth->acl_get('u_masspm_group')) && !empty($address_list['g']))
 	{
 		$address_list = array();
-		$error[] = $user->lang['NO_AUTH_GROUP_MESSAGE'];
+		$error[] = phpbb::$user->lang['NO_AUTH_GROUP_MESSAGE'];
 	}
 
 	// Check mass pm to users permission
 	if ((!phpbb::$config['allow_mass_pm'] || !$auth->acl_get('u_masspm')) && num_recipients($address_list) > 1)
 	{
 		$address_list = get_recipients($address_list, 1);
-		$error[] = $user->lang('TOO_MANY_RECIPIENTS', 1);
+		$error[] = phpbb::$user->lang('TOO_MANY_RECIPIENTS', 1);
 	}
 
 	// Check for too many recipients
 	if (!empty($address_list['u']) && $max_recipients && sizeof($address_list['u']) > $max_recipients)
 	{
 		$address_list = get_recipients($address_list, $max_recipients);
-		$error[] = $user->lang('TOO_MANY_RECIPIENTS', $max_recipients);
+		$error[] = phpbb::$user->lang('TOO_MANY_RECIPIENTS', $max_recipients);
 	}
 
 	// Always check if the submitted attachment data is valid and belongs to the user.
@@ -494,9 +492,9 @@ function compose_pm($id, $mode, $action)
 
 	if (!in_array($action, array('quote', 'edit', 'delete', 'forward')))
 	{
-		$enable_sig		= (phpbb::$config['allow_sig'] && phpbb::$config['allow_sig_pm'] && $auth->acl_get('u_sig') && $user->optionget('attachsig'));
-		$enable_smilies	= (phpbb::$config['allow_smilies'] && $auth->acl_get('u_pm_smilies') && $user->optionget('smilies'));
-		$enable_bbcode	= (phpbb::$config['allow_bbcode'] && $auth->acl_get('u_pm_bbcode') && $user->optionget('bbcode'));
+		$enable_sig		= (phpbb::$config['allow_sig'] && phpbb::$config['allow_sig_pm'] && $auth->acl_get('u_sig') && phpbb::$user->optionget('attachsig'));
+		$enable_smilies	= (phpbb::$config['allow_smilies'] && $auth->acl_get('u_pm_smilies') && phpbb::$user->optionget('smilies'));
+		$enable_bbcode	= (phpbb::$config['allow_bbcode'] && $auth->acl_get('u_pm_bbcode') && phpbb::$user->optionget('bbcode'));
 		$enable_urls	= true;
 	}
 
@@ -509,7 +507,7 @@ function compose_pm($id, $mode, $action)
 			FROM ' . DRAFTS_TABLE . '
 			WHERE forum_id = 0
 				AND topic_id = 0
-				AND user_id = ' . $user->data['user_id'] .
+				AND user_id = ' . phpbb::$user->data['user_id'] .
 				(($draft_id) ? " AND draft_id <> $draft_id" : '');
 		$result = $db->sql_query_limit($sql, 1);
 		$row = $db->sql_fetchrow($result);
@@ -536,7 +534,7 @@ function compose_pm($id, $mode, $action)
 	if ($save && $auth->acl_get('u_savedrafts'))
 	{
 		$subject = utf8_normalize_nfc(request_var('subject', '', true));
-		$subject = (!$subject && $action != 'post') ? $user->lang['NEW_MESSAGE'] : $subject;
+		$subject = (!$subject && $action != 'post') ? phpbb::$user->lang['NEW_MESSAGE'] : $subject;
 		$message = utf8_normalize_nfc(request_var('message', '', true));
 
 		if ($subject && $message)
@@ -544,7 +542,7 @@ function compose_pm($id, $mode, $action)
 			if (confirm_box(true))
 			{
 				$sql = 'INSERT INTO ' . DRAFTS_TABLE . ' ' . $db->sql_build_array('INSERT', array(
-					'user_id'		=> $user->data['user_id'],
+					'user_id'		=> phpbb::$user->data['user_id'],
 					'topic_id'		=> 0,
 					'forum_id'		=> 0,
 					'save_time'		=> $current_time,
@@ -557,7 +555,7 @@ function compose_pm($id, $mode, $action)
 				$redirect_url = append_sid('ucp', "i=pm&amp;mode=$mode");
 
 				meta_refresh(3, $redirect_url);
-				$message = $user->lang['DRAFT_SAVED'] . '<br /><br />' . sprintf($user->lang['RETURN_UCP'], '<a href="' . $redirect_url . '">', '</a>');
+				$message = phpbb::$user->lang['DRAFT_SAVED'] . '<br /><br />' . sprintf(phpbb::$user->lang['RETURN_UCP'], '<a href="' . $redirect_url . '">', '</a>');
 
 				trigger_error($message);
 			}
@@ -583,12 +581,12 @@ function compose_pm($id, $mode, $action)
 		{
 			if (utf8_clean_string($subject) === '')
 			{
-				$error[] = $user->lang['EMPTY_MESSAGE_SUBJECT'];
+				$error[] = phpbb::$user->lang['EMPTY_MESSAGE_SUBJECT'];
 			}
 
 			if (utf8_clean_string($message) === '')
 			{
-				$error[] = $user->lang['TOO_FEW_CHARS'];
+				$error[] = phpbb::$user->lang['TOO_FEW_CHARS'];
 			}
 		}
 
@@ -603,7 +601,7 @@ function compose_pm($id, $mode, $action)
 			WHERE draft_id = $draft_id
 				AND topic_id = 0
 				AND forum_id = 0
-				AND user_id = " . $user->data['user_id'];
+				AND user_id = " . phpbb::$user->data['user_id'];
 		$result = $db->sql_query_limit($sql, 1);
 
 		if ($row = $db->sql_fetchrow($result))
@@ -630,7 +628,7 @@ function compose_pm($id, $mode, $action)
 	{
 		if (($submit || $preview) && !check_form_key('ucp_pm_compose'))
 		{
-			$error[] = $user->lang['FORM_INVALID'];
+			$error[] = phpbb::$user->lang['FORM_INVALID'];
 		}
 		$subject = utf8_normalize_nfc(request_var('subject', '', true));
 		$message_parser->message = utf8_normalize_nfc(request_var('message', '', true));
@@ -673,13 +671,13 @@ function compose_pm($id, $mode, $action)
 		if ($action != 'edit' && !$preview && !$refresh && phpbb::$config['flood_interval'] && !$auth->acl_get('u_ignoreflood'))
 		{
 			// Flood check
-			$last_post_time = $user->data['user_lastpost_time'];
+			$last_post_time = phpbb::$user->data['user_lastpost_time'];
 
 			if ($last_post_time)
 			{
 				if ($last_post_time && ($current_time - $last_post_time) < intval(phpbb::$config['flood_interval']))
 				{
-					$error[] = $user->lang['FLOOD_ERROR'];
+					$error[] = phpbb::$user->lang['FLOOD_ERROR'];
 				}
 			}
 		}
@@ -689,12 +687,12 @@ function compose_pm($id, $mode, $action)
 		{
 			if (utf8_clean_string($subject) === '')
 			{
-				$error[] = $user->lang['EMPTY_MESSAGE_SUBJECT'];
+				$error[] = phpbb::$user->lang['EMPTY_MESSAGE_SUBJECT'];
 			}
 
 			if (!sizeof($address_list))
 			{
-				$error[] = $user->lang['NO_RECIPIENT'];
+				$error[] = phpbb::$user->lang['NO_RECIPIENT'];
 			}
 		}
 
@@ -703,9 +701,9 @@ function compose_pm($id, $mode, $action)
 		{
 			$pm_data = array(
 				'msg_id'				=> (int) $msg_id,
-				'from_user_id'			=> $user->data['user_id'],
-				'from_user_ip'			=> $user->ip,
-				'from_username'			=> $user->data['username'],
+				'from_user_id'			=> phpbb::$user->data['user_id'],
+				'from_user_ip'			=> phpbb::$user->ip,
+				'from_username'			=> phpbb::$user->data['username'],
 				'reply_from_root_level'	=> (isset($post['root_level'])) ? (int) $post['root_level'] : 0,
 				'reply_from_msg_id'		=> (int) $msg_id,
 				'icon_id'				=> (int) $icon_id,
@@ -728,7 +726,7 @@ function compose_pm($id, $mode, $action)
 			$return_folder_url = append_sid('ucp', 'i=pm&amp;folder=outbox');
 			meta_refresh(3, $return_message_url);
 
-			$message = $user->lang['MESSAGE_STORED'] . '<br /><br />' . sprintf($user->lang['VIEW_PRIVATE_MESSAGE'], '<a href="' . $return_message_url . '">', '</a>') . '<br /><br />' . sprintf($user->lang['CLICK_RETURN_FOLDER'], '<a href="' . $return_folder_url . '">', '</a>', $user->lang['PM_OUTBOX']);
+			$message = phpbb::$user->lang['MESSAGE_STORED'] . '<br /><br />' . sprintf(phpbb::$user->lang['VIEW_PRIVATE_MESSAGE'], '<a href="' . $return_message_url . '">', '</a>') . '<br /><br />' . sprintf(phpbb::$user->lang['CLICK_RETURN_FOLDER'], '<a href="' . $return_folder_url . '">', '</a>', phpbb::$user->lang['PM_OUTBOX']);
 			trigger_error($message);
 		}
 
@@ -738,12 +736,12 @@ function compose_pm($id, $mode, $action)
 	// Preview
 	if (!sizeof($error) && $preview)
 	{
-		$user->add_lang('viewtopic');
+		phpbb::$user->add_lang('viewtopic');
 		$preview_message = $message_parser->format_display($enable_bbcode, $enable_urls, $enable_smilies, false);
 
-		$preview_signature = $user->data['user_sig'];
-		$preview_signature_uid = $user->data['user_sig_bbcode_uid'];
-		$preview_signature_bitfield = $user->data['user_sig_bbcode_bitfield'];
+		$preview_signature = phpbb::$user->data['user_sig'];
+		$preview_signature_uid = phpbb::$user->data['user_sig_bbcode_uid'];
+		$preview_signature_bitfield = phpbb::$user->data['user_sig_bbcode_bitfield'];
 
 		// Signature
 		if ($enable_sig && phpbb::$config['allow_sig'] && $preview_signature)
@@ -807,11 +805,11 @@ function compose_pm($id, $mode, $action)
 			$post_id = request_var('p', 0);
 			if (phpbb::$config['allow_post_links'])
 			{
-				$message_link = "[url=" . generate_board_url() . '/viewtopic.' . PHP_EXT . "?p={$post_id}#p{$post_id}]{$user->lang['SUBJECT']}: {$message_subject}[/url]\n\n";
+				$message_link = "[url=" . generate_board_url() . '/viewtopic.' . PHP_EXT . '?p=' . $post_id . '#p' . $post_id . ']' . phpbb::$user->lang['SUBJECT'] . ': ' . $message_subject . "[/url]\n\n";
 			}
 			else
 			{
-				$message_link = $user->lang['SUBJECT'] . ': ' . $message_subject . " (" . generate_board_url() . '/viewtopic.' . PHP_EXT . "?p={$post_id}#p{$post_id})\n\n";
+				$message_link = phpbb::$user->lang['SUBJECT'] . ': ' . $message_subject . " (" . generate_board_url() . '/viewtopic.' . PHP_EXT . "?p={$post_id}#p{$post_id})\n\n";
 			}
 		}
 		else
@@ -840,11 +838,11 @@ function compose_pm($id, $mode, $action)
 		}
 
 		$forward_text = array();
-		$forward_text[] = $user->lang['FWD_ORIGINAL_MESSAGE'];
-		$forward_text[] = sprintf($user->lang['FWD_SUBJECT'], censor_text($message_subject));
-		$forward_text[] = sprintf($user->lang['FWD_DATE'], $user->format_date($message_time));
-		$forward_text[] = sprintf($user->lang['FWD_FROM'], $quote_username_text);
-		$forward_text[] = sprintf($user->lang['FWD_TO'], implode(', ', $fwd_to_field['to']));
+		$forward_text[] = phpbb::$user->lang['FWD_ORIGINAL_MESSAGE'];
+		$forward_text[] = sprintf(phpbb::$user->lang['FWD_SUBJECT'], censor_text($message_subject));
+		$forward_text[] = sprintf(phpbb::$user->lang['FWD_DATE'], phpbb::$user->format_date($message_time));
+		$forward_text[] = sprintf(phpbb::$user->lang['FWD_FROM'], $quote_username_text);
+		$forward_text[] = sprintf(phpbb::$user->lang['FWD_TO'], implode(', ', $fwd_to_field['to']));
 
 		$message_parser->message = implode("\n", $forward_text) . "\n\n[quote=&quot;{$quote_username}&quot;]\n" . censor_text(trim($message_parser->message)) . "\n[/quote]";
 		$message_subject = ((!preg_match('/^Fwd:/', $message_subject)) ? 'Fwd: ' : '') . censor_text($message_subject);
@@ -894,10 +892,10 @@ function compose_pm($id, $mode, $action)
 				$sql .= ' LEFT JOIN ' . USER_GROUP_TABLE . ' ug
 					ON (
 						g.group_id = ug.group_id
-						AND ug.user_id = ' . $user->data['user_id'] . '
+						AND ug.user_id = ' . phpbb::$user->data['user_id'] . '
 						AND ug.user_pending = 0
 					)
-					WHERE (g.group_type <> ' . GROUP_HIDDEN . ' OR ug.user_id = ' . $user->data['user_id'] . ')';
+					WHERE (g.group_type <> ' . GROUP_HIDDEN . ' OR ug.user_id = ' . phpbb::$user->data['user_id'] . ')';
 			}
 
 			$sql .= ($auth->acl_gets('a_group', 'a_groupadd', 'a_groupdel')) ? ' WHERE ' : ' AND ';
@@ -919,7 +917,7 @@ function compose_pm($id, $mode, $action)
 				{
 					if ($type == 'g')
 					{
-						$row['name'] = ($row['group_type'] == GROUP_SPECIAL) ? $user->lang['G_' . $row['name']] : $row['name'];
+						$row['name'] = ($row['group_type'] == GROUP_SPECIAL) ? phpbb::$user->lang['G_' . $row['name']] : $row['name'];
 					}
 
 					${$type}[$row['id']] = array('name' => $row['name'], 'colour' => $row['colour']);
@@ -976,35 +974,35 @@ function compose_pm($id, $mode, $action)
 	$s_hidden_address_field = build_address_field($address_list);
 
 
-	$bbcode_checked		= (isset($enable_bbcode)) ? !$enable_bbcode : ((phpbb::$config['allow_bbcode'] && $auth->acl_get('u_pm_bbcode')) ? !$user->optionget('bbcode') : 1);
-	$smilies_checked	= (isset($enable_smilies)) ? !$enable_smilies : ((phpbb::$config['allow_smilies'] && $auth->acl_get('u_pm_smilies')) ? !$user->optionget('smilies') : 1);
+	$bbcode_checked		= (isset($enable_bbcode)) ? !$enable_bbcode : ((phpbb::$config['allow_bbcode'] && $auth->acl_get('u_pm_bbcode')) ? !phpbb::$user->optionget('bbcode') : 1);
+	$smilies_checked	= (isset($enable_smilies)) ? !$enable_smilies : ((phpbb::$config['allow_smilies'] && $auth->acl_get('u_pm_smilies')) ? !phpbb::$user->optionget('smilies') : 1);
 	$urls_checked		= (isset($enable_urls)) ? !$enable_urls : 0;
 	$sig_checked		= $enable_sig;
 
 	switch ($action)
 	{
 		case 'post':
-			$page_title = $user->lang['POST_NEW_PM'];
+			$page_title = phpbb::$user->lang['POST_NEW_PM'];
 		break;
 
 		case 'quote':
-			$page_title = $user->lang['POST_QUOTE_PM'];
+			$page_title = phpbb::$user->lang['POST_QUOTE_PM'];
 		break;
 
 		case 'quotepost':
-			$page_title = $user->lang['POST_PM_POST'];
+			$page_title = phpbb::$user->lang['POST_PM_POST'];
 		break;
 
 		case 'reply':
-			$page_title = $user->lang['POST_REPLY_PM'];
+			$page_title = phpbb::$user->lang['POST_REPLY_PM'];
 		break;
 
 		case 'edit':
-			$page_title = $user->lang['POST_EDIT_PM'];
+			$page_title = phpbb::$user->lang['POST_EDIT_PM'];
 		break;
 
 		case 'forward':
-			$page_title = $user->lang['POST_FORWARD_PM'];
+			$page_title = phpbb::$user->lang['POST_FORWARD_PM'];
 		break;
 
 		default:
@@ -1021,17 +1019,17 @@ function compose_pm($id, $mode, $action)
 	// Start assigning vars for main posting page ...
 	$template->assign_vars(array(
 		'L_POST_A'					=> $page_title,
-		'L_ICON'					=> $user->lang['PM_ICON'],
-		'L_MESSAGE_BODY_EXPLAIN'	=> (intval(phpbb::$config['max_post_chars'])) ? sprintf($user->lang['MESSAGE_BODY_EXPLAIN'], intval(phpbb::$config['max_post_chars'])) : '',
+		'L_ICON'					=> phpbb::$user->lang['PM_ICON'],
+		'L_MESSAGE_BODY_EXPLAIN'	=> (intval(phpbb::$config['max_post_chars'])) ? sprintf(phpbb::$user->lang['MESSAGE_BODY_EXPLAIN'], intval(phpbb::$config['max_post_chars'])) : '',
 
 		'SUBJECT'				=> (isset($message_subject)) ? $message_subject : '',
 		'MESSAGE'				=> $message_text,
-		'BBCODE_STATUS'			=> ($bbcode_status) ? sprintf($user->lang['BBCODE_IS_ON'], '<a href="' . append_sid('faq', 'mode=bbcode') . '">', '</a>') : sprintf($user->lang['BBCODE_IS_OFF'], '<a href="' . append_sid('faq', 'mode=bbcode') . '">', '</a>'),
-		'IMG_STATUS'			=> ($img_status) ? $user->lang['IMAGES_ARE_ON'] : $user->lang['IMAGES_ARE_OFF'],
-		'FLASH_STATUS'			=> ($flash_status) ? $user->lang['FLASH_IS_ON'] : $user->lang['FLASH_IS_OFF'],
-		'SMILIES_STATUS'		=> ($smilies_status) ? $user->lang['SMILIES_ARE_ON'] : $user->lang['SMILIES_ARE_OFF'],
-		'URL_STATUS'			=> ($url_status) ? $user->lang['URL_IS_ON'] : $user->lang['URL_IS_OFF'],
-		'MINI_POST_IMG'			=> $user->img('icon_post_target', $user->lang['PM']),
+		'BBCODE_STATUS'			=> ($bbcode_status) ? sprintf(phpbb::$user->lang['BBCODE_IS_ON'], '<a href="' . append_sid('faq', 'mode=bbcode') . '">', '</a>') : sprintf(phpbb::$user->lang['BBCODE_IS_OFF'], '<a href="' . append_sid('faq', 'mode=bbcode') . '">', '</a>'),
+		'IMG_STATUS'			=> ($img_status) ? phpbb::$user->lang['IMAGES_ARE_ON'] : phpbb::$user->lang['IMAGES_ARE_OFF'],
+		'FLASH_STATUS'			=> ($flash_status) ? phpbb::$user->lang['FLASH_IS_ON'] : phpbb::$user->lang['FLASH_IS_OFF'],
+		'SMILIES_STATUS'		=> ($smilies_status) ? phpbb::$user->lang['SMILIES_ARE_ON'] : phpbb::$user->lang['SMILIES_ARE_OFF'],
+		'URL_STATUS'			=> ($url_status) ? phpbb::$user->lang['URL_IS_ON'] : phpbb::$user->lang['URL_IS_OFF'],
+		'MINI_POST_IMG'			=> phpbb::$user->img('icon_post_target', phpbb::$user->lang['PM']),
 		'ERROR'					=> (sizeof($error)) ? implode('<br />', $error) : '',
 		'MAX_RECIPIENTS'		=> (phpbb::$config['allow_mass_pm'] && ($auth->acl_get('u_masspm') || $auth->acl_get('u_masspm_group'))) ? $max_recipients : 0,
 
@@ -1076,7 +1074,7 @@ function compose_pm($id, $mode, $action)
 	// Message History
 	if ($action == 'reply' || $action == 'quote' || $action == 'forward')
 	{
-		if (message_history($msg_id, $user->data['user_id'], $post, array(), true))
+		if (message_history($msg_id, phpbb::$user->data['user_id'], $post, array(), true))
 		{
 			$template->assign_var('S_DISPLAY_HISTORY', true);
 		}
@@ -1088,8 +1086,6 @@ function compose_pm($id, $mode, $action)
 */
 function handle_message_list_actions(&$address_list, &$error, $remove_u, $remove_g, $add_to, $add_bcc)
 {
-	global $auth, $db, $user;
-
 	// Delete User [TO/BCC]
 	$remove_user_id = request_var('remove_u', array(0 => false));
 	if ($remove_u && sizeof($remove_user_id))
@@ -1152,7 +1148,7 @@ function handle_message_list_actions(&$address_list, &$error, $remove_u, $remove
 			// If there are users not existing, we will at least print a notice...
 			if (!sizeof($user_id_ary))
 			{
-				$error[] = $user->lang['PM_NO_USERS'];
+				$error[] = phpbb::$user->lang['PM_NO_USERS'];
 			}
 		}
 
@@ -1195,7 +1191,7 @@ function handle_message_list_actions(&$address_list, &$error, $remove_u, $remove
 			// print a notice about users not being added who do not want to receive pms
 			if ($removed)
 			{
-				$error[] = $user->lang['PM_USERS_REMOVED_NO_PM'];
+				$error[] = phpbb::$user->lang['PM_USERS_REMOVED_NO_PM'];
 			}
 		}
 	}

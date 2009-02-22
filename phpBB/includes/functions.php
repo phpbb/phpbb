@@ -16,8 +16,6 @@ if (!defined('IN_PHPBB'))
 	exit;
 }
 
-// Common global functions
-
 /**
 * Wrapper function of phpbb_request::variable which exists for backwards compatability.
 * See {@link phpbb_request::variable phpbb_request::variable} for documentation of this function's use.
@@ -75,6 +73,7 @@ function set_config($config_name, $config_value, $is_dynamic = false)
 
 /**
 * Return formatted string for filesizes
+* @todo move those functions to a helper class?
 */
 function get_formatted_filesize($bytes, $add_size_lang = true)
 {
@@ -96,6 +95,7 @@ function get_formatted_filesize($bytes, $add_size_lang = true)
 * at the beginning of the script in which it's used.
 * @return	bool	Either true if the maximum execution time is nearly reached, or false
 *					if some time is still left.
+* @todo helper?
 */
 function still_on_time($extra_time = 15)
 {
@@ -126,11 +126,11 @@ function still_on_time($extra_time = 15)
 	return (ceil($current_time - $start_time) < $max_execution_time) ? true : false;
 }
 
-
 	/**
 	* Add a secret hash   for use in links/GET requests
 	* @param string  $link_name The name of the link; has to match the name used in check_link_hash, otherwise no restrictions apply
 	* @return string the hash
+* @todo add to security, but do not use the current hash mechanism
 	*/
 /*
 @todo should use our hashing instead of a "custom" one
@@ -151,6 +151,7 @@ function still_on_time($extra_time = 15)
 	* @param string $token the submitted token
 	* @param string $link_name The name of the link
 	* @return boolean true if all is fine
+* @todo add to security
 	*/
 
 	function check_link_hash($token, $link_name)
@@ -162,6 +163,7 @@ function still_on_time($extra_time = 15)
 
 /**
 * Pick a language, any language ...
+* @todo integrated into form builder?
 */
 function language_select($default = '')
 {
@@ -183,6 +185,7 @@ function language_select($default = '')
 
 /**
 * Pick a template/theme combo,
+* @todo integrated into form builder?
 */
 function style_select($default = '', $all = false)
 {
@@ -206,6 +209,7 @@ function style_select($default = '', $all = false)
 
 /**
 * Pick a timezone
+* @todo integrated into form builder?
 */
 function tz_select($default = '', $truncate = false)
 {
@@ -231,13 +235,12 @@ function tz_select($default = '', $truncate = false)
 	return $tz_select;
 }
 
-// Functions handling topic/post tracking/marking
-
 /**
 * Marks a topic/forum as read
 * Marks a topic as posted to
 *
 * @param int $user_id can only be used with $mode == 'post'
+* @todo add to a tracking class used by forum/topic/post API, except for the marking features
 */
 function markread($mode, $forum_id = false, $topic_id = false, $post_time = 0, $user_id = 0)
 {
@@ -495,6 +498,7 @@ function markread($mode, $forum_id = false, $topic_id = false, $post_time = 0, $
 
 /**
 * Get topic tracking info by using already fetched info
+* @todo add to a tracking class used by forum/topic/post API
 */
 function get_topic_tracking($forum_id, $topic_ids, &$rowset, $forum_mark_time, $global_announce_list = false)
 {
@@ -571,6 +575,7 @@ function get_topic_tracking($forum_id, $topic_ids, &$rowset, $forum_mark_time, $
 
 /**
 * Get topic tracking info from db (for cookie based tracking only this function is used)
+* @todo add to a tracking class used by forum/topic/post API
 */
 function get_complete_topic_tracking($forum_id, $topic_ids, $global_announce_list = false)
 {
@@ -703,6 +708,7 @@ function get_complete_topic_tracking($forum_id, $topic_ids, $global_announce_lis
 * @param int $mark_time_forum false if the mark time needs to be obtained, else the last users forum mark time
 *
 * @return true if complete forum got marked read, else false.
+* @todo add to a tracking class used by forum/topic/post API
 */
 function update_forum_tracking_info($forum_id, $forum_last_post_time, $f_mark_time = false, $mark_time_forum = false)
 {
@@ -803,6 +809,7 @@ function update_forum_tracking_info($forum_id, $forum_last_post_time, $f_mark_ti
 
 /**
 * Transform an array into a serialized format
+* @todo add to a tracking class used by forum/topic/post API
 */
 function tracking_serialize($input)
 {
@@ -823,6 +830,7 @@ function tracking_serialize($input)
 
 /**
 * Transform a serialized array into an actual array
+* @todo add to a tracking class used by forum/topic/post API
 */
 function tracking_unserialize($string, $max_depth = 3)
 {
@@ -927,11 +935,10 @@ function tracking_unserialize($string, $max_depth = 3)
 /**
 * Pagination routine, generates page number sequence
 * tpl_prefix is for using different pagination blocks at one page
+* @todo $pagination = phpbb_api::new('pagination')
 */
 function generate_pagination($base_url, $num_items, $per_page, $start_item, $add_prevnext_text = false, $tpl_prefix = '')
 {
-	global $template;
-
 	// Make sure $per_page is a valid value
 	$per_page = ($per_page <= 0) ? 1 : $per_page;
 
@@ -1010,11 +1017,10 @@ function generate_pagination($base_url, $num_items, $per_page, $start_item, $add
 
 /**
 * Return current page (pagination)
+* @todo $pagination = phpbb_api::new('pagination')
 */
 function on_page($num_items, $per_page, $start)
 {
-	global $template;
-
 	// Make sure $per_page is a valid value
 	$per_page = ($per_page <= 0) ? 1 : $per_page;
 
@@ -1035,11 +1041,10 @@ function on_page($num_items, $per_page, $start)
 /**
 * Add a secret token to the form (requires the S_FORM_TOKEN template variable)
 * @param string  $form_name The name of the form; has to match the name used in check_form_key, otherwise no restrictions apply
+* @todo add to form builder
 */
 function add_form_key($form_name)
 {
-	global $template;
-
 	$now = time();
 	$token_sid = (phpbb::$user->data['user_id'] == ANONYMOUS && !empty(phpbb::$config['form_token_sid_guests'])) ? phpbb::$user->session_id : '';
 	$token = sha1($now . phpbb::$user->data['user_form_salt'] . $form_name . $token_sid);
@@ -1060,6 +1065,7 @@ function add_form_key($form_name)
 * @param int $timespan The maximum acceptable age for a submitted form in seconds. Defaults to the config setting.
 * @param string $return_page The address for the return link
 * @param bool $trigger If true, the function will triger an error when encountering an invalid form
+* @todo add to form builder
 */
 function check_form_key($form_name, $timespan = false, $return_page = '', $trigger = false)
 {
@@ -1112,8 +1118,6 @@ function check_form_key($form_name, $timespan = false, $return_page = '', $trigg
 */
 function confirm_box($check, $title = '', $hidden = '', $html_body = 'confirm_body.html', $u_action = '')
 {
-	global $template;
-
 	if (phpbb_request::is_set_post('cancel'))
 	{
 		return false;
@@ -1415,8 +1419,6 @@ function login_box($redirect = '', $l_explain = '', $l_success = '', $admin = fa
 */
 function login_forum_box($forum_data)
 {
-	global $template;
-
 	$password = request_var('password', '', true);
 
 	$sql = 'SELECT forum_id
@@ -1491,6 +1493,7 @@ function login_forum_box($forum_data)
 
 /**
 * Little helper for the build_hidden_fields function
+* @todo helper class or form builder ;)
 */
 function _build_hidden_fields($key, $value, $specialchar, $stripslashes)
 {
@@ -1525,6 +1528,7 @@ function _build_hidden_fields($key, $value, $specialchar, $stripslashes)
 * @param bool $stripslashes if true, keys and values get stripslashed
 *
 * @return string the hidden fields
+* @todo helper class or form builder?
 */
 function build_hidden_fields($field_ary, $specialchar = false, $stripslashes = false)
 {
@@ -1591,6 +1595,7 @@ function parse_cfg_file($filename, $lines = false)
 
 /**
 * Add log event
+* @todo phpbb::$log
 */
 function add_log()
 {
@@ -1647,6 +1652,7 @@ function add_log()
 
 /**
 * Return a nicely formatted backtrace (parts from the php manual by diz at ysagoon dot com)
+* @todo helper?
 */
 function get_backtrace()
 {
@@ -1713,6 +1719,7 @@ function get_backtrace()
 * This function returns a regular expression pattern for commonly used expressions
 * Use with / as delimiter for email mode and # for url modes
 * mode can be: email|bbcode_htm|url|url_inline|www_url|www_url_inline|relative_url|relative_url_inline|ipv4|ipv6
+* @todo helper?
 */
 function get_preg_expression($mode)
 {
@@ -1773,6 +1780,7 @@ function get_preg_expression($mode)
 * ones as specified in the length paramater.
 * If length is zero, then an empty string is returned.
 * If length is greater than 3 the complete IP will be returned
+* @todo helper?
 */
 function short_ipv6($ip, $length)
 {
@@ -2367,7 +2375,7 @@ function page_header($page_title = '', $display_online_list = true)
 		'T_ICONS_PATH'			=> PHPBB_ROOT_PATH . phpbb::$config['icons_path'] . '/',
 		'T_RANKS_PATH'			=> PHPBB_ROOT_PATH . phpbb::$config['ranks_path'] . '/',
 		'T_UPLOAD_PATH'			=> PHPBB_ROOT_PATH . phpbb::$config['upload_path'] . '/',
-		'T_STYLESHEET_LINK'		=> (!phpbb::$user->theme['theme_storedb']) ? PHPBB_ROOT_PATH . 'styles/' . phpbb::$user->theme['theme_path'] . '/theme/stylesheet.css' : phpbb::$url->get(PHPBB_ROOT_PATH . 'style.' . PHP_EXT . '?id=' . phpbb::$user->theme['style_id'] . '&amp;lang=' . phpbb::$user->data['user_lang']), //PHPBB_ROOT_PATH . "store/{$user->theme['theme_id']}_{$user->theme['imageset_id']}_{$user->lang_name}.css"
+		'T_STYLESHEET_LINK'		=> (!phpbb::$user->theme['theme_storedb']) ? PHPBB_ROOT_PATH . 'styles/' . phpbb::$user->theme['theme_path'] . '/theme/stylesheet.css' : phpbb::$url->get(PHPBB_ROOT_PATH . 'style.' . PHP_EXT . '?id=' . phpbb::$user->theme['style_id'] . '&amp;lang=' . phpbb::$user->data['user_lang']), //PHPBB_ROOT_PATH . "store/{phpbb::$user->theme['theme_id']}_{phpbb::$user->theme['imageset_id']}_{phpbb::$user->lang_name}.css"
 		'T_STYLESHEET_NAME'		=> phpbb::$user->theme['theme_name'],
 
 		'SITE_LOGO_IMG'			=> phpbb::$user->img('site_logo'),

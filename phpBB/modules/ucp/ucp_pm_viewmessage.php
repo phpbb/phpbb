@@ -23,7 +23,7 @@ function view_message($id, $mode, $folder_id, $msg_id, $folder, $message_row)
 {
 	global $user, $template, $auth, $db;
 
-	$user->add_lang(array('viewtopic', 'memberlist'));
+	phpbb::$user->add_lang(array('viewtopic', 'memberlist'));
 
 	$msg_id		= (int) $msg_id;
 	$folder_id	= (int) $folder_id;
@@ -33,9 +33,9 @@ function view_message($id, $mode, $folder_id, $msg_id, $folder, $message_row)
 	if ($message_row['pm_deleted'])
 	{
 		$meta_info = append_sid('ucp', "i=pm&amp;folder=$folder_id");
-		$message = $user->lang['NO_AUTH_READ_REMOVED_MESSAGE'];
+		$message = phpbb::$user->lang['NO_AUTH_READ_REMOVED_MESSAGE'];
 
-		$message .= '<br /><br />' . sprintf($user->lang['RETURN_FOLDER'], '<a href="' . $meta_info . '">', '</a>');
+		$message .= '<br /><br />' . sprintf(phpbb::$user->lang['RETURN_FOLDER'], '<a href="' . $meta_info . '">', '</a>');
 		trigger_error($message);
 	}
 
@@ -81,8 +81,8 @@ function view_message($id, $mode, $folder_id, $msg_id, $folder, $message_row)
 	// Editing information
 	if ($message_row['message_edit_count'] && phpbb::$config['display_last_edited'])
 	{
-		$l_edit_time_total = ($message_row['message_edit_count'] == 1) ? $user->lang['EDITED_TIME_TOTAL'] : $user->lang['EDITED_TIMES_TOTAL'];
-		$l_edited_by = '<br /><br />' . sprintf($l_edit_time_total, (!$message_row['message_edit_user']) ? $message_row['username'] : $message_row['message_edit_user'], $user->format_date($message_row['message_edit_time'], false, true), $message_row['message_edit_count']);
+		$l_edit_time_total = ($message_row['message_edit_count'] == 1) ? phpbb::$user->lang['EDITED_TIME_TOTAL'] : phpbb::$user->lang['EDITED_TIMES_TOTAL'];
+		$l_edited_by = '<br /><br />' . sprintf($l_edit_time_total, (!$message_row['message_edit_user']) ? $message_row['username'] : $message_row['message_edit_user'], phpbb::$user->format_date($message_row['message_edit_time'], false, true), $message_row['message_edit_count']);
 	}
 	else
 	{
@@ -143,7 +143,7 @@ function view_message($id, $mode, $folder_id, $msg_id, $folder, $message_row)
 
 	$user_info['sig'] = '';
 
-	$signature = ($message_row['enable_sig'] && phpbb::$config['allow_sig'] && $auth->acl_get('u_sig') && $user->optionget('viewsigs')) ? $user_info['user_sig'] : '';
+	$signature = ($message_row['enable_sig'] && phpbb::$config['allow_sig'] && $auth->acl_get('u_sig') && phpbb::$user->optionget('viewsigs')) ? $user_info['user_sig'] : '';
 
 	// End signature parsing, only if needed
 	if ($signature)
@@ -176,22 +176,22 @@ function view_message($id, $mode, $folder_id, $msg_id, $folder, $message_row)
 		'RANK_TITLE'		=> $user_info['rank_title'],
 		'RANK_IMG'			=> $user_info['rank_image'],
 		'AUTHOR_AVATAR'		=> (isset($user_info['avatar'])) ? $user_info['avatar'] : '',
-		'AUTHOR_JOINED'		=> $user->format_date($user_info['user_regdate']),
+		'AUTHOR_JOINED'		=> phpbb::$user->format_date($user_info['user_regdate']),
 		'AUTHOR_POSTS'		=> (!empty($user_info['user_posts'])) ? $user_info['user_posts'] : '',
 		'AUTHOR_FROM'		=> (!empty($user_info['user_from'])) ? $user_info['user_from'] : '',
 
-		'ONLINE_IMG'		=> (!phpbb::$config['load_onlinetrack']) ? '' : ((isset($user_info['online']) && $user_info['online']) ? $user->img('icon_user_online', $user->lang['ONLINE']) : $user->img('icon_user_offline', $user->lang['OFFLINE'])),
+		'ONLINE_IMG'		=> (!phpbb::$config['load_onlinetrack']) ? '' : ((isset($user_info['online']) && $user_info['online']) ? phpbb::$user->img('icon_user_online', 'ONLINE') : phpbb::$user->img('icon_user_offline', 'OFFLINE')),
 		'S_ONLINE'			=> (!phpbb::$config['load_onlinetrack']) ? false : ((isset($user_info['online']) && $user_info['online']) ? true : false),
-		'DELETE_IMG'		=> $user->img('icon_post_delete', $user->lang['DELETE_MESSAGE']),
-		'INFO_IMG'			=> $user->img('icon_post_info', $user->lang['VIEW_PM_INFO']),
-		'PROFILE_IMG'		=> $user->img('icon_user_profile', $user->lang['READ_PROFILE']),
-		'EMAIL_IMG'			=> $user->img('icon_contact_email', $user->lang['SEND_EMAIL']),
-		'QUOTE_IMG'			=> $user->img('icon_post_quote', $user->lang['POST_QUOTE_PM']),
-		'REPLY_IMG'			=> $user->img('button_pm_reply', $user->lang['POST_REPLY_PM']),
-		'EDIT_IMG'			=> $user->img('icon_post_edit', $user->lang['POST_EDIT_PM']),
-		'MINI_POST_IMG'		=> $user->img('icon_post_target', $user->lang['PM']),
+		'DELETE_IMG'		=> phpbb::$user->img('icon_post_delete', 'DELETE_MESSAGE'),
+		'INFO_IMG'			=> phpbb::$user->img('icon_post_info', 'VIEW_PM_INFO'),
+		'PROFILE_IMG'		=> phpbb::$user->img('icon_user_profile', 'READ_PROFILE'),
+		'EMAIL_IMG'			=> phpbb::$user->img('icon_contact_email', 'SEND_EMAIL'),
+		'QUOTE_IMG'			=> phpbb::$user->img('icon_post_quote', 'POST_QUOTE_PM'),
+		'REPLY_IMG'			=> phpbb::$user->img('button_pm_reply', 'POST_REPLY_PM'),
+		'EDIT_IMG'			=> phpbb::$user->img('icon_post_edit', 'POST_EDIT_PM'),
+		'MINI_POST_IMG'		=> phpbb::$user->img('icon_post_target', 'PM'),
 
-		'SENT_DATE'			=> $user->format_date($message_row['message_time']),
+		'SENT_DATE'			=> phpbb::$user->format_date($message_row['message_time']),
 		'SUBJECT'			=> $message_row['message_subject'],
 		'MESSAGE'			=> $message,
 		'SIGNATURE'			=> ($message_row['enable_sig']) ? $signature : '',
@@ -237,7 +237,7 @@ function view_message($id, $mode, $folder_id, $msg_id, $folder, $message_row)
 	if (request_var('view', '') != 'print')
 	{
 		// Message History
-		if (message_history($msg_id, $user->data['user_id'], $message_row, $folder))
+		if (message_history($msg_id, phpbb::$user->data['user_id'], $message_row, $folder))
 		{
 			$template->assign_var('S_DISPLAY_HISTORY', true);
 		}
@@ -293,7 +293,7 @@ function get_user_information($user_id, $user_row)
 		include(PHPBB_ROOT_PATH . 'includes/functions_display.' . PHP_EXT);
 	}
 
-	$user_row['avatar'] = ($user->optionget('viewavatars')) ? get_user_avatar($user_row['user_avatar'], $user_row['user_avatar_type'], $user_row['user_avatar_width'], $user_row['user_avatar_height']) : '';
+	$user_row['avatar'] = (phpbb::$user->optionget('viewavatars')) ? get_user_avatar($user_row['user_avatar'], $user_row['user_avatar_type'], $user_row['user_avatar_width'], $user_row['user_avatar_height']) : '';
 
 	get_user_rank($user_id, $user_row['user_rank'], $user_row['user_posts'], $user_row['rank_title'], $user_row['rank_image'], $user_row['rank_image_src']);
 

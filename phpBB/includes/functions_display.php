@@ -489,8 +489,6 @@ function generate_forum_rules(&$forum_data)
 		return;
 	}
 
-	global $template;
-
 	if ($forum_data['forum_rules'])
 	{
 		$forum_data['forum_rules'] = generate_text_for_display($forum_data['forum_rules'], $forum_data['forum_rules_uid'], $forum_data['forum_rules_bitfield'], $forum_data['forum_rules_options']);
@@ -509,8 +507,6 @@ function generate_forum_rules(&$forum_data)
 */
 function generate_forum_nav(&$forum_data)
 {
-	global $db, $user, $template, $auth;
-
 	if (!$auth->acl_get('f_list', $forum_data['forum_id']))
 	{
 		return;
@@ -566,8 +562,6 @@ function generate_forum_nav(&$forum_data)
 */
 function get_forum_parents(&$forum_data)
 {
-	global $db;
-
 	$forum_parents = array();
 
 	if ($forum_data['parent_id'] > 0)
@@ -608,8 +602,6 @@ function get_forum_parents(&$forum_data)
 */
 function topic_generate_pagination($replies, $url)
 {
-	global $user;
-
 	// Make sure $per_page is a valid value
 	$per_page = (phpbb::$config['posts_per_page'] <= 0) ? 1 : phpbb::$config['posts_per_page'];
 
@@ -632,7 +624,7 @@ function topic_generate_pagination($replies, $url)
 			}
 			else if ($times < $total_pages)
 			{
-				$pagination .= '<span class="page-sep">' . $user->lang['COMMA_SEPARATOR'] . '</span>';
+				$pagination .= '<span class="page-sep">' . phpbb::$user->lang['COMMA_SEPARATOR'] . '</span>';
 			}
 			$times++;
 		}
@@ -733,20 +725,18 @@ function get_moderators(&$forum_moderators, $forum_id = false)
 */
 function gen_forum_auth_level($mode, $forum_id, $forum_status)
 {
-	global $template, $auth, $user;
-
 	$locked = ($forum_status == ITEM_LOCKED && !$auth->acl_get('m_edit', $forum_id)) ? true : false;
 
 	$rules = array(
-		($auth->acl_get('f_post', $forum_id) && !$locked) ? $user->lang['RULES_POST_CAN'] : $user->lang['RULES_POST_CANNOT'],
-		($auth->acl_get('f_reply', $forum_id) && !$locked) ? $user->lang['RULES_REPLY_CAN'] : $user->lang['RULES_REPLY_CANNOT'],
-		($user->data['is_registered'] && $auth->acl_gets('f_edit', 'm_edit', $forum_id) && !$locked) ? $user->lang['RULES_EDIT_CAN'] : $user->lang['RULES_EDIT_CANNOT'],
-		($user->data['is_registered'] && $auth->acl_gets('f_delete', 'm_delete', $forum_id) && !$locked) ? $user->lang['RULES_DELETE_CAN'] : $user->lang['RULES_DELETE_CANNOT'],
+		($auth->acl_get('f_post', $forum_id) && !$locked) ? phpbb::$user->lang['RULES_POST_CAN'] : phpbb::$user->lang['RULES_POST_CANNOT'],
+		($auth->acl_get('f_reply', $forum_id) && !$locked) ? phpbb::$user->lang['RULES_REPLY_CAN'] : phpbb::$user->lang['RULES_REPLY_CANNOT'],
+		(phpbb::$user->is_registered && $auth->acl_gets('f_edit', 'm_edit', $forum_id) && !$locked) ? phpbb::$user->lang['RULES_EDIT_CAN'] : phpbb::$user->lang['RULES_EDIT_CANNOT'],
+		(phpbb::$user->is_registered && $auth->acl_gets('f_delete', 'm_delete', $forum_id) && !$locked) ? phpbb::$user->lang['RULES_DELETE_CAN'] : phpbb::$user->lang['RULES_DELETE_CANNOT'],
 	);
 
 	if (phpbb::$config['allow_attachments'])
 	{
-		$rules[] = ($auth->acl_get('f_attach', $forum_id) && $auth->acl_get('u_attach') && !$locked) ? $user->lang['RULES_ATTACH_CAN'] : $user->lang['RULES_ATTACH_CANNOT'];
+		$rules[] = ($auth->acl_get('f_attach', $forum_id) && $auth->acl_get('u_attach') && !$locked) ? phpbb::$user->lang['RULES_ATTACH_CAN'] : phpbb::$user->lang['RULES_ATTACH_CANNOT'];
 	}
 
 	foreach ($rules as $rule)
@@ -762,13 +752,11 @@ function gen_forum_auth_level($mode, $forum_id, $forum_status)
 */
 function topic_status(&$topic_row, $replies, $unread_topic, &$folder_img, &$folder_alt, &$topic_type)
 {
-	global $user;
-
 	$folder = $folder_new = '';
 
 	if ($topic_row['topic_status'] == ITEM_MOVED)
 	{
-		$topic_type = $user->lang['VIEW_TOPIC_MOVED'];
+		$topic_type = phpbb::$user->lang['VIEW_TOPIC_MOVED'];
 		$folder_img = 'topic_moved';
 		$folder_alt = 'TOPIC_MOVED';
 	}
@@ -777,19 +765,19 @@ function topic_status(&$topic_row, $replies, $unread_topic, &$folder_img, &$fold
 		switch ($topic_row['topic_type'])
 		{
 			case POST_GLOBAL:
-				$topic_type = $user->lang['VIEW_TOPIC_GLOBAL'];
+				$topic_type = phpbb::$user->lang['VIEW_TOPIC_GLOBAL'];
 				$folder = 'global_read';
 				$folder_new = 'global_unread';
 			break;
 
 			case POST_ANNOUNCE:
-				$topic_type = $user->lang['VIEW_TOPIC_ANNOUNCEMENT'];
+				$topic_type = phpbb::$user->lang['VIEW_TOPIC_ANNOUNCEMENT'];
 				$folder = 'announce_read';
 				$folder_new = 'announce_unread';
 			break;
 
 			case POST_STICKY:
-				$topic_type = $user->lang['VIEW_TOPIC_STICKY'];
+				$topic_type = phpbb::$user->lang['VIEW_TOPIC_STICKY'];
 				$folder = 'sticky_read';
 				$folder_new = 'sticky_unread';
 			break;
@@ -810,7 +798,7 @@ function topic_status(&$topic_row, $replies, $unread_topic, &$folder_img, &$fold
 
 		if ($topic_row['topic_status'] == ITEM_LOCKED)
 		{
-			$topic_type = $user->lang['VIEW_TOPIC_LOCKED'];
+			$topic_type = phpbb::$user->lang['VIEW_TOPIC_LOCKED'];
 			$folder .= '_locked';
 			$folder_new .= '_locked';
 		}
@@ -828,7 +816,7 @@ function topic_status(&$topic_row, $replies, $unread_topic, &$folder_img, &$fold
 
 	if ($topic_row['poll_start'] && $topic_row['topic_status'] != ITEM_MOVED)
 	{
-		$topic_type = $user->lang['VIEW_TOPIC_POLL'];
+		$topic_type = phpbb::$user->lang['VIEW_TOPIC_POLL'];
 	}
 }
 
@@ -838,8 +826,6 @@ function topic_status(&$topic_row, $replies, $unread_topic, &$folder_img, &$fold
 */
 function display_custom_bbcodes()
 {
-	global $db, $template;
-
 	// Start counting from 22 for the bbcode ids (every bbcode takes two ids - opening/closing)
 	$num_predefined_bbcodes = 22;
 
@@ -870,8 +856,6 @@ function display_custom_bbcodes()
 */
 function display_reasons($reason_id = 0)
 {
-	global $db, $user, $template;
-
 	$sql = 'SELECT *
 		FROM ' . REPORTS_REASONS_TABLE . '
 		ORDER BY reason_order ASC';
@@ -880,10 +864,10 @@ function display_reasons($reason_id = 0)
 	while ($row = $db->sql_fetchrow($result))
 	{
 		// If the reason is defined within the language file, we will use the localized version, else just use the database entry...
-		if (isset($user->lang['report_reasons']['TITLE'][strtoupper($row['reason_title'])]) && isset($user->lang['report_reasons']['DESCRIPTION'][strtoupper($row['reason_title'])]))
+		if (isset(phpbb::$user->lang['report_reasons']['TITLE'][strtoupper($row['reason_title'])]) && isset(phpbb::$user->lang['report_reasons']['DESCRIPTION'][strtoupper($row['reason_title'])]))
 		{
-			$row['reason_description'] = $user->lang['report_reasons']['DESCRIPTION'][strtoupper($row['reason_title'])];
-			$row['reason_title'] = $user->lang['report_reasons']['TITLE'][strtoupper($row['reason_title'])];
+			$row['reason_description'] = phpbb::$user->lang['report_reasons']['DESCRIPTION'][strtoupper($row['reason_title'])];
+			$row['reason_title'] = phpbb::$user->lang['report_reasons']['TITLE'][strtoupper($row['reason_title'])];
 		}
 
 		$template->assign_block_vars('reason', array(
@@ -901,8 +885,6 @@ function display_reasons($reason_id = 0)
 */
 function display_user_activity(&$userdata)
 {
-	global $auth, $template, $db, $user;
-
 	// Do not display user activity for users having more than 5000 posts...
 	if ($userdata['user_posts'] > 5000)
 	{
@@ -990,14 +972,14 @@ function display_user_activity(&$userdata)
 		$active_t_pct = ($userdata['user_posts']) ? ($active_t_count / $userdata['user_posts']) * 100 : 0;
 	}
 
-	$l_active_pct = ($userdata['user_id'] != ANONYMOUS && $userdata['user_id'] == $user->data['user_id']) ? $user->lang['POST_PCT_ACTIVE_OWN'] : $user->lang['POST_PCT_ACTIVE'];
+	$l_active_pct = ($userdata['user_id'] != ANONYMOUS && $userdata['user_id'] == phpbb::$user->data['user_id']) ? phpbb::$user->lang['POST_PCT_ACTIVE_OWN'] : phpbb::$user->lang['POST_PCT_ACTIVE'];
 
 	$template->assign_vars(array(
 		'ACTIVE_FORUM'			=> $active_f_name,
-		'ACTIVE_FORUM_POSTS'	=> ($active_f_count == 1) ? sprintf($user->lang['USER_POST'], 1) : sprintf($user->lang['USER_POSTS'], $active_f_count),
+		'ACTIVE_FORUM_POSTS'	=> ($active_f_count == 1) ? sprintf(phpbb::$user->lang['USER_POST'], 1) : sprintf(phpbb::$user->lang['USER_POSTS'], $active_f_count),
 		'ACTIVE_FORUM_PCT'		=> sprintf($l_active_pct, $active_f_pct),
 		'ACTIVE_TOPIC'			=> censor_text($active_t_name),
-		'ACTIVE_TOPIC_POSTS'	=> ($active_t_count == 1) ? sprintf($user->lang['USER_POST'], 1) : sprintf($user->lang['USER_POSTS'], $active_t_count),
+		'ACTIVE_TOPIC_POSTS'	=> ($active_t_count == 1) ? sprintf(phpbb::$user->lang['USER_POST'], 1) : sprintf(phpbb::$user->lang['USER_POSTS'], $active_t_count),
 		'ACTIVE_TOPIC_PCT'		=> sprintf($l_active_pct, $active_t_pct),
 		'U_ACTIVE_FORUM'		=> phpbb::$url->append_sid('viewforum', 'f=' . $active_f_id),
 		'U_ACTIVE_TOPIC'		=> phpbb::$url->append_sid('viewtopic', 't=' . $active_t_id),
@@ -1010,12 +992,12 @@ function display_user_activity(&$userdata)
 */
 function watch_topic_forum($mode, &$s_watching, $user_id, $forum_id, $topic_id, $notify_status = 'unset', $start = 0)
 {
-	global $template, $db, $user, $start;
+	global $start;
 
 	$table_sql = ($mode == 'forum') ? FORUMS_WATCH_TABLE : TOPICS_WATCH_TABLE;
 	$where_sql = ($mode == 'forum') ? 'forum_id' : 'topic_id';
 	$match_id = ($mode == 'forum') ? $forum_id : $topic_id;
-	$u_url = "uid={$user->data['user_id']}";
+	$u_url = 'uid=' . phpbb::$user->data['user_id'];
 	$u_url .= ($mode == 'forum') ? '&amp;f' : '&amp;f=' . $forum_id . '&amp;t';
 
 	// Is user watching this thread?
@@ -1044,7 +1026,7 @@ function watch_topic_forum($mode, &$s_watching, $user_id, $forum_id, $topic_id, 
 				if ($uid != $user_id)
 				{
 					$redirect_url = phpbb::$url->append_sid("view$mode", "$u_url=$match_id&amp;start=$start");
-					$message = $user->lang['ERR_UNWATCHING'] . '<br /><br />' . sprintf($user->lang['RETURN_' . strtoupper($mode)], '<a href="' . $redirect_url . '">', '</a>');
+					$message = phpbb::$user->lang['ERR_UNWATCHING'] . '<br /><br />' . sprintf(phpbb::$user->lang['RETURN_' . strtoupper($mode)], '<a href="' . $redirect_url . '">', '</a>');
 					trigger_error($message);
 				}
 				if (phpbb_request::variable('unwatch', '', false, phpbb_request::GET) == $mode)
@@ -1061,7 +1043,7 @@ function watch_topic_forum($mode, &$s_watching, $user_id, $forum_id, $topic_id, 
 
 				meta_refresh(3, $redirect_url);
 
-				$message = $user->lang['NOT_WATCHING_' . strtoupper($mode)] . '<br /><br />' . sprintf($user->lang['RETURN_' . strtoupper($mode)], '<a href="' . $redirect_url . '">', '</a>');
+				$message = phpbb::$user->lang['NOT_WATCHING_' . strtoupper($mode)] . '<br /><br />' . sprintf(phpbb::$user->lang['RETURN_' . strtoupper($mode)], '<a href="' . $redirect_url . '">', '</a>');
 				trigger_error($message);
 			}
 			else
@@ -1092,11 +1074,11 @@ function watch_topic_forum($mode, &$s_watching, $user_id, $forum_id, $topic_id, 
 					$sql = 'INSERT INTO ' . $table_sql . " (user_id, $where_sql, notify_status)
 						VALUES ($user_id, $match_id, 0)";
 					$db->sql_query($sql);
-					$message = $user->lang['ARE_WATCHING_' . strtoupper($mode)] . '<br /><br />' . sprintf($user->lang['RETURN_' . strtoupper($mode)], '<a href="' . $redirect_url . '">', '</a>');
+					$message = phpbb::$user->lang['ARE_WATCHING_' . strtoupper($mode)] . '<br /><br />' . sprintf(phpbb::$user->lang['RETURN_' . strtoupper($mode)], '<a href="' . $redirect_url . '">', '</a>');
 				}
 				else
 				{
-					$message = $user->lang['ERR_WATCHING'] . '<br /><br />' . sprintf($user->lang['RETURN_' . strtoupper($mode)], '<a href="' . $redirect_url . '">', '</a>');
+					$message = phpbb::$user->lang['ERR_WATCHING'] . '<br /><br />' . sprintf(phpbb::$user->lang['RETURN_' . strtoupper($mode)], '<a href="' . $redirect_url . '">', '</a>');
 				}
 
 				meta_refresh(3, $redirect_url);
@@ -1125,7 +1107,7 @@ function watch_topic_forum($mode, &$s_watching, $user_id, $forum_id, $topic_id, 
 	if ($can_watch)
 	{
 		$s_watching['link'] = phpbb::$url->append_sid("view$mode", "$u_url=$match_id&amp;" . (($is_watching) ? 'unwatch' : 'watch') . "=$mode&amp;start=$start&amp;hash=" . generate_link_hash("{$mode}_$match_id"));
-		$s_watching['title'] = $user->lang[(($is_watching) ? 'STOP' : 'START') . '_WATCHING_' . strtoupper($mode)];
+		$s_watching['title'] = phpbb::$user->lang[(($is_watching) ? 'STOP' : 'START') . '_WATCHING_' . strtoupper($mode)];
 		$s_watching['is_watching'] = $is_watching;
 	}
 
@@ -1189,8 +1171,6 @@ function get_user_rank($user_id, $user_rank, $user_posts, &$rank_title, &$rank_i
 */
 function get_user_avatar($avatar, $avatar_type, $avatar_width, $avatar_height, $alt = 'USER_AVATAR')
 {
-	global $user;
-
 	if (empty($avatar) || !$avatar_type)
 	{
 		return '';
@@ -1210,7 +1190,7 @@ function get_user_avatar($avatar, $avatar_type, $avatar_width, $avatar_height, $
 	}
 
 	$avatar_img .= $avatar;
-	return '<img src="' . (str_replace(' ', '%20', $avatar_img)) . '" width="' . $avatar_width . '" height="' . $avatar_height . '" alt="' . ((!empty($user->lang[$alt])) ? $user->lang[$alt] : $alt) . '" />';
+	return '<img src="' . (str_replace(' ', '%20', $avatar_img)) . '" width="' . $avatar_width . '" height="' . $avatar_height . '" alt="' . ((!empty(phpbb::$user->lang[$alt])) ? phpbb::$user->lang[$alt] : $alt) . '" />';
 }
 
 ?>

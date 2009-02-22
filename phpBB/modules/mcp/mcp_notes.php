@@ -33,8 +33,6 @@ class mcp_notes
 
 	function main($id, $mode)
 	{
-		global $auth, $db, $user, $template;
-
 		$action = request_var('action', array('' => ''));
 
 		if (is_array($action))
@@ -51,14 +49,14 @@ class mcp_notes
 					'U_FIND_USERNAME'	=> append_sid('memberlist', 'mode=searchuser&amp;form=mcp&amp;field=username&amp;select_single=true'),
 					'U_POST_ACTION'		=> append_sid('mcp', 'i=notes&amp;mode=user_notes'),
 
-					'L_TITLE'			=> $user->lang['MCP_NOTES'],
+					'L_TITLE'			=> phpbb::$user->lang['MCP_NOTES'],
 				));
 
 				$this->tpl_name = 'mcp_notes_front';
 			break;
 
 			case 'user_notes':
-				$user->add_lang('acp/common');
+				phpbb::$user->add_lang('acp/common');
 
 				$this->mcp_notes_user_view($action);
 				$this->tpl_name = 'mcp_notes_user';
@@ -71,8 +69,6 @@ class mcp_notes
 	*/
 	function mcp_notes_user_view($action)
 	{
-		global $template, $db, $user, $auth;
-
 		$user_id = request_var('u', 0);
 		$username = request_var('username', '', true);
 		$start = request_var('start', 0);
@@ -147,7 +143,7 @@ class mcp_notes
 				}
 				$redirect = $this->u_action . '&amp;u=' . $user_id;
 				meta_refresh(3, $redirect);
-				trigger_error($user->lang[$msg] . '<br /><br />' . sprintf($user->lang['RETURN_PAGE'], '<a href="' . $redirect . '">', '</a>'));
+				trigger_error(phpbb::$user->lang[$msg] . '<br /><br />' . sprintf(phpbb::$user->lang['RETURN_PAGE'], '<a href="' . $redirect . '">', '</a>'));
 			}
 		}
 
@@ -159,16 +155,16 @@ class mcp_notes
 				add_log('mod', 0, 0, 'LOG_USER_FEEDBACK', $userrow['username']);
 
 				add_log('user', $user_id, 'LOG_USER_GENERAL', $usernote);
-				$msg = $user->lang['USER_FEEDBACK_ADDED'];
+				$msg = phpbb::$user->lang['USER_FEEDBACK_ADDED'];
 			}
 			else
 			{
-				$msg = $user->lang['FORM_INVALID'];
+				$msg = phpbb::$user->lang['FORM_INVALID'];
 			}
 			$redirect = $this->u_action;
 			meta_refresh(3, $redirect);
 
-			trigger_error($msg .  '<br /><br />' . sprintf($user->lang['RETURN_PAGE'], '<a href="' . $redirect . '">', '</a>'));
+			trigger_error($msg .  '<br /><br />' . sprintf(phpbb::$user->lang['RETURN_PAGE'], '<a href="' . $redirect . '">', '</a>'));
 		}
 
 		// Generate the appropriate user information for the user we are looking at
@@ -180,8 +176,8 @@ class mcp_notes
 		$rank_title = $rank_img = '';
 		$avatar_img = get_user_avatar($userrow['user_avatar'], $userrow['user_avatar_type'], $userrow['user_avatar_width'], $userrow['user_avatar_height']);
 
-		$limit_days = array(0 => $user->lang['ALL_ENTRIES'], 1 => $user->lang['1_DAY'], 7 => $user->lang['7_DAYS'], 14 => $user->lang['2_WEEKS'], 30 => $user->lang['1_MONTH'], 90 => $user->lang['3_MONTHS'], 180 => $user->lang['6_MONTHS'], 365 => $user->lang['1_YEAR']);
-		$sort_by_text = array('a' => $user->lang['SORT_USERNAME'], 'b' => $user->lang['SORT_DATE'], 'c' => $user->lang['SORT_IP'], 'd' => $user->lang['SORT_ACTION']);
+		$limit_days = array(0 => phpbb::$user->lang['ALL_ENTRIES'], 1 => phpbb::$user->lang['1_DAY'], 7 => phpbb::$user->lang['7_DAYS'], 14 => phpbb::$user->lang['2_WEEKS'], 30 => phpbb::$user->lang['1_MONTH'], 90 => phpbb::$user->lang['3_MONTHS'], 180 => phpbb::$user->lang['6_MONTHS'], 365 => phpbb::$user->lang['1_YEAR']);
+		$sort_by_text = array('a' => phpbb::$user->lang['SORT_USERNAME'], 'b' => phpbb::$user->lang['SORT_DATE'], 'c' => phpbb::$user->lang['SORT_IP'], 'd' => phpbb::$user->lang['SORT_ACTION']);
 		$sort_by_sql = array('a' => 'u.username_clean', 'b' => 'l.log_time', 'c' => 'l.log_ip', 'd' => 'l.log_operation');
 
 		$s_limit_days = $s_sort_key = $s_sort_dir = $u_sort_param = '';
@@ -203,7 +199,7 @@ class mcp_notes
 			{
 				$template->assign_block_vars('usernotes', array(
 					'REPORT_BY'		=> $row['username_full'],
-					'REPORT_AT'		=> $user->format_date($row['time']),
+					'REPORT_AT'		=> phpbb::$user->format_date($row['time']),
 					'ACTION'		=> $row['action'],
 					'IP'			=> $row['ip'],
 					'ID'			=> $row['id'])
@@ -218,16 +214,16 @@ class mcp_notes
 			'S_SELECT_SORT_KEY'		=> $s_sort_key,
 			'S_SELECT_SORT_DAYS'	=> $s_limit_days,
 
-			'L_TITLE'			=> $user->lang['MCP_NOTES_USER'],
+			'L_TITLE'			=> phpbb::$user->lang['MCP_NOTES_USER'],
 
 			'PAGE_NUMBER'		=> on_page($log_count, phpbb::$config['posts_per_page'], $start),
 			'PAGINATION'		=> generate_pagination($this->u_action . "&amp;st=$st&amp;sk=$sk&amp;sd=$sd", $log_count, phpbb::$config['posts_per_page'], $start),
-			'TOTAL_REPORTS'		=> ($log_count == 1) ? $user->lang['LIST_REPORT'] : sprintf($user->lang['LIST_REPORTS'], $log_count),
+			'TOTAL_REPORTS'		=> ($log_count == 1) ? phpbb::$user->lang['LIST_REPORT'] : sprintf(phpbb::$user->lang['LIST_REPORTS'], $log_count),
 
 			'USERNAME'			=> $userrow['username'],
 			'USER_COLOR'		=> (!empty($userrow['user_colour'])) ? $userrow['user_colour'] : '',
 			'RANK_TITLE'		=> $rank_title,
-			'JOINED'			=> $user->format_date($userrow['user_regdate']),
+			'JOINED'			=> phpbb::$user->format_date($userrow['user_regdate']),
 			'POSTS'				=> ($userrow['user_posts']) ? $userrow['user_posts'] : 0,
 			'WARNINGS'			=> ($userrow['user_warnings']) ? $userrow['user_warnings'] : 0,
 

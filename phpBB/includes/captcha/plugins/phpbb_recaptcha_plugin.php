@@ -2,7 +2,7 @@
 /**
 *
 * @package VC
-* @version $Id: constants.php 8818 2008-09-04 14:06:43Z acydburn $
+* @version $Id$
 * @copyright (c) 2006 2008 phpBB Group
 * @license http://opensource.org/licenses/gpl-license.php GNU Public License
 *
@@ -28,9 +28,7 @@ class phpbb_recaptcha extends phpbb_default_captcha implements phpbb_captcha_plu
 
 	function init($type)
 	{
-		global $db, $user;
-
-		$user->add_lang('recaptcha');
+		phpbb::$user->add_lang('recaptcha');
 		parent::init($type);
 
 		$this->challenge = request_var('recaptcha_challenge_field', '');
@@ -44,8 +42,7 @@ class phpbb_recaptcha extends phpbb_default_captcha implements phpbb_captcha_plu
 
 	static function is_available()
 	{
-		global $user;
-		$user->add_lang('recaptcha');
+		phpbb::$user->add_lang('recaptcha');
 		return (isset(phpbb::$config['recaptcha_pubkey']) && !empty(phpbb::$config['recaptcha_pubkey']));
 	}
 
@@ -61,8 +58,6 @@ class phpbb_recaptcha extends phpbb_default_captcha implements phpbb_captcha_plu
 
 	function acp_page($id, &$module)
 	{
-		global $db, $template, $user;
-
 		$captcha_vars = array(
 			'recaptcha_pubkey'				=> 'RECAPTCHA_PUBKEY',
 			'recaptcha_privkey'				=> 'RECAPTCHA_PRIVKEY',
@@ -86,11 +81,11 @@ class phpbb_recaptcha extends phpbb_default_captcha implements phpbb_captcha_plu
 					set_config($captcha_var, $value);
 				}
 			}
-			trigger_error($user->lang['CONFIG_UPDATED'] . adm_back_link($module->u_action));
+			trigger_error(phpbb::$user->lang['CONFIG_UPDATED'] . adm_back_link($module->u_action));
 		}
 		else if ($submit)
 		{
-			trigger_error($user->lang['FORM_INVALID'] . adm_back_link($module->u_action));
+			trigger_error(phpbb::$user->lang['FORM_INVALID'] . adm_back_link($module->u_action));
 		}
 		else
 		{
@@ -122,8 +117,6 @@ class phpbb_recaptcha extends phpbb_default_captcha implements phpbb_captcha_plu
 
 	function get_template()
 	{
-		global $user, $template;
-
 		$template->set_filenames(array(
 			'captcha' => 'captcha_recaptcha.html')
 		);
@@ -260,17 +253,15 @@ class phpbb_recaptcha extends phpbb_default_captcha implements phpbb_captcha_plu
 	*/
 	protected function recaptcha_check_answer($extra_params = array())
 	{
-		global $user;
-
 		// discard spam submissions
 		if ($this->challenge == null || strlen($this->challenge) == 0 || $this->response == null || strlen($this->response) == 0)
 		{
-			return $user->lang['RECAPTCHA_INCORRECT'];
+			return phpbb::$user->lang['RECAPTCHA_INCORRECT'];
 		}
 
 		$response = $this->_recaptcha_http_post(self::recaptcha_verify_server, '/verify', array(
 			'privatekey'	=> phpbb::$config['recaptcha_privkey'],
-			'remoteip'		=> $user->ip,
+			'remoteip'		=> phpbb::$user->ip,
 			'challenge'		=> $this->challenge,
 			'response'		=> $this->response,
 			) + $extra_params
@@ -287,7 +278,7 @@ class phpbb_recaptcha extends phpbb_default_captcha implements phpbb_captcha_plu
 		{
 			if ($answers[1] === 'incorrect-captcha-sol')
 			{
-				return $user->lang['RECAPTCHA_INCORRECT'];
+				return phpbb::$user->lang['RECAPTCHA_INCORRECT'];
 			}
 		}
 	}

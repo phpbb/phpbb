@@ -255,7 +255,7 @@ class ftp extends transfer
 		$this->password		= $password;
 		$this->timeout		= $timeout;
 
-		// Make sure $this->root_path is layed out the same way as the $user->page['root_script_path'] value (/ at the end)
+		// Make sure $this->root_path is layed out the same way as the phpbb::$user->page['root_script_path'] value (/ at the end)
 		$this->root_path	= str_replace('\\', '/', $this->root_path);
 
 		if (!empty($root_path))
@@ -274,13 +274,11 @@ class ftp extends transfer
 	*/
 	private function data()
 	{
-		global $user;
-
 		return array(
 			'host'		=> 'localhost',
 			'username'	=> 'anonymous',
 			'password'	=> '',
-			'root_path'	=> $user->page['root_script_path'],
+			'root_path'	=> phpbb::$user->page['root_script_path'],
 			'port'		=> 21,
 			'timeout'	=> 10
 		);
@@ -478,7 +476,7 @@ class ftp_fsock extends transfer
 		$this->password		= $password;
 		$this->timeout		= $timeout;
 
-		// Make sure $this->root_path is layed out the same way as the $user->page['root_script_path'] value (/ at the end)
+		// Make sure $this->root_path is layed out the same way as the phpbb::$user->page['root_script_path'] value (/ at the end)
 		$this->root_path	= str_replace('\\', '/', $this->root_path);
 
 		if (!empty($root_path))
@@ -497,13 +495,11 @@ class ftp_fsock extends transfer
 	*/
 	private function data()
 	{
-		global $user;
-
 		return array(
 			'host'		=> 'localhost',
 			'username'	=> 'anonymous',
 			'password'	=> '',
-			'root_path'	=> $user->page['root_script_path'],
+			'root_path'	=> phpbb::$user->page['root_script_path'],
 			'port'		=> 21,
 			'timeout'	=> 10
 		);

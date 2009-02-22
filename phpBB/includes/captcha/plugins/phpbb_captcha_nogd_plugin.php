@@ -37,8 +37,6 @@ class phpbb_captcha_nogd extends phpbb_default_captcha implements phpbb_captcha_
 
 	static function get_name()
 	{
-		global $user;
-
 		return 'CAPTCHA_NO_GD';
 	}
 
@@ -50,9 +48,7 @@ class phpbb_captcha_nogd extends phpbb_default_captcha implements phpbb_captcha_
 
 	function acp_page($id, &$module)
 	{
-		global $user;
-
-		trigger_error($user->lang['CAPTCHA_NO_OPTIONS'] . adm_back_link($module->u_action));
+		trigger_error(phpbb::$user->lang['CAPTCHA_NO_OPTIONS'] . adm_back_link($module->u_action));
 	}
 }
 

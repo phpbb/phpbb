@@ -21,9 +21,7 @@ if (!defined('IN_PHPBB'))
 */
 function mcp_post_details($id, $mode, $action)
 {
-	global $template, $db, $user, $auth;
-
-	$user->add_lang('posting');
+	phpbb::$user->add_lang('posting');
 
 	$post_id = request_var('p', 0);
 	$start	= request_var('start', 0);
@@ -52,9 +50,9 @@ function mcp_post_details($id, $mode, $action)
 				include(PHPBB_ROOT_PATH . 'includes/functions_user.' . PHP_EXT);
 
 				$template->assign_vars(array(
-					'RETURN_POST'	=> sprintf($user->lang['RETURN_POST'], '<a href="' . append_sid('mcp', "i=$id&amp;mode=$mode&amp;p=$post_id") . '">', '</a>'),
+					'RETURN_POST'	=> sprintf(phpbb::$user->lang['RETURN_POST'], '<a href="' . append_sid('mcp', "i=$id&amp;mode=$mode&amp;p=$post_id") . '">', '</a>'),
 					'U_RETURN_POST'	=> append_sid('mcp', "i=$id&amp;mode=$mode&amp;p=$post_id"),
-					'L_RETURN_POST'	=> sprintf($user->lang['RETURN_POST'], '', ''),
+					'L_RETURN_POST'	=> sprintf(phpbb::$user->lang['RETURN_POST'], '', ''),
 					'WHOIS'			=> user_ipwhois($ip),
 				));
 			}
@@ -200,14 +198,14 @@ function mcp_post_details($id, $mode, $action)
 		'U_VIEW_POST'			=> append_sid('viewtopic', 'f=' . $post_info['forum_id'] . '&amp;p=' . $post_info['post_id'] . '#p' . $post_info['post_id']),
 		'U_VIEW_TOPIC'			=> append_sid('viewtopic', 'f=' . $post_info['forum_id'] . '&amp;t=' . $post_info['topic_id']),
 
-		'MINI_POST_IMG'			=> ($post_unread) ? $user->img('icon_post_target_unread', 'NEW_POST') : $user->img('icon_post_target', 'POST'),
+		'MINI_POST_IMG'			=> ($post_unread) ? phpbb::$user->img('icon_post_target_unread', 'NEW_POST') : phpbb::$user->img('icon_post_target', 'POST'),
 
-		'RETURN_TOPIC'			=> sprintf($user->lang['RETURN_TOPIC'], '<a href="' . append_sid('viewtopic', "f={$post_info['forum_id']}&amp;p=$post_id") . "#p$post_id\">", '</a>'),
-		'RETURN_FORUM'			=> sprintf($user->lang['RETURN_FORUM'], '<a href="' . append_sid('viewforum', "f={$post_info['forum_id']}&amp;start={$start}") . '">', '</a>'),
-		'REPORTED_IMG'			=> $user->img('icon_topic_reported', $user->lang['POST_REPORTED']),
-		'UNAPPROVED_IMG'		=> $user->img('icon_topic_unapproved', $user->lang['POST_UNAPPROVED']),
-		'EDIT_IMG'				=> $user->img('icon_post_edit', $user->lang['EDIT_POST']),
-		'SEARCH_IMG'			=> $user->img('icon_user_search', $user->lang['SEARCH']),
+		'RETURN_TOPIC'			=> sprintf(phpbb::$user->lang['RETURN_TOPIC'], '<a href="' . append_sid('viewtopic', "f={$post_info['forum_id']}&amp;p=$post_id") . "#p$post_id\">", '</a>'),
+		'RETURN_FORUM'			=> sprintf(phpbb::$user->lang['RETURN_FORUM'], '<a href="' . append_sid('viewforum', "f={$post_info['forum_id']}&amp;start={$start}") . '">', '</a>'),
+		'REPORTED_IMG'			=> phpbb::$user->img('icon_topic_reported', 'POST_REPORTED'),
+		'UNAPPROVED_IMG'		=> phpbb::$user->img('icon_topic_unapproved', 'POST_UNAPPROVED'),
+		'EDIT_IMG'				=> phpbb::$user->img('icon_post_edit', 'EDIT_POST'),
+		'SEARCH_IMG'			=> phpbb::$user->img('icon_user_search', 'SEARCH'),
 
 		'POST_AUTHOR_FULL'		=> get_username_string('full', $post_info['user_id'], $post_info['username'], $post_info['user_colour'], $post_info['post_username']),
 		'POST_AUTHOR_COLOUR'	=> get_username_string('colour', $post_info['user_id'], $post_info['username'], $post_info['user_colour'], $post_info['post_username']),
@@ -216,7 +214,7 @@ function mcp_post_details($id, $mode, $action)
 
 		'POST_PREVIEW'			=> $message,
 		'POST_SUBJECT'			=> $post_info['post_subject'],
-		'POST_DATE'				=> $user->format_date($post_info['post_time']),
+		'POST_DATE'				=> phpbb::$user->format_date($post_info['post_time']),
 		'POST_IP'				=> $post_info['poster_ip'],
 		'POST_IPADDR'			=> ($auth->acl_get('m_info', $post_info['forum_id']) && request_var('lookup', '')) ? @gethostbyaddr($post_info['poster_ip']) : '',
 		'POST_ID'				=> $post_info['post_id'],
@@ -238,7 +236,7 @@ function mcp_post_details($id, $mode, $action)
 		{
 			$template->assign_block_vars('usernotes', array(
 				'REPORT_BY'		=> $row['username_full'],
-				'REPORT_AT'		=> $user->format_date($row['time']),
+				'REPORT_AT'		=> phpbb::$user->format_date($row['time']),
 				'ACTION'		=> $row['action'],
 				'ID'			=> $row['id'])
 			);
@@ -263,20 +261,20 @@ function mcp_post_details($id, $mode, $action)
 			do
 			{
 				// If the reason is defined within the language file, we will use the localized version, else just use the database entry...
-				if (isset($user->lang['report_reasons']['TITLE'][strtoupper($row['reason_title'])]) && isset($user->lang['report_reasons']['DESCRIPTION'][strtoupper($row['reason_title'])]))
+				if (isset(phpbb::$user->lang['report_reasons']['TITLE'][strtoupper($row['reason_title'])]) && isset(phpbb::$user->lang['report_reasons']['DESCRIPTION'][strtoupper($row['reason_title'])]))
 				{
-					$row['reson_description'] = $user->lang['report_reasons']['DESCRIPTION'][strtoupper($row['reason_title'])];
-					$row['reason_title'] = $user->lang['report_reasons']['TITLE'][strtoupper($row['reason_title'])];
+					$row['reson_description'] = phpbb::$user->lang['report_reasons']['DESCRIPTION'][strtoupper($row['reason_title'])];
+					$row['reason_title'] = phpbb::$user->lang['report_reasons']['TITLE'][strtoupper($row['reason_title'])];
 				}
 
 				$template->assign_block_vars('reports', array(
 					'REPORT_ID'		=> $row['report_id'],
 					'REASON_TITLE'	=> $row['reason_title'],
 					'REASON_DESC'	=> $row['reason_description'],
-					'REPORTER'		=> ($row['user_id'] != ANONYMOUS) ? $row['username'] : $user->lang['GUEST'],
+					'REPORTER'		=> ($row['user_id'] != ANONYMOUS) ? $row['username'] : phpbb::$user->lang['GUEST'],
 					'U_REPORTER'	=> ($row['user_id'] != ANONYMOUS) ? append_sid('memberlist', 'mode=viewprofile&amp;u=' . $row['user_id']) : '',
 					'USER_NOTIFY'	=> ($row['user_notify']) ? true : false,
-					'REPORT_TIME'	=> $user->format_date($row['report_time']),
+					'REPORT_TIME'	=> phpbb::$user->format_date($row['report_time']),
 					'REPORT_TEXT'	=> bbcode_nl2br(trim($row['report_text'])),
 				));
 			}
@@ -333,9 +331,9 @@ function mcp_post_details($id, $mode, $action)
 			foreach ($users_ary as $user_id => $user_row)
 			{
 				$template->assign_block_vars('userrow', array(
-					'USERNAME'		=> ($user_id == ANONYMOUS) ? $user->lang['GUEST'] : $user_row['username'],
+					'USERNAME'		=> ($user_id == ANONYMOUS) ? phpbb::$user->lang['GUEST'] : $user_row['username'],
 					'NUM_POSTS'		=> $user_row['postings'],
-					'L_POST_S'		=> ($user_row['postings'] == 1) ? $user->lang['POST'] : $user->lang['POSTS'],
+					'L_POST_S'		=> ($user_row['postings'] == 1) ? phpbb::$user->lang['POST'] : phpbb::$user->lang['POSTS'],
 
 					'U_PROFILE'		=> ($user_id == ANONYMOUS) ? '' : append_sid('memberlist', 'mode=viewprofile&amp;u=' . $user_id),
 					'U_SEARCHPOSTS' => append_sid('search', 'author_id=' . $user_id . '&amp;sr=topics'))
@@ -364,7 +362,7 @@ function mcp_post_details($id, $mode, $action)
 				'IP'			=> $row['poster_ip'],
 				'HOSTNAME'		=> $hostname,
 				'NUM_POSTS'		=> $row['postings'],
-				'L_POST_S'		=> ($row['postings'] == 1) ? $user->lang['POST'] : $user->lang['POSTS'],
+				'L_POST_S'		=> ($row['postings'] == 1) ? phpbb::$user->lang['POST'] : phpbb::$user->lang['POSTS'],
 
 				'U_LOOKUP_IP'	=> ($rdns_ip_num == $row['poster_ip'] || $rdns_ip_num == 'all') ? '' : "$url&amp;i=$id&amp;mode=post_details&amp;rdns={$row['poster_ip']}#ip",
 				'U_WHOIS'		=> append_sid('mcp', "i=$id&amp;mode=$mode&amp;action=whois&amp;p=$post_id&amp;ip={$row['poster_ip']}"))
@@ -394,8 +392,6 @@ function mcp_post_details($id, $mode, $action)
 */
 function change_poster(&$post_info, $userdata)
 {
-	global $auth, $db;
-
 	if (empty($userdata) || $userdata['user_id'] == $post_info['user_id'])
 	{
 		return;

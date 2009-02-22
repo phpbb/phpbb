@@ -33,7 +33,6 @@ class mcp_queue
 
 	function main($id, $mode)
 	{
-		global $auth, $db, $user, $template;
 		global $action;
 
 		include_once(PHPBB_ROOT_PATH . 'includes/functions_posting.' . PHP_EXT);
@@ -74,7 +73,7 @@ class mcp_queue
 
 				$this->tpl_name = 'mcp_post';
 
-				$user->add_lang(array('posting', 'viewtopic'));
+				phpbb::$user->add_lang(array('posting', 'viewtopic'));
 
 				$post_id = request_var('p', 0);
 				$topic_id = request_var('t', 0);
@@ -195,14 +194,14 @@ class mcp_queue
 					'U_VIEW_POST'			=> $post_url,
 					'U_VIEW_TOPIC'			=> $topic_url,
 
-					'MINI_POST_IMG'			=> ($post_unread) ? $user->img('icon_post_target_unread', 'NEW_POST') : $user->img('icon_post_target', 'POST'),
+					'MINI_POST_IMG'			=> ($post_unread) ? phpbb::$user->img('icon_post_target_unread', 'NEW_POST') : phpbb::$user->img('icon_post_target', 'POST'),
 
-					'RETURN_QUEUE'			=> sprintf($user->lang['RETURN_QUEUE'], '<a href="' . append_sid('mcp', 'i=queue' . (($topic_id) ? '&amp;mode=unapproved_topics' : '&amp;mode=unapproved_posts')) . "&amp;start=$start\">", '</a>'),
-					'RETURN_POST'			=> sprintf($user->lang['RETURN_POST'], '<a href="' . $post_url . '">', '</a>'),
-					'RETURN_TOPIC_SIMPLE'	=> sprintf($user->lang['RETURN_TOPIC_SIMPLE'], '<a href="' . $topic_url . '">', '</a>'),
-					'REPORTED_IMG'			=> $user->img('icon_topic_reported', $user->lang['POST_REPORTED']),
-					'UNAPPROVED_IMG'		=> $user->img('icon_topic_unapproved', $user->lang['POST_UNAPPROVED']),
-					'EDIT_IMG'				=> $user->img('icon_post_edit', $user->lang['EDIT_POST']),
+					'RETURN_QUEUE'			=> sprintf(phpbb::$user->lang['RETURN_QUEUE'], '<a href="' . append_sid('mcp', 'i=queue' . (($topic_id) ? '&amp;mode=unapproved_topics' : '&amp;mode=unapproved_posts')) . "&amp;start=$start\">", '</a>'),
+					'RETURN_POST'			=> sprintf(phpbb::$user->lang['RETURN_POST'], '<a href="' . $post_url . '">', '</a>'),
+					'RETURN_TOPIC_SIMPLE'	=> sprintf(phpbb::$user->lang['RETURN_TOPIC_SIMPLE'], '<a href="' . $topic_url . '">', '</a>'),
+					'REPORTED_IMG'			=> phpbb::$user->img('icon_topic_reported', 'POST_REPORTED'),
+					'UNAPPROVED_IMG'		=> phpbb::$user->img('icon_topic_unapproved', 'POST_UNAPPROVED'),
+					'EDIT_IMG'				=> phpbb::$user->img('icon_post_edit', 'EDIT_POST'),
 
 					'POST_AUTHOR_FULL'		=> get_username_string('full', $post_info['user_id'], $post_info['username'], $post_info['user_colour'], $post_info['post_username']),
 					'POST_AUTHOR_COLOUR'	=> get_username_string('colour', $post_info['user_id'], $post_info['username'], $post_info['user_colour'], $post_info['post_username']),
@@ -211,7 +210,7 @@ class mcp_queue
 
 					'POST_PREVIEW'			=> $message,
 					'POST_SUBJECT'			=> $post_info['post_subject'],
-					'POST_DATE'				=> $user->format_date($post_info['post_time']),
+					'POST_DATE'				=> phpbb::$user->format_date($post_info['post_time']),
 					'POST_IP'				=> $post_info['poster_ip'],
 					'POST_IPADDR'			=> ($auth->acl_get('m_info', $post_info['forum_id']) && request_var('lookup', '')) ? @gethostbyaddr($post_info['poster_ip']) : '',
 					'POST_ID'				=> $post_info['post_id'],
@@ -223,7 +222,7 @@ class mcp_queue
 
 			case 'unapproved_topics':
 			case 'unapproved_posts':
-				$user->add_lang(array('viewtopic', 'viewforum'));
+				phpbb::$user->add_lang(array('viewtopic', 'viewforum'));
 
 				$topic_id = request_var('t', 0);
 				$forum_info = array();
@@ -292,7 +291,7 @@ class mcp_queue
 					$global_id = $forum_id;
 				}
 
-				$forum_options = '<option value="0"' . (($forum_id == 0) ? ' selected="selected"' : '') . '>' . $user->lang['ALL_FORUMS'] . '</option>';
+				$forum_options = '<option value="0"' . (($forum_id == 0) ? ' selected="selected"' : '') . '>' . phpbb::$user->lang['ALL_FORUMS'] . '</option>';
 				foreach ($forum_list_approve as $row)
 				{
 					$forum_options .= '<option value="' . $row['forum_id'] . '"' . (($forum_id == $row['forum_id']) ? ' selected="selected"' : '') . '>' . str_repeat('&nbsp; &nbsp;', $row['padding']) . $row['forum_name'] . '</option>';
@@ -411,7 +410,7 @@ class mcp_queue
 
 					if (empty($row['post_username']))
 					{
-						$row['post_username'] = $user->lang['GUEST'];
+						$row['post_username'] = phpbb::$user->lang['GUEST'];
 					}
 
 					$template->assign_block_vars('postrow', array(
@@ -426,20 +425,20 @@ class mcp_queue
 						'U_POST_AUTHOR'			=> get_username_string('profile', $row['poster_id'], $row['username'], $row['user_colour'], $row['post_username']),
 
 						'POST_ID'		=> $row['post_id'],
-						'FORUM_NAME'	=> (!$global_topic) ? $forum_names[$row['forum_id']] : $user->lang['GLOBAL_ANNOUNCEMENT'],
+						'FORUM_NAME'	=> (!$global_topic) ? $forum_names[$row['forum_id']] : phpbb::$user->lang['GLOBAL_ANNOUNCEMENT'],
 						'POST_SUBJECT'	=> $row['post_subject'],
 						'TOPIC_TITLE'	=> $row['topic_title'],
-						'POST_TIME'		=> $user->format_date($row['post_time']))
+						'POST_TIME'		=> phpbb::$user->format_date($row['post_time']))
 					);
 				}
 				unset($rowset, $forum_names);
 
 				// Now display the page
 				$template->assign_vars(array(
-					'L_DISPLAY_ITEMS'		=> ($mode == 'unapproved_posts') ? $user->lang['DISPLAY_POSTS'] : $user->lang['DISPLAY_TOPICS'],
-					'L_EXPLAIN'				=> ($mode == 'unapproved_posts') ? $user->lang['MCP_QUEUE_UNAPPROVED_POSTS_EXPLAIN'] : $user->lang['MCP_QUEUE_UNAPPROVED_TOPICS_EXPLAIN'],
-					'L_TITLE'				=> ($mode == 'unapproved_posts') ? $user->lang['MCP_QUEUE_UNAPPROVED_POSTS'] : $user->lang['MCP_QUEUE_UNAPPROVED_TOPICS'],
-					'L_ONLY_TOPIC'			=> ($topic_id) ? sprintf($user->lang['ONLY_TOPIC'], $topic_info['topic_title']) : '',
+					'L_DISPLAY_ITEMS'		=> ($mode == 'unapproved_posts') ? phpbb::$user->lang['DISPLAY_POSTS'] : phpbb::$user->lang['DISPLAY_TOPICS'],
+					'L_EXPLAIN'				=> ($mode == 'unapproved_posts') ? phpbb::$user->lang['MCP_QUEUE_UNAPPROVED_POSTS_EXPLAIN'] : phpbb::$user->lang['MCP_QUEUE_UNAPPROVED_TOPICS_EXPLAIN'],
+					'L_TITLE'				=> ($mode == 'unapproved_posts') ? phpbb::$user->lang['MCP_QUEUE_UNAPPROVED_POSTS'] : phpbb::$user->lang['MCP_QUEUE_UNAPPROVED_TOPICS'],
+					'L_ONLY_TOPIC'			=> ($topic_id) ? sprintf(phpbb::$user->lang['ONLY_TOPIC'], $topic_info['topic_title']) : '',
 
 					'S_FORUM_OPTIONS'		=> $forum_options,
 					'S_MCP_ACTION'			=> build_url(array('t', 'f', 'sd', 'st', 'sk')),
@@ -448,7 +447,7 @@ class mcp_queue
 					'PAGINATION'			=> generate_pagination($this->u_action . "&amp;f=$forum_id&amp;st=$sort_days&amp;sk=$sort_key&amp;sd=$sort_dir", $total, phpbb::$config['topics_per_page'], $start),
 					'PAGE_NUMBER'			=> on_page($total, phpbb::$config['topics_per_page'], $start),
 					'TOPIC_ID'				=> $topic_id,
-					'TOTAL'					=> ($total == 1) ? (($mode == 'unapproved_posts') ? $user->lang['VIEW_TOPIC_POST'] : $user->lang['VIEW_FORUM_TOPIC']) : sprintf((($mode == 'unapproved_posts') ? $user->lang['VIEW_TOPIC_POSTS'] : $user->lang['VIEW_FORUM_TOPICS']), $total),
+					'TOTAL'					=> ($total == 1) ? (($mode == 'unapproved_posts') ? phpbb::$user->lang['VIEW_TOPIC_POST'] : phpbb::$user->lang['VIEW_FORUM_TOPIC']) : sprintf((($mode == 'unapproved_posts') ? phpbb::$user->lang['VIEW_TOPIC_POSTS'] : phpbb::$user->lang['VIEW_FORUM_TOPICS']), $total),
 				));
 
 				$this->tpl_name = 'mcp_queue';
@@ -462,8 +461,6 @@ class mcp_queue
 */
 function approve_post($post_id_list, $id, $mode)
 {
-	global $db, $template, $user;
-
 	if (!check_ids($post_id_list, POSTS_TABLE, 'post_id', array('m_approve')))
 	{
 		trigger_error('NOT_AUTHORISED');
@@ -775,10 +772,10 @@ function approve_post($post_id_list, $id, $mode)
 		$add_message = '';
 		if (sizeof($post_id_list) == 1 && !empty($post_url))
 		{
-			$add_message = '<br /><br />' . sprintf($user->lang['RETURN_POST'], '<a href="' . $post_url . '">', '</a>');
+			$add_message = '<br /><br />' . sprintf(phpbb::$user->lang['RETURN_POST'], '<a href="' . $post_url . '">', '</a>');
 		}
 
-		trigger_error($user->lang[$success_msg] . '<br /><br />' . sprintf($user->lang['RETURN_PAGE'], "<a href=\"$redirect\">", '</a>') . $add_message);
+		trigger_error(phpbb::$user->lang[$success_msg] . '<br /><br />' . sprintf(phpbb::$user->lang['RETURN_PAGE'], "<a href=\"$redirect\">", '</a>') . $add_message);
 	}
 }
 
@@ -787,8 +784,6 @@ function approve_post($post_id_list, $id, $mode)
 */
 function disapprove_post($post_id_list, $id, $mode)
 {
-	global $db, $template, $user;
-
 	if (!check_ids($post_id_list, POSTS_TABLE, 'post_id', array('m_approve')))
 	{
 		trigger_error('NOT_AUTHORISED');
@@ -821,15 +816,15 @@ function disapprove_post($post_id_list, $id, $mode)
 
 		if (!$row || (!$reason && strtolower($row['reason_title']) == 'other'))
 		{
-			$additional_msg = $user->lang['NO_REASON_DISAPPROVAL'];
+			$additional_msg = phpbb::$user->lang['NO_REASON_DISAPPROVAL'];
 		}
 		else
 		{
 			// If the reason is defined within the language file, we will use the localized version, else just use the database entry...
-			$disapprove_reason = (strtolower($row['reason_title']) != 'other') ? ((isset($user->lang['report_reasons']['DESCRIPTION'][strtoupper($row['reason_title'])])) ? $user->lang['report_reasons']['DESCRIPTION'][strtoupper($row['reason_title'])] : $row['reason_description']) : '';
+			$disapprove_reason = (strtolower($row['reason_title']) != 'other') ? ((isset(phpbb::$user->lang['report_reasons']['DESCRIPTION'][strtoupper($row['reason_title'])])) ? phpbb::$user->lang['report_reasons']['DESCRIPTION'][strtoupper($row['reason_title'])] : $row['reason_description']) : '';
 			$disapprove_reason .= ($reason) ? "\n\n" . $reason : '';
 
-			if (isset($user->lang['report_reasons']['DESCRIPTION'][strtoupper($row['reason_title'])]))
+			if (isset(phpbb::$user->lang['report_reasons']['DESCRIPTION'][strtoupper($row['reason_title'])]))
 			{
 				$disapprove_reason_lang = strtoupper($row['reason_title']);
 			}
@@ -969,10 +964,10 @@ function disapprove_post($post_id_list, $id, $mode)
 					if (!isset($lang_reasons[$post_data['user_lang']]))
 					{
 						// Assign the current users translation as the default, this is not ideal but getting the board default adds another layer of complexity.
-						$lang_reasons[$post_data['user_lang']] = $user->lang['report_reasons']['DESCRIPTION'][$disapprove_reason_lang];
+						$lang_reasons[$post_data['user_lang']] = phpbb::$user->lang['report_reasons']['DESCRIPTION'][$disapprove_reason_lang];
 
 						// Only load up the language pack if the language is different to the current one
-						if ($post_data['user_lang'] != $user->lang_name && file_exists(PHPBB_ROOT_PATH . '/language/' . $post_data['user_lang'] . '/mcp.' . PHP_EXT))
+						if ($post_data['user_lang'] != phpbb::$user->lang_name && file_exists(PHPBB_ROOT_PATH . '/language/' . $post_data['user_lang'] . '/mcp.' . PHP_EXT))
 						{
 							// Load up the language pack
 							$lang = array();
@@ -1065,7 +1060,7 @@ function disapprove_post($post_id_list, $id, $mode)
 	else
 	{
 		meta_refresh(3, $redirect);
-		trigger_error($user->lang[$success_msg] . '<br /><br />' . sprintf($user->lang['RETURN_PAGE'], "<a href=\"$redirect\">", '</a>'));
+		trigger_error(phpbb::$user->lang[$success_msg] . '<br /><br />' . sprintf(phpbb::$user->lang['RETURN_PAGE'], "<a href=\"$redirect\">", '</a>'));
 	}
 }
 

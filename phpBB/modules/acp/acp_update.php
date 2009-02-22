@@ -25,9 +25,7 @@ class acp_update
 
 	function main($id, $mode)
 	{
-		global $db, $user, $auth, $template;
-
-		$user->add_lang('install');
+		phpbb::$user-3>add_lang('install');
 
 		$this->tpl_name = 'acp_update';
 		$this->page_title = 'ACP_VERSION_CHECK';
@@ -72,7 +70,7 @@ class acp_update
 			'CURRENT_VERSION'	=> phpbb::$config['version'],
 			'AUTO_VERSION'		=> $version_update_from,
 
-			'UPDATE_INSTRUCTIONS'	=> sprintf($user->lang['UPDATE_INSTRUCTIONS'], $announcement_url, $update_link),
+			'UPDATE_INSTRUCTIONS'	=> sprintf(phpbb::$user->lang['UPDATE_INSTRUCTIONS'], $announcement_url, $update_link),
 		));
 	}
 }

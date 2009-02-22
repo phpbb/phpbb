@@ -17,9 +17,9 @@ if (!defined('PHP_EXT')) define('PHP_EXT', substr(strrchr(__FILE__, '.'), 1));
 include(PHPBB_ROOT_PATH . 'common.' . PHP_EXT);
 
 // Start session management
-$user->session_begin();
-$auth->acl($user->data);
-$user->setup();
+phpbb::$user->session_begin();
+$auth->acl(phpbb::$user->data);
+phpbb::$user->setup();
 
 $mode = request_var('mode', '');
 
@@ -27,19 +27,19 @@ $mode = request_var('mode', '');
 switch ($mode)
 {
 	case 'bbcode':
-		$l_title = $user->lang['BBCODE_GUIDE'];
-		$user->add_lang('bbcode', false, true);
+		$l_title = phpbb::$user->lang['BBCODE_GUIDE'];
+		phpbb::$user->add_lang('bbcode', false, true);
 	break;
 
 	default:
-		$l_title = $user->lang['FAQ_EXPLAIN'];
-		$user->add_lang('faq', false, true);
+		$l_title = phpbb::$user->lang['FAQ_EXPLAIN'];
+		phpbb::$user->add_lang('faq', false, true);
 	break;
 }
 
 // Pull the array data from the lang pack
 $help_blocks = array();
-foreach ($user->help as $help_ary)
+foreach (phpbb::$user->help as $help_ary)
 {
 	if ($help_ary[0] == '--')
 	{
@@ -59,7 +59,7 @@ foreach ($user->help as $help_ary)
 // Lets build a page ...
 $template->assign_vars(array(
 	'L_FAQ_TITLE'	=> $l_title,
-	'L_BACK_TO_TOP'	=> $user->lang['BACK_TO_TOP'])
+	'L_BACK_TO_TOP'	=> phpbb::$user->lang['BACK_TO_TOP'])
 );
 
 page_header($l_title);

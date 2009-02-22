@@ -21,7 +21,7 @@ if (!defined('IN_PHPBB'))
 */
 function mcp_front_view($id, $mode, $action)
 {
-	global $template, $db, $user, $auth, $module;
+	global $module;
 
 	// Latest 5 unapproved
 	if ($module->loaded('queue'))
@@ -108,11 +108,11 @@ function mcp_front_view($id, $mode, $action)
 						'AUTHOR_COLOUR'		=> get_username_string('colour', $row['poster_id'], $row['username'], $row['user_colour']),
 						'U_AUTHOR'			=> get_username_string('profile', $row['poster_id'], $row['username'], $row['user_colour']),
 
-						'FORUM_NAME'	=> (!$global_topic) ? $forum_names[$row['forum_id']] : $user->lang['GLOBAL_ANNOUNCEMENT'],
+						'FORUM_NAME'	=> (!$global_topic) ? $forum_names[$row['forum_id']] : phpbb::$user->lang['GLOBAL_ANNOUNCEMENT'],
 						'POST_ID'		=> $row['post_id'],
 						'TOPIC_TITLE'	=> $row['topic_title'],
-						'SUBJECT'		=> ($row['post_subject']) ? $row['post_subject'] : $user->lang['NO_SUBJECT'],
-						'POST_TIME'		=> $user->format_date($row['post_time']))
+						'SUBJECT'		=> ($row['post_subject']) ? $row['post_subject'] : phpbb::$user->lang['NO_SUBJECT'],
+						'POST_TIME'		=> phpbb::$user->format_date($row['post_time']))
 					);
 				}
 				$db->sql_freeresult($result);
@@ -125,14 +125,14 @@ function mcp_front_view($id, $mode, $action)
 			if ($total == 0)
 			{
 				$template->assign_vars(array(
-					'L_UNAPPROVED_TOTAL'		=> $user->lang['UNAPPROVED_POSTS_ZERO_TOTAL'],
+					'L_UNAPPROVED_TOTAL'		=> phpbb::$user->lang['UNAPPROVED_POSTS_ZERO_TOTAL'],
 					'S_HAS_UNAPPROVED_POSTS'	=> false)
 				);
 			}
 			else
 			{
 				$template->assign_vars(array(
-					'L_UNAPPROVED_TOTAL'		=> ($total == 1) ? $user->lang['UNAPPROVED_POST_TOTAL'] : sprintf($user->lang['UNAPPROVED_POSTS_TOTAL'], $total),
+					'L_UNAPPROVED_TOTAL'		=> ($total == 1) ? phpbb::$user->lang['UNAPPROVED_POST_TOTAL'] : sprintf(phpbb::$user->lang['UNAPPROVED_POSTS_TOTAL'], $total),
 					'S_HAS_UNAPPROVED_POSTS'	=> true)
 				);
 			}
@@ -216,11 +216,11 @@ function mcp_front_view($id, $mode, $action)
 						'AUTHOR_COLOUR'		=> get_username_string('colour', $row['author_id'], $row['author_name'], $row['author_colour']),
 						'U_AUTHOR'			=> get_username_string('profile', $row['author_id'], $row['author_name'], $row['author_colour']),
 
-						'FORUM_NAME'	=> (!$global_topic) ? $row['forum_name'] : $user->lang['GLOBAL_ANNOUNCEMENT'],
+						'FORUM_NAME'	=> (!$global_topic) ? $row['forum_name'] : phpbb::$user->lang['GLOBAL_ANNOUNCEMENT'],
 						'TOPIC_TITLE'	=> $row['topic_title'],
-						'SUBJECT'		=> ($row['post_subject']) ? $row['post_subject'] : $user->lang['NO_SUBJECT'],
-						'REPORT_TIME'	=> $user->format_date($row['report_time']),
-						'POST_TIME'		=> $user->format_date($row['post_time']),
+						'SUBJECT'		=> ($row['post_subject']) ? $row['post_subject'] : phpbb::$user->lang['NO_SUBJECT'],
+						'REPORT_TIME'	=> phpbb::$user->format_date($row['report_time']),
+						'POST_TIME'		=> phpbb::$user->format_date($row['post_time']),
 					));
 				}
 			}
@@ -228,14 +228,14 @@ function mcp_front_view($id, $mode, $action)
 			if ($total == 0)
 			{
 				$template->assign_vars(array(
-					'L_REPORTS_TOTAL'	=>	$user->lang['REPORTS_ZERO_TOTAL'],
+					'L_REPORTS_TOTAL'	=>	phpbb::$user->lang['REPORTS_ZERO_TOTAL'],
 					'S_HAS_REPORTS'		=>	false)
 				);
 			}
 			else
 			{
 				$template->assign_vars(array(
-					'L_REPORTS_TOTAL'	=> ($total == 1) ? $user->lang['REPORT_TOTAL'] : sprintf($user->lang['REPORTS_TOTAL'], $total),
+					'L_REPORTS_TOTAL'	=> ($total == 1) ? phpbb::$user->lang['REPORT_TOTAL'] : sprintf(phpbb::$user->lang['REPORTS_TOTAL'], $total),
 					'S_HAS_REPORTS'		=> true)
 				);
 			}
@@ -261,7 +261,7 @@ function mcp_front_view($id, $mode, $action)
 				$template->assign_block_vars('log', array(
 					'USERNAME'		=> $row['username_full'],
 					'IP'			=> $row['ip'],
-					'TIME'			=> $user->format_date($row['time']),
+					'TIME'			=> phpbb::$user->format_date($row['time']),
 					'ACTION'		=> $row['action'],
 					'U_VIEW_TOPIC'	=> (!empty($row['viewtopic'])) ? $row['viewtopic'] : '',
 					'U_VIEWLOGS'	=> (!empty($row['viewlogs'])) ? $row['viewlogs'] : '')

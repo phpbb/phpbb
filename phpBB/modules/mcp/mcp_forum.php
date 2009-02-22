@@ -21,9 +21,9 @@ if (!defined('IN_PHPBB'))
 */
 function mcp_forum_view($id, $mode, $action, $forum_info)
 {
-	global $template, $db, $user, $auth, $module;
+	global $module;
 
-	$user->add_lang(array('viewtopic', 'viewforum'));
+	phpbb::$user->add_lang(array('viewtopic', 'viewforum'));
 
 	include_once(PHPBB_ROOT_PATH . 'includes/functions_display.' . PHP_EXT);
 
@@ -105,10 +105,10 @@ function mcp_forum_view($id, $mode, $action, $forum_info)
 		'FORUM_NAME'			=> $forum_info['forum_name'],
 		'FORUM_DESCRIPTION'		=> generate_text_for_display($forum_info['forum_desc'], $forum_info['forum_desc_uid'], $forum_info['forum_desc_bitfield'], $forum_info['forum_desc_options']),
 
-		'REPORTED_IMG'			=> $user->img('icon_topic_reported', 'TOPIC_REPORTED'),
-		'UNAPPROVED_IMG'		=> $user->img('icon_topic_unapproved', 'TOPIC_UNAPPROVED'),
-		'LAST_POST_IMG'			=> $user->img('icon_topic_latest', 'VIEW_LATEST_POST'),
-		'NEWEST_POST_IMG'		=> $user->img('icon_topic_newest', 'VIEW_NEWEST_POST'),
+		'REPORTED_IMG'			=> phpbb::$user->img('icon_topic_reported', 'TOPIC_REPORTED'),
+		'UNAPPROVED_IMG'		=> phpbb::$user->img('icon_topic_unapproved', 'TOPIC_UNAPPROVED'),
+		'LAST_POST_IMG'			=> phpbb::$user->img('icon_topic_latest', 'VIEW_LATEST_POST'),
+		'NEWEST_POST_IMG'		=> phpbb::$user->img('icon_topic_newest', 'VIEW_NEWEST_POST'),
 
 		'S_CAN_REPORT'			=> $auth->acl_get('m_report', $forum_id),
 		'S_CAN_DELETE'			=> $auth->acl_get('m_delete', $forum_id),
@@ -130,7 +130,7 @@ function mcp_forum_view($id, $mode, $action, $forum_info)
 
 		'PAGINATION'			=> generate_pagination($url . "&amp;i=$id&amp;action=$action&amp;mode=$mode&amp;sd=$sort_dir&amp;sk=$sort_key&amp;st=$sort_days" . (($merge_select) ? $selected_ids : ''), $forum_topics, $topics_per_page, $start),
 		'PAGE_NUMBER'			=> on_page($forum_topics, $topics_per_page, $start),
-		'TOTAL_TOPICS'			=> ($forum_topics == 1) ? $user->lang['VIEW_FORUM_TOPIC'] : sprintf($user->lang['VIEW_FORUM_TOPICS'], $forum_topics),
+		'TOTAL_TOPICS'			=> ($forum_topics == 1) ? phpbb::$user->lang['VIEW_FORUM_TOPIC'] : sprintf(phpbb::$user->lang['VIEW_FORUM_TOPICS'], $forum_topics),
 	));
 
 	// Grab icons
@@ -140,7 +140,7 @@ function mcp_forum_view($id, $mode, $action, $forum_info)
 
 	if (phpbb::$config['load_db_lastread'])
 	{
-		$read_tracking_join = ' LEFT JOIN ' . TOPICS_TRACK_TABLE . ' tt ON (tt.topic_id = t.topic_id AND tt.user_id = ' . $user->data['user_id'] . ')';
+		$read_tracking_join = ' LEFT JOIN ' . TOPICS_TRACK_TABLE . ' tt ON (tt.topic_id = t.topic_id AND tt.user_id = ' . phpbb::$user->data['user_id'] . ')';
 		$read_tracking_select = ', tt.mark_time';
 	}
 	else
@@ -222,13 +222,13 @@ function mcp_forum_view($id, $mode, $action, $forum_info)
 		$u_mcp_queue = ($topic_unapproved || $posts_unapproved) ? $url . '&amp;i=queue&amp;mode=' . (($topic_unapproved) ? 'approve_details' : 'unapproved_posts') . '&amp;t=' . $row['topic_id'] : '';
 
 		$topic_row = array(
-			'ATTACH_ICON_IMG'		=> ($auth->acl_get('u_download') && $auth->acl_get('f_download', $row['forum_id']) && $row['topic_attachment']) ? $user->img('icon_topic_attach', $user->lang['TOTAL_ATTACHMENTS']) : '',
-			'TOPIC_FOLDER_IMG'		=> $user->img($folder_img, $folder_alt),
-			'TOPIC_FOLDER_IMG_SRC'	=> $user->img($folder_img, $folder_alt, 'src'),
+			'ATTACH_ICON_IMG'		=> ($auth->acl_get('u_download') && $auth->acl_get('f_download', $row['forum_id']) && $row['topic_attachment']) ? phpbb::$user->img('icon_topic_attach', 'TOTAL_ATTACHMENTS') : '',
+			'TOPIC_FOLDER_IMG'		=> phpbb::$user->img($folder_img, $folder_alt),
+			'TOPIC_FOLDER_IMG_SRC'	=> phpbb::$user->img($folder_img, $folder_alt, 'src'),
 			'TOPIC_ICON_IMG'		=> (!empty($icons[$row['icon_id']])) ? $icons[$row['icon_id']]['img'] : '',
 			'TOPIC_ICON_IMG_WIDTH'	=> (!empty($icons[$row['icon_id']])) ? $icons[$row['icon_id']]['width'] : '',
 			'TOPIC_ICON_IMG_HEIGHT'	=> (!empty($icons[$row['icon_id']])) ? $icons[$row['icon_id']]['height'] : '',
-			'UNAPPROVED_IMG'		=> ($topic_unapproved || $posts_unapproved) ? $user->img('icon_topic_unapproved', ($topic_unapproved) ? 'TOPIC_UNAPPROVED' : 'POSTS_UNAPPROVED') : '',
+			'UNAPPROVED_IMG'		=> ($topic_unapproved || $posts_unapproved) ? phpbb::$user->img('icon_topic_unapproved', ($topic_unapproved) ? 'TOPIC_UNAPPROVED' : 'POSTS_UNAPPROVED') : '',
 
 			'TOPIC_AUTHOR'				=> get_username_string('username', $row['topic_poster'], $row['topic_first_poster_name'], $row['topic_first_poster_colour']),
 			'TOPIC_AUTHOR_COLOUR'		=> get_username_string('colour', $row['topic_poster'], $row['topic_first_poster_name'], $row['topic_first_poster_colour']),
@@ -243,10 +243,10 @@ function mcp_forum_view($id, $mode, $action, $forum_info)
 			'TOPIC_TYPE'		=> $topic_type,
 			'TOPIC_TITLE'		=> $topic_title,
 			'REPLIES'			=> ($auth->acl_get('m_approve', $row['forum_id'])) ? $row['topic_replies_real'] : $row['topic_replies'],
-			'LAST_POST_TIME'	=> $user->format_date($row['topic_last_post_time']),
-			'FIRST_POST_TIME'	=> $user->format_date($row['topic_time']),
+			'LAST_POST_TIME'	=> phpbb::$user->format_date($row['topic_last_post_time']),
+			'FIRST_POST_TIME'	=> phpbb::$user->format_date($row['topic_time']),
 			'LAST_POST_SUBJECT'	=> $row['topic_last_post_subject'],
-			'LAST_VIEW_TIME'	=> $user->format_date($row['topic_last_view_time']),
+			'LAST_VIEW_TIME'	=> phpbb::$user->format_date($row['topic_last_view_time']),
 
 			'S_TOPIC_REPORTED'		=> (!empty($row['topic_reported']) && empty($row['topic_moved_id']) && $auth->acl_get('m_report', $row['forum_id'])) ? true : false,
 			'S_TOPIC_UNAPPROVED'	=> $topic_unapproved,
@@ -295,8 +295,6 @@ function mcp_forum_view($id, $mode, $action, $forum_info)
 */
 function mcp_resync_topics($topic_ids)
 {
-	global $auth, $db, $template, $user;
-
 	if (!sizeof($topic_ids))
 	{
 		trigger_error('NO_TOPIC_SELECTED');
@@ -324,12 +322,12 @@ function mcp_resync_topics($topic_ids)
 	}
 	$db->sql_freeresult($result);
 
-	$msg = (sizeof($topic_ids) == 1) ? $user->lang['TOPIC_RESYNC_SUCCESS'] : $user->lang['TOPICS_RESYNC_SUCCESS'];
+	$msg = (sizeof($topic_ids) == 1) ? phpbb::$user->lang['TOPIC_RESYNC_SUCCESS'] : phpbb::$user->lang['TOPICS_RESYNC_SUCCESS'];
 
-	$redirect = request_var('redirect', $user->data['session_page']);
+	$redirect = request_var('redirect', phpbb::$user->data['session_page']);
 
 	meta_refresh(3, $redirect);
-	trigger_error($msg . '<br /><br />' . sprintf($user->lang['RETURN_PAGE'], '<a href="' . $redirect . '">', '</a>'));
+	trigger_error($msg . '<br /><br />' . sprintf(phpbb::$user->lang['RETURN_PAGE'], '<a href="' . $redirect . '">', '</a>'));
 
 	return;
 }
@@ -339,16 +337,14 @@ function mcp_resync_topics($topic_ids)
 */
 function merge_topics($forum_id, $topic_ids, $to_topic_id)
 {
-	global $db, $template, $user, $auth;
-
 	if (!sizeof($topic_ids))
 	{
-		$template->assign_var('MESSAGE', $user->lang['NO_TOPIC_SELECTED']);
+		$template->assign_var('MESSAGE', phpbb::$user->lang['NO_TOPIC_SELECTED']);
 		return;
 	}
 	if (!$to_topic_id)
 	{
-		$template->assign_var('MESSAGE', $user->lang['NO_FINAL_TOPIC_SELECTED']);
+		$template->assign_var('MESSAGE', phpbb::$user->lang['NO_FINAL_TOPIC_SELECTED']);
 		return;
 	}
 
@@ -356,7 +352,7 @@ function merge_topics($forum_id, $topic_ids, $to_topic_id)
 
 	if (!sizeof($topic_data))
 	{
-		$template->assign_var('MESSAGE', $user->lang['NO_FINAL_TOPIC_SELECTED']);
+		$template->assign_var('MESSAGE', phpbb::$user->lang['NO_FINAL_TOPIC_SELECTED']);
 		return;
 	}
 
@@ -382,7 +378,7 @@ function merge_topics($forum_id, $topic_ids, $to_topic_id)
 
 	if (!sizeof($post_id_list))
 	{
-		$template->assign_var('MESSAGE', $user->lang['NO_POST_SELECTED']);
+		$template->assign_var('MESSAGE', phpbb::$user->lang['NO_POST_SELECTED']);
 		return;
 	}
 
@@ -425,7 +421,7 @@ function merge_topics($forum_id, $topic_ids, $to_topic_id)
 		$db->sql_query('DELETE FROM ' . TOPICS_WATCH_TABLE . ' WHERE ' . $db->sql_in_set('topic_id', $topic_ids));
 
 		// Link to the new topic
-		$return_link .= (($return_link) ? '<br /><br />' : '') . sprintf($user->lang['RETURN_NEW_TOPIC'], '<a href="' . append_sid('viewtopic', 'f=' . $to_forum_id . '&amp;t=' . $to_topic_id) . '">', '</a>');
+		$return_link .= (($return_link) ? '<br /><br />' : '') . sprintf(phpbb::$user->lang['RETURN_NEW_TOPIC'], '<a href="' . append_sid('viewtopic', 'f=' . $to_forum_id . '&amp;t=' . $to_topic_id) . '">', '</a>');
 	}
 	else
 	{
@@ -442,7 +438,7 @@ function merge_topics($forum_id, $topic_ids, $to_topic_id)
 	else
 	{
 		meta_refresh(3, append_sid('viewtopic', "f=$to_forum_id&amp;t=$to_topic_id"));
-		trigger_error($user->lang[$success_msg] . '<br /><br />' . $return_link);
+		trigger_error(phpbb::$user->lang[$success_msg] . '<br /><br />' . $return_link);
 	}
 }
 

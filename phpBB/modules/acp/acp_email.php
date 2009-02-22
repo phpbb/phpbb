@@ -25,9 +25,7 @@ class acp_email
 
 	function main($id, $mode)
 	{
-		global $db, $user, $auth, $template;
-
-		$user->add_lang('acp/email');
+		phpbb::$user->add_lang('acp/email');
 		$this->tpl_name = 'acp_email';
 		$this->page_title = 'ACP_MASS_EMAIL';
 
@@ -53,17 +51,17 @@ class acp_email
 
 			if (!check_form_key($form_key))
 			{
-				$error[] = $user->lang['FORM_INVALID'];
+				$error[] = phpbb::$user->lang['FORM_INVALID'];
 			}
 
 			if (!$subject)
 			{
-				$error[] = $user->lang['NO_EMAIL_SUBJECT'];
+				$error[] = phpbb::$user->lang['NO_EMAIL_SUBJECT'];
 			}
 
 			if (!$message)
 			{
-				$error[] = $user->lang['NO_EMAIL_MESSAGE'];
+				$error[] = phpbb::$user->lang['NO_EMAIL_MESSAGE'];
 			}
 
 			if (!sizeof($error))
@@ -105,7 +103,7 @@ class acp_email
 				if (!$row)
 				{
 					$db->sql_freeresult($result);
-					trigger_error($user->lang['NO_USER'] . adm_back_link($this->u_action), E_USER_WARNING);
+					trigger_error(phpbb::$user->lang['NO_USER'] . adm_back_link($this->u_action), E_USER_WARNING);
 				}
 
 				$i = $j = 0;
@@ -169,9 +167,9 @@ class acp_email
 					$messenger->template('admin_send_email', $used_lang);
 
 					$messenger->headers('X-AntiAbuse: Board servername - ' . phpbb::$config['server_name']);
-					$messenger->headers('X-AntiAbuse: User_id - ' . $user->data['user_id']);
-					$messenger->headers('X-AntiAbuse: Username - ' . $user->data['username']);
-					$messenger->headers('X-AntiAbuse: User IP - ' . $user->ip);
+					$messenger->headers('X-AntiAbuse: User_id - ' . phpbb::$user->data['user_id']);
+					$messenger->headers('X-AntiAbuse: Username - ' . phpbb::$user->data['username']);
+					$messenger->headers('X-AntiAbuse: User IP - ' . phpbb::$user->ip);
 
 					$messenger->subject(htmlspecialchars_decode($subject));
 					$messenger->set_mail_priority($priority);
@@ -204,7 +202,7 @@ class acp_email
 					else
 					{
 						// Not great but the logging routine doesn't cope well with localising on the fly
-						$group_name = $user->lang['ALL_USERS'];
+						$group_name = phpbb::$user->lang['ALL_USERS'];
 					}
 
 					add_log('admin', 'LOG_MASS_EMAIL', $group_name);
@@ -212,12 +210,12 @@ class acp_email
 
 				if (!$errored)
 				{
-					$message = ($use_queue) ? $user->lang['EMAIL_SENT_QUEUE'] : $user->lang['EMAIL_SENT'];
+					$message = ($use_queue) ? phpbb::$user->lang['EMAIL_SENT_QUEUE'] : phpbb::$user->lang['EMAIL_SENT'];
 					trigger_error($message . adm_back_link($this->u_action));
 				}
 				else
 				{
-					$message = sprintf($user->lang['EMAIL_SEND_ERROR'], '<a href="' . append_sid(PHPBB_ADMIN_PATH . 'index.' . PHP_EXT, 'i=logs&amp;mode=critical') . '">', '</a>');
+					$message = sprintf(phpbb::$user->lang['EMAIL_SEND_ERROR'], '<a href="' . append_sid(PHPBB_ADMIN_PATH . 'index.' . PHP_EXT, 'i=logs&amp;mode=critical') . '">', '</a>');
 					trigger_error($message . adm_back_link($this->u_action), E_USER_WARNING);
 				}
 			}
@@ -236,12 +234,12 @@ class acp_email
 		}
 		$db->sql_freeresult($result);
 
-		$select_list = '<option value="0"' . ((!$group_id) ? ' selected="selected"' : '') . '>' . $user->lang['ALL_USERS'] . '</option>';
+		$select_list = '<option value="0"' . ((!$group_id) ? ' selected="selected"' : '') . '>' . phpbb::$user->lang['ALL_USERS'] . '</option>';
 		$select_list .= group_select_options($group_id, $exclude);
 
-		$s_priority_options = '<option value="' . MAIL_LOW_PRIORITY . '">' . $user->lang['MAIL_LOW_PRIORITY'] . '</option>';
-		$s_priority_options .= '<option value="' . MAIL_NORMAL_PRIORITY . '" selected="selected">' . $user->lang['MAIL_NORMAL_PRIORITY'] . '</option>';
-		$s_priority_options .= '<option value="' . MAIL_HIGH_PRIORITY . '">' . $user->lang['MAIL_HIGH_PRIORITY'] . '</option>';
+		$s_priority_options = '<option value="' . MAIL_LOW_PRIORITY . '">' . phpbb::$user->lang['MAIL_LOW_PRIORITY'] . '</option>';
+		$s_priority_options .= '<option value="' . MAIL_NORMAL_PRIORITY . '" selected="selected">' . phpbb::$user->lang['MAIL_NORMAL_PRIORITY'] . '</option>';
+		$s_priority_options .= '<option value="' . MAIL_HIGH_PRIORITY . '">' . phpbb::$user->lang['MAIL_HIGH_PRIORITY'] . '</option>';
 
 		$template->assign_vars(array(
 			'S_WARNING'				=> (sizeof($error)) ? true : false,

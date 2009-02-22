@@ -17,9 +17,9 @@ if (!defined('PHP_EXT')) define('PHP_EXT', substr(strrchr(__FILE__, '.'), 1));
 include(PHPBB_ROOT_PATH . 'common.' . PHP_EXT);
 
 // Start session management
-$user->session_begin();
-$auth->acl($user->data);
-$user->setup('memberlist');
+phpbb::$user->session_begin();
+$auth->acl(phpbb::$user->data);
+phpbb::$user->setup('memberlist');
 
 // Get and set some variables
 $mode		= request_var('mode', '');
@@ -32,15 +32,15 @@ $show_guests= (phpbb::$config['load_online_guests']) ? request_var('sg', 0) : 0;
 // Can this user view profiles/memberlist?
 if (!$auth->acl_gets('u_viewprofile', 'a_user', 'a_useradd', 'a_userdel'))
 {
-	if ($user->data['user_id'] != ANONYMOUS)
+	if (!phpbb::$user->is_guest)
 	{
 		trigger_error('NO_VIEW_USERS');
 	}
 
-	login_box('', $user->lang['LOGIN_EXPLAIN_VIEWONLINE']);
+	login_box('', phpbb::$user->lang['LOGIN_EXPLAIN_VIEWONLINE']);
 }
 
-$sort_key_text = array('a' => $user->lang['SORT_USERNAME'], 'b' => $user->lang['SORT_JOINED'], 'c' => $user->lang['SORT_LOCATION']);
+$sort_key_text = array('a' => phpbb::$user->lang['SORT_USERNAME'], 'b' => phpbb::$user->lang['SORT_JOINED'], 'c' => phpbb::$user->lang['SORT_LOCATION']);
 $sort_key_sql = array('a' => 'u.username_clean', 'b' => 's.session_time', 'c' => 's.session_page');
 
 // Sorting and order
@@ -69,7 +69,7 @@ if ($mode == 'whois' && $auth->acl_get('a_') && $session_id)
 	$db->sql_freeresult($result);
 
 	// Output the page
-	page_header($user->lang['WHO_IS_ONLINE']);
+	page_header(phpbb::$user->lang['WHO_IS_ONLINE']);
 
 	$template->set_filenames(array(
 		'body' => 'viewonline_whois.html')
@@ -90,7 +90,7 @@ while ($row = $db->sql_fetchrow($result))
 {
 	$forum_data[$row['forum_id']] = $row;
 }
-$db->sql_freeresult($result);
+phpbb::$db->sql_freeresult($result);
 
 $guest_counter = 0;
 
@@ -179,7 +179,7 @@ while ($row = $db->sql_fetchrow($result))
 		}
 
 		$s_user_hidden = false;
-		$username_full = get_username_string('full', $row['user_id'], $user->lang['GUEST']);
+		$username_full = get_username_string('full', $row['user_id'], phpbb::$user->lang['GUEST']);
 	}
 	else
 	{
@@ -195,12 +195,12 @@ while ($row = $db->sql_fetchrow($result))
 	switch ($on_page[1])
 	{
 		case 'index':
-			$location = $user->lang['INDEX'];
+			$location = phpbb::$user->lang['INDEX'];
 			$location_url = append_sid('index');
 		break;
 
 		case 'adm/index':
-			$location = $user->lang['ACP'];
+			$location = phpbb::$user->lang['ACP'];
 			$location_url = append_sid('index');
 		break;
 
@@ -217,7 +217,7 @@ while ($row = $db->sql_fetchrow($result))
 
 				if ($forum_data[$forum_id]['forum_type'] == FORUM_LINK)
 				{
-					$location = sprintf($user->lang['READING_LINK'], $forum_data[$forum_id]['forum_name']);
+					$location = sprintf(phpbb::$user->lang['READING_LINK'], $forum_data[$forum_id]['forum_name']);
 					break;
 				}
 
@@ -231,58 +231,58 @@ while ($row = $db->sql_fetchrow($result))
 						{
 							case 'reply':
 							case 'quote':
-								$location = sprintf($user->lang['REPLYING_MESSAGE'], $forum_data[$forum_id]['forum_name']);
+								$location = sprintf(phpbb::$user->lang['REPLYING_MESSAGE'], $forum_data[$forum_id]['forum_name']);
 							break;
 
 							default:
-								$location = sprintf($user->lang['POSTING_MESSAGE'], $forum_data[$forum_id]['forum_name']);
+								$location = sprintf(phpbb::$user->lang['POSTING_MESSAGE'], $forum_data[$forum_id]['forum_name']);
 							break;
 						}
 					break;
 
 					case 'viewtopic':
-						$location = sprintf($user->lang['READING_TOPIC'], $forum_data[$forum_id]['forum_name']);
+						$location = sprintf(phpbb::$user->lang['READING_TOPIC'], $forum_data[$forum_id]['forum_name']);
 					break;
 
 					case 'viewforum':
-						$location = sprintf($user->lang['READING_FORUM'], $forum_data[$forum_id]['forum_name']);
+						$location = sprintf(phpbb::$user->lang['READING_FORUM'], $forum_data[$forum_id]['forum_name']);
 					break;
 				}
 			}
 			else
 			{
-				$location = $user->lang['INDEX'];
+				$location = phpbb::$user->lang['INDEX'];
 				$location_url = append_sid('index');
 			}
 		break;
 
 		case 'search':
-			$location = $user->lang['SEARCHING_FORUMS'];
+			$location = phpbb::$user->lang['SEARCHING_FORUMS'];
 			$location_url = append_sid('search');
 		break;
 
 		case 'faq':
-			$location = $user->lang['VIEWING_FAQ'];
+			$location = phpbb::$user->lang['VIEWING_FAQ'];
 			$location_url = append_sid('faq');
 		break;
 
 		case 'viewonline':
-			$location = $user->lang['VIEWING_ONLINE'];
+			$location = phpbb::$user->lang['VIEWING_ONLINE'];
 			$location_url = append_sid('viewonline');
 		break;
 
 		case 'memberlist':
-			$location = (strpos($row['session_page'], 'mode=viewprofile') !== false) ? $user->lang['VIEWING_MEMBER_PROFILE'] : $user->lang['VIEWING_MEMBERS'];
+			$location = (strpos($row['session_page'], 'mode=viewprofile') !== false) ? phpbb::$user->lang['VIEWING_MEMBER_PROFILE'] : phpbb::$user->lang['VIEWING_MEMBERS'];
 			$location_url = append_sid('memberlist');
 		break;
 
 		case 'mcp':
-			$location = $user->lang['VIEWING_MCP'];
+			$location = phpbb::$user->lang['VIEWING_MCP'];
 			$location_url = append_sid('index');
 		break;
 
 		case 'ucp':
-			$location = $user->lang['VIEWING_UCP'];
+			$location = phpbb::$user->lang['VIEWING_UCP'];
 
 			// Grab some common modules
 			$url_params = array(
@@ -297,7 +297,7 @@ while ($row = $db->sql_fetchrow($result))
 			{
 				if (strpos($row['session_page'], $param) !== false)
 				{
-					$location = $user->lang[$lang];
+					$location = phpbb::$user->lang[$lang];
 					break;
 				}
 			}
@@ -306,17 +306,17 @@ while ($row = $db->sql_fetchrow($result))
 		break;
 
 		case 'download/file':
-			$location = $user->lang['DOWNLOADING_FILE'];
+			$location = phpbb::$user->lang['DOWNLOADING_FILE'];
 			$location_url = append_sid('index');
 		break;
 
 		case 'report':
-			$location = $user->lang['REPORTING_POST'];
+			$location = phpbb::$user->lang['REPORTING_POST'];
 			$location_url = append_sid('index');
 		break;
 
 		default:
-			$location = $user->lang['INDEX'];
+			$location = phpbb::$user->lang['INDEX'];
 			$location_url = append_sid('index');
 		break;
 	}
@@ -325,7 +325,7 @@ while ($row = $db->sql_fetchrow($result))
 		'USERNAME' 			=> $row['username'],
 		'USERNAME_COLOUR'	=> $row['user_colour'],
 		'USERNAME_FULL'		=> $username_full,
-		'LASTUPDATE'		=> $user->format_date($row['session_time']),
+		'LASTUPDATE'		=> phpbb::$user->format_date($row['session_time']),
 		'FORUM_LOCATION'	=> $location,
 		'USER_IP'			=> ($auth->acl_get('a_')) ? (($mode == 'lookup' && $session_id == $row['session_id']) ? gethostbyaddr($row['session_ip']) : $row['session_ip']) : '',
 		'USER_BROWSER'		=> ($auth->acl_get('a_user')) ? $row['session_browser'] : '',
@@ -340,7 +340,7 @@ while ($row = $db->sql_fetchrow($result))
 		'S_USER_TYPE'		=> $row['user_type'],
 	));
 }
-$db->sql_freeresult($result);
+phpbb::$db->sql_freeresult($result);
 unset($prev_id, $prev_ip);
 
 // Generate reg/hidden/guest online text
@@ -355,15 +355,15 @@ foreach ($vars_online as $l_prefix => $var_ary)
 	switch ($$var_ary[0])
 	{
 		case 0:
-			$$var_ary[1] = $user->lang[$l_prefix . '_USERS_ZERO_ONLINE'];
+			$$var_ary[1] = phpbb::$user->lang[$l_prefix . '_USERS_ZERO_ONLINE'];
 		break;
 
 		case 1:
-			$$var_ary[1] = $user->lang[$l_prefix . '_USER_ONLINE'];
+			$$var_ary[1] = phpbb::$user->lang[$l_prefix . '_USER_ONLINE'];
 		break;
 
 		default:
-			$$var_ary[1] = $user->lang[$l_prefix . '_USERS_ONLINE'];
+			$$var_ary[1] = phpbb::$user->lang[$l_prefix . '_USERS_ONLINE'];
 		break;
 	}
 }
@@ -386,11 +386,11 @@ else
 		LEFT JOIN ' . USER_GROUP_TABLE . ' ug
 			ON (
 				g.group_id = ug.group_id
-				AND ug.user_id = ' . $user->data['user_id'] . '
+				AND ug.user_id = ' . phpbb::$user->data['user_id'] . '
 				AND ug.user_pending = 0
 			)
 		WHERE g.group_legend = 1
-			AND (g.group_type <> ' . GROUP_HIDDEN . ' OR ug.user_id = ' . $user->data['user_id'] . ')
+			AND (g.group_type <> ' . GROUP_HIDDEN . ' OR ug.user_id = ' . phpbb::$user->data['user_id'] . ')
 		ORDER BY g.group_name ASC';
 }
 $result = $db->sql_query($sql);
@@ -400,14 +400,14 @@ while ($row = $db->sql_fetchrow($result))
 {
 	if ($row['group_name'] == 'BOTS')
 	{
-		$legend .= (($legend != '') ? ', ' : '') . '<span style="color:#' . $row['group_colour'] . '">' . $user->lang['G_BOTS'] . '</span>';
+		$legend .= (($legend != '') ? ', ' : '') . '<span style="color:#' . $row['group_colour'] . '">' . phpbb::$user->lang['G_BOTS'] . '</span>';
 	}
 	else
 	{
-		$legend .= (($legend != '') ? ', ' : '') . '<a style="color:#' . $row['group_colour'] . '" href="' . append_sid('memberlist', 'mode=group&amp;g=' . $row['group_id']) . '">' . (($row['group_type'] == GROUP_SPECIAL) ? $user->lang['G_' . $row['group_name']] : $row['group_name']) . '</a>';
+		$legend .= (($legend != '') ? ', ' : '') . '<a style="color:#' . $row['group_colour'] . '" href="' . append_sid('memberlist', 'mode=group&amp;g=' . $row['group_id']) . '">' . (($row['group_type'] == GROUP_SPECIAL) ? phpbb::$user->lang['G_' . $row['group_name']] : $row['group_name']) . '</a>';
 	}
 }
-$db->sql_freeresult($result);
+phpbb::$db->sql_freeresult($result);
 
 // Refreshing the page every 60 seconds...
 meta_refresh(60, append_sid('viewonline', "sg=$show_guests&amp;sk=$sort_key&amp;sd=$sort_dir&amp;start=$start"));
@@ -425,7 +425,7 @@ $template->assign_vars(array(
 	'U_SORT_LOCATION'		=> append_sid('viewonline', 'sk=c&amp;sd=' . (($sort_key == 'c' && $sort_dir == 'a') ? 'd' : 'a') . '&amp;sg=' . ((int) $show_guests)),
 
 	'U_SWITCH_GUEST_DISPLAY'	=> append_sid('viewonline', 'sg=' . ((int) !$show_guests)),
-	'L_SWITCH_GUEST_DISPLAY'	=> ($show_guests) ? $user->lang['HIDE_GUESTS'] : $user->lang['DISPLAY_GUESTS'],
+	'L_SWITCH_GUEST_DISPLAY'	=> ($show_guests) ? phpbb::$user->lang['HIDE_GUESTS'] : phpbb::$user->lang['DISPLAY_GUESTS'],
 	'S_SWITCH_GUEST_DISPLAY'	=> (phpbb::$config['load_online_guests']) ? true : false)
 );
 
@@ -433,7 +433,7 @@ $template->assign_vars(array(
 phpbb::$config['load_online'] = false;
 
 // Output the page
-page_header($user->lang['WHO_IS_ONLINE']);
+page_header(phpbb::$user->lang['WHO_IS_ONLINE']);
 
 $template->set_filenames(array(
 	'body' => 'viewonline_body.html')

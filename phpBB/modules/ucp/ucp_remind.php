@@ -27,8 +27,6 @@ class ucp_remind
 
 	function main($id, $mode)
 	{
-		global $db, $user, $auth, $template;
-
 		$username	= request_var('username', '', true);
 		$email		= strtolower(request_var('email', ''));
 		$submit		= phpbb_request::is_set_post('submit');
@@ -106,7 +104,7 @@ class ucp_remind
 
 			meta_refresh(3, append_sid('index'));
 
-			$message = $user->lang['PASSWORD_UPDATED'] . '<br /><br />' . sprintf($user->lang['RETURN_INDEX'], '<a href="' . append_sid('index') . '">', '</a>');
+			$message = phpbb::$user->lang['PASSWORD_UPDATED'] . '<br /><br />' . sprintf(phpbb::$user->lang['RETURN_INDEX'], '<a href="' . append_sid('index') . '">', '</a>');
 			trigger_error($message);
 		}
 

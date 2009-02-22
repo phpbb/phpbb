@@ -269,8 +269,6 @@ class filespec
 	*/
 	function move_file($destination, $overwrite = false, $skip_image_check = false, $chmod = false)
 	{
-		global $user;
-
 		if (sizeof($this->error))
 		{
 			return false;
@@ -312,7 +310,7 @@ class filespec
 					{
 						if (!@move_uploaded_file($this->filename, $this->destination_file))
 						{
-							$this->error[] = sprintf($user->lang[$this->upload->error_prefix . 'GENERAL_UPLOAD_ERROR'], $this->destination_file);
+							$this->error[] = sprintf(phpbb::$user->lang[$this->upload->error_prefix . 'GENERAL_UPLOAD_ERROR'], $this->destination_file);
 							return false;
 						}
 					}
@@ -327,7 +325,7 @@ class filespec
 					{
 						if (!@copy($this->filename, $this->destination_file))
 						{
-							$this->error[] = sprintf($user->lang[$this->upload->error_prefix . 'GENERAL_UPLOAD_ERROR'], $this->destination_file);
+							$this->error[] = sprintf(phpbb::$user->lang[$this->upload->error_prefix . 'GENERAL_UPLOAD_ERROR'], $this->destination_file);
 							return false;
 						}
 					}
@@ -340,7 +338,7 @@ class filespec
 
 					if (!@copy($this->filename, $this->destination_file))
 					{
-						$this->error[] = sprintf($user->lang[$this->upload->error_prefix . 'GENERAL_UPLOAD_ERROR'], $this->destination_file);
+						$this->error[] = sprintf(phpbb::$user->lang[$this->upload->error_prefix . 'GENERAL_UPLOAD_ERROR'], $this->destination_file);
 						return false;
 					}
 					@unlink($this->filename);
@@ -375,23 +373,23 @@ class filespec
 				{
 					if (!isset($types[$this->image_info[2]]))
 					{
-						$this->error[] = sprintf($user->lang['IMAGE_FILETYPE_INVALID'], $this->image_info[2], $this->mimetype);
+						$this->error[] = sprintf(phpbb::$user->lang['IMAGE_FILETYPE_INVALID'], $this->image_info[2], $this->mimetype);
 					}
 					else
 					{
-						$this->error[] = sprintf($user->lang['IMAGE_FILETYPE_MISMATCH'], $types[$this->image_info[2]][0], $this->extension);
+						$this->error[] = sprintf(phpbb::$user->lang['IMAGE_FILETYPE_MISMATCH'], $types[$this->image_info[2]][0], $this->extension);
 					}
 				}
 
 				// Make sure the dimensions match a valid image
 				if (empty($this->width) || empty($this->height))
 				{
-					$this->error[] = $user->lang['ATTACHED_IMAGE_NOT_IMAGE'];
+					$this->error[] = phpbb::$user->lang['ATTACHED_IMAGE_NOT_IMAGE'];
 				}
 			}
 			else
 			{
-				$this->error[] = $user->lang['UNABLE_GET_IMAGE_SIZE'];
+				$this->error[] = phpbb::$user->lang['UNABLE_GET_IMAGE_SIZE'];
 			}
 		}
 
@@ -407,8 +405,6 @@ class filespec
 	*/
 	function additional_checks()
 	{
-		global $user;
-
 		if (!$this->file_moved)
 		{
 			return false;
@@ -417,17 +413,17 @@ class filespec
 		// Filesize is too big or it's 0 if it was larger than the maxsize in the upload form
 		if ($this->upload->max_filesize && ($this->get('filesize') > $this->upload->max_filesize || $this->filesize == 0))
 		{
-			$size_lang = ($this->upload->max_filesize >= 1048576) ? $user->lang['MIB'] : (($this->upload->max_filesize >= 1024) ? $user->lang['KIB'] : $user->lang['BYTES'] );
+			$size_lang = ($this->upload->max_filesize >= 1048576) ? phpbb::$user->lang['MIB'] : (($this->upload->max_filesize >= 1024) ? phpbb::$user->lang['KIB'] : phpbb::$user->lang['BYTES'] );
 			$max_filesize = get_formatted_filesize($this->upload->max_filesize, false);
 
-			$this->error[] = sprintf($user->lang[$this->upload->error_prefix . 'WRONG_FILESIZE'], $max_filesize, $size_lang);
+			$this->error[] = sprintf(phpbb::$user->lang[$this->upload->error_prefix . 'WRONG_FILESIZE'], $max_filesize, $size_lang);
 
 			return false;
 		}
 
 		if (!$this->upload->valid_dimensions($this))
 		{
-			$this->error[] = sprintf($user->lang[$this->upload->error_prefix . 'WRONG_SIZE'], $this->upload->min_width, $this->upload->min_height, $this->upload->max_width, $this->upload->max_height, $this->width, $this->height);
+			$this->error[] = sprintf(phpbb::$user->lang[$this->upload->error_prefix . 'WRONG_SIZE'], $this->upload->min_width, $this->upload->min_height, $this->upload->max_width, $this->upload->max_height, $this->width, $this->height);
 
 			return false;
 		}
@@ -561,8 +557,6 @@ class fileupload
 	*/
 	function form_upload($form_name)
 	{
-		global $user;
-
 		unset($_FILES[$form_name]['local_mode']);
 		$file = new filespec($_FILES[$form_name], $this);
 
@@ -587,21 +581,21 @@ class fileupload
 		// Check if empty file got uploaded (not catched by is_uploaded_file)
 		if (isset($_FILES[$form_name]['size']) && $_FILES[$form_name]['size'] == 0)
 		{
-			$file->error[] = $user->lang[$this->error_prefix . 'EMPTY_FILEUPLOAD'];
+			$file->error[] = phpbb::$user->lang[$this->error_prefix . 'EMPTY_FILEUPLOAD'];
 			return $file;
 		}
 
 		// PHP Upload filesize exceeded
 		if ($file->get('filename') == 'none')
 		{
-			$file->error[] = (@ini_get('upload_max_filesize') == '') ? $user->lang[$this->error_prefix . 'PHP_SIZE_NA'] : sprintf($user->lang[$this->error_prefix . 'PHP_SIZE_OVERRUN'], @ini_get('upload_max_filesize'));
+			$file->error[] = (@ini_get('upload_max_filesize') == '') ? phpbb::$user->lang[$this->error_prefix . 'PHP_SIZE_NA'] : sprintf(phpbb::$user->lang[$this->error_prefix . 'PHP_SIZE_OVERRUN'], @ini_get('upload_max_filesize'));
 			return $file;
 		}
 
 		// Not correctly uploaded
 		if (!$file->is_uploaded())
 		{
-			$file->error[] = $user->lang[$this->error_prefix . 'NOT_UPLOADED'];
+			$file->error[] = phpbb::$user->lang[$this->error_prefix . 'NOT_UPLOADED'];
 			return $file;
 		}
 
@@ -615,8 +609,6 @@ class fileupload
 	*/
 	function local_upload($source_file, $filedata = false)
 	{
-		global $user;
-
 		$form_name = 'local';
 
 		$_FILES[$form_name]['local_mode'] = true;
@@ -670,14 +662,14 @@ class fileupload
 		// PHP Upload filesize exceeded
 		if ($file->get('filename') == 'none')
 		{
-			$file->error[] = (@ini_get('upload_max_filesize') == '') ? $user->lang[$this->error_prefix . 'PHP_SIZE_NA'] : sprintf($user->lang[$this->error_prefix . 'PHP_SIZE_OVERRUN'], @ini_get('upload_max_filesize'));
+			$file->error[] = (@ini_get('upload_max_filesize') == '') ? phpbb::$user->lang[$this->error_prefix . 'PHP_SIZE_NA'] : sprintf(phpbb::$user->lang[$this->error_prefix . 'PHP_SIZE_OVERRUN'], @ini_get('upload_max_filesize'));
 			return $file;
 		}
 
 		// Not correctly uploaded
 		if (!$file->is_uploaded())
 		{
-			$file->error[] = $user->lang[$this->error_prefix . 'NOT_UPLOADED'];
+			$file->error[] = phpbb::$user->lang[$this->error_prefix . 'NOT_UPLOADED'];
 			return $file;
 		}
 
@@ -696,20 +688,18 @@ class fileupload
 	*/
 	function remote_upload($upload_url)
 	{
-		global $user;
-
 		$upload_ary = array();
 		$upload_ary['local_mode'] = true;
 
 		if (!preg_match('#^(https?://).*?\.(' . implode('|', $this->allowed_extensions) . ')$#i', $upload_url, $match))
 		{
-			$file = new fileerror($user->lang[$this->error_prefix . 'URL_INVALID']);
+			$file = new fileerror(phpbb::$user->lang[$this->error_prefix . 'URL_INVALID']);
 			return $file;
 		}
 
 		if (empty($match[2]))
 		{
-			$file = new fileerror($user->lang[$this->error_prefix . 'URL_INVALID']);
+			$file = new fileerror(phpbb::$user->lang[$this->error_prefix . 'URL_INVALID']);
 			return $file;
 		}
 
@@ -734,7 +724,7 @@ class fileupload
 
 		if (!($fsock = @fsockopen($host, $port, $errno, $errstr)))
 		{
-			$file = new fileerror($user->lang[$this->error_prefix . 'NOT_UPLOADED']);
+			$file = new fileerror(phpbb::$user->lang[$this->error_prefix . 'NOT_UPLOADED']);
 			return $file;
 		}
 
@@ -772,7 +762,7 @@ class fileupload
 					}
 					else if (stripos($line, '404 not found') !== false)
 					{
-						$file = new fileerror($user->lang[$this->error_prefix . 'URL_NOT_FOUND']);
+						$file = new fileerror(phpbb::$user->lang[$this->error_prefix . 'URL_NOT_FOUND']);
 						return $file;
 					}
 				}
@@ -782,7 +772,7 @@ class fileupload
 
 		if (empty($data))
 		{
-			$file = new fileerror($user->lang[$this->error_prefix . 'EMPTY_REMOTE_DATA']);
+			$file = new fileerror(phpbb::$user->lang[$this->error_prefix . 'EMPTY_REMOTE_DATA']);
 			return $file;
 		}
 
@@ -791,7 +781,7 @@ class fileupload
 
 		if (!($fp = @fopen($filename, 'wb')))
 		{
-			$file = new fileerror($user->lang[$this->error_prefix . 'NOT_UPLOADED']);
+			$file = new fileerror(phpbb::$user->lang[$this->error_prefix . 'NOT_UPLOADED']);
 			return $file;
 		}
 
@@ -813,27 +803,25 @@ class fileupload
 	*/
 	function assign_internal_error($errorcode)
 	{
-		global $user;
-
 		switch ($errorcode)
 		{
 			case 1:
-				$error = (@ini_get('upload_max_filesize') == '') ? $user->lang[$this->error_prefix . 'PHP_SIZE_NA'] : sprintf($user->lang[$this->error_prefix . 'PHP_SIZE_OVERRUN'], @ini_get('upload_max_filesize'));
+				$error = (@ini_get('upload_max_filesize') == '') ? phpbb::$user->lang[$this->error_prefix . 'PHP_SIZE_NA'] : sprintf(phpbb::$user->lang[$this->error_prefix . 'PHP_SIZE_OVERRUN'], @ini_get('upload_max_filesize'));
 			break;
 
 			case 2:
-				$size_lang = ($this->max_filesize >= 1048576) ? $user->lang['MIB'] : (($this->max_filesize >= 1024) ? $user->lang['KIB'] : $user->lang['BYTES']);
+				$size_lang = ($this->max_filesize >= 1048576) ? phpbb::$user->lang['MIB'] : (($this->max_filesize >= 1024) ? phpbb::$user->lang['KIB'] : phpbb::$user->lang['BYTES']);
 				$max_filesize = get_formatted_filesize($this->max_filesize, false);
 
-				$error = sprintf($user->lang[$this->error_prefix . 'WRONG_FILESIZE'], $max_filesize, $size_lang);
+				$error = sprintf(phpbb::$user->lang[$this->error_prefix . 'WRONG_FILESIZE'], $max_filesize, $size_lang);
 			break;
 
 			case 3:
-				$error = $user->lang[$this->error_prefix . 'PARTIAL_UPLOAD'];
+				$error = phpbb::$user->lang[$this->error_prefix . 'PARTIAL_UPLOAD'];
 			break;
 
 			case 4:
-				$error = $user->lang[$this->error_prefix . 'NOT_UPLOADED'];
+				$error = phpbb::$user->lang[$this->error_prefix . 'NOT_UPLOADED'];
 			break;
 
 			case 6:
@@ -853,33 +841,31 @@ class fileupload
 	*/
 	function common_checks(&$file)
 	{
-		global $user;
-
 		// Filesize is too big or it's 0 if it was larger than the maxsize in the upload form
 		if ($this->max_filesize && ($file->get('filesize') > $this->max_filesize || $file->get('filesize') == 0))
 		{
-			$size_lang = ($this->max_filesize >= 1048576) ? $user->lang['MIB'] : (($this->max_filesize >= 1024) ? $user->lang['KIB'] : $user->lang['BYTES']);
+			$size_lang = ($this->max_filesize >= 1048576) ? phpbb::$user->lang['MIB'] : (($this->max_filesize >= 1024) ? phpbb::$user->lang['KIB'] : phpbb::$user->lang['BYTES']);
 			$max_filesize = get_formatted_filesize($this->max_filesize, false);
 
-			$file->error[] = sprintf($user->lang[$this->error_prefix . 'WRONG_FILESIZE'], $max_filesize, $size_lang);
+			$file->error[] = sprintf(phpbb::$user->lang[$this->error_prefix . 'WRONG_FILESIZE'], $max_filesize, $size_lang);
 		}
 
 		// check Filename
 		if (preg_match("#[\\/:*?\"<>|]#i", $file->get('realname')))
 		{
-			$file->error[] = sprintf($user->lang[$this->error_prefix . 'INVALID_FILENAME'], $file->get('realname'));
+			$file->error[] = sprintf(phpbb::$user->lang[$this->error_prefix . 'INVALID_FILENAME'], $file->get('realname'));
 		}
 
 		// Invalid Extension
 		if (!$this->valid_extension($file))
 		{
-			$file->error[] = sprintf($user->lang[$this->error_prefix . 'DISALLOWED_EXTENSION'], $file->get('extension'));
+			$file->error[] = sprintf(phpbb::$user->lang[$this->error_prefix . 'DISALLOWED_EXTENSION'], $file->get('extension'));
 		}
 
 		// MIME Sniffing
 		if (!$this->valid_content($file))
 		{
-			$file->error[] = sprintf($user->lang[$this->error_prefix . 'DISALLOWED_CONTENT']);
+			$file->error[] = sprintf(phpbb::$user->lang[$this->error_prefix . 'DISALLOWED_CONTENT']);
 		}
 	}
 

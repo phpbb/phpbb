@@ -22,15 +22,13 @@ if (!defined('IN_PHPBB'))
 */
 function view_folder($id, $mode, $folder_id, $folder)
 {
-	global $user, $template, $auth, $db;
-
 	$submit_export = phpbb_request::is_set_post('submit_export');
 
-	$folder_info = get_pm_from($folder_id, $folder, $user->data['user_id']);
+	$folder_info = get_pm_from($folder_id, $folder, phpbb::$user->data['user_id']);
 
 	if (!$submit_export)
 	{
-		$user->add_lang('viewforum');
+		phpbb::$user->add_lang('viewforum');
 
 		// Grab icons
 		$icons = phpbb_cache::obtain_icons();
@@ -56,9 +54,9 @@ function view_folder($id, $mode, $folder_id, $folder)
 		foreach ($color_rows as $var)
 		{
 			$template->assign_block_vars('pm_colour_info', array(
-				'IMG'	=> $user->img("pm_{$var}", ''),
+				'IMG'	=> phpbb::$user->img("pm_{$var}", ''),
 				'CLASS'	=> "pm_{$var}_colour",
-				'LANG'	=> $user->lang[strtoupper($var) . '_MESSAGE'])
+				'LANG'	=> phpbb::$user->lang[strtoupper($var) . '_MESSAGE'])
 			);
 		}
 
@@ -67,7 +65,7 @@ function view_folder($id, $mode, $folder_id, $folder)
 		$s_mark_options = '';
 		foreach ($mark_options as $mark_option)
 		{
-			$s_mark_options .= '<option value="' . $mark_option . '">' . $user->lang[strtoupper($mark_option)] . '</option>';
+			$s_mark_options .= '<option value="' . $mark_option . '">' . phpbb::$user->lang[strtoupper($mark_option)] . '</option>';
 		}
 
 		// We do the folder moving options here too, for template authors to use...
@@ -82,7 +80,7 @@ function view_folder($id, $mode, $folder_id, $folder)
 				}
 
 				$s_folder_move_options .= '<option' . (($f_id != PRIVMSGS_INBOX) ? ' class="sep"' : '') . ' value="' . $f_id . '">';
-				$s_folder_move_options .= sprintf($user->lang['MOVE_MARKED_TO_FOLDER'], $folder_ary['folder_name']);
+				$s_folder_move_options .= sprintf(phpbb::$user->lang['MOVE_MARKED_TO_FOLDER'], $folder_ary['folder_name']);
 				$s_folder_move_options .= (($folder_ary['unread_messages']) ? ' [' . $folder_ary['unread_messages'] . '] ' : '') . '</option>';
 			}
 		}
@@ -91,7 +89,7 @@ function view_folder($id, $mode, $folder_id, $folder)
 		// Get friends and foes
 		$sql = 'SELECT *
 			FROM ' . ZEBRA_TABLE . '
-			WHERE user_id = ' . $user->data['user_id'];
+			WHERE user_id = ' . phpbb::$user->data['user_id'];
 		$result = $db->sql_query($sql);
 
 		while ($row = $db->sql_fetchrow($result))
@@ -126,7 +124,7 @@ function view_folder($id, $mode, $folder_id, $folder)
 						{
 							foreach (array_keys($address[$message_id][$save]) as $ug_id)
 							{
-								$recipient_list[$save][$ug_id] = array('name' => $user->lang['NA'], 'colour' => '');
+								$recipient_list[$save][$ug_id] = array('name' => phpbb::$user->lang['NA'], 'colour' => '');
 							}
 						}
 					}
@@ -157,7 +155,7 @@ function view_folder($id, $mode, $folder_id, $folder)
 						{
 							if ($ug_type == 'g')
 							{
-								$row['name'] = ($row['group_type'] == GROUP_SPECIAL) ? $user->lang['G_' . $row['name']] : $row['name'];
+								$row['name'] = ($row['group_type'] == GROUP_SPECIAL) ? phpbb::$user->lang['G_' . $row['name']] : $row['name'];
 							}
 
 							$recipient_list[$ug_type][$row['id']] = array('name' => $row['name'], 'colour' => $row['colour']);
@@ -224,16 +222,16 @@ function view_folder($id, $mode, $folder_id, $folder)
 
 					'FOLDER_ID'			=> $folder_id,
 					'MESSAGE_ID'		=> $message_id,
-					'SENT_TIME'			=> $user->format_date($row['message_time']),
+					'SENT_TIME'			=> phpbb::$user->format_date($row['message_time']),
 					'SUBJECT'			=> censor_text($row['message_subject']),
 					'FOLDER'			=> (isset($folder[$row['folder_id']])) ? $folder[$row['folder_id']]['folder_name'] : '',
 					'U_FOLDER'			=> (isset($folder[$row['folder_id']])) ? append_sid('ucp', 'folder=' . $row['folder_id']) : '',
 					'PM_ICON_IMG'		=> (!empty($icons[$row['icon_id']])) ? '<img src="' . phpbb::$config['icons_path'] . '/' . $icons[$row['icon_id']]['img'] . '" width="' . $icons[$row['icon_id']]['width'] . '" height="' . $icons[$row['icon_id']]['height'] . '" alt="" title="" />' : '',
 					'PM_ICON_URL'		=> (!empty($icons[$row['icon_id']])) ? phpbb::$config['icons_path'] . '/' . $icons[$row['icon_id']]['img'] : '',
-					'FOLDER_IMG'		=> $user->img($folder_img, $folder_alt),
-					'FOLDER_IMG_SRC'	=> $user->img($folder_img, $folder_alt, 'src'),
-					'PM_IMG'			=> ($row_indicator) ? $user->img('pm_' . $row_indicator, '') : '',
-					'ATTACH_ICON_IMG'	=> ($auth->acl_get('u_pm_download') && $row['message_attachment'] && phpbb::$config['allow_pm_attach']) ? $user->img('icon_topic_attach', $user->lang['TOTAL_ATTACHMENTS']) : '',
+					'FOLDER_IMG'		=> phpbb::$user->img($folder_img, $folder_alt),
+					'FOLDER_IMG_SRC'	=> phpbb::$user->img($folder_img, $folder_alt, 'src'),
+					'PM_IMG'			=> ($row_indicator) ? phpbb::$user->img('pm_' . $row_indicator, '') : '',
+					'ATTACH_ICON_IMG'	=> ($auth->acl_get('u_pm_download') && $row['message_attachment'] && phpbb::$config['allow_pm_attach']) ? phpbb::$user->img('icon_topic_attach', 'TOTAL_ATTACHMENTS') : '',
 
 					'S_PM_DELETED'		=> ($row['pm_deleted']) ? true : false,
 					'S_AUTHOR_DELETED'	=> ($row['author_id'] == ANONYMOUS) ? true : false,
@@ -283,7 +281,7 @@ function view_folder($id, $mode, $folder_id, $folder)
 
 				$sql = 'SELECT p.message_text, p.bbcode_uid
 					FROM ' . PRIVMSGS_TO_TABLE . ' t, ' . PRIVMSGS_TABLE . ' p, ' . USERS_TABLE . ' u
-					WHERE t.user_id = ' . $user->data['user_id'] . "
+					WHERE t.user_id = ' . phpbb::$user->data['user_id'] . "
 						AND p.author_id = u.user_id
 						AND t.folder_id = $folder_id
 						AND t.msg_id = p.msg_id
@@ -327,7 +325,7 @@ function view_folder($id, $mode, $folder_id, $folder)
 				$data[] = array(
 					'subject'	=> censor_text($row['message_subject']),
 					'sender'	=> $row['username'],
-					'date'		=> $user->format_date($row['message_time']),
+					'date'		=> phpbb::$user->format_date($row['message_time']),
 					'to'		=> ($folder_id == PRIVMSGS_OUTBOX || $folder_id == PRIVMSGS_SENTBOX) ? $address[$message_id] : '',
 					'message'	=> $message_row['message_text']
 				);
@@ -438,8 +436,6 @@ function view_folder($id, $mode, $folder_id, $folder)
 */
 function get_pm_from($folder_id, $folder, $user_id)
 {
-	global $user, $db, $template, $auth;
-
 	$start = request_var('start', 0);
 
 	// Additional vars later, pm ordering is mostly different from post ordering. :/
@@ -448,18 +444,18 @@ function get_pm_from($folder_id, $folder, $user_id)
 	$sort_dir	= request_var('sd', 'd');
 
 	// PM ordering options
-	$limit_days = array(0 => $user->lang['ALL_MESSAGES'], 1 => $user->lang['1_DAY'], 7 => $user->lang['7_DAYS'], 14 => $user->lang['2_WEEKS'], 30 => $user->lang['1_MONTH'], 90 => $user->lang['3_MONTHS'], 180 => $user->lang['6_MONTHS'], 365 => $user->lang['1_YEAR']);
+	$limit_days = array(0 => phpbb::$user->lang['ALL_MESSAGES'], 1 => phpbb::$user->lang['1_DAY'], 7 => phpbb::$user->lang['7_DAYS'], 14 => phpbb::$user->lang['2_WEEKS'], 30 => phpbb::$user->lang['1_MONTH'], 90 => phpbb::$user->lang['3_MONTHS'], 180 => phpbb::$user->lang['6_MONTHS'], 365 => phpbb::$user->lang['1_YEAR']);
 
 	// No sort by Author for sentbox/outbox (already only author available)
 	// Also, sort by msg_id for the time - private messages are not as prone to errors as posts are.
 	if ($folder_id == PRIVMSGS_OUTBOX || $folder_id == PRIVMSGS_SENTBOX)
 	{
-		$sort_by_text = array('t' => $user->lang['POST_TIME'], 's' => $user->lang['SUBJECT']);
+		$sort_by_text = array('t' => phpbb::$user->lang['POST_TIME'], 's' => phpbb::$user->lang['SUBJECT']);
 		$sort_by_sql = array('t' => 'p.msg_id', 's' => 'p.message_subject');
 	}
 	else
 	{
-		$sort_by_text = array('a' => $user->lang['AUTHOR'], 't' => $user->lang['POST_TIME'], 's' => $user->lang['SUBJECT']);
+		$sort_by_text = array('a' => phpbb::$user->lang['AUTHOR'], 't' => phpbb::$user->lang['POST_TIME'], 's' => phpbb::$user->lang['SUBJECT']);
 		$sort_by_sql = array('a' => 'u.username_clean', 't' => 'p.msg_id', 's' => 'p.message_subject');
 	}
 
@@ -499,11 +495,11 @@ function get_pm_from($folder_id, $folder, $user_id)
 	$template->assign_vars(array(
 		'PAGINATION'		=> generate_pagination(append_sid('ucp', "i=pm&amp;mode=view&amp;action=view_folder&amp;f=$folder_id&amp;$u_sort_param"), $pm_count, phpbb::$config['topics_per_page'], $start),
 		'PAGE_NUMBER'		=> on_page($pm_count, phpbb::$config['topics_per_page'], $start),
-		'TOTAL_MESSAGES'	=> (($pm_count == 1) ? $user->lang['VIEW_PM_MESSAGE'] : sprintf($user->lang['VIEW_PM_MESSAGES'], $pm_count)),
+		'TOTAL_MESSAGES'	=> (($pm_count == 1) ? phpbb::$user->lang['VIEW_PM_MESSAGE'] : sprintf(phpbb::$user->lang['VIEW_PM_MESSAGES'], $pm_count)),
 
-		'POST_IMG'		=> (!$auth->acl_get('u_sendpm')) ? $user->img('button_topic_locked', 'PM_LOCKED') : $user->img('button_pm_new', 'POST_PM'),
+		'POST_IMG'		=> (!$auth->acl_get('u_sendpm')) ? phpbb::$user->img('button_topic_locked', 'PM_LOCKED') : phpbb::$user->img('button_pm_new', 'POST_PM'),
 
-		'L_NO_MESSAGES'	=> (!$auth->acl_get('u_sendpm')) ? $user->lang['POST_PM_LOCKED'] : $user->lang['NO_MESSAGES'],
+		'L_NO_MESSAGES'	=> (!$auth->acl_get('u_sendpm')) ? phpbb::$user->lang['POST_PM_LOCKED'] : phpbb::$user->lang['NO_MESSAGES'],
 
 		'S_SELECT_SORT_DIR'		=> $s_sort_dir,
 		'S_SELECT_SORT_KEY'		=> $s_sort_key,

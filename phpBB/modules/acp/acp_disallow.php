@@ -25,11 +25,9 @@ class acp_disallow
 
 	function main($id, $mode)
 	{
-		global $db, $user, $auth, $template;
-
 		include(PHPBB_ROOT_PATH . 'includes/functions_user.' . PHP_EXT);
 
-		$user->add_lang('acp/posting');
+		phpbb::$user->add_lang('acp/posting');
 
 		// Set up general vars
 		$this->tpl_name = 'acp_disallow';
@@ -43,7 +41,7 @@ class acp_disallow
 
 		if (($allow || $disallow) && !check_form_key($form_key))
 		{
-			trigger_error($user->lang['FORM_INVALID'] . adm_back_link($this->u_action), E_USER_WARNING);
+			trigger_error(phpbb::$user->lang['FORM_INVALID'] . adm_back_link($this->u_action), E_USER_WARNING);
 		}
 
 		if ($disallow)
@@ -52,7 +50,7 @@ class acp_disallow
 
 			if (!$disallowed_user)
 			{
-				trigger_error($user->lang['NO_USERNAME_SPECIFIED'] . adm_back_link($this->u_action), E_USER_WARNING);
+				trigger_error(phpbb::$user->lang['NO_USERNAME_SPECIFIED'] . adm_back_link($this->u_action), E_USER_WARNING);
 			}
 
 			$sql = 'INSERT INTO ' . DISALLOW_TABLE . ' ' . $db->sql_build_array('INSERT', array('disallow_username' => $disallowed_user));
@@ -60,7 +58,7 @@ class acp_disallow
 
 			phpbb::$acm->destroy('disallowed_usernames');
 
-			$message = $user->lang['DISALLOW_SUCCESSFUL'];
+			$message = phpbb::$user->lang['DISALLOW_SUCCESSFUL'];
 			add_log('admin', 'LOG_DISALLOW_ADD', str_replace('%', '*', $disallowed_user));
 
 			trigger_error($message . adm_back_link($this->u_action));
@@ -71,7 +69,7 @@ class acp_disallow
 
 			if (!$disallowed_id)
 			{
-				trigger_error($user->lang['NO_USERNAME_SPECIFIED'] . adm_back_link($this->u_action), E_USER_WARNING);
+				trigger_error(phpbb::$user->lang['NO_USERNAME_SPECIFIED'] . adm_back_link($this->u_action), E_USER_WARNING);
 			}
 
 			$sql = 'DELETE FROM ' . DISALLOW_TABLE . '
@@ -82,7 +80,7 @@ class acp_disallow
 
 			add_log('admin', 'LOG_DISALLOW_DELETE');
 
-			trigger_error($user->lang['DISALLOWED_DELETED'] . adm_back_link($this->u_action));
+			trigger_error(phpbb::$user->lang['DISALLOWED_DELETED'] . adm_back_link($this->u_action));
 		}
 
 		// Grab the current list of disallowed usernames...

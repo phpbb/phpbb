@@ -31,11 +31,9 @@ class acp_inactive
 
 	function main($id, $mode)
 	{
-		global $db, $user, $auth, $template;
-
 		include(PHPBB_ROOT_PATH . 'includes/functions_user.' . PHP_EXT);
 
-		$user->add_lang('memberlist');
+		phpbb::$user->add_lang('memberlist');
 
 		$action = request_var('action', '');
 		$mark	= request_var('mark', array(0));
@@ -54,7 +52,7 @@ class acp_inactive
 		{
 			if ($action !== 'delete' && !check_form_key($form_key))
 			{
-				trigger_error($user->lang['FORM_INVALID'] . adm_back_link($this->u_action), E_USER_WARNING);
+				trigger_error(phpbb::$user->lang['FORM_INVALID'] . adm_back_link($this->u_action), E_USER_WARNING);
 			}
 
 			switch ($action)
@@ -108,8 +106,8 @@ class acp_inactive
 								$messenger->to($row['user_email'], $row['username']);
 
 								$messenger->headers('X-AntiAbuse: Board servername - ' . phpbb::$config['server_name']);
-								$messenger->headers('X-AntiAbuse: User_id - ' . $user->data['user_id']);
-								$messenger->headers('X-AntiAbuse: Username - ' . $user->data['username']);
+								$messenger->headers('X-AntiAbuse: User_id - ' . phpbb::$user->data['user_id']);
+								$messenger->headers('X-AntiAbuse: Username - ' . phpbb::$user->data['username']);
 
 								$messenger->assign_vars(array(
 									'USERNAME'	=> htmlspecialchars_decode($row['username']))
@@ -127,7 +125,7 @@ class acp_inactive
 						{
 							if (!$auth->acl_get('a_userdel'))
 							{
-								trigger_error($user->lang['NO_AUTH_OPERATION'] . adm_back_link($this->u_action), E_USER_WARNING);
+								trigger_error(phpbb::$user->lang['NO_AUTH_OPERATION'] . adm_back_link($this->u_action), E_USER_WARNING);
 							}
 
 							foreach ($mark as $user_id)
@@ -146,7 +144,7 @@ class acp_inactive
 								'submit'		=> 1,
 								'start'			=> $start,
 							);
-							confirm_box(false, $user->lang['CONFIRM_OPERATION'], build_hidden_fields($s_hidden_fields));
+							confirm_box(false, phpbb::$user->lang['CONFIRM_OPERATION'], build_hidden_fields($s_hidden_fields));
 						}
 					}
 
@@ -155,7 +153,7 @@ class acp_inactive
 				case 'remind':
 					if (empty(phpbb::$config['email_enable']))
 					{
-						trigger_error($user->lang['EMAIL_DISABLED'] . adm_back_link($this->u_action), E_USER_WARNING);
+						trigger_error(phpbb::$user->lang['EMAIL_DISABLED'] . adm_back_link($this->u_action), E_USER_WARNING);
 					}
 
 					$sql = 'SELECT user_id, username, user_email, user_lang, user_jabber, user_notify_type, user_regdate, user_actkey
@@ -180,7 +178,7 @@ class acp_inactive
 
 							$messenger->assign_vars(array(
 								'USERNAME'		=> htmlspecialchars_decode($row['username']),
-								'REGISTER_DATE'	=> $user->format_date($row['user_regdate']),
+								'REGISTER_DATE'	=> phpbb::$user->format_date($row['user_regdate']),
 								'U_ACTIVATE'	=> generate_board_url() . '/ucp.' . PHP_EXT . '?mode=activate&u=' . $row['user_id'] . '&k=' . $row['user_actkey'])
 							);
 
@@ -202,8 +200,8 @@ class acp_inactive
 		}
 
 		// Sorting
-		$limit_days = array(0 => $user->lang['ALL_ENTRIES'], 1 => $user->lang['1_DAY'], 7 => $user->lang['7_DAYS'], 14 => $user->lang['2_WEEKS'], 30 => $user->lang['1_MONTH'], 90 => $user->lang['3_MONTHS'], 180 => $user->lang['6_MONTHS'], 365 => $user->lang['1_YEAR']);
-		$sort_by_text = array('i' => $user->lang['SORT_INACTIVE'], 'j' => $user->lang['SORT_REG_DATE'], 'l' => $user->lang['SORT_LAST_VISIT'], 'r' => $user->lang['SORT_REASON'], 'u' => $user->lang['SORT_USERNAME']);
+		$limit_days = array(0 => phpbb::$user->lang['ALL_ENTRIES'], 1 => phpbb::$user->lang['1_DAY'], 7 => phpbb::$user->lang['7_DAYS'], 14 => phpbb::$user->lang['2_WEEKS'], 30 => phpbb::$user->lang['1_MONTH'], 90 => phpbb::$user->lang['3_MONTHS'], 180 => phpbb::$user->lang['6_MONTHS'], 365 => phpbb::$user->lang['1_YEAR']);
+		$sort_by_text = array('i' => phpbb::$user->lang['SORT_INACTIVE'], 'j' => phpbb::$user->lang['SORT_REG_DATE'], 'l' => phpbb::$user->lang['SORT_LAST_VISIT'], 'r' => phpbb::$user->lang['SORT_REASON'], 'u' => phpbb::$user->lang['SORT_USERNAME']);
 		$sort_by_sql = array('i' => 'user_inactive_time', 'j' => 'user_regdate', 'l' => 'user_lastvisit', 'r' => 'user_inactive_reason', 'u' => 'username_clean');
 
 		$s_limit_days = $s_sort_key = $s_sort_dir = $u_sort_param = '';
@@ -221,9 +219,9 @@ class acp_inactive
 		foreach ($inactive as $row)
 		{
 			$template->assign_block_vars('inactive', array(
-				'INACTIVE_DATE'	=> $user->format_date($row['user_inactive_time']),
-				'JOINED'		=> $user->format_date($row['user_regdate']),
-				'LAST_VISIT'	=> (!$row['user_lastvisit']) ? ' - ' : $user->format_date($row['user_lastvisit']),
+				'INACTIVE_DATE'	=> phpbb::$user->format_date($row['user_inactive_time']),
+				'JOINED'		=> phpbb::$user->format_date($row['user_regdate']),
+				'LAST_VISIT'	=> (!$row['user_lastvisit']) ? ' - ' : phpbb::$user->format_date($row['user_lastvisit']),
 				'REASON'		=> $row['inactive_reason'],
 				'USER_ID'		=> $row['user_id'],
 				'USERNAME'		=> $row['username'],

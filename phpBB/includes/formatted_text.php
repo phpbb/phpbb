@@ -34,51 +34,51 @@ class formatted_text
 	 * @var string
 	 */
 	private $meta;
-	
+
 	/**
 	 * Formatting options as bit flag.
-	 * 
+	 *
 	 * @see bbcode_parser
 	 *
 	 * @var int
 	 */
 	private $flags;
-	
+
 	/**
 	 * Compiled $text. For dispaly.
 	 *
 	 * @var string
 	 */
 	private $compiled;
-	
+
 	/**
 	 * Set to true if text, meta or flags have been changed, false otherwise.
 	 *
 	 * @var bool
 	 */
 	private $changed;
-	
+
 	/**
 	 * DB table to update
 	 *
 	 * @var string
 	 */
 	private $update_table = '';
-	
+
 	/**
 	 * Column in $update_table to update.
 	 *
 	 * @var string
 	 */
 	private $update_column = '';
-	
+
 	/**
 	 * Where clause for auto update.
 	 *
 	 * @var string
 	 */
 	private $update_where = '';
-	
+
 	/**
 	 * Creates a new instance.
 	 *
@@ -110,12 +110,12 @@ class formatted_text
 			$this->to_db($this->update_table, $this->update_column, $this->update_where);
 		}
 	}
-	
+
 	/**
 	 * Convieniently initialize a formatted_text object from
 	 * a database result set. The array must contain the following indexes:
 	 * $column, {$column}_meta and {$column}_flags
-	 * 
+	 *
 	 *
 	 * @param array $data
 	 * @param string $column
@@ -125,7 +125,7 @@ class formatted_text
 	{
 		return new formatted_text($data[$column], $data[$column . '_meta'], (int) $data[$column . '_flags']);
 	}
-	
+
 	/**
 	 * Returns the $text formatted, ready to be displayed on a webpage.
 	 *
@@ -148,9 +148,8 @@ class formatted_text
 	 */
 	public function to_db($table, $column, $where = '1')
 	{
-		global $db;
 		$this->changed = false;
-		
+
 		$sql = 'UPDATE ' . $table . ' SET ' . $db->sql_build_query('UPDATE', $this->to_db_data($column))
 					. ' WHERE ' . $where;
 		return (bool) $db->sql_query($sql);
@@ -182,7 +181,7 @@ class formatted_text
 		$this->update_column = $column;
 		$this->update_where = $where;
 	}
-	
+
 	/**
 	 * Sets $meta if not set.
 	 */
@@ -196,7 +195,7 @@ class formatted_text
 		$parser = new phpbb_bbcode_parser;
 		$this->meta = $parser->first_pass($this->text);
 	}
-	
+
 	/**
 	 * Sets $compiled if not set.
 	 */
@@ -243,7 +242,7 @@ class formatted_text
 			$this->compiled = '';
 		}
 	}
-	
+
 	/**
 	 * Returns the current text.
 	 *
@@ -253,7 +252,7 @@ class formatted_text
 	{
 		return $this->text;
 	}
-	
+
 	/**
 	 * Returns the current(!!) metadata.
 	 *
@@ -263,7 +262,7 @@ class formatted_text
 	{
 		return $this->meta;
 	}
-	
+
 	/**
 	 * Returns the current flags.
 	 *
@@ -273,7 +272,7 @@ class formatted_text
 	{
 		return $this->flags;
 	}
-	
+
 	/**
 	 * Returns true if $this is equal to $other.
 	 * Objects are only equal if $text and $flags are equal.

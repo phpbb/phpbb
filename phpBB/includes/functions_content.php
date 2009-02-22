@@ -40,6 +40,7 @@ if (!defined('IN_PHPBB'))
 
 /**
 * Generate sort selection fields
+* @todo phpbb_api::new('sort')
 */
 function gen_sort_selects(&$limit_days, &$sort_by_text, &$sort_days, &$sort_key, &$sort_dir, &$s_limit_days, &$s_sort_key, &$s_sort_dir, &$u_sort_param, $def_st = false, $def_sk = false, $def_sd = false)
 {

@@ -26,14 +26,12 @@ class acp_permissions
 
 	function main($id, $mode)
 	{
-		global $db, $user, $auth, $template;
-
 		include_once(PHPBB_ROOT_PATH . 'includes/functions_user.' . PHP_EXT);
 		include_once(PHPBB_ROOT_PATH . 'includes/acp/auth.' . PHP_EXT);
 
 		$auth_admin = new auth_admin();
 
-		$user->add_lang('acp/permissions');
+		phpbb::$user->add_lang('acp/permissions');
 		add_permission_language();
 
 		$this->tpl_name = 'acp_permissions';
@@ -49,7 +47,7 @@ class acp_permissions
 
 			if ($user_id && isset($auth_admin->acl_options['id'][$permission]) && $auth->acl_get('a_viewauth'))
 			{
-				$this->page_title = sprintf($user->lang['TRACE_PERMISSION'], $user->lang['acl_' . $permission]['lang']);
+				$this->page_title = sprintf(phpbb::$user->lang['TRACE_PERMISSION'], phpbb::$user->lang['acl_' . $permission]['lang']);
 				$this->permission_trace($user_id, $forum_id, $permission);
 				return;
 			}
@@ -107,7 +105,7 @@ class acp_permissions
 
 			if (!sizeof($user_id))
 			{
-				trigger_error($user->lang['SELECTED_USER_NOT_EXIST'] . adm_back_link($this->u_action), E_USER_WARNING);
+				trigger_error(phpbb::$user->lang['SELECTED_USER_NOT_EXIST'] . adm_back_link($this->u_action), E_USER_WARNING);
 			}
 		}
 		unset($username);
@@ -204,8 +202,8 @@ class acp_permissions
 		}
 
 		$template->assign_vars(array(
-			'L_TITLE'		=> $user->lang[$this->page_title],
-			'L_EXPLAIN'		=> $user->lang[$this->page_title . '_EXPLAIN'])
+			'L_TITLE'		=> phpbb::$user->lang[$this->page_title],
+			'L_EXPLAIN'		=> phpbb::$user->lang[$this->page_title . '_EXPLAIN'])
 		);
 
 		// Get permission type
@@ -213,7 +211,7 @@ class acp_permissions
 
 		if (!in_array($permission_type, $this->permission_dropdown))
 		{
-			trigger_error($user->lang['WRONG_PERMISSION_TYPE'] . adm_back_link($this->u_action), E_USER_WARNING);
+			trigger_error(phpbb::$user->lang['WRONG_PERMISSION_TYPE'] . adm_back_link($this->u_action), E_USER_WARNING);
 		}
 
 
@@ -226,7 +224,7 @@ class acp_permissions
 
 					if (!check_form_key($form_name))
 					{
-						trigger_error($user->lang['FORM_INVALID']. adm_back_link($this->u_action), E_USER_WARNING);
+						trigger_error(phpbb::$user->lang['FORM_INVALID']. adm_back_link($this->u_action), E_USER_WARNING);
 					}
 					// All users/groups selected?
 					$all_users = phpbb_request::is_set_post('all_users');
@@ -252,18 +250,18 @@ class acp_permissions
 					}
 					else
 					{
-						trigger_error($user->lang['NO_USER_GROUP_SELECTED'] . adm_back_link($this->u_action), E_USER_WARNING);
+						trigger_error(phpbb::$user->lang['NO_USER_GROUP_SELECTED'] . adm_back_link($this->u_action), E_USER_WARNING);
 					}
 				break;
 
 				case 'apply_permissions':
 					if (!phpbb_request::is_set_post('setting'))
 					{
-						trigger_error($user->lang['NO_AUTH_SETTING_FOUND'] . adm_back_link($this->u_action), E_USER_WARNING);
+						trigger_error(phpbb::$user->lang['NO_AUTH_SETTING_FOUND'] . adm_back_link($this->u_action), E_USER_WARNING);
 					}
 					if (!check_form_key($form_name))
 					{
-						trigger_error($user->lang['FORM_INVALID']. adm_back_link($this->u_action), E_USER_WARNING);
+						trigger_error(phpbb::$user->lang['FORM_INVALID']. adm_back_link($this->u_action), E_USER_WARNING);
 					}
 
 					$this->set_permissions($mode, $permission_type, $auth_admin, $user_id, $group_id);
@@ -272,11 +270,11 @@ class acp_permissions
 				case 'apply_all_permissions':
 					if (!phpbb_request::is_set_post('setting'))
 					{
-						trigger_error($user->lang['NO_AUTH_SETTING_FOUND'] . adm_back_link($this->u_action), E_USER_WARNING);
+						trigger_error(phpbb::$user->lang['NO_AUTH_SETTING_FOUND'] . adm_back_link($this->u_action), E_USER_WARNING);
 					}
 					if (!check_form_key($form_name))
 					{
-						trigger_error($user->lang['FORM_INVALID']. adm_back_link($this->u_action), E_USER_WARNING);
+						trigger_error(phpbb::$user->lang['FORM_INVALID']. adm_back_link($this->u_action), E_USER_WARNING);
 					}
 
 					$this->set_all_permissions($mode, $permission_type, $auth_admin, $user_id, $group_id);
@@ -464,12 +462,12 @@ class acp_permissions
 		// Do not allow forum_ids being set and no other setting defined (will bog down the server too much)
 		if (sizeof($forum_id) && !sizeof($user_id) && !sizeof($group_id))
 		{
-			trigger_error($user->lang['ONLY_FORUM_DEFINED'] . adm_back_link($this->u_action), E_USER_WARNING);
+			trigger_error(phpbb::$user->lang['ONLY_FORUM_DEFINED'] . adm_back_link($this->u_action), E_USER_WARNING);
 		}
 
 		$template->assign_vars(array(
 			'S_PERMISSION_DROPDOWN'		=> (sizeof($this->permission_dropdown) > 1) ? $this->build_permission_dropdown($this->permission_dropdown, $permission_type, $permission_scope) : false,
-			'L_PERMISSION_TYPE'			=> $user->lang['ACL_TYPE_' . strtoupper($permission_type)],
+			'L_PERMISSION_TYPE'			=> phpbb::$user->lang['ACL_TYPE_' . strtoupper($permission_type)],
 
 			'U_ACTION'					=> $this->u_action,
 			'S_HIDDEN_FIELDS'			=> $s_hidden_fields)
@@ -500,8 +498,6 @@ class acp_permissions
 	*/
 	function build_subforum_options($forum_list)
 	{
-		global $user;
-
 		$s_options = '';
 
 		$forum_list = array_merge($forum_list);
@@ -530,7 +526,7 @@ class acp_permissions
 
 			if ($branch_there)
 			{
-				$s_options .= ' [' . $user->lang['PLUS_SUBFORUMS'] . ']';
+				$s_options .= ' [' . phpbb::$user->lang['PLUS_SUBFORUMS'] . ']';
 			}
 
 			$s_options .= '</option>';
@@ -544,8 +540,6 @@ class acp_permissions
 	*/
 	function build_permission_dropdown($options, $default_option, $permission_scope)
 	{
-		global $user, $auth;
-
 		$s_dropdown_options = '';
 		foreach ($options as $setting)
 		{
@@ -555,7 +549,7 @@ class acp_permissions
 			}
 
 			$selected = ($setting == $default_option) ? ' selected="selected"' : '';
-			$l_setting = (isset($user->lang['permission_type'][$permission_scope][$setting])) ? $user->lang['permission_type'][$permission_scope][$setting] : $user->lang['permission_type'][$setting];
+			$l_setting = (isset(phpbb::$user->lang['permission_type'][$permission_scope][$setting])) ? phpbb::$user->lang['permission_type'][$permission_scope][$setting] : phpbb::$user->lang['permission_type'][$setting];
 			$s_dropdown_options .= '<option value="' . $setting . '"' . $selected . '>' . $l_setting . '</option>';
 		}
 
@@ -567,8 +561,6 @@ class acp_permissions
 	*/
 	function check_existence($mode, &$ids)
 	{
-		global $db, $user;
-
 		switch ($mode)
 		{
 			case 'user':
@@ -604,7 +596,7 @@ class acp_permissions
 
 		if (!sizeof($ids))
 		{
-			trigger_error($user->lang['SELECTED_' . strtoupper($mode) . '_NOT_EXIST'] . adm_back_link($this->u_action), E_USER_WARNING);
+			trigger_error(phpbb::$user->lang['SELECTED_' . strtoupper($mode) . '_NOT_EXIST'] . adm_back_link($this->u_action), E_USER_WARNING);
 		}
 	}
 
@@ -613,8 +605,6 @@ class acp_permissions
 	*/
 	function set_permissions($mode, $permission_type, &$auth_admin, &$user_id, &$group_id)
 	{
-		global $user, $auth;
-
 		$psubmit = request_var('psubmit', array(0 => array(0 => 0)));
 
 		// User or group to be set?
@@ -623,7 +613,7 @@ class acp_permissions
 		// Check the permission setting again
 		if (!$auth->acl_get('a_' . str_replace('_', '', $permission_type) . 'auth') || !$auth->acl_get('a_auth' . $ug_type . 's'))
 		{
-			trigger_error($user->lang['NO_AUTH_OPERATION'] . adm_back_link($this->u_action), E_USER_WARNING);
+			trigger_error(phpbb::$user->lang['NO_AUTH_OPERATION'] . adm_back_link($this->u_action), E_USER_WARNING);
 		}
 
 		$ug_id = $forum_id = 0;
@@ -690,7 +680,7 @@ class acp_permissions
 
 		$this->log_action($mode, 'add', $permission_type, $ug_type, $ug_id, $forum_id);
 
-		trigger_error($user->lang['AUTH_UPDATED'] . adm_back_link($this->u_action));
+		trigger_error(phpbb::$user->lang['AUTH_UPDATED'] . adm_back_link($this->u_action));
 	}
 
 	/**
@@ -698,15 +688,13 @@ class acp_permissions
 	*/
 	function set_all_permissions($mode, $permission_type, &$auth_admin, &$user_id, &$group_id)
 	{
-		global $user, $auth;
-
 		// User or group to be set?
 		$ug_type = (sizeof($user_id)) ? 'user' : 'group';
 
 		// Check the permission setting again
 		if (!$auth->acl_get('a_' . str_replace('_', '', $permission_type) . 'auth') || !$auth->acl_get('a_auth' . $ug_type . 's'))
 		{
-			trigger_error($user->lang['NO_AUTH_OPERATION'] . adm_back_link($this->u_action), E_USER_WARNING);
+			trigger_error(phpbb::$user->lang['NO_AUTH_OPERATION'] . adm_back_link($this->u_action), E_USER_WARNING);
 		}
 
 		$auth_settings = phpbb_request::variable('setting', array(0 => array(0 => array('' => 0))), false, phpbb_request::POST);
@@ -755,7 +743,7 @@ class acp_permissions
 
 		$this->log_action($mode, 'add', $permission_type, $ug_type, $ug_ids, $forum_ids);
 
-		trigger_error($user->lang['AUTH_UPDATED'] . adm_back_link($this->u_action));
+		trigger_error(phpbb::$user->lang['AUTH_UPDATED'] . adm_back_link($this->u_action));
 	}
 
 	/**
@@ -764,8 +752,6 @@ class acp_permissions
 	*/
 	function check_assigned_role($role_id, &$auth_settings)
 	{
-		global $db;
-
 		$sql = 'SELECT o.auth_option, r.auth_setting
 			FROM ' . ACL_OPTIONS_TABLE . ' o, ' . ACL_ROLES_DATA_TABLE . ' r
 			WHERE o.auth_option_id = r.auth_option_id
@@ -801,15 +787,13 @@ class acp_permissions
 	*/
 	function remove_permissions($mode, $permission_type, &$auth_admin, &$user_id, &$group_id, &$forum_id)
 	{
-		global $user, $db, $auth;
-
 		// User or group to be set?
 		$ug_type = (sizeof($user_id)) ? 'user' : 'group';
 
 		// Check the permission setting again
 		if (!$auth->acl_get('a_' . str_replace('_', '', $permission_type) . 'auth') || !$auth->acl_get('a_auth' . $ug_type . 's'))
 		{
-			trigger_error($user->lang['NO_AUTH_OPERATION'] . adm_back_link($this->u_action), E_USER_WARNING);
+			trigger_error(phpbb::$user->lang['NO_AUTH_OPERATION'] . adm_back_link($this->u_action), E_USER_WARNING);
 		}
 
 		$auth_admin->acl_delete($ug_type, (($ug_type == 'user') ? $user_id : $group_id), (sizeof($forum_id) ? $forum_id : false), $permission_type);
@@ -822,7 +806,7 @@ class acp_permissions
 
 		$this->log_action($mode, 'del', $permission_type, $ug_type, (($ug_type == 'user') ? $user_id : $group_id), (sizeof($forum_id) ? $forum_id : array(0 => 0)));
 
-		trigger_error($user->lang['AUTH_UPDATED'] . adm_back_link($this->u_action));
+		trigger_error(phpbb::$user->lang['AUTH_UPDATED'] . adm_back_link($this->u_action));
 	}
 
 	/**
@@ -830,8 +814,6 @@ class acp_permissions
 	*/
 	function log_action($mode, $action, $permission_type, $ug_type, $ug_id, $forum_id)
 	{
-		global $db, $user;
-
 		if (!is_array($ug_id))
 		{
 			$ug_id = array($ug_id);
@@ -850,7 +832,7 @@ class acp_permissions
 		$l_ug_list = '';
 		while ($row = $db->sql_fetchrow($result))
 		{
-			$l_ug_list .= (($l_ug_list != '') ? ', ' : '') . ((isset($row['group_type']) && $row['group_type'] == GROUP_SPECIAL) ? '<span class="sep">' . $user->lang['G_' . $row['name']] . '</span>' : $row['name']);
+			$l_ug_list .= (($l_ug_list != '') ? ', ' : '') . ((isset($row['group_type']) && $row['group_type'] == GROUP_SPECIAL) ? '<span class="sep">' . phpbb::$user->lang['G_' . $row['name']] . '</span>' : $row['name']);
 		}
 		$db->sql_freeresult($result);
 
@@ -884,9 +866,7 @@ class acp_permissions
 	*/
 	function permission_trace($user_id, $forum_id, $permission)
 	{
-		global $db, $template, $user, $auth;
-
-		if ($user_id != $user->data['user_id'])
+		if ($user_id != phpbb::$user->data['user_id'])
 		{
 			$sql = 'SELECT user_id, username, user_permissions, user_type
 				FROM ' . USERS_TABLE . '
@@ -897,7 +877,7 @@ class acp_permissions
 		}
 		else
 		{
-			$userdata = $user->data;
+			$userdata = phpbb::$user->data;
 		}
 
 		if (!$userdata)
@@ -920,7 +900,7 @@ class acp_permissions
 		$back = request_var('back', 0);
 
 		$template->assign_vars(array(
-			'PERMISSION'			=> $user->lang['acl_' . $permission]['lang'],
+			'PERMISSION'			=> phpbb::$user->lang['acl_' . $permission]['lang'],
 			'PERMISSION_USERNAME'	=> $userdata['username'],
 			'FORUM_NAME'			=> $forum_name,
 
@@ -930,8 +910,8 @@ class acp_permissions
 		);
 
 		$template->assign_block_vars('trace', array(
-			'WHO'			=> $user->lang['DEFAULT'],
-			'INFORMATION'	=> $user->lang['TRACE_DEFAULT'],
+			'WHO'			=> phpbb::$user->lang['DEFAULT'],
+			'INFORMATION'	=> phpbb::$user->lang['TRACE_DEFAULT'],
 
 			'S_SETTING_NO'		=> true,
 			'S_TOTAL_NO'		=> true)
@@ -950,7 +930,7 @@ class acp_permissions
 		{
 			$groups[$row['group_id']] = array(
 				'auth_setting'		=> phpbb::ACL_NO,
-				'group_name'		=> ($row['group_type'] == GROUP_SPECIAL) ? $user->lang['G_' . $row['group_name']] : $row['group_name']
+				'group_name'		=> ($row['group_type'] == GROUP_SPECIAL) ? phpbb::$user->lang['G_' . $row['group_name']] : $row['group_name']
 			);
 		}
 		$db->sql_freeresult($result);
@@ -974,16 +954,16 @@ class acp_permissions
 				switch ($row['auth_setting'])
 				{
 					case phpbb::ACL_NO:
-						$information = $user->lang['TRACE_GROUP_NO' . $add_key];
+						$information = phpbb::$user->lang['TRACE_GROUP_NO' . $add_key];
 					break;
 
 					case phpbb::ACL_YES:
-						$information = ($total == phpbb::ACL_YES) ? $user->lang['TRACE_GROUP_YES_TOTAL_YES' . $add_key] : (($total == phpbb::ACL_NEVER) ? $user->lang['TRACE_GROUP_YES_TOTAL_NEVER' . $add_key] : $user->lang['TRACE_GROUP_YES_TOTAL_NO' . $add_key]);
+						$information = ($total == phpbb::ACL_YES) ? phpbb::$user->lang['TRACE_GROUP_YES_TOTAL_YES' . $add_key] : (($total == phpbb::ACL_NEVER) ? phpbb::$user->lang['TRACE_GROUP_YES_TOTAL_NEVER' . $add_key] : phpbb::$user->lang['TRACE_GROUP_YES_TOTAL_NO' . $add_key]);
 						$total = ($total == phpbb::ACL_NO) ? phpbb::ACL_YES : $total;
 					break;
 
 					case phpbb::ACL_NEVER:
-						$information = ($total == phpbb::ACL_YES) ? $user->lang['TRACE_GROUP_NEVER_TOTAL_YES' . $add_key] : (($total == phpbb::ACL_NEVER) ? $user->lang['TRACE_GROUP_NEVER_TOTAL_NEVER' . $add_key] : $user->lang['TRACE_GROUP_NEVER_TOTAL_NO' . $add_key]);
+						$information = ($total == phpbb::ACL_YES) ? phpbb::$user->lang['TRACE_GROUP_NEVER_TOTAL_YES' . $add_key] : (($total == phpbb::ACL_NEVER) ? phpbb::$user->lang['TRACE_GROUP_NEVER_TOTAL_NEVER' . $add_key] : phpbb::$user->lang['TRACE_GROUP_NEVER_TOTAL_NO' . $add_key]);
 						$total = phpbb::ACL_NEVER;
 					break;
 				}
@@ -1009,17 +989,17 @@ class acp_permissions
 		switch ($auth_setting)
 		{
 			case phpbb::ACL_NO:
-				$information = ($total == phpbb::ACL_NO) ? $user->lang['TRACE_USER_NO_TOTAL_NO' . $add_key] : $user->lang['TRACE_USER_KEPT' . $add_key];
+				$information = ($total == phpbb::ACL_NO) ? phpbb::$user->lang['TRACE_USER_NO_TOTAL_NO' . $add_key] : phpbb::$user->lang['TRACE_USER_KEPT' . $add_key];
 				$total = ($total == phpbb::ACL_NO) ? phpbb::ACL_NEVER : $total;
 			break;
 
 			case phpbb::ACL_YES:
-				$information = ($total == phpbb::ACL_YES) ? $user->lang['TRACE_USER_YES_TOTAL_YES' . $add_key] : (($total == phpbb::ACL_NEVER) ? $user->lang['TRACE_USER_YES_TOTAL_NEVER' . $add_key] : $user->lang['TRACE_USER_YES_TOTAL_NO' . $add_key]);
+				$information = ($total == phpbb::ACL_YES) ? phpbb::$user->lang['TRACE_USER_YES_TOTAL_YES' . $add_key] : (($total == phpbb::ACL_NEVER) ? phpbb::$user->lang['TRACE_USER_YES_TOTAL_NEVER' . $add_key] : phpbb::$user->lang['TRACE_USER_YES_TOTAL_NO' . $add_key]);
 				$total = ($total == phpbb::ACL_NO) ? phpbb::ACL_YES : $total;
 			break;
 
 			case phpbb::ACL_NEVER:
-				$information = ($total == phpbb::ACL_YES) ? $user->lang['TRACE_USER_NEVER_TOTAL_YES' . $add_key] : (($total == phpbb::ACL_NEVER) ? $user->lang['TRACE_USER_NEVER_TOTAL_NEVER' . $add_key] : $user->lang['TRACE_USER_NEVER_TOTAL_NO' . $add_key]);
+				$information = ($total == phpbb::ACL_YES) ? phpbb::$user->lang['TRACE_USER_NEVER_TOTAL_YES' . $add_key] : (($total == phpbb::ACL_NEVER) ? phpbb::$user->lang['TRACE_USER_NEVER_TOTAL_NEVER' . $add_key] : phpbb::$user->lang['TRACE_USER_NEVER_TOTAL_NO' . $add_key]);
 				$total = phpbb::ACL_NEVER;
 			break;
 		}
@@ -1038,7 +1018,7 @@ class acp_permissions
 
 		if ($forum_id != 0 && isset($auth->acl_options['global'][$permission]))
 		{
-			if ($user_id != $user->data['user_id'])
+			if ($user_id != phpbb::$user->data['user_id'])
 			{
 				$auth2 = new auth();
 				$auth2->acl($userdata);
@@ -1051,19 +1031,19 @@ class acp_permissions
 
 			if ($auth_setting)
 			{
-				$information = ($total == phpbb::ACL_YES) ? $user->lang['TRACE_USER_GLOBAL_YES_TOTAL_YES'] : $user->lang['TRACE_USER_GLOBAL_YES_TOTAL_NEVER'];
+				$information = ($total == phpbb::ACL_YES) ? phpbb::$user->lang['TRACE_USER_GLOBAL_YES_TOTAL_YES'] : phpbb::$user->lang['TRACE_USER_GLOBAL_YES_TOTAL_NEVER'];
 				$total = phpbb::ACL_YES;
 			}
 			else
 			{
-				$information = $user->lang['TRACE_USER_GLOBAL_NEVER_TOTAL_KEPT'];
+				$information = phpbb::$user->lang['TRACE_USER_GLOBAL_NEVER_TOTAL_KEPT'];
 			}
 
 			// If there is no auth information we do not need to worry the user by showing non-relevant data.
 			if ($auth_setting)
 			{
 				$template->assign_block_vars('trace', array(
-					'WHO'			=> sprintf($user->lang['TRACE_GLOBAL_SETTING'], $userdata['username']),
+					'WHO'			=> sprintf(phpbb::$user->lang['TRACE_GLOBAL_SETTING'], $userdata['username']),
 					'INFORMATION'	=> sprintf($information, '<a href="' . $this->u_action . "&amp;u=$user_id&amp;f=0&amp;auth=$permission&amp;back=$forum_id\">", '</a>'),
 
 					'S_SETTING_NO'		=> false,
@@ -1081,7 +1061,7 @@ class acp_permissions
 		{
 			$template->assign_block_vars('trace', array(
 				'WHO'			=> $userdata['username'],
-				'INFORMATION'	=> $user->lang['TRACE_USER_FOUNDER'],
+				'INFORMATION'	=> phpbb::$user->lang['TRACE_USER_FOUNDER'],
 
 				'S_SETTING_NO'		=> ($auth_setting == phpbb::ACL_NO) ? true : false,
 				'S_SETTING_YES'		=> ($auth_setting == phpbb::ACL_YES) ? true : false,
@@ -1107,8 +1087,6 @@ class acp_permissions
 	*/
 	function retrieve_defined_user_groups($permission_scope, $forum_id, $permission_type)
 	{
-		global $db, $user;
-
 		$sql_forum_id = ($permission_scope == 'global') ? 'AND a.forum_id = 0' : ((sizeof($forum_id)) ? 'AND ' . $db->sql_in_set('a.forum_id', $forum_id) : 'AND a.forum_id <> 0');
 
 		// Permission options are only able to be a permission set... therefore we will pre-fetch the possible options and also the possible roles
@@ -1178,7 +1156,7 @@ class acp_permissions
 		$defined_group_ids = array();
 		while ($row = $db->sql_fetchrow($result))
 		{
-			$s_defined_group_options .= '<option' . (($row['group_type'] == GROUP_SPECIAL) ? ' class="sep"' : '') . ' value="' . $row['group_id'] . '">' . (($row['group_type'] == GROUP_SPECIAL) ? $user->lang['G_' . $row['group_name']] : $row['group_name']) . '</option>';
+			$s_defined_group_options .= '<option' . (($row['group_type'] == GROUP_SPECIAL) ? ' class="sep"' : '') . ' value="' . $row['group_id'] . '">' . (($row['group_type'] == GROUP_SPECIAL) ? phpbb::$user->lang['G_' . $row['group_name']] : $row['group_name']) . '</option>';
 			$defined_group_ids[] = $row['group_id'];
 		}
 		$db->sql_freeresult($result);

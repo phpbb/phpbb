@@ -25,8 +25,6 @@ class acp_php_info
 
 	function main($id, $mode)
 	{
-		global $db, $user, $auth, $template;
-
 		if ($mode != 'info')
 		{
 			trigger_error('NO_MODE', E_USER_ERROR);

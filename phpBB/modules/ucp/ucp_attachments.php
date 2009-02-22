@@ -27,8 +27,6 @@ class ucp_attachments
 
 	function main($id, $mode)
 	{
-		global $template, $user, $db;
-
 		$start		= request_var('start', 0);
 		$sort_key	= request_var('sk', 'a');
 		$sort_dir	= request_var('sd', 'a');
@@ -42,7 +40,7 @@ class ucp_attachments
 			// Validate $delete_ids...
 			$sql = 'SELECT attach_id
 				FROM ' . ATTACHMENTS_TABLE . '
-				WHERE poster_id = ' . $user->data['user_id'] . '
+				WHERE poster_id = ' . phpbb::$user->data['user_id'] . '
 					AND is_orphan = 0
 					AND ' . $db->sql_in_set('attach_id', $delete_ids);
 			$result = $db->sql_query($sql);
@@ -76,7 +74,7 @@ class ucp_attachments
 				delete_attachments('attach', $delete_ids);
 
 				meta_refresh(3, $this->u_action);
-				$message = ((sizeof($delete_ids) == 1) ? $user->lang['ATTACHMENT_DELETED'] : $user->lang['ATTACHMENTS_DELETED']) . '<br /><br />' . sprintf($user->lang['RETURN_UCP'], '<a href="' . $this->u_action . '">', '</a>');
+				$message = ((sizeof($delete_ids) == 1) ? phpbb::$user->lang['ATTACHMENT_DELETED'] : phpbb::$user->lang['ATTACHMENTS_DELETED']) . '<br /><br />' . sprintf(phpbb::$user->lang['RETURN_UCP'], '<a href="' . $this->u_action . '">', '</a>');
 				trigger_error($message);
 			}
 			else
@@ -86,10 +84,10 @@ class ucp_attachments
 		}
 
 		// Select box eventually
-		$sort_key_text = array('a' => $user->lang['SORT_FILENAME'], 'b' => $user->lang['SORT_COMMENT'], 'c' => $user->lang['SORT_EXTENSION'], 'd' => $user->lang['SORT_SIZE'], 'e' => $user->lang['SORT_DOWNLOADS'], 'f' => $user->lang['SORT_POST_TIME'], 'g' => $user->lang['SORT_TOPIC_TITLE']);
+		$sort_key_text = array('a' => phpbb::$user->lang['SORT_FILENAME'], 'b' => phpbb::$user->lang['SORT_COMMENT'], 'c' => phpbb::$user->lang['SORT_EXTENSION'], 'd' => phpbb::$user->lang['SORT_SIZE'], 'e' => phpbb::$user->lang['SORT_DOWNLOADS'], 'f' => phpbb::$user->lang['SORT_POST_TIME'], 'g' => phpbb::$user->lang['SORT_TOPIC_TITLE']);
 		$sort_key_sql = array('a' => 'a.real_filename', 'b' => 'a.attach_comment', 'c' => 'a.extension', 'd' => 'a.filesize', 'e' => 'a.download_count', 'f' => 'a.filetime', 'g' => 't.topic_title');
 
-		$sort_dir_text = array('a' => $user->lang['ASCENDING'], 'd' => $user->lang['DESCENDING']);
+		$sort_dir_text = array('a' => phpbb::$user->lang['ASCENDING'], 'd' => phpbb::$user->lang['DESCENDING']);
 
 		$s_sort_key = '';
 		foreach ($sort_key_text as $key => $value)
@@ -114,7 +112,7 @@ class ucp_attachments
 
 		$sql = 'SELECT COUNT(attach_id) as num_attachments
 			FROM ' . ATTACHMENTS_TABLE . '
-			WHERE poster_id = ' . $user->data['user_id'] . '
+			WHERE poster_id = ' . phpbb::$user->data['user_id'] . '
 				AND is_orphan = 0';
 		$result = $db->sql_query($sql);
 		$num_attachments = $db->sql_fetchfield('num_attachments');
@@ -124,7 +122,7 @@ class ucp_attachments
 			FROM ' . ATTACHMENTS_TABLE . ' a
 				LEFT JOIN ' . TOPICS_TABLE . ' t ON (a.topic_id = t.topic_id AND a.in_message = 0)
 				LEFT JOIN ' . PRIVMSGS_TABLE . ' p ON (a.post_msg_id = p.msg_id AND a.in_message = 1)
-			WHERE a.poster_id = ' . $user->data['user_id'] . "
+			WHERE a.poster_id = ' . phpbb::$user->data['user_id'] . "
 				AND a.is_orphan = 0
 			ORDER BY $order_by";
 		$result = $db->sql_query_limit($sql, phpbb::$config['topics_per_page'], $start);
@@ -152,7 +150,7 @@ class ucp_attachments
 					'EXTENSION'			=> $row['extension'],
 					'SIZE'				=> get_formatted_filesize($row['filesize']),
 					'DOWNLOAD_COUNT'	=> $row['download_count'],
-					'POST_TIME'			=> $user->format_date($row['filetime']),
+					'POST_TIME'			=> phpbb::$user->format_date($row['filetime']),
 					'TOPIC_TITLE'		=> ($row['in_message']) ? $row['message_title'] : $row['topic_title'],
 
 					'ATTACH_ID'			=> $row['attach_id'],
@@ -176,7 +174,7 @@ class ucp_attachments
 			'PAGINATION'			=> generate_pagination($this->u_action . "&amp;sk=$sort_key&amp;sd=$sort_dir", $num_attachments, phpbb::$config['topics_per_page'], $start),
 			'TOTAL_ATTACHMENTS'		=> $num_attachments,
 
-			'L_TITLE'				=> $user->lang['UCP_ATTACHMENTS'],
+			'L_TITLE'				=> phpbb::$user->lang['UCP_ATTACHMENTS'],
 
 			'U_SORT_FILENAME'		=> $this->u_action . "&amp;sk=a&amp;sd=" . (($sort_key == 'a' && $sort_dir == 'a') ? 'd' : 'a'),
 			'U_SORT_FILE_COMMENT'	=> $this->u_action . "&amp;sk=b&amp;sd=" . (($sort_key == 'b' && $sort_dir == 'a') ? 'd' : 'a'),

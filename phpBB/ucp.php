@@ -42,29 +42,29 @@ switch ($mode)
 {
 	case 'activate':
 		$module->load('ucp', 'activate');
-		$module->display($user->lang['UCP_ACTIVATE']);
+		$module->display(phpbb::$user->lang['UCP_ACTIVATE']);
 
 		redirect(append_sid('index'));
 	break;
 
 	case 'resend_act':
 		$module->load('ucp', 'resend');
-		$module->display($user->lang['UCP_RESEND']);
+		$module->display(phpbb::$user->lang['UCP_RESEND']);
 	break;
 
 	case 'sendpassword':
 		$module->load('ucp', 'remind');
-		$module->display($user->lang['UCP_REMIND']);
+		$module->display(phpbb::$user->lang['UCP_REMIND']);
 	break;
 
 	case 'register':
-		if ($user->data['is_registered'] || phpbb_request::is_set('not_agreed'))
+		if (phpbb::$user->is_registered || phpbb_request::is_set('not_agreed'))
 		{
 			redirect(append_sid('index'));
 		}
 
 		$module->load('ucp', 'register');
-		$module->display($user->lang['REGISTER']);
+		$module->display(phpbb::$user->lang['REGISTER']);
 	break;
 
 	case 'confirm':
@@ -104,9 +104,9 @@ switch ($mode)
 		$message = ($mode == 'terms') ? 'TERMS_OF_USE_CONTENT' : 'PRIVACY_POLICY';
 		$title = ($mode == 'terms') ? 'TERMS_USE' : 'PRIVACY';
 
-		if (empty($user->lang[$message]))
+		if (empty(phpbb::$user->lang[$message]))
 		{
-			if ($user->data['is_registered'])
+			if (phpbb::$user->is_registered)
 			{
 				redirect(append_sid('index'));
 			}
@@ -119,14 +119,14 @@ switch ($mode)
 		);
 
 		// Disable online list
-		page_header($user->lang[$title], false);
+		page_header(phpbb::$user->lang[$title], false);
 
 		$template->assign_vars(array(
 			'S_AGREEMENT'			=> true,
-			'AGREEMENT_TITLE'		=> $user->lang[$title],
-			'AGREEMENT_TEXT'		=> sprintf($user->lang[$message], phpbb::$config['sitename'], generate_board_url()),
+			'AGREEMENT_TITLE'		=> phpbb::$user->lang[$title],
+			'AGREEMENT_TEXT'		=> sprintf(phpbb::$user->lang[$message], phpbb::$config['sitename'], generate_board_url()),
 			'U_BACK'				=> append_sid('ucp', 'mode=login'),
-			'L_BACK'				=> $user->lang['BACK_TO_LOGIN'])
+			'L_BACK'				=> phpbb::$user->lang['BACK_TO_LOGIN'])
 		);
 
 		page_footer();
@@ -148,22 +148,22 @@ switch ($mode)
 				// Polls are stored as {cookie_name}_poll_{topic_id}, cookie_name_ got removed, therefore checking for poll_
 				if (strpos($cookie_name, 'poll_') !== 0)
 				{
-					$user->set_cookie($cookie_name, '', $set_time);
+					phpbb::$user->set_cookie($cookie_name, '', $set_time);
 				}
 			}
 
-			$user->set_cookie('track', '', $set_time);
-			$user->set_cookie('u', '', $set_time);
-			$user->set_cookie('k', '', $set_time);
-			$user->set_cookie('sid', '', $set_time);
+			phpbb::$user->set_cookie('track', '', $set_time);
+			phpbb::$user->set_cookie('u', '', $set_time);
+			phpbb::$user->set_cookie('k', '', $set_time);
+			phpbb::$user->set_cookie('sid', '', $set_time);
 
 			// We destroy the session here, the user will be logged out nevertheless
-			$user->session_kill();
-			$user->session_begin();
+			phpbb::$user->session_kill();
+			phpbb::$user->session_begin();
 
 			meta_refresh(3, append_sid('index'));
 
-			$message = $user->lang['COOKIES_DELETED'] . '<br /><br />' . sprintf($user->lang['RETURN_INDEX'], '<a href="' . append_sid('index') . '">', '</a>');
+			$message = phpbb::$user->lang['COOKIES_DELETED'] . '<br /><br />' . sprintf(phpbb::$user->lang['RETURN_INDEX'], '<a href="' . append_sid('index') . '">', '</a>');
 			trigger_error($message);
 		}
 		else
@@ -186,7 +186,7 @@ switch ($mode)
 		$user_row = $db->sql_fetchrow($result);
 		$db->sql_freeresult($result);
 
-		if (!$auth->acl_get('a_switchperm') || !$user_row || $user_id == $user->data['user_id'])
+		if (!$auth->acl_get('a_switchperm') || !$user_row || $user_id == phpbb::$user->data['user_id'])
 		{
 			redirect(append_sid('index'));
 		}
@@ -194,42 +194,42 @@ switch ($mode)
 		include(PHPBB_ROOT_PATH . 'includes/acp/auth.' . PHP_EXT);
 
 		$auth_admin = new auth_admin();
-		if (!$auth_admin->ghost_permissions($user_id, $user->data['user_id']))
+		if (!$auth_admin->ghost_permissions($user_id, phpbb::$user->data['user_id']))
 		{
 			redirect(append_sid('index'));
 		}
 
 		add_log('admin', 'LOG_ACL_TRANSFER_PERMISSIONS', $user_row['username']);
 
-		$message = sprintf($user->lang['PERMISSIONS_TRANSFERRED'], $user_row['username']) . '<br /><br />' . sprintf($user->lang['RETURN_INDEX'], '<a href="' . append_sid('index') . '">', '</a>');
+		$message = sprintf(phpbb::$user->lang['PERMISSIONS_TRANSFERRED'], $user_row['username']) . '<br /><br />' . sprintf(phpbb::$user->lang['RETURN_INDEX'], '<a href="' . append_sid('index') . '">', '</a>');
 		trigger_error($message);
 
 	break;
 
 	case 'restore_perm':
 
-		if (!$user->data['user_perm_from'] || !$auth->acl_get('a_switchperm'))
+		if (!phpbb::$user->data['user_perm_from'] || !$auth->acl_get('a_switchperm'))
 		{
 			redirect(append_sid('index'));
 		}
 
-		$auth->acl_cache($user->data);
+		$auth->acl_cache(phpbb::$user->data);
 
 		$sql = 'UPDATE ' . USERS_TABLE . "
 			SET user_perm_from = 0
-			WHERE user_id = " . $user->data['user_id'];
+			WHERE user_id = " . phpbb::$user->data['user_id'];
 		$db->sql_query($sql);
 
 		$sql = 'SELECT username
 			FROM ' . USERS_TABLE . '
-			WHERE user_id = ' . $user->data['user_perm_from'];
+			WHERE user_id = ' . phpbb::$user->data['user_perm_from'];
 		$result = $db->sql_query($sql);
 		$username = $db->sql_fetchfield('username');
 		$db->sql_freeresult($result);
 
 		add_log('admin', 'LOG_ACL_RESTORE_PERMISSIONS', $username);
 
-		$message = $user->lang['PERMISSIONS_RESTORED'] . '<br /><br />' . sprintf($user->lang['RETURN_INDEX'], '<a href="' . append_sid('index') . '">', '</a>');
+		$message = phpbb::$user->lang['PERMISSIONS_RESTORED'] . '<br /><br />' . sprintf(phpbb::$user->lang['RETURN_INDEX'], '<a href="' . append_sid('index') . '">', '</a>');
 		trigger_error($message);
 
 	break;
@@ -237,14 +237,14 @@ switch ($mode)
 	default:
 
 		// Only registered users can go beyond this point
-		if (!$user->data['is_registered'])
+		if (!phpbb::$user->is_registered)
 		{
-			if ($user->data['is_bot'])
+			if (phpbb::$user->is_bot)
 			{
 				redirect(append_sid('index'));
 			}
 
-			login_box('', $user->lang['LOGIN_EXPLAIN_UCP']);
+			login_box('', phpbb::$user->lang['LOGIN_EXPLAIN_UCP']);
 		}
 
 		// Instantiate module system and generate list of available modules
@@ -282,8 +282,6 @@ switch ($mode)
 */
 function _display_friends()
 {
-	global $db, $template, $user, $auth;
-
 	$update_time = phpbb::$config['load_online_time'] * 60;
 
 	$sql = $db->sql_build_query('SELECT_DISTINCT', array(
@@ -301,7 +299,7 @@ function _display_friends()
 			)
 		),
 
-		'WHERE'		=> 'z.user_id = ' . $user->data['user_id'] . '
+		'WHERE'		=> 'z.user_id = ' . phpbb::$user->data['user_id'] . '
 			AND z.friend = 1
 			AND u.user_id = z.zebra_id',
 
@@ -333,8 +331,6 @@ function _display_friends()
 */
 function _module_zebra($mode, &$module_row)
 {
-	global $template;
-
 	$template->assign_var('S_ZEBRA_ENABLED', true);
 
 	if ($mode == 'friends')

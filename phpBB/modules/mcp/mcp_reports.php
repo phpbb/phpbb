@@ -33,7 +33,6 @@ class mcp_reports
 
 	function main($id, $mode)
 	{
-		global $auth, $db, $user, $template;
 		global $action;
 
 		include_once(PHPBB_ROOT_PATH . 'includes/functions_posting.' . PHP_EXT);
@@ -65,7 +64,7 @@ class mcp_reports
 		{
 			case 'report_details':
 
-				$user->add_lang(array('posting', 'viewforum', 'viewtopic'));
+				phpbb::$user->add_lang(array('posting', 'viewforum', 'viewtopic'));
 
 				$post_id = request_var('p', 0);
 
@@ -105,10 +104,10 @@ class mcp_reports
 				$post_info = $post_info[$post_id];
 
 				$reason = array('title' => $report['reason_title'], 'description' => $report['reason_description']);
-				if (isset($user->lang['report_reasons']['TITLE'][strtoupper($reason['title'])]) && isset($user->lang['report_reasons']['DESCRIPTION'][strtoupper($reason['title'])]))
+				if (isset(phpbb::$user->lang['report_reasons']['TITLE'][strtoupper($reason['title'])]) && isset(phpbb::$user->lang['report_reasons']['DESCRIPTION'][strtoupper($reason['title'])]))
 				{
-					$reason['description'] = $user->lang['report_reasons']['DESCRIPTION'][strtoupper($reason['title'])];
-					$reason['title'] = $user->lang['report_reasons']['TITLE'][strtoupper($reason['title'])];
+					$reason['description'] = phpbb::$user->lang['report_reasons']['DESCRIPTION'][strtoupper($reason['title'])];
+					$reason['title'] = phpbb::$user->lang['report_reasons']['TITLE'][strtoupper($reason['title'])];
 				}
 
 				if (topic_review($post_info['topic_id'], $post_info['forum_id'], 'topic_review', 0, false))
@@ -204,13 +203,13 @@ class mcp_reports
 					'U_VIEW_POST'				=> append_sid('viewtopic', 'f=' . $post_info['forum_id'] . '&amp;p=' . $post_info['post_id'] . '#p' . $post_info['post_id']),
 					'U_VIEW_TOPIC'				=> append_sid('viewtopic', 'f=' . $post_info['forum_id'] . '&amp;t=' . $post_info['topic_id']),
 
-					'EDIT_IMG'				=> $user->img('icon_post_edit', $user->lang['EDIT_POST']),
-					'MINI_POST_IMG'			=> ($post_unread) ? $user->img('icon_post_target_unread', 'NEW_POST') : $user->img('icon_post_target', 'POST'),
-					'UNAPPROVED_IMG'		=> $user->img('icon_topic_unapproved', $user->lang['POST_UNAPPROVED']),
+					'EDIT_IMG'				=> phpbb::$user->img('icon_post_edit', 'EDIT_POST'),
+					'MINI_POST_IMG'			=> ($post_unread) ? phpbb::$user->img('icon_post_target_unread', 'NEW_POST') : phpbb::$user->img('icon_post_target', 'POST'),
+					'UNAPPROVED_IMG'		=> phpbb::$user->img('icon_topic_unapproved', 'POST_UNAPPROVED'),
 
-					'RETURN_REPORTS'			=> sprintf($user->lang['RETURN_REPORTS'], '<a href="' . append_sid('mcp', 'i=reports' . (($post_info['post_reported']) ? '&amp;mode=reports' : '&amp;mode=reports_closed') . '&amp;start=' . $start . '&amp;f=' . $post_info['forum_id']) . '">', '</a>'),
-					'REPORTED_IMG'				=> $user->img('icon_topic_reported', $user->lang['POST_REPORTED']),
-					'REPORT_DATE'				=> $user->format_date($report['report_time']),
+					'RETURN_REPORTS'			=> sprintf(phpbb::$user->lang['RETURN_REPORTS'], '<a href="' . append_sid('mcp', 'i=reports' . (($post_info['post_reported']) ? '&amp;mode=reports' : '&amp;mode=reports_closed') . '&amp;start=' . $start . '&amp;f=' . $post_info['forum_id']) . '">', '</a>'),
+					'REPORTED_IMG'				=> phpbb::$user->img('icon_topic_reported', 'POST_REPORTED'),
+					'REPORT_DATE'				=> phpbb::$user->format_date($report['report_time']),
 					'REPORT_ID'					=> $report_id,
 					'REPORT_REASON_TITLE'		=> $reason['title'],
 					'REPORT_REASON_DESCRIPTION'	=> $reason['description'],
@@ -227,8 +226,8 @@ class mcp_reports
 					'U_VIEW_REPORTER_PROFILE'	=> get_username_string('profile', $report['user_id'], $report['username'], $report['user_colour']),
 
 					'POST_PREVIEW'			=> $message,
-					'POST_SUBJECT'			=> ($post_info['post_subject']) ? $post_info['post_subject'] : $user->lang['NO_SUBJECT'],
-					'POST_DATE'				=> $user->format_date($post_info['post_time']),
+					'POST_SUBJECT'			=> ($post_info['post_subject']) ? $post_info['post_subject'] : phpbb::$user->lang['NO_SUBJECT'],
+					'POST_DATE'				=> phpbb::$user->format_date($post_info['post_time']),
 					'POST_IP'				=> $post_info['poster_ip'],
 					'POST_IPADDR'			=> ($auth->acl_get('m_info', $post_info['forum_id']) && request_var('lookup', '')) ? @gethostbyaddr($post_info['poster_ip']) : '',
 					'POST_ID'				=> $post_info['post_id'],
@@ -315,7 +314,7 @@ class mcp_reports
 				$forum_list[] = 0;
 				$forum_data = array();
 
-				$forum_options = '<option value="0"' . (($forum_id == 0) ? ' selected="selected"' : '') . '>' . $user->lang['ALL_FORUMS'] . '</option>';
+				$forum_options = '<option value="0"' . (($forum_id == 0) ? ' selected="selected"' : '') . '>' . phpbb::$user->lang['ALL_FORUMS'] . '</option>';
 				foreach ($forum_list_reports as $row)
 				{
 					$forum_options .= '<option value="' . $row['forum_id'] . '"' . (($forum_id == $row['forum_id']) ? ' selected="selected"' : '') . '>' . str_repeat('&nbsp; &nbsp;', $row['padding']) . $row['forum_name'] . '</option>';
@@ -398,12 +397,12 @@ class mcp_reports
 							'REPORTER'				=> get_username_string('username', $row['reporter_id'], $row['reporter_name'], $row['reporter_colour']),
 							'U_REPORTER'			=> get_username_string('profile', $row['reporter_id'], $row['reporter_name'], $row['reporter_colour']),
 
-							'FORUM_NAME'	=> (!$global_topic) ? $forum_data[$row['forum_id']]['forum_name'] : $user->lang['GLOBAL_ANNOUNCEMENT'],
+							'FORUM_NAME'	=> (!$global_topic) ? $forum_data[$row['forum_id']]['forum_name'] : phpbb::$user->lang['GLOBAL_ANNOUNCEMENT'],
 							'POST_ID'		=> $row['post_id'],
-							'POST_SUBJECT'	=> ($row['post_subject']) ? $row['post_subject'] : $user->lang['NO_SUBJECT'],
-							'POST_TIME'		=> $user->format_date($row['post_time']),
+							'POST_SUBJECT'	=> ($row['post_subject']) ? $row['post_subject'] : phpbb::$user->lang['NO_SUBJECT'],
+							'POST_TIME'		=> phpbb::$user->format_date($row['post_time']),
 							'REPORT_ID'		=> $row['report_id'],
-							'REPORT_TIME'	=> $user->format_date($row['report_time']),
+							'REPORT_TIME'	=> phpbb::$user->format_date($row['report_time']),
 							'TOPIC_TITLE'	=> $row['topic_title'])
 						);
 					}
@@ -413,9 +412,9 @@ class mcp_reports
 
 				// Now display the page
 				$template->assign_vars(array(
-					'L_EXPLAIN'				=> ($mode == 'reports') ? $user->lang['MCP_REPORTS_OPEN_EXPLAIN'] : $user->lang['MCP_REPORTS_CLOSED_EXPLAIN'],
-					'L_TITLE'				=> ($mode == 'reports') ? $user->lang['MCP_REPORTS_OPEN'] : $user->lang['MCP_REPORTS_CLOSED'],
-					'L_ONLY_TOPIC'			=> ($topic_id) ? sprintf($user->lang['ONLY_TOPIC'], $topic_info['topic_title']) : '',
+					'L_EXPLAIN'				=> ($mode == 'reports') ? phpbb::$user->lang['MCP_REPORTS_OPEN_EXPLAIN'] : phpbb::$user->lang['MCP_REPORTS_CLOSED_EXPLAIN'],
+					'L_TITLE'				=> ($mode == 'reports') ? phpbb::$user->lang['MCP_REPORTS_OPEN'] : phpbb::$user->lang['MCP_REPORTS_CLOSED'],
+					'L_ONLY_TOPIC'			=> ($topic_id) ? sprintf(phpbb::$user->lang['ONLY_TOPIC'], $topic_info['topic_title']) : '',
 
 					'S_MCP_ACTION'			=> $this->u_action,
 					'S_FORUM_OPTIONS'		=> $forum_options,
@@ -425,7 +424,7 @@ class mcp_reports
 					'PAGE_NUMBER'			=> on_page($total, phpbb::$config['topics_per_page'], $start),
 					'TOPIC_ID'				=> $topic_id,
 					'TOTAL'					=> $total,
-					'TOTAL_REPORTS'			=> ($total == 1) ? $user->lang['LIST_REPORT'] : sprintf($user->lang['LIST_REPORTS'], $total),
+					'TOTAL_REPORTS'			=> ($total == 1) ? phpbb::$user->lang['LIST_REPORT'] : sprintf(phpbb::$user->lang['LIST_REPORTS'], $total),
 					)
 				);
 
@@ -440,8 +439,6 @@ class mcp_reports
 */
 function close_report($report_id_list, $mode, $action)
 {
-	global $db, $template, $user;
-
 	$sql = 'SELECT r.post_id
 		FROM ' . REPORTS_TABLE . ' r
 		WHERE ' . $db->sql_in_set('r.report_id', $report_id_list);
@@ -459,7 +456,7 @@ function close_report($report_id_list, $mode, $action)
 		trigger_error('NOT_AUTHORISED');
 	}
 
-	if ($action == 'delete' && strpos($user->data['session_page'], 'mode=report_details') !== false)
+	if ($action == 'delete' && strpos(phpbb::$user->data['session_page'], 'mode=report_details') !== false)
 	{
 		$redirect = request_var('redirect', build_url(array('mode', 'r', 'quickmod')) . '&amp;mode=reports');
 	}
@@ -602,7 +599,7 @@ function close_report($report_id_list, $mode, $action)
 
 				$messenger->assign_vars(array(
 					'USERNAME'		=> htmlspecialchars_decode($reporter['username']),
-					'CLOSER_NAME'	=> htmlspecialchars_decode($user->data['username']),
+					'CLOSER_NAME'	=> htmlspecialchars_decode(phpbb::$user->data['username']),
 					'POST_SUBJECT'	=> htmlspecialchars_decode(censor_text($post_info[$post_id]['post_subject'])),
 					'TOPIC_TITLE'	=> htmlspecialchars_decode(censor_text($post_info[$post_id]['topic_title'])))
 				);
@@ -625,7 +622,7 @@ function close_report($report_id_list, $mode, $action)
 	}
 	else
 	{
-		confirm_box(false, $user->lang[strtoupper($action) . '_REPORT' . ((sizeof($report_id_list) == 1) ? '' : 'S') . '_CONFIRM'], $s_hidden_fields);
+		confirm_box(false, phpbb::$user->lang[strtoupper($action) . '_REPORT' . ((sizeof($report_id_list) == 1) ? '' : 'S') . '_CONFIRM'], $s_hidden_fields);
 	}
 
 	$redirect = request_var('redirect', 'index.' . PHP_EXT);
@@ -641,15 +638,15 @@ function close_report($report_id_list, $mode, $action)
 		$return_forum = '';
 		if (sizeof($forum_ids == 1))
 		{
-			$return_forum = sprintf($user->lang['RETURN_FORUM'], '<a href="' . append_sid('viewforum', 'f=' . current($forum_ids)) . '">', '</a>') . '<br /><br />';
+			$return_forum = sprintf(phpbb::$user->lang['RETURN_FORUM'], '<a href="' . append_sid('viewforum', 'f=' . current($forum_ids)) . '">', '</a>') . '<br /><br />';
 		}
 		$return_topic = '';
 		if (sizeof($topic_ids == 1))
 		{
-			$return_topic = sprintf($user->lang['RETURN_TOPIC'], '<a href="' . append_sid('viewtopic', 't=' . current($topic_ids) . '&amp;f=' . current($forum_ids)) . '">', '</a>') . '<br /><br />';
+			$return_topic = sprintf(phpbb::$user->lang['RETURN_TOPIC'], '<a href="' . append_sid('viewtopic', 't=' . current($topic_ids) . '&amp;f=' . current($forum_ids)) . '">', '</a>') . '<br /><br />';
 		}
 
-		trigger_error($user->lang[$success_msg] . '<br /><br />' . $return_forum . $return_topic . sprintf($user->lang['RETURN_PAGE'], "<a href=\"$redirect\">", '</a>'));
+		trigger_error(phpbb::$user->lang[$success_msg] . '<br /><br />' . $return_forum . $return_topic . sprintf(phpbb::$user->lang['RETURN_PAGE'], "<a href=\"$redirect\">", '</a>'));
 	}
 }
 

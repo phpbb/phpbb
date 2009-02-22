@@ -18,9 +18,9 @@ if (!defined('PHP_EXT')) define('PHP_EXT', substr(strrchr(__FILE__, '.'), 1));
 include(PHPBB_ROOT_PATH . 'common.' . PHP_EXT);
 
 // Start session management
-$user->session_begin(false);
-$auth->acl($user->data);
-$user->setup();
+phpbb::$user->session_begin(false);
+$auth->acl(phpbb::$user->data);
+phpbb::$user->setup();
 
 // Set custom template for admin area
 $template->set_custom_template(PHPBB_ROOT_PATH . phpbb::$base_config['admin_folder'] . '/style', 'admin');
@@ -41,8 +41,8 @@ $template->assign_vars(array(
 	'NAME'			=> $name,
 	'T_IMAGES_PATH'	=> PHPBB_ROOT_PATH . 'images/',
 
-	'S_USER_LANG'			=> $user->lang['USER_LANG'],
-	'S_CONTENT_DIRECTION'	=> $user->lang['DIRECTION'],
+	'S_USER_LANG'			=> phpbb::$user->lang['USER_LANG'],
+	'S_CONTENT_DIRECTION'	=> phpbb::$user->lang['DIRECTION'],
 	'S_CONTENT_ENCODING'	=> 'UTF-8',
 ));
 

@@ -25,9 +25,7 @@ class acp_reasons
 
 	function main($id, $mode)
 	{
-		global $db, $user, $auth, $template;
-
-		$user->add_lang(array('mcp', 'acp/posting'));
+		phpbb::$user->add_lang(array('mcp', 'acp/posting'));
 
 		// Set up general vars
 		$action = request_var('action', '');
@@ -56,12 +54,12 @@ class acp_reasons
 				{
 					if (!check_form_key($form_name))
 					{
-						$error[] = $user->lang['FORM_INVALID'];
+						$error[] = phpbb::$user->lang['FORM_INVALID'];
 					}
 					// Reason specified?
 					if (!$reason_row['reason_title'] || !$reason_row['reason_description'])
 					{
-						$error[] = $user->lang['NO_REASON_INFO'];
+						$error[] = phpbb::$user->lang['NO_REASON_INFO'];
 					}
 
 					$check_double = ($action == 'add') ? true : false;
@@ -98,7 +96,7 @@ class acp_reasons
 
 						if ($row || ($action == 'add' && strtolower($reason_row['reason_title']) == 'other'))
 						{
-							$error[] = $user->lang['REASON_ALREADY_EXIST'];
+							$error[] = phpbb::$user->lang['REASON_ALREADY_EXIST'];
 						}
 					}
 
@@ -138,7 +136,7 @@ class acp_reasons
 						}
 
 						add_log('admin', 'LOG_REASON_' . $log, $reason_row['reason_title']);
-						trigger_error($user->lang['REASON_' . $log] . adm_back_link($this->u_action));
+						trigger_error(phpbb::$user->lang['REASON_' . $log] . adm_back_link($this->u_action));
 					}
 				}
 				else if ($reason_id)
@@ -152,7 +150,7 @@ class acp_reasons
 
 					if (!$reason_row)
 					{
-						trigger_error($user->lang['NO_REASON'] . adm_back_link($this->u_action), E_USER_WARNING);
+						trigger_error(phpbb::$user->lang['NO_REASON'] . adm_back_link($this->u_action), E_USER_WARNING);
 					}
 				}
 
@@ -161,13 +159,13 @@ class acp_reasons
 				$translated = false;
 
 				// If the reason is defined within the language file, we will use the localized version, else just use the database entry...
-				if (isset($user->lang['report_reasons']['TITLE'][strtoupper($reason_row['reason_title'])]) && isset($user->lang['report_reasons']['DESCRIPTION'][strtoupper($reason_row['reason_title'])]))
+				if (isset(phpbb::$user->lang['report_reasons']['TITLE'][strtoupper($reason_row['reason_title'])]) && isset(phpbb::$user->lang['report_reasons']['DESCRIPTION'][strtoupper($reason_row['reason_title'])]))
 				{
 					$translated = true;
 				}
 
 				$template->assign_vars(array(
-					'L_TITLE'		=> $user->lang['REASON_' . $l_title],
+					'L_TITLE'		=> phpbb::$user->lang['REASON_' . $l_title],
 					'U_ACTION'		=> $this->u_action . "&amp;id=$reason_id&amp;action=$action",
 					'U_BACK'		=> $this->u_action,
 					'ERROR_MSG'		=> (sizeof($error)) ? implode('<br />', $error) : '',
@@ -175,10 +173,10 @@ class acp_reasons
 					'REASON_TITLE'			=> $reason_row['reason_title'],
 					'REASON_DESCRIPTION'	=> $reason_row['reason_description'],
 
-					'TRANSLATED_TITLE'		=> ($translated) ? $user->lang['report_reasons']['TITLE'][strtoupper($reason_row['reason_title'])] : '',
-					'TRANSLATED_DESCRIPTION'=> ($translated) ? $user->lang['report_reasons']['DESCRIPTION'][strtoupper($reason_row['reason_title'])] : '',
+					'TRANSLATED_TITLE'		=> ($translated) ? phpbb::$user->lang['report_reasons']['TITLE'][strtoupper($reason_row['reason_title'])] : '',
+					'TRANSLATED_DESCRIPTION'=> ($translated) ? phpbb::$user->lang['report_reasons']['DESCRIPTION'][strtoupper($reason_row['reason_title'])] : '',
 
-					'S_AVAILABLE_TITLES'	=> implode(', ', array_map('htmlspecialchars', array_keys($user->lang['report_reasons']['TITLE']))),
+					'S_AVAILABLE_TITLES'	=> implode(', ', array_map('htmlspecialchars', array_keys(phpbb::$user->lang['report_reasons']['TITLE']))),
 					'S_EDIT_REASON'			=> true,
 					'S_TRANSLATED'			=> $translated,
 					'S_ERROR'				=> (sizeof($error)) ? true : false,
@@ -199,12 +197,12 @@ class acp_reasons
 
 				if (!$reason_row)
 				{
-					trigger_error($user->lang['NO_REASON'] . adm_back_link($this->u_action), E_USER_WARNING);
+					trigger_error(phpbb::$user->lang['NO_REASON'] . adm_back_link($this->u_action), E_USER_WARNING);
 				}
 
 				if (strtolower($reason_row['reason_title']) == 'other')
 				{
-					trigger_error($user->lang['NO_REMOVE_DEFAULT_REASON'] . adm_back_link($this->u_action), E_USER_WARNING);
+					trigger_error(phpbb::$user->lang['NO_REMOVE_DEFAULT_REASON'] . adm_back_link($this->u_action), E_USER_WARNING);
 				}
 
 				// Let the deletion be confirmed...
@@ -231,11 +229,11 @@ class acp_reasons
 					$db->sql_query('DELETE FROM ' . REPORTS_REASONS_TABLE . ' WHERE reason_id = ' . $reason_id);
 
 					add_log('admin', 'LOG_REASON_REMOVED', $reason_row['reason_title']);
-					trigger_error($user->lang['REASON_REMOVED'] . adm_back_link($this->u_action));
+					trigger_error(phpbb::$user->lang['REASON_REMOVED'] . adm_back_link($this->u_action));
 				}
 				else
 				{
-					confirm_box(false, $user->lang['CONFIRM_OPERATION'], build_hidden_fields(array(
+					confirm_box(false, phpbb::$user->lang['CONFIRM_OPERATION'], build_hidden_fields(array(
 						'i'			=> $id,
 						'mode'		=> $mode,
 						'action'	=> $action,
@@ -313,10 +311,10 @@ class acp_reasons
 			$other_reason = ($row['reason_title'] == 'other') ? true : false;
 
 			// If the reason is defined within the language file, we will use the localized version, else just use the database entry...
-			if (isset($user->lang['report_reasons']['TITLE'][strtoupper($row['reason_title'])]) && isset($user->lang['report_reasons']['DESCRIPTION'][strtoupper($row['reason_title'])]))
+			if (isset(phpbb::$user->lang['report_reasons']['TITLE'][strtoupper($row['reason_title'])]) && isset(phpbb::$user->lang['report_reasons']['DESCRIPTION'][strtoupper($row['reason_title'])]))
 			{
-				$row['reason_description'] = $user->lang['report_reasons']['DESCRIPTION'][strtoupper($row['reason_title'])];
-				$row['reason_title'] = $user->lang['report_reasons']['TITLE'][strtoupper($row['reason_title'])];
+				$row['reason_description'] = phpbb::$user->lang['report_reasons']['DESCRIPTION'][strtoupper($row['reason_title'])];
+				$row['reason_title'] = phpbb::$user->lang['report_reasons']['TITLE'][strtoupper($row['reason_title'])];
 
 				$translated = true;
 			}

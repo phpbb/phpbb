@@ -26,9 +26,7 @@ class acp_captcha
 
 	function main($id, $mode)
 	{
-		global $db, $user, $auth, $template;
-
-		$user->add_lang('acp/board');
+		phpbb::$user->add_lang('acp/board');
 
 		include(PHPBB_ROOT_PATH . 'includes/captcha/captcha_factory.' . PHP_EXT);
 
@@ -83,14 +81,14 @@ class acp_captcha
 					}
 					else
 					{
-						trigger_error($user->lang['CAPTCHA_UNAVAILABLE'] . adm_back_link($this->u_action));
+						trigger_error(phpbb::$user->lang['CAPTCHA_UNAVAILABLE'] . adm_back_link($this->u_action));
 					}
 				}
-				trigger_error($user->lang['CONFIG_UPDATED'] . adm_back_link($this->u_action));
+				trigger_error(phpbb::$user->lang['CONFIG_UPDATED'] . adm_back_link($this->u_action));
 			}
 			else if ($submit)
 			{
-				trigger_error($user->lang['FORM_INVALID'] . adm_back_link());
+				trigger_error(phpbb::$user->lang['FORM_INVALID'] . adm_back_link());
 			}
 			else
 			{
@@ -98,18 +96,18 @@ class acp_captcha
 				foreach ($captchas['available'] as $value => $title)
 				{
 					$current = ($selected !== false && $value == $selected) ? ' selected="selected"' : '';
-					$captcha_select .= '<option value="' . $value . '"' . $current . '>' . $user->lang[$title] . '</option>';
+					$captcha_select .= '<option value="' . $value . '"' . $current . '>' . phpbb::$user->lang[$title] . '</option>';
 				}
 				foreach ($captchas['unavailable'] as $value => $title)
 				{
-					$captcha_select .= '<option value="' . $value . '"' . $current . ' class="disabled-option" >' . $user->lang[$title] . '</option>';
+					$captcha_select .= '<option value="' . $value . '"' . $current . ' class="disabled-option" >' . phpbb::$user->lang[$title] . '</option>';
 				}
 
 				$demo_captcha = phpbb_captcha_factory::get_instance($selected);
 
 				foreach ($config_vars as $config_var => $template_var)
 				{
-					$template->assign_var($template_var, request_var($config_var, $config[$config_var])) ;
+					$template->assign_var($template_var, request_var($config_var, phpbb::$config[$config_var])) ;
 				}
 
 				$template->assign_vars(array(
@@ -127,8 +125,6 @@ class acp_captcha
 	*/
 	function deliver_demo($selected)
 	{
-		global $db, $user;
-
 		$captcha = phpbb_captcha_factory::get_instance($selected);
 		$captcha->init(CONFIRM_REG);
 		$captcha->execute_demo();

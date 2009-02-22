@@ -50,8 +50,6 @@ class phpbb_captcha_gd extends phpbb_default_captcha implements phpbb_captcha_pl
 
 	function acp_page($id, &$module)
 	{
-		global $db, $template, $user;
-
 		$captcha_vars = array(
 			'captcha_gd_x_grid'				=> 'CAPTCHA_GD_X_GRID',
 			'captcha_gd_y_grid'				=> 'CAPTCHA_GD_Y_GRID',
@@ -77,11 +75,11 @@ class phpbb_captcha_gd extends phpbb_default_captcha implements phpbb_captcha_pl
 					set_config($captcha_var, $value);
 				}
 			}
-			trigger_error($user->lang['CONFIG_UPDATED'] . adm_back_link($module->u_action));
+			trigger_error(phpbb::$user->lang['CONFIG_UPDATED'] . adm_back_link($module->u_action));
 		}
 		else if ($submit)
 		{
-			trigger_error($user->lang['FORM_INVALID'] . adm_back_link($module->u_action));
+			trigger_error(phpbb::$user->lang['FORM_INVALID'] . adm_back_link($module->u_action));
 		}
 		else
 		{

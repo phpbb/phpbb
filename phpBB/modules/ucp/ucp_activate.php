@@ -27,8 +27,6 @@ class ucp_activate
 
 	function main($id, $mode)
 	{
-		global $db, $user, $auth, $template;
-
 		$user_id = request_var('u', 0);
 		$key = request_var('k', '');
 
@@ -96,9 +94,9 @@ class ucp_activate
 			$messenger->to($user_row['user_email'], $user_row['username']);
 
 			$messenger->headers('X-AntiAbuse: Board servername - ' . phpbb::$config['server_name']);
-			$messenger->headers('X-AntiAbuse: User_id - ' . $user->data['user_id']);
-			$messenger->headers('X-AntiAbuse: Username - ' . $user->data['username']);
-			$messenger->headers('X-AntiAbuse: User IP - ' . $user->ip);
+			$messenger->headers('X-AntiAbuse: User_id - ' . phpbb::$user->data['user_id']);
+			$messenger->headers('X-AntiAbuse: Username - ' . phpbb::$user->data['username']);
+			$messenger->headers('X-AntiAbuse: User IP - ' . phpbb::$user->ip);
 
 			$messenger->assign_vars(array(
 				'USERNAME'	=> htmlspecialchars_decode($user_row['username']))
@@ -121,7 +119,7 @@ class ucp_activate
 		}
 
 		meta_refresh(3, append_sid('index'));
-		trigger_error($user->lang[$message]);
+		trigger_error(phpbb::$user->lang[$message]);
 	}
 }
 

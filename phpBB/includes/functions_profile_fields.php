@@ -33,8 +33,6 @@ class custom_profile
 	*/
 	public function generate_profile_fields($mode, $lang_id)
 	{
-		global $db, $template, $auth;
-
 		$sql_where = '';
 		switch ($mode)
 		{
@@ -202,14 +200,12 @@ class custom_profile
 	*/
 	private function build_cache()
 	{
-		global $db, $user, $auth;
-
 		$this->profile_cache = array();
 
 		// Display hidden/no_view fields for admin/moderator
 		$sql = 'SELECT l.*, f.*
 			FROM ' . PROFILE_LANG_TABLE . ' l, ' . PROFILE_FIELDS_TABLE . ' f
-			WHERE l.lang_id = ' . $user->get_iso_lang_id() . '
+			WHERE l.lang_id = ' . phpbb::$user->get_iso_lang_id() . '
 				AND f.field_active = 1 ' .
 				((!$auth->acl_gets('a_', 'm_') && !$auth->acl_getf_global('m_')) ? '	AND f.field_hide = 0 ' : '') . '
 				AND f.field_no_view = 0
@@ -229,8 +225,6 @@ class custom_profile
 	*/
 	private function get_option_lang($field_id, $lang_id, $field_type, $preview)
 	{
-		global $db;
-
 		if ($preview)
 		{
 			$lang_options = (!is_array($this->vars['lang_options'])) ? explode("\n", $this->vars['lang_options']) : $this->vars['lang_options'];
@@ -266,8 +260,6 @@ class custom_profile
 	*/
 	public function submit_cp_field($mode, $lang_id, &$cp_data, &$cp_error)
 	{
-		global $auth, $db, $user;
-
 		$sql_where = '';
 		switch ($mode)
 		{
@@ -311,32 +303,32 @@ class custom_profile
 				{
 					case 'FIELD_INVALID_DATE':
 					case 'FIELD_REQUIRED':
-						$error = sprintf($user->lang[$cp_result], $row['lang_name']);
+						$error = sprintf(phpbb::$user->lang[$cp_result], $row['lang_name']);
 					break;
 
 					case 'FIELD_TOO_SHORT':
 					case 'FIELD_TOO_SMALL':
-						$error = sprintf($user->lang[$cp_result], $row['lang_name'], $row['field_minlen']);
+						$error = sprintf(phpbb::$user->lang[$cp_result], $row['lang_name'], $row['field_minlen']);
 					break;
 
 					case 'FIELD_TOO_LONG':
 					case 'FIELD_TOO_LARGE':
-						$error = sprintf($user->lang[$cp_result], $row['lang_name'], $row['field_maxlen']);
+						$error = sprintf(phpbb::$user->lang[$cp_result], $row['lang_name'], $row['field_maxlen']);
 					break;
 
 					case 'FIELD_INVALID_CHARS':
 						switch ($row['field_validation'])
 						{
 							case '[0-9]+':
-								$error = sprintf($user->lang[$cp_result . '_NUMBERS_ONLY'], $row['lang_name']);
+								$error = sprintf(phpbb::$user->lang[$cp_result . '_NUMBERS_ONLY'], $row['lang_name']);
 							break;
 
 							case '[\w]+':
-								$error = sprintf($user->lang[$cp_result . '_ALPHA_ONLY'], $row['lang_name']);
+								$error = sprintf(phpbb::$user->lang[$cp_result . '_ALPHA_ONLY'], $row['lang_name']);
 							break;
 
 							case '[\w_\+\. \-\[\]]+':
-								$error = sprintf($user->lang[$cp_result . '_SPACERS_ONLY'], $row['lang_name']);
+								$error = sprintf(phpbb::$user->lang[$cp_result . '_SPACERS_ONLY'], $row['lang_name']);
 							break;
 						}
 					break;
@@ -358,8 +350,6 @@ class custom_profile
 	*/
 	public function generate_profile_fields_template($mode, $user_id = 0, $profile_row = false)
 	{
-		global $db;
-
 		if ($mode == 'grab')
 		{
 			if (!is_array($user_id))
@@ -489,9 +479,8 @@ class custom_profile
 				}
 				else if ($day && $month && $year)
 				{
-					global $user;
 					// d/m/y 00:00 GMT isn't necessarily on the same d/m/y in the user's timezone, so add the timezone seconds
-					return $user->format_date(gmmktime(0, 0, 0, $month, $day, $year) + $user->timezone + $user->dst, $user->lang['DATE_FORMAT'], true);
+					return phpbb::$user->format_date(gmmktime(0, 0, 0, $month, $day, $year) + phpbb::$user->timezone + phpbb::$user->dst, phpbb::$user->lang['DATE_FORMAT'], true);
 				}
 
 				return $value;
@@ -555,14 +544,12 @@ class custom_profile
 	*/
 	private function get_var($field_validation, &$profile_row, $default_value, $preview)
 	{
-		global $user;
-
 		$profile_row['field_ident'] = (isset($profile_row['var_name'])) ? $profile_row['var_name'] : 'pf_' . $profile_row['field_ident'];
 		$user_ident = $profile_row['field_ident'];
 		// checkbox - only testing for isset
 		if ($profile_row['field_type'] == FIELD_BOOL && $profile_row['field_length'] == 2)
 		{
-			$value = (phpbb_request::is_set($profile_row['field_ident'])) ? true : ((!isset($user->profile_fields[$user_ident]) || $preview) ? $default_value : $user->profile_fields[$user_ident]);
+			$value = (phpbb_request::is_set($profile_row['field_ident'])) ? true : ((!isset(phpbb::$user->profile_fields[$user_ident]) || $preview) ? $default_value : phpbb::$user->profile_fields[$user_ident]);
 		}
 		else if ($profile_row['field_type'] == FIELD_INT)
 		{
@@ -572,17 +559,17 @@ class custom_profile
 			}
 			else
 			{
-				if (!$preview && isset($user->profile_fields[$user_ident]) && is_null($user->profile_fields[$user_ident]))
+				if (!$preview && isset(phpbb::$user->profile_fields[$user_ident]) && is_null(phpbb::$user->profile_fields[$user_ident]))
 				{
 					$value = null;
 				}
-				else if (!isset($user->profile_fields[$user_ident]) || $preview)
+				else if (!isset(phpbb::$user->profile_fields[$user_ident]) || $preview)
 				{
 					$value = $default_value;
 				}
 				else
 				{
-					$value = $user->profile_fields[$user_ident];
+					$value = phpbb::$user->profile_fields[$user_ident];
 				}
 			}
 
@@ -590,7 +577,7 @@ class custom_profile
 		}
 		else
 		{
-			$value = (phpbb_request::is_set($profile_row['field_ident'])) ? request_var($profile_row['field_ident'], $default_value, true) : ((!isset($user->profile_fields[$user_ident]) || $preview) ? $default_value : $user->profile_fields[$user_ident]);
+			$value = (phpbb_request::is_set($profile_row['field_ident'])) ? request_var($profile_row['field_ident'], $default_value, true) : ((!isset(phpbb::$user->profile_fields[$user_ident]) || $preview) ? $default_value : phpbb::$user->profile_fields[$user_ident]);
 
 			if (gettype($value) == 'string')
 			{
@@ -614,8 +601,6 @@ class custom_profile
 	*/
 	private function generate_int($profile_row, $preview = false)
 	{
-		global $template;
-
 		$profile_row['field_value'] = $this->get_var('int', $profile_row, $profile_row['field_default_value'], $preview);
 		$template->assign_block_vars(self::$profile_types[$profile_row['field_type']], array_change_key_case($profile_row, CASE_UPPER));
 	}
@@ -626,8 +611,6 @@ class custom_profile
 	*/
 	private function generate_date($profile_row, $preview = false)
 	{
-		global $user, $template;
-
 		$profile_row['field_ident'] = (isset($profile_row['var_name'])) ? $profile_row['var_name'] : 'pf_' . $profile_row['field_ident'];
 		$user_ident = $profile_row['field_ident'];
 
@@ -639,14 +622,14 @@ class custom_profile
 			{
 				$profile_row['field_default_value'] = sprintf('%2d-%2d-%4d', $now['mday'], $now['mon'], $now['year']);
 			}
-			list($day, $month, $year) = explode('-', ((!isset($user->profile_fields[$user_ident]) || $preview) ? $profile_row['field_default_value'] : $user->profile_fields[$user_ident]));
+			list($day, $month, $year) = explode('-', ((!isset(phpbb::$user->profile_fields[$user_ident]) || $preview) ? $profile_row['field_default_value'] : phpbb::$user->profile_fields[$user_ident]));
 		}
 		else
 		{
 			if ($preview && $profile_row['field_default_value'] == 'now')
 			{
 				$profile_row['field_default_value'] = sprintf('%2d-%2d-%4d', $now['mday'], $now['mon'], $now['year']);
-				list($day, $month, $year) = explode('-', ((!isset($user->profile_fields[$user_ident]) || $preview) ? $profile_row['field_default_value'] : $user->profile_fields[$user_ident]));
+				list($day, $month, $year) = explode('-', ((!isset(phpbb::$user->profile_fields[$user_ident]) || $preview) ? $profile_row['field_default_value'] : phpbb::$user->profile_fields[$user_ident]));
 			}
 			else
 			{
@@ -685,8 +668,6 @@ class custom_profile
 	*/
 	private function generate_bool($profile_row, $preview = false)
 	{
-		global $template;
-
 		$value = $this->get_var('int', $profile_row, $profile_row['field_default_value'], $preview);
 
 		$profile_row['field_value'] = $value;
@@ -716,8 +697,6 @@ class custom_profile
 	*/
 	private function generate_string($profile_row, $preview = false)
 	{
-		global $template;
-
 		$profile_row['field_value'] = $this->get_var('string', $profile_row, $profile_row['lang_default_value'], $preview);
 		$template->assign_block_vars(self::$profile_types[$profile_row['field_type']], array_change_key_case($profile_row, CASE_UPPER));
 	}
@@ -728,8 +707,6 @@ class custom_profile
 	*/
 	private function generate_text($profile_row, $preview = false)
 	{
-		global $template, $user;
-
 		$field_length = explode('|', $profile_row['field_length']);
 		$profile_row['field_rows'] = $field_length[0];
 		$profile_row['field_cols'] = $field_length[1];
@@ -744,8 +721,6 @@ class custom_profile
 	*/
 	private function generate_dropdown($profile_row, $preview = false)
 	{
-		global $user, $template;
-
 		$value = $this->get_var('int', $profile_row, $profile_row['field_default_value'], $preview);
 
 		if (!isset($this->options_lang[$profile_row['field_id']]) || !isset($this->options_lang[$profile_row['field_id']][$profile_row['lang_id']]) || !sizeof($this->options_lang[$profile_row['field_id']][$profile_row['lang_id']]))
@@ -773,8 +748,6 @@ class custom_profile
 	*/
 	private function process_field_row($mode, $profile_row)
 	{
-		global $template;
-
 		$preview = ($mode == 'preview') ? true : false;
 
 		// set template filename
@@ -801,8 +774,6 @@ class custom_profile
 	*/
 	public static function build_insert_sql_array($cp_data)
 	{
-		global $db, $user, $auth;
-
 		$sql_not_in = array();
 		foreach ($cp_data as $key => $null)
 		{
@@ -811,7 +782,7 @@ class custom_profile
 
 		$sql = 'SELECT f.field_type, f.field_ident, f.field_default_value, l.lang_default_value
 			FROM ' . PROFILE_LANG_TABLE . ' l, ' . PROFILE_FIELDS_TABLE . ' f
-			WHERE l.lang_id = ' . $user->get_iso_lang_id() . '
+			WHERE l.lang_id = ' . phpbb::$user->get_iso_lang_id() . '
 				' . ((sizeof($sql_not_in)) ? ' AND ' . $db->sql_in_set('f.field_ident', $sql_not_in, true) : '') . '
 				AND l.field_id = f.field_id';
 		$result = $db->sql_query($sql);
@@ -916,15 +887,13 @@ class custom_profile_admin extends custom_profile
 	*/
 	public function validate_options()
 	{
-		global $user;
-
 		$validate_ary = array('CHARS_ANY' => '.*', 'NUMBERS_ONLY' => '[0-9]+', 'ALPHA_ONLY' => '[\w]+', 'ALPHA_SPACERS' => '[\w_\+\. \-\[\]]+');
 
 		$validate_options = '';
 		foreach ($validate_ary as $lang => $value)
 		{
 			$selected = ($this->vars['field_validation'] == $value) ? ' selected="selected"' : '';
-			$validate_options .= '<option value="' . $value . '"' . $selected . '>' . $user->lang[$lang] . '</option>';
+			$validate_options .= '<option value="' . $value . '"' . $selected . '>' . phpbb::$user->lang[$lang] . '</option>';
 		}
 
 		return $validate_options;
@@ -935,13 +904,11 @@ class custom_profile_admin extends custom_profile
 	*/
 	public function get_string_options()
 	{
-		global $user;
-
 		$options = array(
-			0 => array('TITLE' => $user->lang['FIELD_LENGTH'],		'FIELD' => '<input type="text" name="field_length" size="5" value="' . $this->vars['field_length'] . '" />'),
-			1 => array('TITLE' => $user->lang['MIN_FIELD_CHARS'],	'FIELD' => '<input type="text" name="field_minlen" size="5" value="' . $this->vars['field_minlen'] . '" />'),
-			2 => array('TITLE' => $user->lang['MAX_FIELD_CHARS'],	'FIELD' => '<input type="text" name="field_maxlen" size="5" value="' . $this->vars['field_maxlen'] . '" />'),
-			3 => array('TITLE' => $user->lang['FIELD_VALIDATION'],	'FIELD' => '<select name="field_validation">' . $this->validate_options() . '</select>')
+			0 => array('TITLE' => phpbb::$user->lang['FIELD_LENGTH'],		'FIELD' => '<input type="text" name="field_length" size="5" value="' . $this->vars['field_length'] . '" />'),
+			1 => array('TITLE' => phpbb::$user->lang['MIN_FIELD_CHARS'],	'FIELD' => '<input type="text" name="field_minlen" size="5" value="' . $this->vars['field_minlen'] . '" />'),
+			2 => array('TITLE' => phpbb::$user->lang['MAX_FIELD_CHARS'],	'FIELD' => '<input type="text" name="field_maxlen" size="5" value="' . $this->vars['field_maxlen'] . '" />'),
+			3 => array('TITLE' => phpbb::$user->lang['FIELD_VALIDATION'],	'FIELD' => '<select name="field_validation">' . $this->validate_options() . '</select>')
 		);
 
 		return $options;
@@ -952,13 +919,11 @@ class custom_profile_admin extends custom_profile
 	*/
 	public function get_text_options()
 	{
-		global $user;
-
 		$options = array(
-			0 => array('TITLE' => $user->lang['FIELD_LENGTH'],		'FIELD' => '<input name="rows" size="5" value="' . $this->vars['rows'] . '" /> ' . $user->lang['ROWS'] . '</dd><dd><input name="columns" size="5" value="' . $this->vars['columns'] . '" /> ' . $user->lang['COLUMNS'] . ' <input type="hidden" name="field_length" value="' . $this->vars['field_length'] . '" />'),
-			1 => array('TITLE' => $user->lang['MIN_FIELD_CHARS'],	'FIELD' => '<input type="text" name="field_minlen" size="10" value="' . $this->vars['field_minlen'] . '" />'),
-			2 => array('TITLE' => $user->lang['MAX_FIELD_CHARS'],	'FIELD' => '<input type="text" name="field_maxlen" size="10" value="' . $this->vars['field_maxlen'] . '" />'),
-			3 => array('TITLE' => $user->lang['FIELD_VALIDATION'],	'FIELD' => '<select name="field_validation">' . $this->validate_options() . '</select>')
+			0 => array('TITLE' => phpbb::$user->lang['FIELD_LENGTH'],		'FIELD' => '<input name="rows" size="5" value="' . $this->vars['rows'] . '" /> ' . phpbb::$user->lang['ROWS'] . '</dd><dd><input name="columns" size="5" value="' . $this->vars['columns'] . '" /> ' . phpbb::$user->lang['COLUMNS'] . ' <input type="hidden" name="field_length" value="' . $this->vars['field_length'] . '" />'),
+			1 => array('TITLE' => phpbb::$user->lang['MIN_FIELD_CHARS'],	'FIELD' => '<input type="text" name="field_minlen" size="10" value="' . $this->vars['field_minlen'] . '" />'),
+			2 => array('TITLE' => phpbb::$user->lang['MAX_FIELD_CHARS'],	'FIELD' => '<input type="text" name="field_maxlen" size="10" value="' . $this->vars['field_maxlen'] . '" />'),
+			3 => array('TITLE' => phpbb::$user->lang['FIELD_VALIDATION'],	'FIELD' => '<select name="field_validation">' . $this->validate_options() . '</select>')
 		);
 
 		return $options;
@@ -969,13 +934,11 @@ class custom_profile_admin extends custom_profile
 	*/
 	public function get_int_options()
 	{
-		global $user;
-
 		$options = array(
-			0 => array('TITLE' => $user->lang['FIELD_LENGTH'],		'FIELD' => '<input type="text" name="field_length" size="5" value="' . $this->vars['field_length'] . '" />'),
-			1 => array('TITLE' => $user->lang['MIN_FIELD_NUMBER'],	'FIELD' => '<input type="text" name="field_minlen" size="5" value="' . $this->vars['field_minlen'] . '" />'),
-			2 => array('TITLE' => $user->lang['MAX_FIELD_NUMBER'],	'FIELD' => '<input type="text" name="field_maxlen" size="5" value="' . $this->vars['field_maxlen'] . '" />'),
-			3 => array('TITLE' => $user->lang['DEFAULT_VALUE'],		'FIELD' => '<input type="post" name="field_default_value" value="' . $this->vars['field_default_value'] . '" />')
+			0 => array('TITLE' => phpbb::$user->lang['FIELD_LENGTH'],		'FIELD' => '<input type="text" name="field_length" size="5" value="' . $this->vars['field_length'] . '" />'),
+			1 => array('TITLE' => phpbb::$user->lang['MIN_FIELD_NUMBER'],	'FIELD' => '<input type="text" name="field_minlen" size="5" value="' . $this->vars['field_minlen'] . '" />'),
+			2 => array('TITLE' => phpbb::$user->lang['MAX_FIELD_NUMBER'],	'FIELD' => '<input type="text" name="field_maxlen" size="5" value="' . $this->vars['field_maxlen'] . '" />'),
+			3 => array('TITLE' => phpbb::$user->lang['DEFAULT_VALUE'],		'FIELD' => '<input type="post" name="field_default_value" value="' . $this->vars['field_default_value'] . '" />')
 		);
 
 		return $options;
@@ -986,7 +949,7 @@ class custom_profile_admin extends custom_profile
 	*/
 	public function get_bool_options()
 	{
-		global $user, $lang_defs;
+		global $lang_defs;
 
 		$default_lang_id = $lang_defs['iso'][phpbb::$config['default_lang']];
 
@@ -1004,8 +967,8 @@ class custom_profile_admin extends custom_profile
 		);
 
 		$options = array(
-			0 => array('TITLE' => $user->lang['FIELD_TYPE'], 'EXPLAIN' => $user->lang['BOOL_TYPE_EXPLAIN'], 'FIELD' => '<label><input type="radio" class="radio" name="field_length" value="1"' . (($this->vars['field_length'] == 1) ? ' checked="checked"' : '') . ' onchange="document.getElementById(\'add_profile_field\').submit();" /> ' . $user->lang['RADIO_BUTTONS'] . '</label><label><input type="radio" class="radio" name="field_length" value="2"' . (($this->vars['field_length'] == 2) ? ' checked="checked"' : '') . ' onchange="document.getElementById(\'add_profile_field\').submit();" /> ' . $user->lang['CHECKBOX'] . '</label>'),
-			1 => array('TITLE' => $user->lang['DEFAULT_VALUE'], 'FIELD' => $this->process_field_row('preview', $profile_row))
+			0 => array('TITLE' => phpbb::$user->lang['FIELD_TYPE'], 'EXPLAIN' => phpbb::$user->lang['BOOL_TYPE_EXPLAIN'], 'FIELD' => '<label><input type="radio" class="radio" name="field_length" value="1"' . (($this->vars['field_length'] == 1) ? ' checked="checked"' : '') . ' onchange="document.getElementById(\'add_profile_field\').submit();" /> ' . phpbb::$user->lang['RADIO_BUTTONS'] . '</label><label><input type="radio" class="radio" name="field_length" value="2"' . (($this->vars['field_length'] == 2) ? ' checked="checked"' : '') . ' onchange="document.getElementById(\'add_profile_field\').submit();" /> ' . phpbb::$user->lang['CHECKBOX'] . '</label>'),
+			1 => array('TITLE' => phpbb::$user->lang['DEFAULT_VALUE'], 'FIELD' => $this->process_field_row('preview', $profile_row))
 		);
 
 		return $options;
@@ -1016,7 +979,7 @@ class custom_profile_admin extends custom_profile
 	*/
 	public function get_dropdown_options()
 	{
-		global $user, $lang_defs;
+		global $lang_defs;
 
 		$default_lang_id = $lang_defs['iso'][phpbb::$config['default_lang']];
 
@@ -1038,8 +1001,8 @@ class custom_profile_admin extends custom_profile
 		$profile_row[1]['field_default_value']	= $this->vars['field_novalue'];
 
 		$options = array(
-			0 => array('TITLE' => $user->lang['DEFAULT_VALUE'], 'FIELD' => $this->process_field_row('preview', $profile_row[0])),
-			1 => array('TITLE' => $user->lang['NO_VALUE_OPTION'], 'EXPLAIN' => $user->lang['NO_VALUE_OPTION_EXPLAIN'], 'FIELD' => $this->process_field_row('preview', $profile_row[1]))
+			0 => array('TITLE' => phpbb::$user->lang['DEFAULT_VALUE'], 'FIELD' => $this->process_field_row('preview', $profile_row[0])),
+			1 => array('TITLE' => phpbb::$user->lang['NO_VALUE_OPTION'], 'EXPLAIN' => phpbb::$user->lang['NO_VALUE_OPTION_EXPLAIN'], 'FIELD' => $this->process_field_row('preview', $profile_row[1]))
 		);
 
 		return $options;
@@ -1050,7 +1013,7 @@ class custom_profile_admin extends custom_profile
 	*/
 	public function get_date_options()
 	{
-		global $user, $lang_defs;
+		global $lang_defs;
 
 		$default_lang_id = $lang_defs['iso'][phpbb::$config['default_lang']];
 
@@ -1076,8 +1039,8 @@ class custom_profile_admin extends custom_profile
 		}
 
 		$options = array(
-			0 => array('TITLE' => $user->lang['DEFAULT_VALUE'],	'FIELD' => $this->process_field_row('preview', $profile_row)),
-			1 => array('TITLE' => $user->lang['ALWAYS_TODAY'],	'FIELD' => '<label><input type="radio" class="radio" name="always_now" value="1"' . (($s_checked) ? ' checked="checked"' : '') . ' onchange="document.getElementById(\'add_profile_field\').submit();" /> ' . $user->lang['YES'] . '</label><label><input type="radio" class="radio" name="always_now" value="0"' . ((!$s_checked) ? ' checked="checked"' : '') . ' onchange="document.getElementById(\'add_profile_field\').submit();" /> ' . $user->lang['NO'] . '</label>'),
+			0 => array('TITLE' => phpbb::$user->lang['DEFAULT_VALUE'],	'FIELD' => $this->process_field_row('preview', $profile_row)),
+			1 => array('TITLE' => phpbb::$user->lang['ALWAYS_TODAY'],	'FIELD' => '<label><input type="radio" class="radio" name="always_now" value="1"' . (($s_checked) ? ' checked="checked"' : '') . ' onchange="document.getElementById(\'add_profile_field\').submit();" /> ' . phpbb::$user->lang['YES'] . '</label><label><input type="radio" class="radio" name="always_now" value="0"' . ((!$s_checked) ? ' checked="checked"' : '') . ' onchange="document.getElementById(\'add_profile_field\').submit();" /> ' . phpbb::$user->lang['NO'] . '</label>'),
 		);
 
 		return $options;

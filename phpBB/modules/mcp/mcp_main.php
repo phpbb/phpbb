@@ -33,7 +33,7 @@ class mcp_main
 
 	function main($id, $mode)
 	{
-		global $auth, $db, $user, $template, $action;
+		global $action;
 
 		$quickmod = ($mode == 'quickmod') ? true : false;
 
@@ -80,7 +80,7 @@ class mcp_main
 			break;
 
 			case 'move':
-				$user->add_lang('viewtopic');
+				phpbb::$user->add_lang('viewtopic');
 
 				$topic_ids = (!$quickmod) ? request_var('topic_id_list', array(0)) : array(request_var('t', 0));
 
@@ -93,7 +93,7 @@ class mcp_main
 			break;
 
 			case 'fork':
-				$user->add_lang('viewtopic');
+				phpbb::$user->add_lang('viewtopic');
 
 				$topic_ids = (!$quickmod) ? request_var('topic_id_list', array(0)) : array(request_var('t', 0));
 
@@ -106,7 +106,7 @@ class mcp_main
 			break;
 
 			case 'delete_topic':
-				$user->add_lang('viewtopic');
+				phpbb::$user->add_lang('viewtopic');
 
 				$topic_ids = (!$quickmod) ? request_var('topic_id_list', array(0)) : array(request_var('t', 0));
 
@@ -119,7 +119,7 @@ class mcp_main
 			break;
 
 			case 'delete_post':
-				$user->add_lang('posting');
+				phpbb::$user->add_lang('posting');
 
 				$post_ids = (!$quickmod) ? request_var('post_id_list', array(0)) : array(request_var('p', 0));
 
@@ -137,7 +137,7 @@ class mcp_main
 			case 'front':
 				include(PHPBB_ROOT_PATH . 'includes/mcp/mcp_front.' . PHP_EXT);
 
-				$user->add_lang('acp/common');
+				phpbb::$user->add_lang('acp/common');
 
 				mcp_front_view($id, $mode, $action);
 
@@ -148,7 +148,7 @@ class mcp_main
 			case 'forum_view':
 				include(PHPBB_ROOT_PATH . 'includes/mcp/mcp_forum.' . PHP_EXT);
 
-				$user->add_lang('viewforum');
+				phpbb::$user->add_lang('viewforum');
 
 				$forum_id = request_var('f', 0);
 
@@ -198,8 +198,6 @@ class mcp_main
 */
 function lock_unlock($action, $ids)
 {
-	global $auth, $user, $db;
-
 	if ($action == 'lock' || $action == 'unlock')
 	{
 		$table = TOPICS_TABLE;
@@ -274,7 +272,7 @@ function lock_unlock($action, $ids)
 	else
 	{
 		meta_refresh(2, $redirect);
-		trigger_error($user->lang[$success_msg] . '<br /><br />' . sprintf($user->lang['RETURN_PAGE'], '<a href="' . $redirect . '">', '</a>'));
+		trigger_error(phpbb::$user->lang[$success_msg] . '<br /><br />' . sprintf(phpbb::$user->lang['RETURN_PAGE'], '<a href="' . $redirect . '">', '</a>'));
 	}
 }
 
@@ -283,8 +281,6 @@ function lock_unlock($action, $ids)
 */
 function change_topic_type($action, $topic_ids)
 {
-	global $auth, $user, $db;
-
 	// For changing topic types, we only allow operations in one forum.
 	$forum_id = check_ids($topic_ids, TOPICS_TABLE, 'topic_id', array('f_announce', 'f_sticky', 'm_'), true);
 
@@ -494,12 +490,10 @@ function change_topic_type($action, $topic_ids)
 
 		if ($global_involved)
 		{
-			global $template;
-
 			$template->assign_vars(array(
 				'S_FORUM_SELECT'		=> make_forum_select(request_var('f', $forum_id), false, false, true, true),
 				'S_CAN_LEAVE_SHADOW'	=> false,
-				'ADDITIONAL_MSG'		=> (sizeof($topic_ids) == 1) ? $user->lang['SELECT_FORUM_GLOBAL_ANNOUNCEMENT'] : $user->lang['SELECT_FORUM_GLOBAL_ANNOUNCEMENTS'])
+				'ADDITIONAL_MSG'		=> (sizeof($topic_ids) == 1) ? phpbb::$user->lang['SELECT_FORUM_GLOBAL_ANNOUNCEMENT'] : phpbb::$user->lang['SELECT_FORUM_GLOBAL_ANNOUNCEMENTS'])
 			);
 
 			confirm_box(false, $l_new_type, build_hidden_fields($s_hidden_fields), 'mcp_move.html');
@@ -520,7 +514,7 @@ function change_topic_type($action, $topic_ids)
 	else
 	{
 		meta_refresh(2, $redirect);
-		trigger_error($user->lang[$success_msg] . '<br /><br />' . sprintf($user->lang['RETURN_PAGE'], '<a href="' . $redirect . '">', '</a>'));
+		trigger_error(phpbb::$user->lang[$success_msg] . '<br /><br />' . sprintf(phpbb::$user->lang['RETURN_PAGE'], '<a href="' . $redirect . '">', '</a>'));
 	}
 }
 
@@ -529,8 +523,6 @@ function change_topic_type($action, $topic_ids)
 */
 function mcp_move_topic($topic_ids)
 {
-	global $auth, $user, $db, $template;
-
 	// Here we limit the operation to one forum only
 	$forum_id = check_ids($topic_ids, TOPICS_TABLE, 'topic_id', array('m_move'), true);
 
@@ -556,7 +548,7 @@ function mcp_move_topic($topic_ids)
 
 		if (!sizeof($forum_data))
 		{
-			$additional_msg = $user->lang['FORUM_NOT_EXIST'];
+			$additional_msg = phpbb::$user->lang['FORUM_NOT_EXIST'];
 		}
 		else
 		{
@@ -564,21 +556,21 @@ function mcp_move_topic($topic_ids)
 
 			if ($forum_data['forum_type'] != FORUM_POST)
 			{
-				$additional_msg = $user->lang['FORUM_NOT_POSTABLE'];
+				$additional_msg = phpbb::$user->lang['FORUM_NOT_POSTABLE'];
 			}
 			else if (!$auth->acl_get('f_post', $to_forum_id))
 			{
-				$additional_msg = $user->lang['USER_CANNOT_POST'];
+				$additional_msg = phpbb::$user->lang['USER_CANNOT_POST'];
 			}
 			else if ($forum_id == $to_forum_id)
 			{
-				$additional_msg = $user->lang['CANNOT_MOVE_SAME_FORUM'];
+				$additional_msg = phpbb::$user->lang['CANNOT_MOVE_SAME_FORUM'];
 			}
 		}
 	}
 	else if (phpbb_request::is_set_post('confirm'))
 	{
-		$additional_msg = $user->lang['FORUM_NOT_EXIST'];
+		$additional_msg = phpbb::$user->lang['FORUM_NOT_EXIST'];
 	}
 
 	if ($to_forum_id && !$additional_msg && confirm_box(true))
@@ -733,10 +725,10 @@ function mcp_move_topic($topic_ids)
 	{
 		meta_refresh(3, $redirect);
 
-		$message = $user->lang[$success_msg];
-		$message .= '<br /><br />' . sprintf($user->lang['RETURN_PAGE'], '<a href="' . $redirect . '">', '</a>');
-		$message .= '<br /><br />' . sprintf($user->lang['RETURN_FORUM'], '<a href="' . append_sid('viewforum', "f=$forum_id") . '">', '</a>');
-		$message .= '<br /><br />' . sprintf($user->lang['RETURN_NEW_FORUM'], '<a href="' . append_sid('viewforum', "f=$to_forum_id") . '">', '</a>');
+		$message = phpbb::$user->lang[$success_msg];
+		$message .= '<br /><br />' . sprintf(phpbb::$user->lang['RETURN_PAGE'], '<a href="' . $redirect . '">', '</a>');
+		$message .= '<br /><br />' . sprintf(phpbb::$user->lang['RETURN_FORUM'], '<a href="' . append_sid('viewforum', "f=$forum_id") . '">', '</a>');
+		$message .= '<br /><br />' . sprintf(phpbb::$user->lang['RETURN_NEW_FORUM'], '<a href="' . append_sid('viewforum', "f=$to_forum_id") . '">', '</a>');
 
 		trigger_error($message);
 	}
@@ -747,8 +739,6 @@ function mcp_move_topic($topic_ids)
 */
 function mcp_delete_topic($topic_ids)
 {
-	global $auth, $user, $db;
-
 	if (!check_ids($topic_ids, TOPICS_TABLE, 'topic_id', array('m_delete')))
 	{
 		return;
@@ -802,7 +792,7 @@ function mcp_delete_topic($topic_ids)
 	else
 	{
 		meta_refresh(3, $redirect);
-		trigger_error($user->lang[$success_msg] . '<br /><br />' . sprintf($user->lang['RETURN_' . $redirect_message], '<a href="' . $redirect . '">', '</a>'));
+		trigger_error(phpbb::$user->lang[$success_msg] . '<br /><br />' . sprintf(phpbb::$user->lang['RETURN_' . $redirect_message], '<a href="' . $redirect . '">', '</a>'));
 	}
 }
 
@@ -811,8 +801,6 @@ function mcp_delete_topic($topic_ids)
 */
 function mcp_delete_post($post_ids)
 {
-	global $auth, $user, $db;
-
 	if (!check_ids($post_ids, POSTS_TABLE, 'post_id', array('m_delete')))
 	{
 		return;
@@ -877,9 +865,9 @@ function mcp_delete_post($post_ids)
 		$return_link = array();
 		if ($affected_topics == 1 && !$deleted_topics && $topic_id)
 		{
-			$return_link[] = sprintf($user->lang['RETURN_TOPIC'], '<a href="' . append_sid('viewtopic', "f=$forum_id&amp;t=$topic_id") . '">', '</a>');
+			$return_link[] = sprintf(phpbb::$user->lang['RETURN_TOPIC'], '<a href="' . append_sid('viewtopic', "f=$forum_id&amp;t=$topic_id") . '">', '</a>');
 		}
-		$return_link[] = sprintf($user->lang['RETURN_FORUM'], '<a href="' . append_sid('viewforum', 'f=' . $forum_id) . '">', '</a>');
+		$return_link[] = sprintf(phpbb::$user->lang['RETURN_FORUM'], '<a href="' . append_sid('viewforum', 'f=' . $forum_id) . '">', '</a>');
 
 		if (sizeof($post_ids) == 1)
 		{
@@ -887,11 +875,11 @@ function mcp_delete_post($post_ids)
 			{
 				// We deleted the only post of a topic, which in turn has
 				// been removed from the database
-				$success_msg = $user->lang['TOPIC_DELETED_SUCCESS'];
+				$success_msg = phpbb::$user->lang['TOPIC_DELETED_SUCCESS'];
 			}
 			else
 			{
-				$success_msg = $user->lang['POST_DELETED_SUCCESS'];
+				$success_msg = phpbb::$user->lang['POST_DELETED_SUCCESS'];
 			}
 		}
 		else
@@ -899,11 +887,11 @@ function mcp_delete_post($post_ids)
 			if ($deleted_topics)
 			{
 				// Some of topics disappeared
-				$success_msg = $user->lang['POSTS_DELETED_SUCCESS'] . '<br /><br />' . $user->lang['EMPTY_TOPICS_REMOVED_WARNING'];
+				$success_msg = phpbb::$user->lang['POSTS_DELETED_SUCCESS'] . '<br /><br />' . phpbb::$user->lang['EMPTY_TOPICS_REMOVED_WARNING'];
 			}
 			else
 			{
-				$success_msg = $user->lang['POSTS_DELETED_SUCCESS'];
+				$success_msg = phpbb::$user->lang['POSTS_DELETED_SUCCESS'];
 			}
 		}
 	}
@@ -922,7 +910,7 @@ function mcp_delete_post($post_ids)
 	else
 	{
 		meta_refresh(3, $redirect);
-		trigger_error($success_msg . '<br /><br />' . sprintf($user->lang['RETURN_PAGE'], '<a href="' . $redirect . '">', '</a>') . '<br /><br />' . implode('<br /><br />', $return_link));
+		trigger_error($success_msg . '<br /><br />' . sprintf(phpbb::$user->lang['RETURN_PAGE'], '<a href="' . $redirect . '">', '</a>') . '<br /><br />' . implode('<br /><br />', $return_link));
 	}
 }
 
@@ -931,8 +919,6 @@ function mcp_delete_post($post_ids)
 */
 function mcp_fork_topic($topic_ids)
 {
-	global $auth, $user, $db, $template;
-
 	if (!check_ids($topic_ids, TOPICS_TABLE, 'topic_id', array('m_')))
 	{
 		return;
@@ -956,11 +942,11 @@ function mcp_fork_topic($topic_ids)
 
 		if (!sizeof($topic_ids))
 		{
-			$additional_msg = $user->lang['NO_TOPIC_SELECTED'];
+			$additional_msg = phpbb::$user->lang['NO_TOPIC_SELECTED'];
 		}
 		else if (!sizeof($forum_data))
 		{
-			$additional_msg = $user->lang['FORUM_NOT_EXIST'];
+			$additional_msg = phpbb::$user->lang['FORUM_NOT_EXIST'];
 		}
 		else
 		{
@@ -968,17 +954,17 @@ function mcp_fork_topic($topic_ids)
 
 			if ($forum_data['forum_type'] != FORUM_POST)
 			{
-				$additional_msg = $user->lang['FORUM_NOT_POSTABLE'];
+				$additional_msg = phpbb::$user->lang['FORUM_NOT_POSTABLE'];
 			}
 			else if (!$auth->acl_get('f_post', $to_forum_id))
 			{
-				$additional_msg = $user->lang['USER_CANNOT_POST'];
+				$additional_msg = phpbb::$user->lang['USER_CANNOT_POST'];
 			}
 		}
 	}
 	else if (phpbb_request::is_set_post('confirm'))
 	{
-		$additional_msg = $user->lang['FORUM_NOT_EXIST'];
+		$additional_msg = phpbb::$user->lang['FORUM_NOT_EXIST'];
 	}
 
 	if (!$additional_msg && confirm_box(true))
@@ -1206,14 +1192,14 @@ function mcp_fork_topic($topic_ids)
 	{
 		$redirect_url = append_sid('viewforum', 'f=' . $forum_id);
 		meta_refresh(3, $redirect_url);
-		$return_link = sprintf($user->lang['RETURN_FORUM'], '<a href="' . $redirect_url . '">', '</a>');
+		$return_link = sprintf(phpbb::$user->lang['RETURN_FORUM'], '<a href="' . $redirect_url . '">', '</a>');
 
 		if ($forum_id != $to_forum_id)
 		{
-			$return_link .= '<br /><br />' . sprintf($user->lang['RETURN_NEW_FORUM'], '<a href="' . append_sid('viewforum', 'f=' . $to_forum_id) . '">', '</a>');
+			$return_link .= '<br /><br />' . sprintf(phpbb::$user->lang['RETURN_NEW_FORUM'], '<a href="' . append_sid('viewforum', 'f=' . $to_forum_id) . '">', '</a>');
 		}
 
-		trigger_error($user->lang[$success_msg] . '<br /><br />' . $return_link);
+		trigger_error(phpbb::$user->lang[$success_msg] . '<br /><br />' . $return_link);
 	}
 }
 

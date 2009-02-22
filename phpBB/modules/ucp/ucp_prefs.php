@@ -27,8 +27,6 @@ class ucp_prefs
 
 	function main($id, $mode)
 	{
-		global $db, $user, $auth, $template;
-
 		$submit = phpbb_request::is_set_post('submit');
 		$error = $data = array();
 		$s_hidden_fields = '';
@@ -38,22 +36,22 @@ class ucp_prefs
 			case 'personal':
 				add_form_key('ucp_prefs_personal');
 				$data = array(
-					'notifymethod'	=> request_var('notifymethod', $user->data['user_notify_type']),
-					'dateformat'	=> request_var('dateformat', $user->data['user_dateformat'], true),
-					'lang'			=> basename(request_var('lang', $user->data['user_lang'])),
-					'style'			=> request_var('style', (int) $user->data['user_style']),
-					'tz'			=> request_var('tz', (float) $user->data['user_timezone']),
+					'notifymethod'	=> request_var('notifymethod', phpbb::$user->data['user_notify_type']),
+					'dateformat'	=> request_var('dateformat', phpbb::$user->data['user_dateformat'], true),
+					'lang'			=> basename(request_var('lang', phpbb::$user->data['user_lang'])),
+					'style'			=> request_var('style', (int) phpbb::$user->data['user_style']),
+					'tz'			=> request_var('tz', (float) phpbb::$user->data['user_timezone']),
 
-					'dst'			=> request_var('dst', (bool) $user->data['user_dst']),
-					'viewemail'		=> request_var('viewemail', (bool) $user->data['user_allow_viewemail']),
-					'massemail'		=> request_var('massemail', (bool) $user->data['user_allow_massemail']),
-					'hideonline'	=> request_var('hideonline', (bool) !$user->data['user_allow_viewonline']),
-					'notifypm'		=> request_var('notifypm', (bool) $user->data['user_notify_pm']),
-					'popuppm'		=> request_var('popuppm', (bool) $user->optionget('popuppm')),
-					'allowpm'		=> request_var('allowpm', (bool) $user->data['user_allow_pm']),
+					'dst'			=> request_var('dst', (bool) phpbb::$user->data['user_dst']),
+					'viewemail'		=> request_var('viewemail', (bool) phpbb::$user->data['user_allow_viewemail']),
+					'massemail'		=> request_var('massemail', (bool) phpbb::$user->data['user_allow_massemail']),
+					'hideonline'	=> request_var('hideonline', (bool) !phpbb::$user->data['user_allow_viewonline']),
+					'notifypm'		=> request_var('notifypm', (bool) phpbb::$user->data['user_notify_pm']),
+					'popuppm'		=> request_var('popuppm', (bool) phpbb::$user->optionget('popuppm')),
+					'allowpm'		=> request_var('allowpm', (bool) phpbb::$user->data['user_allow_pm']),
 				);
 
-				if ($data['notifymethod'] == NOTIFY_IM && (!phpbb::$config['jab_enable'] || !$user->data['user_jabber'] || !@extension_loaded('xml')))
+				if ($data['notifymethod'] == NOTIFY_IM && (!phpbb::$config['jab_enable'] || !phpbb::$user->data['user_jabber'] || !@extension_loaded('xml')))
 				{
 					// Jabber isnt enabled, or no jabber field filled in. Update the users table to be sure its correct.
 					$data['notifymethod'] = NOTIFY_BOTH;
@@ -76,16 +74,16 @@ class ucp_prefs
 
 					if (!sizeof($error))
 					{
-						$user->optionset('popuppm', $data['popuppm']);
+						phpbb::$user->optionset('popuppm', $data['popuppm']);
 
 						$sql_ary = array(
 							'user_allow_pm'			=> $data['allowpm'],
 							'user_allow_viewemail'	=> $data['viewemail'],
 							'user_allow_massemail'	=> $data['massemail'],
-							'user_allow_viewonline'	=> ($auth->acl_get('u_hideonline')) ? !$data['hideonline'] : $user->data['user_allow_viewonline'],
+							'user_allow_viewonline'	=> ($auth->acl_get('u_hideonline')) ? !$data['hideonline'] : phpbb::$user->data['user_allow_viewonline'],
 							'user_notify_type'		=> $data['notifymethod'],
 							'user_notify_pm'		=> $data['notifypm'],
-							'user_options'			=> $user->data['user_options'],
+							'user_options'			=> phpbb::$user->data['user_options'],
 
 							'user_dst'				=> $data['dst'],
 							'user_dateformat'		=> $data['dateformat'],
@@ -96,36 +94,36 @@ class ucp_prefs
 
 						$sql = 'UPDATE ' . USERS_TABLE . '
 							SET ' . $db->sql_build_array('UPDATE', $sql_ary) . '
-							WHERE user_id = ' . $user->data['user_id'];
+							WHERE user_id = ' . phpbb::$user->data['user_id'];
 						$db->sql_query($sql);
 
 						meta_refresh(3, $this->u_action);
-						$message = $user->lang['PREFERENCES_UPDATED'] . '<br /><br />' . sprintf($user->lang['RETURN_UCP'], '<a href="' . $this->u_action . '">', '</a>');
+						$message = phpbb::$user->lang['PREFERENCES_UPDATED'] . '<br /><br />' . sprintf(phpbb::$user->lang['RETURN_UCP'], '<a href="' . $this->u_action . '">', '</a>');
 						trigger_error($message);
 					}
 
 					// Replace "error" strings with their real, localised form
-					$error = preg_replace('#^([A-Z_]+)$#e', "(!empty(\$user->lang['\\1'])) ? \$user->lang['\\1'] : '\\1'", $error);
+					$error = preg_replace('#^([A-Z_]+)$#e', "phpbb::\$user->lang('\\1')", $error);
 				}
 
 				$dateformat_options = '';
 
-				foreach ($user->lang['dateformats'] as $format => $null)
+				foreach (phpbb::$user->lang['dateformats'] as $format => $null)
 				{
 					$dateformat_options .= '<option value="' . $format . '"' . (($format == $data['dateformat']) ? ' selected="selected"' : '') . '>';
-					$dateformat_options .= $user->format_date(time(), $format, false) . ((strpos($format, '|') !== false) ? $user->lang['VARIANT_DATE_SEPARATOR'] . $user->format_date(time(), $format, true) : '');
+					$dateformat_options .= phpbb::$user->format_date(time(), $format, false) . ((strpos($format, '|') !== false) ? phpbb::$user->lang['VARIANT_DATE_SEPARATOR'] . phpbb::$user->format_date(time(), $format, true) : '');
 					$dateformat_options .= '</option>';
 				}
 
 				$s_custom = false;
 
 				$dateformat_options .= '<option value="custom"';
-				if (!isset($user->lang['dateformats'][$data['dateformat']]))
+				if (!isset(phpbb::$user->lang['dateformats'][$data['dateformat']]))
 				{
 					$dateformat_options .= ' selected="selected"';
 					$s_custom = true;
 				}
-				$dateformat_options .= '>' . $user->lang['CUSTOM_DATEFORMAT'] . '</option>';
+				$dateformat_options .= '>' . phpbb::$user->lang['CUSTOM_DATEFORMAT'] . '</option>';
 
 				$template->assign_vars(array(
 					'ERROR'				=> (sizeof($error)) ? implode('<br />', $error) : '',
@@ -152,7 +150,7 @@ class ucp_prefs
 					'S_STYLE_OPTIONS'		=> (phpbb::$config['override_user_style']) ? '' : style_select($data['style']),
 					'S_TZ_OPTIONS'			=> tz_select($data['tz'], true),
 					'S_CAN_HIDE_ONLINE'		=> ($auth->acl_get('u_hideonline')) ? true : false,
-					'S_SELECT_NOTIFY'		=> (phpbb::$config['jab_enable'] && $user->data['user_jabber'] && @extension_loaded('xml')) ? true : false)
+					'S_SELECT_NOTIFY'		=> (phpbb::$config['jab_enable'] && phpbb::$user->data['user_jabber'] && @extension_loaded('xml')) ? true : false)
 				);
 
 			break;
@@ -162,20 +160,20 @@ class ucp_prefs
 				add_form_key('ucp_prefs_view');
 
 				$data = array(
-					'topic_sk'		=> request_var('topic_sk', (!empty($user->data['user_topic_sortby_type'])) ? $user->data['user_topic_sortby_type'] : 't'),
-					'topic_sd'		=> request_var('topic_sd', (!empty($user->data['user_topic_sortby_dir'])) ? $user->data['user_topic_sortby_dir'] : 'd'),
-					'topic_st'		=> request_var('topic_st', (!empty($user->data['user_topic_show_days'])) ? $user->data['user_topic_show_days'] : 0),
+					'topic_sk'		=> request_var('topic_sk', (!empty(phpbb::$user->data['user_topic_sortby_type'])) ? phpbb::$user->data['user_topic_sortby_type'] : 't'),
+					'topic_sd'		=> request_var('topic_sd', (!empty(phpbb::$user->data['user_topic_sortby_dir'])) ? phpbb::$user->data['user_topic_sortby_dir'] : 'd'),
+					'topic_st'		=> request_var('topic_st', (!empty(phpbb::$user->data['user_topic_show_days'])) ? phpbb::$user->data['user_topic_show_days'] : 0),
 
-					'post_sk'		=> request_var('post_sk', (!empty($user->data['user_post_sortby_type'])) ? $user->data['user_post_sortby_type'] : 't'),
-					'post_sd'		=> request_var('post_sd', (!empty($user->data['user_post_sortby_dir'])) ? $user->data['user_post_sortby_dir'] : 'a'),
-					'post_st'		=> request_var('post_st', (!empty($user->data['user_post_show_days'])) ? $user->data['user_post_show_days'] : 0),
+					'post_sk'		=> request_var('post_sk', (!empty(phpbb::$user->data['user_post_sortby_type'])) ? phpbb::$user->data['user_post_sortby_type'] : 't'),
+					'post_sd'		=> request_var('post_sd', (!empty(phpbb::$user->data['user_post_sortby_dir'])) ? phpbb::$user->data['user_post_sortby_dir'] : 'a'),
+					'post_st'		=> request_var('post_st', (!empty(phpbb::$user->data['user_post_show_days'])) ? phpbb::$user->data['user_post_show_days'] : 0),
 
-					'images'		=> request_var('images', (bool) $user->optionget('viewimg')),
-					'flash'			=> request_var('flash', (bool) $user->optionget('viewflash')),
-					'smilies'		=> request_var('smilies', (bool) $user->optionget('viewsmilies')),
-					'sigs'			=> request_var('sigs', (bool) $user->optionget('viewsigs')),
-					'avatars'		=> request_var('avatars', (bool) $user->optionget('viewavatars')),
-					'wordcensor'	=> request_var('wordcensor', (bool) $user->optionget('viewcensors')),
+					'images'		=> request_var('images', (bool) phpbb::$user->optionget('viewimg')),
+					'flash'			=> request_var('flash', (bool) phpbb::$user->optionget('viewflash')),
+					'smilies'		=> request_var('smilies', (bool) phpbb::$user->optionget('viewsmilies')),
+					'sigs'			=> request_var('sigs', (bool) phpbb::$user->optionget('viewsigs')),
+					'avatars'		=> request_var('avatars', (bool) phpbb::$user->optionget('viewavatars')),
+					'wordcensor'	=> request_var('wordcensor', (bool) phpbb::$user->optionget('viewcensors')),
 				);
 
 				if ($submit)
@@ -194,19 +192,19 @@ class ucp_prefs
 
 					if (!sizeof($error))
 					{
-						$user->optionset('viewimg', $data['images']);
-						$user->optionset('viewflash', $data['flash']);
-						$user->optionset('viewsmilies', $data['smilies']);
-						$user->optionset('viewsigs', $data['sigs']);
-						$user->optionset('viewavatars', $data['avatars']);
+						phpbb::$user->optionset('viewimg', $data['images']);
+						phpbb::$user->optionset('viewflash', $data['flash']);
+						phpbb::$user->optionset('viewsmilies', $data['smilies']);
+						phpbb::$user->optionset('viewsigs', $data['sigs']);
+						phpbb::$user->optionset('viewavatars', $data['avatars']);
 
 						if ($auth->acl_get('u_chgcensors'))
 						{
-							$user->optionset('viewcensors', $data['wordcensor']);
+							phpbb::$user->optionset('viewcensors', $data['wordcensor']);
 						}
 
 						$sql_ary = array(
-							'user_options'				=> $user->data['user_options'],
+							'user_options'				=> phpbb::$user->data['user_options'],
 							'user_topic_sortby_type'	=> $data['topic_sk'],
 							'user_post_sortby_type'		=> $data['post_sk'],
 							'user_topic_sortby_dir'		=> $data['topic_sd'],
@@ -218,30 +216,30 @@ class ucp_prefs
 
 						$sql = 'UPDATE ' . USERS_TABLE . '
 							SET ' . $db->sql_build_array('UPDATE', $sql_ary) . '
-							WHERE user_id = ' . $user->data['user_id'];
+							WHERE user_id = ' . phpbb::$user->data['user_id'];
 						$db->sql_query($sql);
 
 						meta_refresh(3, $this->u_action);
-						$message = $user->lang['PREFERENCES_UPDATED'] . '<br /><br />' . sprintf($user->lang['RETURN_UCP'], '<a href="' . $this->u_action . '">', '</a>');
+						$message = phpbb::$user->lang['PREFERENCES_UPDATED'] . '<br /><br />' . sprintf(phpbb::$user->lang['RETURN_UCP'], '<a href="' . $this->u_action . '">', '</a>');
 						trigger_error($message);
 					}
 
 					// Replace "error" strings with their real, localised form
-					$error = preg_replace('#^([A-Z_]+)$#e', "(!empty(\$user->lang['\\1'])) ? \$user->lang['\\1'] : '\\1'", $error);
+					$error = preg_replace('#^([A-Z_]+)$#e', "phpbb::\$user->lang('\\1')", $error);
 				}
 
-				$sort_dir_text = array('a' => $user->lang['ASCENDING'], 'd' => $user->lang['DESCENDING']);
+				$sort_dir_text = array('a' => phpbb::$user->lang['ASCENDING'], 'd' => phpbb::$user->lang['DESCENDING']);
 
 				// Topic ordering options
-				$limit_topic_days = array(0 => $user->lang['ALL_TOPICS'], 1 => $user->lang['1_DAY'], 7 => $user->lang['7_DAYS'], 14 => $user->lang['2_WEEKS'], 30 => $user->lang['1_MONTH'], 90 => $user->lang['3_MONTHS'], 180 => $user->lang['6_MONTHS'], 365 => $user->lang['1_YEAR']);
+				$limit_topic_days = array(0 => phpbb::$user->lang['ALL_TOPICS'], 1 => phpbb::$user->lang['1_DAY'], 7 => phpbb::$user->lang['7_DAYS'], 14 => phpbb::$user->lang['2_WEEKS'], 30 => phpbb::$user->lang['1_MONTH'], 90 => phpbb::$user->lang['3_MONTHS'], 180 => phpbb::$user->lang['6_MONTHS'], 365 => phpbb::$user->lang['1_YEAR']);
 
-				$sort_by_topic_text = array('a' => $user->lang['AUTHOR'], 't' => $user->lang['POST_TIME'], 'r' => $user->lang['REPLIES'], 's' => $user->lang['SUBJECT'], 'v' => $user->lang['VIEWS']);
+				$sort_by_topic_text = array('a' => phpbb::$user->lang['AUTHOR'], 't' => phpbb::$user->lang['POST_TIME'], 'r' => phpbb::$user->lang['REPLIES'], 's' => phpbb::$user->lang['SUBJECT'], 'v' => phpbb::$user->lang['VIEWS']);
 				$sort_by_topic_sql = array('a' => 't.topic_first_poster_name', 't' => 't.topic_last_post_time', 'r' => 't.topic_replies', 's' => 't.topic_title', 'v' => 't.topic_views');
 
 				// Post ordering options
-				$limit_post_days = array(0 => $user->lang['ALL_POSTS'], 1 => $user->lang['1_DAY'], 7 => $user->lang['7_DAYS'], 14 => $user->lang['2_WEEKS'], 30 => $user->lang['1_MONTH'], 90 => $user->lang['3_MONTHS'], 180 => $user->lang['6_MONTHS'], 365 => $user->lang['1_YEAR']);
+				$limit_post_days = array(0 => phpbb::$user->lang['ALL_POSTS'], 1 => phpbb::$user->lang['1_DAY'], 7 => phpbb::$user->lang['7_DAYS'], 14 => phpbb::$user->lang['2_WEEKS'], 30 => phpbb::$user->lang['1_MONTH'], 90 => phpbb::$user->lang['3_MONTHS'], 180 => phpbb::$user->lang['6_MONTHS'], 365 => phpbb::$user->lang['1_YEAR']);
 
-				$sort_by_post_text = array('a' => $user->lang['AUTHOR'], 't' => $user->lang['POST_TIME'], 's' => $user->lang['SUBJECT']);
+				$sort_by_post_text = array('a' => phpbb::$user->lang['AUTHOR'], 't' => phpbb::$user->lang['POST_TIME'], 's' => phpbb::$user->lang['SUBJECT']);
 				$sort_by_post_sql = array('a' => 'u.username_clean', 't' => 'p.post_id', 's' => 'p.post_subject');
 
 				$_options = array('topic', 'post');
@@ -297,10 +295,10 @@ class ucp_prefs
 			case 'post':
 
 				$data = array(
-					'bbcode'	=> request_var('bbcode', $user->optionget('bbcode')),
-					'smilies'	=> request_var('smilies', $user->optionget('smilies')),
-					'sig'		=> request_var('sig', $user->optionget('attachsig')),
-					'notify'	=> request_var('notify', (bool) $user->data['user_notify']),
+					'bbcode'	=> request_var('bbcode', phpbb::$user->optionget('bbcode')),
+					'smilies'	=> request_var('smilies', phpbb::$user->optionget('smilies')),
+					'sig'		=> request_var('sig', phpbb::$user->optionget('attachsig')),
+					'notify'	=> request_var('notify', (bool) phpbb::$user->data['user_notify']),
 				);
 				add_form_key('ucp_prefs_post');
 
@@ -308,28 +306,28 @@ class ucp_prefs
 				{
 					if (check_form_key('ucp_prefs_post'))
 					{
-						$user->optionset('bbcode', $data['bbcode']);
-						$user->optionset('smilies', $data['smilies']);
-						$user->optionset('attachsig', $data['sig']);
+						phpbb::$user->optionset('bbcode', $data['bbcode']);
+						phpbb::$user->optionset('smilies', $data['smilies']);
+						phpbb::$user->optionset('attachsig', $data['sig']);
 
 						$sql_ary = array(
-							'user_options'	=> $user->data['user_options'],
+							'user_options'	=> phpbb::$user->data['user_options'],
 							'user_notify'	=> $data['notify'],
 						);
 
 						$sql = 'UPDATE ' . USERS_TABLE . '
 							SET ' . $db->sql_build_array('UPDATE', $sql_ary) . '
-							WHERE user_id = ' . $user->data['user_id'];
+							WHERE user_id = ' . phpbb::$user->data['user_id'];
 						$db->sql_query($sql);
 
-						$msg = $user->lang['PREFERENCES_UPDATED'];
+						$msg = phpbb::$user->lang['PREFERENCES_UPDATED'];
 					}
 					else
 					{
-						$msg = $user->lang['FORM_INVALID'];
+						$msg = phpbb::$user->lang['FORM_INVALID'];
 					}
 					meta_refresh(3, $this->u_action);
-					$message = $msg . '<br /><br />' . sprintf($user->lang['RETURN_UCP'], '<a href="' . $this->u_action . '">', '</a>');
+					$message = $msg . '<br /><br />' . sprintf(phpbb::$user->lang['RETURN_UCP'], '<a href="' . $this->u_action . '">', '</a>');
 					trigger_error($message);
 				}
 
@@ -343,7 +341,7 @@ class ucp_prefs
 		}
 
 		$template->assign_vars(array(
-			'L_TITLE'			=> $user->lang['UCP_PREFS_' . strtoupper($mode)],
+			'L_TITLE'			=> phpbb::$user->lang['UCP_PREFS_' . strtoupper($mode)],
 
 			'S_HIDDEN_FIELDS'	=> $s_hidden_fields,
 			'S_UCP_ACTION'		=> $this->u_action)

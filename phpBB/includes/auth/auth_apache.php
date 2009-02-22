@@ -28,11 +28,9 @@ if (!defined('IN_PHPBB'))
 */
 function init_apache()
 {
-	global $user;
-
-	if (!isset($_SERVER['PHP_AUTH_USER']) || $user->data['username'] !== $_SERVER['PHP_AUTH_USER'])
+	if (!isset($_SERVER['PHP_AUTH_USER']) || phpbb::$user->data['username'] !== $_SERVER['PHP_AUTH_USER'])
 	{
-		return $user->lang['APACHE_SETUP_BEFORE_USE'];
+		return phpbb::$user->lang['APACHE_SETUP_BEFORE_USE'];
 	}
 	return false;
 }
@@ -42,8 +40,6 @@ function init_apache()
 */
 function login_apache(&$username, &$password)
 {
-	global $db;
-
 	// do not allow empty password
 	if (!$password)
 	{
@@ -136,8 +132,6 @@ function login_apache(&$username, &$password)
 */
 function autologin_apache()
 {
-	global $db;
-
 	if (!isset($_SERVER['PHP_AUTH_USER']))
 	{
 		return array();
@@ -192,7 +186,6 @@ function autologin_apache()
 */
 function user_row_apache($username, $password)
 {
-	global $db, $user;
 	// first retrieve default group id
 	$sql = 'SELECT group_id
 		FROM ' . GROUPS_TABLE . "
@@ -214,7 +207,7 @@ function user_row_apache($username, $password)
 		'user_email'	=> '',
 		'group_id'		=> (int) $row['group_id'],
 		'user_type'		=> phpbb::USER_NORMAL,
-		'user_ip'		=> $user->ip,
+		'user_ip'		=> phpbb::$user->ip,
 	);
 }
 

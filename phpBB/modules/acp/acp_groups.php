@@ -25,9 +25,9 @@ class acp_groups
 
 	function main($id, $mode)
 	{
-		global $db, $user, $auth, $template, $file_uploads;
+		global $file_uploads;
 
-		$user->add_lang('acp/groups');
+		phpbb::$user->add_lang('acp/groups');
 		$this->tpl_name = 'acp_groups';
 		$this->page_title = 'ACP_GROUPS_MANAGE';
 
@@ -63,13 +63,13 @@ class acp_groups
 
 			if (!$group_row)
 			{
-				trigger_error($user->lang['NO_GROUP'] . adm_back_link($this->u_action), E_USER_WARNING);
+				trigger_error(phpbb::$user->lang['NO_GROUP'] . adm_back_link($this->u_action), E_USER_WARNING);
 			}
 
 			// Check if the user is allowed to manage this group if set to founder only.
-			if (!phpbb::$user->is_founder && $group_row['group_founder_manage'])
+			if (!phpbb::phpbb::$user->is_founder && $group_row['group_founder_manage'])
 			{
-				trigger_error($user->lang['NOT_ALLOWED_MANAGE_GROUP'] . adm_back_link($this->u_action), E_USER_WARNING);
+				trigger_error(phpbb::$user->lang['NOT_ALLOWED_MANAGE_GROUP'] . adm_back_link($this->u_action), E_USER_WARNING);
 			}
 		}
 
@@ -81,11 +81,11 @@ class acp_groups
 			case 'promote':
 				if (!$group_id)
 				{
-					trigger_error($user->lang['NO_GROUP'] . adm_back_link($this->u_action), E_USER_WARNING);
+					trigger_error(phpbb::$user->lang['NO_GROUP'] . adm_back_link($this->u_action), E_USER_WARNING);
 				}
 
 				// Approve, demote or promote
-				$group_name = ($group_row['group_type'] == GROUP_SPECIAL) ? $user->lang['G_' . $group_row['group_name']] : $group_row['group_name'];
+				$group_name = ($group_row['group_type'] == GROUP_SPECIAL) ? phpbb::$user->lang['G_' . $group_row['group_name']] : $group_row['group_name'];
 				$error = group_user_attributes($action, $group_id, $mark_ary, false, $group_name);
 
 				if (!$error)
@@ -105,11 +105,11 @@ class acp_groups
 						break;
 					}
 
-					trigger_error($user->lang[$message] . adm_back_link($this->u_action . '&amp;action=list&amp;g=' . $group_id));
+					trigger_error(phpbb::$user->lang[$message] . adm_back_link($this->u_action . '&amp;action=list&amp;g=' . $group_id));
 				}
 				else
 				{
-					trigger_error($user->lang[$error] . adm_back_link($this->u_action . '&amp;action=list&amp;g=' . $group_id), E_USER_WARNING);
+					trigger_error(phpbb::$user->lang[$error] . adm_back_link($this->u_action . '&amp;action=list&amp;g=' . $group_id), E_USER_WARNING);
 				}
 
 			break;
@@ -117,12 +117,12 @@ class acp_groups
 			case 'default':
 				if (!$group_id)
 				{
-					trigger_error($user->lang['NO_GROUP'] . adm_back_link($this->u_action), E_USER_WARNING);
+					trigger_error(phpbb::$user->lang['NO_GROUP'] . adm_back_link($this->u_action), E_USER_WARNING);
 				}
 
 				if (confirm_box(true))
 				{
-					$group_name = ($group_row['group_type'] == GROUP_SPECIAL) ? $user->lang['G_' . $group_row['group_name']] : $group_row['group_name'];
+					$group_name = ($group_row['group_type'] == GROUP_SPECIAL) ? phpbb::$user->lang['G_' . $group_row['group_name']] : $group_row['group_name'];
 
 					if (!sizeof($mark_ary))
 					{
@@ -162,11 +162,11 @@ class acp_groups
 						group_user_attributes('default', $group_id, $mark_ary, false, $group_name, $group_row);
 					}
 
-					trigger_error($user->lang['GROUP_DEFS_UPDATED'] . adm_back_link($this->u_action . '&amp;action=list&amp;g=' . $group_id));
+					trigger_error(phpbb::$user->lang['GROUP_DEFS_UPDATED'] . adm_back_link($this->u_action . '&amp;action=list&amp;g=' . $group_id));
 				}
 				else
 				{
-					confirm_box(false, $user->lang['CONFIRM_OPERATION'], build_hidden_fields(array(
+					confirm_box(false, phpbb::$user->lang['CONFIRM_OPERATION'], build_hidden_fields(array(
 						'mark'		=> $mark_ary,
 						'g'			=> $group_id,
 						'i'			=> $id,
@@ -181,11 +181,11 @@ class acp_groups
 			case 'delete':
 				if (!$group_id)
 				{
-					trigger_error($user->lang['NO_GROUP'] . adm_back_link($this->u_action), E_USER_WARNING);
+					trigger_error(phpbb::$user->lang['NO_GROUP'] . adm_back_link($this->u_action), E_USER_WARNING);
 				}
 				else if ($action === 'delete' && $group_row['group_type'] == GROUP_SPECIAL)
 				{
-					trigger_error($user->lang['NO_AUTH_OPERATION'] . adm_back_link($this->u_action), E_USER_WARNING);
+					trigger_error(phpbb::$user->lang['NO_AUTH_OPERATION'] . adm_back_link($this->u_action), E_USER_WARNING);
 				}
 
 				if (confirm_box(true))
@@ -197,14 +197,14 @@ class acp_groups
 						case 'delete':
 							if (!$auth->acl_get('a_groupdel'))
 							{
-								trigger_error($user->lang['NO_AUTH_OPERATION'] . adm_back_link($this->u_action), E_USER_WARNING);
+								trigger_error(phpbb::$user->lang['NO_AUTH_OPERATION'] . adm_back_link($this->u_action), E_USER_WARNING);
 							}
 
 							$error = group_delete($group_id, $group_row['group_name']);
 						break;
 
 						case 'deleteusers':
-							$group_name = ($group_row['group_type'] == GROUP_SPECIAL) ? $user->lang['G_' . $group_row['group_name']] : $group_row['group_name'];
+							$group_name = ($group_row['group_type'] == GROUP_SPECIAL) ? phpbb::$user->lang['G_' . $group_row['group_name']] : $group_row['group_name'];
 							$error = group_user_del($group_id, $mark_ary, false, $group_name);
 						break;
 					}
@@ -213,15 +213,15 @@ class acp_groups
 
 					if ($error)
 					{
-						trigger_error($user->lang[$error] . adm_back_link($back_link), E_USER_WARNING);
+						trigger_error(phpbb::$user->lang[$error] . adm_back_link($back_link), E_USER_WARNING);
 					}
 
 					$message = ($action == 'delete') ? 'GROUP_DELETED' : 'GROUP_USERS_REMOVE';
-					trigger_error($user->lang[$message] . adm_back_link($back_link));
+					trigger_error(phpbb::$user->lang[$message] . adm_back_link($back_link));
 				}
 				else
 				{
-					confirm_box(false, $user->lang['CONFIRM_OPERATION'], build_hidden_fields(array(
+					confirm_box(false, phpbb::$user->lang['CONFIRM_OPERATION'], build_hidden_fields(array(
 						'mark'		=> $mark_ary,
 						'g'			=> $group_id,
 						'i'			=> $id,
@@ -234,25 +234,25 @@ class acp_groups
 			case 'addusers':
 				if (!$group_id)
 				{
-					trigger_error($user->lang['NO_GROUP'] . adm_back_link($this->u_action), E_USER_WARNING);
+					trigger_error(phpbb::$user->lang['NO_GROUP'] . adm_back_link($this->u_action), E_USER_WARNING);
 				}
 
 				if (!$name_ary)
 				{
-					trigger_error($user->lang['NO_USERS'] . adm_back_link($this->u_action . '&amp;action=list&amp;g=' . $group_id), E_USER_WARNING);
+					trigger_error(phpbb::$user->lang['NO_USERS'] . adm_back_link($this->u_action . '&amp;action=list&amp;g=' . $group_id), E_USER_WARNING);
 				}
 
 				$name_ary = array_unique(explode("\n", $name_ary));
-				$group_name = ($group_row['group_type'] == GROUP_SPECIAL) ? $user->lang['G_' . $group_row['group_name']] : $group_row['group_name'];
+				$group_name = ($group_row['group_type'] == GROUP_SPECIAL) ? phpbb::$user->lang['G_' . $group_row['group_name']] : $group_row['group_name'];
 
 				// Add user/s to group
 				if ($error = group_user_add($group_id, false, $name_ary, $group_name, $default, $leader, 0, $group_row))
 				{
-					trigger_error($user->lang[$error] . adm_back_link($this->u_action . '&amp;action=list&amp;g=' . $group_id), E_USER_WARNING);
+					trigger_error(phpbb::$user->lang[$error] . adm_back_link($this->u_action . '&amp;action=list&amp;g=' . $group_id), E_USER_WARNING);
 				}
 
 				$message = ($leader) ? 'GROUP_MODS_ADDED' : 'GROUP_USERS_ADDED';
-				trigger_error($user->lang[$message] . adm_back_link($this->u_action . '&amp;action=list&amp;g=' . $group_id));
+				trigger_error(phpbb::$user->lang[$message] . adm_back_link($this->u_action . '&amp;action=list&amp;g=' . $group_id));
 			break;
 
 			case 'edit':
@@ -264,16 +264,16 @@ class acp_groups
 
 				if ($action == 'edit' && !$group_id)
 				{
-					trigger_error($user->lang['NO_GROUP'] . adm_back_link($this->u_action), E_USER_WARNING);
+					trigger_error(phpbb::$user->lang['NO_GROUP'] . adm_back_link($this->u_action), E_USER_WARNING);
 				}
 
 				if ($action == 'add' && !$auth->acl_get('a_groupadd'))
 				{
-					trigger_error($user->lang['NO_AUTH_OPERATION'] . adm_back_link($this->u_action), E_USER_WARNING);
+					trigger_error(phpbb::$user->lang['NO_AUTH_OPERATION'] . adm_back_link($this->u_action), E_USER_WARNING);
 				}
 
 				$error = array();
-				$user->add_lang('ucp');
+				phpbb::$user->add_lang('ucp');
 
 				$avatar_select = basename(request_var('avatar_select', ''));
 				$category = basename(request_var('category', ''));
@@ -283,7 +283,7 @@ class acp_groups
 				{
 					if (!check_form_key($form_key))
 					{
-						trigger_error($user->lang['FORM_INVALID'] . adm_back_link($this->u_action), E_USER_WARNING);
+						trigger_error(phpbb::$user->lang['FORM_INVALID'] . adm_back_link($this->u_action), E_USER_WARNING);
 					}
 
 					$group_name	= utf8_normalize_nfc(request_var('group_name', '', true));
@@ -362,7 +362,7 @@ class acp_groups
 						{
 							if ($data['width'] > phpbb::$config['avatar_max_width'] || $data['height'] > phpbb::$config['avatar_max_height'])
 							{
-								$error[] = sprintf($user->lang['AVATAR_WRONG_SIZE'], phpbb::$config['avatar_min_width'], phpbb::$config['avatar_min_height'], phpbb::$config['avatar_max_width'], phpbb::$config['avatar_max_height'], $data['width'], $data['height']);
+								$error[] = sprintf(phpbb::$user->lang['AVATAR_WRONG_SIZE'], phpbb::$config['avatar_min_width'], phpbb::$config['avatar_min_height'], phpbb::$config['avatar_max_width'], phpbb::$config['avatar_max_height'], $data['width'], $data['height']);
 							}
 						}
 
@@ -372,7 +372,7 @@ class acp_groups
 							{
 								if ($data['width'] < phpbb::$config['avatar_min_width'] || $data['height'] < phpbb::$config['avatar_min_height'])
 								{
-									$error[] = sprintf($user->lang['AVATAR_WRONG_SIZE'], phpbb::$config['avatar_min_width'], phpbb::$config['avatar_min_height'], phpbb::$config['avatar_max_width'], phpbb::$config['avatar_max_height'], $data['width'], $data['height']);
+									$error[] = sprintf(phpbb::$user->lang['AVATAR_WRONG_SIZE'], phpbb::$config['avatar_min_width'], phpbb::$config['avatar_min_height'], phpbb::$config['avatar_max_width'], phpbb::$config['avatar_max_height'], $data['width'], $data['height']);
 								}
 							}
 						}
@@ -462,7 +462,7 @@ class acp_groups
 							phpbb::$acm->destroy_sql(GROUPS_TABLE);
 
 							$message = ($action == 'edit') ? 'GROUP_UPDATED' : 'GROUP_CREATED';
-							trigger_error($user->lang[$message] . adm_back_link($this->u_action));
+							trigger_error(phpbb::$user->lang[$message] . adm_back_link($this->u_action));
 						}
 					}
 
@@ -504,7 +504,7 @@ class acp_groups
 					ORDER BY rank_title';
 				$result = $db->sql_query($sql);
 
-				$rank_options = '<option value="0"' . ((!$group_rank) ? ' selected="selected"' : '') . '>' . $user->lang['USER_DEFAULT'] . '</option>';
+				$rank_options = '<option value="0"' . ((!$group_rank) ? ' selected="selected"' : '') . '>' . phpbb::$user->lang['USER_DEFAULT'] . '</option>';
 
 				while ($row = $db->sql_fetchrow($result))
 				{
@@ -553,7 +553,7 @@ class acp_groups
 					'S_USER_FOUNDER'	=> phpbb::$user->is_founder,
 
 					'ERROR_MSG'				=> (sizeof($error)) ? implode('<br />', $error) : '',
-					'GROUP_NAME'			=> ($group_type == GROUP_SPECIAL) ? $user->lang['G_' . $group_name] : $group_name,
+					'GROUP_NAME'			=> ($group_type == GROUP_SPECIAL) ? phpbb::$user->lang['G_' . $group_name] : $group_name,
 					'GROUP_INTERNAL_NAME'	=> $group_name,
 					'GROUP_DESC'			=> $group_desc_data['text'],
 					'GROUP_RECEIVE_PM'		=> (isset($group_row['group_receive_pm']) && $group_row['group_receive_pm']) ? ' checked="checked"' : '',
@@ -590,7 +590,7 @@ class acp_groups
 					'U_BACK'			=> $u_back,
 					'U_SWATCH'			=> append_sid(PHPBB_ADMIN_PATH . 'swatch.' . PHP_EXT, 'form=settings&amp;name=group_colour'),
 					'U_ACTION'			=> "{$this->u_action}&amp;action=$action&amp;g=$group_id",
-					'L_AVATAR_EXPLAIN'	=> sprintf($user->lang['AVATAR_EXPLAIN'], phpbb::$config['avatar_max_width'], phpbb::$config['avatar_max_height'], round(phpbb::$config['avatar_filesize'] / 1024)),
+					'L_AVATAR_EXPLAIN'	=> sprintf(phpbb::$user->lang['AVATAR_EXPLAIN'], phpbb::$config['avatar_max_width'], phpbb::$config['avatar_max_height'], round(phpbb::$config['avatar_filesize'] / 1024)),
 					)
 				);
 
@@ -601,7 +601,7 @@ class acp_groups
 
 				if (!$group_id)
 				{
-					trigger_error($user->lang['NO_GROUP'] . adm_back_link($this->u_action), E_USER_WARNING);
+					trigger_error(phpbb::$user->lang['NO_GROUP'] . adm_back_link($this->u_action), E_USER_WARNING);
 				}
 
 				$this->page_title = 'GROUP_MEMBERS';
@@ -622,7 +622,7 @@ class acp_groups
 
 						'USERNAME'			=> $row['username'],
 						'S_GROUP_DEFAULT'	=> ($row['group_id'] == $group_id) ? true : false,
-						'JOINED'			=> ($row['user_regdate']) ? $user->format_date($row['user_regdate']) : ' - ',
+						'JOINED'			=> ($row['user_regdate']) ? phpbb::$user->format_date($row['user_regdate']) : ' - ',
 						'USER_POSTS'		=> $row['user_posts'],
 						'USER_ID'			=> $row['user_id'])
 					);
@@ -643,7 +643,7 @@ class acp_groups
 
 				foreach ($options as $option => $lang)
 				{
-					$s_action_options .= '<option value="' . $option . '">' . $user->lang['GROUP_' . $lang] . '</option>';
+					$s_action_options .= '<option value="' . $option . '">' . phpbb::$user->lang['GROUP_' . $lang] . '</option>';
 				}
 
 				$template->assign_vars(array(
@@ -653,7 +653,7 @@ class acp_groups
 
 					'S_ON_PAGE'		=> on_page($total_members, phpbb::$config['topics_per_page'], $start),
 					'PAGINATION'	=> generate_pagination($this->u_action . "&amp;action=$action&amp;g=$group_id", $total_members, phpbb::$config['topics_per_page'], $start, true),
-					'GROUP_NAME'	=> ($group_row['group_type'] == GROUP_SPECIAL) ? $user->lang['G_' . $group_row['group_name']] : $group_row['group_name'],
+					'GROUP_NAME'	=> ($group_row['group_type'] == GROUP_SPECIAL) ? phpbb::$user->lang['G_' . $group_row['group_name']] : $group_row['group_name'],
 
 					'U_ACTION'			=> $this->u_action . "&amp;g=$group_id",
 					'U_BACK'			=> $this->u_action,
@@ -688,7 +688,7 @@ class acp_groups
 
 						'USERNAME'			=> $row['username'],
 						'S_GROUP_DEFAULT'	=> ($row['group_id'] == $group_id) ? true : false,
-						'JOINED'			=> ($row['user_regdate']) ? $user->format_date($row['user_regdate']) : ' - ',
+						'JOINED'			=> ($row['user_regdate']) ? phpbb::$user->format_date($row['user_regdate']) : ' - ',
 						'USER_POSTS'		=> $row['user_posts'],
 						'USER_ID'			=> $row['user_id'])
 					);
@@ -752,7 +752,7 @@ class acp_groups
 
 			foreach ($row_ary as $group_id => $row)
 			{
-				$group_name = (!empty($user->lang['G_' . $row['group_name']]))? $user->lang['G_' . $row['group_name']] : $row['group_name'];
+				$group_name = (!empty(phpbb::$user->lang['G_' . $row['group_name']]))? phpbb::$user->lang['G_' . $row['group_name']] : $row['group_name'];
 
 				$template->assign_block_vars('groups', array(
 					'U_LIST'		=> "{$this->u_action}&amp;action=list&amp;g=$group_id",

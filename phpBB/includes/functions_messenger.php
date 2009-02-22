@@ -194,8 +194,6 @@ class messenger
 	*/
 	function send($method = NOTIFY_EMAIL, $break = false)
 	{
-		global $user;
-
 		// We add some standard variables we always use, no need to specify them always
 		$this->vars['U_BOARD'] = (!isset($this->vars['U_BOARD'])) ? generate_board_url() : $this->vars['U_BOARD'];
 		$this->vars['EMAIL_SIG'] = (!isset($this->vars['EMAIL_SIG'])) ? str_replace('<br />', "\n", "-- \n" . htmlspecialchars_decode(phpbb::$config['board_email_sig'])) : $this->vars['EMAIL_SIG'];
@@ -213,12 +211,12 @@ class messenger
 		$match = array();
 		if (preg_match('#^(Subject:(.*?))$#m', $this->msg, $match))
 		{
-			$this->subject = (trim($match[2]) != '') ? trim($match[2]) : (($this->subject != '') ? $this->subject : $user->lang['NO_EMAIL_SUBJECT']);
+			$this->subject = (trim($match[2]) != '') ? trim($match[2]) : (($this->subject != '') ? $this->subject : phpbb::$user->lang['NO_EMAIL_SUBJECT']);
 			$drop_header .= '[\r\n]*?' . preg_quote($match[1], '#');
 		}
 		else
 		{
-			$this->subject = (($this->subject != '') ? $this->subject : $user->lang['NO_EMAIL_SUBJECT']);
+			$this->subject = (($this->subject != '') ? $this->subject : phpbb::$user->lang['NO_EMAIL_SUBJECT']);
 		}
 
 		if ($drop_header)
@@ -256,12 +254,10 @@ class messenger
 	*/
 	public static function error($type, $msg)
 	{
-		global $user;
-
 		// Session doesn't exist, create it
-		if (!isset($user->session_id) || $user->session_id === '')
+		if (!isset(phpbb::$user->session_id) || phpbb::$user->session_id === '')
 		{
-			$user->session_begin();
+			phpbb::$user->session_begin();
 		}
 
 		$calling_page = (!empty($_SERVER['PHP_SELF'])) ? $_SERVER['PHP_SELF'] : $_ENV['PHP_SELF'];
@@ -344,8 +340,6 @@ class messenger
 	*/
 	private function msg_email()
 	{
-		global $user;
-
 		if (empty(phpbb::$config['email_enable']))
 		{
 			return false;
@@ -432,8 +426,6 @@ class messenger
 	*/
 	private function msg_jabber()
 	{
-		global $db, $user;
-
 		if (empty(phpbb::$config['jab_enable']) || empty(phpbb::$config['jab_host']) || empty(phpbb::$config['jab_username']) || empty(phpbb::$config['jab_password']))
 		{
 			return false;
@@ -469,13 +461,13 @@ class messenger
 
 			if (!$this->jabber->connect())
 			{
-				self::error('JABBER', $user->lang['ERR_JAB_CONNECT'] . '<br />' . $this->jabber->get_log());
+				self::error('JABBER', phpbb::$user->lang['ERR_JAB_CONNECT'] . '<br />' . $this->jabber->get_log());
 				return false;
 			}
 
 			if (!$this->jabber->login())
 			{
-				self::error('JABBER', $user->lang['ERR_JAB_AUTH'] . '<br />' . $this->jabber->get_log());
+				self::error('JABBER', phpbb::$user->lang['ERR_JAB_AUTH'] . '<br />' . $this->jabber->get_log());
 				return false;
 			}
 
@@ -543,8 +535,6 @@ class queue
 	*/
 	public function process()
 	{
-		global $db, $user;
-
 		set_config('last_queue_run', time(), true);
 
 		// Delete stale lock file
@@ -606,13 +596,13 @@ class queue
 
 					if (!$this->jabber->connect())
 					{
-						messenger::error('JABBER', $user->lang['ERR_JAB_CONNECT']);
+						messenger::error('JABBER', phpbb::$user->lang['ERR_JAB_CONNECT']);
 						continue 2;
 					}
 
 					if (!$this->jabber->login())
 					{
-						messenger::error('JABBER', $user->lang['ERR_JAB_AUTH']);
+						messenger::error('JABBER', phpbb::$user->lang['ERR_JAB_AUTH']);
 						continue 2;
 					}
 
@@ -747,8 +737,6 @@ class queue
 */
 function smtpmail($addresses, $subject, $message, &$err_msg, $headers = '')
 {
-	global $user;
-
 	// Fix any bare linefeeds in the message to make it RFC821 Compliant.
 	$message = preg_replace("#(?<!\r)\n#si", "\r\n", $message);
 
@@ -783,13 +771,13 @@ function smtpmail($addresses, $subject, $message, &$err_msg, $headers = '')
 
 	if (trim($subject) == '')
 	{
-		$err_msg = (isset($user->lang['NO_EMAIL_SUBJECT'])) ? $user->lang['NO_EMAIL_SUBJECT'] : 'No email subject specified';
+		$err_msg = (isset(phpbb::$user->lang['NO_EMAIL_SUBJECT'])) ? phpbb::$user->lang['NO_EMAIL_SUBJECT'] : 'No email subject specified';
 		return false;
 	}
 
 	if (trim($message) == '')
 	{
-		$err_msg = (isset($user->lang['NO_EMAIL_MESSAGE'])) ? $user->lang['NO_EMAIL_MESSAGE'] : 'Email message was blank';
+		$err_msg = (isset(phpbb::$user->lang['NO_EMAIL_MESSAGE'])) ? phpbb::$user->lang['NO_EMAIL_MESSAGE'] : 'Email message was blank';
 		return false;
 	}
 
@@ -841,7 +829,7 @@ function smtpmail($addresses, $subject, $message, &$err_msg, $headers = '')
 			$errstr = utf8_convert_message($errstr);
 		}
 
-		$err_msg = (isset($user->lang['NO_CONNECT_TO_SMTP_HOST'])) ? sprintf($user->lang['NO_CONNECT_TO_SMTP_HOST'], $errno, $errstr) : "Could not connect to smtp host : $errno : $errstr";
+		$err_msg = (isset(phpbb::$user->lang['NO_CONNECT_TO_SMTP_HOST'])) ? sprintf(phpbb::$user->lang['NO_CONNECT_TO_SMTP_HOST'], $errno, $errstr) : "Could not connect to smtp host : $errno : $errstr";
 		$err_msg .= ($error_contents) ? '<br /><br />' . htmlspecialchars($error_contents) : '';
 		return false;
 	}
@@ -903,9 +891,9 @@ function smtpmail($addresses, $subject, $message, &$err_msg, $headers = '')
 	// We try to send messages even if a few people do not seem to have valid email addresses, but if no one has, we have to exit here.
 	if (!$rcpt)
 	{
-		$user->session_begin();
+		phpbb::$user->session_begin();
 		$err_msg .= '<br /><br />';
-		$err_msg .= (isset($user->lang['INVALID_EMAIL_LOG'])) ? sprintf($user->lang['INVALID_EMAIL_LOG'], htmlspecialchars($mail_to_address)) : '<strong>' . htmlspecialchars($mail_to_address) . '</strong> possibly an invalid email address?';
+		$err_msg .= (isset(phpbb::$user->lang['INVALID_EMAIL_LOG'])) ? sprintf(phpbb::$user->lang['INVALID_EMAIL_LOG'], htmlspecialchars($mail_to_address)) : '<strong>' . htmlspecialchars($mail_to_address) . '</strong> possibly an invalid email address?';
 		$smtp->close_session($err_msg);
 		return false;
 	}
@@ -1006,8 +994,6 @@ class smtp_class
 	*/
 	public function server_parse($response, $line)
 	{
-		global $user;
-
 		$this->server_response = '';
 		$this->responses = array();
 		$this->numeric_response_code = 0;
@@ -1016,7 +1002,7 @@ class smtp_class
 		{
 			if (!($this->server_response = fgets($this->socket, 256)))
 			{
-				return (isset($user->lang['NO_EMAIL_RESPONSE_CODE'])) ? $user->lang['NO_EMAIL_RESPONSE_CODE'] : 'Could not get mail server response codes';
+				return (isset(phpbb::$user->lang['NO_EMAIL_RESPONSE_CODE'])) ? phpbb::$user->lang['NO_EMAIL_RESPONSE_CODE'] : 'Could not get mail server response codes';
 			}
 			$this->responses[] = substr(rtrim($this->server_response), 4);
 			$this->numeric_response_code = (int) substr($this->server_response, 0, 3);
@@ -1027,7 +1013,7 @@ class smtp_class
 		if (!(substr($this->server_response, 0, 3) == $response))
 		{
 			$this->numeric_response_code = (int) substr($this->server_response, 0, 3);
-			return (isset($user->lang['EMAIL_SMTP_ERROR_RESPONSE'])) ? sprintf($user->lang['EMAIL_SMTP_ERROR_RESPONSE'], $line, $this->server_response) : "Ran into problems sending Mail at <strong>Line $line</strong>. Response: $this->server_response";
+			return (isset(phpbb::$user->lang['EMAIL_SMTP_ERROR_RESPONSE'])) ? sprintf(phpbb::$user->lang['EMAIL_SMTP_ERROR_RESPONSE'], $line, $this->server_response) : "Ran into problems sending Mail at <strong>Line $line</strong>. Response: $this->server_response";
 		}
 
 		return 0;
@@ -1052,10 +1038,8 @@ class smtp_class
 	*/
 	public function log_into_server($hostname, $username, $password, $default_auth_method)
 	{
-		global $user;
-
 		$err_msg = '';
-		$local_host = (function_exists('php_uname')) ? php_uname('n') : $user->host;
+		$local_host = (function_exists('php_uname')) ? php_uname('n') : phpbb::$user->system['host'];
 
 		// If we are authenticating through pop-before-smtp, we
 		// have to login ones before we get authenticated
@@ -1083,7 +1067,7 @@ class smtp_class
 					$errstr = utf8_convert_message($errstr);
 				}
 
-				$err_msg = (isset($user->lang['NO_CONNECT_TO_SMTP_HOST'])) ? sprintf($user->lang['NO_CONNECT_TO_SMTP_HOST'], $errno, $errstr) : "Could not connect to smtp host : $errno : $errstr";
+				$err_msg = (isset(phpbb::$user->lang['NO_CONNECT_TO_SMTP_HOST'])) ? sprintf(phpbb::$user->lang['NO_CONNECT_TO_SMTP_HOST'], $errno, $errstr) : "Could not connect to smtp host : $errno : $errstr";
 				return $err_msg;
 			}
 
@@ -1129,7 +1113,7 @@ class smtp_class
 
 		if (!isset($this->commands['AUTH']))
 		{
-			return (isset($user->lang['SMTP_NO_AUTH_SUPPORT'])) ? $user->lang['SMTP_NO_AUTH_SUPPORT'] : 'SMTP server does not support authentication';
+			return (isset(phpbb::$user->lang['SMTP_NO_AUTH_SUPPORT'])) ? phpbb::$user->lang['SMTP_NO_AUTH_SUPPORT'] : 'SMTP server does not support authentication';
 		}
 
 		// Get best authentication method
@@ -1157,7 +1141,7 @@ class smtp_class
 
 		if (!$method)
 		{
-			return (isset($user->lang['NO_SUPPORTED_AUTH_METHODS'])) ? $user->lang['NO_SUPPORTED_AUTH_METHODS'] : 'No supported authentication methods';
+			return (isset(phpbb::$user->lang['NO_SUPPORTED_AUTH_METHODS'])) ? phpbb::$user->lang['NO_SUPPORTED_AUTH_METHODS'] : 'No supported authentication methods';
 		}
 
 		$method = strtolower(str_replace('-', '_', $method));
@@ -1169,8 +1153,6 @@ class smtp_class
 	*/
 	private function pop_before_smtp($hostname, $username, $password)
 	{
-		global $user;
-
 		if (!$this->socket = @fsockopen($hostname, 110, $errno, $errstr, 10))
 		{
 			if ($errstr)
@@ -1178,7 +1160,7 @@ class smtp_class
 				$errstr = utf8_convert_message($errstr);
 			}
 
-			return (isset($user->lang['NO_CONNECT_TO_SMTP_HOST'])) ? sprintf($user->lang['NO_CONNECT_TO_SMTP_HOST'], $errno, $errstr) : "Could not connect to smtp host : $errno : $errstr";
+			return (isset(phpbb::$user->lang['NO_CONNECT_TO_SMTP_HOST'])) ? sprintf(phpbb::$user->lang['NO_CONNECT_TO_SMTP_HOST'], $errno, $errstr) : "Could not connect to smtp host : $errno : $errstr";
 		}
 
 		$this->server_send("USER $username", true);
@@ -1278,8 +1260,6 @@ class smtp_class
 	*/
 	private function digest_md5($username, $password)
 	{
-		global $user;
-
 		$this->server_send('AUTH DIGEST-MD5');
 		if ($err_msg = $this->server_parse('334', __LINE__))
 		{
@@ -1328,7 +1308,7 @@ class smtp_class
 		// Realm
 		if (empty($tokens['realm']))
 		{
-			$tokens['realm'] = (function_exists('php_uname')) ? php_uname('n') : $user->host;
+			$tokens['realm'] = (function_exists('php_uname')) ? php_uname('n') : phpbb::$user->system['host'];
 		}
 
 		// Maxbuf
@@ -1363,7 +1343,7 @@ class smtp_class
 		}
 		else
 		{
-			return (isset($user->lang['INVALID_DIGEST_CHALLENGE'])) ? $user->lang['INVALID_DIGEST_CHALLENGE'] : 'Invalid digest challenge';
+			return (isset(phpbb::$user->lang['INVALID_DIGEST_CHALLENGE'])) ? phpbb::$user->lang['INVALID_DIGEST_CHALLENGE'] : 'Invalid digest challenge';
 		}
 
 		$base64_method_digest_md5 = base64_encode($input_string);

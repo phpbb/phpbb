@@ -28,9 +28,9 @@ define('PHP_EXT', substr(strrchr(__FILE__, '.'), 1));
 include(PHPBB_ROOT_PATH . 'common.' . PHP_EXT);
 
 // Start session management
-$user->session_begin();
-$auth->acl($user->data);
-$user->setup();
+phpbb::$user->session_begin();
+$auth->acl(phpbb::$user->data);
+phpbb::$user->setup();
 
 $search_type = phpbb::$config['search_type'];
 

@@ -25,9 +25,7 @@ class acp_database
 
 	function main($id, $mode)
 	{
-		global $db, $user, $auth, $template;
-
-		$user->add_lang('acp/database');
+		phpbb::$user->add_lang('acp/database');
 
 		$this->tpl_name = 'acp_database';
 		$this->page_title = 'ACP_DATABASE';
@@ -55,7 +53,7 @@ class acp_database
 
 						if (!sizeof($table))
 						{
-							trigger_error($user->lang['TABLE_SELECT_ERROR'] . adm_back_link($this->u_action), E_USER_WARNING);
+							trigger_error(phpbb::$user->lang['TABLE_SELECT_ERROR'] . adm_back_link($this->u_action), E_USER_WARNING);
 						}
 
 						$store = $download = $structure = $schema_data = false;
@@ -166,7 +164,7 @@ class acp_database
 							exit;
 						}
 
-						trigger_error($user->lang['BACKUP_SUCCESS'] . adm_back_link($this->u_action));
+						trigger_error(phpbb::$user->lang['BACKUP_SUCCESS'] . adm_back_link($this->u_action));
 					break;
 
 					default:
@@ -221,14 +219,14 @@ class acp_database
 
 						if (!preg_match('#^backup_\d{10,}_[a-z\d]{16}\.(sql(?:\.(?:gz|bz2))?)$#', $file, $matches))
 						{
-							trigger_error($user->lang['BACKUP_INVALID'] . adm_back_link($this->u_action), E_USER_WARNING);
+							trigger_error(phpbb::$user->lang['BACKUP_INVALID'] . adm_back_link($this->u_action), E_USER_WARNING);
 						}
 
 						$file_name = PHPBB_ROOT_PATH . 'store/' . $matches[0];
 
 						if (!file_exists($file_name) || !is_readable($file_name))
 						{
-							trigger_error($user->lang['BACKUP_INVALID'] . adm_back_link($this->u_action), E_USER_WARNING);
+							trigger_error(phpbb::$user->lang['BACKUP_INVALID'] . adm_back_link($this->u_action), E_USER_WARNING);
 						}
 
 						if ($delete)
@@ -237,11 +235,11 @@ class acp_database
 							{
 								unlink($file_name);
 								add_log('admin', 'LOG_DB_DELETE');
-								trigger_error($user->lang['BACKUP_DELETE'] . adm_back_link($this->u_action));
+								trigger_error(phpbb::$user->lang['BACKUP_DELETE'] . adm_back_link($this->u_action));
 							}
 							else
 							{
-								confirm_box(false, $user->lang['DELETE_SELECTED_BACKUP'], build_hidden_fields(array('delete' => $delete, 'file' => $file)));
+								confirm_box(false, phpbb::$user->lang['DELETE_SELECTED_BACKUP'], build_hidden_fields(array('delete' => $delete, 'file' => $file)));
 							}
 						}
 						else
@@ -371,7 +369,7 @@ class acp_database
 											{
 												if ($sub === false)
 												{
-													trigger_error($user->lang['RESTORE_FAILURE'] . adm_back_link($this->u_action), E_USER_WARNING);
+													trigger_error(phpbb::$user->lang['RESTORE_FAILURE'] . adm_back_link($this->u_action), E_USER_WARNING);
 												}
 												pg_put_line($db->db_connect_id, $sub . "\n");
 											}
@@ -402,7 +400,7 @@ class acp_database
 							phpbb::$acm->purge();
 
 							add_log('admin', 'LOG_DB_RESTORE');
-							trigger_error($user->lang['RESTORE_SUCCESS'] . adm_back_link($this->u_action));
+							trigger_error(phpbb::$user->lang['RESTORE_SUCCESS'] . adm_back_link($this->u_action));
 							break;
 						}
 
@@ -612,8 +610,6 @@ class mysql_extractor extends base_extractor
 
 	function write_table($table_name)
 	{
-		global $db;
-
 		$sql = 'SHOW CREATE TABLE ' . $table_name;
 		$result = $db->sql_query($sql);
 		$row = $db->sql_fetchrow($result);
@@ -627,7 +623,6 @@ class mysql_extractor extends base_extractor
 
 	function write_data($table_name)
 	{
-		global $db;
 		if ($db->sql_layer === 'mysqli')
 		{
 			$this->write_data_mysqli($table_name);
@@ -640,7 +635,6 @@ class mysql_extractor extends base_extractor
 
 	function write_data_mysqli($table_name)
 	{
-		global $db;
 		$sql = "SELECT *
 			FROM $table_name";
 		$result = mysqli_query($db->db_connect_id, $sql, MYSQLI_USE_RESULT);
@@ -719,7 +713,6 @@ class mysql_extractor extends base_extractor
 
 	function write_data_mysql($table_name)
 	{
-		global $db;
 		$sql = "SELECT *
 			FROM $table_name";
 		$result = mysql_unbuffered_query($sql, $db->db_connect_id);
@@ -820,7 +813,6 @@ class sqlite_extractor extends base_extractor
 
 	function write_table($table_name)
 	{
-		global $db;
 		$sql_data = '-- Table: ' . $table_name . "\n";
 		$sql_data .= "DROP TABLE $table_name;\n";
 
@@ -869,7 +861,6 @@ class sqlite_extractor extends base_extractor
 
 	function write_data($table_name)
 	{
-		global $db;
 		static $proper;
 
 		if (is_null($proper))
@@ -959,7 +950,6 @@ class postgres_extractor extends base_extractor
 
 	function write_table($table_name)
 	{
-		global $db;
 		static $domains_created = array();
 
 		$sql = "SELECT a.domain_name, a.data_type, a.character_maximum_length, a.domain_default
@@ -1157,7 +1147,6 @@ class postgres_extractor extends base_extractor
 
 	function write_data($table_name)
 	{
-		global $db;
 		// Grab all of the data from current table.
 		$sql = "SELECT *
 			FROM $table_name";
@@ -1259,7 +1248,6 @@ class mssql_extractor extends base_extractor
 
 	function write_table($table_name)
 	{
-		global $db;
 		$sql_data = '-- Table: ' . $table_name . "\n";
 		$sql_data .= "IF OBJECT_ID(N'$table_name', N'U') IS NOT NULL\n";
 		$sql_data .= "DROP TABLE $table_name;\n";
@@ -1368,8 +1356,6 @@ class mssql_extractor extends base_extractor
 
 	function write_data($table_name)
 	{
-		global $db;
-
 		if ($db->sql_layer === 'mssql')
 		{
 			$this->write_data_mssql($table_name);
@@ -1387,7 +1373,6 @@ class mssql_extractor extends base_extractor
 
 	function write_data_mssql($table_name)
 	{
-		global $db;
 		$ary_type = $ary_name = array();
 		$ident_set = false;
 		$sql_data = '';
@@ -1481,7 +1466,6 @@ class mssql_extractor extends base_extractor
 
 	function write_data_odbc($table_name)
 	{
-		global $db;
 		$ary_type = $ary_name = array();
 		$ident_set = false;
 		$sql_data = '';
@@ -1594,7 +1578,6 @@ class db2_extractor extends base_extractor
 
 	function write_table($table_name)
 	{
-		global $db;
 		$sql_data = '-- Table: ' . $table_name . "\n";
 		$sql_data .= "\nCREATE TABLE $table_name (\n";
 		$rows = array();
@@ -1676,7 +1659,6 @@ class db2_extractor extends base_extractor
 
 	function write_data($table_name)
 	{
-		global $db;
 		$ary_type = $ary_name = array();
 		$result = db2_columns($db->db_connect_id, '', '%', $table_name);
 		$i = 0;
@@ -1753,7 +1735,6 @@ class oracle_extractor extends base_extractor
 {
 	function write_table($table_name)
 	{
-		global $db;
 		$sql_data = '-- Table: ' . $table_name . "\n";
 		$sql_data .= "DROP TABLE $table_name;\n";
 		$sql_data .= '\\' . "\n";
@@ -1869,7 +1850,6 @@ class oracle_extractor extends base_extractor
 
 	function write_data($table_name)
 	{
-		global $db;
 		$ary_type = $ary_name = array();
 
 		// Grab all of the data from current table.
@@ -1965,7 +1945,6 @@ class firebird_extractor extends base_extractor
 
 	function write_data($table_name)
 	{
-		global $db;
 		$ary_type = $ary_name = array();
 
 		// Grab all of the data from current table.
@@ -2034,8 +2013,6 @@ class firebird_extractor extends base_extractor
 
 	function write_table($table_name)
 	{
-		global $db;
-
 		$sql_data = '-- Table: ' . $table_name . "\n";
 		$sql_data .= "DROP TABLE $table_name;\n";
 

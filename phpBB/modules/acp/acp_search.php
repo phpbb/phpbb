@@ -29,9 +29,7 @@ class acp_search
 
 	function main($id, $mode)
 	{
-		global $user;
-
-		$user->add_lang('acp/search');
+		phpbb::$user->add_lang('acp/search');
 
 		// For some this may be of help...
 		@ini_set('memory_limit', '128M');
@@ -50,8 +48,6 @@ class acp_search
 
 	function settings($id, $mode)
 	{
-		global $db, $user, $auth, $template;
-
 		$submit = phpbb_request::is_set_post('submit');
 
 		$search_types = $this->get_search_types();
@@ -158,7 +154,7 @@ class acp_search
 							{
 								add_log('admin', 'LOG_CONFIG_SEARCH');
 							}
-							$extra_message = '<br />' . $user->lang['SWITCHED_SEARCH_BACKEND'] . '<br /><a href="' . append_sid(PHPBB_ADMIN_PATH . 'index.' . PHP_EXT, 'i=search&amp;mode=index') . '">&raquo; ' . $user->lang['GO_TO_SEARCH_INDEX'] . '</a>';
+							$extra_message = '<br />' . phpbb::$user->lang['SWITCHED_SEARCH_BACKEND'] . '<br /><a href="' . append_sid(PHPBB_ADMIN_PATH . 'index.' . PHP_EXT, 'i=search&amp;mode=index') . '">&raquo; ' . phpbb::$user->lang['GO_TO_SEARCH_INDEX'] . '</a>';
 						}
 						else
 						{
@@ -167,7 +163,7 @@ class acp_search
 					}
 					else
 					{
-						confirm_box(false, $user->lang['CONFIRM_SEARCH_BACKEND'], build_hidden_fields(array(
+						confirm_box(false, phpbb::$user->lang['CONFIRM_SEARCH_BACKEND'], build_hidden_fields(array(
 							'i'			=> $id,
 							'mode'		=> $mode,
 							'submit'	=> true,
@@ -202,7 +198,7 @@ class acp_search
 				trigger_error($error . adm_back_link($this->u_action), E_USER_WARNING);
 			}
 
-			trigger_error($user->lang['CONFIG_UPDATED'] . $extra_message . adm_back_link($this->u_action));
+			trigger_error(phpbb::$user->lang['CONFIG_UPDATED'] . $extra_message . adm_back_link($this->u_action));
 		}
 		unset($cfg_array);
 
@@ -226,8 +222,6 @@ class acp_search
 
 	function index($id, $mode)
 	{
-		global $db, $user, $auth, $template;
-
 		$action = request_var('action', array('' => false));
 		if (sizeof($action))
 		{
@@ -341,7 +335,7 @@ class acp_search
 							$totaltime = $mtime[0] + $mtime[1] - $starttime;
 							$rows_per_second = $row_count / $totaltime;
 							meta_refresh(1, append_sid($this->u_action . '&amp;action=delete&amp;skip_rows=' . $post_counter));
-							trigger_error(sprintf($user->lang['SEARCH_INDEX_DELETE_REDIRECT'], $post_counter, $row_count, $rows_per_second));
+							trigger_error(sprintf(phpbb::$user->lang['SEARCH_INDEX_DELETE_REDIRECT'], $post_counter, $row_count, $rows_per_second));
 						}
 					}
 
@@ -351,7 +345,7 @@ class acp_search
 					$this->save_state();
 
 					add_log('admin', 'LOG_SEARCH_INDEX_REMOVED', $name);
-					trigger_error($user->lang['SEARCH_INDEX_REMOVED'] . adm_back_link($this->u_action) . $this->close_popup_js());
+					trigger_error(phpbb::$user->lang['SEARCH_INDEX_REMOVED'] . adm_back_link($this->u_action) . $this->close_popup_js());
 				break;
 
 				case 'create':
@@ -418,7 +412,7 @@ class acp_search
 							$totaltime = $mtime[0] + $mtime[1] - $starttime;
 							$rows_per_second = $row_count / $totaltime;
 							meta_refresh(1, append_sid($this->u_action . '&amp;action=create&amp;skip_rows=' . $post_counter));
-							trigger_error(sprintf($user->lang['SEARCH_INDEX_CREATE_REDIRECT'], $post_counter, $row_count, $rows_per_second));
+							trigger_error(sprintf(phpbb::$user->lang['SEARCH_INDEX_CREATE_REDIRECT'], $post_counter, $row_count, $rows_per_second));
 						}
 					}
 
@@ -428,7 +422,7 @@ class acp_search
 					$this->save_state();
 
 					add_log('admin', 'LOG_SEARCH_INDEX_CREATED', $name);
-					trigger_error($user->lang['SEARCH_INDEX_CREATED'] . adm_back_link($this->u_action) . $this->close_popup_js());
+					trigger_error(phpbb::$user->lang['SEARCH_INDEX_CREATED'] . adm_back_link($this->u_action) . $this->close_popup_js());
 				break;
 			}
 		}
@@ -507,27 +501,25 @@ class acp_search
 			$template->assign_vars(array(
 				'S_CONTINUE_INDEXING'	=> $this->state[1],
 				'U_CONTINUE_INDEXING'	=> $this->u_action . '&amp;action=' . $this->state[1],
-				'L_CONTINUE'			=> ($this->state[1] == 'create') ? $user->lang['CONTINUE_INDEXING'] : $user->lang['CONTINUE_DELETING_INDEX'],
-				'L_CONTINUE_EXPLAIN'	=> ($this->state[1] == 'create') ? $user->lang['CONTINUE_INDEXING_EXPLAIN'] : $user->lang['CONTINUE_DELETING_INDEX_EXPLAIN'])
+				'L_CONTINUE'			=> ($this->state[1] == 'create') ? phpbb::$user->lang['CONTINUE_INDEXING'] : phpbb::$user->lang['CONTINUE_DELETING_INDEX'],
+				'L_CONTINUE_EXPLAIN'	=> ($this->state[1] == 'create') ? phpbb::$user->lang['CONTINUE_INDEXING_EXPLAIN'] : phpbb::$user->lang['CONTINUE_DELETING_INDEX_EXPLAIN'])
 			);
 		}
 	}
 
 	function display_progress_bar($type)
 	{
-		global $template, $user;
-
 		$l_type = ($type == 'create') ? 'INDEXING_IN_PROGRESS' : 'DELETING_INDEX_IN_PROGRESS';
 
-		page_header($user->lang[$l_type]);
+		page_header(phpbb::$user->lang[$l_type]);
 
 		$template->set_filenames(array(
 			'body'	=> 'progress_bar.html')
 		);
 
 		$template->assign_vars(array(
-			'L_PROGRESS'			=> $user->lang[$l_type],
-			'L_PROGRESS_EXPLAIN'	=> $user->lang[$l_type . '_EXPLAIN'])
+			'L_PROGRESS'			=> phpbb::$user->lang[$l_type],
+			'L_PROGRESS_EXPLAIN'	=> phpbb::$user->lang[$l_type . '_EXPLAIN'])
 		);
 
 		page_footer();
@@ -567,8 +559,6 @@ class acp_search
 
 	function get_max_post_id()
 	{
-		global $db;
-
 		$sql = 'SELECT MAX(post_id) as max_post_id
 			FROM '. POSTS_TABLE;
 		$result = $db->sql_query($sql);
@@ -597,11 +587,9 @@ class acp_search
 	*/
 	function init_search($type, &$search, &$error)
 	{
-		global $user;
-
 		if (!preg_match('#^\w+$#', $type) || !file_exists(PHPBB_ROOT_PATH . "includes/search/$type." . PHP_EXT))
 		{
-			$error = $user->lang['NO_SUCH_SEARCH_MODULE'];
+			$error = phpbb::$user->lang['NO_SUCH_SEARCH_MODULE'];
 			return $error;
 		}
 
@@ -609,7 +597,7 @@ class acp_search
 
 		if (!class_exists($type))
 		{
-			$error = $user->lang['NO_SUCH_SEARCH_MODULE'];
+			$error = phpbb::$user->lang['NO_SUCH_SEARCH_MODULE'];
 			return $error;
 		}
 

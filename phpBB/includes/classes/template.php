@@ -17,6 +17,16 @@ if (!defined('IN_PHPBB'))
 }
 
 /**
+* @todo
+* IMG_ for image substitution?
+* {IMG_[key]:[alt]:[type]}
+* {IMG_ICON_CONTACT:CONTACT:full} -> phpbb::$user->img('icon_contact', 'CONTACT', 'full');
+*
+* More in-depth...
+* yadayada
+*/
+
+/**
 * Base Template class.
 * @package phpBB3
 */

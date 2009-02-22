@@ -20,8 +20,6 @@ if (!defined('IN_PHPBB'))
 * Recalculate Binary Tree
 function recalc_btree($sql_id, $sql_table, $module_class = '')
 {
-	global $db;
-
 	if (!$sql_id || !$sql_table)
 	{
 		return;
@@ -112,8 +110,6 @@ function recalc_btree($sql_id, $sql_table, $module_class = '')
 */
 function make_forum_select($select_id = false, $ignore_id = false, $ignore_acl = false, $ignore_nonpost = false, $ignore_emptycat = true, $only_acl_post = false, $return_array = false)
 {
-	global $db, $user, $auth;
-
 	$acl = ($ignore_acl) ? '' : (($only_acl_post) ? 'f_post' : array('f_list', 'a_forum', 'a_forumadd', 'a_forumdel'));
 
 	// This query is identical to the jumpbox one
@@ -194,9 +190,7 @@ function make_forum_select($select_id = false, $ignore_id = false, $ignore_acl =
 */
 function size_select_options($size_compare)
 {
-	global $user;
-
-	$size_types_text = array($user->lang['BYTES'], $user->lang['KIB'], $user->lang['MIB']);
+	$size_types_text = array(phpbb::$user->lang['BYTES'], phpbb::$user->lang['KIB'], phpbb::$user->lang['MIB']);
 	$size_types = array('b', 'kb', 'mb');
 
 	$s_size_options = '';
@@ -221,8 +215,6 @@ function size_select_options($size_compare)
 */
 function group_select_options($group_id, $exclude_ids = false, $manage_founder = false)
 {
-	global $db, $user;
-
 	$exclude_sql = ($exclude_ids !== false && sizeof($exclude_ids)) ? 'WHERE ' . $db->sql_in_set('group_id', array_map('intval', $exclude_ids), true) : '';
 	$sql_and = (!phpbb::$config['coppa_enable']) ? (($exclude_sql) ? ' AND ' : ' WHERE ') . "group_name <> 'REGISTERED_COPPA'" : '';
 	$sql_founder = ($manage_founder !== false) ? (($exclude_sql || $sql_and) ? ' AND ' : ' WHERE ') . 'group_founder_manage = ' . (int) $manage_founder : '';
@@ -239,7 +231,7 @@ function group_select_options($group_id, $exclude_ids = false, $manage_founder =
 	while ($row = $db->sql_fetchrow($result))
 	{
 		$selected = ($row['group_id'] == $group_id) ? ' selected="selected"' : '';
-		$s_group_options .= '<option' . (($row['group_type'] == GROUP_SPECIAL) ? ' class="sep"' : '') . ' value="' . $row['group_id'] . '"' . $selected . '>' . (($row['group_type'] == GROUP_SPECIAL) ? $user->lang['G_' . $row['group_name']] : $row['group_name']) . '</option>';
+		$s_group_options .= '<option' . (($row['group_type'] == GROUP_SPECIAL) ? ' class="sep"' : '') . ' value="' . $row['group_id'] . '"' . $selected . '>' . (($row['group_type'] == GROUP_SPECIAL) ? phpbb::$user->lang['G_' . $row['group_name']] : $row['group_name']) . '</option>';
 	}
 	$db->sql_freeresult($result);
 
@@ -251,7 +243,6 @@ function group_select_options($group_id, $exclude_ids = false, $manage_founder =
 */
 function get_forum_list($acl_list = 'f_list', $id_only = true, $postable_only = false, $no_cache = false)
 {
-	global $db, $auth;
 	static $forum_rows;
 
 	if (!isset($forum_rows))
@@ -314,8 +305,6 @@ function get_forum_list($acl_list = 'f_list', $id_only = true, $postable_only = 
 */
 function get_forum_branch($forum_id, $type = 'all', $order = 'descending', $include_forum = true)
 {
-	global $db;
-
 	switch ($type)
 	{
 		case 'parents':
@@ -407,8 +396,6 @@ function filelist($rootdir, $dir = '', $type = 'gif|jpg|jpeg|png')
 */
 function move_topics($topic_ids, $forum_id, $auto_sync = true)
 {
-	global $db;
-
 	if (empty($topic_ids))
 	{
 		return;
@@ -462,8 +449,6 @@ function move_topics($topic_ids, $forum_id, $auto_sync = true)
 */
 function move_posts($post_ids, $topic_id, $auto_sync = true)
 {
-	global $db;
-
 	if (!is_array($post_ids))
 	{
 		$post_ids = array($post_ids);
@@ -525,8 +510,6 @@ function move_posts($post_ids, $topic_id, $auto_sync = true)
 */
 function delete_topics($where_type, $where_ids, $auto_sync = true, $post_count_sync = true, $call_delete_posts = true)
 {
-	global $db;
-
 	$approved_topics = 0;
 	$forum_ids = $topic_ids = array();
 
@@ -630,8 +613,6 @@ function delete_topics($where_type, $where_ids, $auto_sync = true, $post_count_s
 */
 function delete_posts($where_type, $where_ids, $auto_sync = true, $posted_sync = true, $post_count_sync = true, $call_delete_topics = true)
 {
-	global $db;
-
 	if ($where_type === 'range')
 	{
 		$where_clause = $where_ids;
@@ -797,8 +778,6 @@ function delete_posts($where_type, $where_ids, $auto_sync = true, $posted_sync =
 */
 function delete_attachments($mode, $ids, $resync = true)
 {
-	global $db;
-
 	if (is_array($ids) && sizeof($ids))
 	{
 		$ids = array_unique($ids);
@@ -1014,8 +993,6 @@ function delete_topic_shadows($max_age, $forum_id = '', $auto_sync = true)
 */
 function update_posted_info(&$topic_ids)
 {
-	global $db;
-
 	if (empty($topic_ids) || !phpbb::$config['load_db_track'])
 	{
 		return;
@@ -1065,8 +1042,6 @@ function update_posted_info(&$topic_ids)
 */
 function phpbb_unlink($filename, $mode = 'file', $entry_removed = false)
 {
-	global $db;
-
 	// Because of copying topics or modifications a physical filename could be assigned more than once. If so, do not remove the file itself.
 	$sql = 'SELECT COUNT(attach_id) AS num_entries
 		FROM ' . ATTACHMENTS_TABLE . "
@@ -1108,8 +1083,6 @@ function phpbb_unlink($filename, $mode = 'file', $entry_removed = false)
 */
 function sync($mode, $where_type = '', $where_ids = '', $resync_parents = false, $sync_extra = false)
 {
-	global $db;
-
 	if (is_array($where_ids))
 	{
 		$where_ids = array_unique($where_ids);
@@ -1975,8 +1948,6 @@ function sync($mode, $where_type = '', $where_ids = '', $resync_parents = false,
 */
 function prune($forum_id, $prune_mode, $prune_date, $prune_flags = 0, $auto_sync = true)
 {
-	global $db;
-
 	if (!is_array($forum_id))
 	{
 		$forum_id = array($forum_id);
@@ -2050,8 +2021,6 @@ function prune($forum_id, $prune_mode, $prune_date, $prune_flags = 0, $auto_sync
 */
 function auto_prune($forum_id, $prune_mode, $prune_flags, $prune_days, $prune_freq)
 {
-	global $db;
-
 	$sql = 'SELECT forum_name
 		FROM ' . FORUMS_TABLE . "
 		WHERE forum_id = $forum_id";
@@ -2118,8 +2087,6 @@ function remove_comments(&$output)
 */
 function cache_moderators()
 {
-	global $db, $auth;
-
 	// Remove cached sql results
 	phpbb::$acm->destroy_sql(MODERATOR_CACHE_TABLE);
 
@@ -2516,8 +2483,6 @@ function view_log($mode, &$log, &$log_count, $limit = 0, $offset = 0, $forum_id 
 */
 function update_foes($group_id = false, $user_id = false)
 {
-	global $db, $auth;
-
 	// update foes for some user
 	if (is_array($user_id) && sizeof($user_id))
 	{
@@ -2680,8 +2645,6 @@ function view_inactive_users(&$users, &$user_count, $limit = 0, $offset = 0, $li
 */
 function view_warned_users(&$users, &$user_count, $limit = 0, $offset = 0, $limit_days = 0, $sort_by = 'user_warnings DESC')
 {
-	global $db;
-
 	$sql = 'SELECT user_id, username, user_colour, user_warnings, user_last_warning
 		FROM ' . USERS_TABLE . '
 		WHERE user_warnings > 0
@@ -2835,8 +2798,6 @@ function get_database_size()
 */
 function get_remote_file($host, $directory, $filename, &$errstr, &$errno, $port = 80, $timeout = 10)
 {
-	global $user;
-
 	if ($fsock = @fsockopen($host, $port, $errno, $errstr, $timeout))
 	{
 		@fputs($fsock, "GET $directory/$filename HTTP/1.1\r\n");
@@ -2861,7 +2822,7 @@ function get_remote_file($host, $directory, $filename, &$errstr, &$errno, $port 
 				}
 				else if (stripos($line, '404 not found') !== false)
 				{
-					$errstr = $user->lang['FILE_NOT_FOUND'] . ': ' . $filename;
+					$errstr = phpbb::$user->lang['FILE_NOT_FOUND'] . ': ' . $filename;
 					return false;
 				}
 			}
@@ -2877,7 +2838,7 @@ function get_remote_file($host, $directory, $filename, &$errstr, &$errno, $port 
 		}
 		else
 		{
-			$errstr = $user->lang['FSOCK_DISABLED'];
+			$errstr = phpbb::$user->lang['FSOCK_DISABLED'];
 			return false;
 		}
 	}
@@ -2894,8 +2855,6 @@ function get_remote_file($host, $directory, $filename, &$errstr, &$errno, $port 
 */
 function tidy_warnings()
 {
-	global $db;
-
 	$expire_date = time() - (phpbb::$config['warnings_expire_days'] * 86400);
 	$warning_list = $user_list = array();
 
@@ -2936,8 +2895,6 @@ function tidy_warnings()
 */
 function tidy_database()
 {
-	global $db;
-
 	// Here we check permission consistency
 
 	// Sometimes, it can happen permission tables having forums listed which do not exist
@@ -2969,17 +2926,15 @@ function tidy_database()
 */
 function add_permission_language()
 {
-	global $user;
-
 	// First of all, our own file. We need to include it as the first file because it presets all relevant variables.
-	$user->add_lang('acp/permissions_phpbb');
+	phpbb::$user->add_lang('acp/permissions_phpbb');
 
 	$files_to_add = array();
 
 	// Now search in acp and mods folder for permissions_ files.
 	foreach (array('acp/', 'mods/') as $path)
 	{
-		$dh = @opendir($user->lang_path . $user->lang_name . '/' . $path);
+		$dh = @opendir(phpbb::$user->lang_path . phpbb::$user->lang_name . '/' . $path);
 
 		if ($dh)
 		{
@@ -2999,7 +2954,7 @@ function add_permission_language()
 		return false;
 	}
 
-	$user->add_lang($files_to_add);
+	phpbb::$user->add_lang($files_to_add);
 	return true;
 }
 

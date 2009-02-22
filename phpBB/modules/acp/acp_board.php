@@ -27,9 +27,7 @@ class acp_board
 
 	function main($id, $mode)
 	{
-		global $db, $user, $auth, $template;
-
-		$user->add_lang('acp/board');
+		phpbb::$user->add_lang('acp/board');
 
 		$action	= request_var('action', '');
 		$submit = phpbb_request::is_set_post('submit');
@@ -62,7 +60,7 @@ class acp_board
 						'override_user_style'	=> array('lang' => 'OVERRIDE_STYLE',		'validate' => 'bool',	'type' => 'radio:yes_no', 'explain' => true),
 
 						'legend2'				=> 'WARNINGS',
-						'warnings_expire_days'	=> array('lang' => 'WARNINGS_EXPIRE',		'validate' => 'int',	'type' => 'text:3:4', 'explain' => true, 'append' => ' ' . $user->lang['DAYS']),
+						'warnings_expire_days'	=> array('lang' => 'WARNINGS_EXPIRE',		'validate' => 'int',	'type' => 'text:3:4', 'explain' => true, 'append' => ' ' . phpbb::$user->lang['DAYS']),
 					)
 				);
 			break;
@@ -106,9 +104,9 @@ class acp_board
 						'allow_avatar_local'	=> array('lang' => 'ALLOW_LOCAL',			'validate' => 'bool',	'type' => 'radio:yes_no', 'explain' => false),
 						'allow_avatar_remote'	=> array('lang' => 'ALLOW_REMOTE',			'validate' => 'bool',	'type' => 'radio:yes_no', 'explain' => true),
 						'allow_avatar_upload'	=> array('lang' => 'ALLOW_UPLOAD',			'validate' => 'bool',	'type' => 'radio:yes_no', 'explain' => false),
-						'avatar_filesize'		=> array('lang' => 'MAX_FILESIZE',			'validate' => 'int:0',	'type' => 'text:4:10', 'explain' => true, 'append' => ' ' . $user->lang['BYTES']),
-						'avatar_min'			=> array('lang' => 'MIN_AVATAR_SIZE',		'validate' => 'int:0',	'type' => 'dimension:3:4', 'explain' => true, 'append' => ' ' . $user->lang['PIXEL']),
-						'avatar_max'			=> array('lang' => 'MAX_AVATAR_SIZE',		'validate' => 'int:0',	'type' => 'dimension:3:4', 'explain' => true, 'append' => ' ' . $user->lang['PIXEL']),
+						'avatar_filesize'		=> array('lang' => 'MAX_FILESIZE',			'validate' => 'int:0',	'type' => 'text:4:10', 'explain' => true, 'append' => ' ' . phpbb::$user->lang['BYTES']),
+						'avatar_min'			=> array('lang' => 'MIN_AVATAR_SIZE',		'validate' => 'int:0',	'type' => 'dimension:3:4', 'explain' => true, 'append' => ' ' . phpbb::$user->lang['PIXEL']),
+						'avatar_max'			=> array('lang' => 'MAX_AVATAR_SIZE',		'validate' => 'int:0',	'type' => 'dimension:3:4', 'explain' => true, 'append' => ' ' . phpbb::$user->lang['PIXEL']),
 						'avatar_path'			=> array('lang' => 'AVATAR_STORAGE_PATH',	'validate' => 'rwpath',	'type' => 'text:20:255', 'explain' => true),
 						'avatar_gallery_path'	=> array('lang' => 'AVATAR_GALLERY_PATH',	'validate' => 'rpath',	'type' => 'text:20:255', 'explain' => true)
 					)
@@ -125,7 +123,7 @@ class acp_board
 						'pm_max_boxes'			=> array('lang' => 'BOXES_MAX',				'validate' => 'int:0',	'type' => 'text:4:4', 'explain' => true),
 						'pm_max_msgs'			=> array('lang' => 'BOXES_LIMIT',			'validate' => 'int:0',	'type' => 'text:4:4', 'explain' => true),
 						'full_folder_action'	=> array('lang' => 'FULL_FOLDER_ACTION',	'validate' => 'int',	'type' => 'select', 'method' => 'full_folder_select', 'explain' => true),
-						'pm_edit_time'			=> array('lang' => 'PM_EDIT_TIME',			'validate' => 'int:0',	'type' => 'text:5:5', 'explain' => true, 'append' => ' ' . $user->lang['MINUTES']),
+						'pm_edit_time'			=> array('lang' => 'PM_EDIT_TIME',			'validate' => 'int:0',	'type' => 'text:5:5', 'explain' => true, 'append' => ' ' . phpbb::$user->lang['MINUTES']),
 						'pm_max_recipients'		=> array('lang' => 'PM_MAX_RECIPIENTS',		'validate' => 'int:0',	'type' => 'text:5:5', 'explain' => true),
 
 						'legend2'				=> 'GENERAL_OPTIONS',
@@ -162,9 +160,9 @@ class acp_board
 						'enable_queue_trigger'	=> array('lang' => 'ENABLE_QUEUE_TRIGGER',	'validate' => 'bool',		'type' => 'radio:yes_no', 'explain' => true),
 						'queue_trigger_posts'	=> array('lang' => 'QUEUE_TRIGGER_POSTS',	'validate' => 'int:0:250',	'type' => 'text:4:4', 'explain' => true),
 						'bump_type'				=> false,
-						'edit_time'				=> array('lang' => 'EDIT_TIME',				'validate' => 'int:0',		'type' => 'text:5:5', 'explain' => true, 'append' => ' ' . $user->lang['MINUTES']),
+						'edit_time'				=> array('lang' => 'EDIT_TIME',				'validate' => 'int:0',		'type' => 'text:5:5', 'explain' => true, 'append' => ' ' . phpbb::$user->lang['MINUTES']),
 						'display_last_edited'	=> array('lang' => 'DISPLAY_LAST_EDITED',	'validate' => 'bool',		'type' => 'radio:yes_no', 'explain' => true),
-						'flood_interval'		=> array('lang' => 'FLOOD_INTERVAL',		'validate' => 'int:0',		'type' => 'text:3:10', 'explain' => true, 'append' => ' ' . $user->lang['SECONDS']),
+						'flood_interval'		=> array('lang' => 'FLOOD_INTERVAL',		'validate' => 'int:0',		'type' => 'text:3:10', 'explain' => true, 'append' => ' ' . phpbb::$user->lang['SECONDS']),
 						'bump_interval'			=> array('lang' => 'BUMP_INTERVAL',			'validate' => 'int:0',		'type' => 'custom', 'method' => 'bump_interval', 'explain' => true),
 						'topics_per_page'		=> array('lang' => 'TOPICS_PER_PAGE',		'validate' => 'int:1',		'type' => 'text:3:4', 'explain' => false),
 						'posts_per_page'		=> array('lang' => 'POSTS_PER_PAGE',		'validate' => 'int:1',		'type' => 'text:3:4', 'explain' => false),
@@ -175,8 +173,8 @@ class acp_board
 						'max_post_urls'			=> array('lang' => 'MAX_POST_URLS',			'validate' => 'int:0',		'type' => 'text:5:4', 'explain' => true),
 						'max_post_font_size'	=> array('lang' => 'MAX_POST_FONT_SIZE',	'validate' => 'int:0',		'type' => 'text:5:4', 'explain' => true, 'append' => ' %'),
 						'max_quote_depth'		=> array('lang' => 'QUOTE_DEPTH_LIMIT',		'validate' => 'int:0',		'type' => 'text:4:4', 'explain' => true),
-						'max_post_img_width'	=> array('lang' => 'MAX_POST_IMG_WIDTH',	'validate' => 'int:0',		'type' => 'text:5:4', 'explain' => true, 'append' => ' ' . $user->lang['PIXEL']),
-						'max_post_img_height'	=> array('lang' => 'MAX_POST_IMG_HEIGHT',	'validate' => 'int:0',		'type' => 'text:5:4', 'explain' => true, 'append' => ' ' . $user->lang['PIXEL']),
+						'max_post_img_width'	=> array('lang' => 'MAX_POST_IMG_WIDTH',	'validate' => 'int:0',		'type' => 'text:5:4', 'explain' => true, 'append' => ' ' . phpbb::$user->lang['PIXEL']),
+						'max_post_img_height'	=> array('lang' => 'MAX_POST_IMG_HEIGHT',	'validate' => 'int:0',		'type' => 'text:5:4', 'explain' => true, 'append' => ' ' . phpbb::$user->lang['PIXEL']),
 					)
 				);
 			break;
@@ -198,8 +196,8 @@ class acp_board
 						'max_sig_urls'			=> array('lang' => 'MAX_SIG_URLS',			'validate' => 'int:0',	'type' => 'text:5:4', 'explain' => true),
 						'max_sig_font_size'		=> array('lang' => 'MAX_SIG_FONT_SIZE',		'validate' => 'int:0',	'type' => 'text:5:4', 'explain' => true, 'append' => ' %'),
 						'max_sig_smilies'		=> array('lang' => 'MAX_SIG_SMILIES',		'validate' => 'int:0',	'type' => 'text:5:4', 'explain' => true),
-						'max_sig_img_width'		=> array('lang' => 'MAX_SIG_IMG_WIDTH',		'validate' => 'int:0',	'type' => 'text:5:4', 'explain' => true, 'append' => ' ' . $user->lang['PIXEL']),
-						'max_sig_img_height'	=> array('lang' => 'MAX_SIG_IMG_HEIGHT',	'validate' => 'int:0',	'type' => 'text:5:4', 'explain' => true, 'append' => ' ' . $user->lang['PIXEL']),
+						'max_sig_img_width'		=> array('lang' => 'MAX_SIG_IMG_WIDTH',		'validate' => 'int:0',	'type' => 'text:5:4', 'explain' => true, 'append' => ' ' . phpbb::$user->lang['PIXEL']),
+						'max_sig_img_height'	=> array('lang' => 'MAX_SIG_IMG_HEIGHT',	'validate' => 'int:0',	'type' => 'text:5:4', 'explain' => true, 'append' => ' ' . phpbb::$user->lang['PIXEL']),
 					)
 				);
 			break;
@@ -217,7 +215,7 @@ class acp_board
 						'min_pass_chars'		=> array('lang' => 'PASSWORD_LENGTH',	'validate' => 'int:1',	'type' => 'custom', 'method' => 'password_length', 'explain' => true),
 						'allow_name_chars'		=> array('lang' => 'USERNAME_CHARS',	'validate' => 'string',	'type' => 'select', 'method' => 'select_username_chars', 'explain' => true),
 						'pass_complex'			=> array('lang' => 'PASSWORD_TYPE',		'validate' => 'string',	'type' => 'select', 'method' => 'select_password_chars', 'explain' => true),
-						'chg_passforce'			=> array('lang' => 'FORCE_PASS_CHANGE',	'validate' => 'int:0',	'type' => 'text:3:3', 'explain' => true, 'append' => ' ' . $user->lang['DAYS']),
+						'chg_passforce'			=> array('lang' => 'FORCE_PASS_CHANGE',	'validate' => 'int:0',	'type' => 'text:3:3', 'explain' => true, 'append' => ' ' . phpbb::$user->lang['DAYS']),
 
 						'legend2'				=> 'GENERAL_OPTIONS',
 						'allow_namechange'		=> array('lang' => 'ALLOW_NAME_CHANGE',		'validate' => 'bool',	'type' => 'radio:yes_no', 'explain' => false),
@@ -253,9 +251,9 @@ class acp_board
 					'vars'	=> array(
 						'legend1'			=> 'GENERAL_SETTINGS',
 						'limit_load'		=> array('lang' => 'LIMIT_LOAD',		'validate' => 'string',	'type' => 'text:4:4', 'explain' => true),
-						'session_length'	=> array('lang' => 'SESSION_LENGTH',	'validate' => 'int:60',	'type' => 'text:5:10', 'explain' => true, 'append' => ' ' . $user->lang['SECONDS']),
+						'session_length'	=> array('lang' => 'SESSION_LENGTH',	'validate' => 'int:60',	'type' => 'text:5:10', 'explain' => true, 'append' => ' ' . phpbb::$user->lang['SECONDS']),
 						'active_sessions'	=> array('lang' => 'LIMIT_SESSIONS',	'validate' => 'int:0',	'type' => 'text:4:4', 'explain' => true),
-						'load_online_time'	=> array('lang' => 'ONLINE_LENGTH',		'validate' => 'int:0',	'type' => 'text:4:3', 'explain' => true, 'append' => ' ' . $user->lang['MINUTES']),
+						'load_online_time'	=> array('lang' => 'ONLINE_LENGTH',		'validate' => 'int:0',	'type' => 'text:4:3', 'explain' => true, 'append' => ' ' . phpbb::$user->lang['MINUTES']),
 
 						'legend2'				=> 'GENERAL_OPTIONS',
 						'load_db_track'			=> array('lang' => 'YES_POST_MARKING',		'validate' => 'bool',	'type' => 'radio:yes_no', 'explain' => true),
@@ -317,7 +315,7 @@ class acp_board
 					'vars'	=> array(
 						'legend1'				=> 'ACP_SECURITY_SETTINGS',
 						'allow_autologin'		=> array('lang' => 'ALLOW_AUTOLOGIN',		'validate' => 'bool',	'type' => 'radio:yes_no', 'explain' => true),
-						'max_autologin_time'	=> array('lang' => 'AUTOLOGIN_LENGTH',		'validate' => 'int:0',	'type' => 'text:5:5', 'explain' => true, 'append' => ' ' . $user->lang['DAYS']),
+						'max_autologin_time'	=> array('lang' => 'AUTOLOGIN_LENGTH',		'validate' => 'int:0',	'type' => 'text:5:5', 'explain' => true, 'append' => ' ' . phpbb::$user->lang['DAYS']),
 						'ip_check'				=> array('lang' => 'IP_VALID',				'validate' => 'int',	'type' => 'custom', 'method' => 'select_ip_check', 'explain' => true),
 						'browser_check'			=> array('lang' => 'BROWSER_VALID',			'validate' => 'bool',	'type' => 'radio:yes_no', 'explain' => true),
 						'forwarded_for_check'	=> array('lang' => 'FORWARDED_FOR_VALID',	'validate' => 'bool',	'type' => 'radio:yes_no', 'explain' => true),
@@ -325,10 +323,10 @@ class acp_board
 						'check_dnsbl'			=> array('lang' => 'CHECK_DNSBL',			'validate' => 'bool',	'type' => 'radio:yes_no', 'explain' => true),
 						'email_check_mx'		=> array('lang' => 'EMAIL_CHECK_MX',		'validate' => 'bool',	'type' => 'radio:yes_no', 'explain' => true),
 						'pass_complex'			=> array('lang' => 'PASSWORD_TYPE',			'validate' => 'string',	'type' => 'select', 'method' => 'select_password_chars', 'explain' => true),
-						'chg_passforce'			=> array('lang' => 'FORCE_PASS_CHANGE',		'validate' => 'int:0',	'type' => 'text:3:3', 'explain' => true, 'append' => ' ' . $user->lang['DAYS']),
+						'chg_passforce'			=> array('lang' => 'FORCE_PASS_CHANGE',		'validate' => 'int:0',	'type' => 'text:3:3', 'explain' => true, 'append' => ' ' . phpbb::$user->lang['DAYS']),
 						'max_login_attempts'	=> array('lang' => 'MAX_LOGIN_ATTEMPTS',	'validate' => 'int:0',	'type' => 'text:3:3', 'explain' => true),
 						'tpl_allow_php'			=> array('lang' => 'TPL_ALLOW_PHP',			'validate' => 'bool',	'type' => 'radio:yes_no', 'explain' => true),
-						'form_token_lifetime'	=> array('lang' => 'FORM_TIME_MAX',			'validate' => 'int:-1',	'type' => 'text:5:5', 'explain' => true, 'append' => ' ' . $user->lang['SECONDS']),
+						'form_token_lifetime'	=> array('lang' => 'FORM_TIME_MAX',			'validate' => 'int:-1',	'type' => 'text:5:5', 'explain' => true, 'append' => ' ' . phpbb::$user->lang['SECONDS']),
 						'form_token_sid_guests'	=> array('lang' => 'FORM_SID_GUESTS',		'validate' => 'bool',	'type' => 'radio:yes_no', 'explain' => true),
 
 					)
@@ -367,7 +365,7 @@ class acp_board
 
 		if (isset($display_vars['lang']))
 		{
-			$user->add_lang($display_vars['lang']);
+			phpbb::$user->add_lang($display_vars['lang']);
 		}
 
 		$this->new_config = phpbb::$config;
@@ -379,7 +377,7 @@ class acp_board
 
 		if ($submit && !check_form_key($form_key))
 		{
-			$error[] = $user->lang['FORM_INVALID'];
+			$error[] = phpbb::$user->lang['FORM_INVALID'];
 		}
 		// Do not write values if there is an error
 		if (sizeof($error))
@@ -510,15 +508,15 @@ class acp_board
 		{
 			add_log('admin', 'LOG_CONFIG_' . strtoupper($mode));
 
-			trigger_error($user->lang['CONFIG_UPDATED'] . adm_back_link($this->u_action));
+			trigger_error(phpbb::$user->lang['CONFIG_UPDATED'] . adm_back_link($this->u_action));
 		}
 
 		$this->tpl_name = 'acp_board';
 		$this->page_title = $display_vars['title'];
 
 		$template->assign_vars(array(
-			'L_TITLE'			=> $user->lang[$display_vars['title']],
-			'L_TITLE_EXPLAIN'	=> $user->lang[$display_vars['title'] . '_EXPLAIN'],
+			'L_TITLE'			=> phpbb::$user->lang[$display_vars['title']],
+			'L_TITLE_EXPLAIN'	=> phpbb::$user->lang[$display_vars['title'] . '_EXPLAIN'],
 
 			'S_ERROR'			=> (sizeof($error)) ? true : false,
 			'ERROR_MSG'			=> implode('<br />', $error),
@@ -538,7 +536,7 @@ class acp_board
 			{
 				$template->assign_block_vars('options', array(
 					'S_LEGEND'		=> true,
-					'LEGEND'		=> (isset($user->lang[$vars])) ? $user->lang[$vars] : $vars)
+					'LEGEND'		=> (isset(phpbb::$user->lang[$vars])) ? phpbb::$user->lang[$vars] : $vars)
 				);
 
 				continue;
@@ -549,11 +547,11 @@ class acp_board
 			$l_explain = '';
 			if ($vars['explain'] && isset($vars['lang_explain']))
 			{
-				$l_explain = (isset($user->lang[$vars['lang_explain']])) ? $user->lang[$vars['lang_explain']] : $vars['lang_explain'];
+				$l_explain = (isset(phpbb::$user->lang[$vars['lang_explain']])) ? phpbb::$user->lang[$vars['lang_explain']] : $vars['lang_explain'];
 			}
 			else if ($vars['explain'])
 			{
-				$l_explain = (isset($user->lang[$vars['lang'] . '_EXPLAIN'])) ? $user->lang[$vars['lang'] . '_EXPLAIN'] : '';
+				$l_explain = (isset(phpbb::$user->lang[$vars['lang'] . '_EXPLAIN'])) ? phpbb::$user->lang[$vars['lang'] . '_EXPLAIN'] : '';
 			}
 
 			$content = build_cfg_template($type, $config_key, $this->new_config, $config_key, $vars);
@@ -565,7 +563,7 @@ class acp_board
 
 			$template->assign_block_vars('options', array(
 				'KEY'			=> $config_key,
-				'TITLE'			=> (isset($user->lang[$vars['lang']])) ? $user->lang[$vars['lang']] : $vars['lang'],
+				'TITLE'			=> (isset(phpbb::$user->lang[$vars['lang']])) ? phpbb::$user->lang[$vars['lang']] : $vars['lang'],
 				'S_EXPLAIN'		=> $vars['explain'],
 				'TITLE_EXPLAIN'	=> $l_explain,
 				'CONTENT'		=> $content,
@@ -641,14 +639,12 @@ class acp_board
 	*/
 	function mail_auth_select($selected_method, $key = '')
 	{
-		global $user;
-
 		$auth_methods = array('PLAIN', 'LOGIN', 'CRAM-MD5', 'DIGEST-MD5', 'POP-BEFORE-SMTP');
 		$s_smtp_auth_options = '';
 
 		foreach ($auth_methods as $method)
 		{
-			$s_smtp_auth_options .= '<option value="' . $method . '"' . (($selected_method == $method) ? ' selected="selected"' : '') . '>' . $user->lang['SMTP_' . str_replace('-', '_', $method)] . '</option>';
+			$s_smtp_auth_options .= '<option value="' . $method . '"' . (($selected_method == $method) ? ' selected="selected"' : '') . '>' . phpbb::$user->lang['SMTP_' . str_replace('-', '_', $method)] . '</option>';
 		}
 
 		return $s_smtp_auth_options;
@@ -659,9 +655,7 @@ class acp_board
 	*/
 	function full_folder_select($value, $key = '')
 	{
-		global $user;
-
-		return '<option value="1"' . (($value == 1) ? ' selected="selected"' : '') . '>' . $user->lang['DELETE_OLDEST_MESSAGES'] . '</option><option value="2"' . (($value == 2) ? ' selected="selected"' : '') . '>' . $user->lang['HOLD_NEW_MESSAGES_SHORT'] . '</option>';
+		return '<option value="1"' . (($value == 1) ? ' selected="selected"' : '') . '>' . phpbb::$user->lang['DELETE_OLDEST_MESSAGES'] . '</option><option value="2"' . (($value == 2) ? ' selected="selected"' : '') . '>' . phpbb::$user->lang['HOLD_NEW_MESSAGES_SHORT'] . '</option>';
 	}
 
 	/**
@@ -689,8 +683,6 @@ class acp_board
 	*/
 	function select_acc_activation($value, $key = '')
 	{
-		global $user;
-
 		$radio_ary = array(USER_ACTIVATION_DISABLE => 'ACC_DISABLE', USER_ACTIVATION_NONE => 'ACC_NONE');
 		if (phpbb::$config['email_enable'])
 		{
@@ -705,9 +697,7 @@ class acp_board
 	*/
 	function username_length($value, $key = '')
 	{
-		global $user;
-
-		return '<input id="' . $key . '" type="text" size="3" maxlength="3" name="config[min_name_chars]" value="' . $value . '" /> ' . $user->lang['MIN_CHARS'] . '&nbsp;&nbsp;<input type="text" size="3" maxlength="3" name="config[max_name_chars]" value="' . $this->new_config['max_name_chars'] . '" /> ' . $user->lang['MAX_CHARS'];
+		return '<input id="' . $key . '" type="text" size="3" maxlength="3" name="config[min_name_chars]" value="' . $value . '" /> ' . phpbb::$user->lang['MIN_CHARS'] . '&nbsp;&nbsp;<input type="text" size="3" maxlength="3" name="config[max_name_chars]" value="' . $this->new_config['max_name_chars'] . '" /> ' . phpbb::$user->lang['MAX_CHARS'];
 	}
 
 	/**
@@ -715,14 +705,12 @@ class acp_board
 	*/
 	function select_username_chars($selected_value, $key)
 	{
-		global $user;
-
 		$user_char_ary = array('USERNAME_CHARS_ANY', 'USERNAME_ALPHA_ONLY', 'USERNAME_ALPHA_SPACERS', 'USERNAME_LETTER_NUM', 'USERNAME_LETTER_NUM_SPACERS', 'USERNAME_ASCII');
 		$user_char_options = '';
 		foreach ($user_char_ary as $user_type)
 		{
 			$selected = ($selected_value == $user_type) ? ' selected="selected"' : '';
-			$user_char_options .= '<option value="' . $user_type . '"' . $selected . '>' . $user->lang[$user_type] . '</option>';
+			$user_char_options .= '<option value="' . $user_type . '"' . $selected . '>' . phpbb::$user->lang[$user_type] . '</option>';
 		}
 
 		return $user_char_options;
@@ -733,9 +721,7 @@ class acp_board
 	*/
 	function password_length($value, $key)
 	{
-		global $user;
-
-		return '<input id="' . $key . '" type="text" size="3" maxlength="3" name="config[min_pass_chars]" value="' . $value . '" /> ' . $user->lang['MIN_CHARS'] . '&nbsp;&nbsp;<input type="text" size="3" maxlength="3" name="config[max_pass_chars]" value="' . $this->new_config['max_pass_chars'] . '" /> ' . $user->lang['MAX_CHARS'];
+		return '<input id="' . $key . '" type="text" size="3" maxlength="3" name="config[min_pass_chars]" value="' . $value . '" /> ' . phpbb::$user->lang['MIN_CHARS'] . '&nbsp;&nbsp;<input type="text" size="3" maxlength="3" name="config[max_pass_chars]" value="' . $this->new_config['max_pass_chars'] . '" /> ' . phpbb::$user->lang['MAX_CHARS'];
 	}
 
 	/**
@@ -743,14 +729,12 @@ class acp_board
 	*/
 	function select_password_chars($selected_value, $key)
 	{
-		global $user;
-
 		$pass_type_ary = array('PASS_TYPE_ANY', 'PASS_TYPE_CASE', 'PASS_TYPE_ALPHA', 'PASS_TYPE_SYMBOL');
 		$pass_char_options = '';
 		foreach ($pass_type_ary as $pass_type)
 		{
 			$selected = ($selected_value == $pass_type) ? ' selected="selected"' : '';
-			$pass_char_options .= '<option value="' . $pass_type . '"' . $selected . '>' . $user->lang[$pass_type] . '</option>';
+			$pass_char_options .= '<option value="' . $pass_type . '"' . $selected . '>' . phpbb::$user->lang[$pass_type] . '</option>';
 		}
 
 		return $pass_char_options;
@@ -761,14 +745,12 @@ class acp_board
 	*/
 	function bump_interval($value, $key)
 	{
-		global $user;
-
 		$s_bump_type = '';
 		$types = array('m' => 'MINUTES', 'h' => 'HOURS', 'd' => 'DAYS');
 		foreach ($types as $type => $lang)
 		{
 			$selected = ($this->new_config['bump_type'] == $type) ? ' selected="selected"' : '';
-			$s_bump_type .= '<option value="' . $type . '"' . $selected . '>' . $user->lang[$lang] . '</option>';
+			$s_bump_type .= '<option value="' . $type . '"' . $selected . '>' . phpbb::$user->lang[$lang] . '</option>';
 		}
 
 		return '<input id="' . $key . '" type="text" size="3" maxlength="4" name="config[bump_interval]" value="' . $value . '" />&nbsp;<select name="config[bump_type]">' . $s_bump_type . '</select>';
@@ -779,8 +761,6 @@ class acp_board
 	*/
 	function board_disable($value, $key)
 	{
-		global $user;
-
 		$radio_ary = array(1 => 'YES', 0 => 'NO');
 
 		return h_radio('config[board_disable]', $radio_ary, $value) . '<br /><input id="' . $key . '" type="text" name="config[board_disable_msg]" maxlength="255" size="40" value="' . $this->new_config['board_disable_msg'] . '" />';
@@ -791,34 +771,32 @@ class acp_board
 	*/
 	function dateformat_select($value, $key)
 	{
-		global $user;
-
 		// Let the format_date function operate with the acp values
-		$old_tz = $user->timezone;
-		$old_dst = $user->dst;
+		$old_tz = phpbb::$user->timezone;
+		$old_dst = phpbb::$user->dst;
 
-		$user->timezone = phpbb::$config['board_timezone'];
-		$user->dst = phpbb::$config['board_dst'];
+		phpbb::$user->timezone = phpbb::$config['board_timezone'];
+		phpbb::$user->dst = phpbb::$config['board_dst'];
 
 		$dateformat_options = '';
 
-		foreach ($user->lang['dateformats'] as $format => $null)
+		foreach (phpbb::$user->lang['dateformats'] as $format => $null)
 		{
 			$dateformat_options .= '<option value="' . $format . '"' . (($format == $value) ? ' selected="selected"' : '') . '>';
-			$dateformat_options .= $user->format_date(time(), $format, false) . ((strpos($format, '|') !== false) ? $user->lang['VARIANT_DATE_SEPARATOR'] . $user->format_date(time(), $format, true) : '');
+			$dateformat_options .= phpbb::$user->format_date(time(), $format, false) . ((strpos($format, '|') !== false) ? phpbb::$user->lang['VARIANT_DATE_SEPARATOR'] . phpbb::$user->format_date(time(), $format, true) : '');
 			$dateformat_options .= '</option>';
 		}
 
 		$dateformat_options .= '<option value="custom"';
-		if (!isset($user->lang['dateformats'][$value]))
+		if (!isset(phpbb::$user->lang['dateformats'][$value]))
 		{
 			$dateformat_options .= ' selected="selected"';
 		}
-		$dateformat_options .= '>' . $user->lang['CUSTOM_DATEFORMAT'] . '</option>';
+		$dateformat_options .= '>' . phpbb::$user->lang['CUSTOM_DATEFORMAT'] . '</option>';
 
 		// Reset users date options
-		$user->timezone = $old_tz;
-		$user->dst = $old_dst;
+		phpbb::$user->timezone = $old_tz;
+		phpbb::$user->dst = $old_dst;
 
 		return "<select name=\"dateoptions\" id=\"dateoptions\" onchange=\"if (this.value == 'custom') { document.getElementById('" . addslashes($key) . "').value = '" . addslashes($value) . "'; } else { document.getElementById('" . addslashes($key) . "').value = this.value; }\">$dateformat_options</select>
 		<input type=\"text\" name=\"config[$key]\" id=\"$key\" value=\"$value\" maxlength=\"30\" />";

@@ -58,21 +58,6 @@ abstract class phpbb_session
 	public $system = NULL;
 
 	/**
-	* @var bool Is true if the user is a logged in registered user
-	*/
-	public $is_registered = false;
-
-	/**
-	* @var bool Is true if the user is logged in and a search engine/bot
-	*/
-	public $is_bot = false;
-
-	/**
-	* @var bool Is true if user is founder
-	*/
-	public $is_founder = false;
-
-	/**
 	* @var array Extra url parameter to append to every URL in phpBB
 	*/
 	public $extra_url = array();
@@ -304,6 +289,7 @@ abstract class phpbb_session
 		else
 		{
 			$this->is_registered = true;
+			$this->is_guest = false;
 			$this->is_founder = $this->data['user_type'] == phpbb::USER_FOUNDER;
 		}
 
@@ -824,6 +810,7 @@ abstract class phpbb_session
 			{
 				$this->setup('ucp');
 				$this->is_registered = $this->is_bot = $this->is_founder = false;
+				$this->is_guest = true;
 
 				// Set as a precaution to allow login_box() handling this case correctly as well as this function not being executed again.
 				define('IN_CHECK_BAN', 1);
@@ -1113,6 +1100,7 @@ abstract class phpbb_session
 		$this->is_registered = ($this->data['user_id'] != ANONYMOUS && ($this->data['user_type'] == phpbb::USER_NORMAL || $this->data['user_type'] == phpbb::USER_FOUNDER)) ? true : false;
 		$this->is_bot = (!$this->is_registered && $this->data['user_id'] != ANONYMOUS) ? true : false;
 		$this->is_founder = $this->data['user_type'] == phpbb::USER_FOUNDER;
+		$this->is_guest = (!$this->is_registered && $this->data['user_id'] == ANONYMOUS) ? true : false;
 		$this->data['user_lang'] = basename($this->data['user_lang']);
 
 		return true;

@@ -25,9 +25,7 @@ class acp_ranks
 
 	function main($id, $mode)
 	{
-		global $db, $user, $auth, $template;
-
-		$user->add_lang('acp/posting');
+		phpbb::$user->add_lang('acp/posting');
 
 		// Set up general vars
 		$action = request_var('action', '');
@@ -47,7 +45,7 @@ class acp_ranks
 
 				if (!check_form_key($form_name))
 				{
-					trigger_error($user->lang['FORM_INVALID']. adm_back_link($this->u_action), E_USER_WARNING);
+					trigger_error(phpbb::$user->lang['FORM_INVALID']. adm_back_link($this->u_action), E_USER_WARNING);
 				}
 				$rank_title = utf8_normalize_nfc(request_var('title', '', true));
 				$special_rank = request_var('special_rank', 0);
@@ -62,7 +60,7 @@ class acp_ranks
 
 				if (!$rank_title)
 				{
-					trigger_error($user->lang['NO_RANK_TITLE'] . adm_back_link($this->u_action), E_USER_WARNING);
+					trigger_error(phpbb::$user->lang['NO_RANK_TITLE'] . adm_back_link($this->u_action), E_USER_WARNING);
 				}
 
 				$sql_ary = array(
@@ -75,14 +73,14 @@ class acp_ranks
 				if ($rank_id)
 				{
 					$sql = 'UPDATE ' . RANKS_TABLE . ' SET ' . $db->sql_build_array('UPDATE', $sql_ary) . " WHERE rank_id = $rank_id";
-					$message = $user->lang['RANK_UPDATED'];
+					$message = phpbb::$user->lang['RANK_UPDATED'];
 
 					add_log('admin', 'LOG_RANK_UPDATED', $rank_title);
 				}
 				else
 				{
 					$sql = 'INSERT INTO ' . RANKS_TABLE . ' ' . $db->sql_build_array('INSERT', $sql_ary);
-					$message = $user->lang['RANK_ADDED'];
+					$message = phpbb::$user->lang['RANK_ADDED'];
 
 					add_log('admin', 'LOG_RANK_ADDED', $rank_title);
 				}
@@ -98,7 +96,7 @@ class acp_ranks
 
 				if (!$rank_id)
 				{
-					trigger_error($user->lang['MUST_SELECT_RANK'] . adm_back_link($this->u_action), E_USER_WARNING);
+					trigger_error(phpbb::$user->lang['MUST_SELECT_RANK'] . adm_back_link($this->u_action), E_USER_WARNING);
 				}
 
 				if (confirm_box(true))
@@ -125,7 +123,7 @@ class acp_ranks
 				}
 				else
 				{
-					confirm_box(false, $user->lang['CONFIRM_OPERATION'], build_hidden_fields(array(
+					confirm_box(false, phpbb::$user->lang['CONFIRM_OPERATION'], build_hidden_fields(array(
 						'i'			=> $id,
 						'mode'		=> $mode,
 						'rank_id'	=> $rank_id,

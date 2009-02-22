@@ -128,12 +128,10 @@ class bbcode
 	*/
 	function bbcode_cache_init()
 	{
-		global $user;
-
 		if (empty($this->template_filename))
 		{
-			$this->template_bitfield = new bitfield($user->theme['bbcode_bitfield']);
-			$this->template_filename = PHPBB_ROOT_PATH . 'styles/' . $user->theme['template_path'] . '/template/bbcode.html';
+			$this->template_bitfield = new bitfield(phpbb::$user->theme['bbcode_bitfield']);
+			$this->template_filename = PHPBB_ROOT_PATH . 'styles/' . phpbb::$user->theme['template_path'] . '/template/bbcode.html';
 
 			if (!@file_exists($this->template_filename))
 			{
@@ -163,8 +161,6 @@ class bbcode
 
 		if (sizeof($sql))
 		{
-			global $db;
-
 			$sql = 'SELECT *
 				FROM ' . BBCODES_TABLE . '
 				WHERE ' . $db->sql_in_set('bbcode_id', $sql);
@@ -225,7 +221,7 @@ class bbcode
 				break;
 
 				case 4:
-					if ($user->optionget('viewimg'))
+					if (phpbb::$user->optionget('viewimg'))
 					{
 						$this->bbcode_cache[$bbcode_id] = array(
 							'preg' => array(
@@ -304,7 +300,7 @@ class bbcode
 				break;
 
 				case 11:
-					if ($user->optionget('viewflash'))
+					if (phpbb::$user->optionget('viewflash'))
 					{
 						$this->bbcode_cache[$bbcode_id] = array(
 							'preg' => array(
@@ -365,7 +361,7 @@ class bbcode
 						}
 
 						// Replace {L_*} lang strings
-						$bbcode_tpl = preg_replace('/{L_([A-Z_]+)}/e', "(!empty(\$user->lang['\$1'])) ? \$user->lang['\$1'] : ucwords(strtolower(str_replace('_', ' ', '\$1')))", $bbcode_tpl);
+						$bbcode_tpl = preg_replace('/{L_([A-Z_]+)}/e', "phpbb::\$user->lang('\$1')", $bbcode_tpl);
 
 						if (!empty($rowset[$bbcode_id]['second_pass_replace']))
 						{
@@ -398,8 +394,6 @@ class bbcode
 		static $bbcode_hardtpl = array();
 		if (empty($bbcode_hardtpl))
 		{
-			global $user;
-			
 			$bbcode_hardtpl = array(
 				'b_open'	=> '<span style="font-weight: bold">',
 				'b_close'	=> '</span>',
@@ -407,7 +401,7 @@ class bbcode
 				'i_close'	=> '</span>',
 				'u_open'	=> '<span style="text-decoration: underline">',
 				'u_close'	=> '</span>',
-				'img'		=> '<img src="$1" alt="' . $user->lang['IMAGE'] . '" />',
+				'img'		=> '<img src="$1" alt="' . phpbb::$user->lang['IMAGE'] . '" />',
 				'size'		=> '<span style="font-size: $1%; line-height: normal">$2</span>',
 				'color'		=> '<span style="color: $1">$2</span>',
 				'email'		=> '<a href="mailto:$1">$2</a>'
@@ -457,8 +451,6 @@ class bbcode
 	*/
 	function bbcode_tpl_replace($tpl_name, $tpl)
 	{
-		global $user;
-
 		static $replacements = array(
 			'quote_username_open'	=> array('{USERNAME}'	=> '$1'),
 			'color'					=> array('{COLOR}'		=> '$1', '{TEXT}'			=> '$2'),
@@ -469,7 +461,7 @@ class bbcode
 			'email'					=> array('{EMAIL}'		=> '$1', '{DESCRIPTION}'	=> '$2')
 		);
 
-		$tpl = preg_replace('/{L_([A-Z_]+)}/e', "(!empty(\$user->lang['\$1'])) ? \$user->lang['\$1'] : ucwords(strtolower(str_replace('_', ' ', '\$1')))", $tpl);
+		$tpl = preg_replace('/{L_([A-Z_]+)}/e', "phpbb::\$user->lang('\$1')", $tpl);
 
 		if (!empty($replacements[$tpl_name]))
 		{

@@ -33,7 +33,7 @@ class posting_api
 	topic_last_post_title
 	topic_last_post_time
 	*/
-	
+
 	/*
 	post table:
 	post_id
@@ -46,7 +46,7 @@ class posting_api
 	poster_id
 	forum_id
 	post_time
-	
+
 	/*
 	forum table:
 	forum_id
@@ -81,8 +81,6 @@ class posting_api
 	// shadow'd and not deleted (it must first exist for it to be shadow'd or deleted!)
 	static function insert_topic($data)
 	{
-		global $db;
-
 		// one transaction, we can now garuntee that atomicity of insertions
 		$db->sql_transaction('begin');
 
@@ -111,7 +109,7 @@ class posting_api
 			$username = (string) $db->sql_fetchfield('username');
 			$db->sql_freeresult($result);
 		}
-		
+
 		$sql = 'SELECT forum_topics, forum_unapproved_topics, forum_posts, forum_unapproved_posts
 			FROM ' . FORUMS_TABLE . '
 			WHERE forum_id = ' . (int) $forum_id;
@@ -185,7 +183,7 @@ class posting_api
 		{
 			$data['shadow_topic_id'] = $topic_id;
 			$data['forum_id'] = $shadow_forum_id;
-			self::insert_shadow_topic($data); 
+			self::insert_shadow_topic($data);
 		}
 
 		// we are consistant, victory is ours
@@ -195,8 +193,6 @@ class posting_api
 	// inserts a shadow topic into the database
 	static function insert_shadow_topic($data)
 	{
-		global $db;
-
 		// one transaction, we can now garuntee that atomicity of insertions
 		$db->sql_transaction('begin');
 
@@ -223,7 +219,7 @@ class posting_api
 			$username = $row['username'];
 			$db->sql_freeresult($result);
 		}
-		
+
 		$sql = 'SELECT forum_topics, forum_shadow_topics
 			FROM ' . FORUMS_TABLE . '
 			WHERE forum_id = ' . (int) $forum_id;
@@ -272,7 +268,6 @@ class posting_api
 
 	static function insert_post($data)
 	{
-		global $db;
 		// one transaction, we can now garuntee that atomicity of insertions
 		$db->transaction('BEGIN');
 
@@ -387,8 +382,6 @@ class posting_api
 
 	static function delete_topics($data)
 	{
-		global $db;
-
 		// lets get this party started
 		$db->sql_transaction('begin');
 
@@ -451,13 +444,13 @@ class posting_api
 				'forum_shadow_posts'		=> max($forum_row['forum_shadow_posts'] - $topic_row['forum_shadow_posts'], 0),
 				'forum_deleted_posts'		=> max($forum_row['forum_deleted_posts'] - $topic_row['forum_deleted_posts'], 0),
 				'forum_unapproved_posts'	=> max($forum_row['forum_unapproved_posts'] - $topic_row['forum_unapproved_posts'], 0),
-	
+
 				'forum_topics'				=> max($forum_row['forum_topics'] - $topic_row['forum_topics'], 0),
 				'forum_shadow_topics'		=> max($forum_row['forum_shadow_topics'] - $topic_row['forum_shadow_topics'], 0),
 				'forum_deleted_topics'		=> max($forum_row['forum_deleted_topics'] - $topic_row['forum_deleted_topics'], 0),
 				'forum_unapproved_topics'	=> max($forum_row['forum_unapproved_topics'] - $topic_row['forum_unapproved_topics'], 0),
 			);
-	
+
 			// get the last "normal" post in the forum, we _must_ update it
 			$sql = 'SELECT MAX(post_id) as max_post_id
 				FROM ' . POSTS_TABLE . '
@@ -466,7 +459,7 @@ class posting_api
 			$result = $db->sql_query($sql);
 			$row = $db->sql_fetchrow($result);
 			$db->sql_freeresult($result);
-	
+
 			// anything left?
 			if ($row)
 			{
@@ -477,7 +470,7 @@ class posting_api
 				$result = $db->sql_query($sql);
 				$last_post = $db->sql_fetchrow($result);
 				$db->sql_freeresult($result);
-	
+
 				$forum_array['forum_last_user_id'] = (int) $last_post['poster_id'];
 				$forum_array['forum_last_poster_name'] = $last_post['post_username'];
 				$forum_array['forum_last_post_title'] = $last_post['post_subject'];
@@ -491,8 +484,8 @@ class posting_api
 				$forum_array['forum_last_post_title'] = '';
 				$forum_array['forum_last_post_time'] = 0;
 			}
-	
-			$db->sql_handle_data('UPDATE', FORUMS_TABLE, $forum_array, "forum_id = $forum_id");	
+
+			$db->sql_handle_data('UPDATE', FORUMS_TABLE, $forum_array, "forum_id = $forum_id");
 		}
 
 		// let's not get too hasty, we can kill off the shadows later,
@@ -527,8 +520,6 @@ class posting_api
 
 	static function delete_posts($data)
 	{
-		global $db;
-
 		// lets get this party started
 		$db->sql_transaction('begin');
 
@@ -589,7 +580,7 @@ class posting_api
 				'forum_deleted_posts'		=> max($forum_row['forum_deleted_posts'] - $topic_row['forum_deleted_posts'], 0),
 				'forum_unapproved_posts'	=> max($forum_row['forum_unapproved_posts'] - $topic_row['forum_unapproved_posts'], 0),
 			);
-	
+
 			// get the last "normal" post in the forum, we _must_ update it
 			$sql = 'SELECT MAX(post_id) as max_post_id
 				FROM ' . POSTS_TABLE . '
@@ -598,7 +589,7 @@ class posting_api
 			$result = $db->sql_query($sql);
 			$row = $db->sql_fetchrow($result);
 			$db->sql_freeresult($result);
-	
+
 			// anything left?
 			if ($row)
 			{
@@ -609,7 +600,7 @@ class posting_api
 				$result = $db->sql_query($sql);
 				$last_post = $db->sql_fetchrow($result);
 				$db->sql_freeresult($result);
-	
+
 				$forum_array['forum_last_user_id'] = (int) $last_post['poster_id'];
 				$forum_array['forum_last_poster_name'] = $last_post['post_username'];
 				$forum_array['forum_last_post_title'] = $last_post['post_subject'];
@@ -623,7 +614,7 @@ class posting_api
 				$forum_array['forum_last_post_title'] = '';
 				$forum_array['forum_last_post_time'] = 0;
 			}
-	
+
 			$db->sql_handle_data('UPDATE', FORUMS_TABLE, $forum_array, "forum_id = $forum_id");
 		}
 
@@ -651,7 +642,7 @@ class posting_api
 				'topic_deleted_posts'		=> max($topic_row['topic_deleted_posts'] - $post_row['topic_deleted_posts'], 0),
 				'topic_unapproved_posts'	=> max($topic_row['topic_unapproved_posts'] - $post_row['topic_unapproved_posts'], 0),
 			);
-	
+
 			// get the last "normal" post in the topic, we _must_ update it
 			$sql = 'SELECT MAX(post_id) as max_post_id
 				FROM ' . POSTS_TABLE . '
@@ -660,7 +651,7 @@ class posting_api
 			$result = $db->sql_query($sql);
 			$row = $db->sql_fetchrow($result);
 			$db->sql_freeresult($result);
-	
+
 			// anything left?
 			if ($row)
 			{
@@ -671,7 +662,7 @@ class posting_api
 				$result = $db->sql_query($sql);
 				$last_post = $db->sql_fetchrow($result);
 				$db->sql_freeresult($result);
-	
+
 				$topic_array['topic_last_user_id'] = (int) $last_post['poster_id'];
 				$topic_array['topic_last_poster_name'] = $last_post['post_username'];
 				$topic_array['topic_last_post_title'] = $last_post['post_subject'];
@@ -682,9 +673,9 @@ class posting_api
 				// mark this post for execution!
 				$empty_topic_ids[] = $topic_id;
 			}
-	
+
 			$db->sql_handle_data('UPDATE', TOPICS_TABLE, $topic_array, "topic_id = $topic_id");
-		}	
+		}
 
 		$shadow_post_ids = array();
 
@@ -725,8 +716,6 @@ class posting_api
 
 	static function move_topics($data)
 	{
-		global $db;
-
 		// lets get this party started
 		$db->transaction('begin');
 
@@ -831,7 +820,7 @@ class posting_api
 				$result = $db->sql_query($sql);
 				$last_post = $db->sql_fetchrow($result);
 				$db->sql_freeresult($result);
-	
+
 				$forum_data['forum_last_user_id'] = (int) $last_post['poster_id'];
 				$forum_data['forum_last_poster_name'] = $last_post['post_username'];
 				$forum_data['forum_last_post_title'] = $last_post['post_subject'];
@@ -845,7 +834,7 @@ class posting_api
 				$forum_data['forum_last_post_title'] = '';
 				$forum_data['forum_last_post_time'] = 0;
 			}
-	
+
 			// update the old forum
 			$db->sql_handle_data('UPDATE', FORUMS_TABLE, $forum_data, "forum_id = $forum_id");
 		}

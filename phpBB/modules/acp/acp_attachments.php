@@ -26,9 +26,7 @@ class acp_attachments
 
 	function main($id, $mode)
 	{
-		global $db, $user, $auth, $template;
-
-		$user->add_lang(array('posting', 'viewtopic', 'acp/attachments'));
+		phpbb::$user->add_lang(array('posting', 'viewtopic', 'acp/attachments'));
 
 		$error = $notify = array();
 		$submit = phpbb_request::is_set_post('submit');
@@ -39,7 +37,7 @@ class acp_attachments
 
 		if ($submit && !check_form_key($form_key))
 		{
-			trigger_error($user->lang['FORM_INVALID'] . adm_back_link($this->u_action), E_USER_WARNING);
+			trigger_error(phpbb::$user->lang['FORM_INVALID'] . adm_back_link($this->u_action), E_USER_WARNING);
 		}
 
 		switch ($mode)
@@ -69,8 +67,8 @@ class acp_attachments
 		$this->page_title = $l_title;
 
 		$template->assign_vars(array(
-			'L_TITLE'			=> $user->lang[$l_title],
-			'L_TITLE_EXPLAIN'	=> $user->lang[$l_title . '_EXPLAIN'],
+			'L_TITLE'			=> phpbb::$user->lang[$l_title],
+			'L_TITLE_EXPLAIN'	=> phpbb::$user->lang[$l_title . '_EXPLAIN'],
 			'U_ACTION'			=> $this->u_action)
 		);
 
@@ -93,7 +91,7 @@ class acp_attachments
 				}
 				$db->sql_freeresult($result);
 
-				$l_legend_cat_images = $user->lang['SETTINGS_CAT_IMAGES'] . ' [' . $user->lang['ASSIGNED_GROUP'] . ': ' . ((!empty($s_assigned_groups[ATTACHMENT_CATEGORY_IMAGE])) ? implode(', ', $s_assigned_groups[ATTACHMENT_CATEGORY_IMAGE]) : $user->lang['NO_EXT_GROUP']) . ']';
+				$l_legend_cat_images = phpbb::$user->lang['SETTINGS_CAT_IMAGES'] . ' [' . phpbb::$user->lang['ASSIGNED_GROUP'] . ': ' . ((!empty($s_assigned_groups[ATTACHMENT_CATEGORY_IMAGE])) ? implode(', ', $s_assigned_groups[ATTACHMENT_CATEGORY_IMAGE]) : phpbb::$user->lang['NO_EXT_GROUP']) . ']';
 
 				$display_vars = array(
 					'title'	=> 'ACP_ATTACHMENT_SETTINGS',
@@ -120,8 +118,8 @@ class acp_attachments
 						'img_display_inlined'		=> array('lang' => 'DISPLAY_INLINED',		'validate' => 'bool',	'type' => 'radio:yes_no', 'explain' => true),
 						'img_create_thumbnail'		=> array('lang' => 'CREATE_THUMBNAIL',		'validate' => 'bool',	'type' => 'radio:yes_no', 'explain' => true),
 						'img_max_thumb_width'		=> array('lang' => 'MAX_THUMB_WIDTH',		'validate' => 'int',	'type' => 'text:7:15', 'explain' => true, 'append' => ' px'),
-						'img_min_thumb_filesize'	=> array('lang' => 'MIN_THUMB_FILESIZE',	'validate' => 'int',	'type' => 'text:7:15', 'explain' => true, 'append' => ' ' . $user->lang['BYTES']),
-						'img_imagick'				=> array('lang' => 'IMAGICK_PATH',			'validate' => 'string',	'type' => 'text:20:200', 'explain' => true, 'append' => '&nbsp;&nbsp;<span>[ <a href="' . $this->u_action . '&amp;action=imgmagick">' . $user->lang['SEARCH_IMAGICK'] . '</a> ]</span>'),
+						'img_min_thumb_filesize'	=> array('lang' => 'MIN_THUMB_FILESIZE',	'validate' => 'int',	'type' => 'text:7:15', 'explain' => true, 'append' => ' ' . phpbb::$user->lang['BYTES']),
+						'img_imagick'				=> array('lang' => 'IMAGICK_PATH',			'validate' => 'string',	'type' => 'text:20:200', 'explain' => true, 'append' => '&nbsp;&nbsp;<span>[ <a href="' . $this->u_action . '&amp;action=imgmagick">' . phpbb::$user->lang['SEARCH_IMAGICK'] . '</a> ]</span>'),
 						'img_max'					=> array('lang' => 'MAX_IMAGE_SIZE',		'validate' => 'int',	'type' => 'dimension:3:4', 'explain' => true, 'append' => ' px'),
 						'img_link'					=> array('lang' => 'IMAGE_LINK_SIZE',		'validate' => 'int',	'type' => 'dimension:3:4', 'explain' => true, 'append' => ' px'),
 					)
@@ -173,7 +171,7 @@ class acp_attachments
 
 					if (!sizeof($error))
 					{
-						trigger_error($user->lang['CONFIG_UPDATED'] . adm_back_link($this->u_action));
+						trigger_error(phpbb::$user->lang['CONFIG_UPDATED'] . adm_back_link($this->u_action));
 					}
 				}
 
@@ -240,9 +238,9 @@ class acp_attachments
 					'WARNING_MSG'			=> implode('<br />', $error),
 					'DEFINED_IPS'			=> $defined_ips,
 
-					'L_SECURE_TITLE'		=> $user->lang['DEFINE_' . $allow_deny . '_IPS'],
-					'L_IP_EXCLUDE'			=> $user->lang['EXCLUDE_FROM_' . $allow_deny . '_IP'],
-					'L_REMOVE_IPS'			=> $user->lang['REMOVE_' . $allow_deny . '_IPS'])
+					'L_SECURE_TITLE'		=> phpbb::$user->lang['DEFINE_' . $allow_deny . '_IPS'],
+					'L_IP_EXCLUDE'			=> phpbb::$user->lang['EXCLUDE_FROM_' . $allow_deny . '_IP'],
+					'L_REMOVE_IPS'			=> phpbb::$user->lang['REMOVE_' . $allow_deny . '_IPS'])
 				);
 
 				// Output relevant options
@@ -257,7 +255,7 @@ class acp_attachments
 					{
 						$template->assign_block_vars('options', array(
 							'S_LEGEND'		=> true,
-							'LEGEND'		=> (isset($user->lang[$vars])) ? $user->lang[$vars] : $vars)
+							'LEGEND'		=> (isset(phpbb::$user->lang[$vars])) ? phpbb::$user->lang[$vars] : $vars)
 						);
 
 						continue;
@@ -268,11 +266,11 @@ class acp_attachments
 					$l_explain = '';
 					if ($vars['explain'] && isset($vars['lang_explain']))
 					{
-						$l_explain = (isset($user->lang[$vars['lang_explain']])) ? $user->lang[$vars['lang_explain']] : $vars['lang_explain'];
+						$l_explain = (isset(phpbb::$user->lang[$vars['lang_explain']])) ? phpbb::$user->lang[$vars['lang_explain']] : $vars['lang_explain'];
 					}
 					else if ($vars['explain'])
 					{
-						$l_explain = (isset($user->lang[$vars['lang'] . '_EXPLAIN'])) ? $user->lang[$vars['lang'] . '_EXPLAIN'] : '';
+						$l_explain = (isset(phpbb::$user->lang[$vars['lang'] . '_EXPLAIN'])) ? phpbb::$user->lang[$vars['lang'] . '_EXPLAIN'] : '';
 					}
 
 					$content = build_cfg_template($type, $config_key, $this->new_config, $config_key, $vars);
@@ -283,7 +281,7 @@ class acp_attachments
 
 					$template->assign_block_vars('options', array(
 						'KEY'			=> $config_key,
-						'TITLE'			=> $user->lang[$vars['lang']],
+						'TITLE'			=> phpbb::$user->lang[$vars['lang']],
 						'S_EXPLAIN'		=> $vars['explain'],
 						'TITLE_EXPLAIN'	=> $l_explain,
 						'CONTENT'		=> $content,
@@ -374,7 +372,7 @@ class acp_attachments
 
 							if ($row = $db->sql_fetchrow($result))
 							{
-								$error[] = sprintf($user->lang['EXTENSION_EXIST'], $add_extension);
+								$error[] = sprintf(phpbb::$user->lang['EXTENSION_EXIST'], $add_extension);
 							}
 							$db->sql_freeresult($result);
 
@@ -393,7 +391,7 @@ class acp_attachments
 
 					if (!sizeof($error))
 					{
-						$notify[] = $user->lang['EXTENSIONS_UPDATED'];
+						$notify[] = phpbb::$user->lang['EXTENSIONS_UPDATED'];
 					}
 
 					phpbb::$acm->destroy('extensions');
@@ -453,7 +451,7 @@ class acp_attachments
 
 					if (!$group_id && $action == 'edit')
 					{
-						trigger_error($user->lang['NO_EXT_GROUP_SPECIFIED'] . adm_back_link($this->u_action), E_USER_WARNING);
+						trigger_error(phpbb::$user->lang['NO_EXT_GROUP_SPECIFIED'] . adm_back_link($this->u_action), E_USER_WARNING);
 					}
 
 					if ($group_id)
@@ -467,7 +465,7 @@ class acp_attachments
 
 						if (!$ext_row)
 						{
-							trigger_error($user->lang['NO_EXT_GROUP_SPECIFIED'] . adm_back_link($this->u_action), E_USER_WARNING);
+							trigger_error(phpbb::$user->lang['NO_EXT_GROUP_SPECIFIED'] . adm_back_link($this->u_action), E_USER_WARNING);
 						}
 					}
 					else
@@ -480,7 +478,7 @@ class acp_attachments
 
 					if (!$group_name)
 					{
-						$error[] = $user->lang['NO_EXT_GROUP_NAME'];
+						$error[] = phpbb::$user->lang['NO_EXT_GROUP_NAME'];
 					}
 
 					// Check New Group Name
@@ -498,7 +496,7 @@ class acp_attachments
 						{
 							if (utf8_clean_string($row['group_name']) === $clean_group_name)
 							{
-								$error[] = sprintf($user->lang['EXTENSION_GROUP_EXIST'], $new_group_name);
+								$error[] = sprintf(phpbb::$user->lang['EXTENSION_GROUP_EXIST'], $new_group_name);
 								break;
 							}
 						}
@@ -579,17 +577,17 @@ class acp_attachments
 
 					if (!sizeof($error))
 					{
-						$notify[] = $user->lang['SUCCESS_EXTENSION_GROUP_' . strtoupper($action)];
+						$notify[] = phpbb::$user->lang['SUCCESS_EXTENSION_GROUP_' . strtoupper($action)];
 					}
 				}
 
 				$cat_lang = array(
-					ATTACHMENT_CATEGORY_NONE		=> $user->lang['NO_FILE_CAT'],
-					ATTACHMENT_CATEGORY_IMAGE		=> $user->lang['CAT_IMAGES'],
-					ATTACHMENT_CATEGORY_WM			=> $user->lang['CAT_WM_FILES'],
-					ATTACHMENT_CATEGORY_RM			=> $user->lang['CAT_RM_FILES'],
-					ATTACHMENT_CATEGORY_FLASH		=> $user->lang['CAT_FLASH_FILES'],
-					ATTACHMENT_CATEGORY_QUICKTIME	=> $user->lang['CAT_QUICKTIME_FILES'],
+					ATTACHMENT_CATEGORY_NONE		=> phpbb::$user->lang['NO_FILE_CAT'],
+					ATTACHMENT_CATEGORY_IMAGE		=> phpbb::$user->lang['CAT_IMAGES'],
+					ATTACHMENT_CATEGORY_WM			=> phpbb::$user->lang['CAT_WM_FILES'],
+					ATTACHMENT_CATEGORY_RM			=> phpbb::$user->lang['CAT_RM_FILES'],
+					ATTACHMENT_CATEGORY_FLASH		=> phpbb::$user->lang['CAT_FLASH_FILES'],
+					ATTACHMENT_CATEGORY_QUICKTIME	=> phpbb::$user->lang['CAT_QUICKTIME_FILES'],
 				);
 
 				$group_id = request_var('g', 0);
@@ -623,11 +621,11 @@ class acp_attachments
 
 							phpbb::$acm->destroy('extensions');
 
-							trigger_error($user->lang['EXTENSION_GROUP_DELETED'] . adm_back_link($this->u_action));
+							trigger_error(phpbb::$user->lang['EXTENSION_GROUP_DELETED'] . adm_back_link($this->u_action));
 						}
 						else
 						{
-							confirm_box(false, $user->lang['CONFIRM_OPERATION'], build_hidden_fields(array(
+							confirm_box(false, phpbb::$user->lang['CONFIRM_OPERATION'], build_hidden_fields(array(
 								'i'			=> $id,
 								'mode'		=> $mode,
 								'group_id'	=> $group_id,
@@ -641,7 +639,7 @@ class acp_attachments
 
 						if (!$group_id)
 						{
-							trigger_error($user->lang['NO_EXT_GROUP_SPECIFIED'] . adm_back_link($this->u_action), E_USER_WARNING);
+							trigger_error(phpbb::$user->lang['NO_EXT_GROUP_SPECIFIED'] . adm_back_link($this->u_action), E_USER_WARNING);
 						}
 
 						$sql = 'SELECT *
@@ -763,7 +761,7 @@ class acp_attachments
 							'U_EXTENSIONS'		=> append_sid(PHPBB_ADMIN_PATH . 'index.' . PHP_EXT, "i=$id&amp;mode=extensions"),
 							'U_BACK'			=> $this->u_action,
 
-							'L_LEGEND'			=> $user->lang[strtoupper($action) . '_EXTENSION_GROUP'])
+							'L_LEGEND'			=> phpbb::$user->lang[strtoupper($action) . '_EXTENSION_GROUP'])
 						);
 
 						$s_forum_id_options = '';
@@ -910,7 +908,7 @@ class acp_attachments
 						$db->sql_query($sql);
 
 						add_log('admin', 'LOG_ATTACH_ORPHAN_DEL', implode(', ', $delete_files));
-						$notify[] = sprintf($user->lang['LOG_ATTACH_ORPHAN_DEL'], implode(', ', $delete_files));
+						$notify[] = sprintf(phpbb::$user->lang['LOG_ATTACH_ORPHAN_DEL'], implode(', ', $delete_files));
 					}
 
 					$upload_list = array();
@@ -963,9 +961,9 @@ class acp_attachments
 							$post_row = $post_info[$upload_list[$row['attach_id']]];
 
 							$template->assign_block_vars('upload', array(
-								'FILE_INFO'		=> sprintf($user->lang['UPLOADING_FILE_TO'], $row['real_filename'], $post_row['post_id']),
+								'FILE_INFO'		=> sprintf(phpbb::$user->lang['UPLOADING_FILE_TO'], $row['real_filename'], $post_row['post_id']),
 								'S_DENIED'		=> (!$auth->acl_get('f_attach', $post_row['forum_id'])) ? true : false,
-								'L_DENIED'		=> (!$auth->acl_get('f_attach', $post_row['forum_id'])) ? sprintf($user->lang['UPLOAD_DENIED_FORUM'], $forum_names[$row['forum_id']]) : '')
+								'L_DENIED'		=> (!$auth->acl_get('f_attach', $post_row['forum_id'])) ? sprintf(phpbb::$user->lang['UPLOAD_DENIED_FORUM'], $forum_names[$row['forum_id']]) : '')
 							);
 
 							if (!$auth->acl_get('f_attach', $post_row['forum_id']))
@@ -1028,7 +1026,7 @@ class acp_attachments
 				{
 					$template->assign_block_vars('orphan', array(
 						'FILESIZE'			=> get_formatted_filesize($row['filesize']),
-						'FILETIME'			=> $user->format_date($row['filetime']),
+						'FILETIME'			=> phpbb::$user->format_date($row['filetime']),
 						'REAL_FILENAME'		=> basename($row['real_filename']),
 						'PHYSICAL_FILENAME'	=> basename($row['physical_filename']),
 						'ATTACH_ID'			=> $row['attach_id'],
@@ -1063,15 +1061,13 @@ class acp_attachments
 	*/
 	function category_select($select_name, $group_id = false, $key = '')
 	{
-		global $db, $user;
-
 		$types = array(
-			ATTACHMENT_CATEGORY_NONE		=> $user->lang['NO_FILE_CAT'],
-			ATTACHMENT_CATEGORY_IMAGE		=> $user->lang['CAT_IMAGES'],
-			ATTACHMENT_CATEGORY_WM			=> $user->lang['CAT_WM_FILES'],
-			ATTACHMENT_CATEGORY_RM			=> $user->lang['CAT_RM_FILES'],
-			ATTACHMENT_CATEGORY_FLASH		=> $user->lang['CAT_FLASH_FILES'],
-			ATTACHMENT_CATEGORY_QUICKTIME	=> $user->lang['CAT_QUICKTIME_FILES'],
+			ATTACHMENT_CATEGORY_NONE		=> phpbb::$user->lang['NO_FILE_CAT'],
+			ATTACHMENT_CATEGORY_IMAGE		=> phpbb::$user->lang['CAT_IMAGES'],
+			ATTACHMENT_CATEGORY_WM			=> phpbb::$user->lang['CAT_WM_FILES'],
+			ATTACHMENT_CATEGORY_RM			=> phpbb::$user->lang['CAT_RM_FILES'],
+			ATTACHMENT_CATEGORY_FLASH		=> phpbb::$user->lang['CAT_FLASH_FILES'],
+			ATTACHMENT_CATEGORY_QUICKTIME	=> phpbb::$user->lang['CAT_QUICKTIME_FILES'],
 		);
 
 		if ($group_id)
@@ -1108,8 +1104,6 @@ class acp_attachments
 	*/
 	function group_select($select_name, $default_group = false, $key = '')
 	{
-		global $db, $user;
-
 		$group_select = '<select name="' . $select_name . '"' . (($key) ? ' id="' . $key . '"' : '') . '>';
 
 		$sql = 'SELECT group_id, group_name
@@ -1125,7 +1119,7 @@ class acp_attachments
 		$db->sql_freeresult($result);
 
 		$row['group_id'] = 0;
-		$row['group_name'] = $user->lang['NOT_ASSIGNED'];
+		$row['group_name'] = phpbb::$user->lang['NOT_ASSIGNED'];
 		$group_name[] = $row;
 
 		for ($i = 0; $i < sizeof($group_name); $i++)
@@ -1193,8 +1187,6 @@ class acp_attachments
 	*/
 	function test_upload(&$error, $upload_dir, $create_directory = false)
 	{
-		global $user;
-
 		// Does the target directory exist, is it a directory and writable.
 		if ($create_directory)
 		{
@@ -1207,19 +1199,19 @@ class acp_attachments
 
 		if (!file_exists(PHPBB_ROOT_PATH . $upload_dir))
 		{
-			$error[] = sprintf($user->lang['NO_UPLOAD_DIR'], $upload_dir);
+			$error[] = sprintf(phpbb::$user->lang['NO_UPLOAD_DIR'], $upload_dir);
 			return;
 		}
 
 		if (!is_dir(PHPBB_ROOT_PATH . $upload_dir))
 		{
-			$error[] = sprintf($user->lang['UPLOAD_NOT_DIR'], $upload_dir);
+			$error[] = sprintf(phpbb::$user->lang['UPLOAD_NOT_DIR'], $upload_dir);
 			return;
 		}
 
 		if (!is_writable(PHPBB_ROOT_PATH . $upload_dir))
 		{
-			$error[] = sprintf($user->lang['NO_WRITE_UPLOAD'], $upload_dir);
+			$error[] = sprintf(phpbb::$user->lang['NO_WRITE_UPLOAD'], $upload_dir);
 			return;
 		}
 	}
@@ -1229,8 +1221,6 @@ class acp_attachments
 	*/
 	function perform_site_list()
 	{
-		global $db, $user;
-
 		if (phpbb_request::is_set('securesubmit'))
 		{
 			// Grab the list of entries
@@ -1383,7 +1373,7 @@ class acp_attachments
 				add_log('admin', $log_entry, $ip_list_log);
 			}
 
-			trigger_error($user->lang['SECURE_DOWNLOAD_UPDATE_SUCCESS'] . adm_back_link($this->u_action));
+			trigger_error(phpbb::$user->lang['SECURE_DOWNLOAD_UPDATE_SUCCESS'] . adm_back_link($this->u_action));
 		}
 		else if (phpbb_request::is_set_post('unsecuresubmit'))
 		{
@@ -1412,7 +1402,7 @@ class acp_attachments
 				add_log('admin', 'LOG_DOWNLOAD_REMOVE_IP', $l_unip_list);
 			}
 
-			trigger_error($user->lang['SECURE_DOWNLOAD_UPDATE_SUCCESS'] . adm_back_link($this->u_action));
+			trigger_error(phpbb::$user->lang['SECURE_DOWNLOAD_UPDATE_SUCCESS'] . adm_back_link($this->u_action));
 		}
 	}
 

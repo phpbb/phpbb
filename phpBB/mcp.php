@@ -19,9 +19,9 @@ include(PHPBB_ROOT_PATH . 'includes/functions_admin.' . PHP_EXT);
 require(PHPBB_ROOT_PATH . 'includes/functions_module.' . PHP_EXT);
 
 // Start session management
-$user->session_begin();
-$auth->acl($user->data);
-$user->setup('mcp');
+phpbb::$user->session_begin();
+$auth->acl(phpbb::$user->data);
+phpbb::$user->setup('mcp');
 
 $module = new p_master();
 
@@ -42,14 +42,14 @@ else
 }
 
 // Only Moderators can go beyond this point
-if (!$user->data['is_registered'])
+if (!phpbb::$user->is_registered)
 {
-	if ($user->data['is_bot'])
+	if (phpbb::$user->is_bot)
 	{
 		redirect(append_sid(PHPBB_ROOT_PATH . 'index.' . PHP_EXT));
 	}
 
-	login_box('', $user->lang['LOGIN_EXPLAIN_MCP']);
+	login_box('', phpbb::$user->lang['LOGIN_EXPLAIN_MCP']);
 }
 
 $quickmod		= phpbb_request::is_set('quickmod');
@@ -117,10 +117,10 @@ if (!$auth->acl_getf_global('m_'))
 	);
 
 	$allow_user = false;
-	if ($quickmod && isset($user_quickmod_actions[$action]) && $user->data['is_registered'] && $auth->acl_gets($user_quickmod_actions[$action], $forum_id))
+	if ($quickmod && isset($user_quickmod_actions[$action]) && phpbb::$user->is_registered && $auth->acl_gets($user_quickmod_actions[$action], $forum_id))
 	{
 		$topic_info = get_topic_data(array($topic_id));
-		if ($topic_info[$topic_id]['topic_poster'] == $user->data['user_id'])
+		if ($topic_info[$topic_id]['topic_poster'] == phpbb::$user->data['user_id'])
 		{
 			$allow_user = true;
 		}
@@ -332,7 +332,6 @@ function extra_url()
 */
 function get_topic_data($topic_ids, $acl_list = false, $read_tracking = false)
 {
-	global $auth, $db, $user;
 	static $rowset = array();
 
 	$topics = array();
@@ -379,12 +378,12 @@ function get_topic_data($topic_ids, $acl_list = false, $read_tracking = false)
 
 			$sql_array['LEFT_JOIN'][] = array(
 				'FROM'	=> array(TOPICS_TRACK_TABLE => 'tt'),
-				'ON'	=> 'tt.user_id = ' . $user->data['user_id'] . ' AND t.topic_id = tt.topic_id'
+				'ON'	=> 'tt.user_id = ' . phpbb::$user->data['user_id'] . ' AND t.topic_id = tt.topic_id'
 			);
 
 			$sql_array['LEFT_JOIN'][] = array(
 				'FROM'	=> array(FORUMS_TRACK_TABLE => 'ft'),
-				'ON'	=> 'ft.user_id = ' . $user->data['user_id'] . ' AND t.forum_id = ft.forum_id'
+				'ON'	=> 'ft.user_id = ' . phpbb::$user->data['user_id'] . ' AND t.forum_id = ft.forum_id'
 			);
 		}
 
@@ -427,8 +426,6 @@ function get_topic_data($topic_ids, $acl_list = false, $read_tracking = false)
 */
 function get_post_data($post_ids, $acl_list = false, $read_tracking = false)
 {
-	global $db, $auth, $user;
-
 	$rowset = array();
 
 	if (!sizeof($post_ids))
@@ -463,12 +460,12 @@ function get_post_data($post_ids, $acl_list = false, $read_tracking = false)
 
 		$sql_array['LEFT_JOIN'][] = array(
 			'FROM'	=> array(TOPICS_TRACK_TABLE => 'tt'),
-			'ON'	=> 'tt.user_id = ' . $user->data['user_id'] . ' AND t.topic_id = tt.topic_id'
+			'ON'	=> 'tt.user_id = ' . phpbb::$user->data['user_id'] . ' AND t.topic_id = tt.topic_id'
 		);
 
 		$sql_array['LEFT_JOIN'][] = array(
 			'FROM'	=> array(FORUMS_TRACK_TABLE => 'ft'),
-			'ON'	=> 'ft.user_id = ' . $user->data['user_id'] . ' AND t.forum_id = ft.forum_id'
+			'ON'	=> 'ft.user_id = ' . phpbb::$user->data['user_id'] . ' AND t.forum_id = ft.forum_id'
 		);
 	}
 
@@ -507,8 +504,6 @@ function get_post_data($post_ids, $acl_list = false, $read_tracking = false)
 */
 function get_forum_data($forum_id, $acl_list = 'f_list', $read_tracking = false)
 {
-	global $auth, $db, $user;
-
 	$rowset = array();
 
 	if (!is_array($forum_id))
@@ -523,7 +518,7 @@ function get_forum_data($forum_id, $acl_list = 'f_list', $read_tracking = false)
 
 	if ($read_tracking && phpbb::$config['load_db_lastread'])
 	{
-		$read_tracking_join = ' LEFT JOIN ' . FORUMS_TRACK_TABLE . ' ft ON (ft.user_id = ' . $user->data['user_id'] . '
+		$read_tracking_join = ' LEFT JOIN ' . FORUMS_TRACK_TABLE . ' ft ON (ft.user_id = ' . phpbb::$user->data['user_id'] . '
 			AND ft.forum_id = f.forum_id)';
 		$read_tracking_select = ', ft.mark_time';
 	}
@@ -563,8 +558,6 @@ function get_forum_data($forum_id, $acl_list = 'f_list', $read_tracking = false)
 */
 function mcp_sorting($mode, &$sort_days, &$sort_key, &$sort_dir, &$sort_by_sql, &$sort_order_sql, &$total, $forum_id = 0, $topic_id = 0, $where_sql = 'WHERE')
 {
-	global $db, $user, $auth, $template;
-
 	$sort_days = request_var('st', 0);
 	$min_time = ($sort_days) ? time() - ($sort_days * 86400) : 0;
 
@@ -687,34 +680,34 @@ function mcp_sorting($mode, &$sort_days, &$sort_key, &$sort_dir, &$sort_by_sql, 
 
 	$sort_key = request_var('sk', $default_key);
 	$sort_dir = request_var('sd', $default_dir);
-	$sort_dir_text = array('a' => $user->lang['ASCENDING'], 'd' => $user->lang['DESCENDING']);
+	$sort_dir_text = array('a' => phpbb::$user->lang['ASCENDING'], 'd' => phpbb::$user->lang['DESCENDING']);
 
 	switch ($type)
 	{
 		case 'topics':
-			$limit_days = array(0 => $user->lang['ALL_TOPICS'], 1 => $user->lang['1_DAY'], 7 => $user->lang['7_DAYS'], 14 => $user->lang['2_WEEKS'], 30 => $user->lang['1_MONTH'], 90 => $user->lang['3_MONTHS'], 180 => $user->lang['6_MONTHS'], 365 => $user->lang['1_YEAR']);
-			$sort_by_text = array('a' => $user->lang['AUTHOR'], 't' => $user->lang['POST_TIME'], 'tt' => $user->lang['TOPIC_TIME'], 'r' => $user->lang['REPLIES'], 's' => $user->lang['SUBJECT'], 'v' => $user->lang['VIEWS']);
+			$limit_days = array(0 => phpbb::$user->lang['ALL_TOPICS'], 1 => phpbb::$user->lang['1_DAY'], 7 => phpbb::$user->lang['7_DAYS'], 14 => phpbb::$user->lang['2_WEEKS'], 30 => phpbb::$user->lang['1_MONTH'], 90 => phpbb::$user->lang['3_MONTHS'], 180 => phpbb::$user->lang['6_MONTHS'], 365 => phpbb::$user->lang['1_YEAR']);
+			$sort_by_text = array('a' => phpbb::$user->lang['AUTHOR'], 't' => phpbb::$user->lang['POST_TIME'], 'tt' => phpbb::$user->lang['TOPIC_TIME'], 'r' => phpbb::$user->lang['REPLIES'], 's' => phpbb::$user->lang['SUBJECT'], 'v' => phpbb::$user->lang['VIEWS']);
 
 			$sort_by_sql = array('a' => 't.topic_first_poster_name', 't' => 't.topic_last_post_time', 'tt' => 't.topic_time', 'r' => (($auth->acl_get('m_approve', $forum_id)) ? 't.topic_replies_real' : 't.topic_replies'), 's' => 't.topic_title', 'v' => 't.topic_views');
 			$limit_time_sql = ($min_time) ? "AND t.topic_last_post_time >= $min_time" : '';
 		break;
 
 		case 'posts':
-			$limit_days = array(0 => $user->lang['ALL_POSTS'], 1 => $user->lang['1_DAY'], 7 => $user->lang['7_DAYS'], 14 => $user->lang['2_WEEKS'], 30 => $user->lang['1_MONTH'], 90 => $user->lang['3_MONTHS'], 180 => $user->lang['6_MONTHS'], 365 => $user->lang['1_YEAR']);
-			$sort_by_text = array('a' => $user->lang['AUTHOR'], 't' => $user->lang['POST_TIME'], 's' => $user->lang['SUBJECT']);
+			$limit_days = array(0 => phpbb::$user->lang['ALL_POSTS'], 1 => phpbb::$user->lang['1_DAY'], 7 => phpbb::$user->lang['7_DAYS'], 14 => phpbb::$user->lang['2_WEEKS'], 30 => phpbb::$user->lang['1_MONTH'], 90 => phpbb::$user->lang['3_MONTHS'], 180 => phpbb::$user->lang['6_MONTHS'], 365 => phpbb::$user->lang['1_YEAR']);
+			$sort_by_text = array('a' => phpbb::$user->lang['AUTHOR'], 't' => phpbb::$user->lang['POST_TIME'], 's' => phpbb::$user->lang['SUBJECT']);
 			$sort_by_sql = array('a' => 'u.username_clean', 't' => 'p.post_time', 's' => 'p.post_subject');
 			$limit_time_sql = ($min_time) ? "AND p.post_time >= $min_time" : '';
 		break;
 
 		case 'reports':
-			$limit_days = array(0 => $user->lang['ALL_REPORTS'], 1 => $user->lang['1_DAY'], 7 => $user->lang['7_DAYS'], 14 => $user->lang['2_WEEKS'], 30 => $user->lang['1_MONTH'], 90 => $user->lang['3_MONTHS'], 180 => $user->lang['6_MONTHS'], 365 => $user->lang['1_YEAR']);
-			$sort_by_text = array('a' => $user->lang['AUTHOR'], 'r' => $user->lang['REPORTER'], 'p' => $user->lang['POST_TIME'], 't' => $user->lang['REPORT_TIME'], 's' => $user->lang['SUBJECT']);
+			$limit_days = array(0 => phpbb::$user->lang['ALL_REPORTS'], 1 => phpbb::$user->lang['1_DAY'], 7 => phpbb::$user->lang['7_DAYS'], 14 => phpbb::$user->lang['2_WEEKS'], 30 => phpbb::$user->lang['1_MONTH'], 90 => phpbb::$user->lang['3_MONTHS'], 180 => phpbb::$user->lang['6_MONTHS'], 365 => phpbb::$user->lang['1_YEAR']);
+			$sort_by_text = array('a' => phpbb::$user->lang['AUTHOR'], 'r' => phpbb::$user->lang['REPORTER'], 'p' => phpbb::$user->lang['POST_TIME'], 't' => phpbb::$user->lang['REPORT_TIME'], 's' => phpbb::$user->lang['SUBJECT']);
 			$sort_by_sql = array('a' => 'u.username_clean', 'r' => 'ru.username', 'p' => 'p.post_time', 't' => 'r.report_time', 's' => 'p.post_subject');
 		break;
 
 		case 'logs':
-			$limit_days = array(0 => $user->lang['ALL_ENTRIES'], 1 => $user->lang['1_DAY'], 7 => $user->lang['7_DAYS'], 14 => $user->lang['2_WEEKS'], 30 => $user->lang['1_MONTH'], 90 => $user->lang['3_MONTHS'], 180 => $user->lang['6_MONTHS'], 365 => $user->lang['1_YEAR']);
-			$sort_by_text = array('u' => $user->lang['SORT_USERNAME'], 't' => $user->lang['SORT_DATE'], 'i' => $user->lang['SORT_IP'], 'o' => $user->lang['SORT_ACTION']);
+			$limit_days = array(0 => phpbb::$user->lang['ALL_ENTRIES'], 1 => phpbb::$user->lang['1_DAY'], 7 => phpbb::$user->lang['7_DAYS'], 14 => phpbb::$user->lang['2_WEEKS'], 30 => phpbb::$user->lang['1_MONTH'], 90 => phpbb::$user->lang['3_MONTHS'], 180 => phpbb::$user->lang['6_MONTHS'], 365 => phpbb::$user->lang['1_YEAR']);
+			$sort_by_text = array('u' => phpbb::$user->lang['SORT_USERNAME'], 't' => phpbb::$user->lang['SORT_DATE'], 'i' => phpbb::$user->lang['SORT_IP'], 'o' => phpbb::$user->lang['SORT_ACTION']);
 
 			$sort_by_sql = array('u' => 'u.username_clean', 't' => 'l.log_time', 'i' => 'l.log_ip', 'o' => 'l.log_operation');
 			$limit_time_sql = ($min_time) ? "AND l.log_time >= $min_time" : '';
@@ -764,8 +757,6 @@ function mcp_sorting($mode, &$sort_days, &$sort_key, &$sort_dir, &$sort_by_sql, 
 */
 function check_ids(&$ids, $table, $sql_id, $acl_list = false, $single_forum = false)
 {
-	global $db, $auth;
-
 	if (!is_array($ids) || empty($ids))
 	{
 		return false;

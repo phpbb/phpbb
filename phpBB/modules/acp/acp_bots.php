@@ -25,8 +25,6 @@ class acp_bots
 
 	function main($id, $mode)
 	{
-		global $db, $user, $auth, $template;
-
 		$action = request_var('action', '');
 		$submit = phpbb_request::is_set_post('submit');
 		$mark	= request_var('mark', array(0));
@@ -39,7 +37,7 @@ class acp_bots
 
 		$error = array();
 
-		$user->add_lang('acp/bots');
+		phpbb::$user->add_lang('acp/bots');
 		$this->tpl_name = 'acp_bots';
 		$this->page_title = 'ACP_BOTS';
 		$form_key = 'acp_bots';
@@ -47,7 +45,7 @@ class acp_bots
 
 		if ($submit && !check_form_key($form_key))
 		{
-			$error[] = $user->lang['FORM_INVALID'];
+			$error[] = phpbb::$user->lang['FORM_INVALID'];
 		}
 
 		// User wants to do something, how inconsiderate of them!
@@ -124,11 +122,11 @@ class acp_bots
 						phpbb::$acm->destroy('bots');
 
 						add_log('admin', 'LOG_BOT_DELETE', implode(', ', $bot_name_ary));
-						trigger_error($user->lang['BOT_DELETED'] . adm_back_link($this->u_action));
+						trigger_error(phpbb::$user->lang['BOT_DELETED'] . adm_back_link($this->u_action));
 					}
 					else
 					{
-						confirm_box(false, $user->lang['CONFIRM_OPERATION'], build_hidden_fields(array(
+						confirm_box(false, phpbb::$user->lang['CONFIRM_OPERATION'], build_hidden_fields(array(
 							'mark'		=> $mark,
 							'id'		=> $bot_id,
 							'mode'		=> $mode,
@@ -155,14 +153,14 @@ class acp_bots
 				{
 					if (!$bot_row['bot_agent'] && !$bot_row['bot_ip'])
 					{
-						$error[] = $user->lang['ERR_BOT_NO_MATCHES'];
+						$error[] = phpbb::$user->lang['ERR_BOT_NO_MATCHES'];
 					}
 
 					if ($bot_row['bot_ip'] && !preg_match('#^[\d\.,:]+$#', $bot_row['bot_ip']))
 					{
 						if (!$ip_list = gethostbynamel($bot_row['bot_ip']))
 						{
-							$error[] = $user->lang['ERR_BOT_NO_IP'];
+							$error[] = phpbb::$user->lang['ERR_BOT_NO_IP'];
 						}
 						else
 						{
@@ -172,9 +170,9 @@ class acp_bots
 					$bot_row['bot_ip'] = str_replace(' ', '', $bot_row['bot_ip']);
 
 					// Make sure the admin is not adding a bot with an user agent similar to his one
-					if ($bot_row['bot_agent'] && substr($user->data['session_browser'], 0, 149) === substr($bot_row['bot_agent'], 0, 149))
+					if ($bot_row['bot_agent'] && substr(phpbb::$user->data['session_browser'], 0, 149) === substr($bot_row['bot_agent'], 0, 149))
 					{
-						$error[] = $user->lang['ERR_BOT_AGENT_MATCHES_UA'];
+						$error[] = phpbb::$user->lang['ERR_BOT_AGENT_MATCHES_UA'];
 					}
 
 					$bot_name = false;
@@ -190,7 +188,7 @@ class acp_bots
 
 						if (!$bot_row)
 						{
-							$error[] = $user->lang['NO_BOT'];
+							$error[] = phpbb::$user->lang['NO_BOT'];
 						}
 						else
 						{
@@ -199,7 +197,7 @@ class acp_bots
 					}
 					if (!$this->validate_botname($bot_row['bot_name'], $bot_name))
 					{
-						$error[] = $user->lang['BOT_NAME_TAKEN'];
+						$error[] = phpbb::$user->lang['BOT_NAME_TAKEN'];
 					}
 
 					if (!sizeof($error))
@@ -217,7 +215,7 @@ class acp_bots
 
 							if (!$group_row)
 							{
-								trigger_error($user->lang['NO_BOT_GROUP'] . adm_back_link($this->u_action . "&amp;id=$bot_id&amp;action=$action"), E_USER_WARNING);
+								trigger_error(phpbb::$user->lang['NO_BOT_GROUP'] . adm_back_link($this->u_action . "&amp;id=$bot_id&amp;action=$action"), E_USER_WARNING);
 							}
 
 
@@ -256,7 +254,7 @@ class acp_bots
 
 							if (!$row)
 							{
-								trigger_error($user->lang['NO_BOT'] . adm_back_link($this->u_action . "&amp;id=$bot_id&amp;action=$action"), E_USER_WARNING);
+								trigger_error(phpbb::$user->lang['NO_BOT'] . adm_back_link($this->u_action . "&amp;id=$bot_id&amp;action=$action"), E_USER_WARNING);
 							}
 
 							$sql_ary = array(
@@ -293,7 +291,7 @@ class acp_bots
 						phpbb::$acm->destroy('bots');
 
 						add_log('admin', 'LOG_BOT_' . $log, $bot_row['bot_name']);
-						trigger_error($user->lang['BOT_' . $log] . adm_back_link($this->u_action));
+						trigger_error(phpbb::$user->lang['BOT_' . $log] . adm_back_link($this->u_action));
 
 					}
 				}
@@ -309,7 +307,7 @@ class acp_bots
 
 					if (!$bot_row)
 					{
-						trigger_error($user->lang['NO_BOT'] . adm_back_link($this->u_action . "&amp;id=$bot_id&amp;action=$action"), E_USER_WARNING);
+						trigger_error(phpbb::$user->lang['NO_BOT'] . adm_back_link($this->u_action . "&amp;id=$bot_id&amp;action=$action"), E_USER_WARNING);
 					}
 
 					$bot_row['bot_lang'] = $bot_row['user_lang'];
@@ -322,7 +320,7 @@ class acp_bots
 				foreach ($_options as $value => $lang)
 				{
 					$selected = ($bot_row['bot_active'] == $value) ? ' selected="selected"' : '';
-					$s_active_options .= '<option value="' . $value . '"' . $selected . '>' . $user->lang[$lang] . '</option>';
+					$s_active_options .= '<option value="' . $value . '"' . $selected . '>' . phpbb::$user->lang[$lang] . '</option>';
 				}
 
 				$style_select = style_select($bot_row['bot_style'], true);
@@ -331,7 +329,7 @@ class acp_bots
 				$l_title = ($action == 'edit') ? 'EDIT' : 'ADD';
 
 				$template->assign_vars(array(
-					'L_TITLE'		=> $user->lang['BOT_' . $l_title],
+					'L_TITLE'		=> phpbb::$user->lang['BOT_' . $l_title],
 					'U_ACTION'		=> $this->u_action . "&amp;id=$bot_id&amp;action=$action",
 					'U_BACK'		=> $this->u_action,
 					'ERROR_MSG'		=> (sizeof($error)) ? implode('<br />', $error) : '',
@@ -357,7 +355,7 @@ class acp_bots
 		$_options = array('activate' => 'BOT_ACTIVATE', 'deactivate' => 'BOT_DEACTIVATE', 'delete' => 'DELETE');
 		foreach ($_options as $value => $lang)
 		{
-			$s_options .= '<option value="' . $value . '">' . $user->lang[$lang] . '</option>';
+			$s_options .= '<option value="' . $value . '">' . phpbb::$user->lang[$lang] . '</option>';
 		}
 
 		$template->assign_vars(array(
@@ -379,10 +377,10 @@ class acp_bots
 			$template->assign_block_vars('bots', array(
 				'BOT_NAME'		=> $row['bot_name'],
 				'BOT_ID'		=> $row['bot_id'],
-				'LAST_VISIT'	=> ($row['user_lastvisit']) ? $user->format_date($row['user_lastvisit']) : $user->lang['BOT_NEVER'],
+				'LAST_VISIT'	=> ($row['user_lastvisit']) ? phpbb::$user->format_date($row['user_lastvisit']) : phpbb::$user->lang['BOT_NEVER'],
 
 				'U_ACTIVATE_DEACTIVATE'	=> $this->u_action . "&amp;id={$row['bot_id']}&amp;action=$active_value",
-				'L_ACTIVATE_DEACTIVATE'	=> $user->lang[$active_lang],
+				'L_ACTIVATE_DEACTIVATE'	=> phpbb::$user->lang[$active_lang],
 				'U_EDIT'				=> $this->u_action . "&amp;id={$row['bot_id']}&amp;action=edit",
 				'U_DELETE'				=> $this->u_action . "&amp;id={$row['bot_id']}&amp;action=delete")
 			);
@@ -395,8 +393,6 @@ class acp_bots
 	*/
 	function validate_botname($newname, $oldname = false)
 	{
-		global $db;
-
 		if ($oldname && utf8_clean_string($newname) === $oldname)
 		{
 			return true;

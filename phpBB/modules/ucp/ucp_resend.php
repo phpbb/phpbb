@@ -27,8 +27,6 @@ class ucp_resend
 
 	function main($id, $mode)
 	{
-		global $db, $user, $auth, $template;
-
 		$username	= request_var('username', '', true);
 		$email		= strtolower(request_var('email', ''));
 		$submit		= phpbb_request::is_set_post('submit');
@@ -94,12 +92,12 @@ class ucp_resend
 				$messenger->to($user_row['user_email'], $user_row['username']);
 
 				$messenger->headers('X-AntiAbuse: Board servername - ' . phpbb::$config['server_name']);
-				$messenger->headers('X-AntiAbuse: User_id - ' . $user->data['user_id']);
-				$messenger->headers('X-AntiAbuse: Username - ' . $user->data['username']);
-				$messenger->headers('X-AntiAbuse: User IP - ' . $user->ip);
+				$messenger->headers('X-AntiAbuse: User_id - ' . phpbb::$user->data['user_id']);
+				$messenger->headers('X-AntiAbuse: Username - ' . phpbb::$user->data['username']);
+				$messenger->headers('X-AntiAbuse: User IP - ' . phpbb::$user->ip);
 
 				$messenger->assign_vars(array(
-					'WELCOME_MSG'	=> htmlspecialchars_decode(sprintf($user->lang['WELCOME_SUBJECT'], phpbb::$config['sitename'])),
+					'WELCOME_MSG'	=> htmlspecialchars_decode(sprintf(phpbb::$user->lang['WELCOME_SUBJECT'], phpbb::$config['sitename'])),
 					'USERNAME'		=> htmlspecialchars_decode($user_row['username']),
 					'U_ACTIVATE'	=> generate_board_url() . '/ucp.' . PHP_EXT . "?mode=activate&u={$user_row['user_id']}&k={$user_row['user_actkey']}")
 				);
@@ -145,8 +143,8 @@ class ucp_resend
 
 			meta_refresh(3, append_sid('index'));
 
-			$message = (phpbb::$config['require_activation'] == USER_ACTIVATION_ADMIN) ? $user->lang['ACIVATION_EMAIL_SENT_ADMIN'] : $user->lang['ACTIVATION_EMAIL_SENT'];
-			$message .= '<br /><br />' . sprintf($user->lang['RETURN_INDEX'], '<a href="' . append_sid('index') . '">', '</a>');
+			$message = (phpbb::$config['require_activation'] == USER_ACTIVATION_ADMIN) ? phpbb::$user->lang['ACIVATION_EMAIL_SENT_ADMIN'] : phpbb::$user->lang['ACTIVATION_EMAIL_SENT'];
+			$message .= '<br /><br />' . sprintf(phpbb::$user->lang['RETURN_INDEX'], '<a href="' . append_sid('index') . '">', '</a>');
 			trigger_error($message);
 		}
 

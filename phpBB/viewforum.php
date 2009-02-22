@@ -18,17 +18,17 @@ include(PHPBB_ROOT_PATH . 'common.' . PHP_EXT);
 include(PHPBB_ROOT_PATH . 'includes/functions_display.' . PHP_EXT);
 
 // Start session
-$user->session_begin();
-$auth->acl($user->data);
+phpbb::$user->session_begin();
+$auth->acl(phpbb::$user->data);
 
 // Start initial var setup
 $forum_id	= request_var('f', 0);
 $mark_read	= request_var('mark', '');
 $start		= request_var('start', 0);
 
-$default_sort_days	= (!empty($user->data['user_topic_show_days'])) ? $user->data['user_topic_show_days'] : 0;
-$default_sort_key	= (!empty($user->data['user_topic_sortby_type'])) ? $user->data['user_topic_sortby_type'] : 't';
-$default_sort_dir	= (!empty($user->data['user_topic_sortby_dir'])) ? $user->data['user_topic_sortby_dir'] : 'd';
+$default_sort_days	= (!empty(phpbb::$user->data['user_topic_show_days'])) ? phpbb::$user->data['user_topic_show_days'] : 0;
+$default_sort_key	= (!empty(phpbb::$user->data['user_topic_sortby_type'])) ? phpbb::$user->data['user_topic_sortby_type'] : 't';
+$default_sort_dir	= (!empty(phpbb::$user->data['user_topic_sortby_dir'])) ? phpbb::$user->data['user_topic_sortby_dir'] : 'd';
 
 $sort_days	= request_var('st', $default_sort_days);
 $sort_key	= request_var('sk', $default_sort_key);
@@ -45,16 +45,16 @@ $sql_from = FORUMS_TABLE . ' f';
 $lastread_select = '';
 
 // Grab appropriate forum data
-if (phpbb::$config['load_db_lastread'] && $user->data['is_registered'])
+if (phpbb::$config['load_db_lastread'] && phpbb::$user->is_registered)
 {
-	$sql_from .= ' LEFT JOIN ' . FORUMS_TRACK_TABLE . ' ft ON (ft.user_id = ' . $user->data['user_id'] . '
+	$sql_from .= ' LEFT JOIN ' . FORUMS_TRACK_TABLE . ' ft ON (ft.user_id = ' . phpbb::$user->data['user_id'] . '
 		AND ft.forum_id = f.forum_id)';
 	$lastread_select .= ', ft.mark_time';
 }
 
-if ($user->data['is_registered'])
+if (phpbb::$user->is_registered)
 {
-	$sql_from .= ' LEFT JOIN ' . FORUMS_WATCH_TABLE . ' fw ON (fw.forum_id = f.forum_id AND fw.user_id = ' . $user->data['user_id'] . ')';
+	$sql_from .= ' LEFT JOIN ' . FORUMS_WATCH_TABLE . ' fw ON (fw.forum_id = f.forum_id AND fw.user_id = ' . phpbb::$user->data['user_id'] . ')';
 	$lastread_select .= ', fw.notify_status';
 }
 
@@ -63,7 +63,7 @@ $sql = "SELECT f.* $lastread_select
 	WHERE f.forum_id = $forum_id";
 $result = $db->sql_query($sql);
 $forum_data = $db->sql_fetchrow($result);
-$db->sql_freeresult($result);
+phpbb::$db->sql_freeresult($result);
 
 if (!$forum_data)
 {
@@ -72,23 +72,23 @@ if (!$forum_data)
 
 
 // Configure style, language, etc.
-$user->setup('viewforum', $forum_data['forum_style']);
+phpbb::$user->setup('viewforum', $forum_data['forum_style']);
 
 // Redirect to login upon emailed notification links
-if (phpbb_request::is_set('e', phpbb_request::GET) && !$user->data['is_registered'])
+if (phpbb_request::is_set('e', phpbb_request::GET) && !phpbb::$user->is_registered)
 {
-	login_box('', $user->lang['LOGIN_NOTIFY_FORUM']);
+	login_box('', phpbb::$user->lang['LOGIN_NOTIFY_FORUM']);
 }
 
 // Permissions check
 if (!$auth->acl_gets('f_list', 'f_read', $forum_id) || ($forum_data['forum_type'] == FORUM_LINK && $forum_data['forum_link'] && !$auth->acl_get('f_read', $forum_id)))
 {
-	if ($user->data['user_id'] != ANONYMOUS)
+	if (!phpbb::$user->is_guest)
 	{
 		trigger_error('SORRY_AUTH_READ');
 	}
 
-	login_box('', $user->lang['LOGIN_VIEWFORUM']);
+	login_box('', phpbb::$user->lang['LOGIN_VIEWFORUM']);
 }
 
 // Forum is passworded ... check whether access has been granted to this
@@ -139,7 +139,7 @@ else
 }
 
 // Dump out the page header and load viewforum template
-page_header($user->lang['VIEW_FORUM'] . ' - ' . $forum_data['forum_name']);
+page_header(phpbb::$user->lang['VIEW_FORUM'] . ' - ' . $forum_data['forum_name']);
 
 $template->set_filenames(array(
 	'body' => 'viewforum_body.html')
@@ -181,7 +181,7 @@ if ($mark_read == 'topics')
 	$redirect_url = append_sid('viewforum', 'f=' . $forum_id);
 	meta_refresh(3, $redirect_url);
 
-	trigger_error($user->lang['TOPICS_MARKED'] . '<br /><br />' . sprintf($user->lang['RETURN_FORUM'], '<a href="' . $redirect_url . '">', '</a>'));
+	trigger_error(phpbb::$user->lang['TOPICS_MARKED'] . '<br /><br />' . sprintf(phpbb::$user->lang['RETURN_FORUM'], '<a href="' . $redirect_url . '">', '</a>'));
 }
 
 // Is a forum specific topic count required?
@@ -206,16 +206,16 @@ $s_watching_forum = array(
 if ((phpbb::$config['email_enable'] || phpbb::$config['jab_enable']) && phpbb::$config['allow_forum_notify'] && $forum_data['forum_type'] == FORUM_POST && $auth->acl_get('f_subscribe', $forum_id))
 {
 	$notify_status = (isset($forum_data['notify_status'])) ? $forum_data['notify_status'] : NULL;
-	watch_topic_forum('forum', $s_watching_forum, $user->data['user_id'], $forum_id, 0, $notify_status);
+	watch_topic_forum('forum', $s_watching_forum, phpbb::$user->data['user_id'], $forum_id, 0, $notify_status);
 }
 
 $s_forum_rules = '';
 gen_forum_auth_level('forum', $forum_id, $forum_data['forum_status']);
 
 // Topic ordering options
-$limit_days = array(0 => $user->lang['ALL_TOPICS'], 1 => $user->lang['1_DAY'], 7 => $user->lang['7_DAYS'], 14 => $user->lang['2_WEEKS'], 30 => $user->lang['1_MONTH'], 90 => $user->lang['3_MONTHS'], 180 => $user->lang['6_MONTHS'], 365 => $user->lang['1_YEAR']);
+$limit_days = array(0 => phpbb::$user->lang['ALL_TOPICS'], 1 => phpbb::$user->lang['1_DAY'], 7 => phpbb::$user->lang['7_DAYS'], 14 => phpbb::$user->lang['2_WEEKS'], 30 => phpbb::$user->lang['1_MONTH'], 90 => phpbb::$user->lang['3_MONTHS'], 180 => phpbb::$user->lang['6_MONTHS'], 365 => phpbb::$user->lang['1_YEAR']);
 
-$sort_by_text = array('a' => $user->lang['AUTHOR'], 't' => $user->lang['POST_TIME'], 'r' => $user->lang['REPLIES'], 's' => $user->lang['SUBJECT'], 'v' => $user->lang['VIEWS']);
+$sort_by_text = array('a' => phpbb::$user->lang['AUTHOR'], 't' => phpbb::$user->lang['POST_TIME'], 'r' => phpbb::$user->lang['REPLIES'], 's' => phpbb::$user->lang['SUBJECT'], 'v' => phpbb::$user->lang['VIEWS']);
 $sort_by_sql = array('a' => 't.topic_first_poster_name', 't' => 't.topic_last_post_time', 'r' => 't.topic_replies', 's' => 't.topic_title', 'v' => 't.topic_views');
 
 $s_limit_days = $s_sort_key = $s_sort_dir = $u_sort_param = '';
@@ -260,7 +260,7 @@ if ($start < 0 || $start > $topics_count)
 }
 
 // Basic pagewide vars
-$post_alt = ($forum_data['forum_status'] == ITEM_LOCKED) ? $user->lang['FORUM_LOCKED'] : $user->lang['POST_NEW_TOPIC'];
+$post_alt = ($forum_data['forum_status'] == ITEM_LOCKED) ? phpbb::$user->lang['FORUM_LOCKED'] : phpbb::$user->lang['POST_NEW_TOPIC'];
 
 // Display active topics?
 $s_display_active = ($forum_data['forum_type'] == FORUM_CAT && ($forum_data['forum_flags'] & FORUM_FLAG_ACTIVE_TOPICS)) ? true : false;
@@ -268,27 +268,27 @@ $s_display_active = ($forum_data['forum_type'] == FORUM_CAT && ($forum_data['for
 $template->assign_vars(array(
 	'MODERATORS'	=> (!empty($moderators[$forum_id])) ? implode(', ', $moderators[$forum_id]) : '',
 
-	'POST_IMG'					=> ($forum_data['forum_status'] == ITEM_LOCKED) ? $user->img('button_topic_locked', $post_alt) : $user->img('button_topic_new', $post_alt),
-	'NEWEST_POST_IMG'			=> $user->img('icon_topic_newest', 'VIEW_NEWEST_POST'),
-	'LAST_POST_IMG'				=> $user->img('icon_topic_latest', 'VIEW_LATEST_POST'),
-	'FOLDER_IMG'				=> $user->img('topic_read', 'NO_NEW_POSTS'),
-	'FOLDER_NEW_IMG'			=> $user->img('topic_unread', 'NEW_POSTS'),
-	'FOLDER_HOT_IMG'			=> $user->img('topic_read_hot', 'NO_NEW_POSTS_HOT'),
-	'FOLDER_HOT_NEW_IMG'		=> $user->img('topic_unread_hot', 'NEW_POSTS_HOT'),
-	'FOLDER_LOCKED_IMG'			=> $user->img('topic_read_locked', 'NO_NEW_POSTS_LOCKED'),
-	'FOLDER_LOCKED_NEW_IMG'		=> $user->img('topic_unread_locked', 'NEW_POSTS_LOCKED'),
-	'FOLDER_STICKY_IMG'			=> $user->img('sticky_read', 'POST_STICKY'),
-	'FOLDER_STICKY_NEW_IMG'		=> $user->img('sticky_unread', 'POST_STICKY'),
-	'FOLDER_ANNOUNCE_IMG'		=> $user->img('announce_read', 'POST_ANNOUNCEMENT'),
-	'FOLDER_ANNOUNCE_NEW_IMG'	=> $user->img('announce_unread', 'POST_ANNOUNCEMENT'),
-	'FOLDER_MOVED_IMG'			=> $user->img('topic_moved', 'TOPIC_MOVED'),
-	'REPORTED_IMG'				=> $user->img('icon_topic_reported', 'TOPIC_REPORTED'),
-	'UNAPPROVED_IMG'			=> $user->img('icon_topic_unapproved', 'TOPIC_UNAPPROVED'),
-	'GOTO_PAGE_IMG'				=> $user->img('icon_post_target', 'GOTO_PAGE'),
+	'POST_IMG'					=> ($forum_data['forum_status'] == ITEM_LOCKED) ? phpbb::$user->img('button_topic_locked', $post_alt) : phpbb::$user->img('button_topic_new', $post_alt),
+	'NEWEST_POST_IMG'			=> phpbb::$user->img('icon_topic_newest', 'VIEW_NEWEST_POST'),
+	'LAST_POST_IMG'				=> phpbb::$user->img('icon_topic_latest', 'VIEW_LATEST_POST'),
+	'FOLDER_IMG'				=> phpbb::$user->img('topic_read', 'NO_NEW_POSTS'),
+	'FOLDER_NEW_IMG'			=> phpbb::$user->img('topic_unread', 'NEW_POSTS'),
+	'FOLDER_HOT_IMG'			=> phpbb::$user->img('topic_read_hot', 'NO_NEW_POSTS_HOT'),
+	'FOLDER_HOT_NEW_IMG'		=> phpbb::$user->img('topic_unread_hot', 'NEW_POSTS_HOT'),
+	'FOLDER_LOCKED_IMG'			=> phpbb::$user->img('topic_read_locked', 'NO_NEW_POSTS_LOCKED'),
+	'FOLDER_LOCKED_NEW_IMG'		=> phpbb::$user->img('topic_unread_locked', 'NEW_POSTS_LOCKED'),
+	'FOLDER_STICKY_IMG'			=> phpbb::$user->img('sticky_read', 'POST_STICKY'),
+	'FOLDER_STICKY_NEW_IMG'		=> phpbb::$user->img('sticky_unread', 'POST_STICKY'),
+	'FOLDER_ANNOUNCE_IMG'		=> phpbb::$user->img('announce_read', 'POST_ANNOUNCEMENT'),
+	'FOLDER_ANNOUNCE_NEW_IMG'	=> phpbb::$user->img('announce_unread', 'POST_ANNOUNCEMENT'),
+	'FOLDER_MOVED_IMG'			=> phpbb::$user->img('topic_moved', 'TOPIC_MOVED'),
+	'REPORTED_IMG'				=> phpbb::$user->img('icon_topic_reported', 'TOPIC_REPORTED'),
+	'UNAPPROVED_IMG'			=> phpbb::$user->img('icon_topic_unapproved', 'TOPIC_UNAPPROVED'),
+	'GOTO_PAGE_IMG'				=> phpbb::$user->img('icon_post_target', 'GOTO_PAGE'),
 
-	'L_NO_TOPICS' 			=> ($forum_data['forum_status'] == ITEM_LOCKED) ? $user->lang['POST_FORUM_LOCKED'] : $user->lang['NO_TOPICS'],
+	'L_NO_TOPICS' 			=> ($forum_data['forum_status'] == ITEM_LOCKED) ? phpbb::$user->lang['POST_FORUM_LOCKED'] : phpbb::$user->lang['NO_TOPICS'],
 
-	'S_DISPLAY_POST_INFO'	=> ($forum_data['forum_type'] == FORUM_POST && ($auth->acl_get('f_post', $forum_id) || $user->data['user_id'] == ANONYMOUS)) ? true : false,
+	'S_DISPLAY_POST_INFO'	=> ($forum_data['forum_type'] == FORUM_POST && ($auth->acl_get('f_post', $forum_id) || phpbb::$user->is_guest)) ? true : false,
 
 	'S_IS_POSTABLE'			=> ($forum_data['forum_type'] == FORUM_POST) ? true : false,
 	'S_USER_CAN_POST'		=> ($auth->acl_get('f_post', $forum_id)) ? true : false,
@@ -307,10 +307,10 @@ $template->assign_vars(array(
 	'S_IS_LOCKED'			=> ($forum_data['forum_status'] == ITEM_LOCKED) ? true : false,
 	'S_VIEWFORUM'			=> true,
 
-	'U_MCP'				=> ($auth->acl_get('m_', $forum_id)) ? append_sid('mcp', "f=$forum_id&amp;i=main&amp;mode=forum_view", true, $user->session_id) : '',
-	'U_POST_NEW_TOPIC'	=> ($auth->acl_get('f_post', $forum_id) || $user->data['user_id'] == ANONYMOUS) ? append_sid('posting', 'mode=post&amp;f=' . $forum_id) : '',
+	'U_MCP'				=> ($auth->acl_get('m_', $forum_id)) ? append_sid('mcp', "f=$forum_id&amp;i=main&amp;mode=forum_view", true, phpbb::$user->session_id) : '',
+	'U_POST_NEW_TOPIC'	=> ($auth->acl_get('f_post', $forum_id) || phpbb::$user->is_guest) ? append_sid('posting', 'mode=post&amp;f=' . $forum_id) : '',
 	'U_VIEW_FORUM'		=> append_sid('viewforum', "f=$forum_id" . ((strlen($u_sort_param)) ? "&amp;$u_sort_param" : '') . "&amp;start=$start"),
-	'U_MARK_TOPICS'		=> ($user->data['is_registered'] || phpbb::$config['load_anon_lastread']) ? append_sid('viewforum', 'hash=' . generate_link_hash('global') . "&amp;f=$forum_id&amp;mark=topics") : '',
+	'U_MARK_TOPICS'		=> (phpbb::$user->is_registered || phpbb::$config['load_anon_lastread']) ? append_sid('viewforum', 'hash=' . generate_link_hash('global') . "&amp;f=$forum_id&amp;mark=topics") : '',
 ));
 
 // Grab icons
@@ -329,22 +329,22 @@ $sql_array = array(
 
 $sql_approved = ($auth->acl_get('m_approve', $forum_id)) ? '' : 'AND t.topic_approved = 1';
 
-if ($user->data['is_registered'])
+if (phpbb::$user->is_registered)
 {
 	if (phpbb::$config['load_db_track'])
 	{
-		$sql_array['LEFT_JOIN'][] = array('FROM' => array(TOPICS_POSTED_TABLE => 'tp'), 'ON' => 'tp.topic_id = t.topic_id AND tp.user_id = ' . $user->data['user_id']);
+		$sql_array['LEFT_JOIN'][] = array('FROM' => array(TOPICS_POSTED_TABLE => 'tp'), 'ON' => 'tp.topic_id = t.topic_id AND tp.user_id = ' . phpbb::$user->data['user_id']);
 		$sql_array['SELECT'] .= ', tp.topic_posted';
 	}
 
 	if (phpbb::$config['load_db_lastread'])
 	{
-		$sql_array['LEFT_JOIN'][] = array('FROM' => array(TOPICS_TRACK_TABLE => 'tt'), 'ON' => 'tt.topic_id = t.topic_id AND tt.user_id = ' . $user->data['user_id']);
+		$sql_array['LEFT_JOIN'][] = array('FROM' => array(TOPICS_TRACK_TABLE => 'tt'), 'ON' => 'tt.topic_id = t.topic_id AND tt.user_id = ' . phpbb::$user->data['user_id']);
 		$sql_array['SELECT'] .= ', tt.mark_time';
 
 		if ($s_display_active && sizeof($active_forum_ary))
 		{
-			$sql_array['LEFT_JOIN'][] = array('FROM' => array(FORUMS_TRACK_TABLE => 'ft'), 'ON' => 'ft.forum_id = t.forum_id AND ft.user_id = ' . $user->data['user_id']);
+			$sql_array['LEFT_JOIN'][] = array('FROM' => array(FORUMS_TRACK_TABLE => 'ft'), 'ON' => 'ft.forum_id = t.forum_id AND ft.user_id = ' . phpbb::$user->data['user_id']);
 			$sql_array['SELECT'] .= ', ft.mark_time AS forum_mark_time';
 		}
 	}
@@ -433,7 +433,7 @@ while ($row = $db->sql_fetchrow($result))
 {
 	$topic_list[] = (int) $row['topic_id'];
 }
-$db->sql_freeresult($result);
+phpbb::$db->sql_freeresult($result);
 
 // For storing shadow topics
 $shadow_topic_list = array();
@@ -526,7 +526,7 @@ if ($s_display_active)
 $template->assign_vars(array(
 	'PAGINATION'	=> generate_pagination(append_sid('viewforum', "f=$forum_id" . ((strlen($u_sort_param)) ? "&amp;$u_sort_param" : '')), $topics_count, phpbb::$config['topics_per_page'], $start),
 	'PAGE_NUMBER'	=> on_page($topics_count, phpbb::$config['topics_per_page'], $start),
-	'TOTAL_TOPICS'	=> ($s_display_active) ? false : (($topics_count == 1) ? $user->lang['VIEW_FORUM_TOPIC'] : sprintf($user->lang['VIEW_FORUM_TOPICS'], $topics_count)))
+	'TOTAL_TOPICS'	=> ($s_display_active) ? false : (($topics_count == 1) ? phpbb::$user->lang['VIEW_FORUM_TOPIC'] : sprintf(phpbb::$user->lang['VIEW_FORUM_TOPICS'], $topics_count)))
 );
 
 $topic_list = ($store_reverse) ? array_merge($announcement_list, array_reverse($topic_list)) : array_merge($announcement_list, $topic_list);
@@ -545,18 +545,18 @@ if (sizeof($topic_list))
 		$topic_forum_list = array();
 		foreach ($rowset as $t_id => $row)
 		{
-			$topic_forum_list[$row['forum_id']]['forum_mark_time'] = (phpbb::$config['load_db_lastread'] && $user->data['is_registered'] && isset($row['forum_mark_time'])) ? $row['forum_mark_time'] : 0;
+			$topic_forum_list[$row['forum_id']]['forum_mark_time'] = (phpbb::$config['load_db_lastread'] && phpbb::$user->is_registered && isset($row['forum_mark_time'])) ? $row['forum_mark_time'] : 0;
 			$topic_forum_list[$row['forum_id']]['topics'][] = $t_id;
 		}
 
-		if (phpbb::$config['load_db_lastread'] && $user->data['is_registered'])
+		if (phpbb::$config['load_db_lastread'] && phpbb::$user->is_registered)
 		{
 			foreach ($topic_forum_list as $f_id => $topic_row)
 			{
 				$topic_tracking_info += get_topic_tracking($f_id, $topic_row['topics'], $rowset, array($f_id => $topic_row['forum_mark_time']), false);
 			}
 		}
-		else if (phpbb::$config['load_anon_lastread'] || $user->data['is_registered'])
+		else if (phpbb::$config['load_anon_lastread'] || phpbb::$user->is_registered)
 		{
 			foreach ($topic_forum_list as $f_id => $topic_row)
 			{
@@ -568,20 +568,20 @@ if (sizeof($topic_list))
 	}
 	else
 	{
-		if (phpbb::$config['load_db_lastread'] && $user->data['is_registered'])
+		if (phpbb::$config['load_db_lastread'] && phpbb::$user->is_registered)
 		{
 			$topic_tracking_info = get_topic_tracking($forum_id, $topic_list, $rowset, array($forum_id => $forum_data['mark_time']), $global_announce_list);
-			$mark_time_forum = (!empty($forum_data['mark_time'])) ? $forum_data['mark_time'] : $user->data['user_lastmark'];
+			$mark_time_forum = (!empty($forum_data['mark_time'])) ? $forum_data['mark_time'] : phpbb::$user->data['user_lastmark'];
 		}
-		else if (phpbb::$config['load_anon_lastread'] || $user->data['is_registered'])
+		else if (phpbb::$config['load_anon_lastread'] || phpbb::$user->is_registered)
 		{
 			$topic_tracking_info = get_complete_topic_tracking($forum_id, $topic_list, $global_announce_list);
 
-			if (!$user->data['is_registered'])
+			if (!phpbb::$user->is_registered)
 			{
-				$user->data['user_lastmark'] = (isset($tracking_topics['l'])) ? (int) (base_convert($tracking_topics['l'], 36, 10) + phpbb::$config['board_startdate']) : 0;
+				phpbb::$user->data['user_lastmark'] = (isset($tracking_topics['l'])) ? (int) (base_convert($tracking_topics['l'], 36, 10) + phpbb::$config['board_startdate']) : 0;
 			}
-			$mark_time_forum = (isset($tracking_topics['f'][$forum_id])) ? (int) (base_convert($tracking_topics['f'][$forum_id], 36, 10) + phpbb::$config['board_startdate']) : $user->data['user_lastmark'];
+			$mark_time_forum = (isset($tracking_topics['f'][$forum_id])) ? (int) (base_convert($tracking_topics['f'][$forum_id], 36, 10) + phpbb::$config['board_startdate']) : phpbb::$user->data['user_lastmark'];
 		}
 	}
 
@@ -616,7 +616,7 @@ if (sizeof($topic_list))
 
 		$topic_unapproved = (!$row['topic_approved'] && $auth->acl_get('m_approve', $forum_id)) ? true : false;
 		$posts_unapproved = ($row['topic_approved'] && $row['topic_replies'] < $row['topic_replies_real'] && $auth->acl_get('m_approve', $forum_id)) ? true : false;
-		$u_mcp_queue = ($topic_unapproved || $posts_unapproved) ? append_sid('mcp', 'i=queue&amp;mode=' . (($topic_unapproved) ? 'approve_details' : 'unapproved_posts') . "&amp;t=$topic_id", true, $user->session_id) : '';
+		$u_mcp_queue = ($topic_unapproved || $posts_unapproved) ? append_sid('mcp', 'i=queue&amp;mode=' . (($topic_unapproved) ? 'approve_details' : 'unapproved_posts') . "&amp;t=$topic_id", true, phpbb::$user->session_id) : '';
 
 		// Send vars to template
 		$template->assign_block_vars('topicrow', array(
@@ -625,10 +625,10 @@ if (sizeof($topic_list))
 			'TOPIC_AUTHOR'				=> get_username_string('username', $row['topic_poster'], $row['topic_first_poster_name'], $row['topic_first_poster_colour']),
 			'TOPIC_AUTHOR_COLOUR'		=> get_username_string('colour', $row['topic_poster'], $row['topic_first_poster_name'], $row['topic_first_poster_colour']),
 			'TOPIC_AUTHOR_FULL'			=> get_username_string('full', $row['topic_poster'], $row['topic_first_poster_name'], $row['topic_first_poster_colour']),
-			'FIRST_POST_TIME'			=> $user->format_date($row['topic_time']),
+			'FIRST_POST_TIME'			=> phpbb::$user->format_date($row['topic_time']),
 			'LAST_POST_SUBJECT'			=> censor_text($row['topic_last_post_subject']),
-			'LAST_POST_TIME'			=> $user->format_date($row['topic_last_post_time']),
-			'LAST_VIEW_TIME'			=> $user->format_date($row['topic_last_view_time']),
+			'LAST_POST_TIME'			=> phpbb::$user->format_date($row['topic_last_post_time']),
+			'LAST_VIEW_TIME'			=> phpbb::$user->format_date($row['topic_last_view_time']),
 			'LAST_POST_AUTHOR'			=> get_username_string('username', $row['topic_last_poster_id'], $row['topic_last_poster_name'], $row['topic_last_poster_colour']),
 			'LAST_POST_AUTHOR_COLOUR'	=> get_username_string('colour', $row['topic_last_poster_id'], $row['topic_last_poster_name'], $row['topic_last_poster_colour']),
 			'LAST_POST_AUTHOR_FULL'		=> get_username_string('full', $row['topic_last_poster_id'], $row['topic_last_poster_name'], $row['topic_last_poster_colour']),
@@ -639,17 +639,17 @@ if (sizeof($topic_list))
 			'TOPIC_TITLE'		=> censor_text($row['topic_title']),
 			'TOPIC_TYPE'		=> $topic_type,
 
-			'TOPIC_FOLDER_IMG'		=> $user->img($folder_img, $folder_alt),
-			'TOPIC_FOLDER_IMG_SRC'	=> $user->img($folder_img, $folder_alt, 'src'),
-			'TOPIC_FOLDER_IMG_ALT'	=> $user->lang[$folder_alt],
-			'TOPIC_FOLDER_IMG_WIDTH'=> $user->img($folder_img, '', 'width'),
-			'TOPIC_FOLDER_IMG_HEIGHT'	=> $user->img($folder_img, '', 'height'),
+			'TOPIC_FOLDER_IMG'		=> phpbb::$user->img($folder_img, $folder_alt),
+			'TOPIC_FOLDER_IMG_SRC'	=> phpbb::$user->img($folder_img, $folder_alt, 'src'),
+			'TOPIC_FOLDER_IMG_ALT'	=> phpbb::$user->lang[$folder_alt],
+			'TOPIC_FOLDER_IMG_WIDTH'=> phpbb::$user->img($folder_img, '', 'width'),
+			'TOPIC_FOLDER_IMG_HEIGHT'	=> phpbb::$user->img($folder_img, '', 'height'),
 
 			'TOPIC_ICON_IMG'		=> (!empty($icons[$row['icon_id']])) ? $icons[$row['icon_id']]['img'] : '',
 			'TOPIC_ICON_IMG_WIDTH'	=> (!empty($icons[$row['icon_id']])) ? $icons[$row['icon_id']]['width'] : '',
 			'TOPIC_ICON_IMG_HEIGHT'	=> (!empty($icons[$row['icon_id']])) ? $icons[$row['icon_id']]['height'] : '',
-			'ATTACH_ICON_IMG'		=> ($auth->acl_get('u_download') && $auth->acl_get('f_download', $forum_id) && $row['topic_attachment']) ? $user->img('icon_topic_attach', $user->lang['TOTAL_ATTACHMENTS']) : '',
-			'UNAPPROVED_IMG'		=> ($topic_unapproved || $posts_unapproved) ? $user->img('icon_topic_unapproved', ($topic_unapproved) ? 'TOPIC_UNAPPROVED' : 'POSTS_UNAPPROVED') : '',
+			'ATTACH_ICON_IMG'		=> ($auth->acl_get('u_download') && $auth->acl_get('f_download', $forum_id) && $row['topic_attachment']) ? phpbb::$user->img('icon_topic_attach', 'TOTAL_ATTACHMENTS') : '',
+			'UNAPPROVED_IMG'		=> ($topic_unapproved || $posts_unapproved) ? phpbb::$user->img('icon_topic_unapproved', ($topic_unapproved) ? 'TOPIC_UNAPPROVED' : 'POSTS_UNAPPROVED') : '',
 
 			'S_TOPIC_TYPE'			=> $row['topic_type'],
 			'S_USER_POSTED'			=> (isset($row['topic_posted']) && $row['topic_posted']) ? true : false,
@@ -669,7 +669,7 @@ if (sizeof($topic_list))
 			'U_LAST_POST_AUTHOR'	=> get_username_string('profile', $row['topic_last_poster_id'], $row['topic_last_poster_name'], $row['topic_last_poster_colour']),
 			'U_TOPIC_AUTHOR'		=> get_username_string('profile', $row['topic_poster'], $row['topic_first_poster_name'], $row['topic_first_poster_colour']),
 			'U_VIEW_TOPIC'			=> $view_topic_url,
-			'U_MCP_REPORT'			=> append_sid('mcp', 'i=reports&amp;mode=reports&amp;f=' . $forum_id . '&amp;t=' . $topic_id, true, $user->session_id),
+			'U_MCP_REPORT'			=> append_sid('mcp', 'i=reports&amp;mode=reports&amp;f=' . $forum_id . '&amp;t=' . $topic_id, true, phpbb::$user->session_id),
 			'U_MCP_QUEUE'			=> $u_mcp_queue,
 
 			'S_TOPIC_TYPE_SWITCH'	=> ($s_type_switch == $s_type_switch_test) ? -1 : $s_type_switch_test)

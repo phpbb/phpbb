@@ -18,9 +18,9 @@ include(PHPBB_ROOT_PATH . 'includes/functions_user.' . PHP_EXT);
 
 
 // Start session management
-$user->session_begin();
-$auth->acl($user->data);
-$user->setup();
+phpbb::$user->session_begin();
+$auth->acl(phpbb::$user->data);
+phpbb::$user->setup();
 
 $bots = array(
 	'AdsBot [Google]'			=> array('AdsBot-Google', ''),
@@ -94,8 +94,6 @@ echo 'done';
 */
 function add_bots($bots)
 {
-	global $db;
-
 	$sql = 'SELECT group_id FROM ' . GROUPS_TABLE . " WHERE group_name = 'BOTS'";
 	$result = $db->sql_query($sql);
 	$group_id = (int) $db->sql_fetchfield('group_id', $result);

@@ -46,8 +46,6 @@ class fulltext_mysql extends search_backend
 	*/
 	public function init()
 	{
-		global $db, $user;
-
 		$result = $db->sql_query('SHOW TABLE STATUS LIKE \'' . POSTS_TABLE . '\'');
 		$info = $db->sql_fetchrow($result);
 		$db->sql_freeresult($result);
@@ -64,7 +62,7 @@ class fulltext_mysql extends search_backend
 
 		if ($engine != 'MyISAM')
 		{
-			return $user->lang['FULLTEXT_MYSQL_NOT_MYISAM'];
+			return phpbb::$user->lang['FULLTEXT_MYSQL_NOT_MYISAM'];
 		}
 
 		$sql = 'SHOW VARIABLES
@@ -250,8 +248,6 @@ class fulltext_mysql extends search_backend
 	*/
 	public function keyword_search($type, &$fields, &$terms, &$sort_by_sql, &$sort_key, &$sort_dir, &$sort_days, &$ex_fid_ary, &$m_approve_fid_ary, &$topic_id, &$author_ary, &$id_ary, $start, $per_page)
 	{
-		global $db;
-
 		// No keywords? No posts.
 		if (!$this->search_query)
 		{
@@ -409,8 +405,6 @@ class fulltext_mysql extends search_backend
 	*/
 	public function author_search($type, $firstpost_only, &$sort_by_sql, &$sort_key, &$sort_dir, &$sort_days, &$ex_fid_ary, &$m_approve_fid_ary, &$topic_id, &$author_ary, &$id_ary, $start, $per_page)
 	{
-		global $db;
-
 		// No author? No posts.
 		if (!sizeof($author_ary))
 		{
@@ -557,8 +551,6 @@ class fulltext_mysql extends search_backend
 	*/
 	public function index($mode, $post_id, &$message, &$subject, $poster_id, $forum_id)
 	{
-		global $db;
-
 		// Split old and new post/subject to obtain array of words
 		$split_text = $this->split_message($message);
 		$split_title = ($subject) ? $this->split_message($subject) : array();
@@ -587,8 +579,6 @@ class fulltext_mysql extends search_backend
 	*/
 	public function tidy()
 	{
-		global $db;
-
 		// destroy too old cached search results
 		$this->destroy_cache(array());
 
@@ -600,8 +590,6 @@ class fulltext_mysql extends search_backend
 	*/
 	public function create_index($acp_module, $u_action)
 	{
-		global $db;
-
 		// Make sure we can actually use MySQL with fulltext indexes
 		if ($error = $this->init())
 		{
@@ -647,8 +635,6 @@ class fulltext_mysql extends search_backend
 	*/
 	public function delete_index($acp_module, $u_action)
 	{
-		global $db;
-
 		// Make sure we can actually use MySQL with fulltext indexes
 		if ($error = $this->init())
 		{
@@ -705,22 +691,18 @@ class fulltext_mysql extends search_backend
 	*/
 	public function index_stats()
 	{
-		global $user;
-
 		if (empty($this->stats))
 		{
 			$this->get_stats();
 		}
 
 		return array(
-			$user->lang['FULLTEXT_MYSQL_TOTAL_POSTS']			=> ($this->index_created()) ? $this->stats['total_posts'] : 0,
+			phpbb::$user->lang['FULLTEXT_MYSQL_TOTAL_POSTS']			=> ($this->index_created()) ? $this->stats['total_posts'] : 0,
 		);
 	}
 
 	private function get_stats()
 	{
-		global $db;
-
 		if ($db->dbms_type !== 'mysql')
 		{
 			$this->stats = array();
@@ -766,8 +748,6 @@ class fulltext_mysql extends search_backend
 	*/
 	function acp()
 	{
-		global $user;
-
 		$tpl = '';
 
 		// These are fields required in the config table

@@ -25,22 +25,20 @@ class acp_ban
 
 	function main($id, $mode)
 	{
-		global $db, $user, $auth, $template;
-
 		include(PHPBB_ROOT_PATH . 'includes/functions_user.' . PHP_EXT);
 
 		$bansubmit	= phpbb_request::is_set_post('bansubmit');
 		$unbansubmit = phpbb_request::is_set_post('unbansubmit');
 		$current_time = time();
 
-		$user->add_lang(array('acp/ban', 'acp/users'));
+		phpbb::$user->add_lang(array('acp/ban', 'acp/users'));
 		$this->tpl_name = 'acp_ban';
 		$form_key = 'acp_ban';
 		add_form_key($form_key);
 
 		if (($bansubmit || $unbansubmit) && !check_form_key($form_key))
 		{
-			trigger_error($user->lang['FORM_INVALID'] . adm_back_link($this->u_action), E_USER_WARNING);
+			trigger_error(phpbb::$user->lang['FORM_INVALID'] . adm_back_link($this->u_action), E_USER_WARNING);
 		}
 
 		// Ban submitted?
@@ -58,7 +56,7 @@ class acp_ban
 			{
 				user_ban($mode, $ban, $ban_len, $ban_len_other, $ban_exclude, $ban_reason, $ban_give_reason);
 
-				trigger_error($user->lang['BAN_UPDATE_SUCCESSFUL'] . adm_back_link($this->u_action));
+				trigger_error(phpbb::$user->lang['BAN_UPDATE_SUCCESSFUL'] . adm_back_link($this->u_action));
 			}
 		}
 		else if ($unbansubmit)
@@ -69,31 +67,31 @@ class acp_ban
 			{
 				user_unban($mode, $ban);
 
-				trigger_error($user->lang['BAN_UPDATE_SUCCESSFUL'] . adm_back_link($this->u_action));
+				trigger_error(phpbb::$user->lang['BAN_UPDATE_SUCCESSFUL'] . adm_back_link($this->u_action));
 			}
 		}
 
 		// Define language vars
-		$this->page_title = $user->lang[strtoupper($mode) . '_BAN'];
+		$this->page_title = phpbb::$user->lang[strtoupper($mode) . '_BAN'];
 
-		$l_ban_explain = $user->lang[strtoupper($mode) . '_BAN_EXPLAIN'];
-		$l_ban_exclude_explain = $user->lang[strtoupper($mode) . '_BAN_EXCLUDE_EXPLAIN'];
-		$l_unban_title = $user->lang[strtoupper($mode) . '_UNBAN'];
-		$l_unban_explain = $user->lang[strtoupper($mode) . '_UNBAN_EXPLAIN'];
-		$l_no_ban_cell = $user->lang[strtoupper($mode) . '_NO_BANNED'];
+		$l_ban_explain = phpbb::$user->lang[strtoupper($mode) . '_BAN_EXPLAIN'];
+		$l_ban_exclude_explain = phpbb::$user->lang[strtoupper($mode) . '_BAN_EXCLUDE_EXPLAIN'];
+		$l_unban_title = phpbb::$user->lang[strtoupper($mode) . '_UNBAN'];
+		$l_unban_explain = phpbb::$user->lang[strtoupper($mode) . '_UNBAN_EXPLAIN'];
+		$l_no_ban_cell = phpbb::$user->lang[strtoupper($mode) . '_NO_BANNED'];
 
 		switch ($mode)
 		{
 			case 'user':
-				$l_ban_cell = $user->lang['USERNAME'];
+				$l_ban_cell = phpbb::$user->lang['USERNAME'];
 			break;
 
 			case 'ip':
-				$l_ban_cell = $user->lang['IP_HOSTNAME'];
+				$l_ban_cell = phpbb::$user->lang['IP_HOSTNAME'];
 			break;
 
 			case 'email':
-				$l_ban_cell = $user->lang['EMAIL_ADDRESS'];
+				$l_ban_cell = phpbb::$user->lang['EMAIL_ADDRESS'];
 			break;
 		}
 
@@ -120,10 +118,8 @@ class acp_ban
 	*/
 	static function display_ban_options($mode)
 	{
-		global $user, $db, $template;
-
 		// Ban length options
-		$ban_end_text = array(0 => $user->lang['PERMANENT'], 30 => $user->lang['30_MINS'], 60 => $user->lang['1_HOUR'], 360 => $user->lang['6_HOURS'], 1440 => $user->lang['1_DAY'], 10080 => $user->lang['7_DAYS'], 20160 => $user->lang['2_WEEKS'], 40320 => $user->lang['1_MONTH'], -1 => $user->lang['UNTIL'] . ' -&gt; ');
+		$ban_end_text = array(0 => phpbb::$user->lang['PERMANENT'], 30 => phpbb::$user->lang['30_MINS'], 60 => phpbb::$user->lang['1_HOUR'], 360 => phpbb::$user->lang['6_HOURS'], 1440 => phpbb::$user->lang['1_DAY'], 10080 => phpbb::$user->lang['7_DAYS'], 20160 => phpbb::$user->lang['2_WEEKS'], 40320 => phpbb::$user->lang['1_MONTH'], -1 => phpbb::$user->lang['UNTIL'] . ' -&gt; ');
 
 		$ban_end_options = '';
 		foreach ($ban_end_text as $length => $text)
@@ -136,7 +132,7 @@ class acp_ban
 			case 'user':
 
 				$field = 'username';
-				$l_ban_cell = $user->lang['USERNAME'];
+				$l_ban_cell = phpbb::$user->lang['USERNAME'];
 
 				$sql = 'SELECT b.*, u.user_id, u.username, u.username_clean
 					FROM ' . BANLIST_TABLE . ' b, ' . USERS_TABLE . ' u
@@ -149,7 +145,7 @@ class acp_ban
 			case 'ip':
 
 				$field = 'ban_ip';
-				$l_ban_cell = $user->lang['IP_HOSTNAME'];
+				$l_ban_cell = phpbb::$user->lang['IP_HOSTNAME'];
 
 				$sql = 'SELECT *
 					FROM ' . BANLIST_TABLE . '
@@ -161,7 +157,7 @@ class acp_ban
 			case 'email':
 
 				$field = 'ban_email';
-				$l_ban_cell = $user->lang['EMAIL_ADDRESS'];
+				$l_ban_cell = phpbb::$user->lang['EMAIL_ADDRESS'];
 
 				$sql = 'SELECT *
 					FROM ' . BANLIST_TABLE . '
@@ -180,7 +176,7 @@ class acp_ban
 			$banned_options .= '<option' . (($row['ban_exclude']) ? ' class="sep"' : '') . ' value="' . $row['ban_id'] . '">' . $row[$field] . '</option>';
 
 			$time_length = ($row['ban_end']) ? ($row['ban_end'] - $row['ban_start']) / 60 : 0;
-			$ban_length[$row['ban_id']] = (isset($ban_end_text[$time_length])) ? $ban_end_text[$time_length] : $user->lang['UNTIL'] . ' -> ' . $user->format_date($row['ban_end']);
+			$ban_length[$row['ban_id']] = (isset($ban_end_text[$time_length])) ? $ban_end_text[$time_length] : phpbb::$user->lang['UNTIL'] . ' -> ' . phpbb::$user->format_date($row['ban_end']);
 
 			$ban_reasons[$row['ban_id']] = $row['ban_reason'];
 			$ban_give_reasons[$row['ban_id']] = $row['ban_give_reason'];

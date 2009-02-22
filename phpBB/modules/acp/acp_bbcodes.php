@@ -25,9 +25,7 @@ class acp_bbcodes
 
 	function main($id, $mode)
 	{
-		global $db, $user, $auth, $template;
-
-		$user->add_lang('acp/posting');
+		phpbb::$user->add_lang('acp/posting');
 
 		// Set up general vars
 		$action	= request_var('action', '');
@@ -57,7 +55,7 @@ class acp_bbcodes
 
 				if (!$row)
 				{
-					trigger_error($user->lang['BBCODE_NOT_EXIST'] . adm_back_link($this->u_action), E_USER_WARNING);
+					trigger_error(phpbb::$user->lang['BBCODE_NOT_EXIST'] . adm_back_link($this->u_action), E_USER_WARNING);
 				}
 
 				$bbcode_match = $row['bbcode_match'];
@@ -76,7 +74,7 @@ class acp_bbcodes
 
 				if (!$row)
 				{
-					trigger_error($user->lang['BBCODE_NOT_EXIST'] . adm_back_link($this->u_action), E_USER_WARNING);
+					trigger_error(phpbb::$user->lang['BBCODE_NOT_EXIST'] . adm_back_link($this->u_action), E_USER_WARNING);
 				}
 
 			// No break here
@@ -101,14 +99,14 @@ class acp_bbcodes
 					'U_BACK'			=> $this->u_action,
 					'U_ACTION'			=> $this->u_action . '&amp;action=' . (($action == 'add') ? 'create' : 'modify') . (($bbcode_id) ? "&amp;bbcode=$bbcode_id" : ''),
 
-					'L_BBCODE_USAGE_EXPLAIN'=> sprintf($user->lang['BBCODE_USAGE_EXPLAIN'], '<a href="#down">', '</a>'),
+					'L_BBCODE_USAGE_EXPLAIN'=> sprintf(phpbb::$user->lang['BBCODE_USAGE_EXPLAIN'], '<a href="#down">', '</a>'),
 					'BBCODE_MATCH'			=> $bbcode_match,
 					'BBCODE_TPL'			=> $bbcode_tpl,
 					'BBCODE_HELPLINE'		=> $bbcode_helpline,
 					'DISPLAY_ON_POSTING'	=> $display_on_posting)
 				);
 
-				foreach ($user->lang['tokens'] as $token => $token_explain)
+				foreach (phpbb::$user->lang['tokens'] as $token => $token_explain)
 				{
 					$template->assign_block_vars('token', array(
 						'TOKEN'		=> '{' . $token . '}',
@@ -140,7 +138,7 @@ class acp_bbcodes
 					// Grab the end, interrogate the last closing tag
 					if ($info['test'] === '1' || in_array(strtolower($data['bbcode_tag']), $hard_coded) || (preg_match('#\[/([^[]*)]$#', $bbcode_match, $regs) && in_array(strtolower($regs[1]), $hard_coded)))
 					{
-						trigger_error($user->lang['BBCODE_INVALID_TAG_NAME'] . adm_back_link($this->u_action), E_USER_WARNING);
+						trigger_error(phpbb::$user->lang['BBCODE_INVALID_TAG_NAME'] . adm_back_link($this->u_action), E_USER_WARNING);
 					}
 				}
 
@@ -155,23 +153,23 @@ class acp_bbcodes
 
 				if (!preg_match('%\\[' . $test . '[^]]*].*?\\[/' . $test . ']%s', $bbcode_match))
 				{
-					trigger_error($user->lang['BBCODE_OPEN_ENDED_TAG'] . adm_back_link($this->u_action), E_USER_WARNING);
+					trigger_error(phpbb::$user->lang['BBCODE_OPEN_ENDED_TAG'] . adm_back_link($this->u_action), E_USER_WARNING);
 				}
 
 				if (strlen($data['bbcode_tag']) > 16)
 				{
-					trigger_error($user->lang['BBCODE_TAG_TOO_LONG'] . adm_back_link($this->u_action), E_USER_WARNING);
+					trigger_error(phpbb::$user->lang['BBCODE_TAG_TOO_LONG'] . adm_back_link($this->u_action), E_USER_WARNING);
 				}
 
 				if (strlen($bbcode_match) > 4000)
 				{
-					trigger_error($user->lang['BBCODE_TAG_DEF_TOO_LONG'] . adm_back_link($this->u_action), E_USER_WARNING);
+					trigger_error(phpbb::$user->lang['BBCODE_TAG_DEF_TOO_LONG'] . adm_back_link($this->u_action), E_USER_WARNING);
 				}
 
 
 				if (strlen($bbcode_helpline) > 255)
 				{
-					trigger_error($user->lang['BBCODE_HELPLINE_TOO_LONG'] . adm_back_link($this->u_action), E_USER_WARNING);
+					trigger_error(phpbb::$user->lang['BBCODE_HELPLINE_TOO_LONG'] . adm_back_link($this->u_action), E_USER_WARNING);
 				}
 
 				$sql_ary = array(
@@ -211,7 +209,7 @@ class acp_bbcodes
 
 					if ($bbcode_id > 1511)
 					{
-						trigger_error($user->lang['TOO_MANY_BBCODES'] . adm_back_link($this->u_action), E_USER_WARNING);
+						trigger_error(phpbb::$user->lang['TOO_MANY_BBCODES'] . adm_back_link($this->u_action), E_USER_WARNING);
 					}
 
 					$sql_ary['bbcode_id'] = (int) $bbcode_id;
@@ -236,7 +234,7 @@ class acp_bbcodes
 
 				add_log('admin', $log_action, $data['bbcode_tag']);
 
-				trigger_error($user->lang[$lang] . adm_back_link($this->u_action));
+				trigger_error(phpbb::$user->lang[$lang] . adm_back_link($this->u_action));
 
 			break;
 
@@ -259,7 +257,7 @@ class acp_bbcodes
 					}
 					else
 					{
-						confirm_box(false, $user->lang['CONFIRM_OPERATION'], build_hidden_fields(array(
+						confirm_box(false, phpbb::$user->lang['CONFIRM_OPERATION'], build_hidden_fields(array(
 							'bbcode'	=> $bbcode_id,
 							'i'			=> $id,
 							'mode'		=> $mode,
@@ -420,8 +418,7 @@ class acp_bbcodes
 
 		if (!preg_match('/^[a-zA-Z0-9_-]+=?$/', $bbcode_tag))
 		{
-			global $user;
-			trigger_error($user->lang['BBCODE_INVALID'] . adm_back_link($this->u_action), E_USER_WARNING);
+			trigger_error(phpbb::$user->lang['BBCODE_INVALID'] . adm_back_link($this->u_action), E_USER_WARNING);
 		}
 
 		$fp_match = preg_replace('#\[/?' . $bbcode_search . '#ie', "strtolower('\$0')", $fp_match);

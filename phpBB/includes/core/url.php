@@ -430,7 +430,7 @@ class phpbb_url extends phpbb_plugin_support
 
 		if ($server_port && (($cookie_secure && $server_port <> 443) || (!$cookie_secure && $server_port <> 80)))
 		{
-			// HTTP HOST can carry a port number (we fetch $user->host, but for old versions this may be true)
+			// HTTP HOST can carry a port number (we fetch $user->system['host'], but for old versions this may be true)
 			if (strpos($server_name, ':') === false)
 			{
 				$url .= ':' . $server_port;
