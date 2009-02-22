@@ -130,16 +130,16 @@ class acp_icons
 					$sql = 'SELECT *
 						FROM ' . SMILIES_TABLE . '
 						ORDER BY smiley_order';
-					$result = $db->sql_query($sql);
+					$result = phpbb::$db->sql_query($sql);
 
-					while ($row = $db->sql_fetchrow($result))
+					while ($row = phpbb::$db->sql_fetchrow($result))
 					{
 						if (empty($smilies[$row['smiley_url']]))
 						{
 							$smilies[$row['smiley_url']] = $row;
 						}
 					}
-					$db->sql_freeresult($result);
+					phpbb::$db->sql_freeresult($result);
 
 					if (sizeof($smilies))
 					{
@@ -169,7 +169,7 @@ class acp_icons
 				$sql = "SELECT *
 					FROM $table
 					ORDER BY {$fields}_order " . (($icon_id || $action == 'add') ? 'DESC' : 'ASC');
-				$result = $db->sql_query($sql);
+				$result = phpbb::$db->sql_query($sql);
 
 				$data = array();
 				$after = false;
@@ -178,7 +178,7 @@ class acp_icons
 				$add_order_lists = array('', '');
 				$display_count = 0;
 
-				while ($row = $db->sql_fetchrow($result))
+				while ($row = phpbb::$db->sql_fetchrow($result))
 				{
 					if ($action == 'add')
 					{
@@ -218,7 +218,7 @@ class acp_icons
 						}
 					}
 				}
-				$db->sql_freeresult($result);
+				phpbb::$db->sql_freeresult($result);
 
 				$order_list = '<option value="1"' . ((!isset($after)) ? ' selected="selected"' : '') . '>' . phpbb::$user->lang['FIRST'] . '</option>';
 				$add_order_list = '<option value="1">' . phpbb::$user->lang['FIRST'] . '</option>';
@@ -392,7 +392,7 @@ class acp_icons
 							$sql = "UPDATE $table
 								SET {$fields}_order = {$fields}_order + 1
 								WHERE {$fields}_order >= {$image_order[$image]}";
-							$db->sql_query($sql);
+							phpbb::$db->sql_query($sql);
 
 							// If we adjust the order, we need to adjust all other orders too - they became inaccurate...
 							foreach ($image_order as $_image => $_order)
@@ -412,15 +412,15 @@ class acp_icons
 						if ($action == 'modify'  && !empty($image_id[$image]))
 						{
 							$sql = "UPDATE $table
-								SET " . $db->sql_build_array('UPDATE', $img_sql) . "
+								SET " . phpbb::$db->sql_build_array('UPDATE', $img_sql) . "
 								WHERE {$fields}_id = " . $image_id[$image];
-							$db->sql_query($sql);
+							phpbb::$db->sql_query($sql);
 							$icons_updated++;
 						}
 						else if ($action !== 'modify')
 						{
-							$sql = "INSERT INTO $table " . $db->sql_build_array('INSERT', $img_sql);
-							$db->sql_query($sql);
+							$sql = "INSERT INTO $table " . phpbb::$db->sql_build_array('INSERT', $img_sql);
+							phpbb::$db->sql_query($sql);
 							$icons_updated++;
 						}
 
@@ -496,13 +496,13 @@ class acp_icons
 					// The user has already selected a smilies_pak file
 					if ($current == 'delete')
 					{
-						if ($db->truncate)
+						if (phpbb::$db->truncate)
 						{
-							$db->sql_query('TRUNCATE TABLE ' . $table);
+							phpbb::$db->sql_query('TRUNCATE TABLE ' . $table);
 						}
 						else
 						{
-							$db->sql_query('DELETE FROM ' . $table);
+							phpbb::$db->sql_query('DELETE FROM ' . $table);
 						}
 
 						switch ($mode)
@@ -512,8 +512,8 @@ class acp_icons
 
 							case 'icons':
 								// Reset all icon_ids
-								$db->sql_query('UPDATE ' . TOPICS_TABLE . ' SET icon_id = 0');
-								$db->sql_query('UPDATE ' . POSTS_TABLE . ' SET icon_id = 0');
+								phpbb::$db->sql_query('UPDATE ' . TOPICS_TABLE . ' SET icon_id = 0');
+								phpbb::$db->sql_query('UPDATE ' . POSTS_TABLE . ' SET icon_id = 0');
 							break;
 						}
 					}
@@ -525,14 +525,14 @@ class acp_icons
 
 						$sql = "SELECT $field_sql
 							FROM $table";
-						$result = $db->sql_query($sql);
+						$result = phpbb::$db->sql_query($sql);
 
-						while ($row = $db->sql_fetchrow($result))
+						while ($row = phpbb::$db->sql_fetchrow($result))
 						{
 							++$order;
 							$cur_img[$row[$field_sql]] = 1;
 						}
-						$db->sql_freeresult($result);
+						phpbb::$db->sql_freeresult($result);
 					}
 
 					foreach ($pak_ary as $pak_entry)
@@ -577,9 +577,9 @@ class acp_icons
 									));
 								}
 
-								$sql = "UPDATE $table SET " . $db->sql_build_array('UPDATE', $sql) . "
-									WHERE $field_sql = '" . $db->sql_escape($replace_sql) . "'";
-								$db->sql_query($sql);
+								$sql = "UPDATE $table SET " . phpbb::$db->sql_build_array('UPDATE', $sql) . "
+									WHERE $field_sql = '" . phpbb::$db->sql_escape($replace_sql) . "'";
+								phpbb::$db->sql_query($sql);
 							}
 							else
 							{
@@ -600,7 +600,7 @@ class acp_icons
 										'emotion'			=> $emotion,
 									));
 								}
-								$db->sql_query("INSERT INTO $table " . $db->sql_build_array('INSERT', $sql));
+								phpbb::$db->sql_query("INSERT INTO $table " . phpbb::$db->sql_build_array('INSERT', $sql));
 							}
 						}
 					}
@@ -659,10 +659,10 @@ class acp_icons
 				$sql = "SELECT *
 					FROM $table
 					ORDER BY {$fields}_order";
-				$result = $db->sql_query($sql);
+				$result = phpbb::$db->sql_query($sql);
 
 				$pak = '';
-				while ($row = $db->sql_fetchrow($result))
+				while ($row = phpbb::$db->sql_fetchrow($result))
 				{
 					$pak .= "'" . addslashes($row[$fields . '_url']) . "', ";
 					$pak .= "'" . addslashes($row[$fields . '_width']) . "', ";
@@ -677,7 +677,7 @@ class acp_icons
 
 					$pak .= "\n";
 				}
-				$db->sql_freeresult($result);
+				phpbb::$db->sql_freeresult($result);
 
 				if ($pak != '')
 				{
@@ -706,7 +706,7 @@ class acp_icons
 				{
 					$sql = "DELETE FROM $table
 						WHERE {$fields}_id = $icon_id";
-					$db->sql_query($sql);
+					phpbb::$db->sql_query($sql);
 
 					switch ($mode)
 					{
@@ -715,11 +715,11 @@ class acp_icons
 
 						case 'icons':
 							// Reset appropriate icon_ids
-							$db->sql_query('UPDATE ' . TOPICS_TABLE . "
+							phpbb::$db->sql_query('UPDATE ' . TOPICS_TABLE . "
 								SET icon_id = 0
 								WHERE icon_id = $icon_id");
 
-							$db->sql_query('UPDATE ' . POSTS_TABLE . "
+							phpbb::$db->sql_query('UPDATE ' . POSTS_TABLE . "
 								SET icon_id = 0
 								WHERE icon_id = $icon_id");
 						break;
@@ -749,9 +749,9 @@ class acp_icons
 				$sql = "SELECT {$fields}_order as current_order
 					FROM $table
 					WHERE {$fields}_id = $icon_id";
-				$result = $db->sql_query($sql);
-				$current_order = (int) $db->sql_fetchfield('current_order');
-				$db->sql_freeresult($result);
+				$result = phpbb::$db->sql_query($sql);
+				$current_order = (int) phpbb::$db->sql_fetchfield('current_order');
+				phpbb::$db->sql_freeresult($result);
 
 				if ($current_order == 0 && $action == 'move_up')
 				{
@@ -767,16 +767,16 @@ class acp_icons
 					SET {$fields}_order = $current_order
 					WHERE {$fields}_order = $switch_order_id
 						AND {$fields}_id <> $icon_id";
-				$db->sql_query($sql);
+				phpbb::$db->sql_query($sql);
 
 				// Only update the other entry too if the previous entry got updated
-				if ($db->sql_affectedrows())
+				if (phpbb::$db->sql_affectedrows())
 				{
 					$sql = "UPDATE $table
 						SET {$fields}_order = $switch_order_id
 						WHERE {$fields}_order = $current_order
 							AND {$fields}_id = $icon_id";
-					$db->sql_query($sql);
+					phpbb::$db->sql_query($sql);
 				}
 
 				phpbb::$acm->destroy('icons');
@@ -789,9 +789,9 @@ class acp_icons
 		$sql = "SELECT {$fields}_id AS order_id, {$fields}_order AS fields_order
 			FROM $table
 			ORDER BY display_on_posting DESC, {$fields}_order";
-		$result = $db->sql_query($sql);
+		$result = phpbb::$db->sql_query($sql);
 
-		if ($row = $db->sql_fetchrow($result))
+		if ($row = phpbb::$db->sql_fetchrow($result))
 		{
 			$order = 0;
 			do
@@ -799,14 +799,14 @@ class acp_icons
 				++$order;
 				if ($row['fields_order'] != $order)
 				{
-					$db->sql_query("UPDATE $table
+					phpbb::$db->sql_query("UPDATE $table
 						SET {$fields}_order = $order
 						WHERE {$fields}_id = " . $row['order_id']);
 				}
 			}
-			while ($row = $db->sql_fetchrow($result));
+			while ($row = phpbb::$db->sql_fetchrow($result));
 		}
-		$db->sql_freeresult($result);
+		phpbb::$db->sql_freeresult($result);
 
 		$template->assign_vars(array(
 			'L_TITLE'			=> phpbb::$user->lang['ACP_' . $lang],
@@ -833,9 +833,9 @@ class acp_icons
 		$sql = "SELECT *
 			FROM $table
 			ORDER BY {$fields}_order ASC";
-		$result = $db->sql_query($sql);
+		$result = phpbb::$db->sql_query($sql);
 
-		while ($row = $db->sql_fetchrow($result))
+		while ($row = phpbb::$db->sql_fetchrow($result))
 		{
 			$alt_text = ($mode == 'smilies') ? $row['code'] : '';
 
@@ -858,7 +858,7 @@ class acp_icons
 				$spacer = true;
 			}
 		}
-		$db->sql_freeresult($result);
+		phpbb::$db->sql_freeresult($result);
 	}
 }
 

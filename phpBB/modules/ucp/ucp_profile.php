@@ -174,15 +174,15 @@ class ucp_profile
 
 								if (sizeof($admin_ary))
 								{
-									$where_sql .= ' OR ' . $db->sql_in_set('user_id', $admin_ary);
+									$where_sql .= ' OR ' . phpbb::$db->sql_in_set('user_id', $admin_ary);
 								}
 
 								$sql = 'SELECT user_id, username, user_email, user_lang, user_jabber, user_notify_type
 									FROM ' . USERS_TABLE . ' ' .
 									$where_sql;
-								$result = $db->sql_query($sql);
+								$result = phpbb::$db->sql_query($sql);
 
-								while ($row = $db->sql_fetchrow($result))
+								while ($row = phpbb::$db->sql_fetchrow($result))
 								{
 									$messenger->template('admin_activate', $row['user_lang']);
 									$messenger->to($row['user_email'], $row['username']);
@@ -196,7 +196,7 @@ class ucp_profile
 
 									$messenger->send($row['user_notify_type']);
 								}
-								$db->sql_freeresult($result);
+								phpbb::$db->sql_freeresult($result);
 							}
 
 							user_active_flip('deactivate', phpbb::$user->data['user_id'], INACTIVE_PROFILE);
@@ -209,9 +209,9 @@ class ucp_profile
 						if (sizeof($sql_ary))
 						{
 							$sql = 'UPDATE ' . USERS_TABLE . '
-								SET ' . $db->sql_build_array('UPDATE', $sql_ary) . '
+								SET ' . phpbb::$db->sql_build_array('UPDATE', $sql_ary) . '
 								WHERE user_id = ' . phpbb::$user->data['user_id'];
-							$db->sql_query($sql);
+							phpbb::$db->sql_query($sql);
 						}
 
 						// Need to update config, forum, topic, posting, messages, etc.
@@ -373,28 +373,28 @@ class ucp_profile
 						}
 
 						$sql = 'UPDATE ' . USERS_TABLE . '
-							SET ' . $db->sql_build_array('UPDATE', $sql_ary) . '
+							SET ' . phpbb::$db->sql_build_array('UPDATE', $sql_ary) . '
 							WHERE user_id = ' . phpbb::$user->data['user_id'];
-						$db->sql_query($sql);
+						phpbb::$db->sql_query($sql);
 
 						// Update Custom Fields
 						if (sizeof($cp_data))
 						{
 							$sql = 'UPDATE ' . PROFILE_FIELDS_DATA_TABLE . '
-								SET ' . $db->sql_build_array('UPDATE', $cp_data) . '
+								SET ' . phpbb::$db->sql_build_array('UPDATE', $cp_data) . '
 								WHERE user_id = ' . phpbb::$user->data['user_id'];
-							$db->sql_query($sql);
+							phpbb::$db->sql_query($sql);
 
-							if (!$db->sql_affectedrows())
+							if (!phpbb::$db->sql_affectedrows())
 							{
 								$cp_data['user_id'] = (int) phpbb::$user->data['user_id'];
 
-								$db->sql_return_on_error(true);
+								phpbb::$db->sql_return_on_error(true);
 
-								$sql = 'INSERT INTO ' . PROFILE_FIELDS_DATA_TABLE . ' ' . $db->sql_build_array('INSERT', $cp_data);
-								$db->sql_query($sql);
+								$sql = 'INSERT INTO ' . PROFILE_FIELDS_DATA_TABLE . ' ' . phpbb::$db->sql_build_array('INSERT', $cp_data);
+								phpbb::$db->sql_query($sql);
 
-								$db->sql_return_on_error(false);
+								phpbb::$db->sql_return_on_error(false);
 							}
 						}
 
@@ -510,9 +510,9 @@ class ucp_profile
 							);
 
 							$sql = 'UPDATE ' . USERS_TABLE . '
-								SET ' . $db->sql_build_array('UPDATE', $sql_ary) . '
+								SET ' . phpbb::$db->sql_build_array('UPDATE', $sql_ary) . '
 								WHERE user_id = ' . phpbb::$user->data['user_id'];
-							$db->sql_query($sql);
+							phpbb::$db->sql_query($sql);
 
 							$message = phpbb::$user->lang['PROFILE_UPDATED'] . '<br /><br />' . sprintf(phpbb::$user->lang['RETURN_UCP'], '<a href="' . $this->u_action . '">', '</a>');
 							trigger_error($message);

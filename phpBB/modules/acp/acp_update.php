@@ -51,9 +51,9 @@ class acp_update
 		$sql = 'SELECT config_value
 			FROM ' . CONFIG_TABLE . "
 			WHERE config_name = 'version_update_from'";
-		$result = $db->sql_query($sql);
-		$version_update_from = (string) $db->sql_fetchfield('config_value');
-		$db->sql_freeresult($result);
+		$result = phpbb::$db->sql_query($sql);
+		$version_update_from = (string) phpbb::$db->sql_fetchfield('config_value');
+		phpbb::$db->sql_freeresult($result);
 
 		$current_version = (!empty($version_update_from)) ? $version_update_from : phpbb::$config['version'];
 

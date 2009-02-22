@@ -72,19 +72,19 @@ class acp_ranks
 
 				if ($rank_id)
 				{
-					$sql = 'UPDATE ' . RANKS_TABLE . ' SET ' . $db->sql_build_array('UPDATE', $sql_ary) . " WHERE rank_id = $rank_id";
+					$sql = 'UPDATE ' . RANKS_TABLE . ' SET ' . phpbb::$db->sql_build_array('UPDATE', $sql_ary) . " WHERE rank_id = $rank_id";
 					$message = phpbb::$user->lang['RANK_UPDATED'];
 
 					add_log('admin', 'LOG_RANK_UPDATED', $rank_title);
 				}
 				else
 				{
-					$sql = 'INSERT INTO ' . RANKS_TABLE . ' ' . $db->sql_build_array('INSERT', $sql_ary);
+					$sql = 'INSERT INTO ' . RANKS_TABLE . ' ' . phpbb::$db->sql_build_array('INSERT', $sql_ary);
 					$message = phpbb::$user->lang['RANK_ADDED'];
 
 					add_log('admin', 'LOG_RANK_ADDED', $rank_title);
 				}
-				$db->sql_query($sql);
+				phpbb::$db->sql_query($sql);
 
 				phpbb::$acm->destroy('ranks');
 
@@ -104,18 +104,18 @@ class acp_ranks
 					$sql = 'SELECT rank_title
 						FROM ' . RANKS_TABLE . '
 						WHERE rank_id = ' . $rank_id;
-					$result = $db->sql_query($sql);
-					$rank_title = (string) $db->sql_fetchfield('rank_title');
-					$db->sql_freeresult($result);
+					$result = phpbb::$db->sql_query($sql);
+					$rank_title = (string) phpbb::$db->sql_fetchfield('rank_title');
+					phpbb::$db->sql_freeresult($result);
 
 					$sql = 'DELETE FROM ' . RANKS_TABLE . "
 						WHERE rank_id = $rank_id";
-					$db->sql_query($sql);
+					phpbb::$db->sql_query($sql);
 
 					$sql = 'UPDATE ' . USERS_TABLE . "
 						SET user_rank = 0
 						WHERE user_rank = $rank_id";
-					$db->sql_query($sql);
+					phpbb::$db->sql_query($sql);
 
 					phpbb::$acm->destroy('ranks');
 
@@ -141,9 +141,9 @@ class acp_ranks
 				$sql = 'SELECT *
 					FROM ' . RANKS_TABLE . '
 					ORDER BY rank_min ASC, rank_special ASC';
-				$result = $db->sql_query($sql);
+				$result = phpbb::$db->sql_query($sql);
 
-				while ($row = $db->sql_fetchrow($result))
+				while ($row = phpbb::$db->sql_fetchrow($result))
 				{
 					$existing_imgs[] = $row['rank_image'];
 
@@ -152,7 +152,7 @@ class acp_ranks
 						$ranks = $row;
 					}
 				}
-				$db->sql_freeresult($result);
+				phpbb::$db->sql_freeresult($result);
 
 				$imglist = filelist(PHPBB_ROOT_PATH . phpbb::$config['ranks_path'], '');
 				$edit_img = $filename_list = '';
@@ -216,9 +216,9 @@ class acp_ranks
 		$sql = 'SELECT *
 			FROM ' . RANKS_TABLE . '
 			ORDER BY rank_special DESC, rank_min ASC, rank_title ASC';
-		$result = $db->sql_query($sql);
+		$result = phpbb::$db->sql_query($sql);
 
-		while ($row = $db->sql_fetchrow($result))
+		while ($row = phpbb::$db->sql_fetchrow($result))
 		{
 			$template->assign_block_vars('ranks', array(
 				'S_RANK_IMAGE'		=> ($row['rank_image']) ? true : false,
@@ -232,7 +232,7 @@ class acp_ranks
 				'U_DELETE'			=> $this->u_action . '&amp;action=delete&amp;id=' . $row['rank_id'])
 			);
 		}
-		$db->sql_freeresult($result);
+		phpbb::$db->sql_freeresult($result);
 
 	}
 }

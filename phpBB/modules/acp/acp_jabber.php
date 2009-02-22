@@ -91,9 +91,9 @@ class acp_jabber
 				);
 
 				$sql = 'UPDATE ' . USERS_TABLE . '
-					SET ' . $db->sql_build_array('UPDATE', $sql_ary) . '
+					SET ' . phpbb::$db->sql_build_array('UPDATE', $sql_ary) . '
 					WHERE user_notify_type = ' . NOTIFY_IM;
-				$db->sql_query($sql);
+				phpbb::$db->sql_query($sql);
 			}
 
 			set_config('jab_enable', $jab_enable);

@@ -173,10 +173,10 @@ function login_ldap(&$username, &$password)
 
 			$sql ='SELECT user_id, username, user_password, user_passchg, user_email, user_type
 				FROM ' . USERS_TABLE . "
-				WHERE username_clean = '" . $db->sql_escape(utf8_clean_string($username)) . "'";
-			$result = $db->sql_query($sql);
-			$row = $db->sql_fetchrow($result);
-			$db->sql_freeresult($result);
+				WHERE username_clean = '" . phpbb::$db->sql_escape(utf8_clean_string($username)) . "'";
+			$result = phpbb::$db->sql_query($sql);
+			$row = phpbb::$db->sql_fetchrow($result);
+			phpbb::$db->sql_freeresult($result);
 
 			if ($row)
 			{
@@ -204,11 +204,11 @@ function login_ldap(&$username, &$password)
 				// retrieve default group id
 				$sql = 'SELECT group_id
 					FROM ' . GROUPS_TABLE . "
-					WHERE group_name_clean = '" . $db->sql_escape('registered') . "'
+					WHERE group_name_clean = '" . phpbb::$db->sql_escape('registered') . "'
 						AND group_type = " . GROUP_SPECIAL;
-				$result = $db->sql_query($sql);
-				$row = $db->sql_fetchrow($result);
-				$db->sql_freeresult($result);
+				$result = phpbb::$db->sql_query($sql);
+				$row = phpbb::$db->sql_fetchrow($result);
+				phpbb::$db->sql_freeresult($result);
 
 				if (!$row)
 				{

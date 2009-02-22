@@ -95,19 +95,19 @@ echo 'done';
 function add_bots($bots)
 {
 	$sql = 'SELECT group_id FROM ' . GROUPS_TABLE . " WHERE group_name = 'BOTS'";
-	$result = $db->sql_query($sql);
-	$group_id = (int) $db->sql_fetchfield('group_id', $result);
-	$db->sql_freeresult($result);
-	$db->sql_query('TRUNCATE TABLE ' . BOTS_TABLE);
+	$result = phpbb::$db->sql_query($sql);
+	$group_id = (int) phpbb::$db->sql_fetchfield('group_id', $result);
+	phpbb::$db->sql_freeresult($result);
+	phpbb::$db->sql_query('TRUNCATE TABLE ' . BOTS_TABLE);
 
 	if (!$group_id)
 	{
 		add_default_groups();
 
 		$sql = 'SELECT group_id FROM ' . GROUPS_TABLE . " WHERE group_name = 'BOTS'";
-		$result = $db->sql_query($sql);
-		$group_id = (int) $db->sql_fetchfield('group_id', $result);
-		$db->sql_freeresult($result);
+		$result = phpbb::$db->sql_query($sql);
+		$group_id = (int) phpbb::$db->sql_fetchfield('group_id', $result);
+		phpbb::$db->sql_freeresult($result);
 
 	}
 
@@ -134,14 +134,14 @@ function add_bots($bots)
 
 		if ($user_id)
 		{
-			$sql = 'INSERT INTO ' . BOTS_TABLE . ' ' . $db->sql_build_array('INSERT', array(
+			$sql = 'INSERT INTO ' . BOTS_TABLE . ' ' . phpbb::$db->sql_build_array('INSERT', array(
 				'bot_active'	=> 1,
 				'bot_name'		=> $bot_name,
 				'user_id'		=> $user_id,
 				'bot_agent'		=> $bot_ary[0],
 				'bot_ip'		=> $bot_ary[1])
 			);
-			$db->sql_query($sql);
+			phpbb::$db->sql_query($sql);
 		}
 	}
 }

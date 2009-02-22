@@ -171,9 +171,9 @@ class acp_language
 				$sql = 'SELECT *
 					FROM ' . LANG_TABLE . "
 					WHERE lang_id = $lang_id";
-				$result = $db->sql_query($sql);
-				$row = $db->sql_fetchrow($result);
-				$db->sql_freeresult($result);
+				$result = phpbb::$db->sql_query($sql);
+				$row = phpbb::$db->sql_fetchrow($result);
+				phpbb::$db->sql_freeresult($result);
 
 				$sql_ary	= array(
 					'lang_english_name'		=> request_var('lang_english_name', $row['lang_english_name']),
@@ -181,8 +181,8 @@ class acp_language
 					'lang_author'			=> utf8_normalize_nfc(request_var('lang_author', $row['lang_author'], true)),
 				);
 
-				$db->sql_query('UPDATE ' . LANG_TABLE . '
-					SET ' . $db->sql_build_array('UPDATE', $sql_ary) . '
+				phpbb::$db->sql_query('UPDATE ' . LANG_TABLE . '
+					SET ' . phpbb::$db->sql_build_array('UPDATE', $sql_ary) . '
 					WHERE lang_id = ' . $lang_id);
 
 				add_log('admin', 'LOG_LANGUAGE_PACK_UPDATED', $sql_ary['lang_english_name']);
@@ -217,9 +217,9 @@ class acp_language
 				$sql = 'SELECT *
 					FROM ' . LANG_TABLE . "
 					WHERE lang_id = $lang_id";
-				$result = $db->sql_query($sql);
-				$row = $db->sql_fetchrow($result);
-				$db->sql_freeresult($result);
+				$result = phpbb::$db->sql_query($sql);
+				$row = phpbb::$db->sql_fetchrow($result);
+				phpbb::$db->sql_freeresult($result);
 
 				if (!$row)
 				{
@@ -382,9 +382,9 @@ class acp_language
 					$sql = 'SELECT lang_iso
 						FROM ' . LANG_TABLE . "
 						WHERE lang_id = $lang_id";
-					$result = $db->sql_query($sql);
-					$row = $db->sql_fetchrow($result);
-					$db->sql_freeresult($result);
+					$result = phpbb::$db->sql_query($sql);
+					$row = phpbb::$db->sql_fetchrow($result);
+					phpbb::$db->sql_freeresult($result);
 
 					$file = request_var('file', '');
 					$dir = request_var('dir', '');
@@ -451,9 +451,9 @@ class acp_language
 				$sql = 'SELECT *
 					FROM ' . LANG_TABLE . '
 					WHERE lang_id = ' . $lang_id;
-				$result = $db->sql_query($sql);
-				$lang_entries = $db->sql_fetchrow($result);
-				$db->sql_freeresult($result);
+				$result = phpbb::$db->sql_query($sql);
+				$lang_entries = phpbb::$db->sql_fetchrow($result);
+				phpbb::$db->sql_freeresult($result);
 
 				$lang_iso = $lang_entries['lang_iso'];
 				$missing_vars = $missing_files = array();
@@ -769,31 +769,31 @@ class acp_language
 				$sql = 'SELECT *
 					FROM ' . LANG_TABLE . '
 					WHERE lang_id = ' . $lang_id;
-				$result = $db->sql_query($sql);
-				$row = $db->sql_fetchrow($result);
-				$db->sql_freeresult($result);
+				$result = phpbb::$db->sql_query($sql);
+				$row = phpbb::$db->sql_fetchrow($result);
+				phpbb::$db->sql_freeresult($result);
 
 				if ($row['lang_iso'] == phpbb::$config['default_lang'])
 				{
 					trigger_error(phpbb::$user->lang['NO_REMOVE_DEFAULT_LANG'] . adm_back_link($this->u_action), E_USER_WARNING);
 				}
 
-				$db->sql_query('DELETE FROM ' . LANG_TABLE . ' WHERE lang_id = ' . $lang_id);
+				phpbb::$db->sql_query('DELETE FROM ' . LANG_TABLE . ' WHERE lang_id = ' . $lang_id);
 
 				$sql = 'UPDATE ' . USERS_TABLE . "
-					SET user_lang = '" . $db->sql_escape(phpbb::$config['default_lang']) . "'
-					WHERE user_lang = '" . $db->sql_escape($row['lang_iso']) . "'";
-				$db->sql_query($sql);
+					SET user_lang = '" . phpbb::$db->sql_escape(phpbb::$config['default_lang']) . "'
+					WHERE user_lang = '" . phpbb::$db->sql_escape($row['lang_iso']) . "'";
+				phpbb::$db->sql_query($sql);
 
 				// We also need to remove the translated entries for custom profile fields - we want clean tables, don't we?
 				$sql = 'DELETE FROM ' . PROFILE_LANG_TABLE . ' WHERE lang_id = ' . $lang_id;
-				$db->sql_query($sql);
+				phpbb::$db->sql_query($sql);
 
 				$sql = 'DELETE FROM ' . PROFILE_FIELDS_LANG_TABLE . ' WHERE lang_id = ' . $lang_id;
-				$db->sql_query($sql);
+				phpbb::$db->sql_query($sql);
 
-				$sql = 'DELETE FROM ' . STYLES_IMAGESET_DATA_TABLE . " WHERE image_lang = '" . $db->sql_escape($row['lang_iso']) . "'";
-				$result = $db->sql_query($sql);
+				$sql = 'DELETE FROM ' . STYLES_IMAGESET_DATA_TABLE . " WHERE image_lang = '" . phpbb::$db->sql_escape($row['lang_iso']) . "'";
+				$result = phpbb::$db->sql_query($sql);
 
 				phpbb::$acm->destroy_sql(STYLES_IMAGESET_DATA_TABLE);
 
@@ -823,10 +823,10 @@ class acp_language
 
 				$sql = 'SELECT lang_iso
 					FROM ' . LANG_TABLE . "
-					WHERE lang_iso = '" . $db->sql_escape($lang_iso) . "'";
-				$result = $db->sql_query($sql);
-				$row = $db->sql_fetchrow($result);
-				$db->sql_freeresult($result);
+					WHERE lang_iso = '" . phpbb::$db->sql_escape($lang_iso) . "'";
+				$result = phpbb::$db->sql_query($sql);
+				$row = phpbb::$db->sql_fetchrow($result);
+				phpbb::$db->sql_freeresult($result);
 
 				if ($row)
 				{
@@ -847,8 +847,8 @@ class acp_language
 					'lang_author'		=> $lang_pack['author']
 				);
 
-				$db->sql_query('INSERT INTO ' . LANG_TABLE . ' ' . $db->sql_build_array('INSERT', $sql_ary));
-				$lang_id = $db->sql_nextid();
+				phpbb::$db->sql_query('INSERT INTO ' . LANG_TABLE . ' ' . phpbb::$db->sql_build_array('INSERT', $sql_ary));
+				$lang_id = phpbb::$db->sql_nextid();
 
 				$valid_localized = array(
 					'icon_back_top', 'icon_contact_aim', 'icon_contact_email', 'icon_contact_icq', 'icon_contact_jabber', 'icon_contact_msnm', 'icon_contact_pm', 'icon_contact_yahoo', 'icon_contact_www', 'icon_post_delete', 'icon_post_edit', 'icon_post_info', 'icon_post_quote', 'icon_post_report', 'icon_user_online', 'icon_user_offline', 'icon_user_profile', 'icon_user_search', 'icon_user_warn', 'button_pm_forward', 'button_pm_new', 'button_pm_reply', 'button_topic_locked', 'button_topic_new', 'button_topic_reply',
@@ -858,8 +858,8 @@ class acp_language
 
 				$sql = 'SELECT *
 					FROM ' . STYLES_IMAGESET_TABLE;
-				$result = $db->sql_query($sql);
-				while ($imageset_row = $db->sql_fetchrow($result))
+				$result = phpbb::$db->sql_query($sql);
+				while ($imageset_row = phpbb::$db->sql_fetchrow($result))
 				{
 					if (@file_exists(PHPBB_ROOT_PATH . "styles/{$imageset_row['imageset_path']}/imageset/{$lang_pack['iso']}/imageset.cfg"))
 					{
@@ -902,21 +902,21 @@ class acp_language
 						}
 					}
 				}
-				$db->sql_freeresult($result);
+				phpbb::$db->sql_freeresult($result);
 
 				if (sizeof($sql_ary))
 				{
-					$db->sql_multi_insert(STYLES_IMAGESET_DATA_TABLE, $sql_ary);
+					phpbb::$db->sql_multi_insert(STYLES_IMAGESET_DATA_TABLE, $sql_ary);
 					phpbb::$acm->destroy_sql(STYLES_IMAGESET_DATA_TABLE);
 				}
 
 				// Now let's copy the default language entries for custom profile fields for this new language - makes admin's life easier.
 				$sql = 'SELECT lang_id
 					FROM ' . LANG_TABLE . "
-					WHERE lang_iso = '" . $db->sql_escape(phpbb::$config['default_lang']) . "'";
-				$result = $db->sql_query($sql);
-				$default_lang_id = (int) $db->sql_fetchfield('lang_id');
-				$db->sql_freeresult($result);
+					WHERE lang_iso = '" . phpbb::$db->sql_escape(phpbb::$config['default_lang']) . "'";
+				$result = phpbb::$db->sql_query($sql);
+				$default_lang_id = (int) phpbb::$db->sql_fetchfield('lang_id');
+				phpbb::$db->sql_freeresult($result);
 
 				// From the mysql documentation:
 				// Prior to MySQL 4.0.14, the target table of the INSERT statement cannot appear in the FROM clause of the SELECT part of the query. This limitation is lifted in 4.0.14.
@@ -925,26 +925,26 @@ class acp_language
 				$sql = 'SELECT field_id, lang_name, lang_explain, lang_default_value
 					FROM ' . PROFILE_LANG_TABLE . '
 					WHERE lang_id = ' . $default_lang_id;
-				$result = $db->sql_query($sql);
+				$result = phpbb::$db->sql_query($sql);
 
-				while ($row = $db->sql_fetchrow($result))
+				while ($row = phpbb::$db->sql_fetchrow($result))
 				{
 					$row['lang_id'] = $lang_id;
-					$db->sql_query('INSERT INTO ' . PROFILE_LANG_TABLE . ' ' . $db->sql_build_array('INSERT', $row));
+					phpbb::$db->sql_query('INSERT INTO ' . PROFILE_LANG_TABLE . ' ' . phpbb::$db->sql_build_array('INSERT', $row));
 				}
-				$db->sql_freeresult($result);
+				phpbb::$db->sql_freeresult($result);
 
 				$sql = 'SELECT field_id, option_id, field_type, lang_value
 					FROM ' . PROFILE_FIELDS_LANG_TABLE . '
 					WHERE lang_id = ' . $default_lang_id;
-				$result = $db->sql_query($sql);
+				$result = phpbb::$db->sql_query($sql);
 
-				while ($row = $db->sql_fetchrow($result))
+				while ($row = phpbb::$db->sql_fetchrow($result))
 				{
 					$row['lang_id'] = $lang_id;
-					$db->sql_query('INSERT INTO ' . PROFILE_FIELDS_LANG_TABLE . ' ' . $db->sql_build_array('INSERT', $row));
+					phpbb::$db->sql_query('INSERT INTO ' . PROFILE_FIELDS_LANG_TABLE . ' ' . phpbb::$db->sql_build_array('INSERT', $row));
 				}
-				$db->sql_freeresult($result);
+				phpbb::$db->sql_freeresult($result);
 
 				add_log('admin', 'LOG_LANGUAGE_PACK_INSTALLED', $lang_pack['name']);
 
@@ -962,9 +962,9 @@ class acp_language
 				$sql = 'SELECT *
 					FROM ' . LANG_TABLE . '
 					WHERE lang_id = ' . $lang_id;
-				$result = $db->sql_query($sql);
-				$row = $db->sql_fetchrow($result);
-				$db->sql_freeresult($result);
+				$result = phpbb::$db->sql_query($sql);
+				$row = phpbb::$db->sql_fetchrow($result);
+				phpbb::$db->sql_freeresult($result);
 
 				$use_method = request_var('use_method', '');
 				$methods = array('.tar');
@@ -1077,23 +1077,23 @@ class acp_language
 		$sql = 'SELECT user_lang, COUNT(user_lang) AS lang_count
 			FROM ' . USERS_TABLE . '
 			GROUP BY user_lang';
-		$result = $db->sql_query($sql);
+		$result = phpbb::$db->sql_query($sql);
 
 		$lang_count = array();
-		while ($row = $db->sql_fetchrow($result))
+		while ($row = phpbb::$db->sql_fetchrow($result))
 		{
 			$lang_count[$row['user_lang']] = $row['lang_count'];
 		}
-		$db->sql_freeresult($result);
+		phpbb::$db->sql_freeresult($result);
 
 		$sql = 'SELECT *
 			FROM ' . LANG_TABLE . '
 			ORDER BY lang_english_name';
-		$result = $db->sql_query($sql);
+		$result = phpbb::$db->sql_query($sql);
 
 		$installed = array();
 
-		while ($row = $db->sql_fetchrow($result))
+		while ($row = phpbb::$db->sql_fetchrow($result))
 		{
 			$installed[] = $row['lang_iso'];
 			$tagstyle = ($row['lang_iso'] == phpbb::$config['default_lang']) ? '*' : '';
@@ -1110,7 +1110,7 @@ class acp_language
 				'USED_BY'			=> (isset($lang_count[$row['lang_iso']])) ? $lang_count[$row['lang_iso']] : 0,
 			));
 		}
-		$db->sql_freeresult($result);
+		phpbb::$db->sql_freeresult($result);
 
 		$new_ary = $iso = array();
 		$dp = @opendir(PHPBB_ROOT_PATH . 'language');

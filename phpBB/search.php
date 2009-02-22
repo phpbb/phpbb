@@ -108,19 +108,19 @@ if ($keywords || $author || $author_id || $search_id || $submit)
 			trigger_error(sprintf(phpbb::$user->lang['TOO_FEW_AUTHOR_CHARS'], phpbb::$config['min_search_author_chars']));
 		}
 
-		$sql_where = (strpos($author, '*') !== false) ? ' username_clean ' . $db->sql_like_expression(str_replace('*', $db->any_char, utf8_clean_string($author))) : " username_clean = '" . $db->sql_escape(utf8_clean_string($author)) . "'";
+		$sql_where = (strpos($author, '*') !== false) ? ' username_clean ' . phpbb::$db->sql_like_expression(str_replace('*', phpbb::$db->any_char, utf8_clean_string($author))) : " username_clean = '" . phpbb::$db->sql_escape(utf8_clean_string($author)) . "'";
 
 		$sql = 'SELECT user_id
 			FROM ' . USERS_TABLE . "
 			WHERE $sql_where
 				AND user_type IN (" . phpbb::USER_NORMAL . ', ' . phpbb::USER_FOUNDER . ')';
-		$result = $db->sql_query_limit($sql, 100);
+		$result = phpbb::$db->sql_query_limit($sql, 100);
 
-		while ($row = $db->sql_fetchrow($result))
+		while ($row = phpbb::$db->sql_fetchrow($result))
 		{
 			$author_id_ary[] = (int) $row['user_id'];
 		}
-		$db->sql_freeresult($result);
+		phpbb::$db->sql_freeresult($result);
 
 		if (!sizeof($author_id_ary))
 		{
@@ -153,19 +153,19 @@ if ($keywords || $author || $author_id || $search_id || $submit)
 		$ex_fid_ary = array_unique(array_merge(array_keys(phpbb::$acl->acl_getf('!f_read', true)), array_keys(phpbb::$acl->acl_getf('!f_search', true))));
 	}
 
-	$not_in_fid = (sizeof($ex_fid_ary)) ? 'WHERE ' . $db->sql_in_set('f.forum_id', $ex_fid_ary, true) . " OR (f.forum_password <> '' AND fa.user_id <> " . (int) phpbb::$user->data['user_id'] . ')' : "";
+	$not_in_fid = (sizeof($ex_fid_ary)) ? 'WHERE ' . phpbb::$db->sql_in_set('f.forum_id', $ex_fid_ary, true) . " OR (f.forum_password <> '' AND fa.user_id <> " . (int) phpbb::$user->data['user_id'] . ')' : "";
 
 	$sql = 'SELECT f.forum_id, f.forum_name, f.parent_id, f.forum_type, f.right_id, f.forum_password, fa.user_id
 		FROM ' . FORUMS_TABLE . ' f
 		LEFT JOIN ' . FORUMS_ACCESS_TABLE . " fa ON (fa.forum_id = f.forum_id
-			AND fa.session_id = '" . $db->sql_escape(phpbb::$user->session_id) . "')
+			AND fa.session_id = '" . phpbb::$db->sql_escape(phpbb::$user->session_id) . "')
 		$not_in_fid
 		ORDER BY f.left_id";
-	$result = $db->sql_query($sql);
+	$result = phpbb::$db->sql_query($sql);
 
 	$right_id = 0;
 	$reset_search_forum = true;
-	while ($row = $db->sql_fetchrow($result))
+	while ($row = phpbb::$db->sql_fetchrow($result))
 	{
 		if ($row['forum_password'] && $row['user_id'] != phpbb::$user->data['user_id'])
 		{
@@ -194,7 +194,7 @@ if ($keywords || $author || $author_id || $search_id || $submit)
 			}
 		}
 	}
-	$db->sql_freeresult($result);
+	phpbb::$db->sql_freeresult($result);
 
 	// find out in which forums the user is allowed to view approved posts
 	if (phpbb::$acl->acl_get('m_approve'))
@@ -205,7 +205,7 @@ if ($keywords || $author || $author_id || $search_id || $submit)
 	else if (phpbb::$acl->acl_getf_global('m_approve'))
 	{
 		$m_approve_fid_ary = array_diff(array_keys(phpbb::$acl->acl_getf('!m_approve', true)), $ex_fid_ary);
-		$m_approve_fid_sql = ' AND (p.post_approved = 1' . ((sizeof($m_approve_fid_ary)) ? ' OR ' . $db->sql_in_set('p.forum_id', $m_approve_fid_ary, true) : '') . ')';
+		$m_approve_fid_sql = ' AND (p.post_approved = 1' . ((sizeof($m_approve_fid_ary)) ? ' OR ' . phpbb::$db->sql_in_set('p.forum_id', $m_approve_fid_ary, true) : '') . ')';
 	}
 	else
 	{
@@ -283,7 +283,7 @@ if ($keywords || $author || $author_id || $search_id || $submit)
 					WHERE t.topic_moved_id = 0
 						$last_post_time_sql
 						" . str_replace(array('p.', 'post_'), array('t.', 'topic_'), $m_approve_fid_sql) . '
-						' . ((sizeof($ex_fid_ary)) ? ' AND ' . $db->sql_in_set('t.forum_id', $ex_fid_ary, true) : '') . '
+						' . ((sizeof($ex_fid_ary)) ? ' AND ' . phpbb::$db->sql_in_set('t.forum_id', $ex_fid_ary, true) : '') . '
 					ORDER BY t.topic_last_post_time DESC';
 				$field = 'topic_id';
 			break;
@@ -322,7 +322,7 @@ if ($keywords || $author || $author_id || $search_id || $submit)
 							AND p.topic_id = t.topic_id
 							$last_post_time
 							$m_approve_fid_sql
-							" . ((sizeof($ex_fid_ary)) ? ' AND ' . $db->sql_in_set('p.forum_id', $ex_fid_ary, true) : '') . "
+							" . ((sizeof($ex_fid_ary)) ? ' AND ' . phpbb::$db->sql_in_set('p.forum_id', $ex_fid_ary, true) : '') . "
 							$sql_sort";
 					$field = 'post_id';
 				}
@@ -335,7 +335,7 @@ if ($keywords || $author || $author_id || $search_id || $submit)
 							AND p.topic_id = t.topic_id
 							$last_post_time
 							$m_approve_fid_sql
-							" . ((sizeof($ex_fid_ary)) ? ' AND ' . $db->sql_in_set('p.forum_id', $ex_fid_ary, true) : '') . "
+							" . ((sizeof($ex_fid_ary)) ? ' AND ' . phpbb::$db->sql_in_set('p.forum_id', $ex_fid_ary, true) : '') . "
 						$sql_sort";
 					$field = 'topic_id';
 				}
@@ -359,7 +359,7 @@ if ($keywords || $author || $author_id || $search_id || $submit)
 						FROM ' . POSTS_TABLE . ' p
 						WHERE p.post_time > ' . phpbb::$user->data['user_lastvisit'] . "
 							$m_approve_fid_sql
-							" . ((sizeof($ex_fid_ary)) ? ' AND ' . $db->sql_in_set('p.forum_id', $ex_fid_ary, true) : '') . "
+							" . ((sizeof($ex_fid_ary)) ? ' AND ' . phpbb::$db->sql_in_set('p.forum_id', $ex_fid_ary, true) : '') . "
 						$sql_sort";
 					$field = 'post_id';
 				}
@@ -370,7 +370,7 @@ if ($keywords || $author || $author_id || $search_id || $submit)
 						WHERE t.topic_last_post_time > ' . phpbb::$user->data['user_lastvisit'] . '
 							AND t.topic_moved_id = 0
 							' . str_replace(array('p.', 'post_'), array('t.', 'topic_'), $m_approve_fid_sql) . '
-							' . ((sizeof($ex_fid_ary)) ? 'AND ' . $db->sql_in_set('t.forum_id', $ex_fid_ary, true) : '') . "
+							' . ((sizeof($ex_fid_ary)) ? 'AND ' . phpbb::$db->sql_in_set('t.forum_id', $ex_fid_ary, true) : '') . "
 						$sql_sort";
 					$field = 'topic_id';
 				}
@@ -391,13 +391,13 @@ if ($keywords || $author || $author_id || $search_id || $submit)
 		if ($sql)
 		{
 			// only return up to 1000 ids (the last one will be removed later)
-			$result = $db->sql_query_limit($sql, 1001 - $start, $start);
+			$result = phpbb::$db->sql_query_limit($sql, 1001 - $start, $start);
 
-			while ($row = $db->sql_fetchrow($result))
+			while ($row = phpbb::$db->sql_fetchrow($result))
 			{
 				$id_ary[] = $row[$field];
 			}
-			$db->sql_freeresult($result);
+			phpbb::$db->sql_freeresult($result);
 
 			$total_match_count = sizeof($id_ary) + $start;
 			$id_ary = array_slice($id_ary, 0, $per_page);
@@ -433,8 +433,8 @@ if ($keywords || $author || $author_id || $search_id || $submit)
 
 	if (sizeof($id_ary))
 	{
-		$sql_where .= $db->sql_in_set(($show_results == 'posts') ? 'p.post_id' : 't.topic_id', $id_ary);
-		$sql_where .= (sizeof($ex_fid_ary)) ? ' AND (' . $db->sql_in_set('f.forum_id', $ex_fid_ary, true) . ' OR f.forum_id IS NULL)' : '';
+		$sql_where .= phpbb::$db->sql_in_set(($show_results == 'posts') ? 'p.post_id' : 't.topic_id', $id_ary);
+		$sql_where .= (sizeof($ex_fid_ary)) ? ' AND (' . phpbb::$db->sql_in_set('f.forum_id', $ex_fid_ary, true) . ' OR f.forum_id IS NULL)' : '';
 		$sql_where .= ($show_results == 'posts') ? $m_approve_fid_sql : str_replace(array('p.post_approved', 'p.forum_id'), array('t.topic_approved', 't.forum_id'), $m_approve_fid_sql);
 	}
 
@@ -518,14 +518,14 @@ if ($keywords || $author || $author_id || $search_id || $submit)
 			$sql = 'SELECT zebra_id, friend, foe
 				FROM ' . ZEBRA_TABLE . '
 				WHERE user_id = ' . phpbb::$user->data['user_id'];
-			$result = $db->sql_query($sql);
+			$result = phpbb::$db->sql_query($sql);
 
 			$zebra = array();
-			while ($row = $db->sql_fetchrow($result))
+			while ($row = phpbb::$db->sql_fetchrow($result))
 			{
 				$zebra[($row['friend']) ? 'friend' : 'foe'][] = $row['zebra_id'];
 			}
-			$db->sql_freeresult($result);
+			phpbb::$db->sql_freeresult($result);
 
 			$sql = 'SELECT p.*, f.forum_id, f.forum_name, t.*, u.username, u.username_clean, u.user_sig, u.user_sig_bbcode_uid, u.user_colour
 				FROM ' . POSTS_TABLE . ' p
@@ -571,7 +571,7 @@ if ($keywords || $author || $author_id || $search_id || $submit)
 				WHERE $sql_where";
 		}
 		$sql .= ' ORDER BY ' . $sort_by_sql[$sort_key] . ' ' . (($sort_dir == 'd') ? 'DESC' : 'ASC');
-		$result = $db->sql_query($sql);
+		$result = phpbb::$db->sql_query($sql);
 		$result_topic_id = 0;
 
 		$rowset = array();
@@ -579,7 +579,7 @@ if ($keywords || $author || $author_id || $search_id || $submit)
 		if ($show_results == 'topics')
 		{
 			$forums = $rowset = $shadow_topic_list = array();
-			while ($row = $db->sql_fetchrow($result))
+			while ($row = phpbb::$db->sql_fetchrow($result))
 			{
 				if ($row['topic_status'] == ITEM_MOVED)
 				{
@@ -595,17 +595,17 @@ if ($keywords || $author || $author_id || $search_id || $submit)
 				$forums[$row['forum_id']]['topic_list'][] = $row['topic_id'];
 				$forums[$row['forum_id']]['rowset'][$row['topic_id']] = &$rowset[$row['topic_id']];
 			}
-			$db->sql_freeresult($result);
+			phpbb::$db->sql_freeresult($result);
 
 			// If we have some shadow topics, update the rowset to reflect their topic information
 			if (sizeof($shadow_topic_list))
 			{
 				$sql = 'SELECT *
 					FROM ' . TOPICS_TABLE . '
-					WHERE ' . $db->sql_in_set('topic_id', array_keys($shadow_topic_list));
-				$result = $db->sql_query($sql);
+					WHERE ' . phpbb::$db->sql_in_set('topic_id', array_keys($shadow_topic_list));
+				$result = phpbb::$db->sql_query($sql);
 
-				while ($row = $db->sql_fetchrow($result))
+				while ($row = phpbb::$db->sql_fetchrow($result))
 				{
 					$orig_topic_id = $shadow_topic_list[$row['topic_id']];
 
@@ -618,7 +618,7 @@ if ($keywords || $author || $author_id || $search_id || $submit)
 
 					$rowset[$orig_topic_id] = $row;
 				}
-				$db->sql_freeresult($result);
+				phpbb::$db->sql_freeresult($result);
 			}
 			unset($shadow_topic_list);
 
@@ -645,7 +645,7 @@ if ($keywords || $author || $author_id || $search_id || $submit)
 			$bbcode_bitfield = $text_only_message = '';
 			$attach_list = array();
 
-			while ($row = $db->sql_fetchrow($result))
+			while ($row = phpbb::$db->sql_fetchrow($result))
 			{
 				// We pre-process some variables here for later usage
 				$row['post_text'] = censor_text($row['post_text']);
@@ -678,7 +678,7 @@ if ($keywords || $author || $author_id || $search_id || $submit)
 
 				$rowset[] = $row;
 			}
-			$db->sql_freeresult($result);
+			phpbb::$db->sql_freeresult($result);
 
 			unset($text_only_message);
 
@@ -708,16 +708,16 @@ if ($keywords || $author || $author_id || $search_id || $submit)
 			{
 				$sql = 'SELECT *
 					FROM ' . ATTACHMENTS_TABLE . '
-					WHERE ' . $db->sql_in_set('post_msg_id', $attach_list) . '
+					WHERE ' . phpbb::$db->sql_in_set('post_msg_id', $attach_list) . '
 						AND in_message = 0
 					ORDER BY filetime DESC, post_msg_id ASC';
-				$result = $db->sql_query($sql);
+				$result = phpbb::$db->sql_query($sql);
 
-				while ($row = $db->sql_fetchrow($result))
+				while ($row = phpbb::$db->sql_fetchrow($result))
 				{
 					$attachments[$row['post_msg_id']][] = $row;
 				}
-				$db->sql_freeresult($result);
+				phpbb::$db->sql_freeresult($result);
 			}
 		}
 
@@ -754,11 +754,11 @@ if ($keywords || $author || $author_id || $search_id || $submit)
 
 					if (sizeof($forum_ary))
 					{
-						$sql .= ' AND ' . $db->sql_in_set('forum_id', $forum_ary, true);
+						$sql .= ' AND ' . phpbb::$db->sql_in_set('forum_id', $forum_ary, true);
 					}
 
-					$result = $db->sql_query_limit($sql, 1);
-					$g_forum_id = (int) $db->sql_fetchfield('forum_id');
+					$result = phpbb::$db->sql_query_limit($sql, 1);
+					$g_forum_id = (int) phpbb::$db->sql_fetchfield('forum_id');
 				}
 				$u_forum_id = $g_forum_id;
 			}
@@ -936,15 +936,15 @@ $s_forums = '';
 $sql = 'SELECT f.forum_id, f.forum_name, f.parent_id, f.forum_type, f.left_id, f.right_id, f.forum_password, f.enable_indexing, fa.user_id
 	FROM ' . FORUMS_TABLE . ' f
 	LEFT JOIN ' . FORUMS_ACCESS_TABLE . " fa ON (fa.forum_id = f.forum_id
-		AND fa.session_id = '" . $db->sql_escape(phpbb::$user->session_id) . "')
+		AND fa.session_id = '" . phpbb::$db->sql_escape(phpbb::$user->session_id) . "')
 	ORDER BY f.left_id ASC";
-$result = $db->sql_query($sql);
+$result = phpbb::$db->sql_query($sql);
 
 $right = $cat_right = $padding_inc = 0;
 $padding = $forum_list = $holding = '';
 $pad_store = array('0' => '');
 
-while ($row = $db->sql_fetchrow($result))
+while ($row = phpbb::$db->sql_fetchrow($result))
 {
 	if ($row['forum_type'] == FORUM_CAT && ($row['left_id'] + 1 == $row['right_id']))
 	{
@@ -1074,11 +1074,11 @@ if (phpbb::$acl->acl_get('a_search'))
 {
 	$sql = 'SELECT search_time, search_keywords
 		FROM ' . SEARCH_RESULTS_TABLE . '
-		WHERE ' . $db->sql_function('length_text', 'search_keywords') . ' > 0
+		WHERE ' . phpbb::$db->sql_function('length_text', 'search_keywords') . ' > 0
 		ORDER BY search_time DESC';
-	$result = $db->sql_query_limit($sql, 5);
+	$result = phpbb::$db->sql_query_limit($sql, 5);
 
-	while ($row = $db->sql_fetchrow($result))
+	while ($row = phpbb::$db->sql_fetchrow($result))
 	{
 		$keywords = $row['search_keywords'];
 
@@ -1089,7 +1089,7 @@ if (phpbb::$acl->acl_get('a_search'))
 			'U_KEYWORDS'	=> append_sid('search', 'keywords=' . urlencode(htmlspecialchars_decode($keywords)))
 		));
 	}
-	$db->sql_freeresult($result);
+	phpbb::$db->sql_freeresult($result);
 }
 
 // Output the basic page

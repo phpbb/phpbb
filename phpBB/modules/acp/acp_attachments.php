@@ -82,14 +82,14 @@ class acp_attachments
 					FROM ' . EXTENSION_GROUPS_TABLE . '
 					WHERE cat_id > 0
 					ORDER BY cat_id';
-				$result = $db->sql_query($sql);
+				$result = phpbb::$db->sql_query($sql);
 
 				$s_assigned_groups = array();
-				while ($row = $db->sql_fetchrow($result))
+				while ($row = phpbb::$db->sql_fetchrow($result))
 				{
 					$s_assigned_groups[$row['cat_id']][] = $row['group_name'];
 				}
-				$db->sql_freeresult($result);
+				phpbb::$db->sql_freeresult($result);
 
 				$l_legend_cat_images = phpbb::$user->lang['SETTINGS_CAT_IMAGES'] . ' [' . phpbb::$user->lang['ASSIGNED_GROUP'] . ': ' . ((!empty($s_assigned_groups[ATTACHMENT_CATEGORY_IMAGE])) ? implode(', ', $s_assigned_groups[ATTACHMENT_CATEGORY_IMAGE]) : phpbb::$user->lang['NO_EXT_GROUP']) . ']';
 
@@ -214,12 +214,12 @@ class acp_attachments
 
 				$sql = 'SELECT *
 					FROM ' . SITELIST_TABLE;
-				$result = $db->sql_query($sql);
+				$result = phpbb::$db->sql_query($sql);
 
 				$defined_ips = '';
 				$ips = array();
 
-				while ($row = $db->sql_fetchrow($result))
+				while ($row = phpbb::$db->sql_fetchrow($result))
 				{
 					$value = ($row['site_ip']) ? $row['site_ip'] : $row['site_hostname'];
 					if ($value)
@@ -228,7 +228,7 @@ class acp_attachments
 						$ips[$row['site_id']] = $value;
 					}
 				}
-				$db->sql_freeresult($result);
+				phpbb::$db->sql_freeresult($result);
 
 				$template->assign_vars(array(
 					'S_SECURE_DOWNLOADS'	=> $this->new_config['secure_downloads'],
@@ -314,21 +314,21 @@ class acp_attachments
 						$sql = 'SELECT *
 							FROM ' . EXTENSIONS_TABLE . '
 							ORDER BY extension_id';
-						$result = $db->sql_query($sql);
+						$result = phpbb::$db->sql_query($sql);
 
-						while ($row = $db->sql_fetchrow($result))
+						while ($row = phpbb::$db->sql_fetchrow($result))
 						{
 							if ($row['group_id'] != $extensions[$row['extension_id']]['group_id'])
 							{
 								$sql = 'UPDATE ' . EXTENSIONS_TABLE . '
 									SET group_id = ' . (int) $extensions[$row['extension_id']]['group_id'] . '
 									WHERE extension_id = ' . $row['extension_id'];
-								$db->sql_query($sql);
+								phpbb::$db->sql_query($sql);
 
 								add_log('admin', 'LOG_ATTACH_EXT_UPDATE', $row['extension']);
 							}
 						}
-						$db->sql_freeresult($result);
+						phpbb::$db->sql_freeresult($result);
 
 						// Delete Extension?
 						$extension_id_list = request_var('extension_id_list', array(0));
@@ -337,20 +337,20 @@ class acp_attachments
 						{
 							$sql = 'SELECT extension
 								FROM ' . EXTENSIONS_TABLE . '
-								WHERE ' . $db->sql_in_set('extension_id', $extension_id_list);
-							$result = $db->sql_query($sql);
+								WHERE ' . phpbb::$db->sql_in_set('extension_id', $extension_id_list);
+							$result = phpbb::$db->sql_query($sql);
 
 							$extension_list = '';
-							while ($row = $db->sql_fetchrow($result))
+							while ($row = phpbb::$db->sql_fetchrow($result))
 							{
 								$extension_list .= ($extension_list == '') ? $row['extension'] : ', ' . $row['extension'];
 							}
-							$db->sql_freeresult($result);
+							phpbb::$db->sql_freeresult($result);
 
 							$sql = 'DELETE
 								FROM ' . EXTENSIONS_TABLE . '
-								WHERE ' . $db->sql_in_set('extension_id', $extension_id_list);
-							$db->sql_query($sql);
+								WHERE ' . phpbb::$db->sql_in_set('extension_id', $extension_id_list);
+							phpbb::$db->sql_query($sql);
 
 							add_log('admin', 'LOG_ATTACH_EXT_DEL', $extension_list);
 						}
@@ -367,14 +367,14 @@ class acp_attachments
 						{
 							$sql = 'SELECT extension_id
 								FROM ' . EXTENSIONS_TABLE . "
-								WHERE extension = '" . $db->sql_escape($add_extension) . "'";
-							$result = $db->sql_query($sql);
+								WHERE extension = '" . phpbb::$db->sql_escape($add_extension) . "'";
+							$result = phpbb::$db->sql_query($sql);
 
-							if ($row = $db->sql_fetchrow($result))
+							if ($row = phpbb::$db->sql_fetchrow($result))
 							{
 								$error[] = sprintf(phpbb::$user->lang['EXTENSION_EXIST'], $add_extension);
 							}
-							$db->sql_freeresult($result);
+							phpbb::$db->sql_freeresult($result);
 
 							if (!sizeof($error))
 							{
@@ -383,7 +383,7 @@ class acp_attachments
 									'extension'	=>	$add_extension
 								);
 
-								$db->sql_query('INSERT INTO ' . EXTENSIONS_TABLE . ' ' . $db->sql_build_array('INSERT', $sql_ary));
+								phpbb::$db->sql_query('INSERT INTO ' . EXTENSIONS_TABLE . ' ' . phpbb::$db->sql_build_array('INSERT', $sql_ary));
 								add_log('admin', 'LOG_ATTACH_EXT_ADD', $add_extension);
 							}
 						}
@@ -406,9 +406,9 @@ class acp_attachments
 				$sql = 'SELECT *
 					FROM ' . EXTENSIONS_TABLE . '
 					ORDER BY group_id, extension';
-				$result = $db->sql_query($sql);
+				$result = phpbb::$db->sql_query($sql);
 
-				if ($row = $db->sql_fetchrow($result))
+				if ($row = phpbb::$db->sql_fetchrow($result))
 				{
 					$old_group_id = $row['group_id'];
 					do
@@ -429,9 +429,9 @@ class acp_attachments
 							'GROUP_OPTIONS'	=> $this->group_select('group_select[]', $row['group_id']))
 						);
 					}
-					while ($row = $db->sql_fetchrow($result));
+					while ($row = phpbb::$db->sql_fetchrow($result));
 				}
-				$db->sql_freeresult($result);
+				phpbb::$db->sql_freeresult($result);
 
 			break;
 
@@ -459,9 +459,9 @@ class acp_attachments
 						$sql = 'SELECT *
 							FROM ' . EXTENSION_GROUPS_TABLE . "
 							WHERE group_id = $group_id";
-						$result = $db->sql_query($sql);
-						$ext_row = $db->sql_fetchrow($result);
-						$db->sql_freeresult($result);
+						$result = phpbb::$db->sql_query($sql);
+						$ext_row = phpbb::$db->sql_fetchrow($result);
+						phpbb::$db->sql_freeresult($result);
 
 						if (!$ext_row)
 						{
@@ -486,13 +486,13 @@ class acp_attachments
 					{
 						$sql = 'SELECT group_name
 							FROM ' . EXTENSION_GROUPS_TABLE;
-						$result = $db->sql_query($sql);
-						$ext_row = $db->sql_fetchrow($result);
-						$db->sql_freeresult($result);
+						$result = phpbb::$db->sql_query($sql);
+						$ext_row = phpbb::$db->sql_fetchrow($result);
+						phpbb::$db->sql_freeresult($result);
 
 						$clean_group_name = utf8_clean_string($new_group_name);
 
-						while ($row = $db->sql_fetchrow($result))
+						while ($row = phpbb::$db->sql_fetchrow($result))
 						{
 							if (utf8_clean_string($row['group_name']) === $clean_group_name)
 							{
@@ -500,7 +500,7 @@ class acp_attachments
 								break;
 							}
 						}
-						$db->sql_freeresult($result);
+						phpbb::$db->sql_freeresult($result);
 					}
 
 					if (!sizeof($error))
@@ -542,14 +542,14 @@ class acp_attachments
 
 						// @TODO: rewrite with the new param db functions
 						$sql = ($action == 'add') ? 'INSERT INTO ' . EXTENSION_GROUPS_TABLE . ' ' : 'UPDATE ' . EXTENSION_GROUPS_TABLE . ' SET ';
-						$sql .= $db->sql_build_array((($action == 'add') ? 'INSERT' : 'UPDATE'), $group_ary);
+						$sql .= phpbb::$db->sql_build_array((($action == 'add') ? 'INSERT' : 'UPDATE'), $group_ary);
 						$sql .= ($action == 'edit') ? " WHERE group_id = $group_id" : '';
 
-						$db->sql_query($sql);
+						phpbb::$db->sql_query($sql);
 
 						if ($action == 'add')
 						{
-							$group_id = $db->sql_nextid();
+							$group_id = phpbb::$db->sql_nextid();
 						}
 
 						add_log('admin', 'LOG_ATTACH_EXTGROUP_' . strtoupper($action), $group_name);
@@ -562,15 +562,15 @@ class acp_attachments
 						$sql = 'UPDATE ' . EXTENSIONS_TABLE . "
 							SET group_id = 0
 							WHERE group_id = $group_id";
-						$db->sql_query($sql);
+						phpbb::$db->sql_query($sql);
 					}
 
 					if (sizeof($extension_list))
 					{
 						$sql = 'UPDATE ' . EXTENSIONS_TABLE . "
 							SET group_id = $group_id
-							WHERE " . $db->sql_in_set('extension_id', $extension_list);
-						$db->sql_query($sql);
+							WHERE " . phpbb::$db->sql_in_set('extension_id', $extension_list);
+						phpbb::$db->sql_query($sql);
 					}
 
 					phpbb::$acm->destroy('extensions');
@@ -602,20 +602,20 @@ class acp_attachments
 							$sql = 'SELECT group_name
 								FROM ' . EXTENSION_GROUPS_TABLE . "
 								WHERE group_id = $group_id";
-							$result = $db->sql_query($sql);
-							$group_name = (string) $db->sql_fetchfield('group_name');
-							$db->sql_freeresult($result);
+							$result = phpbb::$db->sql_query($sql);
+							$group_name = (string) phpbb::$db->sql_fetchfield('group_name');
+							phpbb::$db->sql_freeresult($result);
 
 							$sql = 'DELETE
 								FROM ' . EXTENSION_GROUPS_TABLE . "
 								WHERE group_id = $group_id";
-							$db->sql_query($sql);
+							phpbb::$db->sql_query($sql);
 
 							// Set corresponding Extensions to a pending Group
 							$sql = 'UPDATE ' . EXTENSIONS_TABLE . "
 								SET group_id = 0
 								WHERE group_id = $group_id";
-							$db->sql_query($sql);
+							phpbb::$db->sql_query($sql);
 
 							add_log('admin', 'LOG_ATTACH_EXTGROUP_DEL', $group_name);
 
@@ -645,9 +645,9 @@ class acp_attachments
 						$sql = 'SELECT *
 							FROM ' . EXTENSION_GROUPS_TABLE . "
 							WHERE group_id = $group_id";
-						$result = $db->sql_query($sql);
-						$ext_group_row = $db->sql_fetchrow($result);
-						$db->sql_freeresult($result);
+						$result = phpbb::$db->sql_query($sql);
+						$ext_group_row = phpbb::$db->sql_fetchrow($result);
+						phpbb::$db->sql_freeresult($result);
 
 						$forum_ids = (!$ext_group_row['allowed_forums']) ? array() : unserialize(trim($ext_group_row['allowed_forums']));
 
@@ -676,9 +676,9 @@ class acp_attachments
 							WHERE group_id = $group_id
 								OR group_id = 0
 							ORDER BY extension";
-						$result = $db->sql_query($sql);
-						$extensions = $db->sql_fetchrowset($result);
-						$db->sql_freeresult($result);
+						$result = phpbb::$db->sql_query($sql);
+						$extensions = phpbb::$db->sql_fetchrowset($result);
+						phpbb::$db->sql_freeresult($result);
 
 						if ($ext_group_row['max_filesize'] == 0)
 						{
@@ -771,13 +771,13 @@ class acp_attachments
 						$sql = 'SELECT forum_id, forum_name, parent_id, forum_type, left_id, right_id
 							FROM ' . FORUMS_TABLE . '
 							ORDER BY left_id ASC';
-						$result = $db->sql_query($sql, 600);
+						$result = phpbb::$db->sql_query($sql, 600);
 
 						$right = $cat_right = $padding_inc = 0;
 						$padding = $forum_list = $holding = '';
 						$padding_store = array('0' => '');
 
-						while ($row = $db->sql_fetchrow($result))
+						while ($row = phpbb::$db->sql_fetchrow($result))
 						{
 							if ($row['forum_type'] == FORUM_CAT && ($row['left_id'] + 1 == $row['right_id']))
 							{
@@ -830,7 +830,7 @@ class acp_attachments
 							$s_forum_id_options .= $holding;
 						}
 
-						$db->sql_freeresult($result);
+						phpbb::$db->sql_freeresult($result);
 						unset($padding_store);
 
 						$template->assign_vars(array(
@@ -843,10 +843,10 @@ class acp_attachments
 				$sql = 'SELECT *
 					FROM ' . EXTENSION_GROUPS_TABLE . '
 					ORDER BY allow_group DESC, allow_in_pm DESC, group_name';
-				$result = $db->sql_query($sql);
+				$result = phpbb::$db->sql_query($sql);
 
 				$old_allow_group = $old_allow_pm = 1;
-				while ($row = $db->sql_fetchrow($result))
+				while ($row = phpbb::$db->sql_fetchrow($result))
 				{
 					$s_add_spacer = ($old_allow_group != $row['allow_group'] || $old_allow_pm != $row['allow_in_pm']) ? true : false;
 
@@ -866,7 +866,7 @@ class acp_attachments
 					$old_allow_group = $row['allow_group'];
 					$old_allow_pm = $row['allow_in_pm'];
 				}
-				$db->sql_freeresult($result);
+				phpbb::$db->sql_freeresult($result);
 
 			break;
 
@@ -882,12 +882,12 @@ class acp_attachments
 					{
 						$sql = 'SELECT *
 							FROM ' . ATTACHMENTS_TABLE . '
-							WHERE ' . $db->sql_in_set('attach_id', $delete_files) . '
+							WHERE ' . phpbb::$db->sql_in_set('attach_id', $delete_files) . '
 								AND is_orphan = 1';
-						$result = $db->sql_query($sql);
+						$result = phpbb::$db->sql_query($sql);
 
 						$delete_files = array();
-						while ($row = $db->sql_fetchrow($result))
+						while ($row = phpbb::$db->sql_fetchrow($result))
 						{
 							phpbb_unlink($row['physical_filename'], 'file');
 
@@ -898,14 +898,14 @@ class acp_attachments
 
 							$delete_files[$row['attach_id']] = $row['real_filename'];
 						}
-						$db->sql_freeresult($result);
+						phpbb::$db->sql_freeresult($result);
 					}
 
 					if (sizeof($delete_files))
 					{
 						$sql = 'DELETE FROM ' . ATTACHMENTS_TABLE . '
-							WHERE ' . $db->sql_in_set('attach_id', array_keys($delete_files));
-						$db->sql_query($sql);
+							WHERE ' . phpbb::$db->sql_in_set('attach_id', array_keys($delete_files));
+						phpbb::$db->sql_query($sql);
 
 						add_log('admin', 'LOG_ATTACH_ORPHAN_DEL', implode(', ', $delete_files));
 						$notify[] = sprintf(phpbb::$user->lang['LOG_ATTACH_ORPHAN_DEL'], implode(', ', $delete_files));
@@ -927,36 +927,36 @@ class acp_attachments
 
 						$sql = 'SELECT forum_id, forum_name
 							FROM ' . FORUMS_TABLE;
-						$result = $db->sql_query($sql);
+						$result = phpbb::$db->sql_query($sql);
 
 						$forum_names = array();
-						while ($row = $db->sql_fetchrow($result))
+						while ($row = phpbb::$db->sql_fetchrow($result))
 						{
 							$forum_names[$row['forum_id']] = $row['forum_name'];
 						}
-						$db->sql_freeresult($result);
+						phpbb::$db->sql_freeresult($result);
 
 						$sql = 'SELECT forum_id, topic_id, post_id, poster_id
 							FROM ' . POSTS_TABLE . '
-							WHERE ' . $db->sql_in_set('post_id', $upload_list);
-						$result = $db->sql_query($sql);
+							WHERE ' . phpbb::$db->sql_in_set('post_id', $upload_list);
+						$result = phpbb::$db->sql_query($sql);
 
 						$post_info = array();
-						while ($row = $db->sql_fetchrow($result))
+						while ($row = phpbb::$db->sql_fetchrow($result))
 						{
 							$post_info[$row['post_id']] = $row;
 						}
-						$db->sql_freeresult($result);
+						phpbb::$db->sql_freeresult($result);
 
 						// Select those attachments we want to change...
 						$sql = 'SELECT *
 							FROM ' . ATTACHMENTS_TABLE . '
-							WHERE ' . $db->sql_in_set('attach_id', array_keys($upload_list)) . '
+							WHERE ' . phpbb::$db->sql_in_set('attach_id', array_keys($upload_list)) . '
 								AND is_orphan = 1';
-						$result = $db->sql_query($sql);
+						$result = phpbb::$db->sql_query($sql);
 
 						$files_added = $space_taken = 0;
-						while ($row = $db->sql_fetchrow($result))
+						while ($row = phpbb::$db->sql_fetchrow($result))
 						{
 							$post_row = $post_info[$upload_list[$row['attach_id']]];
 
@@ -981,26 +981,26 @@ class acp_attachments
 							);
 
 							$sql = 'UPDATE ' . ATTACHMENTS_TABLE . '
-								SET ' . $db->sql_build_array('UPDATE', $sql_ary) . '
+								SET ' . phpbb::$db->sql_build_array('UPDATE', $sql_ary) . '
 								WHERE attach_id = ' . $row['attach_id'];
-							$db->sql_query($sql);
+							phpbb::$db->sql_query($sql);
 
 							$sql = 'UPDATE ' . POSTS_TABLE . '
 								SET post_attachment = 1
 								WHERE post_id = ' . $post_row['post_id'];
-							$db->sql_query($sql);
+							phpbb::$db->sql_query($sql);
 
 							$sql = 'UPDATE ' . TOPICS_TABLE . '
 								SET topic_attachment = 1
 								WHERE topic_id = ' . $post_row['topic_id'];
-							$db->sql_query($sql);
+							phpbb::$db->sql_query($sql);
 
 							$space_taken += $row['filesize'];
 							$files_added++;
 
 							add_log('admin', 'LOG_ATTACH_FILEUPLOAD', $post_row['post_id'], $row['real_filename']);
 						}
-						$db->sql_freeresult($result);
+						phpbb::$db->sql_freeresult($result);
 
 						if ($files_added)
 						{
@@ -1020,9 +1020,9 @@ class acp_attachments
 					WHERE is_orphan = 1
 						AND filetime < ' . (time() - 3*60*60) . '
 					ORDER BY filetime DESC';
-				$result = $db->sql_query($sql);
+				$result = phpbb::$db->sql_query($sql);
 
-				while ($row = $db->sql_fetchrow($result))
+				while ($row = phpbb::$db->sql_fetchrow($result))
 				{
 					$template->assign_block_vars('orphan', array(
 						'FILESIZE'			=> get_formatted_filesize($row['filesize']),
@@ -1034,7 +1034,7 @@ class acp_attachments
 						'U_FILE'			=> append_sid('download/file', 'mode=view&amp;id=' . $row['attach_id']))
 					);
 				}
-				$db->sql_freeresult($result);
+				phpbb::$db->sql_freeresult($result);
 
 			break;
 		}
@@ -1075,11 +1075,11 @@ class acp_attachments
 			$sql = 'SELECT cat_id
 				FROM ' . EXTENSION_GROUPS_TABLE . '
 				WHERE group_id = ' . (int) $group_id;
-			$result = $db->sql_query($sql);
+			$result = phpbb::$db->sql_query($sql);
 
-			$cat_type = (!($row = $db->sql_fetchrow($result))) ? ATTACHMENT_CATEGORY_NONE : $row['cat_id'];
+			$cat_type = (!($row = phpbb::$db->sql_fetchrow($result))) ? ATTACHMENT_CATEGORY_NONE : $row['cat_id'];
 
-			$db->sql_freeresult($result);
+			phpbb::$db->sql_freeresult($result);
 		}
 		else
 		{
@@ -1109,14 +1109,14 @@ class acp_attachments
 		$sql = 'SELECT group_id, group_name
 			FROM ' . EXTENSION_GROUPS_TABLE . '
 			ORDER BY group_name';
-		$result = $db->sql_query($sql);
+		$result = phpbb::$db->sql_query($sql);
 
 		$group_name = array();
-		while ($row = $db->sql_fetchrow($result))
+		while ($row = phpbb::$db->sql_fetchrow($result))
 		{
 			$group_name[] = $row;
 		}
-		$db->sql_freeresult($result);
+		phpbb::$db->sql_freeresult($result);
 
 		$row['group_id'] = 0;
 		$row['group_name'] = phpbb::$user->lang['NOT_ASSIGNED'];
@@ -1309,9 +1309,9 @@ class acp_attachments
 			$sql = 'SELECT site_ip, site_hostname
 				FROM ' . SITELIST_TABLE . "
 				WHERE ip_exclude = $ip_exclude";
-			$result = $db->sql_query($sql);
+			$result = phpbb::$db->sql_query($sql);
 
-			if ($row = $db->sql_fetchrow($result))
+			if ($row = phpbb::$db->sql_fetchrow($result))
 			{
 				$iplist_tmp = array();
 				$hostlist_tmp = array();
@@ -1337,14 +1337,14 @@ class acp_attachments
 					}
 					// break;
 				}
-				while ($row = $db->sql_fetchrow($result));
+				while ($row = phpbb::$db->sql_fetchrow($result));
 
 				$iplist = array_unique(array_diff($iplist, $iplist_tmp));
 				$hostlist = array_unique(array_diff($hostlist, $hostlist_tmp));
 				unset($iplist_tmp);
 				unset($hostlist_tmp);
 			}
-			$db->sql_freeresult($result);
+			phpbb::$db->sql_freeresult($result);
 
 			if (sizeof($iplist))
 			{
@@ -1352,7 +1352,7 @@ class acp_attachments
 				{
 					$sql = 'INSERT INTO ' . SITELIST_TABLE . " (site_ip, ip_exclude)
 						VALUES ($ip_entry, $ip_exclude)";
-					$db->sql_query($sql);
+					phpbb::$db->sql_query($sql);
 				}
 			}
 
@@ -1362,7 +1362,7 @@ class acp_attachments
 				{
 					$sql = 'INSERT INTO ' . SITELIST_TABLE . " (site_hostname, ip_exclude)
 						VALUES ($host_entry, $ip_exclude)";
-					$db->sql_query($sql);
+					phpbb::$db->sql_query($sql);
 				}
 			}
 
@@ -1386,18 +1386,18 @@ class acp_attachments
 				// Grab details of ips for logging information later
 				$sql = 'SELECT site_ip, site_hostname
 					FROM ' . SITELIST_TABLE . '
-					WHERE ' . $db->sql_in_set('site_id', $unip_sql);
-				$result = $db->sql_query($sql);
+					WHERE ' . phpbb::$db->sql_in_set('site_id', $unip_sql);
+				$result = phpbb::$db->sql_query($sql);
 
-				while ($row = $db->sql_fetchrow($result))
+				while ($row = phpbb::$db->sql_fetchrow($result))
 				{
 					$l_unip_list .= (($l_unip_list != '') ? ', ' : '') . (($row['site_ip']) ? $row['site_ip'] : $row['site_hostname']);
 				}
-				$db->sql_freeresult($result);
+				phpbb::$db->sql_freeresult($result);
 
 				$sql = 'DELETE FROM ' . SITELIST_TABLE . '
-					WHERE ' . $db->sql_in_set('site_id', $unip_sql);
-				$db->sql_query($sql);
+					WHERE ' . phpbb::$db->sql_in_set('site_id', $unip_sql);
+				phpbb::$db->sql_query($sql);
 
 				add_log('admin', 'LOG_DOWNLOAD_REMOVE_IP', $l_unip_list);
 			}

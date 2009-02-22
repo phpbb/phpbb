@@ -57,7 +57,7 @@ class acp_logs
 					{
 						$sql_in[] = $mark;
 					}
-					$where_sql = ' AND ' . $db->sql_in_set('log_id', $sql_in);
+					$where_sql = ' AND ' . phpbb::$db->sql_in_set('log_id', $sql_in);
 					unset($sql_in);
 				}
 
@@ -66,7 +66,7 @@ class acp_logs
 					$sql = 'DELETE FROM ' . LOG_TABLE . "
 						WHERE log_type = {$this->log_type}
 						$where_sql";
-					$db->sql_query($sql);
+					phpbb::$db->sql_query($sql);
 
 					add_log('admin', 'LOG_CLEAR_' . strtoupper($mode));
 				}

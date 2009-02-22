@@ -252,9 +252,9 @@ class ucp_pm
 						WHERE msg_id = $msg_id
 							AND folder_id <> " . PRIVMSGS_NO_BOX . '
 							AND user_id = ' . phpbb::$user->data['user_id'];
-					$result = $db->sql_query($sql);
-					$row = $db->sql_fetchrow($result);
-					$db->sql_freeresult($result);
+					$result = phpbb::$db->sql_query($sql);
+					$row = phpbb::$db->sql_fetchrow($result);
+					phpbb::$db->sql_freeresult($result);
 
 					if (!$row)
 					{
@@ -280,9 +280,9 @@ class ucp_pm
 								AND t.msg_id = p.msg_id
 								AND p.message_time $sql_condition p2.message_time
 							ORDER BY p.message_time $sql_ordering";
-						$result = $db->sql_query_limit($sql, 1);
-						$row = $db->sql_fetchrow($result);
-						$db->sql_freeresult($result);
+						$result = phpbb::$db->sql_query_limit($sql, 1);
+						$row = phpbb::$db->sql_fetchrow($result);
+						phpbb::$db->sql_freeresult($result);
 
 						if (!$row)
 						{
@@ -302,9 +302,9 @@ class ucp_pm
 							AND t.folder_id = $folder_id
 							AND t.msg_id = p.msg_id
 							AND p.msg_id = $msg_id";
-					$result = $db->sql_query($sql);
-					$message_row = $db->sql_fetchrow($result);
-					$db->sql_freeresult($result);
+					$result = phpbb::$db->sql_query($sql);
+					$message_row = phpbb::$db->sql_fetchrow($result);
+					phpbb::$db->sql_freeresult($result);
 
 					if (!$message_row)
 					{

@@ -364,7 +364,7 @@ abstract class phpbb_dbal
 		if ($type === 'UPDATE')
 		{
 			$where = ($where) ? ' WHERE ' . $where : '';
-			$this->sql_query('UPDATE ' . $table . ' SET ' . $db->sql_build_array('UPDATE', $data) . $where);
+			$this->sql_query('UPDATE ' . $table . ' SET ' . $this->sql_build_array('UPDATE', $data) . $where);
 		}
 		else
 		{

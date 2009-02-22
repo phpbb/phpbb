@@ -83,13 +83,13 @@ class acp_permissions
 				FROM ' . GROUPS_TABLE . '
 				WHERE group_type = ' . GROUP_SPECIAL . "
 				$sql_and";
-			$result = $db->sql_query($sql);
+			$result = phpbb::$db->sql_query($sql);
 
-			while ($row = $db->sql_fetchrow($result))
+			while ($row = phpbb::$db->sql_fetchrow($result))
 			{
 				$group_id[] = $row['group_id'];
 			}
-			$db->sql_freeresult($result);
+			phpbb::$db->sql_freeresult($result);
 		}
 
 		// Map usernames to ids and vice versa
@@ -116,14 +116,14 @@ class acp_permissions
 			$sql = 'SELECT forum_id
 				FROM ' . FORUMS_TABLE . '
 				ORDER BY left_id';
-			$result = $db->sql_query($sql);
+			$result = phpbb::$db->sql_query($sql);
 
 			$forum_id = array();
-			while ($row = $db->sql_fetchrow($result))
+			while ($row = phpbb::$db->sql_fetchrow($result))
 			{
 				$forum_id[] = (int) $row['forum_id'];
 			}
-			$db->sql_freeresult($result);
+			phpbb::$db->sql_freeresult($result);
 		}
 		else if ($subforum_id)
 		{
@@ -439,16 +439,16 @@ class acp_permissions
 			{
 				$sql = 'SELECT forum_name
 					FROM ' . FORUMS_TABLE . '
-					WHERE ' . $db->sql_in_set('forum_id', $forum_id) . '
+					WHERE ' . phpbb::$db->sql_in_set('forum_id', $forum_id) . '
 					ORDER BY left_id ASC';
-				$result = $db->sql_query($sql);
+				$result = phpbb::$db->sql_query($sql);
 
 				$forum_names = array();
-				while ($row = $db->sql_fetchrow($result))
+				while ($row = phpbb::$db->sql_fetchrow($result))
 				{
 					$forum_names[] = $row['forum_name'];
 				}
-				$db->sql_freeresult($result);
+				phpbb::$db->sql_freeresult($result);
 
 				$template->assign_vars(array(
 					'S_FORUM_NAMES'		=> (sizeof($forum_names)) ? true : false,
@@ -583,15 +583,15 @@ class acp_permissions
 		{
 			$sql = "SELECT $sql_id
 				FROM $table
-				WHERE " . $db->sql_in_set($sql_id, $ids);
-			$result = $db->sql_query($sql);
+				WHERE " . phpbb::$db->sql_in_set($sql_id, $ids);
+			$result = phpbb::$db->sql_query($sql);
 
 			$ids = array();
-			while ($row = $db->sql_fetchrow($result))
+			while ($row = phpbb::$db->sql_fetchrow($result))
 			{
 				$ids[] = (int) $row[$sql_id];
 			}
-			$db->sql_freeresult($result);
+			phpbb::$db->sql_freeresult($result);
 		}
 
 		if (!sizeof($ids))
@@ -756,14 +756,14 @@ class acp_permissions
 			FROM ' . ACL_OPTIONS_TABLE . ' o, ' . ACL_ROLES_DATA_TABLE . ' r
 			WHERE o.auth_option_id = r.auth_option_id
 				AND r.role_id = ' . $role_id;
-		$result = $db->sql_query($sql);
+		$result = phpbb::$db->sql_query($sql);
 
 		$test_auth_settings = array();
-		while ($row = $db->sql_fetchrow($result))
+		while ($row = phpbb::$db->sql_fetchrow($result))
 		{
 			$test_auth_settings[$row['auth_option']] = $row['auth_setting'];
 		}
-		$db->sql_freeresult($result);
+		phpbb::$db->sql_freeresult($result);
 
 		// We need to add any ACL_NO setting from auth_settings to compare correctly
 		foreach ($auth_settings as $option => $setting)
@@ -826,15 +826,15 @@ class acp_permissions
 
 		// Logging ... first grab user or groupnames ...
 		$sql = ($ug_type == 'group') ? 'SELECT group_name as name, group_type FROM ' . GROUPS_TABLE . ' WHERE ' : 'SELECT username as name FROM ' . USERS_TABLE . ' WHERE ';
-		$sql .= $db->sql_in_set(($ug_type == 'group') ? 'group_id' : 'user_id', array_map('intval', $ug_id));
-		$result = $db->sql_query($sql);
+		$sql .= phpbb::$db->sql_in_set(($ug_type == 'group') ? 'group_id' : 'user_id', array_map('intval', $ug_id));
+		$result = phpbb::$db->sql_query($sql);
 
 		$l_ug_list = '';
-		while ($row = $db->sql_fetchrow($result))
+		while ($row = phpbb::$db->sql_fetchrow($result))
 		{
 			$l_ug_list .= (($l_ug_list != '') ? ', ' : '') . ((isset($row['group_type']) && $row['group_type'] == GROUP_SPECIAL) ? '<span class="sep">' . phpbb::$user->lang['G_' . $row['name']] . '</span>' : $row['name']);
 		}
-		$db->sql_freeresult($result);
+		phpbb::$db->sql_freeresult($result);
 
 		$mode = str_replace('setting_', '', $mode);
 
@@ -847,15 +847,15 @@ class acp_permissions
 			// Grab the forum details if non-zero forum_id
 			$sql = 'SELECT forum_name
 				FROM ' . FORUMS_TABLE . '
-				WHERE ' . $db->sql_in_set('forum_id', $forum_id);
-			$result = $db->sql_query($sql);
+				WHERE ' . phpbb::$db->sql_in_set('forum_id', $forum_id);
+			$result = phpbb::$db->sql_query($sql);
 
 			$l_forum_list = '';
-			while ($row = $db->sql_fetchrow($result))
+			while ($row = phpbb::$db->sql_fetchrow($result))
 			{
 				$l_forum_list .= (($l_forum_list != '') ? ', ' : '') . $row['forum_name'];
 			}
-			$db->sql_freeresult($result);
+			phpbb::$db->sql_freeresult($result);
 
 			add_log('admin', 'LOG_ACL_' . strtoupper($action) . '_' . strtoupper($mode) . '_' . strtoupper($permission_type), $l_forum_list, $l_ug_list);
 		}
@@ -871,9 +871,9 @@ class acp_permissions
 			$sql = 'SELECT user_id, username, user_permissions, user_type
 				FROM ' . USERS_TABLE . '
 				WHERE user_id = ' . $user_id;
-			$result = $db->sql_query($sql);
-			$userdata = $db->sql_fetchrow($result);
-			$db->sql_freeresult($result);
+			$result = phpbb::$db->sql_query($sql);
+			$userdata = phpbb::$db->sql_fetchrow($result);
+			phpbb::$db->sql_freeresult($result);
 		}
 		else
 		{
@@ -892,9 +892,9 @@ class acp_permissions
 			$sql = 'SELECT forum_name
 				FROM ' . FORUMS_TABLE . "
 				WHERE forum_id = $forum_id";
-			$result = $db->sql_query($sql, 3600);
-			$forum_name = $db->sql_fetchfield('forum_name');
-			$db->sql_freeresult($result);
+			$result = phpbb::$db->sql_query($sql, 3600);
+			$forum_name = phpbb::$db->sql_fetchfield('forum_name');
+			phpbb::$db->sql_freeresult($result);
 		}
 
 		$back = request_var('back', 0);
@@ -923,17 +923,17 @@ class acp_permissions
 			WHERE ug.user_id = ' . $user_id . '
 				AND ug.user_pending = 0
 			ORDER BY g.group_type DESC, g.group_id DESC';
-		$result = $db->sql_query($sql);
+		$result = phpbb::$db->sql_query($sql);
 
 		$groups = array();
-		while ($row = $db->sql_fetchrow($result))
+		while ($row = phpbb::$db->sql_fetchrow($result))
 		{
 			$groups[$row['group_id']] = array(
 				'auth_setting'		=> phpbb::ACL_NO,
 				'group_name'		=> ($row['group_type'] == GROUP_SPECIAL) ? phpbb::$user->lang['G_' . $row['group_name']] : $row['group_name']
 			);
 		}
-		$db->sql_freeresult($result);
+		phpbb::$db->sql_freeresult($result);
 
 		$total = phpbb::ACL_NO;
 		$add_key = (($forum_id) ? '_LOCAL' : '');
@@ -1087,43 +1087,43 @@ class acp_permissions
 	*/
 	function retrieve_defined_user_groups($permission_scope, $forum_id, $permission_type)
 	{
-		$sql_forum_id = ($permission_scope == 'global') ? 'AND a.forum_id = 0' : ((sizeof($forum_id)) ? 'AND ' . $db->sql_in_set('a.forum_id', $forum_id) : 'AND a.forum_id <> 0');
+		$sql_forum_id = ($permission_scope == 'global') ? 'AND a.forum_id = 0' : ((sizeof($forum_id)) ? 'AND ' . phpbb::$db->sql_in_set('a.forum_id', $forum_id) : 'AND a.forum_id <> 0');
 
 		// Permission options are only able to be a permission set... therefore we will pre-fetch the possible options and also the possible roles
 		$option_ids = $role_ids = array();
 
 		$sql = 'SELECT auth_option_id
 			FROM ' . ACL_OPTIONS_TABLE . '
-			WHERE auth_option ' . $db->sql_like_expression($permission_type . $db->any_char);
-		$result = $db->sql_query($sql);
+			WHERE auth_option ' . phpbb::$db->sql_like_expression($permission_type . phpbb::$db->any_char);
+		$result = phpbb::$db->sql_query($sql);
 
-		while ($row = $db->sql_fetchrow($result))
+		while ($row = phpbb::$db->sql_fetchrow($result))
 		{
 			$option_ids[] = (int) $row['auth_option_id'];
 		}
-		$db->sql_freeresult($result);
+		phpbb::$db->sql_freeresult($result);
 
 		if (sizeof($option_ids))
 		{
 			$sql = 'SELECT DISTINCT role_id
 				FROM ' . ACL_ROLES_DATA_TABLE . '
-				WHERE ' . $db->sql_in_set('auth_option_id', $option_ids);
-			$result = $db->sql_query($sql);
+				WHERE ' . phpbb::$db->sql_in_set('auth_option_id', $option_ids);
+			$result = phpbb::$db->sql_query($sql);
 
-			while ($row = $db->sql_fetchrow($result))
+			while ($row = phpbb::$db->sql_fetchrow($result))
 			{
 				$role_ids[] = (int) $row['role_id'];
 			}
-			$db->sql_freeresult($result);
+			phpbb::$db->sql_freeresult($result);
 		}
 
 		if (sizeof($option_ids) && sizeof($role_ids))
 		{
-			$sql_where = 'AND (' . $db->sql_in_set('a.auth_option_id', $option_ids) . ' OR ' . $db->sql_in_set('a.auth_role_id', $role_ids) . ')';
+			$sql_where = 'AND (' . phpbb::$db->sql_in_set('a.auth_option_id', $option_ids) . ' OR ' . phpbb::$db->sql_in_set('a.auth_role_id', $role_ids) . ')';
 		}
 		else
 		{
-			$sql_where = 'AND ' . $db->sql_in_set('a.auth_option_id', $option_ids);
+			$sql_where = 'AND ' . phpbb::$db->sql_in_set('a.auth_option_id', $option_ids);
 		}
 
 		// Not ideal, due to the filesort, non-use of indexes, etc.
@@ -1133,16 +1133,16 @@ class acp_permissions
 				$sql_forum_id
 				$sql_where
 			ORDER BY u.username_clean, u.user_regdate ASC";
-		$result = $db->sql_query($sql);
+		$result = phpbb::$db->sql_query($sql);
 
 		$s_defined_user_options = '';
 		$defined_user_ids = array();
-		while ($row = $db->sql_fetchrow($result))
+		while ($row = phpbb::$db->sql_fetchrow($result))
 		{
 			$s_defined_user_options .= '<option value="' . $row['user_id'] . '">' . $row['username'] . '</option>';
 			$defined_user_ids[] = $row['user_id'];
 		}
-		$db->sql_freeresult($result);
+		phpbb::$db->sql_freeresult($result);
 
 		$sql = 'SELECT DISTINCT g.group_type, g.group_name, g.group_id
 			FROM ' . GROUPS_TABLE . ' g, ' . ACL_GROUPS_TABLE . " a
@@ -1150,16 +1150,16 @@ class acp_permissions
 				$sql_forum_id
 				$sql_where
 			ORDER BY g.group_type DESC, g.group_name ASC";
-		$result = $db->sql_query($sql);
+		$result = phpbb::$db->sql_query($sql);
 
 		$s_defined_group_options = '';
 		$defined_group_ids = array();
-		while ($row = $db->sql_fetchrow($result))
+		while ($row = phpbb::$db->sql_fetchrow($result))
 		{
 			$s_defined_group_options .= '<option' . (($row['group_type'] == GROUP_SPECIAL) ? ' class="sep"' : '') . ' value="' . $row['group_id'] . '">' . (($row['group_type'] == GROUP_SPECIAL) ? phpbb::$user->lang['G_' . $row['group_name']] : $row['group_name']) . '</option>';
 			$defined_group_ids[] = $row['group_id'];
 		}
-		$db->sql_freeresult($result);
+		phpbb::$db->sql_freeresult($result);
 
 		return array(
 			'group_ids'			=> $defined_group_ids,

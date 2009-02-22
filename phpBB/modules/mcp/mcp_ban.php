@@ -163,22 +163,22 @@ class mcp_ban
 			$sql = 'SELECT username, user_email, user_ip
 				FROM ' . USERS_TABLE . '
 				WHERE user_id = ' . $user_id;
-			$result = $db->sql_query($sql);
+			$result = phpbb::$db->sql_query($sql);
 			switch ($mode)
 			{
 				case 'user':
-					$pre_fill = (string) $db->sql_fetchfield('username');
+					$pre_fill = (string) phpbb::$db->sql_fetchfield('username');
 				break;
 
 				case 'ip':
-					$pre_fill = (string) $db->sql_fetchfield('user_ip');
+					$pre_fill = (string) phpbb::$db->sql_fetchfield('user_ip');
 				break;
 
 				case 'email':
-					$pre_fill = (string) $db->sql_fetchfield('user_email');
+					$pre_fill = (string) phpbb::$db->sql_fetchfield('user_email');
 				break;
 			}
-			$db->sql_freeresult($result);
+			phpbb::$db->sql_freeresult($result);
 		}
 		else if ($post_id)
 		{

@@ -166,12 +166,12 @@ class acp_ban
 						AND ban_email <> ''";
 			break;
 		}
-		$result = $db->sql_query($sql);
+		$result = phpbb::$db->sql_query($sql);
 
 		$banned_options = '';
 		$ban_length = $ban_reasons = $ban_give_reasons = array();
 
-		while ($row = $db->sql_fetchrow($result))
+		while ($row = phpbb::$db->sql_fetchrow($result))
 		{
 			$banned_options .= '<option' . (($row['ban_exclude']) ? ' class="sep"' : '') . ' value="' . $row['ban_id'] . '">' . $row[$field] . '</option>';
 
@@ -181,7 +181,7 @@ class acp_ban
 			$ban_reasons[$row['ban_id']] = $row['ban_reason'];
 			$ban_give_reasons[$row['ban_id']] = $row['ban_give_reason'];
 		}
-		$db->sql_freeresult($result);
+		phpbb::$db->sql_freeresult($result);
 
 		if (sizeof($ban_length))
 		{

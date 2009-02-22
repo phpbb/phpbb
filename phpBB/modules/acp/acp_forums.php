@@ -188,11 +188,11 @@ class acp_forums
 							{
 								$sql = 'DELETE FROM ' . ACL_USERS_TABLE . '
 									WHERE forum_id = ' . (int) $forum_data['forum_id'];
-								$db->sql_query($sql);
+								phpbb::$db->sql_query($sql);
 
 								$sql = 'DELETE FROM ' . ACL_GROUPS_TABLE . '
 									WHERE forum_id = ' . (int) $forum_data['forum_id'];
-								$db->sql_query($sql);
+								phpbb::$db->sql_query($sql);
 							}
 
 							// From the mysql documentation:
@@ -203,10 +203,10 @@ class acp_forums
 							$sql = 'SELECT user_id, auth_option_id, auth_role_id, auth_setting
 								FROM ' . ACL_USERS_TABLE . '
 								WHERE forum_id = ' . $forum_perm_from;
-							$result = $db->sql_query($sql);
+							$result = phpbb::$db->sql_query($sql);
 
 							$users_sql_ary = array();
-							while ($row = $db->sql_fetchrow($result))
+							while ($row = phpbb::$db->sql_fetchrow($result))
 							{
 								$users_sql_ary[] = array(
 									'user_id'			=> (int) $row['user_id'],
@@ -216,16 +216,16 @@ class acp_forums
 									'auth_setting'		=> (int) $row['auth_setting']
 								);
 							}
-							$db->sql_freeresult($result);
+							phpbb::$db->sql_freeresult($result);
 
 							// Copy permisisons from/to the acl groups table (only forum_id gets changed)
 							$sql = 'SELECT group_id, auth_option_id, auth_role_id, auth_setting
 								FROM ' . ACL_GROUPS_TABLE . '
 								WHERE forum_id = ' . $forum_perm_from;
-							$result = $db->sql_query($sql);
+							$result = phpbb::$db->sql_query($sql);
 
 							$groups_sql_ary = array();
-							while ($row = $db->sql_fetchrow($result))
+							while ($row = phpbb::$db->sql_fetchrow($result))
 							{
 								$groups_sql_ary[] = array(
 									'group_id'			=> (int) $row['group_id'],
@@ -235,11 +235,11 @@ class acp_forums
 									'auth_setting'		=> (int) $row['auth_setting']
 								);
 							}
-							$db->sql_freeresult($result);
+							phpbb::$db->sql_freeresult($result);
 
 							// Now insert the data
-							$db->sql_multi_insert(ACL_USERS_TABLE, $users_sql_ary);
-							$db->sql_multi_insert(ACL_GROUPS_TABLE, $groups_sql_ary);
+							phpbb::$db->sql_multi_insert(ACL_USERS_TABLE, $users_sql_ary);
+							phpbb::$db->sql_multi_insert(ACL_GROUPS_TABLE, $groups_sql_ary);
 							cache_moderators();
 						}
 
@@ -282,9 +282,9 @@ class acp_forums
 				$sql = 'SELECT *
 					FROM ' . FORUMS_TABLE . "
 					WHERE forum_id = $forum_id";
-				$result = $db->sql_query($sql);
-				$row = $db->sql_fetchrow($result);
-				$db->sql_freeresult($result);
+				$result = phpbb::$db->sql_query($sql);
+				$row = phpbb::$db->sql_fetchrow($result);
+				phpbb::$db->sql_freeresult($result);
 
 				if (!$row)
 				{
@@ -312,9 +312,9 @@ class acp_forums
 				$sql = 'SELECT forum_name, forum_topics_real
 					FROM ' . FORUMS_TABLE . "
 					WHERE forum_id = $forum_id";
-				$result = $db->sql_query($sql);
-				$row = $db->sql_fetchrow($result);
-				$db->sql_freeresult($result);
+				$result = phpbb::$db->sql_query($sql);
+				$row = phpbb::$db->sql_fetchrow($result);
+				phpbb::$db->sql_freeresult($result);
 
 				if (!$row)
 				{
@@ -326,9 +326,9 @@ class acp_forums
 					$sql = 'SELECT MIN(topic_id) as min_topic_id, MAX(topic_id) as max_topic_id
 						FROM ' . TOPICS_TABLE . '
 						WHERE forum_id = ' . $forum_id;
-					$result = $db->sql_query($sql);
-					$row2 = $db->sql_fetchrow($result);
-					$db->sql_freeresult($result);
+					$result = phpbb::$db->sql_query($sql);
+					$row2 = phpbb::$db->sql_fetchrow($result);
+					phpbb::$db->sql_freeresult($result);
 
 					// Typecast to int if there is no data available
 					$row2['min_topic_id'] = (int) $row2['min_topic_id'];
@@ -350,9 +350,9 @@ class acp_forums
 							FROM ' . TOPICS_TABLE . '
 							WHERE forum_id = ' . $forum_id . '
 								AND topic_id BETWEEN ' . $start . ' AND ' . $end;
-						$result = $db->sql_query($sql);
-						$topics_done = request_var('topics_done', 0) + (int) $db->sql_fetchfield('num_topics');
-						$db->sql_freeresult($result);
+						$result = phpbb::$db->sql_query($sql);
+						$topics_done = request_var('topics_done', 0) + (int) phpbb::$db->sql_fetchfield('num_topics');
+						phpbb::$db->sql_freeresult($result);
 
 						$start += $batch_size;
 
@@ -390,9 +390,9 @@ class acp_forums
 				$sql = 'SELECT forum_name, forum_type
 					FROM ' . FORUMS_TABLE . "
 					WHERE forum_id = $forum_id";
-				$result = $db->sql_query($sql);
-				$row = $db->sql_fetchrow($result);
-				$db->sql_freeresult($result);
+				$result = phpbb::$db->sql_query($sql);
+				$row = phpbb::$db->sql_fetchrow($result);
+				phpbb::$db->sql_freeresult($result);
 
 				if (!$row)
 				{
@@ -557,15 +557,15 @@ class acp_forums
 					FROM ' . FORUMS_TABLE . '
 					WHERE forum_type = ' . FORUM_POST . "
 						AND forum_id <> $forum_id";
-				$result = $db->sql_query($sql);
+				$result = phpbb::$db->sql_query($sql);
 
-				if ($db->sql_fetchrow($result))
+				if (phpbb::$db->sql_fetchrow($result))
 				{
 					$template->assign_vars(array(
 						'S_MOVE_FORUM_OPTIONS'		=> make_forum_select($forum_data['parent_id'], $forum_id, false, true, false))
 					);
 				}
-				$db->sql_freeresult($result);
+				phpbb::$db->sql_freeresult($result);
 
 				// Subforum move options
 				if ($action == 'edit' && $forum_data['forum_type'] == FORUM_CAT)
@@ -584,15 +584,15 @@ class acp_forums
 						FROM ' . FORUMS_TABLE . '
 						WHERE forum_type = ' . FORUM_POST . "
 							AND forum_id <> $forum_id";
-					$result = $db->sql_query($sql);
+					$result = phpbb::$db->sql_query($sql);
 
-					if ($db->sql_fetchrow($result))
+					if (phpbb::$db->sql_fetchrow($result))
 					{
 						$template->assign_vars(array(
 							'S_MOVE_FORUM_OPTIONS'		=> make_forum_select($forum_data['parent_id'], $subforums_id)) // , false, true, false???
 						);
 					}
-					$db->sql_freeresult($result);
+					phpbb::$db->sql_freeresult($result);
 
 					$template->assign_vars(array(
 						'S_HAS_SUBFORUMS'		=> ($forum_data['right_id'] - $forum_data['left_id'] > 1) ? true : false,
@@ -711,15 +711,15 @@ class acp_forums
 					FROM ' . FORUMS_TABLE . '
 					WHERE forum_type = ' . FORUM_POST . "
 						AND forum_id <> $forum_id";
-				$result = $db->sql_query($sql);
+				$result = phpbb::$db->sql_query($sql);
 
-				if ($db->sql_fetchrow($result))
+				if (phpbb::$db->sql_fetchrow($result))
 				{
 					$template->assign_vars(array(
 						'S_MOVE_FORUM_OPTIONS'		=> make_forum_select($forum_data['parent_id'], $subforums_id, false, true)) // , false, true, false???
 					);
 				}
-				$db->sql_freeresult($result);
+				phpbb::$db->sql_freeresult($result);
 
 				$parent_id = ($this->parent_id == $forum_id) ? 0 : $this->parent_id;
 
@@ -776,9 +776,9 @@ class acp_forums
 			FROM ' . FORUMS_TABLE . "
 			WHERE parent_id = $this->parent_id
 			ORDER BY left_id";
-		$result = $db->sql_query($sql);
+		$result = phpbb::$db->sql_query($sql);
 
-		if ($row = $db->sql_fetchrow($result))
+		if ($row = phpbb::$db->sql_fetchrow($result))
 		{
 			do
 			{
@@ -828,7 +828,7 @@ class acp_forums
 					'U_SYNC'			=> $url . '&amp;action=sync')
 				);
 			}
-			while ($row = $db->sql_fetchrow($result));
+			while ($row = phpbb::$db->sql_fetchrow($result));
 		}
 		else if ($this->parent_id)
 		{
@@ -844,7 +844,7 @@ class acp_forums
 				'U_SYNC'			=> $url . '&amp;action=sync')
 			);
 		}
-		$db->sql_freeresult($result);
+		phpbb::$db->sql_freeresult($result);
 
 		$template->assign_vars(array(
 			'ERROR_MSG'		=> (sizeof($errors)) ? implode('<br />', $errors) : '',
@@ -866,9 +866,9 @@ class acp_forums
 		$sql = 'SELECT *
 			FROM ' . FORUMS_TABLE . "
 			WHERE forum_id = $forum_id";
-		$result = $db->sql_query($sql);
-		$row = $db->sql_fetchrow($result);
-		$db->sql_freeresult($result);
+		$result = phpbb::$db->sql_query($sql);
+		$row = phpbb::$db->sql_fetchrow($result);
+		phpbb::$db->sql_freeresult($result);
 
 		if (!$row)
 		{
@@ -980,9 +980,9 @@ class acp_forums
 				$sql = 'SELECT left_id, right_id, forum_type
 					FROM ' . FORUMS_TABLE . '
 					WHERE forum_id = ' . $forum_data_sql['parent_id'];
-				$result = $db->sql_query($sql);
-				$row = $db->sql_fetchrow($result);
-				$db->sql_freeresult($result);
+				$result = phpbb::$db->sql_query($sql);
+				$row = phpbb::$db->sql_fetchrow($result);
+				phpbb::$db->sql_freeresult($result);
 
 				if (!$row)
 				{
@@ -998,12 +998,12 @@ class acp_forums
 				$sql = 'UPDATE ' . FORUMS_TABLE . '
 					SET left_id = left_id + 2, right_id = right_id + 2
 					WHERE left_id > ' . $row['right_id'];
-				$db->sql_query($sql);
+				phpbb::$db->sql_query($sql);
 
 				$sql = 'UPDATE ' . FORUMS_TABLE . '
 					SET right_id = right_id + 2
 					WHERE ' . $row['left_id'] . ' BETWEEN left_id AND right_id';
-				$db->sql_query($sql);
+				phpbb::$db->sql_query($sql);
 
 				$forum_data_sql['left_id'] = $row['right_id'];
 				$forum_data_sql['right_id'] = $row['right_id'] + 1;
@@ -1012,18 +1012,18 @@ class acp_forums
 			{
 				$sql = 'SELECT MAX(right_id) AS right_id
 					FROM ' . FORUMS_TABLE;
-				$result = $db->sql_query($sql);
-				$row = $db->sql_fetchrow($result);
-				$db->sql_freeresult($result);
+				$result = phpbb::$db->sql_query($sql);
+				$row = phpbb::$db->sql_fetchrow($result);
+				phpbb::$db->sql_freeresult($result);
 
 				$forum_data_sql['left_id'] = $row['right_id'] + 1;
 				$forum_data_sql['right_id'] = $row['right_id'] + 2;
 			}
 
-			$sql = 'INSERT INTO ' . FORUMS_TABLE . ' ' . $db->sql_build_array('INSERT', $forum_data_sql);
-			$db->sql_query($sql);
+			$sql = 'INSERT INTO ' . FORUMS_TABLE . ' ' . phpbb::$db->sql_build_array('INSERT', $forum_data_sql);
+			phpbb::$db->sql_query($sql);
 
-			$forum_data['forum_id'] = $db->sql_nextid();
+			$forum_data['forum_id'] = phpbb::$db->sql_nextid();
 
 			add_log('admin', 'LOG_FORUM_ADD', $forum_data['forum_name']);
 		}
@@ -1099,23 +1099,23 @@ class acp_forums
 						if (sizeof($forum_ids))
 						{
 							$sql = 'DELETE FROM ' . FORUMS_TABLE . '
-								WHERE ' . $db->sql_in_set('forum_id', $forum_ids);
-							$db->sql_query($sql);
+								WHERE ' . phpbb::$db->sql_in_set('forum_id', $forum_ids);
+							phpbb::$db->sql_query($sql);
 
 							$sql = 'DELETE FROM ' . ACL_GROUPS_TABLE . '
-								WHERE ' . $db->sql_in_set('forum_id', $forum_ids);
-							$db->sql_query($sql);
+								WHERE ' . phpbb::$db->sql_in_set('forum_id', $forum_ids);
+							phpbb::$db->sql_query($sql);
 
 							$sql = 'DELETE FROM ' . ACL_USERS_TABLE . '
-								WHERE ' . $db->sql_in_set('forum_id', $forum_ids);
-							$db->sql_query($sql);
+								WHERE ' . phpbb::$db->sql_in_set('forum_id', $forum_ids);
+							phpbb::$db->sql_query($sql);
 
 							// Delete forum ids from extension groups table
 							$sql = 'SELECT group_id, allowed_forums
 								FROM ' . EXTENSION_GROUPS_TABLE;
-							$result = $db->sql_query($sql);
+							$result = phpbb::$db->sql_query($sql);
 
-							while ($_row = $db->sql_fetchrow($result))
+							while ($_row = phpbb::$db->sql_fetchrow($result))
 							{
 								if (!$_row['allowed_forums'])
 								{
@@ -1128,9 +1128,9 @@ class acp_forums
 								$sql = 'UPDATE ' . EXTENSION_GROUPS_TABLE . "
 									SET allowed_forums = '" . ((sizeof($allowed_forums)) ? serialize($allowed_forums) : '') . "'
 									WHERE group_id = {$_row['group_id']}";
-								$db->sql_query($sql);
+								phpbb::$db->sql_query($sql);
 							}
-							$db->sql_freeresult($result);
+							phpbb::$db->sql_freeresult($result);
 
 							phpbb::$acm->destroy('extensions');
 						}
@@ -1145,9 +1145,9 @@ class acp_forums
 						$sql = 'SELECT forum_name
 							FROM ' . FORUMS_TABLE . '
 							WHERE forum_id = ' . $subforums_to_id;
-						$result = $db->sql_query($sql);
-						$_row = $db->sql_fetchrow($result);
-						$db->sql_freeresult($result);
+						$result = phpbb::$db->sql_query($sql);
+						$_row = phpbb::$db->sql_fetchrow($result);
+						phpbb::$db->sql_freeresult($result);
 
 						if (!$_row)
 						{
@@ -1159,25 +1159,25 @@ class acp_forums
 						$sql = 'SELECT forum_id
 							FROM ' . FORUMS_TABLE . "
 							WHERE parent_id = {$row['forum_id']}";
-						$result = $db->sql_query($sql);
+						$result = phpbb::$db->sql_query($sql);
 
-						while ($_row = $db->sql_fetchrow($result))
+						while ($_row = phpbb::$db->sql_fetchrow($result))
 						{
 							$this->move_forum($_row['forum_id'], $subforums_to_id);
 						}
-						$db->sql_freeresult($result);
+						phpbb::$db->sql_freeresult($result);
 
 						$sql = 'UPDATE ' . FORUMS_TABLE . "
 							SET parent_id = $subforums_to_id
 							WHERE parent_id = {$row['forum_id']}";
-						$db->sql_query($sql);
+						phpbb::$db->sql_query($sql);
 					}
 
 					// Adjust the left/right id
 					$sql = 'UPDATE ' . FORUMS_TABLE . '
 						SET right_id = left_id + 1
 						WHERE forum_id = ' . $row['forum_id'];
-					$db->sql_query($sql);
+					phpbb::$db->sql_query($sql);
 				}
 			}
 			else if ($row['forum_type'] == FORUM_CAT && $forum_data_sql['forum_type'] == FORUM_POST)
@@ -1223,7 +1223,7 @@ class acp_forums
 				// the forum name has changed, clear the parents list of all forums (for safety)
 				$sql = 'UPDATE ' . FORUMS_TABLE . "
 					SET forum_parents = ''";
-				$db->sql_query($sql);
+				phpbb::$db->sql_query($sql);
 			}
 
 			// Setting the forum id to the forum id is not really received well by some dbs. ;)
@@ -1231,9 +1231,9 @@ class acp_forums
 			unset($forum_data_sql['forum_id']);
 
 			$sql = 'UPDATE ' . FORUMS_TABLE . '
-				SET ' . $db->sql_build_array('UPDATE', $forum_data_sql) . '
+				SET ' . phpbb::$db->sql_build_array('UPDATE', $forum_data_sql) . '
 				WHERE forum_id = ' . $forum_id;
-			$db->sql_query($sql);
+			phpbb::$db->sql_query($sql);
 
 			// Add it back
 			$forum_data['forum_id'] = $forum_id;
@@ -1278,13 +1278,13 @@ class acp_forums
 			SET right_id = right_id - $diff, forum_parents = ''
 			WHERE left_id < " . $from_data['right_id'] . "
 				AND right_id > " . $from_data['right_id'];
-		$db->sql_query($sql);
+		phpbb::$db->sql_query($sql);
 
 		// Resync righthand side of tree
 		$sql = 'UPDATE ' . FORUMS_TABLE . "
 			SET left_id = left_id - $diff, right_id = right_id - $diff, forum_parents = ''
 			WHERE left_id > " . $from_data['right_id'];
-		$db->sql_query($sql);
+		phpbb::$db->sql_query($sql);
 
 		if ($to_id > 0)
 		{
@@ -1295,15 +1295,15 @@ class acp_forums
 			$sql = 'UPDATE ' . FORUMS_TABLE . "
 				SET right_id = right_id + $diff, forum_parents = ''
 				WHERE " . $to_data['right_id'] . ' BETWEEN left_id AND right_id
-					AND ' . $db->sql_in_set('forum_id', $moved_ids, true);
-			$db->sql_query($sql);
+					AND ' . phpbb::$db->sql_in_set('forum_id', $moved_ids, true);
+			phpbb::$db->sql_query($sql);
 
 			// Resync the righthand side of the tree
 			$sql = 'UPDATE ' . FORUMS_TABLE . "
 				SET left_id = left_id + $diff, right_id = right_id + $diff, forum_parents = ''
 				WHERE left_id > " . $to_data['right_id'] . '
-					AND ' . $db->sql_in_set('forum_id', $moved_ids, true);
-			$db->sql_query($sql);
+					AND ' . phpbb::$db->sql_in_set('forum_id', $moved_ids, true);
+			phpbb::$db->sql_query($sql);
 
 			// Resync moved branch
 			$to_data['right_id'] += $diff;
@@ -1321,18 +1321,18 @@ class acp_forums
 		{
 			$sql = 'SELECT MAX(right_id) AS right_id
 				FROM ' . FORUMS_TABLE . '
-				WHERE ' . $db->sql_in_set('forum_id', $moved_ids, true);
-			$result = $db->sql_query($sql);
-			$row = $db->sql_fetchrow($result);
-			$db->sql_freeresult($result);
+				WHERE ' . phpbb::$db->sql_in_set('forum_id', $moved_ids, true);
+			$result = phpbb::$db->sql_query($sql);
+			$row = phpbb::$db->sql_fetchrow($result);
+			phpbb::$db->sql_freeresult($result);
 
 			$diff = '+ ' . ($row['right_id'] - $from_data['left_id'] + 1);
 		}
 
 		$sql = 'UPDATE ' . FORUMS_TABLE . "
 			SET left_id = left_id $diff, right_id = right_id $diff, forum_parents = ''
-			WHERE " . $db->sql_in_set('forum_id', $moved_ids);
-		$db->sql_query($sql);
+			WHERE " . phpbb::$db->sql_in_set('forum_id', $moved_ids);
+		phpbb::$db->sql_query($sql);
 
 		return $errors;
 	}
@@ -1349,7 +1349,7 @@ class acp_forums
 			$sql = "UPDATE $table
 				SET forum_id = $to_id
 				WHERE forum_id = $from_id";
-			$db->sql_query($sql);
+			phpbb::$db->sql_query($sql);
 		}
 		unset($table_ary);
 
@@ -1359,7 +1359,7 @@ class acp_forums
 		{
 			$sql = "DELETE FROM $table
 				WHERE forum_id = $from_id";
-			$db->sql_query($sql);
+			phpbb::$db->sql_query($sql);
 		}
 
 		if ($sync)
@@ -1401,9 +1401,9 @@ class acp_forums
 				$sql = 'SELECT forum_name
 					FROM ' . FORUMS_TABLE . '
 					WHERE forum_id = ' . $posts_to_id;
-				$result = $db->sql_query($sql);
-				$row = $db->sql_fetchrow($result);
-				$db->sql_freeresult($result);
+				$result = phpbb::$db->sql_query($sql);
+				$row = phpbb::$db->sql_fetchrow($result);
+				phpbb::$db->sql_freeresult($result);
 
 				if (!$row)
 				{
@@ -1441,16 +1441,16 @@ class acp_forums
 			$diff = sizeof($forum_ids) * 2;
 
 			$sql = 'DELETE FROM ' . FORUMS_TABLE . '
-				WHERE ' . $db->sql_in_set('forum_id', $forum_ids);
-			$db->sql_query($sql);
+				WHERE ' . phpbb::$db->sql_in_set('forum_id', $forum_ids);
+			phpbb::$db->sql_query($sql);
 
 			$sql = 'DELETE FROM ' . ACL_GROUPS_TABLE . '
-				WHERE ' . $db->sql_in_set('forum_id', $forum_ids);
-			$db->sql_query($sql);
+				WHERE ' . phpbb::$db->sql_in_set('forum_id', $forum_ids);
+			phpbb::$db->sql_query($sql);
 
 			$sql = 'DELETE FROM ' . ACL_USERS_TABLE . '
-				WHERE ' . $db->sql_in_set('forum_id', $forum_ids);
-			$db->sql_query($sql);
+				WHERE ' . phpbb::$db->sql_in_set('forum_id', $forum_ids);
+			phpbb::$db->sql_query($sql);
 		}
 		else if ($action_subforums == 'move')
 		{
@@ -1465,9 +1465,9 @@ class acp_forums
 				$sql = 'SELECT forum_name
 					FROM ' . FORUMS_TABLE . '
 					WHERE forum_id = ' . $subforums_to_id;
-				$result = $db->sql_query($sql);
-				$row = $db->sql_fetchrow($result);
-				$db->sql_freeresult($result);
+				$result = phpbb::$db->sql_query($sql);
+				$row = phpbb::$db->sql_fetchrow($result);
+				phpbb::$db->sql_freeresult($result);
 
 				if (!$row)
 				{
@@ -1480,13 +1480,13 @@ class acp_forums
 					$sql = 'SELECT forum_id
 						FROM ' . FORUMS_TABLE . "
 						WHERE parent_id = $forum_id";
-					$result = $db->sql_query($sql);
+					$result = phpbb::$db->sql_query($sql);
 
-					while ($row = $db->sql_fetchrow($result))
+					while ($row = phpbb::$db->sql_fetchrow($result))
 					{
 						$this->move_forum($row['forum_id'], $subforums_to_id);
 					}
-					$db->sql_freeresult($result);
+					phpbb::$db->sql_freeresult($result);
 
 					// Grab new forum data for correct tree updating later
 					$forum_data = $this->get_forum_info($forum_id);
@@ -1494,20 +1494,20 @@ class acp_forums
 					$sql = 'UPDATE ' . FORUMS_TABLE . "
 						SET parent_id = $subforums_to_id
 						WHERE parent_id = $forum_id";
-					$db->sql_query($sql);
+					phpbb::$db->sql_query($sql);
 
 					$diff = 2;
 					$sql = 'DELETE FROM ' . FORUMS_TABLE . "
 						WHERE forum_id = $forum_id";
-					$db->sql_query($sql);
+					phpbb::$db->sql_query($sql);
 
 					$sql = 'DELETE FROM ' . ACL_GROUPS_TABLE . "
 						WHERE forum_id = $forum_id";
-					$db->sql_query($sql);
+					phpbb::$db->sql_query($sql);
 
 					$sql = 'DELETE FROM ' . ACL_USERS_TABLE . "
 						WHERE forum_id = $forum_id";
-					$db->sql_query($sql);
+					phpbb::$db->sql_query($sql);
 				}
 			}
 
@@ -1521,34 +1521,34 @@ class acp_forums
 			$diff = 2;
 			$sql = 'DELETE FROM ' . FORUMS_TABLE . "
 				WHERE forum_id = $forum_id";
-			$db->sql_query($sql);
+			phpbb::$db->sql_query($sql);
 
 			$sql = 'DELETE FROM ' . ACL_GROUPS_TABLE . "
 				WHERE forum_id = $forum_id";
-			$db->sql_query($sql);
+			phpbb::$db->sql_query($sql);
 
 			$sql = 'DELETE FROM ' . ACL_USERS_TABLE . "
 				WHERE forum_id = $forum_id";
-			$db->sql_query($sql);
+			phpbb::$db->sql_query($sql);
 		}
 
 		// Resync tree
 		$sql = 'UPDATE ' . FORUMS_TABLE . "
 			SET right_id = right_id - $diff
 			WHERE left_id < {$forum_data['right_id']} AND right_id > {$forum_data['right_id']}";
-		$db->sql_query($sql);
+		phpbb::$db->sql_query($sql);
 
 		$sql = 'UPDATE ' . FORUMS_TABLE . "
 			SET left_id = left_id - $diff, right_id = right_id - $diff
 			WHERE left_id > {$forum_data['right_id']}";
-		$db->sql_query($sql);
+		phpbb::$db->sql_query($sql);
 
 		// Delete forum ids from extension groups table
 		$sql = 'SELECT group_id, allowed_forums
 			FROM ' . EXTENSION_GROUPS_TABLE;
-		$result = $db->sql_query($sql);
+		$result = phpbb::$db->sql_query($sql);
 
-		while ($row = $db->sql_fetchrow($result))
+		while ($row = phpbb::$db->sql_fetchrow($result))
 		{
 			if (!$row['allowed_forums'])
 			{
@@ -1561,9 +1561,9 @@ class acp_forums
 			$sql = 'UPDATE ' . EXTENSION_GROUPS_TABLE . "
 				SET allowed_forums = '" . ((sizeof($allowed_forums)) ? serialize($allowed_forums) : '') . "'
 				WHERE group_id = {$row['group_id']}";
-			$db->sql_query($sql);
+			phpbb::$db->sql_query($sql);
 		}
-		$db->sql_freeresult($result);
+		phpbb::$db->sql_freeresult($result);
 
 		phpbb::$acm->destroy('extensions');
 
@@ -1618,7 +1618,7 @@ class acp_forums
 	{
 		include_once(PHPBB_ROOT_PATH . 'includes/functions_posting.' . PHP_EXT);
 
-		$db->sql_transaction('begin');
+		phpbb::$db->sql_transaction('begin');
 
 		// Select then delete all attachments
 		$sql = 'SELECT a.topic_id
@@ -1626,14 +1626,14 @@ class acp_forums
 			WHERE p.forum_id = $forum_id
 				AND a.in_message = 0
 				AND a.topic_id = p.topic_id";
-		$result = $db->sql_query($sql);
+		$result = phpbb::$db->sql_query($sql);
 
 		$topic_ids = array();
-		while ($row = $db->sql_fetchrow($result))
+		while ($row = phpbb::$db->sql_fetchrow($result))
 		{
 			$topic_ids[] = $row['topic_id'];
 		}
-		$db->sql_freeresult($result);
+		phpbb::$db->sql_freeresult($result);
 
 		delete_attachments('topic', $topic_ids, false);
 
@@ -1643,16 +1643,16 @@ class acp_forums
 			WHERE forum_id = ' . $forum_id . '
 				AND post_postcount = 1
 				AND post_approved = 1';
-		$result = $db->sql_query($sql);
+		$result = phpbb::$db->sql_query($sql);
 
 		$post_counts = array();
-		while ($row = $db->sql_fetchrow($result))
+		while ($row = phpbb::$db->sql_fetchrow($result))
 		{
 			$post_counts[$row['poster_id']] = (!empty($post_counts[$row['poster_id']])) ? $post_counts[$row['poster_id']] + 1 : 1;
 		}
-		$db->sql_freeresult($result);
+		phpbb::$db->sql_freeresult($result);
 
-		switch ($db->dbms_type)
+		switch (phpbb::$db->dbms_type)
 		{
 			case 'mysql':
 
@@ -1679,7 +1679,7 @@ class acp_forums
 					$sql_where .= "\nAND $table.$field = " . POSTS_TABLE . ".$field";
 				}
 
-				$db->sql_query($sql . $sql_using . $sql_where);
+				phpbb::$db->sql_query($sql . $sql_using . $sql_where);
 
 			break;
 
@@ -1711,14 +1711,14 @@ class acp_forums
 						$sql = "SELECT $field
 							FROM " . POSTS_TABLE . '
 							WHERE forum_id = ' . $forum_id;
-						$result = $db->sql_query_limit($sql, 500, $start);
+						$result = phpbb::$db->sql_query_limit($sql, 500, $start);
 
 						$ids = array();
-						while ($row = $db->sql_fetchrow($result))
+						while ($row = phpbb::$db->sql_fetchrow($result))
 						{
 							$ids[] = $row[$field];
 						}
-						$db->sql_freeresult($result);
+						phpbb::$db->sql_freeresult($result);
 
 						if (sizeof($ids))
 						{
@@ -1726,7 +1726,7 @@ class acp_forums
 
 							foreach ($tables as $table)
 							{
-								$db->sql_query("DELETE FROM $table WHERE " . $db->sql_in_set($field, $ids));
+								phpbb::$db->sql_query("DELETE FROM $table WHERE " . phpbb::$db->sql_in_set($field, $ids));
 							}
 						}
 					}
@@ -1741,7 +1741,7 @@ class acp_forums
 
 		foreach ($table_ary as $table)
 		{
-			$db->sql_query("DELETE FROM $table WHERE forum_id = $forum_id");
+			phpbb::$db->sql_query("DELETE FROM $table WHERE forum_id = $forum_id");
 		}
 
 		// Set forum ids to 0
@@ -1749,7 +1749,7 @@ class acp_forums
 
 		foreach ($table_ary as $table)
 		{
-			$db->sql_query("UPDATE $table SET forum_id = 0 WHERE forum_id = $forum_id");
+			phpbb::$db->sql_query("UPDATE $table SET forum_id = 0 WHERE forum_id = $forum_id");
 		}
 
 		// Adjust users post counts
@@ -1761,50 +1761,50 @@ class acp_forums
 					SET user_posts = 0
 					WHERE user_id = ' . $poster_id . '
 					AND user_posts < ' . $substract;
-				$db->sql_query($sql);
+				phpbb::$db->sql_query($sql);
 
 				$sql = 'UPDATE ' . USERS_TABLE . '
 					SET user_posts = user_posts - ' . $substract . '
 					WHERE user_id = ' . $poster_id . '
 					AND user_posts >= ' . $substract;
-				$db->sql_query($sql);
+				phpbb::$db->sql_query($sql);
 			}
 		}
 
-		$db->sql_transaction('commit');
+		phpbb::$db->sql_transaction('commit');
 
 		// Make sure the overall post/topic count is correct...
 		$sql = 'SELECT COUNT(post_id) AS stat
 			FROM ' . POSTS_TABLE . '
 			WHERE post_approved = 1';
-		$result = $db->sql_query($sql);
-		$row = $db->sql_fetchrow($result);
-		$db->sql_freeresult($result);
+		$result = phpbb::$db->sql_query($sql);
+		$row = phpbb::$db->sql_fetchrow($result);
+		phpbb::$db->sql_freeresult($result);
 
 		set_config('num_posts', (int) $row['stat'], true);
 
 		$sql = 'SELECT COUNT(topic_id) AS stat
 			FROM ' . TOPICS_TABLE . '
 			WHERE topic_approved = 1';
-		$result = $db->sql_query($sql);
-		$row = $db->sql_fetchrow($result);
-		$db->sql_freeresult($result);
+		$result = phpbb::$db->sql_query($sql);
+		$row = phpbb::$db->sql_fetchrow($result);
+		phpbb::$db->sql_freeresult($result);
 
 		set_config('num_topics', (int) $row['stat'], true);
 
 		$sql = 'SELECT COUNT(attach_id) as stat
 			FROM ' . ATTACHMENTS_TABLE;
-		$result = $db->sql_query($sql);
-		$row = $db->sql_fetchrow($result);
-		$db->sql_freeresult($result);
+		$result = phpbb::$db->sql_query($sql);
+		$row = phpbb::$db->sql_fetchrow($result);
+		phpbb::$db->sql_freeresult($result);
 
 		set_config('num_files', (int) $row['stat'], true);
 
 		$sql = 'SELECT SUM(filesize) as stat
 			FROM ' . ATTACHMENTS_TABLE;
-		$result = $db->sql_query($sql);
-		$row = $db->sql_fetchrow($result);
-		$db->sql_freeresult($result);
+		$result = phpbb::$db->sql_query($sql);
+		$row = phpbb::$db->sql_fetchrow($result);
+		phpbb::$db->sql_freeresult($result);
 
 		set_config('upload_dir_size', (float) $row['stat'], true);
 
@@ -1826,14 +1826,14 @@ class acp_forums
 			FROM ' . FORUMS_TABLE . "
 			WHERE parent_id = {$forum_row['parent_id']}
 				AND " . (($action == 'move_up') ? "right_id < {$forum_row['right_id']} ORDER BY right_id DESC" : "left_id > {$forum_row['left_id']} ORDER BY left_id ASC");
-		$result = $db->sql_query_limit($sql, $steps);
+		$result = phpbb::$db->sql_query_limit($sql, $steps);
 
 		$target = array();
-		while ($row = $db->sql_fetchrow($result))
+		while ($row = phpbb::$db->sql_fetchrow($result))
 		{
 			$target = $row;
 		}
-		$db->sql_freeresult($result);
+		phpbb::$db->sql_freeresult($result);
 
 		if (!sizeof($target))
 		{
@@ -1885,7 +1885,7 @@ class acp_forums
 			WHERE
 				left_id BETWEEN {$left_id} AND {$right_id}
 				AND right_id BETWEEN {$left_id} AND {$right_id}";
-		$db->sql_query($sql);
+		phpbb::$db->sql_query($sql);
 
 		return $target['forum_name'];
 	}

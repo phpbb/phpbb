@@ -62,15 +62,15 @@ class acp_inactive
 
 					$sql = 'SELECT user_id, username
 						FROM ' . USERS_TABLE . '
-						WHERE ' . $db->sql_in_set('user_id', $mark);
-					$result = $db->sql_query($sql);
+						WHERE ' . phpbb::$db->sql_in_set('user_id', $mark);
+					$result = phpbb::$db->sql_query($sql);
 
 					$user_affected = array();
-					while ($row = $db->sql_fetchrow($result))
+					while ($row = phpbb::$db->sql_fetchrow($result))
 					{
 						$user_affected[$row['user_id']] = $row['username'];
 					}
-					$db->sql_freeresult($result);
+					phpbb::$db->sql_freeresult($result);
 
 					if ($action == 'activate')
 					{
@@ -79,16 +79,16 @@ class acp_inactive
 							// Get those 'being activated'...
 							$sql = 'SELECT user_id, username, user_email, user_lang
 								FROM ' . USERS_TABLE . '
-								WHERE ' . $db->sql_in_set('user_id', $mark) . '
+								WHERE ' . phpbb::$db->sql_in_set('user_id', $mark) . '
 									AND user_type = ' . phpbb::USER_INACTIVE;
-							$result = $db->sql_query($sql);
+							$result = phpbb::$db->sql_query($sql);
 
 							$inactive_users = array();
-							while ($row = $db->sql_fetchrow($result))
+							while ($row = phpbb::$db->sql_fetchrow($result))
 							{
 								$inactive_users[] = $row;
 							}
-							$db->sql_freeresult($result);
+							phpbb::$db->sql_freeresult($result);
 						}
 
 						user_active_flip('activate', $mark);
@@ -158,10 +158,10 @@ class acp_inactive
 
 					$sql = 'SELECT user_id, username, user_email, user_lang, user_jabber, user_notify_type, user_regdate, user_actkey
 						FROM ' . USERS_TABLE . '
-						WHERE ' . $db->sql_in_set('user_id', $mark);
-					$result = $db->sql_query($sql);
+						WHERE ' . phpbb::$db->sql_in_set('user_id', $mark);
+					$result = phpbb::$db->sql_query($sql);
 
-					if ($row = $db->sql_fetchrow($result))
+					if ($row = phpbb::$db->sql_fetchrow($result))
 					{
 						// Send the messages
 						include_once(PHPBB_ROOT_PATH . 'includes/functions_messenger.' . PHP_EXT);
@@ -186,14 +186,14 @@ class acp_inactive
 
 							$usernames[] = $row['username'];
 						}
-						while ($row = $db->sql_fetchrow($result));
+						while ($row = phpbb::$db->sql_fetchrow($result));
 
 						$messenger->save_queue();
 
 						add_log('admin', 'LOG_INACTIVE_REMIND', implode(', ', $usernames));
 						unset($usernames);
 					}
-					$db->sql_freeresult($result);
+					phpbb::$db->sql_freeresult($result);
 
 				break;
 			}

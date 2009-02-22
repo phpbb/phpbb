@@ -42,11 +42,11 @@ class ucp_resend
 
 			$sql = 'SELECT user_id, group_id, username, user_email, user_type, user_lang, user_actkey, user_inactive_reason
 				FROM ' . USERS_TABLE . "
-				WHERE user_email = '" . $db->sql_escape($email) . "'
-					AND username_clean = '" . $db->sql_escape(utf8_clean_string($username)) . "'";
-			$result = $db->sql_query($sql);
-			$user_row = $db->sql_fetchrow($result);
-			$db->sql_freeresult($result);
+				WHERE user_email = '" . phpbb::$db->sql_escape($email) . "'
+					AND username_clean = '" . phpbb::$db->sql_escape(utf8_clean_string($username)) . "'";
+			$result = phpbb::$db->sql_query($sql);
+			$user_row = phpbb::$db->sql_fetchrow($result);
+			phpbb::$db->sql_freeresult($result);
 
 			if (!$user_row)
 			{
@@ -72,9 +72,9 @@ class ucp_resend
 			$sql = 'SELECT group_name, group_type
 				FROM ' . GROUPS_TABLE . '
 				WHERE group_id = ' . $user_row['group_id'];
-			$result = $db->sql_query($sql);
-			$row = $db->sql_fetchrow($result);
-			$db->sql_freeresult($result);
+			$result = phpbb::$db->sql_query($sql);
+			$row = phpbb::$db->sql_fetchrow($result);
+			phpbb::$db->sql_freeresult($result);
 
 			if (!$row)
 			{
@@ -121,10 +121,10 @@ class ucp_resend
 
 				$sql = 'SELECT user_id, username, user_email, user_lang, user_jabber, user_notify_type
 					FROM ' . USERS_TABLE . '
-					WHERE ' . $db->sql_in_set('user_id', $admin_ary[0]['a_user']);
-				$result = $db->sql_query($sql);
+					WHERE ' . phpbb::$db->sql_in_set('user_id', $admin_ary[0]['a_user']);
+				$result = phpbb::$db->sql_query($sql);
 
-				while ($row = $db->sql_fetchrow($result))
+				while ($row = phpbb::$db->sql_fetchrow($result))
 				{
 					$messenger->template('admin_activate', $row['user_lang']);
 					$messenger->to($row['user_email'], $row['username']);
@@ -138,7 +138,7 @@ class ucp_resend
 
 					$messenger->send($row['user_notify_type']);
 				}
-				$db->sql_freeresult($result);
+				phpbb::$db->sql_freeresult($result);
 			}
 
 			meta_refresh(3, append_sid('index'));

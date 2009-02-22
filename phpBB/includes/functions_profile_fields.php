@@ -61,9 +61,9 @@ class custom_profile
 				AND l.lang_id = $lang_id
 				AND l.field_id = f.field_id
 			ORDER BY f.field_order";
-		$result = $db->sql_query($sql);
+		$result = phpbb::$db->sql_query($sql);
 
-		while ($row = $db->sql_fetchrow($result))
+		while ($row = phpbb::$db->sql_fetchrow($result))
 		{
 			// Return templated field
 			$tpl_snippet = $this->process_field_row('change', $row);
@@ -79,7 +79,7 @@ class custom_profile
 				'S_REQUIRED'	=> ($row['field_required']) ? true : false)
 			);
 		}
-		$db->sql_freeresult($result);
+		phpbb::$db->sql_freeresult($result);
 	}
 
 	/**
@@ -211,13 +211,13 @@ class custom_profile
 				AND f.field_no_view = 0
 				AND l.field_id = f.field_id
 			ORDER BY f.field_order';
-		$result = $db->sql_query($sql);
+		$result = phpbb::$db->sql_query($sql);
 
-		while ($row = $db->sql_fetchrow($result))
+		while ($row = phpbb::$db->sql_fetchrow($result))
 		{
 			$this->profile_cache[$row['field_ident']] = $row;
 		}
-		$db->sql_freeresult($result);
+		phpbb::$db->sql_freeresult($result);
 	}
 
 	/**
@@ -243,14 +243,14 @@ class custom_profile
 					AND lang_id = $lang_id
 					AND field_type = $field_type
 				ORDER BY option_id";
-			$result = $db->sql_query($sql);
+			$result = phpbb::$db->sql_query($sql);
 
 			// @todo: ref optimize
-			while ($row = $db->sql_fetchrow($result))
+			while ($row = phpbb::$db->sql_fetchrow($result))
 			{
 				$this->options_lang[$field_id][$lang_id][($row['option_id'] + 1)] = $row['lang_value'];
 			}
-			$db->sql_freeresult($result);
+			phpbb::$db->sql_freeresult($result);
 		}
 	}
 
@@ -288,9 +288,9 @@ class custom_profile
 				$sql_where
 				AND l.field_id = f.field_id
 			ORDER BY f.field_order";
-		$result = $db->sql_query($sql);
+		$result = phpbb::$db->sql_query($sql);
 
-		while ($row = $db->sql_fetchrow($result))
+		while ($row = phpbb::$db->sql_fetchrow($result))
 		{
 			$cp_data['pf_' . $row['field_ident']] = $this->get_profile_field($row);
 			$check_value = $cp_data['pf_' . $row['field_ident']];
@@ -340,7 +340,7 @@ class custom_profile
 				}
 			}
 		}
-		$db->sql_freeresult($result);
+		phpbb::$db->sql_freeresult($result);
 	}
 
 	/**
@@ -369,15 +369,15 @@ class custom_profile
 
 			$sql = 'SELECT *
 				FROM ' . PROFILE_FIELDS_DATA_TABLE . '
-				WHERE ' . $db->sql_in_set('user_id', array_map('intval', $user_id));
-			$result = $db->sql_query($sql);
+				WHERE ' . phpbb::$db->sql_in_set('user_id', array_map('intval', $user_id));
+			$result = phpbb::$db->sql_query($sql);
 
 			$field_data = array();
-			while ($row = $db->sql_fetchrow($result))
+			while ($row = phpbb::$db->sql_fetchrow($result))
 			{
 				$field_data[$row['user_id']] = $row;
 			}
-			$db->sql_freeresult($result);
+			phpbb::$db->sql_freeresult($result);
 
 			$user_fields = array();
 
@@ -783,11 +783,11 @@ class custom_profile
 		$sql = 'SELECT f.field_type, f.field_ident, f.field_default_value, l.lang_default_value
 			FROM ' . PROFILE_LANG_TABLE . ' l, ' . PROFILE_FIELDS_TABLE . ' f
 			WHERE l.lang_id = ' . phpbb::$user->get_iso_lang_id() . '
-				' . ((sizeof($sql_not_in)) ? ' AND ' . $db->sql_in_set('f.field_ident', $sql_not_in, true) : '') . '
+				' . ((sizeof($sql_not_in)) ? ' AND ' . phpbb::$db->sql_in_set('f.field_ident', $sql_not_in, true) : '') . '
 				AND l.field_id = f.field_id';
-		$result = $db->sql_query($sql);
+		$result = phpbb::$db->sql_query($sql);
 
-		while ($row = $db->sql_fetchrow($result))
+		while ($row = phpbb::$db->sql_fetchrow($result))
 		{
 			if ($row['field_default_value'] == 'now' && $row['field_type'] == FIELD_DATE)
 			{
@@ -797,7 +797,7 @@ class custom_profile
 
 			$cp_data['pf_' . $row['field_ident']] = (in_array($row['field_type'], array(FIELD_TEXT, FIELD_STRING))) ? $row['lang_default_value'] : $row['field_default_value'];
 		}
-		$db->sql_freeresult($result);
+		phpbb::$db->sql_freeresult($result);
 
 		return $cp_data;
 	}

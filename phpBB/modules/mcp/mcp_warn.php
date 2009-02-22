@@ -105,9 +105,9 @@ class mcp_warn
 			FROM ' . USERS_TABLE . ' u, ' . WARNINGS_TABLE . ' w
 			WHERE u.user_id = w.user_id
 			ORDER BY w.warning_time DESC';
-		$result = $db->sql_query_limit($sql, 5);
+		$result = phpbb::$db->sql_query_limit($sql, 5);
 
-		while ($row = $db->sql_fetchrow($result))
+		while ($row = phpbb::$db->sql_fetchrow($result))
 		{
 			$template->assign_block_vars('latest', array(
 				'U_NOTES'		=> append_sid('mcp', 'i=notes&amp;mode=user_notes&amp;u=' . $row['user_id']),
@@ -121,7 +121,7 @@ class mcp_warn
 				'WARNINGS'		=> $row['user_warnings'],
 			));
 		}
-		$db->sql_freeresult($result);
+		phpbb::$db->sql_freeresult($result);
 	}
 
 	/**
@@ -194,9 +194,9 @@ class mcp_warn
 			FROM ' . POSTS_TABLE . ' p, ' . USERS_TABLE . " u
 			WHERE post_id = $post_id
 				AND u.user_id = p.poster_id";
-		$result = $db->sql_query($sql);
-		$user_row = $db->sql_fetchrow($result);
-		$db->sql_freeresult($result);
+		$result = phpbb::$db->sql_query($sql);
+		$user_row = phpbb::$db->sql_fetchrow($result);
+		phpbb::$db->sql_freeresult($result);
 
 		if (!$user_row)
 		{
@@ -220,9 +220,9 @@ class mcp_warn
 		$sql = 'SELECT post_id
 			FROM ' . WARNINGS_TABLE . "
 			WHERE post_id = $post_id";
-		$result = $db->sql_query($sql);
-		$row = $db->sql_fetchrow($result);
-		$db->sql_freeresult($result);
+		$result = phpbb::$db->sql_query($sql);
+		$row = phpbb::$db->sql_fetchrow($result);
+		phpbb::$db->sql_freeresult($result);
 
 		if ($row)
 		{
@@ -331,14 +331,14 @@ class mcp_warn
 		$notify = phpbb_request::is_set('notify_user');
 		$warning = utf8_normalize_nfc(request_var('warning', '', true));
 
-		$sql_where = ($user_id) ? "user_id = $user_id" : "username_clean = '" . $db->sql_escape(utf8_clean_string($username)) . "'";
+		$sql_where = ($user_id) ? "user_id = $user_id" : "username_clean = '" . phpbb::$db->sql_escape(utf8_clean_string($username)) . "'";
 
 		$sql = 'SELECT *
 			FROM ' . USERS_TABLE . '
 			WHERE ' . $sql_where;
-		$result = $db->sql_query($sql);
-		$user_row = $db->sql_fetchrow($result);
-		$db->sql_freeresult($result);
+		$result = phpbb::$db->sql_query($sql);
+		$user_row = phpbb::$db->sql_fetchrow($result);
+		phpbb::$db->sql_freeresult($result);
 
 		if (!$user_row)
 		{
@@ -470,21 +470,21 @@ function add_warning($user_row, $warning, $send_pm = true, $post_id = 0)
 		'warning_time'	=> time(),
 	);
 
-	$db->sql_query('INSERT INTO ' . WARNINGS_TABLE . ' ' . $db->sql_build_array('INSERT', $sql_ary));
+	phpbb::$db->sql_query('INSERT INTO ' . WARNINGS_TABLE . ' ' . phpbb::$db->sql_build_array('INSERT', $sql_ary));
 
 	$sql = 'UPDATE ' . USERS_TABLE . '
 		SET user_warnings = user_warnings + 1,
 			user_last_warning = ' . time() . '
 		WHERE user_id = ' . $user_row['user_id'];
-	$db->sql_query($sql);
+	phpbb::$db->sql_query($sql);
 
 	// We add this to the mod log too for moderators to see that a specific user got warned.
 	$sql = 'SELECT forum_id, topic_id
 		FROM ' . POSTS_TABLE . '
 		WHERE post_id = ' . $post_id;
-	$result = $db->sql_query($sql);
-	$row = $db->sql_fetchrow($result);
-	$db->sql_freeresult($result);
+	$result = phpbb::$db->sql_query($sql);
+	$row = phpbb::$db->sql_fetchrow($result);
+	phpbb::$db->sql_freeresult($result);
 
 	add_log('mod', $row['forum_id'], $row['topic_id'], 'LOG_USER_WARNING', $user_row['username']);
 }

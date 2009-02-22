@@ -68,7 +68,7 @@ function mcp_post_details($id, $mode, $action)
 			if ($action == 'chgposter')
 			{
 				$username = request_var('username', '', true);
-				$sql_where = "username_clean = '" . $db->sql_escape(utf8_clean_string($username)) . "'";
+				$sql_where = "username_clean = '" . phpbb::$db->sql_escape(utf8_clean_string($username)) . "'";
 			}
 			else
 			{
@@ -79,9 +79,9 @@ function mcp_post_details($id, $mode, $action)
 			$sql = 'SELECT *
 				FROM ' . USERS_TABLE . '
 				WHERE ' . $sql_where;
-			$result = $db->sql_query($sql);
-			$row = $db->sql_fetchrow($result);
-			$db->sql_freeresult($result);
+			$result = phpbb::$db->sql_query($sql);
+			$row = phpbb::$db->sql_fetchrow($result);
+			phpbb::$db->sql_freeresult($result);
 
 			if (!$row)
 			{
@@ -145,13 +145,13 @@ function mcp_post_details($id, $mode, $action)
 			WHERE post_msg_id = ' . $post_id . '
 				AND in_message = 0
 			ORDER BY filetime DESC, post_msg_id ASC';
-		$result = $db->sql_query($sql);
+		$result = phpbb::$db->sql_query($sql);
 
-		while ($row = $db->sql_fetchrow($result))
+		while ($row = phpbb::$db->sql_fetchrow($result))
 		{
 			$attachments[] = $row;
 		}
-		$db->sql_freeresult($result);
+		phpbb::$db->sql_freeresult($result);
 
 		if (sizeof($attachments))
 		{
@@ -252,9 +252,9 @@ function mcp_post_details($id, $mode, $action)
 				AND r.reason_id = re.reason_id
 				AND u.user_id = r.user_id
 			ORDER BY r.report_time DESC";
-		$result = $db->sql_query($sql);
+		$result = phpbb::$db->sql_query($sql);
 
-		if ($row = $db->sql_fetchrow($result))
+		if ($row = phpbb::$db->sql_fetchrow($result))
 		{
 			$template->assign_var('S_SHOW_REPORTS', true);
 
@@ -278,9 +278,9 @@ function mcp_post_details($id, $mode, $action)
 					'REPORT_TEXT'	=> bbcode_nl2br(trim($row['report_text'])),
 				));
 			}
-			while ($row = $db->sql_fetchrow($result));
+			while ($row = phpbb::$db->sql_fetchrow($result));
 		}
-		$db->sql_freeresult($result);
+		phpbb::$db->sql_freeresult($result);
 	}
 
 	// Get IP
@@ -298,12 +298,12 @@ function mcp_post_details($id, $mode, $action)
 		// Get other users who've posted under this IP
 		$sql = 'SELECT poster_id, COUNT(poster_id) as postings
 			FROM ' . POSTS_TABLE . "
-			WHERE poster_ip = '" . $db->sql_escape($post_info['poster_ip']) . "'
+			WHERE poster_ip = '" . phpbb::$db->sql_escape($post_info['poster_ip']) . "'
 			GROUP BY poster_id
 			ORDER BY postings DESC";
-		$result = $db->sql_query($sql);
+		$result = phpbb::$db->sql_query($sql);
 
-		while ($row = $db->sql_fetchrow($result))
+		while ($row = phpbb::$db->sql_fetchrow($result))
 		{
 			// Fill the user select list with users who have posted under this IP
 			if ($row['poster_id'] != $post_info['poster_id'])
@@ -311,22 +311,22 @@ function mcp_post_details($id, $mode, $action)
 				$users_ary[$row['poster_id']] = $row;
 			}
 		}
-		$db->sql_freeresult($result);
+		phpbb::$db->sql_freeresult($result);
 
 		if (sizeof($users_ary))
 		{
 			// Get the usernames
 			$sql = 'SELECT user_id, username
 				FROM ' . USERS_TABLE . '
-				WHERE ' . $db->sql_in_set('user_id', array_keys($users_ary));
-			$result = $db->sql_query($sql);
+				WHERE ' . phpbb::$db->sql_in_set('user_id', array_keys($users_ary));
+			$result = phpbb::$db->sql_query($sql);
 
-			while ($row = $db->sql_fetchrow($result))
+			while ($row = phpbb::$db->sql_fetchrow($result))
 			{
 				$users_ary[$row['user_id']]['username'] = $row['username'];
 				$usernames_ary[utf8_clean_string($row['username'])] = $users_ary[$row['user_id']];
 			}
-			$db->sql_freeresult($result);
+			phpbb::$db->sql_freeresult($result);
 
 			foreach ($users_ary as $user_id => $user_row)
 			{
@@ -352,9 +352,9 @@ function mcp_post_details($id, $mode, $action)
 			WHERE poster_id = ' . $post_info['poster_id'] . "
 			GROUP BY poster_ip
 			ORDER BY postings DESC";
-		$result = $db->sql_query($sql);
+		$result = phpbb::$db->sql_query($sql);
 
-		while ($row = $db->sql_fetchrow($result))
+		while ($row = phpbb::$db->sql_fetchrow($result))
 		{
 			$hostname = (($rdns_ip_num == $row['poster_ip'] || $rdns_ip_num == 'all') && $row['poster_ip']) ? @gethostbyaddr($row['poster_ip']) : '';
 
@@ -368,7 +368,7 @@ function mcp_post_details($id, $mode, $action)
 				'U_WHOIS'		=> append_sid('mcp', "i=$id&amp;mode=$mode&amp;action=whois&amp;p=$post_id&amp;ip={$row['poster_ip']}"))
 			);
 		}
-		$db->sql_freeresult($result);
+		phpbb::$db->sql_freeresult($result);
 
 		$user_select = '';
 
@@ -402,7 +402,7 @@ function change_poster(&$post_info, $userdata)
 	$sql = 'UPDATE ' . POSTS_TABLE . "
 		SET poster_id = {$userdata['user_id']}
 		WHERE post_id = $post_id";
-	$db->sql_query($sql);
+	phpbb::$db->sql_query($sql);
 
 	// Resync topic/forum if needed
 	if ($post_info['topic_last_post_id'] == $post_id || $post_info['forum_last_post_id'] == $post_id || $post_info['topic_first_post_id'] == $post_id)
@@ -418,12 +418,12 @@ function change_poster(&$post_info, $userdata)
 			SET user_posts = user_posts - 1
 			WHERE user_id = ' . $post_info['user_id'] .'
 			AND user_posts > 0';
-		$db->sql_query($sql);
+		phpbb::$db->sql_query($sql);
 
 		$sql = 'UPDATE ' . USERS_TABLE . '
 			SET user_posts = user_posts + 1
 			WHERE user_id = ' . $userdata['user_id'];
-		$db->sql_query($sql);
+		phpbb::$db->sql_query($sql);
 	}
 
 	// Add posted to information for this topic for the new user
@@ -436,16 +436,16 @@ function change_poster(&$post_info, $userdata)
 			FROM ' . POSTS_TABLE . '
 			WHERE topic_id = ' . $post_info['topic_id'] . '
 				AND poster_id = ' . $post_info['user_id'];
-		$result = $db->sql_query_limit($sql, 1);
-		$topic_id = (int) $db->sql_fetchfield('topic_id');
-		$db->sql_freeresult($result);
+		$result = phpbb::$db->sql_query_limit($sql, 1);
+		$topic_id = (int) phpbb::$db->sql_fetchfield('topic_id');
+		phpbb::$db->sql_freeresult($result);
 
 		if (!$topic_id)
 		{
 			$sql = 'DELETE FROM ' . TOPICS_POSTED_TABLE . '
 				WHERE user_id = ' . $post_info['user_id'] . '
 					AND topic_id = ' . $post_info['topic_id'];
-			$db->sql_query($sql);
+			phpbb::$db->sql_query($sql);
 		}
 	}
 
@@ -457,7 +457,7 @@ function change_poster(&$post_info, $userdata)
 			WHERE poster_id = ' . $post_info['user_id'] . '
 				AND post_msg_id = ' . $post_info['post_id'] . '
 				AND topic_id = ' . $post_info['topic_id'];
-		$db->sql_query($sql);
+		phpbb::$db->sql_query($sql);
 	}
 
 	// refresh search cache of this post

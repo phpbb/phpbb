@@ -28,9 +28,9 @@ function generate_smilies($mode, $forum_id)
 			$sql = 'SELECT forum_style
 				FROM ' . FORUMS_TABLE . "
 				WHERE forum_id = $forum_id";
-			$result = $db->sql_query_limit($sql, 1);
-			$row = $db->sql_fetchrow($result);
-			$db->sql_freeresult($result);
+			$result = phpbb::$db->sql_query_limit($sql, 1);
+			$row = phpbb::$db->sql_fetchrow($result);
+			phpbb::$db->sql_freeresult($result);
 
 			phpbb::$user->setup('posting', (int) $row['forum_style']);
 		}
@@ -52,13 +52,13 @@ function generate_smilies($mode, $forum_id)
 		$sql = 'SELECT smiley_id
 			FROM ' . SMILIES_TABLE . '
 			WHERE display_on_posting = 0';
-		$result = $db->sql_query_limit($sql, 1, 0, 3600);
+		$result = phpbb::$db->sql_query_limit($sql, 1, 0, 3600);
 
-		if ($row = $db->sql_fetchrow($result))
+		if ($row = phpbb::$db->sql_fetchrow($result))
 		{
 			$display_link = true;
 		}
-		$db->sql_freeresult($result);
+		phpbb::$db->sql_freeresult($result);
 	}
 
 	$last_url = '';
@@ -67,17 +67,17 @@ function generate_smilies($mode, $forum_id)
 		FROM ' . SMILIES_TABLE .
 		(($mode == 'inline') ? ' WHERE display_on_posting = 1 ' : '') . '
 		ORDER BY smiley_order';
-	$result = $db->sql_query($sql, 3600);
+	$result = phpbb::$db->sql_query($sql, 3600);
 
 	$smilies = array();
-	while ($row = $db->sql_fetchrow($result))
+	while ($row = phpbb::$db->sql_fetchrow($result))
 	{
 		if (empty($smilies[$row['smiley_url']]))
 		{
 			$smilies[$row['smiley_url']] = $row;
 		}
 	}
-	$db->sql_freeresult($result);
+	phpbb::$db->sql_freeresult($result);
 
 	if (sizeof($smilies))
 	{
@@ -145,7 +145,7 @@ function update_post_information($type, $ids, $return_update_sql = false)
 	{
 		$sql = 'SELECT MAX(p.post_id) as last_post_id
 			FROM ' . POSTS_TABLE . " p $topic_join
-			WHERE " . $db->sql_in_set('p.' . $type . '_id', $ids) . "
+			WHERE " . phpbb::$db->sql_in_set('p.' . $type . '_id', $ids) . "
 				$topic_condition
 				AND p.post_approved = 1";
 	}
@@ -153,15 +153,15 @@ function update_post_information($type, $ids, $return_update_sql = false)
 	{
 		$sql = 'SELECT p.' . $type . '_id, MAX(p.post_id) as last_post_id
 			FROM ' . POSTS_TABLE . " p $topic_join
-			WHERE " . $db->sql_in_set('p.' . $type . '_id', $ids) . "
+			WHERE " . phpbb::$db->sql_in_set('p.' . $type . '_id', $ids) . "
 				$topic_condition
 				AND p.post_approved = 1
 			GROUP BY p.{$type}_id";
 	}
-	$result = $db->sql_query($sql);
+	$result = phpbb::$db->sql_query($sql);
 
 	$last_post_ids = array();
-	while ($row = $db->sql_fetchrow($result))
+	while ($row = phpbb::$db->sql_fetchrow($result))
 	{
 		if (sizeof($ids) == 1)
 		{
@@ -180,7 +180,7 @@ function update_post_information($type, $ids, $return_update_sql = false)
 
 		$last_post_ids[] = $row['last_post_id'];
 	}
-	$db->sql_freeresult($result);
+	phpbb::$db->sql_freeresult($result);
 
 	if ($type == 'forum')
 	{
@@ -202,19 +202,19 @@ function update_post_information($type, $ids, $return_update_sql = false)
 		$sql = 'SELECT p.' . $type . '_id, p.post_id, p.post_subject, p.post_time, p.poster_id, p.post_username, u.user_id, u.username, u.user_colour
 			FROM ' . POSTS_TABLE . ' p, ' . USERS_TABLE . ' u
 			WHERE p.poster_id = u.user_id
-				AND ' . $db->sql_in_set('p.post_id', $last_post_ids);
-		$result = $db->sql_query($sql);
+				AND ' . phpbb::$db->sql_in_set('p.post_id', $last_post_ids);
+		$result = phpbb::$db->sql_query($sql);
 
-		while ($row = $db->sql_fetchrow($result))
+		while ($row = phpbb::$db->sql_fetchrow($result))
 		{
 			$update_sql[$row["{$type}_id"]][] = $type . '_last_post_id = ' . (int) $row['post_id'];
-			$update_sql[$row["{$type}_id"]][] = "{$type}_last_post_subject = '" . $db->sql_escape($row['post_subject']) . "'";
+			$update_sql[$row["{$type}_id"]][] = "{$type}_last_post_subject = '" . phpbb::$db->sql_escape($row['post_subject']) . "'";
 			$update_sql[$row["{$type}_id"]][] = $type . '_last_post_time = ' . (int) $row['post_time'];
 			$update_sql[$row["{$type}_id"]][] = $type . '_last_poster_id = ' . (int) $row['poster_id'];
-			$update_sql[$row["{$type}_id"]][] = "{$type}_last_poster_colour = '" . $db->sql_escape($row['user_colour']) . "'";
-			$update_sql[$row["{$type}_id"]][] = "{$type}_last_poster_name = '" . (($row['poster_id'] == ANONYMOUS) ? $db->sql_escape($row['post_username']) : $db->sql_escape($row['username'])) . "'";
+			$update_sql[$row["{$type}_id"]][] = "{$type}_last_poster_colour = '" . phpbb::$db->sql_escape($row['user_colour']) . "'";
+			$update_sql[$row["{$type}_id"]][] = "{$type}_last_poster_name = '" . (($row['poster_id'] == ANONYMOUS) ? phpbb::$db->sql_escape($row['post_username']) : phpbb::$db->sql_escape($row['username'])) . "'";
 		}
-		$db->sql_freeresult($result);
+		phpbb::$db->sql_freeresult($result);
 	}
 	unset($empty_forums, $ids, $last_post_ids);
 
@@ -230,7 +230,7 @@ function update_post_information($type, $ids, $return_update_sql = false)
 		$sql = "UPDATE $table
 			SET " . implode(', ', $update_sql_ary) . "
 			WHERE {$type}_id = $update_id";
-		$db->sql_query($sql);
+		phpbb::$db->sql_query($sql);
 	}
 
 	return;
@@ -823,9 +823,9 @@ function load_drafts($topic_id = 0, $forum_id = 0, $id = 0)
 			WHERE d.user_id = ' . phpbb::$user->data['user_id'] . "
 			$sql_and
 		ORDER BY d.save_time DESC";
-	$result = $db->sql_query($sql);
+	$result = phpbb::$db->sql_query($sql);
 
-	while ($row = $db->sql_fetchrow($result))
+	while ($row = phpbb::$db->sql_fetchrow($result))
 	{
 		if ($row['topic_id'])
 		{
@@ -833,7 +833,7 @@ function load_drafts($topic_id = 0, $forum_id = 0, $id = 0)
 		}
 		$draft_rows[] = $row;
 	}
-	$db->sql_freeresult($result);
+	phpbb::$db->sql_freeresult($result);
 
 	if (!sizeof($draft_rows))
 	{
@@ -845,14 +845,14 @@ function load_drafts($topic_id = 0, $forum_id = 0, $id = 0)
 	{
 		$sql = 'SELECT topic_id, forum_id, topic_title
 			FROM ' . TOPICS_TABLE . '
-			WHERE ' . $db->sql_in_set('topic_id', array_unique($topic_ids));
-		$result = $db->sql_query($sql);
+			WHERE ' . phpbb::$db->sql_in_set('topic_id', array_unique($topic_ids));
+		$result = phpbb::$db->sql_query($sql);
 
-		while ($row = $db->sql_fetchrow($result))
+		while ($row = phpbb::$db->sql_fetchrow($result))
 		{
 			$topic_rows[$row['topic_id']] = $row;
 		}
-		$db->sql_freeresult($result);
+		phpbb::$db->sql_freeresult($result);
 	}
 	unset($topic_ids);
 
@@ -924,23 +924,22 @@ function topic_review($topic_id, $forum_id, $mode = 'topic_review', $cur_post_id
 			' . (($mode == 'post_review') ? " AND p.post_id > $cur_post_id" : '') . '
 		ORDER BY p.post_time ';
 	$sql .= ($mode == 'post_review') ? 'ASC' : 'DESC';
-	$result = $db->sql_query_limit($sql, phpbb::$config['posts_per_page']);
+	$result = phpbb::$db->sql_query_limit($sql, phpbb::$config['posts_per_page']);
 
 	$post_list = array();
 
-	while ($row = $db->sql_fetchrow($result))
+	while ($row = phpbb::$db->sql_fetchrow($result))
 	{
 		$post_list[] = $row['post_id'];
 	}
-
-	$db->sql_freeresult($result);
+	phpbb::$db->sql_freeresult($result);
 
 	if (!sizeof($post_list))
 	{
 		return false;
 	}
 
-	$sql = $db->sql_build_query('SELECT', array(
+	$sql = phpbb::$db->sql_build_query('SELECT', array(
 		'SELECT'	=> 'u.username, u.user_id, u.user_colour, p.*',
 
 		'FROM'		=> array(
@@ -948,16 +947,16 @@ function topic_review($topic_id, $forum_id, $mode = 'topic_review', $cur_post_id
 			POSTS_TABLE		=> 'p',
 		),
 
-		'WHERE'		=> $db->sql_in_set('p.post_id', $post_list) . '
+		'WHERE'		=> phpbb::$db->sql_in_set('p.post_id', $post_list) . '
 			AND u.user_id = p.poster_id'
 	));
 
-	$result = $db->sql_query($sql);
+	$result = phpbb::$db->sql_query($sql);
 
 	$bbcode_bitfield = '';
 	$rowset = array();
 	$has_attachments = false;
-	while ($row = $db->sql_fetchrow($result))
+	while ($row = phpbb::$db->sql_fetchrow($result))
 	{
 		$rowset[$row['post_id']] = $row;
 		$bbcode_bitfield = $bbcode_bitfield | base64_decode($row['bbcode_bitfield']);
@@ -967,7 +966,7 @@ function topic_review($topic_id, $forum_id, $mode = 'topic_review', $cur_post_id
 			$has_attachments = true;
 		}
 	}
-	$db->sql_freeresult($result);
+	phpbb::$db->sql_freeresult($result);
 
 	// Instantiate BBCode class
 	if (!isset($bbcode) && $bbcode_bitfield !== '')
@@ -985,16 +984,16 @@ function topic_review($topic_id, $forum_id, $mode = 'topic_review', $cur_post_id
 		// Get attachments...
 		$sql = 'SELECT *
 			FROM ' . ATTACHMENTS_TABLE . '
-			WHERE ' . $db->sql_in_set('post_msg_id', $post_list) . '
+			WHERE ' . phpbb::$db->sql_in_set('post_msg_id', $post_list) . '
 				AND in_message = 0
 			ORDER BY filetime DESC, post_msg_id ASC';
-		$result = $db->sql_query($sql);
+		$result = phpbb::$db->sql_query($sql);
 
-		while ($row = $db->sql_fetchrow($result))
+		while ($row = phpbb::$db->sql_fetchrow($result))
 		{
 			$attachments[$row['post_msg_id']][] = $row;
 		}
-		$db->sql_freeresult($result);
+		phpbb::$db->sql_freeresult($result);
 	}
 
 	for ($i = 0, $end = sizeof($post_list); $i < $end; ++$i)
@@ -1105,14 +1104,14 @@ function user_notification($mode, $subject, $topic_title, $forum_name, $forum_id
 		FROM ' . BANLIST_TABLE . '
 		WHERE ban_userid <> 0
 			AND ban_exclude <> 1';
-	$result = $db->sql_query($sql);
+	$result = phpbb::$db->sql_query($sql);
 
 	$sql_ignore_users = ANONYMOUS . ', ' . phpbb::$user->data['user_id'];
-	while ($row = $db->sql_fetchrow($result))
+	while ($row = phpbb::$db->sql_fetchrow($result))
 	{
 		$sql_ignore_users .= ', ' . (int) $row['ban_userid'];
 	}
-	$db->sql_freeresult($result);
+	phpbb::$db->sql_freeresult($result);
 
 	$notify_rows = array();
 
@@ -1124,9 +1123,9 @@ function user_notification($mode, $subject, $topic_title, $forum_name, $forum_id
 			AND w.notify_status = 0
 			AND u.user_type IN (" . phpbb::USER_NORMAL . ', ' . phpbb::USER_FOUNDER . ')
 			AND u.user_id = w.user_id';
-	$result = $db->sql_query($sql);
+	$result = phpbb::$db->sql_query($sql);
 
-	while ($row = $db->sql_fetchrow($result))
+	while ($row = phpbb::$db->sql_fetchrow($result))
 	{
 		$notify_rows[$row['user_id']] = array(
 			'user_id'		=> $row['user_id'],
@@ -1140,7 +1139,7 @@ function user_notification($mode, $subject, $topic_title, $forum_name, $forum_id
 			'allowed'		=> false
 		);
 	}
-	$db->sql_freeresult($result);
+	phpbb::$db->sql_freeresult($result);
 
 	// forum notification is sent to those not already receiving topic notifications
 	if ($topic_notification)
@@ -1157,9 +1156,9 @@ function user_notification($mode, $subject, $topic_title, $forum_name, $forum_id
 				AND fw.notify_status = 0
 				AND u.user_type IN (" . phpbb::USER_NORMAL . ', ' . phpbb::USER_FOUNDER . ')
 				AND u.user_id = fw.user_id';
-		$result = $db->sql_query($sql);
+		$result = phpbb::$db->sql_query($sql);
 
-		while ($row = $db->sql_fetchrow($result))
+		while ($row = phpbb::$db->sql_fetchrow($result))
 		{
 			$notify_rows[$row['user_id']] = array(
 				'user_id'		=> $row['user_id'],
@@ -1173,7 +1172,7 @@ function user_notification($mode, $subject, $topic_title, $forum_name, $forum_id
 				'allowed'		=> false
 			);
 		}
-		$db->sql_freeresult($result);
+		phpbb::$db->sql_freeresult($result);
 	}
 
 	if (!sizeof($notify_rows))
@@ -1260,15 +1259,15 @@ function user_notification($mode, $subject, $topic_title, $forum_name, $forum_id
 	}
 
 	// Handle the DB updates
-	$db->sql_transaction('begin');
+	phpbb::$db->sql_transaction('begin');
 
 	if (!empty($update_notification['topic']))
 	{
 		$sql = 'UPDATE ' . TOPICS_WATCH_TABLE . "
 			SET notify_status = 1
 			WHERE topic_id = $topic_id
-				AND " . $db->sql_in_set('user_id', $update_notification['topic']);
-		$db->sql_query($sql);
+				AND " . phpbb::$db->sql_in_set('user_id', $update_notification['topic']);
+		phpbb::$db->sql_query($sql);
 	}
 
 	if (!empty($update_notification['forum']))
@@ -1276,8 +1275,8 @@ function user_notification($mode, $subject, $topic_title, $forum_name, $forum_id
 		$sql = 'UPDATE ' . FORUMS_WATCH_TABLE . "
 			SET notify_status = 1
 			WHERE forum_id = $forum_id
-				AND " . $db->sql_in_set('user_id', $update_notification['forum']);
-		$db->sql_query($sql);
+				AND " . phpbb::$db->sql_in_set('user_id', $update_notification['forum']);
+		phpbb::$db->sql_query($sql);
 	}
 
 	// Now delete the user_ids not authorised to receive notifications on this topic/forum
@@ -1285,19 +1284,19 @@ function user_notification($mode, $subject, $topic_title, $forum_name, $forum_id
 	{
 		$sql = 'DELETE FROM ' . TOPICS_WATCH_TABLE . "
 			WHERE topic_id = $topic_id
-				AND " . $db->sql_in_set('user_id', $delete_ids['topic']);
-		$db->sql_query($sql);
+				AND " . phpbb::$db->sql_in_set('user_id', $delete_ids['topic']);
+		phpbb::$db->sql_query($sql);
 	}
 
 	if (!empty($delete_ids['forum']))
 	{
 		$sql = 'DELETE FROM ' . FORUMS_WATCH_TABLE . "
 			WHERE forum_id = $forum_id
-				AND " . $db->sql_in_set('user_id', $delete_ids['forum']);
-		$db->sql_query($sql);
+				AND " . phpbb::$db->sql_in_set('user_id', $delete_ids['forum']);
+		phpbb::$db->sql_query($sql);
 	}
 
-	$db->sql_transaction('commit');
+	phpbb::$db->sql_transaction('commit');
 }
 
 //
@@ -1328,7 +1327,7 @@ function delete_post($forum_id, $topic_id, $post_id, &$data)
 
 	include_once(PHPBB_ROOT_PATH . 'includes/functions_admin.' . PHP_EXT);
 
-	$db->sql_transaction('begin');
+	phpbb::$db->sql_transaction('begin');
 
 	// we must make sure to update forums that contain the shadow'd topic
 	if ($post_mode == 'delete_topic')
@@ -1337,9 +1336,9 @@ function delete_post($forum_id, $topic_id, $post_id, &$data)
 
 		$sql = 'SELECT forum_id
 			FROM ' . TOPICS_TABLE . '
-			WHERE ' . $db->sql_in_set('topic_moved_id', $topic_id);
-		$result = $db->sql_query($sql);
-		while ($row = $db->sql_fetchrow($result))
+			WHERE ' . phpbb::$db->sql_in_set('topic_moved_id', $topic_id);
+		$result = phpbb::$db->sql_query($sql);
+		while ($row = phpbb::$db->sql_fetchrow($result))
 		{
 			if (!isset($shadow_forum_ids[(int) $row['forum_id']]))
 			{
@@ -1350,7 +1349,7 @@ function delete_post($forum_id, $topic_id, $post_id, &$data)
 				$shadow_forum_ids[(int) $row['forum_id']]++;
 			}
 		}
-		$db->sql_freeresult($result);
+		phpbb::$db->sql_freeresult($result);
 	}
 
 	if (!delete_posts('post_id', array($post_id), false, false))
@@ -1363,7 +1362,7 @@ function delete_post($forum_id, $topic_id, $post_id, &$data)
 		trigger_error('ALREADY_DELETED');
 	}
 
-	$db->sql_transaction('commit');
+	phpbb::$db->sql_transaction('commit');
 
 	// Collect the necessary information for updating the tables
 	$sql_data[FORUMS_TABLE] = '';
@@ -1375,7 +1374,7 @@ function delete_post($forum_id, $topic_id, $post_id, &$data)
 			{
 				// counting is fun! we only have to do sizeof($forum_ids) number of queries,
 				// even if the topic is moved back to where its shadow lives (we count how many times it is in a forum)
-				$db->sql_query('UPDATE ' . FORUMS_TABLE . ' SET forum_topics_real = forum_topics_real - ' . $topic_count . ', forum_topics = forum_topics - ' . $topic_count . ' WHERE forum_id = ' . $updated_forum);
+				phpbb::$db->sql_query('UPDATE ' . FORUMS_TABLE . ' SET forum_topics_real = forum_topics_real - ' . $topic_count . ', forum_topics = forum_topics - ' . $topic_count . ' WHERE forum_id = ' . $updated_forum);
 				update_post_information('forum', $updated_forum);
 			}
 
@@ -1401,16 +1400,16 @@ function delete_post($forum_id, $topic_id, $post_id, &$data)
 				WHERE p.topic_id = $topic_id
 					AND p.poster_id = u.user_id
 				ORDER BY p.post_time ASC";
-			$result = $db->sql_query_limit($sql, 1);
-			$row = $db->sql_fetchrow($result);
-			$db->sql_freeresult($result);
+			$result = phpbb::$db->sql_query_limit($sql, 1);
+			$row = phpbb::$db->sql_fetchrow($result);
+			phpbb::$db->sql_freeresult($result);
 
 			if ($data['topic_type'] != POST_GLOBAL)
 			{
 				$sql_data[FORUMS_TABLE] = ($data['post_approved']) ? 'forum_posts = forum_posts - 1' : '';
 			}
 
-			$sql_data[TOPICS_TABLE] = 'topic_poster = ' . intval($row['poster_id']) . ', topic_first_post_id = ' . intval($row['post_id']) . ", topic_first_poster_colour = '" . $db->sql_escape($row['user_colour']) . "', topic_first_poster_name = '" . (($row['poster_id'] == ANONYMOUS) ? $db->sql_escape($row['post_username']) : $db->sql_escape($row['username'])) . "'";
+			$sql_data[TOPICS_TABLE] = 'topic_poster = ' . intval($row['poster_id']) . ', topic_first_post_id = ' . intval($row['post_id']) . ", topic_first_poster_colour = '" . phpbb::$db->sql_escape($row['user_colour']) . "', topic_first_poster_name = '" . (($row['poster_id'] == ANONYMOUS) ? phpbb::$db->sql_escape($row['post_username']) : phpbb::$db->sql_escape($row['username'])) . "'";
 
 			// Decrementing topic_replies here is fine because this case only happens if there is more than one post within the topic - basically removing one "reply"
 			$sql_data[TOPICS_TABLE] .= ', topic_replies_real = topic_replies_real - 1' . (($data['post_approved']) ? ', topic_replies = topic_replies - 1' : '');
@@ -1445,9 +1444,9 @@ function delete_post($forum_id, $topic_id, $post_id, &$data)
 					FROM ' . POSTS_TABLE . "
 					WHERE topic_id = $topic_id " .
 						((!phpbb::$acl->acl_get('m_approve', $forum_id)) ? 'AND post_approved = 1' : '');
-				$result = $db->sql_query($sql);
-				$row = $db->sql_fetchrow($result);
-				$db->sql_freeresult($result);
+				$result = phpbb::$db->sql_query($sql);
+				$row = phpbb::$db->sql_fetchrow($result);
+				phpbb::$db->sql_freeresult($result);
 
 				$next_post_id = (int) $row['last_post_id'];
 			}
@@ -1460,9 +1459,9 @@ function delete_post($forum_id, $topic_id, $post_id, &$data)
 					((!phpbb::$acl->acl_get('m_approve', $forum_id)) ? 'AND post_approved = 1' : '') . '
 					AND post_time > ' . $data['post_time'] . '
 				ORDER BY post_time ASC';
-			$result = $db->sql_query_limit($sql, 1);
-			$row = $db->sql_fetchrow($result);
-			$db->sql_freeresult($result);
+			$result = phpbb::$db->sql_query_limit($sql, 1);
+			$row = phpbb::$db->sql_fetchrow($result);
+			phpbb::$db->sql_freeresult($result);
 
 			if ($data['topic_type'] != POST_GLOBAL)
 			{
@@ -1476,7 +1475,7 @@ function delete_post($forum_id, $topic_id, $post_id, &$data)
 
 //	$sql_data[USERS_TABLE] = ($data['post_postcount']) ? 'user_posts = user_posts - 1' : '';
 
-	$db->sql_transaction('begin');
+	phpbb::$db->sql_transaction('begin');
 
 	$where_sql = array(
 		FORUMS_TABLE	=> "forum_id = $forum_id",
@@ -1488,7 +1487,7 @@ function delete_post($forum_id, $topic_id, $post_id, &$data)
 	{
 		if ($update_sql)
 		{
-			$db->sql_query("UPDATE $table SET $update_sql WHERE " . $where_sql[$table]);
+			phpbb::$db->sql_query("UPDATE $table SET $update_sql WHERE " . $where_sql[$table]);
 		}
 	}
 
@@ -1499,9 +1498,9 @@ function delete_post($forum_id, $topic_id, $post_id, &$data)
 			FROM ' . POSTS_TABLE . '
 			WHERE topic_id = ' . $topic_id . '
 				AND poster_id = ' . $data['poster_id'];
-		$result = $db->sql_query_limit($sql, 1);
-		$poster_id = (int) $db->sql_fetchfield('poster_id');
-		$db->sql_freeresult($result);
+		$result = phpbb::$db->sql_query_limit($sql, 1);
+		$poster_id = (int) phpbb::$db->sql_fetchfield('poster_id');
+		phpbb::$db->sql_freeresult($result);
 
 		// The user is not having any more posts within this topic
 		if (!$poster_id)
@@ -1509,11 +1508,11 @@ function delete_post($forum_id, $topic_id, $post_id, &$data)
 			$sql = 'DELETE FROM ' . TOPICS_POSTED_TABLE . '
 				WHERE topic_id = ' . $topic_id . '
 					AND user_id = ' . $data['poster_id'];
-			$db->sql_query($sql);
+			phpbb::$db->sql_query($sql);
 		}
 	}
 
-	$db->sql_transaction('commit');
+	phpbb::$db->sql_transaction('commit');
 
 	if ($data['post_reported'] && ($post_mode != 'delete_topic'))
 	{
@@ -1567,9 +1566,9 @@ function submit_post($mode, $subject, $username, $topic_type, &$poll, &$data, $u
 			FROM ' . TOPICS_TABLE . ' t, ' . POSTS_TABLE . ' p
 			WHERE t.topic_id = p.topic_id
 				AND p.post_id = ' . $data['post_id'];
-		$result = $db->sql_query($sql);
-		$topic_row = $db->sql_fetchrow($result);
-		$db->sql_freeresult($result);
+		$result = phpbb::$db->sql_query($sql);
+		$topic_row = phpbb::$db->sql_fetchrow($result);
+		phpbb::$db->sql_freeresult($result);
 
 		$data['topic_approved'] = $topic_row['topic_approved'];
 		$data['post_approved'] = $topic_row['post_approved'];
@@ -1585,7 +1584,7 @@ function submit_post($mode, $subject, $username, $topic_type, &$poll, &$data, $u
 	}
 
 	// Start the transaction here
-	$db->sql_transaction('begin');
+	phpbb::$db->sql_transaction('begin');
 
 	// Collect Information
 	switch ($post_mode)
@@ -1769,9 +1768,9 @@ function submit_post($mode, $subject, $username, $topic_type, &$poll, &$data, $u
 					$sql = 'SELECT topic_type, topic_replies, topic_replies_real, topic_approved
 						FROM ' . TOPICS_TABLE . '
 						WHERE topic_id = ' . $data['topic_id'];
-					$result = $db->sql_query($sql);
-					$topic_row = $db->sql_fetchrow($result);
-					$db->sql_freeresult($result);
+					$result = phpbb::$db->sql_query($sql);
+					$topic_row = phpbb::$db->sql_fetchrow($result);
+					phpbb::$db->sql_freeresult($result);
 				}
 
 				// If this is the only post remaining we do not need to decrement topic_replies.
@@ -1817,10 +1816,10 @@ function submit_post($mode, $subject, $username, $topic_type, &$poll, &$data, $u
 	if ($post_mode == 'post')
 	{
 		$sql = 'INSERT INTO ' . TOPICS_TABLE . ' ' .
-			$db->sql_build_array('INSERT', $sql_data[TOPICS_TABLE]['sql']);
-		$db->sql_query($sql);
+			phpbb::$db->sql_build_array('INSERT', $sql_data[TOPICS_TABLE]['sql']);
+		phpbb::$db->sql_query($sql);
 
-		$data['topic_id'] = $db->sql_nextid();
+		$data['topic_id'] = phpbb::$db->sql_nextid();
 
 		$sql_data[POSTS_TABLE]['sql'] = array_merge($sql_data[POSTS_TABLE]['sql'], array(
 			'topic_id' => $data['topic_id'])
@@ -1838,9 +1837,9 @@ function submit_post($mode, $subject, $username, $topic_type, &$poll, &$data, $u
 			);
 		}
 
-		$sql = 'INSERT INTO ' . POSTS_TABLE . ' ' . $db->sql_build_array('INSERT', $sql_data[POSTS_TABLE]['sql']);
-		$db->sql_query($sql);
-		$data['post_id'] = $db->sql_nextid();
+		$sql = 'INSERT INTO ' . POSTS_TABLE . ' ' . phpbb::$db->sql_build_array('INSERT', $sql_data[POSTS_TABLE]['sql']);
+		phpbb::$db->sql_query($sql);
+		$data['post_id'] = phpbb::$db->sql_nextid();
 
 		if ($post_mode == 'post')
 		{
@@ -1868,9 +1867,9 @@ function submit_post($mode, $subject, $username, $topic_type, &$poll, &$data, $u
 			$sql = 'SELECT topic_type, topic_replies, topic_replies_real, topic_approved, topic_last_post_id
 				FROM ' . TOPICS_TABLE . '
 				WHERE topic_id = ' . $data['topic_id'];
-			$result = $db->sql_query($sql);
-			$topic_row = $db->sql_fetchrow($result);
-			$db->sql_freeresult($result);
+			$result = phpbb::$db->sql_query($sql);
+			$topic_row = phpbb::$db->sql_fetchrow($result);
+			phpbb::$db->sql_freeresult($result);
 		}
 
 		// globalise/unglobalise?
@@ -1878,7 +1877,7 @@ function submit_post($mode, $subject, $username, $topic_type, &$poll, &$data, $u
 		{
 			if (!empty($sql_data[FORUMS_TABLE]['stat']) && implode('', $sql_data[FORUMS_TABLE]['stat']))
 			{
-				$db->sql_query('UPDATE ' . FORUMS_TABLE . ' SET ' . implode(', ', $sql_data[FORUMS_TABLE]['stat']) . ' WHERE forum_id = ' . $data['forum_id']);
+				phpbb::$db->sql_query('UPDATE ' . FORUMS_TABLE . ' SET ' . implode(', ', $sql_data[FORUMS_TABLE]['stat']) . ' WHERE forum_id = ' . $data['forum_id']);
 			}
 
 			$make_global = true;
@@ -1896,7 +1895,7 @@ function submit_post($mode, $subject, $username, $topic_type, &$poll, &$data, $u
 			$sql = 'UPDATE ' . POSTS_TABLE . '
 				SET forum_id = 0
 				WHERE topic_id = ' . $data['topic_id'];
-			$db->sql_query($sql);
+			phpbb::$db->sql_query($sql);
 		}
 		// unglobalise
 		else if ($topic_row['topic_type'] == POST_GLOBAL && $topic_type != POST_GLOBAL)
@@ -1909,7 +1908,7 @@ function submit_post($mode, $subject, $username, $topic_type, &$poll, &$data, $u
 			$sql = 'UPDATE ' . POSTS_TABLE . '
 				SET forum_id = ' . $data['forum_id'] . '
 				WHERE topic_id = ' . $data['topic_id'];
-			$db->sql_query($sql);
+			phpbb::$db->sql_query($sql);
 		}
 	}
 
@@ -1917,18 +1916,18 @@ function submit_post($mode, $subject, $username, $topic_type, &$poll, &$data, $u
 	if (isset($sql_data[TOPICS_TABLE]['sql']))
 	{
 		$sql = 'UPDATE ' . TOPICS_TABLE . '
-			SET ' . $db->sql_build_array('UPDATE', $sql_data[TOPICS_TABLE]['sql']) . '
+			SET ' . phpbb::$db->sql_build_array('UPDATE', $sql_data[TOPICS_TABLE]['sql']) . '
 			WHERE topic_id = ' . $data['topic_id'];
-		$db->sql_query($sql);
+		phpbb::$db->sql_query($sql);
 	}
 
 	// Update the posts table
 	if (isset($sql_data[POSTS_TABLE]['sql']))
 	{
 		$sql = 'UPDATE ' . POSTS_TABLE . '
-			SET ' . $db->sql_build_array('UPDATE', $sql_data[POSTS_TABLE]['sql']) . '
+			SET ' . phpbb::$db->sql_build_array('UPDATE', $sql_data[POSTS_TABLE]['sql']) . '
 			WHERE post_id = ' . $data['post_id'];
-		$db->sql_query($sql);
+		phpbb::$db->sql_query($sql);
 	}
 
 	// Update Poll Tables
@@ -1942,14 +1941,14 @@ function submit_post($mode, $subject, $username, $topic_type, &$poll, &$data, $u
 				FROM ' . POLL_OPTIONS_TABLE . '
 				WHERE topic_id = ' . $data['topic_id'] . '
 				ORDER BY poll_option_id';
-			$result = $db->sql_query($sql);
+			$result = phpbb::$db->sql_query($sql);
 
 			$cur_poll_options = array();
-			while ($row = $db->sql_fetchrow($result))
+			while ($row = phpbb::$db->sql_fetchrow($result))
 			{
 				$cur_poll_options[] = $row;
 			}
-			$db->sql_freeresult($result);
+			phpbb::$db->sql_freeresult($result);
 		}
 
 		$sql_insert_ary = array();
@@ -1970,29 +1969,29 @@ function submit_post($mode, $subject, $username, $topic_type, &$poll, &$data, $u
 				else if ($poll['poll_options'][$i] != $cur_poll_options[$i])
 				{
 					$sql = 'UPDATE ' . POLL_OPTIONS_TABLE . "
-						SET poll_option_text = '" . $db->sql_escape($poll['poll_options'][$i]) . "'
+						SET poll_option_text = '" . phpbb::$db->sql_escape($poll['poll_options'][$i]) . "'
 						WHERE poll_option_id = " . $cur_poll_options[$i]['poll_option_id'] . '
 							AND topic_id = ' . $data['topic_id'];
-					$db->sql_query($sql);
+					phpbb::$db->sql_query($sql);
 				}
 			}
 		}
 
-		$db->sql_multi_insert(POLL_OPTIONS_TABLE, $sql_insert_ary);
+		phpbb::$db->sql_multi_insert(POLL_OPTIONS_TABLE, $sql_insert_ary);
 
 		if (sizeof($poll['poll_options']) < sizeof($cur_poll_options))
 		{
 			$sql = 'DELETE FROM ' . POLL_OPTIONS_TABLE . '
 				WHERE poll_option_id > ' . sizeof($poll['poll_options']) . '
 					AND topic_id = ' . $data['topic_id'];
-			$db->sql_query($sql);
+			phpbb::$db->sql_query($sql);
 		}
 
 		// If edited, we would need to reset votes (since options can be re-ordered above, you can't be sure if the change is for changing the text or adding an option
 		if ($mode == 'edit' && sizeof($poll['poll_options']) != sizeof($cur_poll_options))
 		{
-			$db->sql_query('DELETE FROM ' . POLL_VOTES_TABLE . ' WHERE topic_id = ' . $data['topic_id']);
-			$db->sql_query('UPDATE ' . POLL_OPTIONS_TABLE . ' SET poll_option_total = 0 WHERE topic_id = ' . $data['topic_id']);
+			phpbb::$db->sql_query('DELETE FROM ' . POLL_VOTES_TABLE . ' WHERE topic_id = ' . $data['topic_id']);
+			phpbb::$db->sql_query('UPDATE ' . POLL_OPTIONS_TABLE . ' SET poll_option_total = 0 WHERE topic_id = ' . $data['topic_id']);
 		}
 	}
 
@@ -2011,17 +2010,17 @@ function submit_post($mode, $subject, $username, $topic_type, &$poll, &$data, $u
 		{
 			$sql = 'SELECT attach_id, filesize, physical_filename
 				FROM ' . ATTACHMENTS_TABLE . '
-				WHERE ' . $db->sql_in_set('attach_id', array_keys($orphan_rows)) . '
+				WHERE ' . phpbb::$db->sql_in_set('attach_id', array_keys($orphan_rows)) . '
 					AND is_orphan = 1
 					AND poster_id = ' . phpbb::$user->data['user_id'];
-			$result = $db->sql_query($sql);
+			$result = phpbb::$db->sql_query($sql);
 
 			$orphan_rows = array();
-			while ($row = $db->sql_fetchrow($result))
+			while ($row = phpbb::$db->sql_fetchrow($result))
 			{
 				$orphan_rows[$row['attach_id']] = $row;
 			}
-			$db->sql_freeresult($result);
+			phpbb::$db->sql_freeresult($result);
 		}
 
 		foreach ($data['attachment_data'] as $pos => $attach_row)
@@ -2035,10 +2034,10 @@ function submit_post($mode, $subject, $username, $topic_type, &$poll, &$data, $u
 			{
 				// update entry in db if attachment already stored in db and filespace
 				$sql = 'UPDATE ' . ATTACHMENTS_TABLE . "
-					SET attach_comment = '" . $db->sql_escape($attach_row['attach_comment']) . "'
+					SET attach_comment = '" . phpbb::$db->sql_escape($attach_row['attach_comment']) . "'
 					WHERE attach_id = " . (int) $attach_row['attach_id'] . '
 						AND is_orphan = 0';
-				$db->sql_query($sql);
+				phpbb::$db->sql_query($sql);
 			}
 			else
 			{
@@ -2059,11 +2058,11 @@ function submit_post($mode, $subject, $username, $topic_type, &$poll, &$data, $u
 					'attach_comment'	=> $attach_row['attach_comment'],
 				);
 
-				$sql = 'UPDATE ' . ATTACHMENTS_TABLE . ' SET ' . $db->sql_build_array('UPDATE', $attach_sql) . '
+				$sql = 'UPDATE ' . ATTACHMENTS_TABLE . ' SET ' . phpbb::$db->sql_build_array('UPDATE', $attach_sql) . '
 					WHERE attach_id = ' . $attach_row['attach_id'] . '
 						AND is_orphan = 1
 						AND poster_id = ' . phpbb::$user->data['user_id'];
-				$db->sql_query($sql);
+				phpbb::$db->sql_query($sql);
 			}
 		}
 
@@ -2088,11 +2087,11 @@ function submit_post($mode, $subject, $username, $topic_type, &$poll, &$data, $u
 		if (($post_mode == 'post' || $post_mode == 'reply') && $post_approved)
 		{
 			$sql_data[FORUMS_TABLE]['stat'][] = 'forum_last_post_id = ' . $data['post_id'];
-			$sql_data[FORUMS_TABLE]['stat'][] = "forum_last_post_subject = '" . $db->sql_escape($subject) . "'";
+			$sql_data[FORUMS_TABLE]['stat'][] = "forum_last_post_subject = '" . phpbb::$db->sql_escape($subject) . "'";
 			$sql_data[FORUMS_TABLE]['stat'][] = 'forum_last_post_time = ' . $current_time;
 			$sql_data[FORUMS_TABLE]['stat'][] = 'forum_last_poster_id = ' . (int) phpbb::$user->data['user_id'];
-			$sql_data[FORUMS_TABLE]['stat'][] = "forum_last_poster_name = '" . $db->sql_escape((!phpbb::$user->is_registered && $username) ? $username : ((!phpbb::$user->is_guest) ? phpbb::$user->data['username'] : '')) . "'";
-			$sql_data[FORUMS_TABLE]['stat'][] = "forum_last_poster_colour = '" . $db->sql_escape(phpbb::$user->data['user_colour']) . "'";
+			$sql_data[FORUMS_TABLE]['stat'][] = "forum_last_poster_name = '" . phpbb::$db->sql_escape((!phpbb::$user->is_registered && $username) ? $username : ((!phpbb::$user->is_guest) ? phpbb::$user->data['username'] : '')) . "'";
+			$sql_data[FORUMS_TABLE]['stat'][] = "forum_last_poster_colour = '" . phpbb::$db->sql_escape(phpbb::$user->data['user_colour']) . "'";
 		}
 		else if ($post_mode == 'edit_last_post' || $post_mode == 'edit_topic' || ($post_mode == 'edit_first_post' && !$data['topic_replies']))
 		{
@@ -2101,9 +2100,9 @@ function submit_post($mode, $subject, $username, $topic_type, &$poll, &$data, $u
 			$sql = 'SELECT forum_last_post_id, forum_last_post_subject
 				FROM ' . FORUMS_TABLE . '
 				WHERE forum_id = ' . (int) $data['forum_id'];
-			$result = $db->sql_query($sql);
-			$row = $db->sql_fetchrow($result);
-			$db->sql_freeresult($result);
+			$result = phpbb::$db->sql_query($sql);
+			$row = phpbb::$db->sql_fetchrow($result);
+			phpbb::$db->sql_freeresult($result);
 
 			// this post is the latest post in the forum, better update
 			if ($row['forum_last_post_id'] == $data['post_id'])
@@ -2114,13 +2113,13 @@ function submit_post($mode, $subject, $username, $topic_type, &$poll, &$data, $u
 					// the post's subject changed
 					if ($row['forum_last_post_subject'] !== $subject)
 					{
-						$sql_data[FORUMS_TABLE]['stat'][] = 'forum_last_post_subject = \'' . $db->sql_escape($subject) . '\'';
+						$sql_data[FORUMS_TABLE]['stat'][] = 'forum_last_post_subject = \'' . phpbb::$db->sql_escape($subject) . '\'';
 					}
 
 					// Update the user name if poster is anonymous... just in case an admin changed it
 					if ($data['poster_id'] == ANONYMOUS)
 					{
-						$sql_data[FORUMS_TABLE]['stat'][] = "forum_last_poster_name = '" . $db->sql_escape($username) . "'";
+						$sql_data[FORUMS_TABLE]['stat'][] = "forum_last_poster_name = '" . phpbb::$db->sql_escape($username) . "'";
 					}
 				}
 				else if ($data['post_approved'] !== $post_approved)
@@ -2130,9 +2129,9 @@ function submit_post($mode, $subject, $username, $topic_type, &$poll, &$data, $u
 						FROM ' . TOPICS_TABLE . '
 						WHERE forum_id = ' . (int) $data['forum_id'] . '
 							AND topic_approved = 1';
-					$result = $db->sql_query($sql);
-					$row = $db->sql_fetchrow($result);
-					$db->sql_freeresult($result);
+					$result = phpbb::$db->sql_query($sql);
+					$row = phpbb::$db->sql_fetchrow($result);
+					phpbb::$db->sql_freeresult($result);
 
 					// any posts left in this forum?
 					if (!empty($row['last_post_id']))
@@ -2141,17 +2140,17 @@ function submit_post($mode, $subject, $username, $topic_type, &$poll, &$data, $u
 							FROM ' . POSTS_TABLE . ' p, ' . USERS_TABLE . ' u
 							WHERE p.poster_id = u.user_id
 								AND p.post_id = ' . (int) $row['last_post_id'];
-						$result = $db->sql_query($sql);
-						$row = $db->sql_fetchrow($result);
-						$db->sql_freeresult($result);
+						$result = phpbb::$db->sql_query($sql);
+						$row = phpbb::$db->sql_fetchrow($result);
+						phpbb::$db->sql_freeresult($result);
 
 						// salvation, a post is found! jam it into the forums table
 						$sql_data[FORUMS_TABLE]['stat'][] = 'forum_last_post_id = ' . (int) $row['post_id'];
-						$sql_data[FORUMS_TABLE]['stat'][] = "forum_last_post_subject = '" . $db->sql_escape($row['post_subject']) . "'";
+						$sql_data[FORUMS_TABLE]['stat'][] = "forum_last_post_subject = '" . phpbb::$db->sql_escape($row['post_subject']) . "'";
 						$sql_data[FORUMS_TABLE]['stat'][] = 'forum_last_post_time = ' . (int) $row['post_time'];
 						$sql_data[FORUMS_TABLE]['stat'][] = 'forum_last_poster_id = ' . (int) $row['poster_id'];
-						$sql_data[FORUMS_TABLE]['stat'][] = "forum_last_poster_name = '" . $db->sql_escape(($row['poster_id'] == ANONYMOUS) ? $row['post_username'] : $row['username']) . "'";
-						$sql_data[FORUMS_TABLE]['stat'][] = "forum_last_poster_colour = '" . $db->sql_escape($row['user_colour']) . "'";
+						$sql_data[FORUMS_TABLE]['stat'][] = "forum_last_poster_name = '" . phpbb::$db->sql_escape(($row['poster_id'] == ANONYMOUS) ? $row['post_username'] : $row['username']) . "'";
+						$sql_data[FORUMS_TABLE]['stat'][] = "forum_last_poster_colour = '" . phpbb::$db->sql_escape($row['user_colour']) . "'";
 					}
 					else
 					{
@@ -2173,9 +2172,9 @@ function submit_post($mode, $subject, $username, $topic_type, &$poll, &$data, $u
 		$sql = 'SELECT forum_last_post_id
 			FROM ' . FORUMS_TABLE . '
 			WHERE forum_id = ' . (int) $data['forum_id'];
-		$result = $db->sql_query($sql);
-		$forum_row = $db->sql_fetchrow($result);
-		$db->sql_freeresult($result);
+		$result = phpbb::$db->sql_query($sql);
+		$forum_row = phpbb::$db->sql_fetchrow($result);
+		phpbb::$db->sql_freeresult($result);
 
 		// we made a topic global, go get new data
 		if ($topic_row['topic_type'] != POST_GLOBAL && $topic_type == POST_GLOBAL && $forum_row['forum_last_post_id'] == $topic_row['topic_last_post_id'])
@@ -2185,9 +2184,9 @@ function submit_post($mode, $subject, $username, $topic_type, &$poll, &$data, $u
 				FROM ' . TOPICS_TABLE . '
 				WHERE forum_id = ' . (int) $data['forum_id'] . '
 					AND topic_approved = 1';
-			$result = $db->sql_query($sql);
-			$row = $db->sql_fetchrow($result);
-			$db->sql_freeresult($result);
+			$result = phpbb::$db->sql_query($sql);
+			$row = phpbb::$db->sql_fetchrow($result);
+			phpbb::$db->sql_freeresult($result);
 
 			// any posts left in this forum?
 			if (!empty($row['last_post_id']))
@@ -2196,17 +2195,17 @@ function submit_post($mode, $subject, $username, $topic_type, &$poll, &$data, $u
 					FROM ' . POSTS_TABLE . ' p, ' . USERS_TABLE . ' u
 					WHERE p.poster_id = u.user_id
 						AND p.post_id = ' . (int) $row['last_post_id'];
-				$result = $db->sql_query($sql);
-				$row = $db->sql_fetchrow($result);
-				$db->sql_freeresult($result);
+				$result = phpbb::$db->sql_query($sql);
+				$row = phpbb::$db->sql_fetchrow($result);
+				phpbb::$db->sql_freeresult($result);
 
 				// salvation, a post is found! jam it into the forums table
 				$sql_data[FORUMS_TABLE]['stat'][] = 'forum_last_post_id = ' . (int) $row['post_id'];
-				$sql_data[FORUMS_TABLE]['stat'][] = "forum_last_post_subject = '" . $db->sql_escape($row['post_subject']) . "'";
+				$sql_data[FORUMS_TABLE]['stat'][] = "forum_last_post_subject = '" . phpbb::$db->sql_escape($row['post_subject']) . "'";
 				$sql_data[FORUMS_TABLE]['stat'][] = 'forum_last_post_time = ' . (int) $row['post_time'];
 				$sql_data[FORUMS_TABLE]['stat'][] = 'forum_last_poster_id = ' . (int) $row['poster_id'];
-				$sql_data[FORUMS_TABLE]['stat'][] = "forum_last_poster_name = '" . $db->sql_escape(($row['poster_id'] == ANONYMOUS) ? $row['post_username'] : $row['username']) . "'";
-				$sql_data[FORUMS_TABLE]['stat'][] = "forum_last_poster_colour = '" . $db->sql_escape($row['user_colour']) . "'";
+				$sql_data[FORUMS_TABLE]['stat'][] = "forum_last_poster_name = '" . phpbb::$db->sql_escape(($row['poster_id'] == ANONYMOUS) ? $row['post_username'] : $row['username']) . "'";
+				$sql_data[FORUMS_TABLE]['stat'][] = "forum_last_poster_colour = '" . phpbb::$db->sql_escape($row['user_colour']) . "'";
 			}
 			else
 			{
@@ -2226,17 +2225,17 @@ function submit_post($mode, $subject, $username, $topic_type, &$poll, &$data, $u
 				FROM ' . POSTS_TABLE . ' p, ' . USERS_TABLE . ' u
 				WHERE p.poster_id = u.user_id
 					AND p.post_id = ' . (int) $topic_row['topic_last_post_id'];
-			$result = $db->sql_query($sql);
-			$row = $db->sql_fetchrow($result);
-			$db->sql_freeresult($result);
+			$result = phpbb::$db->sql_query($sql);
+			$row = phpbb::$db->sql_fetchrow($result);
+			phpbb::$db->sql_freeresult($result);
 
 			// salvation, a post is found! jam it into the forums table
 			$sql_data[FORUMS_TABLE]['stat'][] = 'forum_last_post_id = ' . (int) $row['post_id'];
-			$sql_data[FORUMS_TABLE]['stat'][] = "forum_last_post_subject = '" . $db->sql_escape($row['post_subject']) . "'";
+			$sql_data[FORUMS_TABLE]['stat'][] = "forum_last_post_subject = '" . phpbb::$db->sql_escape($row['post_subject']) . "'";
 			$sql_data[FORUMS_TABLE]['stat'][] = 'forum_last_post_time = ' . (int) $row['post_time'];
 			$sql_data[FORUMS_TABLE]['stat'][] = 'forum_last_poster_id = ' . (int) $row['poster_id'];
-			$sql_data[FORUMS_TABLE]['stat'][] = "forum_last_poster_name = '" . $db->sql_escape(($row['poster_id'] == ANONYMOUS) ? $row['post_username'] : $row['username']) . "'";
-			$sql_data[FORUMS_TABLE]['stat'][] = "forum_last_poster_colour = '" . $db->sql_escape($row['user_colour']) . "'";
+			$sql_data[FORUMS_TABLE]['stat'][] = "forum_last_poster_name = '" . phpbb::$db->sql_escape(($row['poster_id'] == ANONYMOUS) ? $row['post_username'] : $row['username']) . "'";
+			$sql_data[FORUMS_TABLE]['stat'][] = "forum_last_poster_colour = '" . phpbb::$db->sql_escape($row['user_colour']) . "'";
 		}
 	}
 
@@ -2249,20 +2248,20 @@ function submit_post($mode, $subject, $username, $topic_type, &$poll, &$data, $u
 		{
 			$sql_data[TOPICS_TABLE]['stat'][] = 'topic_last_post_id = ' . (int) $data['post_id'];
 			$sql_data[TOPICS_TABLE]['stat'][] = 'topic_last_poster_id = ' . (int) phpbb::$user->data['user_id'];
-			$sql_data[TOPICS_TABLE]['stat'][] = "topic_last_poster_name = '" . $db->sql_escape((!phpbb::$user->is_registered && $username) ? $username : ((!phpbb::$user->is_guest) ? phpbb::$user->data['username'] : '')) . "'";
-			$sql_data[TOPICS_TABLE]['stat'][] = "topic_last_poster_colour = '" . ((!phpbb::$user->is_guest) ? $db->sql_escape(phpbb::$user->data['user_colour']) : '') . "'";
-			$sql_data[TOPICS_TABLE]['stat'][] = "topic_last_post_subject = '" . $db->sql_escape($subject) . "'";
+			$sql_data[TOPICS_TABLE]['stat'][] = "topic_last_poster_name = '" . phpbb::$db->sql_escape((!phpbb::$user->is_registered && $username) ? $username : ((!phpbb::$user->is_guest) ? phpbb::$user->data['username'] : '')) . "'";
+			$sql_data[TOPICS_TABLE]['stat'][] = "topic_last_poster_colour = '" . ((!phpbb::$user->is_guest) ? phpbb::$db->sql_escape(phpbb::$user->data['user_colour']) : '') . "'";
+			$sql_data[TOPICS_TABLE]['stat'][] = "topic_last_post_subject = '" . phpbb::$db->sql_escape($subject) . "'";
 			$sql_data[TOPICS_TABLE]['stat'][] = 'topic_last_post_time = ' . (int) $current_time;
 		}
 		else if ($post_mode == 'edit_last_post' || $post_mode == 'edit_topic' || ($post_mode == 'edit_first_post' && !$data['topic_replies']))
 		{
 			// only the subject can be changed from edit
-			$sql_data[TOPICS_TABLE]['stat'][] = "topic_last_post_subject = '" . $db->sql_escape($subject) . "'";
+			$sql_data[TOPICS_TABLE]['stat'][] = "topic_last_post_subject = '" . phpbb::$db->sql_escape($subject) . "'";
 
 			// Maybe not only the subject, but also changing anonymous usernames. ;)
 			if ($data['poster_id'] == ANONYMOUS)
 			{
-				$sql_data[TOPICS_TABLE]['stat'][] = "topic_last_poster_name = '" . $db->sql_escape($username) . "'";
+				$sql_data[TOPICS_TABLE]['stat'][] = "topic_last_poster_name = '" . phpbb::$db->sql_escape($username) . "'";
 			}
 		}
 	}
@@ -2273,9 +2272,9 @@ function submit_post($mode, $subject, $username, $topic_type, &$poll, &$data, $u
 			FROM ' . POSTS_TABLE . '
 			WHERE topic_id = ' . (int) $data['topic_id'] . '
 				AND post_approved = 1';
-		$result = $db->sql_query($sql);
-		$row = $db->sql_fetchrow($result);
-		$db->sql_freeresult($result);
+		$result = phpbb::$db->sql_query($sql);
+		$row = phpbb::$db->sql_fetchrow($result);
+		phpbb::$db->sql_freeresult($result);
 
 		// any posts left in this forum?
 		if (!empty($row['last_post_id']))
@@ -2284,17 +2283,17 @@ function submit_post($mode, $subject, $username, $topic_type, &$poll, &$data, $u
 				FROM ' . POSTS_TABLE . ' p, ' . USERS_TABLE . ' u
 				WHERE p.poster_id = u.user_id
 					AND p.post_id = ' . (int) $row['last_post_id'];
-			$result = $db->sql_query($sql);
-			$row = $db->sql_fetchrow($result);
-			$db->sql_freeresult($result);
+			$result = phpbb::$db->sql_query($sql);
+			$row = phpbb::$db->sql_fetchrow($result);
+			phpbb::$db->sql_freeresult($result);
 
 			// salvation, a post is found! jam it into the topics table
 			$sql_data[TOPICS_TABLE]['stat'][] = 'topic_last_post_id = ' . (int) $row['post_id'];
-			$sql_data[TOPICS_TABLE]['stat'][] = "topic_last_post_subject = '" . $db->sql_escape($row['post_subject']) . "'";
+			$sql_data[TOPICS_TABLE]['stat'][] = "topic_last_post_subject = '" . phpbb::$db->sql_escape($row['post_subject']) . "'";
 			$sql_data[TOPICS_TABLE]['stat'][] = 'topic_last_post_time = ' . (int) $row['post_time'];
 			$sql_data[TOPICS_TABLE]['stat'][] = 'topic_last_poster_id = ' . (int) $row['poster_id'];
-			$sql_data[TOPICS_TABLE]['stat'][] = "topic_last_poster_name = '" . $db->sql_escape(($row['poster_id'] == ANONYMOUS) ? $row['post_username'] : $row['username']) . "'";
-			$sql_data[TOPICS_TABLE]['stat'][] = "topic_last_poster_colour = '" . $db->sql_escape($row['user_colour']) . "'";
+			$sql_data[TOPICS_TABLE]['stat'][] = "topic_last_poster_name = '" . phpbb::$db->sql_escape(($row['poster_id'] == ANONYMOUS) ? $row['post_username'] : $row['username']) . "'";
+			$sql_data[TOPICS_TABLE]['stat'][] = "topic_last_poster_colour = '" . phpbb::$db->sql_escape($row['user_colour']) . "'";
 		}
 	}
 
@@ -2321,7 +2320,7 @@ function submit_post($mode, $subject, $username, $topic_type, &$poll, &$data, $u
 		if (isset($update_ary['stat']) && implode('', $update_ary['stat']))
 		{
 			$sql = "UPDATE $table SET " . implode(', ', $update_ary['stat']) . ' WHERE ' . $where_sql[$table];
-			$db->sql_query($sql);
+			phpbb::$db->sql_query($sql);
 		}
 	}
 
@@ -2330,11 +2329,11 @@ function submit_post($mode, $subject, $username, $topic_type, &$poll, &$data, $u
 	{
 		$sql = 'DELETE FROM ' . TOPICS_TABLE . '
 			WHERE topic_moved_id = ' . $data['topic_id'];
-		$db->sql_query($sql);
+		phpbb::$db->sql_query($sql);
 	}
 
 	// Committing the transaction before updating search index
-	$db->sql_transaction('commit');
+	phpbb::$db->sql_transaction('commit');
 
 	// Delete draft if post was loaded...
 	$draft_id = request_var('draft_loaded', 0);
@@ -2343,7 +2342,7 @@ function submit_post($mode, $subject, $username, $topic_type, &$poll, &$data, $u
 		$sql = 'DELETE FROM ' . DRAFTS_TABLE . "
 			WHERE draft_id = $draft_id
 				AND user_id = " . phpbb::$user->data['user_id'];
-		$db->sql_query($sql);
+		phpbb::$db->sql_query($sql);
 	}
 
 	// Index message contents
@@ -2380,14 +2379,14 @@ function submit_post($mode, $subject, $username, $topic_type, &$poll, &$data, $u
 		{
 			$sql = 'INSERT INTO ' . TOPICS_WATCH_TABLE . ' (user_id, topic_id)
 				VALUES (' . phpbb::$user->data['user_id'] . ', ' . $data['topic_id'] . ')';
-			$db->sql_query($sql);
+			phpbb::$db->sql_query($sql);
 		}
 		else if ($data['notify_set'] && !$data['notify'])
 		{
 			$sql = 'DELETE FROM ' . TOPICS_WATCH_TABLE . '
 				WHERE user_id = ' . phpbb::$user->data['user_id'] . '
 					AND topic_id = ' . $data['topic_id'];
-			$db->sql_query($sql);
+			phpbb::$db->sql_query($sql);
 		}
 	}
 
@@ -2408,9 +2407,9 @@ function submit_post($mode, $subject, $username, $topic_type, &$poll, &$data, $u
 			FROM ' . FORUMS_TRACK_TABLE . '
 			WHERE user_id = ' . phpbb::$user->data['user_id'] . '
 				AND forum_id = ' . $data['forum_id'];
-		$result = $db->sql_query($sql);
-		$f_mark_time = (int) $db->sql_fetchfield('mark_time');
-		$db->sql_freeresult($result);
+		$result = phpbb::$db->sql_query($sql);
+		$f_mark_time = (int) phpbb::$db->sql_fetchfield('mark_time');
+		phpbb::$db->sql_freeresult($result);
 	}
 	else if (phpbb::$config['load_anon_lastread'] || phpbb::$user->is_registered)
 	{
@@ -2423,9 +2422,9 @@ function submit_post($mode, $subject, $username, $topic_type, &$poll, &$data, $u
 		$sql = 'SELECT forum_last_post_time
 			FROM ' . FORUMS_TABLE . '
 			WHERE forum_id = ' . $data['forum_id'];
-		$result = $db->sql_query($sql);
-		$forum_last_post_time = (int) $db->sql_fetchfield('forum_last_post_time');
-		$db->sql_freeresult($result);
+		$result = phpbb::$db->sql_query($sql);
+		$forum_last_post_time = (int) phpbb::$db->sql_fetchfield('forum_last_post_time');
+		phpbb::$db->sql_freeresult($result);
 
 		update_forum_tracking_info($data['forum_id'], $forum_last_post_time, $f_mark_time, false);
 	}

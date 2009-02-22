@@ -105,8 +105,8 @@ if (!phpbb::$config['allow_attachments'] && !phpbb::$config['allow_pm_attach'])
 $sql = 'SELECT attach_id, in_message, post_msg_id, extension, is_orphan, poster_id, filetime
 	FROM ' . ATTACHMENTS_TABLE . "
 	WHERE attach_id = $download_id";
-$result = $db->sql_query_limit($sql, 1);
-$attachment = $db->sql_fetchrow($result);
+$result = phpbb::$db->sql_query_limit($sql, 1);
+$attachment = phpbb::$db->sql_fetchrow($result);
 phpbb::$db->sql_freeresult($result);
 
 if (!$attachment)
@@ -143,9 +143,9 @@ else
 			FROM ' . POSTS_TABLE . ' p, ' . FORUMS_TABLE . ' f
 			WHERE p.post_id = ' . $attachment['post_msg_id'] . '
 				AND p.forum_id = f.forum_id';
-		$result = $db->sql_query_limit($sql, 1);
-		$row = $db->sql_fetchrow($result);
-		$db->sql_freeresult($result);
+		$result = phpbb::$db->sql_query_limit($sql, 1);
+		$row = phpbb::$db->sql_fetchrow($result);
+		phpbb::$db->sql_freeresult($result);
 
 		// Global announcement?
 		$f_download = (!$row) ? phpbb::$acl->acl_getf_global('f_download') : phpbb::$acl->acl_get('f_download', $row['forum_id']);
@@ -176,10 +176,10 @@ else
 		$sql = 'SELECT user_id, author_id
 			FROM ' . PRIVMSGS_TO_TABLE . '
 			WHERE msg_id = ' . $attachment['post_msg_id'];
-		$result = $db->sql_query($sql);
+		$result = phpbb::$db->sql_query($sql);
 
 		$allowed = false;
-		while ($user_row = $db->sql_fetchrow($result))
+		while ($user_row = phpbb::$db->sql_fetchrow($result))
 		{
 			if (phpbb::$user->data['user_id'] == $user_row['user_id'] || phpbb::$user->data['user_id'] == $user_row['author_id'])
 			{
@@ -187,7 +187,7 @@ else
 				break;
 			}
 		}
-		$db->sql_freeresult($result);
+		phpbb::$db->sql_freeresult($result);
 
 		if (!$allowed)
 		{
@@ -216,8 +216,8 @@ $download_mode = (int) $extensions[$attachment['extension']]['download_mode'];
 $sql = 'SELECT attach_id, is_orphan, in_message, post_msg_id, extension, physical_filename, real_filename, mimetype, filetime
 	FROM ' . ATTACHMENTS_TABLE . "
 	WHERE attach_id = $download_id";
-$result = $db->sql_query_limit($sql, 1);
-$attachment = $db->sql_fetchrow($result);
+$result = phpbb::$db->sql_query_limit($sql, 1);
+$attachment = phpbb::$db->sql_fetchrow($result);
 phpbb::$db->sql_freeresult($result);
 
 if (!$attachment)
@@ -248,7 +248,7 @@ else if (($display_cat == ATTACHMENT_CATEGORY_NONE || $display_cat == ATTACHMENT
 	$sql = 'UPDATE ' . ATTACHMENTS_TABLE . '
 		SET download_count = download_count + 1
 		WHERE attach_id = ' . $attachment['attach_id'];
-	$db->sql_query($sql);
+	phpbb::$db->sql_query($sql);
 }
 
 if ($display_cat == ATTACHMENT_CATEGORY_IMAGE && $mode === 'view' && (strpos($attachment['mimetype'], 'image') === 0) && ((strpos(strtolower(phpbb::$user->system['browser']), 'msie') !== false) && (strpos(strtolower(phpbb::$user->system['browser']), 'msie 8.0') === false)))
@@ -460,7 +460,7 @@ function send_file_to_browser($attachment, $upload_dir, $category)
 	}
 
 	// Close the db connection before sending the file
-	$db->sql_close();
+	phpbb::$db->sql_close();
 
 	if (!set_modified_headers($attachment['filetime'], phpbb::$user->system['browser']))
 	{
@@ -566,9 +566,9 @@ function download_allowed()
 	{
 		$sql = 'SELECT site_ip, site_hostname, ip_exclude
 			FROM ' . SITELIST_TABLE;
-		$result = $db->sql_query($sql);
+		$result = phpbb::$db->sql_query($sql);
 
-		while ($row = $db->sql_fetchrow($result))
+		while ($row = phpbb::$db->sql_fetchrow($result))
 		{
 			$site_ip = trim($row['site_ip']);
 			$site_hostname = trim($row['site_hostname']);
@@ -608,7 +608,7 @@ function download_allowed()
 				}
 			}
 		}
-		$db->sql_freeresult($result);
+		phpbb::$db->sql_freeresult($result);
 	}
 
 	return $allowed;

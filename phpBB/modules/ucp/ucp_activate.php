@@ -33,9 +33,9 @@ class ucp_activate
 		$sql = 'SELECT user_id, username, user_type, user_email, user_newpasswd, user_lang, user_notify_type, user_actkey, user_inactive_reason
 			FROM ' . USERS_TABLE . "
 			WHERE user_id = $user_id";
-		$result = $db->sql_query($sql);
-		$user_row = $db->sql_fetchrow($result);
-		$db->sql_freeresult($result);
+		$result = phpbb::$db->sql_query($sql);
+		$user_row = phpbb::$db->sql_fetchrow($result);
+		phpbb::$db->sql_freeresult($result);
 
 		if (!$user_row)
 		{
@@ -66,9 +66,9 @@ class ucp_activate
 			);
 
 			$sql = 'UPDATE ' . USERS_TABLE . '
-				SET ' . $db->sql_build_array('UPDATE', $sql_ary) . '
+				SET ' . phpbb::$db->sql_build_array('UPDATE', $sql_ary) . '
 				WHERE user_id = ' . $user_row['user_id'];
-			$db->sql_query($sql);
+			phpbb::$db->sql_query($sql);
 		}
 
 		if (!$update_password)
@@ -80,7 +80,7 @@ class ucp_activate
 			$sql = 'UPDATE ' . USERS_TABLE . "
 				SET user_actkey = ''
 				WHERE user_id = {$user_row['user_id']}";
-			$db->sql_query($sql);
+			phpbb::$db->sql_query($sql);
 		}
 
 		if (phpbb::$config['require_activation'] == USER_ACTIVATION_ADMIN && !$update_password)

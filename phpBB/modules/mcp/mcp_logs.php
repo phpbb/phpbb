@@ -87,9 +87,9 @@ class mcp_logs
 				$sql = 'SELECT forum_id
 					FROM ' . TOPICS_TABLE . '
 					WHERE topic_id = ' . $topic_id;
-				$result = $db->sql_query($sql);
-				$forum_id = (int) $db->sql_fetchfield('forum_id');
-				$db->sql_freeresult($result);
+				$result = phpbb::$db->sql_query($sql);
+				$forum_id = (int) phpbb::$db->sql_fetchfield('forum_id');
+				phpbb::$db->sql_freeresult($result);
 
 				if (!in_array($forum_id, $forum_list))
 				{
@@ -109,9 +109,9 @@ class mcp_logs
 				{
 					$sql = 'DELETE FROM ' . LOG_TABLE . '
 						WHERE log_type = ' . LOG_MOD . '
-							AND ' . $db->sql_in_set('forum_id', $forum_list) . '
-							AND ' . $db->sql_in_set('log_id', $marked);
-					$db->sql_query($sql);
+							AND ' . phpbb::$db->sql_in_set('forum_id', $forum_list) . '
+							AND ' . phpbb::$db->sql_in_set('log_id', $marked);
+					phpbb::$db->sql_query($sql);
 
 					add_log('admin', 'LOG_CLEAR_MOD');
 				}
@@ -119,13 +119,13 @@ class mcp_logs
 				{
 					$sql = 'DELETE FROM ' . LOG_TABLE . '
 						WHERE log_type = ' . LOG_MOD . '
-							AND ' . $db->sql_in_set('forum_id', $forum_list);
+							AND ' . phpbb::$db->sql_in_set('forum_id', $forum_list);
 
 					if ($mode == 'topic_logs')
 					{
 						$sql .= ' AND topic_id = ' . $topic_id;
 					}
-					$db->sql_query($sql);
+					phpbb::$db->sql_query($sql);
 
 					add_log('admin', 'LOG_CLEAR_MOD');
 				}

@@ -85,9 +85,9 @@ if ($post_id)
 	$sql = 'SELECT topic_id, forum_id
 		FROM ' . POSTS_TABLE . "
 		WHERE post_id = $post_id";
-	$result = $db->sql_query($sql);
-	$row = $db->sql_fetchrow($result);
-	$db->sql_freeresult($result);
+	$result = phpbb::$db->sql_query($sql);
+	$row = phpbb::$db->sql_fetchrow($result);
+	phpbb::$db->sql_freeresult($result);
 
 	$topic_id = (int) $row['topic_id'];
 	$forum_id = (int) ($row['forum_id']) ? $row['forum_id'] : $forum_id;
@@ -97,9 +97,9 @@ else if ($topic_id)
 	$sql = 'SELECT forum_id
 		FROM ' . TOPICS_TABLE . "
 		WHERE topic_id = $topic_id";
-	$result = $db->sql_query($sql);
-	$row = $db->sql_fetchrow($result);
-	$db->sql_freeresult($result);
+	$result = phpbb::$db->sql_query($sql);
+	$row = phpbb::$db->sql_fetchrow($result);
+	phpbb::$db->sql_freeresult($result);
 
 	$forum_id = (int) $row['forum_id'];
 }
@@ -369,7 +369,7 @@ function get_topic_data($topic_ids, $acl_list = false, $read_tracking = false)
 				)
 			),
 
-			'WHERE'		=> $db->sql_in_set('t.topic_id', $topic_ids)
+			'WHERE'		=> phpbb::$db->sql_in_set('t.topic_id', $topic_ids)
 		);
 
 		if ($read_tracking && phpbb::$config['load_db_lastread'])
@@ -387,10 +387,10 @@ function get_topic_data($topic_ids, $acl_list = false, $read_tracking = false)
 			);
 		}
 
-		$sql = $db->sql_build_query('SELECT', $sql_array);
-		$result = $db->sql_query($sql);
+		$sql = phpbb::$db->sql_build_query('SELECT', $sql_array);
+		$result = phpbb::$db->sql_query($sql);
 
-		while ($row = $db->sql_fetchrow($result))
+		while ($row = phpbb::$db->sql_fetchrow($result))
 		{
 			if (!$row['forum_id'])
 			{
@@ -407,7 +407,7 @@ function get_topic_data($topic_ids, $acl_list = false, $read_tracking = false)
 
 			$topics[$row['topic_id']] = $row;
 		}
-		$db->sql_freeresult($result);
+		phpbb::$db->sql_freeresult($result);
 	}
 
 	foreach ($cache_topic_ids as $id)
@@ -449,7 +449,7 @@ function get_post_data($post_ids, $acl_list = false, $read_tracking = false)
 			)
 		),
 
-		'WHERE'		=> $db->sql_in_set('p.post_id', $post_ids) . '
+		'WHERE'		=> phpbb::$db->sql_in_set('p.post_id', $post_ids) . '
 			AND u.user_id = p.poster_id
 			AND t.topic_id = p.topic_id',
 	);
@@ -469,11 +469,11 @@ function get_post_data($post_ids, $acl_list = false, $read_tracking = false)
 		);
 	}
 
-	$sql = $db->sql_build_query('SELECT', $sql_array);
-	$result = $db->sql_query($sql);
+	$sql = phpbb::$db->sql_build_query('SELECT', $sql_array);
+	$result = phpbb::$db->sql_query($sql);
 	unset($sql_array);
 
-	while ($row = $db->sql_fetchrow($result))
+	while ($row = phpbb::$db->sql_fetchrow($result))
 	{
 		if (!$row['forum_id'])
 		{
@@ -494,7 +494,7 @@ function get_post_data($post_ids, $acl_list = false, $read_tracking = false)
 
 		$rowset[$row['post_id']] = $row;
 	}
-	$db->sql_freeresult($result);
+	phpbb::$db->sql_freeresult($result);
 
 	return $rowset;
 }
@@ -529,10 +529,10 @@ function get_forum_data($forum_id, $acl_list = 'f_list', $read_tracking = false)
 
 	$sql = "SELECT f.* $read_tracking_select
 		FROM " . FORUMS_TABLE . " f$read_tracking_join
-		WHERE " . $db->sql_in_set('f.forum_id', $forum_id);
-	$result = $db->sql_query($sql);
+		WHERE " . phpbb::$db->sql_in_set('f.forum_id', $forum_id);
+	$result = phpbb::$db->sql_query($sql);
 
-	while ($row = $db->sql_fetchrow($result))
+	while ($row = phpbb::$db->sql_fetchrow($result))
 	{
 		if ($acl_list && !phpbb::$acl->acl_gets($acl_list, $row['forum_id']))
 		{
@@ -546,7 +546,7 @@ function get_forum_data($forum_id, $acl_list = 'f_list', $read_tracking = false)
 
 		$rowset[$row['forum_id']] = $row;
 	}
-	$db->sql_freeresult($result);
+	phpbb::$db->sql_freeresult($result);
 
 	return $rowset;
 }
@@ -604,7 +604,7 @@ function mcp_sorting($mode, &$sort_days, &$sort_key, &$sort_dir, &$sort_by_sql, 
 
 			$sql = 'SELECT COUNT(post_id) AS total
 				FROM ' . POSTS_TABLE . "
-				$where_sql " . $db->sql_in_set('forum_id', ($forum_id) ? array($forum_id) : array_intersect(get_forum_list('f_read'), get_forum_list('m_approve'))) . '
+				$where_sql " . phpbb::$db->sql_in_set('forum_id', ($forum_id) ? array($forum_id) : array_intersect(get_forum_list('f_read'), get_forum_list('m_approve'))) . '
 					AND post_approved = 0';
 
 			if ($min_time)
@@ -620,7 +620,7 @@ function mcp_sorting($mode, &$sort_days, &$sort_key, &$sort_dir, &$sort_by_sql, 
 
 			$sql = 'SELECT COUNT(topic_id) AS total
 				FROM ' . TOPICS_TABLE . "
-				$where_sql " . $db->sql_in_set('forum_id', ($forum_id) ? array($forum_id) : array_intersect(get_forum_list('f_read'), get_forum_list('m_approve'))) . '
+				$where_sql " . phpbb::$db->sql_in_set('forum_id', ($forum_id) ? array($forum_id) : array_intersect(get_forum_list('f_read'), get_forum_list('m_approve'))) . '
 					AND topic_approved = 0';
 
 			if ($min_time)
@@ -646,7 +646,7 @@ function mcp_sorting($mode, &$sort_days, &$sort_key, &$sort_dir, &$sort_by_sql, 
 			}
 			else
 			{
-				$where_sql .= ' ' . $db->sql_in_set('p.forum_id', get_forum_list(array('!f_read', '!m_report')), true, true);
+				$where_sql .= ' ' . phpbb::$db->sql_in_set('p.forum_id', get_forum_list(array('!f_read', '!m_report')), true, true);
 			}
 
 			if ($mode == 'reports')
@@ -672,7 +672,7 @@ function mcp_sorting($mode, &$sort_days, &$sort_key, &$sort_dir, &$sort_by_sql, 
 
 			$sql = 'SELECT COUNT(log_id) AS total
 				FROM ' . LOG_TABLE . "
-				$where_sql " . $db->sql_in_set('forum_id', ($forum_id) ? array($forum_id) : array_intersect(get_forum_list('f_read'), get_forum_list('m_'))) . '
+				$where_sql " . phpbb::$db->sql_in_set('forum_id', ($forum_id) ? array($forum_id) : array_intersect(get_forum_list('f_read'), get_forum_list('m_'))) . '
 					AND log_time >= ' . $min_time . '
 					AND log_type = ' . LOG_MOD;
 		break;
@@ -732,9 +732,9 @@ function mcp_sorting($mode, &$sort_days, &$sort_key, &$sort_dir, &$sort_by_sql, 
 
 	if (($sort_days && $mode != 'viewlogs') || in_array($mode, array('reports', 'unapproved_topics', 'unapproved_posts')) || $where_sql != 'WHERE')
 	{
-		$result = $db->sql_query($sql);
-		$total = (int) $db->sql_fetchfield('total');
-		$db->sql_freeresult($result);
+		$result = phpbb::$db->sql_query($sql);
+		$total = (int) phpbb::$db->sql_fetchfield('total');
+		phpbb::$db->sql_freeresult($result);
 	}
 	else
 	{
@@ -763,13 +763,13 @@ function check_ids(&$ids, $table, $sql_id, $acl_list = false, $single_forum = fa
 	}
 
 	$sql = "SELECT $sql_id, forum_id FROM $table
-		WHERE " . $db->sql_in_set($sql_id, $ids);
-	$result = $db->sql_query($sql);
+		WHERE " . phpbb::$db->sql_in_set($sql_id, $ids);
+	$result = phpbb::$db->sql_query($sql);
 
 	$ids = array();
 	$forum_id = false;
 
-	while ($row = $db->sql_fetchrow($result))
+	while ($row = phpbb::$db->sql_fetchrow($result))
 	{
 		if ($acl_list && $row['forum_id'] && !phpbb::$acl->acl_gets($acl_list, $row['forum_id']))
 		{
@@ -812,7 +812,7 @@ function check_ids(&$ids, $table, $sql_id, $acl_list = false, $single_forum = fa
 			$ids[] = $row[$sql_id];
 		}
 	}
-	$db->sql_freeresult($result);
+	phpbb::$db->sql_freeresult($result);
 
 	if (!sizeof($ids))
 	{

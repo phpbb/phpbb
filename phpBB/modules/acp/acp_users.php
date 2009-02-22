@@ -87,10 +87,10 @@ class acp_users
 		{
 			$sql = 'SELECT user_id
 				FROM ' . USERS_TABLE . "
-				WHERE username_clean = '" . $db->sql_escape(utf8_clean_string($username)) . "'";
-			$result = $db->sql_query($sql);
-			$user_id = (int) $db->sql_fetchfield('user_id');
-			$db->sql_freeresult($result);
+				WHERE username_clean = '" . phpbb::$db->sql_escape(utf8_clean_string($username)) . "'";
+			$result = phpbb::$db->sql_query($sql);
+			$user_id = (int) phpbb::$db->sql_fetchfield('user_id');
+			phpbb::$db->sql_freeresult($result);
 
 			if (!$user_id)
 			{
@@ -104,9 +104,9 @@ class acp_users
 				LEFT JOIN ' . SESSIONS_TABLE . ' s ON (s.session_user_id = u.user_id)
 			WHERE u.user_id = ' . $user_id . '
 			ORDER BY s.session_time DESC';
-		$result = $db->sql_query($sql);
-		$user_row = $db->sql_fetchrow($result);
-		$db->sql_freeresult($result);
+		$result = phpbb::$db->sql_query($sql);
+		$user_row = phpbb::$db->sql_fetchrow($result);
+		phpbb::$db->sql_freeresult($result);
 
 		if (!$user_row)
 		{
@@ -123,10 +123,10 @@ class acp_users
 				AND module_enabled = 1
 				AND module_class = 'acp'
 			ORDER BY left_id, module_mode";
-		$result = $db->sql_query($sql);
+		$result = phpbb::$db->sql_query($sql);
 
 		$dropdown_modes = array();
-		while ($row = $db->sql_fetchrow($result))
+		while ($row = phpbb::$db->sql_fetchrow($result))
 		{
 			if (!$this->p_master->module_auth($row['module_auth']))
 			{
@@ -135,7 +135,7 @@ class acp_users
 
 			$dropdown_modes[$row['module_mode']] = true;
 		}
-		$db->sql_freeresult($result);
+		phpbb::$db->sql_freeresult($result);
 
 		foreach ($dropdown_modes as $module_mode => $null)
 		{
@@ -255,13 +255,13 @@ class acp_users
 									$sql = 'SELECT DISTINCT poster_ip
 										FROM ' . POSTS_TABLE . "
 										WHERE poster_id = $user_id";
-									$result = $db->sql_query($sql);
+									$result = phpbb::$db->sql_query($sql);
 
-									while ($row = $db->sql_fetchrow($result))
+									while ($row = phpbb::$db->sql_fetchrow($result))
 									{
 										$ban[] = $row['poster_ip'];
 									}
-									$db->sql_freeresult($result);
+									phpbb::$db->sql_freeresult($result);
 
 									$reason = 'USER_ADMIN_BAN_IP_REASON';
 									$log = 'LOG_USER_BAN_IP';
@@ -317,9 +317,9 @@ class acp_users
 									user_active_flip('deactivate', $user_id, INACTIVE_REMIND);
 
 									$sql = 'UPDATE ' . USERS_TABLE . "
-										SET user_actkey = '" . $db->sql_escape($user_actkey) . "'
+										SET user_actkey = '" . phpbb::$db->sql_escape($user_actkey) . "'
 										WHERE user_id = $user_id";
-									$db->sql_query($sql);
+									phpbb::$db->sql_query($sql);
 								}
 								else
 								{
@@ -327,9 +327,9 @@ class acp_users
 									$sql = 'SELECT user_actkey
 										FROM ' . USERS_TABLE . '
 										WHERE user_id = ' . $user_id;
-									$result = $db->sql_query($sql);
-									$user_actkey = (string) $db->sql_fetchfield('user_actkey');
-									$db->sql_freeresult($result);
+									$result = phpbb::$db->sql_query($sql);
+									$user_actkey = (string) phpbb::$db->sql_fetchfield('user_actkey');
+									phpbb::$db->sql_freeresult($result);
 								}
 
 								$messenger = new messenger(false);
@@ -407,9 +407,9 @@ class acp_users
 								'user_sig_bbcode_bitfield'	=> ''
 							);
 
-							$sql = 'UPDATE ' . USERS_TABLE . ' SET ' . $db->sql_build_array('UPDATE', $sql_ary) . "
+							$sql = 'UPDATE ' . USERS_TABLE . ' SET ' . phpbb::$db->sql_build_array('UPDATE', $sql_ary) . "
 								WHERE user_id = $user_id";
-							$db->sql_query($sql);
+							phpbb::$db->sql_query($sql);
 
 							add_log('admin', 'LOG_USER_DEL_SIG', $user_row['username']);
 							add_log('user', $user_id, 'LOG_USER_DEL_SIG_USER');
@@ -433,9 +433,9 @@ class acp_users
 							);
 
 							$sql = 'UPDATE ' . USERS_TABLE . '
-								SET ' . $db->sql_build_array('UPDATE', $sql_ary) . "
+								SET ' . phpbb::$db->sql_build_array('UPDATE', $sql_ary) . "
 								WHERE user_id = $user_id";
-							$db->sql_query($sql);
+							phpbb::$db->sql_query($sql);
 
 							// Delete old avatar if present
 							if ($user_row['user_avatar'] && $user_row['user_avatar_type'] != AVATAR_GALLERY)
@@ -523,9 +523,9 @@ class acp_users
 							$sql = 'SELECT forum_name, forum_type
 								FROM ' . FORUMS_TABLE . "
 								WHERE forum_id = $new_forum_id";
-							$result = $db->sql_query($sql);
-							$forum_info = $db->sql_fetchrow($result);
-							$db->sql_freeresult($result);
+							$result = phpbb::$db->sql_query($sql);
+							$forum_info = phpbb::$db->sql_fetchrow($result);
+							phpbb::$db->sql_freeresult($result);
 
 							if (!$forum_info)
 							{
@@ -547,22 +547,22 @@ class acp_users
 								WHERE poster_id = $user_id
 									AND forum_id <> $new_forum_id
 								GROUP BY topic_id";
-							$result = $db->sql_query($sql);
+							$result = phpbb::$db->sql_query($sql);
 
-							while ($row = $db->sql_fetchrow($result))
+							while ($row = phpbb::$db->sql_fetchrow($result))
 							{
 								$topic_id_ary[$row['topic_id']] = $row['total_posts'];
 							}
-							$db->sql_freeresult($result);
+							phpbb::$db->sql_freeresult($result);
 
 							if (sizeof($topic_id_ary))
 							{
 								$sql = 'SELECT topic_id, forum_id, topic_title, topic_replies, topic_replies_real, topic_attachment
 									FROM ' . TOPICS_TABLE . '
-									WHERE ' . $db->sql_in_set('topic_id', array_keys($topic_id_ary));
-								$result = $db->sql_query($sql);
+									WHERE ' . phpbb::$db->sql_in_set('topic_id', array_keys($topic_id_ary));
+								$result = phpbb::$db->sql_query($sql);
 
-								while ($row = $db->sql_fetchrow($result))
+								while ($row = phpbb::$db->sql_fetchrow($result))
 								{
 									if (max($row['topic_replies'], $row['topic_replies_real']) + 1 == $topic_id_ary[$row['topic_id']])
 									{
@@ -576,7 +576,7 @@ class acp_users
 
 									$forum_id_ary[] = $row['forum_id'];
 								}
-								$db->sql_freeresult($result);
+								phpbb::$db->sql_freeresult($result);
 							}
 
 							// Entire topic comprises posts by this user, move these topics
@@ -592,7 +592,7 @@ class acp_users
 								foreach ($move_post_ary as $topic_id => $post_ary)
 								{
 									// Create new topic
-									$sql = 'INSERT INTO ' . TOPICS_TABLE . ' ' . $db->sql_build_array('INSERT', array(
+									$sql = 'INSERT INTO ' . TOPICS_TABLE . ' ' . phpbb::$db->sql_build_array('INSERT', array(
 										'topic_poster'				=> $user_id,
 										'topic_time'				=> time(),
 										'forum_id' 					=> $new_forum_id,
@@ -604,16 +604,16 @@ class acp_users
 										'topic_time_limit'			=> 0,
 										'topic_attachment'			=> $post_ary['attach'])
 									);
-									$db->sql_query($sql);
+									phpbb::$db->sql_query($sql);
 
-									$new_topic_id = $db->sql_nextid();
+									$new_topic_id = phpbb::$db->sql_nextid();
 
 									// Move posts
 									$sql = 'UPDATE ' . POSTS_TABLE . "
 										SET forum_id = $new_forum_id, topic_id = $new_topic_id
 										WHERE topic_id = $topic_id
 											AND poster_id = $user_id";
-									$db->sql_query($sql);
+									phpbb::$db->sql_query($sql);
 
 									if ($post_ary['attach'])
 									{
@@ -621,7 +621,7 @@ class acp_users
 											SET topic_id = $new_topic_id
 											WHERE topic_id = $topic_id
 												AND poster_id = $user_id";
-										$db->sql_query($sql);
+										phpbb::$db->sql_query($sql);
 									}
 
 									$new_topic_id_ary[] = $new_topic_id;
@@ -746,9 +746,9 @@ class acp_users
 										FROM ' . USERS_TABLE . '
 										WHERE user_type = ' . phpbb::USER_FOUNDER . '
 											AND user_id <> ' . $user_id;
-									$result = $db->sql_query_limit($sql, 1);
-									$row = $db->sql_fetchrow($result);
-									$db->sql_freeresult($result);
+									$result = phpbb::$db->sql_query_limit($sql, 1);
+									$row = phpbb::$db->sql_fetchrow($result);
+									phpbb::$db->sql_freeresult($result);
 
 									if ($row)
 									{
@@ -795,9 +795,9 @@ class acp_users
 						if (sizeof($sql_ary))
 						{
 							$sql = 'UPDATE ' . USERS_TABLE . '
-								SET ' . $db->sql_build_array('UPDATE', $sql_ary) . '
+								SET ' . phpbb::$db->sql_build_array('UPDATE', $sql_ary) . '
 								WHERE user_id = ' . $user_id;
-							$db->sql_query($sql);
+							phpbb::$db->sql_query($sql);
 						}
 
 						if ($update_username)
@@ -854,9 +854,9 @@ class acp_users
 					$sql = 'SELECT MAX(session_time) AS session_time, MIN(session_viewonline) AS session_viewonline
 						FROM ' . SESSIONS_TABLE . "
 						WHERE session_user_id = $user_id";
-					$result = $db->sql_query($sql);
-					$row = $db->sql_fetchrow($result);
-					$db->sql_freeresult($result);
+					$result = phpbb::$db->sql_query($sql);
+					$row = phpbb::$db->sql_fetchrow($result);
+					phpbb::$db->sql_freeresult($result);
 
 					$user_row['session_time'] = (isset($row['session_time'])) ? $row['session_time'] : 0;
 					$user_row['session_viewonline'] = (isset($row['session_viewonline'])) ? $row['session_viewonline'] : 0;
@@ -895,9 +895,9 @@ class acp_users
 					FROM ' . POSTS_TABLE . '
 					WHERE poster_id = ' . $user_id . '
 						AND post_approved = 0';
-				$result = $db->sql_query($sql);
-				$user_row['posts_in_queue'] = (int) $db->sql_fetchfield('posts_in_queue');
-				$db->sql_freeresult($result);
+				$result = phpbb::$db->sql_query($sql);
+				$user_row['posts_in_queue'] = (int) phpbb::$db->sql_fetchfield('posts_in_queue');
+				phpbb::$db->sql_freeresult($result);
 
 				$template->assign_vars(array(
 					'L_NAME_CHARS_EXPLAIN'		=> sprintf(phpbb::$user->lang[phpbb::$config['allow_name_chars'] . '_EXPLAIN'], phpbb::$config['min_name_chars'], phpbb::$config['max_name_chars']),
@@ -963,7 +963,7 @@ class acp_users
 						{
 							$sql_in[] = $mark;
 						}
-						$where_sql = ' AND ' . $db->sql_in_set('log_id', $sql_in);
+						$where_sql = ' AND ' . phpbb::$db->sql_in_set('log_id', $sql_in);
 						unset($sql_in);
 					}
 
@@ -972,7 +972,7 @@ class acp_users
 						$sql = 'DELETE FROM ' . LOG_TABLE . '
 							WHERE log_type = ' . LOG_USERS . "
 							$where_sql";
-						$db->sql_query($sql);
+						phpbb::$db->sql_query($sql);
 
 						add_log('admin', 'LOG_CLEAR_USER', $user_row['username']);
 					}
@@ -1044,10 +1044,10 @@ class acp_users
 
 				$sql = 'SELECT lang_id
 					FROM ' . LANG_TABLE . "
-					WHERE lang_iso = '" . $db->sql_escape(phpbb::$user->data['user_lang']) . "'";
-				$result = $db->sql_query($sql);
-				$row = $db->sql_fetchrow($result);
-				$db->sql_freeresult($result);
+					WHERE lang_iso = '" . phpbb::$db->sql_escape(phpbb::$user->data['user_lang']) . "'";
+				$result = phpbb::$db->sql_query($sql);
+				$row = phpbb::$db->sql_fetchrow($result);
+				phpbb::$db->sql_freeresult($result);
 
 				$user_row['iso_lang_id'] = $row['lang_id'];
 
@@ -1129,14 +1129,14 @@ class acp_users
 						);
 
 						$sql = 'UPDATE ' . USERS_TABLE . '
-							SET ' . $db->sql_build_array('UPDATE', $sql_ary) . "
+							SET ' . phpbb::$db->sql_build_array('UPDATE', $sql_ary) . "
 							WHERE user_id = $user_id";
-						$db->sql_query($sql);
+						phpbb::$db->sql_query($sql);
 
 						// Update Custom Fields
 						if (sizeof($cp_data))
 						{
-							switch ($db->dbms_type)
+							switch (phpbb::$db->dbms_type)
 							{
 								case 'oracle':
 								case 'firebird':
@@ -1163,20 +1163,20 @@ class acp_users
 							}
 
 							$sql = 'UPDATE ' . PROFILE_FIELDS_DATA_TABLE . '
-								SET ' . $db->sql_build_array('UPDATE', $cp_data) . "
+								SET ' . phpbb::$db->sql_build_array('UPDATE', $cp_data) . "
 								WHERE user_id = $user_id";
-							$db->sql_query($sql);
+							phpbb::$db->sql_query($sql);
 
-							if (!$db->sql_affectedrows())
+							if (!phpbb::$db->sql_affectedrows())
 							{
 								$cp_data['user_id'] = (int) $user_id;
 
-								$db->sql_return_on_error(true);
+								phpbb::$db->sql_return_on_error(true);
 
-								$sql = 'INSERT INTO ' . PROFILE_FIELDS_DATA_TABLE . ' ' . $db->sql_build_array('INSERT', $cp_data);
-								$db->sql_query($sql);
+								$sql = 'INSERT INTO ' . PROFILE_FIELDS_DATA_TABLE . ' ' . phpbb::$db->sql_build_array('INSERT', $cp_data);
+								phpbb::$db->sql_query($sql);
 
-								$db->sql_return_on_error(false);
+								phpbb::$db->sql_return_on_error(false);
 							}
 						}
 
@@ -1334,9 +1334,9 @@ class acp_users
 						);
 
 						$sql = 'UPDATE ' . USERS_TABLE . '
-							SET ' . $db->sql_build_array('UPDATE', $sql_ary) . "
+							SET ' . phpbb::$db->sql_build_array('UPDATE', $sql_ary) . "
 							WHERE user_id = $user_id";
-						$db->sql_query($sql);
+						phpbb::$db->sql_query($sql);
 
 						trigger_error(phpbb::$user->lang['USER_PREFS_UPDATED'] . adm_back_link($this->u_action . '&amp;u=' . $user_id));
 					}
@@ -1514,7 +1514,7 @@ class acp_users
 					$sql = 'UPDATE ' . USERS_TABLE . "
 						SET user_rank = $rank_id
 						WHERE user_id = $user_id";
-					$db->sql_query($sql);
+					phpbb::$db->sql_query($sql);
 
 					trigger_error(phpbb::$user->lang['USER_RANK_UPDATED'] . adm_back_link($this->u_action . '&amp;u=' . $user_id));
 				}
@@ -1523,16 +1523,16 @@ class acp_users
 					FROM ' . RANKS_TABLE . '
 					WHERE rank_special = 1
 					ORDER BY rank_title';
-				$result = $db->sql_query($sql);
+				$result = phpbb::$db->sql_query($sql);
 
 				$s_rank_options = '<option value="0"' . ((!$user_row['user_rank']) ? ' selected="selected"' : '') . '>' . phpbb::$user->lang['NO_SPECIAL_RANK'] . '</option>';
 
-				while ($row = $db->sql_fetchrow($result))
+				while ($row = phpbb::$db->sql_fetchrow($result))
 				{
 					$selected = ($user_row['user_rank'] && $row['rank_id'] == $user_row['user_rank']) ? ' selected="selected"' : '';
 					$s_rank_options .= '<option value="' . $row['rank_id'] . '"' . $selected . '>' . $row['rank_title'] . '</option>';
 				}
-				$db->sql_freeresult($result);
+				phpbb::$db->sql_freeresult($result);
 
 				$template->assign_vars(array(
 					'S_RANK'			=> true,
@@ -1581,9 +1581,9 @@ class acp_users
 						);
 
 						$sql = 'UPDATE ' . USERS_TABLE . '
-							SET ' . $db->sql_build_array('UPDATE', $sql_ary) . '
+							SET ' . phpbb::$db->sql_build_array('UPDATE', $sql_ary) . '
 							WHERE user_id = ' . $user_id;
-						$db->sql_query($sql);
+						phpbb::$db->sql_query($sql);
 
 						trigger_error(phpbb::$user->lang['USER_SIG_UPDATED'] . adm_back_link($this->u_action . '&amp;u=' . $user_id));
 					}
@@ -1649,15 +1649,15 @@ class acp_users
 						FROM ' . ATTACHMENTS_TABLE . '
 						WHERE poster_id = ' . $user_id . '
 							AND is_orphan = 0
-							AND ' . $db->sql_in_set('attach_id', $marked);
-					$result = $db->sql_query($sql);
+							AND ' . phpbb::$db->sql_in_set('attach_id', $marked);
+					$result = phpbb::$db->sql_query($sql);
 
 					$marked = array();
-					while ($row = $db->sql_fetchrow($result))
+					while ($row = phpbb::$db->sql_fetchrow($result))
 					{
 						$marked[] = $row['attach_id'];
 					}
-					$db->sql_freeresult($result);
+					phpbb::$db->sql_freeresult($result);
 				}
 
 				if ($deletemark && sizeof($marked))
@@ -1666,15 +1666,15 @@ class acp_users
 					{
 						$sql = 'SELECT real_filename
 							FROM ' . ATTACHMENTS_TABLE . '
-							WHERE ' . $db->sql_in_set('attach_id', $marked);
-						$result = $db->sql_query($sql);
+							WHERE ' . phpbb::$db->sql_in_set('attach_id', $marked);
+						$result = phpbb::$db->sql_query($sql);
 
 						$log_attachments = array();
-						while ($row = $db->sql_fetchrow($result))
+						while ($row = phpbb::$db->sql_fetchrow($result))
 						{
 							$log_attachments[] = $row['real_filename'];
 						}
-						$db->sql_freeresult($result);
+						phpbb::$db->sql_freeresult($result);
 
 						delete_attachments('attach', $marked);
 
@@ -1726,9 +1726,9 @@ class acp_users
 					FROM ' . ATTACHMENTS_TABLE . "
 					WHERE poster_id = $user_id
 						AND is_orphan = 0";
-				$result = $db->sql_query_limit($sql, 1);
-				$num_attachments = (int) $db->sql_fetchfield('num_attachments');
-				$db->sql_freeresult($result);
+				$result = phpbb::$db->sql_query_limit($sql, 1);
+				$num_attachments = (int) phpbb::$db->sql_fetchfield('num_attachments');
+				phpbb::$db->sql_freeresult($result);
 
 				$sql = 'SELECT a.*, t.topic_title, p.message_subject as message_title
 					FROM ' . ATTACHMENTS_TABLE . ' a
@@ -1739,9 +1739,9 @@ class acp_users
 					WHERE a.poster_id = ' . $user_id . "
 						AND a.is_orphan = 0
 					ORDER BY $order_by";
-				$result = $db->sql_query_limit($sql, phpbb::$config['posts_per_page'], $start);
+				$result = phpbb::$db->sql_query_limit($sql, phpbb::$config['posts_per_page'], $start);
 
-				while ($row = $db->sql_fetchrow($result))
+				while ($row = phpbb::$db->sql_fetchrow($result))
 				{
 					if ($row['in_message'])
 					{
@@ -1771,7 +1771,7 @@ class acp_users
 						'U_VIEW_TOPIC'		=> $view_topic)
 					);
 				}
-				$db->sql_freeresult($result);
+				phpbb::$db->sql_freeresult($result);
 
 				$template->assign_vars(array(
 					'S_ATTACHMENTS'		=> true,
@@ -1797,9 +1797,9 @@ class acp_users
 					$sql = 'SELECT group_founder_manage
 						FROM ' . GROUPS_TABLE . '
 						WHERE group_id = ' . $group_id;
-					$result = $db->sql_query($sql);
-					$founder_manage = (int) $db->sql_fetchfield('group_founder_manage');
-					$db->sql_freeresult($result);
+					$result = phpbb::$db->sql_query($sql);
+					$founder_manage = (int) phpbb::$db->sql_fetchfield('group_founder_manage');
+					phpbb::$db->sql_freeresult($result);
 
 					if (!phpbb::$user->is_founder && $founder_manage)
 					{
@@ -1887,11 +1887,11 @@ class acp_users
 					WHERE ug.user_id = $user_id
 						AND g.group_id = ug.group_id
 					ORDER BY g.group_type DESC, ug.user_pending ASC, g.group_name";
-				$result = $db->sql_query($sql);
+				$result = phpbb::$db->sql_query($sql);
 
 				$i = 0;
 				$group_data = $id_ary = array();
-				while ($row = $db->sql_fetchrow($result))
+				while ($row = phpbb::$db->sql_fetchrow($result))
 				{
 					$type = ($row['group_type'] == GROUP_SPECIAL) ? 'special' : (($row['user_pending']) ? 'pending' : 'normal');
 
@@ -1903,17 +1903,17 @@ class acp_users
 
 					$i++;
 				}
-				$db->sql_freeresult($result);
+				phpbb::$db->sql_freeresult($result);
 
 				// Select box for other groups
 				$sql = 'SELECT group_id, group_name, group_type, group_founder_manage
 					FROM ' . GROUPS_TABLE . '
-					' . ((sizeof($id_ary)) ? 'WHERE ' . $db->sql_in_set('group_id', $id_ary, true) : '') . '
+					' . ((sizeof($id_ary)) ? 'WHERE ' . phpbb::$db->sql_in_set('group_id', $id_ary, true) : '') . '
 					ORDER BY group_type DESC, group_name ASC';
-				$result = $db->sql_query($sql);
+				$result = phpbb::$db->sql_query($sql);
 
 				$s_group_options = '';
-				while ($row = $db->sql_fetchrow($result))
+				while ($row = phpbb::$db->sql_fetchrow($result))
 				{
 					if (!phpbb::$config['coppa_enable'] && $row['group_name'] == 'REGISTERED_COPPA')
 					{
@@ -1928,7 +1928,7 @@ class acp_users
 
 					$s_group_options .= '<option' . (($row['group_type'] == GROUP_SPECIAL) ? ' class="sep"' : '') . ' value="' . $row['group_id'] . '">' . (($row['group_type'] == GROUP_SPECIAL) ? phpbb::$user->lang['G_' . $row['group_name']] : $row['group_name']) . '</option>';
 				}
-				$db->sql_freeresult($result);
+				phpbb::$db->sql_freeresult($result);
 
 				$current_type = '';
 				foreach ($group_data as $group_type => $data_ary)
@@ -1983,19 +1983,19 @@ class acp_users
 					// Select auth options
 					$sql = 'SELECT auth_option, is_local, is_global
 						FROM ' . ACL_OPTIONS_TABLE . '
-						WHERE auth_option ' . $db->sql_like_expression($db->any_char . '_') . '
+						WHERE auth_option ' . phpbb::$db->sql_like_expression(phpbb::$db->any_char . '_') . '
 							AND is_global = 1
 						ORDER BY auth_option';
-					$result = $db->sql_query($sql);
+					$result = phpbb::$db->sql_query($sql);
 
 					$hold_ary = array();
 
-					while ($row = $db->sql_fetchrow($result))
+					while ($row = phpbb::$db->sql_fetchrow($result))
 					{
 						$hold_ary = $auth_admin->get_mask('view', $user_id, false, false, $row['auth_option'], 'global', phpbb::ACL_NEVER);
 						$auth_admin->display_mask('view', $row['auth_option'], $hold_ary, 'user', false, false);
 					}
-					$db->sql_freeresult($result);
+					phpbb::$db->sql_freeresult($result);
 
 					unset($hold_ary);
 				}
@@ -2003,17 +2003,17 @@ class acp_users
 				{
 					$sql = 'SELECT auth_option, is_local, is_global
 						FROM ' . ACL_OPTIONS_TABLE . "
-						WHERE auth_option " . $db->sql_like_expression($db->any_char . '_') . "
+						WHERE auth_option " . phpbb::$db->sql_like_expression(phpbb::$db->any_char . '_') . "
 							AND is_local = 1
 						ORDER BY is_global DESC, auth_option";
-					$result = $db->sql_query($sql);
+					$result = phpbb::$db->sql_query($sql);
 
-					while ($row = $db->sql_fetchrow($result))
+					while ($row = phpbb::$db->sql_fetchrow($result))
 					{
 						$hold_ary = $auth_admin->get_mask('view', $user_id, false, $forum_id, $row['auth_option'], 'local', phpbb::ACL_NEVER);
 						$auth_admin->display_mask('view', $row['auth_option'], $hold_ary, 'user', true, false);
 					}
-					$db->sql_freeresult($result);
+					phpbb::$db->sql_freeresult($result);
 				}
 
 				$s_forum_options = '<option value="0"' . ((!$forum_id) ? ' selected="selected"' : '') . '>' . phpbb::$user->lang['VIEW_GLOBAL_PERMS'] . '</option>';

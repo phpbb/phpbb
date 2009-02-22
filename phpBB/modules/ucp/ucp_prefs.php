@@ -93,9 +93,9 @@ class ucp_prefs
 						);
 
 						$sql = 'UPDATE ' . USERS_TABLE . '
-							SET ' . $db->sql_build_array('UPDATE', $sql_ary) . '
+							SET ' . phpbb::$db->sql_build_array('UPDATE', $sql_ary) . '
 							WHERE user_id = ' . phpbb::$user->data['user_id'];
-						$db->sql_query($sql);
+						phpbb::$db->sql_query($sql);
 
 						meta_refresh(3, $this->u_action);
 						$message = phpbb::$user->lang['PREFERENCES_UPDATED'] . '<br /><br />' . sprintf(phpbb::$user->lang['RETURN_UCP'], '<a href="' . $this->u_action . '">', '</a>');
@@ -215,9 +215,9 @@ class ucp_prefs
 						);
 
 						$sql = 'UPDATE ' . USERS_TABLE . '
-							SET ' . $db->sql_build_array('UPDATE', $sql_ary) . '
+							SET ' . phpbb::$db->sql_build_array('UPDATE', $sql_ary) . '
 							WHERE user_id = ' . phpbb::$user->data['user_id'];
-						$db->sql_query($sql);
+						phpbb::$db->sql_query($sql);
 
 						meta_refresh(3, $this->u_action);
 						$message = phpbb::$user->lang['PREFERENCES_UPDATED'] . '<br /><br />' . sprintf(phpbb::$user->lang['RETURN_UCP'], '<a href="' . $this->u_action . '">', '</a>');
@@ -316,9 +316,9 @@ class ucp_prefs
 						);
 
 						$sql = 'UPDATE ' . USERS_TABLE . '
-							SET ' . $db->sql_build_array('UPDATE', $sql_ary) . '
+							SET ' . phpbb::$db->sql_build_array('UPDATE', $sql_ary) . '
 							WHERE user_id = ' . phpbb::$user->data['user_id'];
-						$db->sql_query($sql);
+						phpbb::$db->sql_query($sql);
 
 						$msg = phpbb::$user->lang['PREFERENCES_UPDATED'];
 					}

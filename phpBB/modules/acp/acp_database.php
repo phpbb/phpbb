@@ -83,7 +83,7 @@ class acp_database
 						$time = time();
 
 						$filename = 'backup_' . $time . '_' . unique_id();
-						switch ($db->dbms_type)
+						switch (phpbb::$db->dbms_type)
 						{
 							case 'mysql':
 								$extractor = new mysql_extractor($download, $store, $format, $filename, $time);
@@ -126,7 +126,7 @@ class acp_database
 							else
 							{
 								// We might wanna empty out all that junk :D
-								switch ($db->dbms_type)
+								switch (phpbb::$db->dbms_type)
 								{
 									case 'sqlite':
 									case 'firebird':
@@ -314,14 +314,14 @@ class acp_database
 								break;
 							}
 
-							switch ($db->dbms_type)
+							switch (phpbb::$db->dbms_type)
 							{
 								case 'mysql':
 								case 'sqlite':
 								case 'db2':
 									while (($sql = $fgetd($fp, ";\n", $read, $seek, $eof)) !== false)
 									{
-										$db->sql_query($sql);
+										phpbb::$db->sql_query($sql);
 									}
 								break;
 
@@ -335,7 +335,7 @@ class acp_database
 											$delim = $query[9] . "\n";
 											continue;
 										}
-										$db->sql_query($query);
+										phpbb::$db->sql_query($query);
 									}
 								break;
 
@@ -351,16 +351,16 @@ class acp_database
 											$sql = "SELECT domain_name
 												FROM information_schema.domains
 												WHERE domain_name = '$domain';";
-											$result = $db->sql_query($sql);
-											if (!$db->sql_fetchrow($result))
+											$result = phpbb::$db->sql_query($sql);
+											if (!phpbb::$db->sql_fetchrow($result))
 											{
-												$db->sql_query($query);
+												phpbb::$db->sql_query($query);
 											}
-											$db->sql_freeresult($result);
+											phpbb::$db->sql_freeresult($result);
 										}
 										else
 										{
-											$db->sql_query($query);
+											phpbb::$db->sql_query($query);
 										}
 
 										if (substr($query, 0, 4) == 'COPY')
@@ -371,10 +371,10 @@ class acp_database
 												{
 													trigger_error(phpbb::$user->lang['RESTORE_FAILURE'] . adm_back_link($this->u_action), E_USER_WARNING);
 												}
-												pg_put_line($db->db_connect_id, $sub . "\n");
+												pg_put_line(phpbb::$db->db_connect_id, $sub . "\n");
 											}
-											pg_put_line($db->db_connect_id, "\\.\n");
-											pg_end_copy($db->db_connect_id);
+											pg_put_line(phpbb::$db->db_connect_id, "\\.\n");
+											pg_end_copy(phpbb::$db->db_connect_id);
 										}
 									}
 								break;
@@ -382,14 +382,14 @@ class acp_database
 								case 'oracle':
 									while (($sql = $fgetd($fp, "/\n", $read, $seek, $eof)) !== false)
 									{
-										$db->sql_query($sql);
+										phpbb::$db->sql_query($sql);
 									}
 								break;
 
 								case 'mssql':
 									while (($sql = $fgetd($fp, "GO\n", $read, $seek, $eof)) !== false)
 									{
-										$db->sql_query($sql);
+										phpbb::$db->sql_query($sql);
 									}
 								break;
 							}
@@ -611,19 +611,19 @@ class mysql_extractor extends base_extractor
 	function write_table($table_name)
 	{
 		$sql = 'SHOW CREATE TABLE ' . $table_name;
-		$result = $db->sql_query($sql);
-		$row = $db->sql_fetchrow($result);
+		$result = phpbb::$db->sql_query($sql);
+		$row = phpbb::$db->sql_fetchrow($result);
 
 		$sql_data = '# Table: ' . $table_name . "\n";
 		$sql_data .= "DROP TABLE IF EXISTS $table_name;\n";
 		$this->flush($sql_data . $row['Create Table'] . ";\n\n");
 
-		$db->sql_freeresult($result);
+		phpbb::$db->sql_freeresult($result);
 	}
 
 	function write_data($table_name)
 	{
-		if ($db->sql_layer === 'mysqli')
+		if (phpbb::$db->sql_layer === 'mysqli')
 		{
 			$this->write_data_mysqli($table_name);
 		}
@@ -637,7 +637,7 @@ class mysql_extractor extends base_extractor
 	{
 		$sql = "SELECT *
 			FROM $table_name";
-		$result = mysqli_query($db->db_connect_id, $sql, MYSQLI_USE_RESULT);
+		$result = mysqli_query(phpbb::$db->db_connect_id, $sql, MYSQLI_USE_RESULT);
 		if ($result != false)
 		{
 			$fields_cnt = mysqli_num_fields($result);
@@ -715,7 +715,7 @@ class mysql_extractor extends base_extractor
 	{
 		$sql = "SELECT *
 			FROM $table_name";
-		$result = mysql_unbuffered_query($sql, $db->db_connect_id);
+		$result = mysql_unbuffered_query($sql, phpbb::$db->db_connect_id);
 
 		if ($result != false)
 		{
@@ -819,23 +819,23 @@ class sqlite_extractor extends base_extractor
 		$sql = "SELECT sql
 			FROM sqlite_master
 			WHERE type = 'table'
-				AND name = '" . $db->sql_escape($table_name) . "'
+				AND name = '" . phpbb::$db->sql_escape($table_name) . "'
 			ORDER BY type DESC, name;";
-		$result = $db->sql_query($sql);
-		$row = $db->sql_fetchrow($result);
-		$db->sql_freeresult($result);
+		$result = phpbb::$db->sql_query($sql);
+		$row = phpbb::$db->sql_fetchrow($result);
+		phpbb::$db->sql_freeresult($result);
 
 		// Create Table
 		$sql_data .= $row['sql'] . ";\n";
 
-		$result = $db->sql_query("PRAGMA index_list('" . $db->sql_escape($table_name) . "');");
+		$result = phpbb::$db->sql_query("PRAGMA index_list('" . phpbb::$db->sql_escape($table_name) . "');");
 
 		$ar = array();
-		while ($row = $db->sql_fetchrow($result))
+		while ($row = phpbb::$db->sql_fetchrow($result))
 		{
 			$ar[] = $row;
 		}
-		$db->sql_freeresult($result);
+		phpbb::$db->sql_freeresult($result);
 
 		foreach ($ar as $value)
 		{
@@ -844,14 +844,14 @@ class sqlite_extractor extends base_extractor
 				continue;
 			}
 
-			$result = $db->sql_query("PRAGMA index_info('" . $db->sql_escape($value['name']) . "');");
+			$result = phpbb::$db->sql_query("PRAGMA index_info('" . phpbb::$db->sql_escape($value['name']) . "');");
 
 			$fields = array();
-			while ($row = $db->sql_fetchrow($result))
+			while ($row = phpbb::$db->sql_fetchrow($result))
 			{
 				$fields[] = $row['name'];
 			}
-			$db->sql_freeresult($result);
+			phpbb::$db->sql_freeresult($result);
 
 			$sql_data .= 'CREATE ' . ($value['unique'] ? 'UNIQUE ' : '') . 'INDEX ' . $value['name'] . ' on ' . $table_name . ' (' . implode(', ', $fields) . ");\n";
 		}
@@ -870,7 +870,7 @@ class sqlite_extractor extends base_extractor
 
 		if ($proper)
 		{
-			$col_types = sqlite_fetch_column_types($db->db_connect_id, $table_name);
+			$col_types = sqlite_fetch_column_types(phpbb::$db->db_connect_id, $table_name);
 		}
 		else
 		{
@@ -878,7 +878,7 @@ class sqlite_extractor extends base_extractor
 				FROM sqlite_master
 				WHERE type = 'table'
 					AND name = '" . $table_name . "'";
-			$table_data = sqlite_single_query($db->db_connect_id, $sql);
+			$table_data = sqlite_single_query(phpbb::$db->db_connect_id, $sql);
 			$table_data = preg_replace('#CREATE\s+TABLE\s+"?' . $table_name . '"?#i', '', $table_data);
 			$table_data = trim($table_data);
 
@@ -901,7 +901,7 @@ class sqlite_extractor extends base_extractor
 
 		$sql = "SELECT *
 			FROM $table_name";
-		$result = sqlite_unbuffered_query($db->db_connect_id, $sql);
+		$result = sqlite_unbuffered_query(phpbb::$db->db_connect_id, $sql);
 		$rows = sqlite_fetch_all($result, SQLITE_ASSOC);
 		$sql_insert = 'INSERT INTO ' . $table_name . ' (' . implode(', ', array_keys($col_types)) . ') VALUES (';
 		foreach ($rows as $row)
@@ -956,8 +956,8 @@ class postgres_extractor extends base_extractor
 			FROM INFORMATION_SCHEMA.domains a, INFORMATION_SCHEMA.column_domain_usage b
 			WHERE a.domain_name = b.domain_name
 				AND b.table_name = '{$table_name}'";
-		$result = $db->sql_query($sql);
-		while ($row = $db->sql_fetchrow($result))
+		$result = phpbb::$db->sql_query($sql);
+		while ($row = phpbb::$db->sql_fetchrow($result))
 		{
 			if (empty($domains_created[$row['domain_name']]))
 			{
@@ -984,35 +984,35 @@ class postgres_extractor extends base_extractor
 			FROM pg_class
 			WHERE relkind = 'S'
 				AND relname = '{$table_name}_seq'";
-		$result = $db->sql_query($sql);
+		$result = phpbb::$db->sql_query($sql);
 		// We don't even care about storing the results. We already know the answer if we get rows back.
-		if ($db->sql_fetchrow($result))
+		if (phpbb::$db->sql_fetchrow($result))
 		{
 			$sql_data .= "DROP SEQUENCE {$table_name}_seq;\n";
 			$sql_data .= "CREATE SEQUENCE {$table_name}_seq;\n";
 		}
-		$db->sql_freeresult($result);
+		phpbb::$db->sql_freeresult($result);
 
 		$field_query = "SELECT a.attnum, a.attname as field, t.typname as type, a.attlen as length, a.atttypmod as lengthvar, a.attnotnull as notnull
 			FROM pg_class c, pg_attribute a, pg_type t
-			WHERE c.relname = '" . $db->sql_escape($table_name) . "'
+			WHERE c.relname = '" . phpbb::$db->sql_escape($table_name) . "'
 				AND a.attnum > 0
 				AND a.attrelid = c.oid
 				AND a.atttypid = t.oid
 			ORDER BY a.attnum";
-		$result = $db->sql_query($field_query);
+		$result = phpbb::$db->sql_query($field_query);
 
 		$sql_data .= "CREATE TABLE $table_name(\n";
 		$lines = array();
-		while ($row = $db->sql_fetchrow($result))
+		while ($row = phpbb::$db->sql_fetchrow($result))
 		{
 			// Get the data from the table
 			$sql_get_default = "SELECT pg_get_expr(d.adbin, d.adrelid) as rowdefault
 				FROM pg_attrdef d, pg_class c
-				WHERE (c.relname = '" . $db->sql_escape($table_name) . "')
+				WHERE (c.relname = '" . phpbb::$db->sql_escape($table_name) . "')
 					AND (c.oid = d.adrelid)
 					AND d.adnum = " . $row['attnum'];
-			$def_res = $db->sql_query($sql_get_default);
+			$def_res = phpbb::$db->sql_query($sql_get_default);
 
 			if (!$def_res)
 			{
@@ -1020,9 +1020,9 @@ class postgres_extractor extends base_extractor
 			}
 			else
 			{
-				$row['rowdefault'] = $db->sql_fetchfield('rowdefault', $def_res);
+				$row['rowdefault'] = phpbb::$db->sql_fetchfield('rowdefault', $def_res);
 			}
-			$db->sql_freeresult($def_res);
+			phpbb::$db->sql_freeresult($def_res);
 
 			if ($row['type'] == 'bpchar')
 			{
@@ -1059,7 +1059,7 @@ class postgres_extractor extends base_extractor
 
 			$lines[] = $line;
 		}
-		$db->sql_freeresult($result);
+		phpbb::$db->sql_freeresult($result);
 
 
 		// Get the listing of primary keys.
@@ -1069,17 +1069,17 @@ class postgres_extractor extends base_extractor
 				AND (ic.oid = i.indexrelid)
 				AND (ia.attrelid = i.indexrelid)
 				AND	(ta.attrelid = bc.oid)
-				AND (bc.relname = '" . $db->sql_escape($table_name) . "')
+				AND (bc.relname = '" . phpbb::$db->sql_escape($table_name) . "')
 				AND (ta.attrelid = i.indrelid)
 				AND (ta.attnum = i.indkey[ia.attnum-1])
 			ORDER BY index_name, tab_name, column_name";
 
-		$result = $db->sql_query($sql_pri_keys);
+		$result = phpbb::$db->sql_query($sql_pri_keys);
 
 		$index_create = $index_rows = $primary_key = array();
 
 		// We do this in two steps. It makes placing the comma easier
-		while ($row = $db->sql_fetchrow($result))
+		while ($row = phpbb::$db->sql_fetchrow($result))
 		{
 			if ($row['primary_key'] == 't')
 			{
@@ -1095,7 +1095,7 @@ class postgres_extractor extends base_extractor
 				$index_rows[$row['index_name']]['column_names'][] = $row['column_name'];
 			}
 		}
-		$db->sql_freeresult($result);
+		phpbb::$db->sql_freeresult($result);
 
 		if (!empty($index_rows))
 		{
@@ -1114,7 +1114,7 @@ class postgres_extractor extends base_extractor
 		$sql_checks = "SELECT conname as index_name, consrc
 			FROM pg_constraint, pg_class bc
 			WHERE conrelid = bc.oid
-				AND bc.relname = '" . $db->sql_escape($table_name) . "'
+				AND bc.relname = '" . phpbb::$db->sql_escape($table_name) . "'
 				AND NOT EXISTS (
 					SELECT *
 						FROM pg_constraint as c, pg_inherits as i
@@ -1123,17 +1123,17 @@ class postgres_extractor extends base_extractor
 							AND c.consrc = pg_constraint.consrc
 							AND c.conrelid = i.inhparent
 				)";
-		$result = $db->sql_query($sql_checks);
+		$result = phpbb::$db->sql_query($sql_checks);
 
 		// Add the constraints to the sql file.
-		while ($row = $db->sql_fetchrow($result))
+		while ($row = phpbb::$db->sql_fetchrow($result))
 		{
 			if (!is_null($row['consrc']))
 			{
 				$lines[] = '  CONSTRAINT ' . $row['index_name'] . ' CHECK ' . $row['consrc'];
 			}
 		}
-		$db->sql_freeresult($result);
+		phpbb::$db->sql_freeresult($result);
 
 		$sql_data .= implode(", \n", $lines);
 		$sql_data .= "\n);\n";
@@ -1150,7 +1150,7 @@ class postgres_extractor extends base_extractor
 		// Grab all of the data from current table.
 		$sql = "SELECT *
 			FROM $table_name";
-		$result = $db->sql_query($sql);
+		$result = phpbb::$db->sql_query($sql);
 
 		$i_num_fields = pg_num_fields($result);
 		$seq = '';
@@ -1166,8 +1166,8 @@ class postgres_extractor extends base_extractor
 				WHERE (c.relname = '{$table_name}')
 					AND (c.oid = d.adrelid)
 					AND d.adnum = " . strval($i + 1);
-			$result2 = $db->sql_query($sql);
-			if ($row = $db->sql_fetchrow($result2))
+			$result2 = phpbb::$db->sql_query($sql);
+			if ($row = phpbb::$db->sql_fetchrow($result2))
 			{
 				// Determine if we must reset the sequences
 				if (strpos($row['rowdefault'], "nextval('") === 0)
@@ -1178,7 +1178,7 @@ class postgres_extractor extends base_extractor
 		}
 
 		$this->flush("COPY $table_name (" . implode(', ', $ary_name) . ') FROM stdin;' . "\n");
-		while ($row = $db->sql_fetchrow($result))
+		while ($row = phpbb::$db->sql_fetchrow($result))
 		{
 			$schema_vals = array();
 
@@ -1209,7 +1209,7 @@ class postgres_extractor extends base_extractor
 			// into a valid sql statement to recreate that field in the data.
 			$this->flush(implode("\t", $schema_vals) . "\n");
 		}
-		$db->sql_freeresult($result);
+		phpbb::$db->sql_freeresult($result);
 		$this->flush("\\.\n");
 
 		// Write out the sequence statements
@@ -1260,9 +1260,9 @@ class mssql_extractor extends base_extractor
 		$sql = "SELECT COLUMN_NAME, COLUMN_DEFAULT, IS_NULLABLE, DATA_TYPE, CHARACTER_MAXIMUM_LENGTH, COLUMNPROPERTY(object_id(TABLE_NAME), COLUMN_NAME, 'IsIdentity') as IS_IDENTITY
 			FROM INFORMATION_SCHEMA.COLUMNS
 			WHERE TABLE_NAME = '$table_name'";
-		$result = $db->sql_query($sql);
+		$result = phpbb::$db->sql_query($sql);
 
-		while ($row = $db->sql_fetchrow($result))
+		while ($row = phpbb::$db->sql_fetchrow($result))
 		{
 			$line = "\t[{$row['COLUMN_NAME']}] [{$row['DATA_TYPE']}]";
 
@@ -1297,7 +1297,7 @@ class mssql_extractor extends base_extractor
 
 			$rows[] = $line;
 		}
-		$db->sql_freeresult($result);
+		phpbb::$db->sql_freeresult($result);
 
 		$sql_data .= implode(",\n", $rows);
 		$sql_data .= "\n) ON [PRIMARY]";
@@ -1313,8 +1313,8 @@ class mssql_extractor extends base_extractor
 		$sql = "SELECT CONSTRAINT_NAME, COLUMN_NAME
 			FROM INFORMATION_SCHEMA.KEY_COLUMN_USAGE
 			WHERE TABLE_NAME = '$table_name'";
-		$result = $db->sql_query($sql);
-		while ($row = $db->sql_fetchrow($result))
+		$result = phpbb::$db->sql_query($sql);
+		while ($row = phpbb::$db->sql_fetchrow($result))
 		{
 			if (!sizeof($rows))
 			{
@@ -1328,19 +1328,19 @@ class mssql_extractor extends base_extractor
 			$sql_data .= implode(",\n", $rows);
 			$sql_data .= "\n\t)  ON [PRIMARY] \nGO\n";
 		}
-		$db->sql_freeresult($result);
+		phpbb::$db->sql_freeresult($result);
 
 		$index = array();
 		$sql = "EXEC sp_statistics '$table_name'";
-		$result = $db->sql_query($sql);
-		while ($row = $db->sql_fetchrow($result))
+		$result = phpbb::$db->sql_query($sql);
+		while ($row = phpbb::$db->sql_fetchrow($result))
 		{
 			if ($row['TYPE'] == 3)
 			{
 				$index[$row['INDEX_NAME']][] = '[' . $row['COLUMN_NAME'] . ']';
 			}
 		}
-		$db->sql_freeresult($result);
+		phpbb::$db->sql_freeresult($result);
 
 		foreach ($index as $index_name => $column_name)
 		{
@@ -1356,11 +1356,11 @@ class mssql_extractor extends base_extractor
 
 	function write_data($table_name)
 	{
-		if ($db->sql_layer === 'mssql')
+		if (phpbb::$db->sql_layer === 'mssql')
 		{
 			$this->write_data_mssql($table_name);
 		}
-		else if ($db->sql_layer === 'mssql_odbc')
+		else if (phpbb::$db->sql_layer === 'mssql_odbc')
 		{
 			$this->write_data_odbc($table_name);
 		}
@@ -1380,7 +1380,7 @@ class mssql_extractor extends base_extractor
 		// Grab all of the data from current table.
 		$sql = "SELECT *
 			FROM $table_name";
-		$result = $db->sql_query($sql);
+		$result = phpbb::$db->sql_query($sql);
 
 		$retrieved_data = mssql_num_rows($result);
 
@@ -1397,17 +1397,17 @@ class mssql_extractor extends base_extractor
 			$sql = "SELECT 1 as has_identity
 				FROM INFORMATION_SCHEMA.COLUMNS
 				WHERE COLUMNPROPERTY(object_id('$table_name'), COLUMN_NAME, 'IsIdentity') = 1";
-			$result2 = $db->sql_query($sql);
-			$row2 = $db->sql_fetchrow($result2);
+			$result2 = phpbb::$db->sql_query($sql);
+			$row2 = phpbb::$db->sql_fetchrow($result2);
 			if (!empty($row2['has_identity']))
 			{
 				$sql_data .= "\nSET IDENTITY_INSERT $table_name ON\nGO\n";
 				$ident_set = true;
 			}
-			$db->sql_freeresult($result2);
+			phpbb::$db->sql_freeresult($result2);
 		}
 
-		while ($row = $db->sql_fetchrow($result))
+		while ($row = phpbb::$db->sql_fetchrow($result))
 		{
 			$schema_vals = $schema_fields = array();
 
@@ -1455,7 +1455,7 @@ class mssql_extractor extends base_extractor
 			$this->flush($sql_data);
 			$sql_data = '';
 		}
-		$db->sql_freeresult($result);
+		phpbb::$db->sql_freeresult($result);
 
 		if ($retrieved_data && $ident_set)
 		{
@@ -1473,7 +1473,7 @@ class mssql_extractor extends base_extractor
 		// Grab all of the data from current table.
 		$sql = "SELECT *
 			FROM $table_name";
-		$result = $db->sql_query($sql);
+		$result = phpbb::$db->sql_query($sql);
 
 		$retrieved_data = odbc_num_rows($result);
 
@@ -1482,14 +1482,14 @@ class mssql_extractor extends base_extractor
 			$sql = "SELECT 1 as has_identity
 				FROM INFORMATION_SCHEMA.COLUMNS
 				WHERE COLUMNPROPERTY(object_id('$table_name'), COLUMN_NAME, 'IsIdentity') = 1";
-			$result2 = $db->sql_query($sql);
-			$row2 = $db->sql_fetchrow($result2);
+			$result2 = phpbb::$db->sql_query($sql);
+			$row2 = phpbb::$db->sql_fetchrow($result2);
 			if (!empty($row2['has_identity']))
 			{
 				$sql_data .= "\nSET IDENTITY_INSERT $table_name ON\nGO\n";
 				$ident_set = true;
 			}
-			$db->sql_freeresult($result2);
+			phpbb::$db->sql_freeresult($result2);
 		}
 
 		$i_num_fields = odbc_num_fields($result);
@@ -1500,7 +1500,7 @@ class mssql_extractor extends base_extractor
 			$ary_name[$i] = odbc_field_name($result, $i + 1);
 		}
 
-		while ($row = $db->sql_fetchrow($result))
+		while ($row = phpbb::$db->sql_fetchrow($result))
 		{
 			$schema_vals = $schema_fields = array();
 
@@ -1550,7 +1550,7 @@ class mssql_extractor extends base_extractor
 			$sql_data = '';
 
 		}
-		$db->sql_freeresult($result);
+		phpbb::$db->sql_freeresult($result);
 
 		if ($retrieved_data && $ident_set)
 		{
@@ -1586,9 +1586,9 @@ class db2_extractor extends base_extractor
 		$sql = "SELECT colname, typename, length, default, identity, nulls
 			FROM syscat.columns
 			WHERE tabname = '$table_name'";
-		$result = $db->sql_query($sql);
+		$result = phpbb::$db->sql_query($sql);
 
-		while ($row = $db->sql_fetchrow($result))
+		while ($row = phpbb::$db->sql_fetchrow($result))
 		{
 			$line = "\t{$row['colname']} {$row['typename']}";
 
@@ -1618,19 +1618,19 @@ class db2_extractor extends base_extractor
 
 			$rows[] = $line;
 		}
-		$db->sql_freeresult($result);
+		phpbb::$db->sql_freeresult($result);
 
 		// switch to db2_columns()?
 		$sql = "SELECT colname
 			FROM SYSCAT.KEYCOLUSE
 			WHERE tabname = '$table_name'";
-		$result = $db->sql_query($sql);
+		$result = phpbb::$db->sql_query($sql);
 		$prim_cols = array();
-		while ($row = $db->sql_fetchrow($result))
+		while ($row = phpbb::$db->sql_fetchrow($result))
 		{
 			$prim_cols[] = $row['colname'];
 		}
-		$db->sql_freeresult($result);
+		phpbb::$db->sql_freeresult($result);
 		if (sizeof($prim_cols))
 		{
 			$rows[] = "\tPRIMARY KEY (" . implode($prim_cols) . ')';
@@ -1644,15 +1644,15 @@ class db2_extractor extends base_extractor
 			FROM SYSCAT.INDEXES
 			WHERE TABNAME = '$table_name'
 				AND UNIQUERULE <> 'P'";
-		$result = $db->sql_query($sql);
+		$result = phpbb::$db->sql_query($sql);
 		$index = array();
-		while ($row = $db->sql_fetchrow($result))
+		while ($row = phpbb::$db->sql_fetchrow($result))
 		{
 			$inds = explode('+', $row['colnames']);
 			unset($inds[0]);
 			$sql_data .= 'CREATE INDEX ' . $row['indname'] . ' ON ' . $table_name . ' (' . implode(', ', $inds) . ") PCTFREE 10 MINPCTUSED 10 ALLOW REVERSE SCANS  PAGE SPLIT SYMMETRIC COLLECT  SAMPLED DETAILED  STATISTICS;\n";
 		}
-		$db->sql_freeresult($result);
+		phpbb::$db->sql_freeresult($result);
 
 		$this->flush($sql_data);
 	}
@@ -1660,24 +1660,24 @@ class db2_extractor extends base_extractor
 	function write_data($table_name)
 	{
 		$ary_type = $ary_name = array();
-		$result = db2_columns($db->db_connect_id, '', '%', $table_name);
+		$result = db2_columns(phpbb::$db->db_connect_id, '', '%', $table_name);
 		$i = 0;
-		while ($row = $db->sql_fetchrow($result))
+		while ($row = phpbb::$db->sql_fetchrow($result))
 		{
 			$ary_type[$i] = $row['type_name'];
 			$ary_name[$i++] = strtolower($row['column_name']);
 		}
-		$db->sql_freeresult($result);
+		phpbb::$db->sql_freeresult($result);
 
 		// Grab all of the data from current table.
 		$sql = "SELECT *
 			FROM $table_name";
-		$result = $db->sql_query($sql);
+		$result = phpbb::$db->sql_query($sql);
 
 		$sql_data = '';
 		$i_num_fields = $i;
 
-		while ($row = $db->sql_fetchrow($result))
+		while ($row = phpbb::$db->sql_fetchrow($result))
 		{
 			$schema_vals = $schema_fields = array();
 
@@ -1724,7 +1724,7 @@ class db2_extractor extends base_extractor
 
 			$this->flush($sql_data);
 		}
-		$db->sql_freeresult($result);
+		phpbb::$db->sql_freeresult($result);
 	}
 }
 
@@ -1743,10 +1743,10 @@ class oracle_extractor extends base_extractor
 		$sql = "SELECT COLUMN_NAME, DATA_TYPE, DATA_PRECISION, DATA_LENGTH, NULLABLE, DATA_DEFAULT
 			FROM ALL_TAB_COLS
 			WHERE table_name = '{$table_name}'";
-		$result = $db->sql_query($sql);
+		$result = phpbb::$db->sql_query($sql);
 
 		$rows = array();
-		while ($row = $db->sql_fetchrow($result))
+		while ($row = phpbb::$db->sql_fetchrow($result))
 		{
 			$line = '  "' . $row['column_name'] . '" ' . $row['data_type'];
 
@@ -1773,33 +1773,33 @@ class oracle_extractor extends base_extractor
 			}
 			$rows[] = $line;
 		}
-		$db->sql_freeresult($result);
+		phpbb::$db->sql_freeresult($result);
 
 		$sql = "SELECT A.CONSTRAINT_NAME, A.COLUMN_NAME
 			FROM USER_CONS_COLUMNS A, USER_CONSTRAINTS B
 			WHERE A.CONSTRAINT_NAME = B.CONSTRAINT_NAME
 				AND B.CONSTRAINT_TYPE = 'P'
 				AND A.TABLE_NAME = '{$table_name}'";
-		$result = $db->sql_query($sql);
+		$result = phpbb::$db->sql_query($sql);
 
-		while ($row = $db->sql_fetchrow($result))
+		while ($row = phpbb::$db->sql_fetchrow($result))
 		{
 			$rows[] = "  CONSTRAINT {$row['constraint_name']} PRIMARY KEY ({$row['column_name']})";
 		}
-		$db->sql_freeresult($result);
+		phpbb::$db->sql_freeresult($result);
 
 		$sql = "SELECT A.CONSTRAINT_NAME, A.COLUMN_NAME
 			FROM USER_CONS_COLUMNS A, USER_CONSTRAINTS B
 			WHERE A.CONSTRAINT_NAME = B.CONSTRAINT_NAME
 				AND B.CONSTRAINT_TYPE = 'U'
 				AND A.TABLE_NAME = '{$table_name}'";
-		$result = $db->sql_query($sql);
+		$result = phpbb::$db->sql_query($sql);
 
-		while ($row = $db->sql_fetchrow($result))
+		while ($row = phpbb::$db->sql_fetchrow($result))
 		{
 			$rows[] = "  CONSTRAINT {$row['constraint_name']} UNIQUE ({$row['column_name']})";
 		}
-		$db->sql_freeresult($result);
+		phpbb::$db->sql_freeresult($result);
 
 		$sql_data .= implode(",\n", $rows);
 		$sql_data .= "\n)\n\\";
@@ -1809,33 +1809,33 @@ class oracle_extractor extends base_extractor
 			WHERE A.REFERENCED_TYPE = 'SEQUENCE'
 				AND A.NAME = B.TRIGGER_NAME
 				AND B.TABLE_NAME = '{$table_name}'";
-		$result = $db->sql_query($sql);
-		while ($row = $db->sql_fetchrow($result))
+		$result = phpbb::$db->sql_query($sql);
+		while ($row = phpbb::$db->sql_fetchrow($result))
 		{
 			$sql_data .= "\nCREATE SEQUENCE {$row['referenced_name']}\\\n";
 		}
-		$db->sql_freeresult($result);
+		phpbb::$db->sql_freeresult($result);
 
 		$sql = "SELECT DESCRIPTION, WHEN_CLAUSE, TRIGGER_BODY
 			FROM USER_TRIGGERS
 			WHERE TABLE_NAME = '{$table_name}'";
-		$result = $db->sql_query($sql);
-		while ($row = $db->sql_fetchrow($result))
+		$result = phpbb::$db->sql_query($sql);
+		while ($row = phpbb::$db->sql_fetchrow($result))
 		{
 			$sql_data .= "\nCREATE OR REPLACE TRIGGER {$row['description']}WHEN ({$row['when_clause']})\n{$row['trigger_body']}\\";
 		}
-		$db->sql_freeresult($result);
+		phpbb::$db->sql_freeresult($result);
 
 		$sql = "SELECT A.INDEX_NAME, B.COLUMN_NAME
 			FROM USER_INDEXES A, USER_IND_COLUMNS B
 			WHERE A.UNIQUENESS = 'NONUNIQUE'
 				AND A.INDEX_NAME = B.INDEX_NAME
 				AND B.TABLE_NAME = '{$table_name}'";
-		$result = $db->sql_query($sql);
+		$result = phpbb::$db->sql_query($sql);
 
 		$index = array();
 
-		while ($row = $db->sql_fetchrow($result))
+		while ($row = phpbb::$db->sql_fetchrow($result))
 		{
 			$index[$row['index_name']][] = $row['column_name'];
 		}
@@ -1844,7 +1844,7 @@ class oracle_extractor extends base_extractor
 		{
 			$sql_data .= "\nCREATE INDEX $index_name ON $table_name(" . implode(', ', $column_names) . ")\n\\";
 		}
-		$db->sql_freeresult($result);
+		phpbb::$db->sql_freeresult($result);
 		$this->flush($sql_data);
 	}
 
@@ -1855,7 +1855,7 @@ class oracle_extractor extends base_extractor
 		// Grab all of the data from current table.
 		$sql = "SELECT *
 			FROM $table_name";
-		$result = $db->sql_query($sql);
+		$result = phpbb::$db->sql_query($sql);
 
 		$i_num_fields = ocinumcols($result);
 
@@ -1867,7 +1867,7 @@ class oracle_extractor extends base_extractor
 
 		$sql_data = '';
 
-		while ($row = $db->sql_fetchrow($result))
+		while ($row = phpbb::$db->sql_fetchrow($result))
 		{
 			$schema_vals = $schema_fields = array();
 
@@ -1914,7 +1914,7 @@ class oracle_extractor extends base_extractor
 
 			$this->flush($sql_data);
 		}
-		$db->sql_freeresult($result);
+		phpbb::$db->sql_freeresult($result);
 	}
 
 	function write_start($prefix)
@@ -1950,7 +1950,7 @@ class firebird_extractor extends base_extractor
 		// Grab all of the data from current table.
 		$sql = "SELECT *
 			FROM $table_name";
-		$result = $db->sql_query($sql);
+		$result = phpbb::$db->sql_query($sql);
 
 		$i_num_fields = ibase_num_fields($result);
 
@@ -1961,7 +1961,7 @@ class firebird_extractor extends base_extractor
 			$ary_name[$i] = $info['name'];
 		}
 
-		while ($row = $db->sql_fetchrow($result))
+		while ($row = phpbb::$db->sql_fetchrow($result))
 		{
 			$schema_vals = $schema_fields = array();
 
@@ -2008,7 +2008,7 @@ class firebird_extractor extends base_extractor
 
 			$this->flush($sql_data);
 		}
-		$db->sql_freeresult($result);
+		phpbb::$db->sql_freeresult($result);
 	}
 
 	function write_table($table_name)
@@ -2027,10 +2027,10 @@ class firebird_extractor extends base_extractor
 			WHERE F.RDB$SYSTEM_FLAG = 0
 				AND R.RDB$RELATION_NAME = \''. $table_name . '\'
 			ORDER BY R.RDB$FIELD_POSITION';
-		$result = $db->sql_query($sql);
+		$result = phpbb::$db->sql_query($sql);
 
 		$rows = array();
-		while ($row = $db->sql_fetchrow($result))
+		while ($row = phpbb::$db->sql_fetchrow($result))
 		{
 			$line = "\t" . '"' . $row['fname'] . '" ' . $data_types[$row['ftype']];
 
@@ -2055,7 +2055,7 @@ class firebird_extractor extends base_extractor
 			}
 			$rows[] = $line;
 		}
-		$db->sql_freeresult($result);
+		phpbb::$db->sql_freeresult($result);
 
 		$sql_data .= implode(",\n", $rows);
 		$sql_data .= "\n);\n";
@@ -2067,9 +2067,9 @@ class firebird_extractor extends base_extractor
 				AND (IDX.RDB$INDEX_NAME = RC.RDB$INDEX_NAME)
 				AND (RC.RDB$RELATION_NAME = \''. $table_name . '\')
 			ORDER BY I.RDB$FIELD_POSITION';
-		$result = $db->sql_query($sql);
+		$result = phpbb::$db->sql_query($sql);
 
-		while ($row = $db->sql_fetchrow($result))
+		while ($row = phpbb::$db->sql_fetchrow($result))
 		{
 			$keys[] = $row['name'];
 		}
@@ -2079,7 +2079,7 @@ class firebird_extractor extends base_extractor
 			$sql_data .= "\nALTER TABLE $table_name ADD PRIMARY KEY (" . implode(', ', $keys) . ');';
 		}
 
-		$db->sql_freeresult($result);
+		phpbb::$db->sql_freeresult($result);
 
 		$sql = 'SELECT I.RDB$INDEX_NAME as INAME, I.RDB$UNIQUE_FLAG as UFLAG, S.RDB$FIELD_NAME as FNAME
 			FROM RDB$INDICES I JOIN RDB$INDEX_SEGMENTS S ON S.RDB$INDEX_NAME=I.RDB$INDEX_NAME
@@ -2088,10 +2088,10 @@ class firebird_extractor extends base_extractor
 				AND I.RDB$RELATION_NAME = \''. $table_name . '\'
 				AND I.RDB$INDEX_NAME NOT STARTING WITH \'RDB$\'
 			ORDER BY S.RDB$FIELD_POSITION';
-		$result = $db->sql_query($sql);
+		$result = phpbb::$db->sql_query($sql);
 
 		$index = array();
-		while ($row = $db->sql_fetchrow($result))
+		while ($row = phpbb::$db->sql_fetchrow($result))
 		{
 			$index[$row['iname']]['unique'] = !empty($row['uflag']);
 			$index[$row['iname']]['values'][] = $row['fname'];
@@ -2108,7 +2108,7 @@ class firebird_extractor extends base_extractor
 		}
 		$sql_data .= "\n";
 
-		$db->sql_freeresult($result);
+		phpbb::$db->sql_freeresult($result);
 
 		$sql = 'SELECT D1.RDB$DEPENDENT_NAME as DNAME, D1.RDB$FIELD_NAME as FNAME, D1.RDB$DEPENDENT_TYPE, R1.RDB$RELATION_NAME
 			FROM RDB$DEPENDENCIES D1
@@ -2122,8 +2122,8 @@ class firebird_extractor extends base_extractor
 				AND (D2.RDB$DEPENDENT_NAME = F2.RDB$FIELD_SOURCE)
 				AND (D2.RDB$DEPENDED_ON_NAME = \'' . $table_name . '\')
 			ORDER BY 1, 2';
-		$result = $db->sql_query($sql);
-		while ($row = $db->sql_fetchrow($result))
+		$result = phpbb::$db->sql_query($sql);
+		while ($row = phpbb::$db->sql_fetchrow($result))
 		{
 			$sql = 'SELECT T1.RDB$DEPENDED_ON_NAME as GEN, T1.RDB$FIELD_NAME, T1.RDB$DEPENDED_ON_TYPE
 				FROM RDB$DEPENDENCIES T1
@@ -2135,9 +2135,9 @@ class firebird_extractor extends base_extractor
 					AND (D.RDB$DEPENDENT_NAME = F.RDB$FIELD_SOURCE)
 					AND (F.RDB$RELATION_NAME = \'' . $row['dname'] . '\')
 				ORDER BY 1,2';
-			$result2 = $db->sql_query($sql);
-			$row2 = $db->sql_fetchrow($result2);
-			$db->sql_freeresult($result2);
+			$result2 = phpbb::$db->sql_query($sql);
+			$row2 = phpbb::$db->sql_fetchrow($result2);
+			phpbb::$db->sql_freeresult($result2);
 			$gen_name = $row2['gen'];
 
 			$sql_data .= "\nDROP GENERATOR " . $gen_name . ";";
@@ -2153,7 +2153,7 @@ class firebird_extractor extends base_extractor
 
 		$this->flush($sql_data);
 
-		$db->sql_freeresult($result);
+		phpbb::$db->sql_freeresult($result);
 	}
 }
 

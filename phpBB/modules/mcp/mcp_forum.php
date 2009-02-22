@@ -154,26 +154,26 @@ function mcp_forum_view($id, $mode, $action, $forum_info)
 			" . ((phpbb::$acl->acl_get('m_approve', $forum_id)) ? '' : 'AND t.topic_approved = 1') . "
 			$limit_time_sql
 		ORDER BY t.topic_type DESC, $sort_order_sql";
-	$result = $db->sql_query_limit($sql, $topics_per_page, $start);
+	$result = phpbb::$db->sql_query_limit($sql, $topics_per_page, $start);
 
 	$topic_list = $topic_tracking_info = array();
 
-	while ($row = $db->sql_fetchrow($result))
+	while ($row = phpbb::$db->sql_fetchrow($result))
 	{
 		$topic_list[] = $row['topic_id'];
 	}
-	$db->sql_freeresult($result);
+	phpbb::$db->sql_freeresult($result);
 
 	$sql = "SELECT t.*$read_tracking_select
 		FROM " . TOPICS_TABLE . " t $read_tracking_join
-		WHERE " . $db->sql_in_set('t.topic_id', $topic_list, false, true);
+		WHERE " . phpbb::$db->sql_in_set('t.topic_id', $topic_list, false, true);
 
-	$result = $db->sql_query($sql);
-	while ($row = $db->sql_fetchrow($result))
+	$result = phpbb::$db->sql_query($sql);
+	while ($row = phpbb::$db->sql_fetchrow($result))
 	{
 		$topic_rows[$row['topic_id']] = $row;
 	}
-	$db->sql_freeresult($result);
+	phpbb::$db->sql_freeresult($result);
 
 	// If there is more than one page, but we have no topic list, then the start parameter is... erm... out of sync
 	if (!sizeof($topic_list) && $forum_topics && $start > 0)
@@ -312,15 +312,15 @@ function mcp_resync_topics($topic_ids)
 
 	$sql = 'SELECT topic_id, forum_id, topic_title
 		FROM ' . TOPICS_TABLE . '
-		WHERE ' . $db->sql_in_set('topic_id', $topic_ids);
-	$result = $db->sql_query($sql);
+		WHERE ' . phpbb::$db->sql_in_set('topic_id', $topic_ids);
+	$result = phpbb::$db->sql_query($sql);
 
 	// Log this action
-	while ($row = $db->sql_fetchrow($result))
+	while ($row = phpbb::$db->sql_fetchrow($result))
 	{
 		add_log('mod', $row['forum_id'], $row['topic_id'], 'LOG_TOPIC_RESYNC', $row['topic_title']);
 	}
-	$db->sql_freeresult($result);
+	phpbb::$db->sql_freeresult($result);
 
 	$msg = (sizeof($topic_ids) == 1) ? phpbb::$user->lang['TOPIC_RESYNC_SUCCESS'] : phpbb::$user->lang['TOPICS_RESYNC_SUCCESS'];
 
@@ -365,15 +365,15 @@ function merge_topics($forum_id, $topic_ids, $to_topic_id)
 	{
 		$sql = 'SELECT post_id
 			FROM ' . POSTS_TABLE . '
-			WHERE ' . $db->sql_in_set('topic_id', $topic_ids);
-		$result = $db->sql_query($sql);
+			WHERE ' . phpbb::$db->sql_in_set('topic_id', $topic_ids);
+		$result = phpbb::$db->sql_query($sql);
 
 		$post_id_list = array();
-		while ($row = $db->sql_fetchrow($result))
+		while ($row = phpbb::$db->sql_fetchrow($result))
 		{
 			$post_id_list[] = $row['post_id'];
 		}
-		$db->sql_freeresult($result);
+		phpbb::$db->sql_freeresult($result);
 	}
 
 	if (!sizeof($post_id_list))
@@ -414,11 +414,11 @@ function merge_topics($forum_id, $topic_ids, $to_topic_id)
 
 		// If the topic no longer exist, we will update the topic watch table.
 		// To not let it error out on users watching both topics, we just return on an error...
-		$db->sql_return_on_error(true);
-		$db->sql_query('UPDATE ' . TOPICS_WATCH_TABLE . ' SET topic_id = ' . (int) $to_topic_id . ' WHERE ' . $db->sql_in_set('topic_id', $topic_ids));
-		$db->sql_return_on_error(false);
+		phpbb::$db->sql_return_on_error(true);
+		phpbb::$db->sql_query('UPDATE ' . TOPICS_WATCH_TABLE . ' SET topic_id = ' . (int) $to_topic_id . ' WHERE ' . phpbb::$db->sql_in_set('topic_id', $topic_ids));
+		phpbb::$db->sql_return_on_error(false);
 
-		$db->sql_query('DELETE FROM ' . TOPICS_WATCH_TABLE . ' WHERE ' . $db->sql_in_set('topic_id', $topic_ids));
+		phpbb::$db->sql_query('DELETE FROM ' . TOPICS_WATCH_TABLE . ' WHERE ' . phpbb::$db->sql_in_set('topic_id', $topic_ids));
 
 		// Link to the new topic
 		$return_link .= (($return_link) ? '<br /><br />' : '') . sprintf(phpbb::$user->lang['RETURN_NEW_TOPIC'], '<a href="' . append_sid('viewtopic', 'f=' . $to_forum_id . '&amp;t=' . $to_topic_id) . '">', '</a>');

@@ -48,8 +48,8 @@ $sql = 'SELECT t.*, p.*
 	FROM ' . POSTS_TABLE . ' p, ' . TOPICS_TABLE . " t
 	WHERE p.post_id = $post_id
 		AND p.topic_id = t.topic_id";
-$result = $db->sql_query($sql);
-$report_data = $db->sql_fetchrow($result);
+$result = phpbb::$db->sql_query($sql);
+$report_data = phpbb::$db->sql_fetchrow($result);
 phpbb::$db->sql_freeresult($result);
 
 if (!$report_data)
@@ -63,8 +63,8 @@ $topic_id = (int) $report_data['topic_id'];
 $sql = 'SELECT *
 	FROM ' . FORUMS_TABLE . '
 	WHERE forum_id = ' . $forum_id;
-$result = $db->sql_query($sql);
-$forum_data = $db->sql_fetchrow($result);
+$result = phpbb::$db->sql_query($sql);
+$forum_data = phpbb::$db->sql_fetchrow($result);
 phpbb::$db->sql_freeresult($result);
 
 if (!$forum_data)
@@ -97,9 +97,9 @@ if ($submit && $reason_id)
 	$sql = 'SELECT *
 		FROM ' . REPORTS_REASONS_TABLE . "
 		WHERE reason_id = $reason_id";
-	$result = $db->sql_query($sql);
-	$row = $db->sql_fetchrow($result);
-	$db->sql_freeresult($result);
+	$result = phpbb::$db->sql_query($sql);
+	$row = phpbb::$db->sql_fetchrow($result);
+	phpbb::$db->sql_freeresult($result);
 
 	if (!$row || (!$report_text && strtolower($row['reason_title']) == 'other'))
 	{
@@ -116,16 +116,16 @@ if ($submit && $reason_id)
 		'report_text'	=> (string) $report_text
 	);
 
-	$sql = 'INSERT INTO ' . REPORTS_TABLE . ' ' . $db->sql_build_array('INSERT', $sql_ary);
-	$db->sql_query($sql);
-	$report_id = $db->sql_nextid();
+	$sql = 'INSERT INTO ' . REPORTS_TABLE . ' ' . phpbb::$db->sql_build_array('INSERT', $sql_ary);
+	phpbb::$db->sql_query($sql);
+	$report_id = phpbb::$db->sql_nextid();
 
 	if (!$report_data['post_reported'])
 	{
 		$sql = 'UPDATE ' . POSTS_TABLE . '
 			SET post_reported = 1
 			WHERE post_id = ' . $post_id;
-		$db->sql_query($sql);
+		phpbb::$db->sql_query($sql);
 	}
 
 	if (!$report_data['topic_reported'])
@@ -134,7 +134,7 @@ if ($submit && $reason_id)
 			SET topic_reported = 1
 			WHERE topic_id = ' . $report_data['topic_id'] . '
 				OR topic_moved_id = ' . $report_data['topic_id'];
-		$db->sql_query($sql);
+		phpbb::$db->sql_query($sql);
 	}
 
 	meta_refresh(3, $redirect_url);

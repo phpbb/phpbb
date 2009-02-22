@@ -79,7 +79,7 @@ function display_forums($root_data = '', $display_moderators = true, $return_mod
 	{
 		$sql_array['LEFT_JOIN'][] = array(
 			'FROM'	=> array(FORUMS_ACCESS_TABLE => 'fa'),
-			'ON'	=> "fa.forum_id = f.forum_id AND fa.session_id = '" . $db->sql_escape(phpbb::$user->session_id) . "'"
+			'ON'	=> "fa.forum_id = f.forum_id AND fa.session_id = '" . phpbb::$db->sql_escape(phpbb::$user->session_id) . "'"
 		);
 
 		$sql_array['SELECT'] .= ', fa.user_id';
@@ -573,20 +573,20 @@ function get_forum_parents(&$forum_data)
 				WHERE left_id < ' . $forum_data['left_id'] . '
 					AND right_id > ' . $forum_data['right_id'] . '
 				ORDER BY left_id ASC';
-			$result = $db->sql_query($sql);
+			$result = phpbb::$db->sql_query($sql);
 
-			while ($row = $db->sql_fetchrow($result))
+			while ($row = phpbb::$db->sql_fetchrow($result))
 			{
 				$forum_parents[$row['forum_id']] = array($row['forum_name'], (int) $row['forum_type']);
 			}
-			$db->sql_freeresult($result);
+			phpbb::$db->sql_freeresult($result);
 
 			$forum_data['forum_parents'] = serialize($forum_parents);
 
 			$sql = 'UPDATE ' . FORUMS_TABLE . "
-				SET forum_parents = '" . $db->sql_escape($forum_data['forum_parents']) . "'
+				SET forum_parents = '" . phpbb::$db->sql_escape($forum_data['forum_parents']) . "'
 				WHERE parent_id = " . $forum_data['parent_id'];
-			$db->sql_query($sql);
+			phpbb::$db->sql_query($sql);
 		}
 		else
 		{
@@ -833,10 +833,10 @@ function display_custom_bbcodes()
 		FROM ' . BBCODES_TABLE . '
 		WHERE display_on_posting = 1
 		ORDER BY bbcode_tag';
-	$result = $db->sql_query($sql);
+	$result = phpbb::$db->sql_query($sql);
 
 	$i = 0;
-	while ($row = $db->sql_fetchrow($result))
+	while ($row = phpbb::$db->sql_fetchrow($result))
 	{
 		$template->assign_block_vars('custom_tags', array(
 			'BBCODE_NAME'		=> "'[{$row['bbcode_tag']}]', '[/" . str_replace('=', '', $row['bbcode_tag']) . "]'",
@@ -848,7 +848,7 @@ function display_custom_bbcodes()
 
 		$i++;
 	}
-	$db->sql_freeresult($result);
+	phpbb::$db->sql_freeresult($result);
 }
 
 /**
@@ -859,9 +859,9 @@ function display_reasons($reason_id = 0)
 	$sql = 'SELECT *
 		FROM ' . REPORTS_REASONS_TABLE . '
 		ORDER BY reason_order ASC';
-	$result = $db->sql_query($sql);
+	$result = phpbb::$db->sql_query($sql);
 
-	while ($row = $db->sql_fetchrow($result))
+	while ($row = phpbb::$db->sql_fetchrow($result))
 	{
 		// If the reason is defined within the language file, we will use the localized version, else just use the database entry...
 		if (isset(phpbb::$user->lang['report_reasons']['TITLE'][strtoupper($row['reason_title'])]) && isset(phpbb::$user->lang['report_reasons']['DESCRIPTION'][strtoupper($row['reason_title'])]))
@@ -877,7 +877,7 @@ function display_reasons($reason_id = 0)
 			'S_SELECTED'	=> ($row['reason_id'] == $reason_id) ? true : false)
 		);
 	}
-	$db->sql_freeresult($result);
+	phpbb::$db->sql_freeresult($result);
 }
 
 /**
@@ -905,7 +905,7 @@ function display_user_activity(&$userdata)
 	}
 
 	$forum_ary = array_unique($forum_ary);
-	$forum_sql = (sizeof($forum_ary)) ? 'AND ' . $db->sql_in_set('forum_id', $forum_ary, true) : '';
+	$forum_sql = (sizeof($forum_ary)) ? 'AND ' . phpbb::$db->sql_in_set('forum_id', $forum_ary, true) : '';
 
 	// Obtain active forum
 	$sql = 'SELECT forum_id, COUNT(post_id) AS num_posts
@@ -915,18 +915,18 @@ function display_user_activity(&$userdata)
 			$forum_sql
 		GROUP BY forum_id
 		ORDER BY num_posts DESC";
-	$result = $db->sql_query_limit($sql, 1);
-	$active_f_row = $db->sql_fetchrow($result);
-	$db->sql_freeresult($result);
+	$result = phpbb::$db->sql_query_limit($sql, 1);
+	$active_f_row = phpbb::$db->sql_fetchrow($result);
+	phpbb::$db->sql_freeresult($result);
 
 	if (!empty($active_f_row))
 	{
 		$sql = 'SELECT forum_name
 			FROM ' . FORUMS_TABLE . '
 			WHERE forum_id = ' . $active_f_row['forum_id'];
-		$result = $db->sql_query($sql, 3600);
-		$active_f_row['forum_name'] = (string) $db->sql_fetchfield('forum_name');
-		$db->sql_freeresult($result);
+		$result = phpbb::$db->sql_query($sql, 3600);
+		$active_f_row['forum_name'] = (string) phpbb::$db->sql_fetchfield('forum_name');
+		phpbb::$db->sql_freeresult($result);
 	}
 
 	// Obtain active topic
@@ -937,18 +937,18 @@ function display_user_activity(&$userdata)
 			$forum_sql
 		GROUP BY topic_id
 		ORDER BY num_posts DESC";
-	$result = $db->sql_query_limit($sql, 1);
-	$active_t_row = $db->sql_fetchrow($result);
-	$db->sql_freeresult($result);
+	$result = phpbb::$db->sql_query_limit($sql, 1);
+	$active_t_row = phpbb::$db->sql_fetchrow($result);
+	phpbb::$db->sql_freeresult($result);
 
 	if (!empty($active_t_row))
 	{
 		$sql = 'SELECT topic_title
 			FROM ' . TOPICS_TABLE . '
 			WHERE topic_id = ' . $active_t_row['topic_id'];
-		$result = $db->sql_query($sql);
-		$active_t_row['topic_title'] = (string) $db->sql_fetchfield('topic_title');
-		$db->sql_freeresult($result);
+		$result = phpbb::$db->sql_query($sql);
+		$active_t_row['topic_title'] = (string) phpbb::$db->sql_fetchfield('topic_title');
+		phpbb::$db->sql_freeresult($result);
 	}
 
 	$userdata['active_t_row'] = $active_t_row;
@@ -1011,10 +1011,10 @@ function watch_topic_forum($mode, &$s_watching, $user_id, $forum_id, $topic_id, 
 				FROM $table_sql
 				WHERE $where_sql = $match_id
 					AND user_id = $user_id";
-			$result = $db->sql_query($sql);
+			$result = phpbb::$db->sql_query($sql);
 
-			$notify_status = ($row = $db->sql_fetchrow($result)) ? $row['notify_status'] : NULL;
-			$db->sql_freeresult($result);
+			$notify_status = ($row = phpbb::$db->sql_fetchrow($result)) ? $row['notify_status'] : NULL;
+			phpbb::$db->sql_freeresult($result);
 		}
 
 		if (!is_null($notify_status) && $notify_status !== '')
@@ -1036,7 +1036,7 @@ function watch_topic_forum($mode, &$s_watching, $user_id, $forum_id, $topic_id, 
 					$sql = 'DELETE FROM ' . $table_sql . "
 						WHERE $where_sql = $match_id
 							AND user_id = $user_id";
-					$db->sql_query($sql);
+					phpbb::$db->sql_query($sql);
 				}
 
 				$redirect_url = phpbb::$url->append_sid("view$mode", "$u_url=$match_id&amp;start=$start");
@@ -1056,7 +1056,7 @@ function watch_topic_forum($mode, &$s_watching, $user_id, $forum_id, $topic_id, 
 						SET notify_status = 0
 						WHERE $where_sql = $match_id
 							AND user_id = $user_id";
-					$db->sql_query($sql);
+					phpbb::$db->sql_query($sql);
 				}
 			}
 		}
@@ -1073,7 +1073,7 @@ function watch_topic_forum($mode, &$s_watching, $user_id, $forum_id, $topic_id, 
 
 					$sql = 'INSERT INTO ' . $table_sql . " (user_id, $where_sql, notify_status)
 						VALUES ($user_id, $match_id, 0)";
-					$db->sql_query($sql);
+					phpbb::$db->sql_query($sql);
 					$message = phpbb::$user->lang['ARE_WATCHING_' . strtoupper($mode)] . '<br /><br />' . sprintf(phpbb::$user->lang['RETURN_' . strtoupper($mode)], '<a href="' . $redirect_url . '">', '</a>');
 				}
 				else

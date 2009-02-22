@@ -56,12 +56,12 @@ if (phpbb::$config['cron_lock'])
 define('CRON_ID', time() . ' ' . unique_id());
 
 $sql = 'UPDATE ' . CONFIG_TABLE . "
-	SET config_value = '" . $db->sql_escape(CRON_ID) . "'
-	WHERE config_name = 'cron_lock' AND config_value = '" . $db->sql_escape(phpbb::$config['cron_lock']) . "'";
+	SET config_value = '" . phpbb::$db->sql_escape(CRON_ID) . "'
+	WHERE config_name = 'cron_lock' AND config_value = '" . phpbb::$db->sql_escape(phpbb::$config['cron_lock']) . "'";
 phpbb::$db->sql_query($sql);
 
 // another cron process altered the table between script start and UPDATE query so exit
-if ($db->sql_affectedrows() != 1)
+if (phpbb::$db->sql_affectedrows() != 1)
 {
 	exit;
 }
@@ -214,9 +214,9 @@ switch ($cron_type)
 		$sql = 'SELECT forum_id, prune_next, enable_prune, prune_days, prune_viewed, forum_flags, prune_freq
 			FROM ' . FORUMS_TABLE . "
 			WHERE forum_id = $forum_id";
-		$result = $db->sql_query($sql);
-		$row = $db->sql_fetchrow($result);
-		$db->sql_freeresult($result);
+		$result = phpbb::$db->sql_query($sql);
+		$row = phpbb::$db->sql_fetchrow($result);
+		phpbb::$db->sql_freeresult($result);
 
 		if (!$row)
 		{
@@ -278,8 +278,8 @@ function unlock_cron()
 {
 	$sql = 'UPDATE ' . CONFIG_TABLE . "
 		SET config_value = '0'
-		WHERE config_name = 'cron_lock' AND config_value = '" . $db->sql_escape(CRON_ID) . "'";
-	$db->sql_query($sql);
+		WHERE config_name = 'cron_lock' AND config_value = '" . phpbb::$db->sql_escape(CRON_ID) . "'";
+	phpbb::$db->sql_query($sql);
 }
 
 ?>

@@ -135,8 +135,8 @@ if (!$sql)
 	trigger_error('NO_POST_MODE');
 }
 
-$result = $db->sql_query($sql);
-$post_data = $db->sql_fetchrow($result);
+$result = phpbb::$db->sql_query($sql);
+$post_data = phpbb::$db->sql_fetchrow($result);
 phpbb::$db->sql_freeresult($result);
 
 if (!$post_data)
@@ -291,29 +291,29 @@ if ($mode == 'bump')
 	if ($bump_time = bump_topic_allowed($forum_id, $post_data['topic_bumped'], $post_data['topic_last_post_time'], $post_data['topic_poster'], $post_data['topic_last_poster_id'])
 	   && check_link_hash(request_var('hash', ''), "topic_{$post_data['topic_id']}"))
 	{
-		$db->sql_transaction('begin');
+		phpbb::$db->sql_transaction('begin');
 
 		$sql = 'UPDATE ' . POSTS_TABLE . "
 			SET post_time = $current_time
 			WHERE post_id = {$post_data['topic_last_post_id']}
 				AND topic_id = $topic_id";
-		$db->sql_query($sql);
+		phpbb::$db->sql_query($sql);
 
 		$sql = 'UPDATE ' . TOPICS_TABLE . "
 			SET topic_last_post_time = $current_time,
 				topic_bumped = 1,
 				topic_bumper = " . phpbb::$user->data['user_id'] . "
 			WHERE topic_id = $topic_id";
-		$db->sql_query($sql);
+		phpbb::$db->sql_query($sql);
 
 		update_post_information('forum', $forum_id);
 
 		$sql = 'UPDATE ' . USERS_TABLE . "
 			SET user_lastpost_time = $current_time
 			WHERE user_id = " . phpbb::$user->data['user_id'];
-		$db->sql_query($sql);
+		phpbb::$db->sql_query($sql);
 
-		$db->sql_transaction('commit');
+		phpbb::$db->sql_transaction('commit');
 
 		markread('post', $forum_id, $topic_id, $current_time);
 
@@ -362,13 +362,13 @@ if ($post_data['poll_start'])
 		FROM ' . POLL_OPTIONS_TABLE . "
 		WHERE topic_id = $topic_id
 		ORDER BY poll_option_id";
-	$result = $db->sql_query($sql);
+	$result = phpbb::$db->sql_query($sql);
 
-	while ($row = $db->sql_fetchrow($result))
+	while ($row = phpbb::$db->sql_fetchrow($result))
 	{
 		$post_data['poll_options'][] = trim($row['poll_option_text']);
 	}
-	$db->sql_freeresult($result);
+	phpbb::$db->sql_freeresult($result);
 }
 
 $orig_poll_options_size = sizeof($post_data['poll_options']);
@@ -406,9 +406,9 @@ if ($post_data['post_attachment'] && !$submit && !$refresh && !$preview && $mode
 			AND in_message = 0
 			AND is_orphan = 0
 		ORDER BY filetime DESC";
-	$result = $db->sql_query($sql);
-	$message_parser->attachment_data = array_merge($message_parser->attachment_data, $db->sql_fetchrowset($result));
-	$db->sql_freeresult($result);
+	$result = phpbb::$db->sql_query($sql);
+	$message_parser->attachment_data = array_merge($message_parser->attachment_data, phpbb::$db->sql_fetchrowset($result));
+	phpbb::$db->sql_freeresult($result);
 }
 
 if ($post_data['poster_id'] == ANONYMOUS)
@@ -441,13 +441,13 @@ if (phpbb::$user->is_registered && phpbb::$acl->acl_get('u_savedrafts') && ($mod
 			(($forum_id) ? ' AND forum_id = ' . (int) $forum_id : '') .
 			(($topic_id) ? ' AND topic_id = ' . (int) $topic_id : '') .
 			(($draft_id) ? " AND draft_id <> $draft_id" : '');
-	$result = $db->sql_query_limit($sql, 1);
+	$result = phpbb::$db->sql_query_limit($sql, 1);
 
-	if ($db->sql_fetchrow($result))
+	if (phpbb::$db->sql_fetchrow($result))
 	{
 		$post_data['drafts'] = true;
 	}
-	$db->sql_freeresult($result);
+	phpbb::$db->sql_freeresult($result);
 }
 
 $check_value = (($post_data['enable_bbcode']+1) << 8) + (($post_data['enable_smilies']+1) << 4) + (($post_data['enable_urls']+1) << 2) + (($post_data['enable_sig']+1) << 1);
@@ -459,9 +459,9 @@ if ($mode != 'post' && phpbb::$config['allow_topic_notify'] && phpbb::$user->is_
 		FROM ' . TOPICS_WATCH_TABLE . '
 		WHERE topic_id = ' . $topic_id . '
 			AND user_id = ' . phpbb::$user->data['user_id'];
-	$result = $db->sql_query($sql);
-	$post_data['notify_set'] = (int) $db->sql_fetchfield('topic_id');
-	$db->sql_freeresult($result);
+	$result = phpbb::$db->sql_query($sql);
+	$post_data['notify_set'] = (int) phpbb::$db->sql_fetchfield('topic_id');
+	phpbb::$db->sql_freeresult($result);
 }
 
 // Do we want to edit our post ?
@@ -489,7 +489,7 @@ if ($save && phpbb::$user->is_registered && phpbb::$acl->acl_get('u_savedrafts')
 	{
 		if (confirm_box(true))
 		{
-			$sql = 'INSERT INTO ' . DRAFTS_TABLE . ' ' . $db->sql_build_array('INSERT', array(
+			$sql = 'INSERT INTO ' . DRAFTS_TABLE . ' ' . phpbb::$db->sql_build_array('INSERT', array(
 				'user_id'		=> (int) phpbb::$user->data['user_id'],
 				'topic_id'		=> (int) $topic_id,
 				'forum_id'		=> (int) $forum_id,
@@ -497,7 +497,7 @@ if ($save && phpbb::$user->is_registered && phpbb::$acl->acl_get('u_savedrafts')
 				'draft_subject'	=> (string) $subject,
 				'draft_message'	=> (string) $message)
 			);
-			$db->sql_query($sql);
+			phpbb::$db->sql_query($sql);
 
 			$meta_info = ($mode == 'post') ? append_sid('viewforum', 'f=' . $forum_id) : append_sid('viewtopic', "f=$forum_id&amp;t=$topic_id");
 
@@ -547,9 +547,9 @@ if ($draft_id && ($mode == 'reply' || $mode == 'quote' || $mode == 'post') && ph
 		FROM ' . DRAFTS_TABLE . "
 		WHERE draft_id = $draft_id
 			AND user_id = " . phpbb::$user->data['user_id'];
-	$result = $db->sql_query_limit($sql, 1);
-	$row = $db->sql_fetchrow($result);
-	$db->sql_freeresult($result);
+	$result = phpbb::$db->sql_query_limit($sql, 1);
+	$row = phpbb::$db->sql_fetchrow($result);
+	phpbb::$db->sql_freeresult($result);
 
 	if ($row)
 	{
@@ -624,11 +624,11 @@ if ($submit || $preview || $refresh)
 		{
 			$sql = 'DELETE FROM ' . POLL_OPTIONS_TABLE . "
 				WHERE topic_id = $topic_id";
-			$db->sql_query($sql);
+			phpbb::$db->sql_query($sql);
 
 			$sql = 'DELETE FROM ' . POLL_VOTES_TABLE . "
 				WHERE topic_id = $topic_id";
-			$db->sql_query($sql);
+			phpbb::$db->sql_query($sql);
 
 			$topic_sql = array(
 				'poll_title'		=> '',
@@ -640,9 +640,9 @@ if ($submit || $preview || $refresh)
 			);
 
 			$sql = 'UPDATE ' . TOPICS_TABLE . '
-				SET ' . $db->sql_build_array('UPDATE', $topic_sql) . "
+				SET ' . phpbb::$db->sql_build_array('UPDATE', $topic_sql) . "
 				WHERE topic_id = $topic_id";
-			$db->sql_query($sql);
+			phpbb::$db->sql_query($sql);
 		}
 
 		$post_data['poll_title'] = $post_data['poll_option_text'] = '';
@@ -721,12 +721,12 @@ if ($submit || $preview || $refresh)
 				FROM ' . POSTS_TABLE . "
 				WHERE poster_ip = '" . phpbb::$user->ip . "'
 					AND post_time > " . ($current_time - phpbb::$config['flood_interval']);
-			$result = $db->sql_query_limit($sql, 1);
-			if ($row = $db->sql_fetchrow($result))
+			$result = phpbb::$db->sql_query_limit($sql, 1);
+			if ($row = phpbb::$db->sql_fetchrow($result))
 			{
 				$last_post_time = $row['last_post_time'];
 			}
-			$db->sql_freeresult($result);
+			phpbb::$db->sql_freeresult($result);
 		}
 
 		if ($last_post_time && ($current_time - $last_post_time) < intval(phpbb::$config['flood_interval']))
@@ -866,9 +866,9 @@ if ($submit || $preview || $refresh)
 			$sql = 'SELECT topic_type, forum_id
 				FROM ' . TOPICS_TABLE . "
 				WHERE topic_id = $topic_id";
-			$result = $db->sql_query($sql);
-			$row = $db->sql_fetchrow($result);
-			$db->sql_freeresult($result);
+			$result = phpbb::$db->sql_query($sql);
+			$row = phpbb::$db->sql_fetchrow($result);
+			phpbb::$db->sql_freeresult($result);
 
 			if ($row && !$row['forum_id'] && $row['topic_type'] == POST_GLOBAL)
 			{
@@ -879,9 +879,9 @@ if ($submit || $preview || $refresh)
 					$sql = 'SELECT forum_type
 						FROM ' . FORUMS_TABLE . '
 						WHERE forum_id = ' . $to_forum_id;
-					$result = $db->sql_query($sql);
-					$forum_type = (int) $db->sql_fetchfield('forum_type');
-					$db->sql_freeresult($result);
+					$result = phpbb::$db->sql_query($sql);
+					$forum_type = (int) phpbb::$db->sql_fetchfield('forum_type');
+					phpbb::$db->sql_freeresult($result);
 
 					if ($forum_type != FORUM_POST || !phpbb::$acl->acl_get('f_post', $to_forum_id))
 					{
@@ -935,7 +935,7 @@ if ($submit || $preview || $refresh)
 					SET topic_status = $change_topic_status
 					WHERE topic_id = $topic_id
 						AND topic_moved_id = 0";
-				$db->sql_query($sql);
+				phpbb::$db->sql_query($sql);
 
 				$user_lock = (phpbb::$acl->acl_get('f_user_lock', $forum_id) && phpbb::$user->is_registered && phpbb::$user->data['user_id'] == $post_data['topic_poster']) ? 'USER_' : '';
 

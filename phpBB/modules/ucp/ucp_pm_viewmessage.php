@@ -102,13 +102,13 @@ function view_message($id, $mode, $folder_id, $msg_id, $folder, $message_row)
 				WHERE post_msg_id = $msg_id
 					AND in_message = 1
 				ORDER BY filetime DESC, post_msg_id ASC";
-			$result = $db->sql_query($sql);
+			$result = phpbb::$db->sql_query($sql);
 
-			while ($row = $db->sql_fetchrow($result))
+			while ($row = phpbb::$db->sql_fetchrow($result))
 			{
 				$attachments[] = $row;
 			}
-			$db->sql_freeresult($result);
+			phpbb::$db->sql_freeresult($result);
 
 			// No attachments exist, but message table thinks they do so go ahead and reset attach flags
 			if (!sizeof($attachments))
@@ -116,7 +116,7 @@ function view_message($id, $mode, $folder_id, $msg_id, $folder, $message_row)
 				$sql = 'UPDATE ' . PRIVMSGS_TABLE . "
 					SET message_attachment = 0
 					WHERE msg_id = $msg_id";
-				$db->sql_query($sql);
+				phpbb::$db->sql_query($sql);
 			}
 		}
 		else
@@ -136,8 +136,8 @@ function view_message($id, $mode, $folder_id, $msg_id, $folder, $message_row)
 		{
 			$sql = 'UPDATE ' . ATTACHMENTS_TABLE . '
 				SET download_count = download_count + 1
-				WHERE ' . $db->sql_in_set('attach_id', array_unique($update_count));
-			$db->sql_query($sql);
+				WHERE ' . phpbb::$db->sql_in_set('attach_id', array_unique($update_count));
+			phpbb::$db->sql_query($sql);
 		}
 	}
 
@@ -261,9 +261,9 @@ function get_user_information($user_id, $user_row)
 		$sql = 'SELECT *
 			FROM ' . USERS_TABLE . '
 			WHERE user_id = ' . (int) $user_id;
-		$result = $db->sql_query($sql);
-		$user_row = $db->sql_fetchrow($result);
-		$db->sql_freeresult($result);
+		$result = phpbb::$db->sql_query($sql);
+		$user_row = phpbb::$db->sql_fetchrow($result);
+		phpbb::$db->sql_freeresult($result);
 	}
 
 	// Some standard values
@@ -277,9 +277,9 @@ function get_user_information($user_id, $user_row)
 			FROM ' . SESSIONS_TABLE . "
 			WHERE session_user_id = $user_id
 			GROUP BY session_user_id";
-		$result = $db->sql_query_limit($sql, 1);
-		$row = $db->sql_fetchrow($result);
-		$db->sql_freeresult($result);
+		$result = phpbb::$db->sql_query_limit($sql, 1);
+		$row = phpbb::$db->sql_fetchrow($result);
+		phpbb::$db->sql_freeresult($result);
 
 		$update_time = phpbb::$config['load_online_time'] * 60;
 		if ($row)

@@ -71,11 +71,11 @@ class ucp_main
 
 				if (sizeof($forum_ary))
 				{
-					$sql .= ' AND ' . $db->sql_in_set('forum_id', $forum_ary, true);
+					$sql .= ' AND ' . phpbb::$db->sql_in_set('forum_id', $forum_ary, true);
 				}
-				$result = $db->sql_query_limit($sql, 1);
-				$g_forum_id = (int) $db->sql_fetchfield('forum_id');
-				$db->sql_freeresult($result);
+				$result = phpbb::$db->sql_query_limit($sql, 1);
+				$g_forum_id = (int) phpbb::$db->sql_fetchfield('forum_id');
+				phpbb::$db->sql_freeresult($result);
 
 				$sql = "SELECT t.* $sql_select
 					FROM $sql_from
@@ -87,14 +87,14 @@ class ucp_main
 				// If the user can't see any forums, he can't read any posts because fid of 0 is invalid
 				if ($g_forum_id)
 				{
-					$result = $db->sql_query($sql);
+					$result = phpbb::$db->sql_query($sql);
 
-					while ($row = $db->sql_fetchrow($result))
+					while ($row = phpbb::$db->sql_fetchrow($result))
 					{
 						$topic_list[] = $row['topic_id'];
 						$rowset[$row['topic_id']] = $row;
 					}
-					$db->sql_freeresult($result);
+					phpbb::$db->sql_freeresult($result);
 				}
 
 				$topic_tracking_info = array();
@@ -218,9 +218,9 @@ class ucp_main
 							if (sizeof($forums))
 							{
 								$sql = 'DELETE FROM ' . FORUMS_WATCH_TABLE . '
-									WHERE ' . $db->sql_in_set('forum_id', $forums) . '
+									WHERE ' . phpbb::$db->sql_in_set('forum_id', $forums) . '
 										AND user_id = ' . phpbb::$user->data['user_id'];
-								$db->sql_query($sql);
+								phpbb::$db->sql_query($sql);
 
 								$l_unwatch .= '_FORUMS';
 							}
@@ -228,9 +228,9 @@ class ucp_main
 							if (sizeof($topics))
 							{
 								$sql = 'DELETE FROM ' . TOPICS_WATCH_TABLE . '
-									WHERE ' . $db->sql_in_set('topic_id', $topics) . '
+									WHERE ' . phpbb::$db->sql_in_set('topic_id', $topics) . '
 										AND user_id = ' . phpbb::$user->data['user_id'];
-								$db->sql_query($sql);
+								phpbb::$db->sql_query($sql);
 
 								$l_unwatch .= '_TOPICS';
 							}
@@ -267,7 +267,7 @@ class ucp_main
 
 						'WHERE'		=> 'fw.user_id = ' . phpbb::$user->data['user_id'] . '
 							AND f.forum_id = fw.forum_id
-							AND ' . $db->sql_in_set('f.forum_id', $forbidden_forums, true, true),
+							AND ' . phpbb::$db->sql_in_set('f.forum_id', $forbidden_forums, true, true),
 
 						'ORDER_BY'	=> 'left_id'
 					);
@@ -289,10 +289,10 @@ class ucp_main
 						$tracking_topics = ($tracking_topics) ? tracking_unserialize($tracking_topics) : array();
 					}
 
-					$sql = $db->sql_build_query('SELECT', $sql_array);
-					$result = $db->sql_query($sql);
+					$sql = phpbb::$db->sql_build_query('SELECT', $sql_array);
+					$result = phpbb::$db->sql_query($sql);
 
-					while ($row = $db->sql_fetchrow($result))
+					while ($row = phpbb::$db->sql_fetchrow($result))
 					{
 						$forum_id = $row['forum_id'];
 
@@ -350,7 +350,7 @@ class ucp_main
 							'U_VIEWFORUM'			=> append_sid('viewforum', 'f=' . $row['forum_id']))
 						);
 					}
-					$db->sql_freeresult($result);
+					phpbb::$db->sql_freeresult($result);
 				}
 
 				// Subscribed Topics
@@ -405,8 +405,8 @@ class ucp_main
 					{
 						$sql = 'DELETE FROM ' . BOOKMARKS_TABLE . '
 							WHERE user_id = ' . phpbb::$user->data['user_id'] . '
-								AND ' . $db->sql_in_set('topic_id', $topics);
-						$db->sql_query($sql);
+								AND ' . phpbb::$db->sql_in_set('topic_id', $topics);
+						phpbb::$db->sql_query($sql);
 
 						meta_refresh(3, $url);
 						$message = phpbb::$user->lang['BOOKMARKS_REMOVED'] . '<br /><br />' . sprintf(phpbb::$user->lang['RETURN_UCP'], '<a href="' . $url . '">', '</a>');
@@ -449,9 +449,9 @@ class ucp_main
 						if (sizeof($drafts))
 						{
 							$sql = 'DELETE FROM ' . DRAFTS_TABLE . '
-								WHERE ' . $db->sql_in_set('draft_id', $drafts) . '
+								WHERE ' . phpbb::$db->sql_in_set('draft_id', $drafts) . '
 									AND user_id = ' . phpbb::$user->data['user_id'];
-							$db->sql_query($sql);
+							phpbb::$db->sql_query($sql);
 						}
 						$msg = phpbb::$user->lang['DRAFTS_DELETED'];
 						unset($drafts);
@@ -479,10 +479,10 @@ class ucp_main
 							);
 
 							$sql = 'UPDATE ' . DRAFTS_TABLE . '
-								SET ' . $db->sql_build_array('UPDATE', $draft_row) . "
+								SET ' . phpbb::$db->sql_build_array('UPDATE', $draft_row) . "
 								WHERE draft_id = $draft_id
 									AND user_id = " . phpbb::$user->data['user_id'];
-							$db->sql_query($sql);
+							phpbb::$db->sql_query($sql);
 
 							$message = phpbb::$user->lang['DRAFT_UPDATED'] . '<br /><br />' . sprintf(phpbb::$user->lang['RETURN_UCP'], '<a href="' . $this->u_action . '">', '</a>');
 
@@ -518,11 +518,11 @@ class ucp_main
 							AND topic_id = 0
 						ORDER BY save_time DESC';
 				}
-				$result = $db->sql_query($sql);
+				$result = phpbb::$db->sql_query($sql);
 
 				$draftrows = $topic_ids = array();
 
-				while ($row = $db->sql_fetchrow($result))
+				while ($row = phpbb::$db->sql_fetchrow($result))
 				{
 					if ($row['topic_id'])
 					{
@@ -530,20 +530,20 @@ class ucp_main
 					}
 					$draftrows[] = $row;
 				}
-				$db->sql_freeresult($result);
+				phpbb::$db->sql_freeresult($result);
 
 				if (sizeof($topic_ids))
 				{
 					$sql = 'SELECT topic_id, forum_id, topic_title
 						FROM ' . TOPICS_TABLE . '
-						WHERE ' . $db->sql_in_set('topic_id', array_unique($topic_ids));
-					$result = $db->sql_query($sql);
+						WHERE ' . phpbb::$db->sql_in_set('topic_id', array_unique($topic_ids));
+					$result = phpbb::$db->sql_query($sql);
 
-					while ($row = $db->sql_fetchrow($result))
+					while ($row = phpbb::$db->sql_fetchrow($result))
 					{
 						$topic_rows[$row['topic_id']] = $row;
 					}
-					$db->sql_freeresult($result);
+					phpbb::$db->sql_freeresult($result);
 				}
 				unset($topic_ids);
 
@@ -644,12 +644,12 @@ class ucp_main
 
 			'WHERE'		=>	'i.topic_id = t.topic_id
 				AND i.user_id = ' . phpbb::$user->data['user_id'] . '
-				AND ' . $db->sql_in_set('t.forum_id', $forbidden_forum_ary, true, true),
+				AND ' . phpbb::$db->sql_in_set('t.forum_id', $forbidden_forum_ary, true, true),
 		);
-		$sql = $db->sql_build_query('SELECT', $sql_array);
-		$result = $db->sql_query($sql);
-		$topics_count = (int) $db->sql_fetchfield('topics_count');
-		$db->sql_freeresult($result);
+		$sql = phpbb::$db->sql_build_query('SELECT', $sql_array);
+		$result = phpbb::$db->sql_query($sql);
+		$topics_count = (int) phpbb::$db->sql_fetchfield('topics_count');
+		phpbb::$db->sql_freeresult($result);
 
 		if ($topics_count)
 		{
@@ -672,7 +672,7 @@ class ucp_main
 
 				'WHERE'		=> 'tw.user_id = ' . phpbb::$user->data['user_id'] . '
 					AND t.topic_id = tw.topic_id
-					AND ' . $db->sql_in_set('t.forum_id', $forbidden_forum_ary, true, true),
+					AND ' . phpbb::$db->sql_in_set('t.forum_id', $forbidden_forum_ary, true, true),
 
 
 				'ORDER_BY'	=> 't.topic_last_post_time DESC'
@@ -690,7 +690,7 @@ class ucp_main
 				),
 
 				'WHERE'		=> 'b.user_id = ' . phpbb::$user->data['user_id'] . '
-					AND ' . $db->sql_in_set('f.forum_id', $forbidden_forum_ary, true, true),
+					AND ' . phpbb::$db->sql_in_set('f.forum_id', $forbidden_forum_ary, true, true),
 
 				'ORDER_BY'	=> 't.topic_last_post_time DESC'
 			);
@@ -714,11 +714,11 @@ class ucp_main
 			$sql_array['SELECT'] .= ', tp.topic_posted';
 		}
 
-		$sql = $db->sql_build_query('SELECT', $sql_array);
-		$result = $db->sql_query_limit($sql, phpbb::$config['topics_per_page'], $start);
+		$sql = phpbb::$db->sql_build_query('SELECT', $sql_array);
+		$result = phpbb::$db->sql_query_limit($sql, phpbb::$config['topics_per_page'], $start);
 
 		$topic_list = $topic_forum_list = $global_announce_list = $rowset = array();
-		while ($row = $db->sql_fetchrow($result))
+		while ($row = phpbb::$db->sql_fetchrow($result))
 		{
 			$topic_id = (isset($row['b_topic_id'])) ? $row['b_topic_id'] : $row['topic_id'];
 
@@ -733,7 +733,7 @@ class ucp_main
 				$global_announce_list[] = $topic_id;
 			}
 		}
-		$db->sql_freeresult($result);
+		phpbb::$db->sql_freeresult($result);
 
 		$topic_tracking_info = array();
 		if (phpbb::$config['load_db_lastread'])

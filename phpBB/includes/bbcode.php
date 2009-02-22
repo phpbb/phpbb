@@ -163,10 +163,10 @@ class bbcode
 		{
 			$sql = 'SELECT *
 				FROM ' . BBCODES_TABLE . '
-				WHERE ' . $db->sql_in_set('bbcode_id', $sql);
-			$result = $db->sql_query($sql, 3600);
+				WHERE ' . phpbb::$db->sql_in_set('bbcode_id', $sql);
+			$result = phpbb::$db->sql_query($sql, 3600);
 
-			while ($row = $db->sql_fetchrow($result))
+			while ($row = phpbb::$db->sql_fetchrow($result))
 			{
 				// To circumvent replacing newlines with <br /> for the generated html,
 				// we use carriage returns here. They are later changed back to newlines
@@ -175,7 +175,7 @@ class bbcode
 
 				$rowset[$row['bbcode_id']] = $row;
 			}
-			$db->sql_freeresult($result);
+			phpbb::$db->sql_freeresult($result);
 		}
 
 		foreach ($bbcode_ids as $bbcode_id)

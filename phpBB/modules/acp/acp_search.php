@@ -307,16 +307,16 @@ class acp_search
 								FROM ' . POSTS_TABLE . '
 								WHERE post_id >= ' . (int) ($post_counter + 1) . '
 									AND post_id <= ' . (int) ($post_counter + $this->batch_size);
-							$result = $db->sql_query($sql);
+							$result = phpbb::$db->sql_query($sql);
 
 							$ids = $posters = $forum_ids = array();
-							while ($row = $db->sql_fetchrow($result))
+							while ($row = phpbb::$db->sql_fetchrow($result))
 							{
 								$ids[] = $row['post_id'];
 								$posters[] = $row['poster_id'];
 								$forum_ids[] = $row['forum_id'];
 							}
-							$db->sql_freeresult($result);
+							phpbb::$db->sql_freeresult($result);
 							$row_count += sizeof($ids);
 
 							if (sizeof($ids))
@@ -363,13 +363,13 @@ class acp_search
 					{
 						$sql = 'SELECT forum_id, enable_indexing
 							FROM ' . FORUMS_TABLE;
-						$result = $db->sql_query($sql, 3600);
+						$result = phpbb::$db->sql_query($sql, 3600);
 
-						while ($row = $db->sql_fetchrow($result))
+						while ($row = phpbb::$db->sql_fetchrow($result))
 						{
 							$forums[$row['forum_id']] = (bool) $row['enable_indexing'];
 						}
-						$db->sql_freeresult($result);
+						phpbb::$db->sql_freeresult($result);
 
 						$starttime = explode(' ', microtime());
 						$starttime = $starttime[1] + $starttime[0];
@@ -380,9 +380,9 @@ class acp_search
 								FROM ' . POSTS_TABLE . '
 								WHERE post_id >= ' . (int) ($post_counter + 1) . '
 									AND post_id <= ' . (int) ($post_counter + $this->batch_size);
-							$result = $db->sql_query($sql);
+							$result = phpbb::$db->sql_query($sql);
 
-							while ($row = $db->sql_fetchrow($result))
+							while ($row = phpbb::$db->sql_fetchrow($result))
 							{
 								// Indexing enabled for this forum or global announcement?
 								// Global announcements get indexed by default.
@@ -392,7 +392,7 @@ class acp_search
 								}
 								$row_count++;
 							}
-							$db->sql_freeresult($result);
+							phpbb::$db->sql_freeresult($result);
 
 							$post_counter += $this->batch_size;
 						}
@@ -561,9 +561,9 @@ class acp_search
 	{
 		$sql = 'SELECT MAX(post_id) as max_post_id
 			FROM '. POSTS_TABLE;
-		$result = $db->sql_query($sql);
-		$max_post_id = (int) $db->sql_fetchfield('max_post_id');
-		$db->sql_freeresult($result);
+		$result = phpbb::$db->sql_query($sql);
+		$max_post_id = (int) phpbb::$db->sql_fetchfield('max_post_id');
+		phpbb::$db->sql_freeresult($result);
 
 		return $max_post_id;
 	}

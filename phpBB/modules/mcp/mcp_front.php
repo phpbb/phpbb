@@ -40,9 +40,9 @@ function mcp_front_view($id, $mode, $action)
 				FROM ' . POSTS_TABLE . '
 				WHERE forum_id IN (0, ' . implode(', ', $forum_list) . ')
 					AND post_approved = 0';
-			$result = $db->sql_query($sql);
-			$total = (int) $db->sql_fetchfield('total');
-			$db->sql_freeresult($result);
+			$result = phpbb::$db->sql_query($sql);
+			$total = (int) phpbb::$db->sql_fetchfield('total');
+			phpbb::$db->sql_freeresult($result);
 
 			if ($total)
 			{
@@ -50,27 +50,27 @@ function mcp_front_view($id, $mode, $action)
 
 				$sql = 'SELECT forum_id, forum_name
 					FROM ' . FORUMS_TABLE . '
-					WHERE ' . $db->sql_in_set('forum_id', $forum_list);
-				$result = $db->sql_query($sql);
+					WHERE ' . phpbb::$db->sql_in_set('forum_id', $forum_list);
+				$result = phpbb::$db->sql_query($sql);
 
-				while ($row = $db->sql_fetchrow($result))
+				while ($row = phpbb::$db->sql_fetchrow($result))
 				{
 					$forum_names[$row['forum_id']] = $row['forum_name'];
 				}
-				$db->sql_freeresult($result);
+				phpbb::$db->sql_freeresult($result);
 
 				$sql = 'SELECT post_id
 					FROM ' . POSTS_TABLE . '
 					WHERE forum_id IN (0, ' . implode(', ', $forum_list) . ')
 						AND post_approved = 0
 					ORDER BY post_time DESC';
-				$result = $db->sql_query_limit($sql, 5);
+				$result = phpbb::$db->sql_query_limit($sql, 5);
 
-				while ($row = $db->sql_fetchrow($result))
+				while ($row = phpbb::$db->sql_fetchrow($result))
 				{
 					$post_list[] = $row['post_id'];
 				}
-				$db->sql_freeresult($result);
+				phpbb::$db->sql_freeresult($result);
 
 				if (empty($post_list))
 				{
@@ -82,13 +82,13 @@ function mcp_front_view($id, $mode, $action)
 			{
 				$sql = 'SELECT p.post_id, p.post_subject, p.post_time, p.poster_id, p.post_username, u.username, u.username_clean, u.user_colour, t.topic_id, t.topic_title, t.topic_first_post_id, p.forum_id
 					FROM ' . POSTS_TABLE . ' p, ' . TOPICS_TABLE . ' t, ' . USERS_TABLE . ' u
-					WHERE ' . $db->sql_in_set('p.post_id', $post_list) . '
+					WHERE ' . phpbb::$db->sql_in_set('p.post_id', $post_list) . '
 						AND t.topic_id = p.topic_id
 						AND p.poster_id = u.user_id
 					ORDER BY p.post_time DESC';
-				$result = $db->sql_query($sql);
+				$result = phpbb::$db->sql_query($sql);
 
-				while ($row = $db->sql_fetchrow($result))
+				while ($row = phpbb::$db->sql_fetchrow($result))
 				{
 					$global_topic = ($row['forum_id']) ? false : true;
 					if ($global_topic)
@@ -115,7 +115,7 @@ function mcp_front_view($id, $mode, $action)
 						'POST_TIME'		=> phpbb::$user->format_date($row['post_time']))
 					);
 				}
-				$db->sql_freeresult($result);
+				phpbb::$db->sql_freeresult($result);
 			}
 
 			$template->assign_vars(array(
@@ -153,15 +153,15 @@ function mcp_front_view($id, $mode, $action)
 				WHERE r.post_id = p.post_id
 					AND r.report_closed = 0
 					AND p.forum_id IN (0, ' . implode(', ', $forum_list) . ')';
-			$result = $db->sql_query($sql);
-			$total = (int) $db->sql_fetchfield('total');
-			$db->sql_freeresult($result);
+			$result = phpbb::$db->sql_query($sql);
+			$total = (int) phpbb::$db->sql_fetchfield('total');
+			phpbb::$db->sql_freeresult($result);
 
 			if ($total)
 			{
 				$global_id = $forum_list[0];
 
-				$sql = $db->sql_build_query('SELECT', array(
+				$sql = phpbb::$db->sql_build_query('SELECT', array(
 					'SELECT'	=> 'r.report_time, p.post_id, p.post_subject, p.post_time, u.username, u.username_clean, u.user_colour, u.user_id, u2.username as author_name, u2.username_clean as author_name_clean, u2.user_colour as author_colour, u2.user_id as author_id, t.topic_id, t.topic_title, f.forum_id, f.forum_name',
 
 					'FROM'		=> array(
@@ -189,9 +189,9 @@ function mcp_front_view($id, $mode, $action)
 
 					'ORDER_BY'	=> 'p.post_time DESC'
 				));
-				$result = $db->sql_query_limit($sql, 5);
+				$result = phpbb::$db->sql_query_limit($sql, 5);
 
-				while ($row = $db->sql_fetchrow($result))
+				while ($row = phpbb::$db->sql_fetchrow($result))
 				{
 					$global_topic = ($row['forum_id']) ? false : true;
 					if ($global_topic)

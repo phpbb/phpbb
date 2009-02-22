@@ -62,10 +62,10 @@ class ucp_zebra
 							FROM ' . ZEBRA_TABLE . ' z, ' . USERS_TABLE . ' u
 							WHERE z.user_id = ' . phpbb::$user->data['user_id'] . '
 								AND u.user_id = z.zebra_id';
-						$result = $db->sql_query($sql);
+						$result = phpbb::$db->sql_query($sql);
 
 						$friends = $foes = array();
-						while ($row = $db->sql_fetchrow($result))
+						while ($row = phpbb::$db->sql_fetchrow($result))
 						{
 							if ($row['friend'])
 							{
@@ -76,7 +76,7 @@ class ucp_zebra
 								$foes[] = utf8_clean_string($row['username']);
 							}
 						}
-						$db->sql_freeresult($result);
+						phpbb::$db->sql_freeresult($result);
 
 						// remove friends from the username array
 						$n = sizeof($data['add']);
@@ -111,12 +111,12 @@ class ucp_zebra
 						{
 							$sql = 'SELECT user_id, user_type
 								FROM ' . USERS_TABLE . '
-								WHERE ' . $db->sql_in_set('username_clean', $data['add']) . '
+								WHERE ' . phpbb::$db->sql_in_set('username_clean', $data['add']) . '
 									AND user_type <> ' . phpbb::USER_INACTIVE;
-							$result = $db->sql_query($sql);
+							$result = phpbb::$db->sql_query($sql);
 
 							$user_id_ary = array();
-							while ($row = $db->sql_fetchrow($result))
+							while ($row = phpbb::$db->sql_fetchrow($result))
 							{
 								if ($row['user_id'] != ANONYMOUS && $row['user_type'] != phpbb::USER_IGNORE)
 								{
@@ -127,7 +127,7 @@ class ucp_zebra
 									$error[] = phpbb::$user->lang['NOT_ADDED_' . $l_mode . '_ANONYMOUS'];
 								}
 							}
-							$db->sql_freeresult($result);
+							phpbb::$db->sql_freeresult($result);
 
 							if (sizeof($user_id_ary))
 							{
@@ -169,7 +169,7 @@ class ucp_zebra
 										);
 									}
 
-									$db->sql_multi_insert(ZEBRA_TABLE, $sql_ary);
+									phpbb::$db->sql_multi_insert(ZEBRA_TABLE, $sql_ary);
 
 									$updated = true;
 								}
@@ -188,8 +188,8 @@ class ucp_zebra
 
 						$sql = 'DELETE FROM ' . ZEBRA_TABLE . '
 							WHERE user_id = ' . phpbb::$user->data['user_id'] . '
-								AND ' . $db->sql_in_set('zebra_id', $data['usernames']);
-						$db->sql_query($sql);
+								AND ' . phpbb::$db->sql_in_set('zebra_id', $data['usernames']);
+						phpbb::$db->sql_query($sql);
 
 						$updated = true;
 					}
@@ -224,14 +224,14 @@ class ucp_zebra
 				AND $sql_and
 				AND u.user_id = z.zebra_id
 			ORDER BY u.username_clean ASC";
-		$result = $db->sql_query($sql);
+		$result = phpbb::$db->sql_query($sql);
 
 		$s_username_options = '';
-		while ($row = $db->sql_fetchrow($result))
+		while ($row = phpbb::$db->sql_fetchrow($result))
 		{
 			$s_username_options .= '<option value="' . $row['zebra_id'] . '">' . $row['username'] . '</option>';
 		}
-		$db->sql_freeresult($result);
+		phpbb::$db->sql_freeresult($result);
 
 		$template->assign_vars(array(
 			'L_TITLE'			=> phpbb::$user->lang['UCP_ZEBRA_' . $l_mode],

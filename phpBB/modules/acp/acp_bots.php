@@ -59,7 +59,7 @@ class acp_bots
 					$sql = 'UPDATE ' . BOTS_TABLE . "
 						SET bot_active = 1
 						WHERE bot_id $sql_id";
-					$db->sql_query($sql);
+					phpbb::$db->sql_query($sql);
 				}
 
 				phpbb::$acm->destroy('bots');
@@ -73,7 +73,7 @@ class acp_bots
 					$sql = 'UPDATE ' . BOTS_TABLE . "
 						SET bot_active = 0
 						WHERE bot_id $sql_id";
-					$db->sql_query($sql);
+					phpbb::$db->sql_query($sql);
 				}
 
 				phpbb::$acm->destroy('bots');
@@ -90,21 +90,21 @@ class acp_bots
 						$sql = 'SELECT bot_name, user_id
 							FROM ' . BOTS_TABLE . "
 							WHERE bot_id $sql_id";
-						$result = $db->sql_query($sql);
+						$result = phpbb::$db->sql_query($sql);
 
 						$user_id_ary = $bot_name_ary = array();
-						while ($row = $db->sql_fetchrow($result))
+						while ($row = phpbb::$db->sql_fetchrow($result))
 						{
 							$user_id_ary[] = (int) $row['user_id'];
 							$bot_name_ary[] = $row['bot_name'];
 						}
-						$db->sql_freeresult($result);
+						phpbb::$db->sql_freeresult($result);
 
-						$db->sql_transaction('begin');
+						phpbb::$db->sql_transaction('begin');
 
 						$sql = 'DELETE FROM ' . BOTS_TABLE . "
 							WHERE bot_id $sql_id";
-						$db->sql_query($sql);
+						phpbb::$db->sql_query($sql);
 
 						if (sizeof($user_id_ary))
 						{
@@ -112,12 +112,12 @@ class acp_bots
 							foreach ($_tables as $table)
 							{
 								$sql = "DELETE FROM $table
-									WHERE " . $db->sql_in_set('user_id', $user_id_ary);
-								$db->sql_query($sql);
+									WHERE " . phpbb::$db->sql_in_set('user_id', $user_id_ary);
+								phpbb::$db->sql_query($sql);
 							}
 						}
 
-						$db->sql_transaction('commit');
+						phpbb::$db->sql_transaction('commit');
 
 						phpbb::$acm->destroy('bots');
 
@@ -182,9 +182,9 @@ class acp_bots
 							FROM ' . BOTS_TABLE . ' b, ' . USERS_TABLE . " u
 							WHERE b.bot_id = $bot_id
 								AND u.user_id = b.user_id";
-						$result = $db->sql_query($sql);
-						$row = $db->sql_fetchrow($result);
-						$db->sql_freeresult($result);
+						$result = phpbb::$db->sql_query($sql);
+						$row = phpbb::$db->sql_fetchrow($result);
+						phpbb::$db->sql_freeresult($result);
 
 						if (!$bot_row)
 						{
@@ -209,9 +209,9 @@ class acp_bots
 								FROM ' . GROUPS_TABLE . "
 								WHERE group_name_clean = 'bots'
 									AND group_type = " . GROUP_SPECIAL;
-							$result = $db->sql_query($sql);
-							$group_row = $db->sql_fetchrow($result);
-							$db->sql_freeresult($result);
+							$result = phpbb::$db->sql_query($sql);
+							$group_row = phpbb::$db->sql_fetchrow($result);
+							phpbb::$db->sql_freeresult($result);
 
 							if (!$group_row)
 							{
@@ -232,14 +232,14 @@ class acp_bots
 								'user_allow_massemail'	=> 0,
 							));
 
-							$sql = 'INSERT INTO ' . BOTS_TABLE . ' ' . $db->sql_build_array('INSERT', array(
+							$sql = 'INSERT INTO ' . BOTS_TABLE . ' ' . phpbb::$db->sql_build_array('INSERT', array(
 								'user_id'		=> (int) $user_id,
 								'bot_name'		=> (string) $bot_row['bot_name'],
 								'bot_active'	=> (int) $bot_row['bot_active'],
 								'bot_agent'		=> (string) $bot_row['bot_agent'],
 								'bot_ip'		=> (string) $bot_row['bot_ip'])
 							);
-							$db->sql_query($sql);
+							phpbb::$db->sql_query($sql);
 
 							$log = 'ADDED';
 						}
@@ -248,9 +248,9 @@ class acp_bots
 							$sql = 'SELECT user_id, bot_name
 								FROM ' . BOTS_TABLE . "
 								WHERE bot_id = $bot_id";
-							$result = $db->sql_query($sql);
-							$row = $db->sql_fetchrow($result);
-							$db->sql_freeresult($result);
+							$result = phpbb::$db->sql_query($sql);
+							$row = phpbb::$db->sql_fetchrow($result);
+							phpbb::$db->sql_freeresult($result);
 
 							if (!$row)
 							{
@@ -268,16 +268,16 @@ class acp_bots
 								$sql_ary['username_clean'] = (string) utf8_clean_string($bot_row['bot_name']);
 							}
 
-							$sql = 'UPDATE ' . USERS_TABLE . ' SET ' . $db->sql_build_array('UPDATE', $sql_ary) . " WHERE user_id = {$row['user_id']}";
-							$db->sql_query($sql);
+							$sql = 'UPDATE ' . USERS_TABLE . ' SET ' . phpbb::$db->sql_build_array('UPDATE', $sql_ary) . " WHERE user_id = {$row['user_id']}";
+							phpbb::$db->sql_query($sql);
 
-							$sql = 'UPDATE ' . BOTS_TABLE . ' SET ' . $db->sql_build_array('UPDATE', array(
+							$sql = 'UPDATE ' . BOTS_TABLE . ' SET ' . phpbb::$db->sql_build_array('UPDATE', array(
 								'bot_name'		=> (string) $bot_row['bot_name'],
 								'bot_active'	=> (int) $bot_row['bot_active'],
 								'bot_agent'		=> (string) $bot_row['bot_agent'],
 								'bot_ip'		=> (string) $bot_row['bot_ip'])
 							) . " WHERE bot_id = $bot_id";
-							$db->sql_query($sql);
+							phpbb::$db->sql_query($sql);
 
 							// Updated username?
 							if ($bot_row['bot_name'] !== $row['bot_name'])
@@ -301,9 +301,9 @@ class acp_bots
 						FROM ' . BOTS_TABLE . ' b, ' . USERS_TABLE . " u
 						WHERE b.bot_id = $bot_id
 							AND u.user_id = b.user_id";
-					$result = $db->sql_query($sql);
-					$bot_row = $db->sql_fetchrow($result);
-					$db->sql_freeresult($result);
+					$result = phpbb::$db->sql_query($sql);
+					$bot_row = phpbb::$db->sql_fetchrow($result);
+					phpbb::$db->sql_freeresult($result);
 
 					if (!$bot_row)
 					{
@@ -367,9 +367,9 @@ class acp_bots
 			FROM ' . BOTS_TABLE . ' b, ' . USERS_TABLE . ' u
 			WHERE u.user_id = b.user_id
 			ORDER BY u.user_lastvisit DESC, b.bot_name ASC';
-		$result = $db->sql_query($sql);
+		$result = phpbb::$db->sql_query($sql);
 
-		while ($row = $db->sql_fetchrow($result))
+		while ($row = phpbb::$db->sql_fetchrow($result))
 		{
 			$active_lang = (!$row['bot_active']) ? 'BOT_ACTIVATE' : 'BOT_DEACTIVATE';
 			$active_value = (!$row['bot_active']) ? 'activate' : 'deactivate';
@@ -385,7 +385,7 @@ class acp_bots
 				'U_DELETE'				=> $this->u_action . "&amp;id={$row['bot_id']}&amp;action=delete")
 			);
 		}
-		$db->sql_freeresult($result);
+		phpbb::$db->sql_freeresult($result);
 	}
 
 	/**
@@ -401,10 +401,10 @@ class acp_bots
 		// Admins might want to use names otherwise forbidden, thus we only check for duplicates.
 		$sql = 'SELECT username
 			FROM ' . USERS_TABLE . "
-			WHERE username_clean = '" . $db->sql_escape(utf8_clean_string($newname)) . "'";
-		$result = $db->sql_query($sql);
-		$row = $db->sql_fetchrow($result);
-		$db->sql_freeresult($result);
+			WHERE username_clean = '" . phpbb::$db->sql_escape(utf8_clean_string($newname)) . "'";
+		$result = phpbb::$db->sql_query($sql);
+		$row = phpbb::$db->sql_fetchrow($result);
+		phpbb::$db->sql_freeresult($result);
 
 		return ($row) ? false : true;
 	}

@@ -60,27 +60,27 @@ class acp_profile
 		$sql = 'SELECT lang_id, lang_iso
 			FROM ' . LANG_TABLE . '
 			ORDER BY lang_english_name';
-		$result = $db->sql_query($sql);
+		$result = phpbb::$db->sql_query($sql);
 
-		while ($row = $db->sql_fetchrow($result))
+		while ($row = phpbb::$db->sql_fetchrow($result))
 		{
 			// Make some arrays with all available languages
 			$this->lang_defs['id'][$row['lang_id']] = $row['lang_iso'];
 			$this->lang_defs['iso'][$row['lang_iso']] = $row['lang_id'];
 		}
-		$db->sql_freeresult($result);
+		phpbb::$db->sql_freeresult($result);
 
 		$sql = 'SELECT field_id, lang_id
 			FROM ' . PROFILE_LANG_TABLE . '
 			ORDER BY lang_id';
-		$result = $db->sql_query($sql);
+		$result = phpbb::$db->sql_query($sql);
 
-		while ($row = $db->sql_fetchrow($result))
+		while ($row = phpbb::$db->sql_fetchrow($result))
 		{
 			// Which languages are available for each item
 			$this->lang_defs['entry'][$row['field_id']][] = $row['lang_id'];
 		}
-		$db->sql_freeresult($result);
+		phpbb::$db->sql_freeresult($result);
 
 		// Have some fields been defined?
 		if (isset($this->lang_defs['entry']))
@@ -107,31 +107,31 @@ class acp_profile
 					$sql = 'SELECT field_ident
 						FROM ' . PROFILE_FIELDS_TABLE . "
 						WHERE field_id = $field_id";
-					$result = $db->sql_query($sql);
-					$field_ident = (string) $db->sql_fetchfield('field_ident');
-					$db->sql_freeresult($result);
+					$result = phpbb::$db->sql_query($sql);
+					$field_ident = (string) phpbb::$db->sql_fetchfield('field_ident');
+					phpbb::$db->sql_freeresult($result);
 
-					$db->sql_transaction('begin');
+					phpbb::$db->sql_transaction('begin');
 
-					$db->sql_query('DELETE FROM ' . PROFILE_FIELDS_TABLE . " WHERE field_id = $field_id");
-					$db->sql_query('DELETE FROM ' . PROFILE_FIELDS_LANG_TABLE . " WHERE field_id = $field_id");
-					$db->sql_query('DELETE FROM ' . PROFILE_LANG_TABLE . " WHERE field_id = $field_id");
+					phpbb::$db->sql_query('DELETE FROM ' . PROFILE_FIELDS_TABLE . " WHERE field_id = $field_id");
+					phpbb::$db->sql_query('DELETE FROM ' . PROFILE_FIELDS_LANG_TABLE . " WHERE field_id = $field_id");
+					phpbb::$db->sql_query('DELETE FROM ' . PROFILE_LANG_TABLE . " WHERE field_id = $field_id");
 
-					if ($db->dbms_type == 'sqlite')
+					if (phpbb::$db->dbms_type == 'sqlite')
 					{
 							$sql = "SELECT sql
 								FROM sqlite_master
 								WHERE type = 'table'
 									AND name = '" . PROFILE_FIELDS_DATA_TABLE . "'
 								ORDER BY type DESC, name;";
-							$result = $db->sql_query($sql);
-							$row = $db->sql_fetchrow($result);
-							$db->sql_freeresult($result);
+							$result = phpbb::$db->sql_query($sql);
+							$row = phpbb::$db->sql_fetchrow($result);
+							phpbb::$db->sql_freeresult($result);
 
 							// Create a temp table and populate it, destroy the existing one
-							$db->sql_query(preg_replace('#CREATE\s+TABLE\s+"?' . PROFILE_FIELDS_DATA_TABLE . '"?#i', 'CREATE TEMPORARY TABLE ' . PROFILE_FIELDS_DATA_TABLE . '_temp', $row['sql']));
-							$db->sql_query('INSERT INTO ' . PROFILE_FIELDS_DATA_TABLE . '_temp SELECT * FROM ' . PROFILE_FIELDS_DATA_TABLE);
-							$db->sql_query('DROP TABLE ' . PROFILE_FIELDS_DATA_TABLE);
+							phpbb::$db->sql_query(preg_replace('#CREATE\s+TABLE\s+"?' . PROFILE_FIELDS_DATA_TABLE . '"?#i', 'CREATE TEMPORARY TABLE ' . PROFILE_FIELDS_DATA_TABLE . '_temp', $row['sql']));
+							phpbb::$db->sql_query('INSERT INTO ' . PROFILE_FIELDS_DATA_TABLE . '_temp SELECT * FROM ' . PROFILE_FIELDS_DATA_TABLE);
+							phpbb::$db->sql_query('DROP TABLE ' . PROFILE_FIELDS_DATA_TABLE);
 
 							preg_match('#\((.*)\)#s', $row['sql'], $matches);
 
@@ -159,13 +159,13 @@ class acp_profile
 							$new_table_cols = preg_replace('/' . 'pf_' . $field_ident . '[^,]+,/', '', $new_table_cols);
 
 							// create a new table and fill it up. destroy the temp one
-							$db->sql_query('CREATE TABLE ' . PROFILE_FIELDS_DATA_TABLE . ' (' . $new_table_cols . ');');
-							$db->sql_query('INSERT INTO ' . PROFILE_FIELDS_DATA_TABLE . ' (' . $columns . ') SELECT ' . $columns . ' FROM ' . PROFILE_FIELDS_DATA_TABLE . '_temp;');
-							$db->sql_query('DROP TABLE ' . PROFILE_FIELDS_DATA_TABLE . '_temp');
+							phpbb::$db->sql_query('CREATE TABLE ' . PROFILE_FIELDS_DATA_TABLE . ' (' . $new_table_cols . ');');
+							phpbb::$db->sql_query('INSERT INTO ' . PROFILE_FIELDS_DATA_TABLE . ' (' . $columns . ') SELECT ' . $columns . ' FROM ' . PROFILE_FIELDS_DATA_TABLE . '_temp;');
+							phpbb::$db->sql_query('DROP TABLE ' . PROFILE_FIELDS_DATA_TABLE . '_temp');
 					}
 					else
 					{
-							$db->sql_query('ALTER TABLE ' . PROFILE_FIELDS_DATA_TABLE . " DROP COLUMN pf_$field_ident");
+						phpbb::$db->sql_query('ALTER TABLE ' . PROFILE_FIELDS_DATA_TABLE . " DROP COLUMN pf_$field_ident");
 					}
 
 					$order = 0;
@@ -173,9 +173,9 @@ class acp_profile
 					$sql = 'SELECT *
 						FROM ' . PROFILE_FIELDS_TABLE . '
 						ORDER BY field_order';
-					$result = $db->sql_query($sql);
+					$result = phpbb::$db->sql_query($sql);
 
-					while ($row = $db->sql_fetchrow($result))
+					while ($row = phpbb::$db->sql_fetchrow($result))
 					{
 						$order++;
 						if ($row['field_order'] != $order)
@@ -183,12 +183,12 @@ class acp_profile
 							$sql = 'UPDATE ' . PROFILE_FIELDS_TABLE . "
 								SET field_order = $order
 								WHERE field_id = {$row['field_id']}";
-							$db->sql_query($sql);
+							phpbb::$db->sql_query($sql);
 						}
 					}
-					$db->sql_freeresult($result);
+					phpbb::$db->sql_freeresult($result);
 
-					$db->sql_transaction('commit');
+					phpbb::$db->sql_transaction('commit');
 
 					add_log('admin', 'LOG_PROFILE_FIELD_REMOVED', $field_ident);
 					trigger_error(phpbb::$user->lang['REMOVED_PROFILE_FIELD'] . adm_back_link($this->u_action));
@@ -215,10 +215,10 @@ class acp_profile
 
 				$sql = 'SELECT lang_id
 					FROM ' . LANG_TABLE . "
-					WHERE lang_iso = '" . $db->sql_escape(phpbb::$config['default_lang']) . "'";
-				$result = $db->sql_query($sql);
-				$default_lang_id = (int) $db->sql_fetchfield('lang_id');
-				$db->sql_freeresult($result);
+					WHERE lang_iso = '" . phpbb::$db->sql_escape(phpbb::$config['default_lang']) . "'";
+				$result = phpbb::$db->sql_query($sql);
+				$default_lang_id = (int) phpbb::$db->sql_fetchfield('lang_id');
+				phpbb::$db->sql_freeresult($result);
 
 				if (!in_array($default_lang_id, $this->lang_defs['entry'][$field_id]))
 				{
@@ -228,14 +228,14 @@ class acp_profile
 				$sql = 'UPDATE ' . PROFILE_FIELDS_TABLE . "
 					SET field_active = 1
 					WHERE field_id = $field_id";
-				$db->sql_query($sql);
+				phpbb::$db->sql_query($sql);
 
 				$sql = 'SELECT field_ident
 					FROM ' . PROFILE_FIELDS_TABLE . "
 					WHERE field_id = $field_id";
-				$result = $db->sql_query($sql);
-				$field_ident = (string) $db->sql_fetchfield('field_ident');
-				$db->sql_freeresult($result);
+				$result = phpbb::$db->sql_query($sql);
+				$field_ident = (string) phpbb::$db->sql_fetchfield('field_ident');
+				phpbb::$db->sql_freeresult($result);
 
 				add_log('admin', 'LOG_PROFILE_FIELD_ACTIVATE', $field_ident);
 				trigger_error(phpbb::$user->lang['PROFILE_FIELD_ACTIVATED'] . adm_back_link($this->u_action));
@@ -253,14 +253,14 @@ class acp_profile
 				$sql = 'UPDATE ' . PROFILE_FIELDS_TABLE . "
 					SET field_active = 0
 					WHERE field_id = $field_id";
-				$db->sql_query($sql);
+				phpbb::$db->sql_query($sql);
 
 				$sql = 'SELECT field_ident
 					FROM ' . PROFILE_FIELDS_TABLE . "
 					WHERE field_id = $field_id";
-				$result = $db->sql_query($sql);
-				$field_ident = (string) $db->sql_fetchfield('field_ident');
-				$db->sql_freeresult($result);
+				$result = phpbb::$db->sql_query($sql);
+				$field_ident = (string) phpbb::$db->sql_fetchfield('field_ident');
+				phpbb::$db->sql_freeresult($result);
 
 				add_log('admin', 'LOG_PROFILE_FIELD_DEACTIVATE', $field_ident);
 				trigger_error(phpbb::$user->lang['PROFILE_FIELD_DEACTIVATED'] . adm_back_link($this->u_action));
@@ -275,7 +275,7 @@ class acp_profile
 				$sql = 'UPDATE ' . PROFILE_FIELDS_TABLE . "
 					SET field_order = $order_total - field_order
 					WHERE field_order IN ($field_order, " . (($action == 'move_up') ? $field_order - 1 : $field_order + 1) . ')';
-				$db->sql_query($sql);
+				phpbb::$db->sql_query($sql);
 
 			break;
 
@@ -304,9 +304,9 @@ class acp_profile
 						WHERE l.lang_id = ' . $this->edit_lang_id . "
 							AND f.field_id = $field_id
 							AND l.field_id = f.field_id";
-					$result = $db->sql_query($sql);
-					$field_row = $db->sql_fetchrow($result);
-					$db->sql_freeresult($result);
+					$result = phpbb::$db->sql_query($sql);
+					$field_row = phpbb::$db->sql_fetchrow($result);
+					phpbb::$db->sql_freeresult($result);
 
 					if (!$field_row)
 					{
@@ -316,9 +316,9 @@ class acp_profile
 							WHERE l.lang_id <> ' . $this->edit_lang_id . "
 							AND f.field_id = $field_id
 							AND l.field_id = f.field_id";
-						$result = $db->sql_query($sql);
-						$field_row = $db->sql_fetchrow($result);
-						$db->sql_freeresult($result);
+						$result = phpbb::$db->sql_query($sql);
+						$field_row = phpbb::$db->sql_fetchrow($result);
+						phpbb::$db->sql_freeresult($result);
 
 						if (!$field_row)
 						{
@@ -335,14 +335,14 @@ class acp_profile
 						WHERE lang_id = ' . $this->edit_lang_id . "
 							AND field_id = $field_id
 						ORDER BY option_id ASC";
-					$result = $db->sql_query($sql);
+					$result = phpbb::$db->sql_query($sql);
 
 					$lang_options = array();
-					while ($row = $db->sql_fetchrow($result))
+					while ($row = phpbb::$db->sql_fetchrow($result))
 					{
 						$lang_options[$row['option_id']] = $row['lang_value'];
 					}
-					$db->sql_freeresult($result);
+					phpbb::$db->sql_freeresult($result);
 
 					$s_hidden_fields = '<input type="hidden" name="field_id" value="' . $field_id . '" />';
 				}
@@ -531,14 +531,14 @@ class acp_profile
 						WHERE lang_id <> ' . $this->edit_lang_id . "
 							AND field_id = $field_id
 						ORDER BY option_id ASC";
-					$result = $db->sql_query($sql);
+					$result = phpbb::$db->sql_query($sql);
 
 					$l_lang_options = array();
-					while ($row = $db->sql_fetchrow($result))
+					while ($row = phpbb::$db->sql_fetchrow($result))
 					{
 						$l_lang_options[$row['lang_id']][$row['option_id']] = $row['lang_value'];
 					}
-					$db->sql_freeresult($result);
+					phpbb::$db->sql_freeresult($result);
 
 
 					$sql = 'SELECT lang_id, lang_name, lang_explain, lang_default_value
@@ -546,16 +546,16 @@ class acp_profile
 						WHERE lang_id <> ' . $this->edit_lang_id . "
 							AND field_id = $field_id
 						ORDER BY lang_id ASC";
-					$result = $db->sql_query($sql);
+					$result = phpbb::$db->sql_query($sql);
 
 					$l_lang_name = $l_lang_explain = $l_lang_default_value = array();
-					while ($row = $db->sql_fetchrow($result))
+					while ($row = phpbb::$db->sql_fetchrow($result))
 					{
 						$l_lang_name[$row['lang_id']] = $row['lang_name'];
 						$l_lang_explain[$row['lang_id']] = $row['lang_explain'];
 						$l_lang_default_value[$row['lang_id']] = $row['lang_default_value'];
 					}
-					$db->sql_freeresult($result);
+					phpbb::$db->sql_freeresult($result);
 				}
 
 				foreach ($exclude[3] as $key)
@@ -619,10 +619,10 @@ class acp_profile
 					{
 						$sql = 'SELECT field_ident
 							FROM ' . PROFILE_FIELDS_TABLE . "
-							WHERE field_ident = '" . $db->sql_escape($cp->vars['field_ident']) . "'";
-						$result = $db->sql_query($sql);
-						$row = $db->sql_fetchrow($result);
-						$db->sql_freeresult($result);
+							WHERE field_ident = '" . phpbb::$db->sql_escape($cp->vars['field_ident']) . "'";
+						$result = phpbb::$db->sql_query($sql);
+						$row = phpbb::$db->sql_fetchrow($result);
+						phpbb::$db->sql_freeresult($result);
 
 						if ($row)
 						{
@@ -844,10 +844,10 @@ class acp_profile
 		$sql = 'SELECT *
 			FROM ' . PROFILE_FIELDS_TABLE . '
 			ORDER BY field_order';
-		$result = $db->sql_query($sql);
+		$result = phpbb::$db->sql_query($sql);
 
 		$s_one_need_edit = false;
-		while ($row = $db->sql_fetchrow($result))
+		while ($row = phpbb::$db->sql_fetchrow($result))
 		{
 			$active_lang = (!$row['field_active']) ? 'ACTIVATE' : 'DEACTIVATE';
 			$active_value = (!$row['field_active']) ? 'activate' : 'deactivate';
@@ -875,7 +875,7 @@ class acp_profile
 				'S_NEED_EDIT'				=> $s_need_edit)
 			);
 		}
-		$db->sql_freeresult($result);
+		phpbb::$db->sql_freeresult($result);
 
 		// At least one option field needs editing?
 		if ($s_one_need_edit)
@@ -906,14 +906,14 @@ class acp_profile
 			FROM ' . LANG_TABLE . '
 			WHERE lang_id <> ' . (int) $default_lang_id . '
 			ORDER BY lang_english_name';
-		$result = $db->sql_query($sql);
+		$result = phpbb::$db->sql_query($sql);
 
 		$languages = array();
-		while ($row = $db->sql_fetchrow($result))
+		while ($row = phpbb::$db->sql_fetchrow($result))
 		{
 			$languages[$row['lang_id']] = $row['lang_iso'];
 		}
-		$db->sql_freeresult($result);
+		phpbb::$db->sql_freeresult($result);
 
 		$options = array();
 		$options['lang_name'] = 'string';
@@ -1029,9 +1029,9 @@ class acp_profile
 		{
 			$sql = 'SELECT MAX(field_order) as max_field_order
 				FROM ' . PROFILE_FIELDS_TABLE;
-			$result = $db->sql_query($sql);
-			$new_field_order = (int) $db->sql_fetchfield('max_field_order');
-			$db->sql_freeresult($result);
+			$result = phpbb::$db->sql_query($sql);
+			$new_field_order = (int) phpbb::$db->sql_fetchfield('max_field_order');
+			phpbb::$db->sql_freeresult($result);
 
 			$field_ident = $cp->vars['field_ident'];
 		}
@@ -1060,17 +1060,17 @@ class acp_profile
 				'field_active'		=> 1
 			);
 
-			$sql = 'INSERT INTO ' . PROFILE_FIELDS_TABLE . ' ' . $db->sql_build_array('INSERT', $profile_fields);
-			$db->sql_query($sql);
+			$sql = 'INSERT INTO ' . PROFILE_FIELDS_TABLE . ' ' . phpbb::$db->sql_build_array('INSERT', $profile_fields);
+			phpbb::$db->sql_query($sql);
 
-			$field_id = $db->sql_nextid();
+			$field_id = phpbb::$db->sql_nextid();
 		}
 		else
 		{
 			$sql = 'UPDATE ' . PROFILE_FIELDS_TABLE . '
-				SET ' . $db->sql_build_array('UPDATE', $profile_fields) . "
+				SET ' . phpbb::$db->sql_build_array('UPDATE', $profile_fields) . "
 				WHERE field_id = $field_id";
-			$db->sql_query($sql);
+			phpbb::$db->sql_query($sql);
 		}
 
 		if ($action == 'create')
@@ -1090,7 +1090,7 @@ class acp_profile
 			$sql_ary['field_id'] = $field_id;
 			$sql_ary['lang_id'] = $default_lang_id;
 
-			$profile_sql[] = 'INSERT INTO ' . PROFILE_LANG_TABLE . ' ' . $db->sql_build_array('INSERT', $sql_ary);
+			$profile_sql[] = 'INSERT INTO ' . PROFILE_LANG_TABLE . ' ' . phpbb::$db->sql_build_array('INSERT', $sql_ary);
 		}
 		else
 		{
@@ -1126,7 +1126,7 @@ class acp_profile
 				$sql = 'DELETE FROM ' . PROFILE_LANG_TABLE . "
 					WHERE field_id = $field_id
 					AND lang_id = " . (int) $lang_id;
-				$db->sql_query($sql);
+				phpbb::$db->sql_query($sql);
 			}
 		}
 
@@ -1160,7 +1160,7 @@ class acp_profile
 				$sql = 'DELETE FROM ' . PROFILE_FIELDS_LANG_TABLE . "
 					WHERE field_id = $field_id
 						AND lang_id = " . (int) $default_lang_id;
-				$db->sql_query($sql);
+				phpbb::$db->sql_query($sql);
 			}
 
 			foreach ($cp->vars['lang_options'] as $option_id => $value)
@@ -1176,7 +1176,7 @@ class acp_profile
 					$sql_ary['lang_id'] = $default_lang_id;
 					$sql_ary['option_id'] = (int) $option_id;
 
-					$profile_sql[] = 'INSERT INTO ' . PROFILE_FIELDS_LANG_TABLE . ' ' . $db->sql_build_array('INSERT', $sql_ary);
+					$profile_sql[] = 'INSERT INTO ' . PROFILE_FIELDS_LANG_TABLE . ' ' . phpbb::$db->sql_build_array('INSERT', $sql_ary);
 				}
 				else
 				{
@@ -1212,7 +1212,7 @@ class acp_profile
 						$sql = 'DELETE FROM ' . PROFILE_FIELDS_LANG_TABLE . "
 							WHERE field_id = $field_id
 							AND lang_id = " . (int) $lang_id;
-						$db->sql_query($sql);
+						phpbb::$db->sql_query($sql);
 					}
 
 					foreach ($lang_ary as $option_id => $value)
@@ -1233,7 +1233,7 @@ class acp_profile
 				$sql = 'DELETE FROM ' . PROFILE_FIELDS_LANG_TABLE . "
 					WHERE field_id = $field_id
 					AND lang_id = " . (int) $lang_id;
-				$db->sql_query($sql);
+				phpbb::$db->sql_query($sql);
 			}
 		}
 
@@ -1241,7 +1241,7 @@ class acp_profile
 		{
 			if ($action == 'create')
 			{
-				$profile_sql[] = 'INSERT INTO ' . PROFILE_LANG_TABLE . ' ' . $db->sql_build_array('INSERT', $sql);
+				$profile_sql[] = 'INSERT INTO ' . PROFILE_LANG_TABLE . ' ' . phpbb::$db->sql_build_array('INSERT', $sql);
 			}
 			else
 			{
@@ -1258,7 +1258,7 @@ class acp_profile
 			{
 				if ($action == 'create')
 				{
-					$profile_sql[] = 'INSERT INTO ' . PROFILE_FIELDS_LANG_TABLE . ' ' . $db->sql_build_array('INSERT', $sql);
+					$profile_sql[] = 'INSERT INTO ' . PROFILE_FIELDS_LANG_TABLE . ' ' . phpbb::$db->sql_build_array('INSERT', $sql);
 				}
 				else
 				{
@@ -1276,17 +1276,17 @@ class acp_profile
 		}
 
 
-		$db->sql_transaction('begin');
+		phpbb::$db->sql_transaction('begin');
 
 		if ($action == 'create')
 		{
 			foreach ($profile_sql as $sql)
 			{
-				$db->sql_query($sql);
+				phpbb::$db->sql_query($sql);
 			}
 		}
 
-		$db->sql_transaction('commit');
+		phpbb::$db->sql_transaction('commit');
 
 		if ($action == 'edit')
 		{
@@ -1311,7 +1311,7 @@ class acp_profile
 		foreach ($where_fields as $key => $value)
 		{
 			$check_key = (!$check_key) ? $key : $check_key;
-			$where_sql[] = $key . ' = ' . ((is_string($value)) ? "'" . $db->sql_escape($value) . "'" : (int) $value);
+			$where_sql[] = $key . ' = ' . ((is_string($value)) ? "'" . phpbb::$db->sql_escape($value) . "'" : (int) $value);
 		}
 
 		if (!sizeof($where_sql))
@@ -1322,9 +1322,9 @@ class acp_profile
 		$sql = "SELECT $check_key
 			FROM $table
 			WHERE " . implode(' AND ', $where_sql);
-		$result = $db->sql_query($sql);
-		$row = $db->sql_fetchrow($result);
-		$db->sql_freeresult($result);
+		$result = phpbb::$db->sql_query($sql);
+		$row = phpbb::$db->sql_fetchrow($result);
+		phpbb::$db->sql_freeresult($result);
 
 		if (!$row)
 		{
@@ -1332,16 +1332,16 @@ class acp_profile
 
 			if (sizeof($sql_ary))
 			{
-				$db->sql_query("INSERT INTO $table " . $db->sql_build_array('INSERT', $sql_ary));
+				phpbb::$db->sql_query("INSERT INTO $table " . phpbb::$db->sql_build_array('INSERT', $sql_ary));
 			}
 		}
 		else
 		{
 			if (sizeof($sql_ary))
 			{
-				$sql = "UPDATE $table SET " . $db->sql_build_array('UPDATE', $sql_ary) . '
+				$sql = "UPDATE $table SET " . phpbb::$db->sql_build_array('UPDATE', $sql_ary) . '
 					WHERE ' . implode(' AND ', $where_sql);
-				$db->sql_query($sql);
+				phpbb::$db->sql_query($sql);
 			}
 		}
 	}
@@ -1351,7 +1351,7 @@ class acp_profile
 	*/
 	function add_field_ident($field_ident, $field_type)
 	{
-		switch ($db->dbms_type)
+		switch (phpbb::$db->dbms_type)
 		{
 			case 'mysql':
 
@@ -1428,14 +1428,14 @@ class acp_profile
 						WHERE type = 'table'
 							AND name = '" . PROFILE_FIELDS_DATA_TABLE . "'
 						ORDER BY type DESC, name;";
-					$result = $db->sql_query($sql);
-					$row = $db->sql_fetchrow($result);
-					$db->sql_freeresult($result);
+					$result = phpbb::$db->sql_query($sql);
+					$row = phpbb::$db->sql_fetchrow($result);
+					phpbb::$db->sql_freeresult($result);
 
 					// Create a temp table and populate it, destroy the existing one
-					$db->sql_query(preg_replace('#CREATE\s+TABLE\s+"?' . PROFILE_FIELDS_DATA_TABLE . '"?#i', 'CREATE TEMPORARY TABLE ' . PROFILE_FIELDS_DATA_TABLE . '_temp', $row['sql']));
-					$db->sql_query('INSERT INTO ' . PROFILE_FIELDS_DATA_TABLE . '_temp SELECT * FROM ' . PROFILE_FIELDS_DATA_TABLE);
-					$db->sql_query('DROP TABLE ' . PROFILE_FIELDS_DATA_TABLE);
+					phpbb::$db->sql_query(preg_replace('#CREATE\s+TABLE\s+"?' . PROFILE_FIELDS_DATA_TABLE . '"?#i', 'CREATE TEMPORARY TABLE ' . PROFILE_FIELDS_DATA_TABLE . '_temp', $row['sql']));
+					phpbb::$db->sql_query('INSERT INTO ' . PROFILE_FIELDS_DATA_TABLE . '_temp SELECT * FROM ' . PROFILE_FIELDS_DATA_TABLE);
+					phpbb::$db->sql_query('DROP TABLE ' . PROFILE_FIELDS_DATA_TABLE);
 
 					preg_match('#\((.*)\)#s', $row['sql'], $matches);
 
@@ -1458,9 +1458,9 @@ class acp_profile
 					$new_table_cols = $field_ident . ' ' . $type . ',' . $new_table_cols;
 
 					// create a new table and fill it up. destroy the temp one
-					$db->sql_query('CREATE TABLE ' . PROFILE_FIELDS_DATA_TABLE . ' (' . $new_table_cols . ');');
-					$db->sql_query('INSERT INTO ' . PROFILE_FIELDS_DATA_TABLE . ' (' . $columns . ') SELECT ' . $columns . ' FROM ' . PROFILE_FIELDS_DATA_TABLE . '_temp;');
-					$db->sql_query('DROP TABLE ' . PROFILE_FIELDS_DATA_TABLE . '_temp');
+					phpbb::$db->sql_query('CREATE TABLE ' . PROFILE_FIELDS_DATA_TABLE . ' (' . $new_table_cols . ');');
+					phpbb::$db->sql_query('INSERT INTO ' . PROFILE_FIELDS_DATA_TABLE . ' (' . $columns . ') SELECT ' . $columns . ' FROM ' . PROFILE_FIELDS_DATA_TABLE . '_temp;');
+					phpbb::$db->sql_query('DROP TABLE ' . PROFILE_FIELDS_DATA_TABLE . '_temp');
 				}
 				else
 				{

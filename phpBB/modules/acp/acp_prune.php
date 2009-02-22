@@ -58,14 +58,14 @@ class acp_prune
 			$sql = 'SELECT forum_id
 				FROM ' . FORUMS_TABLE . '
 				ORDER BY left_id';
-			$result = $db->sql_query($sql);
+			$result = phpbb::$db->sql_query($sql);
 
 			$forum_id = array();
-			while ($row = $db->sql_fetchrow($result))
+			while ($row = phpbb::$db->sql_fetchrow($result))
 			{
 				$forum_id[] = $row['forum_id'];
 			}
-			$db->sql_freeresult($result);
+			phpbb::$db->sql_freeresult($result);
 		}
 
 		if ($submit)
@@ -89,7 +89,7 @@ class acp_prune
 					'S_PRUNED'		=> true)
 				);
 
-				$sql_forum = (sizeof($forum_id)) ? ' AND ' . $db->sql_in_set('forum_id', $forum_id) : '';
+				$sql_forum = (sizeof($forum_id)) ? ' AND ' . phpbb::$db->sql_in_set('forum_id', $forum_id) : '';
 
 				// Get a list of forum's or the data for the forum that we are pruning.
 				$sql = 'SELECT forum_id, forum_name
@@ -97,9 +97,9 @@ class acp_prune
 					WHERE forum_type = ' . FORUM_POST . "
 						$sql_forum
 					ORDER BY left_id ASC";
-				$result = $db->sql_query($sql);
+				$result = phpbb::$db->sql_query($sql);
 
-				if ($row = $db->sql_fetchrow($result))
+				if ($row = phpbb::$db->sql_fetchrow($result))
 				{
 					$prune_ids = array();
 					$p_result['topics'] = 0;
@@ -144,13 +144,13 @@ class acp_prune
 
 						$log_data .= (($log_data != '') ? ', ' : '') . $row['forum_name'];
 					}
-					while ($row = $db->sql_fetchrow($result));
+					while ($row = phpbb::$db->sql_fetchrow($result));
 
 					// Sync all pruned forums at once
 					sync('forum', 'forum_id', $prune_ids, true, true);
 					add_log('admin', 'LOG_PRUNE', $log_data);
 				}
-				$db->sql_freeresult($result);
+				phpbb::$db->sql_freeresult($result);
 
 				return;
 			}
@@ -186,13 +186,13 @@ class acp_prune
 		{
 			$sql = 'SELECT forum_id, forum_name
 				FROM ' . FORUMS_TABLE . '
-				WHERE ' . $db->sql_in_set('forum_id', $forum_id);
-			$result = $db->sql_query($sql);
-			$row = $db->sql_fetchrow($result);
+				WHERE ' . phpbb::$db->sql_in_set('forum_id', $forum_id);
+			$result = phpbb::$db->sql_query($sql);
+			$row = phpbb::$db->sql_fetchrow($result);
 
 			if (!$row)
 			{
-				$db->sql_freeresult($result);
+				phpbb::$db->sql_freeresult($result);
 				trigger_error(phpbb::$user->lang['NO_FORUM'] . adm_back_link($this->u_action), E_USER_WARNING);
 			}
 
@@ -202,9 +202,9 @@ class acp_prune
 				$forum_list .= (($forum_list != '') ? ', ' : '') . '<b>' . $row['forum_name'] . '</b>';
 				$s_hidden_fields .= '<input type="hidden" name="f[]" value="' . $row['forum_id'] . '" />';
 			}
-			while ($row = $db->sql_fetchrow($result));
+			while ($row = phpbb::$db->sql_fetchrow($result));
 
-			$db->sql_freeresult($result);
+			phpbb::$db->sql_freeresult($result);
 
 			$l_selected_forums = (sizeof($forum_id) == 1) ? 'SELECTED_FORUM' : 'SELECTED_FORUMS';
 
@@ -364,7 +364,7 @@ class acp_prune
 		if ($users)
 		{
 			$users = explode("\n", $users);
-			$where_sql = ' AND ' . $db->sql_in_set('username_clean', array_map('utf8_clean_string', $users));
+			$where_sql = ' AND ' . phpbb::$db->sql_in_set('username_clean', array_map('utf8_clean_string', $users));
 		}
 		else
 		{
@@ -391,8 +391,8 @@ class acp_prune
 			$sort_by_types = array('username', 'user_email', 'user_posts', 'user_regdate', 'user_lastvisit');
 
 			$where_sql = '';
-			$where_sql .= ($username) ? ' AND username_clean ' . $db->sql_like_expression(str_replace('*', $db->any_char, utf8_clean_string($username))) : '';
-			$where_sql .= ($email) ? ' AND user_email ' . $db->sql_like_expression(str_replace('*', $db->any_char, $email)) . ' ' : '';
+			$where_sql .= ($username) ? ' AND username_clean ' . phpbb::$db->sql_like_expression(str_replace('*', phpbb::$db->any_char, utf8_clean_string($username))) : '';
+			$where_sql .= ($email) ? ' AND user_email ' . phpbb::$db->sql_like_expression(str_replace('*', phpbb::$db->any_char, $email)) . ' ' : '';
 			$where_sql .= (sizeof($joined)) ? " AND user_regdate " . $key_match[$joined_select] . ' ' . gmmktime(0, 0, 0, (int) $joined[1], (int) $joined[2], (int) $joined[0]) : '';
 			$where_sql .= ($count !== '') ? " AND user_posts " . $key_match[$count_select] . ' ' . (int) $count . ' ' : '';
 
@@ -415,14 +415,14 @@ class acp_prune
 		// Get bot ids
 		$sql = 'SELECT user_id
 			FROM ' . BOTS_TABLE;
-		$result = $db->sql_query($sql);
+		$result = phpbb::$db->sql_query($sql);
 
 		$bot_ids = array();
-		while ($row = $db->sql_fetchrow($result))
+		while ($row = phpbb::$db->sql_fetchrow($result))
 		{
 			$bot_ids[] = $row['user_id'];
 		}
-		$db->sql_freeresult($result);
+		phpbb::$db->sql_freeresult($result);
 
 		// Do not prune founder members
 		$sql = 'SELECT user_id, username
@@ -430,12 +430,12 @@ class acp_prune
 			WHERE user_id <> ' . ANONYMOUS . '
 				AND user_type <> ' . phpbb::USER_FOUNDER . "
 			$where_sql";
-		$result = $db->sql_query($sql);
+		$result = phpbb::$db->sql_query($sql);
 
 		$where_sql = '';
 		$user_ids = $usernames = array();
 
-		while ($row = $db->sql_fetchrow($result))
+		while ($row = phpbb::$db->sql_fetchrow($result))
 		{
 			// Do not prune bots and the user currently pruning.
 			if ($row['user_id'] != phpbb::$user->data['user_id'] && !in_array($row['user_id'], $bot_ids))
@@ -444,7 +444,7 @@ class acp_prune
 				$usernames[$row['user_id']] = $row['username'];
 			}
 		}
-		$db->sql_freeresult($result);
+		phpbb::$db->sql_freeresult($result);
 	}
 }
 

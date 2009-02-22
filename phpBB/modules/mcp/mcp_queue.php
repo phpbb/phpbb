@@ -146,13 +146,13 @@ class mcp_queue
 						WHERE post_msg_id = ' . $post_id . '
 							AND in_message = 0
 						ORDER BY filetime DESC, post_msg_id ASC';
-					$result = $db->sql_query($sql);
+					$result = phpbb::$db->sql_query($sql);
 
-					while ($row = $db->sql_fetchrow($result))
+					while ($row = phpbb::$db->sql_fetchrow($result))
 					{
 						$attachments[] = $row;
 					}
-					$db->sql_freeresult($result);
+					phpbb::$db->sql_freeresult($result);
 
 					if (sizeof($attachments))
 					{
@@ -273,9 +273,9 @@ class mcp_queue
 					$sql = 'SELECT SUM(forum_topics) as sum_forum_topics
 						FROM ' . FORUMS_TABLE . "
 						WHERE forum_id IN (0, $forum_list)";
-					$result = $db->sql_query($sql);
-					$forum_info['forum_topics'] = (int) $db->sql_fetchfield('sum_forum_topics');
-					$db->sql_freeresult($result);
+					$result = phpbb::$db->sql_query($sql);
+					$forum_info['forum_topics'] = (int) phpbb::$db->sql_fetchfield('sum_forum_topics');
+					phpbb::$db->sql_freeresult($result);
 				}
 				else
 				{
@@ -319,29 +319,29 @@ class mcp_queue
 							AND t.topic_first_post_id <> p.post_id
 							$limit_time_sql
 						ORDER BY $sort_order_sql";
-					$result = $db->sql_query_limit($sql, phpbb::$config['topics_per_page'], $start);
+					$result = phpbb::$db->sql_query_limit($sql, phpbb::$config['topics_per_page'], $start);
 
 					$i = 0;
 					$post_ids = array();
-					while ($row = $db->sql_fetchrow($result))
+					while ($row = phpbb::$db->sql_fetchrow($result))
 					{
 						$post_ids[] = $row['post_id'];
 						$row_num[$row['post_id']] = $i++;
 					}
-					$db->sql_freeresult($result);
+					phpbb::$db->sql_freeresult($result);
 
 					if (sizeof($post_ids))
 					{
 						$sql = 'SELECT t.topic_id, t.topic_title, t.forum_id, p.post_id, p.post_subject, p.post_username, p.poster_id, p.post_time, u.username, u.username_clean, u.user_colour
 							FROM ' . POSTS_TABLE . ' p, ' . TOPICS_TABLE . ' t, ' . USERS_TABLE . ' u
-							WHERE ' . $db->sql_in_set('p.post_id', $post_ids) . '
+							WHERE ' . phpbb::$db->sql_in_set('p.post_id', $post_ids) . '
 								AND t.topic_id = p.topic_id
 								AND u.user_id = p.poster_id
 							ORDER BY ' . $sort_order_sql;
-						$result = $db->sql_query($sql);
+						$result = phpbb::$db->sql_query($sql);
 
 						$post_data = $rowset = array();
-						while ($row = $db->sql_fetchrow($result))
+						while ($row = phpbb::$db->sql_fetchrow($result))
 						{
 							if ($row['forum_id'])
 							{
@@ -349,7 +349,7 @@ class mcp_queue
 							}
 							$post_data[$row['post_id']] = $row;
 						}
-						$db->sql_freeresult($result);
+						phpbb::$db->sql_freeresult($result);
 
 						foreach ($post_ids as $post_id)
 						{
@@ -370,10 +370,10 @@ class mcp_queue
 							AND topic_approved = 0
 							$limit_time_sql
 						ORDER BY $sort_order_sql";
-					$result = $db->sql_query_limit($sql, phpbb::$config['topics_per_page'], $start);
+					$result = phpbb::$db->sql_query_limit($sql, phpbb::$config['topics_per_page'], $start);
 
 					$rowset = array();
-					while ($row = $db->sql_fetchrow($result))
+					while ($row = phpbb::$db->sql_fetchrow($result))
 					{
 						if ($row['forum_id'])
 						{
@@ -381,7 +381,7 @@ class mcp_queue
 						}
 						$rowset[] = $row;
 					}
-					$db->sql_freeresult($result);
+					phpbb::$db->sql_freeresult($result);
 				}
 
 				if (sizeof($forum_names))
@@ -389,15 +389,15 @@ class mcp_queue
 					// Select the names for the forum_ids
 					$sql = 'SELECT forum_id, forum_name
 						FROM ' . FORUMS_TABLE . '
-						WHERE ' . $db->sql_in_set('forum_id', $forum_names);
-					$result = $db->sql_query($sql, 3600);
+						WHERE ' . phpbb::$db->sql_in_set('forum_id', $forum_names);
+					$result = phpbb::$db->sql_query($sql, 3600);
 
 					$forum_names = array();
-					while ($row = $db->sql_fetchrow($result))
+					while ($row = phpbb::$db->sql_fetchrow($result))
 					{
 						$forum_names[$row['forum_id']] = $row['forum_name'];
 					}
-					$db->sql_freeresult($result);
+					phpbb::$db->sql_freeresult($result);
 				}
 
 				foreach ($rowset as $row)
@@ -584,16 +584,16 @@ function approve_post($post_id_list, $id, $mode)
 		{
 			$sql = 'UPDATE ' . TOPICS_TABLE . '
 				SET topic_approved = 1
-				WHERE ' . $db->sql_in_set('topic_id', $topic_approve_sql);
-			$db->sql_query($sql);
+				WHERE ' . phpbb::$db->sql_in_set('topic_id', $topic_approve_sql);
+			phpbb::$db->sql_query($sql);
 		}
 
 		if (sizeof($post_approve_sql))
 		{
 			$sql = 'UPDATE ' . POSTS_TABLE . '
 				SET post_approved = 1
-				WHERE ' . $db->sql_in_set('post_id', $post_approve_sql);
-			$db->sql_query($sql);
+				WHERE ' . phpbb::$db->sql_in_set('post_id', $post_approve_sql);
+			phpbb::$db->sql_query($sql);
 		}
 
 		foreach ($approve_log as $log_data)
@@ -608,7 +608,7 @@ function approve_post($post_id_list, $id, $mode)
 				$sql = 'UPDATE ' . TOPICS_TABLE . "
 					SET topic_replies = topic_replies + $num_replies
 					WHERE topic_id = $topic_id";
-				$db->sql_query($sql);
+				phpbb::$db->sql_query($sql);
 			}
 		}
 
@@ -623,7 +623,7 @@ function approve_post($post_id_list, $id, $mode)
 				$sql .= ($row['forum_posts']) ? "forum_posts = forum_posts + {$row['forum_posts']}" : '';
 				$sql .= " WHERE forum_id = $forum_id";
 
-				$db->sql_query($sql);
+				phpbb::$db->sql_query($sql);
 			}
 		}
 
@@ -641,8 +641,8 @@ function approve_post($post_id_list, $id, $mode)
 			{
 				$sql = 'UPDATE ' . USERS_TABLE . '
 					SET user_posts = user_posts + ' . $user_posts . '
-					WHERE ' . $db->sql_in_set('user_id', $user_id_ary);
-				$db->sql_query($sql);
+					WHERE ' . phpbb::$db->sql_in_set('user_id', $user_id_ary);
+				phpbb::$db->sql_query($sql);
 			}
 		}
 
@@ -810,9 +810,9 @@ function disapprove_post($post_id_list, $id, $mode)
 		$sql = 'SELECT reason_title, reason_description
 			FROM ' . REPORTS_REASONS_TABLE . "
 			WHERE reason_id = $reason_id";
-		$result = $db->sql_query($sql);
-		$row = $db->sql_fetchrow($result);
-		$db->sql_freeresult($result);
+		$result = phpbb::$db->sql_query($sql);
+		$row = phpbb::$db->sql_fetchrow($result);
+		phpbb::$db->sql_freeresult($result);
 
 		if (!$row || (!$reason && strtolower($row['reason_title']) == 'other'))
 		{
@@ -904,7 +904,7 @@ function disapprove_post($post_id_list, $id, $mode)
 				$sql = 'UPDATE ' . FORUMS_TABLE . "
 					SET forum_topics_real = forum_topics_real - $topics_real
 					WHERE forum_id = $forum_id";
-				$db->sql_query($sql);
+				phpbb::$db->sql_query($sql);
 			}
 		}
 
@@ -915,7 +915,7 @@ function disapprove_post($post_id_list, $id, $mode)
 				$sql = 'UPDATE ' . TOPICS_TABLE . "
 					SET topic_replies_real = topic_replies_real - $num_replies
 					WHERE topic_id = $topic_id";
-				$db->sql_query($sql);
+				phpbb::$db->sql_query($sql);
 			}
 		}
 

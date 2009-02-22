@@ -57,9 +57,9 @@ class acp_groups
 			$sql = 'SELECT *
 				FROM ' . GROUPS_TABLE . "
 				WHERE group_id = $group_id";
-			$result = $db->sql_query($sql);
-			$group_row = $db->sql_fetchrow($result);
-			$db->sql_freeresult($result);
+			$result = phpbb::$db->sql_query($sql);
+			$group_row = phpbb::$db->sql_fetchrow($result);
+			phpbb::$db->sql_freeresult($result);
 
 			if (!$group_row)
 			{
@@ -134,16 +134,16 @@ class acp_groups
 								FROM ' . USER_GROUP_TABLE . "
 								WHERE group_id = $group_id
 								ORDER BY user_id";
-							$result = $db->sql_query_limit($sql, 200, $start);
+							$result = phpbb::$db->sql_query_limit($sql, 200, $start);
 
 							$mark_ary = array();
-							if ($row = $db->sql_fetchrow($result))
+							if ($row = phpbb::$db->sql_fetchrow($result))
 							{
 								do
 								{
 									$mark_ary[] = $row['user_id'];
 								}
-								while ($row = $db->sql_fetchrow($result));
+								while ($row = phpbb::$db->sql_fetchrow($result));
 
 								group_user_attributes('default', $group_id, $mark_ary, false, $group_name, $group_row);
 
@@ -153,7 +153,7 @@ class acp_groups
 							{
 								$start = 0;
 							}
-							$db->sql_freeresult($result);
+							phpbb::$db->sql_freeresult($result);
 						}
 						while ($start);
 					}
@@ -421,9 +421,9 @@ class acp_groups
 								$sql = 'SELECT group_founder_manage
 									FROM ' . GROUPS_TABLE . '
 									WHERE group_id = ' . $group_perm_from;
-								$result = $db->sql_query($sql);
-								$check_row = $db->sql_fetchrow($result);
-								$db->sql_freeresult($result);
+								$result = phpbb::$db->sql_query($sql);
+								$check_row = phpbb::$db->sql_fetchrow($result);
+								phpbb::$db->sql_freeresult($result);
 
 								// Check the group if non-founder
 								if ($check_row && (phpbb::$user->is_founder || $check_row['group_founder_manage'] == 0))
@@ -437,10 +437,10 @@ class acp_groups
 									$sql = 'SELECT forum_id, auth_option_id, auth_role_id, auth_setting
 										FROM ' . ACL_GROUPS_TABLE . '
 										WHERE group_id = ' . $group_perm_from;
-									$result = $db->sql_query($sql);
+									$result = phpbb::$db->sql_query($sql);
 
 									$groups_sql_ary = array();
-									while ($row = $db->sql_fetchrow($result))
+									while ($row = phpbb::$db->sql_fetchrow($result))
 									{
 										$groups_sql_ary[] = array(
 											'group_id'			=> (int) $group_id,
@@ -450,10 +450,10 @@ class acp_groups
 											'auth_setting'		=> (int) $row['auth_setting']
 										);
 									}
-									$db->sql_freeresult($result);
+									phpbb::$db->sql_freeresult($result);
 
 									// Now insert the data
-									$db->sql_multi_insert(ACL_GROUPS_TABLE, $groups_sql_ary);
+									phpbb::$db->sql_multi_insert(ACL_GROUPS_TABLE, $groups_sql_ary);
 
 									phpbb::$acl->acl_clear_prefetch();
 								}
@@ -502,16 +502,16 @@ class acp_groups
 					FROM ' . RANKS_TABLE . '
 					WHERE rank_special = 1
 					ORDER BY rank_title';
-				$result = $db->sql_query($sql);
+				$result = phpbb::$db->sql_query($sql);
 
 				$rank_options = '<option value="0"' . ((!$group_rank) ? ' selected="selected"' : '') . '>' . phpbb::$user->lang['USER_DEFAULT'] . '</option>';
 
-				while ($row = $db->sql_fetchrow($result))
+				while ($row = phpbb::$db->sql_fetchrow($result))
 				{
 					$selected = ($group_rank && $row['rank_id'] == $group_rank) ? ' selected="selected"' : '';
 					$rank_options .= '<option value="' . $row['rank_id'] . '"' . $selected . '>' . $row['rank_title'] . '</option>';
 				}
-				$db->sql_freeresult($result);
+				phpbb::$db->sql_freeresult($result);
 
 				$type_free		= ($group_type == GROUP_FREE) ? ' checked="checked"' : '';
 				$type_open		= ($group_type == GROUP_OPEN) ? ' checked="checked"' : '';
@@ -613,9 +613,9 @@ class acp_groups
 						AND u.user_id = ug.user_id
 						AND ug.group_leader = 1
 					ORDER BY ug.group_leader DESC, ug.user_pending ASC, u.username_clean";
-				$result = $db->sql_query($sql);
+				$result = phpbb::$db->sql_query($sql);
 
-				while ($row = $db->sql_fetchrow($result))
+				while ($row = phpbb::$db->sql_fetchrow($result))
 				{
 					$template->assign_block_vars('leader', array(
 						'U_USER_EDIT'		=> append_sid(PHPBB_ADMIN_PATH . 'index.' . PHP_EXT, "i=users&amp;action=edit&amp;u={$row['user_id']}"),
@@ -627,16 +627,16 @@ class acp_groups
 						'USER_ID'			=> $row['user_id'])
 					);
 				}
-				$db->sql_freeresult($result);
+				phpbb::$db->sql_freeresult($result);
 
 				// Total number of group members (non-leaders)
 				$sql = 'SELECT COUNT(user_id) AS total_members
 					FROM ' . USER_GROUP_TABLE . "
 					WHERE group_id = $group_id
 						AND group_leader = 0";
-				$result = $db->sql_query($sql);
-				$total_members = (int) $db->sql_fetchfield('total_members');
-				$db->sql_freeresult($result);
+				$result = phpbb::$db->sql_query($sql);
+				$total_members = (int) phpbb::$db->sql_fetchfield('total_members');
+				phpbb::$db->sql_freeresult($result);
 
 				$s_action_options = '';
 				$options = array('default' => 'DEFAULT', 'approve' => 'APPROVE', 'demote' => 'DEMOTE', 'promote' => 'PROMOTE', 'deleteusers' => 'DELETE');
@@ -668,11 +668,11 @@ class acp_groups
 						AND u.user_id = ug.user_id
 						AND ug.group_leader = 0
 					ORDER BY ug.group_leader DESC, ug.user_pending ASC, u.username_clean";
-				$result = $db->sql_query_limit($sql, phpbb::$config['topics_per_page'], $start);
+				$result = phpbb::$db->sql_query_limit($sql, phpbb::$config['topics_per_page'], $start);
 
 				$pending = false;
 
-				while ($row = $db->sql_fetchrow($result))
+				while ($row = phpbb::$db->sql_fetchrow($result))
 				{
 					if ($row['user_pending'] && !$pending)
 					{
@@ -693,7 +693,7 @@ class acp_groups
 						'USER_ID'			=> $row['user_id'])
 					);
 				}
-				$db->sql_freeresult($result);
+				phpbb::$db->sql_freeresult($result);
 
 				return;
 			break;
@@ -708,10 +708,10 @@ class acp_groups
 		$sql = 'SELECT g.group_id, g.group_name, g.group_type
 			FROM ' . GROUPS_TABLE . ' g
 			ORDER BY g.group_type ASC, g.group_name';
-		$result = $db->sql_query($sql);
+		$result = phpbb::$db->sql_query($sql);
 
 		$lookup = $cached_group_data = array();
-		while ($row = $db->sql_fetchrow($result))
+		while ($row = phpbb::$db->sql_fetchrow($result))
 		{
 			$type = ($row['group_type'] == GROUP_SPECIAL) ? 'special' : 'normal';
 
@@ -722,21 +722,21 @@ class acp_groups
 			$cached_group_data[$type][$row['group_id']] = $row;
 			$cached_group_data[$type][$row['group_id']]['total_members'] = 0;
 		}
-		$db->sql_freeresult($result);
+		phpbb::$db->sql_freeresult($result);
 
 		// How many people are in which group?
 		$sql = 'SELECT COUNT(ug.user_id) AS total_members, ug.group_id
 			FROM ' . USER_GROUP_TABLE . ' ug
-			WHERE ' . $db->sql_in_set('ug.group_id', array_keys($lookup)) . '
+			WHERE ' . phpbb::$db->sql_in_set('ug.group_id', array_keys($lookup)) . '
 			GROUP BY ug.group_id';
-		$result = $db->sql_query($sql);
+		$result = phpbb::$db->sql_query($sql);
 
-		while ($row = $db->sql_fetchrow($result))
+		while ($row = phpbb::$db->sql_fetchrow($result))
 		{
 			$type = $lookup[$row['group_id']];
 			$cached_group_data[$type][$row['group_id']]['total_members'] = $row['total_members'];
 		}
-		$db->sql_freeresult($result);
+		phpbb::$db->sql_freeresult($result);
 
 		// The order is... normal, then special
 		ksort($cached_group_data);

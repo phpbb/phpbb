@@ -253,11 +253,11 @@ class ucp_register
 
 				$sql = 'SELECT group_id
 					FROM ' . GROUPS_TABLE . "
-					WHERE group_name = '" . $db->sql_escape($group_name) . "'
+					WHERE group_name = '" . phpbb::$db->sql_escape($group_name) . "'
 						AND group_type = " . GROUP_SPECIAL;
-				$result = $db->sql_query($sql);
-				$row = $db->sql_fetchrow($result);
-				$db->sql_freeresult($result);
+				$result = phpbb::$db->sql_query($sql);
+				$row = phpbb::$db->sql_fetchrow($result);
+				phpbb::$db->sql_freeresult($result);
 
 				if (!$row)
 				{
@@ -377,15 +377,15 @@ class ucp_register
 
 						if (sizeof($admin_ary))
 						{
-							$where_sql .= ' OR ' . $db->sql_in_set('user_id', $admin_ary);
+							$where_sql .= ' OR ' . phpbb::$db->sql_in_set('user_id', $admin_ary);
 						}
 
 						$sql = 'SELECT user_id, username, user_email, user_lang, user_jabber, user_notify_type
 							FROM ' . USERS_TABLE . ' ' .
 							$where_sql;
-						$result = $db->sql_query($sql);
+						$result = phpbb::$db->sql_query($sql);
 
-						while ($row = $db->sql_fetchrow($result))
+						while ($row = phpbb::$db->sql_fetchrow($result))
 						{
 							$messenger->template('admin_activate', $row['user_lang']);
 							$messenger->to($row['user_email'], $row['username']);
@@ -399,7 +399,7 @@ class ucp_register
 
 							$messenger->send($row['user_notify_type']);
 						}
-						$db->sql_freeresult($result);
+						phpbb::$db->sql_freeresult($result);
 					}
 				}
 

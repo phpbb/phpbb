@@ -131,17 +131,17 @@ function mcp_topic_view($id, $mode, $action)
 			AND p.poster_id = u.user_id ' .
 			$limit_time_sql . '
 		ORDER BY ' . $sort_order_sql;
-	$result = $db->sql_query_limit($sql, $posts_per_page, $start);
+	$result = phpbb::$db->sql_query_limit($sql, $posts_per_page, $start);
 
 	$rowset = $post_id_list = array();
 	$bbcode_bitfield = '';
-	while ($row = $db->sql_fetchrow($result))
+	while ($row = phpbb::$db->sql_fetchrow($result))
 	{
 		$rowset[] = $row;
 		$post_id_list[] = $row['post_id'];
 		$bbcode_bitfield = $bbcode_bitfield | base64_decode($row['bbcode_bitfield']);
 	}
-	$db->sql_freeresult($result);
+	phpbb::$db->sql_freeresult($result);
 
 	if ($bbcode_bitfield !== '')
 	{
@@ -176,16 +176,16 @@ function mcp_topic_view($id, $mode, $action)
 		{
 			$sql = 'SELECT *
 				FROM ' . ATTACHMENTS_TABLE . '
-				WHERE ' . $db->sql_in_set('post_msg_id', $post_id_list) . '
+				WHERE ' . phpbb::$db->sql_in_set('post_msg_id', $post_id_list) . '
 					AND in_message = 0
 				ORDER BY filetime DESC, post_msg_id ASC';
-			$result = $db->sql_query($sql);
+			$result = phpbb::$db->sql_query($sql);
 
-			while ($row = $db->sql_fetchrow($result))
+			while ($row = phpbb::$db->sql_fetchrow($result))
 			{
 				$attachments[$row['post_msg_id']][] = $row;
 			}
-			$db->sql_freeresult($result);
+			phpbb::$db->sql_freeresult($result);
 		}
 	}
 
@@ -435,11 +435,11 @@ function split_topic($action, $topic_id, $to_forum_id, $subject)
 						$limit_time_sql
 					ORDER BY $sort_order_sql";
 			}
-			$result = $db->sql_query_limit($sql, 0, $start);
+			$result = phpbb::$db->sql_query_limit($sql, 0, $start);
 
 			$store = false;
 			$post_id_list = array();
-			while ($row = $db->sql_fetchrow($result))
+			while ($row = phpbb::$db->sql_fetchrow($result))
 			{
 				// If split from selected post (split_beyond), we split the unapproved items too.
 				if (!$row['post_approved'] && !phpbb::$acl->acl_get('m_approve', $row['forum_id']))
@@ -458,7 +458,7 @@ function split_topic($action, $topic_id, $to_forum_id, $subject)
 					$post_id_list[] = $row['post_id'];
 				}
 			}
-			$db->sql_freeresult($result);
+			phpbb::$db->sql_freeresult($result);
 		}
 
 		if (!sizeof($post_id_list))
@@ -475,10 +475,10 @@ function split_topic($action, $topic_id, $to_forum_id, $subject)
 			'topic_approved'=> 1
 		);
 
-		$sql = 'INSERT INTO ' . TOPICS_TABLE . ' ' . $db->sql_build_array('INSERT', $sql_ary);
-		$db->sql_query($sql);
+		$sql = 'INSERT INTO ' . TOPICS_TABLE . ' ' . phpbb::$db->sql_build_array('INSERT', $sql_ary);
+		phpbb::$db->sql_query($sql);
 
-		$to_topic_id = $db->sql_nextid();
+		$to_topic_id = phpbb::$db->sql_nextid();
 		move_posts($post_id_list, $to_topic_id);
 
 		$topic_info = get_topic_data(array($topic_id));
@@ -489,9 +489,9 @@ function split_topic($action, $topic_id, $to_forum_id, $subject)
 
 		// Change topic title of first post
 		$sql = 'UPDATE ' . POSTS_TABLE . "
-			SET post_subject = '" . $db->sql_escape($subject) . "'
+			SET post_subject = '" . phpbb::$db->sql_escape($subject) . "'
 			WHERE post_id = {$post_id_list[0]}";
-		$db->sql_query($sql);
+		phpbb::$db->sql_query($sql);
 
 		$success_msg = 'TOPIC_SPLIT_SUCCESS';
 
@@ -583,9 +583,9 @@ function merge_posts($topic_id, $to_topic_id)
 		$sql = 'SELECT forum_id
 			FROM ' . TOPICS_TABLE . '
 			WHERE topic_id = ' . $topic_id;
-		$result = $db->sql_query_limit($sql, 1);
-		$row = $db->sql_fetchrow($result);
-		$db->sql_freeresult($result);
+		$result = phpbb::$db->sql_query_limit($sql, 1);
+		$row = phpbb::$db->sql_fetchrow($result);
+		phpbb::$db->sql_freeresult($result);
 
 		if ($row)
 		{
@@ -595,11 +595,11 @@ function merge_posts($topic_id, $to_topic_id)
 		{
 			// If the topic no longer exist, we will update the topic watch table.
 			// To not let it error out on users watching both topics, we just return on an error...
-			$db->sql_return_on_error(true);
-			$db->sql_query('UPDATE ' . TOPICS_WATCH_TABLE . ' SET topic_id = ' . (int) $to_topic_id . ' WHERE topic_id = ' . (int) $topic_id);
-			$db->sql_return_on_error(false);
+			phpbb::$db->sql_return_on_error(true);
+			phpbb::$db->sql_query('UPDATE ' . TOPICS_WATCH_TABLE . ' SET topic_id = ' . (int) $to_topic_id . ' WHERE topic_id = ' . (int) $topic_id);
+			phpbb::$db->sql_return_on_error(false);
 
-			$db->sql_query('DELETE FROM ' . TOPICS_WATCH_TABLE . ' WHERE topic_id = ' . (int) $topic_id);
+			phpbb::$db->sql_query('DELETE FROM ' . TOPICS_WATCH_TABLE . ' WHERE topic_id = ' . (int) $topic_id);
 		}
 
 		// Link to the new topic

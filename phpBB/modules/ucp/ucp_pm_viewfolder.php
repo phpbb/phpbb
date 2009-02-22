@@ -90,14 +90,14 @@ function view_folder($id, $mode, $folder_id, $folder)
 		$sql = 'SELECT *
 			FROM ' . ZEBRA_TABLE . '
 			WHERE user_id = ' . phpbb::$user->data['user_id'];
-		$result = $db->sql_query($sql);
+		$result = phpbb::$db->sql_query($sql);
 
-		while ($row = $db->sql_fetchrow($result))
+		while ($row = phpbb::$db->sql_fetchrow($result))
 		{
 			$friend[$row['zebra_id']] = $row['friend'];
 			$foe[$row['zebra_id']] = $row['foe'];
 		}
-		$db->sql_freeresult($result);
+		phpbb::$db->sql_freeresult($result);
 
 		$template->assign_vars(array(
 			'S_MARK_OPTIONS'		=> $s_mark_options,
@@ -147,11 +147,11 @@ function view_folder($id, $mode, $folder_id, $folder)
 								FROM ' . GROUPS_TABLE . '
 								WHERE ';
 						}
-						$sql .= $db->sql_in_set(($ug_type == 'u') ? 'user_id' : 'group_id', array_map('intval', array_keys($recipient_list[$ug_type])));
+						$sql .= phpbb::$db->sql_in_set(($ug_type == 'u') ? 'user_id' : 'group_id', array_map('intval', array_keys($recipient_list[$ug_type])));
 
-						$result = $db->sql_query($sql);
+						$result = phpbb::$db->sql_query($sql);
 
-						while ($row = $db->sql_fetchrow($result))
+						while ($row = phpbb::$db->sql_fetchrow($result))
 						{
 							if ($ug_type == 'g')
 							{
@@ -160,7 +160,7 @@ function view_folder($id, $mode, $folder_id, $folder)
 
 							$recipient_list[$ug_type][$row['id']] = array('name' => $row['name'], 'colour' => $row['colour']);
 						}
-						$db->sql_freeresult($result);
+						phpbb::$db->sql_freeresult($result);
 					}
 				}
 
@@ -286,9 +286,9 @@ function view_folder($id, $mode, $folder_id, $folder)
 						AND t.folder_id = $folder_id
 						AND t.msg_id = p.msg_id
 						AND p.msg_id = $message_id";
-				$result = $db->sql_query_limit($sql, 1);
-				$message_row = $db->sql_fetchrow($result);
-				$db->sql_freeresult($result);
+				$result = phpbb::$db->sql_query_limit($sql, 1);
+				$message_row = phpbb::$db->sql_fetchrow($result);
+				phpbb::$db->sql_freeresult($result);
 
 				$_types = array('u', 'g');
 				foreach ($_types as $ug_type)
@@ -307,16 +307,16 @@ function view_folder($id, $mode, $folder_id, $folder)
 								FROM ' . GROUPS_TABLE . '
 								WHERE ';
 						}
-						$sql .= $db->sql_in_set(($ug_type == 'u') ? 'user_id' : 'group_id', array_map('intval', array_keys($address[$message_id][$ug_type])));
+						$sql .= phpbb::$db->sql_in_set(($ug_type == 'u') ? 'user_id' : 'group_id', array_map('intval', array_keys($address[$message_id][$ug_type])));
 
-						$result = $db->sql_query($sql);
+						$result = phpbb::$db->sql_query($sql);
 
-						while ($info_row = $db->sql_fetchrow($result))
+						while ($info_row = phpbb::$db->sql_fetchrow($result))
 						{
 							$address[$message_id][$ug_type][$address[$message_id][$ug_type][$info_row['id']]][] = $info_row['name'];
 							unset($address[$message_id][$ug_type][$info_row['id']]);
 						}
-						$db->sql_freeresult($result);
+						phpbb::$db->sql_freeresult($result);
 					}
 				}
 
@@ -480,9 +480,9 @@ function get_pm_from($folder_id, $folder, $user_id)
 				AND t.user_id = $user_id
 				AND t.msg_id = p.msg_id
 				AND p.message_time >= $min_post_time";
-		$result = $db->sql_query_limit($sql, 1);
-		$pm_count = (int) $db->sql_fetchfield('pm_count');
-		$db->sql_freeresult($result);
+		$result = phpbb::$db->sql_query_limit($sql, 1);
+		$pm_count = (int) phpbb::$db->sql_fetchfield('pm_count');
+		phpbb::$db->sql_freeresult($result);
 
 		$sql_limit_time = "AND p.message_time >= $min_post_time";
 	}
@@ -544,14 +544,14 @@ function get_pm_from($folder_id, $folder, $user_id)
 			AND t.msg_id = p.msg_id
 			$sql_limit_time
 		ORDER BY $sql_sort_order";
-	$result = $db->sql_query_limit($sql, $sql_limit, $sql_start);
+	$result = phpbb::$db->sql_query_limit($sql, $sql_limit, $sql_start);
 
-	while ($row = $db->sql_fetchrow($result))
+	while ($row = phpbb::$db->sql_fetchrow($result))
 	{
 		$rowset[$row['msg_id']] = $row;
 		$pm_list[] = $row['msg_id'];
 	}
-	$db->sql_freeresult($result);
+	phpbb::$db->sql_freeresult($result);
 
 	$pm_list = ($store_reverse) ? array_reverse($pm_list) : $pm_list;
 

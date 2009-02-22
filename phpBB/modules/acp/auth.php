@@ -32,11 +32,11 @@ class auth_admin extends auth
 			$sql = 'SELECT auth_option_id, auth_option, is_global, is_local
 				FROM ' . ACL_OPTIONS_TABLE . '
 				ORDER BY auth_option_id';
-			$result = $db->sql_query($sql);
+			$result = phpbb::$db->sql_query($sql);
 
 			$global = $local = 0;
 			$this->acl_options = array();
-			while ($row = $db->sql_fetchrow($result))
+			while ($row = phpbb::$db->sql_fetchrow($result))
 			{
 				if ($row['is_global'])
 				{
@@ -51,7 +51,7 @@ class auth_admin extends auth
 				$this->acl_options['id'][$row['auth_option']] = (int) $row['auth_option_id'];
 				$this->acl_options['option'][(int) $row['auth_option_id']] = $row['auth_option'];
 			}
-			$db->sql_freeresult($result);
+			phpbb::$db->sql_freeresult($result);
 
 			phpbb::$acm->put('acl_options', $this->acl_options);
 		}
@@ -105,13 +105,13 @@ class auth_admin extends auth
 		{
 			$sql = 'SELECT forum_id
 				FROM ' . FORUMS_TABLE;
-			$result = $db->sql_query($sql, 120);
+			$result = phpbb::$db->sql_query($sql, 120);
 
-			while ($row = $db->sql_fetchrow($result))
+			while ($row = phpbb::$db->sql_fetchrow($result))
 			{
 				$forum_ids[] = (int) $row['forum_id'];
 			}
-			$db->sql_freeresult($result);
+			phpbb::$db->sql_freeresult($result);
 		}
 
 		if ($view_user_mask)
@@ -120,10 +120,10 @@ class auth_admin extends auth
 
 			$sql = 'SELECT user_id, user_permissions, user_type
 				FROM ' . USERS_TABLE . '
-				WHERE ' . $db->sql_in_set('user_id', $ug_id);
-			$result = $db->sql_query($sql);
+				WHERE ' . phpbb::$db->sql_in_set('user_id', $ug_id);
+			$result = phpbb::$db->sql_query($sql);
 
-			while ($userdata = $db->sql_fetchrow($result))
+			while ($userdata = phpbb::$db->sql_fetchrow($result))
 			{
 				if (phpbb::$user->data['user_id'] != $userdata['user_id'])
 				{
@@ -147,7 +147,7 @@ class auth_admin extends auth
 					}
 				}
 			}
-			$db->sql_freeresult($result);
+			phpbb::$db->sql_freeresult($result);
 
 			unset($userdata);
 			unset($auth2);
@@ -227,26 +227,26 @@ class auth_admin extends auth
 			FROM ' . ACL_USERS_TABLE . '
 			WHERE auth_role_id = ' . $role_id . '
 			ORDER BY forum_id';
-		$result = $db->sql_query($sql);
+		$result = phpbb::$db->sql_query($sql);
 
-		while ($row = $db->sql_fetchrow($result))
+		while ($row = phpbb::$db->sql_fetchrow($result))
 		{
 			$hold_ary[$row['forum_id']]['users'][] = $row['user_id'];
 		}
-		$db->sql_freeresult($result);
+		phpbb::$db->sql_freeresult($result);
 
 		// Now grab groups...
 		$sql = 'SELECT group_id, forum_id
 			FROM ' . ACL_GROUPS_TABLE . '
 			WHERE auth_role_id = ' . $role_id . '
 			ORDER BY forum_id';
-		$result = $db->sql_query($sql);
+		$result = phpbb::$db->sql_query($sql);
 
-		while ($row = $db->sql_fetchrow($result))
+		while ($row = phpbb::$db->sql_fetchrow($result))
 		{
 			$hold_ary[$row['forum_id']]['groups'][] = $row['group_id'];
 		}
-		$db->sql_freeresult($result);
+		phpbb::$db->sql_freeresult($result);
 
 		return $hold_ary;
 	}
@@ -272,24 +272,24 @@ class auth_admin extends auth
 		{
 			$sql = 'SELECT user_id as ug_id, username as ug_name
 				FROM ' . USERS_TABLE . '
-				WHERE ' . $db->sql_in_set('user_id', array_keys($hold_ary)) . '
+				WHERE ' . phpbb::$db->sql_in_set('user_id', array_keys($hold_ary)) . '
 				ORDER BY username_clean ASC';
 		}
 		else
 		{
 			$sql = 'SELECT group_id as ug_id, group_name as ug_name, group_type
 				FROM ' . GROUPS_TABLE . '
-				WHERE ' . $db->sql_in_set('group_id', array_keys($hold_ary)) . '
+				WHERE ' . phpbb::$db->sql_in_set('group_id', array_keys($hold_ary)) . '
 				ORDER BY group_type DESC, group_name ASC';
 		}
-		$result = $db->sql_query($sql);
+		$result = phpbb::$db->sql_query($sql);
 
 		$ug_names_ary = array();
-		while ($row = $db->sql_fetchrow($result))
+		while ($row = phpbb::$db->sql_fetchrow($result))
 		{
 			$ug_names_ary[$row['ug_id']] = ($user_mode == 'user') ? $row['ug_name'] : (($row['group_type'] == GROUP_SPECIAL) ? phpbb::$user->lang['G_' . $row['ug_name']] : $row['ug_name']);
 		}
-		$db->sql_freeresult($result);
+		phpbb::$db->sql_freeresult($result);
 
 		// Get used forums
 		$forum_ids = array();
@@ -322,16 +322,16 @@ class auth_admin extends auth
 		// Get available roles
 		$sql = 'SELECT *
 			FROM ' . ACL_ROLES_TABLE . "
-			WHERE role_type = '" . $db->sql_escape($permission_type) . "'
+			WHERE role_type = '" . phpbb::$db->sql_escape($permission_type) . "'
 			ORDER BY role_order ASC";
-		$result = $db->sql_query($sql);
+		$result = phpbb::$db->sql_query($sql);
 
 		$roles = array();
-		while ($row = $db->sql_fetchrow($result))
+		while ($row = phpbb::$db->sql_fetchrow($result))
 		{
 			$roles[$row['role_id']] = $row;
 		}
-		$db->sql_freeresult($result);
+		phpbb::$db->sql_freeresult($result);
 
 		$cur_roles = $this->acl_role_data($user_mode, $permission_type, array_keys($hold_ary));
 
@@ -351,10 +351,10 @@ class auth_admin extends auth
 			$sql = 'SELECT r.role_id, o.auth_option, r.auth_setting
 				FROM ' . ACL_ROLES_DATA_TABLE . ' r, ' . ACL_OPTIONS_TABLE . ' o
 				WHERE o.auth_option_id = r.auth_option_id
-					AND ' . $db->sql_in_set('r.role_id', array_keys($roles));
-			$result = $db->sql_query($sql);
+					AND ' . phpbb::$db->sql_in_set('r.role_id', array_keys($roles));
+			$result = phpbb::$db->sql_query($sql);
 
-			while ($row = $db->sql_fetchrow($result))
+			while ($row = phpbb::$db->sql_fetchrow($result))
 			{
 				$flag = substr($row['auth_option'], 0, strpos($row['auth_option'], '_') + 1);
 				if ($flag == $row['auth_option'])
@@ -364,7 +364,7 @@ class auth_admin extends auth
 
 				$s_role_js_array[$row['role_id']] .= 'role_options[' . $row['role_id'] . '][\'' . addslashes($row['auth_option']) . '\'] = ' . $row['auth_setting'] . '; ';
 			}
-			$db->sql_freeresult($result);
+			phpbb::$db->sql_freeresult($result);
 
 			$s_role_js_array = implode('', $s_role_js_array);
 		}
@@ -379,14 +379,14 @@ class auth_admin extends auth
 			$sql = 'SELECT group_id, group_name, group_type
 				FROM ' . GROUPS_TABLE . '
 				ORDER BY group_type DESC, group_name ASC';
-			$result = $db->sql_query($sql);
+			$result = phpbb::$db->sql_query($sql);
 
 			$groups = array();
-			while ($row = $db->sql_fetchrow($result))
+			while ($row = phpbb::$db->sql_fetchrow($result))
 			{
 				$groups[$row['group_id']] = $row;
 			}
-			$db->sql_freeresult($result);
+			phpbb::$db->sql_freeresult($result);
 
 			$memberships = group_memberships(false, array_keys($hold_ary), false);
 
@@ -606,17 +606,17 @@ class auth_admin extends auth
 		// Get forum names
 		$sql = 'SELECT forum_id, forum_name
 			FROM ' . FORUMS_TABLE . '
-			WHERE ' . $db->sql_in_set('forum_id', array_keys($hold_ary)) . '
+			WHERE ' . phpbb::$db->sql_in_set('forum_id', array_keys($hold_ary)) . '
 			ORDER BY left_id';
-		$result = $db->sql_query($sql);
+		$result = phpbb::$db->sql_query($sql);
 
 		// If the role is used globally, then reflect that
 		$forum_names = (isset($hold_ary[0])) ? array(0 => '') : array();
-		while ($row = $db->sql_fetchrow($result))
+		while ($row = phpbb::$db->sql_fetchrow($result))
 		{
 			$forum_names[$row['forum_id']] = $row['forum_name'];
 		}
-		$db->sql_freeresult($result);
+		phpbb::$db->sql_freeresult($result);
 
 		foreach ($forum_names as $forum_id => $forum_name)
 		{
@@ -631,11 +631,11 @@ class auth_admin extends auth
 			{
 				$sql = 'SELECT user_id, username
 					FROM ' . USERS_TABLE . '
-					WHERE ' . $db->sql_in_set('user_id', $auth_ary['users']) . '
+					WHERE ' . phpbb::$db->sql_in_set('user_id', $auth_ary['users']) . '
 					ORDER BY username_clean ASC';
-				$result = $db->sql_query($sql);
+				$result = phpbb::$db->sql_query($sql);
 
-				while ($row = $db->sql_fetchrow($result))
+				while ($row = phpbb::$db->sql_fetchrow($result))
 				{
 					$template->assign_block_vars('role_mask.users', array(
 						'USER_ID'		=> $row['user_id'],
@@ -643,18 +643,18 @@ class auth_admin extends auth
 						'U_PROFILE'		=> append_sid('memberlist', "mode=viewprofile&amp;u={$row['user_id']}"))
 					);
 				}
-				$db->sql_freeresult($result);
+				phpbb::$db->sql_freeresult($result);
 			}
 
 			if (isset($auth_ary['groups']) && sizeof($auth_ary['groups']))
 			{
 				$sql = 'SELECT group_id, group_name, group_type
 					FROM ' . GROUPS_TABLE . '
-					WHERE ' . $db->sql_in_set('group_id', $auth_ary['groups']) . '
+					WHERE ' . phpbb::$db->sql_in_set('group_id', $auth_ary['groups']) . '
 					ORDER BY group_type ASC, group_name';
-				$result = $db->sql_query($sql);
+				$result = phpbb::$db->sql_query($sql);
 
-				while ($row = $db->sql_fetchrow($result))
+				while ($row = phpbb::$db->sql_fetchrow($result))
 				{
 					$template->assign_block_vars('role_mask.groups', array(
 						'GROUP_ID'		=> $row['group_id'],
@@ -662,7 +662,7 @@ class auth_admin extends auth
 						'U_PROFILE'		=> append_sid('memberlist', "mode=group&amp;g={$row['group_id']}"))
 					);
 				}
-				$db->sql_freeresult($result);
+				phpbb::$db->sql_freeresult($result);
 			}
 		}
 	}
@@ -682,9 +682,9 @@ class auth_admin extends auth
 		$sql = 'SELECT auth_option, is_global, is_local
 			FROM ' . ACL_OPTIONS_TABLE . '
 			ORDER BY auth_option_id';
-		$result = $db->sql_query($sql);
+		$result = phpbb::$db->sql_query($sql);
 
-		while ($row = $db->sql_fetchrow($result))
+		while ($row = phpbb::$db->sql_fetchrow($result))
 		{
 			if ($row['is_global'])
 			{
@@ -696,7 +696,7 @@ class auth_admin extends auth
 				$cur_options['local'][] = $row['auth_option'];
 			}
 		}
-		$db->sql_freeresult($result);
+		phpbb::$db->sql_freeresult($result);
 
 		// Here we need to insert new options ... this requires discovering whether
 		// an options is global, local or both and whether we need to add an permission
@@ -743,7 +743,7 @@ class auth_admin extends auth
 			}
 		}
 
-		$db->sql_multi_insert(ACL_OPTIONS_TABLE, $sql_ary);
+		phpbb::$db->sql_multi_insert(ACL_OPTIONS_TABLE, $sql_ary);
 
 		phpbb::$acm->destroy('acl_options');
 		$this->acl_clear_prefetch();
@@ -772,8 +772,8 @@ class auth_admin extends auth
 			$ug_id = array($ug_id);
 		}
 
-		$ug_id_sql = $db->sql_in_set($ug_type . '_id', array_map('intval', $ug_id));
-		$forum_sql = $db->sql_in_set('forum_id', array_map('intval', $forum_id));
+		$ug_id_sql = phpbb::$db->sql_in_set($ug_type . '_id', array_map('intval', $ug_id));
+		$forum_sql = phpbb::$db->sql_in_set('forum_id', array_map('intval', $forum_id));
 
 		// Instead of updating, inserting, removing we just remove all current settings and re-set everything...
 		$table = ($ug_type == 'user') ? ACL_USERS_TABLE : ACL_GROUPS_TABLE;
@@ -803,21 +803,21 @@ class auth_admin extends auth
 		$sql = "DELETE FROM $table
 			WHERE $forum_sql
 				AND $ug_id_sql
-				AND " . $db->sql_in_set('auth_option_id', $auth_option_ids);
-		$db->sql_query($sql);
+				AND " . phpbb::$db->sql_in_set('auth_option_id', $auth_option_ids);
+		phpbb::$db->sql_query($sql);
 
 		// Remove those having a role assigned... the correct type of course...
 		$sql = 'SELECT role_id
 			FROM ' . ACL_ROLES_TABLE . "
-			WHERE role_type = '" . $db->sql_escape($flag) . "'";
-		$result = $db->sql_query($sql);
+			WHERE role_type = '" . phpbb::$db->sql_escape($flag) . "'";
+		$result = phpbb::$db->sql_query($sql);
 
 		$role_ids = array();
-		while ($row = $db->sql_fetchrow($result))
+		while ($row = phpbb::$db->sql_fetchrow($result))
 		{
 			$role_ids[] = $row['role_id'];
 		}
-		$db->sql_freeresult($result);
+		phpbb::$db->sql_freeresult($result);
 
 		if (sizeof($role_ids))
 		{
@@ -825,8 +825,8 @@ class auth_admin extends auth
 				WHERE $forum_sql
 					AND $ug_id_sql
 					AND auth_option_id = 0
-					AND " . $db->sql_in_set('auth_role_id', $role_ids);
-			$db->sql_query($sql);
+					AND " . phpbb::$db->sql_in_set('auth_role_id', $role_ids);
+			phpbb::$db->sql_query($sql);
 		}
 
 		// Ok, include the any-flag if one or more auth options are set to yes...
@@ -878,7 +878,7 @@ class auth_admin extends auth
 			}
 		}
 
-		$db->sql_multi_insert($table, $sql_ary);
+		phpbb::$db->sql_multi_insert($table, $sql_ary);
 
 		if ($clear_prefetch)
 		{
@@ -939,10 +939,10 @@ class auth_admin extends auth
 		// Remove current auth options...
 		$sql = 'DELETE FROM ' . ACL_ROLES_DATA_TABLE . '
 			WHERE role_id = ' . $role_id;
-		$db->sql_query($sql);
+		phpbb::$db->sql_query($sql);
 
 		// Now insert the new values
-		$db->sql_multi_insert(ACL_ROLES_DATA_TABLE, $sql_ary);
+		phpbb::$db->sql_multi_insert(ACL_ROLES_DATA_TABLE, $sql_ary);
 
 		$this->acl_clear_prefetch();
 	}
@@ -965,12 +965,12 @@ class auth_admin extends auth
 
 		if ($forum_id !== false)
 		{
-			$where_sql[] = (!is_array($forum_id)) ? 'forum_id = ' . (int) $forum_id : $db->sql_in_set('forum_id', array_map('intval', $forum_id));
+			$where_sql[] = (!is_array($forum_id)) ? 'forum_id = ' . (int) $forum_id : phpbb::$db->sql_in_set('forum_id', array_map('intval', $forum_id));
 		}
 
 		if ($ug_id !== false)
 		{
-			$where_sql[] = (!is_array($ug_id)) ? $id_field . ' = ' . (int) $ug_id : $db->sql_in_set($id_field, array_map('intval', $ug_id));
+			$where_sql[] = (!is_array($ug_id)) ? $id_field . ' = ' . (int) $ug_id : phpbb::$db->sql_in_set($id_field, array_map('intval', $ug_id));
 		}
 
 		// There seem to be auth options involved, therefore we need to go through the list and make sure we capture roles correctly
@@ -979,16 +979,16 @@ class auth_admin extends auth
 			// Get permission type
 			$sql = 'SELECT auth_option, auth_option_id
 				FROM ' . ACL_OPTIONS_TABLE . "
-				WHERE auth_option " . $db->sql_like_expression($permission_type . $db->any_char);
-			$result = $db->sql_query($sql);
+				WHERE auth_option " . phpbb::$db->sql_like_expression($permission_type . phpbb::$db->any_char);
+			$result = phpbb::$db->sql_query($sql);
 
 			$auth_id_ary = array();
-			while ($row = $db->sql_fetchrow($result))
+			while ($row = phpbb::$db->sql_fetchrow($result))
 			{
 				$option_id_ary[] = $row['auth_option_id'];
 				$auth_id_ary[$row['auth_option']] = phpbb::ACL_NO;
 			}
-			$db->sql_freeresult($result);
+			phpbb::$db->sql_freeresult($result);
 
 			// First of all, lets grab the items having roles with the specified auth options assigned
 			$sql = "SELECT auth_role_id, $id_field, forum_id
@@ -998,14 +998,14 @@ class auth_admin extends auth
 					AND r.role_type = '{$permission_type}'
 					AND " . implode(' AND ', $where_sql) . '
 				ORDER BY auth_role_id';
-			$result = $db->sql_query($sql);
+			$result = phpbb::$db->sql_query($sql);
 
 			$cur_role_auth = array();
-			while ($row = $db->sql_fetchrow($result))
+			while ($row = phpbb::$db->sql_fetchrow($result))
 			{
 				$cur_role_auth[$row['auth_role_id']][$row['forum_id']][] = $row[$id_field];
 			}
-			$db->sql_freeresult($result);
+			phpbb::$db->sql_freeresult($result);
 
 			// Get role data for resetting data
 			if (sizeof($cur_role_auth))
@@ -1013,11 +1013,11 @@ class auth_admin extends auth
 				$sql = 'SELECT ao.auth_option, rd.role_id, rd.auth_setting
 					FROM ' . ACL_OPTIONS_TABLE . ' ao, ' . ACL_ROLES_DATA_TABLE . ' rd
 					WHERE ao.auth_option_id = rd.auth_option_id
-						AND ' . $db->sql_in_set('rd.role_id', array_keys($cur_role_auth));
-				$result = $db->sql_query($sql);
+						AND ' . phpbb::$db->sql_in_set('rd.role_id', array_keys($cur_role_auth));
+				$result = phpbb::$db->sql_query($sql);
 
 				$auth_settings = array();
-				while ($row = $db->sql_fetchrow($result))
+				while ($row = phpbb::$db->sql_fetchrow($result))
 				{
 					// We need to fill all auth_options, else setting it will fail...
 					if (!isset($auth_settings[$row['role_id']]))
@@ -1026,7 +1026,7 @@ class auth_admin extends auth
 					}
 					$auth_settings[$row['role_id']][$row['auth_option']] = $row['auth_setting'];
 				}
-				$db->sql_freeresult($result);
+				phpbb::$db->sql_freeresult($result);
 
 				// Set the options
 				foreach ($cur_role_auth as $role_id => $auth_row)
@@ -1042,12 +1042,12 @@ class auth_admin extends auth
 		// Now, normally remove permissions...
 		if ($permission_type !== false)
 		{
-			$where_sql[] = $db->sql_in_set('auth_option_id', array_map('intval', $option_id_ary));
+			$where_sql[] = phpbb::$db->sql_in_set('auth_option_id', array_map('intval', $option_id_ary));
 		}
 
 		$sql = "DELETE FROM $table
 			WHERE " . implode(' AND ', $where_sql);
-		$db->sql_query($sql);
+		phpbb::$db->sql_query($sql);
 
 		$this->acl_clear_prefetch();
 	}
@@ -1224,10 +1224,10 @@ class auth_admin extends auth
 		}
 
 		$sql = 'UPDATE ' . USERS_TABLE . "
-			SET user_permissions = '" . $db->sql_escape($user_permissions) . "',
+			SET user_permissions = '" . phpbb::$db->sql_escape($user_permissions) . "',
 				user_perm_from = $from_user_id
 			WHERE user_id = " . $to_user_id;
-		$db->sql_query($sql);
+		phpbb::$db->sql_query($sql);
 
 		return true;
 	}

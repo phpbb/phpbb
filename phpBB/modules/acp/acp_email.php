@@ -71,7 +71,7 @@ class acp_email
 					// If giving usernames the admin is able to email inactive users too...
 					$sql = 'SELECT username, user_email, user_jabber, user_notify_type, user_lang
 						FROM ' . USERS_TABLE . '
-						WHERE ' . $db->sql_in_set('username_clean', array_map('utf8_clean_string', explode("\n", $usernames))) . '
+						WHERE ' . phpbb::$db->sql_in_set('username_clean', array_map('utf8_clean_string', explode("\n", $usernames))) . '
 							AND user_allow_massemail = 1
 						ORDER BY user_lang, user_notify_type'; // , SUBSTRING(user_email FROM INSTR(user_email, '@'))
 				}
@@ -97,12 +97,12 @@ class acp_email
 							ORDER BY user_lang, user_notify_type';
 					}
 				}
-				$result = $db->sql_query($sql);
-				$row = $db->sql_fetchrow($result);
+				$result = phpbb::$db->sql_query($sql);
+				$row = phpbb::$db->sql_fetchrow($result);
 
 				if (!$row)
 				{
-					$db->sql_freeresult($result);
+					phpbb::$db->sql_freeresult($result);
 					trigger_error(phpbb::$user->lang['NO_USER'] . adm_back_link($this->u_action), E_USER_WARNING);
 				}
 
@@ -141,8 +141,8 @@ class acp_email
 						$i++;
 					}
 				}
-				while ($row = $db->sql_fetchrow($result));
-				$db->sql_freeresult($result);
+				while ($row = phpbb::$db->sql_fetchrow($result));
+				phpbb::$db->sql_freeresult($result);
 
 				// Send the messages
 				include_once(PHPBB_ROOT_PATH . 'includes/functions_messenger.' . PHP_EXT);
@@ -225,14 +225,14 @@ class acp_email
 		$sql = 'SELECT group_id
 			FROM ' . GROUPS_TABLE . "
 			WHERE group_name_clean IN ('bots', 'guests')";
-		$result = $db->sql_query($sql);
+		$result = phpbb::$db->sql_query($sql);
 
 		$exclude = array();
-		while ($row = $db->sql_fetchrow($result))
+		while ($row = phpbb::$db->sql_fetchrow($result))
 		{
 			$exclude[] = $row['group_id'];
 		}
-		$db->sql_freeresult($result);
+		phpbb::$db->sql_freeresult($result);
 
 		$select_list = '<option value="0"' . ((!$group_id) ? ' selected="selected"' : '') . '>' . phpbb::$user->lang['ALL_USERS'] . '</option>';
 		$select_list .= group_select_options($group_id, $exclude);

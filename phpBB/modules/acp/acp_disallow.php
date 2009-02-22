@@ -53,8 +53,8 @@ class acp_disallow
 				trigger_error(phpbb::$user->lang['NO_USERNAME_SPECIFIED'] . adm_back_link($this->u_action), E_USER_WARNING);
 			}
 
-			$sql = 'INSERT INTO ' . DISALLOW_TABLE . ' ' . $db->sql_build_array('INSERT', array('disallow_username' => $disallowed_user));
-			$db->sql_query($sql);
+			$sql = 'INSERT INTO ' . DISALLOW_TABLE . ' ' . phpbb::$db->sql_build_array('INSERT', array('disallow_username' => $disallowed_user));
+			phpbb::$db->sql_query($sql);
 
 			phpbb::$acm->destroy('disallowed_usernames');
 
@@ -74,7 +74,7 @@ class acp_disallow
 
 			$sql = 'DELETE FROM ' . DISALLOW_TABLE . '
 				WHERE disallow_id = ' . $disallowed_id;
-			$db->sql_query($sql);
+			phpbb::$db->sql_query($sql);
 
 			phpbb::$acm->destroy('disallowed_usernames');
 
@@ -86,14 +86,14 @@ class acp_disallow
 		// Grab the current list of disallowed usernames...
 		$sql = 'SELECT *
 			FROM ' . DISALLOW_TABLE;
-		$result = $db->sql_query($sql);
+		$result = phpbb::$db->sql_query($sql);
 
 		$disallow_select = '';
-		while ($row = $db->sql_fetchrow($result))
+		while ($row = phpbb::$db->sql_fetchrow($result))
 		{
 			$disallow_select .= '<option value="' . $row['disallow_id'] . '">' . str_replace('%', '*', $row['disallow_username']) . '</option>';
 		}
-		$db->sql_freeresult($result);
+		phpbb::$db->sql_freeresult($result);
 
 		$template->assign_vars(array(
 			'U_ACTION'				=> $this->u_action,

@@ -118,25 +118,25 @@ abstract class phpbb_default_captcha implements phpbb_captcha_plugin
 				LEFT JOIN ' . SESSIONS_TABLE . ' s ON (c.session_id = s.session_id)
 				WHERE s.session_id IS NULL' .
 					((empty($type)) ? '' : ' AND c.confirm_type = ' . (int) $type);
-		$result = $db->sql_query($sql);
+		$result = phpbb::$db->sql_query($sql);
 
-		if ($row = $db->sql_fetchrow($result))
+		if ($row = phpbb::$db->sql_fetchrow($result))
 		{
 			$sql_in = array();
 			do
 			{
 				$sql_in[] = (string) $row['session_id'];
 			}
-			while ($row = $db->sql_fetchrow($result));
+			while ($row = phpbb::$db->sql_fetchrow($result));
 
 			if (sizeof($sql_in))
 			{
 				$sql = 'DELETE FROM ' . CONFIRM_TABLE . '
-					WHERE ' . $db->sql_in_set('session_id', $sql_in);
-				$db->sql_query($sql);
+					WHERE ' . phpbb::$db->sql_in_set('session_id', $sql_in);
+				phpbb::$db->sql_query($sql);
 			}
 		}
-		$db->sql_freeresult($result);
+		phpbb::$db->sql_freeresult($result);
 	}
 
 	function uninstall()
@@ -195,14 +195,14 @@ abstract class phpbb_default_captcha implements phpbb_captcha_plugin
 		// compute $seed % 0x7fffffff
 		$this->seed -= 0x7fffffff * floor($this->seed / 0x7fffffff);
 
-		$sql = 'INSERT INTO ' . CONFIRM_TABLE . ' ' . $db->sql_build_array('INSERT', array(
+		$sql = 'INSERT INTO ' . CONFIRM_TABLE . ' ' . phpbb::$db->sql_build_array('INSERT', array(
 				'confirm_id'	=> (string) $this->confirm_id,
 				'session_id'	=> (string) phpbb::$user->session_id,
 				'confirm_type'	=> (int) $this->type,
 				'code'			=> (string) $this->code,
 				'seed'			=> (int) $this->seed)
 		);
-		$db->sql_query($sql);
+		phpbb::$db->sql_query($sql);
 	}
 
 	/**
@@ -212,12 +212,12 @@ abstract class phpbb_default_captcha implements phpbb_captcha_plugin
 	{
 		$sql = 'SELECT code, seed
 				FROM ' . CONFIRM_TABLE . "
-				WHERE confirm_id = '" . $db->sql_escape($this->confirm_id) . "'
-				AND session_id = '" . $db->sql_escape(phpbb::$user->session_id) . "'
+				WHERE confirm_id = '" . phpbb::$db->sql_escape($this->confirm_id) . "'
+				AND session_id = '" . phpbb::$db->sql_escape(phpbb::$user->session_id) . "'
 					AND confirm_type = " . $this->type;
-		$result = $db->sql_query($sql);
-		$row = $db->sql_fetchrow($result);
-		$db->sql_freeresult($result);
+		$result = phpbb::$db->sql_query($sql);
+		$row = phpbb::$db->sql_fetchrow($result);
+		phpbb::$db->sql_freeresult($result);
 		if ($row)
 		{
 			$this->code = $row['code'];
@@ -243,21 +243,21 @@ abstract class phpbb_default_captcha implements phpbb_captcha_plugin
 	protected function delete_code()
 	{
 		$sql = 'DELETE FROM ' . CONFIRM_TABLE . "
-				WHERE confirm_id = '" . $db->sql_escape($this->confirm_id) . "'
-					AND session_id = '" . $db->sql_escape(phpbb::$user->session_id) . "'
+				WHERE confirm_id = '" . phpbb::$db->sql_escape($this->confirm_id) . "'
+					AND session_id = '" . phpbb::$db->sql_escape(phpbb::$user->session_id) . "'
 					AND confirm_type = " . $this->type;
-		$db->sql_query($sql);
+		phpbb::$db->sql_query($sql);
 	}
 
 	function get_attempt_count()
 	{
 		$sql = 'SELECT COUNT(session_id) AS attempts
 				FROM ' . CONFIRM_TABLE . "
-				WHERE session_id = '" . $db->sql_escape(phpbb::$user->session_id) . "'
+				WHERE session_id = '" . phpbb::$db->sql_escape(phpbb::$user->session_id) . "'
 					AND confirm_type = " . $this->type;
-		$result = $db->sql_query($sql);
-		$attempts = (int) $db->sql_fetchfield('attempts');
-		$db->sql_freeresult($result);
+		$result = phpbb::$db->sql_query($sql);
+		$attempts = (int) phpbb::$db->sql_fetchfield('attempts');
+		phpbb::$db->sql_freeresult($result);
 
 		return $attempts;
 	}
@@ -266,9 +266,9 @@ abstract class phpbb_default_captcha implements phpbb_captcha_plugin
 	function reset()
 	{
 		$sql = 'DELETE FROM ' . CONFIRM_TABLE . "
-					WHERE session_id = '" . $db->sql_escape(phpbb::$user->session_id) . "'
+					WHERE session_id = '" . phpbb::$db->sql_escape(phpbb::$user->session_id) . "'
 						AND confirm_type = " . (int) $this->type;
-		$db->sql_query($sql);
+		phpbb::$db->sql_query($sql);
 
 		// we leave the class usable by generating a new question
 		$this->generate_code();

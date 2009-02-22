@@ -182,9 +182,9 @@ switch ($mode)
 		$sql = 'SELECT *
 			FROM ' . USERS_TABLE . '
 			WHERE user_id = ' . (int) $user_id;
-		$result = $db->sql_query($sql);
-		$user_row = $db->sql_fetchrow($result);
-		$db->sql_freeresult($result);
+		$result = phpbb::$db->sql_query($sql);
+		$user_row = phpbb::$db->sql_fetchrow($result);
+		phpbb::$db->sql_freeresult($result);
 
 		if (!phpbb::$acl->acl_get('a_switchperm') || !$user_row || $user_id == phpbb::$user->data['user_id'])
 		{
@@ -218,14 +218,14 @@ switch ($mode)
 		$sql = 'UPDATE ' . USERS_TABLE . "
 			SET user_perm_from = 0
 			WHERE user_id = " . phpbb::$user->data['user_id'];
-		$db->sql_query($sql);
+		phpbb::$db->sql_query($sql);
 
 		$sql = 'SELECT username
 			FROM ' . USERS_TABLE . '
 			WHERE user_id = ' . phpbb::$user->data['user_perm_from'];
-		$result = $db->sql_query($sql);
-		$username = $db->sql_fetchfield('username');
-		$db->sql_freeresult($result);
+		$result = phpbb::$db->sql_query($sql);
+		$username = phpbb::$db->sql_fetchfield('username');
+		phpbb::$db->sql_freeresult($result);
 
 		add_log('admin', 'LOG_ACL_RESTORE_PERMISSIONS', $username);
 
@@ -284,7 +284,7 @@ function _display_friends()
 {
 	$update_time = phpbb::$config['load_online_time'] * 60;
 
-	$sql = $db->sql_build_query('SELECT_DISTINCT', array(
+	$sql = phpbb::$db->sql_build_query('SELECT_DISTINCT', array(
 		'SELECT'	=> 'u.user_id, u.username, u.username_clean, u.user_colour, MAX(s.session_time) as online_time, MIN(s.session_viewonline) AS viewonline',
 
 		'FROM'		=> array(
@@ -308,9 +308,9 @@ function _display_friends()
 		'ORDER_BY'	=> 'u.username_clean ASC',
 	));
 
-	$result = $db->sql_query($sql);
+	$result = phpbb::$db->sql_query($sql);
 
-	while ($row = $db->sql_fetchrow($result))
+	while ($row = phpbb::$db->sql_fetchrow($result))
 	{
 		$which = (time() - $update_time < $row['online_time'] && ($row['viewonline'] || phpbb::$acl->acl_get('u_viewonline'))) ? 'online' : 'offline';
 
@@ -323,7 +323,7 @@ function _display_friends()
 			'USERNAME_FULL'	=> get_username_string('full', $row['user_id'], $row['username'], $row['user_colour']))
 		);
 	}
-	$db->sql_freeresult($result);
+	phpbb::$db->sql_freeresult($result);
 }
 
 /**

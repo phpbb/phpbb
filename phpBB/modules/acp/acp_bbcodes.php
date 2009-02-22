@@ -49,9 +49,9 @@ class acp_bbcodes
 				$sql = 'SELECT bbcode_match, bbcode_tpl, display_on_posting, bbcode_helpline
 					FROM ' . BBCODES_TABLE . '
 					WHERE bbcode_id = ' . $bbcode_id;
-				$result = $db->sql_query($sql);
-				$row = $db->sql_fetchrow($result);
-				$db->sql_freeresult($result);
+				$result = phpbb::$db->sql_query($sql);
+				$row = phpbb::$db->sql_fetchrow($result);
+				phpbb::$db->sql_freeresult($result);
 
 				if (!$row)
 				{
@@ -68,9 +68,9 @@ class acp_bbcodes
 				$sql = 'SELECT bbcode_id, bbcode_tag
 					FROM ' . BBCODES_TABLE . '
 					WHERE bbcode_id = ' . $bbcode_id;
-				$result = $db->sql_query($sql);
-				$row = $db->sql_fetchrow($result);
-				$db->sql_freeresult($result);
+				$result = phpbb::$db->sql_query($sql);
+				$row = phpbb::$db->sql_fetchrow($result);
+				phpbb::$db->sql_freeresult($result);
 
 				if (!$row)
 				{
@@ -130,10 +130,10 @@ class acp_bbcodes
 				{
 					$sql = 'SELECT 1 as test
 						FROM ' . BBCODES_TABLE . "
-						WHERE LOWER(bbcode_tag) = '" . $db->sql_escape(strtolower($data['bbcode_tag'])) . "'";
-					$result = $db->sql_query($sql);
-					$info = $db->sql_fetchrow($result);
-					$db->sql_freeresult($result);
+						WHERE LOWER(bbcode_tag) = '" . phpbb::$db->sql_escape(strtolower($data['bbcode_tag'])) . "'";
+					$result = phpbb::$db->sql_query($sql);
+					$info = phpbb::$db->sql_fetchrow($result);
+					phpbb::$db->sql_freeresult($result);
 
 					// Grab the end, interrogate the last closing tag
 					if ($info['test'] === '1' || in_array(strtolower($data['bbcode_tag']), $hard_coded) || (preg_match('#\[/([^[]*)]$#', $bbcode_match, $regs) && in_array(strtolower($regs[1]), $hard_coded)))
@@ -188,9 +188,9 @@ class acp_bbcodes
 				{
 					$sql = 'SELECT MAX(bbcode_id) as max_bbcode_id
 						FROM ' . BBCODES_TABLE;
-					$result = $db->sql_query($sql);
-					$row = $db->sql_fetchrow($result);
-					$db->sql_freeresult($result);
+					$result = phpbb::$db->sql_query($sql);
+					$row = phpbb::$db->sql_fetchrow($result);
+					phpbb::$db->sql_freeresult($result);
 
 					if ($row)
 					{
@@ -214,7 +214,7 @@ class acp_bbcodes
 
 					$sql_ary['bbcode_id'] = (int) $bbcode_id;
 
-					$db->sql_query('INSERT INTO ' . BBCODES_TABLE . $db->sql_build_array('INSERT', $sql_ary));
+					phpbb::$db->sql_query('INSERT INTO ' . BBCODES_TABLE . phpbb::$db->sql_build_array('INSERT', $sql_ary));
 					phpbb::$acm->destroy_sql(BBCODES_TABLE);
 
 					$lang = 'BBCODE_ADDED';
@@ -223,9 +223,9 @@ class acp_bbcodes
 				else
 				{
 					$sql = 'UPDATE ' . BBCODES_TABLE . '
-						SET ' . $db->sql_build_array('UPDATE', $sql_ary) . '
+						SET ' . phpbb::$db->sql_build_array('UPDATE', $sql_ary) . '
 						WHERE bbcode_id = ' . $bbcode_id;
-					$db->sql_query($sql);
+					phpbb::$db->sql_query($sql);
 					phpbb::$acm->destroy_sql(BBCODES_TABLE);
 
 					$lang = 'BBCODE_EDITED';
@@ -243,15 +243,15 @@ class acp_bbcodes
 				$sql = 'SELECT bbcode_tag
 					FROM ' . BBCODES_TABLE . "
 					WHERE bbcode_id = $bbcode_id";
-				$result = $db->sql_query($sql);
-				$row = $db->sql_fetchrow($result);
-				$db->sql_freeresult($result);
+				$result = phpbb::$db->sql_query($sql);
+				$row = phpbb::$db->sql_fetchrow($result);
+				phpbb::$db->sql_freeresult($result);
 
 				if ($row)
 				{
 					if (confirm_box(true))
 					{
-						$db->sql_query('DELETE FROM ' . BBCODES_TABLE . " WHERE bbcode_id = $bbcode_id");
+						phpbb::$db->sql_query('DELETE FROM ' . BBCODES_TABLE . " WHERE bbcode_id = $bbcode_id");
 						phpbb::$acm->destroy_sql(BBCODES_TABLE);
 						add_log('admin', 'LOG_BBCODE_DELETE', $row['bbcode_tag']);
 					}
@@ -276,9 +276,9 @@ class acp_bbcodes
 		$sql = 'SELECT *
 			FROM ' . BBCODES_TABLE . '
 			ORDER BY bbcode_tag';
-		$result = $db->sql_query($sql);
+		$result = phpbb::$db->sql_query($sql);
 
-		while ($row = $db->sql_fetchrow($result))
+		while ($row = phpbb::$db->sql_fetchrow($result))
 		{
 			$template->assign_block_vars('bbcodes', array(
 				'BBCODE_TAG'		=> $row['bbcode_tag'],
@@ -286,7 +286,7 @@ class acp_bbcodes
 				'U_DELETE'			=> $this->u_action . '&amp;action=delete&amp;bbcode=' . $row['bbcode_id'])
 			);
 		}
-		$db->sql_freeresult($result);
+		phpbb::$db->sql_freeresult($result);
 	}
 
 	/*

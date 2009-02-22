@@ -82,7 +82,7 @@ class posting_api
 	static function insert_topic($data)
 	{
 		// one transaction, we can now garuntee that atomicity of insertions
-		$db->sql_transaction('begin');
+		phpbb::$db->sql_transaction('begin');
 
 		$user_id = (int) $data['user_id'];
 		$forum_id = (int) $data['forum_id'];
@@ -105,17 +105,17 @@ class posting_api
 			$sql = 'SELECT username
 				FROM ' . USERS_TABLE . '
 				WHERE user_id = ' . $user_id;
-			$result = $db->sql_query($sql);
-			$username = (string) $db->sql_fetchfield('username');
-			$db->sql_freeresult($result);
+			$result = phpbb::$db->sql_query($sql);
+			$username = (string) phpbb::$db->sql_fetchfield('username');
+			phpbb::$db->sql_freeresult($result);
 		}
 
 		$sql = 'SELECT forum_topics, forum_unapproved_topics, forum_posts, forum_unapproved_posts
 			FROM ' . FORUMS_TABLE . '
 			WHERE forum_id = ' . (int) $forum_id;
-		$result = $db->sql_query($sql);
-		$row = $db->sql_fetchrow($result);
-		$db->sql_freeresult($result);
+		$result = phpbb::$db->sql_query($sql);
+		$row = phpbb::$db->sql_fetchrow($result);
+		phpbb::$db->sql_freeresult($result);
 
 		// throw our topic to the dogs
 		$topic_data = array(
@@ -135,8 +135,8 @@ class posting_api
 			'forum_id'					=> $forum_id
 		);
 
-		$db->sql_handle_data('INSERT', TOPICS_TABLE, $topic_data);
-		$topic_id = $db->sql_nextid();
+		phpbb::$db->sql_handle_data('INSERT', TOPICS_TABLE, $topic_data);
+		$topic_id = phpbb::$db->sql_nextid();
 
 		// I suppose it is time to make us a post, no?
 		$post_data = array(
@@ -150,11 +150,11 @@ class posting_api
 			'forum_id'		=> $forum_id
 		);
 
-		$db->sql_handle_data('INSERT', POSTS_TABLE, $post_data);
-		$post_id = $db->sql_nextid();
+		phpbb::$db->sql_handle_data('INSERT', POSTS_TABLE, $post_data);
+		$post_id = phpbb::$db->sql_nextid();
 
 		// time to fill in the blanks
-		$db->sql_handle_data('UPDATE', TOPICS_TABLE, array('topic_first_post_id' => $post_id, 'topic_last_post_id' => $post_id), "topic_id = $topic_id");
+		phpbb::$db->sql_handle_data('UPDATE', TOPICS_TABLE, array('topic_first_post_id' => $post_id, 'topic_last_post_id' => $post_id), "topic_id = $topic_id");
 
 		// let's go update the forum table
 		$forum_data = array(
@@ -177,7 +177,7 @@ class posting_api
 			$forum_data['forum_unapproved_topics']	= ++$row['forum_unapproved_topics'];
 		}
 
-		$db->sql_handle_data('UPDATE', FORUMS_TABLE, $forum_data, "forum_id = $forum_id");
+		phpbb::$db->sql_handle_data('UPDATE', FORUMS_TABLE, $forum_data, "forum_id = $forum_id");
 
 		foreach ($shadow_forums as $shadow_forum_id)
 		{
@@ -187,14 +187,14 @@ class posting_api
 		}
 
 		// we are consistant, victory is ours
-		$db->sql_transaction('commit');
+		phpbb::$db->sql_transaction('commit');
 	}
 
 	// inserts a shadow topic into the database
 	static function insert_shadow_topic($data)
 	{
 		// one transaction, we can now garuntee that atomicity of insertions
-		$db->sql_transaction('begin');
+		phpbb::$db->sql_transaction('begin');
 
 		$user_id = (int) $data['user_id'];
 		$forum_id = (int) $data['forum_id'];
@@ -214,18 +214,17 @@ class posting_api
 			$sql = 'SELECT username
 				FROM ' . USERS_TABLE . '
 				WHERE user_id = ' . $user_id;
-			$result = $db->sql_query($sql);
-			$row = $db->sql_fetchrow($result);
-			$username = $row['username'];
-			$db->sql_freeresult($result);
+			$result = phpbb::$db->sql_query($sql);
+			$username = (stromg) phpbb::$db->sql_fetchfield('username');
+			phpbb::$db->sql_freeresult($result);
 		}
 
 		$sql = 'SELECT forum_topics, forum_shadow_topics
 			FROM ' . FORUMS_TABLE . '
 			WHERE forum_id = ' . (int) $forum_id;
-		$result = $db->sql_query($sql);
-		$row = $db->sql_fetchrow($result);
-		$db->sql_freeresult($result);
+		$result = phpbb::phpbb::$db->sql_query($sql);
+		$row = phpbb::$db->sql_fetchrow($result);
+		phpbb::$db->sql_freeresult($result);
 
 		// throw our topic to the dogs
 		$topic_data = array(
@@ -246,7 +245,7 @@ class posting_api
 			'topic_shadow_id'			=> $shadow_topic_id
 		);
 
-		$db->sql_handle_data('INSERT', TOPICS_TABLE, $topic_data);
+		phpbb::$db->sql_handle_data('INSERT', TOPICS_TABLE, $topic_data);
 
 		// let's go update the forum table
 		$forum_data = array(
@@ -260,16 +259,16 @@ class posting_api
 			$forum_data['forum_unapproved_topics']	= ++$row['forum_unapproved_topics'];
 		}
 
-		$db->sql_handle_data('UPDATE', FORUMS_TABLE, $forum_data, "forum_id = $forum_id");
+		phpbb::$db->sql_handle_data('UPDATE', FORUMS_TABLE, $forum_data, "forum_id = $forum_id");
 
 		// we are consistant, victory is ours
-		$db->transaction('END');
+		phpbb::$db->transaction('END');
 	}
 
 	static function insert_post($data)
 	{
 		// one transaction, we can now garuntee that atomicity of insertions
-		$db->transaction('BEGIN');
+		phpbb::$db->transaction('BEGIN');
 
 		$user_id = (int) $data['user_id'];
 		$topic_id = (int) $data['topic_id'];
@@ -285,9 +284,9 @@ class posting_api
 			$sql = 'SELECT forum_id
 				FROM ' . TOPICS_TABLE . '
 				WHERE topic_id = ' . $topic_id;
-			$result = $db->sql_query($sql);
-			$forum_id = (int) $db->sql_fetchfield('forum_id');
-			$db->sql_freeresult($result);
+			$result = phpbb::$db->sql_query($sql);
+			$forum_id = (int) phpbb::$db->sql_fetchfield('forum_id');
+			phpbb::$db->sql_freeresult($result);
 		}
 
 		$post_title = $data['title'];
@@ -303,9 +302,9 @@ class posting_api
 			$sql = 'SELECT username
 				FROM ' . USERS_TABLE . '
 				WHERE user_id = ' . $user_id;
-			$result = $db->sql_query($sql);
-			$username = (string) $db->sql_fetchfield('username');
-			$db->sql_freeresult($result);
+			$result = phpbb::$db->sql_query($sql);
+			$username = (string) phpbb::$db->sql_fetchfield('username');
+			phpbb::$db->sql_freeresult($result);
 		}
 
 		// hand holding complete, lets write some posts
@@ -313,9 +312,9 @@ class posting_api
 		$sql = 'SELECT forum_topics, forum_unapproved_topics, forum_posts, forum_unapproved_posts
 			FROM ' . FORUMS_TABLE . '
 			WHERE forum_id = ' . (int) $forum_id;
-		$result = $db->sql_query($sql);
-		$row = $db->sql_fetchrow($result);
-		$db->sql_freeresult($result);
+		$result = phpbb::$db->sql_query($sql);
+		$row = phpbb::$db->sql_fetchrow($result);
+		phpbb::$db->sql_freeresult($result);
 
 		$post_status = (int) $data['post_status'];
 		$approved = ($post_status === self::NORMAL);
@@ -330,10 +329,10 @@ class posting_api
 			'post_status'	=> $post_status,
 			'forum_id'		=> $forum_id,
 		);
-		$db->sql_handle_data('INSERT', POSTS_TABLE, $post_data);
+		phpbb::$db->sql_handle_data('INSERT', POSTS_TABLE, $post_data);
 
 		// what is the new post_id?
-		$post_id = $db->sql_nextid();
+		$post_id = phpbb::$db->sql_nextid();
 
 		// iceberg ahead! we must only update the topic information if the post is approved ;)
 		if ($approved)
@@ -346,7 +345,7 @@ class posting_api
 				'topic_last_post_title'	=> $post_title,
 				'topic_last_post_time'	=> $time,
 			);
-			$db->sql_handle_data('UPDATE', TOPICS_TABLE, $topics_data, "topic_id = $topic_id");
+			phpbb::$db->sql_handle_data('UPDATE', TOPICS_TABLE, $topics_data, "topic_id = $topic_id");
 		}
 
 		// let's go update the forum table
@@ -368,10 +367,10 @@ class posting_api
 			$forum_data['forum_unapproved_posts']	= ++$row['forum_unapproved_posts'];
 		}
 
-		$db->sql_handle_data('UPDATE', FORUMS_TABLE, $forum_data, "forum_id = $forum_id");
+		phpbb::$db->sql_handle_data('UPDATE', FORUMS_TABLE, $forum_data, "forum_id = $forum_id");
 
 		// we are consistant, victory is ours
-		$db->sql_transaction('commit');
+		phpbb::$db->sql_transaction('commit');
 	}
 
 	static function delete_topic($data)
@@ -383,7 +382,7 @@ class posting_api
 	static function delete_topics($data)
 	{
 		// lets get this party started
-		$db->sql_transaction('begin');
+		phpbb::$db->sql_transaction('begin');
 
 		$topic_ids = array_map('intval', $data['topic_ids']);
 
@@ -391,11 +390,11 @@ class posting_api
 		// TODO: investigate how aggregate functions can speed this up/reduce the number of results returned/misc. other benefits
 		$sql = 'SELECT topic_posts, topic_shadow_posts, topic_deleted_posts, topic_unapproved_posts, topic_shadow_id, forum_id, topic_status
 			FROM ' . TOPICS_TABLE . '
-			WHERE ' . $db->sql_in_set('topic_id', $topic_ids);
-		$result = $db->sql_query($sql);
+			WHERE ' . phpbb::$db->sql_in_set('topic_id', $topic_ids);
+		$result = phpbb::$db->sql_query($sql);
 		// the following in an array, key'd by forum id that refers to topic rows
 		$forum_lookup = array();
-		while ($topic_row = $db->sql_fetchrow($result))
+		while ($topic_row = phpbb::$db->sql_fetchrow($result))
 		{
 			$forum_id = (int) $topic_row['forum_id'];
 
@@ -412,28 +411,28 @@ class posting_api
 			$forum_lookup[$forum_id]['forum_deleted_topics'] += ($topic_status & self::DELETED);
 			$forum_lookup[$forum_id]['forum_unapproved_topics'] += ($topic_status & self::UNAPPROVED);
 		}
-		$db->sql_freeresult($result);
+		phpbb::$db->sql_freeresult($result);
 
 		// goodnight, topics
-		$db->sql_query('DELETE FROM ' . TOPICS_TABLE . ' WHERE ' . $db->sql_in_set('topic_id', $topic_ids));
+		phpbb::$db->sql_query('DELETE FROM ' . TOPICS_TABLE . ' WHERE ' . phpbb::$db->sql_in_set('topic_id', $topic_ids));
 
 		// goodnight, posts
-		$db->sql_query('DELETE FROM ' . POSTS_TABLE . ' WHERE ' . $db->sql_in_set('topic_id', $topic_ids));
+		phpbb::$db->sql_query('DELETE FROM ' . POSTS_TABLE . ' WHERE ' . phpbb::$db->sql_in_set('topic_id', $topic_ids));
 
 		$forum_ids = array_keys($forum_lookup);
 
 		// what kind of topic is this? lets find out how much we must tamper with the forum table...
 		$sql = 'SELECT forum_posts, forum_shadow_posts, forum_deleted_posts, forum_unapproved_posts, forum_id
 			FROM ' . FORUMS_TABLE . '
-			WHERE ' . $db->sql_in_set('forum_id', $forum_ids);
-		$result = $db->sql_query($sql);
+			WHERE ' . phpbb::$db->sql_in_set('forum_id', $forum_ids);
+		$result = phpbb::$db->sql_query($sql);
 		$forum_rows = array();
-		while ($forum_row = $db->sql_fetchrow($result))
+		while ($forum_row = phpbb::$db->sql_fetchrow($result))
 		{
 			$forum_id = (int) $forum_row['forum_id'];
 			$forum_rows[$forum_id] = $forum_row;
 		}
-		$db->sql_freeresult($result);
+		phpbb::$db->sql_freeresult($result);
 
 		$shadow_topic_ids = array();
 		foreach ($forum_rows as $forum_id => $forum_row)
@@ -456,9 +455,9 @@ class posting_api
 				FROM ' . POSTS_TABLE . '
 				WHERE post_status = ' . self::NORMAL . '
 					AND forum_id = ' . $forum_id;
-			$result = $db->sql_query($sql);
-			$row = $db->sql_fetchrow($result);
-			$db->sql_freeresult($result);
+			$result = phpbb::$db->sql_query($sql);
+			$row = phpbb::$db->sql_fetchrow($result);
+			phpbb::$db->sql_freeresult($result);
 
 			// anything left?
 			if ($row)
@@ -467,9 +466,9 @@ class posting_api
 				$sql = 'SELECT post_username, poster_id, post_subject, post_time
 					FROM '. POSTS_TABLE . '
 					WHERE post_id = ' . (int) $row['max_post_id'];
-				$result = $db->sql_query($sql);
-				$last_post = $db->sql_fetchrow($result);
-				$db->sql_freeresult($result);
+				$result = phpbb::$db->sql_query($sql);
+				$last_post = phpbb::$db->sql_fetchrow($result);
+				phpbb::$db->sql_freeresult($result);
 
 				$forum_array['forum_last_user_id'] = (int) $last_post['poster_id'];
 				$forum_array['forum_last_poster_name'] = $last_post['post_username'];
@@ -485,22 +484,22 @@ class posting_api
 				$forum_array['forum_last_post_time'] = 0;
 			}
 
-			$db->sql_handle_data('UPDATE', FORUMS_TABLE, $forum_array, "forum_id = $forum_id");
+			phpbb::$db->sql_handle_data('UPDATE', FORUMS_TABLE, $forum_array, "forum_id = $forum_id");
 		}
 
 		// let's not get too hasty, we can kill off the shadows later,
 		// instead we compose a list of all shadows and then efficiently kill them off :)
 		$sql = 'SELECT topic_id
 			FROM ' . TOPICS_TABLE . '
-			WHERE ' . $db->sql_in_set('topic_shadow_id', $topic_ids);
-		$result = $db->sql_query($sql);
+			WHERE ' . phpbb::$db->sql_in_set('topic_shadow_id', $topic_ids);
+		$result = phpbb::$db->sql_query($sql);
 
-		while ($row = $db->sql_fetchrow($result))
+		while ($row = phpbb::$db->sql_fetchrow($result))
 		{
 			$shadow_topic_ids[] = $row['topic_id'];
 		}
 
-		$db->sql_freeresult($result);
+		phpbb::$db->sql_freeresult($result);
 
 		// recursion, the other white meat.
 		if (sizeof($shadow_topic_ids))
@@ -509,7 +508,7 @@ class posting_api
 		}
 
 		// goodnight, moon
-		$db->transaction('commit');
+		phpbb::$db->transaction('commit');
 	}
 
 	static function delete_post($data)
@@ -521,20 +520,20 @@ class posting_api
 	static function delete_posts($data)
 	{
 		// lets get this party started
-		$db->sql_transaction('begin');
+		phpbb::$db->sql_transaction('begin');
 
 		$post_ids = array_map('intval', $data['post_ids']);
 
 		$sql = 'SELECT topic_id, post_status, post_id, post_shadow_id, forum_id
 			FROM ' . POSTS_TABLE . '
-			WHERE ' . $db->sql_in_set('post_id', $post_ids);
-		$result = $db->sql_query($sql);
+			WHERE ' . phpbb::$db->sql_in_set('post_id', $post_ids);
+		$result = phpbb::$db->sql_query($sql);
 
 		// the following arrays are designed to allow for much faster updates
 		$topic_lookup = array();
 		$forum_lookup = array();
 
-		while ($post_row = $db->sql_fetchrow($result))
+		while ($post_row = phpbb::$db->sql_fetchrow($result))
 		{
 			$topic_id = (int) $post_row['topic_id'];
 			$forum_id = (int) $post_row['forum_id'];
@@ -550,25 +549,25 @@ class posting_api
 			$forum_lookup[$topic_id]['forum_deleted_posts'] += ($post_status & self::DELETED);
 			$forum_lookup[$topic_id]['forum_unapproved_posts'] += ($post_status & self::UNAPPROVED);
 		}
-		$db->sql_freeresult($result);
+		phpbb::$db->sql_freeresult($result);
 
 		$topic_ids = array_keys($forum_lookup);
 
 		// goodnight, posts
-		$db->sql_query('DELETE FROM ' . POSTS_TABLE . ' WHERE ' . $db->sql_in_set('topic_id', $topic_ids));
+		phpbb::$db->sql_query('DELETE FROM ' . POSTS_TABLE . ' WHERE ' . phpbb::$db->sql_in_set('topic_id', $topic_ids));
 
 		// mangle the forums table
 		$sql = 'SELECT forum_posts, forum_shadow_posts, forum_deleted_posts, forum_unapproved_posts, forum_id
 			FROM ' . FORUMS_TABLE . '
 			WHERE forum_id = ' . $forum_id;
-		$result = $db->sql_query($sql);
+		$result = phpbb::$db->sql_query($sql);
 		$forum_rows = array();
-		while ($forum_row = $db->sql_fetchrow($result))
+		while ($forum_row = phpbb::$db->sql_fetchrow($result))
 		{
 			$forum_id = (int) $forum_row['forum_id'];
 			$forum_rows[$forum_id] = $forum_row;
 		}
-		$db->sql_freeresult($result);
+		phpbb::$db->sql_freeresult($result);
 
 		$shadow_topic_ids = array();
 		foreach ($forum_rows as $forum_id => $forum_row)
@@ -586,9 +585,9 @@ class posting_api
 				FROM ' . POSTS_TABLE . '
 				WHERE post_status = ' . self::NORMAL . '
 					AND forum_id = ' . $forum_id;
-			$result = $db->sql_query($sql);
-			$row = $db->sql_fetchrow($result);
-			$db->sql_freeresult($result);
+			$result = phpbb::$db->sql_query($sql);
+			$row = phpbb::$db->sql_fetchrow($result);
+			phpbb::$db->sql_freeresult($result);
 
 			// anything left?
 			if ($row)
@@ -597,9 +596,9 @@ class posting_api
 				$sql = 'SELECT post_username, poster_id, post_subject, post_time
 					FROM '. POSTS_TABLE . '
 					WHERE post_id = ' . (int) $row['max_post_id'];
-				$result = $db->sql_query($sql);
-				$last_post = $db->sql_fetchrow($result);
-				$db->sql_freeresult($result);
+				$result = phpbb::$db->sql_query($sql);
+				$last_post = phpbb::$db->sql_fetchrow($result);
+				phpbb::$db->sql_freeresult($result);
 
 				$forum_array['forum_last_user_id'] = (int) $last_post['poster_id'];
 				$forum_array['forum_last_poster_name'] = $last_post['post_username'];
@@ -615,21 +614,21 @@ class posting_api
 				$forum_array['forum_last_post_time'] = 0;
 			}
 
-			$db->sql_handle_data('UPDATE', FORUMS_TABLE, $forum_array, "forum_id = $forum_id");
+			phpbb::$db->sql_handle_data('UPDATE', FORUMS_TABLE, $forum_array, "forum_id = $forum_id");
 		}
 
 		// mangle the topics table now :)
 		$sql = 'SELECT topic_posts, topic_shadow_posts, topic_deleted_posts, topic_unapproved_posts, topic_id
 			FROM ' . TOPICS_TABLE . '
 			WHERE forum_id = ' . $forum_id;
-		$result = $db->sql_query($sql);
+		$result = phpbb::$db->sql_query($sql);
 		$topic_rows = array();
-		while ($topic_row = $db->sql_fetchrow($result))
+		while ($topic_row = phpbb::$db->sql_fetchrow($result))
 		{
 			$topic_id = (int) $topic_row['topic_id'];
 			$topic_rows[$topic_id] = $topic_row;
 		}
-		$db->sql_freeresult($result);
+		phpbb::$db->sql_freeresult($result);
 
 		$empty_topic_ids = array();
 
@@ -648,9 +647,9 @@ class posting_api
 				FROM ' . POSTS_TABLE . '
 				WHERE post_status = ' . self::NORMAL . '
 					AND topic_id = ' . $topic_id;
-			$result = $db->sql_query($sql);
-			$row = $db->sql_fetchrow($result);
-			$db->sql_freeresult($result);
+			$result = phpbb::$db->sql_query($sql);
+			$row = phpbb::$db->sql_fetchrow($result);
+			phpbb::$db->sql_freeresult($result);
 
 			// anything left?
 			if ($row)
@@ -659,9 +658,9 @@ class posting_api
 				$sql = 'SELECT post_username, poster_id, post_subject, post_time
 					FROM '. POSTS_TABLE . '
 					WHERE post_id = ' . (int) $row['max_post_id'];
-				$result = $db->sql_query($sql);
-				$last_post = $db->sql_fetchrow($result);
-				$db->sql_freeresult($result);
+				$result = phpbb::$db->sql_query($sql);
+				$last_post = phpbb::$db->sql_fetchrow($result);
+				phpbb::$db->sql_freeresult($result);
 
 				$topic_array['topic_last_user_id'] = (int) $last_post['poster_id'];
 				$topic_array['topic_last_poster_name'] = $last_post['post_username'];
@@ -674,7 +673,7 @@ class posting_api
 				$empty_topic_ids[] = $topic_id;
 			}
 
-			$db->sql_handle_data('UPDATE', TOPICS_TABLE, $topic_array, "topic_id = $topic_id");
+			phpbb::$db->sql_handle_data('UPDATE', TOPICS_TABLE, $topic_array, "topic_id = $topic_id");
 		}
 
 		$shadow_post_ids = array();
@@ -683,15 +682,15 @@ class posting_api
 		// instead we compose a list of all shadows and then efficiently kill them off :)
 		$sql = 'SELECT post_id
 			FROM ' . POSTS_TABLE . '
-			WHERE ' . $db->sql_in_set('post_shadow_id', $topic_ids);
-		$result = $db->sql_query($sql);
+			WHERE ' . phpbb::$db->sql_in_set('post_shadow_id', $topic_ids);
+		$result = phpbb::$db->sql_query($sql);
 
-		while ($row = $db->sql_fetchrow($result))
+		while ($row = phpbb::$db->sql_fetchrow($result))
 		{
 			$shadow_post_ids[] = $row['post_id'];
 		}
 
-		$db->sql_freeresult($result);
+		phpbb::$db->sql_freeresult($result);
 
 		// recursion, the other white meat.
 		if (sizeof($shadow_topic_ids))
@@ -706,7 +705,7 @@ class posting_api
 		}
 
 		// goodnight, moon
-		$db->transaction('commit');
+		phpbb::$db->transaction('commit');
 	}
 
 	static function move_topic($data)
@@ -717,7 +716,7 @@ class posting_api
 	static function move_topics($data)
 	{
 		// lets get this party started
-		$db->transaction('begin');
+		phpbb::$db->transaction('begin');
 
 		// all of each are indexed by topic id
 		$to_forum_ids = $shadow_topic_ids = array();
@@ -739,10 +738,10 @@ class posting_api
 		// let us first determine how many items we are removing from the pool
 		$sql = 'SELECT topic_posts, topic_shadow_posts, topic_deleted_posts, topic_unapproved_posts, forum_id, topic_status, topic_type, topic_shadow_id, topic_id
 			FROM ' . TOPICS_TABLE . '
-			WHERE ' . $db->sql_in_set('topic_id', $topic_ids);
-		$result = $db->sql_query($sql);
+			WHERE ' . phpbb::$db->sql_in_set('topic_id', $topic_ids);
+		$result = phpbb::$db->sql_query($sql);
 		$forum_lookup = array();
-		while ($topic_row = $db->sql_fetchrow($result))
+		while ($topic_row = phpbb::$db->sql_fetchrow($result))
 		{
 			$topic_id = $topic_row['topic_id'];
 			$from_forum_id = (int) $topic_row['forum_id'];
@@ -757,15 +756,15 @@ class posting_api
 				$forum_lookup[$to_forum_id][$column]	+= $topic_row['topic_posts'];
 			}
 		}
-		$db->sql_freeresult($result);
+		phpbb::$db->sql_freeresult($result);
 
 		// determine the totals
 		$sql = 'SELECT forum_posts, forum_shadow_posts, forum_deleted_posts, forum_unapproved_posts, forum_id, forum_topics, forum_deleted_topics, forum_unapproved_topics
 			FROM ' . FORUMS_TABLE . '
-			WHERE ' . $db->sql_in_set('forum_id', array_keys($forum_lookup));
-		$result = $db->sql_query($sql);
+			WHERE ' . phpbb::$db->sql_in_set('forum_id', array_keys($forum_lookup));
+		$result = phpbb::$db->sql_query($sql);
 
-		while ($row = $db->sql_fetchrow($result))
+		while ($row = phpbb::$db->sql_fetchrow($result))
 		{
 			$forum_id = (int) $row['forum_id'];
 
@@ -787,10 +786,10 @@ class posting_api
 		foreach ($update_list as $forum_id => $topic_ids)
 		{
 			// update the topic itself
-			$db->sql_handle_data('UPDATE', TOPICS_TABLE, array('forum_id' => $to_forum_id), $db->sql_in_set('topic_id', $topic_ids));
+			phpbb::$db->sql_handle_data('UPDATE', TOPICS_TABLE, array('forum_id' => $to_forum_id), phpbb::$db->sql_in_set('topic_id', $topic_ids));
 
 			// update the posts now
-			$db->sql_handle_data('UPDATE', POSTS_TABLE, array('forum_id' => $to_forum_id), $db->sql_in_set('topic_id', $topic_ids));
+			phpbb::$db->sql_handle_data('UPDATE', POSTS_TABLE, array('forum_id' => $to_forum_id), phpbb::$db->sql_in_set('topic_id', $topic_ids));
 		}
 
 		// start building the needed arrays for updating the forum data
@@ -806,9 +805,9 @@ class posting_api
 				FROM ' . POSTS_TABLE . '
 				WHERE post_status = ' . self::NORMAL . '
 					AND forum_id = ' . $forum_id;
-			$result = $db->sql_query($sql);
-			$row = $db->sql_fetchrow($result);
-			$db->sql_freeresult($result);
+			$result = phpbb::$db->sql_query($sql);
+			$row = phpbb::$db->sql_fetchrow($result);
+			phpbb::$db->sql_freeresult($result);
 
 			// anything left?
 			if ($row)
@@ -817,9 +816,9 @@ class posting_api
 				$sql = 'SELECT post_username, poster_id, post_subject, post_time
 					FROM '. POSTS_TABLE . '
 					WHERE post_id = ' . (int) $row['max_post_id'];
-				$result = $db->sql_query($sql);
-				$last_post = $db->sql_fetchrow($result);
-				$db->sql_freeresult($result);
+				$result = phpbb::$db->sql_query($sql);
+				$last_post = phpbb::$db->sql_fetchrow($result);
+				phpbb::$db->sql_freeresult($result);
 
 				$forum_data['forum_last_user_id'] = (int) $last_post['poster_id'];
 				$forum_data['forum_last_poster_name'] = $last_post['post_username'];
@@ -836,7 +835,7 @@ class posting_api
 			}
 
 			// update the old forum
-			$db->sql_handle_data('UPDATE', FORUMS_TABLE, $forum_data, "forum_id = $forum_id");
+			phpbb::$db->sql_handle_data('UPDATE', FORUMS_TABLE, $forum_data, "forum_id = $forum_id");
 		}
 
 		// hooray for code reuse!
@@ -847,7 +846,7 @@ class posting_api
 			self::insert_shadow_topic($data);
 		}
 
-		$db->sql_transaction('commit');
+		phpbb::$db->sql_transaction('commit');
 
 	}
 }

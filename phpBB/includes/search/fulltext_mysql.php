@@ -46,9 +46,9 @@ class fulltext_mysql extends search_backend
 	*/
 	public function init()
 	{
-		$result = $db->sql_query('SHOW TABLE STATUS LIKE \'' . POSTS_TABLE . '\'');
-		$info = $db->sql_fetchrow($result);
-		$db->sql_freeresult($result);
+		$result = phpbb::$db->sql_query('SHOW TABLE STATUS LIKE \'' . POSTS_TABLE . '\'');
+		$info = phpbb::$db->sql_fetchrow($result);
+		phpbb::$db->sql_freeresult($result);
 
 		$engine = '';
 		if (isset($info['Engine']))
@@ -67,14 +67,14 @@ class fulltext_mysql extends search_backend
 
 		$sql = 'SHOW VARIABLES
 			LIKE \'ft\_%\'';
-		$result = $db->sql_query($sql);
+		$result = phpbb::$db->sql_query($sql);
 
 		$mysql_info = array();
-		while ($row = $db->sql_fetchrow($result))
+		while ($row = phpbb::$db->sql_fetchrow($result))
 		{
 			$mysql_info[$row['Variable_name']] = $row['Value'];
 		}
-		$db->sql_freeresult($result);
+		phpbb::$db->sql_freeresult($result);
 
 		set_config('fulltext_mysql_max_word_len', $mysql_info['ft_max_word_len']);
 		set_config('fulltext_mysql_min_word_len', $mysql_info['ft_min_word_len']);
@@ -336,7 +336,7 @@ class fulltext_mysql extends search_backend
 		}
 		else
 		{
-			$m_approve_fid_sql = ' AND (p.post_approved = 1 OR ' . $db->sql_in_set('p.forum_id', $m_approve_fid_ary, true) . ')';
+			$m_approve_fid_sql = ' AND (p.post_approved = 1 OR ' . phpbb::$db->sql_in_set('p.forum_id', $m_approve_fid_ary, true) . ')';
 		}
 
 		$sql_select			= (!$result_count) ? 'SQL_CALC_FOUND_ROWS ' : '';
@@ -348,7 +348,7 @@ class fulltext_mysql extends search_backend
 		$sql_where_options = $sql_sort_join;
 		$sql_where_options .= ($topic_id) ? ' AND p.topic_id = ' . $topic_id : '';
 		$sql_where_options .= ($join_topic) ? ' AND t.topic_id = p.topic_id' : '';
-		$sql_where_options .= (sizeof($ex_fid_ary)) ? ' AND ' . $db->sql_in_set('p.forum_id', $ex_fid_ary, true) : '';
+		$sql_where_options .= (sizeof($ex_fid_ary)) ? ' AND ' . phpbb::$db->sql_in_set('p.forum_id', $ex_fid_ary, true) : '';
 		$sql_where_options .= $m_approve_fid_sql;
 		$sql_where_options .= (sizeof($author_ary)) ? ' AND p.poster_id ' . $sql_author : '';
 		$sql_where_options .= ($sort_days) ? ' AND p.post_time >= ' . (time() - ($sort_days * 86400)) : '';
@@ -356,16 +356,16 @@ class fulltext_mysql extends search_backend
 
 		$sql = "SELECT $sql_select
 			FROM $sql_from$sql_sort_table" . POSTS_TABLE . " p
-			WHERE MATCH ($sql_match) AGAINST ('" . $db->sql_escape(htmlspecialchars_decode($this->search_query)) . "' IN BOOLEAN MODE)
+			WHERE MATCH ($sql_match) AGAINST ('" . phpbb::$db->sql_escape(htmlspecialchars_decode($this->search_query)) . "' IN BOOLEAN MODE)
 				$sql_where_options
 			ORDER BY $sql_sort";
-		$result = $db->sql_query_limit($sql, phpbb::$config['search_block_size'], $start);
+		$result = phpbb::$db->sql_query_limit($sql, phpbb::$config['search_block_size'], $start);
 
-		while ($row = $db->sql_fetchrow($result))
+		while ($row = phpbb::$db->sql_fetchrow($result))
 		{
 			$id_ary[] = $row[$field];
 		}
-		$db->sql_freeresult($result);
+		phpbb::$db->sql_freeresult($result);
 
 		$id_ary = array_unique($id_ary);
 
@@ -378,9 +378,9 @@ class fulltext_mysql extends search_backend
 		if (!$result_count)
 		{
 			$sql = 'SELECT FOUND_ROWS() as result_count';
-			$result = $db->sql_query($sql);
-			$result_count = (int) $db->sql_fetchfield('result_count');
-			$db->sql_freeresult($result);
+			$result = phpbb::$db->sql_query($sql);
+			$result_count = (int) phpbb::$db->sql_fetchfield('result_count');
+			phpbb::$db->sql_freeresult($result);
 
 			if (!$result_count)
 			{
@@ -436,8 +436,8 @@ class fulltext_mysql extends search_backend
 		$id_ary = array();
 
 		// Create some display specific sql strings
-		$sql_author		= $db->sql_in_set('p.poster_id', $author_ary);
-		$sql_fora		= (sizeof($ex_fid_ary)) ? ' AND ' . $db->sql_in_set('p.forum_id', $ex_fid_ary, true) : '';
+		$sql_author		= phpbb::$db->sql_in_set('p.poster_id', $author_ary);
+		$sql_fora		= (sizeof($ex_fid_ary)) ? ' AND ' . phpbb::$db->sql_in_set('p.forum_id', $ex_fid_ary, true) : '';
 		$sql_topic_id	= ($topic_id) ? ' AND p.topic_id = ' . (int) $topic_id : '';
 		$sql_time		= ($sort_days) ? ' AND p.post_time >= ' . (time() - ($sort_days * 86400)) : '';
 		$sql_firstpost = ($firstpost_only) ? ' AND p.post_id = t.topic_first_post_id' : '';
@@ -473,7 +473,7 @@ class fulltext_mysql extends search_backend
 		}
 		else
 		{
-			$m_approve_fid_sql = ' AND (p.post_approved = 1 OR ' . $db->sql_in_set('p.forum_id', $m_approve_fid_ary, true) . ')';
+			$m_approve_fid_sql = ' AND (p.post_approved = 1 OR ' . phpbb::$db->sql_in_set('p.forum_id', $m_approve_fid_ary, true) . ')';
 		}
 
 		// If the cache was completely empty count the results
@@ -512,21 +512,21 @@ class fulltext_mysql extends search_backend
 		}
 
 		// Only read one block of posts from the db and then cache it
-		$result = $db->sql_query_limit($sql, phpbb::$config['search_block_size'], $start);
+		$result = phpbb::$db->sql_query_limit($sql, phpbb::$config['search_block_size'], $start);
 
-		while ($row = $db->sql_fetchrow($result))
+		while ($row = phpbb::$db->sql_fetchrow($result))
 		{
 			$id_ary[] = $row[$field];
 		}
-		$db->sql_freeresult($result);
+		phpbb::$db->sql_freeresult($result);
 
 		// retrieve the total result count if needed
 		if (!$result_count)
 		{
 			$sql = 'SELECT FOUND_ROWS() as result_count';
-			$result = $db->sql_query($sql);
-			$result_count = (int) $db->sql_fetchfield('result_count');
-			$db->sql_freeresult($result);
+			$result = phpbb::$db->sql_query($sql);
+			$result_count = (int) phpbb::$db->sql_fetchfield('result_count');
+			phpbb::$db->sql_freeresult($result);
 
 			if (!$result_count)
 			{
@@ -622,10 +622,10 @@ class fulltext_mysql extends search_backend
 
 		if (sizeof($alter))
 		{
-			$db->sql_query('ALTER TABLE ' . POSTS_TABLE . ' ' . implode(', ', $alter));
+			phpbb::$db->sql_query('ALTER TABLE ' . POSTS_TABLE . ' ' . implode(', ', $alter));
 		}
 
-		$db->sql_query('TRUNCATE TABLE ' . SEARCH_RESULTS_TABLE);
+		phpbb::$db->sql_query('TRUNCATE TABLE ' . SEARCH_RESULTS_TABLE);
 
 		return false;
 	}
@@ -665,10 +665,10 @@ class fulltext_mysql extends search_backend
 
 		if (sizeof($alter))
 		{
-			$db->sql_query('ALTER TABLE ' . POSTS_TABLE . ' ' . implode(', ', $alter));
+			phpbb::$db->sql_query('ALTER TABLE ' . POSTS_TABLE . ' ' . implode(', ', $alter));
 		}
 
-		$db->sql_query('TRUNCATE TABLE ' . SEARCH_RESULTS_TABLE);
+		phpbb::$db->sql_query('TRUNCATE TABLE ' . SEARCH_RESULTS_TABLE);
 
 		return false;
 	}
@@ -703,7 +703,7 @@ class fulltext_mysql extends search_backend
 
 	private function get_stats()
 	{
-		if ($db->dbms_type !== 'mysql')
+		if (phpbb::$db->dbms_type !== 'mysql')
 		{
 			$this->stats = array();
 			return;
@@ -711,9 +711,9 @@ class fulltext_mysql extends search_backend
 
 		$sql = 'SHOW INDEX
 			FROM ' . POSTS_TABLE;
-		$result = $db->sql_query($sql);
+		$result = phpbb::$db->sql_query($sql);
 
-		while ($row = $db->sql_fetchrow($result))
+		while ($row = phpbb::$db->sql_fetchrow($result))
 		{
 			// deal with older MySQL versions which didn't use Index_type
 			$index_type = (isset($row['Index_type'])) ? $row['Index_type'] : $row['Comment'];
@@ -734,13 +734,13 @@ class fulltext_mysql extends search_backend
 				}
 			}
 		}
-		$db->sql_freeresult($result);
+		phpbb::$db->sql_freeresult($result);
 
 		$sql = 'SELECT COUNT(post_id) as total_posts
 			FROM ' . POSTS_TABLE;
-		$result = $db->sql_query($sql);
-		$this->stats['total_posts'] = (int) $db->sql_fetchfield('total_posts');
-		$db->sql_freeresult($result);
+		$result = phpbb::$db->sql_query($sql);
+		$this->stats['total_posts'] = (int) phpbb::$db->sql_fetchfield('total_posts');
+		phpbb::$db->sql_freeresult($result);
 	}
 
 	/**

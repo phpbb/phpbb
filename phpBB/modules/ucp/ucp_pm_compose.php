@@ -99,14 +99,14 @@ function compose_pm($id, $mode, $action)
 
 			$sql .= 'g.group_receive_pm = 1
 				ORDER BY g.group_type DESC, g.group_name ASC';
-			$result = $db->sql_query($sql);
+			$result = phpbb::$db->sql_query($sql);
 
 			$group_options = '';
-			while ($row = $db->sql_fetchrow($result))
+			while ($row = phpbb::$db->sql_fetchrow($result))
 			{
 				$group_options .= '<option' . (($row['group_type'] == GROUP_SPECIAL) ? ' class="sep"' : '') . ' value="' . $row['group_id'] . '">' . (($row['group_type'] == GROUP_SPECIAL) ? phpbb::$user->lang['G_' . $row['group_name']] : $row['group_name']) . '</option>';
 			}
-			$db->sql_freeresult($result);
+			phpbb::$db->sql_freeresult($result);
 		}
 
 		$template->assign_vars(array(
@@ -216,9 +216,9 @@ function compose_pm($id, $mode, $action)
 
 	if ($sql)
 	{
-		$result = $db->sql_query($sql);
-		$post = $db->sql_fetchrow($result);
-		$db->sql_freeresult($result);
+		$result = phpbb::$db->sql_query($sql);
+		$post = phpbb::$db->sql_fetchrow($result);
+		phpbb::$db->sql_freeresult($result);
 
 		if (!$post)
 		{
@@ -230,9 +230,9 @@ function compose_pm($id, $mode, $action)
 					WHERE t.user_id = ' . phpbb::$user->data['user_id'] . "
 						AND t.msg_id = $msg_id
 						AND t.msg_id = p.msg_id";
-				$result = $db->sql_query($sql);
-				$post = $db->sql_fetchrow($result);
-				$db->sql_freeresult($result);
+				$result = phpbb::$db->sql_query($sql);
+				$post = phpbb::$db->sql_fetchrow($result);
+				phpbb::$db->sql_freeresult($result);
 
 				if ($post)
 				{
@@ -256,9 +256,9 @@ function compose_pm($id, $mode, $action)
 				$sql = 'SELECT forum_password
 					FROM ' . FORUMS_TABLE . '
 					WHERE forum_id = ' . (int) $post['forum_id'];
-				$result = $db->sql_query($sql);
-				$forum_password = (string) $db->sql_fetchfield('forum_password');
-				$db->sql_freeresult($result);
+				$result = phpbb::$db->sql_query($sql);
+				$forum_password = (string) phpbb::$db->sql_fetchfield('forum_password');
+				phpbb::$db->sql_freeresult($result);
 
 				if ($forum_password)
 				{
@@ -422,9 +422,9 @@ function compose_pm($id, $mode, $action)
 		WHERE ug.user_id = ' . phpbb::$user->data['user_id'] . '
 			AND ug.user_pending = 0
 			AND ug.group_id = g.group_id';
-	$result = $db->sql_query($sql);
-	$max_recipients = (int) $db->sql_fetchfield('max_recipients');
-	$db->sql_freeresult($result);
+	$result = phpbb::$db->sql_query($sql);
+	$max_recipients = (int) phpbb::$db->sql_fetchfield('max_recipients');
+	phpbb::$db->sql_freeresult($result);
 
 	$max_recipients = (!$max_recipients) ? phpbb::$config['pm_max_recipients'] : $max_recipients;
 
@@ -485,9 +485,9 @@ function compose_pm($id, $mode, $action)
 				AND in_message = 1
 				AND is_orphan = 0
 			ORDER BY filetime DESC";
-		$result = $db->sql_query($sql);
-		$message_parser->attachment_data = array_merge($message_parser->attachment_data, $db->sql_fetchrowset($result));
-		$db->sql_freeresult($result);
+		$result = phpbb::$db->sql_query($sql);
+		$message_parser->attachment_data = array_merge($message_parser->attachment_data, phpbb::$db->sql_fetchrowset($result));
+		phpbb::$db->sql_freeresult($result);
 	}
 
 	if (!in_array($action, array('quote', 'edit', 'delete', 'forward')))
@@ -509,9 +509,9 @@ function compose_pm($id, $mode, $action)
 				AND topic_id = 0
 				AND user_id = ' . phpbb::$user->data['user_id'] .
 				(($draft_id) ? " AND draft_id <> $draft_id" : '');
-		$result = $db->sql_query_limit($sql, 1);
-		$row = $db->sql_fetchrow($result);
-		$db->sql_freeresult($result);
+		$result = phpbb::$db->sql_query_limit($sql, 1);
+		$row = phpbb::$db->sql_fetchrow($result);
+		phpbb::$db->sql_freeresult($result);
 
 		if ($row)
 		{
@@ -541,7 +541,7 @@ function compose_pm($id, $mode, $action)
 		{
 			if (confirm_box(true))
 			{
-				$sql = 'INSERT INTO ' . DRAFTS_TABLE . ' ' . $db->sql_build_array('INSERT', array(
+				$sql = 'INSERT INTO ' . DRAFTS_TABLE . ' ' . phpbb::$db->sql_build_array('INSERT', array(
 					'user_id'		=> phpbb::$user->data['user_id'],
 					'topic_id'		=> 0,
 					'forum_id'		=> 0,
@@ -550,7 +550,7 @@ function compose_pm($id, $mode, $action)
 					'draft_message'	=> $message
 					)
 				);
-				$db->sql_query($sql);
+				phpbb::$db->sql_query($sql);
 
 				$redirect_url = append_sid('ucp', "i=pm&amp;mode=$mode");
 
@@ -602,9 +602,9 @@ function compose_pm($id, $mode, $action)
 				AND topic_id = 0
 				AND forum_id = 0
 				AND user_id = " . phpbb::$user->data['user_id'];
-		$result = $db->sql_query_limit($sql, 1);
+		$result = phpbb::$db->sql_query_limit($sql, 1);
 
-		if ($row = $db->sql_fetchrow($result))
+		if ($row = phpbb::$db->sql_fetchrow($result))
 		{
 			$message_parser->message = $row['draft_message'];
 			$message_subject = $row['draft_subject'];
@@ -615,7 +615,7 @@ function compose_pm($id, $mode, $action)
 		{
 			$draft_id = 0;
 		}
-		$db->sql_freeresult($result);
+		phpbb::$db->sql_freeresult($result);
 	}
 
 	// Load Drafts
@@ -877,9 +877,9 @@ function compose_pm($id, $mode, $action)
 		{
 			$sql = 'SELECT user_id as id, username as name, user_colour as colour
 				FROM ' . USERS_TABLE . '
-				WHERE ' . $db->sql_in_set('user_id', array_map('intval', array_keys($address_list['u']))) . '
+				WHERE ' . phpbb::$db->sql_in_set('user_id', array_map('intval', array_keys($address_list['u']))) . '
 				ORDER BY username_clean ASC';
-			$result['u'] = $db->sql_query($sql);
+			$result['u'] = phpbb::$db->sql_query($sql);
 		}
 
 		if (!empty($address_list['g']))
@@ -901,10 +901,10 @@ function compose_pm($id, $mode, $action)
 			$sql .= (phpbb::$acl->acl_gets('a_group', 'a_groupadd', 'a_groupdel')) ? ' WHERE ' : ' AND ';
 
 			$sql .= 'g.group_receive_pm = 1
-				AND ' . $db->sql_in_set('g.group_id', array_map('intval', array_keys($address_list['g']))) . '
+				AND ' . phpbb::$db->sql_in_set('g.group_id', array_map('intval', array_keys($address_list['g']))) . '
 				ORDER BY g.group_name ASC';
 
-			$result['g'] = $db->sql_query($sql);
+			$result['g'] = phpbb::$db->sql_query($sql);
 		}
 
 		$u = $g = array();
@@ -913,7 +913,7 @@ function compose_pm($id, $mode, $action)
 		{
 			if (isset($result[$type]) && $result[$type])
 			{
-				while ($row = $db->sql_fetchrow($result[$type]))
+				while ($row = phpbb::$db->sql_fetchrow($result[$type]))
 				{
 					if ($type == 'g')
 					{
@@ -922,7 +922,7 @@ function compose_pm($id, $mode, $action)
 
 					${$type}[$row['id']] = array('name' => $row['name'], 'colour' => $row['colour']);
 				}
-				$db->sql_freeresult($result[$type]);
+				phpbb::$db->sql_freeresult($result[$type]);
 			}
 		}
 
@@ -1176,17 +1176,17 @@ function handle_message_list_actions(&$address_list, &$error, $remove_u, $remove
 		{
 			$sql = 'SELECT user_id
 				FROM ' . USERS_TABLE . '
-				WHERE ' . $db->sql_in_set('user_id', array_keys($address_list['u'])) . '
+				WHERE ' . phpbb::$db->sql_in_set('user_id', array_keys($address_list['u'])) . '
 					AND user_allow_pm = 0';
-			$result = $db->sql_query($sql);
+			$result = phpbb::$db->sql_query($sql);
 
 			$removed = false;
-			while ($row = $db->sql_fetchrow($result))
+			while ($row = phpbb::$db->sql_fetchrow($result))
 			{
 				$removed = true;
 				unset($address_list['u'][$row['user_id']]);
 			}
-			$db->sql_freeresult($result);
+			phpbb::$db->sql_freeresult($result);
 
 			// print a notice about users not being added who do not want to receive pms
 			if ($removed)

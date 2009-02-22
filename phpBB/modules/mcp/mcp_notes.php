@@ -78,14 +78,14 @@ class mcp_notes
 
 		add_form_key('mcp_notes');
 
-		$sql_where = ($user_id) ? "user_id = $user_id" : "username_clean = '" . $db->sql_escape(utf8_clean_string($username)) . "'";
+		$sql_where = ($user_id) ? "user_id = $user_id" : "username_clean = '" . phpbb::$db->sql_escape(utf8_clean_string($username)) . "'";
 
 		$sql = 'SELECT *
 			FROM ' . USERS_TABLE . "
 			WHERE $sql_where";
-		$result = $db->sql_query($sql);
-		$userrow = $db->sql_fetchrow($result);
-		$db->sql_freeresult($result);
+		$result = phpbb::$db->sql_query($sql);
+		$userrow = phpbb::$db->sql_fetchrow($result);
+		phpbb::$db->sql_freeresult($result);
 
 		if (!$userrow)
 		{
@@ -119,7 +119,7 @@ class mcp_notes
 				{
 					$sql_in[] = $mark;
 				}
-				$where_sql = ' AND ' . $db->sql_in_set('log_id', $sql_in);
+				$where_sql = ' AND ' . phpbb::$db->sql_in_set('log_id', $sql_in);
 				unset($sql_in);
 			}
 
@@ -131,7 +131,7 @@ class mcp_notes
 						WHERE log_type = ' . LOG_USERS . "
 							AND reportee_id = $user_id
 							$where_sql";
-					$db->sql_query($sql);
+					phpbb::$db->sql_query($sql);
 
 					add_log('admin', 'LOG_CLEAR_USER', $userrow['username']);
 

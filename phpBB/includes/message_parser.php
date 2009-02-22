@@ -137,13 +137,13 @@ class bbcode_firstpass extends bbcode
 
 			$sql = 'SELECT *
 				FROM ' . BBCODES_TABLE;
-			$result = $db->sql_query($sql);
+			$result = phpbb::$db->sql_query($sql);
 
-			while ($row = $db->sql_fetchrow($result))
+			while ($row = phpbb::$db->sql_fetchrow($result))
 			{
 				$rowset[] = $row;
 			}
-			$db->sql_freeresult($result);
+			phpbb::$db->sql_freeresult($result);
 		}
 
 		foreach ($rowset as $row)
@@ -1250,10 +1250,10 @@ class parse_message extends bbcode_firstpass
 			// For now setting the ttl to 10 minutes
 			$sql = 'SELECT *
 				FROM ' . SMILIES_TABLE . '
-				ORDER BY ' . $db->sql_function('length_varchar', 'code') . ' DESC';
-			$result = $db->sql_query($sql, 600);
+				ORDER BY ' . phpbb::$db->sql_function('length_varchar', 'code') . ' DESC';
+			$result = phpbb::$db->sql_query($sql, 600);
 
-			while ($row = $db->sql_fetchrow($result))
+			while ($row = phpbb::$db->sql_fetchrow($result))
 			{
 				if (empty($row['code']))
 				{
@@ -1264,7 +1264,7 @@ class parse_message extends bbcode_firstpass
 				$match[] = '(?<=^|[\n .])' . preg_quote($row['code'], '#') . '(?![^<>]*>)';
 				$replace[] = '<!-- s' . $row['code'] . ' --><img src="{SMILIES_PATH}/' . $row['smiley_url'] . '" alt="' . $row['code'] . '" title="' . $row['emotion'] . '" /><!-- s' . $row['code'] . ' -->';
 			}
-			$db->sql_freeresult($result);
+			phpbb::$db->sql_freeresult($result);
 		}
 
 		if (sizeof($match))
@@ -1343,10 +1343,10 @@ class parse_message extends bbcode_firstpass
 						'poster_id'			=> phpbb::$user->data['user_id'],
 					);
 
-					$db->sql_query('INSERT INTO ' . ATTACHMENTS_TABLE . ' ' . $db->sql_build_array('INSERT', $sql_ary));
+					phpbb::$db->sql_query('INSERT INTO ' . ATTACHMENTS_TABLE . ' ' . phpbb::$db->sql_build_array('INSERT', $sql_ary));
 
 					$new_entry = array(
-						'attach_id'		=> $db->sql_nextid(),
+						'attach_id'		=> phpbb::$db->sql_nextid(),
 						'is_orphan'		=> 1,
 						'real_filename'	=> $filedata['real_filename'],
 						'attach_comment'=> $this->filename_data['filecomment'],
@@ -1394,9 +1394,9 @@ class parse_message extends bbcode_firstpass
 							WHERE attach_id = ' . (int) $this->attachment_data[$index]['attach_id'] . '
 								AND is_orphan = 1
 								AND poster_id = ' . phpbb::$user->data['user_id'];
-						$result = $db->sql_query($sql);
-						$row = $db->sql_fetchrow($result);
-						$db->sql_freeresult($result);
+						$result = phpbb::$db->sql_query($sql);
+						$row = phpbb::$db->sql_fetchrow($result);
+						phpbb::$db->sql_freeresult($result);
 
 						if ($row)
 						{
@@ -1407,7 +1407,7 @@ class parse_message extends bbcode_firstpass
 								phpbb_unlink($row['physical_filename'], 'thumbnail');
 							}
 
-							$db->sql_query('DELETE FROM ' . ATTACHMENTS_TABLE . ' WHERE attach_id = ' . (int) $this->attachment_data[$index]['attach_id']);
+							phpbb::$db->sql_query('DELETE FROM ' . ATTACHMENTS_TABLE . ' WHERE attach_id = ' . (int) $this->attachment_data[$index]['attach_id']);
 						}
 					}
 					else
@@ -1445,10 +1445,10 @@ class parse_message extends bbcode_firstpass
 							'poster_id'			=> phpbb::$user->data['user_id'],
 						);
 
-						$db->sql_query('INSERT INTO ' . ATTACHMENTS_TABLE . ' ' . $db->sql_build_array('INSERT', $sql_ary));
+						phpbb::$db->sql_query('INSERT INTO ' . ATTACHMENTS_TABLE . ' ' . phpbb::$db->sql_build_array('INSERT', $sql_ary));
 
 						$new_entry = array(
-							'attach_id'		=> $db->sql_nextid(),
+							'attach_id'		=> phpbb::$db->sql_nextid(),
 							'is_orphan'		=> 1,
 							'real_filename'	=> $filedata['real_filename'],
 							'attach_comment'=> $this->filename_data['filecomment'],
@@ -1508,11 +1508,11 @@ class parse_message extends bbcode_firstpass
 			// Get the attachment data, based on the poster id...
 			$sql = 'SELECT attach_id, is_orphan, real_filename, attach_comment
 				FROM ' . ATTACHMENTS_TABLE . '
-				WHERE ' . $db->sql_in_set('attach_id', array_keys($not_orphan)) . '
+				WHERE ' . phpbb::$db->sql_in_set('attach_id', array_keys($not_orphan)) . '
 					AND poster_id = ' . $check_user_id;
-			$result = $db->sql_query($sql);
+			$result = phpbb::$db->sql_query($sql);
 
-			while ($row = $db->sql_fetchrow($result))
+			while ($row = phpbb::$db->sql_fetchrow($result))
 			{
 				$pos = $not_orphan[(int) $row['attach_id']];
 				$this->attachment_data[$pos] = $row;
@@ -1520,7 +1520,7 @@ class parse_message extends bbcode_firstpass
 
 				unset($not_orphan[(int) $row['attach_id']]);
 			}
-			$db->sql_freeresult($result);
+			phpbb::$db->sql_freeresult($result);
 		}
 
 		if (sizeof($not_orphan))
@@ -1533,12 +1533,12 @@ class parse_message extends bbcode_firstpass
 		{
 			$sql = 'SELECT attach_id, is_orphan, real_filename, attach_comment
 				FROM ' . ATTACHMENTS_TABLE . '
-				WHERE ' . $db->sql_in_set('attach_id', array_keys($orphan)) . '
+				WHERE ' . phpbb::$db->sql_in_set('attach_id', array_keys($orphan)) . '
 					AND poster_id = ' . phpbb::$user->data['user_id'] . '
 					AND is_orphan = 1';
-			$result = $db->sql_query($sql);
+			$result = phpbb::$db->sql_query($sql);
 
-			while ($row = $db->sql_fetchrow($result))
+			while ($row = phpbb::$db->sql_fetchrow($result))
 			{
 				$pos = $orphan[(int) $row['attach_id']];
 				$this->attachment_data[$pos] = $row;
@@ -1546,7 +1546,7 @@ class parse_message extends bbcode_firstpass
 
 				unset($orphan[(int) $row['attach_id']]);
 			}
-			$db->sql_freeresult($result);
+			phpbb::$db->sql_freeresult($result);
 		}
 
 		if (sizeof($orphan))

@@ -54,9 +54,9 @@ class acp_words
 				$sql = 'SELECT *
 					FROM ' . WORDS_TABLE . "
 					WHERE word_id = $word_id";
-				$result = $db->sql_query($sql);
-				$word_info = $db->sql_fetchrow($result);
-				$db->sql_freeresult($result);
+				$result = phpbb::$db->sql_query($sql);
+				$word_info = phpbb::$db->sql_fetchrow($result);
+				phpbb::$db->sql_freeresult($result);
 
 				$s_hidden_fields .= '<input type="hidden" name="id" value="' . $word_id . '" />';
 
@@ -97,11 +97,11 @@ class acp_words
 
 				if ($word_id)
 				{
-					$db->sql_query('UPDATE ' . WORDS_TABLE . ' SET ' . $db->sql_build_array('UPDATE', $sql_ary) . ' WHERE word_id = ' . $word_id);
+					phpbb::$db->sql_query('UPDATE ' . WORDS_TABLE . ' SET ' . phpbb::$db->sql_build_array('UPDATE', $sql_ary) . ' WHERE word_id = ' . $word_id);
 				}
 				else
 				{
-					$db->sql_query('INSERT INTO ' . WORDS_TABLE . ' ' . $db->sql_build_array('INSERT', $sql_ary));
+					phpbb::$db->sql_query('INSERT INTO ' . WORDS_TABLE . ' ' . phpbb::$db->sql_build_array('INSERT', $sql_ary));
 				}
 
 				phpbb::$acm->destroy('word_censors');
@@ -128,13 +128,13 @@ class acp_words
 					$sql = 'SELECT word
 						FROM ' . WORDS_TABLE . "
 						WHERE word_id = $word_id";
-					$result = $db->sql_query($sql);
-					$deleted_word = $db->sql_fetchfield('word');
-					$db->sql_freeresult($result);
+					$result = phpbb::$db->sql_query($sql);
+					$deleted_word = phpbb::$db->sql_fetchfield('word');
+					phpbb::$db->sql_freeresult($result);
 
 					$sql = 'DELETE FROM ' . WORDS_TABLE . "
 						WHERE word_id = $word_id";
-					$db->sql_query($sql);
+					phpbb::$db->sql_query($sql);
 
 					phpbb::$acm->destroy('word_censors');
 
@@ -164,9 +164,9 @@ class acp_words
 		$sql = 'SELECT *
 			FROM ' . WORDS_TABLE . '
 			ORDER BY word';
-		$result = $db->sql_query($sql);
+		$result = phpbb::$db->sql_query($sql);
 
-		while ($row = $db->sql_fetchrow($result))
+		while ($row = phpbb::$db->sql_fetchrow($result))
 		{
 			$template->assign_block_vars('words', array(
 				'WORD'			=> $row['word'],
@@ -175,7 +175,7 @@ class acp_words
 				'U_DELETE'		=> $this->u_action . '&amp;action=delete&amp;id=' . $row['word_id'])
 			);
 		}
-		$db->sql_freeresult($result);
+		phpbb::$db->sql_freeresult($result);
 	}
 }
 

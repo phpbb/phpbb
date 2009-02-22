@@ -299,11 +299,11 @@ class acm
 		$this->sql_rowset[$query_id] = array();
 		$this->sql_row_pointer[$query_id] = 0;
 
-		while ($row = $db->sql_fetchrow($query_result))
+		while ($row = phpbb::$db->sql_fetchrow($query_result))
 		{
 			$this->sql_rowset[$query_id][] = $row;
 		}
-		$db->sql_freeresult($query_result);
+		phpbb::$db->sql_freeresult($query_result);
 
 		memcache_set($this->memcache, 'sql_' . md5($query), $this->sql_rowset[$query_id], 0, $ttl);
 

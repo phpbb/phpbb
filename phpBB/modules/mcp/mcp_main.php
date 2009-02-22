@@ -245,8 +245,8 @@ function lock_unlock($action, $ids)
 	{
 		$sql = "UPDATE $table
 			SET $set_id = " . (($action == 'lock' || $action == 'lock_post') ? ITEM_LOCKED : ITEM_UNLOCKED) . '
-			WHERE ' . $db->sql_in_set($sql_id, $ids);
-		$db->sql_query($sql);
+			WHERE ' . phpbb::$db->sql_in_set($sql_id, $ids);
+		phpbb::$db->sql_query($sql);
 
 		$data = ($action == 'lock' || $action == 'unlock') ? get_topic_data($ids) : get_post_data($ids);
 
@@ -332,9 +332,9 @@ function change_topic_type($action, $topic_ids)
 		{
 			$sql = 'UPDATE ' . TOPICS_TABLE . "
 				SET topic_type = $new_topic_type
-				WHERE " . $db->sql_in_set('topic_id', $topic_ids) . '
+				WHERE " . phpbb::$db->sql_in_set('topic_id', $topic_ids) . '
 					AND forum_id <> 0';
-			$db->sql_query($sql);
+			phpbb::$db->sql_query($sql);
 
 			// Reset forum id if a global topic is within the array
 			$to_forum_id = request_var('to_forum_id', 0);
@@ -343,24 +343,24 @@ function change_topic_type($action, $topic_ids)
 			{
 				$sql = 'UPDATE ' . TOPICS_TABLE . "
 					SET topic_type = $new_topic_type, forum_id = $to_forum_id
-					WHERE " . $db->sql_in_set('topic_id', $topic_ids) . '
+					WHERE " . phpbb::$db->sql_in_set('topic_id', $topic_ids) . '
 						AND forum_id = 0';
-				$db->sql_query($sql);
+				phpbb::$db->sql_query($sql);
 
 				// Update forum_ids for all posts
 				$sql = 'UPDATE ' . POSTS_TABLE . "
 					SET forum_id = $to_forum_id
-					WHERE " . $db->sql_in_set('topic_id', $topic_ids) . '
+					WHERE " . phpbb::$db->sql_in_set('topic_id', $topic_ids) . '
 						AND forum_id = 0';
-				$db->sql_query($sql);
+				phpbb::$db->sql_query($sql);
 
 				// Do a little forum sync stuff
 				$sql = 'SELECT SUM(t.topic_replies + t.topic_approved) as topic_posts, COUNT(t.topic_approved) as topics_authed
 					FROM ' . TOPICS_TABLE . ' t
-					WHERE ' . $db->sql_in_set('t.topic_id', $topic_ids);
-				$result = $db->sql_query($sql);
-				$row_data = $db->sql_fetchrow($result);
-				$db->sql_freeresult($result);
+					WHERE ' . phpbb::$db->sql_in_set('t.topic_id', $topic_ids);
+				$result = phpbb::$db->sql_query($sql);
+				$row_data = phpbb::$db->sql_fetchrow($result);
+				phpbb::$db->sql_freeresult($result);
 
 				$sync_sql = array();
 
@@ -381,7 +381,7 @@ function change_topic_type($action, $topic_ids)
 					$sql = 'UPDATE ' . FORUMS_TABLE . '
 						SET ' . implode(', ', $array) . '
 						WHERE forum_id = ' . $forum_id_key;
-					$db->sql_query($sql);
+					phpbb::$db->sql_query($sql);
 				}
 
 				sync('forum', 'forum_id', $to_forum_id);
@@ -392,42 +392,42 @@ function change_topic_type($action, $topic_ids)
 			// Get away with those topics already being a global announcement by re-calculating $topic_ids
 			$sql = 'SELECT topic_id
 				FROM ' . TOPICS_TABLE . '
-				WHERE ' . $db->sql_in_set('topic_id', $topic_ids) . '
+				WHERE ' . phpbb::$db->sql_in_set('topic_id', $topic_ids) . '
 					AND forum_id <> 0';
-			$result = $db->sql_query($sql);
+			$result = phpbb::$db->sql_query($sql);
 
 			$topic_ids = array();
-			while ($row = $db->sql_fetchrow($result))
+			while ($row = phpbb::$db->sql_fetchrow($result))
 			{
 				$topic_ids[] = $row['topic_id'];
 			}
-			$db->sql_freeresult($result);
+			phpbb::$db->sql_freeresult($result);
 
 			if (sizeof($topic_ids))
 			{
 				// Delete topic shadows for global announcements
 				$sql = 'DELETE FROM ' . TOPICS_TABLE . '
-					WHERE ' . $db->sql_in_set('topic_moved_id', $topic_ids);
-				$db->sql_query($sql);
+					WHERE ' . phpbb::$db->sql_in_set('topic_moved_id', $topic_ids);
+				phpbb::$db->sql_query($sql);
 
 				$sql = 'UPDATE ' . TOPICS_TABLE . "
 					SET topic_type = $new_topic_type, forum_id = 0
-						WHERE " . $db->sql_in_set('topic_id', $topic_ids);
-				$db->sql_query($sql);
+						WHERE " . phpbb::$db->sql_in_set('topic_id', $topic_ids);
+				phpbb::$db->sql_query($sql);
 
 				// Update forum_ids for all posts
 				$sql = 'UPDATE ' . POSTS_TABLE . '
 					SET forum_id = 0
-					WHERE ' . $db->sql_in_set('topic_id', $topic_ids);
-				$db->sql_query($sql);
+					WHERE ' . phpbb::$db->sql_in_set('topic_id', $topic_ids);
+				phpbb::$db->sql_query($sql);
 
 				// Do a little forum sync stuff
 				$sql = 'SELECT SUM(t.topic_replies + t.topic_approved) as topic_posts, COUNT(t.topic_approved) as topics_authed
 					FROM ' . TOPICS_TABLE . ' t
-					WHERE ' . $db->sql_in_set('t.topic_id', $topic_ids);
-				$result = $db->sql_query($sql);
-				$row_data = $db->sql_fetchrow($result);
-				$db->sql_freeresult($result);
+					WHERE ' . phpbb::$db->sql_in_set('t.topic_id', $topic_ids);
+				$result = phpbb::$db->sql_query($sql);
+				$row_data = phpbb::$db->sql_fetchrow($result);
+				phpbb::$db->sql_freeresult($result);
 
 				$sync_sql = array();
 
@@ -448,7 +448,7 @@ function change_topic_type($action, $topic_ids)
 					$sql = 'UPDATE ' . FORUMS_TABLE . '
 						SET ' . implode(', ', $array) . '
 						WHERE forum_id = ' . $forum_id_key;
-					$db->sql_query($sql);
+					phpbb::$db->sql_query($sql);
 				}
 
 				sync('forum', 'forum_id', $forum_id);
@@ -476,11 +476,11 @@ function change_topic_type($action, $topic_ids)
 		{
 			$sql = 'SELECT forum_id
 				FROM ' . TOPICS_TABLE . '
-				WHERE ' . $db->sql_in_set('topic_id', $topic_ids) . '
+				WHERE ' . phpbb::$db->sql_in_set('topic_id', $topic_ids) . '
 					AND forum_id = 0';
-			$result = $db->sql_query($sql);
-			$row = $db->sql_fetchrow($result);
-			$db->sql_freeresult($result);
+			$result = phpbb::$db->sql_query($sql);
+			$row = phpbb::$db->sql_fetchrow($result);
+			phpbb::$db->sql_freeresult($result);
 
 			if ($row)
 			{
@@ -593,14 +593,14 @@ function mcp_move_topic($topic_ids)
 			}
 		}
 
-		$db->sql_transaction('begin');
+		phpbb::$db->sql_transaction('begin');
 
 		$sql = 'SELECT SUM(t.topic_replies + t.topic_approved) as topic_posts
 			FROM ' . TOPICS_TABLE . ' t
-			WHERE ' . $db->sql_in_set('t.topic_id', $topic_ids);
-		$result = $db->sql_query($sql);
-		$row_data = $db->sql_fetchrow($result);
-		$db->sql_freeresult($result);
+			WHERE ' . phpbb::$db->sql_in_set('t.topic_id', $topic_ids);
+		$result = phpbb::$db->sql_query($sql);
+		$row_data = phpbb::$db->sql_fetchrow($result);
+		phpbb::$db->sql_freeresult($result);
 
 		$sync_sql = array();
 
@@ -633,7 +633,7 @@ function mcp_move_topic($topic_ids)
 				$sql = 'UPDATE ' . TOPICS_TABLE . '
 					SET topic_type = ' . POST_ANNOUNCE . '
 					WHERE topic_id = ' . (int) $row['topic_id'];
-				$db->sql_query($sql);
+				phpbb::$db->sql_query($sql);
 			}
 
 			// Leave a redirection if required and only if the topic is visible to users
@@ -674,7 +674,7 @@ function mcp_move_topic($topic_ids)
 					'poll_last_vote'		=>	(int) $row['poll_last_vote']
 				);
 
-				$db->sql_query('INSERT INTO ' . TOPICS_TABLE . $db->sql_build_array('INSERT', $shadow));
+				phpbb::$db->sql_query('INSERT INTO ' . TOPICS_TABLE . phpbb::$db->sql_build_array('INSERT', $shadow));
 
 				$topics_authed_moved--;
 				$topics_moved--;
@@ -696,10 +696,10 @@ function mcp_move_topic($topic_ids)
 			$sql = 'UPDATE ' . FORUMS_TABLE . '
 				SET ' . implode(', ', $array) . '
 				WHERE forum_id = ' . $forum_id_key;
-			$db->sql_query($sql);
+			phpbb::$db->sql_query($sql);
 		}
 
-		$db->sql_transaction('commit');
+		phpbb::$db->sql_transaction('commit');
 
 		sync('forum', 'forum_id', array($forum_id, $to_forum_id));
 	}
@@ -830,16 +830,16 @@ function mcp_delete_post($post_ids)
 
 		$sql = 'SELECT DISTINCT topic_id
 			FROM ' . POSTS_TABLE . '
-			WHERE ' . $db->sql_in_set('post_id', $post_ids);
-		$result = $db->sql_query($sql);
+			WHERE ' . phpbb::$db->sql_in_set('post_id', $post_ids);
+		$result = phpbb::$db->sql_query($sql);
 
 		$topic_id_list = array();
-		while ($row = $db->sql_fetchrow($result))
+		while ($row = phpbb::$db->sql_fetchrow($result))
 		{
 			$topic_id_list[] = $row['topic_id'];
 		}
 		$affected_topics = sizeof($topic_id_list);
-		$db->sql_freeresult($result);
+		phpbb::$db->sql_freeresult($result);
 
 		$post_data = get_post_data($post_ids);
 
@@ -853,11 +853,11 @@ function mcp_delete_post($post_ids)
 
 		$sql = 'SELECT COUNT(topic_id) AS topics_left
 			FROM ' . TOPICS_TABLE . '
-			WHERE ' . $db->sql_in_set('topic_id', $topic_id_list);
-		$result = $db->sql_query_limit($sql, 1);
+			WHERE ' . phpbb::$db->sql_in_set('topic_id', $topic_id_list);
+		$result = phpbb::$db->sql_query_limit($sql, 1);
 
-		$deleted_topics = ($row = $db->sql_fetchrow($result)) ? ($affected_topics - $row['topics_left']) : $affected_topics;
-		$db->sql_freeresult($result);
+		$deleted_topics = ($row = phpbb::$db->sql_fetchrow($result)) ? ($affected_topics - $row['topics_left']) : $affected_topics;
+		phpbb::$db->sql_freeresult($result);
 
 		$topic_id = request_var('t', 0);
 
@@ -1001,8 +1001,8 @@ function mcp_fork_topic($topic_ids)
 				'poll_length'				=> (int) $topic_row['poll_length']
 			);
 
-			$db->sql_query('INSERT INTO ' . TOPICS_TABLE . ' ' . $db->sql_build_array('INSERT', $sql_ary));
-			$new_topic_id = $db->sql_nextid();
+			phpbb::$db->sql_query('INSERT INTO ' . TOPICS_TABLE . ' ' . phpbb::$db->sql_build_array('INSERT', $sql_ary));
+			$new_topic_id = phpbb::$db->sql_nextid();
 			$new_topic_id_list[$topic_id] = $new_topic_id;
 
 			if ($topic_row['poll_start'])
@@ -1012,9 +1012,9 @@ function mcp_fork_topic($topic_ids)
 				$sql = 'SELECT *
 					FROM ' . POLL_OPTIONS_TABLE . "
 					WHERE topic_id = $topic_id";
-				$result = $db->sql_query($sql);
+				$result = phpbb::$db->sql_query($sql);
 
-				while ($row = $db->sql_fetchrow($result))
+				while ($row = phpbb::$db->sql_fetchrow($result))
 				{
 					$sql_ary = array(
 						'poll_option_id'	=> (int) $row['poll_option_id'],
@@ -1023,7 +1023,7 @@ function mcp_fork_topic($topic_ids)
 						'poll_option_total'	=> 0
 					);
 
-					$db->sql_query('INSERT INTO ' . POLL_OPTIONS_TABLE . ' ' . $db->sql_build_array('INSERT', $sql_ary));
+					phpbb::$db->sql_query('INSERT INTO ' . POLL_OPTIONS_TABLE . ' ' . phpbb::$db->sql_build_array('INSERT', $sql_ary));
 				}
 			}
 
@@ -1031,14 +1031,14 @@ function mcp_fork_topic($topic_ids)
 				FROM ' . POSTS_TABLE . "
 				WHERE topic_id = $topic_id
 				ORDER BY post_time ASC";
-			$result = $db->sql_query($sql);
+			$result = phpbb::$db->sql_query($sql);
 
 			$post_rows = array();
-			while ($row = $db->sql_fetchrow($result))
+			while ($row = phpbb::$db->sql_fetchrow($result))
 			{
 				$post_rows[] = $row;
 			}
-			$db->sql_freeresult($result);
+			phpbb::$db->sql_freeresult($result);
 
 			if (!sizeof($post_rows))
 			{
@@ -1076,8 +1076,8 @@ function mcp_fork_topic($topic_ids)
 					'post_postcount'	=> 0,
 				);
 
-				$db->sql_query('INSERT INTO ' . POSTS_TABLE . ' ' . $db->sql_build_array('INSERT', $sql_ary));
-				$new_post_id = $db->sql_nextid();
+				phpbb::$db->sql_query('INSERT INTO ' . POSTS_TABLE . ' ' . phpbb::$db->sql_build_array('INSERT', $sql_ary));
+				$new_post_id = phpbb::$db->sql_nextid();
 
 				// Copy whether the topic is dotted
 				markread('post', $to_forum_id, $new_topic_id, 0, $row['poster_id']);
@@ -1089,10 +1089,10 @@ function mcp_fork_topic($topic_ids)
 						WHERE post_msg_id = {$row['post_id']}
 							AND topic_id = $topic_id
 							AND in_message = 0";
-					$result = $db->sql_query($sql);
+					$result = phpbb::$db->sql_query($sql);
 
 					$sql_ary = array();
-					while ($attach_row = $db->sql_fetchrow($result))
+					while ($attach_row = phpbb::$db->sql_fetchrow($result))
 					{
 						$sql_ary[] = array(
 							'post_msg_id'		=> (int) $new_post_id,
@@ -1111,11 +1111,11 @@ function mcp_fork_topic($topic_ids)
 							'thumbnail'			=> (int) $attach_row['thumbnail']
 						);
 					}
-					$db->sql_freeresult($result);
+					phpbb::$db->sql_freeresult($result);
 
 					if (sizeof($sql_ary))
 					{
-						$db->sql_multi_insert(ATTACHMENTS_TABLE, $sql_ary);
+						phpbb::$db->sql_multi_insert(ATTACHMENTS_TABLE, $sql_ary);
 					}
 				}
 			}
@@ -1123,10 +1123,10 @@ function mcp_fork_topic($topic_ids)
 			$sql = 'SELECT user_id, notify_status
 				FROM ' . TOPICS_WATCH_TABLE . '
 				WHERE topic_id = ' . $topic_id;
-			$result = $db->sql_query($sql);
+			$result = phpbb::$db->sql_query($sql);
 
 			$sql_ary = array();
-			while ($row = $db->sql_fetchrow($result))
+			while ($row = phpbb::$db->sql_fetchrow($result))
 			{
 				$sql_ary[] = array(
 					'topic_id'		=> (int) $new_topic_id,
@@ -1134,11 +1134,11 @@ function mcp_fork_topic($topic_ids)
 					'notify_status'	=> (int) $row['notify_status'],
 				);
 			}
-			$db->sql_freeresult($result);
+			phpbb::$db->sql_freeresult($result);
 
 			if (sizeof($sql_ary))
 			{
-				$db->sql_multi_insert(TOPICS_WATCH_TABLE, $sql_ary);
+				phpbb::$db->sql_multi_insert(TOPICS_WATCH_TABLE, $sql_ary);
 			}
 		}
 
@@ -1156,7 +1156,7 @@ function mcp_fork_topic($topic_ids)
 			$sql = 'UPDATE ' . FORUMS_TABLE . '
 				SET ' . implode(', ', $array) . '
 				WHERE forum_id = ' . $forum_id_key;
-			$db->sql_query($sql);
+			phpbb::$db->sql_query($sql);
 		}
 
 		sync('forum', 'forum_id', $to_forum_id);

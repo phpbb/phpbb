@@ -56,13 +56,13 @@ print "<html>\n<body>\n";
 //
 $sql = "SELECT COUNT(*) as total, MAX(post_id) as max_post_id
 	FROM ". POSTS_TABLE;
-if ( !($result = $db->sql_query($sql)) )
+if ( !($result = phpbb::$db->sql_query($sql)) )
 {
-	$error = $db->sql_error();
+	$error = phpbb::$db->sql_error();
 	die("Couldn't get maximum post ID :: " . $sql . " :: " . $error['message']);
 }
 
-$max_post_id = $db->sql_fetchrow($result);
+$max_post_id = phpbb::$db->sql_fetchrow($result);
 
 $totalposts = $max_post_id['total'];
 $max_post_id = $max_post_id['max_post_id'];
@@ -82,14 +82,14 @@ for(;$postcounter <= $max_post_id; $postcounter += $batchsize)
 		WHERE post_id
 			BETWEEN $batchstart
 				AND $batchend";
-	if( !($result = $db->sql_query($sql)) )
+	if( !($result = phpbb::$db->sql_query($sql)) )
 	{
-		$error = $db->sql_error();
+		$error = phpbb::$db->sql_error();
 		die("Couldn't get post_text :: " . $sql . " :: " . $error['message']);
 	}
 
-	$rowset = $db->sql_fetchrowset($result);
-	$db->sql_freeresult($result);
+	$rowset = phpbb::$db->sql_fetchrowset($result);
+	phpbb::$db->sql_freeresult($result);
 
 	$post_rows = sizeof($rowset);
 
@@ -97,7 +97,7 @@ for(;$postcounter <= $max_post_id; $postcounter += $batchsize)
 	{
 
 	// $sql = "LOCK TABLES ".POST_TEXT_TABLE." WRITE";
-	// $result = $db->sql_query($sql);
+	// $result = phpbb::$db->sql_query($sql);
 		print "\n<p>\n<a href='{$_SERVER['PHP_SELF']}?batchstart=$batchstart'>Restart from posting $batchstart</a><br>\n";
 
 		// For every post in the batch:
@@ -111,7 +111,7 @@ for(;$postcounter <= $max_post_id; $postcounter += $batchsize)
 			$search->index('post', $rowset[$post_nr]['post_id'], $rowset[$post_nr]['post_text'], $rowset[$post_nr]['post_subject'], $rowset[$post_nr]['poster_id']);
 		}
 	// $sql = "UNLOCK TABLES";
-	// $result = $db->sql_query($sql);
+	// $result = phpbb::$db->sql_query($sql);
 
 	}
 }

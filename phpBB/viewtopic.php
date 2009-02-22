@@ -60,9 +60,9 @@ if ($view && !$post_id)
 		$sql = 'SELECT forum_id
 			FROM ' . TOPICS_TABLE . "
 			WHERE topic_id = $topic_id";
-		$result = $db->sql_query($sql);
-		$forum_id = (int) $db->sql_fetchfield('forum_id');
-		$db->sql_freeresult($result);
+		$result = phpbb::$db->sql_query($sql);
+		$forum_id = (int) phpbb::$db->sql_fetchfield('forum_id');
+		phpbb::$db->sql_freeresult($result);
 
 		if (!$forum_id)
 		{
@@ -83,18 +83,18 @@ if ($view && !$post_id)
 				" . ((phpbb::$acl->acl_get('m_approve', $forum_id)) ? '' : 'AND post_approved = 1') . "
 				AND post_time > $topic_last_read
 			ORDER BY post_time ASC";
-		$result = $db->sql_query_limit($sql, 1);
-		$row = $db->sql_fetchrow($result);
-		$db->sql_freeresult($result);
+		$result = phpbb::$db->sql_query_limit($sql, 1);
+		$row = phpbb::$db->sql_fetchrow($result);
+		phpbb::$db->sql_freeresult($result);
 
 		if (!$row)
 		{
 			$sql = 'SELECT topic_last_post_id as post_id, topic_id, forum_id
 				FROM ' . TOPICS_TABLE . '
 				WHERE topic_id = ' . $topic_id;
-			$result = $db->sql_query($sql);
-			$row = $db->sql_fetchrow($result);
-			$db->sql_freeresult($result);
+			$result = phpbb::$db->sql_query($sql);
+			$row = phpbb::$db->sql_fetchrow($result);
+			phpbb::$db->sql_freeresult($result);
 		}
 
 		if (!$row)
@@ -116,9 +116,9 @@ if ($view && !$post_id)
 		$sql = 'SELECT forum_id, topic_last_post_time
 			FROM ' . TOPICS_TABLE . '
 			WHERE topic_id = ' . $topic_id;
-		$result = $db->sql_query($sql);
-		$row = $db->sql_fetchrow($result);
-		$db->sql_freeresult($result);
+		$result = phpbb::$db->sql_query($sql);
+		$row = phpbb::$db->sql_fetchrow($result);
+		phpbb::$db->sql_freeresult($result);
 
 		if (!$row)
 		{
@@ -135,9 +135,9 @@ if ($view && !$post_id)
 					AND topic_last_post_time $sql_condition {$row['topic_last_post_time']}
 					" . ((phpbb::$acl->acl_get('m_approve', $row['forum_id'])) ? '' : 'AND topic_approved = 1') . "
 				ORDER BY topic_last_post_time $sql_ordering";
-			$result = $db->sql_query_limit($sql, 1);
-			$row = $db->sql_fetchrow($result);
-			$db->sql_freeresult($result);
+			$result = phpbb::$db->sql_query_limit($sql, 1);
+			$row = phpbb::$db->sql_fetchrow($result);
+			phpbb::$db->sql_freeresult($result);
 
 			if (!$row)
 			{
@@ -254,9 +254,9 @@ $sql_array['WHERE'] .= ')';
 // whereupon we join on the forum_id passed as a parameter ... this
 // is done so navigation, forum name, etc. remain consistent with where
 // user clicked to view a global topic
-$sql = $db->sql_build_query('SELECT', $sql_array);
-$result = $db->sql_query($sql);
-$topic_data = $db->sql_fetchrow($result);
+$sql = phpbb::$db->sql_build_query('SELECT', $sql_array);
+$result = phpbb::$db->sql_query($sql);
+$topic_data = phpbb::$db->sql_fetchrow($result);
 phpbb::$db->sql_freeresult($result);
 
 if (!$topic_data)
@@ -295,9 +295,9 @@ if ($post_id)
 				" . ((!phpbb::$acl->acl_get('m_approve', $forum_id)) ? 'AND p1.post_approved = 1' : '') . '
 				AND ' . (($sort_dir == 'd') ? 'p1.post_time >= p2.post_time' : 'p1.post_time <= p2.post_time');
 
-		$result = $db->sql_query($sql);
-		$row = $db->sql_fetchrow($result);
-		$db->sql_freeresult($result);
+		$result = phpbb::$db->sql_query($sql);
+		$row = phpbb::$db->sql_fetchrow($result);
+		phpbb::$db->sql_freeresult($result);
 
 		$topic_data['prev_posts'] = $row['prev_posts'] - 1;
 	}
@@ -315,7 +315,7 @@ if (($topic_data['topic_type'] == POST_STICKY || $topic_data['topic_type'] == PO
 	$sql = 'UPDATE ' . TOPICS_TABLE . '
 		SET topic_type = ' . POST_NORMAL . ', topic_time_limit = 0
 		WHERE topic_id = ' . $topic_id;
-	$db->sql_query($sql);
+	phpbb::$db->sql_query($sql);
 
 	$topic_data['topic_type'] = POST_NORMAL;
 	$topic_data['topic_time_limit'] = 0;
@@ -411,9 +411,9 @@ if ($sort_days)
 		WHERE topic_id = $topic_id
 			AND post_time >= $min_post_time
 		" . ((phpbb::$acl->acl_get('m_approve', $forum_id)) ? '' : 'AND post_approved = 1');
-	$result = $db->sql_query($sql);
-	$total_posts = (int) $db->sql_fetchfield('num_posts');
-	$db->sql_freeresult($result);
+	$result = phpbb::$db->sql_query($sql);
+	$total_posts = (int) phpbb::$db->sql_fetchfield('num_posts');
+	phpbb::$db->sql_freeresult($result);
 
 	$limit_posts_time = "AND p.post_time >= $min_post_time ";
 
@@ -480,18 +480,18 @@ if (phpbb::$config['allow_bookmarks'] && phpbb::$user->is_registered && request_
 	{
 		if (!$topic_data['bookmarked'])
 		{
-			$sql = 'INSERT INTO ' . BOOKMARKS_TABLE . ' ' . $db->sql_build_array('INSERT', array(
+			$sql = 'INSERT INTO ' . BOOKMARKS_TABLE . ' ' . phpbb::$db->sql_build_array('INSERT', array(
 				'user_id'	=> phpbb::$user->data['user_id'],
 				'topic_id'	=> $topic_id,
 			));
-			$db->sql_query($sql);
+			phpbb::$db->sql_query($sql);
 		}
 		else
 		{
 			$sql = 'DELETE FROM ' . BOOKMARKS_TABLE . '
 				WHERE user_id = ' . phpbb::$user->data['user_id'] . '
 					AND topic_id = ' . $topic_id;
-			$db->sql_query($sql);
+			phpbb::$db->sql_query($sql);
 		}
 		$message = (($topic_data['bookmarked']) ? phpbb::$user->lang['BOOKMARK_REMOVED'] : phpbb::$user->lang['BOOKMARK_ADDED']) . '<br /><br />' . sprintf(phpbb::$user->lang['RETURN_TOPIC'], '<a href="' . $viewtopic_url . '">', '</a>');
 	}
@@ -644,14 +644,14 @@ if (!empty($topic_data['poll_start']))
 			AND p.post_id = {$topic_data['topic_first_post_id']}
 			AND p.topic_id = o.topic_id
 		ORDER BY o.poll_option_id";
-	$result = $db->sql_query($sql);
+	$result = phpbb::$db->sql_query($sql);
 
 	$poll_info = array();
-	while ($row = $db->sql_fetchrow($result))
+	while ($row = phpbb::$db->sql_fetchrow($result))
 	{
 		$poll_info[] = $row;
 	}
-	$db->sql_freeresult($result);
+	phpbb::$db->sql_freeresult($result);
 
 	$cur_voted_id = array();
 	if (phpbb::$user->is_registered)
@@ -660,13 +660,13 @@ if (!empty($topic_data['poll_start']))
 			FROM ' . POLL_VOTES_TABLE . '
 			WHERE topic_id = ' . $topic_id . '
 				AND vote_user_id = ' . phpbb::$user->data['user_id'];
-		$result = $db->sql_query($sql);
+		$result = phpbb::$db->sql_query($sql);
 
-		while ($row = $db->sql_fetchrow($result))
+		while ($row = phpbb::$db->sql_fetchrow($result))
 		{
 			$cur_voted_id[] = $row['poll_option_id'];
 		}
-		$db->sql_freeresult($result);
+		phpbb::$db->sql_freeresult($result);
 	}
 	else
 	{
@@ -723,7 +723,7 @@ if (!empty($topic_data['poll_start']))
 				SET poll_option_total = poll_option_total + 1
 				WHERE poll_option_id = ' . (int) $option . '
 					AND topic_id = ' . (int) $topic_id;
-			$db->sql_query($sql);
+			phpbb::$db->sql_query($sql);
 
 			if (phpbb::$user->is_registered)
 			{
@@ -734,8 +734,8 @@ if (!empty($topic_data['poll_start']))
 					'vote_user_ip'		=> (string) phpbb::$user->ip,
 				);
 
-				$sql = 'INSERT INTO ' . POLL_VOTES_TABLE . ' ' . $db->sql_build_array('INSERT', $sql_ary);
-				$db->sql_query($sql);
+				$sql = 'INSERT INTO ' . POLL_VOTES_TABLE . ' ' . phpbb::$db->sql_build_array('INSERT', $sql_ary);
+				phpbb::$db->sql_query($sql);
 			}
 		}
 
@@ -747,7 +747,7 @@ if (!empty($topic_data['poll_start']))
 					SET poll_option_total = poll_option_total - 1
 					WHERE poll_option_id = ' . (int) $option . '
 						AND topic_id = ' . (int) $topic_id;
-				$db->sql_query($sql);
+				phpbb::$db->sql_query($sql);
 
 				if (phpbb::$user->is_registered)
 				{
@@ -755,7 +755,7 @@ if (!empty($topic_data['poll_start']))
 						WHERE topic_id = ' . (int) $topic_id . '
 							AND poll_option_id = ' . (int) $option . '
 							AND vote_user_id = ' . (int) phpbb::$user->data['user_id'];
-					$db->sql_query($sql);
+					phpbb::$db->sql_query($sql);
 				}
 			}
 		}
@@ -769,7 +769,7 @@ if (!empty($topic_data['poll_start']))
 			SET poll_last_vote = ' . time() . "
 			WHERE topic_id = $topic_id";
 		//, topic_last_post_time = ' . time() . " -- for bumping topics with new votes, ignore for now
-		$db->sql_query($sql);
+		phpbb::$db->sql_query($sql);
 
 		$redirect_url = append_sid('viewtopic', "f=$forum_id&amp;t=$topic_id&amp;start=$start");
 
@@ -894,10 +894,10 @@ $sql = 'SELECT p.post_id
 		" . (($sort_by_sql[$sort_key][0] == 'u') ? 'AND u.user_id = p.poster_id': '') . "
 		$limit_posts_time
 	ORDER BY $sql_sort_order";
-$result = $db->sql_query_limit($sql, $sql_limit, $sql_start);
+$result = phpbb::$db->sql_query_limit($sql, $sql_limit, $sql_start);
 
 $i = ($store_reverse) ? $sql_limit - 1 : 0;
-while ($row = $db->sql_fetchrow($result))
+while ($row = phpbb::$db->sql_fetchrow($result))
 {
 	$post_list[$i] = $row['post_id'];
 	($store_reverse) ? $i-- : $i++;
@@ -920,7 +920,7 @@ if (!sizeof($post_list))
 // We need to grab it because we do reverse ordering sometimes
 $max_post_time = 0;
 
-$sql = $db->sql_build_query('SELECT', array(
+$sql = phpbb::$db->sql_build_query('SELECT', array(
 	'SELECT'	=> 'u.*, z.friend, z.foe, p.*',
 
 	'FROM'		=> array(
@@ -935,17 +935,17 @@ $sql = $db->sql_build_query('SELECT', array(
 		)
 	),
 
-	'WHERE'		=> $db->sql_in_set('p.post_id', $post_list) . '
+	'WHERE'		=> phpbb::$db->sql_in_set('p.post_id', $post_list) . '
 		AND u.user_id = p.poster_id'
 ));
 
-$result = $db->sql_query($sql);
+$result = phpbb::$db->sql_query($sql);
 
 $now = getdate(time() + phpbb::$user->timezone + phpbb::$user->dst - date('Z'));
 
 // Posts are stored in the $rowset array while $attach_list, $user_cache
 // and the global bbcode_bitfield are built
-while ($row = $db->sql_fetchrow($result))
+while ($row = phpbb::$db->sql_fetchrow($result))
 {
 	// Set max_post_time
 	if ($row['post_time'] > $max_post_time)
@@ -1156,16 +1156,16 @@ if (phpbb::$config['load_onlinetrack'] && sizeof($id_cache))
 {
 	$sql = 'SELECT session_user_id, MAX(session_time) as online_time, MIN(session_viewonline) AS viewonline
 		FROM ' . SESSIONS_TABLE . '
-		WHERE ' . $db->sql_in_set('session_user_id', $id_cache) . '
+		WHERE ' . phpbb::$db->sql_in_set('session_user_id', $id_cache) . '
 		GROUP BY session_user_id';
-	$result = $db->sql_query($sql);
+	$result = phpbb::$db->sql_query($sql);
 
 	$update_time = phpbb::$config['load_online_time'] * 60;
-	while ($row = $db->sql_fetchrow($result))
+	while ($row = phpbb::$db->sql_fetchrow($result))
 	{
 		$user_cache[$row['session_user_id']]['online'] = (time() - $update_time < $row['online_time'] && (($row['viewonline']) || phpbb::$acl->acl_get('u_viewonline'))) ? true : false;
 	}
-	$db->sql_freeresult($result);
+	phpbb::$db->sql_freeresult($result);
 }
 unset($id_cache);
 
@@ -1176,24 +1176,24 @@ if (sizeof($attach_list))
 	{
 		$sql = 'SELECT *
 			FROM ' . ATTACHMENTS_TABLE . '
-			WHERE ' . $db->sql_in_set('post_msg_id', $attach_list) . '
+			WHERE ' . phpbb::$db->sql_in_set('post_msg_id', $attach_list) . '
 				AND in_message = 0
 			ORDER BY filetime DESC, post_msg_id ASC';
-		$result = $db->sql_query($sql);
+		$result = phpbb::$db->sql_query($sql);
 
-		while ($row = $db->sql_fetchrow($result))
+		while ($row = phpbb::$db->sql_fetchrow($result))
 		{
 			$attachments[$row['post_msg_id']][] = $row;
 		}
-		$db->sql_freeresult($result);
+		phpbb::$db->sql_freeresult($result);
 
 		// No attachments exist, but post table thinks they do so go ahead and reset post_attach flags
 		if (!sizeof($attachments))
 		{
 			$sql = 'UPDATE ' . POSTS_TABLE . '
 				SET post_attachment = 0
-				WHERE ' . $db->sql_in_set('post_id', $attach_list);
-			$db->sql_query($sql);
+				WHERE ' . phpbb::$db->sql_in_set('post_id', $attach_list);
+			phpbb::$db->sql_query($sql);
 
 			// We need to update the topic indicator too if the complete topic is now without an attachment
 			if (sizeof($rowset) != $total_posts)
@@ -1204,16 +1204,16 @@ if (sizeof($attach_list))
 					WHERE p.topic_id = $topic_id
 						AND p.post_approved = 1
 						AND p.topic_id = a.topic_id";
-				$result = $db->sql_query_limit($sql, 1);
-				$row = $db->sql_fetchrow($result);
-				$db->sql_freeresult($result);
+				$result = phpbb::$db->sql_query_limit($sql, 1);
+				$row = phpbb::$db->sql_fetchrow($result);
+				phpbb::$db->sql_freeresult($result);
 
 				if (!$row)
 				{
 					$sql = 'UPDATE ' . TOPICS_TABLE . "
 						SET topic_attachment = 0
 						WHERE topic_id = $topic_id";
-					$db->sql_query($sql);
+					phpbb::$db->sql_query($sql);
 				}
 			}
 			else
@@ -1221,7 +1221,7 @@ if (sizeof($attach_list))
 				$sql = 'UPDATE ' . TOPICS_TABLE . "
 					SET topic_attachment = 0
 					WHERE topic_id = $topic_id";
-				$db->sql_query($sql);
+				phpbb::$db->sql_query($sql);
 			}
 		}
 		else if ($has_attachments && !$topic_data['topic_attachment'])
@@ -1230,7 +1230,7 @@ if (sizeof($attach_list))
 			$sql = 'UPDATE ' . TOPICS_TABLE . "
 				SET topic_attachment = 1
 				WHERE topic_id = $topic_id";
-			$db->sql_query($sql);
+			phpbb::$db->sql_query($sql);
 
 			$topic_data['topic_attachment'] = 1;
 		}
@@ -1321,16 +1321,16 @@ for ($i = 0, $end = sizeof($post_list); $i < $end; ++$i)
 
 			$sql = 'SELECT DISTINCT u.user_id, u.username, u.user_colour
 				FROM ' . POSTS_TABLE . ' p, ' . USERS_TABLE . ' u
-				WHERE ' . $db->sql_in_set('p.post_id', $post_storage_list) . '
+				WHERE ' . phpbb::$db->sql_in_set('p.post_id', $post_storage_list) . '
 					AND p.post_edit_count <> 0
 					AND p.post_edit_user <> 0
 					AND p.post_edit_user = u.user_id';
-			$result2 = $db->sql_query($sql);
-			while ($user_edit_row = $db->sql_fetchrow($result2))
+			$result2 = phpbb::$db->sql_query($sql);
+			while ($user_edit_row = phpbb::$db->sql_fetchrow($result2))
 			{
 				$post_edit_list[$user_edit_row['user_id']] = $user_edit_row;
 			}
-			$db->sql_freeresult($result2);
+			phpbb::$db->sql_freeresult($result2);
 
 			unset($post_storage_list);
 		}
@@ -1520,15 +1520,15 @@ if (isset(phpbb::$user->data['session_page']) && !phpbb::$user->is_bot && strpos
 	$sql = 'UPDATE ' . TOPICS_TABLE . '
 		SET topic_views = topic_views + 1, topic_last_view_time = ' . time() . "
 		WHERE topic_id = $topic_id";
-	$db->sql_query($sql);
+	phpbb::$db->sql_query($sql);
 
 	// Update the attachment download counts
 	if (sizeof($update_count))
 	{
 		$sql = 'UPDATE ' . ATTACHMENTS_TABLE . '
 			SET download_count = download_count + 1
-			WHERE ' . $db->sql_in_set('attach_id', array_unique($update_count));
-		$db->sql_query($sql);
+			WHERE ' . phpbb::$db->sql_in_set('attach_id', array_unique($update_count));
+		phpbb::$db->sql_query($sql);
 	}
 }
 

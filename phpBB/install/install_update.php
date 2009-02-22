@@ -414,9 +414,9 @@ class install_update extends module
 					$sql = 'SELECT *
 						FROM ' . STYLES_THEME_TABLE . "
 						WHERE theme_name = 'prosilver'";
-					$result = $db->sql_query($sql);
-					$theme = $db->sql_fetchrow($result);
-					$db->sql_freeresult($result);
+					$result = phpbb::$db->sql_query($sql);
+					$theme = phpbb::$db->sql_fetchrow($result);
+					phpbb::$db->sql_freeresult($result);
 
 					if ($theme)
 					{
@@ -461,17 +461,17 @@ class install_update extends module
 								'theme_data'	=> $theme['theme_data']
 							);
 
-							$sql = 'UPDATE ' . STYLES_THEME_TABLE . ' SET ' . $db->sql_build_array('UPDATE', $sql_ary) . '
+							$sql = 'UPDATE ' . STYLES_THEME_TABLE . ' SET ' . phpbb::$db->sql_build_array('UPDATE', $sql_ary) . '
 								WHERE theme_id = ' . $theme['theme_id'];
-							$db->sql_query($sql);
+							phpbb::$db->sql_query($sql);
 
 							phpbb::$acm->destroy_sql(STYLES_THEME_TABLE);
 						}
 					}
 
-					$db->sql_return_on_error(true);
-					$db->sql_query('DELETE FROM ' . CONFIG_TABLE . " WHERE config_name = 'version_update_from'");
-					$db->sql_return_on_error(false);
+					phpbb::$db->sql_return_on_error(true);
+					phpbb::$db->sql_query('DELETE FROM ' . CONFIG_TABLE . " WHERE config_name = 'version_update_from'");
+					phpbb::$db->sql_return_on_error(false);
 
 					phpbb::$acm->purge();
 				}
@@ -1513,14 +1513,14 @@ class install_update extends module
 					$sql = 'SELECT template_name, template_path
 						FROM ' . STYLES_TEMPLATE_TABLE . "
 						WHERE LOWER(template_name) NOT IN ('subsilver2', 'prosilver')";
-					$result = $db->sql_query($sql);
+					$result = phpbb::$db->sql_query($sql);
 
 					$templates = array();
-					while ($row = $db->sql_fetchrow($result))
+					while ($row = phpbb::$db->sql_fetchrow($result))
 					{
 						$templates[] = $row;
 					}
-					$db->sql_freeresult($result);
+					phpbb::$db->sql_freeresult($result);
 
 					if (sizeof($templates))
 					{

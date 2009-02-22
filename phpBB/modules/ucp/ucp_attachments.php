@@ -42,15 +42,15 @@ class ucp_attachments
 				FROM ' . ATTACHMENTS_TABLE . '
 				WHERE poster_id = ' . phpbb::$user->data['user_id'] . '
 					AND is_orphan = 0
-					AND ' . $db->sql_in_set('attach_id', $delete_ids);
-			$result = $db->sql_query($sql);
+					AND ' . phpbb::$db->sql_in_set('attach_id', $delete_ids);
+			$result = phpbb::$db->sql_query($sql);
 
 			$delete_ids = array();
-			while ($row = $db->sql_fetchrow($result))
+			while ($row = phpbb::$db->sql_fetchrow($result))
 			{
 				$delete_ids[] = $row['attach_id'];
 			}
-			$db->sql_freeresult($result);
+			phpbb::$db->sql_freeresult($result);
 		}
 
 		if ($delete && sizeof($delete_ids))
@@ -114,9 +114,9 @@ class ucp_attachments
 			FROM ' . ATTACHMENTS_TABLE . '
 			WHERE poster_id = ' . phpbb::$user->data['user_id'] . '
 				AND is_orphan = 0';
-		$result = $db->sql_query($sql);
-		$num_attachments = $db->sql_fetchfield('num_attachments');
-		$db->sql_freeresult($result);
+		$result = phpbb::$db->sql_query($sql);
+		$num_attachments = phpbb::$db->sql_fetchfield('num_attachments');
+		phpbb::$db->sql_freeresult($result);
 
 		$sql = 'SELECT a.*, t.topic_title, p.message_subject as message_title
 			FROM ' . ATTACHMENTS_TABLE . ' a
@@ -125,10 +125,10 @@ class ucp_attachments
 			WHERE a.poster_id = ' . phpbb::$user->data['user_id'] . "
 				AND a.is_orphan = 0
 			ORDER BY $order_by";
-		$result = $db->sql_query_limit($sql, phpbb::$config['topics_per_page'], $start);
+		$result = phpbb::$db->sql_query_limit($sql, phpbb::$config['topics_per_page'], $start);
 
 		$row_count = 0;
-		if ($row = $db->sql_fetchrow($result))
+		if ($row = phpbb::$db->sql_fetchrow($result))
 		{
 			$template->assign_var('S_ATTACHMENT_ROWS', true);
 
@@ -165,9 +165,9 @@ class ucp_attachments
 
 				$row_count++;
 			}
-			while ($row = $db->sql_fetchrow($result));
+			while ($row = phpbb::$db->sql_fetchrow($result));
 		}
-		$db->sql_freeresult($result);
+		phpbb::$db->sql_freeresult($result);
 
 		$template->assign_vars(array(
 			'PAGE_NUMBER'			=> on_page($num_attachments, phpbb::$config['topics_per_page'], $start),

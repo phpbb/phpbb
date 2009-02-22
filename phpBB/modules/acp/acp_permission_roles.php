@@ -90,9 +90,9 @@ class acp_permission_roles
 					$sql = 'SELECT *
 						FROM ' . ACL_ROLES_TABLE . '
 						WHERE role_id = ' . $role_id;
-					$result = $db->sql_query($sql);
-					$role_row = $db->sql_fetchrow($result);
-					$db->sql_freeresult($result);
+					$result = phpbb::$db->sql_query($sql);
+					$role_row = phpbb::$db->sql_fetchrow($result);
+					phpbb::$db->sql_freeresult($result);
 
 					if (!$role_row)
 					{
@@ -129,9 +129,9 @@ class acp_permission_roles
 					$sql = 'SELECT *
 						FROM ' . ACL_ROLES_TABLE . '
 						WHERE role_id = ' . $role_id;
-					$result = $db->sql_query($sql);
-					$role_row = $db->sql_fetchrow($result);
-					$db->sql_freeresult($result);
+					$result = phpbb::$db->sql_query($sql);
+					$role_row = phpbb::$db->sql_fetchrow($result);
+					phpbb::$db->sql_freeresult($result);
 
 					if (!$role_row)
 					{
@@ -164,11 +164,11 @@ class acp_permission_roles
 					// if we add/edit a role we check the name to be unique among the settings...
 					$sql = 'SELECT role_id
 						FROM ' . ACL_ROLES_TABLE . "
-						WHERE role_type = '" . $db->sql_escape($permission_type) . "'
-							AND role_name = '" . $db->sql_escape($role_name) . "'";
-					$result = $db->sql_query($sql);
-					$row = $db->sql_fetchrow($result);
-					$db->sql_freeresult($result);
+						WHERE role_type = '" . phpbb::$db->sql_escape($permission_type) . "'
+							AND role_name = '" . phpbb::$db->sql_escape($role_name) . "'";
+					$result = phpbb::$db->sql_query($sql);
+					$row = phpbb::$db->sql_fetchrow($result);
+					phpbb::$db->sql_freeresult($result);
 
 					// Make sure we only print out the error if we add the role or change it's name
 					if ($row && ($mode == 'add' || ($mode == 'edit' && $role_row['role_name'] != $role_name)))
@@ -185,26 +185,26 @@ class acp_permission_roles
 					if ($action == 'edit')
 					{
 						$sql = 'UPDATE ' . ACL_ROLES_TABLE . '
-							SET ' . $db->sql_build_array('UPDATE', $sql_ary) . '
+							SET ' . phpbb::$db->sql_build_array('UPDATE', $sql_ary) . '
 							WHERE role_id = ' . $role_id;
-						$db->sql_query($sql);
+						phpbb::$db->sql_query($sql);
 					}
 					else
 					{
 						// Get maximum role order for inserting a new role...
 						$sql = 'SELECT MAX(role_order) as max_order
 							FROM ' . ACL_ROLES_TABLE . "
-							WHERE role_type = '" . $db->sql_escape($permission_type) . "'";
-						$result = $db->sql_query($sql);
-						$max_order = (int) $db->sql_fetchfield('max_order');
-						$db->sql_freeresult($result);
+							WHERE role_type = '" . phpbb::$db->sql_escape($permission_type) . "'";
+						$result = phpbb::$db->sql_query($sql);
+						$max_order = (int) phpbb::$db->sql_fetchfield('max_order');
+						phpbb::$db->sql_freeresult($result);
 
 						$sql_ary['role_order'] = $max_order + 1;
 
-						$sql = 'INSERT INTO ' . ACL_ROLES_TABLE . ' ' . $db->sql_build_array('INSERT', $sql_ary);
-						$db->sql_query($sql);
+						$sql = 'INSERT INTO ' . ACL_ROLES_TABLE . ' ' . phpbb::$db->sql_build_array('INSERT', $sql_ary);
+						phpbb::$db->sql_query($sql);
 
-						$role_id = $db->sql_nextid();
+						$role_id = phpbb::$db->sql_nextid();
 					}
 
 					// Now add the auth settings
@@ -239,30 +239,30 @@ class acp_permission_roles
 						WHERE o.auth_option_id = p.auth_option_id
 							AND p.role_id = ' . $options_from . '
 						ORDER BY p.auth_option_id';
-					$result = $db->sql_query($sql);
+					$result = phpbb::$db->sql_query($sql);
 
 					$auth_options = array();
-					while ($row = $db->sql_fetchrow($result))
+					while ($row = phpbb::$db->sql_fetchrow($result))
 					{
 						$auth_options[$row['auth_option']] = $row['auth_setting'];
 					}
-					$db->sql_freeresult($result);
+					phpbb::$db->sql_freeresult($result);
 				}
 				else
 				{
 					$sql = 'SELECT auth_option_id, auth_option
 						FROM ' . ACL_OPTIONS_TABLE . "
-						WHERE auth_option " . $db->sql_like_expression($permission_type . $db->any_char) . "
+						WHERE auth_option " . phpbb::$db->sql_like_expression($permission_type . phpbb::$db->any_char) . "
 							AND auth_option <> '{$permission_type}'
 						ORDER BY auth_option_id";
-					$result = $db->sql_query($sql);
+					$result = phpbb::$db->sql_query($sql);
 
 					$auth_options = array();
-					while ($row = $db->sql_fetchrow($result))
+					while ($row = phpbb::$db->sql_fetchrow($result))
 					{
 						$auth_options[$row['auth_option']] = phpbb::ACL_NO;
 					}
-					$db->sql_freeresult($result);
+					phpbb::$db->sql_freeresult($result);
 				}
 
 			// no break;
@@ -279,23 +279,23 @@ class acp_permission_roles
 					$sql = 'SELECT *
 						FROM ' . ACL_ROLES_TABLE . '
 						WHERE role_id = ' . $role_id;
-					$result = $db->sql_query($sql);
-					$role_row = $db->sql_fetchrow($result);
-					$db->sql_freeresult($result);
+					$result = phpbb::$db->sql_query($sql);
+					$role_row = phpbb::$db->sql_fetchrow($result);
+					phpbb::$db->sql_freeresult($result);
 
 					$sql = 'SELECT p.auth_option_id, p.auth_setting, o.auth_option
 						FROM ' . ACL_ROLES_DATA_TABLE . ' p, ' . ACL_OPTIONS_TABLE . ' o
 						WHERE o.auth_option_id = p.auth_option_id
 							AND p.role_id = ' . $role_id . '
 						ORDER BY p.auth_option_id';
-					$result = $db->sql_query($sql);
+					$result = phpbb::$db->sql_query($sql);
 
 					$auth_options = array();
-					while ($row = $db->sql_fetchrow($result))
+					while ($row = phpbb::$db->sql_fetchrow($result))
 					{
 						$auth_options[$row['auth_option']] = $row['auth_setting'];
 					}
-					$db->sql_freeresult($result);
+					phpbb::$db->sql_freeresult($result);
 				}
 
 				if (!$role_row)
@@ -318,19 +318,19 @@ class acp_permission_roles
 				// We need to fill the auth options array with ACL_NO options ;)
 				$sql = 'SELECT auth_option_id, auth_option
 					FROM ' . ACL_OPTIONS_TABLE . "
-					WHERE auth_option " . $db->sql_like_expression($permission_type . $db->any_char) . "
+					WHERE auth_option " . phpbb::$db->sql_like_expression($permission_type . phpbb::$db->any_char) . "
 						AND auth_option <> '{$permission_type}'
 					ORDER BY auth_option_id";
-				$result = $db->sql_query($sql);
+				$result = phpbb::$db->sql_query($sql);
 
-				while ($row = $db->sql_fetchrow($result))
+				while ($row = phpbb::$db->sql_fetchrow($result))
 				{
 					if (!isset($auth_options[$row['auth_option']]))
 					{
 						$auth_options[$row['auth_option']] = phpbb::ACL_NO;
 					}
 				}
-				$db->sql_freeresult($result);
+				phpbb::$db->sql_freeresult($result);
 
 				// Unset global permission option
 				unset($auth_options[$permission_type]);
@@ -367,9 +367,9 @@ class acp_permission_roles
 
 				$sql = 'UPDATE ' . ACL_ROLES_TABLE . '
 					SET role_order = ' . $order_total . " - role_order
-					WHERE role_type = '" . $db->sql_escape($permission_type) . "'
+					WHERE role_type = '" . phpbb::$db->sql_escape($permission_type) . "'
 						AND role_order IN ($order, " . (($action == 'move_up') ? $order - 1 : $order + 1) . ')';
-				$db->sql_query($sql);
+				phpbb::$db->sql_query($sql);
 
 			break;
 		}
@@ -377,11 +377,11 @@ class acp_permission_roles
 		// By default, check that role_order is valid and fix it if necessary
 		$sql = 'SELECT role_id, role_order
 			FROM ' . ACL_ROLES_TABLE . "
-			WHERE role_type = '" . $db->sql_escape($permission_type) . "'
+			WHERE role_type = '" . phpbb::$db->sql_escape($permission_type) . "'
 			ORDER BY role_order ASC";
-		$result = $db->sql_query($sql);
+		$result = phpbb::$db->sql_query($sql);
 
-		if ($row = $db->sql_fetchrow($result))
+		if ($row = phpbb::$db->sql_fetchrow($result))
 		{
 			$order = 0;
 			do
@@ -389,12 +389,12 @@ class acp_permission_roles
 				$order++;
 				if ($row['role_order'] != $order)
 				{
-					$db->sql_query('UPDATE ' . ACL_ROLES_TABLE . " SET role_order = $order WHERE role_id = {$row['role_id']}");
+					phpbb::$db->sql_query('UPDATE ' . ACL_ROLES_TABLE . " SET role_order = $order WHERE role_id = {$row['role_id']}");
 				}
 			}
-			while ($row = $db->sql_fetchrow($result));
+			while ($row = phpbb::$db->sql_fetchrow($result));
 		}
-		$db->sql_freeresult($result);
+		phpbb::$db->sql_freeresult($result);
 
 		// Display assigned items?
 		$display_item = request_var('display_item', 0);
@@ -402,12 +402,12 @@ class acp_permission_roles
 		// Select existing roles
 		$sql = 'SELECT *
 			FROM ' . ACL_ROLES_TABLE . "
-			WHERE role_type = '" . $db->sql_escape($permission_type) . "'
+			WHERE role_type = '" . phpbb::$db->sql_escape($permission_type) . "'
 			ORDER BY role_order ASC";
-		$result = $db->sql_query($sql);
+		$result = phpbb::$db->sql_query($sql);
 
 		$s_role_options = '';
-		while ($row = $db->sql_fetchrow($result))
+		while ($row = phpbb::$db->sql_fetchrow($result))
 		{
 			$role_name = (!empty(phpbb::$user->lang[$row['role_name']])) ? phpbb::$user->lang[$row['role_name']] : $row['role_name'];
 
@@ -431,7 +431,7 @@ class acp_permission_roles
 				);
 			}
 		}
-		$db->sql_freeresult($result);
+		phpbb::$db->sql_freeresult($result);
 
 		$template->assign_vars(array(
 			'S_ROLE_OPTIONS'		=> $s_role_options)
@@ -499,28 +499,28 @@ class acp_permission_roles
 		// Get complete auth array
 		$sql = 'SELECT auth_option, auth_option_id
 			FROM ' . ACL_OPTIONS_TABLE . "
-			WHERE auth_option " . $db->sql_like_expression($permission_type . $db->any_char);
-		$result = $db->sql_query($sql);
+			WHERE auth_option " . phpbb::$db->sql_like_expression($permission_type . phpbb::$db->any_char);
+		$result = phpbb::$db->sql_query($sql);
 
 		$auth_settings = array();
-		while ($row = $db->sql_fetchrow($result))
+		while ($row = phpbb::$db->sql_fetchrow($result))
 		{
 			$auth_settings[$row['auth_option']] = phpbb::ACL_NO;
 		}
-		$db->sql_freeresult($result);
+		phpbb::$db->sql_freeresult($result);
 
 		// Get the role auth settings we need to re-set...
 		$sql = 'SELECT o.auth_option, r.auth_setting
 			FROM ' . ACL_ROLES_DATA_TABLE . ' r, ' . ACL_OPTIONS_TABLE . ' o
 			WHERE o.auth_option_id = r.auth_option_id
 				AND r.role_id = ' . $role_id;
-		$result = $db->sql_query($sql);
+		$result = phpbb::$db->sql_query($sql);
 
-		while ($row = $db->sql_fetchrow($result))
+		while ($row = phpbb::$db->sql_fetchrow($result))
 		{
 			$auth_settings[$row['auth_option']] = $row['auth_setting'];
 		}
-		$db->sql_freeresult($result);
+		phpbb::$db->sql_freeresult($result);
 
 		// Get role assignments
 		$hold_ary = $auth_admin->get_role_mask($role_id);
@@ -542,20 +542,20 @@ class acp_permission_roles
 		// Remove role from users and groups just to be sure (happens through acl_set)
 		$sql = 'DELETE FROM ' . ACL_USERS_TABLE . '
 			WHERE auth_role_id = ' . $role_id;
-		$db->sql_query($sql);
+		phpbb::$db->sql_query($sql);
 
 		$sql = 'DELETE FROM ' . ACL_GROUPS_TABLE . '
 			WHERE auth_role_id = ' . $role_id;
-		$db->sql_query($sql);
+		phpbb::$db->sql_query($sql);
 
 		// Remove role data and role
 		$sql = 'DELETE FROM ' . ACL_ROLES_DATA_TABLE . '
 			WHERE role_id = ' . $role_id;
-		$db->sql_query($sql);
+		phpbb::$db->sql_query($sql);
 
 		$sql = 'DELETE FROM ' . ACL_ROLES_TABLE . '
 			WHERE role_id = ' . $role_id;
-		$db->sql_query($sql);
+		phpbb::$db->sql_query($sql);
 
 		$auth_admin->acl_clear_prefetch();
 	}

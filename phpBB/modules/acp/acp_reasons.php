@@ -69,9 +69,9 @@ class acp_reasons
 						$sql = 'SELECT reason_title
 							FROM ' . REPORTS_REASONS_TABLE . "
 							WHERE reason_id = $reason_id";
-						$result = $db->sql_query($sql);
-						$row = $db->sql_fetchrow($result);
-						$db->sql_freeresult($result);
+						$result = phpbb::$db->sql_query($sql);
+						$row = phpbb::$db->sql_fetchrow($result);
+						phpbb::$db->sql_freeresult($result);
 
 						if (strtolower($row['reason_title']) == 'other' || strtolower($reason_row['reason_title']) == 'other')
 						{
@@ -89,10 +89,10 @@ class acp_reasons
 					{
 						$sql = 'SELECT reason_id
 							FROM ' . REPORTS_REASONS_TABLE . "
-							WHERE reason_title = '" . $db->sql_escape($reason_row['reason_title']) . "'";
-						$result = $db->sql_query($sql);
-						$row = $db->sql_fetchrow($result);
-						$db->sql_freeresult($result);
+							WHERE reason_title = '" . phpbb::$db->sql_escape($reason_row['reason_title']) . "'";
+						$result = phpbb::$db->sql_query($sql);
+						$row = phpbb::$db->sql_fetchrow($result);
+						phpbb::$db->sql_freeresult($result);
 
 						if ($row || ($action == 'add' && strtolower($reason_row['reason_title']) == 'other'))
 						{
@@ -108,9 +108,9 @@ class acp_reasons
 							// Get new order...
 							$sql = 'SELECT MAX(reason_order) as max_reason_order
 								FROM ' . REPORTS_REASONS_TABLE;
-							$result = $db->sql_query($sql);
-							$max_order = (int) $db->sql_fetchfield('max_reason_order');
-							$db->sql_freeresult($result);
+							$result = phpbb::$db->sql_query($sql);
+							$max_order = (int) phpbb::$db->sql_fetchfield('max_reason_order');
+							phpbb::$db->sql_freeresult($result);
 
 							$sql_ary = array(
 								'reason_title'			=> (string) $reason_row['reason_title'],
@@ -118,7 +118,7 @@ class acp_reasons
 								'reason_order'			=> $max_order + 1
 							);
 
-							$db->sql_query('INSERT INTO ' . REPORTS_REASONS_TABLE . ' ' . $db->sql_build_array('INSERT', $sql_ary));
+							phpbb::$db->sql_query('INSERT INTO ' . REPORTS_REASONS_TABLE . ' ' . phpbb::$db->sql_build_array('INSERT', $sql_ary));
 
 							$log = 'ADDED';
 						}
@@ -129,7 +129,7 @@ class acp_reasons
 								'reason_description'	=> (string) $reason_row['reason_description'],
 							);
 
-							$db->sql_query('UPDATE ' . REPORTS_REASONS_TABLE . ' SET ' . $db->sql_build_array('UPDATE', $sql_ary) . '
+							phpbb::$db->sql_query('UPDATE ' . REPORTS_REASONS_TABLE . ' SET ' . phpbb::$db->sql_build_array('UPDATE', $sql_ary) . '
 								WHERE reason_id = ' . $reason_id);
 
 							$log = 'UPDATED';
@@ -144,9 +144,9 @@ class acp_reasons
 					$sql = 'SELECT *
 						FROM ' . REPORTS_REASONS_TABLE . '
 						WHERE reason_id = ' . $reason_id;
-					$result = $db->sql_query($sql);
-					$reason_row = $db->sql_fetchrow($result);
-					$db->sql_freeresult($result);
+					$result = phpbb::$db->sql_query($sql);
+					$reason_row = phpbb::$db->sql_fetchrow($result);
+					phpbb::$db->sql_freeresult($result);
 
 					if (!$reason_row)
 					{
@@ -191,9 +191,9 @@ class acp_reasons
 				$sql = 'SELECT *
 					FROM ' . REPORTS_REASONS_TABLE . '
 					WHERE reason_id = ' . $reason_id;
-				$result = $db->sql_query($sql);
-				$reason_row = $db->sql_fetchrow($result);
-				$db->sql_freeresult($result);
+				$result = phpbb::$db->sql_query($sql);
+				$reason_row = phpbb::$db->sql_fetchrow($result);
+				phpbb::$db->sql_freeresult($result);
 
 				if (!$reason_row)
 				{
@@ -211,22 +211,22 @@ class acp_reasons
 					$sql = 'SELECT reason_id, report_text
 						FROM ' . REPORTS_REASONS_TABLE . "
 						WHERE LOWER(reason_title) = 'other'";
-					$result = $db->sql_query($sql);
-					$row = $db->sql_fetchrow($result);
+					$result = phpbb::$db->sql_query($sql);
+					$row = phpbb::$db->sql_fetchrow($result);
 
 					$other_reason_id = (int) $row['reason_id'];
 					$report_text = $row['report_text'];
 
-					$db->sql_freeresult($result);
+					phpbb::$db->sql_freeresult($result);
 
 					$report_text .= $reason_row['reason_description'] . "\n\n";
 
 					$sql = 'UPDATE ' . REPORTS_TABLE . '
-						SET reason_id = ' . $other_reason_id . ", report_text = '" . $db->sql_escape($report_text) . "'
+						SET reason_id = ' . $other_reason_id . ", report_text = '" . phpbb::$db->sql_escape($report_text) . "'
 						WHERE reason_id = $reason_id";
-					$db->sql_query($sql);
+					phpbb::$db->sql_query($sql);
 
-					$db->sql_query('DELETE FROM ' . REPORTS_REASONS_TABLE . ' WHERE reason_id = ' . $reason_id);
+					phpbb::$db->sql_query('DELETE FROM ' . REPORTS_REASONS_TABLE . ' WHERE reason_id = ' . $reason_id);
 
 					add_log('admin', 'LOG_REASON_REMOVED', $reason_row['reason_title']);
 					trigger_error(phpbb::$user->lang['REASON_REMOVED'] . adm_back_link($this->u_action));
@@ -252,7 +252,7 @@ class acp_reasons
 				$sql = 'UPDATE ' . REPORTS_REASONS_TABLE . '
 					SET reason_order = ' . $order_total . ' - reason_order
 					WHERE reason_order IN (' . $order . ', ' . (($action == 'move_up') ? $order - 1 : $order + 1) . ')';
-				$db->sql_query($sql);
+				phpbb::$db->sql_query($sql);
 
 			break;
 		}
@@ -261,9 +261,9 @@ class acp_reasons
 		$sql = 'SELECT reason_id, reason_order
 			FROM ' . REPORTS_REASONS_TABLE . '
 			ORDER BY reason_order';
-		$result = $db->sql_query($sql);
+		$result = phpbb::$db->sql_query($sql);
 
-		if ($row = $db->sql_fetchrow($result))
+		if ($row = phpbb::$db->sql_fetchrow($result))
 		{
 			$order = 0;
 			do
@@ -275,12 +275,12 @@ class acp_reasons
 					$sql = 'UPDATE ' . REPORTS_REASONS_TABLE . "
 						SET reason_order = $order
 						WHERE reason_id = {$row['reason_id']}";
-					$db->sql_query($sql);
+					phpbb::$db->sql_query($sql);
 				}
 			}
-			while ($row = $db->sql_fetchrow($result));
+			while ($row = phpbb::$db->sql_fetchrow($result));
 		}
-		$db->sql_freeresult($result);
+		phpbb::$db->sql_freeresult($result);
 
 		$template->assign_vars(array(
 			'U_ACTION'			=> $this->u_action,
@@ -291,21 +291,21 @@ class acp_reasons
 		$sql = 'SELECT reason_id, COUNT(reason_id) AS reason_count
 			FROM ' . REPORTS_TABLE . '
 			GROUP BY reason_id';
-		$result = $db->sql_query($sql);
+		$result = phpbb::$db->sql_query($sql);
 
 		$reason_count = array();
-		while ($row = $db->sql_fetchrow($result))
+		while ($row = phpbb::$db->sql_fetchrow($result))
 		{
 			$reason_count[$row['reason_id']] = $row['reason_count'];
 		}
-		$db->sql_freeresult($result);
+		phpbb::$db->sql_freeresult($result);
 
 		$sql = 'SELECT *
 			FROM ' . REPORTS_REASONS_TABLE . '
 			ORDER BY reason_order ASC';
-		$result = $db->sql_query($sql);
+		$result = phpbb::$db->sql_query($sql);
 
-		while ($row = $db->sql_fetchrow($result))
+		while ($row = phpbb::$db->sql_fetchrow($result))
 		{
 			$translated = false;
 			$other_reason = ($row['reason_title'] == 'other') ? true : false;
@@ -333,7 +333,7 @@ class acp_reasons
 				'U_MOVE_DOWN'	=> $this->u_action . '&amp;action=move_down&amp;order=' . $row['reason_order'])
 			);
 		}
-		$db->sql_freeresult($result);
+		phpbb::$db->sql_freeresult($result);
 	}
 }
 

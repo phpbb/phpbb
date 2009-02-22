@@ -77,9 +77,9 @@ class mcp_reports
 						AND rr.reason_id = r.reason_id
 						AND r.user_id = u.user_id
 					ORDER BY report_closed ASC';
-				$result = $db->sql_query_limit($sql, 1);
-				$report = $db->sql_fetchrow($result);
-				$db->sql_freeresult($result);
+				$result = phpbb::$db->sql_query_limit($sql, 1);
+				$report = phpbb::$db->sql_fetchrow($result);
+				phpbb::$db->sql_freeresult($result);
 
 				if (!$report)
 				{
@@ -155,13 +155,13 @@ class mcp_reports
 						WHERE post_msg_id = ' . $post_id . '
 							AND in_message = 0
 						ORDER BY filetime DESC, post_msg_id ASC';
-					$result = $db->sql_query($sql);
+					$result = phpbb::$db->sql_query($sql);
 
-					while ($row = $db->sql_fetchrow($result))
+					while ($row = phpbb::$db->sql_fetchrow($result))
 					{
 						$attachments[] = $row;
 					}
-					$db->sql_freeresult($result);
+					phpbb::$db->sql_freeresult($result);
 
 					if (sizeof($attachments))
 					{
@@ -292,10 +292,10 @@ class mcp_reports
 
 					$sql = 'SELECT SUM(forum_topics) as sum_forum_topics
 						FROM ' . FORUMS_TABLE . '
-						WHERE ' . $db->sql_in_set('forum_id', $forum_list);
-					$result = $db->sql_query($sql);
-					$forum_info['forum_topics'] = (int) $db->sql_fetchfield('sum_forum_topics');
-					$db->sql_freeresult($result);
+						WHERE ' . phpbb::$db->sql_in_set('forum_id', $forum_list);
+					$result = phpbb::$db->sql_query($sql);
+					$forum_info['forum_topics'] = (int) phpbb::$db->sql_fetchfield('sum_forum_topics');
+					phpbb::$db->sql_freeresult($result);
 				}
 				else
 				{
@@ -341,7 +341,7 @@ class mcp_reports
 
 				$sql = 'SELECT r.report_id
 					FROM ' . POSTS_TABLE . ' p, ' . TOPICS_TABLE . ' t, ' . REPORTS_TABLE . ' r ' . (($sort_order_sql[0] == 'u') ? ', ' . USERS_TABLE . ' u' : '') . (($sort_order_sql[0] == 'r') ? ', ' . USERS_TABLE . ' ru' : '') . '
-					WHERE ' . $db->sql_in_set('p.forum_id', $forum_list) . "
+					WHERE ' . phpbb::$db->sql_in_set('p.forum_id', $forum_list) . "
 						$report_state
 						AND r.post_id = p.post_id
 						" . (($sort_order_sql[0] == 'u') ? 'AND u.user_id = p.poster_id' : '') . '
@@ -350,31 +350,31 @@ class mcp_reports
 						AND t.topic_id = p.topic_id
 						$limit_time_sql
 					ORDER BY $sort_order_sql";
-				$result = $db->sql_query_limit($sql, phpbb::$config['topics_per_page'], $start);
+				$result = phpbb::$db->sql_query_limit($sql, phpbb::$config['topics_per_page'], $start);
 
 				$i = 0;
 				$report_ids = array();
-				while ($row = $db->sql_fetchrow($result))
+				while ($row = phpbb::$db->sql_fetchrow($result))
 				{
 					$report_ids[] = $row['report_id'];
 					$row_num[$row['report_id']] = $i++;
 				}
-				$db->sql_freeresult($result);
+				phpbb::$db->sql_freeresult($result);
 
 				if (sizeof($report_ids))
 				{
 					$sql = 'SELECT t.forum_id, t.topic_id, t.topic_title, p.post_id, p.post_subject, p.post_username, p.poster_id, p.post_time, u.username, u.username_clean, u.user_colour, r.user_id as reporter_id, ru.username as reporter_name, ru.user_colour as reporter_colour, r.report_time, r.report_id
 						FROM ' . REPORTS_TABLE . ' r, ' . POSTS_TABLE . ' p, ' . TOPICS_TABLE . ' t, ' . USERS_TABLE . ' u, ' . USERS_TABLE . ' ru
-						WHERE ' . $db->sql_in_set('r.report_id', $report_ids) . '
+						WHERE ' . phpbb::$db->sql_in_set('r.report_id', $report_ids) . '
 							AND t.topic_id = p.topic_id
 							AND r.post_id = p.post_id
 							AND u.user_id = p.poster_id
 							AND ru.user_id = r.user_id
 						ORDER BY ' . $sort_order_sql;
-					$result = $db->sql_query($sql);
+					$result = phpbb::$db->sql_query($sql);
 
 					$report_data = $rowset = array();
-					while ($row = $db->sql_fetchrow($result))
+					while ($row = phpbb::$db->sql_fetchrow($result))
 					{
 						$global_topic = ($row['forum_id']) ? false : true;
 						if ($global_topic)
@@ -406,7 +406,7 @@ class mcp_reports
 							'TOPIC_TITLE'	=> $row['topic_title'])
 						);
 					}
-					$db->sql_freeresult($result);
+					phpbb::$db->sql_freeresult($result);
 					unset($report_ids, $row);
 				}
 
@@ -441,11 +441,11 @@ function close_report($report_id_list, $mode, $action)
 {
 	$sql = 'SELECT r.post_id
 		FROM ' . REPORTS_TABLE . ' r
-		WHERE ' . $db->sql_in_set('r.report_id', $report_id_list);
-	$result = $db->sql_query($sql);
+		WHERE ' . phpbb::$db->sql_in_set('r.report_id', $report_id_list);
+	$result = phpbb::$db->sql_query($sql);
 
 	$post_id_list = array();
-	while ($row = $db->sql_fetchrow($result))
+	while ($row = phpbb::$db->sql_fetchrow($result))
 	{
 		$post_id_list[] = $row['post_id'];
 	}
@@ -486,13 +486,13 @@ function close_report($report_id_list, $mode, $action)
 
 		$sql = 'SELECT r.report_id, r.post_id, r.report_closed, r.user_id, r.user_notify, u.username, u.username_clean, u.user_email, u.user_jabber, u.user_lang, u.user_notify_type
 			FROM ' . REPORTS_TABLE . ' r, ' . USERS_TABLE . ' u
-			WHERE ' . $db->sql_in_set('r.report_id', $report_id_list) . '
+			WHERE ' . phpbb::$db->sql_in_set('r.report_id', $report_id_list) . '
 				' . (($action == 'close') ? 'AND r.report_closed = 0' : '') . '
 				AND r.user_id = u.user_id';
-		$result = $db->sql_query($sql);
+		$result = phpbb::$db->sql_query($sql);
 
 		$reports = $close_report_posts = $close_report_topics = $notify_reporters = $report_id_list = array();
-		while ($report = $db->sql_fetchrow($result))
+		while ($report = phpbb::$db->sql_fetchrow($result))
 		{
 			$reports[$report['report_id']] = $report;
 			$report_id_list[] = $report['report_id'];
@@ -508,7 +508,7 @@ function close_report($report_id_list, $mode, $action)
 				$notify_reporters[$report['report_id']] = &$reports[$report['report_id']];
 			}
 		}
-		$db->sql_freeresult($result);
+		phpbb::$db->sql_freeresult($result);
 
 		if (sizeof($reports))
 		{
@@ -520,56 +520,56 @@ function close_report($report_id_list, $mode, $action)
 				// Get a list of topics that still contain reported posts
 				$sql = 'SELECT DISTINCT topic_id
 					FROM ' . POSTS_TABLE . '
-					WHERE ' . $db->sql_in_set('topic_id', $close_report_topics) . '
+					WHERE ' . phpbb::$db->sql_in_set('topic_id', $close_report_topics) . '
 						AND post_reported = 1
-						AND ' . $db->sql_in_set('post_id', $close_report_posts, true);
-				$result = $db->sql_query($sql);
+						AND ' . phpbb::$db->sql_in_set('post_id', $close_report_posts, true);
+				$result = phpbb::$db->sql_query($sql);
 
 				$keep_report_topics = array();
-				while ($row = $db->sql_fetchrow($result))
+				while ($row = phpbb::$db->sql_fetchrow($result))
 				{
 					$keep_report_topics[] = $row['topic_id'];
 				}
-				$db->sql_freeresult($result);
+				phpbb::$db->sql_freeresult($result);
 
 				$close_report_topics = array_diff($close_report_topics, $keep_report_topics);
 				unset($keep_report_topics);
 			}
 
-			$db->sql_transaction('begin');
+			phpbb::$db->sql_transaction('begin');
 
 			if ($action == 'close')
 			{
 				$sql = 'UPDATE ' . REPORTS_TABLE . '
 					SET report_closed = 1
-					WHERE ' . $db->sql_in_set('report_id', $report_id_list);
+					WHERE ' . phpbb::$db->sql_in_set('report_id', $report_id_list);
 			}
 			else
 			{
 				$sql = 'DELETE FROM ' . REPORTS_TABLE . '
-					WHERE ' . $db->sql_in_set('report_id', $report_id_list);
+					WHERE ' . phpbb::$db->sql_in_set('report_id', $report_id_list);
 			}
-			$db->sql_query($sql);
+			phpbb::$db->sql_query($sql);
 
 
 			if (sizeof($close_report_posts))
 			{
 				$sql = 'UPDATE ' . POSTS_TABLE . '
 					SET post_reported = 0
-					WHERE ' . $db->sql_in_set('post_id', $close_report_posts);
-				$db->sql_query($sql);
+					WHERE ' . phpbb::$db->sql_in_set('post_id', $close_report_posts);
+				phpbb::$db->sql_query($sql);
 
 				if (sizeof($close_report_topics))
 				{
 					$sql = 'UPDATE ' . TOPICS_TABLE . '
 						SET topic_reported = 0
-						WHERE ' . $db->sql_in_set('topic_id', $close_report_topics) . '
-							OR ' . $db->sql_in_set('topic_moved_id', $close_report_topics);
-					$db->sql_query($sql);
+						WHERE ' . phpbb::$db->sql_in_set('topic_id', $close_report_topics) . '
+							OR ' . phpbb::$db->sql_in_set('topic_moved_id', $close_report_topics);
+					phpbb::$db->sql_query($sql);
 				}
 			}
 
-			$db->sql_transaction('commit');
+			phpbb::$db->sql_transaction('commit');
 		}
 		unset($close_report_posts, $close_report_topics);
 

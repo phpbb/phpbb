@@ -35,11 +35,11 @@ class ucp_remind
 		{
 			$sql = 'SELECT user_id, username, user_permissions, user_email, user_jabber, user_notify_type, user_type, user_lang, user_inactive_reason
 				FROM ' . USERS_TABLE . "
-				WHERE user_email = '" . $db->sql_escape($email) . "'
-					AND username_clean = '" . $db->sql_escape(utf8_clean_string($username)) . "'";
-			$result = $db->sql_query($sql);
-			$user_row = $db->sql_fetchrow($result);
-			$db->sql_freeresult($result);
+				WHERE user_email = '" . phpbb::$db->sql_escape($email) . "'
+					AND username_clean = '" . phpbb::$db->sql_escape(utf8_clean_string($username)) . "'";
+			$result = phpbb::$db->sql_query($sql);
+			$user_row = phpbb::$db->sql_fetchrow($result);
+			phpbb::$db->sql_freeresult($result);
 
 			if (!$user_row)
 			{
@@ -81,9 +81,9 @@ class ucp_remind
 			$user_password = gen_rand_string(8);
 
 			$sql = 'UPDATE ' . USERS_TABLE . "
-				SET user_newpasswd = '" . $db->sql_escape(phpbb_hash($user_password)) . "', user_actkey = '" . $db->sql_escape($user_actkey) . "'
+				SET user_newpasswd = '" . phpbb::$db->sql_escape(phpbb_hash($user_password)) . "', user_actkey = '" . phpbb::$db->sql_escape($user_actkey) . "'
 				WHERE user_id = " . $user_row['user_id'];
-			$db->sql_query($sql);
+			phpbb::$db->sql_query($sql);
 
 			include_once(PHPBB_ROOT_PATH . 'includes/functions_messenger.' . PHP_EXT);
 

@@ -61,8 +61,8 @@ if (phpbb::$user->is_registered)
 $sql = "SELECT f.* $lastread_select
 	FROM $sql_from
 	WHERE f.forum_id = $forum_id";
-$result = $db->sql_query($sql);
-$forum_data = $db->sql_fetchrow($result);
+$result = phpbb::$db->sql_query($sql);
+$forum_data = phpbb::$db->sql_fetchrow($result);
 phpbb::$db->sql_freeresult($result);
 
 if (!$forum_data)
@@ -108,7 +108,7 @@ if ($forum_data['forum_type'] == FORUM_LINK && $forum_data['forum_link'])
 		$sql = 'UPDATE ' . FORUMS_TABLE . '
 			SET forum_posts = forum_posts + 1
 			WHERE forum_id = ' . $forum_id;
-		$db->sql_query($sql);
+		phpbb::$db->sql_query($sql);
 	}
 
 	// We redirect to the url. The third parameter indicates that external redirects are allowed.
@@ -234,9 +234,9 @@ if ($sort_days)
 			AND ((topic_type <> " . POST_GLOBAL . " AND topic_last_post_time >= $min_post_time)
 				OR topic_type = " . POST_ANNOUNCE . ")
 		" . ((phpbb::$acl->acl_get('m_approve', $forum_id)) ? '' : 'AND topic_approved = 1');
-	$result = $db->sql_query($sql);
-	$topics_count = (int) $db->sql_fetchfield('num_topics');
-	$db->sql_freeresult($result);
+	$result = phpbb::$db->sql_query($sql);
+	$topics_count = (int) phpbb::$db->sql_fetchfield('num_topics');
+	phpbb::$db->sql_freeresult($result);
 
 	if (phpbb_request::is_set_post('sort'))
 	{
@@ -353,7 +353,7 @@ if (phpbb::$user->is_registered)
 if ($forum_data['forum_type'] == FORUM_POST)
 {
 	// Obtain announcements ... removed sort ordering, sort by time in all cases
-	$sql = $db->sql_build_query('SELECT', array(
+	$sql = phpbb::$db->sql_build_query('SELECT', array(
 		'SELECT'	=> $sql_array['SELECT'],
 		'FROM'		=> $sql_array['FROM'],
 		'LEFT_JOIN'	=> $sql_array['LEFT_JOIN'],
@@ -363,9 +363,9 @@ if ($forum_data['forum_type'] == FORUM_POST)
 
 		'ORDER_BY'	=> 't.topic_time DESC',
 	));
-	$result = $db->sql_query($sql);
+	$result = phpbb::$db->sql_query($sql);
 
-	while ($row = $db->sql_fetchrow($result))
+	while ($row = phpbb::$db->sql_fetchrow($result))
 	{
 		$rowset[$row['topic_id']] = $row;
 		$announcement_list[] = $row['topic_id'];
@@ -379,7 +379,7 @@ if ($forum_data['forum_type'] == FORUM_POST)
 			$topics_count--;
 		}
 	}
-	$db->sql_freeresult($result);
+	phpbb::$db->sql_freeresult($result);
 }
 
 // If the user is trying to reach late pages, start searching from the end
@@ -411,12 +411,12 @@ if ($forum_data['forum_type'] == FORUM_POST || !sizeof($active_forum_ary))
 }
 else if (empty($active_forum_ary['exclude_forum_id']))
 {
-	$sql_where = $db->sql_in_set('t.forum_id', $active_forum_ary['forum_id']);
+	$sql_where = phpbb::$db->sql_in_set('t.forum_id', $active_forum_ary['forum_id']);
 }
 else
 {
 	$get_forum_ids = array_diff($active_forum_ary['forum_id'], $active_forum_ary['exclude_forum_id']);
-	$sql_where = (sizeof($get_forum_ids)) ? $db->sql_in_set('t.forum_id', $get_forum_ids) : 't.forum_id = ' . $forum_id;
+	$sql_where = (sizeof($get_forum_ids)) ? phpbb::$db->sql_in_set('t.forum_id', $get_forum_ids) : 't.forum_id = ' . $forum_id;
 }
 
 // Grab just the sorted topic ids
@@ -427,9 +427,9 @@ $sql = 'SELECT t.topic_id
 		$sql_approved
 		$sql_limit_time
 	ORDER BY t.topic_type " . ((!$store_reverse) ? 'DESC' : 'ASC') . ', ' . $sql_sort_order;
-$result = $db->sql_query_limit($sql, $sql_limit, $sql_start);
+$result = phpbb::$db->sql_query_limit($sql, $sql_limit, $sql_start);
 
-while ($row = $db->sql_fetchrow($result))
+while ($row = phpbb::$db->sql_fetchrow($result))
 {
 	$topic_list[] = (int) $row['topic_id'];
 }
@@ -446,16 +446,16 @@ if (sizeof($topic_list))
 		'FROM'			=> $sql_array['FROM'],
 		'LEFT_JOIN'		=> $sql_array['LEFT_JOIN'],
 
-		'WHERE'			=> $db->sql_in_set('t.topic_id', $topic_list),
+		'WHERE'			=> phpbb::$db->sql_in_set('t.topic_id', $topic_list),
 	);
 
 	// If store_reverse, then first obtain topics, then stickies, else the other way around...
 	// Funnily enough you typically save one query if going from the last page to the middle (store_reverse) because
 	// the number of stickies are not known
-	$sql = $db->sql_build_query('SELECT', $sql_array);
-	$result = $db->sql_query($sql);
+	$sql = phpbb::$db->sql_build_query('SELECT', $sql_array);
+	$result = phpbb::$db->sql_query($sql);
 
-	while ($row = $db->sql_fetchrow($result))
+	while ($row = phpbb::$db->sql_fetchrow($result))
 	{
 		if ($row['topic_status'] == ITEM_MOVED)
 		{
@@ -464,7 +464,7 @@ if (sizeof($topic_list))
 
 		$rowset[$row['topic_id']] = $row;
 	}
-	$db->sql_freeresult($result);
+	phpbb::$db->sql_freeresult($result);
 }
 
 // If we have some shadow topics, update the rowset to reflect their topic information
@@ -472,10 +472,10 @@ if (sizeof($shadow_topic_list))
 {
 	$sql = 'SELECT *
 		FROM ' . TOPICS_TABLE . '
-		WHERE ' . $db->sql_in_set('topic_id', array_keys($shadow_topic_list));
-	$result = $db->sql_query($sql);
+		WHERE ' . phpbb::$db->sql_in_set('topic_id', array_keys($shadow_topic_list));
+	$result = phpbb::$db->sql_query($sql);
 
-	while ($row = $db->sql_fetchrow($result))
+	while ($row = phpbb::$db->sql_fetchrow($result))
 	{
 		$orig_topic_id = $shadow_topic_list[$row['topic_id']];
 
@@ -513,7 +513,7 @@ if (sizeof($shadow_topic_list))
 
 		$rowset[$orig_topic_id] = $row;
 	}
-	$db->sql_freeresult($result);
+	phpbb::$db->sql_freeresult($result);
 }
 unset($shadow_topic_list);
 

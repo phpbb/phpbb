@@ -58,15 +58,15 @@ if ($mode == 'whois' && phpbb::$acl->acl_get('a_') && $session_id)
 
 	$sql = 'SELECT u.user_id, u.username, u.user_type, s.session_ip
 		FROM ' . USERS_TABLE . ' u, ' . SESSIONS_TABLE . " s
-		WHERE s.session_id = '" . $db->sql_escape($session_id) . "'
+		WHERE s.session_id = '" . phpbb::$db->sql_escape($session_id) . "'
 			AND	u.user_id = s.session_user_id";
-	$result = $db->sql_query($sql);
+	$result = phpbb::$db->sql_query($sql);
 
-	if ($row = $db->sql_fetchrow($result))
+	if ($row = phpbb::$db->sql_fetchrow($result))
 	{
 		$template->assign_var('WHOIS', user_ipwhois($row['session_ip']));
 	}
-	$db->sql_freeresult($result);
+	phpbb::$db->sql_freeresult($result);
 
 	// Output the page
 	page_header(phpbb::$user->lang['WHO_IS_ONLINE']);
@@ -83,10 +83,10 @@ if ($mode == 'whois' && phpbb::$acl->acl_get('a_') && $session_id)
 $sql = 'SELECT forum_id, forum_name, parent_id, forum_type, left_id, right_id
 	FROM ' . FORUMS_TABLE . '
 	ORDER BY left_id ASC';
-$result = $db->sql_query($sql, 600);
+$result = phpbb::$db->sql_query($sql, 600);
 
 $forum_data = array();
-while ($row = $db->sql_fetchrow($result))
+while ($row = phpbb::$db->sql_fetchrow($result))
 {
 	$forum_data[$row['forum_id']] = $row;
 }
@@ -97,7 +97,7 @@ $guest_counter = 0;
 // Get number of online guests (if we do not display them)
 if (!$show_guests)
 {
-	if ($db->count_distinct)
+	if (phpbb::$db->features['count_distinct'])
 	{
 		$sql = 'SELECT COUNT(DISTINCT session_ip) as num_guests
 				FROM ' . SESSIONS_TABLE . '
@@ -115,9 +115,9 @@ if (!$show_guests)
 			')';
 		break;
 	}
-	$result = $db->sql_query($sql);
-	$guest_counter = (int) $db->sql_fetchfield('num_guests');
-	$db->sql_freeresult($result);
+	$result = phpbb::$db->sql_query($sql);
+	$guest_counter = (int) phpbb::$db->sql_fetchfield('num_guests');
+	phpbb::$db->sql_freeresult($result);
 }
 
 // Get user list
@@ -127,12 +127,12 @@ $sql = 'SELECT u.user_id, u.username, u.username_clean, u.user_type, u.user_colo
 		AND s.session_time >= ' . (time() - (phpbb::$config['load_online_time'] * 60)) .
 		((!$show_guests) ? ' AND s.session_user_id <> ' . ANONYMOUS : '') . '
 	ORDER BY ' . $order_by;
-$result = $db->sql_query($sql);
+$result = phpbb::$db->sql_query($sql);
 
 $prev_id = $prev_ip = $user_list = array();
 $logged_visible_online = $logged_hidden_online = $counter = 0;
 
-while ($row = $db->sql_fetchrow($result))
+while ($row = phpbb::$db->sql_fetchrow($result))
 {
 	if ($row['user_id'] != ANONYMOUS && !isset($prev_id[$row['user_id']]))
 	{
@@ -393,10 +393,10 @@ else
 			AND (g.group_type <> ' . GROUP_HIDDEN . ' OR ug.user_id = ' . phpbb::$user->data['user_id'] . ')
 		ORDER BY g.group_name ASC';
 }
-$result = $db->sql_query($sql);
+$result = phpbb::$db->sql_query($sql);
 
 $legend = '';
-while ($row = $db->sql_fetchrow($result))
+while ($row = phpbb::$db->sql_fetchrow($result))
 {
 	if ($row['group_name'] == 'BOTS')
 	{

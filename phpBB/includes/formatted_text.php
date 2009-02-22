@@ -150,9 +150,9 @@ class formatted_text
 	{
 		$this->changed = false;
 
-		$sql = 'UPDATE ' . $table . ' SET ' . $db->sql_build_query('UPDATE', $this->to_db_data($column))
-					. ' WHERE ' . $where;
-		return (bool) $db->sql_query($sql);
+		$sql = 'UPDATE ' . $table . ' SET ' . phpbb::$db->sql_build_query('UPDATE', $this->to_db_data($column))
+			. ' WHERE ' . $where;
+		return (bool) phpbb::$db->sql_query($sql);
 	}
 
 	/**

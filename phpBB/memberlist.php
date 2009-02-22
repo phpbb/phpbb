@@ -121,9 +121,9 @@ switch ($mode)
 		$sql = 'SELECT group_id
 			FROM ' . GROUPS_TABLE . "
 			WHERE group_name = 'ADMINISTRATORS'";
-		$result = $db->sql_query($sql);
-		$admin_group_id = (int) $db->sql_fetchfield('group_id');
-		$db->sql_freeresult($result);
+		$result = phpbb::$db->sql_query($sql);
+		$admin_group_id = (int) phpbb::$db->sql_fetchfield('group_id');
+		phpbb::$db->sql_freeresult($result);
 
 		// Get group memberships for the admin id ary...
 		$admin_memberships = group_memberships($admin_group_id, $admin_id_ary);
@@ -142,16 +142,16 @@ switch ($mode)
 
 		$sql = 'SELECT forum_id, forum_name
 			FROM ' . FORUMS_TABLE;
-		$result = $db->sql_query($sql);
+		$result = phpbb::$db->sql_query($sql);
 
 		$forums = array();
-		while ($row = $db->sql_fetchrow($result))
+		while ($row = phpbb::$db->sql_fetchrow($result))
 		{
 			$forums[$row['forum_id']] = $row['forum_name'];
 		}
-		$db->sql_freeresult($result);
+		phpbb::$db->sql_freeresult($result);
 
-		$sql = $db->sql_build_query('SELECT', array(
+		$sql = phpbb::$db->sql_build_query('SELECT', array(
 			'SELECT'	=> 'u.user_id, u.group_id as default_group, u.username, u.username_clean, u.user_colour, u.user_rank, u.user_posts, u.user_allow_pm, g.group_id, g.group_name, g.group_colour, g.group_type, ug.user_id as ug_user_id',
 
 			'FROM'		=> array(
@@ -166,14 +166,14 @@ switch ($mode)
 				)
 			),
 
-			'WHERE'		=> $db->sql_in_set('u.user_id', array_unique(array_merge($admin_id_ary, $mod_id_ary)), false, true) . '
+			'WHERE'		=> phpbb::$db->sql_in_set('u.user_id', array_unique(array_merge($admin_id_ary, $mod_id_ary)), false, true) . '
 				AND u.group_id = g.group_id',
 
 			'ORDER_BY'	=> 'g.group_name ASC, u.username_clean ASC'
 		));
-		$result = $db->sql_query($sql);
+		$result = phpbb::$db->sql_query($sql);
 
-		while ($row = $db->sql_fetchrow($result))
+		while ($row = phpbb::$db->sql_fetchrow($result))
 		{
 			$which_row = (in_array($row['user_id'], $admin_id_ary)) ? 'admin' : 'mod';
 
@@ -259,7 +259,7 @@ switch ($mode)
 				'U_VIEW_PROFILE'	=> get_username_string('profile', $row['user_id'], $row['username'], $row['user_colour']),
 			));
 		}
-		$db->sql_freeresult($result);
+		phpbb::$db->sql_freeresult($result);
 
 		$template->assign_vars(array(
 			'PM_IMG'		=> phpbb::$user->img('icon_contact_pm', phpbb::$user->lang['SEND_PRIVATE_MESSAGE']))
@@ -310,9 +310,9 @@ switch ($mode)
 			FROM " . USERS_TABLE . "
 			WHERE user_id = $user_id
 				AND user_type IN (" . phpbb::USER_NORMAL . ', ' . phpbb::USER_FOUNDER . ')';
-		$result = $db->sql_query($sql);
-		$row = $db->sql_fetchrow($result);
-		$db->sql_freeresult($result);
+		$result = phpbb::$db->sql_query($sql);
+		$row = phpbb::$db->sql_fetchrow($result);
+		phpbb::$db->sql_freeresult($result);
 
 		if (!$row)
 		{
@@ -404,10 +404,10 @@ switch ($mode)
 		// Get user...
 		$sql = 'SELECT *
 			FROM ' . USERS_TABLE . '
-			WHERE ' . (($username) ? "username_clean = '" . $db->sql_escape(utf8_clean_string($username)) . "'" : "user_id = $user_id");
-		$result = $db->sql_query($sql);
-		$member = $db->sql_fetchrow($result);
-		$db->sql_freeresult($result);
+			WHERE ' . (($username) ? "username_clean = '" . phpbb::$db->sql_escape(utf8_clean_string($username)) . "'" : "user_id = $user_id");
+		$result = phpbb::$db->sql_query($sql);
+		$member = phpbb::$db->sql_fetchrow($result);
+		phpbb::$db->sql_freeresult($result);
 
 		if (!$member)
 		{
@@ -437,14 +437,14 @@ switch ($mode)
 				AND g.group_id = ug.group_id" . ((!phpbb::$acl->acl_gets('a_group', 'a_groupadd', 'a_groupdel')) ? ' AND g.group_type <> ' . GROUP_HIDDEN : '') . '
 				AND ug.user_pending = 0
 			ORDER BY g.group_type, g.group_name';
-		$result = $db->sql_query($sql);
+		$result = phpbb::$db->sql_query($sql);
 
 		$group_options = '';
-		while ($row = $db->sql_fetchrow($result))
+		while ($row = phpbb::$db->sql_fetchrow($result))
 		{
 			$group_options .= '<option value="' . $row['group_id'] . '"' . (($row['group_id'] == $member['group_id']) ? ' selected="selected"' : '') . '>' . (($row['group_type'] == GROUP_SPECIAL) ? phpbb::$user->lang['G_' . $row['group_name']] : $row['group_name']) . '</option>';
 		}
-		$db->sql_freeresult($result);
+		phpbb::$db->sql_freeresult($result);
 
 		// What colour is the zebra
 		$sql = 'SELECT friend, foe
@@ -452,20 +452,20 @@ switch ($mode)
 			WHERE zebra_id = ' . $user_id . '
 				AND user_id = ' . phpbb::$user->data['user_id'];
 
-		$result = $db->sql_query($sql);
-		$row = $db->sql_fetchrow($result);
+		$result = phpbb::$db->sql_query($sql);
+		$row = phpbb::$db->sql_fetchrow($result);
 		$foe = ($row['foe']) ? true : false;
 		$friend = ($row['friend']) ? true : false;
-		$db->sql_freeresult($result);
+		phpbb::$db->sql_freeresult($result);
 
 		if (phpbb::$config['load_onlinetrack'])
 		{
 			$sql = 'SELECT MAX(session_time) AS session_time, MIN(session_viewonline) AS session_viewonline
 				FROM ' . SESSIONS_TABLE . "
 				WHERE session_user_id = $user_id";
-			$result = $db->sql_query($sql);
-			$row = $db->sql_fetchrow($result);
-			$db->sql_freeresult($result);
+			$result = phpbb::$db->sql_query($sql);
+			$row = phpbb::$db->sql_fetchrow($result);
+			phpbb::$db->sql_freeresult($result);
 
 			$member['session_time'] = (isset($row['session_time'])) ? $row['session_time'] : 0;
 			$member['session_viewonline'] = (isset($row['session_viewonline'])) ? $row['session_viewonline'] :	0;
@@ -534,9 +534,9 @@ switch ($mode)
 				FROM ' . POSTS_TABLE . '
 				WHERE poster_id = ' . $user_id . '
 					AND post_approved = 0';
-			$result = $db->sql_query($sql);
-			$member['posts_in_queue'] = (int) $db->sql_fetchfield('posts_in_queue');
-			$db->sql_freeresult($result);
+			$result = phpbb::$db->sql_query($sql);
+			$member['posts_in_queue'] = (int) phpbb::$db->sql_fetchfield('posts_in_queue');
+			phpbb::$db->sql_freeresult($result);
 		}
 		else
 		{
@@ -673,9 +673,9 @@ switch ($mode)
 				FROM ' . USERS_TABLE . "
 				WHERE user_id = $user_id
 					AND user_type IN (" . phpbb::USER_NORMAL . ', ' . phpbb::USER_FOUNDER . ')';
-			$result = $db->sql_query($sql);
-			$row = $db->sql_fetchrow($result);
-			$db->sql_freeresult($result);
+			$result = phpbb::$db->sql_query($sql);
+			$row = phpbb::$db->sql_fetchrow($result);
+			phpbb::$db->sql_freeresult($result);
 
 			if (!$row)
 			{
@@ -694,9 +694,9 @@ switch ($mode)
 			$sql = 'SELECT forum_id, topic_title
 				FROM ' . TOPICS_TABLE . "
 				WHERE topic_id = $topic_id";
-			$result = $db->sql_query($sql);
-			$row = $db->sql_fetchrow($result);
-			$db->sql_freeresult($result);
+			$result = phpbb::$db->sql_query($sql);
+			$row = phpbb::$db->sql_fetchrow($result);
+			phpbb::$db->sql_freeresult($result);
 
 			if (!$row)
 			{
@@ -784,7 +784,7 @@ switch ($mode)
 				$sql = 'UPDATE ' . USERS_TABLE . '
 					SET user_emailtime = ' . time() . '
 					WHERE user_id = ' . phpbb::$user->data['user_id'];
-				$result = $db->sql_query($sql);
+				$result = phpbb::$db->sql_query($sql);
 
 				include_once(PHPBB_ROOT_PATH . 'includes/functions_messenger.' . PHP_EXT);
 				$messenger = new messenger(false);
@@ -992,13 +992,13 @@ switch ($mode)
 				$s_find_active_time .= '<option value="' . $key . '"' . $selected . '>' . $value . '</option>';
 			}
 
-			$sql_where .= ($username) ? ' AND u.username_clean ' . $db->sql_like_expression(str_replace('*', $db->any_char, utf8_clean_string($username))) : '';
-			$sql_where .= ($email) ? ' AND u.user_email ' . $db->sql_like_expression(str_replace('*', $db->any_char, $email)) . ' ' : '';
-			$sql_where .= ($icq) ? ' AND u.user_icq ' . $db->sql_like_expression(str_replace('*', $db->any_char, $icq)) . ' ' : '';
-			$sql_where .= ($aim) ? ' AND u.user_aim ' . $db->sql_like_expression(str_replace('*', $db->any_char, $aim)) . ' ' : '';
-			$sql_where .= ($yahoo) ? ' AND u.user_yim ' . $db->sql_like_expression(str_replace('*', $db->any_char, $yahoo)) . ' ' : '';
-			$sql_where .= ($msn) ? ' AND u.user_msnm ' . $db->sql_like_expression(str_replace('*', $db->any_char, $msn)) . ' ' : '';
-			$sql_where .= ($jabber) ? ' AND u.user_jabber ' . $db->sql_like_expression(str_replace('*', $db->any_char, $jabber)) . ' ' : '';
+			$sql_where .= ($username) ? ' AND u.username_clean ' . phpbb::$db->sql_like_expression(str_replace('*', phpbb::$db->any_char, utf8_clean_string($username))) : '';
+			$sql_where .= ($email) ? ' AND u.user_email ' . phpbb::$db->sql_like_expression(str_replace('*', phpbb::$db->any_char, $email)) . ' ' : '';
+			$sql_where .= ($icq) ? ' AND u.user_icq ' . phpbb::$db->sql_like_expression(str_replace('*', phpbb::$db->any_char, $icq)) . ' ' : '';
+			$sql_where .= ($aim) ? ' AND u.user_aim ' . phpbb::$db->sql_like_expression(str_replace('*', phpbb::$db->any_char, $aim)) . ' ' : '';
+			$sql_where .= ($yahoo) ? ' AND u.user_yim ' . phpbb::$db->sql_like_expression(str_replace('*', phpbb::$db->any_char, $yahoo)) . ' ' : '';
+			$sql_where .= ($msn) ? ' AND u.user_msnm ' . phpbb::$db->sql_like_expression(str_replace('*', phpbb::$db->any_char, $msn)) . ' ' : '';
+			$sql_where .= ($jabber) ? ' AND u.user_jabber ' . phpbb::$db->sql_like_expression(str_replace('*', phpbb::$db->any_char, $jabber)) . ' ' : '';
 			$sql_where .= (is_numeric($count)) ? ' AND u.user_posts ' . $find_key_match[$count_select] . ' ' . (int) $count . ' ' : '';
 			$sql_where .= (sizeof($joined) > 1) ? " AND u.user_regdate " . $find_key_match[$joined_select] . ' ' . gmmktime(0, 0, 0, intval($joined[1]), intval($joined[2]), intval($joined[0])) : '';
 			$sql_where .= (phpbb::$acl->acl_get('u_viewonline') && sizeof($active) > 1) ? " AND u.user_lastvisit " . $find_key_match[$active_select] . ' ' . gmmktime(0, 0, 0, $active[1], intval($active[2]), intval($active[0])) : '';
@@ -1026,7 +1026,7 @@ switch ($mode)
 				}
 				else
 				{
-					$ips = "'" . str_replace('*', '%', $db->sql_escape($ipdomain)) . "'";
+					$ips = "'" . str_replace('*', '%', phpbb::$db->sql_escape($ipdomain)) . "'";
 				}
 
 				if ($ips === false)
@@ -1042,18 +1042,18 @@ switch ($mode)
 						FROM ' . POSTS_TABLE . '
 						WHERE poster_ip ' . ((strpos($ips, '%') !== false) ? 'LIKE' : 'IN') . " ($ips)
 							AND forum_id IN (0, " . implode(', ', $ip_forums) . ')';
-					$result = $db->sql_query($sql);
+					$result = phpbb::$db->sql_query($sql);
 
-					if ($row = $db->sql_fetchrow($result))
+					if ($row = phpbb::$db->sql_fetchrow($result))
 					{
 						$ip_sql = array();
 						do
 						{
 							$ip_sql[] = $row['poster_id'];
 						}
-						while ($row = $db->sql_fetchrow($result));
+						while ($row = phpbb::$db->sql_fetchrow($result));
 
-						$sql_where .= ' AND ' . $db->sql_in_set('u.user_id', $ip_sql);
+						$sql_where .= ' AND ' . phpbb::$db->sql_in_set('u.user_id', $ip_sql);
 					}
 					else
 					{
@@ -1062,7 +1062,7 @@ switch ($mode)
 					}
 					unset($ip_forums);
 
-					$db->sql_freeresult($result);
+					phpbb::$db->sql_freeresult($result);
 				}
 			}
 		}
@@ -1073,12 +1073,12 @@ switch ($mode)
 		{
 			for ($i = 97; $i < 123; $i++)
 			{
-				$sql_where .= ' AND u.username_clean NOT ' . $db->sql_like_expression(chr($i) . $db->any_char);
+				$sql_where .= ' AND u.username_clean NOT ' . phpbb::$db->sql_like_expression(chr($i) . phpbb::$db->any_char);
 			}
 		}
 		else if ($first_char)
 		{
-			$sql_where .= ' AND u.username_clean ' . $db->sql_like_expression(substr($first_char, 0, 1) . $db->any_char);
+			$sql_where .= ' AND u.username_clean ' . phpbb::$db->sql_like_expression(substr($first_char, 0, 1) . phpbb::$db->any_char);
 		}
 
 		// Are we looking at a usergroup? If so, fetch additional info
@@ -1090,9 +1090,9 @@ switch ($mode)
 				FROM ' . GROUPS_TABLE . ' g
 				LEFT JOIN ' . USER_GROUP_TABLE . ' ug ON (ug.user_pending = 0 AND ug.user_id = ' . phpbb::$user->data['user_id'] . " AND ug.group_id = $group_id)
 				WHERE g.group_id = $group_id";
-			$result = $db->sql_query($sql);
-			$group_row = $db->sql_fetchrow($result);
-			$db->sql_freeresult($result);
+			$result = phpbb::$db->sql_query($sql);
+			$group_row = phpbb::$db->sql_fetchrow($result);
+			phpbb::$db->sql_freeresult($result);
 
 			if (!$group_row)
 			{
@@ -1191,9 +1191,9 @@ switch ($mode)
 				FROM ' . USERS_TABLE . " u$sql_from
 				WHERE u.user_type IN (" . phpbb::USER_NORMAL . ', ' . phpbb::USER_FOUNDER . ")
 				$sql_where";
-			$result = $db->sql_query($sql);
-			$total_users = (int) $db->sql_fetchfield('total_users');
-			$db->sql_freeresult($result);
+			$result = phpbb::$db->sql_query($sql);
+			$total_users = (int) phpbb::$db->sql_fetchfield('total_users');
+			phpbb::$db->sql_freeresult($result);
 		}
 		else
 		{
@@ -1306,14 +1306,14 @@ switch ($mode)
 
 				$sql .= ' ORDER BY g.group_name ASC';
 			}
-			$result = $db->sql_query($sql);
+			$result = phpbb::$db->sql_query($sql);
 
-			while ($row = $db->sql_fetchrow($result))
+			while ($row = phpbb::$db->sql_fetchrow($result))
 			{
 				$group_ids[] = $row['group_id'];
 				$s_group_select .= '<option value="' . $row['group_id'] . '"' . (($group_selected == $row['group_id']) ? ' selected="selected"' : '') . '>' . (($row['group_type'] == GROUP_SPECIAL) ? phpbb::$user->lang['G_' . $row['group_name']] : $row['group_name']) . '</option>';
 			}
-			$db->sql_freeresult($result);
+			phpbb::$db->sql_freeresult($result);
 
 			if ($group_selected !== 0 && !in_array($group_selected, $group_ids))
 			{
@@ -1355,14 +1355,14 @@ switch ($mode)
 			WHERE u.user_type IN (" . phpbb::USER_NORMAL . ', ' . phpbb::USER_FOUNDER . ")
 				$sql_where
 			ORDER BY $order_by";
-		$result = $db->sql_query_limit($sql, phpbb::$config['topics_per_page'], $start);
+		$result = phpbb::$db->sql_query_limit($sql, phpbb::$config['topics_per_page'], $start);
 
 		$user_list = array();
-		while ($row = $db->sql_fetchrow($result))
+		while ($row = phpbb::$db->sql_fetchrow($result))
 		{
 			$user_list[] = (int) $row['user_id'];
 		}
-		$db->sql_freeresult($result);
+		phpbb::$db->sql_freeresult($result);
 		$leaders_set = false;
 		// So, did we get any users?
 		if (sizeof($user_list))
@@ -1371,16 +1371,16 @@ switch ($mode)
 			$sql = 'SELECT session_user_id, MAX(session_time) AS session_time
 				FROM ' . SESSIONS_TABLE . '
 				WHERE session_time >= ' . (time() - phpbb::$config['session_length']) . '
-					AND ' . $db->sql_in_set('session_user_id', $user_list) . '
+					AND ' . phpbb::$db->sql_in_set('session_user_id', $user_list) . '
 				GROUP BY session_user_id';
-			$result = $db->sql_query($sql);
+			$result = phpbb::$db->sql_query($sql);
 
 			$session_times = array();
-			while ($row = $db->sql_fetchrow($result))
+			while ($row = phpbb::$db->sql_fetchrow($result))
 			{
 				$session_times[$row['session_user_id']] = $row['session_time'];
 			}
-			$db->sql_freeresult($result);
+			phpbb::$db->sql_freeresult($result);
 
 			// Do the SQL thang
 			if ($mode == 'group')
@@ -1389,26 +1389,26 @@ switch ($mode)
 						$sql_select
 					FROM " . USERS_TABLE . " u
 						$sql_from
-					WHERE " . $db->sql_in_set('u.user_id', $user_list) . "
+					WHERE " . phpbb::$db->sql_in_set('u.user_id', $user_list) . "
 						$sql_where_data";
 			}
 			else
 			{
 				$sql = 'SELECT *
 					FROM ' . USERS_TABLE . '
-					WHERE ' . $db->sql_in_set('user_id', $user_list);
+					WHERE ' . phpbb::$db->sql_in_set('user_id', $user_list);
 			}
-			$result = $db->sql_query($sql);
+			$result = phpbb::$db->sql_query($sql);
 
 			$id_cache = array();
-			while ($row = $db->sql_fetchrow($result))
+			while ($row = phpbb::$db->sql_fetchrow($result))
 			{
 				$row['session_time'] = (!empty($session_times[$row['user_id']])) ? $session_times[$row['user_id']] : 0;
 				$row['last_visit'] = (!empty($row['session_time'])) ? $row['session_time'] : $row['user_lastvisit'];
 
 				$id_cache[$row['user_id']] = $row;
 			}
-			$db->sql_freeresult($result);
+			phpbb::$db->sql_freeresult($result);
 
 			// Load custom profile fields
 			if (phpbb::$config['load_cpf_memberlist'])
