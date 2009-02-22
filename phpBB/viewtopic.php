@@ -1583,10 +1583,9 @@ else if (!$all_marked_read)
 /**
 * @todo Do NOT overwrite a request variable.
 */
-// We overwrite the 'f' request variable if there is no forum specified
-// to be able to display the correct online list.
+// We overwrite the 'f' request variable if there is no forum specified to be able to display the correct online list.
 // One downside is that the user currently viewing this topic/post is not taken into account.
-if (empty(phpbb_request::variable('f', '')))
+if (!phpbb_request::variable('f', 0))
 {
 	phpbb_request::overwrite('f', $forum_id);
 }

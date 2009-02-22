@@ -62,7 +62,7 @@ while ($row = phpbb::$db->sql_fetchrow($result))
 	$colour_text = ($row['group_colour']) ? ' style="color:#' . $row['group_colour'] . '"' : '';
 	$group_name = ($row['group_type'] == GROUP_SPECIAL) ? phpbb::$user->lang['G_' . $row['group_name']] : $row['group_name'];
 
-	if ($row['group_name'] == 'BOTS' || (phpbb::$user->data['user_id'] != ANONYMOUS && !phpbb::$acl->acl_get('u_viewprofile')))
+	if ($row['group_name'] == 'BOTS' || (!phpbb::$user->is_guest && !phpbb::$acl->acl_get('u_viewprofile')))
 	{
 		$legend[] = '<span' . $colour_text . '>' . $group_name . '</span>';
 	}

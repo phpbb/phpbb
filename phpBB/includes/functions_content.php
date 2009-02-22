@@ -1191,7 +1191,7 @@ function get_username_string($mode, $user_id, $username, $username_colour = '', 
 
 			// Build correct profile url - only show if not anonymous and permission to view profile if registered user
 			// For anonymous the link leads to a login page.
-			if ($user_id && $user_id != ANONYMOUS && (phpbb::$user->data['user_id'] == ANONYMOUS || phpbb::$acl->acl_get('u_viewprofile')))
+			if ($user_id && $user_id != ANONYMOUS && (phpbb::$user->is_guest || phpbb::$acl->acl_get('u_viewprofile')))
 			{
 				$profile_url = ($custom_profile_url !== false) ? $custom_profile_url . '&amp;u=' . (int) $user_id : str_replace(array('={USER_ID}', '=%7BUSER_ID%7D'), '=' . (int) $user_id, $_profile_cache['base_url']);
 			}

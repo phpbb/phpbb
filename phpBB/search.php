@@ -560,7 +560,7 @@ if ($keywords || $author || $author_id || $search_id || $submit)
 				}
 			}
 
-			if (phpbb::$config['load_anon_lastread'] || (phpbb::$user->data['is_registered'] && !phpbb::$config['load_db_lastread']))
+			if (phpbb::$config['load_anon_lastread'] || (phpbb::$user->is_registered && !phpbb::$config['load_db_lastread']))
 			{
 				$tracking_topics = phpbb_request::variable(phpbb::$config['cookie_name'] . '_track', '', false, phpbb_request::COOKIE);
 				$tracking_topics = ($tracking_topics) ? tracking_unserialize($tracking_topics) : array();

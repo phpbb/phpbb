@@ -30,11 +30,11 @@ phpbb::$user->setup('acp/common');
 // End session management
 
 // Have they authenticated (again) as an admin for this session?
-if (phpbb::$user->data['user_id'] != ANONYMOUS &&  (!isset(phpbb::$user->data['session_admin']) || !phpbb::$user->data['session_admin']))
+if (!phpbb::$user->is_guest && (!isset(phpbb::$user->data['session_admin']) || !phpbb::$user->data['session_admin']))
 {
 	login_box('', phpbb::$user->lang['LOGIN_ADMIN_CONFIRM'], phpbb::$user->lang['LOGIN_ADMIN_SUCCESS'], true, false);
 }
-else if (phpbb::$user->data['user_id'] == ANONYMOUS)
+else if (phpbb::$user->is_guest)
 {
 	login_box('');
 }
@@ -114,7 +114,7 @@ function adm_page_header($page_title)
 
 	phpbb::$template->assign_vars(array(
 		'PAGE_TITLE'			=> $page_title,
-		'USERNAME'				=> (phpbb::$user->data['user_id'] != ANONYMOUS) ? phpbb::$user->data['username'] : '',
+		'USERNAME'				=> (!phpbb::$user->is_guest) ? phpbb::$user->data['username'] : '',
 
 		'SESSION_ID'			=> phpbb::$user->session_id,
 		'ROOT_PATH'				=> PHPBB_ADMIN_PATH,
@@ -125,7 +125,7 @@ function adm_page_header($page_title)
 		'U_INDEX'				=> phpbb::$url->append_sid('index'),
 
 		'S_USER_ADMIN'			=> phpbb::$user->data['session_admin'],
-		'S_USER_LOGGED_IN'		=> (phpbb::$user->data['user_id'] != ANONYMOUS && !phpbb::$user->is_bot),
+		'S_USER_LOGGED_IN'		=> (phpbb::$user->is_registered),
 
 		'T_IMAGES_PATH'			=> PHPBB_ROOT_PATH . 'images/',
 		'T_SMILIES_PATH'		=> PHPBB_ROOT_PATH . phpbb::$config['smilies_path'] . '/',

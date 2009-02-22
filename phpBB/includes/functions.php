@@ -39,6 +39,14 @@ function request_var($var_name, $default, $multibyte = false, $cookie = false)
 }
 
 /**
+* Wrapper for phpbb::$url->append_sid()
+*/
+function append_sid($url, $params = false, $is_amp = true, $session_id = false)
+{
+	return phpbb::$url->append_sid($url, $params, $is_amp, $session_id);
+}
+
+/**
 * Set config value.
 * Creates missing config entry if update did not succeed and phpbb::$config for this entry empty.
 *
@@ -248,14 +256,14 @@ function markread($mode, $forum_id = false, $topic_id = false, $post_time = 0, $
 	{
 		if ($forum_id === false || !sizeof($forum_id))
 		{
-			if (phpbb::$config['load_db_lastread'] && phpbb::$user->data['is_registered'])
+			if (phpbb::$config['load_db_lastread'] && phpbb::$user->is_registered)
 			{
 				// Mark all forums read (index page)
 				phpbb::$db->sql_query('DELETE FROM ' . TOPICS_TRACK_TABLE . ' WHERE user_id = ' . phpbb::$user->data['user_id']);
 				phpbb::$db->sql_query('DELETE FROM ' . FORUMS_TRACK_TABLE . ' WHERE user_id = ' . phpbb::$user->data['user_id']);
 				phpbb::$db->sql_query('UPDATE ' . USERS_TABLE . ' SET user_lastmark = ' . time() . ' WHERE user_id = ' . phpbb::$user->data['user_id']);
 			}
-			else if (phpbb::$config['load_anon_lastread'] || phpbb::$user->data['is_registered'])
+			else if (phpbb::$config['load_anon_lastread'] || phpbb::$user->is_registered)
 			{
 				$tracking_topics = phpbb_request::variable(phpbb::$config['cookie_name'] . '_track', '', false, phpbb_request::COOKIE);
 				$tracking_topics = ($tracking_topics) ? tracking_unserialize($tracking_topics) : array();
@@ -270,7 +278,7 @@ function markread($mode, $forum_id = false, $topic_id = false, $post_time = 0, $
 
 				unset($tracking_topics);
 
-				if (phpbb::$user->data['is_registered'])
+				if (phpbb::$user->is_registered)
 				{
 					phpbb::$db->sql_query('UPDATE ' . USERS_TABLE . ' SET user_lastmark = ' . time() . ' WHERE user_id = ' . phpbb::$user->data['user_id']);
 				}
@@ -290,7 +298,7 @@ function markread($mode, $forum_id = false, $topic_id = false, $post_time = 0, $
 		// Add 0 to forums array to mark global announcements correctly
 		$forum_id[] = 0;
 
-		if (phpbb::$config['load_db_lastread'] && phpbb::$user->data['is_registered'])
+		if (phpbb::$config['load_db_lastread'] && phpbb::$user->is_registered)
 		{
 			$sql = 'DELETE FROM ' . TOPICS_TRACK_TABLE . '
 				WHERE user_id = ' . phpbb::$user->data['user_id'] . '
@@ -334,7 +342,7 @@ function markread($mode, $forum_id = false, $topic_id = false, $post_time = 0, $
 				phpbb::$db->sql_multi_insert(FORUMS_TRACK_TABLE, $sql_ary);
 			}
 		}
-		else if (phpbb::$config['load_anon_lastread'] || phpbb::$user->data['is_registered'])
+		else if (phpbb::$config['load_anon_lastread'] || phpbb::$user->is_registered)
 		{
 			$tracking = phpbb_request::variable(phpbb::$config['cookie_name'] . '_track', '', false, phpbb_request::COOKIE);
 			$tracking = ($tracking) ? tracking_unserialize($tracking) : array();
@@ -381,7 +389,7 @@ function markread($mode, $forum_id = false, $topic_id = false, $post_time = 0, $
 			return;
 		}
 
-		if (phpbb::$config['load_db_lastread'] && phpbb::$user->data['is_registered'])
+		if (phpbb::$config['load_db_lastread'] && phpbb::$user->is_registered)
 		{
 			$sql = 'UPDATE ' . TOPICS_TRACK_TABLE . '
 				SET mark_time = ' . (($post_time) ? $post_time : time()) . '
@@ -406,7 +414,7 @@ function markread($mode, $forum_id = false, $topic_id = false, $post_time = 0, $
 				phpbb::$db->sql_return_on_error(false);
 			}
 		}
-		else if (phpbb::$config['load_anon_lastread'] || phpbb::$user->data['is_registered'])
+		else if (phpbb::$config['load_anon_lastread'] || phpbb::$user->is_registered)
 		{
 			$tracking = phpbb_request::variable(phpbb::$config['cookie_name'] . '_track', '', false, phpbb_request::COOKIE);
 			$tracking = ($tracking) ? tracking_unserialize($tracking) : array();
@@ -451,7 +459,7 @@ function markread($mode, $forum_id = false, $topic_id = false, $post_time = 0, $
 					}
 				}
 
-				if (phpbb::$user->data['is_registered'])
+				if (phpbb::$user->is_registered)
 				{
 					phpbb::$user->data['user_lastmark'] = intval(base_convert(max($time_keys) + phpbb::$config['board_startdate'], 36, 10));
 					phpbb::$db->sql_query('UPDATE ' . USERS_TABLE . ' SET user_lastmark = ' . phpbb::$user->data['user_lastmark'] . ' WHERE user_id = ' . phpbb::$user->data['user_id']);
@@ -586,7 +594,7 @@ function get_complete_topic_tracking($forum_id, $topic_ids, $global_announce_lis
 		$topic_ids = array($topic_ids);
 	}
 
-	if (phpbb::$config['load_db_lastread'] && phpbb::$user->data['is_registered'])
+	if (phpbb::$config['load_db_lastread'] && phpbb::$user->is_registered)
 	{
 		$sql = 'SELECT topic_id, mark_time
 			FROM ' . TOPICS_TRACK_TABLE . '
@@ -633,7 +641,7 @@ function get_complete_topic_tracking($forum_id, $topic_ids, $global_announce_lis
 			}
 		}
 	}
-	else if (phpbb::$config['load_anon_lastread'] || phpbb::$user->data['is_registered'])
+	else if (phpbb::$config['load_anon_lastread'] || phpbb::$user->is_registered)
 	{
 		global $tracking_topics;
 
@@ -643,7 +651,7 @@ function get_complete_topic_tracking($forum_id, $topic_ids, $global_announce_lis
 			$tracking_topics = ($tracking_topics) ? tracking_unserialize($tracking_topics) : array();
 		}
 
-		if (!phpbb::$user->data['is_registered'])
+		if (!phpbb::$user->is_registered)
 		{
 			$user_lastmark = (isset($tracking_topics['l'])) ? base_convert($tracking_topics['l'], 36, 10) + phpbb::$config['board_startdate'] : 0;
 		}
@@ -717,16 +725,16 @@ function update_forum_tracking_info($forum_id, $forum_last_post_time, $f_mark_ti
 	// Determine the users last forum mark time if not given.
 	if ($mark_time_forum === false)
 	{
-		if (phpbb::$config['load_db_lastread'] && phpbb::$user->data['is_registered'])
+		if (phpbb::$config['load_db_lastread'] && phpbb::$user->is_registered)
 		{
 			$mark_time_forum = (!empty($f_mark_time)) ? $f_mark_time : phpbb::$user->data['user_lastmark'];
 		}
-		else if (phpbb::$config['load_anon_lastread'] || phpbb::$user->data['is_registered'])
+		else if (phpbb::$config['load_anon_lastread'] || phpbb::$user->is_registered)
 		{
 			$tracking_topics = phpbb_request::variable(phpbb::$config['cookie_name'] . '_track', '', false, phpbb_request::COOKIE);
 			$tracking_topics = ($tracking_topics) ? tracking_unserialize($tracking_topics) : array();
 
-			if (!phpbb::$user->data['is_registered'])
+			if (!phpbb::$user->is_registered)
 			{
 				phpbb::$user->data['user_lastmark'] = (isset($tracking_topics['l'])) ? (int) (base_convert($tracking_topics['l'], 36, 10) + phpbb::$config['board_startdate']) : 0;
 			}
@@ -737,7 +745,7 @@ function update_forum_tracking_info($forum_id, $forum_last_post_time, $f_mark_ti
 
 	// Check the forum for any left unread topics.
 	// If there are none, we mark the forum as read.
-	if (phpbb::$config['load_db_lastread'] && phpbb::$user->data['is_registered'])
+	if (phpbb::$config['load_db_lastread'] && phpbb::$user->is_registered)
 	{
 		if ($mark_time_forum >= $forum_last_post_time)
 		{
@@ -758,7 +766,7 @@ function update_forum_tracking_info($forum_id, $forum_last_post_time, $f_mark_ti
 			phpbb::$db->sql_freeresult($result);
 		}
 	}
-	else if (phpbb::$config['load_anon_lastread'] || phpbb::$user->data['is_registered'])
+	else if (phpbb::$config['load_anon_lastread'] || phpbb::$user->is_registered)
 	{
 		// Get information from cookie
 		$row = false;
@@ -1046,7 +1054,7 @@ function on_page($num_items, $per_page, $start)
 function add_form_key($form_name)
 {
 	$now = time();
-	$token_sid = (phpbb::$user->data['user_id'] == ANONYMOUS && !empty(phpbb::$config['form_token_sid_guests'])) ? phpbb::$user->session_id : '';
+	$token_sid = (phpbb::$user->is_guest && !empty(phpbb::$config['form_token_sid_guests'])) ? phpbb::$user->session_id : '';
 	$token = sha1($now . phpbb::$user->data['user_form_salt'] . $form_name . $token_sid);
 
 	$s_fields = build_hidden_fields(array(
@@ -1085,7 +1093,7 @@ function check_form_key($form_name, $timespan = false, $return_page = '', $trigg
 		// If creation_time and the time() now is zero we can assume it was not a human doing this (the check for if ($diff)...
 		if ($diff && ($diff <= $timespan || $timespan === -1))
 		{
-			$token_sid = (phpbb::$user->data['user_id'] == ANONYMOUS && !empty(phpbb::$config['form_token_sid_guests'])) ? phpbb::$user->session_id : '';
+			$token_sid = (phpbb::$user->is_guest && !empty(phpbb::$config['form_token_sid_guests'])) ? phpbb::$user->session_id : '';
 			$key = sha1($creation_time . phpbb::$user->data['user_form_salt'] . $form_name . $token_sid);
 
 			if ($key === $token)
@@ -2103,7 +2111,7 @@ function page_header($page_title = '', $display_online_list = true)
 	if (phpbb::$plugins->function_inject(__FUNCTION__)) phpbb::$plugins->call_inject(__FUNCTION__, array('default', &$page_title, &$display_online_list));
 
 	// Generate logged in/logged out status
-	if (phpbb::$user->data['user_id'] != ANONYMOUS)
+	if (!phpbb::$user->is_guest)
 	{
 		$u_login_logout = phpbb::$url->append_sid('ucp', 'mode=logout', true, phpbb::$user->session_id);
 		$l_login_logout = sprintf(phpbb::$user->lang['LOGOUT_USER'], phpbb::$user->data['username']);
@@ -2115,7 +2123,7 @@ function page_header($page_title = '', $display_online_list = true)
 	}
 
 	// Last visit date/time
-	$s_last_visit = (phpbb::$user->data['user_id'] != ANONYMOUS) ? phpbb::$user->format_date(phpbb::$user->data['session_last_visit']) : '';
+	$s_last_visit = (!phpbb::$user->is_guest) ? phpbb::$user->format_date(phpbb::$user->data['session_last_visit']) : '';
 
 	// Get users online list ... if required
 	$online_userlist = array();
@@ -2253,7 +2261,7 @@ function page_header($page_title = '', $display_online_list = true)
 	$s_privmsg_new = false;
 
 	// Obtain number of new private messages if user is logged in
-	if (!empty(phpbb::$user->data['is_registered']))
+	if (!empty(phpbb::$user->is_registered))
 	{
 		if (phpbb::$user->data['user_new_privmsg'])
 		{
@@ -2288,7 +2296,7 @@ function page_header($page_title = '', $display_online_list = true)
 	}
 
 	// Which timezone?
-	$tz = (phpbb::$user->data['user_id'] != ANONYMOUS) ? strval(doubleval(phpbb::$user->data['user_timezone'])) : strval(doubleval(phpbb::$config['board_timezone']));
+	$tz = (!phpbb::$user->is_guest) ? strval(doubleval(phpbb::$user->data['user_timezone'])) : strval(doubleval(phpbb::$config['board_timezone']));
 
 	// Send a proper content-language to the output
 	$user_lang = phpbb::$user->lang['USER_LANG'];
@@ -2340,10 +2348,10 @@ function page_header($page_title = '', $display_online_list = true)
 		'U_SEARCH_UNANSWERED'	=> phpbb::$url->append_sid('search', 'search_id=unanswered'),
 		'U_SEARCH_ACTIVE_TOPICS'=> phpbb::$url->append_sid('search', 'search_id=active_topics'),
 		'U_DELETE_COOKIES'		=> phpbb::$url->append_sid('ucp', 'mode=delete_cookies'),
-		'U_TEAM'				=> (phpbb::$user->data['user_id'] != ANONYMOUS && !phpbb::$acl->acl_get('u_viewprofile')) ? '' : phpbb::$url->append_sid('memberlist', 'mode=leaders'),
+		'U_TEAM'				=> (!phpbb::$user->is_guest && !phpbb::$acl->acl_get('u_viewprofile')) ? '' : phpbb::$url->append_sid('memberlist', 'mode=leaders'),
 		'U_RESTORE_PERMISSIONS'	=> (phpbb::$user->data['user_perm_from'] && phpbb::$acl->acl_get('a_switchperm')) ? phpbb::$url->append_sid('ucp', 'mode=restore_perm') : '',
 
-		'S_USER_LOGGED_IN'		=> (phpbb::$user->data['user_id'] != ANONYMOUS) ? true : false,
+		'S_USER_LOGGED_IN'		=> (!phpbb::$user->is_guest) ? true : false,
 		'S_AUTOLOGIN_ENABLED'	=> (phpbb::$config['allow_autologin']) ? true : false,
 		'S_BOARD_DISABLED'		=> (phpbb::$config['board_disable']) ? true : false,
 		'S_REGISTERED_USER'		=> (!empty(phpbb::$user->is_registered)) ? true : false,
@@ -2356,10 +2364,10 @@ function page_header($page_title = '', $display_online_list = true)
 		'S_CONTENT_FLOW_BEGIN'	=> (phpbb::$user->lang['DIRECTION'] == 'ltr') ? 'left' : 'right',
 		'S_CONTENT_FLOW_END'	=> (phpbb::$user->lang['DIRECTION'] == 'ltr') ? 'right' : 'left',
 		'S_CONTENT_ENCODING'	=> 'UTF-8',
-		'S_TIMEZONE'			=> (phpbb::$user->data['user_dst'] || (phpbb::$user->data['user_id'] == ANONYMOUS && phpbb::$config['board_dst'])) ? sprintf(phpbb::$user->lang['ALL_TIMES'], phpbb::$user->lang['tz'][$tz], phpbb::$user->lang['tz']['dst']) : sprintf(phpbb::$user->lang['ALL_TIMES'], phpbb::$user->lang['tz'][$tz], ''),
+		'S_TIMEZONE'			=> (phpbb::$user->data['user_dst'] || (phpbb::$user->is_guest && phpbb::$config['board_dst'])) ? sprintf(phpbb::$user->lang['ALL_TIMES'], phpbb::$user->lang['tz'][$tz], phpbb::$user->lang['tz']['dst']) : sprintf(phpbb::$user->lang['ALL_TIMES'], phpbb::$user->lang['tz'][$tz], ''),
 		'S_DISPLAY_ONLINE_LIST'	=> ($l_online_time) ? 1 : 0,
 		'S_DISPLAY_SEARCH'		=> (!phpbb::$config['load_search']) ? 0 : (phpbb::$acl->acl_get('u_search') && phpbb::$acl->acl_getf_global('f_search')),
-		'S_DISPLAY_PM'			=> (phpbb::$config['allow_privmsg'] && !empty(phpbb::$user->data['is_registered']) && (phpbb::$acl->acl_get('u_readpm') || phpbb::$acl->acl_get('u_sendpm'))) ? true : false,
+		'S_DISPLAY_PM'			=> (phpbb::$config['allow_privmsg'] && !empty(phpbb::$user->is_registered) && (phpbb::$acl->acl_get('u_readpm') || phpbb::$acl->acl_get('u_sendpm'))) ? true : false,
 		'S_DISPLAY_MEMBERLIST'	=> (isset($auth)) ? phpbb::$acl->acl_get('u_viewprofile') : 0,
 		'S_NEW_PM'				=> ($s_privmsg_new) ? 1 : 0,
 		'S_REGISTER_ENABLED'	=> (phpbb::$config['require_activation'] != USER_ACTIVATION_DISABLE) ? true : false,

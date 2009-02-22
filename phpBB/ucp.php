@@ -81,7 +81,7 @@ switch ($mode)
 	break;
 
 	case 'logout':
-		if (phpbb::$user->data['user_id'] != ANONYMOUS && phpbb_request::variable('sid', '', false, phpbb_request::GET) === phpbb::$user->session_id)
+		if (!phpbb::$user->is_guest && phpbb_request::variable('sid', '', false, phpbb_request::GET) === phpbb::$user->session_id)
 		{
 			phpbb::$user->session_kill();
 			phpbb::$user->session_begin();
@@ -89,7 +89,7 @@ switch ($mode)
 		}
 		else
 		{
-			$message = (phpbb::$user->data['user_id'] == ANONYMOUS) ? phpbb::$user->lang['LOGOUT_REDIRECT'] : phpbb::$user->lang['LOGOUT_FAILED'];
+			$message = (phpbb::$user->is_guest) ? phpbb::$user->lang['LOGOUT_REDIRECT'] : phpbb::$user->lang['LOGOUT_FAILED'];
 		}
 		phpbb::$url->meta_refresh(3, phpbb::$url->append_sid('index'));
 

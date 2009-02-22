@@ -45,7 +45,7 @@ switch ($mode)
 		// Can this user view profiles/memberlist?
 		if (!phpbb::$acl->acl_gets('u_viewprofile', 'a_user', 'a_useradd', 'a_userdel'))
 		{
-			if (phpbb::$user->data['user_id'] != ANONYMOUS)
+			if (!phpbb::$user->is_guest)
 			{
 				trigger_error('NO_VIEW_USERS');
 			}
@@ -574,7 +574,7 @@ switch ($mode)
 			'U_SWITCH_PERMISSIONS'	=> (phpbb::$acl->acl_get('a_switchperm') && phpbb::$user->data['user_id'] != $user_id) ? append_sid('ucp', "mode=switch_perm&amp;u={$user_id}") : '',
 			'U_MCP_QUEUE'			=> (phpbb::$acl->acl_getf_global('m_approve')) ? append_sid('mcp', 'i=queue', true, phpbb::$user->session_id) : '',
 
-			'S_ZEBRA'			=> (phpbb::$user->data['user_id'] != $user_id && phpbb::$user->data['is_registered'] && $zebra_enabled) ? true : false,
+			'S_ZEBRA'			=> (phpbb::$user->data['user_id'] != $user_id && phpbb::$user->is_registered && $zebra_enabled) ? true : false,
 			'U_ADD_FRIEND'		=> (!$friend) ? append_sid('ucp', 'i=zebra&amp;add=' . urlencode(htmlspecialchars_decode($member['username']))) : '',
 			'U_ADD_FOE'			=> (!$foe) ? append_sid('ucp', 'i=zebra&amp;mode=foes&amp;add=' . urlencode(htmlspecialchars_decode($member['username']))) : '',
 			'U_REMOVE_FRIEND'	=> ($friend) ? append_sid('ucp', 'i=zebra&amp;remove=1&amp;usernames[]=' . $user_id) : '',

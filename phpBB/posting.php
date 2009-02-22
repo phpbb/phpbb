@@ -179,7 +179,7 @@ if (phpbb::$user->is_bot)
 // Is the user able to read within this forum?
 if (!phpbb::$acl->acl_get('f_read', $forum_id))
 {
-	if (phpbb::$user->data['user_id'] != ANONYMOUS)
+	if (!phpbb::$user->is_guest)
 	{
 		trigger_error('USER_CANNOT_READ');
 	}

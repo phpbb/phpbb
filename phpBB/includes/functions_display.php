@@ -144,7 +144,7 @@ function display_forums($root_data = '', $display_moderators = true, $return_mod
 		}
 		else if (phpbb::$config['load_anon_lastread'] || phpbb::$user->is_registered)
 		{
-			if (!phpbb::$user->data['is_registered'])
+			if (!phpbb::$user->is_registered)
 			{
 				phpbb::$user->data['user_lastmark'] = (isset($tracking_topics['l'])) ? (int) (base_convert($tracking_topics['l'], 36, 10) + phpbb::$config['board_startdate']) : 0;
 			}
@@ -701,7 +701,7 @@ function get_moderators(&$forum_moderators, $forum_id = false)
 		{
 			$group_name = (($row['group_type'] == GROUP_SPECIAL) ? phpbb::$user->lang['G_' . $row['group_name']] : $row['group_name']);
 
-			if (phpbb::$user->data['user_id'] != ANONYMOUS && !phpbb::$acl->acl_get('u_viewprofile'))
+			if (!phpbb::$user->is_guest && !phpbb::$acl->acl_get('u_viewprofile'))
 			{
 				$forum_moderators[$row['forum_id']][] = '<span' . (($row['group_colour']) ? ' style="color:#' . $row['group_colour'] . ';"' : '') . '>' . $group_name . '</span>';
 			}
