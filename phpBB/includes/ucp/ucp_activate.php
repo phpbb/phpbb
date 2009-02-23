@@ -72,6 +72,8 @@ class ucp_activate
 				SET ' . $db->sql_build_array('UPDATE', $sql_ary) . '
 				WHERE user_id = ' . $user_row['user_id'];
 			$db->sql_query($sql);
+
+			add_log('user', $user_row['user_id'], 'LOG_USER_NEW_PASSWORD', $user_row['username']);
 		}
 
 		if (!$update_password)
