@@ -133,6 +133,11 @@ class ucp_resend
 					$messenger->to($row['user_email'], $row['username']);
 					$messenger->im($row['user_jabber'], $row['username']);
 
+					$messenger->headers('X-AntiAbuse: Board servername - ' . $config['server_name']);
+					$messenger->headers('X-AntiAbuse: User_id - ' . $user->data['user_id']);
+					$messenger->headers('X-AntiAbuse: Username - ' . $user->data['username']);
+					$messenger->headers('X-AntiAbuse: User IP - ' . $user->ip);
+
 					$messenger->assign_vars(array(
 						'USERNAME'			=> htmlspecialchars_decode($user_row['username']),
 						'U_USER_DETAILS'	=> generate_board_url() . "/memberlist.$phpEx?mode=viewprofile&u={$user_row['user_id']}",
@@ -146,7 +151,7 @@ class ucp_resend
 
 			meta_refresh(3, append_sid("{$phpbb_root_path}index.$phpEx"));
 
-			$message = ($config['require_activation'] == USER_ACTIVATION_ADMIN) ? $user->lang['ACIVATION_EMAIL_SENT_ADMIN'] : $user->lang['ACTIVATION_EMAIL_SENT'];
+			$message = ($config['require_activation'] == USER_ACTIVATION_ADMIN) ? $user->lang['ACTIVATION_EMAIL_SENT_ADMIN'] : $user->lang['ACTIVATION_EMAIL_SENT'];
 			$message .= '<br /><br />' . sprintf($user->lang['RETURN_INDEX'], '<a href="' . append_sid("{$phpbb_root_path}index.$phpEx") . '">', '</a>');
 			trigger_error($message);
 		}
