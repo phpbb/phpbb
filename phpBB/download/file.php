@@ -464,8 +464,11 @@ function send_file_to_browser($attachment, $upload_dir, $category)
 
 	// Send out the Headers. Do not set Content-Disposition to inline please, it is a security measure for users using the Internet Explorer.
 	$is_ie8 = (strpos(strtolower($user->browser), 'msie 8.0') !== false);
-	header('Content-Type: ' . $attachment['mimetype'] . (($is_ie8) ? '; authoritative=true;' : ''));
-
+	header('Content-Type: ' . $attachment['mimetype']);
+	if ($is_ie8)
+	{
+		header('X-Content-Type-Options: nosniff');
+	}
 	if (empty($user->browser) || (!$is_ie8 && (strpos(strtolower($user->browser), 'msie') !== false)))
 	{
 		header('Content-Disposition: attachment; ' . header_filename(htmlspecialchars_decode($attachment['real_filename'])));
