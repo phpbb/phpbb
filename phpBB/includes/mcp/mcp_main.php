@@ -929,6 +929,11 @@ function mcp_delete_post($post_ids)
 	}
 	else
 	{
+		if ($affected_topics != 1 || $deleted_topics || !$topic_id)
+		{
+			$redirect = append_sid("{$phpbb_root_path}mcp.$phpEx", "f=$forum_id&i=main&mode=forum_view", false);
+		}
+
 		meta_refresh(3, $redirect);
 		trigger_error($success_msg . '<br /><br />' . sprintf($user->lang['RETURN_PAGE'], '<a href="' . $redirect . '">', '</a>') . '<br /><br />' . implode('<br /><br />', $return_link));
 	}

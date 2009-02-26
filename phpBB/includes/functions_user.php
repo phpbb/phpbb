@@ -490,7 +490,7 @@ function user_delete($mode, $user_id, $post_username = false)
 
 	$db->sql_transaction('begin');
 
-	$table_ary = array(USERS_TABLE, USER_GROUP_TABLE, TOPICS_WATCH_TABLE, FORUMS_WATCH_TABLE, ACL_USERS_TABLE, TOPICS_TRACK_TABLE, TOPICS_POSTED_TABLE, FORUMS_TRACK_TABLE, PROFILE_FIELDS_DATA_TABLE, MODERATOR_CACHE_TABLE, DRAFTS_TABLE, BOOKMARKS_TABLE);
+	$table_ary = array(USERS_TABLE, USER_GROUP_TABLE, TOPICS_WATCH_TABLE, FORUMS_WATCH_TABLE, ACL_USERS_TABLE, TOPICS_TRACK_TABLE, TOPICS_POSTED_TABLE, FORUMS_TRACK_TABLE, PROFILE_FIELDS_DATA_TABLE, MODERATOR_CACHE_TABLE, DRAFTS_TABLE, BOOKMARKS_TABLE, SESSIONS_KEYS_TABLE);
 
 	foreach ($table_ary as $table)
 	{
@@ -504,6 +504,11 @@ function user_delete($mode, $user_id, $post_username = false)
 	// Delete the user_id from the banlist
 	$sql = 'DELETE FROM ' . BANLIST_TABLE . ' 
 		WHERE ban_userid = ' . $user_id;
+	$db->sql_query($sql);
+
+	// Delete the user_id from the session table
+	$sql = 'DELETE FROM ' . SESSIONS_TABLE . '
+		WHERE session_user_id = ' . $user_id;
 	$db->sql_query($sql);
 
 	// Remove any undelivered mails...

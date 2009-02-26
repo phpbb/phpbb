@@ -1751,11 +1751,23 @@ function submit_post($mode, $subject, $username, $topic_type, &$poll, &$data, $u
 
 			if (isset($poll['poll_options']) && !empty($poll['poll_options']))
 			{
+				$poll_start = ($poll['poll_start']) ? $poll['poll_start'] : $current_time;
+				$poll_length = $poll['poll_length'] * 86400;
+				if ($poll_length < 0)
+				{
+					$poll_start = $poll_start + $poll_length;
+					if ($poll_start < 0)
+					{
+						$poll_start = 0;
+					}
+					$poll_length = 1;
+				}
+
 				$sql_data[TOPICS_TABLE]['sql'] = array_merge($sql_data[TOPICS_TABLE]['sql'], array(
 					'poll_title'		=> $poll['poll_title'],
-					'poll_start'		=> ($poll['poll_start']) ? $poll['poll_start'] : $current_time,
+					'poll_start'		=> $poll_start,
 					'poll_max_options'	=> $poll['poll_max_options'],
-					'poll_length'		=> ($poll['poll_length'] * 86400),
+					'poll_length'		=> $poll_length,
 					'poll_vote_change'	=> $poll['poll_vote_change'])
 				);
 			}
@@ -1784,6 +1796,20 @@ function submit_post($mode, $subject, $username, $topic_type, &$poll, &$data, $u
 
 		case 'edit_topic':
 		case 'edit_first_post':
+			if (isset($poll['poll_options']) && !empty($poll['poll_options']))
+			{
+				$poll_start = ($poll['poll_start']) ? $poll['poll_start'] : $current_time;
+				$poll_length = $poll['poll_length'] * 86400;
+				if ($poll_length < 0)
+				{
+					$poll_start = $poll_start + $poll_length;
+					if ($poll_start < 0)
+					{
+						$poll_start = 0;
+					}
+					$poll_length = 1;
+				}
+			}
 
 			$sql_data[TOPICS_TABLE]['sql'] = array(
 				'forum_id'					=> ($topic_type == POST_GLOBAL) ? 0 : $data['forum_id'],
@@ -1794,9 +1820,9 @@ function submit_post($mode, $subject, $username, $topic_type, &$poll, &$data, $u
 				'topic_type'				=> $topic_type,
 				'topic_time_limit'			=> ($topic_type == POST_STICKY || $topic_type == POST_ANNOUNCE) ? ($data['topic_time_limit'] * 86400) : 0,
 				'poll_title'				=> (isset($poll['poll_options'])) ? $poll['poll_title'] : '',
-				'poll_start'				=> (isset($poll['poll_options'])) ? (($poll['poll_start']) ? $poll['poll_start'] : $current_time) : 0,
+				'poll_start'				=> (isset($poll['poll_options'])) ? $poll_start : 0,
 				'poll_max_options'			=> (isset($poll['poll_options'])) ? $poll['poll_max_options'] : 1,
-				'poll_length'				=> (isset($poll['poll_options'])) ? ($poll['poll_length'] * 86400) : 0,
+				'poll_length'				=> (isset($poll['poll_options'])) ? $poll_length : 0,
 				'poll_vote_change'			=> (isset($poll['poll_vote_change'])) ? $poll['poll_vote_change'] : 0,
 
 				'topic_attachment'			=> (!empty($data['attachment_data'])) ? 1 : (isset($data['topic_attachment']) ? $data['topic_attachment'] : 0),
