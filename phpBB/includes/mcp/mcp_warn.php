@@ -420,12 +420,15 @@ class mcp_warn
 		$template->assign_vars(array(
 			'U_POST_ACTION'		=> $this->u_action,
 
-			'USERNAME'			=> $user_row['username'],
-			'USER_COLOR'		=> (!empty($user_row['user_colour'])) ? $user_row['user_colour'] : '',
 			'RANK_TITLE'		=> $rank_title,
 			'JOINED'			=> $user->format_date($user_row['user_regdate']),
 			'POSTS'				=> ($user_row['user_posts']) ? $user_row['user_posts'] : 0,
 			'WARNINGS'			=> ($user_row['user_warnings']) ? $user_row['user_warnings'] : 0,
+
+			'USERNAME_FULL'		=> get_username_string('full', $user_row['user_id'], $user_row['username'], $user_row['user_colour']),
+			'USERNAME_COLOUR'	=> get_username_string('colour', $user_row['user_id'], $user_row['username'], $user_row['user_colour']),
+			'USERNAME'			=> get_username_string('username', $user_row['user_id'], $user_row['username'], $user_row['user_colour']),
+			'U_PROFILE'			=> get_username_string('profile', $user_row['user_id'], $user_row['username'], $user_row['user_colour']),
 
 			'AVATAR_IMG'		=> $avatar_img,
 			'RANK_IMG'			=> $rank_img,
