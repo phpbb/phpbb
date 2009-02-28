@@ -728,54 +728,61 @@ class phpbb_db_tools
 			break;
 
 			case 'sqlite':
-				$sql = "SELECT sql
-					FROM sqlite_master
-					WHERE type = 'table'
-						AND name = '{$table_name}'
-					ORDER BY type DESC, name;";
-				$result = $this->db->sql_query($sql);
-
-				if (!$result)
+				if (version_compare(sqlite_libversion(), '3.0') == -1)
 				{
-					break;
-				}
+					$sql = "SELECT sql
+						FROM sqlite_master
+						WHERE type = 'table'
+							AND name = '{$table_name}'
+						ORDER BY type DESC, name;";
+					$result = $this->db->sql_query($sql);
 
-				$row = $this->db->sql_fetchrow($result);
-				$this->db->sql_freeresult($result);
-
-				$statements[] = 'begin';
-
-				// Create a backup table and populate it, destroy the existing one
-				$statements[] = preg_replace('#CREATE\s+TABLE\s+"?' . $table_name . '"?#i', 'CREATE TEMPORARY TABLE ' . $table_name . '_temp', $row['sql']);
-				$statements[] = 'INSERT INTO ' . $table_name . '_temp SELECT * FROM ' . $table_name;
-				$statements[] = 'DROP TABLE ' . $table_name;
-
-				preg_match('#\((.*)\)#s', $row['sql'], $matches);
-
-				$new_table_cols = trim($matches[1]);
-				$old_table_cols = preg_split('/,(?![\s\w]+\))/m', $new_table_cols);
-				$column_list = array();
-
-				foreach ($old_table_cols as $declaration)
-				{
-					$entities = preg_split('#\s+#', trim($declaration));
-					if ($entities[0] == 'PRIMARY')
+					if (!$result)
 					{
-						continue;
+						break;
 					}
-					$column_list[] = $entities[0];
+
+					$row = $this->db->sql_fetchrow($result);
+					$this->db->sql_freeresult($result);
+
+					$statements[] = 'begin';
+
+					// Create a backup table and populate it, destroy the existing one
+					$statements[] = preg_replace('#CREATE\s+TABLE\s+"?' . $table_name . '"?#i', 'CREATE TEMPORARY TABLE ' . $table_name . '_temp', $row['sql']);
+					$statements[] = 'INSERT INTO ' . $table_name . '_temp SELECT * FROM ' . $table_name;
+					$statements[] = 'DROP TABLE ' . $table_name;
+
+					preg_match('#\((.*)\)#s', $row['sql'], $matches);
+
+					$new_table_cols = trim($matches[1]);
+					$old_table_cols = preg_split('/,(?![\s\w]+\))/m', $new_table_cols);
+					$column_list = array();
+
+					foreach ($old_table_cols as $declaration)
+					{
+						$entities = preg_split('#\s+#', trim($declaration));
+						if ($entities[0] == 'PRIMARY')
+						{
+							continue;
+						}
+						$column_list[] = $entities[0];
+					}
+
+					$columns = implode(',', $column_list);
+
+					$new_table_cols = $column_name . ' ' . $column_data['column_type_sql'] . ',' . $new_table_cols;
+
+					// create a new table and fill it up. destroy the temp one
+					$statements[] = 'CREATE TABLE ' . $table_name . ' (' . $new_table_cols . ');';
+					$statements[] = 'INSERT INTO ' . $table_name . ' (' . $columns . ') SELECT ' . $columns . ' FROM ' . $table_name . '_temp;';
+					$statements[] = 'DROP TABLE ' . $table_name . '_temp';
+
+					$statements[] = 'commit';
 				}
-
-				$columns = implode(',', $column_list);
-
-				$new_table_cols = $column_name . ' ' . $column_data['column_type_sql'] . ',' . $new_table_cols;
-
-				// create a new table and fill it up. destroy the temp one
-				$statements[] = 'CREATE TABLE ' . $table_name . ' (' . $new_table_cols . ');';
-				$statements[] = 'INSERT INTO ' . $table_name . ' (' . $columns . ') SELECT ' . $columns . ' FROM ' . $table_name . '_temp;';
-				$statements[] = 'DROP TABLE ' . $table_name . '_temp';
-
-				$statements[] = 'commit';
+				else
+				{
+					$statements[] = 'ALTER TABLE ' . $table_name . ' ADD ' . $column_name . ' [' . $column_data['column_type_sql'] . ']';
+				}
 			break;
 		}
 
@@ -816,54 +823,61 @@ class phpbb_db_tools
 			break;
 
 			case 'sqlite':
-				$sql = "SELECT sql
-					FROM sqlite_master
-					WHERE type = 'table'
-						AND name = '{$table_name}'
-					ORDER BY type DESC, name;";
-				$result = $this->db->sql_query($sql);
-
-				if (!$result)
+				if (version_compare(sqlite_libversion(), '3.0') == -1)
 				{
-					break;
-				}
+					$sql = "SELECT sql
+						FROM sqlite_master
+						WHERE type = 'table'
+							AND name = '{$table_name}'
+						ORDER BY type DESC, name;";
+					$result = $this->db->sql_query($sql);
 
-				$row = $this->db->sql_fetchrow($result);
-				$this->db->sql_freeresult($result);
-
-				$statements[] = 'begin';
-
-				// Create a backup table and populate it, destroy the existing one
-				$statements[] = preg_replace('#CREATE\s+TABLE\s+"?' . $table_name . '"?#i', 'CREATE TEMPORARY TABLE ' . $table_name . '_temp', $row['sql']);
-				$statements[] = 'INSERT INTO ' . $table_name . '_temp SELECT * FROM ' . $table_name;
-				$statements[] = 'DROP TABLE ' . $table_name;
-
-				preg_match('#\((.*)\)#s', $row['sql'], $matches);
-
-				$new_table_cols = trim($matches[1]);
-				$old_table_cols = preg_split('/,(?![\s\w]+\))/m', $new_table_cols);
-				$column_list = array();
-
-				foreach ($old_table_cols as $declaration)
-				{
-					$entities = preg_split('#\s+#', trim($declaration));
-					if ($entities[0] == 'PRIMARY' || $entities[0] === $column_name)
+					if (!$result)
 					{
-						continue;
+						break;
 					}
-					$column_list[] = $entities[0];
+
+					$row = $this->db->sql_fetchrow($result);
+					$this->db->sql_freeresult($result);
+
+					$statements[] = 'begin';
+
+					// Create a backup table and populate it, destroy the existing one
+					$statements[] = preg_replace('#CREATE\s+TABLE\s+"?' . $table_name . '"?#i', 'CREATE TEMPORARY TABLE ' . $table_name . '_temp', $row['sql']);
+					$statements[] = 'INSERT INTO ' . $table_name . '_temp SELECT * FROM ' . $table_name;
+					$statements[] = 'DROP TABLE ' . $table_name;
+
+					preg_match('#\((.*)\)#s', $row['sql'], $matches);
+
+					$new_table_cols = trim($matches[1]);
+					$old_table_cols = preg_split('/,(?![\s\w]+\))/m', $new_table_cols);
+					$column_list = array();
+
+					foreach ($old_table_cols as $declaration)
+					{
+						$entities = preg_split('#\s+#', trim($declaration));
+						if ($entities[0] == 'PRIMARY' || $entities[0] === $column_name)
+						{
+							continue;
+						}
+						$column_list[] = $entities[0];
+					}
+
+					$columns = implode(',', $column_list);
+
+					$new_table_cols = $new_table_cols = preg_replace('/' . $column_name . '[^,]+(?:,|$)/m', '', $new_table_cols);
+
+					// create a new table and fill it up. destroy the temp one
+					$statements[] = 'CREATE TABLE ' . $table_name . ' (' . $new_table_cols . ');';
+					$statements[] = 'INSERT INTO ' . $table_name . ' (' . $columns . ') SELECT ' . $columns . ' FROM ' . $table_name . '_temp;';
+					$statements[] = 'DROP TABLE ' . $table_name . '_temp';
+
+					$statements[] = 'commit';
 				}
-
-				$columns = implode(',', $column_list);
-
-				$new_table_cols = $new_table_cols = preg_replace('/' . $column_name . '[^,]+(?:,|$)/m', '', $new_table_cols);
-
-				// create a new table and fill it up. destroy the temp one
-				$statements[] = 'CREATE TABLE ' . $table_name . ' (' . $new_table_cols . ');';
-				$statements[] = 'INSERT INTO ' . $table_name . ' (' . $columns . ') SELECT ' . $columns . ' FROM ' . $table_name . '_temp;';
-				$statements[] = 'DROP TABLE ' . $table_name . '_temp';
-
-				$statements[] = 'commit';
+				else
+				{
+					$statements[] = 'ALTER TABLE ' . $table_name . ' DROP COLUMN ' . $column_name;
+				}
 			break;
 		}
 
@@ -1159,6 +1173,7 @@ class phpbb_db_tools
 						FROM user_indexes
 						WHERE table_name = '" . $table_name . "'
 							AND generated = 'N'";
+					$col = 'index_name';
 				break;
 
 				case 'sqlite':
@@ -1429,6 +1444,38 @@ class phpbb_db_tools
 			if (!is_array($this->db->dbms_type_map[$orig_column_type . ':']))
 			{
 				$column_type = sprintf($this->db->dbms_type_map[$orig_column_type . ':'], $column_length);
+			}
+			else
+			{
+				if (isset($this->db->dbms_type_map[$orig_column_type . ':']['rule']))
+				{
+					switch ($this->db->dbms_type_map[$orig_column_type . ':']['rule'][0])
+					{
+						case 'div':
+							$column_length /= $this->db->dbms_type_map[$orig_column_type . ':']['rule'][1];
+							$column_length = ceil($column_length);
+							$column_type = sprintf($this->db->dbms_type_map[$orig_column_type . ':'][0], $column_length);
+						break;
+					}
+				}
+
+				if (isset($this->db->dbms_type_map[$orig_column_type . ':']['limit']))
+				{
+					switch ($this->db->dbms_type_map[$orig_column_type . ':']['limit'][0])
+					{
+						case 'mult':
+							$column_length *= $this->db->dbms_type_map[$orig_column_type . ':']['limit'][1];
+							if ($column_length > $this->db->dbms_type_map[$orig_column_type . ':']['limit'][2])
+							{
+								$column_type = $this->db->dbms_type_map[$orig_column_type . ':']['limit'][3];
+							}
+							else
+							{
+								$column_type = sprintf($this->db->dbms_type_map[$orig_column_type . ':'][0], $column_length);
+							}
+						break;
+					}
+				}
 			}
 
 			$orig_column_type .= ':';
