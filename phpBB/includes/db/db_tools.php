@@ -533,7 +533,7 @@ class phpbb_db_tools
 	*			{KEY/INDEX NAME}	=> array({COLUMN NAMES}),
 	*		)
 	*
-	* For more information have a look at /develop/create_schema_files.php (only available through CVS)
+	* For more information have a look at /develop/create_schema_files.php (only available through SVN)
 	*/
 	function perform_schema_changes($schema_changes)
 	{
@@ -551,7 +551,15 @@ class phpbb_db_tools
 			{
 				foreach ($columns as $column_name => $column_data)
 				{
-					$result = $this->sql_column_change($table, $column_name, $column_data);
+					// If the column exists we change it, else we add it ;)
+					if ($this->sql_column_exists($table, $column_name))
+					{
+						$result = $this->sql_column_change($table, $column_name, $column_data);
+					}
+					else
+					{
+						$result = $this->sql_column_add($table, $column_name, $column_data);
+					}
 
 					if ($this->return_statements)
 					{
@@ -568,15 +576,19 @@ class phpbb_db_tools
 			{
 				foreach ($columns as $column_name => $column_data)
 				{
-					// Only add the column if it does not exist yet
-					if (!$this->sql_column_exists($table, $column_name))
+					// Only add the column if it does not exist yet, else change it (to be consistent)
+					if ($this->sql_column_exists($table, $column_name))
+					{
+						$result = $this->sql_column_change($table, $column_name, $column_data);
+					}
+					else
 					{
 						$result = $this->sql_column_add($table, $column_name, $column_data);
+					}
 
-						if ($this->return_statements)
-						{
-							$statements = array_merge($statements, $result);
-						}
+					if ($this->return_statements)
+					{
+						$statements = array_merge($statements, $result);
 					}
 				}
 			}
@@ -606,11 +618,15 @@ class phpbb_db_tools
 			{
 				foreach ($columns as $column)
 				{
-					$result = $this->sql_column_remove($table, $column);
-
-					if ($this->return_statements)
+					// Only remove the column if it exists...
+					if ($this->sql_column_exists($table, $column))
 					{
-						$statements = array_merge($statements, $result);
+						$result = $this->sql_column_remove($table, $column);
+
+						if ($this->return_statements)
+						{
+							$statements = array_merge($statements, $result);
+						}
 					}
 				}
 			}
