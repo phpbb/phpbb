@@ -311,9 +311,6 @@ class phpbb_db_tools
 				$this->sql_layer = $this->db->sql_layer;
 			break;
 		}
-
-		// Because we only need the dbms type map of one database type, we "adjust" it now. ;)
-		$this->dbms_type_map = $this->dbms_type_map[$this->sql_layer];
 	}
 
 	/**
@@ -877,55 +874,37 @@ class phpbb_db_tools
 		if (strpos($column_data[0], ':') !== false)
 		{
 			list($orig_column_type, $column_length) = explode(':', $column_data[0]);
-
-			if (!is_array($this->dbms_type_map[$orig_column_type . ':']))
+			if (!is_array($this->dbms_type_map[$this->sql_layer][$orig_column_type . ':']))
 			{
-				$column_type = sprintf($this->db->dbms_type_map[$orig_column_type . ':'], $column_length);
-			}
-
-			$orig_column_type .= ':';
-		}
-		else
-		{
-			$orig_column_type = $column_data[0];
-			$column_type = $this->db->dbms_type_map[$column_data[0]];
-		}
-
-		// Get type
-		if (strpos($column_data[0], ':') !== false)
-		{
-			list($orig_column_type, $column_length) = explode(':', $column_data[0]);
-			if (!is_array($this->dbms_type_map[$orig_column_type . ':']))
-			{
-				$column_type = sprintf($this->dbms_type_map[$orig_column_type . ':'], $column_length);
+				$column_type = sprintf($this->dbms_type_map[$this->sql_layer][$orig_column_type . ':'], $column_length);
 			}
 			else
 			{
-				if (isset($this->dbms_type_map[$orig_column_type . ':']['rule']))
+				if (isset($this->dbms_type_map[$this->sql_layer][$orig_column_type . ':']['rule']))
 				{
-					switch ($this->dbms_type_map[$orig_column_type . ':']['rule'][0])
+					switch ($this->dbms_type_map[$this->sql_layer][$orig_column_type . ':']['rule'][0])
 					{
 						case 'div':
-							$column_length /= $this->dbms_type_map[$orig_column_type . ':']['rule'][1];
+							$column_length /= $this->dbms_type_map[$this->sql_layer][$orig_column_type . ':']['rule'][1];
 							$column_length = ceil($column_length);
-							$column_type = sprintf($this->dbms_type_map[$orig_column_type . ':'][0], $column_length);
+							$column_type = sprintf($this->dbms_type_map[$this->sql_layer][$orig_column_type . ':'][0], $column_length);
 						break;
 					}
 				}
 
-				if (isset($this->dbms_type_map[$orig_column_type . ':']['limit']))
+				if (isset($this->dbms_type_map[$this->sql_layer][$orig_column_type . ':']['limit']))
 				{
-					switch ($this->dbms_type_map[$orig_column_type . ':']['limit'][0])
+					switch ($this->dbms_type_map[$this->sql_layer][$orig_column_type . ':']['limit'][0])
 					{
 						case 'mult':
-							$column_length *= $this->dbms_type_map[$orig_column_type . ':']['limit'][1];
-							if ($column_length > $this->dbms_type_map[$orig_column_type . ':']['limit'][2])
+							$column_length *= $this->dbms_type_map[$this->sql_layer][$orig_column_type . ':']['limit'][1];
+							if ($column_length > $this->dbms_type_map[$this->sql_layer][$orig_column_type . ':']['limit'][2])
 							{
-								$column_type = $this->dbms_type_map[$orig_column_type . ':']['limit'][3];
+								$column_type = $this->dbms_type_map[$this->sql_layer][$orig_column_type . ':']['limit'][3];
 							}
 							else
 							{
-								$column_type = sprintf($this->dbms_type_map[$orig_column_type . ':'][0], $column_length);
+								$column_type = sprintf($this->dbms_type_map[$this->sql_layer][$orig_column_type . ':'][0], $column_length);
 							}
 						break;
 					}
@@ -936,7 +915,7 @@ class phpbb_db_tools
 		else
 		{
 			$orig_column_type = $column_data[0];
-			$column_type = $this->dbms_type_map[$column_data[0]];
+			$column_type = $this->dbms_type_map[$this->sql_layer][$column_data[0]];
 		}
 
 		// Adjust default value if db-dependant specified

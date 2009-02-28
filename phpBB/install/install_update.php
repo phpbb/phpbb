@@ -183,6 +183,12 @@ class install_update extends module
 			);
 		}
 
+		// Fill DB version
+		if (empty($config['dbms_version']))
+		{
+			set_config('dbms_version', $db->sql_server_info(true));
+		}
+
 		if ($this->test_update === false)
 		{
 			// Got the updater template itself updated? If so, we are able to directly use it - but only if all three files are present
