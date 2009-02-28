@@ -296,7 +296,15 @@ class phpbb_db_tools
 			{
 				foreach ($columns as $column_name => $column_data)
 				{
-					$result = $this->sql_column_change($table, $column_name, $column_data);
+					// If the column exists we change it, else we add it ;)
+					if ($this->sql_column_exists($table, $column_name))
+					{
+						$result = $this->sql_column_change($table, $column_name, $column_data);
+					}
+					else
+					{
+						$result = $this->sql_column_add($table, $column_name, $column_data);
+					}
 
 					if ($this->return_statements)
 					{
@@ -313,15 +321,19 @@ class phpbb_db_tools
 			{
 				foreach ($columns as $column_name => $column_data)
 				{
-					// Only add the column if it does not exist yet
-					if (!$this->sql_column_exists($table, $column_name))
+					// Only add the column if it does not exist yet, else change it (to be consistent)
+					if ($this->sql_column_exists($table, $column_name))
+					{
+						$result = $this->sql_column_change($table, $column_name, $column_data);
+					}
+					else
 					{
 						$result = $this->sql_column_add($table, $column_name, $column_data);
+					}
 
-						if ($this->return_statements)
-						{
-							$statements = array_merge($statements, $result);
-						}
+					if ($this->return_statements)
+					{
+						$statements = array_merge($statements, $result);
 					}
 				}
 			}
@@ -351,11 +363,15 @@ class phpbb_db_tools
 			{
 				foreach ($columns as $column)
 				{
-					$result = $this->sql_column_remove($table, $column);
-
-					if ($this->return_statements)
+					// Only remove the column if it exists...
+					if ($this->sql_column_exists($table, $column))
 					{
-						$statements = array_merge($statements, $result);
+						$result = $this->sql_column_remove($table, $column);
+
+						if ($this->return_statements)
+						{
+							$statements = array_merge($statements, $result);
+						}
 					}
 				}
 			}
@@ -399,7 +415,7 @@ class phpbb_db_tools
 			{
 				foreach ($index_array as $index_name => $column)
 				{
-					$result = $this->sql_create_unique_index($table, $index_name, $column);
+					$result = $this->sql_create_index($table, $index_name, $column);
 
 					if ($this->return_statements)
 					{
