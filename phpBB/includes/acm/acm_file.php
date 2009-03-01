@@ -106,10 +106,13 @@ class acm
 			// Now, this occurred how often? ... phew, just tell the user then...
 			if (!@is_writable($this->cache_dir))
 			{
-				trigger_error($this->cache_dir . ' is NOT writable.', E_USER_ERROR);
+				// We need to use die() here, because else we may encounter an infinite loop (the message handler calls $cache->unload())
+				die($this->cache_dir . ' is NOT writable.');
+				exit;
 			}
 
-			trigger_error('Not able to open ' . $this->cache_dir . 'data_global.' . $phpEx, E_USER_ERROR);
+			die('Not able to open ' . $this->cache_dir . 'data_global.' . $phpEx);
+			exit;
 		}
 
 		$this->is_modified = false;
