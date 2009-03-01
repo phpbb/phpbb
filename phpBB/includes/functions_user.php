@@ -1436,7 +1436,7 @@ function validate_username($username, $allowed_username = false)
 			}
 			else if ($mbstring)
 			{
-				$regex = '[-\]_+ [[:upper:][:lower:][:digit:]]+';
+				$regex = '[-\]_+ \[[:upper:][:lower:][:digit:]]+';
 			}
 			else
 			{
