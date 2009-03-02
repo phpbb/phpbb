@@ -96,7 +96,8 @@ switch ($mode)
 				AND t.topic_id = p.topic_id
 				AND u.user_id = p.poster_id
 				AND (f.forum_id = t.forum_id
-					OR f.forum_id = $forum_id)";
+					OR f.forum_id = $forum_id)" .
+				(($auth->acl_get('m_approve', $forum_id)) ? '' : 'AND p.post_approved = 1');
 	break;
 
 	case 'smilies':
