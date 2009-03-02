@@ -912,6 +912,11 @@ function change_database_data(&$no_updates, $version)
 			}
 			$db->sql_freeresult($result);
 
+			$sql = 'UPDATE ' . BOTS_TABLE . "
+				SET bot_agent = 'ichiro/'
+				WHERE bot_agent = 'ichiro/2'";
+			_sql($sql, $errored, $error_ary);
+
 			$no_updates = false;
 
 		break;
