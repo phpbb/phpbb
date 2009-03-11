@@ -223,9 +223,13 @@ class template_compile
 		// There will be a number of occasions where we switch into and out of
 		// PHP mode instantaneously. Rather than "burden" the parser with this
 		// we'll strip out such occurences, minimising such switching
-		$template_php = str_replace(' ?><?php ', ' ', $template_php);
+		if ($no_echo)
+		{
+			return "\$$echo_var .= '" . str_replace(' ?><?php ', ' ', $template_php) . "'";
+		}
 
-		return (!$no_echo) ? $template_php : "\$$echo_var .= '" . $template_php . "'";
+		$template_php = "<?php if (!defined('IN_PHPBB')) exit; ?>" . $template_php;
+		return str_replace(' ?><?php ', ' ', $template_php);
 	}
 
 	/**

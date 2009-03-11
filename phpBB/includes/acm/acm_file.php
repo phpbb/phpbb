@@ -89,7 +89,7 @@ class acm
 		if ($fp = @fopen($this->cache_dir . 'data_global.' . $phpEx, 'wb'))
 		{
 			@flock($fp, LOCK_EX);
-			fwrite($fp, "<?php\n\$this->vars = " . var_export($this->vars, true) . ";\n\n\$this->var_expires = " . var_export($this->var_expires, true) . "\n?>");
+			fwrite($fp, "<?php\nif (!defined('IN_PHPBB')) exit;\n\$this->vars = " . var_export($this->vars, true) . ";\n\n\$this->var_expires = " . var_export($this->var_expires, true) . "\n?>");
 			@flock($fp, LOCK_UN);
 			fclose($fp);
 
@@ -202,7 +202,7 @@ class acm
 			if ($fp = @fopen($this->cache_dir . "data{$var_name}.$phpEx", 'wb'))
 			{
 				@flock($fp, LOCK_EX);
-				fwrite($fp, "<?php\n\$expired = (time() > " . (time() + $ttl) . ") ? true : false;\nif (\$expired) { return; }\n\n\$data =  " . (sizeof($var) ? "unserialize(" . var_export(serialize($var), true) . ");" : 'array();') . "\n\n?>");
+				fwrite($fp, "<?php\nif (!defined('IN_PHPBB')) exit;\n\$expired = (time() > " . (time() + $ttl) . ") ? true : false;\nif (\$expired) { return; }\n\n\$data =  " . (sizeof($var) ? "unserialize(" . var_export(serialize($var), true) . ");" : 'array();') . "\n\n?>");
 				@flock($fp, LOCK_UN);
 				fclose($fp);
 
@@ -424,7 +424,7 @@ class acm
 			}
 			$db->sql_freeresult($query_result);
 
-			$file = "<?php\n\n/* " . str_replace('*/', '*\/', $query) . " */\n";
+			$file = "<?php\nif (!defined('IN_PHPBB')) exit;\n\n/* " . str_replace('*/', '*\/', $query) . " */\n";
 			$file .= "\n\$expired = (time() > " . (time() + $ttl) . ") ? true : false;\nif (\$expired) { return; }\n";
 
 			fwrite($fp, $file . "\n\$this->sql_rowset[\$query_id] = " . (sizeof($this->sql_rowset[$query_id]) ? "unserialize(" . var_export(serialize($this->sql_rowset[$query_id]), true) . ");" : 'array();') . "\n\n?>");
