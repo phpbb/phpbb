@@ -28,6 +28,7 @@ class messenger
 	var $mail_priority = MAIL_NORMAL_PRIORITY;
 	var $use_queue = true;
 	var $tpl_msg = array();
+	var $eol = "\n";
 
 	/**
 	* Constructor
@@ -38,6 +39,9 @@ class messenger
 
 		$this->use_queue = (!$config['email_package_size']) ? false : $use_queue;
 		$this->subject = '';
+
+		// Determine EOL character (\n for UNIX, \r\n for Windows and \r for Mac)
+		$this->eol = (!defined('PHP_EOL')) ? (($eol = strtolower(substr(PHP_OS, 0, 3))) == 'win') ? "\r\n" : (($eol == 'mac') ? "\r" : "\n") : PHP_EOL;
 	}
 
 	/**
@@ -309,6 +313,7 @@ class messenger
 	{
 		global $config;
 
+		// We could use keys here, but we won't do this for 3.0.x to retain backwards compatibility
 		$headers = array();
 
 		$headers[] = 'From: ' . $this->from;
@@ -338,15 +343,12 @@ class messenger
 		$headers[] = 'X-MimeOLE: phpBB3';
 		$headers[] = 'X-phpBB-Origin: phpbb://' . str_replace(array('http://', 'https://'), array('', ''), generate_board_url());
 
-		// We use \n here instead of \r\n because our smtp mailer is adjusting it to \r\n automatically, whereby the php mail function only works
-		// if using \n.
-
 		if (sizeof($this->extra_headers))
 		{
-			$headers[] = implode("\n", $this->extra_headers);
+			$headers = array_merge($headers, $this->extra_headers);
 		}
 
-		return implode("\n", $headers);
+		return $headers;
 	}
 
 	/**
@@ -412,6 +414,10 @@ class messenger
 			}
 			else
 			{
+				// We use the EOL character for the OS here because the PHP mail function does not correctly transform line endings. On Windows SMTP is used (SMTP is \r\n), on UNIX a command is used...
+				// Reference: http://bugs.php.net/bug.php?id=15841
+				$headers = implode($this->eol, $headers);
+
 				ob_start();
 				$result = $config['email_function_name']($mail_to, mail_encode($this->subject), wordwrap(utf8_wordwrap($this->msg), 997, "\n", true), $headers);
 				$err_msg = ob_get_clean();
@@ -652,7 +658,7 @@ class queue
 						else
 						{
 							ob_start();
-							$result = $config['email_function_name']($to, mail_encode($subject), wordwrap(utf8_wordwrap($msg), 997, "\n", true), $headers);
+							$result = $config['email_function_name']($to, mail_encode($subject), wordwrap(utf8_wordwrap($msg), 997, "\n", true), implode($this->eol, $headers));
 							$err_msg = ob_get_clean();
 						}
 
@@ -757,40 +763,37 @@ class queue
 /**
 * Replacement or substitute for PHP's mail command
 */
-function smtpmail($addresses, $subject, $message, &$err_msg, $headers = '')
+function smtpmail($addresses, $subject, $message, &$err_msg, $headers = false)
 {
 	global $config, $user;
 
 	// Fix any bare linefeeds in the message to make it RFC821 Compliant.
 	$message = preg_replace("#(?<!\r)\n#si", "\r\n", $message);
 
-	if ($headers != '')
+	if ($headers !== false)
 	{
-		if (is_array($headers))
+		if (!is_array($headers))
 		{
-			$headers = (sizeof($headers) > 1) ? join("\n", $headers) : $headers[0];
+			// Make sure there are no bare linefeeds in the headers
+			$headers = preg_replace('#(?<!\r)\n#si', "\n", $headers);
+			$headers = explode("\n", $headers);
 		}
-		$headers = chop($headers);
-
-		// Make sure there are no bare linefeeds in the headers
-		$headers = preg_replace('#(?<!\r)\n#si', "\r\n", $headers);
 
 		// Ok this is rather confusing all things considered,
 		// but we have to grab bcc and cc headers and treat them differently
 		// Something we really didn't take into consideration originally
-		$header_array = explode("\r\n", $headers);
-		$headers = '';
+		$headers_used = array();
 
-		foreach ($header_array as $header)
+		foreach ($headers as $header)
 		{
 			if (strpos(strtolower($header), 'cc:') === 0 || strpos(strtolower($header), 'bcc:') === 0)
 			{
-				$header = '';
+				continue;
 			}
-			$headers .= ($header != '') ? $header . "\r\n" : '';
+			$headers_used[] = trim($header);
 		}
 
-		$headers = chop($headers);
+		$headers = chop(implode("\r\n", $headers_used));
 	}
 
 	if (trim($subject) == '')
@@ -946,7 +949,10 @@ function smtpmail($addresses, $subject, $message, &$err_msg, $headers = '')
 	}
 
 	// Now any custom headers....
-	$smtp->server_send("$headers\r\n");
+	if ($headers !== false)
+	{
+		$smtp->server_send("$headers\r\n");
+	}
 
 	// Ok now we are ready for the message...
 	$smtp->server_send($message);
