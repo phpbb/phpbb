@@ -228,7 +228,6 @@ class template_compile
 			return "\$$echo_var .= '" . str_replace(' ?><?php ', ' ', $template_php) . "'";
 		}
 
-		$template_php = "<?php if (!defined('IN_PHPBB')) exit; ?>" . $template_php;
 		return str_replace(' ?><?php ', ' ', $template_php);
 	}
 
@@ -751,6 +750,8 @@ class template_compile
 		global $phpEx;
 
 		$filename = $this->template->cachepath . str_replace('/', '.', $this->template->filename[$handle]) . '.' . $phpEx;
+
+		$data = "<?php if (!defined('IN_PHPBB')) exit;" . ((strpos($data, '<?php') === 0) ? substr($data, 5) : ' ?>' . $data);
 
 		if ($fp = @fopen($filename, 'wb'))
 		{
