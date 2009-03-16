@@ -1105,13 +1105,6 @@ class parse_message extends bbcode_firstpass
 			}
 		}
 
-		// Check for "empty" message
-		if ($mode !== 'sig' && utf8_clean_string($this->message) === '')
-		{
-			$this->warn_msg[] = $user->lang['TOO_FEW_CHARS'];
-			return (!$update_this_message) ? $return_message : $this->warn_msg;
-		}
-
 		// Prepare BBcode (just prepares some tags for better parsing)
 		if ($allow_bbcode && strpos($this->message, '[') !== false)
 		{
@@ -1152,6 +1145,14 @@ class parse_message extends bbcode_firstpass
 			{
 				$num_urls += preg_match_all('#\<!-- ([lmwe]) --\>.*?\<!-- \1 --\>#', $this->message, $matches);
 			}
+		}
+
+		// Check for "empty" message. We do not check here for maximum length, because bbcode, smilies, etc. can add to the length.
+		// The maximum length check happened before any parsings.
+		if ($mode !== 'sig' && utf8_clean_string($this->message) === '')
+		{
+			$this->warn_msg[] = $user->lang['TOO_FEW_CHARS'];
+			return (!$update_this_message) ? $return_message : $this->warn_msg;
 		}
 
 		// Check number of links
