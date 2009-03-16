@@ -480,6 +480,13 @@ class session
 
 				foreach (explode(',', $row['bot_ip']) as $bot_ip)
 				{
+					$bot_ip = trim($bot_ip);
+
+					if (!$bot_ip)
+					{
+						continue;
+					}
+
 					if (strpos($this->ip, $bot_ip) === 0)
 					{
 						$bot = (int) $row['user_id'];
