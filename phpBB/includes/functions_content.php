@@ -950,6 +950,8 @@ function parse_attachments($forum_id, &$message, &$attachments, &$update_count, 
 						'S_THUMBNAIL'		=> true,
 						'THUMB_IMAGE'		=> $thumbnail_link,
 					);
+
+					$update_count[] = $attachment['attach_id'];
 				break;
 
 				// Windows Media Streams

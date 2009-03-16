@@ -16,7 +16,7 @@ $phpbb_root_path = (defined('PHPBB_ROOT_PATH')) ? PHPBB_ROOT_PATH : './../';
 $phpEx = substr(strrchr(__FILE__, '.'), 1);
 
 
-// Thank you sun. 
+// Thank you sun.
 if (isset($_SERVER['CONTENT_TYPE']))
 {
 	if ($_SERVER['CONTENT_TYPE'] === 'application/x-java-archive')
@@ -60,7 +60,7 @@ if (isset($_GET['avatar']))
 	$filename = $_GET['avatar'];
 	$avatar_group = false;
 	$exit = false;
-	
+
 	if ($filename[0] === 'g')
 	{
 		$avatar_group = true;
@@ -87,8 +87,8 @@ if (isset($_GET['avatar']))
 		header("HTTP/1.0 403 Forbidden");
 		$exit = true;
 	}
-	
-	
+
+
 	if (!$exit)
 	{
 		if (!$filename)
@@ -266,7 +266,7 @@ if ($thumbnail)
 {
 	$attachment['physical_filename'] = 'thumb_' . $attachment['physical_filename'];
 }
-else if (($display_cat == ATTACHMENT_CATEGORY_NONE || $display_cat == ATTACHMENT_CATEGORY_IMAGE) && !$attachment['is_orphan'])
+else if (($display_cat == ATTACHMENT_CATEGORY_NONE/* || $display_cat == ATTACHMENT_CATEGORY_IMAGE*/) && !$attachment['is_orphan'])
 {
 	// Update download count
 	$sql = 'UPDATE ' . ATTACHMENTS_TABLE . '
