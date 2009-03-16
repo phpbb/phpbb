@@ -131,7 +131,7 @@ function adm_page_header($page_title)
 		'ICON_MOVE_UP'				=> '<img src="' . $phpbb_admin_path . 'images/icon_up.gif" alt="' . $user->lang['MOVE_UP'] . '" title="' . $user->lang['MOVE_UP'] . '" />',
 		'ICON_MOVE_UP_DISABLED'		=> '<img src="' . $phpbb_admin_path . 'images/icon_up_disabled.gif" alt="' . $user->lang['MOVE_UP'] . '" title="' . $user->lang['MOVE_UP'] . '" />',
 		'ICON_MOVE_DOWN'			=> '<img src="' . $phpbb_admin_path . 'images/icon_down.gif" alt="' . $user->lang['MOVE_DOWN'] . '" title="' . $user->lang['MOVE_DOWN'] . '" />',
-		'ICON_MOVE_DOWN_DISABLED'	=> '<img src="' . $phpbb_admin_path . 'images/icon_down_disabled.gif" alt="' . $user->lang['MOVE_DOWN'] . '" title="' . $user->lang['MOVE_DOWN'] . '" />',		
+		'ICON_MOVE_DOWN_DISABLED'	=> '<img src="' . $phpbb_admin_path . 'images/icon_down_disabled.gif" alt="' . $user->lang['MOVE_DOWN'] . '" title="' . $user->lang['MOVE_DOWN'] . '" />',
 		'ICON_EDIT'					=> '<img src="' . $phpbb_admin_path . 'images/icon_edit.gif" alt="' . $user->lang['EDIT'] . '" title="' . $user->lang['EDIT'] . '" />',
 		'ICON_EDIT_DISABLED'		=> '<img src="' . $phpbb_admin_path . 'images/icon_edit_disabled.gif" alt="' . $user->lang['EDIT'] . '" title="' . $user->lang['EDIT'] . '" />',
 		'ICON_DELETE'				=> '<img src="' . $phpbb_admin_path . 'images/icon_delete.gif" alt="' . $user->lang['DELETE'] . '" title="' . $user->lang['DELETE'] . '" />',
@@ -301,8 +301,9 @@ function build_cfg_template($tpl_type, $key, &$new, $config_key, $vars)
 		break;
 
 		case 'select':
+		case 'select_multiple':
 		case 'custom':
-			
+
 			$return = '';
 
 			if (isset($vars['method']))
@@ -339,12 +340,21 @@ function build_cfg_template($tpl_type, $key, &$new, $config_key, $vars)
 			}
 			else
 			{
+				if ($tpl_type[0] == 'select_multiple')
+				{
+					$new[$config_key] = @unserialize(trim($new[$config_key]));
+				}
+
 				$args = array($new[$config_key], $key);
 			}
-			
+
 			$return = call_user_func_array($call, $args);
 
-			if ($tpl_type[0] == 'select')
+			if ($tpl_type[0] == 'select_multiple')
+			{
+				$tpl = '<select id="' . $key . '" name="' . $name . '[]" multiple="multiple">' . $return . '</select>';
+			}
+			else if ($tpl_type[0] == 'select')
 			{
 				$tpl = '<select id="' . $key . '" name="' . $name . '">' . $return . '</select>';
 			}
@@ -377,19 +387,19 @@ function validate_config_vars($config_vars, &$cfg_array, &$error)
 	$type	= 0;
 	$min	= 1;
 	$max	= 2;
-	
+
 	foreach ($config_vars as $config_name => $config_definition)
 	{
 		if (!isset($cfg_array[$config_name]) || strpos($config_name, 'legend') !== false)
 		{
 			continue;
 		}
-	
+
 		if (!isset($config_definition['validate']))
 		{
 			continue;
 		}
-		
+
 		$validator = explode(':', $config_definition['validate']);
 
 		// Validate a bit. ;) (0 = type, 1 = min, 2= max)
@@ -548,14 +558,14 @@ function validate_config_vars($config_vars, &$cfg_array, &$error)
 function validate_range($value_ary, &$error)
 {
 	global $user;
-	
+
 	$column_types = array(
 		'BOOL'	=> array('php_type' => 'int', 		'min' => 0, 				'max' => 1),
 		'USINT'	=> array('php_type' => 'int',		'min' => 0, 				'max' => 65535),
 		'UINT'	=> array('php_type' => 'int', 		'min' => 0, 				'max' => (int) 0x7fffffff),
 		'INT'	=> array('php_type' => 'int', 		'min' => (int) 0x80000000, 	'max' => (int) 0x7fffffff),
 		'TINT'	=> array('php_type' => 'int',		'min' => -128,				'max' => 127),
-		
+
 		'VCHAR'	=> array('php_type' => 'string', 	'min' => 0, 				'max' => 255),
 	);
 	foreach ($value_ary as $value)
@@ -582,7 +592,7 @@ function validate_range($value_ary, &$error)
 				}
 			break;
 
-			case 'int': 
+			case 'int':
 				$min = (isset($column[1])) ? max($column[1],$type['min']) : $type['min'];
 				$max = (isset($column[2])) ? min($column[2],$type['max']) : $type['max'];
 				if ($value['value'] < $min)
