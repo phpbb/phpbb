@@ -814,11 +814,14 @@ function delete_attachments($mode, $ids, $resync = true)
 		return false;
 	}
 
+	$sql_where = '';
+
 	switch ($mode)
 	{
 		case 'post':
 		case 'message':
 			$sql_id = 'post_msg_id';
+			$sql_where = ' AND in_message = ' . ($mode == 'message' ? 1 : 0);
 		break;
 
 		case 'topic':
@@ -842,6 +845,9 @@ function delete_attachments($mode, $ids, $resync = true)
 	$sql = 'SELECT post_msg_id, topic_id, in_message, physical_filename, thumbnail, filesize, is_orphan
 			FROM ' . ATTACHMENTS_TABLE . '
 			WHERE ' . $db->sql_in_set($sql_id, $ids);
+
+	$sql .= $sql_where;
+
 	$result = $db->sql_query($sql);
 
 	while ($row = $db->sql_fetchrow($result))
@@ -867,6 +873,9 @@ function delete_attachments($mode, $ids, $resync = true)
 	// Delete attachments
 	$sql = 'DELETE FROM ' . ATTACHMENTS_TABLE . '
 		WHERE ' . $db->sql_in_set($sql_id, $ids);
+
+	$sql .= $sql_where;
+
 	$db->sql_query($sql);
 	$num_deleted = $db->sql_affectedrows();
 
