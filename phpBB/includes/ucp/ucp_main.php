@@ -633,10 +633,13 @@ class ucp_main
 	*/
 	function assign_topiclist($mode = 'subscribed', $forbidden_forum_ary = array())
 	{
-		global $user, $db, $template, $config, $auth, $phpbb_root_path, $phpEx;
+		global $user, $db, $template, $config, $cache, $auth, $phpbb_root_path, $phpEx;
 
 		$table = ($mode == 'subscribed') ? TOPICS_WATCH_TABLE : BOOKMARKS_TABLE;
 		$start = request_var('start', 0);
+
+		// Grab icons
+		$icons = $cache->obtain_icons();
 
 		$sql_array = array(
 			'SELECT'	=> 'COUNT(t.topic_id) as topics_count',
@@ -809,6 +812,7 @@ class ucp_main
 
 				'TOPIC_FOLDER_IMG'		=> $user->img($folder_img, $folder_alt),
 				'TOPIC_FOLDER_IMG_SRC'	=> $user->img($folder_img, $folder_alt, false, '', 'src'),
+				'TOPIC_FOLDER_IMG_ALT'	=> $user->lang[$folder_alt],
 				'TOPIC_ICON_IMG'		=> (!empty($icons[$row['icon_id']])) ? $icons[$row['icon_id']]['img'] : '',
 				'TOPIC_ICON_IMG_WIDTH'	=> (!empty($icons[$row['icon_id']])) ? $icons[$row['icon_id']]['width'] : '',
 				'TOPIC_ICON_IMG_HEIGHT'	=> (!empty($icons[$row['icon_id']])) ? $icons[$row['icon_id']]['height'] : '',
