@@ -1461,7 +1461,7 @@ function validate_username($username, $allowed_username = false)
 	}
 	else if ($mbstring)
 	{
-		mb_ereg_search_init('^' . $username . '$', $regex);
+		mb_ereg_search_init($username, '^' . $regex . '$');
 		if (!mb_ereg_search())
 		{
 			return 'INVALID_CHARS';
