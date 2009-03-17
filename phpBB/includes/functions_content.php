@@ -998,6 +998,7 @@ function parse_attachments($forum_id, &$message, &$attachments, &$update_count, 
 						'S_FLASH_FILE'	=> true,
 						'WIDTH'			=> $width,
 						'HEIGHT'		=> $height,
+						'U_VIEW_LINK'	=> $download_link . '&amp;view=1',
 					);
 
 					// Viewed/Heared File ... update the download count

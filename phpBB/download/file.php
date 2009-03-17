@@ -465,24 +465,34 @@ function send_file_to_browser($attachment, $upload_dir, $category)
 	// Send out the Headers. Do not set Content-Disposition to inline please, it is a security measure for users using the Internet Explorer.
 	$is_ie8 = (strpos(strtolower($user->browser), 'msie 8.0') !== false);
 	header('Content-Type: ' . $attachment['mimetype']);
+
 	if ($is_ie8)
 	{
 		header('X-Content-Type-Options: nosniff');
 	}
-	if (empty($user->browser) || (!$is_ie8 && (strpos(strtolower($user->browser), 'msie') !== false)))
+
+	if ($category == ATTACHMENT_CATEGORY_FLASH && request_var('view', 0) === 1)
 	{
-		header('Content-Disposition: attachment; ' . header_filename(htmlspecialchars_decode($attachment['real_filename'])));
-		if (empty($user->browser) || (strpos(strtolower($user->browser), 'msie 6.0') !== false))
-		{
-			header('expires: -1');
-		}
+		// We use content-disposition: inline for flash files and view=1 to let it correctly play with flash player 10 - any other disposition will fail to play inline
+		header('Content-Disposition: inline');
 	}
 	else
 	{
-		header('Content-Disposition: ' . ((strpos($attachment['mimetype'], 'image') === 0) ? 'inline' : 'attachment') . '; ' . header_filename(htmlspecialchars_decode($attachment['real_filename'])));
-		if ($is_ie8 && (strpos($attachment['mimetype'], 'image') !== 0))
+		if (empty($user->browser) || (!$is_ie8 && (strpos(strtolower($user->browser), 'msie') !== false)))
 		{
-			header('X-Download-Options: noopen');
+			header('Content-Disposition: attachment; ' . header_filename(htmlspecialchars_decode($attachment['real_filename'])));
+			if (empty($user->browser) || (strpos(strtolower($user->browser), 'msie 6.0') !== false))
+			{
+				header('expires: -1');
+			}
+		}
+		else
+		{
+			header('Content-Disposition: ' . ((strpos($attachment['mimetype'], 'image') === 0) ? 'inline' : 'attachment') . '; ' . header_filename(htmlspecialchars_decode($attachment['real_filename'])));
+			if ($is_ie8 && (strpos($attachment['mimetype'], 'image') !== 0))
+			{
+				header('X-Download-Options: noopen');
+			}
 		}
 	}
 
