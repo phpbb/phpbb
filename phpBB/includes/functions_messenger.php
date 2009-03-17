@@ -1073,7 +1073,7 @@ class smtp_class
 		global $user;
 
 		$err_msg = '';
-		$local_host = (function_exists('php_uname')) ? php_uname('n') : $user->host;
+		$local_host = (function_exists('php_uname')) ? gethostbyaddr(gethostbyname(php_uname('n'))) : $user->host;
 
 		// If we are authenticating through pop-before-smtp, we
 		// have to login ones before we get authenticated
