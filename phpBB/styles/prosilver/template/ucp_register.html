@@ -87,7 +87,8 @@
 		<dt><label for="confirm_code">{L_CONFIRM_CODE}:</label></dt>
 		<dd>{CONFIRM_IMG}</dd>
 		<dd><input type="text" name="confirm_code" id="confirm_code" size="8" maxlength="8" class="inputbox narrow" title="{L_CONFIRM_CODE}" /></dd>
-		<dd>{L_CONFIRM_CODE_EXPLAIN}</dd>
+		<dd>{L_CONFIRM_CODE_EXPLAIN}<!-- IF S_CONFIRM_REFRESH --> {L_VC_REFRESH_EXPLAIN}<!-- ENDIF --></dd>
+		<!-- IF S_CONFIRM_REFRESH --><dd><input type="submit" value="{L_VC_REFRESH}" class="button2" /></dd> <!-- ENDIF -->
 	</dl>
 	</fieldset>
 <!-- ENDIF -->
@@ -113,7 +114,7 @@
 	<fieldset class="submit-buttons">
 		{S_HIDDEN_FIELDS}
 		<input type="reset" value="{L_RESET}" name="reset" class="button2" />&nbsp;
-		<input type="submit" name="submit" id ="submit" value="{L_SUBMIT}" class="button1" />
+		<input type="submit" name="submit" id="submit" value="{L_SUBMIT}" class="button1" />
 		{S_FORM_TOKEN}
 	</fieldset>
 

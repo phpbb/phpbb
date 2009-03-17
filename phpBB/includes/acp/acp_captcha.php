@@ -35,6 +35,7 @@ class acp_captcha
 			'captcha_gd'					=> 'CAPTCHA_GD_PREVIEWED',
 			'captcha_gd_wave'				=> 'CAPTCHA_GD_WAVE',
 			'captcha_gd_3d_noise'			=> 'CAPTCHA_GD_3D_NOISE',
+			'captcha_gd_fonts'				=> 'CAPTCHA_GD_FONTS',
 
 		);
 
@@ -61,6 +62,7 @@ class acp_captcha
 		$config_vars = array(
 			'enable_confirm'		=> 'REG_ENABLE',
 			'enable_post_confirm'	=> 'POST_ENABLE',
+			'confirm_refresh'		=> 'CONFIRM_REFRESH',
 			'captcha_gd'			=> 'CAPTCHA_GD',
 		);
 

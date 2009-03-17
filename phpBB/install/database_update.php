@@ -893,6 +893,10 @@ function change_database_data(&$no_updates, $version)
 
 			set_config('captcha_gd_wave', 0);
 			set_config('captcha_gd_3d_noise', 1);
+			set_config('captcha_gd_fonts', 1);
+			set_config('confirm_refresh', 1);
+
+
 
 			$sql = 'SELECT user_id, user_password
 					FROM ' . USERS_TABLE . '

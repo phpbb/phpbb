@@ -66,6 +66,8 @@ INSERT INTO phpbb_config (config_name, config_value) VALUES ('captcha_gd_x_grid'
 INSERT INTO phpbb_config (config_name, config_value) VALUES ('captcha_gd_y_grid', '25');
 INSERT INTO phpbb_config (config_name, config_value) VALUES ('captcha_gd_wave', '0');
 INSERT INTO phpbb_config (config_name, config_value) VALUES ('captcha_gd_3d_noise', '1');
+INSERT INTO phpbb_config (config_name, config_value) VALUES ('captcha_gd_fonts', '1');
+INSERT INTO phpbb_config (config_name, config_value) VALUES ('confirm_refresh', '1');
 INSERT INTO phpbb_config (config_name, config_value) VALUES ('check_attachment_content', '1');
 INSERT INTO phpbb_config (config_name, config_value) VALUES ('check_dnsbl', '0');
 INSERT INTO phpbb_config (config_name, config_value) VALUES ('chg_passforce', '0');
