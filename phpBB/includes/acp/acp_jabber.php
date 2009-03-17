@@ -88,7 +88,8 @@ class acp_jabber
 			else
 			{
 				// This feature is disabled.
-				// We update the user table to be sure all users that have IM as notify type are set to both  as notify type
+				// We update the user table to be sure all users that have IM as notify type are set to both as notify type
+				// We set this to both because users still have their jabber address entered and may want to receive jabber notifications again once it is re-enabled.
 				$sql_ary = array(
 					'user_notify_type'		=> NOTIFY_BOTH,
 				);

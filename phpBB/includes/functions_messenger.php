@@ -61,6 +61,11 @@ class messenger
 	{
 		global $config;
 
+		if (!trim($address))
+		{
+			return;
+		}
+
 		$pos = isset($this->addresses['to']) ? sizeof($this->addresses['to']) : 0;
 
 		$this->addresses['to'][$pos]['email'] = trim($address);
@@ -81,6 +86,11 @@ class messenger
 	*/
 	function cc($address, $realname = '')
 	{
+		if (!trim($address))
+		{
+			return;
+		}
+
 		$pos = isset($this->addresses['cc']) ? sizeof($this->addresses['cc']) : 0;
 		$this->addresses['cc'][$pos]['email'] = trim($address);
 		$this->addresses['cc'][$pos]['name'] = trim($realname);
@@ -91,6 +101,11 @@ class messenger
 	*/
 	function bcc($address, $realname = '')
 	{
+		if (!trim($address))
+		{
+			return;
+		}
+
 		$pos = isset($this->addresses['bcc']) ? sizeof($this->addresses['bcc']) : 0;
 		$this->addresses['bcc'][$pos]['email'] = trim($address);
 		$this->addresses['bcc'][$pos]['name'] = trim($realname);
@@ -102,7 +117,7 @@ class messenger
 	function im($address, $realname = '')
 	{
 		// IM-Addresses could be empty
-		if (!$address)
+		if (!trim($address))
 		{
 			return;
 		}
@@ -363,6 +378,13 @@ class messenger
 			return false;
 		}
 
+		// Addresses to send to?
+		if (empty($this->addresses) || (empty($this->addresses['to']) && empty($this->addresses['cc']) && empty($this->addresses['bcc'])))
+		{
+			// Send was successful. ;)
+			return true;
+		}
+
 		$use_queue = false;
 		if ($config['email_package_size'] && $this->use_queue)
 		{
@@ -457,7 +479,8 @@ class messenger
 
 		if (empty($this->addresses['im']))
 		{
-			return false;
+			// Send was successful. ;)
+			return true;
 		}
 
 		$use_queue = false;
