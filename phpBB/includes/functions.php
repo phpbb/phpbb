@@ -165,6 +165,37 @@ function set_config($config_name, $config_value, $is_dynamic = false)
 }
 
 /**
+* Set dynamic config value with arithmetic operation.
+*/
+function set_config_count($config_name, $increment, $is_dynamic = false)
+{
+	global $db, $cache;
+
+	switch ($db->sql_layer)
+	{
+		case 'firebird':
+			$sql_update = 'CAST(CAST(config_value as integer) + ' . (int) $increment . ' as CHAR)';
+		break;
+
+		case 'postgres':
+			$sql_update = 'int4(config_value) + ' . (int) $increment;
+		break;
+
+		// MySQL, SQlite, mssql, mssql_odbc, oracle
+		default:
+			$sql_update = 'config_value + ' . (int) $increment;
+		break;
+	}
+
+	$db->sql_query('UPDATE ' . CONFIG_TABLE . ' SET config_value = ' . $sql_update . " WHERE config_name = '" . $db->sql_escape($config_name) . "'");
+
+	if (!$is_dynamic)
+	{
+		$cache->destroy('config');
+	}
+}
+
+/**
 * Generates an alphanumeric random string of given length
 */
 function gen_rand_string($num_chars = 8)

@@ -619,7 +619,7 @@ function delete_topics($where_type, $where_ids, $auto_sync = true, $post_count_s
 
 	if ($approved_topics)
 	{
-		set_config('num_topics', $config['num_topics'] - $approved_topics, true);
+		set_config_count('num_topics', $approved_topics * (-1), true);
 	}
 
 	return $return;
@@ -776,7 +776,7 @@ function delete_posts($where_type, $where_ids, $auto_sync = true, $posted_sync =
 
 	if ($approved_posts)
 	{
-		set_config('num_posts', $config['num_posts'] - $approved_posts, true);
+		set_config_count('num_posts', $approved_posts * (-1), true);
 	}
 
 	// We actually remove topics now to not be inconsistent (the delete_topics function calls this function too)
@@ -903,8 +903,8 @@ function delete_attachments($mode, $ids, $resync = true)
 
 	if ($space_removed || $files_removed)
 	{
-		set_config('upload_dir_size', $config['upload_dir_size'] - $space_removed, true);
-		set_config('num_files', $config['num_files'] - $files_removed, true);
+		set_config_count('upload_dir_size', $space_removed * (-1), true);
+		set_config_count('num_files', $files_removed * (-1), true);
 	}
 
 	// If we do not resync, we do not need to adjust any message, post, topic or user entries

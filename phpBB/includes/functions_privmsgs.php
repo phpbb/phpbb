@@ -1350,7 +1350,7 @@ function submit_pm($mode, $subject, &$data, $put_in_outbox = true)
 				WHERE ' . $db->sql_in_set('ug.group_id', array_keys($data['address_list']['g'])) . '
 					AND ug.user_pending = 0
 					AND u.user_id = ug.user_id
-					AND u.user_type IN (' . USER_NORMAL . ', ' . USER_FOUNDER . ')' . 
+					AND u.user_type IN (' . USER_NORMAL . ', ' . USER_FOUNDER . ')' .
 					$sql_allow_pm;
 			$result = $db->sql_query($sql);
 
@@ -1571,8 +1571,8 @@ function submit_pm($mode, $subject, &$data, $put_in_outbox = true)
 
 		if ($space_taken && $files_added)
 		{
-			set_config('upload_dir_size', $config['upload_dir_size'] + $space_taken, true);
-			set_config('num_files', $config['num_files'] + $files_added, true);
+			set_config_count('upload_dir_size', $space_taken, true);
+			set_config_count('num_files', $files_added, true);
 		}
 	}
 

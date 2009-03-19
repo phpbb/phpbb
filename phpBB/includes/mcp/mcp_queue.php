@@ -663,12 +663,12 @@ function approve_post($post_id_list, $id, $mode)
 
 		if ($total_topics)
 		{
-			set_config('num_topics', $config['num_topics'] + $total_topics, true);
+			set_config_count('num_topics', $total_topics, true);
 		}
 
 		if ($total_posts)
 		{
-			set_config('num_posts', $config['num_posts'] + $total_posts, true);
+			set_config_count('num_posts', $total_posts, true);
 		}
 		unset($topic_approve_sql, $topic_replies_sql, $post_approve_sql);
 

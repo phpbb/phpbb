@@ -280,7 +280,7 @@ function user_add($user_row, $cp_data = false)
 	{
 		set_config('newest_user_id', $user_id, true);
 		set_config('newest_username', $user_row['username'], true);
-		set_config('num_users', $config['num_users'] + 1, true);
+		set_config_count('num_users', 1, true);
 
 		$sql = 'SELECT group_colour
 			FROM ' . GROUPS_TABLE . '
@@ -579,7 +579,7 @@ function user_delete($mode, $user_id, $post_username = false)
 	// Decrement number of users if this user is active
 	if ($user_row['user_type'] != USER_INACTIVE && $user_row['user_type'] != USER_IGNORE)
 	{
-		set_config('num_users', $config['num_users'] - 1, true);
+		set_config_count('num_users', -1, true);
 	}
 
 	return false;
@@ -660,12 +660,12 @@ function user_active_flip($mode, $user_id_ary, $reason = INACTIVE_MANUAL)
 
 	if ($deactivated)
 	{
-		set_config('num_users', $config['num_users'] - $deactivated, true);
+		set_config_count('num_users', $deactivated * (-1), true);
 	}
 
 	if ($activated)
 	{
-		set_config('num_users', $config['num_users'] + $activated, true);
+		set_config_count('num_users', $activated, true);
 	}
 
 	// Update latest username

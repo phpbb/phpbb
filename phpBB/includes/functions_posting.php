@@ -1849,8 +1849,8 @@ function submit_post($mode, $subject, $username, $topic_type, &$poll, &$data, $u
 				$sql_data[FORUMS_TABLE]['stat'][] = 'forum_topics = forum_topics - 1';
 				$sql_data[FORUMS_TABLE]['stat'][] = 'forum_posts = forum_posts - ' . ($topic_row['topic_replies'] + 1);
 
-				set_config('num_topics', $config['num_topics'] - 1, true);
-				set_config('num_posts', $config['num_posts'] - ($topic_row['topic_replies'] + 1), true);
+				set_config_count('num_topics', -1, true);
+				set_config_count('num_posts', ($topic_row['topic_replies'] + 1) * (-1), true);
 
 				// Only decrement this post, since this is the one non-approved now
 				if ($auth->acl_get('f_postcount', $data['forum_id']))
@@ -1870,7 +1870,7 @@ function submit_post($mode, $subject, $username, $topic_type, &$poll, &$data, $u
 				$sql_data[TOPICS_TABLE]['stat'][] = 'topic_replies = topic_replies - 1';
 				$sql_data[FORUMS_TABLE]['stat'][] = 'forum_posts = forum_posts - 1';
 
-				set_config('num_posts', $config['num_posts'] - 1, true);
+				set_config_count('num_posts', -1, true);
 
 				if ($auth->acl_get('f_postcount', $data['forum_id']))
 				{
@@ -2137,8 +2137,8 @@ function submit_post($mode, $subject, $username, $topic_type, &$poll, &$data, $u
 
 		if ($space_taken && $files_added)
 		{
-			set_config('upload_dir_size', $config['upload_dir_size'] + $space_taken, true);
-			set_config('num_files', $config['num_files'] + $files_added, true);
+			set_config_count('upload_dir_size', $space_taken, true);
+			set_config_count('num_files', $files_added, true);
 		}
 	}
 
@@ -2371,13 +2371,13 @@ function submit_post($mode, $subject, $username, $topic_type, &$poll, &$data, $u
 	{
 		if ($post_mode == 'post')
 		{
-			set_config('num_topics', $config['num_topics'] + 1, true);
-			set_config('num_posts', $config['num_posts'] + 1, true);
+			set_config_count('num_topics', 1, true);
+			set_config_count('num_posts', 1, true);
 		}
 
 		if ($post_mode == 'reply')
 		{
-			set_config('num_posts', $config['num_posts'] + 1, true);
+			set_config_count('num_posts', 1, true);
 		}
 	}
 

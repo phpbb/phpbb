@@ -1003,8 +1003,8 @@ class acp_attachments
 
 						if ($files_added)
 						{
-							set_config('upload_dir_size', $config['upload_dir_size'] + $space_taken, true);
-							set_config('num_files', $config['num_files'] + $files_added, true);
+							set_config_count('upload_dir_size', $space_taken, true);
+							set_config_count('num_files', $files_added, true);
 						}
 					}
 				}
