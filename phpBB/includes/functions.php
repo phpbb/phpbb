@@ -1120,7 +1120,7 @@ function markread($mode, $forum_id = false, $topic_id = false, $post_time = 0, $
 			$sql_update = array();
 			while ($row = $db->sql_fetchrow($result))
 			{
-				$sql_update[] = $row['forum_id'];
+				$sql_update[] = (int) $row['forum_id'];
 			}
 			$db->sql_freeresult($result);
 

@@ -898,7 +898,7 @@ $result = $db->sql_query_limit($sql, $sql_limit, $sql_start);
 $i = ($store_reverse) ? $sql_limit - 1 : 0;
 while ($row = $db->sql_fetchrow($result))
 {
-	$post_list[$i] = $row['post_id'];
+	$post_list[$i] = (int) $row['post_id'];
 	($store_reverse) ? $i-- : $i++;
 }
 $db->sql_freeresult($result);
@@ -952,12 +952,12 @@ while ($row = $db->sql_fetchrow($result))
 		$max_post_time = $row['post_time'];
 	}
 
-	$poster_id = $row['poster_id'];
+	$poster_id = (int) $row['poster_id'];
 
 	// Does post have an attachment? If so, add it to the list
 	if ($row['post_attachment'] && $config['allow_attachments'])
 	{
-		$attach_list[] = $row['post_id'];
+		$attach_list[] = (int) $row['post_id'];
 
 		if ($row['post_approved'])
 		{
