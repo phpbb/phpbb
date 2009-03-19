@@ -2734,9 +2734,16 @@ function group_user_add($group_id, $user_id_ary = false, $username_ary = false, 
 */
 function group_user_del($group_id, $user_id_ary = false, $username_ary = false, $group_name = false)
 {
-	global $db, $auth;
+	global $db, $auth, $config;
 
-	$group_order = array('ADMINISTRATORS', 'GLOBAL_MODERATORS', 'REGISTERED_COPPA', 'REGISTERED', 'BOTS', 'GUESTS');
+	if ($config['coppa_enable'])
+	{
+		$group_order = array('ADMINISTRATORS', 'GLOBAL_MODERATORS', 'REGISTERED_COPPA', 'REGISTERED', 'BOTS', 'GUESTS');
+	}
+	else
+	{
+		$group_order = array('ADMINISTRATORS', 'GLOBAL_MODERATORS', 'REGISTERED', 'BOTS', 'GUESTS');
+	}
 
 	// We need both username and user_id info
 	$result = user_get_id_name($user_id_ary, $username_ary);
