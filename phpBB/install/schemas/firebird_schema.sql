@@ -65,7 +65,7 @@ CREATE TABLE phpbb_acl_options (
 
 ALTER TABLE phpbb_acl_options ADD PRIMARY KEY (auth_option_id);;
 
-CREATE INDEX phpbb_acl_options_auth_option ON phpbb_acl_options(auth_option);;
+CREATE UNIQUE INDEX phpbb_acl_options_auth_option ON phpbb_acl_options(auth_option);;
 
 CREATE GENERATOR phpbb_acl_options_gen;;
 SET GENERATOR phpbb_acl_options_gen TO 0;;

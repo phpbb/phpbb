@@ -126,6 +126,7 @@
 		<li>[Fix] Use FQDN for SMTP EHLO/HELO command. (Bug #41025)</li>
 		<li>[Fix] Mass Email works again for users with empty jabber address but notification set to 'both'. (Bug #39755)</li>
 		<li>[Fix] Fix race condition for updating post/topic/etc. counter. (reported by BartVB)</li>
+		<li>[Fix] Fix duplicate creation of acl options in acl_add_options() under certain conditions. (Bug #38385, #40225)</li>
 		<li>[Change] Allow download of conflicting file for later reference in automatic updater</li>
 		<li>[Change] Default difference view is now 'inline' instead of 'side by side'</li>
 		<li>[Change] Added new option for merging differences to conflicting files in automatic updater</li>
@@ -133,6 +134,7 @@
 		<li>[Change] Add link to user profile in the MCP for user notes and warn user.</li>
 		<li>[Change] Add IN_PHPBB check to generated cache files. (reported by bantu)</li>
 		<li>[Change] Add topic icons to prosilver UCP main and subscribed templates (Bug #42735 - Patch by Raimon)</li>
+		<li>[Change] Add unique key to ACL options table to prevent duplicate permission options. (Bug #41835)</li>
 		<li>[Feature] Allow translation of custom BBCode help messages. (Patch by bantu)</li>
 		<li>[Feature] db_tools now support create table and drop table.</li>
 		<li>[Feature] Database updater checks for incompatible db schema (MySQL 3.x/4.x against MySQL 4.1.x/5.x/6.x)</li>
