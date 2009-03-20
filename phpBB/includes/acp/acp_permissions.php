@@ -23,7 +23,7 @@ class acp_permissions
 {
 	var $u_action;
 	var $permission_dropdown;
-	
+
 	function main($id, $mode)
 	{
 		global $db, $user, $auth, $template, $cache;
@@ -94,7 +94,7 @@ class acp_permissions
 			}
 			$db->sql_freeresult($result);
 		}
-		
+
 		// Map usernames to ids and vice versa
 		if ($usernames)
 		{
@@ -112,7 +112,7 @@ class acp_permissions
 			}
 		}
 		unset($username);
-		
+
 		// Build forum ids (of all forums are checked or subforum listing used)
 		if ($all_forums)
 		{
@@ -528,7 +528,7 @@ class acp_permissions
 				}
 				continue;
 			}
-			
+
 			if ($branch_there)
 			{
 				$s_options .= ' [' . $user->lang['PLUS_SUBFORUMS'] . ']';
@@ -539,14 +539,14 @@ class acp_permissions
 
 		return $s_options;
 	}
-	
+
 	/**
 	* Build dropdown field for changing permission types
 	*/
 	function build_permission_dropdown($options, $default_option, $permission_scope)
 	{
 		global $user, $auth;
-		
+
 		$s_dropdown_options = '';
 		foreach ($options as $setting)
 		{
@@ -626,7 +626,7 @@ class acp_permissions
 		{
 			trigger_error($user->lang['NO_AUTH_OPERATION'] . adm_back_link($this->u_action), E_USER_WARNING);
 		}
-		
+
 		$ug_id = $forum_id = 0;
 
 		// We loop through the auth settings defined in our submit
@@ -809,7 +809,7 @@ class acp_permissions
 	function remove_permissions($mode, $permission_type, &$auth_admin, &$user_id, &$group_id, &$forum_id)
 	{
 		global $user, $db, $auth;
-			
+
 		// User or group to be set?
 		$ug_type = (sizeof($user_id)) ? 'user' : 'group';
 
@@ -1150,7 +1150,11 @@ class acp_permissions
 		{
 			$sql_where = 'AND (' . $db->sql_in_set('a.auth_option_id', $option_ids) . ' OR ' . $db->sql_in_set('a.auth_role_id', $role_ids) . ')';
 		}
-		else
+		else if (sizeof($role_ids))
+		{
+			$sql_where = 'AND ' . $db->sql_in_set('a.auth_role_id', $role_ids);
+		}
+		else if (sizeof($option_ids))
 		{
 			$sql_where = 'AND ' . $db->sql_in_set('a.auth_option_id', $option_ids);
 		}
