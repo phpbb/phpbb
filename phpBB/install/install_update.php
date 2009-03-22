@@ -148,6 +148,12 @@ class install_update extends module
 			));
 		}
 
+		// Fill DB version
+		if (empty(phpbb::$config['dbms_version']))
+		{
+			set_config('dbms_version', phpbb::$db->sql_server_info(true));
+		}
+
 		if ($this->test_update === false)
 		{
 			// Got the updater template itself updated? If so, we are able to directly use it - but only if all three files are present
@@ -336,13 +342,14 @@ class install_update extends module
 						continue;
 					}
 
-					phpbb::$template->assign_block_vars('files', array(
+/*					phpbb::$template->assign_block_vars('files', array(
 						'S_STATUS'		=> true,
 						'STATUS'		=> $status,
 						'L_STATUS'		=> phpbb::$user->lang['STATUS_' . strtoupper($status)],
 						'TITLE'			=> phpbb::$user->lang['FILES_' . strtoupper($status)],
 						'EXPLAIN'		=> phpbb::$user->lang['FILES_' . strtoupper($status) . '_EXPLAIN'],
-					));
+						)
+					);*/
 
 					foreach ($filelist as $file_struct)
 					{
@@ -362,7 +369,7 @@ class install_update extends module
 
 						$diff_url = append_sid($this->p_master->module_url, "mode=$mode&amp;sub=file_check&amp;action=diff&amp;status=$status&amp;file=" . urlencode($file_struct['filename']));
 
-						phpbb::$template->assign_block_vars('files', array(
+						phpbb::$template->assign_block_vars($status, array(
 							'STATUS'			=> $status,
 
 							'FILENAME'			=> $filename,
@@ -649,7 +656,7 @@ class install_update extends module
 										default:
 											$diff = $this->return_diff($this->old_location . $original_filename, PHPBB_ROOT_PATH . $file_struct['filename'], $this->new_location . $original_filename);
 
-											$contents = implode("\n", $diff->merged_output());
+											$contents = implode("\n", $diff->merged_new_output());
 											unset($diff);
 										break;
 									}
@@ -1015,7 +1022,7 @@ class install_update extends module
 
 		$status = request_var('status', '');
 		$file = request_var('file', '');
-		$diff_mode = request_var('diff_mode', 'side_by_side');
+		$diff_mode = request_var('diff_mode', 'inline');
 
 		// First of all make sure the file is within our file update list with the correct status
 		$found_entry = array();
@@ -1059,9 +1066,7 @@ class install_update extends module
 
 					break;
 
-					case MERGE_NEW_FILE:
-					case MERGE_MOD_FILE:
-
+/*
 						$diff = $this->return_diff($this->old_location . $original_file, PHPBB_ROOT_PATH . $file, $this->new_location . $original_file);
 
 						$tmp = array(
@@ -1078,17 +1083,37 @@ class install_update extends module
 						$this->page_title = 'VIEWING_FILE_CONTENTS';
 
 					break;
-
-					default:
+*/
+					// Merge differences and use new phpBB code for conflicted blocks
+					case MERGE_NEW_FILE:
+					case MERGE_MOD_FILE:
 
 						$diff = $this->return_diff($this->old_location . $original_file, PHPBB_ROOT_PATH . $file, $this->new_location . $original_file);
 
 						phpbb::$template->assign_vars(array(
 							'S_DIFF_CONFLICT_FILE'	=> true,
-							'NUM_CONFLICTS'			=> $diff->merged_output(false, false, false, true),
+							'NUM_CONFLICTS'			=> $diff->get_num_conflicts(),
 						));
 
-						$diff = $this->return_diff(PHPBB_ROOT_PATH . $file, $diff->merged_output());
+						$diff = $this->return_diff(PHPBB_ROOT_PATH . $file, ($option == MERGE_NEW_FILE) ? $diff->merged_new_output() : $diff->merged_orig_output());
+					break;
+
+					// Download conflict file
+					default:
+
+						$diff = $this->return_diff($this->old_location . $original_file, $phpbb_root_path . $file, $this->new_location . $original_file);
+
+						header('Pragma: no-cache');
+						header("Content-Type: application/octetstream; name=\"$file\"");
+						header("Content-disposition: attachment; filename=$file");
+
+						@set_time_limit(0);
+
+						echo implode("\n", $diff->get_conflicts_content());
+
+						flush();
+						exit;
+
 					break;
 				}
 
@@ -1391,9 +1416,9 @@ class install_update extends module
 
 		unset($tmp);
 
-		if ($diff->merged_output(false, false, false, true))
+		if ($diff->get_num_conflicts())
 		{
-			$update_ary['conflicts'] = $diff->_conflicting_blocks;
+			$update_ary['conflicts'] = $diff->get_num_conflicts();
 
 			// There is one special case... users having merged with a conflicting file... we need to check this
 			$tmp = array(
@@ -1420,7 +1445,7 @@ class install_update extends module
 
 		$tmp = array(
 			'file1'		=> file_get_contents(PHPBB_ROOT_PATH . $file),
-			'file2'		=> implode("\n", $diff->merged_output()),
+			'file2'		=> implode("\n", $diff->merged_new_output()),
 		);
 
 		// now compare the merged output with the original file to see if the modified file is up to date

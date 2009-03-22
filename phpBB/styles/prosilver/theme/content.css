@@ -280,6 +280,10 @@ div[class].topic-actions {
 	border-bottom-width: 0;
 }
 
+.post-ignore .postbody {
+	display: none;
+}
+
 /* Content container styles
 ----------------------------------------*/
 .content {

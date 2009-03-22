@@ -53,6 +53,11 @@ class messenger
 	*/
 	function to($address, $realname = '')
 	{
+		if (!trim($address))
+		{
+			return;
+		}
+
 		$pos = isset($this->addresses['to']) ? sizeof($this->addresses['to']) : 0;
 
 		$this->addresses['to'][$pos]['email'] = trim($address);
@@ -73,6 +78,11 @@ class messenger
 	*/
 	function cc($address, $realname = '')
 	{
+		if (!trim($address))
+		{
+			return;
+		}
+
 		$pos = isset($this->addresses['cc']) ? sizeof($this->addresses['cc']) : 0;
 		$this->addresses['cc'][$pos]['email'] = trim($address);
 		$this->addresses['cc'][$pos]['name'] = trim($realname);
@@ -83,6 +93,11 @@ class messenger
 	*/
 	function bcc($address, $realname = '')
 	{
+		if (!trim($address))
+		{
+			return;
+		}
+
 		$pos = isset($this->addresses['bcc']) ? sizeof($this->addresses['bcc']) : 0;
 		$this->addresses['bcc'][$pos]['email'] = trim($address);
 		$this->addresses['bcc'][$pos]['name'] = trim($realname);
@@ -94,7 +109,7 @@ class messenger
 	function im($address, $realname = '')
 	{
 		// IM-Addresses could be empty
-		if (!$address)
+		if (!trim($address))
 		{
 			return;
 		}
@@ -324,15 +339,12 @@ class messenger
 		$headers[] = 'X-MimeOLE: phpBB3';
 		$headers[] = 'X-phpBB-Origin: phpbb://' . str_replace(array('http://', 'https://'), array('', ''), generate_board_url());
 
-		// We use \n here instead of \r\n because our smtp mailer is adjusting it to \r\n automatically, whereby the php mail function only works
-		// if using \n.
-
 		if (sizeof($this->extra_headers))
 		{
-			$headers[] = implode("\n", $this->extra_headers);
+			$headers = array_merge($headers, $this->extra_headers);
 		}
 
-		return implode("\n", $headers);
+		return $headers;
 	}
 
 	/**
@@ -343,6 +355,13 @@ class messenger
 		if (empty(phpbb::$config['email_enable']))
 		{
 			return false;
+		}
+
+		// Addresses to send to?
+		if (empty($this->addresses) || (empty($this->addresses['to']) && empty($this->addresses['cc']) && empty($this->addresses['bcc'])))
+		{
+			// Send was successful. ;)
+			return true;
 		}
 
 		$use_queue = false;
@@ -396,6 +415,10 @@ class messenger
 			}
 			else
 			{
+				// We use the EOL character for the OS here because the PHP mail function does not correctly transform line endings. On Windows SMTP is used (SMTP is \r\n), on UNIX a command is used...
+				// Reference: http://bugs.php.net/bug.php?id=15841
+				$headers = implode(PHP_EOL, $headers);
+
 				ob_start();
 				$result = phpbb::$config['email_function_name']($mail_to, mail_encode($this->subject), wordwrap(utf8_wordwrap($this->msg), 997, "\n", true), $headers);
 				$err_msg = ob_get_clean();
@@ -433,7 +456,8 @@ class messenger
 
 		if (empty($this->addresses['im']))
 		{
-			return false;
+			// Send was successful. ;)
+			return true;
 		}
 
 		$use_queue = false;
@@ -630,7 +654,7 @@ class queue
 						else
 						{
 							ob_start();
-							$result = phpbb::$config['email_function_name']($to, mail_encode($subject), wordwrap(utf8_wordwrap($msg), 997, "\n", true), $headers);
+							$result = phpbb::$config['email_function_name']($to, mail_encode($subject), wordwrap(utf8_wordwrap($msg), 997, "\n", true), implode(PHP_EOL, $headers));
 							$err_msg = ob_get_clean();
 						}
 
@@ -682,7 +706,7 @@ class queue
 			if ($fp = @fopen($this->cache_file, 'wb'))
 			{
 				@flock($fp, LOCK_EX);
-				fwrite($fp, "<?php\n\$this->queue_data = unserialize(" . var_export(serialize($this->queue_data), true) . ");\n\n?>");
+				fwrite($fp, "<?php\nif (!defined('IN_PHPBB')) exit;\n\$this->queue_data = unserialize(" . var_export(serialize($this->queue_data), true) . ");\n\n?>");
 				@flock($fp, LOCK_UN);
 				fclose($fp);
 
@@ -723,7 +747,7 @@ class queue
 		if ($fp = @fopen($this->cache_file, 'w'))
 		{
 			@flock($fp, LOCK_EX);
-			fwrite($fp, "<?php\n\$this->queue_data = unserialize(" . var_export(serialize($this->data), true) . ");\n\n?>");
+			fwrite($fp, "<?php\nif (!defined('IN_PHPBB')) exit;\n\$this->queue_data = unserialize(" . var_export(serialize($this->data), true) . ");\n\n?>");
 			@flock($fp, LOCK_UN);
 			fclose($fp);
 
@@ -735,38 +759,35 @@ class queue
 /**
 * Replacement or substitute for PHP's mail command
 */
-function smtpmail($addresses, $subject, $message, &$err_msg, $headers = '')
+function smtpmail($addresses, $subject, $message, &$err_msg, $headers = false)
 {
 	// Fix any bare linefeeds in the message to make it RFC821 Compliant.
 	$message = preg_replace("#(?<!\r)\n#si", "\r\n", $message);
 
-	if ($headers != '')
+	if ($headers !== false)
 	{
-		if (is_array($headers))
+		if (!is_array($headers))
 		{
-			$headers = (sizeof($headers) > 1) ? join("\n", $headers) : $headers[0];
+			// Make sure there are no bare linefeeds in the headers
+			$headers = preg_replace('#(?<!\r)\n#si', "\n", $headers);
+			$headers = explode("\n", $headers);
 		}
-		$headers = chop($headers);
-
-		// Make sure there are no bare linefeeds in the headers
-		$headers = preg_replace('#(?<!\r)\n#si', "\r\n", $headers);
 
 		// Ok this is rather confusing all things considered,
 		// but we have to grab bcc and cc headers and treat them differently
 		// Something we really didn't take into consideration originally
-		$header_array = explode("\r\n", $headers);
-		$headers = '';
+		$headers_used = array();
 
-		foreach ($header_array as $header)
+		foreach ($headers as $header)
 		{
 			if (strpos(strtolower($header), 'cc:') === 0 || strpos(strtolower($header), 'bcc:') === 0)
 			{
-				$header = '';
+				continue;
 			}
-			$headers .= ($header != '') ? $header . "\r\n" : '';
+			$headers_used[] = trim($header);
 		}
 
-		$headers = chop($headers);
+		$headers = chop(implode("\r\n", $headers_used));
 	}
 
 	if (trim($subject) == '')
@@ -922,7 +943,10 @@ function smtpmail($addresses, $subject, $message, &$err_msg, $headers = '')
 	}
 
 	// Now any custom headers....
-	$smtp->server_send("$headers\r\n");
+	if ($headers !== false)
+	{
+		$smtp->server_send("$headers\r\n");
+	}
 
 	// Ok now we are ready for the message...
 	$smtp->server_send($message);
@@ -1039,7 +1063,7 @@ class smtp_class
 	public function log_into_server($hostname, $username, $password, $default_auth_method)
 	{
 		$err_msg = '';
-		$local_host = (function_exists('php_uname')) ? php_uname('n') : phpbb::$user->system['host'];
+		$local_host = (function_exists('php_uname')) ? gethostbyaddr(gethostbyname(php_uname('n'))) : phpbb::$user->system['host'];
 
 		// If we are authenticating through pop-before-smtp, we
 		// have to login ones before we get authenticated

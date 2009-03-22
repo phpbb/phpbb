@@ -496,7 +496,7 @@ function split_topic($action, $topic_id, $to_forum_id, $subject)
 		$success_msg = 'TOPIC_SPLIT_SUCCESS';
 
 		// Update forum statistics
-		set_config('num_topics', phpbb::$config['num_topics'] + 1, true);
+		set_config_count('num_topics', 1, true);
 
 		// Link back to both topics
 		$return_link = sprintf(phpbb::$user->lang['RETURN_TOPIC'], '<a href="' . append_sid('viewtopic', 'f=' . $post_info['forum_id'] . '&amp;t=' . $post_info['topic_id']) . '">', '</a>') . '<br /><br />' . sprintf(phpbb::$user->lang['RETURN_NEW_TOPIC'], '<a href="' . append_sid('viewtopic', 'f=' . $to_forum_id . '&amp;t=' . $to_topic_id) . '">', '</a>');

@@ -602,7 +602,7 @@ function delete_topics($where_type, $where_ids, $auto_sync = true, $post_count_s
 
 	if ($approved_topics)
 	{
-		set_config('num_topics', phpbb::$config['num_topics'] - $approved_topics, true);
+		set_config_count('num_topics', $approved_topics * (-1), true);
 	}
 
 	return $return;
@@ -757,7 +757,7 @@ function delete_posts($where_type, $where_ids, $auto_sync = true, $posted_sync =
 
 	if ($approved_posts)
 	{
-		set_config('num_posts', phpbb::$config['num_posts'] - $approved_posts, true);
+		set_config_count('num_posts', $approved_posts * (-1), true);
 	}
 
 	// We actually remove topics now to not be inconsistent (the delete_topics function calls this function too)
@@ -793,11 +793,14 @@ function delete_attachments($mode, $ids, $resync = true)
 		return false;
 	}
 
+	$sql_where = '';
+
 	switch ($mode)
 	{
 		case 'post':
 		case 'message':
 			$sql_id = 'post_msg_id';
+			$sql_where = ' AND in_message = ' . ($mode == 'message' ? 1 : 0);
 		break;
 
 		case 'topic':
@@ -821,6 +824,9 @@ function delete_attachments($mode, $ids, $resync = true)
 	$sql = 'SELECT post_msg_id, topic_id, in_message, physical_filename, thumbnail, filesize, is_orphan
 			FROM ' . ATTACHMENTS_TABLE . '
 			WHERE ' . phpbb::$db->sql_in_set($sql_id, $ids);
+
+	$sql .= $sql_where;
+
 	$result = phpbb::$db->sql_query($sql);
 
 	while ($row = phpbb::$db->sql_fetchrow($result))
@@ -846,6 +852,9 @@ function delete_attachments($mode, $ids, $resync = true)
 	// Delete attachments
 	$sql = 'DELETE FROM ' . ATTACHMENTS_TABLE . '
 		WHERE ' . phpbb::$db->sql_in_set($sql_id, $ids);
+
+	$sql .= $sql_where;
+
 	phpbb::$db->sql_query($sql);
 	$num_deleted = phpbb::$db->sql_affectedrows();
 
@@ -873,8 +882,8 @@ function delete_attachments($mode, $ids, $resync = true)
 
 	if ($space_removed || $files_removed)
 	{
-		set_config('upload_dir_size', phpbb::$config['upload_dir_size'] - $space_removed, true);
-		set_config('num_files', phpbb::$config['num_files'] - $files_removed, true);
+		set_config_count('upload_dir_size', $space_removed * (-1), true);
+		set_config_count('num_files', $files_removed * (-1), true);
 	}
 
 	// If we do not resync, we do not need to adjust any message, post, topic or user entries

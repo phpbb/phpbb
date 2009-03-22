@@ -245,12 +245,20 @@ $lang = array_merge($lang, array(
 	'CAPTCHA_GD_X_GRID_EXPLAIN'				=> 'Use lower settings of this to make the GD based CAPTCHA harder. 0 will disable x-axis background noise.',
 	'CAPTCHA_GD_Y_GRID'						=> 'GD CAPTCHA background noise y-axis',
 	'CAPTCHA_GD_Y_GRID_EXPLAIN'				=> 'Use lower settings of this to make the GD based CAPTCHA harder. 0 will disable y-axis background noise.',
+	'CAPTCHA_GD_WAVE'						=> 'GD CAPTCHA wave distortion',
+	'CAPTCHA_GD_WAVE_EXPLAIN'				=> 'This applies a wave distortion to the CAPTCHA.',
+ 	'CAPTCHA_GD_3D_NOISE'					=> 'Add 3D-noise objects',
+	'CAPTCHA_GD_3D_NOISE_EXPLAIN'			=> 'This adds additional objects to the CAPTCHA, over the letters.',
+  	'CAPTCHA_GD_FONTS'						=> 'Use different fonts',
+	'CAPTCHA_GD_FONTS_EXPLAIN'				=> 'This setting controls how many different letter shapes are used. You can just use the default shapes or introduce altered letters. Adding lowercase letters is also possible.',
+	'CAPTCHA_FONT_DEFAULT'					=> 'Default',
+	'CAPTCHA_FONT_NEW'						=> 'New Shapes',
+	'CAPTCHA_FONT_LOWER'					=> 'Also use lowercase',
 
-	'CAPTCHA_NO_GD'							=> 'CAPTCHA without GD',
 
 	'CAPTCHA_PREVIEW_MSG'					=> 'Your changes to the visual confirmation setting were not saved. This is just a preview.',
 	'CAPTCHA_PREVIEW_EXPLAIN'				=> 'The CAPTCHA as it would look like using the current selection.',
-	
+
 	'CAPTCHA_SELECT'						=> 'Installed CAPTCHA plugins',
 	'CAPTCHA_SELECT_EXPLAIN'				=> 'The dropdown holds the CAPTCHA plugins recognized by the board. Gray entries are not available right now and might need configuration prior to use.',
 	'CAPTCHA_CONFIGURE'						=> 'Configure CAPTCHAs',
@@ -261,6 +269,8 @@ $lang = array_merge($lang, array(
 	'VISUAL_CONFIRM_POST_EXPLAIN'			=> 'Requires anonymous users to enter a random code matching an image to help prevent mass postings.',
 	'VISUAL_CONFIRM_REG'					=> 'Enable visual confirmation for registrations',
 	'VISUAL_CONFIRM_REG_EXPLAIN'			=> 'Requires new users to enter a random code matching an image to help prevent mass registrations.',
+	'VISUAL_CONFIRM_REFRESH'				=> 'Enable users to request new images',
+	'VISUAL_CONFIRM_REFRESH_EXPLAIN'		=> 'Allows users to request new images, if they are unable to solve the VC during registration.',
 ));
 
 // Cookie Settings

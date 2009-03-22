@@ -347,11 +347,11 @@ class ucp_profile
 					{
 						$data['notify'] = phpbb::$user->data['user_notify_type'];
 
-						if (!phpbb::$config['jab_enable'] || !$data['jabber'] || !@extension_loaded('xml'))
+						if ($data['notify'] == NOTIFY_IM && (!phpbb::$config['jab_enable'] || !$data['jabber'] || !@extension_loaded('xml')))
 						{
 							// User has not filled in a jabber address (Or one of the modules is disabled or jabber is disabled)
 							// Disable notify by Jabber now for this user.
-							$data['notify'] = NOTIFY_BOTH;
+							$data['notify'] = NOTIFY_EMAIL;
 						}
 
 						$sql_ary = array(
@@ -547,6 +547,7 @@ class ucp_profile
 					'IMG_STATUS'			=> (phpbb::$config['allow_sig_img']) ? phpbb::$user->lang['IMAGES_ARE_ON'] : phpbb::$user->lang['IMAGES_ARE_OFF'],
 					'FLASH_STATUS'			=> (phpbb::$config['allow_sig_flash']) ? phpbb::$user->lang['FLASH_IS_ON'] : phpbb::$user->lang['FLASH_IS_OFF'],
 					'URL_STATUS'			=> (phpbb::$config['allow_sig_links']) ? phpbb::$user->lang['URL_IS_ON'] : phpbb::$user->lang['URL_IS_OFF'],
+					'MAX_FONT_SIZE'			=> (int) phpbb::$config['max_sig_font_size'],
 
 					'L_SIGNATURE_EXPLAIN'	=> sprintf(phpbb::$user->lang['SIGNATURE_EXPLAIN'], phpbb::$config['max_sig_chars']),
 

@@ -684,6 +684,7 @@ class bbcode_firstpass extends bbcode
 		* [quote="[i]test[/i]"]test[/quote] (correct: parsed)
 		* [quote="[quote]test[/quote]"]test[/quote] (correct: parsed - Username displayed as [quote]test[/quote])
 		* #20735 - [quote]test[/[/b]quote] test [/quote][/quote] test - (correct: quoted: "test[/[/b]quote] test" / non-quoted: "[/quote] test" - also failed if layout distorted)
+		* #40565 - [quote="a"]a[/quote][quote="a]a[/quote] (correct: first quote tag parsed, second quote tag unparsed)
 		*/
 
 		$in = str_replace("\r\n", "\n", str_replace('\"', '"', trim($in)));
@@ -694,7 +695,7 @@ class bbcode_firstpass extends bbcode
 		}
 
 		// To let the parser not catch tokens within quote_username quotes we encode them before we start this...
-		$in = preg_replace('#quote=&quot;(.*?)&quot;\]#ie', "'quote=&quot;' . str_replace(array('[', ']'), array('&#91;', '&#93;'), '\$1') . '&quot;]'", $in);
+		$in = preg_replace('#quote=&quot;(.*?)&quot;\]#ie', "'quote=&quot;' . str_replace(array('[', ']', '\\\"'), array('&#91;', '&#93;', '\"'), '\$1') . '&quot;]'", $in);
 
 		$tok = ']';
 		$out = '[';
@@ -846,6 +847,8 @@ class bbcode_firstpass extends bbcode
 			}
 		}
 		while ($in);
+
+		$out .= $buffer;
 
 		if (sizeof($close_tags))
 		{
@@ -1085,13 +1088,6 @@ class parse_message extends bbcode_firstpass
 			}
 		}
 
-		// Check for "empty" message
-		if ($mode !== 'sig' && utf8_clean_string($this->message) === '')
-		{
-			$this->warn_msg[] = phpbb::$user->lang['TOO_FEW_CHARS'];
-			return (!$update_this_message) ? $return_message : $this->warn_msg;
-		}
-
 		// Prepare BBcode (just prepares some tags for better parsing)
 		if ($allow_bbcode && strpos($this->message, '[') !== false)
 		{
@@ -1132,6 +1128,14 @@ class parse_message extends bbcode_firstpass
 			{
 				$num_urls += preg_match_all('#\<!-- ([lmwe]) --\>.*?\<!-- \1 --\>#', $this->message, $matches);
 			}
+		}
+
+		// Check for "empty" message. We do not check here for maximum length, because bbcode, smilies, etc. can add to the length.
+		// The maximum length check happened before any parsings.
+		if ($mode !== 'sig' && utf8_clean_string($this->message) === '')
+		{
+			$this->warn_msg[] = $user->lang['TOO_FEW_CHARS'];
+			return (!$update_this_message) ? $return_message : $this->warn_msg;
 		}
 
 		// Check number of links

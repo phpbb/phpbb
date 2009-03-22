@@ -1121,7 +1121,11 @@ class acp_permissions
 		{
 			$sql_where = 'AND (' . phpbb::$db->sql_in_set('a.auth_option_id', $option_ids) . ' OR ' . phpbb::$db->sql_in_set('a.auth_role_id', $role_ids) . ')';
 		}
-		else
+		else if (sizeof($role_ids))
+		{
+			$sql_where = 'AND ' . phpbb::$db->sql_in_set('a.auth_role_id', $role_ids);
+		}
+		else if (sizeof($option_ids))
 		{
 			$sql_where = 'AND ' . phpbb::$db->sql_in_set('a.auth_option_id', $option_ids);
 		}

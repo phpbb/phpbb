@@ -838,6 +838,12 @@ function display_custom_bbcodes()
 	$i = 0;
 	while ($row = phpbb::$db->sql_fetchrow($result))
 	{
+		// If the helpline is defined within the language file, we will use the localised version, else just use the database entry...
+		if (isset(phpbb::$user->lang[strtoupper($row['bbcode_helpline'])]))
+		{
+			$row['bbcode_helpline'] = phpbb::$user->lang[strtoupper($row['bbcode_helpline'])];
+		}
+
 		phpbb::$template->assign_block_vars('custom_tags', array(
 			'BBCODE_NAME'		=> "'[{$row['bbcode_tag']}]', '[/" . str_replace('=', '', $row['bbcode_tag']) . "]'",
 			'BBCODE_ID'			=> $num_predefined_bbcodes + ($i * 2),

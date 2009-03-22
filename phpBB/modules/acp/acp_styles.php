@@ -1101,139 +1101,142 @@ parse_css_file = {PARSE_CSS_FILE}
 	{
 		$this->page_title = 'EDIT_IMAGESET';
 
-		$update		= phpbb_request::is_set_post('update');
-
-		$imgname	= request_var('imgname', '');
-		$imgpath	= request_var('imgpath', '');
-		$imgsize	= request_var('imgsize', false);
-		$imgwidth	= request_var('imgwidth', 0);
-		$imgheight	= request_var('imgheight', 0);
-
-		$imgname	= preg_replace('#[^a-z0-9\-+_]#i', '', $imgname);
-		$imgpath	= str_replace('..', '.', $imgpath);
-
-		if ($imageset_id)
+		if (!$imageset_id)
 		{
-			$sql = 'SELECT imageset_path, imageset_name
-				FROM ' . STYLES_IMAGESET_TABLE . "
-				WHERE imageset_id = $imageset_id";
-			$result = phpbb::$db->sql_query($sql);
-			$imageset_row = phpbb::$db->sql_fetchrow($result);
-			phpbb::$db->sql_freeresult($result);
+			trigger_error(phpbb::$user->lang['NO_IMAGESET'] . adm_back_link($this->u_action), E_USER_WARNING);
+		}
 
-			$imageset_path		= $imageset_row['imageset_path'];
-			$imageset_name		= $imageset_row['imageset_name'];
+		$update		= phpbb_request::is_set_post('update');
+		$imgname	= request_var('imgname', 'site_logo');
+		$imgname	= preg_replace('#[^a-z0-9\-+_]#i', '', $imgname);
+		$sql_extra = $imgnamelang = '';
 
-			$sql_extra = '';
-			if (strpos($imgname, '-') !== false)
+		$sql = 'SELECT imageset_path, imageset_name
+			FROM ' . STYLES_IMAGESET_TABLE . "
+			WHERE imageset_id = $imageset_id";
+		$result = phpbb::$db->sql_query($sql);
+		$imageset_row = phpbb::$db->sql_fetchrow($result);
+		phpbb::$db->sql_freeresult($result);
+
+		if (!$imageset_row)
+		{
+			trigger_error(phpbb::$user->lang['NO_IMAGESET'] . adm_back_link($this->u_action), E_USER_WARNING);
+		}
+
+		$imageset_path		= $imageset_row['imageset_path'];
+		$imageset_name		= $imageset_row['imageset_name'];
+
+		if (strpos($imgname, '-') !== false)
+		{
+			list($imgname, $imgnamelang) = explode('-', $imgname);
+			$sql_extra = " AND image_lang IN ('" . phpbb::$db->sql_escape($imgnamelang) . "', '')";
+		}
+
+		$sql = 'SELECT image_filename, image_width, image_height, image_lang, image_id
+			FROM ' . STYLES_IMAGESET_DATA_TABLE . "
+			WHERE imageset_id = $imageset_id
+				AND image_name = '" . phpbb::$db->sql_escape($imgname) . "'$sql_extra";
+		$result = phpbb::$db->sql_query($sql);
+		$imageset_data_row = phpbb::$db->sql_fetchrow($result);
+		phpbb::$db->sql_freeresult($result);
+
+		$image_filename	= $imageset_data_row['image_filename'];
+		$image_width	= $imageset_data_row['image_width'];
+		$image_height	= $imageset_data_row['image_height'];
+		$image_lang		= $imageset_data_row['image_lang'];
+		$image_id		= $imageset_data_row['image_id'];
+		$imgsize		= ($imageset_data_row['image_width'] && $imageset_data_row['image_height']) ? 1 : 0;
+
+		// Check to see whether the selected image exists in the table
+		$valid_name = ($update) ? false : true;
+
+		foreach ($this->imageset_keys as $category => $img_ary)
+		{
+			if (in_array($imgname, $img_ary))
 			{
-				list($imgname, $imgnamelang) = explode('-', $imgname);
-				$sql_extra = " AND image_lang IN ('" . phpbb::$db->sql_escape($imgnamelang) . "', '')";
+				$valid_name = true;
+				break;
+			}
+		}
+
+		if ($update && phpbb_request::is_set_post('imgpath') && $valid_name)
+		{
+			// If imgwidth and imgheight are non-zero grab the actual size
+			// from the image itself ... we ignore width settings for the poll center image
+			$imgwidth	= request_var('imgwidth', 0);
+			$imgheight	= request_var('imgheight', 0);
+			$imgsize	= request_var('imgsize', 0);
+			$imgpath	= request_var('imgpath', '');
+			$imgpath	= str_replace('..', '.', $imgpath);
+
+			// If no dimensions selected, we reset width and height to 0 ;)
+			if (!$imgsize)
+			{
+				$imgwidth = $imgheight = 0;
 			}
 
-			$sql = 'SELECT image_filename, image_width, image_height, image_lang, image_id
-				FROM ' . STYLES_IMAGESET_DATA_TABLE . "
-				WHERE imageset_id = $imageset_id
-					AND image_name = '" . phpbb::$db->sql_escape($imgname) . "'$sql_extra";
-			$result = phpbb::$db->sql_query($sql);
-			$imageset_data_row = phpbb::$db->sql_fetchrow($result);
-			phpbb::$db->sql_freeresult($result);
+			$imglang = '';
 
-			$image_filename	= $imageset_data_row['image_filename'];
-			$image_width	= $imageset_data_row['image_width'];
-			$image_height	= $imageset_data_row['image_height'];
-			$image_lang		= $imageset_data_row['image_lang'];
-			$image_id		= $imageset_data_row['image_id'];
-
-			if (!$imageset_row)
+			if ($imgpath && !file_exists(PHPBB_ROOT_PATH . "styles/$imageset_path/imageset/$imgpath"))
 			{
-				trigger_error(phpbb::$user->lang['NO_IMAGESET'] . adm_back_link($this->u_action), E_USER_WARNING);
+				trigger_error(phpbb::$user->lang['NO_IMAGE_ERROR'] . adm_back_link($this->u_action), E_USER_WARNING);
 			}
 
-			// Check to see whether the selected image exists in the table
-			$valid_name = ($update) ? false : true;
-
-			foreach ($this->imageset_keys as $category => $img_ary)
+			// Determine width/height. If dimensions included and no width/height given, we detect them automatically...
+			if ($imgsize && $imgpath)
 			{
-				if (in_array($imgname, $img_ary))
+				if (!$imgwidth || !$imgheight)
 				{
-					$valid_name = true;
-					break;
+					list($imgwidth_file, $imgheight_file) = getimagesize(PHPBB_ROOT_PATH . "styles/$imageset_path/imageset/$imgpath");
+					$imgwidth = ($imgwidth) ? $imgwidth : $imgwidth_file;
+					$imgheight = ($imgheight) ? $imgheight : $imgheight_file;
 				}
+				$imgwidth	= ($imgname != 'poll_center') ? (int) $imgwidth : 0;
+				$imgheight	= (int) $imgheight;
 			}
 
-			if ($update && phpbb_request::is_set_post('imgpath'))
+			if (strpos($imgpath, '/') !== false)
 			{
-				if ($valid_name)
-				{
-					// If imgwidth and imgheight are non-zero grab the actual size
-					// from the image itself ... we ignore width settings for the poll center image
-					$imgwidth	= request_var('imgwidth', 0);
-					$imgheight	= request_var('imgheight', 0);
-					$imglang = '';
-
-					if ($imgpath && !file_exists(PHPBB_ROOT_PATH . "styles/$imageset_path/imageset/$imgpath"))
-					{
-						trigger_error(phpbb::$user->lang['NO_IMAGE_ERROR'] . adm_back_link($this->u_action), E_USER_WARNING);
-					}
-
-					if ($imgsize && $imgpath)
-					{
-						if (!$imgwidth || !$imgheight)
-						{
-							list($imgwidth_file, $imgheight_file) = getimagesize(PHPBB_ROOT_PATH . "styles/$imageset_path/imageset/$imgpath");
-							$imgwidth = ($imgwidth) ? $imgwidth : $imgwidth_file;
-							$imgheight = ($imgheight) ? $imgheight : $imgheight_file;
-						}
-						$imgwidth	= ($imgname != 'poll_center') ? (int) $imgwidth : 0;
-						$imgheight	= (int) $imgheight;
-					}
-
-
-					if (strpos($imgpath, '/') !== false)
-					{
-						list($imglang, $imgfilename) = explode('/', $imgpath);
-					}
-					else
-					{
-						$imgfilename = $imgpath;
-					}
-
-					$sql_ary = array(
-						'image_filename'	=> (string) $imgfilename,
-						'image_width'		=> (int) $imgwidth,
-						'image_height'		=> (int) $imgheight,
-						'image_lang'		=> (string) $imglang,
-					);
-
-					// already exists
-					if ($imageset_data_row)
-					{
-						$sql = 'UPDATE ' . STYLES_IMAGESET_DATA_TABLE . '
-							SET ' . phpbb::$db->sql_build_array('UPDATE', $sql_ary) . "
-							WHERE image_id = $image_id";
-						phpbb::$db->sql_query($sql);
-					}
-					// does not exist
-					else if (!$imageset_data_row)
-					{
-						$sql_ary['image_name']	= $imgname;
-						$sql_ary['imageset_id']	= (int) $imageset_id;
-						phpbb::$db->sql_query('INSERT INTO ' . STYLES_IMAGESET_DATA_TABLE . ' ' . phpbb::$db->sql_build_array('INSERT', $sql_ary));
-					}
-
-					phpbb::$acm->destroy_sql(STYLES_IMAGESET_DATA_TABLE);
-
-					add_log('admin', 'LOG_IMAGESET_EDIT', $imageset_name);
-
-					phpbb::$template->assign_var('SUCCESS', true);
-
-					$image_filename = $imgfilename;
-					$image_width	= $imgwidth;
-					$image_height	= $imgheight;
-					$image_lang		= $imglang;
-				}
+				list($imglang, $imgfilename) = explode('/', $imgpath);
 			}
+			else
+			{
+				$imgfilename = $imgpath;
+			}
+
+			$sql_ary = array(
+				'image_filename'	=> (string) $imgfilename,
+				'image_width'		=> (int) $imgwidth,
+				'image_height'		=> (int) $imgheight,
+				'image_lang'		=> (string) $imglang,
+			);
+
+			// already exists
+			if ($imageset_data_row)
+			{
+				$sql = 'UPDATE ' . STYLES_IMAGESET_DATA_TABLE . '
+					SET ' . phpbb::$db->sql_build_array('UPDATE', $sql_ary) . "
+					WHERE image_id = $image_id";
+				phpbb::$db->sql_query($sql);
+			}
+			// does not exist
+			else if (!$imageset_data_row)
+			{
+				$sql_ary['image_name']	= $imgname;
+				$sql_ary['imageset_id']	= (int) $imageset_id;
+				phpbb::$db->sql_query('INSERT INTO ' . STYLES_IMAGESET_DATA_TABLE . ' ' . phpbb::$db->sql_build_array('INSERT', $sql_ary));
+			}
+
+			phpbb::$acm->destroy_sql(STYLES_IMAGESET_DATA_TABLE);
+
+			add_log('admin', 'LOG_IMAGESET_EDIT', $imageset_name);
+
+			phpbb::$template->assign_var('SUCCESS', true);
+
+			$image_filename = $imgfilename;
+			$image_width	= $imgwidth;
+			$image_height	= $imgheight;
+			$image_lang		= $imglang;
 		}
 
 		$imglang = '';
@@ -1355,6 +1358,8 @@ parse_css_file = {PARSE_CSS_FILE}
 			'U_BACK'			=> $this->u_action,
 			'NAME'				=> $imageset_name,
 			'A_NAME'			=> addslashes($imageset_name),
+			'PATH'				=> $imageset_path,
+			'A_PATH'			=> addslashes($imageset_path),
 			'ERROR'				=> !$valid_name,
 			'IMG_SRC'			=> ($image_found) ? '../styles/' . $imageset_path . '/imageset/' . $img_val : 'images/no_image.png',
 			'IMAGE_SELECT'		=> $image_found,

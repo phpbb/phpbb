@@ -242,7 +242,7 @@ if ($thumbnail)
 {
 	$attachment['physical_filename'] = 'thumb_' . $attachment['physical_filename'];
 }
-else if (($display_cat == ATTACHMENT_CATEGORY_NONE || $display_cat == ATTACHMENT_CATEGORY_IMAGE) && !$attachment['is_orphan'])
+else if (($display_cat == ATTACHMENT_CATEGORY_NONE/* || $display_cat == ATTACHMENT_CATEGORY_IMAGE*/) && !$attachment['is_orphan'])
 {
 	// Update download count
 	$sql = 'UPDATE ' . ATTACHMENTS_TABLE . '
@@ -437,7 +437,12 @@ function send_file_to_browser($attachment, $upload_dir, $category)
 	$is_ie8 = (strpos(strtolower(phpbb::$user->system['browser']), 'msie 8.0') !== false);
 	header('Content-Type: ' . $attachment['mimetype'] . (($is_ie8) ? '; authoritative=true;' : ''));
 
-	if (empty(phpbb::$user->system['browser']) || (!$is_ie8 && (strpos(strtolower(phpbb::$user->system['browser']), 'msie') !== false)))
+	if ($category == ATTACHMENT_CATEGORY_FLASH && request_var('view', 0) === 1)
+	{
+		// We use content-disposition: inline for flash files and view=1 to let it correctly play with flash player 10 - any other disposition will fail to play inline
+		header('Content-Disposition: inline');
+	}
+	else if (empty(phpbb::$user->system['browser']) || (!$is_ie8 && (strpos(strtolower(phpbb::$user->system['browser']), 'msie') !== false)))
 	{
 		header('Content-Disposition: attachment; ' . header_filename(htmlspecialchars_decode($attachment['real_filename'])));
 		if (empty(phpbb::$user->system['browser']) || (strpos(strtolower(phpbb::$user->system['browser']), 'msie 6.0') !== false))

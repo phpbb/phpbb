@@ -395,7 +395,7 @@ if ($keywords || $author || $author_id || $search_id || $submit)
 
 			while ($row = phpbb::$db->sql_fetchrow($result))
 			{
-				$id_ary[] = $row[$field];
+				$id_ary[] = (int) $row[$field];
 			}
 			phpbb::$db->sql_freeresult($result);
 

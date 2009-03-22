@@ -10,7 +10,10 @@
 
 $updates_to_version = '3.1.0';
 
-// Return if we "just include it" to find out for which version the database update is responsuble for
+// Enter any version to update from to test updates. The version within the db will not be updated.
+$debug_from_version = false;
+
+// Return if we "just include it" to find out for which version the database update is responsible for
 if (defined('IN_PHPBB') && defined('IN_INSTALL'))
 {
 	return;
@@ -86,7 +89,7 @@ header('Content-type: text/html; charset=UTF-8');
 		<div class="panel">
 			<span class="corners-top"><span></span></span>
 				<div id="content">
-					<div id="main">
+					<div id="main" class="install-body">
 
 	<h1><?php echo phpbb::$user->lang['UPDATING_TO_LATEST_STABLE']; ?></h1>
 
@@ -105,6 +108,12 @@ echo phpbb::$user->lang['UPDATED_VERSION'] . ' :: <strong>' . $updates_to_versio
 $current_version = str_replace('rc', 'RC', strtolower(phpbb::$config['version']));
 $latest_version = str_replace('rc', 'RC', strtolower($updates_to_version));
 $orig_version = phpbb::$config['version'];
+
+// Fill DB version
+if (empty(phpbb::$config['dbms_version']))
+{
+	set_config('dbms_version', phpbb::$db->sql_server_info(true));
+}
 
 // If the latest version and the current version are 'unequal', we will update the version_update_from, else we do not update anything.
 if ($inline_update)
@@ -224,11 +233,14 @@ $errored = $no_updates = false;
 
 flush();
 
-// update the version
-$sql = "UPDATE " . CONFIG_TABLE . "
-	SET config_value = '$updates_to_version'
-	WHERE config_name = 'version'";
-_sql($sql, $errored, $error_ary);
+if ($debug_from_version === false)
+{
+	// update the version
+	$sql = "UPDATE " . CONFIG_TABLE . "
+		SET config_value = '$updates_to_version'
+		WHERE config_name = 'version'";
+	_sql($sql, $errored, $error_ary);
+}
 
 // Reset permissions
 $sql = 'UPDATE ' . USERS_TABLE . "

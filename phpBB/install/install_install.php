@@ -1712,7 +1712,7 @@ class install_install extends module
 		'Heritrix [Crawler]'		=> array('heritrix/1.', ''),
 		'IBM Research [Bot]'		=> array('ibm.com/cs/crawler', ''),
 		'ICCrawler - ICjobs'		=> array('ICCrawler - ICjobs', ''),
-		'ichiro [Crawler]'			=> array('ichiro/2', ''),
+		'ichiro [Crawler]'			=> array('ichiro/', ''),
 		'Majestic-12 [Bot]'			=> array('MJ12bot/', ''),
 		'Metager [Bot]'				=> array('MetagerBot/', ''),
 		'MSN NewsBlogs'				=> array('msnbot-NewsBlogs/', ''),

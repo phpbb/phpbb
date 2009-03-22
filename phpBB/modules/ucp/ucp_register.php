@@ -50,7 +50,6 @@ class ucp_register
 			add_form_key('ucp_register_terms');
 		}
 
-
 		if (phpbb::$config['enable_confirm'])
 		{
 			include(PHPBB_ROOT_PATH . 'includes/captcha/captcha_factory.' . PHP_EXT);
@@ -466,6 +465,7 @@ class ucp_register
 
 			'S_LANG_OPTIONS'	=> language_select($data['lang']),
 			'S_TZ_OPTIONS'		=> tz_select($data['tz']),
+			'S_CONFIRM_REFRESH'	=> (phpbb::$config['enable_confirm'] && phpbb::$config['confirm_refresh']) ? true : false,
 			'S_COPPA'			=> $coppa,
 			'S_HIDDEN_FIELDS'	=> $s_hidden_fields,
 			'S_UCP_ACTION'		=> append_sid('ucp', 'mode=register'),

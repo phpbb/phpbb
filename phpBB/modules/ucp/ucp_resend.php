@@ -130,6 +130,11 @@ class ucp_resend
 					$messenger->to($row['user_email'], $row['username']);
 					$messenger->im($row['user_jabber'], $row['username']);
 
+					$messenger->headers('X-AntiAbuse: Board servername - ' . phpbb::$config['server_name']);
+					$messenger->headers('X-AntiAbuse: User_id - ' . phpbb::$user->data['user_id']);
+					$messenger->headers('X-AntiAbuse: Username - ' . phpbb::$user->data['username']);
+					$messenger->headers('X-AntiAbuse: User IP - ' . phpbb::$user->ip);
+
 					$messenger->assign_vars(array(
 						'USERNAME'			=> htmlspecialchars_decode($user_row['username']),
 						'U_USER_DETAILS'	=> generate_board_url() . '/memberlist.' . PHP_EXT . "?mode=viewprofile&u={$user_row['user_id']}",

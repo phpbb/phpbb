@@ -1541,8 +1541,8 @@ function submit_pm($mode, $subject, &$data, $put_in_outbox = true)
 
 		if ($space_taken && $files_added)
 		{
-			set_config('upload_dir_size', phpbb::$config['upload_dir_size'] + $space_taken, true);
-			set_config('num_files', phpbb::$config['num_files'] + $files_added, true);
+			set_config_count('upload_dir_size', $space_taken, true);
+			set_config_count('num_files', $files_added, true);
 		}
 	}
 

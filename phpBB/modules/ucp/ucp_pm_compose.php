@@ -1029,6 +1029,7 @@ function compose_pm($id, $mode, $action)
 		'FLASH_STATUS'			=> ($flash_status) ? phpbb::$user->lang['FLASH_IS_ON'] : phpbb::$user->lang['FLASH_IS_OFF'],
 		'SMILIES_STATUS'		=> ($smilies_status) ? phpbb::$user->lang['SMILIES_ARE_ON'] : phpbb::$user->lang['SMILIES_ARE_OFF'],
 		'URL_STATUS'			=> ($url_status) ? phpbb::$user->lang['URL_IS_ON'] : phpbb::$user->lang['URL_IS_OFF'],
+		'MAX_FONT_SIZE'			=> (int) phpbb::$config['max_post_font_size'],
 		'MINI_POST_IMG'			=> phpbb::$user->img('icon_post_target', phpbb::$user->lang['PM']),
 		'ERROR'					=> (sizeof($error)) ? implode('<br />', $error) : '',
 		'MAX_RECIPIENTS'		=> (phpbb::$config['allow_mass_pm'] && (phpbb::$acl->acl_get('u_masspm') || phpbb::$acl->acl_get('u_masspm_group'))) ? $max_recipients : 0,

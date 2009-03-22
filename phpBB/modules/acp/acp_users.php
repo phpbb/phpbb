@@ -971,6 +971,7 @@ class acp_users
 					{
 						$sql = 'DELETE FROM ' . LOG_TABLE . '
 							WHERE log_type = ' . LOG_USERS . "
+							AND reportee_id = $user_id
 							$where_sql";
 						phpbb::$db->sql_query($sql);
 

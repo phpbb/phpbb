@@ -55,7 +55,7 @@ $schema_data['phpbb_acl_options'] = array(
 	),
 	'PRIMARY_KEY'	=> 'auth_option_id',
 	'KEYS'			=> array(
-		'auth_option'		=> array('INDEX', 'auth_option'),
+		'auth_option'		=> array('UNIQUE', 'auth_option'),
 	),
 );
 

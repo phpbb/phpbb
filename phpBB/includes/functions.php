@@ -80,6 +80,35 @@ function set_config($config_name, $config_value, $is_dynamic = false)
 }
 
 /**
+* Set dynamic config value with arithmetic operation.
+*/
+function set_config_count($config_name, $increment, $is_dynamic = false)
+{
+	switch (phpbb::$db->sql_layer)
+	{
+		case 'firebird':
+			$sql_update = 'CAST(CAST(config_value as integer) + ' . (int) $increment . ' as CHAR)';
+		break;
+
+		case 'postgres':
+			$sql_update = 'int4(config_value) + ' . (int) $increment;
+		break;
+
+		// MySQL, SQlite, mssql, mssql_odbc, oracle
+		default:
+			$sql_update = 'config_value + ' . (int) $increment;
+		break;
+	}
+
+	phpbb::$db->sql_query('UPDATE ' . CONFIG_TABLE . ' SET config_value = ' . $sql_update . " WHERE config_name = '" . phpbb::$db->sql_escape($config_name) . "'");
+
+	if (!$is_dynamic)
+	{
+		phpbb::$acm->destroy('#config');
+	}
+}
+
+/**
 * Return formatted string for filesizes
 * @todo move those functions to a helper class?
 */
@@ -314,7 +343,7 @@ function markread($mode, $forum_id = false, $topic_id = false, $post_time = 0, $
 			$sql_update = array();
 			while ($row = phpbb::$db->sql_fetchrow($result))
 			{
-				$sql_update[] = $row['forum_id'];
+				$sql_update[] = (int) $row['forum_id'];
 			}
 			phpbb::$db->sql_freeresult($result);
 

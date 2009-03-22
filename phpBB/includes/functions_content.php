@@ -932,6 +932,8 @@ function parse_attachments($forum_id, &$message, &$attachments, &$update_count, 
 						'S_THUMBNAIL'		=> true,
 						'THUMB_IMAGE'		=> $thumbnail_link,
 					);
+
+					$update_count[] = $attachment['attach_id'];
 				break;
 
 				// Windows Media Streams
@@ -978,6 +980,7 @@ function parse_attachments($forum_id, &$message, &$attachments, &$update_count, 
 						'S_FLASH_FILE'	=> true,
 						'WIDTH'			=> $width,
 						'HEIGHT'		=> $height,
+						'U_VIEW_LINK'	=> $download_link . '&amp;view=1',
 					);
 
 					// Viewed/Heared File ... update the download count
@@ -1153,7 +1156,7 @@ function get_username_string($mode, $user_id, $username, $username_colour = '', 
 	switch ($mode)
 	{
 		case 'full':
-		case 'noprofile':
+		case 'no_profile':
 		case 'colour':
 
 			// Build correct username colour

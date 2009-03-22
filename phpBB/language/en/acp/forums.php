@@ -81,6 +81,7 @@ $lang = array_merge($lang, array(
 	'FORUM_EDIT_EXPLAIN'				=> 'The form below will allow you to customise this forum. Please note that moderation and post count controls are set via forum permissions for each user or usergroup.',
 	'FORUM_IMAGE'						=> 'Forum image',
 	'FORUM_IMAGE_EXPLAIN'				=> 'Location, relative to the phpBB root directory, of an additional image to associate with this forum.',
+	'FORUM_IMAGE_NO_EXIST'				=> 'The specified forum image does not exist',
 	'FORUM_LINK_EXPLAIN'				=> 'Full URL (including the protocol, i.e.: <samp>http://</samp>) to the destination location that clicking this forum will take the user, e.g.: <samp>http://www.phpbb.com/</samp>.',
 	'FORUM_LINK_TRACK'					=> 'Track link redirects',
 	'FORUM_LINK_TRACK_EXPLAIN'			=> 'Records the number of times a forum link was clicked.',

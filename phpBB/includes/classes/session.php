@@ -1192,6 +1192,11 @@ abstract class phpbb_session
 
 				foreach (explode(',', $row['bot_ip']) as $bot_ip)
 				{
+					if (!trim($bot_ip))
+					{
+						continue;
+					}
+
 					if (strpos($this->system['ip'], $bot_ip) === 0)
 					{
 						$bot = (int) $row['user_id'];

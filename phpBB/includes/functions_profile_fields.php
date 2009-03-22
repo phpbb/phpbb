@@ -37,8 +37,8 @@ class custom_profile
 		switch ($mode)
 		{
 			case 'register':
-				// If the field is required we show it on the registration page and do not show hidden fields
-				$sql_where .= ' AND (f.field_show_on_reg = 1 OR f.field_required = 1) AND f.field_hide = 0';
+				// If the field is required we show it on the registration page
+				$sql_where .= ' AND f.field_show_on_reg = 1';
 			break;
 
 			case 'profile':

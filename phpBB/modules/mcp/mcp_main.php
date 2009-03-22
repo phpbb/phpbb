@@ -909,6 +909,11 @@ function mcp_delete_post($post_ids)
 	}
 	else
 	{
+		if ($affected_topics != 1 || $deleted_topics || !$topic_id)
+		{
+			$redirect = append_sid('mcp', "f=$forum_id&i=main&mode=forum_view", false);
+		}
+
 		meta_refresh(3, $redirect);
 		trigger_error($success_msg . '<br /><br />' . sprintf(phpbb::$user->lang['RETURN_PAGE'], '<a href="' . $redirect . '">', '</a>') . '<br /><br />' . implode('<br /><br />', $return_link));
 	}
@@ -1160,8 +1165,8 @@ function mcp_fork_topic($topic_ids)
 		}
 
 		sync('forum', 'forum_id', $to_forum_id);
-		set_config('num_topics', phpbb::$config['num_topics'] + sizeof($new_topic_id_list), true);
-		set_config('num_posts', phpbb::$config['num_posts'] + $total_posts, true);
+		set_config_count('num_topics', sizeof($new_topic_id_list), true);
+		set_config_count('num_posts', $total_posts, true);
 
 		foreach ($new_topic_id_list as $topic_id => $new_topic_id)
 		{

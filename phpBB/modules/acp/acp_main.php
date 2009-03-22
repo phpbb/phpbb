@@ -503,6 +503,12 @@ class acp_main
 			phpbb::$template->assign_var('S_WRITABLE_CONFIG', (bool) (@fileperms(PHPBB_ROOT_PATH . 'config.' . PHP_EXT) & 0x0002));
 		}
 
+		// Fill dbms version if not yet filled
+		if (empty(phpbb::$config['dbms_version']))
+		{
+			set_config('dbms_version', phpbb::$db->sql_server_info(true));
+		}
+
 		$this->tpl_name = 'acp_main';
 		$this->page_title = 'ACP_MAIN';
 	}

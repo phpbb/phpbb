@@ -336,7 +336,7 @@ class ucp_groups
 						'S_GROUP_DEFAULT'	=> ($row['group_id'] == phpbb::$user->data['group_id']) ? true : false,
 					));
 
-					$group_id_ary[] = $row['group_id'];
+					$group_id_ary[] = (int) $row['group_id'];
 				}
 				phpbb::$db->sql_freeresult($result);
 

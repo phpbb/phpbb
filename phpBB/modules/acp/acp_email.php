@@ -118,7 +118,7 @@ class acp_email
 				{
 					if (($row['user_notify_type'] == NOTIFY_EMAIL && $row['user_email']) ||
 						($row['user_notify_type'] == NOTIFY_IM && $row['user_jabber']) ||
-						($row['user_notify_type'] == NOTIFY_BOTH && $row['user_email'] && $row['user_jabber']))
+						($row['user_notify_type'] == NOTIFY_BOTH && ($row['user_email'] || $row['user_jabber'])))
 					{
 						if ($i == $max_chunk_size || $row['user_lang'] != $old_lang || $row['user_notify_type'] != $old_notify_type)
 						{
