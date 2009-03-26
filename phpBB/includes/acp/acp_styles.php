@@ -37,7 +37,10 @@ class acp_styles
 		// Hardcoded template bitfield to add for new templates
 		$bitfield = new bitfield();
 		$bitfield->set(0);
+		$bitfield->set(1);
+		$bitfield->set(2);
 		$bitfield->set(3);
+		$bitfield->set(4);
 		$bitfield->set(8);
 		$bitfield->set(9);
 		$bitfield->set(11);
@@ -3216,7 +3219,16 @@ parse_css_file = {PARSE_CSS_FILE}
 
 		if (isset($cfg_data['inherit_from']) && $cfg_data['inherit_from'])
 		{
-			$sql = "SELECT {$mode}_id, {$mode}_name, {$mode}_path, {$mode}_storedb
+			if ($mode === 'template')
+			{
+				$select_bf = ', template_bitfield';
+			}
+			else
+			{
+				$select_bf = '';
+			}
+			
+			$sql = "SELECT {$mode}_id, {$mode}_name, {$mode}_path, {$mode}_storedb, $select_bf
 				FROM $sql_from
 				WHERE {$mode}_name = '" . $db->sql_escape($cfg_data['inherit_from']) . "'
 					AND {$mode}_inherits_id = 0";
@@ -3231,6 +3243,7 @@ parse_css_file = {PARSE_CSS_FILE}
 			{
 				$inherit_id = $row["{$mode}_id"];
 				$inherit_path = $row["{$mode}_path"];
+				$inherit_bf = ($mode === 'template') ? $row["{$mode}_bitfield"] : false;
 				$cfg_data['store_db'] = $row["{$mode}_storedb"];
 				$store_db = $row["{$mode}_storedb"];
 			}
@@ -3260,6 +3273,10 @@ parse_css_file = {PARSE_CSS_FILE}
 				if (!empty($cfg_data['template_bitfield']))
 				{
 					$sql_ary['bbcode_bitfield'] = $cfg_data['template_bitfield'];
+				}
+				else if ($inherit_bf)
+				{
+					$sql_ary['bbcode_bitfield'] = $inherit_bf;
 				}
 				else
 				{
