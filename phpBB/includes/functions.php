@@ -563,6 +563,9 @@ function phpbb_chmod($filename, $perms = CHMOD_READ)
 
 	if ($_chmod_info['process'])
 	{
+		$file_uid = fileowner($filename);
+		$file_gid = filegroup($filename);
+
 		// Change owner
 		if (@chown($filename, $_chmod_info['common_owner']))
 		{
