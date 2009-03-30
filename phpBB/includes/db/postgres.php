@@ -170,7 +170,7 @@ class phpbb_dbal_postgres extends phpbb_dbal
 		// if $total is set to 0 we do not want to limit the number of rows
 		if ($total == 0)
 		{
-			$total = -1;
+			$total = 'ALL';
 		}
 
 		$query .= "\n LIMIT $total OFFSET $offset";
