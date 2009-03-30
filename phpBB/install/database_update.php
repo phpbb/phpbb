@@ -947,7 +947,11 @@ function change_database_data(&$no_updates, $version)
 						FROM ' . ACL_OPTIONS_TABLE . "
 						WHERE auth_option = '" . $db->sql_escape($option) . "'
 						ORDER BY auth_option_id DESC";
-					$result = $db->sql_query_limit($sql, 0, 1);
+					// sql_query_limit not possible here, due to bug in postgresql layer
+					$result = $db->sql_query($sql);
+
+					// Skip first row, this is our original auth option we want to preserve
+					$row = $db->sql_fetchrow($result);
 
 					while ($row = $db->sql_fetchrow($result))
 					{

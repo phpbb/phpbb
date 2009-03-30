@@ -26,7 +26,7 @@ include_once($phpbb_root_path . 'includes/db/dbal.' . $phpEx);
 class dbal_postgres extends dbal
 {
 	var $last_query_text = '';
-	
+
 	/**
 	* Connect to server
 	*/
@@ -55,7 +55,7 @@ class dbal_postgres extends dbal
 			{
 				$connect_string .= "host=$sqlserver ";
 			}
-		
+
 			if ($port)
 			{
 				$connect_string .= "port=$port ";
@@ -224,7 +224,7 @@ class dbal_postgres extends dbal
 		// if $total is set to 0 we do not want to limit the number of rows
 		if ($total == 0)
 		{
-			$total = -1;
+			$total = 'ALL';
 		}
 
 		$query .= "\n LIMIT $total OFFSET $offset";
