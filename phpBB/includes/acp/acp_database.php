@@ -82,6 +82,7 @@ class acp_database
 						}
 
 						@set_time_limit(1200);
+						@set_time_limit(0);
 
 						$time = time();
 
@@ -555,6 +556,7 @@ class base_extractor
 	function write_end()
 	{
 		static $close;
+
 		if ($this->store)
 		{
 			if ($close === null)
