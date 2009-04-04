@@ -1129,7 +1129,7 @@ function truncate_string($string, $max_length = 60, $max_store_length = 255, $al
 			array_pop($chars);
 			$string = implode('', $chars);
 		}
-		while (utf8_strlen($string) > $max_store_length || !sizeof($chars));
+		while (!empty($char) && utf8_strlen($string) > $max_store_length);
 	}
 
 	if ($strip_reply)
