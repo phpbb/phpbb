@@ -453,7 +453,7 @@ class bbcode_firstpass extends bbcode
 			break;
 
 			default:
-				return '[code:' . $this->bbcode_uid . ']' . $this->bbcode_specialchars(trim($code)) . '[/code:' . $this->bbcode_uid . ']';
+				return '[code:' . $this->bbcode_uid . ']' . $this->bbcode_specialchars($code) . '[/code:' . $this->bbcode_uid . ']';
 			break;
 		}
 	}
