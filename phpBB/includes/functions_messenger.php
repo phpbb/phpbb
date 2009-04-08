@@ -42,6 +42,7 @@ class messenger
 
 		// Determine EOL character (\n for UNIX, \r\n for Windows and \r for Mac)
 		$this->eol = (!defined('PHP_EOL')) ? (($eol = strtolower(substr(PHP_OS, 0, 3))) == 'win') ? "\r\n" : (($eol == 'mac') ? "\r" : "\n") : PHP_EOL;
+		$this->eol = (!$this->eol) ? "\n" : $this->eol;
 	}
 
 	/**
