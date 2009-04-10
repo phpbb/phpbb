@@ -262,9 +262,9 @@ $db->sql_freeresult($result);
 if (!$topic_data)
 {
 	// If post_id was submitted, we try at least to display the topic as a last resort...
-	if ($post_id && $forum_id && $topic_id)
+	if ($post_id && $topic_id)
 	{
-		redirect(append_sid("{$phpbb_root_path}viewtopic.$phpEx", "f=$forum_id&amp;t=$topic_id"));
+		redirect(append_sid("{$phpbb_root_path}viewtopic.$phpEx", "t=$topic_id" . (($forum_id) ? "&amp;f=$forum_id" : '')));
 	}
 
 	trigger_error('NO_TOPIC');
