@@ -652,7 +652,21 @@ function delete_posts($where_type, $where_ids, $auto_sync = true, $posted_sync =
 			return false;
 		}
 
-		$where_clause = $db->sql_in_set($where_type, array_map('intval', $where_ids));
+		$where_ids = array_map('intval', $where_ids);
+
+/*		Possible code for splitting post deletion
+		if (sizeof($where_ids) >= 1001)
+		{
+			// Split into chunks of 1000
+			$chunks = array_chunk($where_ids, 1000);
+
+			foreach ($chunks as $_where_ids)
+			{
+				delete_posts($where_type, $_where_ids, $auto_sync, $posted_sync, $post_count_sync, $call_delete_topics);
+			}
+		}*/
+
+		$where_clause = $db->sql_in_set($where_type, $where_ids);
 	}
 
 	$approved_posts = 0;
@@ -665,10 +679,10 @@ function delete_posts($where_type, $where_ids, $auto_sync = true, $posted_sync =
 
 	while ($row = $db->sql_fetchrow($result))
 	{
-		$post_ids[] = $row['post_id'];
-		$poster_ids[] = $row['poster_id'];
-		$topic_ids[] = $row['topic_id'];
-		$forum_ids[] = $row['forum_id'];
+		$post_ids[] = (int) $row['post_id'];
+		$poster_ids[] = (int) $row['poster_id'];
+		$topic_ids[] = (int) $row['topic_id'];
+		$forum_ids[] = (int) $row['forum_id'];
 
 		if ($row['post_postcount'] && $post_count_sync && $row['post_approved'])
 		{
