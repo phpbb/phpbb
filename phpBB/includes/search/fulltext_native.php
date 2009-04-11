@@ -650,8 +650,12 @@ class fulltext_native extends search_backend
 				case 'mysql4':
 				case 'mysqli':
 
+					$sql_array_copy = $sql_array;
+
 					// 3.x does not support SQL_CALC_FOUND_ROWS
-					$sql_array['SELECT'] = 'SQL_CALC_FOUND_ROWS ' . $sql_array['SELECT'];
+					// $sql_array['SELECT'] = 'SQL_CALC_FOUND_ROWS ' . $sql_array['SELECT'];
+					$sql_array_copy['SELECT'] = 'SQL_CALC_FOUND_ROWS p.post_id ';
+
 					$is_mysql = true;
 
 				break;
@@ -730,8 +734,14 @@ class fulltext_native extends search_backend
 		}
 
 		// if we use mysql and the total result count is not cached yet, retrieve it from the db
-		if (!$total_results && $is_mysql)
+		if (!$total_results && $is_mysql && !empty($sql_array_copy))
 		{
+			$sql = $db->sql_build_query('SELECT', $sql_array_copy);
+			unset($sql_array_copy);
+
+			$db->sql_query($sql);
+			$db->sql_freeresult($result);
+
 			$sql = 'SELECT FOUND_ROWS() as total_results';
 			$result = $db->sql_query($sql);
 			$total_results = (int) $db->sql_fetchfield('total_results');
@@ -855,7 +865,7 @@ class fulltext_native extends search_backend
 			{
 				case 'mysql4':
 				case 'mysqli':
-					$select = 'SQL_CALC_FOUND_ROWS ' . $select;
+//					$select = 'SQL_CALC_FOUND_ROWS ' . $select;
 					$is_mysql = true;
 				break;
 
@@ -948,6 +958,12 @@ class fulltext_native extends search_backend
 
 		if (!$total_results && $is_mysql)
 		{
+			// Count rows for the executed queries. Replace $select within $sql with SQL_CALC_FOUND_ROWS, and run it.
+			$sql = str_replace('SELECT ' . $select, 'SELECT DISTINCT SQL_CALC_FOUND_ROWS p.post_id', $sql);
+
+			$db->sql_query($sql);
+			$db->sql_freeresult($result);
+
 			$sql = 'SELECT FOUND_ROWS() as total_results';
 			$result = $db->sql_query($sql);
 			$total_results = (int) $db->sql_fetchfield('total_results');
