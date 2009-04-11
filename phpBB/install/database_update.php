@@ -11,7 +11,7 @@
 $updates_to_version = '3.0.5-dev';
 
 // Enter any version to update from to test updates. The version within the db will not be updated.
-$debug_from_version = '3.0.4';
+$debug_from_version = false;
 
 // Return if we "just include it" to find out for which version the database update is responsible for
 if (defined('IN_PHPBB') && defined('IN_INSTALL'))
@@ -895,6 +895,9 @@ function change_database_data(&$no_updates, $version)
 			set_config('captcha_gd_fonts', 1);
 
 			set_config('confirm_refresh', 1);
+
+			// Maximum number of keywords
+			set_config('max_num_search_keywords', 10);
 
 			// Hash old MD5 passwords
 			$sql = 'SELECT user_id, user_password

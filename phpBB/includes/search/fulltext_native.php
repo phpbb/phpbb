@@ -167,6 +167,13 @@ class fulltext_native extends search_backend
 		);
 
 		$keywords = preg_replace($match, $replace, $keywords);
+		$num_keywords = sizeof(explode(' ', $keywords));
+
+		// We limit the number of allowed keywords to minimize load on the database
+		if ($config['max_num_search_keywords'] && $num_keywords > $config['max_num_search_keywords'])
+		{
+			trigger_error($user->lang('MAX_NUM_SEARCH_KEYWORDS_REFINE', $config['max_num_search_keywords'], $num_keywords));
+		}
 
 		// $keywords input format: each word separated by a space, words in a bracket are not separated
 
@@ -693,7 +700,7 @@ class fulltext_native extends search_backend
 				$sql_where[] = 'f.forum_id = p.forum_id';
 			break;
 		}
-		
+
 		if ($left_join_topics)
 		{
 			$sql_array['LEFT_JOIN'][$left_join_topics] = array(
@@ -1110,7 +1117,7 @@ class fulltext_native extends search_backend
 
 		// Get unique words from the above arrays
 		$unique_add_words = array_unique(array_merge($words['add']['post'], $words['add']['title']));
-		
+
 		// We now have unique arrays of all words to be added and removed and
 		// individual arrays of added and removed words for text and title. What
 		// we need to do now is add the new words (if they don't already exist)

@@ -160,6 +160,7 @@ INSERT INTO phpbb_config (config_name, config_value) VALUES ('max_filesize', '26
 INSERT INTO phpbb_config (config_name, config_value) VALUES ('max_filesize_pm', '262144');
 INSERT INTO phpbb_config (config_name, config_value) VALUES ('max_login_attempts', '3');
 INSERT INTO phpbb_config (config_name, config_value) VALUES ('max_name_chars', '20');
+INSERT INTO phpbb_config (config_name, config_value) VALUES ('max_num_search_keywords', '10');
 INSERT INTO phpbb_config (config_name, config_value) VALUES ('max_pass_chars', '30');
 INSERT INTO phpbb_config (config_name, config_value) VALUES ('max_poll_options', '10');
 INSERT INTO phpbb_config (config_name, config_value) VALUES ('max_post_chars', '60000');
