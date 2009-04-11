@@ -122,8 +122,8 @@ $lang = array_merge($lang, array(
 	'CONFIRM_EMAIL'				=> 'Confirm e-mail address',
 	'CONFIRM_EMAIL_EXPLAIN'		=> 'You only need to specify this if you are changing your e-mail address.',
 	'CONFIRM_EXPLAIN'			=> 'To prevent automated registrations the board requires you to enter a confirmation code. The code is displayed in the image you should see below. If you are visually impaired or cannot otherwise read this code please contact the %sBoard Administrator%s.',
-	'VC_REFRESH'				=> 'New Image',
-	'VC_REFRESH_EXPLAIN'		=> 'If you cannot read the code, then you can request a new one by clicking the button.',
+	'VC_REFRESH'				=> 'Refresh confirmation code',
+	'VC_REFRESH_EXPLAIN'		=> 'If you cannot read the code you can request a new one by clicking the button.',
 
 	'CONFIRM_PASSWORD'			=> 'Confirm password',
 	'CONFIRM_PASSWORD_EXPLAIN'	=> 'You only need to confirm your password if you changed it above.',

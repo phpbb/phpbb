@@ -11,7 +11,7 @@
 $updates_to_version = '3.0.5-dev';
 
 // Enter any version to update from to test updates. The version within the db will not be updated.
-$debug_from_version = false;
+$debug_from_version = '3.0.4';
 
 // Return if we "just include it" to find out for which version the database update is responsible for
 if (defined('IN_PHPBB') && defined('IN_INSTALL'))

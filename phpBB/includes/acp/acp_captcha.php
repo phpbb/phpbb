@@ -42,10 +42,12 @@ class acp_captcha
 		if (isset($_GET['demo']))
 		{
 			$captcha_vars = array_keys($captcha_vars);
+
 			foreach ($captcha_vars as $captcha_var)
 			{
 				$config[$captcha_var] = (isset($_REQUEST[$captcha_var])) ? request_var($captcha_var, 0) : $config[$captcha_var];
 			}
+
 			if ($config['captcha_gd'])
 			{
 				include($phpbb_root_path . 'includes/captcha/captcha_gd.' . $phpEx);
@@ -54,8 +56,9 @@ class acp_captcha
 			{
 				include($phpbb_root_path . 'includes/captcha/captcha_non_gd.' . $phpEx);
 			}
+
 			$captcha = new captcha();
-			$captcha->execute(gen_rand_string(mt_rand(5, 8)), time());
+			$captcha->execute(gen_rand_string(mt_rand(CAPTCHA_MIN_CHARS, CAPTCHA_MAX_CHARS)), time());
 			exit;
 		}
 
@@ -76,11 +79,14 @@ class acp_captcha
 		if ($submit && check_form_key($form_key))
 		{
 			$config_vars = array_keys($config_vars);
+
 			foreach ($config_vars as $config_var)
 			{
 				set_config($config_var, request_var($config_var, ''));
 			}
+
 			$captcha_vars = array_keys($captcha_vars);
+
 			foreach ($captcha_vars as $captcha_var)
 			{
 				$value = request_var($captcha_var, 0);
@@ -89,35 +95,38 @@ class acp_captcha
 					set_config($captcha_var, $value);
 				}
 			}
+
 			trigger_error($user->lang['CONFIG_UPDATED'] . adm_back_link($this->u_action));
 		}
 		else if ($submit)
 		{
-				trigger_error($user->lang['FORM_INVALID'] . adm_back_link($this->u_action));
+			trigger_error($user->lang['FORM_INVALID'] . adm_back_link($this->u_action));
 		}
 		else
 		{
-
 			$preview_image_src = append_sid(append_sid("{$phpbb_admin_path}index.$phpEx", "i=$id&amp;demo=demo"));
+
 			if (@extension_loaded('gd'))
 			{
 				$template->assign_var('GD', true);
 			}
+
 			foreach ($config_vars as $config_var => $template_var)
 			{
 				$template->assign_var($template_var, (isset($_REQUEST[$config_var])) ? request_var($config_var, '') : $config[$config_var]) ;
 			}
+
 			foreach ($captcha_vars as $captcha_var => $template_var)
 			{
 				$var = (isset($_REQUEST[$captcha_var])) ? request_var($captcha_var, 0) : $config[$captcha_var];
 				$template->assign_var($template_var, $var);
 				$preview_image_src .= "&amp;$captcha_var=" . $var;
 			}
+
 			$template->assign_vars(array(
 				'CAPTCHA_PREVIEW'	=> $preview_image_src,
 				'PREVIEW'			=> isset($_POST['preview']),
 			));
-
 		}
 	}
 }

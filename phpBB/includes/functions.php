@@ -2632,7 +2632,7 @@ function login_box($redirect = '', $l_explain = '', $l_success = '', $admin = fa
 				$db->sql_query($sql);
 
 				// Generate code
-				$code = gen_rand_string(mt_rand(5, 8));
+				$code = gen_rand_string(mt_rand(CAPTCHA_MIN_CHARS, CAPTCHA_MAX_CHARS));
 				$confirm_id = md5(unique_id($user->ip));
 				$seed = hexdec(substr(unique_id(), 4, 10));
 
