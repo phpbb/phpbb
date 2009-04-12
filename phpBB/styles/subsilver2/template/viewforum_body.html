@@ -111,7 +111,7 @@
 	</tr>
 	</table>
 
-	<!-- IF not S_USER_LOGGED_IN -->
+	<!-- IF not S_USER_LOGGED_IN and not S_IS_BOT -->
 
 		<br /><br />
 
@@ -125,7 +125,7 @@
 			<td class="row1" align="center"><span class="genmed">{L_USERNAME}:</span> <input class="post" type="text" name="username" size="10" />&nbsp; <span class="genmed">{L_PASSWORD}:</span> <input class="post" type="password" name="password" size="10" /><!-- IF S_AUTOLOGIN_ENABLED -->&nbsp; <span class="gensmall">{L_LOG_ME_IN}</span> <input type="checkbox" class="radio" name="autologin" /><!-- ENDIF -->&nbsp; <input type="submit" class="btnmain" name="login" value="{L_LOGIN}" /></td>
 		</tr>
 		</table>
-		
+
 		</form>
 
 	<!-- ENDIF -->
@@ -298,7 +298,7 @@
 				<td class="gensmall">{L_NO_NEW_POSTS_HOT}</td>
 				<td>&nbsp;&nbsp;</td>
 				<td style="text-align: center;">{FOLDER_STICKY_IMG}</td>
-				<td class="gensmall">{L_ICON_STICKY}</td>			
+				<td class="gensmall">{L_ICON_STICKY}</td>
 			</tr>
 			<tr>
 				<td style="text-align: center;">{FOLDER_LOCKED_NEW_IMG}</td>
