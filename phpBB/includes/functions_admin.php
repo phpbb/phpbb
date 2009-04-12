@@ -664,6 +664,8 @@ function delete_posts($where_type, $where_ids, $auto_sync = true, $posted_sync =
 			{
 				delete_posts($where_type, $_where_ids, $auto_sync, $posted_sync, $post_count_sync, $call_delete_topics);
 			}
+
+			return;
 		}*/
 
 		$where_clause = $db->sql_in_set($where_type, $where_ids);
