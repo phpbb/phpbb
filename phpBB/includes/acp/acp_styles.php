@@ -3228,7 +3228,7 @@ parse_css_file = {PARSE_CSS_FILE}
 				$select_bf = '';
 			}
 			
-			$sql = "SELECT {$mode}_id, {$mode}_name, {$mode}_path, {$mode}_storedb, $select_bf
+			$sql = "SELECT {$mode}_id, {$mode}_name, {$mode}_path, {$mode}_storedb $select_bf
 				FROM $sql_from
 				WHERE {$mode}_name = '" . $db->sql_escape($cfg_data['inherit_from']) . "'
 					AND {$mode}_inherits_id = 0";
@@ -3252,6 +3252,7 @@ parse_css_file = {PARSE_CSS_FILE}
 		{
 			$inherit_id = 0;
 			$inherit_path = '';
+            $inherit_bf = false;
 		}
 
 
