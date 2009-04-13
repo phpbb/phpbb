@@ -3252,7 +3252,7 @@ parse_css_file = {PARSE_CSS_FILE}
 		{
 			$inherit_id = 0;
 			$inherit_path = '';
-            $inherit_bf = false;
+			$inherit_bf = false;
 		}
 
 
