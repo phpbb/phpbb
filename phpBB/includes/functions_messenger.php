@@ -1448,8 +1448,8 @@ function mail_encode($str)
 	$end = "?=";
 	$delimiter = "\r\n ";
 
-	// Maximum length is 75 for everything. 75 - length of start/end/delimiter == 63
-	$split_length = 63;
+	// Maximum length is 75. $split_length *must* be a multiple of 4, but <= 75 - strlen($start . $delimiter . $end)!!!
+	$split_length = 60;
 	$encoded_str = base64_encode($str);
 
 	// If encoded string meets the limits, we just return with the correct data.
