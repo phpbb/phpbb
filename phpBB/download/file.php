@@ -376,7 +376,7 @@ function send_avatar_to_browser($file, $browser)
 	}
 	else
 	{
-		header('HTTP/1.0 404 not found');
+		header('HTTP/1.0 404 Not Found');
 	}
 }
 
