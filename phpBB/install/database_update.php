@@ -655,7 +655,7 @@ function database_update_info()
 					'template_id'			=> array('UINT', 0),
 				),
 				FORUMS_TABLE				=> array(
-					'forum_style'			=> array('USINT', 0),
+					'forum_style'			=> array('UINT', 0),
 				),
 				USERS_TABLE					=> array(
 					'user_style'			=> array('UINT', 0),
@@ -667,7 +667,13 @@ function database_update_info()
 		'3.0.4-RC1'		=> array(),
 
 		// Changes from 3.0.4 to 3.0.5-dev
-		'3.0.4'			=> array(),
+		'3.0.4'			=> array(
+			'change_columns'	=> array(
+				FORUMS_TABLE				=> array(
+					'forum_style'			=> array('UINT', 0),
+				),
+			),
+		),
 	);
 }
 
