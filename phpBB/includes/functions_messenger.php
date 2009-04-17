@@ -173,7 +173,7 @@ class messenger
 	*/
 	function template($template_file, $template_lang = '')
 	{
-		global $config, $phpbb_root_path;
+		global $config, $phpbb_root_path, $user;
 
 		if (!trim($template_file))
 		{
@@ -187,7 +187,8 @@ class messenger
 
 		if (empty($this->tpl_msg[$template_lang . $template_file]))
 		{
-			$tpl_file = "{$phpbb_root_path}language/$template_lang/email/$template_file.txt";
+			$tpl_file = (!empty($user->lang_path)) ? $user->lang_path : $phpbb_root_path . 'language/';
+			$tpl_file .= $template_lang . "/email/$template_file.txt";
 
 			if (!file_exists($tpl_file))
 			{
