@@ -850,7 +850,7 @@ function compose_pm($id, $mode, $action)
 		$forward_text = array();
 		$forward_text[] = $user->lang['FWD_ORIGINAL_MESSAGE'];
 		$forward_text[] = sprintf($user->lang['FWD_SUBJECT'], censor_text($message_subject));
-		$forward_text[] = sprintf($user->lang['FWD_DATE'], $user->format_date($message_time));
+		$forward_text[] = sprintf($user->lang['FWD_DATE'], $user->format_date($message_time, false, true));
 		$forward_text[] = sprintf($user->lang['FWD_FROM'], $quote_username_text);
 		$forward_text[] = sprintf($user->lang['FWD_TO'], implode(', ', $fwd_to_field['to']));
 
