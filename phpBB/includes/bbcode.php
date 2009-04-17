@@ -134,7 +134,7 @@ class bbcode
 		{
 			$this->template_bitfield = new bitfield($user->theme['bbcode_bitfield']);
 			$this->template_filename = $phpbb_root_path . 'styles/' . $user->theme['template_path'] . '/template/bbcode.html';
-			
+
 			if (!@file_exists($this->template_filename))
 			{
 				if (isset($user->theme['template_inherits_id']) && $user->theme['template_inherits_id'])
@@ -410,7 +410,7 @@ class bbcode
 		if (empty($bbcode_hardtpl))
 		{
 			global $user;
-			
+
 			$bbcode_hardtpl = array(
 				'b_open'	=> '<span style="font-weight: bold">',
 				'b_close'	=> '</span>',
@@ -528,12 +528,12 @@ class bbcode
 		else if (is_numeric($type))
 		{
 			$tpl = 'olist_open';
-			$type = 'arabic-numbers';
+			$type = 'decimal';
 		}
 		else
 		{
 			$tpl = 'olist_open';
-			$type = 'arabic-numbers';
+			$type = 'decimal';
 		}
 
 		return str_replace('{LIST_TYPE}', $type, $this->bbcode_tpl($tpl));
