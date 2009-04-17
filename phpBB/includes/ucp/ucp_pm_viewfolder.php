@@ -328,7 +328,7 @@ function view_folder($id, $mode, $folder_id, $folder)
 				$data[] = array(
 					'subject'	=> censor_text($row['message_subject']),
 					'sender'	=> $row['username'],
-					'date'		=> $user->format_date($row['message_time']),
+					'date'		=> $user->format_date($row['message_time'], (PHP_VERSION >= 5) ? 'c' : "Y-m-d\TH:i:sO", true), // ISO 8601 date
 					'to'		=> ($folder_id == PRIVMSGS_OUTBOX || $folder_id == PRIVMSGS_SENTBOX) ? $address[$message_id] : '',
 					'message'	=> $message_row['message_text']
 				);
