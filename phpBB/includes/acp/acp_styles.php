@@ -746,7 +746,7 @@ parse_css_file = {PARSE_CSS_FILE}
 				// If it's not stored in the db yet, then update the template setting and store all template files in the db
 				if (!$template_info['template_storedb'])
 				{
-					if ($this->get_super('template', $template_id))
+					if ($super = $this->get_super('template', $template_id))
 					{
 						$this->store_in_db('template', $super['template_id']);
 					}
@@ -3227,7 +3227,7 @@ parse_css_file = {PARSE_CSS_FILE}
 			{
 				$select_bf = '';
 			}
-			
+
 			$sql = "SELECT {$mode}_id, {$mode}_name, {$mode}_path, {$mode}_storedb $select_bf
 				FROM $sql_from
 				WHERE {$mode}_name = '" . $db->sql_escape($cfg_data['inherit_from']) . "'
