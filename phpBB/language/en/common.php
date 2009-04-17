@@ -87,7 +87,7 @@ $lang = array_merge($lang, array(
 	'AVATAR_NO_SIZE'				=> 'The width or height of the linked avatar could not be determined. Please enter them manually.',
 	'AVATAR_PARTIAL_UPLOAD'			=> 'The specified file was only partially uploaded.',
 	'AVATAR_PHP_SIZE_NA'			=> 'The avatar’s filesize is too large.<br />The maximum allowed filesize set in php.ini could not be determined.',
-	'AVATAR_PHP_SIZE_OVERRUN'		=> 'The avatar’s filesize is too large. The maximum allowed upload size is %d MB.<br />Please note this is set in php.ini and cannot be overridden.',
+	'AVATAR_PHP_SIZE_OVERRUN'		=> 'The avatar’s filesize is too large. The maximum allowed upload size is %1$d %2$s.<br />Please note this is set in php.ini and cannot be overridden.',
 	'AVATAR_URL_INVALID'			=> 'The URL you specified is invalid.',
 	'AVATAR_URL_NOT_FOUND'			=> 'The file specified could not be found.',
 	'AVATAR_WRONG_FILESIZE'			=> 'The avatar’s filesize must be between 0 and %1d %2s.',
@@ -228,6 +228,8 @@ $lang = array_merge($lang, array(
 	'FTP_USERNAME_EXPLAIN'		=> 'Username used to connect to your server.',
 
 	'GENERAL_ERROR'				=> 'General Error',
+	'GB'						=> 'GB',
+	'GIB'						=> 'GiB',
 	'GO'						=> 'Go',
 	'GOTO_PAGE'					=> 'Go to page',
 	'GROUP'						=> 'Group',
