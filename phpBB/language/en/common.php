@@ -158,7 +158,7 @@ $lang = array_merge($lang, array(
 	'VIEWED_COUNT_NONE'		=> 'Not viewed yet',
 
 	'EDIT_POST'							=> 'Edit post',
-	'EMAIL'								=> 'E-mail',
+	'EMAIL'								=> 'E-mail', // Short form for EMAIL_ADDRESS
 	'EMAIL_ADDRESS'						=> 'E-mail address',
 	'EMAIL_SMTP_ERROR_RESPONSE'			=> 'Ran into problems sending e-mail at <strong>Line %1$s</strong>. Response: %2$s.',
 	'EMPTY_SUBJECT'						=> 'You must specify a subject when posting a new topic.',
@@ -520,7 +520,7 @@ $lang = array_merge($lang, array(
 	'SELECT_ALL_CODE'			=> 'Select all',
 	'SELECT_DESTINATION_FORUM'	=> 'Please select a destination forum',
 	'SELECT_FORUM'				=> 'Select a forum',
-	'SEND_EMAIL'				=> 'E-mail',
+	'SEND_EMAIL'				=> 'E-mail',				// Used for submit buttons
 	'SEND_EMAIL_USER'			=> 'E-mail',				// Used as: {L_SEND_EMAIL_USER} {USERNAME} -> E-mail UserX
 	'SEND_PRIVATE_MESSAGE'		=> 'Send private message',
 	'SETTINGS'					=> 'Settings',
