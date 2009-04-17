@@ -39,12 +39,19 @@ function popup(url, width, height, name)
 function jumpto()
 {
 	var page = prompt('{LA_JUMP_PAGE}:', '{ON_PAGE}');
-	var perpage = '{PER_PAGE}';
+	var per_page = '{PER_PAGE}';
 	var base_url = '{A_BASE_URL}';
 
-	if (page !== null && !isNaN(page) && page > 0)
+	if (page !== null && !isNaN(page) && page == Math.floor(page) && page > 0)
 	{
-		document.location.href = base_url.replace(/&amp;/g, '&') + '&start=' + ((page - 1) * perpage);
+		if (base_url.indexOf('?') == -1)
+		{
+			document.location.href = base_url + '?start=' + ((page - 1) * per_page);
+		}
+		else
+		{
+			document.location.href = base_url.replace(/&amp;/g, '&') + '&start=' + ((page - 1) * per_page);
+		}
 	}
 }
 
