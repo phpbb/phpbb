@@ -1126,7 +1126,7 @@ function user_notification($mode, $subject, $topic_title, $forum_name, $forum_id
 
 	if (!$topic_notification && !$forum_notification)
 	{
-		trigger_error('WRONG_NOTIFICATION_MODE');
+		trigger_error('NO_MODE');
 	}
 
 	if (($topic_notification && !$config['allow_topic_notify']) || ($forum_notification && !$config['allow_forum_notify']))
