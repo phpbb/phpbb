@@ -614,7 +614,7 @@ function create_thumbnail($source, $destination, $mimetype)
 	list($new_width, $new_height) = get_img_size_format($width, $height);
 
 	// Do not create a thumbnail if the resulting width/height is bigger than the original one
-	if ($new_width > $width && $new_height > $height)
+	if ($new_width >= $width && $new_height >= $height)
 	{
 		return false;
 	}
