@@ -650,12 +650,8 @@ class fulltext_native extends search_backend
 				case 'mysql4':
 				case 'mysqli':
 
-					$sql_array_copy = $sql_array;
-
 					// 3.x does not support SQL_CALC_FOUND_ROWS
 					// $sql_array['SELECT'] = 'SQL_CALC_FOUND_ROWS ' . $sql_array['SELECT'];
-					$sql_array_copy['SELECT'] = 'SQL_CALC_FOUND_ROWS p.post_id ';
-
 					$is_mysql = true;
 
 				break;
@@ -707,7 +703,7 @@ class fulltext_native extends search_backend
 
 		if ($left_join_topics)
 		{
-			$sql_array['LEFT_JOIN'][$left_join_topics] = array(
+			$sql_array['LEFT_JOIN'][] = array(
 				'FROM'	=> array(TOPICS_TABLE => 't'),
 				'ON'	=> 'p.topic_id = t.topic_id'
 			);
@@ -734,8 +730,12 @@ class fulltext_native extends search_backend
 		}
 
 		// if we use mysql and the total result count is not cached yet, retrieve it from the db
-		if (!$total_results && $is_mysql && !empty($sql_array_copy))
+		if (!$total_results && $is_mysql)
 		{
+			// Count rows for the executed queries. Replace $select within $sql with SQL_CALC_FOUND_ROWS, and run it.
+			$sql_array_copy = $sql_array;
+			$sql_array_copy['SELECT'] = 'SQL_CALC_FOUND_ROWS p.post_id ';
+
 			$sql = $db->sql_build_query('SELECT', $sql_array_copy);
 			unset($sql_array_copy);
 
