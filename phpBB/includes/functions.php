@@ -236,6 +236,11 @@ function get_formatted_filesize($bytes, $add_size_lang = true)
 {
 	global $user;
 
+	if ($bytes >= pow(2, 30))
+	{
+		return ($add_size_lang) ? round($bytes / 1024 / 1024 / 1024, 2) . ' ' . $user->lang['GIB'] : round($bytes / 1024 / 1024 / 1024, 2);
+	}
+
 	if ($bytes >= pow(2, 20))
 	{
 		return ($add_size_lang) ? round($bytes / 1024 / 1024, 2) . ' ' . $user->lang['MIB'] : round($bytes / 1024 / 1024, 2);
@@ -3240,6 +3245,7 @@ function msg_handler($errno, $msg_text, $errfile, $errline)
 				$msg_text = str_replace(array(phpbb_realpath($phpbb_root_path), '\\'), array('', '/'), $msg_text);
 
 				echo '<b>[phpBB Debug] PHP Notice</b>: in file <b>' . $errfile . '</b> on line <b>' . $errline . '</b>: <b>' . $msg_text . '</b><br />' . "\n";
+				// echo '<br /><br />BACKTRACE<br />' . get_backtrace() . '<br />' . "\n";
 			}
 
 			return;
