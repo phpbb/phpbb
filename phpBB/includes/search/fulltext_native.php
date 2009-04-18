@@ -645,6 +645,14 @@ class fulltext_native extends search_backend
 			$sql = '';
 			$sql_array_count = $sql_array;
 
+			if ($left_join_topics)
+			{
+				$sql_array_count['LEFT_JOIN'][] = array(
+					'FROM'	=> array(TOPICS_TABLE => 't'),
+					'ON'	=> 'p.topic_id = t.topic_id'
+				);
+			}
+
 			switch ($db->sql_layer)
 			{
 				case 'mysql4':
