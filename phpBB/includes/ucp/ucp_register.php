@@ -188,7 +188,7 @@ class ucp_register
 					array('string', false, 6, 60),
 					array('email')),
 				'email_confirm'		=> array('string', false, 6, 60),
-				'confirm_code'		=> array('string', !$config['enable_confirm'], 5, 8),
+				'confirm_code'		=> array('string', !$config['enable_confirm'], CAPTCHA_MIN_CHARS, CAPTCHA_MAX_CHARS),
 				'tz'				=> array('num', false, -14, 14),
 				'lang'				=> array('match', false, '#^[a-z_\-]{2,}$#i'),
 			));
