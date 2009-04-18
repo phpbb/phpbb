@@ -81,7 +81,7 @@ class fulltext_native extends search_backend
 	*/
 	function split_keywords($keywords, $terms)
 	{
-		global $db, $user;
+		global $db, $user, $config;
 
 		$keywords = trim($this->cleanup($keywords, '+-|()*'));
 
