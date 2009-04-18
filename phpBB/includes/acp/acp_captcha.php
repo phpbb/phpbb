@@ -96,6 +96,7 @@ class acp_captcha
 				}
 			}
 
+			add_log('admin', 'LOG_CONFIG_VISUAL');
 			trigger_error($user->lang['CONFIG_UPDATED'] . adm_back_link($this->u_action));
 		}
 		else if ($submit)
