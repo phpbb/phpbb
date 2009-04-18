@@ -262,9 +262,9 @@ phpbb::$db->sql_freeresult($result);
 if (!$topic_data)
 {
 	// If post_id was submitted, we try at least to display the topic as a last resort...
-	if ($post_id && $forum_id && $topic_id)
+	if ($post_id && $topic_id)
 	{
-		redirect(append_sid('viewtopic', "f=$forum_id&amp;t=$topic_id"));
+		redirect(append_sid('viewtopic', "t=$topic_id" . (($forum_id) ? "&amp;f=$forum_id" : '')));
 	}
 
 	trigger_error('NO_TOPIC');
@@ -605,7 +605,7 @@ phpbb::$template->assign_vars(array(
 	'S_SINGLE_MODERATOR'	=> (!empty($forum_moderators[$forum_id]) && sizeof($forum_moderators[$forum_id]) > 1) ? false : true,
 	'S_TOPIC_ACTION' 		=> append_sid('viewtopic', "f=$forum_id&amp;t=$topic_id&amp;start=$start"),
 	'S_TOPIC_MOD' 			=> ($topic_mod != '') ? '<select name="action" id="quick-mod-select">' . $topic_mod . '</select>' : '',
-	'S_MOD_ACTION' 			=> append_sid('mcp', "f=$forum_id&amp;t=$topic_id&amp;quickmod=1&amp;redirect=" . urlencode(str_replace('&amp;', '&', $viewtopic_url)), true, phpbb::$user->session_id),
+	'S_MOD_ACTION' 			=> append_sid('mcp', "f=$forum_id&amp;t=$topic_id&amp;start=$start&amp;quickmod=1&amp;redirect=" . urlencode(str_replace('&amp;', '&', $viewtopic_url)), true, $user->session_id),
 
 	'S_VIEWTOPIC'			=> true,
 	'S_DISPLAY_SEARCHBOX'	=> (phpbb::$acl->acl_get('u_search') && phpbb::$acl->acl_get('f_search', $forum_id) && phpbb::$config['load_search']) ? true : false,
@@ -1144,7 +1144,10 @@ phpbb::$db->sql_freeresult($result);
 // Load custom profile fields
 if (phpbb::$config['load_cpf_viewtopic'])
 {
-	include(PHPBB_ROOT_PATH . 'includes/functions_profile_fields.' . PHP_EXT);
+	if (!class_exists('custom_profile'))
+	{
+		include(PHPBB_ROOT_PATH . 'includes/functions_profile_fields.' . PHP_EXT);
+	}
 	$cp = new custom_profile();
 
 	// Grab all profile fields from users in id cache for later use - similar to the poster cache
@@ -1422,7 +1425,7 @@ for ($i = 0, $end = sizeof($post_list); $i < $end; ++$i)
 		'POSTER_WARNINGS'	=> $user_cache[$poster_id]['warnings'],
 		'POSTER_AGE'		=> $user_cache[$poster_id]['age'],
 
-		'POST_DATE'			=> phpbb::$user->format_date($row['post_time']),
+		'POST_DATE'			=> phpbb::$user->format_date($row['post_time'], false, ($view == 'print') ? true : false),
 		'POST_SUBJECT'		=> $row['post_subject'],
 		'MESSAGE'			=> $message,
 		'SIGNATURE'			=> ($row['enable_sig']) ? $user_cache[$poster_id]['sig'] : '',
@@ -1515,7 +1518,7 @@ for ($i = 0, $end = sizeof($post_list); $i < $end; ++$i)
 unset($rowset, $user_cache);
 
 // Update topic view and if necessary attachment view counters ... but only for humans and if this is the first 'page view'
-if (isset(phpbb::$user->data['session_page']) && !phpbb::$user->is_bot && strpos(phpbb::$user->data['session_page'], '&t=' . $topic_id) === false)
+if (isset(phpbb::$user->data['session_page']) && !phpbb::$user->is_bot && (strpos(phpbb::$user->data['session_page'], '&t=' . $topic_id) === false || isset(phpbb::$user->data['session_created'])))
 {
 	$sql = 'UPDATE ' . TOPICS_TABLE . '
 		SET topic_views = topic_views + 1, topic_last_view_time = ' . time() . "

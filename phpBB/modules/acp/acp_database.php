@@ -78,7 +78,7 @@ class acp_database
 							$schema_data = true;
 						}
 
-						@set_time_limit(1200);
+						@set_time_limit(0);
 
 						$time = time();
 
@@ -420,25 +420,35 @@ class acp_database
 						$dir = PHPBB_ROOT_PATH . 'store/';
 						$dh = @opendir($dir);
 
+						$backup_files = array();
+
 						if ($dh)
 						{
 							while (($file = readdir($dh)) !== false)
 							{
 								if (preg_match('#^backup_(\d{10,})_[a-z\d]{16}\.(sql(?:\.(?:gz|bz2))?)$#', $file, $matches))
 								{
-									$supported = in_array($matches[2], $methods);
-
-									if ($supported == 'true')
+									if (in_array($matches[2], $methods))
 									{
-										phpbb::$template->assign_block_vars('files', array(
-											'FILE'		=> $file,
-											'NAME'		=> gmdate("d-m-Y H:i:s", $matches[1]),
-											'SUPPORTED'	=> $supported,
-										));
+										$backup_files[gmdate("d-m-Y H:i:s", $matches[1])] = $file;
 									}
 								}
 							}
 							closedir($dh);
+						}
+
+						if (!empty($backup_files))
+						{
+							krsort($backup_files);
+
+							foreach ($backup_files as $name => $file)
+							{
+								phpbb::$template->assign_block_vars('files', array(
+									'FILE'		=> $file,
+									'NAME'		=> $name,
+									'SUPPORTED'	=> true,
+								));
+							}
 						}
 
 						phpbb::$template->assign_vars(array(
@@ -540,6 +550,7 @@ class base_extractor
 	function write_end()
 	{
 		static $close;
+
 		if ($this->store)
 		{
 			if ($close === null)

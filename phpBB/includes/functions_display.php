@@ -234,7 +234,7 @@ function display_forums($root_data = '', $display_moderators = true, $return_mod
 	// Handle marking posts
 	if ($mark_read == 'forums' || $mark_read == 'all')
 	{
-		$redirect = phpbb::$url->build_url('mark', 'hash');
+		$redirect = phpbb::$url->build_url(array('mark', 'hash'));
 		$token = request_var('hash', '');
 
 		if (phpbb::$security->check_link($token, 'global'))

@@ -110,6 +110,12 @@ class fulltext_mysql extends search_backend
 		preg_match_all('#(?:[^\p{L}\p{N}*"()]|^)([+\-|]?(?:[\p{L}\p{N}*"()]+\'?)*[\p{L}\p{N}*"()])(?:[^\p{L}\p{N}*"()]|$)#u', $split_keywords, $matches);
 		$this->split_words = $matches[1];
 
+		// We limit the number of allowed keywords to minimize load on the database
+		if (phpbb::$config['max_num_search_keywords'] && sizeof($this->split_words) > phpbb::$config['max_num_search_keywords'])
+		{
+			trigger_error(phpbb::$user->lang('MAX_NUM_SEARCH_KEYWORDS_REFINE', phpbb::$config['max_num_search_keywords'], sizeof($this->split_words)));
+		}
+
 		// to allow phrase search, we need to concatenate quoted words
 		$tmp_split_words = array();
 		$phrase = '';

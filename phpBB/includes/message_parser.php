@@ -1037,11 +1037,7 @@ class parse_message extends bbcode_firstpass
 	{
 		// Init BBCode UID
 		$this->bbcode_uid = substr(base_convert(unique_id(), 16, 36), 0, BBCODE_UID_LEN);
-
-		if ($message)
-		{
-			$this->message = $message;
-		}
+		$this->message = $message;
 	}
 
 	/**

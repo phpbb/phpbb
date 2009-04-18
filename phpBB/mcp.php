@@ -169,6 +169,13 @@ if ($quickmod)
 		break;
 
 		case 'topic_logs':
+			// Reset start parameter if we jumped from the quickmod dropdown
+			if (request_var('start', 0))
+			{
+				phpbb_request::overwrite('start', 0, phpbb_request::GET);
+				phpbb_request::overwrite('start', 0, phpbb_request::REQUEST);
+			}
+
 			$module->set_active('logs', 'topic_logs');
 		break;
 

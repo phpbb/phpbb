@@ -29,6 +29,8 @@ abstract class phpbb_default_captcha implements phpbb_captcha_plugin
 	protected $type;
 	protected $solved = false;
 
+	protected $min_chars = 4;
+	protected $max_chars = 7;
 
 	function init($type)
 	{
@@ -46,7 +48,7 @@ abstract class phpbb_default_captcha implements phpbb_captcha_plugin
 
 	function execute_demo()
 	{
-		$this->code = gen_rand_string(mt_rand(5, 8));
+		$this->code = gen_rand_string(mt_rand($this->min_chars, $this->max_chars));
 		$this->seed = hexdec(substr(unique_id(), 4, 10));
 
 		// compute $seed % 0x7fffffff
@@ -188,10 +190,11 @@ abstract class phpbb_default_captcha implements phpbb_captcha_plugin
 	*/
 	protected function generate_code()
 	{
-		$this->code = gen_rand_string(mt_rand(5, 8));
+		$this->code = gen_rand_string(mt_rand($this->min_chars, $this->max_chars));
 		$this->confirm_id = md5(unique_id(phpbb::$user->ip));
 		$this->seed = hexdec(substr(unique_id(), 4, 10));
 		$this->solved = false;
+
 		// compute $seed % 0x7fffffff
 		$this->seed -= 0x7fffffff * floor($this->seed / 0x7fffffff);
 

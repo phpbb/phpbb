@@ -349,7 +349,7 @@ function send_avatar_to_browser($file, $browser)
 	}
 	else
 	{
-		header('HTTP/1.0 404 not found');
+		header('HTTP/1.0 404 Not Found');
 	}
 }
 
@@ -631,8 +631,9 @@ function set_modified_headers($stamp, $browser)
 	{
 		if ($last_load !== false && $last_load <= $stamp)
 		{
-			if (@php_sapi_name() === 'CGI')
+			if (substr(strtolower(@php_sapi_name()),0,3) === 'cgi')
 			{
+				// in theory, we shouldn't need that due to php doing it. Reality offers a differing opinion, though
 				header('Status: 304 Not Modified', true, 304);
 			}
 			else

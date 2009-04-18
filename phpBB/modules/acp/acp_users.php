@@ -1843,6 +1843,16 @@ class acp_users
 							}
 
 							$error = array();
+
+							// The delete action was successful - therefore update the user row...
+							$sql = 'SELECT u.*, s.*
+								FROM ' . USERS_TABLE . ' u
+									LEFT JOIN ' . SESSIONS_TABLE . ' s ON (s.session_user_id = u.user_id)
+								WHERE u.user_id = ' . $user_id . '
+								ORDER BY s.session_time DESC';
+							$result = $db->sql_query($sql);
+							$user_row = $db->sql_fetchrow($result);
+							$db->sql_freeresult($result);
 						}
 						else
 						{

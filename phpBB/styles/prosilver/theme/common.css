@@ -599,7 +599,7 @@ div.rules {
 	font-size: 1.1em;
 }
 
-div.rules ul {
+div.rules ul, div.rules ol {
 	margin-left: 20px;
 }
 

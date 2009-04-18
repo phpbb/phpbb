@@ -588,7 +588,18 @@ class fileupload
 		// PHP Upload filesize exceeded
 		if ($file->get('filename') == 'none')
 		{
-			$file->error[] = (@ini_get('upload_max_filesize') == '') ? phpbb::$user->lang[$this->error_prefix . 'PHP_SIZE_NA'] : sprintf(phpbb::$user->lang[$this->error_prefix . 'PHP_SIZE_OVERRUN'], @ini_get('upload_max_filesize'));
+			$max_filesize = @ini_get('upload_max_filesize');
+			$unit = 'MB';
+
+			if (!empty($max_filesize))
+			{
+				$unit = strtolower(substr($max_filesize, -1, 1));
+				$max_filesize = (int) $max_filesize;
+
+				$unit = ($unit == 'k') ? 'KB' : (($unit == 'g') ? 'GB' : 'MB');
+			}
+
+			$file->error[] = (empty($max_filesize)) ? phpbb::$user->lang[$this->error_prefix . 'PHP_SIZE_NA'] : phpbb::$user->lang($this->error_prefix . 'PHP_SIZE_OVERRUN', $max_filesize, phpbb::$user->lang[$unit]);
 			return $file;
 		}
 
@@ -662,7 +673,18 @@ class fileupload
 		// PHP Upload filesize exceeded
 		if ($file->get('filename') == 'none')
 		{
-			$file->error[] = (@ini_get('upload_max_filesize') == '') ? phpbb::$user->lang[$this->error_prefix . 'PHP_SIZE_NA'] : sprintf(phpbb::$user->lang[$this->error_prefix . 'PHP_SIZE_OVERRUN'], @ini_get('upload_max_filesize'));
+			$max_filesize = @ini_get('upload_max_filesize');
+			$unit = 'MB';
+
+			if (!empty($max_filesize))
+			{
+				$unit = strtolower(substr($max_filesize, -1, 1));
+				$max_filesize = (int) $max_filesize;
+
+				$unit = ($unit == 'k') ? 'KB' : (($unit == 'g') ? 'GB' : 'MB');
+			}
+
+			$file->error[] = (empty($max_filesize)) ? phpbb::$user->lang[$this->error_prefix . 'PHP_SIZE_NA'] : phpbb::$user->lang($this->error_prefix . 'PHP_SIZE_OVERRUN', $max_filesize, phpbb::$user->lang[$unit]);
 			return $file;
 		}
 
@@ -806,7 +828,18 @@ class fileupload
 		switch ($errorcode)
 		{
 			case 1:
-				$error = (@ini_get('upload_max_filesize') == '') ? phpbb::$user->lang[$this->error_prefix . 'PHP_SIZE_NA'] : sprintf(phpbb::$user->lang[$this->error_prefix . 'PHP_SIZE_OVERRUN'], @ini_get('upload_max_filesize'));
+				$max_filesize = @ini_get('upload_max_filesize');
+				$unit = 'MB';
+
+				if (!empty($max_filesize))
+				{
+					$unit = strtolower(substr($max_filesize, -1, 1));
+					$max_filesize = (int) $max_filesize;
+
+					$unit = ($unit == 'k') ? 'KB' : (($unit == 'g') ? 'GB' : 'MB');
+				}
+
+				$error = (empty($max_filesize)) ? phpbb::$user->lang[$this->error_prefix . 'PHP_SIZE_NA'] : phpbb::$user->lang($this->error_prefix . 'PHP_SIZE_OVERRUN', $max_filesize, phpbb::$user->lang[$unit]);
 			break;
 
 			case 2:

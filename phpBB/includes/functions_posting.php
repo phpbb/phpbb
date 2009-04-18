@@ -600,7 +600,7 @@ function create_thumbnail($source, $destination, $mimetype)
 	list($new_width, $new_height) = get_img_size_format($width, $height);
 
 	// Do not create a thumbnail if the resulting width/height is bigger than the original one
-	if ($new_width > $width && $new_height > $height)
+	if ($new_width >= $width && $new_height >= $height)
 	{
 		return false;
 	}
@@ -1101,7 +1101,7 @@ function user_notification($mode, $subject, $topic_title, $forum_name, $forum_id
 
 	if (!$topic_notification && !$forum_notification)
 	{
-		trigger_error('WRONG_NOTIFICATION_MODE');
+		trigger_error('NO_MODE');
 	}
 
 	if (($topic_notification && !phpbb::$config['allow_topic_notify']) || ($forum_notification && !phpbb::$config['allow_forum_notify']))
@@ -1708,6 +1708,7 @@ function submit_post($mode, $subject, $username, $topic_type, &$poll, &$data, $u
 			$sql_data[TOPICS_TABLE]['sql'] = array(
 				'topic_poster'				=> (int) phpbb::$user->data['user_id'],
 				'topic_time'				=> $current_time,
+				'topic_last_view_time'		=> $current_time,
 				'forum_id'					=> ($topic_type == POST_GLOBAL) ? 0 : $data['forum_id'],
 				'icon_id'					=> $data['icon_id'],
 				'topic_approved'			=> $post_approval,
@@ -1755,7 +1756,13 @@ function submit_post($mode, $subject, $username, $topic_type, &$poll, &$data, $u
 		break;
 
 		case 'reply':
-			$sql_data[TOPICS_TABLE]['stat'][] = 'topic_replies_real = topic_replies_real + 1, topic_bumped = 0, topic_bumper = 0' . (($post_approval) ? ', topic_replies = topic_replies + 1' : '') . ((!empty($data['attachment_data']) || (isset($data['topic_attachment']) && $data['topic_attachment'])) ? ', topic_attachment = 1' : '');
+			$sql_data[TOPICS_TABLE]['stat'][] = 'topic_last_view_time = ' . $current_time . ',
+				topic_replies_real = topic_replies_real + 1,
+				topic_bumped = 0,
+				topic_bumper = 0' .
+				(($post_approval) ? ', topic_replies = topic_replies + 1' : '') .
+				((!empty($data['attachment_data']) || (isset($data['topic_attachment']) && $data['topic_attachment'])) ? ', topic_attachment = 1' : '');
+
 			$sql_data[USERS_TABLE]['stat'][] = "user_lastpost_time = $current_time" . ((phpbb::$acl->acl_get('f_postcount', $data['forum_id']) && $post_approval) ? ', user_posts = user_posts + 1' : '');
 
 			if ($post_approval && $topic_type != POST_GLOBAL)
@@ -1794,6 +1801,7 @@ function submit_post($mode, $subject, $username, $topic_type, &$poll, &$data, $u
 				'poll_max_options'			=> (isset($poll['poll_options'])) ? $poll['poll_max_options'] : 1,
 				'poll_length'				=> (isset($poll['poll_options'])) ? $poll_length : 0,
 				'poll_vote_change'			=> (isset($poll['poll_vote_change'])) ? $poll['poll_vote_change'] : 0,
+				'topic_last_view_time'		=> $current_time,
 
 				'topic_attachment'			=> (!empty($data['attachment_data'])) ? 1 : (isset($data['topic_attachment']) ? $data['topic_attachment'] : 0),
 			);
@@ -1837,7 +1845,7 @@ function submit_post($mode, $subject, $username, $topic_type, &$poll, &$data, $u
 			// Correctly set back the topic replies and forum posts... but only if the post was approved before.
 			if (!$post_approval && $data['post_approved'])
 			{
-				$sql_data[TOPICS_TABLE]['stat'][] = 'topic_replies = topic_replies - 1';
+				$sql_data[TOPICS_TABLE]['stat'][] = 'topic_replies = topic_replies - 1, topic_last_view_time = ' . $current_time;
 				$sql_data[FORUMS_TABLE]['stat'][] = 'forum_posts = forum_posts - 1';
 
 				set_config_count('num_posts', -1, true);

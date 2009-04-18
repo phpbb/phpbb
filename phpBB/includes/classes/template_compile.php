@@ -187,8 +187,8 @@ class phpbb_template_filter extends php_user_filter
 		$this->compile_language_tags($text_blocks);
 
 		// This will handle the remaining root-level varrefs
-		$text_blocks = preg_replace('#\{([a-z0-9\-_]*)\}#is', "<?php echo (isset(\$_rootref['\\1'])) ? \$_rootref['\\1'] : ''; ?>", $text_blocks);
-		$text_blocks = preg_replace('#\{\$([a-z0-9\-_]*)\}#is', "<?php echo (isset(\$_tpldata['DEFINE']['.']['\\1'])) ? \$_tpldata['DEFINE']['.']['\\1'] : ''; ?>", $text_blocks);
+		$text_blocks = preg_replace('#\{([A-Z0-9\-_]+)\}#', "<?php echo (isset(\$_rootref['\\1'])) ? \$_rootref['\\1'] : ''; ?>", $text_blocks);
+		$text_blocks = preg_replace('#\{\$([A-Z0-9\-_]+)\}#', "<?php echo (isset(\$_tpldata['DEFINE']['.']['\\1'])) ? \$_tpldata['DEFINE']['.']['\\1'] : ''; ?>", $text_blocks);
 
 		return $text_blocks;
 	}
@@ -201,14 +201,14 @@ class phpbb_template_filter extends php_user_filter
 		// transform vars prefixed by L_ into their language variable pendant if nothing is set within the tpldata array
 		if (strpos($text_blocks, '{L_') !== false)
 		{
-			$text_blocks = preg_replace('#\{L_([a-z0-9\-_]*)\}#is', "<?php echo (isset(\$_rootref['L_\\1'])) ? \$_rootref['L_\\1'] : (isset(\$_lang['\\1']) ? \$_lang['\\1'] : '{ \\1 }'); ?>", $text_blocks);
+			$text_blocks = preg_replace('#\{L_([A-Z0-9\-_]+)\}#', "<?php echo ((isset(\$_rootref['L_\\1'])) ? \$_rootref['L_\\1'] : ((isset(\$_lang['\\1'])) ? \$_lang['\\1'] : '{ \\1 }')); ?>", $text_blocks);
 		}
 
 		// Handle addslashed language variables prefixed with LA_
 		// If a template variable already exist, it will be used in favor of it...
 		if (strpos($text_blocks, '{LA_') !== false)
 		{
-			$text_blocks = preg_replace('#\{LA_([a-z0-9\-_]*)\}#is', "<?php echo (isset(\$_rootref['LA_\\1'])) ? \$_rootref['LA_\\1'] : ((isset(\$_rootref['L_\\1'])) ? addslashes(\$_rootref['L_\\1']) : (isset(\$_lang['\\1']) ? addslashes(\$_lang['\\1']) : '{ \\1 }')); ?>", $text_blocks);
+			$text_blocks = preg_replace('#\{LA_([A-Z0-9\-_]+)\}#', "<?php echo ((isset(\$_rootref['LA_\\1'])) ? \$_rootref['LA_\\1'] : ((isset(\$_rootref['L_\\1'])) ? addslashes(\$_rootref['L_\\1']) : ((isset(\$_lang['\\1'])) ? addslashes(\$_lang['\\1']) : '{ \\1 }'))); ?>", $text_blocks);
 		}
 	}
 

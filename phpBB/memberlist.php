@@ -890,6 +890,8 @@ switch ($mode)
 
 		phpbb::$template->assign_vars(array(
 			'ERROR_MESSAGE'		=> (sizeof($error)) ? implode('<br />', $error) : '',
+			'SUBJECT'			=> $subject,
+			'MESSAGE'			=> $message,
 		));
 
 	break;

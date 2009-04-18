@@ -269,8 +269,8 @@ $lang = array_merge($lang, array(
 	'VISUAL_CONFIRM_POST_EXPLAIN'			=> 'Requires anonymous users to enter a random code matching an image to help prevent mass postings.',
 	'VISUAL_CONFIRM_REG'					=> 'Enable visual confirmation for registrations',
 	'VISUAL_CONFIRM_REG_EXPLAIN'			=> 'Requires new users to enter a random code matching an image to help prevent mass registrations.',
-	'VISUAL_CONFIRM_REFRESH'				=> 'Enable users to request new images',
-	'VISUAL_CONFIRM_REFRESH_EXPLAIN'		=> 'Allows users to request new images, if they are unable to solve the VC during registration.',
+	'VISUAL_CONFIRM_REFRESH'				=> 'Enable users to refresh the confirmation image',
+	'VISUAL_CONFIRM_REFRESH_EXPLAIN'		=> 'Allows users to request new confirmation codes, if they are unable to solve the VC during registration.',
 ));
 
 // Cookie Settings

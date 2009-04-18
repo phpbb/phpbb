@@ -8,7 +8,7 @@
 *
 */
 
-$updates_to_version = '3.1.0';
+$updates_to_version = '3.1.0-dev1';
 
 // Enter any version to update from to test updates. The version within the db will not be updated.
 $debug_from_version = false;
@@ -55,8 +55,8 @@ $inline_update = (request_var('type', 0)) ? true : false;
 // Only an example, but also commented out
 $database_update_info = array(
 
-	// No changes from 3.0.3-RC1 to 3.0.3
-	'3.0.3-RC1'		=> array(),
+	// Changes from 3.0.5 to 3.1.0-dev1
+	'3.0.5'		=> array(),
 );
 
 $error_ary = array();
@@ -340,6 +340,9 @@ function change_database_data($version)
 	switch ($version)
 	{
 		default:
+			// Changes from 3.0.5 to 3.1.0-dev1
+			case '3.0.5':
+			break;
 		break;
 	}
 }

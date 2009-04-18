@@ -107,6 +107,9 @@ class phpbb_system extends phpbb_plugin_support
 
 		if ($this->chmod_info['process'])
 		{
+			$file_uid = fileowner($filename);
+			$file_gid = filegroup($filename);
+
 			// Change owner
 			if (@chown($filename, $this->chmod_info['common_owner']))
 			{

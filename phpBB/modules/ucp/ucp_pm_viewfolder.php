@@ -325,7 +325,7 @@ function view_folder($id, $mode, $folder_id, $folder)
 				$data[] = array(
 					'subject'	=> censor_text($row['message_subject']),
 					'sender'	=> $row['username'],
-					'date'		=> phpbb::$user->format_date($row['message_time']),
+					'date'		=> phpbb::$user->format_date($row['message_time'], 'c', true), // ISO 8601 date.
 					'to'		=> ($folder_id == PRIVMSGS_OUTBOX || $folder_id == PRIVMSGS_SENTBOX) ? $address[$message_id] : '',
 					'message'	=> $message_row['message_text']
 				);
@@ -497,7 +497,7 @@ function get_pm_from($folder_id, $folder, $user_id)
 		'PAGE_NUMBER'		=> on_page($pm_count, phpbb::$config['topics_per_page'], $start),
 		'TOTAL_MESSAGES'	=> (($pm_count == 1) ? phpbb::$user->lang['VIEW_PM_MESSAGE'] : sprintf(phpbb::$user->lang['VIEW_PM_MESSAGES'], $pm_count)),
 
-		'POST_IMG'		=> (!phpbb::$acl->acl_get('u_sendpm')) ? phpbb::$user->img('button_topic_locked', 'PM_LOCKED') : phpbb::$user->img('button_pm_new', 'POST_PM'),
+		'POST_IMG'		=> (!phpbb::$acl->acl_get('u_sendpm')) ? phpbb::$user->img('button_topic_locked', 'POST_PM_LOCKED') : phpbb::$user->img('button_pm_new', 'POST_NEW_PM'),
 
 		'L_NO_MESSAGES'	=> (!phpbb::$acl->acl_get('u_sendpm')) ? phpbb::$user->lang['POST_PM_LOCKED'] : phpbb::$user->lang['NO_MESSAGES'],
 

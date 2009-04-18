@@ -176,7 +176,8 @@ class messenger
 
 		if (empty($this->tpl_msg[$template_lang . $template_file]))
 		{
-			$tpl_file = PHPBB_ROOT_PATH . "language/$template_lang/email/$template_file.txt";
+			$tpl_file = (!empty(phpbb::$user->lang_path)) ? phpbb::$user->lang_path : PHPBB_ROOT_PATH . 'language/';
+			$tpl_file .= $template_lang . "/email/$template_file.txt";
 
 			if (!file_exists($tpl_file))
 			{
@@ -1401,9 +1402,10 @@ function mail_encode($str)
 	// define start delimimter, end delimiter and spacer
 	$start = "=?UTF-8?B?";
 	$end = "?=";
-	$spacer = $end . ' ' . $start;
-	$split_length = 64;
+	$delimiter = "\r\n ";
 
+	// Maximum length is 75. $split_length *must* be a multiple of 4, but <= 75 - strlen($start . $delimiter . $end)!!!
+	$split_length = 60;
 	$encoded_str = base64_encode($str);
 
 	// If encoded string meets the limits, we just return with the correct data.
@@ -1415,7 +1417,7 @@ function mail_encode($str)
 	// If there is only ASCII data, we just return what we want, correctly splitting the lines.
 	if (strlen($str) === utf8_strlen($str))
 	{
-		return $start . implode($spacer, str_split($encoded_str, $split_length)) . $end;
+		return $start . implode($end . $delimiter . $start, str_split($encoded_str, $split_length)) . $end;
 	}
 
 	// UTF-8 data, compose encoded lines
@@ -1426,16 +1428,15 @@ function mail_encode($str)
 	{
 		$text = '';
 
-		while (sizeof($array) && intval((strlen($text . current($array)) + 2) / 3) << 2 <= $split_length)
+		while (sizeof($array) && intval((strlen($text . $array[0]) + 2) / 3) << 2 <= $split_length)
 		{
-			$text .= current($array);
-			unset($array[key($array)]);
+			$text .= array_shift($array);
 		}
 
-		$str .= $start . base64_encode($text) . $end . ' ';
+		$str .= $start . base64_encode($text) . $end . $delimiter;
 	}
 
-	return substr($str, 0, -1);
+	return substr($str, 0, -strlen($delimiter));
 }
 
 ?>

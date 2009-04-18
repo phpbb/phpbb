@@ -719,4 +719,7 @@
 * tweaks.css
 */
 
-
+/** Reference: Bug #27155 */
+.rtl #wrap, .rtl .headerbar, .rtl #site-description, .rtl .navbar {
+	position: relative;
+}

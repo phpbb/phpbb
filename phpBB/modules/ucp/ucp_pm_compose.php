@@ -839,10 +839,10 @@ function compose_pm($id, $mode, $action)
 
 		$forward_text = array();
 		$forward_text[] = phpbb::$user->lang['FWD_ORIGINAL_MESSAGE'];
-		$forward_text[] = sprintf(phpbb::$user->lang['FWD_SUBJECT'], censor_text($message_subject));
-		$forward_text[] = sprintf(phpbb::$user->lang['FWD_DATE'], phpbb::$user->format_date($message_time));
-		$forward_text[] = sprintf(phpbb::$user->lang['FWD_FROM'], $quote_username_text);
-		$forward_text[] = sprintf(phpbb::$user->lang['FWD_TO'], implode(', ', $fwd_to_field['to']));
+		$forward_text[] = phpbb::$user->lang('FWD_SUBJECT', censor_text($message_subject));
+		$forward_text[] = phpbb::$user->lang('FWD_DATE', phpbb::$user->format_date($message_time, false, true));
+		$forward_text[] = phpbb::$user->lang('FWD_FROM', $quote_username_text);
+		$forward_text[] = phpbb::$user->lang('FWD_TO', implode(', ', $fwd_to_field['to']));
 
 		$message_parser->message = implode("\n", $forward_text) . "\n\n[quote=&quot;{$quote_username}&quot;]\n" . censor_text(trim($message_parser->message)) . "\n[/quote]";
 		$message_subject = ((!preg_match('/^Fwd:/', $message_subject)) ? 'Fwd: ' : '') . censor_text($message_subject);

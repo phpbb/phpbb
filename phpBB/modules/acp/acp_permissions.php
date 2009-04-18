@@ -743,7 +743,7 @@ class acp_permissions
 
 		$this->log_action($mode, 'add', $permission_type, $ug_type, $ug_ids, $forum_ids);
 
-		trigger_error(phpbb::$user->lang['AUTH_UPDATED'] . adm_back_link($this->u_action));
+		trigger_error(phpbb::$user->lang['AUTH_UPDATED'] . adm_back_link($this->u_action . '&amp;forum_id[]=' . implode('&amp;forum_id[]=', $forum_ids)));
 	}
 
 	/**
@@ -806,7 +806,7 @@ class acp_permissions
 
 		$this->log_action($mode, 'del', $permission_type, $ug_type, (($ug_type == 'user') ? $user_id : $group_id), (sizeof($forum_id) ? $forum_id : array(0 => 0)));
 
-		trigger_error(phpbb::$user->lang['AUTH_UPDATED'] . adm_back_link($this->u_action));
+		trigger_error(phpbb::$user->lang['AUTH_UPDATED'] . adm_back_link($this->u_action . '&amp;forum_id[]=' . implode('&amp;forum_id[]=', $forum_id)));
 	}
 
 	/**

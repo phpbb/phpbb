@@ -1,4 +1,4 @@
-<?php
+18.04.2009<?php
 /**
 *
 * @package phpBB3
@@ -509,12 +509,12 @@ class bbcode
 		else if (is_numeric($type))
 		{
 			$tpl = 'olist_open';
-			$type = 'arabic-numbers';
+			$type = 'decimal';
 		}
 		else
 		{
 			$tpl = 'olist_open';
-			$type = 'arabic-numbers';
+			$type = 'decimal';
 		}
 
 		return str_replace('{LIST_TYPE}', $type, $this->bbcode_tpl($tpl));

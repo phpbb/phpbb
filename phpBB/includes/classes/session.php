@@ -420,6 +420,15 @@ abstract class phpbb_session
 			}
 		}
 
+		// Something quite important: session_page always holds the *last* page visited, except for the *first* visit.
+		// We are not able to simply have an empty session_page btw, therefore we need to tell phpBB how to detect this special case.
+		// If the session id is empty, we have a completely new one and will set an "identifier" here. This identifier is able to be checked later.
+		if (empty($this->data['session_id']))
+		{
+			// This is a temporary variable, only set for the very first visit
+			$this->data['session_created'] = true;
+		}
+
 		$this->session_id = $this->data['session_id'] = md5(phpbb::$security->unique_id());
 
 		$sql_ary['session_id'] = (string) $this->session_id;

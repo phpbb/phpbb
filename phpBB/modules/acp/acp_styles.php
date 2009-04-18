@@ -34,7 +34,10 @@ class acp_styles
 		// Hardcoded template bitfield to add for new templates
 		$bitfield = new bitfield();
 		$bitfield->set(0);
+		$bitfield->set(1);
+		$bitfield->set(2);
 		$bitfield->set(3);
+		$bitfield->set(4);
 		$bitfield->set(8);
 		$bitfield->set(9);
 		$bitfield->set(11);

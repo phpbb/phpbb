@@ -55,7 +55,8 @@ if (phpbb::$config['enable_post_confirm'] && !phpbb::$user->is_registered)
 // Was cancel pressed? If so then redirect to the appropriate page
 if ($cancel || ($current_time - $lastclick < 2 && $submit))
 {
-	$redirect = ($post_id) ? append_sid('viewtopic', 'p=' . $post_id) . '#p' . $post_id : (($topic_id) ? append_sid('viewtopic', 't=' . $topic_id) : (($forum_id) ? append_sid('viewforum', 'f=' . $forum_id) : append_sid('index')));
+	$f = ($forum_id) ? 'f=' . $forum_id . '&amp;' : '';
+	$redirect = ($post_id) ? append_sid('viewtopic', $f . 'p=' . $post_id) . '#p' . $post_id : (($topic_id) ? append_sid('viewtopic', $f . 't=' . $topic_id) : (($forum_id) ? append_sid('viewforum', 'f=' . $forum_id) : append_sid('index')));
 	redirect($redirect);
 }
 

@@ -163,6 +163,13 @@ class fulltext_native extends search_backend
 		);
 
 		$keywords = preg_replace($match, $replace, $keywords);
+		$num_keywords = sizeof(explode(' ', $keywords));
+
+		// We limit the number of allowed keywords to minimize load on the database
+		if (phpbb::$config['max_num_search_keywords'] && $num_keywords > phpbb::$config['max_num_search_keywords'])
+		{
+			trigger_error(phpbb::$user->lang('MAX_NUM_SEARCH_KEYWORDS_REFINE', phpbb::$config['max_num_search_keywords'], $num_keywords));
+		}
 
 		// $keywords input format: each word separated by a space, words in a bracket are not separated
 
@@ -637,7 +644,11 @@ class fulltext_native extends search_backend
 
 			if (phpbb::$db->dbms_type === 'mysql')
 			{
-				$sql_array['SELECT'] = 'SQL_CALC_FOUND_ROWS ' . $sql_array['SELECT'];
+				$sql_array_copy = $sql_array;
+
+				// $sql_array['SELECT'] = 'SQL_CALC_FOUND_ROWS ' . $sql_array['SELECT'];
+				$sql_array_copy['SELECT'] = 'SQL_CALC_FOUND_ROWS p.post_id ';
+
 				$is_mysql = true;
 			}
 			else
@@ -710,8 +721,14 @@ class fulltext_native extends search_backend
 		}
 
 		// if we use mysql and the total result count is not cached yet, retrieve it from the db
-		if (!$total_results && $is_mysql)
+		if (!$total_results && $is_mysql && !empty($sql_array_copy))
 		{
+			$sql = phpbb::$db->sql_build_query('SELECT', $sql_array_copy);
+			unset($sql_array_copy);
+
+			phpbb::$db->sql_query($sql);
+			phpbb::$db->sql_freeresult($result);
+
 			$sql = 'SELECT FOUND_ROWS() as total_results';
 			$result = phpbb::$db->sql_query($sql);
 			$total_results = (int) phpbb::$db->sql_fetchfield('total_results');
@@ -831,8 +848,8 @@ class fulltext_native extends search_backend
 		{
 			if (phpbb::$db->dbms_type === 'mysql')
 			{
-					$select = 'SQL_CALC_FOUND_ROWS ' . $select;
-					$is_mysql = true;
+//				$select = 'SQL_CALC_FOUND_ROWS ' . $select;
+				$is_mysql = true;
 			}
 			else
 			{
@@ -923,6 +940,12 @@ class fulltext_native extends search_backend
 
 		if (!$total_results && $is_mysql)
 		{
+			// Count rows for the executed queries. Replace $select within $sql with SQL_CALC_FOUND_ROWS, and run it.
+			$sql = str_replace('SELECT ' . $select, 'SELECT DISTINCT SQL_CALC_FOUND_ROWS p.post_id', $sql);
+
+			phpbb::$db->sql_query($sql);
+			phpbb::$db->sql_freeresult($result);
+
 			$sql = 'SELECT FOUND_ROWS() as total_results';
 			$result = phpbb::$db->sql_query($sql);
 			$total_results = (int) phpbb::$db->sql_fetchfield('total_results');

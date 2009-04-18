@@ -2686,13 +2686,14 @@ function group_user_del($group_id, $user_id_ary = false, $username_ary = false, 
 	$temp_ary = array();
 	while ($row = phpbb::$db->sql_fetchrow($result))
 	{
-		if ($default_groups[$row['user_id']] == $group_id && (!isset($temp_ary[$row['user_id']]) || array_search($row['group_name_clean'], $clean_group_order) < $temp_ary[$row['user_id']]))
+		if ($default_groups[$row['user_id']] == $group_id && (!isset($temp_ary[$row['user_id']]) || $group_order_id[$row['group_name']] < $temp_ary[$row['user_id']]))
 		{
 			$temp_ary[$row['user_id']] = $row['group_id'];
 		}
 	}
 	phpbb::$db->sql_freeresult($result);
 
+	// sql_where_ary holds the new default groups and their users
 	$sql_where_ary = array();
 	foreach ($temp_ary as $uid => $gid)
 	{
@@ -2704,7 +2705,7 @@ function group_user_del($group_id, $user_id_ary = false, $username_ary = false, 
 	{
 		if (isset($sql_where_ary[$gid]) && sizeof($sql_where_ary[$gid]))
 		{
-			remove_default_rank($group_id, $sql_where_ary[$gid]);
+			remove_default_rank($gid, $sql_where_ary[$gid]);
 			remove_default_avatar($group_id, $sql_where_ary[$gid]);
 			group_set_user_default($gid, $sql_where_ary[$gid], $default_data_ary);
 		}
