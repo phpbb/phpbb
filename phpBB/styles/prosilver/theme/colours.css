@@ -906,6 +906,7 @@ Colours and backgrounds for forms.css
 select {
 	border-color: #666666;
 	background-color: #FAFAFA;
+	color: #000;
 }
 
 label {
