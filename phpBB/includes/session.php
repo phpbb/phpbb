@@ -396,11 +396,6 @@ class session
 									WHERE session_id = '" . $db->sql_escape($this->session_id) . "'";
 								$db->sql_query($sql);
 							}
-							
-							if ($this->data['user_id'] != ANONYMOUS && $config['new_member_limit'] &&  $this->data['user_new'] && $config['new_member_limit'] <= $this->data['user_posts'])
-							{
-								$this->leave_newly_registered();
-							}
 						}
 
 						$this->data['is_registered'] = ($this->data['user_id'] != ANONYMOUS && ($this->data['user_type'] == USER_NORMAL || $this->data['user_type'] == USER_FOUNDER)) ? true : false;
@@ -1397,8 +1392,8 @@ class session
 
 		$host = htmlspecialchars($this->host);
 		$ref = substr($this->referer, strpos($this->referer, '://') + 3);
-		
-		if (!(stripos($ref, $host) === 0) && (!$config['force_server'] || !(stripos($ref, $config['server_name']) === 0)))
+
+		if (!(stripos($ref, $host) === 0))
 		{
 			return false;
 		}
@@ -2258,44 +2253,6 @@ class user extends session
 			return $var;
 		}
 	}
-	
-	/**
-	* Funtion to make the user leave the NEWLY_REGISTERED system group.
-	* @access public
-	*/
-	function leave_newly_registered()
-	{
-		global $db;
-		
-		$sql = 'SELECT group_id
-				FROM ' . GROUPS_TABLE . "
-				WHERE group_name = 'NEWLY_REGISTERED'
-					AND group_type = " . GROUP_SPECIAL;
-		$result = $db->sql_query_limit($sql, 1, 0, 7200);
-		$row = $db->sql_fetchrow($result);
-		$db->sql_freeresult($result);
-		$group_id = (int) $row['group_id'];
-		$sql = 'DELETE FROM ' . USER_GROUP_TABLE . "
-			WHERE group_id = $group_id 
-			AND user_id = {$this->data['user_id']}";
-		$db->sql_query($sql);
-
-		// Clear permissions cache of relevant users
-		$sql = 'UPDATE ' . USERS_TABLE . "
-			SET user_permissions = '',
-			user_new = 0,
-			WHERE user_perm_from = 0
-			AND user_id = {$this->data['user_id']}";
-		$db->sql_query($sql);
-		$this->data['user_permissions'] = '';
-		
-		if ($this->data['group_id'] == $group_id)
-		{
-			// BLAST! Somebody made the group default
-			
-		}
-	}
-	
 }
 
 ?>
