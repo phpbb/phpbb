@@ -44,7 +44,9 @@ ul.topiclist dd {
 
 ul.topiclist dfn {
 	/* Labels for post/view counts */
-	display: none;
+	position: absolute;
+	left: -999px;
+	width: 990px;
 }
 
 ul.topiclist li.row dt a.subforum {
