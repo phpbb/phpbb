@@ -545,18 +545,21 @@ function approve_post($post_id_list, $id, $mode)
 			}
 			else
 			{
-				if (!isset($topic_replies_sql[$post_data['topic_id']]))
-				{
-					$topic_replies_sql[$post_data['topic_id']] = 0;
-				}
-				$topic_replies_sql[$post_data['topic_id']]++;
-
 				$approve_log[] = array(
 					'type'			=> 'post',
 					'post_subject'	=> $post_data['post_subject'],
 					'forum_id'		=> $post_data['forum_id'],
 					'topic_id'		=> $post_data['topic_id'],
 				);
+			}
+
+			if ($post_data['topic_replies_real'] > 0)
+			{
+				if (!isset($topic_replies_sql[$post_data['topic_id']]))
+				{
+					$topic_replies_sql[$post_data['topic_id']] = 0;
+				}
+				$topic_replies_sql[$post_data['topic_id']]++;
 			}
 
 			if ($post_data['forum_id'])
