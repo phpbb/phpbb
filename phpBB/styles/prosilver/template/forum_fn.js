@@ -207,6 +207,12 @@ function selectCode(a)
 		// Firefox and Opera
 		else
 		{
+			// workaround for bug # 42885
+			if (window.opera && e.innerHTML.substring(e.innerHTML.length - 4) == '<BR>')
+			{
+				e.innerHTML = e.innerHTML + '&nbsp;';
+			}
+
 			var r = document.createRange();
 			r.selectNodeContents(e);
 			s.removeAllRanges();
