@@ -1220,7 +1220,7 @@ class session
 		}
 
 		$dnsbl_check = array(
-			'sbl-xbl.spamhaus.org'	=> 'http://www.spamhaus.org/query/bl?ip=',
+			'sbl.spamhaus.org'	=> 'http://www.spamhaus.org/query/bl?ip=',
 		);
 
 		if ($mode == 'register')
