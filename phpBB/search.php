@@ -373,6 +373,9 @@ if ($keywords || $author || $author_id || $search_id || $submit)
 							' . ((sizeof($ex_fid_ary)) ? 'AND ' . $db->sql_in_set('t.forum_id', $ex_fid_ary, true) : '') . "
 						$sql_sort";
 /*
+		[Fix] queued replies missing from "view new posts" (Bug #42705 - Patch by Paul)
+		- Creates temporary table, query is far from optimized
+
 					$sql = 'SELECT t.topic_id
 						FROM ' . TOPICS_TABLE . ' t, ' . POSTS_TABLE . ' p
 						WHERE p.post_time > ' . $user->data['user_lastvisit'] . '
