@@ -378,8 +378,9 @@ if ($keywords || $author || $author_id || $search_id || $submit)
 						WHERE p.post_time > ' . $user->data['user_lastvisit'] . '
 							AND t.topic_id = p.topic_id
 							AND t.topic_moved_id = 0
-							' .  $m_approve_fid_sql . '
+							' . $m_approve_fid_sql . '
 							' . ((sizeof($ex_fid_ary)) ? 'AND ' . $db->sql_in_set('t.forum_id', $ex_fid_ary, true) : '') . "
+						GROUP BY t.topic_id
 						$sql_sort";
 */
 					$field = 'topic_id';
