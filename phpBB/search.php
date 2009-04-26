@@ -365,14 +365,23 @@ if ($keywords || $author || $author_id || $search_id || $submit)
 				}
 				else
 				{
- 					$sql = 'SELECT t.topic_id
+					$sql = 'SELECT t.topic_id
+						FROM ' . TOPICS_TABLE . ' t
+						WHERE t.topic_last_post_time > ' . $user->data['user_lastvisit'] . '
+							AND t.topic_moved_id = 0
+							' . str_replace(array('p.', 'post_'), array('t.', 'topic_'), $m_approve_fid_sql) . '
+							' . ((sizeof($ex_fid_ary)) ? 'AND ' . $db->sql_in_set('t.forum_id', $ex_fid_ary, true) : '') . "
+						$sql_sort";
+/*
+					$sql = 'SELECT t.topic_id
 						FROM ' . TOPICS_TABLE . ' t, ' . POSTS_TABLE . ' p
 						WHERE p.post_time > ' . $user->data['user_lastvisit'] . '
 							AND t.topic_id = p.topic_id
- 							AND t.topic_moved_id = 0
+							AND t.topic_moved_id = 0
 							' .  $m_approve_fid_sql . '
- 							' . ((sizeof($ex_fid_ary)) ? 'AND ' . $db->sql_in_set('t.forum_id', $ex_fid_ary, true) : '') . "
- 						$sql_sort";
+							' . ((sizeof($ex_fid_ary)) ? 'AND ' . $db->sql_in_set('t.forum_id', $ex_fid_ary, true) : '') . "
+						$sql_sort";
+*/
 					$field = 'topic_id';
 				}
 			break;
