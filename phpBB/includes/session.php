@@ -1793,7 +1793,10 @@ class user extends session
 		// Is board disabled and user not an admin or moderator?
 		if ($config['board_disable'] && !defined('IN_LOGIN') && !$auth->acl_gets('a_', 'm_') && !$auth->acl_getf_global('m_'))
 		{
-			header('HTTP/1.1 503 Service Unavailable');
+			if ($this->data['is_bot'])
+			{
+				header('HTTP/1.1 503 Service Unavailable');
+			}
 
 			$message = (!empty($config['board_disable_msg'])) ? $config['board_disable_msg'] : 'BOARD_DISABLE';
 			trigger_error($message);
@@ -1809,7 +1812,10 @@ class user extends session
 
 				if (!$auth->acl_gets('a_', 'm_') && !$auth->acl_getf_global('m_'))
 				{
-					header('HTTP/1.1 503 Service Unavailable');
+					if ($this->data['is_bot'])
+					{
+						header('HTTP/1.1 503 Service Unavailable');
+					}
 					trigger_error('BOARD_UNAVAILABLE');
 				}
 			}
