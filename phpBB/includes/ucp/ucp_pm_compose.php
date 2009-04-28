@@ -1125,7 +1125,9 @@ function handle_message_list_actions(&$address_list, &$error, $remove_u, $remove
 	$group_list = request_var('group_list', array(0));
 
 	// Build usernames to add
-	$usernames = (isset($_REQUEST['username'])) ? array(request_var('username', '', true)) : array();
+	$usernames = request_var('username', '', true);
+	$usernames = (empty($usernames)) ? array() : array($usernames);
+
 	$username_list = request_var('username_list', '', true);
 	if ($username_list)
 	{
