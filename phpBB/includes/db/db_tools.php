@@ -1115,7 +1115,7 @@ class phpbb_db_tools
 		switch ($this->sql_layer)
 		{
 			case 'firebird':
-				$statements[] = 'ALTER TABLE "' . $table_name . '" ADD "' . $column_name . '" ' . $column_data['column_type_sql'];
+				$statements[] = 'ALTER TABLE ' . $table_name . ' ADD "' . strtoupper($column_name) . '" ' . $column_data['column_type_sql'];
 			break;
 
 			case 'mssql':
@@ -1207,7 +1207,7 @@ class phpbb_db_tools
 		switch ($this->sql_layer)
 		{
 			case 'firebird':
-				$statements[] = 'ALTER TABLE "' . $table_name . '" DROP "' . $column_name . '"';
+				$statements[] = 'ALTER TABLE ' . $table_name . ' DROP "' . strtoupper($column_name) . '"';
 			break;
 
 			case 'mssql':
@@ -1626,7 +1626,7 @@ class phpbb_db_tools
 		{
 			case 'firebird':
 				// Change type...
-				$statements[] = 'ALTER TABLE "' . $table_name . '" ALTER COLUMN "' . $column_name . '" TYPE ' . ' ' . $column_data['column_type_sql'];
+				$statements[] = 'ALTER TABLE ' . $table_name . ' ALTER COLUMN "' . strtoupper($column_name) . '" TYPE ' . ' ' . $column_data['column_type_sql'];
 			break;
 
 			case 'mssql':

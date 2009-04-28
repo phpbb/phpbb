@@ -1162,7 +1162,8 @@ class acp_users
 
 							foreach ($cp_data as $key => $value)
 							{
-								$cp_data[$left_delim . $key . $right_delim] = $value;
+								// Firebird is case sensitive with delimiter
+								$cp_data[$left_delim . (($db->sql_layer == 'firebird') ? strtoupper($key) : $key) . $right_delim] = $value;
 								unset($cp_data[$key]);
 							}
 
