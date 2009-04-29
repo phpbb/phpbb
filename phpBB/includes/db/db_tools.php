@@ -314,6 +314,28 @@ class phpbb_db_tools
 	}
 
 	/**
+	* Check if table exists
+	*
+	*
+	* @param string	$table_name	The table name to check for
+	* @return bool true if table exists, else false
+	*/
+	function sql_table_exists($table_name)
+	{
+		$this->db->sql_return_on_error(true);
+		$result = $this->db->sql_query_limit('SELECT * FROM ' . $table_name, 1);
+		$this->db->sql_return_on_error(false);
+
+		if ($result)
+		{
+			$this->db->sql_freeresult($result);
+			return true;
+		}
+
+		return false;
+	}
+
+	/**
 	* Create SQL Table
 	*
 	* @param string	$table_name	The table name to create
