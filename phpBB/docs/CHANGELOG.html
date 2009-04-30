@@ -125,13 +125,13 @@
 		<li>[Fix] Flash files do not display anymore after update to flash player 10 (Bug #41315)</li>
 		<li>[Fix] Use FQDN for SMTP EHLO/HELO command. (Bug #41025)</li>
 		<li>[Fix] Mass Email works again for users with empty jabber address but notification set to 'both'. (Bug #39755)</li>
-		<li>[Fix] Fix race condition for updating post/topic/etc. counter. (reported by BartVB)</li>
+		<li>[Fix] Fix race condition for updating post/topic/etc. counter. (Reported by BartVB)</li>
 		<li>[Fix] Fix duplicate creation of acl options in acl_add_options() under certain conditions. (Bug #38385, #40225)</li>
 		<li>[Fix] Cancel when replying to global announcement redirects to first forum - not to the current forum (Bug #41225 - Patch by TerraFrost)</li>
 		<li>[Fix] Cursor Jumps on New Topic in IE (Bug #42455 - Patch by TerraFrost)</li>
 		<li>[Fix] Add indicator to be used in code if session was created (user visits the site for the first time).</li>
 		<li>[Fix] Correctly count topic views for guests visiting the website the first time by entering the topic directly (Bug #43445)</li>
-		<li>[Fix] Fix bug in postgresql db layer for LIMIT ALL clauses (reported by JRSweets)</li>
+		<li>[Fix] Fix bug in postgresql db layer for LIMIT ALL clauses (Reported by JRSweets)</li>
 		<li>[Fix] Sort backups by date, newest first (Bug #14818)</li>
 		<li>[Fix] Prevent incomplete backups stored if option &quot;store and download&quot; is selected and admin cancel download by removing the option. (Bug #20325)</li>
 		<li>[Fix] Enforce correct case for template variables</li>
@@ -144,7 +144,7 @@
 		<li>[Fix] Do not create thumbnail if thumbnail would've the same size as the original image. (Bug #30725)</li>
 		<li>[Fix] Ability to vote in poll is now required for the ability to change existing vote. (Bug #38925)</li>
 		<li>[Fix] Search for 'topic title only' and 'first post' should work again for non-mysql dbms. (Bug #40605)</li>
-		<li>[Fix] Make sure additional information for accessibility is always exposed to screen readers (Bug #44335 - patch by MarcoZ)</li>
+		<li>[Fix] Make sure additional information for accessibility is always exposed to screen readers (Bug #44335 - Patch by MarcoZ)</li>
 		<li>[Fix] Approving a topic when some of the posts within that topic have already been approved (Bug #42585 - Patch by TerraFrost)</li>
 		<li>[Fix] Online status shown when post hidden (Bug #35505 - Patch by Raimon)</li>
 		<li>[Fix] memberlist.php display formating can be distorted by posting long URL for website (Bug #36675 - Patch by TerraFrost)</li>
@@ -155,12 +155,12 @@
 		<li>[Change] Default difference view is now 'inline' instead of 'side by side'</li>
 		<li>[Change] Added new option for merging differences to conflicting files in automatic updater</li>
 		<li>[Change] Add link to user profile in the MCP for user notes and warn user.</li>
-		<li>[Change] Add IN_PHPBB check to generated cache files. (reported by bantu)</li>
+		<li>[Change] Add IN_PHPBB check to generated cache files. (Reported by bantu)</li>
 		<li>[Change] Add topic icons to prosilver UCP main and subscribed templates (Bug #42735 - Patch by Raimon)</li>
 		<li>[Change] Add unique key to ACL options table to prevent duplicate permission options. (Bug #41835)</li>
 		<li>[Change] Redirect to relevant MCP page of multi-page topic if accessing quickmod tools (Split option for example)</li>
-		<li>[Change] Performance improvements for native fulltext search (patch by Paul)</li>
-		<li>[Change] Changed jumpto() JS function to be more fail-safe. (But #27635 - patch by peterkclee)</li>
+		<li>[Change] Performance improvements for native fulltext search (Patch by Paul)</li>
+		<li>[Change] Changed jumpto() JS function to be more fail-safe. (But #27635 - Patch by peterkclee)</li>
 		<li>[Feature] Added new options for visual confirmation.</li>
 		<li>[Feature] Allow download of conflicting file for later reference in automatic updater</li>
 		<li>[Feature] Allow translation of custom BBCode help messages. (Patch by bantu)</li>
@@ -168,6 +168,7 @@
 		<li>[Feature] Database updater checks for incompatible db schema (MySQL 3.x/4.x against MySQL 4.1.x/5.x/6.x)</li>
 		<li>[Feature] New search option: Maximum number of words allowed to search for.</li>
 		<li>[Sec] Prevent accounts from being activated by users when admin activation is turned on and the correct activation key is known.</li>
+		<li>[Sec] Only use forum id supplied for posting if global announcement detected. (Reported by nickvergessen)</li>
 	</ul>
 
 	<a name="v303"></a><h3>1.ii. Changes since 3.0.3</h3>

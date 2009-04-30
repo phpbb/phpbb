@@ -75,6 +75,16 @@ switch ($mode)
 			trigger_error('NO_TOPIC');
 		}
 
+		// Force forum id
+		$sql = 'SELECT forum_id
+			FROM ' . TOPICS_TABLE . '
+			WHERE topic_id = ' . $topic_id;
+		$result = $db->sql_query($sql);
+		$f_id = (int) $db->sql_fetchfield('forum_id');
+		$db->sql_freeresult($result);
+
+		$forum_id = (!$f_id) ? $forum_id : $f_id;
+
 		$sql = 'SELECT f.*, t.*
 			FROM ' . TOPICS_TABLE . ' t, ' . FORUMS_TABLE . " f
 			WHERE t.topic_id = $topic_id
@@ -90,6 +100,16 @@ switch ($mode)
 			$user->setup('posting');
 			trigger_error('NO_POST');
 		}
+
+		// Force forum id
+		$sql = 'SELECT forum_id
+			FROM ' . POSTS_TABLE . '
+			WHERE post_id = ' . $post_id;
+		$result = $db->sql_query($sql);
+		$f_id = (int) $db->sql_fetchfield('forum_id');
+		$db->sql_freeresult($result);
+
+		$forum_id = (!$f_id) ? $forum_id : $f_id;
 
 		$sql = 'SELECT f.*, t.*, p.*, u.username, u.username_clean, u.user_sig, u.user_sig_bbcode_uid, u.user_sig_bbcode_bitfield
 			FROM ' . POSTS_TABLE . ' p, ' . TOPICS_TABLE . ' t, ' . FORUMS_TABLE . ' f, ' . USERS_TABLE . " u
