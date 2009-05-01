@@ -516,6 +516,7 @@ class diff3 extends diff
 				$label_end		= array('>>>>>>> ' . $label2);
 
 				$lines = array_merge($lines, $label_start, $edit->final1, $label_mid, $edit->final2, $label_end);
+				$this->_conflicting_blocks++;
 			}
 			else
 			{
@@ -524,6 +525,16 @@ class diff3 extends diff
 		}
 
 		return $lines;
+	}
+
+	/**
+	* Return merged output (used by the renderer)
+	*
+	* @return mixed the merged output
+	*/
+	function merged_output()
+	{
+		return $this->get_conflicts_content();
 	}
 
 	/**
