@@ -593,7 +593,7 @@ class acp_search
 
 		ksort($this->state);
 
-		set_config('search_indexing_state', implode(',', $this->state));
+		set_config('search_indexing_state', implode(',', $this->state), true);
 	}
 
 	/**

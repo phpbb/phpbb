@@ -896,6 +896,7 @@ function change_database_data(&$no_updates, $version)
 		// Changes from 3.0.4 to 3.0.5-dev
 		case '3.0.4':
 
+			// Captcha config variables
 			set_config('captcha_gd_wave', 0);
 			set_config('captcha_gd_3d_noise', 1);
 			set_config('captcha_gd_fonts', 1);
@@ -904,6 +905,12 @@ function change_database_data(&$no_updates, $version)
 
 			// Maximum number of keywords
 			set_config('max_num_search_keywords', 10);
+
+			// Remove static config var and put it back as dynamic variable
+			$sql = 'UPDATE ' . CONFIG_TABLE . "
+				SET is_dynamic = 1
+				WHERE config_name = 'search_indexing_state'";
+			_sql($sql, $errored, $error_ary);
 
 			// Hash old MD5 passwords
 			$sql = 'SELECT user_id, user_password
