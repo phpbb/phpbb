@@ -8,7 +8,7 @@
 *
 */
 
-$updates_to_version = '3.0.5-dev';
+$updates_to_version = '3.0.5-RC1';
 
 // Enter any version to update from to test updates. The version within the db will not be updated.
 $debug_from_version = false;
@@ -666,7 +666,7 @@ function database_update_info()
 		// Changes from 3.0.4-RC1 to 3.0.4
 		'3.0.4-RC1'		=> array(),
 
-		// Changes from 3.0.4 to 3.0.5-dev
+		// Changes from 3.0.4 to 3.0.5-RC1
 		'3.0.4'			=> array(
 			'change_columns'	=> array(
 				FORUMS_TABLE				=> array(
@@ -893,7 +893,7 @@ function change_database_data(&$no_updates, $version)
 		case '3.0.4-RC1':
 		break;
 
-		// Changes from 3.0.4 to 3.0.5-dev
+		// Changes from 3.0.4 to 3.0.5-RC1
 		case '3.0.4':
 
 			// Captcha config variables
