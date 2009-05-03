@@ -269,7 +269,7 @@ $lang = array_merge($lang, array(
 	'MAKE_FOLDER_WRITABLE'		=> 'Please make sure that this folder exists and is writable by the webserver then try again:<br />»<strong>%s</strong>.',
 	'MAKE_FOLDERS_WRITABLE'		=> 'Please make sure that these folders exist and are writable by the webserver then try again:<br />»<strong>%s</strong>.',
 
-	'MYSQL_SCHEMA_UPDATE_REQUIRED'	=> 'Your MySQL database schema for phpBB is outdated. phpBB detected a schema for MySQL 3.x/4.x, but the server runs on MySQL %2s.<br /><strong>Before you proceed the update, you need to upgrade the schema.</strong><br /><br />Please refer to the <a href="http://www.phpbb.com/kb/article/doesnt-have-a-default-value-errors/">Knowledge Base article about upgrading the MySQL schema</a>. If you encounter problems, please use <a href="http://www.phpbb.com/community/viewforum.php?f=46">our support forums</a>.',
+	'MYSQL_SCHEMA_UPDATE_REQUIRED'	=> 'Your MySQL database schema for phpBB is outdated. phpBB detected a schema for MySQL 3.x/4.x, but the server runs on MySQL %2$s.<br /><strong>Before you proceed the update, you need to upgrade the schema.</strong><br /><br />Please refer to the <a href="http://www.phpbb.com/kb/article/doesnt-have-a-default-value-errors/">Knowledge Base article about upgrading the MySQL schema</a>. If you encounter problems, please use <a href="http://www.phpbb.com/community/viewforum.php?f=46">our support forums</a>.',
 
 	'NAMING_CONFLICT'			=> 'Naming conflict: %s and %s are both aliases<br /><br />%s',
 	'NEXT_STEP'					=> 'Proceed to next step',
