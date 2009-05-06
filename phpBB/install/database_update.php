@@ -943,7 +943,7 @@ function change_database_data(&$no_updates, $version)
 			$sql = 'SELECT auth_option
 				FROM ' . ACL_OPTIONS_TABLE . '
 				GROUP BY auth_option
-				HAVING COUNT(*) >= 1';
+				HAVING COUNT(*) >= 2';
 			$result = $db->sql_query($sql);
 
 			$auth_options = array();

@@ -454,7 +454,7 @@ class install_update extends module
 					// Refresh prosilver css data - this may cause some unhappy users, but
 					$sql = 'SELECT *
 						FROM ' . STYLES_THEME_TABLE . "
-						WHERE theme_name = 'prosilver'";
+						WHERE LOWER(theme_name) = 'prosilver'";
 					$result = $db->sql_query($sql);
 					$theme = $db->sql_fetchrow($result);
 					$db->sql_freeresult($result);
@@ -491,22 +491,13 @@ class install_update extends module
 
 						if ($recache)
 						{
-							include_once($phpbb_root_path . 'includes/acp/acp_styles.' . $phpEx);
-
-							$theme['theme_data'] = acp_styles::db_theme_data($theme);
-							$theme['theme_mtime'] = $update_time;
-
-							// Save CSS contents
-							$sql_ary = array(
-								'theme_mtime'	=> $theme['theme_mtime'],
-								'theme_data'	=> $theme['theme_data']
-							);
-
-							$sql = 'UPDATE ' . STYLES_THEME_TABLE . ' SET ' . $db->sql_build_array('UPDATE', $sql_ary) . '
-								WHERE theme_id = ' . $theme['theme_id'];
+							// Instead of re-caching here, we simply remove theme_data... HAR HAR HAR (think about a carribean pirate)
+							$sql = 'UPDATE ' . STYLES_THEME_TABLE . " SET theme_data = ''
+								WHERE theme_id = " . $theme['theme_id'];
 							$db->sql_query($sql);
 
 							$cache->destroy('sql', STYLES_THEME_TABLE);
+							$cache->destroy('sql', STYLES_TABLE);
 						}
 					}
 
