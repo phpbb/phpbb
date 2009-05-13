@@ -3221,7 +3221,7 @@ parse_css_file = {PARSE_CSS_FILE}
 		{
 			if ($mode === 'template')
 			{
-				$select_bf = ', template_bitfield';
+				$select_bf = ', bbcode_bitfield';
 			}
 			else
 			{
@@ -3243,7 +3243,7 @@ parse_css_file = {PARSE_CSS_FILE}
 			{
 				$inherit_id = $row["{$mode}_id"];
 				$inherit_path = $row["{$mode}_path"];
-				$inherit_bf = ($mode === 'template') ? $row["{$mode}_bitfield"] : false;
+				$inherit_bf = ($mode === 'template') ? $row["bbcode_bitfield"] : false;
 				$cfg_data['store_db'] = $row["{$mode}_storedb"];
 				$store_db = $row["{$mode}_storedb"];
 			}
