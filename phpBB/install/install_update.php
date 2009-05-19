@@ -60,6 +60,8 @@ class install_update extends module
 	var $current_version;
 	var $unequal_version;
 
+	var $update_to_version;
+
 	// Set to false
 	var $test_update = false;
 
@@ -182,6 +184,9 @@ class install_update extends module
 				'WARNING_MSG'	=> sprintf($user->lang['OLD_UPDATE_FILES'], $this->update_info['version']['from'], $this->update_info['version']['to'], $this->latest_version))
 			);
 		}
+
+		// We store the "update to" version, because it is not always the latest. ;)
+		$this->update_to_version = $this->update_info['version']['to'];
 
 		// Fill DB version
 		if (empty($config['dbms_version']))
@@ -449,7 +454,7 @@ class install_update extends module
 				if ($all_up_to_date)
 				{
 					// Add database update to log
-					add_log('admin', 'LOG_UPDATE_PHPBB', $this->current_version, $this->latest_version);
+					add_log('admin', 'LOG_UPDATE_PHPBB', $this->current_version, $this->update_to_version);
 
 					// Refresh prosilver css data - this may cause some unhappy users, but
 					$sql = 'SELECT *
