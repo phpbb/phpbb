@@ -21,7 +21,7 @@ if (!defined('IN_PHPBB'))
 */
 function can_load_dll($dll)
 {
-	return ((@ini_get('enable_dl') || strtolower(@ini_get('enable_dl')) == 'on') && (!@ini_get('safe_mode') || strtolower(@ini_get('safe_mode')) == 'off') && @dl($dll . '.' . PHP_SHLIB_SUFFIX)) ? true : false;
+	return ((@ini_get('enable_dl') || strtolower(@ini_get('enable_dl')) == 'on') && (!@ini_get('safe_mode') || strtolower(@ini_get('safe_mode')) == 'off') && function_exists('dl') && @dl($dll . '.' . PHP_SHLIB_SUFFIX)) ? true : false;
 }
 
 /**
