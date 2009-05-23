@@ -541,8 +541,8 @@ function phpbb_chmod($filename, $perms = CHMOD_READ)
 			global $phpbb_root_path, $phpEx;
 
 			// Determine owner/group of common.php file and the filename we want to change here
-			$common_php_owner = fileowner($phpbb_root_path . 'common.' . $phpEx);
-			$common_php_group = filegroup($phpbb_root_path . 'common.' . $phpEx);
+			$common_php_owner = @fileowner($phpbb_root_path . 'common.' . $phpEx);
+			$common_php_group = @filegroup($phpbb_root_path . 'common.' . $phpEx);
 
 			// And the owner and the groups PHP is running under.
 			$php_uid = (function_exists('posix_getuid')) ? @posix_getuid() : false;
@@ -568,21 +568,21 @@ function phpbb_chmod($filename, $perms = CHMOD_READ)
 
 	if ($_chmod_info['process'])
 	{
-		$file_uid = fileowner($filename);
-		$file_gid = filegroup($filename);
+		$file_uid = @fileowner($filename);
+		$file_gid = @filegroup($filename);
 
 		// Change owner
 		if (@chown($filename, $_chmod_info['common_owner']))
 		{
 			clearstatcache();
-			$file_uid = fileowner($filename);
+			$file_uid = @fileowner($filename);
 		}
 
 		// Change group
 		if (@chgrp($filename, $_chmod_info['common_group']))
 		{
 			clearstatcache();
-			$file_gid = filegroup($filename);
+			$file_gid = @filegroup($filename);
 		}
 
 		// If the file_uid/gid now match the one from common.php we can process further, else we are not able to change something
