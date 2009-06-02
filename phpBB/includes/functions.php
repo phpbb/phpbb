@@ -2520,6 +2520,11 @@ function login_box($redirect = '', $l_explain = '', $l_success = '', $admin = fa
 {
 	global $db, $user, $template, $auth, $phpEx, $phpbb_root_path, $config;
 
+	if (!class_exists('phpbb_captcha_factory'))
+	{
+		include($phpbb_root_path . 'includes/captcha/captcha_factory.' . $phpEx);
+	}
+	
 	$err = '';
 
 	// Make sure user->setup() has been called
@@ -2630,34 +2635,14 @@ function login_box($redirect = '', $l_explain = '', $l_success = '', $admin = fa
 		{
 			case LOGIN_ERROR_ATTEMPTS:
 
-				// Show confirm image
-				$sql = 'DELETE FROM ' . CONFIRM_TABLE . "
-					WHERE session_id = '" . $db->sql_escape($user->session_id) . "'
-						AND confirm_type = " . CONFIRM_LOGIN;
-				$db->sql_query($sql);
+				$captcha = phpbb_captcha_factory::get_instance($config['captcha_plugin']);
+				$captcha->init(CONFIRM_LOGIN);
+				$captcha->reset();
 
-				// Generate code
-				$code = gen_rand_string(mt_rand(CAPTCHA_MIN_CHARS, CAPTCHA_MAX_CHARS));
-				$confirm_id = md5(unique_id($user->ip));
-				$seed = hexdec(substr(unique_id(), 4, 10));
-
-				// compute $seed % 0x7fffffff
-				$seed -= 0x7fffffff * floor($seed / 0x7fffffff);
-
-				$sql = 'INSERT INTO ' . CONFIRM_TABLE . ' ' . $db->sql_build_array('INSERT', array(
-					'confirm_id'	=> (string) $confirm_id,
-					'session_id'	=> (string) $user->session_id,
-					'confirm_type'	=> (int) CONFIRM_LOGIN,
-					'code'			=> (string) $code,
-					'seed'			=> (int) $seed)
-				);
-				$db->sql_query($sql);
 
 				$template->assign_vars(array(
 					'S_CONFIRM_CODE'			=> true,
-					'CONFIRM_ID'				=> $confirm_id,
-					'CONFIRM_IMAGE'				=> '<img src="' . append_sid("{$phpbb_root_path}ucp.$phpEx", 'mode=confirm&amp;id=' . $confirm_id . '&amp;type=' . CONFIRM_LOGIN) . '" alt="" title="" />',
-					'L_LOGIN_CONFIRM_EXPLAIN'	=> sprintf($user->lang['LOGIN_CONFIRM_EXPLAIN'], '<a href="mailto:' . htmlspecialchars($config['board_contact']) . '">', '</a>'),
+					'CONFIRM'					=> $captcha->get_template(''),
 				));
 
 				$err = $user->lang[$result['error_msg']];

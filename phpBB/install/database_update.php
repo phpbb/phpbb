@@ -8,7 +8,7 @@
 *
 */
 
-$updates_to_version = '3.0.5';
+$updates_to_version = '3.0.6-dev';
 
 // Enter any version to update from to test updates. The version within the db will not be updated.
 $debug_from_version = false;
@@ -677,6 +677,9 @@ function database_update_info()
 
 		// No changes from 3.0.5-RC1 to 3.0.5
 		'3.0.5-RC1'		=> array(),
+		
+		// No changes from 3.0.5
+		'3.0.5'		=> array(),
 	);
 }
 
@@ -1011,6 +1014,14 @@ function change_database_data(&$no_updates, $version)
 
 		// No changes from 3.0.5-RC1 to 3.0.5
 		case '3.0.5-RC1':
+		break;
+		
+		
+				 
+		case '3.0.5':
+			// TODO: smarter detection here; problem without GD.
+			set_config('captcha_plugin', 'phpbb_captcha_nogd');
+
 		break;
 	}
 }

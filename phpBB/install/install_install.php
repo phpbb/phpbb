@@ -1373,8 +1373,8 @@ class install_install extends module
 		if (@extension_loaded('gd') || can_load_dll('gd'))
 		{
 			$sql_ary[] = 'UPDATE ' . $data['table_prefix'] . "config
-				SET config_value = '1'
-				WHERE config_name = 'captcha_gd'";
+				SET config_value = 'phpbb_captcha_gd'
+				WHERE config_name = 'captcha_plugin'";
 		}
 
 		$ref = substr($referer, strpos($referer, '://') + 3);

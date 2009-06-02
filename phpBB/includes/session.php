@@ -891,7 +891,7 @@ class session
 	*/
 	function session_gc()
 	{
-		global $db, $config;
+		global $db, $config, $phpbb_root_path, $phpEx;
 
 		$batch_size = 10;
 
@@ -949,40 +949,16 @@ class session
 					WHERE last_login < ' . (time() - (86400 * (int) $config['max_autologin_time']));
 				$db->sql_query($sql);
 			}
-			$this->confirm_gc();
+			
+			// only called from CRON; should be a safe workaround until the infrastructure gets going
+			if (!class_exists('captcha_factory'))
+			{
+				include($phpbb_root_path . "includes/captcha/captcha_factory." . $phpEx);
+			}
+			captcha_factory::garbage_collect($config['captcha_plugin']);
 		}
 
 		return;
-	}
-
-	function confirm_gc($type = 0)
-	{
-		global $db, $config;
-
-		$sql = 'SELECT DISTINCT c.session_id
-				FROM ' . CONFIRM_TABLE . ' c
-				LEFT JOIN ' . SESSIONS_TABLE . ' s ON (c.session_id = s.session_id)
-				WHERE s.session_id IS NULL' .
-					((empty($type)) ? '' : ' AND c.confirm_type = ' . (int) $type);
-		$result = $db->sql_query($sql);
-
-		if ($row = $db->sql_fetchrow($result))
-		{
-			$sql_in = array();
-			do
-			{
-				$sql_in[] = (string) $row['session_id'];
-			}
-			while ($row = $db->sql_fetchrow($result));
-
-			if (sizeof($sql_in))
-			{
-				$sql = 'DELETE FROM ' . CONFIRM_TABLE . '
-					WHERE ' . $db->sql_in_set('session_id', $sql_in);
-				$db->sql_query($sql);
-			}
-		}
-		$db->sql_freeresult($result);
 	}
 
 
