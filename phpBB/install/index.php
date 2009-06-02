@@ -175,7 +175,7 @@ if (!empty($_SERVER['HTTP_ACCEPT_LANGUAGE']) && !$language)
 		// Set correct format ... guess full xx_yy form
 		$accept_lang = substr($accept_lang, 0, 2) . '_' . substr($accept_lang, 3, 2);
 
-		if (file_exists($phpbb_root_path . 'language/' . $accept_lang))
+		if (file_exists($phpbb_root_path . 'language/' . $accept_lang) && is_dir($phpbb_root_path . 'language/' . $accept_lang))
 		{
 			$language = $accept_lang;
 			break;
@@ -184,7 +184,7 @@ if (!empty($_SERVER['HTTP_ACCEPT_LANGUAGE']) && !$language)
 		{
 			// No match on xx_yy so try xx
 			$accept_lang = substr($accept_lang, 0, 2);
-			if (file_exists($phpbb_root_path . 'language/' . $accept_lang))
+			if (file_exists($phpbb_root_path . 'language/' . $accept_lang) && is_dir($phpbb_root_path . 'language/' . $accept_lang))
 			{
 				$language = $accept_lang;
 				break;
@@ -218,7 +218,7 @@ if (!$language)
 	closedir($dir);
 }
 
-if (!file_exists($phpbb_root_path . 'language/' . $language))
+if (!file_exists($phpbb_root_path . 'language/' . $language) || !is_dir($phpbb_root_path . 'language/' . $language))
 {
 	die('No language found!');
 }
