@@ -669,6 +669,67 @@ function phpbb_chmod($filename, $perms = CHMOD_READ)
 	return $result;
 }
 
+/**
+ * Test if a file/directory is writable
+ *
+ * This function calls the native is_writable() when not running under
+ * Windows and it is not disabled.
+ *
+ * @param string $file Path to perform write test on
+ * @return bool True when the path is writable, otherwise false.
+ */
+function phpbb_is_writable($file)
+{
+	if (substr(PHP_OS, 0, 3) === 'WIN' || !function_exists('is_writable'))
+	{
+		if (file_exists($file))
+		{
+			// Canonicalise path to absolute path
+			$file = phpbb_realpath($file);
+
+			if (is_dir($file))
+			{
+				// Test directory by creating a file inside the directory
+				$result = @tempnam($file, 'i_w');
+
+				if (is_string($result) && file_exists($result))
+				{
+					unlink($result);
+
+					// Ensure the file is actually in the directory (returned realpathed)
+					return (strpos($result, $file) === 0) ? true : false;
+				}
+			}
+			else
+			{
+				$handle = @fopen($file, 'r+');
+
+				if (is_resource($handle))
+				{
+					fclose($handle);
+					return true;
+				}
+			}
+		}
+		else
+		{
+			// file does not exist test if we can write to the directory
+
+			$dir = dirname($file);
+
+			if (file_exists($dir) && is_dir($dir) && phpbb_is_writable($dir))
+			{
+				return true;
+			}
+		}
+		return false;
+	}
+	else
+	{
+		return is_writable($file);
+	}
+}
+
 // Compatibility functions
 
 if (!function_exists('array_combine'))
