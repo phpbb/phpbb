@@ -2077,8 +2077,8 @@ function avatar_gallery($category, $avatar_select, $items_per_column, $block_var
 						if (preg_match('#^[^&\'"<>]+\.(?:gif|png|jpe?g)$#i', $sub_file))
 						{
 							$avatar_list[$file][$avatar_row_count][$avatar_col_count] = array(
-								'file'		=> "$file/$sub_file",
-								'filename'	=> $sub_file,
+								'file'		=> rawurlencode  ($file) . '/' . rawurlencode  ($sub_file),
+								'filename'	=> rawurlencode  ($sub_file),
 								'name'		=> ucfirst(str_replace('_', ' ', preg_replace('#^(.*)\..*$#', '\1', $sub_file))),
 							);
 							$avatar_col_count++;
