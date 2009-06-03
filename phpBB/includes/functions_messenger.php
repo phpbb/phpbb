@@ -408,6 +408,8 @@ class messenger
 			$this->from = '<' . $config['board_contact'] . '>';
 		}
 
+		$encode_eol = ($config['smtp_delivery']) ? "\r\n" : $this->eol;
+
 		// Build to, cc and bcc strings
 		$to = $cc = $bcc = '';
 		foreach ($this->addresses as $type => $address_ary)
@@ -419,7 +421,7 @@ class messenger
 
 			foreach ($address_ary as $which_ary)
 			{
-				$$type .= (($$type != '') ? ', ' : '') . (($which_ary['name'] != '') ? '"' . mail_encode($which_ary['name']) . '" <' . $which_ary['email'] . '>' : $which_ary['email']);
+				$$type .= (($$type != '') ? ', ' : '') . (($which_ary['name'] != '') ? '"' . mail_encode($which_ary['name'], $encode_eol) . '" <' . $which_ary['email'] . '>' : $which_ary['email']);
 			}
 		}
 
@@ -443,7 +445,7 @@ class messenger
 				$headers = implode($this->eol, $headers);
 
 				ob_start();
-				$result = $config['email_function_name']($mail_to, mail_encode($this->subject), wordwrap(utf8_wordwrap($this->msg), 997, "\n", true), $headers);
+				$result = $config['email_function_name']($mail_to, mail_encode($this->subject, $this->eol), wordwrap(utf8_wordwrap($this->msg), 997, "\n", true), $headers);
 				$err_msg = ob_get_clean();
 			}
 
@@ -688,7 +690,7 @@ class queue
 						else
 						{
 							ob_start();
-							$result = $config['email_function_name']($to, mail_encode($subject), wordwrap(utf8_wordwrap($msg), 997, "\n", true), implode($this->eol, $headers));
+							$result = $config['email_function_name']($to, mail_encode($subject, $this->eol), wordwrap(utf8_wordwrap($msg), 997, "\n", true), implode($this->eol, $headers));
 							$err_msg = ob_get_clean();
 						}
 
@@ -1441,13 +1443,15 @@ class smtp_class
 * is basically doomed with an unreadable subject.
 *
 * Please note that this version fully supports RFC 2045 section 6.8.
+*
+* @param string $eol End of line we are using (optional to be backwards compatible)
 */
-function mail_encode($str)
+function mail_encode($str, $eol = "\r\n")
 {
 	// define start delimimter, end delimiter and spacer
 	$start = "=?UTF-8?B?";
 	$end = "?=";
-	$delimiter = "\r\n ";
+	$delimiter = "$eol ";
 
 	// Maximum length is 75. $split_length *must* be a multiple of 4, but <= 75 - strlen($start . $delimiter . $end)!!!
 	$split_length = 60;
