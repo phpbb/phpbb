@@ -1,9 +1,9 @@
-<?
+<?php
 /**
 *
 * @package VC
-* @version $Id: $
-* @copyright (c) 2006 2008 phpBB Group
+* @version $Id$
+* @copyright (c) 2006, 2008 phpBB Group
 * @license http://opensource.org/licenses/gpl-license.php GNU Public License
 *
 */
@@ -19,7 +19,7 @@ if (!defined('IN_PHPBB'))
 if (!class_exists('phpbb_default_captcha'))
 {
 	// we need the classic captcha code for tracking solutions and attempts
-	include_once($phpbb_root_path . "includes/captcha/plugins/captcha_abstract." . $phpEx);
+	include_once($phpbb_root_path . 'includes/captcha/plugins/captcha_abstract.' . $phpEx);
 }
 
 class phpbb_recaptcha extends phpbb_default_captcha

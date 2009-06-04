@@ -1,4 +1,4 @@
-<?
+<?php
 
 interface phpbb_captcha_plugin
 {
@@ -95,3 +95,5 @@ interface phpbb_captcha_plugin
 	function get_attempt_count();
 
 }
+
+?>

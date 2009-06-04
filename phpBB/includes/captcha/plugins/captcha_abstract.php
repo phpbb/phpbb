@@ -1,9 +1,9 @@
-<?
+<?php
 /**
 *
 * @package VC
-* @version $Id: $
-* @copyright (c) 2006 2008 phpBB Group
+* @version $Id$
+* @copyright (c) 2006, 2008 phpBB Group
 * @license http://opensource.org/licenses/gpl-license.php GNU Public License
 *
 */
@@ -330,3 +330,4 @@ class phpbb_default_captcha
 	
 }
 
+?>

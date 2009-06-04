@@ -3,10 +3,11 @@
 *
 * @package VC
 * @version $Id$
-* @copyright (c) 2006 2008 phpBB Group
+* @copyright (c) 2006, 2008 phpBB Group
 * @license http://opensource.org/licenses/gpl-license.php GNU Public License
 *
 */
+
 /**
 * @ignore
 */
@@ -29,6 +30,7 @@ class phpbb_captcha_gd_wave extends phpbb_default_captcha
 	function phpbb_captcha_gd_wave()
 	{
 		global $phpbb_root_path, $phpEx;
+
 		if (!class_exists('captcha'))
 		{
 			include_once($phpbb_root_path . 'includes/captcha/captcha_gd_wave.' . $phpEx);
