@@ -1,0 +1,63 @@
+<?php
+/**
+*
+* @package acm
+* @version $Id$
+* @copyright (c) 2005, 2009 phpBB Group
+* @license http://opensource.org/licenses/gpl-license.php GNU Public License
+*
+*/
+
+/**
+* @ignore
+*/
+if (!defined('IN_PHPBB'))
+{
+	exit;
+}
+
+// Include the abstract base
+if (!class_exists('acm_memory'))
+{
+	require("${phpbb_root_path}includes/acm/acm_memory.$phpEx");
+}
+
+/**
+* ACM for APC
+* @package acm
+*/
+class acm extends acm_memory
+{
+	function acm()
+	{
+		// Call the parent constructor
+		parent::acm_memory();
+	}
+
+	/**
+	* Purge cache data
+	*/
+	function purge()
+	{
+		apc_clear_cache('user');
+
+		parent::purge();
+	}
+
+	function read($var)
+	{
+		return apc_fetch($var);
+	}
+
+	function write($var, $data, $ttl = 2592000)
+	{
+		return apc_store($var, $data, $ttl);
+	}
+
+	function delete($var)
+	{
+		return apc_delete($var);
+	}
+}
+
+?>
