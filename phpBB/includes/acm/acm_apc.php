@@ -57,7 +57,7 @@ class acm extends acm_memory
 	*/
 	function _read($var)
 	{
-		return apc_fetch($var);
+		return apc_fetch($this->key_prefix . $var);
 	}
 
 	/**
@@ -71,7 +71,7 @@ class acm extends acm_memory
 	*/
 	function _write($var, $data, $ttl = 2592000)
 	{
-		return apc_store($var, $data, $ttl);
+		return apc_store($this->key_prefix . $var, $data, $ttl);
 	}
 
 	/**
@@ -83,7 +83,7 @@ class acm extends acm_memory
 	*/
 	function _delete($var)
 	{
-		return apc_delete($var);
+		return apc_delete($this->key_prefix . $var);
 	}
 }
 

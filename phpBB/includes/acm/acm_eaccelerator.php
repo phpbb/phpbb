@@ -49,6 +49,7 @@ class acm extends acm_memory
 		foreach (eaccelerator_list_keys() as $var)
 		{
 			// @todo Check why the substr()
+			// @todo Only unset vars matching $this->key_prefix
 			eaccelerator_rm(substr($var['name'], 1));
 		}
 
@@ -76,7 +77,7 @@ class acm extends acm_memory
 	*/
 	function _read($var)
 	{
-		$result = eaccelerator_get($var);
+		$result = eaccelerator_get($this->key_prefix . $var);
 
 		if ($result === null)
 		{
@@ -106,7 +107,7 @@ class acm extends acm_memory
 		// Serialize objects and make them easy to detect
 		$data = (is_object($data)) ? $this->serialize_header . serialize($data) : $data;
 
-		return eaccelerator_put($var, $data, $ttl);
+		return eaccelerator_put($this->key_prefix . $var, $data, $ttl);
 	}
 
 	/**
@@ -118,7 +119,7 @@ class acm extends acm_memory
 	*/
 	function _delete($var)
 	{
-		return eaccelerator_rm($var);
+		return eaccelerator_rm($this->key_prefix . $var);
 	}
 }
 

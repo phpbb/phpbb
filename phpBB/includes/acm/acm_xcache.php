@@ -62,7 +62,7 @@ class acm extends acm_memory
 	*/
 	function _read($var)
 	{
-		return xcache_get($var);
+		return xcache_get($this->key_prefix . $var);
 	}
 
 	/**
@@ -76,7 +76,7 @@ class acm extends acm_memory
 	*/
 	function _write($var, $data, $ttl = 2592000)
 	{
-		return xcache_set($var, $data, $ttl);
+		return xcache_set($this->key_prefix . $var, $data, $ttl);
 	}
 
 	/**
@@ -88,7 +88,7 @@ class acm extends acm_memory
 	*/
 	function _delete($var)
 	{
-		return xcache_unset($var);
+		return xcache_unset($this->key_prefix . $var);
 	}
 
 	/**
@@ -101,7 +101,7 @@ class acm extends acm_memory
 	function _isset($var)
 	{
 		// Most caches don't need to check
-		return xcache_isset($var);
+		return xcache_isset($this->key_prefix . $var);
 	}
 }
 
