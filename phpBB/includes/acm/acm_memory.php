@@ -228,7 +228,7 @@ class acm_memory
 	{
 		if ($var_name[0] == '_')
 		{
-			return true;
+			return $this->_isset($var_name);
 		}
 		else
 		{
@@ -397,6 +397,19 @@ class acm_memory
 		}
 
 		return @unlink($filename);
+	}
+
+	/**
+	* Check if a cache var exists
+	*
+	* @access protected
+	* @param string $var Cache key
+	* @return bool True if it exists, otherwise false
+	*/	
+	function _isset($var)
+	{
+		// Most caches don't need to check
+		return true;
 	}
 }
 
