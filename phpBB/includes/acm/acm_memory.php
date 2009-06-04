@@ -34,6 +34,8 @@ class acm_memory
 	*/
 	function acm_memory()
 	{
+		global $phpbb_root_path;
+
 		$this->cache_dir = $phpbb_root_path . 'cache/';
 	}
 
@@ -43,7 +45,7 @@ class acm_memory
 	function load()
 	{
 		// grab the global cache
-		$this->vars = $this->read('global');
+		$this->vars = $this->_read('global');
 
 		if ($this->vars !== false)
 		{
@@ -78,7 +80,7 @@ class acm_memory
 			return;
 		}
 
-		$this->write('global', $this->vars, 2592000);
+		$this->_write('global', $this->vars, 2592000);
 
 		$this->is_modified = false;
 	}
@@ -105,7 +107,7 @@ class acm_memory
 				return false;
 			}
 
-			return $this->read($var_name);
+			return $this->_read($var_name);
 		}
 		else
 		{
@@ -120,7 +122,7 @@ class acm_memory
 	{
 		if ($var_name[0] == '_')
 		{
-			$this->write($var_name, $var, $ttl);
+			$this->_write($var_name, $var, $ttl);
 		}
 		else
 		{
@@ -180,7 +182,7 @@ class acm_memory
 			foreach ($table as $table_name)
 			{
 				// gives us the md5s that we want
-				$temp = $this->read('sql_' . $table_name);
+				$temp = $this->_read('sql_' . $table_name);
 
 				if ($temp === false)
 				{
@@ -190,11 +192,11 @@ class acm_memory
 				// delete each query ref
 				foreach ($temp as $md5_id => $void)
 				{
-					$this->delete('sql_' . $md5_id);
+					$this->_delete('sql_' . $md5_id);
 				}
 
 				// delete the table ref
-				$this->delete('sql_' . $table_name);
+				$this->_delete('sql_' . $table_name);
 			}
 
 			return;
@@ -207,7 +209,7 @@ class acm_memory
 
 		if ($var_name[0] == '_')
 		{
-			$this->delete($var_name);
+			$this->_delete($var_name);
 		}
 		else if (isset($this->vars[$var_name]))
 		{
@@ -248,7 +250,7 @@ class acm_memory
 		$query = preg_replace('/[\n\r\s\t]+/', ' ', $query);
 		$query_id = sizeof($this->sql_rowset);
 
-		if (($result = $this->read('sql_' . md5($query))) === false)
+		if (($result = $this->_read('sql_' . md5($query))) === false)
 		{
 			return false;
 		}
@@ -290,7 +292,7 @@ class acm_memory
 				$table_name = substr($table_name, 0, $pos);
 			}
 
-			$temp = $this->read('sql_' . $table_name);
+			$temp = $this->_read('sql_' . $table_name);
 
 			if ($temp === false)
 			{
@@ -300,7 +302,7 @@ class acm_memory
 			$temp[$hash] = true;
 
 			// This must never expire
-			$this->write('sql_' . $table_name, $temp, 0);
+			$this->_write('sql_' . $table_name, $temp, 0);
 		}
 
 		// store them in the right place
@@ -314,7 +316,7 @@ class acm_memory
 		}
 		$db->sql_freeresult($query_result);
 
-		$this->write('sql_' . $hash, $this->sql_rowset[$query_id], $ttl);
+		$this->_write('sql_' . $hash, $this->sql_rowset[$query_id], $ttl);
 
 		$query_result = $query_id;
 	}

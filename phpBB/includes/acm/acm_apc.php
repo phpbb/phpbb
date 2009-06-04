@@ -36,6 +36,8 @@ class acm extends acm_memory
 
 	/**
 	* Purge cache data
+	*
+	* @return void
 	*/
 	function purge()
 	{
@@ -44,17 +46,40 @@ class acm extends acm_memory
 		parent::purge();
 	}
 
-	function read($var)
+	/**
+	* Fetch an item from the cache
+	*
+	* @access protected
+	* @param string $var Cache key
+	* @return mixed Cached data
+	*/
+	function _read($var)
 	{
 		return apc_fetch($var);
 	}
 
-	function write($var, $data, $ttl = 2592000)
+	/**
+	* Store data in the cache
+	*
+	* @access protected
+	* @param string $var Cache key
+	* @param mixed $data Data to store
+	* @param int $ttl Time-to-live of cached data
+	* @return bool True if the operation succeeded
+	*/
+	function _write($var, $data, $ttl = 2592000)
 	{
 		return apc_store($var, $data, $ttl);
 	}
 
-	function delete($var)
+	/**
+	* Remove an item from the cache
+	*
+	* @access protected
+	* @param string $var Cache key
+	* @return bool True if the operation succeeded
+	*/
+	function _delete($var)
 	{
 		return apc_delete($var);
 	}

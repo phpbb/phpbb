@@ -61,6 +61,11 @@ class acm extends acm_memory
 		$this->flags = (PHPBB_ACM_MEMCACHE_COMPRESS) ? MEMCACHE_COMPRESSED : 0;
 	}
 
+	/**
+	* Unload the cache resources
+	*
+	* @return void
+	*/
 	function unload()
 	{
 		parent::unload();
@@ -70,6 +75,8 @@ class acm extends acm_memory
 
 	/**
 	* Purge cache data
+	*
+	* @return void
 	*/
 	function purge()
 	{
@@ -78,17 +85,40 @@ class acm extends acm_memory
 		parent::purge();
 	}
 
-	function read($var)
+	/**
+	* Fetch an item from the cache
+	*
+	* @access protected
+	* @param string $var Cache key
+	* @return mixed Cached data
+	*/
+	function _read($var)
 	{
 		return $this->memcache->get($var);
 	}
 
-	function write($var, $data, $ttl = 2592000)
+	/**
+	* Store data in the cache
+	*
+	* @access protected
+	* @param string $var Cache key
+	* @param mixed $data Data to store
+	* @param int $ttl Time-to-live of cached data
+	* @return bool True if the operation succeeded
+	*/
+	function _write($var, $data, $ttl = 2592000)
 	{
 		return $this->memcache->set($var, $data, $this->flags, $ttl);
 	}
 
-	function delete($var)
+	/**
+	* Remove an item from the cache
+	*
+	* @access protected
+	* @param string $var Cache key
+	* @return bool True if the operation succeeded
+	*/
+	function _delete($var)
 	{
 		return $this->memcache->delete($var);
 	}
