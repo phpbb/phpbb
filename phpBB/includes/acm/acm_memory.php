@@ -37,6 +37,13 @@ class acm_memory
 		global $phpbb_root_path;
 
 		$this->cache_dir = $phpbb_root_path . 'cache/';
+
+		if (!isset($this->extension) || !extension_loaded($this->extension))
+		{
+			global $acm_type;
+
+			trigger_error("Could not find required extension [{$this->extension}] for the ACM module $acm_type.", E_USER_ERROR);
+		}
 	}
 
 	/**

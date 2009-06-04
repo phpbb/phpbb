@@ -16,16 +16,6 @@ if (!defined('IN_PHPBB'))
 	exit;
 }
 
-if (!extension_loaded('memcache') || !defined('PHPBB_ACM_MEMCACHE_HOST'))
-{
-	// Memcached will not work, include the null ACM at least the
-	// board will still work.
-	// @todo Could change this for a simple error though.
-	require("${phpbb_root_path}includes/acm/acm_null.$phpEx");
-
-	return;
-}
-
 // Include the abstract base
 if (!class_exists('acm_memory'))
 {
@@ -48,6 +38,8 @@ if (!defined('PHPBB_ACM_MEMCACHE_COMPRESS'))
 */
 class acm extends acm_memory
 {
+	var $extension = 'memcache';
+
 	var $memcache;
 	var $flags = 0;
 
@@ -55,6 +47,11 @@ class acm extends acm_memory
 	{
 		// Call the parent constructor
 		parent::acm_memory();
+
+		if (!defined('PHPBB_ACM_MEMCACHE_HOST'))
+		{
+			trigger_error('Missing required constant [PHPBB_ACM_MEMCACHE_HOST] for memcache ACM module.', E_USER_ERROR);
+		}
 
 		$this->memcache = new Memcache;
 		$this->memcache->connect(PHPBB_ACM_MEMCACHE_HOST, PHPBB_ACM_MEMCACHE_PORT);

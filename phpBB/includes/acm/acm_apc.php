@@ -28,6 +28,8 @@ if (!class_exists('acm_memory'))
 */
 class acm extends acm_memory
 {
+	var $extension = 'apc';
+
 	function acm()
 	{
 		// Call the parent constructor

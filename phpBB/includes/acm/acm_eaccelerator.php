@@ -29,6 +29,8 @@ if (!class_exists('acm_memory'))
 */
 class acm extends acm_memory
 {
+	var $extension = 'eaccelerator';
+
 	var $serialize_header = '#phpbb-serialized#';
 
 	function acm()
