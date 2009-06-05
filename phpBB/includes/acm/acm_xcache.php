@@ -19,7 +19,7 @@ if (!defined('IN_PHPBB'))
 // Include the abstract base
 if (!class_exists('acm_memory'))
 {
-	require("${phpbb_root_path}includes/acm/acm_memory.$phpEx");
+	require("{$phpbb_root_path}includes/acm/acm_memory.$phpEx");
 }
 
 /**
@@ -29,12 +29,6 @@ if (!class_exists('acm_memory'))
 class acm extends acm_memory
 {
 	var $extension = 'xcache';
-
-	function acm()
-	{
-		// Call the parent constructor
-		parent::acm_memory();
-	}
 
 	/**
 	* Purge cache data
@@ -62,7 +56,9 @@ class acm extends acm_memory
 	*/
 	function _read($var)
 	{
-		return xcache_get($this->key_prefix . $var);
+		$result = xcache_get($this->key_prefix . $var);
+
+		return ($result !== null) ? $result : false;
 	}
 
 	/**
@@ -100,7 +96,6 @@ class acm extends acm_memory
 	*/	
 	function _isset($var)
 	{
-		// Most caches don't need to check
 		return xcache_isset($this->key_prefix . $var);
 	}
 }

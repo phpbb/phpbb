@@ -19,7 +19,7 @@ if (!defined('IN_PHPBB'))
 // Include the abstract base
 if (!class_exists('acm_memory'))
 {
-	require("${phpbb_root_path}includes/acm/acm_memory.$phpEx");
+	require("{$phpbb_root_path}includes/acm/acm_memory.$phpEx");
 }
 
 /**
@@ -29,12 +29,6 @@ if (!class_exists('acm_memory'))
 class acm extends acm_memory
 {
 	var $extension = 'apc';
-
-	function acm()
-	{
-		// Call the parent constructor
-		parent::acm_memory();
-	}
 
 	/**
 	* Purge cache data
