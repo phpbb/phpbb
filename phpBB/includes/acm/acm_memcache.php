@@ -32,6 +32,11 @@ if (!defined('PHPBB_ACM_MEMCACHE_COMPRESS'))
 	define('PHPBB_ACM_MEMCACHE_COMPRESS', false);
 }
 
+if (!defined('PHPBB_ACM_MEMCACHE_HOST'))
+{
+	define('PHPBB_ACM_MEMCACHE_HOST', 'localhost');
+}
+
 /**
 * ACM for Memcached
 * @package acm
@@ -47,11 +52,6 @@ class acm extends acm_memory
 	{
 		// Call the parent constructor
 		parent::acm_memory();
-
-		if (!defined('PHPBB_ACM_MEMCACHE_HOST'))
-		{
-			trigger_error('Missing required constant [PHPBB_ACM_MEMCACHE_HOST] for memcache ACM module.', E_USER_ERROR);
-		}
 
 		$this->memcache = new Memcache;
 		$this->memcache->connect(PHPBB_ACM_MEMCACHE_HOST, PHPBB_ACM_MEMCACHE_PORT);

@@ -51,7 +51,7 @@ if ($config['enable_post_confirm'] && !$user->data['is_registered'])
 	$captcha = phpbb_captcha_factory::get_instance($config['captcha_plugin']);
 	$captcha->init(CONFIRM_POST);
 }
-	
+
 // Was cancel pressed? If so then redirect to the appropriate page
 if ($cancel || ($current_time - $lastclick < 2 && $submit))
 {
@@ -1016,10 +1016,12 @@ if ($submit || $preview || $refresh)
 			}
 
 			$redirect_url = submit_post($mode, $post_data['post_subject'], $post_data['username'], $post_data['topic_type'], $poll, $data, $update_message);
+
 			if ($config['enable_post_confirm'] && !$user->data['is_registered'] && in_array($mode, array('quote', 'post', 'reply')))
 			{
 				$captcha->reset();
 			}
+
 			// Check the permissions for post approval, as well as the queue trigger where users are put on approval with a post count lower than specified. Moderators are not affected.
 			if ((($config['enable_queue_trigger'] && $user->data['user_posts'] < $config['queue_trigger_posts']) || !$auth->acl_get('f_noapprove', $data['forum_id'])) && !$auth->acl_get('m_approve', $data['forum_id']))
 			{
@@ -1241,7 +1243,6 @@ generate_forum_rules($post_data);
 if ($config['enable_post_confirm'] && !$user->data['is_registered'] && $solved_captcha === false && ($mode == 'post' || $mode == 'reply' || $mode == 'quote'))
 {
 	$captcha->reset();
-
 
 	$template->assign_vars(array(
 		'S_CONFIRM_CODE'			=> true,

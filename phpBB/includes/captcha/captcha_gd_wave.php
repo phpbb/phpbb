@@ -1,16 +1,18 @@
 <?php
-/** 
+/**
 *
 * @package VC
 * @version $Id$
-* @copyright (c) 2006 phpBB Group 
-* @license http://opensource.org/licenses/gpl-license.php GNU Public License 
+* @copyright (c) 2006 phpBB Group
+* @license http://opensource.org/licenses/gpl-license.php GNU Public License
 *
 */
 
-
-/** 
-* Wave3D CAPTCHA by Robert Hetzler
+/**
+* Wave3D CAPTCHA
+*
+* @author Robert Hetzler
+* @package VC
 */
 class captcha
 {
@@ -20,10 +22,10 @@ class captcha
 	function execute($code, $seed)
 	{
 		global $starttime;
-		
+
 		// seed the random generator
 		mt_srand($seed);
-	
+
 		// set height and width
 		$img_x = $this->width;
 		$img_y = $this->height;
@@ -32,7 +34,7 @@ class captcha
 		$img	= imagecreatetruecolor($img_x, $img_y);
 		$x_grid = mt_rand(6, 10);
 		$y_grid = mt_rand(6, 10);
- 
+
 		// Ok, so lets cut to the chase. We could accurately represent this in 3d and
 		// do all the appropriate linear transforms. my questions is... why bother?
 		// The computational overhead is unnecessary when you consider the simple fact:
@@ -47,27 +49,28 @@ class captcha
 		$plane_x	= 100;
 		$plane_y	= 30;
 
-		$subdivision_factor	= 3;
+		$subdivision_factor = 3;
+
 		// $box is the 4 points in img_space that correspond to the corners of the plane in 3-space
 		$box = array(
 			'upper_left'	=> array(
 				'x' => mt_rand(5, 15),
 				'y' => mt_rand(10, 15)
-			), 
+			),
 			'upper_right'	=> array(
 				'x' => mt_rand($img_x - 35, $img_x - 19),
 				'y' => mt_rand(10, 17)
-			), 
+			),
 			'lower_left'	=> array(
 				'x' => mt_rand($img_x - 5, $img_x - 45),
 				'y' => mt_rand($img_y - 0, $img_y - 15)
-			), 
-		);
-		$box['lower_right'] = array(
-				'x' => $box['lower_left']['x'] + $box['upper_left']['x'] - $box['upper_right']['x'],
-				'y' => $box['lower_left']['y'] + $box['upper_left']['y'] - $box['upper_right']['y'],
+			),
 		);
 
+		$box['lower_right'] = array(
+			'x' => $box['lower_left']['x'] + $box['upper_left']['x'] - $box['upper_right']['x'],
+			'y' => $box['lower_left']['y'] + $box['upper_left']['y'] - $box['upper_right']['y'],
+		);
 
 		// TODO
 		$background = imagecolorallocate($img, mt_rand(155, 255), mt_rand(155, 255), mt_rand(155, 255));
@@ -83,7 +86,7 @@ class captcha
 		}
 
 		$fontcolors[0] = imagecolorallocate($img, mt_rand(0, 120), mt_rand(0, 120), mt_rand(0, 120));
-		
+
  		$colors = array();
 
 		$minr = mt_rand(20, 30);
@@ -159,7 +162,7 @@ class captcha
 			$cur_height		= $this->wave_height($x, 0, $subdivision_factor);
 			$offset			= $cur_height - $prev_height;
 			$img_pos_cur	= array($img_pos_prev[0] + $dxx, $img_pos_prev[1] + $dxy + $offset);
-									
+
 			$img_buffer[0][$x]	= $img_pos_cur;
 			$img_pos_prev		= $img_pos_cur;
 			$prev_height		= $cur_height;
@@ -170,7 +173,7 @@ class captcha
 			// swap buffers
 			$buffer_cur		= $y & 1;
 			$buffer_prev	= 1 - $buffer_cur;
-			
+
 			$prev_height	= $this->wave_height(0, $y, $subdivision_factor);
 			$offset			= $prev_height - $this->wave_height(0, $y - 1, $subdivision_factor);
 			$img_pos_cur	= array($img_buffer[$buffer_prev][0][0] + $dyx, min($img_buffer[$buffer_prev][0][1] + $dyy + $offset, $img_y - 1));
@@ -179,7 +182,7 @@ class captcha
 			$img_pos_prev	= $img_pos_cur;
 
 			$img_buffer[$buffer_cur][0]	= $img_pos_cur;
-			
+
 			for ($x = 1; $x <= $full_x; ++$x)
 			{
 				$cur_height		= $this->wave_height($x, $y, $subdivision_factor) + $this->grid_height($x, $y, 1, $x_grid, $y_grid);
@@ -496,7 +499,7 @@ class captcha
 					array(0,0,0,0,0,0,0,0,0),
 					array(0,0,0,0,0,0,0,0,0),
 					array(0,0,0,0,0,0,0,0,0),
-				),		
+				),
 				'O' => array(
 					array(0,0,0,1,1,1,0,0,0),
 					array(0,0,1,0,0,0,1,0,0),

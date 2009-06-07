@@ -24,6 +24,9 @@ if (!class_exists('captcha_abstract'))
 	include_once($phpbb_root_path . 'includes/captcha/plugins/captcha_abstract.' . $phpEx);
 }
 
+/**
+* @package VC
+*/
 class phpbb_captcha_gd_wave extends phpbb_default_captcha
 {
 
@@ -60,7 +63,7 @@ class phpbb_captcha_gd_wave extends phpbb_default_captcha
 	function acp_page($id, &$module)
 	{
 		global $config, $db, $template, $user;
-		
+
 		trigger_error($user->lang['CAPTCHA_NO_OPTIONS'] . adm_back_link($module->u_action));
 	}
 }

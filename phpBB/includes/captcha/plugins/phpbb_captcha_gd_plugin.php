@@ -16,7 +16,7 @@ if (!defined('IN_PHPBB'))
 	exit;
 }
 
-/** 
+/**
 * Placeholder for autoload
 */
 if (!class_exists('phpbb_default_captcha'))
@@ -24,6 +24,9 @@ if (!class_exists('phpbb_default_captcha'))
 	include($phpbb_root_path . 'includes/captcha/plugins/captcha_abstract.' . $phpEx);
 }
 
+/**
+* @package VC
+*/
 class phpbb_captcha_gd extends phpbb_default_captcha
 {
 	function phpbb_captcha_gd()
@@ -35,7 +38,7 @@ class phpbb_captcha_gd extends phpbb_default_captcha
 			include($phpbb_root_path . 'includes/captcha/captcha_gd.' . $phpEx);
 		}
 	}
-	
+
 	function get_instance()
 	{
 		return new phpbb_captcha_gd();
@@ -45,17 +48,17 @@ class phpbb_captcha_gd extends phpbb_default_captcha
 	{
 		return (@extension_loaded('gd') || can_load_dll('gd'));
 	}
-	
+
 	function get_name()
 	{
 		return 'CAPTCHA_GD';
 	}
-	
+
 	function get_class_name()
 	{
 		return 'phpbb_captcha_gd';
 	}
-		
+
 	function acp_page($id, &$module)
 	{
 		global $db, $user, $auth, $template;
@@ -79,7 +82,6 @@ class phpbb_captcha_gd extends phpbb_default_captcha
 			'confirm_refresh'		=> 'CONFIRM_REFRESH',
 			'captcha_gd'			=> 'CAPTCHA_GD',
 		);
-
 
 		$module->tpl_name = 'captcha_gd_acp';
 		$module->page_title = 'ACP_VC_SETTINGS';
@@ -112,11 +114,11 @@ class phpbb_captcha_gd extends phpbb_default_captcha
 				$var = (isset($_REQUEST[$captcha_var])) ? request_var($captcha_var, 0) : $config[$captcha_var];
 				$template->assign_var($template_var, $var);
 			}
+
 			$template->assign_vars(array(
 				'CAPTCHA_PREVIEW'	=> $this->get_demo_template($id),
 				'CAPTCHA_NAME'		=> $this->get_class_name(),
 			));
-
 		}
 	}
 }

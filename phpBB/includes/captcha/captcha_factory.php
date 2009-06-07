@@ -16,8 +16,11 @@ if (!defined('IN_PHPBB'))
 	exit;
 }
 
-
-/** A small class until we get the autoloader done */
+/**
+* A small class for 3.0.x (no autoloader in 3.0.x)
+*
+* @package VC
+*/
 class phpbb_captcha_factory
 {
 	/**
@@ -26,7 +29,7 @@ class phpbb_captcha_factory
 	function get_instance($name)
 	{
 		global $phpbb_root_path, $phpEx;
-		
+
 		$name = basename($name);
 		if (!class_exists($name))
 		{
@@ -34,7 +37,7 @@ class phpbb_captcha_factory
 		}
 		return call_user_func(array($name, 'get_instance'));
 	}
-	
+
 	/**
 	* Call the garbage collector
 	*/
@@ -49,18 +52,19 @@ class phpbb_captcha_factory
 		}
 		call_user_func(array($name, 'garbage_collect'), 0);
 	}
-	
+
 	/**
 	* return a list of all discovered CAPTCHA plugins
 	*/
 	function get_captcha_types()
 	{
 		global $phpbb_root_path, $phpEx;
-	
-		$captchas = array();
-		$captchas['available'] = array();
-		$captchas['unavailable'] = array();
-	
+
+		$captchas = array(
+			'available'		=> array(),
+			'unavailable'	=> array(),
+		);
+
 		$dp = @opendir($phpbb_root_path . 'includes/captcha/plugins');
 
 		if ($dp)
@@ -74,6 +78,7 @@ class phpbb_captcha_factory
 					{
 						include($phpbb_root_path . "includes/captcha/plugins/$file");
 					}
+
 					if (call_user_func(array($name, 'is_available')))
 					{
 						$captchas['available'][$name] = call_user_func(array($name, 'get_name'));

@@ -42,7 +42,8 @@ class ucp_register
 		$submit			= (isset($_POST['submit'])) ? true : false;
 		$change_lang	= request_var('change_lang', '');
 		$user_lang		= request_var('lang', $user->lang_name);
-		$confirm_refresh        = (isset($_POST['confirm_refresh']) && $config['confirm_refresh']) ? ((!empty($_POST['confirm_refresh'])) ? 1 : 0) : false;
+		$confirm_refresh= (isset($_POST['confirm_refresh']) && $config['confirm_refresh']) ? ((!empty($_POST['confirm_refresh'])) ? 1 : 0) : false;
+
 		if ($agreed)
 		{
 			add_form_key('ucp_register');
@@ -52,14 +53,13 @@ class ucp_register
 			add_form_key('ucp_register_terms');
 		}
 
-		
 		if ($config['enable_confirm'])
 		{
 			include($phpbb_root_path . 'includes/captcha/captcha_factory.' . $phpEx);
 			$captcha = phpbb_captcha_factory::get_instance($config['captcha_plugin']);
 			$captcha->init(CONFIRM_REG);
 		}
-			
+
 		if ($change_lang || $user_lang != $config['default_lang'])
 		{
 			$use_lang = ($change_lang) ? basename($change_lang) : basename($user_lang);
@@ -94,7 +94,7 @@ class ucp_register
 		{
 			$add_lang = ($change_lang) ? '&amp;change_lang=' . urlencode($change_lang) : '';
 			$add_coppa = ($coppa !== false) ? '&amp;coppa=' . $coppa : '';
-			
+
 			$s_hidden_fields = array();
 
 			// If we change the language, we want to pass on some more possible parameter.
@@ -108,7 +108,7 @@ class ucp_register
 					'lang'				=> $user->lang_name,
 					'tz'				=> request_var('tz', (float) $config['board_timezone']),
 				));
-				
+
 				if ($config['enable_confirm'])
 				{
 					$s_hidden_fields = array_merge($s_hidden_fields, $captcha->get_hidden_fields());
@@ -198,10 +198,12 @@ class ucp_register
 				'tz'				=> array('num', false, -14, 14),
 				'lang'				=> array('match', false, '#^[a-z_\-]{2,}$#i'),
 			));
+
 			if (!check_form_key('ucp_register'))
 			{
 				$error[] = $user->lang['FORM_INVALID'];
 			}
+
 			// Replace "error" strings with their real, localised form
 			$error = preg_replace('#^([A-Z_]+)$#e', "(!empty(\$user->lang['\\1'])) ? \$user->lang['\\1'] : '\\1'", $error);
 
@@ -216,11 +218,13 @@ class ucp_register
 				{
 					$captcha->reset();
 				}
+
 				if ($config['max_reg_attempts'] && $captcha->get_attempt_count() > $config['max_reg_attempts'])
 				{
 					$error[] = $user->lang['TOO_MANY_REGISTERS'];
 				}
 			}
+
 			// DNSBL check
 			if ($config['check_dnsbl'])
 			{
@@ -424,7 +428,6 @@ class ucp_register
 		$confirm_image = '';
 
 		// Visual Confirmation - Show images
-
 		if ($config['enable_confirm'])
 		{
 			if ($change_lang || $confirm_refresh)
@@ -434,13 +437,12 @@ class ucp_register
 			else
 			{
 				$str = '';
-
 			}
+
 			$template->assign_vars(array(
 				'L_CONFIRM_EXPLAIN'		=> sprintf($user->lang['CONFIRM_EXPLAIN'], '<a href="mailto:' . htmlspecialchars($config['board_contact']) . '">', '</a>'),
 				'S_CAPTCHA'				=> $captcha->get_template(),
 			));
-
 		}
 
 		//
@@ -455,7 +457,7 @@ class ucp_register
 				$l_reg_cond = $user->lang['UCP_ADMIN_ACTIVATE'];
 			break;
 		}
-		
+
 		$template->assign_vars(array(
 			'ERROR'				=> (sizeof($error)) ? implode('<br />', $error) : '',
 			'USERNAME'			=> $data['username'],
@@ -474,8 +476,7 @@ class ucp_register
 			'S_COPPA'			=> $coppa,
 			'S_HIDDEN_FIELDS'	=> $s_hidden_fields,
 			'S_UCP_ACTION'		=> append_sid("{$phpbb_root_path}ucp.$phpEx", 'mode=register'),
-			)
-		);
+		));
 
 		//
 		$user->profile_fields = array();

@@ -156,7 +156,7 @@ class acm_memory
 
 		while (($entry = readdir($dir)) !== false)
 		{
-			if (strpos($entry, 'ctpl_') !== 0 && strpos($entry, 'tpl_') !== 0)
+			if (strpos($entry, 'sql_') !== 0 && strpos($entry, 'data_') !== 0 && strpos($entry, 'ctpl_') !== 0 && strpos($entry, 'tpl_') !== 0)
 			{
 				continue;
 			}
@@ -415,7 +415,7 @@ class acm_memory
 	* @access protected
 	* @param string $var Cache key
 	* @return bool True if it exists, otherwise false
-	*/	
+	*/
 	function _isset($var)
 	{
 		// Most caches don't need to check

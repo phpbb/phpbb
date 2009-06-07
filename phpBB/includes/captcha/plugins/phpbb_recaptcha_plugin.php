@@ -22,6 +22,9 @@ if (!class_exists('phpbb_default_captcha'))
 	include_once($phpbb_root_path . 'includes/captcha/plugins/captcha_abstract.' . $phpEx);
 }
 
+/**
+* @package VC
+*/
 class phpbb_recaptcha extends phpbb_default_captcha
 {
 	var $recaptcha_server = 'http://api.recaptcha.net';
@@ -29,18 +32,16 @@ class phpbb_recaptcha extends phpbb_default_captcha
 	var $challenge;
 	var $response;
 
-	
 	function init($type)
 	{
 		global $config, $db, $user;
-		
+
 		$user->add_lang('recaptcha');
 		parent::init($type);
 		$this->challenge = request_var('recaptcha_challenge_field', '');
 		$this->response = request_var('recaptcha_response_field', '');
 	}
-	
-	
+
 	function get_instance()
 	{
 		return new phpbb_recaptcha();
@@ -48,25 +49,25 @@ class phpbb_recaptcha extends phpbb_default_captcha
 
 	function is_available()
 	{
-		global $config, $user; 
+		global $config, $user;
 		$user->add_lang('recaptcha');
 		return (isset($config['recaptcha_pubkey']) && !empty($config['recaptcha_pubkey']));
 	}
-	
+
 	function get_name()
 	{
 		return 'CAPTCHA_RECAPTCHA';
 	}
-	
+
 	function get_class_name()
 	{
 		return 'phpbb_recaptcha';
 	}
-		
+
 	function acp_page($id, &$module)
 	{
 		global $config, $db, $template, $user;
-		
+
 		$captcha_vars = array(
 			'recaptcha_pubkey'				=> 'RECAPTCHA_PUBKEY',
 			'recaptcha_privkey'				=> 'RECAPTCHA_PRIVKEY',
@@ -103,6 +104,7 @@ class phpbb_recaptcha extends phpbb_default_captcha
 				$var = (isset($_REQUEST[$captcha_var])) ? request_var($captcha_var, '') : ((isset($config[$captcha_var])) ? $config[$captcha_var] : '');
 				$template->assign_var($template_var, $var);
 			}
+
 			$template->assign_vars(array(
 				'CAPTCHA_PREVIEW'	=> $this->get_demo_template($id),
 				'CAPTCHA_NAME'		=> $this->get_class_name(),
@@ -110,47 +112,44 @@ class phpbb_recaptcha extends phpbb_default_captcha
 
 		}
 	}
-	
-	
+
 	// not needed
 	function execute_demo()
 	{
 	}
-	
-	
+
 	// not needed
 	function execute()
 	{
 	}
-	
-	
+
 	function get_template()
 	{
 		global $config, $user, $template;
-		
+
 		$template->set_filenames(array(
 			'captcha' => 'captcha_recaptcha.html')
 		);
-		
+
 		$template->assign_vars(array(
 			'RECAPTCHA_SERVER'			=> $this->recaptcha_server,
 			'RECAPTCHA_PUBKEY'			=> isset($config['recaptcha_pubkey']) ? $config['recaptcha_pubkey'] : '',
 			'RECAPTCHA_ERRORGET'		=> '',
 			'S_RECAPTCHA_AVAILABLE'		=> $this->is_available(),
 		));
-	
+
 		return $template->assign_display('captcha');
 	}
-	
+
 	function get_demo_template($id)
 	{
 		return $this->get_template();
 	}
-		
+
 	function get_hidden_fields()
 	{
 		$hidden_fields = array();
-		
+
 		// this is required for postig.php - otherwise we would forget about the captcha being already solved
 		if ($this->solved)
 		{
@@ -159,17 +158,17 @@ class phpbb_recaptcha extends phpbb_default_captcha
 		$hidden_fields['confirm_id'] = $this->confirm_id;
 		return $hidden_fields;
 	}
-		
+
 	function uninstall()
 	{
-		self::garbage_collect(0);
+		$this->garbage_collect(0);
 	}
-	
+
 	function install()
 	{
 		return;
 	}
-	
+
 	function validate()
 	{
 		if (!parent::validate())
@@ -181,7 +180,6 @@ class phpbb_recaptcha extends phpbb_default_captcha
 			return $this->recaptcha_check_answer();
 		}
 	}
-	
 
 // Code from here on is based on recaptchalib.php
 /*
@@ -218,14 +216,14 @@ class phpbb_recaptcha extends phpbb_default_captcha
  */
 
 	/**
-	 * Submits an HTTP POST to a reCAPTCHA server
-	 * @param string $host
-	 * @param string $path
-	 * @param array $data
-	 * @param int port
-	 * @return array response
-	 */
-	function _recaptcha_http_post($host, $path, $data, $port = 80) 
+	* Submits an HTTP POST to a reCAPTCHA server
+	* @param string $host
+	* @param string $path
+	* @param array $data
+	* @param int port
+	* @return array response
+	*/
+	function _recaptcha_http_post($host, $path, $data, $port = 80)
 	{
 		$req = $this->_recaptcha_qsencode ($data);
 
@@ -238,52 +236,56 @@ class phpbb_recaptcha extends phpbb_default_captcha
 		$http_request .= $req;
 
 		$response = '';
-		if( false == ( $fs = @fsockopen($host, $port, $errno, $errstr, 10) ) ) {
-				die ('Could not open socket');
+		if (false == ($fs = @fsockopen($host, $port, $errno, $errstr, 10)))
+		{
+			trigger_error('Could not open socket', E_USER_ERROR);
 		}
 
 		fwrite($fs, $http_request);
 
-		while ( !feof($fs) )
-				$response .= fgets($fs, 1160); // One TCP-IP packet
+		while (!feof($fs))
+		{
+			// One TCP-IP packet
+			$response .= fgets($fs, 1160);
+		}
 		fclose($fs);
 		$response = explode("\r\n\r\n", $response, 2);
 
 		return $response;
 	}
 
-
 	/**
-	  * Calls an HTTP POST function to verify if the user's guess was correct
-	  * @param array $extra_params an array of extra variables to post to the server
-	  * @return ReCaptchaResponse
-	  */
-	function recaptcha_check_answer ($extra_params = array())
+	* Calls an HTTP POST function to verify if the user's guess was correct
+	* @param array $extra_params an array of extra variables to post to the server
+	* @return ReCaptchaResponse
+	*/
+	function recaptcha_check_answer($extra_params = array())
 	{
 		global $config, $user;
+
 		//discard spam submissions
-		if ($this->challenge == null || strlen($this->challenge) == 0 || $this->response == null || strlen($this->response) == 0) 
+		if ($this->challenge == null || strlen($this->challenge) == 0 || $this->response == null || strlen($this->response) == 0)
 		{
-				return $user->lang['RECAPTCHA_INCORRECT'];
+			return $user->lang['RECAPTCHA_INCORRECT'];
 		}
 
-		$response = $this->_recaptcha_http_post ($this->recaptcha_verify_server, "/verify",
-										  array (
-												 'privatekey'	=> $config['recaptcha_privkey'],
-												 'remoteip'		=> $user->ip,
-												 'challenge'	=> $this->challenge,
-												 'response'		=> $this->response
-												 ) + $extra_params
-										  );
+		$response = $this->_recaptcha_http_post($this->recaptcha_verify_server, '/verify',
+			array(
+				'privatekey'	=> $config['recaptcha_privkey'],
+				'remoteip'		=> $user->ip,
+				'challenge'		=> $this->challenge,
+				'response'		=> $this->response
+			) + $extra_params
+		);
 
-		$answers = explode ("\n", $response[1]);
-		
-		if (trim ($answers[0]) === 'true') 
+		$answers = explode("\n", $response[1]);
+
+		if (trim($answers[0]) === 'true')
 		{
 			$this->solved = true;
 			return false;
 		}
-		else 
+		else
 		{
 			if ($answers[1] === 'incorrect-captcha-sol')
 			{
@@ -291,22 +293,24 @@ class phpbb_recaptcha extends phpbb_default_captcha
 			}
 		}
 	}
-	
-		/**
-	 * Encodes the given data into a query string format
-	 * @param $data - array of string elements to be encoded
-	 * @return string - encoded request
-	 */
-	function _recaptcha_qsencode ($data)
+
+	/**
+	* Encodes the given data into a query string format
+	* @param $data - array of string elements to be encoded
+	* @return string - encoded request
+	*/
+	function _recaptcha_qsencode($data)
 	{
 		$req = '';
-		foreach ( $data as $key => $value )
+		foreach ($data as $key => $value)
 		{
-			$req .= $key . '=' . urlencode( stripslashes($value) ) . '&';
+			$req .= $key . '=' . urlencode(stripslashes($value)) . '&';
 		}
+
 		// Cut the last '&'
-		$req=substr($req,0,strlen($req)-1);
+		$req = substr($req, 0, strlen($req) - 1);
 		return $req;
 	}
 }
 
+?>

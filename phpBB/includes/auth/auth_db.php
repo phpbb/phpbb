@@ -68,7 +68,6 @@ function login_db(&$username, &$password)
 	if ($config['max_login_attempts'] && $row['user_login_attempts'] >= $config['max_login_attempts'])
 	{
 		$confirm_id = request_var('confirm_id', '');
-		$confirm_code = request_var('confirm_code', '');
 
 		// Visual Confirmation handling
 		if (!$confirm_id)
@@ -84,12 +83,13 @@ function login_db(&$username, &$password)
 			$captcha = phpbb_captcha_factory::get_instance($config['captcha_plugin']);
 			$captcha->init(CONFIRM_LOGIN);
 			$vc_response = $captcha->validate();
+
 			if ($vc_response)
 			{
 				return array(
-						'status'		=> LOGIN_ERROR_ATTEMPTS,
-						'error_msg'		=> 'LOGIN_ERROR_ATTEMPTS',
-						'user_row'		=> $row,
+					'status'		=> LOGIN_ERROR_ATTEMPTS,
+					'error_msg'		=> 'LOGIN_ERROR_ATTEMPTS',
+					'user_row'		=> $row,
 				);
 			}
 		}
@@ -130,7 +130,7 @@ function login_db(&$username, &$password)
 				$row['user_pass_convert'] = 0;
 				$row['user_password'] = $hash;
 			}
-			else 
+			else
 			{
 				// Although we weren't able to convert this password we have to
 				// increase login attempt count to make sure this cannot be exploited

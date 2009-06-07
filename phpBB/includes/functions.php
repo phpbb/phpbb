@@ -670,17 +670,17 @@ function phpbb_chmod($filename, $perms = CHMOD_READ)
 }
 
 /**
- * Test if a file/directory is writable
- *
- * This function calls the native is_writable() when not running under
- * Windows and it is not disabled.
- *
- * @param string $file Path to perform write test on
- * @return bool True when the path is writable, otherwise false.
- */
+* Test if a file/directory is writable
+*
+* This function calls the native is_writable() when not running under
+* Windows and it is not disabled.
+*
+* @param string $file Path to perform write test on
+* @return bool True when the path is writable, otherwise false.
+*/
 function phpbb_is_writable($file)
 {
-	if (substr(PHP_OS, 0, 3) === 'WIN' || !function_exists('is_writable'))
+	if (strtolower(substr(PHP_OS, 0, 3)) === 'win' || !function_exists('is_writable'))
 	{
 		if (file_exists($file))
 		{
@@ -714,7 +714,6 @@ function phpbb_is_writable($file)
 		else
 		{
 			// file does not exist test if we can write to the directory
-
 			$dir = dirname($file);
 
 			if (file_exists($dir) && is_dir($dir) && phpbb_is_writable($dir))
@@ -722,6 +721,7 @@ function phpbb_is_writable($file)
 				return true;
 			}
 		}
+
 		return false;
 	}
 	else
@@ -2585,7 +2585,7 @@ function login_box($redirect = '', $l_explain = '', $l_success = '', $admin = fa
 	{
 		include($phpbb_root_path . 'includes/captcha/captcha_factory.' . $phpEx);
 	}
-	
+
 	$err = '';
 
 	// Make sure user->setup() has been called
@@ -2700,14 +2700,12 @@ function login_box($redirect = '', $l_explain = '', $l_success = '', $admin = fa
 				$captcha->init(CONFIRM_LOGIN);
 				$captcha->reset();
 
-
 				$template->assign_vars(array(
 					'S_CONFIRM_CODE'			=> true,
 					'CONFIRM'					=> $captcha->get_template(''),
 				));
 
 				$err = $user->lang[$result['error_msg']];
-
 			break;
 
 			case LOGIN_ERROR_PASSWORD_CONVERT:

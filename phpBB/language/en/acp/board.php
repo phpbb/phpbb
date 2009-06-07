@@ -257,7 +257,7 @@ $lang = array_merge($lang, array(
 	'CAPTCHA_NO_GD'							=> 'CAPTCHA without GD',
 	'CAPTCHA_PREVIEW_MSG'					=> 'Your changes to the visual confirmation setting were not saved. This is just a preview.',
 	'CAPTCHA_PREVIEW_EXPLAIN'				=> 'The CAPTCHA as it would look like using the current selection.',
-	
+
 	'CAPTCHA_SELECT'						=> 'Installed CAPTCHA plugins',
 	'CAPTCHA_SELECT_EXPLAIN'				=> 'The dropdown holds the CAPTCHA plugins recognized by the board. Gray entries are not available right now and might need configuration prior to use.',
 	'CAPTCHA_CONFIGURE'						=> 'Configure CAPTCHAs',

@@ -949,7 +949,7 @@ class session
 					WHERE last_login < ' . (time() - (86400 * (int) $config['max_autologin_time']));
 				$db->sql_query($sql);
 			}
-			
+
 			// only called from CRON; should be a safe workaround until the infrastructure gets going
 			if (!class_exists('captcha_factory'))
 			{
@@ -960,7 +960,6 @@ class session
 
 		return;
 	}
-
 
 	/**
 	* Sets a cookie

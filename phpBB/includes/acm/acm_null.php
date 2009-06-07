@@ -27,7 +27,6 @@ class acm
 	*/
 	function acm()
 	{
-
 	}
 
 	/**
@@ -43,7 +42,6 @@ class acm
 	*/
 	function unload()
 	{
-
 	}
 
 	/**
@@ -51,7 +49,6 @@ class acm
 	*/
 	function save()
 	{
-
 	}
 
 	/**
@@ -76,7 +73,6 @@ class acm
 	*/
 	function put($var_name, $var, $ttl = 0)
 	{
-
 	}
 
 	/**
@@ -84,7 +80,6 @@ class acm
 	*/
 	function purge()
 	{
-
 	}
 
 	/**
@@ -92,7 +87,6 @@ class acm
 	*/
 	function destroy($var_name, $table = '')
 	{
-
 	}
 
 	/**
@@ -116,7 +110,6 @@ class acm
 	*/
 	function sql_save($query, &$query_result, $ttl)
 	{
-
 	}
 
 	/**

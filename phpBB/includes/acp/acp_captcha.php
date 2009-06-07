@@ -10,8 +10,6 @@
 /**
 * @ignore
 */
-
-
 if (!defined('IN_PHPBB'))
 {
 	exit;
@@ -35,13 +33,13 @@ class acp_captcha
 
 		$selected = request_var('select_captcha', $config['captcha_plugin']);
 		$configure = request_var('configure', false);
-		
+
 		// Oh, they are just here for the view
 		if (isset($_GET['captcha_demo']))
 		{
 			$this->deliver_demo($selected);
 		}
-		
+
 		// Delegate
 		if ($configure)
 		{
@@ -52,6 +50,7 @@ class acp_captcha
 		else
 		{
 			$captchas = phpbb_captcha_factory::get_captcha_types();
+
 			$config_vars = array(
 				'enable_confirm'		=> 'REG_ENABLE',
 				'enable_post_confirm'	=> 'POST_ENABLE',
@@ -68,10 +67,12 @@ class acp_captcha
 			if ($submit && check_form_key($form_key))
 			{
 				$config_vars = array_keys($config_vars);
+
 				foreach ($config_vars as $config_var)
 				{
 					set_config($config_var, request_var($config_var, false));
 				}
+
 				if ($selected !== $config['captcha_plugin'])
 				{
 					// sanity check
@@ -79,9 +80,11 @@ class acp_captcha
 					{
 						$old_captcha = phpbb_captcha_factory::get_instance($config['captcha_plugin']);
 						$old_captcha->uninstall();
+
 						set_config('captcha_plugin', $selected);
 						$new_captcha = phpbb_captcha_factory::get_instance($config['captcha_plugin']);
-						$old_captcha->install();
+						$new_captcha->install();
+
 						add_log('admin', 'LOG_CONFIG_VISUAL');
 					}
 					else
@@ -103,14 +106,15 @@ class acp_captcha
 					$current = ($selected !== false && $value == $selected) ? ' selected="selected"' : '';
 					$captcha_select .= '<option value="' . $value . '"' . $current . '>' . $user->lang[$title] . '</option>';
 				}
+
 				foreach ($captchas['unavailable'] as $value => $title)
 				{
 					$current = ($selected !== false && $value == $selected) ? ' selected="selected"' : '';
-					$captcha_select .= '<option value="' . $value . '"' . $current . ' class="disabled-option" >' . $user->lang[$title] . '</option>';
+					$captcha_select .= '<option value="' . $value . '"' . $current . ' class="disabled-option">' . $user->lang[$title] . '</option>';
 				}
 
 				$demo_captcha = phpbb_captcha_factory::get_instance($selected);
-				
+
 				foreach ($config_vars as $config_var => $template_var)
 				{
 					$template->assign_var($template_var, (isset($_REQUEST[$config_var])) ? request_var($config_var, '') : $config[$config_var]) ;
@@ -121,28 +125,23 @@ class acp_captcha
 					'CAPTCHA_SELECT'	=> $captcha_select,
 				));
 			}
-
 		}
 	}
-	
-	
+
 	/**
 	* Entry point for delivering image CAPTCHAs in the ACP.
 	*/
 	function deliver_demo($selected)
 	{
 		global $db, $user, $config;
-		
+
 		$captcha = phpbb_captcha_factory::get_instance($selected);
 		$captcha->init(CONFIRM_REG);
 		$captcha->execute_demo();
+
 		garbage_collection();
 		exit_handler();
 	}
-	
-	
-	
-	
 }
 
 ?>
