@@ -16,6 +16,8 @@ if (!defined('IN_PHPBB'))
 	exit;
 }
 
+require_once PHPBB_ROOT_PATH . 'includes/sftp/sftp.' . PHP_EXT;
+
 /**
 * Transfer class, wrapper for ftp/sftp/ssh
 * @package phpBB3
@@ -232,6 +234,7 @@ class transfer
 		if (!in_array('fsockopen', $disabled_functions))
 		{
 			$methods[] = 'ftp_fsock';
+			$methods[] = 'sftp';
 		}
 
 		return $methods;
@@ -272,11 +275,12 @@ class ftp extends transfer
 	/**
 	* Requests data
 	*/
-	private function data()
+	public static function data()
 	{
+		$root_path = phpbb::$url->realpath(PHPBB_ROOT_PATH);
 		return array(
 			'host'		=> 'localhost',
-			'username'	=> 'anonymous',
+			'username'	=> preg_match('#^/home/([^/]+)#', $root_path, $matches) ? $matches[1] : 'anonymous',
 			'password'	=> '',
 			'root_path'	=> phpbb::$user->page['root_script_path'],
 			'port'		=> 21,
@@ -288,7 +292,7 @@ class ftp extends transfer
 	* Init FTP Session
 	* @access private
 	*/
-	private function _init()
+	protected function _init()
 	{
 		// connect to the server
 		$this->connection = @ftp_connect($this->host, $this->port, $this->timeout);
@@ -320,7 +324,7 @@ class ftp extends transfer
 	* Create Directory (MKDIR)
 	* @access private
 	*/
-	private function _mkdir($dir)
+	protected function _mkdir($dir)
 	{
 		return @ftp_mkdir($this->connection, $dir);
 	}
@@ -329,7 +333,7 @@ class ftp extends transfer
 	* Remove directory (RMDIR)
 	* @access private
 	*/
-	private function _rmdir($dir)
+	protected function _rmdir($dir)
 	{
 		return @ftp_rmdir($this->connection, $dir);
 	}
@@ -338,7 +342,7 @@ class ftp extends transfer
 	* Rename file
 	* @access private
 	*/
-	private function _rename($old_handle, $new_handle)
+	protected function _rename($old_handle, $new_handle)
 	{
 		return @ftp_rename($this->connection, $old_handle, $new_handle);
 	}
@@ -347,7 +351,7 @@ class ftp extends transfer
 	* Change current working directory (CHDIR)
 	* @access private
 	*/
-	private function _chdir($dir = '')
+	protected function _chdir($dir = '')
 	{
 		if ($dir && $dir !== '/')
 		{
@@ -364,7 +368,7 @@ class ftp extends transfer
 	* change file permissions (CHMOD)
 	* @access private
 	*/
-	private function _chmod($file, $perms)
+	protected function _chmod($file, $perms)
 	{
 		if (function_exists('ftp_chmod'))
 		{
@@ -385,7 +389,7 @@ class ftp extends transfer
 	* Upload file to location (PUT)
 	* @access private
 	*/
-	private function _put($from_file, $to_file)
+	protected function _put($from_file, $to_file)
 	{
 		// get the file extension
 		$file_extension = strtolower(substr(strrchr($to_file, '.'), 1));
@@ -407,7 +411,7 @@ class ftp extends transfer
 	* Delete file (DELETE)
 	* @access private
 	*/
-	private function _delete($file)
+	protected function _delete($file)
 	{
 		return @ftp_delete($this->connection, $file);
 	}
@@ -416,7 +420,7 @@ class ftp extends transfer
 	* Close ftp session (CLOSE)
 	* @access private
 	*/
-	private function _close()
+	protected function _close()
 	{
 		if (!$this->connection)
 		{
@@ -431,7 +435,7 @@ class ftp extends transfer
 	* At the moment not used by parent class
 	* @access private
 	*/
-	private function _cwd()
+	protected function _cwd()
 	{
 		return @ftp_pwd($this->connection);
 	}
@@ -440,7 +444,7 @@ class ftp extends transfer
 	* Return list of files in a given directory (LS)
 	* @access private
 	*/
-	private function _ls($dir = './')
+	protected function _ls($dir = './')
 	{
 		$list = @ftp_nlist($this->connection, $dir);
 
@@ -510,11 +514,12 @@ class ftp_fsock extends transfer
 	/**
 	* Requests data
 	*/
-	private function data()
+	public static function data()
 	{
+		$root_path = phpbb::$url->realpath(PHPBB_ROOT_PATH);
 		return array(
 			'host'		=> 'localhost',
-			'username'	=> 'anonymous',
+			'username'	=> preg_match('#^/home/([^/]+)#', $root_path, $matches) ? $matches[1] : 'anonymous',
 			'password'	=> '',
 			'root_path'	=> phpbb::$user->page['root_script_path'],
 			'port'		=> 21,
@@ -526,7 +531,7 @@ class ftp_fsock extends transfer
 	* Init FTP Session
 	* @access private
 	*/
-	private function _init()
+	protected function _init()
 	{
 		$errno = 0;
 		$errstr = '';
@@ -565,7 +570,7 @@ class ftp_fsock extends transfer
 	* Create Directory (MKDIR)
 	* @access private
 	*/
-	private function _mkdir($dir)
+	protected function _mkdir($dir)
 	{
 		return $this->_send_command('MKD', $dir);
 	}
@@ -574,7 +579,7 @@ class ftp_fsock extends transfer
 	* Remove directory (RMDIR)
 	* @access private
 	*/
-	private function _rmdir($dir)
+	protected function _rmdir($dir)
 	{
 		return $this->_send_command('RMD', $dir);
 	}
@@ -583,7 +588,7 @@ class ftp_fsock extends transfer
 	* Rename File
 	* @access private
 	*/
-	private function _rename($old_handle, $new_handle)
+	protected function _rename($old_handle, $new_handle)
 	{
 		$this->_send_command('RNFR', $old_handle);
 		return $this->_send_command('RNTO', $new_handle);
@@ -593,7 +598,7 @@ class ftp_fsock extends transfer
 	* Change current working directory (CHDIR)
 	* @access private
 	*/
-	function _chdir($dir = '')
+	protected function _chdir($dir = '')
 	{
 		if ($dir && $dir !== '/')
 		{
@@ -610,7 +615,7 @@ class ftp_fsock extends transfer
 	* change file permissions (CHMOD)
 	* @access private
 	*/
-	private function _chmod($file, $perms)
+	protected function _chmod($file, $perms)
 	{
 		// Unfortunatly CHMOD is not expecting an octal value...
 		// We need to transform the integer (which was an octal) to an octal representation (to get the int) and then pass as is. ;)
@@ -621,7 +626,7 @@ class ftp_fsock extends transfer
 	* Upload file to location (PUT)
 	* @access private
 	*/
-	private function _put($from_file, $to_file)
+	protected function _put($from_file, $to_file)
 	{
 		// We only use the BINARY file mode to cicumvent rewrite actions from ftp server (mostly linefeeds being replaced)
 		// 'I' == BINARY
@@ -657,7 +662,7 @@ class ftp_fsock extends transfer
 	* Delete file (DELETE)
 	* @access private
 	*/
-	private function _delete($file)
+	protected function _delete($file)
 	{
 		return $this->_send_command('DELE', $file);
 	}
@@ -666,7 +671,7 @@ class ftp_fsock extends transfer
 	* Close ftp session (CLOSE)
 	* @access private
 	*/
-	private function _close()
+	protected function _close()
 	{
 		if (!$this->connection)
 		{
@@ -681,7 +686,7 @@ class ftp_fsock extends transfer
 	* At the moment not used by parent class
 	* @access private
 	*/
-	private function _cwd()
+	protected function _cwd()
 	{
 		$this->_send_command('PWD', '', false);
 		return preg_replace('#^[0-9]{3} "(.+)" .+\r\n#', '\\1', $this->_check_command(true));
@@ -691,7 +696,7 @@ class ftp_fsock extends transfer
 	* Return list of files in a given directory (LS)
 	* @access private
 	*/
-	private function _ls($dir = './')
+	protected function _ls($dir = './')
 	{
 		if (!$this->_open_data_connection())
 		{
@@ -814,6 +819,191 @@ class ftp_fsock extends transfer
 		}
 
 		return ($return) ? $response : true;
+	}
+}
+
+/**
+* SFTP transfer class
+* @package phpBB3
+*/
+class sftp extends transfer
+{
+	var $current_path;
+
+	/**
+	* Standard parameters for SFTP session
+	*/
+	function __construct($host, $username, $password, $root_path, $port = 22, $timeout = 10)
+	{
+		$this->host			= $host;
+		$this->port			= $port;
+		$this->username		= $username;
+		$this->password		= $password;
+		$this->timeout		= $timeout;
+
+		// Make sure $this->root_path is layed out the same way as the phpbb::$user->page['root_script_path'] value (/ at the end)
+		$this->root_path	= str_replace('\\', '/', $this->root_path);
+
+		if (!empty($root_path))
+		{
+			$this->root_path = (($root_path[0] != '/' ) ? '/' : '') . $root_path . ((substr($root_path, -1, 1) == '/') ? '' : '/');
+		}
+
+		// Init some needed values
+		parent::__construct();
+
+		return;
+	}
+
+	/**
+	* Requests data
+	*/
+	public static function data()
+	{
+		$root_path = phpbb::$url->realpath(PHPBB_ROOT_PATH);
+		return array(
+			'host'		=> 'localhost',
+			'username'	=> preg_match('#^/home/([^/]+)#', $root_path, $matches) ? $matches[1] : 'anonymous',
+			'password'	=> '',
+			'root_path'	=> $root_path,
+			'port'		=> 22,
+			'timeout'	=> 10
+		);
+	}
+	/**
+	* Init SFTP Session
+	* @access private
+	*/
+	protected function _init()
+	{
+		// connect to the server
+		$this->connection = new ssh2_sftp($this->host, $this->port, $this->timeout);
+
+		if (!$this->connection->login($this->username, $this->password))
+		{
+			return 'ERR_CONNECTING_SERVER';
+		}
+
+		// change to the root directory
+		if (!$this->_chdir($this->root_path))
+		{
+			return 'ERR_CHANGING_DIRECTORY';
+		}
+
+		return true;
+	}
+
+	/**
+	* Create Directory (MKDIR)
+	* @access private
+	*/
+	protected function _mkdir($dir)
+	{
+		return $this->connection->mkdir($dir);
+	}
+
+	/**
+	* Remove directory (RMDIR)
+	* @access private
+	*/
+	protected function _rmdir($dir)
+	{
+		return $this->connection->rmdir($dir);
+	}
+
+	/**
+	* Rename File
+	* @access private
+	*/
+	protected function _rename($old_handle, $new_handle)
+	{
+		return $this->connection->rename($old_handle, $new_handle);
+	}
+
+	/**
+	* Change current working directory (CHDIR)
+	* @access private
+	*/
+	protected function _chdir($dir = '')
+	{
+		return $this->connection->chdir($dir);
+	}
+
+	/**
+	* change file permissions (CHMOD)
+	* @access private
+	*/
+	protected function _chmod($file, $perms)
+	{
+		return $this->connection->chmod($file, $perms);
+	}
+
+	/**
+	* Upload file to location (PUT)
+	* @access private
+	*/
+	protected function _put($from_file, $to_file)
+	{
+		return $this->connection->put($to_file, $from_file, NET_SFTP_LOCAL_FILE);
+	}
+
+	/**
+	* Delete file (DELETE)
+	* @access private
+	*/
+	protected function _delete($file)
+	{
+		return $this->connection->delete($file);
+	}
+
+	/**
+	* Close ftp session (CLOSE)
+	* @access private
+	*/
+	protected function _close()
+	{
+		if (!$this->connection)
+		{
+			return false;
+		}
+
+		return $this->connection->disconnect();
+	}
+
+	/**
+	* Return current working directory (CWD)
+	* At the moment not used by parent class
+	* @access private
+	*/
+	protected function _cwd()
+	{
+		return $this->connection->pwd();
+	}
+
+	/**
+	* Return list of files in a given directory (LS)
+	* @access private
+	*/
+	protected function _ls($dir = './')
+	{
+		$list = $this->connection->nlist($dir);
+
+		// Remove path if prepended
+		foreach ($list as $key => $item)
+		{
+			// Use same separator for item and dir
+			$item = str_replace('\\', '/', $item);
+			$dir = str_replace('\\', '/', $dir);
+
+			if (strpos($item, $dir) === 0)
+			{
+				$item = substr($item, strlen($dir));
+			}
+
+			$list[$key] = $item;
+		}
+
+		return $list;
 	}
 }
 

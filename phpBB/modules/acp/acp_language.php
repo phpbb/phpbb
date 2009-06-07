@@ -98,6 +98,10 @@ class acp_language
 					$transfer = new ftp_fsock(request_var('host', ''), request_var('username', ''), request_var('password', ''), request_var('root_path', ''), request_var('port', ''), request_var('timeout', ''));
 				break;
 
+				case 'sftp':
+					$transfer = new sftp(request_var('host', ''), request_var('username', ''), request_var('password', ''), request_var('root_path', ''), request_var('port', ''), request_var('timeout', ''));
+				break;
+
 				default:
 					trigger_error(phpbb::$user->lang['INVALID_UPLOAD_METHOD'], E_USER_ERROR);
 				break;
@@ -153,6 +157,7 @@ class acp_language
 
 					'S_CONNECTION_SUCCESS'		=> (request_var('test_connection', '') && $test_connection === true) ? true : false,
 					'S_CONNECTION_FAILED'		=> (request_var('test_connection', '') && $test_connection !== true) ? true : false,
+					'ERROR_MSG'					=> (request_var('test_connection', '') && $test_connection !== true) ? phpbb::$user->lang[$test_connection] : '',
 				));
 			break;
 
@@ -397,7 +402,7 @@ class acp_language
 					include_once(PHPBB_ROOT_PATH . 'includes/functions_transfer.' . PHP_EXT);
 					$method = request_var('method', '');
 
-					if ($method != 'ftp' && $method != 'ftp_fsock')
+					if ($method != 'ftp' && $method != 'ftp_fsock' && $method != 'sftp')
 					{
 						trigger_error(phpbb::$user->lang['INVALID_UPLOAD_METHOD'], E_USER_ERROR);
 					}

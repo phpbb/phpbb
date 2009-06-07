@@ -25,7 +25,7 @@ class acp_update
 
 	function main($id, $mode)
 	{
-		phpbb::$user-3>add_lang('install');
+		phpbb::$user->add_lang('install');
 
 		$this->tpl_name = 'acp_update';
 		$this->page_title = 'ACP_VERSION_CHECK';
