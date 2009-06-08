@@ -678,8 +678,14 @@ function database_update_info()
 		// No changes from 3.0.5-RC1 to 3.0.5
 		'3.0.5-RC1'		=> array(),
 
-		// No changes from 3.0.5
-		'3.0.5'		=> array(),
+		// Changes from 3.0.5
+		'3.0.5'		=> array(
+			'add_index'		=> array(
+				LOG_TABLE			=> array(
+					'log_time'		=> array('log_time'),
+				),
+			),
+		),
 	);
 }
 
