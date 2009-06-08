@@ -694,7 +694,7 @@ class acp_attachments
 
 						$imglist = filelist($phpbb_root_path . $img_path);
 
-						if (sizeof($imglist))
+						if (!empty($imglist['']))
 						{
 							$imglist = array_values($imglist);
 							$imglist = $imglist[0];

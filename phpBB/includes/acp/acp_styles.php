@@ -827,6 +827,11 @@ parse_css_file = {PARSE_CSS_FILE}
 			unset($file_info);
 		}
 
+		if (empty($filelist['']))
+		{
+			trigger_error($user->lang['NO_TEMPLATE'] . adm_back_link($this->u_action), E_USER_WARNING);
+		}
+
 		// Now create the categories
 		$filelist_cats[''] = array();
 		foreach ($filelist as $pathfile => $file_ary)

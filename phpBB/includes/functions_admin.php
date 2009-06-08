@@ -359,7 +359,7 @@ function get_forum_branch($forum_id, $type = 'all', $order = 'descending', $incl
 */
 function filelist($rootdir, $dir = '', $type = 'gif|jpg|jpeg|png')
 {
-	$matches = array();
+	$matches = array($dir => array());
 
 	// Remove initial / if present
 	$rootdir = (substr($rootdir, 0, 1) == '/') ? substr($rootdir, 1) : $rootdir;
