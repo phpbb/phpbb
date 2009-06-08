@@ -118,9 +118,9 @@
 		<!-- ENDIF -->
 			</table>
 			{S_HIDDEN_FIELDS}
-			
+
 			</form>
-			
+
 		</td>
 	</tr>
 <!-- ENDIF -->
@@ -155,7 +155,7 @@
 				</table>
 			</td>
 		</tr>
-		
+
 		<!-- IF postrow.S_ROW_COUNT is even --><tr class="row1"><!-- ELSE --><tr class="row2"><!-- ENDIF -->
 
 			<td valign="top" class="profile">
@@ -178,6 +178,11 @@
 			<!-- IF postrow.POSTER_AVATAR -->
 				<tr>
 					<td>{postrow.POSTER_AVATAR}</td>
+				</tr>
+			<!-- ENDIF -->
+			<!-- IF not (postrow.ONLINE_IMG or postrow.RANK_TITLE or postrow.RANK_IMG or postrow.POSTER_AVATAR) -->
+				<tr>
+					<td></td>
 				</tr>
 			<!-- ENDIF -->
 				</table>
