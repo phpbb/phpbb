@@ -684,7 +684,9 @@ if (!empty($topic_data['poll_start']))
 	$s_can_vote = ($auth->acl_get('f_vote', $forum_id) &&
 		(($topic_data['poll_length'] != 0 && $topic_data['poll_start'] + $topic_data['poll_length'] > time()) || $topic_data['poll_length'] == 0) &&
 		$topic_data['topic_status'] != ITEM_LOCKED &&
-		$topic_data['forum_status'] != ITEM_LOCKED) ? true : false;
+		$topic_data['forum_status'] != ITEM_LOCKED &&
+		(!sizeof($cur_voted_id) ||
+		($auth->acl_get('f_votechg', $forum_id) && $topic_data['poll_vote_change']))) ? true : false;
 	$s_display_results = (!$s_can_vote || ($s_can_vote && sizeof($cur_voted_id)) || $view == 'viewpoll') ? true : false;
 
 	if ($update && $s_can_vote)
