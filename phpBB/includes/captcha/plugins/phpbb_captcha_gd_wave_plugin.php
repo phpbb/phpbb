@@ -52,7 +52,7 @@ class phpbb_captcha_gd_wave extends phpbb_default_captcha
 
 	function get_name()
 	{
-		return 'CAPTCHA_GD_WAVE';
+		return 'CAPTCHA_GD_3D';
 	}
 
 	function get_class_name()
