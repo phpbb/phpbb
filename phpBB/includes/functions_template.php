@@ -128,9 +128,9 @@ class template_compile
 		$php_blocks = $matches[1];
 		$code = preg_replace('#<!-- PHP -->.*?<!-- ENDPHP -->#s', '<!-- PHP -->', $code);
 
-		preg_match_all('#<!-- INCLUDE ([a-zA-Z0-9\_\-\+\./]+) -->#', $code, $matches);
+		preg_match_all('#<!-- INCLUDE (\{\$?[A-Z0-9\-_]+\}|[a-zA-Z0-9\_\-\+\./]+) -->#', $code, $matches);
 		$include_blocks = $matches[1];
-		$code = preg_replace('#<!-- INCLUDE [a-zA-Z0-9\_\-\+\./]+ -->#', '<!-- INCLUDE -->', $code);
+		$code = preg_replace('#<!-- INCLUDE (?:\{\$?[A-Z0-9\-_]+\}|[a-zA-Z0-9\_\-\+\./]+) -->#', '<!-- INCLUDE -->', $code);
 
 		preg_match_all('#<!-- INCLUDEPHP ([a-zA-Z0-9\_\-\+\./]+) -->#', $code, $matches);
 		$includephp_blocks = $matches[1];
@@ -193,8 +193,39 @@ class template_compile
 
 				case 'INCLUDE':
 					$temp = array_shift($include_blocks);
+
+					// Dynamic includes
+					// Cheap match rather than a full blown regexp, we already know
+					// the format of the input so just use string manipulation.
+					if ($temp[0] == '{')
+					{
+						$file = false;
+
+						if ($temp[1] == '$')
+						{
+							$var = substr($temp, 2, -1);
+							//$file = $this->template->_tpldata['DEFINE']['.'][$var];
+							$temp = "\$this->_tpldata['DEFINE']['.']['$var']";
+						}
+						else
+						{
+							$var = substr($temp, 1, -1);
+							//$file = $this->template->_rootref[$var];
+							$temp = "\$this->_rootref['$var']";
+						}
+					}
+					else
+					{
+						$file = $temp;
+					}
+
 					$compile_blocks[] = '<?php ' . $this->compile_tag_include($temp) . ' ?>';
-					$this->template->_tpl_include($temp, false);
+
+					// No point in checking variable includes
+					if ($file)
+					{
+						$this->template->_tpl_include($file, false);
+					}
 				break;
 
 				case 'INCLUDEPHP':
@@ -594,6 +625,12 @@ class template_compile
 	*/
 	function compile_tag_include($tag_args)
 	{
+		// Process dynamic includes
+		if ($tag_args[0] == '$')
+		{
+			return "if (isset($tag_args)) { \$this->_tpl_include($tag_args); }";
+		}
+
 		return "\$this->_tpl_include('$tag_args');";
 	}
 
