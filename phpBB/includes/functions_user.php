@@ -501,6 +501,12 @@ function user_delete($mode, $user_id, $post_username = false)
 
 	$cache->destroy('sql', MODERATOR_CACHE_TABLE);
 
+	// Delete the user_id from the zebra table
+	$sql = 'DELETE FROM ' . ZEBRA_TABLE . '
+		WHERE user_id = ' . $user_id . '
+			OR zebra_id = ' . $user_id;
+	$db->sql_query($sql);
+
 	// Delete the user_id from the banlist
 	$sql = 'DELETE FROM ' . BANLIST_TABLE . '
 		WHERE ban_userid = ' . $user_id;
