@@ -30,6 +30,7 @@ class phpbb_default_captcha
 	var $seed;
 	var $type;
 	var $solved = false;
+	var $captcha_vars = false;
 
 	function init($type)
 	{
@@ -106,10 +107,20 @@ class phpbb_default_captcha
 		$template->set_filenames(array(
 			'captcha_demo' => 'captcha_default_acp_demo.html')
 		);
+		
+		$variables = '';
+		
+		if (is_array($this->captcha_vars))
+		{
+			foreach ($this->captcha_vars as $captcha_var => $template_var)
+			{
+				$variables .= '&amp;' . rawurlencode($captcha_var) . '=' . request_var($captcha_var, (int) $config[$captcha_var]);
+			}
+		}
 
 		// acp_captcha has a delivery function; let's use it
 		$template->assign_vars(array(
-			'CONFIRM_IMAGE'		=> append_sid($phpbb_admin_path . 'index.' . $phpEx . '?captcha_demo=1&amp;mode=visual&amp;i=' . $id . '&amp;select_captcha=' . $this->get_class_name()),
+			'CONFIRM_IMAGE'		=> append_sid($phpbb_admin_path . 'index.' . $phpEx . '?captcha_demo=1&amp;mode=visual&amp;i=' . $id . '&amp;select_captcha=' . $this->get_class_name()) . $variables,
 			'CONFIRM_ID'		=> $this->confirm_id,
 		));
 

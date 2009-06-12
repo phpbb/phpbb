@@ -29,6 +29,18 @@ if (!class_exists('phpbb_default_captcha'))
 */
 class phpbb_captcha_gd extends phpbb_default_captcha
 {
+
+	var $captcha_vars = array(
+		'captcha_gd_x_grid'				=> 'CAPTCHA_GD_X_GRID',
+		'captcha_gd_y_grid'				=> 'CAPTCHA_GD_Y_GRID',
+		'captcha_gd_foreground_noise'	=> 'CAPTCHA_GD_FOREGROUND_NOISE',
+		'captcha_gd'					=> 'CAPTCHA_GD_PREVIEWED',
+		'captcha_gd_wave'				=> 'CAPTCHA_GD_WAVE',
+		'captcha_gd_3d_noise'			=> 'CAPTCHA_GD_3D_NOISE',
+		'captcha_gd_fonts'				=> 'CAPTCHA_GD_FONTS',
+
+	);
+		
 	function phpbb_captcha_gd()
 	{
 		global $phpbb_root_path, $phpEx;
@@ -65,16 +77,7 @@ class phpbb_captcha_gd extends phpbb_default_captcha
 		global $config, $phpbb_root_path, $phpbb_admin_path, $phpEx;
 
 		$user->add_lang('acp/board');
-		$captcha_vars = array(
-			'captcha_gd_x_grid'				=> 'CAPTCHA_GD_X_GRID',
-			'captcha_gd_y_grid'				=> 'CAPTCHA_GD_Y_GRID',
-			'captcha_gd_foreground_noise'	=> 'CAPTCHA_GD_FOREGROUND_NOISE',
-			'captcha_gd'					=> 'CAPTCHA_GD_PREVIEWED',
-			'captcha_gd_wave'				=> 'CAPTCHA_GD_WAVE',
-			'captcha_gd_3d_noise'			=> 'CAPTCHA_GD_3D_NOISE',
-			'captcha_gd_fonts'				=> 'CAPTCHA_GD_FONTS',
 
-		);
 
 		$config_vars = array(
 			'enable_confirm'		=> 'REG_ENABLE',
@@ -92,7 +95,7 @@ class phpbb_captcha_gd extends phpbb_default_captcha
 
 		if ($submit && check_form_key($form_key))
 		{
-			$captcha_vars = array_keys($captcha_vars);
+			$captcha_vars = array_keys($this->captcha_vars);
 			foreach ($captcha_vars as $captcha_var)
 			{
 				$value = request_var($captcha_var, 0);
@@ -109,7 +112,7 @@ class phpbb_captcha_gd extends phpbb_default_captcha
 		}
 		else
 		{
-			foreach ($captcha_vars as $captcha_var => $template_var)
+			foreach ($this->captcha_vars as $captcha_var => $template_var)
 			{
 				$var = (isset($_REQUEST[$captcha_var])) ? request_var($captcha_var, 0) : $config[$captcha_var];
 				$template->assign_var($template_var, $var);
@@ -121,6 +124,20 @@ class phpbb_captcha_gd extends phpbb_default_captcha
 			));
 		}
 	}
+	
+	function execute_demo()
+	{
+		global $config;
+		
+		$config_old = $config;
+		foreach ($this->captcha_vars as $captcha_var => $template_var)
+		{
+				$config[$captcha_var] = request_var($captcha_var, (int) $config[$captcha_var]);
+		}
+		parent::execute_demo();
+		$config = $config_old;
+	}
+	
 }
 
 ?>
