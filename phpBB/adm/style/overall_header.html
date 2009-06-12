@@ -194,21 +194,27 @@ function switch_menu()
 					<div id="menu">
 						<p>{L_LOGGED_IN_AS}<br /><strong>{USERNAME}</strong> [&nbsp;<a href="{U_LOGOUT}">{L_LOGOUT}</a>&nbsp;][&nbsp;<a href="{U_ADM_LOGOUT}">{L_ADM_LOGOUT}</a>&nbsp;]&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</p>
 						<ul>
+						<!-- DEFINE $LI_USED = 0 -->
 						<!-- BEGIN l_block1 -->
 							<!-- IF l_block1.S_SELECTED -->
 	
 						<!-- BEGIN l_block2 -->
 							<!-- IF .l_block1.l_block2.l_block3 -->
 							<li class="header">{l_block1.l_block2.L_TITLE}</li>
+							<!-- DEFINE $LI_USED = 1 -->
 							<!-- ENDIF -->
 	
 							<!-- BEGIN l_block3 -->
 								<li<!-- IF l_block1.l_block2.l_block3.S_SELECTED --> id="activemenu"<!-- ENDIF -->><a href="{l_block1.l_block2.l_block3.U_TITLE}"><span>{l_block1.l_block2.l_block3.L_TITLE}</span></a></li>
+								<!-- DEFINE $LI_USED = 1 -->
 							<!-- END l_block3 -->
 						<!-- END l_block2 -->
 						
 							<!-- ENDIF -->
 						<!-- END l_block1 -->
+						<!-- IF not $LI_USED -->
+							<li></li>
+						<!-- ENDIF -->
 						</ul>
 					</div>
 	
