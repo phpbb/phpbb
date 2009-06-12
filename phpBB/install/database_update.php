@@ -1022,9 +1022,69 @@ function change_database_data(&$no_updates, $version)
 		case '3.0.5-RC1':
 		break;
 
+		// Changes from 3.0.5 to 3.0.6-RC1
 		case '3.0.5':
-			// TODO: smarter detection here; problem without GD.
-			set_config('captcha_plugin', 'phpbb_captcha_nogd');
+			// Let's see if the GD Captcha can be enabled... we simply look for what *is* enabled...
+			if (!empty($config['captcha_gd']) && !isset($config['captcha_plugin']))
+			{
+				set_config('captcha_plugin', 'phpbb_captcha_gd');
+			}
+			else if (!isset($config['captcha_plugin']))
+			{
+				set_config('captcha_plugin', 'phpbb_captcha_nogd');
+			}
+
+			// Entries for the Feed Feature
+			set_config('feed_enable', '0');
+			set_config('feed_limit', '10');
+
+			set_config('feed_overall_forums', '1');
+			set_config('feed_overall_forums_limit', '15');
+
+			set_config('feed_overall_topics', '0');
+			set_config('feed_overall_topics_limit', '15');
+
+			set_config('feed_forum', '1');
+			set_config('feed_topic', '1');
+			set_config('feed_news_id', '');
+
+			set_config('feed_item_statistics', '1');
+			set_config('feed_exclude_id', '');
+
+			include_once($phpbb_root_path . 'includes/acp/acp_modules.' . $phpEx);
+
+			$_module = new acp_modules();
+
+			// Set the module class
+			$_module->module_class = 'acp';
+
+			$sql = 'SELECT module_id
+				FROM ' . MODULES_TABLE . "
+				WHERE module_class = 'acp'
+					AND module_langname = 'ACP_BOARD_CONFIGURATION'
+					AND module_mode = ''
+					AND module_basename = ''";
+			$result = $db->sql_query($sql);
+			$category_id = (int) $db->sql_fetchfield('module_id');
+			$db->sql_freeresult($result);
+
+			if ($category_id)
+			{
+				$module_data = array(
+					'module_basename'	=> 'board',
+					'module_enabled'	=> 1,
+					'module_display'	=> 1,
+					'parent_id'			=> $category_id,
+					'module_class'		=> 'acp',
+					'module_langname'	=> 'ACP_FEED_SETTINGS',
+					'module_mode'		=> 'feed',
+					'module_auth'		=> 'acl_a_board',
+				);
+
+				$_module->update_module_data($module_data, true);
+			}
+
+			$_module->remove_cache_file();
 
 			$no_updates = false;
 		break;

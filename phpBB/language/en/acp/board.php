@@ -231,6 +231,38 @@ $lang = array_merge($lang, array(
 	'USERNAME_LENGTH_EXPLAIN'	=> 'Minimum and maximum number of characters in usernames.',
 ));
 
+// Feeds
+$lang = array_merge($lang, array(
+	'ACP_FEED_MANAGEMENT'				=> 'General Syndication Feeds settings',
+	'ACP_FEED_MANAGEMENT_EXPLAIN'		=> 'This Module makes available various ATOM Feeds, parsing any BBCode in posts to make them readable in external feeds.',
+
+	'ACP_FEED_ENABLE'					=> 'Enable Feeds',
+	'ACP_FEED_ENABLE_EXPLAIN'			=> 'Turns on or off ATOM Feeds for the entire board.<br />Disabling this switches off all Feeds, no matter how the options below are set.',
+	'ACP_FEED_LIMIT'					=> 'Number of items',
+	'ACP_FEED_LIMIT_EXPLAI'				=> 'The maximum number of feed items to display.',
+
+	'ACP_FEED_OVERALL_FORUMS'			=> 'Enable overall forums feed',
+	'ACP_FEED_OVERALL_FORUMS_EXPLAIN'	=> 'This feed displays the latest posts from all forums topics.',
+	'ACP_FEED_OVERALL_FORUMS_LIMIT'		=> 'Number of items per page to display in the forums feed',
+
+	'ACP_FEED_OVERALL_TOPIC'			=> 'Enable overall topics feed',
+	'ACP_FEED_OVERALL_TOPIC_EXPLAIN'	=> 'Enables the &quot;All Topics&quot; feed',
+	'ACP_FEED_OVERALL_TOPIC_LIMIT'		=> 'Number of items per page to display in the topics feed',
+	'ACP_FEED_FORUM'					=> 'Enable Per-Forum Feeds',
+	'ACP_FEED_FORUM_EXPLAIN'			=> 'Single forum new posts.',
+	'ACP_FEED_TOPIC'					=> 'Enable Per-Topic Feeds',
+	'ACP_FEED_TOPIC_EXPLAIN'			=> 'Single topics new posts.',
+	'ACP_FEED_NEWS'						=> 'News Feeds',
+	'ACP_FEED_NEWS_EXPLAIN'				=> 'Pull the first post from these forums. Select no forums to disable news feed.<br />Select multiple forums by holding <samp>CTRL</samp> and clicking.',
+
+	'ACP_FEED_GENERAL'					=> 'General Feed Settings',
+
+	'ACP_FEED_ITEM_STATISTICS'			=> 'Item statistics',
+	'ACP_FEED_ITEM_STATISTICS_EXPLAIN'	=> 'Display individual statistics underneath feed items<br />(Posted by, date and time, Replies, Views)',
+	'ACP_FEED_EXCLUDE_ID'				=> 'Exclude these forums',
+	'ACP_FEED_EXCLUDE_ID_EXPLAIN'		=> 'Content from these will be <strong>not included in feeds</strong>. Select no forum to pull data from all forums.<br />Select/Deselect multiple forums by holding <samp>CTRL</samp> and clicking.',
+));
+
 // Visual Confirmation Settings
 $lang = array_merge($lang, array(
 	'ACP_VC_SETTINGS_EXPLAIN'				=> 'Here you are able to define visual confirmation defaults and CAPTCHA settings.',
@@ -264,6 +296,7 @@ $lang = array_merge($lang, array(
 	'CAPTCHA_CONFIGURE_EXPLAIN'				=> 'Change the settings for the selected CAPTCHA.',
 	'CONFIGURE'								=> 'Configure',
 	'CAPTCHA_NO_OPTIONS'					=> 'This CAPTCHA has no configuration options.',
+
 	'VISUAL_CONFIRM_POST'					=> 'Enable visual confirmation for guest postings',
 	'VISUAL_CONFIRM_POST_EXPLAIN'			=> 'Requires anonymous users to enter a random code matching an image to help prevent mass postings.',
 	'VISUAL_CONFIRM_REG'					=> 'Enable visual confirmation for registrations',

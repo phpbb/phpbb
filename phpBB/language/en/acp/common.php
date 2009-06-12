@@ -148,6 +148,9 @@ $lang = array_merge($lang, array(
 
 	'ACP_RESTORE'				=> 'Restore',
 
+	'ACP_FEED'					=> 'Feed management',
+	'ACP_FEED_SETTINGS'			=> 'Feed settings',
+
 	'ACP_SEARCH'				=> 'Search configuration',
 	'ACP_SEARCH_INDEX'			=> 'Search index',
 	'ACP_SEARCH_SETTINGS'		=> 'Search settings',
@@ -160,6 +163,8 @@ $lang = array_merge($lang, array(
 	'ACP_STYLE_COMPONENTS'		=> 'Style components',
 	'ACP_STYLE_MANAGEMENT'		=> 'Style management',
 	'ACP_STYLES'				=> 'Styles',
+
+	'ACP_SUBMIT_CHANGES'		=> 'Submit changes',
 
 	'ACP_TEMPLATES'				=> 'Templates',
 	'ACP_THEMES'				=> 'Themes',
@@ -464,6 +469,7 @@ $lang = array_merge($lang, array(
 	'LOG_CONFIG_MESSAGE'		=> '<strong>Altered private message settings</strong>',
 	'LOG_CONFIG_POST'			=> '<strong>Altered post settings</strong>',
 	'LOG_CONFIG_REGISTRATION'	=> '<strong>Altered user registration settings</strong>',
+	'LOG_CONFIG_FEED'			=> '<strong>Altered syndication feeds settings</strong>',
 	'LOG_CONFIG_SEARCH'			=> '<strong>Altered search settings</strong>',
 	'LOG_CONFIG_SECURITY'		=> '<strong>Altered security settings</strong>',
 	'LOG_CONFIG_SERVER'			=> '<strong>Altered server settings</strong>',

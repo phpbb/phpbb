@@ -3775,6 +3775,9 @@ function page_header($page_title = '', $display_online_list = true)
 		$user_lang = substr($user_lang, 0, strpos($user_lang, '-x-'));
 	}
 
+	$forum_id = request_var('f', 0);
+	$topic_id = request_var('t', 0);
+
 	// The following assigns all _common_ variables that may be used at any point in a template.
 	$template->assign_vars(array(
 		'SITENAME'						=> $config['sitename'],
@@ -3822,6 +3825,7 @@ function page_header($page_title = '', $display_online_list = true)
 		'U_DELETE_COOKIES'		=> append_sid("{$phpbb_root_path}ucp.$phpEx", 'mode=delete_cookies'),
 		'U_TEAM'				=> ($user->data['user_id'] != ANONYMOUS && !$auth->acl_get('u_viewprofile')) ? '' : append_sid("{$phpbb_root_path}memberlist.$phpEx", 'mode=leaders'),
 		'U_RESTORE_PERMISSIONS'	=> ($user->data['user_perm_from'] && $auth->acl_get('a_switchperm')) ? append_sid("{$phpbb_root_path}ucp.$phpEx", 'mode=restore_perm') : '',
+		'U_FEED'				=> generate_board_url() . "/feed.$phpEx",
 
 		'S_USER_LOGGED_IN'		=> ($user->data['user_id'] != ANONYMOUS) ? true : false,
 		'S_AUTOLOGIN_ENABLED'	=> ($config['allow_autologin']) ? true : false,
@@ -3843,6 +3847,15 @@ function page_header($page_title = '', $display_online_list = true)
 		'S_DISPLAY_MEMBERLIST'	=> (isset($auth)) ? $auth->acl_get('u_viewprofile') : 0,
 		'S_NEW_PM'				=> ($s_privmsg_new) ? 1 : 0,
 		'S_REGISTER_ENABLED'	=> ($config['require_activation'] != USER_ACTIVATION_DISABLE) ? true : false,
+		'S_FORUM_ID'			=> $forum_id,
+		'S_TOPIC_ID'			=> $topic_id,
+
+		'S_ENABLE_FEEDS'			=> ($config['feed_enable']) ? true : false,
+		'S_ENABLE_FEEDS_NEWS'		=> ($config['feed_news_id'] != '') ? true : false,
+		'S_ENABLE_FEEDS_FORUMS'		=> ($config['feed_overall_forums']) ? true : false,
+		'S_ENABLE_FEEDS_TOPICS'		=> ($config['feed_overall_topics']) ? true : false,
+		'S_ENABLE_FEEDS_FORUM'		=> ($config['feed_forum'] && $forum_id && strpos($user->page['page_name'], 'viewforum') !== false) ? true : false,
+		'S_ENABLE_FEEDS_TOPIC'		=> ($config['feed_topic'] && $topic_id && strpos($user->page['page_name'], 'viewtopic') !== false) ? true : false,
 
 		'T_THEME_PATH'			=> "{$phpbb_root_path}styles/" . $user->theme['theme_path'] . '/theme',
 		'T_TEMPLATE_PATH'		=> "{$phpbb_root_path}styles/" . $user->theme['template_path'] . '/template',

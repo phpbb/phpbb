@@ -64,6 +64,8 @@ class acp_board
 
 						'legend2'				=> 'WARNINGS',
 						'warnings_expire_days'	=> array('lang' => 'WARNINGS_EXPIRE',		'validate' => 'int',	'type' => 'text:3:4', 'explain' => true, 'append' => ' ' . $user->lang['DAYS']),
+
+						'legend3'					=> 'ACP_SUBMIT_CHANGES',
 					)
 				);
 			break;
@@ -93,6 +95,8 @@ class acp_board
 						'load_cpf_memberlist'	=> array('lang' => 'LOAD_CPF_MEMBERLIST',	'validate' => 'bool',	'type' => 'radio:yes_no', 'explain' => false),
 						'load_cpf_viewprofile'	=> array('lang' => 'LOAD_CPF_VIEWPROFILE',	'validate' => 'bool',	'type' => 'radio:yes_no', 'explain' => false),
 						'load_cpf_viewtopic'	=> array('lang' => 'LOAD_CPF_VIEWTOPIC',	'validate' => 'bool',	'type' => 'radio:yes_no', 'explain' => false),
+
+						'legend3'					=> 'ACP_SUBMIT_CHANGES',
 					)
 				);
 			break;
@@ -143,7 +147,9 @@ class acp_board
 						'forward_pm'			=> array('lang' => 'ALLOW_FORWARD_PM',		'validate' => 'bool',	'type' => 'radio:yes_no', 'explain' => false),
 						'auth_img_pm'			=> array('lang' => 'ALLOW_IMG_PM',			'validate' => 'bool',	'type' => 'radio:yes_no', 'explain' => false),
 						'auth_flash_pm'			=> array('lang' => 'ALLOW_FLASH_PM',		'validate' => 'bool',	'type' => 'radio:yes_no', 'explain' => true),
-						'enable_pm_icons'		=> array('lang' => 'ENABLE_PM_ICONS',		'validate' => 'bool',	'type' => 'radio:yes_no', 'explain' => false)
+						'enable_pm_icons'		=> array('lang' => 'ENABLE_PM_ICONS',		'validate' => 'bool',	'type' => 'radio:yes_no', 'explain' => false),
+
+						'legend3'					=> 'ACP_SUBMIT_CHANGES',
 					)
 				);
 			break;
@@ -182,6 +188,8 @@ class acp_board
 						'max_quote_depth'		=> array('lang' => 'QUOTE_DEPTH_LIMIT',		'validate' => 'int:0',		'type' => 'text:4:4', 'explain' => true),
 						'max_post_img_width'	=> array('lang' => 'MAX_POST_IMG_WIDTH',	'validate' => 'int:0',		'type' => 'text:5:4', 'explain' => true, 'append' => ' ' . $user->lang['PIXEL']),
 						'max_post_img_height'	=> array('lang' => 'MAX_POST_IMG_HEIGHT',	'validate' => 'int:0',		'type' => 'text:5:4', 'explain' => true, 'append' => ' ' . $user->lang['PIXEL']),
+
+						'legend3'					=> 'ACP_SUBMIT_CHANGES',
 					)
 				);
 			break;
@@ -205,6 +213,8 @@ class acp_board
 						'max_sig_smilies'		=> array('lang' => 'MAX_SIG_SMILIES',		'validate' => 'int:0',	'type' => 'text:5:4', 'explain' => true),
 						'max_sig_img_width'		=> array('lang' => 'MAX_SIG_IMG_WIDTH',		'validate' => 'int:0',	'type' => 'text:5:4', 'explain' => true, 'append' => ' ' . $user->lang['PIXEL']),
 						'max_sig_img_height'	=> array('lang' => 'MAX_SIG_IMG_HEIGHT',	'validate' => 'int:0',	'type' => 'text:5:4', 'explain' => true, 'append' => ' ' . $user->lang['PIXEL']),
+
+						'legend3'					=> 'ACP_SUBMIT_CHANGES',
 					)
 				);
 			break;
@@ -235,6 +245,28 @@ class acp_board
 						'coppa_enable'		=> array('lang' => 'ENABLE_COPPA',		'validate' => 'bool',	'type' => 'radio:yes_no', 'explain' => true),
 						'coppa_mail'		=> array('lang' => 'COPPA_MAIL',		'validate' => 'string',	'type' => 'textarea:5:40', 'explain' => true),
 						'coppa_fax'			=> array('lang' => 'COPPA_FAX',			'validate' => 'string',	'type' => 'text:25:100', 'explain' => false),
+
+						'legend4'			=> 'ACP_SUBMIT_CHANGES',
+					)
+				);
+			break;
+
+			case 'feed':
+				$display_vars = array(
+					'title'	=> 'ACP_FEED_MANAGEMENT',
+					'vars'	=> array(
+						'legend1'					=> 'ACP_FEED_GENERAL',
+						'feed_enable'				=> array('lang' => 'ACP_FEED_ENABLE',				'validate' => 'bool',	'type' => 'radio:enabled_disabled',	'explain' => true ),
+						'feed_item_statistics'		=> array('lang' => 'ACP_FEED_ITEM_STATISTICS',		'validate' => 'bool',	'type' => 'radio:enabled_disabled',	'explain' => true),
+						'feed_limit'				=> array('lang' => 'ACP_FEED_LIMIT',				'validate' => 'int:5',	'type' => 'text:3:4',				'explain' => true),
+						'feed_overall_forums'		=> array('lang'	=> 'ACP_FEED_OVERALL_FORUMS',		'validate' => 'bool',	'type' => 'radio:enabled_disabled',	'explain' => true ),
+						'feed_overall_forums_limit'	=> array('lang' => 'ACP_FEED_OVERALL_FORUMS_LIMIT',	'validate' => 'int:5',	'type' => 'text:3:4',				'explain' => false),
+						'feed_overall_topics'		=> array('lang' => 'ACP_FEED_OVERALL_TOPIC',		'validate' => 'bool',	'type' => 'radio:enabled_disabled',	'explain' => true ),
+						'feed_overall_topics_limit'	=> array('lang' => 'ACP_FEED_OVERALL_TOPIC_LIMIT',	'validate' => 'int:5',	'type' => 'text:3:4',				'explain' => false),
+						'feed_forum'				=> array('lang' => 'ACP_FEED_FORUM',				'validate' => 'bool',	'type' => 'radio:enabled_disabled',	'explain' => true ),
+						'feed_topic'				=> array('lang' => 'ACP_FEED_TOPIC',				'validate' => 'bool',	'type' => 'radio:enabled_disabled',	'explain' => true ),
+						'feed_news_id'				=> array('lang' => 'ACP_FEED_NEWS',					'validate' => 'string',	'type' => 'select_multiple', 'method' => 'select_news_forums', 'explain' => true ),
+						'feed_exclude_id'			=> array('lang' => 'ACP_FEED_EXCLUDE_ID',			'validate' => 'string',	'type' => 'select_multiple', 'method' => 'select_exclude_forums', 'explain' => true),
 					)
 				);
 			break;
@@ -279,6 +311,8 @@ class acp_board
 						'load_cpf_memberlist'	=> array('lang' => 'LOAD_CPF_MEMBERLIST',	'validate' => 'bool',	'type' => 'radio:yes_no', 'explain' => false),
 						'load_cpf_viewprofile'	=> array('lang' => 'LOAD_CPF_VIEWPROFILE',	'validate' => 'bool',	'type' => 'radio:yes_no', 'explain' => false),
 						'load_cpf_viewtopic'	=> array('lang' => 'LOAD_CPF_VIEWTOPIC',	'validate' => 'bool',	'type' => 'radio:yes_no', 'explain' => false),
+
+						'legend4'					=> 'ACP_SUBMIT_CHANGES',
 					)
 				);
 			break;
@@ -312,6 +346,8 @@ class acp_board
 						'server_name'			=> array('lang' => 'SERVER_NAME',		'validate' => 'string',			'type' => 'text:40:255', 'explain' => true),
 						'server_port'			=> array('lang' => 'SERVER_PORT',		'validate' => 'int:0',			'type' => 'text:5:5', 'explain' => true),
 						'script_path'			=> array('lang' => 'SCRIPT_PATH',		'validate' => 'script_path',	'type' => 'text::255', 'explain' => true),
+
+						'legend4'					=> 'ACP_SUBMIT_CHANGES',
 					)
 				);
 			break;
@@ -360,7 +396,9 @@ class acp_board
 						'smtp_port'				=> array('lang' => 'SMTP_PORT',				'validate' => 'int:0',	'type' => 'text:4:5', 'explain' => true),
 						'smtp_auth_method'		=> array('lang' => 'SMTP_AUTH_METHOD',		'validate' => 'string',	'type' => 'select', 'method' => 'mail_auth_select', 'explain' => true),
 						'smtp_username'			=> array('lang' => 'SMTP_USERNAME',			'validate' => 'string',	'type' => 'text:25:255', 'explain' => true),
-						'smtp_password'			=> array('lang' => 'SMTP_PASSWORD',			'validate' => 'string',	'type' => 'password:25:255', 'explain' => true)
+						'smtp_password'			=> array('lang' => 'SMTP_PASSWORD',			'validate' => 'string',	'type' => 'password:25:255', 'explain' => true),
+
+						'legend3'					=> 'ACP_SUBMIT_CHANGES',
 					)
 				);
 			break;
@@ -395,7 +433,7 @@ class acp_board
 		// We go through the display_vars to make sure no one is trying to set variables he/she is not allowed to...
 		foreach ($display_vars['vars'] as $config_name => $null)
 		{
-			if (!isset($cfg_array[$config_name]) || strpos($config_name, 'legend') !== false)
+			if ($null === false || strpos($config_name, 'legend') !== false)
 			{
 				continue;
 			}
@@ -403,6 +441,26 @@ class acp_board
 			if ($config_name == 'auth_method')
 			{
 				continue;
+			}
+
+			// If not set, then this is a valid entry and needs to be emptied (select_multiple, checkbox)
+			if (!isset($cfg_array[$config_name]))
+			{
+				$cfg_array[$config_name] = '';
+			}
+
+
+			// Erm, we spotted an array
+			if ($null['type'] == 'select_multiple' && $submit && isset($_REQUEST['config'][$config_name]))
+			{
+				// Get config *array*
+				$cfg_ = utf8_normalize_nfc(request_var('config', array('' => array('')), true));
+
+				// Check if the variable is set and an array
+				if (isset($cfg_[$config_name]) && is_array($cfg_[$config_name]))
+				{
+					$cfg_array[$config_name] = trim(serialize($cfg_[$config_name]));
+				}
 			}
 
 			$this->new_config[$config_name] = $config_value = $cfg_array[$config_name];
@@ -829,6 +887,47 @@ class acp_board
 
 		return "<select name=\"dateoptions\" id=\"dateoptions\" onchange=\"if (this.value == 'custom') { document.getElementById('" . addslashes($key) . "').value = '" . addslashes($value) . "'; } else { document.getElementById('" . addslashes($key) . "').value = this.value; }\">$dateformat_options</select>
 		<input type=\"text\" name=\"config[$key]\" id=\"$key\" value=\"$value\" maxlength=\"30\" />";
+	}
+
+	/**
+	* Select multiple forums
+	*/
+	function select_news_forums($value, $key)
+	{
+		global $user, $config;
+
+		// Determine ids to be selected
+		$select_ids = (sizeof($value)) ? $value : false;
+
+		$forum_list = make_forum_select($select_ids, false, true, true, true, false, true);
+
+		// Build forum options
+		$s_forum_options = '';
+		foreach ($forum_list as $f_id => $f_row)
+		{
+			$s_forum_options .= '<option value="' . $f_id . '"' . (($f_row['selected']) ? ' selected="selected"' : '') . (($f_row['disabled']) ? ' disabled="disabled" class="disabled-option"' : '') . '>' . $f_row['padding'] . $f_row['forum_name'] . '</option>';
+		}
+
+		return $s_forum_options;
+	}
+
+	function select_exclude_forums($value, $key)
+	{
+		global $user, $config;
+
+		// Determine ids to be selected
+		$select_ids = (sizeof($value)) ? $value : false;
+
+		$forum_list = make_forum_select($select_ids, false, true, false, false, false, true);
+
+		// Build forum options
+		$s_forum_options = '';
+		foreach ($forum_list as $f_id => $f_row)
+		{
+			$s_forum_options .= '<option value="' . $f_id . '"' . (($f_row['selected']) ? ' selected="selected"' : '') . (($f_row['disabled']) ? ' disabled="disabled" class="disabled-option"' : '') . '>' . $f_row['padding'] . $f_row['forum_name'] . '</option>';
+		}
+
+		return $s_forum_options;
 	}
 }
 
