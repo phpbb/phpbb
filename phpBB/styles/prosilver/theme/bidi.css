@@ -234,9 +234,29 @@
 	padding-right: 15px;
 }
 
+.rtl .skiplink {
+	/* invisible skip link, used for accessibility  */
+	position: relative;
+	width: 1px;
+	height: 1px;
+	overflow: hidden;
+	display: block;
+	left: 0;
+}
+
 /**
 * content.css
 */
+.rtl ul.topiclist dfn {
+	/* Labels for post/view counts */
+	position: relative;
+	width: 1px;
+	height: 1px;
+	overflow: hidden;
+	display: block;
+	left: 0;
+}
+
 .rtl ul.topiclist dt {
 	float: right;
 }
