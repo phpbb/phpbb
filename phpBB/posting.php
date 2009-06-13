@@ -606,7 +606,11 @@ if ($submit || $preview || $refresh)
 	$post_data['orig_topic_type']	= $post_data['topic_type'];
 	$post_data['topic_type']		= request_var('topic_type', (($mode != 'post') ? (int) $post_data['topic_type'] : POST_NORMAL));
 	$post_data['topic_time_limit']	= request_var('topic_time_limit', (($mode != 'post') ? (int) $post_data['topic_time_limit'] : 0));
-	$post_data['icon_id']			= request_var('icon', 0);
+
+	if ($post_data['enable_icons'] && $auth->acl_get('f_icons', $forum_id))
+	{
+		$post_data['icon_id'] = request_var('icon', (int) $post_data['icon_id']);
+	}
 
 	$post_data['enable_bbcode']		= (!$bbcode_status || isset($_POST['disable_bbcode'])) ? false : true;
 	$post_data['enable_smilies']	= (!$smilies_status || isset($_POST['disable_smilies'])) ? false : true;
