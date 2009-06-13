@@ -25,10 +25,25 @@ if (!class_exists('acm_memory'))
 /**
 * ACM for XCache
 * @package acm
+*
+* To use this module you need ini_get() enabled and the following INI settings configured as follows:
+* - xcache.var_size > 0
+* - xcache.admin.enable_auth = off (or xcache.admin.user and xcache.admin.password set)
+*
 */
 class acm extends acm_memory
 {
-	var $extension = 'xcache';
+	var $extension = 'XCache';
+
+	function acm()
+	{
+		parent::acm_memory();
+
+		if (!function_exists('ini_get') || (int) ini_get('xcache.var_size') <= 0)
+		{
+			trigger_error('Increase xcache.var_size setting above 0 or enable ini_get() to use this ACM module.', E_USER_ERROR);
+		}
+	}
 
 	/**
 	* Purge cache data
@@ -37,14 +52,17 @@ class acm extends acm_memory
 	*/
 	function purge()
 	{
+		// Run before for XCache, if admin functions are disabled it will terminate execution
+		parent::purge();
+
+		// If the admin authentication is enabled but not set up, this will cause a nasty error.
+		// Not much we can do about it though.
 		$n = xcache_count(XC_TYPE_VAR);
 
 		for ($i = 0; $i < $n; $i++)
 		{
 			xcache_clear_cache(XC_TYPE_VAR, $i);
 		}
-
-		parent::purge();
 	}
 
 	/**
