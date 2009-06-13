@@ -1070,18 +1070,34 @@ function change_database_data(&$no_updates, $version)
 
 			if ($category_id)
 			{
-				$module_data = array(
-					'module_basename'	=> 'board',
-					'module_enabled'	=> 1,
-					'module_display'	=> 1,
-					'parent_id'			=> $category_id,
-					'module_class'		=> 'acp',
-					'module_langname'	=> 'ACP_FEED_SETTINGS',
-					'module_mode'		=> 'feed',
-					'module_auth'		=> 'acl_a_board',
-				);
+				// Check if we actually need to add the feed module or if it is already added. ;)
+				$sql = 'SELECT *
+					FROM ' . MODULES_TABLE . "
+					WHERE module_basename = 'board'
+						AND module_class = 'acp'
+						AND module_langname = 'ACP_FEED_SETTINGS'
+						AND module_mode = 'feed'
+						AND module_auth = 'acl_a_board'
+						AND parent_id = {$category_id}";
+				$result = $db->sql_query($sql);
+				$row = $db->sql_fetchrow($result);
+				$db->sql_freeresult($result);
 
-				$_module->update_module_data($module_data, true);
+				if (!$row)
+				{
+					$module_data = array(
+						'module_basename'	=> 'board',
+						'module_enabled'	=> 1,
+						'module_display'	=> 1,
+						'parent_id'			=> $category_id,
+						'module_class'		=> 'acp',
+						'module_langname'	=> 'ACP_FEED_SETTINGS',
+						'module_mode'		=> 'feed',
+						'module_auth'		=> 'acl_a_board',
+					);
+
+					$_module->update_module_data($module_data, true);
+				}
 			}
 
 			$_module->remove_cache_file();
