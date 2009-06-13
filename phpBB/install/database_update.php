@@ -912,7 +912,6 @@ function change_database_data(&$no_updates, $version)
 			set_config('captcha_gd_wave', 0);
 			set_config('captcha_gd_3d_noise', 1);
 			set_config('captcha_gd_fonts', 1);
-
 			set_config('confirm_refresh', 1);
 
 			// Maximum number of keywords
@@ -948,6 +947,7 @@ function change_database_data(&$no_updates, $version)
 				SET bot_agent = 'ichiro/'
 				WHERE bot_agent = 'ichiro/2'";
 			_sql($sql, $errored, $error_ary);
+
 
 			// Before we are able to add a unique key to auth_option, we need to remove duplicate entries
 
@@ -1637,7 +1637,7 @@ class updater_db_tools
 			case 'oracle':
 				$sql = "SELECT column_name
 					FROM user_tab_columns
-					WHERE table_name = '{$table}'";
+					WHERE LOWER(table_name) = '" . strtolower($table) . "'";
 				$result = $this->db->sql_query($sql);
 				while ($row = $this->db->sql_fetchrow($result))
 				{

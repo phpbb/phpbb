@@ -801,7 +801,7 @@ class phpbb_db_tools
 			case 'oracle':
 				$sql = "SELECT column_name
 					FROM user_tab_columns
-					WHERE table_name = '{$table}'";
+					WHERE LOWER(table_name) = '" . strtolower($table) . "'";
 				$result = $this->db->sql_query($sql);
 				while ($row = $this->db->sql_fetchrow($result))
 				{
