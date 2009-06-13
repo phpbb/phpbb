@@ -259,7 +259,7 @@ class custom_profile
 	}
 
 	/**
-	* Submit profile field
+	* Submit profile field for validation
 	* @access public
 	*/
 	function submit_cp_field($mode, $lang_id, &$cp_data, &$cp_error)
@@ -347,6 +347,65 @@ class custom_profile
 			}
 		}
 		$db->sql_freeresult($result);
+	}
+
+	/**
+	* Update profile field data directly
+	*/
+	function update_profile_field_data($user_id, &$cp_data)
+	{
+		global $db;
+
+		if (!sizeof($cp_data))
+		{
+			return;
+		}
+
+		switch ($db->sql_layer)
+		{
+			case 'oracle':
+			case 'firebird':
+			case 'postgres':
+				$right_delim = $left_delim = '"';
+			break;
+
+			case 'sqlite':
+			case 'mssql':
+			case 'mssql_odbc':
+				$right_delim = ']';
+				$left_delim = '[';
+			break;
+
+			case 'mysql':
+			case 'mysql4':
+			case 'mysqli':
+				$right_delim = $left_delim = '`';
+			break;
+		}
+
+		foreach ($cp_data as $key => $value)
+		{
+			// Firebird is case sensitive with delimiter
+			$cp_data[$left_delim . (($db->sql_layer == 'firebird') ? strtoupper($key) : $key) . $right_delim] = $value;
+			unset($cp_data[$key]);
+		}
+
+		$sql = 'UPDATE ' . PROFILE_FIELDS_DATA_TABLE . '
+			SET ' . $db->sql_build_array('UPDATE', $cp_data) . "
+			WHERE user_id = $user_id";
+		$db->sql_query($sql);
+
+		if (!$db->sql_affectedrows())
+		{
+			$cp_data['user_id'] = (int) $user_id;
+
+			$db->sql_return_on_error(true);
+
+			$sql = 'INSERT INTO ' . PROFILE_FIELDS_DATA_TABLE . ' ' . $db->sql_build_array('INSERT', $cp_data);
+			$db->sql_query($sql);
+
+			$db->sql_return_on_error(false);
+		}
 	}
 
 	/**

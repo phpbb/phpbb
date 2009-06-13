@@ -380,25 +380,7 @@ class ucp_profile
 						$db->sql_query($sql);
 
 						// Update Custom Fields
-						if (sizeof($cp_data))
-						{
-							$sql = 'UPDATE ' . PROFILE_FIELDS_DATA_TABLE . '
-								SET ' . $db->sql_build_array('UPDATE', $cp_data) . '
-								WHERE user_id = ' . $user->data['user_id'];
-							$db->sql_query($sql);
-
-							if (!$db->sql_affectedrows())
-							{
-								$cp_data['user_id'] = (int) $user->data['user_id'];
-
-								$db->sql_return_on_error(true);
-
-								$sql = 'INSERT INTO ' . PROFILE_FIELDS_DATA_TABLE . ' ' . $db->sql_build_array('INSERT', $cp_data);
-								$db->sql_query($sql);
-
-								$db->sql_return_on_error(false);
-							}
-						}
+						$cp->update_profile_field_data($user->data['user_id'], $cp_data);
 
 						meta_refresh(3, $this->u_action);
 						$message = $user->lang['PROFILE_UPDATED'] . '<br /><br />' . sprintf($user->lang['RETURN_UCP'], '<a href="' . $this->u_action . '">', '</a>');
