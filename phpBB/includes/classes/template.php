@@ -242,6 +242,11 @@ class phpbb_template
 	*/
 	private function _tpl_load($handle)
 	{
+		if (!isset($this->filename[$handle]))
+		{
+			trigger_error("template->_tpl_load(): No file specified for handle $handle", E_USER_ERROR);
+		}
+
 		$filename = $this->cachepath . str_replace('/', '.', $this->filename[$handle]) . '.' . PHP_EXT;
 
 		$recompile = (!file_exists($filename) || @filesize($filename) === 0 || (phpbb::$config['load_tplcompile'] && @filemtime($filename) < filemtime($this->files[$handle]))) ? true : false;

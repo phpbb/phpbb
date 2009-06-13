@@ -23,10 +23,13 @@ if (!defined('IN_PHPBB'))
 */
 class phpbb_template_filter extends php_user_filter
 {
-	/**
-	* @var string Replaceable tokens regex
-	*/
-	private $regex = '~<!-- ([A-Z][A-Z_0-9]+)(?: (.*?) ?)?-->|{((?:[a-z][a-z_0-9]+\.)*\\$?[A-Z][A-Z_0-9]+)}~';
+	const REGEX_NS = '[a-z][a-z_0-9]+';
+
+	const REGEX_VAR = '[A-Z][A-Z_0-9]+';
+
+	const REGEX_TAG = '<!-- ([A-Z][A-Z_0-9]+)(?: (.*?) ?)?-->';
+
+	const REGEX_TOKENS = '~<!-- ([A-Z][A-Z_0-9]+)(?: (.*?) ?)?-->|{((?:[a-z][a-z_0-9]+\.)*\\$?[A-Z][A-Z_0-9]+)}~';
 
 	/**
 	* @var array
@@ -87,7 +90,7 @@ class phpbb_template_filter extends php_user_filter
 	private function compile($data)
 	{
 		$data = preg_replace('#<(?:[\\?%]|script)#s', '<?php echo\'\\0\';?>', $data);
-		return str_replace('?><?php', '', preg_replace_callback($this->regex, array($this, 'replace'), $data));
+		return str_replace('?><?php', '', preg_replace_callback(self::REGEX_TOKENS, array($this, 'replace'), $data));
 	}
 
 	private function replace($matches)
@@ -172,7 +175,7 @@ class phpbb_template_filter extends php_user_filter
 		$varrefs = array();
 
 		// This one will handle varrefs WITH namespaces
-		preg_match_all('#\{((?:[a-z0-9\-_]+\.)+)(\$)?([A-Z0-9\-_]+)\}#', $text_blocks, $varrefs, PREG_SET_ORDER);
+		preg_match_all('#\{((?:' . self::REGEX_NS . '\.)+)(\$)?(' . self::REGEX_VAR . ')\}#', $text_blocks, $varrefs, PREG_SET_ORDER);
 
 		foreach ($varrefs as $var_val)
 		{
@@ -187,28 +190,28 @@ class phpbb_template_filter extends php_user_filter
 		$this->compile_language_tags($text_blocks);
 
 		// This will handle the remaining root-level varrefs
-		$text_blocks = preg_replace('#\{([A-Z0-9\-_]+)\}#', "<?php echo (isset(\$_rootref['\\1'])) ? \$_rootref['\\1'] : ''; ?>", $text_blocks);
-		$text_blocks = preg_replace('#\{\$([A-Z0-9\-_]+)\}#', "<?php echo (isset(\$_tpldata['DEFINE']['.']['\\1'])) ? \$_tpldata['DEFINE']['.']['\\1'] : ''; ?>", $text_blocks);
+		$text_blocks = preg_replace('#\{(' . self::REGEX_VAR . ')\}#', "<?php echo (isset(\$_rootref['\\1'])) ? \$_rootref['\\1'] : ''; ?>", $text_blocks);
+		$text_blocks = preg_replace('#\{\$(' . self::REGEX_VAR . ')\}#', "<?php echo (isset(\$_tpldata['DEFINE']['.']['\\1'])) ? \$_tpldata['DEFINE']['.']['\\1'] : ''; ?>", $text_blocks);
 
 		return $text_blocks;
 	}
 
 	/**
-	* Handlse special language tags L_ and LA_
+	* Handles special language tags L_ and LA_
 	*/
 	private function compile_language_tags(&$text_blocks)
 	{
 		// transform vars prefixed by L_ into their language variable pendant if nothing is set within the tpldata array
 		if (strpos($text_blocks, '{L_') !== false)
 		{
-			$text_blocks = preg_replace('#\{L_([A-Z0-9\-_]+)\}#', "<?php echo ((isset(\$_rootref['L_\\1'])) ? \$_rootref['L_\\1'] : ((isset(\$_lang['\\1'])) ? \$_lang['\\1'] : '{ \\1 }')); ?>", $text_blocks);
+			$text_blocks = preg_replace('#\{L_(' . self::REGEX_VAR . ')\}#', "<?php echo ((isset(\$_rootref['L_\\1'])) ? \$_rootref['L_\\1'] : ((isset(\$_lang['\\1'])) ? \$_lang['\\1'] : '{ \\1 }')); ?>", $text_blocks);
 		}
 
 		// Handle addslashed language variables prefixed with LA_
 		// If a template variable already exist, it will be used in favor of it...
 		if (strpos($text_blocks, '{LA_') !== false)
 		{
-			$text_blocks = preg_replace('#\{LA_([A-Z0-9\-_]+)\}#', "<?php echo ((isset(\$_rootref['LA_\\1'])) ? \$_rootref['LA_\\1'] : ((isset(\$_rootref['L_\\1'])) ? addslashes(\$_rootref['L_\\1']) : ((isset(\$_lang['\\1'])) ? addslashes(\$_lang['\\1']) : '{ \\1 }'))); ?>", $text_blocks);
+			$text_blocks = preg_replace('#\{LA_(' . self::REGEX_VAR . '+)\}#', "<?php echo ((isset(\$_rootref['LA_\\1'])) ? \$_rootref['LA_\\1'] : ((isset(\$_rootref['L_\\1'])) ? addslashes(\$_rootref['L_\\1']) : ((isset(\$_lang['\\1'])) ? addslashes(\$_lang['\\1']) : '{ \\1 }'))); ?>", $text_blocks);
 		}
 	}
 
@@ -240,6 +243,7 @@ class phpbb_template_filter extends php_user_filter
 		// foo(3,4)  : Will start the loop on the fourth entry and end it on the fifth
 		// foo(3,-4) : Will start the loop on the fourth entry and end it four from last
 		$match = array();
+
 		if (preg_match('#^([^()]*)\(([\-\d]+)(?:,([\-\d]+))?\)$#', $tag_args, $match))
 		{
 			$tag_args = $match[1];
@@ -253,7 +257,7 @@ class phpbb_template_filter extends php_user_filter
 				$loop_start = '($_' . $tag_args . '_count < ' . $match[2] . ' ? $_' . $tag_args . '_count : ' . $match[2] . ')';
 			}
 
-			if (strlen($match[3]) < 1 || $match[3] == -1)
+			if (!isset($match[3]) || strlen($match[3]) < 1 || $match[3] == -1)
 			{
 				$loop_end = '$_' . $tag_args . '_count';
 			}
@@ -318,7 +322,7 @@ class phpbb_template_filter extends php_user_filter
 		*/
 
 		$tag_template_php .= 'for ($_' . $tag_args . '_i = ' . $loop_start . '; $_' . $tag_args . '_i < ' . $loop_end . '; ++$_' . $tag_args . '_i){';
-		$tag_template_php .= '$_'. $tag_args . '_val = &' . $varref . '[$_'. $tag_args. '_i];';
+		$tag_template_php .= '$_' . $tag_args . '_val = &' . $varref . '[$_' . $tag_args . '_i];';
 
 		return $tag_template_php;
 	}
@@ -328,7 +332,7 @@ class phpbb_template_filter extends php_user_filter
 	* some adaptions for our block level methods
 	* @access private
 	*/
-	private function compile_expression($tag_args)
+	private function compile_expression($tag_args, &$vars = array())
 	{
 		$match = array();
 		preg_match_all('/(?:
@@ -435,7 +439,7 @@ class phpbb_template_filter extends php_user_filter
 
 				default:
 					$varrefs = array();
-					if (preg_match('#^((?:[a-z0-9\-_]+\.)+)?(\$)?(?=[A-Z])([A-Z0-9\-_]+)#s', $token, $varrefs))
+					if (preg_match('#^((?:' . self::REGEX_NS . '\.)+)?(\$)?(?=[A-Z])([A-Z0-9\-_]+)#s', $token, $varrefs))
 					{
 						if (!empty($varrefs[1]))
 						{
@@ -469,15 +473,18 @@ class phpbb_template_filter extends php_user_filter
 
 								default:
 									$token = $this->generate_block_data_ref(substr($varrefs[1], 0, -1), true, $varrefs[2]) . '[\'' . $varrefs[3] . '\']';
+									$vars[$token] = true;
 								break;
 							}
 						}
 						else
 						{
 							$token = ($varrefs[2]) ? '$_tpldata[\'DEFINE\'][\'.\'][\'' . $varrefs[3] . '\']' : '$_rootref[\'' . $varrefs[3] . '\']';
+							$vars[$token] = true;
 						}
+						
 					}
-					else if (preg_match('#^\.((?:[a-z0-9\-_]+\.?)+)$#s', $token, $varrefs))
+					else if (preg_match('#^\.((?:' . self::REGEX_NS . '\.?)+)$#s', $token, $varrefs))
 					{
 						// Allow checking if loops are set with .loopname
 						// It is also possible to check the loop count by doing <!-- IF .loopname > 1 --> for example
@@ -514,12 +521,19 @@ class phpbb_template_filter extends php_user_filter
 
 	private function compile_tag_if($tag_args, $elseif)
 	{
-		$tokens = $this->compile_expression($tag_args);
+		$vars = array();
 
-		// @todo We suppress notices within IF statements until we find a way to correctly check them
-		$tpl = ($elseif) ? '} else if (@(' : 'if (@(';
+		$tokens = $this->compile_expression($tag_args, $vars);
+
+		$tpl = ($elseif) ? '} else if (' : 'if (';
+
+		if (!empty($vars))
+		{
+			$tpl .= '(isset(' . implode(') && isset(', array_keys($vars)) . ')) && ';
+		}
+
 		$tpl .= implode(' ', $tokens);
-		$tpl .= ')) { ';
+		$tpl .= ') { ';
 
 		return $tpl;
 	}
@@ -531,7 +545,7 @@ class phpbb_template_filter extends php_user_filter
 	private function compile_tag_define($tag_args, $op)
 	{
 		$match = array();
-		preg_match('#^((?:[a-z0-9\-_]+\.)+)?\$(?=[A-Z])([A-Z0-9_\-]*)(?: = (.*?))?$#', $tag_args, $match);
+		preg_match('#^((?:' . self::REGEX_NS . '\.)+)?\$(?=[A-Z])([A-Z0-9_\-]*)(?: = (.*?))?$#', $tag_args, $match);
 
 		if (empty($match[2]) || (!isset($match[3]) && $op))
 		{
@@ -563,7 +577,7 @@ class phpbb_template_filter extends php_user_filter
 	*/
 	private function compile_tag_include_php($tag_args)
 	{
-		return "include('" . $tag_args . "');";
+		return "include('$tag_args');";
 	}
 
 	/**
@@ -589,7 +603,7 @@ class phpbb_template_filter extends php_user_filter
 		switch ($expr_type)
 		{
 			case 'even':
-				if (@$tokens[$expr_end] == 'by')
+				if (isset($tokens[$expr_end]) && $tokens[$expr_end] == 'by')
 				{
 					$expr_end++;
 					$expr_arg = $tokens[$expr_end++];
@@ -602,7 +616,7 @@ class phpbb_template_filter extends php_user_filter
 			break;
 
 			case 'odd':
-				if (@$tokens[$expr_end] == 'by')
+				if (isset($tokens[$expr_end]) && $tokens[$expr_end] == 'by')
 				{
 					$expr_end++;
 					$expr_arg = $tokens[$expr_end++];
@@ -615,7 +629,7 @@ class phpbb_template_filter extends php_user_filter
 			break;
 
 			case 'div':
-				if (@$tokens[$expr_end] == 'by')
+				if (isset($tokens[$expr_end]) && $tokens[$expr_end] == 'by')
 				{
 					$expr_end++;
 					$expr_arg = $tokens[$expr_end++];
@@ -626,7 +640,15 @@ class phpbb_template_filter extends php_user_filter
 
 		if ($negate_expr)
 		{
-			$expr = "!($expr)";
+			if ($expr[0] == '!')
+			{
+				// Negated expression, de-negate it.
+				$expr = substr($expr, 1);
+			}
+			else
+			{
+				$expr = "!($expr)";
+			}
 		}
 
 		array_splice($tokens, 0, $expr_end, $expr);
@@ -653,6 +675,7 @@ class phpbb_template_filter extends php_user_filter
 		$namespace = substr($namespace, 0, -1);
 
 		$expr = true;
+		$isset = false;
 
 		// S_ROW_COUNT is deceptive, it returns the current row number now the number of rows
 		// hence S_ROW_COUNT is deprecated in favour of S_ROW_NUM
@@ -688,10 +711,11 @@ class phpbb_template_filter extends php_user_filter
 				$varref .= "['$varname']";
 
 				$expr = false;
+				$isset = true;
 			break;
 		}
 		// @todo Test the !$expr more
-		$varref = ($echo) ? "<?php echo $varref; ?>" : (($expr || isset($varref)) ? $varref : '');
+		$varref = ($echo) ? '<?php echo ' . ($isset ? "isset($varref) ? $varref : ''" : $varref) . '; ?>' : (($expr || isset($varref)) ? $varref : '');
 
 		return $varref;
 	}
@@ -767,15 +791,15 @@ stream_filter_register('phpbb_template', 'phpbb_template_filter');
 class phpbb_template_compile
 {
 	/**
-	* @var template Reference to the {@link template template} object performing compilation
+	* @var phpbb_template Reference to the {@link phpbb_template template} object performing compilation
 	*/
 	private $template;
 
 	/**
 	* Constructor
-	* @param template $template {@link template Template} object performing compilation
+	* @param phpbb_template $template {@link phpbb_template Template} object performing compilation
 	*/
-	function __construct(phpbb_template $template)
+	public function __construct(phpbb_template $template)
 	{
 		$this->template = $template;
 	}
