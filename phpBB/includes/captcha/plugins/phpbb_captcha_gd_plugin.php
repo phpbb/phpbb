@@ -51,9 +51,10 @@ class phpbb_captcha_gd extends phpbb_default_captcha
 		}
 	}
 
-	function get_instance()
+	function &get_instance()
 	{
-		return new phpbb_captcha_gd();
+		$instance =& new phpbb_captcha_gd();
+		return $instance;
 	}
 
 	function is_available()

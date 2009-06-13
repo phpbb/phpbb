@@ -80,7 +80,7 @@ function login_db(&$username, &$password)
 		}
 		else
 		{
-			$captcha = phpbb_captcha_factory::get_instance($config['captcha_plugin']);
+			$captcha =& phpbb_captcha_factory::get_instance($config['captcha_plugin']);
 			$captcha->init(CONFIRM_LOGIN);
 			$vc_response = $captcha->validate();
 

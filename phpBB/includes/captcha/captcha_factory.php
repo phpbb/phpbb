@@ -26,7 +26,7 @@ class phpbb_captcha_factory
 	/**
 	* return an instance of class $name in file $name_plugin.php
 	*/
-	function get_instance($name)
+	function &get_instance($name)
 	{
 		global $phpbb_root_path, $phpEx;
 
@@ -35,7 +35,8 @@ class phpbb_captcha_factory
 		{
 			include($phpbb_root_path . "includes/captcha/plugins/{$name}_plugin." . $phpEx);
 		}
-		return call_user_func(array($name, 'get_instance'));
+		$instance =& call_user_func(array($name, 'get_instance'));
+		return $instance;
 	}
 
 	/**

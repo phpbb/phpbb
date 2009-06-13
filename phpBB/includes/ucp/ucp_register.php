@@ -56,7 +56,7 @@ class ucp_register
 		if ($config['enable_confirm'])
 		{
 			include($phpbb_root_path . 'includes/captcha/captcha_factory.' . $phpEx);
-			$captcha = phpbb_captcha_factory::get_instance($config['captcha_plugin']);
+			$captcha =& phpbb_captcha_factory::get_instance($config['captcha_plugin']);
 			$captcha->init(CONFIRM_REG);
 		}
 

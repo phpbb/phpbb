@@ -34,6 +34,7 @@ class captcha
 	function execute($code, $seed)
 	{
 		global $config;
+		
 		srand($seed);
 		//mt_srand($seed);
 
