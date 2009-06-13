@@ -819,7 +819,7 @@ class phpbb_db_tools
 			case 'firebird':
 				$sql = "SELECT RDB\$FIELD_NAME as FNAME
 					FROM RDB\$RELATION_FIELDS
-					WHERE RDB\$RELATION_NAME = '{$table}'";
+					WHERE RDB\$RELATION_NAME = '" . strtoupper($table) . "'";
 				$result = $this->db->sql_query($sql);
 				while ($row = $this->db->sql_fetchrow($result))
 				{
@@ -972,10 +972,12 @@ class phpbb_db_tools
 		{
 			case 'firebird':
 				$sql .= " {$column_type} ";
+				$return_array['column_type_sql_type'] = " {$column_type} ";
 
 				if (!is_null($column_data[1]))
 				{
 					$sql .= 'DEFAULT ' . ((is_numeric($column_data[1])) ? $column_data[1] : "'{$column_data[1]}'") . ' ';
+					$return_array['column_type_sql_default'] = ((is_numeric($column_data[1])) ? $column_data[1] : "'{$column_data[1]}'") . ' ';
 				}
 
 				$sql .= 'NOT NULL';
@@ -1648,7 +1650,15 @@ class phpbb_db_tools
 		{
 			case 'firebird':
 				// Change type...
-				$statements[] = 'ALTER TABLE ' . $table_name . ' ALTER COLUMN "' . strtoupper($column_name) . '" TYPE ' . ' ' . $column_data['column_type_sql'];
+				if (!empty($column_data['column_type_sql_default']))
+				{
+					$statements[] = 'ALTER TABLE ' . $table_name . ' ALTER COLUMN "' . strtoupper($column_name) . '" TYPE ' . ' ' . $column_data['column_type_sql_type'];
+					$statements[] = 'ALTER TABLE ' . $table_name . ' ALTER COLUMN "' . strtoupper($column_name) . '" SET DEFAULT ' . ' ' . $column_data['column_type_sql_default'];
+				}
+				else
+				{
+					$statements[] = 'ALTER TABLE ' . $table_name . ' ALTER COLUMN "' . strtoupper($column_name) . '" TYPE ' . ' ' . $column_data['column_type_sql'];
+				}
 			break;
 
 			case 'mssql':
