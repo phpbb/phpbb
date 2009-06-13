@@ -386,7 +386,7 @@ class custom_profile
 		foreach ($cp_data as $key => $value)
 		{
 			// Firebird is case sensitive with delimiter
-			$cp_data[$left_delim . (($db->sql_layer == 'firebird') ? strtoupper($key) : $key) . $right_delim] = $value;
+			$cp_data[$left_delim . (($db->sql_layer == 'firebird' || $db->sql_layer == 'oracle') ? strtoupper($key) : $key) . $right_delim] = $value;
 			unset($cp_data[$key]);
 		}
 
