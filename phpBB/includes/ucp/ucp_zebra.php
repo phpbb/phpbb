@@ -55,9 +55,6 @@ class ucp_zebra
 					// Remove users
 					if (!empty($data['usernames']))
 					{
-						// Force integer values
-						$data['usernames'] = array_map('intval', $data['usernames']);
-
 						$sql = 'DELETE FROM ' . ZEBRA_TABLE . '
 							WHERE user_id = ' . $user->data['user_id'] . '
 								AND ' . $db->sql_in_set('zebra_id', $data['usernames']);
