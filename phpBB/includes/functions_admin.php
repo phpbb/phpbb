@@ -2419,7 +2419,8 @@ function view_log($mode, &$log, &$log_count, $limit = 0, $offset = 0, $forum_id 
 
 		if (!empty($row['log_data']))
 		{
-			$log_data_ary = unserialize($row['log_data']);
+			$log_data_ary = @unserialize($row['log_data']);
+			$log_data_ary = ($log_data_ary === false) ? array() : $log_data_ary;
 
 			if (isset($user->lang[$row['log_operation']]))
 			{
@@ -2442,7 +2443,7 @@ function view_log($mode, &$log, &$log_count, $limit = 0, $offset = 0, $forum_id 
 					$log[$i]['action'] = bbcode_nl2br(censor_text($log[$i]['action']));
 				}
 			}
-			else
+			else if (!empty($log_data_ary))
 			{
 				$log[$i]['action'] .= '<br />' . implode('', $log_data_ary);
 			}
