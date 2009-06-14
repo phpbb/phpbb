@@ -183,7 +183,8 @@ class phpbb_default_captcha
 	function validate()
 	{
 		global $config, $db, $user;
-
+		
+		$error = '';
 		$this->confirm_code = request_var('confirm_code', '');
 		if (!$this->confirm_id)
 		{

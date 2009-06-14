@@ -52,7 +52,8 @@ class ucp_register
 		{
 			add_form_key('ucp_register_terms');
 		}
-
+		
+		$captcha_solved = false;
 		if ($config['enable_confirm'])
 		{
 			include($phpbb_root_path . 'includes/captcha/captcha_factory.' . $phpEx);
@@ -216,7 +217,8 @@ class ucp_register
 				}
 				else
 				{
-					$captcha->reset();
+					$captcha_solved = true;
+					// $captcha->reset();
 				}
 
 				if ($config['max_reg_attempts'] && $captcha->get_attempt_count() > $config['max_reg_attempts'])
@@ -423,12 +425,17 @@ class ucp_register
 		{
 			$s_hidden_fields['coppa'] = $coppa;
 		}
-		$s_hidden_fields = build_hidden_fields($s_hidden_fields);
+		
 
+		if ($config['enable_confirm'])
+		{
+			$s_hidden_fields = array_merge($s_hidden_fields, $captcha->get_hidden_fields());
+		}
+		$s_hidden_fields = build_hidden_fields($s_hidden_fields);
 		$confirm_image = '';
 
 		// Visual Confirmation - Show images
-		if ($config['enable_confirm'])
+		if ($config['enable_confirm'] && !$captcha_solved)
 		{
 			if ($change_lang || $confirm_refresh)
 			{
