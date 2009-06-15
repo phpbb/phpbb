@@ -910,7 +910,8 @@ function user_ban($mode, $ban, $ban_len, $ban_len_other, $ban_exclude, $ban_reas
 						}
 					}
 				}
-				else
+
+				if (empty($banlist_ary))
 				{
 					trigger_error('NO_IPS_DEFINED');
 				}
