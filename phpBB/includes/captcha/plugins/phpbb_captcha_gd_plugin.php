@@ -38,9 +38,8 @@ class phpbb_captcha_gd extends phpbb_default_captcha
 		'captcha_gd_wave'				=> 'CAPTCHA_GD_WAVE',
 		'captcha_gd_3d_noise'			=> 'CAPTCHA_GD_3D_NOISE',
 		'captcha_gd_fonts'				=> 'CAPTCHA_GD_FONTS',
-
 	);
-		
+
 	function phpbb_captcha_gd()
 	{
 		global $phpbb_root_path, $phpEx;
@@ -59,7 +58,19 @@ class phpbb_captcha_gd extends phpbb_default_captcha
 
 	function is_available()
 	{
-		return (@extension_loaded('gd') || can_load_dll('gd'));
+		global $phpbb_root_path, $phpEx;
+
+		if (@extension_loaded('gd'))
+		{
+			return true;
+		}
+
+		if (!function_exists('can_load_dll'))
+		{
+			include($phpbb_root_path . 'includes/functions_install.' . $phpEx);
+		}
+
+		return can_load_dll('gd');
 	}
 
 	function get_name()
@@ -78,7 +89,6 @@ class phpbb_captcha_gd extends phpbb_default_captcha
 		global $config, $phpbb_root_path, $phpbb_admin_path, $phpEx;
 
 		$user->add_lang('acp/board');
-
 
 		$config_vars = array(
 			'enable_confirm'		=> 'REG_ENABLE',
@@ -125,7 +135,7 @@ class phpbb_captcha_gd extends phpbb_default_captcha
 			));
 		}
 	}
-	
+
 	function execute_demo()
 	{
 		global $config;
@@ -138,7 +148,7 @@ class phpbb_captcha_gd extends phpbb_default_captcha
 		parent::execute_demo();
 		$config = $config_old;
 	}
-	
+
 }
 
 ?>

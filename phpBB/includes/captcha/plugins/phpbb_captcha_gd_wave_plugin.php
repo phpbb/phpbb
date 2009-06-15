@@ -47,7 +47,19 @@ class phpbb_captcha_gd_wave extends phpbb_default_captcha
 
 	function is_available()
 	{
-		return (@extension_loaded('gd') || can_load_dll('gd'));
+		global $phpbb_root_path, $phpEx;
+
+		if (@extension_loaded('gd'))
+		{
+			return true;
+		}
+
+		if (!function_exists('can_load_dll'))
+		{
+			include($phpbb_root_path . 'includes/functions_install.' . $phpEx);
+		}
+
+		return can_load_dll('gd');
 	}
 
 	function get_name()
