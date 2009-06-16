@@ -1854,7 +1854,8 @@ class oracle_extractor extends base_extractor
 			// Build the SQL statement to recreate the data.
 			for ($i = 0; $i < $i_num_fields; $i++)
 			{
-				$str_val = $row[$ary_name[$i]];
+				// Oracle uses uppercase - we use lowercase
+				$str_val = $row[strtolower($ary_name[$i])];
 
 				if (preg_match('#char|text|bool|raw#i', $ary_type[$i]))
 				{
@@ -1885,7 +1886,7 @@ class oracle_extractor extends base_extractor
 				}
 
 				$schema_vals[$i] = $str_quote . $str_val . $str_quote;
-				$schema_fields[$i] = '"' . $ary_name[$i] . "'";
+				$schema_fields[$i] = '"' . $ary_name[$i] . '"';
 			}
 
 			// Take the ordered fields and their associated data and build it
