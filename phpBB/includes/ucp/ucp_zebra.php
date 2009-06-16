@@ -136,6 +136,10 @@ class ucp_zebra
 								{
 									$user_id_ary[] = $row['user_id'];
 								}
+								else if ($row['user_id'] != ANONYMOUS)
+								{
+									$error[] = $user->lang['NOT_ADDED_' . $l_mode . '_BOTS'];
+								}
 								else
 								{
 									$error[] = $user->lang['NOT_ADDED_' . $l_mode . '_ANONYMOUS'];
