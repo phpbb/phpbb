@@ -1029,12 +1029,12 @@ parse_css_file = {PARSE_CSS_FILE}
 
 		foreach ($file_ary as $file)
 		{
-			$file 		= str_replace('/', '.', $file);
+			$file		= str_replace('/', '.', $file);
 
 			// perform some dirty guessing to get the path right.
 			// We assume that three dots in a row were '../'
-			$tpl_file 	= str_replace('.', '/', $file);
-			$tpl_file 	= str_replace('///', '../', $tpl_file);
+			$tpl_file	= str_replace('.', '/', $file);
+			$tpl_file	= str_replace('///', '../', $tpl_file);
 
 			$filename = "{$cache_prefix}_$file.html.$phpEx";
 
@@ -1066,6 +1066,11 @@ parse_css_file = {PARSE_CSS_FILE}
 				}
 			}
 
+			// Correct the filename if it is stored in database and the file is in a subfolder.
+			if ($template_row['template_storedb'])
+			{
+				$file = str_replace('.', '/', $file);
+			}
 
 			$template->assign_block_vars('file', array(
 				'U_VIEWSOURCE'	=> $this->u_action . "&amp;action=cache&amp;id=$template_id&amp;source=$file",
@@ -1073,7 +1078,7 @@ parse_css_file = {PARSE_CSS_FILE}
 				'CACHED'		=> $user->format_date(filemtime("{$phpbb_root_path}cache/$filename")),
 				'FILENAME'		=> $file,
 				'FILENAME_PATH'	=> $file_tpl,
-				'FILESIZE'		=> sprintf('%.1f ' . $user->lang['KIB'], filesize("{$phpbb_root_path}cache/$filename") / 1024),
+				'FILESIZE'		=> get_formatted_filesize(filesize("{$phpbb_root_path}cache/$filename")),
 				'MODIFIED'		=> $user->format_date((!$template_row['template_storedb']) ? filemtime($file_tpl) : $filemtime[$file . '.html']))
 			);
 		}
@@ -1270,7 +1275,6 @@ parse_css_file = {PARSE_CSS_FILE}
 			'TEXT_ROWS'			=> $text_rows)
 		);
 	}
-
 
 	/**
 	* Edit imagesets
@@ -2409,7 +2413,6 @@ parse_css_file = {PARSE_CSS_FILE}
 			}
 		}
 
-
 		if ($mode == 'template')
 		{
 			$super = array();
@@ -3209,7 +3212,6 @@ parse_css_file = {PARSE_CSS_FILE}
 		$row = $db->sql_fetchrow($result);
 		$db->sql_freeresult($result);
 
-
 		if ($row)
 		{
 			// If it exist, we just use the style on installation
@@ -3259,7 +3261,6 @@ parse_css_file = {PARSE_CSS_FILE}
 			$inherit_path = '';
 			$inherit_bf = false;
 		}
-
 
 		if (sizeof($error))
 		{
@@ -3529,7 +3530,6 @@ parse_css_file = {PARSE_CSS_FILE}
 				$sql_from = STYLES_IMAGESET_TABLE;
 			break;
 		}
-
 
 		$sql = "SELECT {$mode}_inherits_id
 			FROM $sql_from
