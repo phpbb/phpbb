@@ -421,6 +421,11 @@ function user_delete($mode, $user_id, $post_username = false)
 					WHERE topic_last_poster_id = $user_id";
 				$db->sql_query($sql);
 
+				$sql = 'UPDATE ' . ATTACHMENTS_TABLE . '
+					SET poster_id = ' . ANONYMOUS . "
+					WHERE poster_id = $user_id";
+				$db->sql_query($sql);
+
 				// Since we change every post by this author, we need to count this amount towards the anonymous user
 
 				// Update the post count for the anonymous user
