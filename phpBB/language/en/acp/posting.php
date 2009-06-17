@@ -217,6 +217,7 @@ $lang = array_merge($lang, array(
 	'RANK_ADDED'			=> 'The rank was successfully added.',
 	'RANK_IMAGE'			=> 'Rank image',
 	'RANK_IMAGE_EXPLAIN'	=> 'Use this to define a small image associated with the rank. The path is relative to the root phpBB directory.',
+	'RANK_IMAGE_IN_USE'		=> '(In use)',
 	'RANK_MINIMUM'			=> 'Minimum posts',
 	'RANK_REMOVED'			=> 'The rank was successfully deleted.',
 	'RANK_SPECIAL'			=> 'Set as special rank',

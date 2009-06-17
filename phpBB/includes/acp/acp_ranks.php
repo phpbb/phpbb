@@ -168,25 +168,22 @@ class acp_ranks
 					{
 						$img = $path . $img;
 
-						if (!in_array($img, $existing_imgs) || $action == 'edit')
+						if ($ranks && $img == $ranks['rank_image'])
 						{
-							if ($ranks && $img == $ranks['rank_image'])
-							{
-								$selected = ' selected="selected"';
-								$edit_img = $img;
-							}
-							else
-							{
-								$selected = '';
-							}
-
-							if (strlen($img) > 255)
-							{
-								continue;
-							}
-
-							$filename_list .= '<option value="' . htmlspecialchars($img) . '"' . $selected . '>' . $img . '</option>';
+							$selected = ' selected="selected"';
+							$edit_img = $img;
 						}
+						else
+						{
+							$selected = '';
+						}
+
+						if (strlen($img) > 255)
+						{
+							continue;
+						}
+
+						$filename_list .= '<option value="' . htmlspecialchars($img) . '"' . $selected . '>' . $img . ((in_array($img, $existing_imgs)) ? ' ' . $user->lang['RANK_IMAGE_IN_USE'] : '') . '</option>';
 					}
 				}
 
