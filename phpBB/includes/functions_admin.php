@@ -17,17 +17,17 @@ if (!defined('IN_PHPBB'))
 }
 
 /**
-* Recalculate Binary Tree
+* Recalculate Nested Sets
 *
 * @param int	$new_id	first left_id (should start with 1)
 * @param string	$pkey	primary key-column (containing the id for the parent_id of the children)
 * @param string	$table	constant or fullname of the table
-* @param int	$parent_id parent_id of the current tree-path (default = 0)
+* @param int	$parent_id parent_id of the current set (default = 0)
 * @param array	$where	contains strings to compare closer on the where statement (additional)
 *
 * @author EXreaction
 */
-function recalc_btree(&$new_id, $pkey, $table, $parent_id = 0, $where = array())
+function recalc_nested_sets(&$new_id, $pkey, $table, $parent_id = 0, $where = array())
 {
 	global $db;
 
@@ -47,7 +47,7 @@ function recalc_btree(&$new_id, $pkey, $table, $parent_id = 0, $where = array())
 		$new_id++;
 
 		// Then we go through any children and update their left/right id's
-		recalc_btree($new_id, $pkey, $table, $row[$pkey], $where);
+		recalc_nested_sets($new_id, $pkey, $table, $row[$pkey], $where);
 
 		// Then we come back and update the right_id for this module
 		if ($row['right_id'] != $new_id)
