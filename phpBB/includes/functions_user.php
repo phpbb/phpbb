@@ -1145,7 +1145,10 @@ function user_unban($mode, $ban)
 		while ($row = $db->sql_fetchrow($result))
 		{
 			$l_unban_list .= (($l_unban_list != '') ? ', ' : '') . $row['unban_info'];
-			$user_ids_ary[] = $row['user_id'];
+			if ($mode == 'user')
+			{
+				$user_ids_ary[] = $row['user_id'];
+			}
 		}
 		$db->sql_freeresult($result);
 
