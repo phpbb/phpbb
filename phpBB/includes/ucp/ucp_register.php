@@ -42,7 +42,6 @@ class ucp_register
 		$submit			= (isset($_POST['submit'])) ? true : false;
 		$change_lang	= request_var('change_lang', '');
 		$user_lang		= request_var('lang', $user->lang_name);
-		$confirm_refresh= (isset($_POST['confirm_refresh']) && $config['confirm_refresh']) ? ((!empty($_POST['confirm_refresh'])) ? 1 : 0) : false;
 
 		if ($agreed)
 		{
@@ -437,7 +436,7 @@ class ucp_register
 		// Visual Confirmation - Show images
 		if ($config['enable_confirm'] && !$captcha_solved)
 		{
-			if ($change_lang || $confirm_refresh)
+			if ($change_lang)
 			{
 				$str = '&amp;change_lang=' . $change_lang;
 			}
@@ -448,7 +447,7 @@ class ucp_register
 
 			$template->assign_vars(array(
 				'L_CONFIRM_EXPLAIN'		=> sprintf($user->lang['CONFIRM_EXPLAIN'], '<a href="mailto:' . htmlspecialchars($config['board_contact']) . '">', '</a>'),
-				'S_CAPTCHA'				=> $captcha->get_template(),
+				'CAPTCHA_TEMPLATE'		=> $captcha->get_template(),
 			));
 		}
 

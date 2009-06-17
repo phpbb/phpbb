@@ -21,8 +21,8 @@
 				<!-- IF U_RESEND_ACTIVATION --><dd><a href="{U_RESEND_ACTIVATION}">{L_RESEND_ACTIVATION}</a></dd><!-- ENDIF -->
 			<!-- ENDIF -->
 		</dl>
-		<!-- IF S_CONFIRM_CODE -->
-		{CONFIRM}
+		<!-- IF CAPTCHA_TEMPLATE -->
+		<!-- INCLUDE {CAPTCHA_TEMPLATE} -->
 		<!-- ENDIF -->
 		<!-- IF S_DISPLAY_FULL_LOGIN -->
 		<dl>

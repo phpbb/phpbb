@@ -75,10 +75,11 @@
 		</td>
 		<td class="row2">{profile_fields.FIELD}<!-- IF profile_fields.ERROR --><br /><span class="gensmall error">{profile_fields.ERROR}</span><!-- ENDIF --></td>
 	</tr>
+	
 <!-- END profile_fields -->
 
-		<!-- IF S_CAPTCHA -->
-		{S_CAPTCHA}
+		<!-- IF CAPTCHA_TEMPLATE -->
+		<!-- INCLUDE {CAPTCHA_TEMPLATE} -->
 		<!-- ENDIF -->
 
 <!-- IF S_COPPA -->

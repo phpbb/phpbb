@@ -71,7 +71,7 @@
 		</dl>
 	<!-- END profile_fields -->
 	</fieldset>
-<!-- IF S_CAPTCHA -->
+<!-- IF CAPTCHA_TEMPLATE -->
 	<span class="corners-bottom"><span></span></span></div>
 </div>
 
@@ -82,8 +82,9 @@
 	<p>{L_CONFIRM_EXPLAIN}</p>
 
 	<fieldset class="fields2">
-		{S_CAPTCHA}
 
+		<!-- INCLUDE {CAPTCHA_TEMPLATE} -->
+	
 	</fieldset>
 
 <!-- ENDIF -->

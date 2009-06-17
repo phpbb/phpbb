@@ -1250,7 +1250,7 @@ if ($config['enable_post_confirm'] && !$user->data['is_registered'] && $solved_c
 
 	$template->assign_vars(array(
 		'S_CONFIRM_CODE'			=> true,
-		'CONFIRM'					=> $captcha->get_template(),
+		'CAPTCHA_TEMPLATE'			=> $captcha->get_template(),
 	));
 }
 

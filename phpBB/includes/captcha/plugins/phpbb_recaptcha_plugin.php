@@ -128,10 +128,6 @@ class phpbb_recaptcha extends phpbb_default_captcha
 	{
 		global $config, $user, $template;
 
-		$template->set_filenames(array(
-			'captcha' => 'captcha_recaptcha.html')
-		);
-
 		$template->assign_vars(array(
 			'RECAPTCHA_SERVER'			=> $this->recaptcha_server,
 			'RECAPTCHA_PUBKEY'			=> isset($config['recaptcha_pubkey']) ? $config['recaptcha_pubkey'] : '',
@@ -139,7 +135,7 @@ class phpbb_recaptcha extends phpbb_default_captcha
 			'S_RECAPTCHA_AVAILABLE'		=> $this->is_available(),
 		));
 
-		return $template->assign_display('captcha');
+		return 'captcha_recaptcha.html';
 	}
 
 	function get_demo_template($id)

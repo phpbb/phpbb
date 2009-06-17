@@ -85,29 +85,27 @@ class phpbb_default_captcha
 	function get_template()
 	{
 		global $config, $user, $template, $phpEx, $phpbb_root_path;
-
-		$template->set_filenames(array(
-			'captcha' => 'captcha_default.html')
-		);
-
+		
+		$link = append_sid($phpbb_root_path . 'ucp.' . $phpEx . '?mode=confirm&amp;confirm_id=' . $this->confirm_id . '&amp;type=' . $this->type);
+		$explain = ($this->type != CONFIRM_POST) ? sprintf($user->lang['CONFIRM_EXPLAIN'], '<a href="mailto:' . htmlspecialchars($config['board_contact']) . '">', '</a>') : $user->lang['POST_CONFIRM_EXPLAIN'];
+		
 		$template->assign_vars(array(
-			'CONFIRM_IMAGE'				=> append_sid($phpbb_root_path . 'ucp.' . $phpEx . '?mode=confirm&amp;confirm_id=' . $this->confirm_id . '&amp;type=' . $this->type),
+			'CONFIRM_IMAGE_LINK'		=> $link,
+			'CONFIRM_IMAGE'				=> '<img src="'. $link . '" />',
+			'CONFIRM_IMG'				=> '<img src="'. $link . '" />',
 			'CONFIRM_ID'				=> $this->confirm_id,
-			'S_REFRESH'					=> (bool) $config['confirm_refresh'],
-
+			'S_CONFIRM_CODE'			=> true,
+			'S_CONFIRM_REFRESH'			=> ($config['enable_confirm'] && $config['confirm_refresh'] && $this->type == CONFIRM_REG) ? true : false,
+			'L_CONFIRM_EXPLAIN'			=> $explain,
 		));
 
-		return $template->assign_display('captcha');
+		return 'captcha_default.html';
 	}
 
 	function get_demo_template($id)
 	{
 		global $config, $user, $template, $phpbb_admin_path, $phpEx;
 
-		$template->set_filenames(array(
-			'captcha_demo' => 'captcha_default_acp_demo.html')
-		);
-		
 		$variables = '';
 		
 		if (is_array($this->captcha_vars))
@@ -124,7 +122,7 @@ class phpbb_default_captcha
 			'CONFIRM_ID'		=> $this->confirm_id,
 		));
 
-		return $template->assign_display('captcha_demo');
+		return 'captcha_default_acp_demo.html';
 	}
 
 	function get_hidden_fields()

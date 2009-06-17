@@ -2702,7 +2702,7 @@ function login_box($redirect = '', $l_explain = '', $l_success = '', $admin = fa
 
 				$template->assign_vars(array(
 					'S_CONFIRM_CODE'			=> true,
-					'CONFIRM'					=> $captcha->get_template(''),
+					'CAPTCHA_TEMPLATE'			=> $captcha->get_template(),
 				));
 
 				$err = $user->lang[$result['error_msg']];
