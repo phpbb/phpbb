@@ -155,7 +155,7 @@ if ($keywords || $author || $author_id || $search_id || $submit)
 
 	$not_in_fid = (sizeof($ex_fid_ary)) ? 'WHERE ' . $db->sql_in_set('f.forum_id', $ex_fid_ary, true) . " OR (f.forum_password <> '' AND fa.user_id <> " . (int) $user->data['user_id'] . ')' : "";
 
-	$sql = 'SELECT f.forum_id, f.forum_name, f.parent_id, f.forum_type, f.right_id, f.forum_password, fa.user_id
+	$sql = 'SELECT f.forum_id, f.forum_name, f.parent_id, f.forum_type, f.right_id, f.forum_password, f.forum_flags, fa.user_id
 		FROM ' . FORUMS_TABLE . ' f
 		LEFT JOIN ' . FORUMS_ACCESS_TABLE . " fa ON (fa.forum_id = f.forum_id
 			AND fa.session_id = '" . $db->sql_escape($user->session_id) . "')
@@ -168,6 +168,13 @@ if ($keywords || $author || $author_id || $search_id || $submit)
 	while ($row = $db->sql_fetchrow($result))
 	{
 		if ($row['forum_password'] && $row['user_id'] != $user->data['user_id'])
+		{
+			$ex_fid_ary[] = (int) $row['forum_id'];
+			continue;
+		}
+
+		// Exclude forums from active topics
+		if (!($row['forum_flags'] & FORUM_FLAG_ACTIVE_TOPICS) && ($search_id == 'active_topics'))
 		{
 			$ex_fid_ary[] = (int) $row['forum_id'];
 			continue;
@@ -307,7 +314,6 @@ if ($keywords || $author || $author_id || $search_id || $submit)
 				{
 					$last_post_time = '';
 				}
-
 
 				if ($sort_key == 'a')
 				{
@@ -944,7 +950,6 @@ if ($keywords || $author || $author_id || $search_id || $submit)
 
 	page_footer();
 }
-
 
 // Search forum
 $s_forums = '';
