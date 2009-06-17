@@ -1072,9 +1072,16 @@ function user_ban($mode, $ban, $ban_len, $ban_len_other, $ban_exclude, $ban_reas
 		// Update log
 		$log_entry = ($ban_exclude) ? 'LOG_BAN_EXCLUDE_' : 'LOG_BAN_';
 
-		// Add to moderator and admin log
+		// Add to moderator log, admin log and user notes
 		add_log('admin', $log_entry . strtoupper($mode), $ban_reason, $ban_list_log);
 		add_log('mod', 0, 0, $log_entry . strtoupper($mode), $ban_reason, $ban_list_log);
+		if ($mode == 'user')
+		{
+			foreach ($banlist_ary as $user_id)
+			{
+				add_log('user', $user_id, $log_entry . strtoupper($mode), $ban_reason, $ban_list_log);
+			}
+		}
 
 		$cache->destroy('sql', BANLIST_TABLE);
 
@@ -1113,7 +1120,7 @@ function user_unban($mode, $ban)
 		switch ($mode)
 		{
 			case 'user':
-				$sql = 'SELECT u.username AS unban_info
+				$sql = 'SELECT u.username AS unban_info, u.user_id
 					FROM ' . USERS_TABLE . ' u, ' . BANLIST_TABLE . ' b
 					WHERE ' . $db->sql_in_set('b.ban_id', $unban_sql) . '
 						AND u.user_id = b.ban_userid';
@@ -1134,9 +1141,11 @@ function user_unban($mode, $ban)
 		$result = $db->sql_query($sql);
 
 		$l_unban_list = '';
+		$user_ids_ary = array();
 		while ($row = $db->sql_fetchrow($result))
 		{
 			$l_unban_list .= (($l_unban_list != '') ? ', ' : '') . $row['unban_info'];
+			$user_ids_ary[] = $row['user_id'];
 		}
 		$db->sql_freeresult($result);
 
@@ -1144,9 +1153,16 @@ function user_unban($mode, $ban)
 			WHERE ' . $db->sql_in_set('ban_id', $unban_sql);
 		$db->sql_query($sql);
 
-		// Add to moderator and admin log
+		// Add to moderator log, admin log and user notes
 		add_log('admin', 'LOG_UNBAN_' . strtoupper($mode), $l_unban_list);
 		add_log('mod', 0, 0, 'LOG_UNBAN_' . strtoupper($mode), $l_unban_list);
+		if ($mode == 'user')
+		{
+			foreach ($user_ids_ary as $user_id)
+			{
+				add_log('user', $user_id, 'LOG_UNBAN_' . strtoupper($mode), $l_unban_list);
+			}
+		}
 	}
 
 	$cache->destroy('sql', BANLIST_TABLE);
