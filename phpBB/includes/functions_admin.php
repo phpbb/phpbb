@@ -18,94 +18,46 @@ if (!defined('IN_PHPBB'))
 
 /**
 * Recalculate Binary Tree
-function recalc_btree($sql_id, $sql_table, $module_class = '')
+*
+* @param int	$new_id	first left_id (should start with 1)
+* @param string	$pkey	primary key-column (containing the id for the parent_id of the children)
+* @param string	$table	constant or fullname of the table
+* @param int	$parent_id parent_id of the current tree-path (default = 0)
+* @param array	$where	contains strings to compare closer on the where statement (additional)
+*
+* @author EXreaction
+*/
+function recalc_btree(&$new_id, $pkey, $table, $parent_id = 0, $where = array())
 {
 	global $db;
 
-	if (!$sql_id || !$sql_table)
-	{
-		return;
-	}
-
-	$sql_where = ($module_class) ? " WHERE module_class = '" . $db->sql_escape($module_class) . "'" : '';
-
-	// Reset to minimum possible left and right id
-	$sql = "SELECT MIN(left_id) as min_left_id, MIN(right_id) as min_right_id
-		FROM $sql_table
-		$sql_where";
+	$sql = 'SELECT *
+		FROM ' . $table . '
+		WHERE parent_id = ' . (int) $parent_id .
+		((!empty($where)) ? ' AND ' . implode(' AND ', $where) : '') . '
+		ORDER BY left_id ASC';
 	$result = $db->sql_query($sql);
-	$row = $db->sql_fetchrow($result);
+	while ($row = $db->sql_fetchrow($result))
+	{
+		// First we update the left_id for this module
+		if ($row['left_id'] != $new_id)
+		{
+			$db->sql_query('UPDATE ' . $table . ' SET ' . $db->sql_build_array('UPDATE', array('left_id' => $new_id)) . " WHERE $pkey = {$row[$pkey]}");
+		}
+		$new_id++;
+
+		// Then we go through any children and update their left/right id's
+		recalc_btree($new_id, $pkey, $table, $row[$pkey], $where);
+
+		// Then we come back and update the right_id for this module
+		if ($row['right_id'] != $new_id)
+		{
+			$db->sql_query('UPDATE ' . $table . ' SET ' . $db->sql_build_array('UPDATE', array('right_id' => $new_id)) . " WHERE $pkey = {$row[$pkey]}");
+		}
+		$new_id++;
+	}
 	$db->sql_freeresult($result);
-
-	$substract = (int) (min($row['min_left_id'], $row['min_right_id']) - 1);
-
-	if ($substract > 0)
-	{
-		$sql = "UPDATE $sql_table
-			SET left_id = left_id - $substract, right_id = right_id - $substract
-			$sql_where";
-		$db->sql_query($sql);
-	}
-
-	$sql = "SELECT $sql_id, parent_id, left_id, right_id
-		FROM $sql_table
-		$sql_where
-		ORDER BY left_id ASC, parent_id ASC, $sql_id ASC";
-	$f_result = $db->sql_query($sql);
-
-	while ($item_data = $db->sql_fetchrow($f_result))
-	{
-		if ($item_data['parent_id'])
-		{
-			$sql = "SELECT left_id, right_id
-				FROM $sql_table
-				$sql_where " . (($sql_where) ? 'AND' : 'WHERE') . "
-					$sql_id = {$item_data['parent_id']}";
-			$result = $db->sql_query($sql);
-
-			if (!$row = $db->sql_fetchrow($result))
-			{
-				$sql = "UPDATE $sql_table SET parent_id = 0 WHERE $sql_id = " . $item_data[$sql_id];
-				$db->sql_query($sql);
-			}
-			$db->sql_freeresult($result);
-
-			$sql = "UPDATE $sql_table
-				SET left_id = left_id + 2, right_id = right_id + 2
-				$sql_where " . (($sql_where) ? 'AND' : 'WHERE') . "
-					left_id > {$row['right_id']}";
-			$db->sql_query($sql);
-
-			$sql = "UPDATE $sql_table
-				SET right_id = right_id + 2
-				$sql_where " . (($sql_where) ? 'AND' : 'WHERE') . "
-					{$row['left_id']} BETWEEN left_id AND right_id";
-			$db->sql_query($sql);
-
-			$item_data['left_id'] = $row['right_id'];
-			$item_data['right_id'] = $row['right_id'] + 1;
-		}
-		else
-		{
-			$sql = "SELECT MAX(right_id) AS right_id
-				FROM $sql_table
-				$sql_where";
-			$result = $db->sql_query($sql);
-			$row = $db->sql_fetchrow($result);
-			$db->sql_freeresult($result);
-
-			$item_data['left_id'] = $row['right_id'] + 1;
-			$item_data['right_id'] = $row['right_id'] + 2;
-		}
-
-		$sql = "UPDATE $sql_table
-			SET left_id = {$item_data['left_id']}, right_id = {$item_data['right_id']}
-			WHERE $sql_id = " . $item_data[$sql_id];
-		$db->sql_query($sql);
-	}
-	$db->sql_freeresult($f_result);
 }
-*/
 
 /**
 * Simple version of jumpbox, just lists authed forums
