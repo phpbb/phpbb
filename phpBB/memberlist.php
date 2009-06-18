@@ -500,7 +500,29 @@ switch ($mode)
 
 		$poster_avatar = get_user_avatar($member['user_avatar'], $member['user_avatar_type'], $member['user_avatar_width'], $member['user_avatar_height']);
 
-		$template->assign_vars(show_profile($member));
+		// We need to check if the modules 'zebra',  'notes' ('user_notes' mode) and  'warn' ('warn_user' mode) are accessible to decide if we can display appropriate links
+		$zebra_enabled = $user_notes_enabled = $warn_user_enabled = false;
+
+		// Only check if the user is logged in
+		if ($user->data['is_registered'])
+		{
+			if (!class_exists('p_master'))
+			{
+				include($phpbb_root_path . 'includes/functions_module.' . $phpEx);
+			}
+			$module = new p_master();
+
+			$module->list_modules('ucp');
+			$module->list_modules('mcp');
+
+			$user_notes_enabled = ($module->loaded('notes', 'user_notes')) ? true : false;
+			$warn_user_enabled = ($module->loaded('warn', 'warn_user')) ? true : false;
+			$zebra_enabled = ($module->loaded('zebra')) ? true : false;
+
+			unset($module);
+		}
+
+		$template->assign_vars(show_profile($member, $user_notes_enabled, $warn_user_enabled));
 
 		// Custom Profile Fields
 		$profile_fields = array();
@@ -511,23 +533,6 @@ switch ($mode)
 			$profile_fields = $cp->generate_profile_fields_template('grab', $user_id);
 			$profile_fields = (isset($profile_fields[$user_id])) ? $cp->generate_profile_fields_template('show', false, $profile_fields[$user_id]) : array();
 		}
-
-		// We need to check if the modules 'zebra',  'notes' ('user_notes' mode) and  'warn' ('warn_user' mode) are accessible to decide if we can display appropriate links
-		$zebra_enabled = $user_notes_enabled = $warn_user_enabled = false;
-
-		if (!class_exists('p_master'))
-		{
-			include($phpbb_root_path . 'includes/functions_module.' . $phpEx);
-		}
-		$module = new p_master();
-		
-		$module->list_modules('ucp');
-		$module->list_modules('mcp');
-		$user_notes_enabled = ($module->loaded('notes', 'user_notes')) ? true : false;
-		$warn_user_enabled = ($module->loaded('warn', 'warn_user')) ? true : false;
-		$zebra_enabled = ($module->loaded('zebra')) ? true : false;
-
-		unset($module);
 
 		// If the user has m_approve permission or a_user permission, then list then display unapproved posts
 		if ($auth->acl_getf_global('m_approve') || $auth->acl_get('a_user'))
@@ -1538,7 +1543,7 @@ page_footer();
 /**
 * Prepare profile data
 */
-function show_profile($data)
+function show_profile($data, $user_notes_enabled = false, $warn_user_enabled = false)
 {
 	global $config, $auth, $template, $user, $phpEx, $phpbb_root_path;
 
@@ -1624,9 +1629,11 @@ function show_profile($data)
 		'ICQ_STATUS_IMG'	=> (!empty($data['user_icq'])) ? '<img src="http://web.icq.com/whitepages/online?icq=' . $data['user_icq'] . '&amp;img=5" width="18" height="18" />' : '',
 		'S_JABBER_ENABLED'	=> ($config['jab_enable']) ? true : false,
 
+		'S_WARNINGS'	=> ($auth->acl_getf_global('m_') || $auth->acl_get('m_warn')) ? true : false,
+
 		'U_SEARCH_USER'	=> ($auth->acl_get('u_search')) ? append_sid("{$phpbb_root_path}search.$phpEx", "author_id=$user_id&amp;sr=posts") : '',
-		'U_NOTES'		=> $auth->acl_getf_global('m_') ? append_sid("{$phpbb_root_path}mcp.$phpEx", 'i=notes&amp;mode=user_notes&amp;u=' . $user_id, true, $user->session_id) : '',
-		'U_WARN'		=> $auth->acl_get('m_warn') ? append_sid("{$phpbb_root_path}mcp.$phpEx", 'i=warn&amp;mode=warn_user&amp;u=' . $user_id, true, $user->session_id) : '',
+		'U_NOTES'		=> ($user_notes_enabled && $auth->acl_getf_global('m_')) ? append_sid("{$phpbb_root_path}mcp.$phpEx", 'i=notes&amp;mode=user_notes&amp;u=' . $user_id, true, $user->session_id) : '',
+		'U_WARN'		=> ($warn_user_enabled && $auth->acl_get('m_warn')) ? append_sid("{$phpbb_root_path}mcp.$phpEx", 'i=warn&amp;mode=warn_user&amp;u=' . $user_id, true, $user->session_id) : '',
 		'U_PM'			=> ($config['allow_privmsg'] && $auth->acl_get('u_sendpm') && ($data['user_allow_pm'] || $auth->acl_gets('a_', 'm_') || $auth->acl_getf_global('m_'))) ? append_sid("{$phpbb_root_path}ucp.$phpEx", 'i=pm&amp;mode=compose&amp;u=' . $user_id) : '',
 		'U_EMAIL'		=> $email,
 		'U_WWW'			=> (!empty($data['user_website'])) ? $data['user_website'] : '',
