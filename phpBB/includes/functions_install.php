@@ -21,6 +21,12 @@ if (!defined('IN_PHPBB'))
 */
 function can_load_dll($dll)
 {
+	// SQLite2 is a tricky thing, from 5.0.0 it requires PDO; if PDO is not loaded we must state that SQLite is unavailable
+	// as the installer doesn't understand that the extension has a prerequisite.
+    if ($dll == 'sqlite' && version_compare(PHP_VERSION, '5.0.0', '>=') && !extension_loaded('pdo'))
+    {
+        return false;
+    }
 	return ((@ini_get('enable_dl') || strtolower(@ini_get('enable_dl')) == 'on') && (!@ini_get('safe_mode') || strtolower(@ini_get('safe_mode')) == 'off') && function_exists('dl') && @dl($dll . '.' . PHP_SHLIB_SUFFIX)) ? true : false;
 }
 
