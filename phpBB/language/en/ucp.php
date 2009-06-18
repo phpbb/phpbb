@@ -79,6 +79,7 @@ $lang = array_merge($lang, array(
 	'ADD_NEW_RULE'					=> 'Add new rule',
 	'ADD_RULE'						=> 'Add rule',
 	'ADD_TO'						=> 'Add [To]',
+	'ADD_USERS_UCP_EXPLAIN'			=> 'Here you can add new users to the group. You may select whether this group becomes the new default for the selected users. Please enter each username on a separate line.',
 	'ADMIN_EMAIL'					=> 'Administrators can e-mail me information',
 	'AGREE'							=> 'I agree to these terms',
 	'ALLOW_PM'						=> 'Allow users to send you private messages',
