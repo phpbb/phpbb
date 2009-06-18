@@ -109,6 +109,10 @@ function message_options($id, $mode, $global_privmsgs_rules, $global_rule_condit
 				$db->sql_query($sql);
 				$msg = $user->lang['FOLDER_ADDED'];
 			}
+			else
+			{
+				$msg = $user->lang['FOLDER_NAME_EMPTY'];
+			}
 		}
 		else
 		{

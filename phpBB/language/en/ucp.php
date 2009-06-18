@@ -197,6 +197,7 @@ $lang = array_merge($lang, array(
 	'FOES_UPDATED'				=> 'Your foes list has been updated successfully.',
 	'FOLDER_ADDED'				=> 'Folder successfully added.',
 	'FOLDER_MESSAGE_STATUS'		=> '%1$d from %2$d messages stored',
+	'FOLDER_NAME_EMPTY'			=> 'You must enter a name for this folder.',
 	'FOLDER_NAME_EXIST'			=> 'Folder <strong>%s</strong> already exists.',
 	'FOLDER_OPTIONS'			=> 'Folder options',
 	'FOLDER_RENAMED'			=> 'Folder successfully renamed.',
