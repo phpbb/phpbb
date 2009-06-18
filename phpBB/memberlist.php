@@ -512,20 +512,22 @@ switch ($mode)
 			$profile_fields = (isset($profile_fields[$user_id])) ? $cp->generate_profile_fields_template('show', false, $profile_fields[$user_id]) : array();
 		}
 
-		// We need to check if the module 'zebra' is accessible
-		$zebra_enabled = false;
+		// We need to check if the modules 'zebra',  'notes' ('user_notes' mode) and  'warn' ('warn_user' mode) are accessible to decide if we can display appropriate links
+		$zebra_enabled = $user_notes_enabled = $warn_user_enabled = false;
 
-		if ($user->data['user_id'] != $user_id && $user->data['is_registered'])
+		if (!class_exists('p_master'))
 		{
-			include_once($phpbb_root_path . 'includes/functions_module.' . $phpEx);
-			$module = new p_master();
-			$module->list_modules('ucp');
-			$module->set_active('zebra');
-
-			$zebra_enabled = ($module->active_module === false) ? false : true;
-
-			unset($module);
+			include($phpbb_root_path . 'includes/functions_module.' . $phpEx);
 		}
+		$module = new p_master();
+		
+		$module->list_modules('ucp');
+		$module->list_modules('mcp');
+		$user_notes_enabled = ($module->loaded('notes', 'user_notes')) ? true : false;
+		$warn_user_enabled = ($module->loaded('warn', 'warn_user')) ? true : false;
+		$zebra_enabled = ($module->loaded('zebra')) ? true : false;
+
+		unset($module);
 
 		// If the user has m_approve permission or a_user permission, then list then display unapproved posts
 		if ($auth->acl_getf_global('m_approve') || $auth->acl_get('a_user'))
@@ -575,6 +577,8 @@ switch ($mode)
 
 			'U_SWITCH_PERMISSIONS'	=> ($auth->acl_get('a_switchperm') && $user->data['user_id'] != $user_id) ? append_sid("{$phpbb_root_path}ucp.$phpEx", "mode=switch_perm&amp;u={$user_id}") : '',
 
+			'S_USER_NOTES'		=> ($user_notes_enabled) ? true : false,
+			'S_WARN_USER'		=> ($warn_user_enabled) ? true : false,
 			'S_ZEBRA'			=> ($user->data['user_id'] != $user_id && $user->data['is_registered'] && $zebra_enabled) ? true : false,
 			'U_ADD_FRIEND'		=> (!$friend) ? append_sid("{$phpbb_root_path}ucp.$phpEx", 'i=zebra&amp;add=' . urlencode(htmlspecialchars_decode($member['username']))) : '',
 			'U_ADD_FOE'			=> (!$foe) ? append_sid("{$phpbb_root_path}ucp.$phpEx", 'i=zebra&amp;mode=foes&amp;add=' . urlencode(htmlspecialchars_decode($member['username']))) : '',
