@@ -461,6 +461,10 @@ blockquote {
 	border-color:#DBDBCE;
 }
 
+.rtl blockquote {
+	background-image: url("{T_THEME_PATH}/images/quote_rtl.gif");
+}
+
 blockquote blockquote {
 	/* Nested quotes */
 	background-color:#EFEED9;

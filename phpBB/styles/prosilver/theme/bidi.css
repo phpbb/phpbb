@@ -367,11 +367,12 @@
 /* Quote block */
 .rtl blockquote {
 	margin: 0.5em 25px 0 1px;
+	background-position: 99% 5px;
 }
 
 .rtl blockquote blockquote {
 	/* Nested quotes */
-	margin: 0.5em 15px 0 1px;	
+	margin: 0.5em 15px 0 1px;
 }
 
 .rtl blockquote cite {
