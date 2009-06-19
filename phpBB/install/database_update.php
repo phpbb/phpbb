@@ -683,6 +683,11 @@ function database_update_info()
 
 		// Changes from 3.0.5
 		'3.0.5'		=> array(
+			'add_columns'		=> array(
+				CONFIRM_TABLE			=> array(
+					'attempts'		=> array('UINT', 0),
+				),
+			),
 			'add_index'		=> array(
 				LOG_TABLE			=> array(
 					'log_time'		=> array('log_time'),

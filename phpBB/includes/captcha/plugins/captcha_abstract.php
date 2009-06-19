@@ -28,6 +28,7 @@ class phpbb_default_captcha
 	var $confirm_code;
 	var $code;
 	var $seed;
+	var $attempts = 0;
 	var $type;
 	var $solved = false;
 	var $captcha_vars = false;
@@ -43,7 +44,7 @@ class phpbb_default_captcha
 
 		$this->type = (int) $type;
 
-		if (!strlen($this->confirm_id))
+		if (!strlen($this->confirm_id) || !$this->load_code())
 		{
 			// we have no confirm ID, better get ready to display something
 			$this->generate_code();
@@ -183,7 +184,6 @@ class phpbb_default_captcha
 		global $config, $db, $user;
 		
 		$error = '';
-		$this->confirm_code = request_var('confirm_code', '');
 		if (!$this->confirm_id)
 		{
 			$error = $user->lang['CONFIRM_CODE_WRONG'];
@@ -204,7 +204,7 @@ class phpbb_default_captcha
 		if (strlen($error))
 		{
 			// okay, incorrect answer. Let's ask a new question.
-			$this->generate_code();
+			$this->new_attempt();
 			return $error;
 		}
 		else
@@ -260,13 +260,36 @@ class phpbb_default_captcha
 	}
 
 	/**
+	* New Question, if desired.
+	*/
+	function new_attempt()
+	{
+		global $db, $user;
+
+		$this->code = gen_rand_string(mt_rand(CAPTCHA_MIN_CHARS, CAPTCHA_MAX_CHARS));
+		$this->seed = hexdec(substr(unique_id(), 4, 10));
+		$this->solved = false;
+		// compute $seed % 0x7fffffff
+		$this->seed -= 0x7fffffff * floor($this->seed / 0x7fffffff);
+
+		$sql = 'UPDATE ' . CONFIRM_TABLE . ' SET ' . $db->sql_build_array('UPDATE', array(
+				'code'			=> (string) $this->code,
+				'seed'			=> (int) $this->seed)) . '
+				, attempts = attempts + 1 
+				WHERE
+				confirm_id = \'' . $db->sql_escape($this->confirm_id) . '\' AND
+				session_id = \'' . $db->sql_escape($user->session_id) . '\'';
+		$db->sql_query($sql);
+	}
+	
+	/**
 	* Look up everything we need for painting&checking.
 	*/
 	function load_code()
 	{
 		global $db, $user;
 
-		$sql = 'SELECT code, seed
+		$sql = 'SELECT code, seed, attempts
 			FROM ' . CONFIRM_TABLE . "
 			WHERE confirm_id = '" . $db->sql_escape($this->confirm_id) . "'
 			AND session_id = '" . $db->sql_escape($user->session_id) . "'
@@ -279,6 +302,7 @@ class phpbb_default_captcha
 		{
 			$this->code = $row['code'];
 			$this->seed = $row['seed'];
+			$this->attempts = $row['attempts'];
 			return true;
 		}
 
@@ -287,15 +311,6 @@ class phpbb_default_captcha
 
 	function check_code()
 	{
-		global $db;
-
-		if (empty($this->code))
-		{
-			if (!$this->load_code())
-			{
-				return false;
-			}
-		}
 		return (strcasecmp($this->code, $this->confirm_code) === 0);
 	}
 
@@ -312,17 +327,7 @@ class phpbb_default_captcha
 
 	function get_attempt_count()
 	{
-		global $db, $user;
-
-		$sql = 'SELECT COUNT(session_id) AS attempts
-			FROM ' . CONFIRM_TABLE . "
-			WHERE session_id = '" . $db->sql_escape($user->session_id) . "'
-				AND confirm_type = " . $this->type;
-		$result = $db->sql_query($sql);
-		$attempts = (int) $db->sql_fetchfield('attempts');
-		$db->sql_freeresult($result);
-
-		return $attempts;
+		return $this->attempts;
 	}
 
 	function reset()

@@ -52,13 +52,6 @@ class ucp_register
 			add_form_key('ucp_register_terms');
 		}
 		
-		$captcha_solved = false;
-		if ($config['enable_confirm'])
-		{
-			include($phpbb_root_path . 'includes/captcha/captcha_factory.' . $phpEx);
-			$captcha =& phpbb_captcha_factory::get_instance($config['captcha_plugin']);
-			$captcha->init(CONFIRM_REG);
-		}
 
 		if ($change_lang || $user_lang != $config['default_lang'])
 		{
@@ -150,6 +143,13 @@ class ucp_register
 			return;
 		}
 
+		$captcha_solved = false;
+		if ($config['enable_confirm'])
+		{
+			include($phpbb_root_path . 'includes/captcha/captcha_factory.' . $phpEx);
+			$captcha =& phpbb_captcha_factory::get_instance($config['captcha_plugin']);
+			$captcha->init(CONFIRM_REG);
+		}
 
 		// Try to manually determine the timezone and adjust the dst if the server date/time complies with the default setting +/- 1
 		$timezone = date('Z') / 3600;
