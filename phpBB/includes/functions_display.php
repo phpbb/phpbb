@@ -1200,14 +1200,15 @@ function get_user_rank($user_rank, $user_posts, &$rank_title, &$rank_img, &$rank
 * @param string $avatar_width Width of users avatar
 * @param string $avatar_height Height of users avatar
 * @param string $alt Optional language string for alt tag within image, can be a language key or text
+* @param bool $ignore_config Ignores the config-setting, to be still able to view the avatar in the UCP
 *
 * @return string Avatar image
 */
-function get_user_avatar($avatar, $avatar_type, $avatar_width, $avatar_height, $alt = 'USER_AVATAR')
+function get_user_avatar($avatar, $avatar_type, $avatar_width, $avatar_height, $alt = 'USER_AVATAR', $ignore_config = false)
 {
 	global $user, $config, $phpbb_root_path, $phpEx;
 
-	if (empty($avatar) || !$avatar_type)
+	if (empty($avatar) || !$avatar_type || (!$config['allow_avatar'] && !$ignore_config))
 	{
 		return '';
 	}
@@ -1217,11 +1218,26 @@ function get_user_avatar($avatar, $avatar_type, $avatar_width, $avatar_height, $
 	switch ($avatar_type)
 	{
 		case AVATAR_UPLOAD:
+			if (!$config['allow_avatar_upload'] && !$ignore_config)
+			{
+				return '';
+			}
 			$avatar_img = $phpbb_root_path . "download/file.$phpEx?avatar=";
 		break;
 
 		case AVATAR_GALLERY:
+			if (!$config['allow_avatar_local'] && !$ignore_config)
+			{
+				return '';
+			}
 			$avatar_img = $phpbb_root_path . $config['avatar_gallery_path'] . '/';
+		break;
+
+		case AVATAR_REMOTE:
+			if (!$config['allow_avatar_remote'] && !$ignore_config)
+			{
+				return '';
+			}
 		break;
 	}
 

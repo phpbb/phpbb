@@ -578,9 +578,20 @@ class ucp_profile
 					$error = preg_replace('#^([A-Z_]+)$#e', "(!empty(\$user->lang['\\1'])) ? \$user->lang['\\1'] : '\\1'", $error);
 				}
 
+				if (!$config['allow_avatar'] && $user->data['user_avatar_type'])
+				{
+					$error[] = $user->lang['AVATAR_NOT_ALLOWED'];
+				}
+				else if ((($user->data['user_avatar_type'] == AVATAR_UPLOAD) && !$config['allow_avatar_upload']) ||
+				 (($user->data['user_avatar_type'] == AVATAR_REMOTE) && !$config['allow_avatar_remote']) ||
+				 (($user->data['user_avatar_type'] == AVATAR_GALLERY) && !$config['allow_avatar_local']))
+				{
+					$error[] = $user->lang['AVATAR_TYPE_NOT_ALLOWED'];
+				}
+
 				$template->assign_vars(array(
 					'ERROR'			=> (sizeof($error)) ? implode('<br />', $error) : '',
-					'AVATAR'		=> get_user_avatar($user->data['user_avatar'], $user->data['user_avatar_type'], $user->data['user_avatar_width'], $user->data['user_avatar_height']),
+					'AVATAR'		=> get_user_avatar($user->data['user_avatar'], $user->data['user_avatar_type'], $user->data['user_avatar_width'], $user->data['user_avatar_height'], 'USER_AVATAR', true),
 					'AVATAR_SIZE'	=> $config['avatar_filesize'],
 
 					'U_GALLERY'		=> append_sid("{$phpbb_root_path}ucp.$phpEx", 'i=profile&amp;mode=avatar&amp;display_gallery=1'),
@@ -590,11 +601,11 @@ class ucp_profile
 					'L_AVATAR_EXPLAIN'	=> sprintf($user->lang['AVATAR_EXPLAIN'], $config['avatar_max_width'], $config['avatar_max_height'], $config['avatar_filesize'] / 1024),
 				));
 
-				if ($display_gallery && $auth->acl_get('u_chgavatar') && $config['allow_avatar_local'])
+				if ($config['allow_avatar'] && $display_gallery && $auth->acl_get('u_chgavatar') && $config['allow_avatar_local'])
 				{
 					avatar_gallery($category, $avatar_select, 4);
 				}
-				else
+				else if ($config['allow_avatar'])
 				{
 					$avatars_enabled = ($can_upload || ($auth->acl_get('u_chgavatar') && ($config['allow_avatar_local'] || $config['allow_avatar_remote']))) ? true : false;
 

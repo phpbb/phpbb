@@ -1115,6 +1115,15 @@ function change_database_data(&$no_updates, $version)
 
 			$_module->remove_cache_file();
 
+			if ($config['allow_avatar_upload'] || $config['allow_avatar_local'] || $config['allow_avatar_remote'])
+			{
+				set_config('allow_avatar', '1');
+			}
+			else
+			{
+				set_config('allow_avatar', '0');
+			}
+
 			$no_updates = false;
 		break;
 	}
