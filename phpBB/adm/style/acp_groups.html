@@ -55,21 +55,29 @@
 	</fieldset>
 
 	<fieldset>
-		<legend>{L_GROUP_SETTINGS_SAVE}</legend>
+		<legend>{L_GROUP_OPTIONS_SAVE}</legend>
 	<!-- IF S_USER_FOUNDER -->
 	<dl>
 		<dt><label for="group_founder_manage">{L_GROUP_FOUNDER_MANAGE}:</label><br /><span>{L_GROUP_FOUNDER_MANAGE_EXPLAIN}</span></dt>
-		<dd><input name="group_founder_manage" type="checkbox" class="radio" id="group_founder_manage"{GROUP_FOUNDER_MANAGE} /></dd>
+		<dd><input name="group_founder_manage" type="checkbox" value="1" class="radio" id="group_founder_manage"{GROUP_FOUNDER_MANAGE} /></dd>
 	</dl>
 	<!-- ENDIF -->
 	<dl>
+		<dt><label for="group_skip_auth">{L_GROUP_SKIP_AUTH}:</label><br /><span>{L_GROUP_SKIP_AUTH_EXPLAIN}</span></dt>
+		<dd><input name="group_skip_auth" type="checkbox" value="1" class="radio" id="group_skip_auth"{GROUP_SKIP_AUTH} /></dd>
+	</dl>
+	<dl>
 		<dt><label for="group_legend">{L_GROUP_LEGEND}:</label></dt>
-		<dd><input name="group_legend" type="checkbox" class="radio" id="group_legend"{GROUP_LEGEND} /></dd>
+		<dd><input name="group_legend" type="checkbox" value="1" class="radio" id="group_legend"{GROUP_LEGEND} /></dd>
 	</dl>
 	<dl>
 		<dt><label for="group_receive_pm">{L_GROUP_RECEIVE_PM}:</label><br /><span>{L_GROUP_RECEIVE_PM_EXPLAIN}</span></dt>
-		<dd><input name="group_receive_pm" type="checkbox" class="radio" id="group_receive_pm"{GROUP_RECEIVE_PM} /></dd>
+		<dd><input name="group_receive_pm" type="checkbox" value="1" class="radio" id="group_receive_pm"{GROUP_RECEIVE_PM} /></dd>
 	</dl>
+	</fieldset>
+
+	<fieldset>
+		<legend>{L_GROUP_SETTINGS_SAVE}</legend>
 	<dl>
 		<dt><label for="group_message_limit">{L_GROUP_MESSAGE_LIMIT}:</label><br /><span>{L_GROUP_MESSAGE_LIMIT_EXPLAIN}</span></dt>
 		<dd><input name="group_message_limit" type="text" id="group_message_limit" maxlength="4" size="4" value="{GROUP_MESSAGE_LIMIT}" /></dd>
@@ -80,7 +88,7 @@
 	</dl>
 	<dl>
 		<dt><label for="group_colour">{L_GROUP_COLOR}:</label><br /><span>{L_GROUP_COLOR_EXPLAIN}</span></dt>
-		<dd><input name="group_colour" type="text" id="group_colour" value="{GROUP_COLOUR}" size="6" maxlength="6" />&nbsp;&nbsp;<span>[ <a href="{U_SWATCH}" onclick="popup(this.href, 636, 150, '_swatch'); return false">{L_COLOUR_SWATCH}</a> ]</span></dd>
+		<dd><input name="group_colour" type="text" id="group_colour" value="{GROUP_COLOUR}" size="6" maxlength="6" /><!-- IF GROUP_COLOUR -->&nbsp;<span style="background-color: #{GROUP_COLOUR}">&nbsp; &nbsp;</span><!-- ENDIF -->&nbsp;&nbsp;<span>[ <a href="{U_SWATCH}" onclick="popup(this.href, 636, 150, '_swatch'); return false">{L_COLOUR_SWATCH}</a> ]</span></dd>
 	</dl>
 	<dl>
 		<dt><label for="group_rank">{L_GROUP_RANK}:</label></dt>
@@ -97,7 +105,7 @@
 	</dl>
 	<!-- IF not S_IN_AVATAR_GALLERY -->
 		<!-- IF S_CAN_UPLOAD -->
-			<dl> 
+			<dl>
 				<dt><label for="uploadfile">{L_UPLOAD_AVATAR_FILE}:</label></dt>
 				<dd><input type="file" id="uploadfile" name="uploadfile" /></dd>
 			</dl>
@@ -115,7 +123,7 @@
 			<dd><input name="width" type="text" id="width" size="3" value="{AVATAR_WIDTH}" /> <span>px X </span> <input type="text" name="height" size="3" value="{AVATAR_HEIGHT}" /> <span>px</span></dd>
 		</dl>
 		<!-- IF S_DISPLAY_GALLERY -->
-			<dl> 
+			<dl>
 				<dt><label>{L_AVATAR_GALLERY}:</label></dt>
 				<dd><input class="button2" type="submit" name="display_gallery" value="{L_DISPLAY_GALLERY}" /></dd>
 			</dl>
@@ -132,7 +140,7 @@
 		<dl>
 			<table cellspacing="1">
 			<!-- BEGIN avatar_row -->
-			<tr> 
+			<tr>
 				<!-- BEGIN avatar_column -->
 					<td class="row1" style="text-align: center;"><img src="{avatar_row.avatar_column.AVATAR_IMAGE}" alt="{avatar_row.avatar_column.AVATAR_NAME}" title="{avatar_row.avatar_column.AVATAR_NAME}" /></td>
 				<!-- END avatar_column -->
@@ -146,11 +154,11 @@
 			</table>
 		</dl>
 		</fieldset>
-		
+
 		<fieldset class="quick" style="margin-top: -15px;">
 			<input class="button2" type="submit" name="cancel" value="{L_CANCEL}" />
 		</fieldset>
-	
+
 	<!-- ENDIF -->
 	</fieldset>
 
@@ -192,7 +200,7 @@
 	</tr>
 	<!-- BEGIN leader -->
 		<!-- IF leader.S_ROW_COUNT is even --><tr class="row1"><!-- ELSE --><tr class="row2"><!-- ENDIF -->
-			<td><a href="{leader.U_USER_EDIT}">{leader.USERNAME}</a></td>
+			<td><!-- IF leader.USERNAME_COLOUR --><a href="{leader.U_USER_EDIT}" style="color: #{leader.USERNAME_COLOUR};" class="username-coloured">{leader.USERNAME}</a><!-- ELSE --><a href="{leader.U_USER_EDIT}">{leader.USERNAME}</a><!-- ENDIF --></td>
 			<td style="text-align: center;"><!-- IF leader.S_GROUP_DEFAULT -->{L_YES}<!-- ELSE -->{L_NO}<!-- ENDIF --></td>
 			<td style="text-align: center;">{leader.JOINED}</td>
 			<td style="text-align: center;">{leader.USER_POSTS}</td>
@@ -213,7 +221,7 @@
 		</tr>
 		<!-- ELSE -->
 			<!-- IF member.S_ROW_COUNT is even --><tr class="row1"><!-- ELSE --><tr class="row2"><!-- ENDIF -->
-			<td><a href="{member.U_USER_EDIT}">{member.USERNAME}</a></td>
+			<td><!-- IF member.USERNAME_COLOUR --><a href="{member.U_USER_EDIT}" style="color: #{member.USERNAME_COLOUR};" class="username-coloured">{member.USERNAME}</a><!-- ELSE --><a href="{member.U_USER_EDIT}">{member.USERNAME}</a><!-- ENDIF --></td>
 			<td style="text-align: center;"><!-- IF member.S_GROUP_DEFAULT -->{L_YES}<!-- ELSE -->{L_NO}<!-- ENDIF --></td>
 			<td style="text-align: center;">{member.JOINED}</td>
 			<td style="text-align: center;">{member.USER_POSTS}</td>
@@ -231,12 +239,12 @@
 	<div class="pagination">
 			<a href="#" onclick="jumpto(); return false;" title="{L_JUMP_TO_PAGE}">{S_ON_PAGE}</a> &bull; <span>{PAGINATION}</span>
 	</div>
-	<!-- ENDIF -->	
+	<!-- ENDIF -->
 
 	<fieldset class="quick">
 		<select name="action"><option class="sep" value="">{L_SELECT_OPTION}</option>{S_ACTION_OPTIONS}</select>
 		<input class="button2" type="submit" name="update" value="{L_SUBMIT}" />
-		<p class="small"><a href="#" onclick="marklist('list', 'mark', true); return false;">{L_MARK_ALL}</a> &bull; <a href="#" onclick="marklist('list', 'mark', false); return false;">{L_UNMARK_ALL}</a></p>		
+		<p class="small"><a href="#" onclick="marklist('list', 'mark', true); return false;">{L_MARK_ALL}</a> &bull; <a href="#" onclick="marklist('list', 'mark', false); return false;">{L_UNMARK_ALL}</a></p>
 	</fieldset>
 
 	<h1>{L_ADD_USERS}</h1>

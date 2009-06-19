@@ -2396,24 +2396,9 @@ function group_create(&$group_id, $type, $name, $desc, $group_attributes, $allow
 	global $phpbb_root_path, $config, $db, $user, $file_upload;
 
 	$error = array();
-	$attribute_ary = array(
-		'group_colour'			=> 'string',
-		'group_rank'			=> 'int',
-		'group_avatar'			=> 'string',
-		'group_avatar_type'		=> 'int',
-		'group_avatar_width'	=> 'int',
-		'group_avatar_height'	=> 'int',
 
-		'group_receive_pm'		=> 'int',
-		'group_legend'			=> 'int',
-		'group_message_limit'	=> 'int',
-		'group_max_recipients'	=> 'int',
-
-		'group_founder_manage'	=> 'int',
-	);
-
-	// Those are group-only attributes
-	$group_only_ary = array('group_receive_pm', 'group_legend', 'group_message_limit', 'group_max_recipients', 'group_founder_manage');
+	// Attributes which also affect the users table
+	$user_attribute_ary = array('group_colour', 'group_rank', 'group_avatar', 'group_avatar_type', 'group_avatar_width', 'group_avatar_height');
 
 	// Check data. Limit group name length.
 	if (!utf8_strlen($name) || utf8_strlen($name) > 60)
@@ -2451,14 +2436,8 @@ function group_create(&$group_id, $type, $name, $desc, $group_attributes, $allow
 
 		if (sizeof($group_attributes))
 		{
-			foreach ($attribute_ary as $attribute => $_type)
-			{
-				if (isset($group_attributes[$attribute]))
-				{
-					settype($group_attributes[$attribute], $_type);
-					$sql_ary[$attribute] = $group_attributes[$attribute];
-				}
-			}
+			// Merge them with $sql_ary to properly update the group
+			$sql_ary = array_merge($sql_ary, $group_attributes);
 		}
 
 		// Setting the log message before we set the group id (if group gets added)
@@ -2483,6 +2462,7 @@ function group_create(&$group_id, $type, $name, $desc, $group_attributes, $allow
 			{
 				remove_default_avatar($group_id, $user_ary);
 			}
+
 			if (isset($sql_ary['group_rank']) && !$sql_ary['group_rank'])
 			{
 				remove_default_rank($group_id, $user_ary);
@@ -2498,6 +2478,32 @@ function group_create(&$group_id, $type, $name, $desc, $group_attributes, $allow
 				SET group_name = '" . $db->sql_escape($sql_ary['group_name']) . "'
 				WHERE group_id = $group_id";
 			$db->sql_query($sql);
+
+			// One special case is the group skip auth setting. If this was changed we need to purge permissions for this group
+			if (isset($group_attributes['group_skip_auth']))
+			{
+				// Get users within this group...
+				$sql = 'SELECT user_id
+					FROM ' . USER_GROUP_TABLE . '
+					WHERE group_id = ' . $group_id . '
+						AND user_pending = 0';
+				$result = $db->sql_query($sql);
+
+				$user_id_ary = array();
+				while ($row = $db->sql_fetchrow($result))
+				{
+					$user_id_ary[] = $row['user_id'];
+				}
+				$db->sql_freeresult($result);
+
+				if (!empty($user_id_ary))
+				{
+					global $auth;
+
+					// Clear permissions cache of relevant users
+					$auth->acl_clear_prefetch($user_id_ary);
+				}
+			}
 		}
 		else
 		{
@@ -2508,6 +2514,7 @@ function group_create(&$group_id, $type, $name, $desc, $group_attributes, $allow
 		if (!$group_id)
 		{
 			$group_id = $db->sql_nextid();
+
 			if (isset($sql_ary['group_avatar_type']) && $sql_ary['group_avatar_type'] == AVATAR_UPLOAD)
 			{
 				group_correct_avatar($group_id, $sql_ary['group_avatar']);
@@ -2518,18 +2525,21 @@ function group_create(&$group_id, $type, $name, $desc, $group_attributes, $allow
 		$sql_ary = array();
 		if (sizeof($group_attributes))
 		{
-			foreach ($attribute_ary as $attribute => $_type)
+			// Go through the user attributes array, check if a group attribute matches it and then set it. ;)
+			foreach ($user_attribute_ary as $attribute)
 			{
-				if (isset($group_attributes[$attribute]) && !in_array($attribute, $group_only_ary))
+				if (!isset($group_attributes[$attribute]))
 				{
-					// If we are about to set an avatar, we will not overwrite user avatars if no group avatar is set...
-					if (strpos($attribute, 'group_avatar') === 0 && !$group_attributes[$attribute])
-					{
-						continue;
-					}
-
-					$sql_ary[$attribute] = $group_attributes[$attribute];
+					continue;
 				}
+
+				// If we are about to set an avatar, we will not overwrite user avatars if no group avatar is set...
+				if (strpos($attribute, 'group_avatar') === 0 && !$group_attributes[$attribute])
+				{
+					continue;
+				}
+
+				$sql_ary[$attribute] = $group_attributes[$attribute];
 			}
 		}
 

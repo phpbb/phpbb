@@ -13,6 +13,9 @@ $updates_to_version = '3.0.6-dev';
 // Enter any version to update from to test updates. The version within the db will not be updated.
 $debug_from_version = false;
 
+// Which oldest version does this updater supports?
+$oldest_from_version = '3.0.0';
+
 // Return if we "just include it" to find out for which version the database update is responsible for
 if (defined('IN_PHPBB') && defined('IN_INSTALL'))
 {
@@ -683,6 +686,11 @@ function database_update_info()
 			'add_index'		=> array(
 				LOG_TABLE			=> array(
 					'log_time'		=> array('log_time'),
+				),
+			),
+			'add_columns'		=> array(
+				GROUPS_TABLE			=> array(
+					'group_skip_auth'		=> array('BOOL', 0, 'after' => 'group_founder_manage'),
 				),
 			),
 		),
@@ -1991,23 +1999,28 @@ class updater_db_tools
 		switch ($this->sql_layer)
 		{
 			case 'firebird':
+				// Does not support AFTER statement, only POSITION (and there you need the column position)
 				$statements[] = 'ALTER TABLE ' . $table_name . ' ADD "' . strtoupper($column_name) . '" ' . $column_data['column_type_sql'];
 			break;
 
 			case 'mssql':
+				// Does not support AFTER, only through temporary table
 				$statements[] = 'ALTER TABLE [' . $table_name . '] ADD [' . $column_name . '] ' . $column_data['column_type_sql_default'];
 			break;
 
 			case 'mysql_40':
 			case 'mysql_41':
-				$statements[] = 'ALTER TABLE `' . $table_name . '` ADD COLUMN `' . $column_name . '` ' . $column_data['column_type_sql'];
+				$after = (!empty($column_data['after'])) ? ' AFTER ' . $column_data['after'] : '';
+				$statements[] = 'ALTER TABLE `' . $table_name . '` ADD COLUMN `' . $column_name . '` ' . $column_data['column_type_sql'] . $after;
 			break;
 
 			case 'oracle':
+				// Does not support AFTER, only through temporary table
 				$statements[] = 'ALTER TABLE ' . $table_name . ' ADD ' . $column_name . ' ' . $column_data['column_type_sql'];
 			break;
 
 			case 'postgres':
+				// Does not support AFTER, only through temporary table
 				$statements[] = 'ALTER TABLE ' . $table_name . ' ADD COLUMN "' . $column_name . '" ' . $column_data['column_type_sql'];
 			break;
 

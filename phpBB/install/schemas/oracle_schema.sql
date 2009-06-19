@@ -586,6 +586,7 @@ CREATE TABLE phpbb_groups (
 	group_id number(8) NOT NULL,
 	group_type number(4) DEFAULT '1' NOT NULL,
 	group_founder_manage number(1) DEFAULT '0' NOT NULL,
+	group_skip_auth number(1) DEFAULT '0' NOT NULL,
 	group_name varchar2(255) DEFAULT '' ,
 	group_desc clob DEFAULT '' ,
 	group_desc_bitfield varchar2(255) DEFAULT '' ,
@@ -822,7 +823,7 @@ CREATE TABLE phpbb_poll_votes (
 	topic_id number(8) DEFAULT '0' NOT NULL,
 	poll_option_id number(4) DEFAULT '0' NOT NULL,
 	vote_user_id number(8) DEFAULT '0' NOT NULL,
-	vote_user_ip varchar2(40) DEFAULT ''
+	vote_user_ip varchar2(40) DEFAULT '' 
 )
 /
 
@@ -1466,7 +1467,7 @@ CREATE TABLE phpbb_styles_template_data (
 	template_filename varchar2(100) DEFAULT '' ,
 	template_included clob DEFAULT '' ,
 	template_mtime number(11) DEFAULT '0' NOT NULL,
-	template_data clob DEFAULT ''
+	template_data clob DEFAULT '' 
 )
 /
 

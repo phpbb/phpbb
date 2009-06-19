@@ -606,11 +606,24 @@ class ucp_groups
 								// were made.
 
 								$group_attributes = array();
-								$test_variables = array('rank', 'colour', 'avatar', 'avatar_type', 'avatar_width', 'avatar_height', 'receive_pm', 'legend', 'message_limit', 'max_recipients');
-								foreach ($test_variables as $test)
+								$test_variables = array(
+									'rank'			=> 'int',
+									'colour'		=> 'string',
+									'avatar'		=> 'string',
+									'avatar_type'	=> 'int',
+									'avatar_width'	=> 'int',
+									'avatar_height'	=> 'int',
+									'receive_pm'	=> 'int',
+									'legend'		=> 'int',
+									'message_limit'	=> 'int',
+									'max_recipients'=> 'int',
+								);
+
+								foreach ($test_variables as $test => $type)
 								{
-									if ($action == 'add' || (isset($submit_ary[$test]) && $group_row['group_' . $test] != $submit_ary[$test]))
+									if (isset($submit_ary[$test]) && ($action == 'add' || $group_row['group_' . $test] != $submit_ary[$test]))
 									{
+										settype($submit_ary[$test], $type);
 										$group_attributes['group_' . $test] = $group_row['group_' . $test] = $submit_ary[$test];
 									}
 								}

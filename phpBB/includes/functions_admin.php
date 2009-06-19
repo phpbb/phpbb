@@ -2137,12 +2137,13 @@ function cache_moderators()
 
 		// Remove users who have group memberships with DENY moderator permissions
 		$sql = $db->sql_build_query('SELECT', array(
-			'SELECT'	=> 'a.forum_id, ug.user_id',
+			'SELECT'	=> 'a.forum_id, ug.user_id, g.group_id',
 
 			'FROM'		=> array(
 				ACL_OPTIONS_TABLE	=> 'o',
 				USER_GROUP_TABLE	=> 'ug',
-				ACL_GROUPS_TABLE	=> 'a'
+				ACL_GROUPS_TABLE	=> 'a',
+				GROUPS_TABLE		=> 'g',
 			),
 
 			'LEFT_JOIN'	=> array(
@@ -2156,6 +2157,8 @@ function cache_moderators()
 				AND ((a.auth_setting = ' . ACL_NEVER . ' AND r.auth_setting IS NULL)
 					OR r.auth_setting = ' . ACL_NEVER . ')
 				AND a.group_id = ug.group_id
+				AND g.ground_id = ug.group_id
+				AND NOT (ug.group_leader = 1 AND g.group_skip_auth = 1)
 				AND ' . $db->sql_in_set('ug.user_id', $ug_id_ary) . "
 				AND ug.user_pending = 0
 				AND o.auth_option " . $db->sql_like_expression('m_' . $db->any_char),

@@ -1125,6 +1125,7 @@ function get_schema_struct()
 			'group_id'				=> array('UINT', NULL, 'auto_increment'),
 			'group_type'			=> array('TINT:4', 1),
 			'group_founder_manage'	=> array('BOOL', 0),
+			'group_skip_auth'		=> array('BOOL', 0),
 			'group_name'			=> array('VCHAR_CI', ''),
 			'group_desc'			=> array('TEXT_UNI', ''),
 			'group_desc_bitfield'	=> array('VCHAR:255', ''),

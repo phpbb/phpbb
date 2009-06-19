@@ -297,6 +297,7 @@ CREATE TABLE phpbb_groups (
 	group_id mediumint(8) UNSIGNED NOT NULL auto_increment,
 	group_type tinyint(4) DEFAULT '1' NOT NULL,
 	group_founder_manage tinyint(1) UNSIGNED DEFAULT '0' NOT NULL,
+	group_skip_auth tinyint(1) UNSIGNED DEFAULT '0' NOT NULL,
 	group_name blob NOT NULL,
 	group_desc blob NOT NULL,
 	group_desc_bitfield varbinary(255) DEFAULT '' NOT NULL,
