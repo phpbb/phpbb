@@ -955,7 +955,7 @@ class session
 			{
 				include($phpbb_root_path . "includes/captcha/captcha_factory." . $phpEx);
 			}
-			captcha_factory::garbage_collect($config['captcha_plugin']);
+			phpbb_captcha_factory::garbage_collect($config['captcha_plugin']);
 		}
 
 		return;
