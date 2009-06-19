@@ -210,23 +210,36 @@ parse_css_file = {PARSE_CSS_FILE}
 							trigger_error($user->lang['DEACTIVATE_DEFAULT'] . adm_back_link($this->u_action), E_USER_WARNING);
 						}
 
-						$sql = 'UPDATE ' . STYLES_TABLE . '
-							SET style_active = ' . (($action == 'activate') ? 1 : 0) . '
-							WHERE style_id = ' . $style_id;
-						$db->sql_query($sql);
-
-						// Set style to default for any member using deactivated style
-						if ($action == 'deactivate')
+						if (($action == 'deactivate' && confirm_box(true)) || $action == 'activate')
 						{
-							$sql = 'UPDATE ' . USERS_TABLE . '
-								SET user_style = ' . $config['default_style'] . "
-								WHERE user_style = $style_id";
+							$sql = 'UPDATE ' . STYLES_TABLE . '
+								SET style_active = ' . (($action == 'activate') ? 1 : 0) . '
+								WHERE style_id = ' . $style_id;
 							$db->sql_query($sql);
 
-							$sql = 'UPDATE ' . FORUMS_TABLE . '
-								SET forum_style = 0
-								WHERE forum_style = ' . $style_id;
-							$db->sql_query($sql);
+							// Set style to default for any member using deactivated style
+							if ($action == 'deactivate')
+							{
+								$sql = 'UPDATE ' . USERS_TABLE . '
+									SET user_style = ' . $config['default_style'] . "
+									WHERE user_style = $style_id";
+								$db->sql_query($sql);
+
+								$sql = 'UPDATE ' . FORUMS_TABLE . '
+									SET forum_style = 0
+									WHERE forum_style = ' . $style_id;
+								$db->sql_query($sql);
+							}
+						}
+						elseif ( $action == 'deactivate' )
+						{
+							$s_hidden_fields = array(
+								'i'			=> $id,
+								'mode'		=> $mode,
+								'action'	=> $action,
+								'style_id'	=> $style_id,
+							);
+							confirm_box(false, $user->lang['CONFIRM_OPERATION'], build_hidden_fields($s_hidden_fields));
 						}
 					break;
 				}
