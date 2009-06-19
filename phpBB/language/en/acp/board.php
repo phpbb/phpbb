@@ -239,14 +239,14 @@ $lang = array_merge($lang, array(
 	'ACP_FEED_ENABLE'					=> 'Enable Feeds',
 	'ACP_FEED_ENABLE_EXPLAIN'			=> 'Turns on or off ATOM Feeds for the entire board.<br />Disabling this switches off all Feeds, no matter how the options below are set.',
 	'ACP_FEED_LIMIT'					=> 'Number of items',
-	'ACP_FEED_LIMIT_EXPLAI'				=> 'The maximum number of feed items to display.',
+	'ACP_FEED_LIMIT_EXPLAIN'			=> 'The maximum number of feed items to display.',
 
 	'ACP_FEED_OVERALL_FORUMS'			=> 'Enable overall forums feed',
 	'ACP_FEED_OVERALL_FORUMS_EXPLAIN'	=> 'This feed displays the latest posts from all forums topics.',
 	'ACP_FEED_OVERALL_FORUMS_LIMIT'		=> 'Number of items per page to display in the forums feed',
 
 	'ACP_FEED_OVERALL_TOPIC'			=> 'Enable overall topics feed',
-	'ACP_FEED_OVERALL_TOPIC_EXPLAIN'	=> 'Enables the &quot;All Topics&quot; feed',
+	'ACP_FEED_OVERALL_TOPIC_EXPLAIN'	=> 'Enables the “All Topics” feed',
 	'ACP_FEED_OVERALL_TOPIC_LIMIT'		=> 'Number of items per page to display in the topics feed',
 	'ACP_FEED_FORUM'					=> 'Enable Per-Forum Feeds',
 	'ACP_FEED_FORUM_EXPLAIN'			=> 'Single forum new posts.',
