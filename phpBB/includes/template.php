@@ -55,7 +55,7 @@ class template
 		{
 			$this->root = $phpbb_root_path . 'styles/' . $user->theme['template_path'] . '/template';
 			$this->cachepath = $phpbb_root_path . 'cache/tpl_' . str_replace('_', '-', $user->theme['template_path']) . '_';
-			
+
 			if ($user->theme['template_inherits_id'])
 			{
 				$this->inherit_root = $phpbb_root_path . 'styles/' . $user->theme['template_inherit_path'] . '/template';
@@ -105,13 +105,13 @@ class template
 
 			$this->filename[$handle] = $filename;
 			$this->files[$handle] = $this->root . '/' . $filename;
-			
+
 			if ($this->inherit_root)
 			{
 				$this->files_inherit[$handle] = $this->inherit_root . '/' . $filename;
 			}
 		}
-		
+
 		return true;
 	}
 
@@ -209,7 +209,7 @@ class template
 
 		return true;
 	}
-	
+
 	/**
 	* Load a compiled template if possible, if not, recompile it
 	* @access private
@@ -220,7 +220,7 @@ class template
 
 		$filename = $this->cachepath . str_replace('/', '.', $this->filename[$handle]) . '.' . $phpEx;
 		$this->files_template[$handle] = $user->theme['template_id'];
-		
+
 		$recompile = false;
 		if (!file_exists($filename) || @filesize($filename) === 0)
 		{
@@ -236,7 +236,7 @@ class template
 			}
 			$recompile = (@filemtime($filename) < filemtime($this->files[$handle])) ? true : false;
 		}
-		
+
 		// Recompile page if the original template is newer, otherwise load the compiled version
 		if (!$recompile)
 		{
@@ -249,14 +249,14 @@ class template
 		{
 			include($phpbb_root_path . 'includes/functions_template.' . $phpEx);
 		}
-		
+
 		// Inheritance - we point to another template file for this one. Equality is also used for store_db
 		if (isset($user->theme['template_inherits_id']) && $user->theme['template_inherits_id'] && !file_exists($this->files[$handle]))
 		{
 			$this->files[$handle] = $this->files_inherit[$handle];
 			$this->files_template[$handle] = $user->theme['template_inherits_id'];
 		}
-		
+
 		$compile = new template_compile($this);
 
 		// If we don't have a file assigned to this handle, die.
@@ -282,7 +282,7 @@ class template
 				$ids[] = $user->theme['template_inherits_id'];
 			}
 			$ids[] = $user->theme['template_id'];
-			
+
 			foreach ($ids as $id)
 			{
 				$sql = 'SELECT *
@@ -290,7 +290,7 @@ class template
 				WHERE template_id = ' . $id . "
 					AND (template_filename = '" . $db->sql_escape($this->filename[$handle]) . "'
 						OR template_included " . $db->sql_like_expression($db->any_char . $this->filename[$handle] . ':' . $db->any_char) . ')';
-			
+
 				$result = $db->sql_query($sql);
 				while ($row = $db->sql_fetchrow($result))
 				{
@@ -298,7 +298,7 @@ class template
 				}
 				$db->sql_freeresult($result);
 			}
-					
+
 			if (sizeof($rows))
 			{
 				foreach ($rows as $row)
@@ -326,7 +326,7 @@ class template
 					{
 						$this->files_template[$row['template_filename']] = $user->theme['template_id'];
 					}
-					
+
 					if ($force_reload || $row['template_mtime'] < filemtime($file))
 					{
 						if ($row['template_filename'] == $this->filename[$handle])
@@ -468,7 +468,7 @@ class template
 			{
 				unset($this->_tpldata[$blockname][($s_row_count - 1)]['S_LAST_ROW']);
 			}
-			
+
 			// Add a new iteration to this block with the variable assignments we were given.
 			$this->_tpldata[$blockname][] = $vararray;
 		}
@@ -511,7 +511,7 @@ class template
 			// Nested blocks are not supported
 			return false;
 		}
-		
+
 		// Change key to zero (change first position) if false and to last position if true
 		if ($key === false || $key === true)
 		{
@@ -613,6 +613,25 @@ class template
 			}
 			eval(' ?>' . $this->compiled_code[$handle] . '<?php ');
 		}
+	}
+
+	/**
+	* Include a php-file
+	* @access private
+	*/
+	function _php_include($filename)
+	{
+		global $phpbb_root_path;
+
+		$file = $phpbb_root_path . $filename;
+
+		if (!file_exists($file))
+		{
+			// trigger_error cannot be used here, as the output already started
+			echo 'template->_php_include(): File ' . htmlspecialchars($file) . ' does not exist or is empty';
+			return;
+		}
+		include($file);
 	}
 }
 

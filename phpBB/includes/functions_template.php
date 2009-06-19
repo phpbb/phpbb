@@ -640,7 +640,7 @@ class template_compile
 	*/
 	function compile_tag_include_php($tag_args)
 	{
-		return "include('" . $tag_args . "');";
+		return "\$this->_php_include('$tag_args');";
 	}
 
 	/**
