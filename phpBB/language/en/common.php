@@ -602,6 +602,7 @@ $lang = array_merge($lang, array(
 
 	'TOPIC'				=> 'Topic',
 	'TOPICS'			=> 'Topics',
+	'TOPICS_UNAPPROVED'	=> 'At least one topic in this forum has not been approved.',
 	'TOPIC_ICON'		=> 'Topic icon',
 	'TOPIC_LOCKED'		=> 'This topic is locked, you cannot edit posts or make further replies.',
 	'TOPIC_LOCKED_SHORT'=> 'Topic locked',
