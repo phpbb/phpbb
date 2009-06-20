@@ -1254,7 +1254,7 @@ $lang = array_merge($lang, array(
 		$keys = func_get_args();
 
 		$non_static		= array_shift($keys);
-		$value			= array_shift($keys);
+		$value			= utf8_normalize_nfc(array_shift($keys));
 
 		if (!$non_static)
 		{
