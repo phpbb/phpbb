@@ -3439,16 +3439,17 @@ function msg_handler($errno, $msg_text, $errfile, $errline)
 
 /**
 * Queries the session table to get information about online guests
-* @param int $forum_id Limits the search to the forum with this id
+* @param int $item_id Limits the search to the item with this id
+* @param string $item The name of the item which is stored in the session table as session_{$item}_id
 * @return int The number of active distinct guest sessions
 */
-function obtain_guest_count($forum_id = 0)
+function obtain_guest_count($item_id = 0, $item = 'forum')
 {
 	global $db, $config;
 
-	if ($forum_id)
+	if ($item_id)
 	{
-		$reading_sql = ' AND s.session_forum_id = ' . (int) $forum_id;
+		$reading_sql = ' AND s.session_' . $item . '_id = ' . (int) $item_id;
 	}
 	else
 	{
@@ -3486,17 +3487,18 @@ function obtain_guest_count($forum_id = 0)
 
 /**
 * Queries the session table to get information about online users
-* @param int $forum_id Limits the search to the forum with this id
+* @param int $item_id Limits the search to the item with this id
+* @param string $item The name of the item which is stored in the session table as session_{$item}_id
 * @return array An array containing the ids of online, hidden and visible users, as well as statistical info
 */
-function obtain_users_online($forum_id = 0)
+function obtain_users_online($item_id = 0, $item = 'forum')
 {
 	global $db, $config, $user;
 
 	$reading_sql = '';
-	if ($forum_id !== 0)
+	if ($item !== 0)
 	{
-		$reading_sql = ' AND s.session_forum_id = ' . (int) $forum_id;
+		$reading_sql = ' AND s.session_' . $item . '_id = ' . (int) $item_id;
 	}
 
 	$online_users = array(
@@ -3510,7 +3512,7 @@ function obtain_users_online($forum_id = 0)
 
 	if ($config['load_online_guests'])
 	{
-		$online_users['guests_online'] = obtain_guest_count($forum_id);
+		$online_users['guests_online'] = obtain_guest_count($item_id, $item);
 	}
 
 	// a little discrete magic to cache this for 30 seconds
@@ -3549,14 +3551,17 @@ function obtain_users_online($forum_id = 0)
 /**
 * Uses the result of obtain_users_online to generate a localized, readable representation.
 * @param mixed $online_users result of obtain_users_online - array with user_id lists for total, hidden and visible users, and statistics
-* @param int $forum_id Indicate that the data is limited to one forum and not global.
+* @param int $item_id Indicate that the data is limited to one item and not global
+* @param string $item The name of the item which is stored in the session table as session_{$item}_id
 * @return array An array containing the string for output to the template
 */
-function obtain_users_online_string($online_users, $forum_id = 0)
+function obtain_users_online_string($online_users, $item_id = 0, $item = 'forum')
 {
 	global $config, $db, $user, $auth;
 
 	$user_online_link = $online_userlist = '';
+	// Need caps version of $item for language-strings
+	$item_caps = strtoupper($item);
 
 	if (sizeof($online_users['online_users']))
 	{
@@ -3591,18 +3596,18 @@ function obtain_users_online_string($online_users, $forum_id = 0)
 		$online_userlist = $user->lang['NO_ONLINE_USERS'];
 	}
 
-	if ($forum_id === 0)
+	if ($item_id === 0)
 	{
 		$online_userlist = $user->lang['REGISTERED_USERS'] . ' ' . $online_userlist;
 	}
 	else if ($config['load_online_guests'])
 	{
-		$l_online = ($online_users['guests_online'] === 1) ? $user->lang['BROWSING_FORUM_GUEST'] : $user->lang['BROWSING_FORUM_GUESTS'];
+		$l_online = ($online_users['guests_online'] === 1) ? $user->lang['BROWSING_' . $item_caps . '_GUEST'] : $user->lang['BROWSING_' . $item_caps . '_GUESTS'];
 		$online_userlist = sprintf($l_online, $online_userlist, $online_users['guests_online']);
 	}
 	else
 	{
-		$online_userlist = sprintf($user->lang['BROWSING_FORUM'], $online_userlist);
+		$online_userlist = sprintf($user->lang['BROWSING_' . $item_caps], $online_userlist);
 	}
 	// Build online listing
 	$vars_online = array(
@@ -3700,10 +3705,28 @@ function page_header($page_title = '', $display_online_list = true)
 
 	if ($config['load_online'] && $config['load_online_time'] && $display_online_list)
 	{
-		$f = request_var('f', 0);
-		$f = max($f, 0);
-		$online_users = obtain_users_online($f);
-		$user_online_strings = obtain_users_online_string($online_users, $f);
+		/**
+		* Load online data:
+		* For obtaining another session column use the following code, whereby the column is session_{$item}_id.
+		* Put the code directly after $item = 'forum';
+		*
+		* <code>
+		* $my_item_id = request_var('my_item_id', 0);
+		*
+		* if ($my_item_id > 0)
+		* {
+		*   // would revolve to the column session_myitem_id in the SESSIONS_TABLE
+		*   $item = 'myitem';
+		*   $item_id = $my_item_id;
+		* }
+		* </code>
+		*/
+
+		$item_id = max(request_var('f', 0), 0);
+		$item = 'forum';
+
+		$online_users = obtain_users_online($item_id, $item);
+		$user_online_strings = obtain_users_online_string($online_users, $item_id, $item);
 
 		$l_online_users = $user_online_strings['l_online_users'];
 		$online_userlist = $user_online_strings['online_userlist'];
