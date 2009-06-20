@@ -250,6 +250,7 @@ $lang = array_merge($lang, array(
 	'G_REGISTERED'				=> 'Registered users',
 	'G_REGISTERED_COPPA'		=> 'Registered COPPA users',
 	'G_GLOBAL_MODERATORS'		=> 'Global moderators',
+	'G_NEWLY_REGISTERED'		=> 'Newly registered users',
 
 	'HIDDEN_USERS_ONLINE'			=> '%d hidden users online',
 	'HIDDEN_USERS_TOTAL'			=> '%d hidden',
@@ -648,6 +649,8 @@ $lang = array_merge($lang, array(
 	'USER_POSTS'			=> '%d Posts',
 	'USERS'					=> 'Users',
 	'USE_PERMISSIONS'		=> 'Test out user’s permissions',
+
+	'USER_NEW_PERMISSION_DISALLOWED'	=> 'We are sorry, but you are not authorised to use this feature. You may have just registered here and may need to participate more to be able to use this feature.',
 
 	'VARIANT_DATE_SEPARATOR'	=> ' / ',	// Used in date format dropdown, eg: "Today, 13:37 / 01 Jan 2007, 13:37" ... to join a relative date with calendar date
 	'VIEWED'					=> 'Viewed',

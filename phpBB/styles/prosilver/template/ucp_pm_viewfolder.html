@@ -82,6 +82,8 @@
 		<!-- END messagerow -->
 
 		</ul>
+	<!-- ELSEIF S_NO_AUTH_SEND_MESSAGE -->
+		<p><strong><!-- IF S_USER_NEW -->{L_USER_NEW_PERMISSION_DISALLOWED}<!-- ELSE -->{L_NO_AUTH_SEND_MESSAGE}<!-- ENDIF --></p></strong>
 	<!-- ELSE -->
 		<p><strong>{L_NO_MESSAGES}</strong></p>
 	<!-- ENDIF -->

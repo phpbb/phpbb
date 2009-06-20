@@ -687,15 +687,16 @@ function database_update_info()
 				CONFIRM_TABLE			=> array(
 					'attempts'		=> array('UINT', 0),
 				),
+				USERS_TABLE			=> array(
+					'user_new'		=> array('BOOL', 1),
+				),
+				GROUPS_TABLE			=> array(
+					'group_skip_auth'		=> array('BOOL', 0, 'after' => 'group_founder_manage'),
+				),
 			),
 			'add_index'		=> array(
 				LOG_TABLE			=> array(
 					'log_time'		=> array('log_time'),
-				),
-			),
-			'add_columns'		=> array(
-				GROUPS_TABLE			=> array(
-					'group_skip_auth'		=> array('BOOL', 0, 'after' => 'group_founder_manage'),
 				),
 			),
 		),
@@ -1114,6 +1115,136 @@ function change_database_data(&$no_updates, $version)
 			}
 
 			$_module->remove_cache_file();
+
+			// Add newly_registered group... but check if it already exists (we always supported running the updater on any schema)
+			$sql = 'SELECT group_id
+				FROM ' . GROUPS_TABLE . "
+				WHERE group_name = 'NEWLY_REGISTERED'";
+			$result = $db->sql_query($sql);
+			$group_id = (int) $db->sql_fetchfield('group_id');
+			$db->sql_freeresult($result);
+
+			if (!$group_id)
+			{
+				$sql = 'INSERT INTO ' .  GROUPS_TABLE . " (group_name, group_type, group_founder_manage, group_colour, group_legend, group_avatar, group_desc, group_desc_uid, group_max_recipients) VALUES ('NEWLY_REGISTERED', 3, 0, '', 0, '', '', '', 5)";
+				_sql($sql, $errored, $error_ary);
+
+				$group_id = $db->sql_nextid();
+			}
+
+			// Insert new user role... at the end of the chain
+			$sql = 'SELECT role_id
+				FROM ' . ACL_ROLES_TABLE . "
+				WHERE role_name = 'ROLE_USER_NEW_MEMBER'
+					AND role_type = 'u_'";
+			$result = $db->sql_query($sql);
+			$u_role = (int) $db->sql_fetchfield('role_id');
+			$db->sql_freeresult($result);
+
+			if (!$u_role)
+			{
+				$sql = 'SELECT MAX(role_order) as max_order_id
+					FROM ' . ACL_ROLES_TABLE . "
+					WHERE role_type = 'u_'";
+				$result = $db->sql_query($sql);
+				$next_order_id = (int) $db->sql_fetchfield('max_order_id');
+				$db->sql_freeresult($result);
+
+				$next_order_id++;
+
+				$sql = 'INSERT INTO ' . ACL_ROLES_TABLE . " (role_name, role_description, role_type, role_order) VALUES ('ROLE_USER_NEW_MEMBER', 'ROLE_DESCRIPTION_USER_NEW_MEMBER', 'u_', $next_order_id)";
+				_sql($sql, $errored, $error_ary);
+				$u_role = $db->sql_nextid();
+
+				if (!$errored)
+				{
+					// Now add the correct data to the roles...
+					// The standard role says that new users are not able to send a PM, Mass PM, are not able to PM groups
+					$sql = 'INSERT INTO ' . ACL_ROLES_DATA_TABLE . " (role_id, auth_option_id, auth_setting) SELECT $u_role, auth_option_id, 0 FROM " . ACL_OPTIONS_TABLE . " WHERE auth_option LIKE 'u_%' AND auth_option IN ('u_sendpm', 'u_masspm', 'u_masspm_group')";
+					_sql($sql, $errored, $error_ary);
+
+					// Add user role to group
+					$sql = 'INSERT INTO ' . ACL_GROUPS_TABLE . " (group_id, forum_id, auth_option_id, auth_role_id, auth_setting) VALUES ($group_id, 0, 0, $u_role, 0)";
+					_sql($sql, $errored, $error_ary);
+				}
+			}
+
+			// Insert new forum role
+			$sql = 'SELECT role_id
+				FROM ' . ACL_ROLES_TABLE . "
+				WHERE role_name = 'ROLE_FORUM_NEW_MEMBER'
+					AND role_type = 'f_'";
+			$result = $db->sql_query($sql);
+			$f_role = (int) $db->sql_fetchfield('role_id');
+			$db->sql_freeresult($result);
+
+			if (!$f_role)
+			{
+				$sql = 'SELECT MAX(role_order) as max_order_id
+					FROM ' . ACL_ROLES_TABLE . "
+					WHERE role_type = 'f_'";
+				$result = $db->sql_query($sql);
+				$next_order_id = (int) $db->sql_fetchfield('max_order_id');
+				$db->sql_freeresult($result);
+
+				$next_order_id++;
+
+				$sql = 'INSERT INTO ' . ACL_ROLES_TABLE . " (role_name, role_description, role_type, role_order) VALUES  ('ROLE_FORUM_NEW_MEMBER', 'ROLE_DESCRIPTION_FORUM_NEW_MEMBER', 'f_', $next_order_id)";
+				_sql($sql, $errored, $error_ary);
+				$f_role = $db->sql_nextid();
+
+				if (!$errored)
+				{
+					$sql = 'INSERT INTO ' . ACL_ROLES_DATA_TABLE . " (role_id, auth_option_id, auth_setting) SELECT $f_role, auth_option_id, 0 FROM " . ACL_OPTIONS_TABLE . " WHERE auth_option LIKE 'f_%' AND auth_option IN ('f_noapprove')";
+					_sql($sql, $errored, $error_ary);
+				}
+			}
+
+			// Set every members user_new column to 0 (old users)
+			$sql = 'UPDATE ' . USERS_TABLE . ' SET user_new = 0';
+			_sql($sql, $errored, $error_ary);
+
+			// Newly registered users limit
+			if (!isset($config['new_member_post_limit']))
+			{
+				set_config('new_member_post_limit', (!empty($config['enable_queue_trigger'])) ? $config['queue_trigger_posts'] : 0);
+			}
+
+			if (!isset($config['new_member_group_default']))
+			{
+				set_config('new_member_group_default', 0);
+			}
+
+			// To mimick the old "feature" we will assign the forum role to every forum, regardless of the setting (this makes sure there are no "this does not work!!!! YUO!!!" posts...
+			// Check if the role is already assigned...
+			$sql = 'SELECT forum_id
+				FROM ' . ACL_GROUPS_TABLE . '
+				WHERE group_id = ' . $group_id . '
+					AND auth_role_id = ' . $f_role;
+			$result = $db->sql_query($sql);
+			$is_options = (int) $db->sql_fetchfield('forum_id');
+			$db->sql_freeresult($result);
+
+			// Not assigned at all... :/
+			if (!$is_options)
+			{
+				// Get postable forums
+				$sql = 'SELECT forum_id
+					FROM ' . FORUMS_TABLE . '
+					WHERE forum_type != ' . FORUM_LINK;
+				$result = $db->sql_query($sql);
+
+				while ($row = $db->sql_fetchrow($result))
+				{
+					_sql('INSERT INTO ' . ACL_GROUPS_TABLE . ' (group_id, forum_id, auth_option_id, auth_role_id, auth_setting) VALUES (' . $group_id . ', ' . (int) $row['forum_id'] . ', 0, ' . $f_role . ', 0)', $errored, $error_ary);
+				}
+				$db->sql_freeresult($result);
+			}
+
+			// Clear permissions...
+			include_once($phpbb_root_path . 'includes/acp/auth.' . $phpEx);
+			$auth_admin = new auth_admin();
+			$auth_admin->acl_clear_prefetch();
 
 			if ($config['allow_avatar_upload'] || $config['allow_avatar_local'] || $config['allow_avatar_remote'])
 			{

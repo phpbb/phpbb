@@ -37,7 +37,7 @@
 
 </form>
 <!-- ELSE -->
-	
+
 	<table class="tablebg" width="100%" cellspacing="1" cellpadding="0" border="0">
 	<!-- IF NUM_NOT_MOVED or NUM_REMOVED -->
 		<tr>
@@ -74,7 +74,7 @@
 			<!-- ENDIF -->
 
 			<span class="topictitle">
-				{messagerow.ATTACH_ICON_IMG} 
+				{messagerow.ATTACH_ICON_IMG}
 				<!-- IF messagerow.S_PM_DELETED -->
 					{L_MESSAGE_REMOVED_FROM_OUTBOX}<br />
 					<a href="{messagerow.U_REMOVE_PM}" style="float: {S_CONTENT_FLOW_END};">{L_DELETE_MESSAGE}</a>
@@ -92,7 +92,7 @@
 		</tr>
 	<!-- BEGINELSE -->
 		<tr>
-			<td class="row1" colspan="{$COLSPAN}" height="30" align="center" valign="middle"><span class="gen">{L_NO_MESSAGES}</span></td>
+			<td class="row1" colspan="{$COLSPAN}" height="30" align="center" valign="middle"><span class="gen"><!-- IF S_USER_NEW -->{L_USER_NEW_PERMISSION_DISALLOWED}<!-- ELSE -->{L_NO_MESSAGES}<!-- ENDIF --></span></td>
 		</tr>
 	<!-- END messagerow -->
 </table>

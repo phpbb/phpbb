@@ -188,6 +188,8 @@ function user_add($user_row, $cp_data = false)
 		'user_regdate'		=> time(),
 		'user_passchg'		=> time(),
 		'user_options'		=> 895,
+		// We do not set the new flag here - registration scripts need to specify it
+		'user_new'			=> 0,
 
 		'user_inactive_reason'	=> 0,
 		'user_inactive_time'	=> 0,
@@ -274,6 +276,31 @@ function user_add($user_row, $cp_data = false)
 
 	// Now make it the users default group...
 	group_set_user_default($user_row['group_id'], array($user_id), false);
+
+	// Add to newly registered users group if user_new is 1
+	if ($config['new_member_post_limit'] && $sql_ary['user_new'])
+	{
+		$sql = 'SELECT group_id
+			FROM ' . GROUPS_TABLE . "
+			WHERE group_name = 'NEWLY_REGISTERED'
+				AND group_type = " . GROUP_SPECIAL;
+		$result = $db->sql_query($sql);
+		$add_group_id = (int) $db->sql_fetchfield('group_id');
+		$db->sql_freeresult($result);
+
+		if ($add_group_id)
+		{
+			// Add user to "newly registered users" group and set to default group if admin specified so.
+			if ($config['new_member_group_default'])
+			{
+				group_user_add($add_group_id, $user_id, false, false, true);
+			}
+			else
+			{
+				group_user_add($add_group_id, $user_id);
+			}
+		}
+	}
 
 	// set the newest user and adjust the user count if the user is a normal user and no activation mail is sent
 	if ($user_row['user_type'] == USER_NORMAL)
@@ -2867,7 +2894,7 @@ function group_user_del($group_id, $user_id_ary = false, $username_ary = false, 
 	{
 		if (isset($sql_where_ary[$gid]) && sizeof($sql_where_ary[$gid]))
 		{
-			remove_default_rank($gid, $sql_where_ary[$gid]);
+			remove_default_rank($group_id, $sql_where_ary[$gid]);
 			remove_default_avatar($group_id, $sql_where_ary[$gid]);
 			group_set_user_default($gid, $sql_where_ary[$gid], $default_data_ary);
 		}
@@ -2889,7 +2916,10 @@ function group_user_del($group_id, $user_id_ary = false, $username_ary = false, 
 
 	$log = 'LOG_GROUP_REMOVE';
 
-	add_log('admin', $log, $group_name, implode(', ', $username_ary));
+	if ($group_name)
+	{
+		add_log('admin', $log, $group_name, implode(', ', $username_ary));
+	}
 
 	group_update_listings($group_id);
 
@@ -3283,7 +3313,7 @@ function get_group_name($group_id)
 	$row = $db->sql_fetchrow($result);
 	$db->sql_freeresult($result);
 
-	if (!$row)
+	if (!$row || ($row['group_type'] == GROUP_SPECIAL && empty($user->lang)))
 	{
 		return '';
 	}

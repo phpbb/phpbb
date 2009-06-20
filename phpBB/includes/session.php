@@ -396,6 +396,11 @@ class session
 									WHERE session_id = '" . $db->sql_escape($this->session_id) . "'";
 								$db->sql_query($sql);
 							}
+
+							if ($this->data['user_id'] != ANONYMOUS && !empty($config['new_member_post_limit']) && $this->data['user_new'] && $config['new_member_post_limit'] <= $this->data['user_posts'])
+							{
+								$this->leave_newly_registered();
+							}
 						}
 
 						$this->data['is_registered'] = ($this->data['user_id'] != ANONYMOUS && ($this->data['user_type'] == USER_NORMAL || $this->data['user_type'] == USER_FOUNDER)) ? true : false;
@@ -2233,6 +2238,62 @@ class user extends session
 		{
 			return $var;
 		}
+	}
+
+	/**
+	* Funtion to make the user leave the NEWLY_REGISTERED system group.
+	* @access public
+	*/
+	function leave_newly_registered()
+	{
+		global $db;
+
+		if (!function_exists('group_user_del'))
+		{
+			global $phpbb_root_path, $phpEx;
+
+			include($phpbb_root_path . 'includes/functions_user.' . $phpEx);
+		}
+
+		$sql = 'SELECT group_id
+			FROM ' . GROUPS_TABLE . "
+			WHERE group_name = 'NEWLY_REGISTERED'
+				AND group_type = " . GROUP_SPECIAL;
+		$result = $db->sql_query($sql);
+		$group_id = (int) $db->sql_fetchfield('group_id');
+		$db->sql_freeresult($result);
+
+		if (!$group_id)
+		{
+			return false;
+		}
+
+		// We need to call group_user_del here, because this function makes sure everything is correctly changed.
+		// A downside for a call within the session handler is that the language is not set up yet - so no log entry
+		group_user_del($group_id, $this->data['user_id']);
+
+		// Set user_new to 0 to let this not be triggered again
+		$sql = 'UPDATE ' . USERS_TABLE . '
+			SET user_new = 0
+			WHERE user_id = ' . $this->data['user_id'];
+		$db->sql_query($sql);
+
+		$this->data['user_permissions'] = '';
+		$this->data['user_new'] = 0;
+
+		// The new users group was the users default group?
+		if ($this->data['group_id'] == $group_id)
+		{
+			// Which group is now the users default one?
+			$sql = 'SELECT group_id
+				FROM ' . USERS_TABLE . '
+				WHERE user_id = ' . $this->data['user_id'];
+			$result = $db->sql_query($sql);
+			$this->data['group_id'] = $db->sql_fetchfield('group_id');
+			$db->sql_freeresult($result);
+		}
+
+		return true;
 	}
 }
 

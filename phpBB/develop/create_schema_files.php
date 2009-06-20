@@ -1853,7 +1853,7 @@ function get_schema_struct()
 			'user_actkey'				=> array('VCHAR:32', ''),
 			'user_newpasswd'			=> array('VCHAR_UNI:40', ''),
 			'user_form_salt'			=> array('VCHAR_UNI:32', ''),
-
+			'user_new'					=> array('BOOL', 1),
 		),
 		'PRIMARY_KEY'	=> 'user_id',
 		'KEYS'			=> array(

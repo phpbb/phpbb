@@ -1698,7 +1698,8 @@ function add_default_groups()
 		'REGISTERED_COPPA'	=> array('', 0, 0),
 		'GLOBAL_MODERATORS'	=> array('00AA00', 1, 0),
 		'ADMINISTRATORS'	=> array('AA0000', 1, 1),
-		'BOTS'				=> array('9E8DA7', 0, 0)
+		'BOTS'				=> array('9E8DA7', 0, 0),
+		'NEWLY_REGISTERED'		=> array('', 0, 0),
 	);
 
 	$sql = 'SELECT *

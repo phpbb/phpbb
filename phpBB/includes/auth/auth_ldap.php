@@ -227,6 +227,7 @@ function login_ldap(&$username, &$password)
 					'group_id'		=> (int) $row['group_id'],
 					'user_type'		=> USER_NORMAL,
 					'user_ip'		=> $user->ip,
+					'user_new'		=> ($config['new_member_post_limit']) ? 1 : 0,
 				);
 
 				unset($ldap_result);

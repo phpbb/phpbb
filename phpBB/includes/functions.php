@@ -3795,6 +3795,7 @@ function page_header($page_title = '', $display_online_list = true)
 
 		'S_USER_NEW_PRIVMSG'			=> $user->data['user_new_privmsg'],
 		'S_USER_UNREAD_PRIVMSG'			=> $user->data['user_unread_privmsg'],
+		'S_USER_NEW'					=> $user->data['user_new'],
 
 		'SID'				=> $SID,
 		'_SID'				=> $_SID,

@@ -310,6 +310,11 @@ class ucp_register
 					'user_inactive_time'	=> $user_inactive_time,
 				);
 
+				if ($config['new_member_post_limit'])
+				{
+					$user_row['user_new'] = 1;
+				}
+
 				// Register user...
 				$user_id = user_add($user_row, $cp_data);
 
