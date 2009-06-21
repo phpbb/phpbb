@@ -550,7 +550,10 @@ generate_forum_rules($topic_data);
 
 // Moderators
 $forum_moderators = array();
-get_moderators($forum_moderators, $forum_id);
+if ($config['load_moderators'])
+{
+	get_moderators($forum_moderators, $forum_id);
+}
 
 // This is only used for print view so ...
 $server_path = (!$view) ? $phpbb_root_path : generate_board_url() . '/';

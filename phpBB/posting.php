@@ -1183,7 +1183,10 @@ if (sizeof($post_data['poll_options']) && $post_data['poll_title'])
 
 // Forum moderators?
 $moderators = array();
-get_moderators($moderators, $forum_id);
+if ($config['load_moderators'])
+{
+	get_moderators($moderators, $forum_id);
+}
 
 // Generate smiley listing
 generate_smilies('inline', $forum_id);

@@ -135,7 +135,10 @@ if ($forum_data['left_id'] != $forum_data['right_id'] - 1)
 else
 {
 	$template->assign_var('S_HAS_SUBFORUM', false);
-	get_moderators($moderators, $forum_id);
+	if ($config['load_moderators'])
+	{
+		get_moderators($moderators, $forum_id);
+	}
 }
 
 // Dump out the page header and load viewforum template

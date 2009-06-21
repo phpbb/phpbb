@@ -663,14 +663,7 @@ function get_moderators(&$forum_moderators, $forum_id = false)
 {
 	global $config, $template, $db, $phpbb_root_path, $phpEx, $user, $auth;
 
-	// Have we disabled the display of moderators? If so, then return
-	// from whence we came ...
-	if (!$config['load_moderators'])
-	{
-		return;
-	}
-
-	$forum_sql = '';
+	$forum_id_ary = array();
 
 	if ($forum_id !== false)
 	{
@@ -679,13 +672,8 @@ function get_moderators(&$forum_moderators, $forum_id = false)
 			$forum_id = array($forum_id);
 		}
 
-		// If we don't have a forum then we can't have a moderator
-		if (!sizeof($forum_id))
-		{
-			return;
-		}
-
-		$forum_sql = 'AND m.' . $db->sql_in_set('forum_id', $forum_id);
+		// Exchange key/value pair to be able to faster check for the forum id existence
+		$forum_id_ary = array_flip($forum_id);
 	}
 
 	$sql_array = array(
@@ -706,17 +694,25 @@ function get_moderators(&$forum_moderators, $forum_id = false)
 			),
 		),
 
-		'WHERE'		=> "m.display_on_index = 1 $forum_sql",
+		'WHERE'		=> 'm.display_on_index = 1',
 	);
 
+	// We query every forum here because for caching we should not have any parameter.
 	$sql = $db->sql_build_query('SELECT', $sql_array);
 	$result = $db->sql_query($sql, 3600);
 
 	while ($row = $db->sql_fetchrow($result))
 	{
+		$f_id = (int) $row['forum_id'];
+
+		if (!isset($forum_id_ary[$f_id]))
+		{
+			continue;
+		}
+
 		if (!empty($row['user_id']))
 		{
-			$forum_moderators[$row['forum_id']][] = get_username_string('full', $row['user_id'], $row['username'], $row['user_colour']);
+			$forum_moderators[$f_id][] = get_username_string('full', $row['user_id'], $row['username'], $row['user_colour']);
 		}
 		else
 		{
@@ -724,11 +720,11 @@ function get_moderators(&$forum_moderators, $forum_id = false)
 
 			if ($user->data['user_id'] != ANONYMOUS && !$auth->acl_get('u_viewprofile'))
 			{
-				$forum_moderators[$row['forum_id']][] = '<span' . (($row['group_colour']) ? ' style="color:#' . $row['group_colour'] . ';"' : '') . '>' . $group_name . '</span>';
+				$forum_moderators[$f_id][] = '<span' . (($row['group_colour']) ? ' style="color:#' . $row['group_colour'] . ';"' : '') . '>' . $group_name . '</span>';
 			}
 			else
 			{
-				$forum_moderators[$row['forum_id']][] = '<a' . (($row['group_colour']) ? ' style="color:#' . $row['group_colour'] . ';"' : '') . ' href="' . append_sid("{$phpbb_root_path}memberlist.$phpEx", 'mode=group&amp;g=' . $row['group_id']) . '">' . $group_name . '</a>';
+				$forum_moderators[$f_id][] = '<a' . (($row['group_colour']) ? ' style="color:#' . $row['group_colour'] . ';"' : '') . ' href="' . append_sid("{$phpbb_root_path}memberlist.$phpEx", 'mode=group&amp;g=' . $row['group_id']) . '">' . $group_name . '</a>';
 			}
 		}
 	}
