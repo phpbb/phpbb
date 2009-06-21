@@ -2496,7 +2496,7 @@ function confirm_box($check, $title = '', $hidden = '', $html_body = 'confirm_bo
 
 	if ($check && $confirm)
 	{
-		$user_id = request_var('user_id', 0);
+		$user_id = request_var('confirm_uid', 0);
 		$session_id = request_var('sess', '');
 		$confirm_key = request_var('confirm_key', '');
 
@@ -2518,10 +2518,10 @@ function confirm_box($check, $title = '', $hidden = '', $html_body = 'confirm_bo
 	}
 
 	$s_hidden_fields = build_hidden_fields(array(
-		'user_id'	=> $user->data['user_id'],
-		'sess'		=> $user->session_id,
-		'sid'		=> $user->session_id)
-	);
+		'confirm_uid'	=> $user->data['user_id'],
+		'sess'			=> $user->session_id,
+		'sid'			=> $user->session_id,
+	));
 
 	// generate activation key
 	$confirm_key = gen_rand_string(10);
