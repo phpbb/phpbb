@@ -2248,6 +2248,11 @@ class user extends session
 	{
 		global $db;
 
+		if (empty($this->data['user_new']))
+		{
+			return false;
+		}
+
 		if (!function_exists('group_user_del'))
 		{
 			global $phpbb_root_path, $phpEx;
