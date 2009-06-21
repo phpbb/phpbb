@@ -246,7 +246,7 @@ $lang = array_merge($lang, array(
 	'TRACE_USER_GLOBAL_YES_TOTAL_NEVER'		=> 'The forum independent user permission evaluates to <samp>YES</samp> which overwrites the current local result <samp>NEVER</samp>. %sTrace global permission%s',
 	'TRACE_USER_GLOBAL_NEVER_TOTAL_KEPT'	=> 'The forum independent user permission evaluates to <samp>NEVER</samp> which doesn’t influence the local permission. %sTrace global permission%s',
 
-	'TRACE_USER_FOUNDER'					=> 'The user has the founder type set, therefore admin permissions are set to <samp>YES</samp> by default.',
+	'TRACE_USER_FOUNDER'					=> 'The user is a founder, therefore admin permissions are always set to <samp>YES</samp>.',
 	'TRACE_USER_KEPT'						=> 'The user’s permission is <samp>NO</samp> so the old total value is kept.',
 	'TRACE_USER_KEPT_LOCAL'					=> 'The user’s permission for this forum is <samp>NO</samp> so the old total value is kept.',
 	'TRACE_USER_NEVER_TOTAL_NEVER'			=> 'The user’s permission is set to <samp>NEVER</samp> and the total value is set to <samp>NEVER</samp>, so nothing is changed.',
