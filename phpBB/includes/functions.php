@@ -2261,17 +2261,12 @@ function reapply_sid($url)
 	}
 
 	// Remove previously added sid
-	if (strpos($url, '?sid=') !== false)
+	if (strpos($url, 'sid=') !== false)
 	{
-		$url = preg_replace('/(\?)sid=[a-z0-9]+(&amp;|&)?/', '\1', $url);
-	}
-	else if (strpos($url, '&sid=') !== false)
-	{
-		$url = preg_replace('/&sid=[a-z0-9]+(&)?/', '\1', $url);
-	}
-	else if (strpos($url, '&amp;sid=') !== false)
-	{
-		$url = preg_replace('/&amp;sid=[a-z0-9]+(&amp;)?/', '\1', $url);
+		// All kind of links
+		$url = preg_replace('/(\?)?(&amp;|&)?sid=[a-z0-9]+/', '', $url);
+		// if the sid was the first param, make the old second as first ones 
+		$url = preg_replace("/$phpEx(&amp;|&)+?/", "$phpEx?", $url);
 	}
 
 	return append_sid($url);
