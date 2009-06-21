@@ -3456,4 +3456,77 @@ function group_update_listings($group_id)
 	}
 }
 
+
+
+/**
+* Funtion to make a user leave the NEWLY_REGISTERED system group.
+* @access public
+* @param $user_id The id of the user to remove from the group
+*/
+function remove_newly_registered($user_id, $user_data = false)
+{
+	global $db;
+
+	if ($user_data === false)
+	{
+		$sql = 'SELECT *
+			FROM ' . USERS_TABLE . '
+			WHERE user_id = ' . $user_id;
+		$result = $db->sql_query($sql);
+		$user_row = $db->sql_fetchrow($result);
+		$db->sql_freeresult($result);
+
+		if (!$user_row)
+		{
+			return false;
+		}
+		else
+		{
+			$user_data  = $user_row;
+		}
+	}
+	
+	if (empty($user_data['user_new']))
+	{
+		return false;
+	}
+ 
+	$sql = 'SELECT group_id
+		FROM ' . GROUPS_TABLE . "
+		WHERE group_name = 'NEWLY_REGISTERED'
+			AND group_type = " . GROUP_SPECIAL;
+	$result = $db->sql_query($sql);
+	$group_id = (int) $db->sql_fetchfield('group_id');
+	$db->sql_freeresult($result);
+
+	if (!$group_id)
+	{
+		return false;
+	}
+
+	// We need to call group_user_del here, because this function makes sure everything is correctly changed.
+	// A downside for a call within the session handler is that the language is not set up yet - so no log entry
+	group_user_del($group_id, $user_id);
+
+	// Set user_new to 0 to let this not be triggered again
+	$sql = 'UPDATE ' . USERS_TABLE . '
+		SET user_new = 0
+		WHERE user_id = ' . $user_id;
+	$db->sql_query($sql);
+
+	// The new users group was the users default group?
+	if ($user_data['group_id'] == $group_id)
+	{
+		// Which group is now the users default one?
+		$sql = 'SELECT group_id
+			FROM ' . USERS_TABLE . '
+			WHERE user_id = ' . $user_id;
+		$result = $db->sql_query($sql);
+		$user_data['group_id'] = $db->sql_fetchfield('group_id');
+		$db->sql_freeresult($result);
+	}
+
+	return $user_data['group_id'];
+}
+
 ?>

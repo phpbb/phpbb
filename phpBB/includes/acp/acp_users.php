@@ -650,6 +650,28 @@ class acp_users
 							trigger_error($user->lang['USER_POSTS_MOVED'] . adm_back_link($this->u_action . '&amp;u=' . $user_id));
 
 						break;
+						
+						case 'leave_nr':
+
+							if (confirm_box(true))
+							{
+								remove_newly_registered($user_id, $user_row);
+
+								add_log('admin', 'LOG_USER_REMOVED_NR', $user_row['username']);
+								trigger_error($user->lang['USER_LIFTED_NR'] . adm_back_link($this->u_action . '&amp;u=' . $user_id));
+							}
+							else
+							{
+								confirm_box(false, $user->lang['CONFIRM_OPERATION'], build_hidden_fields(array(
+									'u'				=> $user_id,
+									'i'				=> $id,
+									'mode'			=> $mode,
+									'action'		=> $action,
+									'update'		=> true))
+								);
+							}
+
+						break;
 					}
 
 					// Handle registration info updates
@@ -821,6 +843,10 @@ class acp_users
 				if ($user_id == $user->data['user_id'])
 				{
 					$quick_tool_ary = array('delsig' => 'DEL_SIG', 'delavatar' => 'DEL_AVATAR', 'moveposts' => 'MOVE_POSTS', 'delposts' => 'DEL_POSTS', 'delattach' => 'DEL_ATTACH');
+					if ($user_row['user_new'])
+					{
+						$quick_tool_ary['leave_nr'] = 'LEAVE_NR';
+					}
 				}
 				else
 				{
@@ -841,6 +867,10 @@ class acp_users
 					if ($config['email_enable'] && ($user_row['user_type'] == USER_NORMAL || $user_row['user_type'] == USER_INACTIVE))
 					{
 						$quick_tool_ary['reactivate'] = 'FORCE';
+					}
+					if ($user_row['user_new'])
+					{
+						$quick_tool_ary['leave_nr'] = 'LEAVE_NR';
 					}
 				}
 

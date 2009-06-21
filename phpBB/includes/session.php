@@ -2253,51 +2253,20 @@ class user extends session
 			return false;
 		}
 
-		if (!function_exists('group_user_del'))
+		if (!function_exists('remove_newly_registered'))
 		{
 			global $phpbb_root_path, $phpEx;
 
 			include($phpbb_root_path . 'includes/functions_user.' . $phpEx);
 		}
-
-		$sql = 'SELECT group_id
-			FROM ' . GROUPS_TABLE . "
-			WHERE group_name = 'NEWLY_REGISTERED'
-				AND group_type = " . GROUP_SPECIAL;
-		$result = $db->sql_query($sql);
-		$group_id = (int) $db->sql_fetchfield('group_id');
-		$db->sql_freeresult($result);
-
-		if (!$group_id)
+		if ($group = remove_newly_registered($this->data['user_id'], $this->data))
 		{
-			return false;
+			$this->data['group_id'] = $group;
+			
 		}
-
-		// We need to call group_user_del here, because this function makes sure everything is correctly changed.
-		// A downside for a call within the session handler is that the language is not set up yet - so no log entry
-		group_user_del($group_id, $this->data['user_id']);
-
-		// Set user_new to 0 to let this not be triggered again
-		$sql = 'UPDATE ' . USERS_TABLE . '
-			SET user_new = 0
-			WHERE user_id = ' . $this->data['user_id'];
-		$db->sql_query($sql);
-
 		$this->data['user_permissions'] = '';
 		$this->data['user_new'] = 0;
-
-		// The new users group was the users default group?
-		if ($this->data['group_id'] == $group_id)
-		{
-			// Which group is now the users default one?
-			$sql = 'SELECT group_id
-				FROM ' . USERS_TABLE . '
-				WHERE user_id = ' . $this->data['user_id'];
-			$result = $db->sql_query($sql);
-			$this->data['group_id'] = $db->sql_fetchfield('group_id');
-			$db->sql_freeresult($result);
-		}
-
+		
 		return true;
 	}
 }
