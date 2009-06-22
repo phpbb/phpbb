@@ -2157,7 +2157,7 @@ function cache_moderators()
 				AND ((a.auth_setting = ' . ACL_NEVER . ' AND r.auth_setting IS NULL)
 					OR r.auth_setting = ' . ACL_NEVER . ')
 				AND a.group_id = ug.group_id
-				AND g.ground_id = ug.group_id
+				AND g.group_id = ug.group_id
 				AND NOT (ug.group_leader = 1 AND g.group_skip_auth = 1)
 				AND ' . $db->sql_in_set('ug.user_id', $ug_id_ary) . "
 				AND ug.user_pending = 0
