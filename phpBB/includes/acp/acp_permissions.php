@@ -217,43 +217,61 @@ class acp_permissions
 			trigger_error($user->lang['WRONG_PERMISSION_TYPE'] . adm_back_link($this->u_action), E_USER_WARNING);
 		}
 
-
 		// Handle actions
 		if (strpos($mode, 'setting_') === 0 && $action)
 		{
 			switch ($action)
 			{
 				case 'delete':
-
-					if (!check_form_key($form_name))
+					if (confirm_box(true))
 					{
-						trigger_error($user->lang['FORM_INVALID']. adm_back_link($this->u_action), E_USER_WARNING);
-					}
-					// All users/groups selected?
-					$all_users = (isset($_POST['all_users'])) ? true : false;
-					$all_groups = (isset($_POST['all_groups'])) ? true : false;
+						// All users/groups selected?
+						$all_users = (isset($_POST['all_users'])) ? true : false;
+						$all_groups = (isset($_POST['all_groups'])) ? true : false;
 
-					if ($all_users || $all_groups)
-					{
-						$items = $this->retrieve_defined_user_groups($permission_scope, $forum_id, $permission_type);
-
-						if ($all_users && sizeof($items['user_ids']))
+						if ($all_users || $all_groups)
 						{
-							$user_id = $items['user_ids'];
-						}
-						else if ($all_groups && sizeof($items['group_ids']))
-						{
-							$group_id = $items['group_ids'];
-						}
-					}
+							$items = $this->retrieve_defined_user_groups($permission_scope, $forum_id, $permission_type);
 
-					if (sizeof($user_id) || sizeof($group_id))
-					{
-						$this->remove_permissions($mode, $permission_type, $auth_admin, $user_id, $group_id, $forum_id);
+							if ($all_users && sizeof($items['user_ids']))
+							{
+								$user_id = $items['user_ids'];
+							}
+							else if ($all_groups && sizeof($items['group_ids']))
+							{
+								$group_id = $items['group_ids'];
+							}
+						}
+
+						if (sizeof($user_id) || sizeof($group_id))
+						{
+							$this->remove_permissions($mode, $permission_type, $auth_admin, $user_id, $group_id, $forum_id);
+						}
+						else
+						{
+							trigger_error($user->lang['NO_USER_GROUP_SELECTED'] . adm_back_link($this->u_action), E_USER_WARNING);
+						}
 					}
 					else
 					{
-						trigger_error($user->lang['NO_USER_GROUP_SELECTED'] . adm_back_link($this->u_action), E_USER_WARNING);
+						$s_hidden_fields = array(
+							'i'				=> $id,
+							'mode'			=> $mode,
+							'action'		=> array($action => 1),
+							'user_id'		=> $user_id,
+							'group_id'		=> $group_id,
+							'forum_id'		=> $forum_id,
+							'type'			=> $permission_type,
+						);
+						if (isset($_POST['all_users']))
+						{
+							$s_hidden_fields['all_users'] = 1;
+						}
+						if (isset($_POST['all_groups']))
+						{
+							$s_hidden_fields['all_groups'] = 1;
+						}
+						confirm_box(false, $user->lang['CONFIRM_OPERATION'], build_hidden_fields($s_hidden_fields));
 					}
 				break;
 
