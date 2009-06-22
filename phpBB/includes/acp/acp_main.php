@@ -499,7 +499,7 @@ class acp_main
 		}
 
 		// Warn if install is still present
-		if (file_exists($phpbb_root_path . 'install'))
+		if (file_exists($phpbb_root_path . 'install') && !is_file($phpbb_root_path . 'install'))
 		{
 			$template->assign_var('S_REMOVE_INSTALL', true);
 		}
