@@ -160,6 +160,7 @@ CREATE TABLE phpbb_confirm (
 	confirm_type tinyint(3) NOT NULL DEFAULT '0',
 	code varchar(8) NOT NULL DEFAULT '',
 	seed INTEGER UNSIGNED NOT NULL DEFAULT '0',
+	attempts INTEGER UNSIGNED NOT NULL DEFAULT '0',
 	PRIMARY KEY (session_id, confirm_id)
 );
 
@@ -934,7 +935,8 @@ CREATE TABLE phpbb_users (
 	user_interests text(65535) NOT NULL DEFAULT '',
 	user_actkey varchar(32) NOT NULL DEFAULT '',
 	user_newpasswd varchar(40) NOT NULL DEFAULT '',
-	user_form_salt varchar(32) NOT NULL DEFAULT ''
+	user_form_salt varchar(32) NOT NULL DEFAULT '',
+	user_new INTEGER UNSIGNED NOT NULL DEFAULT '1'
 );
 
 CREATE INDEX phpbb_users_user_birthday ON phpbb_users (user_birthday);

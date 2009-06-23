@@ -163,6 +163,7 @@ CREATE TABLE phpbb_confirm (
 	confirm_type tinyint(3) DEFAULT '0' NOT NULL,
 	code varchar(8) DEFAULT '' NOT NULL,
 	seed int(10) UNSIGNED DEFAULT '0' NOT NULL,
+	attempts mediumint(8) UNSIGNED DEFAULT '0' NOT NULL,
 	PRIMARY KEY (session_id, confirm_id),
 	KEY confirm_type (confirm_type)
 ) CHARACTER SET `utf8` COLLATE `utf8_bin`;
@@ -965,6 +966,7 @@ CREATE TABLE phpbb_users (
 	user_actkey varchar(32) DEFAULT '' NOT NULL,
 	user_newpasswd varchar(40) DEFAULT '' NOT NULL,
 	user_form_salt varchar(32) DEFAULT '' NOT NULL,
+	user_new tinyint(1) UNSIGNED DEFAULT '1' NOT NULL,
 	PRIMARY KEY (user_id),
 	KEY user_birthday (user_birthday),
 	KEY user_email_hash (user_email_hash),

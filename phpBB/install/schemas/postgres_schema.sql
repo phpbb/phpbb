@@ -276,6 +276,7 @@ CREATE TABLE phpbb_confirm (
 	confirm_type INT2 DEFAULT '0' NOT NULL,
 	code varchar(8) DEFAULT '' NOT NULL,
 	seed INT4 DEFAULT '0' NOT NULL CHECK (seed >= 0),
+	attempts INT4 DEFAULT '0' NOT NULL CHECK (attempts >= 0),
 	PRIMARY KEY (session_id, confirm_id)
 );
 
@@ -1228,6 +1229,7 @@ CREATE TABLE phpbb_users (
 	user_actkey varchar(32) DEFAULT '' NOT NULL,
 	user_newpasswd varchar(40) DEFAULT '' NOT NULL,
 	user_form_salt varchar(32) DEFAULT '' NOT NULL,
+	user_new INT2 DEFAULT '1' NOT NULL CHECK (user_new >= 0),
 	PRIMARY KEY (user_id)
 );
 

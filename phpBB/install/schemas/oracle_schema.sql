@@ -338,6 +338,7 @@ CREATE TABLE phpbb_confirm (
 	confirm_type number(3) DEFAULT '0' NOT NULL,
 	code varchar2(8) DEFAULT '' ,
 	seed number(10) DEFAULT '0' NOT NULL,
+	attempts number(8) DEFAULT '0' NOT NULL,
 	CONSTRAINT pk_phpbb_confirm PRIMARY KEY (session_id, confirm_id)
 )
 /
@@ -1783,6 +1784,7 @@ CREATE TABLE phpbb_users (
 	user_actkey varchar2(32) DEFAULT '' ,
 	user_newpasswd varchar2(120) DEFAULT '' ,
 	user_form_salt varchar2(96) DEFAULT '' ,
+	user_new number(1) DEFAULT '1' NOT NULL,
 	CONSTRAINT pk_phpbb_users PRIMARY KEY (user_id),
 	CONSTRAINT u_phpbb_username_clean UNIQUE (username_clean)
 )

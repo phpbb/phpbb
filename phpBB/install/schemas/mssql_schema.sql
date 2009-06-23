@@ -302,7 +302,8 @@ CREATE TABLE [phpbb_confirm] (
 	[session_id] [char] (32) DEFAULT ('') NOT NULL ,
 	[confirm_type] [int] DEFAULT (0) NOT NULL ,
 	[code] [varchar] (8) DEFAULT ('') NOT NULL ,
-	[seed] [int] DEFAULT (0) NOT NULL 
+	[seed] [int] DEFAULT (0) NOT NULL ,
+	[attempts] [int] DEFAULT (0) NOT NULL 
 ) ON [PRIMARY]
 GO
 
@@ -1635,7 +1636,8 @@ CREATE TABLE [phpbb_users] (
 	[user_interests] [varchar] (4000) DEFAULT ('') NOT NULL ,
 	[user_actkey] [varchar] (32) DEFAULT ('') NOT NULL ,
 	[user_newpasswd] [varchar] (40) DEFAULT ('') NOT NULL ,
-	[user_form_salt] [varchar] (32) DEFAULT ('') NOT NULL 
+	[user_form_salt] [varchar] (32) DEFAULT ('') NOT NULL ,
+	[user_new] [int] DEFAULT (1) NOT NULL 
 ) ON [PRIMARY] TEXTIMAGE_ON [PRIMARY]
 GO
 
