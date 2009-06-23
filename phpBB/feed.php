@@ -158,38 +158,40 @@ else
 	exit_handler();
 }
 
+$namespace = 'phpbb';
+
 echo '<?xml version="1.0" encoding="UTF-8"?>' . "\n";
-echo '<atom:feed xmlns:atom="http://www.w3.org/2005/Atom" xmlns:xhtml="http://www.w3.org/1999/xhtml" xml:lang="' . $global_vars['FEED_LANG'] . '">' . "\n";
-echo '<atom:link rel="self" type="application/atom+xml" href="' . $global_vars['SELF_LINK'] . '" />' . "\n\n";
+echo '<' . $namespace . ':feed xmlns:' . $namespace . '="http://www.w3.org/2005/Atom" xmlns="http://www.w3.org/1999/xhtml" xml:lang="' . $global_vars['FEED_LANG'] . '">' . "\n";
+echo '<' . $namespace . ':link rel="self" type="application/atom+xml" href="' . $global_vars['SELF_LINK'] . '" />' . "\n\n";
 
-echo (!empty($global_vars['FEED_TITLE'])) ? '<atom:title>' . $global_vars['FEED_TITLE'] . '</atom:title>' . "\n" : '';
-echo (!empty($global_vars['FEED_SUBTITLE'])) ? '<atom:subtitle>' . $global_vars['FEED_SUBTITLE'] . '</atom:subtitle>' . "\n" : '';
-echo (!empty($global_vars['FEED_LINK'])) ? '<atom:link href="' . $global_vars['FEED_LINK'] .'" />' . "\n" : '';
-echo '<atom:updated>' . $global_vars['FEED_UPDATED'] . '</atom:updated>' . "\n\n";
+echo (!empty($global_vars['FEED_TITLE'])) ? '<' . $namespace . ':title>' . $global_vars['FEED_TITLE'] . '</' . $namespace . ':title>' . "\n" : '';
+echo (!empty($global_vars['FEED_SUBTITLE'])) ? '<' . $namespace . ':subtitle>' . $global_vars['FEED_SUBTITLE'] . '</' . $namespace . ':subtitle>' . "\n" : '';
+echo (!empty($global_vars['FEED_LINK'])) ? '<' . $namespace . ':link href="' . $global_vars['FEED_LINK'] .'" />' . "\n" : '';
+echo '<' . $namespace . ':updated>' . $global_vars['FEED_UPDATED'] . '</' . $namespace . ':updated>' . "\n\n";
 
-echo '<atom:author><atom:name>' . $global_vars['FEED_AUTHOR'] . '</atom:name></atom:author>' . "\n";
-echo '<atom:id>' . $global_vars['SELF_LINK'] . '</atom:id>' . "\n";
+echo '<' . $namespace . ':author><' . $namespace . ':name>' . $global_vars['FEED_AUTHOR'] . '</' . $namespace . ':name></' . $namespace . ':author>' . "\n";
+echo '<' . $namespace . ':id>' . $global_vars['SELF_LINK'] . '</' . $namespace . ':id>' . "\n";
 
 foreach ($item_vars as $row)
 {
-	echo '<atom:entry>' . "\n";
+	echo '<' . $namespace . ':entry>' . "\n";
 
 	if (!empty($row['author']))
 	{
-		echo '<atom:author><atom:name>' . $row['author'] . '</atom:name></atom:author>' . "\n";
+		echo '<' . $namespace . ':author><' . $namespace . ':name>' . $row['author'] . '</' . $namespace . ':name></' . $namespace . ':author>' . "\n";
 	}
 
-	echo '<atom:updated>' . $row['pubdate'] . '</atom:updated>' . "\n";
-	echo '<atom:id>' . $row['link'] . '</atom:id>' . "\n";
-	echo '<atom:link href="' . $row['link'] . '"/>' . "\n";
-	echo '<atom:title>' . $row['title'] . '</atom:title>' . "\n\n";
+	echo '<' . $namespace . ':updated>' . $row['pubdate'] . '</' . $namespace . ':updated>' . "\n";
+	echo '<' . $namespace . ':id>' . $row['link'] . '</' . $namespace . ':id>' . "\n";
+	echo '<' . $namespace . ':link href="' . $row['link'] . '"/>' . "\n";
+	echo '<' . $namespace . ':title type="xhtml"><div xmlns="http://www.w3.org/1999/xhtml">' . $row['title'] . '</div></' . $namespace . ':title>' . "\n\n";
 
 	if (!empty($row['category']))
 	{
-		echo '<atom:category term="' . $row['category_name'] . '" scheme="' . $row['category'] . '" label="' . $row['category_name'] . '"/>' . "\n";
+		echo '<' . $namespace . ':category term="' . $row['category_name'] . '" scheme="' . $row['category'] . '" label="' . $row['category_name'] . '"/>' . "\n";
 	}
 
-	echo '<atom:content type="xhtml" xml:base="' . $row['link'] . '">' . "\n";
+	echo '<' . $namespace . ':content type="xhtml" xml:base="' . $row['link'] . '">' . "\n";
 	echo '<div xmlns="http://www.w3.org/1999/xhtml">' . "\n";
 	echo $row['description'];
 
@@ -198,11 +200,11 @@ foreach ($item_vars as $row)
 		echo '<p>' . $user->lang['STATISTICS'] . ': ' . $row['statistics'] . '</p>';
 	}
 
-	echo '<hr /></div>' . "\n" . '</atom:content>' . "\n";
-	echo '</atom:entry>' . "\n";
+	echo '<hr /></div>' . "\n" . '</' . $namespace . ':content>' . "\n";
+	echo '</' . $namespace . ':entry>' . "\n";
 }
 
-echo '</atom:feed>';
+echo '</' . $namespace . ':feed>';
 
 garbage_collection();
 exit_handler();
@@ -217,7 +219,15 @@ function feed_append_sid($url, $params)
 	$link = append_sid($board_url . $url, $params);
 
 	// Remove added sid - not as easy as it sounds. ;)
-	return (strpos($link, 'sid=') !== false) ? trim(preg_replace('/(&amp;|&|\?)sid=[a-z0-9]+(&amp;|&)?/', '\1', $link), '?& ') : $link;
+	$link = (strpos($link, 'sid=') !== false) ? trim(preg_replace('/(&amp;|&|\?)sid=[a-z0-9]+(&amp;|&)?/', '\1', $link), '?& ') : $link;
+
+	// Now the only thing remaining could be an empty &amp;
+	if (substr($link, -5) === '&amp;')
+	{
+	    $link = substr($link, 0, -5);
+	}
+
+	return $link;
 }
 
 /**
@@ -236,6 +246,9 @@ function feed_generate_content($content, $uid, $bitfield, $options)
 	$content	= preg_replace("#\[quote(=&quot;.*?&quot;)?:$uid\]\s*(.*?)\s*\[/quote:$uid\]#si", "[quote$1:$uid]<br />$2<br />[/quote:$uid]", $content);
 
 	$content = generate_text_for_display($content, $uid, $bitfield, $options);
+
+	// Add newlines
+	$content = str_replace('<br />', '<br />' . "\n", $content);
 
 	// Relative Path to Absolute path, Windows style
 	$content = str_replace('./', $board_url . '/', $content);
@@ -408,6 +421,11 @@ class phpbb_feed
 	* Default cache time of entries in seconds
 	*/
 	var $cache_time = 300;
+
+	/**
+	* Separator for title elements to separate items (for example forum / topic)
+	*/
+	var $separator = '&#x2022;';
 
 	/**
 	* Constructor. Set standard keys.
@@ -672,7 +690,7 @@ class phpbb_feed
 			'SELECT'	=>	'f.forum_id, f.forum_name, f.forum_desc_options, ' .
 							't.topic_last_post_time, t.topic_id, t.topic_title, t.topic_time, t.topic_replies, t.topic_views, ' .
 							'p.post_id, p.post_time, p.post_subject, p.post_text, p.bbcode_bitfield, p.bbcode_uid, p.enable_bbcode, p.enable_smilies, p.enable_magic_url, ' .
-							'u.username, u.user_id, u.user_email',
+							'u.username, u.user_id, u.user_email, u.user_colour',
 			'FROM'		=> array(
 				POSTS_TABLE		=> 'p',
 				TOPICS_TABLE	=> 't',
@@ -748,7 +766,7 @@ class phpbb_feed
 	{
 		global $phpEx, $config;
 
-		$item_row['title'] = (!$this->topic_id) ? $row['forum_name'] . ' | ' . $item_row['title'] : $item_row['title'];
+		$item_row['title'] = (!$this->topic_id) ? $row['forum_name'] . ' ' . $this->separator . ' ' . $item_row['title'] : $item_row['title'];
 		$item_row['link'] = feed_append_sid('/viewtopic.' . $phpEx, "t={$row['topic_id']}&amp;p={$row['post_id']}#p{$row['post_id']}");
 
 		if ($config['feed_item_statistics'])
@@ -865,7 +883,7 @@ class phpbb_feed_news extends phpbb_feed
 			'SELECT'	=> 'f.forum_id, f.forum_password, f.forum_name, f.forum_topics, f.forum_posts, f.parent_id, f.left_id, f.right_id,
 							t.topic_id, t.topic_title, t.topic_poster, t.topic_first_poster_name, t.topic_replies, t.topic_views, t.topic_time,
 							p.post_id, p.post_text, p.bbcode_bitfield, p.bbcode_uid, p.enable_bbcode, p.enable_smilies, p.enable_magic_url,
-							u.username, u.user_id, u.user_email',
+							u.username, u.user_id, u.user_email, u.user_colour',
 			'FROM'		=> array(
 				TOPICS_TABLE	=> 't',
 				FORUMS_TABLE	=> 'f',
@@ -963,7 +981,7 @@ class phpbb_feed_topics extends phpbb_feed
 			'SELECT'	=> 'f.forum_id, f.forum_password, f.forum_name, f.forum_topics, f.forum_posts, f.parent_id, f.left_id, f.right_id,
 							t.topic_id, t.topic_title, t.topic_poster, t.topic_first_poster_name, t.topic_replies, t.topic_views, t.topic_time,
 							p.post_id, p.post_text, p.bbcode_bitfield, p.bbcode_uid, p.enable_bbcode, p.enable_smilies, p.enable_magic_url,
-							u.username, u.user_id, u.user_email',
+							u.username, u.user_id, u.user_email, u.user_colour',
 			'FROM'		=> array(
 				TOPICS_TABLE	=> 't',
 				FORUMS_TABLE	=> 'f',
