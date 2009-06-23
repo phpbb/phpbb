@@ -455,6 +455,7 @@ function get_schema_struct()
 			'confirm_type'		=> array('TINT:3', 0),
 			'code'				=> array('VCHAR:8', ''),
 			'seed'				=> array('UINT:10', 0),
+			'attempts'			=> array('UINT', 0),
 		),
 		'PRIMARY_KEY'	=> array('session_id', 'confirm_id'),
 		'KEYS'			=> array(
@@ -597,6 +598,7 @@ function get_schema_struct()
 			'group_id'				=> array('UINT', NULL, 'auto_increment'),
 			'group_type'			=> array('TINT:4', 1),
 			'group_founder_manage'	=> array('BOOL', 0),
+			'group_skip_auth'		=> array('BOOL', 0),
 			'group_name'			=> array('VCHAR_CI', ''),
 			'group_desc'			=> array('TEXT_UNI', ''),
 			'group_desc_bitfield'	=> array('VCHAR:255', ''),
@@ -1323,7 +1325,7 @@ function get_schema_struct()
 			'user_actkey'				=> array('VCHAR:32', ''),
 			'user_newpasswd'			=> array('VCHAR_UNI:40', ''),
 			'user_form_salt'			=> array('VCHAR_UNI:32', ''),
-
+			'user_new'					=> array('BOOL', 1),
 		),
 		'PRIMARY_KEY'	=> 'user_id',
 		'KEYS'			=> array(
