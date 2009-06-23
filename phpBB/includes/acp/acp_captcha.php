@@ -121,8 +121,8 @@ class acp_captcha
 				}
 
 				$template->assign_vars(array(
-					'CAPTCHA_PREVIEW'	=> $demo_captcha->get_demo_template($id),
-					'CAPTCHA_SELECT'	=> $captcha_select,
+					'CAPTCHA_PREVIEW_TPL'	=> $demo_captcha->get_demo_template($id),
+					'CAPTCHA_SELECT'		=> $captcha_select,
 				));
 			}
 		}
