@@ -1089,14 +1089,22 @@ class parse_message extends bbcode_firstpass
 		$replace = array("\\1&#058;");
 		$this->message = preg_replace($match, $replace, trim($this->message));
 
-		// Message length check. 0 disables this check completely.
-		if ($config['max_' . $mode . '_chars'] > 0)
-		{
-			$msg_len = ($mode == 'post') ? utf8_strlen($this->message) : utf8_strlen(preg_replace('#\[\/?[a-z\*\+\-]+(=[\S]+)?\]#ius', ' ', $this->message));
+		// Store message length...
+		$message_length = ($mode == 'post') ? utf8_strlen($this->message) : utf8_strlen(preg_replace('#\[\/?[a-z\*\+\-]+(=[\S]+)?\]#ius', ' ', $this->message));
 
-			if ((!$msg_len && $mode !== 'sig') || $config['max_' . $mode . '_chars'] && $msg_len > $config['max_' . $mode . '_chars'])
+		// Maximum message length check. 0 disables this check completely.
+		if ((int) $config['max_' . $mode . '_chars'] > 0 && $message_length > (int) $config['max_' . $mode . '_chars'])
+		{
+			$this->warn_msg[] = sprintf($user->lang['TOO_MANY_CHARS_' . strtoupper($mode)], $message_length, (int) $config['max_' . $mode . '_chars']);
+			return (!$update_this_message) ? $return_message : $this->warn_msg;
+		}
+
+		// Minimum message length check for post only
+		if ($mode !== 'sig')
+		{
+			if (!$message_length || $message_length < (int) $config['min_post_chars'])
 			{
-				$this->warn_msg[] = (!$msg_len) ? $user->lang['TOO_FEW_CHARS'] : sprintf($user->lang['TOO_MANY_CHARS_' . strtoupper($mode)], $msg_len, $config['max_' . $mode . '_chars']);
+				$this->warn_msg[] = (!$message_length) ? $user->lang['TOO_FEW_CHARS'] : sprintf($user->lang['TOO_FEW_CHARS_LIMIT'], $message_length, (int) $config['min_post_chars']);
 				return (!$update_this_message) ? $return_message : $this->warn_msg;
 			}
 		}

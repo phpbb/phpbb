@@ -611,7 +611,7 @@ class install_convert extends module
 		$config['max_quote_depth'] = 0;
 
 		// @todo Need to confirm that max post length in source is <= max post length in destination or there may be interesting formatting issues
-		$config['max_post_chars'] = 0;
+		$config['max_post_chars'] = $config['min_post_chars'] = 0;
 
 		// Set up a user as well. We _should_ have enough of a database here at this point to do this
 		// and it helps for any core code we call
@@ -989,7 +989,7 @@ class install_convert extends module
 				$config['max_quote_depth'] = 0;
 
 				// @todo Need to confirm that max post length in source is <= max post length in destination or there may be interesting formatting issues
-				$config['max_post_chars'] = 0;
+				$config['max_post_chars'] = $config['min_post_chars'] = 0;
 			}
 
 			$template->assign_block_vars('checks', array(

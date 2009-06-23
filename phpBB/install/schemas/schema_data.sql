@@ -25,6 +25,7 @@ INSERT INTO phpbb_config (config_name, config_value) VALUES ('allow_pm_attach', 
 INSERT INTO phpbb_config (config_name, config_value) VALUES ('allow_post_flash', '1');
 INSERT INTO phpbb_config (config_name, config_value) VALUES ('allow_post_links', '1');
 INSERT INTO phpbb_config (config_name, config_value) VALUES ('allow_privmsg', '1');
+INSERT INTO phpbb_config (config_name, config_value) VALUES ('allow_quick_reply', '1');
 INSERT INTO phpbb_config (config_name, config_value) VALUES ('allow_sig', '1');
 INSERT INTO phpbb_config (config_name, config_value) VALUES ('allow_sig_bbcode', '1');
 INSERT INTO phpbb_config (config_name, config_value) VALUES ('allow_sig_flash', '0');
@@ -191,6 +192,7 @@ INSERT INTO phpbb_config (config_name, config_value) VALUES ('max_sig_smilies', 
 INSERT INTO phpbb_config (config_name, config_value) VALUES ('max_sig_urls', '5');
 INSERT INTO phpbb_config (config_name, config_value) VALUES ('min_name_chars', '3');
 INSERT INTO phpbb_config (config_name, config_value) VALUES ('min_pass_chars', '6');
+INSERT INTO phpbb_config (config_name, config_value) VALUES ('min_post_chars', '1');
 INSERT INTO phpbb_config (config_name, config_value) VALUES ('min_search_author_chars', '3');
 INSERT INTO phpbb_config (config_name, config_value) VALUES ('mime_triggers', 'body|head|html|img|plaintext|a href|pre|script|table|title');
 INSERT INTO phpbb_config (config_name, config_value) VALUES ('new_member_post_limit', '3');

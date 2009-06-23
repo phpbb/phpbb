@@ -1200,9 +1200,19 @@ function change_database_data(&$no_updates, $version)
 				}
 			}
 
-			// Set every members user_new column to 0 (old users)
-			$sql = 'UPDATE ' . USERS_TABLE . ' SET user_new = 0';
-			_sql($sql, $errored, $error_ary);
+			// Set every members user_new column to 0 (old users) only if there is no one yet (this makes sure we do not execute this more than once)
+			$sql = 'SELECT 1
+				FROM ' . USERS_TABLE . '
+				WHERE user_new = 0';
+			$result = $db->sql_query_limit($sql, 1);
+			$row = $db->sql_fetchrow($result);
+			$db->sql_freeresult($result);
+
+			if (!$row)
+			{
+				$sql = 'UPDATE ' . USERS_TABLE . ' SET user_new = 0';
+				_sql($sql, $errored, $error_ary);
+			}
 
 			// Newly registered users limit
 			if (!isset($config['new_member_post_limit']))
@@ -1246,13 +1256,27 @@ function change_database_data(&$no_updates, $version)
 			$auth_admin = new auth_admin();
 			$auth_admin->acl_clear_prefetch();
 
-			if ($config['allow_avatar_upload'] || $config['allow_avatar_local'] || $config['allow_avatar_remote'])
+			if (!isset($config['allow_avatar']))
 			{
-				set_config('allow_avatar', '1');
+				if ($config['allow_avatar_upload'] || $config['allow_avatar_local'] || $config['allow_avatar_remote'])
+				{
+					set_config('allow_avatar', '1');
+				}
+				else
+				{
+					set_config('allow_avatar', '0');
+				}
 			}
-			else
+
+			// Minimum number of characters
+			if (!isset($config['min_post_chars']))
 			{
-				set_config('allow_avatar', '0');
+				set_config('min_post_chars', '1');
+			}
+
+			if (!isset($config['allow_quick_reply']))
+			{
+				set_config('allow_quick_reply', '1');
 			}
 
 			$no_updates = false;

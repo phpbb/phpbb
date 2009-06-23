@@ -611,6 +611,7 @@ if (!$get_info)
 				'query_first'	=> array('target', $convert->truncate_statement . POSTS_TABLE),
 				'execute_first'	=> '
 					$config["max_post_chars"] = 0;
+					$config["min_post_chars"] = 0;
 					$config["max_quote_depth"] = 0;
 				',
 
@@ -660,6 +661,7 @@ if (!$get_info)
 
 				'execute_first'	=> '
 					$config["max_post_chars"] = 0;
+					$config["min_post_chars"] = 0;
 					$config["max_quote_depth"] = 0;
 				',
 

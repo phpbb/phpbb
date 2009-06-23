@@ -91,6 +91,7 @@ define('FORUM_FLAG_PRUNE_ANNOUNCE', 4);
 define('FORUM_FLAG_PRUNE_STICKY', 8);
 define('FORUM_FLAG_ACTIVE_TOPICS', 16);
 define('FORUM_FLAG_POST_REVIEW', 32);
+define('FORUM_FLAG_QUICK_REPLY', 64);
 
 // Optional text flags
 define('OPTION_FLAG_BBCODE', 1);
