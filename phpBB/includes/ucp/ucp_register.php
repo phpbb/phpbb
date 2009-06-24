@@ -52,7 +52,6 @@ class ucp_register
 			add_form_key('ucp_register_terms');
 		}
 		
-
 		if ($change_lang || $user_lang != $config['default_lang'])
 		{
 			$use_lang = ($change_lang) ? basename($change_lang) : basename($user_lang);
@@ -67,7 +66,7 @@ class ucp_register
 					$agreed = (empty($_GET['change_lang'])) ? 0 : $agreed;
 				}
 
-				$user->lang_name = $lang = $use_lang;
+				$user->lang_name = $user_lang = $use_lang;
 				$user->lang = array();
 				$user->add_lang(array('common', 'ucp'));
 			}
@@ -78,17 +77,26 @@ class ucp_register
 			}
 		}
 
+		$captcha_solved = false;
+		if ($config['enable_confirm'])
+		{
+			include($phpbb_root_path . 'includes/captcha/captcha_factory.' . $phpEx);
+			$captcha =& phpbb_captcha_factory::get_instance($config['captcha_plugin']);
+			$captcha->init(CONFIRM_REG);
+		}
+
 		$cp = new custom_profile();
 
 		$error = $cp_data = $cp_error = array();
-
 
 		if (!$agreed || ($coppa === false && $config['coppa_enable']) || ($coppa && !$config['coppa_enable']))
 		{
 			$add_lang = ($change_lang) ? '&amp;change_lang=' . urlencode($change_lang) : '';
 			$add_coppa = ($coppa !== false) ? '&amp;coppa=' . $coppa : '';
 
-			$s_hidden_fields = array();
+			$s_hidden_fields = array(
+				'change_lang'	=> $change_lang,
+			);
 
 			// If we change the language, we want to pass on some more possible parameter.
 			if ($change_lang)
@@ -108,6 +116,17 @@ class ucp_register
 				}
 			}
 
+			// Checking amount of available languages
+			$lang_row = array();
+			$sql = 'SELECT lang_id 
+				FROM ' . LANG_TABLE;
+			$result = $db->sql_query($sql);
+			while ($row = $db->sql_fetchrow($result))
+			{
+				$lang_row[] = $row;
+			}
+			$db->sql_freeresult($result);
+
 			if ($coppa === false && $config['coppa_enable'])
 			{
 				$now = getdate();
@@ -115,6 +134,7 @@ class ucp_register
 				unset($now);
 
 				$template->assign_vars(array(
+					'S_LANG_OPTIONS'	=> (sizeof($lang_row) > 1) ? language_select($user_lang) : '',
 					'L_COPPA_NO'		=> sprintf($user->lang['UCP_COPPA_BEFORE'], $coppa_birthday),
 					'L_COPPA_YES'		=> sprintf($user->lang['UCP_COPPA_ON_AFTER'], $coppa_birthday),
 
@@ -129,6 +149,7 @@ class ucp_register
 			else
 			{
 				$template->assign_vars(array(
+					'S_LANG_OPTIONS'	=> (sizeof($lang_row) > 1) ? language_select($user_lang) : '',
 					'L_TERMS_OF_USE'	=> sprintf($user->lang['TERMS_OF_USE_CONTENT'], $config['sitename'], generate_board_url()),
 
 					'S_SHOW_COPPA'		=> false,
@@ -138,17 +159,10 @@ class ucp_register
 					)
 				);
 			}
+			unset($lang_row);
 
 			$this->tpl_name = 'ucp_agreement';
 			return;
-		}
-
-		$captcha_solved = false;
-		if ($config['enable_confirm'])
-		{
-			include($phpbb_root_path . 'includes/captcha/captcha_factory.' . $phpEx);
-			$captcha =& phpbb_captcha_factory::get_instance($config['captcha_plugin']);
-			$captcha->init(CONFIRM_REG);
 		}
 
 		// Try to manually determine the timezone and adjust the dst if the server date/time complies with the default setting +/- 1
@@ -430,7 +444,6 @@ class ucp_register
 			$s_hidden_fields['coppa'] = $coppa;
 		}
 		
-
 		if ($config['enable_confirm'])
 		{
 			$s_hidden_fields = array_merge($s_hidden_fields, $captcha->get_hidden_fields());
@@ -441,15 +454,6 @@ class ucp_register
 		// Visual Confirmation - Show images
 		if ($config['enable_confirm'] && !$captcha_solved)
 		{
-			if ($change_lang)
-			{
-				$str = '&amp;change_lang=' . $change_lang;
-			}
-			else
-			{
-				$str = '';
-			}
-
 			$template->assign_vars(array(
 				'L_CONFIRM_EXPLAIN'		=> sprintf($user->lang['CONFIRM_EXPLAIN'], '<a href="mailto:' . htmlspecialchars($config['board_contact']) . '">', '</a>'),
 				'CAPTCHA_TEMPLATE'		=> $captcha->get_template(),
@@ -484,6 +488,7 @@ class ucp_register
 			'S_LANG_OPTIONS'	=> language_select($data['lang']),
 			'S_TZ_OPTIONS'		=> tz_select($data['tz']),
 			'S_CONFIRM_REFRESH'	=> ($config['enable_confirm'] && $config['confirm_refresh']) ? true : false,
+			'S_REGISTRATION'	=> true,
 			'S_COPPA'			=> $coppa,
 			'S_HIDDEN_FIELDS'	=> $s_hidden_fields,
 			'S_UCP_ACTION'		=> append_sid("{$phpbb_root_path}ucp.$phpEx", 'mode=register'),
