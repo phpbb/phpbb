@@ -51,7 +51,7 @@ class ucp_register
 		{
 			add_form_key('ucp_register_terms');
 		}
-		
+
 		if ($change_lang || $user_lang != $config['default_lang'])
 		{
 			$use_lang = ($change_lang) ? basename($change_lang) : basename($user_lang);
@@ -77,12 +77,18 @@ class ucp_register
 			}
 		}
 
-		$captcha_solved = false;
+		$vc_response = false;
 		if ($config['enable_confirm'])
 		{
 			include($phpbb_root_path . 'includes/captcha/captcha_factory.' . $phpEx);
 			$captcha =& phpbb_captcha_factory::get_instance($config['captcha_plugin']);
 			$captcha->init(CONFIRM_REG);
+
+			// If confirm id is submitted we check the status of the captcha here
+			if (request_var('confirm_code', ''))
+			{
+				$vc_response = $captcha->validate();
+			}
 		}
 
 		$cp = new custom_profile();
@@ -117,10 +123,11 @@ class ucp_register
 			}
 
 			// Checking amount of available languages
-			$lang_row = array();
-			$sql = 'SELECT lang_id 
+			$sql = 'SELECT lang_id
 				FROM ' . LANG_TABLE;
 			$result = $db->sql_query($sql);
+
+			$lang_row = array();
 			while ($row = $db->sql_fetchrow($result))
 			{
 				$lang_row[] = $row;
@@ -223,15 +230,9 @@ class ucp_register
 
 			if ($config['enable_confirm'])
 			{
-				$vc_response = $captcha->validate();
-				if ($vc_response)
+				if (!$captcha->solved)
 				{
 					$error[] = $vc_response;
-				}
-				else
-				{
-					$captcha_solved = true;
-					// $captcha->reset();
 				}
 
 				if ($config['max_reg_attempts'] && $captcha->get_attempt_count() > $config['max_reg_attempts'])
@@ -443,7 +444,7 @@ class ucp_register
 		{
 			$s_hidden_fields['coppa'] = $coppa;
 		}
-		
+
 		if ($config['enable_confirm'])
 		{
 			$s_hidden_fields = array_merge($s_hidden_fields, $captcha->get_hidden_fields());
@@ -452,7 +453,7 @@ class ucp_register
 		$confirm_image = '';
 
 		// Visual Confirmation - Show images
-		if ($config['enable_confirm'] && !$captcha_solved)
+		if ($config['enable_confirm'] && !$captcha->solved)
 		{
 			$template->assign_vars(array(
 				'L_CONFIRM_EXPLAIN'		=> sprintf($user->lang['CONFIRM_EXPLAIN'], '<a href="mailto:' . htmlspecialchars($config['board_contact']) . '">', '</a>'),
