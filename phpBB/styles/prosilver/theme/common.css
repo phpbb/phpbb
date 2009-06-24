@@ -611,6 +611,7 @@ p.rules {
 
 p.rules img {
 	vertical-align: middle;
+	padding-top: 5px;
 }
 
 p.rules a {

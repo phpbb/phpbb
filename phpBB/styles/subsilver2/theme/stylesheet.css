@@ -227,6 +227,7 @@ p.topicdetails {
 
 .postapprove img, .postreported img {
 	vertical-align: bottom;
+	padding-top: 5px;
 }
 
 .postauthor {
