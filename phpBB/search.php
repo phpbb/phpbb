@@ -348,7 +348,6 @@ if ($keywords || $author || $author_id || $search_id || $submit)
 			break;
 
 			case 'newposts':
-			case 'unreadposts':
 				$l_search_title = $user->lang['SEARCH_NEW'];
 				// force sorting
 				$show_results = (request_var('sr', 'topics') == 'posts') ? 'posts' : 'topics';
@@ -804,10 +803,6 @@ if ($keywords || $author || $author_id || $search_id || $submit)
 				topic_status($row, $replies, (isset($topic_tracking_info[$forum_id][$row['topic_id']]) && $row['topic_last_post_time'] > $topic_tracking_info[$forum_id][$row['topic_id']]) ? true : false, $folder_img, $folder_alt, $topic_type);
 
 				$unread_topic = (isset($topic_tracking_info[$forum_id][$row['topic_id']]) && $row['topic_last_post_time'] > $topic_tracking_info[$forum_id][$row['topic_id']]) ? true : false;
-				if ($search_id == 'unreadposts' && !$unread_topic)
-				{
-					continue;
-				}
 
 				$topic_unapproved = (!$row['topic_approved'] && $auth->acl_get('m_approve', $forum_id)) ? true : false;
 				$posts_unapproved = ($row['topic_approved'] && $row['topic_replies'] < $row['topic_replies_real'] && $auth->acl_get('m_approve', $forum_id)) ? true : false;
