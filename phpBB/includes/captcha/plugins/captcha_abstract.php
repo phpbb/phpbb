@@ -30,7 +30,7 @@ class phpbb_default_captcha
 	var $seed;
 	var $attempts = 0;
 	var $type;
-	var $solved = false;
+	var $solved = 0;
 	var $captcha_vars = false;
 
 	function init($type)
@@ -223,7 +223,7 @@ class phpbb_default_captcha
 		$this->code = gen_rand_string(mt_rand(CAPTCHA_MIN_CHARS, CAPTCHA_MAX_CHARS));
 		$this->confirm_id = md5(unique_id($user->ip));
 		$this->seed = hexdec(substr(unique_id(), 4, 10));
-		$this->solved = false;
+		$this->solved = 0;
 		// compute $seed % 0x7fffffff
 		$this->seed -= 0x7fffffff * floor($this->seed / 0x7fffffff);
 
@@ -246,7 +246,7 @@ class phpbb_default_captcha
 
 		$this->code = gen_rand_string(mt_rand(CAPTCHA_MIN_CHARS, CAPTCHA_MAX_CHARS));
 		$this->seed = hexdec(substr(unique_id(), 4, 10));
-		$this->solved = false;
+		$this->solved = 0;
 		// compute $seed % 0x7fffffff
 		$this->seed -= 0x7fffffff * floor($this->seed / 0x7fffffff);
 
@@ -268,7 +268,7 @@ class phpbb_default_captcha
 
 		$this->code = gen_rand_string(mt_rand(CAPTCHA_MIN_CHARS, CAPTCHA_MAX_CHARS));
 		$this->seed = hexdec(substr(unique_id(), 4, 10));
-		$this->solved = false;
+		$this->solved = 0;
 		// compute $seed % 0x7fffffff
 		$this->seed -= 0x7fffffff * floor($this->seed / 0x7fffffff);
 
@@ -342,6 +342,16 @@ class phpbb_default_captcha
 		// we leave the class usable by generating a new question
 		$this->generate_code();
 	}
+	
+	function is_solved()
+	{
+		if ($this->solved === 0)
+		{
+			$this->validate();
+		}
+		return (bool) $this->solved;
+	}
+	
 }
 
 ?>

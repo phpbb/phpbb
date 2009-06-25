@@ -592,7 +592,6 @@ if ($load && ($mode == 'reply' || $mode == 'quote' || $mode == 'post') && $post_
 	load_drafts($topic_id, $forum_id);
 }
 
-$solved_captcha = false;
 
 if ($submit || $preview || $refresh)
 {
@@ -777,10 +776,6 @@ if ($submit || $preview || $refresh)
 		if ($vc_response)
 		{
 			$error[] = $vc_response;
-		}
-		else
-		{
-			$solved_captcha = true;
 		}
 	}
 
@@ -1247,7 +1242,7 @@ generate_forum_nav($post_data);
 // Build Forum Rules
 generate_forum_rules($post_data);
 
-if ($config['enable_post_confirm'] && !$user->data['is_registered'] && $solved_captcha === false && ($mode == 'post' || $mode == 'reply' || $mode == 'quote'))
+if ($config['enable_post_confirm'] && !$user->data['is_registered'] && $captcha->is_solved() === false && ($mode == 'post' || $mode == 'reply' || $mode == 'quote'))
 {
 	$captcha->reset();
 
@@ -1262,7 +1257,7 @@ $s_hidden_fields .= '<input type="hidden" name="lastclick" value="' . $current_t
 $s_hidden_fields .= ($draft_id || isset($_REQUEST['draft_loaded'])) ? '<input type="hidden" name="draft_loaded" value="' . request_var('draft_loaded', $draft_id) . '" />' : '';
 
 // Add the confirm id/code pair to the hidden fields, else an error is displayed on next submit/preview
-if ($solved_captcha !== false)
+if ($captcha->is_solved() !== false)
 {
 	$s_hidden_fields .= build_hidden_fields($captcha->get_hidden_fields());
 }

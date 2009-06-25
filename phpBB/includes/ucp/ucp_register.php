@@ -230,7 +230,7 @@ class ucp_register
 
 			if ($config['enable_confirm'])
 			{
-				if (!$captcha->solved)
+				if (!$captcha->is_solved())
 				{
 					$error[] = $vc_response;
 				}
@@ -453,7 +453,7 @@ class ucp_register
 		$confirm_image = '';
 
 		// Visual Confirmation - Show images
-		if ($config['enable_confirm'] && !$captcha->solved)
+		if ($config['enable_confirm'] && !$captcha->is_solved())
 		{
 			$template->assign_vars(array(
 				'L_CONFIRM_EXPLAIN'		=> sprintf($user->lang['CONFIRM_EXPLAIN'], '<a href="mailto:' . htmlspecialchars($config['board_contact']) . '">', '</a>'),
