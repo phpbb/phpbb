@@ -254,6 +254,16 @@ class acp_permissions
 					}
 					else
 					{
+						if (isset($_POST['cancel']))
+						{
+							$u_redirect = $this->u_action . '&amp;type=' . $permission_type;
+							foreach ($forum_id as $fid)
+							{
+								$u_redirect .= '&amp;forum_id[]=' . $fid;
+							}
+							redirect($u_redirect);
+						}
+
 						$s_hidden_fields = array(
 							'i'				=> $id,
 							'mode'			=> $mode,
