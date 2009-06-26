@@ -77,6 +77,7 @@ if ($mode == 'topic_logs')
 $post_id = request_var('p', 0);
 $topic_id = request_var('t', 0);
 $forum_id = request_var('f', 0);
+$report_id = request_var('r', 0);
 $user_id = request_var('u', 0);
 $username = utf8_normalize_nfc(request_var('username', '', true));
 
@@ -323,13 +324,14 @@ function _module_reports_url($mode, &$module_row)
 
 function extra_url()
 {
-	global $forum_id, $topic_id, $post_id, $user_id;
+	global $forum_id, $topic_id, $post_id, $report_id, $user_id;
 
 	$url_extra = '';
 	$url_extra .= ($forum_id) ? "&amp;f=$forum_id" : '';
 	$url_extra .= ($topic_id) ? "&amp;t=$topic_id" : '';
 	$url_extra .= ($post_id) ? "&amp;p=$post_id" : '';
 	$url_extra .= ($user_id) ? "&amp;u=$user_id" : '';
+	$url_extra .= ($report_id) ? "&amp;r=$report_id" : '';
 
 	return $url_extra;
 }
