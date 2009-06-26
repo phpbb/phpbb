@@ -103,10 +103,6 @@ class ucp_register
 					'tz'				=> request_var('tz', (float) $config['board_timezone']),
 				));
 
-				if ($config['enable_confirm'])
-				{
-					$s_hidden_fields = array_merge($s_hidden_fields, $captcha->get_hidden_fields());
-				}
 			}
 
 			// Checking amount of available languages
