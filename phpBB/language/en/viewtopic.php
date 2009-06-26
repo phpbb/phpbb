@@ -86,11 +86,13 @@ $lang = array_merge($lang, array(
 	'PRINT_TOPIC'			=> 'Print view',
 
 	'QUICK_MOD'				=> 'Quick-mod tools',
+	'QUICKREPLY'			=> 'Quick Reply',
 	'QUOTE'					=> 'Quote',
 
 	'REPLY_TO_TOPIC'		=> 'Reply to topic',
 	'RETURN_POST'			=> '%sReturn to the post%s',
 
+	'SHOW_QR'				=> 'Show Editor',
 	'SUBMIT_VOTE'			=> 'Submit vote',
 
 	'TOTAL_VOTES'			=> 'Total votes',

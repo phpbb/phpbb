@@ -41,6 +41,7 @@ $sort_dir	= request_var('sd', $default_sort_dir);
 
 $update		= request_var('update', false);
 
+$s_can_vote = false;
 /**
 * @todo normalize?
 */
@@ -695,7 +696,7 @@ if (!empty($topic_data['poll_start']))
 	if ($update && $s_can_vote)
 	{
 
-		if (!sizeof($voted_id) || sizeof($voted_id) > $topic_data['poll_max_options'] || in_array(VOTE_CONVERTED, $cur_voted_id))
+		if (!sizeof($voted_id) || sizeof($voted_id) > $topic_data['poll_max_options'] || in_array(VOTE_CONVERTED, $cur_voted_id) || !check_form_key('posting'))
 		{
 			$redirect_url = append_sid("{$phpbb_root_path}viewtopic.$phpEx", "f=$forum_id&amp;t=$topic_id&amp;start=$start");
 
@@ -708,9 +709,13 @@ if (!empty($topic_data['poll_start']))
 			{
 				$message = 'TOO_MANY_VOTE_OPTIONS';
 			}
-			else
+			else if (in_array(VOTE_CONVERTED, $cur_voted_id))
 			{
 				$message = 'VOTE_CONVERTED';
+			}
+			else
+			{
+				$message = 'FORM_INVALID';
 			}
 
 			$message = $user->lang[$message] . '<br /><br />' . sprintf($user->lang['RETURN_TOPIC'], '<a href="' . $redirect_url . '">', '</a>');
@@ -1422,6 +1427,7 @@ for ($i = 0, $end = sizeof($post_list); $i < $end; ++$i)
 	{
 		$s_first_unread = $first_unread = true;
 	}
+	
 
 	//
 	$postrow = array(
@@ -1598,6 +1604,41 @@ else if (!$all_marked_read)
 	}
 }
 
+// let's set up quick_reply
+// TODO: introduce a per-forum and a per-user setting
+if ($s_can_vote || $config['allow_quick_reply'])
+{
+	add_form_key('posting');
+	if ($user->data['is_registered'] && $config['allow_quick_reply'])
+	{
+	
+		$s_attach_sig = $config['allow_sig'] && strlen($user->data['user_sig']) && $user->optionget('attachsig') && $auth->acl_get('f_sigs', $forum_id) && $auth->acl_get('u_sig');
+		$s_smilies = $config['allow_smilies'] && $user->optionget('smilies') && $auth->acl_get('f_smilies', $forum_id);
+		$s_bbcode = $config['allow_bbcode'] && $user->optionget('bbcode') && $auth->acl_get('f_bbcode', $forum_id);
+		$s_notify = $config['allow_topic_notify'] && $user->data['user_notify'];
+		$qr_hidden_fields = array(
+			'topic_cur_post_id'		=> $topic_data['topic_last_post_id'],
+			'lastclick'				=> time(),
+			'topic_id'				=> $topic_data['topic_id'],
+			'forum_id'				=> $forum_id,
+			'disable_bbcode'		=> !$s_bbcode,
+			'disable_smilies'		=> !$s_smilies,
+			'disable_magic_url'		=> !$config['allow_post_links'],
+			'attach_sig'			=> $s_attach_sig,
+			'notify'				=> $s_notify,
+		);
+		
+		$template->assign_vars(array(
+			'S_QUICK_REPLY'			=> true, 
+			'U_QR_ACTION'			=> append_sid("{$phpbb_root_path}posting.$phpEx", "mode=reply&amp;f=$forum_id&amp;t=$topic_id"),
+			'QR_HIDDEN_FIELDS'		=> build_hidden_fields($qr_hidden_fields),
+			'SUBJECT'				=> 'Re: ' . censor_text($topic_data['topic_title']),
+
+		));
+	}
+}
+	
+	
 // We overwrite $_REQUEST['f'] if there is no forum specified
 // to be able to display the correct online list.
 // One downside is that the user currently viewing this topic/post is not taken into account.
