@@ -631,7 +631,7 @@ function compose_pm($id, $mode, $action)
 	// Load Drafts
 	if ($load && $drafts)
 	{
-		load_drafts(0, 0, $id);
+		load_drafts(0, 0, $id, $action, $msg_id);
 	}
 
 	if ($submit || $preview || $refresh)

@@ -818,7 +818,7 @@ function posting_gen_attachment_entry($attachment_data, &$filename_data, $show_a
 /**
 * Load Drafts
 */
-function load_drafts($topic_id = 0, $forum_id = 0, $id = 0)
+function load_drafts($topic_id = 0, $forum_id = 0, $id = 0, $pm_action = '', $msg_id = 0)
 {
 	global $user, $db, $template, $auth;
 	global $phpbb_root_path, $phpEx;
@@ -911,7 +911,7 @@ function load_drafts($topic_id = 0, $forum_id = 0, $id = 0)
 		{
 			// Either display as PM draft if forum_id and topic_id are empty or if access to the forums has been denied afterwards...
 			$link_pm = true;
-			$insert_url = append_sid("{$phpbb_root_path}ucp.$phpEx", "i=$id&amp;mode=compose&amp;d={$draft['draft_id']}");
+			$insert_url = append_sid("{$phpbb_root_path}ucp.$phpEx", "i=$id&amp;mode=compose&amp;d={$draft['draft_id']}" . (($pm_action) ? "&amp;action=$pm_action" : '') . (($msg_id) ? "&amp;p=$msg_id" : ''));
 		}
 
 		$template->assign_block_vars('draftrow', array(
