@@ -1247,7 +1247,7 @@ switch ($mode)
 			'joined'		=> array('joined', ''),
 			'active'		=> array('active', ''),
 			'count'			=> (request_var('count', '') !== '') ? array('count', 0) : array('count', ''),
-			'ipdomain'		=> array('ip', ''),
+			'ip'			=> array('ip', ''),
 			'first_char'	=> array('first_char', ''),
 		);
 
