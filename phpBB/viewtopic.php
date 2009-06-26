@@ -1606,10 +1606,11 @@ else if (!$all_marked_read)
 
 // let's set up quick_reply
 // TODO: introduce a per-forum and a per-user setting
-if ($s_can_vote || $config['allow_quick_reply'])
+$s_quick_reply = $user->data['is_registered'] && $config['allow_quick_reply'] && ($topic_data['forum_flags'] & FORUM_FLAG_QUICK_REPLY);
+if ($s_can_vote || $s_quick_reply )
 {
 	add_form_key('posting');
-	if ($user->data['is_registered'] && $config['allow_quick_reply'])
+	if ($s_quick_reply)
 	{
 	
 		$s_attach_sig = $config['allow_sig'] && strlen($user->data['user_sig']) && $user->optionget('attachsig') && $auth->acl_get('f_sigs', $forum_id) && $auth->acl_get('u_sig');
