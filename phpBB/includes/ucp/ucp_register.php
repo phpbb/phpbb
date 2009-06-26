@@ -77,19 +77,6 @@ class ucp_register
 			}
 		}
 
-		$vc_response = false;
-		if ($config['enable_confirm'])
-		{
-			include($phpbb_root_path . 'includes/captcha/captcha_factory.' . $phpEx);
-			$captcha =& phpbb_captcha_factory::get_instance($config['captcha_plugin']);
-			$captcha->init(CONFIRM_REG);
-
-			// If confirm id is submitted we check the status of the captcha here
-			if (request_var('confirm_code', ''))
-			{
-				$vc_response = $captcha->validate();
-			}
-		}
 
 		$cp = new custom_profile();
 
@@ -171,6 +158,15 @@ class ucp_register
 			$this->tpl_name = 'ucp_agreement';
 			return;
 		}
+		
+		
+		// The CAPTCHA kicks in here. We can't help that the information gets lost on language change. 
+		if ($config['enable_confirm'])
+		{
+			include($phpbb_root_path . 'includes/captcha/captcha_factory.' . $phpEx);
+			$captcha =& phpbb_captcha_factory::get_instance($config['captcha_plugin']);
+			$captcha->init(CONFIRM_REG);
+		}
 
 		// Try to manually determine the timezone and adjust the dst if the server date/time complies with the default setting +/- 1
 		$timezone = date('Z') / 3600;
@@ -230,7 +226,8 @@ class ucp_register
 
 			if ($config['enable_confirm'])
 			{
-				if (!$captcha->is_solved())
+				$vc_response = $captcha->validate();
+				if (!$captcha->is_solved() && $vc_response)
 				{
 					$error[] = $vc_response;
 				}
