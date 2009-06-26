@@ -1257,7 +1257,7 @@ $s_hidden_fields .= '<input type="hidden" name="lastclick" value="' . $current_t
 $s_hidden_fields .= ($draft_id || isset($_REQUEST['draft_loaded'])) ? '<input type="hidden" name="draft_loaded" value="' . request_var('draft_loaded', $draft_id) . '" />' : '';
 
 // Add the confirm id/code pair to the hidden fields, else an error is displayed on next submit/preview
-if ($captcha->is_solved() !== false)
+if (isset($captcha) && $captcha->is_solved() !== false)
 {
 	$s_hidden_fields .= build_hidden_fields($captcha->get_hidden_fields());
 }
