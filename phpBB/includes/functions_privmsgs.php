@@ -1691,12 +1691,29 @@ function message_history($msg_id, $user_id, $message_row, $folder, $in_post_mode
 {
 	global $db, $user, $config, $template, $phpbb_root_path, $phpEx, $auth, $bbcode;
 
+	// Select all receipts and the author from the pm we currently view, to only display their pm-history
+	$sql = 'SELECT author_id, user_id
+		FROM ' . PRIVMSGS_TO_TABLE . "
+		WHERE msg_id = $msg_id
+			AND folder_id <> " . PRIVMSGS_HOLD_BOX;
+	$result = $db->sql_query($sql);
+
+	$recipients = array();
+	while ($row = $db->sql_fetchrow($result))
+	{
+		$recipients[] = $row['user_id'];
+		$recipients[] = $row['author_id'];
+	}
+	$db->sql_freeresult($result);
+	$recipients = array_unique($recipients);
+
 	// Get History Messages (could be newer)
 	$sql = 'SELECT t.*, p.*, u.*
 		FROM ' . PRIVMSGS_TABLE . ' p, ' . PRIVMSGS_TO_TABLE . ' t, ' . USERS_TABLE . ' u
 		WHERE t.msg_id = p.msg_id
 			AND p.author_id = u.user_id
-			AND t.folder_id NOT IN (' . PRIVMSGS_NO_BOX . ', ' . PRIVMSGS_HOLD_BOX . ")
+			AND t.folder_id NOT IN (' . PRIVMSGS_NO_BOX . ', ' . PRIVMSGS_HOLD_BOX . ')
+			AND ' . $db->sql_in_set('t.author_id', $recipients) . "
 			AND t.user_id = $user_id";
 
 	if (!$message_row['root_level'])
