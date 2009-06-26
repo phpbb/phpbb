@@ -2556,8 +2556,21 @@ parse_css_file = {PARSE_CSS_FILE}
 				{
 					trigger_error("Could not open {$phpbb_root_path}styles/$template_path$pathfile$file", E_USER_ERROR);
 				}
-				$template_data = fread($fp, filesize("{$phpbb_root_path}styles/$template_path$pathfile$file"));
+
+				$filesize = filesize("{$phpbb_root_path}styles/$template_path$pathfile$file");
+
+				if ($filesize)
+				{
+					$template_data = fread($fp, $filesize);
+				}
+
 				fclose($fp);
+
+				if (!$filesize)
+				{
+					// File is empty
+					continue;
+				}
 
 				if (preg_match_all('#<!-- INCLUDE (.*?\.html) -->#is', $template_data, $matches))
 				{
