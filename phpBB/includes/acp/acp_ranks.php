@@ -39,7 +39,7 @@ class acp_ranks
 		$this->tpl_name = 'acp_ranks';
 		$this->page_title = 'ACP_MANAGE_RANKS';
 
-		$form_name = 'acp_prune';
+		$form_name = 'acp_ranks';
 		add_form_key($form_name);
 
 		switch ($action)

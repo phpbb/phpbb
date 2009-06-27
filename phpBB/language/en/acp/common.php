@@ -393,6 +393,14 @@ $lang = array_merge($lang, array(
 	'USER_IS_INACTIVE'		=> 'User is inactive',
 ));
 
+// Send statistics page
+$lang = array_merge($lang, array(
+	'EXPLAIN_SEND_STATISTICS'	=> 'Please send some statistical information about your server and forum configuration to phpBB. All information that could identify you has been removed - the data is entirely anonymous. We will base decisions about future phpBB versions on this information. Below you can display all variables that will be transmitted.',
+	'HIDE_STATISTICS'			=> 'Hide details',
+	'SEND_STATISTICS'			=> 'Send statistical information',
+	'SHOW_STATISTICS'			=> 'Show details',
+));
+
 // Log Entries
 $lang = array_merge($lang, array(
 	'LOG_ACL_ADD_USER_GLOBAL_U_'		=> '<strong>Added or edited users’ user permissions</strong><br />» %s',

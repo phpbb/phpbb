@@ -1,0 +1,63 @@
+<!-- INCLUDE overall_header.html -->
+
+<a name="maincontent"></a>
+
+<h1>{L_SEND_STATISTICS}</h1>
+
+<p>{L_EXPLAIN_SEND_STATISTICS}</p>
+
+<script type="text/javascript">
+//<![CDATA[
+var iframect = 0;
+
+function iframeUpdated()
+{
+	if (iframect++ == 0)
+	{
+		return;
+	}
+
+	//dE('questionnaireForm', -1);
+	//dE('questionnaireThanks', 1);
+}
+//]]>
+</script>
+
+<iframe onload="iframeUpdated();" name="questionaireResult" style="display:none"></iframe>
+<form action="{U_COLLECT_STATS}" method="post" target="questionaireResult" id="questionnaireForm">
+
+	<p id="show_button"><input type="button" class="button2" onclick="dE('configlist', 1);dE('show_button', -1);" value="{L_SHOW_STATISTICS}"/></p>
+
+    <div id="configlist">
+        <input type="button" class="button2" onclick="dE('show_button', 1);dE('configlist', -1);" value="{L_HIDE_STATISTICS}"/>
+		<p class="submit-buttons">
+			<input class="button1" type="submit" id="submit" name="submit" value="{L_SEND_STATISTICS}" />
+		</p>
+		<!-- BEGIN providers -->
+        <fieldset>
+			<legend>{providers.NAME}</legend>
+			<!-- BEGIN values -->
+			<dl>
+				<dt>{providers.values.KEY}</dt>
+				<dd>{providers.values.VALUE}</dd>
+			</dl>
+			<!-- END values -->
+		</fieldset>
+		<!-- END providers -->
+    </div>
+    <p class="submit-buttons">
+		<input type="hidden" name="systemdata" value="{RAW_DATA}" />
+		<input class="button1" type="submit" id="submit" name="submit" value="{L_SEND_STATISTICS}" />
+	</p>
+</form>
+<div id="questionnaireThanks">
+    <p><strong>{L_THANKS_SEND_STATISTICS}</strong></p>
+</div>
+
+<script type="text/javascript">
+//<![CDATA[
+dE('configlist', false);
+dE('questionnaireThanks', false);
+//]]>
+</script>
+<!-- INCLUDE overall_footer.html -->
