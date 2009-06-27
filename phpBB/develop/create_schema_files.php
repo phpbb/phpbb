@@ -1833,7 +1833,7 @@ function get_schema_struct()
 			'user_allow_viewonline'		=> array('BOOL', 1),
 			'user_allow_viewemail'		=> array('BOOL', 1),
 			'user_allow_massemail'		=> array('BOOL', 1),
-			'user_options'				=> array('UINT:11', 895),
+			'user_options'				=> array('UINT:11', 230271),
 			'user_avatar'				=> array('VCHAR', ''),
 			'user_avatar_type'			=> array('TINT:2', 0),
 			'user_avatar_width'			=> array('USINT', 0),
