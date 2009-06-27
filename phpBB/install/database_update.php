@@ -676,6 +676,10 @@ function database_update_info()
 					'forum_style'			=> array('UINT', 0),
 				),
 			),
+			'change_columns'	=> array(
+				USERS_TABLE				=> array(
+					'user_options'		=> array('UINT:11', 230271),
+				),
 		),
 
 		// No changes from 3.0.5-RC1 to 3.0.5
@@ -1277,6 +1281,23 @@ function change_database_data(&$no_updates, $version)
 			if (!isset($config['allow_quick_reply']))
 			{
 				set_config('allow_quick_reply', '1');
+			}
+
+			// Set every members user_options column to enable
+			// bbcode, smilies and URLs for signatures by default
+			$sql = 'SELECT user_options
+				FROM ' . USERS_TABLE . '
+				WHERE user_type IN (' . USER_NORMAL . ', ' . USER_FOUNDER . ')';
+			$result = $db->sql_query_limit($sql, 1);
+			$user_option = (int) $db->sql_fetchfield('user_options');
+			$db->sql_freeresult($result);
+			
+			// Check if we already updated the database by checking bit 15 which we used to store the sig_bbcode option
+			if (!($user_option & 1 << 15))
+			{
+				// 229376 is the added value to enable all three signature options
+				$sql = 'UPDATE ' . USERS_TABLE . ' SET user_options = user_options + 229376';
+				_sql($sql, $errored, $error_ary);
 			}
 
 			$no_updates = false;

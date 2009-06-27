@@ -1545,9 +1545,9 @@ class acp_users
 				include_once($phpbb_root_path . 'includes/functions_posting.' . $phpEx);
 				include_once($phpbb_root_path . 'includes/functions_display.' . $phpEx);
 
-				$enable_bbcode	= ($config['allow_sig_bbcode']) ? ((request_var('disable_bbcode', !$user->optionget('bbcode'))) ? false : true) : false;
-				$enable_smilies	= ($config['allow_sig_smilies']) ? ((request_var('disable_smilies', !$user->optionget('smilies'))) ? false : true) : false;
-				$enable_urls	= ($config['allow_sig_links']) ? ((request_var('disable_magic_url', false)) ? false : true) : false;
+				$enable_bbcode	= ($config['allow_sig_bbcode']) ? (bool) $this->optionget($user_row, 'sig_bbcode') : false;
+				$enable_smilies	= ($config['allow_sig_smilies']) ? (bool) $this->optionget($user_row, 'sig_smilies') : false;
+				$enable_urls	= ($config['allow_sig_links']) ? (bool) $this->optionget($user_row, 'sig_links') : false;
 				$signature		= utf8_normalize_nfc(request_var('signature', (string) $user_row['user_sig'], true));
 
 				$preview		= (isset($_POST['preview'])) ? true : false;
@@ -1555,6 +1555,10 @@ class acp_users
 				if ($submit || $preview)
 				{
 					include_once($phpbb_root_path . 'includes/message_parser.' . $phpEx);
+
+					$enable_bbcode	= ($config['allow_sig_bbcode']) ? ((request_var('disable_bbcode', false)) ? false : true) : false;
+					$enable_smilies	= ($config['allow_sig_smilies']) ? ((request_var('disable_smilies', false)) ? false : true) : false;
+					$enable_urls	= ($config['allow_sig_links']) ? ((request_var('disable_magic_url', false)) ? false : true) : false;
 
 					$message_parser = new parse_message($signature);
 
@@ -1573,8 +1577,13 @@ class acp_users
 
 					if (!sizeof($error) && $submit)
 					{
+						$this->optionset($user_row, 'sig_bbcode', $enable_bbcode);
+						$this->optionset($user_row, 'sig_smilies', $enable_smilies);
+						$this->optionset($user_row, 'sig_links', $enable_urls);
+
 						$sql_ary = array(
 							'user_sig'					=> (string) $message_parser->message,
+							'user_options'				=> $user_row['user_options'],
 							'user_sig_bbcode_uid'		=> (string) $message_parser->bbcode_uid,
 							'user_sig_bbcode_bitfield'	=> (string) $message_parser->bbcode_bitfield
 						);

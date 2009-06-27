@@ -1764,7 +1764,7 @@ CREATE TABLE phpbb_users (
 	user_allow_viewonline number(1) DEFAULT '1' NOT NULL,
 	user_allow_viewemail number(1) DEFAULT '1' NOT NULL,
 	user_allow_massemail number(1) DEFAULT '1' NOT NULL,
-	user_options number(11) DEFAULT '895' NOT NULL,
+	user_options number(11) DEFAULT '230271' NOT NULL,
 	user_avatar varchar2(255) DEFAULT '' ,
 	user_avatar_type number(2) DEFAULT '0' NOT NULL,
 	user_avatar_width number(4) DEFAULT '0' NOT NULL,

@@ -187,7 +187,7 @@ function user_add($user_row, $cp_data = false)
 		'user_ip'			=> '',
 		'user_regdate'		=> time(),
 		'user_passchg'		=> time(),
-		'user_options'		=> 895,
+		'user_options'		=> 230271,
 		// We do not set the new flag here - registration scripts need to specify it
 		'user_new'			=> 0,
 

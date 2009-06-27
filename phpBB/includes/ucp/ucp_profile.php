@@ -456,9 +456,9 @@ class ucp_profile
 				include($phpbb_root_path . 'includes/functions_posting.' . $phpEx);
 				include($phpbb_root_path . 'includes/functions_display.' . $phpEx);
 
-				$enable_bbcode	= ($config['allow_sig_bbcode']) ? ((request_var('disable_bbcode', !$user->optionget('bbcode'))) ? false : true) : false;
-				$enable_smilies	= ($config['allow_sig_smilies']) ? ((request_var('disable_smilies', !$user->optionget('smilies'))) ? false : true) : false;
-				$enable_urls	= ($config['allow_sig_links']) ? ((request_var('disable_magic_url', false)) ? false : true) : false;
+				$enable_bbcode	= ($config['allow_sig_bbcode']) ? (bool) $user->optionget('sig_bbcode') : false;
+				$enable_smilies	= ($config['allow_sig_smilies']) ? (bool) $user->optionget('sig_smilies') : false;
+				$enable_urls	= ($config['allow_sig_links']) ? (bool) $user->optionget('sig_links') : false;
 
 				$signature		= utf8_normalize_nfc(request_var('signature', (string) $user->data['user_sig'], true));
 
@@ -467,6 +467,10 @@ class ucp_profile
 				if ($submit || $preview)
 				{
 					include($phpbb_root_path . 'includes/message_parser.' . $phpEx);
+
+					$enable_bbcode	= ($config['allow_sig_bbcode']) ? ((request_var('disable_bbcode', false)) ? false : true) : false;
+					$enable_smilies	= ($config['allow_sig_smilies']) ? ((request_var('disable_smilies', false)) ? false : true) : false;
+					$enable_urls	= ($config['allow_sig_links']) ? ((request_var('disable_magic_url', false)) ? false : true) : false;
 
 					if (!sizeof($error))
 					{
@@ -487,8 +491,13 @@ class ucp_profile
 
 						if (!sizeof($error) && $submit)
 						{
+							$user->optionset('sig_bbcode', $enable_bbcode);
+							$user->optionset('sig_smilies', $enable_smilies);
+							$user->optionset('sig_links', $enable_urls);
+
 							$sql_ary = array(
 								'user_sig'					=> (string) $message_parser->message,
+								'user_options'				=> $user->data['user_options'],
 								'user_sig_bbcode_uid'		=> (string) $message_parser->bbcode_uid,
 								'user_sig_bbcode_bitfield'	=> $message_parser->bbcode_bitfield
 							);
