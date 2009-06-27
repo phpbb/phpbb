@@ -2,7 +2,7 @@
 /**
 *
 * @package acp
-* @version $Id: acp_ranks.php 8479 2008-03-29 00:22:48Z naderman $
+* @version $Id$
 * @copyright (c) 2005 phpBB Group
 * @license http://opensource.org/licenses/gpl-license.php GNU Public License
 *
@@ -65,28 +65,6 @@ class acp_send_statistics
 				));
 			}
 		}
-	}
-
-	/**
-	* Output the data as an HTML Definition List.
-	*
-	* @param   mixed
-	* @param   string
-	* @param   string
-	* @return  void
-	*/
-	function data_printer($value, $key)
-	{
-		echo '<dt>', htmlentities($key), '</dt>', $ident, "\t", '<dd>';
-		if (is_array($value))
-		{
-			$value = htmlentities(serialize($value));
-			echo '<dl>';
-			echo '</dl>';
-		} else {
-			echo htmlentities($value);
-		}
-		echo '</dd>';
 	}
 }
 
