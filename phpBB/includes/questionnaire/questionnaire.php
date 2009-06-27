@@ -108,7 +108,7 @@ class Questionnaire_Data_Collector
      * @param   array
      * @param   string
      */
-    function __construct()
+    function Questionnaire_Data_Collector()
     {
         $this->providers = array();
     }

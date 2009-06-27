@@ -27,9 +27,8 @@ class questionnaire_phpbb_data_provider
 	* Constructor.
 	*
 	* @param	array	$config
-	* @param	string	$oldversion
 	*/
-	function __construct($config)
+	function questionnaire_phpbb_data_provider($config)
 	{
 		// generate a unique id if necessary
 		if (!isset($config['questionnaire_unique_id']))
