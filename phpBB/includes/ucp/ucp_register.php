@@ -222,8 +222,8 @@ class ucp_register
 
 			if ($config['enable_confirm'])
 			{
-				$vc_response = $captcha->validate();
-				if (!$captcha->is_solved() && $vc_response)
+				$vc_response = $captcha->validate($data);
+				if ($vc_response)
 				{
 					$error[] = $vc_response;
 				}

@@ -178,7 +178,7 @@ class phpbb_default_captcha
 		return;
 	}
 
-	function validate()
+	function validate($data = false)
 	{
 		global $config, $db, $user;
 		
@@ -344,7 +344,7 @@ class phpbb_default_captcha
 	
 	function is_solved()
 	{
-		if ($this->solved === 0)
+		if (request_var('confirm_code', false) && $this->solved === 0)
 		{
 			$this->validate();
 		}

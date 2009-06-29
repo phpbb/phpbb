@@ -772,7 +772,12 @@ if ($submit || $preview || $refresh)
 
 	if ($config['enable_post_confirm'] && !$user->data['is_registered'] && in_array($mode, array('quote', 'post', 'reply')))
 	{
-		$vc_response = $captcha->validate();
+		$captcha_data = array(
+			'message'	=> utf8_normalize_nfc(request_var('message', '', true)),
+			'subject'	=> utf8_normalize_nfc(request_var('subject', '', true)),
+			'username'	=> utf8_normalize_nfc(request_var('username', '', true)),
+		);
+		$vc_response = $captcha->validate($captcha_data);
 		if ($vc_response)
 		{
 			$error[] = $vc_response;
