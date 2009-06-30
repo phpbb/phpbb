@@ -10,7 +10,9 @@
 <!-- ENDIF -->
 <!-- IF S_RECAPTCHA_AVAILABLE -->
 	<dl>
+	<dt><label>{L_CONFIRM_CODE}</label>:<br /><span>{L_RECAPTCHA_EXPLAIN}</span></dt>
 	<dd>
+		
 		<script type="text/javascript" src="{RECAPTCHA_SERVER}/challenge?k={RECAPTCHA_PUBKEY}{RECAPTCHA_ERRORGET}">
 		// <![CDATA[
 		var RecaptchaOptions = {
