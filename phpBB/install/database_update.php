@@ -680,6 +680,7 @@ function database_update_info()
 				USERS_TABLE				=> array(
 					'user_options'		=> array('UINT:11', 230271),
 				),
+			),
 		),
 
 		// No changes from 3.0.5-RC1 to 3.0.5
