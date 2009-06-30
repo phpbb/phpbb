@@ -255,8 +255,8 @@ class phpbb_default_captcha
 				'code'			=> (string) $this->code,
 				'seed'			=> (int) $this->seed)) . '
 				WHERE
-				confirm_id = \'' . $db->sql_escape($this->confirm_id) . '\' AND
-				session_id = \'' . $db->sql_escape($user->session_id) . '\'';
+				confirm_id = \'' . $db->sql_escape($this->confirm_id) . '\' 
+					AND session_id = \'' . $db->sql_escape($user->session_id) . '\'';
 		$db->sql_query($sql);
 	}
 
@@ -278,8 +278,8 @@ class phpbb_default_captcha
 				'seed'			=> (int) $this->seed)) . '
 				, attempts = attempts + 1 
 				WHERE
-				confirm_id = \'' . $db->sql_escape($this->confirm_id) . '\' AND
-				session_id = \'' . $db->sql_escape($user->session_id) . '\'';
+				confirm_id = \'' . $db->sql_escape($this->confirm_id) . '\' 
+					AND session_id = \'' . $db->sql_escape($user->session_id) . '\'';
 		$db->sql_query($sql);
 	}
 	
@@ -293,7 +293,7 @@ class phpbb_default_captcha
 		$sql = 'SELECT code, seed, attempts
 			FROM ' . CONFIRM_TABLE . "
 			WHERE confirm_id = '" . $db->sql_escape($this->confirm_id) . "'
-			AND session_id = '" . $db->sql_escape($user->session_id) . "'
+				AND session_id = '" . $db->sql_escape($user->session_id) . "'
 				AND confirm_type = " . $this->type;
 		$result = $db->sql_query($sql);
 		$row = $db->sql_fetchrow($result);

@@ -46,7 +46,7 @@ $lang = array_merge($lang, array(
 	'RECAPTCHA_PRIVATE'				=> 'Private reCaptcha key',
 	'RECAPTCHA_PRIVATE_EXPLAIN'		=> 'Your private reCaptcha key. You can obtain keys from <a href="http://recaptcha.net">reCaptcha.net</a>.',
 
-	'RECAPTCHA_EXPLAIN'				=> 'To avoid spam postings, please enter the two words shown in the picture into the text field undeneath.',
+	'RECAPTCHA_EXPLAIN'				=> 'To avoid spam postings, please enter the two words shown in the picture into the text field underneath.',
 
 ));
 
