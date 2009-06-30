@@ -1,3 +1,13 @@
+<!-- IF S_TYPE == 0 -->
+<div class="panel">
+	<div class="inner"><span class="corners-top"><span></span></span>
+
+	<h3>{L_CONFIRMATION}</h3>
+	<p>{L_CONFIRM_EXPLAIN}</p>
+
+	<fieldset class="fields2">
+
+<!-- ENDIF -->
 <!-- IF S_RECAPTCHA_AVAILABLE -->
 	<dl>
 	<dd>
@@ -23,3 +33,7 @@
 <!-- ELSE -->
 {L_RECAPTCHA_NOT_AVAILABLE}
 <!-- ENDIF -->
+<!-- IF S_TYPE == 0 -->
+
+<!-- ENDIF -->
+	
