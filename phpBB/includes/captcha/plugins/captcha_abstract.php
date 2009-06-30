@@ -38,12 +38,13 @@ class phpbb_default_captcha
 		global $config, $db, $user;
 
 		// read input
+		$this->confirm_id = request_var('confirm_id', '');
 		$this->confirm_code = request_var('confirm_code', '');
 		$refresh = request_var('refresh_vc', false) && $config['confirm_refresh'];
 
 		$this->type = (int) $type;
 
-		if (!$this->load_code())
+		if (!strlen($this->confirm_id) || !$this->load_code())
 		{
 			// we have no confirm ID, better get ready to display something
 			$this->generate_code();
@@ -95,6 +96,7 @@ class phpbb_default_captcha
 			'CONFIRM_IMG'				=> '<img src="'. $link . '" />',
 			'CONFIRM_ID'				=> $this->confirm_id,
 			'S_CONFIRM_CODE'			=> true,
+			'S_TYPE'					=> $this->type,
 			'S_CONFIRM_REFRESH'			=> ($config['enable_confirm'] && $config['confirm_refresh'] && $this->type == CONFIRM_REG) ? true : false,
 			'L_CONFIRM_EXPLAIN'			=> $explain,
 		));
@@ -178,7 +180,7 @@ class phpbb_default_captcha
 		return;
 	}
 
-	function validate($data = false)
+	function validate()
 	{
 		global $config, $db, $user;
 		
@@ -204,7 +206,6 @@ class phpbb_default_captcha
 		{
 			// okay, incorrect answer. Let's ask a new question.
 			$this->new_attempt();
-			$this->solved = false;
 			return $error;
 		}
 		else
@@ -277,6 +278,7 @@ class phpbb_default_captcha
 				'seed'			=> (int) $this->seed)) . '
 				, attempts = attempts + 1 
 				WHERE
+				confirm_id = \'' . $db->sql_escape($this->confirm_id) . '\' AND
 				session_id = \'' . $db->sql_escape($user->session_id) . '\'';
 		$db->sql_query($sql);
 	}
@@ -288,9 +290,10 @@ class phpbb_default_captcha
 	{
 		global $db, $user;
 
-		$sql = 'SELECT code, confirm_id, seed, attempts
+		$sql = 'SELECT code, seed, attempts
 			FROM ' . CONFIRM_TABLE . "
-			WHERE session_id = '" . $db->sql_escape($user->session_id) . "'
+			WHERE confirm_id = '" . $db->sql_escape($this->confirm_id) . "'
+			AND session_id = '" . $db->sql_escape($user->session_id) . "'
 				AND confirm_type = " . $this->type;
 		$result = $db->sql_query($sql);
 		$row = $db->sql_fetchrow($result);
@@ -298,7 +301,6 @@ class phpbb_default_captcha
 
 		if ($row)
 		{
-			$this->confirm_id = $row['confirm_id'];
 			$this->code = $row['code'];
 			$this->seed = $row['seed'];
 			$this->attempts = $row['attempts'];
