@@ -97,6 +97,7 @@ if ($keywords || $author || $author_id || $search_id || $submit)
 
 	// If we are looking for authors get their ids
 	$author_id_ary = array();
+	$sql_author_match = '';
 	if ($author_id)
 	{
 		$author_id_ary[] = $author_id;
@@ -121,6 +122,22 @@ if ($keywords || $author || $author_id || $search_id || $submit)
 			$author_id_ary[] = (int) $row['user_id'];
 		}
 		$db->sql_freeresult($result);
+
+		$sql_where = (strpos($author, '*') !== false) ? ' post_username ' . $db->sql_like_expression(str_replace('*', $db->any_char, utf8_clean_string($author))) : " post_username = '" . $db->sql_escape(utf8_clean_string($author)) . "'";
+
+		$sql = 'SELECT 1 as guest_post
+			FROM ' . POSTS_TABLE . "
+			WHERE $sql_where
+				AND poster_id = " . ANONYMOUS;
+		$result = $db->sql_query_limit($sql, 1);
+		$found_guest_post = $db->sql_fetchfield('guest_post');
+		$db->sql_freeresult($result);
+
+		if ($found_guest_post)
+		{
+			$author_id_ary[] = ANONYMOUS;
+			$sql_author_match = (strpos($author, '*') !== false) ? ' ' . $db->sql_like_expression(str_replace('*', $db->any_char, utf8_clean_string($author))) : " = '" . $db->sql_escape(utf8_clean_string($author)) . "'";
+		}
 
 		if (!sizeof($author_id_ary))
 		{
@@ -435,12 +452,12 @@ if ($keywords || $author || $author_id || $search_id || $submit)
 
 	if (!empty($search->search_query))
 	{
-		$total_match_count = $search->keyword_search($show_results, $search_fields, $search_terms, $sort_by_sql, $sort_key, $sort_dir, $sort_days, $ex_fid_ary, $m_approve_fid_ary, $topic_id, $author_id_ary, $id_ary, $start, $per_page);
+		$total_match_count = $search->keyword_search($show_results, $search_fields, $search_terms, $sort_by_sql, $sort_key, $sort_dir, $sort_days, $ex_fid_ary, $m_approve_fid_ary, $topic_id, $author_id_ary, $sql_author_match, $id_ary, $start, $per_page);
 	}
 	else if (sizeof($author_id_ary))
 	{
 		$firstpost_only = ($search_fields === 'firstpost' || $search_fields == 'titleonly') ? true : false;
-		$total_match_count = $search->author_search($show_results, $firstpost_only, $sort_by_sql, $sort_key, $sort_dir, $sort_days, $ex_fid_ary, $m_approve_fid_ary, $topic_id, $author_id_ary, $id_ary, $start, $per_page);
+		$total_match_count = $search->author_search($show_results, $firstpost_only, $sort_by_sql, $sort_key, $sort_dir, $sort_days, $ex_fid_ary, $m_approve_fid_ary, $topic_id, $author_id_ary, $sql_author_match, $id_ary, $start, $per_page);
 	}
 
 	// For some searches we need to print out the "no results" page directly to allow re-sorting/refining the search options.
