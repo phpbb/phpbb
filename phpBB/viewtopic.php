@@ -28,6 +28,9 @@ $topic_id	= request_var('t', 0);
 $post_id	= request_var('p', 0);
 $voted_id	= request_var('vote_id', array('' => 0));
 
+$voted_id = (sizeof($voted_id) > 1) ? array_unique($voted_id) : $voted_id;
+
+
 $start		= request_var('start', 0);
 $view		= request_var('view', '');
 
