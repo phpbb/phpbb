@@ -136,7 +136,6 @@ $lang = array_merge($lang, array(
 	'ACP_PERMISSION_TRACE'		=> 'Permission trace',
 	'ACP_PHP_INFO'				=> 'PHP information',
 	'ACP_POST_SETTINGS'			=> 'Post settings',
-	'ACP_PRUNE_ATTACHMENTS'		=> 'Prune attachments',
 	'ACP_PRUNE_FORUMS'			=> 'Prune forums',
 	'ACP_PRUNE_USERS'			=> 'Prune users',
 	'ACP_PRUNING'				=> 'Pruning',
@@ -616,13 +615,14 @@ $lang = array_merge($lang, array(
 	'LOG_PROFILE_FIELD_REMOVED'		=> '<strong>Profile field removed</strong><br />» %s',
 
 	'LOG_PRUNE'					=> '<strong>Pruned forums</strong><br />» %s',
-	'LOG_PRUNE_ATTACHMENTS'		=> '<strong>Pruned attachments</strong>',
 	'LOG_AUTO_PRUNE'			=> '<strong>Auto-pruned forums</strong><br />» %s',
 	'LOG_PRUNE_USER_DEAC'		=> '<strong>Users deactivated</strong><br />» %s',
 	'LOG_PRUNE_USER_DEL_DEL'	=> '<strong>Users pruned and posts deleted</strong><br />» %s',
 	'LOG_PRUNE_USER_DEL_ANON'	=> '<strong>Users pruned and posts retained</strong><br />» %s',
 
 	'LOG_PURGE_CACHE'			=> '<strong>Purged cache</strong>',
+	'LOG_PURGE_SESSIONS'		=> '<strong>Purged sessions</strong>',
+
 
 	'LOG_RANK_ADDED'		=> '<strong>Added new rank</strong><br />» %s',
 	'LOG_RANK_REMOVED'		=> '<strong>Removed rank</strong><br />» %s',
