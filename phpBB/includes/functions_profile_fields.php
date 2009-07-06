@@ -383,15 +383,16 @@ class custom_profile
 			break;
 		}
 
+		// use new array for the UPDATE; changes in the key do not affect the original array
+		$cp_data_sql = array();
 		foreach ($cp_data as $key => $value)
 		{
 			// Firebird is case sensitive with delimiter
-			$cp_data[$left_delim . (($db->sql_layer == 'firebird' || $db->sql_layer == 'oracle') ? strtoupper($key) : $key) . $right_delim] = $value;
-			unset($cp_data[$key]);
+			$cp_data_sql[$left_delim . (($db->sql_layer == 'firebird' || $db->sql_layer == 'oracle') ? strtoupper($key) : $key) . $right_delim] = $value;
 		}
 
 		$sql = 'UPDATE ' . PROFILE_FIELDS_DATA_TABLE . '
-			SET ' . $db->sql_build_array('UPDATE', $cp_data) . "
+			SET ' . $db->sql_build_array('UPDATE', $cp_data_sql) . "
 			WHERE user_id = $user_id";
 		$db->sql_query($sql);
 
@@ -401,7 +402,7 @@ class custom_profile
 
 			$db->sql_return_on_error(true);
 
-			$sql = 'INSERT INTO ' . PROFILE_FIELDS_DATA_TABLE . ' ' . $db->sql_build_array('INSERT', $cp_data);
+			$sql = 'INSERT INTO ' . PROFILE_FIELDS_DATA_TABLE . ' ' . $db->sql_build_array('INSERT', $cp_data_sql);
 			$db->sql_query($sql);
 
 			$db->sql_return_on_error(false);
