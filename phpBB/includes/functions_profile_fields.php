@@ -398,7 +398,7 @@ class custom_profile
 
 		if (!$db->sql_affectedrows())
 		{
-			$cp_data['user_id'] = (int) $user_id;
+			$cp_data_sql['user_id'] = (int) $user_id;
 
 			$db->sql_return_on_error(true);
 
