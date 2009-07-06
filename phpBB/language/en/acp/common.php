@@ -136,6 +136,7 @@ $lang = array_merge($lang, array(
 	'ACP_PERMISSION_TRACE'		=> 'Permission trace',
 	'ACP_PHP_INFO'				=> 'PHP information',
 	'ACP_POST_SETTINGS'			=> 'Post settings',
+	'ACP_PRUNE_ATTACHMENTS'		=> 'Prune attachments',
 	'ACP_PRUNE_FORUMS'			=> 'Prune forums',
 	'ACP_PRUNE_USERS'			=> 'Prune users',
 	'ACP_PRUNING'				=> 'Pruning',
@@ -338,6 +339,10 @@ $lang = array_merge($lang, array(
 	'PURGE_CACHE'			=> 'Purge the cache',
 	'PURGE_CACHE_CONFIRM'	=> 'Are you sure you wish to purge the cache?',
 	'PURGE_CACHE_EXPLAIN'	=> 'Purge all cache related items, this includes any cached template files or queries.',
+
+	'PURGE_SESSIONS'			=> 'Purge all sessions',
+	'PURGE_SESSIONS_CONFIRM'	=> 'Are you sure you wish to purge all sessions? This will log out all users.',
+	'PURGE_SESSIONS_EXPLAIN'	=> 'Purge all sessions. This will log out all users by truncating the session table.',
 
 	'RESET_DATE'					=> 'Reset board’s start date',
 	'RESET_DATE_CONFIRM'			=> 'Are you sure you wish to reset the board’s start date?',
@@ -611,6 +616,7 @@ $lang = array_merge($lang, array(
 	'LOG_PROFILE_FIELD_REMOVED'		=> '<strong>Profile field removed</strong><br />» %s',
 
 	'LOG_PRUNE'					=> '<strong>Pruned forums</strong><br />» %s',
+	'LOG_PRUNE_ATTACHMENTS'		=> '<strong>Pruned attachments</strong>',
 	'LOG_AUTO_PRUNE'			=> '<strong>Auto-pruned forums</strong><br />» %s',
 	'LOG_PRUNE_USER_DEAC'		=> '<strong>Users deactivated</strong><br />» %s',
 	'LOG_PRUNE_USER_DEL_DEL'	=> '<strong>Users pruned and posts deleted</strong><br />» %s',
