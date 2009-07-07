@@ -48,6 +48,8 @@ $lang = array_merge($lang, array(
 	'BAN_REASON'			=> 'Reason for ban',
 	'BAN_GIVE_REASON'		=> 'Reason shown to the banned',
 	'BAN_UPDATE_SUCCESSFUL'	=> 'The banlist has been updated successfully.',
+	'BANNED_UNTIL_DATE'		=> 'until %s', // Example: "until Mon 13.Jul.2009, 14:44"
+	'BANNED_UNTIL_DURATION'	=> '%1$s (until %2$s)', // Example: "7 days (until Tue 14.Jul.2009, 14:44)"
 
 	'EMAIL_BAN'					=> 'Ban one or more e-mail addresses',
 	'EMAIL_BAN_EXCLUDE_EXPLAIN'	=> 'Enable this to exclude the entered e-mail address from all current bans.',
@@ -67,7 +69,7 @@ $lang = array_merge($lang, array(
 	'LENGTH_BAN_INVALID'		=> 'The date has to be formatted <kbd>YYYY-MM-DD</kbd>.',
 
 	'PERMANENT'		=> 'Permanent',
-	
+
 	'UNTIL'						=> 'Until',
 	'USER_BAN'					=> 'Ban one or more usernames',
 	'USER_BAN_EXCLUDE_EXPLAIN'	=> 'Enable this to exclude the entered users from all current bans.',
@@ -75,8 +77,6 @@ $lang = array_merge($lang, array(
 	'USER_NO_BANNED'			=> 'No banned usernames',
 	'USER_UNBAN'				=> 'Un-ban or un-exclude usernames',
 	'USER_UNBAN_EXPLAIN'		=> 'You can unban (or un-exclude) multiple users in one go using the appropriate combination of mouse and keyboard for your computer and browser. Excluded users are emphasised.',
-	
-
 ));
 
 ?>
