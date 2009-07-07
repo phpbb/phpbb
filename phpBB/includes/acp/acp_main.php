@@ -354,11 +354,19 @@ class acp_main
 						
 						$tables = array(CONFIRM_TABLE, SESSIONS_TABLE);
 						
-						// DELETE would probably take a lot longer if we're dealing with a runaway table
 						foreach ($tables as $table)
 						{
-							$sql = "TRUNCATE TABLE $table";
-							$db->sql_query($sql);
+							switch ($db->sql_layer)
+							{
+								case 'sqlite':
+								case 'firebird':
+									$db->sql_query("DELETE FROM $table");
+								break;
+
+								default:
+									$db->sql_query("TRUNCATE TABLE $table");
+								break;
+							}
 						}
 						
 						// let's restore the admin session
