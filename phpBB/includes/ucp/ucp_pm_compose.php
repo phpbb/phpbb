@@ -84,6 +84,10 @@ function compose_pm($id, $mode, $action)
 		}
 		redirect(append_sid("{$phpbb_root_path}ucp.$phpEx", 'i=pm'));
 	}
+	
+	// Since viewtopic.php language entries are used in several modes,
+	// we include the language file here
+	$user->add_lang('viewtopic');
 
 	// Output PM_TO box if message composing
 	if ($action != 'edit')
@@ -746,7 +750,6 @@ function compose_pm($id, $mode, $action)
 	// Preview
 	if (!sizeof($error) && $preview)
 	{
-		$user->add_lang('viewtopic');
 		$preview_message = $message_parser->format_display($enable_bbcode, $enable_urls, $enable_smilies, false);
 
 		$preview_signature = $user->data['user_sig'];
