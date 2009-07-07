@@ -72,12 +72,12 @@ function request_var($var_name, $default, $multibyte = false, $cookie = false)
 	}
 
 	$super_global = ($cookie) ? '_COOKIE' : '_REQUEST';
-	if (!isset($$super_global[$var_name]) || is_array($$super_global[$var_name]) != is_array($default))
+	if (!isset($GLOBALS[$super_global][$var_name]) || is_array($GLOBALS[$super_global][$var_name]) != is_array($default))
 	{
 		return (is_array($default)) ? array() : $default;
 	}
 
-	$var = $$super_global[$var_name];
+	$var = $GLOBALS[$super_global][$var_name];
 	if (!is_array($default))
 	{
 		$type = gettype($default);
