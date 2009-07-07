@@ -231,7 +231,7 @@ parse_css_file = {PARSE_CSS_FILE}
 								$db->sql_query($sql);
 							}
 						}
-						elseif ( $action == 'deactivate' )
+						else if ($action == 'deactivate')
 						{
 							$s_hidden_fields = array(
 								'i'			=> $id,
