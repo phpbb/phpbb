@@ -158,41 +158,38 @@ else
 	exit_handler();
 }
 
-$namespace = 'phpbb';
-
 echo '<?xml version="1.0" encoding="UTF-8"?>' . "\n";
-echo '<' . $namespace . ':feed xmlns:' . $namespace . '="http://www.w3.org/2005/Atom" xmlns="http://www.w3.org/1999/xhtml" xml:lang="' . $global_vars['FEED_LANG'] . '">' . "\n";
-echo '<' . $namespace . ':link rel="self" type="application/atom+xml" href="' . $global_vars['SELF_LINK'] . '" />' . "\n\n";
+echo '<feed xmlns="http://www.w3.org/2005/Atom" xml:lang="' . $global_vars['FEED_LANG'] . '">' . "\n";
+echo '<link rel="self" type="application/atom+xml" href="' . $global_vars['SELF_LINK'] . '" />' . "\n\n";
 
-echo (!empty($global_vars['FEED_TITLE'])) ? '<' . $namespace . ':title>' . $global_vars['FEED_TITLE'] . '</' . $namespace . ':title>' . "\n" : '';
-echo (!empty($global_vars['FEED_SUBTITLE'])) ? '<' . $namespace . ':subtitle>' . $global_vars['FEED_SUBTITLE'] . '</' . $namespace . ':subtitle>' . "\n" : '';
-echo (!empty($global_vars['FEED_LINK'])) ? '<' . $namespace . ':link href="' . $global_vars['FEED_LINK'] .'" />' . "\n" : '';
-echo '<' . $namespace . ':updated>' . $global_vars['FEED_UPDATED'] . '</' . $namespace . ':updated>' . "\n\n";
+echo (!empty($global_vars['FEED_TITLE'])) ? '<title>' . $global_vars['FEED_TITLE'] . '</title>' . "\n" : '';
+echo (!empty($global_vars['FEED_SUBTITLE'])) ? '<subtitle>' . $global_vars['FEED_SUBTITLE'] . '</subtitle>' . "\n" : '';
+echo (!empty($global_vars['FEED_LINK'])) ? '<link href="' . $global_vars['FEED_LINK'] .'" />' . "\n" : '';
+echo '<updated>' . $global_vars['FEED_UPDATED'] . '</updated>' . "\n\n";
 
-echo '<' . $namespace . ':author><' . $namespace . ':name>' . $global_vars['FEED_AUTHOR'] . '</' . $namespace . ':name></' . $namespace . ':author>' . "\n";
-echo '<' . $namespace . ':id>' . $global_vars['SELF_LINK'] . '</' . $namespace . ':id>' . "\n";
+echo '<author><name><![CDATA[' . $global_vars['FEED_AUTHOR'] . ']]></name></author>' . "\n";
+echo '<id>' . $global_vars['SELF_LINK'] . '</id>' . "\n";
 
 foreach ($item_vars as $row)
 {
-	echo '<' . $namespace . ':entry>' . "\n";
+	echo '<entry>' . "\n";
 
 	if (!empty($row['author']))
 	{
-		echo '<' . $namespace . ':author><' . $namespace . ':name>' . $row['author'] . '</' . $namespace . ':name></' . $namespace . ':author>' . "\n";
+		echo '<author><name><![CDATA[' . $row['author'] . ']]></name></author>' . "\n";
 	}
 
-	echo '<' . $namespace . ':updated>' . $row['pubdate'] . '</' . $namespace . ':updated>' . "\n";
-	echo '<' . $namespace . ':id>' . $row['link'] . '</' . $namespace . ':id>' . "\n";
-	echo '<' . $namespace . ':link href="' . $row['link'] . '"/>' . "\n";
-	echo '<' . $namespace . ':title type="xhtml"><div xmlns="http://www.w3.org/1999/xhtml">' . $row['title'] . '</div></' . $namespace . ':title>' . "\n\n";
+	echo '<updated>' . $row['pubdate'] . '</updated>' . "\n";
+	echo '<id>' . $row['link'] . '</id>' . "\n";
+	echo '<link href="' . $row['link'] . '"/>' . "\n";
+	echo '<title type="html"><![CDATA[' . $row['title'] . ']]></title>' . "\n\n";
 
 	if (!empty($row['category']))
 	{
-		echo '<' . $namespace . ':category term="' . $row['category_name'] . '" scheme="' . $row['category'] . '" label="' . $row['category_name'] . '"/>' . "\n";
+		echo '<category term="' . $row['category_name'] . '" scheme="' . $row['category'] . '" label="' . $row['category_name'] . '"/>' . "\n";
 	}
 
-	echo '<' . $namespace . ':content type="xhtml" xml:base="' . $row['link'] . '">' . "\n";
-	echo '<div xmlns="http://www.w3.org/1999/xhtml">' . "\n";
+	echo '<content type="html" xml:base="' . $row['link'] . '"><![CDATA[' . "\n";
 	echo $row['description'];
 
 	if (!empty($row['statistics']))
@@ -200,11 +197,11 @@ foreach ($item_vars as $row)
 		echo '<p>' . $user->lang['STATISTICS'] . ': ' . $row['statistics'] . '</p>';
 	}
 
-	echo '<hr /></div>' . "\n" . '</' . $namespace . ':content>' . "\n";
-	echo '</' . $namespace . ':entry>' . "\n";
+	echo '<hr /></div>' . "\n" . ']]></content>' . "\n";
+	echo '</entry>' . "\n";
 }
 
-echo '</' . $namespace . ':feed>';
+echo '</feed>';
 
 garbage_collection();
 exit_handler();
@@ -257,17 +254,19 @@ function feed_generate_content($content, $uid, $bitfield, $options)
 	$content = str_replace('<a href="#" onclick="selectCode(this); return false;">' .$user->lang['SELECT_ALL_CODE'] . '</a>', '', $content);
 	$content = preg_replace('#(onkeypress|onclick)="(.*?)"#si', '', $content);
 
+	// Firefox does not support CSS for feeds, though
+
 	// Remove font sizes
-	$content = preg_replace('#<span style="font-size: [0-9]+%; line-height: [0-9]+%;">([^>]+)</span>#iU', '\1', $content);
+//	$content = preg_replace('#<span style="font-size: [0-9]+%; line-height: [0-9]+%;">([^>]+)</span>#iU', '\1', $content);
 
 	// Make text strong :P
-	$content = preg_replace('#<span style="font-weight: bold?">([^<]+)</span>#iU', '<strong>\1</strong>', $content);
+//	$content = preg_replace('#<span style="font-weight: bold?">(.*?)</span>#iU', '<strong>\1</strong>', $content);
 
 	// Italic
-	$content = preg_replace('#<span style="font-style: italic?">([^<]+)</span>#iU', '<em>\1</em>', $content);
+//	$content = preg_replace('#<span style="font-style: italic?">([^<]+)</span>#iU', '<em>\1</em>', $content);
 
 	// Underline
-	$content = preg_replace('#<span style="text-decoration: underline?">([^<]+)</span>#iU', '<u>\1</u>', $content);
+//	$content = preg_replace('#<span style="text-decoration: underline?">([^<]+)</span>#iU', '<u>\1</u>', $content);
 
 	// Remove embed Windows Media Streams
 	$content	= preg_replace( '#<\!--\[if \!IE\]>-->([^[]+)<\!--<!\[endif\]-->#si', '', $content);
@@ -292,6 +291,9 @@ function feed_generate_content($content, $uid, $bitfield, $options)
 	);
 
 	$content = str_replace(array_keys($entities), array_values($entities), $content);
+
+	// Remove CDATA blocks. ;)
+	$content = preg_replace('#\<\!\[CDATA\[(.*?)\]\]\>#s', '', $content);
 
 	// Other control characters
 	// $content = preg_replace('#(?:[\x00-\x1F\x7F]+|(?:\xC2[\x80-\x9F])+)#', '', $content);
