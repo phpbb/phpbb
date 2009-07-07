@@ -10,31 +10,33 @@
 //<![CDATA[
 var iframect = 0;
 
-function iframeUpdated()
+function iframe_updated()
 {
 	if (iframect++ == 0)
 	{
 		return;
 	}
 
-	//dE('questionnaireForm', -1);
-	//dE('questionnaireThanks', 1);
+	//dE('questionnaire-form', -1);
+	//dE('questionnaire-thanks', 1);
 }
 //]]>
 </script>
 
-<iframe onload="iframeUpdated();" name="questionaireResult" style="display:none"></iframe>
-<form action="{U_COLLECT_STATS}" method="post" target="questionaireResult" id="questionnaireForm">
+<iframe onload="iframe_updated();" name="questionaire_result" style="display: none;"></iframe>
 
-	<p id="show_button"><input type="button" class="button2" onclick="dE('configlist', 1);dE('show_button', -1);" value="{L_SHOW_STATISTICS}"/></p>
+<form action="{U_COLLECT_STATS}" method="post" target="questionaire_result" id="questionnaire-form">
 
-    <div id="configlist">
-        <input type="button" class="button2" onclick="dE('show_button', 1);dE('configlist', -1);" value="{L_HIDE_STATISTICS}"/>
+	<p id="show-button"><input type="button" class="button2" onclick="dE('configlist', 1); dE('show-button', -1);" value="{L_SHOW_STATISTICS}" /></p>
+
+	<div id="configlist">
+		<input type="button" class="button2" onclick="dE('show-button', 1); dE('configlist', -1);" value="{L_HIDE_STATISTICS}" />
 		<p class="submit-buttons">
 			<input class="button1" type="submit" id="submit" name="submit" value="{L_SEND_STATISTICS}" />
 		</p>
+
 		<!-- BEGIN providers -->
-        <fieldset>
+		<fieldset>
 			<legend>{providers.NAME}</legend>
 			<!-- BEGIN values -->
 			<dl>
@@ -44,20 +46,22 @@ function iframeUpdated()
 			<!-- END values -->
 		</fieldset>
 		<!-- END providers -->
-    </div>
-    <p class="submit-buttons">
+	</div>
+	<p class="submit-buttons">
 		<input type="hidden" name="systemdata" value="{RAW_DATA}" />
 		<input class="button1" type="submit" id="submit" name="submit" value="{L_SEND_STATISTICS}" />
 	</p>
 </form>
-<div id="questionnaireThanks">
-    <p><strong>{L_THANKS_SEND_STATISTICS}</strong></p>
+
+<div id="questionnaire-thanks">
+	<p><strong>{L_THANKS_SEND_STATISTICS}</strong></p>
 </div>
 
 <script type="text/javascript">
 //<![CDATA[
-dE('configlist', false);
-dE('questionnaireThanks', false);
+	dE('configlist', false);
+	dE('questionnaire-thanks', false);
 //]]>
 </script>
+
 <!-- INCLUDE overall_footer.html -->

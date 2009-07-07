@@ -15,8 +15,8 @@ if (!defined('IN_PHPBB'))
 {
 	exit;
 }
-include($phpbb_root_path . 'includes/questionnaire/questionnaire_phpbb.' . $phpEx);
 
+include($phpbb_root_path . 'includes/questionnaire/questionnaire.' . $phpEx);
 
 /**
 * @package acp
@@ -34,22 +34,24 @@ class acp_send_statistics
 		$this->tpl_name = 'acp_send_statistics';
 		$this->page_title = 'ACP_SEND_STATISTICS';
 
-		$c = new Questionnaire_Data_Collector();
-		$c->addDataProvider(new Questionnaire_PHP_Data_Provider());
-		$c->addDataProvider(new Questionnaire_System_Data_Provider());
-		$c->addDataProvider(new questionnaire_phpbb_data_provider($config));
+		$collector = new phpbb_questionnaire_data_collector();
+
+		// Add data provider
+		$collector->add_data_provider(new phpbb_questionnaire_php_data_provider());
+		$collector->add_data_provider(new phpbb_questionnaire_system_data_provider());
+		$collector->add_data_provider(new phpbb_questionnaire_phpbb_data_provider($config));
 
 		$template->assign_vars(array(
 			'U_COLLECT_STATS'	=> $collect_url,
-			'RAW_DATA' => $c->getDataForForm(),
+			'RAW_DATA'			=> $collector->get_data_for_form(),
 		));
 
-		$raw = $c->getDataRaw();
+		$raw = $collector->get_data_raw();
 
 		foreach ($raw as $provider => $data)
 		{
 			$template->assign_block_vars('providers', array(
-				'NAME'	=> htmlentities($provider),
+				'NAME'	=> htmlspecialchars($provider),
 			));
 
 			foreach ($data as $key => $value)
@@ -60,8 +62,8 @@ class acp_send_statistics
 				}
 
 				$template->assign_block_vars('providers.values', array(
-					'KEY'	=> htmlentities($key),
-					'VALUE'	=> htmlentities($value),
+					'KEY'	=> utf8_htmlspecialchars($key),
+					'VALUE'	=> utf8_htmlspecialchars($value),
 				));
 			}
 		}
