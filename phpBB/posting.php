@@ -370,6 +370,7 @@ else
 }
 
 $post_data['post_edit_locked']	= (isset($post_data['post_edit_locked'])) ? (int) $post_data['post_edit_locked'] : 0;
+$post_data['post_subject_md5']	= (isset($post_data['post_subject']) && $mode == 'edit') ? md5($post_data['post_subject']) : '';
 $post_data['post_subject']		= (in_array($mode, array('quote', 'edit'))) ? $post_data['post_subject'] : ((isset($post_data['topic_title'])) ? $post_data['topic_title'] : '');
 $post_data['topic_time_limit']	= (isset($post_data['topic_time_limit'])) ? (($post_data['topic_time_limit']) ? (int) $post_data['topic_time_limit'] / 86400 : (int) $post_data['topic_time_limit']) : 0;
 $post_data['poll_length']		= (!empty($post_data['poll_length'])) ? (int) $post_data['poll_length'] / 86400 : 0;
@@ -703,6 +704,37 @@ if ($submit || $preview || $refresh)
 
 	// Grab md5 'checksum' of new message
 	$message_md5 = md5($message_parser->message);
+
+	// If editing and checksum has changed we know the post was edited while we're editing
+	// Notify and show user the changed post
+	if ($mode == 'edit' && $post_data['forum_flags'] & FORUM_FLAG_POST_REVIEW)
+	{
+		$edit_post_message_checksum = request_var('edit_post_message_checksum', '');
+		$edit_post_subject_checksum = request_var('edit_post_subject_checksum', '');
+
+		// $post_data['post_checksum'] is the checksum of the post submitted in the meantime
+		// $message_md5 is the checksum of the post we're about to submit
+		// $edit_post_message_checksum is the checksum of the post we're editing
+		// ...
+
+		// We make sure nobody else made exactly the same change
+		// we're about to submit by also checking $message_md5 != $post_data['post_checksum']
+		if (($edit_post_message_checksum !== '' && $edit_post_message_checksum != $post_data['post_checksum'] && $message_md5 != $post_data['post_checksum'])
+		 || ($edit_post_subject_checksum !== '' && $edit_post_subject_checksum != $post_data['post_subject_md5'] && md5($post_data['post_subject']) != $post_data['post_subject_md5']))
+		{
+			if (topic_review($topic_id, $forum_id, 'post_review_edit', $post_id))
+			{
+				$template->assign_vars(array(
+					'S_POST_REVIEW'			=> true,
+
+					'L_POST_REVIEW_EXPLAIN'	=> $user->lang['POST_REVIEW_EDIT_EXPLAIN'],
+				));
+			}
+
+			$submit = false;
+			$refresh = true;
+		}
+	}
 
 	// Check checksum ... don't re-parse message if the same
 	$update_message = ($mode != 'edit' || $message_md5 != $post_data['post_checksum'] || $status_switch || strlen($post_data['bbcode_uid']) < BBCODE_UID_LEN) ? true : false;
@@ -1260,6 +1292,14 @@ if ($config['enable_post_confirm'] && !$user->data['is_registered'] && (isset($c
 $s_hidden_fields = ($mode == 'reply' || $mode == 'quote') ? '<input type="hidden" name="topic_cur_post_id" value="' . $post_data['topic_last_post_id'] . '" />' : '';
 $s_hidden_fields .= '<input type="hidden" name="lastclick" value="' . $current_time . '" />';
 $s_hidden_fields .= ($draft_id || isset($_REQUEST['draft_loaded'])) ? '<input type="hidden" name="draft_loaded" value="' . request_var('draft_loaded', $draft_id) . '" />' : '';
+
+if ($mode == 'edit')
+{
+	$s_hidden_fields .= build_hidden_fields(array(
+		'edit_post_message_checksum'	=> $post_data['post_checksum'],
+		'edit_post_subject_checksum'	=> $post_data['post_subject_md5'],
+	));
+}
 
 // Add the confirm id/code pair to the hidden fields, else an error is displayed on next submit/preview
 if (isset($captcha) && $captcha->is_solved() !== false)

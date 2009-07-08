@@ -944,6 +944,7 @@ function topic_review($topic_id, $forum_id, $mode = 'topic_review', $cur_post_id
 		WHERE p.topic_id = $topic_id
 			" . ((!$auth->acl_get('m_approve', $forum_id)) ? 'AND p.post_approved = 1' : '') . '
 			' . (($mode == 'post_review') ? " AND p.post_id > $cur_post_id" : '') . '
+			' . (($mode == 'post_review_edit') ? " AND p.post_id = $cur_post_id" : '') . '
 		ORDER BY p.post_time ';
 	$sql .= ($mode == 'post_review') ? 'ASC' : 'DESC';
 	$result = $db->sql_query_limit($sql, $config['posts_per_page']);
@@ -960,6 +961,12 @@ function topic_review($topic_id, $forum_id, $mode = 'topic_review', $cur_post_id
 	if (!sizeof($post_list))
 	{
 		return false;
+	}
+
+	// Handle 'post_review_edit' like 'post_review' from now on
+	if ($mode == 'post_review_edit')
+	{
+		$mode = 'post_review';
 	}
 
 	$sql = $db->sql_build_query('SELECT', array(

@@ -167,6 +167,7 @@ $lang = array_merge($lang, array(
 	'POST_ICON'					=> 'Post icon',
 	'POST_NORMAL'				=> 'Normal',
 	'POST_REVIEW'				=> 'Post review',
+	'POST_REVIEW_EDIT_EXPLAIN'	=> 'This post has been altered by another user while you were editing it. You may wish to review the current version of this post and adjust your edits.',
 	'POST_REVIEW_EXPLAIN'		=> 'At least one new post has been made to this topic. You may wish to review your post in light of this.',
 	'POST_STORED'				=> 'This message has been posted successfully.',
 	'POST_STORED_MOD'			=> 'This message has been submitted successfully, but it will need to be approved by a moderator before it is publicly viewable.',
