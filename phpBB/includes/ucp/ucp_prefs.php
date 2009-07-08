@@ -282,7 +282,7 @@ class ucp_prefs
 					'S_AVATARS'			=> $data['avatars'],
 					'S_DISABLE_CENSORS'	=> $data['wordcensor'],
 
-					'S_CHANGE_CENSORS'		=> ($auth->acl_get('u_chgcensors')) ? true : false,
+					'S_CHANGE_CENSORS'		=> ($auth->acl_get('u_chgcensors') && $config['allow_nocensors']) ? true : false,
 
 					'S_TOPIC_SORT_DAYS'		=> $s_limit_topic_days,
 					'S_TOPIC_SORT_KEY'		=> $s_sort_topic_key,
