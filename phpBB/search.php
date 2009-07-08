@@ -114,7 +114,7 @@ if ($keywords || $author || $author_id || $search_id || $submit)
 		$sql = 'SELECT user_id
 			FROM ' . USERS_TABLE . "
 			WHERE $sql_where
-				AND user_type IN (" . USER_NORMAL . ', ' . USER_FOUNDER . ')';
+				AND user_type <> " . USER_IGNORE;
 		$result = $db->sql_query_limit($sql, 100);
 
 		while ($row = $db->sql_fetchrow($result))
