@@ -569,6 +569,9 @@ function get_forum_data($forum_id, $acl_list = 'f_list', $read_tracking = false)
 * sorting in mcp
 *
 * @param string $where_sql should either be WHERE (default if ommited) or end with AND or OR
+*
+* $mode reports and reports_closed: the $where parameters uses aliases p for posts table and r for report table
+* $mode unapproved_posts: the $where parameters uses aliases p for posts table and t for topic table
 */
 function mcp_sorting($mode, &$sort_days, &$sort_key, &$sort_dir, &$sort_by_sql, &$sort_order_sql, &$total, $forum_id = 0, $topic_id = 0, $where_sql = 'WHERE')
 {
@@ -616,12 +619,14 @@ function mcp_sorting($mode, &$sort_days, &$sort_key, &$sort_dir, &$sort_by_sql, 
 			$type = 'posts';
 			$default_key = 't';
 			$default_dir = 'd';
-			$where_sql .= ($topic_id) ? ' topic_id = ' . $topic_id . ' AND' : '';
+			$where_sql .= ($topic_id) ? ' p.topic_id = ' . $topic_id . ' AND' : '';
 
-			$sql = 'SELECT COUNT(post_id) AS total
-				FROM ' . POSTS_TABLE . "
-				$where_sql " . $db->sql_in_set('forum_id', ($forum_id) ? array($forum_id) : array_intersect(get_forum_list('f_read'), get_forum_list('m_approve'))) . '
-					AND post_approved = 0';
+			$sql = 'SELECT COUNT(p.post_id) AS total
+				FROM ' . POSTS_TABLE . ' p, ' . TOPICS_TABLE . " t
+				$where_sql " . $db->sql_in_set('p.forum_id', ($forum_id) ? array($forum_id) : array_intersect(get_forum_list('f_read'), get_forum_list('m_approve'))) . '
+					AND p.post_approved = 0
+					AND t.topic_id = p.topic_id
+					AND t.topic_first_post_id <> p.post_id';
 
 			if ($min_time)
 			{
