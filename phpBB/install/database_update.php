@@ -11,7 +11,7 @@
 $updates_to_version = '3.0.6-dev';
 
 // Enter any version to update from to test updates. The version within the db will not be updated.
-$debug_from_version = '3.0.5';
+$debug_from_version = false;
 
 // Which oldest version does this updater supports?
 $oldest_from_version = '3.0.0';
@@ -249,26 +249,23 @@ if ($db->sql_layer == 'mysql' || $db->sql_layer == 'mysql4' || $db->sql_layer ==
 		echo '<h1>' . $lang['ERROR'] . '</h1><br />';
 
 		echo '<p>' . sprintf($lang['MYSQL_SCHEMA_UPDATE_REQUIRED'], $config['dbms_version'], $db->sql_server_info(true)) . '</p>';
-?>
-					</div>
-				</div>
-			<span class="corners-bottom"><span></span></span>
-		</div>
-		</div>
-	</div>
 
-	<div id="page-footer">
-		Powered by <a href="http://www.phpbb.com/">phpBB</a> &copy; 2000, 2002, 2005, 2007 phpBB Group
-	</div>
-</div>
-
-</body>
-</html>
-<?php
+		_print_footer();
 
 		exit_handler();
 		exit;
 	}
+}
+
+// Now check if the user wants to update from a version we no longer support updates from
+if (version_compare($current_version, $oldest_from_version, '<'))
+{
+	echo '<br /><br /><h1>' . $lang['ERROR'] . '</h1><br />';
+	echo '<p>' . sprintf($lang['DB_UPDATE_NOT_SUPPORTED'], $oldest_from_version, $current_version) . '</p>';
+
+	_print_footer();
+	exit_handler();
+	exit;
 }
 
 // If the latest version and the current version are 'unequal', we will update the version_update_from, else we do not update anything.
@@ -455,8 +452,21 @@ add_log('admin', 'LOG_UPDATE_DATABASE', $orig_version, $updates_to_version);
 // Now we purge the session table as well as all cache files
 $cache->purge();
 
-?>
+_print_footer();
 
+garbage_collection();
+
+if (function_exists('exit_handler'))
+{
+	exit_handler();
+}
+
+/**
+* Print out footer
+*/
+function _print_footer()
+{
+	echo <<<EOF
 					</div>
 				</div>
 			<span class="corners-bottom"><span></span></span>
@@ -471,14 +481,7 @@ $cache->purge();
 
 </body>
 </html>
-
-<?php
-
-garbage_collection();
-
-if (function_exists('exit_handler'))
-{
-	exit_handler();
+EOF;
 }
 
 /**

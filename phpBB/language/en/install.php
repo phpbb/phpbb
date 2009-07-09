@@ -133,6 +133,7 @@ $lang = array_merge($lang, array(
 	'DB_PASSWORD'				=> 'Database password',
 	'DB_PORT'					=> 'Database server port',
 	'DB_PORT_EXPLAIN'			=> 'Leave this blank unless you know the server operates on a non-standard port.',
+	'DB_UPDATE_NOT_SUPPORTED'	=> 'Sorry, but you are not able to update your phpBB database with this script. This update script updates the phpBB database from at least version “%1$s”, but your version is “%2$s”. Please try to update to an older version of phpBB first or post within our support forums to get more help.',
 	'DB_USERNAME'				=> 'Database username',
 	'DB_TEST'					=> 'Test connection',
 	'DEFAULT_LANG'				=> 'Default board language',
