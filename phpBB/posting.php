@@ -727,6 +727,7 @@ if ($submit || $preview || $refresh)
 				$template->assign_vars(array(
 					'S_POST_REVIEW'			=> true,
 
+					'L_POST_REVIEW'			=> $user->lang['POST_REVIEW_EDIT'],
 					'L_POST_REVIEW_EXPLAIN'	=> $user->lang['POST_REVIEW_EDIT_EXPLAIN'],
 				));
 			}
