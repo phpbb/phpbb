@@ -92,7 +92,7 @@ $lang = array_merge($lang, array(
 	'REPLY_TO_TOPIC'		=> 'Reply to topic',
 	'RETURN_POST'			=> '%sReturn to the post%s',
 
-	'SHOW_QR'				=> 'Show Editor',
+	'SHOW_QR'				=> 'Quick Reply',
 	'SUBMIT_VOTE'			=> 'Submit vote',
 
 	'TOTAL_VOTES'			=> 'Total votes',
