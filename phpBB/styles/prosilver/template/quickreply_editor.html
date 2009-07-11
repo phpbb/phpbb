@@ -1,13 +1,13 @@
 <script type="text/javascript">
 // <![CDATA[
-	function hide_qr(hide)
+	function hide_qr()
 	{
 		dE('qr_editor_div');
 		dE('qr_showeditor_div');
 		return true;
 	}
 
-	onload_functions.push('hide_qr(true);');
+	onload_functions.push('hide_qr();');
 	// ]]>
 </script>
 <form method="post" action="{U_QR_ACTION}">
@@ -16,18 +16,15 @@
 		<div class="inner"><span class="corners-top"><span></span></span>
 			<div class="content">
 				<h2>{L_QUICKREPLY}</h2>
-			
 				<fieldset class="fields1">
 					<dl style="clear: left;">
 						<dt><label for="subject">{L_SUBJECT}:</label></dt>
 						<dd><input type="text" name="subject" id="subject" size="45" maxlength="64" tabindex="2" value="{SUBJECT}" class="inputbox autowidth" /></dd>
 					</dl>
-				</fieldset>
-				
 				<div id="message-box">
 					<textarea style="height: 9em;" name="message" rows="7" cols="76" tabindex="3" class="inputbox"></textarea>
 				</div>
-
+				</fieldset>
 				<fieldset class="submit-buttons">
 					{S_FORM_TOKEN}
 					{S_HIDDEN_FIELDS}
@@ -41,15 +38,9 @@
 
 			<div class="content">
 				<fieldset class="submit-buttons">
-					<input type="submit" name="show_qr" tabindex="1" class="button2" value="{L_SHOW_QR}" onclick="hide_qr(false);return false;"/>
+					<input type="submit" name="show_qr" tabindex="1" class="button2" value="{L_SHOW_QR}" onclick="hide_qr();return false;"/>
 				</fieldset>
 			</div>
-
-		
 		<span class="corners-bottom"><span></span></span></div>
 	</div>
-	
-
-
 </form>
-	<hr />
