@@ -684,8 +684,9 @@ class acp_attachments
 							$ext_group_row['max_filesize'] = (int) $config['max_filesize'];
 						}
 
-						$size_format = ($ext_group_row['max_filesize'] >= 1048576) ? 'mb' : (($ext_group_row['max_filesize'] >= 1024) ? 'kb' : 'b');
-						$ext_group_row['max_filesize'] = get_formatted_filesize($ext_group_row['max_filesize'], false);
+						$max_filesize = get_formatted_filesize($ext_group_row['max_filesize'], false, array('mb', 'kb', 'b'));
+						$size_format = $max_filesize['si_identifier'];
+						$ext_group_row['max_filesize'] = $max_filesize['value'];
 
 						$img_path = $config['upload_icons_path'];
 
@@ -1429,8 +1430,9 @@ class acp_attachments
 	function max_filesize($value, $key = '')
 	{
 		// Determine size var and adjust the value accordingly
-		$size_var = ($value >= 1048576) ? 'mb' : (($value >= 1024) ? 'kb' : 'b');
-		$value = get_formatted_filesize($value, false);
+		$filesize = get_formatted_filesize($value, false, array('mb', 'kb', 'b'));
+		$size_var = $filesize['si_identifier'];
+		$value = $filesize['value'];
 
 		return '<input type="text" id="' . $key . '" size="8" maxlength="15" name="config[' . $key . ']" value="' . $value . '" /> <select name="' . $key . '">' . size_select_options($size_var) . '</select>';
 	}

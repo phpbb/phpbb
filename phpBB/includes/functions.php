@@ -232,27 +232,82 @@ function unique_id($extra = 'c')
 
 /**
 * Return formatted string for filesizes
+*
+* @param int	$value			filesize in bytes
+* @param bool	$string_only	true if language string should be returned
+* @param array	$allowed_units	only allow these units (data array indexes)
+*
+* @return mixed					data array if $string_only is false
+* @author bantu
 */
-function get_formatted_filesize($bytes, $add_size_lang = true)
+function get_formatted_filesize($value, $string_only = true, $allowed_units = false)
 {
 	global $user;
 
-	if ($bytes >= pow(2, 30))
+	$available_units = array(
+		'gb' => array(
+			'min' 		=> 1073741824, // pow(2, 30)
+			'index'		=> 3,
+			'si_unit'	=> 'GB',
+			'iec_unit'	=> 'GIB',
+		),
+		'mb' => array(
+			'min'		=> 1048576, // pow(2, 20)
+			'index'		=> 2,
+			'si_unit'	=> 'MB',
+			'iec_unit'	=> 'MIB',
+		),
+		'kb' => array(
+			'min'		=> 1024, // pow(2, 10)
+			'index'		=> 1,
+			'si_unit'	=> 'KB',
+			'iec_unit'	=> 'KIB',
+		),
+		'b' => array(
+			'min'		=> 0,
+			'index'		=> 0,
+			'si_unit'	=> 'BYTES', // Language index
+			'iec_unit'	=> 'BYTES',  // Language index
+		),
+	);
+
+	foreach ($available_units as $si_identifier => $unit_info)
 	{
-		return ($add_size_lang) ? round($bytes / 1024 / 1024 / 1024, 2) . ' ' . $user->lang['GIB'] : round($bytes / 1024 / 1024 / 1024, 2);
+		if (!empty($allowed_units) && $si_identifier != 'b' && !in_array($si_identifier, $allowed_units))
+		{
+			continue;
+		}
+
+		if ($value >= $unit_info['min'])
+		{
+			$unit_info['si_identifier'] = $si_identifier;
+
+			break;
+		}
+	}
+	unset($available_units);
+
+	for ($i = 0; $i < $unit_info['index']; $i++)
+	{
+		$value /= 1024;
+	}
+	$value = round($value, 2);
+
+	// Lookup units in language dictionary
+	$unit_info['si_unit'] = (isset($user->lang[$unit_info['si_unit']])) ? $user->lang[$unit_info['si_unit']] : $unit_info['si_unit'];
+	$unit_info['iec_unit'] = (isset($user->lang[$unit_info['iec_unit']])) ? $user->lang[$unit_info['iec_unit']] : $unit_info['iec_unit'];
+
+	// Default to IEC
+	$unit_info['unit'] = $unit_info['iec_unit'];
+
+	if (!$string_only)
+	{
+		$unit_info['value'] = $value;
+
+		return $unit_info;
 	}
 
-	if ($bytes >= pow(2, 20))
-	{
-		return ($add_size_lang) ? round($bytes / 1024 / 1024, 2) . ' ' . $user->lang['MIB'] : round($bytes / 1024 / 1024, 2);
-	}
-
-	if ($bytes >= pow(2, 10))
-	{
-		return ($add_size_lang) ? round($bytes / 1024, 2) . ' ' . $user->lang['KIB'] : round($bytes / 1024, 2);
-	}
-
-	return ($add_size_lang) ? ($bytes) . ' ' . $user->lang['BYTES'] : ($bytes);
+	return $value  . ' ' . $unit_info['unit'];
 }
 
 /**

@@ -853,16 +853,14 @@ function parse_attachments($forum_id, &$message, &$attachments, &$update_count, 
 			}
 		}
 
-		$filesize = $attachment['filesize'];
-		$size_lang = ($filesize >= 1048576) ? $user->lang['MIB'] : (($filesize >= 1024) ? $user->lang['KIB'] : $user->lang['BYTES']);
-		$filesize = get_formatted_filesize($filesize, false);
+		$filesize = get_formatted_filesize($attachment['filesize'], false);
 
 		$comment = bbcode_nl2br(censor_text($attachment['attach_comment']));
 
 		$block_array += array(
 			'UPLOAD_ICON'		=> $upload_icon,
-			'FILESIZE'			=> $filesize,
-			'SIZE_LANG'			=> $size_lang,
+			'FILESIZE'			=> $filesize['value'],
+			'SIZE_LANG'			=> $filesize['unit'],
 			'DOWNLOAD_NAME'		=> basename($attachment['real_filename']),
 			'COMMENT'			=> $comment,
 		);
