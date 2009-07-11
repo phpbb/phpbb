@@ -2,13 +2,11 @@
 // <![CDATA[
 	function hide_qr(hide)
 	{
-		var qr = document.getElementById('qr_editor_div');
-		var qr_show = document.getElementById('qr_showeditor_div');
-		qr_show.style.display = (hide) ? '' : 'none';
-		qr.style.display = (hide) ? 'none' : '';
+		dE('qr_editor_div');
+		dE('qr_showeditor_div');
 		return true;
 	}
-		
+
 	onload_functions.push('hide_qr(true);');
 	// ]]>
 </script>
