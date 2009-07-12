@@ -47,11 +47,10 @@ class acp_language
 		// Check and set some common vars
 
 		$action		= (phpbb_request::is_set_post('update_details')) ? 'update_details' : '';
-		$action		= (phpbb_request::is_set_post('download_file')) ? 'download_file' : $action;
-		$action		= (phpbb_request::is_set_post('upload_file')) ? 'upload_file' : $action;
-		$action		= (phpbb_request::is_set_post('upload_data')) ? 'upload_data' : $action;
 		$action		= (phpbb_request::is_set_post('submit_file')) ? 'submit_file' : $action;
 		$action		= (phpbb_request::is_set_post('remove_store')) ? 'details' : $action;
+		$action		= (phpbb_request::is_set_post('ftp_upload')) ? 'ftp_upload' : $action;
+		$action		= (phpbb_request::is_set_post('download')) ? 'download' : $action;
 
 		$submit = (empty($action) && !phpbb_request::is_set_post('update') && !phpbb_request::is_set_post('test_connection')) ? false : true;
 		$action = (empty($action)) ? request_var('action', '') : $action;
@@ -80,87 +79,8 @@ class acp_language
 		$this->tpl_name = 'acp_language';
 		$this->page_title = 'ACP_LANGUAGE_PACKS';
 
-		if ($submit && $action == 'upload_data' && request_var('test_connection', ''))
-		{
-			$test_connection = false;
-			$action = 'upload_file';
-			$method = request_var('method', '');
-
-			include_once(PHPBB_ROOT_PATH . 'includes/functions_transfer.' . PHP_EXT);
-
-			switch ($method)
-			{
-				case 'ftp':
-					$transfer = new ftp(request_var('host', ''), request_var('username', ''), request_var('password', ''), request_var('root_path', ''), request_var('port', ''), request_var('timeout', ''));
-				break;
-
-				case 'ftp_fsock':
-					$transfer = new ftp_fsock(request_var('host', ''), request_var('username', ''), request_var('password', ''), request_var('root_path', ''), request_var('port', ''), request_var('timeout', ''));
-				break;
-
-				case 'sftp':
-					$transfer = new sftp(request_var('host', ''), request_var('username', ''), request_var('password', ''), request_var('root_path', ''), request_var('port', ''), request_var('timeout', ''));
-				break;
-
-				default:
-					trigger_error(phpbb::$user->lang['INVALID_UPLOAD_METHOD'], E_USER_ERROR);
-				break;
-			}
-
-			$test_connection = $transfer->open_session();
-			$transfer->close_session();
-		}
-
 		switch ($action)
 		{
-			case 'upload_file':
-
-				include_once(PHPBB_ROOT_PATH . 'includes/functions_transfer.' . PHP_EXT);
-
-				$method = request_var('method', '');
-
-				if (!class_exists($method))
-				{
-					trigger_error('Method does not exist.', E_USER_ERROR);
-				}
-
-				$requested_data = call_user_func(array($method, 'data'));
-				foreach ($requested_data as $data => $default)
-				{
-					$default_value = request_var($data, '');
-					phpbb::$template->assign_block_vars('data', array(
-						'DATA'		=> $data,
-						'NAME'		=> phpbb::$user->lang[strtoupper($method . '_' . $data)],
-						'EXPLAIN'	=> phpbb::$user->lang[strtoupper($method . '_' . $data) . '_EXPLAIN'],
-						'DEFAULT'	=> (empty($default_value)) ? $default : $default_value,
-					));
-				}
-
-				$hidden_data = build_hidden_fields(array(
-					'file'			=> $this->language_file,
-					'dir'			=> $this->language_directory,
-					'language_file'	=> $selected_lang_file,
-					'method'		=> $method)
-				);
-
-				/**
-				* @todo Do not use $_POST here, but phpbb_request::variable which needs to support more dimensions
-				*/
-				$hidden_data .= build_hidden_fields(array('entry' => $_POST['entry']), true, STRIP);
-
-				phpbb::$template->assign_vars(array(
-					'S_UPLOAD'	=> true,
-					'NAME'		=> $method,
-					'U_ACTION'	=> $this->u_action . "&amp;id=$lang_id&amp;action=upload_data",
-					'U_BACK'	=> $this->u_action . "&amp;id=$lang_id&amp;action=details&amp;language_file=" . urlencode($selected_lang_file),
-					'HIDDEN'	=> $hidden_data,
-
-					'S_CONNECTION_SUCCESS'		=> (request_var('test_connection', '') && $test_connection === true) ? true : false,
-					'S_CONNECTION_FAILED'		=> (request_var('test_connection', '') && $test_connection !== true) ? true : false,
-					'ERROR_MSG'					=> (request_var('test_connection', '') && $test_connection !== true) ? phpbb::$user->lang[$test_connection] : '',
-				));
-			break;
-
 			case 'update_details':
 
 				if (!$submit || !check_form_key($form_name))
@@ -195,9 +115,8 @@ class acp_language
 				trigger_error(phpbb::$user->lang['LANGUAGE_DETAILS_UPDATED'] . adm_back_link($this->u_action));
 			break;
 
-			case 'submit_file':
-			case 'download_file':
-			case 'upload_data':
+			case 'ftp_upload':
+			case 'download':
 
 				if (!$submit || !check_form_key($form_name))
 				{
@@ -231,218 +150,200 @@ class acp_language
 					trigger_error(phpbb::$user->lang['NO_LANG_ID'] . adm_back_link($this->u_action), E_USER_WARNING);
 				}
 
-				// Before we attempt to write anything let's check if the admin really chose a correct filename
-				switch ($this->language_directory)
+				if (!request_var('test_connection', false))
 				{
-					case 'email':
-						// Get email templates
-						$email_files = filelist(PHPBB_ROOT_PATH . 'language/' . $row['lang_iso'], 'email', 'txt');
-						$email_files = $email_files['email/'];
-
-						if (!in_array($this->language_file, $email_files))
-						{
-							trigger_error(phpbb::$user->lang['WRONG_LANGUAGE_FILE'] . adm_back_link($this->u_action . '&amp;action=details&amp;id=' . $lang_id), E_USER_WARNING);
-						}
-					break;
-
-					case 'acp':
-						// Get acp files
-						$acp_files = filelist(PHPBB_ROOT_PATH . 'language/' . $row['lang_iso'], 'acp', PHP_EXT);
-						$acp_files = $acp_files['acp/'];
-
-						if (!in_array($this->language_file, $acp_files))
-						{
-							trigger_error(phpbb::$user->lang['WRONG_LANGUAGE_FILE'] . adm_back_link($this->u_action . '&amp;action=details&amp;id=' . $lang_id), E_USER_WARNING);
-						}
-					break;
-
-					case 'mods':
-						// Get mod files
-						$mods_files = filelist(PHPBB_ROOT_PATH . 'language/' . $row['lang_iso'], 'mods', PHP_EXT);
-						$mods_files = (isset($mods_files['mods/'])) ? $mods_files['mods/'] : array();
-
-						if (!in_array($this->language_file, $mods_files))
-						{
-							trigger_error(phpbb::$user->lang['WRONG_LANGUAGE_FILE'] . adm_back_link($this->u_action . '&amp;action=details&amp;id=' . $lang_id), E_USER_WARNING);
-						}
-					break;
-
-					default:
-						if (!in_array($this->language_file, $this->main_files))
-						{
-							trigger_error(phpbb::$user->lang['WRONG_LANGUAGE_FILE'] . adm_back_link($this->u_action . '&amp;action=details&amp;id=' . $lang_id), E_USER_WARNING);
-						}
-					break;
-				}
-
-				if (!$safe_mode)
-				{
-					$mkdir_ary = array('language', 'language/' . $row['lang_iso']);
-
-					if ($this->language_directory)
+					// Before we attempt to write anything let's check if the admin really chose a correct filename
+					switch ($this->language_directory)
 					{
-						$mkdir_ary[] = 'language/' . $row['lang_iso'] . '/' . $this->language_directory;
+						case 'email':
+							// Get email templates
+							$email_files = filelist(PHPBB_ROOT_PATH . 'language/' . $row['lang_iso'], 'email', 'txt');
+							$email_files = $email_files['email/'];
+
+							if (!in_array($this->language_file, $email_files))
+							{
+								trigger_error(phpbb::$user->lang['WRONG_LANGUAGE_FILE'] . adm_back_link($this->u_action . '&amp;action=details&amp;id=' . $lang_id), E_USER_WARNING);
+							}
+						break;
+
+						case 'acp':
+							// Get acp files
+							$acp_files = filelist(PHPBB_ROOT_PATH . 'language/' . $row['lang_iso'], 'acp', PHP_EXT);
+							$acp_files = $acp_files['acp/'];
+
+							if (!in_array($this->language_file, $acp_files))
+							{
+								trigger_error(phpbb::$user->lang['WRONG_LANGUAGE_FILE'] . adm_back_link($this->u_action . '&amp;action=details&amp;id=' . $lang_id), E_USER_WARNING);
+							}
+						break;
+
+						case 'mods':
+							// Get mod files
+							$mods_files = filelist(PHPBB_ROOT_PATH . 'language/' . $row['lang_iso'], 'mods', PHP_EXT);
+							$mods_files = (isset($mods_files['mods/'])) ? $mods_files['mods/'] : array();
+
+							if (!in_array($this->language_file, $mods_files))
+							{
+								trigger_error(phpbb::$user->lang['WRONG_LANGUAGE_FILE'] . adm_back_link($this->u_action . '&amp;action=details&amp;id=' . $lang_id), E_USER_WARNING);
+							}
+						break;
+
+						default:
+							if (!in_array($this->language_file, $this->main_files))
+							{
+								trigger_error(phpbb::$user->lang['WRONG_LANGUAGE_FILE'] . adm_back_link($this->u_action . '&amp;action=details&amp;id=' . $lang_id), E_USER_WARNING);
+							}
+						break;
 					}
 
-					foreach ($mkdir_ary as $dir)
+					if (!$safe_mode)
 					{
-						$dir = PHPBB_ROOT_PATH . 'store/' . $dir;
+						$mkdir_ary = array('language', 'language/' . $row['lang_iso']);
 
-						if (!is_dir($dir))
+						if ($this->language_directory)
 						{
-							if (!@mkdir($dir, 0777))
+							$mkdir_ary[] = 'language/' . $row['lang_iso'] . '/' . $this->language_directory;
+						}
+
+						foreach ($mkdir_ary as $dir)
+						{
+							$dir = PHPBB_ROOT_PATH . 'store/' . $dir;
+
+							if (!is_dir($dir))
 							{
-								trigger_error("Could not create directory $dir", E_USER_ERROR);
+								if (!@mkdir($dir, 0777))
+								{
+									trigger_error("Could not create directory $dir", E_USER_ERROR);
+								}
+								phpbb::$system->chmod($dir, phpbb::CHMOD_READ | phpbb::CHMOD_WRITE);
 							}
-							phpbb::$system->chmod($dir, phpbb::CHMOD_READ | phpbb::CHMOD_WRITE);
 						}
 					}
-				}
 
-				// Get target filename for storage folder
-				$filename = $this->get_filename($row['lang_iso'], $this->language_directory, $this->language_file, true, true);
-				$fp = @fopen(PHPBB_ROOT_PATH . $filename, 'wb');
+					// Get target filename for storage folder
+					$filename = $this->get_filename($row['lang_iso'], $this->language_directory, $this->language_file, true, true);
+					$fp = @fopen(PHPBB_ROOT_PATH . $filename, 'wb');
 
-				if (!$fp)
-				{
-					trigger_error(sprintf(phpbb::$user->lang['UNABLE_TO_WRITE_FILE'], $filename) . adm_back_link($this->u_action . '&amp;id=' . $lang_id . '&amp;action=details&amp;language_file=' . urlencode($selected_lang_file)), E_USER_WARNING);
-				}
-
-				if ($this->language_directory == 'email')
-				{
-					// Email Template
-					$entry = $this->prepare_lang_entry($_POST['entry'], false);
-					fwrite($fp, $entry);
-				}
-				else
-				{
-					$name = (($this->language_directory) ? $this->language_directory . '_' : '') . $this->language_file;
-					$header = str_replace(array('{FILENAME}', '{LANG_NAME}', '{CHANGED}', '{AUTHOR}'), array($name, $row['lang_english_name'], date('Y-m-d', time()), $row['lang_author']), $this->language_file_header);
-
-					if (strpos($this->language_file, 'help_') === 0)
+					if (!$fp)
 					{
-						// Help File
-						$header .= '$help = array(' . "\n";
-						fwrite($fp, $header);
+						trigger_error(sprintf(phpbb::$user->lang['UNABLE_TO_WRITE_FILE'], $filename) . adm_back_link($this->u_action . '&amp;id=' . $lang_id . '&amp;action=details&amp;language_file=' . urlencode($selected_lang_file)), E_USER_WARNING);
+					}
 
-						foreach ($_POST['entry'] as $key => $value)
-						{
-							if (!is_array($value))
-							{
-								continue;
-							}
-
-							$entry = "\tarray(\n";
-
-							foreach ($value as $_key => $_value)
-							{
-								$entry .= "\t\t" . (int) $_key . "\t=> '" . $this->prepare_lang_entry($_value) . "',\n";
-							}
-
-							$entry .= "\t),\n";
-							fwrite($fp, $entry);
-						}
-
-						$footer = ");\n\n?>";
-						fwrite($fp, $footer);
+					if ($this->language_directory == 'email')
+					{
+						// Email Template
+						$entry = $this->prepare_lang_entry($_POST['entry'], false);
+						fwrite($fp, $entry);
 					}
 					else
 					{
-						// Language File
-						$header .= $this->lang_header;
-						fwrite($fp, $header);
+						$name = (($this->language_directory) ? $this->language_directory . '_' : '') . $this->language_file;
+						$header = str_replace(array('{FILENAME}', '{LANG_NAME}', '{CHANGED}', '{AUTHOR}'), array($name, $row['lang_english_name'], date('Y-m-d', time()), $row['lang_author']), $this->language_file_header);
 
-						foreach ($_POST['entry'] as $key => $value)
+						if (strpos($this->language_file, 'help_') === 0)
 						{
-							$entry = $this->format_lang_array($key, $value);
-							fwrite($fp, $entry);
+							// Help File
+							$header .= '$help = array(' . "\n";
+							fwrite($fp, $header);
+
+							foreach ($_POST['entry'] as $key => $value)
+							{
+								if (!is_array($value))
+								{
+									continue;
+								}
+
+								$entry = "\tarray(\n";
+
+								foreach ($value as $_key => $_value)
+								{
+									$entry .= "\t\t" . (int) $_key . "\t=> '" . $this->prepare_lang_entry($_value) . "',\n";
+								}
+
+								$entry .= "\t),\n";
+								fwrite($fp, $entry);
+							}
+
+							$footer = ");\n\n?>";
+							fwrite($fp, $footer);
 						}
+						else
+						{
+							// Language File
+							$header .= $this->lang_header;
+							fwrite($fp, $header);
 
-						$footer = "));\n\n?>";
-						fwrite($fp, $footer);
+							foreach ($_POST['entry'] as $key => $value)
+							{
+								$entry = $this->format_lang_array($key, $value);
+								fwrite($fp, $entry);
+							}
+
+							$footer = "));\n\n?>";
+							fwrite($fp, $footer);
+						}
 					}
-				}
 
-				fclose($fp);
-
-				if ($action == 'download_file')
-				{
-					header('Pragma: no-cache');
-					header('Content-Type: application/octetstream; name="' . $this->language_file . '"');
-					header('Content-disposition: attachment; filename=' . $this->language_file);
-
-					$fp = @fopen(PHPBB_ROOT_PATH . $filename, 'rb');
-					while ($buffer = fread($fp, 1024))
-					{
-						echo $buffer;
-					}
 					fclose($fp);
-
-					add_log('admin', 'LOG_LANGUAGE_FILE_SUBMITTED', $this->language_file);
-
-					exit;
 				}
-				else if ($action == 'upload_data')
+
+				include_once(PHPBB_ROOT_PATH . 'includes/functions_compress.' . PHP_EXT);
+				include_once(PHPBB_ROOT_PATH . 'includes/functions_transfer.' . PHP_EXT);
+
+				$file = request_var('file', '');
+				$dir = request_var('dir', '');
+				$lang_path = 'language/' . $row['lang_iso'] . '/' . (($dir) ? $dir . '/' : '');
+
+				$module_url = $this->u_action . "&amp;action=ftp_upload&amp;id=$lang_id";
+				$update_list = array('not_modified' => array(array('filename' => $lang_path . $file, 'custom' => false)));
+				$new_location = PHPBB_ROOT_PATH . 'store/';
+				$download_filename = $this->language_file;
+
+				process_transfer($module_url, $update_list, $new_location, $download_filename);
+
+				// bug: if you're downloading the file, the following code will never be called as process_transfer() will exit before it has a chance to be called
+
+				if (!request_var('test_connection', false))
 				{
-					$sql = 'SELECT lang_iso
-						FROM ' . LANG_TABLE . "
-						WHERE lang_id = $lang_id";
-					$result = phpbb::$db->sql_query($sql);
-					$row = phpbb::$db->sql_fetchrow($result);
-					phpbb::$db->sql_freeresult($result);
-
-					$file = request_var('file', '');
-					$dir = request_var('dir', '');
-
-					$selected_lang_file = $dir . '|' . $file;
-
-					$old_file = '/' . $this->get_filename($row['lang_iso'], $dir, $file, false, true);
-					$lang_path = 'language/' . $row['lang_iso'] . '/' . (($dir) ? $dir . '/' : '');
-
-					include_once(PHPBB_ROOT_PATH . 'includes/functions_transfer.' . PHP_EXT);
-					$method = request_var('method', '');
-
-					if ($method != 'ftp' && $method != 'ftp_fsock' && $method != 'sftp')
-					{
-						trigger_error(phpbb::$user->lang['INVALID_UPLOAD_METHOD'], E_USER_ERROR);
-					}
-
-					$transfer = new $method(request_var('host', ''), request_var('username', ''), request_var('password', ''), request_var('root_path', ''), request_var('port', ''), request_var('timeout', ''));
-
-					if (($result = $transfer->open_session()) !== true)
-					{
-						trigger_error(phpbb::$user->lang[$result] . adm_back_link($this->u_action . '&amp;action=details&amp;id=' . $lang_id . '&amp;language_file=' . urlencode($selected_lang_file)), E_USER_WARNING);
-					}
-
-					$transfer->rename($lang_path . $file, $lang_path . $file . '.bak');
-					$result = $transfer->copy_file('store/' . $lang_path . $file, $lang_path . $file);
-
-					if ($result === false)
-					{
-						// If failed, try to rename again and print error out...
-						$transfer->delete_file($lang_path . $file);
-						$transfer->rename($lang_path . $file . '.bak', $lang_path . $file);
-
-						trigger_error(phpbb::$user->lang['UPLOAD_FAILED'] . adm_back_link($this->u_action . '&amp;action=details&amp;id=' . $lang_id . '&amp;language_file=' . urlencode($selected_lang_file)), E_USER_WARNING);
-					}
-
-					$transfer->close_session();
-
 					// Remove from storage folder
 					if (file_exists(PHPBB_ROOT_PATH . 'store/' . $lang_path . $file))
 					{
 						@unlink(PHPBB_ROOT_PATH . 'store/' . $lang_path . $file);
 					}
 
-					add_log('admin', 'LOG_LANGUAGE_FILE_REPLACED', $file);
+					if ($action == 'ftp_upload')
+					{
+						add_log('admin', 'LOG_LANGUAGE_FILE_REPLACED', $file);
+					}
 
-					trigger_error(phpbb::$user->lang['UPLOAD_COMPLETED'] . adm_back_link($this->u_action . '&amp;action=details&amp;id=' . $lang_id . '&amp;language_file=' . urlencode($selected_lang_file)));
+					add_log('admin', 'LOG_LANGUAGE_FILE_SUBMITTED', $this->language_file);
 				}
 
-				add_log('admin', 'LOG_LANGUAGE_FILE_SUBMITTED', $this->language_file);
-				$action = 'details';
-
 			// no break;
+
+			case 'submit_file':
+
+				$s_hidden_fields = build_hidden_fields(array(
+					'file'			=> $this->language_file,
+					'dir'			=> $this->language_directory,
+					'language_file'	=> $selected_lang_file)
+				);
+
+				/**
+				* @todo Do not use $_POST here, but phpbb_request::variable which needs to support more dimensions
+				*/
+				$s_hidden_fields .= build_hidden_fields(array('entry' => $_POST['entry']), true, STRIP);
+
+				$module_url = $this->u_action . '&amp;action=details&amp;id=' . $lang_id . '&amp;language_file=' . urlencode($selected_lang_file);
+
+				phpbb::$template->assign_vars(array(
+					'S_HIDDEN_FIELDS' => $s_hidden_fields,
+					'S_UPDATE_OPTIONS' => true,
+					'U_INITIAL_ACTION' => $module_url,
+					'U_FINAL_ACTION' => $module_url)
+				);
+
+			break;
 
 			case 'details':
 

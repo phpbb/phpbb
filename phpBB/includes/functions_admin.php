@@ -2984,4 +2984,268 @@ function add_permission_language()
 	return true;
 }
 
+/**
+* Upload files or let the user download them as appropriate
+*/
+function process_transfer($module_url, $update_list, $new_location, $download_filename)
+{
+	// todo: add $s_hidden_fields as a parameter to this function
+	$s_hidden_fields = '';
+
+	if (request_var('download', false))
+	{
+		$use_method = request_var('use_method', '');
+		$methods = array('.tar');
+
+		$available_methods = array('.tar.gz' => 'zlib', '.tar.bz2' => 'bz2', '.zip' => 'zlib');
+		foreach ($available_methods as $type => $module)
+		{
+			if (!@extension_loaded($module))
+			{
+				continue;
+			}
+
+			$methods[] = $type;
+		}
+
+		// Let the user decide in which format he wants to have the pack
+		if (!$use_method)
+		{
+			$radio_buttons = '';
+			foreach ($methods as $method)
+			{
+				$radio_buttons .= '<label><input type="radio"' . ((!$radio_buttons) ? ' id="use_method"' : '') . ' class="radio" value="' . $method . '" name="use_method" /> ' . $method . '</label>';
+			}
+
+			phpbb::$template->assign_vars(array(
+				'S_DOWNLOAD_FILES'		=> true,
+				'U_ACTION'				=> append_sid($module_url),
+				'RADIO_BUTTONS'			=> $radio_buttons,
+				'S_HIDDEN_FIELDS'		=> $s_hidden_fields)
+			);
+
+			// To ease the update process create a file location map
+			$script_path = (phpbb::$config['force_server_vars']) ? ((phpbb::$config['script_path'] == '/') ? '/' : phpbb::$config['script_path'] . '/') : phpbb::$user->page['root_script_path'];
+
+			foreach ($update_list as $status => $files)
+			{
+				if ($status == 'up_to_date' || $status == 'no_update' || $status == 'status')
+				{
+					continue;
+				}
+
+				foreach ($files as $file_struct)
+				{
+					phpbb::$template->assign_block_vars('location', array(
+						'SOURCE'		=> htmlspecialchars($file_struct['filename']),
+						'DESTINATION'	=> $script_path . htmlspecialchars($file_struct['filename']),
+					));
+				}
+			}
+			return 'SELECT_DOWNLOAD_FORMAT';
+		}
+
+		if (!in_array($use_method, $methods))
+		{
+			$use_method = '.tar';
+		}
+
+		$update_mode = 'download';
+	}
+	else
+	{
+		// Choose FTP, if not available use fsock...
+		$method = basename(request_var('method', ''));
+		$submit = phpbb_request::is_set_post('update');
+		$test_ftp_connection = request_var('test_connection', '');
+
+		if (!$method || !class_exists($method))
+		{
+			$method = 'ftp';
+			$methods = transfer::methods();
+
+			if (!in_array('ftp', $methods))
+			{
+				$method = $methods[0];
+			}
+		}
+
+		$test_connection = false;
+		if ($test_ftp_connection || $submit)
+		{
+			$transfer = new $method(request_var('host', ''), request_var('username', ''), request_var('password', ''), request_var('root_path', ''), request_var('port', ''), request_var('timeout', ''));
+			$test_connection = $transfer->open_session();
+
+			// Make sure that the directory is correct by checking for the existence of common.php
+			if ($test_connection === true)
+			{
+				// Check for common.php file
+				if (!$transfer->file_exists(PHPBB_ROOT_PATH, 'common.' . PHP_EXT))
+				{
+					$test_connection = 'ERR_WRONG_PATH_TO_PHPBB';
+				}
+			}
+
+			$transfer->close_session();
+
+			// Make sure the login details are correct before continuing
+			if ($submit && $test_connection !== true)
+			{
+				$submit = false;
+				$test_ftp_connection = true;
+			}
+		}
+
+		$s_hidden_fields .= build_hidden_fields(array('method' => $method));
+
+		if (!$submit)
+		{
+			if (!class_exists($method))
+			{
+				trigger_error('Method does not exist.', E_USER_ERROR);
+			}
+
+			$requested_data = call_user_func(array($method, 'data'));
+			foreach ($requested_data as $data => $default)
+			{
+				phpbb::$template->assign_block_vars('data', array(
+					'DATA'		=> $data,
+					'NAME'		=> phpbb::$user->lang[strtoupper($method . '_' . $data)],
+					'EXPLAIN'	=> phpbb::$user->lang[strtoupper($method . '_' . $data) . '_EXPLAIN'],
+					'DEFAULT'	=> (request_var($data, false)) ? request_var($data, '') : $default
+				));
+			}
+
+			phpbb::$template->assign_vars(array(
+				'S_CONNECTION_SUCCESS'		=> ($test_ftp_connection && $test_connection === true) ? true : false,
+				'S_CONNECTION_FAILED'		=> ($test_ftp_connection && $test_connection !== true) ? true : false,
+				'ERROR_MSG'					=> ($test_ftp_connection && $test_connection !== true) ? phpbb::$user->lang[$test_connection] : '',
+
+				'S_FTP_UPLOAD'		=> true,
+				'UPLOAD_METHOD'		=> $method,
+				'U_ACTION'			=> $module_url,
+				'U_DOWNLOAD_METHOD'	=> $module_url . '&amp;download=1',
+				'S_HIDDEN_FIELDS'	=> $s_hidden_fields,
+			));
+
+			return 'SELECT_FTP_SETTINGS';
+		}
+
+		$update_mode = 'upload';
+	}
+
+	// Now init the connection
+	if ($update_mode == 'download')
+	{
+		// Now update the installation or download the archive...
+		$archive_filename = $download_filename . '_' . time() . '_' . unique_id();
+
+		if ($use_method == '.zip')
+		{
+			$compress = new compress_zip('w', PHPBB_ROOT_PATH . 'store/' . $archive_filename . $use_method);
+		}
+		else
+		{
+			$compress = new compress_tar('w', PHPBB_ROOT_PATH . 'store/' . $archive_filename . $use_method, $use_method);
+		}
+	}
+	else
+	{
+		$transfer = new $method(request_var('host', ''), request_var('username', ''), request_var('password', ''), request_var('root_path', ''), request_var('port', ''), request_var('timeout', ''));
+		$transfer->open_session();
+	}
+
+	// Ok, go through the update list and do the operations based on their status
+	foreach ($update_list as $status => $files)
+	{
+		if (!is_array($files))
+		{
+			continue;
+		}
+
+		foreach ($files as $file_struct)
+		{
+			$original_filename = ($file_struct['custom']) ? $file_struct['original'] : $file_struct['filename'];
+
+			switch ($status)
+			{
+				case 'new':
+				case 'new_conflict':
+				case 'not_modified':
+
+					if ($update_mode == 'download')
+					{
+						$compress->add_custom_file($new_location . $original_filename, $file_struct['filename']);
+					}
+					else
+					{
+						if ($status != 'new')
+						{
+							$transfer->rename($file_struct['filename'], $file_struct['filename'] . '.bak');
+						}
+
+						// New directory too?
+						$dirname = dirname($file_struct['filename']);
+
+						if ($dirname && !file_exists(PHPBB_ROOT_PATH . $dirname))
+						{
+							$transfer->make_dir($dirname);
+						}
+
+						$transfer->copy_file($new_location . $original_filename, $file_struct['filename']);
+					}
+				break;
+
+				case 'modified':
+
+					$contents = base64_decode($cache->get($file_list[$file_struct['filename']]));
+
+					if ($update_mode == 'download')
+					{
+						$compress->add_data($contents, $file_struct['filename']);
+					}
+					else
+					{
+						// @todo add option to specify if a backup file should be created?
+						$transfer->rename($file_struct['filename'], $file_struct['filename'] . '.bak');
+						$transfer->write_file($file_struct['filename'], $contents);
+					}
+				break;
+
+				case 'conflict':
+
+					$contents = base64_decode($cache->get($file_list[$file_struct['filename']]));
+
+					if ($update_mode == 'download')
+					{
+						$compress->add_data($contents, $file_struct['filename']);
+					}
+					else
+					{
+						$transfer->rename($file_struct['filename'], $file_struct['filename'] . '.bak');
+						$transfer->write_file($file_struct['filename'], $contents);
+					}
+				break;
+			}
+		}
+	}
+
+	if ($update_mode == 'download')
+	{
+		$compress->close();
+
+		$compress->download($archive_filename, $download_filename);
+		@unlink(PHPBB_ROOT_PATH . 'store/' . $archive_filename . $use_method);
+
+		exit;
+	}
+	else
+	{
+		$transfer->close_session();
+
+		phpbb::$template->assign_var('S_UPLOAD_SUCCESS', true);
+		return;
+	}
+}
+
 ?>

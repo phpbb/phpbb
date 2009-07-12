@@ -131,6 +131,7 @@ $lang = array_merge($lang, array(
 	'CONGRATULATIONS'		=> 'Congratulations to',
 	'CONNECTION_FAILED'		=> 'Connection failed.',
 	'CONNECTION_SUCCESS'	=> 'Connection was successful!',
+	'CONTINUE_UPDATE'			=> 'Back',
 	'COOKIES_DELETED'		=> 'All board cookies successfully deleted.',
 	'CURRENT_TIME'			=> 'It is currently %s',
 
@@ -161,6 +162,10 @@ $lang = array_merge($lang, array(
 		1		=> 'Viewed %d time',
 		2		=> 'Viewed %d times',
 	),
+
+	'DOWNLOAD_UPDATE_METHOD'			=> 'Download modified files archive',
+	'DOWNLOAD_UPDATE_METHOD_BUTTON'		=> 'Download modified files archive (recommended)',
+	'DOWNLOAD_UPDATE_METHOD_EXPLAIN'	=> 'Once downloaded you should unpack the archive. You will find the modified files you need to upload to your phpBB root directory within it. Please upload the files to their respective locations then. After you have uploaded all files, please check the files again with the other button below.',
 
 	'EDIT_POST'							=> 'Edit post',
 	'EMAIL'								=> 'E-mail', // Short form for EMAIL_ADDRESS
@@ -205,6 +210,9 @@ $lang = array_merge($lang, array(
 	'FORUM_RULES_LINK'		=> 'Please click here to view the forum rules',
 	'FROM'					=> 'from',
 	'FSOCK_DISABLED'		=> 'The operation could not be completed because the <var>fsockopen</var> function has been disabled or the server being queried could not be found.',
+
+	'FTP_SETTINGS'					=> 'FTP settings',
+	'FTP_UPDATE_METHOD'				=> 'FTP upload',
 
 	'FTP_FSOCK_HOST'				=> 'FTP host',
 	'FTP_FSOCK_HOST_EXPLAIN'		=> 'FTP server used to connect your site.',
@@ -338,6 +346,7 @@ $lang = array_merge($lang, array(
 	'LOGOUT_USER'						=> 'Logout [ %s ]',
 	'LOG_ME_IN'							=> 'Log me on automatically each visit',
 
+	'MAPPING_FILE_STRUCTURE'	=> 'To ease the upload here are the file locations which map your phpBB installation.',
 	'MARK'					=> 'Mark',
 	'MARK_ALL'				=> 'Mark all',
 	'MARK_FORUMS_READ'		=> 'Mark forums read',
@@ -550,10 +559,12 @@ $lang = array_merge($lang, array(
 	'SELECT_ALL_CODE'			=> 'Select all',
 	'SELECT_DESTINATION_FORUM'	=> 'Please select a destination forum',
 	'SELECT_FORUM'				=> 'Select a forum',
+	'SELECT_FTP_SETTINGS'		=> 'Select FTP settings',
 	'SEND_EMAIL'				=> 'E-mail',				// Used for submit buttons
 	'SEND_EMAIL_USER'			=> 'E-mail',				// Used as: {L_SEND_EMAIL_USER} {USERNAME} -> E-mail UserX
 	'SEND_PRIVATE_MESSAGE'		=> 'Send private message',
 	'SETTINGS'					=> 'Settings',
+
 	'SIGNATURE'					=> 'Signature',
 	'SKIP'						=> 'Skip to content',
 	'SMTP_NO_AUTH_SUPPORT'		=> 'SMTP server does not support authentication.',
@@ -655,6 +666,9 @@ $lang = array_merge($lang, array(
 	),
 	'TRACKED_PHP_ERROR'	=> 'Tracked PHP errors: %s',
 
+	'TRY_DOWNLOAD_METHOD'		=> 'You may want to try the download modified files method.<br />This method always works and is also the recommended update path.',
+	'TRY_DOWNLOAD_METHOD_BUTTON'=> 'Try this method now',
+
 	'UNABLE_GET_IMAGE_SIZE'	=> 'It was not possible to determine the dimensions of the image.',
 	'UNABLE_TO_DELIVER_FILE'=> 'Unable to deliver file.',
 	'UNKNOWN_BROWSER'		=> 'Unknown browser',
@@ -669,7 +683,11 @@ $lang = array_merge($lang, array(
 	'UNWATCHED_TOPICS'			=> 'You are no longer subscribed to the selected topics.',
 	'UNWATCHED_FORUMS_TOPICS'	=> 'You are no longer subscribed to the selected entries.',
 	'UPDATE'				=> 'Update',
+	'UPDATE_FILES'					=> 'Update files',
+	'UPDATE_METHOD_EXPLAIN'			=> 'You are now able to choose your preferred update method. Using the FTP upload will present you with a form you need to enter your FTP account details into. With this method the files will be automatically moved to the new location and backups of the old files being created by appending .bak to the filename. If you choose to download the modified files you are able to unpack and upload them to their correct location manually later.',
 	'UPLOAD_IN_PROGRESS'	=> 'The upload is currently in progress.',
+	'UPDATE_SUCCESS'				=> 'Update was successful',
+	'UPDATE_SUCCESS_EXPLAIN'		=> 'Successfully updated all files. You should now check to see if everything is working fine.',
 	'URL_REDIRECT'			=> 'If your browser does not support meta redirection %splease click HERE to be redirected%s.',
 	'USERGROUPS'			=> 'Groups',
 	'USERNAME'				=> 'Username',

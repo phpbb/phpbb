@@ -182,7 +182,7 @@ class install_update extends module
 		$this->include_file('includes/diff/renderer.' . PHP_EXT);
 
 		// Make sure we stay at the file check if checking the files again
-		if (phpbb_request::variable('check_again', false, false, phpbb_request::POST))
+		if (phpbb_request::variable('clean_up', false, false, phpbb_request::POST))
 		{
 			$sub = $this->p_master->sub = 'file_check';
 		}
@@ -271,7 +271,7 @@ class install_update extends module
 				$action = request_var('action', '');
 
 				// We are directly within an update. To make sure our update list is correct we check its status.
-				$update_list = (phpbb_request::variable('check_again', false, false, phpbb_request::POST)) ? false : phpbb::$acm->get('update_list');
+				$update_list = (phpbb_request::variable('clean_up', false, false, phpbb_request::POST)) ? false : phpbb::$acm->get('update_list');
 				$modified = ($update_list !== false) ? phpbb::$acm->get_modified_date('data', 'update_list') : 0;
 
 				// Make sure the list is up-to-date
@@ -721,284 +721,43 @@ class install_update extends module
 				$file_list['status'] = -1;
 				phpbb::$acm->put('diff_files', $file_list);
 
-				if (request_var('download', false))
-				{
-					$this->include_file('includes/functions_compress.' . PHP_EXT);
+				$this->include_file('includes/functions_compress.' . $phpEx);
+				$this->include_file('includes/functions_transfer.' . $phpEx);
 
-					$use_method = request_var('use_method', '');
-					$methods = array('.tar');
-
-					$available_methods = array('.tar.gz' => 'zlib', '.tar.bz2' => 'bz2', '.zip' => 'zlib');
-					foreach ($available_methods as $type => $module)
-					{
-						if (!@extension_loaded($module))
-						{
-							continue;
-						}
-
-						$methods[] = $type;
-					}
-
-					// Let the user decide in which format he wants to have the pack
-					if (!$use_method)
-					{
-						$this->page_title = 'SELECT_DOWNLOAD_FORMAT';
-
-						$radio_buttons = '';
-						foreach ($methods as $method)
-						{
-							$radio_buttons .= '<label><input type="radio"' . ((!$radio_buttons) ? ' id="use_method"' : '') . ' class="radio" value="' . $method . '" name="use_method" /> ' . $method . '</label>';
-						}
-
-						phpbb::$template->assign_vars(array(
-							'S_DOWNLOAD_FILES'		=> true,
-							'U_ACTION'				=> append_sid($this->p_master->module_url, "mode=$mode&amp;sub=update_files"),
-							'RADIO_BUTTONS'			=> $radio_buttons,
-							'S_HIDDEN_FIELDS'		=> $s_hidden_fields,
-						));
-
-						// To ease the update process create a file location map
-						$update_list = phpbb::$acm->get('update_list');
-						$script_path = (phpbb::$config['force_server_vars']) ? ((phpbb::$config['script_path'] == '/') ? '/' : phpbb::$config['script_path'] . '/') : phpbb::$user->page['root_script_path'];
-
-						foreach ($update_list as $status => $files)
-						{
-							if ($status == 'up_to_date' || $status == 'no_update' || $status == 'status')
-							{
-								continue;
-							}
-
-							foreach ($files as $file_struct)
-							{
-								if (in_array($file_struct['filename'], $no_update))
-								{
-									continue;
-								}
-
-								phpbb::$template->assign_block_vars('location', array(
-									'SOURCE'		=> htmlspecialchars($file_struct['filename']),
-									'DESTINATION'	=> $script_path . htmlspecialchars($file_struct['filename']),
-								));
-							}
-						}
-						return;
-					}
-
-					if (!in_array($use_method, $methods))
-					{
-						$use_method = '.tar';
-					}
-
-					$update_mode = 'download';
-				}
-				else
-				{
-					$this->include_file('includes/functions_transfer.' . PHP_EXT);
-
-					// Choose FTP, if not available use fsock...
-					$method = basename(request_var('method', ''));
-					$submit = phpbb_request::is_set_post('submit');
-					$test_ftp_connection = request_var('test_connection', '');
-
-					if (!$method || !class_exists($method))
-					{
-						$method = 'ftp';
-						$methods = transfer::methods();
-
-						if (!in_array('ftp', $methods))
-						{
-							$method = $methods[0];
-						}
-					}
-
-					$test_connection = false;
-					if ($test_ftp_connection || $submit)
-					{
-						$transfer = new $method(request_var('host', ''), request_var('username', ''), request_var('password', ''), request_var('root_path', ''), request_var('port', ''), request_var('timeout', ''));
-						$test_connection = $transfer->open_session();
-
-						// Make sure that the directory is correct by checking for the existence of common.php
-						if ($test_connection === true)
-						{
-							// Check for common.php file
-							if (!$transfer->file_exists(PHPBB_ROOT_PATH, 'common.' . PHP_EXT))
-							{
-								$test_connection = 'ERR_WRONG_PATH_TO_PHPBB';
-							}
-						}
-
-						$transfer->close_session();
-
-						// Make sure the login details are correct before continuing
-						if ($submit && $test_connection !== true)
-						{
-							$submit = false;
-							$test_ftp_connection = true;
-						}
-					}
-
-					$s_hidden_fields .= build_hidden_fields(array('method' => $method));
-
-					if (!$submit)
-					{
-						$this->page_title = 'SELECT_FTP_SETTINGS';
-
-						if (!class_exists($method))
-						{
-							trigger_error('Method does not exist.', E_USER_ERROR);
-						}
-
-						$requested_data = call_user_func(array($method, 'data'));
-						foreach ($requested_data as $data => $default)
-						{
-							phpbb::$template->assign_block_vars('data', array(
-								'DATA'		=> $data,
-								'NAME'		=> phpbb::$user->lang[strtoupper($method . '_' . $data)],
-								'EXPLAIN'	=> phpbb::$user->lang[strtoupper($method . '_' . $data) . '_EXPLAIN'],
-								'DEFAULT'	=> (request_var($data, false)) ? request_var($data, '') : $default
-							));
-						}
-
-						phpbb::$template->assign_vars(array(
-							'S_CONNECTION_SUCCESS'		=> ($test_ftp_connection && $test_connection === true) ? true : false,
-							'S_CONNECTION_FAILED'		=> ($test_ftp_connection && $test_connection !== true) ? true : false,
-							'ERROR_MSG'					=> ($test_ftp_connection && $test_connection !== true) ? phpbb::$user->lang[$test_connection] : '',
-
-							'S_FTP_UPLOAD'		=> true,
-							'UPLOAD_METHOD'		=> $method,
-							'U_ACTION'			=> append_sid($this->p_master->module_url, "mode=$mode&amp;sub=update_files"),
-							'U_DOWNLOAD_METHOD'	=> append_sid($this->p_master->module_url, "mode=$mode&amp;sub=update_files&amp;download=1"),
-							'S_HIDDEN_FIELDS'	=> $s_hidden_fields,
-						));
-
-						return;
-					}
-
-					$update_mode = 'upload';
-				}
-
-				// Now update the installation or download the archive...
-				$download_filename = 'update_' . $this->update_info['version']['from'] . '_to_' . $this->update_info['version']['to'];
-				$archive_filename = $download_filename . '_' . time() . '_' . unique_id();
-
-				// Now init the connection
-				if ($update_mode == 'download')
-				{
-					if ($use_method == '.zip')
-					{
-						$compress = new compress_zip('w', PHPBB_ROOT_PATH . 'store/' . $archive_filename . $use_method);
-					}
-					else
-					{
-						$compress = new compress_tar('w', PHPBB_ROOT_PATH . 'store/' . $archive_filename . $use_method, $use_method);
-					}
-				}
-				else
-				{
-					$transfer = new $method(request_var('host', ''), request_var('username', ''), request_var('password', ''), request_var('root_path', ''), request_var('port', ''), request_var('timeout', ''));
-					$transfer->open_session();
-				}
-
-				// Ok, go through the update list and do the operations based on their status
-				foreach ($update_list as $status => $files)
+				$module_url = append_sid($this->p_master->module_url, "mode=$mode&amp;sub=update_files");
+				foreach ($update_list as &$files)
 				{
 					if (!is_array($files))
 					{
 						continue;
 					}
-
-					foreach ($files as $file_struct)
+					for ($i = 0, $size = sizeof($files); $i < $size; $i++)
 					{
 						// Skip this file if the user selected to not update it
-						if (in_array($file_struct['filename'], $no_update))
+						if (in_array($files[$i]['filename'], $no_update))
 						{
-							continue;
-						}
-
-						$original_filename = ($file_struct['custom']) ? $file_struct['original'] : $file_struct['filename'];
-
-						switch ($status)
-						{
-							case 'new':
-							case 'new_conflict':
-							case 'not_modified':
-
-								if ($update_mode == 'download')
-								{
-									$compress->add_custom_file($this->new_location . $original_filename, $file_struct['filename']);
-								}
-								else
-								{
-									if ($status != 'new')
-									{
-										$transfer->rename($file_struct['filename'], $file_struct['filename'] . '.bak');
-									}
-
-									// New directory too?
-									$dirname = dirname($file_struct['filename']);
-
-									if ($dirname && !file_exists(PHPBB_ROOT_PATH . $dirname))
-									{
-										$transfer->make_dir($dirname);
-									}
-
-									$transfer->copy_file($this->new_location . $original_filename, $file_struct['filename']);
-								}
-							break;
-
-							case 'modified':
-
-								$contents = base64_decode(phpbb::$acm->get($file_list[$file_struct['filename']]));
-
-								if ($update_mode == 'download')
-								{
-									$compress->add_data($contents, $file_struct['filename']);
-								}
-								else
-								{
-									// @todo add option to specify if a backup file should be created?
-									$transfer->rename($file_struct['filename'], $file_struct['filename'] . '.bak');
-									$transfer->write_file($file_struct['filename'], $contents);
-								}
-							break;
-
-							case 'conflict':
-
-								$contents = base64_decode(phpbb::$acm->get($file_list[$file_struct['filename']]));
-
-								if ($update_mode == 'download')
-								{
-									$compress->add_data($contents, $file_struct['filename']);
-								}
-								else
-								{
-									$transfer->rename($file_struct['filename'], $file_struct['filename'] . '.bak');
-									$transfer->write_file($file_struct['filename'], $contents);
-								}
-							break;
+							unset($files[$i]['filename']);
 						}
 					}
+					$files = array_values($files);
 				}
+				unset($files);
+				$new_location = $this->new_location;
+				$download_filename = 'update_' . $this->update_info['version']['from'] . '_to_' . $this->update_info['version']['to'];
+				$check_params = "mode=$mode&amp;sub=file_check";
 
-				if ($update_mode == 'download')
+				$temp = process_transfer($module_url, $update_list, $new_location, $download_filename);
+				if (is_string($temp))
 				{
-					$compress->close();
-
-					$compress->download($archive_filename, $download_filename);
-					@unlink(PHPBB_ROOT_PATH . 'store/' . $archive_filename . $use_method);
-
-					exit;
+					$this->page_title = $temp;
 				}
-				else
-				{
-					$transfer->close_session();
 
-					phpbb::$template->assign_vars(array(
-						'S_UPLOAD_SUCCESS'	=> true,
-						'U_ACTION'			=> append_sid($this->p_master->module_url, "mode=$mode&amp;sub=file_check"),
-					));
-					return;
-				}
+				phpbb::$template->assign_vars(array(
+					'S_UPDATE_OPTIONS' => true,
+					'S_CHECK_AGAIN' => true,
+					// 'U_INITIAL_ACTION' isn't set because it's taken care of in the S_FILE_CHECK block of install_update.html
+					'U_FINAL_ACTION' => append_sid($this->p_master->module_url, "mode=$mode&amp;sub=update_files"))
+				);
 
 			break;
 

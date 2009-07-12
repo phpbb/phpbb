@@ -16,7 +16,7 @@ if (!defined('IN_PHPBB'))
 	exit;
 }
 
-require_once PHPBB_ROOT_PATH . 'includes/sftp/sftp.' . PHP_EXT;
+require_once PHPBB_ROOT_PATH . 'includes/libraries/sftp/sftp.' . PHP_EXT;
 
 /**
 * Transfer class, wrapper for ftp/sftp/ssh
@@ -192,7 +192,7 @@ class transfer
 		$directory = $this->root_path . str_replace(PHPBB_ROOT_PATH, '', $directory);
 
 		$this->_chdir($directory);
-		$result = $this->_ls();
+		$result = $this->_ls('');
 
 		if ($result !== false && is_array($result))
 		{
@@ -455,7 +455,7 @@ class ftp extends transfer
 			$item = str_replace('\\', '/', $item);
 			$dir = str_replace('\\', '/', $dir);
 
-			if (strpos($item, $dir) === 0)
+			if (!empty($dir) && strpos($item, $dir) === 0)
 			{
 				$item = substr($item, strlen($dir));
 			}

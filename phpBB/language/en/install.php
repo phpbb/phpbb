@@ -384,7 +384,6 @@ $lang = array_merge($lang, array(
 
 	'CHANGE_CLEAN_NAMES'			=> 'The method used to make sure a username is not used by multiple users has been changed. There are some users which have the same name when compared with the new method. You have to delete or rename these users to make sure that each name is only used by one user before you can proceed.',
 	'CHECK_FILES'					=> 'Check files',
-	'CHECK_FILES_AGAIN'				=> 'Check files again',
 	'CHECK_FILES_EXPLAIN'			=> 'Within the next step all files will be checked against the update files - this can take a while if this is the first file check.',
 	'CHECK_FILES_UP_TO_DATE'		=> 'According to your database your version is up to date. You may want to proceed with the file check to make sure all files are really up to date with the latest phpBB version.',
 	'CHECK_UPDATE_DATABASE'			=> 'Continue update process',
@@ -392,6 +391,7 @@ $lang = array_merge($lang, array(
 	'COLLECTED_INFORMATION_EXPLAIN'	=> 'The list below shows information about the files needing an update. Please read the information in front of every status block to see what they mean and what you may need to do to perform a successful update.',
 	'COLLECTING_FILE_DIFFS'			=> 'Collecting file differences',
 	'COMPLETE_LOGIN_TO_BOARD'		=> 'You should now <a href="../ucp.php?mode=login">login to your board</a> and check if everything is working fine. Do not forget to delete, rename or move your install directory!',
+	'CONTINUE_UPDATE'				=> 'Check files again',
 	'CONTINUE_UPDATE_NOW'			=> 'Continue the update process now',
 	'CURRENT_FILE'					=> 'Begin of Conflict - Original File code before update',
 	'CURRENT_VERSION'				=> 'Current version',
@@ -410,11 +410,8 @@ $lang = array_merge($lang, array(
 	'DONE'								=> 'Done',
 	'DOWNLOAD'							=> 'Download',
 	'DOWNLOAD_AS'						=> 'Download as',
-	'DOWNLOAD_UPDATE_METHOD_BUTTON'		=> 'Download modified files archive (recommended)',
 	'DOWNLOAD_CONFLICTS'				=> 'Download conflicts for this file',
 	'DOWNLOAD_CONFLICTS_EXPLAIN'		=> 'Search for &lt;&lt;&lt; to spot conflicts',
-	'DOWNLOAD_UPDATE_METHOD'			=> 'Download modified files archive',
-	'DOWNLOAD_UPDATE_METHOD_EXPLAIN'	=> 'Once downloaded you should unpack the archive. You will find the modified files you need to upload to your phpBB root directory within it. Please upload the files to their respective locations then. After you have uploaded all files, please check the files again with the other button below.',
 
 	'ERROR'			=> 'Error',
 	'EDIT_USERNAME'	=> 'Edit username',
@@ -434,8 +431,6 @@ $lang = array_merge($lang, array(
 	'FILES_NOT_MODIFIED_EXPLAIN'	=> 'The following files are not modified and represent the original phpBB files from the version you want to update from.',
 	'FILES_UP_TO_DATE'				=> 'Already updated files',
 	'FILES_UP_TO_DATE_EXPLAIN'		=> 'The following files are already up to date and do not need to be updated.',
-	'FTP_SETTINGS'					=> 'FTP settings',
-	'FTP_UPDATE_METHOD'				=> 'FTP upload',
 
 	'INCOMPATIBLE_UPDATE_FILES'		=> 'The update files found are incompatible with your installed version. Your installed version is %1$s and the update file is for updating phpBB %2$s to %3$s.',
 	'INCOMPLETE_UPDATE_FILES'		=> 'The update files are incomplete.',
@@ -450,8 +445,6 @@ $lang = array_merge($lang, array(
 	'LINE_REMOVED'			=> 'Removed',
 	'LINE_UNMODIFIED'		=> 'Unmodified',
 	'LOGIN_UPDATE_EXPLAIN'	=> 'In order to update your installation you need to login first.',
-
-	'MAPPING_FILE_STRUCTURE'	=> 'To ease the upload here are the file locations which map your phpBB installation.',
 
 	'MERGE_MODIFICATIONS_OPTION'	=> 'Merge modifications',
 
@@ -491,7 +484,6 @@ $lang = array_merge($lang, array(
 
 	'SELECT_DIFF_MODE'			=> 'Select diff mode',
 	'SELECT_DOWNLOAD_FORMAT'	=> 'Select download archive format',
-	'SELECT_FTP_SETTINGS'		=> 'Select FTP settings',
 	'SHOW_DIFF_CONFLICT'		=> 'Show differences/conflicts',
 	'SHOW_DIFF_FINAL'			=> 'Show resulting file',
 	'SHOW_DIFF_MODIFIED'		=> 'Show merged differences',
@@ -513,14 +505,11 @@ $lang = array_merge($lang, array(
 	'STATUS_UP_TO_DATE'			=> 'Already updated file',
 
 	'TOGGLE_DISPLAY'			=> 'View/Hide file list',
-	'TRY_DOWNLOAD_METHOD'		=> 'You may want to try the download modified files method.<br />This method always works and is also the recommended update path.',
-	'TRY_DOWNLOAD_METHOD_BUTTON'=> 'Try this method now',
 
 	'UPDATE_COMPLETED'				=> 'Update completed',
 	'UPDATE_DATABASE'				=> 'Update database',
 	'UPDATE_DATABASE_EXPLAIN'		=> 'Within the next step the database will be updated.',
 	'UPDATE_DATABASE_SCHEMA'		=> 'Updating database schema',
-	'UPDATE_FILES'					=> 'Update files',
 	'UPDATE_FILES_NOTICE'			=> 'Please make sure you have updated your board files too, this file is only updating your database.',
 	'UPDATE_INSTALLATION'			=> 'Update phpBB installation',
 	'UPDATE_INSTALLATION_EXPLAIN'	=> 'With this option, it is possible to update your phpBB installation to the latest version.<br />During the process all of your files will be checked for their integrity. You are able to review all differences and files before the update.<br /><br />The file update itself can be done in two different ways.</p><h2>Manual Update</h2><p>With this update you only download your personal set of changed files to make sure you do not lose your file modifications you may have done. After you downloaded this package you need to manually upload the files to their correct position under your phpBB root directory. Once done, you are able to do the file check stage again to see if you moved the files to their correct location.</p><h2>Automatic Update with FTP</h2><p>This method is similar to the first one but without the need to download the changed files and uploading them on your own. This will be done for you. In order to use this method you need to know your FTP login details since you will be asked for them. Once finished you will be redirected to the file check again to make sure everything got updated correctly.<br /><br />',
@@ -555,9 +544,7 @@ $lang = array_merge($lang, array(
 		<p>phpBB detected an incomplete automatic update. Please make sure you followed every step within the automatic update tool. Below you will find the link again, or go directly to your install directory.</p>
 	',
 	'UPDATE_METHOD'					=> 'Update method',
-	'UPDATE_METHOD_EXPLAIN'			=> 'You are now able to choose your preferred update method. Using the FTP upload will present you with a form you need to enter your FTP account details into. With this method the files will be automatically moved to the new location and backups of the old files being created by appending .bak to the filename. If you choose to download the modified files you are able to unpack and upload them to their correct location manually later.',
 	'UPDATE_REQUIRES_FILE'			=> 'The updater requires that the following file is present: %s',
-	'UPDATE_SUCCESS'				=> 'Update was successful',
 	'UPDATE_SUCCESS_EXPLAIN'		=> 'Successfully updated all files. The next step involves checking all files again to make sure the files got updated correctly.',
 	'UPDATE_VERSION_OPTIMIZE'		=> 'Updating version and optimising tables',
 	'UPDATING_DATA'					=> 'Updating data',
