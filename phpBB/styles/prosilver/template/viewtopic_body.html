@@ -222,7 +222,9 @@
 
 	<hr class="divider" />
 <!-- END postrow -->
-
+<!-- IF S_QUICK_REPLY -->
+	<!-- INCLUDE quickreply_editor.html -->
+<!-- ENDIF -->
 <!-- IF S_NUM_POSTS > 1 or PREVIOUS_PAGE -->
 	<form id="viewtopic" method="post" action="{S_TOPIC_ACTION}">
 
@@ -253,9 +255,7 @@
 		</div>
 	<!-- ENDIF -->
 </div>
-<!-- IF S_QUICK_REPLY -->
-<!-- INCLUDE quickreply_editor.html -->
-<!-- ENDIF -->
+
 <!-- INCLUDE jumpbox.html -->
 
 <!-- IF S_TOPIC_MOD -->
