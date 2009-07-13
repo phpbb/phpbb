@@ -29,6 +29,7 @@ function view_message($id, $mode, $folder_id, $msg_id, $folder, $message_row)
 	$msg_id		= (int) $msg_id;
 	$folder_id	= (int) $folder_id;
 	$author_id	= (int) $message_row['author_id'];
+	$view		= request_var('view', '');
 
 	// Not able to view message, it was deleted by the sender
 	if ($message_row['pm_deleted'])
@@ -192,7 +193,7 @@ function view_message($id, $mode, $folder_id, $msg_id, $folder, $message_row)
 		'EDIT_IMG'			=> $user->img('icon_post_edit', $user->lang['POST_EDIT_PM']),
 		'MINI_POST_IMG'		=> $user->img('icon_post_target', $user->lang['PM']),
 
-		'SENT_DATE'			=> $user->format_date($message_row['message_time']),
+		'SENT_DATE'			=> ($view == 'print') ? $user->format_date($message_row['message_time'], false, true) : $user->format_date($message_row['message_time']),
 		'SUBJECT'			=> $message_row['message_subject'],
 		'MESSAGE'			=> $message,
 		'SIGNATURE'			=> ($message_row['enable_sig']) ? $signature : '',
