@@ -3109,6 +3109,27 @@ function group_user_attributes($action, $group_id, $user_id_ary = false, $userna
 		break;
 
 		case 'default':
+			// We only set default group for approved members of the group
+			$sql = 'SELECT user_id
+				FROM ' . USER_GROUP_TABLE . "
+				WHERE group_id = $group_id
+					AND user_pending = 0
+					AND " . $db->sql_in_set('user_id', $user_id_ary);
+			$result = $db->sql_query($sql);
+
+			$user_id_ary = $username_ary = array();
+			while ($row = $db->sql_fetchrow($result))
+			{
+				$user_id_ary[] = $row['user_id'];
+			}
+			$db->sql_freeresult($result);
+
+			$result = user_get_id_name($user_id_ary, $username_ary);
+			if (!sizeof($user_id_ary) || $result !== false)
+			{
+				return 'NO_USERS';
+			}
+
 			$sql = 'SELECT user_id, group_id FROM ' . USERS_TABLE . '
 				WHERE ' . $db->sql_in_set('user_id', $user_id_ary, false, true);
 			$result = $db->sql_query($sql);
@@ -3197,7 +3218,7 @@ function group_validate_groupname($group_id, $group_name)
 */
 function group_set_user_default($group_id, $user_id_ary, $group_attributes = false, $update_listing = false)
 {
-	global $db;
+	global $cache, $db;
 
 	if (empty($user_id_ary))
 	{
@@ -3297,6 +3318,9 @@ function group_set_user_default($group_id, $user_id_ary, $group_attributes = fal
 	{
 		group_update_listings($group_id);
 	}
+
+	// Because some tables/caches use usercolour-specific data we need to purge this here.
+	$cache->destroy('sql', MODERATOR_CACHE_TABLE);
 }
 
 /**

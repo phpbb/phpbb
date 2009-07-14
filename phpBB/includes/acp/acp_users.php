@@ -2017,6 +2017,29 @@ class acp_users
 						}
 
 					break;
+
+					case 'approve':
+
+						if (confirm_box(true))
+						{
+							if (!$group_id)
+							{
+								trigger_error($user->lang['NO_GROUP'] . adm_back_link($this->u_action . '&amp;u=' . $user_id), E_USER_WARNING);
+							}
+							group_user_attributes($action, $group_id, $user_id);
+						}
+						else
+						{
+							confirm_box(false, $user->lang['CONFIRM_OPERATION'], build_hidden_fields(array(
+								'u'				=> $user_id,
+								'i'				=> $id,
+								'mode'			=> $mode,
+								'action'		=> $action,
+								'g'				=> $group_id))
+							);
+						}
+
+					break;
 				}
 
 				// Add user to group?
@@ -2109,10 +2132,12 @@ class acp_users
 							'U_DEFAULT'			=> $this->u_action . "&amp;action=default&amp;u=$user_id&amp;g=" . $data['group_id'],
 							'U_DEMOTE_PROMOTE'	=> $this->u_action . '&amp;action=' . (($data['group_leader']) ? 'demote' : 'promote') . "&amp;u=$user_id&amp;g=" . $data['group_id'],
 							'U_DELETE'			=> $this->u_action . "&amp;action=delete&amp;u=$user_id&amp;g=" . $data['group_id'],
+							'U_APPROVE'			=> ($group_type == 'pending') ? $this->u_action . "&amp;action=approve&amp;u=$user_id&amp;g=" . $data['group_id'] : '',
 
 							'GROUP_NAME'		=> ($group_type == 'special') ? $user->lang['G_' . $data['group_name']] : $data['group_name'],
 							'L_DEMOTE_PROMOTE'	=> ($data['group_leader']) ? $user->lang['GROUP_DEMOTE'] : $user->lang['GROUP_PROMOTE'],
 
+							'S_IS_MEMBER'		=> ($group_type != 'pending') ? true : false,
 							'S_NO_DEFAULT'		=> ($user_row['group_id'] != $data['group_id']) ? true : false,
 							'S_SPECIAL_GROUP'	=> ($group_type == 'special') ? true : false,
 							)
