@@ -1122,6 +1122,49 @@ function change_database_data(&$no_updates, $version)
 				}
 			}
 
+			// Also install the "User Warning" module
+			$sql = 'SELECT module_id
+				FROM ' . MODULES_TABLE . "
+				WHERE module_class = 'acp'
+					AND module_langname = 'ACP_USER_MANAGEMENT'
+					AND module_mode = ''
+					AND module_basename = ''";
+			$result = $db->sql_query($sql);
+
+			while ($row = $db->sql_fetchrow($result))
+			{
+				$category_id = (int) $row['module_id'];
+
+				// Check if we actually need to add the module or if it is already added. ;)
+				$sql = 'SELECT *
+					FROM ' . MODULES_TABLE . "
+					WHERE module_class = 'acp'
+						AND module_langname = 'ACP_USER_WARNINGS'
+						AND module_mode = 'warnings'
+						AND module_auth = 'acl_a_user'
+						AND parent_id = {$category_id}";
+				$result2 = $db->sql_query($sql);
+				$row2 = $db->sql_fetchrow($result2);
+				$db->sql_freeresult($result2);
+
+				if (!$row2)
+				{
+					$module_data = array(
+						'module_basename'	=> 'users',
+						'module_enabled'	=> 1,
+						'module_display'	=> 0,
+						'parent_id'			=> $category_id,
+						'module_class'		=> 'acp',
+						'module_langname'	=> 'ACP_USER_WARNINGS',
+						'module_mode'		=> 'warnings',
+						'module_auth'		=> 'acl_a_user',
+					);
+
+					$_module->update_module_data($module_data, true);
+				}
+			}
+			$db->sql_freeresult($result);
+
 			$_module->remove_cache_file();
 
 			// Add newly_registered group... but check if it already exists (we always supported running the updater on any schema)

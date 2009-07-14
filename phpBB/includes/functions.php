@@ -4025,7 +4025,7 @@ function page_footer($run_cron = true)
 			// Tidy the cache
 			$cron_type = 'tidy_cache';
 		}
-		else if (time() - $config['warnings_gc'] > $config['warnings_last_gc'])
+		else if ($config['warnings_last_gc'] && (time() - $config['warnings_gc'] > $config['warnings_last_gc']))
 		{
 			$cron_type = 'tidy_warnings';
 		}

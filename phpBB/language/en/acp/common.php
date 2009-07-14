@@ -186,6 +186,7 @@ $lang = array_merge($lang, array(
 	'ACP_USER_ROLES'				=> 'User roles',
 	'ACP_USER_SECURITY'				=> 'User security',
 	'ACP_USER_SIG'					=> 'Signature',
+	'ACP_USER_WARNINGS'				=> 'Warnings',
 
 	'ACP_VC_SETTINGS'					=> 'Visual confirmation settings',
 	'ACP_VC_CAPTCHA_DISPLAY'			=> 'CAPTCHA image preview',
@@ -697,6 +698,7 @@ $lang = array_merge($lang, array(
 	'LOG_USER_REACTIVATE_USER'	=> '<strong>Forced user account reactivation</strong>',
 	'LOG_USER_UNLOCK'			=> '<strong>User unlocked own topic</strong><br />» %s',
 	'LOG_USER_WARNING'			=> '<strong>Added user warning</strong><br />» %s',
+	'LOG_WARNING_DELETED'		=> '<strong>Deleted user warning</strong><br />» %s',
 	'LOG_USER_WARNING_BODY'		=> '<strong>The following warning was issued to this user</strong><br />» %s',
 
 	'LOG_USER_GROUP_CHANGE'			=> '<strong>User changed default group</strong><br />» %s',

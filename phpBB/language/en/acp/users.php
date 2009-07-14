@@ -77,6 +77,7 @@ $lang = array_merge($lang, array(
 	'MOVE_POSTS_EXPLAIN'	=> 'Please select the forum to which you wish to move all the posts this user has made.',
 
 	'NO_SPECIAL_RANK'		=> 'No special rank assigned',
+	'NO_WARNINGS'			=> 'No warnings.',
 	'NOT_MANAGE_FOUNDER'	=> 'You tried to manage a user with founder status. Only founders are allowed to manage other founders.',
 
 	'QUICK_TOOLS'			=> 'Quick tools',
@@ -130,6 +131,7 @@ $lang = array_merge($lang, array(
 	'USER_RANK'						=> 'User rank',
 	'USER_RANK_UPDATED'				=> 'User rank updated.',
 	'USER_SIG_UPDATED'				=> 'User signature successfully updated.',
+	'USER_WARNING_LOG_DELETED'		=> 'No information available. Possibly the log entry has been deleted.',
 	'USER_TOOLS'					=> 'Basic tools',
 ));
 

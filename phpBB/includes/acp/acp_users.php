@@ -1065,6 +1065,148 @@ class acp_users
 
 			break;
 
+			case 'warnings':
+				$user->add_lang('mcp');
+
+				// Set up general vars
+				$start		= request_var('start', 0);
+				$deletemark	= (isset($_POST['delmarked'])) ? true : false;
+				$deleteall	= (isset($_POST['delall'])) ? true : false;
+				$confirm	= (isset($_POST['confirm'])) ? true : false;
+				$marked		= request_var('mark', array(0));
+				$message	= utf8_normalize_nfc(request_var('message', '', true));
+
+				// Sort keys
+				$sort_days	= request_var('st', 0);
+				$sort_key	= request_var('sk', 't');
+				$sort_dir	= request_var('sd', 'd');
+
+				// Delete entries if requested and able
+				if ($deletemark || $deleteall || $confirm)
+				{
+					if (confirm_box(true))
+					{
+						$where_sql = '';
+						$deletemark = request_var('delmarked', 0);
+						$deleteall = request_var('delall', 0);
+						if ($deletemark && $marked)
+						{
+							$sql_in = array();
+							foreach ($marked as $mark)
+							{
+								$sql_in[] = $mark;
+							}
+							$where_sql = ' AND ' . $db->sql_in_set('warning_id', $sql_in);
+							unset($sql_in);
+						}
+
+						if ($where_sql || $deleteall)
+						{
+							$sql = 'DELETE FROM ' . WARNINGS_TABLE . "
+								WHERE user_id = $user_id
+									$where_sql";
+							$db->sql_query($sql);
+
+							if ($deleteall)
+							{
+								$deleted_warnings = '0';
+							}
+							else
+							{
+								$deleted_warnings = ' user_warnings - ' . $db->sql_affectedrows();
+							}
+
+							$sql = 'UPDATE ' . USERS_TABLE . "
+								SET user_warnings = $deleted_warnings
+								WHERE user_id = $user_id";
+							$db->sql_query($sql);
+
+							add_log('admin', 'LOG_WARNING_DELETED', $user_row['username']);
+						}
+					}
+					else
+					{
+						$s_hidden_fields = array(
+							'i'				=> $id,
+							'mode'			=> $mode,
+							'u'				=> $user_id,
+							'mark'			=> $marked,
+						);
+						if (isset($_POST['delmarked']))
+						{
+							$s_hidden_fields['delmarked'] = 1;
+						}
+						if (isset($_POST['delall']))
+						{
+							$s_hidden_fields['delall'] = 1;
+						}
+						if (isset($_POST['delall']) || (isset($_POST['delmarked']) && sizeof($marked)))
+						{
+							confirm_box(false, $user->lang['CONFIRM_OPERATION'], build_hidden_fields($s_hidden_fields));
+						}
+					}
+				}
+
+				$sql = 'SELECT w.warning_id, w.warning_time, w.post_id, l.log_operation, l.log_data, l.user_id AS mod_user_id, m.username AS mod_username, m.user_colour AS mod_user_colour
+					FROM ' . WARNINGS_TABLE . ' w
+					LEFT JOIN ' . LOG_TABLE . ' l
+						ON (w.log_id = l.log_id)
+					LEFT JOIN ' . USERS_TABLE . ' m
+						ON (l.user_id = m.user_id)
+					WHERE w.user_id = ' . $user_id . '
+					ORDER BY w.warning_time DESC';
+				$result = $db->sql_query($sql);
+
+				while ($row = $db->sql_fetchrow($result))
+				{
+					if (!$row['log_operation'])
+					{
+						// We do not have a log-entry anymore, so there is no data available
+						$row['action'] = $user->lang['USER_WARNING_LOG_DELETED'];
+					}
+					else
+					{
+						$row['action'] = (isset($user->lang[$row['log_operation']])) ? $user->lang[$row['log_operation']] : '{' . ucfirst(str_replace('_', ' ', $row['log_operation'])) . '}';
+						if (!empty($row['log_data']))
+						{
+							$log_data_ary = @unserialize($row['log_data']);
+							$log_data_ary = ($log_data_ary === false) ? array() : $log_data_ary;
+
+							if (isset($user->lang[$row['log_operation']]))
+							{
+								// Check if there are more occurrences of % than arguments, if there are we fill out the arguments array
+								// It doesn't matter if we add more arguments than placeholders
+								if ((substr_count($row['action'], '%') - sizeof($log_data_ary)) > 0)
+								{
+									$log_data_ary = array_merge($log_data_ary, array_fill(0, substr_count($row['action'], '%') - sizeof($log_data_ary), ''));
+								}
+								$row['action'] = vsprintf($row['action'], $log_data_ary);
+								$row['action'] = bbcode_nl2br(censor_text($row['action']));
+							}
+							else if (!empty($log_data_ary))
+							{
+								$row['action'] .= '<br />' . implode('', $log_data_ary);
+							}
+						}
+					}
+
+
+					$template->assign_block_vars('warn', array(
+						'ID'		=> $row['warning_id'],
+						'USERNAME'	=> ($row['log_operation']) ? get_username_string('full', $row['mod_user_id'], $row['mod_username'], $row['mod_user_colour']) : '-',
+						'ACTION'	=> make_clickable($row['action']),
+						'DATE'		=> $user->format_date($row['warning_time']),
+					));
+				}
+				$db->sql_freeresult($result);
+
+				$template->assign_vars(array(
+					'S_WARNINGS'	=> true,
+					'S_CLEARLOGS'	=> $auth->acl_get('a_clearlogs'),
+				));
+
+			break;
+
 			case 'profile':
 
 				include($phpbb_root_path . 'includes/functions_user.' . $phpEx);
