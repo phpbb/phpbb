@@ -1276,6 +1276,18 @@ function change_database_data(&$no_updates, $version)
 				}
 			}
 
+			if (!isset($config['allow_avatar_remote_upload']))
+			{
+				if ($config['allow_avatar_remote'] && $config['allow_avatar_upload'])
+				{
+					set_config('allow_avatar_remote_upload', '1');
+				}
+				else
+				{
+					set_config('allow_avatar_remote_upload', '0');
+				}
+			}
+
 			// Minimum number of characters
 			if (!isset($config['min_post_chars']))
 			{

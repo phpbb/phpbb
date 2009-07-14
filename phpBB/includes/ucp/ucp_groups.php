@@ -688,23 +688,27 @@ class ucp_groups
 
 						$display_gallery = (isset($_POST['display_gallery'])) ? true : false;
 
-						if ($config['allow_avatar_local'] && $display_gallery)
+						if ($config['allow_avatar'] && $config['allow_avatar_local'] && $display_gallery)
 						{
 							avatar_gallery($category, $avatar_select, 4);
 						}
 
-						$avatars_enabled = ($can_upload || ($config['allow_avatar_local'] || $config['allow_avatar_remote'])) ? true : false;
+						$avatars_enabled = ($config['allow_avatar'] && (($can_upload && ($config['allow_avatar_upload'] || $config['allow_avatar_remote_upload'])) || ($config['allow_avatar_local'] || $config['allow_avatar_remote']))) ? true : false;
 
 						$template->assign_vars(array(
 							'S_EDIT'			=> true,
 							'S_INCLUDE_SWATCH'	=> true,
-							'S_CAN_UPLOAD'		=> $can_upload,
-							'S_FORM_ENCTYPE'	=> ($can_upload) ? ' enctype="multipart/form-data"' : '',
+							'S_FORM_ENCTYPE'	=> ($config['allow_avatar'] && $can_upload && ($config['allow_avatar_upload'] || $config['allow_avatar_remote_upload'])) ? ' enctype="multipart/form-data"' : '',
 							'S_ERROR'			=> (sizeof($error)) ? true : false,
 							'S_SPECIAL_GROUP'	=> ($group_type == GROUP_SPECIAL) ? true : false,
 							'S_AVATARS_ENABLED'	=> $avatars_enabled,
-							'S_DISPLAY_GALLERY'	=> ($config['allow_avatar_local'] && !$display_gallery) ? true : false,
+							'S_DISPLAY_GALLERY'	=> ($config['allow_avatar'] && $config['allow_avatar_local'] && !$display_gallery) ? true : false,
 							'S_IN_GALLERY'		=> ($config['allow_avatar_local'] && $display_gallery) ? true : false,
+
+							'S_UPLOAD_AVATAR_FILE'	=> ($config['allow_avatar'] && $config['allow_avatar_upload'] && $can_upload) ? true : false,
+							'S_UPLOAD_AVATAR_URL'	=> ($config['allow_avatar'] && $config['allow_avatar_remote_upload'] && $can_upload) ? true : false,
+							'S_LINK_AVATAR'			=> ($config['allow_avatar'] && $config['allow_avatar_remote']) ? true : false,
+							'S_DISPLAY_GALLERY'		=> ($config['allow_avatar'] && $config['allow_avatar_local']) ? true : false,
 
 							'ERROR_MSG'				=> (sizeof($error)) ? implode('<br />', $error) : '',
 							'GROUP_RECEIVE_PM'		=> (isset($group_row['group_receive_pm']) && $group_row['group_receive_pm']) ? ' checked="checked"' : '',
