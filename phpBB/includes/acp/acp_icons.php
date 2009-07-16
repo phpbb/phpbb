@@ -173,7 +173,7 @@ class acp_icons
 					FROM $table
 					ORDER BY {$fields}_order " . (($icon_id || $action == 'add') ? 'DESC' : 'ASC');
 				$result = $db->sql_query($sql);
-				
+
 				$data = array();
 				$after = false;
 				$display = 0;
@@ -835,12 +835,20 @@ class acp_icons
 		);
 
 		$spacer = false;
+		
+		$sql = "SELECT COUNT(*) AS count
+			FROM $table";
+		$result = $db->sql_query($sql);
+		$row = $db->sql_fetchrow($result);
+		$db->sql_freeresult($result);
+		$item_count = $row['count'];
 
 		$sql = "SELECT *
 			FROM $table
 			ORDER BY {$fields}_order ASC";
-		$result = $db->sql_query($sql);
+		$result = $db->sql_query_limit($sql, $config['smilies_per_page'], request_var('start', 0));
 
+		$pagination_start = request_var('start', 0);
 		while ($row = $db->sql_fetchrow($result))
 		{
 			$alt_text = ($mode == 'smilies') ? $row['code'] : '';
@@ -855,9 +863,9 @@ class acp_icons
 				'EMOTION'		=> (isset($row['emotion'])) ? $row['emotion'] : '',
 				'U_EDIT'		=> $this->u_action . '&amp;action=edit&amp;id=' . $row[$fields . '_id'],
 				'U_DELETE'		=> $this->u_action . '&amp;action=delete&amp;id=' . $row[$fields . '_id'],
-				'U_MOVE_UP'		=> $this->u_action . '&amp;action=move_up&amp;id=' . $row[$fields . '_id'],
-				'U_MOVE_DOWN'	=> $this->u_action . '&amp;action=move_down&amp;id=' . $row[$fields . '_id'])
-			);
+				'U_MOVE_UP'		=> $this->u_action . '&amp;action=move_up&amp;id=' . $row[$fields . '_id'] . '&amp;start=' . $pagination_start,
+				'U_MOVE_DOWN'	=> $this->u_action . '&amp;action=move_down&amp;id=' . $row[$fields . '_id'] . '&amp;start=' . $pagination_start,
+			));
 
 			if (!$spacer && !$row['display_on_posting'])
 			{
@@ -865,6 +873,8 @@ class acp_icons
 			}
 		}
 		$db->sql_freeresult($result);
+		$template->assign_var('PAGINATION', generate_pagination(
+								$this->u_action, $item_count, $config['smilies_per_page'], $pagination_start, true));
 	}
 }
 

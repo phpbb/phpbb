@@ -43,10 +43,25 @@ function generate_smilies($mode, $forum_id)
 		}
 
 		page_header($user->lang['SMILIES']);
+		
+		$sql = 'SELECT COUNT(smiley_id) AS count
+			FROM ' . SMILIES_TABLE . '
+			GROUP BY smiley_url';
+		$result = $db->sql_query($sql, 3600);
+		
+		$smiley_count = 0;
+		while ($row = $db->sql_fetchrow($result))
+		{
+			++$smiley_count;
+		}
+		$db->sql_freeresult($result);
 
 		$template->set_filenames(array(
 			'body' => 'posting_smilies.html')
 		);
+		$template->assign_var('PAGINATION',
+			generate_pagination(append_sid("{$phpbb_root_path}posting.$phpEx", 'mode=smilies&amp;f=' . $forum_id),
+				$smiley_count, $config['smilies_per_page'], request_var('start', 0), true));
 	}
 
 	$display_link = false;
@@ -64,13 +79,22 @@ function generate_smilies($mode, $forum_id)
 		$db->sql_freeresult($result);
 	}
 
-	$last_url = '';
+	if ($mode == 'window')
+	{
+		$sql = 'SELECT smiley_url, MIN(emotion) as emotion, MIN(code) AS code, smiley_width, smiley_height
+			FROM ' . SMILIES_TABLE . '
+			GROUP BY smiley_url, smiley_width, smiley_height ORDER BY smiley_order';
+		$result = $db->sql_query_limit($sql, $config['smilies_per_page'], request_var('start', 0), 3600);
+	}
+	else
+	{
+		$sql = 'SELECT *
+			FROM ' . SMILIES_TABLE . '
+			WHERE display_on_posting = 1
+			ORDER BY smiley_order';
 
-	$sql = 'SELECT *
-		FROM ' . SMILIES_TABLE .
-		(($mode == 'inline') ? ' WHERE display_on_posting = 1 ' : '') . '
-		ORDER BY smiley_order';
-	$result = $db->sql_query($sql, 3600);
+		$result = $db->sql_query($sql, 3600);
+	}
 
 	$smilies = array();
 	while ($row = $db->sql_fetchrow($result))
