@@ -133,6 +133,8 @@ class phpbb_recaptcha extends phpbb_default_captcha
 			'RECAPTCHA_PUBKEY'			=> isset($config['recaptcha_pubkey']) ? $config['recaptcha_pubkey'] : '',
 			'RECAPTCHA_ERRORGET'		=> '',
 			'S_RECAPTCHA_AVAILABLE'		=> $this->is_available(),
+			'S_CONFIRM_CODE'			=> true,
+			'S_TYPE'					=> $this->type,
 		));
 
 		return 'captcha_recaptcha.html';
