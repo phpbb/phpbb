@@ -548,9 +548,7 @@ class base_extractor
 
 			if (!$this->fp)
 			{
-				global $user;
-
-				trigger_error($user->lang['FILE_WRITE_FAIL'], E_USER_ERROR);
+				trigger_error('FILE_WRITE_FAIL', E_USER_ERROR);
 			}
 		}
 	}
