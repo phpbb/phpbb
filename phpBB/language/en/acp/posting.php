@@ -180,6 +180,8 @@ $lang = array_merge($lang, array(
 	'SMILIES_URL'				=> 'Smiley image file',
 	'SMILIES_WIDTH'				=> 'Smiley width',
 
+	'TOO_MANY_SMILIES'			=> 'Limit of %d smilies reached.',
+
 	'WRONG_PAK_TYPE'	=> 'The specified package does not contain the appropriate data.',
 ));
 

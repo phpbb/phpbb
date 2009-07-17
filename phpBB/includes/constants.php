@@ -161,6 +161,9 @@ define('BBCODE_UID_LEN', 8);
 // Number of core BBCodes
 define('NUM_CORE_BBCODES', 12);
 
+// Smiley hard limit
+define('SMILEY_LIMIT', 1000);
+
 // Magic url types
 define('MAGIC_URL_EMAIL', 1);
 define('MAGIC_URL_FULL', 2);
