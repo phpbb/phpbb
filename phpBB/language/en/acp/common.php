@@ -675,6 +675,7 @@ $lang = array_merge($lang, array(
 	'LOG_USER_DELETED'		=> '<strong>Deleted user</strong><br />» %s',
 	'LOG_USER_DEL_ATTACH'	=> '<strong>Removed all attachments made by the user</strong><br />» %s',
 	'LOG_USER_DEL_AVATAR'	=> '<strong>Removed user avatar</strong><br />» %s',
+	'LOG_USER_DEL_OUTBOX'	=> '<strong>Emptied user outbox</strong><br />» %s',
 	'LOG_USER_DEL_POSTS'	=> '<strong>Removed all posts made by the user</strong><br />» %s',
 	'LOG_USER_DEL_SIG'		=> '<strong>Removed user signature</strong><br />» %s',
 	'LOG_USER_INACTIVE'		=> '<strong>User deactivated</strong><br />» %s',

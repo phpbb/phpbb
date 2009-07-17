@@ -495,6 +495,56 @@ class acp_users
 
 						break;
 
+						case 'deloutbox':
+
+							if (confirm_box(true))
+							{
+								$msg_ids = array();
+								$lang = 'EMPTY';
+
+								$sql = 'SELECT msg_id
+									FROM ' . PRIVMSGS_TO_TABLE . "
+									WHERE author_id = $user_id
+										AND folder_id = " . PRIVMSGS_OUTBOX;
+								$result = $db->sql_query($sql);
+
+								if ($row = $db->sql_fetchrow($result))
+								{
+									if (!function_exists('delete_pm'))
+									{
+										include($phpbb_root_path . 'includes/functions_privmsgs.' . $phpEx);
+									}
+
+									do
+									{
+										$msg_ids[] = (int) $row['msg_id'];
+									}
+									while ($row = $db->sql_fetchrow($result));
+
+									$db->sql_freeresult($result);
+
+									delete_pm($user_id, $msg_ids, PRIVMSGS_OUTBOX);
+
+									add_log('admin', 'LOG_USER_DEL_OUTBOX', $user_row['username']);
+									
+									$lang = 'EMPTIED';
+								}
+								$db->sql_freeresult($result);
+								
+								trigger_error($user->lang['USER_OUTBOX_' . $lang] . adm_back_link($this->u_action . '&amp;u=' . $user_id));
+							}
+							else
+							{
+								confirm_box(false, $user->lang['CONFIRM_OPERATION'], build_hidden_fields(array(
+									'u'				=> $user_id,
+									'i'				=> $id,
+									'mode'			=> $mode,
+									'action'		=> $action,
+									'update'		=> true))
+								);
+							}
+						break;
+
 						case 'moveposts':
 
 							if (!check_form_key($form_name))
@@ -842,7 +892,7 @@ class acp_users
 
 				if ($user_id == $user->data['user_id'])
 				{
-					$quick_tool_ary = array('delsig' => 'DEL_SIG', 'delavatar' => 'DEL_AVATAR', 'moveposts' => 'MOVE_POSTS', 'delposts' => 'DEL_POSTS', 'delattach' => 'DEL_ATTACH');
+					$quick_tool_ary = array('delsig' => 'DEL_SIG', 'delavatar' => 'DEL_AVATAR', 'moveposts' => 'MOVE_POSTS', 'delposts' => 'DEL_POSTS', 'delattach' => 'DEL_ATTACH', 'deloutbox' => 'DEL_OUTBOX');
 					if ($user_row['user_new'])
 					{
 						$quick_tool_ary['leave_nr'] = 'LEAVE_NR';
@@ -862,12 +912,13 @@ class acp_users
 						$quick_tool_ary += array('active' => (($user_row['user_type'] == USER_INACTIVE) ? 'ACTIVATE' : 'DEACTIVATE'));
 					}
 
-					$quick_tool_ary += array('delsig' => 'DEL_SIG', 'delavatar' => 'DEL_AVATAR', 'moveposts' => 'MOVE_POSTS', 'delposts' => 'DEL_POSTS', 'delattach' => 'DEL_ATTACH');
+					$quick_tool_ary += array('delsig' => 'DEL_SIG', 'delavatar' => 'DEL_AVATAR', 'moveposts' => 'MOVE_POSTS', 'delposts' => 'DEL_POSTS', 'delattach' => 'DEL_ATTACH', 'deloutbox' => 'DEL_OUTBOX');
 
 					if ($config['email_enable'] && ($user_row['user_type'] == USER_NORMAL || $user_row['user_type'] == USER_INACTIVE))
 					{
 						$quick_tool_ary['reactivate'] = 'FORCE';
 					}
+
 					if ($user_row['user_new'])
 					{
 						$quick_tool_ary['leave_nr'] = 'LEAVE_NR';
