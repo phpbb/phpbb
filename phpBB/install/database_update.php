@@ -1073,6 +1073,9 @@ function change_database_data(&$no_updates, $version)
 			set_config('feed_item_statistics', '1');
 			set_config('feed_exclude_id', '');
 
+			// Entries for smiley pagination
+			set_config('smilies_per_page', '50');
+
 			include_once($phpbb_root_path . 'includes/acp/acp_modules.' . $phpEx);
 
 			$_module = new acp_modules();
