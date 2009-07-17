@@ -872,9 +872,10 @@ class acp_icons
 			}
 		}
 		$db->sql_freeresult($result);
-		$template->assign_var('PAGINATION', generate_pagination(
 
-		$this->u_action, $item_count, $config['smilies_per_page'], $pagination_start, true));
+		$template->assign_var('PAGINATION',
+			generate_pagination($this->u_action, $item_count, $config['smilies_per_page'], $pagination_start, true)
+		);
 	}
 }
 
