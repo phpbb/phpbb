@@ -548,7 +548,9 @@ class base_extractor
 
 			if (!$this->fp)
 			{
-				trigger_error('Unable to write temporary file to storage folder', E_USER_ERROR);
+				global $user;
+
+				trigger_error($user->lang['FILE_WRITE_FAIL'], E_USER_ERROR);
 			}
 		}
 	}
