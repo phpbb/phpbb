@@ -915,6 +915,11 @@ class install_update extends module
 				// Now init the connection
 				if ($update_mode == 'download')
 				{
+					if (function_exists('phpbb_is_writable') && !phpbb_is_writable($phpbb_root_path . 'store/'))
+					{
+						trigger_error(sprintf($user->lang['DIRECTORY_NOT_WRITABLE'], $phpbb_root_path . 'store/'), E_USER_ERROR);
+					}
+
 					if ($use_method == '.zip')
 					{
 						$compress = new compress_zip('w', $phpbb_root_path . 'store/' . $archive_filename . $use_method);
