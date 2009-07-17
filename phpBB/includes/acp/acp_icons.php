@@ -231,7 +231,7 @@ class acp_icons
 					$data = $_images;
 				}
 
-				$colspan = (($mode == 'smilies') ? '7' : '5');
+				$colspan = (($mode == 'smilies') ? 7 : 5);
 				$colspan += ($icon_id) ? 1 : 0;
 				$colspan += ($action == 'add') ? 2 : 0;
 
@@ -345,6 +345,25 @@ class acp_icons
 						}
 
 						$image_order[$add_image] = request_var('add_order', 0);
+					}
+				}
+
+				if ($mode == 'smilies' && $action == 'create')
+				{
+					$smiley_count = $this->item_count($table);
+					
+					$addable_smileys_count = sizeof($images);
+					foreach ($images as $image)
+					{
+						if (!isset($image_add[$image]))
+						{
+							--$addable_smileys_count;
+						}
+					}
+					
+					if ($smiley_count + $addable_smileys_count > SMILEY_LIMIT)
+					{
+						trigger_error(sprintf($user->lang['TOO_MANY_SMILIES'], SMILEY_LIMIT) . adm_back_link($this->u_action), E_USER_WARNING);
 					}
 				}
 
@@ -495,7 +514,6 @@ class acp_icons
 						}
 					}
 
-
 					// The user has already selected a smilies_pak file
 					if ($current == 'delete')
 					{
@@ -539,6 +557,15 @@ class acp_icons
 							$cur_img[$row[$field_sql]] = 1;
 						}
 						$db->sql_freeresult($result);
+					}
+
+					if ($mode == 'smilies')
+					{
+						$smiley_count = $this->item_count($table);
+						if ($smiley_count + sizeof($pak_ary) > SMILEY_LIMIT)
+						{
+							trigger_error(sprintf($user->lang['TOO_MANY_SMILIES'], SMILEY_LIMIT) . adm_back_link($this->u_action), E_USER_WARNING);
+						}
 					}
 
 					foreach ($pak_ary as $pak_entry)
@@ -837,11 +864,7 @@ class acp_icons
 		$spacer = false;
 		$pagination_start = request_var('start', 0);
 
-		$sql = "SELECT COUNT(*) AS count
-			FROM $table";
-		$result = $db->sql_query($sql);
-		$item_count = (int) $db->sql_fetchfield('count');
-		$db->sql_freeresult($result);
+		$item_count = $this->item_count($table);
 
 		$sql = "SELECT *
 			FROM $table
@@ -876,6 +899,24 @@ class acp_icons
 		$template->assign_var('PAGINATION',
 			generate_pagination($this->u_action, $item_count, $config['smilies_per_page'], $pagination_start, true)
 		);
+	}
+	
+	/**
+	 * Returns the count of smilies or icons in the database
+	 *
+	 * @param string $table The table of items to count.
+	 * @return int number of items
+	 */
+	/* private */ function item_count($table)
+	{
+		global $db;
+
+		$sql = "SELECT COUNT(*) AS count
+			FROM $table";
+		$result = $db->sql_query($sql);
+		$item_count = (int) $db->sql_fetchfield('count');
+		$db->sql_freeresult($result);
+		return $item_count;
 	}
 }
 
