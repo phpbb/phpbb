@@ -1164,7 +1164,7 @@ function tz_select($default = '', $truncate = false)
 		if (is_numeric($offset))
 		{
 			$selected = ($offset == $default) ? ' selected="selected"' : '';
-			$tz_select .= '<option title="'.$zone.'" value="' . $offset . '"' . $selected . '>' . $zone_trunc . '</option>';
+			$tz_select .= '<option title="' . $zone . '" value="' . $offset . '"' . $selected . '>' . $zone_trunc . '</option>';
 		}
 	}
 
