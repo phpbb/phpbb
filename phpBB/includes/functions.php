@@ -3295,7 +3295,7 @@ function msg_handler($errno, $msg_text, $errfile, $errline)
 	global $phpEx, $phpbb_root_path, $msg_title, $msg_long_text;
 
 	// Do not display notices if we suppress them via @
-	if (error_reporting() == 0)
+	if (error_reporting() == 0 && $errno != E_USER_ERROR && $errno != E_USER_WARNING && $errno != E_USER_NOTICE)
 	{
 		return;
 	}
