@@ -1,0 +1,23 @@
+<!-- IF S_TYPE == 1 -->
+<div class="panel">
+	<div class="inner"><span class="corners-top"><span></span></span>
+
+	<h3>{L_CONFIRMATION}</h3>
+	<fieldset class="fields2">
+
+<!-- ENDIF -->
+
+	<dl>
+	<dt><label>{CONFIRM_QUESTION}</label>:<br /><span>{L_CONFIRM_QUESTION_EXPLAIN}</span></dt>
+	<dd>
+		<input type="text" tabindex="10" name="answer" id="answer" size="25" value="{USERNAME}" class="inputbox autowidth" title="{L_ANSWER}" />
+		<input type="hidden" name="confirm_id" id="confirm_id" value="{CONFIRM_ID}" />
+	</dd>
+	</dl>
+
+<!-- IF S_TYPE == 1 -->
+	</fieldset>
+	<span class="corners-bottom"><span></span></span></div>
+</div>
+<!-- ENDIF -->
+	
