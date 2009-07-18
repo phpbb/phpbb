@@ -104,6 +104,65 @@ class acp_logs
 		$sql_where = ($sort_days) ? (time() - ($sort_days * 86400)) : 0;
 		$sql_sort = $sort_by_sql[$sort_key] . ' ' . (($sort_dir == 'd') ? 'DESC' : 'ASC');
 
+		$log_operation = request_var('log_operation', '');
+		$s_lang_keys = '<option value="">' . $user->lang['SHOW_ALL_OPERATIONS'] . '</option>';
+
+		switch ($mode)
+		{
+			case 'admin':
+				$log_type = LOG_ADMIN;
+				$sql_forum = '';
+			break;
+
+			case 'mod':
+				$log_type = LOG_MOD;
+
+				if ($topic_id)
+				{
+					$sql_forum = 'AND topic_id = ' . intval($topic_id);
+				}
+				else if (is_array($forum_id))
+				{
+					$sql_forum = 'AND ' . $db->sql_in_set('forum_id', array_map('intval', $forum_id));
+				}
+				else
+				{
+					$sql_forum = ($forum_id) ? 'AND forum_id = ' . intval($forum_id) : '';
+				}
+			break;
+
+			case 'user':
+				$log_type = LOG_USERS;
+				$sql_forum = 'AND reportee_id = ' . (int) $user_id;
+			break;
+
+			case 'users':
+				$log_type = LOG_USERS;
+				$sql_forum = '';
+			break;
+
+			case 'critical':
+				$log_type = LOG_CRITICAL;
+				$sql_forum = '';
+			break;
+
+			default:
+				return;
+		}
+
+		$sql = "SELECT DISTINCT log_operation
+			FROM " . LOG_TABLE . "
+			WHERE log_type = $log_type
+				" . (($limit_days) ? "AND log_time >= $sql_where " : ' ') . 
+				$sql_forum;
+		$result = $db->sql_query($sql);
+		while ($row = $db->sql_fetchrow($result))
+		{
+			$selected = ($log_operation == $row['log_operation']) ? ' selected="selected"' : '';
+			$s_lang_keys .= '<option value="' . $row['log_operation'] . '"' . $selected . '>' . $user->lang[$row['log_operation']] . '</option>';
+		}
+		$db->sql_freeresult($result);
+
 		$l_title = $user->lang['ACP_' . strtoupper($mode) . '_LOGS'];
 		$l_title_explain = $user->lang['ACP_' . strtoupper($mode) . '_LOGS_EXPLAIN'];
 
@@ -123,7 +182,7 @@ class acp_logs
 		// Grab log data
 		$log_data = array();
 		$log_count = 0;
-		view_log($mode, $log_data, $log_count, $config['topics_per_page'], $start, $forum_id, 0, 0, $sql_where, $sql_sort);
+		view_log($mode, $log_data, $log_count, $config['topics_per_page'], $start, $forum_id, 0, 0, $sql_where, $sql_sort, $log_operation);
 
 		$template->assign_vars(array(
 			'L_TITLE'		=> $l_title,
@@ -136,6 +195,7 @@ class acp_logs
 			'S_LIMIT_DAYS'	=> $s_limit_days,
 			'S_SORT_KEY'	=> $s_sort_key,
 			'S_SORT_DIR'	=> $s_sort_dir,
+			'S_LANG_KEYS'	=> $s_lang_keys,
 			'S_CLEARLOGS'	=> $auth->acl_get('a_clearlogs'),
 			)
 		);

@@ -8,11 +8,17 @@
 
 <form id="list" method="post" action="{U_ACTION}">
 
+<fieldset class="display-options" style="float: left">
+	{L_SELECT_LANG_KEY}: <select name="log_operation">{S_LANG_KEYS}</select>&nbsp;<input type="submit" class="button2" name="filter" value="{L_FILTER}" />
+</fieldset>
+
 <!-- IF PAGINATION -->
-<div class="pagination">
+<div class="pagination" style="float: right; margin: 15px 0 2px 0">
 		<a href="#" onclick="jumpto(); return false;" title="{L_JUMP_TO_PAGE}">{S_ON_PAGE}</a> &bull; <span>{PAGINATION}</span>
 </div>
 <!-- ENDIF -->
+
+<div class="clearfix">&nbsp;</div><br style="clear: both;" />
 
 <!-- IF .log -->
 	<table cellspacing="1">

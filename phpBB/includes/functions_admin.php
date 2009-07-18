@@ -2278,7 +2278,7 @@ function cache_moderators()
 /**
 * View log
 */
-function view_log($mode, &$log, &$log_count, $limit = 0, $offset = 0, $forum_id = 0, $topic_id = 0, $user_id = 0, $limit_days = 0, $sort_by = 'l.log_time DESC')
+function view_log($mode, &$log, &$log_count, $limit = 0, $offset = 0, $forum_id = 0, $topic_id = 0, $user_id = 0, $limit_days = 0, $sort_by = 'l.log_time DESC', $log_operation = '')
 {
 	global $db, $user, $auth, $phpEx, $phpbb_root_path, $phpbb_admin_path;
 
@@ -2333,7 +2333,8 @@ function view_log($mode, &$log, &$log_count, $limit = 0, $offset = 0, $forum_id 
 		FROM " . LOG_TABLE . " l, " . USERS_TABLE . " u
 		WHERE l.log_type = $log_type
 			AND u.user_id = l.user_id
-			" . (($limit_days) ? "AND l.log_time >= $limit_days" : '') . "
+			" . (($limit_days) ? "AND l.log_time >= $limit_days" : '') . 
+			(!empty($log_operation) ? "AND l.log_operation = '" . $db->sql_escape($log_operation) . "'" : '') . "
 			$sql_forum
 		ORDER BY $sort_by";
 	$result = $db->sql_query_limit($sql, $limit, $offset);
