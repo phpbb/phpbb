@@ -3306,6 +3306,11 @@ function msg_handler($errno, $msg_text, $errfile, $errline)
 		$msg_text = $msg_long_text;
 	}
 
+	if (!defined('E_DEPRECATED'))
+	{
+		define('E_DEPRECATED', 8192);
+	}
+
 	switch ($errno)
 	{
 		case E_NOTICE:
@@ -3480,6 +3485,11 @@ function msg_handler($errno, $msg_text, $errfile, $errline)
 			}
 
 			exit_handler();
+		break;
+		
+		// PHP4 comptibility
+		case E_DEPRECATED:
+			return true;
 		break;
 	}
 
