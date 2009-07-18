@@ -281,7 +281,8 @@ function ldap_user_filter($username)
 	$filter = '(' . $config['ldap_uid'] . '=' . ldap_escape(htmlspecialchars_decode($username)) . ')';
 	if ($config['ldap_user_filter'])
 	{
-		$filter = "(&$filter({$config['ldap_user_filter']}))";
+		$_filter = ($config['ldap_user_filter'][0] == '(' && substr($config['ldap_user_filter'], -1) == ')') ? $config['ldap_user_filter'] : "({$config['ldap_user_filter']})";
+		$filter = "(&{$filter}{$_filter})";
 	}
 	return $filter;
 }
