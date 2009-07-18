@@ -215,11 +215,6 @@ switch ($mode)
 
 		$auth->acl_cache($user->data);
 
-		$sql = 'UPDATE ' . USERS_TABLE . "
-			SET user_perm_from = 0
-			WHERE user_id = " . $user->data['user_id'];
-		$db->sql_query($sql);
-
 		$sql = 'SELECT username
 			FROM ' . USERS_TABLE . '
 			WHERE user_id = ' . $user->data['user_perm_from'];
