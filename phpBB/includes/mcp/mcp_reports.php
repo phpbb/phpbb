@@ -258,7 +258,7 @@ class mcp_reports
 				}
 				unset($forum_list_read);
 
-				if ($topic_id && $forum_id)
+				if ($topic_id)
 				{
 					$topic_info = get_topic_data(array($topic_id));
 
@@ -267,12 +267,15 @@ class mcp_reports
 						trigger_error('TOPIC_NOT_EXIST');
 					}
 
-					$topic_info = $topic_info[$topic_id];
-					$forum_id = $topic_info['forum_id'];
-				}
-				else if ($topic_id && !$forum_id)
-				{
-					$topic_id = 0;
+					if ($forum_id != $topic_info[$topic_id]['forum_id'])
+					{
+						$topic_id = 0;
+					}
+					else
+					{
+						$topic_info = $topic_info[$topic_id];
+						$forum_id = (int) $topic_info['forum_id'];
+					}
 				}
 
 				$forum_list = array();
