@@ -225,7 +225,7 @@ class phpbb_captcha_qa
 								),
 								'PRIMARY_KEY'		=> 'question_id',
 								'KEYS'				=> array(
-									'question_id'			=> array('INDEX', array('question_id', 'language_iso')),
+									'question_id'			=> array('INDEX', array('question_id', 'lang_iso')),
 								),
 				),
 				ANSWERS_TABLE		=> array (
