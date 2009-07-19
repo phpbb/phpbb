@@ -1064,7 +1064,9 @@ function mcp_fork_topic($topic_ids)
 				'topic_bumper'				=> (int) $topic_row['topic_bumper'],
 				'poll_title'				=> (string) $topic_row['poll_title'],
 				'poll_start'				=> (int) $topic_row['poll_start'],
-				'poll_length'				=> (int) $topic_row['poll_length']
+				'poll_length'				=> (int) $topic_row['poll_length'],
+				'poll_max_options'			=> (int) $topic_row['poll_max_options'],
+				'poll_vote_change'			=> (int) $topic_row['poll_vote_change'],
 			);
 
 			$db->sql_query('INSERT INTO ' . TOPICS_TABLE . ' ' . $db->sql_build_array('INSERT', $sql_ary));
