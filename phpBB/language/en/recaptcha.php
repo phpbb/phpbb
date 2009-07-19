@@ -5,7 +5,7 @@
 *
 * @package language
 * @version $Id$
-* @copyright (c) 2008 phpBB Group
+* @copyright (c) 2009 phpBB Group
 * @license http://opensource.org/licenses/gpl-license.php GNU Public License
 *
 */
@@ -47,7 +47,6 @@ $lang = array_merge($lang, array(
 	'RECAPTCHA_PRIVATE_EXPLAIN'		=> 'Your private reCaptcha key. You can obtain keys from <a href="http://recaptcha.net">reCaptcha.net</a>.',
 
 	'RECAPTCHA_EXPLAIN'				=> 'To avoid spam postings, please enter the two words shown in the picture into the text field underneath.',
-
 ));
 
 ?>

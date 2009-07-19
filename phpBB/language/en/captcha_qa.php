@@ -4,8 +4,8 @@
 * recaptcha [English]
 *
 * @package language
-* @version $Id: recaptcha.php 9709 2009-06-30 14:23:16Z Kellanved $
-* @copyright (c) 2008 phpBB Group
+* @version $Id$
+* @copyright (c) 2009 phpBB Group
 * @license http://opensource.org/licenses/gpl-license.php GNU Public License
 *
 */
@@ -57,8 +57,6 @@ $lang = array_merge($lang, array(
 	'QUESTION_TEXT_EXPLAIN'		=> 'The question that will be asked on registration.',
 
 	'QA_ERROR_MSG'				=> 'Please fill out all fields and enter at least one answer.',
-
-
 ));
 
 ?>
