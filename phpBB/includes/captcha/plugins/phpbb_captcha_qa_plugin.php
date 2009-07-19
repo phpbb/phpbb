@@ -97,10 +97,7 @@ class phpbb_captcha_qa
 			include("$phpbb_root_path/includes/db/db_tools.$phpEx");
 		}
 		$db_tool = new phpbb_db_tools($db);
-		if (!$db_tool->sql_table_exists(QUESTIONS_TABLE))
-		{
-			return false;
-		}
+		return $db_tool->sql_table_exists(QUESTIONS_TABLE);
 	}
 	
 	function is_available()
@@ -109,7 +106,7 @@ class phpbb_captcha_qa
 		
 		$user->add_lang('captcha_qa');
 		
-		if (self::is_installed())
+		if (!self::is_installed())
 		{
 			return false;
 		}
