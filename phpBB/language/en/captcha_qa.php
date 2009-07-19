@@ -37,7 +37,7 @@ if (empty($lang) || !is_array($lang))
 
 $lang = array_merge($lang, array(
 	'CAPTCHA_QA'				=> 'Q&amp;A CAPTCHA',
-	'CONFIRM_QUESTION_EXPLAIN'	=> 'Please answer this question to avoid automatted registrations.',
+	'CONFIRM_QUESTION_EXPLAIN'	=> 'Please answer this question to avoid automated registrations.',
 	'CONFIRM_QUESTION_WRONG'	=> 'The answer to the confirmation question was not recognized.',
 
 	'QUESTION_ANSWERS'			=> 'Answers',
@@ -48,7 +48,7 @@ $lang = array_merge($lang, array(
 	'QUESTIONS'					=> 'Questions',
 	'QUESTIONS_EXPLAIN'			=> 'Here you can add enter and edit questions to be asked on registration to ward against automatted installs.',
 	'QUESTION_DELETED'			=> 'Question deleted',
-	'QUESTION_LANG'			=> 'Language',
+	'QUESTION_LANG'				=> 'Language',
 	'QUESTION_LANG_EXPLAIN'		=> 'The language this question and its answers is written in.',
 	'QUESTION_STRICT'			=> 'Strict check',
 	'QUESTION_STRICT_EXPLAIN'	=> 'If enabled, the check also recognizes capitalization and whitespaces.',
