@@ -26,9 +26,6 @@
 	<!-- IF L_REG_COND -->
 		<dl><dd><strong>{L_REG_COND}</strong></dd></dl>
 	<!-- ENDIF -->
-	<!-- IF .profile_fields -->
-		<dl><dd><strong>{L_ITEMS_REQUIRED}</strong></dd></dl>
-	<!-- ENDIF -->
 
 	<dl>
 		<dt><label for="username">{L_USERNAME}:</label><br /><span>{L_USERNAME_EXPLAIN}</span></dt>
@@ -62,6 +59,9 @@
 		<dd><select name="tz" id="tz" class="autowidth">{S_TZ_OPTIONS}</select></dd>
 	</dl>
 
+	<!-- IF .profile_fields -->
+		<dl><dd><strong>{L_ITEMS_REQUIRED}</strong></dd></dl>
+
 	<!-- BEGIN profile_fields -->
 		<dl>
 			<dt><label<!-- IF profile_fields.FIELD_ID --> for="{profile_fields.FIELD_ID}"<!-- ENDIF -->>{profile_fields.LANG_NAME}:<!-- IF profile_fields.S_REQUIRED --> *<!-- ENDIF --></label>
@@ -70,6 +70,8 @@
 			<dd>{profile_fields.FIELD}</dd>
 		</dl>
 	<!-- END profile_fields -->
+	<!-- ENDIF -->
+
 	</fieldset>
 	<span class="corners-bottom"><span></span></span></div>
 </div>
