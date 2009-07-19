@@ -42,6 +42,9 @@ $lang = array_merge($lang, array(
 
 	'QUESTION_ANSWERS'			=> 'Answers',
 	'ANSWERS_EXPLAIN'			=> 'The Answers. Please write one answer per line.',
+	'CONFIRM_QUESTION'			=> 'Question',
+
+	'ANSWER'					=> 'Answer',
 	'QUESTIONS'					=> 'Questions',
 	'QUESTIONS_EXPLAIN'			=> 'Here you can add enter and edit questions to be asked on registration to ward against automatted installs.',
 	'QUESTION_DELETED'			=> 'Question deleted',
