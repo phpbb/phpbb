@@ -50,10 +50,11 @@ class phpbb_captcha_qa
 	{
 		global $config, $db, $user;
 
+		// load our language file 
 		$user->add_lang('captcha_qa');
 		// read input
-		$this->confirm_id = request_var('confirm_id', '');
-		$this->answer = request_var('answer', '');
+		$this->confirm_id = request_var('qa_confirm_id', '');
+		$this->answer = request_var('qa_answer', '');
 
 		$this->type = (int) $type;
 		$this->question_lang = $user->data['user_lang'];
@@ -118,6 +119,7 @@ class phpbb_captcha_qa
 	{
 		global $config, $db, $phpbb_root_path, $phpEx, $user;
 		
+		// load language file for pretty display in the ACP dropdown
 		$user->add_lang('captcha_qa');
 		
 		if (!self::is_installed())
@@ -170,8 +172,8 @@ class phpbb_captcha_qa
 		global $template;
 		
 		$template->assign_vars(array(
-			'CONFIRM_QUESTION'			=> $this->question_text,
-			'CONFIRM_ID'				=> $this->confirm_id,
+			'QA_CONFIRM_QUESTION'		=> $this->question_text,
+			'QA_CONFIRM_ID'				=> $this->confirm_id,
 			'S_CONFIRM_CODE'			=> true,
 			'S_TYPE'					=> $this->type,
 		));
@@ -197,9 +199,9 @@ class phpbb_captcha_qa
 		// this is required - otherwise we would forget about the captcha being already solved
 		if ($this->solved)
 		{
-			$hidden_fields['answer'] = $this->answer;
+			$hidden_fields['qa_answer'] = $this->answer;
 		}
-		$hidden_fields['confirm_id'] = $this->confirm_id;
+		$hidden_fields['qa_confirm_id'] = $this->confirm_id;
 		return $hidden_fields;
 	}
 
@@ -447,7 +449,7 @@ class phpbb_captcha_qa
 	{
 		global $db;
 		
-		$answer = ($this->question_strict) ? request_var('answer', '') : utf8_clean_string(request_var('answer', ''));
+		$answer = ($this->question_strict) ? request_var('qa_answer', '') : utf8_clean_string(request_var('qa_answer', ''));
 		
 		$sql = 'SELECT answer_text
 					FROM ' . ANSWERS_TABLE . '
@@ -509,7 +511,7 @@ class phpbb_captcha_qa
 	*/
 	function is_solved()
 	{
-		if (request_var('answer', false) && $this->solved === 0)
+		if (request_var('qa_answer', false) && $this->solved === 0)
 		{
 			$this->validate();
 		}
