@@ -36,7 +36,7 @@ class phpbb_recaptcha extends phpbb_default_captcha
 	{
 		global $config, $db, $user;
 
-		$user->add_lang('recaptcha');
+		$user->add_lang('captcha_recaptcha');
 		parent::init($type);
 		$this->challenge = request_var('recaptcha_challenge_field', '');
 		$this->response = request_var('recaptcha_response_field', '');
@@ -51,7 +51,7 @@ class phpbb_recaptcha extends phpbb_default_captcha
 	function is_available()
 	{
 		global $config, $user;
-		$user->add_lang('recaptcha');
+		$user->add_lang('captcha_recaptcha');
 		return (isset($config['recaptcha_pubkey']) && !empty($config['recaptcha_pubkey']));
 	}
 

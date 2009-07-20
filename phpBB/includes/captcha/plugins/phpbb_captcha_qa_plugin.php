@@ -474,6 +474,7 @@ class phpbb_captcha_qa
 		$question_id = request_var('question_id', 0);
 		$action = request_var('action', '');
 		
+		$list_url = $module->u_action . "&amp;configure=1&amp;select_captcha=" . $this->get_class_name();
 		
 		$template->assign_vars(array(
 				'U_ACTION'		=> $module->u_action,
@@ -490,7 +491,7 @@ class phpbb_captcha_qa
 			if (confirm_box(true))
 			{
 				$this->acp_delete_question($question_id);
-				trigger_error($user->lang['QUESTION_DELETED'] . adm_back_link($module->u_action));
+				trigger_error($user->lang['QUESTION_DELETED'] . adm_back_link($list_url));
 			}
 			else
 			{
@@ -520,6 +521,9 @@ class phpbb_captcha_qa
 				));
 			}
 			
+			$template->assign_vars(array(
+						'U_LIST'		=> $list_url,
+			));
 			if ($question_id)
 			{
 				if ($question = $this->acp_get_question_data($question_id))
@@ -534,7 +538,7 @@ class phpbb_captcha_qa
 				}
 				else
 				{
-					trigger_error($user->lang['FORM_INVALID'] . adm_back_link($module->u_action));
+					trigger_error($user->lang['FORM_INVALID'] . adm_back_link($list_url));
 				}
 			}
 			else
@@ -568,12 +572,12 @@ class phpbb_captcha_qa
 						$this->acp_add_question($data);
 					}
 					
-					trigger_error($user->lang['CONFIG_UPDATED'] . adm_back_link($module->u_action . "&amp;configure=1&amp;select_captcha=" . $this->get_class_name()));
+					trigger_error($user->lang['CONFIG_UPDATED'] . adm_back_link($list_url));
 				}
 			}
 			else if ($submit)
 			{
-				trigger_error($user->lang['FORM_INVALID'] . adm_back_link($module->u_action));
+				trigger_error($user->lang['FORM_INVALID'] . adm_back_link($list_url));
 			}
 		}
 	}
