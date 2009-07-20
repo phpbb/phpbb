@@ -2499,7 +2499,8 @@ function view_log($mode, &$log, &$log_count, $limit = 0, $offset = 0, $forum_id 
 	$sql = 'SELECT COUNT(l.log_id) AS total_entries
 		FROM ' . LOG_TABLE . " l
 		WHERE l.log_type = $log_type
-			AND l.log_time >= $limit_days
+			AND l.log_time >= $limit_days " .
+			(!empty($log_operation) ? "AND l.log_operation = '" . $db->sql_escape($log_operation) . "'" : '') . "
 			$sql_forum";
 	$result = $db->sql_query($sql);
 	$log_count = (int) $db->sql_fetchfield('total_entries');

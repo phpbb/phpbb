@@ -281,6 +281,8 @@ $lang = array_merge($lang, array(
 	'SETTING_TOO_LONG'		=> 'The entered value for the setting “%1$s” is too long. The maximal allowed length is %2$d.',
 	'SETTING_TOO_SHORT'		=> 'The entered value for the setting “%1$s” is not long enough. The minimal allowed length is %2$d.',
 
+	'SHOW_ALL_OPERATIONS'	=> 'Show all operations',
+
 	'UCP'					=> 'User Control Panel',
 	'USERNAMES_EXPLAIN'		=> 'Place each username on a separate line.',
 	'USER_CONTROL_PANEL'	=> 'User Control Panel',

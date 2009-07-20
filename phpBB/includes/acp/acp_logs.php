@@ -158,8 +158,12 @@ class acp_logs
 		$result = $db->sql_query($sql);
 		while ($row = $db->sql_fetchrow($result))
 		{
+			if (empty($row['log_operation']))
+			{
+				continue;
+			}
 			$selected = ($log_operation == $row['log_operation']) ? ' selected="selected"' : '';
-			$s_lang_keys .= '<option value="' . $row['log_operation'] . '"' . $selected . '>' . $user->lang[$row['log_operation']] . '</option>';
+			$s_lang_keys .= '<option value="' . $row['log_operation'] . '"' . $selected . '>' . htmlspecialchars(strip_tags($user->lang[$row['log_operation']]), ENT_COMPAT, 'UTF-8') . '</option>';
 		}
 		$db->sql_freeresult($result);
 
