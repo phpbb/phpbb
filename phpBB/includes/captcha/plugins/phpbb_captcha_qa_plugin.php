@@ -24,6 +24,7 @@ define('QA_CONFIRM_TABLE',	$table_prefix . 'qa_confirm');
 
 
 /**
+* And now to something completely different. Let's make a captcha without extending the abstract class.
 * QA CAPTCHA sample implementation
 *
 * @package VC
@@ -39,9 +40,12 @@ class phpbb_captcha_qa
 	var $question_strict;
 	var $attempts = 0;
 	var $type;
+	// dirty trick: 0 is false, but can still encode that the captcha is not yet validated
 	var $solved = 0;
-	var $captcha_vars = false;
 
+	/**
+	* @param int $type  as per the CAPTCHA API docs, the type
+	*/
 	function init($type)
 	{
 		global $config, $db, $user;
@@ -53,7 +57,8 @@ class phpbb_captcha_qa
 
 		$this->type = (int) $type;
 		$this->question_lang = $user->data['user_lang'];
-
+		// we need all defined questions - shouldn't be too many, so we can just grab them
+		// try the user's lang first
 		$sql = 'SELECT question_id FROM ' . QUESTIONS_TABLE . ' WHERE lang_iso = \'' . $db->sql_escape($user->data['user_lang']) . '\''; 
 		$result = $db->sql_query($sql, 3600);
 		while ($row = $db->sql_fetchrow($result))
@@ -61,6 +66,7 @@ class phpbb_captcha_qa
 			$this->question_ids[$row['question_id']] = $row['question_id'];
 		}
 		$db->sql_freeresult($result);
+		// fallback to the board default lang
 		if (!sizeof($this->question_ids))
 		{
 			$this->question_lang = $config['default_lang'];
@@ -73,21 +79,26 @@ class phpbb_captcha_qa
 			$db->sql_freeresult($result);
 		}
 
+		// okay, if there is a confirm_id, we try to load that confirm's state
 		if (!strlen($this->confirm_id) || !$this->load_answer())
 		{
-			// we have no confirm ID, better get ready to display something
+			// we have no valid confirm ID, better get ready to ask something
 			$this->select_question();
 		}
 	}
 	
-	
+	/**
+	*  API function
+	*/
 	function &get_instance()
 	{
 		$instance =& new phpbb_captcha_qa();
 		return $instance;
 	}
 
-
+	/**
+	* See if the captcha has created its tables.
+	*/
 	function is_installed()
 	{
 		global $db, $phpbb_root_path, $phpEx;
@@ -100,6 +111,9 @@ class phpbb_captcha_qa
 		return $db_tool->sql_table_exists(QUESTIONS_TABLE);
 	}
 	
+	/**
+	*  API function - for the captcha to be available, it must have installed itself and there has to be at least one question in the board's default lang
+	*/
 	function is_available()
 	{
 		global $config, $db, $phpbb_root_path, $phpEx, $user;
@@ -117,28 +131,43 @@ class phpbb_captcha_qa
 		return ((bool) $row['count']);
 	}
 
+	/**
+	*  API function
+	*/
 	function get_name()
 	{
 		return 'CAPTCHA_QA';
 	}
 
+	/**
+	*  API function
+	*/
 	function get_class_name()
 	{
 		return 'phpbb_captcha_qa';
 	}
 
 
+	/**
+	*  API function - not needed as we don't display an image
+	*/
 	function execute_demo()
 	{
 	}
 
+	/**
+	*  API function - not needed as we don't display an image
+	*/
 	function execute()
 	{
 	}
 
+	/**
+	*  API function - send the question to the template
+	*/
 	function get_template()
 	{
-		global $config, $user, $template, $phpEx, $phpbb_root_path;
+		global $template;
 		
 		$template->assign_vars(array(
 			'CONFIRM_QUESTION'			=> $this->question_text,
@@ -150,11 +179,17 @@ class phpbb_captcha_qa
 		return 'captcha_qa.html';
 	}
 
-	function get_demo_template($id)
+	/**
+	*  API function - we just display a mockup so that the captcha doesn't need to be installed
+	*/
+	function get_demo_template()
 	{
 		return 'captcha_qa_acp_demo.html';
 	}
 
+	/**
+	*  API function
+	*/
 	function get_hidden_fields()
 	{
 		$hidden_fields = array();
@@ -168,6 +203,9 @@ class phpbb_captcha_qa
 		return $hidden_fields;
 	}
 
+	/**
+	*  API function
+	*/
 	function garbage_collect($type)
 	{
 		global $db, $config;
@@ -198,11 +236,17 @@ class phpbb_captcha_qa
 		$db->sql_freeresult($result);
 	}
 
+	/**
+	*  API function - we don't drop the tables here, as that would cause the loss of all entered questions.
+	*/
 	function uninstall()
 	{
 		$this->garbage_collect(0);
 	}
 
+	/**
+	*  API function - set up shop
+	*/
 	function install()
 	{
 		global $db, $phpbb_root_path, $phpEx;
@@ -226,6 +270,7 @@ class phpbb_captcha_qa
 								'PRIMARY_KEY'		=> 'question_id',
 								'KEYS'				=> array(
 									'question_id'			=> array('INDEX', array('question_id', 'lang_iso')),
+									'lang_iso'			=> array('INDEX', 'lang_iso'),
 								),
 				),
 				ANSWERS_TABLE		=> array (
@@ -254,7 +299,6 @@ class phpbb_captcha_qa
 				),
 		);
 		
-
 		foreach($schemas as $table => $schema)
 		{
 			if (!$db_tool->sql_table_exists($table))
@@ -265,6 +309,9 @@ class phpbb_captcha_qa
 	}
 
 
+	/**
+	*  API function - see what has to be done to validate
+	*/
 	function validate()
 	{
 		global $config, $db, $user;
@@ -342,12 +389,13 @@ class phpbb_captcha_qa
 	}
 
 	/**
-	* New Question, if desired.
+	* Wrong answer, so we increase the attempts and use a different question.
 	*/
 	function new_attempt()
 	{
 		global $db, $user;
 
+		// yah, I would prefer a stronger rand, but this should work
 		$this->question = (int) array_rand($this->question_ids);
 		$this->solved = 0;
 		// compute $seed % 0x7fffffff
@@ -363,7 +411,7 @@ class phpbb_captcha_qa
 	}
 	
 	/**
-	* Look up everything we need.
+	* Look up everything we need and populate the instance variables.
 	*/
 	function load_answer()
 	{
@@ -392,6 +440,9 @@ class phpbb_captcha_qa
 		return false;
 	}
 
+	/**
+	*  The actual validation
+	*/
 	function check_answer()
 	{
 		global $db;
@@ -415,6 +466,9 @@ class phpbb_captcha_qa
 		return $this->solved;
 	}
 
+	/**
+	*  API function - clean the entry
+	*/
 	function delete_code()
 	{
 		global $db, $user;
@@ -426,11 +480,17 @@ class phpbb_captcha_qa
 		$db->sql_query($sql);
 	}
 
+	/**
+	*  API function 
+	*/
 	function get_attempt_count()
 	{
 		return $this->attempts;
 	}
 
+	/**
+	*  API function 
+	*/
 	function reset()
 	{
 		global $db, $user;
@@ -443,7 +503,10 @@ class phpbb_captcha_qa
 		// we leave the class usable by generating a new question
 		$this->generate_code();
 	}
-	
+
+	/**
+	*  API function 
+	*/
 	function is_solved()
 	{
 		if (request_var('answer', false) && $this->solved === 0)
@@ -453,6 +516,10 @@ class phpbb_captcha_qa
 		return (bool) $this->solved;
 	}
 	
+	
+	/**
+	*  API function - The ACP backend, this marks the end of the easy methods
+	*/
 	function acp_page($id, &$module)
 	{
 		global $db, $user, $auth, $template;
@@ -474,6 +541,7 @@ class phpbb_captcha_qa
 		$question_id = request_var('question_id', 0);
 		$action = request_var('action', '');
 		
+		// we have two pages, so users might want to navigate from one to the other
 		$list_url = $module->u_action . "&amp;configure=1&amp;select_captcha=" . $this->get_class_name();
 		
 		$template->assign_vars(array(
@@ -481,7 +549,8 @@ class phpbb_captcha_qa
 				'QUESTION_ID'	=> $question_id ,
 				'CLASS'			=> $this->get_class_name(),
 		));
-		
+
+		// show the list?
 		if (!$question_id && $action != 'add')
 		{
 			$this->acp_question_list($module);
@@ -506,7 +575,7 @@ class phpbb_captcha_qa
 		}
 		else
 		{
-			
+			// okay, show the editor
 			$error = false;
 			$input_question = request_var('question_text', '');
 			$input_answers = request_var('answers', '');
@@ -582,6 +651,10 @@ class phpbb_captcha_qa
 		}
 	}
 	
+
+	/**
+	*  This handles the list overview
+	*/
 	function acp_question_list(&$module)
 	{
 		global $db, $template;
@@ -606,7 +679,10 @@ class phpbb_captcha_qa
 		}
 		$db->sql_freeresult($result);
 	}
-	
+
+	/**
+	*  Grab a question and bring it into a format the editor understands
+	*/
 	function acp_get_question_data($question_id)
 	{
 		global $db;
@@ -639,6 +715,9 @@ class phpbb_captcha_qa
 	}
 	
 	
+	/**
+	*  Grab a question from input and bring it into a format the editor understands
+	*/
 	function acp_get_question_input()
 	{
 		global $db;
@@ -653,12 +732,15 @@ class phpbb_captcha_qa
 		return $question;
 	}
 
-
-
+	/**
+	*  Update a question.
+	* param mixed $data : an array as created from acp_get_question_input or acp_get_question_data
+	*/
 	function acp_update_question($data, $question_id)
 	{
 		global $db;
 
+		// easier to delete all answers than to figure out which to update
 		$sql = "DELETE FROM " . ANSWERS_TABLE . " WHERE question_id = $question_id";
 		$db->sql_query($sql);
 		$langs = $this->get_languages();
@@ -671,6 +753,10 @@ class phpbb_captcha_qa
 		$this->acp_insert_answers($data, $question_id);
 	}
 	
+	/**
+	*  Insert a question.
+	* param mixed $data : an array as created from acp_get_question_input or acp_get_question_data
+	*/
 	function acp_add_question($data)
 	{
 		global $db;
@@ -686,6 +772,10 @@ class phpbb_captcha_qa
 		$this->acp_insert_answers($data, $question_id);
 	}
 	
+	/**
+	*  Insert the answers.
+	* param mixed $data : an array as created from acp_get_question_input or acp_get_question_data
+	*/
 	function acp_insert_answers($data, $question_id)
 	{
 		global $db;
@@ -702,7 +792,9 @@ class phpbb_captcha_qa
 	}
 	
 
-
+	/**
+	*  Delete a question.
+	*/
 	function acp_delete_question($question_id)
 	{
 		global $db;
@@ -716,6 +808,10 @@ class phpbb_captcha_qa
 	}
 	
 	
+	/**
+	*  Check if the entered data can be inserted/used
+	* param mixed $data : an array as created from acp_get_question_input or acp_get_question_data
+	*/
 	function validate_input($question_data)
 	{
 		$langs = $this->get_languages();
@@ -736,6 +832,9 @@ class phpbb_captcha_qa
 		return true;
 	}
 	
+	/**
+	* List the installed language packs
+	*/
 	function get_languages()
 	{
 		global $db;
