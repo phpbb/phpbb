@@ -1,7 +1,11 @@
 <!-- INCLUDE mcp_header.html -->
 
 <!-- IF S_MCP_REPORT -->
+	<!-- IF S_PM -->
+	<h2>{L_PM_REPORT_DETAILS}</h2>
+	<!-- ELSE -->
 	<h2>{L_REPORT_DETAILS}</h2>
+	<!-- ENDIF -->
 
 	<div id="report" class="panel">
 		<div class="inner"><span class="corners-top"><span></span></span>
@@ -51,7 +55,16 @@
 		<!-- ENDIF -->
 
 		<h3><a href="{U_VIEW_POST}">{POST_SUBJECT}</a></h3>
+		<!-- IF S_PM -->
+		<p class="author">
+			<strong>{L_SENT_AT}:</strong> {POST_DATE}
+			<br /><strong>{L_PM_FROM}:</strong> {POST_AUTHOR_FULL}
+			<!-- IF S_TO_RECIPIENT --><br /><strong>{L_TO}:</strong> <!-- BEGIN to_recipient --><!-- IF to_recipient.NAME_FULL -->{to_recipient.NAME_FULL}<!-- ELSE --><a href="{to_recipient.U_VIEW}" style="color:<!-- IF to_recipient.COLOUR -->{to_recipient.COLOUR}<!-- ELSEIF to_recipient.IS_GROUP -->#0000FF<!-- ENDIF -->;">{to_recipient.NAME}</a><!-- ENDIF -->&nbsp;<!-- END to_recipient --><!-- ENDIF -->
+			<!-- IF S_BCC_RECIPIENT --><br /><strong>{L_BCC}:</strong> <!-- BEGIN bcc_recipient --><!-- IF bcc_recipient.NAME_FULL -->{bcc_recipient.NAME_FULL}<!-- ELSE --><a href="{bcc_recipient.U_VIEW}" style="color:<!-- IF bcc_recipient.COLOUR -->{bcc_recipient.COLOUR}<!-- ELSEIF bcc_recipient.IS_GROUP -->#0000FF<!-- ENDIF -->;">{bcc_recipient.NAME}</a><!-- ENDIF -->&nbsp;<!-- END bcc_recipient --><!-- ENDIF -->
+		</p>
+		<!-- ELSE -->
 		<p class="author">{MINI_POST_IMG} {L_POSTED} {L_POST_BY_AUTHOR} {POST_AUTHOR_FULL} &raquo; {POST_DATE}</p>
+		<!-- ENDIF -->
 
 		<!-- IF S_POST_UNAPPROVED -->
 			<form method="post" id="mcp_approve" action="{U_APPROVE_ACTION}">
@@ -152,7 +165,7 @@
 	<div class="panel">
 		<div class="inner"><span class="corners-top"><span></span></span>
 
-		<p><!-- IF S_MCP_QUEUE -->{RETURN_QUEUE} | {RETURN_TOPIC_SIMPLE} | {RETURN_POST}<!-- ELSEIF S_MCP_REPORT -->{RETURN_REPORTS} | <a href="{U_VIEW_POST}">{L_VIEW_POST}</a> | <a href="{U_VIEW_TOPIC}">{L_VIEW_TOPIC}</a> | <a href="{U_VIEW_FORUM}">{L_VIEW_FORUM}</a><!-- ELSE -->{RETURN_TOPIC}<!-- ENDIF --></p>
+		<p><!-- IF S_MCP_QUEUE -->{RETURN_QUEUE} | {RETURN_TOPIC_SIMPLE} | {RETURN_POST}<!-- ELSEIF S_MCP_REPORT -->{RETURN_REPORTS}<!-- IF not S_PM --> | <a href="{U_VIEW_POST}">{L_VIEW_POST}</a> | <a href="{U_VIEW_TOPIC}">{L_VIEW_TOPIC}</a> | <a href="{U_VIEW_FORUM}">{L_VIEW_FORUM}</a><!-- ENDIF --><!-- ELSE -->{RETURN_TOPIC}<!-- ENDIF --></p>
 
 		<span class="corners-bottom"><span></span></span></div>
 	</div>

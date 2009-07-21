@@ -1405,7 +1405,8 @@ function submit_pm($mode, $subject, &$data, $put_in_outbox = true)
 				'bbcode_bitfield'	=> $data['bbcode_bitfield'],
 				'bbcode_uid'		=> $data['bbcode_uid'],
 				'to_address'		=> implode(':', $to),
-				'bcc_address'		=> implode(':', $bcc)
+				'bcc_address'		=> implode(':', $bcc),
+				'message_reported'	=> 0,
 			);
 		break;
 
@@ -1878,6 +1879,95 @@ function set_user_message_limit()
 	$db->sql_freeresult($result);
 
 	$user->data['message_limit'] = (!$message_limit) ? $config['pm_max_msgs'] : $message_limit;
+}
+
+/**
+* Generates an array of coloured recipient names from a list of PMs - (groups & users)
+*
+* @param	array	$pm_by_id	An array of rows from PRIVMSGS_TABLE, keys are the msg_ids.
+*
+* @return	array				2D Array: array(msg_id => array('username or group string', ...), ...)
+*								Usernames are generated with {@link get_username_string get_username_string}
+*								Groups are coloured and have a link to the membership page
+*/
+function get_recipient_strings($pm_by_id)
+{
+	global $user, $db;
+
+	$address_list = $recipient_list = $address = array();
+
+	$_types = array('u', 'g');
+
+	foreach ($pm_by_id as $message_id => $row)
+	{
+		$address[$message_id] = rebuild_header(array('to' => $row['to_address'], 'bcc' => $row['bcc_address']));
+		
+		foreach ($_types as $ug_type)
+		{
+			if (isset($address[$message_id][$ug_type]) && sizeof($address[$message_id][$ug_type]))
+			{
+				foreach ($address[$message_id][$ug_type] as $ug_id => $in_to)
+				{
+					$recipient_list[$ug_type][$ug_id] = array('name' => $user->lang['NA'], 'colour' => '');
+				}
+			}
+		}
+	}
+
+	foreach ($_types as $ug_type)
+	{
+		if (!empty($recipient_list[$ug_type]))
+		{
+			if ($ug_type == 'u')
+			{
+				$sql = 'SELECT user_id as id, username as name, user_colour as colour
+					FROM ' . USERS_TABLE . '
+					WHERE ';
+			}
+			else
+			{
+				$sql = 'SELECT group_id as id, group_name as name, group_colour as colour, group_type
+					FROM ' . GROUPS_TABLE . '
+					WHERE ';
+			}
+			$sql .= $db->sql_in_set(($ug_type == 'u') ? 'user_id' : 'group_id', array_map('intval', array_keys($recipient_list[$ug_type])));
+
+			$result = $db->sql_query($sql);
+
+			while ($row = $db->sql_fetchrow($result))
+			{
+				if ($ug_type == 'g')
+				{
+					$row['name'] = ($row['group_type'] == GROUP_SPECIAL) ? $user->lang['G_' . $row['name']] : $row['name'];
+				}
+
+				$recipient_list[$ug_type][$row['id']] = array('name' => $row['name'], 'colour' => $row['colour']);
+			}
+			$db->sql_freeresult($result);
+		}
+	}
+
+	foreach ($address as $message_id => $adr_ary)
+	{
+		foreach ($adr_ary as $type => $id_ary)
+		{
+			foreach ($id_ary as $ug_id => $_id)
+			{
+				if ($type == 'u')
+				{
+					$address_list[$message_id][] = get_username_string('full', $ug_id, $recipient_list[$type][$ug_id]['name'], $recipient_list[$type][$ug_id]['colour']);
+				}
+				else
+				{
+					$user_colour = ($recipient_list[$type][$ug_id]['colour']) ? ' style="font-weight: bold; color:#' . $recipient_list[$type][$ug_id]['colour'] . '"' : '';
+					$link = '<a href="' . append_sid("{$phpbb_root_path}memberlist.$phpEx", 'mode=group&amp;g=' . $ug_id) . '"' . $user_colour . '>';
+					$address_list[$message_id][] = $link . $recipient_list[$type][$ug_id]['name'] . (($link) ? '</a>' : '');
+				}
+			}
+		}
+	}
+
+	return $address_list;
 }
 
 ?>

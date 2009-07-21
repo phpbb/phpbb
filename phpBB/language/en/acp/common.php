@@ -409,6 +409,7 @@ $lang = array_merge($lang, array(
 	'HIDE_STATISTICS'			=> 'Hide details',
 	'SEND_STATISTICS'			=> 'Send statistical information',
 	'SHOW_STATISTICS'			=> 'Show details',
+	'THANKS_SEND_STATISTICS'	=> 'Thank you for submitting your information.',
 ));
 
 // Log Entries
@@ -505,6 +506,8 @@ $lang = array_merge($lang, array(
 	'LOG_LOCK_POST'				=> '<strong>Locked post</strong><br />» %s',
 	'LOG_MERGE'					=> '<strong>Merged posts</strong> into topic<br />» %s',
 	'LOG_MOVE'					=> '<strong>Moved topic</strong><br />» from %1$s to %2$s',
+	'LOG_PM_REPORT_CLOSED'		=> '<strong>Closed PM report</strong><br />» %s',
+	'LOG_PM_REPORT_DELETED'		=> '<strong>Deleted PM report</strong><br />» %s',
 	'LOG_POST_APPROVED'			=> '<strong>Approved post</strong><br />» %s',
 	'LOG_POST_DISAPPROVED'		=> '<strong>Disapproved post “%1$s” with the following reason</strong><br />» %2$s',
 	'LOG_POST_EDITED'			=> '<strong>Edited post “%1$s” written by</strong><br />» %2$s',

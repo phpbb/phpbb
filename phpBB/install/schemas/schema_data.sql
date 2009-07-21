@@ -23,6 +23,7 @@ INSERT INTO phpbb_config (config_name, config_value) VALUES ('allow_name_chars',
 INSERT INTO phpbb_config (config_name, config_value) VALUES ('allow_namechange', '0');
 INSERT INTO phpbb_config (config_name, config_value) VALUES ('allow_nocensors', '0');
 INSERT INTO phpbb_config (config_name, config_value) VALUES ('allow_pm_attach', '0');
+INSERT INTO phpbb_config (config_name, config_value) VALUES ('allow_pm_report', '1');
 INSERT INTO phpbb_config (config_name, config_value) VALUES ('allow_post_flash', '1');
 INSERT INTO phpbb_config (config_name, config_value) VALUES ('allow_post_links', '1');
 INSERT INTO phpbb_config (config_name, config_value) VALUES ('allow_privmsg', '1');

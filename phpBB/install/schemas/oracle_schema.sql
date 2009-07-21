@@ -923,6 +923,7 @@ CREATE TABLE phpbb_privmsgs (
 	message_edit_count number(4) DEFAULT '0' NOT NULL,
 	to_address clob DEFAULT '' ,
 	bcc_address clob DEFAULT '' ,
+	message_reported number(1) DEFAULT '0' NOT NULL,
 	CONSTRAINT pk_phpbb_privmsgs PRIMARY KEY (msg_id)
 )
 /
@@ -1164,6 +1165,7 @@ CREATE TABLE phpbb_reports (
 	report_id number(8) NOT NULL,
 	reason_id number(4) DEFAULT '0' NOT NULL,
 	post_id number(8) DEFAULT '0' NOT NULL,
+	pm_id number(8) DEFAULT '0' NOT NULL,
 	user_id number(8) DEFAULT '0' NOT NULL,
 	user_notify number(1) DEFAULT '0' NOT NULL,
 	report_closed number(1) DEFAULT '0' NOT NULL,
@@ -1173,6 +1175,10 @@ CREATE TABLE phpbb_reports (
 )
 /
 
+CREATE INDEX phpbb_reports_post_id ON phpbb_reports (post_id)
+/
+CREATE INDEX phpbb_reports_pm_id ON phpbb_reports (pm_id)
+/
 
 CREATE SEQUENCE phpbb_reports_seq
 /

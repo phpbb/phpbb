@@ -471,7 +471,8 @@ CREATE TABLE phpbb_privmsgs (
 	message_edit_time INTEGER UNSIGNED NOT NULL DEFAULT '0',
 	message_edit_count INTEGER UNSIGNED NOT NULL DEFAULT '0',
 	to_address text(65535) NOT NULL DEFAULT '',
-	bcc_address text(65535) NOT NULL DEFAULT ''
+	bcc_address text(65535) NOT NULL DEFAULT '',
+	message_reported INTEGER UNSIGNED NOT NULL DEFAULT '0'
 );
 
 CREATE INDEX phpbb_privmsgs_author_ip ON phpbb_privmsgs (author_ip);
@@ -590,6 +591,7 @@ CREATE TABLE phpbb_reports (
 	report_id INTEGER PRIMARY KEY NOT NULL ,
 	reason_id INTEGER UNSIGNED NOT NULL DEFAULT '0',
 	post_id INTEGER UNSIGNED NOT NULL DEFAULT '0',
+	pm_id INTEGER UNSIGNED NOT NULL DEFAULT '0',
 	user_id INTEGER UNSIGNED NOT NULL DEFAULT '0',
 	user_notify INTEGER UNSIGNED NOT NULL DEFAULT '0',
 	report_closed INTEGER UNSIGNED NOT NULL DEFAULT '0',
@@ -597,6 +599,8 @@ CREATE TABLE phpbb_reports (
 	report_text mediumtext(16777215) NOT NULL DEFAULT ''
 );
 
+CREATE INDEX phpbb_reports_post_id ON phpbb_reports (post_id);
+CREATE INDEX phpbb_reports_pm_id ON phpbb_reports (pm_id);
 
 # Table: 'phpbb_reports_reasons'
 CREATE TABLE phpbb_reports_reasons (

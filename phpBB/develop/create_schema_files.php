@@ -1332,6 +1332,7 @@ function get_schema_struct()
 			'message_edit_count'	=> array('USINT', 0),
 			'to_address'			=> array('TEXT_UNI', ''),
 			'bcc_address'			=> array('TEXT_UNI', ''),
+			'message_reported'		=> array('BOOL', 0),
 		),
 		'PRIMARY_KEY'	=> 'msg_id',
 		'KEYS'			=> array(
@@ -1465,6 +1466,7 @@ function get_schema_struct()
 			'report_id'				=> array('UINT', NULL, 'auto_increment'),
 			'reason_id'				=> array('USINT', 0),
 			'post_id'				=> array('UINT', 0),
+			'pm_id'					=> array('UINT', 0),
 			'user_id'				=> array('UINT', 0),
 			'user_notify'			=> array('BOOL', 0),
 			'report_closed'			=> array('BOOL', 0),
@@ -1472,6 +1474,10 @@ function get_schema_struct()
 			'report_text'			=> array('MTEXT_UNI', ''),
 		),
 		'PRIMARY_KEY'	=> 'report_id',
+		'KEYS'			=> array(
+			'post_id'			=> array('INDEX', 'post_id'),
+			'pm_id'				=> array('INDEX', 'pm_id'),
+		),
 	);
 
 	$schema_data['phpbb_reports_reasons'] = array(

@@ -831,7 +831,8 @@ CREATE TABLE [phpbb_privmsgs] (
 	[message_edit_time] [int] DEFAULT (0) NOT NULL ,
 	[message_edit_count] [int] DEFAULT (0) NOT NULL ,
 	[to_address] [varchar] (4000) DEFAULT ('') NOT NULL ,
-	[bcc_address] [varchar] (4000) DEFAULT ('') NOT NULL 
+	[bcc_address] [varchar] (4000) DEFAULT ('') NOT NULL ,
+	[message_reported] [int] DEFAULT (0) NOT NULL 
 ) ON [PRIMARY] TEXTIMAGE_ON [PRIMARY]
 GO
 
@@ -1055,6 +1056,7 @@ CREATE TABLE [phpbb_reports] (
 	[report_id] [int] IDENTITY (1, 1) NOT NULL ,
 	[reason_id] [int] DEFAULT (0) NOT NULL ,
 	[post_id] [int] DEFAULT (0) NOT NULL ,
+	[pm_id] [int] DEFAULT (0) NOT NULL ,
 	[user_id] [int] DEFAULT (0) NOT NULL ,
 	[user_notify] [int] DEFAULT (0) NOT NULL ,
 	[report_closed] [int] DEFAULT (0) NOT NULL ,
@@ -1068,6 +1070,12 @@ ALTER TABLE [phpbb_reports] WITH NOCHECK ADD
 	(
 		[report_id]
 	)  ON [PRIMARY] 
+GO
+
+CREATE  INDEX [post_id] ON [phpbb_reports]([post_id]) ON [PRIMARY]
+GO
+
+CREATE  INDEX [pm_id] ON [phpbb_reports]([pm_id]) ON [PRIMARY]
 GO
 
 

@@ -4,10 +4,10 @@
 
 <table class="tablebg" width="100%" cellspacing="1">
 <tr>
-	<th colspan="2">{L_REPORT_POST}</th>
+	<th colspan="2"><!-- IF S_REPORT_POST -->{L_REPORT_POST}<!-- ELSE -->{L_REPORT_MESSAGE}<!-- ENDIF --></th>
 </tr>
 <tr>
-	<td class="row3" colspan="2"><span class="gensmall">{L_REPORT_POST_EXPLAIN}</span></td>
+	<td class="row3" colspan="2"><span class="gensmall"><!-- IF S_REPORT_POST -->{L_REPORT_POST_EXPLAIN}<!-- ELSE -->{L_REPORT_MESSAGE_EXPLAIN}<!-- ENDIF --></span></td>
 </tr>
 <tr>
 	<td class="row1" width="22%"><b class="gen">{L_REASON}:</b></td>

@@ -212,9 +212,14 @@ if ($mode == '' || $mode == 'unapproved_topics' || $mode == 'unapproved_posts')
 	$module->set_display('queue', 'approve_details', false);
 }
 
-if ($mode == '' || $mode == 'reports' || $mode == 'reports_closed')
+if ($mode == '' || $mode == 'reports' || $mode == 'reports_closed' || $mode == 'pm_reports' || $mode == 'pm_reports_closed' || $mode == 'pm_report_details')
 {
 	$module->set_display('reports', 'report_details', false);
+}
+
+if ($mode == '' || $mode == 'reports' || $mode == 'reports_closed' || $mode == 'pm_reports' || $mode == 'pm_reports_closed' || $mode == 'report_details')
+{
+	$module->set_display('pm_reports', 'pm_report_details', false);
 }
 
 if (!$topic_id)
@@ -566,6 +571,45 @@ function get_forum_data($forum_id, $acl_list = 'f_list', $read_tracking = false)
 }
 
 /**
+* Get simple pm data
+*/
+function get_pm_data($pm_ids)
+{
+	global $db, $auth, $config, $user;
+
+	$rowset = array();
+
+	if (!sizeof($pm_ids))
+	{
+		return array();
+	}
+
+	$sql_array = array(
+		'SELECT'	=> 'p.*, u.*',
+
+		'FROM'		=> array(
+			USERS_TABLE			=> 'u',
+			PRIVMSGS_TABLE		=> 'p',
+		),
+
+		'WHERE'		=> $db->sql_in_set('p.msg_id', $pm_ids) . '
+			AND u.user_id = p.author_id',
+	);
+
+	$sql = $db->sql_build_query('SELECT', $sql_array);
+	$result = $db->sql_query($sql);
+	unset($sql_array);
+
+	while ($row = $db->sql_fetchrow($result))
+	{
+		$rowset[$row['msg_id']] = $row;
+	}
+	$db->sql_freeresult($result);
+
+	return $rowset;
+}
+
+/**
 * sorting in mcp
 *
 * @param string $where_sql should either be WHERE (default if ommited) or end with AND or OR
@@ -650,6 +694,8 @@ function mcp_sorting($mode, &$sort_days, &$sort_key, &$sort_dir, &$sort_by_sql, 
 			}
 		break;
 
+		case 'pm_reports':
+		case 'pm_reports_closed':
 		case 'reports':
 		case 'reports_closed':
 			$type = 'reports';
@@ -657,33 +703,46 @@ function mcp_sorting($mode, &$sort_days, &$sort_key, &$sort_dir, &$sort_by_sql, 
 			$default_dir = 'd';
 			$limit_time_sql = ($min_time) ? "AND r.report_time >= $min_time" : '';
 
+			$pm = (strpos($mode, 'pm_') === 0) ? true : false;
+
 			if ($topic_id)
 			{
-				$where_sql .= ' p.topic_id = ' . $topic_id;
+				$where_sql .= ' p.topic_id = ' . $topic_id . ' AND ';
 			}
 			else if ($forum_id)
 			{
-				$where_sql .= ' p.forum_id = ' . $forum_id;
+				$where_sql .= ' p.forum_id = ' . $forum_id . ' AND ';
 			}
-			else
+			else if ($pm)
 			{
-				$where_sql .= ' ' . $db->sql_in_set('p.forum_id', get_forum_list(array('!f_read', '!m_report')), true, true);
+				$where_sql .= ' ' . $db->sql_in_set('p.forum_id', get_forum_list(array('!f_read', '!m_report')), true, true) . ' AND ';
 			}
 
 			if ($mode == 'reports')
 			{
-				$where_sql .= ' AND r.report_closed = 0';
+				$where_sql .= ' r.report_closed = 0 AND ';
 			}
 			else
 			{
-				$where_sql .= ' AND r.report_closed = 1';
+				$where_sql .= ' r.report_closed = 1 AND ';
 			}
 
-			$sql = 'SELECT COUNT(r.report_id) AS total
-				FROM ' . REPORTS_TABLE . ' r, ' . POSTS_TABLE . " p
-				$where_sql
-					AND p.post_id = r.post_id
-					$limit_time_sql";
+			if ($pm)
+			{
+				$sql = 'SELECT COUNT(r.report_id) AS total
+					FROM ' . REPORTS_TABLE . ' r, ' . PRIVMSGS_TABLE . " p
+					$where_sql r.post_id = 0
+						AND p.msg_id = r.pm_id
+						$limit_time_sql";
+			}
+			else
+			{
+				$sql = 'SELECT COUNT(r.report_id) AS total
+					FROM ' . REPORTS_TABLE . ' r, ' . POSTS_TABLE . " p
+					$where_sql r.pm_id = 0
+						AND p.post_id = r.post_id
+						$limit_time_sql";
+			}
 		break;
 
 		case 'viewlogs':

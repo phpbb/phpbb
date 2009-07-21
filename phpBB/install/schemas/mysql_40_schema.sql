@@ -486,6 +486,7 @@ CREATE TABLE phpbb_privmsgs (
 	message_edit_count smallint(4) UNSIGNED DEFAULT '0' NOT NULL,
 	to_address blob NOT NULL,
 	bcc_address blob NOT NULL,
+	message_reported tinyint(1) UNSIGNED DEFAULT '0' NOT NULL,
 	PRIMARY KEY (msg_id),
 	KEY author_ip (author_ip),
 	KEY message_time (message_time),
@@ -609,12 +610,15 @@ CREATE TABLE phpbb_reports (
 	report_id mediumint(8) UNSIGNED NOT NULL auto_increment,
 	reason_id smallint(4) UNSIGNED DEFAULT '0' NOT NULL,
 	post_id mediumint(8) UNSIGNED DEFAULT '0' NOT NULL,
+	pm_id mediumint(8) UNSIGNED DEFAULT '0' NOT NULL,
 	user_id mediumint(8) UNSIGNED DEFAULT '0' NOT NULL,
 	user_notify tinyint(1) UNSIGNED DEFAULT '0' NOT NULL,
 	report_closed tinyint(1) UNSIGNED DEFAULT '0' NOT NULL,
 	report_time int(11) UNSIGNED DEFAULT '0' NOT NULL,
 	report_text mediumblob NOT NULL,
-	PRIMARY KEY (report_id)
+	PRIMARY KEY (report_id),
+	KEY post_id (post_id),
+	KEY pm_id (pm_id)
 );
 
 

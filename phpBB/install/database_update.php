@@ -701,10 +701,20 @@ function database_update_info()
 				GROUPS_TABLE			=> array(
 					'group_skip_auth'		=> array('BOOL', 0, 'after' => 'group_founder_manage'),
 				),
+				PRIVMSGS_TABLE		=> array(
+					'message_reported'	=> array('BOOL', 0),
+				),
+				REPORTS_TABLE		=> array(
+					'pm_id'				=> array('UINT', 0),
+				),
 			),
 			'add_index'		=> array(
 				LOG_TABLE			=> array(
 					'log_time'		=> array('log_time'),
+				),
+				REPORTS_TABLE		=> array(
+					'post_id'		=> array('post_id'),
+					'pm_id'		=> array('pm_id'),
 				),
 			),
 		),
@@ -1076,6 +1086,9 @@ function change_database_data(&$no_updates, $version)
 			// Entries for smiley pagination
 			set_config('smilies_per_page', '50');
 
+			// Entry for reporting PMs
+			set_config('allow_pm_report', '1');
+
 			include_once($phpbb_root_path . 'includes/acp/acp_modules.' . $phpEx);
 
 			$_module = new acp_modules();
@@ -1164,6 +1177,58 @@ function change_database_data(&$no_updates, $version)
 					);
 
 					$_module->update_module_data($module_data, true);
+				}
+			}
+			$db->sql_freeresult($result);
+
+
+			// Also install the "PM Reports" module
+			$sql = 'SELECT module_id
+				FROM ' . MODULES_TABLE . "
+				WHERE module_class = 'mcp'
+					AND module_langname = 'MCP_REPORTS'
+					AND module_mode = ''
+					AND module_basename = ''";
+			$result = $db->sql_query($sql);
+
+			while ($row = $db->sql_fetchrow($result))
+			{
+				$category_id = (int) $row['module_id'];
+
+				$modes = array(
+					'pm_reports'			=> array('title' => 'MCP_PM_REPORTS_OPEN', 'auth' => 'aclf_m_report'),
+					'pm_reports_closed'	=> array('title' => 'MCP_PM_REPORTS_CLOSED', 'auth' => 'aclf_m_report'),
+					'pm_report_details'	=> array('title' => 'MCP_PM_REPORT_DETAILS', 'auth' => 'aclf_m_report'),
+				);
+
+				foreach ($modes as $mode => $data)
+				{
+					// Check if we actually need to add the module or if it is already added. ;)
+					$sql = 'SELECT *
+						FROM ' . MODULES_TABLE . "
+						WHERE module_class = 'mcp'
+							AND module_langname = '{$data['title']}'
+							AND module_mode = '$mode'
+							AND parent_id = {$category_id}";
+					$result2 = $db->sql_query($sql);
+					$row2 = $db->sql_fetchrow($result2);
+					$db->sql_freeresult($result2);
+
+					if (!$row2)
+					{
+						$module_data = array(
+							'module_basename'	=> 'users',
+							'module_enabled'	=> 1,
+							'module_display'	=> 1,
+							'parent_id'			=> $category_id,
+							'module_class'		=> 'mcp',
+							'module_langname'	=> $data['title'],
+							'module_mode'		=> $mode,
+							'module_auth'		=> $data['auth'],
+						);
+
+						$_module->update_module_data($module_data, true);
+					}
 				}
 			}
 			$db->sql_freeresult($result);

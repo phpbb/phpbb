@@ -685,7 +685,8 @@ CREATE TABLE phpbb_privmsgs (
 	message_edit_time INTEGER DEFAULT 0 NOT NULL,
 	message_edit_count INTEGER DEFAULT 0 NOT NULL,
 	to_address BLOB SUB_TYPE TEXT CHARACTER SET UTF8 DEFAULT '' NOT NULL,
-	bcc_address BLOB SUB_TYPE TEXT CHARACTER SET UTF8 DEFAULT '' NOT NULL
+	bcc_address BLOB SUB_TYPE TEXT CHARACTER SET UTF8 DEFAULT '' NOT NULL,
+	message_reported INTEGER DEFAULT 0 NOT NULL
 );;
 
 ALTER TABLE phpbb_privmsgs ADD PRIMARY KEY (msg_id);;
@@ -872,6 +873,7 @@ CREATE TABLE phpbb_reports (
 	report_id INTEGER NOT NULL,
 	reason_id INTEGER DEFAULT 0 NOT NULL,
 	post_id INTEGER DEFAULT 0 NOT NULL,
+	pm_id INTEGER DEFAULT 0 NOT NULL,
 	user_id INTEGER DEFAULT 0 NOT NULL,
 	user_notify INTEGER DEFAULT 0 NOT NULL,
 	report_closed INTEGER DEFAULT 0 NOT NULL,
@@ -881,6 +883,8 @@ CREATE TABLE phpbb_reports (
 
 ALTER TABLE phpbb_reports ADD PRIMARY KEY (report_id);;
 
+CREATE INDEX phpbb_reports_post_id ON phpbb_reports(post_id);;
+CREATE INDEX phpbb_reports_pm_id ON phpbb_reports(pm_id);;
 
 CREATE GENERATOR phpbb_reports_gen;;
 SET GENERATOR phpbb_reports_gen TO 0;;

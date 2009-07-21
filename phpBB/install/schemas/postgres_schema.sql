@@ -659,6 +659,7 @@ CREATE TABLE phpbb_privmsgs (
 	message_edit_count INT2 DEFAULT '0' NOT NULL CHECK (message_edit_count >= 0),
 	to_address varchar(4000) DEFAULT '' NOT NULL,
 	bcc_address varchar(4000) DEFAULT '' NOT NULL,
+	message_reported INT2 DEFAULT '0' NOT NULL CHECK (message_reported >= 0),
 	PRIMARY KEY (msg_id)
 );
 
@@ -810,6 +811,7 @@ CREATE TABLE phpbb_reports (
 	report_id INT4 DEFAULT nextval('phpbb_reports_seq'),
 	reason_id INT2 DEFAULT '0' NOT NULL CHECK (reason_id >= 0),
 	post_id INT4 DEFAULT '0' NOT NULL CHECK (post_id >= 0),
+	pm_id INT4 DEFAULT '0' NOT NULL CHECK (pm_id >= 0),
 	user_id INT4 DEFAULT '0' NOT NULL CHECK (user_id >= 0),
 	user_notify INT2 DEFAULT '0' NOT NULL CHECK (user_notify >= 0),
 	report_closed INT2 DEFAULT '0' NOT NULL CHECK (report_closed >= 0),
@@ -818,6 +820,8 @@ CREATE TABLE phpbb_reports (
 	PRIMARY KEY (report_id)
 );
 
+CREATE INDEX phpbb_reports_post_id ON phpbb_reports (post_id);
+CREATE INDEX phpbb_reports_pm_id ON phpbb_reports (pm_id);
 
 /*
 	Table: 'phpbb_reports_reasons'
