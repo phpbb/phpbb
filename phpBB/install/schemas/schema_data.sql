@@ -175,7 +175,7 @@ INSERT INTO phpbb_config (config_name, config_value) VALUES ('max_filesize_pm', 
 INSERT INTO phpbb_config (config_name, config_value) VALUES ('max_login_attempts', '3');
 INSERT INTO phpbb_config (config_name, config_value) VALUES ('max_name_chars', '20');
 INSERT INTO phpbb_config (config_name, config_value) VALUES ('max_num_search_keywords', '10');
-INSERT INTO phpbb_config (config_name, config_value) VALUES ('max_pass_chars', '30');
+INSERT INTO phpbb_config (config_name, config_value) VALUES ('max_pass_chars', '100');
 INSERT INTO phpbb_config (config_name, config_value) VALUES ('max_poll_options', '10');
 INSERT INTO phpbb_config (config_name, config_value) VALUES ('max_post_chars', '60000');
 INSERT INTO phpbb_config (config_name, config_value) VALUES ('max_post_font_size', '200');
