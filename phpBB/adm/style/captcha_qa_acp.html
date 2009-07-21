@@ -3,7 +3,7 @@
 <a name="maincontent"></a>
 
 
-	<a href="<!-- IF U_LIST -->{U_LIST}<!-- ELSE -->{U_BACK}<!-- ENDIF -->" style="float: {S_CONTENT_FLOW_END};">&laquo; {L_BACK}</a>
+	<a href="<!-- IF U_LIST -->{U_LIST}<!-- ELSE -->{U_ACTION}<!-- ENDIF -->" style="float: {S_CONTENT_FLOW_END};">&laquo; {L_BACK}</a>
 
 	<h1>{L_QUESTIONS}</h1>
 
@@ -57,7 +57,7 @@
 	<!-- ENDIF -->
 	<form id="captcha_qa" method="post" action="{U_ACTION}">
 	<fieldset>
-		<legend>{L_QUESTIONS}</legend>
+		<legend>{L_EDIT_QUESTION}</legend>
 	<dl> 
 		<dt><label for="strict">{L_QUESTION_STRICT}:</label><br /><span>{L_QUESTION_STRICT_EXPLAIN}</span></dt>
 		<dd><label><input type="radio" class="radio" name="strict" value="1"<!-- IF STRICT --> id="strict" checked="checked"<!-- ENDIF --> /> {L_YES}</label>
