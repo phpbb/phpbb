@@ -86,6 +86,12 @@
 		<li><a href="#writingstyle">Writing Style</a></li>
 	</ol>
 	</li>
+	<li><a href="#vcs">VCS Guidelines</a>
+	<ol style="list-style-type: lower-roman;">
+		<li><a href="#repostruct">Repository structure</a></li>
+		<li><a href="#commitmessage">Commit messages</a></li>
+	</ol>
+	</li>
 	<li><a href="#changes">Guidelines Changelog</a></li>
 	<li><a href="#disclaimer">Copyright and disclaimer</a></li>
 </ol>
@@ -2252,12 +2258,67 @@ if (utf8_case_fold_nfc($string1) == utf8_case_fold_nfc($string2))
 
 	<hr />
 
-<a name="changes"></a><h2>7. Guidelines Changelog</h2>
+<a name="vcs"></a><h2>7. VCS Guidelines</h2>
+
 	<div class="paragraph">
 		<div class="inner"><span class="corners-top"><span></span></span>
 
 		<div class="content">
 
+	<p>The version control system for phpBB3 is subversion. The repository is available at <a href="http://code.phpbb.com/svn/phpbb" title="repository">http://code.phpbb.com/svn/phpbb</a>.
+
+	<a name="repostruct"></a><h3>7.i. Repository Structure</h3>
+
+	<ul>
+		<li><strong>trunk</strong><br />The latest unstable development version with new features etc. Contains the actual board in <code>/trunk/phpBB</code></li>
+		<li><strong>branches</strong><br />Development branches of stable phpBB releases. Copied from <code>/trunk</code> at the time of release.
+			<ul>
+				<li><strong>phpBB3.0</strong><code>/branches/phpBB-3_0_0/phpBB</code><br />Development branch of the stable 3.0 line. Bug fixes are applied here.</li>
+				<li><strong>phpBB2</strong><code>/branches/phpBB-2_0_0/phpBB</code><br />Old phpBB2 development branch.</li>
+			</ul>
+		</li>
+		<li><strong>tags</strong><br />Released versions. Copies of trunk or the respective branch, made at the time of release.
+			<ul>
+				<li><code>/tags/release_3_0_BX</code><br />Beta release X of the 3.0 line.</li>
+				<li><code>/tags/release_3_0_RCX</code><br />Release candidate X of the 3.0 line.</li>
+				<li><code>/tags/release_3_0_X-RCY</code><br />Release candidate Y of the stable 3.0.X release.</li>
+				<li><code>/tags/release_3_0_X</code><br />Stable <strong>3.0.X</strong> release.</li>
+				<li><code>/tags/release_2_0_X</code><br />Old stable 2.0.X release.</li>
+			</ul>
+		</li>
+	</ul>
+	
+	<a name="commitmessage"></a><h3>7.ii. Commit Messages</h3>
+
+	<p>The commit message should contain a brief explanation of all changes made within the commit. Often identical to the changelog entry. A bug ticket can be referenced by specifying the ticket ID with a hash, e.g. #12345. A reference to another revision should simply be prefixed with r, e.g. r12345.</p>
+
+	<p>Junior Developers need to have their patches approved by a development team member first. The commit message must end in a line with the following format:</p>
+	
+	<div class="codebox"><pre>
+Authorised by: developer1[, developer2[, ...]]
+	</pre></div>
+
+		</div>
+
+		<div class="back2top"><a href="#wrap" class="top">Back to Top</a></div>
+
+		<span class="corners-bottom"><span></span></span></div>
+	</div>
+
+	<hr />
+
+<a name="changes"></a><h2>8. Guidelines Changelog</h2>
+	<div class="paragraph">
+		<div class="inner"><span class="corners-top"><span></span></span>
+
+		<div class="content">
+
+
+<h3>Revision 9817</h3>
+
+<ul>
+	<li>Added VCS section.</li>
+</ul>
 
 <h3>Revision 8732</h3>
 
@@ -2330,7 +2391,7 @@ if (utf8_case_fold_nfc($string1) == utf8_case_fold_nfc($string2))
 
 	<hr />
 
-<a name="disclaimer"></a><h2>8. Copyright and disclaimer</h2>
+<a name="disclaimer"></a><h2>9. Copyright and disclaimer</h2>
 
 	<div class="paragraph">
 		<div class="inner"><span class="corners-top"><span></span></span>
