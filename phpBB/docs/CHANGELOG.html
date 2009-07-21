@@ -168,6 +168,7 @@
 		<li>[Fix] Allow changing forum from select box under certain circumstances. (Bug #37525)</li>
 		<li>[Fix] Display required fields notice on registration above the custom profile fields. (Bug #39665)</li>
 		<li>[Fix] Copy poll options properly when copying topic. (Bug #39065)</li>
+		<li>[Fix] Preserve newlines in template files (one newline had been always dropped after a template variable due to PHP's handling of closing tags)</li>
 		<li>[Change] Change the data format of the default file ACM to be more secure from tampering and have better performance.</li>
 		<li>[Change] Add index on log_time to the log table to prevent slowdown on boards with many log entries. (Bug #44665 - Patch by bantu)</li>
 		<li>[Change] Template engine now permits to a limited extent variable includes.</li>

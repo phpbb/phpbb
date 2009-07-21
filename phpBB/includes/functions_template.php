@@ -251,15 +251,22 @@ class template_compile
 			$template_php .= (!$no_echo) ? (($trim_check_text != '') ? $text_blocks[$i] : '') . ((isset($compile_blocks[$i])) ? $compile_blocks[$i] : '') : (($trim_check_text != '') ? $text_blocks[$i] : '') . ((isset($compile_blocks[$i])) ? $compile_blocks[$i] : '');
 		}
 
+		// Remove unused opening/closing tags
+		$template_php = str_replace(' ?><?php ', ' ', $template_php);
+
+		// Now add a newline after each php closing tag which already has a newline
+		// PHP itself strips a newline if a closing tag is used (this is documented behaviour) and it is mostly not intended by style authors to remove newlines
+		$template_php = preg_replace('#\?\>([\r\n])#', '?>\1\1', $template_php);
+
 		// There will be a number of occasions where we switch into and out of
 		// PHP mode instantaneously. Rather than "burden" the parser with this
 		// we'll strip out such occurences, minimising such switching
 		if ($no_echo)
 		{
-			return "\$$echo_var .= '" . str_replace(' ?><?php ', ' ', $template_php) . "'";
+			return "\$$echo_var .= '" . $template_php . "'";
 		}
 
-		return str_replace(' ?><?php ', ' ', $template_php);
+		return $template_php;
 	}
 
 	/**

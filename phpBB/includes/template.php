@@ -82,6 +82,8 @@ class template
 		$this->root = $template_path;
 		$this->cachepath = $phpbb_root_path . 'cache/ctpl_' . str_replace('_', '-', $template_name) . '_';
 
+		$this->_rootref = &$this->_tpldata['.'][0];
+
 		return true;
 	}
 
