@@ -52,9 +52,10 @@ class acp_captcha
 			$captchas = phpbb_captcha_factory::get_captcha_types();
 
 			$config_vars = array(
-				'enable_confirm'		=> 'REG_ENABLE',
-				'enable_post_confirm'	=> 'POST_ENABLE',
-				'confirm_refresh'		=> 'CONFIRM_REFRESH',
+				'enable_confirm'		=> array('tpl' => 'REG_ENABLE', 'default' => false),
+				'enable_post_confirm'	=> array('tpl' => 'POST_ENABLE', 'default' => false),
+				'confirm_refresh'		=> array('tpl' => 'CONFIRM_REFRESH', 'default' => false),
+				'max_reg_attempts'		=> array('tpl' => 'REG_LIMIT', 'default' => 0),
 			);
 
 			$this->tpl_name = 'acp_captcha';
@@ -67,10 +68,9 @@ class acp_captcha
 			if ($submit && check_form_key($form_key))
 			{
 				$config_vars = array_keys($config_vars);
-
-				foreach ($config_vars as $config_var)
+				foreach ($config_vars as $config_var => $options)
 				{
-					set_config($config_var, request_var($config_var, false));
+					set_config($config_var, request_var($config_var, $options['default']));
 				}
 
 				if ($selected !== $config['captcha_plugin'])
@@ -115,9 +115,9 @@ class acp_captcha
 
 				$demo_captcha =& phpbb_captcha_factory::get_instance($selected);
 
-				foreach ($config_vars as $config_var => $template_var)
+				foreach ($config_vars as $config_var => $options)
 				{
-					$template->assign_var($template_var, (isset($_REQUEST[$config_var])) ? request_var($config_var, '') : $config[$config_var]) ;
+					$template->assign_var($options['tpl'], (isset($_POST[$config_var])) ? request_var($config_var, $options['default']) : $config[$config_var]) ;
 				}
 
 				$template->assign_vars(array(

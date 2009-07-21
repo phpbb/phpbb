@@ -274,7 +274,7 @@ $lang = array_merge($lang, array(
 
 // Visual Confirmation Settings
 $lang = array_merge($lang, array(
-	'ACP_VC_SETTINGS_EXPLAIN'				=> 'Here you are able to define visual confirmation defaults and CAPTCHA settings.',
+	'ACP_VC_SETTINGS_EXPLAIN'				=> 'Here you can select and configure CAPTCHA plugins, which implement various ways to reject registration attempts from so-called spambots.',
 	'AVAILABLE_CAPTCHAS'					=> 'Available plugins',
 	'CAPTCHA_UNAVAILABLE'					=> 'The CAPTCHA cannot be selected as its requirements are not met.',
 	'CAPTCHA_GD'							=> 'GD CAPTCHA',
