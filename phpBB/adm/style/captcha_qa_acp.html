@@ -21,8 +21,8 @@
 	</tr>
 	<tr class="row3">
 		<td style="text-align: center;">{L_QUESTION_TEXT}</td>
-		<td style="text-align: center;">{L_QUESTION_LANG}</td>
-		<td style="text-align: center;">{L_ACTION}</td>
+		<td style="width: 5%; text-align: center;">{L_QUESTION_LANG}</td>
+		<td style="vertical-align: top; width: 50px; text-align: center; white-space: nowrap;">{L_ACTION}</td>
 	</tr>
 	</thead>
 	<tbody>
@@ -30,7 +30,7 @@
 		
 		<!-- IF questions.S_ROW_COUNT is even --><tr class="row1"><!-- ELSE --><tr class="row2"><!-- ENDIF -->
 	
-		<td style="text-align: center;">{questions.QUESTION_TEXT}</td>
+		<td style="text-align: left;">{questions.QUESTION_TEXT}</td>
 		<td style="text-align: center;">{questions.QUESTION_LANG}</td>
 		<td style="text-align: center;"><a href="{questions.U_EDIT}">{ICON_EDIT}</a><a href="{questions.U_DELETE}">{ICON_DELETE}</a></td>
 		</tr>
