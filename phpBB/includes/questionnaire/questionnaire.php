@@ -30,15 +30,16 @@ class phpbb_questionnaire_data_collector
 {
 	var $providers;
 	var $data = null;
+	var $install_id = '';
 
 	/**
 	* Constructor.
 	*
-	* @param   array
 	* @param   string
 	*/
-	function phpbb_questionnaire_data_collector()
+	function phpbb_questionnaire_data_collector($install_id)
 	{
+		$this->install_id = $install_id;
 		$this->providers = array();
 	}
 
@@ -79,6 +80,7 @@ class phpbb_questionnaire_data_collector
 			$provider = &$this->providers[$key];
 			$this->data[$provider->get_identifier()] = $provider->get_data();
 		}
+        $this->data['install_id'] = $this->install_id;
 	}
 }
 
@@ -229,61 +231,221 @@ class phpbb_questionnaire_phpbb_data_provider
 	*/
 	function get_data()
 	{
-		// Exclude certain config vars
-		$exclude_config_vars = array(
-			'avatar_gallery_path'	=> true,
-			'avatar_path'			=> true,
-			'avatar_salt'			=> true,
-			'board_contact'			=> true,
-			'board_disable_msg'		=> true,
-			'board_email'			=> true,
-			'board_email_sig'		=> true,
-			'cookie_name'			=> true,
-			'icons_path'			=> true,
-			'icons_path'			=> true,
-			'jab_host'				=> true,
-			'jab_password'			=> true,
-			'jab_port'				=> true,
-			'jab_username'			=> true,
-			'ldap_base_dn'			=> true,
-			'ldap_email'			=> true,
-			'ldap_password'			=> true,
-			'ldap_port'				=> true,
-			'ldap_server'			=> true,
-			'ldap_uid'				=> true,
-			'ldap_user'				=> true,
-			'ldap_user_filter'		=> true,
-			'ranks_path'			=> true,
-			'script_path'			=> true,
-			'server_name'			=> true,
-			'server_port'			=> true,
-			'server_protocol'		=> true,
-			'site_desc'				=> true,
-			'sitename'				=> true,
-			'smilies_path'			=> true,
-			'smtp_host'				=> true,
-			'smtp_password'			=> true,
-			'smtp_port'				=> true,
-			'smtp_username'			=> true,
-			'upload_icons_path'		=> true,
-			'upload_path'			=> true,
-			'newest_user_colour'	=> true,
-			'newest_user_id'		=> true,
-			'newest_username'		=> true,
-			'rand_seed'				=> true,
+		global $phpbb_root_path, $phpEx;
+		include("{$phpbb_root_path}config.$phpEx");
+		
+		// Only send certain config vars
+		$config_vars = array(
+			'active_sessions' => true,
+			'allow_attachments' => true,
+			'allow_autologin' => true,
+			'allow_avatar' => true,
+			'allow_avatar_local' => true,
+			'allow_avatar_remote' => true,
+			'allow_avatar_upload' => true,
+			'allow_bbcode' => true,
+			'allow_birthdays' => true,
+			'allow_bookmarks' => true,
+			'allow_emailreuse' => true,
+			'allow_forum_notify' => true,
+			'allow_mass_pm' => true,
+			'allow_name_chars' => true,
+			'allow_namechange' => true,
+			'allow_nocensors' => true,
+			'allow_pm_attach' => true,
+			'allow_post_flash' => true,
+			'allow_post_links' => true,
+			'allow_privmsg' => true,
+			'allow_quick_reply' => true,
+			'allow_sig' => true,
+			'allow_sig_bbcode' => true,
+			'allow_sig_flash' => true,
+			'allow_sig_img' => true,
+			'allow_sig_links' => true,
+			'allow_sig_pm' => true,
+			'allow_sig_smilies' => true,
+			'allow_smilies' => true,
+			'allow_topic_notify' => true,
+			'attachment_quota' => true,
+			'auth_bbcode_pm' => true,
+			'auth_flash_pm' => true,
+			'auth_img_pm' => true,
+			'auth_method' => true,
+			'auth_smilies_pm' => true,
+			'avatar_filesize' => true,
+			'avatar_max_height' => true,
+			'avatar_max_width' => true,
+			'avatar_min_height' => true,
+			'avatar_min_width' => true,
+			'board_dst' => true,
+			'board_email_form' => true,
+			'board_hide_emails' => true,
+			'board_timezone' => true,
+			'browser_check' => true,
+			'bump_interval' => true,
+			'bump_type' => true,
+			'cache_gc' => true,
+			'captcha_plugin' => true,
+			'captcha_gd' => true,
+			'captcha_gd_foreground_noise' => true,
+			'captcha_gd_x_grid' => true,
+			'captcha_gd_y_grid' => true,
+			'captcha_gd_wave' => true,
+			'captcha_gd_3d_noise' => true,
+			'captcha_gd_fonts' => true,
+			'confirm_refresh' => true,
+			'check_attachment_content' => true,
+			'check_dnsbl' => true,
+			'chg_passforce' => true,
+			'cookie_secure' => true,
+			'coppa_enable' => true,
+			'database_gc' => true,
+			'dbms_version' => true,
+			'default_dateformat' => true,
+			'display_last_edited' => true,
+			'display_order' => true,
+			'edit_time' => true,
+			'email_check_mx' => true,
+			'email_enable' => true,
+			'email_function_name' => true,
+			'email_package_size' => true,
+			'enable_confirm' => true,
+			'enable_pm_icons' => true,
+			'enable_post_confirm' => true,
+			'feed_enable' => true,
+			'feed_limit' => true,
+			'feed_overall_forums' => true,
+			'feed_overall_forums_limit' => true,
+			'feed_overall_topics' => true,
+			'feed_overall_topics_limit' => true,
+			'feed_forum' => true,
+			'feed_topic' => true,
+			'feed_item_statistics' => true,
+			'flood_interval' => true,
+			'force_server_vars' => true,
+			'form_token_lifetime' => true,
+			'form_token_mintime' => true,
+			'form_token_sid_guests' => true,
+			'forward_pm' => true,
+			'forwarded_for_check' => true,
+			'full_folder_action' => true,
+			'fulltext_native_common_thres' => true,
+			'fulltext_native_load_upd' => true,
+			'fulltext_native_max_chars' => true,
+			'fulltext_native_min_chars' => true,
+			'gzip_compress' => true,
+			'hot_threshold' => true,
+			'img_create_thumbnail' => true,
+			'img_display_inlined' => true,
+			'img_imagick' => true,
+			'img_link_height' => true,
+			'img_link_width' => true,
+			'img_max_height' => true,
+			'img_max_thumb_width' => true,
+			'img_max_width' => true,
+			'img_min_thumb_filesize' => true,
+			'ip_check' => true,
+			'jab_enable' => true,
+			'jab_package_size' => true,
+			'jab_use_ssl' => true,
+			'limit_load' => true,
+			'limit_search_load' => true,
+			'load_anon_lastread' => true,
+			'load_birthdays' => true,
+			'load_cpf_memberlist' => true,
+			'load_cpf_viewprofile' => true,
+			'load_cpf_viewtopic' => true,
+			'load_db_lastread' => true,
+			'load_db_track' => true,
+			'load_jumpbox' => true,
+			'load_moderators' => true,
+			'load_online' => true,
+			'load_online_guests' => true,
+			'load_online_time' => true,
+			'load_onlinetrack' => true,
+			'load_search' => true,
+			'load_tplcompile' => true,
+			'load_user_activity' => true,
+			'max_attachments' => true,
+			'max_attachments_pm' => true,
+			'max_autologin_time' => true,
+			'max_filesize' => true,
+			'max_filesize_pm' => true,
+			'max_login_attempts' => true,
+			'max_name_chars' => true,
+			'max_num_search_keywords' => true,
+			'max_pass_chars' => true,
+			'max_poll_options' => true,
+			'max_post_chars' => true,
+			'max_post_font_size' => true,
+			'max_post_img_height' => true,
+			'max_post_img_width' => true,
+			'max_post_smilies' => true,
+			'max_post_urls' => true,
+			'max_quote_depth' => true,
+			'max_reg_attempts' => true,
+			'max_sig_chars' => true,
+			'max_sig_font_size' => true,
+			'max_sig_img_height' => true,
+			'max_sig_img_width' => true,
+			'max_sig_smilies' => true,
+			'max_sig_urls' => true,
+			'min_name_chars' => true,
+			'min_pass_chars' => true,
+			'min_post_chars' => true,
+			'min_search_author_chars' => true,
+			'mime_triggers' => true,
+			'new_member_post_limit' => true,
+			'new_member_group_default' => true,
+			'override_user_style' => true,
+			'pass_complex' => true,
+			'pm_edit_time' => true,
+			'pm_max_boxes' => true,
+			'pm_max_msgs' => true,
+			'pm_max_recipients' => true,
+			'posts_per_page' => true,
+			'print_pm' => true,
+			'queue_interval' => true,
+			'require_activation' => true,
+			'referer_validation' => true,
+			'search_block_size' => true,
+			'search_gc' => true,
+			'search_interval' => true,
+			'search_anonymous_interval' => true,
+			'search_type' => true,
+			'search_store_results' => true,
+			'secure_allow_deny' => true,
+			'secure_allow_empty_referer' => true,
+			'secure_downloads' => true,
+			'session_gc' => true,
+			'session_length' => true,
+			'smtp_auth_method' => true,
+			'smtp_delivery' => true,
+			'topics_per_page' => true,
+			'tpl_allow_php' => true,
+			'version' => true,
+			'warnings_expire_days' => true,
+			'warnings_gc' => true,
+
+			'num_files' => true,
+			'num_posts' => true,
+			'num_topics' => true,
+			'num_users' => true,
+			'record_online_users' => true,
 		);
 
 		$result = array();
 		foreach ($this->config as $name => $value)
 		{
-			// Mods may add columns for storing passwords - we do not want to grab them
-			if (isset($exclude_config_vars[$name]) || strpos($name, 'password') !== false)
+			if (!isset($exclude_config_vars[$name]))
 			{
-				continue;
+				$result['config.' . $name] = $value;
 			}
-
-			$result['config.' . $name] = $value;
 		}
+
+		$result['dbms'] = $dbms;
+		$result['acm_type'] = $acm_type;
+		$result['load_extensions'] = $load_extensions;
 
 		return $result;
 	}

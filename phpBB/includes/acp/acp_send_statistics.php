@@ -29,12 +29,23 @@ class acp_send_statistics
 	{
 		global $config, $template;
 
-		$collect_url = "http://www.phpbb.com/stats/getstatdata.php";
+		$collect_url = "http://www.phpbb.com/stats/receive_stats.php";
 
 		$this->tpl_name = 'acp_send_statistics';
 		$this->page_title = 'ACP_SEND_STATISTICS';
 
-		$collector = new phpbb_questionnaire_data_collector();
+		// generate a unique id if necessary
+		if (!isset($config['questionnaire_unique_id']))
+		{
+			$install_id = unique_id();
+			set_config('questionnaire_unique_id', $install_id);
+		}
+		else
+		{
+			$install_id = $config['questionnaire_unique_id'];
+		}
+
+		$collector = new phpbb_questionnaire_data_collector($install_id);
 
 		// Add data provider
 		$collector->add_data_provider(new phpbb_questionnaire_php_data_provider());
