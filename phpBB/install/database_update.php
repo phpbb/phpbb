@@ -1217,7 +1217,7 @@ function change_database_data(&$no_updates, $version)
 					if (!$row2)
 					{
 						$module_data = array(
-							'module_basename'	=> 'users',
+							'module_basename'	=> 'pm_reports',
 							'module_enabled'	=> 1,
 							'module_display'	=> 1,
 							'parent_id'			=> $category_id,
