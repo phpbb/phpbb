@@ -737,7 +737,12 @@ class ftp_fsock extends transfer
 		$list = array();
 		while (!@feof($this->data_connection))
 		{
-			$list[] = preg_replace('#[\r\n]#', '', @fgets($this->data_connection, 512));
+			$filename = preg_replace('#[\r\n]#', '', @fgets($this->data_connection, 512));
+
+			if ($filename !== '')
+			{
+				$list[] = $filename;
+			}
 		}
 		$this->_close_data_connection();
 
@@ -840,7 +845,7 @@ class ftp_fsock extends transfer
 			$result = @fgets($this->connection, 512);
 			$response .= $result;
 		}
-		while (substr($response, 3, 1) != ' ');
+		while (substr($result, 3, 1) !== ' ');
 
 		if (!preg_match('#^[123]#', $response))
 		{
