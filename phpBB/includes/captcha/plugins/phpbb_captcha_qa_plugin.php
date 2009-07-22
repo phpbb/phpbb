@@ -294,7 +294,7 @@ class phpbb_captcha_qa
 									'confirm_type'	=> array('USINT', 0),
 								),
 								'KEYS'				=> array(
-									'confirm_id'			=> array('INDEX', 'confirm_id'),
+									'session_id'			=> array('INDEX', 'session_id'),
 									'lookup'				=> array('INDEX', array('confirm_id', 'session_id', 'lang_iso')),
 								),
 								'PRIMARY_KEY'		=> 'confirm_id',
