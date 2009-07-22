@@ -707,7 +707,6 @@ $lang = array_merge($lang, array(
 	'LOG_USER_REACTIVATE_USER'	=> '<strong>Forced user account reactivation</strong>',
 	'LOG_USER_UNLOCK'			=> '<strong>User unlocked own topic</strong><br />» %s',
 	'LOG_USER_WARNING'			=> '<strong>Added user warning</strong><br />» %s',
-	'LOG_WARNING_DELETED'		=> '<strong>Deleted user warning</strong><br />» %s',
 	'LOG_USER_WARNING_BODY'		=> '<strong>The following warning was issued to this user</strong><br />» %s',
 
 	'LOG_USER_GROUP_CHANGE'			=> '<strong>User changed default group</strong><br />» %s',
@@ -715,6 +714,10 @@ $lang = array_merge($lang, array(
 	'LOG_USER_GROUP_JOIN'			=> '<strong>User joined group</strong><br />» %s',
 	'LOG_USER_GROUP_JOIN_PENDING'	=> '<strong>User joined group and needs to be approved</strong><br />» %s',
 	'LOG_USER_GROUP_RESIGN'			=> '<strong>User resigned membership from group</strong><br />» %s',
+
+	'LOG_WARNING_DELETED'		=> '<strong>Deleted user warning</strong><br />» %s',
+	'LOG_WARNINGS_DELETED'		=> '<strong>Deleted %2$s user warnings</strong><br />» %1$s', // Example: '<strong>Deleted 2 user warnings</strong><br />» username'
+	'LOG_WARNINGS_DELETED_ALL'	=> '<strong>Deleted all user warnings</strong><br />» %s',
 
 	'LOG_WORD_ADD'			=> '<strong>Added word censor</strong><br />» %s',
 	'LOG_WORD_DELETE'		=> '<strong>Deleted word censor</strong><br />» %s',

@@ -1160,11 +1160,13 @@ class acp_users
 
 							if ($deleteall)
 							{
-								$deleted_warnings = '0';
+								$log_warnings = $deleted_warnings = 0;
 							}
 							else
 							{
-								$deleted_warnings = ' user_warnings - ' . $db->sql_affectedrows();
+								$num_warnings = (int) $db->sql_affectedrows();
+								$deleted_warnings = ' user_warnings - ' . $num_warnings;
+								$log_warnings = ($num_warnings > 2) ? 2 : $num_warnings;
 							}
 
 							$sql = 'UPDATE ' . USERS_TABLE . "
@@ -1172,7 +1174,18 @@ class acp_users
 								WHERE user_id = $user_id";
 							$db->sql_query($sql);
 
-							add_log('admin', 'LOG_WARNING_DELETED', $user_row['username']);
+							switch ($log_warnings)
+							{
+								case 2:
+									add_log('admin', 'LOG_WARNINGS_DELETED', $user_row['username'], $num_warnings);
+								break;
+								case 1:
+									add_log('admin', 'LOG_WARNING_DELETED', $user_row['username']);
+								break;
+								default:
+									add_log('admin', 'LOG_WARNINGS_DELETED_ALL', $user_row['username']);
+								break;
+							}
 						}
 					}
 					else
