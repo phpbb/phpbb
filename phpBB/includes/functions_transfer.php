@@ -316,14 +316,14 @@ class ftp extends transfer
 			return 'ERR_CONNECTING_SERVER';
 		}
 
-		// attempt to turn pasv mode on
-		@ftp_pasv($this->connection, true);
-
 		// login to the server
 		if (!@ftp_login($this->connection, $this->username, $this->password))
 		{
 			return 'ERR_UNABLE_TO_LOGIN';
 		}
+
+		// attempt to turn pasv mode on
+		@ftp_pasv($this->connection, true);
 
 		// change to the root directory
 		if (!$this->_chdir($this->root_path))
@@ -461,6 +461,12 @@ class ftp extends transfer
 	function _ls($dir = './')
 	{
 		$list = @ftp_nlist($this->connection, $dir);
+
+		// Return on error
+		if ($list === false)
+		{
+			return false;
+		}
 
 		// Remove path if prepended
 		foreach ($list as $key => $item)
