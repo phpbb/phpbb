@@ -483,7 +483,7 @@ class ftp extends transfer
 			$item = str_replace('\\', '/', $item);
 			$dir = str_replace('\\', '/', $dir);
 
-			if (strpos($item, $dir) === 0)
+			if (!empty($dir) && strpos($item, $dir) === 0)
 			{
 				$item = substr($item, strlen($dir));
 			}
@@ -749,6 +749,20 @@ class ftp_fsock extends transfer
 		// Clear buffer
 		$this->_check_command();
 
+		// See bug #46295 - Some FTP daemons don't like './'
+		if ($dir === './' && empty($list))
+		{
+			// Let's try some alternatives
+			$list = $this->_ls('.');
+
+			if (empty($list))
+			{
+				$list = $this->_ls('');
+			}
+
+			return $list;
+		}
+
 		// Remove path if prepended
 		foreach ($list as $key => $item)
 		{
@@ -756,7 +770,7 @@ class ftp_fsock extends transfer
 			$item = str_replace('\\', '/', $item);
 			$dir = str_replace('\\', '/', $dir);
 
-			if (strpos($item, $dir) === 0)
+			if (!empty($dir) && strpos($item, $dir) === 0)
 			{
 				$item = substr($item, strlen($dir));
 			}
