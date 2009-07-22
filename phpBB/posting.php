@@ -1187,7 +1187,15 @@ $message_parser->decode_message($post_data['bbcode_uid']);
 
 if ($mode == 'quote' && !$submit && !$preview && !$refresh)
 {
-	$message_parser->message = '[quote=&quot;' . $post_data['quote_username'] . '&quot;]' . censor_text(trim($message_parser->message)) . "[/quote]\n";
+	if ($config['allow_bbcode'])
+	{
+		$message_parser->message = '[quote=&quot;' . $post_data['quote_username'] . '&quot;]' . censor_text(trim($message_parser->message)) . "[/quote]\n";
+	}
+	else
+	{
+		$message = '> ' . utf8_wordwrap(censor_text(trim($message_parser->message)), 75, "\n> ");
+		$message_parser->message =  $post_data['quote_username'] . " " . $user->lang['WROTE'] . " :\n" . $message . "\n";
+	}
 }
 
 if (($mode == 'reply' || $mode == 'quote') && !$submit && !$preview && !$refresh)
