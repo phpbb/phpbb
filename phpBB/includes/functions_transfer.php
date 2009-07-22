@@ -462,6 +462,14 @@ class ftp extends transfer
 	{
 		$list = @ftp_nlist($this->connection, $dir);
 
+		// See bug #46295 - Some FTP daemons don't like './'
+		if ($dir === './')
+		{
+			// Let's try some alternatives
+			$list = (empty($list)) ? @ftp_nlist($this->connection, '.') : $list;
+			$list = (empty($list)) ? @ftp_nlist($this->connection, '') : $list;
+		}
+
 		// Return on error
 		if ($list === false)
 		{
