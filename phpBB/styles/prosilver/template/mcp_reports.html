@@ -45,7 +45,7 @@
 						<span>{L_MESSAGE_TO} {postrow.RECIPIENTS}</span>
 					</dt>
 					<dd class="moderation">
-						<span>{postrow.REPORTER_FULL} {L_REPORTED_ON_DATE} {postrow.REPORT_TIME}</span>
+						<span>{postrow.REPORTER_FULL} &laquo; {postrow.REPORT_TIME}</span>
 					</dd>
 					<!-- ELSE -->
 					<dt>
@@ -53,7 +53,7 @@
 						<span>{L_POSTED} {L_POST_BY_AUTHOR} {postrow.POST_AUTHOR_FULL} &raquo; {postrow.POST_TIME}</span>
 					</dt>
 					<dd class="moderation">
-						<span>{postrow.REPORTER_FULL} {L_REPORTED_ON_DATE} {postrow.REPORT_TIME}<br />
+						<span>{postrow.REPORTER_FULL} &laquo; {postrow.REPORT_TIME}<br />
 						{L_FORUM}: <a href="{postrow.U_VIEWFORUM}">{postrow.FORUM_NAME}</a></span>
 					</dd>
 					<!-- ENDIF -->
