@@ -271,7 +271,6 @@ class phpbb_captcha_qa
 								),
 								'PRIMARY_KEY'		=> 'question_id',
 								'KEYS'				=> array(
-									'question_id'			=> array('INDEX', array('question_id', 'lang_iso')),
 									'lang_iso'			=> array('INDEX', 'lang_iso'),
 								),
 				),
