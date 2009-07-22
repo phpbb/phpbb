@@ -221,7 +221,7 @@ class mcp_pm_reports
 
 				if ($mode == 'pm_reports')
 				{
-					$report_state = 'pm.message_reported = 1 AND r.report_closed = 0';
+					$report_state = 'p.message_reported = 1 AND r.report_closed = 0';
 				}
 				else
 				{
@@ -229,10 +229,10 @@ class mcp_pm_reports
 				}
 
 				$sql = 'SELECT r.report_id
-					FROM ' . PRIVMSGS_TABLE . ' pm, ' . REPORTS_TABLE . ' r ' . (($sort_order_sql[0] == 'u') ? ', ' . USERS_TABLE . ' u' : '') . (($sort_order_sql[0] == 'r') ? ', ' . USERS_TABLE . ' ru' : '') . "
+					FROM ' . PRIVMSGS_TABLE . ' p, ' . REPORTS_TABLE . ' r ' . (($sort_order_sql[0] == 'u') ? ', ' . USERS_TABLE . ' u' : '') . (($sort_order_sql[0] == 'r') ? ', ' . USERS_TABLE . ' ru' : '') . "
 					WHERE $report_state
-						AND r.pm_id = pm.msg_id
-						" . (($sort_order_sql[0] == 'u') ? 'AND u.user_id = pm.author_id' : '') . '
+						AND r.pm_id = p.msg_id
+						" . (($sort_order_sql[0] == 'u') ? 'AND u.user_id = p.author_id' : '') . '
 						' . (($sort_order_sql[0] == 'r') ? 'AND ru.user_id = r.user_id' : '') . "
 						AND r.post_id = 0
 						$limit_time_sql

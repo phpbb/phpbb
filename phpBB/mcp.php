@@ -698,12 +698,12 @@ function mcp_sorting($mode, &$sort_days, &$sort_key, &$sort_dir, &$sort_by_sql, 
 		case 'pm_reports_closed':
 		case 'reports':
 		case 'reports_closed':
-			$type = 'reports';
+			$pm = (strpos($mode, 'pm_') === 0) ? true : false;
+
+			$type = ($pm) ? 'pm_reports' : 'reports';
 			$default_key = 't';
 			$default_dir = 'd';
 			$limit_time_sql = ($min_time) ? "AND r.report_time >= $min_time" : '';
-
-			$pm = (strpos($mode, 'pm_') === 0) ? true : false;
 
 			if ($topic_id)
 			{
@@ -713,12 +713,12 @@ function mcp_sorting($mode, &$sort_days, &$sort_key, &$sort_dir, &$sort_by_sql, 
 			{
 				$where_sql .= ' p.forum_id = ' . $forum_id . ' AND ';
 			}
-			else if ($pm)
+			else if (!$pm)
 			{
 				$where_sql .= ' ' . $db->sql_in_set('p.forum_id', get_forum_list(array('!f_read', '!m_report')), true, true) . ' AND ';
 			}
 
-			if ($mode == 'reports')
+			if ($mode == 'reports' || $mode == 'pm_reports')
 			{
 				$where_sql .= ' r.report_closed = 0 AND ';
 			}
@@ -783,6 +783,12 @@ function mcp_sorting($mode, &$sort_days, &$sort_key, &$sort_dir, &$sort_by_sql, 
 			$limit_days = array(0 => $user->lang['ALL_REPORTS'], 1 => $user->lang['1_DAY'], 7 => $user->lang['7_DAYS'], 14 => $user->lang['2_WEEKS'], 30 => $user->lang['1_MONTH'], 90 => $user->lang['3_MONTHS'], 180 => $user->lang['6_MONTHS'], 365 => $user->lang['1_YEAR']);
 			$sort_by_text = array('a' => $user->lang['AUTHOR'], 'r' => $user->lang['REPORTER'], 'p' => $user->lang['POST_TIME'], 't' => $user->lang['REPORT_TIME'], 's' => $user->lang['SUBJECT']);
 			$sort_by_sql = array('a' => 'u.username_clean', 'r' => 'ru.username', 'p' => 'p.post_time', 't' => 'r.report_time', 's' => 'p.post_subject');
+		break;
+
+		case 'pm_reports':
+			$limit_days = array(0 => $user->lang['ALL_REPORTS'], 1 => $user->lang['1_DAY'], 7 => $user->lang['7_DAYS'], 14 => $user->lang['2_WEEKS'], 30 => $user->lang['1_MONTH'], 90 => $user->lang['3_MONTHS'], 180 => $user->lang['6_MONTHS'], 365 => $user->lang['1_YEAR']);
+			$sort_by_text = array('a' => $user->lang['AUTHOR'], 'r' => $user->lang['REPORTER'], 'p' => $user->lang['POST_TIME'], 't' => $user->lang['REPORT_TIME'], 's' => $user->lang['SUBJECT']);
+			$sort_by_sql = array('a' => 'u.username_clean', 'r' => 'ru.username', 'p' => 'p.message_time', 't' => 'r.report_time', 's' => 'p.message_subject');
 		break;
 
 		case 'logs':
