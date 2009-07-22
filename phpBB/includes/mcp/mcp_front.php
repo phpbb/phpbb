@@ -322,15 +322,15 @@ function mcp_front_view($id, $mode, $action)
 		if ($total == 0)
 		{
 			$template->assign_vars(array(
-				'L_REPORTS_TOTAL'	=>	$user->lang['REPORTS_ZERO_TOTAL'],
+				'L_REPORTS_TOTAL'	=>	$user->lang['PM_REPORTS_ZERO_TOTAL'],
 				'S_HAS_PM_REPORTS'		=>	false)
 			);
 		}
 		else
 		{
 			$template->assign_vars(array(
-				'L_REPORTS_TOTAL'	=> ($total == 1) ? $user->lang['REPORT_TOTAL'] : sprintf($user->lang['REPORTS_TOTAL'], $total),
-				'S_HAS_REPORTS'		=> true)
+				'L_REPORTS_TOTAL'	=> ($total == 1) ? $user->lang['PM_REPORT_TOTAL'] : sprintf($user->lang['PM_REPORTS_TOTAL'], $total),
+				'S_HAS_PM_REPORTS'		=> true)
 			);
 		}
 	}
