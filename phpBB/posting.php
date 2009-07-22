@@ -1193,7 +1193,8 @@ if ($mode == 'quote' && !$submit && !$preview && !$refresh)
 	}
 	else
 	{
-		$message = '> ' . utf8_wordwrap(censor_text(trim($message_parser->message)), 75, "\n> ");
+		$message = '> ' . utf8_wordwrap(censor_text(trim($message_parser->message)), 75, "\n");
+		$message = str_replace("\n", "\n> ", $message);
 		$message_parser->message =  $post_data['quote_username'] . " " . $user->lang['WROTE'] . " :\n" . $message . "\n";
 	}
 }
