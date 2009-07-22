@@ -23,8 +23,8 @@ if (!defined('IN_PHPBB'))
 * to a central server. For privacy reasons we try to collect only data which aren't private
 * or don't give any information which might help to identify the user.
 *
-* @author      Johannes Schlueter <johannes@php.net>
-* @copyright   (c) 2007-2008 Johannes Schlueter
+* @author		Johannes Schlueter <johannes@php.net>
+* @copyright	(c) 2007-2008 Johannes Schlueter
 */
 class phpbb_questionnaire_data_collector
 {
@@ -35,7 +35,7 @@ class phpbb_questionnaire_data_collector
 	/**
 	* Constructor.
 	*
-	* @param   string
+	* @param	string
 	*/
 	function phpbb_questionnaire_data_collector($install_id)
 	{
@@ -51,7 +51,7 @@ class phpbb_questionnaire_data_collector
 	/**
 	* Get data as an array.
 	*
-	* @return  array All Data
+	* @return	array	All Data
 	*/
 	function get_data_raw()
 	{
@@ -71,7 +71,7 @@ class phpbb_questionnaire_data_collector
 	/**
 	* Collect info into the data property.
 	*
-	* @return  void
+	* @return	void
 	*/
 	function collect()
 	{
@@ -80,7 +80,7 @@ class phpbb_questionnaire_data_collector
 			$provider = &$this->providers[$key];
 			$this->data[$provider->get_identifier()] = $provider->get_data();
 		}
-        $this->data['install_id'] = $this->install_id;
+		$this->data['install_id'] = $this->install_id;
 	}
 }
 
@@ -100,7 +100,7 @@ class phpbb_questionnaire_php_data_provider
 	/**
 	* Get data about the PHP runtime setup.
 	*
-	* @return  array
+	* @return	array
 	*/
 	function get_data()
 	{
@@ -144,7 +144,7 @@ class phpbb_questionnaire_system_data_provider
 	/**
 	* Get data about the general system information, like OS or IP (shortened).
 	*
-	* @return  array
+	* @return	array
 	*/
 	function get_data()
 	{
