@@ -254,6 +254,7 @@ $lang = array_merge($lang, array(
 	'PM_REPORTED_SUCCESS'		=> 'This private message has been successfully reported.',
 	'PM_REPORTS_TOTAL'			=> 'In total there are <strong>%d</strong> PM reports to review.',
 	'PM_REPORTS_ZERO_TOTAL'		=> 'There are no PM reports to review.',
+	'PM_REPORT_DETAILS'			=> 'Private message report details',
 	'POSTER'					=> 'Poster',
 	'POSTS_APPROVED_SUCCESS'	=> 'The selected posts have been approved.',
 	'POSTS_DELETED_SUCCESS'		=> 'The selected posts have been successfully removed from the database.',
