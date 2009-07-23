@@ -1193,8 +1193,18 @@ if ($mode == 'quote' && !$submit && !$preview && !$refresh)
 	}
 	else
 	{
-		$message = '> ' . utf8_wordwrap(censor_text(trim($message_parser->message)), 75, "\n");
-		$message = str_replace("\n", "\n> ", $message);
+		$offset = 0;
+		$quote_string = "&gt; ";
+		$message = censor_text(trim($message_parser->message));
+		// see if we are nesting. It's easily tricked but should work for one level of nesting
+		if (strpos($message, "&gt;") !== false)
+		{
+			$offset = 10;
+		}
+		$message = utf8_wordwrap($message, 75 + $offset, "\n");
+
+		$message = $quote_string . $message;
+		$message = str_replace("\n", "\n" . $quote_string, $message);
 		$message_parser->message =  $post_data['quote_username'] . " " . $user->lang['WROTE'] . " :\n" . $message . "\n";
 	}
 }
