@@ -1860,6 +1860,8 @@ function get_schema_struct()
 			'user_newpasswd'			=> array('VCHAR_UNI:40', ''),
 			'user_form_salt'			=> array('VCHAR_UNI:32', ''),
 			'user_new'					=> array('BOOL', 1),
+			'user_reminded'				=> array('TINT:4', 0),
+			'user_reminded_time'		=> array('TIMESTAMP', 0),
 		),
 		'PRIMARY_KEY'	=> 'user_id',
 		'KEYS'			=> array(

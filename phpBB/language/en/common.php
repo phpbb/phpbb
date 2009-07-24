@@ -541,6 +541,7 @@ $lang = array_merge($lang, array(
 	'SORT_JOINED'				=> 'Joined date',
 	'SORT_LOCATION'				=> 'Location',
 	'SORT_RANK'					=> 'Rank',
+	'SORT_POSTS'				=> 'Posts',
 	'SORT_TOPIC_TITLE'			=> 'Topic title',
 	'SORT_USERNAME'				=> 'Username',
 	'SPLIT_TOPIC'				=> 'Split topic',

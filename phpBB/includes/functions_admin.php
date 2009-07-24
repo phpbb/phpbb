@@ -2375,7 +2375,7 @@ function view_log($mode, &$log, &$log_count, $limit = 0, $offset = 0, $forum_id 
 		FROM " . LOG_TABLE . " l, " . USERS_TABLE . " u
 		WHERE l.log_type = $log_type
 			AND u.user_id = l.user_id
-			" . (($limit_days) ? "AND l.log_time >= $limit_days" : '') . 
+			" . (($limit_days) ? "AND l.log_time >= $limit_days" : '') .
 			(!empty($log_operation) ? "AND l.log_operation = '" . $db->sql_escape($log_operation) . "'" : '') . "
 			$sql_forum
 		ORDER BY $sort_by";
@@ -2685,7 +2685,7 @@ function view_inactive_users(&$users, &$user_count, $limit = 0, $offset = 0, $li
 		$offset = ($offset - $limit < 0) ? 0 : $offset - $limit;
 	}
 
-	$sql = 'SELECT user_id, username, user_regdate, user_lastvisit, user_inactive_time, user_inactive_reason
+	$sql = 'SELECT *
 		FROM ' . USERS_TABLE . '
 		WHERE user_type = ' . USER_INACTIVE .
 		(($limit_days) ? " AND user_inactive_time >= $limit_days" : '') . "

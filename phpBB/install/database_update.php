@@ -11,7 +11,7 @@
 $updates_to_version = '3.0.6-dev';
 
 // Enter any version to update from to test updates. The version within the db will not be updated.
-$debug_from_version = false;
+$debug_from_version = '3.0.5';
 
 // Which oldest version does this updater supports?
 $oldest_from_version = '3.0.0';
@@ -696,7 +696,9 @@ function database_update_info()
 					'attempts'		=> array('UINT', 0),
 				),
 				USERS_TABLE			=> array(
-					'user_new'		=> array('BOOL', 1),
+					'user_new'			=> array('BOOL', 1),
+					'user_reminded'		=> array('TINT:4', 0),
+					'user_reminded_time'=> array('TIMESTAMP', 0),
 				),
 				GROUPS_TABLE			=> array(
 					'group_skip_auth'		=> array('BOOL', 0, 'after' => 'group_founder_manage'),
@@ -714,7 +716,7 @@ function database_update_info()
 				),
 				REPORTS_TABLE		=> array(
 					'post_id'		=> array('post_id'),
-					'pm_id'		=> array('pm_id'),
+					'pm_id'			=> array('pm_id'),
 				),
 			),
 		),
