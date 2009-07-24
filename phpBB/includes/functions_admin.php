@@ -892,19 +892,61 @@ function delete_attachments($mode, $ids, $resync = true)
 	// Update post indicators for posts now no longer having attachments
 	if (sizeof($post_ids))
 	{
-		$sql = 'UPDATE ' . POSTS_TABLE . '
-			SET post_attachment = 0
-			WHERE ' . $db->sql_in_set('post_id', $post_ids);
-		$db->sql_query($sql);
+		// Just check which posts are still having an assigned attachment not orphaned by querying the attachments table
+		$sql = 'SELECT post_msg_id
+			FROM ' . ATTACHMENTS_TABLE . '
+			WHERE ' . $db->sql_in_set('post_msg_id', $post_ids) . '
+				AND in_message = 0
+				AND is_orphan = 0';
+		$result = $db->sql_query($sql);
+
+		$remaining_ids = array();
+		while ($row = $db->sql_fetchrow($result))
+		{
+			$remaining_ids[] = $row['post_msg_id'];
+		}
+		$db->sql_freeresult($result);
+
+		// Now only unset those ids remaining
+		$post_ids = array_diff($post_ids, $remaining_ids);
+
+		if (sizeof($post_ids))
+		{
+			$sql = 'UPDATE ' . POSTS_TABLE . '
+				SET post_attachment = 0
+				WHERE ' . $db->sql_in_set('post_id', $post_ids);
+			$db->sql_query($sql);
+		}
 	}
 
 	// Update message table if messages are affected
 	if (sizeof($message_ids))
 	{
-		$sql = 'UPDATE ' . PRIVMSGS_TABLE . '
-			SET message_attachment = 0
-			WHERE ' . $db->sql_in_set('msg_id', $message_ids);
-		$db->sql_query($sql);
+		// Just check which messages are still having an assigned attachment not orphaned by querying the attachments table
+		$sql = 'SELECT post_msg_id
+			FROM ' . ATTACHMENTS_TABLE . '
+			WHERE ' . $db->sql_in_set('post_msg_id', $message_ids) . '
+				AND in_message = 1
+				AND is_orphan = 0';
+		$result = $db->sql_query($sql);
+
+		$remaining_ids = array();
+		while ($row = $db->sql_fetchrow($result))
+		{
+			$remaining_ids[] = $row['post_msg_id'];
+		}
+		$db->sql_freeresult($result);
+
+		// Now only unset those ids remaining
+		$message_ids = array_diff($message_ids, $remaining_ids);
+
+		if (sizeof($message_ids))
+		{
+			$sql = 'UPDATE ' . PRIVMSGS_TABLE . '
+				SET message_attachment = 0
+				WHERE ' . $db->sql_in_set('msg_id', $message_ids);
+			$db->sql_query($sql);
+		}
 	}
 
 	// Now update the topics. This is a bit trickier, because there could be posts still having attachments within the topic

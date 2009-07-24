@@ -1549,6 +1549,21 @@ function delete_post($forum_id, $topic_id, $post_id, &$data)
 		break;
 	}
 
+	if (($post_mode == 'delete') || ($post_mode == 'delete_last_post') || ($post_mode == 'delete_first_post'))
+	{
+		$sql = 'SELECT 1 AS has_attachments
+			FROM ' . ATTACHMENTS_TABLE . '
+			WHERE ' . $db->sql_in_set('topic_id', $topic_ids);
+		$result = $db->sql_query($sql);
+		$has_attachments = (int) $db->sql_fetchfield('has_attachments');
+		$db->sql_freeresult($result);
+
+		if (!$has_attachments)
+		{
+			$sql_data[TOPICS_TABLE] .= ', topic_attachment = 0';
+		}
+	}
+
 //	$sql_data[USERS_TABLE] = ($data['post_postcount']) ? 'user_posts = user_posts - 1' : '';
 
 	$db->sql_transaction('begin');
