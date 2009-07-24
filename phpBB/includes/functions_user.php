@@ -1016,7 +1016,17 @@ function user_ban($mode, $ban, $ban_len, $ban_len_other, $ban_exclude, $ban_reas
 		}
 		while ($row = $db->sql_fetchrow($result));
 
-		$banlist_ary = array_unique(array_diff($banlist_ary, $banlist_ary_tmp));
+		$banlist_ary_tmp = array_intersect($banlist_ary, $banlist_ary_tmp);
+
+		if (sizeof($banlist_ary_tmp))
+		{
+			// One or more entities are already banned/excluded, delete the existing bans, so they can be re-inserted with the given new length
+			$sql = 'DELETE FROM ' . BANLIST_TABLE . '
+				WHERE ' . $db->sql_in_set($type, $banlist_ary_tmp) . '
+					AND ban_exclude = ' . (int) $ban_exclude;
+			$db->sql_query($sql);
+		}
+
 		unset($banlist_ary_tmp);
 	}
 	$db->sql_freeresult($result);
