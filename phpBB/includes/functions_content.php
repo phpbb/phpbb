@@ -250,6 +250,11 @@ function get_context($text, $words, $length = 400)
 	// first replace all whitespaces with single spaces
 	$text = preg_replace('/ +/', ' ', strtr($text, "\t\n\r\x0C ", '     '));
 
+	// we need to turn the entities back into their original form, to not cut the message in between them
+	$entities = array('&lt;', '&gt;', '&#91;', '&#93;', '&#46;', '&#58;', '&#058;');
+	$characters = array('<', '>', '[', ']', '.', ':', ':');
+	$text = str_replace($entities, $characters, $text);
+
 	$word_indizes = array();
 	if (sizeof($words))
 	{
@@ -345,13 +350,13 @@ function get_context($text, $words, $length = 400)
 					}
 				}
 			}
-			return $final_text;
+			return str_replace($characters, $entities, $final_text);
 		}
 	}
 
 	if (!sizeof($words) || !sizeof($word_indizes))
 	{
-		return (utf8_strlen($text) >= $length + 3) ? utf8_substr($text, 0, $length) . '...' : $text;
+		return str_replace($characters, $entities, ((utf8_strlen($text) >= $length + 3) ? utf8_substr($text, 0, $length) . '...' : $text));
 	}
 }
 
