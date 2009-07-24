@@ -39,6 +39,8 @@ class template
 	var $files_inherit = array();
 	var $files_template = array();
 	var $inherit_root = '';
+	var $orig_tpl_storedb = 'undefined';
+	var $orig_tpl_inherits_id = 'undefined';
 
 	// this will hash handle names to the compiled/uncompiled code for that handle.
 	var $compiled_code = array();
@@ -55,6 +57,16 @@ class template
 		{
 			$this->root = $phpbb_root_path . 'styles/' . $user->theme['template_path'] . '/template';
 			$this->cachepath = $phpbb_root_path . 'cache/tpl_' . str_replace('_', '-', $user->theme['template_path']) . '_';
+			if ($this->orig_tpl_storedb == 'undefined')
+			{
+				$this->orig_tpl_storedb = $user->theme['template_storedb'];
+			}
+			if ($this->orig_tpl_inherits_id == 'undefined')
+			{
+				$this->orig_tpl_inherits_id = $user->theme['template_inherits_id'];
+			}
+			$user->theme['template_storedb'] = $this->orig_tpl_storedb;
+			$user->theme['template_inherits_id'] = $this->orig_tpl_inherits_id;
 
 			if ($user->theme['template_inherits_id'])
 			{
@@ -77,10 +89,12 @@ class template
 	*/
 	function set_custom_template($template_path, $template_name)
 	{
-		global $phpbb_root_path;
+		global $phpbb_root_path, $user;
 
 		$this->root = $template_path;
 		$this->cachepath = $phpbb_root_path . 'cache/ctpl_' . str_replace('_', '-', $template_name) . '_';
+		$user->theme['template_storedb'] = false;
+		$user->theme['template_inherits_id'] = false;
 
 		$this->_rootref = &$this->_tpldata['.'][0];
 
