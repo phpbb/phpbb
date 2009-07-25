@@ -1116,6 +1116,16 @@ append_sid(&quot;{$phpbb_root_path}memberlist.$phpEx&quot;, 'mode=group&amp;amp;
 
 <p>You will note in the 3.0 templates the major sources start with <code>&lt;!-- INCLUDE overall_header.html --&gt;</code> or <code>&lt;!-- INCLUDE simple_header.html --&gt;</code>, etc. In 2.0.x control of &quot;which&quot; header to use was defined entirely within the code. In 3.0.x the template designer can output what they like. Note that you can introduce new templates (i.e. other than those in the default set) using this system and include them as you wish ... perhaps useful for a common &quot;menu&quot; bar or some such. No need to modify loads of files as with 2.0.x.</p>
 
+<p>Added in <strong>3.0.6</strong> is the ability to include a file using a template variable to specify the file, this functionality only works for root variables (i.e. not block variables).</p>
+<div class="codebox"><pre>
+<span class="comment">&lt;!-- INCLUDE {FILE_VAR} --&gt;</span>
+</pre></div>
+<p>Template defined variables can also be utilised.
+<div class="codebox"><pre>
+<span class="comment">&lt;!-- DEFINE $SOME_VAR = 'my_file.html' --&gt;</span>
+<span class="comment">&lt;!-- INCLUDE {$SOME_VAR} --&gt;</span>	
+</pre></div>
+
 <h4>PHP</h4>
 <p>A contentious decision has seen the ability to include PHP within the template introduced. This is achieved by enclosing the PHP within relevant tags:</p>
 
