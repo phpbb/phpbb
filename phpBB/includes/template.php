@@ -39,8 +39,8 @@ class template
 	var $files_inherit = array();
 	var $files_template = array();
 	var $inherit_root = '';
-	var $orig_tpl_storedb = 'undefined';
-	var $orig_tpl_inherits_id = 'undefined';
+	var $orig_tpl_storedb;
+	var $orig_tpl_inherits_id;
 
 	// this will hash handle names to the compiled/uncompiled code for that handle.
 	var $compiled_code = array();
@@ -57,14 +57,17 @@ class template
 		{
 			$this->root = $phpbb_root_path . 'styles/' . $user->theme['template_path'] . '/template';
 			$this->cachepath = $phpbb_root_path . 'cache/tpl_' . str_replace('_', '-', $user->theme['template_path']) . '_';
-			if ($this->orig_tpl_storedb == 'undefined')
+
+			if ($this->orig_tpl_storedb === null)
 			{
 				$this->orig_tpl_storedb = $user->theme['template_storedb'];
 			}
-			if ($this->orig_tpl_inherits_id == 'undefined')
+
+			if ($this->orig_tpl_inherits_id === null)
 			{
 				$this->orig_tpl_inherits_id = $user->theme['template_inherits_id'];
 			}
+
 			$user->theme['template_storedb'] = $this->orig_tpl_storedb;
 			$user->theme['template_inherits_id'] = $this->orig_tpl_inherits_id;
 
