@@ -545,7 +545,7 @@ if ($keywords || $author || $author_id || $search_id || $submit)
 
 	$u_search = append_sid("{$phpbb_root_path}search.$phpEx", $u_sort_param . $u_show_results);
 	$u_search .= ($search_id) ? '&amp;search_id=' . $search_id : '';
-	$u_search .= ($u_hilit) ? '&amp;keywords=' . urlencode(htmlspecialchars_decode($search->search_query)) : '';
+	$u_search .= ($u_hilit) ? '&amp;keywords=' . urlencode(htmlspecialchars_decode($keywords)) : '';
 	$u_search .= ($search_terms != 'all') ? '&amp;terms=' . $search_terms : '';
 	$u_search .= ($topic_id) ? '&amp;t=' . $topic_id : '';
 	$u_search .= ($author) ? '&amp;author=' . urlencode(htmlspecialchars_decode($author)) : '';
