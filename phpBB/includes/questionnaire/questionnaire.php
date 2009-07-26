@@ -253,6 +253,7 @@ class phpbb_questionnaire_phpbb_data_provider
 			'allow_namechange' => true,
 			'allow_nocensors' => true,
 			'allow_pm_attach' => true,
+			'allow_pm_report' => true,
 			'allow_post_flash' => true,
 			'allow_post_links' => true,
 			'allow_privmsg' => true,
@@ -435,11 +436,11 @@ class phpbb_questionnaire_phpbb_data_provider
 		);
 
 		$result = array();
-		foreach ($this->config as $name => $value)
+		foreach ($config_vars as $name => $void)
 		{
-			if (!isset($exclude_config_vars[$name]))
+			if (isset($this->config[$name]))
 			{
-				$result['config.' . $name] = $value;
+				$result['config.' . $name] = $this->config[$name];
 			}
 		}
 
