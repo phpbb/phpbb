@@ -61,6 +61,11 @@ class acp_send_statistics
 
 		foreach ($raw as $provider => $data)
 		{
+			if ($provider == 'install_id')
+			{
+				$data = array($provider => $data);
+			}
+
 			$template->assign_block_vars('providers', array(
 				'NAME'	=> htmlspecialchars($provider),
 			));
