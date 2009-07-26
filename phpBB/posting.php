@@ -545,6 +545,47 @@ if ($save && $user->data['is_registered'] && $auth->acl_get('u_savedrafts') && (
 				)
 			);
 
+			$hidden_fields = array(
+				'icon_id'			=> 0,
+
+				'disable_bbcode'	=> false,
+				'disable_smilies'	=> false,
+				'disable_magic_url'	=> false,
+				'attach_sig'		=> true,
+				'lock_topic'		=> false,
+
+				'topic_type'		=> POST_NORMAL,
+				'topic_time_limit'	=> 0,
+
+				'poll_title'		=> '',
+				'poll_option_text'	=> '',
+				'poll_max_options'	=> 1,
+				'poll_length'		=> 0,
+				'poll_vote_change'	=> false,
+			);
+
+			foreach ($hidden_fields as $name => $default)
+			{
+				if (!isset($_POST[$name]))
+				{
+					// Don't include it, if its not available
+					unset($hidden_fields[$name]);
+					continue;
+				}
+
+				if (is_bool($default))
+				{
+					// Use the string representation
+					$hidden_fields[$name] = request_var($name, '');
+				}
+				else
+				{
+					$hidden_fields[$name] = request_var($name, $default);
+				}
+			}
+
+			$s_hidden_fields .= build_hidden_fields($hidden_fields);
+
 			confirm_box(false, 'SAVE_DRAFT', $s_hidden_fields);
 		}
 	}
