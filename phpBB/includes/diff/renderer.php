@@ -536,7 +536,7 @@ class diff_renderer_raw extends diff_renderer
 	*/
 	function get_diff_content($diff)
 	{
-		return '<textarea style="height: 290px;" class="full">' . htmlspecialchars($this->render($diff)) . '</textarea>';
+		return '<textarea style="height: 290px;" rows="15" cols="76" class="full">' . htmlspecialchars($this->render($diff)) . '</textarea>';
 	}
 
 	function _block_header($xbeg, $xlen, $ybeg, $ylen)
