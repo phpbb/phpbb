@@ -307,6 +307,8 @@ $lang = array_merge($lang, array(
 
 	'DISPLAY_LOG'	=> 'Display entries from previous',
 
+	'LOGS_PLACEHOLDER'	=> '&lt;value&gt;',
+
 	'NO_ENTRIES'	=> 'No log entries for this period.',
 
 	'SORT_IP'		=> 'IP address',

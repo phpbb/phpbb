@@ -186,14 +186,32 @@ class mcp_logs
 				' . (($limit_days) ? "AND log_time >= $sql_where " : ' ') . 
 				$sql_forum;
 		$result = $db->sql_query($sql);
+
 		while ($row = $db->sql_fetchrow($result))
 		{
 			if (empty($row['log_operation']))
 			{
 				continue;
 			}
+
 			$selected = ($log_operation == $row['log_operation']) ? ' selected="selected"' : '';
-			$s_lang_keys .= '<option value="' . $row['log_operation'] . '"' . $selected . '>' . htmlspecialchars(strip_tags($user->lang[$row['log_operation']]), ENT_COMPAT, 'UTF-8') . '</option>';
+
+			if (isset($user->lang[$row['log_operation']]))
+			{
+				$text = htmlspecialchars(strip_tags(str_replace('<br />', ' ', $user->lang[$row['log_operation']])), ENT_COMPAT, 'UTF-8');
+
+				// Fill in sprintf placeholders with translated placeholder text
+				if (substr_count($text, '%'))
+				{
+					$text = vsprintf($text, array_fill(0, substr_count($text, '%'), $user->lang['LOGS_PLACEHOLDER']));
+				}
+			}
+			else
+			{
+				$text = ucfirst(str_replace('_', ' ', strtolower($row['log_operation'])));
+			}
+
+			$s_lang_keys .= '<option value="' . $row['log_operation'] . '"' . $selected . '>' . $text . '</option>';
 		}
 		$db->sql_freeresult($result);
 
