@@ -381,7 +381,7 @@ if ($keywords || $author || $author_id || $search_id || $submit)
 					$unread_list = array();
 					$unread_list = get_unread_topics_list();
 
-					if(!empty($unread_list))
+					if (!empty($unread_list))
 					{
 						$sql = 'SELECT t.topic_id
 							FROM ' . TOPICS_TABLE . ' t

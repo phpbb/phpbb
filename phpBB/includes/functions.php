@@ -4138,7 +4138,7 @@ function get_unread_topics_list($user_id = false, $sql_extra = '')
 {
 	global $config, $db, $user;
 
-	if($user_id === false)
+	if ($user_id === false)
 	{
 		$user_id = $user->data['user_id'];
 	}
@@ -4150,25 +4150,28 @@ function get_unread_topics_list($user_id = false, $sql_extra = '')
 	{
 		// List of the tracked forums (not ideal, hope the better way will be found)
 		// This list is to fetch later the forums user never read (fully) before
-		$sql = 'SELECT forum_id FROM ' . FORUMS_TRACK_TABLE . "
+		$sql = 'SELECT forum_id
+			FROM ' . FORUMS_TRACK_TABLE . "
 			WHERE user_id = {$user_id}";
 		$result = $db->sql_query($sql);
-		while($row = $db->sql_fetchrow($result))
+		while ($row = $db->sql_fetchrow($result))
 		{
 			$tracked_forums_list[] = $row['forum_id'];
 		}
 		$db->sql_freeresult($result);
-	
+
 		// Get list of the unread topics - on topics tracking as the first step
-		$sql = 'SELECT t.topic_id, t.topic_last_post_time, tt.mark_time FROM ' . TOPICS_TABLE . ' t, ' . TOPICS_TRACK_TABLE . " tt
+		$sql = 'SELECT t.topic_id, t.topic_last_post_time, tt.mark_time
+			FROM ' . TOPICS_TABLE . ' t, ' . TOPICS_TRACK_TABLE . " tt
 			WHERE t.topic_id = tt.topic_id
 				AND t.topic_last_post_time >= tt.mark_time
 				AND tt.user_id = {$user_id}
-				$sql_extra";
+			$sql_extra
+			ORDER BY t.topic_last_post_time DESC";
 		$result = $db->sql_query($sql);
-		while($row = $db->sql_fetchrow($result))
+		while ($row = $db->sql_fetchrow($result))
 		{
-			if($row['topic_last_post_time'] == $row['mark_time'])
+			if ($row['topic_last_post_time'] == $row['mark_time'])
 			{
 				// Check if there're read topics for the forums having unread ones
 				$read_topics_list[$row['topic_id']] = $row['mark_time'];
@@ -4179,33 +4182,41 @@ function get_unread_topics_list($user_id = false, $sql_extra = '')
 			}
 		}
 		$db->sql_freeresult($result);
-		
+
 		// Get the full list of the tracked topics
 		$tracked_topics_list = array_merge(array_keys($unread_topics_list), array_keys($read_topics_list));
 
 		// Get list of the unread topics - on forums tracking as the second step
 		// We don't take in account topics tracked before
-		$sql = 'SELECT t.topic_id, ft.mark_time FROM ' . TOPICS_TABLE . ' t, ' . FORUMS_TRACK_TABLE . ' ft
+		$sql = 'SELECT t.topic_id, ft.mark_time
+			FROM ' . TOPICS_TABLE . ' t, ' . FORUMS_TRACK_TABLE . ' ft
 			WHERE t.forum_id = ft.forum_id
 				AND t.topic_last_post_time > ft.mark_time
 				AND ' . $db->sql_in_set('t.topic_id', $tracked_topics_list, true, true) . "
 				AND ft.user_id = {$user_id}
-			$sql_extra";
+			$sql_extra
+			ORDER BY t.topic_last_post_time DESC";
 		$result = $db->sql_query($sql);
-		while($row = $db->sql_fetchrow($result))
+		while ($row = $db->sql_fetchrow($result))
 		{
 			$unread_topics_list[$row['topic_id']] = $row['mark_time'];
 		}
 		$db->sql_freeresult($result);
-		
+
+		// Refresh the full list of the tracked topics
+		unset($tracked_topics_list);
+		$tracked_topics_list = array_merge(array_keys($unread_topics_list), array_keys($read_topics_list));
+
 		// And the last step - find unread topics were not found before (that can mean a user has never read some forums)
-		$sql = 'SELECT topic_id FROM ' . TOPICS_TABLE . "
+		$sql = 'SELECT topic_id
+			FROM ' . TOPICS_TABLE . "
 			WHERE topic_last_post_time > {$user->data['user_lastmark']}
 				AND " . $db->sql_in_set('topic_id', array_keys($unread_topics_list), true, true) . '
 				AND ' . $db->sql_in_set('forum_id', $tracked_forums_list, true, true) . "
-			$sql_extra";
+			$sql_extra
+			ORDER BY topic_last_post_time DESC";
 		$result = $db->sql_query_limit($sql, 1000);
-		while($row = $db->sql_fetchrow($result))
+		while ($row = $db->sql_fetchrow($result))
 		{
 			$unread_topics_list[$row['topic_id']] = $user->data['user_lastmark'];
 		}
