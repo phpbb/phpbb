@@ -2376,7 +2376,7 @@ function view_log($mode, &$log, &$log_count, $limit = 0, $offset = 0, $forum_id 
 		WHERE l.log_type = $log_type
 			AND u.user_id = l.user_id
 			" . (($limit_days) ? "AND l.log_time >= $limit_days" : '') .
-			(!empty($log_operation) ? "AND l.log_operation = '" . $db->sql_escape($log_operation) . "'" : '') . "
+			(!empty($log_operation) ? " AND l.log_operation = '" . $db->sql_escape($log_operation) . "'" : '') . "
 			$sql_forum
 		ORDER BY $sort_by";
 	$result = $db->sql_query_limit($sql, $limit, $offset);
