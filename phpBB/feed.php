@@ -604,7 +604,7 @@ class phpbb_feed
 
 			while ($row = $db->sql_fetchrow($result))
 			{
-				$post_ids[] = $row['topic_last_post_id'];
+				$post_ids[] = (int) $row['topic_last_post_id'];
 			}
 			$db->sql_freeresult($result);
 		}
@@ -630,7 +630,7 @@ class phpbb_feed
 			$forum_ids = array();
 			while ($row = $db->sql_fetchrow($result))
 			{
-				$forum_ids[] = $row['forum_id'];
+				$forum_ids[] = (int) $row['forum_id'];
 			}
 			$db->sql_freeresult($result);
 
@@ -646,7 +646,7 @@ class phpbb_feed
 
 			while ($row = $db->sql_fetchrow($result))
 			{
-				$post_ids[] = $row['topic_last_post_id'];
+				$post_ids[] = (int) $row['topic_last_post_id'];
 			}
 			$db->sql_freeresult($result);
 		}
@@ -676,7 +676,7 @@ class phpbb_feed
 
 			while ($row = $db->sql_fetchrow($result))
 			{
-				$post_ids[] = $row['post_id'];
+				$post_ids[] = (int) $row['post_id'];
 			}
 			$db->sql_freeresult($result);
 		}
@@ -870,7 +870,7 @@ class phpbb_feed_news extends phpbb_feed
 		$this->set('enable_smilies',	'enable_smilies');
 		$this->set('enable_magic_url',	'enable_magic_url');
 
-		$this->num_items = $config['feed_overall_forums_limit'];
+		$this->num_items = (int) $config['feed_overall_forums_limit'];
 	}
 
 	function open()
@@ -949,7 +949,7 @@ class phpbb_feed_topics extends phpbb_feed
 		$this->set('enable_smilies',	'enable_smilies');
 		$this->set('enable_magic_url',	'enable_magic_url');
 
-		$this->num_items = $config['feed_overall_topics_limit'];
+		$this->num_items = (int) $config['feed_overall_topics_limit'];
 	}
 
 	function open()
@@ -981,7 +981,7 @@ class phpbb_feed_topics extends phpbb_feed
 
 		while ($row = $db->sql_fetchrow($result))
 		{
-			$post_ids[] = $row['topic_first_post_id'];
+			$post_ids[] = (int) $row['topic_first_post_id'];
 		}
 		$db->sql_freeresult($result);
 
