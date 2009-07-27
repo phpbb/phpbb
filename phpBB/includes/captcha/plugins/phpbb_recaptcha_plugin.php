@@ -156,7 +156,7 @@ class phpbb_recaptcha extends phpbb_default_captcha
 	{
 		$hidden_fields = array();
 
-		// this is required for postig.php - otherwise we would forget about the captcha being already solved
+		// this is required for posting.php - otherwise we would forget about the captcha being already solved
 		if ($this->solved)
 		{
 			$hidden_fields['confirm_code'] = $this->confirm_code;
