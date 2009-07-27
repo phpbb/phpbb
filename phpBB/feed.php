@@ -282,10 +282,10 @@ function feed_generate_content($content, $uid, $bitfield, $options)
 
 	// Replace some entities with their unicode counterpart
 	$entities = array(
-		'&nbsp;'	=> '&#160;',
-		'&bull;'	=> '&#8226;',
-		'&middot;'	=> '&#183;',
-		'&copy;'	=> '&#169;',
+		'&nbsp;'	=> "\xC2\xA0",
+		'&bull;'	=> "\xE2\x80\xA2",
+		'&middot;'	=> "\xC2\xB7",
+		'&copy;'	=> "\xC2\xA9",
 	);
 
 	$content = str_replace(array_keys($entities), array_values($entities), $content);
@@ -425,7 +425,7 @@ class phpbb_feed
 	/**
 	* Separator for title elements to separate items (for example forum / topic)
 	*/
-	var $separator = '&#x2022;';
+	var $separator = "\xE2\x80\xA2"; // &bull;
 
 	/**
 	* Constructor. Set standard keys.
