@@ -218,10 +218,9 @@ function feed_append_sid($url, $params)
 	$link = (strpos($link, 'sid=') !== false) ? trim(preg_replace('/(&amp;|&|\?)sid=[a-z0-9]+(&amp;|&)?/', '\1', $link), '?& ') : $link;
 
 	// Now the only thing remaining could be an empty &amp;
-	if (substr($link, -5) === '&amp;')
-	{
-		$link = substr($link, 0, -5);
-	}
+	$link = (substr($link, -5) === '&amp;') ? substr($link, 0, -5) : $link;
+	// And &amp;#xxx
+	$link = str_replace('&amp;#', '#', $link);
 
 	return $link;
 }
