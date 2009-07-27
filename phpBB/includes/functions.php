@@ -2752,7 +2752,6 @@ function login_box($redirect = '', $l_explain = '', $l_success = '', $admin = fa
 				$captcha->reset();
 
 				$template->assign_vars(array(
-					'S_CONFIRM_CODE'			=> true,
 					'CAPTCHA_TEMPLATE'			=> $captcha->get_template(),
 				));
 

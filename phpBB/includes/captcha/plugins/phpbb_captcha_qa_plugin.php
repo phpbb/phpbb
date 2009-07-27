@@ -171,14 +171,21 @@ class phpbb_captcha_qa
 	{
 		global $template;
 		
-		$template->assign_vars(array(
-			'QA_CONFIRM_QUESTION'		=> $this->question_text,
-			'QA_CONFIRM_ID'				=> $this->confirm_id,
-			'S_CONFIRM_CODE'			=> true,
-			'S_TYPE'					=> $this->type,
-		));
+		if ($this->is_solved())
+		{
+			return false;
+		}
+		else
+		{
+			$template->assign_vars(array(
+				'QA_CONFIRM_QUESTION'		=> $this->question_text,
+				'QA_CONFIRM_ID'				=> $this->confirm_id,
+				'S_CONFIRM_CODE'			=> true,
+				'S_TYPE'					=> $this->type,
+			));
 
-		return 'captcha_qa.html';
+			return 'captcha_qa.html';
+		}
 	}
 
 	/**

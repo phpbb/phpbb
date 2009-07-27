@@ -87,21 +87,28 @@ class phpbb_default_captcha
 	{
 		global $config, $user, $template, $phpEx, $phpbb_root_path;
 		
-		$link = append_sid($phpbb_root_path . 'ucp.' . $phpEx . '?mode=confirm&amp;confirm_id=' . $this->confirm_id . '&amp;type=' . $this->type);
-		$explain = ($this->type != CONFIRM_POST) ? sprintf($user->lang['CONFIRM_EXPLAIN'], '<a href="mailto:' . htmlspecialchars($config['board_contact']) . '">', '</a>') : $user->lang['POST_CONFIRM_EXPLAIN'];
-		
-		$template->assign_vars(array(
-			'CONFIRM_IMAGE_LINK'		=> $link,
-			'CONFIRM_IMAGE'				=> '<img src="'. $link . '" />',
-			'CONFIRM_IMG'				=> '<img src="'. $link . '" />',
-			'CONFIRM_ID'				=> $this->confirm_id,
-			'S_CONFIRM_CODE'			=> true,
-			'S_TYPE'					=> $this->type,
-			'S_CONFIRM_REFRESH'			=> ($config['enable_confirm'] && $config['confirm_refresh'] && $this->type == CONFIRM_REG) ? true : false,
-			'L_CONFIRM_EXPLAIN'			=> $explain,
-		));
+		if ($this->is_solved())
+		{
+			return false;
+		}
+		else
+		{
+			$link = append_sid($phpbb_root_path . 'ucp.' . $phpEx . '?mode=confirm&amp;confirm_id=' . $this->confirm_id . '&amp;type=' . $this->type);
+			$explain = ($this->type != CONFIRM_POST) ? sprintf($user->lang['CONFIRM_EXPLAIN'], '<a href="mailto:' . htmlspecialchars($config['board_contact']) . '">', '</a>') : $user->lang['POST_CONFIRM_EXPLAIN'];
+			
+			$template->assign_vars(array(
+				'CONFIRM_IMAGE_LINK'		=> $link,
+				'CONFIRM_IMAGE'				=> '<img src="'. $link . '" />',
+				'CONFIRM_IMG'				=> '<img src="'. $link . '" />',
+				'CONFIRM_ID'				=> $this->confirm_id,
+				'S_CONFIRM_CODE'			=> true,
+				'S_TYPE'					=> $this->type,
+				'S_CONFIRM_REFRESH'			=> ($config['enable_confirm'] && $config['confirm_refresh'] && $this->type == CONFIRM_REG) ? true : false,
+				'L_CONFIRM_EXPLAIN'			=> $explain,
+			));
 
-		return 'captcha_default.html';
+			return 'captcha_default.html';
+		}
 	}
 
 	function get_demo_template($id)

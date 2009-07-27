@@ -446,10 +446,9 @@ class ucp_register
 		$confirm_image = '';
 
 		// Visual Confirmation - Show images
-		if ($config['enable_confirm'] && !$captcha->is_solved())
+		if ($config['enable_confirm'])
 		{
 			$template->assign_vars(array(
-				'L_CONFIRM_EXPLAIN'		=> sprintf($user->lang['CONFIRM_EXPLAIN'], '<a href="mailto:' . htmlspecialchars($config['board_contact']) . '">', '</a>'),
 				'CAPTCHA_TEMPLATE'		=> $captcha->get_template(),
 			));
 		}
