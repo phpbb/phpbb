@@ -54,7 +54,7 @@ class phpbb_captcha_qa
 		$user->add_lang('captcha_qa');
 		// read input
 		$this->confirm_id = request_var('qa_confirm_id', '');
-		$this->answer = request_var('qa_answer', '');
+		$this->answer = request_var('qa_answer', '', true);
 
 		$this->type = (int) $type;
 		$this->question_lang = $user->data['user_lang'];
@@ -448,7 +448,7 @@ class phpbb_captcha_qa
 	{
 		global $db;
 		
-		$answer = ($this->question_strict) ? request_var('qa_answer', '') : utf8_clean_string(request_var('qa_answer', ''));
+		$answer = ($this->question_strict) ? request_var('qa_answer', '', true) : utf8_clean_string(request_var('qa_answer', '', true));
 		
 		$sql = 'SELECT answer_text
 					FROM ' . ANSWERS_TABLE . '
@@ -578,9 +578,9 @@ class phpbb_captcha_qa
 		{
 			// okay, show the editor
 			$error = false;
-			$input_question = request_var('question_text', '');
-			$input_answers = request_var('answers', '');
-			$input_lang = request_var('lang_iso', '');
+			$input_question = request_var('question_text', '', true);
+			$input_answers = request_var('answers', '', true);
+			$input_lang = request_var('lang_iso', '', true);
 			$input_strict = request_var('strict', false);
 			$langs = $this->get_languages();
 			foreach ($langs as $lang => $entry)
@@ -724,10 +724,10 @@ class phpbb_captcha_qa
 		global $db;
 
 		$question = array(
-			'question_text'	=> request_var('question_text', ''),
+			'question_text'	=> request_var('question_text', '', true),
 			'strict'		=> request_var('strict', false),
 			'lang_iso'		=> request_var('lang_iso', ''),
-			'answers'		=> explode("\n", request_var('answers', '')),
+			'answers'		=> explode("\n", request_var('answers', '', true)),
 		);
 		
 		return $question;
