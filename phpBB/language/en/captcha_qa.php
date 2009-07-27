@@ -45,6 +45,7 @@ $lang = array_merge($lang, array(
 	'CONFIRM_QUESTION'			=> 'Question',
 
 	'ANSWER'					=> 'Answer',
+	'EDIT_QUESTION'				=> 'Edit Question',
 	'QUESTIONS'					=> 'Questions',
 	'QUESTIONS_EXPLAIN'			=> 'Here you can add and edit questions to be asked on registration. You have to provide at least one question in the default board language to use this plugin. Questions should be easy for your target audience, but beyond the ability of google. Also, remember to change the questions regularly. If your question relies on punctuation, spelling or capitalisation, use the strict setting.',
 	'QUESTION_DELETED'			=> 'Question deleted',
