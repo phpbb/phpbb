@@ -1356,6 +1356,12 @@ function submit_pm($mode, $subject, &$data, $put_in_outbox = true)
 
 			while ($row = $db->sql_fetchrow($result))
 			{
+				// Additionally, do not include the sender if he is in the group he wants to send to. ;)
+				if ($row['user_id'] === $user->data['user_id'])
+				{
+					continue;
+				}
+
 				$field = ($data['address_list']['g'][$row['group_id']] == 'to') ? 'to' : 'bcc';
 				$recipients[$row['user_id']] = $field;
 			}
@@ -1901,7 +1907,7 @@ function get_recipient_strings($pm_by_id)
 	foreach ($pm_by_id as $message_id => $row)
 	{
 		$address[$message_id] = rebuild_header(array('to' => $row['to_address'], 'bcc' => $row['bcc_address']));
-		
+
 		foreach ($_types as $ug_type)
 		{
 			if (isset($address[$message_id][$ug_type]) && sizeof($address[$message_id][$ug_type]))
