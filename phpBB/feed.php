@@ -10,7 +10,6 @@
 * MOD Author Profile: http://www.phpbb.com/community/memberlist.php?mode=viewprofile&u=345763
 * MOD Author Homepage: http://www.mssti.com/phpbb3/
 *
-* @note remove cache if Authentication gets added
 **/
 
 /**
@@ -221,7 +220,7 @@ function feed_append_sid($url, $params)
 	// Now the only thing remaining could be an empty &amp;
 	if (substr($link, -5) === '&amp;')
 	{
-	    $link = substr($link, 0, -5);
+		$link = substr($link, 0, -5);
 	}
 
 	return $link;
@@ -417,7 +416,7 @@ class phpbb_feed
 	/**
 	* Default setting for last x days
 	*/
-	var $sort_days = 100;
+	var $sort_days = 30;
 
 	/**
 	* Default cache time of entries in seconds
@@ -585,7 +584,7 @@ class phpbb_feed
 
 		$post_ids = array();
 
-		// Search for topics in last 7 days
+		// Search for topics in last X days
 		$last_post_time_sql = ($this->sort_days) ? ' AND t.topic_last_post_time > ' . (time() - ($this->sort_days * 24 * 3600)) : '';
 
 		// Fetch latest post, grouped by topic...
@@ -712,6 +711,18 @@ class phpbb_feed
 	function get_item()
 	{
 		global $db, $cache;
+
+		// Disable cache if it is not a guest or a bot but a registered user
+		if ($this->cache_time)
+		{
+			global $user;
+
+			// We check this here because we call get_item() quite often
+			if (!empty($user) && $user->data['is_registered'])
+			{
+				$this->cache_time = 0;
+			}
+		}
 
 		if (!$this->cache_time)
 		{
