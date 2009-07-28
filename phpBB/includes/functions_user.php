@@ -2780,7 +2780,7 @@ function group_user_add($group_id, $user_id_ary = false, $username_ary = false, 
 
 	if ($default)
 	{
-		group_set_user_default($group_id, $user_id_ary, $group_attributes);
+		group_user_attributes('default', $group_id, $user_id_ary, false, $group_name, $group_attributes);
 	}
 
 	$db->sql_transaction('commit');
