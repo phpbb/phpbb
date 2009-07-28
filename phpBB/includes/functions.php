@@ -4210,7 +4210,7 @@ function get_unread_topics_list($user_id = false, $sql_extra = '')
 		$sql = 'SELECT topic_id
 			FROM ' . TOPICS_TABLE . "
 			WHERE topic_last_post_time > {$user->data['user_lastmark']}
-				AND " . $db->sql_in_set('topic_id', array_keys($unread_topics_list), true, true) . '
+				AND " . $db->sql_in_set('topic_id', $tracked_topics_list, true, true) . '
 				AND ' . $db->sql_in_set('forum_id', $tracked_forums_list, true, true) . "
 			$sql_extra
 			ORDER BY topic_last_post_time DESC";
