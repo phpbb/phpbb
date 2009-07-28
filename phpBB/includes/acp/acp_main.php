@@ -395,6 +395,25 @@ class acp_main
 			}
 		}
 
+		// Version check
+		$user->add_lang('install');
+
+		$latest_version_info = false;
+		if (($latest_version_info = obtain_latest_version_info(request_var('versioncheck_force', false))) === false)
+		{
+			$template->assign_var('S_VERSIONCHECK_FAIL', true);
+		}
+		else
+		{
+			$latest_version_info = explode("\n", $latest_version_info);
+			$latest_version = trim($latest_version_info[0]);
+			$template->assign_var('S_VERSION_UP_TO_DATE',
+					version_compare(
+							str_replace('rc', 'RC', strtolower($config['version'])),
+							str_replace('rc', 'RC', strtolower($latest_version)),
+							'<') ? false : true);
+		}
+
 		// Get forum statistics
 		$total_posts = $config['num_posts'];
 		$total_topics = $config['num_topics'];
@@ -492,6 +511,8 @@ class acp_main
 			'U_ACTION'			=> $this->u_action,
 			'U_ADMIN_LOG'		=> append_sid("{$phpbb_admin_path}index.$phpEx", 'i=logs&amp;mode=admin'),
 			'U_INACTIVE_USERS'	=> append_sid("{$phpbb_admin_path}index.$phpEx", 'i=inactive&amp;mode=list'),
+			'U_VERSIONCHECK'	=> append_sid("{$phpbb_admin_path}index.$phpEx", 'i=update&amp;mode=version_check'),
+			'U_VERSIONCHECK_FORCE'	=> append_sid("{$phpbb_admin_path}index.$phpEx", 'i=1&amp;versioncheck_force=1'),
 
 			'S_ACTION_OPTIONS'	=> ($auth->acl_get('a_board')) ? true : false,
 			'S_FOUNDER'			=> ($user->data['user_type'] == USER_FOUNDER) ? true : false,

@@ -249,6 +249,7 @@ $lang = array_merge($lang, array(
 
 	'MANAGE'				=> 'Manage',
 	'MENU_TOGGLE'			=> 'Hide or display the side menu',
+	'MORE'					=> 'More &raquo;',
 	'MOVE_DOWN'				=> 'Move down',
 	'MOVE_UP'				=> 'Move up',
 
@@ -374,9 +375,11 @@ $lang = array_merge($lang, array(
 	'UPLOAD_DIR_SIZE'	=> 'Size of posted attachments',
 	'USERS_PER_DAY'		=> 'Users per day',
 
-	'VALUE'					=> 'Value',
-	'VIEW_ADMIN_LOG'		=> 'View administrator log',
-	'VIEW_INACTIVE_USERS'	=> 'View inactive users',
+	'VALUE'						=> 'Value',
+	'VERSIONCHECK_FAIL'			=> 'Failed to obtain latest version',
+	'VERSIONCHECK_FORCE_UPDATE'	=> 'Re-Check version',
+	'VIEW_ADMIN_LOG'			=> 'View administrator log',
+	'VIEW_INACTIVE_USERS'		=> 'View inactive users',
 
 	'WELCOME_PHPBB'			=> 'Welcome to phpBB',
 	'WRITABLE_CONFIG'		=> 'Your config file (config.php) is currently world-writable. We strongly encourage you to change the permissions to 640 or at least to 644 (for example: <a href="http://en.wikipedia.org/wiki/Chmod" rel="external">chmod</a> 640 config.php).',

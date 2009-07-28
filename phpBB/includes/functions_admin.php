@@ -3054,4 +3054,43 @@ function add_permission_language()
 	return true;
 }
 
+/**
+ * Obtains the latest version information
+ *
+ * @param bool $force_update Ignores cached data. Defaults to false.
+ * @param bool $warn_fail Trigger a warning if obtaining the latest version information fails. Defaults to false.
+ * @param int $ttl Cache version information for $ttl seconds. Defaults to 86400 (24 hours).
+ *
+ * @return string | false Version info on success, false on failure.
+ */
+function obtain_latest_version_info($force_update = false, $warn_fail = false, $ttl = 86400)
+{
+	global $cache;
+
+	$info = $cache->get('versioncheck');
+
+	if ($info === false || $force_update)
+	{
+		$errstr = '';
+		$errno = 0;
+
+		$info = get_remote_file('www.phpbb.com', '/updatecheck',
+				((defined('PHPBB_QA')) ? '30x_qa.txt' : '30x.txt'), $errstr, $errno);
+
+		if ($info === false)
+		{
+			$cache->destroy('versioncheck');
+			if ($warn_fail)
+			{
+				trigger_error($errstr, E_USER_WARNING);
+			}
+			return false;
+		}
+
+		$cache->put('versioncheck', $info, $ttl);
+	}
+
+	return $info;
+}
+
 ?>
