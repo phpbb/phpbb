@@ -27,7 +27,7 @@ INSERT INTO phpbb_config (config_name, config_value) VALUES ('allow_pm_report', 
 INSERT INTO phpbb_config (config_name, config_value) VALUES ('allow_post_flash', '1');
 INSERT INTO phpbb_config (config_name, config_value) VALUES ('allow_post_links', '1');
 INSERT INTO phpbb_config (config_name, config_value) VALUES ('allow_privmsg', '1');
-INSERT INTO phpbb_config (config_name, config_value) VALUES ('allow_quick_reply', '1');
+INSERT INTO phpbb_config (config_name, config_value) VALUES ('allow_quick_reply', '0');
 INSERT INTO phpbb_config (config_name, config_value) VALUES ('allow_sig', '1');
 INSERT INTO phpbb_config (config_name, config_value) VALUES ('allow_sig_bbcode', '1');
 INSERT INTO phpbb_config (config_name, config_value) VALUES ('allow_sig_flash', '0');
