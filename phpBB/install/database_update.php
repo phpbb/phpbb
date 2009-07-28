@@ -679,11 +679,6 @@ function database_update_info()
 					'forum_style'			=> array('UINT', 0),
 				),
 			),
-			'change_columns'	=> array(
-				USERS_TABLE				=> array(
-					'user_options'		=> array('UINT:11', 230271),
-				),
-			),
 		),
 
 		// No changes from 3.0.5-RC1 to 3.0.5
@@ -708,6 +703,11 @@ function database_update_info()
 				),
 				REPORTS_TABLE		=> array(
 					'pm_id'				=> array('UINT', 0),
+				),
+			),
+			'change_columns'		=> array(
+				USERS_TABLE				=> array(
+					'user_options'		=> array('UINT:11', 230271),
 				),
 			),
 			'add_index'		=> array(
