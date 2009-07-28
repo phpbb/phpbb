@@ -187,63 +187,7 @@ class acp_forums
 						if (!empty($forum_perm_from) && $forum_perm_from != $forum_data['forum_id'] &&
 							(($action != 'edit') || empty($forum_id) || ($auth->acl_get('a_fauth') && $auth->acl_get('a_authusers') && $auth->acl_get('a_authgroups') && $auth->acl_get('a_mauth'))))
 						{
-							// if we edit a forum delete current permissions first
-							if ($action == 'edit')
-							{
-								$sql = 'DELETE FROM ' . ACL_USERS_TABLE . '
-									WHERE forum_id = ' . (int) $forum_data['forum_id'];
-								$db->sql_query($sql);
-
-								$sql = 'DELETE FROM ' . ACL_GROUPS_TABLE . '
-									WHERE forum_id = ' . (int) $forum_data['forum_id'];
-								$db->sql_query($sql);
-							}
-
-							// From the mysql documentation:
-							// Prior to MySQL 4.0.14, the target table of the INSERT statement cannot appear in the FROM clause of the SELECT part of the query. This limitation is lifted in 4.0.14.
-							// Due to this we stay on the safe side if we do the insertion "the manual way"
-
-							// Copy permisisons from/to the acl users table (only forum_id gets changed)
-							$sql = 'SELECT user_id, auth_option_id, auth_role_id, auth_setting
-								FROM ' . ACL_USERS_TABLE . '
-								WHERE forum_id = ' . $forum_perm_from;
-							$result = $db->sql_query($sql);
-
-							$users_sql_ary = array();
-							while ($row = $db->sql_fetchrow($result))
-							{
-								$users_sql_ary[] = array(
-									'user_id'			=> (int) $row['user_id'],
-									'forum_id'			=> (int) $forum_data['forum_id'],
-									'auth_option_id'	=> (int) $row['auth_option_id'],
-									'auth_role_id'		=> (int) $row['auth_role_id'],
-									'auth_setting'		=> (int) $row['auth_setting']
-								);
-							}
-							$db->sql_freeresult($result);
-
-							// Copy permisisons from/to the acl groups table (only forum_id gets changed)
-							$sql = 'SELECT group_id, auth_option_id, auth_role_id, auth_setting
-								FROM ' . ACL_GROUPS_TABLE . '
-								WHERE forum_id = ' . $forum_perm_from;
-							$result = $db->sql_query($sql);
-
-							$groups_sql_ary = array();
-							while ($row = $db->sql_fetchrow($result))
-							{
-								$groups_sql_ary[] = array(
-									'group_id'			=> (int) $row['group_id'],
-									'forum_id'			=> (int) $forum_data['forum_id'],
-									'auth_option_id'	=> (int) $row['auth_option_id'],
-									'auth_role_id'		=> (int) $row['auth_role_id'],
-									'auth_setting'		=> (int) $row['auth_setting']
-								);
-							}
-							$db->sql_freeresult($result);
-
-							// Now insert the data
-							$db->sql_multi_insert(ACL_USERS_TABLE, $users_sql_ary);
-							$db->sql_multi_insert(ACL_GROUPS_TABLE, $groups_sql_ary);
+							copy_forum_permissions($forum_perm_from, $forum_data['forum_id'], ($action == 'edit') ? true : false);
 							cache_moderators();
 						}
 

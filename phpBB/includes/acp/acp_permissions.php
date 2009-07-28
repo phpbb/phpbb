@@ -57,6 +57,21 @@ class acp_permissions
 			trigger_error('NO_MODE', E_USER_ERROR);
 		}
 
+		// Copy forum permissions
+		if ($mode == 'setting_forum_copy')
+		{
+			$this->tpl_name = 'permission_forum_copy';
+
+			if ($auth->acl_get('a_fauth') && $auth->acl_get('a_authusers') && $auth->acl_get('a_authgroups') && $auth->acl_get('a_mauth'))
+			{
+				$this->page_title = 'ACP_FORUM_PERMISSIONS_COPY';
+				$this->copy_forum_permissions();
+				return;
+			}
+
+			trigger_error('NO_MODE', E_USER_ERROR);
+		}
+
 		// Set some vars
 		$action = request_var('action', array('' => 0));
 		$action = key($action);
@@ -1149,6 +1164,57 @@ class acp_permissions
 			'S_RESULT_NO'		=> ($total == ACL_NO) ? true : false,
 			'S_RESULT_YES'		=> ($total == ACL_YES) ? true : false,
 			'S_RESULT_NEVER'	=> ($total == ACL_NEVER) ? true : false,
+		));
+	}
+
+	/**
+	* Handles copying permissions from one forum to others
+	*/
+	function copy_forum_permissions()
+	{
+		global $auth, $cache, $template, $user;
+
+		$user->add_lang('acp/forums');
+
+		$submit = isset($_POST['submit']) ? true : false;
+
+		if ($submit)
+		{
+			$src = request_var('src_forum_id', 0);
+			$dest = request_var('dest_forum_ids', array(0));
+
+			if (confirm_box(true))
+			{
+				if (copy_forum_permissions($src, $dest))
+				{
+					cache_moderators();
+
+					$auth->acl_clear_prefetch();
+					$cache->destroy('sql', FORUMS_TABLE);
+
+					trigger_error($user->lang['AUTH_UPDATED'] . adm_back_link($this->u_action));
+				}
+				else
+				{
+					trigger_error($user->lang['SELECTED_FORUM_NOT_EXIST'] . adm_back_link($this->u_action), E_USER_WARNING);
+				}
+			}
+			else
+			{
+				$s_hidden_fields = array(
+					'submit'			=> $submit,
+					'src_forum_id'		=> $src,
+					'dest_forum_ids'	=> $dest,
+				);
+
+				$s_hidden_fields = build_hidden_fields($s_hidden_fields);
+
+				confirm_box(false, $user->lang['CONFIRM_OPERATION'] . ' ' . $user->lang['COPY_PERMISSIONS_CONFIRM'], $s_hidden_fields);
+			}
+		}
+
+		$template->assign_vars(array(
+			'S_FORUM_OPTIONS' => make_forum_select(false, false, false, false, false),
 		));
 	}
 

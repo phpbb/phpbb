@@ -88,6 +88,7 @@ $lang = array_merge($lang, array(
 	'ACP_FORUM_MANAGEMENT'			=> 'Forum management',
 	'ACP_FORUM_MODERATORS'			=> 'Forum moderators',
 	'ACP_FORUM_PERMISSIONS'			=> 'Forum permissions',
+	'ACP_FORUM_PERMISSIONS_COPY'	=> 'Copy forum permissions',
 	'ACP_FORUM_ROLES'				=> 'Forum roles',
 
 	'ACP_GENERAL_CONFIGURATION'		=> 'General configuration',
@@ -545,6 +546,7 @@ $lang = array_merge($lang, array(
 	'LOG_ERROR_EMAIL'		=> '<strong>E-mail error</strong><br />» %s',
 
 	'LOG_FORUM_ADD'							=> '<strong>Created new forum</strong><br />» %s',
+	'LOG_FORUM_COPIED_PERMISSIONS'			=> '<strong>Copied forum permissions</strong> from %1$s<br />» %2$s',
 	'LOG_FORUM_DEL_FORUM'					=> '<strong>Deleted forum</strong><br />» %s',
 	'LOG_FORUM_DEL_FORUMS'					=> '<strong>Deleted forum and its subforums</strong><br />» %s',
 	'LOG_FORUM_DEL_MOVE_FORUMS'				=> '<strong>Deleted forum and moved subforums</strong> to %1$s<br />» %2$s',

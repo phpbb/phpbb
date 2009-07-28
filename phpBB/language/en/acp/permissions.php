@@ -80,6 +80,7 @@ $lang = array_merge($lang, array(
 	'ACP_ADMINISTRATORS_EXPLAIN'				=> 'Here you can assign administrator permissions to users or groups. All users with administrator permissions can view the administration control panel.',
 	'ACP_FORUM_MODERATORS_EXPLAIN'				=> 'Here you can assign users and groups as forum moderators. To assign users access to forums, to define global moderative permissions or administrators please use the appropriate page.',
 	'ACP_FORUM_PERMISSIONS_EXPLAIN'				=> 'Here you can alter which users and groups can access which forums. To assign moderators or define administrators please use the appropriate page.',
+	'ACP_FORUM_PERMISSIONS_COPY_EXPLAIN'		=> 'Here you can copy forum permissions from one forum to one or more other forums.',
 	'ACP_GLOBAL_MODERATORS_EXPLAIN'				=> 'Here you can assign global moderator permissions to users or groups. These moderators are like ordinary moderators except they have access to every forum on your board.',
 	'ACP_GROUPS_FORUM_PERMISSIONS_EXPLAIN'		=> 'Here you can assign forum permissions to groups.',
 	'ACP_GROUPS_PERMISSIONS_EXPLAIN'			=> 'Here you can assign global permissions to groups - user permissions, global moderator permissions and administrator permissions. User permissions include capabilities such as the use of avatars, sending private messages, et cetera; global moderator permissions such as approving posts, manage topics, manage bans, et cetera and lastly administrator permissions such as altering permissions, define custom BBCodes, manage forums, et cetera. Individual users permissions should only be changed in rare occasions, the preferred method is putting users in groups and assigning the group’s permissions.',
@@ -108,6 +109,12 @@ $lang = array_merge($lang, array(
 	'APPLY_PERMISSIONS'			=> 'Apply permissions',
 	'APPLY_PERMISSIONS_EXPLAIN'	=> 'The permissions and role defined for this item will only be applied to this item and all checked items.',
 	'AUTH_UPDATED'				=> 'Permissions have been updated.',
+
+	'COPY_PERMISSIONS_CONFIRM'				=> 'Please be aware that this will overwrite any existing permissions on the selected targets.',
+	'COPY_PERMISSIONS_FORUM_FROM_EXPLAIN'	=> 'The source forum you want to copy permissions from.',
+	'COPY_PERMISSIONS_FORUM_TO_EXPLAIN'		=> 'The destination forums you want the copied permissions applied to.',
+	'COPY_PERMISSIONS_FROM'					=> 'Copy permissions from',
+	'COPY_PERMISSIONS_TO'					=> 'Apply permissions to',
 
 	'CREATE_ROLE'				=> 'Create role',
 	'CREATE_ROLE_FROM'			=> 'Use settings from…',

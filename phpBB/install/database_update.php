@@ -1235,6 +1235,49 @@ function change_database_data(&$no_updates, $version)
 			}
 			$db->sql_freeresult($result);
 
+			// Also install the "Copy forum permissions" module
+			$sql = 'SELECT module_id
+				FROM ' . MODULES_TABLE . "
+				WHERE module_class = 'acp'
+					AND module_langname = 'ACP_FORUM_BASED_PERMISSIONS'
+					AND module_mode = ''
+					AND module_basename = ''";
+			$result = $db->sql_query($sql);
+
+			while ($row = $db->sql_fetchrow($result))
+			{
+				$category_id = (int) $row['module_id'];
+
+				// Check if we actually need to add the feed module or if it is already added. ;)
+				$sql = 'SELECT *
+					FROM ' . MODULES_TABLE . "
+					WHERE module_class = 'acp'
+						AND module_langname = 'ACP_FORUM_PERMISSIONS_COPY'
+						AND module_mode = 'setting_forum_copy'
+						AND module_auth = 'acl_a_fauth && acl_a_authusers && acl_a_authgroups && acl_a_mauth'
+						AND parent_id = {$category_id}";
+				$result2 = $db->sql_query($sql);
+				$row2 = $db->sql_fetchrow($result2);
+				$db->sql_freeresult($result2);
+
+				if (!$row2)
+				{
+					$module_data = array(
+						'module_basename'	=> 'permissions',
+						'module_enabled'	=> 1,
+						'module_display'	=> 1,
+						'parent_id'			=> $category_id,
+						'module_class'		=> 'acp',
+						'module_langname'	=> 'ACP_FORUM_PERMISSIONS_COPY',
+						'module_mode'		=> 'setting_forum_copy',
+						'module_auth'		=> 'acl_a_fauth && acl_a_authusers && acl_a_authgroups && acl_a_mauth',
+					);
+
+					$_module->update_module_data($module_data, true);
+				}
+			}
+			$db->sql_freeresult($result);
+
 			$_module->remove_cache_file();
 
 			// Add newly_registered group... but check if it already exists (we always supported running the updater on any schema)

@@ -307,6 +307,149 @@ function get_forum_branch($forum_id, $type = 'all', $order = 'descending', $incl
 }
 
 /**
+* Copies permissions from one forum to others
+*
+* @param int	$src_forum_id		The source forum we want to copy permissions from
+* @param array	$dest_forum_ids		The destination forum(s) we want to copy to
+* @param bool	$clear_dest_perms	True if destination permissions should be deleted
+* @param bool	$add_log			True if log entry should be added
+*
+* @return bool						False on error
+*
+* @author bantu
+*/
+function copy_forum_permissions($src_forum_id, $dest_forum_ids, $clear_dest_perms = true, $add_log = true)
+{
+	global $db;
+
+	// Only one forum id specified
+	if (!is_array($dest_forum_ids))
+	{
+		$dest_forum_ids = array($dest_forum_ids);
+	}
+
+	// Make sure forum ids are integers
+	$src_forum_id = (int) $src_forum_id;
+	$dest_forum_ids = array_map('intval', $dest_forum_ids);
+
+	// No source forum or no destination forums specified
+	if (empty($src_forum_id) || empty($dest_forum_ids))
+	{
+		return false;
+	}
+
+	// Check if source forums exists
+	$sql = 'SELECT forum_name
+		FROM ' . FORUMS_TABLE . '
+		WHERE forum_id = ' . $src_forum_id;
+	$result = $db->sql_query($sql);
+	$src_forum_name = $db->sql_fetchfield('forum_name');
+
+	// Source forum doesn't exist
+	if (empty($src_forum_name))
+	{
+		return false;
+	}
+
+	// Check if destination forums exists
+	$sql = 'SELECT forum_id, forum_name
+		FROM ' . FORUMS_TABLE . '
+		WHERE ' . $db->sql_in_set('forum_id', $dest_forum_ids);
+	$result = $db->sql_query($sql);
+
+	while ($row = $db->sql_fetchrow($result))
+	{
+		$dest_forum_ids[]	= (int) $row['forum_id'];
+		$dest_forum_names[]	= $row['forum_name'];
+	}
+	$db->sql_freeresult($result);
+
+	// No destination forum exists
+	if (empty($dest_forum_ids))
+	{
+		return false;
+	}
+
+	// From the mysql documentation:
+	// Prior to MySQL 4.0.14, the target table of the INSERT statement cannot appear
+	// in the FROM clause of the SELECT part of the query. This limitation is lifted in 4.0.14.
+	// Due to this we stay on the safe side if we do the insertion "the manual way"
+
+	// Rowsets we're going to insert
+	$users_sql_ary = $groups_sql_ary = array();
+
+	// Query acl users table for source forum data
+	$sql = 'SELECT user_id, auth_option_id, auth_role_id, auth_setting
+		FROM ' . ACL_USERS_TABLE . '
+		WHERE forum_id = ' . $src_forum_id;
+	$result = $db->sql_query($sql);
+
+	while ($row = $db->sql_fetchrow($result))
+	{
+		$row = array(
+			'user_id'			=> (int) $row['user_id'],
+			'auth_option_id'	=> (int) $row['auth_option_id'],
+			'auth_role_id'		=> (int) $row['auth_role_id'],
+			'auth_setting'		=> (int) $row['auth_setting'],
+		);
+
+		foreach ($dest_forum_ids as $dest_forum_id)
+		{
+			$users_sql_ary[] = $row + array('forum_id' => $dest_forum_id);
+		}
+	}
+	$db->sql_freeresult($result);
+
+	// Query acl groups table for source forum data
+	$sql = 'SELECT group_id, auth_option_id, auth_role_id, auth_setting
+		FROM ' . ACL_GROUPS_TABLE . '
+		WHERE forum_id = ' . $src_forum_id;
+	$result = $db->sql_query($sql);
+
+	while ($row = $db->sql_fetchrow($result))
+	{
+		$row = array(
+			'group_id'			=> (int) $row['group_id'],
+			'auth_option_id'	=> (int) $row['auth_option_id'],
+			'auth_role_id'		=> (int) $row['auth_role_id'],
+			'auth_setting'		=> (int) $row['auth_setting'],
+		);
+
+		foreach ($dest_forum_ids as $dest_forum_id)
+		{
+			$groups_sql_ary[] = $row + array('forum_id' => $dest_forum_id);
+		}
+	}
+	$db->sql_freeresult($result);
+
+	$db->sql_transaction('begin');
+
+	// Clear current permissions of destination forums
+	if ($clear_dest_perms)
+	{
+		$sql = 'DELETE FROM ' . ACL_USERS_TABLE . '
+			WHERE ' . $db->sql_in_set('forum_id', $dest_forum_ids);
+		$db->sql_query($sql);
+
+		$sql = 'DELETE FROM ' . ACL_GROUPS_TABLE . '
+			WHERE ' . $db->sql_in_set('forum_id', $dest_forum_ids);
+		$db->sql_query($sql);
+	}
+
+	$db->sql_multi_insert(ACL_USERS_TABLE, $users_sql_ary);
+	$db->sql_multi_insert(ACL_GROUPS_TABLE, $groups_sql_ary);
+
+	if ($add_log)
+	{
+		add_log('admin', 'LOG_FORUM_COPIED_PERMISSIONS', $src_forum_name, implode(', ', $dest_forum_names));
+	}
+
+	$db->sql_transaction('commit');
+
+	return true;
+}
+
+/**
 * Get physical file listing
 */
 function filelist($rootdir, $dir = '', $type = 'gif|jpg|jpeg|png')
