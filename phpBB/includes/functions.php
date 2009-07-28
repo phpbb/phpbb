@@ -1648,7 +1648,7 @@ function get_complete_topic_tracking($forum_id, $topic_ids, $global_announce_lis
 * Get list of unread topics
 * only for registered users and non-cookie tracking
 *
-* @param int $user_id			User ID (or false for currect user)
+* @param int $user_id			User ID (or false for current user)
 * @param string $sql_extra		Extra WHERE SQL statement
 *
 * @return array[int][int]		Topic ids as keys, mark_time of topic as value
