@@ -249,7 +249,7 @@ $lang = array_merge($lang, array(
 
 	'MANAGE'				=> 'Manage',
 	'MENU_TOGGLE'			=> 'Hide or display the side menu',
-	'MORE'					=> 'More &raquo;',
+	'MORE'					=> 'More&nbsp;&raquo;',
 	'MOVE_DOWN'				=> 'Move down',
 	'MOVE_UP'				=> 'Move up',
 
