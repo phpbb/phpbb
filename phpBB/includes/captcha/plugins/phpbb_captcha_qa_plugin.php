@@ -32,7 +32,6 @@ define('QA_CONFIRM_TABLE',	$table_prefix . 'qa_confirm');
 class phpbb_captcha_qa
 {
 	var $confirm_id;
-	var $confirm_code;
 	var $answer;
 	var $question_ids;
 	var $question_text;
@@ -509,7 +508,7 @@ class phpbb_captcha_qa
 		$db->sql_query($sql);
 
 		// we leave the class usable by generating a new question
-		$this->generate_code();
+		$this->select_question();
 	}
 
 	/**
