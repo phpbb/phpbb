@@ -14,21 +14,22 @@
 
 	<p>{L_ADMIN_INTRO}</p>
 
+	<!-- version check -->
+
 	<!-- IF S_VERSIONCHECK_FAIL -->
 		<div class="errorbox notice">
-			<p>{L_VERSIONCHECK_FAIL} - <a href="{U_VERSIONCHECK_FORCE}">{L_VERSIONCHECK_FORCE_UPDATE}</a> - <a href="{U_VERSIONCHECK}">{L_MORE}</a></p>
-		</div>
+			<p>{L_VERSIONCHECK_FAIL}</p>
 	<!-- ELSE -->
 		<!-- IF S_VERSION_UP_TO_DATE -->
 			<div class="successbox">
-				<p>{L_VERSION_UP_TO_DATE_ACP} - <a href="{U_VERSIONCHECK_FORCE}">{L_VERSIONCHECK_FORCE_UPDATE}</a> - <a href="{U_VERSIONCHECK}">{L_MORE}</a></p>
-			</div>
+				<p>{L_VERSION_UP_TO_DATE_ACP}</p>
 		<!-- ELSE -->
 			<div class="errorbox">
-				<p>{L_VERSION_NOT_UP_TO_DATE_ACP} - <a href="{U_VERSIONCHECK_FORCE}">{L_VERSIONCHECK_FORCE_UPDATE}</a> - <a href="{U_VERSIONCHECK}">{L_MORE}</a></p>
-			</div>
+				<p>{L_VERSION_NOT_UP_TO_DATE_TITLE}</p>
 		<!-- ENDIF -->
 	<!-- ENDIF -->
+			<p><a href="{U_VERSIONCHECK_FORCE}">{L_VERSIONCHECK_FORCE_UPDATE}</a> &middot; <a href="{U_VERSIONCHECK}">{L_MORE_INFORMATION}</a></p>
+		</div>
 
 	<!-- IF S_REMOVE_INSTALL -->
 		<div class="errorbox">

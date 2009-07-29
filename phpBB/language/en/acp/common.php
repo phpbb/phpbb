@@ -250,7 +250,8 @@ $lang = array_merge($lang, array(
 
 	'MANAGE'				=> 'Manage',
 	'MENU_TOGGLE'			=> 'Hide or display the side menu',
-	'MORE'					=> 'More&nbsp;&raquo;',
+	'MORE'					=> 'More',			// Not used at the moment
+	'MORE_INFORMATION'		=> 'More information &raquo;',
 	'MOVE_DOWN'				=> 'Move down',
 	'MOVE_UP'				=> 'Move up',
 
@@ -377,7 +378,7 @@ $lang = array_merge($lang, array(
 	'USERS_PER_DAY'		=> 'Users per day',
 
 	'VALUE'						=> 'Value',
-	'VERSIONCHECK_FAIL'			=> 'Failed to obtain latest version',
+	'VERSIONCHECK_FAIL'			=> 'Failed to obtain latest version information.',
 	'VERSIONCHECK_FORCE_UPDATE'	=> 'Re-Check version',
 	'VIEW_ADMIN_LOG'			=> 'View administrator log',
 	'VIEW_INACTIVE_USERS'		=> 'View inactive users',

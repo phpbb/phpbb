@@ -345,15 +345,15 @@ class acp_main
 
 						add_log('admin', 'LOG_PURGE_CACHE');
 					break;
-					
+
 					case 'purge_sessions':
 						if ((int) $user->data['user_type'] !== USER_FOUNDER)
 						{
 							trigger_error($user->lang['NO_AUTH_OPERATION'] . adm_back_link($this->u_action), E_USER_WARNING);
 						}
-						
+
 						$tables = array(CONFIRM_TABLE, SESSIONS_TABLE);
-						
+
 						foreach ($tables as $table)
 						{
 							switch ($db->sql_layer)
@@ -368,7 +368,7 @@ class acp_main
 								break;
 							}
 						}
-						
+
 						// let's restore the admin session
 						$reinsert_ary = array(
 								'session_id'			=> (string) $user->session_id,
@@ -385,10 +385,10 @@ class acp_main
 								'session_admin'			=> 1,
 								'session_viewonline'	=> (int) $user->data['session_viewonline'],
 						);
-						
+
 						$sql = 'INSERT INTO ' . SESSIONS_TABLE . ' ' . $db->sql_build_array('INSERT', $reinsert_ary);
 						$db->sql_query($sql);
-						
+
 						add_log('admin', 'LOG_PURGE_SESSIONS');
 					break;
 				}
@@ -406,12 +406,13 @@ class acp_main
 		else
 		{
 			$latest_version_info = explode("\n", $latest_version_info);
-			$latest_version = trim($latest_version_info[0]);
-			$template->assign_var('S_VERSION_UP_TO_DATE',
-					version_compare(
-							str_replace('rc', 'RC', strtolower($config['version'])),
-							str_replace('rc', 'RC', strtolower($latest_version)),
-							'<') ? false : true);
+
+			$latest_version = str_replace('rc', 'RC', strtolower(trim($latest_version_info[0])));
+			$current_version = str_replace('rc', 'RC', strtolower($config['version']));
+
+			$template->assign_vars(array(
+				'S_VERSION_UP_TO_DATE'	=> version_compare($current_version, $latest_version, '<') ? false : true,
+			));
 		}
 
 		// Get forum statistics
