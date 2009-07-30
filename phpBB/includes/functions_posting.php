@@ -1553,8 +1553,8 @@ function delete_post($forum_id, $topic_id, $post_id, &$data)
 	{
 		$sql = 'SELECT 1 AS has_attachments
 			FROM ' . ATTACHMENTS_TABLE . '
-			WHERE ' . $db->sql_in_set('topic_id', $topic_ids);
-		$result = $db->sql_query($sql);
+			WHERE topic_id = ' . $topic_id;
+		$result = $db->sql_query_limit($sql, 1);
 		$has_attachments = (int) $db->sql_fetchfield('has_attachments');
 		$db->sql_freeresult($result);
 
