@@ -1062,9 +1062,20 @@ class parse_message extends bbcode_firstpass
 	{
 		global $config, $db, $user;
 
-		$mode = ($mode != 'post') ? 'sig' : 'post';
-
 		$this->mode = $mode;
+
+		if (!isset($config['max_' . $mode . '_chars']))
+		{
+			$config['max_' . $mode . '_chars'] = 0;
+		}
+		if (!isset($config['max_' . $mode . '_smilies']))
+		{
+			$config['max_' . $mode . '_smilies'] = 0;
+		}
+		if (!isset($config['max_' . $mode . '_urls']))
+		{
+			$config['max_' . $mode . '_urls'] = 0;
+		}
 
 		$this->allow_img_bbcode = $allow_img_bbcode;
 		$this->allow_flash_bbcode = $allow_flash_bbcode;
@@ -1100,7 +1111,7 @@ class parse_message extends bbcode_firstpass
 		}
 
 		// Minimum message length check for post only
-		if ($mode !== 'sig')
+		if ($mode === 'post')
 		{
 			if (!$message_length || $message_length < (int) $config['min_post_chars'])
 			{
@@ -1153,7 +1164,7 @@ class parse_message extends bbcode_firstpass
 
 		// Check for "empty" message. We do not check here for maximum length, because bbcode, smilies, etc. can add to the length.
 		// The maximum length check happened before any parsings.
-		if ($mode !== 'sig' && utf8_clean_string($this->message) === '')
+		if ($mode === 'post' && utf8_clean_string($this->message) === '')
 		{
 			$this->warn_msg[] = $user->lang['TOO_FEW_CHARS'];
 			return (!$update_this_message) ? $return_message : $this->warn_msg;
@@ -1629,7 +1640,7 @@ class parse_message extends bbcode_firstpass
 		$this->message = $poll['poll_option_text'];
 		$bbcode_bitfield = $this->bbcode_bitfield;
 
-		$poll['poll_option_text'] = $this->parse($poll['enable_bbcode'], ($config['allow_post_links']) ? $poll['enable_urls'] : false, $poll['enable_smilies'], $poll['img_status'], false, false, $config['allow_post_links'], false);
+		$poll['poll_option_text'] = $this->parse($poll['enable_bbcode'], ($config['allow_post_links']) ? $poll['enable_urls'] : false, $poll['enable_smilies'], $poll['img_status'], false, false, $config['allow_post_links'], false, 'poll');
 
 		$bbcode_bitfield = base64_encode(base64_decode($bbcode_bitfield) | base64_decode($this->bbcode_bitfield));
 		$this->message = $tmp_message;
@@ -1652,7 +1663,7 @@ class parse_message extends bbcode_firstpass
 			{
 				$this->warn_msg[] = $user->lang['POLL_TITLE_TOO_LONG'];
 			}
-			$poll['poll_title'] = $this->parse($poll['enable_bbcode'], ($config['allow_post_links']) ? $poll['enable_urls'] : false, $poll['enable_smilies'], $poll['img_status'], false, false, $config['allow_post_links'], false);
+			$poll['poll_title'] = $this->parse($poll['enable_bbcode'], ($config['allow_post_links']) ? $poll['enable_urls'] : false, $poll['enable_smilies'], $poll['img_status'], false, false, $config['allow_post_links'], false, 'poll');
 			if (strlen($poll['poll_title']) > 255)
 			{
 				$this->warn_msg[] = $user->lang['POLL_TITLE_COMP_TOO_LONG'];
