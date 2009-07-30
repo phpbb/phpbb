@@ -64,9 +64,9 @@ class auth
 			$db->sql_freeresult($result);
 
 			$cache->put('_acl_options', $this->acl_options);
-			$this->acl_cache($userdata);
 		}
-		else if (!trim($userdata['user_permissions']))
+
+		if (!trim($userdata['user_permissions']))
 		{
 			$this->acl_cache($userdata);
 		}
