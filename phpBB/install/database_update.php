@@ -1452,7 +1452,7 @@ function change_database_data(&$no_updates, $version)
 
 			if (!isset($config['allow_quick_reply']))
 			{
-				set_config('allow_quick_reply', '0');
+				set_config('allow_quick_reply', '1');
 			}
 
 			// Set every members user_options column to enable
