@@ -696,6 +696,11 @@ function create_thumbnail($source, $destination, $mimetype)
 				break;
 			}
 
+			if (empty($image))
+			{
+				return false;
+			}
+
 			if ($type['version'] == 1)
 			{
 				$new_image = imagecreate($new_width, $new_height);
