@@ -44,9 +44,12 @@ $lang = array_merge($lang, array(
 	'AUTO_PRUNE_VIEWED'			=> 'Auto-prune post viewed age',
 	'AUTO_PRUNE_VIEWED_EXPLAIN'	=> 'Number of days since topic was viewed after which topic is removed.',
 
+	'CONTINUE'						=> 'Continue',
 	'COPY_PERMISSIONS'				=> 'Copy permissions from',
+	'COPY_PERMISSIONS_EXPLAIN'		=> 'To ease up the permission setup for your new forum, you can copy the permissions of an existing forum.',
 	'COPY_PERMISSIONS_ADD_EXPLAIN'	=> 'Once created, the forum will have the same permissions as the one you select here. If no forum is selected the newly created forum will not be visible until permissions had been set.',
 	'COPY_PERMISSIONS_EDIT_EXPLAIN'	=> 'If you select to copy permissions, the forum will have the same permissions as the one you select here. This will overwrite any permissions you have previously set for this forum with the permissions of the forum you select here. If no forum is selected the current permissions will be kept.',
+	'COPY_TO_ACL'					=> 'Alternatively, you are also able to %sset up new permissions%s for this forum.',
 	'CREATE_FORUM'					=> 'Create new forum',
 
 	'DECIDE_MOVE_DELETE_CONTENT'		=> 'Delete content or move to forum',

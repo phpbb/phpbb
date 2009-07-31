@@ -74,6 +74,13 @@ class acp_forums
 				{
 					trigger_error($user->lang['NO_PERMISSION_FORUM_ADD'] . adm_back_link($this->u_action . '&amp;parent_id=' . $this->parent_id), E_USER_WARNING);
 				}
+				
+			case 'copy_perm':
+								
+				if (!(($auth->acl_get('a_fauth') && $auth->acl_get('a_authusers') && $auth->acl_get('a_authgroups') && $auth->acl_get('a_mauth'))))
+				{
+					trigger_error($user->lang['NO_PERMISSION_COPY'] . adm_back_link($this->u_action . '&amp;parent_id=' . $this->parent_id), E_USER_WARNING);
+				}
 
 			break;
 		}
@@ -190,6 +197,12 @@ class acp_forums
 							copy_forum_permissions($forum_perm_from, $forum_data['forum_id'], ($action == 'edit') ? true : false);
 							cache_moderators();
 						}
+						else if (($action != 'edit') && $auth->acl_get('a_fauth') && $auth->acl_get('a_authusers') && $auth->acl_get('a_authgroups') && $auth->acl_get('a_mauth'))
+						{
+							$this->copy_permission_page($forum_data);
+							return;
+						}
+
 
 						$auth->acl_clear_prefetch();
 						$cache->destroy('sql', FORUMS_TABLE);
@@ -687,6 +700,36 @@ class acp_forums
 
 				return;
 			break;
+			
+			case 'copy_perm': 
+				$forum_perm_from = request_var('forum_perm_from', 0);
+
+				// Copy permissions?
+				if (!empty($forum_perm_from) && $forum_perm_from != $forum_id)
+				{
+					copy_forum_permissions($forum_perm_from, $forum_id, true);
+					cache_moderators();
+					$auth->acl_clear_prefetch();
+					$cache->destroy('sql', FORUMS_TABLE);
+
+					$acl_url = '&amp;mode=setting_forum_local&amp;forum_id[]=' . $forum_id;
+
+					$message = $user->lang['FORUM_UPDATED'];
+
+					// Redirect to permissions
+					if ($auth->acl_get('a_fauth'))
+					{
+						$message .= '<br /><br />' . sprintf($user->lang['REDIRECT_ACL'], '<a href="' . append_sid("{$phpbb_admin_path}index.$phpEx", 'i=permissions' . $acl_url) . '">', '</a>');
+					}
+
+					// redirect directly to permission settings screen if authed
+					if ($action == 'add' && !$forum_perm_from && $auth->acl_get('a_fauth'))
+					{
+						meta_refresh(4, append_sid("{$phpbb_admin_path}index.$phpEx", 'i=permissions' . $acl_url));
+					}
+
+					trigger_error($message . adm_back_link($this->u_action . '&amp;parent_id=' . $this->parent_id));
+				}
 		}
 
 		// Default management page
@@ -1876,6 +1919,30 @@ class acp_forums
 
 		adm_page_footer();
 	}
+	
+	function copy_permission_page($forum_data)
+	{
+		global $phpEx, $phpbb_admin_path, $template, $user;
+	
+		$acl_url = '&amp;mode=setting_forum_local&amp;forum_id[]=' . $forum_data['forum_id'];
+		$action = append_sid($this->u_action . "&amp;parent_id={$this->parent_id}&amp;f={$forum_data['forum_id']}&amp;action=copy_perm");
+
+		
+		$l_acl = sprintf($user->lang['COPY_TO_ACL'], '<a href="' . append_sid("{$phpbb_admin_path}index.$phpEx", 'i=permissions' . $acl_url) . '">', '</a>');
+
+
+					
+		$this->tpl_name = 'acp_forums_copy_perm';
+
+		$template->assign_vars(array(
+			'U_ACL'				=> append_sid("{$phpbb_admin_path}index.$phpEx", 'i=permissions' . $acl_url),
+			'L_ACL_LINK'		=> $l_acl,
+			'L_BACK_LINK'		=> adm_back_link($this->u_action . '&amp;parent_id=' . $this->parent_id),
+			'S_COPY_ACTION'		=> $action,
+			'S_FORUM_OPTIONS'	=> make_forum_select($forum_data['parent_id'], false, false, false, false),
+		));
+	}
+
 }
 
 ?>
