@@ -2006,6 +2006,34 @@ class user extends session
 				$language_filename = $this->lang_path . $this->lang_name . '/' . (($use_help) ? 'help_' : '') . $lang_file . '.' . $phpEx;
 			}
 
+			if (!file_exists($language_filename))
+			{
+				global $config;
+
+				if ($this->lang_name == 'en')
+				{
+					// The user's selected language is missing the file, the board default's language is missing the file, and the file doesn't exist in /en.
+					$language_filename = str_replace($this->lang_path . 'en', $this->lang_path . $this->data['user_lang'], $language_filename);
+					trigger_error('Language file ' . $language_filename . ' couldn\'t be opened.', E_USER_ERROR);
+				}
+				else if ($this->lang_name == basename($config['default_lang']))
+				{
+					// Fall back to the English Language
+					$this->lang_name = 'en';
+					$this->set_lang($lang, $help, $lang_file, $use_db, $use_help);
+				}
+				else if ($this->lang_name == $this->data['user_lang'])
+				{
+					// Fall back to the board default language
+					$this->lang_name = basename($config['default_lang']);
+					$this->set_lang($lang, $help, $lang_file, $use_db, $use_help);
+				}
+
+				// Reset the lang name
+				$this->lang_name = (file_exists($this->lang_path . $this->data['user_lang'] . "/common.$phpEx")) ? $this->data['user_lang'] : basename($config['default_lang']);
+				return;
+			}
+
 			// Do not suppress error if in DEBUG_EXTRA mode
 			$include_result = (defined('DEBUG_EXTRA')) ? (include $language_filename) : (@include $language_filename);
 
@@ -2262,11 +2290,11 @@ class user extends session
 		if ($group = remove_newly_registered($this->data['user_id'], $this->data))
 		{
 			$this->data['group_id'] = $group;
-			
+
 		}
 		$this->data['user_permissions'] = '';
 		$this->data['user_new'] = 0;
-		
+
 		return true;
 	}
 }
