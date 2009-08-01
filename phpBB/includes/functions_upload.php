@@ -58,7 +58,7 @@ class filespec
 
 		$this->filename = $upload_ary['tmp_name'];
 		$this->filesize = $upload_ary['size'];
-		$name = trim(htmlspecialchars(basename($upload_ary['name'])));
+		$name = trim(utf8_htmlspecialchars(utf8_basename($upload_ary['name'])));
 		$this->realname = $this->uploadname = (STRIP) ? stripslashes($name) : $name;
 		$this->mimetype = $upload_ary['type'];
 
@@ -290,7 +290,7 @@ class filespec
 
 		$upload_mode = (@ini_get('open_basedir') || @ini_get('safe_mode') || strtolower(@ini_get('safe_mode')) == 'on') ? 'move' : 'copy';
 		$upload_mode = ($this->local) ? 'local' : $upload_mode;
-		$this->destination_file = $this->destination_path . '/' . basename($this->realname);
+		$this->destination_file = $this->destination_path . '/' . utf8_basename($this->realname);
 
 		// Check if the file already exist, else there is something wrong...
 		if (file_exists($this->destination_file) && !$overwrite)
@@ -634,7 +634,7 @@ class fileupload
 
 		if ($filedata === false)
 		{
-			$_FILES[$form_name]['name'] = basename($source_file);
+			$_FILES[$form_name]['name'] = utf8_basename($source_file);
 			$_FILES[$form_name]['size'] = 0;
 			$mimetype = '';
 
@@ -746,7 +746,7 @@ class fileupload
 		$ext = array_pop($url['path']);
 
 		$url['path'] = implode('', $url['path']);
-		$upload_ary['name'] = basename($url['path']) . (($ext) ? '.' . $ext : '');
+		$upload_ary['name'] = utf8_basename($url['path']) . (($ext) ? '.' . $ext : '');
 		$filename = $url['path'];
 		$filesize = 0;
 

@@ -841,8 +841,8 @@ function parse_attachments($forum_id, &$message, &$attachments, &$update_count, 
 
 		// Some basics...
 		$attachment['extension'] = strtolower(trim($attachment['extension']));
-		$filename = $phpbb_root_path . $config['upload_path'] . '/' . basename($attachment['physical_filename']);
-		$thumbnail_filename = $phpbb_root_path . $config['upload_path'] . '/thumb_' . basename($attachment['physical_filename']);
+		$filename = $phpbb_root_path . $config['upload_path'] . '/' . utf8_basename($attachment['physical_filename']);
+		$thumbnail_filename = $phpbb_root_path . $config['upload_path'] . '/thumb_' . utf8_basename($attachment['physical_filename']);
 
 		$upload_icon = '';
 
@@ -866,7 +866,7 @@ function parse_attachments($forum_id, &$message, &$attachments, &$update_count, 
 			'UPLOAD_ICON'		=> $upload_icon,
 			'FILESIZE'			=> $filesize['value'],
 			'SIZE_LANG'			=> $filesize['unit'],
-			'DOWNLOAD_NAME'		=> basename($attachment['real_filename']),
+			'DOWNLOAD_NAME'		=> utf8_basename($attachment['real_filename']),
 			'COMMENT'			=> $comment,
 		);
 

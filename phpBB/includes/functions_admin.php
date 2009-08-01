@@ -1235,7 +1235,7 @@ function phpbb_unlink($filename, $mode = 'file', $entry_removed = false)
 	// Because of copying topics or modifications a physical filename could be assigned more than once. If so, do not remove the file itself.
 	$sql = 'SELECT COUNT(attach_id) AS num_entries
 		FROM ' . ATTACHMENTS_TABLE . "
-		WHERE physical_filename = '" . $db->sql_escape(basename($filename)) . "'";
+		WHERE physical_filename = '" . $db->sql_escape(utf8_basename($filename)) . "'";
 	$result = $db->sql_query($sql);
 	$num_entries = (int) $db->sql_fetchfield('num_entries');
 	$db->sql_freeresult($result);
@@ -1246,7 +1246,7 @@ function phpbb_unlink($filename, $mode = 'file', $entry_removed = false)
 		return false;
 	}
 
-	$filename = ($mode == 'thumbnail') ? 'thumb_' . basename($filename) : basename($filename);
+	$filename = ($mode == 'thumbnail') ? 'thumb_' . utf8_basename($filename) : utf8_basename($filename);
 	return @unlink($phpbb_root_path . $config['upload_path'] . '/' . $filename);
 }
 

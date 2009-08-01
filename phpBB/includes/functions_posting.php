@@ -785,7 +785,7 @@ function posting_gen_inline_attachments(&$attachment_data)
 
 		foreach ($attachment_data as $i => $attachment)
 		{
-			$s_inline_attachment_options .= '<option value="' . $i . '">' . basename($attachment['real_filename']) . '</option>';
+			$s_inline_attachment_options .= '<option value="' . $i . '">' . utf8_basename($attachment['real_filename']) . '</option>';
 		}
 
 		$template->assign_var('S_INLINE_ATTACHMENT_OPTIONS', $s_inline_attachment_options);
@@ -819,7 +819,7 @@ function posting_gen_attachment_entry($attachment_data, &$filename_data, $show_a
 		foreach ($attachment_data as $count => $attach_row)
 		{
 			$hidden = '';
-			$attach_row['real_filename'] = basename($attach_row['real_filename']);
+			$attach_row['real_filename'] = utf8_basename($attach_row['real_filename']);
 
 			foreach ($attach_row as $key => $value)
 			{
@@ -829,8 +829,8 @@ function posting_gen_attachment_entry($attachment_data, &$filename_data, $show_a
 			$download_link = append_sid("{$phpbb_root_path}download/file.$phpEx", 'mode=view&amp;id=' . (int) $attach_row['attach_id'], true, ($attach_row['is_orphan']) ? $user->session_id : false);
 
 			$template->assign_block_vars('attach_row', array(
-				'FILENAME'			=> basename($attach_row['real_filename']),
-				'A_FILENAME'		=> addslashes(basename($attach_row['real_filename'])),
+				'FILENAME'			=> utf8_basename($attach_row['real_filename']),
+				'A_FILENAME'		=> addslashes(utf8_basename($attach_row['real_filename'])),
 				'FILE_COMMENT'		=> $attach_row['attach_comment'],
 				'ATTACH_ID'			=> $attach_row['attach_id'],
 				'S_IS_ORPHAN'		=> $attach_row['is_orphan'],
@@ -2175,7 +2175,7 @@ function submit_post($mode, $subject, $username, $topic_type, &$poll, &$data, $u
 			else
 			{
 				// insert attachment into db
-				if (!@file_exists($phpbb_root_path . $config['upload_path'] . '/' . basename($orphan_rows[$attach_row['attach_id']]['physical_filename'])))
+				if (!@file_exists($phpbb_root_path . $config['upload_path'] . '/' . utf8_basename($orphan_rows[$attach_row['attach_id']]['physical_filename'])))
 				{
 					continue;
 				}
