@@ -447,7 +447,7 @@ class dbal
 				$ary[] = '(' . implode(', ', $values) . ')';
 			}
 
-			$this->sql_query('INSERT INTO ' . $table . ' ' . ' (' . implode(', ', array_keys($sql_ary[0])) . ') VALUES ' . implode(', ', $ary));
+			return $this->sql_query('INSERT INTO ' . $table . ' ' . ' (' . implode(', ', array_keys($sql_ary[0])) . ') VALUES ' . implode(', ', $ary));
 		}
 		else
 		{
@@ -458,7 +458,12 @@ class dbal
 					return false;
 				}
 
-				$this->sql_query('INSERT INTO ' . $table . ' ' . $this->sql_build_array('INSERT', $ary));
+				$result = $this->sql_query('INSERT INTO ' . $table . ' ' . $this->sql_build_array('INSERT', $ary));
+
+				if (!$result)
+				{
+					return false;
+				}
 			}
 		}
 
