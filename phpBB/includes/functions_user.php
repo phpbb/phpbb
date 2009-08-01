@@ -2793,7 +2793,7 @@ function group_user_add($group_id, $user_id_ary = false, $username_ary = false, 
 		$group_name = get_group_name($group_id);
 	}
 
-	$log = ($leader) ? 'LOG_MODS_ADDED' : 'LOG_USERS_ADDED';
+	$log = ($leader) ? 'LOG_MODS_ADDED' : (($pending) ? 'LOG_USERS_PENDING' : 'LOG_USERS_ADDED');
 
 	add_log('admin', $log, $group_name, implode(', ', $username_ary));
 
