@@ -435,8 +435,7 @@ class dbal
 				// If by accident the sql array is only one-dimensional we build a normal insert statement
 				if (!is_array($_sql_ary))
 				{
-					$this->sql_query('INSERT INTO ' . $table . ' ' . $this->sql_build_array('INSERT', $sql_ary));
-					return true;
+					return $this->sql_query('INSERT INTO ' . $table . ' ' . $this->sql_build_array('INSERT', $sql_ary));
 				}
 
 				$values = array();
