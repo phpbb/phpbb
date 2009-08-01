@@ -684,6 +684,7 @@ function create_thumbnail($source, $destination, $mimetype)
 				break;
 
 				case IMG_JPG:
+					@ini_set('gd.jpeg_ignore_warning', 1);
 					$image = @imagecreatefromjpeg($source);
 				break;
 
