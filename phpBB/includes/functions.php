@@ -2284,7 +2284,7 @@ function redirect($url, $return = false, $disable_cd_check = false)
 	$url = str_replace('&amp;', '&', $url);
 
 	// Determine which type of redirect we need to handle...
-	$url_parts = parse_url($url);
+	$url_parts = @parse_url($url);
 
 	if ($url_parts === false)
 	{
@@ -2495,6 +2495,18 @@ function build_url($strip_vars = false)
 		$query = implode('&', $_query);
 
 		$redirect .= ($query) ? '?' . $query : '';
+	}
+
+	// We need to be cautious here.
+	// On some situations, the redirect path is an absolute URL, sometimes a relative path
+	// For a relative path, let's prefix it with $phpbb_root_path to point to the correct location,
+	// else we use the URL directly.
+	$url_parts = @parse_url($redirect);
+
+	// URL
+	if ($url_parts !== false && !empty($url_parts['scheme']) && !empty($url_parts['host']))
+	{
+		return str_replace('&', '&amp;', $redirect);
 	}
 
 	return $phpbb_root_path . str_replace('&', '&amp;', $redirect);
@@ -3596,7 +3608,7 @@ function msg_handler($errno, $msg_text, $errfile, $errline)
 
 			exit_handler();
 		break;
-		
+
 		// PHP4 comptibility
 		case E_DEPRECATED:
 			return true;
