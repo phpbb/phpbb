@@ -537,6 +537,7 @@ CREATE TABLE phpbb_profile_fields (
 	field_validation varchar(20) NOT NULL DEFAULT '',
 	field_required INTEGER UNSIGNED NOT NULL DEFAULT '0',
 	field_show_on_reg INTEGER UNSIGNED NOT NULL DEFAULT '0',
+	field_show_on_vt INTEGER UNSIGNED NOT NULL DEFAULT '0',
 	field_show_profile INTEGER UNSIGNED NOT NULL DEFAULT '0',
 	field_hide INTEGER UNSIGNED NOT NULL DEFAULT '0',
 	field_no_view INTEGER UNSIGNED NOT NULL DEFAULT '0',
@@ -940,7 +941,9 @@ CREATE TABLE phpbb_users (
 	user_actkey varchar(32) NOT NULL DEFAULT '',
 	user_newpasswd varchar(40) NOT NULL DEFAULT '',
 	user_form_salt varchar(32) NOT NULL DEFAULT '',
-	user_new INTEGER UNSIGNED NOT NULL DEFAULT '1'
+	user_new INTEGER UNSIGNED NOT NULL DEFAULT '1',
+	user_reminded tinyint(4) NOT NULL DEFAULT '0',
+	user_reminded_time INTEGER UNSIGNED NOT NULL DEFAULT '0'
 );
 
 CREATE INDEX phpbb_users_user_birthday ON phpbb_users (user_birthday);

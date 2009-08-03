@@ -948,6 +948,7 @@ CREATE TABLE [phpbb_profile_fields] (
 	[field_validation] [varchar] (20) DEFAULT ('') NOT NULL ,
 	[field_required] [int] DEFAULT (0) NOT NULL ,
 	[field_show_on_reg] [int] DEFAULT (0) NOT NULL ,
+	[field_show_on_vt] [int] DEFAULT (0) NOT NULL ,
 	[field_show_profile] [int] DEFAULT (0) NOT NULL ,
 	[field_hide] [int] DEFAULT (0) NOT NULL ,
 	[field_no_view] [int] DEFAULT (0) NOT NULL ,
@@ -1645,7 +1646,9 @@ CREATE TABLE [phpbb_users] (
 	[user_actkey] [varchar] (32) DEFAULT ('') NOT NULL ,
 	[user_newpasswd] [varchar] (40) DEFAULT ('') NOT NULL ,
 	[user_form_salt] [varchar] (32) DEFAULT ('') NOT NULL ,
-	[user_new] [int] DEFAULT (1) NOT NULL 
+	[user_new] [int] DEFAULT (1) NOT NULL ,
+	[user_reminded] [int] DEFAULT (0) NOT NULL ,
+	[user_reminded_time] [int] DEFAULT (0) NOT NULL 
 ) ON [PRIMARY] TEXTIMAGE_ON [PRIMARY]
 GO
 

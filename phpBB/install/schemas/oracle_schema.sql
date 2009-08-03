@@ -1060,6 +1060,7 @@ CREATE TABLE phpbb_profile_fields (
 	field_validation varchar2(60) DEFAULT '' ,
 	field_required number(1) DEFAULT '0' NOT NULL,
 	field_show_on_reg number(1) DEFAULT '0' NOT NULL,
+	field_show_on_vt number(1) DEFAULT '0' NOT NULL,
 	field_show_profile number(1) DEFAULT '0' NOT NULL,
 	field_hide number(1) DEFAULT '0' NOT NULL,
 	field_no_view number(1) DEFAULT '0' NOT NULL,
@@ -1791,6 +1792,8 @@ CREATE TABLE phpbb_users (
 	user_newpasswd varchar2(120) DEFAULT '' ,
 	user_form_salt varchar2(96) DEFAULT '' ,
 	user_new number(1) DEFAULT '1' NOT NULL,
+	user_reminded number(4) DEFAULT '0' NOT NULL,
+	user_reminded_time number(11) DEFAULT '0' NOT NULL,
 	CONSTRAINT pk_phpbb_users PRIMARY KEY (user_id),
 	CONSTRAINT u_phpbb_username_clean UNIQUE (username_clean)
 )

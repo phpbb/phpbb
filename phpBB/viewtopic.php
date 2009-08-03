@@ -1179,7 +1179,22 @@ if ($config['load_cpf_viewtopic'])
 	$cp = new custom_profile();
 
 	// Grab all profile fields from users in id cache for later use - similar to the poster cache
-	$profile_fields_cache = $cp->generate_profile_fields_template('grab', $id_cache);
+	$profile_fields_tmp = $cp->generate_profile_fields_template('grab', $id_cache);
+	
+	// filter out fields not to be displayed on viewtopic. Yes, it's a hack, but this shouldn't break any MODs.
+	$profile_fields_cache = array();
+	foreach ($profile_fields_tmp as $profile_user_id => $profile_fields)
+	{
+		$profile_fields_cache[$profile_user_id] = array();
+		foreach ($profile_fields as $used_ident => $profile_field)
+		{
+			if ($profile_field['data']['field_show_on_vt'])
+			{
+				$profile_fields_cache[$profile_user_id][$used_ident] = $profile_field;
+			}
+		}
+	}
+	unset($profile_fields_tmp);
 }
 
 // Generate online information for user

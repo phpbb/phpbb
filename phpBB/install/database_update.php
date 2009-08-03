@@ -704,6 +704,9 @@ function database_update_info()
 				REPORTS_TABLE		=> array(
 					'pm_id'				=> array('UINT', 0),
 				),
+				PROFILE_FIELDS_TABLE			=> array(
+					'field_show_on_vt'		=> array('BOOL', 0),
+				),
 			),
 			'change_columns'		=> array(
 				USERS_TABLE				=> array(
