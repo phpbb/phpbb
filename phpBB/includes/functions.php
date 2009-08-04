@@ -3468,7 +3468,7 @@ function msg_handler($errno, $msg_text, $errfile, $errline)
 				echo '<b>[phpBB Debug] PHP Notice</b>: in file <b>' . $errfile . '</b> on line <b>' . $errline . '</b>: <b>' . $msg_text . '</b><br />' . "\n";
 
 				// we are writing an image - the user won't see the debug, so let's place it in the log
-				if (defined('IMAGE_OUTPUT'))
+				if (defined('IMAGE_OUTPUT') || defined('IN_CRON'))
 				{
 					add_log('critical', 'LOG_IMAGE_GENERATION_ERROR', $errfile, $errline, $msg_text);
 				}
@@ -3614,7 +3614,7 @@ function msg_handler($errno, $msg_text, $errfile, $errline)
 			exit_handler();
 		break;
 
-		// PHP4 comptibility
+		// PHP4 compatibility
 		case E_DEPRECATED:
 			return true;
 		break;
