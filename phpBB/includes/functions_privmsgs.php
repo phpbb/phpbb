@@ -1145,8 +1145,7 @@ function write_pm_addresses($check_ary, $author_id, $plaintext = false)
 		{
 			$sql = 'SELECT user_id, username, user_colour
 				FROM ' . USERS_TABLE . '
-				WHERE ' . $db->sql_in_set('user_id', $u) . '
-					AND user_type IN (' . USER_NORMAL . ', ' . USER_FOUNDER . ')';
+				WHERE ' . $db->sql_in_set('user_id', $u);
 			$result = $db->sql_query($sql);
 
 			while ($row = $db->sql_fetchrow($result))
