@@ -1364,6 +1364,8 @@ class session
 	*/
 	function validate_referer($check_script_path = false)
 	{
+		global $config;
+
 		// no referer - nothing to validate, user's fault for turning it off (we only check on POST; so meta can't be the reason)
 		if (empty($this->referer) || empty($this->host))
 		{
@@ -1373,7 +1375,7 @@ class session
 		$host = htmlspecialchars($this->host);
 		$ref = substr($this->referer, strpos($this->referer, '://') + 3);
 
-		if (!(stripos($ref, $host) === 0) && (!$config['force_server'] || !(stripos($ref, $config['server_name']) === 0)))
+		if (!(stripos($ref, $host) === 0) && (!$config['force_server_vars'] || !(stripos($ref, $config['server_name']) === 0)))
 		{
 			return false;
 		}
