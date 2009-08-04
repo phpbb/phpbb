@@ -46,6 +46,9 @@ function compose_pm($id, $mode, $action)
 	$draft_id		= request_var('d', 0);
 	$lastclick		= request_var('lastclick', 0);
 
+	// Reply to all triggered (quote/reply)
+	$reply_to_all	= request_var('reply_to_all', 0);
+
 	// Do NOT use request_var or specialchars here
 	$address_list	= isset($_REQUEST['address_list']) ? $_REQUEST['address_list'] : array();
 
@@ -84,7 +87,7 @@ function compose_pm($id, $mode, $action)
 		}
 		redirect(append_sid("{$phpbb_root_path}ucp.$phpEx", 'i=pm'));
 	}
-	
+
 	// Since viewtopic.php language entries are used in several modes,
 	// we include the language file here
 	$user->add_lang('viewtopic');
@@ -314,13 +317,14 @@ function compose_pm($id, $mode, $action)
 
 			if (($action == 'reply' || $action == 'quote' || $action == 'quotepost') && !sizeof($address_list) && !$refresh && !$submit && !$preview)
 			{
-				if ($action == 'quotepost')
+				// Add the original author as the recipient if quoting a post or only replying and not having checked "reply to all"
+				if ($action == 'quotepost' || !$reply_to_all)
 				{
 					$address_list = array('u' => array($post['author_id'] => 'to'));
 				}
 				else
 				{
-					// We try to include every previously listed member from the TO Header
+					// We try to include every previously listed member from the TO Header - Reply to all
 					$address_list = rebuild_header(array('to' => $post['to_address']));
 
 					// Add the author (if he is already listed then this is no shame (it will be overwritten))
@@ -443,7 +447,7 @@ function compose_pm($id, $mode, $action)
 	$max_recipients = (!$max_recipients) ? $config['pm_max_recipients'] : $max_recipients;
 
 	// If this is a quote/reply "to all"... we may increase the max_recpients to the number of original recipients
-	if (($action == 'reply' || $action == 'quote') && $max_recipients)
+	if (($action == 'reply' || $action == 'quote') && $max_recipients && $reply_to_all)
 	{
 		// We try to include every previously listed member from the TO Header
 		$list = rebuild_header(array('to' => $post['to_address']));

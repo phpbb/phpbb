@@ -374,6 +374,7 @@ $lang = array_merge($lang, array(
 	'RENAME'							=> 'Rename',
 	'RENAME_FOLDER'						=> 'Rename folder',
 	'REPLIED_MESSAGE'					=> 'Replied to message',
+	'REPLY_TO_ALL'						=> 'Reply to sender and all recipients.',
 	'REPORT_PM'							=> 'Report private message',
 	'RESIGN_SELECTED'					=> 'Resign selected',
 	'RETURN_FOLDER'						=> '%1$sReturn to previous folder%2$s',
