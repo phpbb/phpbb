@@ -66,6 +66,7 @@ class phpbb_default_captcha
 		$this->seed -= 0x7fffffff * floor($this->seed / 0x7fffffff);
 
 		$captcha = new captcha();
+		define('IMAGE_OUTPUT', 1);
 		$captcha->execute($this->code, $this->seed);
 	}
 
@@ -80,6 +81,7 @@ class phpbb_default_captcha
 			}
 		}
 		$captcha = new captcha();
+		define('IMAGE_OUTPUT', 1);
 		$captcha->execute($this->code, $this->seed);
 	}
 
