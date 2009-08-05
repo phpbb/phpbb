@@ -628,8 +628,7 @@ class fulltext_native extends search_backend
 			if ($author_name)
 			{
 				// first one matches post of registered users, second one guests and deleted users
-				$sql_author = '(' . $db->sql_in_set('p.poster_id', $author_ary) . " AND p.post_username = ''";
-				$sql_author .= ' OR p.poster_id = ' . ANONYMOUS . ' AND p.post_username ' . $author_name . ')';
+				$sql_author = '(' . $db->sql_in_set('p.poster_id', array_diff($author_ary, array(ANONYMOUS)), false, true) . ' OR p.post_username ' . $author_name . ')';
 			}
 			else
 			{
@@ -840,8 +839,7 @@ class fulltext_native extends search_backend
 		if ($author_name)
 		{
 			// first one matches post of registered users, second one guests and deleted users
-			$sql_author = '(' . $db->sql_in_set('p.poster_id', $author_ary) . " AND p.post_username = ''";
-			$sql_author .= ' OR p.poster_id = ' . ANONYMOUS . ' AND p.post_username ' . $author_name . ')';
+			$sql_author = '(' . $db->sql_in_set('p.poster_id', array_diff($author_ary, array(ANONYMOUS)), false, true) . ' OR p.post_username ' . $author_name . ')';
 		}
 		else
 		{

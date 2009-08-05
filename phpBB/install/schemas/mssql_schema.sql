@@ -803,6 +803,9 @@ GO
 CREATE  INDEX [post_approved] ON [phpbb_posts]([post_approved]) ON [PRIMARY]
 GO
 
+CREATE  INDEX [post_username] ON [phpbb_posts]([post_username]) ON [PRIMARY]
+GO
+
 CREATE  INDEX [tid_post_time] ON [phpbb_posts]([topic_id], [post_time]) ON [PRIMARY]
 GO
 

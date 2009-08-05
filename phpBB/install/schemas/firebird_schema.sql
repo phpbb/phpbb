@@ -650,6 +650,7 @@ CREATE INDEX phpbb_posts_topic_id ON phpbb_posts(topic_id);;
 CREATE INDEX phpbb_posts_poster_ip ON phpbb_posts(poster_ip);;
 CREATE INDEX phpbb_posts_poster_id ON phpbb_posts(poster_id);;
 CREATE INDEX phpbb_posts_post_approved ON phpbb_posts(post_approved);;
+CREATE INDEX phpbb_posts_post_username ON phpbb_posts(post_username);;
 CREATE INDEX phpbb_posts_tid_post_time ON phpbb_posts(topic_id, post_time);;
 
 CREATE GENERATOR phpbb_posts_gen;;

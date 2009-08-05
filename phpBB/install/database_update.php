@@ -721,6 +721,9 @@ function database_update_info()
 					'post_id'		=> array('post_id'),
 					'pm_id'			=> array('pm_id'),
 				),
+				POSTS_TABLE			=> array(
+					'post_username'		=> array('post_username'),
+				),
 			),
 		),
 	);

@@ -459,6 +459,7 @@ CREATE TABLE phpbb_posts (
 	KEY poster_ip (poster_ip),
 	KEY poster_id (poster_id),
 	KEY post_approved (post_approved),
+	KEY post_username (post_username(255)),
 	KEY tid_post_time (topic_id, post_time)
 );
 
