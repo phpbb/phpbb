@@ -3505,6 +3505,14 @@ function msg_handler($errno, $msg_text, $errfile, $errline)
 					$l_notify = '<p>Please notify the board administrator or webmaster: <a href="mailto:' . $config['board_contact'] . '">' . $config['board_contact'] . '</a></p>';
 				}
 			}
+			
+			if (defined('DEBUG') || defined('IN_CRON') || defined('IMAGE_OUTPUT'))
+			{
+				// let's avoid loops
+				$db->sql_return_on_error(true);
+				add_log('critical', 'LOG_GENERAL_ERROR', $msg_title, $msg_text);
+				$db->sql_return_on_error(false);
+			}
 
 			garbage_collection();
 
