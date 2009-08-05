@@ -40,11 +40,16 @@ $row = $db->sql_fetchrow($result);
 
 $db->sql_freeresult($result);
 
-$mysql_indexer = false;
+$mysql_indexer = $drop_index = false;
 
 if (strtolower($row['Type']) === 'mediumtext')
 {
 	$mysql_indexer = true;
+}
+
+if (strtolower($row['Key']) === 'mul')
+{
+	$drop_index = true;
 }
 
 echo "USE $dbname;$newline$newline";
@@ -123,6 +128,13 @@ foreach ($schema_data as $table_name => $table_data)
 
 	// Create Table statement
 	$generator = $textimage = false;
+
+	// Do we need to DROP a fulltext index before we alter the table?
+	if ($table_name == ($prefix . 'posts') && $drop_index)
+	{
+		echo "ALTER TABLE {$table_name}{$newline}";
+		echo "DROP INDEX post_text,{$newline}DROP INDEX post_subject,{$newline}DROP INDEX post_content;{$newline}{$newline}";
+	}
 
 	$line = "ALTER TABLE {$table_name} $newline";
 
@@ -236,6 +248,12 @@ foreach ($schema_data as $table_name => $table_data)
 	$line .= "\tDEFAULT CHARSET=utf8 COLLATE=utf8_bin;$newline$newline";
 
 	echo $line . "$newline";
+
+	// Do we now need to re-add the fulltext index? ;)
+	if ($table_name == ($prefix . 'posts') && $drop_index)
+	{
+		echo "ALTER TABLE $table_name ADD FULLTEXT (post_subject), ADD FULLTEXT (post_text), ADD FULLTEXT post_content (post_subject, post_text){$newline}";
+	}
 }
 
 /**
