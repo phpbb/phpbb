@@ -1674,12 +1674,20 @@ function submit_post($mode, $subject, $username, $topic_type, &$poll, &$data, $u
 	}
 
 	// This variable indicates if the user is able to post or put into the queue - it is used later for all code decisions regarding approval
+	// The variable name should be $post_approved, because it indicates if the post is approved or not
 	$post_approval = 1;
 
 	// Check the permissions for post approval. Moderators are not affected.
 	if (!$auth->acl_get('f_noapprove', $data['forum_id']) && !$auth->acl_get('m_approve', $data['forum_id']))
 	{
+		// Post not approved, but in queue
 		$post_approval = 0;
+	}
+
+	// Mods are able to force approved/unapproved posts. True means the post is approved, false the post is unapproved
+	if ($data['force_approved_state'])
+	{
+		$post_approval = ($data['force_approved_state']) ? 1 : 0;
 	}
 
 	// Start the transaction here
