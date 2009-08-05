@@ -1157,16 +1157,17 @@ class postgres_extractor extends base_extractor
 					AND (c.oid = d.adrelid)
 					AND d.adnum = " . $row['attnum'];
 			$def_res = $db->sql_query($sql_get_default);
+			$def_row = $db->sql_fetchrow($def_res);
+			$db->sql_freeresult($def_res);
 
-			if (!$def_res)
+			if (empty($def_row))
 			{
 				unset($row['rowdefault']);
 			}
 			else
 			{
-				$row['rowdefault'] = $db->sql_fetchfield('rowdefault', false, $def_res);
+				$row['rowdefault'] = $def_row['rowdefault'];
 			}
-			$db->sql_freeresult($def_res);
 
 			if ($row['type'] == 'bpchar')
 			{
