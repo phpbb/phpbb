@@ -1685,7 +1685,7 @@ function submit_post($mode, $subject, $username, $topic_type, &$poll, &$data, $u
 	}
 
 	// Mods are able to force approved/unapproved posts. True means the post is approved, false the post is unapproved
-	if ($data['force_approved_state'])
+	if (isset($data['force_approved_state']))
 	{
 		$post_approval = ($data['force_approved_state']) ? 1 : 0;
 	}
