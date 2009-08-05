@@ -1227,7 +1227,7 @@ function markread($mode, $forum_id = false, $topic_id = false, $post_time = 0, $
 		}
 
 		// Add 0 to forums array to mark global announcements correctly
-		$forum_id[] = 0;
+		// $forum_id[] = 0;
 
 		if ($config['load_db_lastread'] && $user->data['is_registered'])
 		{

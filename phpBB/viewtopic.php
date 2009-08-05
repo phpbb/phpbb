@@ -1582,10 +1582,10 @@ if (isset($user->data['session_page']) && !$user->data['is_bot'] && (strpos($use
 // Only mark topic if it's currently unread. Also make sure we do not set topic tracking back if earlier pages are viewed.
 if (isset($topic_tracking_info[$topic_id]) && $topic_data['topic_last_post_time'] > $topic_tracking_info[$topic_id] && $max_post_time > $topic_tracking_info[$topic_id])
 {
-	markread('topic', $forum_id, $topic_id, $max_post_time);
+	markread('topic', (($topic_data['topic_type'] == POST_GLOBAL) ? 0 : $forum_id), $topic_id, $max_post_time);
 
 	// Update forum info
-	$all_marked_read = update_forum_tracking_info($forum_id, $topic_data['forum_last_post_time'], (isset($topic_data['forum_mark_time'])) ? $topic_data['forum_mark_time'] : false, false);
+	$all_marked_read = update_forum_tracking_info((($topic_data['topic_type'] == POST_GLOBAL) ? 0 : $forum_id), $topic_data['forum_last_post_time'], (isset($topic_data['forum_mark_time'])) ? $topic_data['forum_mark_time'] : false, false);
 }
 else
 {

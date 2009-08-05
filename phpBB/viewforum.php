@@ -179,7 +179,8 @@ if ($mark_read == 'topics')
 	$token = request_var('hash', '');
 	if (check_link_hash($token, 'global'))
 	{
-		markread('topics', $forum_id);
+		// Add 0 to forums array to mark global announcements correctly
+		markread('topics', array($forum_id, 0));
 	}
 	$redirect_url = append_sid("{$phpbb_root_path}viewforum.$phpEx", 'f=' . $forum_id);
 	meta_refresh(3, $redirect_url);

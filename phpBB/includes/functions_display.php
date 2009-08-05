@@ -251,6 +251,8 @@ function display_forums($root_data = '', $display_moderators = true, $return_mod
 			}
 			else
 			{
+				// Add 0 to forums array to mark global announcements correctly
+				$forum_ids[] = 0;
 				markread('topics', $forum_ids);
 				$message = sprintf($user->lang['RETURN_FORUM'], '<a href="' . $redirect . '">', '</a>');
 			}

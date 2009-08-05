@@ -2531,7 +2531,7 @@ function submit_post($mode, $subject, $username, $topic_type, &$poll, &$data, $u
 
 	// Mark this topic as read
 	// We do not use post_time here, this is intended (post_time can have a date in the past if editing a message)
-	markread('topic', $data['forum_id'], $data['topic_id'], time());
+	markread('topic', (($topic_type == POST_GLOBAL) ? 0 : $data['forum_id']), $data['topic_id'], time());
 
 	//
 	if ($config['load_db_lastread'] && $user->data['is_registered'])
@@ -2539,7 +2539,7 @@ function submit_post($mode, $subject, $username, $topic_type, &$poll, &$data, $u
 		$sql = 'SELECT mark_time
 			FROM ' . FORUMS_TRACK_TABLE . '
 			WHERE user_id = ' . $user->data['user_id'] . '
-				AND forum_id = ' . $data['forum_id'];
+				AND forum_id = ' . (($topic_type == POST_GLOBAL) ? 0 : $data['forum_id']);
 		$result = $db->sql_query($sql);
 		$f_mark_time = (int) $db->sql_fetchfield('mark_time');
 		$db->sql_freeresult($result);
@@ -2552,14 +2552,23 @@ function submit_post($mode, $subject, $username, $topic_type, &$poll, &$data, $u
 	if (($config['load_db_lastread'] && $user->data['is_registered']) || $config['load_anon_lastread'] || $user->data['is_registered'])
 	{
 		// Update forum info
-		$sql = 'SELECT forum_last_post_time
-			FROM ' . FORUMS_TABLE . '
-			WHERE forum_id = ' . $data['forum_id'];
+		if ($topic_type == POST_GLOBAL)
+		{
+			$sql = 'SELECT MAX(topic_last_post_time) as forum_last_post_time
+				FROM ' . TOPICS_TABLE . '
+				WHERE forum_id = 0';
+		}
+		else
+		{
+			$sql = 'SELECT forum_last_post_time
+				FROM ' . FORUMS_TABLE . '
+				WHERE forum_id = ' . $data['forum_id'];
+		}
 		$result = $db->sql_query($sql);
 		$forum_last_post_time = (int) $db->sql_fetchfield('forum_last_post_time');
 		$db->sql_freeresult($result);
 
-		update_forum_tracking_info($data['forum_id'], $forum_last_post_time, $f_mark_time, false);
+		update_forum_tracking_info((($topic_type == POST_GLOBAL) ? 0 : $data['forum_id']), $forum_last_post_time, $f_mark_time, false);
 	}
 
 	// Send Notifications
