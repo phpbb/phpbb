@@ -804,6 +804,7 @@ function get_schema_struct()
 			'message_edit_count'	=> array('USINT', 0),
 			'to_address'			=> array('TEXT_UNI', ''),
 			'bcc_address'			=> array('TEXT_UNI', ''),
+			'message_reported'		=> array('BOOL', 0),
 		),
 		'PRIMARY_KEY'	=> 'msg_id',
 		'KEYS'			=> array(
@@ -879,6 +880,7 @@ function get_schema_struct()
 			'field_validation'		=> array('VCHAR_UNI:20', ''),
 			'field_required'		=> array('BOOL', 0),
 			'field_show_on_reg'		=> array('BOOL', 0),
+			'field_show_on_vt'		=> array('BOOL', 0),
 			'field_show_profile'	=> array('BOOL', 0),
 			'field_hide'			=> array('BOOL', 0),
 			'field_no_view'			=> array('BOOL', 0),
@@ -937,6 +939,7 @@ function get_schema_struct()
 			'report_id'				=> array('UINT', NULL, 'auto_increment'),
 			'reason_id'				=> array('USINT', 0),
 			'post_id'				=> array('UINT', 0),
+			'pm_id'					=> array('UINT', 0),
 			'user_id'				=> array('UINT', 0),
 			'user_notify'			=> array('BOOL', 0),
 			'report_closed'			=> array('BOOL', 0),
@@ -944,6 +947,10 @@ function get_schema_struct()
 			'report_text'			=> array('MTEXT_UNI', ''),
 		),
 		'PRIMARY_KEY'	=> 'report_id',
+		'KEYS'			=> array(
+			'post_id'			=> array('INDEX', 'post_id'),
+			'pm_id'				=> array('INDEX', 'pm_id'),
+		),
 	);
 
 	$schema_data['phpbb_reports_reasons'] = array(
@@ -1326,6 +1333,8 @@ function get_schema_struct()
 			'user_newpasswd'			=> array('VCHAR_UNI:40', ''),
 			'user_form_salt'			=> array('VCHAR_UNI:32', ''),
 			'user_new'					=> array('BOOL', 1),
+			'user_reminded'				=> array('TINT:4', 0),
+			'user_reminded_time'		=> array('TIMESTAMP', 0),
 		),
 		'PRIMARY_KEY'	=> 'user_id',
 		'KEYS'			=> array(
