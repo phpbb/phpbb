@@ -135,7 +135,7 @@ $lang = array_merge($lang, array(
 	'USER_BAN'				=> 'Banning',
 	'USER_FORUM'			=> 'User statistics',
 	'USER_LAST_REMINDED'	=> array(
-		0		=> 'No reminder sent yet',
+		0		=> 'No reminder sent at this time',
 		1		=> '%1$d reminder sent<br />» %2$s',
 	),
 	'USER_ONLINE'			=> 'Online',

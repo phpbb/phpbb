@@ -37,27 +37,27 @@ if (empty($lang) || !is_array($lang))
 
 $lang = array_merge($lang, array(
 	'CAPTCHA_QA'				=> 'Q&amp;A CAPTCHA',
-	'CONFIRM_QUESTION_EXPLAIN'	=> 'Please answer this question to avoid automated registrations.',
-	'CONFIRM_QUESTION_WRONG'	=> 'The answer to the confirmation question was not recognized.',
+	'CONFIRM_QUESTION_EXPLAIN'	=> 'The following question is a means of identifying and preventing automated submissions.',
+	'CONFIRM_QUESTION_WRONG'	=> 'You have provided an invalid answer to the confirmation question.',
 
 	'QUESTION_ANSWERS'			=> 'Answers',
-	'ANSWERS_EXPLAIN'			=> 'The Answers. Please write one answer per line.',
+	'ANSWERS_EXPLAIN'			=> 'Please enter valid answers to the question, one per line.',
 	'CONFIRM_QUESTION'			=> 'Question',
 
 	'ANSWER'					=> 'Answer',
 	'EDIT_QUESTION'				=> 'Edit Question',
 	'QUESTIONS'					=> 'Questions',
-	'QUESTIONS_EXPLAIN'			=> 'Here you can add and edit questions to be asked on registration. You have to provide at least one question in the default board language to use this plugin. Questions should be easy for your target audience, but beyond the ability of Google™. Also, remember to change the questions regularly. If your question relies on punctuation, spelling or capitalisation, use the strict setting.',
+	'QUESTIONS_EXPLAIN'			=> 'During registration, users will be asked one of the questions specified here. To use this plugin, at least one question must be set in the default language. These questions should be easy for your target audience to answer, but beyond the ability of a bot capable of running a Google™ search. Using a large and regulary changed set of questions will yield the best results. Enable the strict setting if your question relies on punctuation or capitalisation.',
 	'QUESTION_DELETED'			=> 'Question deleted',
 	'QUESTION_LANG'				=> 'Language',
-	'QUESTION_LANG_EXPLAIN'		=> 'The language this question and its answers is written in.',
+	'QUESTION_LANG_EXPLAIN'		=> 'The language that this question and its answers are written in.',
 	'QUESTION_STRICT'			=> 'Strict check',
-	'QUESTION_STRICT_EXPLAIN'	=> 'If enabled, the check also recognizes capitalization and whitespaces.',
+	'QUESTION_STRICT_EXPLAIN'	=> 'If enabled, capitalisation and whitespace will also be enforced.',
 
 	'QUESTION_TEXT'				=> 'Question',
 	'QUESTION_TEXT_EXPLAIN'		=> 'The question that will be asked on registration.',
 
-	'QA_ERROR_MSG'				=> 'Please fill out all fields and enter at least one answer.',
+	'QA_ERROR_MSG'				=> 'Please fill in all fields and enter at least one answer.',
 ));
 
 ?>

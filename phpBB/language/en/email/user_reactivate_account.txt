@@ -9,7 +9,7 @@ Please keep this e-mail for your records. Your account information is as follows
 Username: {USERNAME}
 ----------------------------
 
-Your password has been encrypted in our database. Should you forget your password you can request a new one which will be activated in the same way as this account.
+Your password has been securely stored in our database and cannot be retrieved. In the event that it is forgotten, you will be able to reset it using the email address associated with your account.
 
 Please visit the following link to reactivate your account:
 
