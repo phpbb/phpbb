@@ -21,7 +21,7 @@ if (!defined('IN_PHPBB'))
 */
 if (!class_exists('captcha_abstract'))
 {
-	include_once($phpbb_root_path . 'includes/captcha/plugins/captcha_abstract.' . $phpEx);
+	include($phpbb_root_path . 'includes/captcha/plugins/captcha_abstract.' . $phpEx);
 }
 
 /**

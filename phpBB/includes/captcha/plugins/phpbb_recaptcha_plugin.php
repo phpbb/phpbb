@@ -19,7 +19,7 @@ if (!defined('IN_PHPBB'))
 if (!class_exists('phpbb_default_captcha'))
 {
 	// we need the classic captcha code for tracking solutions and attempts
-	include_once($phpbb_root_path . 'includes/captcha/plugins/captcha_abstract.' . $phpEx);
+	include($phpbb_root_path . 'includes/captcha/plugins/captcha_abstract.' . $phpEx);
 }
 
 /**
