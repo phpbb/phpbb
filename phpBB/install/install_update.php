@@ -1556,7 +1556,7 @@ class install_update extends module
 				if ($info === false)
 				{
 					$update_info = array();
-					include($phpbb_root_path . 'install/update/index.php');
+					include($phpbb_root_path . 'install/update/index.' . $phpEx);
 					$info = (empty($update_info) || !is_array($update_info)) ? false : $update_info;
 
 					if ($info !== false)
@@ -1570,7 +1570,7 @@ class install_update extends module
 				global $phpbb_root_path, $phpEx;
 
 				$update_info = array();
-				include($phpbb_root_path . 'install/update/index.php');
+				include($phpbb_root_path . 'install/update/index.' . $phpEx);
 
 				$info = (empty($update_info) || !is_array($update_info)) ? false : $update_info;
 				$errstr = ($info === false) ? $user->lang['WRONG_INFO_FILE_FORMAT'] : '';
