@@ -1558,7 +1558,7 @@ class install_convert extends module
 	*/
 	function finish_conversion()
 	{
-		global $db, $phpbb_root_path, $convert, $config, $language, $user, $template;
+		global $db, $phpbb_root_path, $phpEx, $convert, $config, $language, $user, $template;
 
 		$db->sql_query('DELETE FROM ' . CONFIG_TABLE . "
 			WHERE config_name = 'convert_progress'
@@ -1567,7 +1567,7 @@ class install_convert extends module
 				OR config_name = 'convert_db_user'");
 		$db->sql_query('DELETE FROM ' . SESSIONS_TABLE);
 
-		@unlink($phpbb_root_path . 'cache/data_global.php');
+		@unlink($phpbb_root_path . 'cache/data_global.' . $phpEx);
 		cache_moderators();
 
 		// And finally, add a note to the log

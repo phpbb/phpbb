@@ -206,7 +206,7 @@ class install_update extends module
 			if (in_array('language/en/install.php', $this->update_info['files']))
 			{
 				$lang = array();
-				include($this->new_location . 'language/en/install.php');
+				include($this->new_location . 'language/en/install.' . $phpEx);
 				// only add new keys to user's language in english
 				$new_keys = array_diff(array_keys($lang), array_keys($user->lang));
 				foreach ($new_keys as $i => $new_key)
