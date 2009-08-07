@@ -450,13 +450,6 @@ class acp_board
 				continue;
 			}
 
-			// If not set, then this is a valid entry and needs to be emptied (select_multiple, checkbox)
-			if (!isset($cfg_array[$config_name]))
-			{
-				$cfg_array[$config_name] = '';
-			}
-
-
 			// Erm, we spotted an array
 			if ($null['type'] == 'select_multiple' && $submit && isset($_REQUEST['config'][$config_name]))
 			{
