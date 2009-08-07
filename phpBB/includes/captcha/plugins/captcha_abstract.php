@@ -100,8 +100,8 @@ class phpbb_default_captcha
 			
 			$template->assign_vars(array(
 				'CONFIRM_IMAGE_LINK'		=> $link,
-				'CONFIRM_IMAGE'				=> '<img src="'. $link . '" />',
-				'CONFIRM_IMG'				=> '<img src="'. $link . '" />',
+				'CONFIRM_IMAGE'				=> '<img src="' . $link . '" />',
+				'CONFIRM_IMG'				=> '<img src="' . $link . '" />',
 				'CONFIRM_ID'				=> $this->confirm_id,
 				'S_CONFIRM_CODE'			=> true,
 				'S_TYPE'					=> $this->type,
