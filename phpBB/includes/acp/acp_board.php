@@ -440,7 +440,7 @@ class acp_board
 		// We go through the display_vars to make sure no one is trying to set variables he/she is not allowed to...
 		foreach ($display_vars['vars'] as $config_name => $null)
 		{
-			if (!isset($cfg_array[$config_name]) || strpos($config_name, 'legend') !== false)
+			if (strpos($config_name, 'legend') !== false)
 			{
 				continue;
 			}
@@ -448,6 +448,12 @@ class acp_board
 			if ($config_name == 'auth_method')
 			{
 				continue;
+			}
+
+			// It could happen that the cfg array is not set. This happens within feed settings if unselecting all forums in the multiple select fields for example (it is the same as checkbox handling)
+			if (!isset($cfg_array[$config_name]))
+			{
+				$cfg_array[$config_name] = '';
 			}
 
 			// Erm, we spotted an array
