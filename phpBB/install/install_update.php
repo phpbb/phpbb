@@ -203,7 +203,7 @@ class install_update extends module
 			}
 
 			// What about the language file? Got it updated?
-			if (in_array('language/en/install.php', $this->update_info['files']))
+			if (in_array('language/en/install.' . $phpEx, $this->update_info['files']))
 			{
 				$lang = array();
 				include($this->new_location . 'language/en/install.' . $phpEx);
@@ -1577,6 +1577,12 @@ class install_update extends module
 
 				if ($info !== false)
 				{
+					// We assume that all file extensions have been renamed to .$phpEx,
+					// if someone is using a non .php file extension for php files.
+					// However, in $update_info['files'] we use hardcoded .php.
+					// We therefore replace .php with .$phpEx.
+					$info['files'] = preg_replace('/\.php$/i', ".$phpEx", $info['files']);
+
 					// Adjust the update info file to hold some specific style-related information
 					$info['custom'] = array();
 /*
