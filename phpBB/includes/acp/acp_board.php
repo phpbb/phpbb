@@ -440,7 +440,7 @@ class acp_board
 		// We go through the display_vars to make sure no one is trying to set variables he/she is not allowed to...
 		foreach ($display_vars['vars'] as $config_name => $null)
 		{
-			if ($null === false || strpos($config_name, 'legend') !== false)
+			if (!isset($cfg_array[$config_name]) || strpos($config_name, 'legend') !== false)
 			{
 				continue;
 			}
@@ -448,12 +448,6 @@ class acp_board
 			if ($config_name == 'auth_method')
 			{
 				continue;
-			}
-
-			// If not set, then this is a valid entry and needs to be emptied (select_multiple, checkbox)
-			if (!isset($cfg_array[$config_name]))
-			{
-				$cfg_array[$config_name] = '';
 			}
 
 			// Erm, we spotted an array
