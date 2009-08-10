@@ -93,7 +93,7 @@
 				// ]]>
 				</script>
 			</dt>
-			<dd style="margin-left: 90px;"><textarea name="signature" rows="10" cols="60" style="width: 95%;" onselect="storeCaret(this);" onclick="storeCaret(this);" onkeyup="storeCaret(this);">{SIGNATURE}</textarea></dd>
+			<dd style="margin-left: 90px;"><textarea name="signature" rows="10" cols="60" style="width: 95%;" onselect="storeCaret(this);" onclick="storeCaret(this);" onkeyup="storeCaret(this);" onfocus="initInsertions();">{SIGNATURE}</textarea></dd>
 			<dd style="margin-left: 90px; margin-top: 5px;">
 			<!-- IF S_BBCODE_ALLOWED -->
 				<label><input type="checkbox" class="radio" name="disable_bbcode"{S_BBCODE_CHECKED} /> {L_DISABLE_BBCODE}</label>
