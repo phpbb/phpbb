@@ -491,10 +491,8 @@ function approve_post($post_id_list, $id, $mode)
 		// If Post -> total_posts = total_posts+1, forum_posts = forum_posts+1, topic_replies = topic_replies+1
 
 		$total_topics = $total_posts = 0;
-		$forum_topics_posts = $topic_approve_sql = $topic_replies_sql = $post_approve_sql = $topic_id_list = $forum_id_list = $approve_log = array();
+		$topic_approve_sql = $post_approve_sql = $topic_id_list = $forum_id_list = $approve_log = array();
 		$user_posts_sql = $post_approved_list = array();
-
-		$update_forum_information = false;
 
 		foreach ($post_info as $post_id => $post_data)
 		{
@@ -523,16 +521,7 @@ function approve_post($post_id_list, $id, $mode)
 			{
 				if ($post_data['forum_id'])
 				{
-					if (!isset($forum_topics_posts[$post_data['forum_id']]))
-					{
-						$forum_topics_posts[$post_data['forum_id']] = array(
-							'forum_posts'	=> 0,
-							'forum_topics'	=> 0
-						);
-					}
-
 					$total_topics++;
-					$forum_topics_posts[$post_data['forum_id']]['forum_topics']++;
 				}
 				$topic_approve_sql[] = $post_data['topic_id'];
 
@@ -553,44 +542,19 @@ function approve_post($post_id_list, $id, $mode)
 				);
 			}
 
-			if ($post_data['topic_replies_real'] > 0)
-			{
-				if (!isset($topic_replies_sql[$post_data['topic_id']]))
-				{
-					$topic_replies_sql[$post_data['topic_id']] = 0;
-				}
-				$topic_replies_sql[$post_data['topic_id']]++;
-			}
-
 			if ($post_data['forum_id'])
 			{
-				if (!isset($forum_topics_posts[$post_data['forum_id']]))
-				{
-					$forum_topics_posts[$post_data['forum_id']] = array(
-						'forum_posts'	=> 0,
-						'forum_topics'	=> 0
-					);
-				}
-
 				$total_posts++;
-				$forum_topics_posts[$post_data['forum_id']]['forum_posts']++;
 
 				// Increment by topic_replies if we approve a topic...
 				// This works because we do not adjust the topic_replies when re-approving a topic after an edit.
 				if ($post_data['topic_first_post_id'] == $post_id && $post_data['topic_replies'])
 				{
 					$total_posts += $post_data['topic_replies'];
-					$forum_topics_posts[$post_data['forum_id']]['forum_posts'] += $post_data['topic_replies'];
 				}
 			}
 
 			$post_approve_sql[] = $post_id;
-
-			// If the post is newer than the last post information stored we need to update the forum information
-			if ($post_data['post_time'] >= $post_data['forum_last_post_time'])
-			{
-				$update_forum_information = true;
-			}
 		}
 		$post_id_list = array_values(array_diff($post_id_list, $post_approved_list));
 		for ($i = 0, $size = sizeof($post_approved_list); $i < $size; $i++)
@@ -614,35 +578,11 @@ function approve_post($post_id_list, $id, $mode)
 			$db->sql_query($sql);
 		}
 
+		unset($topic_approve_sql, $post_approve_sql);
+
 		foreach ($approve_log as $log_data)
 		{
 			add_log('mod', $log_data['forum_id'], $log_data['topic_id'], ($log_data['type'] == 'topic') ? 'LOG_TOPIC_APPROVED' : 'LOG_POST_APPROVED', $log_data['post_subject']);
-		}
-
-		if (sizeof($topic_replies_sql))
-		{
-			foreach ($topic_replies_sql as $topic_id => $num_replies)
-			{
-				$sql = 'UPDATE ' . TOPICS_TABLE . "
-					SET topic_replies = topic_replies + $num_replies
-					WHERE topic_id = $topic_id";
-				$db->sql_query($sql);
-			}
-		}
-
-		if (sizeof($forum_topics_posts))
-		{
-			foreach ($forum_topics_posts as $forum_id => $row)
-			{
-				$sql = 'UPDATE ' . FORUMS_TABLE . '
-					SET ';
-				$sql .= ($row['forum_topics']) ? "forum_topics = forum_topics + {$row['forum_topics']}" : '';
-				$sql .= ($row['forum_topics'] && $row['forum_posts']) ? ', ' : '';
-				$sql .= ($row['forum_posts']) ? "forum_posts = forum_posts + {$row['forum_posts']}" : '';
-				$sql .= " WHERE forum_id = $forum_id";
-
-				$db->sql_query($sql);
-			}
 		}
 
 		if (sizeof($user_posts_sql))
@@ -673,14 +613,9 @@ function approve_post($post_id_list, $id, $mode)
 		{
 			set_config_count('num_posts', $total_posts, true);
 		}
-		unset($topic_approve_sql, $topic_replies_sql, $post_approve_sql);
 
-		update_post_information('topic', array_keys($topic_id_list));
-
-		if ($update_forum_information)
-		{
-			update_post_information('forum', array_keys($forum_id_list));
-		}
+		sync('topic', 'topic_id', array_keys($topic_id_list), true);
+		sync('forum', 'forum_id', array_keys($forum_id_list), true, true);
 		unset($topic_id_list, $forum_id_list);
 
 		$messenger = new messenger();
