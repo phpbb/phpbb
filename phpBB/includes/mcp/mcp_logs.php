@@ -165,6 +165,7 @@ class mcp_logs
 		$sql_sort = $sort_by_sql[$sort_key] . ' ' . (($sort_dir == 'd') ? 'DESC' : 'ASC');
 
 		$log_operation = request_var('log_operation', '');
+		$log_operation_param = !empty($log_operation) ? '&amp;log_operation=' . urlencode(htmlspecialchars_decode($log_operation)) : '';
 		$s_lang_keys = '<option value="">' . $user->lang['SHOW_ALL_OPERATIONS'] . '</option>';
 
 		if ($topic_id)
@@ -223,7 +224,7 @@ class mcp_logs
 		$template->assign_vars(array(
 			'PAGE_NUMBER'		=> on_page($log_count, $config['topics_per_page'], $start),
 			'TOTAL'				=> ($log_count == 1) ? $user->lang['TOTAL_LOG'] : sprintf($user->lang['TOTAL_LOGS'], $log_count),
-			'PAGINATION'		=> generate_pagination($this->u_action . "&amp;$u_sort_param", $log_count, $config['topics_per_page'], $start),
+			'PAGINATION'		=> generate_pagination($this->u_action . "&amp;$u_sort_param$log_operation_param", $log_count, $config['topics_per_page'], $start),
 
 			'L_TITLE'			=> $user->lang['MCP_LOGS'],
 

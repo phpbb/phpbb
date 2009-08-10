@@ -106,6 +106,7 @@ class acp_logs
 		$sql_sort = $sort_by_sql[$sort_key] . ' ' . (($sort_dir == 'd') ? 'DESC' : 'ASC');
 
 		$log_operation = request_var('log_operation', '');
+		$log_operation_param = !empty($log_operation) ? '&amp;log_operation=' . urlencode(htmlspecialchars_decode($log_operation)) : '';
 		$s_lang_keys = '<option value="">' . $user->lang['SHOW_ALL_OPERATIONS'] . '</option>';
 
 		switch ($mode)
@@ -213,7 +214,7 @@ class acp_logs
 			'U_ACTION'		=> $this->u_action,
 
 			'S_ON_PAGE'		=> on_page($log_count, $config['topics_per_page'], $start),
-			'PAGINATION'	=> generate_pagination($this->u_action . "&amp;$u_sort_param", $log_count, $config['topics_per_page'], $start, true),
+			'PAGINATION'	=> generate_pagination($this->u_action . "&amp;$u_sort_param$log_operation_param", $log_count, $config['topics_per_page'], $start, true),
 
 			'S_LIMIT_DAYS'	=> $s_limit_days,
 			'S_SORT_KEY'	=> $s_sort_key,

@@ -194,6 +194,7 @@ class mcp_notes
 		$sql_sort = $sort_by_sql[$sk] . ' ' . (($sd == 'd') ? 'DESC' : 'ASC');
 
 		$log_operation = request_var('log_operation', '');
+		$log_operation_param = !empty($log_operation) ? '&amp;log_operation=' . urlencode(htmlspecialchars_decode($log_operation)) : '';
 		$s_lang_keys = '<option value="">' . $user->lang['SHOW_ALL_OPERATIONS'] . '</option>';
 
 		$sql = "SELECT DISTINCT log_operation
@@ -243,7 +244,7 @@ class mcp_notes
 			'L_TITLE'			=> $user->lang['MCP_NOTES_USER'],
 
 			'PAGE_NUMBER'		=> on_page($log_count, $config['posts_per_page'], $start),
-			'PAGINATION'		=> generate_pagination($this->u_action . "&amp;st=$st&amp;sk=$sk&amp;sd=$sd", $log_count, $config['posts_per_page'], $start),
+			'PAGINATION'		=> generate_pagination($this->u_action . "&amp;st=$st&amp;sk=$sk&amp;sd=$sd$log_operation_param", $log_count, $config['posts_per_page'], $start),
 			'TOTAL_REPORTS'		=> ($log_count == 1) ? $user->lang['LIST_REPORT'] : sprintf($user->lang['LIST_REPORTS'], $log_count),
 
 			'RANK_TITLE'		=> $rank_title,
