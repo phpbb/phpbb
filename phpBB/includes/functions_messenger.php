@@ -173,7 +173,7 @@ class messenger
 	/**
 	* Set email template to use
 	*/
-	function template($template_file, $template_lang = '')
+	function template($template_file, $template_lang = '', $template_path = '')
 	{
 		global $config, $phpbb_root_path, $user;
 
@@ -193,8 +193,11 @@ class messenger
 			$this->tpl_msg[$template_lang . $template_file] = new template();
 			$tpl = &$this->tpl_msg[$template_lang . $template_file];
 
-			$template_path = (!empty($user->lang_path)) ? $user->lang_path : $phpbb_root_path . 'language/';
-			$template_path .= $template_lang . '/email';
+			if (!$template_path)
+			{
+				$template_path = (!empty($user->lang_path)) ? $user->lang_path : $phpbb_root_path . 'language/';
+				$template_path .= $template_lang . '/email';
+			}
 
 			$tpl->set_custom_template($template_path, $template_lang . '_email');
 
