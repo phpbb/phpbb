@@ -17,17 +17,15 @@
 	<!-- IF S_VERSIONCHECK_FAIL -->
 		<div class="errorbox notice">
 			<p>{L_VERSIONCHECK_FAIL}</p>
-	<!-- ELSE -->
-		<!-- IF S_VERSION_UP_TO_DATE -->
-			<div class="successbox">
-				<p>{L_VERSION_UP_TO_DATE_ACP}</p>
-		<!-- ELSE -->
-			<div class="errorbox">
-				<p>{L_VERSION_NOT_UP_TO_DATE_TITLE}</p>
-		<!-- ENDIF -->
-	<!-- ENDIF -->
 			<p><a href="{U_VERSIONCHECK_FORCE}">{L_VERSIONCHECK_FORCE_UPDATE}</a> &middot; <a href="{U_VERSIONCHECK}">{L_MORE_INFORMATION}</a></p>
 		</div>
+	<!-- ELSEIF ! S_VERSION_UP_TO_DATE -->
+		<div class="errorbox">
+			<p>{L_VERSION_NOT_UP_TO_DATE_TITLE}</p>
+			<p><a href="{U_VERSIONCHECK_FORCE}">{L_VERSIONCHECK_FORCE_UPDATE}</a> &middot; <a href="{U_VERSIONCHECK}">{L_MORE_INFORMATION}</a></p>
+		</div>
+	<!-- ENDIF -->
+
 
 	<!-- IF S_REMOVE_INSTALL -->
 		<div class="errorbox">
@@ -100,7 +98,9 @@
 	</tr>
 	<tr>
 		<td>{L_BOARD_VERSION}: </td>
-		<td><strong>{BOARD_VERSION}</strong></td>
+				<td>
+			<strong><a href="{U_VERSIONCHECK}" <!-- IF S_VERSION_UP_TO_DATE -->style="color: #228822"<!-- ELSE -->style="color: #BC2A4D"<!-- ENDIF --> title="{L_MORE_INFORMATION}" href="{U_VERSIONCHECK}">{BOARD_VERSION}</a></strong>&nbsp;<a href="{U_VERSIONCHECK_FORCE}">{L_VERSIONCHECK_FORCE_UPDATE}</a>&nbsp;
+		</td>
 	<!-- IF S_TOTAL_ORPHAN -->
 		<td>{L_NUMBER_ORPHAN}: </td>
 		<td><strong>{TOTAL_ORPHAN}</strong></td>
