@@ -802,6 +802,9 @@ if ($submit || $preview || $refresh)
 	// Check checksum ... don't re-parse message if the same
 	$update_message = ($mode != 'edit' || $message_md5 != $post_data['post_checksum'] || $status_switch || strlen($post_data['bbcode_uid']) < BBCODE_UID_LEN) ? true : false;
 
+	// Also check if subject got updated...
+	$update_subject = $mode != 'edit' || ($post_data['post_subject_md5'] && $post_data['post_subject_md5'] != md5($post_data['post_subject']));
+
 	// Parse message
 	if ($update_message)
 	{
@@ -1114,7 +1117,8 @@ if ($submit || $preview || $refresh)
 				$data['topic_replies'] = $post_data['topic_replies'];
 			}
 
-			$redirect_url = submit_post($mode, $post_data['post_subject'], $post_data['username'], $post_data['topic_type'], $poll, $data, $update_message);
+			// $update_message indicates two things: 1) update post_text in table 2) update search index
+			$redirect_url = submit_post($mode, $post_data['post_subject'], $post_data['username'], $post_data['topic_type'], $poll, $data, $update_message || $update_subject);
 
 			if ($config['enable_post_confirm'] && !$user->data['is_registered'] && in_array($mode, array('quote', 'post', 'reply')))
 			{
