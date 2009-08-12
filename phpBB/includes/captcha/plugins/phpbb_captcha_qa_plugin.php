@@ -121,7 +121,7 @@ class phpbb_captcha_qa
 		// load language file for pretty display in the ACP dropdown
 		$user->add_lang('captcha_qa');
 		
-		if (!self::is_installed())
+		if (!phpbb_captcha_qa::is_installed())
 		{
 			return false;
 		}
@@ -273,7 +273,7 @@ class phpbb_captcha_qa
 									'strict'		=> array('BOOL', 0),
 									'lang_id'		=> array('UINT', 0),
 									'lang_iso'		=> array('VCHAR:30', 0),
-									'question_text'	=> array('TEXT', 0),
+									'question_text'	=> array('TEXT_UNI', ''),
 								),
 								'PRIMARY_KEY'		=> 'question_id',
 								'KEYS'				=> array(
@@ -283,7 +283,7 @@ class phpbb_captcha_qa
 				ANSWERS_TABLE		=> array (
 								'COLUMNS' => array(
 									'question_id'	=> array('UINT', 0),
-									'answer_text'	=> array('TEXT', 0),
+									'answer_text'	=> array('STEXT_UNI', ''),
 								),
 								'KEYS'				=> array(
 									'question_id'			=> array('INDEX', 'question_id'),
