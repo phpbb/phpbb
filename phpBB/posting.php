@@ -39,7 +39,7 @@ $load		= (isset($_POST['load'])) ? true : false;
 $delete		= (isset($_POST['delete'])) ? true : false;
 $cancel		= (isset($_POST['cancel']) && !isset($_POST['save'])) ? true : false;
 
-$refresh	= (isset($_POST['add_file']) || isset($_POST['delete_file']) || isset($_POST['cancel_unglobalise']) || $save || $load) ? true : false;
+$refresh	= (isset($_POST['add_file']) || isset($_POST['delete_file']) || isset($_POST['full_editor']) ||isset($_POST['cancel_unglobalise']) || $save || $load) ? true : false;
 $mode		= ($delete && !$preview && !$refresh && $submit) ? 'delete' : request_var('mode', '');
 
 $error = $post_data = array();
@@ -1365,6 +1365,7 @@ generate_forum_nav($post_data);
 // Build Forum Rules
 generate_forum_rules($post_data);
 
+// Posting uses is_solved for legacy reasons. Plugins have to use is_solved to force themselves to be displayed.
 if ($config['enable_post_confirm'] && !$user->data['is_registered'] && (isset($captcha) && $captcha->is_solved() === false) && ($mode == 'post' || $mode == 'reply' || $mode == 'quote'))
 {
 	$captcha->reset();
