@@ -339,7 +339,17 @@ class phpbb_feed_factory
 			break;
 
 			case 'news':
-				if (empty($config['feed_news_id']))
+				global $db;
+
+				// Get at least one news forum
+				$sql = 'SELECT forum_id
+					FROM ' . FORUMS_TABLE . '
+					WHERE ' . $db->sql_bit_and('forum_options', FORUM_OPTION_FEED_NEWS, '<> 0');
+				$result = $db->sql_query_limit($sql, 1, 0, 600);
+				$s_feed_news = (int) $db->sql_fetchfield('forum_id');
+				$db->sql_freeresult($result);
+
+				if (!$s_feed_news)
 				{
 					return false;
 				}
@@ -534,7 +544,18 @@ class phpbb_feed
 		global $auth, $db, $config, $phpbb_root_path, $phpEx, $user;
 
 		// Which forums should not be searched ?
-		$exclude_forums = (!empty($config['feed_exclude_id'])) ? unserialize(trim($config['feed_exclude_id'])) : array();
+		$exclude_forums = array();
+
+		$sql = 'SELECT forum_id
+			FROM ' . FORUMS_TABLE . '
+			WHERE ' . $db->sql_bit_and('forum_options', FORUM_OPTION_FEED_EXCLUDE, '<> 0');
+		$result = $db->sql_query($sql);
+
+		while ($row = $db->sql_fetchrow($result))
+		{
+			$exclude_forums[] = (int) $row['forum_id'];
+		}
+		$db->sql_freeresult($result);
 
 		// Exclude forums the user is not able to read
 		$this->excluded_forums_ary = array_keys($auth->acl_getf('!f_read', true));
@@ -883,7 +904,18 @@ class phpbb_feed_news extends phpbb_feed
 	{
 		global $db, $config;
 
-		$in_fid_ary = unserialize(trim($config['feed_news_id']));
+		// Get news forums...
+		$sql = 'SELECT forum_id
+			FROM ' . FORUMS_TABLE . '
+			WHERE ' . $db->sql_bit_and('forum_options', FORUM_OPTION_FEED_NEWS, '<> 0');
+		$result = $db->sql_query($sql);
+
+		$in_fid_ary = array();
+		while ($row = $db->sql_fetchrow($result))
+		{
+			$in_fid_ary[] = (int) $row['forum_id'];
+		}
+		$db->sql_freeresult($result);
 
 		if (!sizeof($in_fid_ary))
 		{
@@ -905,7 +937,8 @@ class phpbb_feed_news extends phpbb_feed
 			'WHERE'		=> $db->sql_in_set('t.forum_id', $in_fid_ary) . '
 							AND f.forum_id = t.forum_id
 							AND p.post_id = t.topic_first_post_id
-							AND t.topic_poster = u.user_id',
+							AND t.topic_poster = u.user_id
+							AND t.topic_moved_id = 0',
 			'ORDER_BY'	=> 't.topic_time DESC',
 		);
 

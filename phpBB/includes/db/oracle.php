@@ -568,6 +568,11 @@ class dbal_oracle extends dbal
 		return $data;
 	}
 
+	function _sql_bit_and($column_name, $bit, $compare = '')
+	{
+		return 'BITAND(' . $column_name . ', ' . (1 << $bit) . ')' . (($compare) ? ' ' . $compare : '');
+	}
+
 	/**
 	* return sql error array
 	* @access private

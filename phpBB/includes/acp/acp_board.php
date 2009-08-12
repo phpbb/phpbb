@@ -272,8 +272,8 @@ class acp_board
 						'feed_overall_topics_limit'	=> array('lang' => 'ACP_FEED_OVERALL_TOPIC_LIMIT',	'validate' => 'int:5',	'type' => 'text:3:4',				'explain' => false),
 						'feed_forum'				=> array('lang' => 'ACP_FEED_FORUM',				'validate' => 'bool',	'type' => 'radio:enabled_disabled',	'explain' => true ),
 						'feed_topic'				=> array('lang' => 'ACP_FEED_TOPIC',				'validate' => 'bool',	'type' => 'radio:enabled_disabled',	'explain' => true ),
-						'feed_news_id'				=> array('lang' => 'ACP_FEED_NEWS',					'validate' => 'string',	'type' => 'select_multiple', 'method' => 'select_news_forums', 'explain' => true ),
-						'feed_exclude_id'			=> array('lang' => 'ACP_FEED_EXCLUDE_ID',			'validate' => 'string',	'type' => 'select_multiple', 'method' => 'select_exclude_forums', 'explain' => true),
+						'feed_news_id'				=> array('lang' => 'ACP_FEED_NEWS',					'validate' => 'string',	'type' => 'custom', 'method' => 'select_news_forums', 'explain' => true),
+						'feed_exclude_id'			=> array('lang' => 'ACP_FEED_EXCLUDE_ID',			'validate' => 'string',	'type' => 'custom', 'method' => 'select_exclude_forums', 'explain' => true),
 					)
 				);
 			break;
@@ -440,33 +440,14 @@ class acp_board
 		// We go through the display_vars to make sure no one is trying to set variables he/she is not allowed to...
 		foreach ($display_vars['vars'] as $config_name => $null)
 		{
-			if (strpos($config_name, 'legend') !== false)
+			if (!isset($cfg_array[$config_name]) || strpos($config_name, 'legend') !== false)
 			{
 				continue;
 			}
 
-			if ($config_name == 'auth_method')
+			if ($config_name == 'auth_method' || $config_name == 'feed_news_id' || $config_name == 'feed_exclude_id')
 			{
 				continue;
-			}
-
-			// It could happen that the cfg array is not set. This happens within feed settings if unselecting all forums in the multiple select fields for example (it is the same as checkbox handling)
-			if (!isset($cfg_array[$config_name]))
-			{
-				$cfg_array[$config_name] = '';
-			}
-
-			// Erm, we spotted an array
-			if ($null['type'] == 'select_multiple' && $submit && isset($_REQUEST['config'][$config_name]))
-			{
-				// Get config *array*
-				$cfg_ = utf8_normalize_nfc(request_var('config', array('' => array('')), true));
-
-				// Check if the variable is set and an array
-				if (isset($cfg_[$config_name]) && is_array($cfg_[$config_name]))
-				{
-					$cfg_array[$config_name] = trim(serialize($cfg_[$config_name]));
-				}
 			}
 
 			$this->new_config[$config_name] = $config_value = $cfg_array[$config_name];
@@ -482,6 +463,13 @@ class acp_board
 			{
 				set_config($config_name, $config_value);
 			}
+		}
+
+		// Store news and exclude ids
+		if ($mode == 'feed' && $submit)
+		{
+			$this->store_feed_forums(FORUM_OPTION_FEED_NEWS, 'feed_news_id');
+			$this->store_feed_forums(FORUM_OPTION_FEED_EXCLUDE, 'feed_exclude_id');
 		}
 
 		if ($mode == 'auth')
@@ -902,17 +890,17 @@ class acp_board
 	{
 		global $user, $config;
 
-		// Determine ids to be selected
-		$select_ids = (sizeof($value)) ? $value : false;
-
-		$forum_list = make_forum_select($select_ids, false, true, true, true, false, true);
+		$forum_list = make_forum_select(false, false, true, true, true, false, true);
 
 		// Build forum options
-		$s_forum_options = '';
+		$s_forum_options = '<select id="' . $key . '" name="' . $key . '[]" multiple="multiple">';
 		foreach ($forum_list as $f_id => $f_row)
 		{
+			$f_row['selected'] = phpbb_optionget(FORUM_OPTION_FEED_NEWS, $f_row['forum_options']);
+
 			$s_forum_options .= '<option value="' . $f_id . '"' . (($f_row['selected']) ? ' selected="selected"' : '') . (($f_row['disabled']) ? ' disabled="disabled" class="disabled-option"' : '') . '>' . $f_row['padding'] . $f_row['forum_name'] . '</option>';
 		}
+		$s_forum_options .= '</select>';
 
 		return $s_forum_options;
 	}
@@ -921,20 +909,48 @@ class acp_board
 	{
 		global $user, $config;
 
-		// Determine ids to be selected
-		$select_ids = (sizeof($value)) ? $value : false;
-
-		$forum_list = make_forum_select($select_ids, false, true, false, false, false, true);
+		$forum_list = make_forum_select(false, false, true, false, false, false, true);
 
 		// Build forum options
-		$s_forum_options = '';
+		$s_forum_options = '<select id="' . $key . '" name="' . $key . '[]" multiple="multiple">';
 		foreach ($forum_list as $f_id => $f_row)
 		{
+			$f_row['selected'] = phpbb_optionget(FORUM_OPTION_FEED_EXCLUDE, $f_row['forum_options']);
+
 			$s_forum_options .= '<option value="' . $f_id . '"' . (($f_row['selected']) ? ' selected="selected"' : '') . (($f_row['disabled']) ? ' disabled="disabled" class="disabled-option"' : '') . '>' . $f_row['padding'] . $f_row['forum_name'] . '</option>';
 		}
+		$s_forum_options .= '</select>';
 
 		return $s_forum_options;
 	}
+
+	function store_feed_forums($option, $key)
+	{
+		global $db, $cache;
+
+		// Get key
+		$values = request_var($key, array(0 => 0));
+
+		// Empty option bit for all forums
+		$sql = 'UPDATE ' . FORUMS_TABLE . '
+			SET forum_options = forum_options - ' . (1 << $option) . '
+			WHERE ' . $db->sql_bit_and('forum_options', $option, '<> 0');
+		$db->sql_query($sql);
+
+		// Already emptied for all...
+		if (sizeof($values))
+		{
+			// Set for selected forums
+			$sql = 'UPDATE ' . FORUMS_TABLE . '
+				SET forum_options = forum_options + ' . (1 << $option) . '
+				WHERE ' . $db->sql_in_set('forum_id', $values);
+			$db->sql_query($sql);
+		}
+
+		// Empty sql cache for forums table because options changed
+		$cache->destroy('sql', FORUMS_TABLE);
+	}
+
 }
 
 ?>

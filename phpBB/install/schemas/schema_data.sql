@@ -105,9 +105,7 @@ INSERT INTO phpbb_config (config_name, config_value) VALUES ('feed_overall_topic
 INSERT INTO phpbb_config (config_name, config_value) VALUES ('feed_overall_topics_limit', '15');
 INSERT INTO phpbb_config (config_name, config_value) VALUES ('feed_forum', '1');
 INSERT INTO phpbb_config (config_name, config_value) VALUES ('feed_topic', '1');
-INSERT INTO phpbb_config (config_name, config_value) VALUES ('feed_news_id', '');
 INSERT INTO phpbb_config (config_name, config_value) VALUES ('feed_item_statistics', '1');
-INSERT INTO phpbb_config (config_name, config_value) VALUES ('feed_exclude_id', '');
 INSERT INTO phpbb_config (config_name, config_value) VALUES ('flood_interval', '15');
 INSERT INTO phpbb_config (config_name, config_value) VALUES ('force_server_vars', '0');
 INSERT INTO phpbb_config (config_name, config_value) VALUES ('form_token_lifetime', '7200');

@@ -446,6 +446,11 @@ class dbal_firebird extends dbal
 		return $data;
 	}
 
+	function _sql_bit_and($column_name, $bit, $compare = '')
+	{
+		return 'BIN_AND(' . $column_name . ', ' . (1 << $bit) . ')' . (($compare) ? ' ' . $compare : '');
+	}
+
 	/**
 	* return sql error array
 	* @access private

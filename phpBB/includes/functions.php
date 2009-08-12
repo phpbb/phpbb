@@ -3505,7 +3505,7 @@ function msg_handler($errno, $msg_text, $errfile, $errline)
 					$l_notify = '<p>Please notify the board administrator or webmaster: <a href="mailto:' . $config['board_contact'] . '">' . $config['board_contact'] . '</a></p>';
 				}
 			}
-			
+
 			if (defined('DEBUG') || defined('IN_CRON') || defined('IMAGE_OUTPUT'))
 			{
 				// let's avoid loops
@@ -3857,6 +3857,40 @@ function obtain_users_online_string($online_users, $item_id = 0, $item = 'forum'
 	);
 }
 
+/**
+* Get option bitfield from custom data
+*
+* @param int	$bit		The bit/value to get
+* @param int	$data		Current bitfield to check
+* @return bool	Returns true if value of constant is set in bitfield, else false
+*/
+function phpbb_optionget($bit, $data)
+{
+	return ($data & 1 << (int) $bit) ? true : false;
+}
+
+/**
+* Set option bitfield
+*
+* @param int	$bit		The bit/value to set/unset
+* @param bool	$set		True if option should be set, false if option should be unset.
+* @param int	$data		Current bitfield to change
+*
+* @return int	The new bitfield
+*/
+function phpbb_optionset($bit, $set, $data)
+{
+	if ($set && !($data & 1 << $bit))
+	{
+		$data += 1 << $bit;
+	}
+	else if (!$set && ($data & 1 << $bit))
+	{
+		$data -= 1 << $bit;
+	}
+
+	return $data;
+}
 
 /**
 * Generate page header
@@ -3917,7 +3951,7 @@ function page_header($page_title = '', $display_online_list = true, $forum_id = 
 		* }
 		* </code>
 		*/
-		
+
 		if ($forum_id)
 		{
 			$item_id = max($forum_id, 0);
@@ -3926,7 +3960,7 @@ function page_header($page_title = '', $display_online_list = true, $forum_id = 
 		{
 			$item_id = 0;
 		}
-		
+
 		// workaround legacy code
 		$item = 'forum';
 		$online_users = obtain_users_online($item_id, $item);
@@ -4005,6 +4039,19 @@ function page_header($page_title = '', $display_online_list = true, $forum_id = 
 	$forum_id = request_var('f', 0);
 	$topic_id = request_var('t', 0);
 
+	$s_feed_news = false;
+
+	// Get option for news
+	if ($config['feed_enable'])
+	{
+		$sql = 'SELECT forum_id
+			FROM ' . FORUMS_TABLE . '
+			WHERE ' . $db->sql_bit_and('forum_options', FORUM_OPTION_FEED_NEWS, '<> 0');
+		$result = $db->sql_query_limit($sql, 1, 0, 600);
+		$s_feed_news = (int) $db->sql_fetchfield('forum_id');
+		$db->sql_freeresult($result);
+	}
+
 	// The following assigns all _common_ variables that may be used at any point in a template.
 	$template->assign_vars(array(
 		'SITENAME'						=> $config['sitename'],
@@ -4082,11 +4129,9 @@ function page_header($page_title = '', $display_online_list = true, $forum_id = 
 		'S_TOPIC_ID'			=> $topic_id,
 
 		'S_ENABLE_FEEDS'			=> ($config['feed_enable']) ? true : false,
-		'S_ENABLE_FEEDS_NEWS'		=> ($config['feed_news_id'] != '') ? true : false,
 		'S_ENABLE_FEEDS_FORUMS'		=> ($config['feed_overall_forums']) ? true : false,
 		'S_ENABLE_FEEDS_TOPICS'		=> ($config['feed_overall_topics']) ? true : false,
-		'S_ENABLE_FEEDS_FORUM'		=> ($config['feed_forum'] && $forum_id && strpos($user->page['page_name'], 'viewforum') !== false) ? true : false,
-		'S_ENABLE_FEEDS_TOPIC'		=> ($config['feed_topic'] && $topic_id && strpos($user->page['page_name'], 'viewtopic') !== false) ? true : false,
+		'S_ENABLE_FEEDS_NEWS'		=> ($s_feed_news) ? true : false,
 
 		'T_THEME_PATH'			=> "{$phpbb_root_path}styles/" . $user->theme['theme_path'] . '/theme',
 		'T_TEMPLATE_PATH'		=> "{$phpbb_root_path}styles/" . $user->theme['template_path'] . '/template',

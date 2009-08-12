@@ -505,6 +505,7 @@ CREATE TABLE phpbb_forums (
 	forum_last_poster_name varchar2(765) DEFAULT '' ,
 	forum_last_poster_colour varchar2(6) DEFAULT '' ,
 	forum_flags number(4) DEFAULT '32' NOT NULL,
+	forum_options number(20) DEFAULT '0' NOT NULL,
 	display_subforum_list number(1) DEFAULT '1' NOT NULL,
 	display_on_index number(1) DEFAULT '1' NOT NULL,
 	enable_indexing number(1) DEFAULT '1' NOT NULL,

@@ -412,6 +412,24 @@ class dbal
 	}
 
 	/**
+	* Run binary AND operator on DB column.
+	* Results in sql statement: "{$column_name} & (1 << {$bit}) {$compare}"
+	*
+	* @param string $column_name The column name to use
+	* @param int $bit The value to use for the AND operator, will be converted to (1 << $bit). Is used by options, using the number schema... 0, 1, 2...29
+	* @param string $compare Any custom SQL code after the check (for example "= 0")
+	*/
+	function sql_bit_and($column_name, $bit, $compare = '')
+	{
+		if (method_exists($this, '_sql_bit_and'))
+		{
+			return $this->_sql_bit_and($column_name, $bit, $compare);
+		}
+
+		return $column_name . ' & ' . (1 << $bit) . (($compare) ? ' ' . $compare : '');
+	}
+
+	/**
 	* Run more than one insert statement.
 	*
 	* @param string $table table name to run the statements on

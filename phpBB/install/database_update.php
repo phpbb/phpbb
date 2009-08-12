@@ -707,6 +707,9 @@ function database_update_info()
 				PROFILE_FIELDS_TABLE			=> array(
 					'field_show_on_vt'		=> array('BOOL', 0),
 				),
+				FORUMS_TABLE		=> array(
+					'forum_options'			=> array('UINT:20', 0),
+				),
 			),
 			'change_columns'		=> array(
 				USERS_TABLE				=> array(
@@ -1086,10 +1089,7 @@ function change_database_data(&$no_updates, $version)
 
 			set_config('feed_forum', '1');
 			set_config('feed_topic', '1');
-			set_config('feed_news_id', '');
-
 			set_config('feed_item_statistics', '1');
-			set_config('feed_exclude_id', '');
 
 			// Entries for smiley pagination
 			set_config('smilies_per_page', '50');

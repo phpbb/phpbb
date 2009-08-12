@@ -382,6 +382,7 @@ CREATE TABLE phpbb_forums (
 	forum_last_poster_name varchar(255) DEFAULT '' NOT NULL,
 	forum_last_poster_colour varchar(6) DEFAULT '' NOT NULL,
 	forum_flags INT2 DEFAULT '32' NOT NULL,
+	forum_options INT4 DEFAULT '0' NOT NULL CHECK (forum_options >= 0),
 	display_subforum_list INT2 DEFAULT '1' NOT NULL CHECK (display_subforum_list >= 0),
 	display_on_index INT2 DEFAULT '1' NOT NULL CHECK (display_on_index >= 0),
 	enable_indexing INT2 DEFAULT '1' NOT NULL CHECK (enable_indexing >= 0),

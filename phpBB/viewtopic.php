@@ -620,6 +620,7 @@ $template->assign_vars(array(
 
 	'S_DISPLAY_POST_INFO'	=> ($topic_data['forum_type'] == FORUM_POST && ($auth->acl_get('f_post', $forum_id) || $user->data['user_id'] == ANONYMOUS)) ? true : false,
 	'S_DISPLAY_REPLY_INFO'	=> ($topic_data['forum_type'] == FORUM_POST && ($auth->acl_get('f_reply', $forum_id) || $user->data['user_id'] == ANONYMOUS)) ? true : false,
+	'S_ENABLE_FEEDS_TOPIC'	=> ($config['feed_topic'] && !phpbb_optionget(FORUM_OPTION_FEED_EXCLUDE, $topic_data['forum_options'])) ? true : false,
 
 	'U_TOPIC'				=> "{$server_path}viewtopic.$phpEx?f=$forum_id&amp;t=$topic_id",
 	'U_FORUM'				=> $server_path,
@@ -1180,7 +1181,7 @@ if ($config['load_cpf_viewtopic'])
 
 	// Grab all profile fields from users in id cache for later use - similar to the poster cache
 	$profile_fields_tmp = $cp->generate_profile_fields_template('grab', $id_cache);
-	
+
 	// filter out fields not to be displayed on viewtopic. Yes, it's a hack, but this shouldn't break any MODs.
 	$profile_fields_cache = array();
 	foreach ($profile_fields_tmp as $profile_user_id => $profile_fields)

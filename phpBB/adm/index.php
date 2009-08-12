@@ -263,6 +263,12 @@ function build_cfg_template($tpl_type, $key, &$new, $config_key, $vars)
 	$tpl = '';
 	$name = 'config[' . $config_key . ']';
 
+	// Make sure there is no notice printed out for non-existent config options (we simply set them)
+	if (!isset($new[$config_key]))
+	{
+		$new[$config_key] = '';
+	}
+
 	switch ($tpl_type[0])
 	{
 		case 'text':
@@ -301,7 +307,6 @@ function build_cfg_template($tpl_type, $key, &$new, $config_key, $vars)
 		break;
 
 		case 'select':
-		case 'select_multiple':
 		case 'custom':
 
 			$return = '';
@@ -340,21 +345,12 @@ function build_cfg_template($tpl_type, $key, &$new, $config_key, $vars)
 			}
 			else
 			{
-				if ($tpl_type[0] == 'select_multiple')
-				{
-					$new[$config_key] = @unserialize(trim($new[$config_key]));
-				}
-
 				$args = array($new[$config_key], $key);
 			}
 
 			$return = call_user_func_array($call, $args);
 
-			if ($tpl_type[0] == 'select_multiple')
-			{
-				$tpl = '<select id="' . $key . '" name="' . $name . '[]" multiple="multiple">' . $return . '</select>';
-			}
-			else if ($tpl_type[0] == 'select')
+			if ($tpl_type[0] == 'select')
 			{
 				$tpl = '<select id="' . $key . '" name="' . $name . '">' . $return . '</select>';
 			}

@@ -69,7 +69,7 @@ function make_forum_select($select_id = false, $ignore_id = false, $ignore_acl =
 	$acl = ($ignore_acl) ? '' : (($only_acl_post) ? 'f_post' : array('f_list', 'a_forum', 'a_forumadd', 'a_forumdel'));
 
 	// This query is identical to the jumpbox one
-	$sql = 'SELECT forum_id, forum_name, parent_id, forum_type, left_id, right_id
+	$sql = 'SELECT forum_id, forum_name, parent_id, forum_type, forum_flags, forum_options, left_id, right_id
 		FROM ' . FORUMS_TABLE . '
 		ORDER BY left_id ASC';
 	$result = $db->sql_query($sql, 600);
@@ -1364,15 +1364,15 @@ function sync($mode, $where_type = '', $where_ids = '', $resync_parents = false,
 					$sql = 'DELETE FROM ' . TOPICS_TABLE . '
 						WHERE ' . $db->sql_in_set('topic_id', $topic_id_ary);
 					$db->sql_query($sql);
-					
+
 				break;
 			}
-		
+
 			$db->sql_transaction('commit');
 			break;
 
 		case 'topic_approved':
-		
+
 			$db->sql_transaction('begin');
 			switch ($db->sql_layer)
 			{
@@ -1409,15 +1409,15 @@ function sync($mode, $where_type = '', $where_ids = '', $resync_parents = false,
 					$db->sql_query($sql);
 				break;
 			}
-			
+
 			$db->sql_transaction('commit');
 			break;
 
 		case 'post_reported':
 			$post_ids = $post_reported = array();
-			
+
 			$db->sql_transaction('begin');
-			
+
 			$sql = 'SELECT p.post_id, p.post_reported
 				FROM ' . POSTS_TABLE . " p
 				$where_sql
@@ -1468,7 +1468,7 @@ function sync($mode, $where_type = '', $where_ids = '', $resync_parents = false,
 					WHERE ' . $db->sql_in_set('post_id', $post_ids);
 				$db->sql_query($sql);
 			}
-			
+
 			$db->sql_transaction('commit');
 			break;
 
@@ -1481,7 +1481,7 @@ function sync($mode, $where_type = '', $where_ids = '', $resync_parents = false,
 			$topic_ids = $topic_reported = array();
 
 			$db->sql_transaction('begin');
-			
+
 			$sql = 'SELECT DISTINCT(t.topic_id)
 				FROM ' . POSTS_TABLE . " t
 				$where_sql_and t.post_reported = 1";
@@ -1514,7 +1514,7 @@ function sync($mode, $where_type = '', $where_ids = '', $resync_parents = false,
 					WHERE ' . $db->sql_in_set('topic_id', $topic_ids);
 				$db->sql_query($sql);
 			}
-			
+
 			$db->sql_transaction('commit');
 			break;
 
@@ -1522,7 +1522,7 @@ function sync($mode, $where_type = '', $where_ids = '', $resync_parents = false,
 			$post_ids = $post_attachment = array();
 
 			$db->sql_transaction('begin');
-			
+
 			$sql = 'SELECT p.post_id, p.post_attachment
 				FROM ' . POSTS_TABLE . " p
 				$where_sql
@@ -1573,7 +1573,7 @@ function sync($mode, $where_type = '', $where_ids = '', $resync_parents = false,
 					WHERE ' . $db->sql_in_set('post_id', $post_ids);
 				$db->sql_query($sql);
 			}
-			
+
 			$db->sql_transaction('commit');
 			break;
 
@@ -1619,15 +1619,15 @@ function sync($mode, $where_type = '', $where_ids = '', $resync_parents = false,
 					WHERE ' . $db->sql_in_set('topic_id', $topic_ids);
 				$db->sql_query($sql);
 			}
-		
+
 			$db->sql_transaction('commit');
-		
+
 			break;
 
 		case 'forum':
 
 			$db->sql_transaction('begin');
-			
+
 			// 1: Get the list of all forums
 			$sql = 'SELECT f.*
 				FROM ' . FORUMS_TABLE . " f
@@ -1828,7 +1828,7 @@ function sync($mode, $where_type = '', $where_ids = '', $resync_parents = false,
 					$db->sql_query($sql);
 				}
 			}
-			
+
 			$db->sql_transaction('commit');
 			break;
 
@@ -1836,7 +1836,7 @@ function sync($mode, $where_type = '', $where_ids = '', $resync_parents = false,
 			$topic_data = $post_ids = $approved_unapproved_ids = $resync_forums = $delete_topics = $delete_posts = $moved_topics = array();
 
 			$db->sql_transaction('begin');
-			
+
 			$sql = 'SELECT t.topic_id, t.forum_id, t.topic_moved_id, t.topic_approved, ' . (($sync_extra) ? 't.topic_attachment, t.topic_reported, ' : '') . 't.topic_poster, t.topic_time, t.topic_replies, t.topic_replies_real, t.topic_first_post_id, t.topic_first_poster_name, t.topic_first_poster_colour, t.topic_last_post_id, t.topic_last_post_subject, t.topic_last_poster_id, t.topic_last_poster_name, t.topic_last_poster_colour, t.topic_last_post_time
 				FROM ' . TOPICS_TABLE . " t
 				$where_sql";
@@ -2160,7 +2160,7 @@ function sync($mode, $where_type = '', $where_ids = '', $resync_parents = false,
 			unset($topic_data);
 
 			$db->sql_transaction('commit');
-			
+
 			// if some topics have been resync'ed then resync parent forums
 			// except when we're only syncing a range, we don't want to sync forums during
 			// batch processing.

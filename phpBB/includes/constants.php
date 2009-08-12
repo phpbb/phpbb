@@ -93,6 +93,10 @@ define('FORUM_FLAG_ACTIVE_TOPICS', 16);
 define('FORUM_FLAG_POST_REVIEW', 32);
 define('FORUM_FLAG_QUICK_REPLY', 64);
 
+// Forum Options... sequential order. Modifications should begin at number 10 (number 29 is maximum)
+define('FORUM_OPTION_FEED_NEWS', 1);
+define('FORUM_OPTION_FEED_EXCLUDE', 2);
+
 // Optional text flags
 define('OPTION_FLAG_BBCODE', 1);
 define('OPTION_FLAG_SMILIES', 2);
