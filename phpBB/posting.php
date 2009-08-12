@@ -1492,7 +1492,7 @@ $allowed = ($auth->acl_get('f_attach', $forum_id) && $auth->acl_get('u_attach') 
 posting_gen_attachment_entry($attachment_data, $filename_data, $allowed);
 
 // Output page ...
-page_header($page_title);
+page_header($page_title, false);
 
 $template->set_filenames(array(
 	'body' => 'posting_body.html')
@@ -1520,7 +1520,7 @@ function upload_popup($forum_style = 0)
 
 	($forum_style) ? $user->setup('posting', $forum_style) : $user->setup('posting');
 
-	page_header($user->lang['PROGRESS_BAR']);
+	page_header($user->lang['PROGRESS_BAR'], false);
 
 	$template->set_filenames(array(
 		'popup'	=> 'posting_progress_bar.html')

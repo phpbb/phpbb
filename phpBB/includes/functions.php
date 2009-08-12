@@ -3861,7 +3861,7 @@ function obtain_users_online_string($online_users, $item_id = 0, $item = 'forum'
 /**
 * Generate page header
 */
-function page_header($page_title = '', $display_online_list = true)
+function page_header($page_title = '', $display_online_list = true, $forum_id = 0)
 {
 	global $db, $config, $template, $SID, $_SID, $user, $auth, $phpEx, $phpbb_root_path;
 
@@ -3917,10 +3917,18 @@ function page_header($page_title = '', $display_online_list = true)
 		* }
 		* </code>
 		*/
-
-		$item_id = max(request_var('f', 0), 0);
+		
+		if ($forum_id)
+		{
+			$item_id = max($forum_id, 0);
+		}
+		else
+		{
+			$item_id = 0;
+		}
+		
+		// workaround legacy code
 		$item = 'forum';
-
 		$online_users = obtain_users_online($item_id, $item);
 		$user_online_strings = obtain_users_online_string($online_users, $item_id, $item);
 

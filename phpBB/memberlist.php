@@ -1531,7 +1531,7 @@ switch ($mode)
 }
 
 // Output the page
-page_header($page_title);
+page_header($page_title, false);
 
 $template->set_filenames(array(
 	'body' => $template_html)
