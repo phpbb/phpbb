@@ -1,7 +1,7 @@
 <?php
 /**
 *
-* recaptcha [English]
+* captcha_qa [English]
 *
 * @package language
 * @version $Id$
