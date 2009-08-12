@@ -3692,7 +3692,7 @@ function obtain_users_online($item_id = 0, $item = 'forum')
 	global $db, $config, $user;
 
 	$reading_sql = '';
-	if ($item !== 0)
+	if ($item_id !== 0)
 	{
 		$reading_sql = ' AND s.session_' . $item . '_id = ' . (int) $item_id;
 	}
