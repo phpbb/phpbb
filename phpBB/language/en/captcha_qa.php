@@ -37,7 +37,7 @@ if (empty($lang) || !is_array($lang))
 
 $lang = array_merge($lang, array(
 	'CAPTCHA_QA'				=> 'Q&amp;A CAPTCHA',
-	'CONFIRM_QUESTION_EXPLAIN'	=> 'The following question is a means of identifying and preventing automated submissions.',
+	'CONFIRM_QUESTION_EXPLAIN'	=> 'This question is a means of identifying and preventing automated submissions.',
 	'CONFIRM_QUESTION_WRONG'	=> 'You have provided an invalid answer to the confirmation question.',
 
 	'QUESTION_ANSWERS'			=> 'Answers',
