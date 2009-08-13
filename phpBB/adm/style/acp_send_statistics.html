@@ -23,9 +23,13 @@ function iframe_updated()
 //]]>
 </script>
 
-<iframe onload="iframe_updated();" name="questionaire_result" style="display: none;"></iframe>
+<iframe onload="iframe_updated();" name="questionaire_result" style="display:none;"></iframe>
 
 <form action="{U_COLLECT_STATS}" method="post" target="questionaire_result" id="questionnaire-form">
+
+	<p><a href="{U_ACP_MAIN}">{L_DONT_SEND_STATISTICS}</a></p>
+
+	<p>{L_EXPLAIN_SHOW_STATISTICS}</p>
 
 	<p id="show-button"><input type="button" class="button2" onclick="dE('configlist', 1); dE('show-button', -1);" value="{L_SHOW_STATISTICS}" /></p>
 
@@ -53,8 +57,8 @@ function iframe_updated()
 	</p>
 </form>
 
-<div id="questionnaire-thanks">
-	<p><strong>{L_THANKS_SEND_STATISTICS}</strong></p>
+<div id="questionnaire-thanks" class="successbox">
+	<p><strong>{L_THANKS_SEND_STATISTICS}</strong><br /><br /><a href="{U_ACP_MAIN}">&laquo; {L_GO_ACP_MAIN}</a></p>
 </div>
 
 <script type="text/javascript">

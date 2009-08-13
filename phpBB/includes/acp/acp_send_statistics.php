@@ -27,7 +27,7 @@ class acp_send_statistics
 
 	function main($id, $mode)
 	{
-		global $config, $template;
+		global $config, $template, $phpbb_admin_path, $phpEx;
 
 		$collect_url = "http://www.phpbb.com/stats/receive_stats.php";
 
@@ -55,6 +55,7 @@ class acp_send_statistics
 		$template->assign_vars(array(
 			'U_COLLECT_STATS'	=> $collect_url,
 			'RAW_DATA'			=> $collector->get_data_for_form(),
+			'U_ACP_MAIN'		=> append_sid("{$phpbb_admin_path}index.$phpEx"),
 		));
 
 		$raw = $collector->get_data_raw();

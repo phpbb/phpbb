@@ -440,7 +440,7 @@ class phpbb_questionnaire_phpbb_data_provider
 		{
 			if (isset($this->config[$name]))
 			{
-				$result['config.' . $name] = $this->config[$name];
+				$result['config_' . $name] = $this->config[$name];
 			}
 		}
 
