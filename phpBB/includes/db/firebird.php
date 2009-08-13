@@ -20,7 +20,7 @@ include_once($phpbb_root_path . 'includes/db/dbal.' . $phpEx);
 
 /**
 * Firebird/Interbase Database Abstraction Layer
-* Minimum Requirement is Firebird 2.0
+* Minimum Requirement is Firebird 2.1
 * @package dbal
 */
 class dbal_firebird extends dbal
@@ -72,7 +72,7 @@ class dbal_firebird extends dbal
 			return @ibase_server_info($this->service_handle, IBASE_SVC_SERVER_VERSION);
 		}
 
-		return ($raw) ? '2.0' : 'Firebird/Interbase';
+		return ($raw) ? '2.1' : 'Firebird/Interbase';
 	}
 
 	/**

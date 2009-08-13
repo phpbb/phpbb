@@ -222,6 +222,33 @@ if (empty($config['dbms_version']))
 	set_config('dbms_version', $db->sql_server_info(true));
 }
 
+// Firebird update from Firebord 2.0 to 2.1+ required?
+if ($db->sql_layer == 'firebird')
+{
+	// We do not trust any PHP5 function enabled, we will simply test for a function new in 2.1
+	$db->sql_return_on_error(true);
+
+	$sql = 'SELECT 1 FROM RDB$DATABASE
+		WHERE BIN_AND(10, 1) = 0';
+	$result = $db->sql_query($sql);
+
+	if (!$result || $db->sql_error_triggered)
+	{
+		echo '<br /><br />';
+		echo '<h1>' . $lang['ERROR'] . '</h1><br />';
+
+		echo '<p>' . $lang['FIREBIRD_DBMS_UPDATE_REQUIRED'] . '</p>';
+
+		_print_footer();
+
+		exit_handler();
+		exit;
+	}
+
+	$db->sql_freeresult($result);
+	$db->sql_return_on_error(false);
+}
+
 // MySQL update from MySQL 3.x/4.x to > 4.1.x required?
 if ($db->sql_layer == 'mysql' || $db->sql_layer == 'mysql4' || $db->sql_layer == 'mysqli')
 {
