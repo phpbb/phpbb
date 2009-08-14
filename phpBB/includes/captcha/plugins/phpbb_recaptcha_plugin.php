@@ -117,6 +117,7 @@ class phpbb_recaptcha extends phpbb_default_captcha
 			$template->assign_vars(array(
 				'CAPTCHA_PREVIEW'	=> $this->get_demo_template($id),
 				'CAPTCHA_NAME'		=> $this->get_class_name(),
+				'U_ACTION'			=> $module->u_action,
 			));
 
 		}
