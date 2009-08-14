@@ -362,6 +362,14 @@ class phpbb_default_captcha
 		return (bool) $this->solved;
 	}
 	
+	/**
+	*  API function
+	*/
+	function has_config()
+	{
+		return false;
+	}
+	
 }
 
 ?>

@@ -39,10 +39,12 @@
 	<dt><label for="captcha_select">{L_CAPTCHA_SELECT}:</label><br /><span>{L_CAPTCHA_SELECT_EXPLAIN}</span></dt>
 	<dd><select id="captcha_select" name="select_captcha" onchange="(document.getElementById('acp_captcha')).submit()" >{CAPTCHA_SELECT}</select></dd>
 </dl>
+ <!-- IF S_CAPTCHA_HAS_CONFIG -->
 <dl>
 	<dt><label for="configure">{L_CAPTCHA_CONFIGURE}:</label><br /><span>{L_CAPTCHA_CONFIGURE_EXPLAIN}</span></dt>
 	<dd><input class="button2" type="submit" id="configure" name="configure" value="{L_CONFIGURE}" /></dd>
 </dl>
+<!-- ENDIF -->
 </fieldset>
 
 <!-- IF CAPTCHA_PREVIEW_TPL -->

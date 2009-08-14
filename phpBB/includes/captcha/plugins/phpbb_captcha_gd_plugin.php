@@ -73,6 +73,14 @@ class phpbb_captcha_gd extends phpbb_default_captcha
 		return can_load_dll('gd');
 	}
 
+	/**
+	*  API function
+	*/
+	function has_config()
+	{
+		return true;
+	}
+	
 	function get_name()
 	{
 		return 'CAPTCHA_GD';

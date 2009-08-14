@@ -54,6 +54,14 @@ class phpbb_recaptcha extends phpbb_default_captcha
 		$user->add_lang('captcha_recaptcha');
 		return (isset($config['recaptcha_pubkey']) && !empty($config['recaptcha_pubkey']));
 	}
+	
+	/**
+	*  API function
+	*/
+	function has_config()
+	{
+		return true;
+	}
 
 	function get_name()
 	{

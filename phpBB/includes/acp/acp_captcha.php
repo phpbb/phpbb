@@ -67,7 +67,6 @@ class acp_captcha
 
 			if ($submit && check_form_key($form_key))
 			{
-				$config_vars = array_keys($config_vars);
 				foreach ($config_vars as $config_var => $options)
 				{
 					set_config($config_var, request_var($config_var, $options['default']));
@@ -122,6 +121,7 @@ class acp_captcha
 
 				$template->assign_vars(array(
 					'CAPTCHA_PREVIEW_TPL'	=> $demo_captcha->get_demo_template($id),
+					'S_CAPTCHA_HAS_CONFIG'	=> $demo_captcha->has_config(),
 					'CAPTCHA_SELECT'		=> $captcha_select,
 				));
 			}
