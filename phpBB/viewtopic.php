@@ -86,6 +86,7 @@ if ($view && !$post_id)
 			WHERE topic_id = $topic_id
 				" . (($auth->acl_get('m_approve', $forum_id)) ? '' : 'AND post_approved = 1') . "
 				AND post_time > $topic_last_read
+				AND forum_id = $forum_id
 			ORDER BY post_time ASC";
 		$result = $db->sql_query_limit($sql, 1);
 		$row = $db->sql_fetchrow($result);
@@ -188,6 +189,7 @@ $sql_array = array(
 // The FROM-Order is quite important here, else t.* columns can not be correctly bound.
 if ($post_id)
 {
+	$sql_array['SELECT'] .= ', p.post_approved';
 	$sql_array['FROM'][POSTS_TABLE] = 'p';
 }
 
@@ -235,7 +237,7 @@ if (!$post_id)
 }
 else
 {
-	$sql_array['WHERE'] = "p.post_id = $post_id AND t.topic_id = p.topic_id" . ((!$auth->acl_get('m_approve', $forum_id)) ? ' AND p.post_approved = 1' : '');
+	$sql_array['WHERE'] = "p.post_id = $post_id AND t.topic_id = p.topic_id";
 }
 
 $sql_array['WHERE'] .= ' AND (f.forum_id = t.forum_id';
@@ -263,6 +265,7 @@ $result = $db->sql_query($sql);
 $topic_data = $db->sql_fetchrow($result);
 $db->sql_freeresult($result);
 
+// link to unapproved post or incorrect link
 if (!$topic_data)
 {
 	// If post_id was submitted, we try at least to display the topic as a last resort...
@@ -274,9 +277,23 @@ if (!$topic_data)
 	trigger_error('NO_TOPIC');
 }
 
+$forum_id = (int) $topic_data['forum_id'];
+$topic_id = (int) $topic_data['topic_id'];
+
 // This is for determining where we are (page)
 if ($post_id)
 {
+	// are we where we are supposed to be?
+	if ($post_id && !$topic_data['post_approved'] && !$auth->acl_get('m_approve', $topic_data['forum_id']))
+	{
+		// If post_id was submitted, we try at least to display the topic as a last resort...
+		if ($post_id && $topic_id)
+		{
+			redirect(append_sid("{$phpbb_root_path}viewtopic.$phpEx", "t=$topic_id" . (($forum_id) ? "&amp;f=$forum_id" : '')));
+		}
+
+		trigger_error('NO_TOPIC');
+	}
 	if ($post_id == $topic_data['topic_first_post_id'] || $post_id == $topic_data['topic_last_post_id'])
 	{
 		$check_sort = ($post_id == $topic_data['topic_first_post_id']) ? 'd' : 'a';
@@ -306,9 +323,6 @@ if ($post_id)
 		$topic_data['prev_posts'] = $row['prev_posts'] - 1;
 	}
 }
-
-$forum_id = (int) $topic_data['forum_id'];
-$topic_id = (int) $topic_data['topic_id'];
 
 //
 $topic_replies = ($auth->acl_get('m_approve', $forum_id)) ? $topic_data['topic_replies_real'] : $topic_data['topic_replies'];
