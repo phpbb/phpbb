@@ -278,8 +278,6 @@ if (!$topic_data)
 }
 
 $forum_id = (int) $topic_data['forum_id'];
-$topic_id = (int) $topic_data['topic_id'];
-
 // This is for determining where we are (page)
 if ($post_id)
 {
@@ -324,6 +322,7 @@ if ($post_id)
 	}
 }
 
+$topic_id = (int) $topic_data['topic_id'];
 //
 $topic_replies = ($auth->acl_get('m_approve', $forum_id)) ? $topic_data['topic_replies_real'] : $topic_data['topic_replies'];
 
