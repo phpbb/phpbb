@@ -74,9 +74,9 @@ class acp_forums
 				{
 					trigger_error($user->lang['NO_PERMISSION_FORUM_ADD'] . adm_back_link($this->u_action . '&amp;parent_id=' . $this->parent_id), E_USER_WARNING);
 				}
-				
+
 			case 'copy_perm':
-								
+
 				if (!(($auth->acl_get('a_fauth') && $auth->acl_get('a_authusers') && $auth->acl_get('a_authgroups') && $auth->acl_get('a_mauth'))))
 				{
 					trigger_error($user->lang['NO_PERMISSION_COPY'] . adm_back_link($this->u_action . '&amp;parent_id=' . $this->parent_id), E_USER_WARNING);
@@ -203,7 +203,6 @@ class acp_forums
 							$this->copy_permission_page($forum_data);
 							return;
 						}
-
 
 						$auth->acl_clear_prefetch();
 
@@ -722,14 +721,10 @@ class acp_forums
 						$message .= '<br /><br />' . sprintf($user->lang['REDIRECT_ACL'], '<a href="' . append_sid("{$phpbb_admin_path}index.$phpEx", 'i=permissions' . $acl_url) . '">', '</a>');
 					}
 
-					// redirect directly to permission settings screen if authed
-					if ($action == 'add' && !$forum_perm_from && $auth->acl_get('a_fauth'))
-					{
-						meta_refresh(4, append_sid("{$phpbb_admin_path}index.$phpEx", 'i=permissions' . $acl_url));
-					}
-
 					trigger_error($message . adm_back_link($this->u_action . '&amp;parent_id=' . $this->parent_id));
 				}
+
+			break;
 		}
 
 		// Default management page
@@ -1919,7 +1914,10 @@ class acp_forums
 
 		adm_page_footer();
 	}
-	
+
+	/**
+	* Display copy permission page
+	*/
 	function copy_permission_page($forum_data)
 	{
 		global $phpEx, $phpbb_admin_path, $template, $user;
@@ -1927,11 +1925,8 @@ class acp_forums
 		$acl_url = '&amp;mode=setting_forum_local&amp;forum_id[]=' . $forum_data['forum_id'];
 		$action = append_sid($this->u_action . "&amp;parent_id={$this->parent_id}&amp;f={$forum_data['forum_id']}&amp;action=copy_perm");
 
-		
 		$l_acl = sprintf($user->lang['COPY_TO_ACL'], '<a href="' . append_sid("{$phpbb_admin_path}index.$phpEx", 'i=permissions' . $acl_url) . '">', '</a>');
 
-
-					
 		$this->tpl_name = 'acp_forums_copy_perm';
 
 		$template->assign_vars(array(
