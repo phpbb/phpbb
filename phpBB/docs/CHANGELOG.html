@@ -193,6 +193,7 @@
 		<li>[Fix] Allow updater to work correctly with PHP filename extensions other than &quot;.php&quot;. (Bugs #15809, #49215)</li>
 		<li>[Fix] Update search index if only post subject changed. (Bug #49435)</li>
 		<li>[Fix] Fix who is online displaying incorrect data. (Bug #49485, thanks Brainy)</li>
+		<li>[Fix] Fixed incorrect &quot;topic does not exist&quot; when unapproved posts were visited without global moderator permissions. (Bug #47795)</li>
 		<li>[Change] submit_post() now accepts force_approved_state key passed to $data to indicate new posts being approved (true) or unapproved (false).</li>
 		<li>[Change] Change the data format of the default file ACM to be more secure from tampering and have better performance.</li>
 		<li>[Change] Add index on log_time to the log table to prevent slowdown on boards with many log entries. (Bug #44665 - Patch by bantu)</li>
@@ -461,7 +462,6 @@
 		<li>[Fix] Moderators can only see reports/queue/logs from forums they can actually read. (Bug #31085)</li>
 		<li>[Fix] Correctly display topic when start parameter is equal to the number of posts.</li>
 		<li>[Fix] Correctly display topic in MCP when start parameter is equal to or greater than the number of posts. (Bug #30525)</li>
-		<li>[Fix] Fixed incorrect "topic does not exist" when unapproved posts were visited without global moderator permissions. (Bug #47795)</li>
 
 		<li>[Change] No longer allow the direct use of MULTI_INSERT in sql_build_array. sql_multi_insert() must be used.</li>
 		<li>[Change] Display warning in ACP if config.php file is left writable.</li>
