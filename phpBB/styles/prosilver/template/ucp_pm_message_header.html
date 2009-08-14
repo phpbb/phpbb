@@ -5,9 +5,7 @@
 
 	<!-- IF FOLDER_STATUS and FOLDER_MAX_MESSAGES neq 0 --><p>{FOLDER_STATUS}</p><!-- ENDIF -->
 
-		<!-- IF U_POST_REPLY_PM or U_POST_NEW_TOPIC or U_FORWARD_PM -->
-		<form method="post" action="{U_PM_ACTION}" id="reply-form">
-
+	<!-- IF U_POST_REPLY_PM or U_POST_NEW_TOPIC or U_FORWARD_PM -->
 		<div class="buttons">
 			<!-- IF U_POST_REPLY_PM --><div class="pmreply-icon clearfix"><a title="{L_POST_REPLY_PM}" href="{U_POST_REPLY_PM}"><span></span>{L_POST_REPLY_PM}</a></div>
 			<!-- ELSEIF U_POST_NEW_TOPIC --><div class="newpm-icon"><a href="{U_POST_NEW_TOPIC}" accesskey="n" title="{L_UCP_PM_COMPOSE}"><span></span>{L_UCP_PM_COMPOSE}</a></div><!-- ENDIF -->
@@ -18,10 +16,7 @@
 			<div class="reply-all"><a title="{L_REPLY_TO_ALL}" href="{U_POST_REPLY_ALL}">&raquo; {L_REPLY_TO_ALL}</a></div>
 		<!-- ENDIF -->
 
-		<input type="hidden" name="action" value="" id="reply-action" />
-
-		</form>
-		<!-- ENDIF -->
+	<!-- ENDIF -->
 
 		<!-- IF TOTAL_MESSAGES or S_VIEW_MESSAGE -->
 	<ul class="linklist pm-return-to">
