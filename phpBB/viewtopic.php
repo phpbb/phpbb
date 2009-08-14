@@ -282,10 +282,10 @@ $forum_id = (int) $topic_data['forum_id'];
 if ($post_id)
 {
 	// are we where we are supposed to be?
-	if ($post_id && !$topic_data['post_approved'] && !$auth->acl_get('m_approve', $topic_data['forum_id']))
+	if (!$topic_data['post_approved'] && !$auth->acl_get('m_approve', $topic_data['forum_id']))
 	{
 		// If post_id was submitted, we try at least to display the topic as a last resort...
-		if ($post_id && $topic_id)
+		if ($topic_id)
 		{
 			redirect(append_sid("{$phpbb_root_path}viewtopic.$phpEx", "t=$topic_id" . (($forum_id) ? "&amp;f=$forum_id" : '')));
 		}
