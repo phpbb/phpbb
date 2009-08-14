@@ -48,6 +48,7 @@ $lang = array_merge($lang, array(
 	'BUMP_TOPIC'			=> 'Bump topic',
 
 	'CODE'					=> 'Code',
+	'COLLAPSE_QR'			=> 'Hide Quick Reply',
 
 	'DELETE_TOPIC'			=> 'Delete topic',
 	'DOWNLOAD_NOTICE'		=> 'You do not have the required permissions to view the files attached to this post.',
