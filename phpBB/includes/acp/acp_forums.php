@@ -189,6 +189,7 @@ class acp_forums
 					if (!sizeof($errors))
 					{
 						$forum_perm_from = request_var('forum_perm_from', 0);
+						$cache->destroy('sql', FORUMS_TABLE);
 
 						// Copy permissions?
 						if (!empty($forum_perm_from) && $forum_perm_from != $forum_data['forum_id'] &&
@@ -205,7 +206,6 @@ class acp_forums
 
 
 						$auth->acl_clear_prefetch();
-						$cache->destroy('sql', FORUMS_TABLE);
 
 						$acl_url = '&amp;mode=setting_forum_local&amp;forum_id[]=' . $forum_data['forum_id'];
 
