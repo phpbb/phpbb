@@ -34,7 +34,7 @@ function mcp_front_view($id, $mode, $action)
 		$forum_id = request_var('f', 0);
 
 		$template->assign_var('S_SHOW_UNAPPROVED', (!empty($forum_list)) ? true : false);
-		
+
 		if (!empty($forum_list))
 		{
 			$sql = 'SELECT COUNT(post_id) AS total
@@ -249,6 +249,7 @@ function mcp_front_view($id, $mode, $action)
 	if ($module->loaded('pm_reports') && $auth->acl_getf_global('m_report'))
 	{
 		$template->assign_var('S_SHOW_PM_REPORTS', true);
+		$user->add_lang(array('ucp'));
 
 		$sql = 'SELECT COUNT(r.report_id) AS total
 			FROM ' . REPORTS_TABLE . ' r, ' . PRIVMSGS_TABLE . ' p
@@ -262,7 +263,6 @@ function mcp_front_view($id, $mode, $action)
 		if ($total)
 		{
 			include($phpbb_root_path . 'includes/functions_privmsgs.' . $phpEx);
-			$user->add_lang(array('ucp'));
 
 			$sql = $db->sql_build_query('SELECT', array(
 				'SELECT'	=> 'r.report_id, r.report_time, p.msg_id, p.message_subject, p.message_time, p.to_address, p.bcc_address, u.username, u.username_clean, u.user_colour, u.user_id, u2.username as author_name, u2.username_clean as author_name_clean, u2.user_colour as author_colour, u2.user_id as author_id',
@@ -300,7 +300,7 @@ function mcp_front_view($id, $mode, $action)
 
 				$template->assign_block_vars('pm_report', array(
 					'U_PM_DETAILS'	=> append_sid("{$phpbb_root_path}mcp.$phpEx", 'r=' . $row['report_id'] . "&amp;i=pm_reports&amp;mode=pm_report_details"),
-					
+
 					'REPORTER_FULL'		=> get_username_string('full', $row['user_id'], $row['username'], $row['user_colour']),
 					'REPORTER'			=> get_username_string('username', $row['user_id'], $row['username'], $row['user_colour']),
 					'REPORTER_COLOUR'	=> get_username_string('colour', $row['user_id'], $row['username'], $row['user_colour']),
