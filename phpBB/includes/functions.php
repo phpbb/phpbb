@@ -3895,7 +3895,7 @@ function phpbb_optionset($bit, $set, $data)
 /**
 * Generate page header
 */
-function page_header($page_title = '', $display_online_list = true, $forum_id = 0)
+function page_header($page_title = '', $display_online_list = true, $item_id = 0, $item = 'forum')
 {
 	global $db, $config, $template, $SID, $_SID, $user, $auth, $phpEx, $phpbb_root_path;
 
@@ -3937,32 +3937,10 @@ function page_header($page_title = '', $display_online_list = true, $forum_id = 
 	{
 		/**
 		* Load online data:
-		* For obtaining another session column use the following code, whereby the column is session_{$item}_id.
-		* Put the code directly after $item = 'forum';
-		*
-		* <code>
-		* $my_item_id = request_var('my_item_id', 0);
-		*
-		* if ($my_item_id > 0)
-		* {
-		*   // would revolve to the column session_myitem_id in the SESSIONS_TABLE
-		*   $item = 'myitem';
-		*   $item_id = $my_item_id;
-		* }
-		* </code>
+		* For obtaining another session column use $item and $item_id in the function-parameter, whereby the column is session_{$item}_id.
 		*/
+		$item_id = max($item_id, 0);
 
-		if ($forum_id)
-		{
-			$item_id = max($forum_id, 0);
-		}
-		else
-		{
-			$item_id = 0;
-		}
-
-		// workaround legacy code
-		$item = 'forum';
 		$online_users = obtain_users_online($item_id, $item);
 		$user_online_strings = obtain_users_online_string($online_users, $item_id, $item);
 
