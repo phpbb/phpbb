@@ -188,7 +188,7 @@ $lang = array_merge($lang, array(
 	'INITIAL_CONFIG_EXPLAIN'	=> 'Now that install has determined your server can run phpBB you need to supply some specific information. If you do not know how to connect to your database please contact your hosting provider (in the first instance) or use the phpBB support forums. When entering data please ensure you check it thoroughly before continuing.',
 	'INSTALL_CONGRATS'			=> 'Congratulations!',
 	'INSTALL_CONGRATS_EXPLAIN'	=> '
-		You have successfully installed phpBB %1$s. Please proceed by choosing one of the following opions:</p>
+		You have successfully installed phpBB %1$s. Please proceed by choosing one of the following options:</p>
 		<h2>Convert an existing board to phpBB3</h2>
 		<p>The phpBB Unified Convertor Framework supports the conversion of phpBB 2.0.x and other board systems to phpBB3. If you have an existing board that you wish to convert, please <a href="%2$s">proceed to the convertor</a>.</p>
 		<h2>Go live with your phpBB3!</h2>
