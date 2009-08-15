@@ -155,7 +155,7 @@ function display_forums($root_data = '', $display_moderators = true, $return_mod
 		}
 
 		// Count the difference of real to public topics, so we can display an information to moderators
-		$row['forum_topics_unapproved'] = ($auth->acl_get('m_approve', $forum_id)) ? $row['forum_topics_real'] - $row['forum_topics'] : 0;
+		$row['forum_id_unapproved_topics'] = ($auth->acl_get('m_approve', $forum_id) && ($row['forum_topics_real'] - $row['forum_topics'])) ? $forum_id : 0;
 		$row['forum_topics'] = ($auth->acl_get('m_approve', $forum_id)) ? $row['forum_topics_real'] : $row['forum_topics'];
 
 		// Display active topics from this forum?
@@ -214,7 +214,11 @@ function display_forums($root_data = '', $display_moderators = true, $return_mod
 				$subforums[$parent_id][$row['parent_id']]['children'][] = $forum_id;
 			}
 
-			$forum_rows[$parent_id]['forum_topics_unapproved'] += $row['forum_topics_unapproved'];
+			if (!$forum_rows[$parent_id]['forum_id_unapproved_topics'] && $row['forum_id_unapproved_topics'])
+			{
+				$forum_rows[$parent_id]['forum_id_unapproved_topics'] = $forum_id;
+			}
+
 			$forum_rows[$parent_id]['forum_topics'] += $row['forum_topics'];
 
 			// Do not list redirects in LINK Forums as Posts.
@@ -456,7 +460,7 @@ function display_forums($root_data = '', $display_moderators = true, $return_mod
 			'L_FORUM_FOLDER_ALT'	=> $folder_alt,
 			'L_MODERATOR_STR'		=> $l_moderator,
 
-			'U_UNAPPROVED_TOPICS'	=> ($row['forum_topics_unapproved'] > 0) ? append_sid("{$phpbb_root_path}mcp.$phpEx", 'i=queue&amp;mode=unapproved_topics&amp;f=' . $row['forum_id']) : '',
+			'U_UNAPPROVED_TOPICS'	=> ($row['forum_id_unapproved_topics']) ? append_sid("{$phpbb_root_path}mcp.$phpEx", 'i=queue&amp;mode=unapproved_topics&amp;f=' . $row['forum_id_unapproved_topics']) : '',
 			'U_VIEWFORUM'		=> $u_viewforum,
 			'U_LAST_POSTER'		=> get_username_string('profile', $row['forum_last_poster_id'], $row['forum_last_poster_name'], $row['forum_last_poster_colour']),
 			'U_LAST_POST'		=> $last_post_url)
