@@ -1,7 +1,7 @@
 
 function fontsizeup(event)
 {
-	// Skip tabs
+	// Skip tabs; 9 being the ASCII code for a tab
 	if (event && getKeyCode(event) == 9)
 	{
 		return true;
