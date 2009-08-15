@@ -676,15 +676,17 @@ class phpbb_captcha_qa
 	{
 		global $db, $template;
 		
-		$sql = 'SELECT * FROM ' . CAPTCHA_QUESTIONS_TABLE;
+		$sql = 'SELECT *
+			FROM ' . CAPTCHA_QUESTIONS_TABLE;
 		$result = $db->sql_query($sql);
+
 		$template->assign_vars(array(
-						'S_LIST'			=> true,
+			'S_LIST'			=> true,
 		));
 
-		while($row = $db->sql_fetchrow($result))
+		while ($row = $db->sql_fetchrow($result))
 		{
-			$url = $module->u_action . "&amp;question_id={$row['question_id']}&amp;configure=1&amp;select_captcha=" . $this->get_class_name() . "&amp;";
+			$url = $module->u_action . "&amp;question_id={$row['question_id']}&amp;configure=1&amp;select_captcha=" . $this->get_class_name() . '&amp;';
 			
 			$template->assign_block_vars('questions', array(
 				'QUESTION_TEXT'		=> $row['question_text'],
@@ -704,31 +706,35 @@ class phpbb_captcha_qa
 	{
 		global $db;
 
-
 		if ($question_id)
 		{
-			$sql = 'SELECT * FROM ' . CAPTCHA_QUESTIONS_TABLE . ' WHERE question_id = ' . $question_id;
+			$sql = 'SELECT *
+				FROM ' . CAPTCHA_QUESTIONS_TABLE . '
+				WHERE question_id = ' . $question_id;
 			$result = $db->sql_query($sql);
-			if ($row = $db->sql_fetchrow($result))
+			$question = $db->sql_fetchrow($result);
+			$db->sql_freeresult($result);
+
+			if (!$question)
 			{
-				$question = $row;
-			}
-			else
-			{
-				$db->sql_freeresult($result);
 				return false;
 			}
+
 			$question['answers'] = array();
-			$sql = 'SELECT * FROM ' . CAPTCHA_ANSWERS_TABLE . ' WHERE question_id = ' . $question_id;
+
+			$sql = 'SELECT *
+				FROM ' . CAPTCHA_ANSWERS_TABLE . '
+				WHERE question_id = ' . $question_id;
 			$result = $db->sql_query($sql);
-			while($row = $db->sql_fetchrow($result))
+
+			while ($row = $db->sql_fetchrow($result))
 			{
 				$question['answers'][] = $row['answer_text'];
 			}
 			$db->sql_freeresult($result);
+
 			return $question;
 		}
-		
 	}
 	
 	
@@ -737,15 +743,13 @@ class phpbb_captcha_qa
 	*/
 	function acp_get_question_input()
 	{
-		global $db;
-
 		$question = array(
 			'question_text'	=> request_var('question_text', '', true),
 			'strict'		=> request_var('strict', false),
 			'lang_iso'		=> request_var('lang_iso', ''),
 			'answers'		=> explode("\n", request_var('answers', '', true)),
 		);
-		
+
 		return $question;
 	}
 
@@ -755,19 +759,25 @@ class phpbb_captcha_qa
 	*/
 	function acp_update_question($data, $question_id)
 	{
-		global $db;
+		global $db, $cache;
 
 		// easier to delete all answers than to figure out which to update
-		$sql = "DELETE FROM " . CAPTCHA_ANSWERS_TABLE . " WHERE question_id = $question_id";
+		$sql = 'DELETE FROM ' . CAPTCHA_ANSWERS_TABLE . " WHERE question_id = $question_id";
 		$db->sql_query($sql);
+
 		$langs = $this->get_languages();
 		$question_ary = $data;
 		$question_ary['lang_id'] = $langs[$question_ary['lang_iso']]['id'];
 		unset($question_ary['answers']);
-		$sql = "UPDATE " . CAPTCHA_QUESTIONS_TABLE . ' SET ' . $db->sql_build_array('UPDATE', $question_ary) . "
-				WHERE question_id = $question_id";
+
+		$sql = 'UPDATE ' . CAPTCHA_QUESTIONS_TABLE . '
+			SET ' . $db->sql_build_array('UPDATE', $question_ary) . "
+			WHERE question_id = $question_id";
 		$db->sql_query($sql);
+
 		$this->acp_insert_answers($data, $question_id);
+
+		$cache->destroy('sql', CAPTCHA_QUESTIONS_TABLE);
 	}
 	
 	/**
@@ -776,17 +786,22 @@ class phpbb_captcha_qa
 	*/
 	function acp_add_question($data)
 	{
-		global $db;
+		global $db, $cache;
 	
 		$langs = $this->get_languages();
 		$question_ary = $data;
 		
 		$question_ary['lang_id'] = $langs[$data['lang_iso']]['id'];
 		unset($question_ary['answers']);
-		$sql = "INSERT INTO " . CAPTCHA_QUESTIONS_TABLE . $db->sql_build_array('INSERT', $question_ary);
+
+		$sql = 'INSERT INTO ' . CAPTCHA_QUESTIONS_TABLE . $db->sql_build_array('INSERT', $question_ary);
 		$db->sql_query($sql);
+
 		$question_id = $db->sql_nextid();
+
 		$this->acp_insert_answers($data, $question_id);
+
+		$cache->destroy('sql', CAPTCHA_QUESTIONS_TABLE);
 	}
 	
 	/**
@@ -795,17 +810,20 @@ class phpbb_captcha_qa
 	*/
 	function acp_insert_answers($data, $question_id)
 	{
-		global $db;
+		global $db, $cache;
 		
-		foreach($data['answers'] as $answer)
+		foreach ($data['answers'] as $answer)
 		{
 			$answer_ary = array(
 				'question_id'	=> $question_id,
 				'answer_text'	=> $answer,
 			);
-			$sql = "INSERT INTO " . CAPTCHA_ANSWERS_TABLE . $db->sql_build_array('INSERT', $answer_ary);
+
+			$sql = 'INSERT INTO ' . CAPTCHA_ANSWERS_TABLE . $db->sql_build_array('INSERT', $answer_ary);
 			$db->sql_query($sql);
 		}
+
+		$cache->destroy('sql', CAPTCHA_ANSWERS_TABLE);
 	}
 	
 
@@ -814,14 +832,18 @@ class phpbb_captcha_qa
 	*/
 	function acp_delete_question($question_id)
 	{
-		global $db;
-		
+		global $db, $cache;
+
 		$tables = array(CAPTCHA_QUESTIONS_TABLE, CAPTCHA_ANSWERS_TABLE);
-		foreach($tables as $table)
+
+		foreach ($tables as $table)
 		{
-			$sql = "DELETE FROM $table WHERE question_id = $question_id";
+			$sql = "DELETE FROM $table 
+				WHERE question_id = $question_id";
 			$db->sql_query($sql);
 		}
+
+		$cache->destroy('sql', $tables);
 	}
 	
 	
@@ -832,6 +854,7 @@ class phpbb_captcha_qa
 	function validate_input($question_data)
 	{
 		$langs = $this->get_languages();
+
 		if (!isset($question_data['lang_iso']) ||
 			!isset($question_data['question_text']) ||
 			!isset($question_data['strict']) ||
@@ -839,13 +862,14 @@ class phpbb_captcha_qa
 		{
 			return false;
 		}
+
 		if (!isset($langs[$question_data['lang_iso']]) ||
 			!$question_data['question_text'] ||
 			!sizeof($question_data['answers']))
 		{
 			return false;
 		}
-		
+
 		return true;
 	}
 	
@@ -855,18 +879,23 @@ class phpbb_captcha_qa
 	function get_languages()
 	{
 		global $db;
-		
+
 		$langs = array();
-		$sql = 'SELECT * FROM ' . LANG_TABLE;
+
+		$sql = 'SELECT *
+			FROM ' . LANG_TABLE;
+
 		$result = $db->sql_query($sql);
-		while($row = $db->sql_fetchrow($result))
+
+		while ($row = $db->sql_fetchrow($result))
 		{
 			$langs[$row['lang_iso']] = array(
 				'name'	=> $row['lang_local_name'],
-				'id'	=> $row['lang_id'],
+				'id'	=> (int) $row['lang_id'],
 			);
 		}
 		$db->sql_freeresult($result);
+
 		return $langs;
 	}
 	
