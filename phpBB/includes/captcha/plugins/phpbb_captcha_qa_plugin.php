@@ -676,7 +676,7 @@ class phpbb_captcha_qa
 	{
 		global $db, $template;
 		
-		$sql = 'SELECT * FROM ' . CAPTCHA_QUESTIONS_TABLE . ' WHERE 1';
+		$sql = 'SELECT * FROM ' . CAPTCHA_QUESTIONS_TABLE;
 		$result = $db->sql_query($sql);
 		$template->assign_vars(array(
 						'S_LIST'			=> true,
@@ -857,7 +857,7 @@ class phpbb_captcha_qa
 		global $db;
 		
 		$langs = array();
-		$sql = 'SELECT * FROM ' . LANG_TABLE . ' WHERE 1';
+		$sql = 'SELECT * FROM ' . LANG_TABLE;
 		$result = $db->sql_query($sql);
 		while($row = $db->sql_fetchrow($result))
 		{
