@@ -1121,11 +1121,6 @@ if ($submit || $preview || $refresh)
 			// The last parameter tells submit_post if search indexer has to be run
 			$redirect_url = submit_post($mode, $post_data['post_subject'], $post_data['username'], $post_data['topic_type'], $poll, $data, $update_message, ($update_message || $update_subject) ? true : false);
 
-			if ($config['enable_post_confirm'] && !$user->data['is_registered'] && in_array($mode, array('quote', 'post', 'reply')))
-			{
-				$captcha->reset();
-			}
-
 			// Check the permissions for post approval. Moderators are not affected.
 			if (!$auth->acl_get('f_noapprove', $data['forum_id']) && !$auth->acl_get('m_approve', $data['forum_id']))
 			{
@@ -1369,7 +1364,6 @@ generate_forum_rules($post_data);
 // Posting uses is_solved for legacy reasons. Plugins have to use is_solved to force themselves to be displayed.
 if ($config['enable_post_confirm'] && !$user->data['is_registered'] && (isset($captcha) && $captcha->is_solved() === false) && ($mode == 'post' || $mode == 'reply' || $mode == 'quote'))
 {
-	$captcha->reset();
 
 	$template->assign_vars(array(
 		'S_CONFIRM_CODE'			=> true,

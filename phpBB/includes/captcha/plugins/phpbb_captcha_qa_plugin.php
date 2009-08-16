@@ -354,7 +354,7 @@ class phpbb_captcha_qa
 		if (strlen($error))
 		{
 			// okay, incorrect answer. Let's ask a new question.
-			// $this->new_attempt();
+			$this->new_attempt();
 			$this->solved = false;
 			return $error;
 		}
