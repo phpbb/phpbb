@@ -354,7 +354,8 @@ class phpbb_captcha_qa
 		if (strlen($error))
 		{
 			// okay, incorrect answer. Let's ask a new question.
-			$this->new_attempt();
+			// $this->new_attempt();
+			$this->solved = false;
 			return $error;
 		}
 		else
@@ -433,7 +434,7 @@ class phpbb_captcha_qa
 	function load_answer()
 	{
 		global $db, $user;
-
+		
 		$sql = 'SELECT con.question_id, attempts, question_text, strict
 			FROM ' . CAPTCHA_QA_CONFIRM_TABLE . ' con, ' . CAPTCHA_QUESTIONS_TABLE . " qes 
 			WHERE con.question_id = qes.question_id
