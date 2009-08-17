@@ -1796,7 +1796,7 @@ function get_unread_topics_list($user_id = false, $sql_extra = '')
 			}
 			else
 			{
-				$unread_topics_list[$topic_id] = $user_lastmark;				
+				$unread_topics_list[$topic_id] = $user_lastmark;
 			}
 
 		}
@@ -4091,7 +4091,7 @@ function page_header($page_title = '', $display_online_list = true, $item_id = 0
 
 	// Determine board url - we may need it later
 	$board_url = generate_board_url() . '/';
-	$web_path = (defined('PHPBB_USE_BOARD_URL_PATH') && PHPBB_USE_BOARD_URL_PATH) ? generate_board_url() . '/' : $phpbb_root_path;
+	$web_path = (defined('PHPBB_USE_BOARD_URL_PATH') && PHPBB_USE_BOARD_URL_PATH) ? $board_url . '/' : $phpbb_root_path;
 
 	// The following assigns all _common_ variables that may be used at any point in a template.
 	$template->assign_vars(array(
