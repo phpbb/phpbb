@@ -3150,6 +3150,14 @@ function add_log()
 {
 	global $db, $user;
 
+	// In phpBB 3.1.x i want to have logging in a class to be able to control it
+	// For now, we need a quite hakish approach to circumvent logging for some actions
+	// @todo implement cleanly
+	if (!empty($GLOBALS['skip_add_log']))
+	{
+		return false;
+	}
+
 	$args = func_get_args();
 
 	$mode			= array_shift($args);
