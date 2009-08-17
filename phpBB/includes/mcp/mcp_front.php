@@ -119,7 +119,12 @@ function mcp_front_view($id, $mode, $action)
 				$db->sql_freeresult($result);
 			}
 
+			$s_hidden_fields = build_hidden_fields(array(
+				'redirect'		=> append_sid("{$phpbb_root_path}mcp.$phpEx", 'i=main')
+			));
+
 			$template->assign_vars(array(
+				'S_HIDDEN_FIELDS'		=> $s_hidden_fields,
 				'S_MCP_QUEUE_ACTION'	=> append_sid("{$phpbb_root_path}mcp.$phpEx", "i=queue"),
 			));
 
