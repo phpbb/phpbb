@@ -104,14 +104,14 @@ h3 {
 	border-top: 1px solid #ccc;
 }
 
-code { 
-	color: #006600; 
-	font-weight: normal; 
-	font-family: 'Courier New', monospace; 
-	border-color: #D1D7DC; 
-	border-width: 1px; 
-	border-style: solid; 
-	background-color: #FAFAFA; 
+code {
+	color: #006600;
+	font-weight: normal;
+	font-family: 'Courier New', monospace;
+	border-color: #D1D7DC;
+	border-width: 1px;
+	border-style: solid;
+	background-color: #FAFAFA;
 }
 
 #wrap {
@@ -387,7 +387,35 @@ PHPBB_MSG_HANDLER (overwrite message handler)
 PHPBB_DB_NEW_LINK (overwrite new_link parameter for sql_connect)
 PHPBB_ROOT_PATH   (overwrite $phpbb_root_path)
 PHPBB_ADMIN_PATH  (overwrite $phpbb_admin_path)
+PHPBB_USE_BOARD_URL_PATH (use generate_board_url() for image paths instead of $phpbb_root_path)
 </pre></div>
+
+<p>If the <code>PHPBB_USE_BOARD_URL_PATH</code> constant is set to true, phpBB uses generate_board_url() (this will return the boards url with the script path included) on all instances where web-accessible images are loaded. The exact locations are:</p>
+
+<ul>
+	<li>/includes/session.php - user::img()</li>
+	<li>/includes/functions_content.php - smiley_text()</li>
+</ul>
+
+<p>Path locations for the following template variables are affected by this too:</p>
+
+<ul>
+	<li>{T_THEME_PATH} - styles/xxx/theme</li>
+	<li>{T_TEMPLATE_PATH} - styles/xxx/template</li>
+	<li>{T_SUPER_TEMPLATE_PATH} - styles/xxx/template</li>
+	<li>{T_IMAGESET_PATH} - styles/xxx/imageset</li>
+	<li>{T_IMAGESET_LANG_PATH} - styles/xxx/imageset/yy</li>
+	<li>{T_IMAGES_PATH} - images/</li>
+	<li>{T_SMILIES_PATH} - $config['smilies_path']/</li>
+	<li>{T_AVATAR_PATH} - $config['avatar_path']/</li>
+	<li>{T_AVATAR_GALLERY_PATH} - $config['avatar_gallery_path']/</li>
+	<li>{T_ICONS_PATH} - $config['icons_path']/</li>
+	<li>{T_RANKS_PATH} - $config['ranks_path']/</li>
+	<li>{T_UPLOAD_PATH} - $config['upload_path']/</li>
+	<li>{T_STYLESHEET_LINK} - styles/xxx/theme/stylesheet.css (or link to style.php if css is parsed dynamically)</li>
+	<li>New template variable {BOARD_URL} for the board url + script path.</li>
+</ul>
+
 
 		</div>
 
@@ -616,7 +644,7 @@ echo $second_object-&gt;hook_me('first', 'second') . '&lt;br /&gt;';
 
 <div class="codebox"><pre>
 not hooked
-hooked 
+hooked
 </pre></div>
 
 		<p>A different possibility would be using a function variable (which could be left out on passing the function variables to the hook):</p>
@@ -670,7 +698,7 @@ echo $second_object-&gt;hook_me('first', 'second') . '&lt;br /&gt;';
 
 		<div class="codebox"><pre>
 not hooked
-hooked 
+hooked
 		</pre></div>
 
 		</div>

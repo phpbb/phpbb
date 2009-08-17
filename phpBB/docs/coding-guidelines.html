@@ -57,6 +57,7 @@
 		<li><a href="#editorsettings">Editor Settings</a></li>
 		<li><a href="#fileheader">File Header</a></li>
 		<li><a href="#locations">File Locations</a></li>
+		<li><a href="#constants">Special Constants</a></li>
 	</ol>
 	</li>
 	<li><a href="#code">Code Layout/Guidelines</a>
@@ -222,6 +223,54 @@ class ...
 		<li><strong>search</strong><br /><code>/includes/search</code>, <code>search.php</code><br />Search System</li>
 		<li><strong>styles</strong><br /><code>/styles</code>, <code>style.php</code><br />phpBB Styles/Templates/Themes/Imagesets</li>
 	</ul>
+
+	<a name="constants"></a></h3>1.iv. Special Constants</h3>
+
+	<p>There are some special constants application developers are able to utilize to bend some of phpBB's internal functionality to suit their needs.</p>
+
+	<div class="codebox"><pre>
+PHPBB_MSG_HANDLER          (overwrite message handler)
+PHPBB_DB_NEW_LINK          (overwrite new_link parameter for sql_connect)
+PHPBB_ROOT_PATH            (overwrite $phpbb_root_path)
+PHPBB_ADMIN_PATH           (overwrite $phpbb_admin_path)
+PHPBB_USE_BOARD_URL_PATH   (use generate_board_url() for image paths instead of $phpbb_root_path)
+PHPBB_DISABLE_ACP_EDITOR   (disable ACP style editor for templates)
+PHPBB_DISABLE_CONFIG_CHECK (disable ACP config.php writeable check)
+
+PHPBB_ACM_MEMCACHE_PORT     (overwrite memcached port, default is 11211)
+PHPBB_ACM_MEMCACHE_COMPRESS (overwrite memcached compress setting, default is disabled)
+PHPBB_ACM_MEMCACHE_HOST     (overwrite memcached host name, default is localhost)
+
+PHPBB_QA                   (Set board to QA-Mode, which means the updater also checks for RC-releases)
+</pre></div>
+
+<h4>PHPBB_USE_BOARD_URL_PATH</h4>
+
+<p>If the <code>PHPBB_USE_BOARD_URL_PATH</code> constant is set to true, phpBB uses generate_board_url() (this will return the boards url with the script path included) on all instances where web-accessible images are loaded. The exact locations are:</p>
+
+<ul>
+	<li>/includes/session.php - user::img()</li>
+	<li>/includes/functions_content.php - smiley_text()</li>
+</ul>
+
+<p>Path locations for the following template variables are affected by this too:</p>
+
+<ul>
+	<li>{T_THEME_PATH} - styles/xxx/theme</li>
+	<li>{T_TEMPLATE_PATH} - styles/xxx/template</li>
+	<li>{T_SUPER_TEMPLATE_PATH} - styles/xxx/template</li>
+	<li>{T_IMAGESET_PATH} - styles/xxx/imageset</li>
+	<li>{T_IMAGESET_LANG_PATH} - styles/xxx/imageset/yy</li>
+	<li>{T_IMAGES_PATH} - images/</li>
+	<li>{T_SMILIES_PATH} - $config['smilies_path']/</li>
+	<li>{T_AVATAR_PATH} - $config['avatar_path']/</li>
+	<li>{T_AVATAR_GALLERY_PATH} - $config['avatar_gallery_path']/</li>
+	<li>{T_ICONS_PATH} - $config['icons_path']/</li>
+	<li>{T_RANKS_PATH} - $config['ranks_path']/</li>
+	<li>{T_UPLOAD_PATH} - $config['upload_path']/</li>
+	<li>{T_STYLESHEET_LINK} - styles/xxx/theme/stylesheet.css (or link to style.php if css is parsed dynamically)</li>
+	<li>New template variable {BOARD_URL} for the board url + script path.</li>
+</ul>
 
 		</div>
 
@@ -1123,7 +1172,7 @@ append_sid(&quot;{$phpbb_root_path}memberlist.$phpEx&quot;, 'mode=group&amp;amp;
 <p>Template defined variables can also be utilised.
 <div class="codebox"><pre>
 <span class="comment">&lt;!-- DEFINE $SOME_VAR = 'my_file.html' --&gt;</span>
-<span class="comment">&lt;!-- INCLUDE {$SOME_VAR} --&gt;</span>	
+<span class="comment">&lt;!-- INCLUDE {$SOME_VAR} --&gt;</span>
 </pre></div>
 
 <h4>PHP</h4>
@@ -2297,13 +2346,13 @@ if (utf8_case_fold_nfc($string1) == utf8_case_fold_nfc($string2))
 			</ul>
 		</li>
 	</ul>
-	
+
 	<a name="commitmessage"></a><h3>7.ii. Commit Messages</h3>
 
 	<p>The commit message should contain a brief explanation of all changes made within the commit. Often identical to the changelog entry. A bug ticket can be referenced by specifying the ticket ID with a hash, e.g. #12345. A reference to another revision should simply be prefixed with r, e.g. r12345.</p>
 
 	<p>Junior Developers need to have their patches approved by a development team member first. The commit message must end in a line with the following format:</p>
-	
+
 	<div class="codebox"><pre>
 Authorised by: developer1[, developer2[, ...]]
 	</pre></div>
@@ -2322,7 +2371,11 @@ Authorised by: developer1[, developer2[, ...]]
 		<div class="inner"><span class="corners-top"><span></span></span>
 
 		<div class="content">
+<h3>Revision 10007</h3>
 
+<ul>
+	<li>Added <a href="#constants">Special Constants</a> section.</li>
+</ul>
 
 <h3>Revision 9817</h3>
 
