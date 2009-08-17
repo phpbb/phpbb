@@ -4089,6 +4089,10 @@ function page_header($page_title = '', $display_online_list = true, $item_id = 0
 		$db->sql_freeresult($result);
 	}
 
+	// Determine board url - we may need it later
+	$board_url = generate_board_url() . '/';
+	$web_path = (defined('PHPBB_USE_BOARD_URL_PATH') && PHPBB_USE_BOARD_URL_PATH) ? generate_board_url() . '/' : $phpbb_root_path;
+
 	// The following assigns all _common_ variables that may be used at any point in a template.
 	$template->assign_vars(array(
 		'SITENAME'						=> $config['sitename'],
@@ -4112,6 +4116,7 @@ function page_header($page_title = '', $display_online_list = true, $item_id = 0
 		'_SID'				=> $_SID,
 		'SESSION_ID'		=> $user->session_id,
 		'ROOT_PATH'			=> $phpbb_root_path,
+		'BOARD_URL'			=> $board_url,
 
 		'L_LOGIN_LOGOUT'	=> $l_login_logout,
 		'L_INDEX'			=> $user->lang['FORUM_INDEX'],
@@ -4170,20 +4175,33 @@ function page_header($page_title = '', $display_online_list = true, $item_id = 0
 		'S_ENABLE_FEEDS_TOPICS'		=> ($config['feed_overall_topics']) ? true : false,
 		'S_ENABLE_FEEDS_NEWS'		=> ($s_feed_news) ? true : false,
 
-		'T_THEME_PATH'			=> "{$phpbb_root_path}styles/" . $user->theme['theme_path'] . '/theme',
-		'T_TEMPLATE_PATH'		=> "{$phpbb_root_path}styles/" . $user->theme['template_path'] . '/template',
-		'T_SUPER_TEMPLATE_PATH'	=> (isset($user->theme['template_inherit_path']) && $user->theme['template_inherit_path']) ? "{$phpbb_root_path}styles/" . $user->theme['template_inherit_path'] . '/template' : "{$phpbb_root_path}styles/" . $user->theme['template_path'] . '/template',
-		'T_IMAGESET_PATH'		=> "{$phpbb_root_path}styles/" . $user->theme['imageset_path'] . '/imageset',
-		'T_IMAGESET_LANG_PATH'	=> "{$phpbb_root_path}styles/" . $user->theme['imageset_path'] . '/imageset/' . $user->data['user_lang'],
-		'T_IMAGES_PATH'			=> "{$phpbb_root_path}images/",
-		'T_SMILIES_PATH'		=> "{$phpbb_root_path}{$config['smilies_path']}/",
-		'T_AVATAR_PATH'			=> "{$phpbb_root_path}{$config['avatar_path']}/",
-		'T_AVATAR_GALLERY_PATH'	=> "{$phpbb_root_path}{$config['avatar_gallery_path']}/",
-		'T_ICONS_PATH'			=> "{$phpbb_root_path}{$config['icons_path']}/",
-		'T_RANKS_PATH'			=> "{$phpbb_root_path}{$config['ranks_path']}/",
-		'T_UPLOAD_PATH'			=> "{$phpbb_root_path}{$config['upload_path']}/",
-		'T_STYLESHEET_LINK'		=> (!$user->theme['theme_storedb']) ? "{$phpbb_root_path}styles/" . $user->theme['theme_path'] . '/theme/stylesheet.css' : "{$phpbb_root_path}style.$phpEx?sid=$user->session_id&amp;id=" . $user->theme['style_id'] . '&amp;lang=' . $user->data['user_lang'],
+		'T_THEME_PATH'			=> "{$web_path}styles/" . $user->theme['theme_path'] . '/theme',
+		'T_TEMPLATE_PATH'		=> "{$web_path}styles/" . $user->theme['template_path'] . '/template',
+		'T_SUPER_TEMPLATE_PATH'	=> (isset($user->theme['template_inherit_path']) && $user->theme['template_inherit_path']) ? "{$web_path}styles/" . $user->theme['template_inherit_path'] . '/template' : "{$web_path}styles/" . $user->theme['template_path'] . '/template',
+		'T_IMAGESET_PATH'		=> "{$web_path}styles/" . $user->theme['imageset_path'] . '/imageset',
+		'T_IMAGESET_LANG_PATH'	=> "{$web_path}styles/" . $user->theme['imageset_path'] . '/imageset/' . $user->data['user_lang'],
+		'T_IMAGES_PATH'			=> "{$web_path}images/",
+		'T_SMILIES_PATH'		=> "{$web_path}{$config['smilies_path']}/",
+		'T_AVATAR_PATH'			=> "{$web_path}{$config['avatar_path']}/",
+		'T_AVATAR_GALLERY_PATH'	=> "{$web_path}{$config['avatar_gallery_path']}/",
+		'T_ICONS_PATH'			=> "{$web_path}{$config['icons_path']}/",
+		'T_RANKS_PATH'			=> "{$web_path}{$config['ranks_path']}/",
+		'T_UPLOAD_PATH'			=> "{$web_path}{$config['upload_path']}/",
+		'T_STYLESHEET_LINK'		=> (!$user->theme['theme_storedb']) ? "{$web_path}styles/" . $user->theme['theme_path'] . '/theme/stylesheet.css' : append_sid("{$phpbb_root_path}style.$phpEx", 'id=' . $user->theme['style_id'] . '&amp;lang=' . $user->data['user_lang']),
 		'T_STYLESHEET_NAME'		=> $user->theme['theme_name'],
+
+		'T_THEME_NAME'			=> $user->theme['theme_path'],
+		'T_TEMPLATE_NAME'		=> $user->theme['template_path'],
+		'T_SUPER_TEMPLATE_NAME'	=> (isset($user->theme['template_inherit_path']) && $user->theme['template_inherit_path']) ? $user->theme['template_inherit_path'] : $user->theme['template_path'],
+		'T_IMAGESET_NAME'		=> $user->theme['imageset_path'],
+		'T_IMAGESET_LANG_NAME'	=> $user->data['user_lang'],
+		'T_IMAGES'				=> 'images',
+		'T_SMILIES'				=> $config['smilies_path'],
+		'T_AVATAR'				=> $config['avatar_path'],
+		'T_AVATAR_GALLERY'		=> $config['avatar_gallery_path'],
+		'T_ICONS'				=> $config['icons_path'],
+		'T_RANKS'				=> $config['ranks_path'],
+		'T_UPLOAD'				=> $config['upload_path'],
 
 		'SITE_LOGO_IMG'			=> $user->img('site_logo'),
 

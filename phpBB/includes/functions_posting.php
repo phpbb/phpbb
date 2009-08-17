@@ -112,12 +112,14 @@ function generate_smilies($mode, $forum_id)
 
 	if (sizeof($smilies))
 	{
+		$root_path = (defined('PHPBB_USE_BOARD_URL_PATH') && PHPBB_USE_BOARD_URL_PATH) ? generate_board_url() . '/' : $phpbb_root_path;
+
 		foreach ($smilies as $row)
 		{
 			$template->assign_block_vars('smiley', array(
 				'SMILEY_CODE'	=> $row['code'],
 				'A_SMILEY_CODE'	=> addslashes($row['code']),
-				'SMILEY_IMG'	=> $phpbb_root_path . $config['smilies_path'] . '/' . $row['smiley_url'],
+				'SMILEY_IMG'	=> $root_path . $config['smilies_path'] . '/' . $row['smiley_url'],
 				'SMILEY_WIDTH'	=> $row['smiley_width'],
 				'SMILEY_HEIGHT'	=> $row['smiley_height'],
 				'SMILEY_DESC'	=> $row['emotion'])
