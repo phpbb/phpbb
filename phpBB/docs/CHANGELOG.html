@@ -107,56 +107,55 @@
 		<li>[Fix] Fix saving custom profile fields in ACP if Oracle used (Bug #46015)</li>
 		<li>[Fix] Make view_log() more resilient to corrupt serialized data. (Bug #46545)</li>
 		<li>[Fix] Show error if hostname lookup doesn't return a valid IP address when banning. (Bug #45585 - Patch by bantu)</li>
-		<li>[Fix] Incorrect layout when loading PM-draft (Bug #38435 - Patch by nickvergessen)</li>
-		<li>[Fix] Wrong message shown to user, when adding bots to friends/foes. (Bug #40205 - Patch by nickvergessen)</li>
+		<li>[Fix] Fix incorrect layout when loading private message draft. (Bug #38435 - Patch by nickvergessen)</li>
+		<li>[Fix] Show proper error message when trying to add bots to friends/foes list. (Bug #40205 - Patch by nickvergessen)</li>
 		<li>[Fix] Fix Oracle database backup (Bug #46715)</li>
 		<li>[Fix] Update attachments table when deleting user and retaining his posts. (Bug #40245 - Patch by rxu)</li>
-		<li>[Fix] Template cache error for files of template-subfolders (Bug #46145 - Patch by nickvergessen)</li>
+		<li>[Fix] Correctly detect files in subfolders when viewing cached template files. (Bug #46145 - Patch by nickvergessen)</li>
 		<li>[Fix] Display user's Jabber address in popup when Jabber functionality is disabled (Bug #20775 - Patch by nickvergessen)</li>
-		<li>[Fix] Exclude forum from active topics option is ignored (Bug #19135 - Patch by nickvergessen)</li>
+		<li>[Fix] Correctly exclude forums from active topics list. (Bug #19135 - Patch by nickvergessen)</li>
 		<li>[Fix] Do not display birthdays of banned users (Bug #20625 - Patch by nickvergessen)</li>
 		<li>[Fix] Fix function to recalculate Nested Sets (Bug #41555 - Patch by EXreaction)</li>
-		<li>[Fix] Display and highlight already used rank images while assigning new rank (Bug #22665 - Patch by nickvergessen)</li>
+		<li>[Fix] Display but also highlight already used rank images when creating new ranks. (Bug #22665 - Patch by nickvergessen)</li>
 		<li>[Fix] Correctly orientate quoted text image on RTL languages (Bug #33745 - Patch by nickvergessen)</li>
 		<li>[Fix] Do not display &quot;View user notes&quot; and &quot;Warn user&quot; links in user profile if corresponding MCP modules are disabled. (Bug #10519 - Patch by rxu)</li>
-		<li>[Fix] Empty error message in UCP folder management when creating folder without name (Bug #39875 - Patch by nickvergessen)</li>
-		<li>[Fix] Wrong description in UCP group management implicates missing feature (Bug #19945 - Patch by nickvergessen)</li>
+		<li>[Fix] Show proper error message when trying to create a private messages folder with an empty name. (Bug #39875 - Patch by nickvergessen)</li>
+		<li>[Fix] No longer state that it is possible to manage group leaders from the UCP. (Bug #19945 - Patch by nickvergessen)</li>
 		<li>[Fix] Do not throw an error when PDO is a shared module and not loaded preventing SQLite from being loaded.</li>
-		<li>[Fix] Fix unicode words censoring. (Bug #16555 - Patches by rxu)</li>
+		<li>[Fix] Fix censoring of unicode words. (Bug #16555 - Patches by rxu)</li>
 		<li>[Fix] Display coloured usernames in ACP groups management screens</li>
 		<li>[Fix] Correctly describe founder permissions on trace-information (Bug #37235 - Patch by nickvergessen)</li>
 		<li>[Fix] Correct the width value for poll_center.gif omitted in imageset.cfg for subsilver2. (Bug #43005 - Patch by rxu)</li>
 		<li>[Fix] Correctly load complex language variable using acp_language (Bug #45735 - Patch by leviatan21)</li>
-		<li>[Fix] Fixed reapply_sid() to correctly strip session id in certain circumstances (Bug #43125 - Patch by leviatan21)</li>
+		<li>[Fix] Fix reapply_sid() to correctly strip session id in certain circumstances (Bug #43125 - Patch by leviatan21)</li>
 		<li>[Fix] Correctly state why one language pack is marked with an asterisk in the ACP. (Bug #37565 - Patch by bantu)</li>
 		<li>[Fix] Correctly check if install directory is still present. (Bug #46965 - Patch by rxu)</li>
 		<li>[Fix] Correct banned user behaviour when &quot;force password change&quot; is enabled (Bug #47145 - Patch by nickvergessen and leviatan21 )</li>
 		<li>[Fix] Correctly display ACP logs options, without permission to clear logs. (Bug #24155 - Patch by leviatan21)</li>
 		<li>[Fix] Display topic icons in MCP forum view again (only prosilver).</li>
 		<li>[Fix] Properly display post status messages in topic when post is reported and unapproved (Bug #44455 - Patch by leviatan21)</li>
-		<li>[Fix] Loading draft removes recipients when replying to PM (Bug #38395 - Patch by nickvergessen)</li>
-		<li>[Fix] Add poster-name to moderator-log when deleting post/topic (Bug #46225 - Patch by nickvergessen)</li>
-		<li>[Fix] &quot;Report details&quot; link broken in MCP (Bug #46975 - Patch by nickvergessen)</li>
+		<li>[Fix] Do not remove recipients when loading private message draft. (Bug #38395 - Patch by nickvergessen)</li>
+		<li>[Fix] Add author name to moderator log when deleting post/topic. (Bug #46225 - Patch by nickvergessen)</li>
+		<li>[Fix] Fix broken &quot;Report details&quot; link in the MCP. (Bug #46975 - Patch by nickvergessen)</li>
 		<li>[Fix] Resolve accesskey conflicts in prosilver. (Bug #44685 - Patch by bantu)</li>
 		<li>[Fix] Check if template file is empty before trying to read from it. (Bug #47345 - Patch by bantu)</li>
 		<li>[Fix] Correct descriptions of the permissions to use BBCode, smilies, images and flash to be more relevant. (Bug #36065 - Patch by rxu)</li>
 		<li>[Fix] Fix style issues in print mode. (Bug #26375 - Patch by leviatan21)</li>
 		<li>[Fix] Fix minor issue with L_QUOTE language string missing in several PM composing modes. (Bug #39625 - Patch by rxu)</li>
-		<li>[Fix] Color bbcode now supports three-digit hex notation. (Bug #39965 - Patch by m0rpha)</li>
-		<li>[Fix] Search by authorname does not display posts of guests and deleted or deactivated users (Bug #36565, #47765 - Patch by nickvergessen)</li>
-		<li>[Fix] View end of ban in MCP and ACP when user is banned by duration (Bug #47815 - Patch by Pyramide)</li>
-		<li>[Fix] Wrong count of posts awaiting approval in MCP. (Bug #47685 - Patch by nickvergessen)</li>
+		<li>[Fix] Also fetch posts of guests and deleted or deactivated users when searching for author names. (Bug #36565, #47765 - Patch by nickvergessen)</li>
+		<li>[Fix] Show end of ban in MCP and ACP when user is banned by duration. (Bug #47815 - Patch by Pyramide)</li>
+		<li>[Fix] Correctly count posts awaiting approval in the MCP. (Bug #47685 - Patch by nickvergessen)</li>
 		<li>[Fix] Display user's posts count in private message when it is equal to 0 (prosilver). (Bug #40155 - Patch by rxu)</li>
-		<li>[Fix] Disable word-censor option in UCP lacks the config-setting (Bug #47575 - Patch by 00mohgta7)</li>
+		<li>[Fix] Only allow users to disable word censor if globally allowed. (Bug #47575 - Patch by 00mohgta7)</li>
 		<li>[Fix] Fix database updater and db tools to support multiple column changes/additions/removals with SQLite</li>
 		<li>[Fix] Correctly detect GZIP status in debug mode. (Bug #24075 - Patch by rxu)</li>
 		<li>[Fix] Posting smilies in view more smilies now work again in IE (Bug #46025 - Patch by leviatan21)</li>
-		<li>[Fix] Properly convert and show filesize information (Bug #47775 - Patch by bantu)</li>
+		<li>[Fix] Properly convert and show filesize information. (Bug #47775 - Patch by bantu)</li>
 		<li>[Fix] Add ability to prune users who never logged in. (Bug #44295 - Patch by rxu)</li>
-		<li>[Fix] Smilies and images not viewed in topic-print view (Bug #47265 - Patch by nickvergessen)</li>
-		<li>[Fix] Force full date for PMs print-view (Patch by nickvergessen)</li>
+		<li>[Fix] Show smilies and images in topic print view. (Bug #47265 - Patch by nickvergessen)</li>
+		<li>[Fix] Force full date in private message print view. (Patch by nickvergessen)</li>
 		<li>[Fix] Fix &quot;Always show a scrollbar for short pages&quot; for IE8 and Firefox 3.5 (Bug #47865 - Patch by stokerpiller)</li>
-		<li>[Fix] Do not allow setting group as default group for pending user (Bug #45675 - Patch by nickvergessen)</li>
+		<li>[Fix] Do not allow setting group as default group for pending users. (Bug #45675 - Patch by nickvergessen)</li>
 		<li>[Fix] Fail gracefully if store folder is not writable during update. (Bugs #46615, #46945)</li>
 		<li>[Fix] Hide profile-icon from viewtopic-page if user has no permissions (subsilver2 only) (Bug #37635 - Patch by leviatan21)</li>
 		<li>[Fix] Correct escaping/unescaping in the LDAP authentication plugin. (Bug #48175)</li>
@@ -223,6 +222,7 @@
 		<li>[Change] Introduce new parameter to page_header() for forum specific who is online listings.</li>
 		<li>[Change] Lifted minimum requirement for Firebird DBMS from 2.0+ to 2.1+.</li>
 		<li>[Change] Unapproved topics can no longer be replied to (Bug #44005)</li>
+		<li>[Change] Allow three-digit hex notation in Color BBcode. (Bug #39965 - Patch by m0rpha)</li>
 		<li>[Feature] Add language selection on the registration terms page (Bug #15085 - Patch by leviatan21)</li>
 		<li>[Feature] Backported 3.2 captcha plugins.
 			<ul>
