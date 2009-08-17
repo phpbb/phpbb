@@ -2706,7 +2706,7 @@ function confirm_box($check, $title = '', $hidden = '', $html_body = 'confirm_bo
 	}
 	else
 	{
-		page_header((!isset($user->lang[$title])) ? $user->lang['CONFIRM'] : $user->lang[$title]);
+		page_header(((!isset($user->lang[$title])) ? $user->lang['CONFIRM'] : $user->lang[$title]), false);
 	}
 
 	$template->set_filenames(array(
@@ -3028,7 +3028,7 @@ function login_forum_box($forum_data)
 		$template->assign_var('LOGIN_ERROR', $user->lang['WRONG_PASSWORD']);
 	}
 
-	page_header($user->lang['LOGIN']);
+	page_header($user->lang['LOGIN'], false);
 
 	$template->assign_vars(array(
 		'S_HIDDEN_FIELDS'		=> build_hidden_fields(array('f' => $forum_data['forum_id'])))
@@ -3592,7 +3592,7 @@ function msg_handler($errno, $msg_text, $errfile, $errline)
 				}
 				else
 				{
-					page_header($msg_title);
+					page_header($msg_title, false);
 				}
 			}
 
