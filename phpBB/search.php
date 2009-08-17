@@ -372,8 +372,6 @@ if ($keywords || $author || $author_id || $search_id || $submit)
 			break;
 
 			case 'unreadposts':
-				if ($config['load_db_lastread'] && $user->data['is_registered'])
-				{
 					$l_search_title = $user->lang['SEARCH_UNREAD'];
 					// force sorting
 					$show_results = 'topics';
@@ -399,10 +397,7 @@ if ($keywords || $author || $author_id || $search_id || $submit)
 							$sql_sort";
 						$field = 'topic_id';
 					}
-					break;
-				}
-				// Do nothing if it's cookie based read tracking
-				// Just do not break and let user to see newposts
+			break;
 
 			case 'newposts':
 				$l_search_title = $user->lang['SEARCH_NEW'];
