@@ -95,6 +95,13 @@ if ($keywords || $author || $author_id || $search_id || $submit)
 		}
 	}
 
+	// search for unread posts needs user to be logged in
+	// if topics tracking for guests is disabled
+	if ($search_id == 'unreadposts' && !$config['load_anon_lastread'] && !$user->data['is_registered'])
+	{
+		login_box('', $user->lang['LOGIN_EXPLAIN_UNREADSEARCH']);
+	}
+
 	// If we are looking for authors get their ids
 	$author_id_ary = array();
 	$sql_author_match = '';
