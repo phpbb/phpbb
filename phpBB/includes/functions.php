@@ -1730,13 +1730,13 @@ function get_unread_topics_list($user_id = false, $sql_extra = '')
 		$tracked_topics_list = array_merge(array_keys($unread_topics_list), array_keys($read_topics_list));
 
 		// And the last step - find unread topics were not found before (that can mean a user has never read some forums)
-		$sql = 'SELECT topic_id
-			FROM ' . TOPICS_TABLE . '
-			WHERE topic_last_post_time > ' . (int) $user->data['user_lastmark'] . '
-				AND ' . $db->sql_in_set('topic_id', $tracked_topics_list, true, true) . '
-				AND ' . $db->sql_in_set('forum_id', $tracked_forums_list, true, true) . "
+		$sql = 'SELECT t.topic_id
+			FROM ' . TOPICS_TABLE . ' t
+			WHERE t.topic_last_post_time > ' . (int) $user->data['user_lastmark'] . '
+				AND ' . $db->sql_in_set('t.topic_id', $tracked_topics_list, true, true) . '
+				AND ' . $db->sql_in_set('t.forum_id', $tracked_forums_list, true, true) . "
 			$sql_extra
-			ORDER BY topic_last_post_time DESC";
+			ORDER BY t.topic_last_post_time DESC";
 		$result = $db->sql_query_limit($sql, 1000);
 
 		while ($row = $db->sql_fetchrow($result))

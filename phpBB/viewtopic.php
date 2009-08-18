@@ -1593,6 +1593,27 @@ if (isset($user->data['session_page']) && !$user->data['is_bot'] && (strpos($use
 	}
 }
 
+// Get last post time for all global announcements
+// to keep proper forums tracking
+if ($topic_data['topic_type'] == POST_GLOBAL)
+{
+	$sql = 'SELECT topic_last_post_time as forum_last_post_time
+		FROM ' . TOPICS_TABLE . '
+		WHERE forum_id = 0
+		ORDER BY topic_last_post_time DESC';
+	$result = $db->sql_query_limit($sql, 1);
+	$topic_data['forum_last_post_time'] = (int) $db->sql_fetchfield('forum_last_post_time');
+	$db->sql_freeresult($result);
+	
+	$sql = 'SELECT mark_time as forum_mark_time
+		FROM ' . FORUMS_TRACK_TABLE . '
+		WHERE forum_id = 0
+			AND user_id = ' . $user->data['user_id'];
+	$result = $db->sql_query($sql);
+	$topic_data['forum_mark_time'] = (int) $db->sql_fetchfield('forum_mark_time');
+	$db->sql_freeresult($result);
+}
+
 // Only mark topic if it's currently unread. Also make sure we do not set topic tracking back if earlier pages are viewed.
 if (isset($topic_tracking_info[$topic_id]) && $topic_data['topic_last_post_time'] > $topic_tracking_info[$topic_id] && $max_post_time > $topic_tracking_info[$topic_id])
 {

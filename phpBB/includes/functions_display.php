@@ -102,6 +102,19 @@ function display_forums($root_data = '', $display_moderators = true, $return_mod
 
 	$forum_tracking_info = array();
 	$branch_root_id = $root_data['forum_id'];
+
+	// Check for unread global announcements
+	// For index page only we do it
+	$ga_unread = false;
+	if ($root_data['forum_id'] == 0)
+	{
+		$unread_ga_list = get_unread_topics_list($user->data['user_id'], 'AND t.forum_id = 0');
+		if (sizeof($unread_ga_list))
+		{
+			$ga_unread = true;
+		}
+	}
+
 	while ($row = $db->sql_fetchrow($result))
 	{
 		$forum_id = $row['forum_id'];
@@ -308,6 +321,12 @@ function display_forums($root_data = '', $display_moderators = true, $return_mod
 		$forum_id = $row['forum_id'];
 
 		$forum_unread = (isset($forum_tracking_info[$forum_id]) && $row['orig_forum_last_post_time'] > $forum_tracking_info[$forum_id]) ? true : false;
+
+		// Mark the first visible forum on index as unread if there's any unread global announcement
+		if (($forum_id == $forum_ids_moderator[0]) && ($root_data['forum_id'] == 0) && $ga_unread)
+		{
+			$forum_unread = true;
+		}
 
 		$folder_image = $folder_alt = $l_subforums = '';
 		$subforums_list = array();
