@@ -790,6 +790,11 @@ ul.cplist {
 	background-image: url("{T_THEME_PATH}/images/bg_menu.gif");
 }
 
+.rtl #navigation a {
+	background-image: url("{T_THEME_PATH}/images/bg_menu_rtl.gif");
+	background-position: 0 100%;
+}
+
 #navigation a:hover {
 	background-color: #aabac6;
 	color: #BC2A4D;
