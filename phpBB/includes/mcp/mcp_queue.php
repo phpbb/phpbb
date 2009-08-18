@@ -895,7 +895,7 @@ function disapprove_post($post_id_list, $id, $mode)
 						{
 							// Load up the language pack
 							$lang = array();
-							@include($phpbb_root_path . '/language/' . $post_data['user_lang'] . '/mcp.' . $phpEx);
+							@include($phpbb_root_path . '/language/' . basename($post_data['user_lang']) . '/mcp.' . $phpEx);
 
 							// If we find the reason in this language pack use it
 							if (isset($lang['report_reasons']['DESCRIPTION'][$disapprove_reason_lang]))
