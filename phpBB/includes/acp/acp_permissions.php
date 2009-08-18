@@ -1209,7 +1209,7 @@ class acp_permissions
 
 				$s_hidden_fields = build_hidden_fields($s_hidden_fields);
 
-				confirm_box(false, $user->lang['CONFIRM_OPERATION'] . ' ' . $user->lang['COPY_PERMISSIONS_CONFIRM'], $s_hidden_fields);
+				confirm_box(false, $user->lang['COPY_PERMISSIONS_CONFIRM'], $s_hidden_fields);
 			}
 		}
 

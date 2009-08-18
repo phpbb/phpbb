@@ -110,7 +110,7 @@ $lang = array_merge($lang, array(
 	'APPLY_PERMISSIONS_EXPLAIN'	=> 'The permissions and role defined for this item will only be applied to this item and all checked items.',
 	'AUTH_UPDATED'				=> 'Permissions have been updated.',
 
-	'COPY_PERMISSIONS_CONFIRM'				=> 'Please be aware that this will overwrite any existing permissions on the selected targets.',
+	'COPY_PERMISSIONS_CONFIRM'				=> 'Are you sure you wish to carry out this operation? Please be aware that this will overwrite any existing permissions on the selected targets.',
 	'COPY_PERMISSIONS_FORUM_FROM_EXPLAIN'	=> 'The source forum you want to copy permissions from.',
 	'COPY_PERMISSIONS_FORUM_TO_EXPLAIN'		=> 'The destination forums you want the copied permissions applied to.',
 	'COPY_PERMISSIONS_FROM'					=> 'Copy permissions from',
