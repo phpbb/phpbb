@@ -1526,19 +1526,11 @@ function phpbb_mail($to, $subject, $msg, $headers, $eol, &$err_msg)
 	$headers = implode($eol, $headers);
 
 	ob_start();
-	$result = $config['email_function_name']($to, mail_encode($subject, $eol), wordwrap(utf8_wordwrap($msg), 997, "\n", true), $headers);
-	$err_msg = ob_get_clean();
-
-	// Try again...
 	// On some PHP Versions mail() *may* fail if there are newlines within the subject.
 	// Newlines are used as a delimiter for lines in mail_encode() according to RFC 2045 section 6.8.
-	if (!$result)
-	{
-		// Use nothing as delimiter (results in SPACE used)
-		ob_start();
-		$result = $config['email_function_name']($to, mail_encode($subject, ''), wordwrap(utf8_wordwrap($msg), 997, "\n", true), $headers);
-		$err_msg = ob_get_clean();
-	}
+	// Because PHP can't decide what is wanted we revert back to the non-RFC-compliant way of separating by one space (Use '' as parameter to mail_encode() results in SPACE used)
+	$result = $config['email_function_name']($to, mail_encode($subject, ''), wordwrap(utf8_wordwrap($msg), 997, "\n", true), $headers);
+	$err_msg = ob_get_clean();
 
 	return $result;
 }
