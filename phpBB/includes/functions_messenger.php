@@ -390,7 +390,7 @@ class messenger
 
 		$headers[] = 'X-Priority: ' . $this->mail_priority;
 		$headers[] = 'X-MSMail-Priority: ' . (($this->mail_priority == MAIL_LOW_PRIORITY) ? 'Low' : (($this->mail_priority == MAIL_NORMAL_PRIORITY) ? 'Normal' : 'High'));
-		$headers[] = 'X-Mailer: PhpBB3';
+		$headers[] = 'X-Mailer: phpBB3';
 		$headers[] = 'X-MimeOLE: phpBB3';
 		$headers[] = 'X-phpBB-Origin: phpbb://' . str_replace(array('http://', 'https://'), array('', ''), generate_board_url());
 
@@ -474,13 +474,7 @@ class messenger
 			}
 			else
 			{
-				// We use the EOL character for the OS here because the PHP mail function does not correctly transform line endings. On Windows SMTP is used (SMTP is \r\n), on UNIX a command is used...
-				// Reference: http://bugs.php.net/bug.php?id=15841
-				$headers = implode($this->eol, $headers);
-
-				ob_start();
-				$result = $config['email_function_name']($mail_to, mail_encode($this->subject, $this->eol), wordwrap(utf8_wordwrap($this->msg), 997, "\n", true), $headers);
-				$err_msg = ob_get_clean();
+				$result = phpbb_mail($mail_to, $this->subject, $this->msg, $headers, $this->eol, $err_msg);
 			}
 
 			if (!$result)
@@ -723,9 +717,7 @@ class queue
 						}
 						else
 						{
-							ob_start();
-							$result = $config['email_function_name']($to, mail_encode($subject, $this->eol), wordwrap(utf8_wordwrap($msg), 997, "\n", true), implode($this->eol, $headers));
-							$err_msg = ob_get_clean();
+							$result = phpbb_mail($to, $subject, $msg, $headers, $this->eol, $err_msg);
 						}
 
 						if (!$result)
@@ -1520,6 +1512,35 @@ function mail_encode($str, $eol = "\r\n")
 	}
 
 	return substr($str, 0, -strlen($delimiter));
+}
+
+/**
+* Wrapper for sending out emails with the PHP's mail function
+*/
+function phpbb_mail($to, $subject, $msg, $headers, $eol, &$err_msg)
+{
+	global $config;
+
+	// We use the EOL character for the OS here because the PHP mail function does not correctly transform line endings. On Windows SMTP is used (SMTP is \r\n), on UNIX a command is used...
+	// Reference: http://bugs.php.net/bug.php?id=15841
+	$headers = implode($eol, $headers);
+
+	ob_start();
+	$result = $config['email_function_name']($to, mail_encode($subject, $eol), wordwrap(utf8_wordwrap($msg), 997, "\n", true), $headers);
+	$err_msg = ob_get_clean();
+
+	// Try again...
+	// On some PHP Versions mail() *may* fail if there are newlines within the subject.
+	// Newlines are used as a delimiter for lines in mail_encode() according to RFC 2045 section 6.8.
+	if (!$result)
+	{
+		// Use nothing as delimiter (results in SPACE used)
+		ob_start();
+		$result = $config['email_function_name']($to, mail_encode($subject, ''), wordwrap(utf8_wordwrap($msg), 997, "\n", true), $headers);
+		$err_msg = ob_get_clean();
+	}
+
+	return $result;
 }
 
 ?>
