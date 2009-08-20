@@ -213,7 +213,7 @@ class session
 		$this->update_session_page	= $update_session_page;
 		$this->browser				= (!empty($_SERVER['HTTP_USER_AGENT'])) ? htmlspecialchars((string) $_SERVER['HTTP_USER_AGENT']) : '';
 		$this->referer				= (!empty($_SERVER['HTTP_REFERER'])) ? htmlspecialchars((string) $_SERVER['HTTP_REFERER']) : '';
-		$this->forwarded_for		= (!empty($_SERVER['HTTP_X_FORWARDED_FOR'])) ? (string) $_SERVER['HTTP_X_FORWARDED_FOR'] : '';
+		$this->forwarded_for		= (!empty($_SERVER['HTTP_X_FORWARDED_FOR'])) ? htmlspecialchars((string) $_SERVER['HTTP_X_FORWARDED_FOR']) : '';
 
 		$this->host					= $this->extract_current_hostname();
 		$this->page					= $this->extract_current_page($phpbb_root_path);
@@ -221,10 +221,10 @@ class session
 		// if the forwarded for header shall be checked we have to validate its contents
 		if ($config['forwarded_for_check'])
 		{
-			$this->forwarded_for = preg_replace('#, +#', ', ', $this->forwarded_for);
+			$this->forwarded_for = preg_replace('#[ ]{2,}#', ' ', str_replace(array(',', ' '), ' ', $this->forwarded_for));
 
 			// split the list of IPs
-			$ips = explode(', ', $this->forwarded_for);
+			$ips = explode(' ', $this->forwarded_for);
 			foreach ($ips as $ip)
 			{
 				// check IPv4 first, the IPv6 is hopefully only going to be used very seldomly
@@ -267,7 +267,7 @@ class session
 
 		// Why no forwarded_for et al? Well, too easily spoofed. With the results of my recent requests
 		// it's pretty clear that in the majority of cases you'll at least be left with a proxy/cache ip.
-		$this->ip = (!empty($_SERVER['REMOTE_ADDR'])) ? htmlspecialchars($_SERVER['REMOTE_ADDR']) : '';
+		$this->ip = (!empty($_SERVER['REMOTE_ADDR'])) ? htmlspecialchars((string) $_SERVER['REMOTE_ADDR']) : '';
 		$this->load = false;
 
 		// Load limit check (if applicable)
@@ -606,7 +606,7 @@ class session
 			}
 			else
 			{
-				$ips = explode(', ', $this->forwarded_for);
+				$ips = explode(' ', $this->forwarded_for);
 				$ips[] = $this->ip;
 				$this->check_ban($this->data['user_id'], $ips);
 			}
