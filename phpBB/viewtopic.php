@@ -907,6 +907,7 @@ else
 	$direction = (($sort_dir == 'd') ? 'DESC' : 'ASC');
 	$sql_start = $start;
 }
+
 if (is_array($sort_by_sql[$sort_key]))
 {
 	$sql_sort_order = implode(' ' . $direction . ', ', $sort_by_sql[$sort_key]) . ' ' . $direction;
@@ -915,7 +916,6 @@ else
 {
 	$sql_sort_order = $sort_by_sql[$sort_key] . ' ' . $direction;
 }
-
 
 // Container for user details, only process once
 $post_list = $user_cache = $id_cache = $attachments = $attach_list = $rowset = $update_count = $post_edit_list = array();
@@ -1604,7 +1604,7 @@ if ($topic_data['topic_type'] == POST_GLOBAL)
 	$result = $db->sql_query_limit($sql, 1);
 	$topic_data['forum_last_post_time'] = (int) $db->sql_fetchfield('forum_last_post_time');
 	$db->sql_freeresult($result);
-	
+
 	$sql = 'SELECT mark_time as forum_mark_time
 		FROM ' . FORUMS_TRACK_TABLE . '
 		WHERE forum_id = 0

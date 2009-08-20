@@ -386,12 +386,12 @@ function get_pm_from($folder_id, $folder, $user_id)
 	if ($folder_id == PRIVMSGS_OUTBOX || $folder_id == PRIVMSGS_SENTBOX)
 	{
 		$sort_by_text = array('t' => $user->lang['POST_TIME'], 's' => $user->lang['SUBJECT']);
-		$sort_by_sql = array('t' => 'p.msg_id', 's' => 'p.message_subject');
+		$sort_by_sql = array('t' => 'p.message_time', 's' => array('p.message_subject', 'p.message_time'));
 	}
 	else
 	{
 		$sort_by_text = array('a' => $user->lang['AUTHOR'], 't' => $user->lang['POST_TIME'], 's' => $user->lang['SUBJECT']);
-		$sort_by_sql = array('a' => 'u.username_clean', 't' => 'p.msg_id', 's' => 'p.message_subject');
+		$sort_by_sql = array('a' => array('u.username_clean', 'p.message_time'), 't' => 'p.message_time', 's' => array('p.message_subject', 'p.message_time'));
 	}
 
 	$s_limit_days = $s_sort_key = $s_sort_dir = $u_sort_param = '';
@@ -462,14 +462,24 @@ function get_pm_from($folder_id, $folder, $user_id)
 		}
 
 		// Select the sort order
-		$sql_sort_order = $sort_by_sql[$sort_key] . ' ' . (($sort_dir == 'd') ? 'ASC' : 'DESC');
+		$directioin = ($sort_dir == 'd') ? 'ASC' : 'DESC';
 		$sql_start = max(0, $pm_count - $sql_limit - $start);
 	}
 	else
 	{
 		// Select the sort order
-		$sql_sort_order = $sort_by_sql[$sort_key] . ' ' . (($sort_dir == 'd') ? 'DESC' : 'ASC');
+		$direction = ($sort_dir == 'd') ? 'DESC' : 'ASC';
 		$sql_start = $start;
+	}
+
+	// Sql sort order
+	if (is_array($sort_by_sql[$sort_key]))
+	{
+		$sql_sort_order = implode(' ' . $direction . ', ', $sort_by_sql[$sort_key]) . ' ' . $direction;
+	}
+	else
+	{
+		$sql_sort_order = $sort_by_sql[$sort_key] . ' ' . $direction;
 	}
 
 	$sql = 'SELECT t.*, p.root_level, p.message_time, p.message_subject, p.icon_id, p.to_address, p.message_attachment, p.bcc_address, u.username, u.username_clean, u.user_colour
