@@ -462,7 +462,7 @@ function get_pm_from($folder_id, $folder, $user_id)
 		}
 
 		// Select the sort order
-		$directioin = ($sort_dir == 'd') ? 'ASC' : 'DESC';
+		$direction = ($sort_dir == 'd') ? 'ASC' : 'DESC';
 		$sql_start = max(0, $pm_count - $sql_limit - $start);
 	}
 	else
