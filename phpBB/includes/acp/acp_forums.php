@@ -125,6 +125,7 @@ class acp_forums
 						'type_action'			=> request_var('type_action', ''),
 						'forum_status'			=> request_var('forum_status', ITEM_UNLOCKED),
 						'forum_parents'			=> '',
+						'forum_options'			=> 0,
 						'forum_name'			=> utf8_normalize_nfc(request_var('forum_name', '', true)),
 						'forum_link'			=> request_var('forum_link', ''),
 						'forum_link_track'		=> request_var('forum_link_track', false),
@@ -443,6 +444,7 @@ class acp_forums
 							'prune_viewed'			=> 7,
 							'prune_freq'			=> 1,
 							'forum_flags'			=> FORUM_FLAG_POST_REVIEW,
+							'forum_options'			=> 0,
 							'forum_password'		=> '',
 							'forum_password_confirm'=> '',
 						);
@@ -699,8 +701,8 @@ class acp_forums
 
 				return;
 			break;
-			
-			case 'copy_perm': 
+
+			case 'copy_perm':
 				$forum_perm_from = request_var('forum_perm_from', 0);
 
 				// Copy permissions?
@@ -1921,7 +1923,7 @@ class acp_forums
 	function copy_permission_page($forum_data)
 	{
 		global $phpEx, $phpbb_admin_path, $template, $user;
-	
+
 		$acl_url = '&amp;mode=setting_forum_local&amp;forum_id[]=' . $forum_data['forum_id'];
 		$action = append_sid($this->u_action . "&amp;parent_id={$this->parent_id}&amp;f={$forum_data['forum_id']}&amp;action=copy_perm");
 
