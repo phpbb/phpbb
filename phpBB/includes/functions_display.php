@@ -545,7 +545,7 @@ function generate_forum_rules(&$forum_data)
 */
 function generate_forum_nav(&$forum_data)
 {
-	global $db, $user, $template, $auth;
+	global $db, $user, $template, $auth, $config;
 	global $phpEx, $phpbb_root_path;
 
 	if (!$auth->acl_get('f_list', $forum_data['forum_id']))
@@ -592,8 +592,10 @@ function generate_forum_nav(&$forum_data)
 	$template->assign_vars(array(
 		'FORUM_ID' 		=> $forum_data['forum_id'],
 		'FORUM_NAME'	=> $forum_data['forum_name'],
-		'FORUM_DESC'	=> generate_text_for_display($forum_data['forum_desc'], $forum_data['forum_desc_uid'], $forum_data['forum_desc_bitfield'], $forum_data['forum_desc_options']))
-	);
+		'FORUM_DESC'	=> generate_text_for_display($forum_data['forum_desc'], $forum_data['forum_desc_uid'], $forum_data['forum_desc_bitfield'], $forum_data['forum_desc_options']),
+
+		'S_ENABLE_FEEDS_FORUM'	=> ($config['feed_forum'] && !phpbb_optionget(FORUM_OPTION_FEED_EXCLUDE, $forum_data['forum_options'])) ? true : false,
+	));
 
 	return;
 }
