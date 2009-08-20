@@ -94,6 +94,12 @@ class template
 	{
 		global $phpbb_root_path, $user;
 
+		// Make sure $template_path has no ending slash
+		if (substr($template_path, -1) == '/')
+		{
+			$template_path = substr($template_path, 0, -1);
+		}
+
 		$this->root = $template_path;
 		$this->cachepath = $phpbb_root_path . 'cache/ctpl_' . str_replace('_', '-', $template_name) . '_';
 		$user->theme['template_storedb'] = false;
