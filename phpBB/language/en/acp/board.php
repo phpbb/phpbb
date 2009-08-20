@@ -92,7 +92,7 @@ $lang = array_merge($lang, array(
 	'ACP_AVATAR_SETTINGS_EXPLAIN'	=> 'Avatars are generally small, unique images a user can associate with themselves. Depending on the style they are usually displayed below the username when viewing topics. Here you can determine how users can define their avatars. Please note that in order to upload avatars you need to have created the directory you name below and ensure it can be written to by the web server. Please also note that file size limits are only imposed on uploaded avatars, they do not apply to remotely linked images.',
 
 	'ALLOW_AVATARS'					=> 'Enable avatars',
-	'ALLOW_AVATARS_EXPLAIN'			=> 'Allow general usage of avatars',
+	'ALLOW_AVATARS_EXPLAIN'			=> 'Allow general usage of avatars;<br />If you disable avatars in general or avatars of a certain mode, these avatars will no longer be display within the forum, but users are still able to download their own avatar in the User Control Panel',
 	'ALLOW_LOCAL'					=> 'Enable gallery avatars',
 	'ALLOW_REMOTE'					=> 'Enable remote avatars',
 	'ALLOW_REMOTE_EXPLAIN'			=> 'Avatars linked to from another website.',
