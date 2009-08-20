@@ -244,6 +244,10 @@
 	left: 0;
 }
 
+.rtl a.feed-icon-forum {
+	float: left;
+}
+
 /**
 * content.css
 */
