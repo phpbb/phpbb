@@ -164,67 +164,18 @@ class mcp_logs
 		$sql_where = ($sort_days) ? (time() - ($sort_days * 86400)) : 0;
 		$sql_sort = $sort_by_sql[$sort_key] . ' ' . (($sort_dir == 'd') ? 'DESC' : 'ASC');
 
-		$log_operation = request_var('log_operation', '');
-		$log_operation_param = !empty($log_operation) ? '&amp;log_operation=' . urlencode(htmlspecialchars_decode($log_operation)) : '';
-		$s_lang_keys = '<option value="">' . $user->lang['SHOW_ALL_OPERATIONS'] . '</option>';
-
-		if ($topic_id)
-		{
-			$sql_forum = 'AND topic_id = ' . intval($topic_id);
-		}
-		else if (is_array($forum_id))
-		{
-			$sql_forum = 'AND ' . $db->sql_in_set('forum_id', array_map('intval', $forum_id));
-		}
-		else
-		{
-			$sql_forum = ($forum_id) ? 'AND forum_id = ' . intval($forum_id) : '';
-		}
-
-		$sql = "SELECT DISTINCT log_operation
-			FROM " . LOG_TABLE . '
-			WHERE log_type = ' . LOG_MOD . '
-				' . (($limit_days) ? "AND log_time >= $sql_where " : ' ') . 
-				$sql_forum;
-		$result = $db->sql_query($sql);
-
-		while ($row = $db->sql_fetchrow($result))
-		{
-			if (empty($row['log_operation']))
-			{
-				continue;
-			}
-
-			$selected = ($log_operation == $row['log_operation']) ? ' selected="selected"' : '';
-
-			if (isset($user->lang[$row['log_operation']]))
-			{
-				$text = htmlspecialchars(strip_tags(str_replace('<br />', ' ', $user->lang[$row['log_operation']])), ENT_COMPAT, 'UTF-8');
-
-				// Fill in sprintf placeholders with translated placeholder text
-				if (substr_count($text, '%'))
-				{
-					$text = vsprintf($text, array_fill(0, substr_count($text, '%'), $user->lang['LOGS_PLACEHOLDER']));
-				}
-			}
-			else
-			{
-				$text = ucfirst(str_replace('_', ' ', strtolower($row['log_operation'])));
-			}
-
-			$s_lang_keys .= '<option value="' . $row['log_operation'] . '"' . $selected . '>' . $text . '</option>';
-		}
-		$db->sql_freeresult($result);
+		$keywords = utf8_normalize_nfc(request_var('keywords', '', true));
+		$keywords_param = !empty($keywords) ? '&amp;keywords=' . urlencode(htmlspecialchars_decode($keywords)) : '';
 
 		// Grab log data
 		$log_data = array();
 		$log_count = 0;
-		view_log('mod', $log_data, $log_count, $config['topics_per_page'], $start, $forum_list, $topic_id, 0, $sql_where, $sql_sort, $log_operation);
+		view_log('mod', $log_data, $log_count, $config['topics_per_page'], $start, $forum_list, $topic_id, 0, $sql_where, $sql_sort, $keywords);
 
 		$template->assign_vars(array(
 			'PAGE_NUMBER'		=> on_page($log_count, $config['topics_per_page'], $start),
 			'TOTAL'				=> ($log_count == 1) ? $user->lang['TOTAL_LOG'] : sprintf($user->lang['TOTAL_LOGS'], $log_count),
-			'PAGINATION'		=> generate_pagination($this->u_action . "&amp;$u_sort_param$log_operation_param", $log_count, $config['topics_per_page'], $start),
+			'PAGINATION'	=> generate_pagination($this->u_action . "&amp;$u_sort_param$log_operation_param$keywords_param", $log_count, $config['topics_per_page'], $start, true),
 
 			'L_TITLE'			=> $user->lang['MCP_LOGS'],
 
@@ -235,6 +186,7 @@ class mcp_logs
 			'S_SELECT_SORT_DAYS'	=> $s_limit_days,
 			'S_LANG_KEYS'			=> $s_lang_keys,
 			'S_LOGS'				=> ($log_count > 0),
+			'S_KEYWORDS'			=> $keywords,
 			)
 		);
 

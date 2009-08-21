@@ -338,13 +338,12 @@ function copy_forum_permissions($src_forum_id, $dest_forum_ids, $clear_dest_perm
 		return false;
 	}
 
-	// Check if source forum exists
+	// Check if source forums exists
 	$sql = 'SELECT forum_name
 		FROM ' . FORUMS_TABLE . '
 		WHERE forum_id = ' . $src_forum_id;
 	$result = $db->sql_query($sql);
 	$src_forum_name = $db->sql_fetchfield('forum_name');
-	$db->sql_freeresult($result);
 
 	// Source forum doesn't exist
 	if (empty($src_forum_name))
@@ -358,7 +357,6 @@ function copy_forum_permissions($src_forum_id, $dest_forum_ids, $clear_dest_perm
 		WHERE ' . $db->sql_in_set('forum_id', $dest_forum_ids);
 	$result = $db->sql_query($sql);
 
-	$dest_forum_ids = $dest_forum_names = array();
 	while ($row = $db->sql_fetchrow($result))
 	{
 		$dest_forum_ids[]	= (int) $row['forum_id'];
@@ -2497,7 +2495,7 @@ function cache_moderators()
 /**
 * View log
 */
-function view_log($mode, &$log, &$log_count, $limit = 0, $offset = 0, $forum_id = 0, $topic_id = 0, $user_id = 0, $limit_days = 0, $sort_by = 'l.log_time DESC', $log_operation = '')
+function view_log($mode, &$log, &$log_count, $limit = 0, $offset = 0, $forum_id = 0, $topic_id = 0, $user_id = 0, $limit_days = 0, $sort_by = 'l.log_time DESC', $keywords = '')
 {
 	global $db, $user, $auth, $phpEx, $phpbb_root_path, $phpbb_admin_path;
 
@@ -2548,12 +2546,40 @@ function view_log($mode, &$log, &$log_count, $limit = 0, $offset = 0, $forum_id 
 			return;
 	}
 
+	$keywords = preg_split('#[\s+\-|*()]+#u', utf8_strtolower(preg_quote($keywords, '#')), 0, PREG_SPLIT_NO_EMPTY);
+	$sql_keywords = '';
+
+	if (!empty($keywords))
+	{
+		$keywords_pattern = '#' . implode('|', $keywords) . '#ui';
+		for ($i = 0, $num_keywords = sizeof($keywords); $i < $num_keywords; $i++)
+		{
+			$keywords[$i] = $db->sql_like_expression($db->any_char . $keywords[$i] . $db->any_char);
+		}
+
+		$operations = array();
+		foreach ($user->lang as $key=>$value)
+		{
+			if (substr($key, 0, 4) == 'LOG_' && preg_match($keywords_pattern, $value))
+			{
+				$operations[] = $key;
+			}
+		}
+
+		$sql_keywords = 'AND (';
+		if (!empty($operations))
+		{
+			$sql_keywords.= $db->sql_in_set('l.log_operation', $operations) . ' OR ';
+		}
+		$sql_keywords.= 'LOWER(l.log_data) ' . implode(' OR LOWER(l.log_data) ', $keywords) . ')';
+	}
+
 	$sql = "SELECT l.*, u.username, u.username_clean, u.user_colour
 		FROM " . LOG_TABLE . " l, " . USERS_TABLE . " u
 		WHERE l.log_type = $log_type
 			AND u.user_id = l.user_id
-			" . (($limit_days) ? "AND l.log_time >= $limit_days" : '') .
-			(!empty($log_operation) ? " AND l.log_operation = '" . $db->sql_escape($log_operation) . "'" : '') . "
+			" . (($limit_days) ? "AND l.log_time >= $limit_days" : '') . "
+			$sql_keywords
 			$sql_forum
 		ORDER BY $sort_by";
 	$result = $db->sql_query_limit($sql, $limit, $offset);
@@ -2718,8 +2744,8 @@ function view_log($mode, &$log, &$log_count, $limit = 0, $offset = 0, $forum_id 
 	$sql = 'SELECT COUNT(l.log_id) AS total_entries
 		FROM ' . LOG_TABLE . " l
 		WHERE l.log_type = $log_type
-			AND l.log_time >= $limit_days " .
-			(!empty($log_operation) ? "AND l.log_operation = '" . $db->sql_escape($log_operation) . "'" : '') . "
+			AND l.log_time >= $limit_days
+			$sql_keywords
 			$sql_forum";
 	$result = $db->sql_query($sql);
 	$log_count = (int) $db->sql_fetchfield('total_entries');

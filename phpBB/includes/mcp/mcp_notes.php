@@ -193,29 +193,12 @@ class mcp_notes
 		$sql_where = ($st) ? (time() - ($st * 86400)) : 0;
 		$sql_sort = $sort_by_sql[$sk] . ' ' . (($sd == 'd') ? 'DESC' : 'ASC');
 
-		$log_operation = request_var('log_operation', '');
-		$log_operation_param = !empty($log_operation) ? '&amp;log_operation=' . urlencode(htmlspecialchars_decode($log_operation)) : '';
-		$s_lang_keys = '<option value="">' . $user->lang['SHOW_ALL_OPERATIONS'] . '</option>';
-
-		$sql = "SELECT DISTINCT log_operation
-			FROM " . LOG_TABLE . '
-			WHERE log_type = ' . LOG_USERS . 
-				(($limit_days) ? " AND log_time >= $sql_where" : '');
-		$result = $db->sql_query($sql);
-		while ($row = $db->sql_fetchrow($result))
-		{
-			if (empty($row['log_operation']))
-			{
-				continue;
-			}
-			$selected = ($log_operation == $row['log_operation']) ? ' selected="selected"' : '';
-			$s_lang_keys .= '<option value="' . $row['log_operation'] . '"' . $selected . '>' . htmlspecialchars(strip_tags($user->lang[$row['log_operation']]), ENT_COMPAT, 'UTF-8') . '</option>';
-		}
-		$db->sql_freeresult($result);
+		$keywords = utf8_normalize_nfc(request_var('keywords', '', true));
+		$keywords_param = !empty($keywords) ? '&amp;keywords=' . urlencode(htmlspecialchars_decode($keywords)) : '';
 
 		$log_data = array();
 		$log_count = 0;
-		view_log('user', $log_data, $log_count, $config['posts_per_page'], $start, 0, 0, $user_id, $sql_where, $sql_sort, $log_operation);
+		view_log('user', $log_data, $log_count, $config['posts_per_page'], $start, 0, 0, $user_id, $sql_where, $sql_sort, $keywords);
 
 		if ($log_count)
 		{
@@ -240,11 +223,12 @@ class mcp_notes
 			'S_SELECT_SORT_KEY'		=> $s_sort_key,
 			'S_SELECT_SORT_DAYS'	=> $s_limit_days,
 			'S_LANG_KEYS'			=> $s_lang_keys,
+			'S_KEYWORDS'			=> $keywords,
 
 			'L_TITLE'			=> $user->lang['MCP_NOTES_USER'],
 
 			'PAGE_NUMBER'		=> on_page($log_count, $config['posts_per_page'], $start),
-			'PAGINATION'		=> generate_pagination($this->u_action . "&amp;st=$st&amp;sk=$sk&amp;sd=$sd$log_operation_param", $log_count, $config['posts_per_page'], $start),
+			'PAGINATION'	=> generate_pagination($this->u_action . "&amp;$u_sort_param$keywords_param", $log_count, $config['topics_per_page'], $start, true),
 			'TOTAL_REPORTS'		=> ($log_count == 1) ? $user->lang['LIST_REPORT'] : sprintf($user->lang['LIST_REPORTS'], $log_count),
 
 			'RANK_TITLE'		=> $rank_title,
