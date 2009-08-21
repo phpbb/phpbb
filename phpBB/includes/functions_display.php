@@ -168,7 +168,7 @@ function display_forums($root_data = '', $display_moderators = true, $return_mod
 		}
 
 		// Count the difference of real to public topics, so we can display an information to moderators
-		$row['forum_id_unapproved_topics'] = ($auth->acl_get('m_approve', $forum_id) && ($row['forum_topics_real'] - $row['forum_topics'])) ? $forum_id : 0;
+		$row['forum_id_unapproved_topics'] = ($auth->acl_get('m_approve', $forum_id) && ($row['forum_topics_real'] != $row['forum_topics'])) ? $forum_id : 0;
 		$row['forum_topics'] = ($auth->acl_get('m_approve', $forum_id)) ? $row['forum_topics_real'] : $row['forum_topics'];
 
 		// Display active topics from this forum?
