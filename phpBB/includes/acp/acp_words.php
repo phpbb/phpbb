@@ -23,7 +23,7 @@ if (!defined('IN_PHPBB'))
 class acp_words
 {
 	var $u_action;
-	
+
 	function main($id, $mode)
 	{
 		global $db, $user, $auth, $template, $cache;
@@ -47,8 +47,9 @@ class acp_words
 		switch ($action)
 		{
 			case 'edit':
+
 				$word_id = request_var('id', 0);
-				
+
 				if (!$word_id)
 				{
 					trigger_error($user->lang['NO_WORD'] . adm_back_link($this->u_action), E_USER_WARNING);
@@ -73,7 +74,7 @@ class acp_words
 					'REPLACEMENT'		=> (isset($word_info['replacement'])) ? $word_info['replacement'] : '',
 					'S_HIDDEN_FIELDS'	=> $s_hidden_fields)
 				);
-				
+
 				return;
 
 			break;
@@ -84,11 +85,12 @@ class acp_words
 				{
 					trigger_error($user->lang['FORM_INVALID']. adm_back_link($this->u_action), E_USER_WARNING);
 				}
+
 				$word_id		= request_var('id', 0);
 				$word			= utf8_normalize_nfc(request_var('word', '', true));
 				$replacement	= utf8_normalize_nfc(request_var('replacement', '', true));
-				
-				if (!$word || !$replacement)
+
+				if ($word === '' || $replacement === '')
 				{
 					trigger_error($user->lang['ENTER_WORD'] . adm_back_link($this->u_action), E_USER_WARNING);
 				}

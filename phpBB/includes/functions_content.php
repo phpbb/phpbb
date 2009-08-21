@@ -685,6 +685,12 @@ function censor_text($text)
 {
 	static $censors;
 
+	// Nothing to do?
+	if ($text === '')
+	{
+		return '';
+	}
+
 	// We moved the word censor checks in here because we call this function quite often - and then only need to do the check once
 	if (!isset($censors) || !is_array($censors))
 	{
