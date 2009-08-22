@@ -1,7 +1,12 @@
 <!-- IF S_RECAPTCHA_AVAILABLE -->
-	<tr><td colspan="22>
+	<tr>
+		<th colspan="2" valign="middle">{L_CONFIRM_CODE}</th>
+	</tr>
+	<tr><td class="row1"><b class="genmed">{L_CONFIRM_CODE}: </b><br /><span class="gensmall">{L_RECAPTCHA_EXPLAIN} 
+</span></td>
+	<td class="row2">
 		<script type="text/javascript" src="{RECAPTCHA_SERVER}/challenge?k={RECAPTCHA_PUBKEY}{RECAPTCHA_ERRORGET}">
-		// <![CDATA[
+		//<![CDATA[
 		var RecaptchaOptions = {
 		   lang : {L_RECAPTCHA_LANG}
 		};
