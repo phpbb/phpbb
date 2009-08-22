@@ -184,7 +184,6 @@ class mcp_logs
 			'S_SELECT_SORT_DIR'		=> $s_sort_dir,
 			'S_SELECT_SORT_KEY'		=> $s_sort_key,
 			'S_SELECT_SORT_DAYS'	=> $s_limit_days,
-			'S_LANG_KEYS'			=> $s_lang_keys,
 			'S_LOGS'				=> ($log_count > 0),
 			'S_KEYWORDS'			=> $keywords,
 			)

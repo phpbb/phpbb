@@ -232,8 +232,6 @@ $lang = array_merge($lang, array(
 	'EXPORT_DOWNLOAD'		=> 'Download',
 	'EXPORT_STORE'			=> 'Store',
 
-	'FILTER'				=> 'Filter',
-
 	'GENERAL_OPTIONS'		=> 'General options',
 	'GENERAL_SETTINGS'		=> 'General settings',
 	'GLOBAL_MASK'			=> 'Global permission mask',
@@ -277,7 +275,6 @@ $lang = array_merge($lang, array(
 	'RETURN_TO'							=> 'Return to…',
 
 	'SELECT_ANONYMOUS'		=> 'Select anonymous user',
-	'SELECT_LANG_KEY'		=> 'Select operation',
 	'SELECT_OPTION'			=> 'Select option',
 
 	'SETTING_TOO_LOW'		=> 'The entered value for the setting “%1$s” is too low. The minimal allowed value is %2$d.',
@@ -310,8 +307,6 @@ $lang = array_merge($lang, array(
 	'ALL_ENTRIES'				=> 'All entries',
 
 	'DISPLAY_LOG'	=> 'Display entries from previous',
-
-	'LOGS_PLACEHOLDER'	=> '&lt;value&gt;',
 
 	'NO_ENTRIES'	=> 'No log entries for this period.',
 

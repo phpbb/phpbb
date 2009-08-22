@@ -140,7 +140,6 @@ class acp_logs
 			'S_LIMIT_DAYS'	=> $s_limit_days,
 			'S_SORT_KEY'	=> $s_sort_key,
 			'S_SORT_DIR'	=> $s_sort_dir,
-			'S_LANG_KEYS'	=> $s_lang_keys,
 			'S_CLEARLOGS'	=> $auth->acl_get('a_clearlogs'),
 			'S_KEYWORDS'	=> $keywords,
 			)

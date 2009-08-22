@@ -338,12 +338,13 @@ function copy_forum_permissions($src_forum_id, $dest_forum_ids, $clear_dest_perm
 		return false;
 	}
 
-	// Check if source forums exists
+	// Check if source forum exists
 	$sql = 'SELECT forum_name
 		FROM ' . FORUMS_TABLE . '
 		WHERE forum_id = ' . $src_forum_id;
 	$result = $db->sql_query($sql);
 	$src_forum_name = $db->sql_fetchfield('forum_name');
+	$db->sql_freeresult($result);
 
 	// Source forum doesn't exist
 	if (empty($src_forum_name))
@@ -357,6 +358,7 @@ function copy_forum_permissions($src_forum_id, $dest_forum_ids, $clear_dest_perm
 		WHERE ' . $db->sql_in_set('forum_id', $dest_forum_ids);
 	$result = $db->sql_query($sql);
 
+	$dest_forum_ids = $dest_forum_names = array();
 	while ($row = $db->sql_fetchrow($result))
 	{
 		$dest_forum_ids[]	= (int) $row['forum_id'];
