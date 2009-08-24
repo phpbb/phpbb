@@ -1324,12 +1324,12 @@ function change_database_data(&$no_updates, $version)
 			{
 				$category_id = (int) $row['module_id'];
 
-				// Check if we actually need to add the feed module or if it is already added. ;)
+				// Check if we need to add the module or if it is already there. ;)
 				$sql = 'SELECT *
 					FROM ' . MODULES_TABLE . "
 					WHERE module_class = 'acp'
 						AND module_langname = 'ACP_SEND_STATISTICS'
-						AND module_mode = 'questionnaire'
+						AND module_mode = 'send_statistics'
 						AND module_auth = 'acl_a_server'
 						AND parent_id = {$category_id}";
 				$result2 = $db->sql_query($sql);
