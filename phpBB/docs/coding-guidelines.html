@@ -1174,7 +1174,12 @@ append_sid(&quot;{$phpbb_root_path}memberlist.$phpEx&quot;, 'mode=group&amp;amp;
 <span class="comment">&lt;!-- DEFINE $SOME_VAR = 'my_file.html' --&gt;</span>
 <span class="comment">&lt;!-- INCLUDE {$SOME_VAR} --&gt;</span>
 </pre></div>
-
+<p>Also added in <strong>3.0.6</strong> is the ability to increment an variable on use. This can be used for instances like tabindexes, where the amount of entries is not statically known.
+The INC command will print the current state of a defined var and then increment it by one (postincrement).</p>
+<div class="codebox"><pre>
+<span class="comment">&lt;!-- DEFINE $SOME_VAR = 1 --&gt;</span>
+<span class="comment">&lt;!-- INC $SOME_VAR --&gt;</span>
+</pre></div>
 <h4>PHP</h4>
 <p>A contentious decision has seen the ability to include PHP within the template introduced. This is achieved by enclosing the PHP within relevant tags:</p>
 

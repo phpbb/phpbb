@@ -191,6 +191,10 @@ class template_compile
 					$compile_blocks[] = '<?php ' . $this->compile_tag_define($block_val[2], false) . ' ?>';
 				break;
 
+				case 'INC':
+					$compile_blocks[] = '<?php ' . $this->compile_tag_counter($block_val[2], true) . ' ?>';
+				break;
+				
 				case 'INCLUDE':
 					$temp = array_shift($include_blocks);
 
@@ -626,6 +630,22 @@ class template_compile
 		return (($match[1]) ? $this->generate_block_data_ref(substr($match[1], 0, -1), true, true) . '[\'' . $match[2] . '\']' : '$this->_tpldata[\'DEFINE\'][\'.\'][\'' . $match[2] . '\']') . ' = ' . $match[4] . ';';
 	}
 
+
+	/**
+	* Compile INC tags
+	* @access private
+	*/
+	function compile_tag_counter($tag_args)
+	{
+		preg_match('#^\$(?=[A-Z])([A-Z0-9_\-]*)$#', $tag_args, $match);
+		if (empty($match[1]))
+		{
+			return '';
+		}
+		
+		return 'echo $this->_tpldata[\'DEFINE\'][\'.\'][\'' . $match[1] . '\']++';
+	}
+	
 	/**
 	* Compile INCLUDE tag
 	* @access private
