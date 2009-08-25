@@ -376,24 +376,23 @@ if ($keywords || $author || $author_id || $search_id || $submit)
 					// force sorting
 					$show_results = 'topics';
 					$sort_key = 't';
-					$sort_dir = 'd';
 					$sort_by_sql['t'] = 't.topic_last_post_time';
 					$sql_sort = 'ORDER BY ' . $sort_by_sql[$sort_key] . (($sort_dir == 'a') ? ' ASC' : ' DESC');
+					$sql_where = 'AND t.topic_moved_id = 0
+							' . str_replace(array('p.', 'post_'), array('t.', 'topic_'), $m_approve_fid_sql) . '
+							' . ((sizeof($ex_fid_ary)) ? 'AND ' . $db->sql_in_set('t.forum_id', $ex_fid_ary, true) : '');
 
 					gen_sort_selects($limit_days, $sort_by_text, $sort_days, $sort_key, $sort_dir, $s_limit_days, $s_sort_key, $s_sort_dir, $u_sort_param);
 					$s_sort_key = $s_sort_dir = $u_sort_param = $s_limit_days = '';
 					
 					$unread_list = array();
-					$unread_list = get_unread_topics_list();
+					$unread_list = get_unread_topics_list($user->data['user_id'], $sql_where, $sql_sort);
 
 					if (!empty($unread_list))
 					{
 						$sql = 'SELECT t.topic_id
 							FROM ' . TOPICS_TABLE . ' t
-							WHERE ' . $db->sql_in_set('t.topic_id', array_keys($unread_list)) . '
-								AND t.topic_moved_id = 0
-								' . str_replace(array('p.', 'post_'), array('t.', 'topic_'), $m_approve_fid_sql) . '
-								' . ((sizeof($ex_fid_ary)) ? 'AND ' . $db->sql_in_set('t.forum_id', $ex_fid_ary, true) : '') . "
+							WHERE ' . $db->sql_in_set('t.topic_id', array_keys($unread_list)) . "
 							$sql_sort";
 						$field = 'topic_id';
 					}
