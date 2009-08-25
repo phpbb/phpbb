@@ -92,7 +92,8 @@ if ($id)
 	if (!$user)
 	{
 		$id			= ($id) ? $id : $config['default_style'];
-		$recompile	= false;
+//		Commented out because calls do not always include the SID anymore
+//		$recompile	= false;
 		$user		= array('user_id' => ANONYMOUS);
 	}
 
