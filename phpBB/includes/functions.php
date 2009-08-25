@@ -4120,6 +4120,8 @@ function page_header($page_title = '', $display_online_list = true, $item_id = 0
 		'S_USER_UNREAD_PRIVMSG'			=> $user->data['user_unread_privmsg'],
 		'S_USER_NEW'					=> $user->data['user_new'],
 
+		'S_TAB_INDEX'		=> 1,
+
 		'SID'				=> $SID,
 		'_SID'				=> $_SID,
 		'SESSION_ID'		=> $user->session_id,
