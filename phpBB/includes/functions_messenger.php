@@ -268,6 +268,9 @@ class messenger
 		// Parse message through template
 		$this->msg = trim($this->tpl_obj->assign_display('body'));
 
+		// Because we use \n for newlines in the body message we need to fix line encoding errors for those admins who uploaded email template files in the wrong encoding
+		$this->msg = str_replace("\r\n", "\n", $this->msg);
+
 		// We now try and pull a subject from the email body ... if it exists,
 		// do this here because the subject may contain a variable
 		$drop_header = '';
