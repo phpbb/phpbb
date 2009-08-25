@@ -556,6 +556,7 @@ function approve_post($post_id_list, $id, $mode)
 
 			$post_approve_sql[] = $post_id;
 		}
+
 		$post_id_list = array_values(array_diff($post_id_list, $post_approved_list));
 		for ($i = 0, $size = sizeof($post_approved_list); $i < $size; $i++)
 		{
@@ -834,7 +835,7 @@ function disapprove_post($post_id_list, $id, $mode)
 					'post_subject'	=> $post_info[$post_id]['post_subject'],
 					'forum_id'		=> $post_info[$post_id]['forum_id'],
 					'topic_id'		=> $post_info[$post_id]['topic_id'],
-				);			
+				);
 
 			}
 		}

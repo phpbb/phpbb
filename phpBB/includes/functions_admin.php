@@ -2744,8 +2744,9 @@ function view_log($mode, &$log, &$log_count, $limit = 0, $offset = 0, $forum_id 
 	}
 
 	$sql = 'SELECT COUNT(l.log_id) AS total_entries
-		FROM ' . LOG_TABLE . " l
+		FROM ' . LOG_TABLE . ' l, ' . USERS_TABLE . " u
 		WHERE l.log_type = $log_type
+			AND l.user_id = u.user_id
 			AND l.log_time >= $limit_days
 			$sql_keywords
 			$sql_forum";

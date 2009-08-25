@@ -538,6 +538,17 @@ function user_delete($mode, $user_id, $post_username = false)
 
 	$cache->destroy('sql', MODERATOR_CACHE_TABLE);
 
+	// Delete user log entries about this user
+	$sql = 'DELETE FROM ' . LOG_TABLE . '
+		WHERE reportee_id = ' . $user_id;
+	$db->sql_query($sql);
+
+	// Change user_id to anonymous for this users triggered events
+	$sql = 'UPDATE ' . LOG_TABLE . '
+		SET user_id = ' . ANONYMOUS . '
+		WHERE user_id = ' . $user_id;
+	$db->sql_query($sql);
+
 	// Delete the user_id from the zebra table
 	$sql = 'DELETE FROM ' . ZEBRA_TABLE . '
 		WHERE user_id = ' . $user_id . '
