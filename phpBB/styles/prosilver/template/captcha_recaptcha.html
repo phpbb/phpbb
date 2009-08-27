@@ -16,8 +16,8 @@
 		<script type="text/javascript" src="{RECAPTCHA_SERVER}/challenge?k={RECAPTCHA_PUBKEY}{RECAPTCHA_ERRORGET}">
 		// <![CDATA[
 		var RecaptchaOptions = {
-		   lang : {L_RECAPTCHA_LANG},
-		   tabindex : <!-- INC S_TAB_INDEX -->
+			lang : {L_RECAPTCHA_LANG},
+			tabindex : <!-- IF $CAPTCHA_TAB_INDEX -->{$CAPTCHA_TAB_INDEX}<!-- ELSE -->10<!-- ENDIF -->
 		};
 		// ]]>
 		</script>
