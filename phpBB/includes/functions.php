@@ -3595,6 +3595,9 @@ function msg_handler($errno, $msg_text, $errfile, $errline)
 				$db->sql_return_on_error(false);
 			}
 
+			// Do not send 200 OK, but service unavailable on errors
+			header('HTTP/1.1 503 Service Unavailable');
+
 			garbage_collection();
 
 			// Try to not call the adm page data...
