@@ -552,6 +552,14 @@ function _hash_crypt_private($password, $setting, &$itoa64)
 }
 
 /**
+* Hash email
+*/
+function phpbb_email_hash($email)
+{
+	return crc32(strtolower($email)) . strlen($email);
+}
+
+/**
 * Global function for chmodding directories and files for internal use
 *
 * This function determines owner and group whom the file belongs to and user and group of PHP and then set safest possible file permissions.
