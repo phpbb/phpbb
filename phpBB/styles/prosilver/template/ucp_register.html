@@ -11,6 +11,10 @@
 		document.forms['register'].submit.click();
 	}
 
+	<!-- IF CAPTCHA_TEMPLATE and S_CONFIRM_REFRESH -->
+	onload_functions.push('apply_onkeypress_event()');
+	<!-- ENDIF -->
+
 // ]]>
 </script>
 
@@ -92,15 +96,13 @@
 </div>
 <!-- ENDIF -->
 
-
-
 <div class="panel">
 	<div class="inner"><span class="corners-top"><span></span></span>
 
 	<fieldset class="submit-buttons">
 		{S_HIDDEN_FIELDS}
 		<input type="reset" value="{L_RESET}" name="reset" class="button2" />&nbsp;
-		<input type="submit" name="submit" id="submit" value="{L_SUBMIT}" class="button1" />
+		<input type="submit" name="submit" id="submit" value="{L_SUBMIT}" class="button1 default-submit-action" />
 		{S_FORM_TOKEN}
 	</fieldset>
 

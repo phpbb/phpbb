@@ -268,3 +268,136 @@ function play_qt_file(obj)
 	obj.SetControllerVisible(true);
 	obj.Play();
 }
+
+/**
+* Check if the nodeName of elem is name
+* @author jQuery
+*/
+function is_node_name(elem, name)
+{
+	return elem.nodeName && elem.nodeName.toUpperCase() == name.toUpperCase();
+}
+
+/**
+* Check if elem is in array, return position
+* @author jQuery
+*/
+function is_in_array(elem, array)
+{
+	for (var i = 0, length = array.length; i < length; i++)
+		// === is correct (IE)
+		if (array[i] === elem)
+			return i;
+
+	return -1;
+}
+
+/**
+* Find Element, type and class in tree
+* Not used, but may come in handy for those not using JQuery
+* @author jQuery.find, Meik Sievertsen
+*/
+function find_in_tree(node, tag, type, class_name)
+{
+	var result, element, i = 0, length = node.childNodes.length;
+
+	for (element = node.childNodes[0]; i < length; element = node.childNodes[++i])
+	{
+		if (!element || element.nodeType != 1) continue;
+
+		if ((!tag || is_node_name(element, tag)) && (!type || element.type == type) && (!class_name || is_in_array(class_name, (element.className || element).toString().split(/\s+/)) > -1))
+		{
+			return element;
+		}
+
+		if (element.childNodes.length)
+			result = find_in_tree(element, tag, type, class_name);
+
+		if (result) return result;
+	}
+}
+
+/**
+* Usually used for onkeypress event, to submit a form on enter
+*/
+function submit_default_button(event, selector, class_name)
+{
+	// Add which for key events
+	if (!event.which && ((event.charCode || event.charCode === 0) ? event.charCode : event.keyCode))
+		event.which = event.charCode || event.keyCode;
+
+	// Keycode is not return, then return. ;)
+	if (event.which != 13)
+		return true;
+
+	var current = selector['parentNode'];
+
+	// Search parent form element
+	while (current && (!current.nodeName || current.nodeType != 1 || !is_node_name(current, 'form')) && current != document)
+		current = current['parentNode'];
+
+	// Find the input submit button with the class name
+	//current = find_in_tree(current, 'input', 'submit', class_name);
+	var input_tags = current.getElementsByTagName('input');
+	current = false;
+
+	for (var i = 0, element = input_tags[0]; i < input_tags.length; element = input_tags[++i])
+	{
+		if (element.type == 'submit' && is_in_array(class_name, (element.className || element).toString().split(/\s+/)) > -1)
+			current = element;
+	}
+
+	if (!current)
+		return true;
+
+	// Submit form
+	current.focus();
+	current.click();
+	return false;
+}
+
+/**
+* Apply onkeypress event for forcing default submit button on ENTER key press
+* The jQuery snippet used is based on http://greatwebguy.com/programming/dom/default-html-button-submit-on-enter-with-jquery/
+* The non-jQuery code is a mimick of the jQuery code ;)
+*/
+function apply_onkeypress_event()
+{
+	// jQuery code in case jQuery is used
+	if (jquery_present)
+	{
+		$('form input').live('keypress', function (e)
+		{
+			var default_button = $(this).parents('form').find('input[type=submit].default-submit-action');
+			
+			if (!default_button || default_button.length <= 0)
+				return true;
+
+			if ((e.which && e.which == 13) || (e.keyCode && e.keyCode == 13))
+			{
+				default_button.click();
+				return false;
+			}
+
+			return true;
+		});
+	
+		return;
+	}
+
+	var input_tags = document.getElementsByTagName('input');
+
+	for (var i = 0, element = input_tags[0]; i < input_tags.length ; element = input_tags[++i])
+	{
+		if (element.type == 'hidden')
+			continue;
+
+		// onkeydown is possible too
+		element.onkeypress = function (evt) { submit_default_button((evt || window.event), this, 'default-submit-action'); }; 
+	}
+}
+
+/**
+* Detect JQuery existance. We currently do not deliver it, but some styles do, so why not benefit from it. ;)
+*/
+var jquery_present = typeof jQuery == 'function';

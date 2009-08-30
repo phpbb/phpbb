@@ -1163,8 +1163,14 @@ function handle_message_list_actions(&$address_list, &$error, $remove_u, $remove
 
 		global $refresh, $submit, $preview;
 
-		$refresh = $preview = true;
+		$refresh = true;
 		$submit = false;
+
+		// Preview is only true if there was also a message entered
+		if (request_var('message', ''))
+		{
+			$preview = true;
+		}
 	}
 
 	// Add User/Group [TO]
