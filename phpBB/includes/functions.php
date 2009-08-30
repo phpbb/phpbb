@@ -2978,27 +2978,17 @@ function login_box($redirect = '', $l_explain = '', $l_success = '', $admin = fa
 		}
 	}
 
-	if (!$redirect)
-	{
-		// We just use what the session code determined...
-		// If we are not within the admin directory we use the page dir...
-		$redirect = '';
-
-		if (!$admin)
-		{
-			$redirect .= ($user->page['page_dir']) ? $user->page['page_dir'] . '/' : '';
-		}
-
-		$redirect .= $user->page['page_name'] . (($user->page['query_string']) ? '?' . htmlspecialchars($user->page['query_string']) : '');
-	}
-
 	// Assign credential for username/password pair
 	$credential = ($admin) ? md5(unique_id()) : false;
 
 	$s_hidden_fields = array(
-		'redirect'	=> $redirect,
 		'sid'		=> $user->session_id,
 	);
+
+	if ($redirect)
+	{
+		$s_hidden_fields['redirect'] = $redirect;
+	}
 
 	if ($admin)
 	{
@@ -3017,7 +3007,6 @@ function login_box($redirect = '', $l_explain = '', $l_success = '', $admin = fa
 		'U_PRIVACY'				=> append_sid("{$phpbb_root_path}ucp.$phpEx", 'mode=privacy'),
 
 		'S_DISPLAY_FULL_LOGIN'	=> ($s_display) ? true : false,
-		'S_LOGIN_ACTION'		=> (!$admin) ? append_sid("{$phpbb_root_path}ucp.$phpEx", 'mode=login') : append_sid("index.$phpEx", false, true, $user->session_id), // Needs to stay index.$phpEx because we are within the admin directory
 		'S_HIDDEN_FIELDS' 		=> $s_hidden_fields,
 
 		'S_ADMIN_AUTH'			=> $admin,
@@ -4194,6 +4183,8 @@ function page_header($page_title = '', $display_online_list = true, $item_id = 0
 		'S_REGISTER_ENABLED'	=> ($config['require_activation'] != USER_ACTIVATION_DISABLE) ? true : false,
 		'S_FORUM_ID'			=> $forum_id,
 		'S_TOPIC_ID'			=> $topic_id,
+
+		'S_LOGIN_ACTION'		=> (!defined('ADMIN_START')) ? append_sid("{$phpbb_root_path}ucp.$phpEx", 'mode=login') . '&amp;redirect=' . urlencode(str_replace('&amp;', '&', build_url())) : append_sid("index.$phpEx", false, true, $user->session_id) . '&amp;redirect=' . urlencode(str_replace('&amp;', '&', build_url())),
 
 		'S_ENABLE_FEEDS'			=> ($config['feed_enable']) ? true : false,
 		'S_ENABLE_FEEDS_FORUMS'		=> ($config['feed_overall_forums']) ? true : false,
