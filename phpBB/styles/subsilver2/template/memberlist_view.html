@@ -51,7 +51,15 @@
 			<!-- ENDIF -->
 			<!-- IF S_USER_LOGGED_IN and S_ZEBRA -->
 				<tr>
-					<td class="genmed" align="center">[ <!-- IF U_ADD_FRIEND and U_ADD_FOE--><a href="{U_ADD_FRIEND}">{L_ADD_FRIEND}</a> | <a href="{U_ADD_FOE}">{L_ADD_FOE}</a><!-- ENDIF --><!-- IF U_REMOVE_FRIEND --><a href="{U_REMOVE_FRIEND}">{L_REMOVE_FRIEND}</a><!-- ENDIF --><!-- IF U_REMOVE_FOE --><a href="{U_REMOVE_FOE}">{L_REMOVE_FOE}</a><!-- ENDIF --> ]</td>
+					<td class="genmed" align="center">[
+						<!-- IF U_REMOVE_FRIEND -->
+							<a href="{U_REMOVE_FRIEND}">{L_REMOVE_FRIEND}</a>
+						<!-- ELSEIF U_REMOVE_FOE -->
+							<a href="{U_REMOVE_FOE}">{L_REMOVE_FOE}</a>
+						<!-- ELSE -->
+							<!-- IF U_ADD_FRIEND--><a href="{U_ADD_FRIEND}">{L_ADD_FRIEND}</a><!-- ENDIF --><!-- IF U_ADD_FOE--><!-- IF U_ADD_FRIEND--> | <!-- ENDIF --><a href="{U_ADD_FOE}">{L_ADD_FOE}</a><!-- ENDIF -->
+						<!-- ENDIF -->
+					]</td>
 				</tr>
 			<!-- ENDIF -->
 			</table>

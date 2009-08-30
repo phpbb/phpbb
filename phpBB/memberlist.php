@@ -500,8 +500,8 @@ switch ($mode)
 
 		$poster_avatar = get_user_avatar($member['user_avatar'], $member['user_avatar_type'], $member['user_avatar_width'], $member['user_avatar_height']);
 
-		// We need to check if the modules 'zebra',  'notes' ('user_notes' mode) and  'warn' ('warn_user' mode) are accessible to decide if we can display appropriate links
-		$zebra_enabled = $user_notes_enabled = $warn_user_enabled = false;
+		// We need to check if the modules 'zebra' ('friends' & 'foes' mode),  'notes' ('user_notes' mode) and  'warn' ('warn_user' mode) are accessible to decide if we can display appropriate links
+		$zebra_enabled = $friends_enabled = $foes_enabled = $user_notes_enabled = $warn_user_enabled = false;
 
 		// Only check if the user is logged in
 		if ($user->data['is_registered'])
@@ -518,6 +518,8 @@ switch ($mode)
 			$user_notes_enabled = ($module->loaded('notes', 'user_notes')) ? true : false;
 			$warn_user_enabled = ($module->loaded('warn', 'warn_user')) ? true : false;
 			$zebra_enabled = ($module->loaded('zebra')) ? true : false;
+			$friends_enabled = ($module->loaded('zebra', 'friends')) ? true : false;
+			$foes_enabled = ($module->loaded('zebra', 'foes')) ? true : false;
 
 			unset($module);
 		}
@@ -585,10 +587,10 @@ switch ($mode)
 			'S_USER_NOTES'		=> ($user_notes_enabled) ? true : false,
 			'S_WARN_USER'		=> ($warn_user_enabled) ? true : false,
 			'S_ZEBRA'			=> ($user->data['user_id'] != $user_id && $user->data['is_registered'] && $zebra_enabled) ? true : false,
-			'U_ADD_FRIEND'		=> (!$friend) ? append_sid("{$phpbb_root_path}ucp.$phpEx", 'i=zebra&amp;add=' . urlencode(htmlspecialchars_decode($member['username']))) : '',
-			'U_ADD_FOE'			=> (!$foe) ? append_sid("{$phpbb_root_path}ucp.$phpEx", 'i=zebra&amp;mode=foes&amp;add=' . urlencode(htmlspecialchars_decode($member['username']))) : '',
-			'U_REMOVE_FRIEND'	=> ($friend) ? append_sid("{$phpbb_root_path}ucp.$phpEx", 'i=zebra&amp;remove=1&amp;usernames[]=' . $user_id) : '',
-			'U_REMOVE_FOE'		=> ($foe) ? append_sid("{$phpbb_root_path}ucp.$phpEx", 'i=zebra&amp;remove=1&amp;mode=foes&amp;usernames[]=' . $user_id) : '',
+			'U_ADD_FRIEND'		=> (!$friend && !$foe && $friends_enabled) ? append_sid("{$phpbb_root_path}ucp.$phpEx", 'i=zebra&amp;add=' . urlencode(htmlspecialchars_decode($member['username']))) : '',
+			'U_ADD_FOE'			=> (!$friend && !$foe && $foes_enabled) ? append_sid("{$phpbb_root_path}ucp.$phpEx", 'i=zebra&amp;mode=foes&amp;add=' . urlencode(htmlspecialchars_decode($member['username']))) : '',
+			'U_REMOVE_FRIEND'	=> ($friend && $friends_enabled) ? append_sid("{$phpbb_root_path}ucp.$phpEx", 'i=zebra&amp;remove=1&amp;usernames[]=' . $user_id) : '',
+			'U_REMOVE_FOE'		=> ($foe && $foes_enabled) ? append_sid("{$phpbb_root_path}ucp.$phpEx", 'i=zebra&amp;remove=1&amp;mode=foes&amp;usernames[]=' . $user_id) : '',
 		));
 
 		if (!empty($profile_fields['row']))
