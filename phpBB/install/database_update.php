@@ -1181,11 +1181,11 @@ function change_database_data(&$no_updates, $version)
 					AND module_mode = ''
 					AND module_basename = ''";
 			$result = $db->sql_query($sql);
+			$category_id = (int) $db->sql_fetchfield('module_id');
+			$db->sql_freeresult($result);
 
-			while ($row = $db->sql_fetchrow($result))
+			if ($category_id)
 			{
-				$category_id = (int) $row['module_id'];
-
 				// Check if we actually need to add the module or if it is already added. ;)
 				$sql = 'SELECT *
 					FROM ' . MODULES_TABLE . "
@@ -1194,11 +1194,11 @@ function change_database_data(&$no_updates, $version)
 						AND module_mode = 'warnings'
 						AND module_auth = 'acl_a_user'
 						AND parent_id = {$category_id}";
-				$result2 = $db->sql_query($sql);
-				$row2 = $db->sql_fetchrow($result2);
-				$db->sql_freeresult($result2);
+				$result = $db->sql_query($sql);
+				$row = $db->sql_fetchrow($result);
+				$db->sql_freeresult($result);
 
-				if (!$row2)
+				if (!$row)
 				{
 					$module_data = array(
 						'module_basename'	=> 'users',
@@ -1214,8 +1214,6 @@ function change_database_data(&$no_updates, $version)
 					$_module->update_module_data($module_data, true);
 				}
 			}
-			$db->sql_freeresult($result);
-
 
 			// Also install the "PM Reports" module
 			$sql = 'SELECT module_id
@@ -1225,15 +1223,15 @@ function change_database_data(&$no_updates, $version)
 					AND module_mode = ''
 					AND module_basename = ''";
 			$result = $db->sql_query($sql);
+			$category_id = (int) $db->sql_fetchfield('module_id');
+			$db->sql_freeresult($result);
 
-			while ($row = $db->sql_fetchrow($result))
+			if ($category_id)
 			{
-				$category_id = (int) $row['module_id'];
-
 				$modes = array(
 					'pm_reports'			=> array('title' => 'MCP_PM_REPORTS_OPEN', 'auth' => 'aclf_m_report'),
-					'pm_reports_closed'	=> array('title' => 'MCP_PM_REPORTS_CLOSED', 'auth' => 'aclf_m_report'),
-					'pm_report_details'	=> array('title' => 'MCP_PM_REPORT_DETAILS', 'auth' => 'aclf_m_report'),
+					'pm_reports_closed'		=> array('title' => 'MCP_PM_REPORTS_CLOSED', 'auth' => 'aclf_m_report'),
+					'pm_report_details'		=> array('title' => 'MCP_PM_REPORT_DETAILS', 'auth' => 'aclf_m_report'),
 				);
 
 				foreach ($modes as $mode => $data)
@@ -1245,11 +1243,11 @@ function change_database_data(&$no_updates, $version)
 							AND module_langname = '{$data['title']}'
 							AND module_mode = '$mode'
 							AND parent_id = {$category_id}";
-					$result2 = $db->sql_query($sql);
-					$row2 = $db->sql_fetchrow($result2);
-					$db->sql_freeresult($result2);
+					$result = $db->sql_query($sql);
+					$row = $db->sql_fetchrow($result);
+					$db->sql_freeresult($result);
 
-					if (!$row2)
+					if (!$row)
 					{
 						$module_data = array(
 							'module_basename'	=> 'pm_reports',
@@ -1266,7 +1264,6 @@ function change_database_data(&$no_updates, $version)
 					}
 				}
 			}
-			$db->sql_freeresult($result);
 
 			// Also install the "Copy forum permissions" module
 			$sql = 'SELECT module_id
@@ -1276,11 +1273,11 @@ function change_database_data(&$no_updates, $version)
 					AND module_mode = ''
 					AND module_basename = ''";
 			$result = $db->sql_query($sql);
+			$category_id = (int) $db->sql_fetchfield('module_id');
+			$db->sql_freeresult($result);
 
-			while ($row = $db->sql_fetchrow($result))
+			if ($category_id)
 			{
-				$category_id = (int) $row['module_id'];
-
 				// Check if we actually need to add the feed module or if it is already added. ;)
 				$sql = 'SELECT *
 					FROM ' . MODULES_TABLE . "
@@ -1289,11 +1286,11 @@ function change_database_data(&$no_updates, $version)
 						AND module_mode = 'setting_forum_copy'
 						AND module_auth = 'acl_a_fauth && acl_a_authusers && acl_a_authgroups && acl_a_mauth'
 						AND parent_id = {$category_id}";
-				$result2 = $db->sql_query($sql);
-				$row2 = $db->sql_fetchrow($result2);
-				$db->sql_freeresult($result2);
+				$result = $db->sql_query($sql);
+				$row = $db->sql_fetchrow($result);
+				$db->sql_freeresult($result);
 
-				if (!$row2)
+				if (!$row)
 				{
 					$module_data = array(
 						'module_basename'	=> 'permissions',
@@ -1309,7 +1306,6 @@ function change_database_data(&$no_updates, $version)
 					$_module->update_module_data($module_data, true);
 				}
 			}
-			$db->sql_freeresult($result);
 
 			// Also install the "Send statistics" module
 			$sql = 'SELECT module_id
@@ -1319,11 +1315,11 @@ function change_database_data(&$no_updates, $version)
 					AND module_mode = ''
 					AND module_basename = ''";
 			$result = $db->sql_query($sql);
+			$category_id = (int) $db->sql_fetchfield('module_id');
+			$db->sql_freeresult($result);
 
-			while ($row = $db->sql_fetchrow($result))
+			if ($category_id)
 			{
-				$category_id = (int) $row['module_id'];
-
 				// Check if we need to add the module or if it is already there. ;)
 				$sql = 'SELECT *
 					FROM ' . MODULES_TABLE . "
@@ -1332,11 +1328,11 @@ function change_database_data(&$no_updates, $version)
 						AND module_mode = 'send_statistics'
 						AND module_auth = 'acl_a_server'
 						AND parent_id = {$category_id}";
-				$result2 = $db->sql_query($sql);
-				$row2 = $db->sql_fetchrow($result2);
-				$db->sql_freeresult($result2);
+				$result = $db->sql_query($sql);
+				$row = $db->sql_fetchrow($result);
+				$db->sql_freeresult($result);
 
-				if (!$row2)
+				if (!$row)
 				{
 					$module_data = array(
 						'module_basename'	=> 'send_statistics',
@@ -1352,7 +1348,6 @@ function change_database_data(&$no_updates, $version)
 					$_module->update_module_data($module_data, true);
 				}
 			}
-			$db->sql_freeresult($result);
 
 			$_module->remove_cache_file();
 

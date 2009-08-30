@@ -20,7 +20,7 @@ class acp_send_statistics_info
 			'title'		=> 'ACP_SEND_STATISTICS',
 			'version'	=> '1.0.0',
 			'modes'		=> array(
-				'questionnaire'		=> array('title' => 'ACP_SEND_STATISTICS', 'auth' => 'acl_a_server', 'cat' => array('ACP_SERVER_CONFIGURATION')),
+				'send_statistics'		=> array('title' => 'ACP_SEND_STATISTICS', 'auth' => 'acl_a_server', 'cat' => array('ACP_SERVER_CONFIGURATION')),
 			),
 		);
 	}
