@@ -191,14 +191,6 @@ class template_compile
 					$compile_blocks[] = '<?php ' . $this->compile_tag_define($block_val[2], false) . ' ?>';
 				break;
 
-				case 'INC':
-					$compile_blocks[] = '<?php ' . $this->compile_tag_counter($block_val[2], '++') . ' ?>';
-				break;
-
-				case 'DEC':
-					$compile_blocks[] = '<?php ' . $this->compile_tag_counter($block_val[2], '--') . ' ?>';
-				break;
-
 				case 'INCLUDE':
 					$temp = array_shift($include_blocks);
 
@@ -632,28 +624,6 @@ class template_compile
 		}
 
 		return (($match[1]) ? $this->generate_block_data_ref(substr($match[1], 0, -1), true, true) . '[\'' . $match[2] . '\']' : '$this->_tpldata[\'DEFINE\'][\'.\'][\'' . $match[2] . '\']') . ' = ' . $match[4] . ';';
-	}
-
-
-	/**
-	* Compile INC/DEC tags
-	* INC/DEC tags support defined template variables as well as normal template variables
-	* @access private
-	*/
-	function compile_tag_counter($tag_args, $operation = '++')
-	{
-		preg_match('#^((?:[a-z0-9\-_]+\.)+)?(\$)?(?=[A-Z])([A-Z0-9\-_]+)#s', $tag_args, $varrefs);
-
-		if (empty($varrefs[0]))
-		{
-			return '';
-		}
-
-		// Build token
-		$token = (!empty($varrefs[1])) ? $this->generate_block_data_ref(substr($varrefs[1], 0, -1), true, $varrefs[2]) . '[\'' . $varrefs[3] . '\']' : (($varrefs[2]) ? '$this->_tpldata[\'DEFINE\'][\'.\'][\'' . $varrefs[3] . '\']' : '$this->_rootref[\'' . $varrefs[3] . '\']');
-
-		// Increase or decrease token ;)
-		return "echo {$token}{$operation};";
 	}
 
 	/**
