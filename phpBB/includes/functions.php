@@ -552,7 +552,11 @@ function _hash_crypt_private($password, $setting, &$itoa64)
 }
 
 /**
-* Hash email
+* Hashes an email address to a big integer
+*
+* @param string $email		Email address
+*
+* @return string			Big Integer
 */
 function phpbb_email_hash($email)
 {
