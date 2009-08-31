@@ -508,10 +508,23 @@ class fulltext_mysql extends search_backend
 	/**
 	* Performs a search on an author's posts without caring about message contents. Depends on display specific params
 	*
-	* @param array &$id_ary passed by reference, to be filled with ids for the page specified by $start and $per_page, should be ordered
-	* @param int $start indicates the first index of the page
-	* @param int $per_page number of ids each page is supposed to contain
-	* @return total number of results
+	* @param	string		$type				contains either posts or topics depending on what should be searched for
+	* @param	boolean		$firstpost_only		if true, only topic starting posts will be considered
+	* @param	array		$sort_by_sql		contains SQL code for the ORDER BY part of a query
+	* @param	string		$sort_key			is the key of $sort_by_sql for the selected sorting
+	* @param	string		$sort_dir			is either a or d representing ASC and DESC
+	* @param	string		$sort_days			specifies the maximum amount of days a post may be old
+	* @param	array		$ex_fid_ary			specifies an array of forum ids which should not be searched
+	* @param	array		$m_approve_fid_ary	specifies an array of forum ids in which the searcher is allowed to view unapproved posts
+	* @param	int			$topic_id			is set to 0 or a topic id, if it is not 0 then only posts in this topic should be searched
+	* @param	array		$author_ary			an array of author ids
+	* @param	string		$author_name		specifies the author match, when ANONYMOUS is also a search-match
+	* @param	array		&$id_ary			passed by reference, to be filled with ids for the page specified by $start and $per_page, should be ordered
+	* @param	int			$start				indicates the first index of the page
+	* @param	int			$per_page			number of ids each page is supposed to contain
+	* @return	boolean|int						total number of results
+	*
+	* @access	public
 	*/
 	function author_search($type, $firstpost_only, $sort_by_sql, $sort_key, $sort_dir, $sort_days, $ex_fid_ary, $m_approve_fid_ary, $topic_id, $author_ary, $author_name, &$id_ary, $start, $per_page)
 	{
