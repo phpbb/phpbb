@@ -747,7 +747,8 @@ parse_css_file = {PARSE_CSS_FILE}
 			{
 				if (!($fp = @fopen($file, 'wb')))
 				{
-					trigger_error($user->lang['NO_TEMPLATE'] . adm_back_link($this->u_action), E_USER_WARNING);
+					// File exists and is writeable, but still not able to be written to
+					trigger_error(sprintf($user->lang['TEMPLATE_FILE_NOT_WRITABLE'], htmlspecialchars($template_file)) . adm_back_link($this->u_action), E_USER_WARNING);
 				}
 				fwrite($fp, $template_data);
 				fclose($fp);

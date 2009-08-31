@@ -392,6 +392,7 @@ $lang = array_merge($lang, array(
 	'TEMPLATE_LOCATION'			=> 'Store templates in',
 	'TEMPLATE_LOCATION_EXPLAIN'	=> 'Images are always stored on the filesystem.',
 	'TEMPLATE_NAME'				=> 'Template name',
+	'TEMPLATE_FILE_NOT_WRITABLE'=> 'Unable to write to template file %s. Please check the permissions for the directory and the files.',
 	'TEMPLATE_REFRESHED'		=> 'Template refreshed successfully.',
 
 	'THEME_ADDED'				=> 'New theme added on filesystem.',
