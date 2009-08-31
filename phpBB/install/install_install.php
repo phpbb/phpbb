@@ -1958,7 +1958,7 @@ class install_install extends module
 			'TITLE'		=> $lang['INSTALL_CONGRATS'],
 			'BODY'		=> sprintf($lang['INSTALL_CONGRATS_EXPLAIN'], $config['version'], append_sid($phpbb_root_path . 'install/index.' . $phpEx, 'mode=convert&amp;language=' . $data['language']), '../docs/README.html'),
 			'L_SUBMIT'	=> $lang['INSTALL_LOGIN'],
-			'U_ACTION'	=> append_sid($phpbb_root_path . 'adm/index.' . $phpEx, 'i=send_statistics&amp;mode=questionnaire'),
+			'U_ACTION'	=> append_sid($phpbb_root_path . 'adm/index.' . $phpEx, 'i=send_statistics&amp;mode=send_statistics'),
 		));
 	}
 
@@ -2231,6 +2231,7 @@ class install_install extends module
 			),
 			'ACP_FORUM_BASED_PERMISSIONS' => array(
 				'ACP_FORUM_PERMISSIONS',
+				'ACP_FORUM_PERMISSIONS_COPY',
 				'ACP_FORUM_MODERATORS',
 				'ACP_USERS_FORUM_PERMISSIONS',
 				'ACP_GROUPS_FORUM_PERMISSIONS',
