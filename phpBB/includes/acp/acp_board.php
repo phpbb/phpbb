@@ -177,6 +177,7 @@ class acp_board
 						'legend2'				=> 'POSTING',
 						'bump_type'				=> false,
 						'edit_time'				=> array('lang' => 'EDIT_TIME',				'validate' => 'int:0',		'type' => 'text:5:5', 'explain' => true, 'append' => ' ' . $user->lang['MINUTES']),
+						'delete_time'			=> array('lang' => 'DELETE_TIME',			'validate' => 'int:0',		'type' => 'text:5:5', 'explain' => true, 'append' => ' ' . $user->lang['MINUTES']),
 						'display_last_edited'	=> array('lang' => 'DISPLAY_LAST_EDITED',	'validate' => 'bool',		'type' => 'radio:yes_no', 'explain' => true),
 						'flood_interval'		=> array('lang' => 'FLOOD_INTERVAL',		'validate' => 'int:0',		'type' => 'text:3:10', 'explain' => true, 'append' => ' ' . $user->lang['SECONDS']),
 						'bump_interval'			=> array('lang' => 'BUMP_INTERVAL',			'validate' => 'int:0',		'type' => 'custom', 'method' => 'bump_interval', 'explain' => true),

@@ -1476,7 +1476,8 @@ for ($i = 0, $end = sizeof($post_list); $i < $end; ++$i)
 		$user->data['user_id'] == $poster_id &&
 		$auth->acl_get('f_delete', $forum_id) &&
 		$topic_data['topic_last_post_id'] == $row['post_id'] &&
-		// we do not want to allowe removal of the last post if a moderator locked it!
+		($row['post_time'] > time() - ($config['delete_time'] * 60) || !$config['delete_time']) &&
+		// we do not want to allow removal of the last post if a moderator locked it!
 		!$row['post_edit_locked']
 	)));
 

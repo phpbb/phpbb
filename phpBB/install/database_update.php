@@ -1498,6 +1498,11 @@ function change_database_data(&$no_updates, $version)
 				_sql($sql, $errored, $error_ary);
 			}
 
+			if (!isset($config['delete_time']))
+			{
+				set_config('delete_time', $config['edit_time']);
+			}
+
 			$no_updates = false;
 		break;
 	}

@@ -201,7 +201,6 @@
 		<li>[Fix] Sort private messages by message time and not message id. (Bug #50015)</li>
 		<li>[Fix] Make sure only logs for existing users are displayed and user-specific logs removed on user deletion. (Bug #49855)</li>
 		<li>[Fix] Only show &quot;Add friend&quot; and &quot;Add foe&quot; links if the specific module is enabled. (Bug #50475)</li>
-		<li>[Fix] Do not take edit post time into account for determining permission to delete last post in topic. (Bug #48615)</li>
 		<li>[Fix] Correctly display list items in forum description in prosilver and administration. (Bug #48055 - Patch by leviatan21)</li>
 		<li>[Fix] Fix handling of bookmarks and subscriptions on &quot;split topcis&quot;, &quot;merge topics&quot; and &quot;merge posts&quot;. (Bug #50035)</li>
 		<li>[Change] submit_post() now accepts force_approved_state key passed to $data to indicate new posts being approved (true) or unapproved (false).</li>
@@ -234,6 +233,7 @@
 		<li>[Change] Require user to be registered and logged in to search for unread posts if topic read tracking is disabled for guests (Bug #49525)</li>
 		<li>[Change] Allow three-digit hex notation in Color BBcode. (Bug #39965 - Patch by m0rpha)</li>
 		<li>[Change] Simplified login_box() and redirection after login. S_LOGIN_ACTION can now be used on every page. (Bug #50285)</li>
+		<li>[Change] Do not take edit post time into account for determining permission to delete last post in topic. (Bug #48615)</li>
 		<li>[Feature] Add language selection on the registration terms page (Bug #15085 - Patch by leviatan21)</li>
 		<li>[Feature] Backported 3.2 captcha plugins.
 			<ul>
@@ -289,6 +289,7 @@
 		<li>[Feature] Ability to define constant PHPBB_USE_BOARD_URL_PATH to use board url for images/avatars/ranks/imageset...</li>
 		<li>[Feature] Added function to generate Email hash. (Bug #49195)</li>
 		<li>[Feature] Style authors are now able to define the default submit button used for form submission on ENTER keypress on forms using more than one. Prosilver uses this for the posting page(s) and registration screen.</li>
+		<li>[Feature] Ability to specify amount of time user is able to delete his last post in topic.</li>
 	</ul>
 	<a name="v304"></a><h3>1.ii. Changes since 3.0.4</h3>
 
