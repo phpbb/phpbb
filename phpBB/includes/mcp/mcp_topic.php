@@ -503,6 +503,45 @@ function split_topic($action, $topic_id, $to_forum_id, $subject)
 		// Update forum statistics
 		set_config_count('num_topics', 1, true);
 
+		// Add new topic to bookmarks
+		$bookmarks = array();
+		$sql = 'SELECT user_id
+			FROM ' . BOOKMARKS_TABLE . '
+			WHERE topic_id = ' . $topic_id;
+		$result = $db->sql_query($sql);
+		while ($row = $db->sql_fetchrow($result))
+		{
+			$bookmarks[] = array(
+				'user_id'	=> (int) $row['user_id'],
+				'topic_id'	=> $to_topic_id,
+			);
+		}
+		$db->sql_freeresult($result);
+		if (sizeof($bookmarks))
+		{
+			$db->sql_multi_insert(BOOKMARKS_TABLE, $bookmarks);
+		}
+
+		// Add new topic to watch-list
+		$notifications = array();
+		$sql = 'SELECT user_id, notify_status
+			FROM ' . TOPICS_WATCH_TABLE . '
+			WHERE topic_id = ' . $topic_id;
+		$result = $db->sql_query($sql);
+		while ($row = $db->sql_fetchrow($result))
+		{
+			$notifications[] = array(
+				'user_id'		=> (int) $row['user_id'],
+				'topic_id'		=> $to_topic_id,
+				'notify_status'	=> (int) $row['notify_status'],
+			);
+		}
+		$db->sql_freeresult($result);
+		if (sizeof($notifications))
+		{
+			$db->sql_multi_insert(TOPICS_WATCH_TABLE, $notifications);
+		}
+
 		// Link back to both topics
 		$return_link = sprintf($user->lang['RETURN_TOPIC'], '<a href="' . append_sid("{$phpbb_root_path}viewtopic.$phpEx", 'f=' . $post_info['forum_id'] . '&amp;t=' . $post_info['topic_id']) . '">', '</a>') . '<br /><br />' . sprintf($user->lang['RETURN_NEW_TOPIC'], '<a href="' . append_sid("{$phpbb_root_path}viewtopic.$phpEx", 'f=' . $to_forum_id . '&amp;t=' . $to_topic_id) . '">', '</a>');
 	}
@@ -596,17 +635,65 @@ function merge_posts($topic_id, $to_topic_id)
 
 		if ($row)
 		{
+			// Add new topic to bookmarks
+			$bookmarks = array();
+			$sql = 'SELECT user_id
+				FROM ' . BOOKMARKS_TABLE . '
+				WHERE topic_id = ' . (int) $topic_id;
+			$result = $db->sql_query($sql);
+			while ($row = $db->sql_fetchrow($result))
+			{
+				$bookmarks[] = array(
+					'user_id'	=> (int) $row['user_id'],
+					'topic_id'	=> (int) $to_topic_id,
+				);
+			}
+			$db->sql_freeresult($result);
+			if (sizeof($bookmarks))
+			{
+				// To not let it error out on users, who already bookmarked the topic, we just return on an error...
+				$db->sql_return_on_error(true);
+				$db->sql_multi_insert(BOOKMARKS_TABLE, $bookmarks);
+				$db->sql_return_on_error(false);
+			}
+
+			// Add new topic to notifications
+			$notifications = array();
+			$sql = 'SELECT user_id, notify_status
+				FROM ' . TOPICS_WATCH_TABLE . '
+				WHERE topic_id = ' . (int) $topic_id;
+			$result = $db->sql_query($sql);
+			while ($row = $db->sql_fetchrow($result))
+			{
+				$notifications[] = array(
+					'user_id'		=> (int) $row['user_id'],
+					'topic_id'		=> (int) $to_topic_id,
+					'notify_status'	=> (int) $row['notify_status'],
+				);
+			}
+			$db->sql_freeresult($result);
+			if (sizeof($notifications))
+			{
+				// To not let it error out on users, who already watch the topic, we just return on an error...
+				$db->sql_return_on_error(true);
+				$db->sql_multi_insert(TOPICS_WATCH_TABLE, $notifications);
+				$db->sql_return_on_error(false);
+			}
+
 			$return_link .= sprintf($user->lang['RETURN_TOPIC'], '<a href="' . append_sid("{$phpbb_root_path}viewtopic.$phpEx", 'f=' . $row['forum_id'] . '&amp;t=' . $topic_id) . '">', '</a>');
 		}
 		else
 		{
 			// If the topic no longer exist, we will update the topic watch table.
 			// To not let it error out on users watching both topics, we just return on an error...
+			// Same for bookmarks
 			$db->sql_return_on_error(true);
 			$db->sql_query('UPDATE ' . TOPICS_WATCH_TABLE . ' SET topic_id = ' . (int) $to_topic_id . ' WHERE topic_id = ' . (int) $topic_id);
+			$db->sql_query('UPDATE ' . BOOKMARKS_TABLE . ' SET topic_id = ' . (int) $to_topic_id . ' WHERE topic_id = ' . (int) $topic_id);
 			$db->sql_return_on_error(false);
 
 			$db->sql_query('DELETE FROM ' . TOPICS_WATCH_TABLE . ' WHERE topic_id = ' . (int) $topic_id);
+			$db->sql_query('DELETE FROM ' . BOOKMARKS_TABLE . ' WHERE topic_id = ' . (int) $topic_id);
 		}
 
 		// Link to the new topic
