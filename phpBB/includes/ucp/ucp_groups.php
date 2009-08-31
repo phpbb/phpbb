@@ -966,6 +966,9 @@ class ucp_groups
 							);
 						}
 
+						// redirect to last screen
+						redirect($this->u_action . '&amp;action=list&amp;g=' . $group_id);
+
 					break;
 
 					case 'deleteusers':
@@ -1011,6 +1014,9 @@ class ucp_groups
 								'action'	=> $action))
 							);
 						}
+
+						// redirect to last screen
+						redirect($this->u_action . '&amp;action=list&amp;g=' . $group_id);
 
 					break;
 
