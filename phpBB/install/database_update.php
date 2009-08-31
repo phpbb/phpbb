@@ -575,6 +575,127 @@ function _write_result($no_updates, $errored, $error_ary)
 	}
 }
 
+function _add_modules($modules_to_install)
+{
+	global $phpbb_root_path, $phpEx, $db;
+
+	include_once($phpbb_root_path . 'includes/acp/acp_modules.' . $phpEx);
+
+	$_module = new acp_modules();
+
+	foreach ($modules_to_install as $module_mode => $module_data)
+	{
+		$_module->module_class = $module_data['class'];
+
+		// Determine parent id first
+		$sql = 'SELECT module_id
+			FROM ' . MODULES_TABLE . "
+			WHERE module_class = '" . $db->sql_escape($module_data['class']) . "'
+				AND module_langname = '" . $db->sql_escape($module_data['cat']) . "'
+				AND module_mode = ''
+				AND module_basename = ''";
+		$result = $db->sql_query($sql);
+
+		// There may be more than one categories with the same name
+		$categories = array();
+		while ($row = $db->sql_fetchrow($result))
+		{
+			$categories[] = (int) $row['module_id'];
+		}
+		$db->sql_freeresult($result);
+
+		if (!sizeof($categories))
+		{
+			continue;
+		}
+
+		// Add the module to all categories found
+		foreach ($categories as $parent_id)
+		{
+			// Check if the module already exists
+			$sql = 'SELECT *
+				FROM ' . MODULES_TABLE . "
+				WHERE module_basename = '" . $db->sql_escape($module_data['base']) . "'
+					AND module_class = '" . $db->sql_escape($module_data['class']) . "'
+					AND module_langname = '" . $db->sql_escape($module_data['title']) . "'
+					AND module_mode = '" . $db->sql_escape($module_mode) . "'
+					AND module_auth = '" . $db->sql_escape($module_data['auth']) . "'
+					AND parent_id = {$parent_id}";
+			$result = $db->sql_query($sql);
+			$row = $db->sql_fetchrow($result);
+			$db->sql_freeresult($result);
+
+			// If it exists, we simply continue with the next category
+			if ($row)
+			{
+				continue;
+			}
+
+			// Build the module sql row
+			$module_row = array(
+				'module_basename'	=> $module_data['base'],
+				'module_enabled'	=> (isset($module_data['enabled'])) ? (int) $module_data['enabled'] : 1,
+				'module_display'	=> (isset($module_data['display'])) ? (int) $module_data['display'] : 1,
+				'parent_id'			=> $parent_id,
+				'module_class'		=> $module_data['class'],
+				'module_langname'	=> $module_data['title'],
+				'module_mode'		=> $module_mode,
+				'module_auth'		=> $module_data['auth'],
+			);
+
+			$_module->update_module_data($module_row, true);
+
+			// Ok, do we need to re-order the module, move it up or down?
+			if (!isset($module_data['after']))
+			{
+				continue;
+			}
+
+			$after_mode = $module_data['after'][0];
+			$after_langname = $module_data['after'][1];
+
+			// First of all, get the module id for the module this one has to be placed after
+			$sql = 'SELECT left_id
+				FROM ' . MODULES_TABLE . "
+				WHERE module_class = '" . $db->sql_escape($module_data['class']) . "'
+					AND module_basename = '" . $db->sql_escape($module_data['base']) . "'
+					AND module_langname = '" . $db->sql_escape($after_langname) . "'
+					AND module_mode = '" . $db->sql_escape($after_mode) . "'
+					AND parent_id = '{$parent_id}'";
+			$result = $db->sql_query($sql);
+			$first_left_id = (int) $db->sql_fetchfield('left_id');
+			$db->sql_freeresult($result);
+
+			if (!$first_left_id)
+			{
+				continue;
+			}
+
+			// Ok, count the number of modules between $after_mode and the added module
+			$sql = 'SELECT COUNT(module_id) as num_modules
+				FROM ' . MODULES_TABLE . "
+				WHERE module_class = '" . $db->sql_escape($module_data['class']) . "'
+					AND parent_id = {$parent_id}
+					AND left_id BETWEEN {$first_left_id} AND {$module_row['left_id']}
+				ORDER BY left_id";
+			$result = $db->sql_query($sql);
+			$steps = (int) $db->sql_fetchfield('num_modules');
+			$db->sql_freeresult($result);
+
+			// We need to substract 2
+			$steps -= 2;
+
+			if ($steps <= 0)
+			{
+				continue;
+			}
+
+			// Ok, move module up $num_modules times. ;)
+			$_module->move_module_by($module_row, 'move_up', $steps);
+		}
+	}
+}
+
 /****************************************************************************
 * ADD YOUR DATABASE SCHEMA CHANGES HERE										*
 *****************************************************************************/
@@ -1124,230 +1245,64 @@ function change_database_data(&$no_updates, $version)
 			// Entry for reporting PMs
 			set_config('allow_pm_report', '1');
 
-			include_once($phpbb_root_path . 'includes/acp/acp_modules.' . $phpEx);
+			// Install modules
+			$modules_to_install = array(
+				'feed'					=> array(
+					'base'		=> 'board',
+					'class'		=> 'acp',
+					'title'		=> 'ACP_FEED_SETTINGS',
+					'auth'		=> 'acl_a_board',
+					'cat'		=> 'ACP_BOARD_CONFIGURATION',
+					'after'		=> array('signature', 'ACP_SIGNATURE_SETTINGS')
+				),
+				'warnings'				=> array(
+					'base'		=> 'users',
+					'class'		=> 'acp',
+					'title'		=> 'ACP_USER_WARNINGS',
+					'auth'		=> 'acl_a_user',
+					'display'	=> 0,
+					'cat'		=> 'ACP_CAT_USERS',
+					'after'		=> array('feedback', 'ACP_USER_FEEDBACK')
+				),
+				'send_statistics'		=> array(
+					'base'		=> 'send_statistics',
+					'class'		=> 'acp',
+					'title'		=> 'ACP_SEND_STATISTICS',
+					'auth'		=> 'acl_a_server',
+					'cat'		=> 'ACP_SERVER_CONFIGURATION'
+				),
+				'setting_forum_copy'	=> array(
+					'base'		=> 'permissions',
+					'class'		=> 'acp',
+					'title'		=> 'ACP_FORUM_PERMISSIONS_COPY',
+					'auth'		=> 'acl_a_fauth && acl_a_authusers && acl_a_authgroups && acl_a_mauth',
+					'cat'		=> 'ACP_FORUM_BASED_PERMISSIONS',
+					'after'		=> array('setting_forum_local', 'ACP_FORUM_PERMISSIONS')
+				),
+				'pm_reports'			=> array(
+					'base'		=> 'pm_reports',
+					'class'		=> 'mcp',
+					'title'		=> 'MCP_PM_REPORTS_OPEN',
+					'auth'		=> 'aclf_m_report',
+					'cat'		=> 'MCP_REPORTS'
+				),
+				'pm_reports_closed'		=> array(
+					'base'		=> 'pm_reports',
+					'class'		=> 'mcp',
+					'title'		=> 'MCP_PM_REPORTS_CLOSED',
+					'auth'		=> 'aclf_m_report',
+					'cat'		=> 'MCP_REPORTS'
+				),
+				'pm_report_details'		=> array(
+					'base'		=> 'pm_reports',
+					'class'		=> 'mcp',
+					'title'		=> 'MCP_PM_REPORT_DETAILS',
+					'auth'		=> 'aclf_m_report',
+					'cat'		=> 'MCP_REPORTS'
+				),
+			);
 
-			$_module = new acp_modules();
-
-			// Set the module class
-			$_module->module_class = 'acp';
-
-			$sql = 'SELECT module_id
-				FROM ' . MODULES_TABLE . "
-				WHERE module_class = 'acp'
-					AND module_langname = 'ACP_BOARD_CONFIGURATION'
-					AND module_mode = ''
-					AND module_basename = ''";
-			$result = $db->sql_query($sql);
-			$category_id = (int) $db->sql_fetchfield('module_id');
-			$db->sql_freeresult($result);
-
-			if ($category_id)
-			{
-				// Check if we actually need to add the feed module or if it is already added. ;)
-				$sql = 'SELECT *
-					FROM ' . MODULES_TABLE . "
-					WHERE module_basename = 'board'
-						AND module_class = 'acp'
-						AND module_langname = 'ACP_FEED_SETTINGS'
-						AND module_mode = 'feed'
-						AND module_auth = 'acl_a_board'
-						AND parent_id = {$category_id}";
-				$result = $db->sql_query($sql);
-				$row = $db->sql_fetchrow($result);
-				$db->sql_freeresult($result);
-
-				if (!$row)
-				{
-					$module_data = array(
-						'module_basename'	=> 'board',
-						'module_enabled'	=> 1,
-						'module_display'	=> 1,
-						'parent_id'			=> $category_id,
-						'module_class'		=> 'acp',
-						'module_langname'	=> 'ACP_FEED_SETTINGS',
-						'module_mode'		=> 'feed',
-						'module_auth'		=> 'acl_a_board',
-					);
-
-					$_module->update_module_data($module_data, true);
-				}
-			}
-
-			// Also install the "User Warning" module
-			$sql = 'SELECT module_id
-				FROM ' . MODULES_TABLE . "
-				WHERE module_class = 'acp'
-					AND module_langname = 'ACP_USER_MANAGEMENT'
-					AND module_mode = ''
-					AND module_basename = ''";
-			$result = $db->sql_query($sql);
-			$category_id = (int) $db->sql_fetchfield('module_id');
-			$db->sql_freeresult($result);
-
-			if ($category_id)
-			{
-				// Check if we actually need to add the module or if it is already added. ;)
-				$sql = 'SELECT *
-					FROM ' . MODULES_TABLE . "
-					WHERE module_class = 'acp'
-						AND module_langname = 'ACP_USER_WARNINGS'
-						AND module_mode = 'warnings'
-						AND module_auth = 'acl_a_user'
-						AND parent_id = {$category_id}";
-				$result = $db->sql_query($sql);
-				$row = $db->sql_fetchrow($result);
-				$db->sql_freeresult($result);
-
-				if (!$row)
-				{
-					$module_data = array(
-						'module_basename'	=> 'users',
-						'module_enabled'	=> 1,
-						'module_display'	=> 0,
-						'parent_id'			=> $category_id,
-						'module_class'		=> 'acp',
-						'module_langname'	=> 'ACP_USER_WARNINGS',
-						'module_mode'		=> 'warnings',
-						'module_auth'		=> 'acl_a_user',
-					);
-
-					$_module->update_module_data($module_data, true);
-				}
-			}
-
-			// Also install the "PM Reports" module
-			$sql = 'SELECT module_id
-				FROM ' . MODULES_TABLE . "
-				WHERE module_class = 'mcp'
-					AND module_langname = 'MCP_REPORTS'
-					AND module_mode = ''
-					AND module_basename = ''";
-			$result = $db->sql_query($sql);
-			$category_id = (int) $db->sql_fetchfield('module_id');
-			$db->sql_freeresult($result);
-
-			if ($category_id)
-			{
-				$modes = array(
-					'pm_reports'			=> array('title' => 'MCP_PM_REPORTS_OPEN', 'auth' => 'aclf_m_report'),
-					'pm_reports_closed'		=> array('title' => 'MCP_PM_REPORTS_CLOSED', 'auth' => 'aclf_m_report'),
-					'pm_report_details'		=> array('title' => 'MCP_PM_REPORT_DETAILS', 'auth' => 'aclf_m_report'),
-				);
-
-				foreach ($modes as $mode => $data)
-				{
-					// Check if we actually need to add the module or if it is already added. ;)
-					$sql = 'SELECT *
-						FROM ' . MODULES_TABLE . "
-						WHERE module_class = 'mcp'
-							AND module_langname = '{$data['title']}'
-							AND module_mode = '$mode'
-							AND parent_id = {$category_id}";
-					$result = $db->sql_query($sql);
-					$row = $db->sql_fetchrow($result);
-					$db->sql_freeresult($result);
-
-					if (!$row)
-					{
-						$module_data = array(
-							'module_basename'	=> 'pm_reports',
-							'module_enabled'	=> 1,
-							'module_display'	=> 1,
-							'parent_id'			=> $category_id,
-							'module_class'		=> 'mcp',
-							'module_langname'	=> $data['title'],
-							'module_mode'		=> $mode,
-							'module_auth'		=> $data['auth'],
-						);
-
-						$_module->update_module_data($module_data, true);
-					}
-				}
-			}
-
-			// Also install the "Copy forum permissions" module
-			$sql = 'SELECT module_id
-				FROM ' . MODULES_TABLE . "
-				WHERE module_class = 'acp'
-					AND module_langname = 'ACP_FORUM_BASED_PERMISSIONS'
-					AND module_mode = ''
-					AND module_basename = ''";
-			$result = $db->sql_query($sql);
-			$category_id = (int) $db->sql_fetchfield('module_id');
-			$db->sql_freeresult($result);
-
-			if ($category_id)
-			{
-				// Check if we actually need to add the feed module or if it is already added. ;)
-				$sql = 'SELECT *
-					FROM ' . MODULES_TABLE . "
-					WHERE module_class = 'acp'
-						AND module_langname = 'ACP_FORUM_PERMISSIONS_COPY'
-						AND module_mode = 'setting_forum_copy'
-						AND module_auth = 'acl_a_fauth && acl_a_authusers && acl_a_authgroups && acl_a_mauth'
-						AND parent_id = {$category_id}";
-				$result = $db->sql_query($sql);
-				$row = $db->sql_fetchrow($result);
-				$db->sql_freeresult($result);
-
-				if (!$row)
-				{
-					$module_data = array(
-						'module_basename'	=> 'permissions',
-						'module_enabled'	=> 1,
-						'module_display'	=> 1,
-						'parent_id'			=> $category_id,
-						'module_class'		=> 'acp',
-						'module_langname'	=> 'ACP_FORUM_PERMISSIONS_COPY',
-						'module_mode'		=> 'setting_forum_copy',
-						'module_auth'		=> 'acl_a_fauth && acl_a_authusers && acl_a_authgroups && acl_a_mauth',
-					);
-
-					$_module->update_module_data($module_data, true);
-				}
-			}
-
-			// Also install the "Send statistics" module
-			$sql = 'SELECT module_id
-				FROM ' . MODULES_TABLE . "
-				WHERE module_class = 'acp'
-					AND module_langname = 'ACP_SERVER_CONFIGURATION'
-					AND module_mode = ''
-					AND module_basename = ''";
-			$result = $db->sql_query($sql);
-			$category_id = (int) $db->sql_fetchfield('module_id');
-			$db->sql_freeresult($result);
-
-			if ($category_id)
-			{
-				// Check if we need to add the module or if it is already there. ;)
-				$sql = 'SELECT *
-					FROM ' . MODULES_TABLE . "
-					WHERE module_class = 'acp'
-						AND module_langname = 'ACP_SEND_STATISTICS'
-						AND module_mode = 'send_statistics'
-						AND module_auth = 'acl_a_server'
-						AND parent_id = {$category_id}";
-				$result = $db->sql_query($sql);
-				$row = $db->sql_fetchrow($result);
-				$db->sql_freeresult($result);
-
-				if (!$row)
-				{
-					$module_data = array(
-						'module_basename'	=> 'send_statistics',
-						'module_enabled'	=> 1,
-						'module_display'	=> 1,
-						'parent_id'			=> $category_id,
-						'module_class'		=> 'acp',
-						'module_langname'	=> 'ACP_SEND_STATISTICS',
-						'module_mode'		=> 'send_statistics',
-						'module_auth'		=> 'acl_a_server',
-					);
-
-					$_module->update_module_data($module_data, true);
-				}
-			}
+			_add_modules($modules_to_install);
 
 			$_module->remove_cache_file();
 
