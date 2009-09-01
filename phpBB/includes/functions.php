@@ -4284,7 +4284,26 @@ function page_footer($run_cron = true)
 	);
 
 	// Call cron-type script
+	$call_cron = false;
 	if (!defined('IN_CRON') && $run_cron && !$config['board_disable'])
+	{
+		$call_cron = true;
+
+		// Any old lock present?
+		if (!empty($config['cron_lock']))
+		{
+			$cron_time = explode(' ', $config['cron_lock']);
+
+			// If 1 hour lock is present we do not call cron.php
+			if ($cron_time[0] + 3600 >= time())
+			{
+				$call_cron = false;
+			}
+		}
+	}
+
+	// Call cron job?
+	if ($call_cron)
 	{
 		$cron_type = '';
 
