@@ -694,6 +694,8 @@ function _add_modules($modules_to_install)
 			$_module->move_module_by($module_row, 'move_up', $steps);
 		}
 	}
+
+	$_module->remove_cache_file();
 }
 
 /****************************************************************************
@@ -1303,8 +1305,6 @@ function change_database_data(&$no_updates, $version)
 			);
 
 			_add_modules($modules_to_install);
-
-			$_module->remove_cache_file();
 
 			// Add newly_registered group... but check if it already exists (we always supported running the updater on any schema)
 			$sql = 'SELECT group_id
