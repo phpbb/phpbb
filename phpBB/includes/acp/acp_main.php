@@ -540,6 +540,8 @@ class acp_main
 
 		if ($auth->acl_get('a_user'))
 		{
+			$user->add_lang('memberlist');
+
 			$inactive = array();
 			$inactive_count = 0;
 
@@ -549,13 +551,24 @@ class acp_main
 			{
 				$template->assign_block_vars('inactive', array(
 					'INACTIVE_DATE'	=> $user->format_date($row['user_inactive_time']),
+					'REMINDED_DATE'	=> $user->format_date($row['user_reminded_time']),
 					'JOINED'		=> $user->format_date($row['user_regdate']),
 					'LAST_VISIT'	=> (!$row['user_lastvisit']) ? ' - ' : $user->format_date($row['user_lastvisit']),
+
 					'REASON'		=> $row['inactive_reason'],
 					'USER_ID'		=> $row['user_id'],
-					'USERNAME'		=> $row['username'],
-					'U_USER_ADMIN'	=> append_sid("{$phpbb_admin_path}index.$phpEx", "i=users&amp;mode=overview&amp;u={$row['user_id']}"))
-				);
+					'POSTS'			=> ($row['user_posts']) ? $row['user_posts'] : 0,
+					'REMINDED'		=> $row['user_reminded'],
+
+					'REMINDED_EXPLAIN'	=> $user->lang('USER_LAST_REMINDED', (int) $row['user_reminded'], $user->format_date($row['user_reminded_time'])),
+
+					'USERNAME_FULL'		=> get_username_string('full', $row['user_id'], $row['username'], $row['user_colour'], false, append_sid("{$phpbb_admin_path}index.$phpEx", 'i=users&amp;mode=overview')),
+					'USERNAME'			=> get_username_string('username', $row['user_id'], $row['username'], $row['user_colour']),
+					'USER_COLOR'		=> get_username_string('colour', $row['user_id'], $row['username'], $row['user_colour']),
+
+					'U_USER_ADMIN'	=> append_sid("{$phpbb_admin_path}index.$phpEx", "i=users&amp;mode=overview&amp;u={$row['user_id']}"),
+					'U_SEARCH_USER'	=> ($auth->acl_get('u_search')) ? append_sid("{$phpbb_root_path}search.$phpEx", "author_id={$row['user_id']}&amp;sr=posts") : '',
+				));
 			}
 
 			$option_ary = array('activate' => 'ACTIVATE', 'delete' => 'DELETE');

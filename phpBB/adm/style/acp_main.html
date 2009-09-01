@@ -214,19 +214,24 @@
 			<th>{L_USERNAME}</th>
 			<th>{L_JOINED}</th>
 			<th>{L_INACTIVE_DATE}</th>
-			<th>{L_INACTIVE_REASON}</th>
 			<th>{L_LAST_VISIT}</th>
+			<th>{L_INACTIVE_REASON}</th>
 		</tr>
 		</thead>
 		<tbody>
 		<!-- BEGIN inactive -->
 			<!-- IF inactive.S_ROW_COUNT is even --><tr class="row1"><!-- ELSE --><tr class="row2"><!-- ENDIF -->
 
-				<td><a href="{inactive.U_USER_ADMIN}">{inactive.USERNAME}</a></td>
-				<td>{inactive.JOINED}</td>
-				<td>{inactive.INACTIVE_DATE}</td>
-				<td>{inactive.REASON}</td>
-				<td>{inactive.LAST_VISIT}</td>
+				<td style="vertical-align: top;">
+					{inactive.USERNAME_FULL}
+					<!-- IF inactive.POSTS --><br />{L_POSTS}: <strong>{inactive.POSTS}</strong> [<a href="{inactive.U_SEARCH_USER}">{L_SEARCH_USER_POSTS}</a>]<!-- ENDIF -->
+				</td>
+				<td style="vertical-align: top;">{inactive.JOINED}</td>
+				<td style="vertical-align: top;">{inactive.INACTIVE_DATE}</td>
+				<td style="vertical-align: top;">{inactive.LAST_VISIT}</td>
+				<td style="vertical-align: top;">
+					{inactive.REASON}
+					<!-- IF inactive.REMINDED --><br />{inactive.REMINDED_EXPLAIN}<!-- ENDIF -->
 			</tr>
 		<!-- BEGINELSE -->
 			<tr>
