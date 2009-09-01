@@ -88,7 +88,7 @@ class phpbb_default_captcha
 	function get_template()
 	{
 		global $config, $user, $template, $phpEx, $phpbb_root_path;
-		
+
 		if ($this->is_solved())
 		{
 			return false;
@@ -96,8 +96,8 @@ class phpbb_default_captcha
 		else
 		{
 			$link = append_sid($phpbb_root_path . 'ucp.' . $phpEx,  'mode=confirm&amp;confirm_id=' . $this->confirm_id . '&amp;type=' . $this->type);
-			$explain = ($this->type != CONFIRM_POST) ? sprintf($user->lang['CONFIRM_EXPLAIN'], '<a href="mailto:' . htmlspecialchars($config['board_contact']) . '">', '</a>') : $user->lang['POST_CONFIRM_EXPLAIN'];
-			
+			$explain = $user->lang(($this->type != CONFIRM_POST) ? 'CONFIRM_EXPLAIN' : 'POST_CONFIRM_EXPLAIN', '<a href="mailto:' . htmlspecialchars($config['board_contact']) . '">', '</a>');
+
 			$template->assign_vars(array(
 				'CONFIRM_IMAGE_LINK'		=> $link,
 				'CONFIRM_IMAGE'				=> '<img src="' . $link . '" />',
@@ -118,7 +118,7 @@ class phpbb_default_captcha
 		global $config, $user, $template, $phpbb_admin_path, $phpEx;
 
 		$variables = '';
-		
+
 		if (is_array($this->captcha_vars))
 		{
 			foreach ($this->captcha_vars as $captcha_var => $template_var)
@@ -192,7 +192,7 @@ class phpbb_default_captcha
 	function validate()
 	{
 		global $config, $db, $user;
-		
+
 		$error = '';
 		if (!$this->confirm_id)
 		{
@@ -264,7 +264,7 @@ class phpbb_default_captcha
 				'code'			=> (string) $this->code,
 				'seed'			=> (int) $this->seed)) . '
 				WHERE
-				confirm_id = \'' . $db->sql_escape($this->confirm_id) . '\' 
+				confirm_id = \'' . $db->sql_escape($this->confirm_id) . '\'
 					AND session_id = \'' . $db->sql_escape($user->session_id) . '\'';
 		$db->sql_query($sql);
 	}
@@ -285,13 +285,13 @@ class phpbb_default_captcha
 		$sql = 'UPDATE ' . CONFIRM_TABLE . ' SET ' . $db->sql_build_array('UPDATE', array(
 				'code'			=> (string) $this->code,
 				'seed'			=> (int) $this->seed)) . '
-				, attempts = attempts + 1 
+				, attempts = attempts + 1
 				WHERE
-				confirm_id = \'' . $db->sql_escape($this->confirm_id) . '\' 
+				confirm_id = \'' . $db->sql_escape($this->confirm_id) . '\'
 					AND session_id = \'' . $db->sql_escape($user->session_id) . '\'';
 		$db->sql_query($sql);
 	}
-	
+
 	/**
 	* Look up everything we need for painting&checking.
 	*/
@@ -352,7 +352,7 @@ class phpbb_default_captcha
 		// we leave the class usable by generating a new question
 		$this->generate_code();
 	}
-	
+
 	function is_solved()
 	{
 		if (request_var('confirm_code', false) && $this->solved === 0)
@@ -361,7 +361,7 @@ class phpbb_default_captcha
 		}
 		return (bool) $this->solved;
 	}
-	
+
 	/**
 	*  API function
 	*/
@@ -369,7 +369,7 @@ class phpbb_default_captcha
 	{
 		return false;
 	}
-	
+
 }
 
 ?>

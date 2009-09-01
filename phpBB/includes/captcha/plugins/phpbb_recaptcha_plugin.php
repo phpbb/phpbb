@@ -54,7 +54,7 @@ class phpbb_recaptcha extends phpbb_default_captcha
 		$user->add_lang('captcha_recaptcha');
 		return (isset($config['recaptcha_pubkey']) && !empty($config['recaptcha_pubkey']));
 	}
-	
+
 	/**
 	*  API function
 	*/
@@ -143,6 +143,8 @@ class phpbb_recaptcha extends phpbb_default_captcha
 		}
 		else
 		{
+			$explain = $user->lang(($this->type != CONFIRM_POST) ? 'CONFIRM_EXPLAIN' : 'POST_CONFIRM_EXPLAIN', '<a href="mailto:' . htmlspecialchars($config['board_contact']) . '">', '</a>');
+
 			$template->assign_vars(array(
 				'RECAPTCHA_SERVER'			=> $this->recaptcha_server,
 				'RECAPTCHA_PUBKEY'			=> isset($config['recaptcha_pubkey']) ? $config['recaptcha_pubkey'] : '',
@@ -150,6 +152,7 @@ class phpbb_recaptcha extends phpbb_default_captcha
 				'S_RECAPTCHA_AVAILABLE'		=> $this->is_available(),
 				'S_CONFIRM_CODE'			=> true,
 				'S_TYPE'					=> $this->type,
+				'L_CONFIRM_EXPLAIN'			=> $explain,
 			));
 
 			return 'captcha_recaptcha.html';
