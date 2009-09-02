@@ -385,6 +385,31 @@ class acp_users
 
 							user_active_flip('flip', $user_id);
 
+							if ($user_row['user_type'] == USER_INACTIVE)
+							{
+								if ($config['require_activation'] == USER_ACTIVATION_ADMIN)
+								{
+									include_once($phpbb_root_path . 'includes/functions_messenger.' . $phpEx);
+
+									$messenger = new messenger(false);
+
+									$messenger->template('admin_welcome_activated', $user_row['user_lang']);
+
+									$messenger->to($user_row['user_email'], $user_row['username']);
+
+									$messenger->headers('X-AntiAbuse: Board servername - ' . $config['server_name']);
+									$messenger->headers('X-AntiAbuse: User_id - ' . $user->data['user_id']);
+									$messenger->headers('X-AntiAbuse: Username - ' . $user->data['username']);
+									$messenger->headers('X-AntiAbuse: User IP - ' . $user->ip);
+
+									$messenger->assign_vars(array(
+										'USERNAME'	=> htmlspecialchars_decode($user_row['username']))
+									);
+
+									$messenger->send(NOTIFY_EMAIL);
+								}
+							}
+
 							$message = ($user_row['user_type'] == USER_INACTIVE) ? 'USER_ADMIN_ACTIVATED' : 'USER_ADMIN_DEACTIVED';
 							$log = ($user_row['user_type'] == USER_INACTIVE) ? 'LOG_USER_ACTIVE' : 'LOG_USER_INACTIVE';
 

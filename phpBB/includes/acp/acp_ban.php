@@ -156,7 +156,8 @@ class acp_ban
 					FROM ' . BANLIST_TABLE . '
 					WHERE (ban_end >= ' . time() . "
 							OR ban_end = 0)
-						AND ban_ip <> ''";
+						AND ban_ip <> ''
+					ORDER BY ban_ip";
 			break;
 
 			case 'email':
@@ -168,7 +169,8 @@ class acp_ban
 					FROM ' . BANLIST_TABLE . '
 					WHERE (ban_end >= ' . time() . "
 							OR ban_end = 0)
-						AND ban_email <> ''";
+						AND ban_email <> ''
+					ORDER BY ban_email";
 			break;
 		}
 		$result = $db->sql_query($sql);

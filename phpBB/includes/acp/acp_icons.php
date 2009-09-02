@@ -89,6 +89,18 @@ class acp_icons
 						continue;
 					}
 
+					// adjust the width and height to be lower than 128px while perserving the aspect ratio
+					if ($img_size[0] > 127 && $img_size[0] > $img_size[1])
+					{
+						$img_size[1] = (int) ($img_size[1] * (127 / $img_size[0]));
+						$img_size[0] = 127;
+					}
+					else if ($img_size[1] > 127)
+					{
+						$img_size[0] = (int) ($img_size[0] * (127 / $img_size[1]));
+						$img_size[1] = 127;
+					}
+
 					$_images[$path . $img]['file'] = $path . $img;
 					$_images[$path . $img]['width'] = $img_size[0];
 					$_images[$path . $img]['height'] = $img_size[1];
@@ -386,6 +398,17 @@ class acp_icons
 							$img_size = getimagesize($phpbb_root_path . $img_path . '/' . $image);
 							$image_width[$image] = $img_size[0];
 							$image_height[$image] = $img_size[1];
+						}
+
+						if ($image_width[$image] > 127 && $image_width[$image] > $image_height[$image])
+						{
+							$image_height[$image] = (int) ($image_height[$image] * (127 / $image_width[$image]));
+							$image_width[$image] = 127;
+						}
+						else if ($image_height[$image] > 127)
+						{
+							$image_width[$image] = (int) ($image_width[$image] * (127 / $image_height[$image]));
+							$image_height[$image] = 127;
 						}
 
 						$img_sql = array(

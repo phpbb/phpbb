@@ -205,6 +205,8 @@
 		<li>[Fix] Fix handling of bookmarks and subscriptions on &quot;split topcis&quot;, &quot;merge topics&quot; and &quot;merge posts&quot;. (Bug #50035)</li>
 		<li>[Fix] Only embed cron.php if there is no cron lock present to reduce overhead. (Bug #45725 - Patch by TerryE)</li>
 		<li>[Fix] Add header gradient back into subsilver2 but keep site logo easily replaceable with smaller and bigger ones. (Bug #11142 - Patch by dark/Rain and Raimon)</li>
+		<li>[Fix] Activation email not sent from user settings (Bug #43145)</li>
+		<li>[Fix] Resend activation e-mail link inappropriate if using Admin activation (Bug #44375 - Patch by bbrunnrman)</li>
 		<li>[Change] submit_post() now accepts force_approved_state key passed to $data to indicate new posts being approved (true) or unapproved (false).</li>
 		<li>[Change] Change the data format of the default file ACM to be more secure from tampering and have better performance.</li>
 		<li>[Change] Add index on log_time to the log table to prevent slowdown on boards with many log entries. (Bug #44665 - Patch by bantu)</li>
@@ -231,11 +233,12 @@
 		<li>[Change] Parse multiline url title for [url] BBCode tag. (Bug #1309)</li>
 		<li>[Change] Introduce new parameter to page_header() for forum specific who is online listings.</li>
 		<li>[Change] Lifted minimum requirement for Firebird DBMS from 2.0+ to 2.1+.</li>
-		<li>[Change] Unapproved topics can no longer be replied to (Bug #44005)</li>
+		<li>[Change] Unapproved topics can no longer be replied to (Bug #44005, #47675, #23605)</li>
 		<li>[Change] Require user to be registered and logged in to search for unread posts if topic read tracking is disabled for guests (Bug #49525)</li>
 		<li>[Change] Allow three-digit hex notation in Color BBcode. (Bug #39965 - Patch by m0rpha)</li>
 		<li>[Change] Simplified login_box() and redirection after login. S_LOGIN_ACTION can now be used on every page. (Bug #50285)</li>
 		<li>[Change] Do not take edit post time into account for determining permission to delete last post in topic. (Bug #48615)</li>
+		<li>[Change] Resize oversized Topic icons (Bug #44415)</li>
 		<li>[Feature] Add language selection on the registration terms page (Bug #15085 - Patch by leviatan21)</li>
 		<li>[Feature] Backported 3.2 captcha plugins.
 			<ul>
@@ -269,7 +272,7 @@
 		<li>[Feature] Add option to disable remote upload avatars (Bug #45375 - Patch by nickvergessen)</li>
 		<li>[Feature] Ability to delete warnings and keep warnings permanently (Bug #43375 - Patch by nickvergessen)</li>
 		<li>[Feature] Ability to empty a user's outbox from the user ACP quick tools.</li>
-		<li>[Feature] Ability to filter ACP / MCP logs</li>
+		<li>[Feature] Ability to search ACP / MCP logs</li>
 		<li>[Feature] Users can report PMs to moderators which are then visible in a new MCP module</li>
 		<li>[Feature] Parse email text files with the template engine.</li>
 		<li>[Feature] Use email-style quoting when bbcodes are disabled.</li>
