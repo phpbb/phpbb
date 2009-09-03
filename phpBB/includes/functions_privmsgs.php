@@ -1707,8 +1707,8 @@ function message_history($msg_id, $user_id, $message_row, $folder, $in_post_mode
 	$recipients = array();
 	while ($row = $db->sql_fetchrow($result))
 	{
-		$recipients[] = $row['user_id'];
-		$recipients[] = $row['author_id'];
+		$recipients[] = (int) $row['user_id'];
+		$recipients[] = (int) $row['author_id'];
 	}
 	$db->sql_freeresult($result);
 	$recipients = array_unique($recipients);
@@ -1719,8 +1719,11 @@ function message_history($msg_id, $user_id, $message_row, $folder, $in_post_mode
 		WHERE t.msg_id = p.msg_id
 			AND p.author_id = u.user_id
 			AND t.folder_id NOT IN (' . PRIVMSGS_NO_BOX . ', ' . PRIVMSGS_HOLD_BOX . ')
-			AND ' . $db->sql_in_set('t.author_id', $recipients) . "
+			AND ' . $db->sql_in_set('t.author_id', $recipients, false, true) . "
 			AND t.user_id = $user_id";
+
+	// We no longer need those.
+	unset($recipients);
 
 	if (!$message_row['root_level'])
 	{
