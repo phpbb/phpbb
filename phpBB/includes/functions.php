@@ -2082,7 +2082,7 @@ function generate_pagination($base_url, $num_items, $per_page, $start_item, $add
 	}
 
 	$on_page = floor($start_item / $per_page) + 1;
-	$url_delim = (strpos($base_url, '?') === false) ? '?' : '&amp;';
+	$url_delim = (strpos($base_url, '?') === false) ? '?' : ((strpos($base_url, '?') === strlen($base_url) - 1) ? '' : '&amp;');
 
 	$page_string = ($on_page == 1) ? '<strong>1</strong>' : '<a href="' . $base_url . '">1</a>';
 
@@ -2949,7 +2949,7 @@ function login_box($redirect = '', $l_explain = '', $l_success = '', $admin = fa
 
 				$captcha = phpbb_captcha_factory::get_instance($config['captcha_plugin']);
 				$captcha->init(CONFIRM_LOGIN);
-				$captcha->reset();
+				// $captcha->reset();
 
 				$template->assign_vars(array(
 					'CAPTCHA_TEMPLATE'			=> $captcha->get_template(),
