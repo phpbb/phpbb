@@ -104,7 +104,7 @@
 		<li>[Fix] Fix dynamic config update routine error if firebird is used (Bug #46315)</li>
 		<li>[Fix] Allow friends/foes to be added and removed at the same time. (Bug #46255 - Patch by bantu)</li>
 		<li>[Fix] Only change topic/post icon if icons are enabled and user is allowed to. (Bug #46355 - Patch by bantu)</li>
-		<li>[Fix] Fix saving custom profile fields in ACP if Oracle used (Bug #46015)</li>
+		<li>[Fix] Fix saving custom profile fields in ACP if Oracle is used. (Bug #46015)</li>
 		<li>[Fix] Make view_log() more resilient to corrupt serialized data. (Bug #46545)</li>
 		<li>[Fix] Show error if hostname lookup doesn't return a valid IP address when banning. (Bug #45585 - Patch by bantu)</li>
 		<li>[Fix] Fix incorrect layout when loading private message draft. (Bug #38435 - Patch by nickvergessen)</li>
@@ -130,7 +130,7 @@
 		<li>[Fix] Fix reapply_sid() to correctly strip session id in certain circumstances (Bug #43125 - Patch by leviatan21)</li>
 		<li>[Fix] Correctly state why one language pack is marked with an asterisk in the ACP. (Bug #37565 - Patch by bantu)</li>
 		<li>[Fix] Correctly check if install directory is still present. (Bug #46965 - Patch by rxu)</li>
-		<li>[Fix] Correct banned user behaviour when &quot;force password change&quot; is enabled (Bug #47145 - Patch by nickvergessen and leviatan21 )</li>
+		<li>[Fix] Correct banned user behaviour when &quot;force password change&quot; is enabled (Bug #47145 - Patch by nickvergessen and leviatan21)</li>
 		<li>[Fix] Correctly display ACP logs options, without permission to clear logs. (Bug #24155 - Patch by leviatan21)</li>
 		<li>[Fix] Display topic icons in MCP forum view again (only prosilver).</li>
 		<li>[Fix] Properly display post status messages in topic when post is reported and unapproved (Bug #44455 - Patch by leviatan21)</li>
@@ -181,7 +181,7 @@
 		<li>[Fix] Do not send private message back to sender if sender is in the same group the private message was sent to.</li>
 		<li>[Fix] Correctly add user to a group making it a default one. (Bug #48345 - Patch by rxu)</li>
 		<li>[Fix] Add log entry when copying forum permissions.</li>
-		<li>[Fix] Min/max characters per posts also affects polls option (Bug #47295 - Patch by nickvergessen)</li>
+		<li>[Fix] Min/max characters per posts no longer affects poll options (Bug #47295 - Patch by nickvergessen)</li>
 		<li>[Fix] Correctly log action when users request to join a group (Bug #37585 - Patch by nickvergessen)</li>
 		<li>[Fix] Do not try to create thumbnails for images we cannot open properly. (Bug #48695)</li>
 		<li>[Fix] Apply locale-independent basename() to attachment filenames. New function added: utf8_basename(). (Bug #43335 - Patch by ocean=Yohsuke)</li>
@@ -202,11 +202,11 @@
 		<li>[Fix] Make sure only logs for existing users are displayed and user-specific logs removed on user deletion. (Bug #49855)</li>
 		<li>[Fix] Only show &quot;Add friend&quot; and &quot;Add foe&quot; links if the specific module is enabled. (Bug #50475)</li>
 		<li>[Fix] Correctly display list items in forum description in prosilver and administration. (Bug #48055 - Patch by leviatan21)</li>
-		<li>[Fix] Fix handling of bookmarks and subscriptions on &quot;split topcis&quot;, &quot;merge topics&quot; and &quot;merge posts&quot;. (Bug #50035)</li>
+		<li>[Fix] Fix handling of bookmarks and subscriptions on &quot;split topics&quot;, &quot;merge topics&quot; and &quot;merge posts&quot;. (Bug #50035)</li>
 		<li>[Fix] Only embed cron.php if there is no cron lock present to reduce overhead. (Bug #45725 - Patch by TerryE)</li>
 		<li>[Fix] Add header gradient back into subsilver2 but keep site logo easily replaceable with smaller and bigger ones. (Bug #11142 - Patch by dark/Rain and Raimon)</li>
-		<li>[Fix] Activation email not sent from user settings (Bug #43145)</li>
-		<li>[Fix] Resend activation e-mail link inappropriate if using Admin activation (Bug #44375 - Patch by bbrunnrman)</li>
+		<li>[Fix] Send activation email when activating user from user settings. (Bug #43145)</li>
+		<li>[Fix] Do not show resend activation email link when using admin activation. (Bug #44375 - Patch by bbrunnrman)</li>
 		<li>[Change] submit_post() now accepts force_approved_state key passed to $data to indicate new posts being approved (true) or unapproved (false).</li>
 		<li>[Change] Change the data format of the default file ACM to be more secure from tampering and have better performance.</li>
 		<li>[Change] Add index on log_time to the log table to prevent slowdown on boards with many log entries. (Bug #44665 - Patch by bantu)</li>
@@ -220,8 +220,8 @@
 		<li>[Change] INCLUDEPHP not depending on phpbb_root_path (Bug #45805 - Patch by nickvergessen)</li>
 		<li>[Change] Ability to fetch moderators with get_moderators() even if load_moderators setting is off. (Bug #35955)</li>
 		<li>[Change] &quot;Post details&quot; links with image in MCP. (Bug #39845 - Patch by leviatan21)</li>
-		<li>[Change] Pm history only shows pms of the receipts you currently reply to (Bug #39505 - Patch by nickvergessen)</li>
-		<li>[Change] Add quote-button for own pm's in pm-history (Bug #37285 - Patch by nickvergessen)</li>
+		<li>[Change] PM history now only shows PMs of users you currently reply to. (Bug #39505 - Patch by nickvergessen)</li>
+		<li>[Change] Show quote button for own PMs in PM history. (Bug #37285 - Patch by nickvergessen)</li>
 		<li>[Change] Fetch requested cookie variables directly from cookie super global. (Bug #47785)</li>
 		<li>[Change] Add confirmation for deactivating styles (Bug #14304 - Patch by leviatan21)</li>
 		<li>[Change] Add confirmation for deactivating language packs (Patch by leviatan21)</li>
@@ -270,7 +270,7 @@
 		<li>[Feature] Add bare-bones quick-reply editor to viewtopic.</li>
 		<li>[Feature] Detect when a post has been altered by someone else while editing. (Patch by bantu)</li>
 		<li>[Feature] Add unread posts quick search option (Bug #46765 - Patch by rxu)</li>
-		<li>[Feature] Add option to disable remote upload avatars (Bug #45375 - Patch by nickvergessen)</li>
+		<li>[Feature] Add option to disable avatar uploads from remote locations. (Bug #45375 - Patch by nickvergessen)</li>
 		<li>[Feature] Ability to delete warnings and keep warnings permanently (Bug #43375 - Patch by nickvergessen)</li>
 		<li>[Feature] Ability to empty a user's outbox from the user ACP quick tools.</li>
 		<li>[Feature] Ability to search ACP / MCP logs</li>

@@ -95,7 +95,7 @@ class phpbb_captcha_qa
 			$this->select_question();
 		}
 	}
-	
+
 	/**
 	*  API function
 	*/
@@ -442,7 +442,7 @@ class phpbb_captcha_qa
 
 		$this->load_answer();
 	}
-	
+
 	/**
 	* Look up everything we need and populate the instance variables.
 	*/
@@ -812,7 +812,7 @@ class phpbb_captcha_qa
 	function acp_add_question($data)
 	{
 		global $db, $cache;
-	
+
 		$langs = $this->get_languages();
 		$question_ary = $data;
 		
