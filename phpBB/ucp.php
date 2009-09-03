@@ -143,6 +143,12 @@ switch ($mode)
 
 			foreach ($_COOKIE as $cookie_name => $cookie_data)
 			{
+				// Only delete board cookies, no other ones...
+				if (strpos($cookie_name, $config['cookie_name'] . '_') !== 0)
+				{
+					continue;
+				}
+
 				$cookie_name = str_replace($config['cookie_name'] . '_', '', $cookie_name);
 
 				// Polls are stored as {cookie_name}_poll_{topic_id}, cookie_name_ got removed, therefore checking for poll_
