@@ -877,6 +877,9 @@ function database_update_info()
 				POSTS_TABLE			=> array(
 					'post_username'		=> array('post_username'),
 				),
+				USERS_TABLE			=> array(
+					'user_regdate'	=> array('user_regdate'),
+				),
 			),
 		),
 	);

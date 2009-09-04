@@ -1666,6 +1666,9 @@ GO
 CREATE  INDEX [user_birthday] ON [phpbb_users]([user_birthday]) ON [PRIMARY]
 GO
 
+CREATE  INDEX [user_regdate] ON [phpbb_users]([user_regdate]) ON [PRIMARY]
+GO
+
 CREATE  INDEX [user_email_hash] ON [phpbb_users]([user_email_hash]) ON [PRIMARY]
 GO
 

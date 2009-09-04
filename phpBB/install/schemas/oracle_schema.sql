@@ -1804,6 +1804,8 @@ CREATE TABLE phpbb_users (
 
 CREATE INDEX phpbb_users_user_birthday ON phpbb_users (user_birthday)
 /
+CREATE INDEX phpbb_users_user_regdate ON phpbb_users (user_regdate)
+/
 CREATE INDEX phpbb_users_user_email_hash ON phpbb_users (user_email_hash)
 /
 CREATE INDEX phpbb_users_user_type ON phpbb_users (user_type)
