@@ -551,11 +551,11 @@ class acp_users
 									delete_pm($user_id, $msg_ids, PRIVMSGS_OUTBOX);
 
 									add_log('admin', 'LOG_USER_DEL_OUTBOX', $user_row['username']);
-									
+
 									$lang = 'EMPTIED';
 								}
 								$db->sql_freeresult($result);
-								
+
 								trigger_error($user->lang['USER_OUTBOX_' . $lang] . adm_back_link($this->u_action . '&amp;u=' . $user_id));
 							}
 							else
@@ -725,7 +725,7 @@ class acp_users
 							trigger_error($user->lang['USER_POSTS_MOVED'] . adm_back_link($this->u_action . '&amp;u=' . $user_id));
 
 						break;
-						
+
 						case 'leave_nr':
 
 							if (confirm_box(true))
