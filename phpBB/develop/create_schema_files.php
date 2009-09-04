@@ -1869,7 +1869,6 @@ function get_schema_struct()
 		'PRIMARY_KEY'	=> 'user_id',
 		'KEYS'			=> array(
 			'user_birthday'				=> array('INDEX', 'user_birthday'),
-			'user_regdate'				=> array('INDEX', 'user_regdate'),
 			'user_email_hash'			=> array('INDEX', 'user_email_hash'),
 			'user_type'					=> array('INDEX', 'user_type'),
 			'username_clean'			=> array('UNIQUE', 'username_clean'),

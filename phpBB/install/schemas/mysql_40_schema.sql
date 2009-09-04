@@ -978,7 +978,6 @@ CREATE TABLE phpbb_users (
 	user_reminded_time int(11) UNSIGNED DEFAULT '0' NOT NULL,
 	PRIMARY KEY (user_id),
 	KEY user_birthday (user_birthday),
-	KEY user_regdate (user_regdate),
 	KEY user_email_hash (user_email_hash),
 	KEY user_type (user_type),
 	UNIQUE username_clean (username_clean(255))
