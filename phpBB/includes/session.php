@@ -1361,6 +1361,20 @@ class session
 			WHERE user_id = ' . (int) $user_id;
 		$db->sql_query($sql);
 
+		// Update last visit info first before deleting sessions
+		$sql = 'SELECT session_time, session_page
+			FROM ' . SESSIONS_TABLE . '
+			WHERE session_user_id = ' . (int) $user_id . '
+			ORDER BY session_time DESC';
+		$result = $db->sql_query_limit($sql, 1);
+		$row = $db->sql_fetchrow($result);
+		$db->sql_freeresult($result);
+
+		$sql = 'UPDATE ' . USERS_TABLE . '
+			SET user_lastvisit = ' . (int) $row['session_time'] . ", user_lastpage = '" . $db->sql_escape($row['session_page']) . "'
+			WHERE user_id = " . (int) $user_id;
+		$db->sql_query($sql);
+
 		// Let's also clear any current sessions for the specified user_id
 		// If it's the current user then we'll leave this session intact
 		$sql_where = 'session_user_id = ' . (int) $user_id;
