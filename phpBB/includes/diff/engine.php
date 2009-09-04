@@ -49,6 +49,8 @@ if (!defined('IN_PHPBB'))
 */
 class diff_engine
 {
+	var $skip_whitespace_changes = true;
+
 	function diff(&$from_lines, &$to_lines, $preserve_cr = true)
 	{
 		// Remove empty lines...
@@ -174,6 +176,20 @@ class diff_engine
 			while ($yi < $n_to && $this->ychanged[$yi])
 			{
 				$add[] = $to_lines[$yi++];
+			}
+
+			// Here we are a bit naughty. Naughty Boy... Naughty Boy...
+			// We check if delete and add is filled and only consist of one item
+			if ($this->skip_whitespace_changes && sizeof($delete) == 1 && sizeof($add) == 1)
+			{
+				// Now we simply trim the string and see if the lines are identical
+				// If they are identical we do not need to take them into account for the merge (less conflicts in phpBB)
+				if (trim($delete[0]) === trim($add[0]))
+				{
+					// This line ensures the line found here is correctly copied later (remember: we naughty boys like loops)
+					$xi--; $yi--; $this->xchanged[$xi] = $this->ychanged[$yi] = false;
+					$delete = $add = array();
+				}
 			}
 
 			if ($delete && $add)
