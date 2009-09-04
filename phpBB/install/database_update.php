@@ -8,10 +8,10 @@
 *
 */
 
-$updates_to_version = '3.0.6-dev';
+$updates_to_version = '3.0.6-alpha';
 
 // Enter any version to update from to test updates. The version within the db will not be updated.
-$debug_from_version = '3.0.5';
+$debug_from_version = false;
 
 // Which oldest version does this updater support?
 $oldest_from_version = '3.0.0';
@@ -834,7 +834,7 @@ function database_update_info()
 		// No changes from 3.0.5-RC1 to 3.0.5
 		'3.0.5-RC1'		=> array(),
 
-		// Changes from 3.0.5
+		// Changes from 3.0.5 to 3.0.6-RC1
 		'3.0.5'		=> array(
 			'add_columns'		=> array(
 				CONFIRM_TABLE			=> array(
