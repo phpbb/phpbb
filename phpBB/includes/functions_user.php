@@ -308,7 +308,7 @@ function user_add($user_row, $cp_data = false)
 	}
 
 	// set the newest user and adjust the user count if the user is a normal user and no activation mail is sent
-	if ($user_row['user_type'] == USER_NORMAL)
+	if ($user_row['user_type'] == USER_NORMAL || $user_row['user_type'] == USER_FOUNDER)
 	{
 		set_config('newest_user_id', $user_id, true);
 		set_config('newest_username', $user_row['username'], true);
