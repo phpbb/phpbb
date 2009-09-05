@@ -148,8 +148,10 @@
 			<ul class="linklist leftside">
 				<li class="icon-ucp">
 					<a href="{U_PROFILE}" title="{L_PROFILE}" accesskey="e">{L_PROFILE}</a>
-						<!-- IF S_DISPLAY_PM --> (<a href="{U_PRIVATEMSGS}">{PRIVATE_MESSAGE_INFO}</a>)<!-- ENDIF --> &bull;
+						<!-- IF S_DISPLAY_PM --> (<a href="{U_PRIVATEMSGS}">{PRIVATE_MESSAGE_INFO}</a>)<!-- ENDIF -->
+					<!-- IF S_DISPLAY_SEARCH --> &bull;
 					<a href="{U_SEARCH_SELF}">{L_SEARCH_SELF}</a>
+					<!-- ENDIF -->
 					<!-- IF U_RESTORE_PERMISSIONS --> &bull;
 					<a href="{U_RESTORE_PERMISSIONS}">{L_RESTORE_PERMISSIONS}</a>
 					<!-- ENDIF -->
