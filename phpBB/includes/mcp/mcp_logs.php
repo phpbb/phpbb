@@ -175,7 +175,7 @@ class mcp_logs
 		$template->assign_vars(array(
 			'PAGE_NUMBER'		=> on_page($log_count, $config['topics_per_page'], $start),
 			'TOTAL'				=> ($log_count == 1) ? $user->lang['TOTAL_LOG'] : sprintf($user->lang['TOTAL_LOGS'], $log_count),
-			'PAGINATION'	=> generate_pagination($this->u_action . "&amp;$u_sort_param$log_operation_param$keywords_param", $log_count, $config['topics_per_page'], $start, true),
+			'PAGINATION'		=> generate_pagination($this->u_action . "&amp;$u_sort_param$keywords_param", $log_count, $config['topics_per_page'], $start, true),
 
 			'L_TITLE'			=> $user->lang['MCP_LOGS'],
 
@@ -192,7 +192,7 @@ class mcp_logs
 		foreach ($log_data as $row)
 		{
 			$data = array();
-				
+
 			$checks = array('viewtopic', 'viewforum');
 			foreach ($checks as $check)
 			{
