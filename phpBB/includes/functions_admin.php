@@ -2517,15 +2517,15 @@ function view_log($mode, &$log, &$log_count, $limit = 0, $offset = 0, $forum_id 
 
 			if ($topic_id)
 			{
-				$sql_forum = 'AND l.topic_id = ' . intval($topic_id);
+				$sql_forum = 'AND l.topic_id = ' . (int) $topic_id;
 			}
 			else if (is_array($forum_id))
 			{
 				$sql_forum = 'AND ' . $db->sql_in_set('l.forum_id', array_map('intval', $forum_id));
 			}
-			else
+			else if ($forum_id)
 			{
-				$sql_forum = ($forum_id) ? 'AND l.forum_id = ' . intval($forum_id) : '';
+				$sql_forum = 'AND l.forum_id = ' . (int) $forum_id;
 			}
 		break;
 
@@ -2560,7 +2560,7 @@ function view_log($mode, &$log, &$log_count, $limit = 0, $offset = 0, $forum_id 
 		}
 
 		$operations = array();
-		foreach ($user->lang as $key=>$value)
+		foreach ($user->lang as $key => $value)
 		{
 			if (substr($key, 0, 4) == 'LOG_' && preg_match($keywords_pattern, $value))
 			{
@@ -2571,9 +2571,9 @@ function view_log($mode, &$log, &$log_count, $limit = 0, $offset = 0, $forum_id 
 		$sql_keywords = 'AND (';
 		if (!empty($operations))
 		{
-			$sql_keywords.= $db->sql_in_set('l.log_operation', $operations) . ' OR ';
+			$sql_keywords .= $db->sql_in_set('l.log_operation', $operations) . ' OR ';
 		}
-		$sql_keywords.= 'LOWER(l.log_data) ' . implode(' OR LOWER(l.log_data) ', $keywords) . ')';
+		$sql_keywords .= 'LOWER(l.log_data) ' . implode(' OR LOWER(l.log_data) ', $keywords) . ')';
 	}
 
 	$sql = "SELECT l.*, u.username, u.username_clean, u.user_colour
