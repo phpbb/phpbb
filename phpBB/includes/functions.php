@@ -1683,92 +1683,38 @@ function get_unread_topics_list($user_id = false, $sql_extra = '', $sql_sort = '
 
 	if ($config['load_db_lastread'] && $user->data['is_registered'])
 	{
-		// Get list of the unread topics - on topics tracking as the first step
-		$sql = 'SELECT t.topic_id, t.topic_last_post_time, tt.mark_time
-			FROM ' . TOPICS_TABLE . ' t, ' . TOPICS_TRACK_TABLE . " tt
-			WHERE t.topic_id = tt.topic_id
-				AND tt.user_id = $user_id
-			$sql_extra
-			$sql_sort";
+		// Get list of the unread topics
+		$sql_array = array(
+			'SELECT'		=> 't.topic_id, t.topic_last_post_time, tt.mark_time as topic_mark_time, ft.mark_time as forum_mark_time',
+
+			'FROM'			=> array(TOPICS_TABLE => 't'),
+
+			'LEFT_JOIN'		=> array(
+				array(
+					'FROM'	=> array(TOPICS_TRACK_TABLE => 'tt'),
+					'ON'	=> 't.topic_id = tt.topic_id AND t.topic_last_post_time > tt.mark_time AND tt.user_id = ' . $user_id,
+				),
+				array(
+					'FROM'	=> array(FORUMS_TRACK_TABLE => 'ft'),
+					'ON'	=> 't.forum_id = ft.forum_id AND t.topic_last_post_time > ft.mark_time AND ft.user_id = ' . $user_id,
+				),
+			),
+
+			'WHERE'			=> "((tt.topic_id OR ft.forum_id)
+				OR t.topic_last_post_time > {$user->data['user_lastmark']})
+				$sql_extra
+				$sql_sort",
+		);
+
+		$sql = $db->sql_build_query('SELECT', $sql_array);
 		$result = $db->sql_query_limit($sql, $sql_limit);
 
 		while ($row = $db->sql_fetchrow($result))
 		{
 			$topic_id = (int) $row['topic_id'];
-
-			if ($row['topic_last_post_time'] <= $row['mark_time'])
-			{
-				// Check if there're read topics for the forums having unread ones
-				$read_topics_list[$topic_id] = (int) $row['mark_time'];
-			}
-			else
-			{
-				$unread_topics_list[$topic_id] = (int) $row['mark_time'];
-			}
+			$unread_topics_list[$topic_id] = ($row['forum_mark_time']) ? (int) $row['forum_mark_time'] : (int) $row['topic_mark_time'];
 		}
 		$db->sql_freeresult($result);
-
-		// Get the full list of the tracked topics and unread topics count
-		$tracked_topics_list = array_merge(array_keys($unread_topics_list), array_keys($read_topics_list));
-		$unread_list_count = sizeof($unread_topics_list);
-
-		if ($unread_list_count < $sql_limit)
-		{
-			// Get list of the unread topics - on forums tracking as the second step
-			// We don't take in account topics tracked before
-			$sql = 'SELECT t.topic_id, ft.mark_time
-				FROM ' . TOPICS_TABLE . ' t, ' . FORUMS_TRACK_TABLE . ' ft
-				WHERE t.forum_id = ft.forum_id
-					AND t.topic_last_post_time > ft.mark_time
-					AND ' . $db->sql_in_set('t.topic_id', $tracked_topics_list, true, true) . "
-					AND ft.user_id = $user_id
-				$sql_extra
-				$sql_sort";
-			$result = $db->sql_query_limit($sql, ($sql_limit - $unread_list_count));
-
-			while ($row = $db->sql_fetchrow($result))
-			{
-				$unread_topics_list[(int) $row['topic_id']] = (int) $row['mark_time'];
-			}
-			$db->sql_freeresult($result);
-
-			// Refresh the full list of the tracked topics and unread topics count
-			unset($tracked_topics_list);
-			$tracked_topics_list = array_merge(array_keys($unread_topics_list), array_keys($read_topics_list));
-			$unread_list_count = sizeof($unread_topics_list);
-
-			if ($unread_list_count < $sql_limit)
-			{
-				// List of the tracked forums (not ideal, hope the better way will be found)
-				// This list is to fetch later the forums user never read (fully) before
-				$sql = 'SELECT forum_id
-					FROM ' . FORUMS_TRACK_TABLE . "
-					WHERE user_id = $user_id";
-				$result = $db->sql_query($sql);
-
-				while ($row = $db->sql_fetchrow($result))
-				{
-					$tracked_forums_list[] = (int) $row['forum_id'];
-				}
-				$db->sql_freeresult($result);
-
-				// And the last step - find unread topics were not found before (that can mean a user has never read some forums)
-				$sql = 'SELECT t.topic_id
-					FROM ' . TOPICS_TABLE . ' t
-					WHERE t.topic_last_post_time > ' . (int) $user->data['user_lastmark'] . '
-						AND ' . $db->sql_in_set('t.topic_id', $tracked_topics_list, true, true) . '
-						AND ' . $db->sql_in_set('t.forum_id', $tracked_forums_list, true, true) . "
-					$sql_extra
-					$sql_sort";
-				$result = $db->sql_query_limit($sql, ($sql_limit - $unread_list_count));
-
-				while ($row = $db->sql_fetchrow($result))
-				{
-					$unread_topics_list[(int) $row['topic_id']] = (int) $user->data['user_lastmark'];
-				}
-				$db->sql_freeresult($result);
-			}
-		}
 	}
 	else if ($config['load_anon_lastread'] || $user->data['is_registered'])
 	{
