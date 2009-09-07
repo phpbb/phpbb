@@ -1671,10 +1671,7 @@ function get_unread_topics_list($user_id = false, $sql_extra = '', $sql_sort = '
 {
 	global $config, $db, $user;
 
-	if ($user_id === false)
-	{
-		$user_id = (int) $user->data['user_id'];
-	}
+	$user_id = ($user_id === false) ? (int) $user->data['user_id'] : (int) $user_id;
 
 	if (empty($sql_sort))
 	{
@@ -1697,14 +1694,16 @@ function get_unread_topics_list($user_id = false, $sql_extra = '', $sql_sort = '
 
 		while ($row = $db->sql_fetchrow($result))
 		{
+			$topic_id = (int) $row['topic_id'];
+
 			if ($row['topic_last_post_time'] <= $row['mark_time'])
 			{
 				// Check if there're read topics for the forums having unread ones
-				$read_topics_list[$row['topic_id']] = (int) $row['mark_time'];
+				$read_topics_list[$topic_id] = (int) $row['mark_time'];
 			}
 			else
 			{
-				$unread_topics_list[$row['topic_id']] = (int) $row['mark_time'];
+				$unread_topics_list[$topic_id] = (int) $row['mark_time'];
 			}
 		}
 		$db->sql_freeresult($result);
@@ -1729,7 +1728,7 @@ function get_unread_topics_list($user_id = false, $sql_extra = '', $sql_sort = '
 
 			while ($row = $db->sql_fetchrow($result))
 			{
-				$unread_topics_list[$row['topic_id']] = (int) $row['mark_time'];
+				$unread_topics_list[(int) $row['topic_id']] = (int) $row['mark_time'];
 			}
 			$db->sql_freeresult($result);
 
@@ -1765,7 +1764,7 @@ function get_unread_topics_list($user_id = false, $sql_extra = '', $sql_sort = '
 
 				while ($row = $db->sql_fetchrow($result))
 				{
-					$unread_topics_list[$row['topic_id']] = (int) $user->data['user_lastmark'];
+					$unread_topics_list[(int) $row['topic_id']] = (int) $user->data['user_lastmark'];
 				}
 				$db->sql_freeresult($result);
 			}
@@ -1775,9 +1774,9 @@ function get_unread_topics_list($user_id = false, $sql_extra = '', $sql_sort = '
 	{
 		global $tracking_topics;
 
-		if (!isset($tracking_topics) || !sizeof($tracking_topics))
+		if (empty($tracking_topics))
 		{
-			$tracking_topics = (isset($_COOKIE[$config['cookie_name'] . '_track'])) ? ((STRIP) ? stripslashes($_COOKIE[$config['cookie_name'] . '_track']) : $_COOKIE[$config['cookie_name'] . '_track']) : '';
+			$tracking_topics = request_var($config['cookie_name'] . '_track', '', false, true);
 			$tracking_topics = ($tracking_topics) ? tracking_unserialize($tracking_topics) : array();
 		}
 
@@ -1787,7 +1786,7 @@ function get_unread_topics_list($user_id = false, $sql_extra = '', $sql_sort = '
 		}
 		else
 		{
-			$user_lastmark = $user->data['user_lastmark'];
+			$user_lastmark = (int) $user->data['user_lastmark'];
 		}
 
 		$sql = 'SELECT t.topic_id, t.forum_id, t.topic_last_post_time
@@ -1795,7 +1794,6 @@ function get_unread_topics_list($user_id = false, $sql_extra = '', $sql_sort = '
 			WHERE t.topic_last_post_time > ' . $user_lastmark . "
 			$sql_extra
 			$sql_sort";
-
 		$result = $db->sql_query_limit($sql, $sql_limit);
 
 		while ($row = $db->sql_fetchrow($result))
@@ -1824,7 +1822,6 @@ function get_unread_topics_list($user_id = false, $sql_extra = '', $sql_sort = '
 			{
 				$unread_topics_list[$topic_id] = $user_lastmark;
 			}
-
 		}
 		$db->sql_freeresult($result);
 	}
