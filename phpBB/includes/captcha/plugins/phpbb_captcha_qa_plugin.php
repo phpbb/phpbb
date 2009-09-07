@@ -48,7 +48,7 @@ class phpbb_captcha_qa
 	{
 		global $config, $db, $user;
 
-		// load our language file 
+		// load our language file
 		$user->add_lang('captcha_qa');
 
 		// read input
@@ -62,7 +62,7 @@ class phpbb_captcha_qa
 		// try the user's lang first
 		$sql = 'SELECT question_id
 			FROM ' . CAPTCHA_QUESTIONS_TABLE . "
-			WHERE lang_iso = '" . $db->sql_escape($user->data['user_lang']) . "'"; 
+			WHERE lang_iso = '" . $db->sql_escape($user->data['user_lang']) . "'";
 		$result = $db->sql_query($sql, 3600);
 
 		while ($row = $db->sql_fetchrow($result))
@@ -78,7 +78,7 @@ class phpbb_captcha_qa
 
 			$sql = 'SELECT question_id
 				FROM ' . CAPTCHA_QUESTIONS_TABLE . "
-				WHERE lang_iso = '" . $db->sql_escape($config['default_lang']) . "'"; 
+				WHERE lang_iso = '" . $db->sql_escape($config['default_lang']) . "'";
 			$result = $db->sql_query($sql, 7200);
 
 			while ($row = $db->sql_fetchrow($result))
@@ -139,7 +139,7 @@ class phpbb_captcha_qa
 
 		$sql = 'SELECT COUNT(question_id) as count
 			FROM ' . CAPTCHA_QUESTIONS_TABLE . "
-			WHERE lang_iso = '" . $db->sql_escape($config['default_lang']) . "'"; 
+			WHERE lang_iso = '" . $db->sql_escape($config['default_lang']) . "'";
 		$result = $db->sql_query($sql);
 		$row = $db->sql_fetchrow($result);
 		$db->sql_freeresult($result);
@@ -283,7 +283,7 @@ class phpbb_captcha_qa
 	function install()
 	{
 		global $db, $phpbb_root_path, $phpEx;
-		
+
 		if (!class_exists('phpbb_db_tools'))
 		{
 			include("$phpbb_root_path/includes/db/db_tools.$phpEx");
@@ -294,41 +294,41 @@ class phpbb_captcha_qa
 
 		$schemas = array(
 				CAPTCHA_QUESTIONS_TABLE		=> array (
-								'COLUMNS' => array(
-									'question_id'	=> array('UINT', Null, 'auto_increment'),
-									'strict'		=> array('BOOL', 0),
-									'lang_id'		=> array('UINT', 0),
-									'lang_iso'		=> array('VCHAR:30', ''),
-									'question_text'	=> array('TEXT_UNI', ''),
-								),
-								'PRIMARY_KEY'		=> 'question_id',
-								'KEYS'				=> array(
-									'lang_iso'			=> array('INDEX', 'lang_iso'),
-								),
+					'COLUMNS' => array(
+						'question_id'	=> array('UINT', Null, 'auto_increment'),
+						'strict'		=> array('BOOL', 0),
+						'lang_id'		=> array('UINT', 0),
+						'lang_iso'		=> array('VCHAR:30', ''),
+						'question_text'	=> array('TEXT_UNI', ''),
+					),
+					'PRIMARY_KEY'		=> 'question_id',
+					'KEYS'				=> array(
+						'lang_iso'			=> array('INDEX', 'lang_iso'),
+					),
 				),
 				CAPTCHA_ANSWERS_TABLE		=> array (
-								'COLUMNS' => array(
-									'question_id'	=> array('UINT', 0),
-									'answer_text'	=> array('STEXT_UNI', ''),
-								),
-								'KEYS'				=> array(
-									'question_id'			=> array('INDEX', 'question_id'),
-								),
+					'COLUMNS' => array(
+						'question_id'	=> array('UINT', 0),
+						'answer_text'	=> array('STEXT_UNI', ''),
+					),
+					'KEYS'				=> array(
+						'question_id'			=> array('INDEX', 'question_id'),
+					),
 				),
 				CAPTCHA_QA_CONFIRM_TABLE		=> array (
-								'COLUMNS' => array(
-									'session_id'	=> array('CHAR:32', ''),
-									'confirm_id'	=> array('CHAR:32', ''),
-									'lang_iso'		=> array('VCHAR:30', ''),
-									'question_id'	=> array('UINT', 0),
-									'attempts'		=> array('UINT', 0),
-									'confirm_type'	=> array('USINT', 0),
-								),
-								'KEYS'				=> array(
-									'session_id'			=> array('INDEX', 'session_id'),
-									'lookup'				=> array('INDEX', array('confirm_id', 'session_id', 'lang_iso')),
-								),
-								'PRIMARY_KEY'		=> 'confirm_id',
+					'COLUMNS' => array(
+						'session_id'	=> array('CHAR:32', ''),
+						'confirm_id'	=> array('CHAR:32', ''),
+						'lang_iso'		=> array('VCHAR:30', ''),
+						'question_id'	=> array('UINT', 0),
+						'attempts'		=> array('UINT', 0),
+						'confirm_type'	=> array('USINT', 0),
+					),
+					'KEYS'				=> array(
+						'session_id'			=> array('INDEX', 'session_id'),
+						'lookup'				=> array('INDEX', array('confirm_id', 'session_id', 'lang_iso')),
+					),
+					'PRIMARY_KEY'		=> 'confirm_id',
 				),
 		);
 
@@ -415,7 +415,7 @@ class phpbb_captcha_qa
 
 		$sql = 'UPDATE ' . CAPTCHA_QA_CONFIRM_TABLE . '
 			SET question_id = ' . (int) $this->question . "
-			WHERE confirm_id = '" . $db->sql_escape($this->confirm_id) . "' 
+			WHERE confirm_id = '" . $db->sql_escape($this->confirm_id) . "'
 				AND session_id = '" . $db->sql_escape($user->session_id) . "'";
 		$db->sql_query($sql);
 
@@ -436,7 +436,7 @@ class phpbb_captcha_qa
 		$sql = 'UPDATE ' . CAPTCHA_QA_CONFIRM_TABLE . '
 			SET question_id = ' . (int) $this->question . ",
 				attempts = attempts + 1
-			WHERE confirm_id = '" . $db->sql_escape($this->confirm_id) . "' 
+			WHERE confirm_id = '" . $db->sql_escape($this->confirm_id) . "'
 				AND session_id = '" . $db->sql_escape($user->session_id) . "'";
 		$db->sql_query($sql);
 
@@ -451,7 +451,7 @@ class phpbb_captcha_qa
 		global $db, $user;
 
 		$sql = 'SELECT con.question_id, attempts, question_text, strict
-			FROM ' . CAPTCHA_QA_CONFIRM_TABLE . ' con, ' . CAPTCHA_QUESTIONS_TABLE . " qes 
+			FROM ' . CAPTCHA_QA_CONFIRM_TABLE . ' con, ' . CAPTCHA_QUESTIONS_TABLE . " qes
 			WHERE con.question_id = qes.question_id
 				AND confirm_id = '" . $db->sql_escape($this->confirm_id) . "'
 				AND session_id = '" . $db->sql_escape($user->session_id) . "'
@@ -520,7 +520,7 @@ class phpbb_captcha_qa
 	}
 
 	/**
-	*  API function 
+	*  API function
 	*/
 	function get_attempt_count()
 	{
@@ -528,7 +528,7 @@ class phpbb_captcha_qa
 	}
 
 	/**
-	*  API function 
+	*  API function
 	*/
 	function reset()
 	{
@@ -544,7 +544,7 @@ class phpbb_captcha_qa
 	}
 
 	/**
-	*  API function 
+	*  API function
 	*/
 	function is_solved()
 	{
@@ -815,7 +815,7 @@ class phpbb_captcha_qa
 
 		$langs = $this->get_languages();
 		$question_ary = $data;
-		
+
 		$question_ary['lang_id'] = $langs[$data['lang_iso']]['id'];
 		unset($question_ary['answers']);
 
@@ -862,7 +862,7 @@ class phpbb_captcha_qa
 
 		foreach ($tables as $table)
 		{
-			$sql = "DELETE FROM $table 
+			$sql = "DELETE FROM $table
 				WHERE question_id = $question_id";
 			$db->sql_query($sql);
 		}

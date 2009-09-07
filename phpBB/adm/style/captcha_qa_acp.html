@@ -27,12 +27,12 @@
 	</thead>
 	<tbody>
 	<!-- BEGIN questions -->
-		
+
 		<!-- IF questions.S_ROW_COUNT is even --><tr class="row1"><!-- ELSE --><tr class="row2"><!-- ENDIF -->
-	
+
 		<td style="text-align: left;">{questions.QUESTION_TEXT}</td>
 		<td style="text-align: center;">{questions.QUESTION_LANG}</td>
-		<td style="text-align: center;"><a href="{questions.U_EDIT}">{ICON_EDIT}</a><a href="{questions.U_DELETE}">{ICON_DELETE}</a></td>
+		<td style="text-align: center;"><a href="{questions.U_EDIT}">{ICON_EDIT}</a>&nbsp;<a href="{questions.U_DELETE}">{ICON_DELETE}</a></td>
 		</tr>
 		<!-- END questions -->
 	</tbody>
@@ -58,21 +58,21 @@
 	<form id="captcha_qa" method="post" action="{U_ACTION}">
 	<fieldset>
 		<legend>{L_EDIT_QUESTION}</legend>
-	<dl> 
+	<dl>
 		<dt><label for="strict">{L_QUESTION_STRICT}:</label><br /><span>{L_QUESTION_STRICT_EXPLAIN}</span></dt>
 		<dd><label><input type="radio" class="radio" name="strict" value="1"<!-- IF STRICT --> id="strict" checked="checked"<!-- ENDIF --> /> {L_YES}</label>
 			<label><input type="radio" class="radio" name="strict" value="0"<!-- IF not STRICT --> id="strict" checked="checked"<!-- ENDIF --> /> {L_NO}</label></dd>
 	</dl>
-	
-	<dl> 
+
+	<dl>
 		<dt><label for="lang_iso">{L_QUESTION_LANG}</label><br /><span>{L_QUESTION_LANG_EXPLAIN}</span></dt>
 		<dd><select id="lang_iso" name="lang_iso"><!-- BEGIN langs --><option value="{langs.ISO}" <!-- IF langs.ISO == LANG_ISO --> selected="selected" <!-- ENDIF -->>{langs.NAME}</option><!-- END langs --></select></dd>
 	</dl>
-	<dl> 
+	<dl>
 		<dt><label for="question_text">{L_QUESTION_TEXT}</label><br /><span>{L_QUESTION_TEXT_EXPLAIN}</span></dt>
 		<dd><input id="question_text" maxlength="255" size="60" name="question_text" type="text" value="{QUESTION_TEXT}" /></dd>
 	</dl>
-	<dl> 
+	<dl>
 		<dt><label for="answers">{L_QUESTION_ANSWERS}</label><br /><span>{L_ANSWERS_EXPLAIN}</span></dt>
 		<dd><textarea id="answers" style="word-wrap: normal; overflow-x: scroll;" name="answers" rows="15" cols="800" >{ANSWERS}</textarea></dd>
 	</dl>
