@@ -313,11 +313,8 @@ class filespec
 						if (!@move_uploaded_file($this->filename, $this->destination_file))
 						{
 							$this->error[] = sprintf($user->lang[$this->upload->error_prefix . 'GENERAL_UPLOAD_ERROR'], $this->destination_file);
-							return false;
 						}
 					}
-
-					@unlink($this->filename);
 
 				break;
 
@@ -328,11 +325,8 @@ class filespec
 						if (!@copy($this->filename, $this->destination_file))
 						{
 							$this->error[] = sprintf($user->lang[$this->upload->error_prefix . 'GENERAL_UPLOAD_ERROR'], $this->destination_file);
-							return false;
 						}
 					}
-
-					@unlink($this->filename);
 
 				break;
 
@@ -341,14 +335,21 @@ class filespec
 					if (!@copy($this->filename, $this->destination_file))
 					{
 						$this->error[] = sprintf($user->lang[$this->upload->error_prefix . 'GENERAL_UPLOAD_ERROR'], $this->destination_file);
-						return false;
 					}
-					@unlink($this->filename);
 
 				break;
 			}
 
+			// Remove temporary filename
+			@unlink($this->filename);
+
+			if (sizeof($this->error))
+			{
+				return false;
+			}
+
 			phpbb_chmod($this->destination_file, $chmod);
+			return true;
 		}
 
 		// Try to get real filesize from destination folder
