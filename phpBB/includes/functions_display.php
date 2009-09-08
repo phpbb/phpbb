@@ -107,9 +107,9 @@ function display_forums($root_data = '', $display_moderators = true, $return_mod
 	$ga_unread = false;
 	if ($root_data['forum_id'] == 0)
 	{
-		$unread_ga_list = get_unread_topics($user->data['user_id'], 'AND t.forum_id = 0');
+		$unread_ga_list = get_unread_topics($user->data['user_id'], 'AND t.forum_id = 0', '', 1);
 
-		if (sizeof($unread_ga_list))
+		if (!empty($unread_ga_list))
 		{
 			$ga_unread = true;
 		}
