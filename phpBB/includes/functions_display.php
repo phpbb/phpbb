@@ -103,12 +103,12 @@ function display_forums($root_data = '', $display_moderators = true, $return_mod
 	$forum_tracking_info = array();
 	$branch_root_id = $root_data['forum_id'];
 
-	// Check for unread global announcements
-	// For index page only we do it
+	// Check for unread global announcements (index page only)
 	$ga_unread = false;
 	if ($root_data['forum_id'] == 0)
 	{
-		$unread_ga_list = get_unread_topics_list($user->data['user_id'], 'AND t.forum_id = 0');
+		$unread_ga_list = get_unread_topics($user->data['user_id'], 'AND t.forum_id = 0');
+
 		if (sizeof($unread_ga_list))
 		{
 			$ga_unread = true;

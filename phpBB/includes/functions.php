@@ -1665,21 +1665,20 @@ function get_complete_topic_tracking($forum_id, $topic_ids, $global_announce_lis
 * @param string $sql_limit		Limits the size of unread topics list, 0 for unlimited query
 *
 * @return array[int][int]		Topic ids as keys, mark_time of topic as value
-* @author rxu
 */
-function get_unread_topics_list($user_id = false, $sql_extra = '', $sql_sort = '', $sql_limit = 1001)
+function get_unread_topics($user_id = false, $sql_extra = '', $sql_sort = '', $sql_limit = 1001)
 {
 	global $config, $db, $user;
 
 	$user_id = ($user_id === false) ? (int) $user->data['user_id'] : (int) $user_id;
 
+	// Data array we're going to return
+	$unread_topics = array();
+
 	if (empty($sql_sort))
 	{
 		$sql_sort = 'ORDER BY t.topic_last_post_time DESC';
 	}
-
-	$tracked_topics_list = $unread_topics_list = $read_topics_list = array();
-	$tracked_forums_list = $mark_time = array();
 
 	if ($config['load_db_lastread'] && $user->data['is_registered'])
 	{
@@ -1712,7 +1711,8 @@ function get_unread_topics_list($user_id = false, $sql_extra = '', $sql_sort = '
 		while ($row = $db->sql_fetchrow($result))
 		{
 			$topic_id = (int) $row['topic_id'];
-			$unread_topics_list[$topic_id] = ($row['forum_mark_time']) ? (int) $row['forum_mark_time'] : (int) $row['topic_mark_time'];
+
+			$unread_topics[$topic_id] = ($row['forum_mark_time']) ? (int) $row['forum_mark_time'] : (int) $row['topic_mark_time'];
 		}
 		$db->sql_freeresult($result);
 	}
@@ -1750,29 +1750,31 @@ function get_unread_topics_list($user_id = false, $sql_extra = '', $sql_sort = '
 
 			if (isset($tracking_topics['t'][$topic_id36]))
 			{
-				$last_read[$topic_id] = base_convert($tracking_topics['t'][$topic_id36], 36, 10) + $config['board_startdate'];
-				if ($row['topic_last_post_time'] > $last_read[$topic_id])
+				$last_read = base_convert($tracking_topics['t'][$topic_id36], 36, 10) + $config['board_startdate'];
+
+				if ($row['topic_last_post_time'] > $last_read)
 				{
-					$unread_topics_list[$topic_id] = $last_read[$topic_id];
+					$unread_topics[$topic_id] = $last_read;
 				}
 			}
 			else if (isset($tracking_topics['f'][$forum_id]))
 			{
-				$mark_time[$forum_id] = base_convert($tracking_topics['f'][$forum_id], 36, 10) + $config['board_startdate'];
-				if ($row['topic_last_post_time'] > $mark_time[$forum_id])
+				$mark_time = base_convert($tracking_topics['f'][$forum_id], 36, 10) + $config['board_startdate'];
+
+				if ($row['topic_last_post_time'] > $mark_time)
 				{
-					$unread_topics_list[$topic_id] = $mark_time[$forum_id];
+					$unread_topics[$topic_id] = $mark_time;
 				}
 			}
 			else
 			{
-				$unread_topics_list[$topic_id] = $user_lastmark;
+				$unread_topics[$topic_id] = $user_lastmark;
 			}
 		}
 		$db->sql_freeresult($result);
 	}
 
-	return $unread_topics_list;
+	return $unread_topics;
 }
 
 /**

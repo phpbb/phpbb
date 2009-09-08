@@ -387,7 +387,7 @@ if ($keywords || $author || $author_id || $search_id || $submit)
 				$s_sort_key = $s_sort_dir = $u_sort_param = $s_limit_days = '';
 
 				$unread_list = array();
-				$unread_list = get_unread_topics_list($user->data['user_id'], $sql_where, $sql_sort);
+				$unread_list = get_unread_topics($user->data['user_id'], $sql_where, $sql_sort);
 
 				if (!empty($unread_list))
 				{
