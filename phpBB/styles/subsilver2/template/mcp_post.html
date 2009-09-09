@@ -46,7 +46,7 @@
 	<th colspan="2" align="center"><!-- IF S_PM -->{L_PM}<!-- ELSE -->{L_POST_DETAILS}<!-- ENDIF --></th>
 </tr>
 <tr>
-	<td class="row3" colspan="2" align="center"><span class="gensmall"><!-- IF S_MCP_QUEUE -->{RETURN_QUEUE} | {RETURN_TOPIC_SIMPLE} | {RETURN_POST}<!-- ELSEIF S_MCP_REPORT -->{RETURN_REPORTS} | <!-- IF S_PM --><a href="{U_VIEW_POST}">{L_VIEW_PM}</a><!-- ELSE --><a href="{U_VIEW_POST}">{L_VIEW_POST}</a> | <a href="{U_VIEW_TOPIC}">{L_VIEW_TOPIC}</a> | <a href="{U_VIEW_FORUM}">{L_VIEW_FORUM}</a><!-- ENDIF --><!-- ELSE -->{RETURN_TOPIC}<!-- ENDIF --></span></td>
+	<td class="row3" colspan="2" align="center"><span class="gensmall"><!-- IF S_MCP_QUEUE -->{RETURN_QUEUE} | {RETURN_TOPIC_SIMPLE} | {RETURN_POST}<!-- ELSEIF S_MCP_REPORT -->{RETURN_REPORTS}<!-- IF not S_PM --> | <a href="{U_VIEW_POST}">{L_VIEW_POST}</a> | <a href="{U_VIEW_TOPIC}">{L_VIEW_TOPIC}</a> | <a href="{U_VIEW_FORUM}">{L_VIEW_FORUM}</a><!-- ENDIF --><!-- ELSE -->{RETURN_TOPIC}<!-- ENDIF --></span></td>
 </tr>
 <tr>
 	<td class="row1"><b class="gen"><!-- IF S_PM -->{L_PM_SUBJECT}<!-- ELSE -->{L_POST_SUBJECT}<!-- ENDIF -->: </b></td>
