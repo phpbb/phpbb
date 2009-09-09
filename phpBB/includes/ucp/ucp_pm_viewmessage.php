@@ -193,7 +193,7 @@ function view_message($id, $mode, $folder_id, $msg_id, $folder, $message_row)
 		'EMAIL_IMG'			=> $user->img('icon_contact_email', $user->lang['SEND_EMAIL']),
 		'QUOTE_IMG'			=> $user->img('icon_post_quote', $user->lang['POST_QUOTE_PM']),
 		'REPLY_IMG'			=> $user->img('button_pm_reply', $user->lang['POST_REPLY_PM']),
-		'REPORT_IMG'		=> $user->img('icon_post_report', 'REPORT_POST'),
+		'REPORT_IMG'		=> $user->img('icon_post_report', 'REPORT_PM'),
 		'EDIT_IMG'			=> $user->img('icon_post_edit', $user->lang['POST_EDIT_PM']),
 		'MINI_POST_IMG'		=> $user->img('icon_post_target', $user->lang['PM']),
 
