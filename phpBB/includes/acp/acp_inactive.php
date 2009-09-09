@@ -113,7 +113,7 @@ class acp_inactive
 						{
 							include_once($phpbb_root_path . 'includes/functions_messenger.' . $phpEx);
 
-							$messenger = new messenger();
+							$messenger = new messenger(false);
 
 							foreach ($inactive_users as $row)
 							{
