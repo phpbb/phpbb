@@ -118,8 +118,6 @@ function view_folder($id, $mode, $folder_id, $folder)
 				$address_list = get_recipient_strings($folder_info['rowset']);
 			}
 
-			$data = array();
-
 			foreach ($folder_info['pm_list'] as $message_id)
 			{
 				$row = &$folder_info['rowset'][$message_id];
@@ -196,7 +194,8 @@ function view_folder($id, $mode, $folder_id, $folder)
 		else
 		{
 			// Build Recipient List if in outbox/sentbox
-			$address = array();
+			$address = $data = array();
+
 			if ($folder_id == PRIVMSGS_OUTBOX || $folder_id == PRIVMSGS_SENTBOX)
 			{
 				foreach ($folder_info['rowset'] as $message_id => $row)
