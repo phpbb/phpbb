@@ -307,6 +307,7 @@ div[class].topic-actions {
 	font-family: "Lucida Grande", "Trebuchet MS", Verdana, Helvetica, Arial, sans-serif;
 	font-size: 1em;
 	color: #333333;
+	padding-bottom: 1px;
 }
 
 .content h2, .panel h2 {
