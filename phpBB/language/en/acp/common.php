@@ -277,10 +277,10 @@ $lang = array_merge($lang, array(
 	'SELECT_ANONYMOUS'		=> 'Select anonymous user',
 	'SELECT_OPTION'			=> 'Select option',
 
-	'SETTING_TOO_LOW'		=> 'The provided value for the setting “%1$s” is too low. The minimal acceptable value is %2$d.',
+	'SETTING_TOO_LOW'		=> 'The provided value for the setting “%1$s” is too low. The minimum acceptable value is %2$d.',
 	'SETTING_TOO_BIG'		=> 'The provided value for the setting “%1$s” is too high. The maximum acceptable value is %2$d.',
 	'SETTING_TOO_LONG'		=> 'The provided value for the setting “%1$s” is too long. The maximum acceptable length is %2$d.',
-	'SETTING_TOO_SHORT'		=> 'The provided value for the setting “%1$s” is too short. The minimal acceptable length is %2$d.',
+	'SETTING_TOO_SHORT'		=> 'The provided value for the setting “%1$s” is too short. The minimum acceptable length is %2$d.',
 
 	'SHOW_ALL_OPERATIONS'	=> 'Show all operations',
 
