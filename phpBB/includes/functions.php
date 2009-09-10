@@ -1703,8 +1703,8 @@ function get_unread_topics($user_id = false, $sql_extra = '', $sql_sort = '', $s
 
 			'WHERE'			=> "
 				(
-				(tt.mark_time AND t.topic_last_post_time > tt.mark_time) OR
-				(tt.mark_time IS NULL AND ft.mark_time AND t.topic_last_post_time > ft.mark_time) OR
+				(tt.mark_time IS NOT NULL AND t.topic_last_post_time > tt.mark_time) OR
+				(tt.mark_time IS NULL AND ft.mark_time IS NOT NULL AND t.topic_last_post_time > ft.mark_time) OR
 					(
 						((tt.mark_time IS NULL AND ft.mark_time IS NULL) OR (tt.mark_time < $last_mark AND ft.mark_time < $last_mark))
 						AND t.topic_last_post_time > $last_mark
