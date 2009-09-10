@@ -1936,7 +1936,7 @@ class acp_forums
 			'L_ACL_LINK'		=> $l_acl,
 			'L_BACK_LINK'		=> adm_back_link($this->u_action . '&amp;parent_id=' . $this->parent_id),
 			'S_COPY_ACTION'		=> $action,
-			'S_FORUM_OPTIONS'	=> make_forum_select($forum_data['parent_id'], false, false, false, false),
+			'S_FORUM_OPTIONS'	=> make_forum_select($forum_data['parent_id'], $forum_data['forum_id'], false, false, false),
 		));
 	}
 
