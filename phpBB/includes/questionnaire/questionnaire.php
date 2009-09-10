@@ -179,7 +179,7 @@ class phpbb_questionnaire_system_data_provider
 			// - 10.0.0.0/8
 			// - 172.16.0.0/12
 			// - 192.168.0.0/16
-			'ip'	=> $ip_address_ary[0] . '.' . $ip_address_ary[1] . '.XXX.YYY',
+			'ip'		=> $ip_address_ary[0] . '.' . $ip_address_ary[1] . '.XXX.YYY',
 		);
 	}
 }
@@ -233,7 +233,7 @@ class phpbb_questionnaire_phpbb_data_provider
 	{
 		global $phpbb_root_path, $phpEx;
 		include("{$phpbb_root_path}config.$phpEx");
-		
+
 		// Only send certain config vars
 		$config_vars = array(
 			'active_sessions' => true,
@@ -447,6 +447,22 @@ class phpbb_questionnaire_phpbb_data_provider
 		$result['dbms'] = $dbms;
 		$result['acm_type'] = $acm_type;
 		$result['load_extensions'] = $load_extensions;
+		$result['user_agent'] = 'Unknown';
+
+		// Try to get user agent vendor and version
+		$match = array();
+		$user_agent = (!empty($_SERVER['HTTP_USER_AGENT'])) ? (string) $_SERVER['HTTP_USER_AGENT'] : '';
+		$agents = array('firefox', 'msie', 'opera', 'chrome', 'safari', 'mozilla', 'seamonkey', 'konqueror', 'netscape', 'gecko', 'navigator', 'mosaic', 'lynx', 'amaya', 'omniweb', 'avant', 'camino', 'flock', 'aol');
+
+		// We check here 1 by 1 because some strings occur after others (for example Mozilla [...] Firefox/)
+		foreach ($agents as $agent)
+		{
+			if (preg_match('#(' . $agent . ')[/ ]?([0-9.]*)#i', $user_agent, $match))
+			{
+				$result['user_agent'] = $match[1] . ' ' . $match[2];
+				break;
+			}
+		}
 
 		return $result;
 	}
