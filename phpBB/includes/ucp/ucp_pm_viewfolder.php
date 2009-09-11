@@ -194,13 +194,15 @@ function view_folder($id, $mode, $folder_id, $folder)
 		else
 		{
 			// Build Recipient List if in outbox/sentbox
-			$address = $data = array();
+
+			$address_temp = $address = $data = array();
 
 			if ($folder_id == PRIVMSGS_OUTBOX || $folder_id == PRIVMSGS_SENTBOX)
 			{
 				foreach ($folder_info['rowset'] as $message_id => $row)
 				{
-					$address[$message_id] = rebuild_header(array('to' => $row['to_address'], 'bcc' => $row['bcc_address']));
+					$address_temp[$message_id] = rebuild_header(array('to' => $row['to_address'], 'bcc' => $row['bcc_address']));
+					$address[$message_id] = array();
 				}
 			}
 
@@ -224,8 +226,12 @@ function view_folder($id, $mode, $folder_id, $folder)
 				$_types = array('u', 'g');
 				foreach ($_types as $ug_type)
 				{
-					if (isset($address[$message_id][$ug_type]) && sizeof($address[$message_id][$ug_type]))
+					if (isset($address_temp[$message_id][$ug_type]) && sizeof($address_temp[$message_id][$ug_type]))
 					{
+						if (!isset($address[$message_id][$ug_type]))
+						{
+							$address[$message_id][$ug_type] = array();
+						}
 						if ($ug_type == 'u')
 						{
 							$sql = 'SELECT user_id as id, username as name
@@ -238,21 +244,31 @@ function view_folder($id, $mode, $folder_id, $folder)
 								FROM ' . GROUPS_TABLE . '
 								WHERE ';
 						}
-						$sql .= $db->sql_in_set(($ug_type == 'u') ? 'user_id' : 'group_id', array_map('intval', array_keys($address[$message_id][$ug_type])));
+						$sql .= $db->sql_in_set(($ug_type == 'u') ? 'user_id' : 'group_id', array_map('intval', array_keys($address_temp[$message_id][$ug_type])));
 
 						$result = $db->sql_query($sql);
 
 						while ($info_row = $db->sql_fetchrow($result))
 						{
-							$address[$message_id][$ug_type][$address[$message_id][$ug_type][$info_row['id']]][] = $info_row['name'];
-							unset($address[$message_id][$ug_type][$info_row['id']]);
+							$address[$message_id][$ug_type][$address_temp[$message_id][$ug_type][$info_row['id']]][] = $info_row['name'];
+							unset($address_temp[$message_id][$ug_type][$info_row['id']]);
 						}
 						$db->sql_freeresult($result);
 					}
 				}
 
-				decode_message($message_row['message_text'], $message_row['bbcode_uid']);
+				// There is the chance that all recipients of the message got deleted. To avoid creating 
+				// exports without recipients, we add a bogus "undisclosed recipient".
+				if (!(isset($address[$message_id]['g']) && sizeof($address[$message_id]['g'])) && 
+				    !(isset($address[$message_id]['u']) && sizeof($address[$message_id]['u'])))
+				{
+					$address[$message_id]['u'] = array();
+					$address[$message_id]['u']['to'] = array();
+					$address[$message_id]['u']['to'][] = $user->lang['UNDISCLOSED_RECIPIENT'];
+				}
 
+				decode_message($message_row['message_text'], $message_row['bbcode_uid']);
+				
 				$data[] = array(
 					'subject'	=> censor_text($row['message_subject']),
 					'sender'	=> $row['username'],
