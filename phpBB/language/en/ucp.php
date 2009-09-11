@@ -460,7 +460,6 @@ $lang = array_merge($lang, array(
 	'UCP_ZEBRA'						=> 'Friends &amp; Foes',
 	'UCP_ZEBRA_FOES'				=> 'Manage foes',
 	'UCP_ZEBRA_FRIENDS'				=> 'Manage friends',
-	'UNDISCLOSED_RECIPIENT'			=> 'Undiclosed Recipient',
 	'UNKNOWN_FOLDER'				=> 'Unknown folder',
 	'UNWATCH_MARKED'				=> 'Unwatch marked',
 	'UPLOAD_AVATAR_FILE'			=> 'Upload from your machine',
