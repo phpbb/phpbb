@@ -120,7 +120,7 @@ function mcp_front_view($id, $mode, $action)
 			}
 
 			$s_hidden_fields = build_hidden_fields(array(
-				'redirect'		=> append_sid("{$phpbb_root_path}mcp.$phpEx", 'i=main')
+				'redirect'		=> append_sid("{$phpbb_root_path}mcp.$phpEx", 'i=main' . (($forum_id) ? '&amp;f=' . $forum_id : ''))
 			));
 
 			$template->assign_vars(array(
