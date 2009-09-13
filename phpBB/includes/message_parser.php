@@ -1510,6 +1510,8 @@ class parse_message extends bbcode_firstpass
 							{
 								$sql_ary['topic_id'] = $topic_id;
 							}
+							set_config_count('upload_dir_size', $filedata['filesize'], true);
+							set_config_count('num_files', 1, true);
 						}
 
 						$db->sql_query('INSERT INTO ' . ATTACHMENTS_TABLE . ' ' . $db->sql_build_array('INSERT', $sql_ary));
