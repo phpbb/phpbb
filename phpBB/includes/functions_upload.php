@@ -349,7 +349,6 @@ class filespec
 			}
 
 			phpbb_chmod($this->destination_file, $chmod);
-			return true;
 		}
 
 		// Try to get real filesize from destination folder
