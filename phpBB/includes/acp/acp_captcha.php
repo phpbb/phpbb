@@ -30,9 +30,12 @@ class acp_captcha
 		$user->add_lang('acp/board');
 
 		include($phpbb_root_path . 'includes/captcha/captcha_factory.' . $phpEx);
-
+		$captchas = phpbb_captcha_factory::get_captcha_types();
+		
 		$selected = request_var('select_captcha', $config['captcha_plugin']);
+		$selected = (isset($captchas['available'][$selected]) || isset($captchas['unavailable'][$selected])) ? $selected : $config['captcha_plugin'];
 		$configure = request_var('configure', false);
+
 
 		// Oh, they are just here for the view
 		if (isset($_GET['captcha_demo']))
@@ -49,8 +52,6 @@ class acp_captcha
 		}
 		else
 		{
-			$captchas = phpbb_captcha_factory::get_captcha_types();
-
 			$config_vars = array(
 				'enable_confirm'		=> array('tpl' => 'REG_ENABLE', 'default' => false),
 				'enable_post_confirm'	=> array('tpl' => 'POST_ENABLE', 'default' => false),
