@@ -67,10 +67,12 @@ function login_db(&$username, &$password)
 	// Every auth module is able to define what to do by itself...
 	if ($config['max_login_attempts'] && $row['user_login_attempts'] >= $config['max_login_attempts'])
 	{
-		$confirm_id = request_var('confirm_id', '');
-
 		// Visual Confirmation handling
-		if (!$confirm_id)
+
+		$captcha =& phpbb_captcha_factory::get_instance($config['captcha_plugin']);
+		$captcha->init(CONFIRM_LOGIN);
+		$vc_response = $captcha->validate();
+		if ($vc_response)
 		{
 			return array(
 				'status'		=> LOGIN_ERROR_ATTEMPTS,
@@ -78,21 +80,7 @@ function login_db(&$username, &$password)
 				'user_row'		=> $row,
 			);
 		}
-		else
-		{
-			$captcha =& phpbb_captcha_factory::get_instance($config['captcha_plugin']);
-			$captcha->init(CONFIRM_LOGIN);
-			$vc_response = $captcha->validate();
-
-			if ($vc_response)
-			{
-				return array(
-					'status'		=> LOGIN_ERROR_ATTEMPTS,
-					'error_msg'		=> 'LOGIN_ERROR_ATTEMPTS',
-					'user_row'		=> $row,
-				);
-			}
-		}
+		
 	}
 
 	// If the password convert flag is set we need to convert it
