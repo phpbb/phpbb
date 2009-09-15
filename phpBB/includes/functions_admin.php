@@ -2514,6 +2514,7 @@ function view_log($mode, &$log, &$log_count, $limit = 0, $offset = 0, $forum_id 
 
 		case 'mod':
 			$log_type = LOG_MOD;
+			$sql_forum = '';
 
 			if ($topic_id)
 			{
