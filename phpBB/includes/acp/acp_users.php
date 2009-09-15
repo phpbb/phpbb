@@ -1167,13 +1167,7 @@ class acp_users
 						$deleteall = request_var('delall', 0);
 						if ($deletemark && $marked)
 						{
-							$sql_in = array();
-							foreach ($marked as $mark)
-							{
-								$sql_in[] = $mark;
-							}
-							$where_sql = ' AND ' . $db->sql_in_set('warning_id', $sql_in);
-							unset($sql_in);
+							$where_sql = ' AND ' . $db->sql_in_set('warning_id', array_values($marked));
 						}
 
 						if ($where_sql || $deleteall)
@@ -1291,7 +1285,6 @@ class acp_users
 
 				$template->assign_vars(array(
 					'S_WARNINGS'	=> true,
-					'S_CLEARLOGS'	=> $auth->acl_get('a_clearlogs'),
 				));
 
 			break;
