@@ -199,7 +199,7 @@ class messenger
 				$template_path .= $template_lang . '/email';
 			}
 
-			$tpl->set_custom_template($template_path, $template_lang . '_email');
+			$tpl->set_custom_template($template_path, $template_lang . '_email', 'email');
 
 			$tpl->set_filenames(array(
 				'body'		=> $template_file . '.txt',
