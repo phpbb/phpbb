@@ -4035,16 +4035,6 @@ function page_header($page_title = '', $display_online_list = true, $item_id = 0
 		}
 	}
 
-	// Which timezone?
-	$tz = ($user->data['user_id'] != ANONYMOUS) ? strval(doubleval($user->data['user_timezone'])) : strval(doubleval($config['board_timezone']));
-
-	// Send a proper content-language to the output
-	$user_lang = $user->lang['USER_LANG'];
-	if (strpos($user_lang, '-x-') !== false)
-	{
-		$user_lang = substr($user_lang, 0, strpos($user_lang, '-x-'));
-	}
-
 	$forum_id = request_var('f', 0);
 	$topic_id = request_var('t', 0);
 
@@ -4064,6 +4054,16 @@ function page_header($page_title = '', $display_online_list = true, $item_id = 0
 	// Determine board url - we may need it later
 	$board_url = generate_board_url() . '/';
 	$web_path = (defined('PHPBB_USE_BOARD_URL_PATH') && PHPBB_USE_BOARD_URL_PATH) ? $board_url : $phpbb_root_path;
+
+	// Which timezone?
+	$tz = ($user->data['user_id'] != ANONYMOUS) ? strval(doubleval($user->data['user_timezone'])) : strval(doubleval($config['board_timezone']));
+
+	// Send a proper content-language to the output
+	$user_lang = $user->lang['USER_LANG'];
+	if (strpos($user_lang, '-x-') !== false)
+	{
+		$user_lang = substr($user_lang, 0, strpos($user_lang, '-x-'));
+	}
 
 	// The following assigns all _common_ variables that may be used at any point in a template.
 	$template->assign_vars(array(
