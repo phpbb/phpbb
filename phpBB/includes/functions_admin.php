@@ -254,7 +254,7 @@ function get_forum_list($acl_list = 'f_list', $id_only = true, $postable_only = 
 
 		if ($acl_list == '' || ($acl_list != '' && $auth->acl_gets($acl_list, $row['forum_id'])))
 		{
-			$rowset[] = ($id_only) ? $row['forum_id'] : $row;
+			$rowset[] = ($id_only) ? (int) $row['forum_id'] : $row;
 		}
 	}
 
