@@ -182,7 +182,7 @@ class session
 			else
 			{
 				// Set to OS hostname or localhost
-				$host = (function_exists('php_uname')) ? gethostbyaddr(gethostbyname(php_uname('n'))) : 'localhost';
+				$host = (function_exists('php_uname') && function_exists('gethostbyaddr') && function_exists('gethostbyname')) ? gethostbyaddr(gethostbyname(php_uname('n'))) : 'localhost';
 			}
 		}
 
