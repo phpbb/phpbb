@@ -727,7 +727,9 @@ class diff3_op
 			}
 			else
 			{
+				// The following tries to aggressively solve conflicts...
 				$this->_merged = false;
+				$this->solve_conflict();
 			}
 		}
 
@@ -737,6 +739,99 @@ class diff3_op
 	function is_conflict()
 	{
 		return ($this->merged() === false) ? true : false;
+	}
+
+	/**
+	* Tries to solve conflicts aggressively based on typical "assumptions"
+	* @author acydburn
+	*/
+	function solve_conflict()
+	{
+		$this->_merged = false;
+
+		// CASE ONE: orig changed into final2, but modified/unknown code in final1.
+		// IF orig is found "as is" in final1 we replace the code directly in final1 and populate this as final2/merge
+		if (sizeof($this->orig) && sizeof($this->final2))
+		{
+			// Ok, we basically search for $this->orig in $this->final1 and replace it with $this->final2
+			$compare_seq = sizeof($this->orig);
+
+			// Search for matching code block
+			$merge = array();
+			$merge_found = false;
+
+			// Go through the conflict code
+			for ($i = 0, $j = 0, $size = sizeof($this->final1); $i < $size; $i++, $j = $i)
+			{
+				$line = $this->final1[$i];
+				$skip = 0;
+
+				for ($x = 0; $x < $compare_seq; $x++)
+				{
+					// Try to skip all matching lines
+					if (trim($line) === trim($this->orig[$x]))
+					{
+						$line = (++$j < $size) ? $this->final1[$j] : $line;
+						$skip++;
+					}
+				}
+
+				if ($skip === $compare_seq)
+				{
+					$merge_found = true;
+					$merge = array_merge($merge, $this->final2);
+					$i += ($skip - 1);
+				}
+				else
+				{
+					$merge[] = $line;
+				}
+			}
+
+			if ($merge_found)
+			{
+				$this->final2 = $merge;
+				$this->_merged = &$this->final2;
+			}
+
+			return;
+		}
+
+		// CASE TWO: Added lines from orig to final2 but final1 had added lines too. Just merge them.
+		if (!sizeof($this->orig) && $this->final1 !== $this->final2 && sizeof($this->final1) && sizeof($this->final2))
+		{
+			$this->final2 = array_merge($this->final1, $this->final2);
+			$this->_merged = &$this->final2;
+
+			return;
+		}
+
+		// CASE THREE: Removed lines (orig has the to-remove line(s), but final1 has additional lines which does not need to be removed). Just remove orig from final1 and then use final1 as final2/merge
+		if (!sizeof($this->final2) && sizeof($this->orig) && sizeof($this->final1) && $this->orig !== $this->final1)
+		{
+			$merged = $this->final1;
+
+			foreach ($this->final1 as $i => $line)
+			{
+				foreach ($this->orig as $j => $old_line)
+				{
+					if (trim($line) === trim($old_line))
+					{
+						unset($merged[$i]);
+					}
+				}
+			}
+
+			if (sizeof($merged))
+			{
+				$this->final2 = array_values($merged);
+				$this->_merged = &$this->final2;
+			}
+
+			return;
+		}
+
+		return;
 	}
 }
 
