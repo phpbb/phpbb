@@ -145,8 +145,21 @@ class diff_engine
 		$this->_compareseq(0, sizeof($this->xv), 0, sizeof($this->yv));
 
 		// Merge edits when possible.
-		$this->_shift_boundaries($from_lines, $this->xchanged, $this->ychanged);
-		$this->_shift_boundaries($to_lines, $this->ychanged, $this->xchanged);
+		if ($this->skip_whitespace_changes)
+		{
+			$from_lines_clean = array_map('trim', $from_lines);
+			$to_lines_clean = array_map('trim', $to_lines);
+
+			$this->_shift_boundaries($from_lines_clean, $this->xchanged, $this->ychanged);
+			$this->_shift_boundaries($to_lines_clean, $this->ychanged, $this->xchanged);
+
+			unset($from_lines_clean, $to_lines_clean);
+		}
+		else
+		{
+			$this->_shift_boundaries($from_lines, $this->xchanged, $this->ychanged);
+			$this->_shift_boundaries($to_lines, $this->ychanged, $this->xchanged);
+		}
 
 		// Compute the edit operations.
 		$edits = array();

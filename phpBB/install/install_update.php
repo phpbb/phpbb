@@ -687,7 +687,7 @@ class install_update extends module
 										default:
 											$diff = $this->return_diff($this->old_location . $original_filename, $phpbb_root_path . $file_struct['filename'], $this->new_location . $original_filename);
 
-											$contents = implode("\n", $diff->merged_new_output());
+											$contents = implode("\n", $diff->merged_output());
 											unset($diff);
 										break;
 									}
@@ -1104,24 +1104,6 @@ class install_update extends module
 
 					break;
 
-/*
-						$diff = $this->return_diff($this->old_location . $original_file, $phpbb_root_path . $file, $this->new_location . $original_file);
-
-						$tmp = array(
-							'file1'		=> array(),
-							'file2'		=> ($option == MERGE_NEW_FILE) ? implode("\n", $diff->merged_new_output()) : implode("\n", $diff->merged_orig_output()),
-						);
-
-						$diff = new diff($tmp['file1'], $tmp['file2']);
-
-						unset($tmp);
-
-						$template->assign_var('S_DIFF_NEW_FILE', true);
-						$diff_mode = 'inline';
-						$this->page_title = 'VIEWING_FILE_CONTENTS';
-
-					break;
-*/
 					// Merge differences and use new phpBB code for conflicted blocks
 					case MERGE_NEW_FILE:
 					case MERGE_MOD_FILE:
@@ -1175,6 +1157,7 @@ class install_update extends module
 
 					default:
 						$diff = $this->return_diff($this->old_location . $original_file, $phpbb_root_path . $original_file, $this->new_location . $file);
+						$diff = $this->return_diff($phpbb_root_path . $file, $diff->merged_output());
 					break;
 				}
 			break;
@@ -1362,6 +1345,9 @@ class install_update extends module
 			$update_ary['original'] = $original_file;
 		}
 
+		// we only want to know if the files are successfully merged and newlines could result in errors (duplicate addition of lines and such things)
+		// Therefore we check for empty diffs with two methods, preserving newlines and not preserving them (which mostly works best, therefore the first option)
+
 		// On a successfull update the new location file exists but the old one does not exist.
 		// Check for this circumstance, the new file need to be up-to-date with the current file then...
 		if (!file_exists($this->old_location . $original_file) && file_exists($this->new_location . $original_file) && file_exists($phpbb_root_path . $file))
@@ -1401,104 +1387,134 @@ class install_update extends module
 			trigger_error($user->lang['INCOMPLETE_UPDATE_FILES'], E_USER_ERROR);
 		}
 
-		$tmp = array(
-			'file1'		=> file_get_contents($this->old_location . $original_file),
-			'file2'		=> file_get_contents($phpbb_root_path . $file),
-		);
+		$preserve_cr_ary = array(false, true);
 
-		// We need to diff the contents here to make sure the file is really the one we expect
-		$diff = new diff($tmp['file1'], $tmp['file2'], false);
-		$empty_1 = $diff->is_empty();
-
-		unset($tmp, $diff);
-
-		$tmp = array(
-			'file1'		=> file_get_contents($this->new_location . $original_file),
-			'file2'		=> file_get_contents($phpbb_root_path . $file),
-		);
-
-		// We need to diff the contents here to make sure the file is really the one we expect
-		$diff = new diff($tmp['file1'], $tmp['file2'], false);
-		$empty_2 = $diff->is_empty();
-
-		unset($tmp, $diff);
-
-		// If the file is not modified we are finished here...
-		if ($empty_1)
+		foreach ($preserve_cr_ary as $preserve_cr)
 		{
-			// Further check if it is already up to date - it could happen that non-modified files
-			// slip through
+			$tmp = array(
+				'file1'		=> file_get_contents($this->old_location . $original_file),
+				'file2'		=> file_get_contents($phpbb_root_path . $file),
+			);
+
+			// We need to diff the contents here to make sure the file is really the one we expect
+			$diff = new diff($tmp['file1'], $tmp['file2'], $preserve_cr);
+			$empty_1 = $diff->is_empty();
+
+			unset($tmp, $diff);
+
+			$tmp = array(
+				'file1'		=> file_get_contents($this->new_location . $original_file),
+				'file2'		=> file_get_contents($phpbb_root_path . $file),
+			);
+
+			$diff = new diff($tmp['file1'], $tmp['file2'], $preserve_cr);
+			$empty_2 = $diff->is_empty();
+
+			unset($tmp, $diff);
+
+			// If the file is not modified we are finished here...
+			if ($empty_1)
+			{
+				// Further check if it is already up to date - it could happen that non-modified files
+				// slip through
+				if ($empty_2)
+				{
+					$update_list['up_to_date'][] = $update_ary;
+					return;
+				}
+
+				$update_list['not_modified'][] = $update_ary;
+				return;
+			}
+
+			// If the file had been modified then we need to check if it is already up to date
+
+			// if there are no differences we have an up-to-date file...
 			if ($empty_2)
 			{
 				$update_list['up_to_date'][] = $update_ary;
 				return;
 			}
-
-			$update_list['not_modified'][] = $update_ary;
-			return;
 		}
 
-		// If the file had been modified then we need to check if it is already up to date
+		$conflicts = false;
 
-		// if there are no differences we have an up-to-date file...
-		if ($empty_2)
+		foreach ($preserve_cr_ary as $preserve_cr)
 		{
-			$update_list['up_to_date'][] = $update_ary;
-			return;
-		}
-
-		// if the file is modified we try to make sure a merge succeed
-		$tmp = array(
-			'file1'		=> file_get_contents($this->old_location . $original_file),
-			'file2'		=> file_get_contents($phpbb_root_path . $file),
-			'file3'		=> file_get_contents($this->new_location . $original_file),
-		);
-
-		$diff = new diff3($tmp['file1'], $tmp['file2'], $tmp['file3'], false);
-
-		unset($tmp);
-
-		if ($diff->get_num_conflicts())
-		{
-			$update_ary['conflicts'] = $diff->get_num_conflicts();
-
-			// There is one special case... users having merged with a conflicting file... we need to check this
+			// if the file is modified we try to make sure a merge succeed
 			$tmp = array(
-				'file1'		=> file_get_contents($phpbb_root_path . $file),
-				'file2'		=> implode("\n", $diff->merged_orig_output()),
+				'orig'		=> file_get_contents($this->old_location . $original_file),
+				'final1'	=> file_get_contents($phpbb_root_path . $file),
+				'final2'	=> file_get_contents($this->new_location . $original_file),
 			);
 
-			$diff = new diff($tmp['file1'], $tmp['file2'], false);
-			$empty = $diff->is_empty();
+			$diff = new diff3($tmp['orig'], $tmp['final1'], $tmp['final2'], $preserve_cr);
+			unset($tmp);
 
-			if ($empty)
+			if (!$diff->get_num_conflicts())
 			{
-				unset($update_ary['conflicts']);
-				unset($diff);
-				$update_list['up_to_date'][] = $update_ary;
-				return;
+				$tmp = array(
+					'file1'		=> file_get_contents($phpbb_root_path . $file),
+					'file2'		=> implode("\n", $diff->merged_output()),
+				);
+
+				// now compare the merged output with the original file to see if the modified file is up to date
+				$diff2 = new diff($tmp['file1'], $tmp['file2'], $preserve_cr);
+				$empty = $diff2->is_empty();
+
+				unset($diff, $diff2);
+
+				if ($empty)
+				{
+					$update_list['up_to_date'][] = $update_ary;
+					return;
+				}
 			}
+			else
+			{
+				// There is one special case... users having merged with a conflicting file... we need to check this
+				$tmp = array(
+					'file1'		=> file_get_contents($phpbb_root_path . $file),
+					'file2'		=> implode("\n", $diff->merged_new_output()),
+				);
 
-			$update_list['conflict'][] = $update_ary;
-			unset($diff);
+				$diff2 = new diff($tmp['file1'], $tmp['file2'], $preserve_cr);
+				$empty = $diff2->is_empty();
 
-			return;
+				if (!$empty)
+				{
+					unset($tmp, $diff2);
+
+					// We check if the user merged with his output
+					$tmp = array(
+						'file1'		=> file_get_contents($phpbb_root_path . $file),
+						'file2'		=> implode("\n", $diff->merged_orig_output()),
+					);
+
+					$diff2 = new diff($tmp['file1'], $tmp['file2'], $preserve_cr);
+					$empty = $diff2->is_empty();
+				}
+
+				if (!$empty)
+				{
+					$conflicts = $diff->get_num_conflicts();
+				}
+
+				unset($diff, $diff2);
+
+				if ($empty)
+				{
+					// A conflict got resolved...
+					$update_list['up_to_date'][] = $update_ary;
+					return;
+				}
+			}
 		}
 
-		$tmp = array(
-			'file1'		=> file_get_contents($phpbb_root_path . $file),
-			'file2'		=> implode("\n", $diff->merged_new_output()),
-		);
-
-		// now compare the merged output with the original file to see if the modified file is up to date
-		$diff = new diff($tmp['file1'], $tmp['file2'], false);
-		$empty = $diff->is_empty();
-
-		if ($empty)
+		if ($conflicts !== false)
 		{
-			unset($diff);
-
-			$update_list['up_to_date'][] = $update_ary;
+			$update_ary['conflicts'] = $conflicts;
+			$update_list['conflict'][] = $update_ary;
 			return;
 		}
 
@@ -1650,7 +1666,7 @@ class install_update extends module
 	/**
 	* Wrapper for returning a diff object
 	*/
-	function &return_diff()
+	function return_diff()
 	{
 		$args = func_get_args();
 		$three_way_diff = (func_num_args() > 2) ? true : false;
