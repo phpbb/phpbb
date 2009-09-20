@@ -1469,6 +1469,13 @@ class install_update extends module
 					$update_list['up_to_date'][] = $update_ary;
 					return;
 				}
+
+				// If we preserve cr tag it as modified because the conflict would not show in this mode anyway
+				if ($preserve_cr)
+				{
+					$update_list['modified'][] = $update_ary;
+					return;
+				}
 			}
 			else
 			{
