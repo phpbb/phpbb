@@ -1693,11 +1693,11 @@ function get_unread_topics($user_id = false, $sql_extra = '', $sql_sort = '', $s
 			'LEFT_JOIN'		=> array(
 				array(
 					'FROM'	=> array(TOPICS_TRACK_TABLE => 'tt'),
-					'ON'	=> "tt.user_id = $user_id AND t.topic_id = tt.topic_id AND tt.mark_time > $last_mark",
+					'ON'	=> "tt.user_id = $user_id AND t.topic_id = tt.topic_id",
 				),
 				array(
 					'FROM'	=> array(FORUMS_TRACK_TABLE => 'ft'),
-					'ON'	=> "ft.user_id = $user_id AND t.forum_id = ft.forum_id AND ft.mark_time > $last_mark",
+					'ON'	=> "ft.user_id = $user_id AND t.forum_id = ft.forum_id",
 				),
 			),
 
@@ -1705,10 +1705,7 @@ function get_unread_topics($user_id = false, $sql_extra = '', $sql_sort = '', $s
 				(
 				(tt.mark_time IS NOT NULL AND t.topic_last_post_time > tt.mark_time) OR
 				(tt.mark_time IS NULL AND ft.mark_time IS NOT NULL AND t.topic_last_post_time > ft.mark_time) OR
-					(
-						((tt.mark_time IS NULL AND ft.mark_time IS NULL) OR (tt.mark_time < $last_mark AND ft.mark_time < $last_mark))
-						AND t.topic_last_post_time > $last_mark
-					)
+				(tt.mark_time IS NULL AND ft.mark_time IS NULL AND t.topic_last_post_time > $last_mark)
 				)
 				$sql_extra
 				$sql_sort",
