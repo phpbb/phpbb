@@ -997,29 +997,37 @@ class diff3_op
 		// CASE THREE: Removed lines (orig has the to-remove line(s), but final1 has additional lines which does not need to be removed). Just remove orig from final1 and then use final1 as final2/merge
 		if (!sizeof($this->final2) && sizeof($this->orig) && sizeof($this->final1) && $this->orig !== $this->final1)
 		{
+			$result = $this->_compare_conflict_seq('orig', 'final1');
+
+			if (!$result['merge_found'])
+			{
+				return;
+			}
+
 			// First of all, try to find the code in orig in final1. ;)
 			$compare_seq = sizeof($this->orig);
-			$begin = -1;
-			$j = $end = 0;
+			$begin = $end = -1;
+			$j = 0;
 
-			foreach ($this->final1 as $i => $line)
+			for ($i = 0, $size = sizeof($this->final1); $i < $size; $i++)
 			{
+				$line = $this->final1[$i];
+
 				if (trim($line) === trim($this->orig[$j]))
 				{
+					// Mark begin
 					if ($begin === -1)
 					{
 						$begin = $i;
 					}
 
+					// End is always $i, the last found line
+					$end = $i;
+
 					if (isset($this->orig[$j+1]))
 					{
 						$j++;
 					}
-				}
-
-				if ($begin !== -1)
-				{
-					$end++;
 				}
 			}
 
