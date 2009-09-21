@@ -56,13 +56,13 @@ class phpbb_captcha_qa
 		$this->answer = request_var('qa_answer', '', true);
 
 		$this->type = (int) $type;
-		$this->question_lang = $user->data['user_lang'];
+		$this->question_lang = $user->lang_name;
 
 		// we need all defined questions - shouldn't be too many, so we can just grab them
 		// try the user's lang first
 		$sql = 'SELECT question_id
 			FROM ' . CAPTCHA_QUESTIONS_TABLE . "
-			WHERE lang_iso = '" . $db->sql_escape($user->data['user_lang']) . "'";
+			WHERE lang_iso = '" . $db->sql_escape($user->lang_name) . "'";
 		$result = $db->sql_query($sql, 3600);
 
 		while ($row = $db->sql_fetchrow($result))
