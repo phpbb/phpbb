@@ -685,6 +685,7 @@ class phpbb_captcha_qa
 						$this->acp_add_question($data);
 					}
 
+					add_log('admin', 'LOG_CONFIG_VISUAL');
 					trigger_error($user->lang['CONFIG_UPDATED'] . adm_back_link($list_url));
 				}
 			}
