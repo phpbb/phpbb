@@ -259,7 +259,7 @@ function mcp_topic_view($id, $mode, $action)
 	// Display topic icons for split topic
 	$s_topic_icons = false;
 
-	if ($auth->acl_get('m_split', $topic_info['forum_id']))
+	if ($auth->acl_gets('m_split', 'm_merge', (int) $topic_info['forum_id']))
 	{
 		include_once($phpbb_root_path . 'includes/functions_posting.' . $phpEx);
 		$s_topic_icons = posting_gen_topic_icons('', $icon_id);
