@@ -1705,6 +1705,7 @@ if ($s_can_vote || $s_quick_reply)
 		(!$config['allow_post_links'])	? $qr_hidden_fields['disable_magic_url'] = 1	: true;
 		($s_attach_sig)					? $qr_hidden_fields['attach_sig'] = 1			: true;
 		($s_notify)						? $qr_hidden_fields['notify'] = 1				: true;
+		($topic_data['topic_status'] == ITEM_LOCKED) ? $qr_hidden_fields['lock_topic'] = 1 : true;
 
 		$template->assign_vars(array(
 			'S_QUICK_REPLY'			=> true,
