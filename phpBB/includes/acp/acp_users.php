@@ -1708,6 +1708,7 @@ class acp_users
 
 				$template->assign_vars(array(
 					'S_AVATAR'			=> true,
+					'S_CAN_UPLOAD'		=> $can_upload,
 					'S_UPLOAD_FILE'		=> ($config['allow_avatar'] && $can_upload && $config['allow_avatar_upload']) ? true : false,
 					'S_REMOTE_UPLOAD'	=> ($config['allow_avatar'] && $can_upload && $config['allow_avatar_remote_upload']) ? true : false,
 					'S_ALLOW_REMOTE'	=> ($config['allow_avatar'] && $config['allow_avatar_remote']) ? true : false,
