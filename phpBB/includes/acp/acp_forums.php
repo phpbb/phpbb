@@ -907,7 +907,7 @@ class acp_forums
 			array('lang' => 'FORUM_TOPICS_PAGE', 'value' => $forum_data['forum_topics_per_page'], 'column_type' => 'TINT:0'),
 		);
 
-		if (!file_exists($phpbb_root_path . $forum_data['forum_image']))
+		if (!empty($forum_data['forum_image']) && !file_exists($phpbb_root_path . $forum_data['forum_image']))
 		{
 			$errors[] = $user->lang['FORUM_IMAGE_NO_EXIST'];
 		}
