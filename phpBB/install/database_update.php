@@ -2003,7 +2003,7 @@ class updater_db_tools
 			{
 				foreach ($index_array as $index_name => $column)
 				{
-					if ($this->sql_index_exists($table, $index_name))
+					if ($this->sql_unique_index_exists($table, $index_name))
 					{
 						continue;
 					}
@@ -2338,7 +2338,7 @@ class updater_db_tools
 	}
 
 	/**
-	* Check if a specified index exists in table
+	* Check if a specified index exists in table. Does not return PRIMARY KEY and UNIQUE indexes.
 	*
 	* @param string	$table_name		Table to check the index at
 	* @param string	$index_name		The index name to check
@@ -2373,7 +2373,7 @@ class updater_db_tools
 			case 'firebird':
 				$sql = "SELECT LOWER(RDB\$INDEX_NAME) as index_name
 					FROM RDB\$INDICES
-					WHERE RDB\$RELATION_NAME = " . strtoupper($table_name) . "
+					WHERE RDB\$RELATION_NAME = '" . strtoupper($table_name) . "'
 						AND RDB\$UNIQUE_FLAG IS NULL
 						AND RDB\$FOREIGN_KEY IS NULL";
 				$col = 'index_name';
@@ -2400,12 +2400,14 @@ class updater_db_tools
 			case 'oracle':
 				$sql = "SELECT index_name
 					FROM user_indexes
-					WHERE table_name = '" . $table_name . "'
-						AND generated = 'N'";
+					WHERE table_name = '" . strtoupper($table_name) . "'
+						AND generated = 'N'
+						AND uniqueness = 'NONUNIQUE'";
+				$col = 'index_name';
 			break;
 
 			case 'sqlite':
-				$sql = "PRAGMA index_info('" . $table_name . "');";
+				$sql = "PRAGMA index_list('" . $table_name . "');";
 				$col = 'name';
 			break;
 		}
@@ -2416,6 +2418,135 @@ class updater_db_tools
 			if (($this->sql_layer == 'mysql_40' || $this->sql_layer == 'mysql_41') && !$row['Non_unique'])
 			{
 				continue;
+			}
+
+			// These DBMS prefix index name with the table name
+			switch ($this->sql_layer)
+			{
+				case 'firebird':
+				case 'oracle':
+				case 'postgres':
+				case 'sqlite':
+					$row[$col] = substr($row[$col], strlen($table_name) + 1);
+				break;
+			}
+
+			if (strtolower($row[$col]) == strtolower($index_name))
+			{
+				$this->db->sql_freeresult($result);
+				return true;
+			}
+		}
+		$this->db->sql_freeresult($result);
+
+		return false;
+	}
+
+	/**
+	* Check if a specified UNIQUE index exists in table.
+	*
+	* @param string	$table_name		Table to check the index at
+	* @param string	$index_name		The index name to check
+	*
+	* @return bool True if index exists, else false
+	*/
+	function sql_unique_index_exists($table_name, $index_name)
+	{
+		if ($this->sql_layer == 'mssql')
+		{
+			$sql = "EXEC sp_statistics '$table_name'";
+			$result = $this->db->sql_query($sql);
+
+			while ($row = $this->db->sql_fetchrow($result))
+			{
+				// Usually NON_UNIQUE is the column we want to check, but we allow for both
+				if ($row['TYPE'] == 3)
+				{
+					if (strtolower($row['INDEX_NAME']) == strtolower($index_name))
+					{
+						$this->db->sql_freeresult($result);
+						return true;
+					}
+				}
+			}
+			$this->db->sql_freeresult($result);
+			return false;
+		}
+
+		switch ($this->sql_layer)
+		{
+			case 'firebird':
+				$sql = "SELECT LOWER(RDB\$INDEX_NAME) as index_name
+					FROM RDB\$INDICES
+					WHERE RDB\$RELATION_NAME = '" . strtoupper($table_name) . "'
+						AND RDB\$UNIQUE_FLAG IS NOT NULL
+						AND RDB\$FOREIGN_KEY IS NULL";
+				$col = 'index_name';
+			break;
+
+			case 'postgres':
+				$sql = "SELECT ic.relname as index_name, i.indisunique
+					FROM pg_class bc, pg_class ic, pg_index i
+					WHERE (bc.oid = i.indrelid)
+						AND (ic.oid = i.indexrelid)
+						AND (bc.relname = '" . $table_name . "')
+						AND (i.indisprimary != 't')";
+				$col = 'index_name';
+			break;
+
+			case 'mysql_40':
+			case 'mysql_41':
+				$sql = 'SHOW KEYS
+					FROM ' . $table_name;
+				$col = 'Key_name';
+			break;
+
+			case 'oracle':
+				$sql = "SELECT index_name, table_owner
+					FROM user_indexes
+					WHERE table_name = '" . strtoupper($table_name) . "'
+						AND generated = 'N'
+						AND uniqueness = 'UNIQUE'
+						AND index_name LIKE 'U_%'";
+				$col = 'index_name';
+			break;
+
+			case 'sqlite':
+				$sql = "PRAGMA index_list('" . $table_name . "') WHERE unique = 1;";
+				$col = 'name';
+			break;
+		}
+
+		$result = $this->db->sql_query($sql);
+		while ($row = $this->db->sql_fetchrow($result))
+		{
+			if (($this->sql_layer == 'mysql_40' || $this->sql_layer == 'mysql_41') && ($row['Non_unique'] || $row[$col] == 'PRIMARY'))
+			{
+				continue;
+			}
+
+			if ($this->sql_layer == 'sqlite' && !$row['unique'])
+			{
+				continue;
+			}
+
+			if ($this->sql_layer == 'postgres' && $row['indisunique'] != 't')
+			{
+				continue;
+			}
+
+			// These DBMS prefix index name with the table name
+			switch ($this->sql_layer)
+			{
+				case 'oracle':
+					$row[$col] = substr($row[$col], strlen('U_' . $row['table_owner']) + 1);
+				break;
+
+				case 'firebird':
+				case 'postgres':
+				case 'sqlite':
+					$row[$col] = substr($row[$col], strlen($table_name) + 1);
+				break;
 			}
 
 			if (strtolower($row[$col]) == strtolower($index_name))
@@ -2562,11 +2693,13 @@ class updater_db_tools
 					// For hexadecimal values do not use single quotes
 					if (strpos($column_data[1], '0x') === 0)
 					{
-						$sql_default .= 'DEFAULT (' . $column_data[1] . ') ';
+						$return_array['default'] = 'DEFAULT (' . $column_data[1] . ') ';
+						$sql_default .= $return_array['default'];
 					}
 					else
 					{
-						$sql_default .= 'DEFAULT (' . ((is_numeric($column_data[1])) ? $column_data[1] : "'{$column_data[1]}'") . ') ';
+						$return_array['default'] = 'DEFAULT (' . ((is_numeric($column_data[1])) ? $column_data[1] : "'{$column_data[1]}'") . ') ';
+						$sql_default .= $return_array['default'];
 					}
 				}
 
@@ -3086,6 +3219,27 @@ class updater_db_tools
 
 			case 'mssql':
 				$statements[] = 'ALTER TABLE [' . $table_name . '] ALTER COLUMN [' . $column_name . '] ' . $column_data['column_type_sql'];
+
+				if (!empty($column_data['default']))
+				{
+					// Using TRANSACT-SQL for this statement because we do not want to have colliding data if statements are executed at a later stage
+					$statements[] = "DECLARE @drop_default_name VARCHAR(100), @cmd VARCHAR(1000)
+						SET @drop_default_name =
+							(SELECT so.name FROM sysobjects so
+							JOIN sysconstraints sc ON so.id = sc.constid
+							WHERE object_name(so.parent_obj) = '{$table_name}'
+								AND so.xtype = 'D'
+								AND sc.colid = (SELECT colid FROM syscolumns
+									WHERE id = object_id('{$table_name}')
+										AND name = '{$column_name}'))
+						IF @drop_default_name <> ''
+						BEGIN
+							SET @cmd = 'ALTER TABLE [{$table_name}] DROP CONSTRAINT [' + @drop_default_name + ']'
+							EXEC(@cmd)
+						END
+						SET @cmd = 'ALTER TABLE [{$table_name}] ADD CONSTRAINT [DF_{$table_name}_{$column_name}_1] {$column_data['default']} FOR [{$column_name}]'
+						EXEC(@cmd)";
+				}
 			break;
 
 			case 'mysql_40':

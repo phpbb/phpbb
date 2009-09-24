@@ -1190,11 +1190,13 @@ class phpbb_db_tools
 					// For hexadecimal values do not use single quotes
 					if (strpos($column_data[1], '0x') === 0)
 					{
-						$sql_default .= 'DEFAULT (' . $column_data[1] . ') ';
+						$return_array['default'] = 'DEFAULT (' . $column_data[1] . ') ';
+						$sql_default .= $return_array['default'];
 					}
 					else
 					{
-						$sql_default .= 'DEFAULT (' . ((is_numeric($column_data[1])) ? $column_data[1] : "'{$column_data[1]}'") . ') ';
+						$return_array['default'] = 'DEFAULT (' . ((is_numeric($column_data[1])) ? $column_data[1] : "'{$column_data[1]}'") . ') ';
+						$sql_default .= $return_array['default'];
 					}
 				}
 
@@ -1781,7 +1783,7 @@ class phpbb_db_tools
 				case 'firebird':
 					$sql = "SELECT LOWER(RDB\$INDEX_NAME) as index_name
 						FROM RDB\$INDICES
-						WHERE RDB\$RELATION_NAME = " . strtoupper($table_name) . "
+						WHERE RDB\$RELATION_NAME = '" . strtoupper($table_name) . "'
 							AND RDB\$UNIQUE_FLAG IS NULL
 							AND RDB\$FOREIGN_KEY IS NULL";
 					$col = 'index_name';
@@ -1808,8 +1810,9 @@ class phpbb_db_tools
 				case 'oracle':
 					$sql = "SELECT index_name
 						FROM user_indexes
-						WHERE table_name = '" . $table_name . "'
-							AND generated = 'N'";
+						WHERE table_name = '" . strtoupper($table_name) . "'
+							AND generated = 'N'
+							AND uniqueness = 'NONUNIQUE'";
 					$col = 'index_name';
 				break;
 
@@ -1870,6 +1873,27 @@ class phpbb_db_tools
 
 			case 'mssql':
 				$statements[] = 'ALTER TABLE [' . $table_name . '] ALTER COLUMN [' . $column_name . '] ' . $column_data['column_type_sql'];
+
+				if (!empty($column_data['default']))
+				{
+					// Using TRANSACT-SQL for this statement because we do not want to have colliding data if statements are executed at a later stage
+					$statements[] = "DECLARE @drop_default_name VARCHAR(100), @cmd VARCHAR(1000)
+						SET @drop_default_name =
+							(SELECT so.name FROM sysobjects so
+							JOIN sysconstraints sc ON so.id = sc.constid
+							WHERE object_name(so.parent_obj) = '{$table_name}'
+								AND so.xtype = 'D'
+								AND sc.colid = (SELECT colid FROM syscolumns
+									WHERE id = object_id('{$table_name}')
+										AND name = '{$column_name}'))
+						IF @drop_default_name <> ''
+						BEGIN
+							SET @cmd = 'ALTER TABLE [{$table_name}] DROP CONSTRAINT [' + @drop_default_name + ']'
+							EXEC(@cmd)
+						END
+						SET @cmd = 'ALTER TABLE [{$table_name}] ADD CONSTRAINT [DF_{$table_name}_{$column_name}_1] {$column_data['default']} FOR [{$column_name}]'
+						EXEC(@cmd)";
+				}
 			break;
 
 			case 'mysql_40':
