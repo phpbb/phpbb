@@ -211,6 +211,9 @@
 		<li>[Fix] Fix icon alignment for forums with large descriptions in subsilver2. (Bug #50445)</li>
 		<li>[Fix] Correctly display underlined links placed in last line in viewtopic. (Bug #14811 - Patch by primehalo)</li>
 		<li>[Fix] Only check whether forum image exists if forum image is specified. (Bug #51905)</li>
+		<li>[Fix] Fixed database backup and restore with Oracle DBMS.</li>
+		<li>[Fix] Fixed database updater for changes to columns having default value in MSSQL (adding/dropping constraints)</li>
+		<li>[Change] Database updater now supports checking for existing/missing indexes.</li>
 		<li>[Change] submit_post() now accepts force_approved_state key passed to $data to indicate new posts being approved (true) or unapproved (false).</li>
 		<li>[Change] Change the data format of the default file ACM to be more secure from tampering and have better performance.</li>
 		<li>[Change] Template engine now permits to a limited extent variable includes.</li>
