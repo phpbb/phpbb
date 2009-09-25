@@ -1510,14 +1510,8 @@ function change_database_data(&$no_updates, $version)
 			$no_updates = false;
 		break;
 
-		// Changes from 3.0.6-RC1 to 3.0.6-RC2
+		// No changes from 3.0.6-RC1 to 3.0.6-RC2
 		case '3.0.6-RC1':
-
-			// We check if there is an index for log_time within the logs table
-
-
-			// If so, we remove it
-
 		break;
 	}
 }
