@@ -742,28 +742,7 @@ if ($submit || $preview || $refresh)
 	}
 
 	// Parse Attachments - before checksum is calculated
-	if ($mode == 'edit')
-	{
-		$message_parser->parse_attachments('fileupload', $mode, $forum_id, $submit, $preview, $refresh, false, $post_id, $topic_id);
-		if (sizeof($message_parser->attachment_data))
-		{
-			// Update attachment indicators for post/topic having attachments now, as a precaution if the post does not get stored by submit
-			$sql = 'UPDATE ' . POSTS_TABLE . '
-				SET post_attachment = 1
-				WHERE post_id = ' . $post_id;
-			$db->sql_query($sql);
-
-			$sql = 'UPDATE ' . TOPICS_TABLE . '
-				SET topic_attachment = 1
-				WHERE topic_id = ' . $topic_id;
-			$db->sql_query($sql);
-		}
-	}
-	else
-	{
-		$message_parser->parse_attachments('fileupload', $mode, $forum_id, $submit, $preview, $refresh);
-	}
-
+	$message_parser->parse_attachments('fileupload', $mode, $forum_id, $submit, $preview, $refresh);
 
 	// Grab md5 'checksum' of new message
 	$message_md5 = md5($message_parser->message);

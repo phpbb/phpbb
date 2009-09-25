@@ -669,22 +669,7 @@ function compose_pm($id, $mode, $action)
 		}
 
 		// Parse Attachments - before checksum is calculated
-		if ($action == 'edit')
-		{
-			$message_parser->parse_attachments('fileupload', $action, 0, $submit, $preview, $refresh, true, $msg_id);
-			if (sizeof($message_parser->attachment_data))
-			{
-				// Update attachment indicators for pms having attachments now, as a precaution if the pm does not get stored by submit
-				$sql = 'UPDATE ' . PRIVMSGS_TABLE . '
-					SET message_attachment = 1
-					WHERE msg_id = ' . $msg_id;
-				$db->sql_query($sql);
-			}
-		}
-		else
-		{
-			$message_parser->parse_attachments('fileupload', $action, 0, $submit, $preview, $refresh, true);
-		}
+		$message_parser->parse_attachments('fileupload', $action, 0, $submit, $preview, $refresh, true);
 
 		if (sizeof($message_parser->warn_msg) && !($remove_u || $remove_g || $add_to || $add_bcc))
 		{
