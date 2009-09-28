@@ -349,7 +349,12 @@ class phpbb_captcha_qa
 		global $config, $db, $user;
 
 		$error = '';
-
+		
+		if (!sizeof($this->question_ids))
+		{
+			return false;
+		}
+		
 		if (!$this->confirm_id)
 		{
 			$error = $user->lang['CONFIRM_QUESTION_WRONG'];
@@ -388,6 +393,11 @@ class phpbb_captcha_qa
 	{
 		global $db, $user;
 
+
+		if (!sizeof($this->question_ids))
+		{
+			return false;
+		}
 		$this->confirm_id = md5(unique_id($user->ip));
 		$this->question = (int) array_rand($this->question_ids);
 
@@ -409,6 +419,11 @@ class phpbb_captcha_qa
 	function reselect_question()
 	{
 		global $db, $user;
+		
+		if (!sizeof($this->question_ids))
+		{
+			return false;
+		}
 
 		$this->question = (int) array_rand($this->question_ids);
 		$this->solved = 0;
@@ -449,6 +464,11 @@ class phpbb_captcha_qa
 	function load_answer()
 	{
 		global $db, $user;
+		
+		if (!sizeof($this->question_ids))
+		{
+			return false;
+		}
 
 		$sql = 'SELECT con.question_id, attempts, question_text, strict
 			FROM ' . CAPTCHA_QA_CONFIRM_TABLE . ' con, ' . CAPTCHA_QUESTIONS_TABLE . " qes
