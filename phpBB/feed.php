@@ -249,7 +249,7 @@ function feed_generate_content($content, $uid, $bitfield, $options)
 	$content = str_replace('./', $board_url . '/', $content);
 
 	// Remove "Select all" link and mouse events
-	$content = str_replace('<a href="#" onclick="selectCode(this); return false;">' .$user->lang['SELECT_ALL_CODE'] . '</a>', '', $content);
+	$content = str_replace('<a href="#" onclick="selectCode(this); return false;">' . $user->lang['SELECT_ALL_CODE'] . '</a>', '', $content);
 	$content = preg_replace('#(onkeypress|onclick)="(.*?)"#si', '', $content);
 
 	// Firefox does not support CSS for feeds, though
@@ -450,7 +450,7 @@ class phpbb_feed
 		$this->sql = array();
 
 		// Set some values for pagination
-		$this->num_items = $config['feed_limit'];
+		$this->num_items = (int) $config['feed_limit'];
 		$this->set_keys();
 	}
 
@@ -828,7 +828,7 @@ class phpbb_feed_forums extends phpbb_feed
 		$this->set('date',		'forum_last_post_time');
 		$this->set('options',	'forum_desc_options');
 
-		$this->num_items = $config['feed_overall_forums_limit'];
+		$this->num_items = (int) $config['feed_overall_forums_limit'];
 	}
 
 	function open()
