@@ -1,65 +1,23 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<project name="code_sniffer" basedir="." default="phpunit">
+<project name="code_sniffer" basedir="." default="install">
 
-  <property name="cvs.module" value="pear/PHP_CodeSniffer" />
-  <property name="working.dir" value="${basedir}/_work/code" />
-  <property name="test.coverage" value="${basedir}/_work/coverage" />
+  <property name="working.dir" value="${basedir}" />
+  <property name="target.dir" value="/usr/share/php/PHP/CodeSniffer/Standards" />
 
-  <target name="phpunit" depends="update,prepare">
-    <exec executable="phpunit">
-      <arg line="--coverage-html ${test.coverage}
-      	         PHP_CodeSniffer_AllTests 
-      	         ${working.dir}/${cvs.module}/tests/AllTests.php" />
-    </exec>
-  </target>
-
-  <target name="prepare">
-    <delete dir="${working.dir}/${cvs.module}/CodeSniffer/Standards/phpbb" />
-  	<mkdir dir="${working.dir}/${cvs.module}/CodeSniffer/Standards/phpbb"/>
-  	
-    <copy todir="${working.dir}/${cvs.module}/CodeSniffer/Standards/phpbb/Sniffs">
-      <fileset dir="${basedir}/Sniffs" />
-    </copy>
-
-    <copy todir="${working.dir}/${cvs.module}/CodeSniffer/Standards/phpbb/Tests">
-      <fileset dir="${basedir}/Tests" />
-    </copy>
-  	
-  	<copy todir="${working.dir}/${cvs.module}/CodeSniffer/Standards/phpbb">
-  	  <fileset file="${basedir}/phpbbCodingStandard.php" />
-  	</copy>
-  </target>
-
-  <target name="cleanup">
-    <delete dir="${working.dir}" />
-  </target>
-
-  <target name="update">
-    <exec executable="cvs" dir="${working.dir}/${cvs.module}">
-      <arg line="up" />
-    </exec>
-  </target>
-
-  <target name="checkout" depends="cleanup">
-    <cvspass cvsroot=":pserver:cvsread@cvs.php.net:/repository" password="phpfi" />
-    <cvs cvsRoot=":pserver:cvsread@cvs.php.net:/repository"
-         package="${cvs.module}"
-         dest="${working.dir}" />
-  </target>
-	
   <!--
-  Installs the sniffs on my local development machine
+  Install phpbb sniff
   -->
   <target name="install">
-	<delete dir="/usr/local/pear/PEAR/PHP/CodeSniffer/Standards/phpbb" />
-  	<mkdir dir="/usr/local/pear/PEAR/PHP/CodeSniffer/Standards/phpbb" />
+    <delete dir="${target.dir}/phpbb" />
+    <mkdir dir="${target.dir}/phpbb"/>
 
-  	<copy todir="/usr/local/pear/PEAR/PHP/CodeSniffer/Standards/phpbb">
-  	  <fileset file="${basedir}/phpbbCodingStandard.php" />
-  	</copy>
-    <copy todir="/usr/local/pear/PEAR/PHP/CodeSniffer/Standards/phpbb/Sniffs">
-      <fileset dir="${basedir}/Sniffs" />
+    <copy todir="${target.dir}/phpbb">
+	<fileset file="${working.dir}/phpbbCodingStandard.php" />
     </copy>
+    <copy todir="${target.dir}/phpbb/Sniffs">
+	<fileset dir="${working.dir}/Sniffs" />
+    </copy>
+
   </target>
 
 </project>
