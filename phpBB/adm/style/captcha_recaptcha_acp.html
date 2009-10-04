@@ -1,0 +1,50 @@
+<!-- INCLUDE overall_header.html -->
+
+<a name="maincontent"></a>
+
+<h1>{L_ACP_VC_SETTINGS}</h1>
+
+<p>{L_ACP_VC_SETTINGS_EXPLAIN}</p>
+
+
+<form id="acp_captcha" method="post" action="{U_ACTION}">
+
+<fieldset>
+<legend>{L_GENERAL_OPTIONS}</legend>
+
+<dl>
+	<dt><label for="recaptcha_pubkey">{L_RECAPTCHA_PUBLIC}:</label><br /><span>{L_RECAPTCHA_PUBLIC_EXPLAIN}</span></dt>
+	<dd><input id="recaptcha_pubkey" name="recaptcha_pubkey" value="{RECAPTCHA_PUBKEY}" size="50" type="text" /></dd>
+</dl>
+<dl>
+	<dt><label for="recaptcha_privkey">{L_RECAPTCHA_PRIVATE}:</label><br /><span>{L_RECAPTCHA_PRIVATE_EXPLAIN}</span></dt>
+	<dd><input id="recaptcha_privkey" name="recaptcha_privkey" value="{RECAPTCHA_PRIVKEY}" size="50" type="text" /></dd>
+</dl>
+
+
+</fieldset>
+<fieldset>
+	<legend>{L_PREVIEW}</legend>
+<!-- IF PREVIEW -->
+	<div class="successbox">
+		<h3>{L_WARNING}</h3>
+		<p>{L_CAPTCHA_PREVIEW_MSG}</p>
+	</div>
+<!-- ENDIF -->
+<!-- INCLUDE {CAPTCHA_PREVIEW} -->
+</fieldset>
+
+<fieldset>
+	<legend>{L_ACP_SUBMIT_CHANGES}</legend>
+	<p class="submit-buttons">
+		<input class="button1" type="submit" id="submit" name="submit" value="{L_SUBMIT}" />&nbsp;
+		<input class="button2" type="reset" id="reset" name="reset" value="{L_RESET}" />&nbsp;
+	</p>
+	<input type="hidden" name="select_captcha" value="{CAPTCHA_NAME}" />
+	<input type="hidden" name="configure" value="1" />
+
+	{S_FORM_TOKEN}
+</fieldset>
+</form>
+
+<!-- INCLUDE overall_footer.html -->

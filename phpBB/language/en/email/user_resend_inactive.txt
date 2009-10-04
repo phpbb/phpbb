@@ -1,0 +1,20 @@
+Subject: Welcome to "{SITENAME}"
+
+{WELCOME_MSG}
+
+Please keep this e-mail for your records. Your account information is as follows:
+
+----------------------------
+Username: {USERNAME}
+----------------------------
+
+Your password has been securely stored in our database and cannot be retrieved. In the event that it is forgotten, you will be able to reset it using the email address associated with your account.
+
+Please visit the following link in order to activate your account:
+
+{U_ACTIVATE}
+
+
+Thank you for registering.
+
+{EMAIL_SIG}

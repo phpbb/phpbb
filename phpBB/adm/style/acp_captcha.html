@@ -1,0 +1,67 @@
+<!-- INCLUDE overall_header.html -->
+
+<a name="maincontent"></a>
+
+<h1>{L_ACP_VC_SETTINGS}</h1>
+
+<p>{L_ACP_VC_SETTINGS_EXPLAIN}</p>
+
+
+<form id="acp_captcha" method="post" action="{U_ACTION}">
+
+<fieldset>
+<legend>{L_GENERAL_OPTIONS}</legend>
+
+<dl>
+	<dt><label for="enable_confirm">{L_VISUAL_CONFIRM_REG}:</label><br /><span>{L_VISUAL_CONFIRM_REG_EXPLAIN}</span></dt>
+	<dd><label><input type="radio" class="radio" id="enable_confirm" name="enable_confirm" value="1"<!-- IF REG_ENABLE --> checked="checked"<!-- ENDIF --> /> {L_ENABLED}</label>
+		<label><input type="radio" class="radio" name="enable_confirm" value="0"<!-- IF not REG_ENABLE --> checked="checked"<!-- ENDIF --> /> {L_DISABLED}</label></dd>
+</dl>
+<dl>
+	<dt><label for="max_reg_attempts">{L_REG_LIMIT}:</label><br /><span>{L_REG_LIMIT_EXPLAIN}</span></dt>
+	<dd><input id="max_reg_attempts" type="text" size="4" maxlength="4" name="max_reg_attempts" value="{REG_LIMIT}" /></dd>
+</dl>
+<dl>
+	<dt><label for="enable_post_confirm">{L_VISUAL_CONFIRM_POST}:</label><br /><span>{L_VISUAL_CONFIRM_POST_EXPLAIN}</span></dt>
+	<dd><label><input type="radio" class="radio" id="enable_post_confirm" name="enable_post_confirm" value="1"<!-- IF POST_ENABLE --> checked="checked"<!-- ENDIF --> /> {L_ENABLED}</label>
+		<label><input type="radio" class="radio" name="enable_post_confirm" value="0"<!-- IF not POST_ENABLE --> checked="checked"<!-- ENDIF --> /> {L_DISABLED}</label></dd>
+</dl>
+<dl>
+	<dt><label for="confirm_refresh">{L_VISUAL_CONFIRM_REFRESH}:</label><br /><span>{L_VISUAL_CONFIRM_REFRESH_EXPLAIN}</span></dt>
+	<dd><label><input type="radio" class="radio" id="confirm_refresh" name="confirm_refresh" value="1"<!-- IF CONFIRM_REFRESH --> checked="checked"<!-- ENDIF --> /> {L_ENABLED}</label>
+		<label><input type="radio" class="radio" name="confirm_refresh" value="0"<!-- IF not CONFIRM_REFRESH --> checked="checked"<!-- ENDIF --> /> {L_DISABLED}</label></dd>
+</dl>
+</fieldset>
+
+<fieldset>
+<legend>{L_AVAILABLE_CAPTCHAS}</legend>
+<dl>
+	<dt><label for="captcha_select">{L_CAPTCHA_SELECT}:</label><br /><span>{L_CAPTCHA_SELECT_EXPLAIN}</span></dt>
+	<dd><select id="captcha_select" name="select_captcha" onchange="(document.getElementById('acp_captcha')).submit()" >{CAPTCHA_SELECT}</select></dd>
+</dl>
+ <!-- IF S_CAPTCHA_HAS_CONFIG -->
+<dl>
+	<dt><label for="configure">{L_CAPTCHA_CONFIGURE}:</label><br /><span>{L_CAPTCHA_CONFIGURE_EXPLAIN}</span></dt>
+	<dd><input class="button2" type="submit" id="configure" name="configure" value="{L_CONFIGURE}" /></dd>
+</dl>
+<!-- ENDIF -->
+</fieldset>
+
+<!-- IF CAPTCHA_PREVIEW_TPL -->
+<fieldset>
+	<legend>{L_PREVIEW}</legend>
+<!-- INCLUDE {CAPTCHA_PREVIEW_TPL} -->
+</fieldset>
+<!-- ENDIF -->
+
+<fieldset>
+	<legend>{L_ACP_SUBMIT_CHANGES}</legend>
+	<p class="submit-buttons">
+		<input class="button1" type="submit" id="main_submit" name="main_submit" value="{L_SUBMIT}" />&nbsp;
+		<input class="button2" type="reset" id="form_reset" name="reset" value="{L_RESET}" />&nbsp;
+	</p>
+	{S_FORM_TOKEN}
+</fieldset>
+</form>
+
+<!-- INCLUDE overall_footer.html -->

@@ -1,0 +1,74 @@
+<!-- INCLUDE overall_header.html -->
+
+<a name="maincontent"></a>
+	<a href="{U_ACTION}" style="float: {S_CONTENT_FLOW_END};">&laquo; {L_BACK}</a>
+
+<h1>{L_ACP_VC_SETTINGS}</h1>
+
+<p>{L_ACP_VC_SETTINGS_EXPLAIN}</p>
+
+
+<form id="acp_captcha" method="post" action="{U_ACTION}">
+
+<fieldset>
+<legend>{L_GENERAL_OPTIONS}</legend>
+
+<dl>
+	<dt><label for="captcha_gd_foreground_noise">{L_CAPTCHA_GD_FOREGROUND_NOISE}:</label><br /><span>{L_CAPTCHA_GD_FOREGROUND_NOISE_EXPLAIN}</span></dt>
+	<dd><label><input id="captcha_gd_foreground_noise" name="captcha_gd_foreground_noise" value="1" class="radio" type="radio"<!-- IF CAPTCHA_GD_FOREGROUND_NOISE --> checked="checked"<!-- ENDIF --> /> {L_YES}</label>
+		<label><input name="captcha_gd_foreground_noise" value="0" class="radio" type="radio"<!-- IF not CAPTCHA_GD_FOREGROUND_NOISE --> checked="checked"<!-- ENDIF --> /> {L_NO}</label></dd>
+</dl>
+<dl>
+	<dt><label for="captcha_gd_x_grid">{L_CAPTCHA_GD_X_GRID}:</label><br /><span>{L_CAPTCHA_GD_X_GRID_EXPLAIN}</span></dt>
+	<dd><input id="captcha_gd_x_grid" name="captcha_gd_x_grid" value="{CAPTCHA_GD_X_GRID}" type="text" /></dd>
+</dl>
+<dl>
+	<dt><label for="captcha_gd_y_grid">{L_CAPTCHA_GD_Y_GRID}:</label><br /><span>{L_CAPTCHA_GD_Y_GRID_EXPLAIN}</span></dt>
+	<dd><input id="captcha_gd_y_grid" name="captcha_gd_y_grid" value="{CAPTCHA_GD_Y_GRID}" type="text" /></dd>
+</dl>
+<dl>
+	<dt><label for="captcha_gd_wave">{L_CAPTCHA_GD_WAVE}:</label><br /><span>{L_CAPTCHA_GD_WAVE_EXPLAIN}</span></dt>
+	<dd><label><input id="captcha_gd_wave" name="captcha_gd_wave" value="1" class="radio" type="radio"<!-- IF CAPTCHA_GD_WAVE --> checked="checked"<!-- ENDIF --> /> {L_YES}</label>
+		<label><input name="captcha_gd_wave" value="0" class="radio" type="radio"<!-- IF not CAPTCHA_GD_WAVE --> checked="checked"<!-- ENDIF --> /> {L_NO}</label>
+</dd>
+</dl>
+<dl>
+	<dt><label for="captcha_gd_3d_noise">{L_CAPTCHA_GD_3D_NOISE}:</label><br /><span>{L_CAPTCHA_GD_3D_NOISE_EXPLAIN}</span></dt>
+	<dd><label><input id="captcha_gd_3d_noise" name="captcha_gd_3d_noise" value="1" class="radio" type="radio"<!-- IF CAPTCHA_GD_3D_NOISE --> checked="checked"<!-- ENDIF --> /> {L_YES}</label>
+		<label><input name="captcha_gd_3d_noise" value="0" class="radio" type="radio"<!-- IF not CAPTCHA_GD_3D_NOISE --> checked="checked"<!-- ENDIF --> /> {L_NO}</label>
+</dd>
+</dl>
+<dl>
+	<dt><label for="captcha_gd_fonts">{L_CAPTCHA_GD_FONTS}:</label><br /><span>{L_CAPTCHA_GD_FONTS_EXPLAIN}</span></dt>
+	<dd><label><input id="captcha_gd_fonts" name="captcha_gd_fonts" value="1" class="radio" type="radio"<!-- IF CAPTCHA_GD_FONTS == 1 --> checked="checked"<!-- ENDIF --> /> {L_CAPTCHA_FONT_DEFAULT}</label>
+		<label><input name="captcha_gd_fonts" value="2" class="radio" type="radio"<!-- IF CAPTCHA_GD_FONTS == 2 --> checked="checked"<!-- ENDIF --> /> {L_CAPTCHA_FONT_NEW}</label>
+		<label><input name="captcha_gd_fonts" value="3" class="radio" type="radio"<!-- IF CAPTCHA_GD_FONTS == 3 --> checked="checked"<!-- ENDIF --> /> {L_CAPTCHA_FONT_LOWER}</label>
+
+</dd>
+</dl>
+
+</fieldset>
+<fieldset>
+	<legend>{L_PREVIEW}</legend>
+	<!-- IF CAPTCHA_PREVIEW -->
+	<!-- INCLUDE {CAPTCHA_PREVIEW} -->
+	<!-- ENDIF -->
+
+</fieldset>
+
+<fieldset>
+	<legend>{L_ACP_SUBMIT_CHANGES}</legend>
+	<p class="submit-buttons">
+		<input class="button1" type="submit" id="submit" name="submit" value="{L_SUBMIT}" />&nbsp;
+		<input class="button2" type="reset" id="reset" name="reset" value="{L_RESET}" />&nbsp;
+		<input class="button2" type="submit" id="preview" name="preview" value="{L_PREVIEW}" />&nbsp;
+	</p>
+
+	<input type="hidden" name="select_captcha" value="{CAPTCHA_NAME}" />
+	<input type="hidden" name="configure" value="1" />
+
+	{S_FORM_TOKEN}
+</fieldset>
+</form>
+
+<!-- INCLUDE overall_footer.html -->

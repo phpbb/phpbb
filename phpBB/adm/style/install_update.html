@@ -1,0 +1,475 @@
+<!-- INCLUDE install_header.html -->
+
+<script type="text/javascript">
+// <![CDATA[
+	function popup(url, width, height, name)
+	{
+		if (!name)
+		{
+			name = '_popup';
+		}
+
+		window.open(url.replace(/&amp;/g, '&'), name, 'height=' + height + ',resizable=yes,scrollbars=yes, width=' + width);
+		return false;
+	}
+
+	function diff_popup(url)
+	{
+		popup(url, 950, 600, '_diff');
+		return false;
+	}
+// ]]>
+</script>
+
+<!-- IF S_ERROR -->
+	<div class="errorbox" style="margin-top: 0;">
+		<h3>{L_NOTICE}</h3>
+		<p>{ERROR_MSG}</p>
+	</div>
+<!-- ENDIF -->
+
+<!-- IF S_IN_PROGRESS -->
+
+	<div class="successbox" style="margin-top: 0;">
+		<h3>{L_IN_PROGRESS}</h3>
+		<p>{L_IN_PROGRESS_EXPLAIN}</p>
+	</div>
+
+<!-- ELSEIF S_INTRO -->
+
+	<!-- IF S_WARNING -->
+	<div class="successbox" style="margin-top: 0;">
+		<h3>{L_NOTICE}</h3>
+		<p>{WARNING_MSG}</p>
+	</div>
+	<!-- ENDIF -->
+
+	<form id="install_update" method="post" action="{U_ACTION}">
+
+	<h1>{L_UPDATE_INSTALLATION}</h1>
+	<p>{L_UPDATE_INSTALLATION_EXPLAIN}</p>
+
+	<fieldset class="submit-buttons">
+		<input class="button1" type="submit" name="submit" value="{L_NEXT_STEP}" />
+	</fieldset>
+
+	</form>
+
+<!-- ELSEIF S_UPLOAD_SUCCESS -->
+
+	<form id="install_update" method="post" action="{U_ACTION}">
+
+	<h1>{L_UPDATE_SUCCESS}</h1>
+	<p>{L_UPDATE_SUCCESS_EXPLAIN}</p>
+
+	<fieldset class="submit-buttons">
+		<input class="button1" type="submit" name="check_again" value="{L_CONTINUE_UPDATE}" />
+	</fieldset>
+
+	</form>
+
+<!-- ENDIF -->
+
+<!-- IF S_VERSION_CHECK -->
+
+	<h1>{L_VERSION_CHECK}</h1>
+
+	<p>{L_VERSION_CHECK_EXPLAIN}</p>
+
+	<!-- IF S_UP_TO_DATE -->
+		<div class="successbox">
+			<p>{L_VERSION_UP_TO_DATE}</p>
+		</div>
+	<!-- ELSE -->
+		<div class="errorbox">
+			<p>{L_VERSION_NOT_UP_TO_DATE}</p>
+		</div>
+	<!-- ENDIF -->
+
+	<fieldset>
+		<legend></legend>
+	<dl>
+		<dt><label>{L_CURRENT_VERSION}</label></dt>
+		<dd><strong>{CURRENT_VERSION}</strong></dd>
+	</dl>
+	<dl>
+		<dt><label>{L_LATEST_VERSION}</label></dt>
+		<dd><strong>{LATEST_VERSION}</strong></dd>
+	</dl>
+	<!-- IF PACKAGE_VERSION and not S_UP_TO_DATE -->
+	<dl>
+		<dt><label>{L_PACKAGE_UPDATES_TO}</label></dt>
+		<dd><strong>{PACKAGE_VERSION}</strong></dd>
+	</dl>
+	<!-- ENDIF -->
+	</fieldset>
+
+	<!-- IF not S_UP_TO_DATE -->
+
+		<form id="install_dbupdate" method="post" action="{U_DB_UPDATE_ACTION}">
+
+		<fieldset class="submit-buttons">
+			<p>{L_UPDATE_DATABASE_EXPLAIN}</p>
+			<input class="button1" type="submit" name="db_update" value="{L_UPDATE_DATABASE}" />
+		</fieldset>
+
+		</form>
+
+	<!-- ELSE -->
+		<form id="install_update" method="post" action="{U_ACTION}">
+
+		<fieldset class="submit-buttons">
+			<p>{L_CHECK_FILES_UP_TO_DATE}</p>
+			<input class="button1" type="submit" name="submit" value="{L_CHECK_FILES}" />
+		</fieldset>
+
+		</form>
+	<!-- ENDIF -->
+
+<!-- ELSEIF S_DB_UPDATE -->
+
+	<!-- IF not S_DB_UPDATE_FINISHED -->
+
+		<h1>{L_PERFORM_DATABASE_UPDATE}</h1>
+
+		<p>
+			{L_PERFORM_DATABASE_UPDATE_EXPLAIN}<br />
+		</p>
+
+		<br /><br />
+
+		<form id="install_dbupdate" method="post" action="{U_DB_UPDATE_ACTION}">
+
+		<fieldset class="submit-buttons">
+			<a href="{U_DB_UPDATE}" class="button1">{L_RUN_DATABASE_SCRIPT}</a>
+
+			<!-- input class="button1" type="submit" name="db_update" value="{L_CHECK_UPDATE_DATABASE}" / -->
+		</fieldset>
+
+		</form>
+
+	<!-- ELSE -->
+
+		<h1>{L_UPDATE_DB_SUCCESS}</h1>
+
+		<br /><br />
+
+		<form id="install_update" method="post" action="{U_ACTION}">
+
+		<fieldset class="submit-buttons">
+			<p>{L_CHECK_FILES_EXPLAIN}</p>
+			<input class="button1" type="submit" name="submit" value="{L_CHECK_FILES}" />
+		</fieldset>
+
+		</form>
+
+	<!-- ENDIF -->
+
+<!-- ELSEIF S_FILE_CHECK -->
+
+	<!-- IF S_ALL_UP_TO_DATE -->
+
+		<div class="successbox">
+			<h3>{L_UPDATE_SUCCESS}</h3>
+			<p>{L_ALL_FILES_UP_TO_DATE}</p>
+		</div>
+
+	<!-- ELSE -->
+		<h1>{L_COLLECTED_INFORMATION}</h1>
+
+		<p>{L_COLLECTED_INFORMATION_EXPLAIN}</p>
+
+		<!-- IF S_NO_UPDATE_FILES -->
+			<div class="errorbox">
+				<h3>{L_NO_UPDATE_FILES}</h3>
+
+				<p>{L_NO_UPDATE_FILES_EXPLAIN}</p><br />
+
+				<strong>{NO_UPDATE_FILES}</strong>
+
+			</div>
+		<!-- ENDIF -->
+
+		<form id="install_update" method="post" action="{U_UPDATE_ACTION}">
+
+		<!-- IF .up_to_date -->
+			<h2>{L_FILES_UP_TO_DATE}</h2>
+			<p>{L_FILES_UP_TO_DATE_EXPLAIN}</p>
+
+			<fieldset>
+				<legend><img src="{T_IMAGE_PATH}file_up_to_date.gif" alt="{L_STATUS_UP_TO_DATE}" /></legend>
+			<!-- BEGIN up_to_date -->
+				<dl>
+					<dd class="full" style="text-align: left;"><strong>{up_to_date.FILENAME}</strong></dd>
+				</dl>
+			<!-- END up_to_date -->
+			</fieldset>
+
+		<!-- ENDIF -->
+
+		<!-- IF .new -->
+			<h2>{L_FILES_NEW}</h2>
+			<p>{L_FILES_NEW_EXPLAIN}</p>
+
+			<fieldset>
+				<legend><img src="{T_IMAGE_PATH}file_new.gif" alt="{L_STATUS_NEW}" /></legend>
+			<!-- BEGIN new -->
+				<dl>
+					<dt style="width: 60%;"><strong><!-- IF new.DIR_PART -->{new.DIR_PART}<br /><!-- ENDIF -->{new.FILE_PART}</strong>
+					<!-- IF new.S_CUSTOM --><br /><span><em>{L_FILE_USED}: </em>{new.CUSTOM_ORIGINAL}</span><!-- ENDIF -->
+				</dt>
+				<dd style="margin-left: 60%;">
+					<!-- IF not new.S_BINARY -->[<a href="{new.U_SHOW_DIFF}" onclick="diff_popup(this.href); return false;">{new.L_SHOW_DIFF}</a>]<!-- ELSE -->{L_BINARY_FILE}<!-- ENDIF -->
+				</dd>
+				<!-- IF new.S_CUSTOM -->
+					<dd style="margin-left: 60%;"><label><input type="checkbox" name="no_update[]" value="{new.FILENAME}" class="radio" /> {L_DO_NOT_UPDATE}</label></dd>
+				<!-- ENDIF -->
+				</dl>
+			<!-- END new -->
+			</fieldset>
+
+		<!-- ENDIF -->
+
+		<!-- IF .not_modified -->
+			<h2>{L_FILES_NOT_MODIFIED}</h2>
+			<div style="float: {S_CONTENT_FLOW_END};">&raquo; <a href="#" onclick="dE('not_modified', 0); return false;">{L_TOGGLE_DISPLAY}</a></div>
+			<p>{L_FILES_NOT_MODIFIED_EXPLAIN}</p>
+
+			<fieldset id="not_modified" style="display: none;">
+				<legend><img src="{T_IMAGE_PATH}file_not_modified.gif" alt="{L_STATUS_NOT_MODIFIED}" /></legend>
+			<!-- BEGIN not_modified -->
+				<dl>
+					<dt style="width: 60%;"><strong><!-- IF not_modified.DIR_PART -->{not_modified.DIR_PART}<br /><!-- ENDIF -->{not_modified.FILE_PART}</strong>
+						<!-- IF not_modified.S_CUSTOM --><br /><span><em>{L_FILE_USED}: </em>{not_modified.CUSTOM_ORIGINAL}</span><!-- ENDIF -->
+					</dt>
+					<dd style="margin-left: 60%;"><!-- IF not not_modified.S_BINARY -->[<a href="{not_modified.U_SHOW_DIFF}" onclick="diff_popup(this.href); return false;">{not_modified.L_SHOW_DIFF}</a>]<!-- ELSE -->{L_BINARY_FILE}<!-- ENDIF --></dd>
+					<!-- IF not_modified.S_CUSTOM -->
+						<dd style="margin-left: 60%;"><label><input type="checkbox" name="no_update[]" value="{not_modified.FILENAME}" class="radio" /> {L_DO_NOT_UPDATE}</label></dd>
+					<!-- ENDIF -->
+				</dl>
+			<!-- END not_modified -->
+			</fieldset>
+
+		<!-- ENDIF -->
+
+		<!-- IF .modified -->
+			<h2>{L_FILES_MODIFIED}</h2>
+			<p>{L_FILES_MODIFIED_EXPLAIN}</p>
+
+			<!-- BEGIN modified -->
+			<fieldset>
+				<legend><img src="{T_IMAGE_PATH}file_modified.gif" alt="{L_STATUS_MODIFIED}" /></legend>
+				<dl>
+					<dt style="width: 60%;"><strong><!-- IF modified.DIR_PART -->{modified.DIR_PART}<br /><!-- ENDIF -->{modified.FILE_PART}</strong>
+					<!-- IF modified.S_CUSTOM --><br /><span><em>{L_FILE_USED}: </em>{modified.CUSTOM_ORIGINAL}</span><!-- ENDIF -->
+				</dt>
+				<dd style="margin-left: 60%;">&nbsp;</dd>
+				<!-- IF modified.S_CUSTOM -->
+					<dd style="margin-left: 60%;"><label><input type="checkbox" name="no_update[]" value="{modified.FILENAME}" class="radio" /> {L_DO_NOT_UPDATE}</label></dd>
+				<!-- ENDIF -->
+				</dl>
+				<dl>
+					<dt style="width: 60%"><label><input type="radio" class="radio" name="modified[{modified.FILENAME}]" value="0" checked="checked" /> {L_MERGE_MODIFICATIONS_OPTION}</label></dt>
+					<dd style="margin-left: 60%;"><!-- IF not modified.S_BINARY -->[<a href="{modified.U_SHOW_DIFF}" onclick="diff_popup(this.href); return false;">{modified.L_SHOW_DIFF}</a>]<!-- ELSE -->{L_BINARY_FILE}<!-- ENDIF --></dd>
+				</dl>
+				<dl>
+					<dt style="width: 60%"><label><input type="radio" class="radio" name="modified[{modified.FILENAME}]" value="1" /> {L_MERGE_NO_MERGE_NEW_OPTION}</label></dt>
+					<dd style="margin-left: 60%;"><!-- IF not modified.S_BINARY -->[<a href="{modified.U_VIEW_NO_MERGE_NEW}" onclick="diff_popup(this.href); return false;">{L_SHOW_DIFF_FINAL}</a>]<!-- ELSE -->&nbsp;<!-- ENDIF --></dd>
+				</dl>
+				<dl>
+					<dt style="width: 60%"><label><input type="radio" class="radio" name="modified[{modified.FILENAME}]" value="2" /> {L_MERGE_NO_MERGE_MOD_OPTION}</label></dt>
+					<dd style="margin-left: 60%;"><!-- IF not modified.S_BINARY -->[<a href="{modified.U_VIEW_NO_MERGE_MOD}" onclick="diff_popup(this.href); return false;">{L_SHOW_DIFF_FINAL}</a>]<!-- ELSE -->&nbsp;<!-- ENDIF --></dd>
+				</dl>
+			</fieldset>
+			<!-- END modified -->
+
+		<!-- ENDIF -->
+
+		<!-- IF .new_conflict -->
+			<h2>{L_FILES_NEW_CONFLICT}</h2>
+			<p>{L_FILES_NEW_CONFLICT_EXPLAIN}</p>
+
+			<fieldset>
+				<legend><img src="{T_IMAGE_PATH}file_new_conflict.gif" alt="{L_STATUS_NEW_CONFLICT}" /></legend>
+			<!-- BEGIN new_conflict -->
+				<dl>
+					<dt style="width: 60%;"><strong><!-- IF new_conflict.DIR_PART -->{new_conflict.DIR_PART}<br /><!-- ENDIF -->{new_conflict.FILE_PART}</strong>
+					<!-- IF new_conflict.S_CUSTOM --><br /><span><em>{L_FILE_USED}: </em>{new_conflict.CUSTOM_ORIGINAL}</span><!-- ENDIF -->
+				</dt>
+				<dd style="margin-left: 60%;">
+					<!-- IF not new_conflict.S_BINARY -->[<a href="{new_conflict.U_SHOW_DIFF}" onclick="diff_popup(this.href); return false;">{new_conflict.L_SHOW_DIFF}</a>]<!-- ELSE -->{L_BINARY_FILE}<!-- ENDIF -->
+				</dd>
+				<!-- IF new_conflict.S_CUSTOM -->
+					<dd style="margin-left: 60%;"><label><input type="checkbox" name="no_update[]" value="{new_conflict.FILENAME}" class="radio" /> {L_DO_NOT_UPDATE}</label></dd>
+				<!-- ENDIF -->
+				</dl>
+			<!-- END new_conflict -->
+			</fieldset>
+
+		<!-- ENDIF -->
+
+		<!-- IF .conflict -->
+			<h2>{L_FILES_CONFLICT}</h2>
+			<p>{L_FILES_CONFLICT_EXPLAIN}</p>
+
+			<!-- BEGIN conflict -->
+			<fieldset>
+				<legend><img src="{T_IMAGE_PATH}file_conflict.gif" alt="{L_STATUS_CONFLICT}" /></legend>
+				<dl>
+					<dt style="width: 60%;"><strong><!-- IF conflict.DIR_PART -->{conflict.DIR_PART}<br /><!-- ENDIF -->{conflict.FILE_PART}</strong>
+						<!-- IF conflict.S_CUSTOM --><br /><span><em>{L_FILE_USED}: </em>{conflict.CUSTOM_ORIGINAL}</span><!-- ENDIF -->
+						<!-- IF conflict.NUM_CONFLICTS --><br /><span>{L_NUM_CONFLICTS}: {conflict.NUM_CONFLICTS}</span><!-- ENDIF -->
+					</dt>
+					<dd style="margin-left: 60%;">
+						<!-- IF not conflict.S_BINARY -->[<a href="{conflict.U_SHOW_DIFF}">{L_DOWNLOAD_CONFLICTS}</a>]<br />{L_DOWNLOAD_CONFLICTS_EXPLAIN}
+						<!-- ELSE -->{L_BINARY_FILE}<!-- ENDIF -->
+					</dd>
+					<!-- IF conflict.S_CUSTOM -->
+						<dd style="margin-left: 60%;"><label><input type="checkbox" name="no_update[]" value="{conflict.FILENAME}" class="radio" /> {L_DO_NOT_UPDATE}</label></dd>
+					<!-- ENDIF -->
+				</dl>
+				<!-- IF conflict.S_BINARY -->
+					<dl>
+						<dt style="width: 60%"><label><input type="radio" class="radio" name="conflict[{conflict.FILENAME}]" value="1" checked="checked" /> {L_MERGE_NO_MERGE_NEW_OPTION}</label></dt>
+						<dd style="margin-left: 60%;">&nbsp;</dd>
+					</dl>
+				<!-- ELSE -->
+					<dl>
+						<dt style="width: 60%"><label><input type="radio" class="radio" name="conflict[{conflict.FILENAME}]" value="3" checked="checked" /> {L_MERGE_NEW_FILE_OPTION}</label></dt>
+						<dd style="margin-left: 60%;">[<a href="{conflict.U_VIEW_NEW_FILE}" onclick="diff_popup(this.href); return false;">{L_SHOW_DIFF_MODIFIED}</a>]</dd>
+					</dl>
+					<dl>
+						<dt style="width: 60%"><label><input type="radio" class="radio" name="conflict[{conflict.FILENAME}]" value="4" /> {L_MERGE_MOD_FILE_OPTION}</label></dt>
+						<dd style="margin-left: 60%;">[<a href="{conflict.U_VIEW_MOD_FILE}" onclick="diff_popup(this.href); return false;">{L_SHOW_DIFF_MODIFIED}</a>]</dd>
+					</dl>
+					<dl>
+						<dt style="width: 60%"><label><input type="radio" class="radio" name="conflict[{conflict.FILENAME}]" value="1" /> {L_MERGE_NO_MERGE_NEW_OPTION}</label></dt>
+						<dd style="margin-left: 60%;">[<a href="{conflict.U_VIEW_NO_MERGE_NEW}" onclick="diff_popup(this.href); return false;">{L_SHOW_DIFF_FINAL}</a>]</dd>
+					</dl>
+					<dl>
+						<dt style="width: 60%"><label><input type="radio" class="radio" name="conflict[{conflict.FILENAME}]" value="2" /> {L_MERGE_NO_MERGE_MOD_OPTION}</label></dt>
+						<dd style="margin-left: 60%;">[<a href="{conflict.U_VIEW_NO_MERGE_MOD}" onclick="diff_popup(this.href); return false;">{L_SHOW_DIFF_FINAL}</a>]</dd>
+					</dl>
+				<!-- ENDIF -->
+			</fieldset>
+			<!-- END conflict -->
+
+		<!-- ENDIF -->
+
+		<br />
+
+		<fieldset class="quick">
+			<input class="button1" type="submit" name="check_again" value="{L_CHECK_FILES_AGAIN}" />
+		</fieldset>
+
+		<br />
+
+		<h1>{L_UPDATE_METHOD}</h1>
+
+		<p>{L_UPDATE_METHOD_EXPLAIN}</p>
+
+		<fieldset class="submit-buttons">
+			<input class="button1" type="submit" name="ftp_upload" value="{L_FTP_UPDATE_METHOD}" />&nbsp; &nbsp;<input class="button1" type="submit" name="download" value="{L_DOWNLOAD_UPDATE_METHOD_BUTTON}" />
+		</fieldset>
+
+		</form>
+
+	<!-- ENDIF -->
+
+<!-- ELSEIF S_DOWNLOAD_FILES -->
+
+	<h1>{L_DOWNLOAD_UPDATE_METHOD}</h1>
+
+	<p>{L_DOWNLOAD_UPDATE_METHOD_EXPLAIN}</p>
+
+	<form id="install_update" method="post" action="{U_ACTION}">
+
+	<fieldset>
+		<legend>{L_SELECT_DOWNLOAD_FORMAT}</legend>
+	<dl>
+		<dt><label for="use_method">{L_DOWNLOAD_AS}:</label></dt>
+		<dd>{RADIO_BUTTONS}</dd>
+	</dl>
+	</fieldset>
+
+	<fieldset class="submit-buttons">
+		{S_HIDDEN_FIELDS}
+		<input type="submit" class="button2" value="{L_CONTINUE_UPDATE}" name="check_again" />&nbsp; &nbsp;<input type="submit" class="button1" value="{L_DOWNLOAD}" name="download" />
+	</fieldset>
+
+	</form>
+
+	<br /><br />
+
+	<p>{L_MAPPING_FILE_STRUCTURE}</p>
+
+	<table cellspacing="1">
+		<col class="row1" /><col class="row2" /><col class="row1" />
+	<thead>
+	<tr>
+		<th style="width: 49%">{L_ARCHIVE_FILE}</th>
+		<th style="width: 2%">&nbsp;</th>
+		<th style="width: 49%">{L_DESTINATION}</th>
+	</tr>
+	</thead>
+	<tbody>
+	<!-- BEGIN location -->
+	<tr>
+		<td>{location.SOURCE}</td>
+		<td><strong>&raquo;</strong></td>
+		<td>{location.DESTINATION}</td>
+	</tr>
+	<!-- END location -->
+	</tbody>
+	</table>
+
+<!-- ELSEIF S_FTP_UPLOAD -->
+
+	<h1>{L_SELECT_FTP_SETTINGS}</h1>
+
+	<form id="install_update" method="post" action="{U_ACTION}">
+
+	<!-- IF S_CONNECTION_SUCCESS -->
+		<div class="successbox">
+			<p>{L_CONNECTION_SUCCESS}</p>
+		</div>
+	<!-- ELSEIF S_CONNECTION_FAILED -->
+		<div class="successbox">
+			<p>{L_TRY_DOWNLOAD_METHOD}</p>
+
+			<fieldset class="quick">
+				<input class="button1" type="submit" name="download" value="{L_TRY_DOWNLOAD_METHOD_BUTTON}" />
+			</fieldset>
+		</div>
+
+		<div class="errorbox">
+			<p>{L_CONNECTION_FAILED}<br />{ERROR_MSG}</p>
+		</div>
+	<!-- ENDIF -->
+
+	<fieldset>
+		<legend>{L_FTP_SETTINGS}</legend>
+	<dl>
+		<dt><label>{L_UPLOAD_METHOD}:</label></dt>
+		<dd><strong>{UPLOAD_METHOD}</strong></dd>
+	</dl>
+	<!-- BEGIN data -->
+	<dl>
+		<dt><label for="{data.DATA}">{data.NAME}:</label><br /><span>{data.EXPLAIN}</span></dt>
+		<dd><input type="<!-- IF data.DATA == 'password' -->password<!-- ELSE -->text<!-- ENDIF -->" id="{data.DATA}" name="{data.DATA}" value="{data.DEFAULT}" /></dd>
+	</dl>
+	<!-- END data -->
+	</fieldset>
+
+	<fieldset class="submit-buttons">
+		{S_HIDDEN_FIELDS}
+		<input class="button2" type="submit" name="check_again" value="{L_BACK}" />
+		<input class="button1" type="submit" name="test_connection" value="{L_TEST_CONNECTION}" />
+		<input class="button1" type="submit" name="submit" value="{L_UPDATE_FILES}" />
+	</fieldset>
+
+	</form>
+
+<!-- ENDIF -->
+
+<!-- INCLUDE install_footer.html -->

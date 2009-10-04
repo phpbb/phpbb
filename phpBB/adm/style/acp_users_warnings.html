@@ -1,0 +1,36 @@
+	<form id="list" method="post" action="{U_ACTION}">
+
+	<!-- IF .warn -->
+	<table cellspacing="1">
+	<thead>
+	<tr>
+		<th>{L_REPORT_BY}</th>
+		<th>{L_TIME}</th>
+		<th>{L_FEEDBACK}</th>
+		<th>{L_MARK}</th>
+	</tr>
+	</thead>
+	<tbody>
+	<!-- BEGIN warn -->
+		<!-- IF warn.S_ROW_COUNT is even --><tr class="row1"><!-- ELSE --><tr class="row2"><!-- ENDIF -->
+			<td>{warn.USERNAME}</td>
+			<td style="text-align: center; nowrap: nowrap;">{warn.DATE}</td>
+			<td>{warn.ACTION}</td>
+			<td style="text-align: center;"><input type="checkbox" class="radio" name="mark[]" value="{warn.ID}" /></td>
+		</tr>
+	<!-- END warn -->
+	</tbody>
+	</table>
+	<!-- ELSE -->
+		<div class="errorbox">
+			<p>{L_NO_WARNINGS}</p>
+		</div>
+	<!-- ENDIF -->
+
+	<fieldset class="quick">
+		<input class="button2" type="submit" name="delall" value="{L_DELETE_ALL}" />&nbsp;
+		<input class="button2" type="submit" name="delmarked" value="{L_DELETE_MARKED}" />
+		<p class="small"><a href="#" onclick="marklist('list', 'mark', true);">{L_MARK_ALL}</a> &bull; <a href="#" onclick="marklist('list', 'mark', false);">{L_UNMARK_ALL}</a></p>
+	</fieldset>
+	{S_FORM_TOKEN}
+	</form>

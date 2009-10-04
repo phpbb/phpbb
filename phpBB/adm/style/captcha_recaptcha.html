@@ -1,0 +1,33 @@
+<!-- IF S_RECAPTCHA_AVAILABLE -->
+	<dl>
+	<dd>
+		<script type="text/javascript">
+		// <![CDATA[
+		var RecaptchaOptions = {
+			lang : '{L_RECAPTCHA_LANG}',
+		};
+		// ]]>
+		</script>
+		<script type="text/javascript" src="{RECAPTCHA_SERVER}/challenge?k={RECAPTCHA_PUBKEY}{RECAPTCHA_ERRORGET}"></script>
+		<script type="text/javascript">
+		// <![CDATA[
+		<!-- IF S_CONTENT_DIRECTION eq 'rtl' -->
+			document.getElementById('recaptcha_table').style.direction = 'ltr';
+		<!-- ENDIF -->
+		// ]]>
+		</script>
+
+
+	<noscript>
+	<div>
+		<object data="{RECAPTCHA_SERVER}/noscript?k={RECAPTCHA_PUBKEY}{RECAPTCHA_ERRORGET}" type="text/html" height="300" width="500"></object><br />
+		<textarea name="recaptcha_challenge_field" rows="3" cols="40"></textarea>
+		<input type="hidden" name="recaptcha_response_field" value="manual_challenge" />
+	</div>
+	</noscript>
+
+	</dd>
+	</dl>
+<!-- ELSE -->
+{L_RECAPTCHA_NOT_AVAILABLE}
+<!-- ENDIF -->

@@ -1,0 +1,22 @@
+<!-- INCLUDE overall_header.html -->
+
+<h1>{L_COPY_PERMISSIONS}</h1>
+
+<p>{L_COPY_PERMISSIONS_EXPLAIN}</p>
+<p>{L_ACL_LINK}</p>
+
+<form id="confirm" method="post" action="{S_COPY_ACTION}">
+
+<fieldset>
+	<dl>
+		<dt><label for="forum_perm_from">{L_COPY_PERMISSIONS}:</label><br /><span>{L_COPY_PERMISSIONS_EXPLAIN}</span></dt>
+		<dd><select id="forum_perm_from" name="forum_perm_from"><option value="0">{L_NO_PERMISSIONS}</option>{S_FORUM_OPTIONS}</select></dd>
+	</dl>
+	<div style="text-align: center;">{S_FORM_TOKEN}{S_HIDDEN_FIELDS}
+		<input type="submit" name="update" value="{L_CONTINUE}" class="button2" />&nbsp;
+	</div>
+</fieldset>
+
+</form>
+
+<!-- INCLUDE overall_footer.html -->

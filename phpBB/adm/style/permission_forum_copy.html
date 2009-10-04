@@ -1,0 +1,40 @@
+<!-- INCLUDE overall_header.html -->
+
+<a name="maincontent"></a>
+
+	<h1>{L_ACP_FORUM_PERMISSIONS_COPY}</h1>
+
+	{L_ACP_FORUM_PERMISSIONS_COPY_EXPLAIN}
+
+	<form id="forum_perm_copy" method="post" action="{U_ACTION}">
+
+	<fieldset>
+		<legend>{L_LOOK_UP_FORUM}</legend>
+
+		<dl>
+			<dt><label for="src_forum">{L_COPY_PERMISSIONS_FROM}:</label><br /><span>{L_COPY_PERMISSIONS_FORUM_FROM_EXPLAIN}</span></dt>
+			<dd><select id="src_forum" name="src_forum_id"><option value="0">{L_SELECT_FORUM}</option><option value="-1">------------------</option>{S_FORUM_OPTIONS}</select></dd>
+		</dl>
+	</fieldset>
+
+	<fieldset>
+		<legend>{L_LOOK_UP_FORUM}</legend>
+		<p>{L_LOOK_UP_FORUMS_EXPLAIN}</p>
+
+		<dl>
+			<dt><label for="dest_forums">{L_COPY_PERMISSIONS_TO}:</label><br /><span>{L_COPY_PERMISSIONS_FORUM_TO_EXPLAIN}</span></dt>
+			<dd><select id="dest_forums" name="dest_forum_ids[]" multiple="multiple" size="10">{S_FORUM_OPTIONS}</select></dd>
+		</dl>
+	</fieldset>
+
+	<fieldset class="submit-buttons">
+		<legend>{L_SUBMIT}</legend>
+		<input class="button1" type="submit" id="submit" name="submit" value="{L_SUBMIT}" />&nbsp;
+		<input class="button2" type="reset" id="reset" name="reset" value="{L_RESET}" />
+		{S_HIDDEN_FIELDS}
+		{S_FORM_TOKEN}
+	</fieldset>
+
+	</form>
+
+<!-- INCLUDE overall_footer.html -->

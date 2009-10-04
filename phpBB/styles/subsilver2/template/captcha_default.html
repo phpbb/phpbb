@@ -1,0 +1,15 @@
+	<tr>
+		<th colspan="2" valign="middle">{L_CONFIRM_CODE}</th>
+	</tr>
+	<tr>
+		<td class="row3" colspan="2"><span class="gensmall">{L_CONFIRM_EXPLAIN}</span></td>
+	</tr>
+	<tr>
+		<td class="row1" colspan="2" align="center"><img src="{CONFIRM_IMAGE_LINK}" alt="{L_CONFIRM_CODE}" />
+		<input type="hidden" name="confirm_id" id="confirm_id" value="{CONFIRM_ID}" /></td>
+	</tr>
+	<tr>
+		<td class="row1"><b class="genmed">{L_CONFIRM_CODE}:</b><br /><span class="gensmall">{L_CONFIRM_CODE_EXPLAIN}</span></td>
+		<td class="row2"><input class="post" type="text" name="confirm_code" size="8" maxlength="8" />
+		<!-- IF S_CONFIRM_REFRESH --><input type="submit" name="refresh_vc" id="refresh_vc" class="button2" value="{L_VC_REFRESH}" /><!-- ENDIF --></td>
+	</tr>

@@ -1,0 +1,46 @@
+
+<!-- IF not S_VIEW_MESSAGE -->
+	{S_FORM_TOKEN}
+	</form>
+<!-- ENDIF -->
+
+<table class="tablebg" width="100%" cellspacing="1" cellpadding="0">
+<tr>
+	<td class="row1">
+		<table border="0" cellspacing="0" cellpadding="0" width="100%">
+		<tr>
+			<td align="{S_CONTENT_FLOW_BEGIN}"><!-- INCLUDE pagination.html -->
+				<!-- IF S_VIEW_MESSAGE -->
+					<span class="gensmall">
+						<!-- IF U_PRINT_PM --><a href="{U_PRINT_PM}" title="{L_PRINT_PM}">{L_PRINT_PM}</a><!-- IF U_FORWARD_PM --> | <!-- ENDIF --><!-- ENDIF -->
+						<!-- IF U_FORWARD_PM --><a href="{U_FORWARD_PM}" title="{L_FORWARD_PM}">{L_FORWARD_PM}</a><!-- ENDIF -->
+					</span>
+				<!-- ENDIF -->
+			</td>
+			<td align="{S_CONTENT_FLOW_END}" nowrap="nowrap">
+				<!-- IF S_VIEW_MESSAGE -->
+					<!-- IF not S_SPECIAL_FOLDER -->
+						<form name="movepm" method="post" action="{S_PM_ACTION}" style="margin:0px">
+							<input type="hidden" name="marked_msg_id[]" value="{MSG_ID}" />
+							<input type="hidden" name="cur_folder_id" value="{CUR_FOLDER_ID}" />
+							<input type="hidden" name="p" value="{MSG_ID}" />
+							<select name="dest_folder">{S_TO_FOLDER_OPTIONS}</select>&nbsp;<input class="btnlite" type="submit" name="move_pm" value="{L_MOVE_TO_FOLDER}" />
+						{S_FORM_TOKEN}
+						</form>
+					<!-- ENDIF -->
+				<!-- ELSE -->
+					<form name="sortmsg" method="post" action="{S_PM_ACTION}" style="margin:0px">
+						<span class="gensmall">{L_DISPLAY_MESSAGES}:</span> {S_SELECT_SORT_DAYS} <span class="gensmall">{L_SORT_BY}</span> {S_SELECT_SORT_KEY} {S_SELECT_SORT_DIR} <input class="btnlite" type="submit" name="sort" value="{L_GO}" />
+					{S_FORM_TOKEN}
+					</form>
+				<!-- ENDIF -->
+			</td>
+		</tr>
+		</table>
+	</td>
+</tr>
+</table>
+
+<!-- IF not S_VIEW_MESSAGE -->
+	<div style="float: {S_CONTENT_FLOW_END};"><b class="gensmall"><a href="#" onclick="marklist('viewfolder', 'marked_msg_id', true); return false;">{L_MARK_ALL}</a> :: <a href="#" onclick="marklist('viewfolder', 'marked_msg_id', false); return false;">{L_UNMARK_ALL}</a></b></div>
+<!-- ENDIF -->
