@@ -248,8 +248,13 @@ class template
 	{
 		global $user, $phpEx, $config;
 
+		if (!isset($this->filename[$handle]))
+		{
+			trigger_error("template->_tpl_load(): No file specified for handle $handle", E_USER_ERROR);
+		}
+
 		$filename = $this->cachepath . str_replace('/', '.', $this->filename[$handle]) . '.' . $phpEx;
-		$this->files_template[$handle] = $user->theme['template_id'];
+		$this->files_template[$handle] = (isset($user->theme['template_id'])) ? $user->theme['template_id'] : 0;
 
 		$recompile = false;
 		if (!file_exists($filename) || @filesize($filename) === 0)
