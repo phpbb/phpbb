@@ -8,8 +8,6 @@
 *
 */
 
-define('IN_PHPBB', true);
-
 if (!defined('PHPUnit_MAIN_METHOD'))
 {
 	define('PHPUnit_MAIN_METHOD', 'phpbb_utf_all_tests::main');
@@ -43,4 +41,3 @@ if (PHPUnit_MAIN_METHOD == 'phpbb_utf_all_tests::main')
 {
 	phpbb_utf_all_tests::main();
 }
-?>

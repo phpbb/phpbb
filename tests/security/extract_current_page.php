@@ -8,8 +8,6 @@
 *
 */
 
-define('IN_PHPBB', true);
-
 require_once 'test_framework/framework.php';
 
 require_once '../phpBB/includes/functions.php';
@@ -53,5 +51,3 @@ class phpbb_security_extract_current_page_test extends phpbb_test_case
 		$this->assertEquals($expected, $result['query_string'], $label);
 	}
 }
-
-?>

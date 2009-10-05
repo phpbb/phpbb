@@ -8,8 +8,6 @@
 *
 */
 
-define('IN_PHPBB', true);
-
 if (!defined('PHPUnit_MAIN_METHOD'))
 {
 	define('PHPUnit_MAIN_METHOD', 'phpbb_request_all_tests::main');
@@ -19,7 +17,6 @@ require_once 'test_framework/framework.php';
 require_once 'PHPUnit/TextUI/TestRunner.php';
 
 require_once 'request/request_var.php';
-require_once 'request/request_class.php';
 
 class phpbb_request_all_tests
 {
@@ -32,7 +29,6 @@ class phpbb_request_all_tests
 	{
 		$suite = new PHPUnit_Framework_TestSuite('phpBB Request Parameter Handling');
 
-		$suite->addTestSuite('phpbb_request_request_class_test');
 		$suite->addTestSuite('phpbb_request_request_var_test');
 
 		return $suite;

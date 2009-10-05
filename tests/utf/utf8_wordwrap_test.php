@@ -8,8 +8,6 @@
 *
 */
 
-define('IN_PHPBB', true);
-
 require_once 'test_framework/framework.php';
 require_once '../phpBB/includes/utf/utf_tools.php';
 
@@ -84,4 +82,3 @@ class phpbb_utf_utf8_wordwrap_test extends phpbb_test_case
 		$this->assertEquals($expected, $phpbb_utf8_wordwrap, 'Checking UTF-8 cutting long words');
 	}
 }
-?>

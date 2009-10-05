@@ -8,13 +8,9 @@
 *
 */
 
-define('IN_PHPBB', true);
-define('PHP_EXT', 'php');
-define('PHPBB_ROOT_PATH', '../phpBB/');
-
 require_once 'test_framework/framework.php';
 
-require_once '../phpBB/includes/core/bootstrap.php';
+require_once '../phpBB/includes/template.php';
 
 class phpbb_template_template_test extends phpbb_test_case
 {
@@ -22,7 +18,7 @@ class phpbb_template_template_test extends phpbb_test_case
 	private $template_path;
 
 	// Keep the contents of the cache for debugging?
-	const PRESERVE_CACHE = true;
+	const PRESERVE_CACHE = false;
 
 	private function display($handle)
 	{
@@ -39,7 +35,7 @@ class phpbb_template_template_test extends phpbb_test_case
 	private function setup_engine()
 	{
 		$this->template_path = dirname(__FILE__) . '/templates';
-		$this->template = new phpbb_template;
+		$this->template = new template();
 		$this->template->set_custom_template($this->template_path, 'tests');
 	}
 
@@ -58,7 +54,7 @@ class phpbb_template_template_test extends phpbb_test_case
 			unlink($file);
 		}
 
-		phpbb::$config = array(
+		$GLOBALS['config'] = array(
 			'load_tplcompile'	=> true,
 			'tpl_allow_php'		=> false,
 		);
@@ -269,61 +265,25 @@ class phpbb_template_template_test extends phpbb_test_case
 		$this->assertFileNotExists($this->template_path . '/' . $filename, 'Testing missing file, file cannot exist');
 
 		$expecting = sprintf('template->_tpl_load_file(): File %s does not exist or is empty', realpath($this->template_path) . '/' . $filename);
+		$this->setExpectedTriggerError(E_USER_ERROR, $expecting);
 
-		try
-		{
-			$this->display('test');
-		}
-		catch (ErrorException $e)
-		{
-			$this->assertEquals($expecting, $e->getMessage());
-
-			if ($expecting != $e->getMessage())
-			{
-				// Unrelated error message throw it out
-				throw $e;
-			}
-		}
+		$this->display('test');
 	}
 
 	public function test_empty_file()
 	{
 		$expecting = 'template->set_filenames: Empty filename specified for test';
 
-		try
-		{
-			$this->template->set_filenames(array('test' => ''));
-		}
-		catch (ErrorException $e)
-		{
-			$this->assertEquals($expecting, $e->getMessage());
-
-			if ($expecting != $e->getMessage())
-			{
-				// Unrelated error message throw it out
-				throw $e;
-			}
-		}
+		$this->setExpectedTriggerError(E_USER_ERROR, $expecting);
+		$this->template->set_filenames(array('test' => ''));
 	}
 
 	public function test_invalid_handle()
 	{
 		$expecting = 'template->_tpl_load(): No file specified for handle test';
+		$this->setExpectedTriggerError(E_USER_ERROR, $expecting);
 
-		try
-		{
-			$this->display('test');
-		}
-		catch (ErrorException $e)
-		{
-			$this->assertEquals($expecting, $e->getMessage());
-
-			if ($expecting != $e->getMessage())
-			{
-				// Unrelated error message throw it out
-				throw $e;
-			}
-		}
+		$this->display('test');
 	}
 
 	private function run_template($file, array $vars, array $block_vars, array $destroy, $expected, $cache_file)
@@ -371,7 +331,8 @@ class phpbb_template_template_test extends phpbb_test_case
 	*/
 	public function test_template($file, array $vars, array $block_vars, array $destroy, $expected)
 	{
-		$cache_file = $this->template->cachepath . str_replace('/', '.', $file) . '.' . PHP_EXT;
+		global $phpEx;
+		$cache_file = $this->template->cachepath . str_replace('/', '.', $file) . '.' . $phpEx;
 
 		$this->assertFileNotExists($cache_file);
 
@@ -385,7 +346,6 @@ class phpbb_template_template_test extends phpbb_test_case
 
 	/**
 	* @dataProvider template_data
-	*/
 	public function test_assign_display($file, array $vars, array $block_vars, array $destroy, $expected)
 	{
 		$this->template->set_filenames(array(
@@ -415,16 +375,19 @@ class phpbb_template_template_test extends phpbb_test_case
 
 	public function test_php()
 	{
-		phpbb::$config['tpl_allow_php'] = true;
+		global $phpEx;
 
-		$cache_file = $this->template->cachepath . 'php.html.' . PHP_EXT;
+		$GLOBALS['config']['tpl_allow_php'] = true;
+
+		$cache_file = $this->template->cachepath . 'php.html.' . $phpEx;
 
 		$this->assertFileNotExists($cache_file);
 
 		$this->run_template('php.html', array(), array(), array(), 'test', $cache_file);
 
-		phpbb::$config['tpl_allow_php'] = false;
+		$GLOBALS['config']['tpl_allow_php'] = false;
 	}
+*/
 /*
 	public function test_includephp()
 	{
@@ -678,7 +641,6 @@ EOT
 
 	/**
 	* @dataProvider alter_block_array_data
-	*/
 	public function test_alter_block_array($alter_block, array $vararray, $key, $mode, $expect, $description)
 	{
 		$this->template->set_filenames(array('test' => 'loop_nested.html'));
@@ -700,5 +662,5 @@ EOT
 		$this->template->alter_block_array($alter_block, $vararray, $key, $mode);
 		$this->assertEquals($expect, $this->display('test'), $description);
 	}
+	*/
 }
-?>

@@ -8,12 +8,7 @@
 *
 */
 
-define('IN_PHPBB', true);
-
 require_once 'test_framework/framework.php';
-
-define(PHPBB_ROOT_PATH, '../phpBB/');
-define(PHP_EXT, 'php');
 require_once '../phpBB/includes/utf/utf_tools.php';
 
 class phpbb_utf_utf8_clean_string_test extends phpbb_test_case
@@ -35,4 +30,3 @@ class phpbb_utf_utf8_clean_string_test extends phpbb_test_case
 		$this->assertEquals($output, utf8_clean_string($input), $label);
 	}
 }
-?>

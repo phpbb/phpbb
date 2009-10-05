@@ -8,10 +8,7 @@
 *
 */
 
-define('IN_PHPBB', true);
-
 require_once 'test_framework/framework.php';
-
 require_once '../phpBB/includes/functions.php';
 
 class phpbb_request_request_var_test extends phpbb_test_case
@@ -22,12 +19,10 @@ class phpbb_request_request_var_test extends phpbb_test_case
 	public function test_post($variable_value, $default, $multibyte, $expected)
 	{
 		$variable_name = 'name';
+		$this->unset_variables($variable_name);
 
 		$_POST[$variable_name] = $variable_value;
 		$_REQUEST[$variable_name] = $variable_value;
-
-		// reread data from super globals
-		request::reset();
 
 		$result = request_var($variable_name, $default, $multibyte);
 
@@ -41,12 +36,10 @@ class phpbb_request_request_var_test extends phpbb_test_case
 	public function test_get($variable_value, $default, $multibyte, $expected)
 	{
 		$variable_name = 'name';
+		$this->unset_variables($variable_name);
 
 		$_GET[$variable_name] = $variable_value;
 		$_REQUEST[$variable_name] = $variable_value;
-
-		// reread data from super globals
-		request::reset();
 
 		$result = request_var($variable_name, $default, $multibyte);
 
@@ -55,10 +48,39 @@ class phpbb_request_request_var_test extends phpbb_test_case
 	}
 
 	/**
-	* @dataProvider deep_access
+	* @dataProvider request_variables
 	*/
+	public function test_cookie($variable_value, $default, $multibyte, $expected)
+	{
+		$variable_name = 'name';
+		$this->unset_variables($variable_name);
+
+		$_GET[$variable_name] = false;
+		$_POST[$variable_name] = false;
+		$_REQUEST[$variable_name] = false;
+		$_COOKIE[$variable_name] = $variable_value;
+
+		$result = request_var($variable_name, $default, $multibyte, true);
+
+		$label = 'Requesting COOKIE variable, converting from ' . gettype($variable_value) . ' to ' . gettype($default) . (($multibyte) ? ' multibyte' : '');
+		$this->assertEquals($expected, $result, $label);
+	}
+
+	/**
+	* Helper for unsetting globals
+	*/
+	private function unset_variables($var)
+	{
+		unset($_GET[$var], $_POST[$var], $_REQUEST[$var], $_COOKIE[$var]);
+	}
+
+	/**
+	* @dataProvider deep_access
+	* Only possible with 3.1.x (later)
 	public function test_deep_multi_dim_array_access($path, $default, $expected)
 	{
+		$this->unset_variables('var');
+
 		$_REQUEST['var'] = array(
 			0 => array(
 				'b' => array(
@@ -75,9 +97,6 @@ class phpbb_request_request_var_test extends phpbb_test_case
 			),
 		);
 
-		// reread data from super globals
-		request::reset();
-
 		$result = request_var($path, $default);
 		$this->assertEquals($expected, $result, 'Testing deep access to multidimensional input arrays: ' . $path);
 	}
@@ -92,7 +111,7 @@ class phpbb_request_request_var_test extends phpbb_test_case
 			array(array('var', 0, 'b', true), array(0 => ''), array(5 => 'c', 6 => 'd')),
 		);
 	}
-
+*/
 	public static function request_variables()
 	{
 		return array(
@@ -193,6 +212,7 @@ class phpbb_request_request_var_test extends phpbb_test_case
 					'abc' => array()
 				)
 			),
+			/* 3-dimensional (not supported atm!
 			array(
 				// input:
 				array(
@@ -237,6 +257,7 @@ class phpbb_request_request_var_test extends phpbb_test_case
 					'ä' => array(4 => array('a' => 2, 'ö' => 3)),
 				)
 			),
+			*/
 		);
 	}
 

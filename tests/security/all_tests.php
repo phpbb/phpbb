@@ -8,8 +8,6 @@
 *
 */
 
-define('IN_PHPBB', true);
-
 if (!defined('PHPUnit_MAIN_METHOD'))
 {
 	define('PHPUnit_MAIN_METHOD', 'phpbb_security_all_tests::main');
@@ -28,7 +26,7 @@ class phpbb_security_all_tests extends PHPUnit_Framework_TestSuite
 	*/
 	protected function setUp()
 	{
-		global $user;
+		global $user, $phpbb_root_path;
 
 		// Put this into a global function being run by every test to init a proper user session
 		$_SERVER['HTTP_HOST']		= 'localhost';
@@ -57,7 +55,7 @@ class phpbb_security_all_tests extends PHPUnit_Framework_TestSuite
 		$user->referer				= (!empty($_SERVER['HTTP_REFERER'])) ? htmlspecialchars((string) $_SERVER['HTTP_REFERER']) : '';
 		$user->forwarded_for		= (!empty($_SERVER['HTTP_X_FORWARDED_FOR'])) ? (string) $_SERVER['HTTP_X_FORWARDED_FOR'] : '';
 		$user->host					= (!empty($_SERVER['HTTP_HOST'])) ? (string) strtolower($_SERVER['HTTP_HOST']) : ((!empty($_SERVER['SERVER_NAME'])) ? $_SERVER['SERVER_NAME'] : getenv('SERVER_NAME'));
-		$user->page = session::extract_current_page(PHPBB_ROOT_PATH);
+		$user->page = session::extract_current_page($phpbb_root_path);
 	}
 
 	protected function tearDown()

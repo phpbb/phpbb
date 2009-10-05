@@ -8,12 +8,7 @@
 *
 */
 
-define('IN_PHPBB', true);
-
 require_once 'test_framework/framework.php';
-
-define('PHPBB_ROOT_PATH', './../phpBB/');
-define('PHP_EXT', 'php');
 
 require_once '../phpBB/includes/functions.php';
 require_once '../phpBB/includes/session.php';
@@ -36,7 +31,7 @@ class phpbb_security_redirect_test extends phpbb_test_case
 	protected function setUp()
 	{
 		$GLOBALS['config'] = array(
-			'force_server_vars'	=> 0,
+			'force_server_vars'	=> '0',
 		);
 	}
 
@@ -61,5 +56,3 @@ class phpbb_security_redirect_test extends phpbb_test_case
 		}
 	}
 }
-
-?>

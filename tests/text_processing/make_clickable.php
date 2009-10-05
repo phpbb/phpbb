@@ -8,8 +8,6 @@
 *
 */
 
-define('IN_PHPBB', true);
-
 require_once 'test_framework/framework.php';
 
 require_once '../phpBB/includes/functions.php';
@@ -66,7 +64,7 @@ class phpbb_text_processing_make_clickable_test extends phpbb_test_case
 			{
 				foreach ($urls as $url => $url_type)
 				{
-					$input = $prefix . $schema . $url . $suffix;
+					$input = $prefix . $url . $suffix;
 					// no valid url => no change
 					$output = $input;
 
@@ -106,4 +104,3 @@ class phpbb_text_processing_make_clickable_test extends phpbb_test_case
 	}
 
 }
-?>
