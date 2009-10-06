@@ -2832,11 +2832,11 @@ function group_user_del($group_id, $user_id_ary = false, $username_ary = false, 
 
 	if ($config['coppa_enable'])
 	{
-		$group_order = array('ADMINISTRATORS', 'GLOBAL_MODERATORS', 'REGISTERED_COPPA', 'REGISTERED', 'BOTS', 'GUESTS');
+		$group_order = array('ADMINISTRATORS', 'GLOBAL_MODERATORS', 'NEWLY_REGISTERED', 'REGISTERED_COPPA', 'REGISTERED', 'BOTS', 'GUESTS');
 	}
 	else
 	{
-		$group_order = array('ADMINISTRATORS', 'GLOBAL_MODERATORS', 'REGISTERED', 'BOTS', 'GUESTS');
+		$group_order = array('ADMINISTRATORS', 'GLOBAL_MODERATORS', 'NEWLY_REGISTERED', 'REGISTERED', 'BOTS', 'GUESTS');
 	}
 
 	// We need both username and user_id info
