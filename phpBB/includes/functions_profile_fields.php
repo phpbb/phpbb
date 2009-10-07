@@ -624,7 +624,7 @@ class custom_profile
 			}
 			else
 			{
-				if (!$preview && isset($user->profile_fields[$user_ident]) && is_null($user->profile_fields[$user_ident]))
+				if (!$preview && array_key_exists($user_ident, $user->profile_fields) && is_null($user->profile_fields[$user_ident]))
 				{
 					$value = NULL;
 				}

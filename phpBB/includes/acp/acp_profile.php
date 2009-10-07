@@ -509,6 +509,14 @@ class acp_profile
 						// Get the number of options if this key is 'field_maxlen'
 						$var = request_var('field_default_value', 0);
 					}*/
+					else if ($field_type == FIELD_INT && $key == 'field_default_value')
+					{
+						// Permit an empty string
+						if (request_var('field_default_value', '') === '')
+						{
+							$var = '';
+						}
+					}
 
 					$cp->vars[$key] = $var;
 				}
