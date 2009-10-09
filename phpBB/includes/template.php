@@ -152,6 +152,7 @@ class template
 	function destroy()
 	{
 		$this->_tpldata = array('.' => array(0 => array()));
+		$this->_rootref = &$this->_tpldata['.'][0];
 	}
 
 	/**
