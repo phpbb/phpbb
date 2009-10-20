@@ -430,7 +430,7 @@ class phpbb_feed
 	/**
 	* Default cache time of entries in seconds
 	*/
-	var $cache_time = 300;
+	var $cache_time = 0;
 
 	/**
 	* Separator for title elements to separate items (for example forum / topic)
