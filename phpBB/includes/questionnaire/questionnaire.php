@@ -303,6 +303,7 @@ class phpbb_questionnaire_phpbb_data_provider
 			'database_gc' => true,
 			'dbms_version' => true,
 			'default_dateformat' => true,
+			'default_lang' => true,
 			'display_last_edited' => true,
 			'display_order' => true,
 			'edit_time' => true,
