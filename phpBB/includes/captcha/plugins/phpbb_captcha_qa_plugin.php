@@ -794,7 +794,7 @@ class phpbb_captcha_qa
 			'question_text'	=> request_var('question_text', '', true),
 			'strict'		=> request_var('strict', false),
 			'lang_iso'		=> request_var('lang_iso', ''),
-			'answers'		=> (strlen($answers)) ? explode("\n", request_var('answers', '', true)) : '',
+			'answers'		=> (strlen($answers)) ? explode("\n", $answers) : '',
 		);
 
 		return $question;
