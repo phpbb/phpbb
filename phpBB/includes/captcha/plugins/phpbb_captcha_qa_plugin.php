@@ -502,7 +502,7 @@ class phpbb_captcha_qa
 	{
 		global $db;
 
-		$answer = ($this->question_strict) ? request_var('qa_answer', '', true) : utf8_clean_string(request_var('qa_answer', '', true));
+		$answer = ($this->question_strict) ? utf8_normalize_nfc(request_var('qa_answer', '', true)) : utf8_clean_string(utf8_normalize_nfc(request_var('qa_answer', '', true)));
 
 		$sql = 'SELECT answer_text
 			FROM ' . CAPTCHA_ANSWERS_TABLE . '
@@ -789,7 +789,7 @@ class phpbb_captcha_qa
 	*/
 	function acp_get_question_input()
 	{
-		$answers = request_var('answers', '', true);
+		$answers = utf8_normalize_nfc(request_var('answers', '', true));
 		$question = array(
 			'question_text'	=> request_var('question_text', '', true),
 			'strict'		=> request_var('strict', false),
