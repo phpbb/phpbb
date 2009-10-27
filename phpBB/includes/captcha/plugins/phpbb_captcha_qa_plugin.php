@@ -617,21 +617,28 @@ class phpbb_captcha_qa
 		}
 		else if ($question_id && $action == 'delete')
 		{
-			if (confirm_box(true))
+			if ($this->get_class_name() !== $config['captcha_plugin'] || !$this->acp_is_last($question_id))
 			{
-				$this->acp_delete_question($question_id);
+				if (confirm_box(true))
+				{
+					$this->acp_delete_question($question_id);
 
-				trigger_error($user->lang['QUESTION_DELETED'] . adm_back_link($list_url));
+					trigger_error($user->lang['QUESTION_DELETED'] . adm_back_link($list_url));
+				}
+				else
+				{
+					confirm_box(false, $user->lang['CONFIRM_OPERATION'], build_hidden_fields(array(
+						'question_id'		=> $question_id,
+						'action'			=> $action,
+						'configure'			=> 1,
+						'select_captcha'	=> $this->get_class_name(),
+						))
+					);
+				}
 			}
 			else
 			{
-				confirm_box(false, $user->lang['CONFIRM_OPERATION'], build_hidden_fields(array(
-					'question_id'		=> $question_id,
-					'action'			=> $action,
-					'configure'			=> 1,
-					'select_captcha'	=> $this->get_class_name(),
-					))
-				);
+				trigger_error($user->lang['QA_ERROR_MSG'] . adm_back_link($list_url), E_USER_WARNING);
 			}
 		}
 		else
@@ -711,7 +718,7 @@ class phpbb_captcha_qa
 			}
 			else if ($submit)
 			{
-				trigger_error($user->lang['FORM_INVALID'] . adm_back_link($list_url));
+				trigger_error($user->lang['FORM_INVALID'] . adm_back_link($list_url), E_USER_WARNING);
 			}
 		}
 	}
@@ -789,11 +796,12 @@ class phpbb_captcha_qa
 	*/
 	function acp_get_question_input()
 	{
+		$answers = request_var('answers', '', true);
 		$question = array(
 			'question_text'	=> request_var('question_text', '', true),
 			'strict'		=> request_var('strict', false),
 			'lang_iso'		=> request_var('lang_iso', ''),
-			'answers'		=> explode("\n", request_var('answers', '', true)),
+			'answers'		=> (strlen($answers)) ? explode("\n", $answers) : '',
 		);
 
 		return $question;
@@ -908,12 +916,12 @@ class phpbb_captcha_qa
 		}
 
 		if (!isset($langs[$question_data['lang_iso']]) ||
-			!$question_data['question_text'] ||
-			!sizeof($question_data['answers']))
+			!strlen($question_data['question_text']) ||
+			!sizeof($question_data['answers']) ||
+			!is_array($question_data['answers']))
 		{
 			return false;
 		}
-
 		return true;
 	}
 
@@ -939,6 +947,33 @@ class phpbb_captcha_qa
 		$db->sql_freeresult($result);
 
 		return $langs;
+	}
+	
+	
+	
+		/**
+	*  Grab a question and bring it into a format the editor understands
+	*/
+	function acp_is_last($question_id)
+	{
+		global $config, $db;
+
+		if ($question_id)
+		{
+			$sql = 'SELECT question_id
+				FROM ' . CAPTCHA_QUESTIONS_TABLE . "
+				WHERE lang_iso = '" . $db->sql_escape($config['default_lang']) . "'
+					AND  question_id <> " .  (int) $question_id;
+			$result = $db->sql_query_limit($sql, 1);
+			$question = $db->sql_fetchrow($result);
+			$db->sql_freeresult($result);
+
+			if (!$question)
+			{
+				return true;
+			}
+			return false;
+		}
 	}
 }
 
