@@ -349,12 +349,12 @@ class phpbb_captcha_qa
 		global $config, $db, $user;
 
 		$error = '';
-		
+
 		if (!sizeof($this->question_ids))
 		{
 			return false;
 		}
-		
+
 		if (!$this->confirm_id)
 		{
 			$error = $user->lang['CONFIRM_QUESTION_WRONG'];
@@ -419,7 +419,7 @@ class phpbb_captcha_qa
 	function reselect_question()
 	{
 		global $db, $user;
-		
+
 		if (!sizeof($this->question_ids))
 		{
 			return false;
@@ -464,7 +464,7 @@ class phpbb_captcha_qa
 	function load_answer()
 	{
 		global $db, $user;
-		
+
 		if (!sizeof($this->question_ids))
 		{
 			return false;
@@ -948,10 +948,8 @@ class phpbb_captcha_qa
 
 		return $langs;
 	}
-	
-	
-	
-		/**
+
+	/**
 	*  Grab a question and bring it into a format the editor understands
 	*/
 	function acp_is_last($question_id)
@@ -963,7 +961,7 @@ class phpbb_captcha_qa
 			$sql = 'SELECT question_id
 				FROM ' . CAPTCHA_QUESTIONS_TABLE . "
 				WHERE lang_iso = '" . $db->sql_escape($config['default_lang']) . "'
-					AND  question_id <> " .  (int) $question_id;
+					AND question_id <> " .  (int) $question_id;
 			$result = $db->sql_query_limit($sql, 1);
 			$question = $db->sql_fetchrow($result);
 			$db->sql_freeresult($result);
