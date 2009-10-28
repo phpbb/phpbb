@@ -8,7 +8,7 @@
 *
 */
 
-$updates_to_version = '3.0.6';
+$updates_to_version = '3.0.6-RC4';
 
 // Enter any version to update from to test updates. The version within the db will not be updated.
 $debug_from_version = false;
@@ -885,7 +885,7 @@ function database_update_info()
 		),
 		// No changes from 3.0.6-RC2 to 3.0.6-RC3
 		'3.0.6-RC2'		=> array(),
-		// No changes from 3.0.6-RC3 to 3.0.6
+		// No changes from 3.0.6-RC3 to 3.0.6-RC4
 		'3.0.6-RC3'		=> array(),
 	);
 }
@@ -1531,7 +1531,7 @@ function change_database_data(&$no_updates, $version)
 
 		break;
 
-		// No changes from 3.0.6-RC3 to 3.0.6
+		// No changes from 3.0.6-RC3 to 3.0.6-RC4
 		case '3.0.6-RC3':
 		break;
 	}
