@@ -323,7 +323,7 @@ function display_forums($root_data = '', $display_moderators = true, $return_mod
 		$forum_unread = (isset($forum_tracking_info[$forum_id]) && $row['orig_forum_last_post_time'] > $forum_tracking_info[$forum_id]) ? true : false;
 
 		// Mark the first visible forum on index as unread if there's any unread global announcement
-		if (($forum_id == $forum_ids_moderator[0]) && ($root_data['forum_id'] == 0) && $ga_unread)
+		if ($ga_unread && !empty($forum_ids_moderator) && $forum_id == $forum_ids_moderator[0])
 		{
 			$forum_unread = true;
 		}
