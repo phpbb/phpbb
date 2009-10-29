@@ -212,17 +212,7 @@ function feed_append_sid($url, $params)
 {
 	global $board_url;
 
-	$link = append_sid($board_url . $url, $params);
-
-	// Remove added sid - not as easy as it sounds. ;)
-	$link = (strpos($link, 'sid=') !== false) ? trim(preg_replace('/(&amp;|&|\?)sid=[a-z0-9]+(&amp;|&)?/', '\1', $link), '?& ') : $link;
-
-	// Now the only thing remaining could be an empty &amp;
-	$link = (substr($link, -5) === '&amp;') ? substr($link, 0, -5) : $link;
-	// And &amp;#xxx
-	$link = str_replace('&amp;#', '#', $link);
-
-	return $link;
+	return append_sid($board_url . $url, $params, true, '');
 }
 
 /**
