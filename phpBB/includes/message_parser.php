@@ -1064,17 +1064,12 @@ class parse_message extends bbcode_firstpass
 
 		$this->mode = $mode;
 
-		if (!isset($config['max_' . $mode . '_chars']))
+		foreach (array('chars', 'smilies', 'urls', 'font_size', 'img_height', 'img_width') as $key)
 		{
-			$config['max_' . $mode . '_chars'] = 0;
-		}
-		if (!isset($config['max_' . $mode . '_smilies']))
-		{
-			$config['max_' . $mode . '_smilies'] = 0;
-		}
-		if (!isset($config['max_' . $mode . '_urls']))
-		{
-			$config['max_' . $mode . '_urls'] = 0;
+			if (!isset($config['max_' . $mode . '_' . $key]))
+			{
+				$config['max_' . $mode . '_' . $key] = 0;
+			}
 		}
 
 		$this->allow_img_bbcode = $allow_img_bbcode;
