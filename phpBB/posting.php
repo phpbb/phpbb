@@ -95,8 +95,8 @@ switch ($mode)
 			FROM ' . TOPICS_TABLE . ' t, ' . FORUMS_TABLE . " f
 			WHERE t.topic_id = $topic_id
 				AND (f.forum_id = t.forum_id
-					OR f.forum_id = $forum_id)
-				AND t.topic_approved = 1";
+					OR f.forum_id = $forum_id)" .
+			(($auth->acl_get('m_approve', $forum_id)) ? '' : 'AND t.topic_approved = 1');
 	break;
 
 	case 'quote':
@@ -125,7 +125,7 @@ switch ($mode)
 				AND u.user_id = p.poster_id
 				AND (f.forum_id = t.forum_id
 					OR f.forum_id = $forum_id)" .
-				(($auth->acl_get('m_approve', $forum_id) && $mode != 'quote') ? '' : 'AND p.post_approved = 1');
+				(($auth->acl_get('m_approve', $forum_id)) ? '' : 'AND p.post_approved = 1');
 	break;
 
 	case 'smilies':
@@ -169,6 +169,13 @@ if (!$post_data)
 		$user->setup('posting');
 	}
 	trigger_error(($mode == 'post' || $mode == 'bump' || $mode == 'reply') ? 'NO_TOPIC' : 'NO_POST');
+}
+
+// Not able to reply to unapproved posts/topics
+// TODO: add more descriptive language key
+if ($auth->acl_get('m_approve', $forum_id) && ((($mode == 'reply' || $mode == 'bump') && !$post_data['topic_approved']) || ($mode == 'quote' && !$post_data['post_approved'])))
+{
+	trigger_error(($mode == 'reply' || $mode == 'bump') ? 'TOPIC_UNAPPROVED' : 'POST_UNAPPROVED');
 }
 
 if ($mode == 'popup')
