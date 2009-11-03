@@ -105,6 +105,7 @@ class mcp_queue
 				{
 					$template->assign_vars(array(
 						'S_TOPIC_REVIEW'	=> true,
+						'S_BBCODE_ALLOWED'	=> $post_info['enable_bbcode'],
 						'TOPIC_TITLE'		=> $post_info['topic_title'])
 					);
 				}
