@@ -317,6 +317,9 @@ function find_in_tree(node, tag, type, class_name)
 	}
 }
 
+var in_autocomplete = false;
+var last_key_entered = '';
+
 /**
 * Usually used for onkeypress event, to submit a form on enter
 */
@@ -326,9 +329,27 @@ function submit_default_button(event, selector, class_name)
 	if (!event.which && ((event.charCode || event.charCode === 0) ? event.charCode : event.keyCode))
 		event.which = event.charCode || event.keyCode;
 
+	// Keycode is array down?
+	if (event.keyCode && event.keyCode == 40)
+		in_autocomplete = true;
+
+	// Make sure we are not within an "autocompletion" field
+	if (in_autocomplete)
+	{
+		// If return pressed and key changed we reset the autocompletion
+		if (!last_key_entered || last_key_entered == event.which)
+		{
+			in_autocompletion = false;
+			return true;
+		}
+	}
+
 	// Keycode is not return, then return. ;)
 	if (event.which != 13)
+	{
+		last_key_entered = event.which;
 		return true;
+	}
 
 	var current = selector['parentNode'];
 
@@ -373,11 +394,28 @@ function apply_onkeypress_event()
 			if (!default_button || default_button.length <= 0)
 				return true;
 
+			// Keycode is array down?
+			if (e.keyCode && e.keyCode == 40)
+				in_autocomplete = true;
+
+			// Make sure we are not within an "autocompletion" field
+			if (in_autocomplete)
+			{
+				// If return pressed and key changed we reset the autocompletion
+				if (!last_key_entered || last_key_entered == e.which)
+				{
+					in_autocompletion = false;
+					return true;
+				}
+			}
+
 			if ((e.which && e.which == 13) || (e.keyCode && e.keyCode == 13))
 			{
 				default_button.click();
 				return false;
 			}
+
+			last_key_entered = e.which;
 
 			return true;
 		});
