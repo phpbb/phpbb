@@ -975,12 +975,12 @@ switch ($mode)
 			$msn		= request_var('msn', '');
 			$jabber		= request_var('jabber', '');
 			$search_group_id	= request_var('search_group_id', 0);
-            
-			// when using these, make sure that  actually have values defined in $find_key_match
+
+			// when using these, make sure that we actually have values defined in $find_key_match
 			$joined_select	= request_var('joined_select', 'lt');
 			$active_select	= request_var('active_select', 'lt');
 			$count_select	= request_var('count_select', 'eq');
-            
+
 			$joined			= explode('-', request_var('joined', ''));
 			$active			= explode('-', request_var('active', ''));
 			$count			= (request_var('count', '') !== '') ? request_var('count', 0) : '';
