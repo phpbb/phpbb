@@ -75,13 +75,6 @@ class acp_forums
 					trigger_error($user->lang['NO_PERMISSION_FORUM_ADD'] . adm_back_link($this->u_action . '&amp;parent_id=' . $this->parent_id), E_USER_WARNING);
 				}
 
-			case 'copy_perm':
-
-				if (!(($auth->acl_get('a_fauth') && $auth->acl_get('a_authusers') && $auth->acl_get('a_authgroups') && $auth->acl_get('a_mauth'))))
-				{
-					trigger_error($user->lang['NO_PERMISSION_COPY'] . adm_back_link($this->u_action . '&amp;parent_id=' . $this->parent_id), E_USER_WARNING);
-				}
-
 			break;
 		}
 
