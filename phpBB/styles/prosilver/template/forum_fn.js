@@ -359,7 +359,7 @@ function submit_default_button(event, selector, class_name)
 	if (!event.which && ((event.charCode || event.charCode === 0) ? event.charCode : event.keyCode))
 		event.which = event.charCode || event.keyCode;
 
-	if (phpbb_set_autocomplete(event))
+	if (phpbb_check_key(event))
 		return true;
 
 	var current = selector['parentNode'];
