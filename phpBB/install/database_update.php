@@ -1563,7 +1563,7 @@ function change_database_data(&$no_updates, $version)
 		break;
 
 		// No changes from 3.0.6-RC4 to 3.0.6
-		case '3.0.6-RC3':
+		case '3.0.6-RC4':
 		break;
 	}
 }
