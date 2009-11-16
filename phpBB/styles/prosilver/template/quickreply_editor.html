@@ -4,13 +4,13 @@
 	{
 		dE('qr_editor_div');
 		dE('qr_showeditor_div');
-	   if (show && document.getElementById('qr_editor_div').style.display != 'none')
+		if (show && document.getElementById('qr_editor_div').style.display != 'none')
 		{
-	    	document.getElementsByName('message')[0].focus();
+			document.getElementsByName('message')[0].focus();
 		}
 		return true;
 	}
-	
+
 
 	function init_qr()
 	{
@@ -27,11 +27,11 @@
 				<div class="content">
 					<h2>{L_QUICKREPLY}</h2>
 					<fieldset class="fields1">
-					<dl style="clear: left;">
-						<dt><label for="subject">{L_SUBJECT}:</label></dt>
-						<dd><input type="text" name="subject" id="subject-ns" size="45" maxlength="64" tabindex="2" value="{SUBJECT}" class="inputbox autowidth" /></dd>
-					</dl>
-				<div id="message-box-ns">
+						<dl style="clear: left;">
+							<dt><label for="subject">{L_SUBJECT}:</label></dt>
+							<dd><input type="text" name="subject" id="subject-ns" size="45" maxlength="64" tabindex="2" value="{SUBJECT}" class="inputbox autowidth" /></dd>
+						</dl>
+					<div id="message-box-ns">
 						<textarea style="height: 9em;" name="message" rows="7" cols="76" tabindex="3" class="inputbox"></textarea>
 					</div>
 					</fieldset>
@@ -71,11 +71,11 @@
 		<span class="corners-bottom"><span></span></span></div>
 	</div>
 	<div class="panel" style="display: none" id="qr_showeditor_div" >
-	<div class="inner"><span class="corners-top"><span></span></span>
+		<div class="inner"><span class="corners-top"><span></span></span>
 
-		<div class="content">
-			<fieldset class="submit-buttons">
-				<input type="submit" name="show_qr" tabindex="1" class="button2" value="{L_SHOW_QR}" onclick="hide_qr(true);return false;"/>
+			<div class="content">
+				<fieldset class="submit-buttons">
+					<input type="submit" name="show_qr" tabindex="1" class="button2" value="{L_SHOW_QR}" onclick="hide_qr(true);return false;"/>
 				</fieldset>
 			</div>
 		<span class="corners-bottom"><span></span></span></div>
