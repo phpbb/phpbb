@@ -41,6 +41,7 @@ $params = false;
 
 // We do not use a template, therefore we simply define the global template variables here
 $global_vars = $item_vars = array();
+$feed_updated_time = 0;
 
 // Generate params array for use in append_sid() to correctly link back to this page
 if ($forum_id || $topic_id || $mode)
@@ -67,19 +68,6 @@ if ($feed === false)
 // Open Feed
 $feed->open();
 
-// Some default assignments
-// FEED_IMAGE is not used (atom)
-$global_vars = array(
-	'FEED_IMAGE'			=> ($user->img('site_logo', '', false, '', 'src')) ? $board_url . '/' . substr($user->img('site_logo', '', false, '', 'src'), strlen($phpbb_root_path)) : '',
-	'SELF_LINK'				=> feed_append_sid('/feed.' . $phpEx, $params),
-	'FEED_LINK'				=> $board_url . '/index.' . $phpEx,
-	'FEED_TITLE'			=> $config['sitename'],
-	'FEED_SUBTITLE'			=> $config['site_desc'],
-	'FEED_UPDATED'			=> $user->format_date(time(), $feed_date_format, true),
-	'FEED_LANG'				=> $user->lang['USER_LANG'],
-	'FEED_AUTHOR'			=> $config['sitename'],
-);
-
 // Iterate through items
 while ($row = $feed->get_item())
 {
@@ -102,9 +90,11 @@ while ($row = $feed->get_item())
 	$title = ($row[$feed->get('title')]) ? $row[$feed->get('title')] : ((isset($row[$feed->get('title2')])) ? $row[$feed->get('title2')] : '');
 	$title = censor_text($title);
 
+	$item_time = (int) $row[$feed->get('date')];
+
 	$item_row = array(
 		'author'		=> ($feed->get('creator') !== NULL) ? $row[$feed->get('creator')] : '',
-		'pubdate'		=> $user->format_date($row[$feed->get('date')], $feed_date_format, true),
+		'pubdate'		=> $user->format_date($item_time, $feed_date_format, true),
 		'link'			=> '',
 		'title'			=> censor_text($title),
 		'category'		=> ($config['feed_item_statistics']) ? $board_url . '/viewforum.' . $phpEx . '?f=' . $row['forum_id'] : '',
@@ -117,7 +107,28 @@ while ($row = $feed->get_item())
 	$feed->adjust_item($item_row, $row);
 
 	$item_vars[] = $item_row;
+
+	$feed_updated_time = max($feed_updated_time, $item_time);
 }
+
+// If we do not have any items at all, sending the current time is better than sending no time.
+if (!$feed_updated_time)
+{
+	$feed_updated_time = time();
+}
+
+// Some default assignments
+// FEED_IMAGE is not used (atom)
+$global_vars = array(
+	'FEED_IMAGE'			=> ($user->img('site_logo', '', false, '', 'src')) ? $board_url . '/' . substr($user->img('site_logo', '', false, '', 'src'), strlen($phpbb_root_path)) : '',
+	'SELF_LINK'				=> feed_append_sid('/feed.' . $phpEx, $params),
+	'FEED_LINK'				=> $board_url . '/index.' . $phpEx,
+	'FEED_TITLE'			=> $config['sitename'],
+	'FEED_SUBTITLE'			=> $config['site_desc'],
+	'FEED_UPDATED'			=> $user->format_date($feed_updated_time, $feed_date_format, true),
+	'FEED_LANG'				=> $user->lang['USER_LANG'],
+	'FEED_AUTHOR'			=> $config['sitename'],
+);
 
 $feed->close();
 
@@ -136,7 +147,7 @@ if ($config['gzip_compress'])
 if (!defined('DEBUG_EXTRA') || !request_var('explain', 0) || !$auth->acl_get('a_'))
 {
 	header("Content-Type: application/atom+xml; charset=UTF-8");
-	header("Last-Modified: " . gmdate('D, d M Y H:i:s', time()) . ' GMT');
+	header("Last-Modified: " . gmdate('D, d M Y H:i:s', $feed_updated_time) . ' GMT');
 }
 else
 {
