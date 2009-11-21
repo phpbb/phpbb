@@ -668,7 +668,7 @@ function set_modified_headers($stamp, $browser)
 	$last_load 	=  isset($_SERVER['HTTP_IF_MODIFIED_SINCE']) ? strtotime(trim($_SERVER['HTTP_IF_MODIFIED_SINCE'])) : false;
 	if ((strpos(strtolower($browser), 'msie 6.0') === false) && (strpos(strtolower($browser), 'msie 8.0') === false))
 	{
-		if ($last_load !== false && $last_load <= $stamp)
+		if ($last_load !== false && $last_load >= $stamp)
 		{
 			if (substr(strtolower(@php_sapi_name()),0,3) === 'cgi')
 			{
