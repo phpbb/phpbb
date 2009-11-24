@@ -644,7 +644,7 @@ class phpbb_feed
 			}
 
 			// Determine which forums to fetch
-			$not_in_fid = (sizeof($this->excluded_forums())) ? ' AND ' . $db->sql_in_set('f1.forum_id', $this->excluded_forums(), true) : '';
+			$not_in_fid = (sizeof($this->excluded_forums())) ? ' AND ' . $db->sql_in_set('f2.forum_id', $this->excluded_forums(), true) : '';
 
 			// Determine forum childs...
 			$sql = 'SELECT f2.forum_id
