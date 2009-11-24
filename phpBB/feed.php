@@ -443,7 +443,7 @@ class phpbb_feed
 	*/
 	var $separator_stats = "\xE2\x80\x94"; // &mdash;
 
-/**
+	/**
 	* Constructor. Set standard keys.
 	*/
 	function phpbb_feed($forum_id = 0, $topic_id = 0)
