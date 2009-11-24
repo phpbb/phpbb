@@ -439,6 +439,11 @@ class phpbb_feed
 	var $separator = "\xE2\x80\xA2"; // &bull;
 
 	/**
+	* Separator for the statistics row (Posted by, post date, replies, etc.)
+	*/
+	var $separator_stats = "\xE2\x80\x94"; // &mdash;
+
+/**
 	* Constructor. Set standard keys.
 	*/
 	function phpbb_feed($forum_id = 0, $topic_id = 0)
@@ -811,7 +816,10 @@ class phpbb_feed
 
 			$time = ($this->topic_id) ? $row['post_time'] : $row['topic_time'];
 
-			$item_row['statistics'] = $user->lang['POSTED'] . ' ' . $user->lang['POST_BY_AUTHOR'] . ' ' . $user_link . ' - ' . $user->format_date($time). ' - ' . $user->lang['REPLIES'] . ' ' . $row['topic_replies'] . ' - ' . $user->lang['VIEWS'] . ' ' . $row['topic_views'];
+			$item_row['statistics'] = $user->lang['POSTED'] . ' ' . $user->lang['POST_BY_AUTHOR'] . ' ' . $user_link
+				. ' ' . $this->separator_stats . ' ' . $user->format_date($time)
+				. ' ' . $this->separator_stats . ' ' . $user->lang['REPLIES'] . ' ' . $row['topic_replies']
+				. ' ' . $this->separator_stats . ' ' . $user->lang['VIEWS'] . ' ' . $row['topic_views'];
 		}
 	}
 }
@@ -867,7 +875,8 @@ class phpbb_feed_forums extends phpbb_feed
 		{
 			global $user;
 
-			$item_row['statistics'] = sprintf($user->lang['TOTAL_TOPICS_OTHER'], $row['forum_topics']) . ' - ' . sprintf($user->lang['TOTAL_POSTS_OTHER'], $row['forum_posts']);
+			$item_row['statistics'] = sprintf($user->lang['TOTAL_TOPICS_OTHER'], $row['forum_topics'])
+				. ' ' . $this->separator_stats . ' ' . sprintf($user->lang['TOTAL_POSTS_OTHER'], $row['forum_posts']);
 		}
 	}
 }
@@ -958,7 +967,10 @@ class phpbb_feed_news extends phpbb_feed
 
 			$user_link = '<a href="' . feed_append_sid('/memberlist.' . $phpEx, 'mode=viewprofile&amp;u=' . $row[$this->get('author_id')]) . '">' . $row[$this->get('creator')] . '</a>';
 
-			$item_row['statistics'] = $user->lang['POSTED'] . ' ' . $user->lang['POST_BY_AUTHOR'] . ' ' . $user_link . ' - ' . $user->format_date($row['topic_time']). ' - ' . $user->lang['REPLIES'] . ' ' . $row['topic_replies'] . ' - ' . $user->lang['VIEWS'] . ' ' . $row['topic_views'];
+			$item_row['statistics'] = $user->lang['POSTED'] . ' ' . $user->lang['POST_BY_AUTHOR'] . ' ' . $user_link
+				. ' ' . $this->separator_stats . ' ' . $user->format_date($row['topic_time'])
+				. ' ' . $this->separator_stats . ' ' . $user->lang['REPLIES'] . ' ' . $row['topic_replies']
+				. ' ' . $this->separator_stats . ' ' . $user->lang['VIEWS'] . ' ' . $row['topic_views'];
 		}
 	}
 }
@@ -1056,7 +1068,10 @@ class phpbb_feed_topics extends phpbb_feed
 
 			$user_link = '<a href="' . feed_append_sid('/memberlist.' . $phpEx, 'mode=viewprofile&amp;u=' . $row[$this->get('author_id')]) . '">' . $row[$this->get('creator')] . '</a>';
 
-			$item_row['statistics'] = $user->lang['POSTED'] . ' ' . $user->lang['POST_BY_AUTHOR'] . ' ' . $user_link . ' - ' . $user->format_date($row['topic_time']). ' - ' . $user->lang['REPLIES'] . ' ' . $row['topic_replies'] . ' - ' . $user->lang['VIEWS'] . ' ' . $row['topic_views'];
+			$item_row['statistics'] = $user->lang['POSTED'] . ' ' . $user->lang['POST_BY_AUTHOR'] . ' ' . $user_link
+				. ' ' . $this->separator_stats . ' ' . $user->format_date($row['topic_time'])
+				. ' ' . $this->separator_stats . ' ' . $user->lang['REPLIES'] . ' ' . $row['topic_replies']
+				. ' ' . $this->separator_stats . ' ' . $user->lang['VIEWS'] . ' ' . $row['topic_views'];
 		}
 	}
 }
