@@ -812,7 +812,7 @@ class phpbb_feed
 		{
 			global $user;
 
-			$user_link = '<a href="' . feed_append_sid('/memberlist.' . $phpEx, 'mode=viewprofile&amp;u=' . $row['user_id']) . '">' . $row['username'] . '</a>';
+			$user_link = ($row['user_id'] != ANONYMOUS) ? '<a href="' . feed_append_sid('/memberlist.' . $phpEx, 'mode=viewprofile&amp;u=' . $row['user_id']) . '">' . $row['username'] . '</a>' : $row['username'];
 
 			$time = ($this->topic_id) ? $row['post_time'] : $row['topic_time'];
 
@@ -965,7 +965,7 @@ class phpbb_feed_news extends phpbb_feed
 		{
 			global $user;
 
-			$user_link = '<a href="' . feed_append_sid('/memberlist.' . $phpEx, 'mode=viewprofile&amp;u=' . $row[$this->get('author_id')]) . '">' . $row[$this->get('creator')] . '</a>';
+			$user_link = ($row[$this->get('author_id')] != ANONYMOUS) ? '<a href="' . feed_append_sid('/memberlist.' . $phpEx, 'mode=viewprofile&amp;u=' . $row[$this->get('author_id')]) . '">' . $row[$this->get('creator')] . '</a>' : $row[$this->get('creator')];
 
 			$item_row['statistics'] = $user->lang['POSTED'] . ' ' . $user->lang['POST_BY_AUTHOR'] . ' ' . $user_link
 				. ' ' . $this->separator_stats . ' ' . $user->format_date($row['topic_time'])
@@ -1066,7 +1066,7 @@ class phpbb_feed_topics extends phpbb_feed
 		{
 			global $user;
 
-			$user_link = '<a href="' . feed_append_sid('/memberlist.' . $phpEx, 'mode=viewprofile&amp;u=' . $row[$this->get('author_id')]) . '">' . $row[$this->get('creator')] . '</a>';
+			$user_link = ($row[$this->get('author_id')] != ANONYMOUS) ? '<a href="' . feed_append_sid('/memberlist.' . $phpEx, 'mode=viewprofile&amp;u=' . $row[$this->get('author_id')]) . '">' . $row[$this->get('creator')] . '</a>' : $row[$this->get('creator')];
 
 			$item_row['statistics'] = $user->lang['POSTED'] . ' ' . $user->lang['POST_BY_AUTHOR'] . ' ' . $user_link
 				. ' ' . $this->separator_stats . ' ' . $user->format_date($row['topic_time'])
