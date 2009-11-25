@@ -144,12 +144,7 @@ if ($config['gzip_compress'])
 }
 
 // IF debug extra is enabled and admin want to "explain" the page we need to set other headers...
-if (!defined('DEBUG_EXTRA') || !request_var('explain', 0) || !$auth->acl_get('a_'))
-{
-	header("Content-Type: application/atom+xml; charset=UTF-8");
-	header("Last-Modified: " . gmdate('D, d M Y H:i:s', $feed_updated_time) . ' GMT');
-}
-else
+if (defined('DEBUG_EXTRA') && request_var('explain', 0) && $auth->acl_get('a_'))
 {
 	header('Content-type: text/html; charset=UTF-8');
 	header('Cache-Control: private, no-cache="set-cookie"');
@@ -167,6 +162,9 @@ else
 	garbage_collection();
 	exit_handler();
 }
+
+header("Content-Type: application/atom+xml; charset=UTF-8");
+header("Last-Modified: " . gmdate('D, d M Y H:i:s', $feed_updated_time) . ' GMT');
 
 echo '<?xml version="1.0" encoding="UTF-8"?>' . "\n";
 echo '<feed xmlns="http://www.w3.org/2005/Atom" xml:lang="' . $global_vars['FEED_LANG'] . '">' . "\n";
