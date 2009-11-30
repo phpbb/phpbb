@@ -1726,6 +1726,12 @@ if (empty($_REQUEST['f']))
 	$_REQUEST['f'] = $forum_id;
 }
 
+// We need to do the same with the topic_id. See #53025.
+if (empty($_REQUEST['t']) && !empty($topic_id))
+{
+	$_REQUEST['t'] = $topic_id;
+}
+
 // Output the page
 page_header($user->lang['VIEW_TOPIC'] . ' - ' . $topic_data['topic_title'], true, $forum_id);
 
