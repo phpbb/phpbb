@@ -66,7 +66,10 @@ if ($feed === false)
 }
 
 // Open Feed
-$feed->open();
+if ($feed->open() === false)
+{
+	trigger_error('NO_FEED');
+}
 
 // Iterate through items
 while ($row = $feed->get_item())
@@ -479,34 +482,42 @@ class phpbb_feed
 	{
 		if (!$this->forum_id && !$this->topic_id)
 		{
-			return;
+			return false;
 		}
 		else if ($this->forum_id && !$this->topic_id)
 		{
-			global $db, $user, $global_vars;
+			global $db, $user;
 
 			$sql = 'SELECT forum_name
 				FROM ' . FORUMS_TABLE . '
 				WHERE forum_id = ' . $this->forum_id;
 			$result = $db->sql_query($sql);
-
-			$global_vars['FEED_MODE'] = $user->lang['FORUM'] . ': ' . $db->sql_fetchfield('forum_name');
-
+			$row = $db->sql_fetchrow($result);
 			$db->sql_freeresult($result);
+
+			if (empty($row))
+			{
+				return false;
+			}
 		}
 		else if ($this->topic_id)
 		{
-			global $db, $user, $global_vars;
+			global $db, $user;
 
 			$sql = 'SELECT topic_title
 				FROM ' . TOPICS_TABLE . '
 				WHERE topic_id = ' . $this->topic_id;
 			$result = $db->sql_query($sql);
-
-			$global_vars['FEED_MODE'] = $user->lang['TOPIC'] . ': ' . $db->sql_fetchfield('topic_title');
-
+			$row = $db->sql_fetchrow($result);
 			$db->sql_freeresult($result);
+
+			if (empty($row))
+			{
+				return false;
+			}
 		}
+
+		return true;
 	}
 
 	function close()
@@ -517,6 +528,8 @@ class phpbb_feed
 
 			$db->sql_freeresult($this->result);
 		}
+
+		return true;
 	}
 
 	/**
@@ -840,9 +853,7 @@ class phpbb_feed_forums extends phpbb_feed
 
 	function open()
 	{
-		global $user, $global_vars;
-
-		$global_vars['FEED_MODE'] = $user->lang['FORUMS'];
+		return true;
 	}
 
 	function get_sql()
@@ -903,9 +914,7 @@ class phpbb_feed_news extends phpbb_feed
 
 	function open()
 	{
-		global $user, $global_vars;
-
-		$global_vars['FEED_MODE'] = $user->lang['FEED_NEWS'];
+		return true;
 	}
 
 	function get_sql()
@@ -997,9 +1006,7 @@ class phpbb_feed_topics extends phpbb_feed
 
 	function open()
 	{
-		global $user, $global_vars;
-
-		$global_vars['FEED_MODE'] = $user->lang['TOPICS'];
+		return true;
 	}
 
 	function get_sql()
