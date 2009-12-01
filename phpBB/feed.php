@@ -482,7 +482,7 @@ class phpbb_feed
 	{
 		if (!$this->forum_id && !$this->topic_id)
 		{
-			return false;
+			return true;
 		}
 		else if ($this->forum_id && !$this->topic_id)
 		{
