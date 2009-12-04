@@ -45,7 +45,7 @@ if (!defined('PHPBB_INSTALLED') || empty($dbms) || empty($acm_type))
 }
 
 // Load Extensions
-if (!empty($load_extensions))
+if (!empty($load_extensions) && function_exists('dl'))
 {
 	$load_extensions = explode(',', $load_extensions);
 

@@ -172,7 +172,8 @@ if (defined('DEBUG_EXTRA'))
 }
 
 // Load Extensions
-if (!empty($load_extensions))
+// dl() is deprecated and disabled by default as of PHP 5.3.
+if (!empty($load_extensions) && function_exists('dl'))
 {
 	$load_extensions = explode(',', $load_extensions);
 

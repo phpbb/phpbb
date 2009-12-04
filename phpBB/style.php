@@ -31,7 +31,7 @@ if (version_compare(PHP_VERSION, '6.0.0-dev', '<'))
 }
 
 // Load Extensions
-if (!empty($load_extensions))
+if (!empty($load_extensions) && function_exists('dl'))
 {
 	$load_extensions = explode(',', $load_extensions);
 
