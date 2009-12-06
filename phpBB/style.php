@@ -15,8 +15,12 @@ define('IN_PHPBB', true);
 $phpbb_root_path = (defined('PHPBB_ROOT_PATH')) ? PHPBB_ROOT_PATH : './';
 $phpEx = substr(strrchr(__FILE__, '.'), 1);
 
-// Report all errors, except notices
-error_reporting(E_ALL ^ E_NOTICE);
+// Report all errors, except notices and deprecation messages
+if (!defined('E_DEPRECATED'))
+{
+	define('E_DEPRECATED', 8192);
+}
+error_reporting(E_ALL ^ E_NOTICE ^ E_DEPRECATED);
 
 require($phpbb_root_path . 'config.' . $phpEx);
 
