@@ -45,13 +45,6 @@ $mode		= ($delete && !$preview && !$refresh && $submit) ? 'delete' : request_var
 $error = $post_data = array();
 $current_time = time();
 
-if ($config['enable_post_confirm'] && !$user->data['is_registered'])
-{
-	include($phpbb_root_path . 'includes/captcha/captcha_factory.' . $phpEx);
-	$captcha =& phpbb_captcha_factory::get_instance($config['captcha_plugin']);
-	$captcha->init(CONFIRM_POST);
-}
-
 // Was cancel pressed? If so then redirect to the appropriate page
 if ($cancel || ($current_time - $lastclick < 2 && $submit))
 {
@@ -185,6 +178,13 @@ if ($mode == 'popup')
 }
 
 $user->setup(array('posting', 'mcp', 'viewtopic'), $post_data['forum_style']);
+
+if ($config['enable_post_confirm'] && !$user->data['is_registered'])
+{
+	include($phpbb_root_path . 'includes/captcha/captcha_factory.' . $phpEx);
+	$captcha =& phpbb_captcha_factory::get_instance($config['captcha_plugin']);
+	$captcha->init(CONFIRM_POST);
+}
 
 // Use post_row values in favor of submitted ones...
 $forum_id	= (!empty($post_data['forum_id'])) ? (int) $post_data['forum_id'] : (int) $forum_id;
