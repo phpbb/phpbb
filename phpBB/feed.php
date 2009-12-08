@@ -722,7 +722,7 @@ class phpbb_feed
 			'SELECT'	=>	'f.forum_id, f.forum_name, f.forum_desc_options, ' .
 							't.topic_last_post_time, t.topic_id, t.topic_title, t.topic_time, t.topic_replies, t.topic_views, ' .
 							'p.post_id, p.post_time, p.post_subject, p.post_text, p.bbcode_bitfield, p.bbcode_uid, p.enable_bbcode, p.enable_smilies, p.enable_magic_url, ' .
-							'u.username, u.user_id, u.user_email, u.user_colour',
+							'u.username, u.user_id',
 			'FROM'		=> array(
 				POSTS_TABLE		=> 'p',
 				TOPICS_TABLE	=> 't',
@@ -933,20 +933,17 @@ class phpbb_feed_news extends phpbb_feed
 
 		// Build SQL Query
 		$this->sql = array(
-			'SELECT'	=> 'f.forum_id, f.forum_password, f.forum_name, f.forum_topics, f.forum_posts, f.parent_id, f.left_id, f.right_id,
+			'SELECT'	=> 'f.forum_id, f.forum_name, f.forum_topics, f.forum_posts,
 							t.topic_id, t.topic_title, t.topic_poster, t.topic_first_poster_name, t.topic_replies, t.topic_views, t.topic_time,
-							p.post_id, p.post_text, p.bbcode_bitfield, p.bbcode_uid, p.enable_bbcode, p.enable_smilies, p.enable_magic_url,
-							u.username, u.user_id, u.user_email, u.user_colour',
+							p.post_id, p.post_text, p.bbcode_bitfield, p.bbcode_uid, p.enable_bbcode, p.enable_smilies, p.enable_magic_url',
 			'FROM'		=> array(
 				TOPICS_TABLE	=> 't',
 				FORUMS_TABLE	=> 'f',
 				POSTS_TABLE		=> 'p',
-				USERS_TABLE		=> 'u',
 			),
 			'WHERE'		=> $db->sql_in_set('t.forum_id', $in_fid_ary) . '
 							AND f.forum_id = t.forum_id
 							AND p.post_id = t.topic_first_post_id
-							AND t.topic_poster = u.user_id
 							AND t.topic_moved_id = 0',
 			'ORDER_BY'	=> 't.topic_time DESC',
 		);
@@ -1033,20 +1030,17 @@ class phpbb_feed_topics extends phpbb_feed
 		}
 
 		$this->sql = array(
-			'SELECT'	=> 'f.forum_id, f.forum_password, f.forum_name, f.forum_topics, f.forum_posts, f.parent_id, f.left_id, f.right_id,
+			'SELECT'	=> 'f.forum_id, f.forum_name, f.forum_topics, f.forum_posts,
 							t.topic_id, t.topic_title, t.topic_poster, t.topic_first_poster_name, t.topic_replies, t.topic_views, t.topic_time,
-							p.post_id, p.post_text, p.bbcode_bitfield, p.bbcode_uid, p.enable_bbcode, p.enable_smilies, p.enable_magic_url,
-							u.username, u.user_id, u.user_email, u.user_colour',
+							p.post_id, p.post_text, p.bbcode_bitfield, p.bbcode_uid, p.enable_bbcode, p.enable_smilies, p.enable_magic_url',
 			'FROM'		=> array(
 				TOPICS_TABLE	=> 't',
 				FORUMS_TABLE	=> 'f',
 				POSTS_TABLE		=> 'p',
-				USERS_TABLE		=> 'u',
 			),
 			'WHERE'		=> $db->sql_in_set('p.post_id', $post_ids) . '
 								AND f.forum_id = p.forum_id
-								AND t.topic_id = p.topic_id
-								AND u.user_id = p.poster_id',
+								AND t.topic_id = p.topic_id',
 			'ORDER_BY'	=> 't.topic_last_post_time DESC',
 		);
 
