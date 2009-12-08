@@ -819,10 +819,8 @@ class phpbb_feed
 
 			$user_link = ($row['user_id'] != ANONYMOUS) ? '<a href="' . feed_append_sid('/memberlist.' . $phpEx, 'mode=viewprofile&amp;u=' . $row['user_id']) . '">' . $row['username'] . '</a>' : $row['username'];
 
-			$time = ($this->topic_id) ? $row['post_time'] : $row['topic_time'];
-
 			$item_row['statistics'] = $user->lang['POSTED'] . ' ' . $user->lang['POST_BY_AUTHOR'] . ' ' . $user_link
-				. ' ' . $this->separator_stats . ' ' . $user->format_date($time)
+				. ' ' . $this->separator_stats . ' ' . $user->format_date($row['post_time'])
 				. ' ' . $this->separator_stats . ' ' . $user->lang['REPLIES'] . ' ' . $row['topic_replies']
 				. ' ' . $this->separator_stats . ' ' . $user->lang['VIEWS'] . ' ' . $row['topic_views'];
 		}
