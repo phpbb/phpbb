@@ -480,17 +480,13 @@ class phpbb_feed
 
 	function open()
 	{
-		if (!$this->forum_id && !$this->topic_id)
-		{
-			return true;
-		}
-		else if ($this->forum_id && !$this->topic_id)
-		{
-			global $db, $user;
+		global $db, $user;
 
-			$sql = 'SELECT forum_name
-				FROM ' . FORUMS_TABLE . '
-				WHERE forum_id = ' . $this->forum_id;
+		if ($this->topic_id)
+		{
+			$sql = 'SELECT topic_title
+				FROM ' . TOPICS_TABLE . '
+				WHERE topic_id = ' . $this->topic_id;
 			$result = $db->sql_query($sql);
 			$row = $db->sql_fetchrow($result);
 			$db->sql_freeresult($result);
@@ -500,13 +496,11 @@ class phpbb_feed
 				return false;
 			}
 		}
-		else if ($this->topic_id)
+		else if ($this->forum_id)
 		{
-			global $db, $user;
-
-			$sql = 'SELECT topic_title
-				FROM ' . TOPICS_TABLE . '
-				WHERE topic_id = ' . $this->topic_id;
+			$sql = 'SELECT forum_name
+				FROM ' . FORUMS_TABLE . '
+				WHERE forum_id = ' . $this->forum_id;
 			$result = $db->sql_query($sql);
 			$row = $db->sql_fetchrow($result);
 			$db->sql_freeresult($result);
