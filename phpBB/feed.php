@@ -66,10 +66,7 @@ if ($feed === false)
 }
 
 // Open Feed
-if ($feed->open() === false)
-{
-	trigger_error('NO_FEED');
-}
+$feed->open();
 
 // Iterate through items
 while ($row = $feed->get_item())
@@ -480,25 +477,33 @@ class phpbb_feed
 
 	function open()
 	{
-		global $db, $user;
+		global $auth, $db, $user;
 
 		if ($this->topic_id)
 		{
-			$sql = 'SELECT topic_title
+			// Topic feed
+			$sql = 'SELECT forum_id
 				FROM ' . TOPICS_TABLE . '
 				WHERE topic_id = ' . $this->topic_id;
 			$result = $db->sql_query($sql);
 			$row = $db->sql_fetchrow($result);
+			$this->forum_id = (int) $row['forum_id'];
 			$db->sql_freeresult($result);
 
 			if (empty($row))
 			{
-				return false;
+				trigger_error('NO_TOPIC');
+			}
+
+			if (!$auth->acl_get('f_read', $this->forum_id))
+			{
+				trigger_error('SORRY_AUTH_READ');
 			}
 		}
 		else if ($this->forum_id)
 		{
-			$sql = 'SELECT forum_name
+			// Forum feed
+			$sql = 'SELECT forum_id
 				FROM ' . FORUMS_TABLE . '
 				WHERE forum_id = ' . $this->forum_id;
 			$result = $db->sql_query($sql);
@@ -507,7 +512,12 @@ class phpbb_feed
 
 			if (empty($row))
 			{
-				return false;
+				trigger_error('NO_FORUM');
+			}
+
+			if (!$auth->acl_get('f_read', $this->forum_id))
+			{
+				trigger_error('SORRY_AUTH_READ');
 			}
 		}
 
