@@ -47,6 +47,11 @@ class acm_memory
 
 			trigger_error("Could not find required extension [{$this->extension}] for the ACM module $acm_type.", E_USER_ERROR);
 		}
+
+		if (isset($this->function) && !function_exists($this->function))
+		{
+			trigger_error("The required function [{$this->function}] is not available for the ACM module $acm_type.", E_USER_ERROR);
+		}
 	}
 
 	/**
