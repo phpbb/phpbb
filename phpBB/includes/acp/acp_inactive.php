@@ -90,22 +90,19 @@ class acp_inactive
 
 					if ($action == 'activate')
 					{
-						if ($config['require_activation'] == USER_ACTIVATION_ADMIN)
-						{
-							// Get those 'being activated'...
-							$sql = 'SELECT user_id, username, user_email, user_lang
-								FROM ' . USERS_TABLE . '
-								WHERE ' . $db->sql_in_set('user_id', $mark) . '
-									AND user_type = ' . USER_INACTIVE;
-							$result = $db->sql_query($sql);
+						// Get those 'being activated'...
+						$sql = 'SELECT user_id, username' . (($config['require_activation'] == USER_ACTIVATION_ADMIN) ? ', user_email, user_lang' : '') . '
+							FROM ' . USERS_TABLE . '
+							WHERE ' . $db->sql_in_set('user_id', $mark) . '
+								AND user_type = ' . USER_INACTIVE;
+						$result = $db->sql_query($sql);
 
-							$inactive_users = array();
-							while ($row = $db->sql_fetchrow($result))
-							{
-								$inactive_users[] = $row;
-							}
-							$db->sql_freeresult($result);
+						$inactive_users = array();
+						while ($row = $db->sql_fetchrow($result))
+						{
+							$inactive_users[] = $row;
 						}
+						$db->sql_freeresult($result);
 
 						user_active_flip('activate', $mark);
 
@@ -134,6 +131,15 @@ class acp_inactive
 							}
 
 							$messenger->save_queue();
+						}
+
+						if (!empty($inactive_users))
+						{
+							foreach ($inactive_users as $row)
+							{
+								add_log('admin', 'LOG_USER_ACTIVE', $row['username']);
+								add_log('user', $row['user_id'], 'LOG_USER_ACTIVE_USER');
+							}
 						}
 
 						// For activate we really need to redirect, else a refresh can result in users being deactivated again
