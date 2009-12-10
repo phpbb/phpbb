@@ -35,15 +35,12 @@ $forum_id	= request_var('f', 0);
 $topic_id	= request_var('t', 0);
 $mode		= request_var('mode', '');
 
-// Feed date format for PHP > 5 and PHP4
-$feed_date_format = (PHP_VERSION >= 5) ? 'c' : "Y-m-d\TH:i:sO";
-$params = false;
-
 // We do not use a template, therefore we simply define the global template variables here
 $global_vars = $item_vars = array();
 $feed_updated_time = 0;
 
 // Generate params array for use in append_sid() to correctly link back to this page
+$params = false;
 if ($forum_id || $topic_id || $mode)
 {
 	$params = array(
@@ -94,7 +91,7 @@ while ($row = $feed->get_item())
 
 	$item_row = array(
 		'author'		=> ($feed->get('creator') !== NULL) ? $row[$feed->get('creator')] : '',
-		'pubdate'		=> $user->format_date($item_time, $feed_date_format, true),
+		'pubdate'		=> feed_format_date($item_time),
 		'link'			=> '',
 		'title'			=> censor_text($title),
 		'category'		=> ($config['feed_item_statistics']) ? $board_url . '/viewforum.' . $phpEx . '?f=' . $row['forum_id'] : '',
@@ -125,7 +122,7 @@ $global_vars = array_merge($global_vars, array(
 	'FEED_LINK'				=> $board_url . '/index.' . $phpEx,
 	'FEED_TITLE'			=> $config['sitename'],
 	'FEED_SUBTITLE'			=> $config['site_desc'],
-	'FEED_UPDATED'			=> $user->format_date($feed_updated_time, $feed_date_format, true),
+	'FEED_UPDATED'			=> feed_format_date($feed_updated_time),
 	'FEED_LANG'				=> $user->lang['USER_LANG'],
 	'FEED_AUTHOR'			=> $config['sitename'],
 ));
@@ -222,6 +219,33 @@ function feed_append_sid($url, $params)
 	global $board_url;
 
 	return append_sid($board_url . $url, $params, true, '');
+}
+
+/**
+* Generate ISO 8601 date string (RFC 3339)
+**/
+function feed_format_date($time)
+{
+	static $zone_offset;
+	static $offset_string;
+
+	if (empty($offset_string))
+	{
+		global $user;
+
+		$zone_offset = (int) $user->timezone + (int) $user->dst;
+
+		$sign = ($zone_offset < 0) ? '-' : '+';
+		$time_offset = abs($zone_offset);
+
+		$offset_seconds	= $time_offset % 3600;
+		$offset_minutes	= $offset_seconds / 60;
+		$offset_hours	= ($time_offset - $offset_seconds) / 3600;
+
+		$offset_string	= sprintf("%s%02d:%02d", $sign, $offset_hours, $offset_minutes);
+	}
+
+	return gmdate("Y-m-d\TH:i:s", $time + $zone_offset) . $offset_string;
 }
 
 /**
