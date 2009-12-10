@@ -95,7 +95,7 @@ while ($row = $feed->get_item())
 		'link'			=> '',
 		'title'			=> censor_text($title),
 		'category'		=> ($config['feed_item_statistics']) ? $board_url . '/viewforum.' . $phpEx . '?f=' . $row['forum_id'] : '',
-		'category_name'	=> ($config['feed_item_statistics']) ? utf8_htmlspecialchars($row['forum_name']) : '',
+		'category_name'	=> ($config['feed_item_statistics']) ? $row['forum_name'] : '',
 		'description'	=> censor_text(feed_generate_content($row[$feed->get('text')], $row[$feed->get('bbcode_uid')], $row[$feed->get('bitfield')], $options)),
 		'statistics'	=> '',
 	);
