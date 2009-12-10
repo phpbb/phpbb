@@ -589,50 +589,38 @@ class phpbb_feed
 		global $auth, $db, $config, $phpbb_root_path, $phpEx, $user;
 
 		// Which forums should not be searched ?
-		$exclude_forums = array();
+		$this->excluded_forums_ary = array();
+
+		// Exclude excluded forums and forums we cannot read
+		$forum_ids_read = array_keys($auth->acl_getf('f_read', true));
+		$sql_or = (!empty($forum_ids_read)) ? 'OR ' . $db->sql_in_set('forum_id', $forum_ids_read, true) : '';
 
 		$sql = 'SELECT forum_id
 			FROM ' . FORUMS_TABLE . '
-			WHERE ' . $db->sql_bit_and('forum_options', FORUM_OPTION_FEED_EXCLUDE, '<> 0');
+			WHERE ' . $db->sql_bit_and('forum_options', FORUM_OPTION_FEED_EXCLUDE, '<> 0') . "
+			$sql_or";
 		$result = $db->sql_query($sql);
 
 		while ($row = $db->sql_fetchrow($result))
 		{
-			$exclude_forums[] = (int) $row['forum_id'];
+			$this->excluded_forums_ary[(int) $row['forum_id']] = (int) $row['forum_id'];
 		}
 		$db->sql_freeresult($result);
 
-		// Exclude forums the user is not able to read
-		$this->excluded_forums_ary = array_keys($auth->acl_getf('!f_read', true));
-		$this->excluded_forums_ary = (sizeof($exclude_forums)) ? array_merge($exclude_forums, $this->excluded_forums_ary) : $this->excluded_forums_ary;
-
-		$not_in_fid = (sizeof($this->excluded_forums_ary)) ? 'WHERE (' . $db->sql_in_set('f.forum_id', $this->excluded_forums_ary, true) . ' AND ' . $db->sql_in_set('f.parent_id', $this->excluded_forums_ary, true) . ") OR (f.forum_password <> '' AND fa.user_id <> " . (int) $user->data['user_id'] . ')' : '';
-
-		$sql = 'SELECT f.forum_id, f.forum_name, f.parent_id, f.forum_type, f.right_id, f.forum_password, fa.user_id
+		// Exclude passworded forums
+		$sql = 'SELECT f.forum_id, fa.user_id
 			FROM ' . FORUMS_TABLE . ' f
-			LEFT JOIN ' . FORUMS_ACCESS_TABLE . " fa ON (fa.forum_id = f.forum_id
-				AND fa.session_id = '" . $db->sql_escape($user->session_id) . "')
-			$not_in_fid
-			ORDER BY f.left_id";
+			LEFT JOIN ' . FORUMS_ACCESS_TABLE . " fa
+				ON (fa.forum_id = f.forum_id
+					AND fa.session_id = '" . $db->sql_escape($user->session_id) . "')
+			WHERE f.forum_password <> ''";
 		$result = $db->sql_query($sql);
 
-		$right_id = 0;
 		while ($row = $db->sql_fetchrow($result))
 		{
-			// Exclude passworded forum completely
-			if ($row['forum_password'] && $row['user_id'] != $user->data['user_id'])
+			if ($row['user_id'] != $user->data['user_id'])
 			{
-				$this->excluded_forums_ary[] = (int) $row['forum_id'];
-				continue;
-			}
-
-			if ($row['right_id'] > $right_id)
-			{
-				$right_id = (int) $row['right_id'];
-			}
-			else if ($row['right_id'] < $right_id)
-			{
-				continue;
+				$this->excluded_forums_ary[(int) $row['forum_id']] = (int) $row['forum_id'];
 			}
 		}
 		$db->sql_freeresult($result);
