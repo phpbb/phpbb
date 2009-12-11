@@ -443,7 +443,7 @@ class phpbb_feed_base
 	/**
 	* Default cache time of entries in seconds
 	*/
-	var $cache_time = 0;
+	var $cache_time = 90;
 
 	/**
 	* Separator for title elements to separate items (for example forum / topic)
@@ -460,6 +460,14 @@ class phpbb_feed_base
 	*/
 	function phpbb_feed_base()
 	{
+		global $user;
+
+		// Disable cache if it is not a guest or a bot but a registered user
+		if ($this->cache_time && !empty($user) && $user->data['is_registered'])
+		{
+			$this->cache_time = 0;
+		}
+
 		$this->set_keys();
 	}
 
@@ -561,18 +569,6 @@ class phpbb_feed_base
 	function get_item()
 	{
 		global $db, $cache;
-
-		// Disable cache if it is not a guest or a bot but a registered user
-		if ($this->cache_time)
-		{
-			global $user;
-
-			// We check this here because we call get_item() quite often
-			if (!empty($user) && $user->data['is_registered'])
-			{
-				$this->cache_time = 0;
-			}
-		}
 
 		if (!$this->cache_time)
 		{
@@ -699,11 +695,6 @@ class phpbb_feed extends phpbb_feed_base
 			{
 				trigger_error('NO_TOPIC');
 			}
-
-			if (!$auth->acl_get('f_read', $this->forum_id))
-			{
-				trigger_error('SORRY_AUTH_READ');
-			}
 		}
 		else if ($this->forum_id)
 		{
@@ -719,11 +710,18 @@ class phpbb_feed extends phpbb_feed_base
 			{
 				trigger_error('NO_FORUM');
 			}
+		}
 
+		// Topic/Forum feed
+		if ($this->topic_id || $this->forum_id)
+		{
 			if (!$auth->acl_get('f_read', $this->forum_id))
 			{
 				trigger_error('SORRY_AUTH_READ');
 			}
+
+			// Disable caching
+			$this->cache_time = 0;
 		}
 	}
 
@@ -933,6 +931,11 @@ class phpbb_feed_forums extends phpbb_feed_base
 
 class phpbb_feed_news extends phpbb_feed_base
 {
+	/**
+	* Longer cache time for the news feed
+	*/
+	var $cache_time = 180;
+
 	function set_keys()
 	{
 		global $config;
