@@ -958,7 +958,7 @@ class phpbb_feed_news extends phpbb_feed_base
 
 	function get_sql()
 	{
-		global $db, $config;
+		global $auth, $config, $db;
 
 		// Get news forums...
 		$sql = 'SELECT forum_id
@@ -969,6 +969,12 @@ class phpbb_feed_news extends phpbb_feed_base
 		$in_fid_ary = array();
 		while ($row = $db->sql_fetchrow($result))
 		{
+			// Make sure we can read this forum
+			if (!$auth->acl_get('f_read', (int) $row['forum_id']))
+			{
+				continue;
+			}
+
 			$in_fid_ary[] = (int) $row['forum_id'];
 		}
 		$db->sql_freeresult($result);
