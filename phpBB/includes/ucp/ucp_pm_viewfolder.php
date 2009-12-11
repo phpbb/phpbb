@@ -65,6 +65,12 @@ function view_folder($id, $mode, $folder_id, $folder)
 
 		$mark_options = array('mark_important', 'delete_marked');
 
+		// Minimise edits
+		if (!$auth->acl_get('u_pm_delete') && $key = array_search('delete_marked', $mark_options))
+		{
+			unset($mark_options[$key]);
+		}
+
 		$s_mark_options = '';
 		foreach ($mark_options as $mark_option)
 		{
