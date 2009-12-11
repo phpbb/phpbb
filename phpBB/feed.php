@@ -545,6 +545,16 @@ class phpbb_feed_base
 		}
 		$db->sql_freeresult($result);
 
+		// Include passworded forums
+		$this->excluded_forums_ary = array_unique(array_merge($this->excluded_forums_ary, $this->get_passworded_forums()));
+
+		return $this->excluded_forums_ary;
+	}
+
+	function get_passworded_forums()
+	{
+		global $db, $user;
+
 		// Exclude passworded forums
 		$sql = 'SELECT f.forum_id, fa.user_id
 			FROM ' . FORUMS_TABLE . ' f
@@ -554,16 +564,19 @@ class phpbb_feed_base
 			WHERE f.forum_password <> ''";
 		$result = $db->sql_query($sql);
 
+		$forum_ids = array();
 		while ($row = $db->sql_fetchrow($result))
 		{
+			$forum_id = (int) $row['forum_id'];
+
 			if ($row['user_id'] != $user->data['user_id'])
 			{
-				$this->excluded_forums_ary[(int) $row['forum_id']] = (int) $row['forum_id'];
+				$forum_ids[$forum_id] = $forum_id;
 			}
 		}
 		$db->sql_freeresult($result);
 
-		return $this->excluded_forums_ary;
+		return $forum_ids;
 	}
 
 	function get_item()
@@ -960,6 +973,9 @@ class phpbb_feed_news extends phpbb_feed_base
 	{
 		global $auth, $config, $db;
 
+		// Get passworded forums
+		$forum_ids_passworded = $this->get_passworded_forums();
+
 		// Get news forums...
 		$sql = 'SELECT forum_id
 			FROM ' . FORUMS_TABLE . '
@@ -969,8 +985,16 @@ class phpbb_feed_news extends phpbb_feed_base
 		$in_fid_ary = array();
 		while ($row = $db->sql_fetchrow($result))
 		{
+			$forum_id = (int) $row['forum_id'];
+
+			// Passworded forum
+			if (isset($forum_ids_passworded[$forum_id]))
+			{
+				continue;
+			}
+
 			// Make sure we can read this forum
-			if (!$auth->acl_get('f_read', (int) $row['forum_id']))
+			if (!$auth->acl_get('f_read', $forum_id))
 			{
 				continue;
 			}
