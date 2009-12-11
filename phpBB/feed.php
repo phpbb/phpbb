@@ -399,26 +399,16 @@ class phpbb_feed_factory
 }
 
 /**
-* Base/default Feed class if no mode is specified.
-* This can be the overall site feed or a forum/topic feed.
+* Base class with some generic functions and settings.
+*
 * @package phpBB3
 */
-class phpbb_feed
+class phpbb_feed_base
 {
-	/**
-	* Forum id specified for forum feed.
-	*/
-	var $forum_id = 0;
-
-	/**
-	* Topic id specified for topic feed.
-	*/
-	var $topic_id = 0;
-
 	/**
 	* SQL Query to be executed to get feed items
 	*/
-	var $sql;
+	var $sql = array();
 
 	/**
 	* Keys specified for retrieval of title, content, etc.
@@ -431,9 +421,9 @@ class phpbb_feed
 	var $excluded_forums_ary = NULL;
 
 	/**
-	* Number of items to fetch
+	* Number of items to fetch. Usually overwritten by $config['feed_something']
 	*/
-	var $num_items;
+	var $num_items = 15;
 
 	/**
 	* boolean to determine if items array is filled or not
@@ -466,98 +456,38 @@ class phpbb_feed
 	var $separator_stats = "\xE2\x80\x94"; // &mdash;
 
 	/**
-	* Constructor. Set standard keys.
+	* Constructor
 	*/
-	function phpbb_feed($forum_id = 0, $topic_id = 0)
+	function phpbb_feed_base()
 	{
-		global $config;
-
-		$this->forum_id = $forum_id;
-		$this->topic_id = $topic_id;
-
-		$this->sql = array();
-
-		// Set some values for pagination
-		$this->num_items = (int) $config['feed_limit'];
 		$this->set_keys();
 	}
 
+	/**
+	* Set keys.
+	*/
 	function set_keys()
 	{
-		// Set keys for items...
-		$this->set('title',		'post_subject');
-		$this->set('title2',	'topic_title');
-		$this->set('author_id',	'user_id');
-		$this->set('creator',	'username');
-		$this->set('text',		'post_text');
-		$this->set('bitfield',	'bbcode_bitfield');
-		$this->set('bbcode_uid','bbcode_uid');
-		$this->set('date',		'post_time');
-
-		$this->set('enable_bbcode',		'enable_bbcode');
-		$this->set('enable_smilies',	'enable_smilies');
-		$this->set('enable_magic_url',	'enable_magic_url');
 	}
 
+	/**
+	* Open feed
+	*/
 	function open()
 	{
-		global $auth, $db, $user;
-
-		if ($this->topic_id)
-		{
-			// Topic feed
-			$sql = 'SELECT forum_id
-				FROM ' . TOPICS_TABLE . '
-				WHERE topic_id = ' . $this->topic_id;
-			$result = $db->sql_query($sql);
-			$row = $db->sql_fetchrow($result);
-			$this->forum_id = (int) $row['forum_id'];
-			$db->sql_freeresult($result);
-
-			if (empty($row))
-			{
-				trigger_error('NO_TOPIC');
-			}
-
-			if (!$auth->acl_get('f_read', $this->forum_id))
-			{
-				trigger_error('SORRY_AUTH_READ');
-			}
-		}
-		else if ($this->forum_id)
-		{
-			// Forum feed
-			$sql = 'SELECT forum_id
-				FROM ' . FORUMS_TABLE . '
-				WHERE forum_id = ' . $this->forum_id;
-			$result = $db->sql_query($sql);
-			$row = $db->sql_fetchrow($result);
-			$db->sql_freeresult($result);
-
-			if (empty($row))
-			{
-				trigger_error('NO_FORUM');
-			}
-
-			if (!$auth->acl_get('f_read', $this->forum_id))
-			{
-				trigger_error('SORRY_AUTH_READ');
-			}
-		}
-
-		return true;
 	}
 
+	/**
+	* Close feed
+	*/
 	function close()
 	{
+		global $db;
+
 		if (!empty($this->result))
 		{
-			global $db;
-
 			$db->sql_freeresult($this->result);
 		}
-
-		return true;
 	}
 
 	/**
@@ -626,6 +556,175 @@ class phpbb_feed
 		$db->sql_freeresult($result);
 
 		return $this->excluded_forums_ary;
+	}
+
+	function get_item()
+	{
+		global $db, $cache;
+
+		// Disable cache if it is not a guest or a bot but a registered user
+		if ($this->cache_time)
+		{
+			global $user;
+
+			// We check this here because we call get_item() quite often
+			if (!empty($user) && $user->data['is_registered'])
+			{
+				$this->cache_time = 0;
+			}
+		}
+
+		if (!$this->cache_time)
+		{
+			if (empty($this->result))
+			{
+				if (!$this->get_sql())
+				{
+					return false;
+				}
+
+				// Query database
+				$sql = $db->sql_build_query('SELECT', $this->sql);
+				$this->result = $db->sql_query_limit($sql, $this->num_items);
+			}
+
+			return $db->sql_fetchrow($this->result);
+		}
+		else
+		{
+			if (empty($this->items_filled))
+			{
+				// Try to load result set...
+				$cache_filename = substr(get_class($this), strlen('phpbb_'));
+
+				if (($this->items = $cache->get('_' . $cache_filename)) === false)
+				{
+					$this->items = array();
+
+					if ($this->get_sql())
+					{
+						// Query database
+						$sql = $db->sql_build_query('SELECT', $this->sql);
+						$result = $db->sql_query_limit($sql, $this->num_items);
+
+						while ($row = $db->sql_fetchrow($result))
+						{
+							$this->items[] = $row;
+						}
+						$db->sql_freeresult($result);
+					}
+
+					$cache->put('_' . $cache_filename, $this->items, $this->cache_time);
+				}
+
+				$this->items_filled = true;
+			}
+
+			$row = array_shift($this->items);
+			return (!$row) ? false : $row;
+		}
+	}
+}
+
+/**
+* Default feed class if no mode is specified.
+* This can be the overall site feed or a forum/topic feed.
+*
+* @package phpBB3
+*/
+class phpbb_feed extends phpbb_feed_base
+{
+	/**
+	* Forum id specified for forum feed.
+	*/
+	var $forum_id = 0;
+
+	/**
+	* Topic id specified for topic feed.
+	*/
+	var $topic_id = 0;
+
+	/**
+	* Constructor.
+	*/
+	function phpbb_feed($forum_id = 0, $topic_id = 0)
+	{
+		global $config;
+
+		// Call parent constructor.
+		parent::phpbb_feed_base();
+
+		$this->forum_id = $forum_id;
+		$this->topic_id = $topic_id;
+
+		$this->sql = array();
+	}
+
+	function set_keys()
+	{
+		global $config;
+
+		$this->set('title',		'post_subject');
+		$this->set('title2',	'topic_title');
+		$this->set('author_id',	'user_id');
+		$this->set('creator',	'username');
+		$this->set('text',		'post_text');
+		$this->set('bitfield',	'bbcode_bitfield');
+		$this->set('bbcode_uid','bbcode_uid');
+		$this->set('date',		'post_time');
+
+		$this->set('enable_bbcode',		'enable_bbcode');
+		$this->set('enable_smilies',	'enable_smilies');
+		$this->set('enable_magic_url',	'enable_magic_url');
+
+		$this->num_items = (int) $config['feed_limit'];
+	}
+
+	function open()
+	{
+		global $auth, $db, $user;
+
+		if ($this->topic_id)
+		{
+			// Topic feed
+			$sql = 'SELECT forum_id
+				FROM ' . TOPICS_TABLE . '
+				WHERE topic_id = ' . $this->topic_id;
+			$result = $db->sql_query($sql);
+			$row = $db->sql_fetchrow($result);
+			$this->forum_id = (int) $row['forum_id'];
+			$db->sql_freeresult($result);
+
+			if (empty($row))
+			{
+				trigger_error('NO_TOPIC');
+			}
+
+			if (!$auth->acl_get('f_read', $this->forum_id))
+			{
+				trigger_error('SORRY_AUTH_READ');
+			}
+		}
+		else if ($this->forum_id)
+		{
+			// Forum feed
+			$sql = 'SELECT forum_id
+				FROM ' . FORUMS_TABLE . '
+				WHERE forum_id = ' . $this->forum_id;
+			$result = $db->sql_query($sql);
+			$row = $db->sql_fetchrow($result);
+			$db->sql_freeresult($result);
+
+			if (empty($row))
+			{
+				trigger_error('NO_FORUM');
+			}
+
+			if (!$auth->acl_get('f_read', $this->forum_id))
+			{
+				trigger_error('SORRY_AUTH_READ');
+			}
+		}
 	}
 
 	/**
@@ -761,73 +860,6 @@ class phpbb_feed
 		return true;
 	}
 
-	function get_item()
-	{
-		global $db, $cache;
-
-		// Disable cache if it is not a guest or a bot but a registered user
-		if ($this->cache_time)
-		{
-			global $user;
-
-			// We check this here because we call get_item() quite often
-			if (!empty($user) && $user->data['is_registered'])
-			{
-				$this->cache_time = 0;
-			}
-		}
-
-		if (!$this->cache_time)
-		{
-			if (empty($this->result))
-			{
-				if (!$this->get_sql())
-				{
-					return false;
-				}
-
-				// Query database
-				$sql = $db->sql_build_query('SELECT', $this->sql);
-				$this->result = $db->sql_query_limit($sql, $this->num_items);
-			}
-
-			return $db->sql_fetchrow($this->result);
-		}
-		else
-		{
-			if (empty($this->items_filled))
-			{
-				// Try to load result set...
-				$cache_filename = substr(get_class($this), strlen('phpbb_'));
-
-				if (($this->items = $cache->get('_' . $cache_filename)) === false)
-				{
-					$this->items = array();
-
-					if ($this->get_sql())
-					{
-						// Query database
-						$sql = $db->sql_build_query('SELECT', $this->sql);
-						$result = $db->sql_query_limit($sql, $this->num_items);
-
-						while ($row = $db->sql_fetchrow($result))
-						{
-							$this->items[] = $row;
-						}
-						$db->sql_freeresult($result);
-					}
-
-					$cache->put('_' . $cache_filename, $this->items, $this->cache_time);
-				}
-
-				$this->items_filled = true;
-			}
-
-			$row = array_shift($this->items);
-			return (!$row) ? false : $row;
-		}
-	}
-
 	function adjust_item(&$item_row, &$row)
 	{
 		global $phpEx, $config;
@@ -849,7 +881,7 @@ class phpbb_feed
 	}
 }
 
-class phpbb_feed_forums extends phpbb_feed
+class phpbb_feed_forums extends phpbb_feed_base
 {
 	function set_keys()
 	{
@@ -863,11 +895,6 @@ class phpbb_feed_forums extends phpbb_feed
 		$this->set('options',	'forum_desc_options');
 
 		$this->num_items = (int) $config['feed_overall_forums_limit'];
-	}
-
-	function open()
-	{
-		return true;
 	}
 
 	function get_sql()
@@ -904,7 +931,7 @@ class phpbb_feed_forums extends phpbb_feed
 	}
 }
 
-class phpbb_feed_news extends phpbb_feed
+class phpbb_feed_news extends phpbb_feed_base
 {
 	function set_keys()
 	{
@@ -924,11 +951,6 @@ class phpbb_feed_news extends phpbb_feed
 		$this->set('enable_magic_url',	'enable_magic_url');
 
 		$this->num_items = (int) $config['feed_overall_forums_limit'];
-	}
-
-	function open()
-	{
-		return true;
 	}
 
 	function get_sql()
@@ -993,7 +1015,7 @@ class phpbb_feed_news extends phpbb_feed
 	}
 }
 
-class phpbb_feed_topics extends phpbb_feed
+class phpbb_feed_topics extends phpbb_feed_base
 {
 	function set_keys()
 	{
@@ -1013,11 +1035,6 @@ class phpbb_feed_topics extends phpbb_feed
 		$this->set('enable_magic_url',	'enable_magic_url');
 
 		$this->num_items = (int) $config['feed_overall_topics_limit'];
-	}
-
-	function open()
-	{
-		return true;
 	}
 
 	function get_sql()
