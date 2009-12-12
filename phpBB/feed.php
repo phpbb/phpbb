@@ -816,14 +816,6 @@ class phpbb_feed extends phpbb_feed_base
 		// Fetch last posts from specified topic...
 		else if ($this->topic_id)
 		{
-			// First of all, determine the forum...
-			$sql = 'SELECT forum_id
-				FROM ' . TOPICS_TABLE . '
-				WHERE topic_id = ' . $this->topic_id;
-			$result = $db->sql_query_limit($sql, 1);
-			$this->forum_id = (int) $db->sql_fetchfield('forum_id');
-			$db->sql_freeresult($result);
-
 			// non-global announcement
 			if ($this->forum_id && in_array($this->forum_id, $this->excluded_forums()))
 			{
