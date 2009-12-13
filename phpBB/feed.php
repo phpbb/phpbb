@@ -693,41 +693,50 @@ class phpbb_feed extends phpbb_feed_base
 	{
 		global $auth, $db, $user;
 
-		if ($this->topic_id)
-		{
-			// Topic feed
-			$sql = 'SELECT forum_id
-				FROM ' . TOPICS_TABLE . '
-				WHERE topic_id = ' . $this->topic_id;
-			$result = $db->sql_query($sql);
-			$row = $db->sql_fetchrow($result);
-			$this->forum_id = (int) $row['forum_id'];
-			$db->sql_freeresult($result);
-
-			if (empty($row))
-			{
-				trigger_error('NO_TOPIC');
-			}
-		}
-		else if ($this->forum_id)
-		{
-			// Forum feed
-			$sql = 'SELECT forum_id
-				FROM ' . FORUMS_TABLE . '
-				WHERE forum_id = ' . $this->forum_id;
-			$result = $db->sql_query($sql);
-			$row = $db->sql_fetchrow($result);
-			$db->sql_freeresult($result);
-
-			if (empty($row))
-			{
-				trigger_error('NO_FORUM');
-			}
-		}
-
 		// Topic/Forum feed
 		if ($this->topic_id || $this->forum_id)
 		{
+			if ($this->topic_id)
+			{
+				// Topic feed
+				$sql = 'SELECT t.forum_id, f.forum_options
+					FROM ' . TOPICS_TABLE . ' t, ' . FORUMS_TABLE . ' f
+					WHERE t.topic_id = ' . $this->topic_id . '
+						AND t.forum_id = f.forum_id';
+				$result = $db->sql_query($sql);
+				$row = $db->sql_fetchrow($result);
+				$db->sql_freeresult($result);
+
+				if (empty($row))
+				{
+					trigger_error('NO_TOPIC');
+				}
+
+				$this->forum_id = (int) $row['forum_id'];
+			}
+			else
+			{
+				// Forum feed
+				$sql = 'SELECT forum_options
+					FROM ' . FORUMS_TABLE . '
+					WHERE forum_id = ' . $this->forum_id;
+				$result = $db->sql_query($sql);
+				$row = $db->sql_fetchrow($result);
+				$db->sql_freeresult($result);
+
+				if (empty($row))
+				{
+					trigger_error('NO_FORUM');
+				}
+			}
+
+			// Make sure forum is not excluded from feed
+			if (phpbb_optionget(FORUM_OPTION_FEED_EXCLUDE, $row['forum_options']))
+			{
+				trigger_error('NO_FEED');
+			}
+
+			// Make sure we can read this forum
 			if (!$auth->acl_get('f_read', $this->forum_id))
 			{
 				trigger_error('SORRY_AUTH_READ');
