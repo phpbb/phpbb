@@ -85,7 +85,6 @@ while ($row = $feed->get_item())
 	}
 
 	$title = ($row[$feed->get('title')]) ? $row[$feed->get('title')] : ((isset($row[$feed->get('title2')])) ? $row[$feed->get('title2')] : '');
-	$title = censor_text($title);
 
 	$item_time = (int) $row[$feed->get('date')];
 
