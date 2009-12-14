@@ -124,13 +124,6 @@
 			<dd><input name="ban_give_reason" type="text" class="text medium" maxlength="3000" id="ban_give_reason" /></dd>
 		</dl>
 	</div>
-		<!-- IF not S_OWN_ACCOUNT -->
-			<dl>
-				<dt><label for="delete_user">{L_DELETE_USER}:</label><br /><span>{L_DELETE_USER_EXPLAIN}</span></dt>
-				<dd><input type="checkbox" class="radio" name="delete" value="1" /></dd>
-				<dd><select id="delete_user" name="delete_type"><option value="retain">{L_RETAIN_POSTS}</option><option value="remove">{L_DELETE_POSTS}</option></select></dd>
-			</dl>
-		<!-- ENDIF -->
 
 	<p class="quick">
 		<input class="button1" type="submit" name="update" value="{L_SUBMIT}" />
@@ -141,4 +134,20 @@
 
 	</form>
 
+	<!-- IF not S_OWN_ACCOUNT -->
+	<form id="user_delete" method="post" action="{U_ACTION}">
+	<fieldset>
+		<legend>{L_DELETE_USER}</legend>
+		<dl>
+			<dt><label for="delete_type">{L_DELETE_USER}:</label><br /><span>{L_DELETE_USER_EXPLAIN}</span></dt>
+			<dd><select id="delete_type" name="delete_type"><option value="retain">{L_RETAIN_POSTS}</option><option value="remove">{L_DELETE_POSTS}</option></select></dd>
+		</dl>
+		<p class="quick">
+			<input class="button1" type="submit" name="update" value="{L_SUBMIT}" />
+			<input type="hidden" name="delete" value="1" />
+			{S_FORM_TOKEN}
+		</p>
+	</fieldset>
+	<!-- ENDIF -->
+	</form>
 <!-- ENDIF -->
