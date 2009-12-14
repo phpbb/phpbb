@@ -84,7 +84,7 @@ while ($row = $feed->get_item())
 		$options = $row[$feed->get('options')];
 	}
 
-	$title = ($row[$feed->get('title')]) ? $row[$feed->get('title')] : ((isset($row[$feed->get('title2')])) ? $row[$feed->get('title2')] : '');
+	$title = (isset($row[$feed->get('title')]) && $row[$feed->get('title')] !== '') ? $row[$feed->get('title')] : ((isset($row[$feed->get('title2')])) ? $row[$feed->get('title2')] : '');
 
 	$item_time = (int) $row[$feed->get('date')];
 
