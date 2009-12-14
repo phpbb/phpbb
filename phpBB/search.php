@@ -653,6 +653,9 @@ if ($keywords || $author || $author_id || $search_id || $submit)
 			$forums = $rowset = $shadow_topic_list = array();
 			while ($row = $db->sql_fetchrow($result))
 			{
+				$row['forum_id'] = (int) $row['forum_id'];
+				$row['topic_id'] = (int) $row['topic_id'];
+
 				if ($row['topic_status'] == ITEM_MOVED)
 				{
 					$shadow_topic_list[$row['topic_moved_id']] = $row['topic_id'];
