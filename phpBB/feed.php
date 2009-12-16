@@ -442,7 +442,7 @@ class phpbb_feed_base
 	/**
 	* Default cache time of entries in seconds
 	*/
-	var $cache_time = 90;
+	var $cache_time = 0; // 0 important
 
 	/**
 	* Separator for title elements to separate items (for example forum / topic)
@@ -944,11 +944,6 @@ class phpbb_feed_forums extends phpbb_feed_base
 
 class phpbb_feed_news extends phpbb_feed_base
 {
-	/**
-	* Longer cache time for the news feed
-	*/
-	var $cache_time = 180;
-
 	function set_keys()
 	{
 		global $config;
