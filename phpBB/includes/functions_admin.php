@@ -2361,8 +2361,8 @@ function cache_moderators()
 			'FROM'		=> array(
 				ACL_OPTIONS_TABLE	=> 'o',
 				USER_GROUP_TABLE	=> 'ug',
-				ACL_GROUPS_TABLE	=> 'a',
 				GROUPS_TABLE		=> 'g',
+				ACL_GROUPS_TABLE	=> 'a',
 			),
 
 			'LEFT_JOIN'	=> array(
@@ -2549,16 +2549,23 @@ function view_log($mode, &$log, &$log_count, $limit = 0, $offset = 0, $forum_id 
 			return;
 	}
 
-	$keywords = preg_split('#[\s+\-|*()]+#u', utf8_strtolower(preg_quote($keywords, '#')), 0, PREG_SPLIT_NO_EMPTY);
+	// Use no preg_quote for $keywords because this would lead to sole backslashes being added
+	// We also use an OR connection here for spaces and the | string. Currently, regex is not supported for searching (but may come later).
+	$keywords = preg_split('#[\s|]+#u', utf8_strtolower($keywords), 0, PREG_SPLIT_NO_EMPTY);
 	$sql_keywords = '';
 
 	if (!empty($keywords))
 	{
-		$keywords_pattern = '#' . implode('|', $keywords) . '#ui';
+		$keywords_pattern = array();
+
+		// Build pattern and keywords...
 		for ($i = 0, $num_keywords = sizeof($keywords); $i < $num_keywords; $i++)
 		{
+			$keywords_pattern[] = preg_quote($keywords[$i], '#');
 			$keywords[$i] = $db->sql_like_expression($db->any_char . $keywords[$i] . $db->any_char);
 		}
+
+		$keywords_pattern = '#' . implode('|', $keywords_pattern) . '#ui';
 
 		$operations = array();
 		foreach ($user->lang as $key => $value)

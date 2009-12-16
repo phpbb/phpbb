@@ -215,6 +215,8 @@ if ($submit && $reason_id)
 // Generate the reasons
 display_reasons($reason_id);
 
+$page_title = ($pm_id) ? $user->lang['REPORT_MESSAGE'] : $user->lang['REPORT_POST'];
+
 $template->assign_vars(array(
 	'S_REPORT_POST'		=> ($pm_id) ? false : true,
 	'REPORT_TEXT'		=> $report_text,
@@ -227,7 +229,7 @@ $template->assign_vars(array(
 generate_forum_nav($forum_data);
 
 // Start output of page
-page_header($user->lang['REPORT_POST']);
+page_header($page_title);
 
 $template->set_filenames(array(
 	'body' => 'report_body.html')

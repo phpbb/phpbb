@@ -45,13 +45,6 @@ $mode		= ($delete && !$preview && !$refresh && $submit) ? 'delete' : request_var
 $error = $post_data = array();
 $current_time = time();
 
-if ($config['enable_post_confirm'] && !$user->data['is_registered'])
-{
-	include($phpbb_root_path . 'includes/captcha/captcha_factory.' . $phpEx);
-	$captcha =& phpbb_captcha_factory::get_instance($config['captcha_plugin']);
-	$captcha->init(CONFIRM_POST);
-}
-
 // Was cancel pressed? If so then redirect to the appropriate page
 if ($cancel || ($current_time - $lastclick < 2 && $submit))
 {
@@ -95,8 +88,8 @@ switch ($mode)
 			FROM ' . TOPICS_TABLE . ' t, ' . FORUMS_TABLE . " f
 			WHERE t.topic_id = $topic_id
 				AND (f.forum_id = t.forum_id
-					OR f.forum_id = $forum_id)
-				AND t.topic_approved = 1";
+					OR f.forum_id = $forum_id)" .
+			(($auth->acl_get('m_approve', $forum_id)) ? '' : 'AND t.topic_approved = 1');
 	break;
 
 	case 'quote':
@@ -125,7 +118,7 @@ switch ($mode)
 				AND u.user_id = p.poster_id
 				AND (f.forum_id = t.forum_id
 					OR f.forum_id = $forum_id)" .
-				(($auth->acl_get('m_approve', $forum_id) && $mode != 'quote') ? '' : 'AND p.post_approved = 1');
+				(($auth->acl_get('m_approve', $forum_id)) ? '' : 'AND p.post_approved = 1');
 	break;
 
 	case 'smilies':
@@ -171,6 +164,13 @@ if (!$post_data)
 	trigger_error(($mode == 'post' || $mode == 'bump' || $mode == 'reply') ? 'NO_TOPIC' : 'NO_POST');
 }
 
+// Not able to reply to unapproved posts/topics
+// TODO: add more descriptive language key
+if ($auth->acl_get('m_approve', $forum_id) && ((($mode == 'reply' || $mode == 'bump') && !$post_data['topic_approved']) || ($mode == 'quote' && !$post_data['post_approved'])))
+{
+	trigger_error(($mode == 'reply' || $mode == 'bump') ? 'TOPIC_UNAPPROVED' : 'POST_UNAPPROVED');
+}
+
 if ($mode == 'popup')
 {
 	upload_popup($post_data['forum_style']);
@@ -178,6 +178,13 @@ if ($mode == 'popup')
 }
 
 $user->setup(array('posting', 'mcp', 'viewtopic'), $post_data['forum_style']);
+
+if ($config['enable_post_confirm'] && !$user->data['is_registered'])
+{
+	include($phpbb_root_path . 'includes/captcha/captcha_factory.' . $phpEx);
+	$captcha =& phpbb_captcha_factory::get_instance($config['captcha_plugin']);
+	$captcha->init(CONFIRM_POST);
+}
 
 // Use post_row values in favor of submitted ones...
 $forum_id	= (!empty($post_data['forum_id'])) ? (int) $post_data['forum_id'] : (int) $forum_id;

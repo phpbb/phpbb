@@ -8,7 +8,7 @@
 *
 */
 
-$updates_to_version = '3.0.6-RC3';
+$updates_to_version = '3.0.6';
 
 // Enter any version to update from to test updates. The version within the db will not be updated.
 $debug_from_version = false;
@@ -30,8 +30,12 @@ define('IN_INSTALL', true);
 $phpbb_root_path = (defined('PHPBB_ROOT_PATH')) ? PHPBB_ROOT_PATH : './../';
 $phpEx = substr(strrchr(__FILE__, '.'), 1);
 
-// Report all errors, except notices
-//error_reporting(E_ALL ^ E_NOTICE);
+// Report all errors, except notices and deprecation messages
+if (!defined('E_DEPRECATED'))
+{
+	define('E_DEPRECATED', 8192);
+}
+//error_reporting(E_ALL ^ E_NOTICE ^ E_DEPRECATED);
 error_reporting(E_ALL);
 
 @set_time_limit(0);
@@ -45,7 +49,7 @@ if (!defined('PHPBB_INSTALLED') || empty($dbms) || empty($acm_type))
 }
 
 // Load Extensions
-if (!empty($load_extensions))
+if (!empty($load_extensions) && function_exists('dl'))
 {
 	$load_extensions = explode(',', $load_extensions);
 
@@ -346,11 +350,15 @@ for ($i = 0; $i < sizeof($versions); $i++)
 
 	$no_updates = false;
 
-	$statements = $db_tools->perform_schema_changes($schema_changes);
-
-	foreach ($statements as $sql)
+	// We run one index after the other... to be consistent with schema changes...
+	foreach ($schema_changes as $key => $changes)
 	{
-		_sql($sql, $errored, $error_ary);
+		$statements = $db_tools->perform_schema_changes(array($key => $changes));
+
+		foreach ($statements as $sql)
+		{
+			_sql($sql, $errored, $error_ary);
+		}
 	}
 }
 
@@ -716,6 +724,9 @@ function database_update_info()
 					'session_forum_id'		=> array('UINT', 0),
 				),
 			),
+			'drop_keys'		=> array(
+				GROUPS_TABLE			=> array('group_legend'),
+			),
 			'add_index'		=> array(
 				SESSIONS_TABLE			=> array(
 					'session_forum_id'		=> array('session_forum_id'),
@@ -723,9 +734,6 @@ function database_update_info()
 				GROUPS_TABLE			=> array(
 					'group_legend_name'		=> array('group_legend', 'group_name'),
 				),
-			),
-			'drop_keys'		=> array(
-				GROUPS_TABLE			=> array('group_legend'),
 			),
 		),
 		// No changes from 3.0.1-RC1 to 3.0.1
@@ -885,6 +893,10 @@ function database_update_info()
 		),
 		// No changes from 3.0.6-RC2 to 3.0.6-RC3
 		'3.0.6-RC2'		=> array(),
+		// No changes from 3.0.6-RC3 to 3.0.6-RC4
+		'3.0.6-RC3'		=> array(),
+		// No changes from 3.0.6-RC4 to 3.0.6
+		'3.0.6-RC4'		=> array(),
 	);
 }
 
@@ -1051,10 +1063,21 @@ function change_database_data(&$no_updates, $version)
 
 		// Changes from 3.0.3-RC1 to 3.0.3
 		case '3.0.3-RC1':
-			$sql = 'UPDATE ' . LOG_TABLE . "
-				SET log_operation = 'LOG_DELETE_TOPIC'
-				WHERE log_operation = 'LOG_TOPIC_DELETED'";
-			_sql($sql, $errored, $error_ary);
+			if ($db->sql_layer == 'oracle')
+			{
+				// log_operation is CLOB - but we can change this later
+				$sql = 'UPDATE ' . LOG_TABLE . "
+					SET log_operation = 'LOG_DELETE_TOPIC'
+					WHERE log_operation LIKE 'LOG_TOPIC_DELETED'";
+				_sql($sql, $errored, $error_ary);
+			}
+			else
+			{
+				$sql = 'UPDATE ' . LOG_TABLE . "
+					SET log_operation = 'LOG_DELETE_TOPIC'
+					WHERE log_operation = 'LOG_TOPIC_DELETED'";
+				_sql($sql, $errored, $error_ary);
+			}
 
 			$no_updates = false;
 		break;
@@ -1197,14 +1220,24 @@ function change_database_data(&$no_updates, $version)
 				'drop_keys'			=> array(
 					ACL_OPTIONS_TABLE		=> array('auth_option'),
 				),
+			);
+
+			global $db_tools;
+
+			$statements = $db_tools->perform_schema_changes($changes);
+
+			foreach ($statements as $sql)
+			{
+				_sql($sql, $errored, $error_ary);
+			}
+
+			$changes = array(
 				'add_unique_index'	=> array(
 					ACL_OPTIONS_TABLE		=> array(
 						'auth_option'		=> array('auth_option'),
 					),
 				),
 			);
-
-			global $db_tools;
 
 			$statements = $db_tools->perform_schema_changes($changes);
 
@@ -1527,6 +1560,14 @@ function change_database_data(&$no_updates, $version)
 			_sql($sql, $errored, $error_ary);
 			$no_updates = false;
 
+		break;
+
+		// No changes from 3.0.6-RC3 to 3.0.6-RC4
+		case '3.0.6-RC3':
+		break;
+
+		// No changes from 3.0.6-RC4 to 3.0.6
+		case '3.0.6-RC4':
 		break;
 	}
 }
@@ -2515,13 +2556,12 @@ class updater_db_tools
 					FROM user_indexes
 					WHERE table_name = '" . strtoupper($table_name) . "'
 						AND generated = 'N'
-						AND uniqueness = 'UNIQUE'
-						AND index_name LIKE 'U_%'";
+						AND uniqueness = 'UNIQUE'";
 				$col = 'index_name';
 			break;
 
 			case 'sqlite':
-				$sql = "PRAGMA index_list('" . $table_name . "') WHERE unique = 1;";
+				$sql = "PRAGMA index_list('" . $table_name . "');";
 				$col = 'name';
 			break;
 		}
@@ -2548,7 +2588,15 @@ class updater_db_tools
 			switch ($this->sql_layer)
 			{
 				case 'oracle':
-					$row[$col] = substr($row[$col], strlen('U_' . $row['table_owner']) + 1);
+					// Two cases here... prefixed with U_[table_owner] and not prefixed with table_name
+					if (strpos($row[$col], 'U_') === 0)
+					{
+						$row[$col] = substr($row[$col], strlen('U_' . $row['table_owner']) + 1);
+					}
+					else if (strpos($row[$col], strtoupper($table_name)) === 0)
+					{
+						$row[$col] = substr($row[$col], strlen($table_name) + 1);
+					}
 				break;
 
 				case 'firebird':
@@ -3222,7 +3270,8 @@ class updater_db_tools
 				}
 				else
 				{
-					$statements[] = 'ALTER TABLE ' . $table_name . ' ALTER COLUMN "' . strtoupper($column_name) . '" TYPE ' . ' ' . $column_data['column_type_sql'];
+					// TODO: try to change pkey without removing trigger, generator or constraints. ATM this query may fail.
+					$statements[] = 'ALTER TABLE ' . $table_name . ' ALTER COLUMN "' . strtoupper($column_name) . '" TYPE ' . ' ' . $column_data['column_type_sql_type'];
 				}
 			break;
 

@@ -35,7 +35,7 @@ class phpbb_captcha_factory
 		{
 			include($phpbb_root_path . "includes/captcha/plugins/{$name}_plugin." . $phpEx);
 		}
-		$instance =& call_user_func(array($name, 'get_instance'));
+		$instance = call_user_func(array($name, 'get_instance'));
 		return $instance;
 	}
 

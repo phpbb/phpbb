@@ -105,7 +105,11 @@ class acm extends acm_memory
 	*/
 	function _write($var, $data, $ttl = 2592000)
 	{
-		return $this->memcache->set($this->key_prefix . $var, $data, $this->flags, $ttl);
+		if (!$this->memcache->replace($this->key_prefix . $var, $data, $this->flags, $ttl))
+		{
+			return $this->memcache->set($this->key_prefix . $var, $data, $this->flags, $ttl);
+		}
+		return true;
 	}
 
 	/**

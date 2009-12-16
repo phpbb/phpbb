@@ -116,6 +116,7 @@ class mcp_reports
 				{
 					$template->assign_vars(array(
 						'S_TOPIC_REVIEW'	=> true,
+						'S_BBCODE_ALLOWED'	=> $post_info['enable_bbcode'],
 						'TOPIC_TITLE'		=> $post_info['topic_title'])
 					);
 				}
@@ -429,7 +430,7 @@ class mcp_reports
 					'PAGE_NUMBER'			=> on_page($total, $config['topics_per_page'], $start),
 					'TOPIC_ID'				=> $topic_id,
 					'TOTAL'					=> $total,
-					'TOTAL_REPORTS'			=> ($total == 1) ? $user->lang['LIST_REPORT'] : sprintf($user->lang['LIST_REPORTS'], $total),					
+					'TOTAL_REPORTS'			=> ($total == 1) ? $user->lang['LIST_REPORT'] : sprintf($user->lang['LIST_REPORTS'], $total),
 					)
 				);
 
@@ -671,7 +672,7 @@ function close_report($report_id_list, $mode, $action, $pm = false)
 				$messenger->send($reporter['user_notify_type']);
 			}
 		}
-		
+
 		if (!$pm)
 		{
 			foreach ($post_info as $post)
@@ -712,13 +713,13 @@ function close_report($report_id_list, $mode, $action, $pm = false)
 			{
 				$return_forum = sprintf($user->lang['RETURN_FORUM'], '<a href="' . append_sid("{$phpbb_root_path}viewforum.$phpEx", 'f=' . current($forum_ids)) . '">', '</a>') . '<br /><br />';
 			}
-			
+
 			if (sizeof($topic_ids) === 1)
 			{
 				$return_topic = sprintf($user->lang['RETURN_TOPIC'], '<a href="' . append_sid("{$phpbb_root_path}viewtopic.$phpEx", 't=' . current($topic_ids) . '&amp;f=' . current($forum_ids)) . '">', '</a>') . '<br /><br />';
 			}
 		}
-		
+
 		trigger_error($user->lang[$success_msg] . '<br /><br />' . $return_forum . $return_topic . sprintf($user->lang['RETURN_PAGE'], "<a href=\"$redirect\">", '</a>'));
 	}
 }

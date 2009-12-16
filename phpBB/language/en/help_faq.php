@@ -96,7 +96,7 @@ $help = array(
 	),
 	array(
 		0 => 'How do I show an image below my username?',
-		1 => 'There are two images that may appear below a username when viewing posts. Depending on the used style, the first may be an image associated with your rank, generally in the form of stars, blocks or dots, indicating how many posts you have made or your status on the board. The second, usually a larger image, is known as an avatar and is generally unique or personal to each user. It is up to the board administrator to enable avatars and to choose the way in which avatars can be made available. If you are unable to use avatars, contact a board administrator and ask them for their reasons.'
+		1 => 'There are two images which may appear below a username when viewing posts. One of them may be an image associated with your rank, generally in the form of stars, blocks or dots, indicating how many posts you have made or your status on the board. Another, usually a larger image, is known as an avatar and is generally unique or personal to each user. It is up to the board administrators to enable avatars and to choose the way in which avatars can be made available. If you are unable to use avatars, contact a board administrators and ask them for their reasons.'
 	),
 	array(
 		0 => 'What is my rank and how do I change it?',

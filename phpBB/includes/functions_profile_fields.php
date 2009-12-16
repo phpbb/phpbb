@@ -158,11 +158,11 @@ class custom_profile
 
 			case FIELD_STRING:
 			case FIELD_TEXT:
-				if (empty($field_value) && !$field_data['field_required'])
+				if (trim($field_value) === '' && !$field_data['field_required'])
 				{
 					return false;
 				}
-				else if (empty($field_value) && $field_data['field_required'])
+				else if (trim($field_value) === '' && $field_data['field_required'])
 				{
 					return 'FIELD_REQUIRED';
 				}
@@ -624,7 +624,7 @@ class custom_profile
 			}
 			else
 			{
-				if (!$preview && isset($user->profile_fields[$user_ident]) && is_null($user->profile_fields[$user_ident]))
+				if (!$preview && array_key_exists($user_ident, $user->profile_fields) && is_null($user->profile_fields[$user_ident]))
 				{
 					$value = NULL;
 				}
