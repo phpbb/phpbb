@@ -892,35 +892,48 @@ class phpbb_feed extends phpbb_feed_base
 	}
 }
 
+/**
+* 'All Forums' feed
+*
+* This will give you a list of all postable forums where feeds are enabled
+* including forum description, topic stats and post stats
+*
+* @package phpBB3
+*/
 class phpbb_feed_forums extends phpbb_feed_base
 {
+	var $num_items	= 0;
+
 	function set_keys()
 	{
-		global $config;
-
 		$this->set('title',		'forum_name');
 		$this->set('text',		'forum_desc');
 		$this->set('bitfield',	'forum_desc_bitfield');
 		$this->set('bbcode_uid','forum_desc_uid');
 		$this->set('date',		'forum_last_post_time');
 		$this->set('options',	'forum_desc_options');
-
-		$this->num_items = (int) $config['feed_overall_forums_limit'];
 	}
 
 	function get_sql()
 	{
-		global $db;
+		global $auth, $db;
 
-		$not_in_fid = (sizeof($this->excluded_forums())) ? ' AND ' . $db->sql_in_set('f.forum_id', $this->excluded_forums(), true) : '';
+		$f_read_ids = array_keys($auth->acl_getf('f_read'));
+		if (empty($f_read_ids))
+		{
+			return false;
+		}
 
 		// Build SQL Query
 		$this->sql = array(
-			'SELECT'	=> 'f.*',
+			'SELECT'	=> 'f.forum_id, f.left_id, f.forum_name, f.forum_last_post_time,
+							f.forum_desc, f.forum_desc_bitfield, f.forum_desc_uid, f.forum_desc_options,
+							f.forum_topics, f.forum_posts',
 			'FROM'		=> array(FORUMS_TABLE => 'f'),
 			'WHERE'		=> 'f.forum_type = ' . FORUM_POST . '
-								AND (f.forum_last_post_id > 0' . $not_in_fid . ')',
-			'ORDER_BY'	=> 'f.left_id',
+							AND ' . $db->sql_bit_and('f.forum_options', FORUM_OPTION_FEED_EXCLUDE, '= 0') . '
+							AND ' . $db->sql_in_set('f.forum_id', $f_read_ids),
+			'ORDER_BY'	=> 'f.left_id ASC',
 		);
 
 		return true;
