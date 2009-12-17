@@ -188,7 +188,7 @@ foreach ($item_vars as $row)
 	echo '<link href="' . $row['link'] . '"/>' . "\n";
 	echo '<title type="html"><![CDATA[' . $row['title'] . ']]></title>' . "\n\n";
 
-	if (!empty($row['category']) && isset($row['category_name']))
+	if (!empty($row['category']) && isset($row['category_name']) && $row['category_name'] !== '')
 	{
 		echo '<category term="' . $row['category_name'] . '" scheme="' . $row['category'] . '" label="' . $row['category_name'] . '"/>' . "\n";
 	}
@@ -1161,7 +1161,7 @@ class phpbb_feed_topics extends phpbb_feed_base
 		{
 			global $user;
 
-			$item_row['statistics'] = $user->lang['POSTED'] . ' ' . $user->lang['POST_BY_AUTHOR'] . ' ' .  $this->user_viewprofile($row)
+			$item_row['statistics'] = $user->lang['POSTED'] . ' ' . $user->lang['POST_BY_AUTHOR'] . ' ' . $this->user_viewprofile($row)
 				. ' ' . $this->separator_stats . ' ' . $user->format_date($row['topic_time'])
 				. ' ' . $this->separator_stats . ' ' . $user->lang['REPLIES'] . ' ' . $row['topic_replies']
 				. ' ' . $this->separator_stats . ' ' . $user->lang['VIEWS'] . ' ' . $row['topic_views'];
