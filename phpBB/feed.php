@@ -93,8 +93,8 @@ while ($row = $feed->get_item())
 		'pubdate'		=> feed_format_date($item_time),
 		'link'			=> '',
 		'title'			=> censor_text($title),
-		'category'		=> ($config['feed_item_statistics']) ? $board_url . '/viewforum.' . $phpEx . '?f=' . $row['forum_id'] : '',
-		'category_name'	=> ($config['feed_item_statistics']) ? $row['forum_name'] : '',
+		'category'		=> ($config['feed_item_statistics'] && !empty($row['forum_id'])) ? $board_url . '/viewforum.' . $phpEx . '?f=' . $row['forum_id'] : '',
+		'category_name'	=> ($config['feed_item_statistics'] && isset($row['forum_name'])) ? $row['forum_name'] : '',
 		'description'	=> censor_text(feed_generate_content($row[$feed->get('text')], $row[$feed->get('bbcode_uid')], $row[$feed->get('bitfield')], $options)),
 		'statistics'	=> '',
 	);
@@ -188,7 +188,7 @@ foreach ($item_vars as $row)
 	echo '<link href="' . $row['link'] . '"/>' . "\n";
 	echo '<title type="html"><![CDATA[' . $row['title'] . ']]></title>' . "\n\n";
 
-	if (!empty($row['category']))
+	if (!empty($row['category']) && isset($row['category_name']))
 	{
 		echo '<category term="' . $row['category_name'] . '" scheme="' . $row['category'] . '" label="' . $row['category_name'] . '"/>' . "\n";
 	}
@@ -955,6 +955,14 @@ class phpbb_feed_forums extends phpbb_feed_base
 	}
 }
 
+/**
+* News feed
+*
+* This will give you {$this->num_items} first posts
+* of all topics in the selected news forums.
+*
+* @package phpBB3
+*/
 class phpbb_feed_news extends phpbb_feed_base
 {
 	function set_keys()
@@ -1016,20 +1024,24 @@ class phpbb_feed_news extends phpbb_feed_base
 			return false;
 		}
 
-		// Build SQL Query
 		$this->sql = array(
-			'SELECT'	=> 'f.forum_id, f.forum_name, f.forum_topics, f.forum_posts,
+			'SELECT'	=> 'f.forum_id, f.forum_name,
 							t.topic_id, t.topic_title, t.topic_poster, t.topic_first_poster_name, t.topic_replies, t.topic_views, t.topic_time,
 							p.post_id, p.post_text, p.bbcode_bitfield, p.bbcode_uid, p.enable_bbcode, p.enable_smilies, p.enable_magic_url',
 			'FROM'		=> array(
 				TOPICS_TABLE	=> 't',
-				FORUMS_TABLE	=> 'f',
 				POSTS_TABLE		=> 'p',
 			),
-			'WHERE'		=> $db->sql_in_set('t.forum_id', $in_fid_ary) . '
-							AND f.forum_id = t.forum_id
-							AND p.post_id = t.topic_first_post_id
-							AND t.topic_moved_id = 0',
+			'LEFT_JOIN'	=> array(
+				array(
+					'FROM'	=> array(FORUMS_TABLE => 'f'),
+					'ON'	=> 'f.forum_id = t.forum_id',
+				),
+			),
+			'WHERE'		=> 'p.post_id = t.topic_first_post_id
+							AND t.topic_moved_id = 0
+							AND (' . $db->sql_in_set('t.forum_id', $in_fid_ary) . '
+								OR t.topic_type = ' . POST_GLOBAL . ')',
 			'ORDER_BY'	=> 't.topic_time DESC',
 		);
 
