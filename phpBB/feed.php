@@ -982,7 +982,7 @@ class phpbb_feed_news extends phpbb_feed_base
 		$this->set('enable_smilies',	'enable_smilies');
 		$this->set('enable_magic_url',	'enable_magic_url');
 
-		$this->num_items = (int) $config['feed_overall_forums_limit'];
+		$this->num_items = (int) $config['feed_limit'];
 	}
 
 	function get_sql()
