@@ -1054,6 +1054,7 @@ class phpbb_feed_news extends phpbb_feed_base
 			),
 			'WHERE'		=> 'p.post_id = t.topic_first_post_id
 							AND t.topic_moved_id = 0
+							AND t.topic_approved = 1
 							AND (' . $db->sql_in_set('t.forum_id', $in_fid_ary) . '
 								OR t.topic_type = ' . POST_GLOBAL . ')',
 			'ORDER_BY'	=> 't.topic_time DESC',
