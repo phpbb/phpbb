@@ -562,8 +562,8 @@ class phpbb_feed_base
 		global $db, $cache;
 		static $forum_ids;
 
+		// Matches acp/acp_board.php
 		$cache_name	= 'feed_excluded_forum_ids';
-		$cache_ttl	= 300;
 
 		if (!isset($forum_ids) && ($forum_ids = $cache->get('_' . $cache_name)) === false)
 		{
@@ -579,7 +579,7 @@ class phpbb_feed_base
 			}
 			$db->sql_freeresult($result);
 
-			$cache->put('_' . $cache_name, $forum_ids, $cache_ttl);
+			$cache->put('_' . $cache_name, $forum_ids);
 		}
 
 		return $forum_ids;
@@ -1046,8 +1046,8 @@ class phpbb_feed_news extends phpbb_feed_base
 		global $db, $cache;
 		static $forum_ids;
 
+		// Matches acp/acp_board.php
 		$cache_name	= 'feed_news_forum_ids';
-		$cache_ttl	= 300;
 
 		if (!isset($forum_ids) && ($forum_ids = $cache->get('_' . $cache_name)) === false)
 		{
@@ -1063,7 +1063,7 @@ class phpbb_feed_news extends phpbb_feed_base
 			}
 			$db->sql_freeresult($result);
 
-			$cache->put('_' . $cache_name, $forum_ids, $cache_ttl);
+			$cache->put('_' . $cache_name, $forum_ids);
 		}
 
 		return $forum_ids;
