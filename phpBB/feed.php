@@ -550,6 +550,48 @@ class phpbb_feed_base
 		return $this->excluded_forums_ary;
 	}
 
+	function get_readable_forums()
+	{
+		global $auth;
+
+		return array_keys($auth->acl_getf('f_read'));
+	}
+
+	function get_excluded_forums()
+	{
+		global $db, $cache;
+		static $forum_ids;
+
+		$cache_name	= 'feed_excluded_forum_ids';
+		$cache_ttl	= 300;
+
+		if (!isset($forum_ids) && ($forum_ids = $cache->get('_' . $cache_name)) === false)
+		{
+			$sql = 'SELECT forum_id
+				FROM ' . FORUMS_TABLE . '
+				WHERE ' . $db->sql_bit_and('forum_options', FORUM_OPTION_FEED_EXCLUDE, '<> 0');
+			$result = $db->sql_query($sql);
+
+			$forum_ids = array();
+			while ($forum_id = (int) $db->sql_fetchfield('forum_id'))
+			{
+				$forum_ids[$forum_id] = $forum_id;
+			}
+			$db->sql_freeresult($result);
+
+			$cache->put('_' . $cache_name, $forum_ids, $cache_ttl);
+		}
+
+		return $forum_ids;
+	}
+
+	function is_excluded_forum($forum_id)
+	{
+		$forum_ids = $this->get_excluded_forums();
+
+		return isset($forum_ids[$forum_id]) ? true : false;
+	}
+
 	function get_passworded_forums()
 	{
 		global $db, $user;
