@@ -432,7 +432,21 @@ class phpbb_feed_base
 	*/
 	function phpbb_feed_base()
 	{
+		global $config;
+
 		$this->set_keys();
+
+		// Allow num_items to be string
+		if (is_string($this->num_items))
+		{
+			$this->num_items = (int) $config[$this->num_items];
+
+			// A precaution
+			if (!$this->num_items)
+			{
+				$this->num_items = 10;
+			}
+		}
 	}
 
 	/**
@@ -592,10 +606,10 @@ class phpbb_feed_base
 */
 class phpbb_feed_post_base extends phpbb_feed_base
 {
+	var $num_items = 'feed_limit';
+
 	function set_keys()
 	{
-		global $config;
-
 		$this->set('title',		'post_subject');
 		$this->set('title2',	'topic_title');
 
@@ -610,8 +624,6 @@ class phpbb_feed_post_base extends phpbb_feed_base
 		$this->set('enable_bbcode',		'enable_bbcode');
 		$this->set('enable_smilies',	'enable_smilies');
 		$this->set('enable_magic_url',	'enable_magic_url');
-
-		$this->num_items = (int) $config['feed_limit'];
 	}
 
 	function adjust_item(&$item_row, &$row)
@@ -1098,14 +1110,7 @@ class phpbb_feed_forums extends phpbb_feed_base
 */
 class phpbb_feed_news extends phpbb_feed_topic_base
 {
-	function set_keys()
-	{
-		global $config;
-
-		parent::set_keys();
-
-		$this->num_items = (int) $config['feed_limit'];
-	}
+	var $num_items = 'feed_limit';
 
 	function get_news_forums()
 	{
@@ -1188,14 +1193,7 @@ class phpbb_feed_news extends phpbb_feed_topic_base
 */
 class phpbb_feed_topics extends phpbb_feed_topic_base
 {
-	function set_keys()
-	{
-		global $config;
-
-		parent::set_keys();
-
-		$this->num_items = (int) $config['feed_overall_topics_limit'];
-	}
+	var $num_items = 'feed_overall_topics_limit';
 
 	function get_sql()
 	{
