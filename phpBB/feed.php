@@ -1184,17 +1184,16 @@ class phpbb_feed_topics extends phpbb_feed_base
 	{
 		global $db, $config;
 
-		$excluded_forum_ids = $this->excluded_forums();
-		if (empty($excluded_forum_ids))
+		$forum_ids_read = $this->get_readable_forums();
+		if (empty($forum_ids_read))
 		{
-			// Whole board
-			$sql_where_more = '';
+			return false;
 		}
-		else
+
+		$in_fid_ary = array_diff($forum_ids_read, $this->get_excluded_forums(), $this->get_passworded_forums());
+		if (empty($in_fid_ary))
 		{
-			// Not excluded forums or global topic
-			$sql_where_more = 'AND (' . $db->sql_in_set('t.forum_id', $excluded_forum_ids, true) . '
-				OR t.topic_type = ' . POST_GLOBAL . ')';
+			return false;
 		}
 
 		$this->sql = array(
@@ -1211,10 +1210,11 @@ class phpbb_feed_topics extends phpbb_feed_base
 					'ON'	=> 'f.forum_id = t.forum_id',
 				),
 			),
-			'WHERE'		=> "p.post_id = t.topic_first_post_id
+			'WHERE'		=> 'p.post_id = t.topic_first_post_id
 							AND t.topic_moved_id = 0
 							AND t.topic_approved = 1
-							$sql_where_more",
+							AND (' . $db->sql_in_set('t.forum_id', $in_fid_ary) . '
+								OR t.topic_type = ' . POST_GLOBAL . ')',
 			'ORDER_BY'	=> 't.topic_time DESC',
 		);
 
