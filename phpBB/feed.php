@@ -1015,8 +1015,8 @@ class phpbb_feed_forums extends phpbb_feed_base
 	{
 		global $auth, $db;
 
-		$f_read_ids = array_keys($auth->acl_getf('f_read'));
-		if (empty($f_read_ids))
+		$in_fid_ary = array_diff($this->get_readable_forums(), $this->get_excluded_forums());
+		if (empty($in_fid_ary))
 		{
 			return false;
 		}
@@ -1028,8 +1028,7 @@ class phpbb_feed_forums extends phpbb_feed_base
 							f.forum_topics, f.forum_posts',
 			'FROM'		=> array(FORUMS_TABLE => 'f'),
 			'WHERE'		=> 'f.forum_type = ' . FORUM_POST . '
-							AND ' . $db->sql_bit_and('f.forum_options', FORUM_OPTION_FEED_EXCLUDE, '= 0') . '
-							AND ' . $db->sql_in_set('f.forum_id', $f_read_ids),
+							AND ' . $db->sql_in_set('f.forum_id', $in_fid_ary),
 			'ORDER_BY'	=> 'f.left_id ASC',
 		);
 
