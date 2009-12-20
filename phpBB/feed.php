@@ -1081,6 +1081,14 @@ class phpbb_feed_news extends phpbb_feed_base
 	}
 }
 
+/**
+* 'All Topics' feed
+*
+* This will give you the last {$this->num_items} created topics
+* including the first post.
+*
+* @package phpBB3
+*/
 class phpbb_feed_topics extends phpbb_feed_base
 {
 	function set_keys()
@@ -1107,46 +1115,38 @@ class phpbb_feed_topics extends phpbb_feed_base
 	{
 		global $db, $config;
 
-		$post_ids = array();
-		$not_in_fid = (sizeof($this->excluded_forums())) ? ' AND ' . $db->sql_in_set('t.forum_id', $this->excluded_forums(), true) : '';
-
-		// Search for topics in last x days
-		$last_post_time_sql = ($this->sort_days) ? ' AND t.topic_last_post_time > ' . (time() - ($this->sort_days * 24 * 3600)) : '';
-
-		// Last x topics from all forums, with first post from topic...
-		$sql = 'SELECT t.topic_first_post_id
-			FROM ' . TOPICS_TABLE . ' t
-			WHERE t.topic_approved = 1
-				AND t.topic_moved_id = 0' .
-				$not_in_fid .
-				$last_post_time_sql . '
-			ORDER BY t.topic_last_post_time DESC';
-		$result = $db->sql_query_limit($sql, $this->num_items);
-
-		while ($row = $db->sql_fetchrow($result))
+		$excluded_forum_ids = $this->excluded_forums();
+		if (empty($excluded_forum_ids))
 		{
-			$post_ids[] = (int) $row['topic_first_post_id'];
+			// Whole board
+			$sql_where_more = '';
 		}
-		$db->sql_freeresult($result);
-
-		if (!sizeof($post_ids))
+		else
 		{
-			return false;
+			// Not excluded forums or global topic
+			$sql_where_more = 'AND (' . $db->sql_in_set('t.forum_id', $excluded_forum_ids, true) . '
+				OR t.topic_type = ' . POST_GLOBAL . ')';
 		}
 
 		$this->sql = array(
-			'SELECT'	=> 'f.forum_id, f.forum_name, f.forum_topics, f.forum_posts,
+			'SELECT'	=> 'f.forum_id, f.forum_name,
 							t.topic_id, t.topic_title, t.topic_poster, t.topic_first_poster_name, t.topic_replies, t.topic_views, t.topic_time,
 							p.post_id, p.post_text, p.bbcode_bitfield, p.bbcode_uid, p.enable_bbcode, p.enable_smilies, p.enable_magic_url',
 			'FROM'		=> array(
 				TOPICS_TABLE	=> 't',
-				FORUMS_TABLE	=> 'f',
 				POSTS_TABLE		=> 'p',
 			),
-			'WHERE'		=> $db->sql_in_set('p.post_id', $post_ids) . '
-								AND f.forum_id = p.forum_id
-								AND t.topic_id = p.topic_id',
-			'ORDER_BY'	=> 't.topic_last_post_time DESC',
+			'LEFT_JOIN'	=> array(
+				array(
+					'FROM'	=> array(FORUMS_TABLE => 'f'),
+					'ON'	=> 'f.forum_id = t.forum_id',
+				),
+			),
+			'WHERE'		=> "p.post_id = t.topic_first_post_id
+							AND t.topic_moved_id = 0
+							AND t.topic_approved = 1
+							$sql_where_more",
+			'ORDER_BY'	=> 't.topic_time DESC',
 		);
 
 		return true;
@@ -1156,6 +1156,7 @@ class phpbb_feed_topics extends phpbb_feed_base
 	{
 		global $phpEx, $config;
 
+		$item_row['title'] = (isset($row['forum_name']) && $row['forum_name'] !== '') ? $row['forum_name'] . ' ' . $this->separator . ' ' . $item_row['title'] : $item_row['title'];
 		$item_row['link'] = feed_append_sid('/viewtopic.' . $phpEx, 't=' . $row['topic_id'] . '&amp;p=' . $row['post_id'] . '#p' . $row['post_id']);
 
 		if ($config['feed_item_statistics'])
