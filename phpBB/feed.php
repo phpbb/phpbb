@@ -693,6 +693,47 @@ class phpbb_feed_base
 }
 
 /**
+* Abstract class for topic based feeds
+*
+* @package phpBB3
+*/
+class phpbb_feed_topic_base extends phpbb_feed_base
+{
+	function set_keys()
+	{
+		$this->set('title',		'topic_title');
+		$this->set('title2',	'forum_name');
+
+		$this->set('author_id',	'topic_poster');
+		$this->set('creator',	'topic_first_poster_name');
+		$this->set('date',		'topic_time');
+		$this->set('text',		'post_text');
+
+		$this->set('bitfield',	'bbcode_bitfield');
+		$this->set('bbcode_uid','bbcode_uid');
+
+		$this->set('enable_bbcode',		'enable_bbcode');
+		$this->set('enable_smilies',	'enable_smilies');
+		$this->set('enable_magic_url',	'enable_magic_url');
+	}
+
+	function adjust_item(&$item_row, &$row)
+	{
+		global $phpEx, $config, $user;
+
+		$item_row['link'] = feed_append_sid('/viewtopic.' . $phpEx, 't=' . $row['topic_id'] . '&amp;p=' . $row['post_id'] . '#p' . $row['post_id']);
+
+		if ($config['feed_item_statistics'])
+		{
+			$item_row['statistics'] = $user->lang['POSTED'] . ' ' . $user->lang['POST_BY_AUTHOR'] . ' ' . $this->user_viewprofile($row)
+				. ' ' . $this->separator_stats . ' ' . $user->format_date($row['topic_time'])
+				. ' ' . $this->separator_stats . ' ' . $user->lang['REPLIES'] . ' ' . $row['topic_replies']
+				. ' ' . $this->separator_stats . ' ' . $user->lang['VIEWS'] . ' ' . $row['topic_views'];
+		}
+	}
+}
+
+/**
 * Default feed class if no mode is specified.
 * This can be the overall site feed or a forum/topic feed.
 *
@@ -1019,24 +1060,13 @@ class phpbb_feed_forums extends phpbb_feed_base
 *
 * @package phpBB3
 */
-class phpbb_feed_news extends phpbb_feed_base
+class phpbb_feed_news extends phpbb_feed_topic_base
 {
 	function set_keys()
 	{
 		global $config;
 
-		$this->set('title',		'topic_title');
-		$this->set('title2',	'forum_name');
-		$this->set('author_id',	'topic_poster');
-		$this->set('creator',	'topic_first_poster_name');
-		$this->set('text',		'post_text');
-		$this->set('bitfield',	'bbcode_bitfield');
-		$this->set('bbcode_uid','bbcode_uid');
-		$this->set('date',		'topic_time');
-
-		$this->set('enable_bbcode',		'enable_bbcode');
-		$this->set('enable_smilies',	'enable_smilies');
-		$this->set('enable_magic_url',	'enable_magic_url');
+		parent::set_keys();
 
 		$this->num_items = (int) $config['feed_limit'];
 	}
@@ -1131,23 +1161,6 @@ class phpbb_feed_news extends phpbb_feed_base
 
 		return true;
 	}
-
-	function adjust_item(&$item_row, &$row)
-	{
-		global $phpEx, $config;
-
-		$item_row['link'] = feed_append_sid('/viewtopic.' . $phpEx, 't=' . $row['topic_id'] . '&amp;p=' . $row['post_id'] . '#p' . $row['post_id']);
-
-		if ($config['feed_item_statistics'])
-		{
-			global $user;
-
-			$item_row['statistics'] = $user->lang['POSTED'] . ' ' . $user->lang['POST_BY_AUTHOR'] . ' ' . $this->user_viewprofile($row)
-				. ' ' . $this->separator_stats . ' ' . $user->format_date($row['topic_time'])
-				. ' ' . $this->separator_stats . ' ' . $user->lang['REPLIES'] . ' ' . $row['topic_replies']
-				. ' ' . $this->separator_stats . ' ' . $user->lang['VIEWS'] . ' ' . $row['topic_views'];
-		}
-	}
 }
 
 /**
@@ -1158,24 +1171,13 @@ class phpbb_feed_news extends phpbb_feed_base
 *
 * @package phpBB3
 */
-class phpbb_feed_topics extends phpbb_feed_base
+class phpbb_feed_topics extends phpbb_feed_topic_base
 {
 	function set_keys()
 	{
 		global $config;
 
-		$this->set('title',		'topic_title');
-		$this->set('title2',	'forum_name');
-		$this->set('author_id',	'topic_poster');
-		$this->set('creator',	'topic_first_poster_name');
-		$this->set('text',		'post_text');
-		$this->set('bitfield',	'bbcode_bitfield');
-		$this->set('bbcode_uid','bbcode_uid');
-		$this->set('date',		'topic_time');
-
-		$this->set('enable_bbcode',		'enable_bbcode');
-		$this->set('enable_smilies',	'enable_smilies');
-		$this->set('enable_magic_url',	'enable_magic_url');
+		parent::set_keys();
 
 		$this->num_items = (int) $config['feed_overall_topics_limit'];
 	}
@@ -1223,20 +1225,9 @@ class phpbb_feed_topics extends phpbb_feed_base
 
 	function adjust_item(&$item_row, &$row)
 	{
-		global $phpEx, $config;
+		parent::adjust_item($item_row, $row);
 
 		$item_row['title'] = (isset($row['forum_name']) && $row['forum_name'] !== '') ? $row['forum_name'] . ' ' . $this->separator . ' ' . $item_row['title'] : $item_row['title'];
-		$item_row['link'] = feed_append_sid('/viewtopic.' . $phpEx, 't=' . $row['topic_id'] . '&amp;p=' . $row['post_id'] . '#p' . $row['post_id']);
-
-		if ($config['feed_item_statistics'])
-		{
-			global $user;
-
-			$item_row['statistics'] = $user->lang['POSTED'] . ' ' . $user->lang['POST_BY_AUTHOR'] . ' ' . $this->user_viewprofile($row)
-				. ' ' . $this->separator_stats . ' ' . $user->format_date($row['topic_time'])
-				. ' ' . $this->separator_stats . ' ' . $user->lang['REPLIES'] . ' ' . $row['topic_replies']
-				. ' ' . $this->separator_stats . ' ' . $user->lang['VIEWS'] . ' ' . $row['topic_views'];
-		}
 	}
 }
 
