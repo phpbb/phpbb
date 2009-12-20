@@ -1041,41 +1041,68 @@ class phpbb_feed_news extends phpbb_feed_base
 		$this->num_items = (int) $config['feed_limit'];
 	}
 
+	function get_news_forums()
+	{
+		global $db, $cache;
+		static $forum_ids;
+
+		$cache_name	= 'feed_news_forum_ids';
+		$cache_ttl	= 300;
+
+		if (!isset($forum_ids) && ($forum_ids = $cache->get('_' . $cache_name)) === false)
+		{
+			$sql = 'SELECT forum_id
+				FROM ' . FORUMS_TABLE . '
+				WHERE ' . $db->sql_bit_and('forum_options', FORUM_OPTION_FEED_NEWS, '<> 0');
+			$result = $db->sql_query($sql);
+
+			$forum_ids = array();
+			while ($forum_id = (int) $db->sql_fetchfield('forum_id'))
+			{
+				$forum_ids[$forum_id] = $forum_id;
+			}
+			$db->sql_freeresult($result);
+
+			$cache->put('_' . $cache_name, $forum_ids, $cache_ttl);
+		}
+
+		return $forum_ids;
+	}
+
 	function get_sql()
 	{
 		global $auth, $config, $db;
 
+		// Determine forum ids
+		$forum_ids_news = $this->get_news_forums();
+
+		// Very very unlikely, check anyway
+		if (empty($forum_ids_news))
+		{
+			return false;
+		}
+
 		// Get passworded forums
 		$forum_ids_passworded = $this->get_passworded_forums();
 
-		// Get news forums...
-		$sql = 'SELECT forum_id
-			FROM ' . FORUMS_TABLE . '
-			WHERE ' . $db->sql_bit_and('forum_options', FORUM_OPTION_FEED_NEWS, '<> 0');
-		$result = $db->sql_query($sql);
-
+		// Check forum_ids
 		$in_fid_ary = array();
-		while ($row = $db->sql_fetchrow($result))
+		foreach ($forum_ids_news as $forum_id)
 		{
-			$forum_id = (int) $row['forum_id'];
-
-			// Passworded forum
 			if (isset($forum_ids_passworded[$forum_id]))
 			{
 				continue;
 			}
 
-			// Make sure we can read this forum
 			if (!$auth->acl_get('f_read', $forum_id))
 			{
 				continue;
 			}
 
-			$in_fid_ary[] = (int) $row['forum_id'];
+			$in_fid_ary[] = $forum_id;
 		}
-		$db->sql_freeresult($result);
 
-		if (!sizeof($in_fid_ary))
+		if (empty($in_fid_ary))
 		{
 			return false;
 		}
