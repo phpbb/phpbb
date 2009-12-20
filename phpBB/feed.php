@@ -413,34 +413,9 @@ class phpbb_feed_base
 	var $keys = array();
 
 	/**
-	* An array of excluded forum ids.
-	*/
-	var $excluded_forums_ary = NULL;
-
-	/**
 	* Number of items to fetch. Usually overwritten by $config['feed_something']
 	*/
 	var $num_items = 15;
-
-	/**
-	* boolean to determine if items array is filled or not
-	*/
-	var $items_filled = false;
-
-	/**
-	* array holding items
-	*/
-	var $items = array();
-
-	/**
-	* Default setting for last x days
-	*/
-	var $sort_days = 30;
-
-	/**
-	* Default cache time of entries in seconds
-	*/
-	var $cache_time = 0; // 0 important
 
 	/**
 	* Separator for title elements to separate items (for example forum / topic)
@@ -457,14 +432,6 @@ class phpbb_feed_base
 	*/
 	function phpbb_feed_base()
 	{
-		global $user;
-
-		// Disable cache if it is not a guest or a bot but a registered user
-		if ($this->cache_time && !empty($user) && $user->data['is_registered'])
-		{
-			$this->cache_time = 0;
-		}
-
 		$this->set_keys();
 	}
 
@@ -509,43 +476,6 @@ class phpbb_feed_base
 	function get($key)
 	{
 		return (isset($this->keys[$key])) ? $this->keys[$key] : NULL;
-	}
-
-	/**
-	* Return array of excluded forums
-	*/
-	function excluded_forums()
-	{
-		if ($this->excluded_forums_ary !== NULL)
-		{
-			return $this->excluded_forums_ary;
-		}
-
-		global $auth, $db, $config, $phpbb_root_path, $phpEx, $user;
-
-		// Which forums should not be searched ?
-		$this->excluded_forums_ary = array();
-
-		// Exclude excluded forums and forums we cannot read
-		$forum_ids_read = array_keys($auth->acl_getf('f_read', true));
-		$sql_or = (!empty($forum_ids_read)) ? 'OR ' . $db->sql_in_set('forum_id', $forum_ids_read, true) : '';
-
-		$sql = 'SELECT forum_id
-			FROM ' . FORUMS_TABLE . '
-			WHERE ' . $db->sql_bit_and('forum_options', FORUM_OPTION_FEED_EXCLUDE, '<> 0') . "
-			$sql_or";
-		$result = $db->sql_query($sql);
-
-		while ($row = $db->sql_fetchrow($result))
-		{
-			$this->excluded_forums_ary[(int) $row['forum_id']] = (int) $row['forum_id'];
-		}
-		$db->sql_freeresult($result);
-
-		// Include passworded forums
-		$this->excluded_forums_ary = array_unique(array_merge($this->excluded_forums_ary, $this->get_passworded_forums()));
-
-		return $this->excluded_forums_ary;
 	}
 
 	function get_readable_forums()
@@ -621,56 +551,21 @@ class phpbb_feed_base
 	function get_item()
 	{
 		global $db, $cache;
+		static $result;
 
-		if (!$this->cache_time)
+		if (!isset($result))
 		{
-			if (empty($this->result))
+			if (!$this->get_sql())
 			{
-				if (!$this->get_sql())
-				{
-					return false;
-				}
-
-				// Query database
-				$sql = $db->sql_build_query('SELECT', $this->sql);
-				$this->result = $db->sql_query_limit($sql, $this->num_items);
+				return false;
 			}
 
-			return $db->sql_fetchrow($this->result);
+			// Query database
+			$sql = $db->sql_build_query('SELECT', $this->sql);
+			$result = $db->sql_query_limit($sql, $this->num_items);
 		}
-		else
-		{
-			if (empty($this->items_filled))
-			{
-				// Try to load result set...
-				$cache_filename = substr(get_class($this), strlen('phpbb_'));
 
-				if (($this->items = $cache->get('_' . $cache_filename)) === false)
-				{
-					$this->items = array();
-
-					if ($this->get_sql())
-					{
-						// Query database
-						$sql = $db->sql_build_query('SELECT', $this->sql);
-						$result = $db->sql_query_limit($sql, $this->num_items);
-
-						while ($row = $db->sql_fetchrow($result))
-						{
-							$this->items[] = $row;
-						}
-						$db->sql_freeresult($result);
-					}
-
-					$cache->put('_' . $cache_filename, $this->items, $this->cache_time);
-				}
-
-				$this->items_filled = true;
-			}
-
-			$row = array_shift($this->items);
-			return (!$row) ? false : $row;
-		}
+		return $db->sql_fetchrow($result);
 	}
 
 	function user_viewprofile($row)
@@ -1245,34 +1140,13 @@ class phpbb_feed_news extends phpbb_feed_topic_base
 		global $auth, $config, $db;
 
 		// Determine forum ids
-		$forum_ids_news = $this->get_news_forums();
-
-		// Very very unlikely, check anyway
-		if (empty($forum_ids_news))
+		$in_fid_ary = array_intersect($this->get_news_forums(), $this->get_readable_forums());
+		if (empty($in_fid_ary))
 		{
 			return false;
 		}
 
-		// Get passworded forums
-		$forum_ids_passworded = $this->get_passworded_forums();
-
-		// Check forum_ids
-		$in_fid_ary = array();
-		foreach ($forum_ids_news as $forum_id)
-		{
-			if (isset($forum_ids_passworded[$forum_id]))
-			{
-				continue;
-			}
-
-			if (!$auth->acl_get('f_read', $forum_id))
-			{
-				continue;
-			}
-
-			$in_fid_ary[] = $forum_id;
-		}
-
+		$in_fid_ary = array_diff($in_fid_ary, $this->get_passworded_forums());
 		if (empty($in_fid_ary))
 		{
 			return false;
