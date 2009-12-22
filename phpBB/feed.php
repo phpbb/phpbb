@@ -388,8 +388,12 @@ class phpbb_feed_factory
 				{
 					return new phpbb_feed_forum($forum_id);
 				}
+				else if ($config['feed_overall'])
+				{
+					return new phpbb_feed_overall();
+				}
 
-				return new phpbb_feed_overall();
+				return false;
 			break;
 		}
 	}
