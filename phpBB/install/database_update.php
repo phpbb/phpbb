@@ -1573,8 +1573,12 @@ function change_database_data(&$no_updates, $version)
 		case '3.0.6-RC4':
 		break;
 
-		// No changes from 3.0.6 to 3.0.7-RC1
+		// Changes from 3.0.6 to 3.0.7-RC1
 		case '3.0.6':
+
+			// ATOM Feeds
+			set_config('feed_overall', '1');
+
 		break;
 	}
 }

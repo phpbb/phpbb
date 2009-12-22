@@ -271,6 +271,7 @@ class acp_board
 						'feed_overall_forums'		=> array('lang'	=> 'ACP_FEED_OVERALL_FORUMS',		'validate' => 'bool',	'type' => 'radio:enabled_disabled',	'explain' => true ),
 						'feed_overall_topics'		=> array('lang' => 'ACP_FEED_OVERALL_TOPIC',		'validate' => 'bool',	'type' => 'radio:enabled_disabled',	'explain' => true ),
 						'feed_overall_topics_limit'	=> array('lang' => 'ACP_FEED_OVERALL_TOPIC_LIMIT',	'validate' => 'int:5',	'type' => 'text:3:4',				'explain' => false),
+						'feed_overall'				=> array('lang' => 'ACP_FEED_OVERALL',				'validate' => 'bool',	'type' => 'radio:enabled_disabled',	'explain' => true ),
 						'feed_forum'				=> array('lang' => 'ACP_FEED_FORUM',				'validate' => 'bool',	'type' => 'radio:enabled_disabled',	'explain' => true ),
 						'feed_topic'				=> array('lang' => 'ACP_FEED_TOPIC',				'validate' => 'bool',	'type' => 'radio:enabled_disabled',	'explain' => true ),
 						'feed_news_id'				=> array('lang' => 'ACP_FEED_NEWS',					'validate' => 'string',	'type' => 'custom', 'method' => 'select_news_forums', 'explain' => true),

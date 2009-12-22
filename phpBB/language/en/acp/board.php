@@ -254,6 +254,9 @@ $lang = array_merge($lang, array(
 	'ACP_FEED_LIMIT'					=> 'Number of items',
 	'ACP_FEED_LIMIT_EXPLAIN'			=> 'The maximum number of feed items to display.',
 
+	'ACP_FEED_OVERALL'					=> 'Enable board-wide Feed',
+	'ACP_FEED_OVERALL_EXPLAIN'			=> 'Board-wide new posts.',
+
 	'ACP_FEED_OVERALL_FORUMS'			=> 'Enable overall forums feed',
 	'ACP_FEED_OVERALL_FORUMS_EXPLAIN'	=> 'This feed displays the latest posts from all forums topics.',
 	'ACP_FEED_OVERALL_FORUMS_LIMIT'		=> 'Number of items per page to display in the forums feed',
