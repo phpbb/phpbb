@@ -262,8 +262,8 @@ $lang = array_merge($lang, array(
 	'ACP_FEED_OVERALL_FORUMS'			=> 'Enable forums feed',
 	'ACP_FEED_OVERALL_FORUMS_EXPLAIN'	=> 'Enables the “All forums” feed, which displays a list of forums.',
 
-	'ACP_FEED_OVERALL_TOPIC'			=> 'Enable overall topics feed',
-	'ACP_FEED_OVERALL_TOPIC_EXPLAIN'	=> 'Enables the “All Topics” feed',
+	'ACP_FEED_OVERALL_TOPIC'			=> 'Enable topics feed',
+	'ACP_FEED_OVERALL_TOPIC_EXPLAIN'	=> 'Enables the “All Topics” feed, which displays the last created topics including the first post.',
 	'ACP_FEED_FORUM'					=> 'Enable Per-Forum Feeds',
 	'ACP_FEED_FORUM_EXPLAIN'			=> 'Single forum new posts.',
 	'ACP_FEED_TOPIC'					=> 'Enable Per-Topic Feeds',
