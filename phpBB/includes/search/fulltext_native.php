@@ -202,7 +202,8 @@ class fulltext_native extends search_backend
 		{
 			$sql = 'SELECT word_id, word_text, word_common
 				FROM ' . SEARCH_WORDLIST_TABLE . '
-				WHERE ' . $db->sql_in_set('word_text', $exact_words);
+				WHERE ' . $db->sql_in_set('word_text', $exact_words) . '
+				ORDER BY word_count ASC';
 			$result = $db->sql_query($sql);
 
 			// store an array of words and ids, remove common words
@@ -377,10 +378,6 @@ class fulltext_native extends search_backend
 			return false;
 		}
 
-		sort($this->must_contain_ids);
-		sort($this->must_not_contain_ids);
-		sort($this->must_exclude_one_ids);
-
 		if (!empty($this->search_query))
 		{
 			return true;
@@ -420,11 +417,19 @@ class fulltext_native extends search_backend
 			return false;
 		}
 
+		$must_contain_ids = $this->must_contain_ids;
+		$must_not_contain_ids = $this->must_not_contain_ids;
+		$must_exclude_one_ids = $this->must_exclude_one_ids;
+
+		sort($must_contain_ids);
+		sort($must_not_contain_ids);
+		sort($must_exclude_one_ids);
+
 		// generate a search_key from all the options to identify the results
 		$search_key = md5(implode('#', array(
-			serialize($this->must_contain_ids),
-			serialize($this->must_not_contain_ids),
-			serialize($this->must_exclude_one_ids),
+			serialize($must_contain_ids),
+			serialize($must_not_contain_ids),
+			serialize($must_exclude_one_ids),
 			$type,
 			$fields,
 			$terms,
