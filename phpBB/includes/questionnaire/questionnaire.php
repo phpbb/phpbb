@@ -167,7 +167,7 @@ class phpbb_questionnaire_system_data_provider
 			'httpd'	=> $_SERVER['SERVER_SOFTWARE'],
 			// we don't want the real IP address (for privacy policy reasons) but only
 			// a network address to see whether your installation is running on a private or public network.
-			'private_ip'	=> is_private_ip($server_address),
+			'private_ip'	=> $this->is_private_ip($server_address),
 			'ipv6'			=> strpos($server_address, ':') !== false,
 		);
 	}
