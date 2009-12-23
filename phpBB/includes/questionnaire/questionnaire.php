@@ -162,25 +162,59 @@ class phpbb_questionnaire_system_data_provider
 			$server_address = $_SERVER['LOCAL_ADDR'];
 		}
 
-		$ip_address_ary = explode('.', $server_address);
-
-		// build ip
-		if (!isset($ip_address_ary[0]) || !isset($ip_address_ary[1]))
-		{
-			$ip_address_ary = explode('.', '0.0.0.0');
-		}
-
 		return array(
 			'os'	=> PHP_OS,
 			'httpd'	=> $_SERVER['SERVER_SOFTWARE'],
 			// we don't want the real IP address (for privacy policy reasons) but only
 			// a network address to see whether your installation is running on a private or public network.
+			'private_ip'	=> is_private_ip($server_address),
+			'ipv6'			=> strpos($server_address, ':') !== false,
+		);
+	}
+
+	/**
+	* Checks whether the given IP is in a private network.
+	*
+	* @param	string	$ip	IP in v4 dot-decimal or v6 hex format
+	* @return	bool		true if the IP is from a private network, else false
+	*/
+	function is_private_ip($ip)
+	{
+		// IPv4
+		if (strpos($ip, ':') === false)
+		{
+			$ip_address_ary = explode('.', $ip);
+
+			// build ip
+			if (!isset($ip_address_ary[0]) || !isset($ip_address_ary[1]))
+			{
+				$ip_address_ary = explode('.', '0.0.0.0');
+			}
+
 			// IANA reserved addresses for private networks (RFC 1918) are:
 			// - 10.0.0.0/8
 			// - 172.16.0.0/12
 			// - 192.168.0.0/16
-			'ip'		=> $ip_address_ary[0] . '.' . $ip_address_ary[1] . '.XXX.YYY',
-		);
+			if ($ip_address_ary[0] == '10' ||
+				($ip_address_ary[0] == '172' && intval($ip_address_ary[1]) > 15 && intval($ip_address_ary[1]) < 32) ||
+				($ip_address_ary[0] == '192' && $ip_address_ary[1] == '168') ||
+				($ip_address_ary[0] == '192' && $ip_address_ary[1] == '168'))
+			{
+				return true;
+			}
+		}
+		// IPv6
+		else
+		{
+			// unique local unicast
+			$prefix = substr($ip, 0, 2);
+			if ($prefix == 'fc' || $prefix == 'fd')
+			{
+				return true;
+			}
+		}
+
+		return false;
 	}
 }
 
