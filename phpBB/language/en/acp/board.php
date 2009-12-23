@@ -251,10 +251,8 @@ $lang = array_merge($lang, array(
 
 	'ACP_FEED_ENABLE'					=> 'Enable Feeds',
 	'ACP_FEED_ENABLE_EXPLAIN'			=> 'Turns on or off ATOM Feeds for the entire board.<br />Disabling this switches off all Feeds, no matter how the options below are set.',
-	'ACP_FEED_LIMIT_POST'				=> 'Number of items in post based feeds',
-	'ACP_FEED_LIMIT_POST_EXPLAIN'		=> 'The maximum number of feed items to display in post based feeds.',
-	'ACP_FEED_LIMIT_TOPIC'				=> 'Number of items in topic based feeds',
-	'ACP_FEED_LIMIT_TOPIC_EXPLAIN'		=> 'The maximum number of feed items to display in topic based feeds.',
+	'ACP_FEED_LIMIT'					=> 'Number of items',
+	'ACP_FEED_LIMIT_EXPLAIN'			=> 'The maximum number of feed items to display.',	
 
 	'ACP_FEED_OVERALL'					=> 'Enable board-wide Feed',
 	'ACP_FEED_OVERALL_EXPLAIN'			=> 'Board-wide new posts.',
@@ -272,6 +270,9 @@ $lang = array_merge($lang, array(
 	'ACP_FEED_NEWS_EXPLAIN'				=> 'Pull the first post from these forums. Select no forums to disable news feed.<br />Select multiple forums by holding <samp>CTRL</samp> and clicking.',
 
 	'ACP_FEED_GENERAL'					=> 'General Feed Settings',
+	'ACP_FEED_POST_BASED'				=> 'Post-based Feed Settings',
+	'ACP_FEED_TOPIC_BASED'				=> 'Topic-based Feed Settings',
+	'ACP_FEED_SETTINGS_OTHER'			=> 'Other Feeds and Seetings',
 
 	'ACP_FEED_ITEM_STATISTICS'			=> 'Item statistics',
 	'ACP_FEED_ITEM_STATISTICS_EXPLAIN'	=> 'Display individual statistics underneath feed items<br />(Posted by, date and time, Replies, Views)',
