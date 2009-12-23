@@ -610,7 +610,7 @@ class phpbb_feed_base
 */
 class phpbb_feed_post_base extends phpbb_feed_base
 {
-	var $num_items = 'feed_limit';
+	var $num_items = 'feed_limit_post';
 
 	function set_keys()
 	{
@@ -651,6 +651,8 @@ class phpbb_feed_post_base extends phpbb_feed_base
 */
 class phpbb_feed_topic_base extends phpbb_feed_base
 {
+	var $num_items = 'feed_limit_topic';
+
 	function set_keys()
 	{
 		$this->set('title',		'topic_title');
@@ -1114,8 +1116,6 @@ class phpbb_feed_forums extends phpbb_feed_base
 */
 class phpbb_feed_news extends phpbb_feed_topic_base
 {
-	var $num_items = 'feed_limit';
-
 	function get_news_forums()
 	{
 		global $db, $cache;
@@ -1197,8 +1197,6 @@ class phpbb_feed_news extends phpbb_feed_topic_base
 */
 class phpbb_feed_topics extends phpbb_feed_topic_base
 {
-	var $num_items = 'feed_overall_topics_limit';
-
 	function get_sql()
 	{
 		global $db, $config;

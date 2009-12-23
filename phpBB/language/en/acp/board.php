@@ -251,8 +251,10 @@ $lang = array_merge($lang, array(
 
 	'ACP_FEED_ENABLE'					=> 'Enable Feeds',
 	'ACP_FEED_ENABLE_EXPLAIN'			=> 'Turns on or off ATOM Feeds for the entire board.<br />Disabling this switches off all Feeds, no matter how the options below are set.',
-	'ACP_FEED_LIMIT'					=> 'Number of items',
-	'ACP_FEED_LIMIT_EXPLAIN'			=> 'The maximum number of feed items to display.',
+	'ACP_FEED_LIMIT_POST'				=> 'Number of items in post based feeds',
+	'ACP_FEED_LIMIT_POST_EXPLAIN'		=> 'The maximum number of feed items to display in post based feeds.',
+	'ACP_FEED_LIMIT_TOPIC'				=> 'Number of items in topic based feeds',
+	'ACP_FEED_LIMIT_TOPIC_EXPLAIN'		=> 'The maximum number of feed items to display in topic based feeds.',
 
 	'ACP_FEED_OVERALL'					=> 'Enable board-wide Feed',
 	'ACP_FEED_OVERALL_EXPLAIN'			=> 'Board-wide new posts.',
