@@ -360,6 +360,15 @@ class phpbb_feed_factory
 				return new phpbb_feed_topics();
 			break;
 
+			case 'topics_active':
+				if (!$config['feed_topics_active'])
+				{
+					return false;
+				}
+
+				return new phpbb_feed_topics_active();
+			break;
+
 			case 'news':
 				global $db;
 
@@ -680,7 +689,7 @@ class phpbb_feed_topic_base extends phpbb_feed_base
 		if ($config['feed_item_statistics'])
 		{
 			$item_row['statistics'] = $user->lang['POSTED'] . ' ' . $user->lang['POST_BY_AUTHOR'] . ' ' . $this->user_viewprofile($row)
-				. ' ' . $this->separator_stats . ' ' . $user->format_date($row['topic_time'])
+				. ' ' . $this->separator_stats . ' ' . $user->format_date($row[$this->get('date')])
 				. ' ' . $this->separator_stats . ' ' . $user->lang['REPLIES'] . ' ' . $row['topic_replies']
 				. ' ' . $this->separator_stats . ' ' . $user->lang['VIEWS'] . ' ' . $row['topic_views'];
 		}
@@ -1188,7 +1197,7 @@ class phpbb_feed_news extends phpbb_feed_topic_base
 }
 
 /**
-* 'All Topics' feed
+* New Topics feed
 *
 * This will give you the last {$this->num_items} created topics
 * including the first post.
@@ -1236,6 +1245,112 @@ class phpbb_feed_topics extends phpbb_feed_topic_base
 		);
 
 		return true;
+	}
+
+	function adjust_item(&$item_row, &$row)
+	{
+		parent::adjust_item($item_row, $row);
+
+		$item_row['title'] = (isset($row['forum_name']) && $row['forum_name'] !== '') ? $row['forum_name'] . ' ' . $this->separator . ' ' . $item_row['title'] : $item_row['title'];
+	}
+}
+
+/**
+* Active Topics feed
+*
+* This will give you the last {$this->num_items} topics
+* with replies made withing the last {$this->sort_days} days
+* including the last post.
+*
+* @package phpBB3
+*/
+class phpbb_feed_topics_active extends phpbb_feed_topic_base
+{
+	var $sort_days = 7;
+
+	function set_keys()
+	{
+		parent::set_keys();
+
+		$this->set('author_id',	'topic_last_poster_id');
+		$this->set('creator',	'topic_last_poster_name');
+		$this->set('date',		'topic_last_post_time');
+		$this->set('text',		'post_text');
+	}
+
+	function get_sql()
+	{
+		global $db, $config;
+
+		$forum_ids_read = $this->get_readable_forums();
+		if (empty($forum_ids_read))
+		{
+			return false;
+		}
+
+		$in_fid_ary = array_intersect($forum_ids_read, $this->get_forum_ids());
+		$in_fid_ary = array_diff($in_fid_ary, $this->get_passworded_forums());
+		if (empty($in_fid_ary))
+		{
+			return false;
+		}
+
+		// Search for topics in last X days
+		$last_post_time_sql = ($this->sort_days) ? ' AND t.topic_last_post_time > ' . (time() - ($this->sort_days * 24 * 3600)) : '';
+
+		$this->sql = array(
+			'SELECT'	=> 'f.forum_id, f.forum_name,
+							t.topic_id, t.topic_title, t.topic_replies, t.topic_views,
+							t.topic_last_poster_id, t.topic_last_poster_name, t.topic_last_post_time,
+							p.post_id, p.post_text, p.bbcode_bitfield, p.bbcode_uid, p.enable_bbcode, p.enable_smilies, p.enable_magic_url',
+			'FROM'		=> array(
+				TOPICS_TABLE	=> 't',
+				POSTS_TABLE		=> 'p',
+			),
+			'LEFT_JOIN'	=> array(
+				array(
+					'FROM'	=> array(FORUMS_TABLE => 'f'),
+					'ON'	=> 'f.forum_id = t.forum_id',
+				),
+			),
+			'WHERE'		=> 'p.post_id = t.topic_last_post_id
+							' . $last_post_time_sql . '
+							AND t.topic_moved_id = 0
+							AND t.topic_approved = 1
+							AND (' . $db->sql_in_set('t.forum_id', $in_fid_ary) . '
+								OR t.topic_type = ' . POST_GLOBAL . ')',
+			'ORDER_BY'	=> 't.topic_last_post_time DESC',
+		);
+
+		return true;
+	}
+
+	function get_forum_ids()
+	{
+		global $db, $cache;
+		static $forum_ids;
+
+		$cache_name	= 'feed_topic_active_forum_ids';
+
+		if (!isset($forum_ids) && ($forum_ids = $cache->get('_' . $cache_name)) === false)
+		{
+			$sql = 'SELECT forum_id
+				FROM ' . FORUMS_TABLE . '
+				WHERE ' . $db->sql_bit_and('forum_options', FORUM_OPTION_FEED_EXCLUDE, '= 0') . '
+					AND ' . $db->sql_bit_and('forum_flags', log(FORUM_FLAG_ACTIVE_TOPICS, 2), '<> 0');
+			$result = $db->sql_query($sql);
+
+			$forum_ids = array();
+			while ($forum_id = (int) $db->sql_fetchfield('forum_id'))
+			{
+				$forum_ids[$forum_id] = $forum_id;
+			}
+			$db->sql_freeresult($result);
+
+			$cache->put('_' . $cache_name, $forum_ids, 180);
+		}
+
+		return $forum_ids;
 	}
 
 	function adjust_item(&$item_row, &$row)
