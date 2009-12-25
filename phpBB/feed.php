@@ -1336,7 +1336,8 @@ class phpbb_feed_topics_active extends phpbb_feed_topic_base
 		{
 			$sql = 'SELECT forum_id
 				FROM ' . FORUMS_TABLE . '
-				WHERE ' . $db->sql_bit_and('forum_options', FORUM_OPTION_FEED_EXCLUDE, '= 0') . '
+				WHERE forum_type = ' . FORUM_POST . '
+					AND ' . $db->sql_bit_and('forum_options', FORUM_OPTION_FEED_EXCLUDE, '= 0') . '
 					AND ' . $db->sql_bit_and('forum_flags', log(FORUM_FLAG_ACTIVE_TOPICS, 2), '<> 0');
 			$result = $db->sql_query($sql);
 
