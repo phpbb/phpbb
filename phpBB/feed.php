@@ -352,7 +352,8 @@ class phpbb_feed_factory
 			break;
 
 			case 'topics':
-				if (!$config['feed_overall_topics'])
+			case 'topics_new':
+				if (!$config['feed_topics_new'])
 				{
 					return false;
 				}

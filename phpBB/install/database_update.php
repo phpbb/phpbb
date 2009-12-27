@@ -1580,6 +1580,8 @@ function change_database_data(&$no_updates, $version)
 			set_config('feed_overall', '1');
 			set_config('feed_limit_post', (string) (isset($config['feed_limit']) ? (int) $config['feed_limit'] : 15));
 			set_config('feed_limit_topic', (string) (isset($config['feed_overall_topics_limit']) ? (int) $config['feed_overall_topics_limit'] : 10));
+			set_config('feed_topics_new', (!empty($config['feed_overall_topics']) ? '1' : '0'));
+			set_config('feed_topics_active', (!empty($config['feed_overall_topics']) ? '1' : '0'));
 
 		break;
 	}
