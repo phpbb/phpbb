@@ -246,38 +246,38 @@ $lang = array_merge($lang, array(
 
 // Feeds
 $lang = array_merge($lang, array(
-	'ACP_FEED_MANAGEMENT'				=> 'General Syndication Feeds settings',
-	'ACP_FEED_MANAGEMENT_EXPLAIN'		=> 'This Module makes available various ATOM Feeds, parsing any BBCode in posts to make them readable in external feeds.',
+	'ACP_FEED_MANAGEMENT'				=> 'General syndication feeds settings',
+	'ACP_FEED_MANAGEMENT_EXPLAIN'		=> 'This module makes available various ATOM feeds, parsing any BBCode in posts to make them readable in external feeds.',
 
-	'ACP_FEED_GENERAL'					=> 'General Feed Settings',
-	'ACP_FEED_POST_BASED'				=> 'Post-based Feed Settings',
-	'ACP_FEED_TOPIC_BASED'				=> 'Topic-based Feed Settings',
-	'ACP_FEED_SETTINGS_OTHER'			=> 'Other Feeds and Settings',
+	'ACP_FEED_GENERAL'					=> 'General feed settings',
+	'ACP_FEED_POST_BASED'				=> 'Post-based feed settings',
+	'ACP_FEED_TOPIC_BASED'				=> 'Topic-based feed settings',
+	'ACP_FEED_SETTINGS_OTHER'			=> 'Other feeds and settings',
 
-	'ACP_FEED_ENABLE'					=> 'Enable Feeds',
-	'ACP_FEED_ENABLE_EXPLAIN'			=> 'Turns on or off ATOM Feeds for the entire board.<br />Disabling this switches off all Feeds, no matter how the options below are set.',
+	'ACP_FEED_ENABLE'					=> 'Enable feeds',
+	'ACP_FEED_ENABLE_EXPLAIN'			=> 'Turns on or off ATOM feeds for the entire board.<br />Disabling this switches off all feeds, no matter how the options below are set.',
 	'ACP_FEED_LIMIT'					=> 'Number of items',
 	'ACP_FEED_LIMIT_EXPLAIN'			=> 'The maximum number of feed items to display.',
 
-	'ACP_FEED_OVERALL'					=> 'Enable board-wide Feed',
+	'ACP_FEED_OVERALL'					=> 'Enable board-wide feed',
 	'ACP_FEED_OVERALL_EXPLAIN'			=> 'Board-wide new posts.',
-	'ACP_FEED_FORUM'					=> 'Enable Per-Forum Feeds',
-	'ACP_FEED_FORUM_EXPLAIN'			=> 'Single forum new posts.',
-	'ACP_FEED_TOPIC'					=> 'Enable Per-Topic Feeds',
+	'ACP_FEED_FORUM'					=> 'Enable per-forum feeds',
+	'ACP_FEED_FORUM_EXPLAIN'			=> 'Single forum and subforums new posts.',
+	'ACP_FEED_TOPIC'					=> 'Enable per-topic feeds',
 	'ACP_FEED_TOPIC_EXPLAIN'			=> 'Single topics new posts.',
 
 	'ACP_FEED_TOPICS_NEW'				=> 'Enable new topics feed',
 	'ACP_FEED_TOPICS_NEW_EXPLAIN'		=> 'Enables the “New Topics” feed, which displays the last created topics including the first post.',
 	'ACP_FEED_TOPICS_ACTIVE'			=> 'Enable active topics feed',
 	'ACP_FEED_TOPICS_ACTIVE_EXPLAIN'	=> 'Enables the “Active Topics” feed, which displays the last active topics including the last post.',
-	'ACP_FEED_NEWS'						=> 'News Feed',
+	'ACP_FEED_NEWS'						=> 'News feed',
 	'ACP_FEED_NEWS_EXPLAIN'				=> 'Pull the first post from these forums. Select no forums to disable news feed.<br />Select multiple forums by holding <samp>CTRL</samp> and clicking.',
 
 	'ACP_FEED_OVERALL_FORUMS'			=> 'Enable forums feed',
 	'ACP_FEED_OVERALL_FORUMS_EXPLAIN'	=> 'Enables the “All forums” feed, which displays a list of forums.',
 
 	'ACP_FEED_ITEM_STATISTICS'			=> 'Item statistics',
-	'ACP_FEED_ITEM_STATISTICS_EXPLAIN'	=> 'Display individual statistics underneath feed items<br />(Posted by, date and time, Replies, Views)',
+	'ACP_FEED_ITEM_STATISTICS_EXPLAIN'	=> 'Display individual statistics underneath feed items<br />(e.g. posted by, date and time, replies, views)',
 	'ACP_FEED_EXCLUDE_ID'				=> 'Exclude these forums',
 	'ACP_FEED_EXCLUDE_ID_EXPLAIN'		=> 'Content from these will be <strong>not included in feeds</strong>. Select no forum to pull data from all forums.<br />Select/Deselect multiple forums by holding <samp>CTRL</samp> and clicking.',
 ));
