@@ -252,7 +252,7 @@ $lang = array_merge($lang, array(
 	'ACP_FEED_GENERAL'					=> 'General Feed Settings',
 	'ACP_FEED_POST_BASED'				=> 'Post-based Feed Settings',
 	'ACP_FEED_TOPIC_BASED'				=> 'Topic-based Feed Settings',
-	'ACP_FEED_SETTINGS_OTHER'			=> 'Other Feeds and Seetings',
+	'ACP_FEED_SETTINGS_OTHER'			=> 'Other Feeds and Settings',
 
 	'ACP_FEED_ENABLE'					=> 'Enable Feeds',
 	'ACP_FEED_ENABLE_EXPLAIN'			=> 'Turns on or off ATOM Feeds for the entire board.<br />Disabling this switches off all Feeds, no matter how the options below are set.',
