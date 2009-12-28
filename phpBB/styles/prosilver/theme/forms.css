@@ -316,7 +316,7 @@ a.button1, input.button1, input.button3, a.button2, input.button2 {
 	padding-bottom: 1px;
 	font-family: "Lucida Grande", Verdana, Helvetica, Arial, sans-serif;
 	color: #000;
-	background: #FAFAFA none repeat-x top;
+	background: #FAFAFA none repeat-x top left;
 }
 
 a.button1, input.button1 {
