@@ -85,7 +85,7 @@ hr.sep {
 		<td width="10%" nowrap="nowrap">{L_TO}:</td>
 		<td>
 		<!-- BEGIN to_recipient -->
-			<!-- IF to_recipient.COLOUR --><span style="color:{to_recipient.COLOUR}"><!-- ELSE --><span<!-- IF to_recipient.IS_GROUP --> class="sep"<!-- ENDIF -->><!-- ENDIF -->{to_recipient.NAME}</span>&nbsp;
+			<span<!-- IF to_recipient.IS_GROUP --> class="sep"<!-- ENDIF -->>{to_recipient.NAME}</span>&nbsp;
 		<!-- END to_recipient -->
 		</td>
 	</tr>
