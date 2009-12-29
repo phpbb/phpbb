@@ -316,7 +316,7 @@ function feed_generate_content($content, $uid, $bitfield, $options)
 	$content = preg_replace('#\<\!\[CDATA\[(.*?)\]\]\>#s', '', $content);
 
 	// Other control characters
-	// $content = preg_replace('#(?:[\x00-\x1F\x7F]+|(?:\xC2[\x80-\x9F])+)#', '', $content);
+	$content = preg_replace('#(?:[\x00-\x1F\x7F]+|(?:\xC2[\x80-\x9F])+)#', '', $content);
 
 	return $content;
 }
