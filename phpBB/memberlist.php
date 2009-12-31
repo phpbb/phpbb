@@ -430,21 +430,50 @@ switch ($mode)
 
 		$user_id = (int) $member['user_id'];
 
+		// Get group memberships
+		// Also get visiting user's groups to determine hidden group memberships if necessary.
+		$auth_hidden_groups = ($user_id === (int) $user->data['user_id'] || $auth->acl_gets('a_group', 'a_groupadd', 'a_groupdel')) ? true : false;
+		$sql_uid_ary = ($auth_hidden_groups) ? array($user_id) : array($user_id, (int) $user->data['user_id']);
+
 		// Do the SQL thang
-		$sql = 'SELECT g.group_id, g.group_name, g.group_type
-			FROM ' . GROUPS_TABLE . ' g, ' . USER_GROUP_TABLE . " ug
-			WHERE ug.user_id = $user_id
-				AND g.group_id = ug.group_id" . ((!$auth->acl_gets('a_group', 'a_groupadd', 'a_groupdel')) ? ' AND g.group_type <> ' . GROUP_HIDDEN : '') . '
+		$sql = 'SELECT g.group_id, g.group_name, g.group_type, ug.user_id
+			FROM ' . GROUPS_TABLE . ' g, ' . USER_GROUP_TABLE . ' ug
+			WHERE ' . $db->sql_in_set('ug.user_id', $sql_uid_ary) . '
+				AND g.group_id = ug.group_id
 				AND ug.user_pending = 0
 			ORDER BY g.group_type, g.group_name';
 		$result = $db->sql_query($sql);
 
-		$group_options = '';
+		$profile_groups = $user_groups = array();
 		while ($row = $db->sql_fetchrow($result))
 		{
-			$group_options .= '<option value="' . $row['group_id'] . '"' . (($row['group_id'] == $member['group_id']) ? ' selected="selected"' : '') . '>' . (($row['group_type'] == GROUP_SPECIAL) ? $user->lang['G_' . $row['group_name']] : $row['group_name']) . '</option>';
+			$row['user_id'] = (int) $row['user_id'];
+			$row['group_id'] = (int) $row['group_id'];
+
+			if ($row['user_id'] == $user_id)
+			{
+				$profile_groups[] = $row;
+			}
+			else
+			{
+				$user_groups[$row['group_id']] = $row['group_id'];
+			}
 		}
 		$db->sql_freeresult($result);
+
+		$group_options = '';
+		foreach ($profile_groups as $row)
+		{
+			// Skip over hidden groups the user cannot see
+			if (!$auth_hidden_groups && $row['group_type'] == GROUP_HIDDEN && !isset($user_groups[$row['group_id']]))
+			{
+				continue;
+			}
+
+			$group_options .= '<option value="' . $row['group_id'] . '"' . (($row['group_id'] == $member['group_id']) ? ' selected="selected"' : '') . '>' . (($row['group_type'] == GROUP_SPECIAL) ? $user->lang['G_' . $row['group_name']] : $row['group_name']) . '</option>';
+		}
+		unset($profile_groups);
+		unset($user_groups);
 
 		// What colour is the zebra
 		$sql = 'SELECT friend, foe
