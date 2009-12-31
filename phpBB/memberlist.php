@@ -443,7 +443,7 @@ switch ($mode)
 				AND ug.user_pending = 0';
 		$result = $db->sql_query($sql);
 
-		// Devide data into profile data and current user data
+		// Divide data into profile data and current user data
 		$profile_groups = $user_groups = array();
 		while ($row = $db->sql_fetchrow($result))
 		{
