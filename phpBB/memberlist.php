@@ -440,10 +440,10 @@ switch ($mode)
 			FROM ' . GROUPS_TABLE . ' g, ' . USER_GROUP_TABLE . ' ug
 			WHERE ' . $db->sql_in_set('ug.user_id', $sql_uid_ary) . '
 				AND g.group_id = ug.group_id
-				AND ug.user_pending = 0
-			ORDER BY g.group_type, g.group_name';
+				AND ug.user_pending = 0';
 		$result = $db->sql_query($sql);
 
+		// Devide data into profile data and current user data
 		$profile_groups = $user_groups = array();
 		while ($row = $db->sql_fetchrow($result))
 		{
@@ -461,19 +461,40 @@ switch ($mode)
 		}
 		$db->sql_freeresult($result);
 
-		$group_options = '';
+		// Filter out hidden groups and sort groups by name
+		$group_data = $group_sort = array();
 		foreach ($profile_groups as $row)
 		{
-			// Skip over hidden groups the user cannot see
-			if (!$auth_hidden_groups && $row['group_type'] == GROUP_HIDDEN && !isset($user_groups[$row['group_id']]))
+			if ($row['group_type'] == GROUP_SPECIAL)
 			{
+				// Lookup group name in language dictionary
+				if (isset($user->lang['G_' . $row['group_name']]))
+				{
+					$row['group_name'] = $user->lang['G_' . $row['group_name']];
+				}
+			}
+			else if (!$auth_hidden_groups && $row['group_type'] == GROUP_HIDDEN && !isset($user_groups[$row['group_id']]))
+			{
+				// Skip over hidden groups the user cannot see
 				continue;
 			}
 
-			$group_options .= '<option value="' . $row['group_id'] . '"' . (($row['group_id'] == $member['group_id']) ? ' selected="selected"' : '') . '>' . (($row['group_type'] == GROUP_SPECIAL) ? $user->lang['G_' . $row['group_name']] : $row['group_name']) . '</option>';
+			$group_sort[$row['group_id']] = utf8_clean_string($row['group_name']);
+			$group_data[$row['group_id']] = $row;
 		}
 		unset($profile_groups);
 		unset($user_groups);
+		asort($group_sort);
+
+		$group_options = '';
+		foreach ($group_sort as $group_id => $null)
+		{
+			$row = $group_data[$group_id];
+
+			$group_options .= '<option value="' . $row['group_id'] . '"' . (($row['group_id'] == $member['group_id']) ? ' selected="selected"' : '') . '>' . $row['group_name'] . '</option>';
+		}
+		unset($group_data);
+		unset($group_sort);
 
 		// What colour is the zebra
 		$sql = 'SELECT friend, foe
