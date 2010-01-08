@@ -10,6 +10,9 @@
 * MOD Author Profile: http://www.phpbb.com/community/memberlist.php?mode=viewprofile&u=345763
 * MOD Author Homepage: http://www.mssti.com/phpbb3/
 *
+* Warning:	Querying the posts table can be very expensive and time consuming on very large boards.
+*			Where possible post ids should be prefetched from another table using a separate query.
+*
 **/
 
 /**
@@ -1171,10 +1174,34 @@ class phpbb_feed_news extends phpbb_feed_topic_base
 			return false;
 		}
 
+		// Add global forum
+		$in_fid_ary[] = 0;
+
+		// We really have to get the post ids first!
+		$sql = 'SELECT topic_first_post_id, topic_time
+			FROM ' . TOPICS_TABLE . '
+			WHERE ' . $db->sql_in_set('forum_id', $in_fid_ary) . '
+				AND topic_moved_id = 0
+				AND topic_approved = 1
+			ORDER BY topic_time DESC';
+		$result = $db->sql_query_limit($sql, $this->num_items);
+
+		$post_ids = array();
+		while ($row = $db->sql_fetchrow($result))
+		{
+			$post_ids[] = (int) $row['topic_first_post_id'];
+		}
+		$db->sql_freeresult($result);
+
+		if (empty($post_ids))
+		{
+			return false;
+		}
+
 		$this->sql = array(
 			'SELECT'	=> 'f.forum_id, f.forum_name,
 							t.topic_id, t.topic_title, t.topic_poster, t.topic_first_poster_name, t.topic_replies, t.topic_views, t.topic_time,
-							p.post_id, p.post_text, p.bbcode_bitfield, p.bbcode_uid, p.enable_bbcode, p.enable_smilies, p.enable_magic_url',
+							p.post_id, p.post_time, p.post_text, p.bbcode_bitfield, p.bbcode_uid, p.enable_bbcode, p.enable_smilies, p.enable_magic_url',
 			'FROM'		=> array(
 				TOPICS_TABLE	=> 't',
 				POSTS_TABLE		=> 'p',
@@ -1182,15 +1209,12 @@ class phpbb_feed_news extends phpbb_feed_topic_base
 			'LEFT_JOIN'	=> array(
 				array(
 					'FROM'	=> array(FORUMS_TABLE => 'f'),
-					'ON'	=> 'f.forum_id = t.forum_id',
+					'ON'	=> 'p.forum_id = f.forum_id',
 				),
 			),
-			'WHERE'		=> 'p.post_id = t.topic_first_post_id
-							AND t.topic_moved_id = 0
-							AND t.topic_approved = 1
-							AND (' . $db->sql_in_set('t.forum_id', $in_fid_ary) . '
-								OR t.topic_type = ' . POST_GLOBAL . ')',
-			'ORDER_BY'	=> 't.topic_time DESC',
+			'WHERE'		=> 'p.topic_id = t.topic_id
+							AND ' . $db->sql_in_set('p.post_id', $post_ids),
+			'ORDER_BY'	=> 'p.post_time DESC',
 		);
 
 		return true;
@@ -1223,10 +1247,34 @@ class phpbb_feed_topics extends phpbb_feed_topic_base
 			return false;
 		}
 
+		// Add global forum
+		$in_fid_ary[] = 0;
+
+		// We really have to get the post ids first!
+		$sql = 'SELECT topic_first_post_id, topic_time
+			FROM ' . TOPICS_TABLE . '
+			WHERE ' . $db->sql_in_set('forum_id', $in_fid_ary) . '
+				AND topic_moved_id = 0
+				AND topic_approved = 1
+			ORDER BY topic_time DESC';
+		$result = $db->sql_query_limit($sql, $this->num_items);
+
+		$post_ids = array();
+		while ($row = $db->sql_fetchrow($result))
+		{
+			$post_ids[] = (int) $row['topic_first_post_id'];
+		}
+		$db->sql_freeresult($result);
+
+		if (empty($post_ids))
+		{
+			return false;
+		}
+
 		$this->sql = array(
 			'SELECT'	=> 'f.forum_id, f.forum_name,
 							t.topic_id, t.topic_title, t.topic_poster, t.topic_first_poster_name, t.topic_replies, t.topic_views, t.topic_time,
-							p.post_id, p.post_text, p.bbcode_bitfield, p.bbcode_uid, p.enable_bbcode, p.enable_smilies, p.enable_magic_url',
+							p.post_id, p.post_time, p.post_text, p.bbcode_bitfield, p.bbcode_uid, p.enable_bbcode, p.enable_smilies, p.enable_magic_url',
 			'FROM'		=> array(
 				TOPICS_TABLE	=> 't',
 				POSTS_TABLE		=> 'p',
@@ -1234,15 +1282,12 @@ class phpbb_feed_topics extends phpbb_feed_topic_base
 			'LEFT_JOIN'	=> array(
 				array(
 					'FROM'	=> array(FORUMS_TABLE => 'f'),
-					'ON'	=> 'f.forum_id = t.forum_id',
+					'ON'	=> 'p.forum_id = f.forum_id',
 				),
 			),
-			'WHERE'		=> 'p.post_id = t.topic_first_post_id
-							AND t.topic_moved_id = 0
-							AND t.topic_approved = 1
-							AND (' . $db->sql_in_set('t.forum_id', $in_fid_ary) . '
-								OR t.topic_type = ' . POST_GLOBAL . ')',
-			'ORDER_BY'	=> 't.topic_time DESC',
+			'WHERE'		=> 'p.topic_id = t.topic_id
+							AND ' . $db->sql_in_set('p.post_id', $post_ids),
+			'ORDER_BY'	=> 'p.post_time DESC',
 		);
 
 		return true;
@@ -1296,14 +1341,39 @@ class phpbb_feed_topics_active extends phpbb_feed_topic_base
 			return false;
 		}
 
+		// Add global forum
+		$in_fid_ary[] = 0;
+
 		// Search for topics in last X days
-		$last_post_time_sql = ($this->sort_days) ? ' AND t.topic_last_post_time > ' . (time() - ($this->sort_days * 24 * 3600)) : '';
+		$last_post_time_sql = ($this->sort_days) ? ' AND topic_last_post_time > ' . (time() - ($this->sort_days * 24 * 3600)) : '';
+
+		// We really have to get the post ids first!
+		$sql = 'SELECT topic_last_post_id, topic_last_post_time
+			FROM ' . TOPICS_TABLE . '
+			WHERE ' . $db->sql_in_set('forum_id', $in_fid_ary) . '
+				AND topic_moved_id = 0
+				AND topic_approved = 1
+				' . $last_post_time_sql . '
+			ORDER BY topic_last_post_time DESC';
+		$result = $db->sql_query_limit($sql, $this->num_items);
+
+		$post_ids = array();
+		while ($row = $db->sql_fetchrow($result))
+		{
+			$post_ids[] = (int) $row['topic_last_post_id'];
+		}
+		$db->sql_freeresult($result);
+
+		if (empty($post_ids))
+		{
+			return false;
+		}
 
 		$this->sql = array(
 			'SELECT'	=> 'f.forum_id, f.forum_name,
 							t.topic_id, t.topic_title, t.topic_replies, t.topic_views,
 							t.topic_last_poster_id, t.topic_last_poster_name, t.topic_last_post_time,
-							p.post_id, p.post_text, p.bbcode_bitfield, p.bbcode_uid, p.enable_bbcode, p.enable_smilies, p.enable_magic_url',
+							p.post_id, p.post_time, p.post_text, p.bbcode_bitfield, p.bbcode_uid, p.enable_bbcode, p.enable_smilies, p.enable_magic_url',
 			'FROM'		=> array(
 				TOPICS_TABLE	=> 't',
 				POSTS_TABLE		=> 'p',
@@ -1311,16 +1381,12 @@ class phpbb_feed_topics_active extends phpbb_feed_topic_base
 			'LEFT_JOIN'	=> array(
 				array(
 					'FROM'	=> array(FORUMS_TABLE => 'f'),
-					'ON'	=> 'f.forum_id = t.forum_id',
+					'ON'	=> 'p.forum_id = f.forum_id',
 				),
 			),
-			'WHERE'		=> 'p.post_id = t.topic_last_post_id
-							' . $last_post_time_sql . '
-							AND t.topic_moved_id = 0
-							AND t.topic_approved = 1
-							AND (' . $db->sql_in_set('t.forum_id', $in_fid_ary) . '
-								OR t.topic_type = ' . POST_GLOBAL . ')',
-			'ORDER_BY'	=> 't.topic_last_post_time DESC',
+			'WHERE'		=> 'p.topic_id = t.topic_id
+							AND ' . $db->sql_in_set('p.post_id', $post_ids),
+			'ORDER_BY'	=> 'p.post_time DESC',
 		);
 
 		return true;
