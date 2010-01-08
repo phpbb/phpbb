@@ -724,7 +724,7 @@ class phpbb_feed_overall extends phpbb_feed_post_base
 		$forum_ids[] = 0;
 
 		// Determine post ids first for optimization
-		$sql = 'SELECT post_id
+		$sql = 'SELECT post_id, post_time
 			FROM ' . POSTS_TABLE . '
 			WHERE post_approved = 1
 				AND ' . $db->sql_in_set('forum_id', $forum_ids) . '
@@ -737,6 +737,11 @@ class phpbb_feed_overall extends phpbb_feed_post_base
 			$post_ids[] = $post_id;
 		}
 		$db->sql_freeresult($result);
+
+		if (empty($post_ids))
+		{
+			return false;
+		}
 
 		$this->sql = array(
 			'SELECT'	=>	'f.forum_id, f.forum_name, f.forum_desc_options, ' .
@@ -977,7 +982,7 @@ class phpbb_feed_topic extends phpbb_feed_post_base
 				trigger_error('SORRY_AUTH_READ');
 			}
 
-			$sql = 'SELECT forum_id
+			$sql = 'SELECT forum_id, left_id
 				FROM ' . FORUMS_TABLE . '
 				WHERE forum_type = ' . FORUM_POST . '
 					AND ' . $db->sql_in_set('forum_id', $in_fid_ary) . '
