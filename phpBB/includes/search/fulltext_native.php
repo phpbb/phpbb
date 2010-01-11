@@ -744,7 +744,7 @@ class fulltext_native extends search_backend
 
 		while ($row = $db->sql_fetchrow($result))
 		{
-			$id_ary[] = $row[(($type == 'posts') ? 'post_id' : 'topic_id')];
+			$id_ary[] = (int) $row[(($type == 'posts') ? 'post_id' : 'topic_id')];
 		}
 		$db->sql_freeresult($result);
 
@@ -986,7 +986,7 @@ class fulltext_native extends search_backend
 
 		while ($row = $db->sql_fetchrow($result))
 		{
-			$id_ary[] = $row[$field];
+			$id_ary[] = (int) $row[$field];
 		}
 		$db->sql_freeresult($result);
 
