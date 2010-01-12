@@ -512,15 +512,27 @@ class phpbb_feed_base
 	function get_readable_forums()
 	{
 		global $auth;
+		static $forum_ids;
 
-		return array_keys($auth->acl_getf('f_read'));
+		if (!isset($forum_ids))
+		{
+			$forum_ids = array_keys($auth->acl_getf('f_read'));
+		}
+
+		return $forum_ids;
 	}
 
-	function get_m_approve_forums()
+	function get_moderator_approve_forums()
 	{
 		global $auth;
+		static $forum_ids;
 
-		return array_keys($auth->acl_getf('m_approve'));
+		if (!isset($forum_ids))
+		{
+			$forum_ids = array_keys($auth->acl_getf('m_approve'));
+		}
+
+		return $forum_ids;
 	}
 
 	function get_excluded_forums()
@@ -730,15 +742,12 @@ class phpbb_feed_overall extends phpbb_feed_post_base
 		// Add global forum id
 		$forum_ids[] = 0;
 
-		// Forums with m_approve
-		$m_approve_fids = array_keys($auth->acl_getf('m_approve'));
-
 		// Determine topics with recent activity
 		$sql = 'SELECT topic_id, topic_last_post_time
 			FROM ' . TOPICS_TABLE . '
 			WHERE ' . $db->sql_in_set('forum_id', $forum_ids) . '
 				AND (topic_approved = 1
-					OR ' . $db->sql_in_set('forum_id', $m_approve_fids) . ')
+					OR ' . $db->sql_in_set('forum_id', $this->get_moderator_approve_forums()) . ')
 			ORDER BY topic_last_post_time DESC';
 		$result = $db->sql_query_limit($sql, $this->num_items);
 
@@ -773,7 +782,7 @@ class phpbb_feed_overall extends phpbb_feed_post_base
 			),
 			'WHERE'		=> $db->sql_in_set('p.topic_id', $topic_ids) . '
 							AND (p.post_approved = 1
-								OR ' . $db->sql_in_set('p.forum_id', $m_approve_fids) . ')
+								OR ' . $db->sql_in_set('p.forum_id', $this->get_moderator_approve_forums()) . ')
 							AND p.post_time >= ' . $topic_last_post_time . '
 							AND u.user_id = p.poster_id',
 			'ORDER_BY'	=> 'p.post_time DESC',
