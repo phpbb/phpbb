@@ -742,13 +742,17 @@ class phpbb_feed_overall extends phpbb_feed_post_base
 		// Add global forum id
 		$forum_ids[] = 0;
 
+		// m_approve forums
+		$fid_m_approve = $this->get_moderator_approve_forums();
+		$sql_m_approve = (!empty($fid_m_approve)) ? 'OR ' . $db->sql_in_set('forum_id', $fid_m_approve) : '';
+
 		// Determine topics with recent activity
 		$sql = 'SELECT topic_id, topic_last_post_time
 			FROM ' . TOPICS_TABLE . '
 			WHERE ' . $db->sql_in_set('forum_id', $forum_ids) . '
 				AND topic_moved_id = 0
 				AND (topic_approved = 1
-					OR ' . $db->sql_in_set('forum_id', $this->get_moderator_approve_forums()) . ')
+					' . $sql_m_approve . ')
 			ORDER BY topic_last_post_time DESC';
 		$result = $db->sql_query_limit($sql, $this->num_items);
 
@@ -784,7 +788,7 @@ class phpbb_feed_overall extends phpbb_feed_post_base
 			),
 			'WHERE'		=> $db->sql_in_set('p.topic_id', $topic_ids) . '
 							AND (p.post_approved = 1
-								OR ' . $db->sql_in_set('p.forum_id', $this->get_moderator_approve_forums()) . ')
+								' . str_replace('forum_id', 'p.forum_id', $sql_m_approve) . ')
 							AND p.post_time >= ' . $min_post_time . '
 							AND u.user_id = p.poster_id',
 			'ORDER_BY'	=> 'p.post_time DESC',
