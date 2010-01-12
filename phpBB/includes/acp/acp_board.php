@@ -921,7 +921,7 @@ class acp_board
 	{
 		global $user, $config;
 
-		$forum_list = make_forum_select(false, false, true, false, false, false, true);
+		$forum_list = make_forum_select(false, false, true, true, true, false, true);
 
 		// Build forum options
 		$s_forum_options = '<select id="' . $key . '" name="' . $key . '[]" multiple="multiple">';

@@ -809,7 +809,7 @@ class phpbb_feed_overall extends phpbb_feed_post_base
 * Forum feed
 *
 * This will give you the last {$this->num_items} posts made
-* within this forum and all its subforums.
+* within a specific forum.
 *
 * @package phpBB3
 */
@@ -817,7 +817,6 @@ class phpbb_feed_forum extends phpbb_feed_post_base
 {
 	var $forum_id		= 0;
 	var $forum_data		= array();
-	var $forum_ids		= array();
 
 	function phpbb_feed_forum($forum_id)
 	{
@@ -831,7 +830,7 @@ class phpbb_feed_forum extends phpbb_feed_post_base
 		global $db, $auth;
 
 		// Check if forum exists
-		$sql = 'SELECT forum_id, forum_name, forum_options, forum_password
+		$sql = 'SELECT forum_id, forum_name, forum_password, forum_type, forum_options
 			FROM ' . FORUMS_TABLE . '
 			WHERE forum_id = ' . $this->forum_id;
 		$result = $db->sql_query($sql);
@@ -841,6 +840,12 @@ class phpbb_feed_forum extends phpbb_feed_post_base
 		if (empty($this->forum_data))
 		{
 			trigger_error('NO_FORUM');
+		}
+
+		// Forum needs to be postable
+		if ($this->forum_data['forum_type'] != FORUM_POST)
+		{
+			trigger_error('NO_FEED');
 		}
 
 		// Make sure forum is not excluded from feed
@@ -873,53 +878,44 @@ class phpbb_feed_forum extends phpbb_feed_post_base
 	{
 		global $auth, $db;
 
-		$in_fid_ary = array_diff($this->get_readable_forums(), $this->get_excluded_forums(), $this->get_passworded_forums());
-		if (empty($in_fid_ary))
-		{
-			return false;
-		}
+		$m_approve = ($auth->acl_get('m_approve')) ? true : false;
+		$forum_ids = array(0, $this->forum_id);
 
-		// Determine subforums
-		$sql = 'SELECT f2.forum_id
-			FROM ' . FORUMS_TABLE . ' f1, ' . FORUMS_TABLE . ' f2
-			WHERE f1.forum_id = ' . $this->forum_id . '
-				AND (f2.left_id BETWEEN f1.left_id AND f1.right_id)
-				AND ' . $db->sql_in_set('f2.forum_id', $in_fid_ary);
-		$result = $db->sql_query($sql);
+		// Determine topics with recent activity
+		$sql = 'SELECT topic_id, topic_last_post_time
+			FROM ' . TOPICS_TABLE . '
+			WHERE ' . $db->sql_in_set('forum_id', $forum_ids) . '
+				AND topic_moved_id = 0
+				' . ((!$m_approve) ? 'AND topic_approved = 1' : '') . '
+			ORDER BY topic_last_post_time DESC';
+		$result = $db->sql_query_limit($sql, $this->num_items);
 
-		$in_fid_ary = array();
-		while ($row = $db->sql_fetchrow($result))
+		$topic_ids = array();
+		$min_post_time = 0;
+		while ($row = $db->sql_fetchrow())
 		{
-			$in_fid_ary[] = (int) $row['forum_id'];
+			$topic_ids[] = (int) $row['topic_id'];
+
+			$min_post_time = (int) $row['topic_last_post_time'];
 		}
 		$db->sql_freeresult($result);
 
-		if (empty($in_fid_ary))
+		if (empty($topic_ids))
 		{
 			return false;
 		}
 
-		// Add global topics forum '0' to forum ids
-		// This is kind of hackish, but therefore we don't need the topic table (t.topic_type)
-		$in_fid_ary[] = 0;
-
 		$this->sql = array(
-			'SELECT'	=>	'f.forum_id, f.forum_name, ' .
-							'p.post_id, p.topic_id, p.post_time, p.post_subject, p.post_text, p.bbcode_bitfield, p.bbcode_uid, p.enable_bbcode, p.enable_smilies, p.enable_magic_url, ' .
+			'SELECT'	=>	'p.post_id, p.topic_id, p.post_time, p.post_subject, p.post_text, p.bbcode_bitfield, p.bbcode_uid, p.enable_bbcode, p.enable_smilies, p.enable_magic_url, ' .
 							'u.username, u.user_id',
 			'FROM'		=> array(
 				POSTS_TABLE		=> 'p',
 				USERS_TABLE		=> 'u',
 			),
-			'LEFT_JOIN'	=> array(
-				array(
-					'FROM'	=> array(FORUMS_TABLE => 'f'),
-					'ON'	=> 'f.forum_id = p.forum_id',
-				),
-			),
-			'WHERE'		=> $db->sql_in_set('p.forum_id', $in_fid_ary) . '
-							AND p.poster_id = u.user_id
-							AND p.post_approved = 1',
+			'WHERE'		=> $db->sql_in_set('p.topic_id', $topic_ids) . '
+							' . ((!$m_approve) ? 'AND p.post_approved = 1' : '') . '
+							AND p.post_time >= ' . $min_post_time . '
+							AND p.poster_id = u.user_id',
 			'ORDER_BY'	=> 'p.post_time DESC',
 		);
 
@@ -931,6 +927,11 @@ class phpbb_feed_forum extends phpbb_feed_post_base
 		parent::adjust_item($item_row, $row);
 
 		$item_row['title'] = (isset($row['forum_name']) && $row['forum_name'] !== '') ? $row['forum_name'] . ' ' . $this->separator . ' ' . $item_row['title'] : $item_row['title'];
+	}
+
+	function get_item()
+	{
+		return ($row = parent::get_item()) ? array_merge($this->forum_data, $row) : $row;
 	}
 }
 
