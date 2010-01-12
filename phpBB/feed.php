@@ -752,11 +752,12 @@ class phpbb_feed_overall extends phpbb_feed_post_base
 		$result = $db->sql_query_limit($sql, $this->num_items);
 
 		$topic_ids = array();
-		$topic_last_post_time = PHP_INT_MAX;
+		$min_post_time = 0;
 		while ($row = $db->sql_fetchrow())
 		{
 			$topic_ids[] = (int) $row['topic_id'];
-			$topic_last_post_time = min($topic_last_post_time, (int) $row['topic_last_post_time']);
+
+			$min_post_time = (int) $row['topic_last_post_time'];
 		}
 		$db->sql_freeresult($result);
 
@@ -783,7 +784,7 @@ class phpbb_feed_overall extends phpbb_feed_post_base
 			'WHERE'		=> $db->sql_in_set('p.topic_id', $topic_ids) . '
 							AND (p.post_approved = 1
 								OR ' . $db->sql_in_set('p.forum_id', $this->get_moderator_approve_forums()) . ')
-							AND p.post_time >= ' . $topic_last_post_time . '
+							AND p.post_time >= ' . $min_post_time . '
 							AND u.user_id = p.poster_id',
 			'ORDER_BY'	=> 'p.post_time DESC',
 		);
