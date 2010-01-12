@@ -746,6 +746,7 @@ class phpbb_feed_overall extends phpbb_feed_post_base
 		$sql = 'SELECT topic_id, topic_last_post_time
 			FROM ' . TOPICS_TABLE . '
 			WHERE ' . $db->sql_in_set('forum_id', $forum_ids) . '
+				AND topic_moved_id = 0
 				AND (topic_approved = 1
 					OR ' . $db->sql_in_set('forum_id', $this->get_moderator_approve_forums()) . ')
 			ORDER BY topic_last_post_time DESC';
