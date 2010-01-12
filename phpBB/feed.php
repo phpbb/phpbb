@@ -516,6 +516,13 @@ class phpbb_feed_base
 		return array_keys($auth->acl_getf('f_read'));
 	}
 
+	function get_m_approve_forums()
+	{
+		global $auth;
+
+		return array_keys($auth->acl_getf('m_approve'));
+	}
+
 	function get_excluded_forums()
 	{
 		global $db, $cache;
@@ -712,7 +719,7 @@ class phpbb_feed_overall extends phpbb_feed_post_base
 {
 	function get_sql()
 	{
-		global $db;
+		global $auth, $db;
 
 		$forum_ids = array_diff($this->get_readable_forums(), $this->get_excluded_forums(), $this->get_passworded_forums());
 		if (empty($forum_ids))
@@ -723,34 +730,39 @@ class phpbb_feed_overall extends phpbb_feed_post_base
 		// Add global forum id
 		$forum_ids[] = 0;
 
-		// Determine post ids first for optimization
-		$sql = 'SELECT post_id, post_time
-			FROM ' . POSTS_TABLE . '
-			WHERE post_approved = 1
-				AND ' . $db->sql_in_set('forum_id', $forum_ids) . '
-			ORDER BY post_time DESC';
+		// Forums with m_approve
+		$m_approve_fids = array_keys($auth->acl_getf('m_approve'));
+
+		// Determine topics with recent activity
+		$sql = 'SELECT topic_id, topic_last_post_time
+			FROM ' . TOPICS_TABLE . '
+			WHERE ' . $db->sql_in_set('forum_id', $forum_ids) . '
+				AND (topic_approved = 1
+					OR ' . $db->sql_in_set('forum_id', $m_approve_fids) . ')
+			ORDER BY topic_last_post_time DESC';
 		$result = $db->sql_query_limit($sql, $this->num_items);
 
-		$post_ids = array();
-		while ($post_id = (int) $db->sql_fetchfield('post_id'))
+		$topic_ids = array();
+		$topic_last_post_time = PHP_INT_MAX;
+		while ($row = $db->sql_fetchrow())
 		{
-			$post_ids[] = $post_id;
+			$topic_ids[] = (int) $row['topic_id'];
+			$topic_last_post_time = min($topic_last_post_time, (int) $row['topic_last_post_time']);
 		}
 		$db->sql_freeresult($result);
 
-		if (empty($post_ids))
+		if (empty($topic_ids))
 		{
 			return false;
 		}
 
+		// Get the actual data
 		$this->sql = array(
-			'SELECT'	=>	'f.forum_id, f.forum_name, f.forum_desc_options, ' .
-							't.topic_id, t.topic_title, t.topic_time, t.topic_replies, t.topic_views, ' .
-							'p.post_id, p.post_time, p.post_subject, p.post_text, p.bbcode_bitfield, p.bbcode_uid, p.enable_bbcode, p.enable_smilies, p.enable_magic_url, ' .
+			'SELECT'	=>	'f.forum_id, f.forum_name, ' .
+							'p.post_id, p.topic_id, p.post_time, p.post_subject, p.post_text, p.bbcode_bitfield, p.bbcode_uid, p.enable_bbcode, p.enable_smilies, p.enable_magic_url, ' .
 							'u.username, u.user_id',
 			'FROM'		=> array(
 				POSTS_TABLE		=> 'p',
-				TOPICS_TABLE	=> 't',
 				USERS_TABLE		=> 'u',
 			),
 			'LEFT_JOIN'	=> array(
@@ -759,8 +771,10 @@ class phpbb_feed_overall extends phpbb_feed_post_base
 					'ON'	=> 'f.forum_id = p.forum_id',
 				),
 			),
-			'WHERE'		=> $db->sql_in_set('p.post_id', $post_ids) . '
-							AND t.topic_id = p.topic_id
+			'WHERE'		=> $db->sql_in_set('p.topic_id', $topic_ids) . '
+							AND (p.post_approved = 1
+								OR ' . $db->sql_in_set('p.forum_id', $m_approve_fids) . ')
+							AND p.post_time >= ' . $topic_last_post_time . '
 							AND u.user_id = p.poster_id',
 			'ORDER_BY'	=> 'p.post_time DESC',
 		);
