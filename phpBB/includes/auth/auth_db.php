@@ -71,7 +71,7 @@ function login_db(&$username, &$password)
 
 		$captcha =& phpbb_captcha_factory::get_instance($config['captcha_plugin']);
 		$captcha->init(CONFIRM_LOGIN);
-		$vc_response = $captcha->validate();
+		$vc_response = $captcha->validate($row);
 		if ($vc_response)
 		{
 			return array(
