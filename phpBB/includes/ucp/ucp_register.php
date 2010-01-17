@@ -333,6 +333,12 @@ class ucp_register
 					trigger_error('NO_USER', E_USER_ERROR);
 				}
 
+				// Okay, captcha, your job is done.
+				if (isset($captcha))
+				{
+					$captcha->reset();
+				}
+
 				if ($coppa && $config['email_enable'])
 				{
 					$message = $user->lang['ACCOUNT_COPPA'];
