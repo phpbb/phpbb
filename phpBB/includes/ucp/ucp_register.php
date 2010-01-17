@@ -334,7 +334,7 @@ class ucp_register
 				}
 
 				// Okay, captcha, your job is done.
-				if (isset($captcha))
+				if ($config['enable_confirm'] && isset($captcha))
 				{
 					$captcha->reset();
 				}
