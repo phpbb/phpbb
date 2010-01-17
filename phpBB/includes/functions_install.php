@@ -23,7 +23,14 @@ function can_load_dll($dll)
 {
 	// SQLite2 is a tricky thing, from 5.0.0 it requires PDO; if PDO is not loaded we must state that SQLite is unavailable
 	// as the installer doesn't understand that the extension has a prerequisite.
-	if ($dll == 'sqlite' && version_compare(PHP_VERSION, '5.0.0', '>=') && !extension_loaded('pdo'))
+	//
+	// On top of this sometimes the SQLite extension is compiled for a different version of PDO
+	// by some Linux distributions which causes phpBB to bomb out with a blank page.
+	//
+	// Net result we'll disable automatic inclusion of SQLite support
+	//
+	// See: r9618 and #56105
+	if ($dll == 'sqlite')
 	{
 		return false;
 	}
