@@ -56,7 +56,7 @@ class acp_captcha
 				'enable_post_confirm'	=> array('tpl' => 'POST_ENABLE', 'default' => false),
 				'confirm_refresh'		=> array('tpl' => 'CONFIRM_REFRESH', 'default' => false),
 				'max_reg_attempts'		=> array('tpl' => 'REG_LIMIT', 'default' => 0),
-                'max_login_attempts'		=> array('tpl' => 'MAX_LOGIN_ATTEMPTS', 'default' => 0),
+				'max_login_attempts'		=> array('tpl' => 'MAX_LOGIN_ATTEMPTS', 'default' => 0),
 			);
 
 			$this->tpl_name = 'acp_captcha';
