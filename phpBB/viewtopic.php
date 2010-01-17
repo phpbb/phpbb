@@ -1690,7 +1690,7 @@ if ($s_can_vote || $s_quick_reply)
 		$s_attach_sig	= $config['allow_sig'] && $user->optionget('attachsig') && $auth->acl_get('f_sigs', $forum_id) && $auth->acl_get('u_sig');
 		$s_smilies		= $config['allow_smilies'] && $user->optionget('smilies') && $auth->acl_get('f_smilies', $forum_id);
 		$s_bbcode		= $config['allow_bbcode'] && $user->optionget('bbcode') && $auth->acl_get('f_bbcode', $forum_id);
-		$s_notify		= $config['allow_topic_notify'] && $user->data['user_notify'];
+		$s_notify		= $config['allow_topic_notify'] && ($user->data['user_notify'] || $s_watching_topic['is_watching']);
 
 		$qr_hidden_fields = array(
 			'topic_cur_post_id'		=> (int) $topic_data['topic_last_post_id'],
