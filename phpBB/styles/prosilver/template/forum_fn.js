@@ -424,11 +424,11 @@ function apply_onkeypress_event()
 
 	for (var i = 0, element = input_tags[0]; i < input_tags.length ; element = input_tags[++i])
 	{
-		if (element.type == 'hidden')
-			continue;
-
-		// onkeydown is possible too
-		element.onkeypress = function (evt) { submit_default_button((evt || window.event), this, 'default-submit-action'); }; 
+		if (element.type == 'text' || element.type == 'password')
+		{
+			// onkeydown is possible too
+			element.onkeypress = function (evt) { submit_default_button((evt || window.event), this, 'default-submit-action'); };
+		}
 	}
 }
 
