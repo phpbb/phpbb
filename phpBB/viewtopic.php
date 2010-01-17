@@ -1678,8 +1678,12 @@ else if (!$all_marked_read)
 }
 
 // let's set up quick_reply
-$s_allowed_reply = ((!$auth->acl_get('f_reply', $forum_id) || ($topic_data['forum_status'] == ITEM_LOCKED) || ($topic_data['topic_status'] == ITEM_LOCKED)) && !$auth->acl_get('m_edit', $forum_id)) ? false : true;
-$s_quick_reply = $s_allowed_reply && $user->data['is_registered'] && $config['allow_quick_reply'] && ($topic_data['forum_flags'] & FORUM_FLAG_QUICK_REPLY);
+$s_quick_reply = false;
+if ($user->data['is_registered'] && $config['allow_quick_reply'] && ($topic_data['forum_flags'] & FORUM_FLAG_QUICK_REPLY) && $auth->acl_get('f_reply', $forum_id))
+{
+	// Quick reply enabled forum
+	$s_quick_reply = (($topic_data['forum_status'] == ITEM_UNLOCKED && $topic_data['topic_status'] == ITEM_UNLOCKED) || $auth->acl_get('m_edit', $forum_id)) ? true : false;
+}
 
 if ($s_can_vote || $s_quick_reply)
 {
