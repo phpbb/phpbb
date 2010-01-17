@@ -267,6 +267,7 @@ class phpbb_questionnaire_phpbb_data_provider
 	{
 		global $phpbb_root_path, $phpEx;
 		include("{$phpbb_root_path}config.$phpEx");
+		unset($dbhost, $dbport, $dbname, $dbuser, $dbpasswd); // Just a precaution
 
 		// Only send certain config vars
 		$config_vars = array(
@@ -480,10 +481,13 @@ class phpbb_questionnaire_phpbb_data_provider
 			}
 		}
 
+		global $db;
+
 		$result['dbms'] = $dbms;
 		$result['acm_type'] = $acm_type;
 		$result['load_extensions'] = $load_extensions;
 		$result['user_agent'] = 'Unknown';
+		$result['dbms_version'] = $db->sql_server_info(true);
 
 		// Try to get user agent vendor and version
 		$match = array();
