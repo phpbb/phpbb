@@ -992,7 +992,7 @@ if ($submit || $preview || $refresh)
 					$forum_type = (int) $db->sql_fetchfield('forum_type');
 					$db->sql_freeresult($result);
 
-					if ($forum_type != FORUM_POST || !$auth->acl_get('f_post', $to_forum_id))
+					if ($forum_type != FORUM_POST || !$auth->acl_get('f_post', $to_forum_id) || (!$auth->acl_get('m_approve', $to_forum_id) && !$auth->acl_get('f_noapprove', $to_forum_id)))
 					{
 						$to_forum_id = 0;
 					}
