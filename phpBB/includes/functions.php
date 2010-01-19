@@ -3921,6 +3921,103 @@ function phpbb_optionset($bit, $set, $data)
 }
 
 /**
+* Login using http authenticate.
+*
+* @param array	$param		Parameter array, see $param_defaults array.
+*
+* @return void
+*/
+function phpbb_http_login($param)
+{
+	global $auth, $user;
+	global $config;
+
+	$param_defaults = array(
+		'auth_message'	=> '',
+
+		'autologin'		=> false,
+		'viewonline'	=> true,
+		'admin'			=> false,
+	);
+
+	// Overwrite default values with passed values
+	$param = array_merge($param_defaults, $param);
+
+	// User is already logged in
+	// We will not overwrite his session
+	if (!empty($user->data['is_registered']))
+	{
+		return;
+	}
+
+	// $_SERVER keys to check
+	$username_keys = array(
+		'PHP_AUTH_USER',
+		'Authorization',
+		'REMOTE_USER', 'REDIRECT_REMOTE_USER',
+		'HTTP_AUTHORIZATION', 'REDIRECT_HTTP_AUTHORIZATION',
+		'REMOTE_AUTHORIZATION', 'REDIRECT_REMOTE_AUTHORIZATION',
+		'AUTH_USER',
+	);
+
+	$password_keys = array(
+		'PHP_AUTH_PW',
+		'REMOTE_PASSWORD',
+		'AUTH_PASSWORD',
+	);
+
+	$username = null;
+	foreach ($username_keys as $k)
+	{
+		if (isset($_SERVER[$k]))
+		{
+			$username = $_SERVER[$k];
+			break;
+		}
+	}
+
+	$password = null;
+	foreach ($password_keys as $k)
+	{
+		if (isset($_SERVER[$k]))
+		{
+			$password = $_SERVER[$k];
+			break;
+		}
+	}
+
+	// Decode encoded information (IIS, CGI, FastCGI etc.)
+	if (!is_null($username) && is_null($password) && strpos($username, 'Basic ') === 0)
+	{
+		list($username, $password) = explode(':', base64_decode(substr($username, 6)), 2);
+    }
+
+	if (!is_null($username) && !is_null($password))
+	{
+		set_var($username, $username, 'string', true);
+		set_var($password, $password, 'string', true);
+
+		$auth_result = $auth->login($username, $password, $param['autologin'], $param['viewonline'], $param['admin']);
+
+		if ($auth_result['status'] == LOGIN_SUCCESS)
+		{
+			return;
+		}
+	}
+
+	// Prepend sitename to auth_message
+	$param['auth_message'] = ($param['auth_message'] === '') ? $config['sitename'] : $config['sitename'] . ' - ' . $param['auth_message'];
+
+	// We should probably filter out non-ASCII characters - RFC2616
+	$param['auth_message'] = preg_replace('/[\x80-\xFF]/', '?', $param['auth_message']);
+
+	header('WWW-Authenticate: Basic realm="' . $param['auth_message'] . '"');
+	header('HTTP/1.0 401 Unauthorized');
+
+	trigger_error('NOT_AUTHORISED');
+}
+
+/**
 * Generate page header
 */
 function page_header($page_title = '', $display_online_list = true, $item_id = 0, $item = 'forum')

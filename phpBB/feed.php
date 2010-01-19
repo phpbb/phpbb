@@ -30,6 +30,15 @@ if (!$config['feed_enable'])
 
 // Start session
 $user->session_begin();
+
+if (!empty($config['feed_http_auth']) && request_var('auth', '') == 'http')
+{
+	phpbb_http_login(array(
+		'auth_message'	=> 'Feed',
+		'viewonline'	=> request_var('viewonline', true),
+	));
+}
+
 $auth->acl($user->data);
 $user->setup();
 

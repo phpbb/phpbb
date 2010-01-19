@@ -350,6 +350,7 @@ class phpbb_questionnaire_phpbb_data_provider
 			'enable_pm_icons' => true,
 			'enable_post_confirm' => true,
 			'feed_enable' => true,
+			'feed_http_auth' => true,
 			'feed_limit_post' => true,
 			'feed_limit_topic' => true,
 			'feed_overall' => true,
