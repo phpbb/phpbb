@@ -69,6 +69,11 @@ function login_db(&$username, &$password)
 	if ($show_captcha)
 	{
 		// Visual Confirmation handling
+		if (!class_exists('phpbb_captcha_factory'))
+		{
+			global $phpbb_root_path, $phpEx;
+			include ($phpbb_root_path . 'includes/captcha/captcha_factory.' . $phpEx);
+		}
 
 		$captcha =& phpbb_captcha_factory::get_instance($config['captcha_plugin']);
 		$captcha->init(CONFIRM_LOGIN);

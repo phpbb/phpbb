@@ -193,6 +193,11 @@ class phpbb_default_captcha
 	{
 		global $config, $db, $user;
 
+		if (empty($user->lang))
+		{
+			$user->setup();
+		}
+
 		$error = '';
 		if (!$this->confirm_id)
 		{
