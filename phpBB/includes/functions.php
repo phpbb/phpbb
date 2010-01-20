@@ -4003,6 +4003,11 @@ function phpbb_http_login($param)
 		{
 			return;
 		}
+		else if ($auth_result['status'] == LOGIN_ERROR_ATTEMPTS)
+		{
+			header('HTTP/1.0 401 Unauthorized');
+			trigger_error('NOT_AUTHORISED');
+		}
 	}
 
 	// Prepend sitename to auth_message
