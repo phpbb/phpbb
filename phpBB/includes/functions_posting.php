@@ -2525,7 +2525,7 @@ function submit_post($mode, $subject, $username, $topic_type, &$poll, &$data, $u
 				VALUES (' . $user->data['user_id'] . ', ' . $data['topic_id'] . ')';
 			$db->sql_query($sql);
 		}
-		else if ($data['notify_set'] && !$data['notify'])
+		else if (($config['email_enable'] || $config['jab_enable']) && $data['notify_set'] && !$data['notify'])
 		{
 			$sql = 'DELETE FROM ' . TOPICS_WATCH_TABLE . '
 				WHERE user_id = ' . $user->data['user_id'] . '
