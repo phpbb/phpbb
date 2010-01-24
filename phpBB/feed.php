@@ -10,9 +10,6 @@
 * MOD Author Profile: http://www.phpbb.com/community/memberlist.php?mode=viewprofile&u=345763
 * MOD Author Homepage: http://www.mssti.com/phpbb3/
 *
-* Warning:	Querying the posts table can be very expensive and time consuming on very large boards.
-*			Where possible post ids should be prefetched from another table using a separate query.
-*
 **/
 
 /**
