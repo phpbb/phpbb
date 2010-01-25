@@ -267,7 +267,6 @@ $lang = array_merge($lang, array(
 	'PARSE_URLS'						=> 'Parse links',
 	'PERMISSIONS_TRANSFERRED'			=> 'Permissions transferred',
 	'PERMISSIONS_TRANSFERRED_EXPLAIN'	=> 'You currently have the permissions from %1$s. You are able to browse the board with this user’s permissions, but not access the administration control panel since admin permissions were not transferred. You can <a href="%2$s"><strong>revert to your permission set</strong></a> at any time.',
-	'PIXEL'								=> 'px',
 	'PROCEED_TO_ACP'					=> '%sProceed to the ACP%s',
 
 	'REMIND'							=> 'Remind',

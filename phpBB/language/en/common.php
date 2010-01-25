@@ -417,6 +417,7 @@ $lang = array_merge($lang, array(
 
 	'PAGE_OF'				=> 'Page <strong>%1$d</strong> of <strong>%2$d</strong>',
 	'PASSWORD'				=> 'Password',
+	'PIXEL'					=> 'px',
 	'PLAY_QUICKTIME_FILE'	=> 'Play Quicktime file',
 	'PM'					=> 'PM',
 	'POSTING_MESSAGE'		=> 'Posting message in %s',
