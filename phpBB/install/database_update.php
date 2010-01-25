@@ -885,12 +885,9 @@ function database_update_info()
 				),
 			),
 		),
-		// Changes from 3.0.6-RC1 to 3.0.6-RC2
-		'3.0.6-RC1'		=> array(
-			'drop_keys'		=> array(
-				LOG_TABLE			=> array('log_time'),
-			),
-		),
+
+		// No changes from 3.0.6-RC1 to 3.0.6-RC2
+		'3.0.6-RC1'		=> array(),
 		// No changes from 3.0.6-RC2 to 3.0.6-RC3
 		'3.0.6-RC2'		=> array(),
 		// No changes from 3.0.6-RC3 to 3.0.6-RC4
@@ -898,8 +895,12 @@ function database_update_info()
 		// No changes from 3.0.6-RC4 to 3.0.6
 		'3.0.6-RC4'		=> array(),
 
-		// No changes from 3.0.6 to 3.0.7-RC1
-		'3.0.6'			=> array(),
+		// Changes from 3.0.6 to 3.0.7-RC1
+		'3.0.6'		=> array(
+			'drop_keys'		=> array(
+				LOG_TABLE			=> array('log_time'),
+			),
+		),
 	);
 }
 
