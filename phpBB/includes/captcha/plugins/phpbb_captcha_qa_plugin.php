@@ -263,7 +263,7 @@ class phpbb_captcha_qa
 	{
 		global $db, $config;
 
-		$sql = 'SELECT c.question_id
+		$sql = 'SELECT c.confirm_id
 			FROM ' . CAPTCHA_QA_CONFIRM_TABLE . ' c
 			LEFT JOIN ' . SESSIONS_TABLE . ' s
 				ON (c.session_id = s.session_id)
@@ -277,14 +277,14 @@ class phpbb_captcha_qa
 
 			do
 			{
-				$sql_in[] = (string) $row['question_id'];
+				$sql_in[] = (string) $row['confirm_id'];
 			}
 			while ($row = $db->sql_fetchrow($result));
 
 			if (sizeof($sql_in))
 			{
 				$sql = 'DELETE FROM ' . CAPTCHA_QA_CONFIRM_TABLE . '
-					WHERE ' . $db->sql_in_set('question_id', $sql_in);
+					WHERE ' . $db->sql_in_set('confirm_id', $sql_in);
 				$db->sql_query($sql);
 			}
 		}
