@@ -87,6 +87,12 @@ class phpbb_captcha_qa
 			}
 			$db->sql_freeresult($result);
 		}
+	
+		// Possible snag: the user didn't send a confirm_id. See, if we have something on file.
+		if (!strlen($this->confirm_id))
+		{
+			$this->load_confirm_id();
+		}
 
 		// okay, if there is a confirm_id, we try to load that confirm's state
 		if (!strlen($this->confirm_id) || !$this->load_answer())
@@ -471,6 +477,38 @@ class phpbb_captcha_qa
 		$db->sql_query($sql);
 
 		$this->load_answer();
+	}
+
+
+	/**
+	* See if there is already an entry for the current session.
+	*/
+	function load_confirm_id()
+	{
+		global $db, $user;
+		
+		if (!sizeof($this->question_ids))
+		{
+			return false;
+		}
+
+		$sql = 'SELECT confirm_id
+			FROM ' . CAPTCHA_QA_CONFIRM_TABLE . " 
+			WHERE 
+				session_id = '" . $db->sql_escape($user->session_id) . "'
+				AND lang_iso = '" . $db->sql_escape($this->question_lang) . "'
+				AND confirm_type = " . $this->type;
+		$result = $db->sql_query_limit($sql, 1);
+		$row = $db->sql_fetchrow($result);
+		$db->sql_freeresult($result);
+
+		if ($row)
+		{
+			$this->confirm_id = $row['confirm_id'];
+			return true;
+		}
+
+		return false;
 	}
 
 	/**
