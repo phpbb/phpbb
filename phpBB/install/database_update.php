@@ -1585,6 +1585,12 @@ function change_database_data(&$no_updates, $version)
 			set_config('feed_topics_new', (!empty($config['feed_overall_topics']) ? '1' : '0'));
 			set_config('feed_topics_active', (!empty($config['feed_overall_topics']) ? '1' : '0'));
 
+			// Delete all text-templates from the template_data
+			$sql = 'DELETE FROM ' . STYLES_TEMPLATE_DATA_TABLE . '
+				WHERE template_filename ' . $db->sql_like_expression($db->any_char . '.txt');
+			_sql($sql, $errored, $error_ary);
+
+			$no_updates = false;
 		break;
 	}
 }
