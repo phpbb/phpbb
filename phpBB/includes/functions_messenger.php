@@ -182,7 +182,16 @@ class messenger
 			trigger_error('No template file for emailing set.', E_USER_ERROR);
 		}
 
-		if (!trim($template_lang) || !file_exists("{$phpbb_root_path}language/{$template_lang}/email/$template_file.txt"))
+		if (!$template_path)
+		{
+			$path_check = (!empty($user->lang_path)) ? $user->lang_path : $phpbb_root_path . 'language/';
+		}
+		else
+		{
+			$path_check = $template_path;
+		}
+
+		if (!trim($template_lang) || !file_exists("$path_check$template_lang/email/$template_file.txt"))
 		{
 			// fall back to board default language if the user's language is
 			// missing $template_file.  If this does not exist either,
