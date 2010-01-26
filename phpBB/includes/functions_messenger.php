@@ -182,9 +182,15 @@ class messenger
 			trigger_error('No template file for emailing set.', E_USER_ERROR);
 		}
 
-		if (!trim($template_lang))
+		if (!trim($template_lang) || !file_exists("{$phpbb_root_path}language/{$template_lang}/email/$template_file.txt"))
 		{
-			$template_lang = basename($config['default_lang']);
+			if (file_exists("{$phpbb_root_path}language/{$config['default_lang']}/email/$template_file.txt"))
+			{
+				// fall back to board default language if the user's language is
+				// missing $template_file
+				$template_lang = basename($config['default_lang']);
+			}
+			// Else $tpl->set_custom_template will do a trigger error
 		}
 
 		// tpl_msg now holds a template object we can use to parse the template file
