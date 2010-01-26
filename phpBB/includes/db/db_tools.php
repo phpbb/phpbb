@@ -1348,7 +1348,29 @@ class phpbb_db_tools
 			break;
 
 			case 'postgres':
-				$statements[] = 'ALTER TABLE ' . $table_name . ' ADD COLUMN "' . $column_name . '" ' . $column_data['column_type_sql'];
+				if (version_compare($this->db->sql_server_info(true), '8.0', '>='))
+				{
+					$statements[] = 'ALTER TABLE ' . $table_name . ' ADD COLUMN "' . $column_name . '" ' . $column_data['column_type_sql'];
+				}
+				else
+				{
+					// old versions cannot add columns with default and null information
+					$statements[] = 'ALTER TABLE ' . $table_name . ' ADD COLUMN "' . $column_name . '" ' . $column_data['column_type'] . ' ' . $column_data['constraint'];
+
+					if (isset($column_data['null']))
+					{
+						if ($column_data['null'] == 'NOT NULL')
+						{
+							$statements[] = 'ALTER TABLE ' . $table_name . ' ALTER COLUMN ' . $column_name . ' SET NOT NULL';
+						}
+					}
+
+					if (isset($column_data['default']))
+					{
+						$statements[] = 'ALTER TABLE ' . $table_name . ' ALTER COLUMN ' . $column_name . ' SET DEFAULT ' . $column_data['default'];
+					}
+				}
+
 			break;
 
 			case 'sqlite':
