@@ -88,14 +88,8 @@ class phpbb_captcha_qa
 			$db->sql_freeresult($result);
 		}
 	
-		// Possible snag: the user didn't send a confirm_id. See, if we have something on file.
-		if (!strlen($this->confirm_id))
-		{
-			$this->load_confirm_id();
-		}
-
-		// okay, if there is a confirm_id, we try to load that confirm's state
-		if (!strlen($this->confirm_id) || !$this->load_answer())
+		// okay, if there is a confirm_id, we try to load that confirm's state. If not, we try to find one
+		if (!$this->load_answer() && (!$this->load_confirm_id() || !$this->load_answer()))
 		{
 			// we have no valid confirm ID, better get ready to ask something
 			$this->select_question();
@@ -486,11 +480,6 @@ class phpbb_captcha_qa
 	function load_confirm_id()
 	{
 		global $db, $user;
-		
-		if (!sizeof($this->question_ids))
-		{
-			return false;
-		}
 
 		$sql = 'SELECT confirm_id
 			FROM ' . CAPTCHA_QA_CONFIRM_TABLE . " 
@@ -507,7 +496,6 @@ class phpbb_captcha_qa
 			$this->confirm_id = $row['confirm_id'];
 			return true;
 		}
-
 		return false;
 	}
 
@@ -518,7 +506,7 @@ class phpbb_captcha_qa
 	{
 		global $db, $user;
 		
-		if (!sizeof($this->question_ids))
+		if (!strlen($this->confirm_id) || !sizeof($this->question_ids))
 		{
 			return false;
 		}
