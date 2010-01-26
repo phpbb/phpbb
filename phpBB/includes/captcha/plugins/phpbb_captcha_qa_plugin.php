@@ -253,11 +253,11 @@ class phpbb_captcha_qa
 	/**
 	*  API function
 	*/
-	function garbage_collect($type)
+	function garbage_collect($type = 0)
 	{
 		global $db, $config;
 
-		$sql = 'SELECT DISTINCT c.session_id
+		$sql = 'SELECT c.question_id
 			FROM ' . CAPTCHA_QA_CONFIRM_TABLE . ' c
 			LEFT JOIN ' . SESSIONS_TABLE . ' s
 				ON (c.session_id = s.session_id)
@@ -266,19 +266,19 @@ class phpbb_captcha_qa
 		$result = $db->sql_query($sql);
 
 		if ($row = $db->sql_fetchrow($result))
-		{
+		{print_r($row);
 			$sql_in = array();
 
 			do
 			{
-				$sql_in[] = (string) $row['session_id'];
+				$sql_in[] = (string) $row['question_id'];
 			}
 			while ($row = $db->sql_fetchrow($result));
 
 			if (sizeof($sql_in))
 			{
 				$sql = 'DELETE FROM ' . CAPTCHA_QA_CONFIRM_TABLE . '
-					WHERE ' . $db->sql_in_set('session_id', $sql_in);
+					WHERE ' . $db->sql_in_set('question_id', $sql_in);
 				$db->sql_query($sql);
 			}
 		}
