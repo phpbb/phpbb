@@ -58,6 +58,8 @@ $lang = array_merge($lang, array(
 	'QUESTION_TEXT_EXPLAIN'		=> 'The question that will be asked on registration.',
 
 	'QA_ERROR_MSG'				=> 'Please fill in all fields and enter at least one answer.',
+	'QA_LAST_QUESTION'			=> 'You cannot delete all questions while the plugin is active.',
+
 ));
 
 ?>
