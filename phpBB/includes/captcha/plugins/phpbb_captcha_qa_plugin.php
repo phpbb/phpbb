@@ -266,7 +266,7 @@ class phpbb_captcha_qa
 		$result = $db->sql_query($sql);
 
 		if ($row = $db->sql_fetchrow($result))
-		{print_r($row);
+		{
 			$sql_in = array();
 
 			do
