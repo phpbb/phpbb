@@ -184,13 +184,10 @@ class messenger
 
 		if (!trim($template_lang) || !file_exists("{$phpbb_root_path}language/{$template_lang}/email/$template_file.txt"))
 		{
-			if (file_exists("{$phpbb_root_path}language/{$config['default_lang']}/email/$template_file.txt"))
-			{
-				// fall back to board default language if the user's language is
-				// missing $template_file
-				$template_lang = basename($config['default_lang']);
-			}
-			// Else $tpl->set_custom_template will do a trigger error
+			// fall back to board default language if the user's language is
+			// missing $template_file.  If this does not exist either,
+			// $tpl->set_custom_template will do a trigger_error
+			$template_lang = basename($config['default_lang']);
 		}
 
 		// tpl_msg now holds a template object we can use to parse the template file
