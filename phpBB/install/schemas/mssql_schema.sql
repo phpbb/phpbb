@@ -1506,6 +1506,9 @@ ALTER TABLE [phpbb_topics_track] WITH NOCHECK ADD
 	)  ON [PRIMARY] 
 GO
 
+CREATE  INDEX [topic_id] ON [phpbb_topics_track]([topic_id]) ON [PRIMARY]
+GO
+
 CREATE  INDEX [forum_id] ON [phpbb_topics_track]([forum_id]) ON [PRIMARY]
 GO
 

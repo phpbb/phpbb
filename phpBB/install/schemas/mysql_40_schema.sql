@@ -861,6 +861,7 @@ CREATE TABLE phpbb_topics_track (
 	forum_id mediumint(8) UNSIGNED DEFAULT '0' NOT NULL,
 	mark_time int(11) UNSIGNED DEFAULT '0' NOT NULL,
 	PRIMARY KEY (user_id, topic_id),
+	KEY topic_id (topic_id),
 	KEY forum_id (forum_id)
 );
 

@@ -900,6 +900,11 @@ function database_update_info()
 			'drop_keys'		=> array(
 				LOG_TABLE			=> array('log_time'),
 			),
+			'add_index'		=> array(
+				TOPICS_TRACK_TABLE	=> array(
+					'topic_id'		=> array('topic_id'),
+				),
+			),
 		),
 	);
 }
