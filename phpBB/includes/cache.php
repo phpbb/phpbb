@@ -82,9 +82,11 @@ class cache extends acm
 			$result = $db->sql_query($sql);
 
 			$censors = array();
+			$unicode = ((version_compare(PHP_VERSION, '5.1.0', '>=') || (version_compare(PHP_VERSION, '5.0.0-dev', '<=') && version_compare(PHP_VERSION, '4.4.0', '>='))) && @preg_match('/\p{L}/u', 'a') !== false) ? true : false;
+
 			while ($row = $db->sql_fetchrow($result))
 			{
-				if ((version_compare(PHP_VERSION, '5.1.0', '>=') || (version_compare(PHP_VERSION, '5.0.0-dev', '<=') && version_compare(PHP_VERSION, '4.4.0', '>='))) && @preg_match('/\p{L}/u', 'a') !== false)
+				if ($unicode)
 				{
 					$censors['match'][] = '#(?<![\p{Nd}\p{L}_])(' . str_replace('\*', '[\p{Nd}\p{L}_]*?', preg_quote($row['word'], '#')) . ')(?![\p{Nd}\p{L}_])#iu';
 				}
