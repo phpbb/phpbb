@@ -32,7 +32,7 @@ unset($dbpasswd);
 $convertor_data = array(
 	'forum_name'	=> 'phpBB 2.0.x',
 	'version'		=> '1.0.3',
-	'phpbb_version'	=> '3.0.6',
+	'phpbb_version'	=> '3.0.7',
 	'author'		=> '<a href="http://www.phpbb.com/">phpBB Group</a>',
 	'dbms'			=> $dbms,
 	'dbhost'		=> $dbhost,
@@ -78,6 +78,15 @@ $tables = array(
 *
 * 'table_format' can take the value 'file' to indicate a config file. In this case array_name
 * is set to indicate the name of the array the config values are stored in
+* Example of using a file:
+* $config_schema = array(
+* 	'table_format'	=>	'file',
+* 	'filename'	=>	'NAME OF FILE', // If the file is not in the root directory, the path needs to be added with no leading slash
+* 	'array_name' => 'NAME OF ARRAY', // Only used if the configuration file stores the setting in an array.
+* 	'settings'		=>	array( 
+*        'board_email' => 'SUPPORT_EMAIL', // target config name => source target name
+* 	)
+* );
 * 'table_format' can be an array if the values are stored in a table which is an assosciative array
 * (as per phpBB 2.0.x)
 * If left empty, values are assumed to be stored in a table where each config setting is

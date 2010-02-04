@@ -1232,6 +1232,11 @@ function get_config()
 			$convert->p_master->error($user->lang['FILE_NOT_FOUND'] . ': ' . $filename, __LINE__, __FILE__);
 		}
 
+		if (isset($convert->config_schema['array_name']))
+		{
+			unset($convert->config_schema['array_name']);
+		}
+
 		$convert_config = extract_variables_from_file($filename);
 		if (!empty($convert->config_schema['array_name']))
 		{
@@ -1264,6 +1269,7 @@ function restore_config($schema)
 	global $db, $config;
 
 	$convert_config = get_config();
+
 	foreach ($schema['settings'] as $config_name => $src)
 	{
 		if (preg_match('/(.*)\((.*)\)/', $src, $m))
@@ -1274,8 +1280,16 @@ function restore_config($schema)
 		}
 		else
 		{
-			$config_value = (isset($convert_config[$src])) ? $convert_config[$src] : '';
-		}
+			if ($schema['table_format'] != 'file' || empty($schema['array_name']))
+			{
+				$config_value = (isset($convert_config[$src])) ? $convert_config[$src] : '';
+			}
+			else if (!empty($schema['array_name']))
+			{
+				$src_ary = $schema['array_name'];
+				$config_value = (isset($convert_config[$src_ary][$src])) ? $convert_config[$src_ary][$src] : '';
+			}
+   		}
 
 		if ($config_value !== '')
 		{
