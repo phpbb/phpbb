@@ -435,7 +435,7 @@ class acp_database
 								{
 									if (in_array($matches[2], $methods))
 									{
-										$backup_files[gmdate("d-m-Y H:i:s", $matches[1])] = $file;
+										$backup_files[(int) $matches[1]] = $file;
 									}
 								}
 							}
@@ -450,7 +450,7 @@ class acp_database
 							{
 								$template->assign_block_vars('files', array(
 									'FILE'		=> $file,
-									'NAME'		=> $name,
+									'NAME'		=> $user->format_date($name, 'd-m-Y H:i:s', true),
 									'SUPPORTED'	=> true,
 								));
 							}
