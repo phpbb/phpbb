@@ -102,7 +102,7 @@ function make_forum_select($select_id = false, $ignore_id = false, $ignore_acl =
 			{
 				$disabled = true;
 			}
-			else if (!$only_acl_post && !$auth->acl_gets(array('a_forum', 'a_forumadd', 'a_forumdel'), $row['forum_id']))
+			else if (!$only_acl_post && !$auth->acl_gets(array('f_list', 'a_forum', 'a_forumadd', 'a_forumdel'), $row['forum_id']))
 			{
 				$disabled = true;
 			}
