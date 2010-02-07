@@ -202,7 +202,7 @@ function set_config_count($config_name, $increment, $is_dynamic = false)
 function gen_rand_string($num_chars = 8)
 {
 	$rand_str = unique_id();
-	$rand_str = str_replace('0', 'Z', strtoupper(base_convert($rand_str, 16, 35)));
+	$rand_str = str_replace(array('0', 'O'), array('Z', 'Y'), strtoupper(base_convert($rand_str, 16, 34)));
 
 	return substr($rand_str, 0, $num_chars);
 }
