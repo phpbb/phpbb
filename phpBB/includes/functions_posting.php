@@ -46,7 +46,7 @@ function generate_smilies($mode, $forum_id)
 
 		page_header($user->lang['SMILIES']);
 
-		$sql = 'SELECT COUNT(smiley_id) AS count
+		$sql = 'SELECT COUNT(smiley_id) AS item_count
 			FROM ' . SMILIES_TABLE . '
 			GROUP BY smiley_url';
 		$result = $db->sql_query($sql, 3600);

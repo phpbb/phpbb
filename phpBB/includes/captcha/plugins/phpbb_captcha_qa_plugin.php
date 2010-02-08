@@ -137,14 +137,14 @@ class phpbb_captcha_qa
 			return false;
 		}
 
-		$sql = 'SELECT COUNT(question_id) as count
+		$sql = 'SELECT COUNT(question_id) AS question_count
 			FROM ' . CAPTCHA_QUESTIONS_TABLE . "
 			WHERE lang_iso = '" . $db->sql_escape($config['default_lang']) . "'";
 		$result = $db->sql_query($sql);
 		$row = $db->sql_fetchrow($result);
 		$db->sql_freeresult($result);
 
-		return ((bool) $row['count']);
+		return ((bool) $row['question_count']);
 	}
 
 	/**
