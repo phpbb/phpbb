@@ -2,7 +2,7 @@
 /**
 *
 * @package search
-* @version $Id: fulltext_postgres.php,v 1.47 2007/06/09 11:08:57 acydburn Exp $
+* @version $Id: fulltext_postgres.php,v 1.49 2010/02/12 10:10:36 frantic Exp $
 * @copyright (c) 2005 phpBB Group
 * @license http://opensource.org/licenses/gpl-license.php GNU Public License
 *
@@ -35,6 +35,7 @@ class fulltext_postgres extends search_backend
 	var $common_words = array();
 	var $pcre_properties = false;
 	var $mbstring_regex = false;
+	var $tsearch_builtin = false;
 
 	function fulltext_postgres(&$error)
 	{
@@ -58,7 +59,16 @@ class fulltext_postgres extends search_backend
 
 		if ($db->sql_layer == 'postgres')
 		{
-			$db->sql_query("SELECT set_curcfg('" . $db->sql_escape($config['fulltext_postgres_ts_name']) . "')");
+			$pgsql_version = explode('.', substr($db->sql_server_info(), 10));
+			if ($pgsql_version[0] >= 8 && $pgsql_version[1] >= 3)
+			{
+				$this->tsearch_builtin = true;
+			}
+
+
+			if (!$this->tsearch_builtin) {
+				$db->sql_query("SELECT set_curcfg('" . $db->sql_escape($config['fulltext_postgres_ts_name']) . "')");
+			}
 		}
 
 		$error = false;
@@ -76,18 +86,20 @@ class fulltext_postgres extends search_backend
 			return $user->lang['FULLTEXT_POSTGRES_INCOMPATIBLE_VERSION'];
 		}
 
-		$sql = "SELECT c.relname
-			  FROM pg_catalog.pg_class c
-			 WHERE c.relkind = 'r'
-			   AND c.relname = 'pg_ts_cfg'
-			   AND pg_catalog.pg_table_is_visible(c.oid)";
-		$result = $db->sql_query($sql);
-		$row = $db->sql_fetchrow($result);
-		$db->sql_freeresult($result);
+		if (!$this->tsearch_builtin) {
+			$sql = "SELECT c.relname
+				  FROM pg_catalog.pg_class c
+				 WHERE c.relkind = 'r'
+				   AND c.relname = 'pg_ts_cfg'
+				   AND pg_catalog.pg_table_is_visible(c.oid)";
+			$result = $db->sql_query($sql);
+			$row = $db->sql_fetchrow($result);
+			$db->sql_freeresult($result);
 
-		if (empty ($row['relname']))
-		{
-			return $user->lang['FULLTEXT_POSTGRES_TS_NOT_FOUND'];
+			if (empty ($row['relname']))
+			{
+				return $user->lang['FULLTEXT_POSTGRES_TS_NOT_FOUND'];
+			}
 		}
 
 		return false;
@@ -114,7 +126,7 @@ class fulltext_postgres extends search_backend
 		}
 
 		// Filter out as above
-		$split_keywords = preg_replace("#[\n\r\t]+#", ' ', trim(htmlspecialchars_decode($keywords)));
+		$split_keywords = preg_replace("#[\"\n\r\t]+#", ' ', trim(htmlspecialchars_decode($keywords)));
 
 		// Split words
 		if ($this->pcre_properties)
@@ -317,16 +329,17 @@ class fulltext_postgres extends search_backend
 	* Performs a search on keywords depending on display specific params. You have to run split_keywords() first.
 	*
 	* @param	string		$type				contains either posts or topics depending on what should be searched for
-	* @param	string		&$fields			contains either titleonly (topic titles should be searched), msgonly (only message bodies should be searched), firstpost (only subject and body of the first post should be searched) or all (all post bodies and subjects should be searched)
-	* @param	string		&$terms				is either 'all' (use query as entered, words without prefix should default to "have to be in field") or 'any' (ignore search query parts and just return all posts that contain any of the specified words)
-	* @param	array		&$sort_by_sql		contains SQL code for the ORDER BY part of a query
-	* @param	string		&$sort_key			is the key of $sort_by_sql for the selected sorting
-	* @param	string		&$sort_dir			is either a or d representing ASC and DESC
-	* @param	string		&$sort_days			specifies the maximum amount of days a post may be old
-	* @param	array		&$ex_fid_ary		specifies an array of forum ids which should not be searched
-	* @param	array		&$m_approve_fid_ary	specifies an array of forum ids in which the searcher is allowed to view unapproved posts
-	* @param	int			&$topic_id			is set to 0 or a topic id, if it is not 0 then only posts in this topic should be searched
-	* @param	array		&$author_ary		an array of author ids if the author should be ignored during the search the array is empty
+	* @param	string		$fields				contains either titleonly (topic titles should be searched), msgonly (only message bodies should be searched), firstpost (only subject and body of the first post should be searched) or all (all post bodies and subjects should be searched)
+	* @param	string		$terms				is either 'all' (use query as entered, words without prefix should default to "have to be in field") or 'any' (ignore search query parts and just return all posts that contain any of the specified words)
+	* @param	array		$sort_by_sql		contains SQL code for the ORDER BY part of a query
+	* @param	string		$sort_key			is the key of $sort_by_sql for the selected sorting
+	* @param	string		$sort_dir			is either a or d representing ASC and DESC
+	* @param	string		$sort_days			specifies the maximum amount of days a post may be old
+	* @param	array		$ex_fid_ary			specifies an array of forum ids which should not be searched
+	* @param	array		$m_approve_fid_ary	specifies an array of forum ids in which the searcher is allowed to view unapproved posts
+	* @param	int			$topic_id			is set to 0 or a topic id, if it is not 0 then only posts in this topic should be searched
+	* @param	array		$author_ary			an array of author ids if the author should be ignored during the search the array is empty
+	* @param	string		$author_name		specifies the author match, when ANONYMOUS is also a search-match
 	* @param	array		&$id_ary			passed by reference, to be filled with ids for the page specified by $start and $per_page, should be ordered
 	* @param	int			$start				indicates the first index of the page
 	* @param	int			$per_page			number of ids each page is supposed to contain
@@ -334,7 +347,7 @@ class fulltext_postgres extends search_backend
 	*
 	* @access	public
 	*/
-	function keyword_search($type, &$fields, &$terms, &$sort_by_sql, &$sort_key, &$sort_dir, &$sort_days, &$ex_fid_ary, &$m_approve_fid_ary, &$topic_id, &$author_ary, &$id_ary, $start, $per_page)
+	function keyword_search($type, $fields, $terms, $sort_by_sql, $sort_key, $sort_dir, $sort_days, $ex_fid_ary, $m_approve_fid_ary, $topic_id, $author_ary, $author_name, &$id_ary, $start, $per_page)
 	{
 		global $config, $db;
 
@@ -433,20 +446,41 @@ class fulltext_postgres extends search_backend
 		$sql_from			= ($join_topic) ? TOPICS_TABLE . ' t, ' : '';
 		$field				= ($type == 'posts') ? 'post_id' : 'topic_id';
 		$sql_author			= (sizeof($author_ary) == 1) ? ' = ' . $author_ary[0] : 'IN (' . implode(', ', $author_ary) . ')';
-
+		
+		if (sizeof($author_ary) && $author_name)
+		{
+			// first one matches post of registered users, second one guests and deleted users
+			$sql_author = '(' . $db->sql_in_set('p.poster_id', array_diff($author_ary, array(ANONYMOUS)), false, true) . ' OR p.post_username ' . $author_name . ')';
+		}
+		else if (sizeof($author_ary))
+		{
+			$sql_author = ' AND ' . $db->sql_in_set('p.poster_id', $author_ary);
+		}
+		else
+		{
+			$sql_author = '';
+		}
+		
 		$sql_where_options = $sql_sort_join;
 		$sql_where_options .= ($topic_id) ? ' AND p.topic_id = ' . $topic_id : '';
 		$sql_where_options .= ($join_topic) ? ' AND t.topic_id = p.topic_id' : '';
 		$sql_where_options .= (sizeof($ex_fid_ary)) ? ' AND ' . $db->sql_in_set('p.forum_id', $ex_fid_ary, true) : '';
 		$sql_where_options .= $m_approve_fid_sql;
-		$sql_where_options .= (sizeof($author_ary)) ? ' AND p.poster_id ' . $sql_author : '';
+		$sql_where_options .= $sql_author;
 		$sql_where_options .= ($sort_days) ? ' AND p.post_time >= ' . (time() - ($sort_days * 86400)) : '';
 		$sql_where_options .= $sql_match_where;
 
 		$tmp_sql_match = array();
 		foreach (explode(',', $sql_match) as $sql_match_column)
 		{
-			$tmp_sql_match[] = "to_tsvector (" . $sql_match_column . ") @@ to_tsquery ('" . $db->sql_escape($this->tsearch_query) . "')";
+			if ($this->tsearch_builtin)
+			{
+				$tmp_sql_match[] = "to_tsvector ('" . $db->sql_escape($config['fulltext_postgres_ts_name']) . "', " . $sql_match_column . ") @@ to_tsquery ('" . $db->sql_escape($config['fulltext_postgres_ts_name']) . "', '" . $db->sql_escape($this->tsearch_query) . "')";
+			}
+			else
+			{
+				$tmp_sql_match[] = "to_tsvector (" . $sql_match_column . ") @@ to_tsquery ('" . $db->sql_escape($this->tsearch_query) . "')";
+			}
 		}
 
 		$sql = "SELECT $sql_select
@@ -490,12 +524,25 @@ class fulltext_postgres extends search_backend
 	/**
 	* Performs a search on an author's posts without caring about message contents. Depends on display specific params
 	*
-	* @param array &$id_ary passed by reference, to be filled with ids for the page specified by $start and $per_page, should be ordered
-	* @param int $start indicates the first index of the page
-	* @param int $per_page number of ids each page is supposed to contain
-	* @return total number of results
+	* @param	string		$type				contains either posts or topics depending on what should be searched for
+	* @param	boolean		$firstpost_only		if true, only topic starting posts will be considered
+	* @param	array		$sort_by_sql		contains SQL code for the ORDER BY part of a query
+	* @param	string		$sort_key			is the key of $sort_by_sql for the selected sorting
+	* @param	string		$sort_dir			is either a or d representing ASC and DESC
+	* @param	string		$sort_days			specifies the maximum amount of days a post may be old
+	* @param	array		$ex_fid_ary			specifies an array of forum ids which should not be searched
+	* @param	array		$m_approve_fid_ary	specifies an array of forum ids in which the searcher is allowed to view unapproved posts
+	* @param	int			$topic_id			is set to 0 or a topic id, if it is not 0 then only posts in this topic should be searched
+	* @param	array		$author_ary			an array of author ids
+	* @param	string		$author_name		specifies the author match, when ANONYMOUS is also a search-match
+	* @param	array		&$id_ary			passed by reference, to be filled with ids for the page specified by $start and $per_page, should be ordered
+	* @param	int			$start				indicates the first index of the page
+	* @param	int			$per_page			number of ids each page is supposed to contain
+	* @return	boolean|int						total number of results
+	*
+	* @access	public
 	*/
-	function author_search($type, $firstpost_only, &$sort_by_sql, &$sort_key, &$sort_dir, &$sort_days, &$ex_fid_ary, &$m_approve_fid_ary, &$topic_id, &$author_ary, &$id_ary, $start, $per_page)
+	function author_search($type, $firstpost_only, $sort_by_sql, $sort_key, $sort_dir, $sort_days, $ex_fid_ary, $m_approve_fid_ary, $topic_id, $author_ary, $author_name, &$id_ary, $start, $per_page)
 	{
 		global $config, $db;
 
@@ -517,7 +564,8 @@ class fulltext_postgres extends search_backend
 			$topic_id,
 			implode(',', $ex_fid_ary),
 			implode(',', $m_approve_fid_ary),
-			implode(',', $author_ary)
+			implode(',', $author_ary),
+			$author_name,
 		)));
 
 		// try reading the results from cache
@@ -528,9 +576,17 @@ class fulltext_postgres extends search_backend
 		}
 
 		$id_ary = array();
-
+		
 		// Create some display specific sql strings
-		$sql_author		= $db->sql_in_set('p.poster_id', $author_ary);
+		if ($author_name)
+		{
+			// first one matches post of registered users, second one guests and deleted users
+			$sql_author = '(' . $db->sql_in_set('p.poster_id', array_diff($author_ary, array(ANONYMOUS)), false, true) . ' OR p.post_username ' . $author_name . ')';
+		}
+		else
+		{
+			$sql_author = $db->sql_in_set('p.poster_id', $author_ary);
+		}
 		$sql_fora		= (sizeof($ex_fid_ary)) ? ' AND ' . $db->sql_in_set('p.forum_id', $ex_fid_ary, true) : '';
 		$sql_topic_id	= ($topic_id) ? ' AND p.topic_id = ' . (int) $topic_id : '';
 		$sql_time		= ($sort_days) ? ' AND p.post_time >= ' . (time() - ($sort_days * 86400)) : '';
@@ -547,8 +603,8 @@ class fulltext_postgres extends search_backend
 			break;
 
 			case 't':
-				$sql_sort_table	= ($type == 'posts') ? TOPICS_TABLE . ' t, ' : '';
-				$sql_sort_join	= ($type == 'posts') ? ' AND t.topic_id = p.topic_id ' : '';
+				$sql_sort_table	= ($type == 'posts' && !$firstpost_only) ? TOPICS_TABLE . ' t, ' : '';
+				$sql_sort_join	= ($type == 'posts' && !$firstpost_only) ? ' AND t.topic_id = p.topic_id ' : '';
 			break;
 
 			case 'f':
@@ -569,7 +625,7 @@ class fulltext_postgres extends search_backend
 		{
 			$m_approve_fid_sql = ' AND (p.post_approved = 1 OR ' . $db->sql_in_set('p.forum_id', $m_approve_fid_ary, true) . ')';
 		}
-
+		
 		// Build the query for really selecting the post_ids
 		if ($type == 'posts')
 		{
@@ -597,7 +653,7 @@ class fulltext_postgres extends search_backend
 					AND t.topic_id = p.topic_id
 					$sql_sort_join
 					$sql_time
-				GROUP BY t.topic_id
+				GROUP BY t.topic_id, $sort_by_sql[$sort_key]
 				ORDER BY $sql_sort";
 			$field = 'topic_id';
 		}
@@ -682,7 +738,7 @@ class fulltext_postgres extends search_backend
 	*/
 	function create_index($acp_module, $u_action)
 	{
-		global $db;
+		global $db, $config;
 
 		// Make sure we can actually use PostgreSQL with fulltext indexes
 		if ($error = $this->init())
@@ -697,12 +753,12 @@ class fulltext_postgres extends search_backend
 
 		if (!isset($this->stats['post_subject']))
 		{
-			$db->sql_query('CREATE INDEX ' . POSTS_TABLE . '_post_subject ON ' . POSTS_TABLE . ' USING gist (to_tsvector (post_subject))');
+			$db->sql_query("CREATE INDEX " . POSTS_TABLE . "_" . $config['fulltext_postgres_ts_name'] . "_post_subject ON " . POSTS_TABLE . " USING gin (to_tsvector ('" . $db->sql_escape($config['fulltext_postgres_ts_name']) . "', post_subject))");
 		}
 
 		if (!isset($this->stats['post_text']))
 		{
-			$db->sql_query('CREATE INDEX ' . POSTS_TABLE . '_post_text ON ' . POSTS_TABLE . ' USING gist (to_tsvector (post_text))');
+			$db->sql_query("CREATE INDEX " . POSTS_TABLE . "_" . $config['fulltext_postgres_ts_name'] . "_post_text ON " . POSTS_TABLE . " USING gin (to_tsvector ('" . $db->sql_escape($config['fulltext_postgres_ts_name']) . "', post_text))");
 		}
 
 		$db->sql_query('TRUNCATE TABLE ' . SEARCH_RESULTS_TABLE);
@@ -730,12 +786,12 @@ class fulltext_postgres extends search_backend
 
 		if (isset($this->stats['post_subject']))
 		{
-			$db->sql_query('DROP INDEX ' . POSTS_TABLE . '_post_subject');
+			$db->sql_query('DROP INDEX ' . $this->stats['post_subject']['relname']);
 		}
 
 		if (isset($this->stats['post_text']))
 		{
-			$db->sql_query('DROP INDEX ' . POSTS_TABLE . '_post_text');
+			$db->sql_query('DROP INDEX ' . $this->stats['post_text']['relname']);
 		}
 
 		$db->sql_query('TRUNCATE TABLE ' . SEARCH_RESULTS_TABLE);
@@ -790,11 +846,11 @@ class fulltext_postgres extends search_backend
 			// deal with older PostgreSQL versions which didn't use Index_type
 			if (strpos($row['indexdef'], 'to_tsvector') !== false)
 			{
-				if ($row['relname'] == POSTS_TABLE . '_post_text')
+				if ($row['relname'] == POSTS_TABLE . '_' . $config['fulltext_postgres_ts_name'] . '_post_text' || $row['relname'] == POSTS_TABLE . '_post_text')
 				{
 					$this->stats['post_text'] = $row;
 				}
-				else if ($row['relname'] == POSTS_TABLE . '_post_subject')
+				else if ($row['relname'] == POSTS_TABLE . '_' . $config['fulltext_postgres_ts_name'] . '_post_subject' || $row['relname'] == POSTS_TABLE . '_post_subject')
 				{
 					$this->stats['post_subject'] = $row;
 				}
@@ -827,8 +883,17 @@ class fulltext_postgres extends search_backend
 
 		if ($db->sql_layer == 'postgres')
 		{
-			$sql = 'SELECT *
-				  FROM pg_ts_cfg';
+			if ($this->tsearch_builtin)
+			{
+				$sql = 'SELECT cfgname AS ts_name
+					  FROM pg_ts_config';
+			}
+			else
+			{
+				$sql = 'SELECT *
+					  FROM pg_ts_cfg';
+			}
+
 			$result = $db->sql_query($sql);
 
 			while ($row = $db->sql_fetchrow($result))
