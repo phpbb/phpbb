@@ -1203,6 +1203,7 @@ class install_install extends module
 		{
 			case 'mssql':
 			case 'mssql_odbc':
+			case 'mssqlnative':
 				$sql_query = preg_replace('#\# MSSQL IDENTITY (phpbb_[a-z_]+) (ON|OFF) \##s', 'SET IDENTITY_INSERT \1 \2;', $sql_query);
 			break;
 
@@ -1375,7 +1376,7 @@ class install_install extends module
 			$sql_ary[] = 'UPDATE ' . $data['table_prefix'] . "config
 				SET config_value = 'phpbb_captcha_gd'
 				WHERE config_name = 'captcha_plugin'";
-			
+
 			$sql_ary[] = 'UPDATE ' . $data['table_prefix'] . "config
 				SET config_value = '1'
 				WHERE config_name = 'captcha_gd'";

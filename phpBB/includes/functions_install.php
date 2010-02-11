@@ -95,6 +95,16 @@ function get_available_dbms($dbms = false, $return_unavailable = false, $only_20
 			'AVAILABLE'		=> true,
 			'2.0.x'			=> true,
 		),
+		'mssqlnative'		=> array(
+			'LABEL'			=> 'MS SQL Server 2005+ [ Native ]',
+			'SCHEMA'		=> 'mssql',
+			'MODULE'		=> 'sqlsrv',
+			'DELIM'			=> 'GO',
+			'COMMENTS'		=> 'remove_comments',
+			'DRIVER'		=> 'mssqlnative',
+			'AVAILABLE'		=> true,
+			'2.0.x'			=> false,
+		),			
 		'oracle'	=>	array(
 			'LABEL'			=> 'Oracle',
 			'SCHEMA'		=> 'oracle',
@@ -220,6 +230,7 @@ function get_tables($db)
 
 		case 'mssql':
 		case 'mssql_odbc':
+		case 'mssqlnative':
 			$sql = "SELECT name
 				FROM sysobjects
 				WHERE type='U'";
@@ -313,6 +324,7 @@ function connect_check_db($error_connect, &$error, $dbms_details, $table_prefix,
 
 		case 'mssql':
 		case 'mssql_odbc':
+		case 'mssqlnative':
 			$prefix_length = 90;
 		break;
 

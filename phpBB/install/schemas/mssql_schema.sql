@@ -4,9 +4,6 @@
 
 */
 
-BEGIN TRANSACTION
-GO
-
 /*
 	Table: 'phpbb_attachments'
 */
@@ -1731,10 +1728,5 @@ ALTER TABLE [phpbb_zebra] WITH NOCHECK ADD
 		[user_id],
 		[zebra_id]
 	)  ON [PRIMARY] 
-GO
-
-
-
-COMMIT
 GO
 

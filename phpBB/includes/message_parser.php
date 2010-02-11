@@ -1284,6 +1284,7 @@ class parse_message extends bbcode_firstpass
 			{
 				case 'mssql':
 				case 'mssql_odbc':
+				case 'mssqlnative':
 					$sql = 'SELECT *
 						FROM ' . SMILIES_TABLE . '
 						ORDER BY LEN(code) DESC';

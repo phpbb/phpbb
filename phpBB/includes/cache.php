@@ -299,6 +299,7 @@ class cache extends acm
 			{
 				case 'mssql':
 				case 'mssql_odbc':
+				case 'mssqlnative':
 					$sql = 'SELECT user_id, bot_agent, bot_ip
 						FROM ' . BOTS_TABLE . '
 						WHERE bot_active = 1
