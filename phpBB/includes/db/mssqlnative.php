@@ -2,10 +2,12 @@
 /**
 *
 * @package dbal
+* @version $Id$
+* @copyright (c) 2010 phpBB Group
+* @license http://opensource.org/licenses/gpl-license.php GNU Public License
+*
 * This is the MS SQL Server Native database abstraction layer.
 * PHP mssql native driver required.
-* @copyright (c) 2005 phpBB Group
-* @license http://opensource.org/licenses/gpl-license.php GNU Public License
 * @author Chris Pucci
 *
 */
