@@ -622,6 +622,11 @@ class dbal_oracle extends dbal
 		return 'BITAND(' . $column_name . ', ' . (1 << $bit) . ')' . (($compare) ? ' ' . $compare : '');
 	}
 
+	function _sql_bit_or($column_name, $bit, $compare = '')
+	{
+		return 'BITOR(' . $column_name . ', ' . (1 << $bit) . ')' . (($compare) ? ' ' . $compare : '');
+	}
+
 	/**
 	* return sql error array
 	* @access private

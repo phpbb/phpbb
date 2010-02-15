@@ -3309,4 +3309,24 @@ function obtain_latest_version_info($force_update = false, $warn_fail = false, $
 	return $info;
 }
 
+/**
+ * Enables a particular flag in a bitfield column of a given table.
+ *
+ * @param string	$table_name		The table to update
+ * @param string	$column_name	The column containing a bitfield to update
+ * @param int		$flag			The binary flag which is OR-ed with the current column value
+ * @param string	$sql_more		This string is attached to the sql query generated to update the table.
+ *
+ * @return void
+ */
+function enable_bitfield_column_flag($table_name, $column_name, $flag, $sql_more = '')
+{
+	global $db;
+
+	$sql = 'UPDATE ' . $table_name . '
+		SET ' . $column_name . ' = ' . $db->sql_bit_or($column_name, $flag) . '
+		' . $sql_more;
+	$db->sql_query($sql);
+}
+
 ?>
