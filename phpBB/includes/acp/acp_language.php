@@ -1120,6 +1120,11 @@ class acp_language
 		{
 			while (($file = readdir($dp)) !== false)
 			{
+				if (!is_dir($phpbb_root_path . 'language/' . $file))
+				{
+					continue;
+				}
+
 				if ($file[0] != '.' && file_exists("{$phpbb_root_path}language/$file/iso.txt"))
 				{
 					if (!in_array($file, $installed))
