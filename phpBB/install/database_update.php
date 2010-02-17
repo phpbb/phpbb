@@ -906,6 +906,9 @@ function database_update_info()
 				),
 			),
 		),
+
+		// No changes from 3.0.7-RC1 to 3.0.7
+		'3.0.7-RC1'		=> array(),
 	);
 }
 
@@ -1596,6 +1599,10 @@ function change_database_data(&$no_updates, $version)
 			_sql($sql, $errored, $error_ary);
 
 			$no_updates = false;
+		break;
+
+		// No changes from 3.0.7-RC1 to 3.0.7
+		case '3.0.7-RC1':
 		break;
 	}
 }
