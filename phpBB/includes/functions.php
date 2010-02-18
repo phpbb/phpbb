@@ -556,11 +556,11 @@ function _hash_crypt_private($password, $setting, &$itoa64)
 *
 * @param string $email		Email address
 *
-* @return string			Big Integer
+* @return string			Unsigned Big Integer
 */
 function phpbb_email_hash($email)
 {
-	return crc32(strtolower($email)) . strlen($email);
+	return sprintf('%u', crc32(strtolower($email))) . strlen($email);
 }
 
 /**
