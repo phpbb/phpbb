@@ -205,10 +205,12 @@ function get_group_id($group_name)
 
 /**
 * Generate the email hash stored in the users table
+*
+* Note: Deprecated, calls should directly go to phpbb_email_hash()
 */
 function gen_email_hash($email)
 {
-	return (crc32(strtolower($email)) . strlen($email));
+	return phpbb_email_hash($email);
 }
 
 /**
