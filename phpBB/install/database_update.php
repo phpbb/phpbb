@@ -1601,7 +1601,7 @@ function change_database_data(&$no_updates, $version)
 			$no_updates = false;
 		break;
 
-		// No changes from 3.0.7-RC1 to 3.0.7
+		// Changes from 3.0.7-RC1 to 3.0.7
 		case '3.0.7-RC1':
 
 			$sql = 'SELECT user_id, user_email, user_email_hash
@@ -1624,12 +1624,14 @@ function change_database_data(&$no_updates, $version)
 					$sql = 'UPDATE ' . USERS_TABLE . '
 						SET ' . $db->sql_build_array('UPDATE', $sql_ary) . '
 						WHERE user_id = ' . (int) $row['user_id'];
-					__sql($sql, $errored, $error_ary, ($i % 100 == 0));
+					_sql($sql, $errored, $error_ary, ($i % 100 == 0));
 
 					++$i;
 				}
 			}
 			$db->sql_freeresult($result);
+
+			$no_updates = false;
 
 		break;
 	}
