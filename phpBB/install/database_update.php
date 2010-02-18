@@ -907,8 +907,10 @@ function database_update_info()
 			),
 		),
 
-		// No changes from 3.0.7-RC1 to 3.0.7
+		// No changes from 3.0.7-RC1 to 3.0.7-RC2
 		'3.0.7-RC1'		=> array(),
+		// No changes from 3.0.7-RC2 to 3.0.7
+		'3.0.7-RC2'		=> array(),
 	);
 }
 
@@ -1601,7 +1603,7 @@ function change_database_data(&$no_updates, $version)
 			$no_updates = false;
 		break;
 
-		// Changes from 3.0.7-RC1 to 3.0.7
+		// Changes from 3.0.7-RC1 to 3.0.7-RC2
 		case '3.0.7-RC1':
 
 			$sql = 'SELECT user_id, user_email, user_email_hash
@@ -1633,6 +1635,10 @@ function change_database_data(&$no_updates, $version)
 
 			$no_updates = false;
 
+		break;
+
+		// No changes from 3.0.7-RC2 to 3.0.7
+		case '3.0.7-RC2':
 		break;
 	}
 }
