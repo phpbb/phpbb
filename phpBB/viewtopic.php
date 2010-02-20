@@ -186,6 +186,13 @@ $sql_array = array(
 	'FROM'		=> array(FORUMS_TABLE => 'f'),
 );
 
+// Firebird handles two columns of the same name a little differently, this
+// addresses that by forcing the forum_id to come from the forums table.
+if ($db->sql_layer === 'firebird')
+{
+	$sql_array['SELECT'] = 'f.forum_id AS forum_id, ' . $sql_array['SELECT'];
+}
+
 // The FROM-Order is quite important here, else t.* columns can not be correctly bound.
 if ($post_id)
 {
