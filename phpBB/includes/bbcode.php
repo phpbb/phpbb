@@ -137,7 +137,7 @@ class bbcode
 
 			if (!@file_exists($this->template_filename))
 			{
-				if (isset($template->orig_tpl_inherits_id) && $template->orig_tpl_inherits_id)
+				if (isset($user->theme['template_inherits_id']) && $user->theme['template_inherits_id'])
 				{
 					$this->template_filename = $phpbb_root_path . 'styles/' . $user->theme['template_inherit_path'] . '/template/bbcode.html';
 					if (!@file_exists($this->template_filename))
