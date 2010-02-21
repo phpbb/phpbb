@@ -315,6 +315,7 @@ class acp_bbcodes
 	{
 		$bbcode_match = trim($bbcode_match);
 		$bbcode_tpl = trim($bbcode_tpl);
+		$utf8 = strpos($bbcode_match, 'INTTEXT') !== false;
 
 		$fp_match = preg_quote($bbcode_match, '!');
 		$fp_replace = preg_replace('#^\[(.*?)\]#', '[$1:$uid]', $bbcode_match);
@@ -342,6 +343,9 @@ class acp_bbcodes
 			'SIMPLETEXT' => array(
 				'!([a-zA-Z0-9-+.,_ ]+)!'	 =>	"$1"
 			),
+			'INTTEXT' => array(
+				'!([\p{L}\p{N}+-,_.\s]+)!u'	 =>	"$1"
+			),
 			'IDENTIFIER' => array(
 				'!([a-zA-Z0-9-_]+)!'	 =>	"$1"
 			),
@@ -359,6 +363,7 @@ class acp_bbcodes
 			'EMAIL' => '(' . get_preg_expression('email') . ')',
 			'TEXT' => '(.*?)',
 			'SIMPLETEXT' => '([a-zA-Z0-9-+.,_ ]+)',
+			'INTTEXT' => '([\p{L}\p{N}+-,_.\s]+)',
 			'IDENTIFIER' => '([a-zA-Z0-9-_]+)',
 			'COLOR' => '([a-zA-Z]+|#[0-9abcdefABCDEF]+)',
 			'NUMBER' => '([0-9]+)',
@@ -366,7 +371,8 @@ class acp_bbcodes
 
 		$pad = 0;
 		$modifiers = 'i';
-
+		$modifiers .= ($utf8) ? 'u' : '';
+		
 		if (preg_match_all('/\{(' . implode('|', array_keys($tokens)) . ')[0-9]*\}/i', $bbcode_match, $m))
 		{
 			foreach ($m[0] as $n => $token)
