@@ -3531,7 +3531,7 @@ function msg_handler($errno, $msg_text, $errfile, $errline)
 				}
 			}
 
-			if (defined('DEBUG') || defined('IN_CRON') || defined('IMAGE_OUTPUT'))
+			if ((defined('DEBUG') || defined('IN_CRON') || defined('IMAGE_OUTPUT')) && isset($db))
 			{
 				// let's avoid loops
 				$db->sql_return_on_error(true);
