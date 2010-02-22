@@ -1615,7 +1615,9 @@ function change_database_data(&$no_updates, $version)
 			$i = 0;
 			while ($row = $db->sql_fetchrow($result))
 			{
-				$user_email_hash = phpbb_email_hash($row['user_email']);
+				// Snapshot of the phpbb_email_hash() function
+				// We cannot call it directly because the auto updater updates the DB first. :/
+				$user_email_hash = sprintf('%u', crc32(strtolower($row['user_email']))) . strlen($row['user_email']);
 
 				if ($user_email_hash != $row['user_email_hash'])
 				{
