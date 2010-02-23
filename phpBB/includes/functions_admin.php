@@ -913,7 +913,13 @@ function delete_attachments($mode, $ids, $resync = true)
 {
 	global $db, $config;
 
-	if (is_array($ids) && sizeof($ids))
+	// 0 is as bad as an empty array
+	if (empty($ids))
+	{
+		return false;
+	}
+
+	if (is_array($ids))
 	{
 		$ids = array_unique($ids);
 		$ids = array_map('intval', $ids);
@@ -921,11 +927,6 @@ function delete_attachments($mode, $ids, $resync = true)
 	else
 	{
 		$ids = array((int) $ids);
-	}
-
-	if (!sizeof($ids))
-	{
-		return false;
 	}
 
 	$sql_where = '';
