@@ -1181,7 +1181,19 @@ class BBCodeDiffFormatter extends DiffFormatter
 			$text = implode('', $order_array['find_c']);
 			if ($text === "\n" || $text === "\t" || $text === '')
 			{
-				return true;
+				if (isset($order_array['first_find_c'][0]) &&
+					is_array($order_array['first_find_c'][0]) &&
+					trim(implode('', $order_array['first_find_c'][0])) != '' &&
+					isset($order_array['replace']))
+				{
+					$order_array['add'] = $order_array['replace'];
+					unset($order_array['replace']);
+					// this is actually an after add
+				}
+				else
+				{
+					return true;
+				}
 			}
 		}
 
@@ -1223,16 +1235,40 @@ class BBCodeDiffFormatter extends DiffFormatter
 				$text = implode('', $order_array['find_c']);
 				if ($text === "\n" || $text === "\t" || $text === '')
 				{
-					continue;
+					// no real find, use first_find_c if possible!
+					//var_dump($order_array);
+					if (is_array($order_array['first_find_c'][0]))
+					{
+						$order_array['find_c'] = $order_array['first_find_c'][0];
+					}
+					else
+					{
+						if (isset($order_array['replace']) || isset($order_array['add']) || isset($order_array['delete']))
+						{
+							echo "skipped an edit!\n";
+							var_dump($order_array);
+						}
+						continue;
+					}
 				}
-
-				if (strlen(implode('', $order_array['find_c'])) < 50 && is_array($order_array['first_find_c'][0]))
+				else
 				{
-					$html .= "#\n#-----[ FIND ]---------------------------------------------\n# Around Line {$ybeg}\n";
-					$html .= implode("", $order_array['first_find_c'][0]);
-					$html .= "\n";
-					$ybeg += sizeof($order_array['first_find_c'][0]);
+					if (strlen(implode('', $order_array['find_c'])) < 50 && is_array($order_array['first_find_c'][0]))
+					{
+						$html .= "#\n#-----[ FIND ]---------------------------------------------\n# Around Line {$ybeg}\n";
+						$html .= implode("", $order_array['first_find_c'][0]);
+						$html .= "\n";
+						$ybeg += sizeof($order_array['first_find_c'][0]);
+					}
 				}
+			}
+
+			// still here but nothing to do? what the heck?
+			if (!isset($order_array['replace']) && !isset($order_array['add']) && !isset($order_array['delete']))
+			{
+				echo "skipped an edit!\n";
+				var_dump($order_array);
+				continue;
 			}
 
 			if (sizeof($order_array['find_c']))
@@ -1309,7 +1345,7 @@ class BBCodeDiffFormatter extends DiffFormatter
 			{
 				if (isset($hunk['a']) && isset($hunk['d']))
 				{
-	/*				if (sizeof($hunk['a']) == 1 && sizeof($hunk['d']) == 1)
+	/**/				if (sizeof($hunk['a']) == 1 && sizeof($hunk['d']) == 1)
 					{
 						if (preg_match('/\* @version \$Id:.+\$$/', $hunk['a'][0]) && preg_match('/\* @version \$Id:.+\$$/', $hunk['d'][0]))
 						{
@@ -1318,7 +1354,7 @@ class BBCodeDiffFormatter extends DiffFormatter
 							$reorder = true;
 							continue;
 						}
-					}*/
+					}/**/
 
 					// Compare the add and replace one...
 					$string_1 = rtrim(trim(implode('', $hunk['a'])));
@@ -1349,7 +1385,7 @@ class BBCodeDiffFormatter extends DiffFormatter
 			{
 				if (isset($hunk['a']) && isset($hunk['d']))
 				{
-	/*				if (sizeof($hunk['a']) == 1 && sizeof($hunk['d']) == 1)
+	/**/				if (sizeof($hunk['a']) == 1 && sizeof($hunk['d']) == 1)
 					{
 						if (preg_match('/\* @version \$Id:.+\$$/', $hunk['a'][0]) && preg_match('/\* @version \$Id:.+\$$/', $hunk['d'][0]))
 						{
@@ -1358,7 +1394,7 @@ class BBCodeDiffFormatter extends DiffFormatter
 							$reorder = true;
 							continue;
 						}
-					}*/
+					}/**/
 
 					// Compare the add and replace one...
 					$string_1 = rtrim(trim(implode('', $hunk['a'])));
@@ -1673,5 +1709,3 @@ class MODXDiffFormatter extends BBCodeDiffFormatter
 	{
 	}
 }
-
-?>
