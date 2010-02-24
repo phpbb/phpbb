@@ -11,9 +11,9 @@
 
 // CONFIG - Begin
 $substitute_old = '3.0.6';
-$substitute_new = '3.0.7-RC1';
+$substitute_new = '3.0.7-RC2';
 $simple_name_old = 'phpbb306';
-$simple_name_new = 'phpbb307-RC1';
+$simple_name_new = 'phpbb307-RC2';
 $echo_changes = false;
 // Set this to true to just compress the changes and do not build them again
 // This should be used for building custom modified txt file. ;)
