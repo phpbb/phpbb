@@ -164,6 +164,7 @@
 		<li>[Fix] BBCode parser now uses the user object for all settings rather than taking some from the template object (Bug #57365)</li>
 		<li>[Fix] Ensure a database connection is available before logging general errors. (Bug #57975)</li>
 		<li>[Fix] Do not delete unrelated attachments when deleting empty forums. (Bug #57375)</li>
+		<li>[Fix] Update: Store expected resulting file contents in cache and do not suggest further merges if the contents match, also fixes infinite merge loop (Bug #54075)</li>
 		<li>[Change] Move redirect into a hidden field to avoid issues with mod_security. (Bug #54145)</li>
 		<li>[Change] Log activation through inactive users ACP. (Bug #30145)</li>
 		<li>[Change] Send time of last item instead of current time in ATOM Feeds. (Bug #53305)</li>
