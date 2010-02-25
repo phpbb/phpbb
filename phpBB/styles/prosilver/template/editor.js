@@ -157,7 +157,7 @@ function insert_text(text, spaces, popup)
 		var sel_start = textarea.selectionStart;
 		var sel_end = textarea.selectionEnd;
 
-		mozWrap(textarea, text, '')
+		mozWrap(textarea, text, '');
 		textarea.selectionStart = sel_start + text.length;
 		textarea.selectionEnd = sel_end + text.length;
 	}
@@ -259,7 +259,7 @@ function addquote(post_id, username)
 			var lines = split_lines(theSelection);
 			for (i = 0; i < lines.length; i++)
 			{
-				insert_text('> ' + lines[i] + '\n')
+				insert_text('> ' + lines[i] + '\n');
 			}
 		}
 	}
@@ -289,7 +289,7 @@ function split_lines(text)
 				if (splitAt == -1)
 				{
 					splitLines[j] = line;
-					j++
+					j++;
 				}
 				else
 				{
@@ -298,7 +298,7 @@ function split_lines(text)
 					j++;
 				}
 			}
-			while(splitAt != -1)
+			while(splitAt != -1);
 		}
 	}
 	return splitLines;
@@ -319,7 +319,7 @@ function mozWrap(txtarea, open, close)
 	}
 
 	var s1 = (txtarea.value).substring(0,selStart);
-	var s2 = (txtarea.value).substring(selStart, selEnd)
+	var s2 = (txtarea.value).substring(selStart, selEnd);
 	var s3 = (txtarea.value).substring(selEnd, selLength);
 
 	txtarea.value = s1 + open + s2 + close + s3;
