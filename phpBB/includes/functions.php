@@ -2336,6 +2336,19 @@ function redirect($url, $return = false, $disable_cd_check = false)
 		// Relative uri
 		$pathinfo = pathinfo($url);
 
+		if (!$disable_cd_check && !file_exists($pathinfo['dirname']))
+		{
+			$url = str_replace('../', '', $url);
+			$pathinfo = pathinfo($url);
+
+			if (!file_exists($pathinfo['dirname']))
+			{
+				// fallback to "last known user page"
+				$url = generate_board_url() . '/' . $user->page['page'];
+				break;
+			}
+		}
+
 		// Is the uri pointing to the current directory?
 		if ($pathinfo['dirname'] == '.')
 		{
