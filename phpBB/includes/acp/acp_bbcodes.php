@@ -420,7 +420,7 @@ class acp_bbcodes
 			}
 
 			$fp_match = '!' . $fp_match . '!' . $modifiers;
-			$sp_match = '!' . $sp_match . '!s';
+			$sp_match = '!' . $sp_match . '!s' . (($utf8) ? 'u' : '');
 
 			if (strpos($fp_match, 'e') !== false)
 			{
