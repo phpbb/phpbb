@@ -344,7 +344,7 @@ class acp_bbcodes
 				'!([a-zA-Z0-9-+.,_ ]+)!'	 =>	"$1"
 			),
 			'INTTEXT' => array(
-				'!([\p{L}\p{N}+-,_. ]+)!u'	 =>	"$1"
+				'!([\p{L}\p{N}-+,_. ]+)!u'	 =>	"$1"
 			),
 			'IDENTIFIER' => array(
 				'!([a-zA-Z0-9-_]+)!'	 =>	"$1"
@@ -363,7 +363,7 @@ class acp_bbcodes
 			'EMAIL' => '(' . get_preg_expression('email') . ')',
 			'TEXT' => '(.*?)',
 			'SIMPLETEXT' => '([a-zA-Z0-9-+.,_ ]+)',
-			'INTTEXT' => '([\p{L}\p{N}+-,_. ]+)',
+			'INTTEXT' => '([\p{L}\p{N}-+,_. ]+)',
 			'IDENTIFIER' => '([a-zA-Z0-9-_]+)',
 			'COLOR' => '([a-zA-Z]+|#[0-9abcdefABCDEF]+)',
 			'NUMBER' => '([0-9]+)',
