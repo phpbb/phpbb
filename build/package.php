@@ -518,4 +518,9 @@ foreach ($compress_programs as $extension => $compress_command)
 	$package->run_command('md5sum ./release_files/' . $package->get('release_filename') . '.' . $extension . ' > ./release_files/' . $package->get('release_filename') . '.' . $extension . '.md5');
 }
 
+// verify results
+chdir($package->locations['root']);
+$package->begin_status('********** Verifying packages **********');
+$package->run_command('./compare.sh ' . $package->package_infos['release_filename']);
+
 echo "Done.\n";
