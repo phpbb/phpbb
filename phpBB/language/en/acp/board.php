@@ -85,7 +85,7 @@ $lang = array_merge($lang, array(
 	'ALLOW_SMILIES'				=> 'Allow smilies',
 	'ALLOW_TOPIC_NOTIFY'		=> 'Allow subscribing to topics',
 	'BOARD_PM'					=> 'Private messaging',
-	'BOARD_PM_EXPLAIN'			=> 'Enable or disable private messaging for all users.',
+	'BOARD_PM_EXPLAIN'			=> 'Enable private messaging for all users.',
 ));
 
 // Avatar Settings
