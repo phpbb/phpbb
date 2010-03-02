@@ -166,7 +166,7 @@ if ($quickmod)
 		case 'delete_post':
 		case 'delete_topic':
 			$module->load('mcp', 'main', 'quickmod');
-			exit_handler();
+			exit;
 		break;
 
 		case 'topic_logs':
@@ -390,7 +390,7 @@ function get_topic_data($topic_ids, $acl_list = false, $read_tracking = false)
 
 		$sql = $db->sql_build_query('SELECT', $sql_array);
 		$result = $db->sql_query($sql);
-	
+
 		while ($row = $db->sql_fetchrow($result))
 		{
 			if (!$row['forum_id'])

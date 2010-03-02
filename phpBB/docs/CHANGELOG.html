@@ -53,6 +53,7 @@
 <ol>
 	<li><a href="#changelog">Changelog</a>
 	<ol style="list-style-type: lower-roman;">
+		<li><a href="#v301">Changes since 3.0.1</a></li>
 		<li><a href="#v300">Changes since 3.0.0</a></li>
 		<li><a href="#v30rc8">Changes since RC-8</a></li>
 		<li><a href="#v30rc7">Changes since RC-7</a></li>
@@ -81,7 +82,49 @@
 
 		<div class="content">
 
-	<a name="v300"></a><h3>1.i. Changes since 3.0.0</h3>
+	<a name="v301"></a><h3>1.i. Changes since 3.0.1</h3>
+
+	<ul>
+		<li>[Fix] Ability to set permissions on non-mysql dbms (Bug #24955)</li>
+		<li>[Fix] Fixed blank style on setups having no username defined within config.php (Bug #25065)</li>
+		<li>[Fix] Made the compress_tar class tolerate archives that do not properly have their archived contents listed (Bug #14429 / thanks to JRSweets for his patch)</li>
+		<li>[Fix] Moved topics should not count towards the number of topics in a forum (Bug #14648 / thanks to Schumi for his patch)</li>
+		<li>[Fix] Properly check for invalid characters in MySQL DB prefixes during install (Bug #18775)</li>
+		<li>[Change] Generalize load check (Bug #21255 / thanks to Xipher)</li>
+		<li>[Change] Make utf8_htmlspecialchars not pass its argument by reference (Bug #21885)</li>
+		<li>[Fix] Bring the PostgreSQL backup system back to working order (Bug #22385)</li>
+		<li>[Change] Sort the tables at the database table backup screen</li>
+		<li>[Fix] Update correct theme for cached styles in style.php (Bug #25805)</li>
+		<li>[Fix] Also add PHPBB_INSTALLED check to download/file.php for inline avatar delivery</li>
+		<li>[Fix] Unable to login to some jabber server, reverted previous change (Bug #25095)</li>
+		<li>[Fix] Do not return BMP as valid image type for GD image manipulation (Bug #25925)</li>
+		<li>[Change] For determining the maximum number of private messages in one box, use the biggest value from all groups the user is a member of (Bug #24665)</li>
+		<li>[Fix] Correctly determine safe mode for temp file creation in functions_upload.php (Bug #23525)</li>
+		<li>[Fix] Correctly sort by rank in memberlist (Bug #24435)</li>
+		<li>[Fix] Purge cache after database restore (Bug #24245)</li>
+		<li>[Fix] Correctly display subforum read/unread icons from RTL in FF3, Konqueror and Safari3+. (thanks arod-1 for the fix, related to Bug #14830)</li>
+		<li>[Feature] Added optional referer validation of POST requests as additional CSRF protection.</li>
+		<li>[Fix] Added missing form token in acp (thanks NBBN).</li>
+		<li>[Feature] Added optional stricter upload validation to avoid mime sniffing in addition to the safeguards provided by file.php. (thanks to Nicolas Grekas for compiling the list).</li>
+		<li>[Fix] Do not remove whitespace in front of url containing the boards url and no relative path appended (Bug #27355)</li>
+		<li>[Change] Show email ban reason on registration. Additionally allow custom errors properly returned if using validate_data(). (Bug #26885)</li>
+		<li>[Feature] Streamlined banning via the MCP by adding a ban link to the user profile. Also pre-fills ban fields as far as possible.</li>
+		<li>[Feature] Added ACP logout to reset an admin session.</li>
+		<li>[Fix] reset forum notifications in viewtopic (Bug #28025)</li>
+		<li>[Fix] corrected link for searching post author's other posts (Bug #26455)</li>
+		<li>[Fix] HTTP Authentication supports UTF-8 usernames now (Bug #21135)</li>
+		<li>[Fix] Topic searches by author no longer return invalid results (Bug #11777)</li>
+		<li>[Change] Don't allow redirects to different domains. (thanks nookieman)</li>
+		<li>[Fix] Delete drafts and bookmarks when deleting an user. (#27585, thanks Schumi for the fix)</li>
+		<li>[Fix] Set last_post_subject for new topics. (#23945)</li>
+		<li>[Fix] Allow moving posts to invisible forums. (#27325)</li>
+		<li>[Fix] Don't allow promoting unapproved group members (#16124)</li>
+		<li>[Fix] Correctly fetch server name if using non-standard port (#27395)</li>
+		<li>[Fix] Regular expression for email matching in posts will no longer die on long words.</li>
+		<li>[Sec] Only allow urls gone through redirect() being used within login_box(). (thanks nookieman)</li>
+	</ul>
+
+	<a name="v300"></a><h3>1.ii. Changes since 3.0.0</h3>
 
 	<ul>
 		<li>[Change] Validate birthdays (Bug #15004)</li>
@@ -99,7 +142,7 @@
 		<li>[Fix] Fixing wrong sync() calls if moving all posts by a member in ACP (Bug #18385)</li>
 		<li>[Fix] Check entered imagemagick path for trailing slash (Bug #18205)</li>
 		<li>[Fix] Use proper title on index for new/unread posts (Bug #13101) - patch provided by Pyramide</li>
-		<li>[Fix] Allow calls to $user->set_cookie() define no cookie time for setting session cookies (Bug #18025)</li>
+		<li>[Fix] Allow calls to $user-&gt;set_cookie() define no cookie time for setting session cookies (Bug #18025)</li>
 		<li>[Fix] Stricter checks on smilie packs (Bug #19675)</li>
 		<li>[Fix] Gracefully return from cancelling pm drafts (Bug #19675)</li>
 		<li>[Fix] Possible login problems with IE7 if browser check is activated (Bug #20135)</li>
@@ -152,7 +195,7 @@
 		<li>[Fix] Find and display colliding usernames correctly when converting from one database to another (Bug #23925)</li>
 	</ul>
 
-	<a name="v30rc8"></a><h3>1.i. Changes since 3.0.RC8</h3>
+	<a name="v30rc8"></a><h3>1.iii. Changes since 3.0.RC8</h3>
 
 	<ul>
 		<li>[Fix] Cleaned usernames contain only single spaces, so &quot;a_name&quot; and &quot;a__name&quot; are treated as the same name (Bug #15634)</li>
@@ -161,7 +204,7 @@
 		<li>[Fix] Call garbage_collection() within database updater to correctly close connections (affects Oracle for example)</li>
 	</ul>
 
-	<a name="v30rc7"></a><h3>1.ii. Changes since 3.0.RC7</h3>
+	<a name="v30rc7"></a><h3>1.iv. Changes since 3.0.RC7</h3>
 
 	<ul>
 		<li>[Fix] Fixed MSSQL related bug in the update system</li>
@@ -196,7 +239,7 @@
 		<li>[Fix] No duplication of active topics (Bug #15474)</li>
 	</ul>
 
-	<a name="v30rc6"></a><h3>1.iii. Changes since 3.0.RC6</h3>
+	<a name="v30rc6"></a><h3>1.v. Changes since 3.0.RC6</h3>
 
 	<ul>
 		<li>[Fix] Submitting language changes using acp_language (Bug #14736)</li>
@@ -206,7 +249,7 @@
 		<li>[Fix] Able to request new password (Bug #14743)</li>
 	</ul>
 
-	<a name="v30rc5"></a><h3>1.iv. Changes since 3.0.RC5</h3>
+	<a name="v30rc5"></a><h3>1.vi. Changes since 3.0.RC5</h3>
 
 	<ul>
 		<li>[Feature] Removing constant PHPBB_EMBEDDED in favor of using an exit_handler(); the constant was meant to achive this more or less.</li>
@@ -269,7 +312,7 @@
 		<li>[Sec] New password hashing mechanism for storing passwords (#i42)</li>
 	</ul>
 
-	<a name="v30rc4"></a><h3>1.v. Changes since 3.0.RC4</h3>
+	<a name="v30rc4"></a><h3>1.vii. Changes since 3.0.RC4</h3>
 
 	<ul>
 		<li>[Fix] MySQL, PostgreSQL and SQLite related database fixes (Bug #13862)</li>
@@ -320,7 +363,7 @@
 		<li>[Fix] odbc_autocommit causing existing result sets to be dropped (Bug #14182)</li>
 	</ul>
 
-	<a name="v30rc3"></a><h3>1.vi. Changes since 3.0.RC3</h3>
+	<a name="v30rc3"></a><h3>1.viii. Changes since 3.0.RC3</h3>
 
 	<ul>
 		<li>[Fix] Fixing some subsilver2 and prosilver style issues</li>
@@ -429,7 +472,7 @@
 
 	</ul>
 
-	<a name="v30rc2"></a><h3>1.vii. Changes since 3.0.RC2</h3>
+	<a name="v30rc2"></a><h3>1.ix. Changes since 3.0.RC2</h3>
 
 	<ul>
 		<li>[Fix] Re-allow searching within the memberlist</li>
@@ -471,11 +514,11 @@
 		<li>[Fix] Some jabber related bugs (Bug #12989, #11805, #11809)</li>
 		<li>[Fix] Added UTF-8 support for banning via the MCP (Bug #13013)</li>
 		<li>[Fix] Properly detect the script name in session::extract_current_page() if PHP_SELF is not defined (Bug #12705) - patch provided by ToonArmy</li>
-		<li>[Fix] Show role mask for global permission class under Permissions->Permission Roles (Bug #13057)</li>
+		<li>[Fix] Show role mask for global permission class under Permissions-&gt;Permission Roles (Bug #13057)</li>
 
 	</ul>
 
-	<a name="v30rc1"></a><h3>1.viii. Changes since 3.0.RC1</h3>
+	<a name="v30rc1"></a><h3>1.x. Changes since 3.0.RC1</h3>
 
 	<ul>
 		<li>[Fix] (X)HTML issues within the templates (Bug #11255, #11255)</li>

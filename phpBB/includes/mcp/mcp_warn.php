@@ -170,7 +170,7 @@ class mcp_warn
 				'USERNAME'			=> $row['username'],
 				'USERNAME_COLOUR'	=> ($row['user_colour']) ? '#' . $row['user_colour'] : '',
 				'U_USER'			=> append_sid("{$phpbb_root_path}memberlist.$phpEx", 'mode=viewprofile&amp;u=' . $row['user_id']),
-			
+
 				'WARNING_TIME'	=> $user->format_date($row['user_last_warning']),
 				'WARNINGS'		=> $row['user_warnings'],
 			));
@@ -262,11 +262,11 @@ class mcp_warn
 			}
 			$redirect = append_sid("{$phpbb_root_path}mcp.$phpEx", "i=notes&amp;mode=user_notes&amp;u=$user_id");
 			meta_refresh(2, $redirect);
-			trigger_error($user->lang['USER_WARNING_ADDED'] . '<br /><br />' . sprintf($user->lang['RETURN_PAGE'], '<a href="' . $redirect . '">', '</a>'));
+			trigger_error($msg . '<br /><br />' . sprintf($user->lang['RETURN_PAGE'], '<a href="' . $redirect . '">', '</a>'));
 		}
 
 		// OK, they didn't submit a warning so lets build the page for them to do so
-		
+
 		// We want to make the message available here as a reminder
 		// Parse the message and subject
 		$message = censor_text($user_row['post_text']);

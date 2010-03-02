@@ -148,8 +148,8 @@ function autologin_apache()
 
 	if (!empty($php_auth_user) && !empty($php_auth_pw))
 	{
-		set_var($php_auth_user, $php_auth_user, 'string');
-		set_var($php_auth_pw, $php_auth_pw, 'string');
+		set_var($php_auth_user, $php_auth_user, 'string', true);
+		set_var($php_auth_pw, $php_auth_pw, 'string', true);
 
 		$sql = 'SELECT *
 			FROM ' . USERS_TABLE . "
@@ -233,7 +233,7 @@ function validate_session_apache(&$user)
 	}
 
 	$php_auth_user = '';
-	set_var($php_auth_user, $_SERVER['PHP_AUTH_USER'], 'string');
+	set_var($php_auth_user, $_SERVER['PHP_AUTH_USER'], 'string', true);
 
 	return ($php_auth_user === $user['username']) ? true : false;
 }

@@ -114,8 +114,7 @@ switch ($mode)
 		else
 		{
 			upload_popup();
-			garbage_collection();
-			exit_handler();
+			exit;
 		}
 	break;
 
@@ -146,7 +145,7 @@ if (!$post_data)
 if ($mode == 'popup')
 {
 	upload_popup($post_data['forum_style']);
-	exit_handler();
+	exit;
 }
 
 $user->setup(array('posting', 'mcp', 'viewtopic'), $post_data['forum_style']);
@@ -277,7 +276,7 @@ if ($mode == 'edit' && !$auth->acl_get('m_edit', $forum_id))
 if ($mode == 'delete')
 {
 	handle_post_delete($forum_id, $topic_id, $post_id, $post_data);
-	exit_handler();
+	exit;
 }
 
 // Handle bump mode...
@@ -998,8 +997,6 @@ if ($submit || $preview || $refresh)
 				$data['topic_replies'] = $post_data['topic_replies'];
 			}
 
-			unset($message_parser);
-
 			$redirect_url = submit_post($mode, $post_data['post_subject'], $post_data['username'], $post_data['topic_type'], $poll, $data, $update_message);
 			$post_need_approval = (!$auth->acl_get('f_noapprove', $data['forum_id']) && !$auth->acl_get('m_approve', $data['forum_id'])) ? true : false;
 
@@ -1155,7 +1152,6 @@ if (sizeof($post_data['poll_options']) && $post_data['poll_title'])
 	$message_parser->decode_message();
 	$post_data['poll_options'] = explode("\n", $message_parser->message);
 }
-unset($message_parser);
 
 // MAIN POSTING PAGE BEGINS HERE
 
@@ -1405,6 +1401,9 @@ function upload_popup($forum_style = 0)
 	);
 
 	$template->display('popup');
+
+	garbage_collection();
+	exit_handler();
 }
 
 /**

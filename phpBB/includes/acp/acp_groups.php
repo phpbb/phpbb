@@ -87,24 +87,32 @@ class acp_groups
 
 				// Approve, demote or promote
 				$group_name = ($group_row['group_type'] == GROUP_SPECIAL) ? $user->lang['G_' . $group_row['group_name']] : $group_row['group_name'];
-				group_user_attributes($action, $group_id, $mark_ary, false, $group_name);
-
-				switch ($action)
+				$error = group_user_attributes($action, $group_id, $mark_ary, false, $group_name);
+				
+				if (!$error)
 				{
-					case 'demote':
-						$message = 'GROUP_MODS_DEMOTED';
-					break;
+					switch ($action)
+					{
+						case 'demote':
+							$message = 'GROUP_MODS_DEMOTED';
+						break;
 
-					case 'promote':
-						$message = 'GROUP_MODS_PROMOTED';
-					break;
+						case 'promote':
+							$message = 'GROUP_MODS_PROMOTED';
+						break;
 
-					case 'approve':
-						$message = 'USERS_APPROVED';
-					break;
+						case 'approve':
+							$message = 'USERS_APPROVED';
+						break;
+					}
+
+					trigger_error($user->lang[$message] . adm_back_link($this->u_action . '&amp;action=list&amp;g=' . $group_id));
 				}
-
-				trigger_error($user->lang[$message] . adm_back_link($this->u_action . '&amp;action=list&amp;g=' . $group_id));
+				else
+				{
+					trigger_error($user->lang[$error] . adm_back_link($this->u_action . '&amp;action=list&amp;g=' . $group_id), E_USER_WARNING);
+				}
+				
 			break;
 
 			case 'default':

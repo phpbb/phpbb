@@ -386,7 +386,7 @@ function split_topic($action, $topic_id, $to_forum_id, $subject)
 		return;
 	}
 
-	$redirect = request_var('redirect', build_url(array('_f_', 'quickmod')));
+	$redirect = request_var('redirect', build_url(array('quickmod')));
 
 	$s_hidden_fields = build_hidden_fields(array(
 		'i'				=> 'main',
@@ -550,7 +550,7 @@ function merge_posts($topic_id, $to_topic_id)
 		return;
 	}
 
-	$redirect = request_var('redirect', build_url(array('_f_', 'quickmod')));
+	$redirect = request_var('redirect', build_url(array('quickmod')));
 
 	$s_hidden_fields = build_hidden_fields(array(
 		'i'				=> 'main',

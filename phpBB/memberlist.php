@@ -551,6 +551,8 @@ switch ($mode)
 			'S_CUSTOM_FIELDS'	=> (isset($profile_fields['row']) && sizeof($profile_fields['row'])) ? true : false,
 
 			'U_USER_ADMIN'			=> ($auth->acl_get('a_user')) ? append_sid("{$phpbb_root_path}adm/index.$phpEx", 'i=users&amp;mode=overview&amp;u=' . $user_id, true, $user->session_id) : '',
+			'U_USER_BAN'			=> ($auth->acl_get('m_ban')) ? append_sid("{$phpbb_root_path}mcp.$phpEx", 'i=ban&amp;mode=user&amp;u=' . $user_id, true, $user->session_id) : '',
+
 			'U_SWITCH_PERMISSIONS'	=> ($auth->acl_get('a_switchperm') && $user->data['user_id'] != $user_id) ? append_sid("{$phpbb_root_path}ucp.$phpEx", "mode=switch_perm&amp;u={$user_id}") : '',
 
 			'S_ZEBRA'			=> ($user->data['user_id'] != $user_id && $user->data['is_registered'] && $zebra_enabled) ? true : false,
@@ -896,7 +898,7 @@ switch ($mode)
 		}
 
 		$sort_key_text['m'] = $user->lang['SORT_RANK'];
-		$sort_key_sql['m'] = 'u.user_rank DESC, u.user_posts';
+		$sort_key_sql['m'] = 'u.user_rank';
 
 		$sort_dir_text = array('a' => $user->lang['ASCENDING'], 'd' => $user->lang['DESCENDING']);
 
@@ -1155,6 +1157,12 @@ switch ($mode)
 		}
 
 		$order_by .= $sort_key_sql[$sort_key] . ' ' . (($sort_dir == 'a') ? 'ASC' : 'DESC');
+
+		// Unfortunately we must do this here for sorting by rank, else the sort order is applied wrongly
+		if ($sort_key == 'm')
+		{
+			$order_by .= ', u.user_posts DESC';
+		}
 
 		// Count the users ...
 		if ($sql_where)
@@ -1556,6 +1564,7 @@ function show_profile($data)
 
 		'A_USERNAME'		=> addslashes(get_username_string('username', $user_id, $username, $data['user_colour'])),
 
+		'AVATAR_IMG'		=> get_user_avatar($data['user_avatar'], $data['user_avatar_type'], $data['user_avatar_width'], $data['user_avatar_height']),
 		'ONLINE_IMG'		=> (!$config['load_onlinetrack']) ? '' : (($online) ? $user->img('icon_user_online', 'ONLINE') : $user->img('icon_user_offline', 'OFFLINE')),
 		'S_ONLINE'			=> ($config['load_onlinetrack'] && $online) ? true : false,
 		'RANK_IMG'			=> $rank_img,

@@ -1156,7 +1156,7 @@ class acp_permissions
 		}
 
 		// Not ideal, due to the filesort, non-use of indexes, etc.
-		$sql = 'SELECT DISTINCT u.user_id, u.username
+		$sql = 'SELECT DISTINCT u.user_id, u.username, u.username_clean, u.user_regdate
 			FROM ' . USERS_TABLE . ' u, ' . ACL_USERS_TABLE . " a
 			WHERE u.user_id = a.user_id
 				$sql_forum_id

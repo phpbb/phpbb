@@ -183,7 +183,6 @@ function user_add($user_row, $cp_data = false)
 		'user_dateformat'	=> $config['default_dateformat'],
 		'user_lang'			=> $config['default_lang'],
 		'user_style'		=> (int) $config['default_style'],
-		'user_allow_pm'		=> 1,
 		'user_actkey'		=> '',
 		'user_ip'			=> '',
 		'user_regdate'		=> time(),
@@ -486,7 +485,7 @@ function user_delete($mode, $user_id, $post_username = false)
 		break;
 	}
 
-	$table_ary = array(USERS_TABLE, USER_GROUP_TABLE, TOPICS_WATCH_TABLE, FORUMS_WATCH_TABLE, ACL_USERS_TABLE, TOPICS_TRACK_TABLE, TOPICS_POSTED_TABLE, FORUMS_TRACK_TABLE, PROFILE_FIELDS_DATA_TABLE, MODERATOR_CACHE_TABLE);
+	$table_ary = array(USERS_TABLE, USER_GROUP_TABLE, TOPICS_WATCH_TABLE, FORUMS_WATCH_TABLE, ACL_USERS_TABLE, TOPICS_TRACK_TABLE, TOPICS_POSTED_TABLE, FORUMS_TRACK_TABLE, PROFILE_FIELDS_DATA_TABLE, MODERATOR_CACHE_TABLE, DRAFTS_TABLE, BOOKMARKS_TABLE);
 
 	foreach ($table_ary as $table)
 	{
@@ -1195,6 +1194,8 @@ function user_ipwhois($ip)
 */
 function validate_data($data, $val_ary)
 {
+	global $user;
+
 	$error = array();
 
 	foreach ($val_ary as $var => $val_seq)
@@ -1211,7 +1212,8 @@ function validate_data($data, $val_ary)
 
 			if ($result = call_user_func_array('validate_' . $function, $validate))
 			{
-				$error[] = $result . '_' . strtoupper($var);
+				// Since errors are checked later for their language file existence, we need to make sure custom errors are not adjusted.
+				$error[] = (empty($user->lang[$result . '_' . strtoupper($var)])) ? $result : $result . '_' . strtoupper($var);
 			}
 		}
 	}
@@ -1611,9 +1613,9 @@ function validate_email($email, $allowed_email = false)
 		}
 	}
 
-	if ($user->check_ban(false, false, $email, true) == true)
+	if (($ban_reason = $user->check_ban(false, false, $email, true)) !== false)
 	{
-		return 'EMAIL_BANNED';
+		return ($ban_reason === true) ? 'EMAIL_BANNED' : $ban_reason;
 	}
 
 	if (!$config['allow_emailreuse'])
@@ -1953,7 +1955,7 @@ function avatar_upload($data, &$error)
 
 	// Init upload class
 	include_once($phpbb_root_path . 'includes/functions_upload.' . $phpEx);
-	$upload = new fileupload('AVATAR_', array('jpg', 'jpeg', 'gif', 'png'), $config['avatar_filesize'], $config['avatar_min_width'], $config['avatar_min_height'], $config['avatar_max_width'], $config['avatar_max_height']);
+	$upload = new fileupload('AVATAR_', array('jpg', 'jpeg', 'gif', 'png'), $config['avatar_filesize'], $config['avatar_min_width'], $config['avatar_min_height'], $config['avatar_max_width'], $config['avatar_max_height'], explode('|', $config['mime_triggers']));
 
 	if (!empty($_FILES['uploadfile']['name']))
 	{
@@ -2909,7 +2911,7 @@ function group_user_attributes($action, $group_id, $user_id_ary = false, $userna
 
 	if (!sizeof($user_id_ary) || $result !== false)
 	{
-		return false;
+		return 'NO_USERS';
 	}
 
 	if (!$group_name)
@@ -2921,9 +2923,23 @@ function group_user_attributes($action, $group_id, $user_id_ary = false, $userna
 	{
 		case 'demote':
 		case 'promote':
+		
+			$sql = 'SELECT user_id FROM ' . USER_GROUP_TABLE . "
+				WHERE group_id = $group_id
+					AND user_pending = 1
+					AND " . $db->sql_in_set('user_id', $user_id_ary);
+			$result = $db->sql_query_limit($sql, 1);
+			$not_empty = ($db->sql_fetchrow($result));
+			$db->sql_freeresult($result);
+			if ($not_empty)
+			{
+				return 'NO_VALID_USERS';
+			}
+			
 			$sql = 'UPDATE ' . USER_GROUP_TABLE . '
 				SET group_leader = ' . (($action == 'promote') ? 1 : 0) . "
 				WHERE group_id = $group_id
+					AND user_pending = 0
 					AND " . $db->sql_in_set('user_id', $user_id_ary);
 			$db->sql_query($sql);
 
@@ -3017,7 +3033,7 @@ function group_user_attributes($action, $group_id, $user_id_ary = false, $userna
 
 	group_update_listings($group_id);
 
-	return true;
+	return false;
 }
 
 /**

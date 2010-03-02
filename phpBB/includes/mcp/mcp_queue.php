@@ -74,7 +74,7 @@ class mcp_queue
 
 				$this->tpl_name = 'mcp_post';
 
-				$user->add_lang('posting');
+				$user->add_lang(array('posting', 'viewtopic'));
 
 				$post_id = request_var('p', 0);
 				$topic_id = request_var('t', 0);
@@ -459,7 +459,7 @@ function approve_post($post_id_list, $id, $mode)
 		trigger_error('NOT_AUTHORISED');
 	}
 
-	$redirect = request_var('redirect', build_url(array('_f_', 'quickmod')));
+	$redirect = request_var('redirect', build_url(array('quickmod')));
 	$success_msg = '';
 
 	$s_hidden_fields = build_hidden_fields(array(
@@ -758,7 +758,7 @@ function disapprove_post($post_id_list, $id, $mode)
 		trigger_error('NOT_AUTHORISED');
 	}
 
-	$redirect = request_var('redirect', build_url(array('t', 'mode', '_f_', 'quickmod')) . "&amp;mode=$mode");
+	$redirect = request_var('redirect', build_url(array('t', 'mode', 'quickmod')) . "&amp;mode=$mode");
 	$reason = utf8_normalize_nfc(request_var('reason', '', true));
 	$reason_id = request_var('reason_id', 0);
 	$success_msg = $additional_msg = '';

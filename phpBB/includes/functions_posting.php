@@ -358,6 +358,11 @@ function upload_attachment($form_name, $forum_id, $local = false, $local_storage
 	include_once($phpbb_root_path . 'includes/functions_upload.' . $phpEx);
 	$upload = new fileupload();
 
+	if ($config['check_attachment_content'])
+	{
+		$upload->set_disallowed_content(explode('|', $config['mime_triggers']));
+	}
+	
 	if (!$local)
 	{
 		$filedata['post_attach'] = ($upload->is_valid($form_name)) ? true : false;
@@ -524,6 +529,8 @@ function get_supported_image_types($type = false)
 
 		if ($type !== false)
 		{
+			// Type is one of the IMAGETYPE constants - it is fetched from getimagesize()
+			// We do not use the constants here, because some were not available in PHP 4.3.x
 			switch ($type)
 			{
 				// GIF
@@ -545,8 +552,7 @@ function get_supported_image_types($type = false)
 					$new_type = ($format & IMG_PNG) ? IMG_PNG : false;
 				break;
 
-				// BMP, WBMP
-				case 6:
+				// WBMP
 				case 15:
 					$new_type = ($format & IMG_WBMP) ? IMG_WBMP : false;
 				break;
@@ -1856,6 +1862,7 @@ function submit_post($mode, $subject, $username, $topic_type, &$poll, &$data, $u
 				'topic_last_poster_id'		=> (int) $user->data['user_id'],
 				'topic_last_poster_name'	=> (!$user->data['is_registered'] && $username) ? $username : (($user->data['user_id'] != ANONYMOUS) ? $user->data['username'] : ''),
 				'topic_last_poster_colour'	=> $user->data['user_colour'],
+				'topic_last_post_subject'	=> (string) $subject,
 			);
 		}
 

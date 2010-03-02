@@ -255,7 +255,7 @@ function still_on_time($extra_time = 15)
 
 /**
 *
-* @version Version 0.1 / $Id$
+* @version Version 0.1 / slightly modified for phpBB 3.0.x (using $H$ as hash type identifier)
 *
 * Portable PHP password hashing framework.
 *
@@ -1778,7 +1778,7 @@ function generate_board_url($without_script_path = false)
 
 	if ($server_port && (($config['cookie_secure'] && $server_port <> 443) || (!$config['cookie_secure'] && $server_port <> 80)))
 	{
-		// HTTP HOST can carry a port number...
+		// HTTP HOST can carry a port number (we fetch $user->host, but for old versions this may be true)
 		if (strpos($server_name, ':') === false)
 		{
 			$url .= ':' . $server_port;
@@ -1801,6 +1801,7 @@ function generate_board_url($without_script_path = false)
 
 /**
 * Redirects the user to another page then exits the script nicely
+* This function is intended for urls within the board. It's not meant to redirect to cross-domains.
 */
 function redirect($url, $return = false)
 {
@@ -1829,7 +1830,11 @@ function redirect($url, $return = false)
 	}
 	else if (!empty($url_parts['scheme']) && !empty($url_parts['host']))
 	{
-		// Full URL
+		// Attention: only able to redirect within the same domain (yourdomain.com -> www.yourdomain.com will not work)
+		if ($url_parts['host'] !== $user->host)
+		{
+			$url = generate_board_url();
+		}
 	}
 	else if ($url[0] == '/')
 	{
@@ -2045,11 +2050,14 @@ function meta_refresh($time, $url)
 	global $template;
 
 	$url = redirect($url, true);
+	$url = str_replace('&', '&amp;', $url);
 
 	// For XHTML compatibility we change back & to &amp;
 	$template->assign_vars(array(
-		'META' => '<meta http-equiv="refresh" content="' . $time . ';url=' . str_replace('&', '&amp;', $url) . '" />')
+		'META' => '<meta http-equiv="refresh" content="' . $time . ';url=' . $url . '" />')
 	);
+
+	return $url;
 }
 
 //Form validation
@@ -2331,7 +2339,7 @@ function login_box($redirect = '', $l_explain = '', $l_success = '', $admin = fa
 				return;
 			}
 
-			meta_refresh(3, $redirect);
+			$redirect = meta_refresh(3, $redirect);
 			trigger_error($message . '<br /><br />' . sprintf($l_redirect, '<a href="' . $redirect . '">', '</a>'));
 		}
 
@@ -2771,7 +2779,7 @@ function get_preg_expression($mode)
 	switch ($mode)
 	{
 		case 'email':
-			return '(?:[a-z0-9\'\.\-_\+\|]|&amp;)+@[a-z0-9\-]+\.(?:[a-z0-9\-]+\.)*[a-z]+';
+			return '(?:[a-z0-9\'\.\-_\+\|]++|&amp;)+@[a-z0-9\-]+\.(?:[a-z0-9\-]+\.)*[a-z]+';
 		break;
 
 		case 'bbcode_htm':
@@ -2941,9 +2949,15 @@ function msg_handler($errno, $msg_text, $errfile, $errline)
 			if (strpos($errfile, 'cache') === false && strpos($errfile, 'template.') === false)
 			{
 				// flush the content, else we get a white page if output buffering is on
+				if ((int) @ini_get('output_buffering') === 1 || strtolower(@ini_get('output_buffering')) === 'on')
+				{
+					@ob_flush();
+				}
+
+				// Another quick fix for those having gzip compression enabled, but do not flush if the coder wants to catch "something". ;)
 				if ($config['gzip_compress'])
 				{
-					if (@extension_loaded('zlib') && !headers_sent())
+					if (@extension_loaded('zlib') && !headers_sent() && !ob_get_level())
 					{
 						@ob_flush();
 					}
@@ -3106,16 +3120,16 @@ function msg_handler($errno, $msg_text, $errfile, $errline)
 function obtain_guest_count($forum_id = 0)
 {
 	global $db, $config;
-	
+
 	if ($forum_id)
 	{
 		$reading_sql = ' AND s.session_forum_id = ' . (int) $forum_id;
-	} 
+	}
 	else
 	{
 		$reading_sql = '';
 	}
-	$time = (time() - (intval($config['load_online_time']) * 60)); 
+	$time = (time() - (intval($config['load_online_time']) * 60));
 
 	// Get number of online guests
 
@@ -3141,7 +3155,7 @@ function obtain_guest_count($forum_id = 0)
 	$result = $db->sql_query($sql, 60);
 	$guests_online = (int) $db->sql_fetchfield('num_guests');
 	$db->sql_freeresult($result);
-	
+
 	return $guests_online;
 }
 
@@ -3173,16 +3187,16 @@ function obtain_users_online($forum_id = 0)
 	{
 		$online_users['guests_online'] = obtain_guest_count($forum_id);
 	}
-	
+
 	// a little discrete magic to cache this for 30 seconds
-	$time = (time() - (intval($config['load_online_time']) * 60)); 
+	$time = (time() - (intval($config['load_online_time']) * 60));
 
 	$sql = 'SELECT s.session_user_id, s.session_ip, s.session_viewonline
 		FROM ' . SESSIONS_TABLE . ' s
 		WHERE s.session_time >= ' . ($time - ((int) ($time % 30))) .
 			$reading_sql .
 		' AND s.session_user_id <> ' . ANONYMOUS;
-	$result = $db->sql_query($sql, 30); 
+	$result = $db->sql_query($sql);
 
 	while ($row = $db->sql_fetchrow($result))
 	{
@@ -3203,7 +3217,7 @@ function obtain_users_online($forum_id = 0)
 	}
 	$online_users['total_online'] = $online_users['guests_online'] + $online_users['visible_online'] + $online_users['hidden_online'];
 	$db->sql_freeresult($result);
-	
+
 	return $online_users;
 }
 
@@ -3652,7 +3666,7 @@ function garbage_collection()
 */
 function exit_handler()
 {
-	global $phpbb_hook;
+	global $phpbb_hook, $config;
 
 	if (!empty($phpbb_hook) && $phpbb_hook->call_hook(__FUNCTION__))
 	{
@@ -3663,7 +3677,7 @@ function exit_handler()
 	}
 
 	// As a pre-caution... some setups display a blank page if the flush() is not there.
-	@flush();
+	(!$config['gzip_compress']) ? @flush() : @ob_flush();
 
 	exit;
 }

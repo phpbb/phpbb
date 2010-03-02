@@ -68,7 +68,7 @@ class session
 
 		foreach ($args as $key => $argument)
 		{
-			if (strpos($argument, 'sid=') === 0 || strpos($argument, '_f_=') === 0)
+			if (strpos($argument, 'sid=') === 0)
 			{
 				continue;
 			}
@@ -158,8 +158,16 @@ class session
 		$this->cookie_data			= array('u' => 0, 'k' => '');
 		$this->update_session_page	= $update_session_page;
 		$this->browser				= (!empty($_SERVER['HTTP_USER_AGENT'])) ? htmlspecialchars((string) $_SERVER['HTTP_USER_AGENT']) : '';
+		$this->referer				= (!empty($_SERVER['HTTP_REFERER'])) ? htmlspecialchars((string) $_SERVER['HTTP_REFERER']) : '';
 		$this->forwarded_for		= (!empty($_SERVER['HTTP_X_FORWARDED_FOR'])) ? (string) $_SERVER['HTTP_X_FORWARDED_FOR'] : '';
 		$this->host					= (!empty($_SERVER['HTTP_HOST'])) ? (string) strtolower($_SERVER['HTTP_HOST']) : ((!empty($_SERVER['SERVER_NAME'])) ? $_SERVER['SERVER_NAME'] : getenv('SERVER_NAME'));
+
+		// Since HTTP_HOST may carry a port definition, we need to remove it here...
+		if (strpos($this->host, ':') !== false)
+		{
+			$this->host = substr($this->host, 0, strpos($this->host, ':'));
+		}
+
 		$this->page					= $this->extract_current_page($phpbb_root_path);
 
 		// if the forwarded for header shall be checked we have to validate its contents
@@ -217,9 +225,9 @@ class session
 		// Load limit check (if applicable)
 		if ($config['limit_load'] || $config['limit_search_load'])
 		{
-			if ($load = @file_get_contents('/proc/loadavg'))
+			if ((function_exists('sys_getloadavg') && $load = sys_getloadavg()) || ($load = explode(' ', @file_get_contents('/proc/loadavg'))))
 			{
-				$this->load = array_slice(explode(' ', $load), 0, 1);
+				$this->load = array_slice($load, 0, 1);
 				$this->load = floatval($this->load[0]);
 			}
 			else
@@ -264,7 +272,18 @@ class session
 				$s_forwarded_for = ($config['forwarded_for_check']) ? substr($this->data['session_forwarded_for'], 0, 254) : '';
 				$u_forwarded_for = ($config['forwarded_for_check']) ? substr($this->forwarded_for, 0, 254) : '';
 
-				if ($u_ip === $s_ip && $s_browser === $u_browser && $s_forwarded_for === $u_forwarded_for)
+				// referer checks
+				// The @ before $config['referer_validation'] suppresses notices present while running the updater
+				$check_referer_path = (@$config['referer_validation'] == REFERER_VALIDATE_PATH);
+				$referer_valid = true;
+
+				// we assume HEAD and TRACE to be foul play and thus only whitelist GET
+				if (@$config['referer_validation'] && isset($_SERVER['REQUEST_METHOD']) && strtolower($_SERVER['REQUEST_METHOD']) !== 'get')
+				{
+					$referer_valid = $this->validate_referer($check_referer_path);
+				}
+
+				if ($u_ip === $s_ip && $s_browser === $u_browser && $s_forwarded_for === $u_forwarded_for && $referer_valid)
 				{
 					$session_expired = false;
 
@@ -343,7 +362,14 @@ class session
 					// Added logging temporarly to help debug bugs...
 					if (defined('DEBUG_EXTRA') && $this->data['user_id'] != ANONYMOUS)
 					{
-						add_log('critical', 'LOG_IP_BROWSER_FORWARDED_CHECK', $u_ip, $s_ip, $u_browser, $s_browser, htmlspecialchars($u_forwarded_for), htmlspecialchars($s_forwarded_for));
+						if ($referer_valid)
+						{
+							add_log('critical', 'LOG_IP_BROWSER_FORWARDED_CHECK', $u_ip, $s_ip, $u_browser, $s_browser, htmlspecialchars($u_forwarded_for), htmlspecialchars($s_forwarded_for));
+						}
+						else
+						{
+							add_log('critical', 'LOG_REFERER_INVALID', $this->referer);
+						}
 					}
 				}
 			}
@@ -1101,7 +1127,7 @@ class session
 			trigger_error($message);
 		}
 
-		return ($banned) ? true : false;
+		return ($banned && $ban_row['ban_give_reason']) ? $ban_row['ban_give_reason'] : $banned;
 	}
 
 	/**
@@ -1278,6 +1304,55 @@ class session
 		{
 			$this->set_login_key($user_id);
 		}
+	}
+
+
+	/**
+	* Check if the request originated from the same page.
+	* @param bool $check_script_path If true, the path will be checked as well
+	*/
+	function validate_referer($check_script_path = false)
+	{
+		// no referer - nothing to validate, user's fault for turning it off (we only check on POST; so meta can't be the reason)
+		if (empty($this->referer) || empty($this->host) )
+		{
+			return true;
+		}
+
+		$host = htmlspecialchars($this->host);
+		$ref = substr($this->referer, strpos($this->referer, '://') + 3);
+
+		if (!(stripos($ref , $host) === 0))
+		{
+			return false;
+		}
+		else if ($check_script_path && rtrim($this->page['root_script_path'], '/') !== '')
+		{
+			$ref = substr($ref, strlen($host));
+			$server_port = (!empty($_SERVER['SERVER_PORT'])) ? (int) $_SERVER['SERVER_PORT'] : (int) getenv('SERVER_PORT');
+
+			if ($server_port !== 80 && $server_port !== 443 && stripos($ref, ":$server_port") === 0)
+			{
+				$ref = substr($ref, strlen(":$server_port"));
+			}
+
+			if (!(stripos(rtrim($ref, '/'), rtrim($this->page['root_script_path'], '/')) === 0))
+			{
+				return false;
+			}
+		}
+
+		return true;
+	}
+
+
+	function unset_admin()
+	{
+		global $db;
+		$sql = 'UPDATE ' . SESSIONS_TABLE . '
+			SET session_admin = 0
+			WHERE session_id = \'' . $db->sql_escape($this->session_id) . '\'';
+		$db->sql_query($sql);
 	}
 }
 

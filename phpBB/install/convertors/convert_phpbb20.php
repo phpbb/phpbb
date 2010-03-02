@@ -31,8 +31,8 @@ unset($dbpasswd);
 */
 $convertor_data = array(
 	'forum_name'	=> 'phpBB 2.0.x',
-	'version'		=> '1.0.1',
-	'phpbb_version'	=> '3.0.1',
+	'version'		=> '1.0.2',
+	'phpbb_version'	=> '3.0.2',
 	'author'		=> '<a href="http://www.phpbb.com/">phpBB Group</a>',
 	'dbms'			=> $dbms,
 	'dbhost'		=> $dbhost,
@@ -191,7 +191,7 @@ if (!$get_info)
 	{
 		$src_db->sql_freeresult($result);
 	}
-	
+
 
 	/**
 	* Tests for further MODs can be included here.
@@ -265,7 +265,7 @@ if (!$get_info)
 *								- empty string == execute nothing
 *								- string == function to execute
 *								- array == complex execution instructions
-*		
+*
 *		Complex execution instructions:
 *		@todo test complex execution instructions - in theory they will work fine
 *
@@ -307,7 +307,7 @@ if (!$get_info)
 			array('target', $convert->truncate_statement . SEARCH_WORDMATCH_TABLE),
 			array('target', $convert->truncate_statement . LOG_TABLE),
 		),
-		
+
 //	with this you are able to import all attachment files on the fly. For large boards this is not an option, therefore commented out by default.
 //	Instead every file gets copied while processing the corresponding attachment entry.
 //		if (defined("MOD_ATTACHMENT")) { import_attachment_files(); phpbb_copy_thumbnails(); }
@@ -489,7 +489,7 @@ if (!$get_info)
 				array('poll_max_options',		1,									''),
 				array('poll_vote_change',		0,									''),
 
-				'left_join'		=>	array (	'topics LEFT JOIN vote_desc ON topics.topic_id = vote_desc.topic_id AND topics.topic_vote = 1', 
+				'left_join'		=>	array (	'topics LEFT JOIN vote_desc ON topics.topic_id = vote_desc.topic_id AND topics.topic_vote = 1',
 											'topics LEFT JOIN posts ON topics.topic_last_post_id = posts.post_id',
 									),
 				'where'			=> 'topics.topic_moved_id = 0',
@@ -687,7 +687,7 @@ if (!$get_info)
 				array('user_id',				'users.user_id',						'phpbb_user_id'),
 				array('folder_name',			$user->lang['CONV_SAVED_MESSAGES'],		''),
 				array('pm_count',				0,										''),
-			
+
 				'where'			=> 'users.user_id <> -1',
 			),
 
@@ -711,7 +711,7 @@ if (!$get_info)
 				'where'			=> 'privmsgs.privmsgs_id = privmsgs_text.privmsgs_text_id
 										AND (privmsgs.privmsgs_type = 0 OR privmsgs.privmsgs_type = 1 OR privmsgs.privmsgs_type = 5)',
 			),
-			
+
 			// Outbox
 			array(
 				'target'		=> PRIVMSGS_TO_TABLE,

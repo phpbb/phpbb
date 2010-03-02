@@ -132,6 +132,7 @@ $lang = array_merge($lang, array(
 
 	'USERNAME_BEGINS_WITH'	=> 'Username begins with',
 	'USER_ADMIN'			=> 'Administrate user',
+	'USER_BAN'				=> 'Banning',
 	'USER_FORUM'			=> 'User statistics',
 	'USER_ONLINE'			=> 'Online',
 	'USER_PRESENCE'			=> 'Board presence',

@@ -20,7 +20,7 @@ error_reporting(E_ALL ^ E_NOTICE);
 
 require($phpbb_root_path . 'config.' . $phpEx);
 
-if (!defined('PHPBB_INSTALLED') || empty($dbms) || !isset($dbhost) || !isset($dbpasswd) || empty($dbuser))
+if (!defined('PHPBB_INSTALLED') || empty($dbms) || empty($acm_type))
 {
 	exit;
 }
@@ -57,11 +57,6 @@ if (strspn($sid, 'abcdefABCDEF0123456789') !== strlen($sid))
 // server a little
 if ($id)
 {
-	if (empty($acm_type) || empty($dbms))
-	{
-		die('Hacking attempt');
-	}
-
 	// Include files
 	require($phpbb_root_path . 'includes/acm/acm_' . $acm_type . '.' . $phpEx);
 	require($phpbb_root_path . 'includes/cache.' . $phpEx);
@@ -100,7 +95,7 @@ if ($id)
 		$user		= array('user_id' => ANONYMOUS);
 	}
 
-	$sql = 'SELECT s.style_id, c.theme_data, c.theme_path, c.theme_name, c.theme_mtime, i.*, t.template_path
+	$sql = 'SELECT s.style_id, c.theme_id, c.theme_data, c.theme_path, c.theme_name, c.theme_mtime, i.*, t.template_path
 		FROM ' . STYLES_TABLE . ' s, ' . STYLES_TEMPLATE_TABLE . ' t, ' . STYLES_THEME_TABLE . ' c, ' . STYLES_IMAGESET_TABLE . ' i
 		WHERE s.style_id = ' . $id . '
 			AND t.template_id = s.template_id
@@ -198,7 +193,7 @@ if ($id)
 		);
 
 		$sql = 'UPDATE ' . STYLES_THEME_TABLE . ' SET ' . $db->sql_build_array('UPDATE', $sql_ary) . "
-			WHERE theme_id = $id";
+			WHERE theme_id = {$theme['theme_id']}";
 		$db->sql_query($sql);
 
 		$cache->destroy('sql', STYLES_THEME_TABLE);

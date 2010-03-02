@@ -117,7 +117,9 @@ class acp_attachments
 						'max_attachments_pm'	=> array('lang' => 'MAX_ATTACHMENTS_PM',	'validate' => 'int',	'type' => 'text:3:3', 'explain' => false),
 						'secure_downloads'		=> array('lang' => 'SECURE_DOWNLOADS',		'validate' => 'bool',	'type' => 'radio:yes_no', 'explain' => true),
 						'secure_allow_deny'		=> array('lang' => 'SECURE_ALLOW_DENY',		'validate' => 'int',	'type' => 'custom', 'method' => 'select_allow_deny', 'explain' => true),
-						'secure_allow_empty_referer' => array('lang' => 'SECURE_EMPTY_REFERRER', 'validate' => 'bool',	'type' => 'radio:yes_no', 'explain' => true),
+						'secure_allow_empty_referer'	=> array('lang' => 'SECURE_EMPTY_REFERRER', 'validate' => 'bool',	'type' => 'radio:yes_no', 'explain' => true),
+						'check_attachment_content' 		=> array('lang' => 'CHECK_CONTENT', 'validate' => 'bool',	'type' => 'radio:yes_no', 'explain' => true),
+
 
 						'legend2'					=> $l_legend_cat_images,
 						'img_display_inlined'		=> array('lang' => 'DISPLAY_INLINED',		'validate' => 'bool',	'type' => 'radio:yes_no', 'explain' => true),
@@ -156,7 +158,7 @@ class acp_attachments
 					if (in_array($config_name, array('attachment_quota', 'max_filesize', 'max_filesize_pm')))
 					{
 						$size_var = request_var($config_name, '');
-						$this->new_config[$config_name] = $config_value = ($size_var == 'kb') ? ($config_value << 10) : (($size_var == 'mb') ? ($config_value << 20) : $config_value);
+						$this->new_config[$config_name] = $config_value = ($size_var == 'kb') ? round($config_value * 1024) : (($size_var == 'mb') ? round($config_value * 1048576) : $config_value);
 					}
 
 					if ($submit)
@@ -277,13 +279,19 @@ class acp_attachments
 					{
 						$l_explain = (isset($user->lang[$vars['lang'] . '_EXPLAIN'])) ? $user->lang[$vars['lang'] . '_EXPLAIN'] : '';
 					}
+					
+					$content = build_cfg_template($type, $config_key, $this->new_config, $config_key, $vars);
+					if (empty($content))
+					{
+						continue;
+					}
 
 					$template->assign_block_vars('options', array(
 						'KEY'			=> $config_key,
 						'TITLE'			=> $user->lang[$vars['lang']],
 						'S_EXPLAIN'		=> $vars['explain'],
 						'TITLE_EXPLAIN'	=> $l_explain,
-						'CONTENT'		=> build_cfg_template($type, $config_key, $this->new_config, $config_key, $vars),
+						'CONTENT'		=> $content,
 						)
 					);
 
@@ -504,7 +512,7 @@ class acp_attachments
 						$allowed_forums	= request_var('allowed_forums', array(0));
 						$allow_in_pm	= (isset($_POST['allow_in_pm'])) ? true : false;
 						$max_filesize	= request_var('max_filesize', 0);
-						$max_filesize	= ($size_select == 'kb') ? ($max_filesize << 10) : (($size_select == 'mb') ? ($max_filesize << 20) : $max_filesize);
+						$max_filesize	= ($size_select == 'kb') ? round($max_filesize * 1024) : (($size_select == 'mb') ? round($max_filesize * 1048576) : $max_filesize);
 						$allow_group	= (isset($_POST['allow_group'])) ? true : false;
 
 						if ($max_filesize == $config['max_filesize'])

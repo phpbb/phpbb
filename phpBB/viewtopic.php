@@ -451,9 +451,16 @@ $s_watching_topic = array(
 	'is_watching'	=> false,
 );
 
-if ($config['email_enable'] && $config['allow_topic_notify'] && $user->data['is_registered'])
+if (($config['email_enable'] || $config['jab_enable']) && $config['allow_topic_notify'] && $user->data['is_registered'])
 {
 	watch_topic_forum('topic', $s_watching_topic, $user->data['user_id'], $forum_id, $topic_id, $topic_data['notify_status'], $start);
+
+	// Reset forum notification if forum notify is set
+	if ($config['allow_forum_notify'] && $auth->acl_get('f_subscribe', $forum_id))
+	{
+		$s_watching_forum = $s_watching_topic;
+		watch_topic_forum('forum', $s_watching_forum, $user->data['user_id'], $forum_id, 0);
+	}
 }
 
 // Bookmarks
@@ -1003,7 +1010,6 @@ while ($row = $db->sql_fetchrow($result))
 				'rank_image'		=> '',
 				'rank_image_src'	=> '',
 				'sig'				=> '',
-				'posts'				=> '',
 				'profile'			=> '',
 				'pm'				=> '',
 				'email'				=> '',
@@ -1066,7 +1072,7 @@ while ($row = $db->sql_fetchrow($result))
 				'msn'			=> ($row['user_msnm'] && $auth->acl_get('u_sendim')) ? append_sid("{$phpbb_root_path}memberlist.$phpEx", "mode=contact&amp;action=msnm&amp;u=$poster_id") : '',
 				'yim'			=> ($row['user_yim']) ? 'http://edit.yahoo.com/config/send_webmesg?.target=' . urlencode($row['user_yim']) . '&amp;.src=pg' : '',
 				'jabber'		=> ($row['user_jabber'] && $auth->acl_get('u_sendim')) ? append_sid("{$phpbb_root_path}memberlist.$phpEx", "mode=contact&amp;action=jabber&amp;u=$poster_id") : '',
-				'search'		=> ($auth->acl_get('u_search')) ? append_sid("{$phpbb_root_path}search.$phpEx", 'search_author=' . urlencode($row['username']) .'&amp;showresults=posts') : '',
+				'search'		=> ($auth->acl_get('u_search')) ? append_sid("{$phpbb_root_path}search.$phpEx", 'search_author=' . urlencode($row['username']) .'&amp;sr=posts') : '',
 			);
 
 			get_user_rank($row['user_rank'], $row['user_posts'], $user_cache[$poster_id]['rank_title'], $user_cache[$poster_id]['rank_image'], $user_cache[$poster_id]['rank_image_src']);
