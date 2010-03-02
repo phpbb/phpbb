@@ -131,13 +131,13 @@ $result = $db->sql_query($sql);
 $post_data = $db->sql_fetchrow($result);
 $db->sql_freeresult($result);
 
-$user->setup(array('posting', 'mcp', 'viewtopic'), $post_data['forum_style']);
-
 if ($mode == 'popup')
 {
 	upload_popup($post_data['forum_style']);
 	exit;
 }
+
+$user->setup(array('posting', 'mcp', 'viewtopic'), $post_data['forum_style']);
 
 // Use post_row values in favor of submitted ones...
 $forum_id	= (!empty($post_data['forum_id'])) ? (int) $post_data['forum_id'] : (int) $forum_id;
@@ -167,9 +167,51 @@ if (!$auth->acl_get('f_read', $forum_id))
 }
 
 // Permission to do the action asked?
-$check_auth = ($mode == 'quote') ? 'reply' : $mode;
-if (!$auth->acl_get('f_' . $check_auth, $forum_id))
+$is_authed = false;
+
+switch ($mode)
 {
+	case 'post':
+		if ($auth->acl_get('f_post', $forum_id))
+		{
+			$is_authed = true;
+		}
+	break;
+
+	case 'bump':
+		if ($auth->acl_get('f_bump', $forum_id))
+		{
+			$is_authed = true;
+		}
+	break;
+
+	case 'quote':
+	case 'reply':
+		if ($auth->acl_get('f_reply', $forum_id))
+		{
+			$is_authed = true;
+		}
+	break;
+
+	case 'edit':
+		if ($user->data['is_registered'] && $auth->acl_gets('f_edit', 'm_edit', $forum_id))
+		{
+			$is_authed = true;
+		}
+	break;
+
+	case 'delete':
+		if ($user->data['is_registered'] && $auth->acl_gets('f_delete', 'm_delete', $forum_id))
+		{
+			$is_authed = true;
+		}
+	break;
+}
+
+if (!$is_authed)
+{
+	$check_auth = ($mode == 'quote') ? 'reply' : $mode;
+
 	if ($user->data['is_registered'])
 	{
 		trigger_error('USER_CANNOT_' . strtoupper($check_auth));
@@ -199,7 +241,7 @@ if ($mode == 'edit' && !$auth->acl_get('m_edit', $forum_id))
 		trigger_error('USER_CANNOT_EDIT');
 	}
 
-	if (!($post_data['post_time'] > time() - $config['edit_time'] || !$config['edit_time']))
+	if (!($post_data['post_time'] > time() - ($config['edit_time'] * 60) || !$config['edit_time']))
 	{
 		trigger_error('CANNOT_EDIT_TIME');
 	}
@@ -316,7 +358,7 @@ $message_parser->get_submitted_attachment_data($post_data['poster_id']);
 if ($post_data['post_attachment'] && !$submit && !$refresh && !$preview && $mode == 'edit')
 {
 	// Do not change to SELECT *
-	$sql = 'SELECT attach_id, physical_filename, comment, real_filename, extension, mimetype, filesize, filetime, thumbnail
+	$sql = 'SELECT attach_id, physical_filename, attach_comment, real_filename, extension, mimetype, filesize, filetime, thumbnail
 		FROM ' . ATTACHMENTS_TABLE . "
 		WHERE post_msg_id = $post_id
 			AND in_message = 0
@@ -485,7 +527,7 @@ if ($submit || $preview || $refresh)
 
 	$message_parser->message = request_var('message', '', true);
 
-	$post_data['username']			= request_var('username', $post_data['username'], true);
+	$post_data['username']			= request_var('username', $post_data['username']);
 	$post_data['post_edit_reason']	= (!empty($_POST['edit_reason']) && $mode == 'edit' && $auth->acl_get('m_edit', $forum_id)) ? request_var('edit_reason', '', true) : '';
 
 	$post_data['topic_type']		= request_var('topic_type', (($mode != 'post') ? (int) $post_data['topic_type'] : POST_NORMAL));
@@ -524,25 +566,13 @@ if ($submit || $preview || $refresh)
 	if ($poll_delete && $mode == 'edit' && sizeof($post_data['poll_options']) && 
 		((!$post_data['poll_last_vote'] && $post_data['poster_id'] == $user->data['user_id'] && $auth->acl_get('f_delete', $forum_id)) || $auth->acl_get('m_delete', $forum_id)))
 	{
-		switch (SQL_LAYER)
-		{
-			case 'mysql4':
-			case 'mysqli':
-				$sql = 'DELETE FROM ' . POLL_OPTIONS_TABLE . ', ' . POLL_VOTES_TABLE . "
-					WHERE topic_id = $topic_id";
-				$db->sql_query($sql);
-			break;
+		$sql = 'DELETE FROM ' . POLL_OPTIONS_TABLE . "
+			WHERE topic_id = $topic_id";
+		$db->sql_query($sql);
 
-			default:
-				$sql = 'DELETE FROM ' . POLL_OPTIONS_TABLE . "
-					WHERE topic_id = $topic_id";
-				$db->sql_query($sql);
-
-				$sql = 'DELETE FROM ' . POLL_VOTES_TABLE . "
-					WHERE topic_id = $topic_id";
-				$db->sql_query($sql);
-			break;
-		}
+		$sql = 'DELETE FROM ' . POLL_VOTES_TABLE . "
+			WHERE topic_id = $topic_id";
+		$db->sql_query($sql);
 		
 		$topic_sql = array(
 			'poll_title'		=> '',
@@ -575,13 +605,17 @@ if ($submit || $preview || $refresh)
 	// notify and show user the post made between his request and the final submit
 	if (($mode == 'reply' || $mode == 'quote') && $post_data['topic_cur_post_id'] && $post_data['topic_cur_post_id'] != $post_data['topic_last_post_id'])
 	{
-		if (topic_review($topic_id, $forum_id, 'post_review', $post_data['topic_cur_post_id']))
+		// Only do so if it is allowed forum-wide
+		if ($post_data['forum_flags'] & 32)
 		{
-			$template->assign_var('S_POST_REVIEW', true);
-		}
+			if (topic_review($topic_id, $forum_id, 'post_review', $post_data['topic_cur_post_id']))
+			{
+				$template->assign_var('S_POST_REVIEW', true);
+			}
 
-		$submit = false;
-		$refresh = true;
+			$submit = false;
+			$refresh = true;
+		}
 	}
 
 	// Parse Attachments - before checksum is calculated
@@ -834,7 +868,7 @@ if ($submit || $preview || $refresh)
 				'notify_set'			=> $post_data['notify_set'],
 				'poster_ip'				=> (isset($post_data['poster_ip'])) ? $post_data['poster_ip'] : $user->ip,
 				'post_edit_locked'		=> (int) $post_data['post_edit_locked'],
-				'bbcode_bitfield'		=> (int) $message_parser->bbcode_bitfield,
+				'bbcode_bitfield'		=> $message_parser->bbcode_bitfield,
 				'bbcode_uid'			=> $message_parser->bbcode_uid,
 				'message'				=> $message_parser->message,
 				'attachment_data'		=> $message_parser->attachment_data,
@@ -1020,7 +1054,7 @@ $lock_topic_checked	= (isset($topic_lock)) ? $topic_lock : (($post_data['topic_s
 $lock_post_checked	= (isset($post_lock)) ? $post_lock : $post_data['post_edit_locked'];
 
 // If in edit mode, and the user is not the poster, we do not take the notification into account
-$notify_checked		= (isset($notify)) ? $notify : (($mode != 'edit') ? $user->data['user_notify'] : $post_data['notify_set']);
+$notify_checked		= (isset($notify)) ? $notify : (($mode == 'post') ? $user->data['user_notify'] : $post_data['notify_set']);
 
 // Page title & action URL, include session_id for security purpose
 $s_action = append_sid("{$phpbb_root_path}posting.$phpEx", "mode=$mode&amp;f=$forum_id", true, $user->session_id);
@@ -1091,8 +1125,8 @@ $template->assign_vars(array(
 	'L_MESSAGE_BODY_EXPLAIN'	=> (intval($config['max_post_chars'])) ? sprintf($user->lang['MESSAGE_BODY_EXPLAIN'], intval($config['max_post_chars'])) : '',
 
 	'FORUM_NAME'			=> $post_data['forum_name'],
-	'FORUM_DESC'			=> ($post_data['forum_desc']) ? generate_text_for_display($post_data['forum_desc'], $post_data['forum_desc_uid'], $post_data['forum_desc_bitfield']) : '',
-	'TOPIC_TITLE'			=> $post_data['topic_title'],
+	'FORUM_DESC'			=> ($post_data['forum_desc']) ? generate_text_for_display($post_data['forum_desc'], $post_data['forum_desc_uid'], $post_data['forum_desc_bitfield'], $post_data['forum_desc_options']) : '',
+	'TOPIC_TITLE'			=> censor_text($post_data['topic_title']),
 	'MODERATORS'			=> (sizeof($moderators)) ? implode(', ', $moderators[$forum_id]) : '',
 	'USERNAME'				=> ((!$preview && $mode != 'quote') || $preview) ? $post_data['username'] : '',
 	'SUBJECT'				=> $post_data['post_subject'],
@@ -1101,7 +1135,7 @@ $template->assign_vars(array(
 	'IMG_STATUS'			=> ($img_status) ? $user->lang['IMAGES_ARE_ON'] : $user->lang['IMAGES_ARE_OFF'],
 	'FLASH_STATUS'			=> ($flash_status) ? $user->lang['FLASH_IS_ON'] : $user->lang['FLASH_IS_OFF'],
 	'SMILIES_STATUS'		=> ($smilies_status) ? $user->lang['SMILIES_ARE_ON'] : $user->lang['SMILIES_ARE_OFF'],
-	'MINI_POST_IMG'			=> $user->img('icon_post', $user->lang['POST']),
+	'MINI_POST_IMG'			=> $user->img('icon_post_target', $user->lang['POST']),
 	'POST_DATE'				=> ($post_data['post_time']) ? $user->format_date($post_data['post_time']) : '',
 	'ERROR'					=> (sizeof($error)) ? implode('<br />', $error) : '',
 	'TOPIC_TIME_LIMIT'		=> (int) $post_data['topic_time_limit'],
@@ -1145,23 +1179,7 @@ $template->assign_vars(array(
 );
 
 // Build custom bbcodes array
-$sql = 'SELECT bbcode_id, bbcode_tag 
-	FROM ' . BBCODES_TABLE . '
-	WHERE display_on_posting = 1';
-$result = $db->sql_query($sql);
-
-$i = 0;
-while ($row = $db->sql_fetchrow($result))
-{
-	$template->assign_block_vars('custom_tags', array(
-		'BBCODE_NAME'	=> "'[{$row['bbcode_tag']}]', '[/" . str_replace('=', '', $row['bbcode_tag']) . "]'",
-		'BBCODE_ID'		=> 22 + ($i * 2),
-		'BBCODE_TAG'	=> $row['bbcode_tag'])
-	);
-
-	$i++;
-}
-$db->sql_freeresult($result);
+display_custom_bbcodes();
 
 // Poll entry
 if (($mode == 'post' || ($mode == 'edit' && $post_id == $post_data['topic_first_post_id'] && (!$post_data['poll_last_vote'] || $auth->acl_get('m_edit', $forum_id))))
@@ -1218,14 +1236,14 @@ function upload_popup($forum_style = 0)
 
 	($forum_style) ? $user->setup('posting', $forum_style) : $user->setup('posting');
 
-	page_header('PROGRESS_BAR');
+	page_header($user->lang['PROGRESS_BAR']);
 
 	$template->set_filenames(array(
 		'popup'	=> 'posting_progress_bar.html')
 	);
 
 	$template->assign_vars(array(
-		'PROGRESS_BAR'	=> $user->img('attach_progress_bar', $user->lang['UPLOAD_IN_PROGRESS']))
+		'PROGRESS_BAR'	=> $user->img('upload_bar', $user->lang['UPLOAD_IN_PROGRESS']))
 	);
 
 	$template->display('popup');
@@ -1258,7 +1276,8 @@ function handle_post_delete($forum_id, $topic_id, $post_id, &$post_data)
 				'post_approved'			=> $post_data['post_approved'],
 				'post_reported'			=> $post_data['post_reported'],
 				'post_time'				=> $post_data['post_time'],
-				'poster_id'				=> $post_data['poster_id']
+				'poster_id'				=> $post_data['poster_id'],
+				'post_postcount'		=> $post_data['post_postcount']
 			);
 
 			$next_post_id = delete_post($forum_id, $topic_id, $post_id, $data);

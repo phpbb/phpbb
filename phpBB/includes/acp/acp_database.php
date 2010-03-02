@@ -68,7 +68,7 @@ class acp_database
 
 						@set_time_limit(1200);
 
-						$filename = time();
+						$filename = 'backup_' . time();
 
 						// We set up the info needed for our on-the-fly creation :D
 						switch ($format)
@@ -135,6 +135,7 @@ class acp_database
 						{
 							case 'sqlite':
 								$sql_data .= "BEGIN TRANSACTION;\n";
+								$sqlite_version = sqlite_libversion();
 							break;
 
 							case 'postgres':
@@ -143,7 +144,8 @@ class acp_database
 
 							case 'mssql':
 							case 'mssql_odbc':
-								$sql_data .= "BEGIN TRANSACTION\nGO\n";
+								$sql_data .= "BEGIN TRANSACTION\n";
+								$sql_data .= "GO\n";
 							break;
 						}
 
@@ -157,14 +159,26 @@ class acp_database
 									case 'mysqli':
 									case 'mysql4':
 									case 'mysql':
-									case 'sqlite':
 										$sql_data .= '# Table: ' . $table_name . "\n";
 										$sql_data .= "DROP TABLE IF EXISTS $table_name;\n";
 									break;
 									
 									case 'oracle':
 										$sql_data .= '# Table: ' . $table_name . "\n";
-										$sql_data .= "DROP TABLE $table_name;\n\\\n";
+										$sql_data .= "DROP TABLE $table_name;\n";
+										$sql_data .= '\\' . "\n";
+									break;
+
+									case 'sqlite':
+										$sql_data .= '# Table: ' . $table_name . "\n";
+										if (version_compare($sqlite_version, '3.0') == -1)
+										{
+											$sql_data .= "DROP TABLE $table_name;\n";
+										}
+										else
+										{
+											$sql_data .= "DROP TABLE IF EXISTS $table_name;\n";
+										}
 									break;
 
 									case 'postgres':
@@ -177,10 +191,32 @@ class acp_database
 									case 'mssql_odbc':
 										$sql_data .= '# Table: ' . $table_name . "\n";
 										$sql_data .= "IF OBJECT_ID(N'$table_name', N'U') IS NOT NULL\n";
-										$sql_data .= "DROP TABLE $table_name;\nGO\n";
+										$sql_data .= "DROP TABLE $table_name;\n";
+										$sql_data .= "GO\n";
 									break;
 								}
 								$sql_data .= $this->get_table_structure($table_name);
+							}
+							// We might wanna empty out all that junk :D
+							else
+							{
+								switch (SQL_LAYER)
+								{
+									case 'mysqli':
+									case 'mysql4':
+									case 'mysql':
+									case 'mssql':
+									case 'mssql_odbc':
+									case 'oracle':
+									case 'postgres':
+									case 'firebird':
+										$sql_data .= 'TRUNCATE TABLE ' . $table_name . ";\n";
+									break;
+									
+									case 'sqlite':
+										$sql_data .= 'DELETE FROM ' . $table_name . ";\n";
+									break;
+								}
 							}
 							// Now write the data for the first time. :)
 							if ($store == true)
@@ -211,7 +247,8 @@ class acp_database
 								{
 									case 'mysqli':
 
-										$sql = "SELECT * FROM $table_name";
+										$sql = "SELECT *
+											FROM $table_name";
 										$result = mysqli_query($db->db_connect_id, $sql, MYSQLI_USE_RESULT);
 										if ($result != false)
 										{
@@ -278,7 +315,8 @@ class acp_database
 									case 'mysql4':
 									case 'mysql':
 	
-										$sql = "SELECT * FROM $table_name";
+										$sql = "SELECT *
+											FROM $table_name";
 										$result = mysql_unbuffered_query($sql, $db->db_connect_id);
 
 										if ($result != false)
@@ -347,12 +385,48 @@ class acp_database
 									break;
 	
 									case 'sqlite':
+										// This is *not* my fault. The PHP guys forgot a call to finalize when they wrote this function. This forces all the tables to stay locked...
+										// They finally fixed it in 5.1.3 but 5.1.2 and under still have this so instead, we go and grab the column types by smashing open the sqlite_master table
+										// and grope around for things that remind us of datatypes...
+										if (version_compare(phpversion(), '5.1.3', '>='))
+										{
+											$col_types = sqlite_fetch_column_types($db->db_connect_id, $table_name);
+										}
+										else
+										{
+											$sql = "SELECT sql
+												FROM sqlite_master 
+												WHERE type = 'table' 
+													AND name = '" . $table_name . "'";
+											$table_data = sqlite_single_query($db->db_connect_id, $sql);
+											$table_data = preg_replace('#CREATE\s+TABLE\s+"?' . $table_name . '"?#i', '', $table_data);
+											$table_data = trim($table_data);
 
-										$col_types = sqlite_fetch_column_types($table_name, $db->db_connect_id);
-										$sql = "SELECT * FROM $table_name";
-										$result = $db->sql_query($sql);
+											preg_match('#\((.*)\)#s', $table_data, $matches);
 
-										while ($row = $db->sql_fetchrow($result))
+											$column_list = array();
+											$table_cols = explode(',', trim($matches[1]));
+											foreach($table_cols as $declaration)
+											{
+												$entities = preg_split('#\s+#', trim($declaration));
+												$column_name = preg_replace('/"?([^"]+)"?/', '\1', $entities[0]);
+
+												// Hit a primary key, those are not what we need :D
+												if (empty($entities[1]))
+												{
+													continue;
+												}
+												$col_types[$column_name] = $entities[1];
+											}
+										}
+
+										// Unbueffered query and the foreach make this ultra fast, we wait for nothing.
+										$sql = "SELECT *
+											FROM $table_name";
+										$result = sqlite_unbuffered_query($db->db_connect_id, $sql);
+										$rows = sqlite_fetch_all($result, SQLITE_ASSOC);
+
+										foreach ($rows as $row)
 										{
 											$names = $data = array();
 											foreach ($row as $row_name => $row_data)
@@ -405,7 +479,7 @@ class acp_database
 										
 										// Grab all of the data from current table.
 										$sql = "SELECT *
-											FROM {$table_name}";
+											FROM $table_name";
 										$result = $db->sql_query($sql);
 
 										$i_num_fields = pg_num_fields($result);
@@ -421,14 +495,14 @@ class acp_database
 												FROM pg_attrdef d, pg_class c
 												WHERE (c.relname = '{$table_name}')
 													AND (c.oid = d.adrelid)
-													AND d.adnum = " . strval($i+1);
+													AND d.adnum = " . strval($i + 1);
 											$result2 = $db->sql_query($sql);
 											if ($row = $db->sql_fetchrow($result2))
 											{
 												// Determine if we must reset the sequences
-												if (strpos($row['rowdefault'], 'nextval(\'') === 0)
+												if (strpos($row['rowdefault'], "nextval('") === 0)
 												{
-													$seq .= "SELECT SETVAL('{$table_name}_seq',(select case when max({$ary_name[$i]})>0 then max({$ary_name[$i]})+1 else 1 end from {$table_name}));\n";
+													$seq .= "SELECT SETVAL('{$table_name}_seq',(select case when max({$ary_name[$i]})>0 then max({$ary_name[$i]})+1 else 1 end FROM {$table_name}));\n";
 												}
 											}
 										}
@@ -476,7 +550,7 @@ class acp_database
 
 											// Take the ordered fields and their associated data and build it
 											// into a valid sql statement to recreate that field in the data.
-											$sql_data .= "INSERT INTO $table_name (" . implode(', ', $schema_fields) . ') VALUES(' . implode(', ', $schema_vals) . ");\n";
+											$sql_data .= "INSERT INTO $table_name (" . implode(', ', $schema_fields) . ') VALUES (' . implode(', ', $schema_vals) . ");\n";
 
 											if ($store == true)
 											{
@@ -526,7 +600,7 @@ class acp_database
 										
 										// Grab all of the data from current table.
 										$sql = "SELECT *
-											FROM {$table_name}";
+											FROM $table_name";
 										$result = $db->sql_query($sql);
 
 										$retrieved_data = odbc_num_rows($result);
@@ -534,8 +608,8 @@ class acp_database
 										if ($retrieved_data)
 										{
 											$sql = "SELECT 1 as has_identity
-														FROM INFORMATION_SCHEMA.COLUMNS
-														WHERE COLUMNPROPERTY(object_id('$table_name'), COLUMN_NAME, 'IsIdentity') = 1";
+												FROM INFORMATION_SCHEMA.COLUMNS
+												WHERE COLUMNPROPERTY(object_id('$table_name'), COLUMN_NAME, 'IsIdentity') = 1";
 											$result2 = $db->sql_query($sql);
 											$row2 = $db->sql_fetchrow($result2);
 											if (!empty($row2['has_identity']))
@@ -597,7 +671,7 @@ class acp_database
 
 											// Take the ordered fields and their associated data and build it
 											// into a valid sql statement to recreate that field in the data.
-											$sql_data .= "INSERT INTO $table_name (" . implode(', ', $schema_fields) . ') VALUES(' . implode(', ', $schema_vals) . ");\n";
+											$sql_data .= "INSERT INTO $table_name (" . implode(', ', $schema_fields) . ') VALUES (' . implode(', ', $schema_vals) . ");\n";
 
 											if ($store == true)
 											{
@@ -637,7 +711,7 @@ class acp_database
 										
 										// Grab all of the data from current table.
 										$sql = "SELECT *
-											FROM {$table_name}";
+											FROM $table_name";
 										$result = $db->sql_query($sql);
 
 										$retrieved_data = mssql_num_rows($result);
@@ -653,8 +727,8 @@ class acp_database
 										if ($retrieved_data)
 										{
 											$sql = "SELECT 1 as has_identity
-														FROM INFORMATION_SCHEMA.COLUMNS
-														WHERE COLUMNPROPERTY(object_id('$table_name'), COLUMN_NAME, 'IsIdentity') = 1";
+												FROM INFORMATION_SCHEMA.COLUMNS
+												WHERE COLUMNPROPERTY(object_id('$table_name'), COLUMN_NAME, 'IsIdentity') = 1";
 											$result2 = $db->sql_query($sql);
 											$row2 = $db->sql_fetchrow($result2);
 											if (!empty($row2['has_identity']))
@@ -708,7 +782,7 @@ class acp_database
 
 											// Take the ordered fields and their associated data and build it
 											// into a valid sql statement to recreate that field in the data.
-											$sql_data .= "INSERT INTO $table_name (" . implode(', ', $schema_fields) . ') VALUES(' . implode(', ', $schema_vals) . ");\n";
+											$sql_data .= "INSERT INTO $table_name (" . implode(', ', $schema_fields) . ') VALUES (' . implode(', ', $schema_vals) . ");\n";
 
 											if ($store == true)
 											{
@@ -748,7 +822,7 @@ class acp_database
 										
 										// Grab all of the data from current table.
 										$sql = "SELECT *
-											FROM {$table_name}";
+											FROM $table_name";
 										$result = $db->sql_query($sql);
 
 										$i_num_fields = ibase_num_fields($result);
@@ -803,7 +877,7 @@ class acp_database
 
 											// Take the ordered fields and their associated data and build it
 											// into a valid sql statement to recreate that field in the data.
-											$sql_data .= "INSERT INTO $table_name (" . implode(', ', $schema_fields) . ') VALUES(' . implode(', ', $schema_vals) . ");\n";
+											$sql_data .= "INSERT INTO $table_name (" . implode(', ', $schema_fields) . ') VALUES (' . implode(', ', $schema_vals) . ");\n";
 
 											if ($store == true)
 											{
@@ -833,7 +907,7 @@ class acp_database
 										
 										// Grab all of the data from current table.
 										$sql = "SELECT *
-											FROM {$table_name}";
+											FROM $table_name";
 										$result = $db->sql_query($sql);
 
 										$i_num_fields = ocinumcols($result);
@@ -887,7 +961,7 @@ class acp_database
 
 											// Take the ordered fields and their associated data and build it
 											// into a valid sql statement to recreate that field in the data.
-											$sql_data .= "INSERT INTO $table_name (" . implode(', ', $schema_fields) . ') VALUES(' . implode(', ', $schema_vals) . ");\n";
+											$sql_data .= "INSERT INTO $table_name (" . implode(', ', $schema_fields) . ') VALUES (' . implode(', ', $schema_vals) . ");\n";
 
 											if ($store == true)
 											{
@@ -987,9 +1061,9 @@ class acp_database
 							break;
 
 							case 'postgres':
-								$sql = "SELECT relname
+								$sql = 'SELECT relname
 									FROM pg_stat_user_tables
-									ORDER BY relname;";
+									ORDER BY relname';
 								$result = $db->sql_query($sql);
 								while ($row = $db->sql_fetchrow($result))
 								{
@@ -1088,7 +1162,7 @@ class acp_database
 						$delete = request_var('delete', '');
 						$file = request_var('file', '');
 
-						preg_match('#^(\d{10})\.(sql(?:\.(?:gz|bz2))?)$#', $file, $matches);
+						preg_match('#^(backup_\d{10,})\.(sql(?:\.(?:gz|bz2))?)$#', $file, $matches);
 						$file_name = $phpbb_root_path . 'store/' . $matches[0];
 
 						if (!(file_exists($file_name) && is_readable($file_name)))
@@ -1144,39 +1218,47 @@ class acp_database
 						{
 							// Strip out sql comments...
 							remove_remarks($data);
-							switch (SQL_LAYER)
+
+							// SQLite gets improved performance when you shove all of these disk write queries at once :D
+							if (SQL_LAYER == 'sqlite')
 							{
-								case 'firebird':
-									$delim = ';;';
-								break;
-
-								case 'mysql':
-								case 'mysql4':
-								case 'mysqli':
-								case 'sqlite':
-								case 'postgres':
-									$delim = ';';
-								break;
-
-								case 'oracle':
-									$delim = '/';
-								break;
-
-								case 'mssql':
-								case 'mssql-odbc':
-									$delim = 'GO';
-								break;
+								$db->sql_query($data);
 							}
-							$pieces = split_sql_file($data, $delim);
-
-							$sql_count = count($pieces);
-							for($i = 0; $i < $sql_count; $i++)
+							else
 							{
-								$sql = trim($pieces[$i]);
-
-								if (!empty($sql) && $sql[0] != '#')
+								switch (SQL_LAYER)
 								{
-									$db->sql_query($sql);
+									case 'firebird':
+										$delim = ';;';
+									break;
+
+									case 'mysql':
+									case 'mysql4':
+									case 'mysqli':
+									case 'postgres':
+										$delim = ';';
+									break;
+
+									case 'oracle':
+										$delim = '/';
+									break;
+
+									case 'mssql':
+									case 'mssql-odbc':
+										$delim = 'GO';
+									break;
+								}
+								$pieces = split_sql_file($data, $delim);
+
+								$sql_count = count($pieces);
+								for($i = 0; $i < $sql_count; $i++)
+								{
+									$sql = trim($pieces[$i]);
+
+									if (!empty($sql) && $sql[0] != '#')
+									{
+										$db->sql_query($sql);
+									}
 								}
 							}
 						}
@@ -1202,7 +1284,7 @@ class acp_database
 						$dh = opendir($dir);
 						while (($file = readdir($dh)) !== false)
 						{
-							if (preg_match('#^(\d{10})\.(sql(?:\.(?:gz|bz2))?)$#', $file, $matches))
+							if (preg_match('#^backup_(\d{10,})\.(sql(?:\.(?:gz|bz2))?)$#', $file, $matches))
 							{
 								$supported = in_array($matches[2], $methods);
 
@@ -1278,7 +1360,10 @@ class acp_database
 				}
 				$db->sql_freeresult($result);
 
-				$result = $db->sql_query("SHOW KEYS FROM $table_name");
+				$sql = "SHOW KEYS
+					FROM $table_name";
+
+				$result = $db->sql_query($sql);
 
 				$index = array();
 				while ($row = $db->sql_fetchrow($result))
@@ -1403,11 +1488,12 @@ class acp_database
 				// We don't even care about storing the results. We already know the answer if we get rows back.
 				if ($db->sql_fetchrow($result))
 				{
+					$sql_data .= "DROP SEQUENCE {$table_name}_seq;\n";
 					$sql_data .= "CREATE SEQUENCE {$table_name}_seq;\n";
 				}
 				$db->sql_freeresult($result);
 			
-				$field_query = "SELECT a.attnum, a.attname AS field, t.typname as type, a.attlen AS length, a.atttypmod as lengthvar, a.attnotnull as notnull
+				$field_query = "SELECT a.attnum, a.attname as field, t.typname as type, a.attlen as length, a.atttypmod as lengthvar, a.attnotnull as notnull
 					FROM pg_class c, pg_attribute a, pg_type t
 					WHERE c.relname = '" . $db->sql_escape($table_name) . "'
 						AND a.attnum > 0
@@ -1477,7 +1563,7 @@ class acp_database
 
 
 				// Get the listing of primary keys.
-				$sql_pri_keys = "SELECT ic.relname AS index_name, bc.relname AS tab_name, ta.attname AS column_name, i.indisunique AS unique_key, i.indisprimary AS primary_key
+				$sql_pri_keys = "SELECT ic.relname as index_name, bc.relname as tab_name, ta.attname as column_name, i.indisunique as unique_key, i.indisprimary as primary_key
 					FROM pg_class bc, pg_class ic, pg_index i, pg_attribute ta, pg_attribute ia
 					WHERE (bc.oid = i.indrelid)
 						AND (ic.oid = i.indexrelid)
@@ -1486,7 +1572,8 @@ class acp_database
 						AND (bc.relname = '" . $db->sql_escape($table_name) . "')
 						AND (ta.attrelid = i.indrelid)
 						AND (ta.attnum = i.indkey[ia.attnum-1])
-					ORDER BY index_name, tab_name, column_name ";
+					ORDER BY index_name, tab_name, column_name";
+
 				$result = $db->sql_query($sql_pri_keys);
 
 				$index_create = $index_rows = $primary_key = array();
@@ -1599,7 +1686,7 @@ class acp_database
 
 					if ($row['COLUMN_DEFAULT'])
 					{
-						$line .= ' CONSTRAINT [DF_' . $table_name . '_' . $row['COLUMN_NAME'] . '] DEFAULT ' . $row['COLUMN_DEFAULT'];
+						$line .= ' DEFAULT ' . $row['COLUMN_DEFAULT'];
 					}
 
 					$rows[] = $line;
@@ -1666,7 +1753,7 @@ class acp_database
 
 				$sql_data .= "\nCREATE TABLE $table_name (\n";
 
-				$sql  = 'SELECT DISTINCT R.RDB$FIELD_NAME AS FNAME, R.RDB$NULL_FLAG AS NFLAG, R.RDB$DEFAULT_SOURCE AS DSOURCE, F.RDB$FIELD_TYPE AS FTYPE, F.RDB$FIELD_SUB_TYPE AS STYPE, F.RDB$FIELD_LENGTH AS FLEN
+				$sql  = 'SELECT DISTINCT R.RDB$FIELD_NAME as FNAME, R.RDB$NULL_FLAG as NFLAG, R.RDB$DEFAULT_SOURCE as DSOURCE, F.RDB$FIELD_TYPE as FTYPE, F.RDB$FIELD_SUB_TYPE as STYPE, F.RDB$FIELD_LENGTH as FLEN
 					FROM RDB$RELATION_FIELDS R
 					JOIN RDB$FIELDS F ON R.RDB$FIELD_SOURCE=F.RDB$FIELD_NAME
 					LEFT JOIN RDB$FIELD_DIMENSIONS D ON R.RDB$FIELD_SOURCE = D.RDB$FIELD_NAME
@@ -1727,7 +1814,7 @@ class acp_database
 
 				$db->sql_freeresult($result);
 
-				$sql = 'SELECT I.RDB$INDEX_NAME AS INAME, I.RDB$UNIQUE_FLAG AS UFLAG, S.RDB$FIELD_NAME AS FNAME
+				$sql = 'SELECT I.RDB$INDEX_NAME as INAME, I.RDB$UNIQUE_FLAG as UFLAG, S.RDB$FIELD_NAME as FNAME
 					FROM RDB$INDICES I JOIN RDB$INDEX_SEGMENTS S ON S.RDB$INDEX_NAME=I.RDB$INDEX_NAME
 					WHERE (I.RDB$SYSTEM_FLAG IS NULL  OR  I.RDB$SYSTEM_FLAG=0)
 						AND I.RDB$FOREIGN_KEY IS NULL
@@ -1771,7 +1858,7 @@ class acp_database
 				$result = $db->sql_query($sql);
 				while ($row = $db->sql_fetchrow($result))
 				{
-					$sql = 'SELECT T1.RDB$DEPENDED_ON_NAME AS GEN, T1.RDB$FIELD_NAME, T1.RDB$DEPENDED_ON_TYPE
+					$sql = 'SELECT T1.RDB$DEPENDED_ON_NAME as GEN, T1.RDB$FIELD_NAME, T1.RDB$DEPENDED_ON_TYPE
 						FROM RDB$DEPENDENCIES T1
 						WHERE (T1.RDB$DEPENDENT_NAME = \'' . $row['dname'] . '\')
 							AND (T1.RDB$DEPENDENT_TYPE = 2 AND T1.RDB$DEPENDED_ON_TYPE = 14)
@@ -1800,7 +1887,9 @@ class acp_database
 			case 'oracle':
 				$sql_data .= "\nCREATE TABLE $table_name (\n";
 
-				$sql  = "SELECT COLUMN_NAME, DATA_TYPE, DATA_PRECISION, DATA_LENGTH, NULLABLE, DATA_DEFAULT from ALL_TAB_COLS where table_name = '{$table_name}'";
+				$sql  = "SELECT COLUMN_NAME, DATA_TYPE, DATA_PRECISION, DATA_LENGTH, NULLABLE, DATA_DEFAULT
+					FROM ALL_TAB_COLS
+					WHERE table_name = '{$table_name}'";
 				$result = $db->sql_query($sql);
 
 				$rows = array();

@@ -86,8 +86,8 @@ $global_privmsgs_rules = array(
 	),
 
 	CHECK_STATUS	=> array(
-		RULE_ANSWERED		=> array('check0' => 'replied', 'function' => '{CHECK0} == 1'),
-		RULE_FORWARDED		=> array('check0' => 'forwarded', 'function' => '{CHECK0} == 1'),
+		RULE_ANSWERED		=> array('check0' => 'pm_replied', 'function' => '{CHECK0} == 1'),
+		RULE_FORWARDED		=> array('check0' => 'pm_forwarded', 'function' => '{CHECK0} == 1'),
 	),
 
 	CHECK_TO		=> array(
@@ -121,7 +121,7 @@ function get_folder($user_id, $folder_id = false)
 	$folder = array();
 
 	// Get folder informations
-	$sql = 'SELECT folder_id, COUNT(msg_id) as num_messages, SUM(unread) as num_unread
+	$sql = 'SELECT folder_id, COUNT(msg_id) as num_messages, SUM(pm_unread) as num_unread
 		FROM ' . PRIVMSGS_TO_TABLE . "
 		WHERE user_id = $user_id
 			AND folder_id <> " . PRIVMSGS_NO_BOX . '
@@ -262,7 +262,7 @@ function check_rule(&$rules, &$rule_row, &$message_row, $user_id)
 	// Replace Rule Literals
 	$evaluate = preg_replace('/{(STRING|USER_ID|GROUP_ID)}/', '$rule_row["rule_" . strtolower("\1")]', $evaluate);
 
-	// Eval Statement
+	// Evil Statement
 	$result = false;
 	eval('$result = (' . $evaluate . ') ? true : false;');
 
@@ -280,7 +280,7 @@ function check_rule(&$rules, &$rule_row, &$message_row, $user_id)
 		case ACTION_MARK_AS_READ:
 		case ACTION_MARK_AS_IMPORTANT:
 		case ACTION_DELETE_MESSAGE:
-			return array('action' => $rule_row['rule_action'], 'unread' => $message_row['unread'], 'marked' => $message_row['marked']);
+			return array('action' => $rule_row['rule_action'], 'pm_unread' => $message_row['pm_unread'], 'pm_marked' => $message_row['pm_marked']);
 		break;
 		
 		default:
@@ -387,7 +387,7 @@ function place_pm_into_folder(&$global_privmsgs_rules, $release = false)
 		{
 			$sql = 'SELECT *
 				FROM ' . USER_GROUP_TABLE . ' 
-				WHERE user_id IN (' . implode(', ', $user_ids) . ')
+				WHERE ' . $db->sql_in_set('user_id', $user_ids) . '
 					AND user_pending = 0';
 			$result = $db->sql_query($sql);
 
@@ -447,18 +447,24 @@ function place_pm_into_folder(&$global_privmsgs_rules, $release = false)
 			switch ($rule_ary['action'])
 			{
 				case ACTION_PLACE_INTO_FOLDER:
+					// Folder actions have precedence, so we will remove any other ones
 					$folder_action = true;
 					$_folder_id = (int) $rule_ary['folder_id'];
+					$move_into_folder = array();
 					$move_into_folder[$_folder_id][] = $msg_id;
 					$num_new++;
 				break;
 
 				case ACTION_MARK_AS_READ:
-					if ($rule_ary['unread'])
+					if ($rule_ary['pm_unread'])
 					{
 						$unread_ids[] = $msg_id;
 					}
-					$move_into_folder[PRIVMSGS_INBOX][] = $msg_id;
+
+					if (!$folder_action)
+					{
+						$move_into_folder[PRIVMSGS_INBOX][] = $msg_id;
+					}
 				break;
 
 				case ACTION_DELETE_MESSAGE:
@@ -466,11 +472,15 @@ function place_pm_into_folder(&$global_privmsgs_rules, $release = false)
 				break;
 
 				case ACTION_MARK_AS_IMPORTANT:
-					if (!$rule_ary['marked'])
+					if (!$rule_ary['pm_marked'])
 					{
 						$important_ids[] = $msg_id;
 					}
-					$move_into_folder[PRIVMSGS_INBOX][] = $msg_id;
+
+					if (!$folder_action)
+					{
+						$move_into_folder[PRIVMSGS_INBOX][] = $msg_id;
+					}
 				break;
 			}
 		}
@@ -495,8 +505,8 @@ function place_pm_into_folder(&$global_privmsgs_rules, $release = false)
 	if (sizeof($unread_ids))
 	{
 		$sql = 'UPDATE ' . PRIVMSGS_TO_TABLE . ' 
-			SET unread = 0
-			WHERE msg_id IN (' . implode(', ', $unread_ids) . ")
+			SET pm_unread = 0
+			WHERE ' . $db->sql_in_set('msg_id', $unread_ids) . "
 				AND user_id = $user_id
 				AND folder_id = " . PRIVMSGS_NO_BOX;
 		$db->sql_query($sql);
@@ -506,10 +516,10 @@ function place_pm_into_folder(&$global_privmsgs_rules, $release = false)
 	if (sizeof($important_ids))
 	{
 		$sql = 'UPDATE ' . PRIVMSGS_TO_TABLE . '
-			SET marked = !marked
+			SET pm_marked = !pm_marked
 			WHERE folder_id = ' . PRIVMSGS_NO_BOX . "
 				AND user_id = $user_id
-				AND msg_id IN (" . implode(', ', $important_ids) . ')';
+				AND " . $db->sql_in_set('msg_id', $important_ids);
 		$db->sql_query($sql);
 	}
 
@@ -520,10 +530,16 @@ function place_pm_into_folder(&$global_privmsgs_rules, $release = false)
 	{
 		// Determine Full Folder Action - we need the move to folder id later eventually
 		$full_folder_action = ($user->data['user_full_folder'] == FULL_FOLDER_NONE) ? ($config['full_folder_action'] - (FULL_FOLDER_NONE*(-1))) : $user->data['user_full_folder'];
-		
+
+		$sql_folder = array_keys($move_into_folder);
+		if ($full_folder_action >= 0)
+		{
+			$sql_folder[] = $full_folder_action;
+		}
+
 		$sql = 'SELECT folder_id, pm_count 
 			FROM ' . PRIVMSGS_FOLDER_TABLE . '
-			WHERE folder_id IN (' . implode(', ', array_keys($move_into_folder)) . (($full_folder_action >= 0) ? ', ' . $full_folder_action : '') . ")
+			WHERE ' . $db->sql_in_set('folder_id', $sql_folder) . "
 				AND user_id = $user_id";
 		$result = $db->sql_query($sql);
 
@@ -532,6 +548,8 @@ function place_pm_into_folder(&$global_privmsgs_rules, $release = false)
 			$folder[(int) $row['folder_id']] = (int) $row['pm_count'];
 		}
 		$db->sql_freeresult($result);
+
+		unset($sql_folder);
 
 		if (in_array(PRIVMSGS_INBOX, array_keys($move_into_folder)))
 		{
@@ -586,6 +604,7 @@ function place_pm_into_folder(&$global_privmsgs_rules, $release = false)
 					$delete_ids[] = $row['msg_id'];
 				}
 				$db->sql_freeresult($result);
+
 				delete_pm($user_id, $delete_ids, $dest_folder);
 			}
 		}
@@ -594,21 +613,22 @@ function place_pm_into_folder(&$global_privmsgs_rules, $release = false)
 		if ($full_folder_action == FULL_FOLDER_HOLD)
 		{
 			$num_not_moved += sizeof($msg_ary);
+
 			$sql = 'UPDATE ' . PRIVMSGS_TO_TABLE . ' 
 				SET folder_id = ' . PRIVMSGS_HOLD_BOX . '
 				WHERE folder_id = ' . PRIVMSGS_NO_BOX . "
 					AND user_id = $user_id
-					AND msg_id IN (" . implode(', ', $msg_ary) . ')';
+					AND " . $db->sql_in_set('msg_id', $msg_ary);
 			$db->sql_query($sql);
 		}
 		else
 		{
 			$sql = 'UPDATE ' . PRIVMSGS_TO_TABLE . " 
-				SET folder_id = $dest_folder, new = 0
+				SET folder_id = $dest_folder, pm_new = 0
 				WHERE folder_id = " . PRIVMSGS_NO_BOX . "
 					AND user_id = $user_id
-					AND new = 1
-					AND msg_id IN (" . implode(', ', $msg_ary) . ')';
+					AND pm_new = 1
+					AND " . $db->sql_in_set('msg_id', $msg_ary);
 			$db->sql_query($sql);
 
 			if ($dest_folder != PRIVMSGS_INBOX)
@@ -633,7 +653,7 @@ function place_pm_into_folder(&$global_privmsgs_rules, $release = false)
 		$sql = 'UPDATE ' . PRIVMSGS_TO_TABLE . ' 
 			SET folder_id = ' . PRIVMSGS_SENTBOX . '
 			WHERE folder_id = ' . PRIVMSGS_OUTBOX . '
-				AND msg_id IN (' . implode(', ', array_keys($action_ary)) . ')';
+				AND ' . $db->sql_in_set('msg_id', array_keys($action_ary));
 		$db->sql_query($sql);
 	}
 
@@ -718,7 +738,7 @@ function move_pm($user_id, $message_limit, $move_msg_ids, $dest_folder, $cur_fol
 			SET folder_id = $dest_folder
 			WHERE folder_id = $cur_folder_id
 				AND user_id = $user_id
-				AND msg_id IN (" . implode(', ', $move_msg_ids) . ')';
+				AND " . $db->sql_in_set('msg_id', $move_msg_ids);
 		$db->sql_query($sql);
 		$num_moved = $db->sql_affectedrows();
 
@@ -761,7 +781,7 @@ function update_unread_status($unread, $msg_id, $user_id, $folder_id)
 	global $db;
 
 	$sql = 'UPDATE ' . PRIVMSGS_TO_TABLE . " 
-		SET unread = 0
+		SET pm_unread = 0
 		WHERE msg_id = $msg_id
 			AND user_id = $user_id
 			AND folder_id = $folder_id";
@@ -794,10 +814,10 @@ function handle_mark_actions($user_id, $mark_action)
 		case 'mark_important':
 
 			$sql = 'UPDATE ' . PRIVMSGS_TO_TABLE . "
-				SET marked = !marked
+				SET pm_marked = !pm_marked
 				WHERE folder_id = $cur_folder_id
 					AND user_id = $user_id
-					AND msg_id IN (" . implode(', ', $msg_ids) . ')';
+					AND " . $db->sql_in_set('msg_id', $msg_ids);
 			$db->sql_query($sql);
 
 		break;
@@ -865,9 +885,9 @@ function delete_pm($user_id, $msg_ids, $folder_id)
 	}
 
 	// Get PM Informations for later deleting
-	$sql = 'SELECT msg_id, unread, new
+	$sql = 'SELECT msg_id, pm_unread, pm_new
 		FROM ' . PRIVMSGS_TO_TABLE . '
-		WHERE msg_id IN (' . implode(', ', array_map('intval', $msg_ids)) . ")
+		WHERE ' . $db->sql_in_set('msg_id', array_map('intval', $msg_ids)) . "
 			AND folder_id = $folder_id
 			AND user_id = $user_id";
 	$result = $db->sql_query($sql);
@@ -876,8 +896,8 @@ function delete_pm($user_id, $msg_ids, $folder_id)
 	$num_unread = $num_new = $num_deleted = 0;
 	while ($row = $db->sql_fetchrow($result))
 	{
-		$num_unread += (int) $row['unread'];
-		$num_new += (int) $row['new'];
+		$num_unread += (int) $row['pm_unread'];
+		$num_new += (int) $row['pm_new'];
 
 		$delete_rows[$row['msg_id']] = 1;
 	}
@@ -896,19 +916,19 @@ function delete_pm($user_id, $msg_ids, $folder_id)
 		// Remove PM from Outbox
 		$sql = 'DELETE FROM ' . PRIVMSGS_TO_TABLE . "
 			WHERE user_id = $user_id AND folder_id = " . PRIVMSGS_OUTBOX . '
-				AND msg_id IN (' . implode(', ', array_keys($delete_rows)) . ')';
+				AND ' . $db->sql_in_set('msg_id', array_keys($delete_rows));
 		$db->sql_query($sql);
 
 		// Update PM Information for safety
 		$sql = 'UPDATE ' . PRIVMSGS_TABLE . " SET message_text = ''
-			WHERE msg_id IN (" . implode(', ', array_keys($delete_rows)) . ')';
+			WHERE " . $db->sql_in_set('msg_id', array_keys($delete_rows));
 		$db->sql_query($sql);
 
 		// Set delete flag for those intended to receive the PM
 		// We do not remove the message actually, to retain some basic informations (sent time for example)
 		$sql = 'UPDATE ' . PRIVMSGS_TO_TABLE . '
-			SET deleted = 1
-			WHERE msg_id IN (' . implode(', ', array_keys($delete_rows)) . ')';
+			SET pm_deleted = 1
+			WHERE ' . $db->sql_in_set('msg_id', array_keys($delete_rows));
 		$db->sql_query($sql);
 
 		$num_deleted = $db->sql_affectedrows();
@@ -919,7 +939,7 @@ function delete_pm($user_id, $msg_ids, $folder_id)
 		$sql = 'DELETE FROM ' . PRIVMSGS_TO_TABLE . "
 			WHERE user_id = $user_id
 				AND folder_id = $folder_id
-				AND msg_id IN (" . implode(', ', array_keys($delete_rows)) . ')';
+				AND " . $db->sql_in_set('msg_id', array_keys($delete_rows));
 		$db->sql_query($sql);
 		$num_deleted = $db->sql_affectedrows();
 	}
@@ -949,7 +969,7 @@ function delete_pm($user_id, $msg_ids, $folder_id)
 	// Now we have to check which messages we can delete completely	
 	$sql = 'SELECT msg_id 
 		FROM ' . PRIVMSGS_TO_TABLE . '
-		WHERE msg_id IN (' . implode(', ', array_keys($delete_rows)) . ')';
+		WHERE ' . $db->sql_in_set('msg_id', array_keys($delete_rows));
 	$result = $db->sql_query($sql);
 
 	while ($row = $db->sql_fetchrow($result))
@@ -958,12 +978,12 @@ function delete_pm($user_id, $msg_ids, $folder_id)
 	}
 	$db->sql_freeresult($result);
 
-	$delete_ids = implode(', ', array_keys($delete_rows));
+	$delete_ids = array_keys($delete_rows);
 
-	if ($delete_ids)
+	if (sizeof($delete_ids))
 	{
 		$sql = 'DELETE FROM ' . PRIVMSGS_TABLE . '
-			WHERE msg_id IN (' . $delete_ids . ')';
+			WHERE ' . $db->sql_in_set('msg_id', $delete_ids);
 		$db->sql_query($sql);
 	}
 
@@ -1039,7 +1059,7 @@ function write_pm_addresses($check_ary, $author_id, $plaintext = false)
 		{
 			$sql = 'SELECT user_id, username, user_colour 
 				FROM ' . USERS_TABLE . '
-				WHERE user_id IN (' . implode(', ', $u) . ')
+				WHERE ' . $db->sql_in_set('user_id', $u) . '
 					AND user_type IN (' . USER_NORMAL . ', ' . USER_FOUNDER . ')';
 			$result = $db->sql_query($sql);
 
@@ -1066,7 +1086,7 @@ function write_pm_addresses($check_ary, $author_id, $plaintext = false)
 			{
 				$sql = 'SELECT group_name, group_type
 					FROM ' . GROUPS_TABLE . ' 
-						WHERE group_id IN (' . implode(', ', $g) . ')';
+						WHERE ' . $db->sql_in_set('group_id', $g);
 				$result = $db->sql_query($sql);
 		
 				while ($row = $db->sql_fetchrow($result))
@@ -1082,7 +1102,7 @@ function write_pm_addresses($check_ary, $author_id, $plaintext = false)
 			{
 				$sql = 'SELECT g.group_id, g.group_name, g.group_colour, g.group_type, ug.user_id
 					FROM ' . GROUPS_TABLE . ' g, ' . USER_GROUP_TABLE . ' ug
-						WHERE g.group_id IN (' . implode(', ', $g) . ')
+						WHERE ' . $db->sql_in_set('g.group_id', $g) . '
 						AND g.group_id = ug.group_id
 						AND ug.user_pending = 0';
 				$result = $db->sql_query($sql);
@@ -1222,7 +1242,7 @@ function submit_pm($mode, $subject, &$data, $update_message, $put_in_outbox = tr
 		{
 			$sql = 'SELECT group_id, user_id
 				FROM ' . USER_GROUP_TABLE . '
-				WHERE group_id IN (' . implode(', ', array_keys($data['address_list']['g'])) . ')
+				WHERE ' . $db->sql_in_set('group_id', array_keys($data['address_list']['g'])) . '
 					AND user_pending = 0';
 			$result = $db->sql_query($sql);
 	
@@ -1250,7 +1270,7 @@ function submit_pm($mode, $subject, &$data, $update_message, $put_in_outbox = tr
 
 			// Set message_replied switch for this user
 			$sql = 'UPDATE ' . PRIVMSGS_TO_TABLE . '
-				SET replied = 1
+				SET pm_replied = 1
 				WHERE user_id = ' . $data['from_user_id'] . '
 					AND msg_id = ' . $data['reply_from_msg_id'];
 
@@ -1300,6 +1320,8 @@ function submit_pm($mode, $subject, &$data, $update_message, $put_in_outbox = tr
 
 	if (sizeof($sql_data))
 	{
+		$query = '';
+
 		if ($mode == 'post' || $mode == 'reply' || $mode == 'quote' || $mode == 'quotepost' || $mode == 'forward')
 		{
 			$db->sql_query('INSERT INTO ' . PRIVMSGS_TABLE . ' ' . $db->sql_build_array('INSERT', $sql_data));
@@ -1328,13 +1350,13 @@ function submit_pm($mode, $subject, &$data, $update_message, $put_in_outbox = tr
 		foreach ($recipients as $user_id => $type)
 		{
 			$sql_ary[] = array(
-				'msg_id'	=> (int) $data['msg_id'],
-				'user_id'	=> (int) $user_id,
-				'author_id'	=> (int) $data['from_user_id'],
-				'folder_id'	=> PRIVMSGS_NO_BOX,
-				'new'		=> 1,
-				'unread'	=> 1,
-				'forwarded'	=> ($mode == 'forward') ? 1 : 0
+				'msg_id'		=> (int) $data['msg_id'],
+				'user_id'		=> (int) $user_id,
+				'author_id'		=> (int) $data['from_user_id'],
+				'folder_id'		=> PRIVMSGS_NO_BOX,
+				'pm_new'		=> 1,
+				'pm_unread'		=> 1,
+				'pm_forwarded'	=> ($mode == 'forward') ? 1 : 0
 			);
 		}
 
@@ -1359,20 +1381,20 @@ function submit_pm($mode, $subject, &$data, $update_message, $put_in_outbox = tr
 
 		$sql = 'UPDATE ' . USERS_TABLE . ' 
 			SET user_new_privmsg = user_new_privmsg + 1, user_unread_privmsg = user_unread_privmsg + 1, user_last_privmsg = ' . time() . '
-			WHERE user_id IN (' . implode(', ', array_keys($recipients)) . ')';
+			WHERE ' . $db->sql_in_set('user_id', array_keys($recipients));
 		$db->sql_query($sql);
 
 		// Put PM into outbox
 		if ($put_in_outbox)
 		{
 			$db->sql_query('INSERT INTO ' . PRIVMSGS_TO_TABLE . ' ' . $db->sql_build_array('INSERT', array(
-				'msg_id'	=> (int) $data['msg_id'],
-				'user_id'	=> (int) $data['from_user_id'],
-				'author_id'	=> (int) $data['from_user_id'],
-				'folder_id'	=> PRIVMSGS_OUTBOX,
-				'new'		=> 0,
-				'unread'	=> 0,
-				'forwarded'	=> ($mode == 'forward') ? 1 : 0))
+				'msg_id'		=> (int) $data['msg_id'],
+				'user_id'		=> (int) $data['from_user_id'],
+				'author_id'		=> (int) $data['from_user_id'],
+				'folder_id'		=> PRIVMSGS_OUTBOX,
+				'pm_new'		=> 0,
+				'pm_unread'		=> 0,
+				'pm_forwarded'	=> ($mode == 'forward') ? 1 : 0))
 			);
 		}
 
@@ -1401,7 +1423,7 @@ function submit_pm($mode, $subject, &$data, $update_message, $put_in_outbox = tr
 			{
 				// update entry in db if attachment already stored in db and filespace
 				$sql = 'UPDATE ' . ATTACHMENTS_TABLE . " 
-					SET comment = '" . $db->sql_escape($attach_row['comment']) . "' 
+					SET attach_comment = '" . $db->sql_escape($attach_row['attach_comment']) . "' 
 					WHERE attach_id = " . (int) $attach_row['attach_id'];
 				$db->sql_query($sql);
 			}
@@ -1415,7 +1437,7 @@ function submit_pm($mode, $subject, &$data, $update_message, $put_in_outbox = tr
 					'poster_id'			=> $data['from_user_id'],
 					'physical_filename'	=> basename($attach_row['physical_filename']),
 					'real_filename'		=> basename($attach_row['real_filename']),
-					'comment'			=> $attach_row['comment'],
+					'attach_comment'	=> $attach_row['attach_comment'],
 					'extension'			=> $attach_row['extension'],
 					'mimetype'			=> $attach_row['mimetype'],
 					'filesize'			=> $attach_row['filesize'],
@@ -1477,19 +1499,23 @@ function pm_notification($mode, $author, $recipients, $subject, $message)
 
 	$subject = censor_text($subject);
 
+	unset($recipients[ANONYMOUS], $recipients[$user->data['user_id']]);
+
+	if (!sizeof($recipients))
+	{
+		return;
+	}
+
 	// Get banned User ID's
 	$sql = 'SELECT ban_userid 
-		FROM ' . BANLIST_TABLE;
+		FROM ' . BANLIST_TABLE . '
+		WHERE ' . $db->sql_in_set('ban_userid', array_map('intval', array_keys($recipients))) . '
+			AND ban_exclude = 0';
 	$result = $db->sql_query($sql);
 
-	unset($recipients[ANONYMOUS], $recipients[$user->data['user_id']]);
-	
 	while ($row = $db->sql_fetchrow($result))
 	{
-		if (isset($row['ban_userid']))
-		{
-			unset($recipients[$row['ban_userid']]);
-		}
+		unset($recipients[$row['ban_userid']]);
 	}
 	$db->sql_freeresult($result);
 
@@ -1498,11 +1524,9 @@ function pm_notification($mode, $author, $recipients, $subject, $message)
 		return;
 	}
 
-	$recipient_list = implode(', ', array_keys($recipients));
-
 	$sql = 'SELECT user_id, username, user_email, user_lang, user_notify_pm, user_notify_type, user_jabber 
-		FROM ' . USERS_TABLE . "
-		WHERE user_id IN ($recipient_list)";
+		FROM ' . USERS_TABLE . '
+		WHERE ' . $db->sql_in_set('user_id', array_map('intval', array_keys($recipients)));
 	$result = $db->sql_query($sql);
 
 	$msg_list_ary = array();

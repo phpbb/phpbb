@@ -40,7 +40,7 @@
 		<fieldset>
 			<legend>{L_VISIBILITY_OPTION}</legend>
 		<dl>
-			<dt><label for="field_option_none">{L_DISPLAY_AT_PROFILE}:</label></dt>
+			<dt><label for="field_option_none">{L_DISPLAY_AT_PROFILE}:</label><br /><span>{L_DISPLAY_AT_PROFILE_EXPLAIN}</span></dt>
 			<dd><input type="radio" class="radio" id="field_option_none" name="field_option" value="none"<!-- IF not S_SHOW_ON_REG and not S_FIELD_REQUIRED and not S_FIELD_HIDE --> checked="checked"<!-- ENDIF --> /></dd>
 		</dl>
 		<dl>
@@ -81,7 +81,13 @@
 		<!-- ENDIF -->
 		<!-- IF S_BOOL or S_DROPDOWN -->
 			<dl>
-				<dt><label for="lang_options">{L_ENTRIES}:</label><br /><span>{L_LANG_OPTIONS_EXPLAIN}</span></dt>
+				<dt><label for="lang_options">{L_ENTRIES}:</label>
+					<!-- IF S_EDIT_MODE and S_DROPDOWN -->
+						<br /><span>{L_EDIT_DROPDOWN_LANG_EXPLAIN}</span>
+					<!-- ELSE -->
+						<br /><span>{L_LANG_OPTIONS_EXPLAIN}</span>
+					<!-- ENDIF -->
+				</dt>
 			<!-- IF S_DROPDOWN -->
 				<dd><textarea id="lang_options" name="lang_options" rows="5" cols="80">{LANG_OPTIONS}</textarea></dd>
 			<!-- ELSE -->
@@ -182,7 +188,8 @@
 	
 	<fieldset class="quick">
 		<input class="small" type="text" name="field_ident" /> <select name="field_type">{S_TYPE_OPTIONS}</select>
-		<input class="button1" type="submit" name="create" value="{L_CREATE_NEW_FIELD}" />
+		<input class="button1" type="submit" name="submit" value="{L_CREATE_NEW_FIELD}" />
+		<input type="hidden" name="create" value="1" />
 	</fieldset>
 
 	</form>

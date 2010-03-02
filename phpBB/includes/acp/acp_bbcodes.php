@@ -33,12 +33,12 @@ class acp_bbcodes
 		switch ($action)
 		{
 			case 'add':
-				$bbcode_match = $bbcode_tpl = '';
+				$bbcode_match = $bbcode_tpl = $bbcode_helpline = '';
 				$display_on_posting = 0;
 			break;
 
 			case 'edit':
-				$sql = 'SELECT bbcode_match, bbcode_tpl, display_on_posting
+				$sql = 'SELECT bbcode_match, bbcode_tpl, display_on_posting, bbcode_helpline
 					FROM ' . BBCODES_TABLE . '
 					WHERE bbcode_id = ' . $bbcode_id;
 				$result = $db->sql_query($sql);
@@ -53,6 +53,7 @@ class acp_bbcodes
 				$bbcode_match = $row['bbcode_match'];
 				$bbcode_tpl = htmlspecialchars($row['bbcode_tpl']);
 				$display_on_posting = $row['display_on_posting'];
+				$bbcode_helpline = html_entity_decode($row['bbcode_helpline']);
 			break;
 
 			case 'modify':
@@ -75,6 +76,7 @@ class acp_bbcodes
 
 				$bbcode_match = request_var('bbcode_match', '');
 				$bbcode_tpl = html_entity_decode(request_var('bbcode_tpl', ''));
+				$bbcode_helpline = htmlspecialchars(request_var('bbcode_helpline', ''));
 			break;
 		}
 
@@ -89,8 +91,10 @@ class acp_bbcodes
 					'U_BACK'			=> $this->u_action,
 					'U_ACTION'			=> $this->u_action . '&amp;action=' . (($action == 'add') ? 'create' : 'modify') . (($bbcode_id) ? "&amp;bbcode=$bbcode_id" : ''),
 
+					'L_BBCODE_USAGE_EXPLAIN'=> sprintf($user->lang['BBCODE_USAGE_EXPLAIN'], '<a href="#down">', '</a>'),
 					'BBCODE_MATCH'			=> $bbcode_match,
 					'BBCODE_TPL'			=> $bbcode_tpl,
+					'BBCODE_HELPLINE'		=> $bbcode_helpline,
 					'DISPLAY_ON_POSTING'	=> $display_on_posting)
 				);
 
@@ -134,6 +138,7 @@ class acp_bbcodes
 					'bbcode_match'				=> $bbcode_match,
 					'bbcode_tpl'				=> $bbcode_tpl,
 					'display_on_posting'		=> $display_on_posting,
+					'bbcode_helpline'			=> $bbcode_helpline,
 					'first_pass_match'			=> $data['first_pass_match'],
 					'first_pass_replace'		=> $data['first_pass_replace'],
 					'second_pass_match'			=> $data['second_pass_match'],
@@ -163,7 +168,7 @@ class acp_bbcodes
 						$bbcode_id = NUM_CORE_BBCODES + 1;
 					}
 
-					if ($bbcode_id > 31)
+					if ($bbcode_id > 1511)
 					{
 						trigger_error('TOO_MANY_BBCODES');
 					}
@@ -278,8 +283,8 @@ class acp_bbcodes
 			{
 				$token_type = $m[1][$n];
 
-				reset($tokens[$token_type]);
-				list($match, $replace) = each($tokens[$token_type]);
+				reset($tokens[strtoupper($token_type)]);
+				list($match, $replace) = each($tokens[strtoupper($token_type)]);
 
 				// Pad backreference numbers from tokens
 				if (preg_match_all('/(?<!\\\\)\$([0-9]+)/', $replace, $repad))
@@ -337,7 +342,7 @@ class acp_bbcodes
 		}
 
 		// Lowercase tags
-		$bbcode_tag = preg_replace('/.*?\[([a-z]+=?).*/i', '$1', $bbcode_match);
+		$bbcode_tag = preg_replace('/.*?\[([a-z0-9_-]+=?).*/i', '$1', $bbcode_match);
 		$fp_match = preg_replace('#\[/?' . $bbcode_tag . '#ie', "strtolower('\$0')", $fp_match);
 		$fp_replace = preg_replace('#\[/?' . $bbcode_tag . '#ie', "strtolower('\$0')", $fp_replace);
 		$sp_match = preg_replace('#\[/?' . $bbcode_tag . '#ie', "strtolower('\$0')", $sp_match);

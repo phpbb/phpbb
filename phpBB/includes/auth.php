@@ -161,7 +161,7 @@ class auth
 				
 				if (sizeof($this->acl))
 				{
-					$sql .= ' WHERE forum_id NOT IN (' . implode(', ', array_keys($this->acl)) . ')';
+					$sql .= ' WHERE ' . $db->sql_in_set('forum_id', array_keys($this->acl), true);
 				}
 				$result = $db->sql_query($sql);
 
@@ -378,14 +378,14 @@ class auth
 
 						// If one option is allowed, the global permission for this option has to be allowed too
 						// example: if the user has the a_ permission this means he has one or more a_* permissions
-						if ($auth_ary[$opt] == ACL_YES && (!isset($bitstring[$this->acl_options[$ary_key][$option_key]]) || $bitstring[$this->acl_options[$ary_key][$option_key]] == ACL_NO))
+						if ($auth_ary[$opt] == ACL_YES && (!isset($bitstring[$this->acl_options[$ary_key][$option_key]]) || $bitstring[$this->acl_options[$ary_key][$option_key]] == ACL_NEVER))
 						{
 							$bitstring[$this->acl_options[$ary_key][$option_key]] = ACL_YES;
 						}
 					}
 					else
 					{
-						$bitstring[$id] = ACL_NO;
+						$bitstring[$id] = ACL_NEVER;
 					}
 				}
 
@@ -418,7 +418,13 @@ class auth
 	{
 		global $db;
 
-		$where_sql = ($user_id !== false) ? ' WHERE user_id ' . ((is_array($user_id)) ? ' IN (' . implode(', ', array_map('intval', $user_id)) . ')' : " = $user_id") : '';
+		$where_sql = '';
+
+		if ($user_id !== false)
+		{
+			$user_id = (!is_array($user_id)) ? $user_id = array((int) $user_id) : array_map('intval', $user_id);
+			$where_sql = ' WHERE ' . $db->sql_in_set('user_id', $user_id);
+		}
 
 		$sql = 'UPDATE ' . USERS_TABLE . "
 			SET user_permissions = '',
@@ -440,8 +446,8 @@ class auth
 
 		$sql_id = ($user_type == 'user') ? 'user_id' : 'group_id';
 
-		$sql_ug = ($ug_id !== false) ? ((!is_array($ug_id)) ? "AND a.$sql_id = $ug_id" : "AND a.$sql_id IN (" . implode(', ', $ug_id) . ')') : '';
-		$sql_forum = ($forum_id !== false) ? ((!is_array($forum_id)) ? "AND a.forum_id = $forum_id" : 'AND a.forum_id IN (' . implode(', ', $forum_id) . ')') : '';
+		$sql_ug = ($ug_id !== false) ? ((!is_array($ug_id)) ? "AND a.$sql_id = $ug_id" : 'AND ' . $db->sql_in_set("a.$sql_id", $ug_id)) : '';
+		$sql_forum = ($forum_id !== false) ? ((!is_array($forum_id)) ? "AND a.forum_id = $forum_id" : 'AND ' . $db->sql_in_set('a.forum_id', $forum_id)) : '';
 
 		// Grab assigned roles...
 		$sql = 'SELECT a.auth_role_id, a.' . $sql_id . ', a.forum_id
@@ -469,8 +475,8 @@ class auth
 	{
 		global $db;
 
-		$sql_user = ($user_id !== false) ? ((!is_array($user_id)) ? "user_id = $user_id" : 'user_id IN (' . implode(', ', $user_id) . ')') : '';
-		$sql_forum = ($forum_id !== false) ? ((!is_array($forum_id)) ? "AND a.forum_id = $forum_id" : 'AND a.forum_id IN (' . implode(', ', $forum_id) . ')') : '';
+		$sql_user = ($user_id !== false) ? ((!is_array($user_id)) ? "user_id = $user_id" : $db->sql_in_set('user_id', $user_id)) : '';
+		$sql_forum = ($forum_id !== false) ? ((!is_array($forum_id)) ? "AND a.forum_id = $forum_id" : 'AND ' . $db->sql_in_set('a.forum_id', $forum_id)) : '';
 
 		$sql_opts = '';
 
@@ -482,14 +488,14 @@ class auth
 			}
 			else
 			{
-				$sql_opts = 'AND ao.auth_option IN (' . implode(', ', preg_replace('#^\s*(.*)\s*$#e', "\"'\" . \$db->sql_escape('\\1') . \"'\"", $opts)) . ')';
+				$sql_opts = 'AND ' . $db->sql_in_set('ao.auth_option', $opts);
 			}
 		}
 
 		$hold_ary = array();
 
 		// First grab user settings ... each user has only one setting for each
-		// option ... so we shouldn't need any ACL_NO checks ... he says ...
+		// option ... so we shouldn't need any ACL_NEVER checks ... he says ...
 		// Grab assigned roles...
 		$sql = $db->sql_build_query('SELECT', array(
 			'SELECT'	=> 'ao.auth_option, a.auth_role_id, r.auth_setting as role_auth_setting, a.user_id, a.forum_id, a.auth_setting',
@@ -522,7 +528,7 @@ class auth
 		}
 		$db->sql_freeresult($result);
 
-		// Now grab group settings ... ACL_NO overrides ACL_YES so act appropriatley
+		// Now grab group settings ... ACL_NEVER overrides ACL_YES so act appropriatley
 		$sql = $db->sql_build_query('SELECT', array(
 			'SELECT'	=> 'ug.user_id, ao.auth_option, a.forum_id, a.auth_setting, a.auth_role_id, r.auth_setting as role_auth_setting',
 
@@ -552,13 +558,13 @@ class auth
 
 		while ($row = $db->sql_fetchrow($result))
 		{
-			if (!isset($hold_ary[$row['user_id']][$row['forum_id']][$row['auth_option']]) || (isset($hold_ary[$row['user_id']][$row['forum_id']][$row['auth_option']]) && $hold_ary[$row['user_id']][$row['forum_id']][$row['auth_option']] != ACL_NO))
+			if (!isset($hold_ary[$row['user_id']][$row['forum_id']][$row['auth_option']]) || (isset($hold_ary[$row['user_id']][$row['forum_id']][$row['auth_option']]) && $hold_ary[$row['user_id']][$row['forum_id']][$row['auth_option']] != ACL_NEVER))
 			{
 				$setting = ($row['auth_role_id']) ? $row['role_auth_setting'] : $row['auth_setting'];
 				$hold_ary[$row['user_id']][$row['forum_id']][$row['auth_option']] = $setting;
 
-				// Check for existence of ACL_YES if an option got set to NO
-				if ($setting == ACL_NO)
+				// Check for existence of ACL_YES if an option got set to ACL_NEVER
+				if ($setting == ACL_NEVER)
 				{
 					$flag = substr($row['auth_option'], 0, strpos($row['auth_option'], '_') + 1);
 
@@ -586,8 +592,8 @@ class auth
 	{
 		global $db;
 
-		$sql_user = ($user_id !== false) ? ((!is_array($user_id)) ? "user_id = $user_id" : 'user_id IN (' . implode(', ', $user_id) . ')') : '';
-		$sql_forum = ($forum_id !== false) ? ((!is_array($forum_id)) ? "AND a.forum_id = $forum_id" : 'AND a.forum_id IN (' . implode(', ', $forum_id) . ')') : '';
+		$sql_user = ($user_id !== false) ? ((!is_array($user_id)) ? "user_id = $user_id" : $db->sql_in_set('user_id', $user_id)) : '';
+		$sql_forum = ($forum_id !== false) ? ((!is_array($forum_id)) ? "AND a.forum_id = $forum_id" : 'AND ' . $db->sql_in_set('a.forum_id', $forum_id)) : '';
 
 		$sql_opts = '';
 
@@ -599,7 +605,7 @@ class auth
 			}
 			else
 			{
-				$sql_opts = 'AND ao.auth_option IN (' . implode(', ', preg_replace('#^\s*(.*)\s*$#e', "\"'\" . \$db->sql_escape('\\1') . \"'\"", $opts)) . ')';
+				$sql_opts = 'AND ' . $db->sql_in_set('ao.auth_option', $opts);
 			}
 		}
 
@@ -647,8 +653,8 @@ class auth
 	{
 		global $db;
 
-		$sql_group = ($group_id !== false) ? ((!is_array($group_id)) ? "group_id = $group_id" : 'group_id IN (' . implode(', ', $group_id) . ')') : '';
-		$sql_forum = ($forum_id !== false) ? ((!is_array($forum_id)) ? "AND a.forum_id = $forum_id" : 'AND a.forum_id IN (' . implode(', ', $forum_id) . ')') : '';
+		$sql_group = ($group_id !== false) ? ((!is_array($group_id)) ? "group_id = $group_id" : $db->sql_in_set('group_id', $group_id)) : '';
+		$sql_forum = ($forum_id !== false) ? ((!is_array($forum_id)) ? "AND a.forum_id = $forum_id" : 'AND ' . $db->sql_in_set('a.forum_id', $forum_id)) : '';
 
 		if ($opts !== false)
 		{
@@ -658,7 +664,7 @@ class auth
 			}
 			else
 			{
-				$sql_opts = 'AND ao.auth_option IN (' . implode(', ', preg_replace('#^\s*(.*)\s*$#e', "\"'\" . \$db->sql_escape('\\1') . \"'\"", $opts)) . ')';
+				$sql_opts = 'AND ' . $db->sql_in_set('ao.auth_option', $opts);
 			}
 		}
 
@@ -707,40 +713,70 @@ class auth
 		global $config, $db, $user, $phpbb_root_path, $phpEx;
 
 		$method = trim(basename($config['auth_method']));
+		include_once($phpbb_root_path . 'includes/auth/auth_' . $method . '.' . $phpEx);
 
-		if (file_exists($phpbb_root_path . 'includes/auth/auth_' . $method . '.' . $phpEx))
+		$method = 'login_' . $method;
+		if (function_exists($method))
 		{
-			include_once($phpbb_root_path . 'includes/auth/auth_' . $method . '.' . $phpEx);
+			$login = $method($username, $password);
 
-			$method = 'login_' . $method;
-			if (function_exists($method))
+			// If the auth module wants us to create an empty profile do so and then treat the status as LOGIN_SUCCESS
+			if ($login['status'] == LOGIN_SUCCESS_CREATE_PROFILE)
 			{
-				$login = $method($username, $password);
-
-				// If login succeeded, we will log the user in... else we pass the login array through...
-				if ($login['status'] == LOGIN_SUCCESS)
+				// we are going to use the user_add function so include functions_user.php if it wasn't defined yet
+				if (!function_exists('user_add'))
 				{
-					$result = $user->session_create($login['user_row']['user_id'], $admin, $autologin, $viewonline);
+					include_once($phpbb_root_path . 'includes/functions_user.' . $phpEx);
+				}
 
-					// Successful session creation
-					if ($result === true)
-					{
-						return array(
-							'status'		=> LOGIN_SUCCESS,
-							'error_msg'		=> false,
-							'user_row'		=> $login['user_row'],
-						);
-					}
+				user_add($login['user_row'], (isset($login['cp_data'])) ? $login['cp_data'] : false);
 
+				$sql = 'SELECT user_id, username, user_password, user_passchg, user_email, user_type
+					FROM ' . USERS_TABLE . "
+					WHERE username = '" . $db->sql_escape($username) . "'";
+				$result = $db->sql_query($sql);
+				$row = $db->sql_fetchrow($result);
+				$db->sql_freeresult($result);
+
+				if (!$row)
+				{
 					return array(
-						'status'		=> LOGIN_BREAK,
-						'error_msg'		=> $result,
+						'status'		=> LOGIN_ERROR_EXTERNAL_AUTH,
+						'error_msg'		=> 'AUTH_NO_PROFILE_CREATED',
+						'user_row'		=> array('user_id' => ANONYMOUS),
+					);
+				}
+
+				$login = array(
+					'status'	=> LOGIN_SUCCESS,
+					'error_msg'	=> false,
+					'user_row'	=> $row,
+				);
+			}
+
+			// If login succeeded, we will log the user in... else we pass the login array through...
+			if ($login['status'] == LOGIN_SUCCESS)
+			{
+				$result = $user->session_create($login['user_row']['user_id'], $admin, $autologin, $viewonline);
+
+				// Successful session creation
+				if ($result === true)
+				{
+					return array(
+						'status'		=> LOGIN_SUCCESS,
+						'error_msg'		=> false,
 						'user_row'		=> $login['user_row'],
 					);
 				}
 
-				return $login;
+				return array(
+					'status'		=> LOGIN_BREAK,
+					'error_msg'		=> $result,
+					'user_row'		=> $login['user_row'],
+				);
 			}
+
+			return $login;
 		}
 
 		trigger_error('Authentication method not found', E_USER_ERROR);

@@ -50,9 +50,9 @@ class ucp_main
 					$sql_select .= ', tt.mark_time';
 				}
 
-				$topic_type = $user->lang['VIEW_TOPIC_ANNOUNCEMENT'];
-				$folder = 'folder_announce';
-				$folder_new = $folder . '_new';
+				$topic_type = $user->lang['VIEW_TOPIC_GLOBAL'];
+				$folder = 'global_read';
+				$folder_new = 'global_unread';
 
 				// Get cleaned up list... return only those forums not having the f_read permission
 				$forum_ary = $auth->acl_getf('!f_read', true);
@@ -65,7 +65,7 @@ class ucp_main
 	
 				if (sizeof($forum_ary))
 				{
-					$sql .= ' AND forum_id NOT IN ( ' . implode(', ', $forum_ary) . ')';
+					$sql .= ' AND ' . $db->sql_in_set('forum_id', $forum_ary);
 				}
 				$result = $db->sql_query_limit($sql, 1);
 				$g_forum_id = (int) $db->sql_fetchfield('forum_id');
@@ -105,20 +105,18 @@ class ucp_main
 
 					$unread_topic = (isset($topic_tracking_info[$topic_id]) && $row['topic_last_post_time'] > $topic_tracking_info[$topic_id]) ? true : false;
 
-					if ($row['topic_status'] == ITEM_LOCKED)
-					{
-						$topic_type = $user->lang['VIEW_TOPIC_LOCKED'];
-						$folder = 'folder_locked';
-						$folder_new = 'folder_locked_new';
-					}
-
 					$folder_img = ($unread_topic) ? $folder_new : $folder;
 					$folder_alt = ($unread_topic) ? 'NEW_POSTS' : (($row['topic_status'] == ITEM_LOCKED) ? 'TOPIC_LOCKED' : 'NO_NEW_POSTS');
+
+					if ($row['topic_status'] == ITEM_LOCKED)
+					{
+						$folder_img .= '_locked';
+					}
 
 					// Posted image?
 					if (!empty($row['topic_posted']) && $row['topic_posted'])
 					{
-						$folder_img .= '_posted';
+						$folder_img .= '_mine';
 					}
 
 					$template->assign_block_vars('topicrow', array(
@@ -129,11 +127,11 @@ class ucp_main
 						'TOPIC_TITLE'		=> censor_text($row['topic_title']),
 						'TOPIC_TYPE'		=> $topic_type,
 
-						'LAST_POST_IMG'			=> $user->img('icon_post_latest', 'VIEW_LATEST_POST'),
-						'NEWEST_POST_IMG'		=> $user->img('icon_post_newest', 'VIEW_NEWEST_POST'),
+						'LAST_POST_IMG'			=> $user->img('icon_topic_latest', 'VIEW_LATEST_POST'),
+						'NEWEST_POST_IMG'		=> $user->img('icon_topic_newest', 'VIEW_NEWEST_POST'),
 						'TOPIC_FOLDER_IMG'		=> $user->img($folder_img, $folder_alt),
 						'TOPIC_FOLDER_IMG_SRC'	=> $user->img($folder_img, $folder_alt, false, '', 'src'),
-						'ATTACH_ICON_IMG'		=> ($auth->acl_gets('f_download', 'u_download', $forum_id) && $row['topic_attachment']) ? $user->img('icon_attach', '') : '',
+						'ATTACH_ICON_IMG'		=> ($auth->acl_gets('f_download', 'u_download', $forum_id) && $row['topic_attachment']) ? $user->img('icon_topic_attach', '') : '',
 
 						'S_USER_POSTED'		=> (!empty($row['topic_posted']) && $row['topic_posted']) ? true : false,
 						'S_UNREAD'			=> $unread_topic,
@@ -188,27 +186,27 @@ class ucp_main
 
 				if ($unwatch)
 				{
-					$forums = (isset($_POST['f'])) ? implode(', ', array_map('intval', array_keys($_POST['f']))) : false;
-					$topics = (isset($_POST['t'])) ? implode(', ', array_map('intval', array_keys($_POST['t']))) : false;
+					$forums = (isset($_POST['f'])) ? array_map('intval', array_keys($_POST['f'])) : array();
+					$topics = (isset($_POST['t'])) ? array_map('intval', array_keys($_POST['t'])) : array();
 
-					if ($forums || $topics)
+					if (sizeof($forums) || sizeof($topics))
 					{
 						$l_unwatch = '';
-						if ($forums)
+						if (sizeof($forums))
 						{
-							$sql = 'DELETE FROM ' . FORUMS_WATCH_TABLE . "
-								WHERE forum_id IN ($forums) 
-									AND user_id = " . $user->data['user_id'];
+							$sql = 'DELETE FROM ' . FORUMS_WATCH_TABLE . '
+								WHERE ' . $db->sql_in_set('forum_id', $forums) . '
+									AND user_id = ' . $user->data['user_id'];
 							$db->sql_query($sql);
 
 							$l_unwatch .= '_FORUMS';
 						}
 
-						if ($topics)
+						if (sizeof($topics))
 						{
-							$sql = 'DELETE FROM ' . TOPICS_WATCH_TABLE . "
-								WHERE topic_id IN ($topics) 
-									AND user_id = " . $user->data['user_id'];
+							$sql = 'DELETE FROM ' . TOPICS_WATCH_TABLE . '
+								WHERE ' . $db->sql_in_set('topic_id', $topics) . '
+									AND user_id = ' . $user->data['user_id'];
 							$db->sql_query($sql);
 
 							$l_unwatch .= '_TOPICS';
@@ -273,12 +271,12 @@ class ucp_main
 					// Which folder should we display?
 					if ($row['forum_status'] == ITEM_LOCKED)
 					{
-						$folder_image = ($unread_forum) ? 'folder_locked_new' : 'folder_locked';
+						$folder_image = ($unread_forum) ? 'forum_unread_locked' : 'forum_read_locked';
 						$folder_alt = 'FORUM_LOCKED';
 					}
 					else
 					{
-						$folder_image = ($unread_forum) ? 'folder_new' : 'folder';
+						$folder_image = ($unread_forum) ? 'forum_unread' : 'forum_read';
 						$folder_alt = ($unread_forum) ? 'NEW_POSTS' : 'NO_NEW_POSTS';
 					}
 
@@ -302,7 +300,7 @@ class ucp_main
 						'FORUM_FOLDER_IMG'		=> $user->img($folder_image, $folder_alt),
 						'FORUM_FOLDER_IMG_SRC'	=> $user->img($folder_image, $folder_alt, false, '', 'src'),
 						'FORUM_NAME'			=> $row['forum_name'],
-						'LAST_POST_IMG'			=> $user->img('icon_post_latest', 'VIEW_LATEST_POST'),
+						'LAST_POST_IMG'			=> $user->img('icon_topic_latest', 'VIEW_LATEST_POST'),
 						'LAST_POST_TIME'		=> $last_post_time,
 						'LAST_POST_AUTHOR'		=> $last_poster,
 
@@ -432,14 +430,14 @@ class ucp_main
 						'TOPIC_TITLE'		=> censor_text($row['topic_title']),
 						'TOPIC_TYPE'		=> $topic_type,
 
-						'LAST_POST_IMG'			=> $user->img('icon_post_latest', 'VIEW_LATEST_POST'),
-						'NEWEST_POST_IMG'		=> $user->img('icon_post_newest', 'VIEW_NEWEST_POST'),
+						'LAST_POST_IMG'			=> $user->img('icon_topic_latest', 'VIEW_LATEST_POST'),
+						'NEWEST_POST_IMG'		=> $user->img('icon_topic_newest', 'VIEW_NEWEST_POST'),
 						'TOPIC_FOLDER_IMG'		=> $user->img($folder_img, $folder_alt),
 						'TOPIC_FOLDER_IMG_SRC'	=> $user->img($folder_img, $folder_alt, false, '', 'src'),
 						'TOPIC_ICON_IMG'		=> (!empty($icons[$row['icon_id']])) ? $icons[$row['icon_id']]['img'] : '',
 						'TOPIC_ICON_IMG_WIDTH'	=> (!empty($icons[$row['icon_id']])) ? $icons[$row['icon_id']]['width'] : '',
 						'TOPIC_ICON_IMG_HEIGHT'	=> (!empty($icons[$row['icon_id']])) ? $icons[$row['icon_id']]['height'] : '',
-						'ATTACH_ICON_IMG'		=> ($auth->acl_gets('f_download', 'u_download', $forum_id) && $row['topic_attachment']) ? $user->img('icon_attach', $user->lang['TOTAL_ATTACHMENTS']) : '',
+						'ATTACH_ICON_IMG'		=> ($auth->acl_gets('f_download', 'u_download', $forum_id) && $row['topic_attachment']) ? $user->img('icon_topic_attach', $user->lang['TOTAL_ATTACHMENTS']) : '',
 
 						'S_TOPIC_TYPE'			=> $row['topic_type'],
 						'S_USER_POSTED'			=> (!empty($row['topic_posted'])) ? true : false,
@@ -513,7 +511,7 @@ class ucp_main
 					{
 						$sql = 'DELETE FROM ' . BOOKMARKS_TABLE . '
 							WHERE user_id = ' . $user->data['user_id'] . '
-								AND topic_id IN (' . implode(', ', $topics) . ')';
+								AND ' . $db->sql_in_set('topic_id', $topics);
 						$db->sql_query($sql);
 
 						// Re-Order bookmarks (possible with one query? This query massaker is not really acceptable...)
@@ -591,8 +589,8 @@ class ucp_main
 
 						'TOPIC_FOLDER_IMG'		=> $user->img($folder_img, $folder_alt),
 						'TOPIC_FOLDER_IMG_SRC'	=> $user->img($folder_img, $folder_alt, false, '', 'src'),
-						'ATTACH_ICON_IMG'		=> ($auth->acl_gets('f_download', 'u_download', $forum_id) && $row['topic_attachment']) ? $user->img('icon_attach', '') : '',
-						'LAST_POST_IMG'			=> $user->img('icon_post_latest', 'VIEW_LATEST_POST'),
+						'ATTACH_ICON_IMG'		=> ($auth->acl_gets('f_download', 'u_download', $forum_id) && $row['topic_attachment']) ? $user->img('icon_topic_attach', '') : '',
+						'LAST_POST_IMG'			=> $user->img('icon_topic_latest', 'VIEW_LATEST_POST'),
 
 						'U_LAST_POST'			=> $view_topic_url . '&amp;p=' . $row['topic_last_post_id'] . '#p' . $row['topic_last_post_id'],
 						'U_LAST_POST_AUTHOR'	=> ($row['topic_last_poster_id'] != ANONYMOUS && $row['topic_last_poster_id']) ? append_sid("{$phpbb_root_path}memberlist.$phpEx", 'mode=viewprofile&amp;u=' . $row['topic_last_poster_id']) : '',
@@ -622,13 +620,13 @@ class ucp_main
 
 				if ($delete)
 				{
-					$drafts = (isset($_POST['d'])) ? implode(', ', array_map('intval', array_keys($_POST['d']))) : '';
+					$drafts = (!empty($_POST['d'])) ? array_map('intval', array_keys($_POST['d'])) : array();
 
-					if ($drafts)
+					if (sizeof($drafts))
 					{
-						$sql = 'DELETE FROM ' . DRAFTS_TABLE . "
-							WHERE draft_id IN ($drafts) 
-								AND user_id = " .$user->data['user_id'];
+						$sql = 'DELETE FROM ' . DRAFTS_TABLE . '
+							WHERE ' . $db->sql_in_set('draft_id', $drafts) . '
+								AND user_id = ' . $user->data['user_id'];
 						$db->sql_query($sql);
 
 						$message = $user->lang['DRAFTS_DELETED'] . '<br /><br />' . sprintf($user->lang['RETURN_UCP'], '<a href="' . $this->u_action . '">', '</a>');
@@ -636,6 +634,8 @@ class ucp_main
 						meta_refresh(3, $this->u_action);
 						trigger_error($message);
 					}
+
+					unset($drafts);
 				}
 
 				if ($submit && $edit)
@@ -703,7 +703,7 @@ class ucp_main
 				{
 					$sql = 'SELECT topic_id, forum_id, topic_title
 						FROM ' . TOPICS_TABLE . '
-						WHERE topic_id IN (' . implode(',', array_unique($topic_ids)) . ')';
+						WHERE ' . $db->sql_in_set('topic_id', array_unique($topic_ids));
 					$result = $db->sql_query($sql);
 
 					while ($row = $db->sql_fetchrow($result))

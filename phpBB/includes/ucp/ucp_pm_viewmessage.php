@@ -23,7 +23,7 @@ function view_message($id, $mode, $folder_id, $msg_id, $folder, $message_row)
 	$author_id	= (int) $message_row['author_id'];
 
 	// Not able to view message, it was deleted by the sender
-	if ($message_row['deleted'])
+	if ($message_row['pm_deleted'])
 	{
 		trigger_error('NO_AUTH_READ_REMOVED_MESSAGE');
 	}
@@ -85,7 +85,7 @@ function view_message($id, $mode, $folder_id, $msg_id, $folder, $message_row)
 
 	if ($message_row['message_attachment'] && $config['allow_pm_attach'])
 	{
-		if ($config['auth_download_pm'] && $auth->acl_get('u_pm_download'))
+		if ($auth->acl_get('u_pm_download'))
 		{
 			include($phpbb_root_path . 'includes/functions_display.' . $phpEx);
 
@@ -134,7 +134,7 @@ function view_message($id, $mode, $folder_id, $msg_id, $folder, $message_row)
 		{
 			$sql = 'UPDATE ' . ATTACHMENTS_TABLE . '
 				SET download_count = download_count + 1
-				WHERE attach_id IN (' . implode(', ', array_unique($update_count)) . ')';
+				WHERE ' . $db->sql_in_set('attach_id', array_unique($update_count));
 			$db->sql_query($sql);
 		}
 	}
@@ -172,16 +172,16 @@ function view_message($id, $mode, $folder_id, $msg_id, $folder, $message_row)
 		'AUTHOR_POSTS'		=> (!empty($user_info['user_posts'])) ? $user_info['user_posts'] : '',
 		'AUTHOR_FROM'		=> (!empty($user_info['user_from'])) ? $user_info['user_from'] : '',
 
-		'ONLINE_IMG'		=> (!$config['load_onlinetrack']) ? '' : ((isset($user_info['online']) && $user_info['online']) ? $user->img('btn_online', $user->lang['ONLINE']) : $user->img('btn_offline', $user->lang['OFFLINE'])),
+		'ONLINE_IMG'		=> (!$config['load_onlinetrack']) ? '' : ((isset($user_info['online']) && $user_info['online']) ? $user->img('icon_user_online', $user->lang['ONLINE']) : $user->img('icon_user_offline', $user->lang['OFFLINE'])),
 		'S_ONLINE'			=> (!$config['load_onlinetrack']) ? false : ((isset($user_info['online']) && $user_info['online']) ? true : false),
-		'DELETE_IMG'		=> $user->img('btn_delete', $user->lang['DELETE_MESSAGE']),
-		'INFO_IMG'			=> $user->img('btn_info', $user->lang['VIEW_PM_INFO']),
-		'PROFILE_IMG'		=> $user->img('btn_profile', $user->lang['READ_PROFILE']),
-		'EMAIL_IMG'			=> $user->img('btn_email', $user->lang['SEND_EMAIL']),
-		'QUOTE_IMG'			=> $user->img('btn_quote', $user->lang['POST_QUOTE_PM']),
-		'REPLY_IMG'			=> $user->img('btn_reply_pm', $user->lang['POST_REPLY_PM']),
-		'EDIT_IMG'			=> $user->img('btn_edit', $user->lang['POST_EDIT_PM']),
-		'MINI_POST_IMG'		=> $user->img('icon_post', $user->lang['PM']),
+		'DELETE_IMG'		=> $user->img('icon_post_delete', $user->lang['DELETE_MESSAGE']),
+		'INFO_IMG'			=> $user->img('icon_post_info', $user->lang['VIEW_PM_INFO']),
+		'PROFILE_IMG'		=> $user->img('icon_user_profile', $user->lang['READ_PROFILE']),
+		'EMAIL_IMG'			=> $user->img('icon_contact_email', $user->lang['SEND_EMAIL']),
+		'QUOTE_IMG'			=> $user->img('icon_post_quote', $user->lang['POST_QUOTE_PM']),
+		'REPLY_IMG'			=> $user->img('button_pm_reply', $user->lang['POST_REPLY_PM']),
+		'EDIT_IMG'			=> $user->img('icon_post_edit', $user->lang['POST_EDIT_PM']),
+		'MINI_POST_IMG'		=> $user->img('icon_post_target', $user->lang['PM']),
 
 		'SENT_DATE'			=> $user->format_date($message_row['message_time']),
 		'SUBJECT'			=> $message_row['message_subject'],
@@ -189,12 +189,12 @@ function view_message($id, $mode, $folder_id, $msg_id, $folder, $message_row)
 		'SIGNATURE'			=> ($message_row['enable_sig']) ? $signature : '',
 		'EDITED_MESSAGE'	=> $l_edited_by,
 
-		'U_INFO'			=> ($auth->acl_get('m_info') && $message_row['forwarded']) ? append_sid("{$phpbb_root_path}mcp.$phpEx", 'mode=pm_details&amp;p=' . $message_row['msg_id'], true, $user->session_id) : '',
+		'U_INFO'			=> ($auth->acl_get('m_info') && $message_row['pm_forwarded']) ? append_sid("{$phpbb_root_path}mcp.$phpEx", 'mode=pm_details&amp;p=' . $message_row['msg_id'], true, $user->session_id) : '',
 		'U_DELETE'			=> ($auth->acl_get('u_pm_delete')) ? "$url&amp;mode=compose&amp;action=delete&amp;f=$folder_id&amp;p=" . $message_row['msg_id'] : '',
 		'U_AUTHOR_PROFILE'	=> append_sid("{$phpbb_root_path}memberlist.$phpEx", 'mode=viewprofile&amp;u=' . $author_id),
 		'U_EMAIL'			=> $user_info['email'],
 		'U_QUOTE'			=> ($auth->acl_get('u_sendpm')) ? "$url&amp;mode=compose&amp;action=quote&amp;f=$folder_id&amp;p=" . $message_row['msg_id'] : '',
-		'U_EDIT'			=> (($message_row['message_time'] > time() - $config['pm_edit_time'] || !$config['pm_edit_time']) && $folder_id == PRIVMSGS_OUTBOX && $auth->acl_get('u_pm_edit')) ? "$url&amp;mode=compose&amp;action=edit&amp;f=$folder_id&amp;p=" . $message_row['msg_id'] : '',
+		'U_EDIT'			=> (($message_row['message_time'] > time() - ($config['pm_edit_time'] * 60) || !$config['pm_edit_time']) && $folder_id == PRIVMSGS_OUTBOX && $auth->acl_get('u_pm_edit')) ? "$url&amp;mode=compose&amp;action=edit&amp;f=$folder_id&amp;p=" . $message_row['msg_id'] : '',
 		'U_POST_REPLY_PM'	=> ($auth->acl_get('u_sendpm')) ? "$url&amp;mode=compose&amp;action=reply&amp;f=$folder_id&amp;p=" . $message_row['msg_id'] : '',
 		'U_PREVIOUS_PM'		=> "$url&amp;f=$folder_id&amp;p=" . $message_row['msg_id'] . "&amp;view=previous",
 		'U_NEXT_PM'			=> "$url&amp;f=$folder_id&amp;p=" . $message_row['msg_id'] . "&amp;view=next",
@@ -264,7 +264,7 @@ function message_history($msg_id, $user_id, $message_row, $folder)
 	}
 
 	$rowset = array();
-	$bbcode_bitfield = 0;
+	$bbcode_bitfield = '';
 	$folder_url = append_sid("{$phpbb_root_path}ucp.$phpEx", 'i=pm') . '&amp;folder=';
 
 	$title = ($sort_dir == 'd') ? $row['message_subject'] : '';
@@ -281,7 +281,7 @@ function message_history($msg_id, $user_id, $message_row, $folder)
 		else
 		{
 			$rowset[$row['msg_id']] = $row;
-			$bbcode_bitfield |= $row['bbcode_bitfield'];
+			$bbcode_bitfield = $bbcode_bitfield | base64_decode($row['bbcode_bitfield']);
 		}
 	}
 	while ($row = $db->sql_fetchrow($result));
@@ -355,7 +355,7 @@ function message_history($msg_id, $user_id, $message_row, $folder)
 	}
 
 	$template->assign_vars(array(
-		'QUOTE_IMG'	=> $user->img('btn_quote', $user->lang['REPLY_WITH_QUOTE']),
+		'QUOTE_IMG'	=> $user->img('icon_post_quote', $user->lang['REPLY_WITH_QUOTE']),
 		'TITLE'		=> $title,
 
 		'U_VIEW_NEXT_HISTORY'		=> "$url&amp;p=" . (($next_history_pm) ? $next_history_pm : $msg_id),

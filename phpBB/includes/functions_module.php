@@ -20,8 +20,8 @@ class p_master
 	var $p_mode;
 	var $p_parent;
 
+	var $active_module = false;
 	var $acl_forum_id = false;
-
 	var $module_ary = array();
 
 	/**
@@ -86,7 +86,7 @@ class p_master
 			}
 
 			// Category with no members, ignore
-			if (!$row['module_name'] && ($row['left_id'] + 1 == $row['right_id']))
+			if (!$row['module_basename'] && ($row['left_id'] + 1 == $row['right_id']))
 			{
 				unset($this->module_cache['modules'][$key]);
 				continue;
@@ -135,7 +135,7 @@ class p_master
 			}
 
 			// Category with no members on their way down (we have to check every level)
-			if (!$row['module_name'])
+			if (!$row['module_basename'])
 			{
 				$empty_category = true;
 
@@ -145,7 +145,7 @@ class p_master
 					if ($temp_row['left_id'] > $row['left_id'] && $temp_row['left_id'] < $row['right_id'])
 					{
 						// Module there
-						if ($temp_row['module_name'] && $temp_row['module_enabled'])
+						if ($temp_row['module_basename'] && $temp_row['module_enabled'])
 						{
 							$empty_category = false;
 							break;
@@ -168,15 +168,15 @@ class p_master
 			// We need to prefix the functions to not create a naming conflict
 			
 			// Function for building 'url_extra'
-			$url_func = '_module_' . $row['module_name'] . '_url';
+			$url_func = '_module_' . $row['module_basename'] . '_url';
 
 			// Function for building the language name
-			$lang_func = '_module_' . $row['module_name'] . '_lang';
+			$lang_func = '_module_' . $row['module_basename'] . '_lang';
 
 			// Custom function for calling parameters on module init (for example assigning template variables)
-			$custom_func = '_module_' . $row['module_name'];
+			$custom_func = '_module_' . $row['module_basename'];
 
-			$names[$row['module_name'] . '_' . $row['module_mode']][] = true;
+			$names[$row['module_basename'] . '_' . $row['module_mode']][] = true;
 			
 			$module_row = array(
 				'depth'		=> $depth,
@@ -185,15 +185,15 @@ class p_master
 				'parent'	=> (int) $row['parent_id'],
 				'cat'		=> ($row['right_id'] > $row['left_id'] + 1) ? true : false,
 
-				'is_duplicate'	=> ($row['module_name'] && sizeof($names[$row['module_name'] . '_' . $row['module_mode']]) > 1) ? true : false,
+				'is_duplicate'	=> ($row['module_basename'] && sizeof($names[$row['module_basename'] . '_' . $row['module_mode']]) > 1) ? true : false,
 
-				'name'		=> (string) $row['module_name'],
+				'name'		=> (string) $row['module_basename'],
 				'mode'		=> (string) $row['module_mode'],
 				'display'	=> (int) $row['module_display'],
 
 				'url_extra'	=> (function_exists($url_func)) ? $url_func($row['module_mode']) : '',
 				
-				'lang'		=> ($row['module_name'] && function_exists($lang_func)) ? $lang_func($row['module_mode'], $row['module_langname']) : ((!empty($user->lang[$row['module_langname']])) ? $user->lang[$row['module_langname']] : $row['module_langname']),
+				'lang'		=> ($row['module_basename'] && function_exists($lang_func)) ? $lang_func($row['module_mode'], $row['module_langname']) : ((!empty($user->lang[$row['module_langname']])) ? $user->lang[$row['module_langname']] : $row['module_langname']),
 				'langname'	=> $row['module_langname'],
 
 				'left'		=> $row['left_id'],
@@ -239,6 +239,7 @@ class p_master
 	function set_active($id = false, $mode = false)
 	{
 		$icat = false;
+		$this->active_module = false;
 
 		if (request_var('icat', ''))
 		{
@@ -247,20 +248,20 @@ class p_master
 		}
 
 		$category = false;
-		foreach ($this->module_ary as $row_id => $itep_ary)
+		foreach ($this->module_ary as $row_id => $item_ary)
 		{
 			// If this is a module and it's selected, active
 			// If this is a category and the module is the first within it, active
 			// If this is a module and no mode selected, select first mode
 			// If no category or module selected, go active for first module in first category
 			if (
-				(($itep_ary['name'] === $id || $itep_ary['id'] === (int) $id) && (($itep_ary['mode'] == $mode && !$itep_ary['cat']) || ($icat && $itep_ary['cat']))) ||
-				($itep_ary['parent'] === $category && !$itep_ary['cat'] && !$icat) ||
-				(($itep_ary['name'] === $id || $itep_ary['id'] === (int) $id) && !$mode && !$itep_ary['cat']) ||
-				(!$id && !$mode && !$itep_ary['cat'])
+				(($item_ary['name'] === $id || $item_ary['id'] === (int) $id) && (($item_ary['mode'] == $mode && !$item_ary['cat']) || ($icat && $item_ary['cat']))) ||
+				($item_ary['parent'] === $category && !$item_ary['cat'] && !$icat) ||
+				(($item_ary['name'] === $id || $item_ary['id'] === (int) $id) && !$mode && !$item_ary['cat']) ||
+				(!$id && !$mode && !$item_ary['cat'])
 				)
 			{
-				if ($itep_ary['cat'])
+				if ($item_ary['cat'])
 				{
 					$id = $icat;
 					$icat = false;
@@ -268,20 +269,21 @@ class p_master
 					continue;
 				}
 
-				$this->p_id		= $itep_ary['id'];
-				$this->p_parent	= $itep_ary['parent'];
-				$this->p_name	= $itep_ary['name'];
-				$this->p_mode 	= $itep_ary['mode'];
-				$this->p_left	= $itep_ary['left'];
-				$this->p_right	= $itep_ary['right'];
+				$this->p_id		= $item_ary['id'];
+				$this->p_parent	= $item_ary['parent'];
+				$this->p_name	= $item_ary['name'];
+				$this->p_mode 	= $item_ary['mode'];
+				$this->p_left	= $item_ary['left'];
+				$this->p_right	= $item_ary['right'];
 
 				$this->module_cache['parents'] = $this->module_cache['parents'][$this->p_id];
+				$this->active_module = $item_ary['id'];
 
 				break;
 			}
-			else if (($itep_ary['cat'] && $itep_ary['id'] === (int) $id) || ($itep_ary['parent'] === $category && $itep_ary['cat']))
+			else if (($item_ary['cat'] && $item_ary['id'] === (int) $id) || ($item_ary['parent'] === $category && $item_ary['cat']))
 			{
-				$category = $itep_ary['id'];
+				$category = $item_ary['id'];
 			}
 		}
 	}
@@ -297,6 +299,11 @@ class p_master
 
 		$module_path = $phpbb_root_path . 'includes/' . $this->p_class;
 		$icat = request_var('icat', '');
+
+		if ($this->active_module === false)
+		{
+			trigger_error('Module not accessible', E_USER_ERROR);
+		}
 
 		if (!class_exists("{$this->p_class}_$this->p_name"))
 		{
@@ -464,10 +471,10 @@ class p_master
 		// 1) In a linear fashion
 		// 2) In a combined tabbed + linear fashion ... tabs for the categories
 		//    and a linear list for subcategories/items
-		foreach ($this->module_ary as $row_id => $itep_ary)
+		foreach ($this->module_ary as $row_id => $item_ary)
 		{
 			// Skip hidden modules
-			if (!$itep_ary['display'])
+			if (!$item_ary['display'])
 			{
 				continue;
 			}
@@ -475,7 +482,7 @@ class p_master
 			// Skip branch
 			if ($right_id !== false)
 			{
-				if ($itep_ary['left'] < $right_id)
+				if ($item_ary['left'] < $right_id)
 				{
 					continue;
 				}
@@ -484,14 +491,14 @@ class p_master
 			}
 
 			// Category with no members on their way down (we have to check every level)
-			if (!$itep_ary['name'])
+			if (!$item_ary['name'])
 			{
 				$empty_category = true;
 
 				// We go through the branch and look for an activated module
 				foreach (array_slice($this->module_ary, $row_id + 1) as $temp_row)
 				{
-					if ($temp_row['left'] > $itep_ary['left'] && $temp_row['left'] < $itep_ary['right'])
+					if ($temp_row['left'] > $item_ary['left'] && $temp_row['left'] < $item_ary['right'])
 					{
 						// Module there and displayed?
 						if ($temp_row['name'] && $temp_row['display'])
@@ -507,18 +514,18 @@ class p_master
 				// Skip the branch
 				if ($empty_category)
 				{
-					$right_id = $itep_ary['right'];
+					$right_id = $item_ary['right'];
 					continue;
 				}
 			}
 
 			// Select first id we can get
-			if (!$current_id && (in_array($itep_ary['id'], array_keys($this->module_cache['parents'])) || $itep_ary['id'] == $this->p_id))
+			if (!$current_id && (in_array($item_ary['id'], array_keys($this->module_cache['parents'])) || $item_ary['id'] == $this->p_id))
 			{
-				$current_id = $itep_ary['id'];
+				$current_id = $item_ary['id'];
 			}
 
-			$depth = $itep_ary['depth'];
+			$depth = $item_ary['depth'];
 
 			if ($depth > $current_depth)
 			{
@@ -534,30 +541,30 @@ class p_master
 				}
 			}
 
-			$u_title = $module_url . $delim . 'i=' . (($itep_ary['cat']) ? $itep_ary['id'] : $itep_ary['name'] . (($itep_ary['is_duplicate']) ? '&amp;icat=' . $current_id : '') . '&amp;mode=' . $itep_ary['mode']);
-			$u_title .= (!$itep_ary['cat'] && isset($itep_ary['url_extra'])) ? $itep_ary['url_extra'] : '';
+			$u_title = $module_url . $delim . 'i=' . (($item_ary['cat']) ? $item_ary['id'] : $item_ary['name'] . (($item_ary['is_duplicate']) ? '&amp;icat=' . $current_id : '') . '&amp;mode=' . $item_ary['mode']);
+			$u_title .= (!$item_ary['cat'] && isset($item_ary['url_extra'])) ? $item_ary['url_extra'] : '';
 
 			// Only output a categories items if it's currently selected
-			if (!$depth || ($depth && (in_array($itep_ary['parent'], array_values($this->module_cache['parents'])) || $itep_ary['parent'] == $this->p_parent)))
+			if (!$depth || ($depth && (in_array($item_ary['parent'], array_values($this->module_cache['parents'])) || $item_ary['parent'] == $this->p_parent)))
 			{
 				$use_tabular_offset = (!$depth) ? 't_block1' : $tabular_offset;
 
 				$tpl_ary = array(
-					'L_TITLE'		=> $itep_ary['lang'],
-					'S_SELECTED'	=> (in_array($itep_ary['id'], array_keys($this->module_cache['parents'])) || $itep_ary['id'] == $this->p_id) ? true : false,
+					'L_TITLE'		=> $item_ary['lang'],
+					'S_SELECTED'	=> (in_array($item_ary['id'], array_keys($this->module_cache['parents'])) || $item_ary['id'] == $this->p_id) ? true : false,
 					'U_TITLE'		=> $u_title
 				);
 
-				$template->assign_block_vars($use_tabular_offset, array_merge($tpl_ary, array_change_key_case($itep_ary, CASE_UPPER)));
+				$template->assign_block_vars($use_tabular_offset, array_merge($tpl_ary, array_change_key_case($item_ary, CASE_UPPER)));
 			}
 
 			$tpl_ary = array(
-				'L_TITLE'		=> $itep_ary['lang'],
-				'S_SELECTED'	=> (in_array($itep_ary['id'], array_keys($this->module_cache['parents'])) || $itep_ary['id'] == $this->p_id) ? true : false,
+				'L_TITLE'		=> $item_ary['lang'],
+				'S_SELECTED'	=> (in_array($item_ary['id'], array_keys($this->module_cache['parents'])) || $item_ary['id'] == $this->p_id) ? true : false,
 				'U_TITLE'		=> $u_title
 			);
 
-			$template->assign_block_vars($linear_offset, array_merge($tpl_ary, array_change_key_case($itep_ary, CASE_UPPER)));
+			$template->assign_block_vars($linear_offset, array_merge($tpl_ary, array_change_key_case($item_ary, CASE_UPPER)));
 
 			$current_depth = $depth;
 		}
@@ -593,7 +600,10 @@ class p_master
 	{
 		$this->p_class = $class;
 		$this->p_name = $name;
-		
+
+		// Set active module to true instead of using the id
+		$this->active_module = true;
+
 		$this->load_active($mode);
 	}
 
@@ -633,9 +643,9 @@ class p_master
 	*/
 	function set_display($id, $mode = false, $display = true)
 	{
-		foreach ($this->module_ary as $row_id => $itep_ary)
+		foreach ($this->module_ary as $row_id => $item_ary)
 		{
-			if (($itep_ary['name'] === $id || $itep_ary['id'] === (int) $id) && (!$mode || $itep_ary['mode'] === $mode))
+			if (($item_ary['name'] === $id || $item_ary['id'] === (int) $id) && (!$mode || $item_ary['mode'] === $mode))
 			{
 				$this->module_ary[$row_id]['display'] = (int) $display;
 			}

@@ -25,6 +25,9 @@ $user->setup('mcp');
 
 $module = new p_master();
 
+// Setting a variable to let the style designer know where he is...
+$template->assign_var('S_IN_MCP', true);
+
 // Basic parameter data
 $id = request_var('i', '');
 
@@ -69,7 +72,7 @@ $post_id = request_var('p', 0);
 $topic_id = request_var('t', 0);
 $forum_id = request_var('f', 0);
 $user_id = request_var('u', 0);
-$username = request_var('username', '', true);
+$username = request_var('username', '');
 
 if ($post_id)
 {
@@ -270,7 +273,7 @@ function get_topic_data($topic_ids, $acl_list = false)
 		$sql = 'SELECT f.*, t.*
 			FROM ' . TOPICS_TABLE . ' t
 				LEFT JOIN ' . FORUMS_TABLE . ' f ON t.forum_id = f.forum_id
-			WHERE t.topic_id IN (' . implode(', ', $topic_ids) . ')';
+			WHERE ' . $db->sql_in_set('t.topic_id', $topic_ids);
 		$result = $db->sql_query($sql);
 	
 		while ($row = $db->sql_fetchrow($result))
@@ -334,7 +337,7 @@ function get_post_data($post_ids, $acl_list = false)
 			)
 		),
 
-		'WHERE'		=> 'p.post_id IN (' . implode(', ', $post_ids) . ')
+		'WHERE'		=> $db->sql_in_set('p.post_id', $post_ids) . '
 			AND u.user_id = p.poster_id
 			AND t.topic_id = p.topic_id',
 	));
@@ -375,6 +378,11 @@ function get_forum_data($forum_id, $acl_list = 'f_list')
 
 	$rowset = array();
 
+	if (!is_array($forum_id))
+	{
+		$forum_id = array($forum_id);
+	}
+
 	if (!sizeof($forum_id))
 	{
 		return array();
@@ -382,7 +390,7 @@ function get_forum_data($forum_id, $acl_list = 'f_list')
 
 	$sql = 'SELECT *
 		FROM ' . FORUMS_TABLE . '
-		WHERE forum_id ' . ((is_array($forum_id)) ? 'IN (' . implode(', ', $forum_id) . ')' : "= $forum_id");
+		WHERE ' . $db->sql_in_set('forum_id', $forum_id);
 	$result = $db->sql_query($sql);
 
 	while ($row = $db->sql_fetchrow($result))
@@ -459,7 +467,7 @@ function mcp_sorting($mode, &$sort_days, &$sort_key, &$sort_dir, &$sort_by_sql, 
 
 			$sql = 'SELECT COUNT(post_id) AS total
 				FROM ' . POSTS_TABLE . "
-				$where_sql forum_id IN (" . (($forum_id) ? $forum_id : implode(', ', get_forum_list('m_approve'))) . ')
+				$where_sql " . $db->sql_in_set('forum_id', ($forum_id) ? array($forum_id) : get_forum_list('m_approve')) . '
 					AND post_approved = 0
 					AND post_time >= ' . $min_time;
 		break;
@@ -471,7 +479,7 @@ function mcp_sorting($mode, &$sort_days, &$sort_key, &$sort_dir, &$sort_by_sql, 
 
 			$sql = 'SELECT COUNT(topic_id) AS total
 				FROM ' . TOPICS_TABLE . "
-				$where_sql forum_id IN (" . (($forum_id) ? $forum_id : implode(', ', get_forum_list('m_approve'))) . ')
+				$where_sql " . $db->sql_in_set('forum_id', ($forum_id) ? array($forum_id) : get_forum_list('m_approve')) . '
 					AND topic_approved = 0
 					AND topic_time >= ' . $min_time;
 		break;
@@ -493,7 +501,7 @@ function mcp_sorting($mode, &$sort_days, &$sort_key, &$sort_dir, &$sort_by_sql, 
 			}
 			else
 			{
-				$where_sql .= ' p.forum_id IN (' . implode(', ', get_forum_list('m_report')) . ')';
+				$where_sql .= ' ' . $db->sql_in_set('p.forum_id', get_forum_list('m_report'));
 			}
 
 			if ($mode == 'reports')
@@ -519,7 +527,7 @@ function mcp_sorting($mode, &$sort_days, &$sort_key, &$sort_dir, &$sort_by_sql, 
 
 			$sql = 'SELECT COUNT(log_id) AS total
 				FROM ' . LOG_TABLE . "
-				$where_sql forum_id IN (" . (($forum_id) ? $forum_id : implode(', ', get_forum_list('m_'))) . ')
+				$where_sql " . $db->sql_in_set('forum_id', ($forum_id) ? array($forum_id) : get_forum_list('m_')) . '
 					AND log_time >= ' . $min_time . '
 					AND log_type = ' . LOG_MOD;
 		break;
@@ -542,21 +550,21 @@ function mcp_sorting($mode, &$sort_days, &$sort_key, &$sort_dir, &$sort_by_sql, 
 		case 'posts':
 			$limit_days = array(0 => $user->lang['ALL_POSTS'], 1 => $user->lang['1_DAY'], 7 => $user->lang['7_DAYS'], 14 => $user->lang['2_WEEKS'], 30 => $user->lang['1_MONTH'], 90 => $user->lang['3_MONTHS'], 180 => $user->lang['6_MONTHS'], 365 => $user->lang['1_YEAR']);
 			$sort_by_text = array('a' => $user->lang['AUTHOR'], 't' => $user->lang['POST_TIME'], 's' => $user->lang['SUBJECT']);
-			$sort_by_sql = array('a' => 'u.username', 't' => 'p.post_id', 's' => 'p.post_subject');
+			$sort_by_sql = array('a' => 'u.username', 't' => 'p.post_time', 's' => 'p.post_subject');
 			$limit_time_sql = ($min_time) ? "AND p.post_time >= $min_time" : '';
 		break;
 
 		case 'reports':
 			$limit_days = array(0 => $user->lang['ALL_REPORTS'], 1 => $user->lang['1_DAY'], 7 => $user->lang['7_DAYS'], 14 => $user->lang['2_WEEKS'], 30 => $user->lang['1_MONTH'], 90 => $user->lang['3_MONTHS'], 180 => $user->lang['6_MONTHS'], 365 => $user->lang['1_YEAR']);
 			$sort_by_text = array('a' => $user->lang['AUTHOR'], 'r' => $user->lang['REPORTER'], 'p' => $user->lang['POST_TIME'], 't' => $user->lang['REPORT_TIME'], 's' => $user->lang['SUBJECT']);
-			$sort_by_sql = array('a' => 'u.username', 'r' => 'ru.username', 'p' => 'p.post_id', 't' => 'r.report_time', 's' => 'p.post_subject');
+			$sort_by_sql = array('a' => 'u.username', 'r' => 'ru.username', 'p' => 'p.post_time', 't' => 'r.report_time', 's' => 'p.post_subject');
 		break;
 
 		case 'logs':
 			$limit_days = array(0 => $user->lang['ALL_ENTRIES'], 1 => $user->lang['1_DAY'], 7 => $user->lang['7_DAYS'], 14 => $user->lang['2_WEEKS'], 30 => $user->lang['1_MONTH'], 90 => $user->lang['3_MONTHS'], 180 => $user->lang['6_MONTHS'], 365 => $user->lang['1_YEAR']);
 			$sort_by_text = array('u' => $user->lang['SORT_USERNAME'], 't' => $user->lang['SORT_DATE'], 'i' => $user->lang['SORT_IP'], 'o' => $user->lang['SORT_ACTION']);
 
-			$sort_by_sql = array('u' => 'l.user_id', 't' => 'l.log_time', 'i' => 'l.log_ip', 'o' => 'l.log_operation');
+			$sort_by_sql = array('u' => 'l.username', 't' => 'l.log_time', 'i' => 'l.log_ip', 'o' => 'l.log_operation');
 			$limit_time_sql = ($min_time) ? "AND l.log_time >= $min_time" : '';
 		break;
 	}
@@ -623,7 +631,7 @@ function check_ids(&$ids, $table, $sql_id, $acl_list = false)
 			WHERE forum_type = ' . FORUM_POST;
 		if (sizeof($forum_ary))
 		{
-			$sql .= ' AND forum_id NOT IN ( ' . implode(', ', $forum_ary) . ')';
+			$sql .= ' AND ' . $db->sql_in_set('forum_id', $forum_ary, true);
 		}
 
 		$result = $db->sql_query_limit($sql, 1);
@@ -642,7 +650,7 @@ function check_ids(&$ids, $table, $sql_id, $acl_list = false)
 	}
 
 	$sql = "SELECT $sql_id FROM $table
-		WHERE $sql_id IN (" . implode(', ', $ids) . ")
+		WHERE " . $db->sql_in_set($sql_id, $ids) . "
 			AND (forum_id = $forum_id OR forum_id = 0)";
 	$result = $db->sql_query($sql);
 

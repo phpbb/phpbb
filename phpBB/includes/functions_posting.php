@@ -114,9 +114,9 @@ function update_post_information($type, $ids, $return_update_sql = false)
 	$update_sql = $empty_forums = array();
 
 	$sql = 'SELECT ' . $type . '_id, MAX(post_id) as last_post_id
-		FROM ' . POSTS_TABLE . "
+		FROM ' . POSTS_TABLE . '
 		WHERE post_approved = 1
-			AND {$type}_id IN (" . implode(', ', $ids) . ")
+			AND ' . $db->sql_in_set($type . '_id', $ids) . "
 		GROUP BY {$type}_id";
 	$result = $db->sql_query($sql);
 
@@ -150,7 +150,7 @@ function update_post_information($type, $ids, $return_update_sql = false)
 		$sql = 'SELECT p.' . $type . '_id, p.post_id, p.post_time, p.poster_id, p.post_username, u.user_id, u.username
 			FROM ' . POSTS_TABLE . ' p, ' . USERS_TABLE . ' u
 			WHERE p.poster_id = u.user_id
-				AND p.post_id IN (' . implode(', ', $last_post_ids) . ')';
+				AND ' . $db->sql_in_set('p.post_id', $last_post_ids);
 		$result = $db->sql_query($sql);
 
 		while ($row = $db->sql_fetchrow($result))
@@ -339,9 +339,18 @@ function upload_attachment($form_name, $forum_id, $local = false, $local_storage
 		$file->upload->set_allowed_dimensions(0, 0, $config['img_max_width'], $config['img_max_height']);		
 	}
 
+	// Admins and mods are allowed to exceed the allowed filesize
 	if (!$auth->acl_get('a_') && !$auth->acl_get('m_', $forum_id))
 	{
-		$allowed_filesize = ($extensions[$file->get('extension')]['max_filesize'] != 0) ? $extensions[$file->get('extension')]['max_filesize'] : (($is_message) ? $config['max_filesize_pm'] : $config['max_filesize']);
+		if (!empty($extensions[$file->get('extension')]['max_filesize']))
+		{
+			$allowed_filesize = $extensions[$file->get('extension')]['max_filesize'];
+		}
+		else
+		{
+			$allowed_filesize = ($is_message) ? $config['max_filesize_pm'] : $config['max_filesize'];
+		}
+
 		$file->upload->set_max_filesize($allowed_filesize);
 	}
 
@@ -521,9 +530,10 @@ function create_thumbnail($source, $destination, $mimetype)
 
 	$used_imagick = false;
 
-	if ($config['img_imagick']) 
+	// Only use imagemagick if defined and the passthru function not disabled
+	if ($config['img_imagick'] && function_exists('passthru'))
 	{
-		passthru($config['img_imagick'] . 'convert' . ((defined('PHP_OS') && preg_match('#win#i', PHP_OS)) ? '.exe' : '') . ' -quality 85 -antialias -sample ' . $new_width . 'x' . $new_height . ' "' . str_replace('\\', '/', $source) . '" +profile "*" "' . str_replace('\\', '/', $destination) . '"');
+		passthru(escapeshellcmd($config['img_imagick']) . 'convert' . ((defined('PHP_OS') && preg_match('#^win#i', PHP_OS)) ? '.exe' : '') . ' -quality 85 -antialias -sample ' . $new_width . 'x' . $new_height . ' "' . str_replace('\\', '/', $source) . '" +profile "*" "' . str_replace('\\', '/', $destination) . '"');
 		if (file_exists($destination))
 		{
 			$used_imagick = true;
@@ -570,6 +580,12 @@ function create_thumbnail($source, $destination, $mimetype)
 			{
 				$new_image = imagecreatetruecolor($new_width, $new_height);
 				imagecopyresampled($new_image, $image, 0, 0, 0, 0, $new_width, $new_height, $width, $height);
+			}
+
+			// If we are in safe mode create the destination file prior to using the gd functions to circumvent a PHP bug
+			if (@ini_get('safe_mode') || @strtolower(ini_get('safe_mode')) == 'on')
+			{
+				@touch($destination);
 			}
 
 			switch ($type['format'])
@@ -666,7 +682,7 @@ function posting_gen_attachment_entry(&$attachment_data, &$filename_data)
 			$template->assign_block_vars('attach_row', array(
 				'FILENAME'			=> basename($attach_row['real_filename']),
 				'ATTACH_FILENAME'	=> basename($attach_row['physical_filename']),
-				'FILE_COMMENT'		=> $attach_row['comment'],
+				'FILE_COMMENT'		=> $attach_row['attach_comment'],
 				'ATTACH_ID'			=> $attach_row['attach_id'],
 				'ASSOC_INDEX'		=> $count,
 
@@ -741,7 +757,7 @@ function load_drafts($topic_id = 0, $forum_id = 0, $id = 0)
 	{
 		$sql = 'SELECT topic_id, forum_id, topic_title
 			FROM ' . TOPICS_TABLE . '
-			WHERE topic_id IN (' . implode(',', array_unique($topic_ids)) . ')';
+			WHERE ' . $db->sql_in_set('topic_id', array_unique($topic_ids));
 		$result = $db->sql_query($sql);
 
 		while ($row = $db->sql_fetchrow($result))
@@ -822,11 +838,11 @@ function topic_review($topic_id, $forum_id, $mode = 'topic_review', $cur_post_id
 		return false;
 	}
 
-	$bbcode_bitfield = 0;
+	$bbcode_bitfield = '';
 	do
 	{
 		$rowset[] = $row;
-		$bbcode_bitfield |= $row['bbcode_bitfield'];
+		$bbcode_bitfield = $bbcode_bitfield | base64_decode($row['bbcode_bitfield']);
 	}
 	while ($row = $db->sql_fetchrow($result));
 	$db->sql_freeresult($result);
@@ -876,7 +892,7 @@ function topic_review($topic_id, $forum_id, $mode = 'topic_review', $cur_post_id
 		$template->assign_block_vars($mode . '_row', array(
 			'POSTER_NAME'		=> $poster,
 			'POST_SUBJECT'		=> $post_subject,
-			'MINI_POST_IMG'		=> $user->img('icon_post', $user->lang['POST']),
+			'MINI_POST_IMG'		=> $user->img('icon_post_target', $user->lang['POST']),
 			'POST_DATE'			=> $user->format_date($row['post_time']),
 			'MESSAGE'			=> str_replace("\n", '<br />', $message), 
 			'DECODED_MESSAGE'	=> $decoded_message,
@@ -891,7 +907,7 @@ function topic_review($topic_id, $forum_id, $mode = 'topic_review', $cur_post_id
 
 	if ($mode == 'topic_review')
 	{
-		$template->assign_var('QUOTE_IMG', $user->img('btn_quote', $user->lang['REPLY_WITH_QUOTE']));
+		$template->assign_var('QUOTE_IMG', $user->img('icon_post_quote', $user->lang['REPLY_WITH_QUOTE']));
 	}
 
 	return true;
@@ -1093,7 +1109,7 @@ function user_notification($mode, $subject, $topic_title, $forum_name, $forum_id
 		$sql = 'UPDATE ' . TOPICS_WATCH_TABLE . "
 			SET notify_status = 1
 			WHERE topic_id = $topic_id
-				AND user_id IN (" . implode(', ', $update_notification['topic']) . ")";
+				AND " . $db->sql_in_set('user_id', $update_notification['topic']);
 		$db->sql_query($sql);
 	}
 
@@ -1102,7 +1118,7 @@ function user_notification($mode, $subject, $topic_title, $forum_name, $forum_id
 		$sql = 'UPDATE ' . FORUMS_WATCH_TABLE . "
 			SET notify_status = 1
 			WHERE forum_id = $forum_id
-				AND user_id IN (" . implode(', ', $update_notification['forum']) . ")";
+				AND " . $db->sql_in_set('user_id', $update_notification['forum']);
 		$db->sql_query($sql);
 	}
 
@@ -1111,7 +1127,7 @@ function user_notification($mode, $subject, $topic_title, $forum_name, $forum_id
 	{
 		$sql = 'DELETE FROM ' . TOPICS_WATCH_TABLE . "
 			WHERE topic_id = $topic_id
-				AND user_id IN (" . implode(', ', $delete_ids['topic']) . ")";
+				AND " . $db->sql_in_set('user_id', $delete_ids['topic']);
 		$db->sql_query($sql);
 	}
 
@@ -1119,7 +1135,7 @@ function user_notification($mode, $subject, $topic_title, $forum_name, $forum_id
 	{
 		$sql = 'DELETE FROM ' . FORUMS_WATCH_TABLE . "
 			WHERE forum_id = $forum_id
-				AND user_id IN (" . implode(', ', $delete_ids['forum']) . ")";
+				AND " . $db->sql_in_set('user_id', $delete_ids['forum']);
 		$db->sql_query($sql);
 	}
 
@@ -1165,7 +1181,6 @@ function delete_post($forum_id, $topic_id, $post_id, &$data)
 	{
 		case 'delete_topic':
 			delete_topics('topic_id', array($topic_id), false);
-			set_config('num_topics', $config['num_topics'] - 1, true);
 
 			if ($data['topic_type'] != POST_GLOBAL)
 			{
@@ -1258,8 +1273,7 @@ function delete_post($forum_id, $topic_id, $post_id, &$data)
 		break;
 	}
 
-	$sql_data[USERS_TABLE] = ($auth->acl_get('f_postcount', $forum_id)) ? 'user_posts = user_posts - 1' : '';
-	set_config('num_posts', $config['num_posts'] - 1, true);
+//	$sql_data[USERS_TABLE] = ($data['post_postcount']) ? 'user_posts = user_posts - 1' : '';
 
 	$db->sql_transaction('begin');
 
@@ -1338,6 +1352,11 @@ function submit_post($mode, $subject, $username, $topic_type, &$poll, &$data, $u
 		$post_mode = ($data['topic_first_post_id'] == $data['topic_last_post_id']) ? 'edit_topic' : (($data['topic_first_post_id'] == $data['post_id']) ? 'edit_first_post' : (($data['topic_last_post_id'] == $data['post_id']) ? 'edit_last_post' : 'edit'));
 	}
 
+	// First of all make sure the subject and topic title are having the correct length.
+	// To achive this without cutting off between special chars we convert to an array and then count the elements.
+	$subject = truncate_string($subject);
+	$data['topic_title'] = truncate_string($data['topic_title']);
+
 	// Collect some basic informations about which tables and which rows to update/insert
 	$sql_data = array();
 	$poster_id = ($mode == 'edit') ? $data['poster_id'] : (int) $user->data['user_id'];
@@ -1366,6 +1385,7 @@ function submit_post($mode, $subject, $username, $topic_type, &$poll, &$data, $u
 				'post_attachment'	=> (isset($data['filename_data']['physical_filename']) && sizeof($data['filename_data'])) ? 1 : 0,
 				'bbcode_bitfield'	=> $data['bbcode_bitfield'],
 				'bbcode_uid'		=> $data['bbcode_uid'],
+				'post_postcount'	=> ($auth->acl_get('f_postcount', $data['forum_id'])) ? 1 : 0,
 				'post_edit_locked'	=> $data['post_edit_locked']
 			);
 		break;
@@ -1529,8 +1549,7 @@ function submit_post($mode, $subject, $username, $topic_type, &$poll, &$data, $u
 			);
 		}
 
-		$sql = 'INSERT INTO ' . POSTS_TABLE . ' ' .
-			$db->sql_build_array('INSERT', $sql_data[POSTS_TABLE]['sql']);
+		$sql = 'INSERT INTO ' . POSTS_TABLE . ' ' .	$db->sql_build_array('INSERT', $sql_data[POSTS_TABLE]['sql']);
 		$db->sql_query($sql);
 		$data['post_id'] = $db->sql_nextid();
 
@@ -1695,7 +1714,7 @@ function submit_post($mode, $subject, $username, $topic_type, &$poll, &$data, $u
 			{
 				// update entry in db if attachment already stored in db and filespace
 				$sql = 'UPDATE ' . ATTACHMENTS_TABLE . "
-					SET comment = '" . $db->sql_escape($attach_row['comment']) . "'
+					SET attach_comment = '" . $db->sql_escape($attach_row['attach_comment']) . "'
 					WHERE attach_id = " . (int) $attach_row['attach_id'];
 				$db->sql_query($sql);
 			}
@@ -1714,7 +1733,7 @@ function submit_post($mode, $subject, $username, $topic_type, &$poll, &$data, $u
 					'poster_id'			=> $poster_id,
 					'physical_filename'	=> basename($attach_row['physical_filename']),
 					'real_filename'		=> basename($attach_row['real_filename']),
-					'comment'			=> $attach_row['comment'],
+					'attach_comment'	=> $attach_row['attach_comment'],
 					'extension'			=> $attach_row['extension'],
 					'mimetype'			=> $attach_row['mimetype'],
 					'filesize'			=> $attach_row['filesize'],
@@ -1843,7 +1862,7 @@ function submit_post($mode, $subject, $username, $topic_type, &$poll, &$data, $u
 			trigger_error($error);
 		}
 
-		$search->index($mode, $data['post_id'], $data['message'], $subject, $poster_id);
+		$search->index($mode, $data['post_id'], $data['message'], $subject, $user->lang['ENCODING'], $poster_id, ($topic_type == POST_GLOBAL) ? 0 : $data['forum_id']);
 	}
 
 	$db->sql_transaction('commit');
@@ -1885,6 +1904,35 @@ function submit_post($mode, $subject, $username, $topic_type, &$poll, &$data, $u
 	// Mark this topic as read
 	// We do not use post_time here, this is intended (post_time can have a date in the past if editing a message)
 	markread('topic', $data['forum_id'], $data['topic_id'], time());
+
+	//
+	if ($config['load_db_lastread'] && $user->data['is_registered'])
+	{
+		$sql = 'SELECT mark_time
+			FROM ' . FORUMS_TRACK_TABLE . '
+			WHERE user_id = ' . $user->data['user_id'] . '
+				AND forum_id = ' . $data['forum_id'];
+		$result = $db->sql_query($sql);
+		$f_mark_time = (int) $db->sql_fetchfield('mark_time');
+		$db->sql_freeresult($result);
+	}
+	else if ($config['load_anon_lastread'] || $user->data['is_registered'])
+	{
+		$f_mark_time = false;
+	}
+
+	if ($config['load_db_lastread'] || $config['load_anon_lastread'] || $user->data['is_registered'])
+	{
+		// Update forum info
+		$sql = 'SELECT forum_last_post_time
+			FROM ' . FORUMS_TABLE . '
+			WHERE forum_id = ' . $data['forum_id'];
+		$result = $db->sql_query($sql);
+		$forum_last_post_time = (int) $db->sql_fetchfield('forum_last_post_time');
+		$db->sql_freeresult($result);
+
+		update_forum_tracking_info($data['forum_id'], $forum_last_post_time, $f_mark_time, false);
+	}
 
 	// Send Notifications
 	if ($mode != 'edit' && $mode != 'delete' && ($auth->acl_get('f_noapprove', $data['forum_id']) || $auth->acl_get('m_approve', $data['forum_id'])))

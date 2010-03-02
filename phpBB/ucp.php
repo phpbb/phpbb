@@ -32,6 +32,9 @@ $user->session_begin();
 $auth->acl($user->data);
 $user->setup('ucp');
 
+// Setting a variable to let the style designer know where he is...
+$template->assign_var('S_IN_UCP', true);
+
 $module = new p_master();
 
 // Basic "global" modes
@@ -280,9 +283,9 @@ while ($row = $db->sql_fetchrow($result))
 $db->sql_freeresult($result);
 
 // Output PM_TO box if message composing
-if ($mode == 'compose' && request_var('action', '') != 'edit')
+if ($mode == 'compose' && $auth->acl_get('u_sendpm') && request_var('action', '') != 'edit')
 {
-	if ($config['allow_mass_pm'])
+	if ($config['allow_mass_pm'] && $auth->acl_get('u_masspm'))
 	{
 		$sql = 'SELECT group_id, group_name, group_type
 			FROM ' . GROUPS_TABLE . '
@@ -301,8 +304,8 @@ if ($mode == 'compose' && request_var('action', '') != 'edit')
 
 	$template->assign_vars(array(
 		'S_SHOW_PM_BOX'		=> true,
-		'S_ALLOW_MASS_PM'	=> ($config['allow_mass_pm']),
-		'S_GROUP_OPTIONS'	=> ($config['allow_mass_pm']) ? $group_options : '',
+		'S_ALLOW_MASS_PM'	=> ($config['allow_mass_pm'] && $auth->acl_get('u_masspm')) ? true : false,
+		'S_GROUP_OPTIONS'	=> ($config['allow_mass_pm'] && $auth->acl_get('u_masspm')) ? $group_options : '',
 		'U_SEARCH_USER'		=> append_sid("{$phpbb_root_path}memberlist.$phpEx", 'mode=searchuser&amp;form=post&amp;field=username_list'))
 	);
 }

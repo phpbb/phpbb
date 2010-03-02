@@ -11,6 +11,7 @@
 /**
 */
 define('IN_PHPBB', 1);
+define('ADMIN_START', 1);
 define('NEED_SID', true);
 
 // Include files
@@ -151,7 +152,7 @@ function adm_page_header($page_title)
 	{
 		header('Content-type: text/html; charset: ' . $user->lang['ENCODING']);
 	}
-	header('Cache-Control: private, no-cache="set-cookie", pre-check=0, post-check=0');
+	header('Cache-Control: private, no-cache="set-cookie"');
 	header('Expires: 0');
 	header('Pragma: no-cache');
 
@@ -205,14 +206,7 @@ function adm_page_footer($copyright_html = true)
 
 	$template->display('body');
 
-	// Unload cache, must be done before the DB connection if closed
-	if (!empty($cache))
-	{
-		$cache->unload();
-	}
-
-	// Close our DB connection.
-	$db->sql_close();
+	garbage_collection();
 
 	exit;
 }

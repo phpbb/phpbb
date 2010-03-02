@@ -48,7 +48,7 @@ $lang = array_merge($lang, array(
 	'GROUP_COLOR_EXPLAIN'			=> 'Defines the colour members usernames will appear in, leave blank for user default.',
 	'GROUP_CREATED'					=> 'Group has been created successfully',
 	'GROUP_DEFAULT'					=> 'Default',
-	'GROUP_DEFS_UPDATED'			=> 'Default group set for all members',
+	'GROUP_DEFS_UPDATED'			=> 'Default group set for all selected members',
 	'GROUP_DELETE'					=> 'Delete',
 	'GROUP_DELETED'					=> 'Group deleted and user default groups set successfully',
 	'GROUP_DEMOTE'					=> 'Demote',
@@ -88,6 +88,9 @@ $lang = array_merge($lang, array(
 	'GROUP_USERS_ADDED'				=> 'New users added to group successfully.',
 	'GROUP_USERS_EXIST'				=> 'The selected users are already members.',
 	'GROUP_USERS_REMOVE'			=> 'Users removed from group and new defaults set successfully',
+
+	'MAKE_DEFAULT_FOR_ALL'	=> 'Make default group for every member',
+	'MEMBERS'				=> 'Members',
 
 	'NO_GROUP'					=> 'No group specified',
 	'NO_PERMISSIONS'			=> 'Do not copy permissions',

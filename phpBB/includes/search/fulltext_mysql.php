@@ -27,8 +27,11 @@ include_once($phpbb_root_path . 'includes/search/search.' . $phpEx);
 */
 class fulltext_mysql extends search_backend
 {
-	var $stats;
-	var $word_length;
+	var $stats = array();
+	var $word_length = array();
+	var $split_words = array();
+	var $search_query;
+	var $common_words = array();
 
 	function fulltext_mysql(&$error)
 	{
@@ -98,6 +101,7 @@ class fulltext_mysql extends search_backend
 
 	/**
 	* Splits keywords entered by a user into an array of words stored in $this->split_words
+	* Stores the tidied search query in $this->search_query
 	*
 	* @param string $keywords Contains the keyword as entered by the user
 	* @param string $terms is either 'all' or 'any'
@@ -156,6 +160,8 @@ class fulltext_mysql extends search_backend
 				unset($this->split_words[$i]);
 			}
 		}
+
+		$this->search_query = implode(' ', $this->split_words);
 
 		if (sizeof($this->split_words))
 		{
@@ -306,19 +312,19 @@ class fulltext_mysql extends search_backend
 		}
 		else
 		{
-			$m_approve_fid_sql = ' AND (p.post_approved = 1 OR p.forum_id NOT IN (' . implode(', ', $m_approve_fid_ary) . '))';
+			$m_approve_fid_sql = ' AND (p.post_approved = 1 OR ' . $db->sql_in_set('p.forum_id', $m_approve_fid_ary, true) . ')';
 		}
 
 		$sql_select			= (!$result_count) ? 'SQL_CALC_FOUND_ROWS ' : '';
 		$sql_select			= ($type == 'posts') ? $sql_select . 'p.post_id' : 'DISTINCT ' . $sql_select . 't.topic_id';
 		$sql_from			= ($join_topic) ? TOPICS_TABLE . ' t, ' : '';
 		$field				= ($type == 'posts') ? 'post_id' : 'topic_id';
-		$sql_author			= (sizeof($author_ary) == 1) ? ' = ' . $author_ary[0] : 'IN (' . implode(',', $author_ary) . ')';
+		$sql_author			= (sizeof($author_ary) == 1) ? ' = ' . $author_ary[0] : 'IN (' . implode(', ', $author_ary) . ')';
 
 		$sql_where_options = $sql_sort_join;
 		$sql_where_options .= ($topic_id) ? ' AND p.topic_id = ' . $topic_id : '';
 		$sql_where_options .= ($join_topic) ? ' AND t.topic_id = p.topic_id' : '';
-		$sql_where_options .= (sizeof($ex_fid_ary)) ? ' AND p.forum_id NOT IN (' . implode(',', $ex_fid_ary) . ')' : '';
+		$sql_where_options .= (sizeof($ex_fid_ary)) ? ' AND ' . $db->sql_in_set('p.forum_id', $ex_fid_ary, true) : '';
 		$sql_where_options .= $m_approve_fid_sql;
 		$sql_where_options .= (sizeof($author_ary)) ? ' AND p.poster_id ' . $sql_author : '';
 		$sql_where_options .= ($sort_days) ? ' AND p.post_time >= ' . (time() - ($sort_days * 86400)) : '';
@@ -445,8 +451,8 @@ class fulltext_mysql extends search_backend
 		$id_ary = array();
 
 		// Create some display specific sql strings
-		$sql_author		= 'p.poster_id ' . ((sizeof($author_ary) > 1) ? 'IN (' . implode(',', $author_ary) . ')' : '= ' . $author_ary[0]);
-		$sql_fora		= (sizeof($ex_fid_ary)) ? ' AND p.forum_id NOT IN (' . implode(',', $ex_fid_ary) . ')' : '';
+		$sql_author		= $db->sql_in_set('p.poster_id', $author_ary);
+		$sql_fora		= (sizeof($ex_fid_ary)) ? ' AND ' . $db->sql_in_set('p.forum_id', $ex_fid_ary, true) : '';
 		$sql_topic_id	= ($topic_id) ? ' AND p.topic_id = ' . (int) $topic_id : '';
 		$sql_time		= ($sort_days) ? ' AND p.post_time >= ' . (time() - ($sort_days * 86400)) : '';
 
@@ -481,7 +487,7 @@ class fulltext_mysql extends search_backend
 		}
 		else
 		{
-			$m_approve_fid_sql = ' AND (p.post_approved = 1 OR p.forum_id IN (' . implode($m_approve_fid_ary) . '))';
+			$m_approve_fid_sql = ' AND (p.post_approved = 1 OR ' . $db->sql_in_set('p.forum_id', $m_approve_fid_ary, true) . ')';
 		}
 
 		// If the cache was completely empty count the results
@@ -555,7 +561,7 @@ class fulltext_mysql extends search_backend
 	*
 	* @param string $mode contains the post mode: edit, post, reply, quote ...
 	*/
-	function index($mode, $post_id, &$message, &$subject, $poster_id)
+	function index($mode, $post_id, &$message, &$subject, $encoding, $poster_id, $forum_id)
 	{
 		global $db;
 
@@ -606,7 +612,7 @@ class fulltext_mysql extends search_backend
 	/**
 	* Destroy cached results, that might be outdated after deleting a post
 	*/
-	function index_remove($post_ids, $author_ids)
+	function index_remove($post_ids, $author_ids, $forum_ids)
 	{
 		$this->destroy_cache(array(), $author_ids);
 	}
@@ -637,7 +643,7 @@ class fulltext_mysql extends search_backend
 			return $error;
 		}
 
-		if (!is_array($this->stats))
+		if (empty($this->stats))
 		{
 			$this->get_stats();
 		}
@@ -670,7 +676,7 @@ class fulltext_mysql extends search_backend
 			return $error;
 		}
 
-		if (!is_array($this->stats))
+		if (empty($this->stats))
 		{
 			$this->get_stats();
 		}
@@ -695,7 +701,7 @@ class fulltext_mysql extends search_backend
 	*/
 	function index_created()
 	{
-		if (!is_array($this->stats))
+		if (empty($this->stats))
 		{
 			$this->get_stats();
 		}
@@ -710,7 +716,7 @@ class fulltext_mysql extends search_backend
 	{
 		global $user;
 
-		if (!is_array($this->stats))
+		if (empty($this->stats))
 		{
 			$this->get_stats();
 		}

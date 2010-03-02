@@ -38,6 +38,15 @@
 
 	<p>{L_ACP_WORDS_EXPLAIN}</p>
 
+	<form id="acp_words" method="post" action="{U_ACTION}">
+
+	<fieldset class="quick">
+		{S_HIDDEN_FIELDS}
+		<input class="button2" name="add" type="submit" value="{L_ADD_WORD}" />
+	</fieldset>
+
+	</form>
+
 	<table cellspacing="1">
 	<thead>
 	<tr>
@@ -57,15 +66,6 @@
 	<!-- END words -->
 	</tbody>
 	</table>
-
-	<form id="acp_words" method="post" action="{U_ACTION}">
-
-	<fieldset class="quick">
-		{S_HIDDEN_FIELDS}
-		<input class="button2" name="add" type="submit" value="{L_ADD_WORD}" />
-	</fieldset>
-
-	</form>
 
 <!-- ENDIF -->
 

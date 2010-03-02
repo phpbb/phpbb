@@ -53,6 +53,7 @@ $lang = array_merge($lang, array(
 	'BBCODE_S_HELP'				=> 'Font color: [color=red]text[/color]  Tip: you can also use color=#FF0000',
 	'BBCODE_U_HELP'				=> 'Underline text: [u]text[/u]  (alt+u)',
 	'BBCODE_W_HELP'				=> 'Insert URL: [url]http://url[/url] or [url=http://url]URL text[/url]  (alt+w)',
+	'BBCODE_D_HELP'				=> 'Flash: [flash=height,width]http://url[/flash]  (alt+d)',
 	'BUMP_ERROR'				=> 'You cannot bump this topic so soon after the last post.',
 
 	'CANNOT_DELETE_REPLIED'		=> 'Sorry but you may only delete posts which have not been replied to.',
@@ -123,6 +124,7 @@ $lang = array_merge($lang, array(
 	'NO_POLL_TITLE'				=> 'You have to enter a poll title',
 	'NO_POST'					=> 'The requested post does not exist.',
 	'NO_POST_MODE'				=> 'No post mode specified',
+	'NO_TOPIC_ICON'				=> 'None',
 
 	'PARTIAL_UPLOAD'			=> 'The uploaded file was only partially uploaded',
 	'PHP_SIZE_NA'				=> 'The attachment\'s filesize is too large.<br />Could not determine the maximum size defined by PHP in php.ini.',
@@ -180,9 +182,8 @@ $lang = array_merge($lang, array(
 	'TOO_MANY_USER_OPTIONS'		=> 'You cannot specify more Options per User than existing poll options',
 	'TOPIC_BUMPED'				=> 'Topic has been bumped successfully',
 
-	'UNABLE_GET_IMAGE_SIZE'		=> 'Accessing the image was impossible or file isn\'t a valid picture.',
 	'UNAUTHORISED_BBCODE'		=> 'You cannot use certain bbcodes: ',
-	'UNGLOBALISE_EXPLAIN'		=> 'To switch this topic back from being global to a normal topic, you need to select the forum you whish this topic to be displayed',
+	'UNGLOBALISE_EXPLAIN'		=> 'To switch this topic back from being global to a normal topic, you need to select the forum you wish this topic to be displayed.',
 	'UPDATE_COMMENT'			=> 'Update comment',
 	'URL_INVALID'				=> 'The URL you specified is invalid.',
 	'URL_NOT_FOUND'				=> 'The file specified could not be found.',

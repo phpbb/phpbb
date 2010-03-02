@@ -38,17 +38,14 @@ if (!$forum_id)
 }
 
 $sql_from = FORUMS_TABLE . ' f';
+$lastread_select = '';
 
 // Grab appropriate forum data
 if ($config['load_db_lastread'] && $user->data['is_registered'])
 {
 	$sql_from .= ' LEFT JOIN ' . FORUMS_TRACK_TABLE . ' ft ON (ft.user_id = ' . $user->data['user_id'] . '
 		AND ft.forum_id = f.forum_id)';
-	$lastread_select = ', ft.mark_time';
-}
-else
-{
-	$lastread_select = '';
+	$lastread_select .= ', ft.mark_time';
 }
 
 if ($user->data['is_registered'])
@@ -240,23 +237,23 @@ $template->assign_vars(array(
 	'TOTAL_TOPICS'	=> ($s_display_active) ? false : (($topics_count == 1) ? $user->lang['VIEW_FORUM_TOPIC'] : sprintf($user->lang['VIEW_FORUM_TOPICS'], $topics_count)),
 	'MODERATORS'	=> (!empty($moderators[$forum_id])) ? implode(', ', $moderators[$forum_id]) : '',
 
-	'POST_IMG'					=> ($forum_data['forum_status'] == ITEM_LOCKED) ? $user->img('btn_locked', $post_alt) : $user->img('btn_post', $post_alt),
-	'NEWEST_POST_IMG'			=> $user->img('icon_post_newest', 'VIEW_NEWEST_POST'),
-	'LAST_POST_IMG'				=> $user->img('icon_post_latest', 'VIEW_LATEST_POST'),
-	'FOLDER_IMG'				=> $user->img('folder', 'NO_NEW_POSTS'),
-	'FOLDER_NEW_IMG'			=> $user->img('folder_new', 'NEW_POSTS'),
-	'FOLDER_HOT_IMG'			=> $user->img('folder_hot', 'NO_NEW_POSTS_HOT'),
-	'FOLDER_HOT_NEW_IMG'		=> $user->img('folder_hot_new', 'NEW_POSTS_HOT'),
-	'FOLDER_LOCKED_IMG'			=> $user->img('folder_locked', 'NO_NEW_POSTS_LOCKED'),
-	'FOLDER_LOCKED_NEW_IMG'		=> $user->img('folder_locked_new', 'NEW_POSTS_LOCKED'),
-	'FOLDER_STICKY_IMG'			=> $user->img('folder_sticky', 'POST_STICKY'),
-	'FOLDER_STICKY_NEW_IMG'		=> $user->img('folder_sticky_new', 'POST_STICKY'),
-	'FOLDER_ANNOUNCE_IMG'		=> $user->img('folder_announce', 'POST_ANNOUNCEMENT'),
-	'FOLDER_ANNOUNCE_NEW_IMG'	=> $user->img('folder_announce_new', 'POST_ANNOUNCEMENT'),
-	'FOLDER_MOVED_IMG'			=> $user->img('folder_moved', 'TOPIC_MOVED'),
-	'REPORTED_IMG'				=> $user->img('icon_reported', 'TOPIC_REPORTED'),
-	'UNAPPROVED_IMG'			=> $user->img('icon_unapproved', 'TOPIC_UNAPPROVED'),
-	'GOTO_PAGE_IMG'				=> $user->img('icon_post', 'GOTO_PAGE'),
+	'POST_IMG'					=> ($forum_data['forum_status'] == ITEM_LOCKED) ? $user->img('button_topic_locked', $post_alt) : $user->img('button_topic_new', $post_alt),
+	'NEWEST_POST_IMG'			=> $user->img('icon_topic_newest', 'VIEW_NEWEST_POST'),
+	'LAST_POST_IMG'				=> $user->img('icon_topic_latest', 'VIEW_LATEST_POST'),
+	'FOLDER_IMG'				=> $user->img('topic_read', 'NO_NEW_POSTS'),
+	'FOLDER_NEW_IMG'			=> $user->img('topic_unread', 'NEW_POSTS'),
+	'FOLDER_HOT_IMG'			=> $user->img('topic_read_hot', 'NO_NEW_POSTS_HOT'),
+	'FOLDER_HOT_NEW_IMG'		=> $user->img('topic_unread_hot', 'NEW_POSTS_HOT'),
+	'FOLDER_LOCKED_IMG'			=> $user->img('topic_read_locked', 'NO_NEW_POSTS_LOCKED'),
+	'FOLDER_LOCKED_NEW_IMG'		=> $user->img('topic_unread_locked', 'NEW_POSTS_LOCKED'),
+	'FOLDER_STICKY_IMG'			=> $user->img('sticky_read', 'POST_STICKY'),
+	'FOLDER_STICKY_NEW_IMG'		=> $user->img('sticky_unread', 'POST_STICKY'),
+	'FOLDER_ANNOUNCE_IMG'		=> $user->img('announce_read', 'POST_ANNOUNCEMENT'),
+	'FOLDER_ANNOUNCE_NEW_IMG'	=> $user->img('announce_unread', 'POST_ANNOUNCEMENT'),
+	'FOLDER_MOVED_IMG'			=> $user->img('topic_moved', 'TOPIC_MOVED'),
+	'REPORTED_IMG'				=> $user->img('icon_topic_reported', 'TOPIC_REPORTED'),
+	'UNAPPROVED_IMG'			=> $user->img('icon_topic_unapproved', 'TOPIC_UNAPPROVED'),
+	'GOTO_PAGE_IMG'				=> $user->img('icon_post_target', 'GOTO_PAGE'),
 
 	'L_NO_TOPICS' 			=> ($forum_data['forum_status'] == ITEM_LOCKED) ? $user->lang['POST_FORUM_LOCKED'] : $user->lang['NO_TOPICS'],
 
@@ -374,7 +371,7 @@ $sql_array = array(
 	'FROM'			=> $sql_array['FROM'],
 	'LEFT_JOIN'		=> $sql_array['LEFT_JOIN'],
 
-	'WHERE'			=> (($forum_data['forum_type'] == FORUM_POST || !sizeof($active_forum_ary)) ? 't.forum_id = ' . $forum_id : 't.forum_id IN (' . implode(', ', $active_forum_ary['forum_id']) . ')') . '
+	'WHERE'			=> (($forum_data['forum_type'] == FORUM_POST || !sizeof($active_forum_ary)) ? 't.forum_id = ' . $forum_id : $db->sql_in_set('t.forum_id', $active_forum_ary['forum_id'])) . '
 		AND t.topic_type NOT IN (' . POST_ANNOUNCE . ', ' . POST_GLOBAL . ")
 		$sql_approved
 		$sql_limit_time",
@@ -384,12 +381,42 @@ $sql_array = array(
 $sql = $db->sql_build_query('SELECT', $sql_array);
 $result = $db->sql_query_limit($sql, $sql_limit, $sql_start);
 
+$shadow_topic_list = array();
 while ($row = $db->sql_fetchrow($result))
 {
+	if ($row['topic_status'] == ITEM_MOVED)
+	{
+		$shadow_topic_list[$row['topic_moved_id']] = $row['topic_id'];
+	}
+
 	$rowset[$row['topic_id']] = $row;
 	$topic_list[] = $row['topic_id'];
 }
 $db->sql_freeresult($result);
+
+// If we have some shadow topics, update the rowset to reflect their topic informations
+if (sizeof($shadow_topic_list))
+{
+	$sql = 'SELECT *
+		FROM ' . TOPICS_TABLE . '
+		WHERE ' . $db->sql_in_set('topic_id', array_keys($shadow_topic_list));
+	$result = $db->sql_query($sql);
+
+	while ($row = $db->sql_fetchrow($result))
+	{
+		$orig_topic_id = $shadow_topic_list[$row['topic_id']];
+
+		// We want to retain some values
+		$row = array_merge($row, array(
+			'topic_moved_id'	=> $rowset[$orig_topic_id]['topic_moved_id'],
+			'topic_status'		=> $rowset[$orig_topic_id]['topic_status'])
+		);
+
+		$rowset[$orig_topic_id] = $row;
+	}
+	$db->sql_freeresult($result);
+}
+unset($shadow_topic_list);
 
 $topic_list = ($store_reverse) ? array_merge($announcement_list, array_reverse($topic_list)) : array_merge($announcement_list, $topic_list);
 $topic_tracking_info = $tracking_topics = array();
@@ -398,6 +425,7 @@ $topic_tracking_info = $tracking_topics = array();
 if (sizeof($topic_list))
 {
 	$mark_forum_read = true;
+	$mark_time_forum = 0;
 
 	// Active topics?
 	if ($s_display_active && sizeof($active_forum_ary))
@@ -406,7 +434,7 @@ if (sizeof($topic_list))
 		$topic_forum_list = array();
 		foreach ($rowset as $t_id => $row)
 		{
-			$topic_forum_list[$row['forum_id']]['forum_mark_time'] = ($config['load_db_lastread']) ? $row['forum_mark_time'] : 0;
+			$topic_forum_list[$row['forum_id']]['forum_mark_time'] = ($config['load_db_lastread'] && $user->data['is_registered']) ? $row['forum_mark_time'] : 0;
 			$topic_forum_list[$row['forum_id']]['topics'][] = $t_id;
 		}
 
@@ -417,7 +445,7 @@ if (sizeof($topic_list))
 				$topic_tracking_info += get_topic_tracking($f_id, $topic_row['topics'], $rowset, array($f_id => $topic_row['forum_mark_time']), false);
 			}
 		}
-		else
+		else if ($config['load_anon_lastread'] || $user->data['is_registered'])
 		{
 			foreach ($topic_forum_list as $f_id => $topic_row)
 			{
@@ -434,7 +462,7 @@ if (sizeof($topic_list))
 			$topic_tracking_info = get_topic_tracking($forum_id, $topic_list, $rowset, array($forum_id => $forum_data['mark_time']), $global_announce_list);
 			$mark_time_forum = (!empty($forum_data['mark_time'])) ? $forum_data['mark_time'] : $user->data['user_lastmark'];
 		}
-		else
+		else if ($config['load_anon_lastread'] || $user->data['is_registered'])
 		{
 			$topic_tracking_info = get_complete_topic_tracking($forum_id, $topic_list, $global_announce_list);
 
@@ -499,8 +527,8 @@ if (sizeof($topic_list))
 			'TOPIC_ICON_IMG'		=> (!empty($icons[$row['icon_id']])) ? $icons[$row['icon_id']]['img'] : '',
 			'TOPIC_ICON_IMG_WIDTH'	=> (!empty($icons[$row['icon_id']])) ? $icons[$row['icon_id']]['width'] : '',
 			'TOPIC_ICON_IMG_HEIGHT'	=> (!empty($icons[$row['icon_id']])) ? $icons[$row['icon_id']]['height'] : '',
-			'ATTACH_ICON_IMG'		=> ($auth->acl_gets('f_download', 'u_download', $forum_id) && $row['topic_attachment']) ? $user->img('icon_attach', $user->lang['TOTAL_ATTACHMENTS']) : '',
-			'UNAPPROVED_IMG'		=> ($topic_unapproved || $posts_unapproved) ? $user->img('icon_unapproved', ($topic_unapproved) ? 'TOPIC_UNAPPROVED' : 'POSTS_UNAPPROVED') : '',
+			'ATTACH_ICON_IMG'		=> ($auth->acl_gets('f_download', 'u_download', $forum_id) && $row['topic_attachment']) ? $user->img('icon_topic_attach', $user->lang['TOTAL_ATTACHMENTS']) : '',
+			'UNAPPROVED_IMG'		=> ($topic_unapproved || $posts_unapproved) ? $user->img('icon_topic_unapproved', ($topic_unapproved) ? 'TOPIC_UNAPPROVED' : 'POSTS_UNAPPROVED') : '',
 
 			'S_TOPIC_TYPE'			=> $row['topic_type'],
 			'S_USER_POSTED'			=> (isset($row['topic_posted']) && $row['topic_posted']) ? true : false,
@@ -512,6 +540,7 @@ if (sizeof($topic_list))
 			'S_POST_ANNOUNCE'		=> ($row['topic_type'] == POST_ANNOUNCE) ? true : false,
 			'S_POST_GLOBAL'			=> ($row['topic_type'] == POST_GLOBAL) ? true : false,
 			'S_POST_STICKY'			=> ($row['topic_type'] == POST_STICKY) ? true : false,
+			'S_TOPIC_LOCKED'		=> ($row['topic_status'] == ITEM_LOCKED) ? true : false,
 			'S_TOPIC_MOVED'			=> ($row['topic_status'] == ITEM_MOVED) ? true : false,
 
 			'U_NEWEST_POST'			=> $view_topic_url . '&amp;view=unread#unread',
@@ -541,65 +570,7 @@ if (sizeof($topic_list))
 // after reading a topic
 if ($forum_data['forum_type'] == FORUM_POST && sizeof($topic_list) && $mark_forum_read)
 {
-	// Make sure there are not additional topics unread
-	if ($config['load_db_lastread'] && $user->data['is_registered'])
-	{
-		if ($mark_time_forum >= $forum_data['forum_last_post_time'])
-		{
-			$row = true;
-		}
-		else
-		{
-			$sql = 'SELECT t.forum_id FROM ' . TOPICS_TABLE . ' t
-				LEFT JOIN ' . TOPICS_TRACK_TABLE . ' tt ON (tt.topic_id = t.topic_id AND tt.user_id = ' . $user->data['user_id'] . ')
-				WHERE t.forum_id = ' . $forum_id . '
-					AND t.topic_last_post_time > ' . $mark_time_forum . '
-					AND t.topic_moved_id = 0
-					AND tt.topic_id IS NULL
-				GROUP BY t.forum_id';
-			$result = $db->sql_query($sql);
-			$row = $db->sql_fetchrow($result);
-			$db->sql_freeresult($result);
-		}
-	}
-	else
-	{
-		// Get information from cookie
-		$row = false;
-
-		if (!isset($tracking_topics['tf'][$forum_id]))
-		{
-			// We do not need to mark read, this has happened before. Therefore setting this to true
-			$row = true;
-		}
-		else
-		{
-			$sql = 'SELECT topic_id FROM ' . TOPICS_TABLE . '
-				WHERE forum_id = ' . $forum_id . '
-					AND topic_last_post_time > ' . $mark_time_forum . '
-					AND topic_moved_id = 0';
-			$result = $db->sql_query($sql);
-
-			$check_forum = $tracking_topics['tf'][$forum_id];
-			$unread = false;
-			while ($row = $db->sql_fetchrow($result))
-			{
-				if (!in_array(base_convert($row['topic_id'], 10, 36), array_keys($check_forum)))
-				{
-					$unread = true;
-					break;
-				}
-			}
-			$db->sql_freeresult($result);
-
-			$row = $unread;
-		}
-	}
-
-	if (!$row)
-	{
-		markread('topics', $forum_id);
-	}
+	update_forum_tracking_info($forum_id, $forum_data['forum_last_post_time'], false, $mark_time_forum);
 }
 
 page_footer();

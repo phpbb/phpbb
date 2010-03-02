@@ -51,7 +51,7 @@ class session
 		// Now, remove the sid and let us get a clean query string...
 		foreach ($args as $key => $argument)
 		{
-			if (strpos($argument, 'sid=') === 0)
+			if (strpos($argument, 'sid=') === 0 || strpos($argument, '_f_=') === 0)
 			{
 				unset($args[$key]);
 				break;
@@ -67,8 +67,8 @@ class session
 		$page_name = htmlspecialchars(basename($script_name));
 
 		// current directory within the phpBB root (for example: adm)
-		$root_dirs = explode('/', str_replace('\\', '/', realpath($root_path)));
-		$page_dirs = explode('/', str_replace('\\', '/', realpath('./')));
+		$root_dirs = explode('/', str_replace('\\', '/', phpbb_realpath($root_path)));
+		$page_dirs = explode('/', str_replace('\\', '/', phpbb_realpath('./')));
 		$intersection = array_intersect_assoc($root_dirs, $page_dirs);
 
 		$root_dirs = array_diff_assoc($root_dirs, $intersection);
@@ -106,8 +106,8 @@ class session
 			'page_dir'			=> $page_dir,
 
 			'query_string'		=> $query_string,
-			'script_path'		=> htmlspecialchars($script_path),
-			'root_script_path'	=> htmlspecialchars($root_script_path),
+			'script_path'		=> str_replace(' ', '%20', htmlspecialchars($script_path)),
+			'root_script_path'	=> str_replace(' ', '%20', htmlspecialchars($root_script_path)),
 
 			'page'				=> $page
 		);
@@ -143,7 +143,8 @@ class session
 		$this->host					= (!empty($_SERVER['HTTP_HOST'])) ? (string) $_SERVER['HTTP_HOST'] : 'localhost';
 		$this->page					= $this->extract_current_page($phpbb_root_path);
 
-		$this->page['page'] .= (isset($_POST['f'])) ? ((strpos($this->page['page'], '?') !== false) ? '&' : '?') . 'f=' . intval($_POST['f']) : '';
+		// Add forum to the page for tracking online users - also adding a "x" to the end to properly identify the number
+		$this->page['page'] .= (isset($_REQUEST['f'])) ? ((strpos($this->page['page'], '?') !== false) ? '&' : '?') . '_f_=' . (int) $_REQUEST['f'] . 'x' : '';
 
 		if (isset($_COOKIE[$config['cookie_name'] . '_sid']) || isset($_COOKIE[$config['cookie_name'] . '_u']))
 		{
@@ -156,6 +157,13 @@ class session
 
 			$SID = (defined('NEED_SID')) ? '?sid=' . $this->session_id : '?sid=';
 			$_SID = (defined('NEED_SID')) ? $this->session_id : '';
+
+			if (empty($this->session_id))
+			{
+				$this->session_id = $_SID = request_var('sid', '');
+				$SID = '?sid=' . $this->session_id;
+				$this->cookie_data = array('u' => 0, 'k' => '');
+			}
 		}
 		else
 		{
@@ -171,17 +179,10 @@ class session
 		// Load limit check (if applicable)
 		if ($config['limit_load'])
 		{
-			if (@file_exists('/proc/loadavg') && @is_readable('/proc/loadavg'))
+			if ($load = @file_get_contents('/proc/loadavg'))
 			{
-				if ($load = @file_get_contents('/proc/loadavg'))
-				{
-					$this->load = array_slice(explode(' ', $load), 0, 1);
-					$this->load = floatval($this->load[0]);
-				}
-				else
-				{
-					set_config('limit_load', '0');
-				}
+				$this->load = array_slice(explode(' ', $load), 0, 1);
+				$this->load = floatval($this->load[0]);
 			}
 			else
 			{
@@ -206,7 +207,7 @@ class session
 				// Validate IP length according to admin ... enforces an IP
 				// check on bots if admin requires this
 //				$quadcheck = ($config['ip_check_bot'] && $this->data['user_type'] & USER_BOT) ? 4 : $config['ip_check'];
-
+				
 				$s_ip = implode('.', array_slice(explode('.', $this->data['session_ip']), 0, $config['ip_check']));
 				$u_ip = implode('.', array_slice(explode('.', $this->ip), 0, $config['ip_check']));
 
@@ -219,18 +220,14 @@ class session
 
 					// Check whether the session is still valid if we have one
 					$method = basename(trim($config['auth_method']));
+					include_once($phpbb_root_path . 'includes/auth/auth_' . $method . '.' . $phpEx);
 
-					if (file_exists($phpbb_root_path . 'includes/auth/auth_' . $method . '.' . $phpEx))
+					$method = 'validate_session_' . $method;
+					if (function_exists($method))
 					{
-						include_once($phpbb_root_path . 'includes/auth/auth_' . $method . '.' . $phpEx);
-
-						$method = 'validate_session_' . $method;
-						if (function_exists($method))
+						if (!$method($this->data))
 						{
-							if (!$method($this->data))
-							{
-								$session_expired = true;
-							}
+							$session_expired = true;
 						}
 					}
 
@@ -356,21 +353,17 @@ class session
 		}
 
 		$method = basename(trim($config['auth_method']));
+		include_once($phpbb_root_path . 'includes/auth/auth_' . $method . '.' . $phpEx);
 
-		if (file_exists($phpbb_root_path . 'includes/auth/auth_' . $method . '.' . $phpEx))
+		$method = 'autologin_' . $method;
+		if (function_exists($method))
 		{
-			include_once($phpbb_root_path . 'includes/auth/auth_' . $method . '.' . $phpEx);
+			$this->data = $method();
 
-			$method = 'autologin_' . $method;
-			if (function_exists($method))
+			if (sizeof($this->data))
 			{
-				$this->data = $method();
-
-				if (sizeof($this->data))
-				{
-					$this->cookie_data['k'] = '';
-					$this->cookie_data['u'] = $this->data['user_id'];
-				}
+				$this->cookie_data['k'] = '';
+				$this->cookie_data['u'] = $this->data['user_id'];
 			}
 		}
 
@@ -420,7 +413,7 @@ class session
 			$db->sql_freeresult($result);
 		}
 
-		if ($this->data['user_id'] != ANONYMOUS)
+		if ($this->data['user_id'] != ANONYMOUS && !$bot)
 		{
 			$this->data['session_last_visit'] = (isset($this->data['session_time']) && $this->data['session_time']) ? $this->data['session_time'] : (($this->data['user_lastvisit']) ? $this->data['user_lastvisit'] : time());
 		}
@@ -437,7 +430,7 @@ class session
 		// @todo Change to !$this->data['user_type'] & USER_FOUNDER && !$this->data['user_type'] & USER_BOT in time
 		if ($this->data['user_type'] != USER_FOUNDER)
 		{
-			$this->check_ban();
+			$this->check_ban($this->data['user_id'], $this->ip);
 		}
 
 		//
@@ -470,8 +463,10 @@ class session
 
 		$db->sql_return_on_error(true);
 
-		$sql = 'UPDATE ' . SESSIONS_TABLE . ' SET ' . $db->sql_build_array('UPDATE', $sql_ary) . "
-			WHERE session_id = '" . $db->sql_escape($this->session_id) . "'";
+		$sql = 'DELETE
+			FROM ' . SESSIONS_TABLE . '
+			WHERE session_id = \'' . $db->sql_escape($this->session_id) . '\'
+				AND session_user_id = ' . ANONYMOUS;
 
 		if (!$this->session_id || !$db->sql_query($sql) || !$db->sql_affectedrows())
 		{
@@ -490,15 +485,16 @@ class session
 					trigger_error('BOARD_UNAVAILABLE');
 				}
 			}
-
-			$this->session_id = $this->data['session_id'] = md5(unique_id());
-
-			$sql_ary['session_id'] = (string) $this->session_id;
-			$sql_ary['session_page'] = (string) substr($this->page['page'], 0, 199);
-
-			$sql = 'INSERT INTO ' . SESSIONS_TABLE . ' ' . $db->sql_build_array('INSERT', $sql_ary);
-			$db->sql_query($sql);
 		}
+
+		$this->session_id = $this->data['session_id'] = md5(unique_id());
+
+		$sql_ary['session_id'] = (string) $this->session_id;
+		$sql_ary['session_page'] = (string) substr($this->page['page'], 0, 199);
+
+		$sql = 'INSERT INTO ' . SESSIONS_TABLE . ' ' . $db->sql_build_array('INSERT', $sql_ary);
+		$db->sql_query($sql);
+
 		$db->sql_return_on_error(false);
 
 		// Regenerate autologin/persistent login key
@@ -507,8 +503,8 @@ class session
 			$this->set_login_key();
 		}
 
-		$SID = '?sid=';
-		$_SID = '';
+		$SID = '?sid=' . $this->session_id;
+		$_SID = $this->session_id;
 
 		if (!$bot)
 		{
@@ -517,9 +513,6 @@ class session
 			$this->set_cookie('u', $this->cookie_data['u'], $cookie_expire);
 			$this->set_cookie('k', $this->cookie_data['k'], $cookie_expire);
 			$this->set_cookie('sid', $this->session_id, $cookie_expire);
-
-			$SID = '?sid=' . $this->session_id;
-			$_SID = $this->session_id;
 
 			unset($cookie_expire);
 		}
@@ -546,16 +539,12 @@ class session
 
 		// Allow connecting logout with external auth method logout
 		$method = basename(trim($config['auth_method']));
+		include_once($phpbb_root_path . 'includes/auth/auth_' . $method . '.' . $phpEx);
 
-		if (file_exists($phpbb_root_path . 'includes/auth/auth_' . $method . '.' . $phpEx))
+		$method = 'logout_' . $method;
+		if (function_exists($method))
 		{
-			include_once($phpbb_root_path . 'includes/auth/auth_' . $method . '.' . $phpEx);
-
-			$method = 'logout_' . $method;
-			if (function_exists($method))
-			{
-				$method($this->data);
-			}
+			$method($this->data);
 		}
 
 		if ($this->data['user_id'] != ANONYMOUS)
@@ -657,7 +646,7 @@ class session
 					WHERE session_time < ' . (int) ($this->time_now - $config['session_length']);
 				$db->sql_query($sql);
 
-				set_config('session_last_gc', $this->time_now);
+				set_config('session_last_gc', $this->time_now, true);
 			break;
 
 			default:
@@ -669,33 +658,30 @@ class session
 					GROUP BY session_user_id, session_page';
 				$result = $db->sql_query_limit($sql, 5);
 
-				$del_user_id = '';
+				$del_user_id = array();
 				$del_sessions = 0;
-				if ($row = $db->sql_fetchrow($result))
-				{
-					do
-					{
-						if ($row['session_user_id'] != ANONYMOUS)
-						{
-							$sql = 'UPDATE ' . USERS_TABLE . '
-								SET user_lastvisit = ' . $row['recent_time'] . ", user_lastpage = '" . $db->sql_escape($row['session_page']) . "'
-								WHERE user_id = " . $row['session_user_id'];
-							$db->sql_query($sql);
-						}
 
-						$del_user_id .= (($del_user_id != '') ? ', ' : '') . (int) $row['session_user_id'];
-						$del_sessions++;
+				while ($row = $db->sql_fetchrow($result));
+				{
+					if ($row['session_user_id'] != ANONYMOUS)
+					{
+						$sql = 'UPDATE ' . USERS_TABLE . '
+							SET user_lastvisit = ' . (int) $row['recent_time'] . ", user_lastpage = '" . $db->sql_escape($row['session_page']) . "'
+							WHERE user_id = " . (int) $row['session_user_id'];
+						$db->sql_query($sql);
 					}
-					while ($row = $db->sql_fetchrow($result));
+
+					$del_user_id[] = (int) $row['session_user_id'];
+					$del_sessions++;
 				}
 				$db->sql_freeresult($result);
 
-				if ($del_user_id)
+				if (sizeof($del_user_id))
 				{
 					// Delete expired sessions
-					$sql = 'DELETE FROM ' . SESSIONS_TABLE . "
-						WHERE session_user_id IN ($del_user_id)
-							AND session_time < " . ($this->time_now - $config['session_length']);
+					$sql = 'DELETE FROM ' . SESSIONS_TABLE . '
+						WHERE ' . $db->sql_in_set('session_user_id', $del_user_id) . '
+							AND session_time < ' . ($this->time_now - $config['session_length']);
 					$db->sql_query($sql);
 				}
 
@@ -755,16 +741,44 @@ class session
 	{
 		global $config, $db;
 
-		$user_id = ($user_id === false) ? $this->data['user_id'] : $user_id;
-		$user_ip = ($user_ip === false) ? $this->ip : $user_ip;
-		$user_email = ($user_email === false) ? $this->data['user_email'] : $user_email;
-
 		$banned = false;
 
 		$sql = 'SELECT ban_ip, ban_userid, ban_email, ban_exclude, ban_give_reason, ban_end
 			FROM ' . BANLIST_TABLE . '
-			WHERE ban_end >= ' . time() . '
-				OR ban_end = 0';
+			WHERE (ban_end >= ' . time() . ' OR ban_end = 0)';
+
+		// Determine which entries to check, only return those
+		if ($user_email === false)
+		{
+			$sql .= " AND ban_email = ''";
+		}
+
+		if ($user_ip === false)
+		{
+			$sql .= " AND (ban_ip = '' OR (ban_ip <> '' AND ban_exclude = 1))";
+		}
+
+		if ($user_id === false)
+		{
+			$sql .= ' AND (ban_userid = 0 OR (ban_userid <> 0 AND ban_exclude = 1))';
+		}
+		else
+		{
+			$sql .= ' AND (ban_userid = ' . $user_id;
+
+			if ($user_email !== false)
+			{
+				$sql .= " OR ban_email <> ''";
+			}
+
+			if ($user_ip !== false)
+			{
+				$sql .= " OR ban_ip <> ''";
+			}
+
+			$sql .= ')';
+		}
+
 		$result = $db->sql_query($sql);
 
 		while ($row = $db->sql_fetchrow($result))
@@ -1066,8 +1080,33 @@ class user extends session
 		{
 			$this->theme['theme_storedb'] = 1;
 
+			$stylesheet = file_get_contents("{$phpbb_root_path}styles/{$this->theme['theme_path']}/theme/stylesheet.css");
+			// Match CSS imports
+			$matches = array();
+			preg_match_all('/@import url\(["\'](.*)["\']\);/i', $stylesheet, $matches);
+	
+			if (sizeof($matches))
+			{
+				$content = '';
+				foreach ($matches[0] as $idx => $match)
+				{
+					if ($content = @file_get_contents("{$phpbb_root_path}styles/{$this->theme['theme_path']}/theme/" . $matches[1][$idx]))
+					{
+						$content = trim($content);
+					}
+					else
+					{
+						$content = '';
+					}
+					$stylesheet = str_replace($match, $content, $stylesheet);
+				}
+				unset ($content);
+			}
+
+			$stylesheet = str_replace('./', 'styles/' . $this->theme['theme_path'] . '/theme/', $stylesheet);
+
 			$sql_ary = array(
-				'theme_data'	=> implode('', file("{$phpbb_root_path}styles/" . $this->theme['theme_path'] . '/theme/stylesheet.css')),
+				'theme_data'	=> $stylesheet,
 				'theme_mtime'	=> time(),
 				'theme_storedb'	=> 1
 			);
@@ -1102,9 +1141,9 @@ class user extends session
 
 		// Does the user need to change their password? If so, redirect to the
 		// ucp profile reg_details page ... of course do not redirect if we're already in the ucp
-		if (!defined('IN_ADMIN') && $config['chg_passforce'] && $this->data['user_passchg'] < time() - ($config['chg_passforce'] * 86400))
+		if (!defined('IN_ADMIN') && $config['chg_passforce'] && $this->data['is_registered'] && $this->data['user_passchg'] < time() - ($config['chg_passforce'] * 86400))
 		{
-			if (strpos($this->page['query_string'], 'mode=reg_details') !== false && $this->page['page_name'] == "ucp.$phpEx")
+			if (strpos($this->page['query_string'], 'mode=reg_details') === false && $this->page['page_name'] != "ucp.$phpEx")
 			{
 				redirect(append_sid("{$phpbb_root_path}ucp.$phpEx", 'i=profile&amp;mode=reg_details'));
 			}
@@ -1205,17 +1244,18 @@ class user extends session
 	*/
 	function format_date($gmepoch, $format = false, $forcedate = false)
 	{
-		static $lang_dates, $midnight;
+		static $midnight;
 
-		if (empty($lang_dates))
+		$lang_dates = $this->lang['datetime'];
+		$format = (!$format) ? $this->date_format : $format;
+
+		// Short representation of month in format
+		if ((strpos($format, '\M') === false && strpos($format, 'M') !== false) || (strpos($format, '\r') === false && strpos($format, 'r') !== false))
 		{
-			foreach ($this->lang['datetime'] as $match => $replace)
-			{
-				$lang_dates[$match] = $replace;
-			}
+			$lang_dates['May'] = $lang_dates['May_short'];
 		}
 
-		$format = (!$format) ? $this->date_format : $format;
+		unset($lang_dates['May_short']);
 
 		if (!$midnight)
 		{

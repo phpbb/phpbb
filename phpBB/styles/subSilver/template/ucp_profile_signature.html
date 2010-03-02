@@ -25,6 +25,8 @@ a_help = "{LA_BBCODE_A_HELP}";
 s_help = "{LA_BBCODE_S_HELP}";
 f_help = "{LA_BBCODE_F_HELP}";
 e_help = "{LA_BBCODE_E_HELP}";
+d_help = "{LA_BBCODE_D_HELP}";
+<!-- BEGIN custom_tags -->cb_{custom_tags.BBCODE_ID}_help = "{custom_tags.BBCODE_HELPLINE}";<!-- END custom_tags -->
 
 //-->
 </script>
@@ -56,7 +58,7 @@ e_help = "{LA_BBCODE_E_HELP}";
 				<input type="button" class="btnbbcode" accesskey="o" name="addbbcode12" value="List=" style="width: 40px" onclick="bbstyle(12)" onmouseover="helpline('o')" />
 				<!-- IF S_BBCODE_IMG --><input type="button" class="btnbbcode" accesskey="p" name="addbbcode14" value="Img" style="width: 40px"  onclick="bbstyle(14)" onmouseover="helpline('p')" /><!-- ENDIF -->
 				<input type="button" class="btnbbcode" accesskey="w" name="addbbcode16" value="URL" style="text-decoration: underline; width: 40px" onclick="bbstyle(16)" onmouseover="helpline('w')" />
-				<!-- IF S_BBCODE_FLASH --><input type="button" class="btnbbcode" accesskey="f" name="addbbcode18" value="Flash" onclick="bbstyle(18)" /><!-- ENDIF -->
+				<!-- IF S_BBCODE_FLASH --><input type="button" class="btnbbcode" accesskey="d" name="addbbcode18" value="Flash" onclick="bbstyle(18)" onmouseover="helpline('d')" /><!-- ENDIF -->
 			</td>
 		</tr>
 		<tr>
@@ -74,9 +76,10 @@ e_help = "{LA_BBCODE_E_HELP}";
 			<tr valign="middle" align="left">
 				<td colspan="2">
 				<!-- BEGIN custom_tags -->
-					<input type="button" class="btnbbcode" name="addbbcode{custom_tags.BBCODE_ID}" value="{custom_tags.BBCODE_TAG}" onclick="bbstyle({custom_tags.BBCODE_ID})" />
+					<input type="button" class="btnbbcode" name="addbbcode{custom_tags.BBCODE_ID}" value="{custom_tags.BBCODE_TAG}" onclick="bbstyle({custom_tags.BBCODE_ID})"<!-- IF custom_tags.BBCODE_HELPLINE !== '' --> onmouseover="helpline('cb_{custom_tags.BBCODE_ID}')"<!-- ENDIF --> />
 				<!-- END custom_tags -->
 				</td>
+			</tr>
 		<!-- ENDIF -->
 		<tr>
 			<td colspan="9"><input type="text" name="helpbox" style="width:100%" maxlength="100" class="helpline" value="{L_STYLES_TIP}" /></td>

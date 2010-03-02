@@ -49,10 +49,10 @@ class ucp_profile
 						$data[$var] = request_var($var, $default);
 					}
 
+					// Do not check cur_password, it is the old one.
 					$var_ary = array(
-						'password_confirm'	=> array('string', true, $config['min_pass_chars'], $config['max_pass_chars']),
 						'new_password'		=> array('string', true, $config['min_pass_chars'], $config['max_pass_chars']),
-						'cur_password'		=> array('string', true, $config['min_pass_chars'], $config['max_pass_chars']),
+						'password_confirm'	=> array('string', true, $config['min_pass_chars'], $config['max_pass_chars']),
 						'email'				=> array(
 							array('string', false, 6, 60),
 							array('email', $data['email'])),
@@ -153,7 +153,7 @@ class ucp_profile
 
 								$sql = 'SELECT user_id, username, user_email, user_lang, user_jabber, user_notify_type
 									FROM ' . USERS_TABLE . '
-									WHERE user_id IN (' . implode(', ', $admin_ary[0]['a_user']) .')';
+									WHERE ' . $db->sql_in_set('user_id', $admin_ary[0]['a_user']);
 								$result = $db->sql_query($sql);
 
 								while ($row = $db->sql_fetchrow($result))
@@ -225,7 +225,7 @@ class ucp_profile
 					'S_CHANGE_EMAIL'	=> ($auth->acl_get('u_chgemail')) ? true : false,
 					'S_CHANGE_PASSWORD'	=> ($auth->acl_get('u_chgpasswd')) ? true : false)
 				);
-				break;
+			break;
 
 			case 'profile_info':
 
@@ -399,7 +399,7 @@ class ucp_profile
 
 				$cp->generate_profile_fields('profile', $user->get_iso_lang_id());
 
-				break;
+			break;
 
 			case 'signature':
 
@@ -408,7 +408,8 @@ class ucp_profile
 					trigger_error('NO_AUTH_SIGNATURE');
 				}
 				
-				include($phpbb_root_path . 'includes/functions_posting.'.$phpEx);
+				include($phpbb_root_path . 'includes/functions_posting.' . $phpEx);
+				include($phpbb_root_path . 'includes/functions_display.' . $phpEx);
 
 				$enable_bbcode	= ($config['allow_sig_bbcode']) ? request_var('enable_bbcode', $user->optionget('bbcode')) : false;
 				$enable_smilies	= ($config['allow_sig_smilies']) ? request_var('enable_smilies', $user->optionget('smilies')) : false;
@@ -430,13 +431,13 @@ class ucp_profile
 						{
 							$error[] = implode('<br />', $message_parser->warn_msg);
 						}
-						
+
 						if (!sizeof($error) && $submit)
 						{
 							$sql_ary = array(
 								'user_sig'					=> (string) $message_parser->message, 
 								'user_sig_bbcode_uid'		=> (string) $message_parser->bbcode_uid, 
-								'user_sig_bbcode_bitfield'	=> (int) $message_parser->bbcode_bitfield
+								'user_sig_bbcode_bitfield'	=> $message_parser->bbcode_bitfield
 							);
 
 							$sql = 'UPDATE ' . USERS_TABLE . ' 
@@ -486,23 +487,7 @@ class ucp_profile
 				);
 			
 				// Build custom bbcodes array
-				$sql = 'SELECT bbcode_id, bbcode_tag 
-					FROM ' . BBCODES_TABLE . '
-					WHERE display_on_posting = 1';
-				$result = $db->sql_query($sql);
-
-				$i = 0;
-				while ($row = $db->sql_fetchrow($result))
-				{
-					$template->assign_block_vars('custom_tags', array(
-						'BBCODE_NAME'	=> "'[{$row['bbcode_tag']}]', '[/" . str_replace('=', '', $row['bbcode_tag']) . "]'",
-						'BBCODE_ID'		=> 22 + ($i * 2),
-						'BBCODE_TAG'	=> $row['bbcode_tag'])
-					);
-
-					$i++;
-				}
-				$db->sql_freeresult($result);
+				display_custom_bbcodes();
 			
 			break;
 
@@ -600,7 +585,11 @@ class ucp_profile
 							// Delete old avatar if present
 							if ($user->data['user_avatar'] && $filename != $user->data['user_avatar'] && $user->data['user_avatar_type'] != AVATAR_GALLERY)
 							{
-								avatar_delete($user->data['user_avatar']);
+								// Check if the users avatar is actually a group avatar
+								if (strpos($user->data['user_avatar'], 'g' . $user->data['group_id'] . '_') !== 0 && strpos($user->data['user_avatar'], $user->data['user_id'] . '_') === 0)
+								{
+									avatar_delete($user->data['user_avatar']);
+								}
 							}
 						}
 
@@ -665,7 +654,7 @@ class ucp_profile
 					);
 				}
 
-				break;
+			break;
 		}
 
 		$template->assign_vars(array(

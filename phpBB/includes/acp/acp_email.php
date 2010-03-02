@@ -55,13 +55,11 @@ class acp_email
 			{
 				if ($usernames)
 				{
-					$usernames = implode(', ', preg_replace('#^[\s]*?(.*?)[\s]*?$#e', "\"'\" . \$db->sql_escape('\\1') . \"'\"", explode("\n", $usernames)));
-
 					$sql = 'SELECT username, user_email, user_jabber, user_notify_type, user_lang 
-						FROM ' . USERS_TABLE . " 
-						WHERE username IN ($usernames)
+						FROM ' . USERS_TABLE . '
+						WHERE ' . $db->sql_in_set('username', explode("\n", $usernames)) . '
 							AND user_allow_massemail = 1
-						ORDER BY user_lang, user_notify_type"; // , SUBSTRING(user_email FROM INSTR(user_email, '@'))
+						ORDER BY user_lang, user_notify_type'; // , SUBSTRING(user_email FROM INSTR(user_email, '@'))
 				}
 				else
 				{
@@ -85,10 +83,10 @@ class acp_email
 				}
 				$result = $db->sql_query($sql);
 				$row = $db->sql_fetchrow($result);
-				$db->sql_freeresult($result);
 
 				if (!$row)
 				{
+					$db->sql_freeresult($result);
 					trigger_error($user->lang['NO_USER'] . adm_back_link($this->u_action));
 				}
 	
@@ -121,7 +119,7 @@ class acp_email
 						$email_list[$j][$i]['jabber']	= $row['user_jabber'];
 						$i++;
 					}
-				} 
+				}
 				while ($row = $db->sql_fetchrow($result));
 				$db->sql_freeresult($result);
 
@@ -159,6 +157,7 @@ class acp_email
 					$messenger->assign_vars(array(
 						'SITENAME'		=> $config['sitename'],
 						'CONTACT_EMAIL' => $config['board_contact'],
+						'EMAIL_SIG'		=> str_replace('<br />', "\n", "-- \n" . $config['board_email_sig']),
 						'MESSAGE'		=> html_entity_decode($message))
 					);
 	

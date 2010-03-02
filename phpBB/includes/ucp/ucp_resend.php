@@ -22,7 +22,7 @@ class ucp_resend
 		global $config, $phpbb_root_path, $phpEx;
 		global $db, $user, $auth, $template;
 
-		$username	= request_var('username', '', true);
+		$username	= request_var('username', '');
 		$email		= request_var('email', '');
 		$submit		= (isset($_POST['submit'])) ? true : false;
 
@@ -105,7 +105,7 @@ class ucp_resend
 
 				$sql = 'SELECT user_id, username, user_email, user_lang, user_jabber, user_notify_type
 					FROM ' . USERS_TABLE . '
-					WHERE user_id IN (' . implode(', ', $admin_ary[0]['a_user']) .')';
+					WHERE ' . $db->sql_in_set('user_id', $admin_ary[0]['a_user']);
 				$result = $db->sql_query($sql);
 
 				while ($row = $db->sql_fetchrow($result))

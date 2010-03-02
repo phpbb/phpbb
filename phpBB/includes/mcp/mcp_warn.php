@@ -188,6 +188,7 @@ function mcp_warn_post_view($id, $mode, $action)
 	global $template, $db, $user, $auth;
 
 	$post_id = request_var('p', 0);
+	$forum_id = request_var('f', 0);
 	$notify = (isset($_REQUEST['notify_user'])) ? true : false;
 	$warning = request_var('warning', '', true);
 
@@ -208,6 +209,12 @@ function mcp_warn_post_view($id, $mode, $action)
 	if ($userrow['user_type'] == USER_IGNORE)
 	{
 		trigger_error($user->lang['CANNOT_WARN_ANONYMOUS']);
+	}
+
+	// Prevent someone from warning themselves
+	if ($userrow['user_id'] == $user->data['user_id'])
+	{
+		trigger_error($user->lang['CANNOT_WARN_SELF']);
 	}
 
 	// Check if there is already a warning for this post to prevent multiple
@@ -290,6 +297,8 @@ function mcp_warn_post_view($id, $mode, $action)
 
 		'AVATAR_IMG'		=> $avatar_img,
 		'RANK_IMG'			=> $rank_img,
+
+		'L_WARNING_POST_DEFAULT'	=> sprintf($user->lang['WARNING_POST_DEFAULT'], generate_board_url() . "/viewtopic.$phpEx?f=$forum_id&amp;p=$post_id"),
 		)
 	);
 }
@@ -303,7 +312,7 @@ function mcp_warn_user_view($id, $mode, $action)
 	global $template, $db, $user, $auth;
 
 	$user_id = request_var('u', 0);
-	$username = request_var('username', '', true);
+	$username = request_var('username', '');
 	$notify = (isset($_REQUEST['notify_user'])) ? true : false;
 	$warning = request_var('warning', '', true);
 
@@ -319,6 +328,12 @@ function mcp_warn_user_view($id, $mode, $action)
 	if (!$userrow)
 	{
 		trigger_error('NO_USER');
+	}
+
+	// Prevent someone from warning themselves
+	if ($userrow['user_id'] == $user->data['user_id'])
+	{
+		trigger_error($user->lang['CANNOT_WARN_SELF']);
 	}
 
 	$user_id = $userrow['user_id'];
@@ -401,7 +416,7 @@ function add_warning($userrow, $warning, $send_pm = true, $post_id = 0)
 			'enable_smilies'		=> true,
 			'enable_urls'			=> false,
 			'icon_id'				=> 0,
-			'bbcode_bitfield'		=> (int) $message_parser->bbcode_bitfield,
+			'bbcode_bitfield'		=> $message_parser->bbcode_bitfield,
 			'bbcode_uid'			=> $message_parser->bbcode_uid,
 			'message'				=> $message_parser->message,
 			'address_list'			=> array('u' => array($userrow['user_id'] => 'to')),

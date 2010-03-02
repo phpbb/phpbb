@@ -50,10 +50,20 @@ $lang = array_merge($lang, array(
 ));
 
 $lang = array_merge($lang, array(
-	'CAPTCHA_LINE_1'	=> 'Enter the code on',
-	'CAPTCHA_LINE_2'	=> ' the right which ',
-	'CAPTCHA_LINE_3'	=> 'matches the image',
-	'CAPTCHA_LINE_4'	=> '   on the left   ',
+	'CAPTCHA' =>array(
+		'cells'		=> array(
+						'Enter the code on',
+						'  the right, in  ',
+						' the order shown ',
+						'   on the left   ',
+		),
+		'shape'		=> array(
+						'Enter the code on',
+						' the right which ',
+						'matches the image',
+						'   on the left   ',
+		)
+	)
 ));
 
 // Common language entries
@@ -149,6 +159,7 @@ $lang = array_merge($lang, array(
 	'DELETE_MESSAGES_IN_FOLDER'	=> 'Delete all messages within removed folder',
 	'DELETE_RULE'				=> 'Delete rule',
 	'DELETE_RULE_CONFIRM'		=> 'Are you sure you want to delete this rule?',
+	'DEMOTE_SELECTED'			=> 'Demote selected',
 	'DISABLE_CENSORS'			=> 'Enable word censoring',
 	'DISPLAY_GALLERY'			=> 'Display gallery',
 	'DOWNLOADS'					=> 'Downloads',
@@ -157,6 +168,7 @@ $lang = array_merge($lang, array(
 	'DRAFT_UPDATED'				=> 'Draft successfully updated.',
 
 	'EDIT_DRAFT_EXPLAIN'		=> 'Here you are able to edit your draft. Drafts do not contain attachment and poll informations.',
+	'EMAIL_BANNED_EMAIL'		=> 'The email address you entered is not allowed to be used.',
 	'EMAIL_INVALID_EMAIL'		=> 'The email address you entered is invalid.',
 	'EMAIL_REMIND'				=> 'This must be the email address you supplied when registering.',
 	'EMAIL_TAKEN_EMAIL'			=> 'The entered email address is already in use',
@@ -212,6 +224,9 @@ $lang = array_merge($lang, array(
 
 	'IF_FOLDER_FULL'			=> 'If folder is full',
 	'IMPORTANT_NEWS'			=> 'Important announcements',
+	'ITEMS_REQUIRED'			=> 'The items marked with * are required profile fields and need to be filled out',
+
+	'JOIN_SELECTED'				=> 'Join selected',
 
 	'LANGUAGE'					=> 'Language',
 	'LINK_REMOTE_AVATAR'		=> 'Link off-site',
@@ -225,11 +240,14 @@ $lang = array_merge($lang, array(
 	'MARK_IMPORTANT'			=> 'Mark as important',
 	'MARKED_MESSAGE'			=> 'Marked message',
 	'MAX_FOLDER_REACHED'		=> 'Maximum number of allowed user defined folder reached',
+	'MESSAGE_BY_AUTHOR'			=> 'by',
 	'MESSAGE_COLOURS'			=> 'Message colours',
 	'MESSAGE_DELETED'			=> 'Message successfully deleted',
 	'MESSAGE_HISTORY'			=> 'Message history',
 	'MESSAGE_REMOVED_FROM_OUTBOX'	=> 'This message has been removed by it\'s author before it was delivered',
-	'MESSAGE_STORED'			=> 'The message has been send successfully',
+	'MESSAGE_SENT_ON'			=> 'on',
+	'MESSAGE_STORED'			=> 'Your message has been sent successfully',
+	'MESSAGE_TO'				=> 'To',
 	'MESSAGES_DELETED'			=> 'Messages successfully deleted',
 	'MOVE_DELETED_MESSAGES_TO'	=> 'Move messages from removed folder to',
 	'MOVE_DOWN'					=> 'Move down',
@@ -249,14 +267,20 @@ $lang = array_merge($lang, array(
 	'NOTIFY_METHOD_EXPLAIN'		=> 'Method for sending messages sent via this board.',
 	'NOTIFY_METHOD_IM'			=> 'Jabber only',
 	'NOTIFY_ON_PM'				=> 'Email me on new private messages',
-	'NOT_ADDED_FRIENDS'			=> 'You cannot add the anonymous user to your friends list.',
-	'NOT_ADDED_FOES'			=> 'Usernames not added to foes list because of administrator/moderator status or because you tried to add the anonymous user.',
+	'NOT_ADDED_FRIENDS_ANONYMOUS'	=> 'You cannot add the anonymous user to your friends list.',
+	'NOT_ADDED_FRIENDS_FOES'	=> 'You cannot add users to your friends list who are on your foes list',
+	'NOT_ADDED_FRIENDS_SELF'	=> 'You cannot add yourself to the friends list',
+	'NOT_ADDED_FOES_MOD_ADMIN'	=> 'You cannot add administrators and moderators to your foes list.',
+	'NOT_ADDED_FOES_ANONYMOUS'	=> 'You cannot add the anonymous user to your foes list.',
+	'NOT_ADDED_FOES_FRIENDS'	=> 'You cannot add users to your foes list who are on your friends list.',
+	'NOT_ADDED_FOES_SELF'		=> 'You cannot add yourself to the foes list.',
 	'NOT_AGREE'					=> 'I do not agree to these terms',
 	'NOT_ENOUGH_SPACE_FOLDER'	=> 'The destination folder "%s" seems to be full. The requested action has not been taken.',
 	'NOT_MOVED_MESSAGE'			=> 'You have 1 private message currently on hold because of full folder.',
 	'NOT_MOVED_MESSAGES'		=> 'You have %d private messages currently on hold because of full folder.',
 	'NO_ACTION_MODE'			=> 'No message action specified',
 	'NO_AUTHOR'					=> 'No author defined for this message',
+	'NO_AVATAR_CATEGORY'		=> 'None',
 
 	'NO_AUTH_DELETE_MESSAGE'		=> 'You are not authorised to delete private messages.',
 	'NO_AUTH_EDIT_MESSAGE'			=> 'You are not authorised to edit private messages.',
@@ -267,6 +291,7 @@ $lang = array_merge($lang, array(
 	'NO_AUTH_SEND_MESSAGE'			=> 'You are not authorised sending private messages.',
 	'NO_AUTH_SIGNATURE'				=> 'You are not authorised to define a signature',
 
+	'NO_BCC_RECIPIENT'			=> 'None',
 	'NO_BOOKMARKS'				=> 'You have no bookmarks',
 	'NO_BOOKMARKS_SELECTED'		=> 'You have selected no bookmarks',
 	'NO_EMAIL_USER'				=> 'The email/username information submitted could not be found',
@@ -283,6 +308,7 @@ $lang = array_merge($lang, array(
 	'NO_RECIPIENT'				=> 'No recipient defined',
 	'NO_RULES_DEFINED'			=> 'No rules defined',
 	'NO_SAVED_DRAFTS'			=> 'No drafts saved',
+	'NO_TO_RECIPIENT'			=> 'None',
 	'NO_WATCHED_FORUMS'			=> 'You are not watching any forums.',
 	'NO_WATCHED_TOPICS'			=> 'You are not watching any topics.',
 
@@ -295,7 +321,7 @@ $lang = array_merge($lang, array(
 	'PM_ICON'					=> 'PM icon',
 	'PM_INBOX'					=> 'Inbox',
 	'PM_OUTBOX'					=> 'Outbox',
-	'PM_SENTBOX'				=> 'Sentbox',
+	'PM_SENTBOX'				=> 'Sent Messages',
 	'PM_SUBJECT'				=> 'Message subject',
 	'PM_TO'						=> 'Send to',
 	'POPUP_ON_PM'				=> 'Pop up window on new private message',
@@ -325,6 +351,7 @@ $lang = array_merge($lang, array(
 	'RENAME'					=> 'Rename',
 	'RENAME_FOLDER'				=> 'Rename folder',
 	'REPLIED_MESSAGE'			=> 'Replied to message',
+	'RESIGN_SELECTED'			=> 'Resign selected',
 	'RETURN_FOLDER'				=> '%1$sReturn to previous folder%2$s',
 	'RETURN_UCP'				=> '%sReturn to the User Control Panel%s',
 	'RULE_ADDED'				=> 'Rule successfully added',
@@ -372,7 +399,7 @@ $lang = array_merge($lang, array(
 	'UCP_MSNM'					=> 'MSN Messenger',
 	'UCP_NO_ATTACHMENTS'		=> 'You have posted no files',
 
-	'UCP_PREFS'					=> 'Preferences',
+	'UCP_PREFS'					=> 'Forum preferences',
 	'UCP_PREFS_PERSONAL'		=> 'Personal settings',
 	'UCP_PREFS_POST'			=> 'Posting messages',
 	'UCP_PREFS_VIEW'			=> 'Viewing posts',
@@ -399,7 +426,6 @@ $lang = array_merge($lang, array(
 	'UCP_REGISTER_DISABLE'			=> 'Creating a new account is currently not possible.',
 	'UCP_REMIND'					=> 'Send password',
 	'UCP_RESEND'					=> 'Send activation email',
-	'UCP_WATCHED'					=> 'Watched items',
 	'UCP_WELCOME'					=> 'Welcome to the User Control Panel. From here you can monitor, view and update your profile, preferences, subscribed forums and topics. You can also send messages to other users (if permitted). Please ensure you read any announcements before continuing.',
 	'UCP_YIM'						=> 'Yahoo Messenger',
 	'UCP_ZEBRA'						=> 'Friends and Foes',
@@ -414,7 +440,7 @@ $lang = array_merge($lang, array(
 	'USERNAME_ALPHA_SPACERS_EXPLAIN'=> 'Username must be between %1$d and %2$d chars long and use alphanumeric, space or -+_[] characters.',
 	'USERNAME_CHARS_ANY_EXPLAIN'	=> 'Length must be between %1$d and %2$d characters.',
 	'USERNAME_TAKEN_USERNAME'		=> 'The username you entered is already in use, please select an alternative.',
-	'USERNAME_USERNAME_DISALLOWED'	=> 'The username you entered has been banned.',
+	'USERNAME_DISALLOWED_USERNAME'	=> 'The username you entered has been banned.',
 	'USER_NOT_FOUND_OR_INACTIVE'	=> 'The usernames you specified could either not be found or are not activated users.',
 
 	'VIEW_AVATARS'				=> 'Display avatars',
@@ -476,7 +502,6 @@ $lang = array_merge($lang, array(
 		'IS_GROUP'		=> 'is in usergroup',
 		'ANSWERED'		=> 'answered',
 		'FORWARDED'		=> 'forwarded',
-		'REPORTED'		=> 'reported',
 		'TO_GROUP'		=> 'to my default usergroup',
 		'TO_ME'			=> 'to me'
 	),
@@ -493,11 +518,6 @@ $lang = array_merge($lang, array(
 	'NO_MEMBER'		=> 'No group memberships',
 	'NO_PENDING'	=> 'No pending memberships',
 	'NO_NONMEMBER'	=> 'No non-member groups',
-
-	'QUIT_ALL'		=> 'Quit all',
-	'QUIT_MARKED'	=> 'Quit marked',
-	'JOIN_ALL'		=> 'Join all',
-	'JOIN_MARKED'	=> 'Join marked',
 ));
 
 ?>

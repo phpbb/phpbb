@@ -230,7 +230,7 @@ class custom_profile
 		}
 		else
 		{
-			$sql = 'SELECT option_id, value
+			$sql = 'SELECT option_id, lang_value
 				FROM ' . PROFILE_FIELDS_LANG_TABLE . "
 					WHERE field_id = $field_id
 					AND lang_id = $lang_id
@@ -240,7 +240,7 @@ class custom_profile
 
 			while ($row = $db->sql_fetchrow($result))
 			{
-				$this->options_lang[$field_id][$lang_id][($row['option_id'] + 1)] = $row['value'];
+				$this->options_lang[$field_id][$lang_id][($row['option_id'] + 1)] = $row['lang_value'];
 			}
 			$db->sql_freeresult($result);
 		}
@@ -286,8 +286,8 @@ class custom_profile
 
 		while ($row = $db->sql_fetchrow($result))
 		{
-			$cp_data[$row['field_ident']] = $this->get_profile_field($row);
-			$check_value = $cp_data[$row['field_ident']];
+			$cp_data['_' . $row['field_ident']] = $this->get_profile_field($row);
+			$check_value = $cp_data['_' . $row['field_ident']];
 
 			if (($cp_result = $this->validate_profile_field($row['field_type'], $check_value, $row)) !== false)
 			{
@@ -358,14 +358,14 @@ class custom_profile
 				$this->build_cache();
 			}
 
-			if (!implode(', ', $user_id))
+			if (!sizeof($user_id))
 			{
 				return array();
 			}
 
 			$sql = 'SELECT *
 				FROM ' . PROFILE_FIELDS_DATA_TABLE . '
-				WHERE user_id IN (' . implode(', ', array_map('intval', $user_id)) . ')';
+				WHERE ' . $db->sql_in_set('user_id', array_map('intval', $user_id));
 			$result = $db->sql_query($sql);
 
 			$field_data = array();
@@ -382,7 +382,7 @@ class custom_profile
 			{
 				foreach ($field_data as $user_id => $row)
 				{
-					$user_fields[$user_id][$used_ident]['value'] = $row[$used_ident];
+					$user_fields[$user_id][$used_ident]['value'] = $row['_' . $used_ident];
 					$user_fields[$user_id][$used_ident]['data'] = $this->profile_cache[$used_ident];
 				}
 			}
@@ -494,7 +494,15 @@ class custom_profile
 					return NULL;
 				}
 
-				return $this->options_lang[$field_id][$lang_id][(int) $value];
+				$value = (int) $value;
+
+				// User not having a value assigned
+				if (!isset($this->options_lang[$field_id][$lang_id][$value]))
+				{
+					return NULL;
+				}
+
+				return $this->options_lang[$field_id][$lang_id][$value];
 			break;
 
 			case 'bool':
@@ -534,7 +542,7 @@ class custom_profile
 		global $user;
 
 		$profile_row['field_ident'] = (isset($profile_row['var_name'])) ? $profile_row['var_name'] : 'pf_' . $profile_row['field_ident'];
-		$user_ident = str_replace('pf_', '', $profile_row['field_ident']);
+		$user_ident = '_' . str_replace('pf_', '', $profile_row['field_ident']);
 
 		// checkbox - only testing for isset
 		if ($profile_row['field_type'] == FIELD_BOOL && $profile_row['field_length'] == 2)
@@ -601,7 +609,7 @@ class custom_profile
 		global $user, $template;
 
 		$profile_row['field_ident'] = (isset($profile_row['var_name'])) ? $profile_row['var_name'] : 'pf_' . $profile_row['field_ident'];
-		$user_ident = str_replace('pf_', '', $profile_row['field_ident']);
+		$user_ident = '_' . str_replace('pf_', '', $profile_row['field_ident']);
 
 		$now = getdate();
 
@@ -779,13 +787,13 @@ class custom_profile
 		$sql_not_in = array();
 		foreach ($cp_data as $key => $null)
 		{
-			$sql_not_in[] = "'" . $db->sql_escape($key) . "'";
+			$sql_not_in[] = (strncmp($key, '_', 1) === 0) ? substr($key, 1) : $key;
 		}
 
 		$sql = 'SELECT f.field_type, f.field_ident, f.field_default_value, l.lang_default_value
 			FROM ' . PROFILE_LANG_TABLE . ' l, ' . PROFILE_FIELDS_TABLE . ' f 
 			WHERE l.lang_id = ' . $user->get_iso_lang_id() . ' 
-				' . ((sizeof($sql_not_in)) ? ' AND f.field_ident NOT IN (' . implode(', ', $sql_not_in) . ')' : '') . '
+				' . ((sizeof($sql_not_in)) ? ' AND ' . $db->sql_in_set('f.field_ident', $sql_not_in, true) : '') . '
 				AND l.field_id = f.field_id';
 		$result = $db->sql_query($sql);
 
@@ -796,7 +804,8 @@ class custom_profile
 				$now = getdate();
 				$row['field_default_value'] = sprintf('%2d-%2d-%4d', $now['mday'], $now['mon'], $now['year']);
 			}
-			$cp_data[$row['field_ident']] = (in_array($row['field_type'], array(FIELD_TEXT, FIELD_STRING))) ? $row['lang_default_value'] : $row['field_default_value'];
+
+			$cp_data['_' . $row['field_ident']] = (in_array($row['field_type'], array(FIELD_TEXT, FIELD_STRING))) ? $row['lang_default_value'] : $row['field_default_value'];
 		}
 		$db->sql_freeresult($result);
 		

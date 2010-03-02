@@ -18,7 +18,7 @@
 	<h2><a class="titles" href="{U_VIEW_TOPIC}">{TOPIC_TITLE}</a></h2>
 
 <!-- IF MODERATORS -->
-	<p class="moderators">{L_MODERATORS}: {MODERATORS}</p>
+	<p class="moderators"><!-- IF S_SINGLE_MODERATOR -->{L_MODERATOR}<!-- ELSE -->{L_MODERATORS}<!-- ENDIF -->: {MODERATORS}</p>
 <!-- ENDIF -->
 <!-- IF U_MCP -->
 	<p class="linkmcp">[ <a href="{U_MCP}">{L_MCP}</a> ]</p>
@@ -132,6 +132,13 @@
 	<!-- IF postrow.S_IGNORE_POST -->
 			<td class="gensmall" colspan="2" height="25" align="center">{postrow.L_IGNORE_POST}</td>
 	<!-- ELSE -->
+
+		<!-- IF postrow.FORCE_ENCODING -->
+			<td class="gensmall" colspan="2" height="25" align="center">{postrow.FORCE_ENCODING}</td>
+		</tr>
+			<!-- IF postrow.S_ROW_COUNT is even --><tr class="row1"><!-- ELSE --><tr class="row2"><!-- ENDIF -->
+		<!-- ENDIF -->
+
 			<td align="center" valign="middle"><!-- IF postrow.S_FIRST_UNREAD --><a name="unread"></a><!-- ENDIF --><a name="p{postrow.POST_ID}"></a><b class="postauthor">{postrow.POSTER_NAME}</b></td>
 			<td width="100%" height="25">
 				<table width="100%" cellspacing="0">
@@ -144,7 +151,7 @@
 				</table>
 			</td>
 		</tr>
-
+		
 		<!-- IF postrow.S_ROW_COUNT is even --><tr class="row1"><!-- ELSE --><tr class="row2"><!-- ENDIF -->
 
 			<td valign="top">

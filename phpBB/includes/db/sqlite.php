@@ -22,10 +22,11 @@ if (!defined('SQL_LAYER'))
 {
 
 	define('SQL_LAYER', 'sqlite');
-	include($phpbb_root_path . 'includes/db/dbal.' . $phpEx);
+	include_once($phpbb_root_path . 'includes/db/dbal.' . $phpEx);
 
 /**
 * Sqlite Database Abstraction Layer
+* Minimum Requirement: 2.8.2+
 * @package dbal
 */
 class dbal_sqlite extends dbal
@@ -47,8 +48,17 @@ class dbal_sqlite extends dbal
 		{
 			@sqlite_query('PRAGMA short_column_names = 1', $this->db_connect_id);
 		}
+
 		
 		return ($this->db_connect_id) ? true : array('message' => $error);
+	}
+
+	/**
+	* Version information about used database
+	*/
+	function sql_server_info()
+	{
+		return 'SQLite ' . @sqlite_libversion();
 	}
 
 	/**
@@ -77,6 +87,12 @@ class dbal_sqlite extends dbal
 
 	/**
 	* Base query method
+	*
+	* @param	string	$query		Contains the SQL query which shall be executed
+	* @param	int		$cache_ttl	Either 0 to avoid caching or the time in seconds which the result shall be kept in cache
+	* @return	mixed				When casted to bool the returned value returns true on success and false on failure
+	*
+	* @access	public
 	*/
 	function sql_query($query = '', $cache_ttl = 0)
 	{
@@ -159,9 +175,16 @@ class dbal_sqlite extends dbal
 	*/
 	function sql_numrows($query_id = false)
 	{
+		global $cache;
+
 		if (!$query_id)
 		{
 			$query_id = $this->query_result;
+		}
+
+		if (isset($cache->sql_rowset[$query_id]))
+		{
+			return $cache->sql_numrows($query_id);
 		}
 
 		return ($query_id) ? @sqlite_num_rows($query_id) : false;
@@ -192,7 +215,9 @@ class dbal_sqlite extends dbal
 			return $cache->sql_fetchrow($query_id);
 		}
 
-		return ($query_id) ? @sqlite_fetch_array($query_id, SQLITE_ASSOC) : false;
+		$row = @sqlite_fetch_array($query_id, SQLITE_ASSOC);
+
+		return $row;
 	}
 
 	/**
@@ -201,6 +226,8 @@ class dbal_sqlite extends dbal
 	*/
 	function sql_fetchfield($field, $rownum = false, $query_id = false)
 	{
+		global $cache;
+
 		if (!$query_id)
 		{
 			$query_id = $this->query_result;
@@ -208,15 +235,17 @@ class dbal_sqlite extends dbal
 
 		if ($query_id)
 		{
-			if ($rownum === false)
-			{
-				return @sqlite_column($query_id, $field);
-			}
-			else
+			if ($rownum !== false)
 			{
 				$this->sql_rowseek($rownum, $query_id);
-				return @sqlite_column($query_id, $field);
 			}
+
+			if (isset($cache->sql_rowset[$query_id]))
+			{
+				return $cache->sql_fetchfield($query_id, $field);
+			}
+
+			return @sqlite_column($query_id, $field);
 		}
 
 		return false;
@@ -228,9 +257,16 @@ class dbal_sqlite extends dbal
 	*/
 	function sql_rowseek($rownum, $query_id = false)
 	{
+		global $cache;
+
 		if (!$query_id)
 		{
 			$query_id = $this->query_result;
+		}
+
+		if (isset($cache->sql_rowset[$query_id]))
+		{
+			return $cache->sql_rowseek($query_id, $rownum);
 		}
 
 		return ($query_id) ? @sqlite_seek($query_id, $rownum) : false;
@@ -249,6 +285,18 @@ class dbal_sqlite extends dbal
 	*/
 	function sql_freeresult($query_id = false)
 	{
+		global $cache;
+
+		if (!$query_id)
+		{
+			$query_id = $this->query_result;
+		}
+
+		if (isset($cache->sql_rowset[$query_id]))
+		{
+			return $cache->sql_freeresult($query_id);
+		}
+
 		return true;
 	}
 

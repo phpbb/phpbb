@@ -177,8 +177,6 @@ class dbal
 	* Idea for this from Ikonboard
 	* Possible query values: INSERT, INSERT_SELECT, MULTI_INSERT, UPDATE, SELECT
 	*
-	* If a key is 'module_name' and firebird used it gets adjusted to '"module_name"'
-	* on INSERT, INSERT_SELECT, UPDATE and SELECT
 	*/
 	function sql_build_array($query, $assoc_ary = false)
 	{
@@ -193,24 +191,16 @@ class dbal
 		{
 			foreach ($assoc_ary as $key => $var)
 			{
-				$fields[] = ($key == 'module_name' && SQL_LAYER == 'firebird') ? '"' . $key . '"' : $key;
+				$fields[] = $key;
 
-				if (is_null($var))
-				{
-					$values[] = 'NULL';
-				}
-				else if (is_string($var))
-				{
-					$values[] = "'" . $this->sql_escape($var) . "'";
-				}
-				else if (is_array($var) && is_string($var[0]))
+				if (is_array($var) && is_string($var[0]))
 				{
 					// This is used for INSERT_SELECT(s)
 					$values[] = $var[0];
 				}
 				else
 				{
-					$values[] = (is_bool($var)) ? intval($var) : $var;
+					$values[] = $this->_sql_validate_value($var);
 				}
 			}
 
@@ -224,18 +214,7 @@ class dbal
 				$values = array();
 				foreach ($sql_ary as $key => $var)
 				{
-					if (is_null($var))
-					{
-						$values[] = 'NULL';
-					}
-					else if (is_string($var))
-					{
-						$values[] = "'" . $this->sql_escape($var) . "'";
-					}
-					else
-					{
-						$values[] = (is_bool($var)) ? intval($var) : $var;
-					}
+					$values[] = $this->_sql_validate_value($var);
 				}
 				$ary[] = '(' . implode(', ', $values) . ')';
 			}
@@ -247,25 +226,55 @@ class dbal
 			$values = array();
 			foreach ($assoc_ary as $key => $var)
 			{
-				$key = ($key == 'module_name' && SQL_LAYER == 'firebird') ? '"' . $key . '"' : $key;
-
-				if (is_null($var))
-				{
-					$values[] = "$key = NULL";
-				}
-				else if (is_string($var))
-				{
-					$values[] = "$key = '" . $this->sql_escape($var) . "'";
-				}
-				else
-				{
-					$values[] = (is_bool($var)) ? "$key = " . intval($var) : "$key = $var";
-				}
+				$values[] = "$key = " . $this->_sql_validate_value($var);
 			}
 			$query = implode(($query == 'UPDATE') ? ', ' : ' AND ', $values);
 		}
 
 		return $query;
+	}
+
+	function sql_in_set($field, $array, $negate = false)
+	{
+		if (!sizeof($array))
+		{
+			trigger_error('No values specified for SQL IN comparison', E_USER_ERROR);
+		}
+
+		$values = array();
+		foreach ($array as $var)
+		{
+			$values[] = $this->_sql_validate_value($var);
+		}
+
+		if (sizeof($values) == 1)
+		{
+			return $field . ($negate ? ' <> ' : ' = ') . $values[0];
+		}
+		else
+		{
+			return $field . ($negate ? ' NOT IN ' : ' IN ' ) . '(' . implode(', ', $values) . ')';
+		}
+	}
+
+	/**
+	* Function for validating values
+	* @access private
+	*/
+	function _sql_validate_value($var)
+	{
+		if (is_null($var))
+		{
+			return 'NULL';
+		}
+		else if (is_string($var))
+		{
+			return "'" . $this->sql_escape($var) . "'";
+		}
+		else
+		{
+			return (is_bool($var)) ? intval($var) : $var;
+		}
 	}
 
 	/**
@@ -286,7 +295,17 @@ class dbal
 				$table_array = array();
 				foreach ($array['FROM'] as $table_name => $alias)
 				{
-					$table_array[] = $table_name . ' ' . $alias;
+					if (is_array($alias))
+					{
+						foreach ($alias as $multi_alias)
+						{
+							$table_array[] = $table_name . ' ' . $multi_alias;
+						}
+					}
+					else
+					{
+						$table_array[] = $table_name . ' ' . $alias;
+					}
 				}
 
 				$sql .= $this->_sql_custom_build('FROM', implode(', ', $table_array));
@@ -355,7 +374,7 @@ class dbal
 				// This could happen if the connection could not be established for example (then we are not able to grab the default language)
 				if (!isset($user->lang['SQL_ERROR_OCCURRED']))
 				{
-					$message .= '<br /><br />An sql error occurred while fetching this page. Please contact an administrator if this problem persist.';
+					$message .= '<br /><br />An sql error occurred while fetching this page. Please contact an administrator if this problem persists.';
 				}
 				else
 				{

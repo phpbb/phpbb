@@ -19,6 +19,12 @@ $phpEx = substr(strrchr(__FILE__, '.'), 1);
 // Report all errors, except notices
 error_reporting(E_ALL ^ E_NOTICE);
 
+// @todo Review this test and see if we can find out what it is which prevents PHP 4.2.x from even displaying the page with requirements on it
+if (version_compare(phpversion(), '4.3.0') < 0)
+{
+	die('You are running an unsupported PHP version. Please upgrade to PHP 4.3.3 or higher before trying to install phpBB 3.0');
+}
+
 /*
 * Remove variables created by register_globals from the global scope
 * Thanks to Matt Kavanagh
@@ -304,10 +310,10 @@ class module
 		global $template, $lang, $stage;
 
 		$template->assign_vars(array(
+			'L_CHANGE'				=> $lang['CHANGE'],
 			'L_INSTALL_PANEL'		=> $lang['INSTALL_PANEL'],
+			'L_SELECT_LANG'			=> $lang['SELECT_LANG'],
 			'PAGE_TITLE'			=> $this->get_page_title(),
-
-			'META'					=> $this->get_meta(),
 
 			'S_CONTENT_DIRECTION' 	=> $lang['DIRECTION'],
 			'S_CONTENT_ENCODING' 	=> $lang['ENCODING'],
@@ -320,7 +326,7 @@ class module
 		{
 			header('Content-type: text/html; charset: ' . $lang['ENCODING']);
 		}
-		header('Cache-Control: private, no-cache="set-cookie", pre-check=0, post-check=0');
+		header('Cache-Control: private, no-cache="set-cookie"');
 		header('Expires: 0');
 		header('Pragma: no-cache');
 
@@ -332,7 +338,7 @@ class module
 	*/
 	function page_footer()
 	{
-		global $template;
+		global $db, $template;
 
 		$template->display('body');
 	
@@ -369,11 +375,36 @@ class module
 	}
 
 	/**
-	* Returns the desired meta tags for the page
+	* Generate an HTTP/1.1 header to redirect the user to another page
+	* This is used during the installation when we do not have a database available to call the normal redirect function
+	* @param string $page The page to redirect to relative to the installer root path
 	*/
-	function get_meta()
+	function redirect($page)
 	{
-		return (isset($this->module->meta)) ? $this->module->meta : '';
+		$server_name = (!empty($_SERVER['SERVER_NAME'])) ? $_SERVER['SERVER_NAME'] : getenv('SERVER_NAME');
+		$server_port = (!empty($_SERVER['SERVER_PORT'])) ? (int) $_SERVER['SERVER_PORT'] : (int) getenv('SERVER_PORT');
+		$secure = (isset($_SERVER['HTTPS']) && $_SERVER['HTTPS'] == 'on') ? 1 : 0;
+
+		$script_name = (!empty($_SERVER['PHP_SELF'])) ? $_SERVER['PHP_SELF'] : getenv('PHP_SELF');
+		if (!$script_name)
+		{
+			$script_name = (!empty($_SERVER['REQUEST_URI'])) ? $_SERVER['REQUEST_URI'] : getenv('REQUEST_URI');
+		}
+
+		// Replace backslashes and doubled slashes (could happen on some proxy setups)
+		$script_name = str_replace(array('\\', '//'), '/', $script_name);
+		$script_path = trim(dirname($script_name));
+
+		$url = (($secure) ? 'https://' : 'http://') . $server_name;
+
+		if ($server_port && (($secure && $server_port <> 443) || (!$secure && $server_port <> 80)))
+		{
+			$url .= ':' . $server_port;
+		}
+
+		$url .= $script_path . '/' . $page;
+		header('Location: ' . $url);
+		exit;
 	}
 
 	/**
@@ -381,7 +412,7 @@ class module
 	*/
 	function generate_navigation()
 	{
-		global $lang, $template, $phpEx;
+		global $lang, $template, $phpEx, $language;
 
 		if (is_array($this->module_ary))
 		{
@@ -391,7 +422,7 @@ class module
 				$cat = $cat_ary['name'];
 				$l_cat = (!empty($lang['CAT_' . $cat])) ? $lang['CAT_' . $cat] : preg_replace('#_#', ' ', $cat);
 				$cat = strtolower($cat);
-				$url = $this->module_url . '?mode=' . $cat;
+				$url = $this->module_url . "?mode=$cat&amp;language=$language";
 				
 				if ($this->mode == $cat)
 				{
@@ -408,7 +439,7 @@ class module
 						{
 							$l_option = (!empty($lang['SUB_' . $option])) ? $lang['SUB_' . $option] : preg_replace('#_#', ' ', $option);
 							$option = strtolower($option);
-							$url = $this->module_url . '?mode=' . $this->mode . '&amp;sub=' . $option;
+							$url = $this->module_url . '?mode=' . $this->mode . "&amp;sub=$option&amp;language=$language";
 
 							$template->assign_block_vars('l_block1', array(
 								'L_TITLE'		=> $l_option,
@@ -451,8 +482,6 @@ class module
 	/**
 	* Output an error message
 	* If skip is true, return and continue execution, else exit
-	* @todo Really should change the caption based on $skip and calling code at some point
-	* @todo This needs testing with a large dataset that generates multiple errors
 	*/
 	function error($error, $line, $file, $skip = false)
 	{
@@ -462,7 +491,7 @@ class module
 		{
 			$template->assign_block_vars('checks', array(
 				'S_LEGEND'	=> true,
-				'LEGEND'	=> $lang['INST_ERR_FATAL'],
+				'LEGEND'	=> $lang['INST_ERR'],
 			));
 
 			$template->assign_block_vars('checks', array(
@@ -545,9 +574,13 @@ class module
 			'MESSAGE_TEXT'		=> '<p>' . basename($file) . ' [ ' . $line . ' ]</p><p>SQL : ' . $sql . '</p><p><b>' . $error . '</b></p>',
 		));
 
-		$db->sql_close();
+		// Rollback if in transaction
+		if ($db->transaction)
+		{
+			$db->sql_transaction('rollback');
+		}
+
 		$this->page_footer();
-		exit;
 	}
 
 	/**
@@ -573,7 +606,7 @@ class module
 				$rows = (int) $tpl_type[1];
 				$cols = (int) $tpl_type[2];
 
-				$tpl = '<textarea id="' . $key . '" name="' . $name . '" rows="' . $rows . '" cols="' . $cols . '">' . $value . '</textarea>';
+				$tpl = '<textarea id="' . $name . '" name="' . $name . '" rows="' . $rows . '" cols="' . $cols . '">' . $value . '</textarea>';
 			break;
 
 			case 'radio':
@@ -591,7 +624,7 @@ class module
 
 			case 'select':
 				eval('$s_options = ' . str_replace('{VALUE}', $value, $options) . ';');
-				$tpl = '<select name="' . $name . '">' . $s_options . '</select>';
+				$tpl = '<select id="' . $name . '" name="' . $name . '">' . $s_options . '</select>';
 			break;
 
 			case 'custom':
@@ -603,6 +636,45 @@ class module
 		}
 
 		return $tpl;
+	}
+
+	/**
+	* Generate the drop down of available language packs
+	*/
+	function inst_language_select($default = '')
+	{
+		global $phpbb_root_path, $phpEx;
+
+		$dir = @opendir($phpbb_root_path . 'language');
+
+		while ($file = readdir($dir))
+		{
+			$path = $phpbb_root_path . 'language/' . $file;
+
+			if (is_file($path) || is_link($path) || $file == '.' || $file == '..' || $file == 'CVS')
+			{
+				continue;
+			}
+
+			if (file_exists($path . '/iso.txt'))
+			{
+				list($displayname) = @file($path . '/iso.txt');
+				$lang[$displayname] = $file;
+			}
+		}
+		@closedir($dir);
+
+		@asort($lang);
+		@reset($lang);
+
+		$user_select = '';
+		foreach ($lang as $displayname => $filename)
+		{
+			$selected = (strtolower($default) == strtolower($filename)) ? ' selected="selected"' : '';
+			$user_select .= '<option value="' . $filename . '"' . $selected . '>' . ucwords($displayname) . '</option>';
+		}
+
+		return $user_select;
 	}
 }
 

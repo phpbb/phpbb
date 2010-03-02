@@ -50,6 +50,10 @@ class template
 			$this->root = $phpbb_root_path . 'styles/' . $user->theme['template_path'] . '/template';
 			$this->cachepath = $phpbb_root_path . 'cache/tpl_' . $user->theme['template_path'] . '_';
 		}
+		else
+		{
+			trigger_error('Template path could not be found: styles/' . $user->theme['template_path'] . '/template', E_USER_ERROR);
+		}
 
 		return true;
 	}
@@ -183,7 +187,7 @@ class template
 
 		$filename = $this->cachepath . str_replace('/', '.', $this->filename[$handle]) . '.' . $phpEx;
 
-		$recompile = (($config['load_tplcompile'] && @filemtime($filename) < filemtime($this->files[$handle])) || !file_exists($filename)) ? true : false;
+		$recompile = (($config['load_tplcompile'] && @filemtime($filename) < filemtime($this->files[$handle])) || !file_exists($filename) || @filesize($filename) === 0) ? true : false;
 
 		// Recompile page if the original template is newer, otherwise load the compiled version
 		if (!$recompile)

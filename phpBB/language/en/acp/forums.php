@@ -38,7 +38,8 @@ $lang = array_merge($lang, array(
 	'AUTO_PRUNE_VIEWED_EXPLAIN'	=> 'Number of days since topic was viewed after which topic is removed.',
 
 	'COPY_PERMISSIONS'				=> 'Copy permissions from',
-	'COPY_PERMISSIONS_EXPLAIN'		=> 'Once created, the forum will have the same permissions as the one you select here. If no forum is selected the newly created forum will not be visible until permissions had been set.',
+	'COPY_PERMISSIONS_ADD_EXPLAIN'	=> 'Once created, the forum will have the same permissions as the one you select here. If no forum is selected the newly created forum will not be visible until permissions had been set.',
+	'COPY_PERMISSIONS_EDIT_EXPLAIN'	=> 'If you select to copy permissions, the forum will have the same permissions as the one you select here. This will overwrite any permissions you have previously set for this forum with the permissions of the forum you select here. If no forum is selected the current permissions will be kept.',
 	'CREATE_FORUM'					=> 'Create new forum',
 
 	'DECIDE_MOVE_DELETE_CONTENT'		=> 'Delete content or move to forum',
@@ -48,12 +49,14 @@ $lang = array_merge($lang, array(
 	'DISPLAY_ACTIVE_TOPICS'				=> 'Enable active topics',
 	'DISPLAY_ACTIVE_TOPICS_EXPLAIN'		=> 'If set to yes active topics in selected subforums will be displayed under this category.',
 
-	'EDIT_FORUM'				=> 'Edit forum',
-	'ENABLE_INDEXING'			=> 'Enable search indexing',
-	'ENABLE_INDEXING_EXPLAIN'	=> 'If set to yes posts made to this forum will be indexed for searching.',
-	'ENABLE_RECENT'				=> 'Display active topics',
-	'ENABLE_RECENT_EXPLAIN'		=> 'If set to yes topics made to this forum will be shown in the active topics list.',
-	'ENABLE_TOPIC_ICONS'		=> 'Enable Topic Icons',
+	'EDIT_FORUM'					=> 'Edit forum',
+	'ENABLE_INDEXING'				=> 'Enable search indexing',
+	'ENABLE_INDEXING_EXPLAIN'		=> 'If set to yes posts made to this forum will be indexed for searching.',
+	'ENABLE_POST_REVIEW'			=> 'Enable post review',
+	'ENABLE_POST_REVIEW_EXPLAIN'	=> 'If set to yes users are able to review their post if new posts were made to the topic while users wrote theirs. This should be disabled for chat forums.',
+	'ENABLE_RECENT'					=> 'Display active topics',
+	'ENABLE_RECENT_EXPLAIN'			=> 'If set to yes topics made to this forum will be shown in the active topics list.',
+	'ENABLE_TOPIC_ICONS'			=> 'Enable Topic Icons',
 
 	'FORUM_ADMIN'						=> 'Forum Administration',
 	'FORUM_ADMIN_EXPLAIN'				=> 'In phpBB3 there are no categories, everything is forum based. Each forum can have an unlimited number of sub-forums and you can determine whether each may be posted to or not (i.e. whether it acts like an old category). Here you can add, edit, delete, lock, unlock individual forums as well as set certain additional controls. If your posts and topics have got out of sync you can also resynchronise a forum.',
@@ -80,6 +83,7 @@ $lang = array_merge($lang, array(
 	'FORUM_PASSWORD_CONFIRM_EXPLAIN'	=> 'Only needs to be set if a forum password is entered.',
 	'FORUM_PASSWORD_EXPLAIN'			=> 'Defines a password for this forum, use the permission system in preference.',
 	'FORUM_PASSWORD_MISMATCH'			=> 'The passwords you entered did not match.',
+	'FORUM_PRUNE_SETTINGS'				=> 'Forum prune settings',
 	'FORUM_RESYNCED'					=> 'Forum "%s" successfully resynced',
 	'FORUM_RULES_EXPLAIN'				=> 'Forum Rules are displayed at any page within the given forum.',
 	'FORUM_RULES_LINK'					=> 'Link to Forum Rules',

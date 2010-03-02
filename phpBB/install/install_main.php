@@ -11,6 +11,12 @@
 /**
 */
 
+if ( !defined('IN_INSTALL') )
+{
+	// Someone has tried to access the file direct. This is not a good idea, so exit
+	exit;
+}
+
 if (!empty($setmodules))
 {
 	$module[] = array(
@@ -37,7 +43,7 @@ class install_main extends module
 
 	function main($mode, $sub)
 	{
-		global $lang, $template;
+		global $lang, $template, $language;
 
 		switch ($sub)
 		{
@@ -63,6 +69,8 @@ class install_main extends module
 		$template->assign_vars(array(
 			'TITLE'		=> $title,
 			'BODY'		=> $body,
+
+			'S_LANG_SELECT'	=> '<select id="language" name="language">' . $this->p_master->inst_language_select($language) . '</select>',
 		));
 	}
 }

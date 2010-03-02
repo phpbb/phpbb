@@ -352,8 +352,8 @@ class messenger
 		$headers .= "Content-transfer-encoding: 8bit\n";
 		$headers .= "X-Priority: {$this->mail_priority}\n";
 		$headers .= 'X-MSMail-Priority: ' . (($this->mail_priority == MAIL_LOW_PRIORITY) ? 'Low' : (($this->mail_priority == MAIL_NORMAL_PRIORITY) ? 'Normal' : 'High')) . "\n";
-		$headers .= "X-Mailer: PhpBB\n";
-		$headers .= "X-MimeOLE: phpBB\n";
+		$headers .= "X-Mailer: PhpBB3\n";
+		$headers .= "X-MimeOLE: phpBB3\n";
 		$headers .= "X-phpBB-Origin: phpbb://" . str_replace(array('http://', 'https://'), array('', ''), generate_board_url()) . "\n";
 		$headers .= ($this->extra_headers != '') ? $this->extra_headers : '';
 
@@ -363,7 +363,14 @@ class messenger
 			$mail_to = ($to == '') ? 'Undisclosed-Recipient:;' : $to;
 			$err_msg = '';
 
-			$result = ($config['smtp_delivery']) ? smtpmail($this->addresses, $this->subject, wordwrap($this->msg), $err_msg, $this->encoding, $headers) : @$config['email_function_name']($mail_to, $this->subject, implode("\n", preg_split("/\r?\n/", wordwrap($this->msg))), $headers);
+			if ($config['smtp_delivery'])
+			{
+				$result = smtpmail($this->addresses, $this->subject, wordwrap($this->msg), $err_msg, $this->encoding, $headers);
+			}
+			else
+			{
+				$result = @$config['email_function_name']($mail_to, $this->subject, implode("\n", preg_split("/\r?\n/", wordwrap($this->msg))), $headers);
+			}
 
 			if (!$result)
 			{
@@ -808,8 +815,11 @@ function smtpmail($addresses, $subject, $message, &$err_msg, $encoding, $headers
 
 	$smtp = new smtp_class;
 
+	$errno = 0;
+	$errstr = '';
+
 	// Ok we have error checked as much as we can to this point let's get on it already.
-	if (!$smtp->socket = fsockopen($config['smtp_host'], $config['smtp_port'], $errno, $errstr, 20))
+	if (!$smtp->socket = @fsockopen($config['smtp_host'], $config['smtp_port'], $errno, $errstr, 20))
 	{
 		$err_msg = (isset($user->lang['NO_CONNECT_TO_SMTP_HOST'])) ? sprintf($user->lang['NO_CONNECT_TO_SMTP_HOST'], $errno, $errstr) : "Could not connect to smtp host : $errno : $errstr";
 		return false;

@@ -4,13 +4,13 @@
 
 <table width="100%" class="tablebg" cellspacing="1" cellpadding="4" border="0">
 <tr>
-	<th colspan="5" height="28" nowrap="nowrap">{L_DISPLAY_OPTIONS}</th>
+	<th colspan="5" nowrap="nowrap">{L_DISPLAY_OPTIONS}</th>
 </tr>
 <tr>
-	<td colspan="5" class="cat" height="28" align="center"><span class="gensmall">{L_DISPLAY_POSTS}:</span> {S_SELECT_SORT_DAYS}&nbsp;<span class="gensmall">{L_SORT_BY}</span> {S_SELECT_SORT_KEY} {S_SELECT_SORT_DIR}&nbsp;<span class="gensmall">{L_FORUM}</span> <select name="f">{S_FORUM_OPTIONS}</select> &nbsp; <!-- IF TOPIC_ID --><input type="checkbox" class="radio" name="t" value="{TOPIC_ID}" checked="checked" />&nbsp; <b>{L_ONLY_TOPIC}</b> &nbsp; <!-- ENDIF --><input class="btnlite" type="submit" name="sort" value="{L_GO}" /></span></td>
+	<td colspan="5" class="cat" align="center"><span class="gensmall">{L_DISPLAY_POSTS}:</span> {S_SELECT_SORT_DAYS}&nbsp;<span class="gensmall">{L_SORT_BY}</span> {S_SELECT_SORT_KEY} {S_SELECT_SORT_DIR}&nbsp;<span class="gensmall">{L_FORUM}</span> <select name="f">{S_FORUM_OPTIONS}</select> &nbsp; <!-- IF TOPIC_ID --><input type="checkbox" class="radio" name="t" value="{TOPIC_ID}" checked="checked" />&nbsp; <b>{L_ONLY_TOPIC}</b> &nbsp; <!-- ENDIF --><input class="btnlite" type="submit" name="sort" value="{L_GO}" /></span></td>
 </tr>
 <tr> 
-	<th height="28">&nbsp;{L_POST}&nbsp;</th>
+	<th>&nbsp;{L_POST}&nbsp;</th>
 	<th>&nbsp;{L_AUTHOR}&nbsp;</th>
 	<th>&nbsp;{L_REPORTER}&nbsp;</th>
 	<th>&nbsp;{L_REPORT_TIME}&nbsp;</th>
@@ -19,9 +19,8 @@
 <!-- BEGIN postrow -->
 
 	<!-- IF postrow.S_ROW_COUNT is even --><tr class="row1"><!-- ELSE --><tr class="row2"><!-- ENDIF -->
-		<td style="padding: 4px;"><p class="topictitle"><a href="{postrow.U_VIEWTOPIC}">{postrow.POST_SUBJECT}</a></p>
-			<span class="gensmall">{L_TOPIC}: <a href="{postrow.U_VIEWTOPIC}">{postrow.TOPIC_TITLE}</a></span><br />
-			<span class="gensmall">{L_FORUM}: <a href="{postrow.U_VIEWFORUM}">{postrow.FORUM_NAME}</a></span></td>
+		<td style="padding: 4px;"><p class="topictitle"><a href="{postrow.U_VIEWPOST}">{postrow.POST_SUBJECT}</a></p>
+			<span class="gensmall"><!-- IF postrow.U_VIEWFORUM -->{L_FORUM}: <a href="{postrow.U_VIEWFORUM}">{postrow.FORUM_NAME}</a><!-- ELSE -->{postrow.FORUM_NAME}<!-- ENDIF --></span></td>
 		<td style="padding: 4px;" align="left" valign="top" nowrap="nowrap"><span class="gen"><!-- IF postrow.U_VIEW_POSTER_PROFILE --><a href="{postrow.U_VIEW_POSTER_PROFILE}">{postrow.POSTER}</a><!-- ELSE -->{postrow.POSTER}<!-- ENDIF --></span><br />
 			<span class="gensmall">{postrow.POST_TIME}</span></td>
 		<td style="padding: 4px;" align="left" valign="top" nowrap="nowrap"><span class="gen"><!-- IF postrow.U_VIEW_REPORTER_PROFILE --><a href="{postrow.U_VIEW_REPOTER_PROFILE}">{postrow.REPORTER}</a><!-- ELSE -->{postrow.REPORTER}<!-- ENDIF --></span></td>
@@ -35,7 +34,7 @@
 	</tr>
 <!-- END postrow -->
 <tr>
-	<td class="cat" colspan="5" height="28" align="center">
+	<td class="cat" colspan="5" align="center">
 	<!-- IF S_CLOSED -->
 		<input class="btnmain" type="submit" value="{L_DELETE_REPORTS}" name="action[delete]" />
 	<!-- ELSE -->

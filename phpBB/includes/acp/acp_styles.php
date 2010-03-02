@@ -27,7 +27,14 @@ class acp_styles
 		global $config, $phpbb_root_path, $phpbb_admin_path, $phpEx;
 
 		// Hardcoded template bitfield to add for new templates
-		define('TEMPLATE_BITFIELD', 6921);
+		$bitfield = new bitfield();
+		$bitfield->set(0);
+		$bitfield->set(3);
+		$bitfield->set(8);
+		$bitfield->set(9);
+		$bitfield->set(11);
+		$bitfield->set(12);
+		define('TEMPLATE_BITFIELD', $bitfield->get_base64());
 
 		$user->add_lang('acp/styles');
 
@@ -82,7 +89,32 @@ parse_css_file = {PARSE_CSS_FILE}
 pagination_sep = \'{PAGINATION_SEP}\'
 ';
 
-		$this->imageset_keys = 'site_logo, btn_post, btn_post_pm, btn_reply, btn_reply_pm, btn_locked, btn_profile, btn_pm, btn_delete, btn_info, btn_quote, btn_search, btn_edit, btn_report, btn_email, btn_www, btn_icq, btn_aim, btn_yim, btn_msnm, btn_jabber, btn_online, btn_offline, btn_friend, btn_foe, icon_unapproved, icon_reported, icon_attach, icon_post, icon_post_new, icon_post_latest, icon_post_newest, forum, forum_new, forum_locked, forum_link, sub_forum, sub_forum_new, folder, folder_moved, folder_posted, folder_new, folder_new_posted, folder_hot, folder_hot_posted, folder_hot_new, folder_hot_new_posted, folder_locked, folder_locked_posted, folder_locked_new, folder_locked_new_posted, folder_sticky, folder_sticky_posted, folder_sticky_new, folder_sticky_new_posted, folder_announce, folder_announce_posted, folder_announce_new, folder_announce_new_posted, folder_global, folder_global_posted, folder_global_new, folder_global_new_posted, poll_left, poll_center, poll_right, attach_progress_bar, user_icon1, user_icon2, user_icon3, user_icon4, user_icon5, user_icon6, user_icon7, user_icon8, user_icon9, user_icon10';
+		$this->imageset_keys = array(
+			'logos' => array(
+				'site_logo',
+			),
+			'buttons'	=> array(
+				'icon_contact_aim', 'icon_contact_email', 'icon_contact_icq', 'icon_contact_jabber', 'icon_contact_msnm', 'icon_contact_pm', 'icon_contact_yahoo', 'icon_contact_www', 'icon_post_delete', 'icon_post_edit', 'icon_post_info', 'icon_post_quote', 'icon_post_report', 'icon_user_online', 'icon_user_offline', 'icon_user_profile', 'icon_user_search', 'icon_user_warn', 'button_pm_forward', 'button_pm_new', 'button_pm_reply', 'button_topic_locked', 'button_topic_new', 'button_topic_reply',
+			),
+			'icons'		=> array(
+				'icon_post_target', 'icon_post_target_unread', 'icon_topic_attach', 'icon_topic_latest', 'icon_topic_newest', 'icon_topic_reported', 'icon_topic_unapproved', 'icon_friend', 'icon_foe',
+			),
+			'forums'	=> array(
+				'forum_link', 'forum_read', 'forum_read_locked', 'forum_read_subforum', 'forum_unread', 'forum_unread_locked', 'forum_unread_subforum',
+			),
+			'folders'	=> array(
+				'topic_moved', 'topic_read', 'topic_read_mine', 'topic_read_hot', 'topic_read_hot_mine', 'topic_read_locked', 'topic_read_locked_mine', 'topic_unread', 'topic_unread_mine', 'topic_unread_hot', 'topic_unread_hot_mine', 'topic_unread_locked', 'topic_unread_locked_mine', 'sticky_read', 'sticky_read_mine', 'sticky_read_locked', 'sticky_read_locked_mine', 'sticky_unread', 'sticky_unread_mine', 'sticky_unread_locked', 'sticky_unread_locked_mine', 'announce_read', 'announce_read_mine', 'announce_read_locked', 'announce_read_locked_mine', 'announce_unread', 'announce_unread_mine', 'announce_unread_locked', 'announce_unread_locked_mine', 'global_read', 'global_read_mine', 'global_read_locked', 'global_read_locked_mine', 'global_unread', 'global_unread_mine', 'global_unread_locked', 'global_unread_locked_mine', 'pm_read', 'pm_unread',
+			),
+			'polls'		=> array(
+				'poll_left', 'poll_center', 'poll_right',
+			),
+			'ui'		=> array(
+				'upload_bar',
+			),
+			'user'		=> array(
+				'user_icon1', 'user_icon2', 'user_icon3', 'user_icon4', 'user_icon5', 'user_icon6', 'user_icon7', 'user_icon8', 'user_icon9', 'user_icon10',
+			),
+		);
 
 		// Execute overall actions
 		switch ($action)
@@ -183,7 +215,7 @@ pagination_sep = \'{PAGINATION_SEP}\'
 					break;
 				}
 
-				$this->frontend('style', array('details', 'export', 'delete'));
+				$this->frontend('style', array('details'), array('export', 'delete'));
 			break;
 
 			case 'template':
@@ -260,7 +292,7 @@ pagination_sep = \'{PAGINATION_SEP}\'
 					break;
 				}
 
-				$this->frontend('template', array('cache', 'details', 'refresh', 'edit', 'export', 'delete'));
+				$this->frontend('template', array('edit', 'cache', 'details'), array('refresh', 'export', 'delete'));
 			break;
 
 			case 'theme':
@@ -303,6 +335,7 @@ pagination_sep = \'{PAGINATION_SEP}\'
 
 								$cache->destroy('sql', STYLES_THEME_TABLE);
 
+								add_log('admin', 'LOG_THEME_REFRESHED', $theme_row['theme_name']);
 								trigger_error($user->lang['THEME_REFRESHED'] . adm_back_link($this->u_action));
 							}
 						}
@@ -318,11 +351,74 @@ pagination_sep = \'{PAGINATION_SEP}\'
 					break;
 				}
 
-				$this->frontend('theme', array('details', 'refresh', 'edit', 'export', 'delete'));
+				$this->frontend('theme', array('edit', 'details'), array('refresh', 'export', 'delete'));
 			break;
 
 			case 'imageset':
-				$this->frontend('imageset', array('details', 'edit', 'delete', 'export'));
+
+				switch ($action)
+				{
+					case 'refresh':
+
+						$sql = 'SELECT *
+							FROM ' . STYLES_IMAGESET_TABLE . "
+							WHERE imageset_id = $style_id";
+						$result = $db->sql_query($sql);
+						$imageset_row = $db->sql_fetchrow($result);
+						$db->sql_freeresult($result);
+
+						if (!$imageset_row)
+						{
+							trigger_error($user->lang['NO_IMAGESET'] . adm_back_link($this->u_action));
+						}
+
+						if (confirm_box(true))
+						{
+							$sql_ary = array();
+
+							$cfg_data = parse_cfg_file("{$phpbb_root_path}styles/{$imageset_row['imageset_path']}/imageset/imageset.cfg");
+					
+							$imageset_definitions = array();
+							foreach ($this->imageset_keys as $topic => $key_array)
+							{
+								$imageset_definitions = array_merge($imageset_definitions, $key_array);
+							}
+				
+							foreach ($cfg_data as $key => $value)
+							{
+								if (strpos($key, 'img_') === 0)
+								{
+									$key = substr($key, 4);
+									if (in_array($key, $imageset_definitions))
+									{
+										$sql_ary[$key] = str_replace('{PATH}', "styles/{$imageset_row['imageset_path']}/imageset/", trim($value));
+									}
+								}
+							}
+							unset($cfg_data);
+
+							$sql = 'UPDATE ' . STYLES_IMAGESET_TABLE . ' SET ' . $db->sql_build_array('UPDATE', $sql_ary) . "
+								WHERE imageset_id = $style_id";
+							$db->sql_query($sql);
+
+							$cache->destroy('sql', STYLES_IMAGESET_TABLE);
+
+							add_log('admin', 'LOG_IMAGESET_REFRESHED', $imageset_row['imageset_name']);
+							trigger_error($user->lang['IMAGESET_REFRESHED'] . adm_back_link($this->u_action));
+						}
+						else
+						{
+							confirm_box(false, $user->lang['CONFIRM_IMAGESET_REFRESH'], build_hidden_fields(array(
+								'i'			=> $id,
+								'mode'		=> $mode,
+								'action'	=> $action,
+								'id'		=> $style_id
+							)));
+						}
+					break;
+				}
+
+				$this->frontend('imageset', array('edit', 'details'), array('refresh', 'export', 'delete'));
 			break;
 		}
 	}
@@ -330,7 +426,7 @@ pagination_sep = \'{PAGINATION_SEP}\'
 	/**
 	* Build Frontend with supplied options
 	*/
-	function frontend($mode, $options)
+	function frontend($mode, $options, $actions)
 	{
 		global $user, $template, $db, $config, $phpbb_root_path, $phpEx;
 
@@ -408,12 +504,19 @@ pagination_sep = \'{PAGINATION_SEP}\'
 				$s_options[] = '<a href="' . $this->u_action . "&amp;action=$option&amp;id=" . $row[$mode . '_id'] . '">' . $user->lang[strtoupper($option)] . '</a>';
 			}
 
+			$s_actions = array();
+			foreach ($actions as $option)
+			{
+				$s_actions[] = '<a href="' . $this->u_action . "&amp;action=$option&amp;id=" . $row[$mode . '_id'] . '">' . $user->lang[strtoupper($option)] . '</a>';
+			}
+
 			$template->assign_block_vars('installed', array(
 				'S_DEFAULT_STYLE'		=> ($mode == 'style' && $row['style_id'] == $config['default_style']) ? true : false,
 				'U_EDIT'				=> $this->u_action . '&amp;action=' . (($mode == 'style') ? 'details' : 'edit') . '&amp;id=' . $row[$mode . '_id'],
 				'U_STYLE_ACT_DEACT'		=> $this->u_action . '&amp;action=' . $stylevis . '&amp;id=' . $row[$mode . '_id'],
 				'L_STYLE_ACT_DEACT'		=> $user->lang['STYLE_' . strtoupper($stylevis)],
 				'S_OPTIONS'				=> implode(' | ', $s_options),
+				'S_ACTIONS'				=> implode(' | ', $s_actions),
 				'U_PREVIEW'				=> ($mode == 'style') ? append_sid("{$phpbb_root_path}index.$phpEx", "$mode=" . $row[$mode . '_id']) : '',
 
 				'NAME'					=> $row[$mode . '_name'],
@@ -483,16 +586,17 @@ pagination_sep = \'{PAGINATION_SEP}\'
 
 		$filelist = $filelist_cats = array();
 
-		$template_data	= (!empty($_POST['template_data'])) ? ((STRIP) ? stripslashes($_POST['template_data']) : $_POST['template_data']) : '';
+		// we want newlines no carriage returns!
+		$_POST['template_data'] = (isset($_POST['template_data']) && !empty($_POST['template_data'])) ? str_replace(array("\r\n", "\r"), array("\n", "\n"), $_POST['template_data']) : '';
+
+		$template_data	= (STRIP) ? stripslashes($_POST['template_data']) : $_POST['template_data'];
 		$template_file		= request_var('template_file', '');
 		$text_rows		= max(5, min(999, request_var('text_rows', 20)));
 		$save_changes	= (isset($_POST['save'])) ? true : false;
 
 		// make sure template_file path doesn't go upwards
 		$template_file = str_replace('..', '.', $template_file);
-		// we want newlines no carriage returns!
-		$template_data = str_replace(array("\n\r", "\r"), array("\n", "\n"), $template_data);
-
+		
 		// Retrieve some information about the template
 		$sql = 'SELECT template_storedb, template_path, template_name
 			FROM ' . STYLES_TEMPLATE_TABLE . "
@@ -728,7 +832,7 @@ pagination_sep = \'{PAGINATION_SEP}\'
 				'FILENAME'	=> str_replace('.', '/', $source) . '.html')
 			);
 
-			$code = str_replace(array("\n\r", "\r"), array("\n", "\n"), file_get_contents("{$phpbb_root_path}cache/{$cache_prefix}_$source.html.$phpEx"));
+			$code = str_replace(array("\r\n", "\r"), array("\n", "\n"), file_get_contents("{$phpbb_root_path}cache/{$cache_prefix}_$source.html.$phpEx"));
 
 			$conf = array('highlight.bg', 'highlight.comment', 'highlight.default', 'highlight.html', 'highlight.keyword', 'highlight.string');
 			foreach ($conf as $ini_var)
@@ -815,19 +919,19 @@ pagination_sep = \'{PAGINATION_SEP}\'
 
 		$this->page_title = 'EDIT_THEME';
 
+		// we want newlines no carriage returns!
+		$_POST['css_data'] = (isset($_POST['css_data']) && !empty($_POST['css_data'])) ? str_replace(array("\r\n", "\r"), array("\n", "\n"), $_POST['css_data']) : '';
+
 		// get user input
 		$text_rows		= max(5, min(999, request_var('text_rows', 20)));
 		$hide_css		= request_var('hidecss', false);
 		$show_css		= !$hide_css && request_var('showcss', false);
 		$edit_class		= request_var('css_class', '');
 		$custom_class	= request_var('custom_class', '');
-		$css_data		= (!empty($_POST['css_data'])) ? ((STRIP) ? stripslashes($_POST['css_data']) : $_POST['css_data']) : '';
+		$css_data		= (STRIP) ? stripslashes($_POST['css_data']) : $_POST['css_data'];
 		$submit			= isset($_POST['submit']) ? true : false;
 		$add_custom		= isset($_POST['add_custom']) ? true : false;
 		$matches		= array();
-
-		// we want newlines no carriage returns!
-		$css_data = str_replace(array("\n\r", "\r"), array("\n", "\n"), $css_data);
 
 		// Retrieve some information about the theme
 		$sql = 'SELECT theme_storedb, theme_path, theme_name, theme_data
@@ -943,7 +1047,7 @@ pagination_sep = \'{PAGINATION_SEP}\'
 			$css_elements = array_diff(array_map('trim', explode("\n", preg_replace("#;[\n]*#s", "\n", $css_data))), array(''));
 
 			// Grab list of potential images for the "images" type
-			$imglist = filelist($phpbb_root_path . 'styles/' . $theme_info['theme_name'] . '/theme');
+			$img_filelist = filelist($phpbb_root_path . 'styles/' . $theme_info['theme_name'] . '/theme');
 
 			foreach ($match_elements as $type => $match_ary)
 			{
@@ -1009,7 +1113,7 @@ pagination_sep = \'{PAGINATION_SEP}\'
 								$selected = ($unit_option == $unit) ? ' selected="selected"' : '';
 								$s_units .= "<option value=\"$unit_option\"$selected>$unit_option</option>";
 							}
-							$s_units = '<option value=""' . (($unit == '') ? ' selected="selected"' : '') . '>' . $user->lang['NONE'] . '</option>' . $s_units;
+							$s_units = '<option value=""' . (($unit == '') ? ' selected="selected"' : '') . '>' . $user->lang['NO_UNIT'] . '</option>' . $s_units;
 
 							$template->assign_vars(array(
 								strtoupper($var) => $value,
@@ -1020,7 +1124,7 @@ pagination_sep = \'{PAGINATION_SEP}\'
 						case 'images':
 							// generate a list of images for this setting
 							$s_imglist = '';
-							foreach ($imglist as $path => $img_ary)
+							foreach ($img_filelist as $path => $img_ary)
 							{
 								foreach ($img_ary as $img)
 								{
@@ -1030,7 +1134,7 @@ pagination_sep = \'{PAGINATION_SEP}\'
 									$s_imglist .= "<option value=\"$img\"$selected>$img</option>";
 								}
 							}
-							$s_imglist = '<option value=""' . (($value == '') ? ' selected="selected"' : '') . '>' . $user->lang['NONE'] . '</option>' . $s_imglist;
+							$s_imglist = '<option value=""' . (($value == '') ? ' selected="selected"' : '') . '>' . $user->lang['NO_IMAGE'] . '</option>' . $s_imglist;
 
 							$template->assign_vars(array(
 								'S_' . strtoupper($var) => $s_imglist)
@@ -1065,7 +1169,7 @@ pagination_sep = \'{PAGINATION_SEP}\'
 				$s_hidden_fields['cssother'] = implode(' ;; ', $css_elements);
 			}
 
-			unset($imglist, $css_elements);
+			unset($img_filelist, $css_elements);
 		}
 		// else if we are showing raw css or the user submitted data from the simple view
 		// then we need to turn the given information into raw css
@@ -1257,24 +1361,8 @@ pagination_sep = \'{PAGINATION_SEP}\'
 
 			// Check to see whether the selected image exists in the table
 			$valid_name = ($update) ? false : true;
-			$imglist = array(
-				'logos' => array(
-					'site_logo',
-				),
-				'buttons'	=> array(
-					'btn_post', 'btn_reply', 'btn_locked', 'btn_quote', 'btn_edit', 'btn_delete', 'btn_report', 'btn_post_pm', 'btn_reply_pm', 'btn_profile', 'btn_pm', 'btn_info', 'btn_search', 'btn_email', 'btn_www', 'btn_icq', 'btn_aim', 'btn_yim', 'btn_msnm', 'btn_jabber', 'btn_online', 'btn_offline',
-				),
-				'icons'		=> array(
-					'icon_unapproved', 'icon_reported', 'icon_attach', 'icon_post', 'icon_post_new', 'icon_post_latest', 'icon_post_newest',),
-				'forums'		=> array(
-					'forum', 'forum_new', 'forum_locked', 'forum_link', 'sub_forum', 'sub_forum_new',),
-				'folders'	=> array(
-					'folder', 'folder_posted', 'folder_new', 'folder_new_posted', 'folder_hot', 'folder_hot_posted', 'folder_hot_new', 'folder_hot_new_posted', 'folder_locked', 'folder_locked_posted', 'folder_locked_new', 'folder_locked_new_posted', 'folder_sticky', 'folder_sticky_posted', 'folder_sticky_new', 'folder_sticky_new_posted', 'folder_announce', 'folder_announce_posted', 'folder_announce_new', 'folder_announce_new_posted',),
-				'polls'		=> array(
-					'poll_left', 'poll_center', 'poll_right',),
-			);
 
-			foreach ($imglist as $category => $img_ary)
+			foreach ($this->imageset_keys as $category => $img_ary)
 			{
 				if (in_array($imgname, $img_ary))
 				{
@@ -1317,11 +1405,12 @@ pagination_sep = \'{PAGINATION_SEP}\'
 
 		// Generate list of image options
 		$img_options = '';
-		foreach ($imglist as $category => $img_ary)
+		foreach ($this->imageset_keys as $category => $img_ary)
 		{
 			$template->assign_block_vars('category', array(
 				'NAME'			=> $user->lang['IMG_CAT_' . strtoupper($category)]
 			));
+
 			foreach ($img_ary as $img)
 			{
 				$template->assign_block_vars('category.images', array(
@@ -1362,6 +1451,10 @@ pagination_sep = \'{PAGINATION_SEP}\'
 		}
 		closedir($dp);
 
+		// Make sure the list of possible images is sorted alphabetically
+		sort($imagesetlist['nolang']);
+		sort($imagesetlist['lang']);
+
 		$imagesetlist_options = '';
 		foreach ($imagesetlist as $type => $img_ary)
 		{
@@ -1395,7 +1488,7 @@ pagination_sep = \'{PAGINATION_SEP}\'
 			'IMAGE_OPTIONS'		=> $img_options,
 			'IMAGELIST_OPTIONS'	=> $imagesetlist_options,
 			'IMAGE_SIZE'		=> $imgsize_bool,
-			'IMAGE_REQUEST'		=> (!empty($imgname)) ? '../styles/' . $imageset_path . '/imageset/' . str_replace('{LANG}', $imglang, $img_info[0]) : '',
+			'IMAGE_REQUEST'		=> (!empty($img_info[0])) ? '../styles/' . $imageset_path . '/imageset/' . str_replace('{LANG}', $imglang, $img_info[0]) : '',
 			'U_ACTION'			=> $this->u_action . "&amp;action=edit&amp;id=$imageset_id",
 			'U_BACK'			=> $this->u_action,
 			'NAME'				=> $imageset_name,
@@ -1408,7 +1501,7 @@ pagination_sep = \'{PAGINATION_SEP}\'
 	*/
 	function remove($mode, $style_id)
 	{
-		global $db, $template, $user, $phpbb_root_path, $cache;
+		global $db, $template, $user, $phpbb_root_path, $cache, $config;
 
 		$new_id = request_var('new_id', 0);
 		$update = (isset($_POST['update'])) ? true : false;
@@ -1489,6 +1582,11 @@ pagination_sep = \'{PAGINATION_SEP}\'
 					SET forum_style = $new_id
 					WHERE forum_style = $style_id";
 				$db->sql_query($sql);
+
+				if ($style_id == $config['default_style'])
+				{
+					set_config('default_style', $new_id);
+				}
 			}
 			else
 			{
@@ -1741,11 +1839,12 @@ pagination_sep = \'{PAGINATION_SEP}\'
 			{
 				$imageset_cfg = str_replace(array('{MODE}', '{NAME}', '{COPYRIGHT}', '{VERSION}'), array($mode, $style_row['imageset_name'], $style_row['imageset_copyright'], $config['version']), $this->imageset_cfg);
 
-				$imageset_definitions = explode(', ', $this->imageset_keys);
-
-				foreach ($imageset_definitions as $key)
+				foreach ($this->imageset_keys as $topic => $key_array)
 				{
-					$imageset_cfg .= "\n" . $key . ' = ' . str_replace("styles/{$style_row['imageset_path']}/imageset/", '{PATH}', $style_row[$key]);
+					foreach ($key_array as $key)
+					{
+						$imageset_cfg .= "\n" . $key . ' = ' . str_replace("styles/{$style_row['imageset_path']}/imageset/", '{PATH}', $style_row[$key]);
+					}
 				}
 
 				$files[] = array(
@@ -1794,7 +1893,14 @@ pagination_sep = \'{PAGINATION_SEP}\'
 			{
 				include($phpbb_root_path . 'includes/functions_compress.' . $phpEx);
 
-				$path = $style_row[$mode . '_path'];
+				if ($mode == 'style')
+				{
+					$path = preg_replace('#[^\w-]+#', '_', $style_row['style_name']);
+				}
+				else
+				{
+					$path = $style_row[$mode . '_path'];
+				}
 
 				if ($format == 'zip')
 				{
@@ -2254,7 +2360,7 @@ pagination_sep = \'{PAGINATION_SEP}\'
 				// heck of a lot of data ...
 				$sql_ary = array(
 					'template_id'			=> $style_id,
-					'template_filename'		=> "$template_pathfile$file",
+					'template_filename'		=> "$pathfile$file",
 					'template_included'		=> (isset($includes[$file])) ? implode(':', $includes[$file]) . ':' : '',
 					'template_mtime'		=> filemtime("{$phpbb_root_path}styles/$template_path$pathfile$file"),
 					'template_data'			=> file_get_contents("{$phpbb_root_path}styles/$template_path$pathfile$file"),
@@ -2581,7 +2687,7 @@ pagination_sep = \'{PAGINATION_SEP}\'
 			{
 				$style_row['style_id'] = 0;
 
-				$this->install_style($error, 'add', '', $style_row['style_id'], $style_row['style_name'], $style_row['style_copyright'], $style_row['style_active'], $style_row['style_default'], $style_row);
+				$this->install_style($error, 'add', '', $style_row['style_id'], $style_row['style_name'], '', $style_row['style_copyright'], $style_row['style_active'], $style_row['style_default'], $style_row);
 			}
 
 			if (!sizeof($error))
@@ -2867,40 +2973,54 @@ pagination_sep = \'{PAGINATION_SEP}\'
 			$mode . '_path'			=> $path,
 		);
 
-		if ($mode != 'imageset')
+		switch ($mode)
 		{
-			switch ($mode)
-			{
-				case 'template':
-					// We set a pre-defined bitfield here which we may use further in 3.2
-					$sql_ary += array(
-						'bbcode_bitfield'	=> TEMPLATE_BITFIELD,
-						'template_storedb'	=> $store_db
-					);
-				break;
+			case 'template':
+				// We set a pre-defined bitfield here which we may use further in 3.2
+				$sql_ary += array(
+					'bbcode_bitfield'	=> TEMPLATE_BITFIELD,
+					'template_storedb'	=> $store_db
+				);
+			break;
 
-				case 'theme':
-					$sql_ary += array(
-						'theme_storedb'	=> $store_db,
-						'theme_data'	=> ($store_db) ? (($root_path) ? $this->db_theme_data($sql_ary, false, $root_path) : '') : '',
-						'theme_mtime'	=> filemtime("{$phpbb_root_path}styles/$path/theme/stylesheet.css")
-					);
-				break;
-			}
-		}
-		else
-		{
-			$cfg_data = parse_cfg_file("$root_path$mode/imageset.cfg");
+			case 'theme':
+				// We are only interested in the theme configuration for now
+				$theme_cfg = parse_cfg_file("{$phpbb_root_path}styles/$path/theme/theme.cfg");
 
-			foreach ($cfg_data as $key => $value)
-			{
-				if (strpos($key, 'img_') === 0)
+				if (isset($theme_cfg['parse_css_file']) && $theme_cfg['parse_css_file'])
 				{
-					$key = substr($key, 4);
-					$sql_ary[$key] = str_replace('{PATH}', "styles/$path/imageset/", trim($value));
+					$store_db = 1;
 				}
-			}
-			unset($cfg_data);
+
+				$sql_ary += array(
+					'theme_storedb'	=> $store_db,
+					'theme_data'	=> ($store_db) ? $this->db_theme_data($sql_ary, false, $root_path) : '',
+					'theme_mtime'	=> filemtime("{$phpbb_root_path}styles/$path/theme/stylesheet.css")
+				);
+			break;
+
+			case 'imageset':
+				$cfg_data = parse_cfg_file("$root_path$mode/imageset.cfg");
+	
+				$imageset_definitions = array();
+				foreach ($this->imageset_keys as $topic => $key_array)
+				{
+					$imageset_definitions = array_merge($imageset_definitions, $key_array);
+				}
+	
+				foreach ($cfg_data as $key => $value)
+				{
+					if (strpos($key, 'img_') === 0)
+					{
+						$key = substr($key, 4);
+						if (in_array($key, $imageset_definitions))
+						{
+							$sql_ary[$key] = str_replace('{PATH}', "styles/$path/imageset/", trim($value));
+						}
+					}
+				}
+				unset($cfg_data);
+			break;
 		}
 
 		$db->sql_transaction('begin');

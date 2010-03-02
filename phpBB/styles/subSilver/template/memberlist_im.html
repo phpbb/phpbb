@@ -17,20 +17,6 @@
 		<td class="row2"><span class="gen"><b>{USERNAME}</b> [ {IM_CONTACT} ]</span> <!-- IF PRESENCE_IMG -->{PRESENCE_IMG}<!-- ENDIF --></td>
 	</tr>
 
-	<!-- IF S_SEND_ICQ -->
-		<tr>
-			<td class="row1"><b class="genmed">{L_IM_NAME}: </b></td>
-			<td class="row2"><input class="post" type="text" name="from" size="20" maxlength="40" /></td>
-		</tr>
-		<tr>
-			<td class="row1"><b class="genmed">{L_IM_MESSAGE}: </b></td>
-			<td class="row2"><textarea class="post" name="body" rows="5" cols="45"></textarea></td>
-		</tr>
-		<tr>
-			<td class="cat" colspan="2" align="center"><input type="hidden" name="fromemail" value="{EMAIL}" /><input type="hidden" name="subject" value="{SITENAME}" /><input type="hidden" name="to" value="{IM_CONTACT}" /><input class="btnmain" name="submit" type="submit" value="{L_IM_SEND}" /></td>
-		</tr>
-	<!-- ENDIF -->
-
 	<!-- IF S_SEND_AIM -->
 		<tr>
 			<td class="row1" colspan="2" align="center"><br /><a class="gen" href="aim:addbuddy?screenname={IM_CONTACT}">{L_IM_ADD_CONTACT}</a><br /><a class="gen" href="aim:goim?screenname={IM_CONTACT}&message={SITENAME}">{L_IM_SEND_MESSAGE}</a><br /><br /><a class="gensmall" href="http://www.aol.co.uk/aim/index.html" target="_blank">{L_IM_DOWNLOAD_APP}</a> | <a class="gensmall" href="http://aimexpress.oscar.aol.com/aimexpress/launch.adp?Brand=AIM" target="_blank">{L_IM_AIM_EXPRESS}</a> </td>

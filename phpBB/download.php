@@ -17,12 +17,10 @@ $phpEx = substr(strrchr(__FILE__, '.'), 1);
 include($phpbb_root_path . 'common.' . $phpEx);
 
 $download_id = request_var('id', 0);
-
-// Thumbnails are not handled by this file by default - but for modders this should be interesting. ;)
 $thumbnail = request_var('t', false);
 
-// Start session management
-$user->session_begin();
+// Start session management, do not update session page.
+$user->session_begin(false);
 $auth->acl($user->data);
 $user->setup('viewtopic');
 
@@ -65,6 +63,19 @@ if (!$attachment['in_message'])
 	$row = $db->sql_fetchrow($result);
 	$db->sql_freeresult($result);
 
+	// Global announcement?
+	if (!$row)
+	{
+		$forum_id = request_var('f', 0);
+
+		$sql = 'SELECT forum_id, forum_password, parent_id
+			FROM ' . FORUMS_TABLE . '
+			WHERE forum_id = ' . $forum_id;
+		$result = $db->sql_query($sql);
+		$row = $db->sql_fetchrow($result);
+		$db->sql_freeresult($result);
+	}
+
 	if ($auth->acl_get('u_download') && $auth->acl_get('f_download', $row['forum_id']))
 	{
 		if ($row['forum_password'])
@@ -81,7 +92,7 @@ if (!$attachment['in_message'])
 else
 {
 	$row['forum_id'] = 0;
-	if (!$auth->acl_get('u_pm_download') || !$config['auth_download_pm'])
+	if (!$auth->acl_get('u_pm_download'))
 	{
 		trigger_error('SORRY_AUTH_VIEW_ATTACH');
 	}
@@ -116,12 +127,13 @@ if (!$attachment)
 
 
 $attachment['physical_filename'] = basename($attachment['physical_filename']);
+$display_cat = $extensions[$attachment['extension']]['display_cat'];
 
 if ($thumbnail)
 {
 	$attachment['physical_filename'] = 'thumb_' . $attachment['physical_filename'];
 }
-else
+else if ($display_cat == ATTACHMENT_CATEGORY_NONE)
 {
 	// Update download count
 	$sql = 'UPDATE ' . ATTACHMENTS_TABLE . ' 
@@ -162,83 +174,52 @@ function send_file_to_browser($attachment, $upload_dir, $category)
 		trigger_error($user->lang['ERROR_NO_ATTACHMENT'] . '<br /><br />' . sprintf($user->lang['FILE_NOT_FOUND_404'], $filename));
 	}
 
-	// Determine the Browser the User is using, because of some nasty incompatibilities.
-	// borrowed from phpMyAdmin. :)
-	$user_agent = $user->browser;
-
-	if (ereg('Opera(/| )([0-9].[0-9]{1,2})', $user_agent, $log_version))
-	{
-		$browser_version = $log_version[2];
-		$browser_agent = 'opera';
-	}
-	else if (ereg('MSIE ([0-9].[0-9]{1,2})', $user_agent, $log_version))
-	{
-		$browser_version = $log_version[1];
-		$browser_agent = 'ie';
-	}
-	else if (ereg('OmniWeb/([0-9].[0-9]{1,2})', $user_agent, $log_version))
-	{
-		$browser_version = $log_version[1];
-		$browser_agent = 'omniweb';
-	}
-	else if (ereg('(Konqueror/)(.*)(;)', $user_agent, $log_version))
-	{
-		$browser_version = $log_version[2];
-		$browser_agent = 'konqueror';
-	}
-	else if (ereg('Mozilla/([0-9].[0-9]{1,2})', $user_agent, $log_version) && ereg('Safari/([0-9]*)', $user_agent, $log_version2))
-	{
-		$browser_version = $log_version[1] . '.' . $log_version2[1];
-		$browser_agent = 'safari';
-	}
-	else if (ereg('Mozilla/([0-9].[0-9]{1,2})', $user_agent, $log_version))
-	{
-		$browser_version = $log_version[1];
-		$browser_agent = 'mozilla';
-	}
-	else
-	{
-		$browser_version = 0;
-		$browser_agent = 'other';
-	}
-
 	// Correct the mime type - we force application/octetstream for all files, except images
 	// Please do not change this, it is a security precaution
 	if ($category == ATTACHMENT_CATEGORY_NONE && strpos($attachment['mimetype'], 'image') === false)
 	{
-		$attachment['mimetype'] = ($browser_agent == 'ie' || $browser_agent == 'opera') ? 'application/octetstream' : 'application/octet-stream';
+		$attachment['mimetype'] = (strpos(strtolower($user->browser), 'msie') !== false || strpos(strtolower($user->browser), 'opera') !== false) ? 'application/octetstream' : 'application/octet-stream';
 	}
 
 	if (@ob_get_length())
 	{
 		@ob_end_clean();
 	}
-	
+
+	// Now send the File Contents to the Browser
+	$size = @filesize($filename);
+
+	// Might not be ideal to store the contents, but file_get_contents is binary-safe as well as the recommended method
+	// To correctly display further errors we need to make sure we are using the correct headers for both (unsetting content-length may not work)
+	$contents = @file_get_contents($filename);
+
+	// Check if headers already sent or not able to get the file contents.
+	if (headers_sent() || $contents === false)
+	{
+		unset($contents);
+
+		// PHP track_errors setting On?
+		if (!empty($php_errormsg))
+		{
+			trigger_error($user->lang['UNABLE_TO_DELIVER_FILE'] . '<br />' . sprintf($user->lang['TRACKED_PHP_ERROR'], $php_errormsg));
+		}
+
+		trigger_error('UNABLE_TO_DELIVER_FILE');
+	}
+
 	// Now the tricky part... let's dance
 	header('Pragma: public');
 
 	// Send out the Headers
-	header('Content-Type: ' . $attachment['mimetype'] . '; name="' . $attachment['real_filename'] . '"');
+	header('Content-type: ' . $attachment['mimetype'] . '; name="' . $attachment['real_filename'] . '"');
 	header('Content-Disposition: inline; filename="' . $attachment['real_filename'] . '"');
 
-	// Now send the File Contents to the Browser
-	$size = @filesize($filename);
 	if ($size)
 	{
 		header("Content-length: $size");
 	}
-	$result = @readfile($filename);
-	
-	if (!$result)
-	{
-		// PHP track_errors setting On?
-		if (!empty($php_errormsg))
-		{
-			trigger_error('Unable to deliver file.<br />Error was: ' . $php_errormsg, E_USER_ERROR);
-		}
-
-		trigger_error('Unable to deliver file.', E_USER_ERROR);
-	}
+	echo $contents;
+	unset($contents);
 
 	flush();
 	exit;
@@ -256,7 +237,7 @@ function download_allowed()
 		return true;
 	}
 
-	$url = (getenv('HTTP_REFERER')) ? trim(getenv('HTTP_REFERER')) : trim($_SERVER['HTTP_REFERER']);
+	$url = (!empty($_SERVER['HTTP_REFERER'])) ? trim($_SERVER['HTTP_REFERER']) : trim(getenv('HTTP_REFERER'));
 
 	if (!$url)
 	{
@@ -264,20 +245,27 @@ function download_allowed()
 	}
 
 	// Split URL into domain and script part
-	$url = explode('?', str_replace(array('http://', 'https://'), array('', ''), $url));
-	$hostname = trim($url[0]);
+	$url = @parse_url($url);
+
+	if ($url === false)
+	{
+		return ($config['secure_allow_empty_referer']) ? true : false;
+	}
+
+	$hostname = $url['host'];
 	unset($url);
 
 	$allowed = ($config['secure_allow_deny']) ? false : true;
 	$iplist = array();
 
-	$ip_ary = gethostbynamel($hostname);
-
-	foreach ($ip_ary as $ip)
+	if (($ip_ary = @gethostbynamel($hostname)) !== false)
 	{
-		if ($ip)
+		foreach ($ip_ary as $ip)
 		{
-			$iplist[] = $ip;
+			if ($ip)
+			{
+				$iplist[] = $ip;
+			}
 		}
 	}
 	
@@ -311,7 +299,7 @@ function download_allowed()
 			{
 				foreach ($iplist as $ip)
 				{
-					if (preg_match('#^' . str_replace('*', '.*?', $site_ip) . '$#i', $ip))
+					if (preg_match('#^' . str_replace('*', '.*?', preg_quote($site_ip, '#')) . '$#i', $ip))
 					{
 						if ($row['ip_exclude'])
 						{
@@ -328,7 +316,7 @@ function download_allowed()
 
 			if ($site_hostname)
 			{
-				if (preg_match('#^' . str_replace('*', '.*?', $site_hostname) . '$#i', $hostname))
+				if (preg_match('#^' . str_replace('*', '.*?', preg_quote($site_hostname, '#')) . '$#i', $hostname))
 				{
 					if ($row['ip_exclude'])
 					{

@@ -76,7 +76,7 @@ class acp_reasons
 					{
 						$sql = 'SELECT reason_id
 							FROM ' . REPORTS_REASONS_TABLE . "
-							WHERE LOWER(reason_title) = '" . strtolower($reason_row['reason_title']) . "'";
+							WHERE LOWER(reason_title) = '" . strtolower($db->sql_escape($reason_row['reason_title'])) . "'";
 						$result = $db->sql_query($sql);
 						$row = $db->sql_fetchrow($result);
 						$db->sql_freeresult($result);
@@ -198,10 +198,38 @@ class acp_reasons
 					$other_reason_id = (int) $db->sql_fetchfield('reason_id');
 					$db->sql_freeresult($result);
 
-					// Change the reports using this reason to 'other'
-					$sql = 'UPDATE ' . REPORTS_TABLE . '
-						SET reason_id = ' . $other_reason_id . ", report_text = CONCAT('" . $db->sql_escape($reason_row['reason_description']) . "\n\n', report_text)
-						WHERE reason_id = $reason_id";
+					switch (SQL_LAYER)
+					{
+						// The ugly one!
+						case 'mysqli':
+						case 'mysql4':
+						case 'mysql':
+							// Change the reports using this reason to 'other'
+							$sql = 'UPDATE ' . REPORTS_TABLE . '
+								SET reason_id = ' . $other_reason_id . ", report_text = CONCAT('" . $db->sql_escape($reason_row['reason_description']) . "\n\n', report_text)
+								WHERE reason_id = $reason_id";
+						break;
+
+						// Nearly standard, not quite
+						case 'mssql':
+						case 'mssql_odbc':
+							// Change the reports using this reason to 'other'
+							$sql = 'UPDATE ' . REPORTS_TABLE . '
+								SET reason_id = ' . $other_reason_id . ", report_text = '" . $db->sql_escape($reason_row['reason_description']) . "\n\n' + report_text
+								WHERE reason_id = $reason_id";
+						break;
+
+						// Teh standard
+						case 'postgres':
+						case 'oracle':
+						case 'firebird':
+						case 'sqlite':
+							// Change the reports using this reason to 'other'
+							$sql = 'UPDATE ' . REPORTS_TABLE . '
+								SET reason_id = ' . $other_reason_id . ", report_text = '" . $db->sql_escape($reason_row['reason_description']) . "\n\n' || report_text
+								WHERE reason_id = $reason_id";
+						break;
+					}
 					$db->sql_query($sql);
 
 					$db->sql_query('DELETE FROM ' . REPORTS_REASONS_TABLE . ' WHERE reason_id = ' . $reason_id);

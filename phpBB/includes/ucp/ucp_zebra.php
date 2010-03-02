@@ -23,9 +23,12 @@ class ucp_zebra
 		$submit	= (isset($_POST['submit']) || isset($_GET['add'])) ? true : false;
 		$s_hidden_fields = '';
 
+		$l_mode = strtoupper($mode);
+
 		if ($submit)
 		{
-			$data = array();
+			$data = $error = array();
+			$updated = false;
 
 			$var_ary = array(
 				'usernames'	=> array(0),
@@ -37,15 +40,9 @@ class ucp_zebra
 				$data[$var] = request_var($var, $default);
 			}
 
-			$var_ary = array(
-				'add'	=> array('string', false)
-			);
-
-			$error = validate_data($data, $var_ary);
-
-			if ($data['add'] && !sizeof($error))
+			if ($data['add'])
 			{
-				$data['add'] = array_map('strtolower', explode("\n", $data['add']));
+				$data['add'] = array_map('trim', array_map('strtolower', explode("\n", $data['add'])));
 
 				// Do these name/s exist on a list already? If so, ignore ... we could be
 				// 'nice' and automatically handle names added to one list present on 
@@ -71,25 +68,53 @@ class ucp_zebra
 				}
 				$db->sql_freeresult($result);
 
-				$data['add'] = array_diff($data['add'], $friends, $foes, array(strtolower($user->data['username'])));
-				unset($friends, $foes);
+				// remove friends from the username array
+				$n = sizeof($data['add']);
+				$data['add'] = array_diff($data['add'], $friends);
 
-				$data['add'] = implode(', ', preg_replace('#^[\s]*?(.*?)[\s]*?$#e', "\"'\" . \$db->sql_escape('\\1') . \"'\"", $data['add']));
+				if (sizeof($data['add']) < $n && $mode == 'foes')
+				{
+					$error[] = $user->lang['NOT_ADDED_FOES_FRIENDS'];
+				}
 
-				if ($data['add'])
+				// remove foes from the username array
+				$n = sizeof($data['add']);
+				$data['add'] = array_diff($data['add'], $foes);
+
+				if (sizeof($data['add']) < $n && $mode == 'friends')
+				{
+					$error[] = $user->lang['NOT_ADDED_FRIENDS_FOES'];
+				}
+
+				// remove the user himself from the username array
+				$n = sizeof($data['add']);
+				$data['add'] = array_diff($data['add'], array(strtolower($user->data['username'])));
+
+				if (sizeof($data['add']) < $n)
+				{
+					$error[] = $user->lang['NOT_ADDED_' . $l_mode . '_SELF'];
+				}
+
+				unset($friends, $foes, $n);
+
+				if (sizeof($data['add']))
 				{
 					$sql = 'SELECT user_id, user_type
 						FROM ' . USERS_TABLE . ' 
-						WHERE LOWER(username) IN (' . $data['add'] . ')
-							AND user_type NOT IN (' . USER_IGNORE . ', ' . USER_INACTIVE . ')';
+						WHERE ' . $db->sql_in_set('LOWER(username)', $data['add']) . '
+							AND user_type <> ' . USER_INACTIVE;
 					$result = $db->sql_query($sql);
 
 					$user_id_ary = array();
 					while ($row = $db->sql_fetchrow($result))
 					{
-						if ($row['user_id'] != ANONYMOUS)
+						if ($row['user_id'] != ANONYMOUS && $row['user_type'] != USER_IGNORE)
 						{
 							$user_id_ary[] = $row['user_id'];
+						}
+						else
+						{
+							$error[] = $user->lang['NOT_ADDED_' . $l_mode . '_ANONYMOUS'];
 						}
 					}
 					$db->sql_freeresult($result);
@@ -109,6 +134,11 @@ class ucp_zebra
 							}
 
 							$perms = array_unique($perms);
+
+							if (sizeof($perms))
+							{
+								$error[] = $user->lang['NOT_ADDED_FOES_MOD_ADMIN'];
+							}
 
 							// This may not be right ... it may yield true when perms equate to deny
 							$user_id_ary = array_diff($user_id_ary, $perms);
@@ -147,39 +177,37 @@ class ucp_zebra
 									break;
 								}
 							}
-						}
-						else
-						{
-							$error[] = 'NOT_ADDED_' . strtoupper($mode);
+
+							$updated = true;
 						}
 						unset($user_id_ary);
 					}
-					else
+					else if (!sizeof($error))
 					{
-						$error[] = 'USER_NOT_FOUND_OR_INACTIVE';
+						$error[] = $user->lang['USER_NOT_FOUND_OR_INACTIVE'];
 					}
 				}
 			}
-			else if (sizeof($data['usernames']) && !sizeof($error))
+			else if (sizeof($data['usernames']))
 			{
 				// Force integer values
 				$data['usernames'] = array_map('intval', $data['usernames']);
 
 				$sql = 'DELETE FROM ' . ZEBRA_TABLE . ' 
 					WHERE user_id = ' . $user->data['user_id'] . ' 
-						AND zebra_id IN (' . implode(', ', $data['usernames']) . ')';
+						AND ' . $db->sql_in_set('zebra_id', $data['usernames']);
 				$db->sql_query($sql);
 			}
 
-			if (!sizeof($error))
+			if ($updated)
 			{
 				meta_refresh(3, $this->u_action);
-				$message = $user->lang[strtoupper($mode) . '_UPDATED'] . '<br /><br />' . sprintf($user->lang['RETURN_UCP'], '<a href="' . $this->u_action . '">', '</a>');
+				$message = $user->lang[$l_mode . '_UPDATED'] . '<br />' . implode('<br />', $error) . ((sizeof($error)) ? '<br />' : '') . '<br />' . sprintf($user->lang['RETURN_UCP'], '<a href="' . $this->u_action . '">', '</a>');
 				trigger_error($message);
 			}
 			else
 			{
-				$template->assign_var('ERROR', implode('<br />', preg_replace('#^([A-Z_]+)$#e', "(!empty(\$user->lang['\\1'])) ? \$user->lang['\\1'] : '\\1'", $error)));
+				$template->assign_var('ERROR', implode('<br />', $error));
 			}
 		}
 
@@ -200,7 +228,7 @@ class ucp_zebra
 		$db->sql_freeresult($result);
 
 		$template->assign_vars(array( 
-			'L_TITLE'			=> $user->lang['UCP_ZEBRA_' . strtoupper($mode)],
+			'L_TITLE'			=> $user->lang['UCP_ZEBRA_' . $l_mode],
 
 			'U_SEARCH_USER'		=> append_sid("{$phpbb_root_path}memberlist.$phpEx", 'mode=searchuser&amp;form=ucp&amp;field=add'), 
 
@@ -210,7 +238,7 @@ class ucp_zebra
 		);
 
 		$this->tpl_name = 'ucp_zebra_' . $mode;
-		$this->page_title = 'UCP_ZEBRA_' . strtoupper($mode);
+		$this->page_title = 'UCP_ZEBRA_' . $l_mode;
 	}
 }
 

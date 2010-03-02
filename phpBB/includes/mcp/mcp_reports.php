@@ -61,20 +61,14 @@ class mcp_reports
 
 				$post_id = request_var('p', 0);
 
-				$post_info = get_post_data(array($post_id), 'm_approve');
+				// closed reports are accessed by report id
+				$report_id = request_var('r', 0);
 
-				if (!sizeof($post_info))
-				{
-					trigger_error('NO_POST_SELECTED');
-				}
-
-				$post_info = $post_info[$post_id];
-
-				$sql = 'SELECT r.user_id, r.report_closed, report_time, r.report_text, rr.reason_title, rr.reason_description, u.username
-					FROM ' . REPORTS_TABLE . ' r, ' . REPORTS_REASONS_TABLE . ' rr, ' . USERS_TABLE . " u
-					WHERE r.post_id = $post_id
+				$sql = 'SELECT r.post_id, r.user_id, r.report_closed, report_time, r.report_text, rr.reason_title, rr.reason_description, u.username
+					FROM ' . REPORTS_TABLE . ' r, ' . REPORTS_REASONS_TABLE . ' rr, ' . USERS_TABLE . ' u
+					WHERE ' . (($report_id) ? 'r.report_id = ' . $report_id : "r.post_id = $post_id AND r.report_closed = 0") . '
 						AND rr.reason_id = r.reason_id
-						AND r.user_id = u.user_id";
+						AND r.user_id = u.user_id';
 				$result = $db->sql_query($sql);
 				$report = $db->sql_fetchrow($result);
 				$db->sql_freeresult($result);
@@ -83,6 +77,20 @@ class mcp_reports
 				{
 					trigger_error('NO_POST_REPORT');
 				}
+
+				if ($report_id)
+				{
+					$post_id = $report['post_id'];
+				}
+
+				$post_info = get_post_data(array($post_id), 'm_report');
+
+				if (!sizeof($post_info))
+				{
+					trigger_error('NO_POST_SELECTED');
+				}
+
+				$post_info = $post_info[$post_id];
 
 				$reason = array('title' => $report['reason_title'], 'description' => $report['reason_description']);
 				if (isset($user->lang['report_reasons']['TITLE'][strtoupper($reason['title'])]) && isset($user->lang['report_reasons']['DESCRIPTION'][strtoupper($reason['title'])]))
@@ -134,14 +142,16 @@ class mcp_reports
 					'U_MCP_USER_NOTES'			=> append_sid("{$phpbb_root_path}mcp.$phpEx", 'i=notes&amp;mode=user_notes&amp;u=' . $post_info['user_id']),
 					'U_MCP_WARN_REPORTER'		=> ($auth->acl_getf_global('m_warn')) ? append_sid("{$phpbb_root_path}mcp.$phpEx", 'i=warn&amp;mode=warn_user&amp;u=' . $report['user_id']) : '',
 					'U_MCP_WARN_USER'			=> ($auth->acl_getf_global('m_warn')) ? append_sid("{$phpbb_root_path}mcp.$phpEx", 'i=warn&amp;mode=warn_user&amp;u=' . $post_info['user_id']) : '',
+					'U_VIEW_POST'				=> append_sid("{$phpbb_root_path}viewtopic.$phpEx", 'f=' . $post_info['forum_id'] . '&amp;p=' . $post_info['post_id'] . '#p' . $post_info['post_id']),
 					'U_VIEW_PROFILE'			=> ($post_info['user_id'] != ANONYMOUS) ? append_sid("{$phpbb_root_path}memberlist.$phpEx", 'mode=viewprofile&amp;u=' . $post_info['user_id']) : '',
 					'U_VIEW_REPORTER_PROFILE'	=> ($report['user_id'] != ANONYMOUS) ? append_sid("{$phpbb_root_path}memberlist.$phpEx", 'mode=viewprofile&amp;u=' . $report['user_id']) : '',
+					'U_VIEW_TOPIC'				=> append_sid("{$phpbb_root_path}viewtopic.$phpEx", 'f=' . $post_info['forum_id'] . '&amp;t=' . $post_info['topic_id']),
 
-					'EDIT_IMG'				=> $user->img('btn_edit', $user->lang['EDIT_POST']),
-					'UNAPPROVED_IMG'		=> $user->img('icon_unapproved', $user->lang['POST_UNAPPROVED']),
+					'EDIT_IMG'				=> $user->img('icon_post_edit', $user->lang['EDIT_POST']),
+					'UNAPPROVED_IMG'		=> $user->img('icon_topic_unapproved', $user->lang['POST_UNAPPROVED']),
 
 					'RETURN_REPORTS'			=> sprintf($user->lang['RETURN_REPORTS'], '<a href="' . append_sid("{$phpbb_root_path}mcp.$phpEx", 'i=reports' . (($post_info['post_reported']) ? '&amp;mode=reports' : '&amp;mode=reports_closed') . '&amp;start=' . $start) . '">', '</a>'),
-					'REPORTED_IMG'				=> $user->img('icon_reported', $user->lang['POST_REPORTED']),
+					'REPORTED_IMG'				=> $user->img('icon_topic_reported', $user->lang['POST_REPORTED']),
 					'REPORT_REASON_TITLE'		=> $reason['title'],
 					'REPORT_REASON_DESCRIPTION'	=> $reason['description'],
 					'REPORTER_NAME'				=> ($report['user_id'] == ANONYMOUS) ? $user->lang['GUEST'] : $report['username'],
@@ -181,22 +191,25 @@ class mcp_reports
 					$forum_id = $topic_info['forum_id'];
 				}
 
+				$forum_list = array();
+
 				if (!$forum_id)
 				{
-					$forum_list = array();
 					foreach ($forum_list_reports as $row)
 					{
 						$forum_list[] = $row['forum_id'];
 					}
 
-					if (!($forum_list = implode(', ', $forum_list)))
+					$global_id = $forum_list[0];
+
+					if (!sizeof($forum_list))
 					{
 						trigger_error('NOT_MODERATOR');
 					}
 
 					$sql = 'SELECT SUM(forum_topics) as sum_forum_topics
-						FROM ' . FORUMS_TABLE . "
-						WHERE forum_id IN ($forum_list)";
+						FROM ' . FORUMS_TABLE . '
+						WHERE ' . $db->sql_in_set('forum_id', $forum_list);
 					$result = $db->sql_query($sql);
 					$forum_info['forum_topics'] = (int) $db->sql_fetchfield('sum_forum_topics');
 					$db->sql_freeresult($result);
@@ -211,10 +224,11 @@ class mcp_reports
 					}
 
 					$forum_info = $forum_info[$forum_id];
-					$forum_list = $forum_id;
+					$forum_list = array($forum_id);
+					$global_id = $forum_id;
 				}
 
-				$forum_list .= ', 0';
+				$forum_list[] = 0;
 				$forum_data = array();
 
 				$forum_options = '<option value="0"' . (($forum_id == 0) ? ' selected="selected"' : '') . '>' . $user->lang['ALL_FORUMS'] . '</option>';
@@ -242,9 +256,9 @@ class mcp_reports
 					$report_state = 'AND r.report_closed = 1';
 				}
 
-				$sql = 'SELECT p.post_id
-					FROM ' . POSTS_TABLE . ' p, ' . TOPICS_TABLE . ' t, ' . REPORTS_TABLE . ' r ' . (($sort_order_sql[0] == 'u') ? ', ' . USERS_TABLE . ' u' : '') . (($sort_order_sql[0] == 'r') ? ', ' . USERS_TABLE . ' ru' : '') . "
-					WHERE p.forum_id IN ($forum_list)
+				$sql = 'SELECT r.report_id
+					FROM ' . POSTS_TABLE . ' p, ' . TOPICS_TABLE . ' t, ' . REPORTS_TABLE . ' r ' . (($sort_order_sql[0] == 'u') ? ', ' . USERS_TABLE . ' u' : '') . (($sort_order_sql[0] == 'r') ? ', ' . USERS_TABLE . ' ru' : '') . '
+					WHERE ' . $db->sql_in_set('p.forum_id', $forum_list) . "
 						$report_state
 						AND r.post_id = p.post_id
 						" . (($sort_order_sql[0] == 'u') ? 'AND u.user_id = p.poster_id' : '') . '
@@ -256,36 +270,28 @@ class mcp_reports
 				$result = $db->sql_query_limit($sql, $config['topics_per_page'], $start);
 
 				$i = 0;
-				$post_ids = array();
+				$report_ids = array();
 				while ($row = $db->sql_fetchrow($result))
 				{
-					$post_ids[] = $row['post_id'];
-					$row_num[$row['post_id']] = $i++;
+					$report_ids[] = $row['report_id'];
+					$row_num[$row['report_id']] = $i++;
 				}
 				$db->sql_freeresult($result);
 
-				if (sizeof($post_ids))
+				if (sizeof($report_ids))
 				{
-					$sql = 'SELECT t.forum_id, t.topic_id, t.topic_title, p.post_id, p.post_subject, p.post_username, p.poster_id, p.post_time, u.username, r.user_id as reporter_id, ru.username as reporter_name, r.report_time
-						FROM ' . POSTS_TABLE . ' p, ' . TOPICS_TABLE . ' t, ' . REPORTS_TABLE . ' r, ' . USERS_TABLE . ' u, ' . USERS_TABLE . " ru
-						WHERE p.post_id IN (" . implode(', ', $post_ids) . ")
+					$sql = 'SELECT t.forum_id, t.topic_id, t.topic_title, p.post_id, p.post_subject, p.post_username, p.poster_id, p.post_time, u.username, r.user_id as reporter_id, ru.username as reporter_name, r.report_time, r.report_id
+						FROM ' . REPORTS_TABLE . ' r, ' . POSTS_TABLE . ' p, ' . TOPICS_TABLE . ' t, ' . USERS_TABLE . ' u, ' . USERS_TABLE . ' ru
+						WHERE ' . $db->sql_in_set('r.report_id', $report_ids) . '
 							AND t.topic_id = p.topic_id
 							AND r.post_id = p.post_id
 							AND u.user_id = p.poster_id
-							AND ru.user_id = r.user_id";
+							AND ru.user_id = r.user_id';
 					$result = $db->sql_query($sql);
 
-					$post_data = $rowset = array();
+					$report_data = $rowset = array();
 					while ($row = $db->sql_fetchrow($result))
 					{
-						$post_data[$row['post_id']] = $row;
-					}
-					$db->sql_freeresult($result);
-
-					foreach ($post_ids as $post_id)
-					{
-						$row = $post_data[$post_id];
-
 						if ($row['poster_id'] == ANONYMOUS)
 						{
 							$poster = (!empty($row['post_username'])) ? $row['post_username'] : $user->lang['GUEST'];
@@ -295,16 +301,20 @@ class mcp_reports
 							$poster = $row['username'];
 						}
 
+						$global_topic = ($row['forum_id']) ? false : true;
+						if ($global_topic)
+						{
+							$row['forum_id'] = $global_id;
+						}
+
 						$template->assign_block_vars('postrow', array(
-							'U_VIEWFORUM'				=> append_sid("{$phpbb_root_path}viewforum.$phpEx", 'f=' . $row['forum_id']),
-							// Q: Why accessing the topic by a post_id instead of its topic_id?
-							// A: To prevent the post from being hidden because of wrong encoding or different charset
-							'U_VIEWTOPIC'				=> append_sid("{$phpbb_root_path}viewtopic.$phpEx", 'f=' . $row['forum_id'] . '&amp;p=' . $row['post_id']) . '#p' . $row['post_id'],
-							'U_VIEW_DETAILS'			=> append_sid("{$phpbb_root_path}mcp.$phpEx", "i=reports&amp;start=$start&amp;mode=report_details&amp;f={$forum_id}&amp;p={$row['post_id']}"),
+							'U_VIEWFORUM'				=> (!$global_topic) ? append_sid("{$phpbb_root_path}viewforum.$phpEx", 'f=' . $row['forum_id']) : '',
+							'U_VIEWPOST'				=> append_sid("{$phpbb_root_path}viewtopic.$phpEx", 'f=' . $row['forum_id'] . '&amp;p=' . $row['post_id']) . '#p' . $row['post_id'],
+							'U_VIEW_DETAILS'			=> append_sid("{$phpbb_root_path}mcp.$phpEx", "i=reports&amp;start=$start&amp;mode=report_details&amp;f={$row['forum_id']}&amp;r={$row['report_id']}"),
 							'U_VIEW_POSTER_PROFILE'		=> ($row['poster_id'] != ANONYMOUS) ? append_sid("{$phpbb_root_path}memberlist.$phpEx", 'mode=viewprofile&amp;u=' . $row['poster_id']) : '',
 							'U_VIEW_REPORTER_PROFILE'	=> ($row['reporter_id'] != ANONYMOUS) ? append_sid("{$phpbb_root_path}memberlist.$phpEx", 'mode=viewprofile&amp;u=' . $row['reporter_id']) : '',
 
-							'FORUM_NAME'	=> ($row['forum_id']) ? $forum_data[$row['forum_id']]['forum_name'] : $user->lang['ALL_FORUMS'],
+							'FORUM_NAME'	=> (!$global_topic) ? $forum_data[$row['forum_id']]['forum_name'] : $user->lang['GLOBAL_ANNOUNCEMENT'],
 							'POSTER'		=> $poster,
 							'POST_ID'		=> $row['post_id'],
 							'POST_SUBJECT'	=> $row['post_subject'],
@@ -314,7 +324,8 @@ class mcp_reports
 							'TOPIC_TITLE'	=> $row['topic_title'])
 						);
 					}
-					unset($post_data, $post_ids, $row);
+					$db->sql_freeresult($result);
+					unset($report_ids, $row);
 				}
 
 				// Now display the page
@@ -377,7 +388,7 @@ function close_report($post_id_list, $mode, $action)
 
 		$sql = 'SELECT r.post_id, r.report_closed, r.user_id, r.user_notify, u.username, u.user_email, u.user_jabber, u.user_lang, u.user_notify_type
 			FROM ' . REPORTS_TABLE . ' r, ' . USERS_TABLE . ' u
-			WHERE r.post_id IN (' . implode(',', array_keys($post_info)) . ')
+			WHERE ' . $db->sql_in_set('r.post_id', array_keys($post_info)) . '
 				' . (($action == 'close') ? 'AND r.report_closed = 0' : '') . '
 				AND r.user_id = u.user_id';
 		$result = $db->sql_query($sql);
@@ -411,9 +422,9 @@ function close_report($post_id_list, $mode, $action)
 			// Get a list of topics that still contain reported posts
 			$sql = 'SELECT DISTINCT topic_id
 				FROM ' . POSTS_TABLE . '
-				WHERE topic_id IN (' . implode(', ', $close_report_topics) . ')
+				WHERE ' . $db->sql_in_set('topic_id', $close_report_topics) . '
 					AND post_reported = 1
-					AND post_id NOT IN (' . implode(', ', $close_report_posts) . ')';
+					AND ' . $db->sql_in_set('post_id', $close_report_posts, true);
 			$result = $db->sql_query($sql);
 
 			$keep_report_topics = array();
@@ -432,24 +443,27 @@ function close_report($post_id_list, $mode, $action)
 			{
 				$sql = 'UPDATE ' . REPORTS_TABLE . '
 					SET report_closed = 1
-					WHERE post_id IN (' . implode(', ', $close_report_posts) . ')';
+					WHERE ' . $db->sql_in_set('post_id', $close_report_posts);
 			}
 			else
 			{
 				$sql = 'DELETE FROM ' . REPORTS_TABLE . '
-					WHERE post_id IN (' . implode(', ', $close_report_posts) . ')';
+					WHERE ' . $db->sql_in_set('post_id', $close_report_posts);
 			}
 			$db->sql_query($sql);
 
 			$sql = 'UPDATE ' . POSTS_TABLE . '
 				SET post_reported = 0
-				WHERE post_id IN (' . implode(', ', $close_report_posts) . ')';
+				WHERE ' . $db->sql_in_set('post_id', $close_report_posts);
 			$db->sql_query($sql);
 
-			$sql = 'UPDATE ' . TOPICS_TABLE . '
-				SET topic_reported = 0
-				WHERE topic_id IN (' . implode(', ', $close_report_topics) . ')';
-			$db->sql_query($sql);
+			if (sizeof($close_report_topics))
+			{
+				$sql = 'UPDATE ' . TOPICS_TABLE . '
+					SET topic_reported = 0
+					WHERE ' . $db->sql_in_set('topic_id', $close_report_topics);
+				$db->sql_query($sql);
+			}
 
 			$db->sql_transaction('commit');
 		}

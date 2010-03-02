@@ -104,14 +104,40 @@ if (defined('IN_CRON'))
 
 if (!file_exists($phpbb_root_path . 'config.' . $phpEx))
 {
-	die("<p>The config.$phpEx file could not be found.</p><p><a href=\"$phpbb_root_path/install/index.$phpEx\">Click here to install phpBB</a></p>");
+	die("<p>The config.$phpEx file could not be found.</p><p><a href=\"{$phpbb_root_path}install/index.$phpEx\">Click here to install phpBB</a></p>");
 }
 
 require($phpbb_root_path . 'config.' . $phpEx);
 
 if (!defined('PHPBB_INSTALLED'))
 {
-	header('Location: install/index.' . $phpEx);
+	// Redirect the user to the installer
+	// We have to generate a full HTTP/1.1 header here since we can't guarantee to have any of the information
+	// available as used by the redirect function
+	$server_name = (!empty($_SERVER['SERVER_NAME'])) ? $_SERVER['SERVER_NAME'] : getenv('SERVER_NAME');
+	$server_port = (!empty($_SERVER['SERVER_PORT'])) ? (int) $_SERVER['SERVER_PORT'] : (int) getenv('SERVER_PORT');
+	$secure = (isset($_SERVER['HTTPS']) && $_SERVER['HTTPS'] == 'on') ? 1 : 0;
+
+	$script_name = (!empty($_SERVER['PHP_SELF'])) ? $_SERVER['PHP_SELF'] : getenv('PHP_SELF');
+	if (!$script_name)
+	{
+		$script_name = (!empty($_SERVER['REQUEST_URI'])) ? $_SERVER['REQUEST_URI'] : getenv('REQUEST_URI');
+	}
+
+	// Replace any number of consecutive backslashes and/or slashes with a single slash
+	// (could happen on some proxy setups and/or Windows servers)
+	$script_path = trim(dirname($script_name)) . '/install/index.' . $phpEx;
+	$script_path = preg_replace('#[\\\\/]{2,}#', '/', $script_path);
+
+	$url = (($secure) ? 'https://' : 'http://') . $server_name;
+
+	if ($server_port && (($secure && $server_port <> 443) || (!$secure && $server_port <> 80)))
+	{
+		$url .= ':' . $server_port;
+	}
+
+	$url .= $script_path;
+	header('Location: ' . $url);
 	exit;
 }
 
@@ -165,10 +191,11 @@ unset($dbpasswd);
 $config = $cache->obtain_config();
 $dss_seeded = false;
 
-// Warn about install/ directory
-if (file_exists($phpbb_root_path . 'install'))
+// Disable board if the install/ directory is still present
+if (file_exists($phpbb_root_path . 'install') && !defined('ADMIN_START'))
 {
-	trigger_error('REMOVE_INSTALL');
+	$message = (!empty($config['board_disable_msg'])) ? $config['board_disable_msg'] : 'BOARD_DISABLE';
+	trigger_error($message);
 }
 
 ?>

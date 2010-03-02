@@ -11,6 +11,13 @@
 	</div>
 <!-- ENDIF -->
 
+<!-- IF S_REMOVE_INSTALL -->
+	<div class="errorbox">
+		<h3>{L_WARNING}</h3>
+		<p>{L_REMOVE_INSTALL}</p>
+	</div>
+<!-- ENDIF -->
+
 <table cellspacing="1">
 	<caption>{L_FORUM_STATS}</caption>
 	<col class="col1" /><col class="col2" /><col class="col1" /><col class="col2" />
@@ -60,10 +67,10 @@
 	<td><b>{UPLOAD_DIR_SIZE}</b></td>
 </tr>
 <tr>
+	<td>{L_DATABASE_SERVER_INFO}: </td>
+	<td><b>{DATABASE_INFO}</b></td>
 	<td>{L_GZIP_COMPRESSION}: </td>
 	<td><b>{GZIP_COMPRESSION}</b></td>
-	<td>&nbsp;</td>
-	<td>&nbsp;</td>
 </tr>
 </tbody>
 </table>
@@ -104,6 +111,10 @@
 	<!-- END log -->
 	</tbody>
 	</table>
+
+	<br />
+	<div style="text-align: right;"><a href="{U_ADMIN_LOG}">&raquo; {L_VIEW_ADMIN_LOG}</a></div>
+
 <!-- ENDIF -->
 
 <!-- IF S_INACTIVE_USERS -->
@@ -118,6 +129,7 @@
 	<tr>
 		<th>{L_USERNAME}</th>
 		<th>{L_JOINED}</th>
+		<th>{L_LAST_VISIT}</th>
 		<th>{L_MARK}</th>
 	</tr>
 	</thead>
@@ -127,6 +139,7 @@
 
 			<td><a href="{inactive.U_USER_ADMIN}">{inactive.USERNAME}</a></td>
 			<td>{inactive.DATE}</td>
+			<td>{inactive.LAST_VISIT}</td>
 			<td>&nbsp;<input type="checkbox" class="radio" name="mark[]" value="{inactive.USER_ID}" />&nbsp;</td>
 		</tr>
 	<!-- BEGINELSE -->

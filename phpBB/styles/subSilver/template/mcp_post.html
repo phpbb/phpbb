@@ -5,7 +5,7 @@
 	
 	<table width="100%" cellpadding="3" cellspacing="1" border="0" class="tablebg">
 	<tr>
-		<th colspan="2" height="28" align="center">{L_REPORT_DETAILS}</th>
+		<th colspan="2" align="center">{L_REPORT_DETAILS}</th>
 	</tr>
 	<tr>
 		<td class="row1"><b class="gen">{L_REPORT_REASON}: </b></td>
@@ -21,7 +21,7 @@
 	</tr>
 	<!-- IF REPORT_TEXT -->
 		<tr>
-			<th colspan="2" height="28" align="center">{L_MORE_INFO}</th>
+			<th colspan="2" align="center">{L_MORE_INFO}</th>
 		</tr>
 		<tr>
 			<td class="row1" colspan="2"><div class="gen" style="overflow: auto; width: 100%; height: 80pt; border: 1px;">{REPORT_TEXT}</div></td>
@@ -42,14 +42,14 @@
 
 <table width="100%" cellpadding="3" cellspacing="1" border="0" class="tablebg">
 <tr>
-	<th colspan="2" height="28" align="center">{L_POST_DETAILS}</th>
+	<th colspan="2" align="center">{L_POST_DETAILS}</th>
 </tr>
 <tr>
 	<td class="row3" colspan="2" align="center"><span class="gensmall"><!-- IF S_MCP_QUEUE -->{RETURN_QUEUE}<!-- ELSEIF S_MCP_REPORT -->{RETURN_REPORTS}<!-- ELSE -->{RETURN_TOPIC}<!-- ENDIF --></span></td>
 </tr>
 <tr>
 	<td class="row1"><b class="gen">{L_POST_SUBJECT}: </b></td>
-	<td class="row2"><span class="gen">{POST_SUBJECT}</span> <!-- IF S_POST_UNAPPROVED --><span class="postapprove">{UNAPPROVED_IMG} <a href="{U_MCP_APPROVE}">{L_POST_UNAPPROVED}</a></span> <!-- ENDIF --> <!-- IF S_POST_REPORTED --><span class="postreported">{REPORTED_IMG} <a href="{U_MCP_REPORT}">{L_POST_REPORTED}</a></span><!-- ENDIF --></td>
+	<td class="row2"><span class="gen">{POST_SUBJECT}</span> <!-- IF S_POST_UNAPPROVED --><span class="postapprove">{UNAPPROVED_IMG} <a href="{U_MCP_APPROVE}">{L_POST_UNAPPROVED}</a></span> <!-- ENDIF --> <!-- IF S_POST_REPORTED and not S_MCP_REPORT --><span class="postreported">{REPORTED_IMG} <a href="{U_MCP_REPORT}">{L_POST_REPORTED}</a></span><!-- ENDIF --></td>
 </tr>
 <tr>
 	<td class="row1" width="20%"><b class="gen">{L_POSTER}: </b></td>
@@ -66,7 +66,7 @@
 	<td class="row2"><span class="postdetails">{POST_DATE}</span></td>
 </tr>
 <tr>
-	<th colspan="2" height="28" align="center">{L_PREVIEW}</th>
+	<th colspan="2" align="center">{L_PREVIEW}</th>
 </tr>
 <tr>
 	<td class="row1" colspan="2"><div class="gen" style="overflow: auto; width: 100%; height: 80pt; border: 1px;">{POST_PREVIEW}</div><!-- IF U_EDIT --><div class="gen" style="float: right;"><a href="{U_EDIT}">{EDIT_IMG}</a></div><!-- ENDIF --></td>
@@ -95,7 +95,7 @@
 
 		<table width="100%" cellpadding="3" cellspacing="1" border="0" class="tablebg">
 		<tr>
-			<th colspan="2" height="28" align="center">{L_MOD_OPTIONS}</th>
+			<th colspan="2" align="center">{L_MOD_OPTIONS}</th>
 		</tr>
 		<!-- IF S_CAN_CHGPOSTER -->
 			<tr>
@@ -121,10 +121,10 @@
 
 		<table width="100%" cellpadding="3" cellspacing="1" border="0" class="tablebg">
 		<tr>
-			<th colspan="2" height="28" align="center">{L_IP_INFO}</th>
+			<th colspan="2" align="center">{L_IP_INFO}</th>
 		</tr>
 		<tr>
-			<td colspan="2" height="28" class="cat"><b class="gen">{L_OTHER_USERS}</b></td>
+			<td colspan="2" class="cat"><b class="gen">{L_OTHER_USERS}</b></td>
 		</tr>
 		<!-- BEGIN userrow -->
 			<!-- IF userrow.S_ROW_COUNT is even -->
@@ -141,7 +141,7 @@
 			</tr>
 		<!-- END userrow -->
 		<tr>
-			<td height="28" class="cat"><b class="gen">{L_OTHER_IPS}</b></td>
+			<td class="cat"><b class="gen">{L_OTHER_IPS}</b></td>
 			<td class="cat" width="10%" nowrap="nowrap"><!-- IF U_LOOKUP_ALL --><span class="gen">[ <a href="{U_LOOKUP_ALL}">{L_LOOKUP_ALL}</a> ]</span><!-- ENDIF --></td>
 		</tr>
 		<!-- BEGIN iprow -->

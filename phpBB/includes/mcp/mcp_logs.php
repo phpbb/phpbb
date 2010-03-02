@@ -43,8 +43,8 @@ class mcp_logs
 
 		// Set up general vars
 		$start		= request_var('start', 0);
-		$deletemark = (isset($_POST['del_marked'])) ? true : false;
-		$deleteall	= (isset($_POST['del_all'])) ? true : false;
+		$deletemark = ($action == 'del_marked') ? true : false;
+		$deleteall	= ($action == 'del_all') ? true : false;
 		$marked		= request_var('mark', array(0));
 
 		// Sort keys
@@ -84,14 +84,14 @@ class mcp_logs
 					$sql_in[] = $mark;
 				}
 
-				$where_sql = ' AND log_id IN (' . implode(', ', $sql_in) . ')';
+				$where_sql = ' AND ' . $db->sql_in_set('log_id', $sql_in);
 				unset($sql_in);
 			}
 
 			if ($where_sql || $deleteall)
 			{
 				$sql = 'DELETE FROM ' . LOG_TABLE . '
-					WHERE log_type = ' . LOD_MOD . "
+					WHERE log_type = ' . LOG_MOD . "
 					$where_sql";
 				$db->sql_query($sql);
 
@@ -102,7 +102,7 @@ class mcp_logs
 		// Sorting
 		$limit_days = array(0 => $user->lang['ALL_ENTRIES'], 1 => $user->lang['1_DAY'], 7 => $user->lang['7_DAYS'], 14 => $user->lang['2_WEEKS'], 30 => $user->lang['1_MONTH'], 90 => $user->lang['3_MONTHS'], 180 => $user->lang['6_MONTHS'], 365 => $user->lang['1_YEAR']);
 		$sort_by_text = array('u' => $user->lang['SORT_USERNAME'], 't' => $user->lang['SORT_DATE'], 'i' => $user->lang['SORT_IP'], 'o' => $user->lang['SORT_ACTION']);
-		$sort_by_sql = array('u' => 'l.user_id', 't' => 'l.log_time', 'i' => 'l.log_ip', 'o' => 'l.log_operation');
+		$sort_by_sql = array('u' => 'u.username', 't' => 'l.log_time', 'i' => 'l.log_ip', 'o' => 'l.log_operation');
 
 		$s_limit_days = $s_sort_key = $s_sort_dir = $u_sort_param = '';
 		gen_sort_selects($limit_days, $sort_by_text, $sort_days, $sort_key, $sort_dir, $s_limit_days, $s_sort_key, $s_sort_dir, $u_sort_param);
@@ -120,6 +120,8 @@ class mcp_logs
 			'PAGE_NUMBER'		=> on_page($log_count, $config['topics_per_page'], $start),
 			'TOTAL'				=> ($log_count == 1) ? $user->lang['TOTAL_LOG'] : sprintf($user->lang['TOTAL_LOGS'], $log_count),
 			'PAGINATION'		=> generate_pagination($this->u_action . "&amp;$u_sort_param", $log_count, $config['topics_per_page'], $start),
+
+			'L_TITLE'			=> $user->lang['MCP_LOGS'],
 
 			'U_POST_ACTION'			=> $this->u_action,
 			'S_CLEAR_ALLOWED'		=> ($auth->acl_get('a_clearlogs')) ? true : false,

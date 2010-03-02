@@ -1,0 +1,122 @@
+<!-- INCLUDE overall_header.html -->
+
+<a name="maincontent"></a>
+
+<h1>{L_ACP_VC_SETTINGS}</h1>
+
+<p>{L_ACP_VC_SETTINGS_EXPLAIN}</p>
+
+<form id="acp_captcha" method="post" action="{U_ACTION}">
+
+<fieldset>
+	<legend>{L_GENERAL_OPTIONS}</legend>
+<dl>
+	<dt><label for="enable_confirm">{L_VISUAL_CONFIRM_REG}:</label><br /><span>{L_VISUAL_CONFIRM_REG_EXPLAIN}</span></dt>
+	<dd><input type="radio" class="radio" id="enable_confirm" name="enable_confirm" value="1"<!-- IF REG_ENABLE --> checked="checked"<!-- ENDIF --> />&nbsp;{L_ENABLED}&nbsp; &nbsp;<input type="radio" class="radio" name="enable_confirm" value="0"<!-- IF not REG_ENABLE --> checked="checked"<!-- ENDIF --> />&nbsp;{L_DISABLED}</dd>
+</dl>
+<dl>
+	<dt><label for="enable_post_confirm">{L_VISUAL_CONFIRM_POST}:</label><br /><span>{L_VISUAL_CONFIRM_POST_EXPLAIN}</span></dt>
+	<dd><input type="radio" class="radio" id="enable_post_confirm" name="enable_post_confirm" value="1"<!-- IF POST_ENABLE --> checked="checked"<!-- ENDIF --> />&nbsp;{L_ENABLED}&nbsp; &nbsp;<input type="radio" class="radio" name="enable_post_confirm" value="0"<!-- IF not POST_ENABLE --> checked="checked"<!-- ENDIF --> />&nbsp;{L_DISABLED}</dd>
+</dl>
+</fieldset>
+
+<!-- IF GD -->
+<fieldset>
+	<legend>{L_CAPTCHA_OVERLAP}</legend>
+<!-- IF TTF -->
+<dl>
+	<dt><label for="policy_overlap">{L_CAPTCHA_OVERLAP}:</label><br /><span>{U_POLICY_OVERLAP}</span></dt>
+	<dd><input id="policy_overlap" name="policy_overlap" value="1" class="radio" type="radio"<!-- IF OVERLAP_ENABLE --> checked="checked"<!-- ENDIF --> />&nbsp;{L_YES}&nbsp;&nbsp;<input name="policy_overlap" value="0" class="radio" type="radio"<!-- IF not OVERLAP_ENABLE --> checked="checked"<!-- ENDIF --> />&nbsp;{L_NO}</dd>
+</dl>
+<dl>
+	<dt><label for="policy_overlap_noise_pixel">{L_OVERLAP_NOISE_PIXEL}:</label></dt>
+	<select id="policy_overlap_noise_pixel" name="policy_overlap_noise_pixel"><option value="0"<!-- IF OVERLAP_NOISE_PIXEL eq '0' --> selected="selected"<!-- ENDIF -->>{L_NO_NOISE}</option><option value="1"<!-- IF OVERLAP_NOISE_PIXEL eq '1' --> selected="selected"<!-- ENDIF -->>{L_LIGHT}</option><option value="2"<!-- IF OVERLAP_NOISE_PIXEL eq '2' --> selected="selected"<!-- ENDIF -->>{L_MEDIUM}</option><option value="3"<!-- IF OVERLAP_NOISE_PIXEL eq '3' --> selected="selected"<!-- ENDIF -->>{L_HEAVY}</option></select></dd>
+</dl>
+<dl>
+	<dt><label for="policy_overlap_noise_line">{L_OVERLAP_NOISE_LINE}:</label></dt>
+
+	<dd><input id="policy_overlap_noise_line" name="policy_overlap_noise_line" value="1" class="radio" type="radio"<!-- IF OVERLAP_NOISE_LINE_ENABLE --> checked="checked"<!-- ENDIF --> />&nbsp;{L_YES}&nbsp;&nbsp;<input name="policy_overlap_noise_line" value="0" class="radio" type="radio"<!-- IF not OVERLAP_NOISE_LINE_ENABLE --> checked="checked"<!-- ENDIF --> />&nbsp;{L_NO}</dd>
+</dl>
+</fieldset>
+<!-- ENDIF -->
+
+<fieldset>
+	<legend>{L_CAPTCHA_ENTROPY}</legend>
+<dl>
+	<dt><label for="policy_entropy">{L_CAPTCHA_ENTROPY}:</label><br /><span>{U_POLICY_ENTROPY}</span></dt>
+	<dd><input id="policy_entropy" name="policy_entropy" value="1" class="radio" type="radio"<!-- IF ENTROPY_ENABLE --> checked="checked"<!-- ENDIF --> />&nbsp;{L_YES}&nbsp;&nbsp;<input name="policy_entropy" value="0" class="radio" type="radio"<!-- IF not ENTROPY_ENABLE --> checked="checked"<!-- ENDIF --> />&nbsp;{L_NO}</dd>
+</dl>
+<dl>
+	<dt><label for="policy_entropy_noise_pixel">{L_ENTROPY_NOISE_PIXEL}:</label></dt>
+	<select id="policy_entropy_noise_pixel" name="policy_entropy_noise_pixel"><option value="0"<!-- IF ENTROPY_NOISE_PIXEL eq '0' --> selected="selected"<!-- ENDIF -->>{L_NO_NOISE}</option><option value="1"<!-- IF ENTROPY_NOISE_PIXEL eq '1' --> selected="selected"<!-- ENDIF -->>{L_LIGHT}</option><option value="2"<!-- IF ENTROPY_NOISE_PIXEL eq '2' --> selected="selected"<!-- ENDIF -->>{L_MEDIUM}</option><option value="3"<!-- IF ENTROPY_NOISE_PIXEL eq '3' --> selected="selected"<!-- ENDIF -->>{L_HEAVY}</option></select></dd>
+</dl>
+<dl>
+
+	<dt><label for="policy_entropy_noise_line">{L_ENTROPY_NOISE_LINE}:</label></dt>
+	<dd><input id="policy_entropy_noise_line" name="policy_entropy_noise_line" value="1" class="radio" type="radio"<!-- IF ENTROPY_NOISE_LINE_ENABLE --> checked="checked"<!-- ENDIF --> />&nbsp;{L_YES}&nbsp;&nbsp;<input name="policy_entropy_noise_line" value="0" class="radio" type="radio"<!-- IF not ENTROPY_NOISE_LINE_ENABLE --> checked="checked"<!-- ENDIF --> />&nbsp;{L_NO}</dd>
+</dl>
+</fieldset>
+
+<!-- IF TTF -->
+<fieldset>
+	<legend>{L_CAPTCHA_SHAPE}</legend>
+<dl>
+	<dt><label for="policy_shape">{L_CAPTCHA_SHAPE}:</label><br /><span>{U_POLICY_SHAPE}</span></dt>
+	<dd><input id="policy_shape" name="policy_shape" value="1" class="radio" type="radio"<!-- IF SHAPE_ENABLE --> checked="checked"<!-- ENDIF --> />&nbsp;{L_YES}&nbsp;&nbsp;<input name="policy_shape" value="0" class="radio" type="radio"<!-- IF not SHAPE_ENABLE --> checked="checked"<!-- ENDIF --> />&nbsp;{L_NO}</dd>
+
+</dl>
+<dl>
+	<dt><label for="policy_shape_noise_pixel">{L_SHAPE_NOISE_PIXEL}:</label></dt>
+	<select id="policy_shape_noise_pixel" name="policy_shape_noise_pixel"><option value="0"<!-- IF SHAPE_NOISE_PIXEL eq '0' --> selected="selected"<!-- ENDIF -->>{L_NO_NOISE}</option><option value="1"<!-- IF SHAPE_NOISE_PIXEL eq '1' --> selected="selected"<!-- ENDIF -->>{L_LIGHT}</option><option value="2"<!-- IF SHAPE_NOISE_PIXEL eq '2' --> selected="selected"<!-- ENDIF -->>{L_MEDIUM}</option><option value="3"<!-- IF SHAPE_NOISE_PIXEL eq '3' --> selected="selected"<!-- ENDIF -->>{L_HEAVY}</option></select></dd>
+</dl>
+<dl>
+	<dt><label for="policy_shape_noise_line">{L_SHAPE_NOISE_LINE}:</label></dt>
+	<dd><input id="policy_shape_noise_line" name="policy_shape_noise_line" value="1" class="radio" type="radio"<!-- IF SHAPE_NOISE_LINE_ENABLE --> checked="checked"<!-- ENDIF --> />&nbsp;{L_YES}&nbsp;&nbsp;<input name="policy_shape_noise_line" value="0" class="radio" type="radio"<!-- IF not SHAPE_NOISE_LINE_ENABLE --> checked="checked"<!-- ENDIF --> />&nbsp;{L_NO}</dd>
+</dl>
+</fieldset>
+<!-- ENDIF -->
+
+<fieldset>
+	<legend>{L_CAPTCHA_3DBITMAP}</legend>
+<dl>
+	<dt><label for="policy_3dbitmap">{L_CAPTCHA_3DBITMAP}:</label><br /><span>{U_POLICY_3DBITMAP}</span></dt>
+	<dd><input id="policy_3dbitmap" name="policy_3dbitmap" value="1" class="radio" type="radio"<!-- IF THREEDBITMAP_ENABLE --> checked="checked"<!-- ENDIF --> />&nbsp;{L_YES}&nbsp;&nbsp;<input name="policy_3dbitmap" value="0" class="radio" type="radio"<!-- IF not THREEDBITMAP_ENABLE --> checked="checked"<!-- ENDIF --> />&nbsp;{L_NO}</dd>
+</dl>
+</fieldset>
+
+<!-- IF TTF -->
+<fieldset>
+	<legend>{L_CAPTCHA_CELLS}</legend>
+<dl>
+	<dt><label for="policy_cells">{L_CAPTCHA_CELLS}:</label><br /><span>{U_POLICY_CELLS}</span></dt>
+	<dd><input id="policy_cells" name="policy_cells" value="1" class="radio" type="radio"<!-- IF CELLS_ENABLE --> checked="checked"<!-- ENDIF --> />&nbsp;{L_YES}&nbsp;&nbsp;<input name="policy_cells" value="0" class="radio" type="radio"<!-- IF not CELLS_ENABLE --> checked="checked"<!-- ENDIF --> />&nbsp;{L_NO}</dd>
+</dl>
+</fieldset>
+
+<fieldset>
+	<legend>{L_CAPTCHA_STENCIL}</legend>
+<dl>
+	<dt><label for="policy_stencil">{L_CAPTCHA_STENCIL}:</label><br /><span>{U_POLICY_STENCIL}</span></dt>
+	<dd><input id="policy_stencil" name="policy_stencil" value="1" class="radio" type="radio"<!-- IF STENCIL_ENABLE --> checked="checked"<!-- ENDIF --> />&nbsp;{L_YES}&nbsp;&nbsp;<input name="policy_stencil" value="0" class="radio" type="radio"<!-- IF not STENCIL_ENABLE --> checked="checked"<!-- ENDIF --> />&nbsp;{L_NO}</dd>
+</dl>
+</fieldset>
+
+<fieldset>
+	<legend>{L_CAPTCHA_COMPOSITE}</legend>
+<dl>
+	<dt><label for="policy_composite">{L_CAPTCHA_COMPOSITE}:</label><br /><span>{U_POLICY_COMPOSITE}</span></dt>
+	<dd><input id="policy_composite" name="policy_composite" value="1" class="radio" type="radio"<!-- IF COMPOSITE_ENABLE --> checked="checked"<!-- ENDIF --> />&nbsp;{L_YES}&nbsp;&nbsp;<input name="policy_composite" value="0" class="radio" type="radio"<!-- IF not COMPOSITE_ENABLE --> checked="checked"<!-- ENDIF --> />&nbsp;{L_NO}</dd>
+</dl>
+</fieldset>
+<!-- ENDIF -->
+
+<!-- ENDIF -->
+
+<fieldset class="submit-buttons">
+	<input class="button1" type="submit" id="submit" name="submit" value="{L_SUBMIT}" />&nbsp;
+	<input class="button2" type="reset" id="reset" name="reset" value="{L_RESET}" />
+</fieldset>
+
+</form>
+
+<!-- INCLUDE overall_footer.html -->

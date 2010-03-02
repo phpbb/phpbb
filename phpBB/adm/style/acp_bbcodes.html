@@ -31,6 +31,15 @@
 	</fieldset>
 
 	<fieldset>
+		<legend>{L_BBCODE_HELPLINE}</legend>
+		<p>{L_BBCODE_HELPLINE_EXPLAIN}</p>
+	<dl>
+		<dt><label for="bbcode_helpline">{L_BBCODE_HELPLINE_TEXT}</label></dt>
+		<dd><input type="text" id="bbcode_helpline" name="bbcode_helpline" size="60" maxlength="255" value="{BBCODE_HELPLINE}" /></dd>
+	</dl>
+	</fieldset>
+
+	<fieldset>
 		<legend>{L_SETTINGS}</legend>
 	<dl>
 		<dt><label for="display_on_posting">{L_DISPLAY_ON_POSTING}</label></dt>
@@ -45,7 +54,7 @@
 	
 	<br />
 
-	<table cellspacing="1">
+	<table cellspacing="1" id="down">
 	<thead>
 	<tr>
 		<th colspan="2">{L_TOKENS}</th>
@@ -76,7 +85,7 @@
 
 	<p>{L_ACP_BBCODES_EXPLAIN}</p>
 	
-	<table cellspacing="1">
+	<table cellspacing="1" id="down">
 	<thead>
 	<tr>
 		<th>{L_BBCODE_TAG}</th>

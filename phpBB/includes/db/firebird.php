@@ -22,7 +22,7 @@ if (!defined('SQL_LAYER'))
 {
 
 	define('SQL_LAYER', 'firebird');
-	include($phpbb_root_path . 'includes/db/dbal.' . $phpEx);
+	include_once($phpbb_root_path . 'includes/db/dbal.' . $phpEx);
 
 /**
 * Firebird/Interbase Database Abstraction Layer
@@ -32,6 +32,7 @@ if (!defined('SQL_LAYER'))
 class dbal_firebird extends dbal
 {
 	var $last_query_text = '';
+	var $service_handle = false;
 
 	/**
 	* Connect to server
@@ -45,7 +46,22 @@ class dbal_firebird extends dbal
 
 		$this->db_connect_id = ($this->persistency) ? @ibase_pconnect($this->server . ':' . $this->dbname, $this->user, $sqlpassword, false, false, 3) : @ibase_connect($this->server . ':' . $this->dbname, $this->user, $sqlpassword, false, false, 3);
 
+		$this->service_handle = (function_exists('ibase_service_attach')) ? @ibase_service_attach($this->server, $this->user, $sqlpassword) : false;
+
 		return ($this->db_connect_id) ? $this->db_connect_id : $this->sql_error('');
+	}
+
+	/**
+	* Version information about used database
+	*/
+	function sql_server_info()
+	{
+		if ($this->service_handle !== false && function_exists('ibase_server_info'))
+		{
+			return @ibase_server_info($this->service_handle, IBASE_SVC_SERVER_VERSION);
+		}
+
+		return 'Firebird/Interbase';
 	}
 
 	/**
@@ -74,6 +90,12 @@ class dbal_firebird extends dbal
 
 	/**
 	* Base query method
+	*
+	* @param	string	$query		Contains the SQL query which shall be executed
+	* @param	int		$cache_ttl	Either 0 to avoid caching or the time in seconds which the result shall be kept in cache
+	* @return	mixed				When casted to bool the returned value returns true on success and false on failure
+	*
+	* @access	public
 	*/
 	function sql_query($query = '', $cache_ttl = 0)
 	{
@@ -94,7 +116,14 @@ class dbal_firebird extends dbal
 
 				if (!$this->transaction)
 				{
-					@ibase_commit_ret();
+					if (function_exists('ibase_commit_ret'))
+					{
+						@ibase_commit_ret();
+					}
+					else
+					{
+						@ibase_commit();
+					}
 				}
 
 				if ($cache_ttl && method_exists($cache, 'sql_save'))
@@ -141,6 +170,18 @@ class dbal_firebird extends dbal
 	*/
 	function sql_numrows($query_id = false)
 	{
+		global $cache;
+
+		if (!$query_id)
+		{
+			$query_id = $this->query_result;
+		}
+
+		if (isset($cache->sql_rowset[$query_id]))
+		{
+			return $cache->sql_numrows($query_id);
+		}
+
 		return false;
 	}
 
@@ -199,6 +240,8 @@ class dbal_firebird extends dbal
 	*/
 	function sql_fetchfield($field, $rownum = false, $query_id = false)
 	{
+		global $cache;
+
 		if (!$query_id)
 		{
 			$query_id = $this->query_result;
@@ -209,6 +252,11 @@ class dbal_firebird extends dbal
 			if ($rownum !== false)
 			{
 				$this->sql_rowseek($rownum, $query_id);
+			}
+
+			if (isset($cache->sql_rowset[$query_id]))
+			{
+				return $cache->sql_fetchfield($query_id, $field);
 			}
 
 			$row = $this->sql_fetchrow($query_id);
@@ -224,9 +272,16 @@ class dbal_firebird extends dbal
 	*/
 	function sql_rowseek($rownum, $query_id = false)
 	{
+		global $cache;
+
 		if (!$query_id)
 		{
 			$query_id = $this->query_result;
+		}
+
+		if (isset($cache->sql_rowset[$query_id]))
+		{
+			return $cache->sql_rowseek($query_id, $rownum);
 		}
 
 		// We do not fetch the row for rownum == 0 because then the next resultset would be the second row
@@ -274,9 +329,16 @@ class dbal_firebird extends dbal
 	*/
 	function sql_freeresult($query_id = false)
 	{
+		global $cache;
+
 		if (!$query_id)
 		{
 			$query_id = $this->query_result;
+		}
+
+		if (isset($cache->sql_rowset[$query_id]))
+		{
+			return $cache->sql_freeresult($query_id);
 		}
 
 		if (isset($this->open_queries[(int) $query_id]))
@@ -323,6 +385,11 @@ class dbal_firebird extends dbal
 	*/
 	function _sql_close()
 	{
+		if ($this->service_handle !== false)
+		{
+			@ibase_service_detach($this->service_handle);
+		}
+
 		return @ibase_close($this->db_connect_id);
 	}
 

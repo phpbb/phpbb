@@ -30,12 +30,16 @@ if (empty($lang) || !is_array($lang))
 
 $lang = array_merge($lang, array(
 	'ADMIN_SIG_PREVIEW'		=> 'Signature preview',
-	
+	'AT_LEAST_ONE_FOUNDER'	=> 'You are not able to change this founder to a normal user. There needs to be at least one founder enabled for this board. If you want to change this users founder status promote another user to be a founder first.',
+
 	'BAN_SUCCESSFUL'		=> 'Ban entered successfully',
 
-	'CANNOT_REMOVE_ANONYMOUS'	=> 'You are not able to remove the guest user account.',
-	'CANNOT_REMOVE_YOURSELF'	=> 'You are not allowed to remove your own user account.',
-	'CONFIRM_EMAIL_EXPLAIN'		=> 'You only need to specify this if you are changing the users email address.',
+	'CANNOT_BAN_YOURSELF'			=> 'You are not allowed to ban yourself.',
+	'CANNOT_DEACTIVATE_YOURSELF'	=> 'You are not allowed to deactivate your own account.',
+	'CANNOT_FORCE_REACT_YOURSELF'	=> 'You are not allowed to force reactivation of your own account.',
+	'CANNOT_REMOVE_ANONYMOUS'		=> 'You are not able to remove the guest user account.',
+	'CANNOT_REMOVE_YOURSELF'		=> 'You are not allowed to remove your own user account.',
+	'CONFIRM_EMAIL_EXPLAIN'			=> 'You only need to specify this if you are changing the users email address.',
 	
 	'DELETE_POSTS'			=> 'Delete posts',
 	'DELETE_USER'			=> 'Delete user',

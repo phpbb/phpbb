@@ -16,7 +16,7 @@
 	</tr>
 	<tr>
 		<td class="row1" nowrap="nowrap"><span class="gen">{L_SPLIT_FORUM}</span></td>
-		<td class="row2" colspan="2">{S_FORUM_SELECT}</td>
+		<td class="row2" colspan="2"><select name="to_forum_id">{S_FORUM_SELECT}</select></td>
 	</tr>
 
 	<!-- IF S_SHOW_TOPIC_ICONS -->
@@ -25,7 +25,7 @@
 			<td class="row2" colspan="2">
 				<table width="100%" cellspacing="0" cellpadding="0" border="0">
 				<tr>
-					<td><input type="radio" class="radio" name="icon" value="0"<!-- IF not S_TOPIC_ICON --> checked="checked"<!-- ENDIF --> /><span class="genmed">{L_NONE}</span> <!-- BEGIN topic_icon --><input type="radio" class="radio" name="icon" value="{topic_icon.ICON_ID}"<!-- IF topic_icon.S_CHECKED --> checked="checked"<!-- ENDIF --> /><img src="{topic_icon.ICON_IMG}" width="{topic_icon.ICON_WIDTH}" height="{topic_icon.ICON_HEIGHT}" alt="" title="" hspace="2" vspace="2" /> <!-- END topic_icon --></td>
+					<td><input type="radio" class="radio" name="icon" value="0"<!-- IF not S_TOPIC_ICON --> checked="checked"<!-- ENDIF --> /><span class="genmed">{L_NO_TOPIC_ICON}</span> <!-- BEGIN topic_icon --><input type="radio" class="radio" name="icon" value="{topic_icon.ICON_ID}"<!-- IF topic_icon.S_CHECKED --> checked="checked"<!-- ENDIF --> /><img src="{topic_icon.ICON_IMG}" width="{topic_icon.ICON_WIDTH}" height="{topic_icon.ICON_HEIGHT}" alt="" title="" hspace="2" vspace="2" /> <!-- END topic_icon --></td>
 				</tr>
 				</table>
 			</td>
@@ -58,10 +58,10 @@
 	<td class="row2" colspan="2"><input class="post" type="text" name="posts_per_page" size="6" value="{POSTS_PER_PAGE}"></td>
 </tr>
 <tr>
-	<td class="cat" colspan="3" height="28" align="center"><span class="gensmall">{L_DISPLAY_POSTS}:</span> {S_SELECT_SORT_DAYS}&nbsp;<span class="gensmall">{L_SORT_BY}</span> {S_SELECT_SORT_KEY} {S_SELECT_SORT_DIR}&nbsp;<input class="btnlite" type="submit" name="sort" value="{L_GO}" /></span></td>
+	<td class="cat" colspan="3" align="center"><span class="gensmall">{L_DISPLAY_POSTS}:</span> {S_SELECT_SORT_DAYS}&nbsp;<span class="gensmall">{L_SORT_BY}</span> {S_SELECT_SORT_KEY} {S_SELECT_SORT_DIR}&nbsp;<input class="btnlite" type="submit" name="sort" value="{L_GO}" /></span></td>
 </tr>
 <tr>
-	<th height="28" nowrap="nowrap">{L_AUTHOR}</th>
+	<th nowrap="nowrap">{L_AUTHOR}</th>
 	<th nowrap="nowrap">{L_MESSAGE}</th>
 	<th nowrap="nowrap">{L_SELECT}</th>
 </tr>
@@ -73,7 +73,7 @@
 	<!-- IF postrow.S_ROW_COUNT is even --><tr class="row1"><!-- ELSE --><tr class="row2"><!-- ENDIF -->
 
 		<td align="center"><b class="postauthor">{postrow.POSTER_NAME}</b></td>
-		<td width="100%" height="28">
+		<td width="100%">
 			<table width="100%" cellspacing="0" cellpadding="0" border="0">
 			<tr valign="top">
 				<td class="gensmall" nowrap="nowrap">&nbsp;<b>{L_POST_SUBJECT}:</b>&nbsp;</td>
@@ -89,7 +89,7 @@
 		<td valign="bottom">
 			<table width="100%" cellspacing="0" cellpadding="0" border="0">
 			<tr valign="middle">
-				<td height="28" align="center"><span class="gensmall">[ <a href="{postrow.U_POST_DETAILS}">{L_POST_DETAILS}</a> ]</span></td>
+				<td align="center"><span class="gensmall">[ <a href="{postrow.U_POST_DETAILS}">{L_POST_DETAILS}</a> ]</span></td>
 			</tr>
 			</table>
 		</td>
@@ -120,7 +120,7 @@
 	</tr>
 <!-- END postrow -->
 <tr>
-	<td class="cat" colspan="3" height="28" align="center"><select name="action"><option value="" selected="selected">{L_SELECT_ACTION}</option>
+	<td class="cat" colspan="3" align="center"><select name="action"><option value="" selected="selected">{L_SELECT_ACTION}</option>
 		<!-- IF S_CAN_APPROVE --><option value="approve">{L_APPROVE_POSTS}</option><!-- ENDIF -->
 		<!-- IF S_CAN_LOCK --><option value="lock_post">{L_LOCK_POST_POSTS} [ {L_LOCK_POST_EXPLAIN} ]</option><option value="unlock_post">{L_UNLOCK_POST_POSTS}</option><!-- ENDIF -->
 		<!-- IF S_CAN_DELETE --><option value="delete_post">{L_DELETE_POSTS}</option><!-- ENDIF -->

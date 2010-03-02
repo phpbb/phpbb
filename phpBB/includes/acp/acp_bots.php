@@ -96,7 +96,7 @@ class acp_bots
 					foreach ($_tables as $table)
 					{
 						$sql = "DELETE FROM $table
-							WHERE user_id IN (" . implode(', ', $user_id_ary) . ')';
+							WHERE " . $db->sql_in_set('user_id', $user_id_ary);
 						$db->sql_query($sql);
 					}
 

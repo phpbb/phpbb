@@ -153,11 +153,15 @@
 
 	<a href="{U_BACK}" style="float: right">&laquo; {L_BACK}</a>
 
-	<h1>{L_GROUP_MEMBERS}</h1>
+	<h1>{L_GROUP_MEMBERS} :: {GROUP_NAME}</h1>
 
 	<p>{L_GROUP_MEMBERS_EXPLAIN}</p>
 
 	<form id="list" method="post" action="{U_ACTION}">
+
+	<fieldset class="quick">
+		<a href="{U_DEFAULT_ALL}">&raquo; {L_MAKE_DEFAULT_FOR_ALL}</a>
+	</fieldset>
 
 	<table cellspacing="1">
 	<thead>
@@ -259,6 +263,13 @@
 
 	<p>{L_ACP_GROUPS_MANAGE_EXPLAIN}</p>
 
+	<!-- IF S_ERROR -->
+		<div class="errorbox">
+			<h3>{L_WARNING}</h3>
+			<p>{ERROR_MSG}</p>
+		</div>
+	<!-- ENDIF -->
+
 	<h1>{L_USER_DEF_GROUPS}</h1>
 
 	<p>{L_USER_DEF_GROUPS_EXPLAIN}</p>
@@ -269,9 +280,10 @@
 		<col class="col1" /><col class="col1" /><col class="col2" /><col class="col2" /><col class="col2" />
 	<thead>
 	<tr>
-		<th style="width: 50%">{L_MANAGE}</th>
+		<th style="width: 50%">{L_GROUP}</th>
 		<th>{L_TOTAL_MEMBERS}</th>
-		<th colspan="3">{L_OPTIONS}</th>
+		<th colspan="2">{L_OPTIONS}</th>
+		<th>{L_ACTION}</th>
 	</tr>
 	</thead>
 	<tbody>
@@ -282,9 +294,12 @@
 
 	<fieldset class="quick">
 		<!-- IF S_GROUP_ADD -->
-			{L_CREATE_GROUP}: <input type="text" name="group_name" value="" /> <input class="button2" type="submit" name="add" value="{L_SUBMIT}" />
+			{L_CREATE_GROUP}: <input type="text" name="group_name" value="" /> <input class="button2" type="submit" name="submit" value="{L_SUBMIT}" />
+			<input type="hidden" name="add" value="1" />
 		<!-- ENDIF -->
 	</fieldset>
+
+	</form>
 
 	<h1>{L_SPECIAL_GROUPS}</h1>
 
@@ -294,26 +309,25 @@
 		<col class="col1" /><col class="col1" /><col class="col2" /><col class="col2" /><col class="col2" />
 	<thead>
 	<tr>
-		<th style="width: 50%">{L_MANAGE}</th>
+		<th style="width: 50%">{L_GROUP}</th>
 		<th>{L_TOTAL_MEMBERS}</th>
-		<th colspan="3">{L_OPTIONS}</th>
+		<th colspan="2">{L_OPTIONS}</th>
+		<th>{L_ACTION}</th>
 	</tr>
 	</thead>
 	<tbody>
 		<!-- ELSE -->
 		<tr>
-			<td><a href="{groups.U_LIST}">{groups.GROUP_NAME}</a></td>
+			<td><strong>{groups.GROUP_NAME}</strong></td>
 			<td style="text-align: center;">{groups.TOTAL_MEMBERS}</td>
-			<td style="text-align: center;"><a href="{groups.U_DEFAULT}">{L_GROUP_DEFAULT}</a></td>
-			<td style="text-align: center;"><a href="{groups.U_EDIT}">{L_EDIT}</a></td>
+			<td style="text-align: center;"><a href="{groups.U_EDIT}">{L_SETTINGS}</a></td>
+			<td style="text-align: center;"><a href="{groups.U_LIST}">{L_MEMBERS}</a></td>
 			<td style="text-align: center;"><!-- IF not groups.S_GROUP_SPECIAL and groups.U_DELETE --><a href="{groups.U_DELETE}">{L_DELETE}</a><!-- ELSE -->{L_DELETE}<!-- ENDIF --></td>
 		</tr>
 		<!-- ENDIF -->
 	<!-- END groups -->
 	</tbody>
 	</table>
-
-	</form>
 
 <!-- ENDIF -->
 

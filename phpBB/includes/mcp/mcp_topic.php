@@ -88,11 +88,11 @@ function mcp_topic_view($id, $mode, $action)
 	$result = $db->sql_query_limit($sql, $posts_per_page, $start);
 
 	$rowset = array();
-	$bbcode_bitfield = 0;
+	$bbcode_bitfield = '';
 	while ($row = $db->sql_fetchrow($result))
 	{
 		$rowset[] = $row;
-		$bbcode_bitfield |= $row['bbcode_bitfield'];
+		$bbcode_bitfield = $bbcode_bitfield | base64_decode($row['bbcode_bitfield']);
 	}
 	$db->sql_freeresult($result);
 
@@ -132,7 +132,7 @@ function mcp_topic_view($id, $mode, $action)
 			'POST_ID'		=> $row['post_id'],
 			'RETURN_TOPIC'	=> sprintf($user->lang['RETURN_TOPIC'], '<a href="' . append_sid("{$phpbb_root_path}viewtopic.$phpEx", 't=' . $topic_id) . '">', '</a>'),
 
-			'MINI_POST_IMG'		=> ($row['post_time'] > $user->data['user_lastvisit'] && $user->data['is_registered']) ? $user->img('icon_post_new', $user->lang['NEW_POST']) : $user->img('icon_post', $user->lang['POST']),
+			'MINI_POST_IMG'		=> ($row['post_time'] > $user->data['user_lastvisit'] && $user->data['is_registered']) ? $user->img('icon_post_target_unread', $user->lang['NEW_POST']) : $user->img('icon_post_target', $user->lang['POST']),
 
 			'S_POST_REPORTED'	=> ($row['post_reported']) ? true : false,
 			'S_POST_UNAPPROVED'	=> ($row['post_approved']) ? false : true,
@@ -186,11 +186,11 @@ function mcp_topic_view($id, $mode, $action)
 		'POSTS_PER_PAGE'	=> $posts_per_page,
 		'ACTION'			=> $action,
 
-		'REPORTED_IMG'		=> $user->img('icon_reported', 'POST_REPORTED', false, true),
-		'UNAPPROVED_IMG'	=> $user->img('icon_unapproved', 'POST_UNAPPROVED', false, true),
+		'REPORTED_IMG'		=> $user->img('icon_topic_reported', 'POST_REPORTED', false, true),
+		'UNAPPROVED_IMG'	=> $user->img('icon_topic_unapproved', 'POST_UNAPPROVED', false, true),
 
 		'S_MCP_ACTION'		=> "$url&amp;i=$id&amp;mode=$mode&amp;action=$action&amp;start=$start",
-		'S_FORUM_SELECT'	=> '<select name="to_forum_id">' . (($to_forum_id) ? make_forum_select($to_forum_id) : make_forum_select($topic_info['forum_id'])) . '</select>',
+		'S_FORUM_SELECT'	=> ($to_forum_id) ? make_forum_select($to_forum_id, false, false, true, true, true) : make_forum_select($topic_info['forum_id'], false, false, true, true, true),
 		'S_CAN_SPLIT'		=> ($auth->acl_get('m_split', $topic_info['forum_id'])) ? true : false,
 		'S_CAN_MERGE'		=> ($auth->acl_get('m_merge', $topic_info['forum_id'])) ? true : false,
 		'S_CAN_DELETE'		=> ($auth->acl_get('m_delete', $topic_info['forum_id'])) ? true : false,

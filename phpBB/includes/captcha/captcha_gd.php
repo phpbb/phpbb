@@ -94,10 +94,10 @@ class captcha
 			{
 				if ($map & (1 << $x))
 				{
-					$char = hexdec(substr($seed, ($y * 4) + $x, 1));
+					$char = hexdec(substr($seed, ($y << 2) + $x, 1));
 					if (!($char >> 2))
 					{
-						switch ($char % 4)
+						switch ($char & 3)
 						{
 							case 0:
 								$shape = 'Circle';
@@ -124,21 +124,21 @@ class captcha
 		$cells = array();
 		for ($i = 0; $i < 6; ++$i)
 		{
-			$cells = hexdec(substr($seed, 20 + ($i * 2), 2));
-			$x1 = $cells % 4;
+			$cells = hexdec(substr($seed, 20 + ($i << 1), 2));
+			$x1 = $cells & 3;
 			$cells = $cells >> 2;
-			$y1 = $cells % 4;
+			$y1 = $cells & 3;
 			$cells = $cells >> 2;
-			$x2 = $cells % 4;
+			$x2 = $cells & 3;
 			$cells = $cells >> 2;
-			$y2 = $cells % 4;
+			$y2 = $cells & 3;
 			$x1_real = $x_min + (($x1 + 0.5) * $x_size);
 			$y1_real = $y_min + (($y1 + 0.5) * $y_size);
 			$x2_real = $x_min + (($x2 + 0.5) * $x_size);
 			$y2_real = $y_min + (($y2 + 0.5) * $y_size);
 			if ($thickness > 1)
 			{
-				imagesetthickness($img,$thickness);
+				imagesetthickness($img, $thickness);
 			}
 			imageline($img, $x1_real, $y1_real, $x2_real, $y2_real, $colors[array_rand($colors)]);
 			if ($thickness > 1)
@@ -176,53 +176,77 @@ class captcha
 		// Generate image
 		$img_x = 800;
 		$img_y = 250;
-		$img = imagecreate($img_x, $img_y);
+		$img = imagecreatetruecolor($img_x, $img_y);
 
 		// Generate colors
-		$background = imagecolorallocate($img, mt_rand(155, 255), mt_rand(155, 255), mt_rand(155, 255));
-		imagefill($img, 0, 0, $background);
-
-		$random = array();
-		$fontcolors = array();
-		for ($i = 0; $i < 15; $i++)
-		{
-			$random[$i] = imagecolorallocate($img, mt_rand(0, 255), mt_rand(0, 255), mt_rand(0, 255));
-			$fontcolors[$i] = imagecolorallocate($img, mt_rand(0, 120), mt_rand(0, 120), mt_rand(0, 120));
-		}
+		$c = new color_manager($img, array(
+			'random'			=> true,
+			'min_saturation'	=> 70,
+			'min_value'			=> 65,
+		));
+		
+		$primaries = $c->color_scheme('background', 'tetradic', false);
+		
+		$noise = array_shift($primaries);
+		$noise = $c->mono_range($noise, 'value', 5, false);
+		$primaries = $c->mono_range($primaries, 'value', 5, false);
 
 		// Generate code characters
+		$characters = array();
+		$sizes = array();
+		$bounding_boxes = array();
+		$width_avail = $img_x;
 		$code_num = sizeof($code);
+		$char_class = $this->captcha_char('char_ttf');
+		for ( $i = 0; $i < $code_num; ++$i )
+		{
+			$characters[$i] = new $char_class($code[$i]);
+			list($min, $max) = $characters[$i]->range();
+			$sizes[$i] = mt_rand($min, $max / 2);
+			$box = $characters[$i]->dimensions($sizes[$i]);
+			$width_avail -= ($box[2] - $box[0]);
+			$bounding_boxes[$i] = $box;
+		}
+
+		// Redistribute leftover x-space
+		$offset = array();
+		for ( $i = 0; $i < $code_num; ++$i )
+		{
+			$denom = ($code_num - $i);
+			$denom = max(1.5, $denom);
+			$offset[$i] = mt_rand(0, (1.5 * $width_avail) / $denom);
+			$width_avail -= $offset[$i];
+		}
 
 		// Add some line noise
 		if ($config['policy_shape_noise_line'])
 		{
-			$this->noise_line($img, 0, 0, $img_x, $img_y, $background, $fontcolors, $random);
+			$this->noise_line($img, 0, 0, $img_x, $img_y, $c->r('background'), $primaries, $noise);
 		}
 
 		$real = mt_rand(0, 3);
 		$patterns = array('', '', '', '');
 		for ($i = 32; $i > 0; --$i)
 		{
-			$patterns[$i % 4] .= str_pad(dechex(mt_rand(0, 65535)), 4, '0', STR_PAD_LEFT);
+			$patterns[$i & 3] .= str_pad(dechex(mt_rand(0, 65535)), 4, '0', STR_PAD_LEFT);
 		}
 
-		$char_class = $this->captcha_char('char_ttf');
 
 		for ($i = 0; $i < 4; ++$i)
 		{
-			if ($i)
+			/*if ($i)
 			{
 				$y = 5 + ($i * 60);
 				imageline($img, 550, $y, 650, $y, $fontcolors[0]);
-			}
-			$this->draw_pattern($patterns[$i], $img, 525, 10 + ($i * 60), 575, ($i + 1) * 60, $fontcolors);
+			}*/
+			$this->draw_pattern($patterns[$i], $img, 525, 10 + ($i * 60), 575, ($i + 1) * 60, $primaries);
 			if ($i == $real)
 			{
-				$this->draw_pattern($patterns[$i], $img, 25, 25, 225, 225, $fontcolors, 3);
+				$this->draw_pattern($patterns[$i], $img, 25, 25, 225, 225, $primaries, 3);
 				for ($j = 0; $j < $code_num; ++$j)
 				{
 					$character = new $char_class($code[$j]);
-					$character->drawchar(25, 600 + ($j * 25), 35 + ($i * 60), $img, $background, $fontcolors);
+					$character->drawchar(25, 600 + ($j * 25), 35 + ($i * 60), $img, $c->r('background'), $primaries);
 				}
 			}
 			else
@@ -231,20 +255,29 @@ class captcha
 				for ($j = strlen($word) - 1; $j >= 0; --$j)
 				{
 					$character = new $char_class(substr($word, $j, 1));
-					$character->drawchar(25, 600 + ($j * 25), 35 + ($i * 60), $img, $background, $fontcolors);
+					$character->drawchar(25, 600 + ($j * 25), 35 + ($i * 60), $img, $c->r('background'), $primaries);
 				}
 			}
 		}
-		imagestring($img, 6, 250,  50, $user->lang['CAPTCHA_LINE_1'], $fontcolors[0]);
-		imagestring($img, 6, 250, 100, $user->lang['CAPTCHA_LINE_2'], $fontcolors[0]);
-		imagestring($img, 6, 250, 150, $user->lang['CAPTCHA_LINE_3'], $fontcolors[0]);
-		imagestring($img, 6, 250, 200, $user->lang['CAPTCHA_LINE_4'], $fontcolors[0]);
+
+		$count = sizeof($user->lang['CAPTCHA']['shape']);
+		$line_height = $img_y / ($count + 1);
+		for ($i = 0; $i < $count; ++$i)
+		{
+			$text = $user->lang['CAPTCHA']['shape'][$i];
+			$line_width = strlen($text) * 4.5; //  ( / 2, * 9 )
+			imagestring($img, 6, ($img_x / 2) - $line_width - 1, $line_height * ($i + 1) - 1, $text, $c->r('black'));
+			imagestring($img, 6, ($img_x / 2) - $line_width - 1, $line_height * ($i + 1) + 1, $text, $c->r('black'));
+			imagestring($img, 6, ($img_x / 2) - $line_width + 1, $line_height * ($i + 1) + 1, $text, $c->r('black'));
+			imagestring($img, 6, ($img_x / 2) - $line_width + 1, $line_height * ($i + 1) - 1, $text, $c->r('black'));
+			imagestring($img, 6, ($img_x / 2) - $line_width, $line_height * ($i + 1), $text, $c->r('white'));
+		}
 
 
 		// Add some pixel noise
 		if ($config['policy_shape_noise_pixel'])
 		{
-			$this->noise_pixel($img, 0, 0, $img_x, $img_y, $background, $fontcolors, $random, $config['policy_shape_noise_pixel']);
+			$this->noise_pixel($img, 0, 0, $img_x, $img_y, $c->r('background'), $primaries, $noise, $config['policy_shape_noise_pixel']);
 		}
 
 		// Send image
@@ -262,23 +295,23 @@ class captcha
 		$fonts = captcha_load_ttf_fonts();
 
 		// Generate basic colors
-		$background = imagecolorallocate($img, mt_rand(155, 255), mt_rand(155, 255), mt_rand(155, 255));
-		imagefill($img, 0, 0, $background);
-		$black = imagecolorallocate($img, 0, 0, 0);
-		$random = array();
-		$fontcolors = array();
-		for ($i = 0; $i < 15; ++$i)
-		{
-			$random[$i] = imagecolorallocate($img, mt_rand(120, 255), mt_rand(120, 255), mt_rand(120, 255));
-		}
-		$fontcolors[0] = imagecolorallocate($img, mt_rand(0, 120), mt_rand(0, 120), mt_rand(0, 120));
-
+		$c = new color_manager($img, 'white');
+		$c->allocate_named('primary', array(
+			'random'			=> true,
+			'min_saturation'	=> 50,
+			'min_value'			=> 75,
+		));
+		$bg_colors		= $c->color_scheme('primary', 'triadic', false);
+		$text_colors	= $c->mono_range('primary', 'saturation', 6);
+		$bg_colors		= $c->mono_range($bg_colors, 'saturation', 6);
+		
 		// Specificy image portion dimensions.
 		$count = sizeof($code);
 		$cellsize = $img_x / $count;
 		$y_range = min($cellsize, $img_y);
 		$y_max = $img_y - $y_range;
 		$y_off = array(); // consecutive vertical offset of characters
+		$color = array(); // color of characters
 		$y_off[0] = mt_rand(0, $y_max);
 		for ($i = 1; $i < $count; ++$i)
 		{
@@ -293,108 +326,33 @@ class captcha
 				$y_off[$i] = $y_off[$i - 1] * ((100 + $diff) / 100);
 			}
 		}
+		
+		$range = 0.075;
 
-
-		$range = 0.1;
-
-		$chars = array_merge(range('A', 'Z'), range('0', '9'));
+		$chars = array_merge(range('A', 'Z'), range('1', '9'));
 
 		// draw some characters. if they're within the vector spec of the code character, color them differently
-		for ($i = 0; $i < 5000; ++$i)
+		for ($i = 0; $i < 8000; ++$i)
 		{
 			$degree = mt_rand(-30, 30);
 			$x = mt_rand(0, $img_x - 1);
 			$y = mt_rand(0, $img_y);
-			$c = $chars[array_rand($chars)];
+			$text = $chars[array_rand($chars)];
 			$char = $x / $cellsize;
 			$meta_x = ((($x % $cellsize) / $cellsize) * 1.5) - 0.25;
 			$meta_y = (($img_y - $y) - $y_off[$char]) / $y_range;
 			$font = $fonts[array_rand($fonts)];
+			
+			$distance = vector_distance($map[$code[$char]], $meta_x, $meta_y, $range);
 
-			// distance check
-			$distance = 2;
-			$show = false;
-			foreach ($map[$code[$char]] AS $vector)
-			{
-				switch ($vector[0])
-				{
-					case 'line':
-
-						$c_theta = cos($vector[5]);
-						$s_theta = sin($vector[5]);
-						$bx = $meta_x - $vector[1]; 
-						$by = $meta_y - $vector[2]; 
-						$r = ($by * $c_theta) - ($bx * $s_theta);
-						if ($r < $range && $r > -$range)
-						{
-							if (abs($c_theta) > abs($s_theta))
-							{
-								$s = (($bx + ($s_theta * $r)) / $c_theta);								
-							}
-							else
-							{
-								$s = (($by + ($c_theta * $r)) / $s_theta);
-							}
-							if ($s > -$range)
-							{
-								if ($s < 0)
-								{
-									$distance = min($distance, sqrt(pow($s, 2) + pow($r, 2)));
-								}
-								elseif ($s < $vector[6])
-								{
-									$distance = min($distance, $r);
-								}
-								elseif ($s < $vector[6] + $range)
-								{
-									$distance = min($distance, sqrt(pow($s - $vector[6], 2) + pow($r, 2)));
-								}
-							}
-						}
-
-					break;
-
-					case 'arc':
-
-						$dx = $meta_x - $vector[1];
-						$dy = -($meta_y - $vector[2]); // because our arcs are upside-down
-						if ( abs($dx) > abs($dy) )
-						{
-							$phi = rad2deg(atan(($dy * $vector[3]) / ($dx * $vector[4])));
-							$phi += ($dx < 0) ? 180 : 360;
-							$phi %= 360;
-						}
-						else
-						{
-							$phi = 90 - rad2deg(atan(($dx * $vector[4]) / ($dy * $vector[3])));
-							$phi += ($dy < 0) ? 180 : 360;
-							$phi %= 360;
-						}
-
-						$internal = $vector[6] > $vector[5]; // external wraps over the 360 point
-						$low = $phi >= $vector[5]; // phi is above our low range
-						$high = $phi <= $vector[6]; // phi is below our high range.
-						if ($internal ? ($low && $high) : ($low || $high)) // if it wraps, it can only be one or the other
-						{
-							$radphi = deg2rad($phi);
-							$px = cos($radphi) * 0.5 * $vector[3];
-							$py = sin($radphi) * 0.5 * $vector[4];
-							$distance = min($distance, sqrt(pow($px - $dx, 2) + pow($py - $dy, 2)));
-						}
-
-					break;
-				}
-			}
-
-			if ($distance <= $range)
-			{
-				imagettftext($img, 10, $degree, $x, $y, $black, $font, $c);
-			}
-			else
-			{
-				imagettftext($img, 10, $degree, $x, $y, $random[$char], $font, $c);
-			}
-
+			$switch = !(rand() % 100);
+			
+			imagettftext($img, 10, $degree, $x, $y,
+				(($distance <= $range) xor $switch) ?
+					$c->r_rand($text_colors) :
+					$c->r_rand($bg_colors),
+				$font, $text);
+			
 		}
 
 		// Send image
@@ -406,39 +364,44 @@ class captcha
 		// Generate image
 		$img_x = 800;
 		$img_y = 250;
-		$img = imagecreate($img_x, $img_y);
-		$stencil = imagecreate($img_x, $img_y);
+		$img		= imagecreatetruecolor($img_x, $img_y);
+		$stencil	= imagecreatetruecolor($img_x, $img_y);
 
 		$map = captcha_vectors();
 		$fonts = captcha_load_ttf_fonts();
 
 		// Generate colors
-		$white1 = imagecolorallocate($img, 255, 255, 255);
-		$black2 = imagecolorallocate($stencil, 0, 0, 0);
-		$black1 = imagecolorallocate($img, 0, 0, 0);
-		$white2 = imagecolorallocate($stencil, 255, 255, 255);
-		$channel = mt_rand(0,2);
-		$c1 = (!($channel % 3)) ? 255 : 0;
-		$c2 = (!(($channel + 1) % 3)) ? 255 : 0;
-		$c3 = (!(($channel + 2) % 3)) ? 255 : 0;
-		$primary = imagecolorallocate($img, $c1, $c2, $c3);
-		$second = imagecolorallocate($img, $c2, $c3, $c1);
-		$third = imagecolorallocate($img, $c3, $c1, $c2);
+		$c = new color_manager($img, 'black');
+		$cs = new color_manager($stencil, 'gray');
+		
+		$c->allocate_named('primary', array(
+			'random'			=> true,
+			'min_saturation'	=> 75,
+			'min_value'			=> 80,
+		));
+		
+		$secondary = $c->color_scheme('primary', 'triadic', false);
 
-		imagefill($stencil, 0, 0, $black2);
-		imagefill($img, 0, 0, $white1);
+		//imagefill($stencil, 0, 0, $black2);
+		//imagefill($img, 0, 0, $white1);
 
 		$chars = array_merge(range('A', 'Z'), range('1', '9'));
-
-		for ($i = 0; $i < 1000; ++$i)
+		$step = 20;
+		$density = 4;
+		for ($i = 0; $i < $img_x; $i += $step)
 		{
-			$degree = mt_rand(-30, 30);
-			$x = mt_rand(0, $img_x - 1);
-			$y = mt_rand(0, $img_y);
-			$c = $chars[array_rand($chars)];
-			$font = $fonts[array_rand($fonts)];
-
-			imagettftext($stencil, mt_rand(20, 30), $degree, $x, $y, $white2, $font, $c);
+			for ($j = 0; $j < $img_y; $j += $step)
+			{
+				for ($k = 0; $k < $density; ++$k)
+				{
+					$degree = mt_rand(-30, 30);
+					$x = mt_rand($i, $i + $step);
+					$y = mt_rand($j, $j + $step);
+					$char = $chars[array_rand($chars)];
+					$font = $fonts[array_rand($fonts)];
+					imagettftext($stencil, mt_rand(20, 30), $degree, $x, $y, $cs->r('black'), $font, $char);
+				}
+			}
 		}
 
 		for ($i = 0; $i < 3; ++$i)
@@ -449,27 +412,62 @@ class captcha
 			$x2 = mt_rand(0, $img_x - 1);
 			$y1 = mt_rand(0, $img_y);
 			$y2 = mt_rand(0, $img_y);
-			$c1 = $chars[array_rand($chars)];
-			$c2 = $chars[array_rand($chars)];
+			$char1 = $chars[array_rand($chars)];
+			$char2 = $chars[array_rand($chars)];
 			$font1 = $fonts[array_rand($fonts)];
 			$font2 = $fonts[array_rand($fonts)];
 			
-			imagettftext($img, 150, $degree1, $x1, $y1, $second, $font1, $c1);
-			imagettftext($img, 150, $degree2, $x2, $y2, $third, $font2, $c2);
+			imagettftext($img, mt_rand(75, 100), $degree1, $x1, $y1, $secondary[0], $font1, $char1);
+			imagettftext($img, mt_rand(75, 100), $degree2, $x2, $y2, $secondary[1], $font2, $char2);
 		}
 
-		$text = implode('', $code);
-		$font = $fonts[array_rand($fonts)];
-		imagettftext($img, 150, mt_rand(-5, 5), mt_rand(0, $img_x / 4), mt_rand(150, $img_y), $primary, $font, $text);
+		$characters = array();
+		$sizes = array();
+		$bounding_boxes = array();
+		$width_avail = $img_x;
+		$code_num = sizeof($code);
+		$char_class = $this->captcha_char('char_ttf');
+		for ($i = 0; $i < $code_num; ++$i)
+		{
+			$characters[$i] = new $char_class($code[$i]);
+			$sizes[$i] = mt_rand(75, 100);
+			$box = $characters[$i]->dimensions($sizes[$i]);
+			$width_avail -= ($box[2] - $box[0]);
+			$bounding_boxes[$i] = $box;
+		}
+		
+		//
+		// Redistribute leftover x-space
+		//
+		$offset = array();
+		for ($i = 0; $i < $code_num; ++$i)
+		{
+			$denom = ($code_num - $i);
+			$denom = max(1.5, $denom);
+			$offset[$i] = mt_rand(0, (1.5 * $width_avail) / $denom);
+			$width_avail -= $offset[$i];
+		}
+
+		// Draw the text
+		$xoffset = 0;
+		for ($i = 0; $i < $code_num; ++$i)
+		{
+			$characters[$i] = new $char_class($code[$i]);
+			$dimm = $bounding_boxes[$i];
+			$xoffset += ($offset[$i] - $dimm[0]);
+			$yoffset = mt_rand(-$dimm[1], $img_y - $dimm[3]);
+			$characters[$i]->drawchar($sizes[$i], $xoffset, $yoffset, $img, $c->r('background'), array($c->r('primary')));
+			$xoffset += $dimm[2];
+		}
 
 		for ($i = 0; $i < $img_x; ++$i)
 		{
 			for ($j = 0; $j < $img_y; ++$j)
 			{
-				// if the stencil is black, set the pixel in the image black
-				if (!imagecolorat($stencil, $i, $j))
+				// if the stencil is not black, set the pixel in the image to gray
+				if (imagecolorat($stencil, $i, $j))
 				{
-					imagesetpixel($img, $i, $j, $black1);
+					imagesetpixel($img, $i, $j, $c->r('gray'));
 				}
 			}
 		}
@@ -480,6 +478,7 @@ class captcha
 
 	function policy_cells($code)
 	{
+		global $user;
 		// Generate image
 		$img_x = 800;
 		$img_y = 250;
@@ -492,120 +491,137 @@ class captcha
 		//
 		// Generate colors
 		//
-		$white = imagecolorallocate($img, 255, 255, 255);
-		$black = imagecolorallocate($img, 0, 0, 0);
-		$colors = array(
-			imagecolorallocate($img, 128, 0, 0),
-			imagecolorallocate($img, 0, 128, 0),
-			imagecolorallocate($img, 0, 0, 128),
-			imagecolorallocate($img, 90, 90, 90)
-		);
-						
-		$red = mt_rand(0,3);
-
-		imagefill($img, 10, 10, $white);
-
+		$c = new color_manager($img, 'white');
+		
+		$c->allocate_named('primary', array(
+			'random'			=> true,
+			'min_saturation'	=> 30,
+			'min_value'			=> 65,
+		));
+		$primaries = $c->color_scheme('primary', 'tetradic');
+		$bg_colors = $c->mono_range($primaries, 'value', 4, false);
+		shuffle($primaries);
+		shuffle($bg_colors);
+		
+		// Randomize the characters on the right and the left
+		$left_characters	= array(); 
+		$right_characters	= array();
+		$chars				= array_merge(range('A', 'Z'), range('1', '9'));
+		$chars_size			= sizeof($chars) - 1;
+		$alpha				= range('A', 'Z');
+		$alpha_size			= sizeof($alpha) - 1;
+		for ($i = 0; $i < 25; ++$i)
+		{
+			$left_characters[$i]	= $alpha[mt_rand(0, $alpha_size)];
+			$right_characters[$i]	= $chars[mt_rand(0, $chars_size)];
+		}
+		
+		// Pick locations for our code, shuffle the rest into 3 separate queues
+		$code_count = sizeof($code);
+		$code_order = range(0, 24);
+		shuffle($code_order);
+		$remaining = array_splice($code_order, $code_count);
+		$lineups = array($code_order, array(), array(), array());
+		for ($i = sizeof($remaining) - 1; $i >= 0; --$i)
+		{
+			$lineups[mt_rand(1, 3)][] = $remaining[$i];
+		}
+		
+		// overwrite the randomized left and right values with our code, where applicable
+		for ($i = 0; $i < $code_count; ++$i)
+		{
+			$left_characters[$code_order[$i]]	= $i + 1;
+			$right_characters[$code_order[$i]]	= $code[$i];
+		}
+		
+		
 		$offset1 = 50;
 		$offset2 = 550;
 
-		// draw the cell grid
-		for ($i = 0; $i < 4; ++$i)
+		// Draw the cells and right hand characters
+		$xs = $ys = array();
+		for ($i = 0; $i < 25; ++$i)
 		{
-			imageline($img, $offset1 + 40 + ($i * 40), 25, $offset1 + 40 + ($i * 40), 225, $black);
-			imageline($img, $offset1, 65 + ($i * 40), $offset1 + 200, 65 + ($i * 40), $black);
-			imageline($img, $offset2 + 40 + ($i * 40), 25, $offset2 + 40 + ($i * 40), 225, $black);
-			imageline($img, $offset2, 65 + ($i * 40), $offset2 + 200, 65 + ($i * 40), $black);
-		}
-
-		$code_count = sizeof($code);
-
-		$characters = array();
-		$bitmap = array_fill(0, 25, 0);
-		$cellorder = array();
-		$xs = array();
-		$ys = array();
-
-		$chars = array_merge(range('A', 'Z'), range('1', '9'));
-
-		for ($i = 0, $count = sizeof($chars) - 1; $i < 25; ++$i)
-		{
-			// Put a character in this cell
-			$characters[$i] = $chars[array_rand($chars)];
 			$xs[$i] = $offset1 + 20 + (($i % 5) * 40) + mt_rand(-13, 13);
 			$ys[$i] = 45 + (intval($i / 5) * 40) + mt_rand(-13, 13);
-			
-			// Generate a pastel color
-			$color = array(255, 255, 255);
-			for ($j = 0; $j < 3; ++$j)
-			{
-				$color[array_rand($color)] -= 25;
-			}
-			$bg = imagecolorallocate($img, $color[0], $color[1], $color[2]);
+
+			$bg = $c->r_rand($bg_colors);
 			
 			// fill the cells with the background colors
-			imagefilledrectangle($img, $offset1 + 1 + (($i % 5) * 40), 26 + (intval($i / 5) * 40), $offset1 + 39 + (($i % 5) * 40), 64 + (intval($i / 5) * 40), $bg);
-			imagefilledrectangle($img, $offset2 + 1 + (($i % 5) * 40), 26 + (intval($i / 5) * 40), $offset2 + 39 + (($i % 5) * 40), 64 + (intval($i / 5) * 40), $bg);
-		}
-
-		// assign the code to some cells
-		$cellorder = range(0, 24);
-		shuffle($cellorder);
-		array_splice($cellorder, $code_count);
-		for ($i = 0; $i < $code_count; ++$i)
-		{
-			$bitmap[$cellorder[$i]] = $i + 1;
-			$characters[$cellorder[$i]] = $code[$i];
-		}
-
-		// assign the remaning cells to three separate colors
-		$spares = array(array(), array(), array());
-		for ($i = 0; $i < 25; ++$i)
-		{
-			if (!$bitmap[$i])
-			{
-				$spares[array_rand($spares)][] = $i;
-			}
-		}
-		shuffle($spares[0]);
-		shuffle($spares[1]);
-		shuffle($spares[2]);
-
-		// draw circles and lines for our fake entries
-		for ($k = 0; $k < 3; ++$k )
-		{
-			for ($i = 0, $size = sizeof($spares[$k]); $i < $size; ++$i )
-			{
-				imagefilledellipse($img, $xs[$spares[$k][$i]], $ys[$spares[$k][$i]], 20, 20, $colors[($red + $k + 1) % 4]);
-				if ($i)
-				{
-					imageline($img, $xs[$spares[$k][$i - 1]], $ys[$spares[$k][$i - 1]], $xs[$spares[$k][$i]], $ys[$spares[$k][$i]], $colors[($red + $k + 1) % 4]);
-				}
-			}
-		}
-
-		// draw lines for our real entries
-		for ($i = 1; $i < $code_count; ++$i )
-		{
-			imageline($img, $xs[$cellorder[$i - 1]], $ys[$cellorder[$i - 1]], $xs[$cellorder[$i]], $ys[$cellorder[$i]], $colors[$red]);
-		}
-
-		// write characters into the text cells & put white dots (change this?) on our fake entry circles
-		for ($i = 0; $i < 25; ++$i)
-		{
-			if (!$bitmap[$i])
-			{
-				imagefilledellipse($img, $xs[$i], $ys[$i], 9, 9, $white);
-			}
+			imagefilledrectangle($img,
+				$offset1 + 1 + (($i % 5) * 40),		26 + (intval($i / 5) * 40),
+				$offset1 + 39 + (($i % 5) * 40),	64 + (intval($i / 5) * 40),
+				$bg);
+			imagefilledrectangle($img,
+				$offset2 + 1 + (($i % 5) * 40),		26 + (intval($i / 5) * 40),
+				$offset2 + 39 + (($i % 5) * 40),	64 + (intval($i / 5) * 40),
+				$bg);
+			
 			$level = intval($i / 5);
 			$pos = $i % 5;
-			imagettftext($img, 12, 0, $offset2 + 15 + ($pos * 40), 50 + ($level * 40), $black, $fonts[array_rand($fonts)], $characters[$i]);
+			imagettftext($img, 12, 0,
+				$offset2 + 15 + ($pos * 40),		50 + ($level * 40),
+				$c->is_dark($bg) ? $c->r('white'): $c->r('black'), $fonts['genr102.ttf'], $right_characters[$i]);
 		}
-
-		// draw our real entries in
-		for ($i = 0; $i < $code_count; ++$i )
+		
+		// draw the lines that appear between nodes (visual hint)
+		for ($k = 0; $k < 4; ++$k )
 		{
-			imagefilledellipse($img, $xs[$cellorder[$i]], $ys[$cellorder[$i]], 20, 20, $colors[$red]);
-			imagettftext($img, 12, 0, $xs[$cellorder[$i]] - 5, $ys[$cellorder[$i]] + 5, $white, $fonts[array_rand($fonts)], ($i + 1));
+			$lineup = $lineups[$k];
+			for ($i = 1, $size = sizeof($lineup); $i < $size; ++$i )
+			{
+				imageline($img,
+					$xs[$lineup[$i - 1]],	$ys[$lineup[$i - 1]],
+					$xs[$lineup[$i]],		$ys[$lineup[$i]],
+					$primaries[$k]);
+			}
+		}
+		
+		// draw the actual nodes
+		$textcolor = $c->is_dark($primaries[0]) ? $c->r('white') : $c->r('black');
+		for ($k = 0; $k < 4; ++$k )
+		{
+			for ($j = 0, $size = sizeof($lineups[$k]); $j < $size; ++$j )
+			{
+				$i = $lineups[$k][$j];
+				imagefilledellipse($img,
+					$xs[$i],			$ys[$i],
+					20,					20,
+					$primaries[$k]);
+				imagettftext($img, 12, 0,
+					$xs[$i] - 5,		$ys[$i] + 5,
+					$textcolor, $fonts['genr102.ttf'], $left_characters[$i]);
+			}
+		}
+		
+		// Draw poly behind explain text
+		$points = mt_rand(3, 6);
+		$arc = 360 / $points;
+		$vertices = array();
+		$c_x = $img_x / 2;
+		$c_y = $img_y / 2;
+		$radius = $img_y / 2.5;
+		$start = deg2rad(mt_rand(0, 360));
+		for ($i = 0; $i < $points; ++$i)
+		{
+			$rad = $start + deg2rad(($arc * $i) + mt_rand(-10, 10));
+			$vertices[] = $c_x + (cos($rad) * $radius);
+			$vertices[] = $c_y + (sin($rad) * $radius);
+		}
+		imagefilledpolygon($img, $vertices, $points, $primaries[mt_rand(0,3)]);
+		
+		// draw explain text
+		$count = sizeof($user->lang['CAPTCHA']['cells']);
+		$line_height = $img_y / ($count + 1);
+		for ($i = 0; $i < $count; ++$i)
+		{
+			$text = $user->lang['CAPTCHA']['cells'][$i];
+			$line_width = strlen($text) * 4.5; //  ( / 2, * 9 )
+			imagestring($img, 6, ($img_x / 2) - $line_width - 1, $line_height * ($i + 1) - 1, $text, $c->r('black'));
+			imagestring($img, 6, ($img_x / 2) - $line_width - 1, $line_height * ($i + 1) + 1, $text, $c->r('black'));
+			imagestring($img, 6, ($img_x / 2) - $line_width + 1, $line_height * ($i + 1) + 1, $text, $c->r('black'));
+			imagestring($img, 6, ($img_x / 2) - $line_width + 1, $line_height * ($i + 1) - 1, $text, $c->r('black'));
+			imagestring($img, 6, ($img_x / 2) - $line_width, $line_height * ($i + 1), $text, $c->r('white'));
 		}
 
 		// Send image
@@ -621,19 +637,18 @@ class captcha
 		// Generate image
 		$img_x = 800;
 		$img_y = 250;
-		$img = imagecreate($img_x, $img_y);
+		$img = imagecreatetruecolor($img_x, $img_y);
 
 		// Generate colors
-		$background = imagecolorallocate($img, mt_rand(155, 255), mt_rand(155, 255), mt_rand(155, 255));
-		imagefill($img, 0, 0, $background);
+		$c = new color_manager($img, array(
+			'random'			=> true,
+			'min_value'			=> 60,
+		), 'hsv');
 
-		$random = $fontcolors = array();
-
-		for ($i = 0; $i < 15; $i++)
-		{
-			$random[$i] = imagecolorallocate($img, mt_rand(0, 255), mt_rand(0, 255), mt_rand(0, 255));
-			$fontcolors[$i] = imagecolorallocate($img, mt_rand(0, 120), mt_rand(0, 120), mt_rand(0, 120));
-		}
+		$scheme = $c->color_scheme('background', 'triadic', false);
+		$scheme = $c->mono_range($scheme, 'both', 10, false);
+		shuffle($scheme);
+		$bg_colors = array_splice($scheme, mt_rand(6, 12));
 
 		// Generate code characters
 		$characters = $sizes = $bounding_boxes = array();
@@ -665,7 +680,7 @@ class captcha
 		// Add some line noise
 		if ($config['policy_entropy_noise_line'])
 		{
-			$this->noise_line($img, 0, 0, $img_x, $img_y, $background, $fontcolors, $random);
+			$this->noise_line($img, 0, 0, $img_x, $img_y, $c->r('background'), $scheme, $bg_colors);
 		}
 
 		// Draw the text
@@ -675,14 +690,14 @@ class captcha
 			$dimm = $bounding_boxes[$i];
 			$xoffset += ($offset[$i] - $dimm[0]);
 			$yoffset = mt_rand(-$dimm[1], $img_y - $dimm[3]);
-			$characters[$i]->drawchar($sizes[$i], $xoffset, $yoffset, $img, $background, $fontcolors);
+			$characters[$i]->drawchar($sizes[$i], $xoffset, $yoffset, $img, $c->r('background'), $scheme);
 			$xoffset += $dimm[2];
 		}
 
 		// Add some pixel noise
 		if ($config['policy_entropy_noise_pixel'])
 		{
-			$this->noise_pixel($img, 0, 0, $img_x, $img_y, $background, $fontcolors, $random, $config['policy_entropy_noise_pixel']);
+			$this->noise_pixel($img, 0, 0, $img_x, $img_y, $c->r('background'), $scheme, $bg_colors, $config['policy_entropy_noise_pixel']);
 		}
 
 		// Send image
@@ -697,7 +712,7 @@ class captcha
 		// Generate image
 		$img_x	= 700;
 		$img_y	= 225;
-		$img	= imagecreate($img_x, $img_y);
+		$img	= imagecreatetruecolor($img_x, $img_y);
 		$x_grid = mt_rand(6, 10);
 		$y_grid = mt_rand(6, 10);
 
@@ -738,26 +753,36 @@ class captcha
 		// we'll calculate the 4th point so that it forms a proper trapezoid
 		$box[3][0] = $box[2][0] + $box[0][0] - $box[1][0];
 		$box[3][1] = $box[2][1] + $box[0][1] - $box[1][1];
-
-		// Generate colors (When we get a chance, come up with *better* colors. these ones suck)
-		$background = imagecolorallocate($img, mt_rand(155, 255), mt_rand(155, 255), mt_rand(155, 255));
-		imagefill($img, 0, 0, $background);
-
+		$c = new color_manager($img, array(
+			'random'			=> true,
+			'min_saturation'	=> 50,
+			'min_value'			=> 65,
+		));
+		
+		$r1 = $c->random_color(array(
+			'min_value'		=> 20,
+			'max_value'		=> 50,
+		));
+		$r2 = $c->random_color(array(
+			'min_value'		=> 70,
+			'max_value'		=> 100,
+		));
+		$rdata = mt_rand(0,1) ? array(
+			$c->colors[$r1],
+			$c->colors[$r2],
+		) : array(
+			$c->colors[$r2],
+			$c->colors[$r1],
+		);
+		
 		$colors = array();
-
-		$minr = mt_rand(0, 8);
-		$ming = mt_rand(0, 8);
-		$minb = mt_rand(0, 8);
-
-		$maxr = mt_rand(128, 220);
-		$maxg = mt_rand(128, 220);
-		$maxb = mt_rand(128, 220);
-
-		for ($i = -30; $i <= 30; ++$i)
+		for ($i = 0; $i < 60; ++$i)
 		{
-			$coeff1 = ($i + 30) / 60;
-			$coeff2 = 1 - $coeff1;
-			$colors[$i] = imagecolorallocate($img, ($coeff2 * $maxr) + ($coeff1 * $minr), ($coeff2 * $maxg) + ($coeff1 * $ming), ($coeff2 * $maxb) + ($coeff1 * $minb));
+			$colors[$i - 30] = $c->allocate(array(
+				$rdata[0][0],
+				(($i * $rdata[0][1]) + ((60 - $i) * $rdata[1][1])) / 60,
+				(($i * $rdata[0][2]) + ((60 - $i) * $rdata[1][2])) / 60,
+			));
 		}
 
 		// $img_buffer is the last row of 3-space positions (converted to img-space), cached
@@ -794,7 +819,7 @@ class captcha
 				{
 					if ($map['data'][$letter][$y][$x])
 					{
-						$plane[$y + $plane_offset_y + (($c % 2) ? 1 : -1)][$x + $plane_offset_x] = true;
+						$plane[$y + $plane_offset_y + (($c & 1) ? 1 : -1)][$x + $plane_offset_x] = true;
 					}
 				}
 			}
@@ -817,8 +842,9 @@ class captcha
 		{
 			$cur_height		= $this->wave_height($x, 0, $subdivision_factor);
 			$offset			= $cur_height - $prev_height; 
-			$img_pos_cur	= array($img_pos_prev[0] + $dxx, $img_pos_prev[1] + $dxy + $offset);
-
+			$img_pos_cur	= array($img_pos_prev[0] + $dxx,
+									$img_pos_prev[1] + $dxy + $offset);
+									
 			$img_buffer[0][$x]	= $img_pos_cur;
 			$img_pos_prev		= $img_pos_cur;
 			$prev_height		= $cur_height;
@@ -827,25 +853,27 @@ class captcha
 		for ($y = 1; $y <= $full_y; ++$y)
 		{
 			// swap buffers
-			$buffer_cur		= $y % 2;
+			$buffer_cur		= $y & 1;
 			$buffer_prev	= 1 - $buffer_cur;
-
+			
 			$prev_height	= $this->wave_height(0, $y, $subdivision_factor);
 			$offset			= $prev_height - $this->wave_height(0, $y - 1, $subdivision_factor);
-			$img_pos_cur	= array($img_buffer[$buffer_prev][0][0] + $dyx, $img_buffer[$buffer_prev][0][1] + $dyy + $offset);
+			$img_pos_cur	= array($img_buffer[$buffer_prev][0][0] + $dyx,
+									$img_buffer[$buffer_prev][0][1] + $dyy + $offset);
 			$img_pos_prev	= $img_pos_cur;
 
 			$img_buffer[$buffer_cur][0]	= $img_pos_cur;
-
+			
 			for ($x = 1; $x <= $full_x; ++$x)
 			{
 				$cur_height		= $this->wave_height($x, $y, $subdivision_factor) + $this->grid_height($x, $y, 1, $x_grid, $y_grid);
 
-				// height is a z-factor, not a y-factor
+				//height is a z-factor, not a y-factor
 				$offset			= $cur_height - $prev_height;
-				$img_pos_cur	= array($img_pos_prev[0] + $dxx, $img_pos_prev[1] + $dxy + $offset);
-				
-				// (height is float, index it to an int, get closest color)
+				$img_pos_cur	= array($img_pos_prev[0] + $dxx,
+										$img_pos_prev[1] + $dxy + $offset);
+
+				//(height is float, index it to an int, get closest color)
 				$color			= $colors[intval($cur_height)];
 				$img_pos_prev	= $img_pos_cur;
 				$prev_height	= $cur_height;
@@ -869,7 +897,7 @@ class captcha
 				$diag_up	= (empty($plane[$y_index_old][$x_index_new]) == empty($plane[$y_index_new][$x_index_old]));
 
 				// natural switching
-				$mode = ($x + $y) % 2;
+				$mode = ($x + $y) & 1;
 
 				// override if it requires it
 				if ($diag_down != $diag_up)
@@ -915,20 +943,19 @@ class captcha
 		// Generate image
 		$img_x = 250;
 		$img_y = 120;
-		$img = imagecreate($img_x, $img_y);
+		$img = imagecreatetruecolor($img_x, $img_y);
 
 		// Generate colors
-		$background = imagecolorallocate($img, mt_rand(155, 255), mt_rand(155, 255), mt_rand(155, 255));
-		imagefill($img, 0, 0, $background);
-
-		$random = $fontcolors = array();
-
-		for ($i = 0; $i < 15; $i++)
-		{
-			$random[$i] = imagecolorallocate($img, mt_rand(0, 255), mt_rand(0, 255), mt_rand(0, 255));
-		}
-
-		$fontcolors[0] = imagecolorallocate($img, mt_rand(0, 120), mt_rand(0, 120), mt_rand(0, 120));
+		$c = new color_manager($img, array(
+			'random'			=> true,
+			'min_saturation'	=> 70,
+			'min_value'			=> 65,
+		));
+		
+		$primaries = $c->color_scheme('background', 'triadic', false);
+		$text = mt_rand(0, 1);
+		$c->name_color('text', $primaries[$text]);
+		$noise = $c->mono_range($primaries[1 - $text], 'both', 6, false);
 
 		// Generate code characters
 		$characters = $bounding_boxes = array();
@@ -952,30 +979,44 @@ class captcha
 		// Add some line noise
 		if ($config['policy_overlap_noise_line'])
 		{
-			$this->noise_line($img, 0, 0, $img_x, $img_y, $background, $fontcolors, $random);
+			$this->noise_line($img, 0, 0, $img_x, $img_y, $c->r('background'), array($c->r('text')), $noise);
 		}
 
 		// Draw the text
-		$min = -$bounding_boxes[0][1];
-		$max = $img_y - $bounding_boxes[0][3];
+		$min = 10 - $bounding_boxes[0][1];
+		$max = ($img_y - 10) - $bounding_boxes[0][3];
 		$med = ($max + $min) / 2;
-
+		
 		$yoffset = mt_rand($med, $max);
-
-		for ($i = 0; $i < $code_num; ++$i)
+		$char_num = sizeof($characters);
+		
+		imagesetthickness($img, 3);
+		for ($i = 0; $i < $char_num; ++$i)
 		{
+			if ($i)
+			{
+				imageline($img, $old_x + mt_rand(-3, 3), $old_y - 70 + mt_rand(-3, 3), $offset + mt_rand(-3, 3), $yoffset - 70 + mt_rand(-3, 3), $c->r('text'));
+				imageline($img, $old_x + mt_rand(-3, 3), $old_y + 30 + mt_rand(-3, 3), $offset + mt_rand(-3, 3), $yoffset + 30 + mt_rand(-3, 3), $c->r('text')); 
+			}
+			
 			$dimm = $bounding_boxes[$i];
 			$offset -= $dimm[0];
-			$characters[$i]->drawchar($char_size, $offset, $yoffset, $img, $background, $fontcolors);
+			$characters[$i]->drawchar($char_size, $offset, $yoffset, $img, $c->r('background'), array($c->r('text')));
+			
+			$old_x = $offset;
+			$old_y = $yoffset;
+			
 			$offset += $dimm[2];
 			$offset -= (($dimm[2] - $dimm[0]) * $overlap_factor);
-			$yoffset += ($i % 2) ? ((1 - $overlap_factor) * ($dimm[3] - $dimm[1])) : ((1 - $overlap_factor) * ($dimm[1] - $dimm[3]));
+			$yoffset += ($i & 1) ? ((1 - $overlap_factor) * ($dimm[3] - $dimm[1])) : ((1 - $overlap_factor) * ($dimm[1] - $dimm[3]));
 		}
+		
+		imagesetthickness($img, 1);
 
 		// Add some medium pixel noise
 		if ($config['policy_overlap_noise_pixel'])
 		{
-			$this->noise_pixel($img, 0, 0, $img_x, $img_y, $background, $fontcolors, $random, $config['policy_overlap_noise_pixel']);
+			$this->noise_pixel($img, 0, 0, $img_x, $img_y, $c->r('background'), array($c->r('text')), $noise, $config['policy_overlap_noise_pixel']);
 		}
 
 		// Send image
@@ -1041,15 +1082,15 @@ class captcha
 
 			case 'noise_pixel_heavy':
 
-				for ($x = $min_x; $x < $max_x; $x += mt_rand(9, 18))
+				for ($x = $min_x; $x < $max_x; $x += mt_rand(4, 9))
 				{
-					for ($y = $min_y; $y < $max_y; $y += mt_rand(4, 9))
+					for ($y = $min_y; $y < $max_y; $y++)
 					{
 						imagesetpixel($img, $x, $y, $non_font[array_rand($non_font)]);
 					}
 				}
 
-				for ($y = $min_y; $y < $max_y; $y++)
+				for ($y = $min_y; $y < $max_y; $y+= mt_rand(4, 9))
 				{
 					for ($x = $min_x; $x < $max_x; $x++)
 					{
@@ -1066,6 +1107,7 @@ class captcha
 	*/
 	function noise_line($img, $min_x, $min_y, $max_x, $max_y, $bg, $font, $non_font)
 	{
+		imagesetthickness($img, 2);
 		$x1 = $min_x;
 		$x2 = $max_x;
 		$y1 = $min_y;
@@ -1073,23 +1115,13 @@ class captcha
 
 		do
 		{
-			$line = array();
-
-			for ($j = mt_rand(30, 60); $j > 0; --$j)
-			{
-				$line[] = $non_font[array_rand($non_font)];
-			}
-
-			for ($j = mt_rand(30, 60); $j > 0; --$j)
-			{
-				$line[] = $bg;
-			}
+			$line = array_merge(
+				array_fill(0, mt_rand(30, 60), $non_font[array_rand($non_font)]),
+				array_fill(0, mt_rand(30, 60), $bg)
+			);
 
 			imagesetstyle($img, $line);
-			for ($yp = -1; $yp <= 1; ++$yp)
-			{
-				imageline($img, $x1, $y1 + $yp, $x2, $y2 + $yp, IMG_COLOR_STYLED);
-			}
+			imageline($img, $x1, $y1, $x2, $y2, IMG_COLOR_STYLED);
 
 			$y1 += mt_rand(12, 35);
 			$y2 += mt_rand(12, 35);
@@ -1103,28 +1135,19 @@ class captcha
 
 		do
 		{
-			$line = array();
-
-			for ($j = mt_rand(30, 60); $j > 0; --$j)
-			{
-				$line[] = $non_font[array_rand($non_font)];
-			}
-
-			for ($j = mt_rand(30, 60); $j > 0; --$j)
-			{
-				$line[] = $bg;
-			}
+			$line = array_merge(
+				array_fill(0, mt_rand(30, 60), $non_font[array_rand($non_font)]),
+				array_fill(0, mt_rand(30, 60), $bg)
+			);
 
 			imagesetstyle($img, $line);
-			for ($xp = -1; $xp <= 1; ++$xp)
-			{
-				imageline($img, $x1 + $xp, $y1, $x2 + $xp, $y2, IMG_COLOR_STYLED);
-			}
+			imageline($img, $x1, $y1, $x2, $y2, IMG_COLOR_STYLED);
 
 			$x1 += mt_rand(12, 35);
 			$x2 += mt_rand(12, 35);
 		}
 		while ($x1 < $max_x && $x2 < $max_x);
+		imagesetthickness($img, 1);
 	}
 
 	/**
@@ -1145,7 +1168,7 @@ class captcha
 				$character_classes[] = 'char_ttf';
 			}
 		}
-//$character_classes = array('char_dots');
+
 		// Use the module $override, else a random picked one...
 		$class = ($override !== false && in_array($override, $character_classes)) ? $override : $character_classes[array_rand($character_classes)];
 
@@ -1179,7 +1202,8 @@ class char_dots
 		$this->width_percent = (!empty($width_percent)) ? max(25, min(150, intval($width_percent))) : mt_rand(60, 90);
 
 		$this->space = 10;
-		$this->radius = 1;
+		$this->radius = 3;
+		$this->density = 3;
 		$this->letter = $letter;
 	}
 	
@@ -1211,18 +1235,14 @@ class char_dots
 
 						for ($i = 0; $i < $len; ++$i)
 						{
-							$shift1 = mt_rand(-$this->radius, $this->radius);
-							$shift2 = mt_rand(-$this->radius, $this->radius);
-
-							imagesetpixel($img,
-										$xoff + ($veclist[1] * $width) + (($i * $dx) / $len) + ($inv_dx * $shift1),
-										$yoff + ((1 - $veclist[2]) * $height) + (($i * $dy) / $len) + ($inv_dy * $shift1),
-										$color);
-							
-							imagesetpixel($img,
-										$xoff + ($veclist[1] * $width) + (($i * $dx) / $len) + ($inv_dx * $shift2),
-										$yoff + ((1 - $veclist[2]) * $height) + (($i * $dy) / $len) + ($inv_dy * $shift2),
-										$color);
+							for ($k = 0; $k <= $this->density; ++$k)
+							{
+								$shift = mt_rand(-$this->radius, $this->radius);
+								imagesetpixel($img,
+											$xoff + ($veclist[1] * $width) + (($i * $dx) / $len) + ($inv_dx * $shift),
+											$yoff + ((1 - $veclist[2]) * $height) + (($i * $dy) / $len) + ($inv_dy * $shift),
+											$color);
+							}
 						}
 						
 					break;
@@ -1243,22 +1263,20 @@ class char_dots
 						for ($i = 0; $i < $arclengthdeg; $i += $increment)
 						{
 							$theta = deg2rad(($i + $veclist[5]) % 360);
-							$shift1 = mt_rand(-$this->radius, $this->radius);
-							$shift2 = mt_rand(-$this->radius, $this->radius);
-							$x_o1 = cos($theta) * (($veclist[3] * 0.5 * $width) + $shift1);
-							$y_o1 = sin($theta) * (($veclist[4] * 0.5 * $height) + $shift1);
-							$x_o2 = cos($theta) * (($veclist[3] * 0.5 * $width) + $shift2);
-							$y_o2 = sin($theta) * (($veclist[4] * 0.5 * $height) + $shift2);
-
-							imagesetpixel($img,
-										$xoff + $x_c + $x_o1,
-										$yoff + $y_c + $y_o1,
-										$color);
-
-							imagesetpixel($img,
-										$xoff + $x_c + $x_o2,
-										$yoff + $y_c + $y_o2,
-										$color);
+							$x_o = cos($theta);
+							$y_o = sin($theta);
+							$pre_width = ($veclist[3] * 0.5 * $width);
+							$pre_height = ($veclist[4] * 0.5 * $height);
+							for ($k = 0; $k <= $this->density; ++$k)
+							{
+								$shift = mt_rand(-$this->radius, $this->radius);
+								$x_o1 = $x_o * ($pre_width + $shift);
+								$y_o1 = $y_o * ($pre_height + $shift);
+								imagesetpixel($img,
+											$xoff + $x_c + $x_o1,
+											$yoff + $y_c + $y_o1,
+											$color);
+							}
 						}
 
 					break;
@@ -1499,8 +1517,7 @@ class char_hatches
 
 						for ($p = 0; $p <= $hatches; ++$p)
 						{
-							// toss some crap at the hough transform, if people even get to that stage here
-							if (!mt_rand(0, 9) && ($hatches > 3) && !$p)
+							if (!$p && !mt_rand(0, 9) && ($hatches > 3))
 							{
 								continue;
 							}
@@ -2699,4 +2716,712 @@ function captcha_vectors()
 	);
 }
 
+class color_manager
+{
+	var $img;
+	var $mode;
+	var $colors;
+	var $named_colors;
+	var $named_rgb = array(
+		'red'		=> array(0xff, 0x00, 0x00),
+		'maroon'	=> array(0x80, 0x00, 0x00),
+		'yellow'	=> array(0xff, 0xff, 0x00),
+		'olive'		=> array(0x80, 0x80, 0x00),
+		'lime'		=> array(0x00, 0xff, 0x00),
+		'green'		=> array(0x00, 0x80, 0x00),
+		'aqua'		=> array(0x00, 0xff, 0xff),
+		'teal'		=> array(0x00, 0x80, 0x80),
+		'blue'		=> array(0x00, 0x00, 0xff),
+		'navy'		=> array(0x00, 0x00, 0x80),
+		'fuchsia'	=> array(0xff, 0x00, 0xff),
+		'purple'	=> array(0x80, 0x00, 0x80),
+		'white'		=> array(0xff, 0xff, 0xff),
+		'silver'	=> array(0xc0, 0xc0, 0xc0),
+		'gray'		=> array(0x80, 0x80, 0x80),
+		'black'		=> array(0x00, 0x00, 0x00),
+	);
+	
+	/**
+	* Create the color manager, link it to
+	* the image resource
+	*/
+	function color_manager($img, $background = false, $mode = 'ahsv')
+	{
+		$this->img = $img;
+		$this->mode = $mode;
+		$this->colors = array();
+		$this->named_colors = array();
+		if ($background !== false)
+		{
+			$bg = $this->allocate_named('background', $background);
+			imagefill($this->img, 0, 0, $bg);
+		}
+	}
+	
+	/**
+	* Lookup a named color resource
+	*/
+	function r($named_color)
+	{
+		if (isset($this->named_colors[$named_color]))
+		{
+			return $this->named_colors[$named_color];
+		}
+		if (isset($this->named_rgb[$named_color]))
+		{
+			return $this->allocate_named($named_color, $this->named_rgb[$named_color], 'rgb');
+		}
+		return false;
+	}
+	
+	/**
+	* Assign a name to a color resource
+	*/
+	function name_color($name, $resource)
+	{
+		$this->named_colors[$name] = $resource;
+	}
+	
+	/**
+	* random color resource
+	*/
+	function r_rand($colors)
+	{
+		return $colors[array_rand($colors)];
+	}
+	
+	/**
+	* names and allocates a color resource
+	*/
+	function allocate_named($name, $color, $mode = false)
+	{
+		$resource = $this->allocate($color, $mode);
+		if ($resource !== false)
+		{
+			$this->name_color($name, $resource);
+		}
+		return $resource;
+	}
+	
+	/**
+	* allocates a specified color into the image
+	*/
+	function allocate($color, $mode = false)
+	{
+		if ($mode === false)
+		{
+			$mode = $this->mode;
+		}
+		if (!is_array($color))
+		{
+			if (isset($this->named_rgb[$color]))
+			{
+				return $this->allocate_named($color, $this->named_rgb[$color], 'rgb');
+			}
+			if (!is_int($color))
+			{
+				return false;
+			}
+			$mode = 'rgb';
+			$color = array(
+				255 & ($color >> 16),
+				255 & ($color >>  8),
+				255 & $color,
+			);
+		}
+		
+		if (isset($color['mode']))
+		{
+			$mode = $color['mode'];
+			unset($color['mode']);
+		}
+		if (isset($color['random']))
+		{
+			unset($color['random']);
+			// everything else is params
+			return $this->random_color($color, $mode);
+		}
+		
+		$rgb		= color_manager::model_convert($color, $mode, 'rgb');
+		$store		= ($this->mode == 'rgb') ? $rgb : color_manager::model_convert($color, $mode, $this->mode);
+		$resource	= imagecolorallocate($this->img, $rgb[0], $rgb[1], $rgb[2]);
+		
+		$this->colors[$resource] = $store;
+		
+		return $resource;
+	}
+	
+	/**
+	* randomly generates a color, with optional params
+	*/
+	function random_color($params = array(), $mode = false)
+	{
+		if ($mode === false)
+		{
+			$mode = $this->mode;
+		}
+		switch ($mode)
+		{
+			case 'rgb':
+			
+				// @TODO random rgb generation. do we intend to do this, or is it just too tedious?
+			
+			break;
+			
+			case 'ahsv':
+			case 'hsv':
+			default:
+			
+				$default_params = array(
+					'hue_bias'			=> false,	// degree / 'r'/'g'/'b'/'c'/'m'/'y'   /'o'
+					'hue_range'			=> false,	// if hue bias, then difference range +/- from bias
+					'min_saturation'	=> 30,		// 0 - 100
+					'max_saturation'	=> 100,		// 0 - 100
+					'min_value'			=> 30,		// 0 - 100
+					'max_value'			=> 100,		// 0 - 100
+				);
+				
+				$alt = ($mode == 'ahsv');
+				
+				$params			= array_merge($default_params, $params);
+				
+				$min_hue		= 0;
+				$max_hue		= 359;
+				$min_saturation	= max(0, $params['min_saturation']);
+				$max_saturation	= min(100, $params['max_saturation']);
+				$min_value		= max(0, $params['min_value']);
+				$max_value		= min(100, $params['max_value']);
+				
+				if ($params['hue_bias'] !== false)
+				{
+					if (is_numeric($params['hue_bias']))
+					{
+						$h = intval($params['hue_bias']) % 360;
+					}
+					else
+					{
+						switch ($params['hue_bias'])
+						{
+							case 'o':
+								$h = $alt ?  60 :  30;
+							break;
+
+							case 'y':
+								$h = $alt ? 120 :  60;
+							break;
+
+							case 'g':
+								$h = $alt ? 180 : 120;
+							break;
+
+							case 'c':
+								$h = $alt ? 210 : 180;
+							break;
+
+							case 'b':
+								$h = 240;
+							break;
+
+							case 'm':
+								$h = 300;
+							break;
+
+							case 'r':
+							default:
+								$h = 0;
+							break;
+						}
+					}
+
+					$min_hue = $h + 360;
+					$max_hue = $h + 360;
+
+					if ($params['hue_range'])
+					{
+						$min_hue -= min(180, $params['hue_range']);
+						$max_hue += min(180, $params['hue_range']);
+					}
+				}
+
+				$h = mt_rand($min_hue, $max_hue);
+				$s = mt_rand($min_saturation, $max_saturation);
+				$v = mt_rand($min_value, $max_value);
+
+				return $this->allocate(array($h, $s, $v), $mode);
+
+			break;
+		}
+	}
+	
+	function color_scheme($resource, $scheme, $include_original = true)
+	{
+		$mode = (in_array($this->mode, array('hsv', 'ahsv'), true) ? $this->mode : 'hsv');
+		if (($pre = $this->r($resource)) !== false)
+		{
+			$resource = $pre;
+		}
+		$color = color_manager::model_convert($this->colors[$resource], $this->mode, $mode);
+		$results = $include_original ? array($resource) : array();
+		
+		switch ($scheme)
+		{
+			case 'complement':
+				
+				$color2 = $color;
+				$color2[0] += 180;
+				$results[] = $this->allocate($color2, $mode);
+				
+			break;
+			
+			case 'triadic':
+				
+				$color2 = $color3 = $color;
+				$color2[0] += 120;
+				$color3[0] += 240;
+				$results[] = $this->allocate($color2, $mode);
+				$results[] = $this->allocate($color3, $mode);
+				
+			break;
+			
+			case 'tetradic':
+				
+				$color2 = $color3 = $color4 = $color;
+				$color2[0] += 30;
+				$color3[0] += 180;
+				$color4[0] += 210;
+				$results[] = $this->allocate($color2, $mode);
+				$results[] = $this->allocate($color3, $mode);
+				$results[] = $this->allocate($color4, $mode);
+				
+			break;
+			
+			case 'analogous':
+				
+				$color2 = $color3 = $color;
+				$color2[0] += 30;
+				$color3[0] += 330;
+				$results[] = $this->allocate($color2, $mode);
+				$results[] = $this->allocate($color3, $mode);
+				
+			break;
+		}
+		return $results;
+	}
+	
+	function mono_range($resource, $type = 'both', $count = 5, $include_original = true)
+	{
+		if (is_array($resource))
+		{
+			$results = array();
+			for ($i = 0, $size = sizeof($resource); $i < $size; ++$i)
+			{
+				$results = array_merge($results, $this->mono_range($resource[$i], $type, $count, $include_original));
+			}
+			return $results;
+		}
+		$mode = (in_array($this->mode, array('hsv', 'ahsv'), true) ? $this->mode : 'ahsv');
+		if (($pre = $this->r($resource)) !== false)
+		{
+			$resource = $pre;
+		}
+		$color = color_manager::model_convert($this->colors[$resource], $this->mode, $mode);
+		
+		$results = array();
+		if ($include_original)
+		{
+			$results[] = $resource;
+			$count--;
+		}
+		
+		switch ($type)
+		{
+			case 'saturation':
+				
+				$pivot		= $color[1];
+				$num_below	= intval(($pivot * $count) / 100);
+				$num_above	= $count - $num_below;
+				
+				for ($i = $num_above; $i > 0; --$i)
+				{
+					$color[1] = (($i * 100) + (($num_above - $i) * $pivot)) / $num_above;
+					$results[] = $this->allocate($color, $mode);
+				}
+				
+				++$num_below;
+				
+				for ($i = $num_below - 1; $i > 0; --$i)
+				{
+					$color[1] = ($i * $pivot) / $num_below;;
+					$results[] = $this->allocate($color, $mode);
+				}
+				
+				return $results;
+				
+			break;
+			
+			case 'value':
+				
+				$pivot		= $color[2];
+				$num_below	= intval(($pivot * $count) / 100);
+				$num_above	= $count - $num_below;
+				
+				for ($i = $num_above; $i > 0; --$i)
+				{
+					$color[2] = (($i * 100) + (($num_above - $i) * $pivot)) / $num_above;
+					$results[] = $this->allocate($color, $mode);
+				}
+				
+				++$num_below;
+				
+				for ($i = $num_below - 1; $i > 0; --$i)
+				{
+					$color[2] = ($i * $pivot) / $num_below;;
+					$results[] = $this->allocate($color, $mode);
+				}
+				
+				return $results;
+				
+			break;
+			
+			case 'both':
+				
+				// This is a hard problem. I chicken out and do an even triangle
+				// the problem is that it disregards the original saturation and value,
+				//		and as such a generated result might come arbitrarily close to our original value.
+				$length = ceil(sqrt($count * 2));
+				for ($i = $length; $i > 0; --$i)
+				{
+					for ($j = $i; $j > 0; --$j)
+					{
+						$color[1] = ($i * 100) / $length;
+						$color[2] = ($j * 100) / $i;
+						$results[] = $this->allocate($color, $mode);
+						--$count;
+						if (!$count)
+						{
+							return $results;
+						}
+					}
+				}
+				
+				return $results;
+				
+			break;
+		}
+		
+		return false;
+	}
+	
+	function is_dark($resource)
+	{
+		$color = (($pre = $this->r($resource)) !== false) ? $this->colors[$pre] : $this->colors[$resource];
+		switch($this->mode)
+		{
+			case 'ahsv':
+			case 'hsv':
+				
+				return ($color[2] <= 50);
+				
+			break;
+
+			case 'rgb':
+				
+				return (max($color[0], $color[1], $color[2]) <= 128);
+				
+			break;
+		}
+		return false;
+	}
+	
+	/**
+	* Convert from one color model to another
+	*
+	* note: properly following coding standards here yields unweildly amounts of whitespace, rendering this less than easily readable
+	* 
+	*/
+	function model_convert($color, $from_model, $to_model)
+	{
+		if ($from_model == $to_model)
+		{
+			return $color;
+		}
+		switch ($to_model)
+		{
+			case 'hsv':
+				switch($from_model)
+				{
+					case 'ahsv':
+						return color_manager::ah2h($color);
+					break;
+
+					case 'rgb':
+						return color_manager::rgb2hsv($color);
+					break;
+				}
+			break;
+			
+			case 'ahsv':
+				switch($from_model)
+				{
+					case 'hsv':
+						return color_manager::h2ah($color);
+					break;
+
+					case 'rgb':
+						return color_manager::h2ah(color_manager::rgb2hsv($color));
+					break;
+				}
+			break;
+			
+			case 'rgb':
+				switch($from_model)
+				{
+					case 'hsv':
+						return color_manager::hsv2rgb($color);
+					break;
+
+					case 'ahsv':
+						return color_manager::hsv2rgb(color_manager::ah2h($color));
+					break;
+				}
+			break;
+		}
+		return false;
+	}
+	
+	/**
+	* Slightly altered from wikipedia's algorithm
+	*/
+	function hsv2rgb($hsv)
+	{
+		color_manager::normalize_hue($hsv[0]);
+		$h = $hsv[0];
+		$s = min(1, max(0, $hsv[1] / 100));
+		$v = min(1, max(0, $hsv[2] / 100));
+		
+		$hi = floor($hsv[0] / 60);		// calculate hue sector
+
+		$p = $v * (1 - $s);				// calculate opposite color
+		$f = ($h / 60) - $hi;			// calculate distance between hex vertices
+		if (!($hi & 1))					// coming in or going out?
+		{
+			$f = 1 - $f;
+		}
+		$q = $v * (1 - ($f * $s));		// calculate adjacent color
+		
+		switch ($hi)
+		{
+			case 0:
+				$rgb = array($v, $q, $p);
+			break;
+
+			case 1:
+				$rgb = array($q, $v, $p);
+			break;
+
+			case 2:
+				$rgb = array($p, $v, $q);
+			break;
+
+			case 3:
+				$rgb = array($p, $q, $v);
+			break;
+
+			case 4:
+				$rgb = array($q, $p, $v);
+			break;
+
+			case 5:
+				$rgb = array($v, $p, $q);
+			break;
+
+			default:
+				return array(0, 0, 0);
+			break;
+		}
+		return array(255 * $rgb[0], 255 * $rgb[1], 255 * $rgb[2]);
+	}
+	
+	/**
+	* (more than) Slightly altered from wikipedia's algorithm
+	*/
+	function rgb2hsv($rgb)
+	{
+		$r = min(255, max(0, $rgb[0]));
+		$g = min(255, max(0, $rgb[1]));
+		$b = min(255, max(0, $rgb[2]));
+		$max = max($r, $g, $b);
+		$min = min($r, $g, $b);
+		
+		$v = $max / 255;
+		$s = (!$max) ? 0 : 1 - ($min / $max);
+		$h = $max - $min;	// if max - min is 0, we want hue to be 0 anyway.
+		if ($h)
+		{
+			switch ($max)
+			{
+				case $g:
+					$h = 120 + (60 * ($b - $r) / $h);
+				break;
+
+				case $b:
+					$h = 240 + (60 * ($r - $g) / $h);
+				break;
+
+				case $r:
+					$h = 360 + (60 * ($g - $b) / $h);
+				break;
+			}
+		}
+		color_manager::normalize_hue($h);
+		return array($h, $s * 100, $v * 100);
+	}
+	
+	/**
+	* Bleh
+	*/
+	function normalize_hue(&$hue)
+	{
+		$hue %= 360;
+		if ($hue < 0)
+		{
+			$hue += 360;
+		}
+	}
+	
+	/**
+	* Alternate hue to hue
+	*/
+	function ah2h($ahue)
+	{
+		if (is_array($ahue))
+		{
+			$ahue[0] = color_manager::ah2h($ahue[0]);
+			return $ahue;
+		}
+		color_manager::normalize_hue($ahue);
+		if ($ahue >= 240) // blue through red is already ok
+		{
+			return $ahue;
+		}
+		if ($ahue >= 180) // ahue green is at 180
+		{
+			// return (240 - (2 * (240 - $ahue)));
+			return (2 * $ahue) - 240; // equivalent
+		}
+		if ($ahue >= 120) // ahue yellow is at 120   (RYB rather than RGB)
+		{
+			return $ahue - 60;
+		}
+		return $ahue / 2;
+	}
+
+	/**
+	* hue to Alternate hue
+	*/
+	function h2ah($hue)
+	{
+		if (is_array($hue))
+		{
+			$hue[0] = color_manager::h2ah($hue[0]);
+			return $hue;
+		}
+		color_manager::normalize_hue($hue);
+		if ($hue >= 240) // blue through red is already ok
+		{
+			return $hue;
+		}
+		else if ($hue <= 60)
+		{
+			return $hue * 2;
+		}
+		else if ($hue <= 120)
+		{
+			return $hue + 60;
+		}
+		else
+		{
+			return ($hue + 240) / 2;
+		}
+	}
+}
+
+function vector_distance(&$char, $x, $y, $range = 0.1)
+{
+	$distance = $range + 1;
+	foreach ($char AS $vector)
+	{
+		$d = $range + 1;
+		switch ($vector[0])
+		{
+			case 'arc':
+				
+				$dx = $x - $vector[1];
+				$dy = -($y - $vector[2]);				//because our arcs are upside-down....
+				if (abs($dx) > abs($dy))
+				{
+					$phi = rad2deg(atan(($dy * $vector[3])/($dx * $vector[4])));
+					$phi += ($dx < 0) ? 180 : 360;
+					$phi %= 360;
+				}
+				else
+				{
+					$phi = 90 - rad2deg(atan(($dx * $vector[4])/($dy * $vector[3])));
+					$phi += ($dy < 0) ? 180 : 360;
+					$phi %= 360;
+				}
+								
+				$internal = $vector[6] > $vector[5];	//external wraps over the 360 point
+				$low = $phi >= $vector[5]; 					//phi is above our low range
+				$high = $phi <= $vector[6];					//phi is below our high range.
+				if ($internal ? ($low && $high) : ($low || $high))	//if it wraps, it can only be one or the other
+				{
+					$radphi = deg2rad($phi);						// i'm awesome. or not.
+					$px = cos($radphi) * 0.5 * $vector[3];
+					$py = sin($radphi) * 0.5 * $vector[4];
+					$d = sqrt(pow($px - $dx, 2) + pow($py - $dy, 2));
+				}
+				
+			break;
+							
+			case 'line':
+				
+				$bx = $x - $vector[1];
+				$by = $y - $vector[2];
+				$dx = cos($vector[5]);
+				$dy = sin($vector[5]);
+				$r = ($by * $dx) - ($bx * $dy);
+				if ($r < $range && $r > -$range)
+				{
+					if (abs($dx) > abs($dy))
+					{
+						$s = (($bx + ($dy * $r)) / $dx);								
+					}
+					else
+					{
+						$s = (($by + ($dx * $r)) / $dy);
+					}
+					if ($s > -$range)
+					{
+						if ($s < 0)
+						{
+							$d = sqrt(pow($s, 2) + pow($r, 2));
+						}
+						elseif ($s < $vector[6])
+						{
+							$d = $r;
+						}
+						elseif ($s < $vector[6] + $range)
+						{
+							$d = sqrt(pow($s - $vector[6], 2) + pow($r, 2));
+						}
+					}
+				}
+				
+			break;
+		}
+		$distance = min($distance, abs($d));
+	}
+	return $distance;
+}
 ?>

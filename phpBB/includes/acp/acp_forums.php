@@ -99,10 +99,12 @@ class acp_forums
 						'forum_link_track'		=> request_var('forum_link_track', false),
 						'forum_desc'			=> request_var('forum_desc', '', true),
 						'forum_desc_uid'		=> '',
-						'forum_desc_bitfield'	=> 0,
+						'forum_desc_options'	=> 0,
+						'forum_desc_bitfield'	=> '',
 						'forum_rules'			=> request_var('forum_rules', '', true),
 						'forum_rules_uid'		=> '',
-						'forum_rules_bitfield'	=> 0,
+						'forum_rules_options'	=> 0,
+						'forum_rules_bitfield'	=> '',
 						'forum_rules_link'		=> request_var('forum_rules_link', ''),
 						'forum_image'			=> request_var('forum_image', ''),
 						'forum_style'			=> request_var('forum_style', 0),
@@ -111,6 +113,7 @@ class acp_forums
 						'enable_indexing'		=> request_var('enable_indexing',true), 
 						'enable_icons'			=> request_var('enable_icons', false),
 						'enable_prune'			=> request_var('enable_prune', false),
+						'enable_post_review'	=> request_var('enable_post_review', true),
 						'prune_days'			=> request_var('prune_days', 7),
 						'prune_viewed'			=> request_var('prune_viewed', 7),
 						'prune_freq'			=> request_var('prune_freq', 1),
@@ -126,13 +129,13 @@ class acp_forums
 					// Get data for forum rules if specified...
 					if ($forum_data['forum_rules'])
 					{
-						generate_text_for_storage($forum_data['forum_rules'], $forum_data['forum_rules_uid'], $forum_data['forum_rules_bitfield'], request_var('rules_parse_bbcode', false), request_var('rules_parse_urls', false), request_var('rules_parse_smilies', false));
+						generate_text_for_storage($forum_data['forum_rules'], $forum_data['forum_rules_uid'], $forum_data['forum_rules_bitfield'], $forum_data['forum_rules_options'], request_var('rules_parse_bbcode', false), request_var('rules_parse_urls', false), request_var('rules_parse_smilies', false));
 					}
 
 					// Get data for forum description if specified
 					if ($forum_data['forum_desc'])
 					{
-						generate_text_for_storage($forum_data['forum_desc'], $forum_data['forum_desc_uid'], $forum_data['forum_desc_bitfield'], request_var('desc_parse_bbcode', false), request_var('desc_parse_urls', false), request_var('desc_parse_smilies', false));
+						generate_text_for_storage($forum_data['forum_desc'], $forum_data['forum_desc_uid'], $forum_data['forum_desc_bitfield'], $forum_data['forum_desc_options'], request_var('desc_parse_bbcode', false), request_var('desc_parse_urls', false), request_var('desc_parse_smilies', false));
 					}
 
 					$errors = $this->update_forum_data($forum_data);
@@ -142,8 +145,20 @@ class acp_forums
 						$forum_perm_from = request_var('forum_perm_from', 0);
 
 						// Copy permissions?
-						if ($forum_perm_from && $action == 'add')
+						if ($forum_perm_from)
 						{
+							// if we edit a forum delete current permissions first
+							if ($action == 'edit')
+							{
+								$sql = 'DELETE FROM ' . ACL_USERS_TABLE . '
+									WHERE forum_id = ' . (int) $forum_data['forum_id'];
+								$db->sql_query($sql);
+	
+								$sql = 'DELETE FROM ' . ACL_GROUPS_TABLE . '
+									WHERE forum_id = ' . (int) $forum_data['forum_id'];
+								$db->sql_query($sql);
+							}
+
 							// From the mysql documentation:
 							// Prior to MySQL 4.0.14, the target table of the INSERT statement cannot appear in the FROM clause of the SELECT part of the query. This limitation is lifted in 4.0.14.
 							// Due to this we stay on the safe side if we do the insertion "the manual way"
@@ -281,7 +296,7 @@ class acp_forums
 					trigger_error($user->lang['NO_FORUM'] . adm_back_link($this->u_action . '&amp;parent_id=' . $this->parent_id));
 				}
 
-				$sql = 'SELECT forum_name
+				$sql = 'SELECT forum_name, forum_type
 					FROM ' . FORUMS_TABLE . "
 					WHERE forum_id = $forum_id";
 				$result = $db->sql_query($sql);
@@ -306,12 +321,13 @@ class acp_forums
 
 				if ($update)
 				{
-					$forum_data['forum_flags']	= 0;
-					$forum_data['forum_flags']	+= (request_var('forum_link_track', false)) ? 1 : 0;
-					$forum_data['forum_flags']	+= (request_var('prune_old_polls', false)) ? 2 : 0;
-					$forum_data['forum_flags']	+= (request_var('prune_announce', false)) ? 4 : 0;
-					$forum_data['forum_flags']	+= (request_var('prune_sticky', false)) ? 8 : 0;
-					$forum_data['forum_flags']	+= ($forum_data['show_active']) ? 16 : 0;
+					$forum_data['forum_flags'] = 0;
+					$forum_data['forum_flags'] += (request_var('forum_link_track', false)) ? 1 : 0;
+					$forum_data['forum_flags'] += (request_var('prune_old_polls', false)) ? 2 : 0;
+					$forum_data['forum_flags'] += (request_var('prune_announce', false)) ? 4 : 0;
+					$forum_data['forum_flags'] += (request_var('prune_sticky', false)) ? 8 : 0;
+					$forum_data['forum_flags'] += ($forum_data['show_active']) ? 16 : 0;
+					$forum_data['forum_flags'] += (request_var('enable_post_review', true)) ? 32 : 0;
 				}
 
 				// Show form to create/modify a forum
@@ -326,7 +342,20 @@ class acp_forums
 						$forum_data = $row;
 					}
 
-					$parents_list = make_forum_select($forum_data['parent_id'], $forum_id, false, false, false);
+					// Make sure there is no forum displayed for parents_list having the current forum id as a parent...
+					$sql = 'SELECT forum_id
+						FROM ' . FORUMS_TABLE . '
+						WHERE parent_id = ' . $forum_id;
+					$result = $db->sql_query($sql);
+
+					$exclude_forums = array($forum_id);
+					while ($row = $db->sql_fetchrow($result))
+					{
+						$exclude_forums[] = $row['forum_id'];
+					}
+					$db->sql_freeresult($result);
+
+					$parents_list = make_forum_select($forum_data['parent_id'], $exclude_forums, false, false, false);
 
 					$forum_data['forum_password_confirm'] = $forum_data['forum_password'];
 				}
@@ -390,16 +419,17 @@ class acp_forums
 					{
 						// Before we are able to display the preview and plane text, we need to parse our request_var()'d value...
 						$forum_data['forum_rules_uid'] = '';
-						$forum_data['forum_rules_bitfield'] = 0;
+						$forum_data['forum_rules_bitfield'] = '';
+						$forum_data['forum_rules_options'] = 0;
 
-						generate_text_for_storage($forum_data['forum_rules'], $forum_data['forum_rules_uid'], $forum_data['forum_rules_bitfield'], request_var('rules_allow_bbcode', false), request_var('rules_allow_urls', false), request_var('rules_allow_smiliess', false));
+						generate_text_for_storage($forum_data['forum_rules'], $forum_data['forum_rules_uid'], $forum_data['forum_rules_bitfield'], $forum_data['forum_rules_options'], request_var('rules_allow_bbcode', false), request_var('rules_allow_urls', false), request_var('rules_allow_smiliess', false));
 					}
 
 					// Generate preview content
-					$forum_rules_preview = generate_text_for_display($forum_data['forum_rules'], $forum_data['forum_rules_uid'], $forum_data['forum_rules_bitfield']);
+					$forum_rules_preview = generate_text_for_display($forum_data['forum_rules'], $forum_data['forum_rules_uid'], $forum_data['forum_rules_bitfield'], $forum_data['forum_rules_options']);
 
 					// decode...
-					$forum_rules_data = generate_text_for_edit($forum_data['forum_rules'], $forum_data['forum_rules_uid'], $forum_data['forum_rules_bitfield']);
+					$forum_rules_data = generate_text_for_edit($forum_data['forum_rules'], $forum_data['forum_rules_uid'], $forum_data['forum_rules_options']);
 				}
 
 				// Parse desciption if specified
@@ -409,13 +439,14 @@ class acp_forums
 					{
 						// Before we are able to display the preview and plane text, we need to parse our request_var()'d value...
 						$forum_data['forum_desc_uid'] = '';
-						$forum_data['forum_desc_bitfield'] = 0;
+						$forum_data['forum_desc_bitfield'] = '';
+						$forum_data['forum_desc_options'] = 0;
 
-						generate_text_for_storage($forum_data['forum_desc'], $forum_data['forum_desc_uid'], $forum_data['forum_desc_bitfield'], request_var('desc_allow_bbcode', false), request_var('desc_allow_urls', false), request_var('desc_allow_smiliess', false));
+						generate_text_for_storage($forum_data['forum_desc'], $forum_data['forum_desc_uid'], $forum_data['forum_desc_bitfield'], $forum_data['forum_desc_options'], request_var('desc_allow_bbcode', false), request_var('desc_allow_urls', false), request_var('desc_allow_smiliess', false));
 					}
 
 					// decode...
-					$forum_desc_data = generate_text_for_edit($forum_data['forum_desc'], $forum_data['forum_desc_uid'], $forum_data['forum_desc_bitfield']);
+					$forum_desc_data = generate_text_for_edit($forum_data['forum_desc'], $forum_data['forum_desc_uid'], $forum_data['forum_desc_options']);
 				}
 
 				$forum_type_options = '';
@@ -468,8 +499,9 @@ class acp_forums
 					'U_BACK'		=> $this->u_action . '&amp;parent_id=' . $this->parent_id,
 					'U_EDIT_ACTION'	=> $this->u_action . "&amp;parent_id={$this->parent_id}&amp;action=$action&amp;f=$forum_id",
 
-					'L_TITLE'				=> $user->lang[$this->page_title],
-					'ERROR_MSG'				=> (sizeof($errors)) ? implode('<br />', $errors) : '',
+					'L_COPY_PERMISSIONS_EXPLAIN'	=> $user->lang['COPY_PERMISSIONS_' . strtoupper($action) . '_EXPLAIN'],
+					'L_TITLE'						=> $user->lang[$this->page_title],
+					'ERROR_MSG'						=> (sizeof($errors)) ? implode('<br />', $errors) : '',
 
 					'FORUM_NAME'				=> $forum_data['forum_name'],
 					'FORUM_DATA_LINK'			=> $forum_data['forum_link'],
@@ -501,21 +533,22 @@ class acp_forums
 					'S_STATUS_OPTIONS'			=> $statuslist,
 					'S_PARENT_OPTIONS'			=> $parents_list,
 					'S_STYLES_OPTIONS'			=> $styles_list,
-					'S_FORUM_OPTIONS'			=> make_forum_select(false, false, false),
+					'S_FORUM_OPTIONS'			=> make_forum_select(($action == 'add') ? $forum_data['parent_id'] : false, false, false, false, false),
 					'S_SHOW_DISPLAY_ON_INDEX'	=> $s_show_display_on_index,
 					'S_FORUM_POST'				=> ($forum_data['forum_type'] == FORUM_POST) ? true : false,
 					'S_FORUM_ORIG_POST'			=> (isset($old_forum_type) && $old_forum_type == FORUM_POST) ? true : false,
 					'S_FORUM_LINK'				=> ($forum_data['forum_type'] == FORUM_LINK) ? true : false,
 					'S_FORUM_CAT'				=> ($forum_data['forum_type'] == FORUM_CAT) ? true : false,
-					'S_FORUM_LINK_TRACK'		=> ($forum_data['forum_flags'] & 1) ? true : false,
 					'S_ENABLE_INDEXING'			=> ($forum_data['enable_indexing']) ? true : false,
 					'S_TOPIC_ICONS'				=> ($forum_data['enable_icons']) ? true : false,
 					'S_DISPLAY_ON_INDEX'		=> ($forum_data['display_on_index']) ? true : false,
 					'S_PRUNE_ENABLE'			=> ($forum_data['enable_prune']) ? true : false,
+					'S_FORUM_LINK_TRACK'		=> ($forum_data['forum_flags'] & 1) ? true : false,
 					'S_PRUNE_OLD_POLLS'			=> ($forum_data['forum_flags'] & 2) ? true : false,
 					'S_PRUNE_ANNOUNCE'			=> ($forum_data['forum_flags'] & 4) ? true : false,
 					'S_PRUNE_STICKY'			=> ($forum_data['forum_flags'] & 8) ? true : false,
 					'S_DISPLAY_ACTIVE_TOPICS'	=> ($forum_data['forum_flags'] & 16) ? true : false,
+					'S_ENABLE_POST_REVIEW'		=> ($forum_data['forum_flags'] & 32) ? true : false,
 					)
 				);
 
@@ -645,7 +678,7 @@ class acp_forums
 				$template->assign_block_vars('forums', array(
 					'FOLDER_IMAGE'		=> $folder_image,
 					'FORUM_NAME'		=> $row['forum_name'],
-					'FORUM_DESCRIPTION'	=> generate_text_for_display($row['forum_desc'], $row['forum_desc_uid'], $row['forum_desc_bitfield']),
+					'FORUM_DESCRIPTION'	=> generate_text_for_display($row['forum_desc'], $row['forum_desc_uid'], $row['forum_desc_bitfield'], $row['forum_desc_options']),
 					'FORUM_TOPICS'		=> $row['forum_topics'],
 					'FORUM_POSTS'		=> $row['forum_posts'],
 
@@ -744,12 +777,14 @@ class acp_forums
 		// 4 = prune announcements
 		// 8 = prune stickies
 		// 16 = show active topics
+		// 32 = enable post review
 		$forum_data['forum_flags'] = 0;
 		$forum_data['forum_flags'] += ($forum_data['forum_link_track']) ? 1 : 0;
 		$forum_data['forum_flags'] += ($forum_data['prune_old_polls']) ? 2 : 0;
 		$forum_data['forum_flags'] += ($forum_data['prune_announce']) ? 4 : 0;
 		$forum_data['forum_flags'] += ($forum_data['prune_sticky']) ? 8 : 0;
 		$forum_data['forum_flags'] += ($forum_data['show_active']) ? 16 : 0;
+		$forum_data['forum_flags'] += ($forum_data['enable_post_review']) ? 32 : 0;
 
 		// Unset data that are not database fields
 		$forum_data_sql = $forum_data;
@@ -759,6 +794,7 @@ class acp_forums
 		unset($forum_data_sql['prune_announce']);
 		unset($forum_data_sql['prune_sticky']);
 		unset($forum_data_sql['show_active']);
+		unset($forum_data_sql['enable_post_review']);
 		unset($forum_data_sql['forum_password_confirm']);
 
 		// What are we going to do tonight Brain? The same thing we do everynight,
@@ -935,14 +971,14 @@ class acp_forums
 			$sql = 'UPDATE ' . FORUMS_TABLE . "
 				SET right_id = right_id + $diff, forum_parents = ''
 				WHERE " . $to_data['right_id'] . ' BETWEEN left_id AND right_id
-					AND forum_id NOT IN (' . implode(', ', $moved_ids) . ')';
+					AND ' . $db->sql_in_set('forum_id', $moved_ids, true);
 			$db->sql_query($sql);
 
 			// Resync the righthand side of the tree
 			$sql = 'UPDATE ' . FORUMS_TABLE . "
 				SET left_id = left_id + $diff, right_id = right_id + $diff, forum_parents = ''
 				WHERE left_id > " . $to_data['right_id'] . '
-					AND forum_id NOT IN (' . implode(', ', $moved_ids) . ')';
+					AND ' . $db->sql_in_set('forum_id', $moved_ids, true);
 			$db->sql_query($sql);
 
 			// Resync moved branch
@@ -961,7 +997,7 @@ class acp_forums
 		{
 			$sql = 'SELECT MAX(right_id) AS right_id
 				FROM ' . FORUMS_TABLE . '
-				WHERE forum_id NOT IN (' . implode(', ', $moved_ids) . ')';
+				WHERE ' . $db->sql_in_set('forum_id', $moved_ids, true);
 			$result = $db->sql_query($sql);
 			$row = $db->sql_fetchrow($result);
 			$db->sql_freeresult($result);
@@ -971,7 +1007,7 @@ class acp_forums
 
 		$sql = 'UPDATE ' . FORUMS_TABLE . "
 			SET left_id = left_id $diff, right_id = right_id $diff, forum_parents = ''
-			WHERE forum_id IN (" . implode(', ', $moved_ids) . ')';
+			WHERE " . $db->sql_in_set('forum_id', $moved_ids);
 		$db->sql_query($sql);
 	}
 
@@ -982,7 +1018,7 @@ class acp_forums
 	{
 		global $db;
 
-		$table_ary = array(LOG_TABLE, POSTS_TABLE, TOPICS_TABLE, DRAFTS_TABLE, TOPICS_TRACK_TABLE);
+		$table_ary = array(ACL_GROUPS_TABLE, ACL_USERS_TABLE, LOG_TABLE, POSTS_TABLE, TOPICS_TABLE, DRAFTS_TABLE, TOPICS_TRACK_TABLE);
 
 		foreach ($table_ary as $table)
 		{
@@ -1023,6 +1059,7 @@ class acp_forums
 
 		$errors = array();
 		$log_action_posts = $log_action_forums = $posts_to_name = $subforums_to_name = '';
+		$forum_ids = array($forum_id);
 
 		if ($action_posts == 'delete')
 		{
@@ -1066,8 +1103,6 @@ class acp_forums
 		if ($action_subforums == 'delete')
 		{
 			$log_action_forums = 'FORUMS';
-
-			$forum_ids = array($forum_id);
 			$rows = get_forum_branch($forum_id, 'children', 'descending', false);
 
 			foreach ($rows as $row)
@@ -1084,7 +1119,7 @@ class acp_forums
 			$diff = sizeof($forum_ids) * 2;
 
 			$sql = 'DELETE FROM ' . FORUMS_TABLE . '
-				WHERE forum_id IN (' . implode(', ', $forum_ids) . ')';
+				WHERE ' . $db->sql_in_set('forum_id', $forum_ids);
 			$db->sql_query($sql);
 		}
 		else if ($action_subforums == 'move')
@@ -1158,11 +1193,6 @@ class acp_forums
 			SET left_id = left_id - $diff, right_id = right_id - $diff
 			WHERE left_id > {$forum_data['right_id']}";
 		$db->sql_query($sql);
-
-		if (!isset($forum_ids) || !is_array($forum_ids))
-		{
-			$forum_ids = array($forum_id);
-		}
 
 		// Delete forum ids from extension groups table
 		$sql = 'SELECT group_id, allowed_forums 
@@ -1332,11 +1362,10 @@ class acp_forums
 						if (sizeof($ids))
 						{
 							$start += sizeof($ids);
-							$id_list = implode(', ', $ids);
 
 							foreach ($tables as $table)
 							{
-								$db->sql_query("DELETE FROM $table WHERE $field IN ($id_list)");
+								$db->sql_query("DELETE FROM $table WHERE " . $db->sql_in_set($field, $id_list));
 							}
 						}
 					}
@@ -1363,6 +1392,43 @@ class acp_forums
 		}
 
 		$db->sql_transaction('commit');
+
+		// Make sure the overall post/topic count is correct...
+		$sql = 'SELECT COUNT(post_id) AS stat 
+			FROM ' . POSTS_TABLE . '
+			WHERE post_approved = 1';
+		$result = $db->sql_query($sql);
+		$row = $db->sql_fetchrow($result);
+		$db->sql_freeresult($result);
+
+		set_config('num_posts', (int) $row['stat'], true);
+
+		$sql = 'SELECT COUNT(topic_id) AS stat
+			FROM ' . TOPICS_TABLE . '
+			WHERE topic_approved = 1';
+		$result = $db->sql_query($sql);
+		$row = $db->sql_fetchrow($result);
+		$db->sql_freeresult($result);
+
+		set_config('num_topics', (int) $row['stat'], true);
+
+		$sql = 'SELECT COUNT(attach_id) as stat
+			FROM ' . ATTACHMENTS_TABLE;
+		$result = $db->sql_query($sql);
+		$row = $db->sql_fetchrow($result);
+		$db->sql_freeresult($result);
+
+		set_config('num_files', (int) $row['stat'], true);
+
+		$sql = 'SELECT SUM(filesize) as stat
+			FROM ' . ATTACHMENTS_TABLE;
+		$result = $db->sql_query($sql);
+		$row = $db->sql_fetchrow($result);
+		$db->sql_freeresult($result);
+
+		set_config('upload_dir_size', (int) $row['stat'], true);
+
+		add_log('admin', 'LOG_RESYNC_STATS');
 
 		return array();
 	}

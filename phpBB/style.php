@@ -52,7 +52,7 @@ if ($id && $sid)
 
 	// Include files
 	require($phpbb_root_path . 'includes/acm/acm_' . $acm_type . '.' . $phpEx);
-	require($phpbb_root_path . 'includes/acm/acm_main.' . $phpEx);
+	require($phpbb_root_path . 'includes/cache.' . $phpEx);
 	require($phpbb_root_path . 'includes/db/' . $dbms . '.' . $phpEx);
 
 	$db = new $sql_db();
@@ -74,7 +74,7 @@ if ($id && $sid)
 
 	if ($user)
 	{
-		$sql = "SELECT s.style_id, c.theme_data, c.theme_path, c.theme_name, c.theme_mtime, i.imageset_path, t.template_path
+		$sql = "SELECT s.style_id, c.theme_data, c.theme_path, c.theme_name, c.theme_mtime, i.*, t.template_path
 			FROM {$table_prefix}styles s, {$table_prefix}styles_template t, {$table_prefix}styles_theme c, {$table_prefix}styles_imageset i
 			WHERE s.style_id = $id
 				AND t.template_id = s.template_id
@@ -109,6 +109,66 @@ if ($id && $sid)
 		);
 
 		$theme['theme_data'] = str_replace(array_keys($replace), array_values($replace), $theme['theme_data']);
+
+		$matches = array();
+		preg_match_all('#\{IMG_([A-Za-z0-9_]*?)_(WIDTH|HEIGHT|SRC)\}#', $theme['theme_data'], $matches);
+
+		$imgs = $find = $replace = array();
+		if (isset($matches[0]) && sizeof($matches[0]))
+		{
+			foreach ($matches[1] as $i => $img)
+			{
+				$img = strtolower($img);
+				if (!isset($theme[$img]))
+				{
+					continue;
+				}
+
+				if (!isset($imgs[$img]))
+				{
+					// Do not include dimensions?
+					if (strpos($theme[$img], '*') === false)
+					{
+						$imgsrc = trim($theme[$img]);
+						$width = $height = null;
+					}
+					else
+					{
+						list($imgsrc, $height, $width) = explode('*', $theme[$img]);
+					}
+		
+					$imgs[$img] = array(
+						'src'		=> $phpbb_root_path . 'styles/' . $theme['imageset_path'] . '/imageset/' . str_replace('{LANG}', $user['user_lang'], $imgsrc),
+						'width'		=> $width,
+						'height'	=> $height,
+					);
+				}
+
+				switch ($matches[2][$i])
+				{
+					case 'SRC':
+						$replace = $imgs[$img]['src'];
+					break;
+					
+					case 'WIDTH':
+						$replace = $imgs[$img]['width'];
+					break;
+		
+					case 'HEIGHT':
+						$replace = $imgs[$img]['height'];
+					break;
+
+					default:
+						continue;
+				}
+				$find = $matches[0][$i];
+			}
+
+			if (sizeof($find))
+			{
+				$theme['theme_data'] = str_replace($find, $replace, $theme['theme_data']);
+			}
+		}
 
 		echo $theme['theme_data'];
 	}

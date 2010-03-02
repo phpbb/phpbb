@@ -108,44 +108,41 @@ class acp_icons
 					ORDER BY {$fields}_order " . (($icon_id || $action == 'add') ? 'DESC' : 'ASC');
 				$result = $db->sql_query($sql);
 
-				if ($row = $db->sql_fetchrow($result))
+				while ($row = $db->sql_fetchrow($result))
 				{
-					do
+					if ($action == 'add')
 					{
-						if ($action == 'add')
-						{
-							unset($_images[$row[$fields . '_url']]);
-						}
+						unset($_images[$row[$fields . '_url']]);
+					}
 
-						if ($row[$fields . '_id'] == $icon_id)
+					if ($row[$fields . '_id'] == $icon_id)
+					{
+						$after = true;
+						$data[$row[$fields . '_url']] = $row;
+					}
+					else
+					{
+						if ($action == 'edit' && !$icon_id)
 						{
-							$after = true;
 							$data[$row[$fields . '_url']] = $row;
 						}
-						else
-						{
-							if ($action == 'edit' && !$icon_id)
-							{
-								$data[$row[$fields . '_url']] = $row;
-							}
-							
-							$selected = '';
-							if (!empty($after))
-							{
-								$selected = ' selected="selected"';
-								$after = false;
-							}
 
-							$after_txt = ($mode == 'smilies') ? $row['code'] : $row['icons_url'];
-							$order_list = '<option value="' . ($row[$fields . '_order']) . '"' . $selected . '>' . sprintf($user->lang['AFTER_' . $lang], ' -&gt; ' . htmlspecialchars($after_txt)) . '</option>' . $order_list;
+						$selected = '';
+						if (!empty($after))
+						{
+							$selected = ' selected="selected"';
+							$after = false;
 						}
+
+						$after_txt = ($mode == 'smilies') ? $row['code'] : $row['icons_url'];
+						$order_list = '<option value="' . ($row[$fields . '_order']) . '"' . $selected . '>' . sprintf($user->lang['AFTER_' . $lang], ' -&gt; ' . htmlspecialchars($after_txt)) . '</option>' . $order_list;
 					}
-					while ($row = $db->sql_fetchrow($result));
 				}
 				$db->sql_freeresult($result);
 
 				$order_list = '<option value="1"' . ((!isset($after)) ? ' selected="selected"' : '') . '>' . $user->lang['FIRST'] . '</option>' . $order_list;
 
+				$data = array();
 				if ($action == 'add')
 				{
 					$data = $_images;
@@ -231,20 +228,20 @@ class acp_icons
 						}
 
 						$img_sql = array(
-							$fields . '_url'	=>	$image,
-							$fields . '_width'	=>	$image_width[$image],
-							$fields . '_height'	=>	$image_height[$image],
-							'display_on_posting'=>	(isset($image_display_on_posting[$image])) ? 1 : 0,
+							$fields . '_url'		=> $image,
+							$fields . '_width'		=> $image_width[$image],
+							$fields . '_height'		=> $image_height[$image],
+							'display_on_posting'	=> (isset($image_display_on_posting[$image])) ? 1 : 0,
 						);
 
 						if ($mode == 'smilies')
 						{
 							$img_sql = array_merge($img_sql, array(
-								'emotion'	=>	$image_emotion[$image],
-								'code'		=>	$image_code[$image])
+								'emotion'	=> $image_emotion[$image],
+								'code'		=> $image_code[$image])
 							);
 						}
-						
+
 						if (!empty($image_order[$image]))
 						{
 							$img_sql = array_merge($img_sql, array(
@@ -351,7 +348,10 @@ class acp_icons
 						$cur_img = array();
 
 						$field_sql = ($mode == 'smilies') ? 'code' : 'icons_url';
-						$result = $db->sql_query("SELECT $field_sql FROM $table");
+
+						$sql = "SELECT $field_sql
+							FROM $table";
+						$result = $db->sql_query($sql);
 
 						while ($row = $db->sql_fetchrow($result))
 						{
@@ -371,8 +371,8 @@ class acp_icons
 						$data = array();
 						if (preg_match_all("#'(.*?)', #", $pak_entry, $data))
 						{
-							if ((sizeof($data[1]) != 3 && $mode == 'icons') || 
-								(sizeof($data[1]) != 5 && $mode == 'smilies'))
+							if ((sizeof($data[1]) != 4 && $mode == 'icons') || 
+								(sizeof($data[1]) != 6 && $mode == 'smilies'))
 							{
 								trigger_error($user->lang['WRONG_PAK_TYPE'] . adm_back_link($this->u_action));
 							}
@@ -381,11 +381,12 @@ class acp_icons
 							$img = stripslashes($data[1][0]);
 							$width = stripslashes($data[1][1]);
 							$height = stripslashes($data[1][2]);
+							$display_on_posting = stripslashes($data[1][3]);
 
-							if (isset($data[1][3]) && isset($data[1][4]))
+							if (isset($data[1][4]) && isset($data[1][5]))
 							{
-								$emotion = stripslashes($data[1][3]);
-								$code = stripslashes($data[1][4]);
+								$emotion = stripslashes($data[1][4]);
+								$code = stripslashes($data[1][5]);
 							}
 
 							if ($current == 'replace' && 
@@ -394,15 +395,16 @@ class acp_icons
 							{
 								$replace_sql = ($mode == 'smilies') ? $code : $img;
 								$sql = array(
-									$fields . '_url'	=>	$img,
-									$fields . '_height'	=>	(int) $height,
-									$fields . '_width'	=>	(int) $width,
+									$fields . '_url'		=> $img,
+									$fields . '_height'		=> (int) $height,
+									$fields . '_width'		=> (int) $width,
+									'display_on_posting'	=> (int) $display_on_posting,
 								);
 
 								if ($mode == 'smilies')
 								{
 									$sql = array_merge($sql, array(
-										'emotion'	=>	$emotion
+										'emotion'				=> $emotion,
 									));
 								}
 
@@ -415,17 +417,18 @@ class acp_icons
 								++$order;
 
 								$sql = array(
-									$fields . '_url'	=>	$img,
-									$fields . '_height'	=>	(int) $height,
-									$fields . '_width'	=>	(int) $width,
-									$fields . '_order'	=>	(int) $order,
+									$fields . '_url'	=> $img,
+									$fields . '_height'	=> (int) $height,
+									$fields . '_width'	=> (int) $width,
+									$fields . '_order'	=> (int) $order,
+									'display_on_posting'=> (int) $display_on_posting,
 								);
 
 								if ($mode == 'smilies')
 								{
 									$sql = array_merge($sql, array(
-										'code'		=>	$code,
-										'emotion'	=>	$emotion
+										'code'				=> $code,
+										'emotion'			=> $emotion,
 									));
 								}
 								$db->sql_query("INSERT INTO $table " . $db->sql_build_array('INSERT', $sql));
@@ -435,7 +438,7 @@ class acp_icons
 
 					$cache->destroy('icons');
 					$cache->destroy('sql', $table);
-	
+
 					trigger_error($user->lang[$lang . '_IMPORT_SUCCESS'] . adm_back_link($this->u_action));
 				}
 				else
@@ -476,7 +479,7 @@ class acp_icons
 				);
 
 				return;
-				
+
 			break;
 
 			case 'send':
@@ -492,6 +495,7 @@ class acp_icons
 					$pak .= "'" . addslashes($row[$fields . '_url']) . "', ";
 					$pak .= "'" . addslashes($row[$fields . '_width']) . "', ";
 					$pak .= "'" . addslashes($row[$fields . '_height']) . "', ";
+					$pak .= "'" . addslashes($row['display_on_posting']) . "', ";
 
 					if ($mode == 'smilies')
 					{
@@ -505,7 +509,7 @@ class acp_icons
 
 				if ($pak != '')
 				{
-					$db->sql_close();
+					garbage_collection();
 
 					header('Pragma: public');
 
@@ -519,15 +523,16 @@ class acp_icons
 				}
 				else
 				{
-					trigger_error($user->lang['NO_' . $fields . '_EXPORT'] . adm_back_link($this->u_action));
+					trigger_error($user->lang['NO_' . strtoupper($fields) . '_EXPORT'] . adm_back_link($this->u_action));
 				}
 
 			break;
 
 			case 'delete':
 
-				$db->sql_query("DELETE FROM $table 
-					WHERE {$fields}_id = $icon_id");
+				$sql = "DELETE FROM $table
+					WHERE {$fields}_id = $icon_id";
+				$db->sql_query($sql);
 
 				switch ($mode)
 				{
@@ -548,6 +553,9 @@ class acp_icons
 				}
 
 				$notice = $user->lang[$lang . '_DELETED'];
+
+				$cache->destroy('icons');
+				$cache->destroy('sql', $table);
 
 			break;
 

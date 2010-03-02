@@ -89,14 +89,14 @@ if ($keywords || $author || $author_id || $search_id || $submit)
 	// Which forums should not be searched?
 	$ex_fid_ary = array_unique(array_merge(array_keys($auth->acl_getf('!f_read', true)), array_keys($auth->acl_getf('!f_search', true))));
 
-	$not_in_fid = (sizeof($ex_fid_ary)) ? 'f.forum_id NOT IN (' . implode(', ', $ex_fid_ary) . ') OR ' : '';
+	$not_in_fid = (sizeof($ex_fid_ary)) ? 'WHERE ' . $db->sql_in_set('f.forum_id', $ex_fid_ary, true) . " OR (f.forum_password <> '' AND fa.user_id <> " . (int) $user->data['user_id'] . ')' : "";
 
 	$sql = 'SELECT f.forum_id, f.forum_name, f.parent_id, f.forum_type, f.right_id, f.forum_password, fa.user_id
 		FROM ' . FORUMS_TABLE . ' f
 		LEFT JOIN ' . FORUMS_ACCESS_TABLE . " fa ON  (fa.forum_id = f.forum_id
 			AND fa.session_id = '" . $db->sql_escape($user->session_id) . "')
-		WHERE $not_in_fid(f.forum_password <> '' AND fa.user_id <> " . (int) $user->data['user_id'] . ')
-		ORDER BY f.left_id';
+		$not_in_fid
+		ORDER BY f.left_id";
 	$result = $db->sql_query($sql);
 
 	$right_id = 0;
@@ -141,7 +141,7 @@ if ($keywords || $author || $author_id || $search_id || $submit)
 	else if ($auth->acl_getf_global('m_approve'))
 	{
 		$m_approve_fid_ary = array_diff(array_keys($auth->acl_getf('!m_approve', true)), $ex_fid_ary);
-		$m_approve_fid_sql = ' AND (p.post_approved = 1 OR p.forum_id NOT IN (' . implode(', ', $m_approve_fid_ary) . '))';
+		$m_approve_fid_sql = ' AND (p.post_approved = 1' . ((sizeof($m_approve_fid_ary)) ? ' OR ' . $db->sql_in_set('p.forum_id', $m_approve_fid_ary, true) : '') . ')';
 	}
 	else
 	{
@@ -230,7 +230,7 @@ if ($keywords || $author || $author_id || $search_id || $submit)
 	if ($keywords)
 	{
 		$search->split_keywords($keywords, $search_terms);
-		if (!sizeof($search->split_words) && !sizeof($author_id_ary) && !$search_id)
+		if (empty($search->search_query) && !sizeof($author_id_ary) && !$search_id)
 		{
 			$ignored = (sizeof($search->common_words)) ? sprintf($user->lang['IGNORED_TERMS_EXPLAIN'], htmlspecialchars(implode(' ', $search->common_words))) . '<br />' : '';
 			trigger_error($ignored . sprintf($user->lang['NO_KEYWORDS'], $search->word_length['min'], $search->word_length['max']));
@@ -273,10 +273,10 @@ if ($keywords || $author || $author_id || $search_id || $submit)
 				$sql = 'SELECT DISTINCT t.topic_last_post_time, t.topic_id
 					FROM ' . POSTS_TABLE . ' p, ' . TOPICS_TABLE . " t
 					WHERE p.post_time > $last_post_time
-						AND t.topic_approved = 1
+						AND t.topic_moved_id = 0
 						AND p.topic_id = t.topic_id
 						$m_approve_fid_sql
-						" . ((sizeof($ex_fid_ary)) ? ' AND p.forum_id NOT IN (' . implode(',', $ex_fid_ary) . ')' : '') . '
+						" . ((sizeof($ex_fid_ary)) ? ' AND ' . $db->sql_in_set('p.forum_id', $ex_fid_ary, true) : '') . '
 					ORDER BY t.topic_last_post_time DESC';
 				$field = 'topic_id';
 			break;
@@ -304,7 +304,7 @@ if ($keywords || $author || $author_id || $search_id || $submit)
 						WHERE t.topic_replies = 0
 							AND p.topic_id = t.topic_id
 							$m_approve_fid_sql
-							" . ((sizeof($ex_fid_ary)) ? ' AND p.forum_id NOT IN (' . implode(',', $ex_fid_ary) . ')' : '') . "
+							" . ((sizeof($ex_fid_ary)) ? ' AND ' . $db->sql_in_set('p.forum_id', $ex_fid_ary, true) : '') . "
 							$sql_sort";
 					$field = 'post_id';
 				}
@@ -313,53 +313,48 @@ if ($keywords || $author || $author_id || $search_id || $submit)
 					$sql = 'SELECT DISTINCT ' . $sort_by_sql[$sort_key] . ", p.topic_id
 						FROM $sort_join" . POSTS_TABLE . ' p, ' . TOPICS_TABLE . " t
 						WHERE t.topic_replies = 0
+							AND t.topic_moved_id = 0
 							AND p.topic_id = t.topic_id
 							$m_approve_fid_sql
-							" . ((sizeof($ex_fid_ary)) ? ' AND p.forum_id NOT IN (' . implode(',', $ex_fid_ary) . ')' : '') . "
+							" . ((sizeof($ex_fid_ary)) ? ' AND ' . $db->sql_in_set('p.forum_id', $ex_fid_ary, true) : '') . "
 						$sql_sort";
 					$field = 'topic_id';
 				}
 			break;
 
 			case 'newposts':
-				$show_results = request_var('sr', 'topics');
-				$show_results = ($show_results == 'posts') ? 'posts' : 'topics';
+				// force sorting
+				$show_results = (request_var('sr', 'topics') == 'posts') ? 'posts' : 'topics';
+				$sort_key = 't';
+				$sort_dir = 'd';
 				$sort_by_sql['t'] = ($show_results == 'posts') ? 'p.post_time' : 't.topic_last_post_time';
-				$sort_by_sql['s'] = ($show_results == 'posts') ? 'p.post_subject' : 't.topic_title';
 				$sql_sort = 'ORDER BY ' . $sort_by_sql[$sort_key] . (($sort_dir == 'a') ? ' ASC' : ' DESC');
 
-				$sort_join = ($sort_key == 'f') ? FORUMS_TABLE . ' f, ' : '';
-				$sql_sort = ($sort_key == 'f') ? ' AND f.forum_id = p.forum_id ' . $sql_sort : $sql_sort;
+				if (!$sort_days)
+				{
+					$sort_days = 1;
+				}
+				gen_sort_selects($limit_days, $sort_by_text, $sort_days, $sort_key, $sort_dir, $s_limit_days, $s_sort_key, $s_sort_dir, $u_sort_param);
+				$s_sort_key = $s_sort_dir = $u_sort_param = $s_limit_days = '';
 
 				if ($show_results == 'posts')
 				{
-					if ($sort_key == 'i')
-					{
-						$sort_join = TOPICS_TABLE . ' t, ';
-						$sql_sort = ' AND t.topic_id = p.topic_id ' . $sql_sort;
-					}
-					else if ($sort_key == 'a')
-					{
-						$sort_join = USERS_TABLE . ' u, ';
-						$sql_sort = ' AND u.user_id = p.poster_id ' . $sql_sort;
-					}
-
-					$sql = "SELECT p.post_id
-						FROM $sort_join" . POSTS_TABLE . ' p
+					$sql = 'SELECT p.post_id
+						FROM ' . POSTS_TABLE . ' p
 						WHERE p.post_time > ' . $user->data['user_lastvisit'] . "
 							$m_approve_fid_sql
-							" . ((sizeof($ex_fid_ary)) ? ' AND p.forum_id NOT IN (' . implode(',', $ex_fid_ary) . ')' : '') . "
+							" . ((sizeof($ex_fid_ary)) ? ' AND ' . $db->sql_in_set('p.forum_id', $ex_fid_ary, true) : '') . "
 						$sql_sort";
 					$field = 'post_id';
 				}
 				else
 				{
-					$sql = 'SELECT DISTINCT ' . $sort_by_sql[$sort_key] . ", p.topic_id
-						FROM $sort_join" . TOPICS_TABLE . ' t, ' . POSTS_TABLE . ' p
-						WHERE p.post_time > ' . $user->data['user_lastvisit'] . "
-							AND t.topic_id = p.topic_id
-							$m_approve_fid_sql
-							" . ((sizeof($ex_fid_ary)) ? ' AND p.forum_id NOT IN (' . implode(',', $ex_fid_ary) . ')' : '') . "
+					$sql = 'SELECT t.topic_id
+						FROM ' . TOPICS_TABLE . ' t
+						WHERE t.topic_last_post_time > ' . $user->data['user_lastvisit'] . '
+							AND t.topic_moved_id = 0
+							' . str_replace(array('p.', 'post_'), array('t.', 'topic_'), $m_approve_fid_sql) . '
+							' . ((sizeof($ex_fid_ary)) ? 'AND ' . $db->sql_in_set('t.forum_id', $ex_fid_ary, true) : '') . "
 						$sql_sort";
 					$field = 'topic_id';
 				}
@@ -397,7 +392,7 @@ if ($keywords || $author || $author_id || $search_id || $submit)
 	sort($m_approve_fid_ary);
 	sort($author_id_ary);
 
-	if (sizeof($search->split_words))
+	if (!empty($search->search_query))
 	{
 		$total_match_count = $search->keyword_search($show_results, $search_fields, $search_terms, $sort_by_sql, $sort_key, $sort_dir, $sort_days, $ex_fid_ary, $m_approve_fid_ary, $topic_id, $author_id_ary, $id_ary, $start, $per_page);
 	}
@@ -411,8 +406,8 @@ if ($keywords || $author || $author_id || $search_id || $submit)
 		trigger_error($user->lang['NO_SEARCH_RESULTS']);
 	}
 
-	$sql_where = (($show_results == 'posts') ? 'p.post_id' : 't.topic_id') . ' IN (' . implode(', ', $id_ary) . ')';
-	$sql_where .= (sizeof($ex_fid_ary)) ? ' AND (f.forum_id NOT IN (' . implode(',', $ex_fid_ary) . ') OR f.forum_id IS NULL)' : '';
+	$sql_where = $db->sql_in_set(($show_results == 'posts') ? 'p.post_id' : 't.topic_id', $id_ary);
+	$sql_where .= (sizeof($ex_fid_ary)) ? ' AND (' . $db->sql_in_set('f.forum_id', $ex_fid_ary, true) . ' OR f.forum_id IS NULL)' : '';
 	$sql_where .= ($show_results == 'posts') ? $m_approve_fid_sql : str_replace(array('p.post_approved', 'p.forum_id'), array('t.topic_approved', 't.forum_id'), $m_approve_fid_sql);
 
 	if ($show_results == 'posts')
@@ -441,9 +436,8 @@ if ($keywords || $author || $author_id || $search_id || $submit)
 	}
 
 	// define some vars for urls
-	$hilit = htmlspecialchars(implode('|', str_replace(array('+', '-', '|'), '', $search->split_words)));
-	$split_words = (sizeof($search->split_words)) ? htmlspecialchars(implode(' ', $search->split_words)) : '';
-	$u_hilit = urlencode($split_words);
+	$hilit = preg_replace('#&amp;(\#[0-9]+;)#', '&$1', htmlspecialchars(implode('|', explode(' ', preg_replace('#\s+#', ' ', str_replace(array('+', '-', '|', '(', ')'), ' ', $keywords))))));
+	$u_hilit = urlencode($keywords);
 	$u_show_results = ($show_results != 'posts') ? '&amp;sr=' . $show_results : '';
 	$u_search_forum = implode('&amp;fid%5B%5D=', $search_forum);
 
@@ -460,7 +454,7 @@ if ($keywords || $author || $author_id || $search_id || $submit)
 
 	$template->assign_vars(array(
 		'SEARCH_MATCHES'	=> $l_search_matches,
-		'SEARCH_WORDS'		=> $split_words,
+		'SEARCH_WORDS'		=> preg_replace('#&amp;(\#[0-9]+;)#', '&$1', htmlspecialchars($search->search_query)),
 		'IGNORED_WORDS'		=> (sizeof($search->common_words)) ? htmlspecialchars(implode(' ', $search->common_words)) : '',
 		'PAGINATION'		=> generate_pagination($u_search, $total_match_count, $per_page, $start),
 		'PAGE_NUMBER'		=> on_page($total_match_count, $per_page, $start),
@@ -473,12 +467,12 @@ if ($keywords || $author || $author_id || $search_id || $submit)
 		'S_SEARCH_ACTION'		=> $u_search,
 		'S_SHOW_TOPICS'			=> ($show_results == 'posts') ? false : true,
 
-		'GOTO_PAGE_IMG'			=> $user->img('icon_post', 'GOTO_PAGE'),
-		'NEWEST_POST_IMG'		=> $user->img('icon_post_newest', 'VIEW_NEWEST_POST'),
-		'REPORTED_IMG'			=> $user->img('icon_reported', 'TOPIC_REPORTED'),
-		'UNAPPROVED_IMG'		=> $user->img('icon_unapproved', 'TOPIC_UNAPPROVED'),
+		'GOTO_PAGE_IMG'		=> $user->img('icon_post_target', 'GOTO_PAGE'),
+		'NEWEST_POST_IMG'	=> $user->img('icon_topic_newest', 'VIEW_NEWEST_POST'),
+		'REPORTED_IMG'		=> $user->img('icon_topic_reported', 'TOPIC_REPORTED'),
+		'UNAPPROVED_IMG'	=> $user->img('icon_topic_unapproved', 'TOPIC_UNAPPROVED'),
 
-		'U_SEARCH_WORDS'	=> append_sid("{$phpbb_root_path}search.$phpEx", "keywords=$u_hilit" . (($author) ? '&amp;author=' . urlencode($author) : '') . (($author_id) ? '&amp;author_id=' . $author_id : '') . $u_show_results))
+		'U_SEARCH_WORDS'	=> $u_search)
 	);
 
 	if ($sql_where)
@@ -533,7 +527,7 @@ if ($keywords || $author || $author_id || $search_id || $submit)
 				}
 			}
 
-			if (!$user->data['is_registered'] || !$config['load_db_lastread'])
+			if ($config['load_anon_lastread'] || ($user->data['is_registered'] && !$config['load_db_lastread']))
 			{
 				$tracking_topics = (isset($_COOKIE[$config['cookie_name'] . '_track'])) ? ((STRIP) ? stripslashes($_COOKIE[$config['cookie_name'] . '_track']) : $_COOKIE[$config['cookie_name'] . '_track']) : '';
 				$tracking_topics = ($tracking_topics) ? unserialize($tracking_topics) : array();
@@ -547,11 +541,18 @@ if ($keywords || $author || $author_id || $search_id || $submit)
 		$result = $db->sql_query($sql);
 		$result_topic_id = 0;
 
+		$rowset = array();
+
 		if ($show_results == 'topics')
 		{
-			$forums = $rowset = array();
+			$forums = $rowset = $shadow_topic_list = array();
 			while ($row = $db->sql_fetchrow($result))
 			{
+				if ($row['topic_status'] == ITEM_MOVED)
+				{
+					$shadow_topic_list[$row['topic_moved_id']] = $row['topic_id'];
+				}
+
 				$rowset[$row['topic_id']] = $row;
 
 				if (!isset($forums[$row['forum_id']]) && $user->data['is_registered'] && $config['load_db_lastread'])
@@ -562,6 +563,31 @@ if ($keywords || $author || $author_id || $search_id || $submit)
 				$forums[$row['forum_id']]['rowset'][$row['topic_id']] = &$rowset[$row['topic_id']];
 			}
 			$db->sql_freeresult($result);
+ 
+			// If we have some shadow topics, update the rowset to reflect their topic informations
+			if (sizeof($shadow_topic_list))
+			{
+				$sql = 'SELECT *
+					FROM ' . TOPICS_TABLE . '
+					WHERE ' . $db->sql_in_set('topic_id', array_keys($shadow_topic_list));
+				$result = $db->sql_query($sql);
+			
+				while ($row = $db->sql_fetchrow($result))
+				{
+					$orig_topic_id = $shadow_topic_list[$row['topic_id']];
+			
+					// We want to retain some values
+					$row = array_merge($row, array(
+						'topic_moved_id'	=> $rowset[$orig_topic_id]['topic_moved_id'],
+						'topic_status'		=> $rowset[$orig_topic_id]['topic_status'],
+						'forum_name'		=> $rowset[$orig_topic_id]['forum_name'])
+					);
+			
+					$rowset[$orig_topic_id] = $row;
+				}
+				$db->sql_freeresult($result);
+			}
+			unset($shadow_topic_list);
 
 			foreach ($forums as $forum_id => $forum)
 			{
@@ -569,7 +595,7 @@ if ($keywords || $author || $author_id || $search_id || $submit)
 				{
 					$topic_tracking_info[$forum_id] = get_topic_tracking($forum_id, $forum['topic_list'], $forum['rowset'], array($forum_id => $forum['mark_time']), ($forum_id) ? false : $forum['topic_list']);
 				}
-				else
+				else if ($config['load_anon_lastread'] || $user->data['is_registered'])
 				{
 					$topic_tracking_info[$forum_id] = get_complete_topic_tracking($forum_id, $forum['topic_list'], ($forum_id) ? false : $forum['topic_list']);
 		
@@ -590,18 +616,43 @@ if ($keywords || $author || $author_id || $search_id || $submit)
 			$db->sql_freeresult($result);
 		}
 
+		if ($hilit)
+		{
+			// Remove bad highlights
+			$hilit_array = array_filter(explode('|', $hilit), 'strlen');
+			foreach ($hilit_array as $key => $value)
+			{
+				$hilit_array[$key] = str_replace('\*', '\w*?', preg_quote($value, '#'));
+			}
+			$hilit = implode('|', $hilit_array);
+		}
+
 		foreach ($rowset as $row)
 		{
 			$forum_id = $row['forum_id'];
 			$result_topic_id = $row['topic_id'];
 			$topic_title = censor_text($row['topic_title']);
 
+			// we need to select a forum id for this global topic
 			if (!$forum_id)
 			{
 				if (!isset($g_forum_id))
 				{
-					$availible_forums = array_values(array_diff(array_keys($auth->acl_getf('f_read', true)), $ex_fid_ary));
-					$g_forum_id = $availible_forums[0];
+					// Get a list of forums the user cannot read
+					$forum_ary = array_unique(array_keys($auth->acl_getf('!f_read', true)));
+	
+					// Determine first forum the user is able to read (must not be a category)
+					$sql = 'SELECT forum_id 
+						FROM ' . FORUMS_TABLE . '
+						WHERE forum_type = ' . FORUM_POST;
+		
+					if (sizeof($forum_ary))
+					{
+						$sql .= ' AND ' . $db->sql_in_set('forum_id', $forum_ary, true);
+					}
+
+					$result = $db->sql_query_limit($sql, 1);
+					$g_forum_id = (int) $db->sql_fetchfield('forum_id');
 				}
 				$u_forum_id = $g_forum_id;
 			}
@@ -634,14 +685,14 @@ if ($keywords || $author || $author_id || $search_id || $submit)
 					'PAGINATION'		=> topic_generate_pagination($replies, $view_topic_url),
 					'TOPIC_TYPE'		=> $topic_type,
 
-					'LAST_POST_IMG'			=> $user->img('icon_post_latest', 'VIEW_LATEST_POST'),
+					'LAST_POST_IMG'			=> $user->img('icon_topic_latest', 'VIEW_LATEST_POST'),
 					'TOPIC_FOLDER_IMG'		=> $user->img($folder_img, $folder_alt),
 					'TOPIC_FOLDER_IMG_SRC'	=> $user->img($folder_img, $folder_alt, false, '', 'src'),
 					'TOPIC_ICON_IMG'		=> (!empty($icons[$row['icon_id']])) ? $icons[$row['icon_id']]['img'] : '',
 					'TOPIC_ICON_IMG_WIDTH'	=> (!empty($icons[$row['icon_id']])) ? $icons[$row['icon_id']]['width'] : '',
 					'TOPIC_ICON_IMG_HEIGHT'	=> (!empty($icons[$row['icon_id']])) ? $icons[$row['icon_id']]['height'] : '',
-					'ATTACH_ICON_IMG'		=> ($auth->acl_gets('f_download', 'u_download', $forum_id) && $row['topic_attachment']) ? $user->img('icon_attach', $user->lang['TOTAL_ATTACHMENTS']) : '',
-					'UNAPPROVED_IMG'		=> ($topic_unapproved || $posts_unapproved) ? $user->img('icon_unapproved', ($topic_unapproved) ? 'TOPIC_UNAPPROVED' : 'POSTS_UNAPPROVED') : '',
+					'ATTACH_ICON_IMG'		=> ($auth->acl_gets('f_download', 'u_download', $forum_id) && $row['topic_attachment']) ? $user->img('icon_topic_attach', $user->lang['TOTAL_ATTACHMENTS']) : '',
+					'UNAPPROVED_IMG'		=> ($topic_unapproved || $posts_unapproved) ? $user->img('icon_topic_unapproved', ($topic_unapproved) ? 'TOPIC_UNAPPROVED' : 'POSTS_UNAPPROVED') : '',
 
 					'S_TOPIC_GLOBAL'		=> (!$forum_id) ? true : false,
 					'S_TOPIC_TYPE'			=> $row['topic_type'],
@@ -683,18 +734,8 @@ if ($keywords || $author || $author_id || $search_id || $submit)
 				$row['post_subject'] = censor_text($row['post_subject']);
 				$row['post_text'] = str_replace("\n", '<br />', censor_text($row['post_text']));
 
-				if ($hilit)
-				{
-					// Remove bad highlights
-					$hilit_array = array_filter(explode('|', $hilit), 'strlen');
-					foreach ($hilit_array as $key => $value)
-					{
-						$hilit_array[$key] = preg_quote($value, '#');
-					}
-					$hilit = implode('|', $hilit_array);
-
-					$row['post_text'] = preg_replace('#(?!<.*)(?<!\w)(' . $hilit . ')(?!\w|[^<>]*>)#i', '<span class="posthilit">$1</span>', $row['post_text']);
-				}
+				// post highlighting
+				$row['post_text'] = preg_replace('#(?!<.*)(?<!\w)(' . $hilit . ')(?!\w|[^<>]*>)#i', '<span class="posthilit">$1</span>', $row['post_text']);
 
 				$row['post_text'] = smiley_text($row['post_text']);
 

@@ -96,7 +96,7 @@
 	<h1>{L_ACL_TYPE}</h1>
 
 	<fieldset class="quick">
-		<a href="javascript: mark_options('a_options', 'y');">{L_ALL_YES}</a> &bull; <a href="javascript: mark_options('a_options', 'n');">{L_ALL_NO}</a> &bull; <a href="javascript: mark_options('a_options', 'u');">{L_ALL_UNSET}</a>
+		<a href="javascript: mark_options('a_options', 'y');">{L_ALL_YES}</a> &bull; <a href="javascript: mark_options('a_options', 'n');">{L_ALL_NEVER}</a> &bull; <a href="javascript: mark_options('a_options', 'u');">{L_ALL_NO}</a>
 	</fieldset>
 
 	<fieldset class="permissions">
@@ -114,10 +114,10 @@
 		<!-- BEGIN auth -->
 			<!-- IF auth.S_YES -->
 				<td class="preset preset_yes">
+			<!-- ELSEIF auth.S_NEVER -->
+				<td class="preset preset_never">
 			<!-- ELSEIF auth.S_NO -->
 				<td class="preset preset_no">
-			<!-- ELSEIF auth.S_UNSET -->
-				<td class="preset preset_unset">
 			<!-- ELSE -->
 				<td class="preset preset_custom">
 			<!-- ENDIF -->
@@ -132,17 +132,17 @@
 				<tr>
 					<th scope="col" style="text-align: left; padding-left: 0;"><strong>{L_ACL_SETTING} [{auth.CAT_NAME}]</strong></th>
 					<th scope="col"><a href="javascript: mark_options('options{auth.S_ROW_COUNT}', 'y');">{L_ACL_YES}</a></th>
-					<th scope="col"><a href="javascript: mark_options('options{auth.S_ROW_COUNT}', 'u');">{L_ACL_UNSET}</a></th>
-					<th scope="col"><a href="javascript: mark_options('options{auth.S_ROW_COUNT}', 'n');">{L_ACL_NO}</a></th>
+					<th scope="col"><a href="javascript: mark_options('options{auth.S_ROW_COUNT}', 'u');">{L_ACL_NO}</a></th>
+					<th scope="col"><a href="javascript: mark_options('options{auth.S_ROW_COUNT}', 'n');">{L_ACL_NEVER}</a></th>
 				</tr>
 				</thead>
 				<tbody>
 				<!-- BEGIN mask -->
 					<!-- IF auth.mask.S_ROW_COUNT is even --><tr class="row4"><!-- ELSE --><tr class="row3"><!-- ENDIF -->
 					<th>{auth.mask.PERMISSION}</th>
-					<td class="unset"><input id="setting[{auth.mask.FIELD_NAME}]_y" name="setting[{auth.mask.FIELD_NAME}]" class="radio" type="radio"<!-- IF auth.mask.S_YES --> checked="checked"<!-- ENDIF --> value="1" /></td>
-					<td class="unset"><input id="setting[{auth.mask.FIELD_NAME}]_u" name="setting[{auth.mask.FIELD_NAME}]" class="radio" type="radio"<!-- IF auth.mask.S_UNSET --> checked="checked"<!-- ENDIF --> value="-1" /></td>
-					<td class="unset"><input id="setting[{auth.mask.FIELD_NAME}]_n" name="setting[{auth.mask.FIELD_NAME}]" class="radio" type="radio"<!-- IF auth.mask.S_NO --> checked="checked"<!-- ENDIF --> value="0" /></td>
+					<td class="no"><input id="setting[{auth.mask.FIELD_NAME}]_y" name="setting[{auth.mask.FIELD_NAME}]" class="radio" type="radio"<!-- IF auth.mask.S_YES --> checked="checked"<!-- ENDIF --> value="1" /></td>
+					<td class="no"><input id="setting[{auth.mask.FIELD_NAME}]_u" name="setting[{auth.mask.FIELD_NAME}]" class="radio" type="radio"<!-- IF auth.mask.S_NO --> checked="checked"<!-- ENDIF --> value="-1" /></td>
+					<td class="no"><input id="setting[{auth.mask.FIELD_NAME}]_n" name="setting[{auth.mask.FIELD_NAME}]" class="radio" type="radio"<!-- IF auth.mask.S_NEVER --> checked="checked"<!-- ENDIF --> value="0" /></td>
 				</tr>
 				<!-- END mask -->
 				</tbody>

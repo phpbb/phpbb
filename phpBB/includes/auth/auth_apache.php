@@ -4,13 +4,6 @@
 *
 * Authentication plug-ins is largely down to Sergey Kanareykin, our thanks to him.
 *
-* This is for initial authentication via Apaches basic realm authentication methods,
-* user data is then obtained from the integrated user table
-*
-* You can do any kind of checking you like here ... the return data format is
-* either the resulting row of user information, an integer zero (indicating an
-* inactive user) or some error string
-*
 * @package login
 * @version $Id$
 * @copyright (c) 2005 phpBB Group 
@@ -19,17 +12,53 @@
 */
 
 /**
+* Checks whether the user is identified to apache
+* Only allow changing authentication to apache if the user is identified
+* Called in acp_board while setting authentication plugins
+*
+* @return boolean|string false if the user is identified and else an error message
+*/
+function init_apache()
+{
+	global $user;
+
+	if (!isset($_SERVER['PHP_AUTH_USER']) || $user->data['username'] !== $_SERVER['PHP_AUTH_USER'])
+	{
+		return $user->lang['APACHE_SETUP_BEFORE_USE'];
+	}
+	return false;
+}
+
+/**
 * Login function
 */
 function login_apache(&$username, &$password)
 {
 	global $db;
 
+	if (!isset($_SERVER['PHP_AUTH_USER']))
+	{
+		return array(
+			'status'		=> LOGIN_ERROR_EXTERNAL_AUTH,
+			'error_msg'		=> 'LOGIN_ERROR_EXTERNAL_AUTH_APACHE',
+			'user_row'		=> array('user_id' => ANONYMOUS),
+		);
+	}
+
 	$php_auth_user = $_SERVER['PHP_AUTH_USER'];
 	$php_auth_pw = $_SERVER['PHP_AUTH_PW'];
 
 	if (!empty($php_auth_user) && !empty($php_auth_pw))
 	{
+		if ($php_auth_user !== $username)
+		{
+			return array(
+				'status'	=> LOGIN_ERROR_USERNAME,
+				'error_msg'	=> 'LOGIN_ERROR_USERNAME',
+				'user_row'	=> array('user_id' => ANONYMOUS),
+			);
+		}
+
 		$sql = 'SELECT user_id, username, user_password, user_passchg, user_email, user_type 
 			FROM ' . USERS_TABLE . "
 			WHERE username = '" . $db->sql_escape($php_auth_user) . "'";
@@ -57,11 +86,11 @@ function login_apache(&$username, &$password)
 			);
 		}
 
-		// the user does not exist
+		// this is the user's first login so create an empty profile
 		return array(
-			'status'	=> LOGIN_ERROR_USERNAME,
-			'error_msg'	=> 'LOGIN_ERROR_USERNAME',
-			'user_row'	=> array('user_id' => ANONYMOUS),
+			'status'		=> LOGIN_SUCCESS_CREATE_PROFILE,
+			'error_msg'		=> false,
+			'user_row'		=> user_row_apache($php_auth_user, $php_auth_pw),
 		);
 	}
 
@@ -82,11 +111,19 @@ function autologin_apache()
 {
 	global $db;
 
+	if (!isset($_SERVER['PHP_AUTH_USER']))
+	{
+		return array();
+	}
+
 	$php_auth_user = $_SERVER['PHP_AUTH_USER'];
 	$php_auth_pw = $_SERVER['PHP_AUTH_PW'];
 
 	if (!empty($php_auth_user) && !empty($php_auth_pw))
 	{
+		set_var($php_auth_user, $php_auth_user, 'string');
+		set_var($php_auth_pw, $php_auth_pw, 'string');
+
 		$sql = 'SELECT *
 			FROM ' . USERS_TABLE . "
 			WHERE username = '" . $db->sql_escape($php_auth_user) . "'";
@@ -98,9 +135,55 @@ function autologin_apache()
 		{
 			return ($row['user_type'] == USER_INACTIVE || $row['user_type'] == USER_IGNORE) ? array() : $row;
 		}
+
+		// create the user if he does not exist yet
+		user_add(user_row_apache($php_auth_user, $php_auth_pw));
+
+		$sql = 'SELECT *
+			FROM ' . USERS_TABLE . "
+			WHERE username = '" . $db->sql_escape($php_auth_user) . "'";
+		$result = $db->sql_query($sql);
+		$row = $db->sql_fetchrow($result);
+		$db->sql_freeresult($result);
+
+		if ($row)
+		{
+			return $row;
+		}
 	}
 
 	return array();
+}
+
+/**
+* This function generates an array which can be passed to the user_add function in order to create a user
+*/
+function user_row_apache($username, $password)
+{
+	global $db, $config, $user;
+	// first retrieve default group id
+	$sql = 'SELECT group_id
+		FROM ' . GROUPS_TABLE . "
+		WHERE group_name = '" . $db->sql_escape('REGISTERED') . "'
+			AND group_type = " . GROUP_SPECIAL;
+	$result = $db->sql_query($sql);
+	$row = $db->sql_fetchrow($result);
+	$db->sql_freeresult($result);
+
+	if (!$row)
+	{
+		trigger_error('NO_GROUP');
+	}
+
+	// generate user account data
+	return array(
+		'username'		=> $username,
+		'user_password'	=> $password,
+		'user_email'	=> '',
+		'group_id'		=> (int) $row['group_id'],
+		'user_type'		=> USER_NORMAL,
+		'user_ip'		=> $user->ip,
+	);
 }
 
 /**
@@ -110,7 +193,15 @@ function autologin_apache()
 */
 function validate_session_apache(&$user)
 {
-	return ($_SERVER['PHP_AUTH_USER'] === $user['username']) ? true : false;
+	if (!isset($_SERVER['PHP_AUTH_USER']))
+	{
+		return false;
+	}
+
+	$php_auth_user = '';
+	set_var($php_auth_user, $_SERVER['PHP_AUTH_USER'], 'string');
+
+	return ($php_auth_user === $user['username']) ? true : false;
 }
 
 ?>

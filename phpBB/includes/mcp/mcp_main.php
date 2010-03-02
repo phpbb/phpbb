@@ -224,8 +224,8 @@ function lock_unlock($action, $ids)
 	if (confirm_box(true))
 	{
 		$sql = "UPDATE $table
-			SET $set_id = " . (($action == 'lock' || $action == 'lock_post') ? ITEM_LOCKED : ITEM_UNLOCKED) . "
-			WHERE $sql_id IN (" . implode(', ', $ids) . ")";
+			SET $set_id = " . (($action == 'lock' || $action == 'lock_post') ? ITEM_LOCKED : ITEM_UNLOCKED) . '
+			WHERE ' . $db->sql_in_set($sql_id, $ids);
 		$db->sql_query($sql);
 
 		$data = ($action == 'lock' || $action == 'unlock') ? get_topic_data($ids) : get_post_data($ids);
@@ -311,7 +311,7 @@ function change_topic_type($action, $topic_ids)
 		{
 			$sql = 'UPDATE ' . TOPICS_TABLE . "
 				SET topic_type = $new_topic_type
-				WHERE topic_id IN (" . implode(', ', $topic_ids) . ')
+				WHERE " . $db->sql_in_set('topic_id', $topic_ids) . '
 					AND forum_id <> 0';
 			$db->sql_query($sql);
 
@@ -320,26 +320,68 @@ function change_topic_type($action, $topic_ids)
 			{
 				$sql = 'UPDATE ' . TOPICS_TABLE . "
 					SET topic_type = $new_topic_type, forum_id = $forum_id
-						WHERE topic_id IN (" . implode(', ', $topic_ids) . ')
+					WHERE " . $db->sql_in_set('topic_id', $topic_ids) . '
 						AND forum_id = 0';
 				$db->sql_query($sql);
+
+				// Update forum_ids for all posts
+				$sql = 'UPDATE ' . POSTS_TABLE . "
+					SET forum_id = $forum_id
+					WHERE " . $db->sql_in_set('topic_id', $topic_ids) . '
+						AND forum_id = 0';
+				$db->sql_query($sql);
+
+				sync('forum', 'forum_id', $forum_id);
 			}
 		}
 		else
 		{
-			$sql = 'UPDATE ' . TOPICS_TABLE . "
-				SET topic_type = $new_topic_type, forum_id = 0
-				WHERE topic_id IN (" . implode(', ', $topic_ids) . ")";
-			$db->sql_query($sql);
+			// Get away with those topics already being a global announcement by re-calculating $topic_ids
+			$sql = 'SELECT topic_id
+				FROM ' . TOPICS_TABLE . '
+				WHERE ' . $db->sql_in_set('topic_id', $topic_ids) . '
+					AND forum_id <> 0';
+			$result = $db->sql_query($sql);
+
+			$topic_ids = array();
+			while ($row = $db->sql_fetchrow($result))
+			{
+				$topic_ids[] = $row['topic_id'];
+			}
+			$db->sql_freeresult($result);
+
+			if (sizeof($topic_ids))
+			{
+				// Delete topic shadows for global announcements
+				$sql = 'DELETE FROM ' . TOPICS_TABLE . '
+					WHERE ' . $db->sql_in_set('topic_moved_id', $topic_ids);
+				$db->sql_query($sql);
+
+				$sql = 'UPDATE ' . TOPICS_TABLE . "
+					SET topic_type = $new_topic_type, forum_id = 0
+						WHERE " . $db->sql_in_set('topic_id', $topic_ids);
+				$db->sql_query($sql);
+
+				// Update forum_ids for all posts
+				$sql = 'UPDATE ' . POSTS_TABLE . '
+					SET forum_id = 0
+					WHERE ' . $db->sql_in_set('topic_id', $topic_ids);
+				$db->sql_query($sql);
+
+				sync('forum', 'forum_id', $forum_id);
+			}
 		}
 
 		$success_msg = (sizeof($topic_ids) == 1) ? 'TOPIC_TYPE_CHANGED' : 'TOPICS_TYPE_CHANGED';
 
-		$data = get_topic_data($topic_ids);
-
-		foreach ($data as $topic_id => $row)
+		if (sizeof($topic_ids))
 		{
-			add_log('mod', $forum_id, $topic_id, 'LOG_TOPIC_TYPE_CHANGED', $row['topic_title']);
+			$data = get_topic_data($topic_ids);
+
+			foreach ($data as $topic_id => $row)
+			{
+				add_log('mod', $forum_id, $topic_id, 'LOG_TOPIC_TYPE_CHANGED', $row['topic_title']);
+			}
 		}
 	}
 	else
@@ -480,7 +522,7 @@ function mcp_move_topic($topic_ids)
 	else
 	{
 		$template->assign_vars(array(
-			'S_FORUM_SELECT'		=> make_forum_select($to_forum_id, $forum_id, false, true, true),
+			'S_FORUM_SELECT'		=> make_forum_select($to_forum_id, $forum_id, false, true, true, true),
 			'S_CAN_LEAVE_SHADOW'	=> true,
 			'ADDITIONAL_MSG'		=> $additional_msg)
 		);
@@ -541,11 +583,7 @@ function mcp_delete_topic($topic_ids)
 			add_log('mod', $forum_id, 0, 'LOG_TOPIC_DELETED', $row['topic_title']);
 		}
 
-		$return = delete_topics('topic_id', $topic_ids, true);
-
-		/**
-		* @todo Adjust total post count (mcp_delete_topic)
-		*/
+		$return = delete_topics('topic_id', $topic_ids);
 	}
 	else
 	{
@@ -602,7 +640,7 @@ function mcp_delete_post($post_ids)
 
 		$sql = 'SELECT DISTINCT topic_id
 			FROM ' . POSTS_TABLE . '
-			WHERE post_id IN (' . implode(', ', $post_ids) . ')';
+			WHERE ' . $db->sql_in_set('post_id', $post_ids);
 		$result = $db->sql_query($sql);
 
 		$topic_id_list = array();
@@ -625,7 +663,7 @@ function mcp_delete_post($post_ids)
 
 		$sql = 'SELECT COUNT(topic_id) AS topics_left
 			FROM ' . TOPICS_TABLE . '
-			WHERE topic_id IN (' . implode(', ', $topic_id_list) . ')';
+			WHERE ' . $db->sql_in_set('topic_id', $topic_id_list);
 		$result = $db->sql_query_limit($sql, 1);
 
 		$deleted_topics = ($row = $db->sql_fetchrow($result)) ? ($affected_topics - $row['topics_left']) : $affected_topics;
@@ -809,7 +847,7 @@ function mcp_fork_topic($topic_ids)
 			$sql = 'SELECT *
 				FROM ' . POSTS_TABLE . "
 				WHERE topic_id = $topic_id
-				ORDER BY post_id ASC";
+				ORDER BY post_time ASC";
 			$result = $db->sql_query($sql);
 
 			$post_rows = array();
@@ -848,7 +886,7 @@ function mcp_fork_topic($topic_ids)
 					'post_checksum'		=> (string) $row['post_checksum'],
 					'post_encoding'		=> (string) $row['post_encoding'],
 					'post_attachment'	=> (int) $row['post_attachment'],
-					'bbcode_bitfield'	=> (int) $row['bbcode_bitfield'],
+					'bbcode_bitfield'	=> $row['bbcode_bitfield'],
 					'bbcode_uid'		=> (string) $row['bbcode_uid'],
 					'post_edit_time'	=> (int) $row['post_edit_time'],
 					'post_edit_count'	=> (int) $row['post_edit_count'],
@@ -880,7 +918,7 @@ function mcp_fork_topic($topic_ids)
 							'physical_filename'	=> (string) basename($attach_row['physical_filename']),
 							'real_filename'		=> (string) basename($attach_row['real_filename']),
 							'download_count'	=> (int) $attach_row['download_count'],
-							'comment'			=> (string) $attach_row['comment'],
+							'attach_comment'	=> (string) $attach_row['attach_comment'],
 							'extension'			=> (string) $attach_row['extension'],
 							'mimetype'			=> (string) $attach_row['mimetype'],
 							'filesize'			=> (int) $attach_row['filesize'],
@@ -898,8 +936,8 @@ function mcp_fork_topic($topic_ids)
 		// Sync new topics, parent forums and board stats
 		sync('topic', 'topic_id', $new_topic_id_list, true);
 		sync('forum', 'forum_id', $to_forum_id, true);
-		set_config('num_topics', $config['num_topics'] + sizeof($new_topic_id_list));
-		set_config('num_posts', $config['num_posts'] + $total_posts);
+		set_config('num_topics', $config['num_topics'] + sizeof($new_topic_id_list), true);
+		set_config('num_posts', $config['num_posts'] + $total_posts, true);
 
 		foreach ($new_topic_id_list as $topic_id => $new_topic_id)
 		{

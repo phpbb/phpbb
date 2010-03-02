@@ -11,7 +11,10 @@
 <!-- ENDIF -->
 <tr> 
 	<td class="row1" width="35%"><b class="genmed">{L_CURRENT_IMAGE}: </b><br /><span class="gensmall">{L_AVATAR_EXPLAIN}</span></td>
-	<td class="row2" align="center"><br /><!-- IF AVATAR -->{AVATAR}<!-- ELSE --><img src="{T_THEME_PATH}/images/no_avatar.gif" alt="" /><!-- ENDIF --><br /><br /><input type="checkbox" class="radio" name="delete" />&nbsp;<span class="gensmall">{L_DELETE_AVATAR}</span></td>
+	<td class="row2" align="center"><br />
+		<!-- IF AVATAR -->{AVATAR}<br /><br /><input type="checkbox" class="radio" name="delete" />&nbsp;<span class="gensmall">{L_DELETE_AVATAR}</span>
+		<!-- ELSE --><img src="{T_THEME_PATH}/images/no_avatar.gif" alt="" />
+		<!-- ENDIF --></td>
 </tr>
 <!-- IF S_UPLOAD_AVATAR_FILE -->
 	<tr> 
@@ -69,7 +72,7 @@
 	</tr>
 <!-- ENDIF -->
 
-<!-- IF S_GALLERY_AVATAR or S_IN_AVATAR_GALLERY or S_LINK_AVATAR or S_UPLOAD_AVATAR_URL or S_UPLOAD_AVATAR_FILE -->
+<!-- IF S_GALLERY_AVATAR or S_IN_AVATAR_GALLERY or S_LINK_AVATAR or S_UPLOAD_AVATAR_URL or S_UPLOAD_AVATAR_FILE or AVATAR -->
 	<tr>
 		<td class="cat" colspan="2" align="center">{S_HIDDEN_FIELDS}<input class="btnmain" type="submit" name="submit" value="{L_SUBMIT}" />&nbsp;&nbsp;<!-- IF S_IN_AVATAR_GALLERY --><input class="btnlite" type="submit" name="cancel" value="{L_CANCEL}" /><!-- ELSE --><input class="btnlite" type="reset" value="{L_RESET}" name="reset" /><!-- ENDIF --></td>
 	</tr>

@@ -59,7 +59,7 @@ function mcp_post_details($id, $mode, $action)
 
 			if ($action == 'chgposter')
 			{
-				$username = request_var('username', '', true);
+				$username = request_var('username', '');
 				$sql_where = "username = '" . $db->sql_escape($username) . "'";
 			}
 			else
@@ -125,13 +125,15 @@ function mcp_post_details($id, $mode, $action)
 		'U_MCP_REPORT'			=> append_sid("{$phpbb_root_path}mcp.$phpEx", 'i=reports&amp;mode=report_details&amp;f=' . $post_info['forum_id'] . '&amp;p=' . $post_id),
 		'U_MCP_USER_NOTES'		=> append_sid("{$phpbb_root_path}mcp.$phpEx", 'i=notes&amp;mode=user_notes&amp;u=' . $post_info['user_id']),
 		'U_MCP_WARN_USER'		=> ($auth->acl_getf_global('m_warn')) ? append_sid("{$phpbb_root_path}mcp.$phpEx", 'i=warn&amp;mode=warn_user&amp;u=' . $post_info['user_id']) : '',
+		'U_VIEW_POST'			=> append_sid("{$phpbb_root_path}viewtopic.$phpEx", 'f=' . $post_info['forum_id'] . '&amp;p=' . $post_info['post_id'] . '#p' . $post_info['post_id']),
 		'U_VIEW_PROFILE'		=> ($post_info['user_id'] != ANONYMOUS) ? append_sid("{$phpbb_root_path}memberlist.$phpEx", 'mode=viewprofile&amp;u=' . $post_info['user_id']) : '',
+		'U_VIEW_TOPIC'			=> append_sid("{$phpbb_root_path}viewtopic.$phpEx", 'f=' . $post_info['forum_id'] . '&amp;t=' . $post_info['topic_id']),
 		
 		'RETURN_TOPIC'			=> sprintf($user->lang['RETURN_TOPIC'], '<a href="' . append_sid("{$phpbb_root_path}viewtopic.$phpEx", "f={$post_info['forum_id']}&amp;p=$post_id") . "#p$post_id\">", '</a>'),
 		'RETURN_FORUM'			=> sprintf($user->lang['RETURN_FORUM'], '<a href="' . append_sid("{$phpbb_root_path}viewforum.$phpEx", "f={$post_info['forum_id']}&amp;start={$start}") . '">', '</a>'),
-		'REPORTED_IMG'			=> $user->img('icon_reported', $user->lang['POST_REPORTED']),
-		'UNAPPROVED_IMG'		=> $user->img('icon_unapproved', $user->lang['POST_UNAPPROVED']),
-		'EDIT_IMG'				=> $user->img('btn_edit', $user->lang['EDIT_POST']),
+		'REPORTED_IMG'			=> $user->img('icon_topic_reported', $user->lang['POST_REPORTED']),
+		'UNAPPROVED_IMG'		=> $user->img('icon_topic_unapproved', $user->lang['POST_UNAPPROVED']),
+		'EDIT_IMG'				=> $user->img('icon_post_edit', $user->lang['EDIT_POST']),
 
 		'POSTER_NAME'			=> $poster,
 		'POST_PREVIEW'			=> $message,
@@ -334,31 +336,20 @@ function change_poster(&$post_info, $userdata)
 	$db->sql_query($sql);
 
 	// Resync topic/forum if needed
-	if ($post_info['topic_last_post_id'] == $post_id || $post_info['forum_last_post_id'] == $post_id)
+	if ($post_info['topic_last_post_id'] == $post_id || $post_info['forum_last_post_id'] == $post_id || $post_info['topic_first_post_id'] == $post_id)
 	{
 		sync('topic', 'topic_id', $post_info['topic_id'], false, false);
 		sync('forum', 'forum_id', $post_info['forum_id'], false, false);
 	}
 
 	// Adjust post counts
-	$auth_user_from = new auth();
-	$auth_user_from->acl($post_info);
-
-	$auth_user_to = new auth();
-	$auth_user_to->acl($userdata);
-
-	// Decrease post count by one for the old user
-	if ($auth_user_from->acl_get('f_postcount', $post_info['forum_id']))
+	if ($post_info['post_postcount'])
 	{
 		$sql = 'UPDATE ' . USERS_TABLE . '
 			SET user_posts = user_posts - 1
 			WHERE user_id = ' . $post_info['user_id'];
 		$db->sql_query($sql);
-	}
 
-	// Increase post count by one for the new user
-	if ($auth_user_to->acl_get('f_postcount', $post_info['forum_id']))
-	{
 		$sql = 'UPDATE ' . USERS_TABLE . '
 			SET user_posts = user_posts + 1
 			WHERE user_id = ' . $userdata['user_id'];

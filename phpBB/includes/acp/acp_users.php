@@ -14,6 +14,12 @@
 class acp_users
 {
 	var $u_action;
+	var $p_master;
+
+	function acp_users(&$p_master)
+	{
+		$this->p_master = &$p_master;
+	}
 
 	function main($id, $mode)
 	{
@@ -28,7 +34,7 @@ class acp_users
 		include($phpbb_root_path . 'includes/functions_profile_fields.' . $phpEx);
 
 		$error		= array();
-		$username	= request_var('username', '', true);
+		$username	= request_var('username', '');
 		$user_id	= request_var('u', 0);
 		$action		= request_var('action', '');
 
@@ -114,7 +120,7 @@ class acp_users
 
 		foreach ($forms_ary['modes'] as $value => $ary)
 		{
-			if (!$this->is_authed($ary['auth']))
+			if (!$this->p_master->module_auth($ary['auth']))
 			{
 				continue;
 			}
@@ -133,7 +139,7 @@ class acp_users
 		// Prevent normal users/admins change/view founders if they are not a founder by themselves
 		if ($user->data['user_type'] != USER_FOUNDER && $user_row['user_type'] == USER_FOUNDER)
 		{
-			trigger_error($user->lang['NOT_MANAGE_FOUNDER'] . adm_back_link($this->u_action));
+			trigger_error($user->lang['NOT_MANAGE_FOUNDER'] . adm_back_link($this->u_action . '&amp;u=' . $user_id));
 		}
 
 		switch ($mode)
@@ -192,6 +198,12 @@ class acp_users
 						case 'banuser':
 						case 'banemail':
 						case 'banip':
+
+							if ($user_id == $user->data['user_id'])
+							{
+								trigger_error($user->lang['CANNOT_BAN_YOURSELF'] . adm_back_link($this->u_action . '&amp;u=' . $user_id));
+							}
+
 							$ban = array();
 
 							switch ($action)
@@ -237,6 +249,11 @@ class acp_users
 						break;
 
 						case 'reactivate':
+
+							if ($user_id == $user->data['user_id'])
+							{
+								trigger_error($user->lang['CANNOT_FORCE_REACT_YOURSELF'] . adm_back_link($this->u_action . '&amp;u=' . $user_id));
+							}
 
 							if ($config['email_enable'])
 							{
@@ -286,6 +303,12 @@ class acp_users
 						break;
 
 						case 'active':
+
+							if ($user_id == $user->data['user_id'])
+							{
+								// It is only deactivation since the user is already activated (else he would not have reached this page)
+								trigger_error($user->lang['CANNOT_DEACTIVATE_YOURSELF'] . adm_back_link($this->u_action . '&amp;u=' . $user_id));
+							}
 
 							user_active_flip($user_id, $user_row['user_type'], false, $user_row['username']);
 
@@ -376,7 +399,7 @@ class acp_users
 								{
 									$sql = 'SELECT topic_id, topic_replies, topic_replies_real
 										FROM ' . TOPICS_TABLE . '
-										WHERE topic_id IN (' . implode(', ', array_keys($topic_id_ary)) . ')';
+										WHERE ' . $db->sql_in_set('topic_id', array_keys($topic_id_ary));
 									$result = $db->sql_query($sql);
 
 									$del_topic_ary = array();
@@ -392,7 +415,7 @@ class acp_users
 									if (sizeof($del_topic_ary))
 									{
 										$sql = 'DELETE FROM ' . TOPICS_TABLE . '
-											WHERE topic_id IN (' . implode(', ', $del_topic_ary) . ')';
+											WHERE ' . $db->sql_in_set('topic_id', $del_topic_ary);
 										$db->sql_query($sql);
 									}
 								}
@@ -478,7 +501,7 @@ class acp_users
 							{
 								$sql = 'SELECT topic_id, forum_id, topic_title, topic_replies, topic_replies_real
 									FROM ' . TOPICS_TABLE . '
-									WHERE topic_id IN (' . implode(', ', array_keys($topic_id_ary)) . ')';
+									WHERE ' . $db->sql_in_set('topic_id', array_keys($topic_id_ary));
 								$result = $db->sql_query($sql);
 
 								while ($row = $db->sql_fetchrow($result))
@@ -601,8 +624,8 @@ class acp_users
 
 					// Validation data
 					$var_ary = array(
-						'password_confirm'	=> array('string', true, $config['min_pass_chars'], $config['max_pass_chars']),
 						'user_password'		=> array('string', true, $config['min_pass_chars'], $config['max_pass_chars']),
+						'password_confirm'	=> array('string', true, $config['min_pass_chars'], $config['max_pass_chars']),
 						'warnings'			=> array('num'),
 					);
 
@@ -657,9 +680,34 @@ class acp_users
 								$sql_ary['user_warnings'] = $data['warnings'];
 							}
 
-							if (($user_row['user_type'] == USER_FOUNDER && !$data['user_founder']) || ($user_row['user_type'] != USER_FOUNDER && $data['user_founder']))
+							// Only allow founders updating the founder status...
+							if ($user->data['user_type'] == USER_FOUNDER)
 							{
-								$sql_ary['user_type'] = ($data['user_founder']) ? USER_FOUNDER : USER_NORMAL;
+								// Setting a normal member to be a founder
+								if ($data['user_founder'] && $user_row['user_type'] != USER_FOUNDER)
+								{
+									$sql_ary['user_type'] = USER_FOUNDER;
+								}
+								else if (!$data['user_founder'] && $user_row['user_type'] == USER_FOUNDER)
+								{
+									// Check if at least one founder is present
+									$sql = 'SELECT user_id
+										FROM ' . USERS_TABLE . '
+										WHERE user_type = ' . USER_FOUNDER . '
+											AND user_id <> ' . $user_id;
+									$result = $db->sql_query_limit($sql, 1);
+									$row = $db->sql_fetchrow($result);
+									$db->sql_freeresult($result);
+
+									if ($row)
+									{
+										$sql_ary['user_type'] = USER_NORMAL;
+									}
+									else
+									{
+										trigger_error($user->lang['AT_LEAST_ONE_FOUNDER'] . adm_back_link($this->u_action . '&amp;u=' . $user_id));
+									}
+								}
 							}
 						}
 
@@ -711,6 +759,9 @@ class acp_users
 							user_update_name($user_row['username'], $update_username);
 						}
 
+						// Let the users permissions being updated
+						$auth->acl_clear_prefetch($user_id);
+
 						add_log('admin', 'LOG_USER_USER_UPDATE', $data['username']);
 
 						trigger_error($user->lang['USER_OVERVIEW_UPDATED'] . adm_back_link($this->u_action . '&amp;u=' . $user_id));
@@ -721,11 +772,19 @@ class acp_users
 				}
 
 				$user_char_ary = array('.*' => 'USERNAME_CHARS_ANY', '[\w]+' => 'USERNAME_ALPHA_ONLY', '[\w_\+\. \-\[\]]+' => 'USERNAME_ALPHA_SPACERS');
-				$quick_tool_ary = array('banuser' => 'BAN_USER', 'banemail' => 'BAN_EMAIL', 'banip' => 'BAN_IP', 'active' => (($user_row['user_type'] == USER_INACTIVE) ? 'ACTIVATE' : 'DEACTIVATE'), 'delsig' => 'DEL_SIG', 'delavatar' => 'DEL_AVATAR', 'moveposts' => 'MOVE_POSTS', 'delposts' => 'DEL_POSTS', 'delattach' => 'DEL_ATTACH');
-				
-				if ($config['email_enable'])
+
+				if ($user_id == $user->data['user_id'])
 				{
-					$quick_tool_ary['reactivate'] = 'FORCE';
+					$quick_tool_ary = array('delsig' => 'DEL_SIG', 'delavatar' => 'DEL_AVATAR', 'moveposts' => 'MOVE_POSTS', 'delposts' => 'DEL_POSTS', 'delattach' => 'DEL_ATTACH');
+				}
+				else
+				{
+					$quick_tool_ary = array('banuser' => 'BAN_USER', 'banemail' => 'BAN_EMAIL', 'banip' => 'BAN_IP', 'active' => (($user_row['user_type'] == USER_INACTIVE) ? 'ACTIVATE' : 'DEACTIVATE'), 'delsig' => 'DEL_SIG', 'delavatar' => 'DEL_AVATAR', 'moveposts' => 'MOVE_POSTS', 'delposts' => 'DEL_POSTS', 'delattach' => 'DEL_ATTACH');
+					
+					if ($config['email_enable'])
+					{
+						$quick_tool_ary['reactivate'] = 'FORCE';
+					}
 				}
 
 				$s_action_options = '<option class="sep" value="">' . $user->lang['SELECT_OPTION'] . '</option>';
@@ -743,6 +802,7 @@ class acp_users
 					'S_USER_IP'			=> ($user_row['user_ip']) ? true : false,
 					'S_USER_FOUNDER'	=> ($user_row['user_type'] == USER_FOUNDER) ? true : false,
 					'S_ACTION_OPTIONS'	=> $s_action_options,
+					'S_OWN_ACCOUNT'		=> ($user_id == $user->data['user_id']) ? true : false,
 
 					'U_SHOW_IP'		=> $this->u_action . "&amp;u=$user_id&amp;ip=" . (($ip == 'ip') ? 'hostname' : 'ip'),
 					'U_WHOIS'		=> $this->u_action . "&amp;action=whois&amp;user_ip={$user_row['user_ip']}",
@@ -755,6 +815,7 @@ class acp_users
 					'USER_LASTACTIVE'	=> ($user_row['user_lastvisit']) ? $user->format_date($user_row['user_lastvisit']) : ' - ',
 					'USER_EMAIL'		=> $user_row['user_email'],
 					'USER_WARNINGS'		=> $user_row['user_warnings'],
+					'USER_POSTS'		=> $user_row['user_posts'],
 					)
 				);
 
@@ -787,7 +848,7 @@ class acp_users
 						{
 							$sql_in[] = $mark;
 						}
-						$where_sql = ' AND log_id IN (' . implode(', ', $sql_in) . ')';
+						$where_sql = ' AND ' . $db->sql_in_set('log_id', $sql_in);
 						unset($sql_in);
 					}
 
@@ -813,7 +874,7 @@ class acp_users
 				// Sorting
 				$limit_days = array(0 => $user->lang['ALL_ENTRIES'], 1 => $user->lang['1_DAY'], 7 => $user->lang['7_DAYS'], 14 => $user->lang['2_WEEKS'], 30 => $user->lang['1_MONTH'], 90 => $user->lang['3_MONTHS'], 180 => $user->lang['6_MONTHS'], 365 => $user->lang['1_YEAR']);
 				$sort_by_text = array('u' => $user->lang['SORT_USERNAME'], 't' => $user->lang['SORT_DATE'], 'i' => $user->lang['SORT_IP'], 'o' => $user->lang['SORT_ACTION']);
-				$sort_by_sql = array('u' => 'l.user_id', 't' => 'l.log_time', 'i' => 'l.log_ip', 'o' => 'l.log_operation');
+				$sort_by_sql = array('u' => 'l.username', 't' => 'l.log_time', 'i' => 'l.log_ip', 'o' => 'l.log_operation');
 
 				$s_limit_days = $s_sort_key = $s_sort_dir = $u_sort_param = '';
 				gen_sort_selects($limit_days, $sort_by_text, $sort_days, $sort_key, $sort_dir, $s_limit_days, $s_sort_key, $s_sort_dir, $u_sort_param);
@@ -943,6 +1004,34 @@ class acp_users
 						// Update Custom Fields
 						if (sizeof($cp_data))
 						{
+							switch (SQL_LAYER)
+							{
+								case 'oracle':
+								case 'firebird':
+								case 'postgres':
+									$right_delim = $left_delim = '"';
+								break;
+
+								case 'sqlite':
+								case 'mssql':
+								case 'mssql_odbc':
+									$right_delim = ']';
+									$left_delim = '[';
+								break;
+
+								case 'mysql':
+								case 'mysql4':
+								case 'mysqli':
+									$right_delim = $left_delim = '`';
+								break;
+							}
+
+							foreach ($cp_data as $key => $value)
+							{
+								$cp_data[$right_delim . $key . $left_delim] = $value;
+								unset($cp_data[$key]);
+							}
+
 							$sql = 'UPDATE ' . PROFILE_FIELDS_DATA_TABLE . '
 								SET ' . $db->sql_build_array('UPDATE', $cp_data) . "
 								WHERE user_id = $user_id";
@@ -1077,7 +1166,7 @@ class acp_users
 
 					$var_ary = array(
 						'dateformat'	=> array('string', false, 3, 30),
-						'lang'			=> array('match', false, '#^[a-z_]{2,}$#i'),
+						'lang'			=> array('match', false, '#^[a-z_\-]{2,}$#i'),
 						'tz'			=> array('num', false, -14, 14),
 
 						'topic_sk'		=> array('string', false, 1, 1),
@@ -1252,7 +1341,7 @@ class acp_users
 
 					'S_LANG_OPTIONS'	=> language_select($lang),
 					'S_STYLE_OPTIONS'	=> style_select($style),
-					'S_TZ_OPTIONS'		=> tz_select($tz),
+					'S_TZ_OPTIONS'		=> tz_select($tz, true),
 					)
 				);
 
@@ -1449,6 +1538,7 @@ class acp_users
 			case 'sig':
 			
 				include_once($phpbb_root_path . 'includes/functions_posting.' . $phpEx);
+				include_once($phpbb_root_path . 'includes/functions_display.' . $phpEx);
 
 				$enable_bbcode	= ($config['allow_sig_bbcode']) ? request_var('enable_bbcode', $this->optionget($user_row, 'bbcode')) : false;
 				$enable_smilies	= ($config['allow_sig_smilies']) ? request_var('enable_smilies', $this->optionget($user_row, 'smilies')) : false;
@@ -1520,8 +1610,13 @@ class acp_users
 					'L_SIGNATURE_EXPLAIN'	=> sprintf($user->lang['SIGNATURE_EXPLAIN'], $config['max_sig_chars']),
 
 					'S_BBCODE_ALLOWED'		=> $config['allow_sig_bbcode'], 
-					'S_SMILIES_ALLOWED'		=> $config['allow_sig_smilies'],)
+					'S_SMILIES_ALLOWED'		=> $config['allow_sig_smilies'],
+					'S_BBCODE_IMG'			=> ($config['allow_sig_img']) ? true : false,
+					'S_BBCODE_FLASH'		=> ($config['allow_sig_flash']) ? true : false)
 				);
+
+				// Assigning custom bbcodes
+				display_custom_bbcodes();
 
 			break;
 
@@ -1541,7 +1636,7 @@ class acp_users
 					{
 						$sql = 'SELECT real_filename
 							FROM ' . ATTACHMENTS_TABLE . '
-							WHERE attach_id IN (' . implode(', ', $marked) . ')';
+							WHERE ' . $db->sql_in_set('attach_id', $marked);
 						$result = $db->sql_query($sql);
 
 						$log_attachments = array();
@@ -1623,7 +1718,7 @@ class acp_users
 
 					$template->assign_block_vars('attach', array(
 						'REAL_FILENAME'		=> $row['real_filename'],
-						'COMMENT'			=> nl2br($row['comment']),
+						'COMMENT'			=> nl2br($row['attach_comment']),
 						'EXTENSION'			=> $row['extension'],
 						'SIZE'				=> ($row['filesize'] >= 1048576) ? ($row['filesize'] >> 20) . ' ' . $user->lang['MB'] : (($row['filesize'] >= 1024) ? ($row['filesize'] >> 10) . ' ' . $user->lang['KB'] : $row['filesize'] . ' ' . $user->lang['BYTES']),
 						'DOWNLOAD_COUNT'	=> $row['download_count'],
@@ -1745,14 +1840,14 @@ class acp_users
 				// Select box for other groups
 				$sql = 'SELECT group_id, group_name, group_type
 					FROM ' . GROUPS_TABLE . '
-					' . ((sizeof($id_ary)) ? 'WHERE group_id NOT IN (' . implode(', ', $id_ary) . ')' : '') . '
+					' . ((sizeof($id_ary)) ? 'WHERE ' . $db->sql_in_set('group_id', $id_ary, true) : '') . '
 					ORDER BY group_type DESC, group_name ASC';
 				$result = $db->sql_query($sql);
 
 				$s_group_options = '';
 				while ($row = $db->sql_fetchrow($result))
 				{
-					if ($config['coppa_hide_groups'] && in_array($row['group_name'], array('INACTIVE_COPPA', 'REGISTERED_COPPA')))
+					if (!$config['coppa_enable'] && in_array($row['group_name'], array('INACTIVE_COPPA', 'REGISTERED_COPPA')))
 					{
 						continue;
 					}
@@ -1809,28 +1904,40 @@ class acp_users
 				// Select auth options
 				$sql = 'SELECT auth_option, is_local, is_global
 					FROM ' . ACL_OPTIONS_TABLE . "
-					WHERE auth_option LIKE '%\_'
-						AND is_global = 1
-					ORDER BY auth_option";
+					WHERE auth_option LIKE '%\_'";
+
+				if (SQL_LAYER == 'mssql' || SQL_LAYER == 'mssql_odbc')
+				{
+					$sql .= " ESCAPE '\\'";
+				}
+
+				$sql .= 'AND is_global = 1
+					ORDER BY auth_option';
 				$result = $db->sql_query($sql);
 
 				while ($row = $db->sql_fetchrow($result))
 				{
-					$hold_ary = $auth_admin->get_mask('view', $user_id, false, false, $row['auth_option'], 'global', ACL_NO);
+					$hold_ary = $auth_admin->get_mask('view', $user_id, false, false, $row['auth_option'], 'global', ACL_NEVER);
 					$auth_admin->display_mask('view', $row['auth_option'], $hold_ary, 'user', false, false);
 				}
 				$db->sql_freeresult($result);
 
 				$sql = 'SELECT auth_option, is_local, is_global
 					FROM ' . ACL_OPTIONS_TABLE . "
-					WHERE auth_option LIKE '%\_'
-						AND is_local = 1
-					ORDER BY is_global DESC, auth_option";
+					WHERE auth_option LIKE '%\_'";
+
+				if (SQL_LAYER == 'mssql' || SQL_LAYER == 'mssql_odbc')
+				{
+					$sql .= " ESCAPE '\\'";
+				}
+
+				$sql .= 'AND is_local = 1
+					ORDER BY is_global DESC, auth_option';
 				$result = $db->sql_query($sql);
 
 				while ($row = $db->sql_fetchrow($result))
 				{
-					$hold_ary = $auth_admin->get_mask('view', $user_id, false, false, $row['auth_option'], 'local', ACL_NO);
+					$hold_ary = $auth_admin->get_mask('view', $user_id, false, false, $row['auth_option'], 'local', ACL_NEVER);
 					$auth_admin->display_mask('view', $row['auth_option'], $hold_ary, 'user', true, false);
 				}
 				$db->sql_freeresult($result);
@@ -1894,26 +2001,6 @@ class acp_users
 
 		$var = ($data) ? $data : $user_row['user_options'];
 		return ($var & 1 << $user->keyoptions[$key]) ? true : false;
-	}
-
-	/**
-	* Check if user is allowed to call this user mode
-	*/
-	function is_authed($module_auth)
-	{
-		global $config, $auth;
-
-		$module_auth = trim($module_auth);
-
-		if (!$module_auth)
-		{
-			return true;
-		}
-
-		$is_auth = false;
-		eval('$is_auth = (int) (' . preg_replace(array('#acl_([a-z_]+)(,\$id)?#', '#\$id#', '#cfg_([a-z_]+)#'), array('(int) $auth->acl_get("\\1"\\2)', 'true', '(int) $config["\\1"]'), $module_auth) . ');');
-
-		return $is_auth;
 	}
 }
 

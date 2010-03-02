@@ -851,12 +851,12 @@ table.pmask td.name {
 	background-color: #40C53D;
 }
 
-.permissions td.no {
+.permissions td.never {
 	width: 20px;
 	background-color: #EC7181;
 }
 
-.permissions td.unset {
+.permissions td.no {
 	width: 20px;
 	background-color: transparent;
 }
@@ -889,11 +889,11 @@ table.pmask td.name {
 	background: #DAE4EC url("../images/bg_hash2.gif") repeat;
 }
 
-.preset_no {
+.preset_never {
 	background: #ECD7DA url("../images/bg_hash3.gif") repeat;
 }
 
-.preset_unset {
+.preset_no {
 	background: #ECD7DA url("../images/bg_hash4.gif") repeat;
 }
 

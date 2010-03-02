@@ -71,6 +71,10 @@ class acp_language
 					$transfer = new ftp(request_var('host', ''), request_var('username', ''), request_var('password', ''), request_var('root_path', ''), request_var('port', ''), request_var('timeout', ''));
 				break;
 
+				case 'ftp_fsock':
+					$transfer = new ftp_fsock(request_var('host', ''), request_var('username', ''), request_var('password', ''), request_var('root_path', ''), request_var('port', ''), request_var('timeout', ''));
+				break;
+
 				default:
 					trigger_error($user->lang['INVALID_UPLOAD_METHOD']);
 			}
@@ -97,23 +101,13 @@ class acp_language
 					));
 				}
 
-				$entry = $_POST['entry'];
-				foreach ($entry as $key => $value)
-				{
-					if (is_array($value))
-					{
-						foreach ($value as $key2 => $data)
-						{
-							$entry[$key][$key2] = htmlentities($data);
-						}
-					}
-					else
-					{
-						$entry[$key] = htmlentities($value);
-					}
-				}
-
-				$hidden_data = build_hidden_fields(array('file' => $this->language_file, 'dir' => $this->language_directory, 'method' => $method, 'entry' => $entry));
+				$hidden_data = build_hidden_fields(array(
+					'file'		=> $this->language_file,
+					'dir'		=> $this->language_directory,
+					'method'	=> $method,
+					'entry'		=> $_POST['entry']),
+					true
+				);
 
 				$template->assign_vars(array(
 					'S_UPLOAD'	=> true,
@@ -133,7 +127,8 @@ class acp_language
 					trigger_error($user->lang['NO_LANG_ID'] . adm_back_link($this->u_action));
 				}
 
-				$sql = 'SELECT * FROM ' . LANG_TABLE . "
+				$sql = 'SELECT *
+					FROM ' . LANG_TABLE . "
 					WHERE lang_id = $lang_id";
 				$result = $db->sql_query($sql);
 				$row = $db->sql_fetchrow($result);
@@ -168,7 +163,8 @@ class acp_language
 					trigger_error($user->lang['NO_FILE_SELECTED'] . adm_back_link($this->u_action));
 				}
 
-				$sql = 'SELECT * FROM ' . LANG_TABLE . "
+				$sql = 'SELECT *
+					FROM ' . LANG_TABLE . "
 					WHERE lang_id = $lang_id";
 				$result = $db->sql_query($sql);
 				$row = $db->sql_fetchrow($result);
@@ -210,8 +206,7 @@ class acp_language
 				if ($this->language_directory == 'email')
 				{
 					// Email Template
-					$entry = (STRIP) ? stripslashes($_POST['entry']) : $_POST['entry'];
-					$entry = preg_replace('#&amp;(\#[0-9]+;)#', '&\1', $entry);
+					$entry = $this->prepare_lang_entry($_POST['entry'], false);
 					fwrite($fp, $entry);
 				}
 				else
@@ -229,23 +224,19 @@ class acp_language
 						{
 							if (!is_array($value))
 							{
+								continue;
 							}
-							else
-							{
-								$entry = "\tarray(\n";
+
+							$entry = "\tarray(\n";
 							
-								foreach ($value as $_key => $_value)
-								{
-									$_value = (STRIP) ? stripslashes($_value) : $_value;
-									$_value = preg_replace('#&amp;(\#[0-9]+;)#', '&\1', $_value);
-									$entry .= "\t\t" . (int) $_key . "\t=> '" . str_replace("'", "\\'", $_value) . "',\n";
-								}
-								
-								$entry .= "\t),\n";
+							foreach ($value as $_key => $_value)
+							{
+								$entry .= "\t\t" . (int) $_key . "\t=> '" . $this->prepare_lang_entry($_value) . "',\n";
 							}
-											
+
+							$entry .= "\t),\n";
 							fwrite($fp, $entry);
-						}	
+						}
 					}
 					else
 					{
@@ -255,32 +246,13 @@ class acp_language
 
 						foreach ($_POST['entry'] as $key => $value)
 						{
-							if (!is_array($value))
-							{
-								$value = (STRIP) ? stripslashes($value) : $value;
-								$value = preg_replace('#&amp;(\#[0-9]+;)#', '&\1', $value);
-								$entry = "\t'" . $key . "'\t=> '" . str_replace("'", "\\'", $value) . "',\n";
-							}
-							else
-							{
-								$entry = "\n\t'" . $key . "'\t=> array(\n";
-							
-								foreach ($value as $_key => $_value)
-								{
-									$_value = (STRIP) ? stripslashes($_value) : $_value;
-									$_value = preg_replace('#&amp;(\#[0-9]+;)#', '&\1', $_value);
-									$entry .= "\t\t'" . $_key . "'\t=> '" . str_replace("'", "\\'", $_value) . "',\n";
-								}
-								
-								$entry .= "\t),\n\n";
-							}
-											
+							$entry = $this->format_lang_array($key, $value);
 							fwrite($fp, $entry);
-						}	
+						}
 					}
 
 					$footer = "));\n\n?>";
-					fwrite($fp, $footer);	
+					fwrite($fp, $footer);
 				}
 
 				fclose($fp);
@@ -302,7 +274,8 @@ class acp_language
 				}
 				else if ($action == 'upload_data')
 				{
-					$sql = 'SELECT lang_iso FROM ' . LANG_TABLE . "
+					$sql = 'SELECT lang_iso
+						FROM ' . LANG_TABLE . "
 						WHERE lang_id = $lang_id";
 					$result = $db->sql_query($sql);
 					$row = $db->sql_fetchrow($result);
@@ -322,6 +295,11 @@ class acp_language
 						case 'ftp':
 							$transfer = new ftp(request_var('host', ''), request_var('username', ''), request_var('password', ''), request_var('root_path', ''), request_var('port', ''), request_var('timeout', ''));
 						break;
+
+						case 'ftp_fsock':
+							$transfer = new ftp_fsock(request_var('host', ''), request_var('username', ''), request_var('password', ''), request_var('root_path', ''), request_var('port', ''), request_var('timeout', ''));
+						break;
+
 						default:
 							trigger_error($user->lang['INVALID_UPLOAD_METHOD']);
 					}
@@ -334,6 +312,9 @@ class acp_language
 					$transfer->rename($lang_path . $file, $lang_path . $file . '.bak');
 					$transfer->copy_file('store/' . $lang_path . $file, $lang_path . $file);
 					$transfer->close_session();
+
+					// Remove from storage folder
+					@unlink($phpbb_root_path . 'store/' . $lang_path . $file);
 
 					add_log('admin', 'LOG_LANGUAGE_FILE_REPLACED', $file);
 
@@ -353,7 +334,8 @@ class acp_language
 				
 				$this->page_title = 'LANGUAGE_PACK_DETAILS';
 
-				$sql = 'SELECT * FROM ' . LANG_TABLE . '
+				$sql = 'SELECT *
+					FROM ' . LANG_TABLE . '
 					WHERE lang_id = ' . $lang_id;
 				$result = $db->sql_query($sql);
 				$lang_entries = $db->sql_fetchrow($result);
@@ -665,7 +647,8 @@ class acp_language
 					trigger_error($user->lang['NO_LANG_ID'] . adm_back_link($this->u_action));
 				}
 				
-				$sql = 'SELECT * FROM ' . LANG_TABLE . '
+				$sql = 'SELECT *
+					FROM ' . LANG_TABLE . '
 					WHERE lang_id = ' . $lang_id;
 				$result = $db->sql_query($sql);
 				$row = $db->sql_fetchrow($result);
@@ -707,7 +690,8 @@ class acp_language
 				);
 				unset($file);
 
-				$sql = 'SELECT lang_iso FROM ' . LANG_TABLE . "
+				$sql = 'SELECT lang_iso
+					FROM ' . LANG_TABLE . "
 					WHERE lang_iso = '" . $db->sql_escape($lang_iso) . "'";
 				$result = $db->sql_query($sql);
 
@@ -746,7 +730,8 @@ class acp_language
 					trigger_error($user->lang['NO_LANG_ID'] . adm_back_link($this->u_action));
 				}
 
-				$sql = 'SELECT * FROM ' . LANG_TABLE . '
+				$sql = 'SELECT * 
+					FROM ' . LANG_TABLE . '
 					WHERE lang_id = ' . $lang_id;
 				$result = $db->sql_query($sql);
 				$row = $db->sql_fetchrow($result);
@@ -794,7 +779,7 @@ class acp_language
 
 				include_once($phpbb_root_path . 'includes/functions_compress.' . $phpEx);
 
-				if ($use_method == 'zip')
+				if ($use_method == '.zip')
 				{
 					$compress = new compress_zip('w', $phpbb_root_path . 'store/lang_' . $row['lang_iso'] . $use_method);
 				}
@@ -817,6 +802,17 @@ class acp_language
 
 				// Add main files
 				$this->add_to_archive($compress, $this->main_files, $row['lang_iso']);
+
+				// Add search files if they exist...
+				if (file_exists($phpbb_root_path . 'language/' . $row['lang_iso'] . '/search_ignore_words.' . $phpEx))
+				{
+					$this->add_to_archive($compress, array("search_ignore_words.$phpEx"), $row['lang_iso']);
+				}
+
+				if (file_exists($phpbb_root_path . 'language/' . $row['lang_iso'] . '/search_synonyms.' . $phpEx))
+				{
+					$this->add_to_archive($compress, array("search_synonyms.$phpEx"), $row['lang_iso']);
+				}
 
 				// Write files in folders
 				$this->add_to_archive($compress, $email_templates, $row['lang_iso'], 'email');
@@ -862,7 +858,8 @@ class acp_language
 		$db->sql_freeresult($result);
 
 		$sql = 'SELECT *  
-			FROM ' . LANG_TABLE;
+			FROM ' . LANG_TABLE . '
+			ORDER BY lang_english_name';
 		$result = $db->sql_query($sql);
 
 		$installed = array();
@@ -975,8 +972,7 @@ $lang = array_merge($lang, array(
 ';
 
 		// Language files in language root directory
-		$this->main_files = array("common.$phpEx", "groups.$phpEx", "mcp.$phpEx", "memberlist.$phpEx", "posting.$phpEx", "search.$phpEx", "ucp.$phpEx", "viewforum.$phpEx", "viewtopic.$phpEx", "help_bbcode.$phpEx", "help_faq.$phpEx");
-	
+		$this->main_files = array("common.$phpEx", "groups.$phpEx", "install.$phpEx", "mcp.$phpEx", "memberlist.$phpEx", "posting.$phpEx", "search.$phpEx", "ucp.$phpEx", "viewforum.$phpEx", "viewtopic.$phpEx", "help_bbcode.$phpEx", "help_faq.$phpEx");
 	}
 
 	/**
@@ -1041,22 +1037,52 @@ $lang = array_merge($lang, array(
 
 				foreach ($value as $_key => $_value)
 				{
-					$tpl .= '
-						<tr>
-							<td class="row1" style="white-space: nowrap;">' . $key_prefix . '<b>' . $_key . '</b></td>
-							<td class="row2">';
-					
-					if ($input_field)
+					if (is_array($_value))
 					{
-						$tpl .= '<input type="text" name="entry[' . $key . '][' . $_key . ']" value="' . htmlspecialchars($_value) . '" size="50" />';
+						$tpl .= '
+							<tr>
+								<td class="row3" colspan="2">' . $key_prefix . '&nbsp; &nbsp;<b>' . $_key . '</b></td>
+							</tr>';
+
+						foreach ($_value as $__key => $__value)
+						{
+							$tpl .= '
+								<tr>
+									<td class="row1" style="white-space: nowrap;">' . $key_prefix . '<b>' . $__key . '</b></td>
+									<td class="row2">';
+
+							if ($input_field)
+							{
+								$tpl .= '<input type="text" name="entry[' . $key . '][' . $_key . '][' . $__key . ']" value="' . htmlspecialchars($__value) . '" size="50" />';
+							}
+							else
+							{
+								$tpl .= '<b>' . htmlspecialchars($__value) . '</b>';
+							}
+							
+							$tpl .= '</td>
+								</tr>';
+						}
 					}
 					else
 					{
-						$tpl .= '<b>' . htmlspecialchars($_value) . '</b>';
+						$tpl .= '
+							<tr>
+								<td class="row1" style="white-space: nowrap;">' . $key_prefix . '<b>' . $_key . '</b></td>
+								<td class="row2">';
+						
+						if ($input_field)
+						{
+							$tpl .= '<input type="text" name="entry[' . $key . '][' . $_key . ']" value="' . htmlspecialchars($_value) . '" size="50" />';
+						}
+						else
+						{
+							$tpl .= '<b>' . htmlspecialchars($_value) . '</b>';
+						}
+						
+						$tpl .= '</td>
+							</tr>';
 					}
-					
-					$tpl .= '</td>
-						</tr>';
 				}
 
 				$tpl .= '
@@ -1190,6 +1216,49 @@ $lang = array_merge($lang, array(
 		unset($lang_entry_src);
 
 		return $return_ary;
+	}
+
+	/**
+	* Return language string value for storage
+	*/
+	function prepare_lang_entry($text, $store = true)
+	{
+		$text = (STRIP) ? stripslashes($text) : $text;
+
+		// Adjust for storage...
+		if ($store)
+		{
+			$text = str_replace("'", "\\'", str_replace('\\', '\\\\', $text));
+		}
+
+		return $text;
+	}
+
+	/**
+	* Format language array for storage
+	*/
+	function format_lang_array($key, $value, $tabs = "\t")
+	{
+		$entry = '';
+
+		if (!is_array($value))
+		{
+			$entry .= "{$tabs}'{$key}'\t=> '" . $this->prepare_lang_entry($value) . "',\n";
+		}
+		else
+		{
+			$_tabs = $tabs . "\t";
+			$entry .= "\n{$tabs}'{$key}'\t=> array(\n";
+
+			foreach ($value as $_key => $_value)
+			{
+				$entry .= $this->format_lang_array($_key, $_value, $_tabs);
+			}
+
+			$entry .= "{$tabs}),\n\n";
+		}
+
+		return $entry;
 	}
 }
 

@@ -29,7 +29,23 @@ function view_folder($id, $mode, $folder_id, $folder)
 		$icons = array();
 		$cache->obtain_icons($icons);
 
-		$color_rows = array('marked', 'replied', 'friend', 'foe');
+		$color_rows = array('marked', 'replied');
+
+		// only show the friend/foe color rows if the module is enabled
+		$zebra_enabled = false;
+
+		$_module = new p_master();
+		$_module->list_modules('ucp');
+		$_module->set_active('zebra');
+
+		$zebra_enabled = ($_module->active_module === false) ? false : true;
+
+		unset($_module);
+
+		if ($zebra_enabled)
+		{
+			$color_rows = array_merge($color_rows, array('friend', 'foe'));
+		}
 
 		foreach ($color_rows as $var)
 		{
@@ -117,15 +133,15 @@ function view_folder($id, $mode, $folder_id, $folder)
 						{
 							$sql = 'SELECT user_id as id, username as name, user_colour as colour 
 								FROM ' . USERS_TABLE . '
-								WHERE user_id';
+								WHERE ';
 						}
 						else
 						{
 							$sql = 'SELECT group_id as id, group_name as name, group_colour as colour, group_type
 								FROM ' . GROUPS_TABLE . '
-								WHERE group_id';
+								WHERE ';
 						}
-						$sql .= ' IN (' . implode(', ', array_map('intval', array_keys($recipient_list[$ug_type]))) . ')';
+						$sql .= $db->sql_in_set(($ug_type == 'u') ? 'user_id' : 'group_id', array_map('intval', array_keys($recipient_list[$ug_type])));
 
 						$result = $db->sql_query($sql);
 
@@ -161,8 +177,8 @@ function view_folder($id, $mode, $folder_id, $folder)
 			{
 				$row = &$folder_info['rowset'][$message_id];
 
-				$folder_img = ($row['unread']) ? 'folder_new' : 'folder';
-				$folder_alt = ($row['unread']) ? 'NEW_MESSAGES' : 'NO_NEW_MESSAGES';
+				$folder_img = ($row['pm_unread']) ? 'pm_unread' : 'pm_read';
+				$folder_alt = ($row['pm_unread']) ? 'NEW_MESSAGES' : 'NO_NEW_MESSAGES';
 
 				// Generate all URIs ...
 				$message_author = '<a href="' . append_sid("{$phpbb_root_path}memberlist.$phpEx", 'mode=viewprofile&amp;u=' . $row['author_id']) . '">' . $row['username'] . '</a>';
@@ -172,7 +188,7 @@ function view_folder($id, $mode, $folder_id, $folder)
 				$row_indicator = '';
 				foreach ($color_rows as $var)
 				{
-					if (($var != 'friend' && $var != 'foe' && $row[$var])
+					if (($var != 'friend' && $var != 'foe' && $row['pm_' . $var])
 						||
 						(($var == 'friend' || $var == 'foe') && isset(${$var}[$row['author_id']]) && ${$var}[$row['author_id']]))
 					{
@@ -194,13 +210,14 @@ function view_folder($id, $mode, $folder_id, $folder)
 					'U_FOLDER'			=> (isset($folder[$row['folder_id']])) ? append_sid("{$phpbb_root_path}ucp.$phpEx", 'folder=' . $row['folder_id']) : '',
 					'PM_ICON_IMG'		=> (!empty($icons[$row['icon_id']])) ? '<img src="' . $config['icons_path'] . '/' . $icons[$row['icon_id']]['img'] . '" width="' . $icons[$row['icon_id']]['width'] . '" height="' . $icons[$row['icon_id']]['height'] . '" alt="" title="" />' : '',
 					'FOLDER_IMG'		=> $user->img($folder_img, $folder_alt),
+					'FOLDER_IMG_SRC'	=> $user->img($folder_img, $folder_alt, false, '', 'src'),
 					'PM_IMG'			=> ($row_indicator) ? $user->img('pm_' . $row_indicator, '') : '',
-					'ATTACH_ICON_IMG'	=> ($auth->acl_get('u_download') && $row['message_attachment'] && $config['allow_pm_attach'] && $config['auth_download_pm']) ? $user->img('icon_attach', $user->lang['TOTAL_ATTACHMENTS']) : '',
+					'ATTACH_ICON_IMG'	=> ($auth->acl_get('u_pm_download') && $row['message_attachment'] && $config['allow_pm_attach']) ? $user->img('icon_topic_attach', $user->lang['TOTAL_ATTACHMENTS']) : '',
 
-					'S_PM_DELETED'		=> ($row['deleted']) ? true : false,
+					'S_PM_DELETED'		=> ($row['pm_deleted']) ? true : false,
 
-					'U_VIEW_PM'			=> ($row['deleted']) ? '' : $view_message_url,
-					'U_REMOVE_PM'		=> ($row['deleted']) ? $remove_message_url : '',
+					'U_VIEW_PM'			=> ($row['pm_deleted']) ? '' : $view_message_url,
+					'U_REMOVE_PM'		=> ($row['pm_deleted']) ? $remove_message_url : '',
 					'RECIPIENTS'		=> ($folder_id == PRIVMSGS_OUTBOX || $folder_id == PRIVMSGS_SENTBOX) ? implode(', ', $address_list[$message_id]) : '')
 				);
 			}
@@ -260,15 +277,15 @@ function view_folder($id, $mode, $folder_id, $folder)
 						{
 							$sql = 'SELECT user_id as id, username as name
 								FROM ' . USERS_TABLE . '
-								WHERE user_id';
+								WHERE ';
 						}
 						else
 						{
 							$sql = 'SELECT group_id as id, group_name as name
 								FROM ' . GROUPS_TABLE . '
-								WHERE group_id';
+								WHERE ';
 						}
-						$sql .= ' IN (' . implode(', ', array_map('intval', array_keys($address[$message_id][$ug_type]))) . ')';
+						$sql .= $db->sql_in_set(($ug_type == 'u') ? 'user_id' : 'group_id', array_map('intval', array_keys($address[$message_id][$ug_type])));
 
 						$result = $db->sql_query($sql);
 
@@ -451,7 +468,7 @@ function get_pm_from($folder_id, $folder, $user_id)
 		'PAGE_NUMBER'		=> on_page($pm_count, $config['topics_per_page'], $start),
 		'TOTAL_MESSAGES'	=> (($pm_count == 1) ? $user->lang['VIEW_PM_MESSAGE'] : sprintf($user->lang['VIEW_PM_MESSAGES'], $pm_count)),
 
-		'POST_IMG'		=> (!$auth->acl_get('u_sendpm')) ? $user->img('btn_locked', 'PM_LOCKED') : $user->img('btn_post_pm', 'POST_PM'),
+		'POST_IMG'		=> (!$auth->acl_get('u_sendpm')) ? $user->img('button_topic_locked', 'PM_LOCKED') : $user->img('button_pm_new', 'POST_PM'),
 
 		'L_NO_MESSAGES'	=> (!$auth->acl_get('u_sendpm')) ? $user->lang['POST_PM_LOCKED'] : $user->lang['NO_MESSAGES'],
 

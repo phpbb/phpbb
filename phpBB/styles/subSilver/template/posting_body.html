@@ -29,6 +29,9 @@ a_help = "{LA_BBCODE_A_HELP}";
 s_help = "{LA_BBCODE_S_HELP}";
 f_help = "{LA_BBCODE_F_HELP}";
 e_help = "{LA_BBCODE_E_HELP}";
+d_help = "{LA_BBCODE_D_HELP}";
+<!-- BEGIN custom_tags -->cb_{custom_tags.BBCODE_ID}_help = "{custom_tags.BBCODE_HELPLINE}";<!-- END custom_tags -->
+
 
 function checkForm()
 {
@@ -171,7 +174,7 @@ function checkForm()
 		<td class="row2">
 			<table width="100%" cellspacing="0" cellpadding="0" border="0">
 			<tr>
-				<td><input type="radio" class="radio" name="icon" value="0"{S_NO_ICON_CHECKED} /><span class="genmed">{L_NONE}</span> <!-- BEGIN topic_icon --><input type="radio" class="radio" name="icon" value="{topic_icon.ICON_ID}"{topic_icon.S_ICON_CHECKED} /><img src="{topic_icon.ICON_IMG}" width="{topic_icon.ICON_WIDTH}" height="{topic_icon.ICON_HEIGHT}" alt="" title="" hspace="2" vspace="2" /> <!-- END topic_icon --></td>
+				<td><input type="radio" class="radio" name="icon" value="0"{S_NO_ICON_CHECKED} /><span class="genmed">{L_NO_TOPIC_ICON}</span> <!-- BEGIN topic_icon --><input type="radio" class="radio" name="icon" value="{topic_icon.ICON_ID}"{topic_icon.S_ICON_CHECKED} /><img src="{topic_icon.ICON_IMG}" width="{topic_icon.ICON_WIDTH}" height="{topic_icon.ICON_HEIGHT}" alt="" title="" hspace="2" vspace="2" /> <!-- END topic_icon --></td>
 			</tr>
 			</table>
 		</td>
@@ -191,9 +194,9 @@ function checkForm()
 		<td class="row2">
 		<!-- BEGIN to_recipient -->
 			<span class="genmed">
-			<a href="{to_recipient.U_VIEW}"><!-- IF to_recipient.COLOUR --><b style="color:#{to_recipient.COLOUR}"><!-- ELSE --><b<!-- IF to_recipient.IS_GROUP --> class="blue"<!-- ENDIF -->><!-- ENDIF -->{to_recipient.NAME}</b></a>&nbsp;</span><!-- IF not S_EDIT_POST --><input class="post" type="submit" name="remove_{to_recipient.TYPE}[{to_recipient.UG_ID}]" value="Remove" />&nbsp;<!-- ENDIF -->
+			<a href="{to_recipient.U_VIEW}"><!-- IF to_recipient.COLOUR --><b style="color:#{to_recipient.COLOUR}"><!-- ELSE --><b<!-- IF to_recipient.IS_GROUP --> class="blue"<!-- ENDIF -->><!-- ENDIF -->{to_recipient.NAME}</b></a>&nbsp;</span><!-- IF not S_EDIT_POST --><input class="post" type="submit" name="remove_{to_recipient.TYPE}[{to_recipient.UG_ID}]" value="{L_REMOVE}" />&nbsp;<!-- ENDIF -->
 		<!-- BEGINELSE -->
-			<span class="genmed">{L_NONE}</span>
+			<span class="genmed">{L_NO_TO_RECIPIENT}</span>
 		<!-- END to_recipient -->
 		</td>
 	</tr>
@@ -204,7 +207,7 @@ function checkForm()
 			<span class="genmed">
 			<a href="{bcc_recipient.U_VIEW}"><!-- IF bcc_recipient.COLOUR --><b style="color:#{bcc_recipient.COLOUR}"><!-- ELSE --><b<!-- IF bcc_recipient.IS_GROUP --> class="blue"<!-- ENDIF -->><!-- ENDIF -->{bcc_recipient.NAME}</b></a>&nbsp;</span><!-- IF not S_EDIT_POST --><input class="post" type="submit" name="remove_{bcc_recipient.TYPE}[{bcc_recipient.UG_ID}]" value="Remove" />&nbsp;<!-- ENDIF -->
 		<!-- BEGINELSE -->
-			<span class="genmed">{L_NONE}</span>
+			<span class="genmed">{L_NO_BCC_RECIPIENT}</span>
 		<!-- END bcc_recipient -->
 		</td>
 	</tr>
@@ -217,6 +220,7 @@ function checkForm()
 </tr>
 <tr>
 	<td class="row1" valign="top"><b class="genmed">{L_MESSAGE_BODY}:</b><br /><span class="gensmall">{L_MESSAGE_BODY_EXPLAIN}</span><br /><br />
+	<!-- IF S_SMILIES_ALLOWED -->
 		<table width="100%" cellspacing="5" cellpadding="0" border="0" align="center">
 		<tr>
 			<td class="gensmall" align="center"><b>{L_SMILIES}</b></td>
@@ -232,6 +236,7 @@ function checkForm()
 		<!-- ENDIF -->
 
 		</table>
+	<!-- ENDIF -->
 	</td>
 	<td class="row2" valign="top">
 	
@@ -247,7 +252,7 @@ function checkForm()
 				<input type="button" class="btnbbcode" accesskey="o" name="addbbcode12" value="List=" style="width: 40px" onclick="bbstyle(12)" onmouseover="helpline('o')" />
 				<!-- IF S_BBCODE_IMG --><input type="button" class="btnbbcode" accesskey="p" name="addbbcode14" value="Img" style="width: 40px"  onclick="bbstyle(14)" onmouseover="helpline('p')" /><!-- ENDIF -->
 				<input type="button" class="btnbbcode" accesskey="w" name="addbbcode16" value="URL" style="text-decoration: underline; width: 40px" onclick="bbstyle(16)" onmouseover="helpline('w')" />
-				<!-- IF S_BBCODE_FLASH --><input type="button" class="btnbbcode" accesskey="f" name="addbbcode18" value="Flash" onclick="bbstyle(18)" /><!-- ENDIF -->
+				<!-- IF S_BBCODE_FLASH --><input type="button" class="btnbbcode" accesskey="d" name="addbbcode18" value="Flash" onclick="bbstyle(18)" onmouseover="helpline('d')" /><!-- ENDIF -->
 				<span class="genmed" style="white-space: nowrap;">{L_FONT_SIZE}: <select class="gensmall" name="addbbcode20" onchange="bbfontstyle('[size=' + this.form.addbbcode20.options[this.form.addbbcode20.selectedIndex].value + ']', '[/size]');this.form.addbbcode20.selectedIndex = 2;" onmouseover="helpline('f')">
 					<option value="7">{L_FONT_TINY}</option>
 					<option value="9">{L_FONT_SMALL}</option>
@@ -261,7 +266,7 @@ function checkForm()
 			<tr valign="middle" align="left">
 				<td colspan="2">
 				<!-- BEGIN custom_tags -->
-					<input type="button" class="btnbbcode" name="addbbcode{custom_tags.BBCODE_ID}" value="{custom_tags.BBCODE_TAG}" onclick="bbstyle({custom_tags.BBCODE_ID})" />
+					<input type="button" class="btnbbcode" name="addbbcode{custom_tags.BBCODE_ID}" value="{custom_tags.BBCODE_TAG}" onclick="bbstyle({custom_tags.BBCODE_ID})"<!-- IF custom_tags.BBCODE_HELPLINE !== '' --> onmouseover="helpline('cb_{custom_tags.BBCODE_ID}')"<!-- ENDIF --> />
 				<!-- END custom_tags -->
 				</td>
 			</tr>
@@ -386,7 +391,7 @@ function checkForm()
 
 <!-- IF S_CONFIRM_CODE -->
 	<tr> 
-		<th colspan="2" height="28" valign="middle">{L_POST_CONFIRMATION}</th>
+		<th colspan="2" valign="middle">{L_POST_CONFIRMATION}</th>
 	</tr>
 	<tr> 
 		<td class="row3" colspan="2"><span class="gensmall">{L_POST_CONFIRM_EXPLAIN}</span></td>

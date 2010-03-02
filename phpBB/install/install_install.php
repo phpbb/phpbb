@@ -11,6 +11,12 @@
 /**
 */
 
+if ( !defined('IN_INSTALL') )
+{
+	// Someone has tried to access the file direct. This is not a good idea, so exit
+	exit;
+}
+
 if (!empty($setmodules))
 {
 	$module[] = array(
@@ -19,7 +25,7 @@ if (!empty($setmodules))
 		'module_filename'	=> substr(basename(__FILE__), 0, -strlen($phpEx)-1),
 		'module_order'		=> 10,
 		'module_subs'		=> '',
-		'module_stages'		=> array('INTRO', 'REQUIREMENTS', 'DATABASE', 'ADMINISTRATOR', 'CONFIG_FILE', 'ADVANCED', 'FINAL'),
+		'module_stages'		=> array('INTRO', 'REQUIREMENTS', 'DATABASE', 'ADMINISTRATOR', 'CONFIG_FILE', 'ADVANCED', 'CREATE_TABLE', 'FINAL'),
 		'module_reqs'		=> ''
 	);
 }
@@ -37,7 +43,7 @@ class install_install extends module
 
 	function main($mode, $sub)
 	{
-		global $lang, $template;
+		global $lang, $template, $language;
 
 		switch ($sub)
 		{
@@ -45,10 +51,11 @@ class install_install extends module
 				$this->page_title = $lang['SUB_INTRO'];
 
 				$template->assign_vars(array(
-					'TITLE'		=> $lang['INSTALL_INTRO'],
-					'BODY'		=> $lang['INSTALL_INTRO_BODY'],
-					'L_SUBMIT'	=> $lang['NEXT'],
-					'U_ACTION'	=> $this->p_master->module_url . "?mode=$mode&amp;sub=requirements",
+					'TITLE'			=> $lang['INSTALL_INTRO'],
+					'BODY'			=> $lang['INSTALL_INTRO_BODY'],
+					'L_SUBMIT'		=> $lang['NEXT'],
+					'S_LANG_SELECT'	=> '<select id="language" name="language">' . $this->p_master->inst_language_select($language) . '</select>',
+					'U_ACTION'		=> $this->p_master->module_url . "?mode=$mode&amp;sub=requirements&amp;language=$language",
 				));
 
 			break;
@@ -78,9 +85,14 @@ class install_install extends module
 
 			break;
 
-			case 'final' :
+			case 'create_table':
 				$this->load_schema($mode, $sub);
+			
+			break;
+
+			case 'final' :
 				$this->add_modules($mode, $sub);
+				$this->add_language($mode, $sub);
 				$this->add_bots($mode, $sub);
 				$this->email_admin($mode, $sub);
 			
@@ -95,7 +107,7 @@ class install_install extends module
 	*/
 	function check_server_requirements($mode, $sub)
 	{
-		global $lang, $template, $phpbb_root_path, $phpEx;
+		global $lang, $template, $phpbb_root_path, $phpEx, $language;
 
 		$this->page_title = $lang['STAGE_REQUIREMENTS'];
 
@@ -235,7 +247,7 @@ class install_install extends module
 		}
 
 		// Can we find Imagemagick anywhere on the system?
-		$exe = ((defined('PHP_OS')) && (preg_match('#win#i', PHP_OS))) ? '.exe' : '';
+		$exe = ((defined('PHP_OS')) && (preg_match('#^win#i', PHP_OS))) ? '.exe' : '';
 
 		$magic_home = getenv('MAGICK_HOME');
 		$img_imagick = '';
@@ -355,7 +367,7 @@ class install_install extends module
 		// And finally where do we want to go next (well today is taken isn't it :P)
 		$s_hidden_fields = ($img_imagick) ? '<input type="hidden" name="img_imagick" value="' . addslashes($img_imagick) . '" />' : '';
 
-		$url = ($passed['php'] && $passed['db'] && $passed['files']) ? $this->p_master->module_url . "?mode=$mode&amp;sub=database" : $this->p_master->module_url . "?mode=$mode&amp;sub=requirements";
+		$url = ($passed['php'] && $passed['db'] && $passed['files']) ? $this->p_master->module_url . "?mode=$mode&amp;sub=database&amp;language=$language" : $this->p_master->module_url . "?mode=$mode&amp;sub=requirements&amp;language=$language	";
 		$submit = ($passed['php'] && $passed['db'] && $passed['files']) ? $lang['INSTALL_START'] : $lang['INSTALL_TEST'];
 
 
@@ -394,6 +406,8 @@ class install_install extends module
 					$error['db'][] = $lang['INST_ERR_NO_DB'];
 				}
 			}
+			
+			$dbpasswd = html_entity_decode($dbpasswd);
 
 			$connect_test = $this->connect_check_db(true, $error, $dbms, $table_prefix, $dbhost, $dbuser, $dbpasswd, $dbname, $dbport);
 
@@ -481,6 +495,7 @@ class install_install extends module
 
 		// And finally where do we want to go next (well today is taken isn't it :P)
 		$s_hidden_fields = ($img_imagick) ? '<input type="hidden" name="img_imagick" value="' . addslashes($img_imagick) . '" />' : '';
+		$s_hidden_fields .= '<input type="hidden" name="language" value="' . $language . '" />';
 		if ($connect_test)
 		{
 			foreach ($this->db_config_options as $config_key => $vars)
@@ -524,8 +539,7 @@ class install_install extends module
 		{
 			// Someone's been silly and tried calling this page direct
 			// So we send them back to the start to do it again properly
-			header('Location: index.' . $phpEx . '?mode=install');
-			exit;
+			$this->p_master->redirect("index?mode=install");
 		}
 
 		$s_hidden_fields = ($img_imagick) ? '<input type="hidden" name="img_imagick" value="' . addslashes($img_imagick) . '" />' : '';
@@ -544,6 +558,17 @@ class install_install extends module
 			if ($admin_pass1 != $admin_pass2 && $admin_pass1 != '')
 			{
 				$error[] = $lang['INST_ERR_PASSWORD_MISMATCH'];
+			}
+
+			// Test against the default username rules
+			if ($admin_name != '' && strlen($admin_name) < 3)
+			{
+				$error[] = $lang['INST_ERR_USER_TOO_SHORT'];
+			}
+
+			if ($admin_name != '' && strlen($admin_name) > 20)
+			{
+				$error[] = $lang['INST_ERR_USER_TOO_LONG'];
 			}
 
 			// Test against the default password rules
@@ -642,6 +667,7 @@ class install_install extends module
 		}
 		
 		$s_hidden_fields .= ($img_imagick) ? '<input type="hidden" name="img_imagick" value="' . addslashes($img_imagick) . '" />' : '';
+		$s_hidden_fields .= '<input type="hidden" name="language" value="' . $language . '" />';
 
 		foreach ($this->db_config_options as $config_key => $vars)
 		{
@@ -683,11 +709,11 @@ class install_install extends module
 		{
 			// Someone's been silly and tried calling this page direct
 			// So we send them back to the start to do it again properly
-			header('Location: index.' . $phpEx . '?mode=install');
-			exit;
+			$this->p_master->redirect("index?mode=install");
 		}
 
 		$s_hidden_fields = ($img_imagick) ? '<input type="hidden" name="img_imagick" value="' . addslashes($img_imagick) . '" />' : '';
+		$s_hidden_fields .= '<input type="hidden" name="language" value="' . $language . '" />';
 		$written = false;
 
 		// Create a list of any PHP modules we wish to have loaded
@@ -706,6 +732,7 @@ class install_install extends module
 			}
 		}
 
+		$dbpasswd = html_entity_decode($dbpasswd);
 		$load_extensions = implode(',', $load_extensions);
 
 		// Time to convert the data provided into a config file
@@ -760,6 +787,7 @@ class install_install extends module
 		}
 
 		$config_options = array_merge($this->db_config_options, $this->admin_config_options);
+
 		foreach ($config_options as $config_key => $vars)
 		{
 			if (!is_array($vars))
@@ -827,18 +855,17 @@ class install_install extends module
 		{
 			// Someone's been silly and tried calling this page direct
 			// So we send them back to the start to do it again properly
-			header('Location: index.' . $phpEx . '?mode=install');
-			exit;
+			$this->p_master->redirect("index?mode=install");
 		}
 
 		$s_hidden_fields = ($img_imagick) ? '<input type="hidden" name="img_imagick" value="' . addslashes($img_imagick) . '" />' : '';
-		$email_enable = ($email_enable !== '') ? $email_enable : true;
+		$s_hidden_fields .= '<input type="hidden" name="language" value="' . $language . '" />';
 
+		$email_enable = ($email_enable !== '') ? $email_enable : true;
 		$server_name = ($server_name !== '') ? $server_name : ((!empty($_SERVER['SERVER_NAME'])) ? $_SERVER['SERVER_NAME'] : getenv('SERVER_NAME'));
 		$server_port = ($server_port !== '') ? $server_port : ((!empty($_SERVER['SERVER_PORT'])) ? (int) $_SERVER['SERVER_PORT'] : (int) getenv('SERVER_PORT'));
-		$server_protocol = ($server_protocol !== '') ? $server_protocol : (isset($_SERVER['HTTPS']) ? 'https://' : 'http://');
-		$cookie_secure = ($cookie_secure !== '') ? $cookie_secure : (isset($_SERVER['HTTPS']) ? true : false);
-
+		$server_protocol = ($server_protocol !== '') ? $server_protocol : ((isset($_SERVER['HTTPS']) && $_SERVER['HTTPS'] == 'on') ? 'https://' : 'http://');
+		$cookie_secure = ($cookie_secure !== '') ? $cookie_secure : ((isset($_SERVER['HTTPS']) && $_SERVER['HTTPS'] == 'on') ? true : false);
 		
 		foreach ($this->advanced_config_options as $config_key => $vars)
 		{
@@ -882,7 +909,7 @@ class install_install extends module
 
 		$submit = $lang['NEXT_STEP'];
 
-		$url = $this->p_master->module_url . "?mode=$mode&amp;sub=final";
+		$url = $this->p_master->module_url . "?mode=$mode&amp;sub=create_table";
 
 		$template->assign_vars(array(
 			'BODY'		=> $lang['STAGE_ADVANCED_EXPLAIN'],
@@ -899,6 +926,8 @@ class install_install extends module
 	{
 		global $db, $lang, $template, $phpbb_root_path, $phpEx;
 
+		$this->page_title = $lang['STAGE_CREATE_TABLE'];
+
 		// Obtain any submitted data
 		foreach ($this->request_vars as $var)
 		{
@@ -909,8 +938,7 @@ class install_install extends module
 		{
 			// Someone's been silly and tried calling this page direct
 			// So we send them back to the start to do it again properly
-			header('Location: index.' . $phpEx . '?mode=install');
-			exit;
+			$this->p_master->redirect("index?mode=install");
 		}
 
 		$cookie_domain = ($server_name != '') ? $server_name : (!empty($_SERVER['SERVER_NAME'])) ? $_SERVER['SERVER_NAME'] : getenv('SERVER_NAME');
@@ -920,6 +948,8 @@ class install_install extends module
 		{
 			@dl($this->available_dbms[$dbms]['MODULE'] . ".$prefix");
 		}
+
+		$dbpasswd = html_entity_decode($dbpasswd);
 
 		// Load the appropriate database class if not already loaded
 		include($phpbb_root_path . 'includes/db/' . $dbms . '.' . $phpEx);
@@ -946,12 +976,18 @@ class install_install extends module
 		{
 			case 'mysql':
 			case 'mysql4':
-			case 'mysqli':
 				// We don't want MySQL mixing up collations
 				if (version_compare(mysql_get_server_info(), '4.1.2', '>='))
 				{
 					$sql_query = preg_replace('/^\);$/m', ') DEFAULT CHARACTER SET latin1;', $sql_query);
 				}
+
+			break;
+
+			case 'mysqli':
+				// mysqli only works with MySQL > 4.1.3 so we'll just do a straight replace if using this DBMS
+				$sql_query = preg_replace('/^\);$/m', ') DEFAULT CHARACTER SET latin1;', $sql_query);
+			
 			break;
 		}
 
@@ -975,7 +1011,7 @@ class install_install extends module
 		// Ok tables have been built, let's fill in the basic information
 		$sql_query = file_get_contents('schemas/schema_data.sql');
 
-		// Deal with any special comments
+		// Deal with any special comments and with MySQL < 4.1.2
 		switch ($dbms)
 		{
 			case 'mssql':
@@ -985,10 +1021,6 @@ class install_install extends module
 
 			case 'postgres':
 				$sql_query = preg_replace('#\# POSTGRES (BEGIN|COMMIT) \##s', '\1; ', $sql_query);
-			break;
-
-			case 'firebird':
-				$sql_query = str_replace('module_name', '"module_name"', $sql_query);
 			break;
 		}
 
@@ -1017,7 +1049,7 @@ class install_install extends module
 				VALUES ('board_startdate', $current_time)",
 
 			'INSERT INTO ' . $table_prefix . "config (config_name, config_value)
-				VALUES ('default_lang', '" . $db->sql_escape($language) . "')",
+				VALUES ('default_lang', '" . $db->sql_escape($default_lang) . "')",
 
 			'UPDATE ' . $table_prefix . "config
 				SET config_value = '" . $db->sql_escape($img_imagick) . "'
@@ -1096,7 +1128,7 @@ class install_install extends module
 				WHERE config_name = 'newest_username'",
 
 			'UPDATE ' . $table_prefix . "users
-				SET username = '" . $db->sql_escape($admin_name) . "', user_password='" . $db->sql_escape(md5($admin_pass1)) . "', user_lang = '" . $db->sql_escape($language) . "', user_email='" . $db->sql_escape($board_email1) . "', user_dateformat='" . $db->sql_escape($lang['default_dateformat']) . "'
+				SET username = '" . $db->sql_escape($admin_name) . "', user_password='" . $db->sql_escape(md5($admin_pass1)) . "', user_lang = '" . $db->sql_escape($default_lang) . "', user_email='" . $db->sql_escape($board_email1) . "', user_dateformat='" . $db->sql_escape($lang['default_dateformat']) . "', user_email_hash = '" . (int) (crc32(strtolower($board_email1)) . strlen($board_email1)) . "'
 				WHERE username = 'Admin'",
 
 			'UPDATE ' . $table_prefix . "moderator_cache
@@ -1143,7 +1175,22 @@ class install_install extends module
 				$this->p_master->db_error($error['message'], $sql, __LINE__, __FILE__);
 			}
 		}
-	
+
+		foreach ($this->request_vars as $var)
+		{
+			$s_hidden_fields .= '<input type="hidden" name="' . $var . '" value="' . $$var . '" />';
+		}
+
+		$submit = $lang['NEXT_STEP'];
+
+		$url = $this->p_master->module_url . "?mode=$mode&amp;sub=final";
+
+		$template->assign_vars(array(
+			'BODY'		=> $lang['STAGE_CREATE_TABLE_EXPLAIN'],
+			'L_SUBMIT'	=> $submit,
+			'S_HIDDEN'	=> $s_hidden_fields,
+			'U_ACTION'	=> $url,
+		));
 	}
 
 	/**
@@ -1159,14 +1206,21 @@ class install_install extends module
 			$$var = request_var($var, '');
 		}
 
+		$dbpasswd = html_entity_decode($dbpasswd);
+
+		// Load the appropriate database class if not already loaded
+		include($phpbb_root_path . 'includes/db/' . $dbms . '.' . $phpEx);
+
+		// Instantiate the database
+		$sql_db = 'dbal_' . $dbms;
+		$db = new $sql_db();
+		$db->sql_connect($dbhost, $dbuser, $dbpasswd, $dbname, $dbport, false);
+
+		// NOTE: trigger_error does not work here.
+		$db->return_on_error = true;
+
 		include_once($phpbb_root_path . 'includes/constants.' . $phpEx);
 		include_once($phpbb_root_path . 'includes/acp/acp_modules.' . $phpEx);
-
-		// recalculate binary tree
-		if (!function_exists('recalc_btree'))
-		{
-			include_once($phpbb_root_path . 'includes/functions_admin.' . $phpEx);
-		}
 
 		$_module = &new acp_modules();
 		$module_classes = array('acp', 'mcp', 'ucp');
@@ -1182,7 +1236,7 @@ class install_install extends module
 			foreach ($this->module_categories[$module_class] as $cat_name => $subs)
 			{
 				$module_data = array(
-					'module_name'		=> '',
+					'module_basename'	=> '',
 					'module_enabled'	=> 1,
 					'module_display'	=> 1,
 					'parent_id'			=> 0,
@@ -1211,7 +1265,7 @@ class install_install extends module
 					foreach ($subs as $level2_name)
 					{
 						$module_data = array(
-							'module_name'		=> '',
+							'module_basename'	=> '',
 							'module_enabled'	=> 1,
 							'module_display'	=> 1,
 							'parent_id'			=> $categories[$cat_name]['id'],
@@ -1239,14 +1293,18 @@ class install_install extends module
 			// Get the modules we want to add... returned sorted by name
 			$module_info = $_module->get_module_infos('', $module_class);
 
-			foreach ($module_info as $module_name => $fileinfo)
+			foreach ($module_info as $module_basename => $fileinfo)
 			{
 				foreach ($fileinfo['modes'] as $module_mode => $row)
 				{
 					foreach ($row['cat'] as $cat_name)
 					{
+						if (!isset($categories[$cat_name]))
+						{
+							continue;
+						}
 						$module_data = array(
-							'module_name'		=> $module_name,
+							'module_basename'	=> $module_basename,
 							'module_enabled'	=> 1,
 							'module_display'	=> (isset($row['display'])) ? $row['display'] : 1,
 							'parent_id'			=> $categories[$cat_name]['id'],
@@ -1268,14 +1326,13 @@ class install_install extends module
 				}
 			}
 
-			// This is a one off move of a single ACP module since the sort algorithm puts it in the wrong place
-			// Manage Users should ideally be the first thing you see on the Users & groups tab
+			// Move some of the modules around since the code above will put them in the wrong place
 			if ($module_class == 'acp')
 			{
 				// Move main module 4 up...
 				$sql = 'SELECT *
 					FROM ' . MODULES_TABLE . "
-					WHERE module_name = 'main'
+					WHERE module_basename = 'main'
 						AND module_class = 'acp'
 						AND module_mode = 'main'";
 				$result = $db->sql_query($sql);
@@ -1287,7 +1344,7 @@ class install_install extends module
 				// Move permissions intro screen module 4 up...
 				$sql = 'SELECT *
 					FROM ' . MODULES_TABLE . "
-					WHERE module_name = 'permissions'
+					WHERE module_basename = 'permissions'
 						AND module_class = 'acp'
 						AND module_mode = 'intro'";
 				$result = $db->sql_query($sql);
@@ -1295,29 +1352,42 @@ class install_install extends module
 				$db->sql_freeresult($result);
 	
 				$_module->move_module_by($row, 'move_up', 4);
-			}
+
+				// Move manage users screen module 4 up...
+				$sql = 'SELECT *
+					FROM ' . MODULES_TABLE . "
+					WHERE module_basename = 'users'
+						AND module_class = 'acp'
+						AND module_mode = 'overview'";
+				$result = $db->sql_query($sql);
+				$row = $db->sql_fetchrow($result);
+				$db->sql_freeresult($result);
 	
+				$_module->move_module_by($row, 'move_up', 4);
+			}
+
 			// And now for the special ones
 			// (these are modules which appear in multiple categories and thus get added manually to some for more control)
 			if (isset($this->module_extras[$module_class]))
 			{
 				foreach ($this->module_extras[$module_class] as $cat_name => $mods)
 				{
-					$sql = 'SELECT module_id, left_id, right_id FROM ' . MODULES_TABLE . " 
-						WHERE module_langname = '$cat_name'
-						AND module_class = '$module_class'";
+					$sql = 'SELECT module_id, left_id, right_id
+						FROM ' . MODULES_TABLE . " 
+						WHERE module_langname = '" . $db->sql_escape($cat_name) . "'
+							AND module_class = '" . $db->sql_escape($module_class) . "'";
 					$result = $db->sql_query_limit($sql, 1);
 					$row2 = $db->sql_fetchrow($result);
 					$db->sql_freeresult($result);
 
 					foreach ($mods as $mod_name)
 					{
-						$sql = 'SELECT * FROM ' . MODULES_TABLE . " 
-							WHERE module_langname = '$mod_name'
-								AND module_class = '$module_class'
-								AND module_name <> ''
-							LIMIT 1";
-						$result = $db->sql_query($sql);
+						$sql = 'SELECT *
+							FROM ' . MODULES_TABLE . " 
+							WHERE module_langname = '" . $db->sql_escape($mod_name) . "'
+								AND module_class = '" . $db->sql_escape($module_class) . "'
+								AND module_basename <> ''";
+						$result = $db->sql_query_limit($sql, 1);
 						$module_data = $db->sql_fetchrow($result);
 						$db->sql_freeresult($result);
 
@@ -1344,17 +1414,63 @@ class install_install extends module
 	}
 
 	/**
+	* Populate the language tables
+	*/
+	function add_language($mode, $sub)
+	{
+		global $db, $lang, $phpbb_root_path, $phpEx;
+
+		$dir = @opendir($phpbb_root_path . 'language');
+		while (($file = readdir($dir)) !== false)
+		{
+			$path = $phpbb_root_path . 'language/' . $file;
+
+			if (is_dir($path) && !is_link($path) && file_exists($path . '/iso.txt'))
+			{
+				$lang_pack = file("{$phpbb_root_path}language/$path/iso.txt");
+				$sql_ary = array(
+					'lang_iso'			=> basename($path),
+					'lang_dir'			=> basename($path),
+					'lang_english_name'	=> trim(htmlspecialchars($lang_pack[0])),
+					'lang_local_name'	=> trim(htmlspecialchars($lang_pack[1])),
+					'lang_author'		=> trim(htmlspecialchars($lang_pack[2])),
+				);
+
+				$db->sql_query('INSERT INTO ' . LANG_TABLE . ' ' . $db->sql_build_array('INSERT', $sql_ary));
+
+				if ($db->sql_error_triggered)
+				{
+					$error = $db->sql_error($db->sql_error_sql);
+					$this->p_master->db_error($error['message'], $db->sql_error_sql, __LINE__, __FILE__);
+				}
+			}
+		}
+	}
+
+	/**
 	* Add search robots to the database
 	*/
 	function add_bots($mode, $sub)
 	{
-		global $db, $lang, $phpbb_root_path, $phpEx;
+		global $db, $lang, $phpbb_root_path, $phpEx, $config;
 
 		// Obtain any submitted data
 		foreach ($this->request_vars as $var)
 		{
 			$$var = request_var($var, '');
 		}
+
+		// Fill the config array - it is needed by those functions we call
+		$sql = 'SELECT *
+			FROM ' . CONFIG_TABLE;
+		$result = $db->sql_query($sql);
+
+		$config = array();
+		while ($row = $db->sql_fetchrow($result))
+		{
+			$config[$row['config_name']] = $row['config_value'];
+		}
+		$db->sql_freeresult($result);
 
 		$sql = 'SELECT group_id
 			FROM ' . GROUPS_TABLE . "
@@ -1384,8 +1500,9 @@ class install_install extends module
 				'user_password'		=> '',
 				'user_colour'		=> '9E8DA7',
 				'user_email'		=> '',
-				'user_lang'			=> $language,
+				'user_lang'			=> $default_lang,
 				'user_style'		=> 1,
+				'user_timezone'		=> 0,
 				'user_dateformat'	=> $lang['default_dateformat'],
 			);
 			
@@ -1510,6 +1627,55 @@ class install_install extends module
 		$db = new $sql_db();
 		$db->sql_return_on_error(true);
 
+		// Check that we actually have a database name before going any further.....
+		if ($dbms != 'sqlite' && $dbname === '')
+		{
+			$error[] = $lang['INST_ERR_DB_NO_NAME'];
+			return false;
+		}
+
+		// Make sure we don't have a daft user who thinks having the SQLite database in the forum directory is a good idea
+		if ($dbms == 'sqlite' && stripos(phpbb_realpath($dbhost), phpbb_realpath('../')) === 0)
+		{
+			$error[] = $lang['INST_ERR_DB_FORUM_PATH'];
+			return false;
+		}
+
+		// Check the prefix length to ensure that index names are not too long
+		switch ($dbms)
+		{
+			case 'mysql':
+			case 'mysql4':
+			case 'mysqli':
+			case 'postgres':
+				$prefix_length = 36;
+
+			break;
+
+			case 'mssql':
+			case 'mssql_odbc':
+				$prefix_length = 90;
+			
+			break;
+
+			case 'oracle':
+			case 'sqlite':
+				$prefix_length = 200;
+			
+			break;
+
+			case 'firebird':
+				$prefix_length = 6;
+
+			break;
+		}
+
+		if (strlen($table_prefix) > $prefix_length)
+		{
+			$error[] = sprintf($lang['INST_ERR_PREFIX_TOO_LONG'], $prefix_length);
+			return false;
+		}
+
 		// Try and connect ...
 		if (is_array($db->sql_connect($dbhost, $dbuser, $dbpasswd, $dbname, $dbport, false)))
 		{
@@ -1577,6 +1743,26 @@ class install_install extends module
 			}
 			$db->sql_freeresult($result);
 
+			// Make sure that the user has selected a sensible DBAL for the DBMS actually installed
+			switch ($dbms)
+			{
+				case 'mysql4':
+					if (version_compare(mysql_get_server_info($db->db_connect_id), '4.0.0', '<'))
+					{
+						$error[] = $lang['INST_ERR_DB_NO_MYSQL4'];
+					}
+
+				break;
+
+				case 'mysqli':
+					if (version_compare(mysqli_get_server_info($db->db_connect_id), '4.1.3', '<'))
+					{
+						$error[] = $lang['INST_ERR_DB_NO_MYSQLI'];
+					}
+				
+				break;
+			}
+
 			$db->sql_close();
 		}
 
@@ -1602,45 +1788,6 @@ class install_install extends module
 	}
 
 	/**
-	* Generate the drop down of available language packs
-	*/
-	function inst_language_select($default = '')
-	{
-		global $phpbb_root_path, $phpEx;
-
-		$dir = @opendir($phpbb_root_path . 'language');
-
-		while ($file = readdir($dir))
-		{
-			$path = $phpbb_root_path . 'language/' . $file;
-
-			if (is_file($path) || is_link($path) || $file == '.' || $file == '..' || $file == 'CVS')
-			{
-				continue;
-			}
-
-			if (file_exists($path . '/iso.txt'))
-			{
-				list($displayname) = @file($path . '/iso.txt');
-				$lang[$displayname] = $file;
-			}
-		}
-		@closedir($dir);
-
-		@asort($lang);
-		@reset($lang);
-
-		$user_select = '';
-		foreach ($lang as $displayname => $filename)
-		{
-			$selected = (strtolower($default) == strtolower($filename)) ? ' selected="selected"' : '';
-			$user_select .= '<option value="' . $filename . '"' . $selected . '>' . ucwords($displayname) . '</option>';
-		}
-
-		return $user_select;
-	}
-
-	/**
 	* Generate a list of available mail server authentication methods
 	*/
 	function mail_auth_select($selected_method)
@@ -1663,7 +1810,7 @@ class install_install extends module
 	* The variables that we will be passing between pages
 	* Used to retrieve data quickly on each page
 	*/
-	var $request_vars = array('language', 'dbms', 'dbhost', 'dbport', 'dbuser', 'dbpasswd', 'dbname', 'table_prefix', 'admin_name', 'admin_pass1', 'admin_pass2', 'board_email1', 'board_email2', 'img_imagick', 'ftp_path', 'ftp_user', 'ftp_pass', 'email_enable', 'smtp_delivery', 'smtp_host', 'smtp_auth', 'smtp_user', 'smtp_pass', 'cookie_secure', 'force_server_vars', 'server_protocol', 'server_name', 'server_port');
+	var $request_vars = array('language', 'dbms', 'dbhost', 'dbport', 'dbuser', 'dbpasswd', 'dbname', 'table_prefix', 'default_lang', 'admin_name', 'admin_pass1', 'admin_pass2', 'board_email1', 'board_email2', 'img_imagick', 'ftp_path', 'ftp_user', 'ftp_pass', 'email_enable', 'smtp_delivery', 'smtp_host', 'smtp_auth', 'smtp_user', 'smtp_pass', 'cookie_secure', 'force_server_vars', 'server_protocol', 'server_name', 'server_port');
 
 	/**
 	* The information below will be used to build the input fields presented to the user
@@ -1680,8 +1827,8 @@ class install_install extends module
 	);
 	var $admin_config_options = array(
 		'legend1'				=> 'ADMIN_CONFIG',
-		'language'				=> array('lang' => 'DEFAULT_LANG',				'type' => 'select', 'options' => '$this->module->inst_language_select(\'{VALUE}\')', 'explain' => false),
-		'admin_name'			=> array('lang' => 'ADMIN_USERNAME',			'type' => 'text:25:100', 'explain' => false),
+		'default_lang'			=> array('lang' => 'DEFAULT_LANG',				'type' => 'select', 'options' => '$this->module->inst_language_select(\'{VALUE}\')', 'explain' => false),
+		'admin_name'			=> array('lang' => 'ADMIN_USERNAME',			'type' => 'text:25:100', 'explain' => true),
 		'admin_pass1'			=> array('lang' => 'ADMIN_PASSWORD',			'type' => 'password:25:100', 'explain' => true),
 		'admin_pass2'			=> array('lang' => 'ADMIN_PASSWORD_CONFIRM',	'type' => 'password:25:100', 'explain' => false),
 		'board_email1'			=> array('lang' => 'CONTACT_EMAIL',				'type' => 'text:25:100', 'explain' => false),
@@ -1763,7 +1910,7 @@ class install_install extends module
 			'COMMENTS'		=> 'remove_comments'
 		),
 		'postgres' => array(
-			'LABEL'			=> 'PostgreSQL 7.x',
+			'LABEL'			=> 'PostgreSQL 7.x/8.x',
 			'SCHEMA'		=> 'postgres',
 			'MODULE'		=> 'pgsql', 
 			'DELIM'			=> ';',

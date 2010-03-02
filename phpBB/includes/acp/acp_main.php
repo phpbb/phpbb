@@ -21,9 +21,9 @@ class acp_main
 		global $phpbb_root_path, $phpbb_admin_path, $phpEx, $table_prefix;
 
 		$action = request_var('action', '');
-		$mark	= (isset($_REQUEST['mark'])) ? implode(', ', request_var('mark', array(0))) : '';
+		$mark	= (isset($_REQUEST['mark'])) ? request_var('mark', array(0)) : array();
 
-		if ($mark)
+		if (sizeof($mark))
 		{
 			switch ($action)
 			{
@@ -36,8 +36,8 @@ class acp_main
 					}
 
 					$sql = 'SELECT username 
-						FROM ' . USERS_TABLE . "
-						WHERE user_id IN ($mark)";
+						FROM ' . USERS_TABLE . '
+						WHERE ' . $db->sql_in_set('user_id', $mark);
 					$result = $db->sql_query($sql);
 				
 					$user_affected = array();
@@ -50,14 +50,13 @@ class acp_main
 					if ($action == 'activate')
 					{
 						include_once($phpbb_root_path . 'includes/functions_user.' . $phpEx);
-						$mark_ary = explode(', ', $mark);
 
-						foreach ($mark_ary as $user_id)
+						foreach ($mark as $user_id)
 						{
 							user_active_flip($user_id, USER_INACTIVE);
 						}
 
-						set_config('num_users', $config['num_users'] + sizeof($mark_ary), true);
+						set_config('num_users', $config['num_users'] + sizeof($mark), true);
 
 						// Update latest username
 						update_last_username();
@@ -69,9 +68,9 @@ class acp_main
 							trigger_error($user->lang['NO_ADMIN']);
 						}
 
-						$sql = 'DELETE FROM ' . USER_GROUP_TABLE . " WHERE user_id IN ($mark)";
+						$sql = 'DELETE FROM ' . USER_GROUP_TABLE . ' WHERE ' . $db->sql_in_set('user_id', $mark);
 						$db->sql_query($sql);
-						$sql = 'DELETE FROM ' . USERS_TABLE . " WHERE user_id IN ($mark)";
+						$sql = 'DELETE FROM ' . USERS_TABLE . ' WHERE ' . $db->sql_in_set('user_id', $mark);
 						$db->sql_query($sql);
 	
 						add_log('admin', 'LOG_INDEX_' . strtoupper($action), implode(', ', $user_affected));
@@ -91,8 +90,8 @@ class acp_main
 					}
 
 					$sql = 'SELECT user_id, username, user_email, user_lang, user_jabber, user_notify_type, user_regdate, user_actkey 
-						FROM ' . USERS_TABLE . " 
-						WHERE user_id IN ($mark)";
+						FROM ' . USERS_TABLE . ' 
+						WHERE ' . $db->sql_in_set('user_id', $mark);
 					$result = $db->sql_query($sql);
 
 					if ($row = $db->sql_fetchrow($result))
@@ -209,39 +208,20 @@ class acp_main
 					trigger_error($user->lang['NO_ADMIN']);
 				}
 
-				$post_count_ary = $auth->acl_getf('f_postcount');
-				$forum_read_ary = $auth->acl_getf('f_read');
-				
-				$forum_ary = array();
-				foreach ($post_count_ary as $forum_id => $allowed)
-				{
-					if ($allowed['f_postcount'] && $forum_read_ary[$forum_id]['f_read'])
-					{
-						$forum_ary[] = $forum_id;
-					}
-				}
+				$sql = 'SELECT COUNT(post_id) AS num_posts, poster_id
+					FROM ' . POSTS_TABLE . '
+					WHERE post_postcount = 1
+					GROUP BY poster_id';
+				$result = $db->sql_query($sql);
 
-				if (!sizeof($forum_ary))
+				while ($row = $db->sql_fetchrow($result))
 				{
-					$db->sql_query('UPDATE ' . USERS_TABLE . ' SET user_posts = 0');
+					$db->sql_query('UPDATE ' . USERS_TABLE . " SET user_posts = {$row['num_posts']} WHERE user_id = {$row['poster_id']}");
 				}
-				else
-				{
-					$sql = 'SELECT COUNT(post_id) AS num_posts, poster_id
-						FROM ' . POSTS_TABLE . '
-						WHERE poster_id <> ' . ANONYMOUS . '
-							AND forum_id IN (' . implode(', ', $forum_ary) . ')
-						GROUP BY poster_id';
-					$result = $db->sql_query($sql);
-
-					while ($row = $db->sql_fetchrow($result))
-					{
-						$db->sql_query('UPDATE ' . USERS_TABLE . " SET user_posts = {$row['num_posts']} WHERE user_id = {$row['poster_id']}");
-					}
-					$db->sql_freeresult($result);
-				}
+				$db->sql_freeresult($result);
 
 				add_log('admin', 'LOG_RESYNC_POSTCOUNTS');
+
 			break;
 	
 			case 'date':
@@ -412,8 +392,10 @@ class acp_main
 			'DBSIZE'			=> $dbsize,
 			'UPLOAD_DIR_SIZE'	=> $upload_dir_size,
 			'GZIP_COMPRESSION'	=> ($config['gzip_compress']) ? $user->lang['ON'] : $user->lang['OFF'],
+			'DATABASE_INFO'		=> $db->sql_server_info(),
 
 			'U_ACTION'			=> append_sid("{$phpbb_admin_path}index.$phpEx"),
+			'U_ADMIN_LOG'		=> append_sid("{$phpbb_admin_path}index.$phpEx", 'i=logs&amp;mode=admin'),
 
 			'S_ACTION_OPTIONS'	=> ($auth->acl_get('a_board')) ? $s_action_options : '',
 			)
@@ -439,7 +421,7 @@ class acp_main
 
 		if ($auth->acl_get('a_user'))
 		{
-			$sql = 'SELECT user_id, username, user_regdate
+			$sql = 'SELECT user_id, username, user_regdate, user_lastvisit
 				FROM ' . USERS_TABLE . ' 
 				WHERE user_type = ' . USER_INACTIVE . ' 
 				ORDER BY user_regdate ASC';
@@ -449,6 +431,7 @@ class acp_main
 			{
 				$template->assign_block_vars('inactive', array(
 					'DATE'			=> $user->format_date($row['user_regdate']),
+					'LAST_VISIT'	=> (!$row['user_lastvisit']) ? ' - ' : $user->format_date($row['user_lastvisit']),
 					'USER_ID'		=> $row['user_id'],
 					'USERNAME'		=> $row['username'],
 					'U_USER_ADMIN'	=> append_sid("{$phpbb_admin_path}index.$phpEx", "i=users&amp;mode=overview&amp;u={$row['user_id']}"))
@@ -471,6 +454,12 @@ class acp_main
 		if (defined('DEBUG_EXTRA'))
 		{
 			$template->assign_var('S_DEBUG_EXTRA', true);
+		}
+
+		// Warn if install is still present
+		if (file_exists($phpbb_root_path . 'install'))
+		{
+			$template->assign_var('S_REMOVE_INSTALL', true);
 		}
 
 		$this->tpl_name = 'acp_main';

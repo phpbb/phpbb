@@ -145,7 +145,7 @@ function unique_id($extra = 'c')
 
 	if ($dss_seeded !== true)
 	{
-		set_config('rand_seed', $config['rand_seed']);
+		set_config('rand_seed', $config['rand_seed'], true);
 		$dss_seeded = true;
 	}
 
@@ -376,6 +376,71 @@ if (!function_exists('stripos'))
 	}
 }
 
+if (!function_exists('realpath'))
+{
+	/**
+	* Replacement for realpath if it is disabled
+	* This function is from the php manual by nospam at savvior dot com
+	*/
+	function phpbb_realpath($path)
+	{
+		$translated_path = getenv('PATH_TRANSLATED');
+
+		$translated_path = str_replace('\\', '/', $translated_path);
+		$translated_path = str_replace(basename(getenv('PATH_INFO')), '', $translated_path);
+
+		$translated_path .= '/';
+
+		if ($path == '.' || $path == './')
+		{
+			return $translated_path;
+		}
+
+		// now check for back directory
+		$translated_path .= $path;
+
+		$dirs = explode('/', $translated_path);
+
+		foreach ($dirs as $key => $value)
+		{
+			if ($value == '..')
+			{
+				$dirs[$key] = '';
+				$dirs[$key - 2] = '';
+			}
+		}
+
+		$translated_path = '';
+
+		foreach ($dirs as $key => $value)
+		{
+			if (strlen($value) > 0)
+			{
+				$translated_path .= $value . '/';
+			}
+		}
+
+		$translated_path = substr($translated_path, 0, strlen($translated_path) - 1);
+
+		if (is_dir($translated_path) || is_file($translated_path))
+		{
+			return $translated_path;
+		}
+
+		return false;
+	}
+}
+else
+{
+	/**
+	* A wrapper for realpath
+	*/
+	function phpbb_realpath($path)
+	{
+		return realpath($path);
+	}
+}
+
 // functions used for building option fields
 
 /**
@@ -429,13 +494,18 @@ function style_select($default = '', $all = false)
 /**
 * Pick a timezone
 */
-function tz_select($default = '')
+function tz_select($default = '', $truncate = false)
 {
 	global $sys_timezone, $user;
 
 	$tz_select = '';
 	foreach ($user->lang['tz_zones'] as $offset => $zone)
 	{
+		if ($truncate)
+		{
+			$zone = (strlen($zone) > 70) ? substr($zone, 0, 70) . '...' : $zone;
+		}
+
 		if (is_numeric($offset))
 		{
 			$selected = ($offset == $default) ? ' selected="selected"' : '';
@@ -469,7 +539,7 @@ function markread($mode, $forum_id = false, $topic_id = false, $post_time = 0, $
 				$db->sql_query('DELETE FROM ' . FORUMS_TRACK_TABLE . " WHERE user_id = {$user->data['user_id']}");
 				$db->sql_query('UPDATE ' . USERS_TABLE . ' SET user_lastmark = ' . time() . " WHERE user_id = {$user->data['user_id']}");
 			}
-			else
+			else if ($config['load_anon_lastread'] || $user->data['is_registered'])
 			{
 				$tracking_topics = (isset($_COOKIE[$config['cookie_name'] . '_track'])) ? ((STRIP) ? stripslashes($_COOKIE[$config['cookie_name'] . '_track']) : $_COOKIE[$config['cookie_name'] . '_track']) : '';
 				$tracking_topics = ($tracking_topics) ? unserialize($tracking_topics) : array();
@@ -506,13 +576,13 @@ function markread($mode, $forum_id = false, $topic_id = false, $post_time = 0, $
 		{
 			$sql = 'DELETE FROM ' . TOPICS_TRACK_TABLE . " 
 				WHERE user_id = {$user->data['user_id']}
-					AND forum_id IN (" . implode(', ', $forum_id) . ")";
+					AND " . $db->sql_in_set('forum_id', $forum_id);
 			$db->sql_query($sql);
 
 			$sql = 'SELECT forum_id
 				FROM ' . FORUMS_TRACK_TABLE . "
 				WHERE user_id = {$user->data['user_id']}
-					AND forum_id IN (" . implode(', ', $forum_id) . ')';
+					AND " . $db->sql_in_set('forum_id', $forum_id);
 			$result = $db->sql_query($sql);
 
 			$sql_update = array();
@@ -527,7 +597,7 @@ function markread($mode, $forum_id = false, $topic_id = false, $post_time = 0, $
 				$sql = 'UPDATE ' . FORUMS_TRACK_TABLE . '
 					SET mark_time = ' . time() . "
 					WHERE user_id = {$user->data['user_id']}
-						AND forum_id IN (" . implode(', ', $sql_update) . ')';
+						AND " . $db->sql_in_set('forum_id', $sql_update);
 				$db->sql_query($sql);
 			}
 
@@ -563,7 +633,7 @@ function markread($mode, $forum_id = false, $topic_id = false, $post_time = 0, $
 				}
 			}
 		}
-		else
+		else if ($config['load_anon_lastread'] || $user->data['is_registered'])
 		{
 			$tracking = (isset($_COOKIE[$config['cookie_name'] . '_track'])) ? ((STRIP) ? stripslashes($_COOKIE[$config['cookie_name'] . '_track']) : $_COOKIE[$config['cookie_name'] . '_track']) : '';
 			$tracking = ($tracking) ? unserialize($tracking) : array();
@@ -628,7 +698,7 @@ function markread($mode, $forum_id = false, $topic_id = false, $post_time = 0, $
 				$db->sql_return_on_error(false);
 			}
 		}
-		else
+		else if ($config['load_anon_lastread'] || $user->data['is_registered'])
 		{
 			$tracking = (isset($_COOKIE[$config['cookie_name'] . '_track'])) ? ((STRIP) ? stripslashes($_COOKIE[$config['cookie_name'] . '_track']) : $_COOKIE[$config['cookie_name'] . '_track']) : '';
 			$tracking = ($tracking) ? unserialize($tracking) : array();
@@ -675,7 +745,8 @@ function markread($mode, $forum_id = false, $topic_id = false, $post_time = 0, $
 
 				if ($user->data['is_registered'])
 				{
-					$db->sql_query('UPDATE ' . USERS_TABLE . ' SET user_lastmark = ' . intval(base_convert(max($time_keys) + $config['board_startdate'], 36, 10)) . " WHERE user_id = {$user->data['user_id']}");
+					$user->data['user_lastmark'] = intval(base_convert(max($time_keys) + $config['board_startdate'], 36, 10));
+					$db->sql_query('UPDATE ' . USERS_TABLE . ' SET user_lastmark = ' . $user->data['user_lastmark'] . " WHERE user_id = {$user->data['user_id']}");
 				}
 				else
 				{
@@ -817,7 +888,7 @@ function get_complete_topic_tracking($forum_id, $topic_ids, $global_announce_lis
 		$sql = 'SELECT topic_id, mark_time
 			FROM ' . TOPICS_TRACK_TABLE . "
 			WHERE user_id = {$user->data['user_id']}
-				AND topic_id IN (" . implode(', ', $topic_ids) . ")";
+				AND " . $db->sql_in_set('topic_id', $topic_ids);
 		$result = $db->sql_query($sql);
 
 		while ($row = $db->sql_fetchrow($result))
@@ -859,7 +930,7 @@ function get_complete_topic_tracking($forum_id, $topic_ids, $global_announce_lis
 			}
 		}
 	}
-	else
+	else if ($config['load_anon_lastread'] || $user->data['is_registered'])
 	{
 		global $tracking_topics;
 
@@ -923,6 +994,111 @@ function get_complete_topic_tracking($forum_id, $topic_ids, $global_announce_lis
 	}
 
 	return $last_read;
+}
+
+/**
+* Check for read forums and update topic tracking info accordingly
+*
+* @param int $forum_id the forum id to check
+* @param int $forum_last_post_time the forums last post time
+* @param int $f_mark_time the forums last mark time if user is registered and load_db_lastread enabled
+* @param int $mark_time_forum false if the mark time needs to be obtained, else the last users forum mark time
+*
+*/
+function update_forum_tracking_info($forum_id, $forum_last_post_time, $f_mark_time = false, $mark_time_forum = false)
+{
+	global $db, $tracking_topics, $user, $config;
+
+	// Determine the users last forum mark time if not given.
+	if ($mark_time_forum === false)
+	{
+		if ($config['load_db_lastread'] && $user->data['is_registered'])
+		{
+			$mark_time_forum = (!empty($f_mark_time)) ? $f_mark_time : $user->data['user_lastmark'];
+		}
+		else if ($config['load_anon_lastread'] || $user->data['is_registered'])
+		{
+			if (!isset($tracking_topics) || !sizeof($tracking_topics))
+			{
+				$tracking_topics = (isset($_COOKIE[$config['cookie_name'] . '_track'])) ? ((STRIP) ? stripslashes($_COOKIE[$config['cookie_name'] . '_track']) : $_COOKIE[$config['cookie_name'] . '_track']) : '';
+				$tracking_topics = ($tracking_topics) ? unserialize($tracking_topics) : array();
+			}
+
+			if (!$user->data['is_registered'])
+			{
+				$user->data['user_lastmark'] = (isset($tracking_topics['l'])) ? (int) (base_convert($tracking_topics['l'], 36, 10) + $config['board_startdate']) : 0;
+			}
+
+			$mark_time_forum = (isset($tracking_topics['f'][$forum_id])) ? (int) (base_convert($tracking_topics['f'][$forum_id], 36, 10) + $config['board_startdate']) : $user->data['user_lastmark'];
+		}
+	}
+
+	// Check the forum for any left unread topics.
+	// If there are none, we mark the forum as read.
+	if ($config['load_db_lastread'] && $user->data['is_registered'])
+	{
+		if ($mark_time_forum >= $forum_last_post_time)
+		{
+			// We do not need to mark read, this happened before. Therefore setting this to true
+			$row = true;
+		}
+		else
+		{
+			$sql = 'SELECT t.forum_id FROM ' . TOPICS_TABLE . ' t
+				LEFT JOIN ' . TOPICS_TRACK_TABLE . ' tt ON (tt.topic_id = t.topic_id AND tt.user_id = ' . $user->data['user_id'] . ')
+				WHERE t.forum_id = ' . $forum_id . '
+					AND t.topic_last_post_time > ' . $mark_time_forum . '
+					AND t.topic_moved_id = 0
+					AND tt.topic_id IS NULL
+				GROUP BY t.forum_id';
+			$result = $db->sql_query_limit($sql, 1);
+			$row = $db->sql_fetchrow($result);
+			$db->sql_freeresult($result);
+		}
+	}
+	else if ($config['load_anon_lastread'] || $user->data['is_registered'])
+	{
+		// Get information from cookie
+		$row = false;
+
+		if (!isset($tracking_topics['tf'][$forum_id]))
+		{
+			// We do not need to mark read, this happened before. Therefore setting this to true
+			$row = true;
+		}
+		else
+		{
+			$sql = 'SELECT topic_id
+				FROM ' . TOPICS_TABLE . '
+				WHERE forum_id = ' . $forum_id . '
+					AND topic_last_post_time > ' . $mark_time_forum . '
+					AND topic_moved_id = 0';
+			$result = $db->sql_query($sql);
+
+			$check_forum = $tracking_topics['tf'][$forum_id];
+			$unread = false;
+			while ($row = $db->sql_fetchrow($result))
+			{
+				if (!in_array(base_convert($row['topic_id'], 10, 36), array_keys($check_forum)))
+				{
+					$unread = true;
+					break;
+				}
+			}
+			$db->sql_freeresult($result);
+
+			$row = $unread;
+		}
+	}
+	else
+	{
+		$row = true;
+	}
+
+	if (!$row)
+	{
+		markread('topics', $forum_id);
+	}
 }
 
 // Pagination functions
@@ -1095,8 +1271,6 @@ function generate_board_url($without_script_path = false)
 	$server_name = (!empty($_SERVER['SERVER_NAME'])) ? $_SERVER['SERVER_NAME'] : getenv('SERVER_NAME');
 	$server_port = (!empty($_SERVER['SERVER_PORT'])) ? (int) $_SERVER['SERVER_PORT'] : (int) getenv('SERVER_PORT');
 
-	$url = (($config['cookie_secure']) ? 'https://' : 'http://') . $server_name;
-
 	// Forcing server vars is the only way to specify/override the protocol
 	if ($config['force_server_vars'] || !$server_name)
 	{
@@ -1105,6 +1279,12 @@ function generate_board_url($without_script_path = false)
 		$server_port = (int) $config['server_port'];
 
 		$url = $server_protocol . $server_name;
+	}
+	else
+	{
+		// Do not rely on cookie_secure, users seem to think that it means a secured cookie instead of an encrypted connection
+		$cookie_secure = (isset($_SERVER['HTTPS']) && $_SERVER['HTTPS'] == 'on') ? 1 : 0;
+		$url = (($cookie_secure) ? 'https://' : 'http://') . $server_name;
 	}
 
 	if ($server_port && (($config['cookie_secure'] && $server_port <> 443) || (!$config['cookie_secure'] && $server_port <> 80)))
@@ -1128,15 +1308,12 @@ function redirect($url)
 {
 	global $db, $cache, $config, $user;
 
-	if (isset($db))
+	if (empty($user->lang))
 	{
-		$db->sql_close();
+		$user->add_lang('common');
 	}
 
-	if (isset($cache))
-	{
-		$cache->unload();
-	}
+	garbage_collection();
 
 	// Make sure no &amp;'s are in, this will break the redirect
 	$url = str_replace('&amp;', '&', $url);
@@ -1184,8 +1361,8 @@ function redirect($url)
 		else
 		{
 			// Get the realpath of dirname
-			$root_dirs = explode('/', str_replace('\\', '/', realpath('./')));
-			$page_dirs = explode('/', str_replace('\\', '/', realpath($pathinfo['dirname'])));
+			$root_dirs = explode('/', str_replace('\\', '/', phpbb_realpath('./')));
+			$page_dirs = explode('/', str_replace('\\', '/', phpbb_realpath($pathinfo['dirname'])));
 			$intersection = array_intersect_assoc($root_dirs, $page_dirs);
 
 			$root_dirs = array_diff_assoc($root_dirs, $intersection);
@@ -1445,13 +1622,17 @@ function login_box($redirect = '', $l_explain = '', $l_success = '', $admin = fa
 	if ($admin && !$auth->acl_get('a_'))
 	{
 		// Not authd
-		add_log('admin', 'LOG_ADMIN_AUTH_FAIL');
+		// anonymous/inactive users are never able to go to the ACP even if they have the relevant permissions
+		if ($user->data['is_registered'])
+		{
+			add_log('admin', 'LOG_ADMIN_AUTH_FAIL');
+		}
 		trigger_error('NO_AUTH_ADMIN');
 	}
 
 	if (isset($_POST['login']))
 	{
-		$username	= request_var('username', '', true);
+		$username	= request_var('username', '');
 		$password	= request_var('password', '');
 		$autologin	= (!empty($_POST['autologin'])) ? true : false;
 		$viewonline = (!empty($_POST['viewonline'])) ? 0 : 1;
@@ -1478,7 +1659,12 @@ function login_box($redirect = '', $l_explain = '', $l_success = '', $admin = fa
 			}
 			else
 			{
-				add_log('admin', 'LOG_ADMIN_AUTH_FAIL');
+				// Only log the failed attempt if a real user tried to.
+				// anonymous/inactive users are never able to go to the ACP even if they have the relevant permissions
+				if ($user->data['is_registered'])
+				{
+					add_log('admin', 'LOG_ADMIN_AUTH_FAIL');
+				}
 			}
 		}
 
@@ -1494,12 +1680,6 @@ function login_box($redirect = '', $l_explain = '', $l_success = '', $admin = fa
 
 			meta_refresh(3, $redirect);
 			trigger_error($message . '<br /><br />' . sprintf($l_redirect, '<a href="' . $redirect . '">', '</a>'));
-		}
-
-		// The user wanted to re-authenticate, but something failed - log this
-		if ($admin)
-		{
-			add_log('admin', 'LOG_ADMIN_AUTH_FAIL');
 		}
 
 		// Something failed, determine what...
@@ -1625,13 +1805,13 @@ function login_forum_box($forum_data)
 			$sql_in = array();
 			do
 			{
-				$sql_in[] = "'" . $db->sql_escape($row['session_id']) . "'";
+				$sql_in[] = (string) $row['session_id'];
 			}
 			while ($row = $db->sql_fetchrow($result));
 
 			// Remove expired sessions
 			$sql = 'DELETE FROM ' . FORUMS_ACCESS_TABLE . '
-				WHERE session_id NOT IN (' . implode(', ', $sql_in) . ')';
+				WHERE ' . $db->sql_in_set('session_id', $sql_in, true);
 			$db->sql_query($sql);
 		}
 		$db->sql_freeresult($result);
@@ -1737,20 +1917,13 @@ function decode_message(&$message, $bbcode_uid = '')
 * For display of custom parsed text on user-facing pages
 * Expects $text to be the value directly from the database (stored value)
 */
-function generate_text_for_display($text, $uid, $bitfield)
+function generate_text_for_display($text, $uid, $bitfield, $flags)
 {
 	global $__bbcode;
 
 	if (!$text)
 	{
 		return '';
-	}
-
-	// Get flags... they are always allow_bbcode, allow_smilies and allow_urls
-	$flags = $bitfield;
-	if ($flags >> 3)
-	{
-		$flags = bindec(substr(decbin($flags), strlen(decbin($flags >> 3))));
 	}
 
 	// Parse bbcode if bbcode uid stored and bbcode enabled
@@ -1764,11 +1937,11 @@ function generate_text_for_display($text, $uid, $bitfield)
 
 		if (empty($__bbcode))
 		{
-			$__bbcode = new bbcode($bitfield >> 3);
+			$__bbcode = new bbcode($bitfield);
 		}
 		else
 		{
-			$__bbcode->bbcode($bitfield >> 3);
+			$__bbcode->bbcode($bitfield);
 		}
 		
 		$__bbcode->bbcode_second_pass($text, $uid);
@@ -1785,12 +1958,12 @@ function generate_text_for_display($text, $uid, $bitfield)
 * This function additionally returns the uid and bitfield that needs to be stored.
 * Expects $text to be the value directly from request_var() and in it's non-parsed form
 */
-function generate_text_for_storage(&$text, &$uid, &$bitfield, $allow_bbcode = false, $allow_urls = false, $allow_smilies = false)
+function generate_text_for_storage(&$text, &$uid, &$bitfield, &$flags, $allow_bbcode = false, $allow_urls = false, $allow_smilies = false)
 {
 	global $phpbb_root_path, $phpEx;
 
 	$uid = '';
-	$bitfield = 0;
+	$bitfield = '';
 
 	if (!$text)
 	{
@@ -1815,7 +1988,7 @@ function generate_text_for_storage(&$text, &$uid, &$bitfield, $allow_bbcode = fa
 	}
 
 	$flags = (($allow_bbcode) ? 1 : 0) + (($allow_smilies) ? 2 : 0) + (($allow_urls) ? 4 : 0);
-	$bitfield = $flags + ($message_parser->bbcode_bitfield << 3);
+	$bitfield = $message_parser->bbcode_bitfield;
 
 	return;
 }
@@ -1824,16 +1997,9 @@ function generate_text_for_storage(&$text, &$uid, &$bitfield, $allow_bbcode = fa
 * For decoding custom parsed text for edits as well as extracting the flags
 * Expects $text to be the value directly from the database (pre-parsed content)
 */
-function generate_text_for_edit($text, $uid, $bitfield)
+function generate_text_for_edit($text, $uid, $flags)
 {
 	global $phpbb_root_path, $phpEx;
-
-	// Get forum flags...
-	$flags = $bitfield;
-	if ($flags >> 3)
-	{
-		$flags = bindec(substr(decbin($flags), strlen(decbin($flags >> 3))));
-	}
 
 	decode_message($text, $uid);
 
@@ -1880,7 +2046,7 @@ function make_clickable($text, $server_url = false)
 		$magic_url_replace[] = "'\$1<!-- w --><a href=\"http://\$2\" target=\"_blank\">' . ((strlen('\$2') > 55) ? substr(str_replace('&amp;', '&', '\$2'), 0, 39) . ' ... ' . substr(str_replace('&amp;', '&', '\$2'), -10) : '\$2') . '</a><!-- w -->'";
 
 		// matches an email@domain type address at the start of a line, or after a space or after what might be a BBCode.
-		$magic_url_match[] = '#(^|[\n ]|\()([a-z0-9&\-_.]+?@[\w\-]+\.(?:[\w\-\.]+\.)?[\w]+)#ie';
+		$magic_url_match[] = '/(^|[\n ]|\()(' . get_preg_expression('email') . ')/ie';
 		$magic_url_replace[] = "'\$1<!-- e --><a href=\"mailto:\$2\">' . ((strlen('\$2') > 55) ? substr('\$2', 0, 39) . ' ... ' . substr('\$2', -10) : '\$2') . '</a><!-- e -->'";
 	}
 
@@ -2000,25 +2166,40 @@ function extension_allowed($forum_id, $extension, &$extensions)
 // Little helpers
 
 /**
+* Little helper for the build_hidden_fields function
+*/
+function _build_hidden_fields($key, $value, $specialchar)
+{
+	$hidden_fields = '';
+
+	if (!is_array($value))
+	{
+		$key = ($specialchar) ? htmlspecialchars($key) : $key;
+		$value = ($specialchar) ? htmlspecialchars($value) : $value;
+
+		$hidden_fields .= '<input type="hidden" name="' . $key . '" value="' . $value . '" />' . "\n";
+	}
+	else
+	{
+		foreach ($value as $_key => $_value)
+		{
+			$hidden_fields .= _build_hidden_fields($key . '[' . $_key . ']', $_value, $specialchar);
+		}
+	}
+
+	return $hidden_fields;
+}
+
+/**
 * Build simple hidden fields from array
 */
-function build_hidden_fields($field_ary)
+function build_hidden_fields($field_ary, $specialchar = false)
 {
 	$s_hidden_fields = '';
 
 	foreach ($field_ary as $name => $vars)
 	{
-		if (is_array($vars))
-		{
-			foreach ($vars as $key => $value)
-			{
-				$s_hidden_fields .= '<input type="hidden" name="' . $name . '[' . $key . ']" value="' . $value . '" />';
-			}
-		}
-		else
-		{
-			$s_hidden_fields .= '<input type="hidden" name="' . $name . '" value="' . $vars . '" />';
-		}
+		$s_hidden_fields .= _build_hidden_fields($name, $vars, $specialchar);
 	}
 
 	return $s_hidden_fields;
@@ -2139,7 +2320,7 @@ function get_backtrace()
 
 	$output = '<div style="font-family: monospace;">';
 	$backtrace = debug_backtrace();
-	$path = realpath($phpbb_root_path);
+	$path = phpbb_realpath($phpbb_root_path);
 
 	foreach ($backtrace as $number => $trace)
 	{
@@ -2184,6 +2365,58 @@ function get_backtrace()
 	return $output;
 }
 
+/**
+* This function returns a regular expression pattern for commonly used expressions
+* Use with / as delimiter
+* mode can be: email|
+*/
+function get_preg_expression($mode)
+{
+	switch ($mode)
+	{
+		case 'email':
+			return '[a-z0-9&\'\.\-_\+]+@[a-z0-9\-]+\.([a-z0-9\-]+\.)*?[a-z]+';
+		break;
+	}
+
+	return '';
+}
+
+/**
+* Truncates string while retaining special characters if going over the max length
+* The default max length is 60 at the moment
+*/
+function truncate_string($string, $max_length = 60)
+{
+	$chars = array();
+
+	// split the multibyte characters first
+	$string_ary = preg_split('#(&\#[0-9]+;)#', $string, -1, PREG_SPLIT_DELIM_CAPTURE);
+
+	// Now go through the array and split the other characters
+	foreach ($string_ary as $key => $value)
+	{
+		if (strpos($value, '&#') === 0)
+		{
+			$chars[] = $value;
+			continue;
+		}
+
+		// decode html entities and put them back later
+		$_chars = str_split(html_entity_decode($value));
+		$chars = array_merge($chars, array_map('htmlspecialchars', $_chars));
+	}
+
+	// Now check the length ;)
+	if (sizeof($chars) <= $max_length)
+	{
+		return $string;
+	}
+
+	// Cut off the last elements from the array
+	return implode('', array_slice($chars, 0, $max_length));
+}
+
 // Handler, header and footer
 
 /**
@@ -2221,8 +2454,8 @@ function msg_handler($errno, $msg_text, $errfile, $errline)
 				if (strpos($errfile, 'cache') === false && strpos($errfile, 'template.') === false)
 				{
 					// remove complete path to installation, with the risk of changing backslashes meant to be there
-					$errfile = str_replace(array(realpath($phpbb_root_path), '\\'), array('', '/'), $errfile);
-					$msg_text = str_replace(array(realpath($phpbb_root_path), '\\'), array('', '/'), $msg_text);
+					$errfile = str_replace(array(phpbb_realpath($phpbb_root_path), '\\'), array('', '/'), $errfile);
+					$msg_text = str_replace(array(phpbb_realpath($phpbb_root_path), '\\'), array('', '/'), $msg_text);
 
 					echo '<b>[phpBB Debug] PHP Notice</b>: in file <b>' . $errfile . '</b> on line <b>' . $errline . '</b>: <b>' . $msg_text . '</b><br />' . "\n";
 				}
@@ -2232,16 +2465,8 @@ function msg_handler($errno, $msg_text, $errfile, $errline)
 
 		case E_USER_ERROR:
 
-			if (isset($db))
-			{
-				$db->sql_close();
-			}
+			garbage_collection();
 
-			if (isset($cache))
-			{
-				$cache->unload();
-			}
-			
 			echo '<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">';
 			echo '<html xmlns="http://www.w3.org/1999/xhtml" dir="ltr">';
 			echo '<head>';
@@ -2390,7 +2615,15 @@ function page_header($page_title = '', $display_online_list = true)
 		if (!empty($_REQUEST['f']))
 		{
 			$f = request_var('f', 0);
-			$reading_sql = " AND s.session_page LIKE '%f=$f%'";
+
+			// Do not change this (it is defined as _f_={forum_id}x within session.php)
+			$reading_sql = " AND s.session_page LIKE '%\_f\_={$f}x%'";
+
+			// Specify escape character for MSSQL
+			if (SQL_LAYER == 'mssql' || SQL_LAYER == 'mssql_odbc')
+			{
+				$reading_sql .= " ESCAPE '\\'";
+			}
 		}
 
 		// Get number of online guests
@@ -2463,7 +2696,7 @@ function page_header($page_title = '', $display_online_list = true)
 
 		if (!$online_userlist)
 		{
-			$online_userlist = $user->lang['NONE'];
+			$online_userlist = $user->lang['NO_ONLINE_USERS'];
 		}
 
 		if (empty($_REQUEST['f']))
@@ -2616,7 +2849,9 @@ function page_header($page_title = '', $display_online_list = true)
 		'U_RESTORE_PERMISSIONS'	=> ($user->data['user_perm_from'] && $auth->acl_get('a_switchperm')) ? append_sid("{$phpbb_root_path}ucp.$phpEx", 'mode=restore_perm') : '',
 
 		'S_USER_LOGGED_IN'		=> ($user->data['user_id'] != ANONYMOUS) ? true : false,
+		'S_BOARD_DISABLED'		=> ($config['board_disable'] && !defined('IN_LOGIN') && $auth->acl_gets('a_', 'm_')) ? true : false,
 		'S_REGISTERED_USER'		=> $user->data['is_registered'],
+		'S_IS_BOT'				=> $user->data['is_bot'],
 		'S_USER_PM_POPUP'		=> $user->optionget('popuppm'),
 		'S_USER_LANG'			=> $user->data['user_lang'],
 		'S_USER_BROWSER'		=> (isset($user->data['session_browser'])) ? $user->data['session_browser'] : $user->lang['UNKNOWN_BROWSER'],
@@ -2653,7 +2888,7 @@ function page_header($page_title = '', $display_online_list = true)
 	{
 		header('Content-type: text/html; charset=' . $user->lang['ENCODING']);
 	}
-	header('Cache-Control: private, no-cache="set-cookie", pre-check=0, post-check=0');
+	header('Cache-Control: private, no-cache="set-cookie"');
 	header('Expires: 0');
 	header('Pragma: no-cache');
 
@@ -2726,7 +2961,6 @@ function page_footer()
 		else if (time() - $config['database_gc'] > $config['database_last_gc'])
 		{
 			// Tidy the database
-			// This includes recalculation binary trees, ...
 			$cron_type = 'tidy_database';
 		}
 		else if (time() - $config['search_gc'] > $config['search_last_gc'])
@@ -2768,6 +3002,103 @@ function garbage_collection()
 
 	// Close our DB connection.
 	$db->sql_close();
+}
+
+/**
+*/
+class bitfield
+{
+	var $data;
+
+	function bitfield($bitfield = '')
+	{
+		$this->data = base64_decode($bitfield);
+	}
+
+	/**
+	*/
+	function get($n)
+	{
+		// Get the ($n / 8)th char
+		$byte = $n >> 3;
+
+		if (!isset($this->data[$byte]))
+		{
+			// Of course, if it doesn't exist then the result if FALSE
+			return false;
+		}
+
+		$c = $this->data[$byte];
+
+		// Lookup the ($n % 8)th bit of the byte
+		$bit = 7 - ($n & 7);
+		return (bool) (ord($c) & (1 << $bit));
+	}
+
+	function set($n)
+	{
+		$byte = $n >> 3;
+		$bit = 7 - ($n & 7);
+
+		if (isset($this->data[$byte]))
+		{
+			$this->data[$byte] = $this->data[$byte] | chr(1 << $bit);
+		}
+		else
+		{
+			if ($byte - strlen($this->data) > 0)
+			{
+				$this->data .= str_repeat("\0", $byte - strlen($this->data));
+			}
+			$this->data .= chr(1 << $bit);
+		}
+	}
+
+	function clear($n)
+	{
+		$byte = $n >> 3;
+
+		if (!isset($this->data[$byte]))
+		{
+			return;
+		}
+
+		$bit = 7 - ($n & 7);
+		$this->data[$byte] = $this->data[$byte] &~ chr(1 << $bit);
+	}
+
+	function get_blob()
+	{
+		return $this->data;
+	}
+
+	function get_base64()
+	{
+		return base64_encode($this->data);
+	}
+
+	function get_bin()
+	{
+		$bin = '';
+		$len = strlen($this->data);
+
+		for ($i = 0; $i < $len; ++$i)
+		{
+			$bin .= str_pad(decbin(ord($this->data[$i])), 8, '0', STR_PAD_LEFT);
+		}
+
+		return $bin;
+	}
+
+	function get_all_set()
+	{
+		return array_keys(array_filter(str_split($this->get_bin())));
+	}
+
+	function merge($bitfield)
+	{
+		$this->data = $this->data | $bitfield->get_blob();
+	}
 }
 
 ?>

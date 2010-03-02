@@ -22,246 +22,305 @@ include_once($phpbb_root_path . 'includes/search/search.' . $phpEx);
 
 /**
 * fulltext_native
-* phpBB's own db driven fulltext search
+* phpBB's own db driven fulltext search, version 2
 * @package search
 */
 class fulltext_native extends search_backend
 {
-	var $stats;
-	var $word_length;
+	var $stats = array();
+	var $word_length = array();
+	var $search_query;
+	var $common_words = array();
 
+	var $must_contain_ids = array();
+	var $must_not_contain_ids = array();
+	var $must_exclude_one_ids = array();
+
+	/**
+	* Initialises the fulltext_native search backend with min/max word length and makes sure the UTF-8 normalizer is loaded.
+	*
+	* @param	boolean|string	$error	is passed by reference and should either be set to false on success or an error message on failure.
+	*
+	* @access	public
+	*/
 	function fulltext_native(&$error)
 	{
-		global $config;
+		global $phpbb_root_path, $phpEx, $config;
 
 		$this->word_length = array('min' => $config['fulltext_native_min_chars'], 'max' => $config['fulltext_native_max_chars']);
+
+		/**
+		* Load the UTF tools
+		*/
+		if (!class_exists('utf_normalizer'))
+		{
+			include($phpbb_root_path . 'includes/utf/utf_normalizer.' . $phpEx);
+		}
+		if (!function_exists('utf8_strlen'))
+		{
+			include($phpbb_root_path . 'includes/utf/utf_tools.' . $phpEx);
+		}
+
 
 		$error = false;
 	}
 
 	/**
-	* Splits keywords entered by a user into an array of words stored in $this->split_words
+	* This function fills $this->search_query with the cleaned user search query.
 	*
-	* @param string $keywords Contains the keyword as entered by the user
-	* @param string $terms is either 'all' or 'any'
-	* @return false if no valid keywords were found and otherwise true
+	* If $terms is 'any' then the words will be extracted from the search query
+	* and combined with | inside brackets. They will afterwards be treated like
+	* an standard search query.
+	*
+	* Then it analyses the query and fills the internal arrays $must_not_contain_ids,
+	* $must_contain_ids and $must_exclude_one_ids which are later used by keyword_search().
+	*
+	* @param	string	$keywords	contains the search query string as entered by the user
+	* @param	string	$terms		is either 'all' (use search query as entered, default words to 'must be contained in post')
+	* 	or 'any' (find all posts containing at least one of the given words)
+	* @return	boolean				false if no valid keywords were found and otherwise true
+	*
+	* @access	public
 	*/
-	function split_keywords(&$keywords, $terms)
+	function split_keywords($keywords, $terms)
 	{
-		global $db, $config;
+		global $db, $config, $user;
 
-		$drop_char_match =   array('^', '$', '(', ')', '<', '>', '`', '\'', '"', ',', '@', '_', '?', '%', '~', '.', '[', ']', '{', '}', ':', '\\', '/', '=', '!', "\n", "\r");
-		$drop_char_replace = array(' ', ' ', ' ', ' ', ' ', '',  '',  ' ',  ' ', ' ', '',  ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', '' ,  ' ', ' ', ' ', ' ', ' ',  ' ');
+		// Clean up the query search
+		$match = array(
+			// Replace multiple spaces with a single space
+			'#  +#',
 
-		$this->get_ignore_words();
-		$this->get_synonyms();
+			// Strip spaces after: +-|(
+			'#([+\\-|(]) #',
 
-		if ($terms == 'all')
+			// Strip spaces before: |*)
+			'# ([|*)])#',
+
+			// Make word|word|word work without brackets
+			'#^[^()]*\\|[^()]*$#',
+
+			// Remove nested brackets
+			'#(\\([^()]*)(?=\\()#',
+			'#\\)([^()]*)(?=\\))#',
+		);
+
+		$replace = array(
+			' ',
+			'$1',
+			'$1',
+			'($0)',
+			'$1)',
+			'$1',
+		);
+
+		$keywords = trim(preg_replace($match, $replace, $this->cleanup($keywords, '+-|()*', $user->lang['ENCODING'])));
+
+		// remove some useless bracket combinations which might be created by the previous regexps
+		$keywords = str_replace(array('()', ')|('), array('', '|'), $keywords);
+
+		// $keywords input format: each word seperated by a space, words in a bracket are not seperated
+
+		// the user wants to search for any word, convert the search query
+		if ($terms == 'any')
 		{
-			$match		= array('#\sand\s#i', '#\sor\s#i', '#\snot\s#i', '#\+#', '#-#', '#\|#');
-			$replace	= array(' + ', ' | ', ' - ', ' + ', ' - ', ' | ');
+			$words = array();
 
-			$keywords = preg_replace($match, $replace, $keywords);
-		}
-
-		$match = array();
-		// NCRs like &nbsp; etc.
-		$match[] = '#(&amp;|&)[a-z0-9]+?;#i';
-
-		// Filter out as above
-		$keywords = preg_replace($match, ' ', strtolower(trim($keywords)));
-
-		// Filter out non alphabetical characters
-		$keywords = str_replace($drop_char_match, $drop_char_replace, $keywords);
-
-		// Filter out ; and # but not &#[0-9]+;
-		$keywords = preg_replace('#&\#([0-9]+);#', '<$1>', $keywords);
-		$keywords = str_replace(array(';', '&', '#'), ' ', $keywords);
-		$keywords = str_replace(array('<', '>'), array('&#', ';'), $keywords);
-
-		// Split words
-		$this->split_words = explode(' ', preg_replace('#\s+#', ' ', $keywords));
-
-		if (sizeof($this->ignore_words))
-		{
-			$this->common_words = array_intersect($this->split_words, $this->ignore_words);
-			$this->split_words = array_diff($this->split_words, $this->ignore_words);
-		}
-
-		if (sizeof($this->match_synonym))
-		{
-			$this->split_words = str_replace($this->match_synonym, $this->replace_synonym, $this->split_words);
-		}
-
-		$prefixes = array('+', '-', '|');
-		$prefixed = false;
-		$in_words = '';
-
-		$lengths = $this->get_word_lengths($this->split_words);
-
-		foreach ($this->split_words as $i => $word)
-		{
-			if (in_array($word, $prefixes))
+			preg_match_all('#([^\\s+\\-|()]+)(?:$|[\\s+\\-|()])#', $keywords, $words);
+			if (sizeof($words[1]))
 			{
-				$prefixed = true;
-				continue;
+				$keywords = '(' . implode('|', $words[1]) . ')';
 			}
-
-			// check word length
-			if (($lengths[$i] < $config['fulltext_native_min_chars']) || ($lengths[$i] > $config['fulltext_native_max_chars']))
-			{
-				if ($prefixed)
-				{
-					$this->common_words[] = $this->split_words[$i - 1];
-					unset($this->split_words[$i - 1]);
-				}
-				$this->common_words[] = $this->split_words[$i];
-				unset($this->split_words[$i]);
-			}
-			else if (strpos($word, '*') === false)
-			{
-				$in_words .= (($in_words) ? ', ' : '') . '\'' . $db->sql_escape($word) . '\'';
-			}
-
-			$prefixed = false;
 		}
 
-		unset($lengths);
+		// set the search_query which is shown to the user
+		$this->search_query = utf8_encode_ncr($keywords, ENT_QUOTES);
 
-		if ($in_words)
+		$exact_words = array();
+		preg_match_all('#([^\\s+\\-|*()]+)(?:$|[\\s+\\-|()])#', $keywords, $exact_words);
+		$exact_words = $exact_words[1];
+
+		if (sizeof($exact_words))
 		{
-			// identify common words and ignore them
-			$sql = 'SELECT word_text
-				FROM ' . SEARCH_WORDLIST_TABLE . "
-				WHERE word_text IN ($in_words)
-					AND word_common = 1";
+			$sql = 'SELECT word_id, word_text, word_common
+				FROM ' . SEARCH_WORDLIST_TABLE . '
+				WHERE ' . $db->sql_in_set('word_text', $exact_words);
 			$result = $db->sql_query($sql);
-
+	
+			// store an array of words and ids, remove common words
 			while ($row = $db->sql_fetchrow($result))
 			{
-				$key = array_search($row['word_text'], $this->split_words);
-
-				if (isset($this->split_words[$key - 1]) && (in_array($this->split_words[$key - 1], $prefixes)))
+				if ($row['word_common'])
 				{
-					$this->common_words[] = $this->split_words[$key - 1];
-					unset($this->split_words[$key - 1]);
+					$this->common_words[] = $row['wort_text'];
+					continue;
 				}
-				$this->common_words[] = $row['word_text'];
-				unset($this->split_words[$key]);
+
+				$words[$row['word_text']] = (int) $row['word_id'];
 			}
 			$db->sql_freeresult($result);
 		}
+		unset($exact_words);
 
-		if (sizeof($this->split_words))
+		// now analyse the search query, first split it using the spaces
+		$query = explode(' ', $keywords);
+
+		$this->must_contain_ids = array();
+		$this->must_not_contain_ids = array();
+		$this->must_exclude_one_ids = array();
+
+		$mode = '';
+		$ignore_no_id = true;
+
+		foreach ($query as $word)
 		{
-			$this->split_words = array_values($this->split_words);
-			sort($this->split_words);
+			if (empty($word))
+			{
+				continue;
+			}
+
+			// words which should not be included
+			if ($word[0] == '-')
+			{
+				$word = substr($word, 1);
+
+				// a group of which at least one may not be in the resulting posts
+				if ($word[0] == '(')
+				{
+					$word = explode('|', substr($word, 1, -1));
+					$mode = 'must_exclude_one';
+				}
+				// one word which should not be in the resulting posts
+				else
+				{
+					$mode = 'must_not_contain';
+				}
+				$ignore_no_id = true;
+			}
+			// words which have to be included
+			else
+			{
+				// no prefix is the same as a +prefix
+				if ($word[0] == '+')
+				{
+					$word = substr($word, 1);
+				}
+
+				// a group of words of which at least one word should be in every resulting post
+				if ($word[0] == '(')
+				{
+					$word = explode('|', substr($word, 1, -1));
+				}
+				$ignore_no_id = false;
+				$mode = 'must_contain';
+			}
+
+			// if this is an array of words then retrieve an id for each
+			if (is_array($word))
+			{
+				$id_words = array();
+				foreach ($word as $i => $word_part)
+				{
+					if (strpos($word_part, '*') !== false)
+					{
+						$id_words[] = '\'' . $db->sql_escape(str_replace('*', '%', $word_part)) . '\'';
+					}
+					if (isset($words[$word_part]))
+					{
+						$id_words[] = $words[$word_part];
+					}
+				}
+				if (sizeof($id_words))
+				{
+					sort($id_words);
+					if (sizeof($id_words) > 1)
+					{
+						$this->{$mode . '_ids'}[] = $id_words;
+					}
+					else
+					{
+						$mode = ($mode == 'must_exclude_one') ? 'must_not_contain' : $mode;
+						$this->{$mode . '_ids'}[] = $id_words[0];
+					}
+				}
+				// throw an error if we shall not ignore unexistant words
+				else if (!$ignore_no_id)
+				{
+					trigger_error(sprintf($user->lang['WORDS_IN_NO_POST'], utf8_encode_ncr(implode(', ', $word))));
+				}
+			}
+			// else we only need one id
+			else if (($wildcard = strpos($word, '*') !== false) || isset($words[$word]))
+			{
+				if ($wildcard)
+				{
+					$this->{$mode . '_ids'}[] = '\'' . $db->sql_escape(str_replace('*', '%', $word)) . '\'';
+				}
+				else
+				{
+					$this->{$mode . '_ids'}[] = $words[$word];
+				}
+			}
+			// throw an error if we shall not ignore unexistant words
+			else if (!$ignore_no_id)
+			{
+				trigger_error(sprintf($user->lang['WORD_IN_NO_POST'], utf8_encode_ncr($word)));
+			}
+		}
+
+		// we can't search for negatives only
+		if (!sizeof($this->must_contain_ids))
+		{
+			return false;
+		}
+
+		sort($this->must_contain_ids);
+		sort($this->must_not_contain_ids);
+		sort($this->must_exclude_one_ids);
+
+		if (!empty($this->search_query))
+		{
 			return true;
 		}
 		return false;
 	}
 
 	/**
-	* Returns any array of string lengths for the given array of strings
-	* It counts multibyte entities as single characters and ignores "*"
+	* Performs a search on keywords depending on display specific params. You have to run split_keywords() first.
 	*
-	*	@param array $words an array of strings
+	* @param	string		$type				contains either posts or topics depending on what should be searched for
+	* @param	string		$fields				contains either titleonly (topic titles should be searched), msgonly (only message bodies should be searched), firstpost (only subject and body of the first post should be searched) or all (all post bodies and subjects should be searched)
+	* @param	string		$terms				is either 'all' (use query as entered, words without prefix should default to "have to be in field") or 'any' (ignore search query parts and just return all posts that contain any of the specified words)
+	* @param	array		$sort_by_sql		contains SQL code for the ORDER BY part of a query
+	* @param	string		$sort_key			is the key of $sort_by_sql for the selected sorting
+	* @param	string		$sort_dir			is either a or d representing ASC and DESC
+	* @param	string		$sort_days			specifies the maximum amount of days a post may be old
+	* @param	array		$ex_fid_ary			specifies an array of forum ids which should not be searched
+	* @param	array		$m_approve_fid_ary	specifies an array of forum ids in which the searcher is allowed to view unapproved posts
+	* @param	int			$topic_id			is set to 0 or a topic id, if it is not 0 then only posts in this topic should be searched
+	* @param	array		$author_ary			an array of author ids if the author should be ignored during the search the array is empty
+	* @param	array		$id_ary				passed by reference, to be filled with ids for the page specified by $start and $per_page, should be ordered
+	* @param	int			$start				indicates the first index of the page
+	* @param	int			$per_page			number of ids each page is supposed to contain
+	* @return	boolean|int						total number of results
 	*
-	*	@return Array of string lengths
-	*/
-	function get_word_lengths($words)
-	{
-		return array_map('strlen', str_replace('*', '', preg_replace('#&\#[0-9]+;#', 'x', $words)));
-	}
-
-	/**
-	* Turns text into an array of words that can be stored in the word list table
-	*/
-	function split_message($text)
-	{
-		global $config;
-
-		static $drop_char_match, $drop_char_replace;
-
-		$this->get_ignore_words();
-		$this->get_synonyms();
-
-		if (!is_array($drop_char_match))
-		{
-			$drop_char_match =   array('-', '^', '$', '(', ')', '<', '>', '`', '\'', '"', '|', ',', '@', '_', '?', '%', '~', '.', '[', ']', '{', '}', ':', '\\', '/', '=', '\'', '!', '*', '+', "\n", "\r");
-			$drop_char_replace = array(' ', ' ', ' ', ' ', ' ', ' ', ' ', '',  '',   ' ', ' ', ' ', ' ', '',  ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', '' ,  ' ', ' ', ' ',  ' ', ' ', ' ', ' ',  ' ');
-		}
-
-		$match = array();
-		// Comments for hardcoded bbcode elements (urls, smilies, html)
-		$match[] = '#<!\-\- .* \-\->(.*?)<!\-\- .* \-\->#is';
-		// NCRs like &nbsp; etc.
-		$match[] = '#(&amp;|&)[a-z0-9]+;#i';
-		// Do not index code
-		$match[] = '#\[code(?:=.*?)?(\:?[0-9a-z]{5,})\].*?\[\/code(\:?[0-9a-z]{5,})\]#is';
-		// BBcode
-		$match[] = '#\[\/?[a-z\*\+\-]+(?:=.*?)?(\:?[0-9a-z]{5,})\]#';
-
-		$text = preg_replace($match, ' ', ' ' . strtolower(trim($text)) . ' ');
-
-		// Filter out non-alphabetical chars
-		$text = str_replace($drop_char_match, $drop_char_replace, $text);
-
-		// Filter out ; and # but not &#[0-9]+;
-		$text = preg_replace('#&\#([0-9]+);#', '<$1>', $text);
-		$text = str_replace(array(';', '&', '#'), ' ', $text);
-		$text = str_replace(array('<', '>'), array('&#', ';'), $text);
-
-		// Split words
-		$text = explode(' ', preg_replace('#\s+#', ' ', trim($text)));
-
-		if (sizeof($this->ignore_words))
-		{
-			$text = array_diff($text, $this->ignore_words);
-		}
-
-		if (sizeof($this->match_synonym))
-		{
-			$text = str_replace($this->match_synonym, $this->replace_synonym, $text);
-		}
-
-		// remove too short or too long words
-		$text = array_map('trim', array_values($text));
-
-		$lengths = $this->get_word_lengths($text);
-
-		for ($i = 0, $n = sizeof($text); $i < $n; $i++)
-		{
-			if ($lengths[$i] < $config['fulltext_native_min_chars'] || $lengths[$i] > $config['fulltext_native_max_chars'])
-			{
-				unset($text[$i]);
-			}
-		}
-
-		return $text;
-	}
-
-	/**
-	* Performs a search on keywords depending on display specific params.
-	*
-	* @param array $id_ary passed by reference, to be filled with ids for the page specified by $start and $per_page, should be ordered
-	* @param int $start indicates the first index of the page
-	* @param int $per_page number of ids each page is supposed to contain
-	* @return total number of results
+	* @access	public
 	*/
 	function keyword_search($type, &$fields, &$terms, &$sort_by_sql, &$sort_key, &$sort_dir, &$sort_days, &$ex_fid_ary, &$m_approve_fid_ary, &$topic_id, &$author_ary, &$id_ary, $start, $per_page)
 	{
 		global $config, $db;
 
 		// No keywords? No posts.
-		if (!sizeof($this->split_words))
+		if (empty($this->search_query))
 		{
 			return false;
 		}
 
 		// generate a search_key from all the options to identify the results
 		$search_key = md5(implode('#', array(
-			implode(',', $this->split_words),
+			serialize($this->must_contain_ids),
+			serialize($this->must_not_contain_ids),
+			serialize($this->must_exclude_one_ids),
 			$type,
 			$fields,
 			$terms,
@@ -274,323 +333,328 @@ class fulltext_native extends search_backend
 		)));
 
 		// try reading the results from cache
-		$result_count = 0;
-		if ($this->obtain_ids($search_key, $result_count, $id_ary, $start, $per_page, $sort_dir) == SEARCH_RESULT_IN_CACHE)
+		$total_results = 0;
+		if ($this->obtain_ids($search_key, $total_results, $id_ary, $start, $per_page, $sort_dir) == SEARCH_RESULT_IN_CACHE)
 		{
-			return $result_count;
+			return $total_results;
 		}
 
-		$result_count = 0;
 		$id_ary = array();
 
-		$join_topic = ($type == 'posts') ? false : true;
+		$sql_where = array();
+		$group_by = false;
+		$m_num = 0;
+		$w_num = 0;
 
-		// Build sql strings for sorting
-		$sql_sort = $sort_by_sql[$sort_key] . (($sort_dir == 'a') ? ' ASC' : ' DESC');
-		$sql_sort_table = $sql_sort_join = '';
+		$sql_array = array(
+			'SELECT'	=> ($type == 'posts') ? 'p.post_id' : 'p.topic_id',
+			'FROM'		=> array(
+				SEARCH_WORDMATCH_TABLE	=> array(),
+				SEARCH_WORDLIST_TABLE	=> array(),
+				POSTS_TABLE				=> 'p'
+			),
+			'LEFT_JOIN'	=> array()
+		);
+		$sql_where[] = 'm0.post_id = p.post_id';
 
-		switch ($sql_sort[0])
+		if ($type == 'topics')
 		{
-			case 'u':
-				$sql_sort_table	= USERS_TABLE . ' u, ';
-				$sql_sort_join	= ' AND u.user_id = p.poster_id ';
-			break;
-
-			case 't':
-				$join_topic = true;
-			break;
-
-			case 'f':
-				$sql_sort_table	= FORUMS_TABLE . ' f, ';
-				$sql_sort_join	= ' AND f.forum_id = p.forum_id ';
-			break;
-
+			$sql_array['FROM'][TOPICS_TABLE] = 't';
+			$group_by = true;
 		}
 
+		$title_match = '';
+		$group_by = true;
 		// Build some display specific sql strings
 		switch ($fields)
 		{
 			case 'titleonly':
-				$sql_match = ' AND m.title_match = 1 AND p.post_id = t.topic_first_post_id';
-				$join_topic = true;
+				$title_match = 'title_match = 1';
+				$group_by = false;
+			// no break
+			case 'firstpost':
+				$sql_array['FROM'][TOPICS_TABLE] = 't';
+				$sql_where[] = 'p.post_id = t.topic_first_post_id';
 			break;
 
 			case 'msgonly':
-				$sql_match = ' AND m.title_match = 0';
+				$title_match = 'title_match = 0';
+				$group_by = false;
 			break;
+		}
 
-			case 'firstpost':
-				$sql_match = ' AND p.post_id = t.topic_first_post_id';
-				$join_topic = true;
-			break;
+		/**
+		* @todo Add a query optimizer (handle stuff like "+(4|3) +4")
+		*/
 
-			default:
-				$sql_match = '';
+		foreach ($this->must_contain_ids as $subquery)
+		{
+			if (is_array($subquery))
+			{
+				$group_by = true;
+
+				$word_id_sql = array();
+				$word_ids = array();
+				foreach ($subquery as $id)
+				{
+					if (is_string($id))
+					{
+						$sql_array['LEFT_JOIN'][] = array(
+							'FROM'	=> array(SEARCH_WORDLIST_TABLE => 'w' . $w_num),
+							'ON'	=> "w$w_num.word_text LIKE $id"
+						);
+						$word_ids[] = "w$w_num.word_id";
+		
+						$w_num++;
+					}
+					else
+					{
+						$word_ids[] = $id;
+					}
+				}
+
+				$sql_where[] = $db->sql_in_set("m$m_num.word_id", $word_ids);
+
+				unset($word_id_sql);
+				unset($word_ids);
+			}
+			else if (is_string($subquery))
+			{
+				$sql_array['FROM'][SEARCH_WORDLIST_TABLE][] = 'w' . $w_num;
+
+				$sql_where[] = "w$w_num.word_text LIKE $subquery";
+				$sql_where[] = "m$m_num.word_id = w$w_num.word_id";
+
+				$group_by = true;
+				$w_num++;
+			}
+			else
+			{
+				$sql_where[] = "m$m_num.word_id = $subquery";
+			}
+	
+			$sql_array['FROM'][SEARCH_WORDMATCH_TABLE][] = 'm' . $m_num;
+
+			if ($title_match)
+			{
+				$sql_where[] = "m$m_num.$title_match";
+			}
+
+			if ($m_num != 0)
+			{
+				$sql_where[] = "m$m_num.post_id = m0.post_id";
+			}
+			$m_num++;
+		}
+
+		foreach ($this->must_not_contain_ids as $key => $subquery)
+		{
+			if (is_string($subquery))
+			{
+				$sql_array['LEFT_JOIN'][] = array(
+					'FROM'	=> array(SEARCH_WORDLIST_TABLE => 'w' . $w_num),
+					'ON'	=> "w$w_num.word_text LIKE $subquery"
+				);
+
+				$this->must_not_contain_ids[$key] = "w$w_num.word_id";
+
+				$group_by = true;
+				$w_num++;
+			}
+		}
+
+		if (sizeof($this->must_not_contain_ids))
+		{
+			$sql_array['LEFT_JOIN'][] = array(
+				'FROM'	=> array(SEARCH_WORDMATCH_TABLE => 'm' . $m_num),
+				'ON'	=> $db->sql_in_set("m$m_num.word_id", $this->must_not_contain_ids) . (($title_match) ? " AND m$m_num.$title_match" : '') . " AND m$m_num.post_id = m0.post_id"
+			);
+
+			$sql_where[] = "m$m_num.word_id IS NULL";
+			$m_num++;
+		}
+
+		foreach ($this->must_exclude_one_ids as $ids)
+		{
+			$is_null_joins = array();
+			foreach ($ids as $id)
+			{
+				if (is_string($id))
+				{
+					$sql_array['LEFT_JOIN'][] = array(
+						'FROM'	=> array(SEARCH_WORDLIST_TABLE => 'w' . $w_num),
+						'ON'	=> "w$w_num.word_text LIKE $id"
+					);
+					$id = "w$w_num.word_id";
+
+					$group_by = true;
+					$w_num++;
+				}
+
+				$sql_array['LEFT_JOIN'][] = array(
+					'FROM'	=> array(SEARCH_WORDMATCH_TABLE => 'm' . $m_num),
+					'ON'	=> "m$m_num.word_id = $id AND m$m_num.post_id = m0.post_id" . (($title_match) ? " AND m$m_num.$title_match" : '')
+				);
+				$is_null_joins[] = "m$m_num.word_id IS NULL";
+
+				$m_num++;
+			}
+			$sql_where[] = '(' . implode(' OR ', $is_null_joins) . ')';
 		}
 
 		if (!sizeof($m_approve_fid_ary))
 		{
-			$m_approve_fid_sql = ' AND p.post_approved = 1';
+			$sql_where[] = 'p.post_approved = 1';
 		}
-		else if ($m_approve_fid_ary === array(-1))
+		else if ($m_approve_fid_ary !== array(-1))
 		{
-			$m_approve_fid_sql = '';
-		}
-		else
-		{
-			$m_approve_fid_sql = ' AND (p.post_approved = 1 OR p.forum_id NOT IN (' . implode(', ', $m_approve_fid_ary) . '))';
+			$sql_where[] = '(p.post_approved = 1 OR ' . $db->sql_in_set('p.forum_id', $m_approve_fid_ary, true) . ')';
 		}
 
-		$sql_select			= ($type == 'posts') ? 'm.post_id' : 'DISTINCT t.topic_id';
-		$sql_from			= ($join_topic) ? TOPICS_TABLE . ' t, ' : '';
-		$field				= ($type == 'posts') ? 'm.post_id' : 't.topic_id';
-		$sql_author			= (sizeof($author_ary) == 1) ? ' = ' . $author_ary[0] : 'IN (' . implode(',', $author_ary) . ')';
-
-		$sql_where_options = $sql_sort_join;
-		$sql_where_options .= ($topic_id) ? ' AND p.topic_id = ' . $topic_id : '';
-		$sql_where_options .= ($join_topic) ? ' AND t.topic_id = p.topic_id' : '';
-		$sql_where_options .= (sizeof($ex_fid_ary)) ? ' AND p.forum_id NOT IN (' . implode(',', $ex_fid_ary) . ')' : '';
-		$sql_where_options .= $m_approve_fid_sql;
-		$sql_where_options .= (sizeof($author_ary)) ? ' AND p.poster_id ' . $sql_author : '';
-		$sql_where_options .= ($sort_days) ? ' AND p.post_time >= ' . (time() - ($sort_days * 86400)) : '';
-		$sql_where_options .= $sql_match;
-
-		// split the words into three arrays (AND, OR, NOT)
-		$sql_words = array('AND' => array(), 'OR' => array(), 'NOT' => array());
-		$bool = ($terms == 'all') ? 'AND' : 'OR';
-
-		foreach ($this->split_words as $word)
+		if ($topic_id)
 		{
-			switch ($word)
+			$sql_where[] = 'p.topic_id = ' . $topic_id;
+		}
+
+		if (sizeof($author_ary))
+		{
+			$sql_where[] = $db->sql_in_set('p.poster_id', $author_ary);
+		}
+
+		if (sizeof($ex_fid_ary))
+		{
+			$sql_where[] = $db->sql_in_set('p.forum_id', $ex_fid_ary, true);
+		}
+
+		if ($sort_days)
+		{
+			$sql_where[] = 'p.post_time >= ' . (time() - ($sort_days * 86400));
+		}
+
+		$sql_array['WHERE'] = implode(' AND ', $sql_where);
+
+		$is_mysql = false;
+		// if the total result count is not cached yet, retrieve it from the db
+		if (!$total_results)
+		{
+			$sql = '';
+			$sql_array_count = $sql_array;
+
+			switch (SQL_LAYER)
 			{
-				case '-':
-					$bool = 'NOT';
-				continue;
-
-				case '+':
-					$bool = 'AND';
-				continue;
-
-				case '|':
-					$bool = 'OR';
-				continue;
-
-				default:
-					$bool = ($terms != 'all') ? 'OR' : $bool;
-					$sql_words[$bool][] = "'" . $db->sql_escape(preg_replace('#\*+#', '%', trim($word))) . "'";
-					$bool = ($terms == 'all') ? 'AND' : 'OR';
+				case 'mysql':
+				case 'mysql4':
+				case 'mysqli':
+					$sql_array['SELECT'] = 'SQL_CALC_FOUND_ROWS ' . $sql_array['SELECT'];
+					$is_mysql = true;
 				break;
-			}
-		}
 
-		// Select all post_ids that contain all AND-words
-		$result_ary= array('AND' => array(), 'OR' => array(), 'NOT' => array());
-		if (sizeof($sql_words['AND']))
-		{
-			$sql_in = '';
-			foreach ($sql_words['AND'] as $word)
-			{
-				// first select all post ids that match a word containing a wildcard
-				if (strstr($word, '%'))
-				{
-					$sql = "SELECT $sql_select
-						FROM $sql_from$sql_sort_table" . POSTS_TABLE . ' p, ' . SEARCH_WORDMATCH_TABLE . ' m, ' . SEARCH_WORDLIST_TABLE . " w
-						WHERE w.word_text LIKE $word
-							AND m.word_id = w.word_id
-							AND w.word_common <> 1
-							AND p.post_id = m.post_id
-							$sql_where_options
-						GROUP BY $field
-						ORDER BY $sql_sort";
+				case 'sqlite':
+					$sql_array_count['SELECT'] = ($type == 'posts') ? 'DISTINCT p.post_id' : 'DISTINCT p.topic_id';
+					$sql = 'SELECT COUNT(' . (($type == 'posts') ? 'post_id' : 'topic_id') . ') as total_results
+							FROM (' . $db->sql_build_query('SELECT', $sql_array_count) . ')';
+				// no break
+				default:
+					$sql_array_count['SELECT'] = ($type == 'posts') ? 'COUNT(DISTINCT p.post_id) AS total_results' : 'COUNT(DISTINCT p.topic_id) AS total_results';
+					$sql = (!$sql) ? $db->sql_build_query('SELECT', $sql_array_count) : $sql;
+		
 					$result = $db->sql_query($sql);
-
-					if (!($row = $db->sql_fetchrow($result)))
+					$total_results = (int) $db->sql_fetchfield('total_results');
+					$db->sql_freeresult($result);
+		
+					if (!$total_results)
 					{
-						$db->sql_freeresult($result);
-						$id_ary = array();
 						return false;
 					}
-
-					$ids = array();
-					do
-					{
-						$ids[] = ($type == 'topics') ? $row['topic_id'] : $row['post_id'];
-					}
-					while ($row = $db->sql_fetchrow($result));
-					$db->sql_freeresult($result);
-
-					// remove ids that are not present in all AND-word results
-					if (sizeof($result_ary['AND']))
-					{
-						$result_ary['AND'] = array_intersect($result_ary['AND'], $ids);
-					}
-					else
-					{
-						$result_ary['AND'] = $ids;
-					}
-					unset($ids);
-				}
-				else
-				{
-					$sql_in .= (($sql_in) ? ', ' : '') . $word;
-				}
+				break;
 			}
 
-			if ($sql_in)
-			{
-				$sql = "SELECT $sql_select, COUNT(DISTINCT m.word_id) as matches, " . $sort_by_sql[$sort_key] . "
-					FROM $sql_from$sql_sort_table" . POSTS_TABLE . ' p, ' . SEARCH_WORDMATCH_TABLE . ' m, ' . SEARCH_WORDLIST_TABLE . " w
-					WHERE w.word_text IN ($sql_in)
-						AND m.word_id = w.word_id
-						AND w.word_common <> 1
-						AND p.post_id = m.post_id
-						$sql_where_options
-					GROUP BY $field, " . $sort_by_sql[$sort_key] . '
-					ORDER BY ' . $sql_sort;
-				$result = $db->sql_query($sql);
-
-				if (!($row = $db->sql_fetchrow($result)))
-				{
-					$db->sql_freeresult($result);
-					$id_ary = array();
-					return false;
-				}
-
-				// A little trick so we only need one query: using DISTINCT makes every word unique so if the
-				// number of all words for one post_id equals the number of AND-words it has to contain all
-				// AND-words
-				$ids = array();
-				do
-				{
-					if ($row['matches'] == sizeof($sql_words['AND']))
-					{
-						$ids[] = ($type == 'topics') ? $row['topic_id'] : $row['post_id'];
-					}
-				}
-				while ($row = $db->sql_fetchrow($result));
-				$db->sql_freeresult($result);
-
-				// remove ids that are not present in all AND-word results
-				if (sizeof($result_ary['AND']))
-				{
-					$result_ary['AND'] = array_intersect($result_ary['AND'], $ids);
-				}
-				else
-				{
-					$result_ary['AND'] = $ids;
-				}
-				unset($ids);
-			}
+			unset($sql_array_count, $sql);
 		}
 
-		// Select all post_ids that contain one of the OR-words
-		if (sizeof($sql_words['OR']))
+		// Build sql strings for sorting
+		$sql_sort = $sort_by_sql[$sort_key] . (($sort_dir == 'a') ? ' ASC' : ' DESC');
+
+		switch ($sql_sort[0])
 		{
-			$sql_where = $sql_in = '';
-			foreach ($sql_words['OR'] as $word)
-			{
-				if (strstr($word, '%'))
+			case 'u':
+				$sql_array['FROM'][USERS_TABLE] = 'u';
+				$sql_where[] = 'u.user_id = p.poster_id ';
+			break;
+
+			case 't':
+				if (!isset($sql_array['FROM'][TOPICS_TABLE]))
 				{
-					$sql_where .= (($sql_where) ? ' OR w.word_text ' : 'w.word_text ') . "LIKE $word";
+					$sql_array['FROM'][TOPICS_TABLE] = 't';
+					$sql_where[] = 'p.topic_id = t.topic_id';
 				}
-				else
-				{
-					$sql_in .= (($sql_in) ? ', ' : '') . $word;
-				}
-			}
-			$sql_where = ($sql_in) ? $sql_where . (($sql_where) ? ' OR ' : '') . 'w.word_text IN (' . $sql_in . ')' : $sql_where;
+			break;
 
-			$sql = "SELECT $sql_select
-				FROM $sql_from$sql_sort_table" . POSTS_TABLE . ' p, ' . SEARCH_WORDMATCH_TABLE . ' m, ' . SEARCH_WORDLIST_TABLE . " w
-				WHERE ($sql_where)
-					AND m.word_id = w.word_id
-					AND w.word_common <> 1
-					AND p.post_id = m.post_id
-					$sql_where_options
-				ORDER BY $sql_sort";
-			$result = $db->sql_query($sql);
-
-			while ($row = $db->sql_fetchrow($result))
-			{
-				$result_ary['OR'][] = ($type == 'topics') ? $row['topic_id'] : $row['post_id'];
-			}
-			$db->sql_freeresult($result);
+			case 'f':
+				$sql_array['FROM'][FORUMS_TABLE] = 'f';
+				$sql_where[] = 'f.forum_id = p.forum_id';
+			break;
 		}
 
-		// remove post_ids that do not contain any OR-word
-		if (sizeof($result_ary['OR']))
+		$sql_array['WHERE'] = implode(' AND ', $sql_where);
+		$sql_array['GROUP_BY'] = ($group_by) ? (($type == 'posts') ? 'p.post_id' : 'p.topic_id') . ', ' . $sort_by_sql[$sort_key] : '';
+		$sql_array['ORDER_BY'] = $sql_sort;
+
+		unset($sql_where, $sql_sort, $group_by);
+
+		$sql = $db->sql_build_query('SELECT', $sql_array);
+		$result = $db->sql_query_limit($sql, $config['search_block_size'], $start);
+
+		while ($row = $db->sql_fetchrow($result))
 		{
-			$id_ary = (sizeof($result_ary['AND'])) ? array_intersect($result_ary['AND'], $result_ary['OR']) : $result_ary['OR'];
+			$id_ary[] = $row[(($type == 'posts') ? 'post_id' : 'topic_id')];
 		}
-		else
-		{
-			$id_ary = (sizeof($result_ary['AND'])) ? $result_ary['AND'] : array();
-		}
-
-		unset($result_ary['AND']);
-		unset($result_ary['OR']);
-
-		// remove all post_ids that contain a NOT-word
-		if (sizeof($sql_words['NOT']) && sizeof($id_ary))
-		{
-			$sql_where = $sql_in = '';
-			foreach ($sql_words['NOT'] as $word)
-			{
-				if (strstr($word, '%'))
-				{
-					$sql_where .= (($sql_where) ? ' OR w.word_text ' : 'w.word_text ') . "LIKE $word";
-				}
-				else
-				{
-					$sql_in .= (($sql_in) ? ', ' : '') . $word;
-				}
-			}
-			$sql_where = ($sql_in) ? $sql_where . (($sql_where) ? ' OR ' : '') . 'w.word_text IN (' . $sql_in . ')' : $sql_where;
-
-			$sql = "SELECT $sql_select
-				FROM $sql_from" . POSTS_TABLE . ' p, ' . SEARCH_WORDMATCH_TABLE . ' m, ' . SEARCH_WORDLIST_TABLE . " w
-				WHERE ($sql_where)
-					AND m.word_id = w.word_id
-					AND w.word_common <> 1
-					AND p.post_id = m.post_id
-					$sql_where_options";
-			$result = $db->sql_query($sql);
-
-			while ($row = $db->sql_fetchrow($result))
-			{
-				$result_ary['NOT'][] = ($type == 'topics') ? $row['topic_id'] : $row['post_id'];
-			}
-			$db->sql_freeresult($result);
-		}
-
-		if (sizeof($result_ary['NOT']))
-		{
-			$id_ary = (sizeof($id_ary)) ? array_diff($id_ary, $result_ary['NOT']) : array();
-		}
-		unset($result_ary);
+		$db->sql_freeresult($result);
 
 		if (!sizeof($id_ary))
 		{
 			return false;
 		}
 
-		$result_count = sizeof($id_ary);
+		// if we use mysql and the total result count is not cached yet, retrieve it from the db
+		if (!$total_results && $is_mysql)
+		{
+			$sql = 'SELECT FOUND_ROWS() as total_results';
+			$result = $db->sql_query($sql);
+			$total_results = (int) $db->sql_fetchfield('total_results');
+			$db->sql_freeresult($result);
+
+			if (!$total_results)
+			{
+				return false;
+			}
+		}
 
 		// store the ids, from start on then delete anything that isn't on the current page because we only need ids for one page
-		$id_ary = array_slice($id_ary, $start);
-		$this->save_ids($search_key, implode(' ', $this->split_words), $author_ary, $result_count, $id_ary, $start, $sort_dir);
+		$this->save_ids($search_key, $this->search_query, $author_ary, $total_results, $id_ary, $start, $sort_dir);
 		$id_ary = array_slice($id_ary, 0, (int) $per_page);
 
-		return $result_count;
+		return $total_results;
 	}
 
 	/**
 	* Performs a search on an author's posts without caring about message contents. Depends on display specific params
 	*
-	* @param array $id_ary passed by reference, to be filled with ids for the page specified by $start and $per_page, should be ordered
-	* @param int $start indicates the first index of the page
-	* @param int $per_page number of ids each page is supposed to contain
-	* @return total number of results
+	* @param	string		$type				contains either posts or topics depending on what should be searched for
+	* @param	array		$sort_by_sql		contains SQL code for the ORDER BY part of a query
+	* @param	string		$sort_key			is the key of $sort_by_sql for the selected sorting
+	* @param	string		$sort_dir			is either a or d representing ASC and DESC
+	* @param	string		$sort_days			specifies the maximum amount of days a post may be old
+	* @param	array		$ex_fid_ary			specifies an array of forum ids which should not be searched
+	* @param	array		$m_approve_fid_ary	specifies an array of forum ids in which the searcher is allowed to view unapproved posts
+	* @param	int			$topic_id			is set to 0 or a topic id, if it is not 0 then only posts in this topic should be searched
+	* @param	array		$author_ary			an array of author ids
+	* @param	array		$id_ary				passed by reference, to be filled with ids for the page specified by $start and $per_page, should be ordered
+	* @param	int			$start				indicates the first index of the page
+	* @param	int			$per_page			number of ids each page is supposed to contain
+	* @return	boolean|int						total number of results
+	*
+	* @access	public
 	*/
 	function author_search($type, &$sort_by_sql, &$sort_key, &$sort_dir, &$sort_days, &$ex_fid_ary, &$m_approve_fid_ary, &$topic_id, &$author_ary, &$id_ary, $start, $per_page)
 	{
@@ -617,17 +681,17 @@ class fulltext_native extends search_backend
 		)));
 
 		// try reading the results from cache
-		$result_count = 0;
-		if ($this->obtain_ids($search_key, $result_count, $id_ary, $start, $per_page, $sort_dir) == SEARCH_RESULT_IN_CACHE)
+		$total_results = 0;
+		if ($this->obtain_ids($search_key, $total_results, $id_ary, $start, $per_page, $sort_dir) == SEARCH_RESULT_IN_CACHE)
 		{
-			return $result_count;
+			return $total_results;
 		}
 
 		$id_ary = array();
 
 		// Create some display specific sql strings
-		$sql_author		= 'p.poster_id ' . ((sizeof($author_ary) > 1) ? 'IN (' . implode(',', $author_ary) . ')' : '= ' . $author_ary[0]);
-		$sql_fora		= (sizeof($ex_fid_ary)) ? ' AND p.forum_id NOT IN (' . implode(',', $ex_fid_ary) . ')' : '';
+		$sql_author		= $db->sql_in_set('p.poster_id', $author_ary);
+		$sql_fora		= (sizeof($ex_fid_ary)) ? ' AND ' . $db->sql_in_set('p.forum_id', $ex_fid_ary, true) : '';
 		$sql_time		= ($sort_days) ? ' AND p.post_time >= ' . (time() - ($sort_days * 86400)) : '';
 		$sql_topic_id	= ($topic_id) ? ' AND p.topic_id = ' . (int) $topic_id : '';
 
@@ -662,47 +726,73 @@ class fulltext_native extends search_backend
 		}
 		else
 		{
-			$m_approve_fid_sql = ' AND (p.post_approved = 1 OR p.forum_id IN (' . implode($m_approve_fid_ary) . '))';
+			$m_approve_fid_sql = ' AND (p.post_approved = 1 OR ' . $db->sql_in_set('p.forum_id', $m_approve_fid_ary, true) . ')';
 		}
 
-		// If the cache was completely empty count the results
-		if (!$result_count)
-		{
-			if ($type == 'posts')
-			{
-				$sql = 'SELECT COUNT(p.post_id) as result_count
-					FROM ' . POSTS_TABLE . " p
-					WHERE $sql_author
-						$sql_topic_id
-						$m_approve_fid_sql
-						$sql_fora
-						$sql_time";
-			}
-			else
-			{
-				$sql = 'SELECT COUNT(DISTINCT t.topic_id) as result_count
-					FROM ' . TOPICS_TABLE . ' t, ' . POSTS_TABLE . " p
-					WHERE $sql_author
-						$sql_topic_id
-						$m_approve_fid_sql
-						$sql_fora
-						AND t.topic_id = p.topic_id
-						$sql_time";
-			}
-			$result = $db->sql_query($sql);
+		$select = ($type == 'posts') ? 'p.post_id' : 't.topic_id';
+		$is_mysql = false;
 
-			if ($row = $db->sql_fetchrow())
+		// If the cache was completely empty count the results
+		if (!$total_results)
+		{
+			switch (SQL_LAYER)
 			{
-				$result_count = $row['result_count'];
+				case 'mysql':
+				case 'mysql4':
+				case 'mysqli':
+					$select = 'SQL_CALC_FOUND_ROWS ' . $select;
+					$is_mysql = true;
+				break;
+
+				default:
+					if ($type == 'posts')
+					{
+						$sql = 'SELECT COUNT(p.post_id) as total_results
+							FROM ' . POSTS_TABLE . " p
+							WHERE $sql_author
+								$sql_topic_id
+								$m_approve_fid_sql
+								$sql_fora
+								$sql_time";
+					}
+					else
+					{
+						if (SQL_LAYER == 'sqlite')
+						{
+							$sql = 'SELECT COUNT(topic_id) as total_results
+								FROM (SELECT DISTINCT t.topic_id';
+						}
+						else
+						{
+							$sql = 'SELECT COUNT(DISTINCT t.topic_id) as total_results';
+						}
+
+						$sql .= ' FROM ' . TOPICS_TABLE . ' t, ' . POSTS_TABLE . " p
+							WHERE $sql_author
+								$sql_topic_id
+								$m_approve_fid_sql
+								$sql_fora
+								AND t.topic_id = p.topic_id
+								$sql_time" . ((SQL_LAYER == 'sqlite') ? ')' : '');
+					}
+					$result = $db->sql_query($sql);
+		
+					$total_results = (int) $db->sql_fetchfield('total_results');
+					$db->sql_freeresult($result);
+		
+					if (!$total_results)
+					{
+						return false;
+					}
+				break;
 			}
-			$db->sql_freeresult($result);
 		}
 
 		// Build the query for really selecting the post_ids
 		if ($type == 'posts')
 		{
-			$sql = 'SELECT p.post_id
-				FROM ' . $sql_sort_table . POSTS_TABLE . ' p' . (($topic_id) ? ', ' . TOPICS_TABLE . ' t' : '') . "
+			$sql = "SELECT $select
+				FROM " . $sql_sort_table . POSTS_TABLE . ' p' . (($topic_id) ? ', ' . TOPICS_TABLE . ' t' : '') . "
 				WHERE $sql_author
 					$sql_topic_id
 					$m_approve_fid_sql
@@ -714,8 +804,8 @@ class fulltext_native extends search_backend
 		}
 		else
 		{
-			$sql = 'SELECT t.topic_id
-				FROM ' . $sql_sort_table . TOPICS_TABLE . ' t, ' . POSTS_TABLE . " p
+			$sql = "SELECT $select
+				FROM " . $sql_sort_table . TOPICS_TABLE . ' t, ' . POSTS_TABLE . " p
 				WHERE $sql_author
 					$sql_topic_id
 					$m_approve_fid_sql
@@ -737,35 +827,140 @@ class fulltext_native extends search_backend
 		}
 		$db->sql_freeresult($result);
 
+		if (!$total_results && $is_mysql)
+		{
+			$sql = 'SELECT FOUND_ROWS() as total_results';
+			$result = $db->sql_query($sql);
+			$total_results = (int) $db->sql_fetchfield('total_results');
+			$db->sql_freeresult($result);
+
+			if (!$total_results)
+			{
+				return false;
+			}
+		}
+
 		if (sizeof($id_ary))
 		{
-			$this->save_ids($search_key, '', $author_ary, $result_count, $id_ary, $start, $sort_dir);
+			$this->save_ids($search_key, '', $author_ary, $total_results, $id_ary, $start, $sort_dir);
 			$id_ary = array_slice($id_ary, 0, $per_page);
 
-			return $result_count;
+			return $total_results;
 		}
 		return false;
 	}
 
 	/**
+	* Split a text into words of a given length
+	*
+	* The text is converted to UTF-8, cleaned up, and split. Then, words that
+	* conform to the defined length range are returned in an array.
+	*
+	* NOTE: duplicates are NOT removed from the return array
+	*
+	* @param	string	$text	Text to split, encoded in user's encoding
+	* @return	array			Array of UTF-8 words
+	*
+	* @access	private
+	*/
+	function split_message($text)
+	{
+		global $phpbb_root_path, $phpEx;
+		global $config, $user;
+
+		$match = $words = array();
+
+		/**
+		* Taken from the original code
+		*/
+		// Do not index code
+		$match[] = '#\[code(?:=.*?)?(\:?[0-9a-z]{5,})\].*?\[\/code(\:?[0-9a-z]{5,})\]#is';
+		// BBcode
+		$match[] = '#\[\/?[a-z\*\+\-]+(?:=.*?)?(\:?[0-9a-z]{5,})\]#';
+
+		$min = $config['fulltext_native_min_chars'];
+		$max = $config['fulltext_native_max_chars'];
+
+		$isset_min = $min - 1;
+
+		/**
+		* Clean up the string, remove HTML tags, remove BBCodes
+		*/
+		$word = strtok($this->cleanup(preg_replace($match, ' ', strip_tags($text)), '', $user->lang['ENCODING']), ' ');
+
+		while (isset($word[0]))
+		{
+			if (isset($word[252])
+			 || !isset($word[$isset_min]))
+			{
+				/**
+				* Words longer than 252 bytes are ignored. This will have to be
+				* changed whenever we change the length of search_wordlist.word_text
+				*
+				* Words shorter than $isset_min bytes are ignored, too
+				*/
+				$word = strtok(' ');
+				continue;
+			}
+
+			$len = utf8_strlen($word);
+
+			/**
+			* Test whether the word is too short to be indexed.
+			*
+			* Note that this limit does NOT apply to CJK and Hangul
+			*/
+			if ($len < $min)
+			{
+				/**
+				* Note: this could be optimized. If the codepoint is lower than Hangul's range
+				* we know that it will also be lower than CJK ranges
+				*/
+				if ((strncmp($word, UTF8_HANGUL_FIRST, 3) < 0 || strncmp($word, UTF8_HANGUL_LAST, 3) > 0)
+				 && (strncmp($word, UTF8_CJK_FIRST, 3) < 0 || strncmp($word, UTF8_CJK_LAST, 3) > 0)
+				 && (strncmp($word, UTF8_CJK_B_FIRST, 4) < 0 || strncmp($word, UTF8_CJK_B_LAST, 4) > 0))
+				{
+					$word = strtok(' ');
+					continue;
+				}
+			}
+
+			$words[] = $word;
+			$word = strtok(' ');
+		}
+
+		return $words;
+	}
+
+	/**
 	* Updates wordlist and wordmatch tables when a message is posted or changed
 	*
-	* @param string $mode contains the post mode: edit, post, reply, quote ...
+	* @param	string	$mode		Contains the post mode: edit, post, reply, quote
+	* @param	int		$post_id	The id of the post which is modified/created
+	* @param	string	$message	New or updated post content
+	* @param	string	$subject	New or updated post subject
+	* @param	string	$encoding	The post content's encoding
+	* @param	int		$poster_id	Post author's user id
+	* @param	int		$forum_id	The id of the forum in which the post is located
+	*
+	* @access	public
 	*/
-	function index($mode, $post_id, &$message, &$subject, $poster_id)
+	function index($mode, $post_id, &$message, &$subject, $encoding, $poster_id, $forum_id)
 	{
-		global $config, $db;
+		global $config, $db, $user;
 
-		// Is the fulltext indexer disabled? If yes then we need not
-		// carry on ... it's okay ... I know when I'm not wanted boo hoo
 		if (!$config['fulltext_native_load_upd'])
 		{
+			/**
+			* The search indexer is disabled, return
+			*/
 			return;
 		}
 
 		// Split old and new post/subject to obtain array of 'words'
 		$split_text = $this->split_message($message);
-		$split_title = ($subject) ? $this->split_message($subject) : array();
+		$split_title = $this->split_message($subject);
+
 		$cur_words = array('post' => array(), 'title' => array());
 
 		$words = array();
@@ -815,7 +1010,7 @@ class fulltext_native extends search_backend
 		{
 			$sql = 'SELECT word_id, word_text
 				FROM ' . SEARCH_WORDLIST_TABLE . '
-				WHERE word_text IN (' . implode(', ', preg_replace('#^(.*)$#', '\'$1\'', $unique_add_words)) . ')';
+				WHERE ' . $db->sql_in_set('word_text', $unique_add_words);
 			$result = $db->sql_query($sql);
 
 			$word_ids = array();
@@ -825,27 +1020,17 @@ class fulltext_native extends search_backend
 			}
 			$db->sql_freeresult($result);
 
-			$new_words = array_map(array(&$db, 'sql_escape'), array_diff($unique_add_words, array_keys($word_ids)));
+			$new_words = array_diff($unique_add_words, array_keys($word_ids));
 
 			if (sizeof($new_words))
 			{
 				switch (SQL_LAYER)
 				{
 					case 'mysql':
-						$sql = 'INSERT INTO ' . SEARCH_WORDLIST_TABLE . ' (word_text)
-							VALUES ' . implode(', ', preg_replace('#^(.*)$#', '(\'$1\')', $new_words));
-						$db->sql_query($sql);
-					break;
-
 					case 'mysql4':
 					case 'mysqli':
-					case 'mssql':
-					case 'mssql_odbc':
-					case 'sqlite':
-						// make sure the longest word comes first, so nothing will be truncated
-						usort($new_words, array(&$this, 'strlencmp'));
-
-						$sql = 'INSERT INTO ' . SEARCH_WORDLIST_TABLE . ' (word_text) ' . implode(' UNION ALL ', preg_replace('#^(.*)$#', "SELECT '\$1'",  $new_words));
+						$sql = 'INSERT INTO ' . SEARCH_WORDLIST_TABLE . " (word_text)
+							VALUES ('" . implode("'),('", array_map(array(&$db, 'sql_escape'), $new_words)) . "')";
 						$db->sql_query($sql);
 					break;
 
@@ -853,7 +1038,7 @@ class fulltext_native extends search_backend
 						foreach ($new_words as $word)
 						{
 							$sql = 'INSERT INTO ' . SEARCH_WORDLIST_TABLE . " (word_text)
-								VALUES ('$word')";
+								VALUES ('" . $db->sql_escape($word) . "')";
 							$db->sql_query($sql);
 						}
 				}
@@ -875,7 +1060,7 @@ class fulltext_native extends search_backend
 				}
 
 				$sql = 'DELETE FROM ' . SEARCH_WORDMATCH_TABLE . '
-					WHERE word_id IN (' . implode(', ', $sql_in) . ')
+					WHERE ' . $db->sql_in_set('word_id', $sql_in) . '
 						AND post_id = ' . intval($post_id) . "
 						AND title_match = $title_match";
 				$db->sql_query($sql);
@@ -892,7 +1077,7 @@ class fulltext_native extends search_backend
 				$sql = 'INSERT INTO ' . SEARCH_WORDMATCH_TABLE . " (post_id, word_id, title_match)
 					SELECT $post_id, word_id, $title_match
 					FROM " . SEARCH_WORDLIST_TABLE . '
-					WHERE word_text IN (' . implode(', ', preg_replace('#^(.*)$#', '\'$1\'', $word_ary)) . ')';
+					WHERE ' . $db->sql_in_set('word_text', $word_ary);
 				$db->sql_query($sql);
 			}
 		}
@@ -924,16 +1109,18 @@ class fulltext_native extends search_backend
 	/**
 	* Removes entries from the wordmatch table for the specified post_ids
 	*/
-	function index_remove($post_ids, $author_ids)
+	function index_remove($post_ids, $author_ids, $forum_ids)
 	{
 		global $db;
 
-		$sql = 'DELETE FROM ' . SEARCH_WORDMATCH_TABLE . '
-			WHERE post_id IN (' . implode(', ', $post_ids) . ')';
-		$db->sql_query($sql);
+		if (sizeof($post_ids))
+		{
+			$sql = 'DELETE FROM ' . SEARCH_WORDMATCH_TABLE . '
+				WHERE ' . $db->sql_in_set('post_id', $post_ids);
+			$db->sql_query($sql);
+		}
 
 		// SEARCH_WORDLIST_TABLE will be updated by tidy()
-
 		$this->destroy_cache(array(), $author_ids);
 	}
 
@@ -958,63 +1145,47 @@ class fulltext_native extends search_backend
 		// Remove common (> 60% of posts ) words
 		if ($config['num_posts'] >= 100)
 		{
+			// First, get the IDs of common words
 			$sql = 'SELECT word_id
 				FROM ' . SEARCH_WORDMATCH_TABLE . '
 				GROUP BY word_id
 				HAVING COUNT(word_id) > ' . floor($config['num_posts'] * 0.6);
 			$result = $db->sql_query($sql);
 
-			if ($row = $db->sql_fetchrow($result))
-			{
-				$sql_in = array();
-				do
-				{
-					$sql_in[] = $row['word_id'];
-				}
-				while ($row = $db->sql_fetchrow($result));
-
-				$destroy_cache_words = $sql_in;
-
-				$sql_in = implode(', ', $sql_in);
-
-				$sql = 'UPDATE ' . SEARCH_WORDLIST_TABLE . "
-					SET word_common = 1
-					WHERE word_id IN ($sql_in)";
-				$db->sql_query($sql);
-
-				$sql = 'DELETE FROM ' . SEARCH_WORDMATCH_TABLE . "
-					WHERE word_id IN ($sql_in)";
-				$db->sql_query($sql);
-				unset($sql_in);
-			}
-			$db->sql_freeresult($result);
-		}
-
-		// Remove words with no matches ... this is a potentially nasty query
-		$sql = 'SELECT w.word_id
-			FROM ' . SEARCH_WORDLIST_TABLE . ' w
-			LEFT JOIN ' . SEARCH_WORDMATCH_TABLE . ' m ON (w.word_id = m.word_id)
-			WHERE w.word_common = 0 AND m.word_id IS NULL
-			GROUP BY w.word_id';
-		$result = $db->sql_query($sql);
-
-		if ($row = $db->sql_fetchrow($result))
-		{
 			$sql_in = array();
-			do
+			while ($row = $db->sql_fetchrow($result))
 			{
 				$sql_in[] = $row['word_id'];
 			}
-			while ($row = $db->sql_fetchrow($result));
+			$db->sql_freeresult($result);
 
-			$destroy_cache_words = array_merge($destroy_cache_words, $sql_in);
+			if (sizeof($sql_in))
+			{
+				// Get the text of those new common words
+				$sql = 'SELECT word_text
+					FROM ' . SEARCH_WORDLIST_TABLE . '
+					WHERE ' . $db->sql_in_set('word_id', $sql_in);
+				$result = $db->sql_query($sql);
 
-			$sql = 'DELETE FROM ' . SEARCH_WORDLIST_TABLE . '
-				WHERE word_id IN (' . implode(', ', $sql_in) . ')';
-			$db->sql_query($sql);
+				while ($row = $db->sql_fetchrow($result))
+				{
+					$destroy_cache_words[] = $row['word_text'];
+				}
+				$db->sql_freeresult($result);
+
+				// Flag the words
+				$sql = 'UPDATE ' . SEARCH_WORDLIST_TABLE . '
+					SET word_common = 1
+					WHERE ' . $db->sql_in_set('word_id', $sql_in);
+				$db->sql_query($sql);
+
+				// Delete the matches
+				$sql = 'DELETE FROM ' . SEARCH_WORDMATCH_TABLE . '
+					WHERE ' . $db->sql_in_set('word_id', $sql_in);
+				$db->sql_query($sql);
+			}
 			unset($sql_in);
 		}
-		$db->sql_freeresult($result);
 
 		// destroy cached search results containing any of the words that are now common or were removed
 		$this->destroy_cache(array_unique($destroy_cache_words));
@@ -1039,7 +1210,7 @@ class fulltext_native extends search_backend
 	*/
 	function index_created()
 	{
-		if (!is_array($this->stats))
+		if (!sizeof($this->stats))
 		{
 			$this->get_stats();
 		}
@@ -1054,7 +1225,7 @@ class fulltext_native extends search_backend
 	{
 		global $user;
 
-		if (!is_array($this->stats))
+		if (!sizeof($this->stats))
 		{
 			$this->get_stats();
 		}
@@ -1082,11 +1253,258 @@ class fulltext_native extends search_backend
 	}
 
 	/**
+	* Clean up a text to remove non-alphanumeric characters
+	*
+	* This method receives a UTF-8 string, normalizes and validates it, replaces all
+	* non-alphanumeric characters with strings then returns the result.
+	*
+	* Any number of "allowed chars" can be passed as a UTF-8 string in NFC.
+	*
+	* @param	string	$text			Text to split, in UTF-8 (not normalized or sanitized)
+	* @param	string	$allowed_chars	String of special chars to allow
+	* @param	string	$encoding		Text encoding
+	* @return	string					Cleaned up text, only alphanumeric chars are left
+	*/
+	function cleanup($text, $allowed_chars = null, $encoding = 'iso-8859-1')
+	{
+		global $phpbb_root_path, $phpEx;
+		static $conv = array(), $conv_loaded = array();
+		$words = $allow = array();
+
+		/**
+		* Convert the text to UTF-8
+		*/
+		$encoding = strtolower($encoding);
+		if ($encoding != 'utf-8')
+		{
+			$text = utf8_recode($text, $encoding);
+		}
+
+		$utf_len_mask = array(
+			"\xC0"	=>	2,
+			"\xD0"	=>	2,
+			"\xE0"	=>	3,
+			"\xF0"	=>	4
+		);
+
+		/**
+		* Replace HTML entities and NCRs
+		*/
+		$text = html_entity_decode(utf8_decode_ncr($text), ENT_QUOTES);
+
+		/**
+		* Load the UTF-8 normalizer
+		*
+		* If we use it more widely, an instance of that class should be held in a
+		* a global variable instead
+		*/
+		$text = utf_normalizer::nfc($text);
+
+		/**
+		* The first thing we do is:
+		*
+		* - convert ASCII-7 letters to lowercase
+		* - remove the ASCII-7 non-alpha characters
+		* - remove the bytes that should not appear in a valid UTF-8 string: 0xC0,
+		*   0xC1 and 0xF5-0xFF
+		*
+		* @todo in theory, the third one is already taken care of during normalization and those chars should have been replaced by Unicode replacement chars
+		*/
+		$sb_match	= "ISTCPAMELRDOJBNHFGVWUQKYXZ\r\n\t!\"#$%&'()*+,-./:;<=>?@[\\]^_`{|}~\x00\x01\x02\x03\x04\x05\x06\x07\x08\x0B\x0C\x0E\x0F\x10\x11\x12\x13\x14\x15\x16\x17\x18\x19\x1A\x1B\x1C\x1D\x1E\x1F\xC0\xC1\xF5\xF6\xF7\xF8\xF9\xFA\xFB\xFC\xFD\xFE\xFF";
+		$sb_replace	= 'istcpamelrdojbnhfgvwuqkyxz                                                                              ';
+
+		/**
+		* This is the list of legal ASCII chars, it is automatically extended
+		* with ASCII chars from $allowed_chars
+		*/
+		$legal_ascii = ' eaisntroludcpmghbfvq10xy2j9kw354867z';
+
+		/**
+		* Prepare an array containing the extra chars to allow
+		*/
+		if (isset($allowed_chars[0]))
+		{
+			$pos = 0;
+			$len = strlen($allowed_chars);
+			do
+			{
+				$c = $allowed_chars[$pos];
+
+				if ($c < "\x80")
+				{
+					/**
+					* ASCII char
+					*/
+					$sb_pos = strpos($sb_match, $c);
+					if (is_int($sb_pos))
+					{
+						/**
+						* Remove the char from $sb_match and its corresponding
+						* replacement in $sb_replace
+						*/
+						$sb_match = substr($sb_match, 0, $sb_pos) . substr($sb_match, $sb_pos + 1);
+						$sb_replace = substr($sb_replace, 0, $sb_pos) . substr($sb_replace, $sb_pos + 1);
+						$legal_ascii .= $c;
+					}
+
+					++$pos;
+				}
+				else
+				{
+					/**
+					* UTF-8 char
+					*/
+					$utf_len = $utf_len_mask[$c & "\xF0"];
+					$allow[substr($allowed_chars, $pos, $utf_len)] = 1;
+					$pos += $utf_len;
+				}
+			}
+			while ($pos < $len);
+		}
+
+		$text = strtr($text, $sb_match, $sb_replace);
+		$ret = '';
+
+		$pos = 0;
+		$len = strlen($text);
+
+		do
+		{
+			/**
+			* Do all consecutive ASCII chars at once
+			*/
+			if ($spn = strspn($text, $legal_ascii, $pos))
+			{
+				$ret .= substr($text, $pos, $spn);
+				$pos += $spn;
+			}
+
+			if ($pos >= $len)
+			{
+				return $ret;
+			}
+
+			/**
+			* Capture the UTF char
+			*/
+			$utf_len = $utf_len_mask[$text[$pos] & "\xF0"];
+			$utf_char = substr($text, $pos, $utf_len);
+			$pos += $utf_len;
+
+			if (($utf_char >= UTF8_HANGUL_FIRST && $utf_char <= UTF8_HANGUL_LAST)
+			 || ($utf_char >= UTF8_CJK_FIRST && $utf_char <= UTF8_CJK_LAST)
+			 || ($utf_char >= UTF8_CJK_B_FIRST && $utf_char <= UTF8_CJK_B_LAST))
+			{
+				/**
+				* All characters within these ranges are valid
+				*
+				* We separate them with a space in order to index each character
+				* individually
+				*/
+				$ret .= ' ' . $utf_char . ' ';
+				continue;
+			}
+
+			if (isset($allow[$utf_char]))
+			{
+				/**
+				* The char is explicitly allowed
+				*/
+				$ret .= $utf_char;
+				continue;
+			}
+
+			if (isset($conv[$utf_char]))
+			{
+				/**
+				* The char is mapped to something, maybe to itself actually
+				*/
+				$ret .= $conv[$utf_char];
+				continue;
+			}
+
+			/**
+			* The char isn't mapped, but did we load its conversion table?
+			*
+			* The search indexer table is split into blocks. The block number of
+			* each char is equal to its codepoint right-shifted for 11 bits. It
+			* means that out of the 11, 16 or 21 meaningful bits of a 2-, 3- or
+			* 4- byte sequence we only keep the leftmost 0, 5 or 10 bits. Thus,
+			* all UTF chars encoded in 2 bytes are in the same first block.
+			*/
+			if (isset($utf_char[2]))
+			{
+				if (isset($utf_char[3]))
+				{
+					/**
+					* 1111 0nnn 10nn nnnn 10nx xxxx 10xx xxxx
+					* 0000 0111 0011 1111 0010 0000
+					*/
+					$idx = ((ord($utf_char[0]) & 0x07) << 7) | ((ord($utf_char[1]) & 0x3F) << 1) | ((ord($utf_char[2]) & 0x20) >> 5);
+				}
+				else
+				{
+					/**
+					* 1110 nnnn 10nx xxxx 10xx xxxx
+					* 0000 0111 0010 0000
+					*/
+					$idx = ((ord($utf_char[0]) & 0x07) << 1) | ((ord($utf_char[1]) & 0x20) >> 5);
+				}
+			}
+			else
+			{
+				/**
+				* 110x xxxx 10xx xxxx
+				* 0000 0000 0000 0000
+				*/
+				$idx = 0;
+			}
+
+			/**
+			* Check if the required conv table has been loaded already
+			*/
+			if (!isset($conv_loaded[$idx]))
+			{
+				$conv_loaded[$idx] = 1;
+				$file = $phpbb_root_path . 'includes/utf/data/search_indexer_' . $idx . '.' . $phpEx;
+
+				if (file_exists($file))
+				{
+					$conv += include($file);
+				}
+			}
+
+			if (isset($conv[$utf_char]))
+			{
+				$ret .= $conv[$utf_char];
+			}
+			else
+			{
+				/**
+				* We add an entry to the conversion table so that we
+				* don't have to convert to codepoint and perform the checks
+				* that are above this block
+				*/
+				$conv[$utf_char] = ' ';
+				$ret .= ' ';
+			}
+		}
+		while (1);
+
+		return $ret;
+	}
+
+	/**
 	* Returns a list of options for the ACP to display
 	*/
 	function acp()
 	{
 		global $user, $config;
+
+
+		/**
+		* if we need any options, copied from fulltext_native for now, will have to be adjusted or removed
+		*/
 
 		$tpl = '
 		<dl>

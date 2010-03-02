@@ -46,16 +46,16 @@ function display_forums($root_data = '', $display_moderators = true, $return_mod
 	// Display list of active topics for this category?
 	$show_active = (isset($root_data['forum_flags']) && $root_data['forum_flags'] & 16) ? true : false;
 
+	$sql_from = FORUMS_TABLE . ' f ';
+	$lastread_select = $sql_lastread = '';
+
 	if ($config['load_db_lastread'] && $user->data['is_registered'])
 	{
 		$sql_from = FORUMS_TABLE . ' f LEFT JOIN ' . FORUMS_TRACK_TABLE . ' ft ON (ft.user_id = ' . $user->data['user_id'] . ' AND ft.forum_id = f.forum_id)';
 		$lastread_select = ', ft.mark_time ';
 	}
-	else
+	else if ($config['load_anon_lastread'] || $user->data['is_registered'])
 	{
-		$sql_from = FORUMS_TABLE . ' f ';
-		$lastread_select = $sql_lastread = '';
-
 		$tracking_topics = (isset($_COOKIE[$config['cookie_name'] . '_track'])) ? ((STRIP) ? stripslashes($_COOKIE[$config['cookie_name'] . '_track']) : $_COOKIE[$config['cookie_name'] . '_track']) : '';
 		$tracking_topics = ($tracking_topics) ? unserialize($tracking_topics) : array();
 
@@ -116,7 +116,7 @@ function display_forums($root_data = '', $display_moderators = true, $return_mod
 		{
 			$forum_tracking_info[$forum_id] = (!empty($row['mark_time'])) ? $row['mark_time'] : $user->data['user_lastmark'];
 		}
-		else
+		else if ($config['load_anon_lastread'] || $user->data['is_registered'])
 		{
 			if (!$user->data['is_registered'])
 			{
@@ -156,7 +156,7 @@ function display_forums($root_data = '', $display_moderators = true, $return_mod
 			$parent_id = $forum_id;
 			$forum_rows[$forum_id] = $row;
 
-			if (!$row['parent_id'] && $row['forum_type'] == FORUM_CAT && $row['parent_id'] == $root_data['forum_id'])
+			if ($row['forum_type'] == FORUM_CAT && $row['parent_id'] == $root_data['forum_id'])
 			{
 				$branch_root_id = $forum_id;
 			}
@@ -228,13 +228,13 @@ function display_forums($root_data = '', $display_moderators = true, $return_mod
 	foreach ($forum_rows as $row)
 	{
 		// Empty category
-		if (!$row['parent_id'] && $row['forum_type'] == FORUM_CAT)
+		if ($row['parent_id'] == $root_data['forum_id'] && $row['forum_type'] == FORUM_CAT)
 		{
 			$template->assign_block_vars('forumrow', array(
 				'S_IS_CAT'				=> true,
 				'FORUM_ID'				=> $row['forum_id'],
 				'FORUM_NAME'			=> $row['forum_name'],
-				'FORUM_DESC'			=> generate_text_for_display($row['forum_desc'], $row['forum_desc_uid'], $row['forum_desc_bitfield']),
+				'FORUM_DESC'			=> generate_text_for_display($row['forum_desc'], $row['forum_desc_uid'], $row['forum_desc_bitfield'], $row['forum_desc_options']),
 				'FORUM_FOLDER_IMG'		=> ($row['forum_image']) ? '<img src="' . $phpbb_root_path . $row['forum_image'] . '" alt="' . $user->lang['FORUM_CAT'] . '" />' : '',
 				'FORUM_FOLDER_IMG_SRC'	=> ($row['forum_image']) ? $phpbb_root_path . $row['forum_image'] : '',
 				'U_VIEWFORUM'			=> append_sid("{$phpbb_root_path}viewforum.$phpEx", 'f=' . $row['forum_id']))
@@ -273,14 +273,14 @@ function display_forums($root_data = '', $display_moderators = true, $return_mod
 			}
 
 			$l_subforums = (sizeof($subforums[$forum_id]) == 1) ? $user->lang['SUBFORUM'] . ': ' : $user->lang['SUBFORUMS'] . ': ';
-			$folder_image = ($forum_unread) ? 'sub_forum_new' : 'sub_forum';
+			$folder_image = ($forum_unread) ? 'forum_unread_subforum' : 'forum_read_subforum';
 		}
 		else
 		{
 			switch ($row['forum_type'])
 			{
 				case FORUM_POST:
-					$folder_image = ($forum_unread) ? 'forum_new' : 'forum';
+					$folder_image = ($forum_unread) ? 'forum_unread' : 'forum_read';
 				break;
 
 				case FORUM_LINK:
@@ -292,7 +292,7 @@ function display_forums($root_data = '', $display_moderators = true, $return_mod
 		// Which folder should we display?
 		if ($row['forum_status'] == ITEM_LOCKED)
 		{
-			$folder_image = 'forum_locked';
+			$folder_image = ($forum_unread) ? 'forum_unread_locked' : 'forum_read_locked';
 			$folder_alt = 'FORUM_LOCKED';
 		}
 		else
@@ -334,7 +334,7 @@ function display_forums($root_data = '', $display_moderators = true, $return_mod
 
 			'FORUM_ID'				=> $row['forum_id'],
 			'FORUM_NAME'			=> $row['forum_name'],
-			'FORUM_DESC'			=> generate_text_for_display($row['forum_desc'], $row['forum_desc_uid'], $row['forum_desc_bitfield']),
+			'FORUM_DESC'			=> generate_text_for_display($row['forum_desc'], $row['forum_desc_uid'], $row['forum_desc_bitfield'], $row['forum_desc_options']),
 			'TOPICS'				=> $row['forum_topics'],
 			$l_post_click_count		=> $post_click_count,
 			'FORUM_FOLDER_IMG'		=> ($row['forum_image']) ? '<img src="' . $phpbb_root_path . $row['forum_image'] . '" alt="' . $user->lang[$folder_alt] . '" />' : $user->img($folder_image, $folder_alt),
@@ -358,7 +358,7 @@ function display_forums($root_data = '', $display_moderators = true, $return_mod
 		'U_MARK_FORUMS'		=> append_sid("{$phpbb_root_path}viewforum.$phpEx", 'f=' . $root_data['forum_id'] . '&amp;mark=forums'),
 		'S_HAS_SUBFORUM'	=> ($visible_forums) ? true : false,
 		'L_SUBFORUM'		=> ($visible_forums == 1) ? $user->lang['SUBFORUM'] : $user->lang['SUBFORUMS'],
-		'LAST_POST_IMG'		=> $user->img('icon_post_latest', 'VIEW_LATEST_POST'))
+		'LAST_POST_IMG'		=> $user->img('icon_topic_latest', 'VIEW_LATEST_POST'))
 	);
 
 	if ($return_moderators)
@@ -383,7 +383,7 @@ function generate_forum_rules(&$forum_data)
 
 	if ($forum_data['forum_rules'])
 	{
-		$forum_data['forum_rules'] = generate_text_for_display($forum_data['forum_rules'], $forum_data['forum_rules_uid'], $forum_data['forum_rules_bitfield']);
+		$forum_data['forum_rules'] = generate_text_for_display($forum_data['forum_rules'], $forum_data['forum_rules_uid'], $forum_data['forum_rules_bitfield'], $forum_data['forum_rules_options']);
 	}
 
 	$template->assign_vars(array(
@@ -443,7 +443,7 @@ function generate_forum_nav(&$forum_data)
 	$template->assign_vars(array(
 		'FORUM_ID' 		=> $forum_data['forum_id'],
 		'FORUM_NAME'	=> $forum_data['forum_name'],
-		'FORUM_DESC'	=> generate_text_for_display($forum_data['forum_desc'], $forum_data['forum_desc_uid'], $forum_data['forum_desc_bitfield']))
+		'FORUM_DESC'	=> generate_text_for_display($forum_data['forum_desc'], $forum_data['forum_desc_uid'], $forum_data['forum_desc_bitfield'], $forum_data['forum_desc_options']))
 	);
 
 	return;
@@ -556,18 +556,22 @@ function get_moderators(&$forum_moderators, $forum_id = false)
 		return;
 	}
 
-	if ($forum_id !== false && is_array($forum_id))
+	$forum_sql = '';
+
+	if ($forum_id !== false)
 	{
+		if (!is_array($forum_id))
+		{
+			$forum_id = array($forum_id);
+		}
+
 		// If we don't have a forum then we can't have a moderator
 		if (!sizeof($forum_id))
 		{
 			return;
 		}
-		$forum_sql = 'AND forum_id IN (' . implode(', ', $forum_id) . ')';
-	}
-	else
-	{
-		$forum_sql = ($forum_id !== false) ? 'AND forum_id = ' . $forum_id : '';
+
+		$forum_sql = 'AND ' . $db->sql_in_set('forum_id', $forum_id);
 	}
 
 	$sql = 'SELECT *
@@ -626,7 +630,7 @@ function topic_status(&$topic_row, $replies, $unread_topic, &$folder_img, &$fold
 	if ($topic_row['topic_status'] == ITEM_MOVED)
 	{
 		$topic_type = $user->lang['VIEW_TOPIC_MOVED'];
-		$folder_img = 'folder_moved';
+		$folder_img = 'topic_moved';
 		$folder_alt = 'VIEW_TOPIC_MOVED';
 	}
 	else
@@ -634,28 +638,32 @@ function topic_status(&$topic_row, $replies, $unread_topic, &$folder_img, &$fold
 		switch ($topic_row['topic_type'])
 		{
 			case POST_GLOBAL:
+				$topic_type = $user->lang['VIEW_TOPIC_GLOBAL'];
+				$folder = 'global_read';
+				$folder_new = 'global_unread';
+			break;
+
 			case POST_ANNOUNCE:
 				$topic_type = $user->lang['VIEW_TOPIC_ANNOUNCEMENT'];
-				$folder = 'folder_announce';
-				$folder_new = 'folder_announce_new';
+				$folder = 'announce_read';
+				$folder_new = 'announce_unread';
 			break;
 
 			case POST_STICKY:
 				$topic_type = $user->lang['VIEW_TOPIC_STICKY'];
-				$folder = 'folder_sticky';
-				$folder_new = 'folder_sticky_new';
+				$folder = 'sticky_read';
+				$folder_new = 'sticky_unread';
 			break;
 
 			default:
-				if ($replies >= $config['hot_threshold'])
+				$topic_type = '';
+				$folder = 'topic_read';
+				$folder_new = 'topic_unread';
+
+				if ($config['hot_threshold'] && $replies >= $config['hot_threshold'])
 				{
-					$folder = 'folder_hot';
-					$folder_new = 'folder_hot_new';
-				}
-				else
-				{
-					$folder = 'folder';
-					$folder_new = 'folder_new';
+					$folder .= '_hot';
+					$folder_new .= '_hot';
 				}
 			break;
 		}
@@ -663,9 +671,10 @@ function topic_status(&$topic_row, $replies, $unread_topic, &$folder_img, &$fold
 		if ($topic_row['topic_status'] == ITEM_LOCKED)
 		{
 			$topic_type = $user->lang['VIEW_TOPIC_LOCKED'];
-			$folder = 'folder_locked';
-			$folder_new = 'folder_locked_new';
+			$folder .= '_locked';
+			$folder_new .= '_locked';
 		}
+
 
 		$folder_img = ($unread_topic) ? $folder_new : $folder;
 		$folder_alt = ($unread_topic) ? 'NEW_POSTS' : (($topic_row['topic_status'] == ITEM_LOCKED) ? 'TOPIC_LOCKED' : 'NO_NEW_POSTS');
@@ -673,7 +682,7 @@ function topic_status(&$topic_row, $replies, $unread_topic, &$folder_img, &$fold
 		// Posted image?
 		if (!empty($topic_row['topic_posted']) && $topic_row['topic_posted'])
 		{
-			$folder_img .= '_posted';
+			$folder_img .= '_mine';
 		}
 	}
 
@@ -719,9 +728,9 @@ function display_attachments($forum_id, $blockname, &$attachment_data, &$update_
 
 		if (isset($extensions[$attachment['extension']]))
 		{
-			if ($user->img('icon_attach', '') && !$extensions[$attachment['extension']]['upload_icon'])
+			if ($user->img('icon_topic_attach', '') && !$extensions[$attachment['extension']]['upload_icon'])
 			{
-				$upload_icon = $user->img('icon_attach', '');
+				$upload_icon = $user->img('icon_topic_attach', '');
 			}
 			else if ($extensions[$attachment['extension']]['upload_icon'])
 			{
@@ -733,7 +742,7 @@ function display_attachments($forum_id, $blockname, &$attachment_data, &$update_
 		$size_lang = ($filesize >= 1048576) ? $user->lang['MB'] : ( ($filesize >= 1024) ? $user->lang['KB'] : $user->lang['BYTES'] );
 		$filesize = ($filesize >= 1048576) ? round((round($filesize / 1048576 * 100) / 100), 2) : (($filesize >= 1024) ? round((round($filesize / 1024 * 100) / 100), 2) : $filesize);
 
-		$comment = str_replace("\n", '<br />', censor_text($attachment['comment']));
+		$comment = str_replace("\n", '<br />', censor_text($attachment['attach_comment']));
 
 		$block_array += array(
 			'UPLOAD_ICON'		=> $upload_icon,
@@ -784,12 +793,13 @@ function display_attachments($forum_id, $blockname, &$attachment_data, &$update_
 				}
 			}
 
+			$download_link = (!$force_physical && $attachment['attach_id']) ? append_sid("{$phpbb_root_path}download.$phpEx", 'id=' . $attachment['attach_id'] . '&amp;f=' . $forum_id) : $filename;
+
 			switch ($display_cat)
 			{
 				// Images
 				case ATTACHMENT_CATEGORY_IMAGE:
 					$l_downloaded_viewed = $user->lang['VIEWED'];
-					$download_link = $filename;
 
 					$block_array += array(
 						'S_IMAGE'		=> true,
@@ -801,17 +811,24 @@ function display_attachments($forum_id, $blockname, &$attachment_data, &$update_
 				// Images, but display Thumbnail
 				case ATTACHMENT_CATEGORY_THUMB:
 					$l_downloaded_viewed = $user->lang['VIEWED'];
-					$download_link = (!$force_physical && $attachment['attach_id']) ? append_sid("{$phpbb_root_path}download.$phpEx", 'id=' . $attachment['attach_id']) : $filename;
+					$thumbnail_link = (!$force_physical && $attachment['attach_id']) ? append_sid("{$phpbb_root_path}download.$phpEx", 'id=' . $attachment['attach_id'] . '&amp;t=1&amp;f=' . $forum_id) : $thumbnail_filename;
 
 					$block_array += array(
 						'S_THUMBNAIL'		=> true,
-						'THUMB_IMAGE'		=> $thumbnail_filename,
+						'THUMB_IMAGE'		=> $thumbnail_link,
 					);
 				break;
 
 				// Windows Media Streams
 				case ATTACHMENT_CATEGORY_WM:
 					$l_downloaded_viewed = $user->lang['VIEWED'];
+
+					// The download link is slightly different, because somehow phpBB is not able to get the correct results if called
+					// within the wmp object (cookies are not present).
+					// $download_link = (!$force_physical && $attachment['attach_id']) ? generate_board_url() . append_sid("/download.$phpEx", 'id=' . $attachment['attach_id'] . '&f=' . $forum_id, false, $user->session_id) : $filename;
+
+					// Giving the filename directly because within the wm object all variables are in local context making it impossible
+					// to validate against a valid session (all params can differ)
 					$download_link = $filename;
 
 					$block_array += array(
@@ -825,7 +842,6 @@ function display_attachments($forum_id, $blockname, &$attachment_data, &$update_
 				// Real Media Streams
 				case ATTACHMENT_CATEGORY_RM:
 					$l_downloaded_viewed = $user->lang['VIEWED'];
-					$download_link = $filename;
 
 					$block_array += array(
 						'S_RM_FILE'		=> true,
@@ -856,7 +872,6 @@ function display_attachments($forum_id, $blockname, &$attachment_data, &$update_
 */
 				default:
 					$l_downloaded_viewed = $user->lang['DOWNLOADED'];
-					$download_link = (!$force_physical && $attachment['attach_id']) ? append_sid("{$phpbb_root_path}download.$phpEx", 'id=' . $attachment['attach_id']) : $filename;
 
 					$block_array += array(
 						'S_FILE'		=> true,
@@ -890,6 +905,40 @@ function display_attachments($forum_id, $blockname, &$attachment_data, &$update_
 	}
 
 	return $return_tpl;
+}
+
+/**
+* Assign/Build custom bbcodes for display in screens supporting using of bbcodes
+* The custom bbcodes buttons will be placed within the template block 'custom_codes'
+*/
+function display_custom_bbcodes()
+{
+	global $db, $template;
+
+	// Start counting from 22 for the bbcode ids (every bbcode takes two ids - opening/closing)
+	$num_predefined_bbcodes = 22;
+
+	/*
+	* @todo while adjusting custom bbcodes, think about caching this query as well as correct ordering
+	*/
+	$sql = 'SELECT bbcode_id, bbcode_tag, bbcode_helpline
+		FROM ' . BBCODES_TABLE . '
+		WHERE display_on_posting = 1';
+	$result = $db->sql_query($sql);
+
+	$i = 0;
+	while ($row = $db->sql_fetchrow($result))
+	{
+		$template->assign_block_vars('custom_tags', array(
+			'BBCODE_NAME'		=> "'[{$row['bbcode_tag']}]', '[/" . str_replace('=', '', $row['bbcode_tag']) . "]'",
+			'BBCODE_ID'			=> $num_predefined_bbcodes + ($i * 2),
+			'BBCODE_TAG'		=> $row['bbcode_tag'],
+			'BBCODE_HELPLINE'	=> $row['bbcode_helpline'])
+		);
+
+		$i++;
+	}
+	$db->sql_freeresult($result);
 }
 
 /**
@@ -967,7 +1016,7 @@ function display_user_activity(&$userdata)
 	}
 
 	$forum_ary = array_unique($forum_ary);
-	$post_count_sql = (sizeof($forum_ary)) ? 'AND f.forum_id NOT IN (' . implode(', ', $forum_ary) . ')' : '';
+	$post_count_sql = (sizeof($forum_ary)) ? 'AND ' . $db->sql_in_set('f.forum_id', $forum_ary, true) : '';
 
 	// Firebird does not support ORDER BY on aliased columns
 	// MySQL does not support ORDER BY on functions
@@ -1073,10 +1122,10 @@ function display_user_activity(&$userdata)
 	$template->assign_vars(array(
 		'ACTIVE_FORUM'			=> $active_f_name,
 		'ACTIVE_FORUM_POSTS'	=> ($active_f_count == 1) ? sprintf($user->lang['USER_POST'], 1) : sprintf($user->lang['USER_POSTS'], $active_f_count),
-		'ACTIVE_FORUM_PCT'		=> sprintf($user->lang['POST_PCT'], $active_f_pct),
+		'ACTIVE_FORUM_PCT'		=> sprintf($user->lang['POST_PCT_ACTIVE'], $active_f_pct),
 		'ACTIVE_TOPIC'			=> censor_text($active_t_name),
 		'ACTIVE_TOPIC_POSTS'	=> ($active_t_count == 1) ? sprintf($user->lang['USER_POST'], 1) : sprintf($user->lang['USER_POSTS'], $active_t_count),
-		'ACTIVE_TOPIC_PCT'		=> sprintf($user->lang['POST_PCT'], $active_t_pct),
+		'ACTIVE_TOPIC_PCT'		=> sprintf($user->lang['POST_PCT_ACTIVE'], $active_t_pct),
 		'U_ACTIVE_FORUM'		=> append_sid("{$phpbb_root_path}viewforum.$phpEx", 'f=' . $active_f_id),
 		'U_ACTIVE_TOPIC'		=> append_sid("{$phpbb_root_path}viewtopic.$phpEx", 't=' . $active_t_id))
 	);

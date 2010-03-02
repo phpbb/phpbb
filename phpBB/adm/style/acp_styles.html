@@ -78,7 +78,7 @@
 				<td class="row1" colspan="2" align="center">
 					<table width="100%" cellspacing="2" cellpadding="2" border="0">
 					<tr>
-						<td width="50%" align="center"><img src="<!-- IF IMAGE_REQUEST neq '' -->{IMAGE_REQUEST}<!-- ELSE -->images/no_image.png<!-- ENDIF -->"/></td>
+						<td width="50%" align="center"><img src="<!-- IF IMAGE_REQUEST -->{IMAGE_REQUEST}<!-- ELSE -->images/no_image.png<!-- ENDIF -->"/></td>
 						<td width="50%" align="center"><img src="images/no_image.png" name="newimg" /></td>
 					</tr>
 					<tr>
@@ -94,7 +94,7 @@
 			</tr>
 			<tr>
 				<td class="row1" width="40%"><b>{L_IMAGE}: </b></td>
-				<td class="row2"><select name="imgpath" onchange="update_image(this.options[selectedIndex].value);"><option value=""<!-- IF not IMAGE_SELECT--> selected="selected"<!-- ENDIF -->>{L_NONE}</option>
+				<td class="row2"><select name="imgpath" onchange="update_image(this.options[selectedIndex].value);"><option value=""<!-- IF not IMAGE_SELECT--> selected="selected"<!-- ENDIF -->>{L_NO_IMAGE}</option>
 					<!-- BEGIN imagesetlist -->
 					<option class="sep" value=""><!-- IF imagesetlist.TYPE -->{L_LOCALISED_IMAGES}<!-- ELSE -->{L_GLOBAL_IMAGES}<!-- ENDIF --></option>
 						<!-- BEGIN images -->
@@ -506,15 +506,16 @@
 
 	<p>{L_EXPLAIN}</p>
 
-	<!-- IF S_STYLE --> <!-- DEFINE $COLSPAN = 4 --> <!-- ELSE --> <!-- DEFINE $COLSPAN = 3 --> <!-- ENDIF -->
+	<!-- IF S_STYLE --> <!-- DEFINE $COLSPAN = 5 --> <!-- ELSE --> <!-- DEFINE $COLSPAN = 4 --> <!-- ENDIF -->
 
 	<table cellspacing="1">
-		<col class="row1" /><!-- IF S_STYLE --><col class="row1" /><!-- ENDIF --><col class="row2" />
+		<col class="row1" /><!-- IF S_STYLE --><col class="row1" /><!-- ENDIF --><col class="row2" /><col class="row2" />
 	<thead>
 	<tr>
 		<th>{L_NAME}</th>
 		<!-- IF S_STYLE --><th>{L_STYLE_USED_BY}</th><!-- ENDIF -->
 		<th>{L_OPTIONS}</th>
+		<th>{L_ACTIONS}</th>
 	</tr>
 	</thead>
 	<tbody>
@@ -523,15 +524,18 @@
 	</tr>
 	<!-- BEGIN installed -->
 	<tr>
-		<td><a href="{installed.U_EDIT}">{installed.NAME}</a><!-- IF installed.S_DEFAULT_STYLE --> *<!-- ENDIF --></td>
+		<td><strong>{installed.NAME}</strong></a><!-- IF installed.S_DEFAULT_STYLE --> *<!-- ENDIF --></td>
 		<!-- IF S_STYLE -->
 			<td style="text-align: center;">{installed.STYLE_COUNT}</td>
 		<!-- ENDIF -->
 		<td style="text-align: center;">
+			{installed.S_OPTIONS}
+		</td>
+		<td style="text-align: center;">
 			<!-- IF S_STYLE -->
 				<a href="{installed.U_STYLE_ACT_DEACT}">{installed.L_STYLE_ACT_DEACT}</a> |
 			<!-- ENDIF -->
-			{installed.S_OPTIONS}
+			{installed.S_ACTIONS}
 			<!-- IF S_STYLE -->
 				| <a href="{installed.U_PREVIEW}" onclick="this.target='_preview';">{L_PREVIEW}</a>
 			<!-- ENDIF -->
@@ -548,7 +552,7 @@
 	<!-- BEGIN uninstalled -->
 		<tr>
 			<td<!-- IF S_STYLE --> colspan="2"<!-- ENDIF -->><b>{uninstalled.NAME}</b><br /><span>{L_COPYRIGHT}: {uninstalled.COPYRIGHT}</span></td>
-			<td style="text-align: center;"><a href="{uninstalled.U_INSTALL}">{L_INSTALL}</a></td>
+			<td style="text-align: center;" colspan="2"><a href="{uninstalled.U_INSTALL}">{L_INSTALL}</a></td>
 		</tr>
 	<!-- END uninstalled -->
 	</tbody>

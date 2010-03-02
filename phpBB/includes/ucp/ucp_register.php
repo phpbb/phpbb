@@ -117,15 +117,15 @@ class ucp_register
 				'username'			=> array(
 					array('string', false, $config['min_name_chars'], $config['max_name_chars']),
 					array('username')),
-				'password_confirm'	=> array('string', false, $config['min_pass_chars'], $config['max_pass_chars']),
 				'new_password'		=> array('string', false, $config['min_pass_chars'], $config['max_pass_chars']),
+				'password_confirm'	=> array('string', false, $config['min_pass_chars'], $config['max_pass_chars']),
 				'email'				=> array(
 					array('string', false, 6, 60),
 					array('email')),
 				'email_confirm'		=> array('string', false, 6, 60),
 				'confirm_code'		=> array('string', !$config['enable_confirm'], 5, 8),
 				'tz'				=> array('num', false, -14, 14),
-				'lang'				=> array('match', false, '#^[a-z_]{2,}$#i'),
+				'lang'				=> array('match', false, '#^[a-z_\-]{2,}$#i'),
 			);
 
 			$error = validate_data($data, $var_ary);
@@ -202,7 +202,7 @@ class ucp_register
 				// Which group by default?
 				$group_reg = ($coppa) ? 'REGISTERED_COPPA' : 'REGISTERED';
 				$group_inactive = ($coppa) ? 'INACTIVE_COPPA' : 'INACTIVE';
-				$group_name = ($config['require_activation'] == USER_ACTIVATION_NONE) ? $group_reg : $group_inactive;
+				$group_name = ($config['require_activation'] == USER_ACTIVATION_NONE || !$config['email_enable']) ? $group_reg : $group_inactive;
 
 				$sql = 'SELECT group_id
 					FROM ' . GROUPS_TABLE . "
@@ -323,7 +323,7 @@ class ucp_register
 
 						$sql = 'SELECT user_id, username, user_email, user_lang, user_jabber, user_notify_type
 							FROM ' . USERS_TABLE . '
-							WHERE user_id IN (' . implode(', ', $admin_ary[0]['a_user']) .')';
+							WHERE ' . $db->sql_in_set('user_id', $admin_ary[0]['a_user']);
 						$result = $db->sql_query($sql);
 
 						while ($row = $db->sql_fetchrow($result))
@@ -345,13 +345,6 @@ class ucp_register
 						$db->sql_freeresult($result);
 					}
 				}
-
-				if ($user_type == USER_NORMAL || !$config['email_enable'])
-				{
-					set_config('newest_user_id', $user_id, true);
-					set_config('newest_username', $username, true);
-					set_config('num_users', $config['num_users'] + 1, true);
-				}
 				unset($data);
 
 				$message = $message . '<br /><br />' . sprintf($user->lang['RETURN_INDEX'],  '<a href="' . append_sid("{$phpbb_root_path}index.$phpEx") . '">', '</a>');
@@ -370,6 +363,7 @@ class ucp_register
 		// Visual Confirmation - Show images
 		if ($config['enable_confirm'])
 		{
+			$str = '';
 			if (!$change_lang)
 			{
 				$sql = 'SELECT session_id
@@ -381,12 +375,12 @@ class ucp_register
 					$sql_in = array();
 					do
 					{
-						$sql_in[] = "'" . $db->sql_escape($row['session_id']) . "'";
+						$sql_in[] = (string) $row['session_id'];
 					}
 					while ($row = $db->sql_fetchrow($result));
 
 					$sql = 'DELETE FROM ' .  CONFIRM_TABLE . '
-						WHERE session_id NOT IN (' . implode(', ', $sql_in) . ')
+						WHERE ' . $db->sql_in_set('session_id', $sql_in, true) . '
 							AND confirm_type = ' . CONFIRM_REG;
 					$db->sql_query($sql);
 				}
@@ -416,8 +410,12 @@ class ucp_register
 				);
 				$db->sql_query($sql);
 			}
+			else
+			{
+				$str .= '&amp;change_lang=' . $change_lang;
+			}
 
-			$confirm_image = '<img src="' . append_sid("{$phpbb_root_path}ucp.$phpEx", 'mode=confirm&amp;id=' . $confirm_id . '&amp;type=' . CONFIRM_REG) . '" alt="" title="" />';
+			$confirm_image = '<img src="' . append_sid("{$phpbb_root_path}ucp.$phpEx", 'mode=confirm&amp;id=' . $confirm_id . '&amp;type=' . CONFIRM_REG . $str) . '" alt="" title="" />';
 			$s_hidden_fields .= '<input type="hidden" name="confirm_id" value="' . $confirm_id . '" />';
 		}
 
@@ -450,7 +448,7 @@ class ucp_register
 			'CONFIRM_IMG'		=> $confirm_image,
 
 			'L_CONFIRM_EXPLAIN'			=> sprintf($user->lang['CONFIRM_EXPLAIN'], '<a href="mailto:' . htmlentities($config['board_contact']) . '">', '</a>'),
-			'L_ITEMS_REQUIRED'			=> $l_reg_cond,
+			'L_REG_COND'				=> $l_reg_cond,
 			'L_USERNAME_EXPLAIN'		=> sprintf($user->lang[$user_char_ary[str_replace('\\\\', '\\', $config['allow_name_chars'])] . '_EXPLAIN'], $config['min_name_chars'], $config['max_name_chars']),
 			'L_NEW_PASSWORD_EXPLAIN'	=> sprintf($user->lang['NEW_PASSWORD_EXPLAIN'], $config['min_pass_chars'], $config['max_pass_chars']),
 

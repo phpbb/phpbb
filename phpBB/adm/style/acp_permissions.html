@@ -140,8 +140,7 @@
 			
 			<fieldset class="quick">
 				{S_HIDDEN_FIELDS}
-				<input class="button2" type="submit" name="action[delete]" value="{L_REMOVE_PERMISSIONS}" /> &nbsp;
-				<input class="button1" type="submit" name="submit_edit_options" value="{L_EDIT_PERMISSIONS}" />
+				<input type="submit" class="button2" name="action[delete]" value="{L_REMOVE_PERMISSIONS}" style="width: 46% !important;" /> &nbsp; <input class="button1" type="submit" name="submit_edit_options" value="{L_EDIT_PERMISSIONS}" style="width: 46% !important;" />
 			</fieldset>
 			
 			</form>
@@ -153,13 +152,12 @@
 				<p>{L_USERNAMES_EXPLAIN}</p>
 			<dl>
 				<dd class="full"><textarea id="username" name="usernames" rows="5" cols="5" style="width: 100%; height: 60px;"></textarea></dd>
-				<dd class="full" style="text-align: left;"><input type="checkbox" class="radio" id="anonymous" name="user_id[]" value="{ANONYMOUS_USER_ID}" /> &nbsp;{L_SELECT_ANONYMOUS}</dd>
+				<dd class="full" style="text-align: left;"><div style="float: right;">[ <a href="#" onclick="window.open('{U_FIND_USERNAME}', '_phpbbsearch', 'height=500, resizable=yes, scrollbars=yes, width=740'); return false;">{L_FIND_USERNAME}</a> ]</div><input type="checkbox" class="radio" id="anonymous" name="user_id[]" value="{ANONYMOUS_USER_ID}" /> &nbsp;{L_SELECT_ANONYMOUS}</dd>
 			</dl>
 			</fieldset>
 
 			<fieldset class="quick">
 				{S_HIDDEN_FIELDS}
-				<input class="button2" type="submit" name="find_username" value="{L_FIND_USERNAME}" onclick="window.open('{U_FIND_USERNAME}', '_phpbbsearch', 'height=500, resizable=yes, scrollbars=yes, width=740'); return false;" /> &nbsp;
 				<input class="button1" type="submit" name="submit_add_options" value="{L_ADD_PERMISSIONS}" />
 			</fieldset>
 			
@@ -187,8 +185,7 @@
 			
 			<fieldset class="quick">
 				{S_HIDDEN_FIELDS}
-				<input class="button2" type="submit" name="action[delete]" value="{L_REMOVE_PERMISSIONS}" />&nbsp;
-				<input class="button1" type="submit" name="submit_edit_options" value="{L_EDIT_PERMISSIONS}" />
+				<input class="button2" type="submit" name="action[delete]" value="{L_REMOVE_PERMISSIONS}" style="width: 46% !important;" /> &nbsp; <input class="button1" type="submit" name="submit_edit_options" value="{L_EDIT_PERMISSIONS}" style="width: 46% !important;" />
 			</fieldset>
 			
 			</form>

@@ -15,7 +15,7 @@
 class bbcode
 {
 	var $bbcode_uid = '';
-	var $bbcode_bitfield = 0;
+	var $bbcode_bitfield = '';
 	var $bbcode_cache = array();
 	var $bbcode_template = array();
 
@@ -28,7 +28,7 @@ class bbcode
 	* Constructor
 	* Init bbcode cache entries if bitfield is specified
 	*/
-	function bbcode($bitfield = 0)
+	function bbcode($bitfield = '')
 	{
 		if ($bitfield)
 		{
@@ -69,32 +69,31 @@ class bbcode
 		$str = array('search' => array(), 'replace' => array());
 		$preg = array('search' => array(), 'replace' => array());
 
-		$bitlen = strlen(decbin($this->bbcode_bitfield));
-		for ($bbcode_id = 0; $bbcode_id < $bitlen; ++$bbcode_id)
+		$bitfield = new bitfield($this->bbcode_bitfield);
+		$bbcodes_set = $bitfield->get_all_set();
+
+		foreach ($bbcodes_set as $bbcode_id)
 		{
-			if ($this->bbcode_bitfield & (1 << $bbcode_id))
+			if (!empty($this->bbcode_cache[$bbcode_id]))
 			{
-				if (!empty($this->bbcode_cache[$bbcode_id]))
+				foreach ($this->bbcode_cache[$bbcode_id] as $type => $array)
 				{
-					foreach ($this->bbcode_cache[$bbcode_id] as $type => $array)
+					foreach ($array as $search => $replace)
 					{
-						foreach ($array as $search => $replace)
-						{
-							${$type}['search'][] = str_replace('$uid', $this->bbcode_uid, $search);
-							${$type}['replace'][] = $replace;
-						}
+						${$type}['search'][] = str_replace('$uid', $this->bbcode_uid, $search);
+						${$type}['replace'][] = $replace;
+					}
 
-						if (sizeof($str['search']))
-						{
-							$message = str_replace($str['search'], $str['replace'], $message);
-							$str = array('search' => array(), 'replace' => array());
-						}
+					if (sizeof($str['search']))
+					{
+						$message = str_replace($str['search'], $str['replace'], $message);
+						$str = array('search' => array(), 'replace' => array());
+					}
 
-						if (sizeof($preg['search']))
-						{
-							$message = preg_replace($preg['search'], $preg['replace'], $message);
-							$preg = array('search' => array(), 'replace' => array());
-						}
+					if (sizeof($preg['search']))
+					{
+						$message = preg_replace($preg['search'], $preg['replace'], $message);
+						$preg = array('search' => array(), 'replace' => array());
 					}
 				}
 			}
@@ -125,13 +124,14 @@ class bbcode
 			}
 		}
 
-		$sql = '';
-		$bbcode_ids = $rowset = array();
-		$bitlen = strlen(decbin($this->bbcode_bitfield));
+		$bbcode_ids = $rowset = $sql = array();
 
-		for ($bbcode_id = 0; $bbcode_id < $bitlen; ++$bbcode_id)
+		$bitfield = new bitfield($this->bbcode_bitfield);
+		$bbcodes_set = $bitfield->get_all_set();
+
+		foreach ($bbcodes_set as $bbcode_id)
 		{
-			if (isset($this->bbcode_cache[$bbcode_id]) || !($this->bbcode_bitfield & (1 << $bbcode_id)))
+			if (isset($this->bbcode_cache[$bbcode_id]))
 			{
 				// do not try to re-cache it if it's already in
 				continue;
@@ -140,18 +140,18 @@ class bbcode
 
 			if ($bbcode_id > NUM_CORE_BBCODES)
 			{
-				$sql .= (($sql) ? ',' : '') . $bbcode_id;
+				$sql[] = $bbcode_id;
 			}
 		}
 
-		if ($sql)
+		if (sizeof($sql))
 		{
 			global $db;
 
 			$sql = 'SELECT *
-				FROM ' . BBCODES_TABLE . "
-				WHERE bbcode_id IN ($sql)";
-			$result = $db->sql_query($sql);
+				FROM ' . BBCODES_TABLE . '
+				WHERE ' . $db->sql_in_set('bbcode_id', $sql);
+			$result = $db->sql_query($sql, 3600);
 
 			while ($row = $db->sql_fetchrow($result))
 			{
@@ -232,7 +232,7 @@ class bbcode
 				case 6:
 					$this->bbcode_cache[$bbcode_id] = array(
 						'preg' => array(
-							'!\[color=(#[0-9A-F]{6}|[a-z\-]+):$uid\](.*?)\[/color:$uid\]!s'	=> $this->bbcode_tpl('color', $bbcode_id),
+							'!\[color=(#[0-9a-fA-F]{6}|[a-z\-]+):$uid\](.*?)\[/color:$uid\]!s'	=> $this->bbcode_tpl('color', $bbcode_id),
 						)
 					);
 				break;
@@ -312,9 +312,13 @@ class bbcode
 				break;
 
 				default:
+					if (!isset($template_bitfield))
+					{
+						$template_bitfield = new bitfield($this->template_bitfield);
+					}
 					if (isset($rowset[$bbcode_id]))
 					{
-						if ($this->template_bitfield & (1 << $bbcode_id))
+						if ($template_bitfield->get($bbcode_id))
 						{
 							// The bbcode requires a custom template to be loaded
 							if (!$bbcode_tpl = $this->bbcode_tpl($rowset[$bbcode_id]['bbcode_tag'], $bbcode_id))
@@ -390,9 +394,10 @@ class bbcode
 				'color'		=> '<span style="color: $1">$2</span>',
 				'email'		=> '<a href="mailto:$1">$2</a>'
 			);
+			$template_bitfield = new bitfield($this->template_bitfield);
 		}
 
-		if ($bbcode_id != -1 && !($this->template_bitfield & (1 << $bbcode_id)))
+		if ($bbcode_id != -1 && !$template_bitfield->get($bbcode_id))
 		{
 			return (isset($bbcode_hardtpl[$tpl_name])) ? $bbcode_hardtpl[$tpl_name] : false;
 		}
@@ -561,7 +566,7 @@ class bbcode
 				$code = str_replace('  ', ' &nbsp;', $code);
 
 				// remove newline at the beginning
-				if ($code{0} == "\n")
+				if (!empty($code) && $code{0} == "\n")
 				{
 					$code = substr($code, 1);
 				}

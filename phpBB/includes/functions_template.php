@@ -69,6 +69,89 @@ class template_compile
 	}
 
 	/**
+	* Straight-forward strategy: use PHP's tokenizer to escape everything that
+	* looks like a PHP tag.
+	*
+	* We open/close PHP tags at the beginning of the template to clearly indicate
+	* that we are in HTML mode. If we find a PHP tag, we escape it then we reiterate
+	* over the whole file. That can become quite slow if the file is stuffed with
+	* <?php tags, but there's only so much we can do.
+	*
+	* Known issue: templates need to be rechecked everytime the value of the php.ini
+	* settings asp_tags or short_tags are changed
+	*/
+	function remove_php_tags(&$code)
+	{
+		if (!function_exists('token_get_all'))
+		{
+			/**
+			* If the tokenizer extension is not available, try to load it and if
+			* it's still not available we fall back to some pattern replacement.
+			*
+			* Note that the pattern replacement may affect the well-formedness
+			* of the HTML if a PHP tag is found because even if we escape PHP
+			* opening tags we do NOT escape PHP closing tags and cannot do so
+			* reliably without the use of a full-blown tokenizer.
+			*
+			* The bottom line is, a template should NEVER contain PHP because it
+			* would comprise the security of the installation, that's why we
+			* prevent it from being executed. Our job is to secure the installation,
+			* not fix unsecure templates. if a template contains some PHP then it
+			* should not be used at all.
+			*/
+			@dl('tokenizer');
+
+			if (!function_exists('token_get_all'))
+			{
+				$match = array(
+					'\\?php[\n\r\s\t]+',
+					'[\\?%]=',
+					'[\\?%][^\w]',
+					'script[\n\r\s\t]+language[\n\r\s\t]*=[\n\r\s\t]*[\'"]php[\'"]'
+				);
+
+				$code = preg_replace('#<(' . implode('|', $match) . ')#is', '&lt;$1', $code);
+				return;
+			}
+		}
+
+		do
+		{
+			$tokens = token_get_all('<?php ?>' . $code);
+			$code = '';
+			$php_found = false;
+
+			foreach ($tokens as $i => $token)
+			{
+				if (!is_array($token))
+				{
+					$code .= $token;
+				}
+				else if ($token[0] == T_OPEN_TAG || $token[0] == T_OPEN_TAG_WITH_ECHO || $token[0] == T_CLOSE_TAG)
+				{
+					if ($i > 1)
+					{
+						$code .= htmlspecialchars($token[1]);
+						$php_found = true;
+					}
+				}
+				else
+				{
+					$code .= $token[1];
+				}
+			}
+			unset($tokens);
+
+			// Fix for a tokenizer oddity
+			if (!strncmp($code, '<?php ?&gt;', 11))
+			{
+				$code = substr($code, 11);
+			}
+		}
+		while ($php_found);
+	}
+
+	/**
 	* The all seeing all doing compile method. Parts are inspired by or directly from Smarty
 	* @access: private
 	*/
@@ -86,8 +169,13 @@ class template_compile
 		// php is a no-no. There is a potential issue here in that non-php
 		// content may be removed ... however designers should use entities
 		// if they wish to display < and >
-		$match_php_tags = array('#\<\?php .*?\?\>#is', '#\<\script language="php"\>.*?\<\/script\>#is', '#\<\?.*?\?\>#s', '#\<%.*?%\>#s');
+/*
+		$match_php_tags = array('#\<\?php.*?\?\>#is', '#<[^\w<]*(script)(((?:"[^"]*"|\'[^\']*\'|[^<>\'"])+)?(language[^<>\'"]+("[^"]*php[^"]*"|\'[^\']*php[^\']*\'))((?:"[^"]*"|\'[^\']*\'|[^<>\'"])+)?)?>.*?</script>#is', '#\<\?.*?\?\>#s', '#\<%.*?%\>#s');
 		$code = preg_replace($match_php_tags, '', $code);
+*/
+
+		// An alternative to the above would be calling this function which would be the ultimate solution but also has its drawbacks.
+		$this->remove_php_tags($code);
 
 		// Pull out all block/statement level elements and seperate plain text
 		preg_match_all('#<!-- PHP -->(.*?)<!-- ENDPHP -->#s', $code, $matches);
@@ -464,7 +552,7 @@ class template_compile
 	{
 		preg_match('#^((?:[a-z0-9\-_]+\.)+)?\$(?=[A-Z])([A-Z0-9_\-]*)(?: = (\'?)([^\']*)(\'?))?$#', $tag_args, $match);
 
-		if (empty($match[2]) || (empty($match[4]) && $op))
+		if (empty($match[2]) || (!isset($match[4]) && $op))
 		{
 			return;
 		}

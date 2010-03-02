@@ -60,7 +60,7 @@ class ucp_attachments
 
 		// Select box eventually
 		$sort_key_text = array('a' => $user->lang['SORT_FILENAME'], 'b' => $user->lang['SORT_COMMENT'], 'c' => $user->lang['SORT_EXTENSION'], 'd' => $user->lang['SORT_SIZE'], 'e' => $user->lang['SORT_DOWNLOADS'], 'f' => $user->lang['SORT_POST_TIME'], 'g' => $user->lang['SORT_TOPIC_TITLE']);
-		$sort_key_sql = array('a' => 'a.real_filename', 'b' => 'a.comment', 'c' => 'a.extension', 'd' => 'a.filesize', 'e' => 'a.download_count', 'f' => 'a.filetime', 'g' => 't.topic_title');
+		$sort_key_sql = array('a' => 'a.real_filename', 'b' => 'a.attach_comment', 'c' => 'a.extension', 'd' => 'a.filesize', 'e' => 'a.download_count', 'f' => 'a.filetime', 'g' => 't.topic_title');
 
 		$sort_dir_text = array('a' => $user->lang['ASCENDING'], 'd' => $user->lang['DESCENDING']);
 
@@ -93,7 +93,7 @@ class ucp_attachments
 				LEFT JOIN ' . PRIVMSGS_TABLE . ' p ON (a.post_msg_id = p.msg_id AND a.in_message = 1)
 			WHERE a.poster_id = ' . $user->data['user_id'] . "
 			ORDER BY $order_by";
-		$result = $db->sql_query_limit($sql, $config['posts_per_page'], $start);
+		$result = $db->sql_query_limit($sql, $config['topics_per_page'], $start);
 
 		$row_count = 0;
 		if ($row = $db->sql_fetchrow($result))
@@ -114,7 +114,7 @@ class ucp_attachments
 				$template->assign_block_vars('attachrow', array(
 					'ROW_NUMBER'		=> $row_count + ($start + 1),
 					'FILENAME'			=> $row['real_filename'],
-					'COMMENT'			=> str_replace("\n", '<br />', $row['comment']),
+					'COMMENT'			=> str_replace("\n", '<br />', $row['attach_comment']),
 					'EXTENSION'			=> $row['extension'],
 					'SIZE'				=> ($row['filesize'] >= 1048576) ? ($row['filesize'] >> 20) . ' ' . $user->lang['MB'] : (($row['filesize'] >= 1024) ? ($row['filesize'] >> 10) . ' ' . $user->lang['KB'] : $row['filesize'] . ' ' . $user->lang['BYTES']),
 					'DOWNLOAD_COUNT'	=> $row['download_count'],
@@ -138,8 +138,8 @@ class ucp_attachments
 		$db->sql_freeresult($result);
 
 		$template->assign_vars(array( 
-			'PAGE_NUMBER'			=> on_page($num_attachments, $config['posts_per_page'], $start),
-			'PAGINATION'			=> generate_pagination($this->u_action . "&amp;sk=$sort_key&amp;sd=$sort_dir", $num_attachments, $config['posts_per_page'], $start),
+			'PAGE_NUMBER'			=> on_page($num_attachments, $config['topics_per_page'], $start),
+			'PAGINATION'			=> generate_pagination($this->u_action . "&amp;sk=$sort_key&amp;sd=$sort_dir", $num_attachments, $config['topics_per_page'], $start),
 			'TOTAL_ATTACHMENTS'		=> $num_attachments,
 
 			'L_TITLE'				=> $user->lang['UCP_ATTACHMENTS'],

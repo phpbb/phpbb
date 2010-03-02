@@ -59,7 +59,7 @@ class ucp_confirm
 
 		if (function_exists('imagettfbbox') && function_exists('imagettftext'))
 		{
-			$policy_modules += array('policy_overlap', 'policy_shape', 'policy_cells', 'policy_stencil', 'policy_composite');
+			$policy_modules = array_merge($policy_modules, array('policy_overlap', 'policy_shape', 'policy_cells', 'policy_stencil', 'policy_composite'));
 		}
 
 		foreach ($policy_modules as $key => $name)
@@ -73,6 +73,16 @@ class ucp_confirm
 		$policy = '';
 		if (@extension_loaded('gd') && sizeof($policy_modules))
 		{
+			$change_lang	= request_var('change_lang', '');
+
+			if ($change_lang)
+			{
+				$lang = $change_lang;
+				$user->lang_name = $lang = $change_lang;
+				$user->lang_path = $phpbb_root_path . 'language/' . $lang . '/';
+				$user->lang = array();
+				$user->add_lang(array('common', 'ucp'));
+			}
 			include($phpbb_root_path . 'includes/captcha/captcha_gd.' . $phpEx);
 			$policy = $policy_modules[array_rand($policy_modules)];
 		}

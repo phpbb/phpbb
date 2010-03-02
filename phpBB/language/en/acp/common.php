@@ -53,6 +53,8 @@ $lang = array_merge($lang, array(
 	'ACP_BOARD_SETTINGS'		=> 'Board Settings',
 	'ACP_BOTS'					=> 'Spiders/Robots',
 	
+	'ACP_CAPTCHA'				=> 'CAPTCHA',
+
 	'ACP_CAT_DATABASE'			=> 'Database',
 	'ACP_CAT_DOT_MODS'			=> '.Mods',
 	'ACP_CAT_FORUMS'			=> 'Forums',
@@ -175,6 +177,7 @@ $lang = array_merge($lang, array(
 	'ACP_USER_SIG'					=> 'Signature',
 
 	'ACP_VC_SETTINGS'					=> 'Visual Confirmation Settings',
+	'ACP_VC_CAPTCHA_DISPLAY'			=> 'CAPTCHA Image Preview',
 	'ACP_VERSION_CHECK'					=> 'Check for Updates',
 	'ACP_VIEW_ADMIN_PERMISSIONS'		=> 'View Admin Permissions',
 	'ACP_VIEW_FORUM_MOD_PERMISSIONS'	=> 'View Forum Moderator Permissions',
@@ -185,6 +188,7 @@ $lang = array_merge($lang, array(
 	'ACP_WORDS'					=> 'Word Censoring',
 
 	'ACTION'				=> 'Action',
+	'ACTIONS'				=> 'Actions',
 	'ACTIVATE'				=> 'Activate',
 	'ADD'					=> 'Add',
 	'ADMIN'					=> 'Administration',
@@ -233,7 +237,6 @@ $lang = array_merge($lang, array(
 	'NOTIFY'				=> 'Notification',
 	'NO_ADMIN'				=> 'You are not authorised to administer this board.',
 	'NO_EMAILS_DEFINED'		=> 'No valid email addresses found',
-	'NO_IPS_DEFINED'		=> 'No IPs or Hostnames defined',
 
 	'OFF'					=> 'OFF',
 	'ON'					=> 'ON',
@@ -241,7 +244,7 @@ $lang = array_merge($lang, array(
 	'PARSE_BBCODE'			=> 'Parse BBCode',
 	'PARSE_SMILIES'			=> 'Parse Smilies',
 	'PARSE_URLS'			=> 'Parse Links',
-	'PROCEED_TO_ACP'		=> 'Click %sHere%s to proceed to the ACP',
+	'PROCEED_TO_ACP'		=> '%sProceed to the ACP%s',
 	'REMIND'				=> 'Remind',
 	'REORDER'				=> 'Reorder',
 	'RESYNC'				=> 'Sync',
@@ -285,12 +288,13 @@ $lang = array_merge($lang, array(
 $lang = array_merge($lang, array(
 	'ADMIN_INTRO'				=> 'Thank you for choosing phpBB as your forum solution. This screen will give you a quick overview of all the various statistics of your board. The links on the left hand side of this screen allow you to control every aspect of your forum experience. Each page will have instructions on how to use the tools.',
 	'ADMIN_LOG'					=> 'Logged administrator actions',
-	'ADMIN_LOG_INDEX_EXPLAIN'	=> 'This gives an overview of the last five actions carried out by board administrators. A full copy of the log can be viewed from the appropriate menu item to the left.',
+	'ADMIN_LOG_INDEX_EXPLAIN'	=> 'This gives an overview of the last five actions carried out by board administrators. A full copy of the log can be viewed from the appropriate menu item or following the link below.',
 	'AVATAR_DIR_SIZE'			=> 'Avatar directory size',
 
 	'BOARD_STARTED'		=> 'Board started',
 
-	'DATABASE_SIZE'		=> 'Database size',
+	'DATABASE_SERVER_INFO'	=> 'Database server',
+	'DATABASE_SIZE'			=> 'Database size',
 
 	'FILES_PER_DAY'		=> 'Attachments per day',
 	'FORUM_STATS'		=> 'Forum Statistics',
@@ -323,11 +327,12 @@ $lang = array_merge($lang, array(
 	'USERS_PER_DAY'		=> 'Users per day',
 
 	'VALUE'				=> 'Value',
+	'VIEW_ADMIN_LOG'	=> 'View administrator log',
 
 	'WELCOME_PHPBB'			=> 'Welcome to phpBB',
 ));
 
-// Log
+// Log Entries
 $lang = array_merge($lang, array(
 	'LOG_ACL_ADD_USER_GLOBAL_U_'		=> '<b>Added or edited users user permissions</b><br />&#187; %s',
 	'LOG_ACL_ADD_GROUP_GLOBAL_U_'		=> '<b>Added or edited groups user permissions</b><br />&#187; %s',
@@ -339,18 +344,18 @@ $lang = array_merge($lang, array(
 	'LOG_ACL_ADD_ADMIN_GLOBAL_A_'		=> '<b>Added or edited Administrators</b><br />&#187; %s',
 	'LOG_ACL_ADD_MOD_GLOBAL_M_'			=> '<b>Added or edited Global Moderators</b><br />&#187; %s',
 
-	'LOG_ACL_ADD_USER_LOCAL_F_'			=> '<b>Added or edited users forum access</b> from %s<br />&#187; %s',
-	'LOG_ACL_ADD_USER_LOCAL_M_'			=> '<b>Added or edited users forum moderator access</b> from %s<br />&#187; %s',
-	'LOG_ACL_ADD_GROUP_LOCAL_F_'		=> '<b>Added or edited groups forum access</b> from %s<br />&#187; %s',
-	'LOG_ACL_ADD_GROUP_LOCAL_M_'		=> '<b>Added or edited groups forum moderator access</b> from %s<br />&#187; %s',
+	'LOG_ACL_ADD_USER_LOCAL_F_'			=> '<b>Added or edited users forum access</b> from %1$s<br />&#187; %2$s',
+	'LOG_ACL_ADD_USER_LOCAL_M_'			=> '<b>Added or edited users forum moderator access</b> from %1$s<br />&#187; %2$s',
+	'LOG_ACL_ADD_GROUP_LOCAL_F_'		=> '<b>Added or edited groups forum access</b> from %1$s<br />&#187; %2$s',
+	'LOG_ACL_ADD_GROUP_LOCAL_M_'		=> '<b>Added or edited groups forum moderator access</b> from %1$s<br />&#187; %2$s',
 
-	'LOG_ACL_ADD_MOD_LOCAL_M_'			=> '<b>Added or edited Moderators</b> from %s<br />&#187; %s',
-	'LOG_ACL_ADD_FORUM_LOCAL_F_'		=> '<b>Added or edited Forum Permissions</b> from %s<br />&#187; %s',
+	'LOG_ACL_ADD_MOD_LOCAL_M_'			=> '<b>Added or edited Moderators</b> from %1$s<br />&#187; %2$s',
+	'LOG_ACL_ADD_FORUM_LOCAL_F_'		=> '<b>Added or edited Forum Permissions</b> from %1$s<br />&#187; %2$s',
 
 	'LOG_ACL_DEL_ADMIN_GLOBAL_A_'		=> '<b>Removed Administrators</b><br />&#187; %s',
 	'LOG_ACL_DEL_MOD_GLOBAL_M_'			=> '<b>Removed Global Moderators</b><br />&#187; %s',
-	'LOG_ACL_DEL_MOD_LOCAL_M_'			=> '<b>Removed Moderators</b> from %s<br />&#187; %s',
-	'LOG_ACL_DEL_FORUM_LOCAL_F_'		=> '<b>Removed User/Group Forum Permissions</b> from %s<br />&#187; %s',
+	'LOG_ACL_DEL_MOD_LOCAL_M_'			=> '<b>Removed Moderators</b> from %1$s<br />&#187; %2$s',
+	'LOG_ACL_DEL_FORUM_LOCAL_F_'		=> '<b>Removed User/Group Forum Permissions</b> from %1$s<br />&#187; %2$s',
 
 	'LOG_ACL_TRANSFER_PERMISSIONS'		=> '<b>Permissions transfered from</b><br />&#187; %s',
 	'LOG_ACL_RESTORE_PERMISSIONS'		=> '<b>Own permissions restored after using permissions from</b><br />&#187; %s',
@@ -367,12 +372,12 @@ $lang = array_merge($lang, array(
 	'LOG_ATTACH_FILEUPLOAD'		=> '<b>Orphan File uploaded to Post</b><br />&#187; ID %1$d - %2$s',
 	'LOG_ATTACH_ORPHAN_DEL'		=> '<b>Orphan Files deleted</b><br />&#187; %s',
 
-	'LOG_BAN_EXCLUDE_USER'	=> '<b>Excluded user from ban</b> for reason "<i>%s</i>"<br />&#187; %s ',
-	'LOG_BAN_EXCLUDE_IP'	=> '<b>Excluded ip from ban</b> for reason "<i>%s</i>"<br />&#187; %s ',
-	'LOG_BAN_EXCLUDE_EMAIL' => '<b>Excluded email from ban</b> for reason "<i>%s</i>"<br />&#187; %s ',
-	'LOG_BAN_USER'			=> '<b>Banned User</b> for reason "<i>%s</i>"<br />&#187; %s ',
-	'LOG_BAN_IP'			=> '<b>Banned ip</b> for reason "<i>%s</i>"<br />&#187; %s',
-	'LOG_BAN_EMAIL'			=> '<b>Banned email</b> for reason "<i>%s</i>"<br />&#187; %s',
+	'LOG_BAN_EXCLUDE_USER'	=> '<b>Excluded user from ban</b> for reason "<i>%1$s</i>"<br />&#187; %2$s ',
+	'LOG_BAN_EXCLUDE_IP'	=> '<b>Excluded ip from ban</b> for reason "<i>%1$s</i>"<br />&#187; %2$s ',
+	'LOG_BAN_EXCLUDE_EMAIL' => '<b>Excluded email from ban</b> for reason "<i>%1$s</i>"<br />&#187; %2$s ',
+	'LOG_BAN_USER'			=> '<b>Banned User</b> for reason "<i>%1$s</i>"<br />&#187; %2$s ',
+	'LOG_BAN_IP'			=> '<b>Banned ip</b> for reason "<i>%1$s</i>"<br />&#187; %2$s',
+	'LOG_BAN_EMAIL'			=> '<b>Banned email</b> for reason "<i>%1$s</i>"<br />&#187; %2$s',
 	'LOG_UNBAN_USER'		=> '<b>Unbanned user</b><br />&#187; %s',
 	'LOG_UNBAN_IP'			=> '<b>Unbanned ip</b><br />&#187; %s',
 	'LOG_UNBAN_EMAIL'		=> '<b>Unbanned email</b><br />&#187; %s',
@@ -439,28 +444,28 @@ $lang = array_merge($lang, array(
 	'LOG_FORUM_ADD'							=> '<b>Created new forum</b><br />&#187; %s',
 	'LOG_FORUM_DEL_FORUM'					=> '<b>Deleted forum</b><br />&#187; %s',
 	'LOG_FORUM_DEL_FORUMS'					=> '<b>Deleted forum and its subforums</b><br />&#187; %s',
-	'LOG_FORUM_DEL_MOVE_FORUMS'				=> '<b>Deleted forum and moved subforums</b> to %s<br />&#187; %s',
-	'LOG_FORUM_DEL_MOVE_POSTS'				=> '<b>Deleted forum and moved posts </b> to %s<br />&#187; %s',
-	'LOG_FORUM_DEL_MOVE_POSTS_FORUMS'		=> '<b>Deleted forum and its subforums, moved messages</b> to %s<br />&#187; %s',
-	'LOG_FORUM_DEL_MOVE_POSTS_MOVE_FORUMS'	=> '<b>Deleted forum, moved posts</b> to %s <b>and subforums</b> to %s<br />&#187; %s',
+	'LOG_FORUM_DEL_MOVE_FORUMS'				=> '<b>Deleted forum and moved subforums</b> to %1$s<br />&#187; %2$s',
+	'LOG_FORUM_DEL_MOVE_POSTS'				=> '<b>Deleted forum and moved posts </b> to %1$s<br />&#187; %2$s',
+	'LOG_FORUM_DEL_MOVE_POSTS_FORUMS'		=> '<b>Deleted forum and its subforums, moved messages</b> to %1$s<br />&#187; %2$s',
+	'LOG_FORUM_DEL_MOVE_POSTS_MOVE_FORUMS'	=> '<b>Deleted forum, moved posts</b> to %1$s <b>and subforums</b> to %2$s<br />&#187; %3$s',
 	'LOG_FORUM_DEL_POSTS'					=> '<b>Deleted forum and its messages</b><br />&#187; %s',
 	'LOG_FORUM_DEL_POSTS_FORUMS'			=> '<b>Deleted forum, its messages and subforums</b><br />&#187; %s',
-	'LOG_FORUM_DEL_POSTS_MOVE_FORUMS'		=> '<b>Deleted forum and its messages, moved subforums</b> to %s<br />&#187; %s',
+	'LOG_FORUM_DEL_POSTS_MOVE_FORUMS'		=> '<b>Deleted forum and its messages, moved subforums</b> to %1$s<br />&#187; %2$s',
 	'LOG_FORUM_EDIT'						=> '<b>Edited forum details</b><br />&#187; %s',
-	'LOG_FORUM_MOVE_DOWN'					=> '<b>Moved forum</b> %s <b>below</b> %s',
-	'LOG_FORUM_MOVE_UP'						=> '<b>Moved forum</b> %s <b>above</b> %s',
+	'LOG_FORUM_MOVE_DOWN'					=> '<b>Moved forum</b> %1$s <b>below</b> %2$s',
+	'LOG_FORUM_MOVE_UP'						=> '<b>Moved forum</b> %1$s <b>above</b> %2$s',
 	'LOG_FORUM_SYNC'						=> '<b>Re-synchronised forum</b><br />&#187; %s',
 
 	'LOG_GROUP_CREATED'		=> '<b>New usergroup created</b><br />&#187; %s',
 	'LOG_GROUP_DEFAULTS'	=> '<b>Group made default for members</b><br />&#187; %s',
 	'LOG_GROUP_DELETE'		=> '<b>Usergroup deleted</b><br />&#187; %s',
-	'LOG_GROUP_DEMOTED'		=> '<b>Leaders demoted in usergroup</b> %s<br />&#187; %s',
-	'LOG_GROUP_PROMOTED'	=> '<b>Members promoted to leader in usergroup</b> %s<br />&#187; %s',
-	'LOG_GROUP_REMOVE'		=> '<b>Members removed from usergroup</b> %s<br />&#187; %s',
+	'LOG_GROUP_DEMOTED'		=> '<b>Leaders demoted in usergroup</b> %1$s<br />&#187; %2$s',
+	'LOG_GROUP_PROMOTED'	=> '<b>Members promoted to leader in usergroup</b> %1$s<br />&#187; %2$s',
+	'LOG_GROUP_REMOVE'		=> '<b>Members removed from usergroup</b> %1$s<br />&#187; %2$s',
 	'LOG_GROUP_UPDATED'		=> '<b>Usergroup details updated</b><br />&#187; %s',
-	'LOG_MODS_ADDED'		=> '<b>Added new leaders to usergroup</b> %s<br />&#187; %s',
-	'LOG_USERS_APPROVED'	=> '<b>Users approved in usergroup</b> %s<br />&#187; %s',
-	'LOG_USERS_ADDED'		=> '<b>Added new members to usergroup</b> %s<br />&#187; %s',
+	'LOG_MODS_ADDED'		=> '<b>Added new leaders to usergroup</b> %1$s<br />&#187; %2$s',
+	'LOG_USERS_APPROVED'	=> '<b>Users approved in usergroup</b> %1$s<br />&#187; %2$s',
+	'LOG_USERS_ADDED'		=> '<b>Added new members to usergroup</b> %1$s<br />&#187; %2$s',
 
 	'LOG_IMAGESET_ADD_DB'		=> '<b>Added new imageset to database</b><br />&#187; %s',
 	'LOG_IMAGESET_ADD_FS'		=> '<b>Add new imageset on filesystem</b><br />&#187; %s',
@@ -468,13 +473,15 @@ $lang = array_merge($lang, array(
 	'LOG_IMAGESET_EDIT_DETAILS'	=> '<b>Edited imageset details</b><br />&#187; %s',
 	'LOG_IMAGESET_EDIT'			=> '<b>Edited imageset</b><br />&#187; %s',
 	'LOG_IMAGESET_EXPORT'		=> '<b>Exported imageset</b><br />&#187; %s',
+	'LOG_IMAGESET_REFRESHED'	=> '<b>Refreshed imageset</b><br />&#187; %s',
 
 	'LOG_INDEX_ACTIVATE'	=> '<b>Activated inactive users</b><br />&#187; %s',
 	'LOG_INDEX_DELETE'		=> '<b>Deleted inactive users</b><br />&#187; %s',
 	'LOG_INDEX_REMIND'		=> '<b>Sent reminder emails to inactive users</b><br />&#187; %s',
+	'LOG_INSTALL_CONVERTED'	=> '<b>Converted from %1$s to phpBB %2$s</b>',
 	'LOG_INSTALL_INSTALLED'	=> '<b>Installed phpBB %s</b>',
 
-	'LOG_IP_BROWSER_CHECK'	=> '<b>Session IP/Browser check failed</b><br />&#187;User IP "<i>%s</i>" checked against session IP "<i>%s</i>" and user browser string "<i>%s</i>" checked against session browser string "<i>%s</i>".',
+	'LOG_IP_BROWSER_CHECK'	=> '<b>Session IP/Browser check failed</b><br />&#187;User IP "<i>%1$s</i>" checked against session IP "<i>%2$s</i>" and user browser string "<i>%3$s</i>" checked against session browser string "<i>%4$s</i>".',
 
 	'LOG_JAB_CHANGED'			=> '<b>Jabber account changed</b>',
 	'LOG_JAB_PASSCHG'			=> '<b>Jabber password changed</b>',
@@ -488,7 +495,7 @@ $lang = array_merge($lang, array(
 
 	'LOG_MASS_EMAIL'		=> '<b>Sent mass email</b><br />&#187; %s',
 
-	'LOG_MCP_CHANGE_POSTER'	=> '<b>Changed poster in topic "%s"</b><br />&#187; from %s to %s',
+	'LOG_MCP_CHANGE_POSTER'	=> '<b>Changed poster in topic "%1$s"</b><br />&#187; from %2$s to %3$s',
 
 	'LOG_MODULE_DISABLE'	=> '<b>Module disabled</b>',
 	'LOG_MODULE_ENABLE'		=> '<b>Module enabled</b>',
@@ -540,9 +547,9 @@ $lang = array_merge($lang, array(
 
 	'LOG_TEMPLATE_ADD_DB'			=> '<b>Added new template set to database</b><br />&#187; %s',
 	'LOG_TEMPLATE_ADD_FS'			=> '<b>Add new template set on filesystem</b><br />&#187; %s',
-	'LOG_TEMPLATE_CACHE_CLEARED'	=> '<b>Deleted cached versions of template files in template set <i>%s</i></b><br />&#187; %s',
+	'LOG_TEMPLATE_CACHE_CLEARED'	=> '<b>Deleted cached versions of template files in template set <i>%1$s</i></b><br />&#187; %2$s',
 	'LOG_TEMPLATE_DELETE'			=> '<b>Deleted template set</b><br />&#187; %s',
-	'LOG_TEMPLATE_EDIT'				=> '<b>Edited template set <i>%s</i></b><br />&#187; %s',
+	'LOG_TEMPLATE_EDIT'				=> '<b>Edited template set <i>%1$s</i></b><br />&#187; %2$s',
 	'LOG_TEMPLATE_EDIT_DETAILS'		=> '<b>Edited template details</b><br />&#187; %s',
 	'LOG_TEMPLATE_EXPORT'			=> '<b>Exported template set</b><br />&#187; %s',
 	'LOG_TEMPLATE_REFRESHED'		=> '<b>Refreshed template set</b><br />&#187; %s',
@@ -551,25 +558,26 @@ $lang = array_merge($lang, array(
 	'LOG_THEME_ADD_FS'			=> '<b>Add new theme on filesystem</b><br />&#187; %s',
 	'LOG_THEME_DELETE'			=> '<b>Theme deleted</b><br />&#187; %s',
 	'LOG_THEME_EDIT_DETAILS'	=> '<b>Edited theme details</b><br />&#187; %s',
-	'LOG_THEME_EDIT'			=> '<b>Edited theme <i>%s</i></b><br />&#187; Modified class <i>%s</i>',
-	'LOG_THEME_EDIT_ADD'		=> '<b>Edited theme <i>%s</i></b><br />&#187; Added class <i>%s</i>',
+	'LOG_THEME_EDIT'			=> '<b>Edited theme <i>%1$s</i></b><br />&#187; Modified class <i>%2$s</i>',
+	'LOG_THEME_EDIT_ADD'		=> '<b>Edited theme <i>%1$s</i></b><br />&#187; Added class <i>%2$s</i>',
 	'LOG_THEME_EXPORT'			=> '<b>Exported theme</b><br />&#187; %s',
+	'LOG_THEME_REFRESHED'		=> '<b>Refreshed theme</b><br />&#187; %s',
 
 	'LOG_USER_ACTIVE'		=> '<b>User activated</b><br />&#187; %s',
-	'LOG_USER_BAN_USER'		=> '<b>Banned User via user management</b> for reason "<i>%s</i>"<br />&#187; %s',
-	'LOG_USER_BAN_IP'		=> '<b>Banned ip via user management</b> for reason "<i>%s</i>"<br />&#187; %s',
-	'LOG_USER_BAN_EMAIL'	=> '<b>Banned email via user management</b> for reason "<i>%s</i>"<br />&#187; %s',
+	'LOG_USER_BAN_USER'		=> '<b>Banned User via user management</b> for reason "<i>%1$s</i>"<br />&#187; %2$s',
+	'LOG_USER_BAN_IP'		=> '<b>Banned ip via user management</b> for reason "<i>%1$s</i>"<br />&#187; %2$s',
+	'LOG_USER_BAN_EMAIL'	=> '<b>Banned email via user management</b> for reason "<i>%1$s</i>"<br />&#187; %2$s',
 	'LOG_USER_DELETED'		=> '<b>Deleted user</b><br />&#187; %s',
 	'LOG_USER_DEL_ATTACH'	=> '<b>Removed all attachments made by the user</b><br />&#187; %s',
 	'LOG_USER_DEL_AVATAR'	=> '<b>Removed user avatar</b><br />&#187; %s',
 	'LOG_USER_DEL_POSTS'	=> '<b>Removed all posts made by the user</b><br />&#187; %s',
 	'LOG_USER_DEL_SIG'		=> '<b>Removed user signature</b><br />&#187; %s',
 	'LOG_USER_INACTIVE'		=> '<b>User deactivated</b><br />&#187; %s',
-	'LOG_USER_MOVE_POSTS'	=> '<b>Moved user posts</b><br />&#187; posts by "%s" to forum "%s"',
+	'LOG_USER_MOVE_POSTS'	=> '<b>Moved user posts</b><br />&#187; posts by "%1$s" to forum "%2$s"',
 	'LOG_USER_NEW_PASSWORD'	=> '<b>Changed user password</b><br />&#187; %s',
 	'LOG_USER_REACTIVATE'	=> '<b>Forced user account re-activation</b><br />&#187; %s',
-	'LOG_USER_UPDATE_EMAIL'	=> '<b>User "%s" changed email</b><br />&#187; from "%s" to "%s"',
-	'LOG_USER_UPDATE_NAME'	=> '<b>Changed username</b><br />&#187; from "%s" to "%s"',
+	'LOG_USER_UPDATE_EMAIL'	=> '<b>User "%1$s" changed email</b><br />&#187; from "%2$s" to "%3$s"',
+	'LOG_USER_UPDATE_NAME'	=> '<b>Changed username</b><br />&#187; from "%1$s" to "%2$s"',
 	'LOG_USER_USER_UPDATE'	=> '<b>Updated user details</b><br />&#187; %s',
 
 	'LOG_USER_ACTIVE_USER'		=> '<b>User account activated</b>',

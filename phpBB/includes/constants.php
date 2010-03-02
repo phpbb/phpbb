@@ -31,14 +31,15 @@ define('USER_FOUNDER', 3);
 //define('USER_GUEST', 4);
 
 // ACL
-define('ACL_NO', 0);
+define('ACL_NEVER', 0);
 define('ACL_YES', 1);
-define('ACL_UNSET', -1);
+define('ACL_NO', -1);
 
 // Login error codes
 define('LOGIN_CONTINUE', 1);
 define('LOGIN_BREAK', 2);
 define('LOGIN_SUCCESS', 3);
+define('LOGIN_SUCCESS_CREATE_PROFILE', 20);
 define('LOGIN_ERROR_USERNAME', 10);
 define('LOGIN_ERROR_PASSWORD', 11);
 define('LOGIN_ERROR_ACTIVE', 12);
@@ -135,8 +136,8 @@ define('FIELD_DATE', 6);
 // Table names
 define('ACL_GROUPS_TABLE',			$table_prefix . 'acl_groups');
 define('ACL_OPTIONS_TABLE',			$table_prefix . 'acl_options');
-define('ACL_ROLES_TABLE',			$table_prefix . 'acl_roles');
 define('ACL_ROLES_DATA_TABLE',		$table_prefix . 'acl_roles_data');
+define('ACL_ROLES_TABLE',			$table_prefix . 'acl_roles');
 define('ACL_USERS_TABLE',			$table_prefix . 'acl_users');
 define('ATTACHMENTS_TABLE',			$table_prefix . 'attachments');
 define('BANLIST_TABLE',				$table_prefix . 'banlist');
@@ -145,10 +146,6 @@ define('BOOKMARKS_TABLE',			$table_prefix . 'bookmarks');
 define('BOTS_TABLE',				$table_prefix . 'bots');
 define('CONFIG_TABLE',				$table_prefix . 'config');
 define('CONFIRM_TABLE',				$table_prefix . 'confirm');
-define('PROFILE_FIELDS_TABLE',		$table_prefix . 'profile_fields');
-define('PROFILE_LANG_TABLE',		$table_prefix . 'profile_lang');
-define('PROFILE_FIELDS_DATA_TABLE',	$table_prefix . 'profile_fields_data');
-define('PROFILE_FIELDS_LANG_TABLE',	$table_prefix . 'profile_fields_lang');
 define('DISALLOW_TABLE',			$table_prefix . 'disallow');
 define('DRAFTS_TABLE',				$table_prefix . 'drafts');
 define('EXTENSIONS_TABLE',			$table_prefix . 'extensions');
@@ -163,11 +160,17 @@ define('LANG_TABLE',				$table_prefix . 'lang');
 define('LOG_TABLE',					$table_prefix . 'log');
 define('MODERATOR_CACHE_TABLE',		$table_prefix . 'moderator_cache');
 define('MODULES_TABLE',				$table_prefix . 'modules');
+define('POLL_OPTIONS_TABLE',		$table_prefix . 'poll_options');
+define('POLL_VOTES_TABLE',			$table_prefix . 'poll_votes');
 define('POSTS_TABLE',				$table_prefix . 'posts');
 define('PRIVMSGS_TABLE',			$table_prefix . 'privmsgs');
-define('PRIVMSGS_TO_TABLE',			$table_prefix . 'privmsgs_to');
 define('PRIVMSGS_FOLDER_TABLE',		$table_prefix . 'privmsgs_folder');
 define('PRIVMSGS_RULES_TABLE',		$table_prefix . 'privmsgs_rules');
+define('PRIVMSGS_TO_TABLE',			$table_prefix . 'privmsgs_to');
+define('PROFILE_FIELDS_TABLE',		$table_prefix . 'profile_fields');
+define('PROFILE_FIELDS_DATA_TABLE',	$table_prefix . 'profile_fields_data');
+define('PROFILE_FIELDS_LANG_TABLE',	$table_prefix . 'profile_fields_lang');
+define('PROFILE_LANG_TABLE',		$table_prefix . 'profile_lang');
 define('RANKS_TABLE',				$table_prefix . 'ranks');
 define('RATINGS_TABLE',				$table_prefix . 'ratings');
 define('REPORTS_TABLE',				$table_prefix . 'reports');
@@ -186,15 +189,13 @@ define('STYLES_THEME_TABLE',		$table_prefix . 'styles_theme');
 define('STYLES_IMAGESET_TABLE',		$table_prefix . 'styles_imageset');
 define('TOPICS_TABLE',				$table_prefix . 'topics');
 define('TOPICS_POSTED_TABLE',		$table_prefix . 'topics_posted');
-define('TOPICS_WATCH_TABLE',		$table_prefix . 'topics_watch');
 define('TOPICS_TRACK_TABLE',		$table_prefix . 'topics_track');
+define('TOPICS_WATCH_TABLE',		$table_prefix . 'topics_watch');
 define('USER_GROUP_TABLE',			$table_prefix . 'user_group');
 define('USERS_TABLE',				$table_prefix . 'users');
 define('USERS_NOTES_TABLE',			$table_prefix . 'users_notes');
 define('WARNINGS_TABLE',			$table_prefix . 'warnings');
 define('WORDS_TABLE',				$table_prefix . 'words');
-define('POLL_OPTIONS_TABLE',		$table_prefix . 'poll_options');
-define('POLL_VOTES_TABLE',			$table_prefix . 'poll_votes');
 define('ZEBRA_TABLE',				$table_prefix . 'zebra');
 
 // Additional tables

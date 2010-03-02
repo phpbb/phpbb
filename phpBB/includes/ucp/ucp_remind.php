@@ -22,7 +22,7 @@ class ucp_remind
 		global $config, $phpbb_root_path, $phpEx;
 		global $db, $user, $auth, $template;
 
-		$username	= request_var('username', '', true);
+		$username	= request_var('username', '');
 		$email		= request_var('email', '');
 		$submit		= (isset($_POST['submit'])) ? true : false;
 
@@ -62,7 +62,7 @@ class ucp_remind
 
 			$messenger = new messenger(false);
 
-			$messenger->template('user_activate_passwd', $row['user_lang']);
+			$messenger->template('user_activate_passwd', $user_row['user_lang']);
 
 			$messenger->replyto($user->data['user_email']);
 			$messenger->to($user_row['user_email'], $user_row['username']);

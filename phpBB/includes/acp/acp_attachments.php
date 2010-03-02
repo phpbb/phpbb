@@ -78,7 +78,7 @@ class acp_attachments
 				}
 				$db->sql_freeresult($result);
 
-				$l_legend_cat_images = $user->lang['SETTINGS_CAT_IMAGES'] . ' [' . $user->lang['ASSIGNED_GROUP'] . ': ' . ((sizeof($s_assigned_groups[ATTACHMENT_CATEGORY_IMAGE])) ? implode(', ', $s_assigned_groups[ATTACHMENT_CATEGORY_IMAGE]) : $user->lang['NONE']) . ']';
+				$l_legend_cat_images = $user->lang['SETTINGS_CAT_IMAGES'] . ' [' . $user->lang['ASSIGNED_GROUP'] . ': ' . ((sizeof($s_assigned_groups[ATTACHMENT_CATEGORY_IMAGE])) ? implode(', ', $s_assigned_groups[ATTACHMENT_CATEGORY_IMAGE]) : $user->lang['NO_EXT_GROUP']) . ']';
 
 				$display_vars = array(
 					'title'	=> 'ACP_ATTACHMENT_SETTINGS',
@@ -97,7 +97,7 @@ class acp_attachments
 						'max_attachments_pm'	=> array('lang' => 'MAX_ATTACHMENTS_PM',	'type' => 'text:3:3', 'explain' => false),
 						'secure_downloads'		=> array('lang' => 'SECURE_DOWNLOADS',		'type' => 'radio:yes_no', 'explain' => true),
 						'secure_allow_deny'		=> array('lang' => 'SECURE_ALLOW_DENY',		'type' => 'custom', 'method' => 'select_allow_deny', 'explain' => true),
-						'secure_allow_empty_referer' => array('lang' => 'SECURE_EMPTY_REFERER', 'type' => 'radio:yes_no', 'explain' => true),
+						'secure_allow_empty_referer' => array('lang' => 'SECURE_EMPTY_REFERRER', 'type' => 'radio:yes_no', 'explain' => true),
 
 						'legend2'					=> $l_legend_cat_images,
 						'img_display_inlined'		=> array('lang' => 'DISPLAY_INLINED',		'type' => 'radio:yes_no', 'explain' => true),
@@ -294,7 +294,7 @@ class acp_attachments
 						{
 							$sql = 'SELECT extension 
 								FROM ' . EXTENSIONS_TABLE . '
-								WHERE extension_id IN (' . implode(', ', $extension_id_list) . ')';
+								WHERE ' . $db->sql_in_set('extension_id', $extension_id_list);
 							$result = $db->sql_query($sql);
 							
 							$extension_list = '';
@@ -306,7 +306,7 @@ class acp_attachments
 
 							$sql = 'DELETE 
 								FROM ' . EXTENSIONS_TABLE . '
-								WHERE extension_id IN (' . implode(', ', $extension_id_list) . ')';
+								WHERE ' . $db->sql_in_set('extension_id', $extension_id_list);
 							$db->sql_query($sql);
 
 							add_log('admin', 'LOG_ATTACH_EXT_DEL', $extension_list);
@@ -508,7 +508,7 @@ class acp_attachments
 					{
 						$sql = 'UPDATE ' . EXTENSIONS_TABLE . " 
 							SET group_id = $group_id
-							WHERE extension_id IN (" . implode(', ', $extension_list) . ")";
+							WHERE " . $db->sql_in_set('extension_id', $extension_list);
 						$db->sql_query($sql);
 					}
 
@@ -521,7 +521,7 @@ class acp_attachments
 				}
 			
 				$cat_lang = array(
-					ATTACHMENT_CATEGORY_NONE	=> $user->lang['NONE'],
+					ATTACHMENT_CATEGORY_NONE	=> $user->lang['NO_FILE_CAT'],
 					ATTACHMENT_CATEGORY_IMAGE	=> $user->lang['CAT_IMAGES'],
 					ATTACHMENT_CATEGORY_WM		=> $user->lang['CAT_WM_FILES'],
 					ATTACHMENT_CATEGORY_RM		=> $user->lang['CAT_RM_FILES']
@@ -631,25 +631,30 @@ class acp_attachments
 
 						$img_path = $config['upload_icons_path'];
 
-						$imglist = filelist($phpbb_root_path . $img_path);
-						$imglist = array_values($imglist);
-						$imglist = $imglist[0];
-
 						$filename_list = '';
 						$no_image_select = false;
-						foreach ($imglist as $key => $img)
-						{
-							if (!$ext_group_row['upload_icon'])
-							{
-								$no_image_select = true;
-								$selected = '';
-							}
-							else
-							{
-								$selected = ($ext_group_row['upload_icon'] == $img) ? ' selected="selected"' : '';
-							}
 
-							$filename_list .= '<option value="' . htmlspecialchars($img) . '"' . $selected . '>' . htmlspecialchars($img) . '</option>';
+						$imglist = filelist($phpbb_root_path . $img_path);
+
+						if (sizeof($imglist))
+						{
+							$imglist = array_values($imglist);
+							$imglist = $imglist[0];
+
+							foreach ($imglist as $key => $img)
+							{
+								if (!$ext_group_row['upload_icon'])
+								{
+									$no_image_select = true;
+									$selected = '';
+								}
+								else
+								{
+									$selected = ($ext_group_row['upload_icon'] == $img) ? ' selected="selected"' : '';
+								}
+
+								$filename_list .= '<option value="' . htmlspecialchars($img) . '"' . $selected . '>' . htmlspecialchars($img) . '</option>';
+							}
 						}
 
 						$i = 0;
@@ -701,7 +706,7 @@ class acp_attachments
 						$sql = 'SELECT forum_id, forum_name, parent_id, forum_type, left_id, right_id
 							FROM ' . FORUMS_TABLE . '
 							ORDER BY left_id ASC';
-						$result = $db->sql_query($sql);
+						$result = $db->sql_query($sql, 600);
 
 						$right = $cat_right = $padding_inc = 0;
 						$padding = $forum_list = $holding = '';
@@ -860,7 +865,7 @@ class acp_attachments
 
 						$sql = 'SELECT forum_id, topic_id, post_id 
 							FROM ' . POSTS_TABLE . '
-							WHERE post_id IN (' . implode(', ', array_keys($upload_list)) . ')';
+							WHERE ' . $db->sql_in_set('post_id', array_keys($upload_list));
 						$result = $db->sql_query($sql);
 
 						while ($row = $db->sql_fetchrow($result))
@@ -954,7 +959,7 @@ class acp_attachments
 		global $db, $user;
 
 		$types = array(
-			ATTACHMENT_CATEGORY_NONE	=> $user->lang['NONE'],
+			ATTACHMENT_CATEGORY_NONE	=> $user->lang['NO_FILE_CAT'],
 			ATTACHMENT_CATEGORY_IMAGE	=> $user->lang['CAT_IMAGES'],
 			ATTACHMENT_CATEGORY_WM		=> $user->lang['CAT_WM_FILES'],
 			ATTACHMENT_CATEGORY_RM		=> $user->lang['CAT_RM_FILES']
@@ -1097,7 +1102,7 @@ class acp_attachments
 				'in_message'		=> 0,
 				'physical_filename'	=> $filedata['physical_filename'],
 				'real_filename'		=> $filedata['real_filename'],
-				'comment'			=> $message_parser->filename_data['filecomment'],
+				'attach_comment'	=> $message_parser->filename_data['filecomment'],
 				'extension'			=> $filedata['extension'],
 				'mimetype'			=> $filedata['mimetype'],
 				'filesize'			=> $filedata['filesize'],
@@ -1145,7 +1150,7 @@ class acp_attachments
 	{
 		$imagick = '';
 
-		$exe = ((defined('PHP_OS')) && (preg_match('#win#i', PHP_OS))) ? '.exe' : '';
+		$exe = ((defined('PHP_OS')) && (preg_match('#^win#i', PHP_OS))) ? '.exe' : '';
 
 		$magic_home = getenv('MAGICK_HOME');
 
@@ -1368,16 +1373,16 @@ class acp_attachments
 		}
 		else if (isset($_POST['unsecuresubmit']))
 		{
-			$unip_sql = implode(', ', array_map('intval', $_POST['unip']));
+			$unip_sql = array_map('intval', $_POST['unip']);
 
-			if ($unip_sql != '')
+			if (sizeof($unip_sql))
 			{
 				$l_unip_list = '';
-			
+
 				// Grab details of ips for logging information later
 				$sql = 'SELECT site_ip, site_hostname
-					FROM ' . SITELIST_TABLE . "
-					WHERE site_id IN ($unip_sql)";
+					FROM ' . SITELIST_TABLE . '
+					WHERE ' . $db->sql_in_set('site_id', $unip_sql);
 				$result = $db->sql_query($sql);
 
 				while ($row = $db->sql_fetchrow($result))
@@ -1386,8 +1391,8 @@ class acp_attachments
 				}
 				$db->sql_freeresult($result);
 
-				$sql = 'DELETE FROM ' . SITELIST_TABLE . "
-					WHERE site_id IN ($unip_sql)";
+				$sql = 'DELETE FROM ' . SITELIST_TABLE . '
+					WHERE ' . $db->sql_in_set('site_id', $unip_sql);
 				$db->sql_query($sql);
 
 				add_log('admin', 'LOG_DOWNLOAD_REMOVE_IP', $l_unip_list);

@@ -22,7 +22,7 @@ if (!defined('SQL_LAYER'))
 {
 
 	define('SQL_LAYER', 'mysql4');
-	include($phpbb_root_path . 'includes/db/dbal.' . $phpEx);
+	include_once($phpbb_root_path . 'includes/db/dbal.' . $phpEx);
 
 /**
 * MySQL4 Database Abstraction Layer
@@ -58,6 +58,14 @@ class dbal_mysql4 extends dbal
 	}
 
 	/**
+	* Version information about used database
+	*/
+	function sql_server_info()
+	{
+		return 'MySQL ' . @mysql_get_server_info($this->db_connect_id);
+	}
+
+	/**
 	* SQL Transaction
 	* @access: private
 	*/
@@ -83,6 +91,12 @@ class dbal_mysql4 extends dbal
 
 	/**
 	* Base query method
+	*
+	* @param	string	$query		Contains the SQL query which shall be executed
+	* @param	int		$cache_ttl	Either 0 to avoid caching or the time in seconds which the result shall be kept in cache
+	* @return	mixed				When casted to bool the returned value returns true on success and false on failure
+	*
+	* @access	public
 	*/
 	function sql_query($query = '', $cache_ttl = 0)
 	{
@@ -166,9 +180,16 @@ class dbal_mysql4 extends dbal
 	*/
 	function sql_numrows($query_id = false)
 	{
+		global $cache;
+
 		if (!$query_id)
 		{
 			$query_id = $this->query_result;
+		}
+
+		if (isset($cache->sql_rowset[$query_id]))
+		{
+			return $cache->sql_numrows($query_id);
 		}
 
 		return ($query_id) ? @mysql_num_rows($query_id) : false;
@@ -208,6 +229,8 @@ class dbal_mysql4 extends dbal
 	*/
 	function sql_fetchfield($field, $rownum = false, $query_id = false)
 	{
+		global $cache;
+
 		if (!$query_id)
 		{
 			$query_id = $this->query_result;
@@ -217,11 +240,22 @@ class dbal_mysql4 extends dbal
 		{
 			if ($rownum === false)
 			{
+				if (isset($cache->sql_rowset[$query_id]))
+				{
+					return $cache->sql_fetchfield($query_id, $field);
+				}
+
 				$row = $this->sql_fetchrow($query_id);
 				return isset($row[$field]) ? $row[$field] : false;
 			}
 			else
 			{
+				if (isset($cache->sql_rowset[$query_id]))
+				{
+					$cache->sql_rowseek($query_id, $rownum);
+					return $cache->sql_fetchfield($query_id, $field);
+				}
+
 				return @mysql_result($query_id, $rownum, $field);
 			}
 		}
@@ -235,9 +269,16 @@ class dbal_mysql4 extends dbal
 	*/
 	function sql_rowseek($rownum, $query_id = false)
 	{
+		global $cache;
+
 		if (!$query_id)
 		{
 			$query_id = $this->query_result;
+		}
+
+		if (isset($cache->sql_rowset[$query_id]))
+		{
+			return $cache->sql_rowseek($query_id, $rownum);
 		}
 
 		return ($query_id) ? @mysql_data_seek($query_id, $rownum) : false;
@@ -256,9 +297,16 @@ class dbal_mysql4 extends dbal
 	*/
 	function sql_freeresult($query_id = false)
 	{
+		global $cache;
+
 		if (!$query_id)
 		{
 			$query_id = $this->query_result;
+		}
+
+		if (isset($cache->sql_rowset[$query_id]))
+		{
+			return $cache->sql_freeresult($query_id);
 		}
 
 		if (isset($this->open_queries[(int) $query_id]))

@@ -36,13 +36,6 @@ $template->assign_vars(array(
 
 $template->display('body');
 
-// Unload cache, must be done before the DB connection if closed
-if (!empty($cache))
-{
-	$cache->unload();
-}
-
-// Close our DB connection.
-$db->sql_close();
+garbage_collection();
 
 ?>

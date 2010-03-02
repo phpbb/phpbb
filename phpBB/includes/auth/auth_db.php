@@ -6,10 +6,6 @@
 *
 * This is for authentication via the integrated user table
 *
-* You can do any kind of checking you like here ... the return data format is
-* either the resulting row of user information, an integer zero (indicating an
-* inactive user) or some error string
-*
 * @package login
 * @version $Id$
 * @copyright (c) 2005 phpBB Group 

@@ -16,6 +16,14 @@
 <div id="wrap">
 	<div id="page-header">
 		<h1>{L_INSTALL_PANEL}</h1>
+		<!-- IF S_LANG_SELECT -->
+		<br />
+		<form method="post">
+			<label for="language">{L_SELECT_LANG}:</label>
+			{S_LANG_SELECT}
+			<input class="button1" type="submit" id="change_lang" name="change_lang" value="{L_CHANGE}" />
+		</form>
+		<!-- ENDIF -->
 	</div>
 	
 	<div id="page-body">

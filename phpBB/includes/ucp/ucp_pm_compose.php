@@ -18,6 +18,7 @@ function compose_pm($id, $mode, $action)
 	global $phpbb_root_path, $phpEx, $config;
 
 	include($phpbb_root_path . 'includes/functions_posting.' . $phpEx);
+	include($phpbb_root_path . 'includes/functions_display.' . $phpEx);
 	include($phpbb_root_path . 'includes/message_parser.' . $phpEx);
 
 	if (!$action)
@@ -137,7 +138,7 @@ function compose_pm($id, $mode, $action)
 				trigger_error('NO_MESSAGE');
 			}
 
-			$sql = 'SELECT msg_id, unread, new, author_id, folder_id
+			$sql = 'SELECT msg_id, pm_unread, pm_new, author_id, folder_id
 				FROM ' . PRIVMSGS_TO_TABLE . '
 				WHERE user_id = ' . $user->data['user_id'] . "
 					AND msg_id = $msg_id";
@@ -236,14 +237,14 @@ function compose_pm($id, $mode, $action)
 		$check_value = 0;
 	}
 
-	if (($to_group_id || isset($address_list['g'])) && !$config['allow_mass_pm'])
+	if (($to_group_id || isset($address_list['g'])) && (!$config['allow_mass_pm'] || !$auth->acl_get('u_masspm')))
 	{
 		trigger_error('NO_AUTH_GROUP_MESSAGE');
 	}
 
 	if ($action == 'edit' && !$refresh && !$preview && !$submit)
 	{
-		if (!($message_time > time() - $config['pm_edit_time'] || !$config['pm_edit_time']))
+		if (!($message_time > time() - ($config['pm_edit_time'] * 60) || !$config['pm_edit_time']))
 		{
 			trigger_error('CANNOT_EDIT_MESSAGE_TIME');
 		}
@@ -300,7 +301,7 @@ function compose_pm($id, $mode, $action)
 	handle_message_list_actions($address_list, $remove_u, $remove_g, $add_to, $add_bcc);
 
 	// Check for too many recipients
-	if (!$config['allow_mass_pm'] && num_recipients($address_list) > 1)
+	if ((!$config['allow_mass_pm'] || !$auth->acl_get('u_masspm')) && num_recipients($address_list) > 1)
 	{
 		$address_list = get_recipient_pos($address_list, 1);
 		$error[] = $user->lang['TOO_MANY_RECIPIENTS'];
@@ -310,7 +311,7 @@ function compose_pm($id, $mode, $action)
 
 	if ($message_attachment && !$submit && !$refresh && !$preview && $action == 'edit')
 	{
-		$sql = 'SELECT attach_id, physical_filename, comment, real_filename, extension, mimetype, filesize, filetime, thumbnail
+		$sql = 'SELECT attach_id, physical_filename, attach_comment, real_filename, extension, mimetype, filesize, filetime, thumbnail
 			FROM ' . ATTACHMENTS_TABLE . "
 			WHERE post_msg_id = $msg_id
 				AND in_message = 1
@@ -519,7 +520,7 @@ function compose_pm($id, $mode, $action)
 				'enable_bbcode'			=> (bool) $enable_bbcode,
 				'enable_smilies'		=> (bool) $enable_smilies,
 				'enable_urls'			=> (bool) $enable_urls,
-				'bbcode_bitfield'		=> (int) $message_parser->bbcode_bitfield,
+				'bbcode_bitfield'		=> $message_parser->bbcode_bitfield,
 				'bbcode_uid'			=> $message_parser->bbcode_uid,
 				'message'				=> $message_parser->message,
 				'attachment_data'		=> $message_parser->attachment_data,
@@ -572,7 +573,6 @@ function compose_pm($id, $mode, $action)
 		// Attachment Preview
 		if (sizeof($message_parser->attachment_data))
 		{
-			include($phpbb_root_path . 'includes/functions_display.' . $phpEx);
 			$extensions = $update_count = array();
 
 			$template->assign_var('S_HAS_ATTACHMENTS', true);
@@ -663,7 +663,7 @@ function compose_pm($id, $mode, $action)
 		{
 			$sql = 'SELECT user_id as id, username as name, user_colour as colour
 				FROM ' . USERS_TABLE . '
-				WHERE user_id IN (' . implode(', ', array_map('intval', array_keys($address_list['u']))) . ')';
+				WHERE ' . $db->sql_in_set('user_id', array_map('intval', array_keys($address_list['u'])));
 			$result['u'] = $db->sql_query($sql);
 		}
 
@@ -672,7 +672,7 @@ function compose_pm($id, $mode, $action)
 			$sql = 'SELECT group_id as id, group_name as name, group_colour as colour, group_type
 				FROM ' . GROUPS_TABLE . '
 				WHERE group_receive_pm = 1
-					AND group_id IN (' . implode(', ', array_map('intval', array_keys($address_list['g']))) . ')';
+					AND ' . $db->sql_in_set('group_id', array_map('intval', array_keys($address_list['g'])));
 			$result['g'] = $db->sql_query($sql);
 		}
 
@@ -787,7 +787,7 @@ function compose_pm($id, $mode, $action)
 		'IMG_STATUS'			=> ($img_status) ? $user->lang['IMAGES_ARE_ON'] : $user->lang['IMAGES_ARE_OFF'],
 		'FLASH_STATUS'			=> ($flash_status) ? $user->lang['FLASH_IS_ON'] : $user->lang['FLASH_IS_OFF'],
 		'SMILIES_STATUS'		=> ($smilies_status) ? $user->lang['SMILIES_ARE_ON'] : $user->lang['SMILIES_ARE_OFF'],
-		'MINI_POST_IMG'			=> $user->img('icon_post', $user->lang['PM']),
+		'MINI_POST_IMG'			=> $user->img('icon_post_target', $user->lang['PM']),
 		'ERROR'					=> (sizeof($error)) ? implode('<br />', $error) : '',
 
 		'S_EDIT_POST'			=> ($action == 'edit'),
@@ -818,23 +818,7 @@ function compose_pm($id, $mode, $action)
 	);
 
 	// Build custom bbcodes array
-	$sql = 'SELECT bbcode_id, bbcode_tag 
-		FROM ' . BBCODES_TABLE . '
-		WHERE display_on_posting = 1';
-	$result = $db->sql_query($sql);
-
-	$i = 0;
-	while ($row = $db->sql_fetchrow($result))
-	{
-		$template->assign_block_vars('custom_tags', array(
-			'BBCODE_NAME'	=> "'[{$row['bbcode_tag']}]', '[/" . str_replace('=', '', $row['bbcode_tag']) . "]'",
-			'BBCODE_ID'		=> 22 + ($i * 2),
-			'BBCODE_TAG'	=> $row['bbcode_tag'])
-		);
-
-		$i++;
-	}
-	$db->sql_freeresult($result);
+	display_custom_bbcodes();
 
 	// Attachment entry
 	if ($auth->acl_get('u_pm_attach') && $config['allow_pm_attach'] && $form_enctype)
@@ -884,8 +868,8 @@ function handle_message_list_actions(&$address_list, $remove_u, $remove_g, $add_
 		$user_id_ary = array();
 
 		// Build usernames to add
-		$usernames = (isset($_REQUEST['username'])) ? array(request_var('username', '', true)) : array();
-		$username_list = request_var('username_list', '', true);
+		$usernames = (isset($_REQUEST['username'])) ? array(request_var('username', '')) : array();
+		$username_list = request_var('username_list', '');
 		if ($username_list)
 		{
 			$usernames = array_merge($usernames, explode("\n", $username_list));
@@ -910,7 +894,7 @@ function handle_message_list_actions(&$address_list, $remove_u, $remove_g, $add_
 			{
 				$sql = 'SELECT user_id
 					FROM ' . USERS_TABLE . '
-					WHERE user_id IN (' . implode(', ', $user_id_ary) . ')
+					WHERE ' . $db->sql_in_set('user_id', $user_id_ary) . '
 						AND user_allow_pm = 1';
 				$result = $db->sql_query($sql);
 

@@ -144,16 +144,16 @@ class acp_modules
 						break;
 					}
 
-					list($module_name, $module_mode) = explode('::', $quick_install);
+					list($module_basename, $module_mode) = explode('::', $quick_install);
 
 					// Check if module name and mode exist...
-					$fileinfo = $this->get_module_infos($module_name);
-					$fileinfo = $fileinfo[$module_name];
+					$fileinfo = $this->get_module_infos($module_basename);
+					$fileinfo = $fileinfo[$module_basename];
 
 					if (isset($fileinfo['modes'][$module_mode]))
 					{
 						$module_data = array(
-							'module_name'		=> $module_name,
+							'module_basename'	=> $module_basename,
 							'module_enabled'	=> 0,
 							'module_display'	=> (isset($fileinfo['modes'][$module_mode]['display'])) ? $fileinfo['modes'][$module_mode]['display'] : 1,
 							'parent_id'			=> $parent_id,
@@ -202,7 +202,7 @@ class acp_modules
 				if ($action == 'add')
 				{
 					$module_row = array(
-						'module_name'		=> '',
+						'module_basename'	=> '',
 						'module_enabled'	=> 0,
 						'module_display'	=> 1,
 						'parent_id'			=> 0,
@@ -214,7 +214,7 @@ class acp_modules
 				
 				$module_data = array();
 
-				$module_data['module_name'] = request_var('module_name', (string) $module_row['module_name']);
+				$module_data['module_basename'] = request_var('module_basename', (string) $module_row['module_basename']);
 				$module_data['module_enabled'] = request_var('module_enabled', (int) $module_row['module_enabled']);
 				$module_data['module_display'] = request_var('module_display', (int) $module_row['module_display']);
 				$module_data['parent_id'] = request_var('module_parent_id', (int) $module_row['parent_id']);
@@ -235,7 +235,7 @@ class acp_modules
 
 					if ($module_type == 'category')
 					{
-						$module_data['module_name'] = $module_data['module_mode'] = $module_data['module_auth'] = '';
+						$module_data['module_basename'] = $module_data['module_mode'] = $module_data['module_auth'] = '';
 						$module_data['module_display'] = 1;
 					}
 
@@ -245,10 +245,10 @@ class acp_modules
 					}
 
 					// Adjust auth row
-					if ($module_data['module_name'] && $module_data['module_mode'])
+					if ($module_data['module_basename'] && $module_data['module_mode'])
 					{
-						$fileinfo = $this->get_module_infos($module_data['module_name']);
-						$module_data['module_auth'] = $fileinfo[$module_data['module_name']]['modes'][$module_data['module_mode']]['auth'];
+						$fileinfo = $this->get_module_infos($module_data['module_basename']);
+						$module_data['module_auth'] = $fileinfo[$module_data['module_basename']]['modes'][$module_data['module_mode']]['auth'];
 					}
 
 					$errors = $this->update_module_data($module_data);
@@ -262,7 +262,7 @@ class acp_modules
 				}
 
 				// Category/not category?
-				$is_cat = (!$module_data['module_name']) ? true : false;
+				$is_cat = (!$module_data['module_basename']) ? true : false;
 
 				// Get module informations
 				$module_infos = $this->get_module_infos();
@@ -271,20 +271,20 @@ class acp_modules
 				$s_name_options = $s_mode_options = '';
 				foreach ($module_infos as $option => $values)
 				{
-					if (!$module_data['module_name'])
+					if (!$module_data['module_basename'])
 					{
-						$module_data['module_name'] = $option;
+						$module_data['module_basename'] = $option;
 					}
 
 					// Name options
-					$s_name_options .= '<option value="' . $option . '"' . (($option == $module_data['module_name']) ? ' selected="selected"' : '') . '>' . $this->lang_name($values['title']) . ' [' . $this->module_class . '_' . $option . ']</option>';
+					$s_name_options .= '<option value="' . $option . '"' . (($option == $module_data['module_basename']) ? ' selected="selected"' : '') . '>' . $this->lang_name($values['title']) . ' [' . $this->module_class . '_' . $option . ']</option>';
 
 					$template->assign_block_vars('m_names', array('NAME' => $option));
 
 					// Build module modes
 					foreach ($values['modes'] as $m_mode => $m_values)
 					{
-						if ($option == $module_data['module_name'])
+						if ($option == $module_data['module_basename'])
 						{
 							$s_mode_options .= '<option value="' . $m_mode . '"' . (($m_mode == $module_data['module_mode']) ? ' selected="selected"' : '') . '>' . $this->lang_name($m_values['title']) . '</option>';
 						}
@@ -387,7 +387,7 @@ class acp_modules
 				}
 				else
 				{
-					$module_image = (!$row['module_name'] || $row['left_id'] + 1 != $row['right_id']) ? '<img src="images/icon_subfolder.gif" width="46" height="25" alt="' . $user->lang['CATEGORY'] . '" />' : '<img src="images/icon_folder.gif" width="46" height="25" alt="' . $user->lang['MODULE'] . '" />';
+					$module_image = (!$row['module_basename'] || $row['left_id'] + 1 != $row['right_id']) ? '<img src="images/icon_subfolder.gif" width="46" height="25" alt="' . $user->lang['CATEGORY'] . '" />' : '<img src="images/icon_folder.gif" width="46" height="25" alt="' . $user->lang['MODULE'] . '" />';
 				}
 
 				$url = $this->u_action . '&amp;parent_id=' . $parent_id . '&amp;m=' . $row['module_id'];
@@ -551,22 +551,10 @@ class acp_modules
 	{
 		global $db, $user, $auth, $config;
 
-		switch (SQL_LAYER)
-		{
-			case 'firebird':
-				$sql = 'SELECT module_id, module_enabled, "module_name", parent_id, module_langname, left_id, right_id, module_auth
-					FROM ' . MODULES_TABLE . "
-					WHERE module_class = '" . $db->sql_escape($this->module_class) . "'
-					ORDER BY left_id ASC";
-			break;
-
-			default:
-				$sql = 'SELECT module_id, module_enabled, module_name, parent_id, module_langname, left_id, right_id, module_auth
-					FROM ' . MODULES_TABLE . "
-					WHERE module_class = '" . $db->sql_escape($this->module_class) . "'
-					ORDER BY left_id ASC";
-			break;
-		}
+		$sql = 'SELECT module_id, module_enabled, module_basename, parent_id, module_langname, left_id, right_id, module_auth
+			FROM ' . MODULES_TABLE . "
+			WHERE module_class = '" . $db->sql_escape($this->module_class) . "'
+			ORDER BY left_id ASC";
 		$result = $db->sql_query($sql);
 
 		$right = $iteration = 0;
@@ -607,13 +595,13 @@ class acp_modules
 			}
 
 			// empty category
-			if (!$row['module_name'] && ($row['left_id'] + 1 == $row['right_id']) && $ignore_emptycat)
+			if (!$row['module_basename'] && ($row['left_id'] + 1 == $row['right_id']) && $ignore_emptycat)
 			{
 				continue;
 			}
 
 			// ignore non-category?
-			if ($row['module_name'] && $ignore_noncat)
+			if ($row['module_basename'] && $ignore_noncat)
 			{
 				continue;
 			}
@@ -723,8 +711,10 @@ class acp_modules
 					WHERE module_class = '" . $db->sql_escape($this->module_class) . "'
 						AND module_id = {$module_data['parent_id']}";
 				$result = $db->sql_query($sql);
+				$row = $db->sql_fetchrow($result);
+				$db->sql_freeresult($result);
 
-				if (!$row = $db->sql_fetchrow($result))
+				if (!$row)
 				{
 					if ($run_inline)
 					{
@@ -733,7 +723,6 @@ class acp_modules
 
 					trigger_error($user->lang['PARENT_NO_EXIST']);
 				}
-				$db->sql_freeresult($result);
 
 				$sql = 'UPDATE ' . MODULES_TABLE . "
 					SET left_id = left_id + 2, right_id = right_id + 2
@@ -777,7 +766,7 @@ class acp_modules
 		{
 			$row = $this->get_module_row($module_data['module_id']);
 
-			if ($module_data['module_name'] && !$row['module_name'])
+			if ($module_data['module_basename'] && !$row['module_basename'])
 			{
 				// we're turning a category into a module
 				$branch = $this->get_module_branch($module_data['module_id'], 'children', 'descending', false);
@@ -792,9 +781,12 @@ class acp_modules
 			{
 				$this->move_module($module_data['module_id'], $module_data['parent_id']);
 			}
-		
+
+			$update_ary = $module_data;
+			unset($update_ary['module_id']);
+
 			$sql = 'UPDATE ' . MODULES_TABLE . '
-				SET ' . $db->sql_build_array('UPDATE', $module_data) . "
+				SET ' . $db->sql_build_array('UPDATE', $update_ary) . "
 				WHERE module_class = '" . $db->sql_escape($this->module_class) . "'
 					AND module_id = {$module_data['module_id']}";
 			$db->sql_query($sql);
@@ -849,7 +841,7 @@ class acp_modules
 				SET right_id = right_id + $diff
 				WHERE module_class = '" . $db->sql_escape($this->module_class) . "'
 					AND " . $to_data['right_id'] . ' BETWEEN left_id AND right_id
-					AND module_id NOT IN (' . implode(', ', $moved_ids) . ')';
+					AND ' . $db->sql_in_set('module_id', $moved_ids, true);
 			$db->sql_query($sql);
 
 			// Resync the righthand side of the tree
@@ -857,7 +849,7 @@ class acp_modules
 				SET left_id = left_id + $diff, right_id = right_id + $diff
 				WHERE module_class = '" . $db->sql_escape($this->module_class) . "'
 					AND left_id > " . $to_data['right_id'] . '
-					AND module_id NOT IN (' . implode(', ', $moved_ids) . ')';
+					AND ' . $db->sql_in_set('module_id', $moved_ids, true);
 			$db->sql_query($sql);
 
 			// Resync moved branch
@@ -876,7 +868,7 @@ class acp_modules
 			$sql = 'SELECT MAX(right_id) AS right_id
 				FROM ' . MODULES_TABLE . "
 				WHERE module_class = '" . $db->sql_escape($this->module_class) . "'
-					AND module_id NOT IN (" . implode(', ', $moved_ids) . ')';
+					AND " . $db->sql_in_set('module_id', $moved_ids, true);
 			$result = $db->sql_query($sql);
 			$row = $db->sql_fetchrow($result);
 			$db->sql_freeresult($result);
@@ -887,7 +879,7 @@ class acp_modules
 		$sql = 'UPDATE ' . MODULES_TABLE . "
 			SET left_id = left_id $diff, right_id = right_id $diff
 			WHERE module_class = '" . $db->sql_escape($this->module_class) . "'
-				AND module_id IN (" . implode(', ', $moved_ids) . ')';
+				AND " . $db->sql_in_set('module_id', $moved_ids);
 		$db->sql_query($sql);
 	}
 

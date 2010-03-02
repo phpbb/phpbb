@@ -16,6 +16,8 @@ function mcp_forum_view($id, $mode, $action, $forum_info)
 	global $template, $db, $user, $auth, $cache;
 	global $phpEx, $phpbb_root_path, $config;
 
+	include_once($phpbb_root_path . 'includes/functions_display.' . $phpEx);
+
 	$url = append_sid("{$phpbb_root_path}mcp.$phpEx?" . extra_url());
 
 	if ($action == 'merge_select')
@@ -61,10 +63,10 @@ function mcp_forum_view($id, $mode, $action, $forum_info)
 
 	$template->assign_vars(array(
 		'FORUM_NAME'			=> $forum_info['forum_name'],
-		'FORUM_DESCRIPTION'		=> generate_text_for_display($forum_info['forum_desc'], $forum_info['forum_desc_uid'], $forum_info['forum_desc_bitfield']),
+		'FORUM_DESCRIPTION'		=> generate_text_for_display($forum_info['forum_desc'], $forum_info['forum_desc_uid'], $forum_info['forum_desc_bitfield'], $forum_info['forum_desc_options']),
 
-		'REPORTED_IMG'			=> $user->img('icon_reported', 'TOPIC_REPORTED'),
-		'UNAPPROVED_IMG'		=> $user->img('icon_unapproved', 'TOPIC_UNAPPROVED'),
+		'REPORTED_IMG'			=> $user->img('icon_topic_reported', 'TOPIC_REPORTED'),
+		'UNAPPROVED_IMG'		=> $user->img('icon_topic_unapproved', 'TOPIC_UNAPPROVED'),
 
 		'S_CAN_DELETE'			=> $auth->acl_get('m_delete', $forum_id),
 		'S_CAN_MOVE'			=> $auth->acl_get('m_move', $forum_id),
@@ -107,56 +109,11 @@ function mcp_forum_view($id, $mode, $action, $forum_info)
 	{
 		$topic_title = '';
 
-		if ($row['topic_status'] == ITEM_LOCKED)
-		{
-			$folder_img = 'folder_locked';
-			$folder_alt = 'VIEW_TOPIC_LOCKED';
-		}
-		else
-		{
-			if ($row['topic_type'] == POST_ANNOUNCE || $row['topic_type'] == POST_GLOBAL)
-			{
-				$folder_img = 'folder_announce';
-				$folder_alt = 'VIEW_TOPIC_ANNOUNCEMENT';
-			}
-			else if ($row['topic_type'] == POST_STICKY)
-			{
-				$folder_img = 'folder_sticky';
-				$folder_alt = 'VIEW_TOPIC_STICKY';
-			}
-			else if ($row['topic_status'] == ITEM_MOVED)
-			{
-				$folder_img = 'folder_moved';
-				$folder_alt = 'VIEW_TOPIC_MOVED';
-			}
-			else
-			{
-				$folder_img = 'folder';
-				$folder_alt = 'NO_NEW_POSTS';
-			}
-		}
+		$replies = ($auth->acl_get('m_approve', $forum_id)) ? $row['topic_replies_real'] : $row['topic_replies'];
 
-		if ($row['topic_type'] == POST_ANNOUNCE || $row['topic_type'] == POST_GLOBAL)
-		{
-			$topic_type = $user->lang['VIEW_TOPIC_ANNOUNCEMENT'] . ' ';
-		}
-		else if ($row['topic_type'] == POST_STICKY)
-		{
-			$topic_type = $user->lang['VIEW_TOPIC_STICKY'] . ' ';
-		}
-		else if ($row['topic_status'] == ITEM_MOVED)
-		{
-			$topic_type = $user->lang['VIEW_TOPIC_MOVED'] . ' ';
-		}
-		else
-		{
-			$topic_type = '';
-		}
-
-		if (intval($row['poll_start']))
-		{
-			$topic_type .= $user->lang['VIEW_TOPIC_POLL'] . ' ';
-		}
+		// Get folder img, topic status/type related informations
+		$folder_img = $folder_alt = $topic_type = '';
+		topic_status($row, $replies, false, $folder_img, $folder_alt, $topic_type);
 
 		$topic_title = censor_text($row['topic_title']);
 
@@ -172,13 +129,13 @@ function mcp_forum_view($id, $mode, $action, $forum_info)
 			'U_MCP_QUEUE'		=> $u_mcp_queue,
 			'U_MCP_REPORT'		=> append_sid("{$phpbb_root_path}mcp.$phpEx", 'i=main&amp;mode=topic_view&amp;t=' . $row['topic_id'] . '&amp;action=reports'),
 
-			'ATTACH_ICON_IMG'		=> ($auth->acl_gets('f_download', 'u_download', $row['forum_id']) && $row['topic_attachment']) ? $user->img('icon_attach', $user->lang['TOTAL_ATTACHMENTS']) : '',
+			'ATTACH_ICON_IMG'		=> ($auth->acl_gets('f_download', 'u_download', $row['forum_id']) && $row['topic_attachment']) ? $user->img('icon_topic_attach', $user->lang['TOTAL_ATTACHMENTS']) : '',
 			'TOPIC_FOLDER_IMG'		=> $user->img($folder_img, $folder_alt),
 			'TOPIC_FOLDER_IMG_SRC'	=> $user->img($folder_img, $folder_alt, false, '', 'src'),
 			'TOPIC_ICON_IMG'		=> (!empty($icons[$row['icon_id']])) ? $icons[$row['icon_id']]['img'] : '',
 			'TOPIC_ICON_IMG_WIDTH'	=> (!empty($icons[$row['icon_id']])) ? $icons[$row['icon_id']]['width'] : '',
 			'TOPIC_ICON_IMG_HEIGHT'	=> (!empty($icons[$row['icon_id']])) ? $icons[$row['icon_id']]['height'] : '',
-			'UNAPPROVED_IMG'		=> ($topic_unapproved || $posts_unapproved) ? $user->img('icon_unapproved', ($topic_unapproved) ? 'TOPIC_UNAPPROVED' : 'POSTS_UNAPPROVED') : '',
+			'UNAPPROVED_IMG'		=> ($topic_unapproved || $posts_unapproved) ? $user->img('icon_topic_unapproved', ($topic_unapproved) ? 'TOPIC_UNAPPROVED' : 'POSTS_UNAPPROVED') : '',
 
 			'TOPIC_TYPE'		=> $topic_type,
 			'TOPIC_TITLE'		=> $topic_title,
@@ -220,7 +177,7 @@ function mcp_resync_topics($topic_ids)
 
 	$sql = 'SELECT topic_id, forum_id, topic_title
 		FROM ' . TOPICS_TABLE . '
-		WHERE topic_id IN (' . implode(', ', $topic_ids) . ')';
+		WHERE ' . $db->sql_in_set('topic_id', $topic_ids);
 	$result = $db->sql_query($sql);
 
 	// Log this action

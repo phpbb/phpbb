@@ -68,7 +68,7 @@ class mcp_notes
 		global $template, $db, $user, $auth;
 
 		$user_id = request_var('u', 0);
-		$username = request_var('username', '', true);
+		$username = request_var('username', '');
 		$start = request_var('start', 0);
 		$st	= request_var('st', 0);
 		$sk	= request_var('sk', 'b');
@@ -106,7 +106,7 @@ class mcp_notes
 				{
 					$sql_in[] = $mark;
 				}
-				$where_sql = ' AND log_id IN (' . implode(', ', $sql_in) . ')';
+				$where_sql = ' AND ' . $db->sql_in_set('log_id', $sql_in);
 				unset($sql_in);
 			}
 
@@ -161,7 +161,7 @@ class mcp_notes
 
 		$limit_days = array(0 => $user->lang['ALL_ENTRIES'], 1 => $user->lang['1_DAY'], 7 => $user->lang['7_DAYS'], 14 => $user->lang['2_WEEKS'], 30 => $user->lang['1_MONTH'], 90 => $user->lang['3_MONTHS'], 180 => $user->lang['6_MONTHS'], 365 => $user->lang['1_YEAR']);
 		$sort_by_text = array('a' => $user->lang['SORT_USERNAME'], 'b' => $user->lang['SORT_DATE'], 'c' => $user->lang['SORT_IP'], 'd' => $user->lang['SORT_ACTION']);
-		$sort_by_sql = array('a' => 'l.user_id', 'b' => 'l.log_time', 'c' => 'l.log_ip', 'd' => 'l.log_operation');
+		$sort_by_sql = array('a' => 'l.username', 'b' => 'l.log_time', 'c' => 'l.log_ip', 'd' => 'l.log_operation');
 
 		$s_limit_days = $s_sort_key = $s_sort_dir = $u_sort_param = '';
 		gen_sort_selects($limit_days, $sort_by_text, $st, $sk, $sd, $s_limit_days, $s_sort_key, $s_sort_dir, $u_sort_param);
@@ -184,6 +184,7 @@ class mcp_notes
 					'REPORT_BY'		=> $row['username'],
 					'REPORT_AT'		=> $user->format_date($row['time']),
 					'ACTION'		=> $row['action'],
+					'IP'			=> $row['ip'],
 					'ID'			=> $row['id'])
 				);
 			}

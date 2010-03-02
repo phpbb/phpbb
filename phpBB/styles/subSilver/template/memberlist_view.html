@@ -34,9 +34,11 @@
 					<td align="center">{AVATAR_IMG}</td>
 				</tr>
 			<!-- ENDIF -->
+			<!-- IF ONLINE_IMG -->
 			<tr>
 				<td align="center">{ONLINE_IMG}</td>
 			</tr>
+			<!-- ENDIF -->
 			<!-- IF U_SWITCH_PERMISSIONS -->
 				<tr>
 					<td class="genmed" align="center">[ <a href="{U_SWITCH_PERMISSIONS}">{L_USE_PERMISSIONS}</a> ]</td>
@@ -67,7 +69,7 @@
 			<!-- ENDIF -->
 			<tr> 
 				<td class="gen" align="right" valign="top" nowrap="nowrap">{L_TOTAL_POSTS}: </td>
-				<td><!-- IF POSTS_PCT neq 0 --><b class="gen">{POSTS}</b><br /><span class="genmed">[{POSTS_PCT} / {POSTS_DAY}]<br /><a href="{U_SEARCH_USER}">{L_SEARCH_USER_POSTS}</a></span><!-- ELSE --><b class="gen">{POSTS}</b><!-- ENDIF --></td>
+				<td><b class="gen">{POSTS}</b><!-- IF POSTS_PCT neq 0 --><br /><span class="genmed">[{POSTS_PCT} / {POSTS_DAY}]<!-- ENDIF --><br /><a href="{U_SEARCH_USER}">{L_SEARCH_USER_POSTS}</a></span></td>
 			</tr>
 			<!-- IF S_SHOW_ACTIVITY -->
 				<tr>
@@ -91,29 +93,31 @@
 			<table width="100%" cellspacing="1" cellpadding="2" border="0">
 			<tr> 
 				<td class="gen" align="right" nowrap="nowrap">{L_EMAIL_ADDRESS}: </td>
-				<td class="row1" width="100%"><!-- IF U_EMAIL --><a href="{U_EMAIL}">{EMAIL_IMG}</a><!-- ENDIF --></td>
+				<td width="100%"><!-- IF U_EMAIL --><a href="{U_EMAIL}">{EMAIL_IMG}</a><!-- ENDIF --></td>
 			</tr>
-			<tr> 
-				<td class="gen" nowrap="nowrap" align="right">{L_PM}: </td>
-				<td><!-- IF U_PM --><a href="{U_PM}">{PM_IMG}</a><!-- ENDIF --></td>
-			</tr>
-			<tr> 
+			<!-- IF U_PM -->
+				<tr>
+					<td class="gen" nowrap="nowrap" align="right">{L_PM}: </td>
+					<td><a href="{U_PM}">{PM_IMG}</a></td>
+				</tr>
+			<!-- ENDIF -->
+			<tr>
 				<td class="gen" nowrap="nowrap" align="right">{L_MSNM}: </td>
 				<td><!-- IF U_MSN --><a href="{U_MSN}" onclick="popup('{U_MSN}', 550, 320); return false">{MSN_IMG}</a><!-- ENDIF --></td>
 			</tr>
-			<tr> 
+			<tr>
 				<td class="gen" nowrap="nowrap" align="right">{L_YIM}: </td>
 				<td><!-- IF U_YIM --><a href="{U_YIM}" onclick="popup('{U_YIM}', 780, 550); return false">{YIM_IMG}</a><!-- ENDIF --></td>
 			</tr>
-			<tr> 
+			<tr>
 				<td class="gen" nowrap="nowrap" align="right">{L_AIM}: </td>
 				<td><!-- IF U_AIM --><a href="{U_AIM}" onclick="popup('{U_AIM}', 550, 320); return false">{AIM_IMG}</a><!-- ENDIF --></td>
 			</tr>
-			<tr> 
+			<tr>
 				<td class="gen" nowrap="nowrap" align="right">{L_ICQ}: </td>
 				<td><!-- IF U_ICQ --><a href="{U_ICQ}" onclick="popup('{U_ICQ}', 550, 320); return false">{ICQ_IMG}</a><!-- ENDIF --></td>
 			</tr>
-			<tr> 
+			<tr>
 				<td class="gen" nowrap="nowrap" align="right">{L_JABBER}: </td>
 				<td><!-- IF U_JABBER and S_JABBER_ENABLED --><a href="{U_JABBER}" onclick="popup('{U_JABBER}', 550, 320); return false">{JABBER_IMG}</a><!-- ELSEIF U_JABBER -->{JABBER_IMG}<!-- ENDIF --></td>
 			</tr>
@@ -125,19 +129,23 @@
 				<td class="gen" align="right" nowrap="nowrap">{L_USERGROUPS}: </td>
 				<td><select name="g">{S_GROUP_OPTIONS}</select> <input class="btnlite" type="submit" name="submit" value="{L_GO}" /></td>
 			</tr>
-			<tr> 
+			<tr>
 				<td class="gen" align="right" nowrap="nowrap">{L_LOCATION}: </td>
 				<td><b class="genmed">{LOCATION}</b></td>
 			</tr>
-			<tr> 
+			<tr>
+				<td class="gen" align="right" nowrap="nowrap">{L_AGE}: </td>
+				<td><b class="genmed">{AGE}</b></td>
+			</tr>
+			<tr>
 				<td class="gen" align="right" nowrap="nowrap">{L_OCCUPATION}: </td>
 				<td><b class="genmed">{OCCUPATION}</b></td>
 			</tr>
-			<tr> 
+			<tr>
 				<td class="gen" align="right" nowrap="nowrap">{L_INTERESTS}: </td>
 				<td><b class="genmed">{INTERESTS}</b></td>
 			</tr>
-			<tr> 
+			<tr>
 				<td class="gen" align="right" nowrap="nowrap">{L_WEBSITE}: </td>
 				<td><b><!-- IF U_WWW --><a class="genmed" href="{U_WWW}" target="_userwww">{U_WWW}</a><!-- ENDIF --></b></td>
 			</tr>
@@ -157,12 +165,14 @@
 			</table>
 		</td>
 	</tr>
-	<tr>
-		<td class="cat" colspan="2" align="center"><h4>{L_SIGNATURE}</h4></td>
-	</tr>
-	<tr>
-		<td class="row1" colspan="2"><div class="postbody" style="padding: 10px;">{SIGNATURE}</div></td>
-	</tr>
+	<!-- IF SIGNATURE -->
+		<tr>
+			<td class="cat" colspan="2" align="center"><h4>{L_SIGNATURE}</h4></td>
+		</tr>
+		<tr>
+			<td class="row1" colspan="2"><div class="postbody" style="padding: 10px;">{SIGNATURE}</div></td>
+		</tr>
+	<!-- ENDIF -->
 	</table>
 	
 	</form>

@@ -22,7 +22,7 @@ if(!defined('SQL_LAYER'))
 {
 
 	define('SQL_LAYER', 'oracle');
-	include($phpbb_root_path . 'includes/db/dbal.' . $phpEx);
+	include_once($phpbb_root_path . 'includes/db/dbal.' . $phpEx);
 
 /**
 * Oracle Database Abstraction Layer
@@ -45,6 +45,14 @@ class dbal_oracle extends dbal
 		$this->db_connect_id = ($this->persistency) ? @ociplogon($this->user, $sqlpassword, $this->server) : @ocinlogon($this->user, $sqlpassword, $this->server);
 
 		return ($this->db_connect_id) ? $this->db_connect_id : $this->sql_error('');
+	}
+
+	/**
+	* Version information about used database
+	*/
+	function sql_server_info()
+	{
+		return 'Oracle ' . @ociserverversion($this->db_connect_id);
 	}
 
 	/**
@@ -73,6 +81,12 @@ class dbal_oracle extends dbal
 
 	/**
 	* Base query method
+	*
+	* @param	string	$query		Contains the SQL query which shall be executed
+	* @param	int		$cache_ttl	Either 0 to avoid caching or the time in seconds which the result shall be kept in cache
+	* @return	mixed				When casted to bool the returned value returns true on success and false on failure
+	*
+	* @access	public
 	*/
 	function sql_query($query = '', $cache_ttl = 0)
 	{
@@ -155,6 +169,52 @@ class dbal_oracle extends dbal
 		{
 			$this->query_result = false; 
 
+			// Any implicit columns exist?
+			if (strpos($query, '.*') !== false)
+			{
+				// This sucker does a few things for us. It grabs all the explicitly named columns and what tables are being used
+				preg_match('/SELECT (?:DISTINCT )?(.*?)FROM(.*?)(?:WHERE|(ORDER|GROUP) BY|$)/s', $query, $tables);
+
+				// The prefixes of the explicit columns don't matter, they simply get in the way
+				preg_match_all('/\.(\w+)/', trim($tables[1]), $columns);
+
+				// Flip lets us do an easy isset() call
+				$columns = array_flip($columns[1]);
+
+				$table_data = trim($tables[2]);
+
+				// Grab the implicitly named columns, they need expanding...
+				preg_match_all('/(\w)\.\*/', $query, $info);
+
+				$cols = array();
+
+				foreach ($info[1] as $table_alias)
+				{
+					// We need to get the name of the aliased table
+					preg_match('/(\w+) ' . $table_alias . '/', $table_data, $table_name);
+					$table_name = $table_name[1];
+
+					$sql  = "SELECT column_name
+						FROM all_tab_cols
+						WHERE table_name = '" . strtoupper($table_name) . "'";
+
+					$result = $this->sql_query($sql);
+					while ($row = $this->sql_fetchrow($result))
+					{
+						if (!isset($columns[strtolower($row['column_name'])]))
+						{
+							$cols[] = $table_alias . '.' . strtolower($row['column_name']);
+						}
+					}
+					$this->sql_freeresult($result);
+
+					// Remove the implicity .* with it's full expansion
+					$query = str_replace($table_alias . '.*', implode(', ', $cols), $query);
+
+					unset($cols);
+				}
+			}
+
 			$query = 'SELECT * FROM (SELECT /*+ FIRST_ROWS */ rownum AS xrownum, a.* FROM (' . $query . ') a WHERE rownum <= ' . ($offset + $total) . ') WHERE xrownum >= ' . $offset;
 
 			return $this->sql_query($query, $cache_ttl); 
@@ -171,9 +231,16 @@ class dbal_oracle extends dbal
 	*/
 	function sql_numrows($query_id = false)
 	{
+		global $cache;
+
 		if (!$query_id)
 		{
 			$query_id = $this->query_result;
+		}
+
+		if (isset($cache->sql_rowset[$query_id]))
+		{
+			return $cache->sql_numrows($query_id);
 		}
 
 		$result = @ocifetchstatement($query_id, $this->rowset);
@@ -224,7 +291,7 @@ class dbal_oracle extends dbal
 			// OCI->CLOB?
 			if (is_object($value))
 			{
-				$value = ($value->size()) ? $value->read($value->size()) : '';
+				$value = $value->load();
 			}
 			
 			$result_row[strtolower($key)] = $value;
@@ -239,6 +306,8 @@ class dbal_oracle extends dbal
 	*/
 	function sql_fetchfield($field, $rownum = false, $query_id = false)
 	{
+		global $cache;
+
 		if (!$query_id)
 		{
 			$query_id = $this->query_result;
@@ -249,6 +318,11 @@ class dbal_oracle extends dbal
 			if ($rownum !== false)
 			{
 				$this->sql_rowseek($rownum, $query_id);
+			}
+
+			if (isset($cache->sql_rowset[$query_id]))
+			{
+				return $cache->sql_fetchfield($query_id, $field);
 			}
 
 			$row = $this->sql_fetchrow($query_id);
@@ -264,9 +338,16 @@ class dbal_oracle extends dbal
 	*/
 	function sql_rowseek($rownum, $query_id = false)
 	{
+		global $cache;
+
 		if (!$query_id)
 		{
 			$query_id = $this->query_result;
+		}
+
+		if (isset($cache->sql_rowset[$query_id]))
+		{
+			return $cache->sql_rowseek($query_id, $rownum);
 		}
 
 		if (!$query_id)
@@ -326,9 +407,16 @@ class dbal_oracle extends dbal
 	*/
 	function sql_freeresult($query_id = false)
 	{
+		global $cache;
+
 		if (!$query_id)
 		{
 			$query_id = $this->query_result;
+		}
+
+		if (isset($cache->sql_rowset[$query_id]))
+		{
+			return $cache->sql_freeresult($query_id);
 		}
 
 		if (isset($this->open_queries[(int) $query_id]))
