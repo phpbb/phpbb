@@ -36,28 +36,30 @@ $lang = array_merge($lang, array(
 	'ACTIVE_IN_TOPIC'		=> 'Most active topic',
 	'ADD_FOE'				=> 'Add foe',
 	'ADD_FRIEND'			=> 'Add friend',
-	'AFTER'					=> 'After',	
+	'AFTER'					=> 'After',
+
+	'ALL'					=> 'All',
 
 	'BEFORE'				=> 'Before',
 
-	'CC_EMAIL'				=> 'Send a copy of this email to yourself',
+	'CC_EMAIL'				=> 'Send a copy of this e-mail to yourself.',
 	'CONTACT_USER'			=> 'Contact',
 
 	'DEST_LANG'				=> 'Language',
 	'DEST_LANG_EXPLAIN'		=> 'Select an appropriate language (if available) for the recipient of this message.',
 
-	'EMAIL_BODY_EXPLAIN'	=> 'This message will be sent as plain text, do not include any HTML or BBCode. The return address for this message will be set to your email address.',
-	'EMAIL_DISABLED'		=> 'Sorry but all email related functions have been disabled.',
-	'EMAIL_SENT'			=> 'The email has been sent.',
-	'EMAIL_TOPIC_EXPLAIN'	=> 'This message will be sent as plain text, do not include any HTML or BBCode. Please note that the topic information is already included in the message. The return address for this message will be set to your email address.',
-	'EMPTY_ADDRESS_EMAIL'	=> 'You must provide a valid email address for the recipient.',
+	'EMAIL_BODY_EXPLAIN'	=> 'This message will be sent as plain text, do not include any HTML or BBCode. The return address for this message will be set to your e-mail address.',
+	'EMAIL_DISABLED'		=> 'Sorry but all e-mail related functions have been disabled.',
+	'EMAIL_SENT'			=> 'The e-mail has been sent.',
+	'EMAIL_TOPIC_EXPLAIN'	=> 'This message will be sent as plain text, do not include any HTML or BBCode. Please note that the topic information is already included in the message. The return address for this message will be set to your e-mail address.',
+	'EMPTY_ADDRESS_EMAIL'	=> 'You must provide a valid e-mail address for the recipient.',
 	'EMPTY_MESSAGE_EMAIL'	=> 'You must enter a message to be emailed.',
 	'EMPTY_NAME_EMAIL'		=> 'You must enter the real name of the recipient.',
-	'EMPTY_SUBJECT_EMAIL'	=> 'You must specify a subject for the email.',
+	'EMPTY_SUBJECT_EMAIL'	=> 'You must specify a subject for the e-mail.',
 	'EQUAL_TO'				=> 'Equal to',
 
 	'FIND_USERNAME_EXPLAIN'	=> 'Use this form to search for specific members. You do not need to fill out all fields. To match partial data use * as a wildcard. When entering dates use the format <kbd>YYYY-MM-DD</kbd>, e.g. <samp>2004-02-29</samp>. Use the mark checkboxes to select one or more usernames (several usernames may be accepted depending on the form itself) and click the Select Marked button to return to the previous form.',
-	'FLOOD_EMAIL_LIMIT'		=> 'You cannot send another email at this time. Please try again later.',
+	'FLOOD_EMAIL_LIMIT'		=> 'You cannot send another e-mail at this time. Please try again later.',
 
 	'GROUP_LEADER'			=> 'Group leader',
 
@@ -69,7 +71,7 @@ $lang = array_merge($lang, array(
 	'IM_DOWNLOAD_APP'		=> 'Download application',
 	'IM_ICQ'				=> 'Please note that users may have selected to not receive unsolicited instant messages.',
 	'IM_JABBER'				=> 'Please note that users may have selected to not receive unsolicited instant messages.',
-	'IM_JABBER_SUBJECT'		=> 'This is an automated message please do not reply! Message from user %1$s at %2$s',
+	'IM_JABBER_SUBJECT'		=> 'This is an automated message please do not reply! Message from user %1$s at %2$s.',
 	'IM_MESSAGE'			=> 'Your message',
 	'IM_MSNM'				=> 'Please note that you need Windows Messenger installed to use this.',
 	'IM_MSNM_BROWSER'		=> 'Your browser does not support this.',
@@ -86,14 +88,14 @@ $lang = array_merge($lang, array(
 	'LESS_THAN'					=> 'Less than',
 	'LIST_USER'					=> '1 user',
 	'LIST_USERS'				=> '%d users',
-	'LOGIN_EXPLAIN_LEADERS'		=> 'The board administrator requires you to be registered and logged in to view the team listing.',
-	'LOGIN_EXPLAIN_MEMBERLIST'	=> 'The board administrator requires you to be registered and logged in to access the memberlist.',
-	'LOGIN_EXPLAIN_SEARCHUSER'	=> 'The board administrator requires you to be registered and logged in to search users.',
-	'LOGIN_EXPLAIN_VIEWPROFILE'	=> 'The board administrator requires you to be registered and logged in to view profiles.',
+	'LOGIN_EXPLAIN_LEADERS'		=> 'The board requires you to be registered and logged in to view the team listing.',
+	'LOGIN_EXPLAIN_MEMBERLIST'	=> 'The board requires you to be registered and logged in to access the memberlist.',
+	'LOGIN_EXPLAIN_SEARCHUSER'	=> 'The board requires you to be registered and logged in to search users.',
+	'LOGIN_EXPLAIN_VIEWPROFILE'	=> 'The board requires you to be registered and logged in to view profiles.',
 
 	'MORE_THAN'				=> 'More than',
 
-	'NO_EMAIL'				=> 'You are not permitted to send email to this user.',
+	'NO_EMAIL'				=> 'You are not permitted to send e-mail to this user.',
 	'NO_VIEW_USERS'			=> 'You are not authorised to view the member list or profiles.',
 
 	'ORDER'					=> 'Order',
@@ -110,9 +112,14 @@ $lang = array_merge($lang, array(
 	'SEARCH_USER_POSTS'		=> 'Search user’s posts',
 	'SELECT_MARKED'			=> 'Select marked',
 	'SELECT_SORT_METHOD'	=> 'Select sort method',
+	'SEND_AIM_MESSAGE'		=> 'Send AIM message',
+	'SEND_ICQ_MESSAGE'		=> 'Send ICQ message',
 	'SEND_IM'				=> 'Instant messaging',
+	'SEND_JABBER_MESSAGE'	=> 'Send Jabber message',
 	'SEND_MESSAGE'			=> 'Message',
-	'SORT_EMAIL'			=> 'Email',
+	'SEND_MSNM_MESSAGE'		=> 'Send MSNM/WLM message',
+	'SEND_YIM_MESSAGE'		=> 'Send YIM message',
+	'SORT_EMAIL'			=> 'E-mail',
 	'SORT_LAST_ACTIVE'		=> 'Last active',
 	'SORT_POST_COUNT'		=> 'Post count',
 
@@ -120,7 +127,7 @@ $lang = array_merge($lang, array(
 	'USER_ADMIN'			=> 'Administrate user',
 	'USER_FORUM'			=> 'User statistics',
 	'USER_ONLINE'			=> 'Online',
-	'USER_PRESENCE'			=> 'Forum presence',
+	'USER_PRESENCE'			=> 'Board presence',
 
 	'VIEWING_PROFILE'		=> 'Viewing profile - %s',
 	'VISITED'				=> 'Last visited',

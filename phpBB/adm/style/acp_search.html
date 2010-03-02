@@ -13,7 +13,8 @@
 		<legend>{L_GENERAL_SEARCH_SETTINGS}</legend>
 	<dl>
 		<dt><label for="load_search">{L_YES_SEARCH}:</label><br /><span>{L_YES_SEARCH_EXPLAIN}</span></dt>
-		<dd><input type="radio" class="radio" id="load_search" name="config[load_search]" value="1"<!-- IF S_YES_SEARCH --> checked="checked"<!-- ENDIF --> />&nbsp;{L_YES}&nbsp;&nbsp;<input type="radio" class="radio" name="config[load_search]" value="0"<!-- IF not S_YES_SEARCH --> checked="checked"<!-- ENDIF --> />&nbsp;{L_NO}</dd>
+		<dd><label><input type="radio" class="radio" id="load_search" name="config[load_search]" value="1"<!-- IF S_YES_SEARCH --> checked="checked"<!-- ENDIF --> /> {L_YES}</label>
+			<label><input type="radio" class="radio" name="config[load_search]" value="0"<!-- IF not S_YES_SEARCH --> checked="checked"<!-- ENDIF --> /> {L_NO}</label></dd>
 	</dl>
 	<dl>
 		<dt><label for="search_interval">{L_SEARCH_INTERVAL}:</label><br /><span>{L_SEARCH_INTERVAL_EXPLAIN}</span></dt>
@@ -80,13 +81,19 @@
 
 	<h1>{L_ACP_SEARCH_INDEX}</h1>
 
-	<p>{L_ACP_SEARCH_INDEX_EXPLAIN}</p>
-
 	<!-- IF S_CONTINUE_INDEXING -->
-		<a href="{U_CONTINUE_INDEXING}" onclick="popup_progress_bar('{S_CONTINUE_INDEXING}');">{L_CONTINUE}</a>
-
 		<p>{L_CONTINUE_EXPLAIN}</p>
+
+		<form id="acp_search_continue" method="post" action="{U_CONTINUE_INDEXING}">
+			<fieldset class="submit-buttons">
+				<legend>{L_SUBMIT}</legend>
+				<input class="button1" type="submit" id="continue" name="continue" value="{L_CONTINUE}" onclick="popup_progress_bar('{S_CONTINUE_INDEXING}');" />&nbsp;
+				<input class="button2" type="submit" id="cancel" name="cancel" value="{L_CANCEL}" />
+			</fieldset>
+		</form>
 	<!-- ELSE -->
+
+		<p>{L_ACP_SEARCH_INDEX_EXPLAIN}</p>
 
 		<!-- BEGIN backend -->
 

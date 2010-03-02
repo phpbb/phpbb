@@ -4,7 +4,7 @@
 */
 function display_checkboxes(status) 
 {
-	var form = document.getElementById('set_permissions');
+	var form = document.getElementById('set-permissions');
 	var cb = document.getElementsByTagName('input');
 	var display;
 
@@ -21,7 +21,7 @@ function display_checkboxes(status)
 	
 	for (var i = 0; i < cb.length; i++ )
 	{
-		if (cb[i].className == 'perm_cb')
+		if (cb[i].className == 'permissions-checkbox')
 		{
 			cb[i].style.display = display;
 		}
@@ -67,7 +67,7 @@ function toggle_opacity(block_id) {
 * except_id = id of the element not to hide
 */
 function reset_opacity(status, except_id) {
-	var perm = document.getElementById('set_permissions');
+	var perm = document.getElementById('set-permissions');
 	var fs = perm.getElementsByTagName('fieldset');
 	var opacity = 5;
 
@@ -90,7 +90,7 @@ function reset_opacity(status, except_id) {
 	}
 
 	//reset checkboxes too
-	marklist('set_permissions', 'inherit', !status);
+	marklist('set-permissions', 'inherit', !status);
 }
 
 
@@ -132,7 +132,7 @@ function set_colours(id, init, quick)
 
 	if (typeof(quick) != 'undefined') 
 	{
-		tab.className = 'perm_preset_' + quick + ' activetab';
+		tab.className = 'permissions-preset-' + quick + ' activetab';
 		return;
 	}
 
@@ -168,11 +168,11 @@ function set_colours(id, init, quick)
 
 	if (init)
 	{
-		tab.className = 'perm_preset_' + colour;
+		tab.className = 'permissions-preset-' + colour;
 	}
 	else
 	{
-		tab.className = 'perm_preset_' + colour + ' activetab';
+		tab.className = 'permissions-preset-' + colour + ' activetab';
 	}
 }
 
@@ -188,7 +188,7 @@ function init_colours(block_id)
 
 	for (var i = 0; i < panels.length; i++)
 	{
-		if(panels[i].className == 'perm_panel')
+		if(panels[i].className == 'permissions-panel')
 		{
 			set_colours(panels[i].id.replace(/options/, ''), true);
 		}

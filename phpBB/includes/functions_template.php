@@ -54,7 +54,7 @@ class template_compile
 	* Load template source from file
 	* @access private
 	*/
-	function _tpl_load_file($handle)
+	function _tpl_load_file($handle, $store_in_db = false)
 	{
 		// Try and open template for read
 		if (!file_exists($this->template->files[$handle]))
@@ -66,6 +66,23 @@ class template_compile
 
 		// Actually compile the code now.
 		$this->compile_write($handle, $this->template->compiled_code[$handle]);
+
+		// Store in database if required...
+		if ($store_in_db)
+		{
+			global $db, $user;
+
+			$sql_ary = array(
+				'template_id'			=> $user->theme['template_id'],
+				'template_filename'		=> $this->template->filename[$handle],
+				'template_included'		=> '',
+				'template_mtime'		=> time(),
+				'template_data'			=> trim(@file_get_contents($this->template->files[$handle])),
+			);
+
+			$sql = 'INSERT INTO ' . STYLES_TEMPLATE_DATA_TABLE . ' ' . $db->sql_build_array('INSERT', $sql_ary);
+			$db->sql_query($sql);
+		}
 	}
 
 	/**
@@ -206,7 +223,7 @@ class template_compile
 		for ($i = 0, $size = sizeof($text_blocks); $i < $size; $i++)
 		{
 			$trim_check_text = trim($text_blocks[$i]);
-			$template_php .= (!$no_echo) ? ((!empty($trim_check_text)) ? $text_blocks[$i] : '') . ((!empty($compile_blocks[$i])) ? $compile_blocks[$i] : '') : ((!empty($trim_check_text)) ? $text_blocks[$i] : '') . ((!empty($compile_blocks[$i])) ? $compile_blocks[$i] : '');
+			$template_php .= (!$no_echo) ? (($trim_check_text != '') ? $text_blocks[$i] : '') . ((isset($compile_blocks[$i])) ? $compile_blocks[$i] : '') : (($trim_check_text != '') ? $text_blocks[$i] : '') . ((isset($compile_blocks[$i])) ? $compile_blocks[$i] : '');
 		}
 
 		// There will be a number of occasions where we switch into and out of

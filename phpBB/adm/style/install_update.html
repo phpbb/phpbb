@@ -62,11 +62,11 @@
 		<legend></legend>
 	<dl>
 		<dt><label>{L_CURRENT_VERSION}</label></dt>
-		<dd><b>{CURRENT_VERSION}</b></dd>
+		<dd><strong>{CURRENT_VERSION}</strong></dd>
 	</dl>
 	<dl>
 		<dt><label>{L_LATEST_VERSION}</label></dt>
-		<dd><b>{LATEST_VERSION}</b></dd>
+		<dd><strong>{LATEST_VERSION}</strong></dd>
 	</dl>
 	</fieldset>
 
@@ -101,7 +101,7 @@
 		<p>
 			{L_PERFORM_DATABASE_UPDATE_EXPLAIN}<br />
 			<br />
-			<a href="{U_DB_UPDATE}" target="update"><strong>&raquo; {L_RUN_DATABASE_SCRIPT} &laquo;</strong></a>
+			<a href="{U_DB_UPDATE}"><strong>&raquo; {L_RUN_DATABASE_SCRIPT} &laquo;</strong></a>
 		</p>
 
 		<br /><br />
@@ -187,25 +187,25 @@
 							</dt>
 							<dd style="margin-left: 60%;"><!-- IF not files.S_BINARY -->[ <a href="{files.U_SHOW_DIFF}" onclick="popup('{files.U_SHOW_DIFF}', 700, 500); return false;">{files.L_SHOW_DIFF}</a> ]<!-- ELSE -->{L_BINARY_FILE}<!-- ENDIF --></dd>
 							<!-- IF files.S_CUSTOM -->
-								<dd style="margin-left: 60%;"><input type="checkbox" name="no_update[]" value="{files.FILENAME}" class="radio" />&nbsp; {L_DO_NOT_UPDATE}</dd>
+								<dd style="margin-left: 60%;"><label><input type="checkbox" name="no_update[]" value="{files.FILENAME}" class="radio" /> {L_DO_NOT_UPDATE}</label></dd>
 							<!-- ENDIF -->
 							<!-- IF files.STATUS eq 'conflict' -->
 							</dl>
 							<dl>
-								<dt style="width: 60%"><input type="radio" class="radio" name="conflict[{files.FILENAME}]" value="1" checked="checked" />&nbsp; {L_MERGE_NO_MERGE_NEW_OPTION}</dt>
-								<dd style="margin-left: 60%;">[<a href="{files.U_VIEW_NO_MERGE_NEW}" onclick="popup('{files.U_VIEW_NO_MERGE_NEW}', 700, 500); return false;">{L_SHOW_DIFF_FINAL}</a>]</dd>
+								<dt style="width: 60%"><label><input type="radio" class="radio" name="conflict[{files.FILENAME}]" value="1" checked="checked" /> {L_MERGE_NO_MERGE_NEW_OPTION}</label></dt>
+								<dd style="margin-left: 60%;"><!-- IF not files.S_BINARY -->[<a href="{files.U_VIEW_NO_MERGE_NEW}" onclick="popup('{files.U_VIEW_NO_MERGE_NEW}', 700, 500); return false;">{L_SHOW_DIFF_FINAL}</a>]<!-- ELSE -->&nbsp;<!-- ENDIF --></dd>
 							</dl>
 							<dl>
-								<dt style="width: 60%"><input type="radio" class="radio" name="conflict[{files.FILENAME}]" value="2" />&nbsp; {L_MERGE_NO_MERGE_MOD_OPTION}</dt>
-								<dd style="margin-left: 60%;">[<a href="{files.U_VIEW_NO_MERGE_MOD}" onclick="popup('{files.U_VIEW_NO_MERGE_MOD}', 700, 500); return false;">{L_SHOW_DIFF_FINAL}</a>]</dd>
+								<dt style="width: 60%"><label><input type="radio" class="radio" name="conflict[{files.FILENAME}]" value="2" /> {L_MERGE_NO_MERGE_MOD_OPTION}</label></dt>
+								<dd style="margin-left: 60%;"><!-- IF not files.S_BINARY -->[<a href="{files.U_VIEW_NO_MERGE_MOD}" onclick="popup('{files.U_VIEW_NO_MERGE_MOD}', 700, 500); return false;">{L_SHOW_DIFF_FINAL}</a>]<!-- ELSE -->&nbsp;<!-- ENDIF --></dd>
 							</dl>
 								<!-- IF not files.S_BINARY -->
 									<dl>
-										<dt style="width: 60%"><input type="radio" class="radio" name="conflict[{files.FILENAME}]" value="3" />&nbsp; {L_MERGE_NEW_FILE_OPTION}</dt>
+										<dt style="width: 60%"><label><input type="radio" class="radio" name="conflict[{files.FILENAME}]" value="3" /> {L_MERGE_NEW_FILE_OPTION}</label></dt>
 										<dd style="margin-left: 60%;">[<a href="{files.U_VIEW_NEW_FILE}" onclick="popup('{files.U_VIEW_NEW_FILE}', 700, 500); return false;">{L_SHOW_DIFF_FINAL}</a>]</dd>
 									</dl>
 									<dl>
-										<dt style="width: 60%"><input type="radio" class="radio" name="conflict[{files.FILENAME}]" value="4" />&nbsp; {L_MERGE_MOD_FILE_OPTION}</dt>
+										<dt style="width: 60%"><label><input type="radio" class="radio" name="conflict[{files.FILENAME}]" value="4" /> {L_MERGE_MOD_FILE_OPTION}</label></dt>
 										<dd style="margin-left: 60%;">[<a href="{files.U_VIEW_MOD_FILE}" onclick="popup('{files.U_VIEW_MOD_FILE}', 700, 500); return false;">{L_SHOW_DIFF_FINAL}</a>]</dd>
 									</dl>
 								<!-- ENDIF -->
@@ -312,7 +312,7 @@
 		<legend>{L_FTP_SETTINGS}</legend>
 	<dl>
 		<dt><label>{L_UPLOAD_METHOD}:</label></dt>
-		<dd><b>{UPLOAD_METHOD}</b></dd>
+		<dd><strong>{UPLOAD_METHOD}</strong></dd>
 	</dl>
 	<!-- BEGIN data -->
 	<dl>

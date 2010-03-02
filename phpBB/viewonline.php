@@ -363,11 +363,27 @@ unset($vars_online);
 $pagination = generate_pagination(append_sid("{$phpbb_root_path}viewonline.$phpEx", "sg=$show_guests&amp;sk=$sort_key&amp;sd=$sort_dir"), $counter, $config['topics_per_page'], $start);
 
 // Grab group details for legend display
-$sql = 'SELECT group_id, group_name, group_colour, group_type
-	FROM ' . GROUPS_TABLE . '
-	WHERE group_legend = 1
-		AND group_type <> ' . GROUP_HIDDEN . '
-	ORDER BY group_name ASC';
+if ($auth->acl_gets('a_group', 'a_groupadd', 'a_groupdel'))
+{
+	$sql = 'SELECT group_id, group_name, group_colour, group_type
+		FROM ' . GROUPS_TABLE . '
+		WHERE group_legend = 1
+		ORDER BY group_name ASC';
+}
+else
+{
+	$sql = 'SELECT g.group_id, g.group_name, g.group_colour, g.group_type
+		FROM ' . GROUPS_TABLE . ' g
+		LEFT JOIN ' . USER_GROUP_TABLE . ' ug
+			ON (
+				g.group_id = ug.group_id
+				AND ug.user_id = ' . $user->data['user_id'] . '
+				AND ug.user_pending = 0
+			)
+		WHERE g.group_legend = 1
+			AND (g.group_type <> ' . GROUP_HIDDEN . ' OR ug.user_id = ' . $user->data['user_id'] . ')
+		ORDER BY g.group_name ASC';
+}
 $result = $db->sql_query($sql);
 
 $legend = '';
@@ -395,9 +411,9 @@ $template->assign_vars(array(
 	'PAGINATION'					=> $pagination,
 	'PAGE_NUMBER'					=> on_page($counter, $config['topics_per_page'], $start),
 
-	'U_SORT_USERNAME'		=> append_sid("{$phpbb_root_path}viewonline.$phpEx", 'sk=a&amp;sd=' . (($sort_key == 'a' && $sort_dir == 'a') ? 'd' : 'a')),
-	'U_SORT_UPDATED'		=> append_sid("{$phpbb_root_path}viewonline.$phpEx", 'sk=b&amp;sd=' . (($sort_key == 'b' && $sort_dir == 'a') ? 'd' : 'a')),
-	'U_SORT_LOCATION'		=> append_sid("{$phpbb_root_path}viewonline.$phpEx", 'sk=c&amp;sd=' . (($sort_key == 'c' && $sort_dir == 'a') ? 'd' : 'a')),
+	'U_SORT_USERNAME'		=> append_sid("{$phpbb_root_path}viewonline.$phpEx", 'sk=a&amp;sd=' . (($sort_key == 'a' && $sort_dir == 'a') ? 'd' : 'a') . '&amp;sg=' . ((int) $show_guests)),
+	'U_SORT_UPDATED'		=> append_sid("{$phpbb_root_path}viewonline.$phpEx", 'sk=b&amp;sd=' . (($sort_key == 'b' && $sort_dir == 'a') ? 'd' : 'a') . '&amp;sg=' . ((int) $show_guests)),
+	'U_SORT_LOCATION'		=> append_sid("{$phpbb_root_path}viewonline.$phpEx", 'sk=c&amp;sd=' . (($sort_key == 'c' && $sort_dir == 'a') ? 'd' : 'a') . '&amp;sg=' . ((int) $show_guests)),
 
 	'U_SWITCH_GUEST_DISPLAY'	=> append_sid("{$phpbb_root_path}viewonline.$phpEx", 'sg=' . ((int) !$show_guests)),
 	'L_SWITCH_GUEST_DISPLAY'	=> ($show_guests) ? $user->lang['HIDE_GUESTS'] : $user->lang['DISPLAY_GUESTS'],

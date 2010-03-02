@@ -6,24 +6,38 @@
 /*                                                                        *\
 /* ********************************************************************** *\
 
-Please see: http://www.phpbb.com/about/ for a list of all the people currently
+Please see: http://www.phpbb.com/about/team/ for a list of all the people currently
 involved in phpBB.
 
-phpBB Project Manager : theFinn (James Atkinson)
+phpBB Project Manager : SHS` (Jonathan Stanley)
 
-phpBB Lead Developers : Acyd Burn (Meik Sievertsen)
-                        psoTFX (Paul S. Owen) [2001 - 09/2005]
+phpBB Lead Developer  : Acyd Burn (Meik Sievertsen)
 
 phpBB Developers      : DavidMJ (David M.)
-                        GrahamJE (Graham Eames)
+                        dhn (Dominik Dröscher)
+                        kellanved (Henry Sudhof)
                         naderman (Nils Adermann)
                         subBlue (Tom Beddard)
+                        Vic (Vic D'elfant)
 
-                        BartVB (Bart van Bragt) - [11/2000 - 03/2006]
-                        Ashe (Ludovic Arnaud) - [10/2002 - 11/2003, 06/2006 - 10/2006]
+-- Previous Contributors --
 
+phpBB Project Manager : theFinn (James Atkinson) [Founder - 04/2007]
+
+phpBB Lead Developer  : psoTFX (Paul S. Owen) [2001 - 09/2005]
+
+phpBB Developers      : Ashe (Ludovic Arnaud)   [10/2002 - 11/2003, 06/2006 - 10/2006]
+                        BartVB (Bart van Bragt) [11/2000 - 03/2006]
+                        GrahamJE (Graham Eames) [09/2005 - 11/2006]
+
+
+-- Copyrights --
+
+Visual Confirmation   : Xore (Robert Hetzler)
 
 Original subSilver by subBlue Design, Tom Beddard, (c) 2001 phpBB Group
+prosilver by subBlue Design, Tom Beddard, (c) 2004 phpBB Group
+subsilver2 by subBlue Design, Tom Beddard, (c) 2004 phpBB Group
 
 phpBB3 contains code from the following applications:
 
@@ -31,7 +45,7 @@ LGPL licenced:
 Smarty (c) 2001, 2002 by ispi of Lincoln, Inc, http://smarty.php.net/
 
 GPL licenced:
-phpMyAdmin (c) 2001,2003 phpMyAdmin Devel team, http://www.phpmyadmin.net/ 
+phpMyAdmin (c) 2001,2003 phpMyAdmin Devel team, http://www.phpmyadmin.net/
 Jabber Class (c) 2004 Nathan Fritz, http://cjphp.netflint.net
 Chora (c) 2000-2006, The Horde Project. http://horde.org/chora/
 Horde Project (c) 2000-2006, The Horde Project. http://horde.org/

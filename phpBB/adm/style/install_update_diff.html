@@ -215,6 +215,7 @@ table.hrdiff caption span {
 <!-- ENDIF -->
 <!-- IF not S_DIFF_NEW_FILE -->
 		<br />
+		<p id="skip"><a href="#acp">{L_SKIP}</a></p>
 		<form method="post">
 			<label for="diff_mode">{L_SELECT_DIFF_MODE}:</label>
 			<select name="diff_mode" id="diff_mode">{S_DIFF_MODE_OPTIONS}</select>
@@ -225,6 +226,7 @@ table.hrdiff caption span {
 	</div>
 	
 	<div id="page-body">
+		<div id="acp">
 		<div class="panel" id="codepanel">
 			<span class="corners-top"><span></span></span>
 				<div id="content">
@@ -237,6 +239,7 @@ table.hrdiff caption span {
 					</div>
 				</div>
 			<span class="corners-bottom"><span></span></span>
+		</div>
 		</div>
 	</div>
 	

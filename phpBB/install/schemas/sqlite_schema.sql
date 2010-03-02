@@ -1,6 +1,4 @@
 #
-# SQLite Schema for phpBB 3.x - (c) phpBB Group, 2005
-#
 # $Id$
 #
 
@@ -42,6 +40,7 @@ CREATE TABLE phpbb_acl_groups (
 
 CREATE INDEX phpbb_acl_groups_group_id ON phpbb_acl_groups (group_id);
 CREATE INDEX phpbb_acl_groups_auth_opt_id ON phpbb_acl_groups (auth_option_id);
+CREATE INDEX phpbb_acl_groups_auth_role_id ON phpbb_acl_groups (auth_role_id);
 
 # Table: 'phpbb_acl_options'
 CREATE TABLE phpbb_acl_options (
@@ -74,6 +73,7 @@ CREATE TABLE phpbb_acl_roles_data (
 	PRIMARY KEY (role_id, auth_option_id)
 );
 
+CREATE INDEX phpbb_acl_roles_data_ath_opt_id ON phpbb_acl_roles_data (auth_option_id);
 
 # Table: 'phpbb_acl_users'
 CREATE TABLE phpbb_acl_users (
@@ -86,6 +86,7 @@ CREATE TABLE phpbb_acl_users (
 
 CREATE INDEX phpbb_acl_users_user_id ON phpbb_acl_users (user_id);
 CREATE INDEX phpbb_acl_users_auth_option_id ON phpbb_acl_users (auth_option_id);
+CREATE INDEX phpbb_acl_users_auth_role_id ON phpbb_acl_users (auth_role_id);
 
 # Table: 'phpbb_banlist'
 CREATE TABLE phpbb_banlist (
@@ -126,11 +127,9 @@ CREATE INDEX phpbb_bbcodes_display_on_post ON phpbb_bbcodes (display_on_posting)
 CREATE TABLE phpbb_bookmarks (
 	topic_id INTEGER UNSIGNED NOT NULL DEFAULT '0',
 	user_id INTEGER UNSIGNED NOT NULL DEFAULT '0',
-	order_id INTEGER UNSIGNED NOT NULL DEFAULT '0'
+	PRIMARY KEY (topic_id, user_id)
 );
 
-CREATE INDEX phpbb_bookmarks_order_id ON phpbb_bookmarks (order_id);
-CREATE INDEX phpbb_bookmarks_topic_user_id ON phpbb_bookmarks (topic_id, user_id);
 
 # Table: 'phpbb_bots'
 CREATE TABLE phpbb_bots (
@@ -616,10 +615,12 @@ CREATE TABLE phpbb_search_results (
 CREATE TABLE phpbb_search_wordlist (
 	word_id INTEGER PRIMARY KEY NOT NULL ,
 	word_text varchar(255) NOT NULL DEFAULT '',
-	word_common INTEGER UNSIGNED NOT NULL DEFAULT '0'
+	word_common INTEGER UNSIGNED NOT NULL DEFAULT '0',
+	word_count INTEGER UNSIGNED NOT NULL DEFAULT '0'
 );
 
 CREATE UNIQUE INDEX phpbb_search_wordlist_wrd_txt ON phpbb_search_wordlist (word_text);
+CREATE INDEX phpbb_search_wordlist_wrd_cnt ON phpbb_search_wordlist (word_count);
 
 # Table: 'phpbb_search_wordmatch'
 CREATE TABLE phpbb_search_wordmatch (
@@ -628,6 +629,7 @@ CREATE TABLE phpbb_search_wordmatch (
 	title_match INTEGER UNSIGNED NOT NULL DEFAULT '0'
 );
 
+CREATE UNIQUE INDEX phpbb_search_wordmatch_unq_mtch ON phpbb_search_wordmatch (word_id, post_id, title_match);
 CREATE INDEX phpbb_search_wordmatch_word_id ON phpbb_search_wordmatch (word_id);
 CREATE INDEX phpbb_search_wordmatch_post_id ON phpbb_search_wordmatch (post_id);
 
@@ -743,104 +745,23 @@ CREATE TABLE phpbb_styles_imageset (
 	imageset_id INTEGER PRIMARY KEY NOT NULL ,
 	imageset_name varchar(255) NOT NULL DEFAULT '',
 	imageset_copyright varchar(255) NOT NULL DEFAULT '',
-	imageset_path varchar(100) NOT NULL DEFAULT '',
-	site_logo varchar(200) NOT NULL DEFAULT '',
-	upload_bar varchar(200) NOT NULL DEFAULT '',
-	poll_left varchar(200) NOT NULL DEFAULT '',
-	poll_center varchar(200) NOT NULL DEFAULT '',
-	poll_right varchar(200) NOT NULL DEFAULT '',
-	icon_friend varchar(200) NOT NULL DEFAULT '',
-	icon_foe varchar(200) NOT NULL DEFAULT '',
-	forum_link varchar(200) NOT NULL DEFAULT '',
-	forum_read varchar(200) NOT NULL DEFAULT '',
-	forum_read_locked varchar(200) NOT NULL DEFAULT '',
-	forum_read_subforum varchar(200) NOT NULL DEFAULT '',
-	forum_unread varchar(200) NOT NULL DEFAULT '',
-	forum_unread_locked varchar(200) NOT NULL DEFAULT '',
-	forum_unread_subforum varchar(200) NOT NULL DEFAULT '',
-	topic_moved varchar(200) NOT NULL DEFAULT '',
-	topic_read varchar(200) NOT NULL DEFAULT '',
-	topic_read_mine varchar(200) NOT NULL DEFAULT '',
-	topic_read_hot varchar(200) NOT NULL DEFAULT '',
-	topic_read_hot_mine varchar(200) NOT NULL DEFAULT '',
-	topic_read_locked varchar(200) NOT NULL DEFAULT '',
-	topic_read_locked_mine varchar(200) NOT NULL DEFAULT '',
-	topic_unread varchar(200) NOT NULL DEFAULT '',
-	topic_unread_mine varchar(200) NOT NULL DEFAULT '',
-	topic_unread_hot varchar(200) NOT NULL DEFAULT '',
-	topic_unread_hot_mine varchar(200) NOT NULL DEFAULT '',
-	topic_unread_locked varchar(200) NOT NULL DEFAULT '',
-	topic_unread_locked_mine varchar(200) NOT NULL DEFAULT '',
-	sticky_read varchar(200) NOT NULL DEFAULT '',
-	sticky_read_mine varchar(200) NOT NULL DEFAULT '',
-	sticky_read_locked varchar(200) NOT NULL DEFAULT '',
-	sticky_read_locked_mine varchar(200) NOT NULL DEFAULT '',
-	sticky_unread varchar(200) NOT NULL DEFAULT '',
-	sticky_unread_mine varchar(200) NOT NULL DEFAULT '',
-	sticky_unread_locked varchar(200) NOT NULL DEFAULT '',
-	sticky_unread_locked_mine varchar(200) NOT NULL DEFAULT '',
-	announce_read varchar(200) NOT NULL DEFAULT '',
-	announce_read_mine varchar(200) NOT NULL DEFAULT '',
-	announce_read_locked varchar(200) NOT NULL DEFAULT '',
-	announce_read_locked_mine varchar(200) NOT NULL DEFAULT '',
-	announce_unread varchar(200) NOT NULL DEFAULT '',
-	announce_unread_mine varchar(200) NOT NULL DEFAULT '',
-	announce_unread_locked varchar(200) NOT NULL DEFAULT '',
-	announce_unread_locked_mine varchar(200) NOT NULL DEFAULT '',
-	global_read varchar(200) NOT NULL DEFAULT '',
-	global_read_mine varchar(200) NOT NULL DEFAULT '',
-	global_read_locked varchar(200) NOT NULL DEFAULT '',
-	global_read_locked_mine varchar(200) NOT NULL DEFAULT '',
-	global_unread varchar(200) NOT NULL DEFAULT '',
-	global_unread_mine varchar(200) NOT NULL DEFAULT '',
-	global_unread_locked varchar(200) NOT NULL DEFAULT '',
-	global_unread_locked_mine varchar(200) NOT NULL DEFAULT '',
-	pm_read varchar(200) NOT NULL DEFAULT '',
-	pm_unread varchar(200) NOT NULL DEFAULT '',
-	icon_contact_aim varchar(200) NOT NULL DEFAULT '',
-	icon_contact_email varchar(200) NOT NULL DEFAULT '',
-	icon_contact_icq varchar(200) NOT NULL DEFAULT '',
-	icon_contact_jabber varchar(200) NOT NULL DEFAULT '',
-	icon_contact_msnm varchar(200) NOT NULL DEFAULT '',
-	icon_contact_pm varchar(200) NOT NULL DEFAULT '',
-	icon_contact_yahoo varchar(200) NOT NULL DEFAULT '',
-	icon_contact_www varchar(200) NOT NULL DEFAULT '',
-	icon_post_delete varchar(200) NOT NULL DEFAULT '',
-	icon_post_edit varchar(200) NOT NULL DEFAULT '',
-	icon_post_info varchar(200) NOT NULL DEFAULT '',
-	icon_post_quote varchar(200) NOT NULL DEFAULT '',
-	icon_post_report varchar(200) NOT NULL DEFAULT '',
-	icon_post_target varchar(200) NOT NULL DEFAULT '',
-	icon_post_target_unread varchar(200) NOT NULL DEFAULT '',
-	icon_topic_attach varchar(200) NOT NULL DEFAULT '',
-	icon_topic_latest varchar(200) NOT NULL DEFAULT '',
-	icon_topic_newest varchar(200) NOT NULL DEFAULT '',
-	icon_topic_reported varchar(200) NOT NULL DEFAULT '',
-	icon_topic_unapproved varchar(200) NOT NULL DEFAULT '',
-	icon_user_online varchar(200) NOT NULL DEFAULT '',
-	icon_user_offline varchar(200) NOT NULL DEFAULT '',
-	icon_user_profile varchar(200) NOT NULL DEFAULT '',
-	icon_user_search varchar(200) NOT NULL DEFAULT '',
-	icon_user_warn varchar(200) NOT NULL DEFAULT '',
-	button_pm_forward varchar(200) NOT NULL DEFAULT '',
-	button_pm_new varchar(200) NOT NULL DEFAULT '',
-	button_pm_reply varchar(200) NOT NULL DEFAULT '',
-	button_topic_locked varchar(200) NOT NULL DEFAULT '',
-	button_topic_new varchar(200) NOT NULL DEFAULT '',
-	button_topic_reply varchar(200) NOT NULL DEFAULT '',
-	user_icon1 varchar(200) NOT NULL DEFAULT '',
-	user_icon2 varchar(200) NOT NULL DEFAULT '',
-	user_icon3 varchar(200) NOT NULL DEFAULT '',
-	user_icon4 varchar(200) NOT NULL DEFAULT '',
-	user_icon5 varchar(200) NOT NULL DEFAULT '',
-	user_icon6 varchar(200) NOT NULL DEFAULT '',
-	user_icon7 varchar(200) NOT NULL DEFAULT '',
-	user_icon8 varchar(200) NOT NULL DEFAULT '',
-	user_icon9 varchar(200) NOT NULL DEFAULT '',
-	user_icon10 varchar(200) NOT NULL DEFAULT ''
+	imageset_path varchar(100) NOT NULL DEFAULT ''
 );
 
 CREATE UNIQUE INDEX phpbb_styles_imageset_imgset_nm ON phpbb_styles_imageset (imageset_name);
+
+# Table: 'phpbb_styles_imageset_data'
+CREATE TABLE phpbb_styles_imageset_data (
+	image_id INTEGER PRIMARY KEY NOT NULL ,
+	image_name varchar(200) NOT NULL DEFAULT '',
+	image_filename varchar(200) NOT NULL DEFAULT '',
+	image_lang varchar(30) NOT NULL DEFAULT '',
+	image_height INTEGER UNSIGNED NOT NULL DEFAULT '0',
+	image_width INTEGER UNSIGNED NOT NULL DEFAULT '0',
+	imageset_id tinyint(4) NOT NULL DEFAULT '0'
+);
+
+CREATE INDEX phpbb_styles_imageset_data_i_id ON phpbb_styles_imageset_data (imageset_id);
 
 # Table: 'phpbb_topics'
 CREATE TABLE phpbb_topics (
@@ -884,6 +805,7 @@ CREATE INDEX phpbb_topics_forum_id ON phpbb_topics (forum_id);
 CREATE INDEX phpbb_topics_forum_id_type ON phpbb_topics (forum_id, topic_type);
 CREATE INDEX phpbb_topics_last_post_time ON phpbb_topics (topic_last_post_time);
 CREATE INDEX phpbb_topics_topic_approved ON phpbb_topics (topic_approved);
+CREATE INDEX phpbb_topics_forum_appr_last ON phpbb_topics (forum_id, topic_approved, topic_last_post_id);
 CREATE INDEX phpbb_topics_fid_time_moved ON phpbb_topics (forum_id, topic_last_post_time, topic_moved_id);
 
 # Table: 'phpbb_topics_track'
@@ -1008,7 +930,7 @@ CREATE TABLE phpbb_users (
 CREATE INDEX phpbb_users_user_birthday ON phpbb_users (user_birthday);
 CREATE INDEX phpbb_users_user_email_hash ON phpbb_users (user_email_hash);
 CREATE INDEX phpbb_users_user_type ON phpbb_users (user_type);
-CREATE INDEX phpbb_users_username_clean ON phpbb_users (username_clean);
+CREATE UNIQUE INDEX phpbb_users_username_clean ON phpbb_users (username_clean);
 
 # Table: 'phpbb_warnings'
 CREATE TABLE phpbb_warnings (

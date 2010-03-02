@@ -26,11 +26,12 @@ include_once($phpbb_root_path . 'includes/db/dbal.' . $phpEx);
 class dbal_postgres extends dbal
 {
 	var $last_query_text = '';
+	var $pgsql_version;
 	
 	/**
 	* Connect to server
 	*/
-	function sql_connect($sqlserver, $sqluser, $sqlpassword, $database, $port = false, $persistency = false)
+	function sql_connect($sqlserver, $sqluser, $sqlpassword, $database, $port = false, $persistency = false, $new_link = false)
 	{
 		$connect_string = '';
 
@@ -62,17 +63,54 @@ class dbal_postgres extends dbal
 			}
 		}
 
+		$schema = '';
+
 		if ($database)
 		{
 			$this->dbname = $database;
+			if (strpos($database, '.') !== false)
+			{
+				list($database, $schema) = explode('.', $database);
+			}
 			$connect_string .= "dbname=$database";
 		}
 
 		$this->persistency = $persistency;
 
-		$this->db_connect_id = ($this->persistency) ? @pg_pconnect($connect_string) : @pg_connect($connect_string);
+		$this->db_connect_id = ($this->persistency) ? @pg_pconnect($connect_string, $new_link) : @pg_connect($connect_string, $new_link);
 
-		return ($this->db_connect_id) ? $this->db_connect_id : $this->sql_error('');
+		if ($this->db_connect_id)
+		{
+			// determine what version of PostgreSQL is running, we can be more efficient if they are running 8.2+
+			if (version_compare(PHP_VERSION, '5.0.0', '>='))
+			{
+				$this->pgsql_version = @pg_parameter_status($this->db_connect_id, 'server_version');
+			}
+			else
+			{
+				$query_id = @pg_query($this->db_connect_id, 'SELECT VERSION()');
+				$row = @pg_fetch_assoc($query_id, null);
+				@pg_free_result($query_id);
+
+				if (!empty($row['version']))
+				{
+					$this->pgsql_version = substr($row['version'], 10);
+				}
+			}
+
+			if (!empty($this->pgsql_version) && $this->pgsql_version[0] >= '8' && $this->pgsql_version[2] >= '2')
+			{
+				$this->multi_insert = true;
+			}
+
+			if ($schema !== '')
+			{
+				@pg_query($this->db_connect_id, 'SET search_path TO ' . $schema);
+			}
+			return $this->db_connect_id;
+		}
+
+		return $this->sql_error('');
 	}
 
 	/**
@@ -80,20 +118,7 @@ class dbal_postgres extends dbal
 	*/
 	function sql_server_info()
 	{
-		if (version_compare(phpversion(), '5.0.0', '>='))
-		{
-			$version = @pg_version($this->db_connect_id);
-			return 'PostgreSQL' . ((!empty($version)) ? ' ' . $version['client'] : '');
-		}
-		else
-		{
-			$query_id = @pg_query($this->db_connect_id, 'select version()');
-			$row = @pg_fetch_assoc($query_id, null);
-			@pg_free_result($query_id);
-
-			$version = $row['version'];
-			return ((!empty($version)) ? ' ' . $version : '');
-		}
+		return 'PostgreSQL ' . $this->pgsql_version;
 	}
 
 	/**

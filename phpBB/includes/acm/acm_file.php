@@ -20,6 +20,7 @@ class acm
 
 	var $sql_rowset = array();
 	var $sql_row_pointer = array();
+	var $cache_dir = '';
 
 	/**
 	* Set cache path
@@ -82,9 +83,9 @@ class acm
 		else
 		{
 			// Now, this occurred how often? ... phew, just tell the user then...
-			if (!@is_writeable($this->cache_dir))
+			if (!@is_writable($this->cache_dir))
 			{
-				trigger_error($this->cache_dir . ' is NOT writeable.', E_USER_ERROR);
+				trigger_error($this->cache_dir . ' is NOT writable.', E_USER_ERROR);
 			}
 
 			trigger_error('Not able to open ' . $this->cache_dir . 'data_global.' . $phpEx, E_USER_ERROR);
@@ -115,7 +116,7 @@ class acm
 			}
 
 			$expired = true;
-			include($this->cache_dir . $entry);
+			@include($this->cache_dir . $entry);
 			if ($expired)
 			{
 				@unlink($this->cache_dir . $entry);
@@ -231,7 +232,10 @@ class acm
 
 		if ($var_name == 'sql' && !empty($table))
 		{
-			$regex = '(' . ((is_array($table)) ? implode('|', $table) : $table) . ')';
+			if (!is_array($table))
+			{
+				$table = array($table);
+			}
 
 			$dir = @opendir($this->cache_dir);
 
@@ -247,11 +251,23 @@ class acm
 					continue;
 				}
 
-				$fp = fopen($this->cache_dir . $entry, 'rb');
-				$file = fread($fp, filesize($this->cache_dir . $entry));
-				@fclose($fp);
+				// The following method is more failproof than simply assuming the query is on line 3 (which it should be)
+				$check_line = file_get_contents($this->cache_dir . $entry);
 
-				if (preg_match('#/\*.*?\W' . $regex . '\W.*?\*/#s', $file, $m))
+				// Now get the contents between /* and */
+				$check_line = substr($check_line, strpos($check_line, '/* ') + 3, strpos($check_line, ' */') - strpos($check_line, '/* ') - 3);
+
+				$found = false;
+				foreach ($table as $check_table)
+				{
+					if (strpos($check_line, $check_table . ' ') !== false)
+					{
+						$found = true;
+						break;
+					}
+				}
+
+				if ($found)
 				{
 					@unlink($this->cache_dir . $entry);
 				}
@@ -364,7 +380,7 @@ class acm
 			}
 			$db->sql_freeresult($query_result);
 
-			$file = "<?php\n\n/*\n" . str_replace('*/', '*\/', $query) . "\n*/\n";
+			$file = "<?php\n\n/* " . str_replace('*/', '*\/', $query) . " */\n";
 			$file .= "\n\$expired = (time() > " . (time() + $ttl) . ") ? true : false;\nif (\$expired) { return; }\n";
 
 			fwrite($fp, $file . "\n\$this->sql_rowset[\$query_id] = " . var_export($this->sql_rowset[$query_id], true) . ";\n?>");

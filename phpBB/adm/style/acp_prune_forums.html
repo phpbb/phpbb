@@ -41,8 +41,11 @@
 	
 	<fieldset>
 		<legend>{L_SELECT_FORUM}</legend>
+		<p>{L_LOOK_UP_FORUMS_EXPLAIN}</p>
 	<dl>
-		<dd class="full"><select name="f[]" multiple="multiple" size="5">{S_FORUM_OPTIONS}</select></dd>
+		<dt><label for="forum">{L_LOOK_UP_FORUM}:</label></dt>
+		<dd><select name="f[]" multiple="multiple" size="5">{S_FORUM_OPTIONS}</select></dd>
+		<dd><label><input type="checkbox" class="radio" name="all_forums" value="1" /> {L_ALL_FORUMS}</label></dd>
 	</dl>
 	
 	<p class="quick">
@@ -78,15 +81,18 @@
 	</dl>
 	<dl>
 		<dt><label for="polls">{L_PRUNE_OLD_POLLS}:</label><br /><span>{L_PRUNE_OLD_POLLS_EXPLAIN}</span></dt>
-		<dd><input type="radio" class="radio" name="prune_old_polls" value="1" /> {L_YES} &nbsp; <input type="radio" class="radio" id="polls" name="prune_old_polls" value="0" checked="checked" /> {L_NO}</dd>
+		<dd><label><input type="radio" class="radio" name="prune_old_polls" value="1" /> {L_YES}</label>
+			<label><input type="radio" class="radio" id="polls" name="prune_old_polls" value="0" checked="checked" /> {L_NO}</label></dd>
 	</dl>
 	<dl>
 		<dt><label for="announce">{L_PRUNE_ANNOUNCEMENTS}:</label></dt>
-		<dd><input type="radio" class="radio" name="prune_announce" value="1" /> {L_YES} &nbsp; <input type="radio" class="radio" id="announce" name="prune_announce" value="0" checked="checked" /> {L_NO}</dd>
+		<dd><label><input type="radio" class="radio" name="prune_announce" value="1" /> {L_YES}</label>
+			<label><input type="radio" class="radio" id="announce" name="prune_announce" value="0" checked="checked" /> {L_NO}</label></dd>
 	</dl>
 	<dl>
 		<dt><label for="sticky">{L_PRUNE_STICKY}:</label></dt>
-		<dd><input type="radio" class="radio" name="prune_sticky" value="1" /> {L_YES} &nbsp; <input type="radio" class="radio" id="sticky" name="prune_sticky" value="0" checked="checked" /> {L_NO}</dd>
+		<dd><label><input type="radio" class="radio" name="prune_sticky" value="1" /> {L_YES}</label>
+			<label><input type="radio" class="radio" id="sticky" name="prune_sticky" value="0" checked="checked" /> {L_NO}</label></dd>
 	</dl>
 	
 	<p class="quick">

@@ -30,7 +30,7 @@ class auth_admin extends auth
 	{
 		global $db, $cache;
 
-		if (($this->acl_options = $cache->get('acl_options')) === false)
+		if (($this->acl_options = $cache->get('_acl_options')) === false)
 		{
 			$sql = 'SELECT auth_option, is_global, is_local
 				FROM ' . ACL_OPTIONS_TABLE . '
@@ -53,7 +53,7 @@ class auth_admin extends auth
 			}
 			$db->sql_freeresult($result);
 
-			$cache->put('acl_options', $this->acl_options);
+			$cache->put('_acl_options', $this->acl_options);
 		}
 
 		if (!sizeof($this->option_ids))
@@ -264,7 +264,7 @@ class auth_admin extends auth
 		{
 			$hold_ary[$row['forum_id']]['groups'][] = $row['group_id'];
 		}
-		$db->sql_freeresult($result);		
+		$db->sql_freeresult($result);
 
 		return $hold_ary;
 	}
@@ -430,16 +430,19 @@ class auth_admin extends auth
 
 		// If we only have one forum id to display or being in local mode and more than one user/group to display, 
 		// we switch the complete interface to group by user/usergroup instead of grouping by forum
-		// To achive this, we need to switch the array a bit
+		// To achieve this, we need to switch the array a bit
 		if (sizeof($forum_ids) == 1 || ($local && sizeof($ug_names_ary) > 1))
 		{
 			$hold_ary_temp = $hold_ary;
 			$hold_ary = array();
 			foreach ($hold_ary_temp as $ug_id => $row)
 			{
-				foreach ($row as $forum_id => $auth_row)
+				foreach ($forum_names_ary as $forum_id => $forum_row)
 				{
-					$hold_ary[$forum_id][$ug_id] = $auth_row;
+					if (isset($row[$forum_id]))
+					{
+						$hold_ary[$forum_id][$ug_id] = $row[$forum_id];
+					}
 				}
 			}
 			unset($hold_ary_temp);
@@ -451,6 +454,8 @@ class auth_admin extends auth
 
 				$template->assign_block_vars($tpl_pmask, array(
 					'NAME'			=> ($forum_id == 0) ? $forum_names_ary[0] : $forum_names_ary[$forum_id]['forum_name'],
+					'PADDING'		=> ($forum_id == 0) ? '' : $forum_names_ary[$forum_id]['padding'],
+
 					'CATEGORIES'	=> implode('</th><th>', $categories),
 
 					'L_ACL_TYPE'	=> $l_acl_type,
@@ -551,35 +556,9 @@ class auth_admin extends auth
 						$s_role_options = '<option value="0"' . ((!$current_role_id) ? ' selected="selected"' : '') . ' title="' . htmlspecialchars($user->lang['NO_ROLE_ASSIGNED_EXPLAIN']) . '">' . $user->lang['NO_ROLE_ASSIGNED'] . '</option>' . $s_role_options;
 					}
 
-					if (!$forum_id)
-					{
-						$folder_image = '';
-					}
-					else
-					{
-						if ($forum_names_ary[$forum_id]['forum_status'] == ITEM_LOCKED)
-						{
-							$folder_image = '<img src="images/icon_folder_lock_small.gif" width="19" height="18" alt="' . $user->lang['FORUM_LOCKED'] . '" />';
-						}
-						else
-						{
-							switch ($forum_names_ary[$forum_id]['forum_type'])
-							{
-								case FORUM_LINK:
-									$folder_image = '<img src="images/icon_folder_link_small.gif" width="22" height="18" alt="' . $user->lang['FORUM_LINK'] . '" />';
-								break;
-
-								default:
-									$folder_image = ($forum_names_ary[$forum_id]['left_id'] + 1 != $forum_names_ary[$forum_id]['right_id']) ? '<img src="images/icon_folder_sub_small.gif" width="22" height="18" alt="' . $user->lang['SUBFORUM'] . '" />' : '<img src="images/icon_folder_small.gif" width="19" height="18" alt="' . $user->lang['FOLDER'] . '" />';
-								break;
-							}
-						}
-					}
-
 					$template->assign_block_vars($tpl_pmask . '.' . $tpl_fmask, array(
 						'NAME'				=> ($forum_id == 0) ? $forum_names_ary[0] : $forum_names_ary[$forum_id]['forum_name'],
 						'PADDING'			=> ($forum_id == 0) ? '' : $forum_names_ary[$forum_id]['padding'],
-						'FOLDER_IMAGE'		=> $folder_image,
 						'S_ROLE_OPTIONS'	=> $s_role_options,
 						'UG_ID'				=> $ug_id,
 						'FORUM_ID'			=> $forum_id)
@@ -620,6 +599,12 @@ class auth_admin extends auth
 
 		foreach ($hold_ary as $forum_id => $auth_ary)
 		{
+			// If there is no forum present the database holds auth information for a non-existent forum... continue then
+			if ($forum_id && !isset($forum_names[$forum_id]))
+			{
+				continue;
+			}
+
 			$template->assign_block_vars('role_mask', array(
 				'NAME'				=> ($forum_id == 0) ? $user->lang['GLOBAL_MASK'] : $forum_names[$forum_id],
 				'FORUM_ID'			=> $forum_id)
@@ -750,7 +735,7 @@ class auth_admin extends auth
 
 		$db->sql_multi_insert(ACL_OPTIONS_TABLE, $sql_ary);
 
-		$cache->destroy('acl_options');
+		$cache->destroy('_acl_options');
 		$this->acl_clear_prefetch();
 
 		return true;
@@ -984,10 +969,19 @@ class auth_admin extends auth
 		if ($permission_type !== false)
 		{
 			// Get permission type
-			$sql = 'SELECT auth_option, auth_option_id
-				FROM ' . ACL_OPTIONS_TABLE . "
-				WHERE auth_option LIKE '" . $db->sql_escape(str_replace('_', "\_", $permission_type)) . "%'";
-			$sql .= ($db->sql_layer == 'mssql' || $db->sql_layer == 'mssql_odbc') ? " ESCAPE '\\'" : '';
+			if ($db->sql_layer == 'sqlite')
+			{
+				$sql = 'SELECT auth_option, auth_option_id
+					FROM ' . ACL_OPTIONS_TABLE . "
+					WHERE auth_option LIKE '" . $db->sql_escape($permission_type) . "%'";
+			}
+			else
+			{
+				$sql = 'SELECT auth_option, auth_option_id
+					FROM ' . ACL_OPTIONS_TABLE . "
+					WHERE auth_option LIKE '" . $db->sql_escape(str_replace('_', "\_", $permission_type)) . "%'";
+				$sql .= ($db->sql_layer == 'mssql' || $db->sql_layer == 'mssql_odbc') ? " ESCAPE '\\'" : '';
+			}
 
 			$result = $db->sql_query($sql);
 
@@ -1080,7 +1074,9 @@ class auth_admin extends auth
 				'CAT_NAME'	=> $user->lang['permission_cat'][$cat])
 			);
 
-			// Sort array
+			/*	Sort permissions by name (more naturaly and user friendly than sorting by a primary key)
+			*	Commented out due to it's memory consumption and time needed
+			*
 			$key_array = array_intersect(array_keys($user->lang), array_map(create_function('$a', 'return "acl_" . $a;'), array_keys($cat_array['permissions'])));
 			$values_array = $cat_array['permissions'];
 
@@ -1092,7 +1088,7 @@ class auth_admin extends auth
 				$cat_array['permissions'][$key] = $values_array[$key];
 			}
 			unset($key_array, $values_array);
-
+*/
 			@reset($cat_array['permissions']);
 			while (list($permission, $allowed) = each($cat_array['permissions']))
 			{

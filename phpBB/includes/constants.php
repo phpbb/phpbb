@@ -48,6 +48,7 @@ define('LOGIN_ERROR_PASSWORD', 11);
 define('LOGIN_ERROR_ACTIVE', 12);
 define('LOGIN_ERROR_ATTEMPTS', 13);
 define('LOGIN_ERROR_EXTERNAL_AUTH', 14);
+define('LOGIN_ERROR_PASSWORD_CONVERT', 15);
 
 // Group settings
 define('GROUP_OPEN', 0);
@@ -140,6 +141,12 @@ define('BBCODE_UID_LEN', 5);
 // Number of core BBCodes
 define('NUM_CORE_BBCODES', 12);
 
+// Magic url types
+define('MAGIC_URL_EMAIL', 1);
+define('MAGIC_URL_FULL', 2);
+define('MAGIC_URL_LOCAL', 3);
+define('MAGIC_URL_WWW', 4);
+
 // Profile Field Types
 define('FIELD_INT', 1);
 define('FIELD_STRING', 2);
@@ -205,6 +212,7 @@ define('STYLES_TEMPLATE_TABLE',		$table_prefix . 'styles_template');
 define('STYLES_TEMPLATE_DATA_TABLE',$table_prefix . 'styles_template_data');
 define('STYLES_THEME_TABLE',		$table_prefix . 'styles_theme');
 define('STYLES_IMAGESET_TABLE',		$table_prefix . 'styles_imageset');
+define('STYLES_IMAGESET_DATA_TABLE',$table_prefix . 'styles_imageset_data');
 define('TOPICS_TABLE',				$table_prefix . 'topics');
 define('TOPICS_POSTED_TABLE',		$table_prefix . 'topics_posted');
 define('TOPICS_TRACK_TABLE',		$table_prefix . 'topics_track');

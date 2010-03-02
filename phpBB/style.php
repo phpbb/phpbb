@@ -16,7 +16,10 @@ $phpbb_root_path = './';
 $phpEx = substr(strrchr(__FILE__, '.'), 1);
 require($phpbb_root_path . 'config.' . $phpEx);
 
-set_magic_quotes_runtime(0);
+if (version_compare(PHP_VERSION, '6.0.0-dev', '<'))
+{
+	set_magic_quotes_runtime(0);
+}
 
 // Load Extensions
 if (!empty($load_extensions))
@@ -33,7 +36,7 @@ if (!empty($load_extensions))
 $sid = (isset($_GET['sid'])) ? htmlspecialchars($_GET['sid']) : '';
 $id = (isset($_GET['id'])) ? intval($_GET['id']) : 0;
 
-if (!ctype_alnum($sid))
+if (strspn($sid, 'abcdefABCDEF0123456789') !== strlen($sid))
 {
 	$sid = '';
 }
@@ -60,15 +63,16 @@ if ($id && $sid)
 	$cache = new cache();
 
 	// Connect to DB
-	if (!@$db->sql_connect($dbhost, $dbuser, $dbpasswd, $dbname, $dbport, false))
+	if (!@$db->sql_connect($dbhost, $dbuser, $dbpasswd, $dbname, $dbport, false, false))
 	{
 		exit;
 	}
+	unset($dbpasswd);
 
 	$config = $cache->obtain_config();
 
-	$sql = "SELECT s.session_id, u.user_lang
-		FROM {$table_prefix}sessions s, {$table_prefix}users u
+	$sql = 'SELECT u.user_id, u.user_lang
+		FROM ' . SESSIONS_TABLE . ' s, ' . USERS_TABLE . " u
 		WHERE s.session_id = '" . $db->sql_escape($sid) . "'
 			AND s.session_user_id = u.user_id";
 	$result = $db->sql_query($sql);
@@ -77,15 +81,35 @@ if ($id && $sid)
 
 	if ($user)
 	{
-		$sql = "SELECT s.style_id, c.theme_data, c.theme_path, c.theme_name, c.theme_mtime, i.*, t.template_path
-			FROM {$table_prefix}styles s, {$table_prefix}styles_template t, {$table_prefix}styles_theme c, {$table_prefix}styles_imageset i
-			WHERE s.style_id = $id
+		$sql = 'SELECT s.style_id, c.theme_data, c.theme_path, c.theme_name, c.theme_mtime, i.*, t.template_path
+			FROM ' . STYLES_TABLE . ' s, ' . STYLES_TEMPLATE_TABLE . ' t, ' . STYLES_THEME_TABLE . ' c, ' . STYLES_IMAGESET_TABLE . ' i
+			WHERE s.style_id = ' . $id . '
 				AND t.template_id = s.template_id
 				AND c.theme_id = s.theme_id
-				AND i.imageset_id = s.imageset_id";
+				AND i.imageset_id = s.imageset_id';
 		$result = $db->sql_query($sql, 300);
 		$theme = $db->sql_fetchrow($result);
 		$db->sql_freeresult($result);
+
+		if ($user['user_id'] == ANONYMOUS)
+		{
+			$user['user_lang'] = $config['default_lang'];
+		}
+
+		$user_image_lang = (file_exists($phpbb_root_path . 'styles/' . $theme['imageset_path'] . '/imageset/' . $user['user_lang'])) ? $user['user_lang'] : $config['default_lang'];
+
+		$sql = 'SELECT *
+			FROM ' . STYLES_IMAGESET_DATA_TABLE . '
+			WHERE imageset_id = ' . $theme['imageset_id'] . "
+			AND image_lang IN('" . $db->sql_escape($user_image_lang) . "', '')";
+		$result = $db->sql_query($sql, 3600);
+
+		$img_array = array();
+
+		while ($row = $db->sql_fetchrow($result))
+		{
+			$img_array[$row['image_name']] = $row;
+		}
 
 		if (!$theme)
 		{
@@ -93,27 +117,58 @@ if ($id && $sid)
 		}
 
 		// Re-cache stylesheet data if necessary
-		if ($config['load_tplcompile'] && $theme['theme_mtime'] < @filemtime("{$phpbb_root_path}styles/" . $theme['theme_path'] . '/theme/stylesheet.css'))
+		if ($config['load_tplcompile'] || empty($theme['theme_data']))
 		{
-			include_once($phpbb_root_path . 'includes/acp/acp_styles.' . $phpEx);
+			$recache = (empty($theme['theme_data'])) ? true : false;
+			$update_time = time();
 
-			$theme['theme_data'] = acp_styles::db_theme_data($theme);
-			$theme['theme_mtime'] = @filemtime("{$phpbb_root_path}styles/" . $theme['theme_path'] . '/theme/stylesheet.css');
+			// We test for stylesheet.css because it is faster and most likely the only file changed on common themes
+			if (!$recache && $theme['theme_mtime'] < @filemtime("{$phpbb_root_path}styles/" . $theme['theme_path'] . '/theme/stylesheet.css'))
+			{
+				$recache = true;
+				$update_time = @filemtime("{$phpbb_root_path}styles/" . $theme['theme_path'] . '/theme/stylesheet.css');
+			}
+			else if (!$recache)
+			{
+				$last_change = $theme['theme_mtime'];
 
-			// Save CSS contents
-			$sql_ary = array(
-				'theme_mtime'	=> $theme['theme_mtime'],
-				'theme_data'	=> $theme['theme_data']
-			);
+				foreach (glob("{$phpbb_root_path}styles/{$theme['theme_path']}/theme/*.css", GLOB_NOSORT) as $file)
+				{
+					if ($last_change < @filemtime($file))
+					{
+						$recache = true;
+						break;
+					}
+				}
+			}
 
-			$sql = 'UPDATE ' . STYLES_THEME_TABLE . ' SET ' . $db->sql_build_array('UPDATE', $sql_ary) . "
-				WHERE theme_id = $id";
-			$db->sql_query($sql);
+			if ($recache)
+			{
+				include_once($phpbb_root_path . 'includes/acp/acp_styles.' . $phpEx);
 
-			$cache->destroy('sql', STYLES_THEME_TABLE);
+				$theme['theme_data'] = acp_styles::db_theme_data($theme);
+				$theme['theme_mtime'] = $update_time;
+
+				// Save CSS contents
+				$sql_ary = array(
+					'theme_mtime'	=> $theme['theme_mtime'],
+					'theme_data'	=> $theme['theme_data']
+				);
+
+				$sql = 'UPDATE ' . STYLES_THEME_TABLE . ' SET ' . $db->sql_build_array('UPDATE', $sql_ary) . "
+					WHERE theme_id = $id";
+				$db->sql_query($sql);
+
+				$cache->destroy('sql', STYLES_THEME_TABLE);
+
+				header('Expires: 0');
+			}
+		}
+		else
+		{
+			header('Expires: ' . gmdate('D, d M Y H:i:s \G\M\T', time() + 3600));
 		}
 
-		header('Expires: ' . gmdate('D, d M Y H:i:s \G\M\T', time() + 3600));
 		header('Content-type: text/css');
 
 		// Parse Theme Data
@@ -121,7 +176,7 @@ if ($id && $sid)
 			'{T_THEME_PATH}'			=> "{$phpbb_root_path}styles/" . $theme['theme_path'] . '/theme',
 			'{T_TEMPLATE_PATH}'			=> "{$phpbb_root_path}styles/" . $theme['template_path'] . '/template',
 			'{T_IMAGESET_PATH}'			=> "{$phpbb_root_path}styles/" . $theme['imageset_path'] . '/imageset',
-			'{T_IMAGESET_LANG_PATH}'	=> "{$phpbb_root_path}styles/" . $theme['imageset_path'] . '/imageset/' . $user['user_lang'],
+			'{T_IMAGESET_LANG_PATH}'	=> "{$phpbb_root_path}styles/" . $theme['imageset_path'] . '/imageset/' . $user_image_lang,
 			'{T_STYLESHEET_NAME}'		=> $theme['theme_name'],
 			'{S_USER_LANG}'				=> $user['user_lang']
 		);
@@ -137,49 +192,42 @@ if ($id && $sid)
 			foreach ($matches[1] as $i => $img)
 			{
 				$img = strtolower($img);
-				if (!isset($theme[$img]))
+				$find[] = $matches[0][$i];
+
+				if (!isset($img_array[$img]))
 				{
+					$replace[] = '';
 					continue;
 				}
 
 				if (!isset($imgs[$img]))
 				{
-					// Do not include dimensions?
-					if (strpos($theme[$img], '*') === false)
-					{
-						$imgsrc = trim($theme[$img]);
-						$width = $height = null;
-					}
-					else
-					{
-						list($imgsrc, $height, $width) = explode('*', $theme[$img]);
-					}
-		
+					$img_data = &$img_array[$img];
+					$imgsrc = ($img_data['image_lang'] ? $img_data['image_lang'] . '/' : '') . $img_data['image_filename'];
 					$imgs[$img] = array(
-						'src'		=> $phpbb_root_path . 'styles/' . $theme['imageset_path'] . '/imageset/' . str_replace('{LANG}', $user['user_lang'], $imgsrc),
-						'width'		=> $width,
-						'height'	=> $height,
+						'src'		=> $phpbb_root_path . 'styles/' . $theme['imageset_path'] . '/imageset/' . $imgsrc,
+						'width'		=> $img_data['image_width'],
+						'height'	=> $img_data['image_height'],
 					);
 				}
 
 				switch ($matches[2][$i])
 				{
 					case 'SRC':
-						$replace = $imgs[$img]['src'];
+						$replace[] = $imgs[$img]['src'];
 					break;
 					
 					case 'WIDTH':
-						$replace = $imgs[$img]['width'];
+						$replace[] = $imgs[$img]['width'];
 					break;
 		
 					case 'HEIGHT':
-						$replace = $imgs[$img]['height'];
+						$replace[] = $imgs[$img]['height'];
 					break;
 
 					default:
 						continue;
 				}
-				$find = $matches[0][$i];
 			}
 
 			if (sizeof($find))

@@ -1,10 +1,10 @@
 <?php
-/** 
+/**
 *
 * @package ucp
 * @version $Id$
-* @copyright (c) 2005 phpBB Group 
-* @license http://opensource.org/licenses/gpl-license.php GNU Public License 
+* @copyright (c) 2005 phpBB Group
+* @license http://opensource.org/licenses/gpl-license.php GNU Public License
 *
 */
 
@@ -62,10 +62,26 @@ class ucp_register
 		$error = $cp_data = $cp_error = array();
 
 		//
-		if (!$agreed)
+		if (!$agreed || ($coppa === false && $config['coppa_enable']) || ($coppa && !$config['coppa_enable']))
 		{
 			$add_lang = ($change_lang) ? '&amp;change_lang=' . urlencode($change_lang) : '';
-			$add_coppa = ($coppa) ? '&amp;coppa=1' : '';
+			$add_coppa = ($coppa !== false) ? '&amp;coppa=' . $coppa : '';
+
+			$s_hidden_fields = ($confirm_id) ? array('confirm_id' => $confirm_id) : array();
+
+			// If we change the language, we want to pass on some more possible parameter.
+			if ($change_lang)
+			{
+				// We do not include the password!
+				$s_hidden_fields = array_merge($s_hidden_fields, array(
+					'username'			=> request_var('username', '', true),
+					'email'				=> strtolower(request_var('email', '')),
+					'email_confirm'		=> strtolower(request_var('email_confirm', '')),
+					'confirm_code'		=> request_var('confirm_code', ''),
+					'lang'				=> $user->lang_name,
+					'tz'				=> request_var('tz', (float) $config['board_timezone']),
+				));
+			}
 
 			if ($coppa === false && $config['coppa_enable'])
 			{
@@ -81,7 +97,7 @@ class ucp_register
 					'U_COPPA_YES'		=> append_sid("{$phpbb_root_path}ucp.$phpEx", 'mode=register&amp;coppa=1' . $add_lang),
 
 					'S_SHOW_COPPA'		=> true,
-					'S_HIDDEN_FIELDS'	=> ($confirm_id) ? '<input type="hidden" name="confirm_id" value="' . $confirm_id . '" />' : '',
+					'S_HIDDEN_FIELDS'	=> build_hidden_fields($s_hidden_fields),
 					'S_UCP_ACTION'		=> append_sid("{$phpbb_root_path}ucp.$phpEx", 'mode=register' . $add_lang))
 				);
 			}
@@ -92,7 +108,7 @@ class ucp_register
 
 					'S_SHOW_COPPA'		=> false,
 					'S_REGISTRATION'	=> true,
-					'S_HIDDEN_FIELDS'	=> ($confirm_id) ? '<input type="hidden" name="confirm_id" value="' . $confirm_id . '" />' : '',
+					'S_HIDDEN_FIELDS'	=> build_hidden_fields($s_hidden_fields),
 					'S_UCP_ACTION'		=> append_sid("{$phpbb_root_path}ucp.$phpEx", 'mode=register' . $add_lang . $add_coppa))
 				);
 			}
@@ -137,7 +153,7 @@ class ucp_register
 			$error = validate_data($data, array(
 				'username'			=> array(
 					array('string', false, $config['min_name_chars'], $config['max_name_chars']),
-					array('username')),
+					array('username', '')),
 				'new_password'		=> array(
 					array('string', false, $config['min_pass_chars'], $config['max_pass_chars']),
 					array('password')),
@@ -372,7 +388,7 @@ class ucp_register
 
 							$messenger->assign_vars(array(
 								'USERNAME'			=> htmlspecialchars_decode($data['username']),
-								'U_USER_DETAILS'	=> "$server_url/memberlist.$phpEx?mode=viewprofile&amp;u=$user_id",
+								'U_USER_DETAILS'	=> "$server_url/memberlist.$phpEx?mode=viewprofile&u=$user_id",
 								'U_ACTIVATE'		=> "$server_url/ucp.$phpEx?mode=activate&u=$user_id&k=$user_actkey")
 							);
 
@@ -387,11 +403,16 @@ class ucp_register
 			}
 		}
 
-		$s_hidden_fields = build_hidden_fields(array(
-			'agreed'		=> 'true', 
-			'coppa'			=> $coppa,
-			'change_lang'	=> 0)
+		$s_hidden_fields = array(
+			'agreed'		=> 'true',
+			'change_lang'	=> 0,
 		);
+
+		if ($config['coppa_enable'])
+		{
+			$s_hidden_fields['coppa'] = $coppa;
+		}
+		$s_hidden_fields = build_hidden_fields($s_hidden_fields);
 
 		$confirm_image = '';
 
@@ -475,8 +496,6 @@ class ucp_register
 			break;
 		}
 
-		$user_char_ary = array('.*' => 'USERNAME_CHARS_ANY', '[a-z]+' => 'USERNAME_ALPHA_ONLY', '[-\]_+ [a-z]+' => 'USERNAME_ALPHA_SPACERS', '\w+' => 'USERNAME_LETTER_NUM', '[-\]_+ [\w]+' => 'USERNAME_LETTER_NUM_SPACERS', '[\x01-\x7F]+' => 'USERNAME_ASCII');
-
 		$template->assign_vars(array(
 			'ERROR'				=> (sizeof($error)) ? implode('<br />', $error) : '',
 			'USERNAME'			=> $data['username'],
@@ -488,7 +507,7 @@ class ucp_register
 
 			'L_CONFIRM_EXPLAIN'			=> sprintf($user->lang['CONFIRM_EXPLAIN'], '<a href="mailto:' . htmlspecialchars($config['board_contact']) . '">', '</a>'),
 			'L_REG_COND'				=> $l_reg_cond,
-			'L_USERNAME_EXPLAIN'		=> sprintf($user->lang[$user_char_ary[str_replace('\\\\', '\\', $config['allow_name_chars'])] . '_EXPLAIN'], $config['min_name_chars'], $config['max_name_chars']),
+			'L_USERNAME_EXPLAIN'		=> sprintf($user->lang[$config['allow_name_chars'] . '_EXPLAIN'], $config['min_name_chars'], $config['max_name_chars']),
 			'L_PASSWORD_EXPLAIN'		=> sprintf($user->lang[$config['pass_complex'] . '_EXPLAIN'], $config['min_pass_chars'], $config['max_pass_chars']),
 
 			'S_LANG_OPTIONS'	=> language_select($data['lang']),

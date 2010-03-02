@@ -100,6 +100,7 @@ class install_install extends module
 			break;
 
 			case 'final' :
+				$this->build_search_index($mode, $sub);
 				$this->add_modules($mode, $sub);
 				$this->add_language($mode, $sub);
 				$this->add_bots($mode, $sub);
@@ -128,7 +129,7 @@ class install_install extends module
 			'BODY'		=> $lang['REQUIREMENTS_EXPLAIN'],
 		));
 
-		$passed = array('php' => false, 'db' => false, 'files' => false, 'pcre' => false);
+		$passed = array('php' => false, 'db' => false, 'files' => false, 'pcre' => false, 'imagesize' => false,);
 
 		// Test for basic PHP settings
 		$template->assign_block_vars('checks', array(
@@ -138,23 +139,23 @@ class install_install extends module
 		));
 
 		// Test the minimum PHP version
-		$php_version = phpversion();
+		$php_version = PHP_VERSION;
 
 		if (version_compare($php_version, '4.3.3') < 0)
 		{
-			$result = '<b style="color:red">' . $lang['NO'] . '</b>';
+			$result = '<strong style="color:red">' . $lang['NO'] . '</strong>';
 		}
 		else
 		{
 			$passed['php'] = true;
 
 			// We also give feedback on whether we're running in safe mode
-			$result = '<b style="color:green">' . $lang['YES'];
+			$result = '<strong style="color:green">' . $lang['YES'];
 			if (@ini_get('safe_mode') || strtolower(@ini_get('safe_mode')) == 'on')
 			{
 				$result .= ', ' . $lang['PHP_SAFE_MODE'];
 			}
-			$result .= '</b>';
+			$result .= '</strong>';
 		}
 
 		$template->assign_block_vars('checks', array(
@@ -168,11 +169,11 @@ class install_install extends module
 		// Check for register_globals being enabled
 		if (@ini_get('register_globals') == '1' || strtolower(@ini_get('register_globals')) == 'on')
 		{
-			$result = '<b style="color:red">' . $lang['NO'] . '</b>';
+			$result = '<strong style="color:red">' . $lang['NO'] . '</strong>';
 		}
 		else
 		{
-			$result = '<b style="color:green">' . $lang['YES'] . '</b>';
+			$result = '<strong style="color:green">' . $lang['YES'] . '</strong>';
 		}
 
 		$template->assign_block_vars('checks', array(
@@ -183,16 +184,57 @@ class install_install extends module
 			'S_EXPLAIN'		=> true,
 			'S_LEGEND'		=> false,
 		));
+		
+		
+		// Check for url_fopen 
+		if (@ini_get('allow_url_fopen') == '1' || strtolower(@ini_get('allow_url_fopen')) == 'on')
+		{
+			$result = '<strong style="color:green">' . $lang['YES'] . '</strong>';
+		}
+		else
+		{
+			$result = '<strong style="color:red">' . $lang['NO'] . '</strong>';
+		}
+
+		$template->assign_block_vars('checks', array(
+			'TITLE'			=> $lang['PHP_URL_FOPEN_SUPPORT'],
+			'TITLE_EXPLAIN'	=> $lang['PHP_URL_FOPEN_SUPPORT_EXPLAIN'],
+			'RESULT'		=> $result,
+
+			'S_EXPLAIN'		=> true,
+			'S_LEGEND'		=> false,
+		));
+		
+		
+		// Check for getimagesize 
+		if (@function_exists('getimagesize'))
+		{
+			$passed['imagesize'] = true;
+			$result = '<strong style="color:green">' . $lang['YES'] . '</strong>';
+		}
+		else
+		{
+			$result = '<strong style="color:red">' . $lang['NO'] . '</strong>';
+		}
+
+		$template->assign_block_vars('checks', array(
+			'TITLE'			=> $lang['PHP_GETIMAGESIZE_SUPPORT'],
+			'TITLE_EXPLAIN'	=> $lang['PHP_GETIMAGESIZE_SUPPORT_EXPLAIN'],
+			'RESULT'		=> $result,
+
+			'S_EXPLAIN'		=> true,
+			'S_LEGEND'		=> false,
+		));
 
 		// Check for PCRE UTF-8 support
 		if (@preg_match('//u', ''))
 		{
 			$passed['pcre'] = true;
-			$result = '<b style="color:green">' . $lang['YES'] . '</b>';
+			$result = '<strong style="color:green">' . $lang['YES'] . '</strong>';
 		}
 		else
 		{
-			$result = '<b style="color:red">' . $lang['NO'] . '</b>';
+			$result = '<strong style="color:red">' . $lang['NO'] . '</strong>';
 		}
 
 		$template->assign_block_vars('checks', array(
@@ -208,7 +250,7 @@ class install_install extends module
 *		Better not enabling and adding to the loaded extensions due to the specific requirements needed
 		if (!@extension_loaded('mbstring'))
 		{
-			$this->can_load_dll('mbstring');
+			can_load_dll('mbstring');
 		}
 */
 
@@ -237,24 +279,24 @@ class install_install extends module
 					case '&':
 						if (intval($ini_val) & $mb_checks[2])
 						{
-							$result = '<b style="color:red">' . $lang['NO'] . '</b>';
+							$result = '<strong style="color:red">' . $lang['NO'] . '</strong>';
 							$passed['mbstring'] = false;
 						}
 						else
 						{
-							$result = '<b style="color:green">' . $lang['YES'] . '</b>';
+							$result = '<strong style="color:green">' . $lang['YES'] . '</strong>';
 						}
 					break;
 
 					case '!=':
 						if ($ini_val != $mb_checks[2])
 						{
-							$result = '<b style="color:red">' . $lang['NO'] . '</b>';
+							$result = '<strong style="color:red">' . $lang['NO'] . '</strong>';
 							$passed['mbstring'] = false;
 						}
 						else
 						{
-							$result = '<b style="color:green">' . $lang['YES'] . '</b>';
+							$result = '<strong style="color:green">' . $lang['YES'] . '</strong>';
 						}
 					break;
 				}
@@ -276,35 +318,32 @@ class install_install extends module
 			'LEGEND_EXPLAIN'	=> $lang['PHP_SUPPORTED_DB_EXPLAIN'],
 		));
 
-		$dlls_db = array();
-		$passed['db'] = false;
-		foreach ($this->available_dbms as $db_name => $db_ary)
+		$available_dbms = get_available_dbms(false, true);
+		$passed['db'] = $available_dbms['ANY_DB_SUPPORT'];
+		unset($available_dbms['ANY_DB_SUPPORT']);
+
+		foreach ($available_dbms as $db_name => $db_ary)
 		{
-			$dll = $db_ary['MODULE'];
-
-			if (!@extension_loaded($dll))
+			if (!$db_ary['AVAILABLE'])
 			{
-				if (!$this->can_load_dll($dll))
-				{
-					$template->assign_block_vars('checks', array(
-						'TITLE'		=> $lang['DLL_' . strtoupper($db_name)],
-						'RESULT'	=> '<span style="color:red">' . $lang['UNAVAILABLE'] . '</span>',
+				$template->assign_block_vars('checks', array(
+					'TITLE'		=> $lang['DLL_' . strtoupper($db_name)],
+					'RESULT'	=> '<span style="color:red">' . $lang['UNAVAILABLE'] . '</span>',
 
-						'S_EXPLAIN'	=> false,
-						'S_LEGEND'	=> false,
-					));
-					continue;
-				}
+					'S_EXPLAIN'	=> false,
+					'S_LEGEND'	=> false,
+				));
 			}
+			else
+			{
+				$template->assign_block_vars('checks', array(
+					'TITLE'		=> $lang['DLL_' . strtoupper($db_name)],
+					'RESULT'	=> '<strong style="color:green">' . $lang['AVAILABLE'] . '</strong>',
 
-			$template->assign_block_vars('checks', array(
-				'TITLE'		=> $lang['DLL_' . strtoupper($db_name)],
-				'RESULT'	=> '<b style="color:green">' . $lang['AVAILABLE'] . '</b>',
-
-				'S_EXPLAIN'	=> false,
-				'S_LEGEND'	=> false,
-			));
-			$passed['db'] = true;
+					'S_EXPLAIN'	=> false,
+					'S_LEGEND'	=> false,
+				));
+			}
 		}
 
 		// Test for other modules
@@ -318,11 +357,11 @@ class install_install extends module
 		{
 			if (!@extension_loaded($dll))
 			{
-				if (!$this->can_load_dll($dll))
+				if (!can_load_dll($dll))
 				{
 					$template->assign_block_vars('checks', array(
 						'TITLE'		=> $lang['DLL_' . strtoupper($dll)],
-						'RESULT'	=> '<b style="color:red">' . $lang['UNAVAILABLE'] . '</b>',
+						'RESULT'	=> '<strong style="color:red">' . $lang['UNAVAILABLE'] . '</strong>',
 
 						'S_EXPLAIN'	=> false,
 						'S_LEGEND'	=> false,
@@ -333,7 +372,7 @@ class install_install extends module
 
 			$template->assign_block_vars('checks', array(
 				'TITLE'		=> $lang['DLL_' . strtoupper($dll)],
-				'RESULT'	=> '<b style="color:green">' . $lang['AVAILABLE'] . '</b>',
+				'RESULT'	=> '<strong style="color:green">' . $lang['AVAILABLE'] . '</strong>',
 
 				'S_EXPLAIN'	=> false,
 				'S_LEGEND'	=> false,
@@ -373,7 +412,7 @@ class install_install extends module
 
 		$template->assign_block_vars('checks', array(
 			'TITLE'		=> $lang['APP_MAGICK'],
-			'RESULT'	=> ($img_imagick) ? '<b style="color:green">' . $lang['AVAILABLE'] . ', ' . $img_imagick . '</b>' : '<b style="color:blue">' . $lang['NO_LOCATION'] . '</b>',
+			'RESULT'	=> ($img_imagick) ? '<strong style="color:green">' . $lang['AVAILABLE'] . ', ' . $img_imagick . '</strong>' : '<strong style="color:blue">' . $lang['NO_LOCATION'] . '</strong>',
 
 			'S_EXPLAIN'	=> false,
 			'S_LEGEND'	=> false,
@@ -405,14 +444,14 @@ class install_install extends module
 			// Now really check
 			if (file_exists($phpbb_root_path . $dir) && is_dir($phpbb_root_path . $dir))
 			{
-				if (!is_writeable($phpbb_root_path . $dir))
+				if (!@is_writable($phpbb_root_path . $dir))
 				{
 					@chmod($phpbb_root_path . $dir, 0777);
 				}
 				$exists = true;
 			}
 
-			// Now check if it is writeable by storing a simple file
+			// Now check if it is writable by storing a simple file
 			$fp = @fopen($phpbb_root_path . $dir . 'test_lock', 'wb');
 			if ($fp !== false)
 			{
@@ -424,8 +463,8 @@ class install_install extends module
 
 			$passed['files'] = ($exists && $write && $passed['files']) ? true : false;
 
-			$exists = ($exists) ? '<b style="color:green">' . $lang['FOUND'] . '</b>' : '<b style="color:red">' . $lang['NOT_FOUND'] . '</b>';
-			$write = ($write) ? ', <b style="color:green">' . $lang['WRITEABLE'] . '</b>' : (($exists) ? ', <b style="color:red">' . $lang['UNWRITEABLE'] . '</b>' : '');
+			$exists = ($exists) ? '<strong style="color:green">' . $lang['FOUND'] . '</strong>' : '<strong style="color:red">' . $lang['NOT_FOUND'] . '</strong>';
+			$write = ($write) ? ', <strong style="color:green">' . $lang['WRITABLE'] . '</strong>' : (($exists) ? ', <strong style="color:red">' . $lang['UNWRITABLE'] . '</strong>' : '');
 
 			$template->assign_block_vars('checks', array(
 				'TITLE'		=> $dir,
@@ -450,7 +489,7 @@ class install_install extends module
 			$write = $exists = true;
 			if (file_exists($phpbb_root_path . $dir))
 			{
-				if (!is_writeable($phpbb_root_path . $dir))
+				if (!@is_writable($phpbb_root_path . $dir))
 				{
 					$write = false;
 				}
@@ -460,8 +499,8 @@ class install_install extends module
 				$write = $exists = false;
 			}
 
-			$exists_str = ($exists) ? '<b style="color:green">' . $lang['FOUND'] . '</b>' : '<b style="color:red">' . $lang['NOT_FOUND'] . '</b>';
-			$write_str = ($write) ? ', <b style="color:green">' . $lang['WRITEABLE'] . '</b>' : (($exists) ? ', <b style="color:red">' . $lang['UNWRITEABLE'] . '</b>' : '');
+			$exists_str = ($exists) ? '<strong style="color:green">' . $lang['FOUND'] . '</strong>' : '<strong style="color:red">' . $lang['NOT_FOUND'] . '</strong>';
+			$write_str = ($write) ? ', <strong style="color:green">' . $lang['WRITABLE'] . '</strong>' : (($exists) ? ', <strong style="color:red">' . $lang['UNWRITABLE'] . '</strong>' : '');
 
 			$template->assign_block_vars('checks', array(
 				'TITLE'		=> $dir,
@@ -475,8 +514,8 @@ class install_install extends module
 		// And finally where do we want to go next (well today is taken isn't it :P)
 		$s_hidden_fields = ($img_imagick) ? '<input type="hidden" name="img_imagick" value="' . addslashes($img_imagick) . '" />' : '';
 
-		$url = ($passed['php'] && $passed['db'] && $passed['files'] && $passed['pcre'] && $passed['mbstring']) ? $this->p_master->module_url . "?mode=$mode&amp;sub=database&amp;language=$language" : $this->p_master->module_url . "?mode=$mode&amp;sub=requirements&amp;language=$language	";
-		$submit = ($passed['php'] && $passed['db'] && $passed['files'] && $passed['pcre'] && $passed['mbstring']) ? $lang['INSTALL_START'] : $lang['INSTALL_TEST'];
+		$url = (!in_array(false, $passed)) ? $this->p_master->module_url . "?mode=$mode&amp;sub=database&amp;language=$language" : $this->p_master->module_url . "?mode=$mode&amp;sub=requirements&amp;language=$language	";
+		$submit = (!in_array(false, $passed)) ? $lang['INSTALL_START'] : $lang['INSTALL_TEST'];
 
 
 		$template->assign_vars(array(
@@ -502,21 +541,22 @@ class install_install extends module
 		}
 
 		$connect_test = false;
+		$error = array();
+		$available_dbms = get_available_dbms(false, true);
 
 		// Has the user opted to test the connection?
 		if (isset($_POST['testdb']))
 		{
-			// If the module for the selected database isn't loaded, let's try and load it now
-			if (!@extension_loaded($this->available_dbms[$dbms]['MODULE']))
+			if (!isset($available_dbms[$dbms]) || !$available_dbms[$dbms]['AVAILABLE'])
 			{
-				if (!$this->can_load_dll($this->available_dbms[$dbms]['MODULE']))
-				{
-					$error['db'][] = $lang['INST_ERR_NO_DB'];
-				}
+				$error['db'][] = $lang['INST_ERR_NO_DB'];
+				$connect_test = false;
 			}
-			
-			$dbpasswd = htmlspecialchars_decode($dbpasswd);
-			$connect_test = $this->connect_check_db(true, $error, $dbms, $table_prefix, $dbhost, $dbuser, $dbpasswd, $dbname, $dbport);
+			else
+			{
+				$dbpasswd = htmlspecialchars_decode($dbpasswd);
+				$connect_test = connect_check_db(true, $error, $available_dbms[$dbms], $table_prefix, $dbhost, $dbuser, $dbpasswd, $dbname, $dbport);
+			}
 
 			$template->assign_block_vars('checks', array(
 				'S_LEGEND'			=> true,
@@ -528,7 +568,7 @@ class install_install extends module
 			{
 				$template->assign_block_vars('checks', array(
 					'TITLE'		=> $lang['DB_TEST'],
-					'RESULT'	=> '<b style="color:green">' . $lang['SUCCESSFUL_CONNECT'] . '</b>',
+					'RESULT'	=> '<strong style="color:green">' . $lang['SUCCESSFUL_CONNECT'] . '</strong>',
 
 					'S_EXPLAIN'	=> false,
 					'S_LEGEND'	=> false,
@@ -538,7 +578,7 @@ class install_install extends module
 			{
 				$template->assign_block_vars('checks', array(
 					'TITLE'		=> $lang['DB_TEST'],
-					'RESULT'	=> '<b style="color:red">' . implode('<br />', $error) . '</b>',
+					'RESULT'	=> '<strong style="color:red">' . implode('<br />', $error) . '</strong>',
 
 					'S_EXPLAIN'	=> false,
 					'S_LEGEND'	=> false,
@@ -550,20 +590,17 @@ class install_install extends module
 		{
 			// Update the list of available DBMS modules to only contain those which can be used
 			$available_dbms_temp = array();
-			foreach ($this->available_dbms as $type => $dbms_ary)
+			foreach ($available_dbms as $type => $dbms_ary)
 			{
-				if (!@extension_loaded($dbms_ary['MODULE']))
+				if (!$dbms_ary['AVAILABLE'])
 				{
-					if (!$this->can_load_dll($dbms_ary['MODULE']))
-					{
-						continue;
-					}
+					continue;
 				}
 
 				$available_dbms_temp[$type] = $dbms_ary;
 			}
 
-			$this->available_dbms = &$available_dbms_temp;
+			$available_dbms = &$available_dbms_temp;
 
 			// And now for the main part of this page
 			$table_prefix = (!empty($table_prefix) ? $table_prefix : 'phpbb_');
@@ -714,7 +751,7 @@ class install_install extends module
 				$passed = true;
 				$template->assign_block_vars('checks', array(
 					'TITLE'		=> $lang['ADMIN_TEST'],
-					'RESULT'	=> '<b style="color:green">' . $lang['TESTS_PASSED'] . '</b>',
+					'RESULT'	=> '<strong style="color:green">' . $lang['TESTS_PASSED'] . '</strong>',
 
 					'S_EXPLAIN'	=> false,
 					'S_LEGEND'	=> false,
@@ -724,7 +761,7 @@ class install_install extends module
 			{
 				$template->assign_block_vars('checks', array(
 					'TITLE'		=> $lang['ADMIN_TEST'],
-					'RESULT'	=> '<b style="color:red">' . implode('<br />', $error) . '</b>',
+					'RESULT'	=> '<strong style="color:red">' . implode('<br />', $error) . '</strong>',
 
 					'S_EXPLAIN'	=> false,
 					'S_LEGEND'	=> false,
@@ -828,7 +865,8 @@ class install_install extends module
 
 		// Create a list of any PHP modules we wish to have loaded
 		$load_extensions = array();
-		$check_exts = array_merge(array($this->available_dbms[$dbms]['MODULE']), $this->php_dlls_other);
+		$available_dbms = get_available_dbms($dbms);
+		$check_exts = array_merge(array($available_dbms[$dbms]['MODULE']), $this->php_dlls_other);
 
 		$suffix = (defined('PHP_OS') && strpos(strtolower(PHP_OS), 'win') === 0) ? 'dll' : 'so';
 
@@ -836,7 +874,7 @@ class install_install extends module
 		{
 			if (!@extension_loaded($dll))
 			{
-				if (!$this->can_load_dll($dll))
+				if (!can_load_dll($dll))
 				{
 					continue;
 				}
@@ -860,7 +898,7 @@ class install_install extends module
 		// Time to convert the data provided into a config file
 		$config_data = "<?php\n";
 		$config_data .= "// phpBB 3.0.x auto-generated configuration file\n// Do not change anything in this file!\n";
-		$config_data .= "\$dbms = '" . $this->available_dbms[$dbms]['DRIVER'] . "';\n";
+		$config_data .= "\$dbms = '" . $available_dbms[$dbms]['DRIVER'] . "';\n";
 		$config_data .= "\$dbhost = '$dbhost';\n";
 		$config_data .= "\$dbport = '$dbport';\n";
 		$config_data .= "\$dbname = '$dbname';\n";
@@ -871,12 +909,12 @@ class install_install extends module
 		$config_data .= "\$acm_type = 'file';\n";
 		$config_data .= "\$load_extensions = '$load_extensions';\n\n";
 		$config_data .= "@define('PHPBB_INSTALLED', true);\n";
-		$config_data .= "@define('DEBUG', true);\n"; // @todo Comment out when final
+		$config_data .= "// @define('DEBUG', true);\n";
 		$config_data .= "// @define('DEBUG_EXTRA', true);\n";
 		$config_data .= '?' . '>'; // Done this to prevent highlighting editors getting confused!
 	
 		// Attempt to write out the config file directly. If it works, this is the easiest way to do it ...
-		if ((file_exists($phpbb_root_path . 'config.' . $phpEx) && is_writeable($phpbb_root_path . 'config.' . $phpEx)) || is_writable($phpbb_root_path))
+		if ((file_exists($phpbb_root_path . 'config.' . $phpEx) && is_writable($phpbb_root_path . 'config.' . $phpEx)) || is_writable($phpbb_root_path))
 		{
 			// Assume it will work ... if nothing goes wrong below
 			$written = true;
@@ -1085,45 +1123,42 @@ class install_install extends module
 			$cookie_domain = str_replace('www.', '.', $cookie_domain);
 		}
 
-		// If we get here and the extension isn't loaded it should be safe to just go ahead and load it 
-		if (!@extension_loaded($this->available_dbms[$dbms]['MODULE']))
-		{
-			$this->can_load_dll($this->available_dbms[$dbms]['MODULE']);
-		}
+		// If we get here and the extension isn't loaded it should be safe to just go ahead and load it
+		$available_dbms = get_available_dbms($dbms);
 
 		$dbpasswd = htmlspecialchars_decode($dbpasswd);
 
 		// Load the appropriate database class if not already loaded
-		include($phpbb_root_path . 'includes/db/' . $this->available_dbms[$dbms]['DRIVER'] . '.' . $phpEx);
+		include($phpbb_root_path . 'includes/db/' . $available_dbms[$dbms]['DRIVER'] . '.' . $phpEx);
 
 		// Instantiate the database
-		$sql_db = 'dbal_' . $this->available_dbms[$dbms]['DRIVER'];
+		$sql_db = 'dbal_' . $available_dbms[$dbms]['DRIVER'];
 		$db = new $sql_db();
-		$db->sql_connect($dbhost, $dbuser, $dbpasswd, $dbname, $dbport, false);
+		$db->sql_connect($dbhost, $dbuser, $dbpasswd, $dbname, $dbport, false, false);
 
 		// NOTE: trigger_error does not work here.
-		$db->return_on_error = true;
+		$db->sql_return_on_error(true);
 
 		// If mysql is chosen, we need to adjust the schema filename slightly to reflect the correct version. ;)
 		if ($dbms == 'mysql')
 		{
 			if (version_compare($db->mysql_version, '4.1.3', '>='))
 			{
-				$this->available_dbms[$dbms]['SCHEMA'] .= '_41';
+				$available_dbms[$dbms]['SCHEMA'] .= '_41';
 			}
 			else
 			{
-				$this->available_dbms[$dbms]['SCHEMA'] .= '_40';
+				$available_dbms[$dbms]['SCHEMA'] .= '_40';
 			}
 		}
 
 		// Ok we have the db info go ahead and read in the relevant schema
 		// and work on building the table
-		$dbms_schema = 'schemas/' . $this->available_dbms[$dbms]['SCHEMA'] . '_schema.sql';
+		$dbms_schema = 'schemas/' . $available_dbms[$dbms]['SCHEMA'] . '_schema.sql';
 
 		// How should we treat this schema?
-		$remove_remarks = $this->available_dbms[$dbms]['COMMENTS'];
-		$delimiter = $this->available_dbms[$dbms]['DELIM'];
+		$remove_remarks = $available_dbms[$dbms]['COMMENTS'];
+		$delimiter = $available_dbms[$dbms]['DELIM'];
 
 		$sql_query = @file_get_contents($dbms_schema);
 
@@ -1160,7 +1195,11 @@ class install_install extends module
 			break;
 		}
 
+		// Change prefix
 		$sql_query = preg_replace('#phpbb_#i', $table_prefix, $sql_query);
+
+		// Change language strings...
+		$sql_query = preg_replace_callback('#\{L_([A-Z0-9\-_]*)\}#s', 'adjust_language_keys_callback', $sql_query);
 
 		// Since there is only one schema file we know the comment style and are able to remove it directly with remove_remarks
 		remove_remarks($sql_query);
@@ -1276,7 +1315,11 @@ class install_install extends module
 			'UPDATE ' . $table_prefix . "config
 				SET config_value = '" . $db->sql_escape($admin_name) . "'
 				WHERE config_name = 'newest_username'",
-
+			
+			'UPDATE ' . $table_prefix . "config
+				SET config_value = '" . md5(mt_rand()) . "'
+				WHERE config_name = 'avatar_salt'",
+				
 			'UPDATE ' . $table_prefix . "users
 				SET username = '" . $db->sql_escape($admin_name) . "', user_password='" . $db->sql_escape(md5($admin_pass1)) . "', user_ip = '" . $db->sql_escape($user_ip) . "', user_lang = '" . $db->sql_escape($default_lang) . "', user_email='" . $db->sql_escape($board_email1) . "', user_dateformat='" . $db->sql_escape($lang['default_dateformat']) . "', user_email_hash = " . (crc32($board_email1) . strlen($board_email1)) . ", username_clean = '" . $db->sql_escape(utf8_clean_string($admin_name)) . "'
 				WHERE username = 'Admin'",
@@ -1307,17 +1350,11 @@ class install_install extends module
 				SET forum_last_post_time = $current_time", 
 		);
 
-		if (!@extension_loaded('gd'))
-		{
-			$this->can_load_dll('gd');
-		}
-
-		// This is for people who have TTF and GD
-		if (@extension_loaded('gd') && function_exists('imagettfbbox') && function_exists('imagettftext'))
+		if (@extension_loaded('gd') || can_load_dll('gd'))
 		{
 			$sql_ary[] = 'UPDATE ' . $table_prefix . "config
-					SET config_value = '1'
-					WHERE config_name = 'captcha_gd'";
+				SET config_value = '1'
+				WHERE config_name = 'captcha_gd'";
 		}
 
 		// We set a (semi-)unique cookie name to bypass login issues related to the cookie name.
@@ -1357,11 +1394,11 @@ class install_install extends module
 	}
 
 	/**
-	* Populate the module tables
+	* Build the search index...
 	*/
-	function add_modules($mode, $sub)
+	function build_search_index($mode, $sub)
 	{
-		global $db, $lang, $phpbb_root_path, $phpEx;
+		global $db, $lang, $phpbb_root_path, $phpEx, $config;
 
 		// Obtain any submitted data
 		foreach ($this->request_vars as $var)
@@ -1372,21 +1409,54 @@ class install_install extends module
 		$dbpasswd = htmlspecialchars_decode($dbpasswd);
 
 		// If we get here and the extension isn't loaded it should be safe to just go ahead and load it 
-		if (!@extension_loaded($this->available_dbms[$dbms]['MODULE']))
-		{
-			$this->can_load_dll($this->available_dbms[$dbms]['MODULE']);
-		}
+		$available_dbms = get_available_dbms($dbms);
 
 		// Load the appropriate database class if not already loaded
-		include($phpbb_root_path . 'includes/db/' . $this->available_dbms[$dbms]['DRIVER'] . '.' . $phpEx);
+		include($phpbb_root_path . 'includes/db/' . $available_dbms[$dbms]['DRIVER'] . '.' . $phpEx);
 
 		// Instantiate the database
-		$sql_db = 'dbal_' . $this->available_dbms[$dbms]['DRIVER'];
+		$sql_db = 'dbal_' . $available_dbms[$dbms]['DRIVER'];
 		$db = new $sql_db();
-		$db->sql_connect($dbhost, $dbuser, $dbpasswd, $dbname, $dbport, false);
+		$db->sql_connect($dbhost, $dbuser, $dbpasswd, $dbname, $dbport, false, false);
 
 		// NOTE: trigger_error does not work here.
-		$db->return_on_error = true;
+		$db->sql_return_on_error(true);
+
+		include_once($phpbb_root_path . 'includes/constants.' . $phpEx);
+		include_once($phpbb_root_path . 'includes/search/fulltext_native.' . $phpEx);
+
+		// Fill the config array - it is needed by those functions we call
+		$sql = 'SELECT *
+			FROM ' . CONFIG_TABLE;
+		$result = $db->sql_query($sql);
+
+		$config = array();
+		while ($row = $db->sql_fetchrow($result))
+		{
+			$config[$row['config_name']] = $row['config_value'];
+		}
+		$db->sql_freeresult($result);
+
+		$error = false;
+		$search = new fulltext_native($error);
+
+		$sql = 'SELECT post_id, post_subject, post_text, poster_id, forum_id
+			FROM ' . POSTS_TABLE;
+		$result = $db->sql_query($sql);
+
+		while ($row = $db->sql_fetchrow($result))
+		{
+			$search->index('post', $row['post_id'], $row['post_text'], $row['post_subject'], $row['poster_id'], $row['forum_id']);
+		}
+		$db->sql_freeresult($result);
+	}
+
+	/**
+	* Populate the module tables
+	*/
+	function add_modules($mode, $sub)
+	{
+		global $db, $lang, $phpbb_root_path, $phpEx;
 
 		include_once($phpbb_root_path . 'includes/constants.' . $phpEx);
 		include_once($phpbb_root_path . 'includes/acp/acp_modules.' . $phpEx);
@@ -1425,7 +1495,7 @@ class install_install extends module
 					$this->p_master->db_error($error['message'], $db->sql_error_sql, __LINE__, __FILE__);
 				}
 
-				$categories[$cat_name]['id'] = $module_data['module_id'];
+				$categories[$cat_name]['id'] = (int) $module_data['module_id'];
 				$categories[$cat_name]['parent_id'] = 0;
 
 				// Create sub-categories...
@@ -1437,7 +1507,7 @@ class install_install extends module
 							'module_basename'	=> '',
 							'module_enabled'	=> 1,
 							'module_display'	=> 1,
-							'parent_id'			=> $categories[$cat_name]['id'],
+							'parent_id'			=> (int) $categories[$cat_name]['id'],
 							'module_class'		=> $module_class,
 							'module_langname'	=> $level2_name,
 							'module_mode'		=> '',
@@ -1453,8 +1523,8 @@ class install_install extends module
 							$this->p_master->db_error($error['message'], $db->sql_error_sql, __LINE__, __FILE__);
 						}
 
-						$categories[$level2_name]['id'] = $module_data['module_id'];
-						$categories[$level2_name]['parent_id'] = $categories[$cat_name]['id'];
+						$categories[$level2_name]['id'] = (int) $module_data['module_id'];
+						$categories[$level2_name]['parent_id'] = (int) $categories[$cat_name]['id'];
 					}
 				}
 			}
@@ -1476,7 +1546,7 @@ class install_install extends module
 							'module_basename'	=> $module_basename,
 							'module_enabled'	=> 1,
 							'module_display'	=> (isset($row['display'])) ? $row['display'] : 1,
-							'parent_id'			=> $categories[$cat_name]['id'],
+							'parent_id'			=> (int) $categories[$cat_name]['id'],
 							'module_class'		=> $module_class,
 							'module_langname'	=> $row['title'],
 							'module_mode'		=> $module_mode,
@@ -1579,7 +1649,7 @@ class install_install extends module
 						unset($module_data['left_id']);
 						unset($module_data['right_id']);
 
-						$module_data['parent_id'] = $row2['module_id'];
+						$module_data['parent_id'] = (int) $row2['module_id'];
 
 						$_module->update_module_data($module_data, true);
 
@@ -1617,22 +1687,88 @@ class install_install extends module
 
 			if (is_dir($path) && !is_link($path) && file_exists($path . '/iso.txt'))
 			{
-				$lang_pack = file("{$phpbb_root_path}language/$path/iso.txt");
+				$lang_file = file("{$phpbb_root_path}language/$path/iso.txt");
 
-				$sql_ary = array(
+				$lang_pack = array(
 					'lang_iso'			=> basename($path),
 					'lang_dir'			=> basename($path),
-					'lang_english_name'	=> trim(htmlspecialchars($lang_pack[0])),
-					'lang_local_name'	=> trim(htmlspecialchars($lang_pack[1], ENT_COMPAT, 'UTF-8')),
-					'lang_author'		=> trim(htmlspecialchars($lang_pack[2], ENT_COMPAT, 'UTF-8')),
+					'lang_english_name'	=> trim(htmlspecialchars($lang_file[0])),
+					'lang_local_name'	=> trim(htmlspecialchars($lang_file[1], ENT_COMPAT, 'UTF-8')),
+					'lang_author'		=> trim(htmlspecialchars($lang_file[2], ENT_COMPAT, 'UTF-8')),
 				);
 
-				$db->sql_query('INSERT INTO ' . LANG_TABLE . ' ' . $db->sql_build_array('INSERT', $sql_ary));
+				$db->sql_query('INSERT INTO ' . LANG_TABLE . ' ' . $db->sql_build_array('INSERT', $lang_pack));
 
 				if ($db->sql_error_triggered)
 				{
 					$error = $db->sql_error($db->sql_error_sql);
 					$this->p_master->db_error($error['message'], $db->sql_error_sql, __LINE__, __FILE__);
+				}
+
+				$valid_localized = array(
+					'icon_back_top', 'icon_contact_aim', 'icon_contact_email', 'icon_contact_icq', 'icon_contact_jabber', 'icon_contact_msnm', 'icon_contact_pm', 'icon_contact_yahoo', 'icon_contact_www', 'icon_post_delete', 'icon_post_edit', 'icon_post_info', 'icon_post_quote', 'icon_post_report', 'icon_user_online', 'icon_user_offline', 'icon_user_profile', 'icon_user_search', 'icon_user_warn', 'button_pm_forward', 'button_pm_new', 'button_pm_reply', 'button_topic_locked', 'button_topic_new', 'button_topic_reply',
+				);
+
+				$sql_ary = array();
+
+				$sql = 'SELECT *
+					FROM ' . STYLES_IMAGESET_TABLE;
+				$result = $db->sql_query($sql);
+
+				while ($imageset_row = $db->sql_fetchrow($result))
+				{
+					if (@file_exists("{$phpbb_root_path}styles/{$imageset_row['imageset_path']}/imageset/{$lang_pack['lang_iso']}/imageset.cfg"))
+					{
+						$cfg_data_imageset_data = parse_cfg_file("{$phpbb_root_path}styles/{$imageset_row['imageset_path']}/imageset/{$lang_pack['lang_iso']}/imageset.cfg");
+						foreach ($cfg_data_imageset_data as $image_name => $value)
+						{
+							if (strpos($value, '*') !== false)
+							{
+								if (substr($value, -1, 1) === '*')
+								{
+									list($image_filename, $image_height) = explode('*', $value);
+									$image_width = 0;
+								}
+								else
+								{
+									list($image_filename, $image_height, $image_width) = explode('*', $value);
+								}
+							}
+							else
+							{
+								$image_filename = $value;
+								$image_height = $image_width = 0;
+							}
+
+							if (strpos($image_name, 'img_') === 0 && $image_filename)
+							{
+								$image_name = substr($image_name, 4);
+								if (in_array($image_name, $valid_localized))
+								{
+									$sql_ary[] = array(
+										'image_name'		=> $image_name,
+										'image_filename'	=> $image_filename,
+										'image_height'		=> $image_height,
+										'image_width'		=> $image_width,
+										'imageset_id'		=> $imageset_row['imageset_id'],
+										'image_lang'		=> $lang_pack['lang_iso'],
+									);
+								}
+							}
+						}
+					}
+				}
+				$db->sql_freeresult($result);
+
+				if (sizeof($sql_ary))
+				{
+					$db->sql_multi_insert(STYLES_IMAGESET_DATA_TABLE, $sql_ary);
+
+					if ($db->sql_error_triggered)
+					{
+						$error = $db->sql_error($db->sql_error_sql);
+						$this->p_master->db_error($error['message'], $db->sql_error_sql, __LINE__, __FILE__);
+					}
 				}
 			}
 		}
@@ -1679,7 +1815,7 @@ class install_install extends module
 
 		if (!function_exists('user_add'))
 		{
-			include_once($phpbb_root_path . 'includes/functions_user.' . $phpEx);
+			include($phpbb_root_path . 'includes/functions_user.' . $phpEx);
 		}
 
 		foreach ($this->bot_list as $bot_name => $bot_ary)
@@ -1785,321 +1921,10 @@ class install_install extends module
 
 		$template->assign_vars(array(
 			'TITLE'		=> $lang['INSTALL_CONGRATS'],
-			'BODY'		=> sprintf($lang['INSTALL_CONGRATS_EXPLAIN'], '<a href="../docs/README.html">', '</a>'),
+			'BODY'		=> sprintf($lang['INSTALL_CONGRATS_EXPLAIN'], $config['version'], append_sid($phpbb_root_path . 'install/index.' . $phpEx, 'mode=convert&amp;language=' . $language), '../docs/README.html'),
 			'L_SUBMIT'	=> $lang['INSTALL_LOGIN'],
 			'U_ACTION'	=> append_sid($phpbb_root_path . 'adm/index.' . $phpEx),
 		));
-	}
-	
-	/**
-	* Determine if we are able to load a specified PHP module
-	*/
-	function can_load_dll($dll)
-	{
-		global $suffix;
-
-		if (empty($suffix))
-		{
-			$suffix = (defined('PHP_OS') && strpos(strtolower(PHP_OS), 'win') === 0) ? 'dll' : 'so';
-		}
-
-		return ((@ini_get('enable_dl') || strtolower(@ini_get('enable_dl')) == 'on') && (!@ini_get('safe_mode') || strtolower(@ini_get('safe_mode')) == 'off') && @dl($dll . ".$suffix")) ? true : false;
-	}
-
-	/**
-	* Used to test whether we are able to connect to the database the user has specified
-	* and identify any problems (eg there are already tables with the names we want to use
-	*/
-	function connect_check_db($error_connect, &$error, $dbms, $table_prefix, $dbhost, $dbuser, $dbpasswd, $dbname, $dbport)
-	{
-		global $phpbb_root_path, $phpEx, $config, $lang;
-
-		// Include the DB layer
-		include($phpbb_root_path . 'includes/db/' . $this->available_dbms[$dbms]['DRIVER'] . '.' . $phpEx);
-
-		// Instantiate it and set return on error true
-		$sql_db = 'dbal_' . $this->available_dbms[$dbms]['DRIVER'];
-		$db = new $sql_db();
-		$db->sql_return_on_error(true);
-
-		// Check that we actually have a database name before going any further.....
-		if ($dbms != 'sqlite' && $dbname === '')
-		{
-			$error[] = $lang['INST_ERR_DB_NO_NAME'];
-			return false;
-		}
-
-		// Make sure we don't have a daft user who thinks having the SQLite database in the forum directory is a good idea
-		if ($dbms == 'sqlite' && stripos(phpbb_realpath($dbhost), phpbb_realpath('../')) === 0)
-		{
-			$error[] = $lang['INST_ERR_DB_FORUM_PATH'];
-			return false;
-		}
-
-		// Check the prefix length to ensure that index names are not too long and does not contain invalid characters
-		switch ($dbms)
-		{
-			case 'mysql':
-			case 'mysqli':
-				if (strpos($table_prefix, '-') !== false)
-				{
-					$error[] = $lang['INST_ERR_PREFIX_INVALID'];
-					return false;
-				}
-
-			// no break;
-
-			case 'postgres':
-				$prefix_length = 36;
-			break;
-
-			case 'mssql':
-			case 'mssql_odbc':
-				$prefix_length = 90;
-			break;
-
-			case 'sqlite':
-				$prefix_length = 200;
-			break;
-
-			case 'firebird':
-			case 'oracle':
-				$prefix_length = 6;
-			break;
-		}
-
-		if (strlen($table_prefix) > $prefix_length)
-		{
-			$error[] = sprintf($lang['INST_ERR_PREFIX_TOO_LONG'], $prefix_length);
-			return false;
-		}
-
-		// Try and connect ...
-		if (is_array($db->sql_connect($dbhost, $dbuser, $dbpasswd, $dbname, $dbport, false)))
-		{
-			$db_error = $db->sql_error();
-			$error[] = $lang['INST_ERR_DB_CONNECT'] . '<br />' . (($db_error['message']) ? $db_error['message'] : $lang['INST_ERR_DB_NO_ERROR']);
-		}
-		else
-		{
-			switch ($dbms)
-			{
-				case 'mysql':
-				case 'mysqli':
-					$sql = 'SHOW TABLES';
-					$field = "Tables_in_{$dbname}";
-				break;
-
-				case 'sqlite':
-					$sql = 'SELECT name
-						FROM sqlite_master
-						WHERE type = "table"';
-					$field = 'name';
-				break;
-
-				case 'mssql':
-				case 'mssql_odbc':
-					$sql = "SELECT name 
-						FROM sysobjects 
-						WHERE type='U'";
-					$field = 'name';
-				break;
-
-				case 'postgres':
-					$sql = "SELECT relname 
-						FROM pg_class 
-						WHERE relkind = 'r' 
-							AND relname NOT LIKE 'pg\_%'";
-					$field = 'relname';
-				break;
-
-				case 'firebird':
-					$sql = 'SELECT rdb$relation_name
-						FROM rdb$relations
-						WHERE rdb$view_source is null
-							AND rdb$system_flag = 0';
-					$field = 'rdb$relation_name';
-				break;
-
-				case 'oracle':
-					$sql = 'SELECT table_name
-						FROM USER_TABLES';
-					$field = 'table_name';
-				break;
-			}
-			$result = $db->sql_query($sql);
-
-			if ($row = $db->sql_fetchrow($result))
-			{
-				// Likely matches for an existing phpBB installation
-				$temp_prefix = strtolower($table_prefix);
-				$table_ary = array($temp_prefix . 'attachments', $temp_prefix . 'config', $temp_prefix . 'sessions', $temp_prefix . 'topics', $temp_prefix . 'users');
-
-				do
-				{
-					// All phpBB installations will at least have config else it won't work
-					if (in_array(strtolower($row[$field]), $table_ary))
-					{
-						$error[] = $lang['INST_ERR_PREFIX'];
-						break;
-					}
-				}
-				while ($row = $db->sql_fetchrow($result));
-			}
-			$db->sql_freeresult($result);
-
-			// Make sure that the user has selected a sensible DBAL for the DBMS actually installed
-			switch ($dbms)
-			{
-				case 'mysqli':
-					if (version_compare(mysqli_get_server_info($db->db_connect_id), '4.1.3', '<'))
-					{
-						$error[] = $lang['INST_ERR_DB_NO_MYSQLI'];
-					}
-				break;
-
-				case 'sqlite':
-					if (version_compare(sqlite_libversion(), '2.8.2', '<'))
-					{
-						$error[] = $lang['INST_ERR_DB_NO_SQLITE'];
-					}
-				break;
-
-				case 'firebird':
-					// check the version of FB, use some hackery if we can't get access to the server info
-					if ($db->service_handle !== false && function_exists('ibase_server_info'))
-					{
-						$val = @ibase_server_info($db->service_handle, IBASE_SVC_SERVER_VERSION);
-						preg_match('#V([\d.]+)#', $val, $match);
-						if ($match[1] < 2)
-						{
-							$error[] = $lang['INST_ERR_DB_NO_FIREBIRD'];
-						}
-						$db_info = @ibase_db_info($db->service_handle, $dbname, IBASE_STS_HDR_PAGES);
-
-						preg_match('/^\\s*Page size\\s*(\\d+)/m', $db_info, $regs);
-						$page_size = intval($regs[1]);
-						if ($page_size < 8192)
-						{
-							$error[] = $lang['INST_ERR_DB_NO_FIREBIRD_PS'];
-						}
-					}
-					else
-					{
-						$sql = "SELECT *
-							FROM RDB$FUNCTIONS
-							WHERE RDB$SYSTEM_FLAG IS NULL
-								AND RDB$FUNCTION_NAME = 'CHAR_LENGTH'";
-						$result = $db->sql_query($sql);
-						$row = $db->sql_fetchrow($result);
-						$db->sql_freeresult($result);
-
-						// if its a UDF, its too old
-						if ($row)
-						{
-							$error[] = $lang['INST_ERR_DB_NO_FIREBIRD'];
-						}
-						else
-						{
-							$sql = "SELECT FIRST 0 char_length('')
-								FROM RDB\$DATABASE";
-							$result = $db->sql_query($sql);
-							if (!$result) // This can only fail if char_length is not defined
-							{
-								$error[] = $lang['INST_ERR_DB_NO_FIREBIRD'];
-							}
-							$db->sql_freeresult($result);
-						}
-
-						// Setup the stuff for our random table
-						$char_array = array_merge(range('A', 'Z'), range('0', '9'));
-						$char_len = mt_rand(7, 9);
-						$char_array_len = sizeof($char_array) - 1;
-
-						$final = '';
-
-						for ($i = 0; $i < $char_len; $i++)
-						{
-							$final .= $char_array[mt_rand(0, $char_array_len)];
-						}
-
-						// Create some random table
-						$sql = 'CREATE TABLE ' . $final . " (
-							FIELD1 VARCHAR(255) CHARACTER SET UTF8 DEFAULT '' NOT NULL COLLATE UNICODE,
-							FIELD2 INTEGER DEFAULT 0 NOT NULL);";
-						$db->sql_query($sql);
-
-						// Create an index that should fail if the page size is less than 8192
-						$sql = 'CREATE INDEX ' . $final . ' ON ' . $final . '(FIELD1, FIELD2);';
-						$db->sql_query($sql);
-
-						if (ibase_errmsg() !== false)
-						{
-							$error[] = $lang['INST_ERR_DB_NO_FIREBIRD_PS'];
-						}
-						else
-						{
-							// Kill the old table
-							$db->sql_query('DROP TABLE ' . $final . ';');
-						}
-						unset($final);
-					}
-				break;
-				
-				case 'oracle':
-					$sql = "SELECT *
-						FROM NLS_DATABASE_PARAMETERS
-						WHERE PARAMETER = 'NLS_RDBMS_VERSION'
-							OR PARAMETER = 'NLS_CHARACTERSET'";
-					$result = $db->sql_query($sql);
-
-					while ($row = $db->sql_fetchrow($result))
-					{
-						$stats[$row['parameter']] = $row['value'];
-					}
-					$db->sql_freeresult($result);
-
-					if (version_compare($stats['NLS_RDBMS_VERSION'], '9.2', '<') && $stats['NLS_CHARACTERSET'] !== 'UTF8')
-					{
-						$error[] = $lang['INST_ERR_DB_NO_ORACLE'];
-					}
-				break;
-				
-				case 'postgres':
-					$sql = "SHOW server_encoding;";
-					$result = $db->sql_query($sql);
-					$row = $db->sql_fetchrow($result);
-					$db->sql_freeresult($result);
-
-					if ($row['server_encoding'] !== 'UNICODE' && $row['server_encoding'] !== 'UTF8')
-					{
-						$error[] = $lang['INST_ERR_DB_NO_POSTGRES'];
-					}
-				break;
-			}
-
-			$db->sql_close();
-		}
-
-		if ($error_connect && (!isset($error) || !sizeof($error)))
-		{
-			return true;
-		}
-		return false;
-	}
-
-	/**
-	* Generate the drop down of available database options
-	*/
-	function dbms_select($default='')
-	{
-		$dbms_options = '';
-		foreach ($this->available_dbms as $dbms_name => $details)
-		{
-			$selected = ($dbms_name == $default) ? ' selected="selected"' : '';
-			$dbms_options .= '<option value="' . $dbms_name . '"' . $selected .'>' . $details['LABEL'] . '</option>';
-		}
-		return $dbms_options;
 	}
 
 	/**
@@ -2132,7 +1957,7 @@ class install_install extends module
 	*/
 	var $db_config_options = array(
 		'legend1'				=> 'DB_CONFIG',
-		'dbms'					=> array('lang' => 'DBMS',			'type' => 'select', 'options' => '$this->module->dbms_select(\'{VALUE}\')', 'explain' => false),
+		'dbms'					=> array('lang' => 'DBMS',			'type' => 'select', 'options' => 'dbms_select(\'{VALUE}\')', 'explain' => false),
 		'dbhost'				=> array('lang' => 'DB_HOST',		'type' => 'text:25:100', 'explain' => true),
 		'dbport'				=> array('lang' => 'DB_PORT',		'type' => 'text:25:100', 'explain' => true),
 		'dbname'				=> array('lang' => 'DB_NAME',		'type' => 'text:25:100', 'explain' => false),
@@ -2171,76 +1996,6 @@ class install_install extends module
 	* Specific PHP modules we may require for certain optional or extended features
 	*/
 	var $php_dlls_other = array('zlib', 'ftp', 'gd', 'xml');
-
-	/**
-	* Details of the database management systems supported
-	*/
-	var $available_dbms = array(
-		'firebird'	=> array(
-			'LABEL'			=> 'FireBird',
-			'SCHEMA'		=> 'firebird',
-			'MODULE'		=> 'interbase', 
-			'DELIM'			=> ';;',
-			'COMMENTS'		=> 'remove_remarks',
-			'DRIVER'		=> 'firebird'
-		),
-		'mysqli'	=> array(
-			'LABEL'			=> 'MySQL with MySQLi Extension',
-			'SCHEMA'		=> 'mysql_41',
-			'MODULE'		=> 'mysqli',
-			'DELIM'			=> ';',
-			'COMMENTS'		=> 'remove_remarks',
-			'DRIVER'		=> 'mysqli'
-		),
-		'mysql'		=> array(
-			'LABEL'			=> 'MySQL',
-			'SCHEMA'		=> 'mysql',
-			'MODULE'		=> 'mysql', 
-			'DELIM'			=> ';',
-			'COMMENTS'		=> 'remove_remarks',
-			'DRIVER'		=> 'mysql'
-		),
-		'mssql'		=> array(
-			'LABEL'			=> 'MS SQL Server 2000+',
-			'SCHEMA'		=> 'mssql',
-			'MODULE'		=> 'mssql', 
-			'DELIM'			=> 'GO',
-			'COMMENTS'		=> 'remove_comments',
-			'DRIVER'		=> 'mssql'
-		),
-		'mssql_odbc'=>	array(
-			'LABEL'			=> 'MS SQL Server [ ODBC ]',
-			'SCHEMA'		=> 'mssql',
-			'MODULE'		=> 'odbc', 
-			'DELIM'			=> 'GO',
-			'COMMENTS'		=> 'remove_comments',
-			'DRIVER'		=> 'mssql_odbc'
-		),
-		'oracle'	=>	array(
-			'LABEL'			=> 'Oracle',
-			'SCHEMA'		=> 'oracle',
-			'MODULE'		=> 'oci8', 
-			'DELIM'			=> '/',
-			'COMMENTS'		=> 'remove_comments',
-			'DRIVER'		=> 'oracle'
-		),
-		'postgres' => array(
-			'LABEL'			=> 'PostgreSQL 7.x/8.x',
-			'SCHEMA'		=> 'postgres',
-			'MODULE'		=> 'pgsql', 
-			'DELIM'			=> ';',
-			'COMMENTS'		=> 'remove_comments',
-			'DRIVER'		=> 'postgres'
-		),
-		'sqlite'		=> array(
-			'LABEL'			=> 'SQLite',
-			'SCHEMA'		=> 'sqlite',
-			'MODULE'		=> 'sqlite', 
-			'DELIM'			=> ';',
-			'COMMENTS'		=> 'remove_remarks',
-			'DRIVER'		=> 'sqlite'
-		),
-	);
 
 	/**
 	* A list of the web-crawlers/bots we recognise by default
@@ -2325,7 +2080,7 @@ class install_install extends module
 		'W3C [Linkcheck]'			=> array('W3C-checklink/', ''),
 		'W3C [Validator]'			=> array('W3C_*Validator', ''),
 		'WiseNut [Bot]'				=> array('http://www.WISEnutbot.com', ''),
-		'Yacy [Bot]'				=> array('yacybot', ''),
+		'YaCy [Bot]'				=> array('yacybot', ''),
 		'Yahoo MMCrawler [Bot]'		=> array('Yahoo-MMCrawler/', ''),
 		'Yahoo Slurp [Bot]'			=> array('Yahoo! DE Slurp', ''),
 		'Yahoo [Bot]'				=> array('Yahoo! Slurp', ''),

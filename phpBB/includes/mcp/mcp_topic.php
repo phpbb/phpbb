@@ -14,7 +14,7 @@
 function mcp_topic_view($id, $mode, $action)
 {
 	global $phpEx, $phpbb_root_path, $config;
-	global $template, $db, $user, $auth;
+	global $template, $db, $user, $auth, $cache;
 
 	$url = append_sid("{$phpbb_root_path}mcp.$phpEx?" . extra_url());
 
@@ -81,7 +81,7 @@ function mcp_topic_view($id, $mode, $action)
 	$sort_by_sql = $sort_order_sql = array();
 	mcp_sorting('viewtopic', $sort_days, $sort_key, $sort_dir, $sort_by_sql, $sort_order_sql, $total, $topic_info['forum_id'], $topic_id, $where_sql);
 
-	$limit_time_sql = ($sort_days) ? 'AND t.topic_last_post_time >= ' . (time() - ($sort_days * 86400)) : '';
+	$limit_time_sql = ($sort_days) ? 'AND p.post_time >= ' . (time() - ($sort_days * 86400)) : '';
 
 	if ($total == -1)
 	{
@@ -99,15 +99,17 @@ function mcp_topic_view($id, $mode, $action)
 		WHERE ' . (($action == 'reports') ? 'p.post_reported = 1 AND ' : '') . '
 			p.topic_id = ' . $topic_id . ' ' .
 			((!$auth->acl_get('m_approve', $topic_info['forum_id'])) ? ' AND p.post_approved = 1 ' : '') . '
-			AND p.poster_id = u.user_id
+			AND p.poster_id = u.user_id ' .
+			$limit_time_sql . '
 		ORDER BY ' . $sort_order_sql;
 	$result = $db->sql_query_limit($sql, $posts_per_page, $start);
 
-	$rowset = array();
+	$rowset = $post_id_list = array();
 	$bbcode_bitfield = '';
 	while ($row = $db->sql_fetchrow($result))
 	{
 		$rowset[] = $row;
+		$post_id_list[] = $row['post_id'];
 		$bbcode_bitfield = $bbcode_bitfield | base64_decode($row['bbcode_bitfield']);
 	}
 	$db->sql_freeresult($result);
@@ -132,10 +134,34 @@ function mcp_topic_view($id, $mode, $action)
 		$topic_tracking_info = get_complete_topic_tracking($topic_info['forum_id'], $topic_id);
 	}
 
+	$has_unapproved_posts = false;
+
+	// Grab extensions
+	$extensions = $attachments = array();
+	if ($topic_info['topic_attachment'] && sizeof($post_id_list))
+	{
+		$extensions = $cache->obtain_attach_extensions($topic_info['forum_id']);
+
+		// Get attachments...
+		if ($auth->acl_get('u_download') && $auth->acl_get('f_download', $topic_info['forum_id']))
+		{
+			$sql = 'SELECT *
+				FROM ' . ATTACHMENTS_TABLE . '
+				WHERE ' . $db->sql_in_set('post_msg_id', $post_id_list) . '
+					AND in_message = 0
+				ORDER BY filetime DESC, post_msg_id ASC';
+			$result = $db->sql_query($sql);
+
+			while ($row = $db->sql_fetchrow($result))
+			{
+				$attachments[$row['post_msg_id']][] = $row;
+			}
+			$db->sql_freeresult($result);
+		}
+	}
+
 	foreach ($rowset as $i => $row)
 	{
-		$has_unapproved_posts = false;
-
 		$message = $row['post_text'];
 		$post_subject = ($row['post_subject'] != '') ? $row['post_subject'] : $topic_info['topic_title'];
 		$message = str_replace("\n", '<br />', $message);
@@ -146,6 +172,12 @@ function mcp_topic_view($id, $mode, $action)
 		}
 
 		$message = smiley_text($message);
+
+		if (!empty($attachments[$row['post_id']]))
+		{
+			$update_count = array();
+			parse_attachments($topic_info['forum_id'], $message, $attachments[$row['post_id']], $update_count);
+		}
 
 		if (!$row['post_approved'])
 		{
@@ -171,11 +203,23 @@ function mcp_topic_view($id, $mode, $action)
 			'S_POST_REPORTED'	=> ($row['post_reported']) ? true : false,
 			'S_POST_UNAPPROVED'	=> ($row['post_approved']) ? false : true,
 			'S_CHECKED'			=> ($post_id_list && in_array(intval($row['post_id']), $post_id_list)) ? true : false,
+			'S_HAS_ATTACHMENTS'	=> (!empty($attachments[$row['post_id']])) ? true : false,
 
 			'U_POST_DETAILS'	=> "$url&amp;i=$id&amp;p={$row['post_id']}&amp;mode=post_details",
 			'U_MCP_APPROVE'		=> ($auth->acl_get('m_approve', $topic_info['forum_id'])) ? append_sid("{$phpbb_root_path}mcp.$phpEx", 'i=queue&amp;mode=approve_details&amp;f=' . $topic_info['forum_id'] . '&amp;p=' . $row['post_id']) : '',
 			'U_MCP_REPORT'		=> ($auth->acl_get('m_report', $topic_info['forum_id'])) ? append_sid("{$phpbb_root_path}mcp.$phpEx", 'i=reports&amp;mode=report_details&amp;f=' . $topic_info['forum_id'] . '&amp;p=' . $row['post_id']) : '')
 		);
+
+		// Display not already displayed Attachments for this post, we already parsed them. ;)
+		if (!empty($attachments[$row['post_id']]))
+		{
+			foreach ($attachments[$row['post_id']] as $attachment)
+			{
+				$template->assign_block_vars('postrow.attachment', array(
+					'DISPLAY_ATTACHMENT'	=> $attachment)
+				);
+			}
+		}
 
 		unset($rowset[$i]);
 	}
@@ -200,11 +244,11 @@ function mcp_topic_view($id, $mode, $action)
 			else
 			{
 				$to_topic_info = $to_topic_info[$to_topic_id];
-			}
 
-			if (!$to_topic_info['enable_icons'])
-			{
-				$s_topic_icons = false;
+				if (!$to_topic_info['enable_icons'] || $auth->acl_get('!f_icons', $topic_info['forum_id']))
+				{
+					$s_topic_icons = false;
+				}
 			}
 		}
 	}
@@ -233,6 +277,7 @@ function mcp_topic_view($id, $mode, $action)
 		'S_CAN_REPORT'		=> ($auth->acl_get('m_report', $topic_info['forum_id'])) ? true : false,
 		'S_REPORT_VIEW'		=> ($action == 'reports') ? true : false,
 		'S_MERGE_VIEW'		=> ($action == 'merge') ? true : false,
+		'S_SPLIT_VIEW'		=> ($action == 'split') ? true : false,
 
 		'S_SHOW_TOPIC_ICONS'	=> $s_topic_icons,
 		'S_TOPIC_ICON'			=> $icon_id,
@@ -244,8 +289,8 @@ function mcp_topic_view($id, $mode, $action)
 
 		'PAGE_NUMBER'		=> on_page($total, $posts_per_page, $start),
 		'PAGINATION'		=> (!$posts_per_page) ? '' : generate_pagination(append_sid("{$phpbb_root_path}mcp.$phpEx", "i=$id&amp;t={$topic_info['topic_id']}&amp;mode=$mode&amp;action=$action&amp;to_topic_id=$to_topic_id&amp;posts_per_page=$posts_per_page&amp;st=$sort_days&amp;sk=$sort_key&amp;sd=$sort_dir"), $total, $posts_per_page, $start),
-		'TOTAL'				=> $total)
-	);
+		'TOTAL_POSTS'		=> ($total == 1) ? $user->lang['VIEW_TOPIC_POST'] : sprintf($user->lang['VIEW_TOPIC_POSTS'], $total),
+	));
 }
 
 /**
@@ -402,7 +447,7 @@ function split_topic($action, $topic_id, $to_forum_id, $subject)
 		$to_topic_id = $db->sql_nextid();
 		move_posts($post_id_list, $to_topic_id);
 
-		$topic_info = get_post_data(array($topic_id));
+		$topic_info = get_topic_data(array($topic_id));
 		$topic_info = $topic_info[$topic_id];
 
 		add_log('mod', $to_forum_id, $to_topic_id, 'LOG_SPLIT_DESTINATION', $subject);
@@ -504,13 +549,23 @@ function merge_posts($topic_id, $to_topic_id)
 			FROM ' . TOPICS_TABLE . '
 			WHERE topic_id = ' . $topic_id;
 		$result = $db->sql_query_limit($sql, 1);
+		$row = $db->sql_fetchrow($result);
+		$db->sql_freeresult($result);
 
-		if ($row = $db->sql_fetchrow($result))
+		if ($row)
 		{
 			$return_link .= sprintf($user->lang['RETURN_TOPIC'], '<a href="' . append_sid("{$phpbb_root_path}viewtopic.$phpEx", 'f=' . $row['forum_id'] . '&amp;t=' . $topic_id) . '">', '</a>');
 		}
+		else
+		{
+			// If the topic no longer exist, we will update the topic watch table.
+			// To not let it error out on users watching both topics, we just return on an error...
+			$db->sql_return_on_error(true);
+			$db->sql_query('UPDATE ' . TOPICS_WATCH_TABLE . ' SET topic_id = ' . $to_topic_id . ' WHERE topic_id = ' . $topic_id);
+			$db->sql_return_on_error(false);
 
-		$db->sql_freeresult($result);
+			$db->sql_query('DELETE FROM ' . TOPICS_WATCH_TABLE . ' WHERE topic_id = ' . $topic_id);
+		}
 
 		// Link to the new topic
 		$return_link .= (($return_link) ? '<br /><br />' : '') . sprintf($user->lang['RETURN_NEW_TOPIC'], '<a href="' . append_sid("{$phpbb_root_path}viewtopic.$phpEx", 'f=' . $to_forum_id . '&amp;t=' . $to_topic_id) . '">', '</a>');

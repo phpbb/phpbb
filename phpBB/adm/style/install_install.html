@@ -1,6 +1,6 @@
 <!-- INCLUDE install_header.html -->
 
-<form id="install_install" method="post" action="{U_ACTION}">
+<form id="install_install" method="post" action="{U_ACTION}" onsubmit="submit.disabled = 'disabled';">
 
 <!-- IF TITLE --><h1>{TITLE}</h1><!-- ENDIF -->
 <!-- IF BODY --><p>{BODY}</p><!-- ENDIF -->
@@ -68,7 +68,7 @@
 	<fieldset class="submit-buttons">
 		<legend>{L_SUBMIT}</legend>
 		{S_HIDDEN}
-		<!-- IF L_SUBMIT --><input class="button1" type="submit" id="submit" onclick="this.className = 'button1 disabled';" onsubmit="this.disabled = 'disabled';" name="submit" value="{L_SUBMIT}" /><!-- ENDIF -->
+		<!-- IF L_SUBMIT --><input class="button1" type="submit" id="submit" onclick="this.className = 'button1 disabled';" name="submit" value="{L_SUBMIT}" /><!-- ENDIF -->
 	</fieldset>
 <!-- ENDIF -->
 

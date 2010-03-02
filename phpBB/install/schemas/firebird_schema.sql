@@ -1,6 +1,4 @@
 #
-# Firebird Schema for phpBB 3.x - (c) phpBB Group, 2005
-#
 # $Id$
 #
 
@@ -54,6 +52,7 @@ CREATE TABLE phpbb_acl_groups (
 
 CREATE INDEX phpbb_acl_groups_group_id ON phpbb_acl_groups(group_id);;
 CREATE INDEX phpbb_acl_groups_auth_opt_id ON phpbb_acl_groups(auth_option_id);;
+CREATE INDEX phpbb_acl_groups_auth_role_id ON phpbb_acl_groups(auth_role_id);;
 
 # Table: 'phpbb_acl_options'
 CREATE TABLE phpbb_acl_options (
@@ -113,6 +112,7 @@ CREATE TABLE phpbb_acl_roles_data (
 
 ALTER TABLE phpbb_acl_roles_data ADD PRIMARY KEY (role_id, auth_option_id);;
 
+CREATE INDEX phpbb_acl_roles_data_ath_opt_id ON phpbb_acl_roles_data(auth_option_id);;
 
 # Table: 'phpbb_acl_users'
 CREATE TABLE phpbb_acl_users (
@@ -125,6 +125,7 @@ CREATE TABLE phpbb_acl_users (
 
 CREATE INDEX phpbb_acl_users_user_id ON phpbb_acl_users(user_id);;
 CREATE INDEX phpbb_acl_users_auth_option_id ON phpbb_acl_users(auth_option_id);;
+CREATE INDEX phpbb_acl_users_auth_role_id ON phpbb_acl_users(auth_role_id);;
 
 # Table: 'phpbb_banlist'
 CREATE TABLE phpbb_banlist (
@@ -178,12 +179,11 @@ CREATE INDEX phpbb_bbcodes_display_on_post ON phpbb_bbcodes(display_on_posting);
 # Table: 'phpbb_bookmarks'
 CREATE TABLE phpbb_bookmarks (
 	topic_id INTEGER DEFAULT 0 NOT NULL,
-	user_id INTEGER DEFAULT 0 NOT NULL,
-	order_id INTEGER DEFAULT 0 NOT NULL
+	user_id INTEGER DEFAULT 0 NOT NULL
 );;
 
-CREATE INDEX phpbb_bookmarks_order_id ON phpbb_bookmarks(order_id);;
-CREATE INDEX phpbb_bookmarks_topic_user_id ON phpbb_bookmarks(topic_id, user_id);;
+ALTER TABLE phpbb_bookmarks ADD PRIMARY KEY (topic_id, user_id);;
+
 
 # Table: 'phpbb_bots'
 CREATE TABLE phpbb_bots (
@@ -924,12 +924,14 @@ ALTER TABLE phpbb_search_results ADD PRIMARY KEY (search_key);;
 CREATE TABLE phpbb_search_wordlist (
 	word_id INTEGER NOT NULL,
 	word_text VARCHAR(255) CHARACTER SET UTF8 DEFAULT '' NOT NULL COLLATE UNICODE,
-	word_common INTEGER DEFAULT 0 NOT NULL
+	word_common INTEGER DEFAULT 0 NOT NULL,
+	word_count INTEGER DEFAULT 0 NOT NULL
 );;
 
 ALTER TABLE phpbb_search_wordlist ADD PRIMARY KEY (word_id);;
 
 CREATE UNIQUE INDEX phpbb_search_wordlist_wrd_txt ON phpbb_search_wordlist(word_text);;
+CREATE INDEX phpbb_search_wordlist_wrd_cnt ON phpbb_search_wordlist(word_count);;
 
 CREATE GENERATOR phpbb_search_wordlist_gen;;
 SET GENERATOR phpbb_search_wordlist_gen TO 0;;
@@ -949,6 +951,7 @@ CREATE TABLE phpbb_search_wordmatch (
 	title_match INTEGER DEFAULT 0 NOT NULL
 );;
 
+CREATE UNIQUE INDEX phpbb_search_wordmatch_unq_mtch ON phpbb_search_wordmatch(word_id, post_id, title_match);;
 CREATE INDEX phpbb_search_wordmatch_word_id ON phpbb_search_wordmatch(word_id);;
 CREATE INDEX phpbb_search_wordmatch_post_id ON phpbb_search_wordmatch(post_id);;
 
@@ -1142,101 +1145,7 @@ CREATE TABLE phpbb_styles_imageset (
 	imageset_id INTEGER NOT NULL,
 	imageset_name VARCHAR(255) CHARACTER SET UTF8 DEFAULT '' NOT NULL COLLATE UNICODE,
 	imageset_copyright VARCHAR(255) CHARACTER SET UTF8 DEFAULT '' NOT NULL COLLATE UNICODE,
-	imageset_path VARCHAR(100) CHARACTER SET NONE DEFAULT '' NOT NULL,
-	site_logo VARCHAR(200) CHARACTER SET NONE DEFAULT '' NOT NULL,
-	upload_bar VARCHAR(200) CHARACTER SET NONE DEFAULT '' NOT NULL,
-	poll_left VARCHAR(200) CHARACTER SET NONE DEFAULT '' NOT NULL,
-	poll_center VARCHAR(200) CHARACTER SET NONE DEFAULT '' NOT NULL,
-	poll_right VARCHAR(200) CHARACTER SET NONE DEFAULT '' NOT NULL,
-	icon_friend VARCHAR(200) CHARACTER SET NONE DEFAULT '' NOT NULL,
-	icon_foe VARCHAR(200) CHARACTER SET NONE DEFAULT '' NOT NULL,
-	forum_link VARCHAR(200) CHARACTER SET NONE DEFAULT '' NOT NULL,
-	forum_read VARCHAR(200) CHARACTER SET NONE DEFAULT '' NOT NULL,
-	forum_read_locked VARCHAR(200) CHARACTER SET NONE DEFAULT '' NOT NULL,
-	forum_read_subforum VARCHAR(200) CHARACTER SET NONE DEFAULT '' NOT NULL,
-	forum_unread VARCHAR(200) CHARACTER SET NONE DEFAULT '' NOT NULL,
-	forum_unread_locked VARCHAR(200) CHARACTER SET NONE DEFAULT '' NOT NULL,
-	forum_unread_subforum VARCHAR(200) CHARACTER SET NONE DEFAULT '' NOT NULL,
-	topic_moved VARCHAR(200) CHARACTER SET NONE DEFAULT '' NOT NULL,
-	topic_read VARCHAR(200) CHARACTER SET NONE DEFAULT '' NOT NULL,
-	topic_read_mine VARCHAR(200) CHARACTER SET NONE DEFAULT '' NOT NULL,
-	topic_read_hot VARCHAR(200) CHARACTER SET NONE DEFAULT '' NOT NULL,
-	topic_read_hot_mine VARCHAR(200) CHARACTER SET NONE DEFAULT '' NOT NULL,
-	topic_read_locked VARCHAR(200) CHARACTER SET NONE DEFAULT '' NOT NULL,
-	topic_read_locked_mine VARCHAR(200) CHARACTER SET NONE DEFAULT '' NOT NULL,
-	topic_unread VARCHAR(200) CHARACTER SET NONE DEFAULT '' NOT NULL,
-	topic_unread_mine VARCHAR(200) CHARACTER SET NONE DEFAULT '' NOT NULL,
-	topic_unread_hot VARCHAR(200) CHARACTER SET NONE DEFAULT '' NOT NULL,
-	topic_unread_hot_mine VARCHAR(200) CHARACTER SET NONE DEFAULT '' NOT NULL,
-	topic_unread_locked VARCHAR(200) CHARACTER SET NONE DEFAULT '' NOT NULL,
-	topic_unread_locked_mine VARCHAR(200) CHARACTER SET NONE DEFAULT '' NOT NULL,
-	sticky_read VARCHAR(200) CHARACTER SET NONE DEFAULT '' NOT NULL,
-	sticky_read_mine VARCHAR(200) CHARACTER SET NONE DEFAULT '' NOT NULL,
-	sticky_read_locked VARCHAR(200) CHARACTER SET NONE DEFAULT '' NOT NULL,
-	sticky_read_locked_mine VARCHAR(200) CHARACTER SET NONE DEFAULT '' NOT NULL,
-	sticky_unread VARCHAR(200) CHARACTER SET NONE DEFAULT '' NOT NULL,
-	sticky_unread_mine VARCHAR(200) CHARACTER SET NONE DEFAULT '' NOT NULL,
-	sticky_unread_locked VARCHAR(200) CHARACTER SET NONE DEFAULT '' NOT NULL,
-	sticky_unread_locked_mine VARCHAR(200) CHARACTER SET NONE DEFAULT '' NOT NULL,
-	announce_read VARCHAR(200) CHARACTER SET NONE DEFAULT '' NOT NULL,
-	announce_read_mine VARCHAR(200) CHARACTER SET NONE DEFAULT '' NOT NULL,
-	announce_read_locked VARCHAR(200) CHARACTER SET NONE DEFAULT '' NOT NULL,
-	announce_read_locked_mine VARCHAR(200) CHARACTER SET NONE DEFAULT '' NOT NULL,
-	announce_unread VARCHAR(200) CHARACTER SET NONE DEFAULT '' NOT NULL,
-	announce_unread_mine VARCHAR(200) CHARACTER SET NONE DEFAULT '' NOT NULL,
-	announce_unread_locked VARCHAR(200) CHARACTER SET NONE DEFAULT '' NOT NULL,
-	announce_unread_locked_mine VARCHAR(200) CHARACTER SET NONE DEFAULT '' NOT NULL,
-	global_read VARCHAR(200) CHARACTER SET NONE DEFAULT '' NOT NULL,
-	global_read_mine VARCHAR(200) CHARACTER SET NONE DEFAULT '' NOT NULL,
-	global_read_locked VARCHAR(200) CHARACTER SET NONE DEFAULT '' NOT NULL,
-	global_read_locked_mine VARCHAR(200) CHARACTER SET NONE DEFAULT '' NOT NULL,
-	global_unread VARCHAR(200) CHARACTER SET NONE DEFAULT '' NOT NULL,
-	global_unread_mine VARCHAR(200) CHARACTER SET NONE DEFAULT '' NOT NULL,
-	global_unread_locked VARCHAR(200) CHARACTER SET NONE DEFAULT '' NOT NULL,
-	global_unread_locked_mine VARCHAR(200) CHARACTER SET NONE DEFAULT '' NOT NULL,
-	pm_read VARCHAR(200) CHARACTER SET NONE DEFAULT '' NOT NULL,
-	pm_unread VARCHAR(200) CHARACTER SET NONE DEFAULT '' NOT NULL,
-	icon_contact_aim VARCHAR(200) CHARACTER SET NONE DEFAULT '' NOT NULL,
-	icon_contact_email VARCHAR(200) CHARACTER SET NONE DEFAULT '' NOT NULL,
-	icon_contact_icq VARCHAR(200) CHARACTER SET NONE DEFAULT '' NOT NULL,
-	icon_contact_jabber VARCHAR(200) CHARACTER SET NONE DEFAULT '' NOT NULL,
-	icon_contact_msnm VARCHAR(200) CHARACTER SET NONE DEFAULT '' NOT NULL,
-	icon_contact_pm VARCHAR(200) CHARACTER SET NONE DEFAULT '' NOT NULL,
-	icon_contact_yahoo VARCHAR(200) CHARACTER SET NONE DEFAULT '' NOT NULL,
-	icon_contact_www VARCHAR(200) CHARACTER SET NONE DEFAULT '' NOT NULL,
-	icon_post_delete VARCHAR(200) CHARACTER SET NONE DEFAULT '' NOT NULL,
-	icon_post_edit VARCHAR(200) CHARACTER SET NONE DEFAULT '' NOT NULL,
-	icon_post_info VARCHAR(200) CHARACTER SET NONE DEFAULT '' NOT NULL,
-	icon_post_quote VARCHAR(200) CHARACTER SET NONE DEFAULT '' NOT NULL,
-	icon_post_report VARCHAR(200) CHARACTER SET NONE DEFAULT '' NOT NULL,
-	icon_post_target VARCHAR(200) CHARACTER SET NONE DEFAULT '' NOT NULL,
-	icon_post_target_unread VARCHAR(200) CHARACTER SET NONE DEFAULT '' NOT NULL,
-	icon_topic_attach VARCHAR(200) CHARACTER SET NONE DEFAULT '' NOT NULL,
-	icon_topic_latest VARCHAR(200) CHARACTER SET NONE DEFAULT '' NOT NULL,
-	icon_topic_newest VARCHAR(200) CHARACTER SET NONE DEFAULT '' NOT NULL,
-	icon_topic_reported VARCHAR(200) CHARACTER SET NONE DEFAULT '' NOT NULL,
-	icon_topic_unapproved VARCHAR(200) CHARACTER SET NONE DEFAULT '' NOT NULL,
-	icon_user_online VARCHAR(200) CHARACTER SET NONE DEFAULT '' NOT NULL,
-	icon_user_offline VARCHAR(200) CHARACTER SET NONE DEFAULT '' NOT NULL,
-	icon_user_profile VARCHAR(200) CHARACTER SET NONE DEFAULT '' NOT NULL,
-	icon_user_search VARCHAR(200) CHARACTER SET NONE DEFAULT '' NOT NULL,
-	icon_user_warn VARCHAR(200) CHARACTER SET NONE DEFAULT '' NOT NULL,
-	button_pm_forward VARCHAR(200) CHARACTER SET NONE DEFAULT '' NOT NULL,
-	button_pm_new VARCHAR(200) CHARACTER SET NONE DEFAULT '' NOT NULL,
-	button_pm_reply VARCHAR(200) CHARACTER SET NONE DEFAULT '' NOT NULL,
-	button_topic_locked VARCHAR(200) CHARACTER SET NONE DEFAULT '' NOT NULL,
-	button_topic_new VARCHAR(200) CHARACTER SET NONE DEFAULT '' NOT NULL,
-	button_topic_reply VARCHAR(200) CHARACTER SET NONE DEFAULT '' NOT NULL,
-	user_icon1 VARCHAR(200) CHARACTER SET NONE DEFAULT '' NOT NULL,
-	user_icon2 VARCHAR(200) CHARACTER SET NONE DEFAULT '' NOT NULL,
-	user_icon3 VARCHAR(200) CHARACTER SET NONE DEFAULT '' NOT NULL,
-	user_icon4 VARCHAR(200) CHARACTER SET NONE DEFAULT '' NOT NULL,
-	user_icon5 VARCHAR(200) CHARACTER SET NONE DEFAULT '' NOT NULL,
-	user_icon6 VARCHAR(200) CHARACTER SET NONE DEFAULT '' NOT NULL,
-	user_icon7 VARCHAR(200) CHARACTER SET NONE DEFAULT '' NOT NULL,
-	user_icon8 VARCHAR(200) CHARACTER SET NONE DEFAULT '' NOT NULL,
-	user_icon9 VARCHAR(200) CHARACTER SET NONE DEFAULT '' NOT NULL,
-	user_icon10 VARCHAR(200) CHARACTER SET NONE DEFAULT '' NOT NULL
+	imageset_path VARCHAR(100) CHARACTER SET NONE DEFAULT '' NOT NULL
 );;
 
 ALTER TABLE phpbb_styles_imageset ADD PRIMARY KEY (imageset_id);;
@@ -1251,6 +1160,32 @@ BEFORE INSERT
 AS
 BEGIN
 	NEW.imageset_id = GEN_ID(phpbb_styles_imageset_gen, 1);
+END;;
+
+
+# Table: 'phpbb_styles_imageset_data'
+CREATE TABLE phpbb_styles_imageset_data (
+	image_id INTEGER NOT NULL,
+	image_name VARCHAR(200) CHARACTER SET NONE DEFAULT '' NOT NULL,
+	image_filename VARCHAR(200) CHARACTER SET NONE DEFAULT '' NOT NULL,
+	image_lang VARCHAR(30) CHARACTER SET NONE DEFAULT '' NOT NULL,
+	image_height INTEGER DEFAULT 0 NOT NULL,
+	image_width INTEGER DEFAULT 0 NOT NULL,
+	imageset_id INTEGER DEFAULT 0 NOT NULL
+);;
+
+ALTER TABLE phpbb_styles_imageset_data ADD PRIMARY KEY (image_id);;
+
+CREATE INDEX phpbb_styles_imageset_data_i_id ON phpbb_styles_imageset_data(imageset_id);;
+
+CREATE GENERATOR phpbb_styles_imageset_data_gen;;
+SET GENERATOR phpbb_styles_imageset_data_gen TO 0;;
+
+CREATE TRIGGER t_phpbb_styles_imageset_data FOR phpbb_styles_imageset_data
+BEFORE INSERT
+AS
+BEGIN
+	NEW.image_id = GEN_ID(phpbb_styles_imageset_data_gen, 1);
 END;;
 
 
@@ -1284,7 +1219,7 @@ CREATE TABLE phpbb_topics (
 	topic_moved_id INTEGER DEFAULT 0 NOT NULL,
 	topic_bumped INTEGER DEFAULT 0 NOT NULL,
 	topic_bumper INTEGER DEFAULT 0 NOT NULL,
-	poll_title VARCHAR(100) CHARACTER SET UTF8 DEFAULT '' NOT NULL COLLATE UNICODE,
+	poll_title VARCHAR(255) CHARACTER SET UTF8 DEFAULT '' NOT NULL COLLATE UNICODE,
 	poll_start INTEGER DEFAULT 0 NOT NULL,
 	poll_length INTEGER DEFAULT 0 NOT NULL,
 	poll_max_options INTEGER DEFAULT 1 NOT NULL,
@@ -1298,6 +1233,7 @@ CREATE INDEX phpbb_topics_forum_id ON phpbb_topics(forum_id);;
 CREATE INDEX phpbb_topics_forum_id_type ON phpbb_topics(forum_id, topic_type);;
 CREATE INDEX phpbb_topics_last_post_time ON phpbb_topics(topic_last_post_time);;
 CREATE INDEX phpbb_topics_topic_approved ON phpbb_topics(topic_approved);;
+CREATE INDEX phpbb_topics_forum_appr_last ON phpbb_topics(forum_id, topic_approved, topic_last_post_id);;
 CREATE INDEX phpbb_topics_fid_time_moved ON phpbb_topics(forum_id, topic_last_post_time, topic_moved_id);;
 
 CREATE GENERATOR phpbb_topics_gen;;
@@ -1437,7 +1373,7 @@ ALTER TABLE phpbb_users ADD PRIMARY KEY (user_id);;
 CREATE INDEX phpbb_users_user_birthday ON phpbb_users(user_birthday);;
 CREATE INDEX phpbb_users_user_email_hash ON phpbb_users(user_email_hash);;
 CREATE INDEX phpbb_users_user_type ON phpbb_users(user_type);;
-CREATE INDEX phpbb_users_username_clean ON phpbb_users(username_clean);;
+CREATE UNIQUE INDEX phpbb_users_username_clean ON phpbb_users(username_clean);;
 
 CREATE GENERATOR phpbb_users_gen;;
 SET GENERATOR phpbb_users_gen TO 0;;

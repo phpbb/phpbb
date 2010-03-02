@@ -83,7 +83,10 @@ class bbcode_firstpass extends bbcode
 	*/
 	function prepare_bbcodes()
 	{
-		// Add newline at the end and in front of each quote block to prevent parsing errors (urls, smilies, etc.)
+		// Ok, seems like users instead want the no-parsing of urls, smilies, etc. after and before and within quote tags being tagged as "not a bug".
+		// Fine by me ;) Will ease our live... but do not come back and cry at us, we won't hear you.
+
+		/* Add newline at the end and in front of each quote block to prevent parsing errors (urls, smilies, etc.)
 		if (strpos($this->message, '[quote') !== false && strpos($this->message, '[/quote]') !== false)
 		{
 			$this->message = str_replace("\r\n", "\n", $this->message);
@@ -91,6 +94,7 @@ class bbcode_firstpass extends bbcode
 			// We strip newlines and spaces after and before quotes in quotes (trimming) and then add exactly one newline
 			$this->message = preg_replace('#\[quote(=&quot;.*?&quot;)?\]\s*(.*?)\s*\[/quote\]#siu', '[quote\1]' . "\n" . '\2' ."\n[/quote]", $this->message);
 		}
+		*/
 
 		// Add other checks which needs to be placed before actually parsing anything (be it bbcodes, smilies, urls...)
 	}
@@ -113,7 +117,7 @@ class bbcode_firstpass extends bbcode
 			'i'				=> array('bbcode_id' => 2,	'regexp' => array('#\[i\](.*?)\[/i\]#ise' => "\$this->bbcode_italic('\$1')")),
 			'url'			=> array('bbcode_id' => 3,	'regexp' => array('#\[url(=(.*))?\](.*)\[/url\]#iUe' => "\$this->validate_url('\$2', '\$3')")),
 			'img'			=> array('bbcode_id' => 4,	'regexp' => array('#\[img\](https?://)([a-z0-9\-\.,\?!%\*_:;~\\&$@/=\+]+)\[/img\]#ie' => "\$this->bbcode_img('\$1\$2')")),
-			'size'			=> array('bbcode_id' => 5,	'regexp' => array('#\[size=([\-\+]?[1-2]?[0-9])\](.*?)\[/size\]#ise' => "\$this->bbcode_size('\$1', '\$2')")),
+			'size'			=> array('bbcode_id' => 5,	'regexp' => array('#\[size=([\-\+]?\d+)\](.*?)\[/size\]#ise' => "\$this->bbcode_size('\$1', '\$2')")),
 			'color'			=> array('bbcode_id' => 6,	'regexp' => array('!\[color=(#[0-9a-f]{6}|[a-z\-]+)\](.*?)\[/color\]!ise' => "\$this->bbcode_color('\$1', '\$2')")),
 			'u'				=> array('bbcode_id' => 7,	'regexp' => array('#\[u\](.*?)\[/u\]#ise' => "\$this->bbcode_underline('\$1')")),
 			'list'			=> array('bbcode_id' => 9,	'regexp' => array('#\[list(?:=(?:[a-z0-9]|disc|circle|square))?].*\[/list]#ise' => "\$this->bbcode_parse_list('\$0')")),
@@ -200,6 +204,8 @@ class bbcode_firstpass extends bbcode
 		if ($config['max_' . $this->mode . '_font_size'] && $config['max_' . $this->mode . '_font_size'] < $stx)
 		{
 			$this->warn_msg[] = sprintf($user->lang['MAX_FONT_SIZE_EXCEEDED'], $config['max_' . $this->mode . '_font_size']);
+
+			return '[size=' . $stx . ']' . $in . '[/size]';
 		}
 
 		return '[size=' . $stx . ':' . $this->bbcode_uid . ']' . $in . '[/size:' . $this->bbcode_uid . ']';
@@ -270,6 +276,7 @@ class bbcode_firstpass extends bbcode
 		}
 
 		$in = trim($in);
+		$error = false;
 
 		if ($config['max_' . $this->mode . '_img_height'] || $config['max_' . $this->mode . '_img_width'])
 		{
@@ -277,23 +284,26 @@ class bbcode_firstpass extends bbcode
 
 			if ($stats === false)
 			{
+				$error = true;
 				$this->warn_msg[] = $user->lang['UNABLE_GET_IMAGE_SIZE'];
 			}
 			else
 			{
 				if ($config['max_' . $this->mode . '_img_height'] && $config['max_' . $this->mode . '_img_height'] < $stats[1])
 				{
+					$error = true;
 					$this->warn_msg[] = sprintf($user->lang['MAX_IMG_HEIGHT_EXCEEDED'], $config['max_' . $this->mode . '_img_height']);
 				}
 
 				if ($config['max_' . $this->mode . '_img_width'] && $config['max_' . $this->mode . '_img_width'] < $stats[0])
 				{
+					$error = true;
 					$this->warn_msg[] = sprintf($user->lang['MAX_IMG_WIDTH_EXCEEDED'], $config['max_' . $this->mode . '_img_width']);
 				}
 			}
 		}
 
-		if ($this->path_in_domain($in))
+		if ($error || $this->path_in_domain($in))
 		{
 			return '[img]' . $in . '[/img]';
 		}
@@ -314,22 +324,25 @@ class bbcode_firstpass extends bbcode
 		}
 
 		$in = trim($in);
+		$error = false;
 
 		// Apply the same size checks on flash files as on images
 		if ($config['max_' . $this->mode . '_img_height'] || $config['max_' . $this->mode . '_img_width'])
 		{
 			if ($config['max_' . $this->mode . '_img_height'] && $config['max_' . $this->mode . '_img_height'] < $height)
 			{
+				$error = true;
 				$this->warn_msg[] = sprintf($user->lang['MAX_FLASH_HEIGHT_EXCEEDED'], $config['max_' . $this->mode . '_img_height']);
 			}
 
 			if ($config['max_' . $this->mode . '_img_width'] && $config['max_' . $this->mode . '_img_width'] < $width)
 			{
+				$error = true;
 				$this->warn_msg[] = sprintf($user->lang['MAX_FLASH_WIDTH_EXCEEDED'], $config['max_' . $this->mode . '_img_width']);
 			}
 		}
 
-		if ($this->path_in_domain($in))
+		if ($error || $this->path_in_domain($in))
 		{
 			return '[flash=' . $width . ',' . $height . ']' . $in . '[/flash]';
 		}
@@ -351,6 +364,72 @@ class bbcode_firstpass extends bbcode
 	}
 
 	/**
+	* Parse code text from code tag
+	* @private
+	*/
+	function bbcode_parse_code($stx, $code)
+	{
+		switch (strtolower($stx))
+		{
+			case 'php':
+
+				$remove_tags = false;
+				$code = str_replace(array('&lt;', '&gt;'), array('<', '>'), $code);
+
+				if (!preg_match('/\<\?.*?\?\>/is', $code))
+				{
+					$remove_tags = true;
+					$code = "<?php $code ?>";
+				}
+
+				$conf = array('highlight.bg', 'highlight.comment', 'highlight.default', 'highlight.html', 'highlight.keyword', 'highlight.string');
+				foreach ($conf as $ini_var)
+				{
+					@ini_set($ini_var, str_replace('highlight.', 'syntax', $ini_var));
+				}
+
+				// Because highlight_string is specialcharing the text (but we already did this before), we have to reverse this in order to get correct results
+				$code = htmlspecialchars_decode($code);
+				$code = highlight_string($code, true);
+
+				$str_from = array('<span style="color: ', '<font color="syntax', '</font>', '<code>', '</code>','[', ']', '.', ':');
+				$str_to = array('<span class="', '<span class="syntax', '</span>', '', '', '&#91;', '&#93;', '&#46;', '&#58;');
+
+				if ($remove_tags)
+				{
+					$str_from[] = '<span class="syntaxdefault">&lt;?php </span>';
+					$str_to[] = '';
+					$str_from[] = '<span class="syntaxdefault">&lt;?php&nbsp;';
+					$str_to[] = '<span class="syntaxdefault">';
+				}
+
+				$code = str_replace($str_from, $str_to, $code);
+				$code = preg_replace('#^(<span class="[a-z_]+">)\n?(.*?)\n?(</span>)$#is', '$1$2$3', $code);
+
+				if ($remove_tags)
+				{
+					$code = preg_replace('#(<span class="[a-z]+">)?\?&gt;(</span>)#', '$1&nbsp;$2', $code);
+				}
+
+				$code = preg_replace('#^<span class="[a-z]+"><span class="([a-z]+)">(.*)</span></span>#s', '<span class="$1">$2</span>', $code);
+				$code = preg_replace('#(?:[\n\r\s\t]|&nbsp;)*</span>$#u', '</span>', $code);
+
+				// remove newline at the end
+				if (!empty($code) && $code[strlen($code) - 1] == "\n")
+				{
+					$code = substr($code, 0, -1);
+				}
+
+				return "[code=$stx:" . $this->bbcode_uid . ']' . $code . '[/code:' . $this->bbcode_uid . ']';
+			break;
+
+			default:
+				return '[code:' . $this->bbcode_uid . ']' . $this->bbcode_specialchars($code) . '[/code:' . $this->bbcode_uid . ']';
+			break;
+		}
+	}
+
+	/**
 	* Parse code tag
 	* Expects the argument to start right after the opening [code] tag and to end with [/code]
 	*/
@@ -365,107 +444,78 @@ class bbcode_firstpass extends bbcode
 		// Having it here saves us one preg_replace per message containing [code] blocks
 		// Additionally, magic url parsing should go after parsing bbcodes, but for safety those are stripped out too...
 		$htm_match = get_preg_expression('bbcode_htm');
-//		$htm_match[3] = '/&#([0-9]+);/';
-		unset($htm_match[3], $htm_match[4]);
+		unset($htm_match[4], $htm_match[5]);
+		$htm_replace = array('\1', '\1', '\2', '\1');
 
-		$htm_replace = array('\1', '\2', '\1'); //, '&amp;#\1;');
+		$in = preg_replace($htm_match, $htm_replace, $in);
+		$out = $code_block = '';
+		$open = 1;
 
-		$out = '';
-
-		do
+		while ($in)
 		{
-			$pos = stripos($in, '[/code]') + 7;
-			$code = substr($in, 0, $pos);
-			$in = substr($in, $pos);
-			
-			// $code contains everything that was between code tags (including the ending tag) but we're trying to grab as much extra text as possible, as long as it does not contain open [code] tags
-			while ($in)
-			{
-				$pos = stripos($in, '[/code]') + 7;
-				$buffer = substr($in, 0, $pos);
+			// Determine position and tag length of next code block
+			preg_match('#(.*?)(\[code(?:=([a-z]+))?\])(.+)#is', $in, $buffer);
+			$pos = (isset($buffer[1])) ? strlen($buffer[1]) : false;
+			$tag_length = (isset($buffer[2])) ? strlen($buffer[2]) : false;
 
-				if (preg_match('#\[code(?:=([a-z]+))?\]#i', $buffer))
+			// Determine position of ending code tag
+			$pos2 = stripos($in, '[/code]');
+
+			// Which is the next block, ending code or code block
+			if ($pos !== false && $pos < $pos2)
+			{
+				// Open new block
+				if (!$open)
 				{
-					break;
+					$out .= substr($in, 0, $pos);
+					$in = substr($in, $pos);
+					$stx = (isset($buffer[3])) ? $buffer[3] : '';
+					$code_block = '';
 				}
 				else
 				{
+					// Already opened block, just append to the current block
+					$code_block .= substr($in, 0, $pos) . ((isset($buffer[2])) ? $buffer[2] : '');
 					$in = substr($in, $pos);
-					$code .= $buffer;
 				}
+
+				$in = substr($in, $tag_length);
+				$open++;
 			}
-
-			$code = substr($code, 0, -7);
-//			$code = preg_replace('#^[\r\n]*(.*?)[\n\r\s\t]*$#s', '$1', $code);
-			$code = preg_replace($htm_match, $htm_replace, $code);
-
-			switch (strtolower($stx))
+			else
 			{
-				case 'php':
+				// Close the block
+				if ($open == 1)
+				{
+					$code_block .= substr($in, 0, $pos2);
 
-					$remove_tags = false;
-					$code = str_replace(array('&lt;', '&gt;'), array('<', '>'), $code);
+					// Parse this code block
+					$out .= $this->bbcode_parse_code($stx, $code_block);
+					$code_block = '';
+					$open--;
+				}
+				else if ($open)
+				{
+					// Close one open tag... add to the current code block
+					$code_block .= substr($in, 0, $pos2 + 7);
+					$open--;
+				}
+				else
+				{
+					// end code without opening code... will be always outside code block
+					$out .= substr($in, 0, $pos2 + 7);
+				}
 
-					if (!preg_match('/\<\?.*?\?\>/is', $code))
-					{
-						$remove_tags = true;
-						$code = "<?php $code ?>";
-					}
-
-					$conf = array('highlight.bg', 'highlight.comment', 'highlight.default', 'highlight.html', 'highlight.keyword', 'highlight.string');
-					foreach ($conf as $ini_var)
-					{
-						@ini_set($ini_var, str_replace('highlight.', 'syntax', $ini_var));
-					}
-
-					// Because highlight_string is specialcharing the text (but we already did this before), we have to reverse this in order to get correct results
-					$code = htmlspecialchars_decode($code);
-					$code = highlight_string($code, true);
-
-					$str_from = array('<span style="color: ', '<font color="syntax', '</font>', '<code>', '</code>','[', ']', '.', ':');
-					$str_to = array('<span class="', '<span class="syntax', '</span>', '', '', '&#91;', '&#93;', '&#46;', '&#58;');
-
-					if ($remove_tags)
-					{
-						$str_from[] = '<span class="syntaxdefault">&lt;?php </span>';
-						$str_to[] = '';
-						$str_from[] = '<span class="syntaxdefault">&lt;?php&nbsp;';
-						$str_to[] = '<span class="syntaxdefault">';
-					}
-
-					$code = str_replace($str_from, $str_to, $code);
-					$code = preg_replace('#^(<span class="[a-z_]+">)\n?(.*?)\n?(</span>)$#is', '$1$2$3', $code);
-
-					if ($remove_tags)
-					{
-						$code = preg_replace('#(<span class="[a-z]+">)?\?&gt;</span>#', '', $code);
-					}
-
-					$code = preg_replace('#^<span class="[a-z]+"><span class="([a-z]+)">(.*)</span></span>#s', '<span class="$1">$2</span>', $code);
-					$code = preg_replace('#(?:[\n\r\s\t]|&nbsp;)*</span>$#u', '</span>', $code);
-
-					// remove newline at the end
-					if (!empty($code) && $code[strlen($code) - 1] == "\n")
-					{
-						$code = substr($code, 0, -1);
-					}
-
-					$out .= "[code=$stx:" . $this->bbcode_uid . ']' . $code . '[/code:' . $this->bbcode_uid . ']';
-				break;
-
-				default:
-					$out .= '[code:' . $this->bbcode_uid . ']' . $this->bbcode_specialchars($code) . '[/code:' . $this->bbcode_uid . ']';
-				break;
-			}
-
-			if (preg_match('#(.*?)\[code(?:=([a-z]+))?\](.+)#is', $in, $m))
-			{
-				$out .= $m[1];
-				$stx = $m[2];
-				$in = $m[3];
+				$in = substr($in, $pos2 + 7);
 			}
 		}
-		while ($in);
+
+		// if now $code_block has contents we need to parse the remaining code while removing the last closing tag to match up.
+		if ($code_block)
+		{
+			$code_block = substr($code_block, 0, -7);
+			$out .= $this->bbcode_parse_code($stx, $code_block);
+		}
 
 		return $out;
 	}
@@ -534,7 +584,7 @@ class bbcode_firstpass extends bbcode
 					{
 						array_push($list_end_tags, '/list:o:' . $this->bbcode_uid);
 					}
-					$out .= $buffer . ':' . $this->bbcode_uid . ']';
+					$out .= 'list' . substr($buffer, 4) . ':' . $this->bbcode_uid . ']';
 					$tok = '[';
 				}
 				else
@@ -645,11 +695,13 @@ class bbcode_firstpass extends bbcode
 					$tok = '[';
 					$buffer = '';
 
-					// Add space at the end of the closing tag if not happened before to allow following urls/smilies to be parsed correctly
+					/* Add space at the end of the closing tag if not happened before to allow following urls/smilies to be parsed correctly
+					* Do not try to think for the user. :/ Do not parse urls/smilies if there is no space - is the same as with other bbcodes too.
+					* Also, we won't have any spaces within $in anyway, only adding up spaces -> #10982
 					if (!$in || $in[0] !== ' ')
 					{
 						$out .= ' ';
-					}
+					}*/
 				}
 				else if (preg_match('#^quote(?:=&quot;(.*?)&quot;)?$#is', $buffer, $m))
 				{
@@ -848,7 +900,9 @@ class bbcode_firstpass extends bbcode
 			// Is this a link to somewhere inside this board? If so then remove the session id from the url
 			if (strpos($url, generate_board_url()) !== false && strpos($url, 'sid=') !== false)
 			{
-				$url = preg_replace('/(&amp;|\?)sid=[0-9a-f]{32}/', '\1', $url);
+				$url = preg_replace('/(&amp;|\?)sid=[0-9a-f]{32}&amp;/', '\1', $url);
+				$url = preg_replace('/(&amp;|\?)sid=[0-9a-f]{32}$/', '', $url);
+				$url = append_sid($url);
 			}
 
 			return ($var1) ? '[url=' . $this->bbcode_specialchars($url) . ':' . $this->bbcode_uid . ']' . $var2 . '[/url:' . $this->bbcode_uid . ']' : '[url:' . $this->bbcode_uid . ']' . $this->bbcode_specialchars($url) . '[/url:' . $this->bbcode_uid . ']'; 
@@ -896,6 +950,12 @@ class bbcode_firstpass extends bbcode
 
 			if ($pos_domain !== false && $pos_path >= $pos_domain && $pos_ext >= $pos_path)
 			{
+				// Ok, actually we allow linking to some files (this may be able to be extended in some way later...)
+				if (strpos($url, '/' . $check_path . '/download.' . $phpEx) !== 0)
+				{
+					return false;
+				}
+
 				return true;
 			}
 		}
@@ -968,10 +1028,8 @@ class parse_message extends bbcode_firstpass
 
 		// Do some general 'cleanup' first before processing message,
 		// e.g. remove excessive newlines(?), smilies(?)
-		// Transform \r\n and \r into \n
-		// TODO: Second regex looks wrong...
-		$match = array('#\r\n?#', "#(\n\s+){3,}#u", '#(script|about|applet|activex|chrome):#i');
-		$replace = array("\n", "\n\n", "\\1&#058;");
+		$match = array('#(script|about|applet|activex|chrome):#i');
+		$replace = array("\\1&#058;");
 		$this->message = preg_replace($match, $replace, trim($this->message));
 
 		// Message length check. -1 disables this check completely.
@@ -1021,7 +1079,7 @@ class parse_message extends bbcode_firstpass
 		if ($allow_magic_url)
 		{
 			$this->magic_url(generate_board_url());
-	
+
 			if ($config['max_' . $mode . '_urls'])
 			{
 				$num_urls += preg_match_all('#\<!-- ([lmwe]) --\>.*?\<!-- \1 --\>#', $this->message, $matches);
@@ -1169,8 +1227,8 @@ class parse_message extends bbcode_firstpass
 			while ($row = $db->sql_fetchrow($result))
 			{
 				// (assertion)
-				$match[] = '#(?<=^|[\n .])' . preg_quote($row['code'], '#') . '#';
-				$replace[] = '<!-- s' . $row['code'] . ' --><img src="{SMILIES_PATH}/' . $row['smiley_url'] . '" alt="' . $row['emotion'] . '" title="' . $row['emotion'] . '" /><!-- s' . $row['code'] . ' -->';
+				$match[] = '#(?<=^|[\n .])' . preg_quote($row['code'], '#') . '(?![^<>]*>)#';
+				$replace[] = '<!-- s' . $row['code'] . ' --><img src="{SMILIES_PATH}/' . $row['smiley_url'] . '" alt="' . $row['code'] . '" title="' . $row['emotion'] . '" /><!-- s' . $row['code'] . ' -->';
 			}
 			$db->sql_freeresult($result);
 		}
@@ -1507,7 +1565,15 @@ class parse_message extends bbcode_firstpass
 		}
 		else
 		{
+			if (utf8_strlen(preg_replace('#\[\/?[a-z\*\+\-]+(=[\S]+)?\]#ius', ' ', $this->message)) > 100)
+			{
+				$this->warn_msg[] = $user->lang['POLL_TITLE_TOO_LONG'];
+			}
 			$poll['poll_title'] = $this->parse($poll['enable_bbcode'], ($config['allow_post_links']) ? $poll['enable_urls'] : false, $poll['enable_smilies'], $poll['img_status'], false, false, $config['allow_post_links'], false);
+			if (strlen($poll['poll_title']) > 255)
+			{
+				$this->warn_msg[] = $user->lang['POLL_TITLE_COMP_TOO_LONG'];
+			}
 		}
 
 		$this->message = $tmp_message;

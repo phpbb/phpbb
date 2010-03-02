@@ -1,5 +1,4 @@
 /*
- MSSQL Schema for phpBB 3.x - (c) phpBB Group, 2005
 
  $Id$
 
@@ -71,6 +70,9 @@ GO
 CREATE  INDEX [auth_opt_id] ON [phpbb_acl_groups]([auth_option_id]) ON [PRIMARY]
 GO
 
+CREATE  INDEX [auth_role_id] ON [phpbb_acl_groups]([auth_role_id]) ON [PRIMARY]
+GO
+
 
 /*
 	Table: 'phpbb_acl_options'
@@ -139,6 +141,9 @@ ALTER TABLE [phpbb_acl_roles_data] WITH NOCHECK ADD
 	)  ON [PRIMARY] 
 GO
 
+CREATE  INDEX [ath_opt_id] ON [phpbb_acl_roles_data]([auth_option_id]) ON [PRIMARY]
+GO
+
 
 /*
 	Table: 'phpbb_acl_users'
@@ -156,6 +161,9 @@ CREATE  INDEX [user_id] ON [phpbb_acl_users]([user_id]) ON [PRIMARY]
 GO
 
 CREATE  INDEX [auth_option_id] ON [phpbb_acl_users]([auth_option_id]) ON [PRIMARY]
+GO
+
+CREATE  INDEX [auth_role_id] ON [phpbb_acl_users]([auth_role_id]) ON [PRIMARY]
 GO
 
 
@@ -228,15 +236,16 @@ GO
 */
 CREATE TABLE [phpbb_bookmarks] (
 	[topic_id] [int] DEFAULT (0) NOT NULL ,
-	[user_id] [int] DEFAULT (0) NOT NULL ,
-	[order_id] [int] DEFAULT (0) NOT NULL 
+	[user_id] [int] DEFAULT (0) NOT NULL 
 ) ON [PRIMARY]
 GO
 
-CREATE  INDEX [order_id] ON [phpbb_bookmarks]([order_id]) ON [PRIMARY]
-GO
-
-CREATE  INDEX [topic_user_id] ON [phpbb_bookmarks]([topic_id], [user_id]) ON [PRIMARY]
+ALTER TABLE [phpbb_bookmarks] WITH NOCHECK ADD 
+	CONSTRAINT [PK_phpbb_bookmarks] PRIMARY KEY  CLUSTERED 
+	(
+		[topic_id],
+		[user_id]
+	)  ON [PRIMARY] 
 GO
 
 
@@ -1098,7 +1107,8 @@ GO
 CREATE TABLE [phpbb_search_wordlist] (
 	[word_id] [int] IDENTITY (1, 1) NOT NULL ,
 	[word_text] [varchar] (255) DEFAULT ('') NOT NULL ,
-	[word_common] [int] DEFAULT (0) NOT NULL 
+	[word_common] [int] DEFAULT (0) NOT NULL ,
+	[word_count] [int] DEFAULT (0) NOT NULL 
 ) ON [PRIMARY]
 GO
 
@@ -1112,6 +1122,9 @@ GO
 CREATE  UNIQUE  INDEX [wrd_txt] ON [phpbb_search_wordlist]([word_text]) ON [PRIMARY]
 GO
 
+CREATE  INDEX [wrd_cnt] ON [phpbb_search_wordlist]([word_count]) ON [PRIMARY]
+GO
+
 
 /*
 	Table: 'phpbb_search_wordmatch'
@@ -1121,6 +1134,9 @@ CREATE TABLE [phpbb_search_wordmatch] (
 	[word_id] [int] DEFAULT (0) NOT NULL ,
 	[title_match] [int] DEFAULT (0) NOT NULL 
 ) ON [PRIMARY]
+GO
+
+CREATE  UNIQUE  INDEX [unq_mtch] ON [phpbb_search_wordmatch]([word_id], [post_id], [title_match]) ON [PRIMARY]
 GO
 
 CREATE  INDEX [word_id] ON [phpbb_search_wordmatch]([word_id]) ON [PRIMARY]
@@ -1340,101 +1356,7 @@ CREATE TABLE [phpbb_styles_imageset] (
 	[imageset_id] [int] IDENTITY (1, 1) NOT NULL ,
 	[imageset_name] [varchar] (255) DEFAULT ('') NOT NULL ,
 	[imageset_copyright] [varchar] (255) DEFAULT ('') NOT NULL ,
-	[imageset_path] [varchar] (100) DEFAULT ('') NOT NULL ,
-	[site_logo] [varchar] (200) DEFAULT ('') NOT NULL ,
-	[upload_bar] [varchar] (200) DEFAULT ('') NOT NULL ,
-	[poll_left] [varchar] (200) DEFAULT ('') NOT NULL ,
-	[poll_center] [varchar] (200) DEFAULT ('') NOT NULL ,
-	[poll_right] [varchar] (200) DEFAULT ('') NOT NULL ,
-	[icon_friend] [varchar] (200) DEFAULT ('') NOT NULL ,
-	[icon_foe] [varchar] (200) DEFAULT ('') NOT NULL ,
-	[forum_link] [varchar] (200) DEFAULT ('') NOT NULL ,
-	[forum_read] [varchar] (200) DEFAULT ('') NOT NULL ,
-	[forum_read_locked] [varchar] (200) DEFAULT ('') NOT NULL ,
-	[forum_read_subforum] [varchar] (200) DEFAULT ('') NOT NULL ,
-	[forum_unread] [varchar] (200) DEFAULT ('') NOT NULL ,
-	[forum_unread_locked] [varchar] (200) DEFAULT ('') NOT NULL ,
-	[forum_unread_subforum] [varchar] (200) DEFAULT ('') NOT NULL ,
-	[topic_moved] [varchar] (200) DEFAULT ('') NOT NULL ,
-	[topic_read] [varchar] (200) DEFAULT ('') NOT NULL ,
-	[topic_read_mine] [varchar] (200) DEFAULT ('') NOT NULL ,
-	[topic_read_hot] [varchar] (200) DEFAULT ('') NOT NULL ,
-	[topic_read_hot_mine] [varchar] (200) DEFAULT ('') NOT NULL ,
-	[topic_read_locked] [varchar] (200) DEFAULT ('') NOT NULL ,
-	[topic_read_locked_mine] [varchar] (200) DEFAULT ('') NOT NULL ,
-	[topic_unread] [varchar] (200) DEFAULT ('') NOT NULL ,
-	[topic_unread_mine] [varchar] (200) DEFAULT ('') NOT NULL ,
-	[topic_unread_hot] [varchar] (200) DEFAULT ('') NOT NULL ,
-	[topic_unread_hot_mine] [varchar] (200) DEFAULT ('') NOT NULL ,
-	[topic_unread_locked] [varchar] (200) DEFAULT ('') NOT NULL ,
-	[topic_unread_locked_mine] [varchar] (200) DEFAULT ('') NOT NULL ,
-	[sticky_read] [varchar] (200) DEFAULT ('') NOT NULL ,
-	[sticky_read_mine] [varchar] (200) DEFAULT ('') NOT NULL ,
-	[sticky_read_locked] [varchar] (200) DEFAULT ('') NOT NULL ,
-	[sticky_read_locked_mine] [varchar] (200) DEFAULT ('') NOT NULL ,
-	[sticky_unread] [varchar] (200) DEFAULT ('') NOT NULL ,
-	[sticky_unread_mine] [varchar] (200) DEFAULT ('') NOT NULL ,
-	[sticky_unread_locked] [varchar] (200) DEFAULT ('') NOT NULL ,
-	[sticky_unread_locked_mine] [varchar] (200) DEFAULT ('') NOT NULL ,
-	[announce_read] [varchar] (200) DEFAULT ('') NOT NULL ,
-	[announce_read_mine] [varchar] (200) DEFAULT ('') NOT NULL ,
-	[announce_read_locked] [varchar] (200) DEFAULT ('') NOT NULL ,
-	[announce_read_locked_mine] [varchar] (200) DEFAULT ('') NOT NULL ,
-	[announce_unread] [varchar] (200) DEFAULT ('') NOT NULL ,
-	[announce_unread_mine] [varchar] (200) DEFAULT ('') NOT NULL ,
-	[announce_unread_locked] [varchar] (200) DEFAULT ('') NOT NULL ,
-	[announce_unread_locked_mine] [varchar] (200) DEFAULT ('') NOT NULL ,
-	[global_read] [varchar] (200) DEFAULT ('') NOT NULL ,
-	[global_read_mine] [varchar] (200) DEFAULT ('') NOT NULL ,
-	[global_read_locked] [varchar] (200) DEFAULT ('') NOT NULL ,
-	[global_read_locked_mine] [varchar] (200) DEFAULT ('') NOT NULL ,
-	[global_unread] [varchar] (200) DEFAULT ('') NOT NULL ,
-	[global_unread_mine] [varchar] (200) DEFAULT ('') NOT NULL ,
-	[global_unread_locked] [varchar] (200) DEFAULT ('') NOT NULL ,
-	[global_unread_locked_mine] [varchar] (200) DEFAULT ('') NOT NULL ,
-	[pm_read] [varchar] (200) DEFAULT ('') NOT NULL ,
-	[pm_unread] [varchar] (200) DEFAULT ('') NOT NULL ,
-	[icon_contact_aim] [varchar] (200) DEFAULT ('') NOT NULL ,
-	[icon_contact_email] [varchar] (200) DEFAULT ('') NOT NULL ,
-	[icon_contact_icq] [varchar] (200) DEFAULT ('') NOT NULL ,
-	[icon_contact_jabber] [varchar] (200) DEFAULT ('') NOT NULL ,
-	[icon_contact_msnm] [varchar] (200) DEFAULT ('') NOT NULL ,
-	[icon_contact_pm] [varchar] (200) DEFAULT ('') NOT NULL ,
-	[icon_contact_yahoo] [varchar] (200) DEFAULT ('') NOT NULL ,
-	[icon_contact_www] [varchar] (200) DEFAULT ('') NOT NULL ,
-	[icon_post_delete] [varchar] (200) DEFAULT ('') NOT NULL ,
-	[icon_post_edit] [varchar] (200) DEFAULT ('') NOT NULL ,
-	[icon_post_info] [varchar] (200) DEFAULT ('') NOT NULL ,
-	[icon_post_quote] [varchar] (200) DEFAULT ('') NOT NULL ,
-	[icon_post_report] [varchar] (200) DEFAULT ('') NOT NULL ,
-	[icon_post_target] [varchar] (200) DEFAULT ('') NOT NULL ,
-	[icon_post_target_unread] [varchar] (200) DEFAULT ('') NOT NULL ,
-	[icon_topic_attach] [varchar] (200) DEFAULT ('') NOT NULL ,
-	[icon_topic_latest] [varchar] (200) DEFAULT ('') NOT NULL ,
-	[icon_topic_newest] [varchar] (200) DEFAULT ('') NOT NULL ,
-	[icon_topic_reported] [varchar] (200) DEFAULT ('') NOT NULL ,
-	[icon_topic_unapproved] [varchar] (200) DEFAULT ('') NOT NULL ,
-	[icon_user_online] [varchar] (200) DEFAULT ('') NOT NULL ,
-	[icon_user_offline] [varchar] (200) DEFAULT ('') NOT NULL ,
-	[icon_user_profile] [varchar] (200) DEFAULT ('') NOT NULL ,
-	[icon_user_search] [varchar] (200) DEFAULT ('') NOT NULL ,
-	[icon_user_warn] [varchar] (200) DEFAULT ('') NOT NULL ,
-	[button_pm_forward] [varchar] (200) DEFAULT ('') NOT NULL ,
-	[button_pm_new] [varchar] (200) DEFAULT ('') NOT NULL ,
-	[button_pm_reply] [varchar] (200) DEFAULT ('') NOT NULL ,
-	[button_topic_locked] [varchar] (200) DEFAULT ('') NOT NULL ,
-	[button_topic_new] [varchar] (200) DEFAULT ('') NOT NULL ,
-	[button_topic_reply] [varchar] (200) DEFAULT ('') NOT NULL ,
-	[user_icon1] [varchar] (200) DEFAULT ('') NOT NULL ,
-	[user_icon2] [varchar] (200) DEFAULT ('') NOT NULL ,
-	[user_icon3] [varchar] (200) DEFAULT ('') NOT NULL ,
-	[user_icon4] [varchar] (200) DEFAULT ('') NOT NULL ,
-	[user_icon5] [varchar] (200) DEFAULT ('') NOT NULL ,
-	[user_icon6] [varchar] (200) DEFAULT ('') NOT NULL ,
-	[user_icon7] [varchar] (200) DEFAULT ('') NOT NULL ,
-	[user_icon8] [varchar] (200) DEFAULT ('') NOT NULL ,
-	[user_icon9] [varchar] (200) DEFAULT ('') NOT NULL ,
-	[user_icon10] [varchar] (200) DEFAULT ('') NOT NULL 
+	[imageset_path] [varchar] (100) DEFAULT ('') NOT NULL 
 ) ON [PRIMARY]
 GO
 
@@ -1446,6 +1368,31 @@ ALTER TABLE [phpbb_styles_imageset] WITH NOCHECK ADD
 GO
 
 CREATE  UNIQUE  INDEX [imgset_nm] ON [phpbb_styles_imageset]([imageset_name]) ON [PRIMARY]
+GO
+
+
+/*
+	Table: 'phpbb_styles_imageset_data'
+*/
+CREATE TABLE [phpbb_styles_imageset_data] (
+	[image_id] [int] IDENTITY (1, 1) NOT NULL ,
+	[image_name] [varchar] (200) DEFAULT ('') NOT NULL ,
+	[image_filename] [varchar] (200) DEFAULT ('') NOT NULL ,
+	[image_lang] [varchar] (30) DEFAULT ('') NOT NULL ,
+	[image_height] [int] DEFAULT (0) NOT NULL ,
+	[image_width] [int] DEFAULT (0) NOT NULL ,
+	[imageset_id] [int] DEFAULT (0) NOT NULL 
+) ON [PRIMARY]
+GO
+
+ALTER TABLE [phpbb_styles_imageset_data] WITH NOCHECK ADD 
+	CONSTRAINT [PK_phpbb_styles_imageset_data] PRIMARY KEY  CLUSTERED 
+	(
+		[image_id]
+	)  ON [PRIMARY] 
+GO
+
+CREATE  INDEX [i_id] ON [phpbb_styles_imageset_data]([imageset_id]) ON [PRIMARY]
 GO
 
 
@@ -1481,7 +1428,7 @@ CREATE TABLE [phpbb_topics] (
 	[topic_moved_id] [int] DEFAULT (0) NOT NULL ,
 	[topic_bumped] [int] DEFAULT (0) NOT NULL ,
 	[topic_bumper] [int] DEFAULT (0) NOT NULL ,
-	[poll_title] [varchar] (100) DEFAULT ('') NOT NULL ,
+	[poll_title] [varchar] (255) DEFAULT ('') NOT NULL ,
 	[poll_start] [int] DEFAULT (0) NOT NULL ,
 	[poll_length] [int] DEFAULT (0) NOT NULL ,
 	[poll_max_options] [int] DEFAULT (1) NOT NULL ,
@@ -1507,6 +1454,9 @@ CREATE  INDEX [last_post_time] ON [phpbb_topics]([topic_last_post_time]) ON [PRI
 GO
 
 CREATE  INDEX [topic_approved] ON [phpbb_topics]([topic_approved]) ON [PRIMARY]
+GO
+
+CREATE  INDEX [forum_appr_last] ON [phpbb_topics]([forum_id], [topic_approved], [topic_last_post_id]) ON [PRIMARY]
 GO
 
 CREATE  INDEX [fid_time_moved] ON [phpbb_topics]([forum_id], [topic_last_post_time], [topic_moved_id]) ON [PRIMARY]
@@ -1691,7 +1641,7 @@ GO
 CREATE  INDEX [user_type] ON [phpbb_users]([user_type]) ON [PRIMARY]
 GO
 
-CREATE  INDEX [username_clean] ON [phpbb_users]([username_clean]) ON [PRIMARY]
+CREATE  UNIQUE  INDEX [username_clean] ON [phpbb_users]([username_clean]) ON [PRIMARY]
 GO
 
 

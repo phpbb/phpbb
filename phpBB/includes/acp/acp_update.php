@@ -40,10 +40,9 @@ class acp_update
 		$latest_version = trim($info[0]);
 
 		$announcement_url = trim($info[1]);
-		$update_archive_link = 'http://www.phpbb.com/files/releases/phpBB-' . $config['version'] . '_to_' . $latest_version . '.zip';
 		$update_link = append_sid($phpbb_root_path . 'install/index.' . $phpEx, 'mode=update');
 
-		$up_to_date = (version_compare(strtolower($config['version']), strtolower($latest_version), '<')) ? false : true;
+		$up_to_date = (version_compare(str_replace('rc', 'RC', strtolower($config['version'])), str_replace('rc', 'RC', strtolower($latest_version)), '<')) ? false : true;
 
 		$template->assign_vars(array(
 			'S_UP_TO_DATE'		=> $up_to_date,

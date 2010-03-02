@@ -81,7 +81,7 @@ class filespec
 	* @param string $prefix Prefix applied to filename
 	* @access public
 	*/
-	function clean_filename($mode = 'unique', $prefix = '')
+	function clean_filename($mode = 'unique', $prefix = '', $user_id = '')
 	{
 		if ($this->init_error)
 		{
@@ -110,6 +110,12 @@ class filespec
 				$this->realname = $prefix . md5(unique_id());
 			break;
 
+			case 'avatar':
+				$this->extension = strtolower($this->extension);
+				$this->realname = $prefix . $user_id . '.' . $this->extension;
+				
+			break;
+			
 			case 'unique_ext':
 			default:
 				$this->realname = $prefix . md5(unique_id()) . '.' . $this->extension;
@@ -224,7 +230,7 @@ class filespec
 	* @param octal $chmod Permission mask for chmodding the file after a successful move
 	* @access public
 	*/
-	function move_file($destination, $overwrite = false, $chmod = 0666)
+	function move_file($destination, $overwrite = false, $skip_image_check = false, $chmod = 0666)
 	{
 		global $user, $phpbb_root_path;
 
@@ -309,7 +315,7 @@ class filespec
 		// Try to get real filesize from destination folder
 		$this->filesize = (@filesize($this->destination_file)) ? @filesize($this->destination_file) : $this->filesize;
 
-		if ($this->is_image())
+		if ($this->is_image() && !$skip_image_check)
 		{
 			$this->width = $this->height = 0;
 
@@ -336,6 +342,12 @@ class filespec
 					{
 						$this->error[] = sprintf($user->lang['IMAGE_FILETYPE_MISMATCH'], $types[$this->image_info[2]][0], $this->extension);
 					}
+				}
+
+				// Make sure the dimensions match a valid image
+				if (empty($this->width) || empty($this->height))
+				{
+					$this->error[] = $user->lang['ATTACHED_IMAGE_NOT_IMAGE'];
 				}
 			}
 			else
@@ -400,7 +412,7 @@ class fileerror extends filespec
 
 /**
 * File upload class
-* Init class (all parameters optional and able to be set/overwritten seperatly) - scope is global and valid for all uploads
+* Init class (all parameters optional and able to be set/overwritten separately) - scope is global and valid for all uploads
 *
 * @package phpBB3
 */
@@ -561,7 +573,20 @@ class fileupload
 		{
 			$_FILES[$form_name]['name'] = basename($source_file);
 			$_FILES[$form_name]['size'] = 0;
-			$_FILES[$form_name]['type'] = '';
+			$mimetype = '';
+
+			if (function_exists('mime_content_type'))
+			{
+				$mimetype = mime_content_type($filename);
+			}
+
+			// Some browsers choke on a mimetype of application/octet-stream
+			if (!$mimetype || $mimetype == 'application/octet-stream')
+			{
+				$mimetype = 'application/octetstream';
+			}
+
+			$_FILES[$form_name]['type'] = $mimetype;
 		}
 		else
 		{
@@ -658,6 +683,12 @@ class fileupload
 		{
 			$file = new fileerror($user->lang[$this->error_prefix . 'NOT_UPLOADED']);
 			return $file;
+		}
+
+		// Make sure $path not beginning with /
+		if (strpos($path, '/') === 0)
+		{
+			$path = substr($path, 1);
 		}
 
 		fputs($fsock, 'GET /' . $path . " HTTP/1.1\r\n");

@@ -79,7 +79,7 @@ class cache extends acm
 			return array();
 		}
 
-		if (($censors = $this->get('word_censors')) === false)
+		if (($censors = $this->get('_word_censors')) === false)
 		{
 			$sql = 'SELECT word, replacement
 				FROM ' . WORDS_TABLE;
@@ -93,7 +93,7 @@ class cache extends acm
 			}
 			$db->sql_freeresult($result);
 
-			$this->put('word_censors', $censors);
+			$this->put('_word_censors', $censors);
 		}
 
 		return $censors;
@@ -104,7 +104,7 @@ class cache extends acm
 	*/
 	function obtain_icons()
 	{
-		if (($icons = $this->get('icons')) === false)
+		if (($icons = $this->get('_icons')) === false)
 		{
 			global $db;
 	
@@ -124,7 +124,7 @@ class cache extends acm
 			}
 			$db->sql_freeresult($result);
 
-			$this->put('icons', $icons);
+			$this->put('_icons', $icons);
 		}
 
 		return $icons;
@@ -135,7 +135,7 @@ class cache extends acm
 	*/
 	function obtain_ranks()
 	{
-		if (($ranks = $this->get('ranks')) === false)
+		if (($ranks = $this->get('_ranks')) === false)
 		{
 			global $db;
 	
@@ -165,7 +165,7 @@ class cache extends acm
 			}
 			$db->sql_freeresult($result);
 
-			$this->put('ranks', $ranks);
+			$this->put('_ranks', $ranks);
 		}
 
 		return $ranks;
@@ -285,7 +285,7 @@ class cache extends acm
 	*/
 	function obtain_bots()
 	{
-		if (($bots = $this->get('bots')) === false)
+		if (($bots = $this->get('_bots')) === false)
 		{
 			global $db;
 	
@@ -323,7 +323,7 @@ class cache extends acm
 			}
 			$db->sql_freeresult($result);
 
-			$this->put('bots', $bots);
+			$this->put('_bots', $bots);
 		}
 	
 		return $bots;

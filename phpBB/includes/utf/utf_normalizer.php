@@ -230,8 +230,8 @@ class utf_normalizer
 		// Load some commonly-used tables
 		if (!isset($utf_jamo_index, $utf_jamo_type, $utf_combining_class))
 		{
-			global $phpbb_root_path;
-			include($phpbb_root_path . 'includes/utf/data/utf_normalizer_common.php');
+			global $phpbb_root_path, $phpEx;
+			include($phpbb_root_path . 'includes/utf/data/utf_normalizer_common.' . $phpEx);
 		}
 
 		// Buffer the last ASCII char before the UTF-8 stuff if applicable
@@ -920,12 +920,13 @@ class utf_normalizer
 	*/
 	function decompose($str, $pos, $len, &$decomp_map)
 	{
-		global $utf_combining_class, $phpbb_root_path;
+		global $utf_combining_class;
 
 		// Load some commonly-used tables
 		if (!isset($utf_combining_class))
 		{
-			include($phpbb_root_path . 'includes/utf/data/utf_normalizer_common.php');
+			global $phpbb_root_path, $phpEx;
+			include($phpbb_root_path . 'includes/utf/data/utf_normalizer_common.' . $phpEx);
 		}
 
 		// UTF char length array

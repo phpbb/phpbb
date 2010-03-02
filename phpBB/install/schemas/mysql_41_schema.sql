@@ -1,6 +1,4 @@
 #
-# MySQL Schema for phpBB 3.x - (c) phpBB Group, 2005
-#
 # $Id$
 #
 
@@ -38,7 +36,8 @@ CREATE TABLE phpbb_acl_groups (
 	auth_role_id mediumint(8) UNSIGNED DEFAULT '0' NOT NULL,
 	auth_setting tinyint(2) DEFAULT '0' NOT NULL,
 	KEY group_id (group_id),
-	KEY auth_opt_id (auth_option_id)
+	KEY auth_opt_id (auth_option_id),
+	KEY auth_role_id (auth_role_id)
 ) CHARACTER SET `utf8` COLLATE `utf8_bin`;
 
 
@@ -72,7 +71,8 @@ CREATE TABLE phpbb_acl_roles_data (
 	role_id mediumint(8) UNSIGNED DEFAULT '0' NOT NULL,
 	auth_option_id mediumint(8) UNSIGNED DEFAULT '0' NOT NULL,
 	auth_setting tinyint(2) DEFAULT '0' NOT NULL,
-	PRIMARY KEY (role_id, auth_option_id)
+	PRIMARY KEY (role_id, auth_option_id),
+	KEY ath_opt_id (auth_option_id)
 ) CHARACTER SET `utf8` COLLATE `utf8_bin`;
 
 
@@ -84,7 +84,8 @@ CREATE TABLE phpbb_acl_users (
 	auth_role_id mediumint(8) UNSIGNED DEFAULT '0' NOT NULL,
 	auth_setting tinyint(2) DEFAULT '0' NOT NULL,
 	KEY user_id (user_id),
-	KEY auth_option_id (auth_option_id)
+	KEY auth_option_id (auth_option_id),
+	KEY auth_role_id (auth_role_id)
 ) CHARACTER SET `utf8` COLLATE `utf8_bin`;
 
 
@@ -128,9 +129,7 @@ CREATE TABLE phpbb_bbcodes (
 CREATE TABLE phpbb_bookmarks (
 	topic_id mediumint(8) UNSIGNED DEFAULT '0' NOT NULL,
 	user_id mediumint(8) UNSIGNED DEFAULT '0' NOT NULL,
-	order_id mediumint(8) UNSIGNED DEFAULT '0' NOT NULL,
-	KEY order_id (order_id),
-	KEY topic_user_id (topic_id, user_id)
+	PRIMARY KEY (topic_id, user_id)
 ) CHARACTER SET `utf8` COLLATE `utf8_bin`;
 
 
@@ -638,8 +637,10 @@ CREATE TABLE phpbb_search_wordlist (
 	word_id mediumint(8) UNSIGNED NOT NULL auto_increment,
 	word_text varchar(255) DEFAULT '' NOT NULL,
 	word_common tinyint(1) UNSIGNED DEFAULT '0' NOT NULL,
+	word_count mediumint(8) UNSIGNED DEFAULT '0' NOT NULL,
 	PRIMARY KEY (word_id),
-	UNIQUE wrd_txt (word_text)
+	UNIQUE wrd_txt (word_text),
+	KEY wrd_cnt (word_count)
 ) CHARACTER SET `utf8` COLLATE `utf8_bin`;
 
 
@@ -648,6 +649,7 @@ CREATE TABLE phpbb_search_wordmatch (
 	post_id mediumint(8) UNSIGNED DEFAULT '0' NOT NULL,
 	word_id mediumint(8) UNSIGNED DEFAULT '0' NOT NULL,
 	title_match tinyint(1) UNSIGNED DEFAULT '0' NOT NULL,
+	UNIQUE unq_mtch (word_id, post_id, title_match),
 	KEY word_id (word_id),
 	KEY post_id (post_id)
 ) CHARACTER SET `utf8` COLLATE `utf8_bin`;
@@ -771,102 +773,22 @@ CREATE TABLE phpbb_styles_imageset (
 	imageset_name varchar(255) DEFAULT '' NOT NULL,
 	imageset_copyright varchar(255) DEFAULT '' NOT NULL,
 	imageset_path varchar(100) DEFAULT '' NOT NULL,
-	site_logo varchar(200) DEFAULT '' NOT NULL,
-	upload_bar varchar(200) DEFAULT '' NOT NULL,
-	poll_left varchar(200) DEFAULT '' NOT NULL,
-	poll_center varchar(200) DEFAULT '' NOT NULL,
-	poll_right varchar(200) DEFAULT '' NOT NULL,
-	icon_friend varchar(200) DEFAULT '' NOT NULL,
-	icon_foe varchar(200) DEFAULT '' NOT NULL,
-	forum_link varchar(200) DEFAULT '' NOT NULL,
-	forum_read varchar(200) DEFAULT '' NOT NULL,
-	forum_read_locked varchar(200) DEFAULT '' NOT NULL,
-	forum_read_subforum varchar(200) DEFAULT '' NOT NULL,
-	forum_unread varchar(200) DEFAULT '' NOT NULL,
-	forum_unread_locked varchar(200) DEFAULT '' NOT NULL,
-	forum_unread_subforum varchar(200) DEFAULT '' NOT NULL,
-	topic_moved varchar(200) DEFAULT '' NOT NULL,
-	topic_read varchar(200) DEFAULT '' NOT NULL,
-	topic_read_mine varchar(200) DEFAULT '' NOT NULL,
-	topic_read_hot varchar(200) DEFAULT '' NOT NULL,
-	topic_read_hot_mine varchar(200) DEFAULT '' NOT NULL,
-	topic_read_locked varchar(200) DEFAULT '' NOT NULL,
-	topic_read_locked_mine varchar(200) DEFAULT '' NOT NULL,
-	topic_unread varchar(200) DEFAULT '' NOT NULL,
-	topic_unread_mine varchar(200) DEFAULT '' NOT NULL,
-	topic_unread_hot varchar(200) DEFAULT '' NOT NULL,
-	topic_unread_hot_mine varchar(200) DEFAULT '' NOT NULL,
-	topic_unread_locked varchar(200) DEFAULT '' NOT NULL,
-	topic_unread_locked_mine varchar(200) DEFAULT '' NOT NULL,
-	sticky_read varchar(200) DEFAULT '' NOT NULL,
-	sticky_read_mine varchar(200) DEFAULT '' NOT NULL,
-	sticky_read_locked varchar(200) DEFAULT '' NOT NULL,
-	sticky_read_locked_mine varchar(200) DEFAULT '' NOT NULL,
-	sticky_unread varchar(200) DEFAULT '' NOT NULL,
-	sticky_unread_mine varchar(200) DEFAULT '' NOT NULL,
-	sticky_unread_locked varchar(200) DEFAULT '' NOT NULL,
-	sticky_unread_locked_mine varchar(200) DEFAULT '' NOT NULL,
-	announce_read varchar(200) DEFAULT '' NOT NULL,
-	announce_read_mine varchar(200) DEFAULT '' NOT NULL,
-	announce_read_locked varchar(200) DEFAULT '' NOT NULL,
-	announce_read_locked_mine varchar(200) DEFAULT '' NOT NULL,
-	announce_unread varchar(200) DEFAULT '' NOT NULL,
-	announce_unread_mine varchar(200) DEFAULT '' NOT NULL,
-	announce_unread_locked varchar(200) DEFAULT '' NOT NULL,
-	announce_unread_locked_mine varchar(200) DEFAULT '' NOT NULL,
-	global_read varchar(200) DEFAULT '' NOT NULL,
-	global_read_mine varchar(200) DEFAULT '' NOT NULL,
-	global_read_locked varchar(200) DEFAULT '' NOT NULL,
-	global_read_locked_mine varchar(200) DEFAULT '' NOT NULL,
-	global_unread varchar(200) DEFAULT '' NOT NULL,
-	global_unread_mine varchar(200) DEFAULT '' NOT NULL,
-	global_unread_locked varchar(200) DEFAULT '' NOT NULL,
-	global_unread_locked_mine varchar(200) DEFAULT '' NOT NULL,
-	pm_read varchar(200) DEFAULT '' NOT NULL,
-	pm_unread varchar(200) DEFAULT '' NOT NULL,
-	icon_contact_aim varchar(200) DEFAULT '' NOT NULL,
-	icon_contact_email varchar(200) DEFAULT '' NOT NULL,
-	icon_contact_icq varchar(200) DEFAULT '' NOT NULL,
-	icon_contact_jabber varchar(200) DEFAULT '' NOT NULL,
-	icon_contact_msnm varchar(200) DEFAULT '' NOT NULL,
-	icon_contact_pm varchar(200) DEFAULT '' NOT NULL,
-	icon_contact_yahoo varchar(200) DEFAULT '' NOT NULL,
-	icon_contact_www varchar(200) DEFAULT '' NOT NULL,
-	icon_post_delete varchar(200) DEFAULT '' NOT NULL,
-	icon_post_edit varchar(200) DEFAULT '' NOT NULL,
-	icon_post_info varchar(200) DEFAULT '' NOT NULL,
-	icon_post_quote varchar(200) DEFAULT '' NOT NULL,
-	icon_post_report varchar(200) DEFAULT '' NOT NULL,
-	icon_post_target varchar(200) DEFAULT '' NOT NULL,
-	icon_post_target_unread varchar(200) DEFAULT '' NOT NULL,
-	icon_topic_attach varchar(200) DEFAULT '' NOT NULL,
-	icon_topic_latest varchar(200) DEFAULT '' NOT NULL,
-	icon_topic_newest varchar(200) DEFAULT '' NOT NULL,
-	icon_topic_reported varchar(200) DEFAULT '' NOT NULL,
-	icon_topic_unapproved varchar(200) DEFAULT '' NOT NULL,
-	icon_user_online varchar(200) DEFAULT '' NOT NULL,
-	icon_user_offline varchar(200) DEFAULT '' NOT NULL,
-	icon_user_profile varchar(200) DEFAULT '' NOT NULL,
-	icon_user_search varchar(200) DEFAULT '' NOT NULL,
-	icon_user_warn varchar(200) DEFAULT '' NOT NULL,
-	button_pm_forward varchar(200) DEFAULT '' NOT NULL,
-	button_pm_new varchar(200) DEFAULT '' NOT NULL,
-	button_pm_reply varchar(200) DEFAULT '' NOT NULL,
-	button_topic_locked varchar(200) DEFAULT '' NOT NULL,
-	button_topic_new varchar(200) DEFAULT '' NOT NULL,
-	button_topic_reply varchar(200) DEFAULT '' NOT NULL,
-	user_icon1 varchar(200) DEFAULT '' NOT NULL,
-	user_icon2 varchar(200) DEFAULT '' NOT NULL,
-	user_icon3 varchar(200) DEFAULT '' NOT NULL,
-	user_icon4 varchar(200) DEFAULT '' NOT NULL,
-	user_icon5 varchar(200) DEFAULT '' NOT NULL,
-	user_icon6 varchar(200) DEFAULT '' NOT NULL,
-	user_icon7 varchar(200) DEFAULT '' NOT NULL,
-	user_icon8 varchar(200) DEFAULT '' NOT NULL,
-	user_icon9 varchar(200) DEFAULT '' NOT NULL,
-	user_icon10 varchar(200) DEFAULT '' NOT NULL,
 	PRIMARY KEY (imageset_id),
 	UNIQUE imgset_nm (imageset_name)
+) CHARACTER SET `utf8` COLLATE `utf8_bin`;
+
+
+# Table: 'phpbb_styles_imageset_data'
+CREATE TABLE phpbb_styles_imageset_data (
+	image_id smallint(4) UNSIGNED NOT NULL auto_increment,
+	image_name varchar(200) DEFAULT '' NOT NULL,
+	image_filename varchar(200) DEFAULT '' NOT NULL,
+	image_lang varchar(30) DEFAULT '' NOT NULL,
+	image_height smallint(4) UNSIGNED DEFAULT '0' NOT NULL,
+	image_width smallint(4) UNSIGNED DEFAULT '0' NOT NULL,
+	imageset_id tinyint(4) DEFAULT '0' NOT NULL,
+	PRIMARY KEY (image_id),
+	KEY i_id (imageset_id)
 ) CHARACTER SET `utf8` COLLATE `utf8_bin`;
 
 
@@ -878,7 +800,7 @@ CREATE TABLE phpbb_topics (
 	topic_attachment tinyint(1) UNSIGNED DEFAULT '0' NOT NULL,
 	topic_approved tinyint(1) UNSIGNED DEFAULT '1' NOT NULL,
 	topic_reported tinyint(1) UNSIGNED DEFAULT '0' NOT NULL,
-	topic_title varchar(100) DEFAULT '' NOT NULL,
+	topic_title varchar(100) DEFAULT '' NOT NULL COLLATE utf8_unicode_ci,
 	topic_poster mediumint(8) UNSIGNED DEFAULT '0' NOT NULL,
 	topic_time int(11) UNSIGNED DEFAULT '0' NOT NULL,
 	topic_time_limit int(11) UNSIGNED DEFAULT '0' NOT NULL,
@@ -900,7 +822,7 @@ CREATE TABLE phpbb_topics (
 	topic_moved_id mediumint(8) UNSIGNED DEFAULT '0' NOT NULL,
 	topic_bumped tinyint(1) UNSIGNED DEFAULT '0' NOT NULL,
 	topic_bumper mediumint(8) UNSIGNED DEFAULT '0' NOT NULL,
-	poll_title varchar(100) DEFAULT '' NOT NULL,
+	poll_title varchar(255) DEFAULT '' NOT NULL,
 	poll_start int(11) UNSIGNED DEFAULT '0' NOT NULL,
 	poll_length int(11) UNSIGNED DEFAULT '0' NOT NULL,
 	poll_max_options tinyint(4) DEFAULT '1' NOT NULL,
@@ -911,6 +833,7 @@ CREATE TABLE phpbb_topics (
 	KEY forum_id_type (forum_id, topic_type),
 	KEY last_post_time (topic_last_post_time),
 	KEY topic_approved (topic_approved),
+	KEY forum_appr_last (forum_id, topic_approved, topic_last_post_id),
 	KEY fid_time_moved (forum_id, topic_last_post_time, topic_moved_id)
 ) CHARACTER SET `utf8` COLLATE `utf8_bin`;
 
@@ -1036,7 +959,7 @@ CREATE TABLE phpbb_users (
 	KEY user_birthday (user_birthday),
 	KEY user_email_hash (user_email_hash),
 	KEY user_type (user_type),
-	KEY username_clean (username_clean)
+	UNIQUE username_clean (username_clean)
 ) CHARACTER SET `utf8` COLLATE `utf8_bin`;
 
 

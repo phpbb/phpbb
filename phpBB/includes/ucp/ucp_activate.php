@@ -25,7 +25,7 @@ class ucp_activate
 		$user_id = request_var('u', 0);
 		$key = request_var('k', '');
 
-		$sql = 'SELECT user_id, username, user_type, user_email, user_newpasswd, user_lang, user_notify_type, user_actkey
+		$sql = 'SELECT user_id, username, user_type, user_email, user_newpasswd, user_lang, user_notify_type, user_actkey, user_inactive_reason
 			FROM ' . USERS_TABLE . "
 			WHERE user_id = $user_id";
 		$result = $db->sql_query($sql);
@@ -101,7 +101,14 @@ class ucp_activate
 		}
 		else
 		{
-			$message = (!$update_password) ? 'ACCOUNT_ACTIVE' : 'PASSWORD_ACTIVATED';
+			if (!$update_password)
+			{
+				$message = ($user_row['user_inactive_reason'] == INACTIVE_PROFILE) ? 'ACCOUNT_ACTIVE_PROFILE' : 'ACCOUNT_ACTIVE';
+			}
+			else
+			{
+				$message = 'PASSWORD_ACTIVATED';
+			}
 		}
 
 		meta_refresh(3, append_sid("{$phpbb_root_path}index.$phpEx"));

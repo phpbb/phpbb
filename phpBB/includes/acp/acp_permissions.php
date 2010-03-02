@@ -305,7 +305,7 @@ class acp_permissions
 					$s_forum_options = '';
 					foreach ($forum_list as $f_id => $f_row)
 					{
-						$s_forum_options .= '<option value="' . $f_id . '"' . (($f_row['selected']) ? ' selected="selected"' : '') . (($f_row['disabled']) ? ' disabled="disabled"' : '') . '>' . $f_row['padding'] . $f_row['forum_name'] . '</option>';
+						$s_forum_options .= '<option value="' . $f_id . '"' . (($f_row['selected']) ? ' selected="selected"' : '') . (($f_row['disabled']) ? ' disabled="disabled" class="disabled-option"' : '') . '>' . $f_row['padding'] . $f_row['forum_name'] . '</option>';
 					}
 
 					// Build subforum options
@@ -355,7 +355,10 @@ class acp_permissions
 				case 'usergroup':
 				case 'usergroup_view':
 
-					if (sizeof($user_id) || sizeof($group_id))
+					$all_users = (isset($_POST['all_users'])) ? true : false;
+					$all_groups = (isset($_POST['all_groups'])) ? true : false;
+
+					if ((sizeof($user_id) && !$all_users) || (sizeof($group_id) && !$all_groups))
 					{
 						if (sizeof($user_id))
 						{
@@ -370,11 +373,8 @@ class acp_permissions
 						continue 2;
 					}
 
-					$items = $this->retrieve_defined_user_groups($permission_scope, $forum_id, $permission_type);
-
 					// Now we check the users... because the "all"-selection is different here (all defined users/groups)
-					$all_users = (isset($_POST['all_users'])) ? true : false;
-					$all_groups = (isset($_POST['all_groups'])) ? true : false;
+					$items = $this->retrieve_defined_user_groups($permission_scope, $forum_id, $permission_type);
 
 					if ($all_users && sizeof($items['user_ids']))
 					{
@@ -422,7 +422,7 @@ class acp_permissions
 				$sql = 'SELECT forum_name
 					FROM ' . FORUMS_TABLE . '
 					WHERE ' . $db->sql_in_set('forum_id', $forum_id) . '
-					ORDER BY forum_name ASC';
+					ORDER BY left_id ASC';
 				$result = $db->sql_query($sql);
 
 				$forum_names = array();
@@ -565,17 +565,20 @@ class acp_permissions
 			break;
 		}
 
-		$sql = "SELECT $sql_id
-			FROM $table
-			WHERE " . $db->sql_in_set($sql_id, $ids);
-		$result = $db->sql_query($sql);
-
-		$ids = array();
-		while ($row = $db->sql_fetchrow($result))
+		if (sizeof($ids))
 		{
-			$ids[] = $row[$sql_id];
+			$sql = "SELECT $sql_id
+				FROM $table
+				WHERE " . $db->sql_in_set($sql_id, $ids);
+			$result = $db->sql_query($sql);
+
+			$ids = array();
+			while ($row = $db->sql_fetchrow($result))
+			{
+				$ids[] = $row[$sql_id];
+			}
+			$db->sql_freeresult($result);
 		}
-		$db->sql_freeresult($result);
 
 		if (!sizeof($ids))
 		{
@@ -656,7 +659,7 @@ class acp_permissions
 		// Remove users who are now moderators or admins from everyones foes list
 		if ($permission_type == 'm_' || $permission_type == 'a_')
 		{
-			update_foes();
+			update_foes($group_id, $user_id);
 		}
 
 		$this->log_action($mode, 'add', $permission_type, $ug_type, $ug_id, $forum_id);
@@ -723,7 +726,7 @@ class acp_permissions
 		// Remove users who are now moderators or admins from everyones foes list
 		if ($permission_type == 'm_' || $permission_type == 'a_')
 		{
-			update_foes();
+			update_foes($group_id, $user_id);
 		}
 
 		$this->log_action($mode, 'add', $permission_type, $ug_type, $ug_ids, $forum_ids);
@@ -823,7 +826,7 @@ class acp_permissions
 		$l_ug_list = '';
 		while ($row = $db->sql_fetchrow($result))
 		{
-			$l_ug_list .= (($l_ug_list != '') ? ', ' : '') . ((isset($row['group_type']) && $row['group_type'] == GROUP_SPECIAL) ? '<span class="blue">' . $user->lang['G_' . $row['name']] . '</span>' : $row['name']);
+			$l_ug_list .= (($l_ug_list != '') ? ', ' : '') . ((isset($row['group_type']) && $row['group_type'] == GROUP_SPECIAL) ? '<span class="sep">' . $user->lang['G_' . $row['name']] . '</span>' : $row['name']);
 		}
 		$db->sql_freeresult($result);
 

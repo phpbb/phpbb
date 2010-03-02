@@ -55,7 +55,6 @@ class session
 			if (strpos($argument, 'sid=') === 0 || strpos($argument, '_f_=') === 0)
 			{
 				unset($args[$key]);
-				break;
 			}
 		}
 
@@ -86,10 +85,10 @@ class session
 		// Current page from phpBB root (for example: adm/index.php?i=10&b=2)
 		$page = (($page_dir) ? $page_dir . '/' : '') . $page_name . (($query_string) ? "?$query_string" : '');
 
-		// The script path from the webroot to the current directory (for example: /phpBB2/adm/) : always prefixed with / and ends in /
+		// The script path from the webroot to the current directory (for example: /phpBB3/adm/) : always prefixed with / and ends in /
 		$script_path = trim(str_replace('\\', '/', dirname($script_name)));
 
-		// The script path from the webroot to the phpBB root (for example: /phpBB2/)
+		// The script path from the webroot to the phpBB root (for example: /phpBB3/)
 		$script_dirs = explode('/', $script_path);
 		array_splice($script_dirs, -sizeof($page_dirs));
 		$root_script_path = implode('/', $script_dirs) . (sizeof($root_dirs) ? '/' . implode('/', $root_dirs) : '');
@@ -113,13 +112,6 @@ class session
 
 			'page'				=> $page
 		);
-
-/*
-		if (!file_exists($page_name))
-		{
-			trigger_error('You are on a page that does not exist!', E_USER_ERROR);
-		}
-*/
 
 		return $page_array;
 	}
@@ -145,7 +137,7 @@ class session
 		$this->time_now				= time();
 		$this->cookie_data			= array('u' => 0, 'k' => '');
 		$this->update_session_page	= $update_session_page;
-		$this->browser				= (!empty($_SERVER['HTTP_USER_AGENT'])) ? (string) $_SERVER['HTTP_USER_AGENT'] : '';
+		$this->browser				= (!empty($_SERVER['HTTP_USER_AGENT'])) ? htmlspecialchars((string) $_SERVER['HTTP_USER_AGENT']) : '';
 		$this->forwarded_for		= (!empty($_SERVER['HTTP_X_FORWARDED_FOR'])) ? (string) $_SERVER['HTTP_X_FORWARDED_FOR'] : '';
 		$this->host					= (!empty($_SERVER['HTTP_HOST'])) ? (string) $_SERVER['HTTP_HOST'] : 'localhost';
 		$this->page					= $this->extract_current_page($phpbb_root_path);
@@ -168,14 +160,9 @@ class session
 				// check IPv4 first, the IPv6 is hopefully only going to be used very seldomly
 				if (!empty($ip) && !preg_match($ipv4, $ip) && !preg_match($ipv6, $ip))
 				{
-					if (!defined('DEBUG_EXTRA'))
-					{
-						trigger_error('Hacking attempt!');
-					}
-					else
-					{
-						trigger_error('Invalid HTTP_X_FORWARDED_FOR header detected: ' . htmlspecialchars($this->forwarded_for));
-					}
+					// contains invalid data, don't use the forwarded for header
+					$this->forwarded_for = '';
+					break;
 				}
 			}
 		}
@@ -211,7 +198,7 @@ class session
 		$this->load = false;
 
 		// Load limit check (if applicable)
-		if ($config['limit_load'])
+		if ($config['limit_load'] || $config['limit_search_load'])
 		{
 			if ($load = @file_get_contents('/proc/loadavg'))
 			{
@@ -221,6 +208,7 @@ class session
 			else
 			{
 				set_config('limit_load', '0');
+				set_config('limit_search_load', '0');
 			}
 		}
 
@@ -241,9 +229,17 @@ class session
 				// Validate IP length according to admin ... enforces an IP
 				// check on bots if admin requires this
 //				$quadcheck = ($config['ip_check_bot'] && $this->data['user_type'] & USER_BOT) ? 4 : $config['ip_check'];
-				
-				$s_ip = implode('.', array_slice(explode('.', $this->data['session_ip']), 0, $config['ip_check']));
-				$u_ip = implode('.', array_slice(explode('.', $this->ip), 0, $config['ip_check']));
+
+				if (strpos($this->ip, ':') !== false && strpos($this->data['session_ip'], ':') !== false)
+				{
+					$s_ip = short_ipv6($this->data['session_ip'], $config['ip_check']);
+					$u_ip = short_ipv6($this->ip, $config['ip_check']);
+				}
+				else
+				{
+					$s_ip = implode('.', array_slice(explode('.', $this->data['session_ip']), 0, $config['ip_check']));
+					$u_ip = implode('.', array_slice(explode('.', $this->ip), 0, $config['ip_check']));
+				}
 
 				$s_browser = ($config['browser_check']) ? strtolower(substr($this->data['session_browser'], 0, 149)) : '';
 				$u_browser = ($config['browser_check']) ? strtolower(substr($this->browser, 0, 149)) : '';
@@ -313,7 +309,7 @@ class session
 					// Added logging temporarly to help debug bugs...
 					if (defined('DEBUG_EXTRA'))
 					{
-						add_log('critical', 'LOG_IP_BROWSER_FORWARDED_CHECK', $u_ip, $s_ip, $u_browser, $s_browser, $u_forwarded_for, $s_forwarded_for);
+						add_log('critical', 'LOG_IP_BROWSER_FORWARDED_CHECK', $u_ip, $s_ip, $u_browser, $s_browser, htmlspecialchars($u_forwarded_for), htmlspecialchars($s_forwarded_for));
 					}
 				}
 			}
@@ -501,8 +497,16 @@ class session
 		if ($this->data['is_bot'] && $bot == $this->data['user_id'] && $this->data['session_id'])
 		{
 			// Only assign the current session if the ip, browser and forwarded_for match...
-			$s_ip = implode('.', array_slice(explode('.', $this->data['session_ip']), 0, $config['ip_check']));
-			$u_ip = implode('.', array_slice(explode('.', $this->ip), 0, $config['ip_check']));
+			if (strpos($this->ip, ':') !== false && strpos($this->data['session_ip'], ':') !== false)
+			{
+				$s_ip = short_ipv6($this->data['session_ip'], $config['ip_check']);
+				$u_ip = short_ipv6($this->ip, $config['ip_check']);
+			}
+			else
+			{
+				$s_ip = implode('.', array_slice(explode('.', $this->data['session_ip']), 0, $config['ip_check']));
+				$u_ip = implode('.', array_slice(explode('.', $this->ip), 0, $config['ip_check']));
+			}
 
 			$s_browser = ($config['browser_check']) ? strtolower(substr($this->data['session_browser'], 0, 149)) : '';
 			$u_browser = ($config['browser_check']) ? strtolower(substr($this->browser, 0, 149)) : '';
@@ -578,7 +582,7 @@ class session
 			WHERE session_id = \'' . $db->sql_escape($this->session_id) . '\'
 				AND session_user_id = ' . ANONYMOUS;
 
-		if (!$this->session_id || !$db->sql_query($sql) || !$db->sql_affectedrows())
+		if (!defined('IN_ERROR_HANDLER') && (!$this->session_id || !$db->sql_query($sql) || !$db->sql_affectedrows()))
 		{
 			// Limit new sessions in 1 minute period (if required)
 			if ((!isset($this->data['session_time']) || !$this->data['session_time']) && $config['active_sessions'])
@@ -592,6 +596,7 @@ class session
 
 				if ((int) $row['sessions'] > (int) $config['active_sessions'])
 				{
+					header('HTTP/1.1 503 Service Unavailable');
 					trigger_error('BOARD_UNAVAILABLE');
 				}
 			}
@@ -926,6 +931,14 @@ class session
 
 		if ($banned && !$return)
 		{
+			global $template;
+
+			// If the session is empty we need to create a valid one...
+			if (empty($this->session_id))
+			{
+				$this->session_create(ANONYMOUS);
+			}
+
 			// Initiate environment ... since it won't be set at this stage
 			$this->setup();
 
@@ -940,17 +953,27 @@ class session
 			{
 				global $phpEx;
 
-				// Set as a precaution to allow login_box() handling this case correctly as well as this function not being executed again.
-				define('IN_CHECK_BAN', 1);
-
 				$this->setup('ucp');
 				$this->data['is_registered'] = $this->data['is_bot'] = false;
+
+				// Set as a precaution to allow login_box() handling this case correctly as well as this function not being executed again.
+				define('IN_CHECK_BAN', 1);
 
 				login_box("index.$phpEx");
 
 				// The false here is needed, else the user is able to circumvent the ban.
 				$this->session_kill(false);
 			}
+
+			// Ok, we catch the case of an empty session id for the anonymous user...
+			// This can happen if the user is logging in, banned by username and the login_box() being called "again".
+			if (empty($this->session_id) && defined('IN_CHECK_BAN'))
+			{
+				$this->session_create(ANONYMOUS);
+			}
+
+			// Because we never have a fully working session we need to embed the style
+			$template->assign_var('S_FORCE_EMBED_STYLE', true);
 
 			// Determine which message to output
 			$till_date = ($ban_row['ban_end']) ? $this->format_date($ban_row['ban_end']) : '';
@@ -1022,6 +1045,41 @@ class session
 
 		return false;
 	}
+
+	/**
+	* Check if URI is blacklisted
+	* This should be called only where absolutly necessary, for example on the submitted website field
+	* This function is not in use at the moment and is only included for testing purposes, it may not work at all!
+	* This means it is untested at the moment and therefore commented out
+	*
+	* @param string $uri URI to check
+	* @return true if uri is on blacklist, else false. Only blacklist is checked (~zero FP), no grey lists
+	function check_uribl($uri)
+	{
+		// Normally parse_url() is not intended to parse uris
+		// We need to get the top-level domain name anyway... change.
+		$uri = parse_url($uri);
+
+		if ($uri === false || empty($uri['host']))
+		{
+			return false;
+		}
+
+		$uri = trim($uri['host']);
+
+		if ($uri)
+		{
+			// One problem here... the return parameter for the "windows" method is different from what
+			// we expect... this may render this check useless...
+			if (phpbb_checkdnsrr($uri . '.multi.uribl.com.', 'A') === true)
+			{
+				return true;
+			}
+		}
+
+		return false;
+	}
+	*/
 
 	/**
 	* Set/Update a persistent login key
@@ -1129,6 +1187,7 @@ class user extends session
 	var $lang_name;
 	var $lang_path;
 	var $img_lang;
+	var $img_array = array();
 
 	// Able to add new option (id 7)
 	var $keyoptions = array('viewimg' => 0, 'viewflash' => 1, 'viewsmilies' => 2, 'viewsigs' => 3, 'viewavatars' => 4, 'viewcensors' => 5, 'attachsig' => 6, 'bbcode' => 8, 'smilies' => 9, 'popuppm' => 10);
@@ -1329,6 +1388,90 @@ class user extends session
 
 		$this->img_lang = (file_exists($phpbb_root_path . 'styles/' . $this->theme['imageset_path'] . '/imageset/' . $this->lang_name)) ? $this->lang_name : $config['default_lang'];
 
+		$sql = 'SELECT *
+			FROM ' . STYLES_IMAGESET_DATA_TABLE . '
+			WHERE imageset_id = ' . $this->theme['imageset_id'] . "
+			AND image_lang IN('" . $db->sql_escape($this->img_lang) . "', '')";
+		$result = $db->sql_query($sql, 3600);
+
+		$localised_images = false;
+		while ($row = $db->sql_fetchrow($result))
+		{
+			if ($row['image_lang'])
+			{
+				$localised_images = true;
+			}
+			$this->img_array[$row['image_name']] = $row;
+		}
+		$db->sql_freeresult($result);
+
+		// there were no localised images, try to refresh the localised imageset for the user's language
+		if (!$localised_images)
+		{
+			// Attention: this code ignores the image definition list from acp_styles and just takes everything
+			// that the config file contains
+			$sql_ary = array();
+	
+			$db->sql_transaction('begin');
+	
+			$sql = 'DELETE FROM ' . STYLES_IMAGESET_DATA_TABLE . '
+				WHERE imageset_id = ' . $this->theme['imageset_id'] . '
+					AND image_lang = \'' . $db->sql_escape($this->img_lang) . '\'';
+			$result = $db->sql_query($sql);
+
+			if (@file_exists("{$phpbb_root_path}styles/{$this->theme['imageset_path']}/imageset/{$this->img_lang}/imageset.cfg"))
+			{
+				$cfg_data_imageset_data = parse_cfg_file("{$phpbb_root_path}styles/{$this->theme['imageset_path']}/imageset/{$this->img_lang}/imageset.cfg");
+				foreach ($cfg_data_imageset_data as $image_name => $value)
+				{
+					if (strpos($value, '*') !== false)
+					{
+						if (substr($value, -1, 1) === '*')
+						{
+							list($image_filename, $image_height) = explode('*', $value);
+							$image_width = 0;
+						}
+						else
+						{
+							list($image_filename, $image_height, $image_width) = explode('*', $value);
+						}
+					}
+					else
+					{
+						$image_filename = $value;
+						$image_height = $image_width = 0;
+					}
+
+					if (strpos($image_name, 'img_') === 0 && $image_filename)
+					{
+						$image_name = substr($image_name, 4);
+						$sql_ary[] = array(
+							'image_name'		=> $image_name,
+							'image_filename'	=> $image_filename,
+							'image_height'		=> $image_height,
+							'image_width'		=> $image_width,
+							'imageset_id'		=> $this->theme['imageset_id'],
+							'image_lang'		=> $this->img_lang,
+						);
+					}
+				}
+			}
+	
+			$db->sql_multi_insert(STYLES_IMAGESET_DATA_TABLE, $sql_ary);
+	
+			$db->sql_transaction('commit');
+	
+			$cache->destroy('sql', STYLES_IMAGESET_DATA_TABLE);
+	
+			add_log('admin', 'LOG_IMAGESET_REFRESHED', $this->theme['imageset_name'], $this->img_lang);
+		}
+
+		// If this function got called from the error handler we are finished here.
+		if (defined('IN_ERROR_HANDLER'))
+		{
+			return;
+		}
+
 		// Disable board if the install/ directory is still present
 		// For the brave development army we do not care about this, else we need to comment out this everytime we develop locally
 		if (!defined('DEBUG_EXTRA') && !defined('ADMIN_START') && !defined('IN_INSTALL') && !defined('IN_LOGIN') && file_exists($phpbb_root_path . 'install'))
@@ -1342,13 +1485,14 @@ class user extends session
 			{
 				$message = (!empty($config['board_disable_msg'])) ? $config['board_disable_msg'] : 'BOARD_DISABLE';
 			}
-
 			trigger_error($message);
 		}
 
 		// Is board disabled and user not an admin or moderator?
 		if ($config['board_disable'] && !defined('IN_LOGIN') && !$auth->acl_gets('a_', 'm_') && !$auth->acl_getf_global('m_'))
 		{
+			header('HTTP/1.1 503 Service Unavailable');
+
 			$message = (!empty($config['board_disable_msg'])) ? $config['board_disable_msg'] : 'BOARD_DISABLE';
 			trigger_error($message);
 		}
@@ -1358,13 +1502,14 @@ class user extends session
 		{
 			if ($this->load > floatval($config['limit_load']) && !defined('IN_LOGIN') && !$auth->acl_gets('a_', 'm_') && !$auth->acl_getf_global('m_'))
 			{
+				header('HTTP/1.1 503 Service Unavailable');
 				trigger_error('BOARD_UNAVAILABLE');
 			}
 		}
 
 		// Does the user need to change their password? If so, redirect to the
 		// ucp profile reg_details page ... of course do not redirect if we're already in the ucp
-		if (!defined('IN_ADMIN') && !defined('ADMIN_START') && $config['chg_passforce'] && $this->data['is_registered'] && $this->data['user_passchg'] < time() - ($config['chg_passforce'] * 86400))
+		if (!defined('IN_ADMIN') && !defined('ADMIN_START') && $config['chg_passforce'] && $this->data['is_registered'] && $auth->acl_get('u_chgpasswd') && $this->data['user_passchg'] < time() - ($config['chg_passforce'] * 86400))
 		{
 			if (strpos($this->page['query_string'], 'mode=reg_details') === false && $this->page['page_name'] != "ucp.$phpEx")
 			{
@@ -1440,7 +1585,7 @@ class user extends session
 		if (!$this->lang_path)
 		{
 			global $phpbb_root_path, $config;
-			
+
 			$this->lang_path = $phpbb_root_path . 'language/' . $config['default_lang'] . '/';
 		}
 
@@ -1565,43 +1710,20 @@ class user extends session
 		static $imgs;
 		global $phpbb_root_path;
 
-		$img_data = &$imgs[$img . $suffix];
+		$img_data = &$imgs[$img];
 
 		if (empty($img_data) || $width !== false)
 		{
-			if (!isset($this->theme[$img]) || !$this->theme[$img])
+			if (!isset($this->img_array[$img]))
 			{
 				// Do not fill the image to let designers decide what to do if the image is empty
 				$img_data = '';
 				return $img_data;
 			}
 
-			// Do not include dimensions?
-			if (strpos($this->theme[$img], '*') === false)
-			{
-				$imgsrc = trim($this->theme[$img]);
-				$width = $height = false;
-			}
-			else
-			{
-				if ($width === false)
-				{
-					list($imgsrc, $height, $width) = explode('*', $this->theme[$img]);
-				}
-				else
-				{
-					list($imgsrc, $height) = explode('*', $this->theme[$img]);
-				}
-			}
-
-			if ($suffix !== '')
-			{
-				$imgsrc = str_replace('{SUFFIX}', $suffix, $imgsrc);
-			}
-
-			$img_data['src'] = $phpbb_root_path . 'styles/' . $this->theme['imageset_path'] . '/imageset/' . str_replace('{LANG}', $this->img_lang, $imgsrc);
-			$img_data['width'] = $width;
-			$img_data['height'] = $height;
+			$img_data['src'] = $phpbb_root_path . 'styles/' . $this->theme['imageset_path'] . '/imageset/' . ($this->img_array[$img]['image_lang'] ? $this->img_array[$img]['image_lang'] .'/' : '') . $this->img_array[$img]['image_filename'];
+			$img_data['width'] = $this->img_array[$img]['image_width'];
+			$img_data['height'] = $this->img_array[$img]['image_height'];
 		}
 
 		$alt = (!empty($this->lang[$alt])) ? $this->lang[$alt] : $alt;

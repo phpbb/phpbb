@@ -17,13 +17,16 @@ class acp_search
 	var $state;
 	var $search;
 	var $max_post_id;
-	var $batch_size = 5000;
+	var $batch_size = 100;
 
 	function main($id, $mode)
 	{
 		global $user;
 
 		$user->add_lang('acp/search');
+
+		// For some this may be of help...
+		@ini_set('memory_limit', '128M');
 
 		switch ($mode)
 		{
@@ -143,7 +146,7 @@ class acp_search
 						if (!method_exists($search, 'init') || !($error = $search->init()))
 						{
 							set_config('search_type', $cfg_array['search_type']);
-		
+
 							if (!$updated)
 							{
 								add_log('admin', 'LOG_CONFIG_SEARCH');
@@ -210,6 +213,13 @@ class acp_search
 		}
 		$this->state = explode(',', $config['search_indexing_state']);
 
+		if (isset($_POST['cancel']))
+		{
+			$action = '';
+			$this->state = array();
+			$this->save_state();
+		}
+
 		if ($action)
 		{
 			switch ($action)
@@ -218,15 +228,15 @@ class acp_search
 					$type = request_var('type', '');
 					$this->display_progress_bar($type);
 				break;
-	
+
 				case 'delete':
 					$this->state[1] = 'delete';
 				break;
-	
+
 				case 'create':
 					$this->state[1] = 'create';
 				break;
-	
+
 				default:
 					trigger_error('NO_ACTION', E_USER_ERROR);
 				break;
@@ -243,10 +253,9 @@ class acp_search
 			{
 				trigger_error($error . adm_back_link($this->u_action), E_USER_WARNING);
 			}
-	
-			$action = &$this->state[1];
+			$name = ucfirst(strtolower(str_replace('_', ' ', $this->state[0])));
 
-			@set_time_limit(0);
+			$action = &$this->state[1];
 
 			$this->max_post_id = $this->get_max_post_id();
 
@@ -254,116 +263,147 @@ class acp_search
 			$this->state[2] = &$post_counter;
 			$this->save_state();
 
-			if ($action == 'delete')
+			switch ($action)
 			{
-				if (method_exists($this->search, 'delete_index'))
-				{
-					// pass a reference to myself so the $search object can make use of save_state() and attributes
-					if ($error = $this->search->delete_index($this, append_sid("{$phpbb_admin_path}index.$phpEx", "i=$id&mode=$mode&action=delete", false)))
+				case 'delete':
+					if (method_exists($this->search, 'delete_index'))
 					{
-						$this->state = array('');
-						$this->save_state();
-						trigger_error($error . adm_back_link($this->u_action) . $this->close_popup_js(), E_USER_WARNING);
-					}
-				}
-				else
-				{
-					$sql = 'SELECT post_id, poster_id, forum_id
-						FROM ' . POSTS_TABLE . '
-						WHERE post_id >= ' . (int) ($post_counter + 1) . '
-							AND post_id < ' . (int) ($post_counter + $this->batch_size);
-					$result = $db->sql_query($sql);
-	
-					$ids = $posters = array();
-					while ($row = $db->sql_fetchrow($result))
-					{
-						$ids[] = $row['post_id'];
-						$posters[] = $row['poster_id'];
-						$forum_ids[] = $row['forum_id'];
-					}
-					$db->sql_freeresult($result);
-
-					if (sizeof($ids))
-					{
-						$this->search->index_remove($ids, $posters, $forum_ids);
-					}
-	
-					$post_counter += $this->batch_size;
-	
-					// save the current state
-					$this->save_state();
-	
-					if ($post_counter <= $this->max_post_id)
-					{
-						redirect($this->u_action . '&amp;action=delete');
-					}
-				}
-	
-				$this->search->tidy();
-
-				$this->state = array('');
-				$this->save_state();
-
-				trigger_error($user->lang['SEARCH_INDEX_REMOVED'] . adm_back_link($this->u_action) . $this->close_popup_js());
-			}
-			else
-			{
-				if (method_exists($this->search, 'create_index'))
-				{
-					// pass a reference to myself so the $search object can make use of save_state() and attributes
-					if ($error = $this->search->create_index($this, append_sid("{$phpbb_admin_path}index.$phpEx", "i=$id&mode=$mode&action=create", false)))
-					{
-						$this->state = array('');
-						$this->save_state();
-						trigger_error($error . adm_back_link($this->u_action) . $this->close_popup_js(), E_USER_WARNING);
-					}
-				}
-				else
-				{
-					$sql = 'SELECT forum_id, enable_indexing
-						FROM ' . FORUMS_TABLE;
-					$result = $db->sql_query($sql, 3600);
-
-					while ($row = $db->sql_fetchrow($result))
-					{
-						$forums[$row['forum_id']] = (bool) $row['enable_indexing'];
-					}
-					$db->sql_freeresult($result);
-
-					$sql = 'SELECT post_id, post_subject, post_text, poster_id, forum_id
-						FROM ' . POSTS_TABLE . '
-						WHERE post_id >= ' . (int) ($post_counter + 1) . '
-							AND post_id < ' . (int) ($post_counter + $this->batch_size);
-					$result = $db->sql_query($sql);
-
-					while ($row = $db->sql_fetchrow($result))
-					{
-						// Indexing enabled for this forum or global announcement?
-						// Global announcements get indexed by default.
-						if (!$row['forum_id'] || (isset($forums[$row['forum_id']]) && $forums[$row['forum_id']]))
+						// pass a reference to myself so the $search object can make use of save_state() and attributes
+						if ($error = $this->search->delete_index($this, append_sid("{$phpbb_admin_path}index.$phpEx", "i=$id&mode=$mode&action=delete", false)))
 						{
-							$this->search->index('post', $row['post_id'], $row['post_text'], $row['post_subject'], $row['poster_id'], $row['forum_id']);
+							$this->state = array('');
+							$this->save_state();
+							trigger_error($error . adm_back_link($this->u_action) . $this->close_popup_js(), E_USER_WARNING);
 						}
 					}
-					$db->sql_freeresult($result);
-
-					$post_counter += $this->batch_size;
-	
-					// save the current state
-					$this->save_state();
-	
-					if ($post_counter <= $this->max_post_id)
+					else
 					{
-						redirect($this->u_action . '&amp;action=create');
-					}
-				}
-	
-				$this->search->tidy();
-	
-				$this->state = array('');
-				$this->save_state();
+						$starttime = explode(' ', microtime());
+						$starttime = $starttime[1] + $starttime[0];
+						$row_count = 0;
+						while (still_on_time() && $post_counter <= $this->max_post_id)
+						{
+							$sql = 'SELECT post_id, poster_id, forum_id
+								FROM ' . POSTS_TABLE . '
+								WHERE post_id >= ' . (int) ($post_counter + 1) . '
+									AND post_id <= ' . (int) ($post_counter + $this->batch_size);
+							$result = $db->sql_query($sql);
 
-				trigger_error($user->lang['SEARCH_INDEX_CREATED'] . adm_back_link($this->u_action) . $this->close_popup_js());
+							$ids = $posters = $forum_ids = array();
+							while ($row = $db->sql_fetchrow($result))
+							{
+								$ids[] = $row['post_id'];
+								$posters[] = $row['poster_id'];
+								$forum_ids[] = $row['forum_id'];
+							}
+							$db->sql_freeresult($result);
+							$row_count += sizeof($ids);
+
+							if (sizeof($ids))
+							{
+								$this->search->index_remove($ids, $posters, $forum_ids);
+							}
+
+							$post_counter += $this->batch_size;
+						}
+						// save the current state
+						$this->save_state();
+
+						if ($post_counter <= $this->max_post_id)
+						{
+							$mtime = explode(' ', microtime());
+							$totaltime = $mtime[0] + $mtime[1] - $starttime;
+							$rows_per_second = $row_count / $totaltime;
+							meta_refresh(1, append_sid($this->u_action . '&amp;action=delete&amp;skip_rows=' . $post_counter));
+							trigger_error(sprintf($user->lang['SEARCH_INDEX_DELETE_REDIRECT'], $post_counter, $row_count, $rows_per_second));
+						}
+					}
+
+					$this->search->tidy();
+
+					$this->state = array('');
+					$this->save_state();
+
+					add_log('admin', 'LOG_SEARCH_INDEX_REMOVED', $name);
+					trigger_error($user->lang['SEARCH_INDEX_REMOVED'] . adm_back_link($this->u_action) . $this->close_popup_js());
+				break;
+
+				case 'create':
+					if (method_exists($this->search, 'create_index'))
+					{
+						// pass a reference to acp_search so the $search object can make use of save_state() and attributes
+						if ($error = $this->search->create_index($this, append_sid("{$phpbb_admin_path}index.$phpEx", "i=$id&mode=$mode&action=create", false)))
+						{
+							$this->state = array('');
+							$this->save_state();
+							trigger_error($error . adm_back_link($this->u_action) . $this->close_popup_js(), E_USER_WARNING);
+						}
+					}
+					else
+					{
+						$sql = 'SELECT forum_id, enable_indexing
+							FROM ' . FORUMS_TABLE;
+						$result = $db->sql_query($sql, 3600);
+
+						while ($row = $db->sql_fetchrow($result))
+						{
+							$forums[$row['forum_id']] = (bool) $row['enable_indexing'];
+						}
+						$db->sql_freeresult($result);
+
+						$starttime = explode(' ', microtime());
+						$starttime = $starttime[1] + $starttime[0];
+						$row_count = 0;
+						while (still_on_time() && $post_counter <= $this->max_post_id)
+						{
+							$sql = 'SELECT post_id, post_subject, post_text, poster_id, forum_id
+								FROM ' . POSTS_TABLE . '
+								WHERE post_id >= ' . (int) ($post_counter + 1) . '
+									AND post_id <= ' . (int) ($post_counter + $this->batch_size);
+							$result = $db->sql_query($sql);
+
+							while ($row = $db->sql_fetchrow($result))
+							{
+								// Indexing enabled for this forum or global announcement?
+								// Global announcements get indexed by default.
+								if (!$row['forum_id'] || (isset($forums[$row['forum_id']]) && $forums[$row['forum_id']]))
+								{
+									$this->search->index('post', $row['post_id'], $row['post_text'], $row['post_subject'], $row['poster_id'], $row['forum_id']);
+								}
+								$row_count++;
+							}
+							$db->sql_freeresult($result);
+
+							$post_counter += $this->batch_size;
+						}
+						// save the current state
+						$this->save_state();
+
+						// pretend the number of posts was as big as the number of ids we indexed so far
+						// just an estimation as it includes deleted posts
+						$num_posts = $config['num_posts'];
+						$config['num_posts'] = min($config['num_posts'], $post_counter);
+						$this->search->tidy();
+						$config['num_posts'] = $num_posts;
+
+						if ($post_counter <= $this->max_post_id)
+						{
+							$mtime = explode(' ', microtime());
+							$totaltime = $mtime[0] + $mtime[1] - $starttime;
+							$rows_per_second = $row_count / $totaltime;
+							meta_refresh(1, append_sid($this->u_action . '&amp;action=create&amp;skip_rows=' . $post_counter));
+							trigger_error(sprintf($user->lang['SEARCH_INDEX_CREATE_REDIRECT'], $post_counter, $row_count, $rows_per_second));
+						}
+					}
+
+					$this->search->tidy();
+
+					$this->state = array('');
+					$this->save_state();
+
+					add_log('admin', 'LOG_SEARCH_INDEX_CREATED', $name);
+					trigger_error($user->lang['SEARCH_INDEX_CREATED'] . adm_back_link($this->u_action) . $this->close_popup_js());
+				break;
 			}
 		}
 
@@ -469,14 +509,11 @@ class acp_search
 
 	function close_popup_js()
 	{
-		/**
-		* @todo remove Javascript
-		*/
-		return '<script type="text/javascript">
-	<!--
-		close_waitscreen = 1;
-	//-->
-	</script>';
+		return "<script type=\"text/javascript\">\n" .
+			"<!--\n" .
+			"	close_waitscreen = 1;\n" .
+			"//-->\n" .
+			"</script>\n";
 	}
 
 	function get_search_types()

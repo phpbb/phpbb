@@ -10,7 +10,7 @@ If you want to view the newest post made since your last visit, click the follow
 If you want to view the topic, click the following link:
 {U_TOPIC}
 
-If you no longer wish to watch this topic you can either click the "Stop watching this topic" link found at the bottom of the topic above, or by clicking the following link:
+If you no longer wish to watch this topic you can either click the "Unsubscribe topic" link found at the bottom of the topic above, or by clicking the following link:
 
 {U_STOP_WATCHING_TOPIC}
 

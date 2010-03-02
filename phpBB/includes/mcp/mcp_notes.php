@@ -18,7 +18,7 @@ class mcp_notes
 	var $p_master;
 	var $u_action;
 
-	function mcp_main(&$p_master)
+	function mcp_notes(&$p_master)
 	{
 		$this->p_master = &$p_master;
 	}
@@ -91,6 +91,15 @@ class mcp_notes
 
 		$user_id = $userrow['user_id'];
 
+		// Populate user id to the currently active module (this module)
+		// The following method is another way of adjusting module urls. It is the easy variant if we want
+		// to directly adjust the current module url based on data retrieved within the same module.
+		if (strpos($this->u_action, "&amp;u=$user_id") === false)
+		{
+			$this->p_master->adjust_url('&amp;u=' . $user_id);
+			$this->u_action .= "&amp;u=$user_id";
+		}
+
 		$deletemark = ($action == 'del_marked') ? true : false;
 		$deleteall	= ($action == 'del_all') ? true : false;
 		$marked		= request_var('marknote', array(0));
@@ -135,33 +144,20 @@ class mcp_notes
 
 			add_log('user', $user_id, 'LOG_USER_GENERAL', $usernote);
 
-			$redirect = $this->u_action . '&amp;u=' . $user_id;
+			$redirect = $this->u_action;
 			meta_refresh(3, $redirect);
+
 			trigger_error($user->lang['USER_FEEDBACK_ADDED'] . '<br /><br />' . sprintf($user->lang['RETURN_PAGE'], '<a href="' . $redirect . '">', '</a>'));
 		}
 
 		// Generate the appropriate user information for the user we are looking at
-		$rank_title = $rank_img = '';
-//		get_user_rank($userrow['user_rank'], $userrow['user_posts'], $rank_title, $rank_img);
-
-		$avatar_img = '';
-
-		if (!empty($userrow['user_avatar']))
+		if (!function_exists('get_user_avatar'))
 		{
-			switch ($userrow['user_avatar_type'])
-			{
-				case AVATAR_UPLOAD:
-					$avatar_img = $config['avatar_path'] . '/';
-				break;
-
-				case AVATAR_GALLERY:
-					$avatar_img = $config['avatar_gallery_path'] . '/';
-				break;
-			}
-
-			$avatar_img .= $userrow['user_avatar'];
-			$avatar_img = '<img src="' . $avatar_img . '" width="' . $userrow['user_avatar_width'] . '" height="' . $userrow['user_avatar_height'] . '" alt="" />';
+			include($phpbb_root_path . 'includes/functions_display.' . $phpEx);
 		}
+
+		$rank_title = $rank_img = '';
+		$avatar_img = get_user_avatar($userrow['user_avatar'], $userrow['user_avatar_type'], $userrow['user_avatar_width'], $userrow['user_avatar_height']);
 
 		$limit_days = array(0 => $user->lang['ALL_ENTRIES'], 1 => $user->lang['1_DAY'], 7 => $user->lang['7_DAYS'], 14 => $user->lang['2_WEEKS'], 30 => $user->lang['1_MONTH'], 90 => $user->lang['3_MONTHS'], 180 => $user->lang['6_MONTHS'], 365 => $user->lang['1_YEAR']);
 		$sort_by_text = array('a' => $user->lang['SORT_USERNAME'], 'b' => $user->lang['SORT_DATE'], 'c' => $user->lang['SORT_IP'], 'd' => $user->lang['SORT_ACTION']);
@@ -195,7 +191,7 @@ class mcp_notes
 		}
 
 		$template->assign_vars(array(
-			'U_POST_ACTION'			=> $this->u_action . '&amp;u=' . $user_id,
+			'U_POST_ACTION'			=> $this->u_action,
 			'S_CLEAR_ALLOWED'		=> ($auth->acl_get('a_clearlogs')) ? true : false,
 			'S_SELECT_SORT_DIR'		=> $s_sort_dir,
 			'S_SELECT_SORT_KEY'		=> $s_sort_key,
@@ -204,7 +200,7 @@ class mcp_notes
 			'L_TITLE'			=> $user->lang['MCP_NOTES_USER'],
 
 			'PAGE_NUMBER'		=> on_page($log_count, $config['posts_per_page'], $start),
-			'PAGINATION'		=> generate_pagination($this->u_action . "&amp;u=$user_id&amp;st=$st&amp;sk=$sk&amp;sd=$sd", $log_count, $config['posts_per_page'], $start),
+			'PAGINATION'		=> generate_pagination($this->u_action . "&amp;st=$st&amp;sk=$sk&amp;sd=$sd", $log_count, $config['posts_per_page'], $start),
 			'TOTAL_REPORTS'		=> ($log_count == 1) ? $user->lang['LIST_REPORT'] : sprintf($user->lang['LIST_REPORTS'], $log_count),
 
 			'USERNAME'			=> $userrow['username'],

@@ -20,7 +20,7 @@
 *	last modified: 24.03.2004 13:01:53 
 *
 *	Modified by phpBB Development Team
-*	version: v0.4.3a1
+*	version: v0.4.3
 *
 * @package phpBB3
 */
@@ -59,6 +59,9 @@ class jabber
 
 	var $connector;
 
+	var $version;
+	var $show_version;
+
 	/**
 	* Constructor
 	*/
@@ -73,6 +76,9 @@ class jabber
 		$this->enable_logging		= true;
 		$this->log_array			= array();
 
+		$this->version				= '1.0';
+		$this->show_version			= false;
+
 		$this->packet_queue			= array();
 		$this->iq_sleep_timer		= $this->delay_disconnect = 1;
 
@@ -85,7 +91,7 @@ class jabber
 
 		$this->error_codes			= array(
 			400 => 'Bad Request',
-			401 => 'Unauthorized',
+			401 => 'Unauthorised',
 			402 => 'Payment Required',
 			403 => 'Forbidden',
 			404 => 'Not Found',
@@ -113,7 +119,7 @@ class jabber
 		if ($this->connector->open_socket($this->server, $this->port))
 		{
 			$this->send_packet("<?xml version='1.0' encoding='UTF-8' ?" . ">\n");
-			$this->send_packet("<stream:stream to='{$this->server}' xmlns='jabber:client' xmlns:stream='http://etherx.jabber.org/streams' version='0.9'>\n");
+			$this->send_packet("<stream:stream to='{$this->server}' xmlns='jabber:client' xmlns:stream='http://etherx.jabber.org/streams'" . (($this->show_version) ? " version='{$this->version}'" : '') . ">\n");
 
 			sleep(2);
 
@@ -890,7 +896,7 @@ class jabber
 		socket_set_blocking($this->connector->active_socket, $meta['blocked']);
 
 		$this->send_packet("<?xml version='1.0' encoding='UTF-8' ?" . ">\n");
-		$this->send_packet("<stream:stream to='{$this->server}' xmlns='jabber:client' xmlns:stream='http://etherx.jabber.org/streams' version='1.0'>\n");
+		$this->send_packet("<stream:stream to='{$this->server}' xmlns='jabber:client' xmlns:stream='http://etherx.jabber.org/streams'" . (($this->show_version) ? " version='{$this->version}'" : '') . ">\n");
 		sleep(2);
 
 		if (!$this->_check_connected(true))

@@ -173,12 +173,12 @@ p a {
 	<ol type="i">
 		<li><a href="#i18n">Internationalisation (i18n)</a></li>
 		<li><a href="#styles">Styles</a></li>
-		<li><a href="#mods">Mods</a></li>
+		<li><a href="#mods">Modifications</a></li>
 	</ol>
 	</li>
 	<li><a href="#help">Getting help with phpBB3</a>
 	<ol type="i">
-		<li><a href="#userguide">Userguide</a></li>
+		<li><a href="#docs">Documentation</a></li>
 		<li><a href="#website">Community Forums</a></li>
 		<li><a href="#irc">Internet Relay Chat</a></li>
 	</ol>
@@ -200,9 +200,24 @@ p a {
 
 <div class="paragraph">
 
-	<p>Installation and update/conversion instructions can be found in the <a href="INSTALL.html">INSTALL</a> document contained in this distribution. If you are intending to convert from a previous phpBB 2.0.x installation we highly recommend you backup any existing data before proceeding!</p>
+	<p>Installation, update and conversion instructions can be found in the <a href="INSTALL.html">INSTALL</a> document contained in this distribution. If you are intending to convert from a previous phpBB 2.0.x installation we highly recommend you backup any existing data before proceeding!</p>
 
-	<p>Users of phpBB3 Beta versions cannot directly update or convert.</p>
+	<p>Users of phpBB3 Beta versions cannot directly update.</p>
+
+	<p>Please note that we won't support the following installation types:</p>
+	<ul class="menu">
+		<li>Updates from phpBB3 Beta versions to phpBB3 RC1 and higher</li>
+		<li>Conversions from phpBB 2.0.x to phpBB3 Beta versions</li>
+		<li>phpBB3 Beta installations</li>
+	</ul>
+
+	<p>We give support for the following installation types:</p>
+
+	<ul class="menu">
+		<li>Updates from phpBB3 RC1 to any higher version</li>
+		<li>Conversions from phpBB 2.0.x to phpBB3 RC1 and higher</li>
+		<li>New installations of phpBB3 RC1 and higher</li>
+	</ul>
 
 </div>
 <a href="#top">Top</a>
@@ -224,7 +239,7 @@ p a {
 
 	<p>This is the <em>official</em> location for all supported language sets. If you download a package from a 3rd party site you do so with the understanding that we cannot offer support. So please, do not ask for help in these cases!</p>
 
-	<p>Installation of these packages is straightforward, simply download the required language pack and unarchive it into the <samp>languages/</samp> folder. Please ensure you retain the directory structure when doing this! Once uploaded go to the <code>Admin-&gt;System-&gt;Language Packs</code> and install the now appeared new language pack. To install the style image packs you should unarchive the file/s into the styles/subSilver/imageset directory, again you must retain the directory structure. Once installed the languages will become immediately available.</p>
+	<p>Installation of these packages is straightforward, simply download the required language pack and unarchive it into the <samp>languages/</samp> folder. Please ensure you retain the directory structure when doing this! Once uploaded go to the <code>Admin-&gt;System-&gt;Language Packs</code> and install the now appeared new language pack. To install the style image packs you should unarchive the file/s into the styles/subsilver2/imageset directory, again you must retain the directory structure. Once installed the languages will become immediately available.</p>
 
 	<p>If your language is not available please visit our forums where you will find a topic listing translations currently available or in preparation. This topic also gives you information should you wish to volunteer to translate a language not currently listed</p>
 
@@ -248,13 +263,13 @@ p a {
 	<a href="#top">Top</a>
 	<br /><br />
 
-	<a name="mods"></a><b>2.iii. Mods</b>
+	<a name="mods"></a><b>2.iii. Modifications</b>
 	<br /><br />
 	<div class="paragraph">
 
 	<p>Although not officially supported by phpBB Group, phpBB has a thriving modification scene. These third party modifications to the standard phpBB extend its capabilities still further and can be found at:</p>
 
-	<p><a href="http://www.phpbb.com/mods">http://www.phpbb.com/mods</a></p>
+	<p><a href="http://www.phpbb.com/mods/">http://www.phpbb.com/mods/</a></p>
 
 	<p><strong>Please remember</strong> that any bugs or other issues that occur after you have added any modification should <strong>NOT</strong> be reported to the bug tracker (see below). First remove the modification and see if the problem is resolved.</p>
 
@@ -270,13 +285,13 @@ p a {
 
 	<p>phpBB3 can seem a little daunting to new users in places, particularly with regard the permission system. The first thing you should do is check the <a href="FAQ.html">FAQ</a> which covers a few basic getting started questions. If you need additional help there are several places you should look.</p>
 
-	<a name="userguide"></a><b>3.i. phpBB3 Userguide</b>
+	<a name="docs"></a><b>3.i. phpBB3 Documentation</b>
 	<br /><br />
 	<div class="paragraph">
 
-	<p>A comprehensive userguide is now available online and can be accessed from the following location:</p>
+	<p>A comprehensive documentation is now available online and can be accessed from the following location:</p>
 
-	<p><a href="http://www.phpbb.com/support/documentation/">http://www.phpbb.com/support/documentation/</a></p>
+	<p><a href="http://www.phpbb.com/support/documentation/3.0/">http://www.phpbb.com/support/documentation/3.0/</a></p>
 
 	<p>This covers everything from installation through setting permissions and managing users.</p>
 
@@ -314,7 +329,7 @@ p a {
 <a name="status"></a><h1>4. Status of this version</h1>
 
 <div class="paragraph">
-	<p>This is the third stable release of phpBB. The 3.0.x line is essentially feature frozen, point releases will see only bugs and such like fixed, though feature alterations and minor feature additions may be done. Our next major release will be phpBB 3.2 and the planning phase has begun (the unstable development version is 3.1). Please do not post questions asking when 3.2 will be available, no release date has been set.</p>
+	<p>This is the third stable release of phpBB. The 3.0.x line is essentially feature frozen, with only point releases seeing fixes for bugs and security issues, though feature alterations and minor feature additions may be done if deemed absolutely required. Our next major release will be phpBB 3.2 and the planning phase has begun (the unstable development version is 3.1). Please do not post questions asking when 3.2 will be available, no release date has been set.</p>
 
 	<p>For those interested in the development of phpBB should keep an eye on the community forums to see how things are progressing:</p>
 
@@ -377,7 +392,7 @@ p a {
 <a name="curbugs"></a><h1>6. Overview of current bug list</h1>
 
 <div class="paragraph">
-	<p>This list is not complete but does represent those bugs which may effect users on a wider scale. Other bugs listed in the tracker have typically been shown to be limited to certain setups or methods of installation/upgrade.</p>
+	<p>This list is not complete but does represent those bugs which may effect users on a wider scale. Other bugs listed in the tracker have typically been shown to be limited to certain setups or methods of installation, updating and/or conversions.</p>
 
 	<ul class="menu">
 		<li>By default cannot post very large messages with MSSQL (this can be configured within MSSQL)</li>

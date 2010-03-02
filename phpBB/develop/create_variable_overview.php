@@ -35,7 +35,7 @@ $merge = array('gcp', 'login', 'mcp', 'memberlist', 'posting', 'ucp');
 
 if (!is_writable($store_dir))
 {
-	die("Directory $store_dir is not writeable!");
+	die("Directory $store_dir is not writable!");
 }
 
 $contents = implode('', file('../adm/subSilver.css', filesize('../adm/subSilver.css')));

@@ -22,7 +22,7 @@ $phpEx = substr(strrchr(__FILE__, '.'), 1);
 error_reporting(E_ALL ^ E_NOTICE);
 
 // @todo Review this test and see if we can find out what it is which prevents PHP 4.2.x from even displaying the page with requirements on it
-if (version_compare(phpversion(), '4.3.0') < 0)
+if (version_compare(PHP_VERSION, '4.3.3') < 0)
 {
 	die('You are running an unsupported PHP version. Please upgrade to PHP 4.3.3 or higher before trying to install phpBB 3.0');
 }
@@ -82,7 +82,7 @@ function deregister_globals()
 }
 
 // If we are on PHP >= 6.0.0 we do not need some code
-if (version_compare(phpversion(), '6.0.0-dev', '>='))
+if (version_compare(PHP_VERSION, '6.0.0-dev', '>='))
 {
 	/**
 	* @ignore
@@ -102,7 +102,9 @@ else
 	define('STRIP', (get_magic_quotes_gpc()) ? true : false);
 }
 
+// Try to override some limits - maybe it helps some...
 @set_time_limit(0);
+@ini_set('memory_limit', '128M');
 
 // Include essential scripts
 require($phpbb_root_path . 'includes/functions.' . $phpEx);
@@ -113,9 +115,10 @@ include($phpbb_root_path . 'includes/acm/acm_file.' . $phpEx);
 include($phpbb_root_path . 'includes/cache.' . $phpEx);
 include($phpbb_root_path . 'includes/functions_admin.' . $phpEx);
 include($phpbb_root_path . 'includes/utf/utf_tools.' . $phpEx);
+require($phpbb_root_path . 'includes/functions_install.' . $phpEx);
 
 // Try and load an appropriate language if required
-$language = request_var('language', '');
+$language = basename(request_var('language', ''));
 
 if (!empty($_SERVER['HTTP_ACCEPT_LANGUAGE']) && !$language)
 {
@@ -168,6 +171,11 @@ if (!$language)
 	closedir($dir);
 }
 
+if (!file_exists($phpbb_root_path . 'language/' . $language))
+{
+	die('No language found!');
+}
+
 // And finally, load the relevant language files
 include($phpbb_root_path . 'language/' . $language . '/common.' . $phpEx);
 include($phpbb_root_path . 'language/' . $language . '/acp/common.' . $phpEx);
@@ -185,6 +193,11 @@ $user = new user();
 $auth = new auth();
 $cache = new cache();
 $template = new template();
+
+// Set some standard variables we want to force
+$config = array(
+	'load_tplcompile'	=> '1'
+);
 
 $template->set_custom_template('../adm/style', 'admin');
 $template->assign_var('T_TEMPLATE_PATH', '../adm/style');
@@ -252,11 +265,21 @@ class module
 			$this->error('No installation modules found', __LINE__, __FILE__);
 		}
 
+		// Order to use and count further if modules get assigned to the same position or not having an order
+		$max_module_order = 1000;
+
 		foreach ($module as $row)
 		{
 			// Check any module pre-reqs
 			if ($row['module_reqs'] != '')
 			{
+			}
+
+			// Module order not specified or module already assigned at this position?
+			if (!isset($row['module_order']) || isset($this->module_ary[$row['module_order']]))
+			{
+				$row['module_order'] = $max_module_order;
+				$max_module_order++;
 			}
 
 			$this->module_ary[$row['module_order']]['name'] = $row['module_title'];
@@ -332,6 +355,7 @@ class module
 			'L_CHANGE'				=> $lang['CHANGE'],
 			'L_INSTALL_PANEL'		=> $lang['INSTALL_PANEL'],
 			'L_SELECT_LANG'			=> $lang['SELECT_LANG'],
+			'L_SKIP'				=> $lang['SKIP'],
 			'PAGE_TITLE'			=> $this->get_page_title(),
 			'T_IMAGE_PATH'			=> $phpbb_root_path . 'adm/images/',
 
@@ -530,6 +554,7 @@ class module
 		echo '	<div id="page-header">';
 		echo '	</div>';
 		echo '	<div id="page-body">';
+		echo '		<div id="acp">';
 		echo '		<div class="panel">';
 		echo '			<span class="corners-top"><span></span></span>';
 		echo '			<div id="content">';
@@ -540,9 +565,10 @@ class module
 		echo '			</div>';
 		echo '			<span class="corners-bottom"><span></span></span>';
 		echo '		</div>';
+		echo '		</div>';
 		echo '	</div>';
 		echo '	<div id="page-footer">';
-		echo '		Powered by phpBB &copy; ' . date('Y') . ' <a href="http://www.phpbb.com/">phpBB Group</a>';
+		echo '		Powered by phpBB &copy; 2000, 2002, 2005, 2007 <a href="http://www.phpbb.com/">phpBB Group</a>';
 		echo '	</div>';
 		echo '</div>';
 		echo '</body>';
@@ -626,14 +652,14 @@ class module
 			break;
 
 			case 'radio':
-				$key_yes	= ($value) ? ' checked="checked"' : '';
-				$key_no		= (!$value) ? ' checked="checked"' : '';
+				$key_yes	= ($value) ? ' checked="checked" id="' . $name . '"' : '';
+				$key_no		= (!$value) ? ' checked="checked" id="' . $name . '"' : '';
 
 				$tpl_type_cond = explode('_', $tpl_type[1]);
 				$type_no = ($tpl_type_cond[0] == 'disabled' || $tpl_type_cond[0] == 'enabled') ? false : true;
 
-				$tpl_no = '<input type="radio" name="' . $name . '" value="0"' . $key_no . ' class="radio" />&nbsp;' . (($type_no) ? $lang['NO'] : $lang['DISABLED']);
-				$tpl_yes = '<input type="radio" name="' . $name . '" value="1"' . $key_yes . ' class="radio" />&nbsp;' . (($type_no) ? $lang['YES'] : $lang['ENABLED']);
+				$tpl_no = '<label><input type="radio" name="' . $name . '" value="0"' . $key_no . ' class="radio" /> ' . (($type_no) ? $lang['NO'] : $lang['DISABLED']) . '</label>';
+				$tpl_yes = '<label><input type="radio" name="' . $name . '" value="1"' . $key_yes . ' class="radio" /> ' . (($type_no) ? $lang['YES'] : $lang['ENABLED']) . '</label>';
 
 				$tpl = ($tpl_type_cond[0] == 'yes' || $tpl_type_cond[0] == 'enabled') ? $tpl_yes . '&nbsp;&nbsp;' . $tpl_no : $tpl_no . '&nbsp;&nbsp;' . $tpl_yes;
 			break;

@@ -180,7 +180,8 @@ class mcp_main
 			break;
 
 			default:
-				trigger_error("Unknown mode: $mode", E_USER_ERROR);
+				trigger_error('NO_MODE', E_USER_ERROR);
+			break;
 		}
 	}
 }
@@ -350,6 +351,36 @@ function change_topic_type($action, $topic_ids)
 						AND forum_id = 0';
 				$db->sql_query($sql);
 
+				// Do a little forum sync stuff
+				$sql = 'SELECT SUM(t.topic_replies + t.topic_approved) as topic_posts, COUNT(t.topic_approved) as topics_authed
+					FROM ' . TOPICS_TABLE . ' t
+					WHERE ' . $db->sql_in_set('t.topic_id', $topic_ids);
+				$result = $db->sql_query($sql);
+				$row_data = $db->sql_fetchrow($result);
+				$db->sql_freeresult($result);
+
+				$sync_sql = array();
+
+				if ($row_data['topic_posts'])
+				{
+					$sync_sql[$to_forum_id][]	= 'forum_posts = forum_posts + ' . (int) $row_data['topic_posts'];
+				}
+
+				if ($row_data['topics_authed'])
+				{
+					$sync_sql[$to_forum_id][]	= 'forum_topics = forum_topics + ' . (int) $row_data['topics_authed'];
+				}
+
+				$sync_sql[$to_forum_id][]	= 'forum_topics_real = forum_topics_real + ' . (int) sizeof($topic_ids);
+
+				foreach ($sync_sql as $forum_id_key => $array)
+				{
+					$sql = 'UPDATE ' . FORUMS_TABLE . '
+						SET ' . implode(', ', $array) . '
+						WHERE forum_id = ' . $forum_id_key;
+					$db->sql_query($sql);
+				}
+
 				sync('forum', 'forum_id', $to_forum_id);
 			}
 		}
@@ -386,6 +417,36 @@ function change_topic_type($action, $topic_ids)
 					SET forum_id = 0
 					WHERE ' . $db->sql_in_set('topic_id', $topic_ids);
 				$db->sql_query($sql);
+
+				// Do a little forum sync stuff
+				$sql = 'SELECT SUM(t.topic_replies + t.topic_approved) as topic_posts, COUNT(t.topic_approved) as topics_authed
+					FROM ' . TOPICS_TABLE . ' t
+					WHERE ' . $db->sql_in_set('t.topic_id', $topic_ids);
+				$result = $db->sql_query($sql);
+				$row_data = $db->sql_fetchrow($result);
+				$db->sql_freeresult($result);
+
+				$sync_sql = array();
+
+				if ($row_data['topic_posts'])
+				{
+					$sync_sql[$forum_id][]	= 'forum_posts = forum_posts - ' . (int) $row_data['topic_posts'];
+				}
+
+				if ($row_data['topics_authed'])
+				{
+					$sync_sql[$forum_id][]	= 'forum_topics = forum_topics - ' . (int) $row_data['topics_authed'];
+				}
+
+				$sync_sql[$forum_id][]	= 'forum_topics_real = forum_topics_real - ' . (int) sizeof($topic_ids);
+
+				foreach ($sync_sql as $forum_id_key => $array)
+				{
+					$sql = 'UPDATE ' . FORUMS_TABLE . '
+						SET ' . implode(', ', $array) . '
+						WHERE forum_id = ' . $forum_id_key;
+					$db->sql_query($sql);
+				}
 
 				sync('forum', 'forum_id', $forum_id);
 			}
@@ -520,6 +581,45 @@ function mcp_move_topic($topic_ids)
 		$topic_data = get_topic_data($topic_ids);
 		$leave_shadow = (isset($_POST['move_leave_shadow'])) ? true : false;
 
+		$topics_moved = sizeof($topic_ids);
+		$topics_authed_moved = 0;
+		$forum_sync_data = array();
+
+		$forum_sync_data[$forum_id] = current($topic_data);
+		$forum_sync_data[$to_forum_id] = $forum_data;
+
+		foreach ($topic_data as $topic_id => $topic_info)
+		{
+			if ($topic_info['topic_approved'] == '1')
+			{
+				$topics_authed_moved++;
+			}
+		}
+
+		$db->sql_transaction('begin');
+
+		$sql = 'SELECT SUM(t.topic_replies + t.topic_approved) as topic_posts
+			FROM ' . TOPICS_TABLE . ' t
+			WHERE ' . $db->sql_in_set('t.topic_id', $topic_ids);
+		$result = $db->sql_query($sql);
+		$row_data = $db->sql_fetchrow($result);
+		$db->sql_freeresult($result);
+
+		$sync_sql = array();
+
+		if ($row_data['topic_posts'])
+		{
+			$sync_sql[$forum_id][]		= 'forum_posts = forum_posts - ' . (int) $row_data['topic_posts'];
+			$sync_sql[$to_forum_id][]	= 'forum_posts = forum_posts + ' . (int) $row_data['topic_posts'];
+		}
+
+		if ($topics_authed_moved)
+		{
+			$sync_sql[$to_forum_id][]	= 'forum_topics = forum_topics + ' . (int) $topics_authed_moved;
+		}
+
+		$sync_sql[$to_forum_id][]	= 'forum_topics_real = forum_topics_real + ' . (int) $topics_moved;
+
 		// Move topics, but do not resync yet
 		move_topics($topic_ids, $to_forum_id, false);
 
@@ -556,12 +656,15 @@ function mcp_move_topic($topic_ids)
 					'topic_replies'			=>	(int) $row['topic_replies'],
 					'topic_replies_real'	=>	(int) $row['topic_replies_real'],
 					'topic_status'			=>	ITEM_MOVED,
-					'topic_type'			=>	(int) $row['topic_type'],
+					'topic_type'			=>	POST_NORMAL,
 					'topic_first_post_id'	=>	(int) $row['topic_first_post_id'],
+					'topic_first_poster_colour'=>(string) $row['topic_first_poster_colour'],
 					'topic_first_poster_name'=>	(string) $row['topic_first_poster_name'],
 					'topic_last_post_id'	=>	(int) $row['topic_last_post_id'],
 					'topic_last_poster_id'	=>	(int) $row['topic_last_poster_id'],
+					'topic_last_poster_colour'=>(string) $row['topic_last_poster_colour'],
 					'topic_last_poster_name'=>	(string) $row['topic_last_poster_name'],
+					'topic_last_post_subject'=>	(string)  $row['topic_last_post_subject'],
 					'topic_last_post_time'	=>	(int) $row['topic_last_post_time'],
 					'topic_last_view_time'	=>	(int) $row['topic_last_view_time'],
 					'topic_moved_id'		=>	(int) $row['topic_id'],
@@ -575,14 +678,33 @@ function mcp_move_topic($topic_ids)
 				);
 
 				$db->sql_query('INSERT INTO ' . TOPICS_TABLE . $db->sql_build_array('INSERT', $shadow));
+
+				$topics_authed_moved--;
+				$topics_moved--;
 			}
 		}
 		unset($topic_data);
 
-		// Now sync forums
-		sync('forum', 'forum_id', $forum_ids);
+		$sync_sql[$forum_id][]	= 'forum_topics_real = forum_topics_real - ' . (int) $topics_moved;
+
+		if ($topics_authed_moved)
+		{
+			$sync_sql[$forum_id][]	= 'forum_topics = forum_topics - ' . (int) $topics_authed_moved;
+		}
 
 		$success_msg = (sizeof($topic_ids) == 1) ? 'TOPIC_MOVED_SUCCESS' : 'TOPICS_MOVED_SUCCESS';
+
+		foreach ($sync_sql as $forum_id_key => $array)
+		{
+			$sql = 'UPDATE ' . FORUMS_TABLE . '
+				SET ' . implode(', ', $array) . '
+				WHERE forum_id = ' . $forum_id_key;
+			$db->sql_query($sql);
+		}
+
+		$db->sql_transaction('commit');
+
+		sync('forum', 'forum_id', array($forum_id, $to_forum_id));
 	}
 	else
 	{
@@ -854,6 +976,7 @@ function mcp_fork_topic($topic_ids)
 
 		$total_posts = 0;
 		$new_topic_id_list = array();
+
 		foreach ($topic_data as $topic_id => $topic_row)
 		{
 			$sql_ary = array(
@@ -952,7 +1075,8 @@ function mcp_fork_topic($topic_ids)
 					'bbcode_uid'		=> (string) $row['bbcode_uid'],
 					'post_edit_time'	=> (int) $row['post_edit_time'],
 					'post_edit_count'	=> (int) $row['post_edit_count'],
-					'post_edit_locked'	=> (int) $row['post_edit_locked']
+					'post_edit_locked'	=> (int) $row['post_edit_locked'],
+					'post_postcount'	=> 0,
 				);
 
 				$db->sql_query('INSERT INTO ' . POSTS_TABLE . ' ' . $db->sql_build_array('INSERT', $sql_ary));
@@ -970,9 +1094,10 @@ function mcp_fork_topic($topic_ids)
 							AND in_message = 0";
 					$result = $db->sql_query($sql);
 
+					$sql_ary = array();
 					while ($attach_row = $db->sql_fetchrow($result))
 					{
-						$sql_ary = array(
+						$sql_ary[] = array(
 							'post_msg_id'		=> (int) $new_post_id,
 							'topic_id'			=> (int) $new_topic_id,
 							'in_message'		=> 0,
@@ -988,16 +1113,55 @@ function mcp_fork_topic($topic_ids)
 							'filetime'			=> (int) $attach_row['filetime'],
 							'thumbnail'			=> (int) $attach_row['thumbnail']
 						);
-
-						$db->sql_query('INSERT INTO ' . ATTACHMENTS_TABLE . ' ' . $db->sql_build_array('INSERT', $sql_ary));
 					}
 					$db->sql_freeresult($result);
+
+					if (sizeof($sql_ary))
+					{
+						$db->sql_multi_insert(ATTACHMENTS_TABLE, $sql_ary);
+					}
 				}
+			}
+
+			$sql = 'SELECT user_id, notify_status
+				FROM ' . TOPICS_WATCH_TABLE . '
+				WHERE topic_id = ' . $topic_id;
+			$result = $db->sql_query($sql);
+
+			$sql_ary = array();
+			while ($row = $db->sql_fetchrow($result))
+			{
+				$sql_ary[] = array(
+					'topic_id'		=> $new_topic_id,
+					'user_id'		=> $row['user_id'],
+					'notify_status'	=> $row['notify_status'],
+				);
+			}
+			$db->sql_freeresult($result);
+
+			if (sizeof($sql_ary))
+			{
+				$db->sql_multi_insert(TOPICS_WATCH_TABLE, $sql_ary);
 			}
 		}
 
 		// Sync new topics, parent forums and board stats
 		sync('topic', 'topic_id', $new_topic_id_list, true);
+
+		$sync_sql = array();
+
+		$sync_sql[$to_forum_id][]	= 'forum_posts = forum_posts + ' . $total_posts;
+		$sync_sql[$to_forum_id][]	= 'forum_topics = forum_topics + ' . sizeof($new_topic_id_list);
+		$sync_sql[$to_forum_id][]	= 'forum_topics_real = forum_topics_real + ' . sizeof($new_topic_id_list);
+
+		foreach ($sync_sql as $forum_id_key => $array)
+		{
+			$sql = 'UPDATE ' . FORUMS_TABLE . '
+				SET ' . implode(', ', $array) . '
+				WHERE forum_id = ' . $forum_id_key;
+			$db->sql_query($sql);
+		}
+
 		sync('forum', 'forum_id', $to_forum_id, true);
 		set_config('num_topics', $config['num_topics'] + sizeof($new_topic_id_list), true);
 		set_config('num_posts', $config['num_posts'] + $total_posts, true);
@@ -1012,7 +1176,7 @@ function mcp_fork_topic($topic_ids)
 	else
 	{
 		$template->assign_vars(array(
-			'S_FORUM_SELECT'		=> make_forum_select($to_forum_id, false, false, true, true),
+			'S_FORUM_SELECT'		=> make_forum_select($to_forum_id, false, false, true, true, true),
 			'S_CAN_LEAVE_SHADOW'	=> false,
 			'ADDITIONAL_MSG'		=> $additional_msg)
 		);

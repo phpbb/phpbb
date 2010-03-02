@@ -116,8 +116,12 @@ class ucp_profile
 							add_log('user', $user->data['user_id'], 'LOG_USER_UPDATE_EMAIL', $data['username'], $user->data['user_email'], $data['email']);
 						}
 
+						$message = 'PROFILE_UPDATED';
+
 						if ($config['email_enable'] && $data['email'] != $user->data['user_email'] && $user->data['user_type'] != USER_FOUNDER && ($config['require_activation'] == USER_ACTIVATION_SELF || $config['require_activation'] == USER_ACTIVATION_ADMIN))
 						{
+							$message = ($config['require_activation'] == USER_ACTIVATION_SELF) ? 'ACCOUNT_EMAIL_CHANGED' : 'ACCOUNT_EMAIL_CHANGED_ADMIN';
+
 							include_once($phpbb_root_path . 'includes/functions_messenger.' . $phpEx);
 
 							$server_url = generate_board_url();
@@ -184,9 +188,9 @@ class ucp_profile
 
 							user_active_flip('deactivate', $user->data['user_id'], INACTIVE_PROFILE);
 
-							$sql_ary += array(
-								'user_actkey'			=> $user_actkey,
-							);
+							// Because we want the profile to be reactivated we set user_newpasswd to empty (else the reactivation will fail)
+							$sql_ary['user_actkey'] = $user_actkey;
+							$sql_ary['user_newpasswd'] = '';
 						}
 
 						if (sizeof($sql_ary))
@@ -203,16 +207,27 @@ class ucp_profile
 							user_update_name($user->data['username'], $data['username']);
 						}
 
-						meta_refresh(3, $this->u_action);
-						$message = $user->lang['PROFILE_UPDATED'] . '<br /><br />' . sprintf($user->lang['RETURN_UCP'], '<a href="' . $this->u_action . '">', '</a>');
+						// Now, we can remove the user completely (kill the session) - NOT BEFORE!!!
+						if (!empty($sql_ary['user_actkey']))
+						{
+							meta_refresh(5, append_sid($phpbb_root_path . 'index.' . $phpEx));
+							$message = $user->lang[$message] . '<br /><br />' . sprintf($user->lang['RETURN_INDEX'], '<a href="' . append_sid($phpbb_root_path . 'index.' . $phpEx) . '">', '</a>');
+
+							// Because the user gets deactivated we log him out too, killing his session
+							$user->session_kill();
+						}
+						else
+						{
+							meta_refresh(3, $this->u_action);
+							$message = $user->lang[$message] . '<br /><br />' . sprintf($user->lang['RETURN_UCP'], '<a href="' . $this->u_action . '">', '</a>');
+						}
+
 						trigger_error($message);
 					}
 	
 					// Replace "error" strings with their real, localised form
 					$error = preg_replace('#^([A-Z_]+)$#e', "(!empty(\$user->lang['\\1'])) ? \$user->lang['\\1'] : '\\1'", $error);
 				}
-
-				$user_char_ary = array('.*' => 'USERNAME_CHARS_ANY', '[a-z]+' => 'USERNAME_ALPHA_ONLY', '[-\]_+ [a-z]+' => 'USERNAME_ALPHA_SPACERS', '\w+' => 'USERNAME_LETTER_NUM', '[-\]_+ [\w]+' => 'USERNAME_LETTER_NUM_SPACERS', '[\x01-\x7F]+' => 'USERNAME_ASCII');
 
 				$template->assign_vars(array(
 					'ERROR'				=> (sizeof($error)) ? implode('<br />', $error) : '',
@@ -223,10 +238,10 @@ class ucp_profile
 					'NEW_PASSWORD'		=> $data['new_password'],
 					'CUR_PASSWORD'		=> '',
 
-					'L_USERNAME_EXPLAIN'		=> sprintf($user->lang[$user_char_ary[str_replace('\\\\', '\\', $config['allow_name_chars'])] . '_EXPLAIN'], $config['min_name_chars'], $config['max_name_chars']),
+					'L_USERNAME_EXPLAIN'		=> sprintf($user->lang[$config['allow_name_chars'] . '_EXPLAIN'], $config['min_name_chars'], $config['max_name_chars']),
 					'L_CHANGE_PASSWORD_EXPLAIN'	=> sprintf($user->lang[$config['pass_complex'] . '_EXPLAIN'], $config['min_pass_chars'], $config['max_pass_chars']),
 
-					'S_FORCE_PASSWORD'	=> ($config['chg_passforce'] && $user->data['user_passchg'] < time() - $config['chg_passforce']) ? true : false,
+					'S_FORCE_PASSWORD'	=> ($auth->acl_get('u_chgpasswd') && $config['chg_passforce'] && $user->data['user_passchg'] < time() - ($config['chg_passforce'] * 86400)) ? true : false,
 					'S_CHANGE_USERNAME' => ($config['allow_namechange'] && $auth->acl_get('u_chgname')) ? true : false,
 					'S_CHANGE_EMAIL'	=> ($auth->acl_get('u_chgemail')) ? true : false,
 					'S_CHANGE_PASSWORD'	=> ($auth->acl_get('u_chgpasswd')) ? true : false)
@@ -275,7 +290,7 @@ class ucp_profile
 						'msn'			=> array('string', true, 5, 255),
 						'jabber'		=> array(
 							array('string', true, 5, 255),
-							array('match', true, '#^[a-z0-9\.\-_\+]+?@(.*?\.)*?[a-z0-9\-_]+?\.[a-z]{2,4}(/.*)?$#i')),
+							array('match', true, '#^[^@:\'"<>&\x00-\x1F\x7F\t\r\n]+@(.*?\.)*?[a-z0-9\-_]+?\.[a-z]{2,4}(/.*)?$#iu')),
 						'yim'			=> array('string', true, 5, 255),
 						'website'		=> array(
 							array('string', true, 12, 255),
@@ -328,12 +343,12 @@ class ucp_profile
 							{
 								$cp_data['user_id'] = (int) $user->data['user_id'];
 
-								$db->return_on_error = true;
+								$db->sql_return_on_error(true);
 
 								$sql = 'INSERT INTO ' . PROFILE_FIELDS_DATA_TABLE . ' ' . $db->sql_build_array('INSERT', $cp_data);
 								$db->sql_query($sql);
 
-								$db->return_on_error = false;
+								$db->sql_return_on_error(false);
 							}
 						}
 
@@ -485,16 +500,18 @@ class ucp_profile
 			
 				// Build custom bbcodes array
 				display_custom_bbcodes();
-			
+
 			break;
 
 			case 'avatar':
 
-				$display_gallery = (isset($_POST['display_gallery'])) ? true : false;
+				include($phpbb_root_path . 'includes/functions_display.' . $phpEx);
+
+				$display_gallery = request_var('display_gallery', '0');
 				$avatar_select = basename(request_var('avatar_select', ''));
 				$category = basename(request_var('category', ''));
 
-				$can_upload = ($config['allow_avatar_upload'] && file_exists($phpbb_root_path . $config['avatar_path']) && is_writeable($phpbb_root_path . $config['avatar_path']) && $auth->acl_get('u_chgavatar') && (@ini_get('file_uploads') || strtolower(@ini_get('file_uploads')) == 'on')) ? true : false;
+				$can_upload = ($config['allow_avatar_upload'] && file_exists($phpbb_root_path . $config['avatar_path']) && @is_writable($phpbb_root_path . $config['avatar_path']) && $auth->acl_get('u_chgavatar') && (@ini_get('file_uploads') || strtolower(@ini_get('file_uploads')) == 'on')) ? true : false;
 
 				if ($submit)
 				{
@@ -509,31 +526,13 @@ class ucp_profile
 					$error = preg_replace('#^([A-Z_]+)$#e', "(!empty(\$user->lang['\\1'])) ? \$user->lang['\\1'] : '\\1'", $error);
 				}
 
-				// Generate users avatar
-				$avatar_img = '';
-
-				if ($user->data['user_avatar'])
-				{
-					switch ($user->data['user_avatar_type'])
-					{
-						case AVATAR_UPLOAD:
-							$avatar_img = $phpbb_root_path . $config['avatar_path'] . '/';
-						break;
-				
-						case AVATAR_GALLERY:
-							$avatar_img = $phpbb_root_path . $config['avatar_gallery_path'] . '/';
-						break;
-					}
-
-					$avatar_img .= $user->data['user_avatar'];
-					$avatar_img = '<img src="' . $avatar_img . '" width="' . $user->data['user_avatar_width'] . '" height="' . $user->data['user_avatar_height'] . '" alt="" />';
-				}
-
 				$template->assign_vars(array(
 					'ERROR'			=> (sizeof($error)) ? implode('<br />', $error) : '',
-					'AVATAR'		=> $avatar_img,
+					'AVATAR'		=> get_user_avatar($user->data['user_avatar'], $user->data['user_avatar_type'], $user->data['user_avatar_width'], $user->data['user_avatar_height']),
 					'AVATAR_SIZE'	=> $config['avatar_filesize'],
-
+					
+					'U_GALLERY'		=> append_sid("{$phpbb_root_path}ucp.$phpEx", 'i=profile&amp;mode=avatar&amp;display_gallery=1'),
+					
 					'S_FORM_ENCTYPE'	=> ($can_upload) ? ' enctype="multipart/form-data"' : '',
 
 					'L_AVATAR_EXPLAIN'	=> sprintf($user->lang['AVATAR_EXPLAIN'], $config['avatar_max_width'], $config['avatar_max_height'], round($config['avatar_filesize'] / 1024)),)
@@ -545,16 +544,17 @@ class ucp_profile
 				}
 				else
 				{
+					$avatars_enabled = ($can_upload || ($auth->acl_get('u_chgavatar') && ($config['allow_avatar_local'] || $config['allow_avatar_remote']))) ? true : false;
+					
 					$template->assign_vars(array(
-						'AVATAR'		=> $avatar_img,
-						'AVATAR_SIZE'	=> $config['avatar_filesize'],
-						'WIDTH'			=> request_var('width', $user->data['user_avatar_width']),
-						'HEIGHT'		=> request_var('height', $user->data['user_avatar_height']),
+						'AVATAR_WIDTH'	=> request_var('width', $user->data['user_avatar_width']),
+						'AVATAR_HEIGHT'	=> request_var('height', $user->data['user_avatar_height']),
 
+						'S_AVATARS_ENABLED'		=> $avatars_enabled,
 						'S_UPLOAD_AVATAR_FILE'	=> $can_upload,
 						'S_UPLOAD_AVATAR_URL'	=> $can_upload,
 						'S_LINK_AVATAR'			=> ($auth->acl_get('u_chgavatar') && $config['allow_avatar_remote']) ? true : false,
-						'S_GALLERY_AVATAR'		=> ($auth->acl_get('u_chgavatar') && $config['allow_avatar_local']) ? true : false)
+						'S_DISPLAY_GALLERY'		=> ($auth->acl_get('u_chgavatar') && $config['allow_avatar_local']) ? true : false)
 					);
 				}
 

@@ -222,44 +222,56 @@ class template
 
 		if (isset($user->theme['template_storedb']) && $user->theme['template_storedb'])
 		{
-			$sql = 'SELECT * FROM ' . STYLES_TEMPLATE_DATA_TABLE . '
+			$sql = 'SELECT *
+				FROM ' . STYLES_TEMPLATE_DATA_TABLE . '
 				WHERE template_id = ' . $user->theme['template_id'] . "
 					AND (template_filename = '" . $db->sql_escape($this->filename[$handle]) . "'
 						OR template_included LIKE '%" . $db->sql_escape($this->filename[$handle]) . ":%')";
 			$result = $db->sql_query($sql);
+			$row = $db->sql_fetchrow($result);
 
-			while ($row = $db->sql_fetchrow($result))
+			if ($row)
 			{
-				if ($row['template_mtime'] < filemtime($phpbb_root_path . 'styles/' . $user->theme['template_path'] . '/template/' . $row['template_filename']))
+				do
 				{
+					if ($row['template_mtime'] < filemtime($phpbb_root_path . 'styles/' . $user->theme['template_path'] . '/template/' . $row['template_filename']))
+					{
+						if ($row['template_filename'] == $this->filename[$handle])
+						{
+							$compile->_tpl_load_file($handle);
+						}
+						else
+						{
+							$this->files[$row['template_filename']] = $this->root . '/' . $row['template_filename'];
+							$compile->_tpl_load_file($row['template_filename']);
+							unset($this->compiled_code[$row['template_filename']]);
+							unset($this->files[$row['template_filename']]);
+						}
+					}
+
 					if ($row['template_filename'] == $this->filename[$handle])
 					{
-						$compile->_tpl_load_file($handle);
+						$this->compiled_code[$handle] = $compile->compile(trim($row['template_data']));
+						$compile->compile_write($handle, $this->compiled_code[$handle]);
 					}
 					else
 					{
-						$this->files[$row['template_filename']] = $this->root . '/' . $row['template_filename'];
-						$compile->_tpl_load_file($row['template_filename']);
-						unset($this->compiled_code[$row['template_filename']]);
-						unset($this->files[$row['template_filename']]);
+						// Only bother compiling if it doesn't already exist
+						if (!file_exists($this->cachepath . str_replace('/', '.', $row['template_filename']) . '.' . $phpEx))
+						{
+							$this->filename[$row['template_filename']] = $row['template_filename'];
+							$compile->compile_write($row['template_filename'], $compile->compile(trim($row['template_data'])));
+							unset($this->filename[$row['template_filename']]);
+						}
 					}
 				}
-
-				if ($row['template_filename'] == $this->filename[$handle])
-				{
-					$this->compiled_code[$handle] = $compile->compile(trim($row['template_data']));
-					$compile->compile_write($handle, $this->compiled_code[$handle]);
-				}
-				else
-				{
-					// Only bother compiling if it doesn't already exist
-					if (!file_exists($this->cachepath . str_replace('/', '.', $row['template_filename']) . '.' . $phpEx))
-					{
-						$this->filename[$row['template_filename']] = $row['template_filename'];
-						$compile->compile_write($row['template_filename'], $compile->compile(trim($row['template_data'])));
-						unset($this->filename[$row['template_filename']]);
-					}
-				}
+				while ($row = $db->sql_fetchrow($result));
+			}
+			else
+			{
+				// Try to load from filesystem and instruct to insert into the styles table...
+				$compile->_tpl_load_file($handle, true);
+				return false;
 			}
 			$db->sql_freeresult($result);
 

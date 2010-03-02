@@ -32,11 +32,22 @@ function helpline(help)
 */ 
 function initInsertions() 
 {
-	var textarea = document.forms[form_name].elements[text_name];
-	textarea.focus();
+	var doc;
+	if(document.forms[form_name])
+	{
+		doc = document;
+	}
+	else
+	{
+		doc = opener.document;
+	}
+
+	var textarea = doc.forms[form_name].elements[text_name];
 	if (is_ie && typeof(baseHeight) != 'number')
 	{
-		baseHeight = document.selection.createRange().duplicate().boundingHeight;
+		textarea.focus();
+		baseHeight = doc.selection.createRange().duplicate().boundingHeight;
+		document.body.focus();
 	}
 }
 
@@ -44,11 +55,13 @@ function initInsertions()
 * bbstyle
 */
 function bbstyle(bbnumber)
-{	
+{
 	if (bbnumber != -1)
 	{
 		bbfontstyle(bbtags[bbnumber], bbtags[bbnumber+1]);
-	} else {
+	}
+	else
+	{
 		insert_text('[*]');
 		document.forms[form_name].elements[text_name].focus();		
 	}
@@ -62,6 +75,7 @@ function bbfontstyle(bbopen, bbclose)
 	theSelection = false;
 		
 	var textarea = document.forms[form_name].elements[text_name];
+
 	textarea.focus();
 
 	if ((clientVer >= 4) && is_ie && is_win)
@@ -85,9 +99,10 @@ function bbfontstyle(bbopen, bbclose)
 		theSelection = '';
 		return;
 	}
-
+	
 	//The new position for the cursor after adding the bbcode
-	var new_pos = getCaretPosition(textarea).start + bbopen.length;
+	var caret_pos = getCaretPosition(textarea).start;
+	var new_pos = caret_pos + bbopen.length;		
 
 	// Open tag
 	insert_text(bbopen + bbclose);
@@ -103,12 +118,12 @@ function bbfontstyle(bbopen, bbclose)
 	else if (document.selection)
 	{
 		var range = textarea.createTextRange(); 
-        range.move("character", new_pos); 
+		range.move("character", new_pos); 
 		range.select();
-		storeCaret(document.forms[form_name].elements[text_name]);		
+		storeCaret(textarea);
 	}
 
-	document.forms[form_name].elements[text_name].focus();
+	textarea.focus();
 	return;
 }
 
@@ -119,18 +134,20 @@ function insert_text(text, spaces, popup)
 {
 	var textarea;
 	
-	if (!popup) 
+	if (!popup)
 	{
 		textarea = document.forms[form_name].elements[text_name];
-	} else 
+	}
+	else
 	{
 		textarea = opener.document.forms[form_name].elements[text_name];
 	}
-	if (spaces) 
+
+	if (spaces)
 	{
 		text = ' ' + text + ' ';
 	}
-	
+
 	if (!isNaN(textarea.selectionStart))
 	{
 		var sel_start = textarea.selectionStart;
@@ -147,17 +164,21 @@ function insert_text(text, spaces, popup)
 		{
 			textarea.focus();
 			storeCaret(textarea);
-		}		
+		}
 		var caret_pos = textarea.caretPos;
 		caret_pos.text = caret_pos.text.charAt(caret_pos.text.length - 1) == ' ' ? caret_pos.text + text + ' ' : caret_pos.text + text;
 		
 	}
-
 	else
 	{
 		textarea.value = textarea.value + text;
 	}
-	document.forms[form_name].elements[text_name].focus();
+
+	if (!popup)
+	{
+		textarea.focus();
+	}
+
 }
 
 /**
@@ -280,6 +301,7 @@ function colorPalette(dir, width, height)
 {
 	var r = 0, g = 0, b = 0;
 	var numberList = new Array(6);
+	var color = '';
 
 	numberList[0] = '00';
 	numberList[1] = '40';
@@ -287,7 +309,7 @@ function colorPalette(dir, width, height)
 	numberList[3] = 'BF';
 	numberList[4] = 'FF';
 
-	document.writeln('<table cellspacing="1" cellpadding="0" border="0">');
+	document.writeln('<table class="type2">');
 
 	for (r = 0; r < 5; r++)
 	{
@@ -344,13 +366,13 @@ function getCaretPosition(txtarea)
 	var caretPos = new caretPosition();
 	
 	// simple Gecko/Opera way
-	if(txtarea.selectionStart || txtarea.selectionStart == 0)
+	if (txtarea.selectionStart || txtarea.selectionStart == 0)
 	{
 		caretPos.start = txtarea.selectionStart;
 		caretPos.end = txtarea.selectionEnd;
 	}
 	// dirty and slow IE way
-	else if(document.selection)
+	else if (document.selection)
 	{
 		// get current selection
 		var range = document.selection.createRange();
@@ -362,15 +384,15 @@ function getCaretPosition(txtarea)
 		// calculate selection start point by moving beginning of range_all to beginning of range
 		var sel_start;
 		for (sel_start = 0; range_all.compareEndPoints('StartToStart', range) < 0; sel_start++)
-		{		
+		{
 			range_all.moveStart('character', 1);
 		}
-		
+	
 		txtarea.sel_start = sel_start;
-				
+	
 		// we ignore the end value for IE, this is already dirty enough and we don't need it
 		caretPos.start = txtarea.sel_start;
-		caretPos.end = txtarea.sel_start;		
+		caretPos.end = txtarea.sel_start;			
 	}
 
 	return caretPos;

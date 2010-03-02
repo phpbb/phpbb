@@ -330,6 +330,7 @@ function place_pm_into_folder(&$global_privmsgs_rules, $release = false)
 
 	$action_ary = $move_into_folder = array();
 
+	// Newly processing on-hold messages
 	if ($release)
 	{
 		$sql = 'UPDATE ' . PRIVMSGS_TO_TABLE . ' 
@@ -337,6 +338,51 @@ function place_pm_into_folder(&$global_privmsgs_rules, $release = false)
 			WHERE folder_id = ' . PRIVMSGS_HOLD_BOX . "
 				AND user_id = $user_id";
 		$db->sql_query($sql);
+
+		// If there are no rows affected there is something wrong with the new and unread message count.
+		// We try to fix this on our way down...
+		if (!$db->sql_affectedrows())
+		{
+			// Update unread count
+			$sql = 'SELECT COUNT(msg_id) as num_messages
+				FROM ' . PRIVMSGS_TO_TABLE . '
+				WHERE pm_unread = 1
+					AND folder_id <> ' . PRIVMSGS_OUTBOX . '
+					AND user_id = ' . $user_id;
+			$result = $db->sql_query($sql);
+			$num_messages = (int) $db->sql_fetchfield('num_messages');
+			$db->sql_freeresult($result);
+
+			$db->sql_query('UPDATE ' . USERS_TABLE . ' SET user_unread_privmsg = ' . $num_messages . ' WHERE user_id = ' . $user_id);
+			$user->data['user_unread_privmsg'] = $num_messages;
+
+			// Update new pm count
+			$sql = 'SELECT COUNT(msg_id) as num_messages
+				FROM ' . PRIVMSGS_TO_TABLE . '
+				WHERE pm_new = 1
+					AND folder_id IN (' . PRIVMSGS_NO_BOX . ', ' . PRIVMSGS_HOLD_BOX . ')
+					AND user_id = ' . $user_id;
+			$result = $db->sql_query($sql);
+			$num_messages = (int) $db->sql_fetchfield('num_messages');
+			$db->sql_freeresult($result);
+
+			$db->sql_query('UPDATE ' . USERS_TABLE . ' SET user_new_privmsg = ' . $num_messages . ' WHERE user_id = ' . $user_id);
+			$user->data['user_new_privmsg'] = $num_messages;
+
+			// Ok, here we need to repair something, other boxes than privmsgs_no_box and privmsgs_hold_box should not carry the pm_new flag.
+			if (!$num_messages)
+			{
+				$sql = 'UPDATE ' . PRIVMSGS_TO_TABLE . '
+					SET pm_new = 0
+					WHERE pm_new = 1
+						AND folder_id NOT IN (' . PRIVMSGS_NO_BOX . ', ' . PRIVMSGS_HOLD_BOX . ')
+						AND user_id = ' . $user_id;
+				$db->sql_query($sql);
+			}
+
+			// The function needs this value to be up-to-date
+			$user_new_privmsg = (int) $user->data['user_new_privmsg'];
+		}
 	}
 
 	// Get those messages not yet placed into any box
@@ -732,7 +778,7 @@ function move_pm($user_id, $message_limit, $move_msg_ids, $dest_folder, $cur_fol
 
 			if (!$row)
 			{
-				trigger_error('NOT_AUTHORIZED');
+				trigger_error('NOT_AUTHORISED');
 			}
 
 			if ($row['pm_count'] + sizeof($move_msg_ids) > $message_limit)
@@ -1310,6 +1356,8 @@ function submit_pm($mode, $subject, &$data, $put_in_outbox = true)
 		}
 	}
 
+	$db->sql_transaction('begin');
+
 	$sql = '';
 
 	switch ($mode)
@@ -1386,8 +1434,6 @@ function submit_pm($mode, $subject, &$data, $put_in_outbox = true)
 
 	if ($mode != 'edit')
 	{
-		$db->sql_transaction('begin');
-
 		if ($sql)
 		{
 			$db->sql_query($sql);
@@ -1428,8 +1474,6 @@ function submit_pm($mode, $subject, &$data, $put_in_outbox = true)
 				'pm_forwarded'	=> ($mode == 'forward') ? 1 : 0))
 			);
 		}
-
-		$db->sql_transaction('commit');
 	}
 
 	// Set user last post time
@@ -1440,8 +1484,6 @@ function submit_pm($mode, $subject, &$data, $put_in_outbox = true)
 			WHERE user_id = " . $data['from_user_id'];
 		$db->sql_query($sql);
 	}
-
-	$db->sql_transaction('begin');
 
 	// Submit Attachments
 	if (!empty($data['attachment_data']) && $data['msg_id'] && in_array($mode, array('post', 'reply', 'quote', 'quotepost', 'edit', 'forward')))
@@ -1522,8 +1564,6 @@ function submit_pm($mode, $subject, &$data, $put_in_outbox = true)
 		}
 	}
 
-	$db->sql_transaction('commit');
-
 	// Delete draft if post was loaded...
 	$draft_id = request_var('draft_loaded', 0);
 	if ($draft_id)
@@ -1533,6 +1573,8 @@ function submit_pm($mode, $subject, &$data, $put_in_outbox = true)
 				AND user_id = " . $data['from_user_id'];
 		$db->sql_query($sql);
 	}
+
+	$db->sql_transaction('commit');
 
 	// Send Notifications
 	if ($mode != 'edit')

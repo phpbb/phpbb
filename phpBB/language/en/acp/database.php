@@ -32,7 +32,7 @@ if (empty($lang) || !is_array($lang))
 
 // Database Backup/Restore
 $lang = array_merge($lang, array(
-	'ACP_BACKUP_EXPLAIN'	=> 'Here you can backup all your phpBB related data. You may store the resulting archive in your <samp>store/</samp> folder or download it directly. Depending on your server configuration you be able to compress the file in a number of formats.',
+	'ACP_BACKUP_EXPLAIN'	=> 'Here you can backup all your phpBB related data. You may store the resulting archive in your <samp>store/</samp> folder or download it directly. Depending on your server configuration you may be able to compress the file in a number of formats.',
 	'ACP_RESTORE_EXPLAIN'	=> 'This will perform a full restore of all phpBB tables from a saved file. If your server supports it you may use a gzip or bzip2 compressed text file and it will automatically be decompressed. <strong>WARNING</strong> This will overwrite any existing data. The restore may take a long time to process please do not move from this page till it is complete.',
 
 	'BACKUP_DELETE'		=> 'The backup file has been deleted successfully.',
@@ -44,12 +44,14 @@ $lang = array_merge($lang, array(
 	'DATABASE'			=> 'Database utilities',
 	'DATA_ONLY'			=> 'Data only',
 	'DELETE_BACKUP'		=> 'Delete backup',
+	'DELETE_SELECTED_BACKUP'	=> 'Are you sure you want to delete the selected backup?',
 	'DESELECT_ALL'		=> 'Deselect all',
 	'DOWNLOAD_BACKUP'	=> 'Download backup',
 
 	'FILE_TYPE'			=> 'File type',
 	'FULL_BACKUP'		=> 'Full',
 
+	'RESTORE_FAILURE'		=> 'The backup file may be corrupt.',
 	'RESTORE_OPTIONS'		=> 'Restore options',
 	'RESTORE_SUCCESS'		=> 'The database has been successfully restored.<br /><br />Your board should be back to the state it was when the backup was made.',
 
@@ -62,6 +64,7 @@ $lang = array_merge($lang, array(
 	'STRUCTURE_ONLY'		=> 'Structure only',
 
 	'TABLE_SELECT'		=> 'Table select',
+	'TABLE_SELECT_ERROR'=> 'You must select at least one table.',
 ));
 
 ?>

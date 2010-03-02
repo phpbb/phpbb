@@ -141,6 +141,10 @@ $template->set_filenames(array(
 
 make_jumpbox(append_sid("{$phpbb_root_path}viewforum.$phpEx"), $forum_id);
 
+$template->assign_vars(array(
+	'U_VIEW_FORUM'			=> append_sid("{$phpbb_root_path}viewforum.$phpEx", "f=$forum_id&amp;start=$start"),
+));
+
 // Not postable forum or showing active topics?
 if (!($forum_data['forum_type'] == FORUM_POST || (($forum_data['forum_flags'] & FORUM_FLAG_ACTIVE_TOPICS) && $forum_data['forum_type'] == FORUM_CAT)))
 {
@@ -152,8 +156,6 @@ if (!($forum_data['forum_type'] == FORUM_POST || (($forum_data['forum_flags'] & 
 if (!$auth->acl_get('f_read', $forum_id))
 {
 	$template->assign_vars(array(
-		'U_VIEW_FORUM'			=> append_sid("{$phpbb_root_path}viewforum.$phpEx", "f=$forum_id&amp;start=$start"),
-
 		'S_NO_READ_ACCESS'		=> true,
 		'S_AUTOLOGIN_ENABLED'	=> ($config['allow_autologin']) ? true : false,
 		'S_LOGIN_ACTION'		=> append_sid("{$phpbb_root_path}ucp.$phpEx", 'mode=login') . '&amp;redirect=' . urlencode(str_replace('&amp;', '&', build_url(array('_f_')))),
@@ -236,6 +238,12 @@ else
 	$sql_limit_time = '';
 }
 
+// Make sure $start is set to the last page if it exceeds the amount
+if ($start < 0 || $start > $topics_count)
+{
+	$start = ($start < 0) ? 0 : floor(($topics_count - 1) / $config['topics_per_page']) * $config['topics_per_page'];
+}
+
 // Basic pagewide vars
 $post_alt = ($forum_data['forum_status'] == ITEM_LOCKED) ? $user->lang['FORUM_LOCKED'] : $user->lang['POST_NEW_TOPIC'];
 
@@ -274,7 +282,7 @@ $template->assign_vars(array(
 	'S_WATCH_FORUM_LINK'	=> $s_watching_forum['link'],
 	'S_WATCH_FORUM_TITLE'	=> $s_watching_forum['title'],
 	'S_FORUM_ACTION'		=> append_sid("{$phpbb_root_path}viewforum.$phpEx", "f=$forum_id&amp;start=$start"),
-	'S_DISPLAY_SEARCHBOX'	=> ($auth->acl_get('f_search', $forum_id)) ? true : false,
+	'S_DISPLAY_SEARCHBOX'	=> ($auth->acl_get('u_search') && $auth->acl_get('f_search', $forum_id) && $config['load_search']) ? true : false,
 	'S_SEARCHBOX_ACTION'	=> append_sid("{$phpbb_root_path}search.$phpEx", 'fid[]=' . $forum_id),
 	'S_SINGLE_MODERATOR'	=> (!empty($moderators[$forum_id]) && sizeof($moderators[$forum_id]) > 1) ? false : true,
 
@@ -345,6 +353,10 @@ if ($forum_data['forum_type'] == FORUM_POST)
 		{
 			$global_announce_list[$row['topic_id']] = true;
 		}
+		else
+		{
+			$topics_count--;
+		}
 	}
 	$db->sql_freeresult($result);
 }
@@ -372,29 +384,41 @@ else
 	$sql_start = $start;
 }
 
+if ($forum_data['forum_type'] == FORUM_POST || !sizeof($active_forum_ary))
+{
+	$sql_where = 't.forum_id = ' . $forum_id;
+}
+else if (empty($active_forum_ary['exclude_forum_id']))
+{
+	$sql_where = $db->sql_in_set('t.forum_id', $active_forum_ary['forum_id']);
+}
+else
+{
+	$get_forum_ids = array_diff($active_forum_ary['forum_id'], $active_forum_ary['exclude_forum_id']);
+	$sql_where = (sizeof($get_forum_ids)) ? $db->sql_in_set('t.forum_id', $get_forum_ids) : 't.forum_id = ' . $forum_id;
+}
+
 // SQL array for obtaining topics/stickies
 $sql_array = array(
 	'SELECT'		=> $sql_array['SELECT'],
 	'FROM'			=> $sql_array['FROM'],
 	'LEFT_JOIN'		=> $sql_array['LEFT_JOIN'],
 
-	'WHERE'			=> (($forum_data['forum_type'] == FORUM_POST || !sizeof($active_forum_ary)) ? 't.forum_id = ' . $forum_id : $db->sql_in_set('t.forum_id', $active_forum_ary['forum_id'])) . "
-		AND t.topic_type = {SQL_TOPIC_TYPE}
+	'WHERE'			=> $sql_where . '
+		AND t.topic_type IN (' . POST_NORMAL . ', ' . POST_STICKY . ")
 		$sql_approved
 		$sql_limit_time",
 
-	'ORDER_BY'		=> $sql_sort_order,
+	'ORDER_BY'		=> 't.topic_type ' . ((!$store_reverse) ? 'DESC' : 'ASC') . ', ' . $sql_sort_order,
 );
 
 // If store_reverse, then first obtain topics, then stickies, else the other way around...
 // Funnily enough you typically save one query if going from the last page to the middle (store_reverse) because
 // the number of stickies are not known
 $sql = $db->sql_build_query('SELECT', $sql_array);
-$sql = str_replace('{SQL_TOPIC_TYPE}', ($store_reverse) ? POST_NORMAL : POST_STICKY, $sql);
 $result = $db->sql_query_limit($sql, $sql_limit, $sql_start);
 
 $shadow_topic_list = array();
-$num_rows = 0;
 while ($row = $db->sql_fetchrow($result))
 {
 	if ($row['topic_status'] == ITEM_MOVED)
@@ -404,29 +428,8 @@ while ($row = $db->sql_fetchrow($result))
 
 	$rowset[$row['topic_id']] = $row;
 	$topic_list[] = $row['topic_id'];
-	$num_rows++;
 }
 $db->sql_freeresult($result);
-
-// If the number of topics exceeds the sql limit then we do not need to retrieve the remaining topic type
-if ($num_rows < $sql_limit)
-{
-	$sql = $db->sql_build_query('SELECT', $sql_array);
-	$sql = str_replace('{SQL_TOPIC_TYPE}', ($store_reverse) ? POST_STICKY : POST_NORMAL, $sql);
-	$result = $db->sql_query_limit($sql, $sql_limit - $num_rows, $sql_start);
-
-	while ($row = $db->sql_fetchrow($result))
-	{
-		if ($row['topic_status'] == ITEM_MOVED)
-		{
-			$shadow_topic_list[$row['topic_moved_id']] = $row['topic_id'];
-		}
-
-		$rowset[$row['topic_id']] = $row;
-		$topic_list[] = $row['topic_id'];
-	}
-	$db->sql_freeresult($result);
-}
 
 // If we have some shadow topics, update the rowset to reflect their topic information
 if (sizeof($shadow_topic_list))
@@ -439,6 +442,17 @@ if (sizeof($shadow_topic_list))
 	while ($row = $db->sql_fetchrow($result))
 	{
 		$orig_topic_id = $shadow_topic_list[$row['topic_id']];
+
+		// If the shadow topic is already listed within the rowset (happens for active topics for example), then do not include it...
+		if (isset($rowset[$row['topic_id']]))
+		{
+			// We need to remove any trace regarding this topic. :)
+			unset($rowset[$orig_topic_id]);
+			unset($topic_list[array_search($orig_topic_id, $topic_list)]);
+			$topics_count--;
+
+			continue;
+		}
 
 		// Do not include those topics the user has no permission to access
 		if (!$auth->acl_get('f_read', $row['forum_id']))
@@ -462,6 +476,12 @@ if (sizeof($shadow_topic_list))
 	$db->sql_freeresult($result);
 }
 unset($shadow_topic_list);
+
+// Ok, adjust topics count for active topics list
+if ($s_display_active)
+{
+	$topics_count = 1;
+}
 
 $template->assign_vars(array(
 	'PAGINATION'	=> generate_pagination(append_sid("{$phpbb_root_path}viewforum.$phpEx", "f=$forum_id&amp;$u_sort_param"), $topics_count, $config['topics_per_page'], $start),
@@ -581,6 +601,7 @@ if (sizeof($topic_list))
 
 			'TOPIC_FOLDER_IMG'		=> $user->img($folder_img, $folder_alt),
 			'TOPIC_FOLDER_IMG_SRC'	=> $user->img($folder_img, $folder_alt, false, '', 'src'),
+			'TOPIC_FOLDER_IMG_ALT'	=> $user->lang[$folder_alt],
 			'TOPIC_ICON_IMG'		=> (!empty($icons[$row['icon_id']])) ? $icons[$row['icon_id']]['img'] : '',
 			'TOPIC_ICON_IMG_WIDTH'	=> (!empty($icons[$row['icon_id']])) ? $icons[$row['icon_id']]['width'] : '',
 			'TOPIC_ICON_IMG_HEIGHT'	=> (!empty($icons[$row['icon_id']])) ? $icons[$row['icon_id']]['height'] : '',

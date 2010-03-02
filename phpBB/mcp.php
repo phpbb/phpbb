@@ -56,6 +56,12 @@ $quickmod = (isset($_REQUEST['quickmod'])) ? true : false;
 $action = request_var('action', '');
 $action_ary = request_var('action', array('' => 0));
 
+$forum_action = request_var('forum_action', '');
+if ($forum_action !== '' && !empty($_POST['sort']))
+{
+	$action = $forum_action;
+}
+
 if (sizeof($action_ary))
 {
 	list($action, ) = each($action_ary);
@@ -87,8 +93,7 @@ if ($post_id)
 	$topic_id = (int) $row['topic_id'];
 	$forum_id = (int) ($row['forum_id']) ? $row['forum_id'] : $forum_id;
 }
-
-if ($topic_id && !$forum_id)
+else if ($topic_id)
 {
 	$sql = 'SELECT forum_id
 		FROM ' . TOPICS_TABLE . "
@@ -124,14 +129,14 @@ if (!$auth->acl_getf_global('m_'))
 
 	if (!$allow_user)
 	{
-		trigger_error($user->lang['NOT_AUTHORIZED']);
+		trigger_error($user->lang['NOT_AUTHORISED']);
 	}
 }
 
 // if the user cannot read the forum he tries to access then we won't allow mcp access either
 if ($forum_id && !$auth->acl_get('f_read', $forum_id))
 {
-	trigger_error($user->lang['NOT_AUTHORIZED']);
+	trigger_error($user->lang['NOT_AUTHORISED']);
 }
 
 if ($forum_id)
@@ -168,6 +173,10 @@ if ($quickmod)
 			$module->set_active('logs', 'topic_logs');
 		break;
 
+		case 'merge_topic':
+			$module->set_active('main', 'forum_view');
+		break;
+
 		case 'split':
 		case 'merge':
 			$module->set_active('main', 'topic_view');
@@ -186,14 +195,18 @@ else
 // Hide some of the options if we don't have the relevant information to use them
 if (!$post_id)
 {
-	$module->set_display('reports', 'report_details', false);
 	$module->set_display('main', 'post_details', false);
 	$module->set_display('warn', 'warn_post', false);
+}
 
-	if (!$topic_id || $mode == 'unapproved_posts')
-	{
-		$module->set_display('queue', 'approve_details', false);
-	}
+if ($mode == '' || $mode == 'unapproved_topics' || $mode == 'unapproved_posts')
+{
+	$module->set_display('queue', 'approve_details', false);
+}
+
+if ($mode == '' || $mode == 'reports' || $mode == 'reports_closed')
+{
+	$module->set_display('reports', 'report_details', false);
 }
 
 if (!$topic_id)
@@ -220,6 +233,14 @@ $module->load_active();
 // Assign data to the template engine for the list of modules
 $module->assign_tpl_vars(append_sid("{$phpbb_root_path}mcp.$phpEx"));
 
+// Generate urls for letting the moderation control panel being accessed in different modes
+$template->assign_vars(array(
+	'U_MCP'			=> append_sid("{$phpbb_root_path}mcp.$phpEx", 'i=main'),
+	'U_MCP_FORUM'	=> ($forum_id) ? append_sid("{$phpbb_root_path}mcp.$phpEx", "i=main&amp;mode=forum_view&amp;f=$forum_id") : '',
+	'U_MCP_TOPIC'	=> ($forum_id && $topic_id) ? append_sid("{$phpbb_root_path}mcp.$phpEx", "i=main&amp;mode=topic_view&amp;t=$topic_id") : '',
+	'U_MCP_POST'	=> ($forum_id && $topic_id && $post_id) ? append_sid("{$phpbb_root_path}mcp.$phpEx", "i=main&amp;mode=post_details&amp;t=$topic_id&amp;p=$post_id") : '',
+));
+
 // Generate the page, do not display/query online list
 $module->display($module->get_page_title(), false);
 
@@ -229,6 +250,41 @@ $module->display($module->get_page_title(), false);
 function _module__url($mode, &$module_row)
 {
 	return extra_url();
+}
+
+function _module_notes_url($mode, &$module_row)
+{
+	if ($mode == 'front')
+	{
+		return '';
+	}
+
+	global $user_id;
+	return ($user_id) ? "&amp;u=$user_id" : '';
+}
+
+function _module_warn_url($mode, &$module_row)
+{
+	if ($mode == 'front' || $mode == 'list')
+	{
+		return '';
+	}
+
+	if ($mode == 'warn_post')
+	{
+		global $forum_id, $post_id;
+
+		$url_extra = ($forum_id) ? "&amp;f=$forum_id" : '';
+		$url_extra .= ($post_id) ? "&amp;p=$post_id" : '';
+
+		return $url_extra;
+	}
+	else
+	{
+		global $user_id;
+
+		return ($user_id) ? "&amp;u=$user_id" : '';
+	}
 }
 
 function _module_main_url($mode, &$module_row)
@@ -242,6 +298,11 @@ function _module_logs_url($mode, &$module_row)
 }
 
 function _module_ban_url($mode, &$module_row)
+{
+	return extra_url();
+}
+
+function _module_queue_url($mode, &$module_row)
 {
 	return extra_url();
 }
@@ -585,7 +646,7 @@ function mcp_sorting($mode, &$sort_days, &$sort_key, &$sort_dir, &$sort_by_sql, 
 			}
 			else
 			{
-				$where_sql .= ' ' . $db->sql_in_set('p.forum_id', get_forum_list('m_report'));
+				$where_sql .= ' ' . $db->sql_in_set('p.forum_id', get_forum_list('!m_report'), true, true);
 			}
 
 			if ($mode == 'reports')

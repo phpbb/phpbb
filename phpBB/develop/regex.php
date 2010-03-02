@@ -1,4 +1,13 @@
 <?php
+//
+// Security message:
+//
+// This script is potentially dangerous.
+// Remove or comment the next line (die(".... ) to enable this script.
+// Do NOT FORGET to either remove this script or disable it after you have used it.
+//
+die("Please read the first lines of this script for instructions on how to enable it");
+
 
 // IP regular expressions
 
@@ -46,7 +55,7 @@ $sub_delims = '!$&\'()*+,;=';
 $pchar = "(?:[$unreserved$sub_delims:@|]+|$pct_encoded)"; // rfc: no "|"
 
 $scheme = '[a-z][a-z\d+\-.]*';
-$reg_name = "(?:[$unreserved$sub_delims|@]+|$pct_encoded)+"; // rfc: * instead of + and no "|" and no "@" (included instead of userinfo
+$reg_name = "(?:[$unreserved$sub_delims:@|]+|$pct_encoded)+"; // rfc: * instead of + and no "|" and no "@" and no ":" (included instead of userinfo)
 //$userinfo = "(?:(?:[$unreserved$sub_delims:]+|$pct_encoded))*";
 $ipv4_simple = '[0-9.]+';
 $ipv6_simple = '\[[a-z0-9.]+:[a-z0-9.]+:[a-z0-9.:]+\]';

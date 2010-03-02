@@ -6,7 +6,7 @@
 * @copyright (c) 2006 phpBB Group 
 * @license http://opensource.org/licenses/gpl-license.php GNU Public License 
 *
-* @todo check for writeable cache/store/files directory
+* @todo check for writable cache/store/files directory
 */
 
 /**
@@ -91,7 +91,7 @@ class install_update extends module
 		$db = new $sql_db();
 
 		// Connect to DB
-		$db->sql_connect($dbhost, $dbuser, $dbpasswd, $dbname, $dbport, false);
+		$db->sql_connect($dbhost, $dbuser, $dbpasswd, $dbname, $dbport, false, false);
 
 		// We do not need this any longer, unset for safety purposes
 		unset($dbpasswd);
@@ -111,20 +111,6 @@ class install_update extends module
 		// First of all, init the user session
 		$user->session_begin();
 		$auth->acl($user->data);
-
-		// Beta4 and below are having a bug displaying an error if the install directory is present.
-		// This bug got fixed, but we need to get around it by using a tiny 'hack'.
-		if (!defined('DEBUG_EXTRA'))
-		{
-			if (version_compare(strtolower($config['version']), '3.0.b4', '<='))
-			{
-				@define('DEBUG_EXTRA', true);
-			}
-			else if (!empty($config['version_update_from']) && version_compare(strtolower($config['version_update_from']), '3.0.b4', '<='))
-			{
-				@define('DEBUG_EXTRA', true);
-			}
-		}
 
 		$user->setup('install');
 
@@ -151,7 +137,7 @@ class install_update extends module
 		// For the current version we trick a bit. ;)
 		$this->current_version = (!empty($config['version_update_from'])) ? $config['version_update_from'] : $config['version'];
 
-		$up_to_date = (version_compare(strtolower($this->current_version), strtolower($this->latest_version), '<')) ? false : true;
+		$up_to_date = (version_compare(str_replace('rc', 'RC', strtolower($this->current_version)), str_replace('rc', 'RC', strtolower($this->latest_version)), '<')) ? false : true;
 
 		// Check for a valid update directory, else point the user to the phpbb.com website
 		if (!file_exists($phpbb_root_path . 'install/update') || !file_exists($phpbb_root_path . 'install/update/index.' . $phpEx) || !file_exists($this->old_location) || !file_exists($this->new_location))
@@ -168,7 +154,7 @@ class install_update extends module
 
 		// Make sure the update directory holds the correct information
 		// Since admins are able to run the update/checks more than once we only check if the current version is lower or equal than the version to which we update to.
-		if (version_compare(strtolower($this->current_version), strtolower($this->update_info['version']['to']), '>'))
+		if (version_compare(str_replace('rc', 'RC', strtolower($this->current_version)), str_replace('rc', 'RC', strtolower($this->update_info['version']['to'])), '>'))
 		{
 			$template->assign_vars(array(
 				'S_ERROR'		=> true,
@@ -202,7 +188,12 @@ class install_update extends module
 			{
 				$lang = array();
 				include($this->new_location . 'language/en/install.php');
-				$user->lang = array_merge($user->lang, $lang);
+				// only add new keys to user's language in english
+				$new_keys = array_diff(array_keys($lang), array_keys($user->lang));
+				foreach ($new_keys as $i => $new_key)
+				{
+					$user->lang[$new_key] = $lang[$new_key];
+				}
 			}
 		}
 
@@ -276,7 +267,7 @@ class install_update extends module
 				$template->assign_vars(array(
 					'S_DB_UPDATE'			=> true,
 					'S_DB_UPDATE_FINISHED'	=> ($config['version'] == $this->latest_version) ? true : false,
-					'U_DB_UPDATE'			=> $phpbb_root_path . 'install/database_update.' . $phpEx . '?type=1',
+					'U_DB_UPDATE'			=> append_sid($phpbb_root_path . 'install/database_update.' . $phpEx, 'type=1&amp;language=' . $language),
 					'U_DB_UPDATE_ACTION'	=> append_sid($this->p_master->module_url, "mode=$mode&amp;sub=update_db"),
 					'U_ACTION'				=> append_sid($this->p_master->module_url, "mode=$mode&amp;sub=file_check"),
 				));
@@ -411,12 +402,14 @@ class install_update extends module
 
 				if ($all_up_to_date)
 				{
-					$db->sql_query('DELETE FROM ' . CONFIG_TABLE . " WHERE config_name = 'version_update_from'");
-
 					// Add database update to log
 					add_log('admin', 'LOG_UPDATE_PHPBB', $this->current_version, $this->latest_version);
 
 					$cache->purge();
+
+					$db->sql_return_on_error(true);
+					$db->sql_query('DELETE FROM ' . CONFIG_TABLE . " WHERE config_name = 'version_update_from'");
+					$db->sql_return_on_error(false);
 				}
 
 			break;
@@ -464,7 +457,7 @@ class install_update extends module
 						$radio_buttons = '';
 						foreach ($methods as $method)
 						{
-							$radio_buttons .= '<input type="radio"' . ((!$radio_buttons) ? ' id="use_method"' : '') . ' class="radio" value="' . $method . '" name="use_method" />&nbsp;' . $method . '&nbsp;';
+							$radio_buttons .= '<label><input type="radio"' . ((!$radio_buttons) ? ' id="use_method"' : '') . ' class="radio" value="' . $method . '" name="use_method" /> ' . $method . '</label>';
 						}
 
 						$template->assign_vars(array(
@@ -590,7 +583,9 @@ class install_update extends module
 				}
 
 				// Now update the installation or download the archive...
-				$archive_filename = 'update_' . $this->update_info['version']['from'] . '_to_' . $this->update_info['version']['to'];
+				$download_filename = 'update_' . $this->update_info['version']['from'] . '_to_' . $this->update_info['version']['to'];
+				$archive_filename = $download_filename . '_' . time() . '_' . unique_id();
+
 				$update_list = $cache->get('_update_list');
 				$conflicts = request_var('conflict', array('' => 0));
 
@@ -749,7 +744,7 @@ class install_update extends module
 				{
 					$compress->close();
 
-					$compress->download($archive_filename);
+					$compress->download($archive_filename, $download_filename);
 					@unlink($phpbb_root_path . 'store/' . $archive_filename . $use_method);
 
 					exit;
@@ -934,7 +929,7 @@ class install_update extends module
 				}
 
 				// If the file exists within the old directory the file got removed and we will write it back
-				// not a biggie, but we might want to state this circumstance seperatly later.
+				// not a biggie, but we might want to state this circumstance separately later.
 				//	if (file_exists($this->old_location . $file))
 				//	{
 				//		$update_list['removed'][] = $file;
@@ -1181,7 +1176,7 @@ class install_update extends module
 					/* Get custom installed styles...
 					$sql = 'SELECT template_name, template_path
 						FROM ' . STYLES_TEMPLATE_TABLE . "
-						WHERE template_name NOT IN ('subSilver', 'BLABLA')";
+						WHERE LOWER(template_name) NOT IN ('subsilver2', 'prosilver')";
 					$result = $db->sql_query($sql);
 
 					$templates = array();
@@ -1196,11 +1191,11 @@ class install_update extends module
 						foreach ($info['files'] as $filename)
 						{
 							// Template update?
-							if (strpos($filename, 'styles/subSilver/template/') === 0)
+							if (strpos(strtolower($filename), 'styles/subsilver2/template/') === 0)
 							{
 								foreach ($templates as $row)
 								{
-									$info['custom'][$filename][] = str_replace('/subSilver/', '/' . $row['template_path'] . '/', $filename);
+									$info['custom'][$filename][] = str_replace('/subsilver2/', '/' . $row['template_path'] . '/', $filename);
 								}
 							}
 						}

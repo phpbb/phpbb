@@ -85,6 +85,7 @@ switch ($mode)
 	case 'delete':
 		if (!$post_id)
 		{
+			$user->setup('posting');
 			trigger_error('NO_POST');
 		}
 
@@ -123,7 +124,7 @@ switch ($mode)
 
 if (!$sql)
 {
-	$user->setup(array('posting', 'mcp', 'viewtopic'));
+	$user->setup('posting');
 	trigger_error('NO_POST_MODE');
 }
 
@@ -133,6 +134,10 @@ $db->sql_freeresult($result);
 
 if (!$post_data)
 {
+	if (!($mode == 'post' || $mode == 'bump' || $mode == 'reply'))
+	{
+		$user->setup('posting');
+	}
 	trigger_error(($mode == 'post' || $mode == 'bump' || $mode == 'reply') ? 'NO_TOPIC' : 'NO_POST');
 }
 
@@ -403,12 +408,13 @@ if ($mode != 'edit')
 $post_data['enable_magic_url'] = $post_data['drafts'] = false;
 
 // User own some drafts?
-if ($user->data['is_registered'] && $auth->acl_get('u_savedrafts'))
+if ($user->data['is_registered'] && $auth->acl_get('u_savedrafts') && ($mode == 'reply' || $mode == 'post' || $mode == 'quote'))
 {
 	$sql = 'SELECT draft_id
 		FROM ' . DRAFTS_TABLE . '
-		WHERE (forum_id IN (' . $forum_id . ', 0)' . (($topic_id) ? " OR topic_id = $topic_id" : '') . ')
-			AND user_id = ' . $user->data['user_id'] .
+		WHERE user_id = ' . $user->data['user_id'] .
+			(($forum_id) ? ' AND forum_id = ' . (int) $forum_id : '') . 
+			(($topic_id) ? ' AND topic_id = ' . (int) $topic_id : '') .
 			(($draft_id) ? " AND draft_id <> $draft_id" : '');
 	$result = $db->sql_query_limit($sql, 1);
 
@@ -441,14 +447,14 @@ if ($mode == 'edit' && $post_data['bbcode_uid'])
 
 // HTML, BBCode, Smilies, Images and Flash status
 $bbcode_status	= ($config['allow_bbcode'] && $auth->acl_get('f_bbcode', $forum_id)) ? true : false;
-$smilies_status	= ($config['allow_smilies'] && $auth->acl_get('f_smilies', $forum_id)) ? true : false;
-$img_status		= ($auth->acl_get('f_img', $forum_id)) ? true : false;
+$smilies_status	= ($bbcode_status && $config['allow_smilies'] && $auth->acl_get('f_smilies', $forum_id)) ? true : false;
+$img_status		= ($bbcode_status && $auth->acl_get('f_img', $forum_id)) ? true : false;
 $url_status		= ($config['allow_post_links']) ? true : false;
-$flash_status	= ($auth->acl_get('f_flash', $forum_id)) ? true : false;
+$flash_status	= ($bbcode_status && $auth->acl_get('f_flash', $forum_id)) ? true : false;
 $quote_status	= ($auth->acl_get('f_reply', $forum_id)) ? true : false;
 
 // Save Draft
-if ($save && $user->data['is_registered'] && $auth->acl_get('u_savedrafts'))
+if ($save && $user->data['is_registered'] && $auth->acl_get('u_savedrafts') && ($mode == 'reply' || $mode == 'post' || $mode == 'quote'))
 {
 	$subject = utf8_normalize_nfc(request_var('subject', '', true));
 	$subject = (!$subject && $mode != 'post') ? $post_data['topic_title'] : $subject;
@@ -510,7 +516,7 @@ if ($save && $user->data['is_registered'] && $auth->acl_get('u_savedrafts'))
 }
 
 // Load requested Draft
-if ($draft_id && $user->data['is_registered'] && $auth->acl_get('u_savedrafts'))
+if ($draft_id && ($mode == 'reply' || $mode == 'quote' || $mode == 'post') && $user->data['is_registered'] && $auth->acl_get('u_savedrafts'))
 {
 	$sql = 'SELECT draft_subject, draft_message
 		FROM ' . DRAFTS_TABLE . "
@@ -534,7 +540,7 @@ if ($draft_id && $user->data['is_registered'] && $auth->acl_get('u_savedrafts'))
 }
 
 // Load draft overview
-if ($load && $post_data['drafts'])
+if ($load && ($mode == 'reply' || $mode == 'quote' || $mode == 'post') && $post_data['drafts'])
 {
 	load_drafts($topic_id, $forum_id);
 }
@@ -544,7 +550,7 @@ $solved_captcha = false;
 if ($submit || $preview || $refresh)
 {
 	$post_data['topic_cur_post_id']	= request_var('topic_cur_post_id', 0);
-	$post_data['post_subject']		= utf8_normalize_nfc(request_var('subject', '', true));
+	$post_data['post_subject']		= trim(utf8_normalize_nfc(request_var('subject', '', true)));
 	$message_parser->message		= utf8_normalize_nfc(request_var('message', '', true));
 
 	$post_data['username']			= utf8_normalize_nfc(request_var('username', $post_data['username'], true));
@@ -707,7 +713,7 @@ if ($submit || $preview || $refresh)
 	{
 		include($phpbb_root_path . 'includes/functions_user.' . $phpEx);
 
-		if (($result = validate_username($post_data['username'])) !== false)
+		if (($result = validate_username($post_data['username'], (!empty($post_data['post_username'])) ? $post_data['post_username'] : '')) !== false)
 		{
 			$user->add_lang('ucp');
 			$error[] = $user->lang[$result . '_USERNAME'];
@@ -769,10 +775,11 @@ if ($submit || $preview || $refresh)
 		$post_data['poll_options'] = (isset($poll['poll_options'])) ? $poll['poll_options'] : '';
 		$post_data['poll_title'] = (isset($poll['poll_title'])) ? $poll['poll_title'] : '';
 
+		/* We reset votes, therefore also allow removing options
 		if ($post_data['poll_last_vote'] && ($poll['poll_options_size'] < $orig_poll_options_size))
 		{
 			$message_parser->warn_msg[] = $user->lang['NO_DELETE_POLL_OPTIONS'];
-		}
+		}*/
 	}
 	else
 	{
@@ -800,8 +807,9 @@ if ($submit || $preview || $refresh)
 
 		if (!$auth->acl_get($auth_option, $forum_id))
 		{
-			// There is a special case where a user edits his post whereby the topic type got changed by an admin/mod
-			if ($mode == 'edit' && $post_data['poster_id'] == $user->data['user_id'])
+			// There is a special case where a user edits his post whereby the topic type got changed by an admin/mod.
+			// Another case would be a mod not having sticky permissions for example but edit permissions.
+			if ($mode == 'edit')
 			{
 				// To prevent non-authed users messing around with the topic type we reset it to the original one.
 				$post_data['topic_type'] = $post_data['orig_topic_type'];
@@ -849,7 +857,7 @@ if ($submit || $preview || $refresh)
 					include_once($phpbb_root_path . 'includes/functions_admin.' . $phpEx);
 
 					$template->assign_vars(array(
-						'S_FORUM_SELECT'	=> make_forum_select(false, false, false, true, true),
+						'S_FORUM_SELECT'	=> make_forum_select(false, false, false, true, true, true),
 						'S_UNGLOBALISE'		=> true)
 					);
 
@@ -858,6 +866,12 @@ if ($submit || $preview || $refresh)
 				}
 				else
 				{
+					if (!$auth->acl_get('f_post', $to_forum_id))
+					{
+						// This will only be triggered if the user tried to trick the forum.
+						trigger_error('NOT_AUTHORISED');
+					}
+
 					$forum_id = $to_forum_id;
 				}
 			}
@@ -906,6 +920,7 @@ if ($submit || $preview || $refresh)
 				'topic_first_post_id'	=> (isset($post_data['topic_first_post_id'])) ? (int) $post_data['topic_first_post_id'] : 0,
 				'topic_last_post_id'	=> (isset($post_data['topic_last_post_id'])) ? (int) $post_data['topic_last_post_id'] : 0,
 				'topic_time_limit'		=> (int) $post_data['topic_time_limit'],
+				'topic_attachment'		=> (isset($post_data['topic_attachment'])) ? (int) $post_data['topic_attachment'] : 0,
 				'post_id'				=> (int) $post_id,
 				'topic_id'				=> (int) $topic_id,
 				'forum_id'				=> (int) $forum_id,
@@ -931,8 +946,17 @@ if ($submit || $preview || $refresh)
 				'bbcode_uid'			=> $message_parser->bbcode_uid,
 				'message'				=> $message_parser->message,
 				'attachment_data'		=> $message_parser->attachment_data,
-				'filename_data'			=> $message_parser->filename_data
+				'filename_data'			=> $message_parser->filename_data,
+
+				'topic_approved'		=> (isset($post_data['topic_approved'])) ? $post_data['topic_approved'] : false,
+				'post_approved'			=> (isset($post_data['post_approved'])) ? $post_data['post_approved'] : false,
 			);
+
+			if ($mode == 'edit')
+			{
+				$data['topic_replies_real'] = $post_data['topic_replies_real'];
+			}
+
 			unset($message_parser);
 
 			$redirect_url = submit_post($mode, $post_data['post_subject'], $post_data['username'], $post_data['topic_type'], $poll, $data, $update_message);
@@ -1095,7 +1119,7 @@ if ($mode == 'post' || ($mode == 'edit' && $post_id == $post_data['topic_first_p
 }
 
 $s_topic_icons = false;
-if ($post_data['enable_icons'])
+if ($post_data['enable_icons'] && $auth->acl_get('f_icons', $forum_id))
 {
 	$s_topic_icons = posting_gen_topic_icons($mode, $post_data['icon_id']);
 }
@@ -1204,7 +1228,7 @@ $template->assign_vars(array(
 	'IMG_STATUS'			=> ($img_status) ? $user->lang['IMAGES_ARE_ON'] : $user->lang['IMAGES_ARE_OFF'],
 	'FLASH_STATUS'			=> ($flash_status) ? $user->lang['FLASH_IS_ON'] : $user->lang['FLASH_IS_OFF'],
 	'SMILIES_STATUS'		=> ($smilies_status) ? $user->lang['SMILIES_ARE_ON'] : $user->lang['SMILIES_ARE_OFF'],
-	'URL_STATUS'			=> ($url_status) ? $user->lang['URL_IS_ON'] : $user->lang['URL_IS_OFF'],
+	'URL_STATUS'			=> ($bbcode_status && $url_status) ? $user->lang['URL_IS_ON'] : $user->lang['URL_IS_OFF'],
 	'MINI_POST_IMG'			=> $user->img('icon_post_target', $user->lang['POST']),
 	'POST_DATE'				=> ($post_data['post_time']) ? $user->format_date($post_data['post_time']) : '',
 	'ERROR'					=> (sizeof($error)) ? implode('<br />', $error) : '',
@@ -1219,7 +1243,7 @@ $template->assign_vars(array(
 	'S_CLOSE_PROGRESS_WINDOW'	=> (isset($_POST['add_file'])) ? true : false,
 	'S_EDIT_POST'				=> ($mode == 'edit') ? true : false,
 	'S_EDIT_REASON'				=> ($mode == 'edit' && $auth->acl_get('m_edit', $forum_id)) ? true : false,
-	'S_DISPLAY_USERNAME'		=> (!$user->data['is_registered'] || ($mode == 'edit' && $post_data['post_username'])) ? true : false,
+	'S_DISPLAY_USERNAME'		=> (!$user->data['is_registered'] || ($mode == 'edit' && $post_data['poster_id'] == ANONYMOUS)) ? true : false,
 	'S_SHOW_TOPIC_ICONS'		=> $s_topic_icons,
 	'S_DELETE_ALLOWED'			=> ($mode == 'edit' && (($post_id == $post_data['topic_last_post_id'] && $post_data['poster_id'] == $user->data['user_id'] && $auth->acl_get('f_delete', $forum_id)) || $auth->acl_get('m_delete', $forum_id))) ? true : false,
 	'S_BBCODE_ALLOWED'			=> $bbcode_status,
@@ -1237,7 +1261,7 @@ $template->assign_vars(array(
 	'S_LINKS_ALLOWED'			=> $url_status,
 	'S_MAGIC_URL_CHECKED'		=> ($urls_checked) ? ' checked="checked"' : '',
 	'S_TYPE_TOGGLE'				=> $topic_type_toggle,
-	'S_SAVE_ALLOWED'			=> ($auth->acl_get('u_savedrafts') && $user->data['is_registered']) ? true : false,
+	'S_SAVE_ALLOWED'			=> ($auth->acl_get('u_savedrafts') && $user->data['is_registered'] && $mode != 'edit') ? true : false,
 	'S_HAS_DRAFTS'				=> ($auth->acl_get('u_savedrafts') && $user->data['is_registered'] && $post_data['drafts']) ? true : false,
 	'S_FORM_ENCTYPE'			=> $form_enctype,
 
@@ -1381,7 +1405,7 @@ function handle_post_delete($forum_id, $topic_id, $post_id, &$post_data)
 	}
 
 	// If we are here the user is not able to delete - present the correct error message
-	if ($post_data['poster_id'] != $user->data['user_id'] && !$auth->acl_get('f_delete', $forum_id))
+	if ($post_data['poster_id'] != $user->data['user_id'] && $auth->acl_get('f_delete', $forum_id))
 	{
 		trigger_error('DELETE_OWN_POSTS');
 	}

@@ -163,13 +163,12 @@ class messenger
 				}
 			}
 
-			if (!($fd = @fopen($tpl_file, 'r')))
+			if (($data = @file_get_contents($tpl_file)) === false)
 			{
 				trigger_error("Failed opening template file [ $tpl_file ]", E_USER_ERROR);
 			}
 
-			$this->tpl_msg[$template_lang . $template_file] = fread($fd, filesize($tpl_file));
-			fclose($fd);
+			$this->tpl_msg[$template_lang . $template_file] = $data;
 		}
 
 		$this->msg = $this->tpl_msg[$template_lang . $template_file];
@@ -209,12 +208,12 @@ class messenger
 		$match = array();
 		if (preg_match('#^(Subject:(.*?))$#m', $this->msg, $match))
 		{
-			$this->subject = (trim($match[2]) != '') ? trim($match[2]) : (($this->subject != '') ? $this->subject : $user->lang['NO_SUBJECT']);
+			$this->subject = (trim($match[2]) != '') ? trim($match[2]) : (($this->subject != '') ? $this->subject : $user->lang['NO_EMAIL_SUBJECT']);
 			$drop_header .= '[\r\n]*?' . preg_quote($match[1], '#');
 		}
 		else
 		{
-			$this->subject = (($this->subject != '') ? $this->subject : $user->lang['NO_SUBJECT']);
+			$this->subject = (($this->subject != '') ? $this->subject : $user->lang['NO_EMAIL_SUBJECT']);
 		}
 
 		if ($drop_header)
@@ -846,7 +845,7 @@ function smtpmail($addresses, $subject, $message, &$err_msg, $headers = '')
 
 	// From this point onward most server response codes should be 250
 	// Specify who the mail is from....
-	$smtp->server_send('MAIL FROM:<' . $config['board_contact'] . '>');
+	$smtp->server_send('MAIL FROM:<' . $config['board_email'] . '>');
 	if ($err_msg = $smtp->server_parse('250', __LINE__))
 	{
 		$smtp->close_session($err_msg);
@@ -957,11 +956,9 @@ class smtp_class
 
 	function smtp_class()
 	{
-		if (defined('DEBUG'))
-		{
-			$this->backtrace = true;
-			$this->backtrace_log = array();
-		}
+		// Always create a backtrace for admins to identify SMTP problems
+		$this->backtrace = true;
+		$this->backtrace_log = array();
 	}
 
 	/**
@@ -971,7 +968,7 @@ class smtp_class
 	{
 		if ($this->backtrace)
 		{
-			$this->backtrace_log[] = htmlspecialchars($message, ENT_COMPAT, 'UTF-8');
+			$this->backtrace_log[] = utf8_htmlspecialchars($message);
 		}
 	}
 

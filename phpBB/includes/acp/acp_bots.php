@@ -50,7 +50,7 @@ class acp_bots
 					$db->sql_query($sql);
 				}
 
-				$cache->destroy('bots');
+				$cache->destroy('_bots');
 			break;
 
 			case 'deactivate':
@@ -64,7 +64,7 @@ class acp_bots
 					$db->sql_query($sql);
 				}
 
-				$cache->destroy('bots');
+				$cache->destroy('_bots');
 			break;
 
 			case 'delete':
@@ -94,17 +94,20 @@ class acp_bots
 							WHERE bot_id $sql_id";
 						$db->sql_query($sql);
 
-						$_tables = array(USERS_TABLE, USER_GROUP_TABLE);
-						foreach ($_tables as $table)
+						if (sizeof($user_id_ary))
 						{
-							$sql = "DELETE FROM $table
-								WHERE " . $db->sql_in_set('user_id', $user_id_ary);
-							$db->sql_query($sql);
+							$_tables = array(USERS_TABLE, USER_GROUP_TABLE);
+							foreach ($_tables as $table)
+							{
+								$sql = "DELETE FROM $table
+									WHERE " . $db->sql_in_set('user_id', $user_id_ary);
+								$db->sql_query($sql);
+							}
 						}
 
 						$db->sql_transaction('commit');
 
-						$cache->destroy('bots');
+						$cache->destroy('_bots');
 
 						add_log('admin', 'LOG_BOT_DELETE', implode(', ', $bot_name_ary));
 						trigger_error($user->lang['BOT_DELETED'] . adm_back_link($this->u_action));
@@ -162,8 +165,6 @@ class acp_bots
 
 					if (!sizeof($error))
 					{
-						$db->sql_transaction('begin');
-
 						// New bot? Create a new user and group entry
 						if ($action == 'add')
 						{
@@ -249,9 +250,7 @@ class acp_bots
 							$log = 'UPDATED';
 						}
 
-						$db->sql_transaction('commit');
-
-						$cache->destroy('bots');
+						$cache->destroy('_bots');
 
 						add_log('admin', 'LOG_BOT_' . $log, $bot_row['bot_name']);
 						trigger_error($user->lang['BOT_' . $log] . adm_back_link($this->u_action . "&amp;id=$bot_id&amp;action=$action"));

@@ -32,8 +32,7 @@ if (empty($lang) || !is_array($lang))
 
 // Board Settings
 $lang = array_merge($lang, array(
-	'ACP_BOARD_SETTINGS_EXPLAIN'	=> 'Here you can determine the basic operation of your board, from the site name through user registration to private messaging.',
-
+	'ACP_BOARD_SETTINGS_EXPLAIN'	=> 'Here you can determine the basic operation of your board, give it a fitting name and description, and among other settings adjust the default values for timezone and language.',
 	'CUSTOM_DATEFORMAT'				=> 'Custom…',
 	'DEFAULT_DATE_FORMAT'			=> 'Date format',
 	'DEFAULT_DATE_FORMAT_EXPLAIN'	=> 'The date format is the same as the PHP <code>date</code> function.',
@@ -43,22 +42,21 @@ $lang = array_merge($lang, array(
 	'DISABLE_BOARD_EXPLAIN'			=> 'This will make the board unavailable to users. You can also enter a short (255 character) message to display if you wish.',
 	'OVERRIDE_STYLE'				=> 'Override user style',
 	'OVERRIDE_STYLE_EXPLAIN'		=> 'Replaces user’s style with the default.',
-	'RELATIVE_DAYS'					=> 'Relative days',
 	'SITE_DESC'						=> 'Site description',
 	'SITE_NAME'						=> 'Site name',
-	'SYSTEM_DST'					=> 'Enable Daylight Savings Time',
+	'SYSTEM_DST'					=> 'Enable Summer Time/<abbr title="Daylight Saving Time">DST</abbr>',
 	'SYSTEM_TIMEZONE'				=> 'System timezone',
 	'WARNINGS_EXPIRE'				=> 'Warning duration',
-	'WARNINGS_EXPIRE_EXPLAIN'		=> 'Number of days that will elapse before the warning will automatically expire from a user’s record',
+	'WARNINGS_EXPIRE_EXPLAIN'		=> 'Number of days that will elapse before the warning will automatically expire from a user’s record.',
 ));
 
 // Board Features
 $lang = array_merge($lang, array(
-	'ACP_BOARD_FEATURES_EXPLAIN'	=> 'Here you can enable/disable several board features',
+	'ACP_BOARD_FEATURES_EXPLAIN'	=> 'Here you can enable/disable several board features.',
 
 	'ALLOW_ATTACHMENTS'			=> 'Allow attachments',
 	'ALLOW_BOOKMARKS'			=> 'Allow bookmarking topics',
-	'ALLOW_BOOKMARKS_EXPLAIN'	=> 'User is able to store personal bookmarks',
+	'ALLOW_BOOKMARKS_EXPLAIN'	=> 'User is able to store personal bookmarks.',
 	'ALLOW_BBCODE'				=> 'Allow BBCode',
 	'ALLOW_FORUM_NOTIFY'		=> 'Allow forum watching',
 	'ALLOW_NAME_CHANGE'			=> 'Allow username changes',
@@ -80,27 +78,27 @@ $lang = array_merge($lang, array(
 
 // Avatar Settings
 $lang = array_merge($lang, array(
-	'ACP_AVATAR_SETTINGS_EXPLAIN'	=> 'Avatars are generally small, unique images a user can associate with themselves. Depending on the style they are usually displayed below the username when viewing topics. Here you can determine how users can define their avatars. Please note that in order to upload avatars you need to have created the directory you name below and ensure it can be written to by the web server. Please also note that filesize limits are only imposed on uploaded avatars, they do not apply to remotely linked images.',
+	'ACP_AVATAR_SETTINGS_EXPLAIN'	=> 'Avatars are generally small, unique images a user can associate with themselves. Depending on the style they are usually displayed below the username when viewing topics. Here you can determine how users can define their avatars. Please note that in order to upload avatars you need to have created the directory you name below and ensure it can be written to by the web server. Please also note that file size limits are only imposed on uploaded avatars, they do not apply to remotely linked images.',
 
 	'ALLOW_LOCAL'					=> 'Enable gallery avatars',
 	'ALLOW_REMOTE'					=> 'Enable remote avatars',
-	'ALLOW_REMOTE_EXPLAIN'			=> 'Avatars linked to from another website',
+	'ALLOW_REMOTE_EXPLAIN'			=> 'Avatars linked to from another website.',
 	'ALLOW_UPLOAD'					=> 'Enable avatar uploading',
 	'AVATAR_GALLERY_PATH'			=> 'Avatar gallery path',
-	'AVATAR_GALLERY_PATH_EXPLAIN'	=> 'Path under your phpBB root directory for pre-loaded images, e.g. <samp>images/avatars/gallery</samp>',
+	'AVATAR_GALLERY_PATH_EXPLAIN'	=> 'Path under your phpBB root directory for pre-loaded images, e.g. <samp>images/avatars/gallery</samp>.',
 	'AVATAR_STORAGE_PATH'			=> 'Avatar storage path',
-	'AVATAR_STORAGE_PATH_EXPLAIN'	=> 'Path under your phpBB root directory, e.g. <samp>images/avatars/upload</samp>',
+	'AVATAR_STORAGE_PATH_EXPLAIN'	=> 'Path under your phpBB root directory, e.g. <samp>images/avatars/upload</samp>.',
 	'MAX_AVATAR_SIZE'				=> 'Maximum avatar dimensions',
-	'MAX_AVATAR_SIZE_EXPLAIN'		=> '(Height x Width in pixels)',
+	'MAX_AVATAR_SIZE_EXPLAIN'		=> 'Height x Width in pixels.',
 	'MAX_FILESIZE'					=> 'Maximum avatar file size',
-	'MAX_FILESIZE_EXPLAIN'			=> 'For uploaded avatar files',
+	'MAX_FILESIZE_EXPLAIN'			=> 'For uploaded avatar files.',
 	'MIN_AVATAR_SIZE'				=> 'Minimum avatar dimensions',
-	'MIN_AVATAR_SIZE_EXPLAIN'		=> '(Height x Width in pixels)',
+	'MIN_AVATAR_SIZE_EXPLAIN'		=> 'Height x Width in pixels.',
 ));
 
 // Message Settings
 $lang = array_merge($lang, array(
-	'ACP_MESSAGE_SETTINGS_EXPLAIN'		=> 'Here you can set all default settings for private messaging',
+	'ACP_MESSAGE_SETTINGS_EXPLAIN'		=> 'Here you can set all default settings for private messaging.',
 
 	'ALLOW_BBCODE_PM'			=> 'Allow BBCode in private messages',
 	'ALLOW_FLASH_PM'			=> 'Allow use of <code>[FLASH]</code> BBCode tag',
@@ -125,7 +123,7 @@ $lang = array_merge($lang, array(
 
 // Post Settings
 $lang = array_merge($lang, array(
-	'ACP_POST_SETTINGS_EXPLAIN'			=> 'Here you can set all default settings for posting',
+	'ACP_POST_SETTINGS_EXPLAIN'			=> 'Here you can set all default settings for posting.',
 	'ALLOW_POST_LINKS'					=> 'Allow links in posts/private messages',
 	'ALLOW_POST_LINKS_EXPLAIN'			=> 'If disallowed the <code>[URL]</code> BBCode tag and automatic/magic URLs are disabled.',
 
@@ -134,13 +132,13 @@ $lang = array_merge($lang, array(
 	'CHAR_LIMIT'					=> 'Maximum characters per post',
 	'CHAR_LIMIT_EXPLAIN'			=> 'The number of characters allowed within a post. Set to 0 for unlimited characters.',
 	'DISPLAY_LAST_EDITED'			=> 'Display last edited time information',
-	'DISPLAY_LAST_EDITED_EXPLAIN'	=> 'Choose if the last edited by information to be displayed on posts',
+	'DISPLAY_LAST_EDITED_EXPLAIN'	=> 'Choose if the last edited by information to be displayed on posts.',
 	'EDIT_TIME'						=> 'Limit editing time',
 	'EDIT_TIME_EXPLAIN'				=> 'Limits the time available to edit a new post. Setting the value to 0 disables this behaviour.',
 	'FLOOD_INTERVAL'				=> 'Flood interval',
 	'FLOOD_INTERVAL_EXPLAIN'		=> 'Number of seconds a user must wait between posting new messages. To enable users to ignore this alter their permissions.',
-	'HOT_THRESHOLD'					=> 'Hot topic threshold',
-	'HOT_THRESHOLD_EXPLAIN'			=> 'Posts per topic threshold required for the hot topic annotation. Set to 0 to disable hot topics.',
+	'HOT_THRESHOLD'					=> 'Popular topic threshold',
+	'HOT_THRESHOLD_EXPLAIN'			=> 'Posts per topic threshold required for the popular topic annotation. Set to 0 to disable popular topics.',
 	'MAX_POLL_OPTIONS'				=> 'Maximum number of poll options',
 	'MAX_POST_FONT_SIZE'			=> 'Maximum font size per post',
 	'MAX_POST_FONT_SIZE_EXPLAIN'	=> 'Maximum font size allowed in a post. Set to 0 for unlimited font size.',
@@ -161,7 +159,7 @@ $lang = array_merge($lang, array(
 
 // Signature Settings
 $lang = array_merge($lang, array(
-	'ACP_SIGNATURE_SETTINGS_EXPLAIN'	=> 'Here you can set all default settings for signatures',
+	'ACP_SIGNATURE_SETTINGS_EXPLAIN'	=> 'Here you can set all default settings for signatures.',
 
 	'MAX_SIG_FONT_SIZE'				=> 'Maximum signature font size',
 	'MAX_SIG_FONT_SIZE_EXPLAIN'		=> 'Maximum font size allowed in user signatures. Set to 0 for unlimited size.',
@@ -179,7 +177,7 @@ $lang = array_merge($lang, array(
 
 // Registration Settings
 $lang = array_merge($lang, array(
-	'ACP_REGISTER_SETTINGS_EXPLAIN'		=> 'Here you are able to define registration and profile related settings',
+	'ACP_REGISTER_SETTINGS_EXPLAIN'		=> 'Here you are able to define registration and profile related settings.',
 
 	'ACC_ACTIVATION'			=> 'Account activation',
 	'ACC_ACTIVATION_EXPLAIN'	=> 'This determines whether users have immediate access to the board or if confirmation is required. You can also completely disable new registrations.',
@@ -188,12 +186,12 @@ $lang = array_merge($lang, array(
 	'ACC_NONE'					=> 'None',
 	'ACC_USER'					=> 'User',
 //	'ACC_USER_ADMIN'			=> 'User + Admin',
-	'ALLOW_EMAIL_REUSE'			=> 'Allow email address re-use',
-	'ALLOW_EMAIL_REUSE_EXPLAIN'	=> 'Different users can register with the same email address.',
+	'ALLOW_EMAIL_REUSE'			=> 'Allow e-mail address re-use',
+	'ALLOW_EMAIL_REUSE_EXPLAIN'	=> 'Different users can register with the same e-mail address.',
 	'COPPA'						=> 'COPPA',
 	'COPPA_FAX'					=> 'COPPA fax number',
 	'COPPA_MAIL'				=> 'COPPA mailing address',
-	'COPPA_MAIL_EXPLAIN'		=> 'This is the mailing address where parents will send COPPA registration forms',
+	'COPPA_MAIL_EXPLAIN'		=> 'This is the mailing address where parents will send COPPA registration forms.',
 	'ENABLE_COPPA'				=> 'Enable COPPA',
 	'ENABLE_COPPA_EXPLAIN'		=> 'This requires users to declare whether they are 13 or over for compliance with the U.S. COPPA Act. If this is disabled the COPPA specific groups will no longer be displayed.',
 	'MAX_CHARS'					=> 'Max',
@@ -210,23 +208,30 @@ $lang = array_merge($lang, array(
 	'USERNAME_LETTER_NUM_SPACERS'	=> 'Any letter, number, and spacer',
 	'USERNAME_CHARS'			=> 'Limit username chars',
 	'USERNAME_CHARS_ANY'		=> 'Any character',
-	'USERNAME_CHARS_EXPLAIN'	=> 'Restrict type of characters that may be used in usernames, spacers are; space, -, +, _, [ and ]',
+	'USERNAME_CHARS_EXPLAIN'	=> 'Restrict type of characters that may be used in usernames, spacers are: space, -, +, _, [ and ].',
 	'USERNAME_LENGTH'			=> 'Username length',
 	'USERNAME_LENGTH_EXPLAIN'	=> 'Minimum and maximum number of characters in usernames.',
 ));
 
 // Visual Confirmation Settings
 $lang = array_merge($lang, array(
-	'ACP_VC_SETTINGS_EXPLAIN'		=> 'Here you are able to define visual confirmation defaults and captcha settings.',
+	'ACP_VC_SETTINGS_EXPLAIN'		=> 'Here you are able to define visual confirmation defaults and CAPTCHA settings.',
 
-	'CAPTCHA_GD'					=> 'GD CAPTCHA',
-	'CAPTCHA_GD_NOISE'				=> 'GD CAPTCHA noise',
-	'CAPTCHA_GD_EXPLAIN'			=> 'Use GD to make a more advanced CAPTCHA',
-	'CAPTCHA_GD_NOISE_EXPLAIN'		=> 'Use noise to make the GD based CAPTCHA harder',
-	'VISUAL_CONFIRM_POST'			=> 'Enable visual confirmation for guest postings',
-	'VISUAL_CONFIRM_POST_EXPLAIN'	=> 'Requires anonymous users to enter a random code matching an image to help prevent mass postings.',
-	'VISUAL_CONFIRM_REG'			=> 'Enable visual confirmation for registrations',
-	'VISUAL_CONFIRM_REG_EXPLAIN'	=> 'Requires new users to enter a random code matching an image to help prevent mass registrations.',
+	'CAPTCHA_GD'							=> 'GD CAPTCHA',
+	'CAPTCHA_GD_FOREGROUND_NOISE'			=> 'GD CAPTCHA foreground noise',
+	'CAPTCHA_GD_EXPLAIN'					=> 'Use GD to make a more advanced CAPTCHA.',
+	'CAPTCHA_GD_FOREGROUND_NOISE_EXPLAIN'	=> 'Use foreground noise to make the GD based CAPTCHA harder.',
+	'CAPTCHA_GD_X_GRID'						=> 'GD CAPTCHA background noise x-axis',
+	'CAPTCHA_GD_X_GRID_EXPLAIN'				=> 'Use lower settings of this to make the GD based CAPTCHA harder. 0 will disable x-axis background noise.',
+	'CAPTCHA_GD_Y_GRID'						=> 'GD CAPTCHA background noise y-axis',
+	'CAPTCHA_GD_Y_GRID_EXPLAIN'				=> 'Use lower settings of this to make the GD based CAPTCHA harder. 0 will disable y-axis background noise.',
+
+	'CAPTCHA_PREVIEW_MSG'					=> 'Your changes to the visual confirmation setting were not saved. This is just a preview.',
+	'CAPTCHA_PREVIEW_EXPLAIN'				=> 'The CAPTCHA as it will look like using the current settings. Use the preview button to refresh. Note that captchas are randomized and will differ from one view to the next.',
+	'VISUAL_CONFIRM_POST'					=> 'Enable visual confirmation for guest postings',
+	'VISUAL_CONFIRM_POST_EXPLAIN'			=> 'Requires anonymous users to enter a random code matching an image to help prevent mass postings.',
+	'VISUAL_CONFIRM_REG'					=> 'Enable visual confirmation for registrations',
+	'VISUAL_CONFIRM_REG_EXPLAIN'			=> 'Requires new users to enter a random code matching an image to help prevent mass registrations.',
 ));
 
 // Cookie Settings
@@ -250,16 +255,16 @@ $lang = array_merge($lang, array(
 
 	'CUSTOM_PROFILE_FIELDS'			=> 'Custom profile fields',
 	'LIMIT_LOAD'					=> 'Limit system load',
-	'LIMIT_LOAD_EXPLAIN'			=> 'If the system’s 1-minute load average exceeds this value the board will automatically go offline. A value of 1.0 equals ~100% utilisation of one processor. This only functions on UNIX based servers.',
+	'LIMIT_LOAD_EXPLAIN'			=> 'If the system’s 1-minute load average exceeds this value the board will automatically go offline. A value of 1.0 equals ~100% utilisation of one processor. This only functions on UNIX based servers and where this information is accessible. The value here resets itself to 0 if phpBB was unable to get the load limit.',
 	'LIMIT_SESSIONS'				=> 'Limit sessions',
 	'LIMIT_SESSIONS_EXPLAIN'		=> 'If the number of sessions exceeds this value within a one minute period the board will go offline. Set to 0 for unlimited sessions.',
 	'LOAD_CPF_MEMBERLIST'			=> 'Allow styles to display custom profile fields in memberlist',
 	'LOAD_CPF_VIEWPROFILE'			=> 'Display custom profile fields in user profiles',
-	'LOAD_CPF_VIEWTOPIC'			=> 'Display custom profile fields on viewtopic',
+	'LOAD_CPF_VIEWTOPIC'			=> 'Display custom profile fields on topic pages',
 	'LOAD_USER_ACTIVITY'			=> 'Show user’s activity',
 	'LOAD_USER_ACTIVITY_EXPLAIN'	=> 'Displays active topic/forum in user profiles and user control panel. It is recommended to disable this on boards with more than one million posts.',
-	'RECOMPILE_TEMPLATES'			=> 'Recompile stale templates',
-	'RECOMPILE_TEMPLATES_EXPLAIN'	=> 'Check for updated template files on filesystem and recompile.',
+	'RECOMPILE_STYLES'				=> 'Recompile stale style components',
+	'RECOMPILE_STYLES_EXPLAIN'		=> 'Check for updated style components on filesystem and recompile.',
 	'YES_ANON_READ_MARKING'			=> 'Enable topic marking for guests',
 	'YES_ANON_READ_MARKING_EXPLAIN'	=> 'Stores read/unread status information for guests. If disabled posts are always read for guests.',
 	'YES_BIRTHDAYS'					=> 'Enable birthday listing',
@@ -270,7 +275,7 @@ $lang = array_merge($lang, array(
 	'YES_ONLINE_GUESTS'				=> 'Enable online guest listings in viewonline',
 	'YES_ONLINE_GUESTS_EXPLAIN'		=> 'Allow display of guest user information in viewonline.',
 	'YES_ONLINE_TRACK'				=> 'Enable display of user online/offline information',
-	'YES_ONLINE_TRACK_EXPLAIN'		=> 'Display online information for user in profiles and viewtopic.',
+	'YES_ONLINE_TRACK_EXPLAIN'		=> 'Display online information for user in profiles and topic pages.',
 	'YES_POST_MARKING'				=> 'Enable dotted topics',
 	'YES_POST_MARKING_EXPLAIN'		=> 'Indicates whether user has posted to a topic.',
 	'YES_READ_MARKING'				=> 'Enable server-side topic marking',
@@ -283,15 +288,15 @@ $lang = array_merge($lang, array(
 
 	'AUTH_METHOD'				=> 'Select an authentication method',
 
-	'APACHE_SETUP_BEFORE_USE'	=> 'You have to setup apache authentication before you switch phpBB to this authentication method. Keep in mind that the username you use for apache authentication has to be the same as your phpBB username.',
+	'APACHE_SETUP_BEFORE_USE'	=> 'You have to setup apache authentication before you switch phpBB to this authentication method. Keep in mind that the username you use for apache authentication has to be the same as your phpBB username. Apache authentication can only be used with mod_php (not with a CGI version) and safe_mode disabled.',
 
 	'LDAP_DN'						=> 'LDAP base <var>dn</var>',
-	'LDAP_DN_EXPLAIN'				=> 'This is the Distinguished Name, locating the user information, e.g. <samp>o=My Company,c=US</samp>',
-	'LDAP_EMAIL'					=> 'LDAP email attribute',
-	'LDAP_EMAIL_EXPLAIN'			=> 'Set this to the name of your user entry email attribute (if one exists) in order to automatically set the email address for new users. Leaving this empty results in empty email address for users who log in for the first time.',
+	'LDAP_DN_EXPLAIN'				=> 'This is the Distinguished Name, locating the user information, e.g. <samp>o=My Company,c=US</samp>.',
+	'LDAP_EMAIL'					=> 'LDAP e-mail attribute',
+	'LDAP_EMAIL_EXPLAIN'			=> 'Set this to the name of your user entry e-mail attribute (if one exists) in order to automatically set the e-mail address for new users. Leaving this empty results in empty e-mail address for users who log in for the first time.',
 	'LDAP_INCORRECT_USER_PASSWORD'	=> 'Binding to LDAP server failed with specified user/password.',
-	'LDAP_NO_EMAIL'					=> 'The specified email attribute does not exist.',
-	'LDAP_NO_IDENTITY'				=> 'Could not find a login identity for %s',
+	'LDAP_NO_EMAIL'					=> 'The specified e-mail attribute does not exist.',
+	'LDAP_NO_IDENTITY'				=> 'Could not find a login identity for %s.',
 	'LDAP_PASSWORD'					=> 'LDAP password',
 	'LDAP_PASSWORD_EXPLAIN'			=> 'Leave blank to use anonymous access. Else fill in the password for the above user. <strong>WARNING:</strong> This password will be stored as plain text in the database visible to everybody who can access your database.',
 	'LDAP_SERVER'					=> 'LDAP server name',
@@ -304,34 +309,35 @@ $lang = array_merge($lang, array(
 
 // Server Settings
 $lang = array_merge($lang, array(
-	'ACP_SERVER_SETTINGS_EXPLAIN'	=> 'Here you define server and domain dependant settings. Please ensure the data you enter is accurate, errors will result in emails containing incorrect information. When entering the domain name remember it does include http:// or other protocol term. Only alter the port number if you know your server uses a different value, port 80 is correct in most cases.',
+	'ACP_SERVER_SETTINGS_EXPLAIN'	=> 'Here you define server and domain dependant settings. Please ensure the data you enter is accurate, errors will result in e-mails containing incorrect information. When entering the domain name remember it does include http:// or other protocol term. Only alter the port number if you know your server uses a different value, port 80 is correct in most cases.',
 
 	'ENABLE_GZIP'				=> 'Enable GZip compression',
+	'ENABLE_GZIP_EXPLAIN'		=> 'Generated content will be compressed prior to sending it to the user. This can reduce network traffic but will also increase CPU usage on both server and client side.',
 	'FORCE_SERVER_VARS'			=> 'Force server URL settings',
-	'FORCE_SERVER_VARS_EXPLAIN'	=> 'If set to yes the server settings defined here will be used in favour of the automatically determined values',
+	'FORCE_SERVER_VARS_EXPLAIN'	=> 'If set to yes the server settings defined here will be used in favour of the automatically determined values.',
 	'ICONS_PATH'				=> 'Post icons storage path',
-	'ICONS_PATH_EXPLAIN'		=> 'Path under your phpBB root directory, e.g. <samp>images/icons</samp>',
+	'ICONS_PATH_EXPLAIN'		=> 'Path under your phpBB root directory, e.g. <samp>images/icons</samp>.',
 	'PATH_SETTINGS'				=> 'Path settings',
 	'RANKS_PATH'				=> 'Rank image storage path',
-	'RANKS_PATH_EXPLAIN'		=> 'Path under your phpBB root directory, e.g. <samp>images/ranks</samp>',
+	'RANKS_PATH_EXPLAIN'		=> 'Path under your phpBB root directory, e.g. <samp>images/ranks</samp>.',
 	'SCRIPT_PATH'				=> 'Script path',
-	'SCRIPT_PATH_EXPLAIN'		=> 'The path where phpBB is located relative to the domain name, e.g. <samp>/phpBB3</samp>',
+	'SCRIPT_PATH_EXPLAIN'		=> 'The path where phpBB is located relative to the domain name, e.g. <samp>/phpBB3</samp>.',
 	'SERVER_NAME'				=> 'Domain name',
-	'SERVER_NAME_EXPLAIN'		=> 'The domain name this board runs from (for example: <samp>www.foo.bar</samp>)',
+	'SERVER_NAME_EXPLAIN'		=> 'The domain name this board runs from (for example: <samp>www.foo.bar</samp>).',
 	'SERVER_PORT'				=> 'Server port',
-	'SERVER_PORT_EXPLAIN'		=> 'The port your server is running on, usually 80, only change if different',
+	'SERVER_PORT_EXPLAIN'		=> 'The port your server is running on, usually 80, only change if different.',
 	'SERVER_PROTOCOL'			=> 'Server protocol',
-	'SERVER_PROTOCOL_EXPLAIN'	=> 'This is used as the server protocol if these settings are forced. If empty or not forced the protocol is determined by the cookie secure settings (<samp>http://</samp> or <samp>https://</samp>)',
+	'SERVER_PROTOCOL_EXPLAIN'	=> 'This is used as the server protocol if these settings are forced. If empty or not forced the protocol is determined by the cookie secure settings (<samp>http://</samp> or <samp>https://</samp>).',
 	'SERVER_URL_SETTINGS'		=> 'Server URL settings',
 	'SMILIES_PATH'				=> 'Smilies storage path',
-	'SMILIES_PATH_EXPLAIN'		=> 'Path under your phpBB root directory, e.g. <samp>images/smilies</samp>',
+	'SMILIES_PATH_EXPLAIN'		=> 'Path under your phpBB root directory, e.g. <samp>images/smilies</samp>.',
 	'UPLOAD_ICONS_PATH'			=> 'Extension group icons storage path',
-	'UPLOAD_ICONS_PATH_EXPLAIN'	=> 'Path under your phpBB root directory, e.g. <samp>images/upload_icons</samp>',
+	'UPLOAD_ICONS_PATH_EXPLAIN'	=> 'Path under your phpBB root directory, e.g. <samp>images/upload_icons</samp>.',
 ));
 
 // Security Settings
 $lang = array_merge($lang, array(
-	'ACP_SECURITY_SETTINGS_EXPLAIN'		=> 'Here you are able to define session and login related settings',
+	'ACP_SECURITY_SETTINGS_EXPLAIN'		=> 'Here you are able to define session and login related settings.',
 
 	'ALL'							=> 'All',
 	'ALLOW_AUTOLOGIN'				=> 'Allow persistent logins', 
@@ -344,47 +350,47 @@ $lang = array_merge($lang, array(
 	'CHECK_DNSBL_EXPLAIN'			=> 'If enabled the user’s IP address is checked against the following DNSBL services on registration and posting: <a href="http://spamcop.net">spamcop.net</a>, <a href="http://dsbl.org">dsbl.org</a> and <a href="http://spamhaus.org">spamhaus.org</a>. This lookup may take a while, depending on the server’s configuration. If slowdowns are experienced or too many false positives reported it is recommended to disable this check.',
 	'CLASS_B'						=> 'A.B',
 	'CLASS_C'						=> 'A.B.C',
-	'EMAIL_CHECK_MX'				=> 'Check email domain for valid MX record',
-	'EMAIL_CHECK_MX_EXPLAIN'		=> 'If enabled, the email domain provided on registration and profile changes is checked for a valid MX record.',
+	'EMAIL_CHECK_MX'				=> 'Check e-mail domain for valid MX record',
+	'EMAIL_CHECK_MX_EXPLAIN'		=> 'If enabled, the e-mail domain provided on registration and profile changes is checked for a valid MX record.',
 	'FORCE_PASS_CHANGE'				=> 'Force password change',
 	'FORCE_PASS_CHANGE_EXPLAIN'		=> 'Require user to change their password after a set number of days. Set this value to 0 disables this behaviour.',
 	'FORWARDED_FOR_VALID'			=> 'Validated <var>X_FORWARDED_FOR</var> header',
 	'FORWARDED_FOR_VALID_EXPLAIN'	=> 'Sessions will only be continued if the sent <var>X_FORWARDED_FOR</var> header equals the one sent with the previous request. Bans will be checked against IPs in <var>X_FORWARDED_FOR</var> too.',
 	'IP_VALID'						=> 'Session IP validation',
-	'IP_VALID_EXPLAIN'				=> 'Determines how much of the users IP is used to validate a session; <samp>All</samp> compares the complete address, <samp>A.B.C</samp> the first x.x.x, <samp>A.B</samp> the first x.x, <samp>None</samp> disables checking.',
+	'IP_VALID_EXPLAIN'				=> 'Determines how much of the users IP is used to validate a session; <samp>All</samp> compares the complete address, <samp>A.B.C</samp> the first x.x.x, <samp>A.B</samp> the first x.x, <samp>None</samp> disables checking. On IPv6 addresses <samp>A.B.C</samp> compares the first 4 blocks and <samp>A.B</samp> the first 3 blocks.',
 	'MAX_LOGIN_ATTEMPTS'			=> 'Maximum number of login attempts',
-	'MAX_LOGIN_ATTEMPTS_EXPLAIN'	=> 'After this number of failed logins the user needs to additionally confirm his login visually (visual confirmation)',
+	'MAX_LOGIN_ATTEMPTS_EXPLAIN'	=> 'After this number of failed logins the user needs to additionally confirm his login visually (visual confirmation).',
 	'NO_IP_VALIDATION'				=> 'None',
 	'PASSWORD_TYPE'					=> 'Password complexity',
 	'PASSWORD_TYPE_EXPLAIN'			=> 'Determines how complex a password needs to be when set or altered, subsequent options include the previous ones.',
-	'PASS_TYPE_ALPHA'				=> 'Must contain alphanumerics',
+	'PASS_TYPE_ALPHA'				=> 'Must contain letters and numbers',
 	'PASS_TYPE_ANY'					=> 'No requirements',
 	'PASS_TYPE_CASE'				=> 'Must be mixed case',
 	'PASS_TYPE_SYMBOL'				=> 'Must contain symbols',
 	'TPL_ALLOW_PHP'					=> 'Allow php in templates',
-	'TPL_ALLOW_PHP_EXPLAIN'			=> 'If this option is enabled, <code>PHP</code> and <code>INCLUDEPHP</code> statements will be recognized and parsed in templates.',
+	'TPL_ALLOW_PHP_EXPLAIN'			=> 'If this option is enabled, <code>PHP</code> and <code>INCLUDEPHP</code> statements will be recognised and parsed in templates.',
 ));
 
 // Email Settings
 $lang = array_merge($lang, array(
-	'ACP_EMAIL_SETTINGS_EXPLAIN'	=> 'This information is used when the board sends emails to your users. Please ensure the email address you specify is valid, any bounced or undeliverable messages will likely be sent to that address. If your host does not provide a native (PHP based) email service you can instead send messages directly using SMTP. This requires the address of an appropriate server (ask your provider if necessary), do not specify any old name here! If the server requires authentication (and only if it does) enter the necessary username and password. Please note only basic authentication is offered, different authentication implementations are not currently supported.',
+	'ACP_EMAIL_SETTINGS_EXPLAIN'	=> 'This information is used when the board sends e-mails to your users. Please ensure the e-mail address you specify is valid, any bounced or undeliverable messages will likely be sent to that address. If your host does not provide a native (PHP based) e-mail service you can instead send messages directly using SMTP. This requires the address of an appropriate server (ask your provider if necessary), do not specify any old name here! If the server requires authentication (and only if it does) enter the necessary username and password. Please note only basic authentication is offered, different authentication implementations are not currently supported.',
 
-	'ADMIN_EMAIL'					=> 'Return email address',
-	'ADMIN_EMAIL_EXPLAIN'			=> 'This will be used as the return address on all emails, the technical contact email address. It will always be used as the <samp>Return-Path</samp> and <samp>Sender</samp> address in emails.',
-	'BOARD_EMAIL_FORM'				=> 'Users send email via board',
-	'BOARD_EMAIL_FORM_EXPLAIN'		=> 'Instead of showing the users email address users are able to send emails via the board.',
-	'BOARD_HIDE_EMAILS'				=> 'Hide email addresses',
-	'BOARD_HIDE_EMAILS_EXPLAIN'		=> 'This function keeps email addresses completely private.',
-	'CONTACT_EMAIL'					=> 'Contact email address',
-	'CONTACT_EMAIL_EXPLAIN'			=> 'This address will be used whenever a specific contact point is needed, e.g. spam, error output, etc. It will always be used as the <samp>From</samp> and <samp>Reply-To</samp> address in emails.',
-	'EMAIL_FUNCTION_NAME'			=> 'Email function name',
-	'EMAIL_FUNCTION_NAME_EXPLAIN'	=> 'The email function used to send mails through PHP.',
-	'EMAIL_PACKAGE_SIZE'			=> 'Email package size',
-	'EMAIL_PACKAGE_SIZE_EXPLAIN'	=> 'This is the number of emails sent in one package.',
-	'EMAIL_SIG'						=> 'Email signature',
-	'EMAIL_SIG_EXPLAIN'				=> 'This text will be attached to all emails the board sends.',
-	'ENABLE_EMAIL'					=> 'Enable board-wide emails',
-	'ENABLE_EMAIL_EXPLAIN'			=> 'If this is set to disabled no emails will be sent by the board at all.',
+	'ADMIN_EMAIL'					=> 'Return e-mail address',
+	'ADMIN_EMAIL_EXPLAIN'			=> 'This will be used as the return address on all e-mails, the technical contact e-mail address. It will always be used as the <samp>Return-Path</samp> and <samp>Sender</samp> address in e-mails.',
+	'BOARD_EMAIL_FORM'				=> 'Users send e-mail via board',
+	'BOARD_EMAIL_FORM_EXPLAIN'		=> 'Instead of showing the users e-mail address users are able to send e-mails via the board.',
+	'BOARD_HIDE_EMAILS'				=> 'Hide e-mail addresses',
+	'BOARD_HIDE_EMAILS_EXPLAIN'		=> 'This function keeps e-mail addresses completely private.',
+	'CONTACT_EMAIL'					=> 'Contact e-mail address',
+	'CONTACT_EMAIL_EXPLAIN'			=> 'This address will be used whenever a specific contact point is needed, e.g. spam, error output, etc. It will always be used as the <samp>From</samp> and <samp>Reply-To</samp> address in e-mails.',
+	'EMAIL_FUNCTION_NAME'			=> 'E-mail function name',
+	'EMAIL_FUNCTION_NAME_EXPLAIN'	=> 'The e-mail function used to send mails through PHP.',
+	'EMAIL_PACKAGE_SIZE'			=> 'E-mail package size',
+	'EMAIL_PACKAGE_SIZE_EXPLAIN'	=> 'This is the number of e-mails sent in one package.',
+	'EMAIL_SIG'						=> 'E-mail signature',
+	'EMAIL_SIG_EXPLAIN'				=> 'This text will be attached to all e-mails the board sends.',
+	'ENABLE_EMAIL'					=> 'Enable board-wide e-mails',
+	'ENABLE_EMAIL_EXPLAIN'			=> 'If this is set to disabled no e-mails will be sent by the board at all.',
 	'SMTP_AUTH_METHOD'				=> 'Authentication method for SMTP',
 	'SMTP_AUTH_METHOD_EXPLAIN'		=> 'Only used if a username/password is set, ask your provider if you are unsure which method to use.',
 	'SMTP_CRAM_MD5'					=> 'CRAM-MD5',
@@ -400,13 +406,13 @@ $lang = array_merge($lang, array(
 	'SMTP_SETTINGS'					=> 'SMTP settings',
 	'SMTP_USERNAME'					=> 'SMTP username',
 	'SMTP_USERNAME_EXPLAIN'			=> 'Only enter a username if your SMTP server requires it.',
-	'USE_SMTP'						=> 'Use SMTP server for email',
-	'USE_SMTP_EXPLAIN'				=> 'Select “Yes” if you want or have to send email via a named server instead of the local mail function.',
+	'USE_SMTP'						=> 'Use SMTP server for e-mail',
+	'USE_SMTP_EXPLAIN'				=> 'Select “Yes” if you want or have to send e-mail via a named server instead of the local mail function.',
 ));
 
 // Jabber settings
 $lang = array_merge($lang, array(
-	'ACP_JABBER_SETTINGS_EXPLAIN'	=> 'Here you can enable and control the use Jabber for instant messaging and board notices. Jabber is an opensource protocol and therefore available for use by anyone. Some Jabber servers include gateways or transports which allow you to contact users on other networks. Not all servers offer all transports and changes in protocols can prevent transports from operating. Note that it may take several seconds to update Jabber account details, do not stop the script till completed!',
+	'ACP_JABBER_SETTINGS_EXPLAIN'	=> 'Here you can enable and control the use of Jabber for instant messaging and board notifications. Jabber is an open source protocol and therefore available for use by anyone. Some Jabber servers include gateways or transports which allow you to contact users on other networks. Not all servers offer all transports and changes in protocols can prevent transports from operating. Note that it may take several seconds to update Jabber account details, so do not stop the script until it is completed!',
 
 	'ERR_JAB_AUTH'			=> 'Could not authorise on Jabber server.',
 	'ERR_JAB_CONNECT'		=> 'Could not connect to Jabber server.',
@@ -417,18 +423,18 @@ $lang = array_merge($lang, array(
 
 	'JAB_CHANGED'				=> 'Jabber account changed successfully.',
 	'JAB_ENABLE'				=> 'Enable Jabber',
-	'JAB_ENABLE_EXPLAIN'		=> 'Enables use of jabber messaging and notifications',
+	'JAB_ENABLE_EXPLAIN'		=> 'Enables use of Jabber messaging and notifications.',
 	'JAB_PACKAGE_SIZE'			=> 'Jabber package size',
 	'JAB_PACKAGE_SIZE_EXPLAIN'	=> 'This is the number of messages sent in one package. If set to 0 the message is sent immediately and is not queued for later sending.',
 	'JAB_PASSWORD'				=> 'Jabber password',
 	'JAB_PASS_CHANGED'			=> 'Jabber password changed successfully.',
 	'JAB_PORT'					=> 'Jabber port',
-	'JAB_PORT_EXPLAIN'			=> 'Leave blank unless you know it is not port 5222',
+	'JAB_PORT_EXPLAIN'			=> 'Leave blank unless you know it is not port 5222.',
 	'JAB_REGISTERED'			=> 'New account registered successfully.',
 	'JAB_RESOURCE'				=> 'Jabber resource',
 	'JAB_RESOURCE_EXPLAIN'		=> 'The resource locates this particular connection, e.g. board, home, etc.',
 	'JAB_SERVER'				=> 'Jabber server',
-	'JAB_SERVER_EXPLAIN'		=> 'See %sjabber.org%s for a list of servers',
+	'JAB_SERVER_EXPLAIN'		=> 'See %sjabber.org%s for a list of servers.',
 	'JAB_SETTINGS_CHANGED'		=> 'Jabber settings changed successfully.',
 	'JAB_USERNAME'				=> 'Jabber username',
 	'JAB_USERNAME_EXPLAIN'		=> 'If this user is not registered it will be created if possible.',

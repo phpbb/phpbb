@@ -227,7 +227,7 @@ foreach ($prefixes as $prefix)
 $sql = 'UPDATE ' . USERS_TABLE . " SET user_permissions = ''";
 $db->sql_query($sql);
 
-$cache->destroy('acl_options');
+$cache->destroy('_acl_options');
 
 echo "<p><b>Done</b></p>\n";
  

@@ -33,6 +33,7 @@ class fulltext_mysql extends search_backend
 	var $search_query;
 	var $common_words = array();
 	var $pcre_properties = false;
+	var $mbstring_regex = false;
 
 	function fulltext_mysql(&$error)
 	{
@@ -43,6 +44,11 @@ class fulltext_mysql extends search_backend
 		if (version_compare(PHP_VERSION, '5.1.0', '>=') || (version_compare(PHP_VERSION, '5.0.0-dev', '<=') && version_compare(PHP_VERSION, '4.4.0', '>=')))
 		{
 			$this->pcre_properties = true;
+		}
+
+		if (function_exists('mb_ereg'))
+		{
+			$this->mbstring_regex = true;
 		}
 
 		$error = false;
@@ -108,9 +114,6 @@ class fulltext_mysql extends search_backend
 	{
 		global $config;
 
-		$this->get_ignore_words();
-		$this->get_synonyms();
-
 		if ($terms == 'all')
 		{
 			$match		= array('#\sand\s#iu', '#\sor\s#iu', '#\snot\s#iu', '#\+#', '#-#', '#\|#');
@@ -119,35 +122,82 @@ class fulltext_mysql extends search_backend
 			$keywords = preg_replace($match, $replace, $keywords);
 		}
 
-		$match = array();
-		// New lines, carriage returns
-		$match[] = "#[\n\r]+#";
-		// NCRs like &nbsp; etc.
-		$match[] = '#(&amp;|&)[\#a-z0-9]+?;#i';
-
 		// Filter out as above
-		$keywords = preg_replace($match, ' ', trim($keywords));
+		$split_keywords = preg_replace("#[\n\r\t]+#", ' ', trim(htmlspecialchars_decode($keywords)));
 
 		// Split words
-		$split_keywords = preg_replace(($this->pcre_properties) ? '#([^\p{L}\p{N}\'*])#u' : '#([^\w\'*])#u', '$1$1', str_replace('\'\'', '\' \'', trim($keywords)));
-		$matches = array();
-		preg_match_all(($this->pcre_properties) ? '#(?:[^\p{L}\p{N}*]|^)([+\-|]?(?:[\p{L}\p{N}*]+\'?)*[\p{L}\p{N}*])(?:[^\p{L}\p{N}*]|$)#u' : '#(?:[^\w*]|^)([+\-|]?(?:[\w*]+\'?)*[\w*])(?:[^\w*]|$)#u', $split_keywords, $matches);
-		$this->split_words = $matches[1];
-
-		if (sizeof($this->ignore_words))
+		if ($this->pcre_properties)
 		{
-			$this->common_words = array_intersect($this->split_words, $this->ignore_words);
-			$this->split_words = array_diff($this->split_words, $this->ignore_words);
+			$split_keywords = preg_replace('#([^\p{L}\p{N}\'*"()])#u', '$1$1', str_replace('\'\'', '\' \'', trim($split_keywords)));
+		}
+		else if ($this->mbstring_regex)
+		{
+			$split_keywords = mb_ereg_replace('([^\w\'*"()])', '\\1\\1', str_replace('\'\'', '\' \'', trim($split_keywords)));
+		}
+		else
+		{
+			$split_keywords = preg_replace('#([^\w\'*"()])#u', '$1$1', str_replace('\'\'', '\' \'', trim($split_keywords)));
 		}
 
-		if (sizeof($this->replace_synonym))
+		if ($this->pcre_properties)
 		{
-			$this->split_words = str_replace($this->replace_synonym, $this->match_synonym, $this->split_words);
+			$matches = array();
+			preg_match_all('#(?:[^\p{L}\p{N}*"()]|^)([+\-|]?(?:[\p{L}\p{N}*"()]+\'?)*[\p{L}\p{N}*"()])(?:[^\p{L}\p{N}*"()]|$)#u', $split_keywords, $matches);
+			$this->split_words = $matches[1];
 		}
+		else if ($this->mbstring_regex)
+		{
+			mb_regex_encoding('UTF-8');
+			mb_ereg_search_init($split_keywords, '(?:[^\w*"()]|^)([+\-|]?(?:[\w*"()]+\'?)*[\w*"()])(?:[^\w*"()]|$)');
+
+			while (($word = mb_ereg_search_regs()))
+			{
+				$this->split_words[] = $word[1];
+			}
+		}
+		else
+		{
+			$matches = array();
+			preg_match_all('#(?:[^\w*"()]|^)([+\-|]?(?:[\w*"()]+\'?)*[\w*"()])(?:[^\w*"()]|$)#u', $split_keywords, $matches);
+			$this->split_words = $matches[1];
+		}
+
+		// to allow phrase search, we need to concatenate quoted words
+		$tmp_split_words = array();
+		$phrase = '';
+		foreach ($this->split_words as $word)
+		{
+			if ($phrase)
+			{
+				$phrase .= ' ' . $word;
+				if (strpos($word, '"') !== false && substr_count($word, '"') % 2 == 1)
+				{
+					$tmp_split_words[] = $phrase;
+					$phrase = '';
+				}
+			}
+			else if (strpos($word, '"') !== false && substr_count($word, '"') % 2 == 1)
+			{
+				$phrase = $word;
+			}
+			else
+			{
+				$tmp_split_words[] = $word . ' ';
+			}
+		}
+		if ($phrase)
+		{
+			$tmp_split_words[] = $phrase;
+		}
+
+		$this->split_words = $tmp_split_words;
+
+		unset($tmp_split_words);
+		unset($phrase);
 
 		foreach ($this->split_words as $i => $word)
 		{
-			$clean_word = preg_replace('#^[+\-|]#', '', $word);
+			$clean_word = preg_replace('#^[+\-|"]#', '', $word);
 
 			// check word length
 			$clean_len = utf8_strlen(str_replace('*', '', $clean_word));
@@ -158,9 +208,41 @@ class fulltext_mysql extends search_backend
 			}
 		}
 
-		$this->search_query = implode(' ', $this->split_words);
+		if ($terms == 'any')
+		{
+			$this->search_query = '';
+			foreach ($this->split_words as $word)
+			{
+				if ((strpos($word, '+') === 0) || (strpos($word, '-') === 0) || (strpos($word, '|') === 0))
+				{
+					$word = substr($word, 1);
+				}
+				$this->search_query .= $word . ' ';
+			}
+		}
+		else
+		{
+			$this->search_query = '';
+			foreach ($this->split_words as $word)
+			{
+				if ((strpos($word, '+') === 0) || (strpos($word, '-') === 0))
+				{
+					$this->search_query .= $word . ' ';
+				}
+				else if (strpos($word, '|') === 0)
+				{
+					$this->search_query .= substr($word, 1) . ' ';
+				}
+				else
+				{
+					$this->search_query .= '+' . $word . ' ';
+				}
+			}
+		}
 
-		if (sizeof($this->split_words))
+		$this->search_query = utf8_htmlspecialchars($this->search_query);
+
+		if ($this->search_query)
 		{
 			$this->split_words = array_values($this->split_words);
 			sort($this->split_words);
@@ -176,23 +258,42 @@ class fulltext_mysql extends search_backend
 	{
 		global $config;
 
-		$this->get_ignore_words();
-		$this->get_synonyms();
-
 		// Split words
-		$text = preg_replace(($this->pcre_properties) ? '#([^\p{L}\p{N}\'*])#u' : '#([^\w\'*])#u', '$1$1', str_replace('\'\'', '\' \'', trim($text)));
-		$matches = array();
-		preg_match_all(($this->pcre_properties) ? '#(?:[^\p{L}\p{N}*]|^)([+\-|]?(?:[\p{L}\p{N}*]+\'?)*[\p{L}\p{N}*])(?:[^\p{L}\p{N}*]|$)#u' : '#(?:[^\w*]|^)([+\-|]?(?:[\w*]+\'?)*[\w*])(?:[^\w*]|$)#u', $text, $matches);
-		$text = $matches[1];
-
-		if (sizeof($this->ignore_words))
+		if ($this->pcre_properties)
 		{
-			$text = array_diff($text, $this->ignore_words);
+			$text = preg_replace('#([^\p{L}\p{N}\'*])#u', '$1$1', str_replace('\'\'', '\' \'', trim($text)));
+		}
+		else if ($this->mbstring_regex)
+		{
+			$text = mb_ereg_replace('([^\w\'*])', '\\1\\1', str_replace('\'\'', '\' \'', trim($text)));
+		}
+		else
+		{
+			$text = preg_replace('#([^\w\'*])#u', '$1$1', str_replace('\'\'', '\' \'', trim($text)));
 		}
 
-		if (sizeof($this->replace_synonym))
+		if ($this->pcre_properties)
 		{
-			$text = str_replace($this->replace_synonym, $this->match_synonym, $text);
+			$matches = array();
+			preg_match_all('#(?:[^\p{L}\p{N}*]|^)([+\-|]?(?:[\p{L}\p{N}*]+\'?)*[\p{L}\p{N}*])(?:[^\p{L}\p{N}*]|$)#u', $text, $matches);
+			$text = $matches[1];
+		}
+		else if ($this->mbstring_regex)
+		{
+			mb_regex_encoding('UTF-8');
+			mb_ereg_search_init($text, '(?:[^\w*]|^)([+\-|]?(?:[\w*]+\'?)*[\w*])(?:[^\w*]|$)');
+
+			$text = array();
+			while (($word = mb_ereg_search_regs()))
+			{
+				$text[] = $word[1];
+			}
+		}
+		else
+		{
+			$matches = array();
+			preg_match_all('#(?:[^\w*]|^)([+\-|]?(?:[\w*]+\'?)*[\w*])(?:[^\w*]|$)#u', $text, $matches);
+			$text = $matches[1];
 		}
 
 		// remove too short or too long words
@@ -210,26 +311,39 @@ class fulltext_mysql extends search_backend
 	}
 
 	/**
-	* Performs a search on keywords depending on display specific params.
+	* Performs a search on keywords depending on display specific params. You have to run split_keywords() first.
 	*
-	* @param array &$id_ary passed by reference, to be filled with ids for the page specified by $start and $per_page, should be ordered
-	* @param int $start indicates the first index of the page
-	* @param int $per_page number of ids each page is supposed to contain
-	* @return total number of results
+	* @param	string		$type				contains either posts or topics depending on what should be searched for
+	* @param	string		&$fields			contains either titleonly (topic titles should be searched), msgonly (only message bodies should be searched), firstpost (only subject and body of the first post should be searched) or all (all post bodies and subjects should be searched)
+	* @param	string		&$terms				is either 'all' (use query as entered, words without prefix should default to "have to be in field") or 'any' (ignore search query parts and just return all posts that contain any of the specified words)
+	* @param	array		&$sort_by_sql		contains SQL code for the ORDER BY part of a query
+	* @param	string		&$sort_key			is the key of $sort_by_sql for the selected sorting
+	* @param	string		&$sort_dir			is either a or d representing ASC and DESC
+	* @param	string		&$sort_days			specifies the maximum amount of days a post may be old
+	* @param	array		&$ex_fid_ary		specifies an array of forum ids which should not be searched
+	* @param	array		&$m_approve_fid_ary	specifies an array of forum ids in which the searcher is allowed to view unapproved posts
+	* @param	int			&$topic_id			is set to 0 or a topic id, if it is not 0 then only posts in this topic should be searched
+	* @param	array		&$author_ary		an array of author ids if the author should be ignored during the search the array is empty
+	* @param	array		&$id_ary			passed by reference, to be filled with ids for the page specified by $start and $per_page, should be ordered
+	* @param	int			$start				indicates the first index of the page
+	* @param	int			$per_page			number of ids each page is supposed to contain
+	* @return	boolean|int						total number of results
+	*
+	* @access	public
 	*/
 	function keyword_search($type, &$fields, &$terms, &$sort_by_sql, &$sort_key, &$sort_dir, &$sort_days, &$ex_fid_ary, &$m_approve_fid_ary, &$topic_id, &$author_ary, &$id_ary, $start, $per_page)
 	{
 		global $config, $db;
 
 		// No keywords? No posts.
-		if (!sizeof($this->split_words))
+		if (!$this->search_query)
 		{
 			return false;
 		}
 
 		// generate a search_key from all the options to identify the results
 		$search_key = md5(implode('#', array(
-			implode(',', $this->split_words),
+			implode(', ', $this->split_words),
 			$type,
 			$fields,
 			$terms,
@@ -327,47 +441,9 @@ class fulltext_mysql extends search_backend
 		$sql_where_options .= ($sort_days) ? ' AND p.post_time >= ' . (time() - ($sort_days * 86400)) : '';
 		$sql_where_options .= $sql_match_where;
 
-		// split the words into words that have to be included or must not be included and optional words
-		$words = $any_words = array();
-		if ($terms == 'all')
-		{
-			foreach ($this->split_words as $id => $word)
-			{
-				if ((strpos($word, '+') === 0) || (strpos($word, '-') === 0))
-				{
-					$words[] = $word;
-				}
-				else if (strpos($word, '|') === 0)
-				{
-					$any_words[] = substr($word, 1);
-				}
-				else
-				{
-					$words[] = '+' . $word;
-				}
-			}
-		}
-		else
-		{
-			foreach ($this->split_words as $id => $word)
-			{
-				if ((strpos($word, '+') === 0) || (strpos($word, '-') === 0) || (strpos($word, '|') === 0))
-				{
-					$words[] = substr($word, 1);
-				}
-				else
-				{
-					$words[] = $word;
-				}
-			}
-		}
-
-		// Get the ids for the current result block
-		$any_words = (sizeof($any_words)) ? ' +(' . implode(' ', $any_words) . ')' : '';
-
 		$sql = "SELECT $sql_select
 			FROM $sql_from$sql_sort_table" . POSTS_TABLE . " p
-			WHERE MATCH ($sql_match) AGAINST ('" . $db->sql_escape(implode(' ', $words)) . $any_words . "' IN BOOLEAN MODE)
+			WHERE MATCH ($sql_match) AGAINST ('" . $db->sql_escape(htmlspecialchars_decode($this->search_query)) . "' IN BOOLEAN MODE)
 				$sql_where_options
 			ORDER BY $sql_sort";
 		$result = $db->sql_query_limit($sql, $config['search_block_size'], $start);
@@ -566,37 +642,8 @@ class fulltext_mysql extends search_backend
 		$split_text = $this->split_message($message);
 		$split_title = ($subject) ? $this->split_message($subject) : array();
 
-		$words = array();
-		if ($mode == 'edit')
-		{
-			$old_text = array();
-			$old_title = array();
+		$words = array_unique(array_merge($split_text, $split_title));
 
-			$sql = 'SELECT post_text, post_subject
-				FROM ' . POSTS_TABLE . "
-				WHERE post_id = $post_id";
-			$result = $db->sql_query($sql);
-
-			if ($row = $db->sql_fetchrow($result))
-			{
-				$old_text = $this->split_message($row['post_text']);
-				$old_title = $this->split_message($row['post_subject']);
-			}
-			$db->sql_freeresult($result);
-
-			$words = array_unique(array_merge(
-				array_diff($split_text, $old_text), 
-				array_diff($split_title, $old_title),
-				array_diff($old_text, $split_text),
-				array_diff($old_title, $split_title)
-			));
-			unset($old_title);
-			unset($old_text);
-		}
-		else
-		{
-			$words = array_unique(array_merge($split_text, $split_title));
-		}
 		unset($split_text);
 		unset($split_title);
 
@@ -653,6 +700,10 @@ class fulltext_mysql extends search_backend
 			{
 				$alter[] = 'MODIFY post_subject varchar(100) COLLATE utf8_unicode_ci DEFAULT \'\' NOT NULL';
 			}
+			else
+			{
+				$alter[] = 'MODIFY post_subject text NOT NULL';
+			}
 			$alter[] = 'ADD FULLTEXT (post_subject)';
 		}
 
@@ -662,7 +713,16 @@ class fulltext_mysql extends search_backend
 			{
 				$alter[] = 'MODIFY post_text mediumtext COLLATE utf8_unicode_ci NOT NULL';
 			}
+			else
+			{
+				$alter[] = 'MODIFY post_text mediumtext NOT NULL';
+			}
 			$alter[] = 'ADD FULLTEXT (post_text)';
+		}
+
+		if (!isset($this->stats['post_content']))
+		{
+			$alter[] = 'ADD FULLTEXT post_content (post_subject, post_text)';
 		}
 
 		if (sizeof($alter))
@@ -705,6 +765,11 @@ class fulltext_mysql extends search_backend
 			$alter[] = 'DROP INDEX post_text';
 		}
 
+		if (isset($this->stats['post_content']))
+		{
+			$alter[] = 'DROP INDEX post_content';
+		}
+
 		if (sizeof($alter))
 		{
 			$db->sql_query('ALTER TABLE ' . POSTS_TABLE . ' ' . implode(', ', $alter));
@@ -725,7 +790,7 @@ class fulltext_mysql extends search_backend
 			$this->get_stats();
 		}
 
-		return (isset($this->stats['post_text']) && isset($this->stats['post_subject'])) ? true : false;
+		return (isset($this->stats['post_text']) && isset($this->stats['post_subject']) && isset($this->stats['post_content'])) ? true : false;
 	}
 
 	/**
@@ -742,8 +807,6 @@ class fulltext_mysql extends search_backend
 
 		return array(
 			$user->lang['FULLTEXT_MYSQL_TOTAL_POSTS']			=> ($this->index_created()) ? $this->stats['total_posts'] : 0,
-			$user->lang['FULLTEXT_MYSQL_TEXT_CARDINALITY']		=> isset($this->stats['post_text']['Cardinality']) ? $this->stats['post_text']['Cardinality'] : 0,
-			$user->lang['FULLTEXT_MYSQL_SUBJECT_CARDINALITY']	=> isset($this->stats['post_subject']['Cardinality']) ? $this->stats['post_subject']['Cardinality'] : 0,
 		);
 	}
 
@@ -768,13 +831,17 @@ class fulltext_mysql extends search_backend
 
 			if ($index_type == 'FULLTEXT')
 			{
-				if ($row['Column_name'] == 'post_text')
+				if ($row['Key_name'] == 'post_text')
 				{
 					$this->stats['post_text'] = $row;
 				}
-				else if ($row['Column_name'] == 'post_subject')
+				else if ($row['Key_name'] == 'post_subject')
 				{
 					$this->stats['post_subject'] = $row;
+				}
+				else if ($row['Key_name'] == 'post_content')
+				{
+					$this->stats['post_content'] = $row;
 				}
 			}
 		}
@@ -794,11 +861,14 @@ class fulltext_mysql extends search_backend
 	{
 		global $user, $config;
 
-
 		$tpl = '
 		<dl>
-			<dt><label>' . $user->lang['FULLTEXT_MYSQL_UNICODE'] . '</label><br /><span>' . $user->lang['FULLTEXT_MYSQL_UNICODE_EXPLAIN'] . '</span></dt>
+			<dt><label>' . $user->lang['FULLTEXT_MYSQL_PCRE'] . '</label><br /><span>' . $user->lang['FULLTEXT_MYSQL_PCRE_EXPLAIN'] . '</span></dt>
 			<dd>' . (($this->pcre_properties) ? $user->lang['YES'] : $user->lang['NO']) . ' (PHP ' . PHP_VERSION . ')</dd>
+		</dl>
+		<dl>
+			<dt><label>' . $user->lang['FULLTEXT_MYSQL_MBSTRING'] . '</label><br /><span>' . $user->lang['FULLTEXT_MYSQL_MBSTRING_EXPLAIN'] . '</span></dt>
+			<dd>' . (($this->mbstring_regex) ? $user->lang['YES'] : $user->lang['NO']). '</dd>
 		</dl>
 		';
 

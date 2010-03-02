@@ -38,6 +38,12 @@ class dbal
 	// Holding the last sql query on sql error
 	var $sql_error_sql = '';
 
+	// Holding transaction count
+	var $transactions = 0;
+
+	// Supports multi inserts?
+	var $multi_insert = false;
+
 	/**
 	* Current sql layer
 	*/
@@ -103,12 +109,9 @@ class dbal
 			$this->sql_transaction('commit');
 		}
 
-		if (sizeof($this->open_queries))
+		foreach ($this->open_queries as $query_id)
 		{
-			foreach ($this->open_queries as $i_query_id => $query_id)
-			{
-				$this->sql_freeresult($query_id);
-			}
+			$this->sql_freeresult($query_id);
 		}
 		
 		return $this->_sql_close();
@@ -197,29 +200,46 @@ class dbal
 		switch ($status)
 		{
 			case 'begin':
-				// Commit previously opened transaction before opening another transaction
+				// If we are within a transaction we will not open another one, but enclose the current one to not loose data (prevening auto commit)
 				if ($this->transaction)
 				{
-					$this->_sql_transaction('commit');
+					$this->transactions++;
+					return true;
 				}
 
 				$result = $this->_sql_transaction('begin');
+
+				if (!$result)
+				{
+					$this->sql_error();
+				}
+
 				$this->transaction = true;
 			break;
 
 			case 'commit':
+				// If there was a previously opened transaction we do not commit yet... but count back the number of inner transactions
+				if ($this->transaction && $this->transactions)
+				{
+					$this->transactions--;
+					return true;
+				}
+
 				$result = $this->_sql_transaction('commit');
-				$this->transaction = false;
 
 				if (!$result)
 				{
-					$this->_sql_transaction('rollback');
+					$this->sql_error();
 				}
+
+				$this->transaction = false;
+				$this->transactions = 0;
 			break;
 
 			case 'rollback':
 				$result = $this->_sql_transaction('rollback');
 				$this->transaction = false;
+				$this->transactions = 0;
 			break;
 
 			default:
@@ -302,11 +322,12 @@ class dbal
 	/**
 	* Build IN or NOT IN sql comparison string, uses <> or = on single element
 	* arrays to improve comparison speed
+	*
 	* @access public
 	* @param	string	$field				name of the sql column that shall be compared
 	* @param	array	$array				array of values that are allowed (IN) or not allowed (NOT IN)
-	* @param	bool	$negate				true for IN (), false for NOT IN ()
-	* @param	bool	$allow_empty_set	Allow $array to be empty, this function will return 1=1 or 1=0 then
+	* @param	bool	$negate				true for NOT IN (), false for IN () (default)
+	* @param	bool	$allow_empty_set	If true, allow $array to be empty, this function will return 1=1 or 1=0 then. Default to false.
 	*/
 	function sql_in_set($field, $array, $negate = false, $allow_empty_set = false)
 	{
@@ -366,25 +387,21 @@ class dbal
 			return false;
 		}
 
-		switch ($this->sql_layer)
+		if ($this->multi_insert)
 		{
-			case 'mysql':
-			case 'mysql4':
-			case 'mysqli':
-				$this->sql_query('INSERT INTO ' . $table . ' ' . $this->sql_build_array('MULTI_INSERT', $sql_ary));
-			break;
-
-			default:
-				foreach ($sql_ary as $ary)
+			$this->sql_query('INSERT INTO ' . $table . ' ' . $this->sql_build_array('MULTI_INSERT', $sql_ary));
+		}
+		else
+		{
+			foreach ($sql_ary as $ary)
+			{
+				if (!is_array($ary))
 				{
-					if (!is_array($ary))
-					{
-						return false;
-					}
-
-					$this->sql_query('INSERT INTO ' . $table . ' ' . $this->sql_build_array('INSERT', $ary));
+					return false;
 				}
-			break;
+
+				$this->sql_query('INSERT INTO ' . $table . ' ' . $this->sql_build_array('INSERT', $ary));
+			}
 		}
 
 		return true;
@@ -487,7 +504,7 @@ class dbal
 
 		if (!$this->return_on_error)
 		{
-			$message = '<u>SQL ERROR</u> [ ' . $this->sql_layer . ' ]<br /><br />' . $error['message'] . ' [' . $error['code'] . ']';
+			$message = 'SQL ERROR [ ' . $this->sql_layer . ' ]<br /><br />' . $error['message'] . ' [' . $error['code'] . ']';
 
 			// Show complete SQL error and path to administrators only
 			// Additionally show complete error on installation or if extended debug mode is enabled
@@ -497,8 +514,8 @@ class dbal
 				// Print out a nice backtrace...
 				$backtrace = get_backtrace();
 
-				$message .= ($sql) ? '<br /><br /><u>SQL</u><br /><br />' . htmlspecialchars($sql) : '';
-				$message .= ($backtrace) ? '<br /><br /><u>BACKTRACE</u><br />' . $backtrace : '';
+				$message .= ($sql) ? '<br /><br />SQL<br /><br />' . htmlspecialchars($sql) : '';
+				$message .= ($backtrace) ? '<br /><br />BACKTRACE<br />' . $backtrace : '';
 				$message .= '<br />';
 			}
 			else
@@ -586,6 +603,7 @@ class dbal
 							<a href="' . build_url('explain') . '">Return to previous page</a>
 						</div>
 						<div id="page-body">
+							<div id="acp">
 							<div class="panel">
 								<span class="corners-top"><span></span></span>
 								<div id="content">
@@ -600,9 +618,10 @@ class dbal
 								</div>
 								<span class="corners-bottom"><span></span></span>
 							</div>
+							</div>
 						</div>
 						<div id="page-footer">
-							Powered by phpBB &copy; ' . date('Y') . ' <a href="http://www.phpbb.com/">phpBB Group</a>
+							Powered by phpBB &copy; 2000, 2002, 2005, 2007 <a href="http://www.phpbb.com/">phpBB Group</a>
 						</div>
 					</div>
 					</body>
@@ -626,6 +645,7 @@ class dbal
 					<tr>
 						<td class="row3"><textarea style="font-family:\'Courier New\',monospace;width:99%" rows="5" cols="10">' . preg_replace('/\t(AND|OR)(\W)/', "\$1\$2", htmlspecialchars(preg_replace('/[\s]*[\n\r\t]+[\n\r\s\t]*/', "\n", $query))) . '</textarea></td>
 					</tr>
+					</tbody>
 					</table>
 					
 					' . $this->html_hold . '

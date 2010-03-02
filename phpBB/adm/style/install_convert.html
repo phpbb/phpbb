@@ -11,7 +11,15 @@
 	<form id="install_convert" method="post" action="{U_ACTION}">
 
 	<h1>{TITLE}</h1>
+
 	<p>{BODY}</p>
+
+	<!-- IF S_ERROR_BOX -->
+	<div class="errorbox">
+		<h3>{ERROR_TITLE}</h3>
+		<p>{ERROR_MSG}</p>
+	</div>
+	<!-- ENDIF -->
 
 	<!-- IF S_LIST -->
 		<table cellspacing="1">
@@ -78,7 +86,7 @@
 			<!-- ELSE -->
 
 				<dl>
-					<dt>{checks.TITLE}:</label><!-- IF checks.S_EXPLAIN --><br /><span class="explain">{checks.TITLE_EXPLAIN}</span><!-- ENDIF --></dt>
+					<dt><label>{checks.TITLE}:</label><!-- IF checks.S_EXPLAIN --><br /><span class="explain">{checks.TITLE_EXPLAIN}</span><!-- ENDIF --></dt>
 					<dd>{checks.RESULT}</dd>
 				</dl>
 			<!-- ENDIF -->

@@ -95,7 +95,8 @@ class acp_permission_roles
 					{
 						$this->remove_role($role_id, $permission_type);
 
-						add_log('admin', 'LOG_' . strtoupper($permission_type) . 'ROLE_REMOVED', $role_row['role_name']);
+						$role_name = (!empty($user->lang[$role_row['role_name']])) ? $user->lang[$role_row['role_name']] : $role_row['role_name'];
+						add_log('admin', 'LOG_' . strtoupper($permission_type) . 'ROLE_REMOVED', $role_name);
 						trigger_error($user->lang['ROLE_DELETED'] . adm_back_link($this->u_action));
 					}
 					else
@@ -196,6 +197,7 @@ class acp_permission_roles
 					// Now add the auth settings
 					$auth_admin->acl_set_role($role_id, $auth_settings);
 
+					$role_name = (!empty($user->lang[$role_name])) ? $user->lang[$role_name] : $role_name;
 					add_log('admin', 'LOG_' . strtoupper($permission_type) . 'ROLE_' . strtoupper($action), $role_name);
 
 					trigger_error($user->lang['ROLE_' . strtoupper($action) . '_SUCCESS'] . adm_back_link($this->u_action));
@@ -332,7 +334,7 @@ class acp_permission_roles
 					{
 						$role_name = (!empty($user->lang[$role_row['role_name']])) ? $user->lang[$role_row['role_name']] : $role_row['role_name'];
 
-						$template->assign_var(array(
+						$template->assign_vars(array(
 							'S_DISPLAY_ROLE_MASK'	=> true,
 							'L_ROLE_ASSIGNED_TO'	=> sprintf($user->lang['ROLE_ASSIGNED_TO'], $role_name))
 						);

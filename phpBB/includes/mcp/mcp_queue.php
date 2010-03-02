@@ -18,14 +18,14 @@ class mcp_queue
 	var $p_master;
 	var $u_action;
 
-	function mcp_main(&$p_master)
+	function mcp_queue(&$p_master)
 	{
 		$this->p_master = &$p_master;
 	}
 
 	function main($id, $mode)
 	{
-		global $auth, $db, $user, $template;
+		global $auth, $db, $user, $template, $cache;
 		global $config, $phpbb_root_path, $phpEx, $action;
 
 		include_once($phpbb_root_path . 'includes/functions_posting.' . $phpEx);
@@ -64,6 +64,8 @@ class mcp_queue
 		{
 			case 'approve_details':
 
+				$this->tpl_name = 'mcp_post';
+
 				$user->add_lang('posting');
 
 				$post_id = request_var('p', 0);
@@ -99,7 +101,8 @@ class mcp_queue
 					);
 				}
 
-				$topic_tracking_info = array();
+				$extensions = $attachments = $topic_tracking_info = array();
+
 				// Get topic tracking info
 				if ($config['load_db_lastread'])
 				{
@@ -125,6 +128,43 @@ class mcp_queue
 				}
 				$message = smiley_text($message);
 
+				if ($post_info['post_attachment'] && $auth->acl_get('u_download') && $auth->acl_get('f_download', $post_info['forum_id']))
+				{
+					$extensions = $cache->obtain_attach_extensions($post_info['forum_id']);
+
+					$sql = 'SELECT *
+						FROM ' . ATTACHMENTS_TABLE . '
+						WHERE post_msg_id = ' . $post_id . '
+							AND in_message = 0
+						ORDER BY filetime DESC, post_msg_id ASC';
+					$result = $db->sql_query($sql);
+
+					while ($row = $db->sql_fetchrow($result))
+					{
+						$attachments[] = $row;
+					}
+					$db->sql_freeresult($result);
+
+					if (sizeof($attachments))
+					{
+						$update_count = array();
+						parse_attachments($post_info['forum_id'], $message, $attachments, $update_count);
+					}
+
+					// Display not already displayed Attachments for this post, we already parsed them. ;)
+					if (!empty($attachments))
+					{
+						$template->assign_var('S_HAS_ATTACHMENTS', true);
+
+						foreach ($attachments as $attachment)
+						{
+							$template->assign_block_vars('attachment', array(
+								'DISPLAY_ATTACHMENT'	=> $attachment)
+							);
+						}
+					}
+				}
+
 				$post_url = append_sid("{$phpbb_root_path}viewtopic.$phpEx", 'f=' . $post_info['forum_id'] . '&amp;p=' . $post_info['post_id'] . '#p' . $post_info['post_id']);
 				$topic_url = append_sid("{$phpbb_root_path}viewtopic.$phpEx", 'f=' . $post_info['forum_id'] . '&amp;t=' . $post_info['topic_id']);
 
@@ -141,7 +181,7 @@ class mcp_queue
 					'U_MCP_APPROVE'			=> append_sid("{$phpbb_root_path}mcp.$phpEx", 'i=queue&amp;mode=approve_details&amp;f=' . $post_info['forum_id'] . '&amp;p=' . $post_id),
 					'U_MCP_REPORT'			=> append_sid("{$phpbb_root_path}mcp.$phpEx", 'i=reports&amp;mode=report_details&amp;f=' . $post_info['forum_id'] . '&amp;p=' . $post_id),
 					'U_MCP_USER_NOTES'		=> append_sid("{$phpbb_root_path}mcp.$phpEx", 'i=notes&amp;mode=user_notes&amp;u=' . $post_info['user_id']),
-					'U_MCP_WARN_USER'		=> ($auth->acl_getf_global('m_warn')) ? append_sid("{$phpbb_root_path}mcp.$phpEx", 'i=warn&amp;mode=warn_user&amp;u=' . $post_info['user_id']) : '',
+					'U_MCP_WARN_USER'		=> ($auth->acl_get('m_warn')) ? append_sid("{$phpbb_root_path}mcp.$phpEx", 'i=warn&amp;mode=warn_user&amp;u=' . $post_info['user_id']) : '',
 					'U_VIEW_POST'			=> $post_url,
 					'U_VIEW_TOPIC'			=> $topic_url,
 
@@ -163,16 +203,18 @@ class mcp_queue
 					'POST_SUBJECT'			=> $post_info['post_subject'],
 					'POST_DATE'				=> $user->format_date($post_info['post_time']),
 					'POST_IP'				=> $post_info['poster_ip'],
-					'POST_IPADDR'			=> @gethostbyaddr($post_info['poster_ip']),
-					'POST_ID'				=> $post_info['post_id'])
-				);
+					'POST_IPADDR'			=> ($auth->acl_get('m_info', $post_info['forum_id']) && request_var('lookup', '')) ? @gethostbyaddr($post_info['poster_ip']) : '',
+					'POST_ID'				=> $post_info['post_id'],
 
-				$this->tpl_name = 'mcp_post';
+					'U_LOOKUP_IP'			=> ($auth->acl_get('m_info', $post_info['forum_id'])) ? append_sid("{$phpbb_root_path}mcp.$phpEx", 'i=queue&amp;mode=approve_details&amp;f=' . $post_info['forum_id'] . '&amp;p=' . $post_id . '&amp;lookup=' . $post_info['poster_ip']) . '#ip' : '',
+				));
 
 			break;
 
 			case 'unapproved_topics':
 			case 'unapproved_posts':
+				$user->add_lang(array('viewtopic', 'viewforum'));
+
 				$topic_id = request_var('t', 0);
 				$forum_info = array();
 
@@ -274,7 +316,8 @@ class mcp_queue
 							FROM ' . POSTS_TABLE . ' p, ' . TOPICS_TABLE . ' t, ' . USERS_TABLE . ' u
 							WHERE ' . $db->sql_in_set('p.post_id', $post_ids) . '
 								AND t.topic_id = p.topic_id
-								AND u.user_id = p.poster_id';
+								AND u.user_id = p.poster_id
+							ORDER BY ' . $sort_order_sql;
 						$result = $db->sql_query($sql);
 
 						$post_data = $rowset = array();
@@ -351,6 +394,7 @@ class mcp_queue
 					}
 
 					$template->assign_block_vars('postrow', array(
+						'U_TOPIC'			=> append_sid("{$phpbb_root_path}viewtopic.$phpEx", 'f=' . $row['forum_id'] . '&amp;t=' . $row['topic_id']),
 						'U_VIEWFORUM'		=> (!$global_topic) ? append_sid("{$phpbb_root_path}viewforum.$phpEx", 'f=' . $row['forum_id']) : '',
 						'U_VIEWPOST'		=> append_sid("{$phpbb_root_path}viewtopic.$phpEx", 'f=' . $row['forum_id'] . '&amp;p=' . $row['post_id']) . (($mode == 'unapproved_posts') ? '#p' . $row['post_id'] : ''),
 						'U_VIEW_DETAILS'	=> append_sid("{$phpbb_root_path}mcp.$phpEx", "i=queue&amp;start=$start&amp;mode=approve_details&amp;f={$row['forum_id']}&amp;p={$row['post_id']}" . (($mode == 'unapproved_topics') ? "&amp;t={$row['topic_id']}" : '')),
@@ -363,6 +407,7 @@ class mcp_queue
 						'POST_ID'		=> $row['post_id'],
 						'FORUM_NAME'	=> (!$global_topic) ? $forum_names[$row['forum_id']] : $user->lang['GLOBAL_ANNOUNCEMENT'],
 						'POST_SUBJECT'	=> $row['post_subject'],
+						'TOPIC_TITLE'	=> $row['topic_title'],
 						'POST_TIME'		=> $user->format_date($row['post_time']))
 					);
 				}
@@ -379,11 +424,11 @@ class mcp_queue
 					'S_MCP_ACTION'			=> build_url(array('t', 'f', 'sd', 'st', 'sk')),
 					'S_TOPICS'				=> ($mode == 'unapproved_posts') ? false : true,
 
-					'PAGINATION'			=> generate_pagination($this->u_action . "&amp;f=$forum_id", $total, $config['topics_per_page'], $start),
+					'PAGINATION'			=> generate_pagination($this->u_action . "&amp;f=$forum_id&amp;st=$sort_days&amp;sk=$sort_key&amp;sd=$sort_dir", $total, $config['topics_per_page'], $start),
 					'PAGE_NUMBER'			=> on_page($total, $config['topics_per_page'], $start),
 					'TOPIC_ID'				=> $topic_id,
-					'TOTAL'					=> $total)
-				);
+					'TOTAL'					=> ($total == 1) ? (($mode == 'unapproved_posts') ? $user->lang['VIEW_TOPIC_POST'] : $user->lang['VIEW_FORUM_TOPIC']) : sprintf((($mode == 'unapproved_posts') ? $user->lang['VIEW_TOPIC_POSTS'] : $user->lang['VIEW_FORUM_TOPICS']), $total),
+				));
 
 				$this->tpl_name = 'mcp_queue';
 			break;
@@ -401,7 +446,7 @@ function approve_post($post_id_list, $id, $mode)
 
 	if (!check_ids($post_id_list, POSTS_TABLE, 'post_id', array('m_approve')))
 	{
-		trigger_error('NOT_AUTHORIZED');
+		trigger_error('NOT_AUTHORISED');
 	}
 
 	$redirect = request_var('redirect', build_url(array('_f_', 'quickmod')));
@@ -425,7 +470,7 @@ function approve_post($post_id_list, $id, $mode)
 		// If Post -> total_posts = total_posts+1, forum_posts = forum_posts+1, topic_replies = topic_replies+1
 
 		$total_topics = $total_posts = 0;
-		$forum_topics_posts = $topic_approve_sql = $topic_replies_sql = $post_approve_sql = $topic_id_list = $forum_id_list = array();
+		$forum_topics_posts = $topic_approve_sql = $topic_replies_sql = $post_approve_sql = $topic_id_list = $forum_id_list = $approve_log = array();
 
 		$update_forum_information = false;
 
@@ -454,8 +499,14 @@ function approve_post($post_id_list, $id, $mode)
 					$total_topics++;
 					$forum_topics_posts[$post_data['forum_id']]['forum_topics']++;
 				}
-
 				$topic_approve_sql[] = $post_data['topic_id'];
+
+				$approve_log[] = array(
+					'type'			=> 'topic',
+					'post_subject'	=> $post_data['post_subject'],
+					'forum_id'		=> $post_data['forum_id'],
+					'topic_id'		=> $post_data['topic_id'],
+				);
 			}
 			else
 			{
@@ -464,6 +515,13 @@ function approve_post($post_id_list, $id, $mode)
 					$topic_replies_sql[$post_data['topic_id']] = 0;
 				}
 				$topic_replies_sql[$post_data['topic_id']]++;
+
+				$approve_log[] = array(
+					'type'			=> 'post',
+					'post_subject'	=> $post_data['post_subject'],
+					'forum_id'		=> $post_data['forum_id'],
+					'topic_id'		=> $post_data['topic_id'],
+				);
 			}
 
 			if ($post_data['forum_id'])
@@ -478,6 +536,14 @@ function approve_post($post_id_list, $id, $mode)
 
 				$total_posts++;
 				$forum_topics_posts[$post_data['forum_id']]['forum_posts']++;
+
+				// Increment by topic_replies if we approve a topic...
+				// This works because we do not adjust the topic_replies when re-approving a topic after an edit.
+				if ($post_data['topic_first_post_id'] == $post_id && $post_data['topic_replies'])
+				{
+					$total_posts += $post_data['topic_replies'];
+					$forum_topics_posts[$post_data['forum_id']]['forum_posts'] += $post_data['topic_replies'];
+				}
 			}
 
 			$post_approve_sql[] = $post_id;
@@ -503,6 +569,11 @@ function approve_post($post_id_list, $id, $mode)
 				SET post_approved = 1
 				WHERE ' . $db->sql_in_set('post_id', $post_approve_sql);
 			$db->sql_query($sql);
+		}
+
+		foreach ($approve_log as $log_data)
+		{
+			add_log('mod', $log_data['forum_id'], $log_data['topic_id'], ($log_data['type'] == 'topic') ? 'LOG_TOPIC_APPROVED' : 'LOG_POST_APPROVED', $log_data['post_subject']);
 		}
 
 		if (sizeof($topic_replies_sql))
@@ -600,6 +671,12 @@ function approve_post($post_id_list, $id, $mode)
 				user_notification('reply', $post_data['post_subject'], $post_data['topic_title'], $post_data['forum_name'], $post_data['forum_id'], $post_data['topic_id'], $post_id);
 			}
 		}
+
+		if (sizeof($post_id_list) == 1)
+		{
+			$post_data = $post_info[$post_id_list[0]];
+			$post_url = append_sid("{$phpbb_root_path}viewtopic.$phpEx", "f={$post_data['forum_id']}&amp;t={$post_data['topic_id']}&amp;p={$post_data['post_id']}") . '#p' . $post_data['post_id'];
+		}
 		unset($post_info);
 
 		if ($total_topics)
@@ -631,7 +708,15 @@ function approve_post($post_id_list, $id, $mode)
 	else
 	{
 		meta_refresh(3, $redirect);
-		trigger_error($user->lang[$success_msg] . '<br /><br />' . sprintf($user->lang['RETURN_PAGE'], "<a href=\"$redirect\">", '</a>'));
+
+		// If approving one post, also give links back to post...
+		$add_message = '';
+		if (sizeof($post_id_list) == 1 && !empty($post_url))
+		{
+			$add_message = '<br /><br />' . sprintf($user->lang['RETURN_POST'], '<a href="' . $post_url . '">', '</a>');
+		}
+
+		trigger_error($user->lang[$success_msg] . '<br /><br />' . sprintf($user->lang['RETURN_PAGE'], "<a href=\"$redirect\">", '</a>') . $add_message);
 	}
 }
 
@@ -645,7 +730,7 @@ function disapprove_post($post_id_list, $id, $mode)
 
 	if (!check_ids($post_id_list, POSTS_TABLE, 'post_id', array('m_approve')))
 	{
-		trigger_error('NOT_AUTHORIZED');
+		trigger_error('NOT_AUTHORISED');
 	}
 
 	$redirect = request_var('redirect', build_url(array('t', 'mode', '_f_', 'quickmod')) . '&amp;mode=unapproved_topics');
@@ -694,7 +779,7 @@ function disapprove_post($post_id_list, $id, $mode)
 		// If Post -> topic_replies_real -= 1
 
 		$num_disapproved = 0;
-		$forum_topics_real = $topic_id_list = $forum_id_list = $topic_replies_real_sql = $post_disapprove_sql = array();
+		$forum_topics_real = $topic_id_list = $forum_id_list = $topic_replies_real_sql = $post_disapprove_sql = $disapprove_log = array();
 
 		foreach ($post_info as $post_id => $post_data)
 		{
@@ -706,6 +791,9 @@ function disapprove_post($post_id_list, $id, $mode)
 			}
 
 			// Topic or Post. ;)
+			/**
+			* @todo this probably is a different method than the one used by delete_posts, does this cause counter inconsistency?
+			*/
 			if ($post_data['topic_first_post_id'] == $post_id && $post_data['topic_last_post_id'] == $post_id)
 			{
 				if ($post_data['forum_id'])
@@ -717,6 +805,13 @@ function disapprove_post($post_id_list, $id, $mode)
 					$forum_topics_real[$post_data['forum_id']]++;
 					$num_disapproved++;
 				}
+
+				$disapprove_log[] = array(
+					'type'			=> 'topic',
+					'post_subject'	=> $post_data['post_subject'],
+					'forum_id'		=> $post_data['forum_id'],
+					'topic_id'		=> 0, // useless to log a topic id, as it will be deleted
+				);
 			}
 			else
 			{
@@ -725,10 +820,19 @@ function disapprove_post($post_id_list, $id, $mode)
 					$topic_replies_real_sql[$post_data['topic_id']] = 0;
 				}
 				$topic_replies_real_sql[$post_data['topic_id']]++;
+
+				$disapprove_log[] = array(
+					'type'			=> 'post',
+					'post_subject'	=> $post_data['post_subject'],
+					'forum_id'		=> $post_data['forum_id'],
+					'topic_id'		=> $post_data['topic_id'],
+				);
 			}
 
 			$post_disapprove_sql[] = $post_id;
 		}
+
+		unset($post_data);
 
 		if (sizeof($forum_topics_real))
 		{
@@ -761,6 +865,11 @@ function disapprove_post($post_id_list, $id, $mode)
 
 			// We do not check for permissions here, because the moderator allowed approval/disapproval should be allowed to delete the disapproved posts
 			delete_posts('post_id', $post_disapprove_sql);
+
+			foreach ($disapprove_log as $log_data)
+			{
+				add_log('mod', $log_data['forum_id'], $log_data['topic_id'], ($log_data['type'] == 'topic') ? 'LOG_TOPIC_DISAPPROVED' : 'LOG_POST_DISAPPROVED', $log_data['post_subject'], $disapprove_reason);
+			}
 		}
 		unset($post_disapprove_sql, $topic_replies_real_sql);
 

@@ -64,56 +64,52 @@
 
 	<h1>{L_ACL_TYPE}</h1>
 
-	<fieldset class="quick">
-		<a href="#" onclick="mark_options('advanced00', 'y'); init_colours('00'); return false;">{L_ALL_YES}</a> &bull; <a href="#" onclick="mark_options('advanced00', 'n'); init_colours('00'); return false;">{L_ALL_NEVER}</a> &bull; <a href="#" onclick="mark_options('advanced00', 'u'); init_colours('00'); return false;">{L_ALL_NO}</a>
-	</fieldset>
-
 	<fieldset class="perm nolegend">
 
 		<div id="advanced00">
-			<div class="perm_cat">
+			<div class="permissions-category">
 				<ul>
 				<!-- BEGIN auth -->
 					<!-- IF auth.S_YES -->
-						<li class="perm_preset_yes<!-- IF auth.S_FIRST_ROW --> activetab<!-- ENDIF -->" id="tab00{auth.S_ROW_COUNT}">
+						<li class="permissions-preset-yes<!-- IF auth.S_FIRST_ROW --> activetab<!-- ENDIF -->" id="tab00{auth.S_ROW_COUNT}">
 					<!-- ELSEIF auth.S_NEVER -->
-						<li class="perm_preset_never<!-- IF auth.S_FIRST_ROW --> activetab<!-- ENDIF -->" id="tab00{auth.S_ROW_COUNT}">
+						<li class="permissions-preset-never<!-- IF auth.S_FIRST_ROW --> activetab<!-- ENDIF -->" id="tab00{auth.S_ROW_COUNT}">
 					<!-- ELSEIF auth.S_NO -->
-						<li class="perm_preset_no<!-- IF auth.S_FIRST_ROW --> activetab<!-- ENDIF -->" id="tab00{auth.S_ROW_COUNT}">
+						<li class="permissions-preset-no<!-- IF auth.S_FIRST_ROW --> activetab<!-- ENDIF -->" id="tab00{auth.S_ROW_COUNT}">
 					<!-- ELSE -->
-						<li class="perm_preset_custom<!-- IF auth.S_FIRST_ROW --> activetab<!-- ENDIF -->" id="tab00{auth.S_ROW_COUNT}">
+						<li class="permissions-preset-custom<!-- IF auth.S_FIRST_ROW --> activetab<!-- ENDIF -->" id="tab00{auth.S_ROW_COUNT}">
 					<!-- ENDIF -->
 						<a href="#" onclick="swap_options('0','0','{auth.S_ROW_COUNT}'); return false;"><span class="tabbg"><span class="colour"></span>{auth.CAT_NAME}</span></a></li>	
 				<!-- END auth -->
 				</ul>
 			</div>
 			<!-- BEGIN auth -->
-			<div class="perm_panel" id="options00{auth.S_ROW_COUNT}"<!-- IF auth.S_FIRST_ROW --><!-- ELSE --> style="display: none;"<!-- ENDIF -->>
+			<div class="permissions-panel" id="options00{auth.S_ROW_COUNT}"<!-- IF auth.S_FIRST_ROW --><!-- ELSE --> style="display: none;"<!-- ENDIF -->>
 				<span class="corners-top"><span></span></span>
 				<div class="tablewrap">
 					<table id="table00{auth.S_ROW_COUNT}" cellspacing="1">
 					<colgroup>
-						<col class="permissions_name" />
-						<col class="permissions_yes" />
-						<col class="permissions_no" />
-						<col class="permissions_never" />
+						<col class="permissions-name" />
+						<col class="permissions-yes" />
+						<col class="permissions-no" />
+						<col class="permissions-never" />
 					</colgroup>
 					<thead>
 					<tr>
 						<th class="name" scope="col"><strong>{L_ACL_SETTING}</strong></th>
-						<th class="value" scope="col"><a href="#" onclick="mark_options('options00{auth.S_ROW_COUNT}', 'y'); set_colours('00{auth.S_ROW_COUNT}', false, 'yes'); return false;">{L_ACL_YES}</a></th>
-						<th class="value" scope="col"><a href="#" onclick="mark_options('options00{auth.S_ROW_COUNT}', 'u'); set_colours('00{auth.S_ROW_COUNT}', false, 'no'); return false;">{L_ACL_NO}</a></th>
-						<th class="value" scope="col"><a href="#" onclick="mark_options('options00{auth.S_ROW_COUNT}', 'n'); set_colours('00{auth.S_ROW_COUNT}', false, 'never'); return false;">{L_ACL_NEVER}</a></th>
+						<th class="value permissions-yes" scope="col"><a href="#" onclick="mark_options('options00{auth.S_ROW_COUNT}', 'y'); set_colours('00{auth.S_ROW_COUNT}', false, 'yes'); return false;">{L_ACL_YES}</a></th>
+						<th class="value permissions-no" scope="col"><a href="#" onclick="mark_options('options00{auth.S_ROW_COUNT}', 'u'); set_colours('00{auth.S_ROW_COUNT}', false, 'no'); return false;">{L_ACL_NO}</a></th>
+						<th class="value permissions-never" scope="col"><a href="#" onclick="mark_options('options00{auth.S_ROW_COUNT}', 'n'); set_colours('00{auth.S_ROW_COUNT}', false, 'never'); return false;">{L_ACL_NEVER}</a></th>
 					</tr>
 					</thead>
 					<tbody>
 					<!-- BEGIN mask -->
 						<!-- IF auth.mask.S_ROW_COUNT is even --><tr class="row4"><!-- ELSE --><tr class="row3"><!-- ENDIF -->
-						<th class="permission_name<!-- IF auth.mask.S_ROW_COUNT is even --> row4<!-- ELSE --> row3<!-- ENDIF -->">{auth.mask.PERMISSION}</th>
+						<th class="permissions-name<!-- IF auth.mask.S_ROW_COUNT is even --> row4<!-- ELSE --> row3<!-- ENDIF -->">{auth.mask.PERMISSION}</th>
 							
-						<td><label for="{auth.mask.FIELD_NAME}_y"><input onchange="set_colours('00{auth.S_ROW_COUNT}', false)" id="setting[{auth.mask.FIELD_NAME}]_y" name="setting[{auth.mask.FIELD_NAME}]" class="radio" type="radio"<!-- IF auth.mask.S_YES --> checked="checked"<!-- ENDIF --> value="1" /></label></td>
-						<td><label for="{auth.mask.FIELD_NAME}_u"><input onchange="set_colours('00{auth.S_ROW_COUNT}', false)" id="setting[{auth.mask.FIELD_NAME}]_u" name="setting[{auth.mask.FIELD_NAME}]" class="radio" type="radio"<!-- IF auth.mask.S_NO --> checked="checked"<!-- ENDIF --> value="-1" /></label></td>
-						<td><label for="{auth.mask.FIELD_NAME}_n"><input onchange="set_colours('00{auth.S_ROW_COUNT}', false)" id="setting[{auth.mask.FIELD_NAME}]_n" name="setting[{auth.mask.FIELD_NAME}]" class="radio" type="radio"<!-- IF auth.mask.S_NEVER --> checked="checked"<!-- ENDIF --> value="0" /></label></td>
+						<td class="permissions-yes"><label for="{auth.mask.FIELD_NAME}_y"><input onchange="set_colours('00{auth.S_ROW_COUNT}', false)" id="setting[{auth.mask.FIELD_NAME}]_y" name="setting[{auth.mask.FIELD_NAME}]" class="radio" type="radio"<!-- IF auth.mask.S_YES --> checked="checked"<!-- ENDIF --> value="1" /></label></td>
+						<td class="permissions-no"><label for="{auth.mask.FIELD_NAME}_u"><input onchange="set_colours('00{auth.S_ROW_COUNT}', false)" id="setting[{auth.mask.FIELD_NAME}]_u" name="setting[{auth.mask.FIELD_NAME}]" class="radio" type="radio"<!-- IF auth.mask.S_NO --> checked="checked"<!-- ENDIF --> value="-1" /></label></td>
+						<td class="permissions-never"><label for="{auth.mask.FIELD_NAME}_n"><input onchange="set_colours('00{auth.S_ROW_COUNT}', false)" id="setting[{auth.mask.FIELD_NAME}]_n" name="setting[{auth.mask.FIELD_NAME}]" class="radio" type="radio"<!-- IF auth.mask.S_NEVER --> checked="checked"<!-- ENDIF --> value="0" /></label></td>
 					</tr>
 					<!-- END mask -->
 					</tbody>
@@ -154,7 +150,7 @@
 	<tbody>
 	<!-- BEGIN roles -->
 	<tr>
-		<td style="vertical-align: top;"><b>{roles.ROLE_NAME}</b>
+		<td style="vertical-align: top;"><strong>{roles.ROLE_NAME}</strong>
 			<!-- IF roles.ROLE_DESCRIPTION --><br /><span>{roles.ROLE_DESCRIPTION}</span><!-- ENDIF -->
 		</td>
 		<td style="width: 30%; text-align: center; vertical-align: top; white-space: nowrap;"><!-- IF roles.U_DISPLAY_ITEMS --><a href="{roles.U_DISPLAY_ITEMS}">{L_VIEW_ASSIGNED_ITEMS}</a><!-- ELSE -->{L_VIEW_ASSIGNED_ITEMS}<!-- ENDIF --></td>

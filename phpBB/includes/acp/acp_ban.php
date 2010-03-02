@@ -26,14 +26,14 @@ class acp_ban
 		$unbansubmit= (isset($_POST['unbansubmit'])) ? true : false;
 		$current_time = time();
 
-		$user->add_lang('acp/ban');
+		$user->add_lang(array('acp/ban', 'acp/users'));
 		$this->tpl_name = 'acp_ban';
 
 		// Ban submitted?
 		if ($bansubmit)
 		{
 			// Grab the list of entries
-			$ban				= request_var('ban', '');
+			$ban				= request_var('ban', '', true);
 			$ban_len			= request_var('banlength', 0);
 			$ban_len_other		= request_var('banlengthother', '');
 			$ban_exclude		= request_var('banexclude', 0);
@@ -130,8 +130,6 @@ class acp_ban
 					WHERE (b.ban_end >= ' . time() . '
 							OR b.ban_end = 0)
 						AND u.user_id = b.ban_userid
-						AND b.ban_userid <> 0
-						AND u.user_id <> ' . ANONYMOUS . '
 					ORDER BY u.username_clean ASC';
 			break;
 

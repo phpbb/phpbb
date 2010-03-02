@@ -176,7 +176,7 @@ class bbcode
 							'[/quote:$uid]'	=> $this->bbcode_tpl('quote_close', $bbcode_id)
 						),
 						'preg' => array(
-							'#\[quote(?:=&quot;(.*?)&quot;)?:$uid\](.)#ise'	=> "\$this->bbcode_second_pass_quote('\$1', '\$2')"
+							'#\[quote(?:=&quot;(.*?)&quot;)?:$uid\]((?!\[quote(?:=&quot;.*?&quot;)?:$uid\]).)?#ise'	=> "\$this->bbcode_second_pass_quote('\$1', '\$2')"
 						)
 					);
 				break;
@@ -230,7 +230,7 @@ class bbcode
 				case 5:
 					$this->bbcode_cache[$bbcode_id] = array(
 						'preg' => array(
-							'#\[size=([\-\+]?[1-2]?[0-9]):$uid\](.*?)\[/size:$uid\]#s'	=> $this->bbcode_tpl('size', $bbcode_id),
+							'#\[size=([\-\+]?\d+):$uid\](.*?)\[/size:$uid\]#s'	=> $this->bbcode_tpl('size', $bbcode_id),
 						)
 					);
 				break;
@@ -392,7 +392,7 @@ class bbcode
 				'u_open'	=> '<span style="text-decoration: underline">',
 				'u_close'	=> '</span>',
 				'img'		=> '<img src="$1" alt="' . $user->lang['IMAGE'] . '" />',
-				'size'		=> '<span style="font-size: $1px; line-height: normal">$2</span>',
+				'size'		=> '<span style="font-size: $1%; line-height: normal">$2</span>',
 				'color'		=> '<span style="color: $1">$2</span>',
 				'email'		=> '<a href="mailto:$1">$2</a>'
 			);
@@ -523,9 +523,9 @@ class bbcode
 		$username = str_replace('\"', '"', $username);
 
 		// remove newline at the beginning
-		if ($quote[0] == "\n")
+		if ($quote == "\n")
 		{
-			$quote = substr($quote, 1);
+			$quote = '';
 		}
 
 		$quote = (($username) ? str_replace('$1', $username, $this->bbcode_tpl('quote_username_open')) : $this->bbcode_tpl('quote_open')) . $quote;

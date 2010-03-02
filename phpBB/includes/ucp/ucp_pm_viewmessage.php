@@ -86,8 +86,6 @@ function view_message($id, $mode, $folder_id, $msg_id, $folder, $message_row)
 	{
 		if ($auth->acl_get('u_pm_download'))
 		{
-			include($phpbb_root_path . 'includes/functions_display.' . $phpEx);
-
 			$sql = 'SELECT *
 				FROM ' . ATTACHMENTS_TABLE . "
 				WHERE post_msg_id = $msg_id
@@ -250,9 +248,7 @@ function message_history($msg_id, $user_id, $message_row, $folder)
 	{
 		$sql .= " AND (p.root_level = " . $message_row['root_level'] . ' OR p.msg_id = ' . $message_row['root_level'] . ')';
 	}
-	$sql .= ' ORDER BY p.message_time ';
-	$sort_dir = (!empty($user->data['user_sortby_dir'])) ? $user->data['user_sortby_dir'] : 'd';
-	$sql .= ($sort_dir == 'd') ? 'ASC' : 'DESC';
+	$sql .= ' ORDER BY p.message_time DESC';
 
 	$result = $db->sql_query($sql);
 	$row = $db->sql_fetchrow($result);
@@ -267,7 +263,6 @@ function message_history($msg_id, $user_id, $message_row, $folder)
 	$bbcode_bitfield = '';
 	$folder_url = append_sid("{$phpbb_root_path}ucp.$phpEx", 'i=pm') . '&amp;folder=';
 
-	$title = ($sort_dir == 'd') ? $row['message_subject'] : '';
 	do
 	{
 		$folder_id = (int) $row['folder_id'];
@@ -287,7 +282,7 @@ function message_history($msg_id, $user_id, $message_row, $folder)
 	while ($row = $db->sql_fetchrow($result));
 	$db->sql_freeresult($result);
 
-	$title = ($sort_dir == 'a') ? $row['message_subject'] : $title;
+	$title = $row['message_subject'];
 
 	if (sizeof($rowset) == 1)
 	{
@@ -350,7 +345,7 @@ function message_history($msg_id, $user_id, $message_row, $folder)
 			'S_CURRENT_MSG'		=> ($row['msg_id'] == $msg_id),
 			'S_AUTHOR_DELETED'	=> ($author_id == ANONYMOUS) ? true : false,
 
-			'U_MSG_ID'			=> $row['msg_id'],
+			'MSG_ID'			=> $row['msg_id'],
 			'U_VIEW_MESSAGE'	=> "$url&amp;f=$folder_id&amp;p=" . $row['msg_id'],
 			'U_QUOTE'			=> ($auth->acl_get('u_sendpm') && $author_id != ANONYMOUS && $author_id != $user->data['user_id']) ? "$url&amp;mode=compose&amp;action=quote&amp;f=" . $folder_id . "&amp;p=" . $row['msg_id'] : '',
 			'U_POST_REPLY_PM'	=> ($author_id != $user->data['user_id'] && $author_id != ANONYMOUS && $auth->acl_get('u_sendpm')) ? "$url&amp;mode=compose&amp;action=reply&amp;f=$folder_id&amp;p=" . $row['msg_id'] : '')
@@ -393,8 +388,9 @@ function get_user_information($user_id, $user_row)
 		$db->sql_freeresult($result);
 	}
 
-	// Grab ranks
-	$ranks = $cache->obtain_ranks();
+	// Some standard values
+	$user_row['online'] = false;
+	$user_row['rank_title'] = $user_row['rank_image'] = $user_row['rank_image_src'] = $user_row['email'] = '';
 
 	// Generate online information for user
 	if ($config['load_onlinetrack'])
@@ -413,60 +409,19 @@ function get_user_information($user_id, $user_row)
 			$user_row['online'] = (time() - $update_time < $row['online_time'] && ($row['viewonline'] && $user_row['user_allow_viewonline'])) ? true : false;
 		}
 	}
-	else
+
+	if (!function_exists('get_user_avatar'))
 	{
-		$user_row['online'] = false;
+		include($phpbb_root_path . 'includes/functions_display.' . $phpEx);
 	}
 
-	if ($user_row['user_avatar'] && $user->optionget('viewavatars'))
-	{
-		$avatar_img = '';
+	$user_row['avatar'] = ($user->optionget('viewavatars')) ? get_user_avatar($user_row['user_avatar'], $user_row['user_avatar_type'], $user_row['user_avatar_width'], $user_row['user_avatar_height']) : '';
 
-		switch ($user_row['user_avatar_type'])
-		{
-			case AVATAR_UPLOAD:
-				$avatar_img = $config['avatar_path'] . '/';
-			break;
-
-			case AVATAR_GALLERY:
-				$avatar_img = $config['avatar_gallery_path'] . '/';
-			break;
-		}
-
-		$avatar_img .= $user_row['user_avatar'];
-		$user_row['avatar'] = '<img src="' . $avatar_img . '" width="' . $user_row['user_avatar_width'] . '" height="' . $user_row['user_avatar_height'] . '" alt="' . $user->lang['USER_AVATAR'] . '" />';
-	}
-
-	$user_row['rank_title'] = $user_row['rank_image'] = '';
-
-	if (!empty($user_row['user_rank']))
-	{
-		$user_row['rank_title'] = (isset($ranks['special'][$user_row['user_rank']])) ? $ranks['special'][$user_row['user_rank']]['rank_title'] : '';
-		$user_row['rank_image'] = (!empty($ranks['special'][$user_row['user_rank']]['rank_image'])) ? '<img src="' . $config['ranks_path'] . '/' . $ranks['special'][$user_row['user_rank']]['rank_image'] . '" alt="' . $ranks['special'][$user_row['user_rank']]['rank_title'] . '" title="' . $ranks['special'][$user_row['user_rank']]['rank_title'] . '" /><br />' : '';
-	}
-	else
-	{
-		if (isset($ranks['normal']))
-		{
-			foreach ($ranks['normal'] as $rank)
-			{
-				if ($user_row['user_posts'] >= $rank['rank_min'])
-				{
-					$user_row['rank_title'] = $rank['rank_title'];
-					$user_row['rank_image'] = (!empty($rank['rank_image'])) ? '<img src="' . $config['ranks_path'] . '/' . $rank['rank_image'] . '" alt="' . $rank['rank_title'] . '" title="' . $rank['rank_title'] . '" /><br />' : '';
-					break;
-				}
-			}
-		}
-	}
+	get_user_rank($user_row['user_rank'], $user_row['user_posts'], $user_row['rank_title'], $user_row['rank_image'], $user_row['rank_image_src']);
 
 	if (!empty($user_row['user_allow_viewemail']) || $auth->acl_get('a_email'))
 	{
 		$user_row['email'] = ($config['board_email_form'] && $config['email_enable']) ? append_sid("{$phpbb_root_path}memberlist.$phpEx", "mode=email&amp;u=$user_id") : ((($config['board_hide_emails'] && !$auth->acl_get('a_email')) || empty($user_row['user_email'])) ? '' : 'mailto:' . $user_row['user_email']);
-	}
-	else
-	{
-		$user_row['email'] = '';
 	}
 
 	return $user_row;

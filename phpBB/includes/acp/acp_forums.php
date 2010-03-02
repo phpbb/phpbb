@@ -129,14 +129,17 @@ class acp_forums
 						'prune_old_polls'		=> request_var('prune_old_polls', false),
 						'prune_announce'		=> request_var('prune_announce', false),
 						'prune_sticky'			=> request_var('prune_sticky', false),
-						'forum_password'		=> request_var('forum_password', ''),
-						'forum_password_confirm'=> request_var('forum_password_confirm', ''),
+						'forum_password'		=> request_var('forum_password', '', true),
+						'forum_password_confirm'=> request_var('forum_password_confirm', '', true),
 					);
 
 					// Use link_display_on_index setting if forum type is link
 					if ($forum_data['forum_type'] == FORUM_LINK)
 					{
 						$forum_data['display_on_index'] = request_var('link_display_on_index', false);
+
+						// Linked forums are not able to be locked...
+						$forum_data['forum_status'] = ITEM_UNLOCKED;
 					}
 
 					$forum_data['show_active'] = ($forum_data['forum_type'] == FORUM_POST) ? request_var('display_recent', false) : request_var('display_active', false);
@@ -285,6 +288,86 @@ class acp_forums
 					trigger_error($user->lang['NO_FORUM'] . adm_back_link($this->u_action . '&amp;parent_id=' . $this->parent_id), E_USER_WARNING);
 				}
 
+				@set_time_limit(0);
+
+				$sql = 'SELECT forum_name, forum_topics_real
+					FROM ' . FORUMS_TABLE . "
+					WHERE forum_id = $forum_id";
+				$result = $db->sql_query($sql);
+				$row = $db->sql_fetchrow($result);
+				$db->sql_freeresult($result);
+
+				if (!$row)
+				{
+					trigger_error($user->lang['NO_FORUM'] . adm_back_link($this->u_action . '&amp;parent_id=' . $this->parent_id), E_USER_WARNING);
+				}
+
+				if ($row['forum_topics_real'])
+				{
+					$sql = 'SELECT MIN(topic_id) as min_topic_id, MAX(topic_id) as max_topic_id
+						FROM ' . TOPICS_TABLE . '
+						WHERE forum_id = ' . $forum_id;
+					$result = $db->sql_query($sql);
+					$row2 = $db->sql_fetchrow($result);
+					$db->sql_freeresult($result);
+
+					// Typecast to int if there is no data available
+					$row2['min_topic_id'] = (int) $row2['min_topic_id'];
+					$row2['max_topic_id'] = (int) $row2['max_topic_id'];
+
+					$start = request_var('start', $row2['min_topic_id']);
+
+					$batch_size = 2000;
+					$end = $start + $batch_size;
+
+					// Sync all topics in batch mode...
+					sync('topic_approved', 'range', 'topic_id BETWEEN ' . $start . ' AND ' . $end, true, false);
+					sync('topic', 'range', 'topic_id BETWEEN ' . $start . ' AND ' . $end, true, true);
+
+					if ($end < $row2['max_topic_id'])
+					{
+						// We really need to find a way of showing statistics... no progress here
+						$sql = 'SELECT COUNT(topic_id) as num_topics
+							FROM ' . TOPICS_TABLE . '
+							WHERE forum_id = ' . $forum_id . '
+								AND topic_id BETWEEN ' . $start . ' AND ' . $end;
+						$result = $db->sql_query($sql);
+						$topics_done = request_var('topics_done', 0) + (int) $db->sql_fetchfield('num_topics');
+						$db->sql_freeresult($result);
+
+						$start += $batch_size;
+
+						$url = $this->u_action . "&amp;parent_id={$this->parent_id}&amp;f=$forum_id&amp;action=sync&amp;start=$start&amp;topics_done=$topics_done&amp;total={$row['forum_topics_real']}";
+
+						meta_refresh(0, $url);
+
+						$template->assign_vars(array(
+							'U_PROGRESS_BAR'		=> $this->u_action . "&amp;action=progress_bar&amp;start=$topics_done&amp;total={$row['forum_topics_real']}",
+							'UA_PROGRESS_BAR'		=> str_replace('&amp;', '&', $this->u_action) . "&action=progress_bar&start=$topics_done&total={$row['forum_topics_real']}",
+							'S_CONTINUE_SYNC'		=> true,
+							'L_PROGRESS_EXPLAIN'	=> sprintf($user->lang['SYNC_IN_PROGRESS_EXPLAIN'], $topics_done, $row['forum_topics_real']))
+						);
+
+						return;
+					}
+				}
+
+				$url = $this->u_action . "&amp;parent_id={$this->parent_id}&amp;f=$forum_id&amp;action=sync_forum";
+				meta_refresh(0, $url);
+
+				$template->assign_vars(array(
+					'U_PROGRESS_BAR'		=> $this->u_action . '&amp;action=progress_bar',
+					'UA_PROGRESS_BAR'		=> str_replace('&amp;', '&', $this->u_action) . '&action=progress_bar',
+					'S_CONTINUE_SYNC'		=> true,
+					'L_PROGRESS_EXPLAIN'	=> sprintf($user->lang['SYNC_IN_PROGRESS_EXPLAIN'], 0, $row['forum_topics_real']))
+				);
+
+				return;
+
+			break;
+
+			case 'sync_forum':
+
 				$sql = 'SELECT forum_name, forum_type
 					FROM ' . FORUMS_TABLE . "
 					WHERE forum_id = $forum_id";
@@ -298,71 +381,6 @@ class acp_forums
 				}
 
 				sync('forum', 'forum_id', $forum_id, false, true);
-				$cache->destroy('sql', FORUMS_TABLE);
-
-				$url = $this->u_action . "&amp;parent_id={$this->parent_id}&amp;f=$forum_id&amp;action=sync_topic";
-				meta_refresh(0, $url);
-
-				$sql = 'SELECT forum_topics_real
-					FROM ' . FORUMS_TABLE . "
-					WHERE forum_id = $forum_id";
-				$result = $db->sql_query($sql);
-				$row = $db->sql_fetchrow($result);
-				$db->sql_freeresult($result);
-
-				$template->assign_vars(array(
-					'U_PROGRESS_BAR'		=> $this->u_action . '&amp;action=progress_bar',
-					'UA_PROGRESS_BAR'		=> str_replace('&amp;', '&', $this->u_action) . '&action=progress_bar',
-					'S_CONTINUE_SYNC'		=> true,
-					'L_PROGRESS_EXPLAIN'	=> sprintf($user->lang['SYNC_IN_PROGRESS_EXPLAIN'], 0, $row['forum_topics_real']))
-				);
-
-//				add_log('admin', 'LOG_FORUM_SYNC', $row['forum_name']);
-
-				return;
-
-			break;
-
-			case 'sync_topic':
-
-				@set_time_limit(0);
-
-				$sql = 'SELECT forum_name, forum_topics_real
-					FROM ' . FORUMS_TABLE . "
-					WHERE forum_id = $forum_id";
-				$result = $db->sql_query($sql);
-				$row = $db->sql_fetchrow($result);
-				$db->sql_freeresult($result);
-
-				if ($row['forum_topics_real'])
-				{
-					$start = request_var('start', 0);
-
-					$batch_size = 3000;
-					$end = $start + $batch_size;
-
-					// Sync all topics in batch mode...
-					sync('topic_approved', 'range', 'topic_id BETWEEN ' . $start . ' AND ' . $end, true, false);
-					sync('topic', 'range', 'topic_id BETWEEN ' . $start . ' AND ' . $end, true, true);
-
-					if ($end < $row['forum_topics_real'])
-					{
-						$start += $batch_size;
-
-						$url = $this->u_action . "&amp;parent_id={$this->parent_id}&amp;f=$forum_id&amp;action=sync_topic&amp;start=$start&amp;total={$row['forum_topics_real']}";
-
-						meta_refresh(0, $url);
-
-						$template->assign_vars(array(
-							'U_PROGRESS_BAR'		=> $this->u_action . "&amp;action=progress_bar&amp;start=$start&amp;total={$row['forum_topics_real']}",
-							'UA_PROGRESS_BAR'		=> str_replace('&amp;', '&', $this->u_action) . "&action=progress_bar&start=$start&total={$row['forum_topics_real']}",
-							'S_CONTINUE_SYNC'		=> true,
-							'L_PROGRESS_EXPLAIN'	=> sprintf($user->lang['SYNC_IN_PROGRESS_EXPLAIN'], $start, $row['forum_topics_real']))
-						);
-
-						return;
-					}
-				}
 
 				add_log('admin', 'LOG_FORUM_SYNC', $row['forum_name']);
 				$cache->destroy('sql', FORUMS_TABLE);
@@ -724,7 +742,7 @@ class acp_forums
 		// Jumpbox
 		$forum_box = make_forum_select($this->parent_id, false, false, false, false); //make_forum_select($this->parent_id);
 
-		if ($action == 'sync' || $action == 'sync_topic')
+		if ($action == 'sync' || $action == 'sync_forum')
 		{
 			$template->assign_var('S_RESYNCED', true);
 		}
@@ -743,18 +761,18 @@ class acp_forums
 
 				if ($row['forum_status'] == ITEM_LOCKED)
 				{
-					$folder_image = '<img src="images/icon_folder_lock.gif" width="46" height="25" alt="' . $user->lang['LOCKED'] . '" />';
+					$folder_image = '<img src="images/icon_folder_lock.gif" alt="' . $user->lang['LOCKED'] . '" />';
 				}
 				else
 				{
 					switch ($forum_type)
 					{
 						case FORUM_LINK:
-							$folder_image = '<img src="images/icon_folder_link.gif" width="46" height="25" alt="' . $user->lang['LINK'] . '" />';
+							$folder_image = '<img src="images/icon_folder_link.gif" alt="' . $user->lang['LINK'] . '" />';
 						break;
 
 						default:
-							$folder_image = ($row['left_id'] + 1 != $row['right_id']) ? '<img src="images/icon_subfolder.gif" width="46" height="25" alt="' . $user->lang['SUBFORUM'] . '" />' : '<img src="images/icon_folder.gif" width="46" height="25" alt="' . $user->lang['FOLDER'] . '" />';
+							$folder_image = ($row['left_id'] + 1 != $row['right_id']) ? '<img src="images/icon_subfolder.gif" alt="' . $user->lang['SUBFORUM'] . '" />' : '<img src="images/icon_folder.gif" alt="' . $user->lang['FOLDER'] . '" />';
 						break;
 					}
 				}
@@ -917,7 +935,7 @@ class acp_forums
 
 			if ($forum_data_sql['parent_id'])
 			{
-				$sql = 'SELECT left_id, right_id
+				$sql = 'SELECT left_id, right_id, forum_type
 					FROM ' . FORUMS_TABLE . '
 					WHERE forum_id = ' . $forum_data_sql['parent_id'];
 				$result = $db->sql_query($sql);
@@ -927,6 +945,12 @@ class acp_forums
 				if (!$row)
 				{
 					trigger_error($user->lang['PARENT_NOT_EXIST'] . adm_back_link($this->u_action . '&amp;' . $this->parent_id), E_USER_WARNING);
+				}
+
+				if ($row['forum_type'] == FORUM_LINK)
+				{
+					$errors[] = $user->lang['PARENT_IS_LINK_FORUM'];
+					return $errors;
 				}
 
 				$sql = 'UPDATE ' . FORUMS_TABLE . '
@@ -1107,6 +1131,19 @@ class acp_forums
 					$db->sql_query($sql);
 				}
 			}
+			else if ($row['forum_type'] == FORUM_CAT && $forum_data_sql['forum_type'] == FORUM_POST)
+			{
+				// Changing a category to a forum? Reset the data (you can't post directly in a cat, you must use a forum)
+				$forum_data_sql['forum_posts'] = 0;
+				$forum_data_sql['forum_topics'] = 0;
+				$forum_data_sql['forum_topics_real'] = 0;
+				$forum_data_sql['forum_last_post_id'] = 0;
+				$forum_data_sql['forum_last_post_subject'] = '';
+				$forum_data_sql['forum_last_post_time'] = 0;
+				$forum_data_sql['forum_last_poster_id'] = 0;
+				$forum_data_sql['forum_last_poster_name'] = '';
+				$forum_data_sql['forum_last_poster_colour'] = '';
+			}
 
 			if (sizeof($errors))
 			{
@@ -1156,7 +1193,21 @@ class acp_forums
 	*/
 	function move_forum($from_id, $to_id)
 	{
-		global $db;
+		global $db, $user;
+
+		$to_data = $moved_ids = $errors = array();
+
+		// Check if we want to move to a parent with link type
+		if ($to_id > 0)
+		{
+			$to_data = $this->get_forum_info($to_id);
+
+			if ($to_data['forum_type'] == FORUM_LINK)
+			{
+				$errors[] = $user->lang['PARENT_IS_LINK_FORUM'];
+				return $errors;
+			}
+		}
 
 		$moved_forums = get_forum_branch($from_id, 'children', 'descending');
 		$from_data = $moved_forums[0];
@@ -1183,6 +1234,7 @@ class acp_forums
 
 		if ($to_id > 0)
 		{
+			// Retrieve $to_data again, it may have been changed...
 			$to_data = $this->get_forum_info($to_id);
 
 			// Resync new parents
@@ -1227,6 +1279,8 @@ class acp_forums
 			SET left_id = left_id $diff, right_id = right_id $diff, forum_parents = ''
 			WHERE " . $db->sql_in_set('forum_id', $moved_ids);
 		$db->sql_query($sql);
+
+		return $errors;
 	}
 
 	/**
@@ -1260,7 +1314,7 @@ class acp_forums
 		{
 			// Delete ghost topics that link back to the same forum then resync counters
 			sync('topic_moved');
-			sync('forum', 'forum_id', $to_id);
+			sync('forum', 'forum_id', $to_id, false, true);
 		}
 
 		return array();

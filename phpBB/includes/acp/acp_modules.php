@@ -106,12 +106,26 @@ class acp_modules
 					trigger_error($user->lang['NO_MODULE_ID'] . adm_back_link($this->u_action . '&amp;parent_id=' . $this->parent_id), E_USER_WARNING);
 				}
 
+				$sql = 'SELECT *
+					FROM ' . MODULES_TABLE . "
+					WHERE module_class = '" . $db->sql_escape($this->module_class) . "'
+						AND module_id = $module_id";
+				$result = $db->sql_query($sql);
+				$row = $db->sql_fetchrow($result);
+				$db->sql_freeresult($result);
+
+				if (!$row)
+				{
+					trigger_error($user->lang['NO_MODULE'] . adm_back_link($this->u_action . '&amp;parent_id=' . $this->parent_id), E_USER_WARNING);
+				}
+
 				$sql = 'UPDATE ' . MODULES_TABLE . ' 
 					SET module_enabled = ' . (($action == 'enable') ? 1 : 0) . "
-					WHERE module_id = $module_id";
+					WHERE module_class = '" . $db->sql_escape($this->module_class) . "'
+						AND module_id = $module_id";
 				$db->sql_query($sql);
 
-				add_log('admin', 'LOG_MODULE_' . strtoupper($action));
+				add_log('admin', 'LOG_MODULE_' . strtoupper($action), $this->lang_name($row['module_langname']));
 				$this->remove_cache_file();
 
 			break;
@@ -140,7 +154,7 @@ class acp_modules
 
 				if ($move_module_name !== false)
 				{
-					add_log('admin', 'LOG_MODULE_' . strtoupper($action), $move_module_name);
+					add_log('admin', 'LOG_MODULE_' . strtoupper($action), $this->lang_name($row['module_langname']), $move_module_name);
 					$this->remove_cache_file();
 				}
 		
@@ -396,11 +410,11 @@ class acp_modules
 
 				if (!$row['module_enabled'])
 				{
-					$module_image = '<img src="images/icon_folder_lock.gif" width="46" height="25" alt="' . $user->lang['DEACTIVATED_MODULE'] .'" />';
+					$module_image = '<img src="images/icon_folder_lock.gif" alt="' . $user->lang['DEACTIVATED_MODULE'] .'" />';
 				}
 				else
 				{
-					$module_image = (!$row['module_basename'] || $row['left_id'] + 1 != $row['right_id']) ? '<img src="images/icon_subfolder.gif" width="46" height="25" alt="' . $user->lang['CATEGORY'] . '" />' : '<img src="images/icon_folder.gif" width="46" height="25" alt="' . $user->lang['MODULE'] . '" />';
+					$module_image = (!$row['module_basename'] || $row['left_id'] + 1 != $row['right_id']) ? '<img src="images/icon_subfolder.gif" alt="' . $user->lang['CATEGORY'] . '" />' : '<img src="images/icon_folder.gif" alt="' . $user->lang['MODULE'] . '" />';
 				}
 
 				$url = $this->u_action . '&amp;parent_id=' . $this->parent_id . '&amp;m=' . $row['module_id'];
@@ -721,12 +735,11 @@ class acp_modules
 		if (!isset($module_data['module_id']))
 		{
 			// no module_id means we're creating a new category/module
-
 			if ($module_data['parent_id'])
 			{
 				$sql = 'SELECT left_id, right_id
 					FROM ' . MODULES_TABLE . "
-					WHERE module_class = '" . $db->sql_escape($this->module_class) . "'
+					WHERE module_class = '" . $db->sql_escape($module_data['module_class']) . "'
 						AND module_id = {$module_data['parent_id']}";
 				$result = $db->sql_query($sql);
 				$row = $db->sql_fetchrow($result);
@@ -742,32 +755,36 @@ class acp_modules
 					trigger_error($user->lang['PARENT_NO_EXIST'] . adm_back_link($this->u_action . '&amp;parent_id=' . $this->parent_id), E_USER_WARNING);
 				}
 
+				// Workaround
+				$row['left_id'] = (int) $row['left_id'];
+				$row['right_id'] = (int) $row['right_id'];
+
 				$sql = 'UPDATE ' . MODULES_TABLE . "
 					SET left_id = left_id + 2, right_id = right_id + 2
-					WHERE module_class = '" . $db->sql_escape($this->module_class) . "'
+					WHERE module_class = '" . $db->sql_escape($module_data['module_class']) . "'
 						AND left_id > {$row['right_id']}";
 				$db->sql_query($sql);
 
 				$sql = 'UPDATE ' . MODULES_TABLE . "
 					SET right_id = right_id + 2
-					WHERE module_class = '" . $db->sql_escape($this->module_class) . "'
+					WHERE module_class = '" . $db->sql_escape($module_data['module_class']) . "'
 						AND {$row['left_id']} BETWEEN left_id AND right_id";
 				$db->sql_query($sql);
 
-				$module_data['left_id'] = $row['right_id'];
-				$module_data['right_id'] = $row['right_id'] + 1;
+				$module_data['left_id'] = (int) $row['right_id'];
+				$module_data['right_id'] = (int) $row['right_id'] + 1;
 			}
 			else
 			{
 				$sql = 'SELECT MAX(right_id) AS right_id
 					FROM ' . MODULES_TABLE . "
-					WHERE module_class = '" . $db->sql_escape($this->module_class) . "'";
+					WHERE module_class = '" . $db->sql_escape($module_data['module_class']) . "'";
 				$result = $db->sql_query($sql);
 				$row = $db->sql_fetchrow($result);
 				$db->sql_freeresult($result);
 
-				$module_data['left_id'] = $row['right_id'] + 1;
-				$module_data['right_id'] = $row['right_id'] + 2;
+				$module_data['left_id'] = (int) $row['right_id'] + 1;
+				$module_data['right_id'] = (int) $row['right_id'] + 2;
 			}
 
 			$sql = 'INSERT INTO ' . MODULES_TABLE . ' ' . $db->sql_build_array('INSERT', $module_data);
@@ -805,7 +822,7 @@ class acp_modules
 
 			$sql = 'UPDATE ' . MODULES_TABLE . '
 				SET ' . $db->sql_build_array('UPDATE', $update_ary) . "
-				WHERE module_class = '" . $db->sql_escape($this->module_class) . "'
+				WHERE module_class = '" . $db->sql_escape($module_data['module_class']) . "'
 					AND module_id = {$module_data['module_id']}";
 			$db->sql_query($sql);
 

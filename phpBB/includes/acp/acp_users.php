@@ -134,7 +134,8 @@ class acp_users
 			'U_BACK'			=> $this->u_action,
 			'U_MODE_SELECT'		=> append_sid("{$phpbb_admin_path}index.$phpEx", "i=$id&amp;u=$user_id"),
 			'U_ACTION'			=> $this->u_action . '&amp;u=' . $user_id,
-			'S_FORM_OPTIONS'	=> $s_form_options)
+			'S_FORM_OPTIONS'	=> $s_form_options,
+			'MANAGED_USERNAME'	=> $user_row['username'])
 		);
 
 		// Prevent normal users/admins change/view founders if they are not a founder by themselves
@@ -146,7 +147,9 @@ class acp_users
 		switch ($mode)
 		{
 			case 'overview':
-				
+
+				$user->add_lang('acp/ban');
+
 				$delete			= request_var('delete', 0);
 				$delete_type	= request_var('delete_type', '');
 				$ip				= request_var('ip', 'ip');
@@ -245,12 +248,13 @@ class acp_users
 								break;
 							}
 
-							user_ban(substr($action, 3), $ban, 0, 0, 0, $user->lang[$reason]);
+							$ban_reason = request_var('ban_reason', $user->lang[$reason], true);
+							$ban_give_reason = request_var('ban_give_reason', '', true);
 
-							add_log('admin', $log, $user->lang[$reason], implode(', ', $ban));
-							add_log('user', $user_id, $log, $user->lang[$reason], implode(', ', $ban));
+							// Log not used at the moment, we simply utilize the ban function.
+							$result = user_ban(substr($action, 3), $ban, 0, 0, 0, $ban_reason, $ban_give_reason);
 
-							trigger_error($user->lang['BAN_SUCCESSFUL'] . adm_back_link($this->u_action . '&amp;u=' . $user_id));
+							trigger_error((($result === false) ? $user->lang['BAN_ALREADY_ENTERED'] : $user->lang['BAN_SUCCESSFUL']) . adm_back_link($this->u_action . '&amp;u=' . $user_id));
 
 						break;
 
@@ -281,6 +285,7 @@ class acp_users
 								$key_len = 54 - (strlen($server_url));
 								$key_len = ($key_len > 6) ? $key_len : 6;
 								$user_actkey = substr($user_actkey, 0, $key_len);
+								$email_template = ($user_row['user_type'] == USER_NORMAL) ? 'user_reactivate_account' : 'user_resend_inactive';
 
 								if ($user_row['user_type'] == USER_NORMAL)
 								{
@@ -294,7 +299,7 @@ class acp_users
 
 								$messenger = new messenger(false);
 
-								$messenger->template('user_resend_inactive', $user_row['user_lang']);
+								$messenger->template($email_template, $user_row['user_lang']);
 
 								$messenger->to($user_row['user_email'], $user_row['username']);
 
@@ -398,44 +403,6 @@ class acp_users
 
 							if (confirm_box(true))
 							{
-								$sql = 'SELECT topic_id, COUNT(post_id) AS total_posts
-									FROM ' . POSTS_TABLE . "
-									WHERE poster_id = $user_id
-									GROUP BY topic_id";
-								$result = $db->sql_query($sql);
-
-								$topic_id_ary = array();
-								while ($row = $db->sql_fetchrow($result))
-								{
-									$topic_id_ary[$row['topic_id']] = $row['total_posts'];
-								}
-								$db->sql_freeresult($result);
-
-								if (sizeof($topic_id_ary))
-								{
-									$sql = 'SELECT topic_id, topic_replies, topic_replies_real
-										FROM ' . TOPICS_TABLE . '
-										WHERE ' . $db->sql_in_set('topic_id', array_keys($topic_id_ary));
-									$result = $db->sql_query($sql);
-
-									$del_topic_ary = array();
-									while ($row = $db->sql_fetchrow($result))
-									{
-										if (max($row['topic_replies'], $row['topic_replies_real']) + 1 == $topic_id_ary[$row['topic_id']])
-										{
-											$del_topic_ary[] = $row['topic_id'];
-										}
-									}
-									$db->sql_freeresult($result);
-
-									if (sizeof($del_topic_ary))
-									{
-										$sql = 'DELETE FROM ' . TOPICS_TABLE . '
-											WHERE ' . $db->sql_in_set('topic_id', $del_topic_ary);
-										$db->sql_query($sql);
-									}
-								}
-
 								// Delete posts, attachments, etc.
 								delete_posts('poster_id', $user_id);
 
@@ -478,7 +445,9 @@ class acp_users
 						break;
 						
 						case 'moveposts':
-								
+
+							$user->add_lang('acp/forums');
+
 							$new_forum_id = request_var('new_f', 0);
 
 							if (!$new_forum_id)
@@ -493,6 +462,24 @@ class acp_users
 								);
 
 								return;
+							}
+
+							// Is the new forum postable to?
+							$sql = 'SELECT forum_name, forum_type
+								FROM ' . FORUMS_TABLE . "
+								WHERE forum_id = $new_forum_id";
+							$result = $db->sql_query($sql);
+							$forum_info = $db->sql_fetchrow($result);
+							$db->sql_freeresult($result);
+
+							if (!$forum_info)
+							{
+								trigger_error($user->lang['NO_FORUM'] . adm_back_link($this->u_action . '&amp;u=' . $user_id), E_USER_WARNING);
+							}
+
+							if ($forum_info['forum_type'] != FORUM_POST)
+							{
+								trigger_error($user->lang['MOVE_POSTS_NO_POSTABLE_FORUM'] . adm_back_link($this->u_action . '&amp;u=' . $user_id), E_USER_WARNING);
 							}
 
 							// Two stage?
@@ -515,7 +502,7 @@ class acp_users
 
 							if (sizeof($topic_id_ary))
 							{
-								$sql = 'SELECT topic_id, forum_id, topic_title, topic_replies, topic_replies_real
+								$sql = 'SELECT topic_id, forum_id, topic_title, topic_replies, topic_replies_real, topic_attachment
 									FROM ' . TOPICS_TABLE . '
 									WHERE ' . $db->sql_in_set('topic_id', array_keys($topic_id_ary));
 								$result = $db->sql_query($sql);
@@ -529,7 +516,7 @@ class acp_users
 									else
 									{
 										$move_post_ary[$row['topic_id']]['title'] = $row['topic_title'];
-										$move_post_ary[$row['topic_id']]['attach'] = ($row['attach']) ? 1 : 0;
+										$move_post_ary[$row['topic_id']]['attach'] = ($row['topic_attachment']) ? 1 : 0;
 									}
 
 									$forum_id_ary[] = $row['forum_id'];
@@ -597,15 +584,9 @@ class acp_users
 
 							if (sizeof($forum_id_ary))
 							{
-								sync('forum', 'forum_id', $forum_id_ary);
+								sync('forum', 'forum_id', $forum_id_ary, false, true);
 							}
 
-							$sql = 'SELECT forum_name
-								FROM ' . FORUMS_TABLE . "
-								WHERE forum_id = $new_forum_id";
-							$result = $db->sql_query($sql, 3600);
-							$forum_info = $db->sql_fetchrow($result);
-							$db->sql_freeresult($result);
 
 							add_log('admin', 'LOG_USER_MOVE_POSTS', $user_row['username'], $forum_info['forum_name']);
 							add_log('user', $user_id, 'LOG_USER_MOVE_POSTS_USER', $forum_info['forum_name']);
@@ -621,13 +602,13 @@ class acp_users
 						'user_founder'		=> request_var('user_founder', ($user_row['user_type'] == USER_FOUNDER) ? 1 : 0),
 						'email'				=> strtolower(request_var('user_email', $user_row['user_email'])),
 						'email_confirm'		=> strtolower(request_var('email_confirm', '')),
-						'user_password'		=> request_var('user_password', '', true),
+						'new_password'		=> request_var('new_password', '', true),
 						'password_confirm'	=> request_var('password_confirm', '', true),
 					);
 
 					// Validation data - we do not check the password complexity setting here
 					$check_ary = array(
-						'user_password'		=> array(
+						'new_password'		=> array(
 							array('string', true, $config['min_pass_chars'], $config['max_pass_chars']),
 							array('password')),
 						'password_confirm'	=> array('string', true, $config['min_pass_chars'], $config['max_pass_chars']),
@@ -658,7 +639,7 @@ class acp_users
 
 					$error = validate_data($data, $check_ary);
 
-					if ($data['user_password'] && $data['password_confirm'] != $data['user_password'])
+					if ($data['new_password'] && $data['password_confirm'] != $data['new_password'])
 					{
 						$error[] = 'NEW_PASSWORD_ERROR';
 					}
@@ -670,7 +651,7 @@ class acp_users
 
 					// Which updates do we need to do?
 					$update_username = ($user_row['username'] != $data['username']) ? $data['username'] : false;
-					$update_password = ($data['user_password'] && $user_row['user_password'] != md5($data['user_password'])) ? true : false;
+					$update_password = ($data['new_password'] && $user_row['user_password'] != md5($data['new_password'])) ? true : false;
 					$update_email = ($data['email'] != $user_row['user_email']) ? $data['email'] : false;
 
 					if (!sizeof($error))
@@ -742,7 +723,7 @@ class acp_users
 						if ($update_password)
 						{
 							$sql_ary += array(
-								'user_password' => md5($data['user_password']),
+								'user_password' => md5($data['new_password']),
 								'user_passchg'	=> time(),
 							);
 
@@ -774,8 +755,6 @@ class acp_users
 					// Replace "error" strings with their real, localised form
 					$error = preg_replace('#^([A-Z_]+)$#e', "(!empty(\$user->lang['\\1'])) ? \$user->lang['\\1'] : '\\1'", $error);
 				}
-
-				$user_char_ary = array('.*' => 'USERNAME_CHARS_ANY', '[a-z]+' => 'USERNAME_ALPHA_ONLY', '[-\]_+ [a-z]+' => 'USERNAME_ALPHA_SPACERS', '\w+' => 'USERNAME_LETTER_NUM', '[-\]_+ [\w]+' => 'USERNAME_LETTER_NUM_SPACERS', '[\x01-\x7F]+' => 'USERNAME_ASCII');
 
 				if ($user_id == $user->data['user_id'])
 				{
@@ -851,7 +830,7 @@ class acp_users
 				}
 
 				$template->assign_vars(array(
-					'L_NAME_CHARS_EXPLAIN'		=> sprintf($user->lang[$user_char_ary[str_replace('\\\\', '\\', $config['allow_name_chars'])] . '_EXPLAIN'], $config['min_name_chars'], $config['max_name_chars']),
+					'L_NAME_CHARS_EXPLAIN'		=> sprintf($user->lang[$config['allow_name_chars'] . '_EXPLAIN'], $config['min_name_chars'], $config['max_name_chars']),
 					'L_CHANGE_PASSWORD_EXPLAIN'	=> sprintf($user->lang[$config['pass_complex'] . '_EXPLAIN'], $config['min_pass_chars'], $config['max_pass_chars']),
 					'S_FOUNDER'					=> ($user->data['user_type'] == USER_FOUNDER) ? true : false,
 
@@ -875,8 +854,7 @@ class acp_users
 					'USER_WARNINGS'		=> $user_row['user_warnings'],
 					'USER_POSTS'		=> $user_row['user_posts'],
 					'USER_INACTIVE_REASON'	=> $inactive_reason,
-					)
-				);
+				));
 
 			break;
 
@@ -1021,7 +999,7 @@ class acp_users
 						'msn'			=> array('string', true, 5, 255),
 						'jabber'		=> array(
 							array('string', true, 5, 255),
-							array('match', true, '#^[a-z0-9\.\-_\+]+?@(.*?\.)*?[a-z0-9\-_]+?\.[a-z]{2,4}(/.*)?$#i')),
+							array('match', true, '#^[^@:\'"<>&\x00-\x1F\x7F\t\r\n]+@(.*?\.)*?[a-z0-9\-_]+?\.[a-z]{2,4}(/.*)?$#iu')),
 						'yim'			=> array('string', true, 5, 255),
 						'website'		=> array(
 							array('string', true, 12, 255),
@@ -1102,12 +1080,12 @@ class acp_users
 							{
 								$cp_data['user_id'] = (int) $user_id;
 
-								$db->return_on_error = true;
+								$db->sql_return_on_error(true);
 
 								$sql = 'INSERT INTO ' . PROFILE_FIELDS_DATA_TABLE . ' ' . $db->sql_build_array('INSERT', $cp_data);
 								$db->sql_query($sql);
 
-								$db->return_on_error = false;
+								$db->sql_return_on_error(false);
 							}
 						}
 
@@ -1207,7 +1185,7 @@ class acp_users
 				if ($submit)
 				{
 					$error = validate_data($data, array(
-						'dateformat'	=> array('string', false, 3, 30),
+						'dateformat'	=> array('string', false, 1, 30),
 						'lang'			=> array('match', false, '#^[a-z_\-]{2,}$#i'),
 						'tz'			=> array('num', false, -14, 14),
 
@@ -1273,7 +1251,7 @@ class acp_users
 				foreach ($user->lang['dateformats'] as $format => $null)
 				{
 					$dateformat_options .= '<option value="' . $format . '"' . (($format == $data['dateformat']) ? ' selected="selected"' : '') . '>';
-					$dateformat_options .= $user->format_date(time(), $format, true) . ((strpos($format, '|') !== false) ? ' [' . $user->lang['RELATIVE_DAYS'] . ']' : '');
+					$dateformat_options .= $user->format_date(time(), $format, false) . ((strpos($format, '|') !== false) ? $user->lang['VARIANT_DATE_SEPARATOR'] . $user->format_date(time(), $format, true) : '');
 					$dateformat_options .= '</option>';
 				}
 
@@ -1373,7 +1351,9 @@ class acp_users
 
 			case 'avatar':
 
-				$can_upload = (file_exists($phpbb_root_path . $config['avatar_path']) && is_writeable($phpbb_root_path . $config['avatar_path']) && $file_uploads) ? true : false;
+				include($phpbb_root_path . 'includes/functions_display.' . $phpEx);
+
+				$can_upload = (file_exists($phpbb_root_path . $config['avatar_path']) && @is_writable($phpbb_root_path . $config['avatar_path']) && $file_uploads) ? true : false;
 
 				if ($submit)
 				{
@@ -1387,28 +1367,7 @@ class acp_users
 				}
 
 				// Generate users avatar
-				if ($user_row['user_avatar'])
-				{
-					$avatar_img = '';
-
-					switch ($user_row['user_avatar_type'])
-					{
-						case AVATAR_UPLOAD:
-							$avatar_img = $phpbb_root_path . $config['avatar_path'] . '/';
-						break;
-				
-						case AVATAR_GALLERY:
-							$avatar_img = $phpbb_root_path . $config['avatar_gallery_path'] . '/';
-						break;
-					}
-
-					$avatar_img .= $user_row['user_avatar'];
-					$avatar_img = '<img src="' . $avatar_img . '" width="' . $user_row['user_avatar_width'] . '" height="' . $user_row['user_avatar_height'] . '" alt="" />';
-				}
-				else
-				{
-					$avatar_img = '<img src="' . $phpbb_admin_path . 'images/no_avatar.gif" alt="" />';
-				}
+				$avatar_img = ($user_row['user_avatar']) ? get_user_avatar($user_row['user_avatar'], $user_row['user_avatar_type'], $user_row['user_avatar_width'], $user_row['user_avatar_height']) : '<img src="' . $phpbb_admin_path . 'images/no_avatar.gif" alt="" />';
 
 				$display_gallery = (isset($_POST['display_gallery'])) ? true : false;
 				$avatar_select = basename(request_var('avatar_select', ''));
@@ -1600,7 +1559,7 @@ class acp_users
 							'i'				=> $id,
 							'mode'			=> $mode,
 							'action'		=> $action,
-							'deletemark'	=> true,
+							'delmarked'		=> true,
 							'mark'			=> $marked))
 						);
 					}
@@ -1675,7 +1634,7 @@ class acp_users
 				
 						'S_IN_MESSAGE'		=> $row['in_message'],
 
-						'U_DOWNLOAD'		=> append_sid("{$phpbb_root_path}download.$phpEx", 'id=' . $row['attach_id']),
+						'U_DOWNLOAD'		=> append_sid("{$phpbb_root_path}download.$phpEx", 'mode=view&amp;id=' . $row['attach_id']),
 						'U_VIEW_TOPIC'		=> $view_topic)
 					);
 				}

@@ -83,7 +83,8 @@
 	</dl>
 	<dl>
 		<dt><label for="exclude">{L_IP_EXCLUDE}:</label><br /><span>{L_EXCLUDE_ENTERED_IP}</span></dt>
-		<dd><input type="radio" id="exclude" name="ipexclude" value="1" class="radio" /> {L_YES} &nbsp; <input type="radio" name="ipexclude" value="0" checked="checked" class="radio" /> {L_NO}</dd>
+		<dd><label><input type="radio" id="exclude" name="ipexclude" value="1" class="radio" /> {L_YES}</label>
+			<label><input type="radio" name="ipexclude" value="0" checked="checked" class="radio" /> {L_NO}</label></dd>
 	</dl>
 
 	<p class="quick">
@@ -205,7 +206,8 @@
 		</dl>
 		<dl>
 			<dt><label for="allowed_forums">{L_ALLOWED_FORUMS}:</label><br /><span>{L_ALLOWED_FORUMS_EXPLAIN}</span></dt>
-			<dd><input type="radio" id="allowed_forums" class="radio" name="forum_select" value="0"<!-- IF not S_FORUM_IDS --> checked="checked"<!-- ENDIF --> />&nbsp;{L_ALLOW_ALL_FORUMS}&nbsp;&nbsp;<input type="radio" class="radio" name="forum_select" value="1"<!-- IF S_FORUM_IDS --> checked="checked"<!-- ENDIF --> />&nbsp;{L_ALLOW_SELECTED_FORUMS}</dd>
+			<dd><label><input type="radio" id="allowed_forums" class="radio" name="forum_select" value="0"<!-- IF not S_FORUM_IDS --> checked="checked"<!-- ENDIF --> /> {L_ALLOW_ALL_FORUMS}</label>
+				<label><input type="radio" class="radio" name="forum_select" value="1"<!-- IF S_FORUM_IDS --> checked="checked"<!-- ENDIF --> /> {L_ALLOW_SELECTED_FORUMS}</label></dd>
 			<dd><select name="allowed_forums[]" multiple="multiple" size="8">{S_FORUM_ID_OPTIONS}</select></dd>
 		</dl>
 
@@ -241,8 +243,10 @@
 			<!-- ENDIF -->
 			<tr>
 				<td><strong>{groups.GROUP_NAME}</strong>
-					<!-- IF groups.S_GROUP_ALLOWED and not groups.S_ALLOWED_IN_PM --><br /><span>&raquo; {L_NOT_ALLOWED_IN_PM}</span><!-- ENDIF -->
-					<!-- IF groups.S_ALLOWED_IN_PM and not groups.S_GROUP_ALLOWED --><br /><span>&raquo; {L_ONLY_ALLOWED_IN_PM}</span><!-- ENDIF -->
+					<!-- IF groups.S_GROUP_ALLOWED and not groups.S_ALLOWED_IN_PM --><br /><span>&raquo; {L_NOT_ALLOWED_IN_PM}</span>
+					<!-- ELSEIF groups.S_ALLOWED_IN_PM and not groups.S_GROUP_ALLOWED --><br /><span>&raquo; {L_ONLY_ALLOWED_IN_PM}</span>
+					<!-- ELSEIF not groups.S_GROUP_ALLOWED and not groups.S_ALLOWED_IN_PM --><br /><span>&raquo; {L_NOT_ALLOWED_IN_PM_POST}</span>
+					<!-- ELSE --><br /><span>&raquo; {L_ALLOWED_IN_PM_POST}</span><!-- ENDIF -->
 				</td>
 				<td>{groups.CATEGORY}</td>
 				<td align="center" valign="middle" style="white-space: nowrap;">&nbsp;<a href="{groups.U_EDIT}">{ICON_EDIT}</a>&nbsp;&nbsp;<a href="{groups.U_DELETE}">{ICON_DELETE}</a>&nbsp;</td>
@@ -304,7 +308,7 @@
 		</tr>
 		<!-- ENDIF -->
 		<tr> 
-			<td><b>{extensions.EXTENSION}</b></td>
+			<td><strong>{extensions.EXTENSION}</strong></td>
 			<td>{extensions.GROUP_OPTIONS}</td>
 			<td><input type="checkbox" class="radio" name="extension_id_list[]" value="{extensions.EXTENSION_ID}" /><input type="hidden" name="extension_change_list[]" value="{extensions.EXTENSION_ID}" /></td>
 		</tr>
@@ -344,7 +348,7 @@
 			<td><a href="{orphan.U_FILE}">{orphan.REAL_FILENAME}</a></td>
 			<td>{orphan.FILETIME}</td>
 			<td>{orphan.FILESIZE}</td>
-			<td><b>ID: </b><input type="text" name="post_id[{orphan.ATTACH_ID}]" size="7" maxlength="10" value="{orphan.POST_ID}" /></td>
+			<td><strong>{L_ATTACH_ID}: </strong><input type="text" name="post_id[{orphan.ATTACH_ID}]" size="7" maxlength="10" value="{orphan.POST_ID}" /></td>
 			<td><input type="checkbox" class="radio" name="add[{orphan.ATTACH_ID}]" /></td>
 			<td><input type="checkbox" class="radio" name="delete[{orphan.ATTACH_ID}]" /></td>
 		</tr>

@@ -175,6 +175,41 @@ function unique_id($extra = 'c')
 }
 
 /**
+* Determine whether we are approaching the maximum execution time. Should be called once
+* at the beginning of the script in which it's used.
+* @return	bool	Either true if the maximum execution time is nearly reached, or false
+*					if some time is still left.
+*/
+function still_on_time($extra_time = 15)
+{
+	static $max_execution_time, $start_time;
+
+	$time = explode(' ', microtime());
+	$current_time = $time[0] + $time[1];
+
+	if (empty($max_execution_time))
+	{
+		$max_execution_time = (function_exists('ini_get')) ? (int) ini_get('max_execution_time') : (int) get_cfg_var('max_execution_time');
+
+		// If zero, then set to something higher to not let the user catch the ten seconds barrier.
+		if ($max_execution_time === 0)
+		{
+			$max_execution_time = 50 + $extra_time;
+		}
+
+		$max_execution_time = min(max(10, ($max_execution_time - $extra_time)), 50);
+
+		// For debugging purposes
+		// $max_execution_time = 10;
+
+		global $starttime;
+		$start_time = (empty($starttime)) ? $current_time : $starttime;
+	}
+
+	return (ceil($current_time - $start_time) < $max_execution_time) ? true : false;
+}
+
+/**
 * Generate sort selection fields
 */
 function gen_sort_selects(&$limit_days, &$sort_by_text, &$sort_days, &$sort_key, &$sort_dir, &$s_limit_days, &$s_sort_key, &$s_sort_dir, &$u_sort_param)
@@ -267,7 +302,9 @@ function make_jumpbox($action, $forum_id = false, $select_all = false, $acl_list
 		}
 		else if ($row['left_id'] > $right + 1)
 		{
-			$padding = $padding_store[$row['parent_id']];
+			// Ok, if the $padding_store for this parent is empty there is something wrong. For now we will skip over it.
+			// @todo digging deep to find out "how" this can happen.
+			$padding = (isset($padding_store[$row['parent_id']])) ? $padding_store[$row['parent_id']] : $padding;
 		}
 
 		$right = $row['right_id'];
@@ -729,14 +766,14 @@ function markread($mode, $forum_id = false, $topic_id = false, $post_time = 0, $
 			else if ($config['load_anon_lastread'] || $user->data['is_registered'])
 			{
 				$tracking_topics = (isset($_COOKIE[$config['cookie_name'] . '_track'])) ? ((STRIP) ? stripslashes($_COOKIE[$config['cookie_name'] . '_track']) : $_COOKIE[$config['cookie_name'] . '_track']) : '';
-				$tracking_topics = ($tracking_topics) ? unserialize($tracking_topics) : array();
+				$tracking_topics = ($tracking_topics) ? tracking_unserialize($tracking_topics) : array();
 
 				unset($tracking_topics['tf']);
 				unset($tracking_topics['t']);
 				unset($tracking_topics['f']);
 				$tracking_topics['l'] = base_convert(time() - $config['board_startdate'], 10, 36);
 	
-				$user->set_cookie('track', serialize($tracking_topics), time() + 31536000);
+				$user->set_cookie('track', tracking_serialize($tracking_topics), time() + 31536000);
 				unset($tracking_topics);
 
 				if ($user->data['is_registered'])
@@ -806,7 +843,7 @@ function markread($mode, $forum_id = false, $topic_id = false, $post_time = 0, $
 		else if ($config['load_anon_lastread'] || $user->data['is_registered'])
 		{
 			$tracking = (isset($_COOKIE[$config['cookie_name'] . '_track'])) ? ((STRIP) ? stripslashes($_COOKIE[$config['cookie_name'] . '_track']) : $_COOKIE[$config['cookie_name'] . '_track']) : '';
-			$tracking = ($tracking) ? unserialize($tracking) : array();
+			$tracking = ($tracking) ? tracking_unserialize($tracking) : array();
 
 			foreach ($forum_id as $f_id)
 			{
@@ -830,7 +867,7 @@ function markread($mode, $forum_id = false, $topic_id = false, $post_time = 0, $
 				$tracking['f'][$f_id] = base_convert(time() - $config['board_startdate'], 10, 36);
 			}
 
-			$user->set_cookie('track', serialize($tracking), time() + 31536000);
+			$user->set_cookie('track', tracking_serialize($tracking), time() + 31536000);
 			unset($tracking);
 		}
 
@@ -871,7 +908,7 @@ function markread($mode, $forum_id = false, $topic_id = false, $post_time = 0, $
 		else if ($config['load_anon_lastread'] || $user->data['is_registered'])
 		{
 			$tracking = (isset($_COOKIE[$config['cookie_name'] . '_track'])) ? ((STRIP) ? stripslashes($_COOKIE[$config['cookie_name'] . '_track']) : $_COOKIE[$config['cookie_name'] . '_track']) : '';
-			$tracking = ($tracking) ? unserialize($tracking) : array();
+			$tracking = ($tracking) ? tracking_unserialize($tracking) : array();
 
 			$topic_id36 = base_convert($topic_id, 10, 36);
 
@@ -924,7 +961,7 @@ function markread($mode, $forum_id = false, $topic_id = false, $post_time = 0, $
 				}
 			}
 
-			$user->set_cookie('track', serialize($tracking), time() + 31536000);
+			$user->set_cookie('track', tracking_serialize($tracking), time() + 31536000);
 		}
 
 		return;
@@ -1107,7 +1144,7 @@ function get_complete_topic_tracking($forum_id, $topic_ids, $global_announce_lis
 		if (!isset($tracking_topics) || !sizeof($tracking_topics))
 		{
 			$tracking_topics = (isset($_COOKIE[$config['cookie_name'] . '_track'])) ? ((STRIP) ? stripslashes($_COOKIE[$config['cookie_name'] . '_track']) : $_COOKIE[$config['cookie_name'] . '_track']) : '';
-			$tracking_topics = ($tracking_topics) ? unserialize($tracking_topics) : array();
+			$tracking_topics = ($tracking_topics) ? tracking_unserialize($tracking_topics) : array();
 		}
 
 		if (!$user->data['is_registered'])
@@ -1192,7 +1229,7 @@ function update_forum_tracking_info($forum_id, $forum_last_post_time, $f_mark_ti
 			if (!isset($tracking_topics) || !sizeof($tracking_topics))
 			{
 				$tracking_topics = (isset($_COOKIE[$config['cookie_name'] . '_track'])) ? ((STRIP) ? stripslashes($_COOKIE[$config['cookie_name'] . '_track']) : $_COOKIE[$config['cookie_name'] . '_track']) : '';
-				$tracking_topics = ($tracking_topics) ? unserialize($tracking_topics) : array();
+				$tracking_topics = ($tracking_topics) ? tracking_unserialize($tracking_topics) : array();
 			}
 
 			if (!$user->data['is_registered'])
@@ -1275,6 +1312,127 @@ function update_forum_tracking_info($forum_id, $forum_last_post_time, $f_mark_ti
 	return false;
 }
 
+/**
+* Transform an array into a serialized format
+*/
+function tracking_serialize($input)
+{
+	$out = '';
+	foreach ($input as $key => $value)
+	{
+		if (is_array($value))
+		{
+			$out .= $key . ':(' . tracking_serialize($value) . ');';
+		}
+		else
+		{
+			$out .= $key . ':' . $value . ';';
+		}
+	}
+	return $out;
+}
+
+/**
+* Transform a serialized array into an actual array
+*/
+function tracking_unserialize($string, $max_depth = 3)
+{
+	$n = strlen($string);
+	if ($n > 10010)
+	{
+		die('Invalid data supplied');
+	}
+	$data = $stack = array();
+	$key = '';
+	$mode = 0;
+	$level = &$data;
+	for ($i = 0; $i < $n; ++$i)
+	{
+		switch ($mode)
+		{
+			case 0:
+				switch ($string[$i])
+				{
+					case ':':
+						$level[$key] = 0;
+						$mode = 1;
+					break;
+					case ')':
+						unset($level);
+						$level = array_pop($stack);
+						$mode = 3;
+					break;
+					default:
+						$key .= $string[$i];
+				}
+			break;
+
+			case 1:
+				switch ($string[$i])
+				{
+					case '(':
+						if (sizeof($stack) >= $max_depth)
+						{
+							die('Invalid data supplied');
+						}
+						$stack[] = &$level;
+						$level[$key] = array();
+						$level = &$level[$key];
+						$key = '';
+						$mode = 0;
+					break;
+					default:
+						$level[$key] = $string[$i];
+						$mode = 2;
+					break;
+				}
+			break;
+			
+			case 2:
+				switch ($string[$i])
+				{
+					case ')':
+						unset($level);
+						$level = array_pop($stack);
+						$mode = 3;
+					break;
+					case ';':
+						$key = '';
+						$mode = 0;
+					break;
+					default:
+						$level[$key] .= $string[$i];
+					break;
+				}
+			break;
+			
+			case 3:
+				switch ($string[$i])
+				{
+					case ')':
+						unset($level);
+						$level = array_pop($stack);
+					break;
+					case ';':
+						$key = '';
+						$mode = 0;
+					break;
+					default:
+						die('Invalid data supplied');
+					break;
+				}
+			break;
+		}
+	}
+
+	if (sizeof($stack) != 0 || ($mode != 0 && $mode != 3))
+	{
+		die('Invalid data supplied');
+	}
+	
+	return $level;
+}
+
 // Pagination functions
 
 /**
@@ -1297,6 +1455,8 @@ function generate_pagination($base_url, $num_items, $per_page, $start_item, $add
 	}
 
 	$on_page = floor($start_item / $per_page) + 1;
+	$url_delim = (strpos($base_url, '?') === false) ? '?' : '&amp;';
+
 	$page_string = ($on_page == 1) ? '<strong>1</strong>' : '<a href="' . $base_url . '">1</a>';
 
 	if ($total_pages > 5)
@@ -1308,7 +1468,7 @@ function generate_pagination($base_url, $num_items, $per_page, $start_item, $add
 
 		for ($i = $start_cnt + 1; $i < $end_cnt; $i++)
 		{
-			$page_string .= ($i == $on_page) ? '<strong>' . $i . '</strong>' : '<a href="' . $base_url . "&amp;start=" . (($i - 1) * $per_page) . '">' . $i . '</a>';
+			$page_string .= ($i == $on_page) ? '<strong>' . $i . '</strong>' : '<a href="' . $base_url . "{$url_delim}start=" . (($i - 1) * $per_page) . '">' . $i . '</a>';
 			if ($i < $end_cnt - 1)
 			{
 				$page_string .= $seperator;
@@ -1323,7 +1483,7 @@ function generate_pagination($base_url, $num_items, $per_page, $start_item, $add
 
 		for ($i = 2; $i < $total_pages; $i++)
 		{
-			$page_string .= ($i == $on_page) ? '<strong>' . $i . '</strong>' : '<a href="' . $base_url . "&amp;start=" . (($i - 1) * $per_page) . '">' . $i . '</a>';
+			$page_string .= ($i == $on_page) ? '<strong>' . $i . '</strong>' : '<a href="' . $base_url . "{$url_delim}start=" . (($i - 1) * $per_page) . '">' . $i . '</a>';
 			if ($i < $total_pages)
 			{
 				$page_string .= $seperator;
@@ -1331,18 +1491,18 @@ function generate_pagination($base_url, $num_items, $per_page, $start_item, $add
 		}
 	}
 
-	$page_string .= ($on_page == $total_pages) ? '<strong>' . $total_pages . '</strong>' : '<a href="' . $base_url . '&amp;start=' . (($total_pages - 1) * $per_page) . '">' . $total_pages . '</a>';
+	$page_string .= ($on_page == $total_pages) ? '<strong>' . $total_pages . '</strong>' : '<a href="' . $base_url . "{$url_delim}start=" . (($total_pages - 1) * $per_page) . '">' . $total_pages . '</a>';
 
 	if ($add_prevnext_text)
 	{
 		if ($on_page != 1) 
 		{
-			$page_string = '<a href="' . $base_url . '&amp;start=' . (($on_page - 2) * $per_page) . '">' . $user->lang['PREVIOUS'] . '</a>&nbsp;&nbsp;' . $page_string;
+			$page_string = '<a href="' . $base_url . "{$url_delim}start=" . (($on_page - 2) * $per_page) . '">' . $user->lang['PREVIOUS'] . '</a>&nbsp;&nbsp;' . $page_string;
 		}
 
 		if ($on_page != $total_pages)
 		{
-			$page_string .= '&nbsp;&nbsp;<a href="' . $base_url . '&amp;start=' . ($on_page * $per_page) . '">' . $user->lang['NEXT'] . '</a>';
+			$page_string .= '&nbsp;&nbsp;<a href="' . $base_url . "{$url_delim}start=" . ($on_page * $per_page) . '">' . $user->lang['NEXT'] . '</a>';
 		}
 	}
 
@@ -1350,8 +1510,9 @@ function generate_pagination($base_url, $num_items, $per_page, $start_item, $add
 		$tpl_prefix . 'BASE_URL'	=> $base_url,
 		$tpl_prefix . 'PER_PAGE'	=> $per_page,
 
-		$tpl_prefix . 'PREVIOUS_PAGE'	=> ($on_page == 1) ? '' : $base_url . '&amp;start=' . (($on_page - 2) * $per_page),
-		$tpl_prefix . 'NEXT_PAGE'		=> ($on_page == $total_pages) ? '' : $base_url . '&amp;start=' . ($on_page * $per_page))
+		$tpl_prefix . 'PREVIOUS_PAGE'	=> ($on_page == 1) ? '' : $base_url . "{$url_delim}start=" . (($on_page - 2) * $per_page),
+		$tpl_prefix . 'NEXT_PAGE'		=> ($on_page == $total_pages) ? '' : $base_url . "{$url_delim}start=" . ($on_page * $per_page),
+		$tpl_prefix . 'TOTAL_PAGES'		=> $total_pages)
 	);
 
 	return $page_string;
@@ -1370,7 +1531,7 @@ function on_page($num_items, $per_page, $start)
 	$on_page = floor($start / $per_page) + 1;
 
 	$template->assign_vars(array(
-		'ON_PAGE'	=> $on_page)
+		'ON_PAGE'		=> $on_page)
 	);
 
 	return sprintf($user->lang['PAGE_OF'], $on_page, max(ceil($num_items / $per_page), 1));
@@ -1534,13 +1695,21 @@ function redirect($url, $return = false)
 		// Is the uri pointing to the current directory?
 		if ($pathinfo['dirname'] == '.')
 		{
+			$url = str_replace('./', '', $url);
+
+			// Strip / from the beginning
+			if ($url && substr($url, 0, 1) == '/')
+			{
+				$url = substr($url, 1);
+			}
+
 			if ($user->page['page_dir'])
 			{
-				$url = generate_board_url() . '/' . $user->page['page_dir'] . '/' . str_replace('./', '', $url);
+				$url = generate_board_url() . '/' . $user->page['page_dir'] . '/' . $url;
 			}
 			else
 			{
-				$url = generate_board_url() . '/' . str_replace('./', '', $url);
+				$url = generate_board_url() . '/' . $url;
 			}
 		}
 		else
@@ -1555,12 +1724,27 @@ function redirect($url, $return = false)
 
 			$dir = str_repeat('../', sizeof($root_dirs)) . implode('/', $page_dirs);
 
+			// Strip / from the end
 			if ($dir && substr($dir, -1, 1) == '/')
 			{
 				$dir = substr($dir, 0, -1);
 			}
 
-			$url = $dir . '/' . str_replace($pathinfo['dirname'] . '/', '', $url);
+			// Strip / from the beginning
+			if ($dir && substr($dir, 0, 1) == '/')
+			{
+				$dir = substr($dir, 1);
+			}
+
+			$url = str_replace($pathinfo['dirname'] . '/', '', $url);
+
+			// Strip / from the beginning
+			if (substr($url, 0, 1) == '/')
+			{
+				$url = substr($url, 1);
+			}
+
+			$url = $dir . '/' . $url;
 			$url = generate_board_url() . '/' . $url;
 		}
 	}
@@ -1585,11 +1769,11 @@ function redirect($url, $return = false)
 		echo '<html xmlns="http://www.w3.org/1999/xhtml" dir="' . $user->lang['DIRECTION'] . '" lang="' . $user->lang['USER_LANG'] . '" xml:lang="' . $user->lang['USER_LANG'] . '">';
 		echo '<head>';
 		echo '<meta http-equiv="content-type" content="text/html; charset=utf-8" />';
-		echo '<meta http-equiv="refresh" content="0; url=' . $url . '" />';
+		echo '<meta http-equiv="refresh" content="0; url=' . str_replace('&', '&amp;', $url) . '" />';
 		echo '<title>' . $user->lang['REDIRECT'] . '</title>';
 		echo '</head>';
 		echo '<body>';
-		echo '<div style="text-align: center;">' . sprintf($user->lang['URL_REDIRECT'], '<a href="' . $url . '">', '</a>') . '</div>';
+		echo '<div style="text-align: center;">' . sprintf($user->lang['URL_REDIRECT'], '<a href="' . str_replace('&', '&amp;', $url) . '">', '</a>') . '</div>';
 		echo '</body>';
 		echo '</html>';
 
@@ -1705,8 +1889,9 @@ function meta_refresh($time, $url)
 
 	$url = redirect($url, true);
 
+	// For XHTML compatibility we change back & to &amp;
 	$template->assign_vars(array(
-		'META' => '<meta http-equiv="refresh" content="' . $time . ';url=' . $url . '" />')
+		'META' => '<meta http-equiv="refresh" content="' . $time . ';url=' . str_replace('&', '&amp;', $url) . '" />')
 	);
 }
 
@@ -1857,6 +2042,7 @@ function login_box($redirect = '', $l_explain = '', $l_success = '', $admin = fa
 		$autologin	= (!empty($_POST['autologin'])) ? true : false;
 		$viewonline = (!empty($_POST['viewonline'])) ? 0 : 1;
 		$admin 		= ($admin) ? 1 : 0;
+		$viewonline = ($admin) ? $user->data['session_viewonline'] : $viewonline;
 
 		// Check if the supplied username is equal to the one stored within the database if re-authenticating
 		if ($admin && utf8_clean_string($username) != utf8_clean_string($user->data['username']))
@@ -1864,6 +2050,12 @@ function login_box($redirect = '', $l_explain = '', $l_success = '', $admin = fa
 			// We log the attempt to use a different username...
 			add_log('admin', 'LOG_ADMIN_AUTH_FAIL');
 			trigger_error('NO_AUTH_ADMIN_USER_DIFFER');
+		}
+
+		// do not allow empty password
+		if (!$password)
+		{
+			trigger_error('NO_PASSWORD_SUPPLIED');
 		}
 
 		// If authentication is successful we redirect user to previous page
@@ -1893,10 +2085,28 @@ function login_box($redirect = '', $l_explain = '', $l_success = '', $admin = fa
 		{
 			$redirect = request_var('redirect', "{$phpbb_root_path}index.$phpEx");
 			$message = ($l_success) ? $l_success : $user->lang['LOGIN_REDIRECT'];
-			$l_redirect = ($admin) ? $user->lang['PROCEED_TO_ACP'] : (($redirect === "{$phpbb_root_path}index.$phpEx") ? $user->lang['RETURN_INDEX'] : $user->lang['RETURN_PAGE']);
+			$l_redirect = ($admin) ? $user->lang['PROCEED_TO_ACP'] : (($redirect === "{$phpbb_root_path}index.$phpEx" || $redirect === "index.$phpEx") ? $user->lang['RETURN_INDEX'] : $user->lang['RETURN_PAGE']);
 
 			// append/replace SID (may change during the session for AOL users)
 			$redirect = reapply_sid($redirect);
+
+			// Make sure the user is able to hide his session
+			if (!$viewonline)
+			{
+				$check_auth = new auth();
+				$check_auth->acl($user->data);
+
+				// Reset online status if not allowed to hide the session...
+				if (!$check_auth->acl_get('u_hideonline'))
+				{
+					$sql = 'UPDATE ' . SESSIONS_TABLE . '
+						SET session_viewonline = 1
+						WHERE session_user_id = ' . $user->data['user_id'];
+					$db->sql_query($sql);
+				}
+
+				unset($check_auth);
+			}
 
 			// Special case... the user is effectively banned, but we allow founders to login
 			if (defined('IN_CHECK_BAN') && $result['user_row']['user_type'] != USER_FOUNDER)
@@ -1953,6 +2163,16 @@ function login_box($redirect = '', $l_explain = '', $l_success = '', $admin = fa
 
 			break;
 
+			case LOGIN_ERROR_PASSWORD_CONVERT:
+				$err = sprintf(
+					$user->lang[$result['error_msg']],
+					($config['email_enable']) ? '<a href="' . append_sid("{$phpbb_root_path}ucp.$phpEx", 'mode=sendpassword') . '">' : '',
+					($config['email_enable']) ? '</a>' : '',
+					($config['board_contact']) ? '<a href="mailto:' . htmlspecialchars($config['board_contact']) . '">' : '',
+					($config['board_contact']) ? '</a>' : ''
+				);
+			break;
+
 			// Username, password, etc...
 			default:
 				$err = $user->lang[$result['error_msg']];
@@ -1962,6 +2182,7 @@ function login_box($redirect = '', $l_explain = '', $l_success = '', $admin = fa
 				{
 					$err = (!$config['board_contact']) ? sprintf($user->lang[$result['error_msg']], '', '') : sprintf($user->lang[$result['error_msg']], '<a href="mailto:' . htmlspecialchars($config['board_contact']) . '">', '</a>');
 				}
+				
 			break;
 		}
 	}
@@ -1977,7 +2198,7 @@ function login_box($redirect = '', $l_explain = '', $l_success = '', $admin = fa
 			$redirect .= ($user->page['page_dir']) ? $user->page['page_dir'] . '/' : '';
 		}
 
-		$redirect .= $user->page['page_name'] . (($user->page['query_string']) ? '?' . $user->page['query_string'] : '');
+		$redirect .= $user->page['page_name'] . (($user->page['query_string']) ? '?' . htmlspecialchars($user->page['query_string']) : '');
 	}
 
 	$s_hidden_fields = build_hidden_fields(array('redirect' => $redirect, 'sid' => $user->session_id));
@@ -2110,7 +2331,7 @@ function bump_topic_allowed($forum_id, $topic_bumped, $last_post_time, $topic_po
 	}
 
 	// Check bumper, only topic poster and last poster are allowed to bump
-	if ($topic_poster != $user->data['user_id'] && $last_topic_poster != $user->data['user_id'] && !$auth->acl_get('m_', $forum_id))
+	if ($topic_poster != $user->data['user_id'] && $last_topic_poster != $user->data['user_id'])
 	{
 		return false;
 	}
@@ -2131,7 +2352,7 @@ function bump_topic_allowed($forum_id, $topic_bumped, $last_post_time, $topic_po
 function get_context($text, $words, $length = 400)
 {
 	// first replace all whitespaces with single spaces
-	$text = preg_replace('/\s+/u', ' ', $text);
+	$text = preg_replace('/ +/', ' ', strtr($text, "\t\n\r\x0C ", '     '), $text);
 
 	$word_indizes = array();
 	if (sizeof($words))
@@ -2140,12 +2361,15 @@ function get_context($text, $words, $length = 400)
 		// find the starting indizes of all words
 		foreach ($words as $word)
 		{
-			if (preg_match('#(?:[^\w]|^)(' . $word . ')(?:[^\w]|$)#i', $text, $match))
+			if ($word)
 			{
-				$pos = strpos($text, $match[1]);
-				if ($pos !== false)
+				if (preg_match('#(?:[^\w]|^)(' . $word . ')(?:[^\w]|$)#i', $text, $match))
 				{
-					$word_indizes[] = $pos;
+					$pos = strpos($text, $match[1]);
+					if ($pos !== false)
+					{
+						$word_indizes[] = $pos;
+					}
 				}
 			}
 		}
@@ -2252,7 +2476,7 @@ function decode_message(&$message, $bbcode_uid = '')
 	$message = str_replace($match, $replace, $message);
 
 	$match = get_preg_expression('bbcode_htm');
-	$replace = array('\1', '\2', '\1', '', '');
+	$replace = array('\1', '\1', '\2', '\1', '', '');
 
 	$message = preg_replace($match, $replace, $message);
 }
@@ -2270,7 +2494,7 @@ function strip_bbcode(&$text, $uid = '')
 	$text = preg_replace("#\[\/?[a-z0-9\*\+\-]+(?:=.*?)?(?::[a-z])?(\:?$uid)\]#", ' ', $text);
 
 	$match = get_preg_expression('bbcode_htm');
-	$replace = array('\1', '\2', '\1', '', '');
+	$replace = array('\1', '\1', '\2', '\1', '', '');
 	
 	$text = preg_replace($match, $replace, $text);
 }
@@ -2288,7 +2512,7 @@ function generate_text_for_display($text, $uid, $bitfield, $flags)
 		return '';
 	}
 
-	$text = str_replace("\n", '<br />', censor_text($text));
+	$text = censor_text($text);
 
 	// Parse bbcode if bbcode uid stored and bbcode enabled
 	if ($uid && ($flags & OPTION_FLAG_BBCODE))
@@ -2310,6 +2534,8 @@ function generate_text_for_display($text, $uid, $bitfield, $flags)
 		
 		$bbcode->bbcode_second_pass($text, $uid);
 	}
+
+	$text = str_replace("\n", '<br />', $text);
 
 	$text = smiley_text($text, !($flags & OPTION_FLAG_SMILIES));
 
@@ -2374,13 +2600,120 @@ function generate_text_for_edit($text, $uid, $flags)
 }
 
 /**
+* A subroutine of make_clickable used with preg_replace
+* It places correct HTML around an url, shortens the displayed text
+* and makes sure no entities are inside URLs
+*/
+function make_clickable_callback($type, $whitespace, $url, $relative_url, $class)
+{
+	$append			= '';
+	$url			= htmlspecialchars_decode($url);
+	$relative_url	= htmlspecialchars_decode($relative_url);
+
+	// make sure no HTML entities were matched
+	$chars = array('<', '>', '"');
+	$split = false;
+	foreach ($chars as $char)
+	{
+		$next_split = strpos($url, $char);
+		if ($next_split !== false)
+		{
+			$split = ($split !== false) ? min($split, $next_split) : $next_split;
+		}
+	}
+
+	if ($split !== false)
+	{
+		// an HTML entity was found, so the URL has to end before it
+		$append			= substr($url, $split) . $relative_url;
+		$url			= substr($url, 0, $split);
+		$relative_url	= '';
+	}
+	else if ($relative_url)
+	{
+		// same for $relative_url
+		$split = false;
+		foreach ($chars as $char)
+		{
+			$next_split = strpos($relative_url, $char);
+			if ($next_split !== false)
+			{
+				$split = ($split !== false) ? min($split, $next_split) : $next_split;
+			}
+		}
+
+		if ($split !== false)
+		{
+			$append			= substr($relative_url, $split);
+			$relative_url	= substr($relative_url, 0, $split);
+		}
+	}
+
+	// if the last character of the url is a punctuation mark, exclude it from the url
+	$last_char = ($relative_url) ? $relative_url[strlen($relative_url) - 1] : $url[strlen($url) - 1];
+
+	switch ($last_char)
+	{
+		case '.':
+		case '?':
+		case '!':
+		case ':':
+		case ',':
+			$append = $last_char;
+			if ($relative_url)
+			{
+				$relative_url = substr($relative_url, 0, -1);
+			}
+			else
+			{
+				$url = substr($url, 0, -1);
+			}
+	}
+
+	switch ($type)
+	{
+		case MAGIC_URL_LOCAL:
+			$tag			= 'l';
+			$relative_url	= preg_replace('/[&?]sid=[0-9a-f]{32}$/', '', preg_replace('/([&?])sid=[0-9a-f]{32}&/', '$1', $relative_url));
+			$url			= $url . '/' . $relative_url;
+			$text			= ($relative_url) ? $relative_url : $url . '/';
+		break;
+
+		case MAGIC_URL_FULL:
+			$tag	= 'm';
+			$text	= (strlen($url) > 55) ? substr($url, 0, 39) . ' ... ' . substr($url, -10) : $url;
+		break;
+
+		case MAGIC_URL_WWW:
+			$tag	= 'w';
+			$url	= 'http://' . $url;
+			$text	= (strlen($url) > 55) ? substr($url, 0, 39) . ' ... ' . substr($url, -10) : $url;
+		break;
+
+		case MAGIC_URL_EMAIL:
+			$tag	= 'e';
+			$url	= 'mailto:' . $url;
+			$text	= (strlen($url) > 55) ? substr($url, 0, 39) . ' ... ' . substr($url, -10) : $url;
+		break;
+	}
+
+	$url	= htmlspecialchars($url);
+	$text	= htmlspecialchars($text);
+	$append	= htmlspecialchars($append);
+
+	$html	= "$whitespace<!-- $tag --><a$class href=\"$url\">$text</a><!-- $tag -->$append";
+
+	return $html;
+}
+
+/**
 * make_clickable function
 *
 * Replace magic urls of form http://xxx.xxx., www.xxx. and xxx@xxx.xxx.
 * Cuts down displayed size of link if over 50 chars, turns absolute links
 * into relative versions when the server/script path matches the link
 */
-function make_clickable($text, $server_url = false)
+function make_clickable($text, $server_url = false, $class = 'postlink')
 {
 	if ($server_url === false)
 	{
@@ -2389,27 +2722,32 @@ function make_clickable($text, $server_url = false)
 
 	static $magic_url_match;
 	static $magic_url_replace;
+	static $static_class;
 
-	if (!is_array($magic_url_match))
+	if (!is_array($magic_url_match) || $static_class != $class)
 	{
+		$static_class = $class;
+		$class = ($static_class) ? ' class="' . $static_class . '"' : '';
+		$local_class = ($static_class) ? ' class="' . $static_class . '-local"' : '';
+
 		$magic_url_match = $magic_url_replace = array();
 		// Be sure to not let the matches cross over. ;)
 
 		// relative urls for this board
-		$magic_url_match[] = '#(^|[\n\t (])(' . preg_quote($server_url, '#') . ')/(' . get_preg_expression('relative_url_inline') . ')#ie';
-		$magic_url_replace[] = "'\$1<!-- l --><a href=\"\$2/' . preg_replace('/(&amp;|\?)sid=[0-9a-f]{32}/', '\\\\1', '\$3') . '\">' . preg_replace('/(&amp;|\?)sid=[0-9a-f]{32}/', '\\\\1', '\$3') . '</a><!-- l -->'";
+		$magic_url_match[] = '#(^|[\n\t (>\]])(' . preg_quote($server_url, '#') . ')/(' . get_preg_expression('relative_url_inline') . ')#ie';
+		$magic_url_replace[] = "make_clickable_callback(MAGIC_URL_LOCAL, '\$1', '\$2', '\$3', '$local_class')";
 
 		// matches a xxxx://aaaaa.bbb.cccc. ...
-		$magic_url_match[] = '#(^|[\n\t (])(' . get_preg_expression('url_inline') . ')#ie';
-		$magic_url_replace[] = "'\$1<!-- m --><a href=\"\$2\">' . ((strlen('\$2') > 55) ? substr(str_replace('&amp;', '&', '\$2'), 0, 39) . ' ... ' . substr(str_replace('&amp;', '&', '\$2'), -10) : '\$2') . '</a><!-- m -->'";
+		$magic_url_match[] = '#(^|[\n\t (>\]])(' . get_preg_expression('url_inline') . ')#ie';
+		$magic_url_replace[] = "make_clickable_callback(MAGIC_URL_FULL, '\$1', '\$2', '', '$class')";
 
 		// matches a "www.xxxx.yyyy[/zzzz]" kinda lazy URL thing
-		$magic_url_match[] = '#(^|[\n\t (])(' . get_preg_expression('www_url_inline') . ')#ie';
-		$magic_url_replace[] = "'\$1<!-- w --><a href=\"http://\$2\">' . ((strlen('\$2') > 55) ? substr(str_replace('&amp;', '&', '\$2'), 0, 39) . ' ... ' . substr(str_replace('&amp;', '&', '\$2'), -10) : '\$2') . '</a><!-- w -->'";
+		$magic_url_match[] = '#(^|[\n\t (>\]])(' . get_preg_expression('www_url_inline') . ')#ie';
+		$magic_url_replace[] = "make_clickable_callback(MAGIC_URL_WWW, '\$1', '\$2', '', '$class')";
 
 		// matches an email@domain type address at the start of a line, or after a space or after what might be a BBCode.
-		$magic_url_match[] = '/(^|[\n\t )])(' . get_preg_expression('email') . ')/ie';
-		$magic_url_replace[] = "'\$1<!-- e --><a href=\"mailto:\$2\">' . ((strlen('\$2') > 55) ? substr('\$2', 0, 39) . ' ... ' . substr('\$2', -10) : '\$2') . '</a><!-- e -->'";
+		$magic_url_match[] = '/(^|[\n\t (>\]])(' . get_preg_expression('email') . ')/ie';
+		$magic_url_replace[] = "make_clickable_callback(MAGIC_URL_EMAIL, '\$1', '\$2', '', '')";
 	}
 
 	return preg_replace($magic_url_match, $magic_url_replace, $text);
@@ -2618,9 +2956,17 @@ function parse_attachments($forum_id, &$message, &$attachments, &$update_count, 
 					{
 						if ($config['img_link_width'] || $config['img_link_height'])
 						{
-							list($width, $height) = @getimagesize($filename);
+							$dimension = @getimagesize($filename);
 
-							$display_cat = (!$width && !$height) ? ATTACHMENT_CATEGORY_IMAGE : (($width <= $config['img_link_width'] && $height <= $config['img_link_height']) ? ATTACHMENT_CATEGORY_IMAGE : ATTACHMENT_CATEGORY_NONE);
+							// If the dimensions could not be determined or the image being 0x0 we display it as a link for safety purposes
+							if ($dimension === false || empty($dimension[0]) || empty($dimension[1]))
+							{
+								$display_cat = ATTACHMENT_CATEGORY_NONE;
+							}
+							else
+							{
+								$display_cat = ($dimension[0] <= $config['img_link_width'] && $dimension[1] <= $config['img_link_height']) ? ATTACHMENT_CATEGORY_IMAGE : ATTACHMENT_CATEGORY_NONE;
+							}
 						}
 					}
 					else
@@ -2641,16 +2987,19 @@ function parse_attachments($forum_id, &$message, &$attachments, &$update_count, 
 				$display_cat = ATTACHMENT_CATEGORY_NONE;
 			}
 
-			$download_link = append_sid("{$phpbb_root_path}download.$phpEx", 'id=' . $attachment['attach_id'] . '&amp;f=' . (int) $forum_id);
+			$download_link = append_sid("{$phpbb_root_path}download.$phpEx", 'id=' . $attachment['attach_id']);
 
 			switch ($display_cat)
 			{
 				// Images
 				case ATTACHMENT_CATEGORY_IMAGE:
-					$l_downloaded_viewed = $user->lang['VIEWED'];
+					$l_downloaded_viewed = 'VIEWED_COUNT';
+					$inline_link = append_sid("{$phpbb_root_path}download.$phpEx", 'id=' . $attachment['attach_id']);
+					$download_link .= '&amp;mode=view';
 
 					$block_array += array(
 						'S_IMAGE'		=> true,
+						'U_INLINE_LINK'		=> $inline_link,
 					);
 
 					$update_count[] = $attachment['attach_id'];
@@ -2658,8 +3007,9 @@ function parse_attachments($forum_id, &$message, &$attachments, &$update_count, 
 
 				// Images, but display Thumbnail
 				case ATTACHMENT_CATEGORY_THUMB:
-					$l_downloaded_viewed = $user->lang['VIEWED'];
-					$thumbnail_link = append_sid("{$phpbb_root_path}download.$phpEx", 'id=' . $attachment['attach_id'] . '&amp;t=1&amp;f=' . (int) $forum_id);
+					$l_downloaded_viewed = 'VIEWED_COUNT';
+					$thumbnail_link = append_sid("{$phpbb_root_path}download.$phpEx", 'id=' . $attachment['attach_id'] . '&amp;t=1');
+					$download_link .= '&amp;mode=view';
 
 					$block_array += array(
 						'S_THUMBNAIL'		=> true,
@@ -2669,7 +3019,7 @@ function parse_attachments($forum_id, &$message, &$attachments, &$update_count, 
 
 				// Windows Media Streams
 				case ATTACHMENT_CATEGORY_WM:
-					$l_downloaded_viewed = $user->lang['VIEWED'];
+					$l_downloaded_viewed = 'VIEWED_COUNT';
 
 					// Giving the filename directly because within the wm object all variables are in local context making it impossible
 					// to validate against a valid session (all params can differ)
@@ -2688,7 +3038,7 @@ function parse_attachments($forum_id, &$message, &$attachments, &$update_count, 
 				// Real Media Streams
 				case ATTACHMENT_CATEGORY_RM:
 				case ATTACHMENT_CATEGORY_QUICKTIME:
-					$l_downloaded_viewed = $user->lang['VIEWED'];
+					$l_downloaded_viewed = 'VIEWED_COUNT';
 
 					$block_array += array(
 						'S_RM_FILE'			=> ($display_cat == ATTACHMENT_CATEGORY_RM) ? true : false,
@@ -2705,7 +3055,7 @@ function parse_attachments($forum_id, &$message, &$attachments, &$update_count, 
 				case ATTACHMENT_CATEGORY_FLASH:
 					list($width, $height) = @getimagesize($filename);
 
-					$l_downloaded_viewed = $user->lang['VIEWED'];
+					$l_downloaded_viewed = 'VIEWED_COUNT';
 
 					$block_array += array(
 						'S_FLASH_FILE'	=> true,
@@ -2718,7 +3068,7 @@ function parse_attachments($forum_id, &$message, &$attachments, &$update_count, 
 				break;
 
 				default:
-					$l_downloaded_viewed = $user->lang['DOWNLOADED'];
+					$l_downloaded_viewed = 'DOWNLOAD_COUNT';
 
 					$block_array += array(
 						'S_FILE'		=> true,
@@ -2726,11 +3076,10 @@ function parse_attachments($forum_id, &$message, &$attachments, &$update_count, 
 				break;
 			}
 
-			$l_download_count = (!isset($attachment['download_count']) || $attachment['download_count'] == 0) ? $user->lang['DOWNLOAD_NONE'] : (($attachment['download_count'] == 1) ? sprintf($user->lang['DOWNLOAD_COUNT'], $attachment['download_count']) : sprintf($user->lang['DOWNLOAD_COUNTS'], $attachment['download_count']));
+			$l_download_count = (!isset($attachment['download_count']) || $attachment['download_count'] == 0) ? $user->lang[$l_downloaded_viewed . '_NONE'] : (($attachment['download_count'] == 1) ? sprintf($user->lang[$l_downloaded_viewed], $attachment['download_count']) : sprintf($user->lang[$l_downloaded_viewed . 'S'], $attachment['download_count']));
 
 			$block_array += array(
 				'U_DOWNLOAD_LINK'		=> $download_link,
-				'L_DOWNLOADED_VIEWED'	=> $l_downloaded_viewed,
 				'L_DOWNLOAD_COUNT'		=> $l_download_count
 			);
 		}
@@ -2975,8 +3324,15 @@ function get_backtrace()
 		}
 
 		// Strip the current directory from path
-		$trace['file'] = str_replace(array($path, '\\'), array('', '/'), $trace['file']);
-		$trace['file'] = substr($trace['file'], 1);
+		if (empty($trace['file']))
+		{
+			$trace['file'] = '';
+		}
+		else
+		{
+			$trace['file'] = str_replace(array($path, '\\'), array('', '/'), $trace['file']);
+			$trace['file'] = substr($trace['file'], 1);
+		}
 		$args = array();
 
 		// If include/require/include_once is not called, do not show arguments - they may contain sensible information
@@ -3001,7 +3357,7 @@ function get_backtrace()
 
 		$output .= '<br />';
 		$output .= '<b>FILE:</b> ' . htmlspecialchars($trace['file']) . '<br />';
-		$output .= '<b>LINE:</b> ' . $trace['line'] . '<br />';
+		$output .= '<b>LINE:</b> ' . ((!empty($trace['line'])) ? $trace['line'] : '') . '<br />';
 
 		$output .= '<b>CALL:</b> ' . htmlspecialchars($trace['class'] . $trace['type'] . $trace['function']) . '(' . ((sizeof($args)) ? implode(', ', $args) : '') . ')<br />';
 	}
@@ -3025,7 +3381,8 @@ function get_preg_expression($mode)
 		case 'bbcode_htm':
 			return array(
 				'#<!\-\- e \-\-><a href="mailto:(.*?)">.*?</a><!\-\- e \-\->#',
-				'#<!\-\- ([lmw]) \-\-><a href="(.*?)">.*?</a><!\-\- \1 \-\->#',
+				'#<!\-\- l \-\-><a (?:class="[\w-]+" )?href="(.*?)(?:(&amp;|\?)sid=[0-9a-f]{32})?">.*?</a><!\-\- l \-\->#',
+				'#<!\-\- ([mw]) \-\-><a (?:class="[\w-]+" )?href="(.*?)">.*?</a><!\-\- \1 \-\->#',
 				'#<!\-\- s(.*?) \-\-><img src="\{SMILIES_PATH\}\/.*? \/><!\-\- s\1 \-\->#',
 				'#<!\-\- .*? \-\->#s',
 				'#<.*?>#s',
@@ -3036,13 +3393,13 @@ function get_preg_expression($mode)
 		case 'url_inline':
 			$inline = ($mode == 'url') ? ')' : '';
 			// generated with regex generation file in the develop folder
-			return "[a-z][a-z\d+\-.]*:/{2}(?:(?:[a-z0-9\-._~!$&'($inline*+,;=|@]+|%[\dA-F]{2})+|[0-9.]+|\[[a-z0-9.]+:[a-z0-9.]+:[a-z0-9.:]+\])(?::\d*)?(?:/(?:[a-z0-9\-._~!$&'($inline*+,;=:@|]+|%[\dA-F]{2})*)*(?:\?(?:[a-z0-9\-._~!$&'($inline*+,;=:@/?|]+|%[\dA-F]{2})*)?(?:\#(?:[a-z0-9\-._~!$&'($inline*+,;=:@/?|]+|%[\dA-F]{2})*)?";
+			return "[a-z][a-z\d+\-.]*:/{2}(?:(?:[a-z0-9\-._~!$&'($inline*+,;=:@|]+|%[\dA-F]{2})+|[0-9.]+|\[[a-z0-9.]+:[a-z0-9.]+:[a-z0-9.:]+\])(?::\d*)?(?:/(?:[a-z0-9\-._~!$&'($inline*+,;=:@|]+|%[\dA-F]{2})*)*(?:\?(?:[a-z0-9\-._~!$&'($inline*+,;=:@/?|]+|%[\dA-F]{2})*)?(?:\#(?:[a-z0-9\-._~!$&'($inline*+,;=:@/?|]+|%[\dA-F]{2})*)?";
 		break;
 
 		case 'www_url':
 		case 'www_url_inline':
 			$inline = ($mode == 'www_url') ? ')' : '';
-			return "www\.(?:[a-z0-9\-._~!$&'($inline*+,;=|@]+|%[\dA-F]{2})+(?::\d*)?(?:/(?:[a-z0-9\-._~!$&'($inline*+,;=:@|]+|%[\dA-F]{2})*)*(?:\?(?:[a-z0-9\-._~!$&'($inline*+,;=:@/?|]+|%[\dA-F]{2})*)?(?:\#(?:[a-z0-9\-._~!$&'($inline*+,;=:@/?|]+|%[\dA-F]{2})*)?";
+			return "www\.(?:[a-z0-9\-._~!$&'($inline*+,;=:@|]+|%[\dA-F]{2})+(?::\d*)?(?:/(?:[a-z0-9\-._~!$&'($inline*+,;=:@|]+|%[\dA-F]{2})*)*(?:\?(?:[a-z0-9\-._~!$&'($inline*+,;=:@/?|]+|%[\dA-F]{2})*)?(?:\#(?:[a-z0-9\-._~!$&'($inline*+,;=:@/?|]+|%[\dA-F]{2})*)?";
 		break;
 
 		case 'relative_url':
@@ -3053,6 +3410,37 @@ function get_preg_expression($mode)
 	}
 
 	return '';
+}
+
+/**
+* Returns the first block of the specified IPv6 address and as many additional
+* ones as specified in the length paramater.
+* If length is zero, then an empty string is returned.
+* If length is greater than 3 the complete IP will be returned
+*/
+function short_ipv6($ip, $length)
+{
+	if ($length < 1)
+	{
+		return '';
+	}
+
+	// extend IPv6 addresses
+	$blocks = substr_count($ip, ':') + 1;
+	if ($blocks < 9)
+	{
+		$ip = str_replace('::', ':' . str_repeat('0000:', 9 - $blocks), $ip);
+	}
+	if ($ip[0] == ':')
+	{
+		$ip = '0000' . $ip;
+	}
+	if ($length < 4)
+	{
+		$ip = implode(':', array_slice(explode(':', $ip), 0, 1 + $length));
+	}
+
+	return $ip;
 }
 
 /**
@@ -3109,7 +3497,7 @@ function truncate_string($string, $max_length = 60, $allow_reply = true, $append
 */
 function get_username_string($mode, $user_id, $username, $username_colour = '', $guest_username = false, $custom_profile_url = false)
 {
-	global $phpbb_root_path, $phpEx, $user;
+	global $phpbb_root_path, $phpEx, $user, $auth;
 
 	$profile_url = '';
 	$username_colour = ($username_colour) ? '#' . $username_colour : '';
@@ -3126,8 +3514,17 @@ function get_username_string($mode, $user_id, $username, $username_colour = '', 
 	// Only show the link if not anonymous
 	if ($user_id && $user_id != ANONYMOUS)
 	{
-		$profile_url = ($custom_profile_url !== false) ? $custom_profile_url : append_sid("{$phpbb_root_path}memberlist.$phpEx", 'mode=viewprofile');
-		$profile_url .= '&amp;u=' . (int) $user_id;
+		// Do not show the link if the user is already logged in but do not have u_viewprofile permissions (relevant for bots mostly).
+		// For all others the link leads to a login page or the profile.
+		if ($user->data['user_id'] != ANONYMOUS && !$auth->acl_get('u_viewprofile'))
+		{
+			$profile_url = '';
+		}
+		else
+		{
+			$profile_url = ($custom_profile_url !== false) ? $custom_profile_url : append_sid("{$phpbb_root_path}memberlist.$phpEx", 'mode=viewprofile');
+			$profile_url .= '&amp;u=' . (int) $user_id;
+		}
 	}
 	else
 	{
@@ -3158,7 +3555,7 @@ function get_username_string($mode, $user_id, $username, $username_colour = '', 
 			}
 			else if (!$profile_url && $username_colour)
 			{
-				$tpl = '<span style="color: {USERNAME_COLOUR}; font-weight: bold;">{USERNAME}</span>';
+				$tpl = '<span style="color: {USERNAME_COLOUR};" class="username-coloured">{USERNAME}</span>';
 			}
 			else if ($profile_url && !$username_colour)
 			{
@@ -3166,7 +3563,7 @@ function get_username_string($mode, $user_id, $username, $username_colour = '', 
 			}
 			else if ($profile_url && $username_colour)
 			{
-				$tpl = '<a href="{PROFILE_URL}" style="color: {USERNAME_COLOUR}; font-weight: bold;">{USERNAME}</a>';
+				$tpl = '<a href="{PROFILE_URL}" style="color: {USERNAME_COLOUR};" class="username-coloured">{USERNAME}</a>';
 			}
 
 			return str_replace(array('{PROFILE_URL}', '{USERNAME_COLOUR}', '{USERNAME}'), array($profile_url, $username_colour, $username), $tpl);
@@ -3264,43 +3661,75 @@ function msg_handler($errno, $msg_text, $errfile, $errline)
 				echo '<b>[phpBB Debug] PHP Notice</b>: in file <b>' . $errfile . '</b> on line <b>' . $errline . '</b>: <b>' . $msg_text . '</b><br />' . "\n";
 			}
 
+			return;
+
 		break;
 
 		case E_USER_ERROR:
 
+			if (!empty($user) && !empty($user->lang))
+			{
+				$msg_text = (!empty($user->lang[$msg_text])) ? $user->lang[$msg_text] : $msg_text;
+				$msg_title = (!isset($msg_title)) ? $user->lang['GENERAL_ERROR'] : ((!empty($user->lang[$msg_title])) ? $user->lang[$msg_title] : $msg_title);
+
+				$l_return_index = sprintf($user->lang['RETURN_INDEX'], '<a href="' . $phpbb_root_path . '">', '</a>');
+				$l_notify = '';
+
+				if (!empty($config['board_contact']))
+				{
+					$l_notify = '<p>' . sprintf($user->lang['NOTIFY_ADMIN_EMAIL'], $config['board_contact']) . '</p>';
+				}
+			}
+			else
+			{
+				$msg_title = 'General Error';
+				$l_return_index = '<a href="' . $phpbb_root_path . '">Return to index page</a>';
+				$l_notify = '';
+
+				if (!empty($config['board_contact']))
+				{
+					$l_notify = '<p>Please notify the board administrator or webmaster: <a href="mailto:' . $config['board_contact'] . '">' . $config['board_contact'] . '</a></p>';
+				}
+			}
+
 			garbage_collection();
+
+			// Try to not call the adm page data...
 
 			echo '<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">';
 			echo '<html xmlns="http://www.w3.org/1999/xhtml" dir="ltr">';
 			echo '<head>';
 			echo '<meta http-equiv="content-type" content="text/html; charset=utf-8" />';
 			echo '<title>' . $msg_title . '</title>';
-			echo '<link href="' . $phpbb_root_path . 'adm/style/admin.css" rel="stylesheet" type="text/css" media="screen" />';
+			echo '<style type="text/css">' . "\n" . '<!--' . "\n";
+			echo '* { margin: 0; padding: 0; } html { font-size: 100%; height: 100%; margin-bottom: 1px; background-color: #E4EDF0; } body { font-family: "Lucida Grande", Verdana, Helvetica, Arial, sans-serif; color: #536482; background: #E4EDF0; font-size: 62.5%; margin: 0; } ';
+			echo 'a:link, a:active, a:visited { color: #006699; text-decoration: none; } a:hover { color: #DD6900; text-decoration: underline; } ';
+			echo '#wrap { padding: 0 20px 15px 20px; min-width: 615px; } #page-header { text-align: right; height: 40px; } #page-footer { clear: both; font-size: 1em; text-align: center; } ';
+			echo '.panel { margin: 4px 0; background-color: #FFFFFF; border: solid 1px  #A9B8C2; } ';
+			echo '#errorpage #page-header a { font-weight: bold; line-height: 6em; } #errorpage #content { padding: 10px; } #errorpage #content h1 { line-height: 1.2em; margin-bottom: 0; color: #DF075C; } ';
+			echo '#errorpage #content div { margin-top: 20px; margin-bottom: 5px; border-bottom: 1px solid #CCCCCC; padding-bottom: 5px; color: #333333; font: bold 1.2em "Lucida Grande", Arial, Helvetica, sans-serif; text-decoration: none; line-height: 120%; text-align: left; } ';
+			echo "\n" . '//-->' . "\n";
+			echo '</style>';
 			echo '</head>';
 			echo '<body id="errorpage">';
 			echo '<div id="wrap">';
 			echo '	<div id="page-header">';
-			echo '		<a href="' . $phpbb_root_path . '">Return to forum index</a>';
+			echo '		' . $l_return_index;
 			echo '	</div>';
-			echo '	<div id="page-body">';
-			echo '		<div class="panel">';
-			echo '			<span class="corners-top"><span></span></span>';
-			echo '			<div id="content">';
-			echo '				<h1>General Error</h1>';
+			echo '	<div id="acp">';
+			echo '	<div class="panel">';
+			echo '		<div id="content">';
+			echo '			<h1>' . $msg_title . '</h1>';
 			
-			echo '				<h2>' . $msg_text . '</h2>';
+			echo '			<div>' . $msg_text . '</div>';
 			
-			if (!empty($config['board_contact']))
-			{
-				echo '				<p>Please notify the board administrator or webmaster: <a href="mailto:' . $config['board_contact'] . '">' . $config['board_contact'] . '</a></p>';
-			}
-			
-			echo '			</div>';
-			echo '			<span class="corners-bottom"><span></span></span>';
+			echo $l_notify;
+
 			echo '		</div>';
 			echo '	</div>';
+			echo '	</div>';
 			echo '	<div id="page-footer">';
-			echo '		Powered by phpBB &copy; ' . date('Y') . ' <a href="http://www.phpbb.com/">phpBB Group</a>';
+			echo '		Powered by phpBB &copy; 2000, 2002, 2005, 2007 <a href="http://www.phpbb.com/">phpBB Group</a>';
 			echo '	</div>';
 			echo '</div>';
 			echo '</body>';
@@ -3368,6 +3797,10 @@ function msg_handler($errno, $msg_text, $errfile, $errline)
 			exit;
 		break;
 	}
+
+	// If we notice an error not handled here we pass this back to PHP by returning false
+	// This may not work for all php versions
+	return false;
 }
 
 /**
@@ -3396,7 +3829,7 @@ function page_header($page_title = '', $display_online_list = true)
 	// Generate logged in/logged out status
 	if ($user->data['user_id'] != ANONYMOUS)
 	{
-		$u_login_logout = append_sid("{$phpbb_root_path}ucp.$phpEx", 'mode=logout');
+		$u_login_logout = append_sid("{$phpbb_root_path}ucp.$phpEx", 'mode=logout', true, $user->session_id);
 		$l_login_logout = sprintf($user->lang['LOGOUT_USER'], $user->data['username']);
 	}
 	else
@@ -3640,12 +4073,16 @@ function page_header($page_title = '', $display_online_list = true)
 		'PAGE_TITLE'					=> $page_title,
 		'SCRIPT_NAME'					=> str_replace('.' . $phpEx, '', $user->page['page_name']),
 		'LAST_VISIT_DATE'				=> sprintf($user->lang['YOU_LAST_VISIT'], $s_last_visit),
+		'LAST_VISIT_YOU'				=> $s_last_visit,
 		'CURRENT_TIME'					=> sprintf($user->lang['CURRENT_TIME'], $user->format_date(time(), false, true)),
 		'TOTAL_USERS_ONLINE'			=> $l_online_users,
 		'LOGGED_IN_USER_LIST'			=> $online_userlist,
 		'RECORD_USERS'					=> $l_online_record,
 		'PRIVATE_MESSAGE_INFO'			=> $l_privmsgs_text,
 		'PRIVATE_MESSAGE_INFO_UNREAD'	=> $l_privmsgs_text_unread,
+
+		'S_USER_NEW_PRIVMSG'			=> $user->data['user_new_privmsg'],
+		'S_USER_UNREAD_PRIVMSG'			=> $user->data['user_unread_privmsg'],
 
 		'SID'				=> $SID,
 		'_SID'				=> $_SID,
@@ -3688,11 +4125,13 @@ function page_header($page_title = '', $display_online_list = true)
 		'S_USER_BROWSER'		=> (isset($user->data['session_browser'])) ? $user->data['session_browser'] : $user->lang['UNKNOWN_BROWSER'],
 		'S_USERNAME'			=> $user->data['username'],
 		'S_CONTENT_DIRECTION'	=> $user->lang['DIRECTION'],
+		'S_CONTENT_FLOW_BEGIN'	=> ($user->lang['DIRECTION'] == 'ltr') ? 'left' : 'right',
+		'S_CONTENT_FLOW_END'	=> ($user->lang['DIRECTION'] == 'ltr') ? 'right' : 'left',
 		'S_CONTENT_ENCODING'	=> 'UTF-8',
 		'S_TIMEZONE'			=> ($user->data['user_dst'] || ($user->data['user_id'] == ANONYMOUS && $config['board_dst'])) ? sprintf($user->lang['ALL_TIMES'], $user->lang['tz'][$tz], $user->lang['tz']['dst']) : sprintf($user->lang['ALL_TIMES'], $user->lang['tz'][$tz], ''),
 		'S_DISPLAY_ONLINE_LIST'	=> ($l_online_time) ? 1 : 0,
 		'S_DISPLAY_SEARCH'		=> (!$config['load_search']) ? 0 : (isset($auth) ? ($auth->acl_get('u_search') && $auth->acl_getf_global('f_search')) : 1),
-		'S_DISPLAY_PM'			=> ($config['allow_privmsg'] && $user->data['is_registered']) ? 1 : 0,
+		'S_DISPLAY_PM'			=> ($config['allow_privmsg'] && $user->data['is_registered'] && ($auth->acl_get('u_readpm') || $auth->acl_get('u_sendpm'))) ? true : false,
 		'S_DISPLAY_MEMBERLIST'	=> (isset($auth)) ? $auth->acl_get('u_viewprofile') : 0,
 		'S_NEW_PM'				=> ($s_privmsg_new) ? 1 : 0,
 
@@ -3709,10 +4148,82 @@ function page_header($page_title = '', $display_online_list = true)
 		'T_UPLOAD_PATH'			=> "{$phpbb_root_path}{$config['upload_path']}/",
 		'T_STYLESHEET_LINK'		=> (!$user->theme['theme_storedb']) ? "{$phpbb_root_path}styles/" . $user->theme['theme_path'] . '/theme/stylesheet.css' : "{$phpbb_root_path}style.$phpEx?sid=$user->session_id&amp;id=" . $user->theme['style_id'] . '&amp;lang=' . $user->data['user_lang'],
 		'T_STYLESHEET_NAME'		=> $user->theme['theme_name'],
-		'T_THEME_DATA'			=> (!$user->theme['theme_storedb']) ? '' : $user->theme['theme_data'],
 
 		'SITE_LOGO_IMG'			=> $user->img('site_logo'))
 	);
+
+	// Once used, we do not want to have the whole theme data twice in memory...
+	if ($user->theme['theme_storedb'])
+	{
+		// Parse Theme Data
+		$replace = array(
+			'{T_THEME_PATH}'			=> "{$phpbb_root_path}styles/" . $user->theme['theme_path'] . '/theme',
+			'{T_TEMPLATE_PATH}'			=> "{$phpbb_root_path}styles/" . $user->theme['template_path'] . '/template',
+			'{T_IMAGESET_PATH}'			=> "{$phpbb_root_path}styles/" . $user->theme['imageset_path'] . '/imageset',
+			'{T_IMAGESET_LANG_PATH}'	=> "{$phpbb_root_path}styles/" . $user->theme['imageset_path'] . '/imageset/' . $user->data['user_lang'],
+			'{T_STYLESHEET_NAME}'		=> $user->theme['theme_name'],
+			'{S_USER_LANG}'				=> $user->data['user_lang']
+		);
+
+		$user->theme['theme_data'] = str_replace(array_keys($replace), array_values($replace), $user->theme['theme_data']);
+
+		$matches = array();
+		if (strpos($user->theme['theme_data'], '{IMG_') !== false)
+		{
+			preg_match_all('#\{IMG_([A-Za-z0-9_]*?)_(WIDTH|HEIGHT|SRC)\}#', $user->theme['theme_data'], $matches);
+
+			$imgs = $find = $replace = array();
+			if (isset($matches[0]) && sizeof($matches[0]))
+			{
+				foreach ($matches[1] as $i => $img)
+				{
+					$img = strtolower($img);
+					if (!isset($img_array[$img]))
+					{
+						continue;
+					}
+
+					if (!isset($imgs[$img]))
+					{
+						$img_data = &$img_array[$img];
+						$imgsrc = ($img_data['image_lang'] ? $img_data['image_lang'] . '/' : '') . $img_data['image_filename'];
+						$imgs[$img] = array(
+							'src'		=> $phpbb_root_path . 'styles/' . $user->theme['imageset_path'] . '/imageset/' . $imgsrc,
+							'width'		=> $img_data['image_width'],
+							'height'	=> $img_data['image_height'],
+						);
+					}
+
+					switch ($matches[2][$i])
+					{
+						case 'SRC':
+							$replace[] = $imgs[$img]['src'];
+						break;
+						
+						case 'WIDTH':
+							$replace[] = $imgs[$img]['width'];
+						break;
+			
+						case 'HEIGHT':
+							$replace[] = $imgs[$img]['height'];
+						break;
+
+						default:
+							continue;
+					}
+					$find[] = $matches[0][$i];
+				}
+
+				if (sizeof($find))
+				{
+					$user->theme['theme_data'] = str_replace($find, $replace, $user->theme['theme_data']);
+				}
+			}
+		}
+
+		$template->assign_var('T_THEME_DATA', $user->theme['theme_data']);
+		$user->theme['theme_data'] = '';
+	}
 
 	// application/xhtml+xml not used because of IE
 	header('Content-type: text/html; charset=UTF-8');

@@ -28,16 +28,16 @@ class dbal_mssql extends dbal
 	/**
 	* Connect to server
 	*/
-	function sql_connect($sqlserver, $sqluser, $sqlpassword, $database, $port = false, $persistency = false)
+	function sql_connect($sqlserver, $sqluser, $sqlpassword, $database, $port = false, $persistency = false, $new_link = false)
 	{
 		$this->persistency = $persistency;
 		$this->user = $sqluser;
 		$this->server = $sqlserver . (($port) ? ':' . $port : '');
 		$this->dbname = $database;
 
-		ini_set('mssql.charset', 'UTF-8');
+		@ini_set('mssql.charset', 'UTF-8');
 
-		$this->db_connect_id = ($this->persistency) ? @mssql_pconnect($this->server, $this->user, $sqlpassword) : @mssql_connect($this->server, $this->user, $sqlpassword);
+		$this->db_connect_id = ($this->persistency) ? @mssql_pconnect($this->server, $this->user, $sqlpassword, $new_link) : @mssql_connect($this->server, $this->user, $sqlpassword, $new_link);
 
 		if ($this->db_connect_id && $this->dbname != '')
 		{
@@ -86,11 +86,11 @@ class dbal_mssql extends dbal
 			break;
 
 			case 'commit':
-				return @mssql_query('commit', $this->db_connect_id);
+				return @mssql_query('COMMIT TRANSACTION', $this->db_connect_id);
 			break;
 
 			case 'rollback':
-				return @mssql_query('ROLLBACK', $this->db_connect_id);
+				return @mssql_query('ROLLBACK TRANSACTION', $this->db_connect_id);
 			break;
 		}
 
@@ -258,7 +258,7 @@ class dbal_mssql extends dbal
 	*/
 	function sql_nextid()
 	{
-		$result_id = @mssql_query('SELECT @@IDENTITY', $this->db_connect_id);
+		$result_id = @mssql_query('SELECT SCOPE_IDENTITY()', $this->db_connect_id);
 		if ($result_id)
 		{
 			if ($row = @mssql_fetch_assoc($result_id))
@@ -313,7 +313,7 @@ class dbal_mssql extends dbal
 	function _sql_error()
 	{
 		$error = array(
-			'message'	=> @mssql_get_last_message($this->db_connect_id),
+			'message'	=> @mssql_get_last_message(),
 			'code'		=> ''
 		);
 
@@ -385,7 +385,7 @@ class dbal_mssql extends dbal
 				if (preg_match('/^SELECT/', $explain_query))
 				{
 					$html_table = false;
-					@mssql_query("SET SHOWPLAN_TEXT ON;", $this->db_connect_id);
+					@mssql_query('SET SHOWPLAN_TEXT ON;', $this->db_connect_id);
 					if ($result = @mssql_query($explain_query, $this->db_connect_id))
 					{
 						@mssql_next_result($result);
@@ -394,7 +394,7 @@ class dbal_mssql extends dbal
 							$html_table = $this->sql_report('add_select_row', $query, $html_table, $row);
 						}
 					}
-					@mssql_query("SET SHOWPLAN_TEXT OFF;", $this->db_connect_id);
+					@mssql_query('SET SHOWPLAN_TEXT OFF;', $this->db_connect_id);
 					@mssql_free_result($result);
 
 					if ($html_table)

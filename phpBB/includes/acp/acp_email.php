@@ -51,10 +51,11 @@ class acp_email
 				$error[] = $user->lang['NO_EMAIL_MESSAGE'];
 			}
 
-			if (!sizeof($error))	
+			if (!sizeof($error))
 			{
 				if ($usernames)
 				{
+					// If giving usernames the admin is able to email inactive users too...
 					$sql = 'SELECT username, user_email, user_jabber, user_notify_type, user_lang 
 						FROM ' . USERS_TABLE . '
 						WHERE ' . $db->sql_in_set('username_clean', array_map('utf8_clean_string', explode("\n", $usernames))) . '
@@ -66,18 +67,20 @@ class acp_email
 					if ($group_id)
 					{
 						$sql = 'SELECT u.user_email, u.username, u.username_clean, u.user_lang, u.user_jabber, u.user_notify_type 
-							FROM ' . USERS_TABLE . ' u, ' . USER_GROUP_TABLE . " ug 
-							WHERE ug.group_id = $group_id 
+							FROM ' . USERS_TABLE . ' u, ' . USER_GROUP_TABLE . ' ug 
+							WHERE ug.group_id = ' . $group_id . '
 								AND ug.user_pending = 0
 								AND u.user_id = ug.user_id 
 								AND u.user_allow_massemail = 1
-							ORDER BY u.user_lang, u.user_notify_type";
+								AND u.user_type IN (' . USER_NORMAL . ', ' . USER_FOUNDER . ')
+							ORDER BY u.user_lang, u.user_notify_type';
 					}
 					else
 					{
 						$sql = 'SELECT username, username_clean, user_email, user_jabber, user_notify_type, user_lang 
 							FROM ' . USERS_TABLE . '
 							WHERE user_allow_massemail = 1
+								AND user_type IN (' . USER_NORMAL . ', ' . USER_FOUNDER . ')
 							ORDER BY user_lang, user_notify_type';
 					}
 				}
@@ -172,17 +175,25 @@ class acp_email
 
 				$messenger->save_queue();
 
-				if ($group_id)
+				if ($usernames)
 				{
-					$group_name = get_group_name($group_id);
+					$usernames = explode("\n", $usernames);
+					add_log('admin', 'LOG_MASS_EMAIL', implode(', ', $usernames));
 				}
 				else
 				{
-					// Not great but the logging routine doesn't cope well with localising on the fly
-					$group_name = $user->lang['ALL_USERS'];
-				}
+					if ($group_id)
+					{
+						$group_name = get_group_name($group_id);
+					}
+					else
+					{
+						// Not great but the logging routine doesn't cope well with localising on the fly
+						$group_name = $user->lang['ALL_USERS'];
+					}
 
-				add_log('admin', 'LOG_MASS_EMAIL', $group_name);
+					add_log('admin', 'LOG_MASS_EMAIL', $group_name);
+				}
 
 				if (!$errored)
 				{
@@ -197,16 +208,21 @@ class acp_email
 			}
 		}
 
-		// Exclude bots...
+		// Exclude bots and guests...
 		$sql = 'SELECT group_id
 			FROM ' . GROUPS_TABLE . "
-			WHERE group_name = 'BOTS'";
+			WHERE group_name IN ('BOTS', 'GUESTS')";
 		$result = $db->sql_query($sql);
-		$bot_group_id = (int) $db->sql_fetchfield('group_id');
+
+		$exclude = array();
+		while ($row = $db->sql_fetchrow($result))
+		{
+			$exclude[] = $row['group_id'];
+		}
 		$db->sql_freeresult($result);
 
 		$select_list = '<option value="0"' . ((!$group_id) ? ' selected="selected"' : '') . '>' . $user->lang['ALL_USERS'] . '</option>';
-		$select_list .= group_select_options($group_id, array($bot_group_id));
+		$select_list .= group_select_options($group_id, $exclude);
 		
 		$s_priority_options = '<option value="' . MAIL_LOW_PRIORITY . '">' . $user->lang['MAIL_LOW_PRIORITY'] . '</option>';
 		$s_priority_options .= '<option value="' . MAIL_NORMAL_PRIORITY . '" selected="selected">' . $user->lang['MAIL_NORMAL_PRIORITY'] . '</option>';

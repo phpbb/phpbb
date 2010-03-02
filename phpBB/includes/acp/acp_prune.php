@@ -46,92 +46,127 @@ class acp_prune
 		global $db, $user, $auth, $template, $cache;
 		global $config, $phpbb_root_path, $phpbb_admin_path, $phpEx;
 
+		$all_forums = request_var('all_forums', 0);
 		$forum_id = request_var('f', array(0));
 		$submit = (isset($_POST['submit'])) ? true : false;
 
-		if ($submit)
+		if ($all_forums)
 		{
-			$prune_posted = request_var('prune_days', 0);
-			$prune_viewed = request_var('prune_vieweddays', 0);
-			$prune_all = (!$prune_posted && !$prune_viewed) ? true : false;
-	
-			$prune_flags = 0;
-			$prune_flags += (request_var('prune_old_polls', 0)) ? 2 : 0;
-			$prune_flags += (request_var('prune_announce', 0)) ? 4 : 0;
-			$prune_flags += (request_var('prune_sticky', 0)) ? 8 : 0;
-
-			// Convert days to seconds for timestamp functions...
-			$prunedate_posted = time() - ($prune_posted * 86400);
-			$prunedate_viewed = time() - ($prune_viewed * 86400);
-
-			$template->assign_vars(array(
-				'S_PRUNED'		=> true)
-			);
-
-			$sql_forum = (sizeof($forum_id)) ? ' AND ' . $db->sql_in_set('forum_id', $forum_id) : '';
-
-			// Get a list of forum's or the data for the forum that we are pruning.
-			$sql = 'SELECT forum_id, forum_name 
+			$sql = 'SELECT forum_id
 				FROM ' . FORUMS_TABLE . '
-				WHERE forum_type = ' . FORUM_POST . "
-					$sql_forum 
-				ORDER BY left_id ASC";
+				ORDER BY left_id';
 			$result = $db->sql_query($sql);
 
-			if ($row = $db->sql_fetchrow($result))
+			$forum_id = array();
+			while ($row = $db->sql_fetchrow($result))
 			{
-				$prune_ids = array();
-				$p_result['topics'] = 0;
-				$p_result['posts'] = 0;
-				$log_data = '';
-		
-				do
-				{
-					if (!$auth->acl_get('f_list', $row['forum_id']))
-					{
-						continue;
-					}
-
-					if ($prune_all)
-					{
-						$p_result = prune($row['forum_id'], 'posted', time(), $prune_flags, false);
-					}
-					else
-					{
-						if ($prune_posted)
-						{
-							$return = prune($row['forum_id'], 'posted', $prunedate_posted, $prune_flags, false);
-							$p_result['topics'] += $return['topics'];
-							$p_result['posts'] += $return['posts'];
-						}
-		
-						if ($prune_viewed)
-						{
-							$return = prune($row['forum_id'], 'viewed', $prunedate_viewed, $prune_flags, false);
-							$p_result['topics'] += $return['topics'];
-							$p_result['posts'] += $return['posts'];
-						}
-					}
-
-					$prune_ids[] = $row['forum_id'];
-
-					$template->assign_block_vars('pruned', array(
-						'FORUM_NAME'	=> $row['forum_name'],
-						'NUM_TOPICS'	=> $p_result['topics'],
-						'NUM_POSTS'		=> $p_result['posts'])
-					);
-	
-					$log_data .= (($log_data != '') ? ', ' : '') . $row['forum_name'];
-				}
-				while ($row = $db->sql_fetchrow($result));
-	
-				// Sync all pruned forums at once
-				sync('forum', 'forum_id', $prune_ids, true);
-				add_log('admin', 'LOG_PRUNE', $log_data);
+				$forum_id[] = $row['forum_id'];
 			}
 			$db->sql_freeresult($result);
+		}
 
-			return;
+		if ($submit)
+		{
+			if (confirm_box(true))
+			{
+				$prune_posted = request_var('prune_days', 0);
+				$prune_viewed = request_var('prune_vieweddays', 0);
+				$prune_all = (!$prune_posted && !$prune_viewed) ? true : false;
+		
+				$prune_flags = 0;
+				$prune_flags += (request_var('prune_old_polls', 0)) ? 2 : 0;
+				$prune_flags += (request_var('prune_announce', 0)) ? 4 : 0;
+				$prune_flags += (request_var('prune_sticky', 0)) ? 8 : 0;
+
+				// Convert days to seconds for timestamp functions...
+				$prunedate_posted = time() - ($prune_posted * 86400);
+				$prunedate_viewed = time() - ($prune_viewed * 86400);
+
+				$template->assign_vars(array(
+					'S_PRUNED'		=> true)
+				);
+
+				$sql_forum = (sizeof($forum_id)) ? ' AND ' . $db->sql_in_set('forum_id', $forum_id) : '';
+
+				// Get a list of forum's or the data for the forum that we are pruning.
+				$sql = 'SELECT forum_id, forum_name 
+					FROM ' . FORUMS_TABLE . '
+					WHERE forum_type = ' . FORUM_POST . "
+						$sql_forum 
+					ORDER BY left_id ASC";
+				$result = $db->sql_query($sql);
+
+				if ($row = $db->sql_fetchrow($result))
+				{
+					$prune_ids = array();
+					$p_result['topics'] = 0;
+					$p_result['posts'] = 0;
+					$log_data = '';
+			
+					do
+					{
+						if (!$auth->acl_get('f_list', $row['forum_id']))
+						{
+							continue;
+						}
+
+						if ($prune_all)
+						{
+							$p_result = prune($row['forum_id'], 'posted', time(), $prune_flags, false);
+						}
+						else
+						{
+							if ($prune_posted)
+							{
+								$return = prune($row['forum_id'], 'posted', $prunedate_posted, $prune_flags, false);
+								$p_result['topics'] += $return['topics'];
+								$p_result['posts'] += $return['posts'];
+							}
+			
+							if ($prune_viewed)
+							{
+								$return = prune($row['forum_id'], 'viewed', $prunedate_viewed, $prune_flags, false);
+								$p_result['topics'] += $return['topics'];
+								$p_result['posts'] += $return['posts'];
+							}
+						}
+
+						$prune_ids[] = $row['forum_id'];
+
+						$template->assign_block_vars('pruned', array(
+							'FORUM_NAME'	=> $row['forum_name'],
+							'NUM_TOPICS'	=> $p_result['topics'],
+							'NUM_POSTS'		=> $p_result['posts'])
+						);
+		
+						$log_data .= (($log_data != '') ? ', ' : '') . $row['forum_name'];
+					}
+					while ($row = $db->sql_fetchrow($result));
+		
+					// Sync all pruned forums at once
+					sync('forum', 'forum_id', $prune_ids, true, true);
+					add_log('admin', 'LOG_PRUNE', $log_data);
+				}
+				$db->sql_freeresult($result);
+
+				return;
+			}
+			else
+			{
+				confirm_box(false, $user->lang['PRUNE_FORUM_CONFIRM'], build_hidden_fields(array(
+					'i'				=> $id,
+					'mode'			=> $mode,
+					'submit'		=> 1,
+					'all_forums'	=> $all_forums,
+					'f'				=> $forum_id,
+
+					'prune_days'		=> request_var('prune_days', 0),
+					'prune_vieweddays'	=> request_var('prune_vieweddays', 0),
+					'prune_old_polls'	=> request_var('prune_old_polls', 0),
+					'prune_announce'	=> request_var('prune_announce', 0),
+					'prune_sticky'		=> request_var('prune_sticky', 0),
+				)));
+			}
 		}
 
 		// If they haven't selected a forum for pruning yet then
@@ -194,76 +229,12 @@ class acp_prune
 
 		if ($prune)
 		{
+			$action = request_var('action', 'deactivate');
+
 			if (confirm_box(true))
 			{
-				$users = request_var('users', '', true);
-				$action = request_var('action', 'deactivate');
-				$deleteposts = request_var('deleteposts', 0);
-		
-				if ($users)
-				{
-					$users = explode("\n", $users);
-					$where_sql = ' AND ' . $db->sql_in_set('username_clean', array_map('utf8_clean_string', $users));
-				}
-				else
-				{
-					$username = request_var('username', '', true);
-					$email = request_var('email', '');
-
-					$joined_select = request_var('joined_select', 'lt');
-					$active_select = request_var('active_select', 'lt');
-					$count_select = request_var('count_select', 'eq');
-					$joined = request_var('joined', '');
-					$active = request_var('active', '');
-
-					$active = ($active) ? explode('-', $active) : array();
-					$joined = ($joined) ? explode('-', $joined) : array();
-
-					$count = request_var('count', 0);
-
-					$key_match = array('lt' => '<', 'gt' => '>', 'eq' => '=');
-					$sort_by_types = array('username', 'user_email', 'user_posts', 'user_regdate', 'user_lastvisit');
-
-					$where_sql = '';
-					$where_sql .= ($username) ? " AND username_clean LIKE '" . $db->sql_escape(str_replace('*', '%', utf8_clean_string($username))) . "'" : '';
-					$where_sql .= ($email) ? " AND user_email LIKE '" . $db->sql_escape(str_replace('*', '%', $email)) . "' " : '';
-					$where_sql .= (sizeof($joined)) ? " AND user_regdate " . $key_match[$joined_select] . ' ' . gmmktime(0, 0, 0, (int) $joined[1], (int) $joined[2], (int) $joined[0]) : '';
-					$where_sql .= ($count) ? " AND user_posts " . $key_match[$count_select] . " $count " : '';
-					$where_sql .= (sizeof($active)) ? " AND user_lastvisit " . $key_match[$active_select] . " " . gmmktime(0, 0, 0, (int) $active[1], (int) $active[2], (int) $active[0]) : '';
-				}
-
-				// Get bot ids
-				$sql = 'SELECT user_id 
-					FROM ' . BOTS_TABLE;
-				$result = $db->sql_query($sql);
-
-				$bot_ids = array();
-				while ($row = $db->sql_fetchrow($result))
-				{
-					$bot_ids[] = $row['user_id'];
-				}
-				$db->sql_freeresult($result);
-
-				// Do not prune founder members
-				$sql = 'SELECT user_id, username
-					FROM ' . USERS_TABLE . '
-					WHERE user_id <> ' . ANONYMOUS . '
-						AND user_type <> ' . USER_FOUNDER . "
-					$where_sql";
-				$result = $db->sql_query($sql);
-
-				$where_sql = '';
 				$user_ids = $usernames = array();
-
-				while ($row = $db->sql_fetchrow($result))
-				{
-					if (!in_array($row['user_id'], $bot_ids))
-					{
-						$user_ids[] = $row['user_id'];
-						$usernames[$row['user_id']] = $row['username'];
-					}
-				}
-				$db->sql_freeresult($result);
+				$this->get_prune_users($user_ids, $usernames);
 
 				if (sizeof($user_ids))
 				{
@@ -295,12 +266,41 @@ class acp_prune
 					}
 
 					add_log('admin', $l_log, implode(', ', $usernames));
+					$msg = $user->lang['USER_' . strtoupper($action) . '_SUCCESS'];
+				}
+				else
+				{
+					$msg = $user->lang['USER_PRUNE_FAILURE'];
 				}
 
-				trigger_error($user->lang['USER_' . strtoupper($action) . '_SUCCESS'] . adm_back_link($this->u_action));
+				trigger_error($msg . adm_back_link($this->u_action));
 			}
 			else
 			{
+				// We list the users which will be pruned...
+				$user_ids = $usernames = array();
+				$this->get_prune_users($user_ids, $usernames);
+
+				if (!sizeof($user_ids))
+				{
+					trigger_error($user->lang['USER_PRUNE_FAILURE'] . adm_back_link($this->u_action), E_USER_WARNING);
+				}
+
+				// Assign to template
+				foreach ($user_ids as $user_id)
+				{
+					$template->assign_block_vars('users', array(
+						'USERNAME'			=> $usernames[$user_id],
+						'U_PROFILE'			=> append_sid($phpbb_root_path . 'memberlist.' . $phpEx, 'mode=viewprofile&amp;u=' . $user_id),
+						'U_USER_ADMIN'		=> ($auth->acl_get('a_user')) ? append_sid("{$phpbb_admin_path}index.$phpEx", 'i=users&amp;mode=overview&amp;u=' . $user_id, true, $user->session_id) : '',
+					));
+				}
+
+				$template->assign_vars(array(
+					'S_DEACTIVATE'		=> ($action == 'deactivate') ? true : false,
+					'S_DELETE'			=> ($action == 'delete') ? true : false,
+				));
+
 				confirm_box(false, $user->lang['CONFIRM_OPERATION'], build_hidden_fields(array(
 					'i'				=> $id,
 					'mode'			=> $mode,
@@ -314,11 +314,11 @@ class acp_prune
 					'active_select'	=> request_var('active_select', ''),
 					'active'		=> request_var('active', ''),
 					'count_select'	=> request_var('count_select', ''),
-					'count'			=> request_var('count', 0),
+					'count'			=> request_var('count', ''),
 					'deleteposts'	=> request_var('deleteposts', 0),
 
 					'action'		=> request_var('action', ''),
-				)));
+				)), 'confirm_body_prune.html');
 			}
 		}
 
@@ -351,6 +351,94 @@ class acp_prune
 			'S_COUNT_OPTIONS'	=> $s_find_count,
 			'U_FIND_USER'		=> append_sid($phpbb_root_path . "memberlist.$phpEx", 'mode=searchuser&amp;form=acp_prune&amp;field=users'))
 		);
+	}
+
+	/**
+	* Get user_ids/usernames from those being pruned
+	*/
+	function get_prune_users(&$user_ids, &$usernames)
+	{
+		global $user, $db;
+
+		$users = request_var('users', '', true);
+		$deleteposts = request_var('deleteposts', 0);
+		
+		if ($users)
+		{
+			$users = explode("\n", $users);
+			$where_sql = ' AND ' . $db->sql_in_set('username_clean', array_map('utf8_clean_string', $users));
+		}
+		else
+		{
+			$username = request_var('username', '', true);
+			$email = request_var('email', '');
+
+			$joined_select = request_var('joined_select', 'lt');
+			$active_select = request_var('active_select', 'lt');
+			$count_select = request_var('count_select', 'eq');
+			$joined = request_var('joined', '');
+			$active = request_var('active', '');
+
+			$active = ($active) ? explode('-', $active) : array();
+			$joined = ($joined) ? explode('-', $joined) : array();
+
+			if ((sizeof($active) && sizeof($active) != 3) || (sizeof($joined) && sizeof($joined) != 3))
+			{
+				trigger_error($user->lang['WRONG_ACTIVE_JOINED_DATE'] . adm_back_link($this->u_action), E_USER_WARNING);
+			}
+
+			$count = request_var('count', '');
+
+			$key_match = array('lt' => '<', 'gt' => '>', 'eq' => '=');
+			$sort_by_types = array('username', 'user_email', 'user_posts', 'user_regdate', 'user_lastvisit');
+
+			$where_sql = '';
+			$where_sql .= ($username) ? " AND username_clean LIKE '" . $db->sql_escape(str_replace('*', '%', utf8_clean_string($username))) . "'" : '';
+			$where_sql .= ($email) ? " AND user_email LIKE '" . $db->sql_escape(str_replace('*', '%', $email)) . "' " : '';
+			$where_sql .= (sizeof($joined)) ? " AND user_regdate " . $key_match[$joined_select] . ' ' . gmmktime(0, 0, 0, (int) $joined[1], (int) $joined[2], (int) $joined[0]) : '';
+			$where_sql .= ($count !== '') ? " AND user_posts " . $key_match[$count_select] . ' ' . (int) $count . ' ' : '';
+			$where_sql .= (sizeof($active)) ? " AND user_lastvisit " . $key_match[$active_select] . " " . gmmktime(0, 0, 0, (int) $active[1], (int) $active[2], (int) $active[0]) : '';
+		}
+
+		// Protect the admin, do not prune if no options are given...
+		if (!$where_sql)
+		{
+			return;
+		}
+
+		// Get bot ids
+		$sql = 'SELECT user_id 
+			FROM ' . BOTS_TABLE;
+		$result = $db->sql_query($sql);
+
+		$bot_ids = array();
+		while ($row = $db->sql_fetchrow($result))
+		{
+			$bot_ids[] = $row['user_id'];
+		}
+		$db->sql_freeresult($result);
+
+		// Do not prune founder members
+		$sql = 'SELECT user_id, username
+			FROM ' . USERS_TABLE . '
+			WHERE user_id <> ' . ANONYMOUS . '
+				AND user_type <> ' . USER_FOUNDER . "
+			$where_sql";
+		$result = $db->sql_query($sql);
+
+		$where_sql = '';
+		$user_ids = $usernames = array();
+
+		while ($row = $db->sql_fetchrow($result))
+		{
+			// Do not prune bots and the user currently pruning.
+			if ($row['user_id'] != $user->data['user_id'] && !in_array($row['user_id'], $bot_ids))
+			{
+				$user_ids[] = $row['user_id'];
+				$usernames[$row['user_id']] = $row['username'];
+			}
+		}
+		$db->sql_freeresult($result);
 	}
 }
 

@@ -67,7 +67,7 @@ class acp_disallow
 
 			add_log('admin', 'LOG_DISALLOW_DELETE');
 
-			trigger_error($user->lang['DISALLOWED_DELETED'] . adm_back_link($this->u_action), E_USER_WARNING);
+			trigger_error($user->lang['DISALLOWED_DELETED'] . adm_back_link($this->u_action));
 		}
 
 		// Grab the current list of disallowed usernames...

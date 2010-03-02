@@ -33,15 +33,15 @@ if (empty($lang) || !is_array($lang))
 // BBCodes 
 // Note to translators: you can translate everything but what's between { and }
 $lang = array_merge($lang, array(
-	'ACP_BBCODES_EXPLAIN'		=> 'BBCode is a special implementation of HTML offering greater control over what and how something is displayed. From this page you can add, remove and edit custom BBCodes',
+	'ACP_BBCODES_EXPLAIN'		=> 'BBCode is a special implementation of HTML offering greater control over what and how something is displayed. From this page you can add, remove and edit custom BBCodes.',
 	'ADD_BBCODE'				=> 'Add a new BBCode',
 
 	'BBCODE_ADDED'				=> 'BBCode added successfully.',
 	'BBCODE_EDITED'				=> 'BBCode edited successfully.',
 	'BBCODE_NOT_EXIST'			=> 'The BBCode you selected does not exist.',
-	'BBCODE_HELPLINE'			=> 'Helpline',
-	'BBCODE_HELPLINE_EXPLAIN'	=> 'This field contains the mouseover text of the BBCode',
-	'BBCODE_HELPLINE_TEXT'		=> 'Helpline text',
+	'BBCODE_HELPLINE'			=> 'Help line',
+	'BBCODE_HELPLINE_EXPLAIN'	=> 'This field contains the mouse over text of the BBCode.',
+	'BBCODE_HELPLINE_TEXT'		=> 'Help line text',
 	'BBCODE_INVALID_TAG_NAME'	=> 'The BBCode tag name that you selected already exists.',
 	'BBCODE_OPEN_ENDED_TAG'		=> 'Your custom BBCode must contain both an opening and a closing tag.',
 	'BBCODE_TAG'				=> 'Tag',
@@ -49,28 +49,28 @@ $lang = array_merge($lang, array(
 	'BBCODE_TAG_DEF_TOO_LONG'	=> 'The tag definition that you have entered is too long, please shorten your tag definition.',
 	'BBCODE_USAGE'				=> 'BBCode usage',
 	'BBCODE_USAGE_EXAMPLE'		=> '[hilight={COLOR}]{TEXT}[/hilight]<br /><br />[font={TEXT1}]{TEXT2}[/font]',
-	'BBCODE_USAGE_EXPLAIN'		=> 'Here you define how to use the bbcode. Replace any variable input by the corresponding token (%ssee below%s)',
+	'BBCODE_USAGE_EXPLAIN'		=> 'Here you define how to use the BBCode. Replace any variable input by the corresponding token (%ssee below%s).',
 
 	'EXAMPLE'						=> 'Example:',
 	'EXAMPLES'						=> 'Examples:',
 
 	'HTML_REPLACEMENT'				=> 'HTML replacement',
 	'HTML_REPLACEMENT_EXAMPLE'		=> '&lt;span style="background-color:{COLOR};"&gt;{TEXT}&lt;/span&gt;<br /><br />&lt;span style="font-family:{TEXT1};"&gt;{TEXT2}&lt;/span&gt;',
-	'HTML_REPLACEMENT_EXPLAIN'		=> 'Here you define the default HTML replacement (each template can have its own HTML replacement). Do not forget to put back tokens you used above!',
+	'HTML_REPLACEMENT_EXPLAIN'		=> 'Here you define the default HTML replacement. Do not forget to put back tokens you used above!',
 
 	'TOKEN'					=> 'Token',
 	'TOKENS'				=> 'Tokens',
-	'TOKENS_EXPLAIN'		=> 'Tokens are placeholders for user input. The input will be validated only if it matches the corresponding definition. If needed, you can number them by adding a number as the last character between the braces, e.g. {USERNAME1}, {USERNAME2}.<br /><br />In addition to these tokens you can use any of lang string present in your language/ directory like this: {L_<em>&lt;stringname&gt;</em>} where <em>&lt;stringname&gt;</em> is the name of the translated string you want to add. For example, {L_WROTE} will be displayed as "wrote" or its translation according to user’s locale',
+	'TOKENS_EXPLAIN'		=> 'Tokens are placeholders for user input. The input will be validated only if it matches the corresponding definition. If needed, you can number them by adding a number as the last character between the braces, e.g. {USERNAME1}, {USERNAME2}.<br /><br />In addition to these tokens you can use any language string present in your language/ directory like this: {L_<em>&lt;STRINGNAME&gt;</em>} where <em>&lt;STRINGNAME&gt;</em> is the name of the translated string you want to add. For example, {L_WROTE} will be displayed as &quot;wrote&quot; or its translation according to user’s locale.',
 	'TOKEN_DEFINITION'		=> 'What can it be?',
 	'TOO_MANY_BBCODES'		=> 'You cannot create any more BBCodes. Please remove one or more BBCodes then try again.',
 
 	'tokens'	=>	array(
 		'TEXT'			=> 'Any text, including foreign characters, numbers, etc…',
 		'NUMBER'		=> 'Any series of digits',
-		'EMAIL'			=> 'A valid email address',
-		'URL'			=> 'A valid URL using any protocol (http, ftp, etc… cannot be used for javascript exploits). If none is given, "http://" is prepended to the string',
-		'LOCAL_URL'		=> 'A local URL. The URL must be relative to the topic page and cannot contain a server name or protocol',
-		'COLOR'			=> 'A HTML color, can be either in the numeric form <samp>#FF1234</samp> or a <a href="http://www.w3.org/TR/CSS21/syndata.html#value-def-color">CSS colour keyword</a> such as <samp>fuchsia</samp> or <samp>InactiveBorder</samp>'
+		'EMAIL'			=> 'A valid e-mail address',
+		'URL'			=> 'A valid URL using any protocol (http, ftp, etc… cannot be used for javascript exploits). If none is given, "http://" is prefixed to the string.',
+		'LOCAL_URL'		=> 'A local URL. The URL must be relative to the topic page and cannot contain a server name or protocol.',
+		'COLOR'			=> 'A HTML colour, can be either in the numeric form <samp>#FF1234</samp> or a <a href="http://www.w3.org/TR/CSS21/syndata.html#value-def-color">CSS colour keyword</a> such as <samp>fuchsia</samp> or <samp>InactiveBorder</samp>'
 	)
 ));
 
@@ -79,17 +79,18 @@ $lang = array_merge($lang, array(
 	'ACP_ICONS_EXPLAIN'		=> 'From this page you can add, remove and edit the icons users may add to their topics or posts. These icons are generally displayed next to topic titles on the forum listing, or the post subjects in topic listings. You can also install and create new packages of icons.',
 	'ACP_SMILIES_EXPLAIN'	=> 'Smilies or emoticons are typically small, sometimes animated images used to convey an emotion or feeling. From this page you can add, remove and edit the emoticons users can use in their posts and private messages. You can also install and create new packages of smilies.',
 	'ADD_SMILIES'			=> 'Add multiple smilies',
+	'ADD_SMILEY_CODE'		=> 'Add additional smiley code',
 	'ADD_ICONS'				=> 'Add multiple icons',
 	'AFTER_ICONS'			=> 'After %s',
 	'AFTER_SMILIES'			=> 'After %s',
 
 	'CODE'						=> 'Code',
 	'CURRENT_ICONS'				=> 'Current icons',
-	'CURRENT_ICONS_EXPLAIN'		=> 'Choose what to do with the currently installed icons',
+	'CURRENT_ICONS_EXPLAIN'		=> 'Choose what to do with the currently installed icons.',
 	'CURRENT_SMILIES'			=> 'Current smilies',
-	'CURRENT_SMILIES_EXPLAIN'	=> 'Choose what to do with the currently installed smilies',
+	'CURRENT_SMILIES_EXPLAIN'	=> 'Choose what to do with the currently installed smilies.',
 
-	'DISPLAY_ON_POSTING'	=> 'Display on posting',
+	'DISPLAY_ON_POSTING'	=> 'Display on posting page',
 
 	'EDIT_ICONS'				=> 'Edit icons',
 	'EDIT_SMILIES'				=> 'Edit smilies',
@@ -116,15 +117,19 @@ $lang = array_merge($lang, array(
 	'ICONS_ORDER'			=> 'Icon order',
 	'ICONS_URL'				=> 'Icon image file',
 	'ICONS_WIDTH'			=> 'Icon width',
-	'IMPORT_ICONS'			=> 'Install icons pak',
-	'IMPORT_SMILIES'		=> 'Install smilies pak',
+	'IMPORT_ICONS'			=> 'Install icons package',
+	'IMPORT_SMILIES'		=> 'Install smilies package',
 
 	'KEEP_ALL'			=> 'Keep all',
 
 	'MASS_ADD_SMILIES'	=> 'Add multiple smilies',
 
+	'NO_ICONS_ADD'		=> 'There are no icons available for adding.',
+	'NO_ICONS_EDIT'		=> 'There are no icons available for modifying.',
 	'NO_ICONS_EXPORT'	=> 'You have no icons with which to create a package.',
 	'NO_ICONS_PAK'		=> 'No icon packages found.',
+	'NO_SMILIES_ADD'	=> 'There are no smilies available for adding.',
+	'NO_SMILIES_EDIT'	=> 'There are no smilies available for modifying.',
 	'NO_SMILIES_EXPORT'	=> 'You have no smilies with which to create a package.',
 	'NO_SMILIES_PAK'	=> 'No smiley packages found.',
 
@@ -176,7 +181,7 @@ $lang = array_merge($lang, array(
 
 // Ranks
 $lang = array_merge($lang, array(
-	'ACP_RANKS_EXPLAIN'		=> 'Using this form you can add, edit, view and delete ranks. You can also create custom ranks which can be applied to a user via the user management facility.',
+	'ACP_RANKS_EXPLAIN'		=> 'Using this form you can add, edit, view and delete ranks. You can also create special ranks which can be applied to a user via the user management facility.',
 	'ADD_RANK'				=> 'Add new rank',
 
 	'MUST_SELECT_RANK'		=> 'You must select a rank.',
@@ -197,11 +202,11 @@ $lang = array_merge($lang, array(
 
 // Disallow Usernames
 $lang = array_merge($lang, array(
-	'ACP_DISALLOW_EXPLAIN'	=> 'Here you can control usernames which will not be allowed to be used. Disallowed usernames are allowed to contain a wildcard character of *.  Please note that you will not be allowed to specify any username that has already been registered, you must first delete that name then disallow it',
-	'ADD_DISALLOW_EXPLAIN'	=> 'You can disallow a username using the wildcard character * to match any character',
+	'ACP_DISALLOW_EXPLAIN'	=> 'Here you can control usernames which will not be allowed to be used. Disallowed usernames are allowed to contain a wildcard character of *.  Please note that you will not be allowed to specify any username that has already been registered, you must first delete that name then disallow it.',
+	'ADD_DISALLOW_EXPLAIN'	=> 'You can disallow a username using the wildcard character * to match any character.',
 	'ADD_DISALLOW_TITLE'	=> 'Add a disallowed username',
 
-	'DELETE_DISALLOW_EXPLAIN'	=> 'You can remove a disallowed username by selecting the username from this list and clicking submit',
+	'DELETE_DISALLOW_EXPLAIN'	=> 'You can remove a disallowed username by selecting the username from this list and clicking submit.',
 	'DELETE_DISALLOW_TITLE'		=> 'Remove a disallowed username',
 	'DISALLOWED_ALREADY'		=> 'The name you entered could not be disallowed. It either already exists in the list, exists in the word censor list, or a matching username is present.',
 	'DISALLOWED_DELETED'		=> 'The disallowed username has been successfully removed.',
@@ -215,12 +220,12 @@ $lang = array_merge($lang, array(
 $lang = array_merge($lang, array(
 	'ACP_REASONS_EXPLAIN'	=> 'Here you can manage the reasons used in reports and denial messages when disapproving posts. There is one default reason (marked with a *) you are not able to remove, this reason is normally used for custom messages if no reason fits.',
 	'ADD_NEW_REASON'		=> 'Add new reason',
-	'AVAILABLE_TITLES'		=> 'Available localized reason titles',
+	'AVAILABLE_TITLES'		=> 'Available localised reason titles',
 	
 	'IS_NOT_TRANSLATED'			=> 'Reason has <strong>not</strong> been localised.',
-	'IS_NOT_TRANSLATED_EXPLAIN'	=> 'Reason has <strong>not</strong> been localised. If you want to provide the localized form, specify the correct key from the language files report reasons section.',
+	'IS_NOT_TRANSLATED_EXPLAIN'	=> 'Reason has <strong>not</strong> been localised. If you want to provide the localised form, specify the correct key from the language files report reasons section.',
 	'IS_TRANSLATED'				=> 'Reason has been localised.',
-	'IS_TRANSLATED_EXPLAIN'		=> 'Reason has been localised. If the title you enter here is specified within the language files report reasons section, the localized form of the title and description will be used.',
+	'IS_TRANSLATED_EXPLAIN'		=> 'Reason has been localised. If the title you enter here is specified within the language files report reasons section, the localised form of the title and description will be used.',
 	
 	'NO_REASON'					=> 'Reason could not be found.',
 	'NO_REASON_INFO'			=> 'You have to specify a title and a description for this reason.',
@@ -232,7 +237,7 @@ $lang = array_merge($lang, array(
 	'REASON_DESCRIPTION'		=> 'Reason description',
 	'REASON_DESC_TRANSLATED'	=> 'Displayed reason description',
 	'REASON_EDIT'				=> 'Edit report/denial reason',
-	'REASON_EDIT_EXPLAIN'		=> 'Here you are able to add or edit a reason. If the reason is translated the localized version is used instead of the description entered here.',
+	'REASON_EDIT_EXPLAIN'		=> 'Here you are able to add or edit a reason. If the reason is translated the localised version is used instead of the description entered here.',
 	'REASON_REMOVED'			=> 'Report/denial reason successfully removed.',
 	'REASON_TITLE'				=> 'Reason title',
 	'REASON_TITLE_TRANSLATED'	=> 'Displayed reason title',

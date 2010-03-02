@@ -37,7 +37,7 @@ class acp_groups
 		$update		= (isset($_POST['update'])) ? true : false;
 
 		// Clear some vars
-		$can_upload = (file_exists($phpbb_root_path . $config['avatar_path']) && is_writeable($phpbb_root_path . $config['avatar_path']) && $file_uploads) ? true : false;
+		$can_upload = (file_exists($phpbb_root_path . $config['avatar_path']) && @is_writable($phpbb_root_path . $config['avatar_path']) && $file_uploads) ? true : false;
 		$group_row = array();
 
 		// Grab basic data for group, if group_id is set and exists
@@ -74,7 +74,8 @@ class acp_groups
 				}
 
 				// Approve, demote or promote
-				group_user_attributes($action, $group_id, $mark_ary, false, $group_row['group_name']);
+				$group_name = ($group_row['group_type'] == GROUP_SPECIAL) ? $user->lang['G_' . $group_row['group_name']] : $group_row['group_name'];
+				group_user_attributes($action, $group_id, $mark_ary, false, $group_name);
 
 				switch ($action)
 				{
@@ -102,6 +103,8 @@ class acp_groups
 
 				if (confirm_box(true))
 				{
+					$group_name = ($group_row['group_type'] == GROUP_SPECIAL) ? $user->lang['G_' . $group_row['group_name']] : $group_row['group_name'];
+
 					if (!sizeof($mark_ary))
 					{
 						$start = 0;
@@ -123,7 +126,7 @@ class acp_groups
 								}
 								while ($row = $db->sql_fetchrow($result));
 
-								group_user_attributes('default', $group_id, $mark_ary, false, $group_row['group_name'], $group_row);
+								group_user_attributes('default', $group_id, $mark_ary, false, $group_name, $group_row);
 
 								$start = (sizeof($mark_ary) < 200) ? 0 : $start + 200;
 							}
@@ -137,7 +140,7 @@ class acp_groups
 					}
 					else
 					{
-						group_user_attributes('default', $group_id, $mark_ary, false, $group_row['group_name'], $group_row);
+						group_user_attributes('default', $group_id, $mark_ary, false, $group_name, $group_row);
 					}
 
 					trigger_error($user->lang['GROUP_DEFS_UPDATED'] . adm_back_link($this->u_action . '&amp;action=list&amp;g=' . $group_id));
@@ -178,7 +181,8 @@ class acp_groups
 						break;
 
 						case 'deleteusers':
-							$error = group_user_del($group_id, $mark_ary, false, $group_row['group_name']);
+							$group_name = ($group_row['group_type'] == GROUP_SPECIAL) ? $user->lang['G_' . $group_row['group_name']] : $group_row['group_name'];
+							$error = group_user_del($group_id, $mark_ary, false, $group_name);
 						break;
 					}
 
@@ -231,6 +235,8 @@ class acp_groups
 			case 'edit':
 			case 'add':
 
+				include($phpbb_root_path . 'includes/functions_display.' . $phpEx);
+
 				$data = $submit_ary = array();
 
 				if ($action == 'edit' && !$group_id)
@@ -272,15 +278,12 @@ class acp_groups
 						'receive_pm'		=> isset($_REQUEST['group_receive_pm']) ? 1 : 0,
 						'legend'			=> isset($_REQUEST['group_legend']) ? 1 : 0,
 						'message_limit'		=> request_var('group_message_limit', 0),
+						'founder_manage'	=> 0,
 					);
 
 					if ($user->data['user_type'] == USER_FOUNDER)
 					{
 						$submit_ary['founder_manage'] = isset($_REQUEST['group_founder_manage']) ? 1 : 0;
-					}
-					else
-					{
-						$submit_ary['founder_manage'] = 0;
 					}
 
 					if (!empty($_FILES['uploadfile']['tmp_name']) || $data['uploadurl'] || $data['remotelink'])
@@ -318,6 +321,11 @@ class acp_groups
 							$submit_ary['avatar'] = $category . '/' . $avatar_select;
 						}
 					}
+					else if ($delete)
+					{
+						$submit_ary['avatar'] = '';
+						$submit_ary['avatar_type'] = $submit_ary['avatar_width'] = $submit_ary['avatar_height'] = 0;
+					}
 					else if ($data['width'] && $data['height'])
 					{
 						// Only update the dimensions?
@@ -346,13 +354,8 @@ class acp_groups
 							$submit_ary['avatar_height'] = $data['height'];
 						}
 					}
-					else if ($delete)
-					{
-						$submit_ary['avatar'] = '';
-						$submit_ary['avatar_type'] = $submit_ary['avatar_width'] = $submit_ary['avatar_height'] = 0;
-					}
 
-					if ((isset($submit_ary['avatar']) && $submit_ary['avatar'] && (!isset($group_row['group_avatar']) || $group_row['group_avatar'] != $submit_ary['avatar'])) || $delete)
+					if ((isset($submit_ary['avatar']) && $submit_ary['avatar'] && (!isset($group_row['group_avatar']))) || $delete)
 					{
 						if (isset($group_row['group_avatar']) && $group_row['group_avatar'])
 						{
@@ -485,28 +488,7 @@ class acp_groups
 				$type_closed	= ($group_type == GROUP_CLOSED) ? ' checked="checked"' : '';
 				$type_hidden	= ($group_type == GROUP_HIDDEN) ? ' checked="checked"' : '';
 
-				if (isset($group_row['group_avatar']) && $group_row['group_avatar'])
-				{
-					$avatar_img = '';
-
-					switch ($group_row['group_avatar_type'])
-					{
-						case AVATAR_UPLOAD:
-							$avatar_img = $phpbb_root_path . $config['avatar_path'] . '/';
-						break;
-
-						case AVATAR_GALLERY:
-							$avatar_img = $phpbb_root_path . $config['avatar_gallery_path'] . '/';
-						break;
-					}
-
-					$avatar_img .= $group_row['group_avatar'];
-					$avatar_img = '<img src="' . $avatar_img . '" width="' . $group_row['group_avatar_width'] . '" height="' . $group_row['group_avatar_height'] . '" alt="" />';
-				}
-				else
-				{
-					$avatar_img = '<img src="' . $phpbb_admin_path . 'images/no_avatar.gif" alt="" />';
-				}
+				$avatar_img = (!empty($group_row['group_avatar'])) ? get_user_avatar($group_row['group_avatar'], $group_row['group_avatar_type'], $group_row['group_avatar_width'], $group_row['group_avatar_height'], 'GROUP_AVATAR') : '<img src="' . $phpbb_admin_path . 'images/no_avatar.gif" alt="" />';
 
 				$display_gallery = (isset($_POST['display_gallery'])) ? true : false;
 
@@ -557,10 +539,11 @@ class acp_groups
 
 					'S_RANK_OPTIONS'		=> $rank_options,
 					'S_GROUP_OPTIONS'		=> group_select_options(false, false, (($user->data['user_type'] == USER_FOUNDER) ? false : 0)),
+					'AVATAR'				=> $avatar_img,
 					'AVATAR_IMAGE'			=> $avatar_img,
 					'AVATAR_MAX_FILESIZE'	=> $config['avatar_filesize'],
-					'GROUP_AVATAR_WIDTH'	=> (isset($group_row['group_avatar_width'])) ? $group_row['group_avatar_width'] : '',
-					'GROUP_AVATAR_HEIGHT'	=> (isset($group_row['group_avatar_height'])) ? $group_row['group_avatar_height'] : '',
+					'AVATAR_WIDTH'			=> (isset($group_row['group_avatar_width'])) ? $group_row['group_avatar_width'] : '',
+					'AVATAR_HEIGHT'			=> (isset($group_row['group_avatar_height'])) ? $group_row['group_avatar_height'] : '',
 
 					'GROUP_TYPE_FREE'		=> GROUP_FREE,
 					'GROUP_TYPE_OPEN'		=> GROUP_OPEN,
@@ -593,51 +576,36 @@ class acp_groups
 
 				$this->page_title = 'GROUP_MEMBERS';
 
-				// Total number of group leaders
-				$sql = 'SELECT COUNT(user_id) AS total_leaders 
-					FROM ' . USER_GROUP_TABLE . " 
-					WHERE group_id = $group_id 
-						AND group_leader = 1";
+				// Grab the leaders - always, on every page...
+				$sql = 'SELECT u.user_id, u.username, u.username_clean, u.user_regdate, u.user_posts, u.group_id, ug.group_leader, ug.user_pending 
+					FROM ' . USERS_TABLE . ' u, ' . USER_GROUP_TABLE . " ug 
+					WHERE ug.group_id = $group_id 
+						AND u.user_id = ug.user_id
+						AND ug.group_leader = 1
+					ORDER BY ug.group_leader DESC, ug.user_pending ASC, u.username_clean";
 				$result = $db->sql_query($sql);
-				$total_leaders = (int) $db->sql_fetchfield('total_leaders');
+
+				while ($row = $db->sql_fetchrow($result))
+				{
+					$template->assign_block_vars('leader', array(
+						'U_USER_EDIT'		=> append_sid("{$phpbb_admin_path}index.$phpEx", "i=users&amp;action=edit&amp;u={$row['user_id']}"),
+
+						'USERNAME'			=> $row['username'],
+						'S_GROUP_DEFAULT'	=> ($row['group_id'] == $group_id) ? true : false,
+						'JOINED'			=> ($row['user_regdate']) ? $user->format_date($row['user_regdate']) : ' - ',
+						'USER_POSTS'		=> $row['user_posts'],
+						'USER_ID'			=> $row['user_id'])
+					);
+				}
 				$db->sql_freeresult($result);
 
 				// Total number of group members (non-leaders)
 				$sql = 'SELECT COUNT(user_id) AS total_members 
 					FROM ' . USER_GROUP_TABLE . " 
 					WHERE group_id = $group_id 
-						AND group_leader <> 1";
+						AND group_leader = 0";
 				$result = $db->sql_query($sql);
 				$total_members = (int) $db->sql_fetchfield('total_members');
-				$db->sql_freeresult($result);
-
-				// Grab the members
-				$sql = 'SELECT u.user_id, u.username, u.username_clean, u.user_regdate, u.user_posts, u.group_id, ug.group_leader, ug.user_pending 
-					FROM ' . USERS_TABLE . ' u, ' . USER_GROUP_TABLE . " ug 
-					WHERE ug.group_id = $group_id 
-						AND u.user_id = ug.user_id 
-					ORDER BY ug.group_leader DESC, ug.user_pending ASC, u.username_clean";
-				$result = $db->sql_query_limit($sql, $config['topics_per_page'], $start);
-
-				$leader = $member = 0;
-				$group_data = array(
-					'leader'	=> array(),
-					'member'	=> array(),
-				);
-
-				while ($row = $db->sql_fetchrow($result))
-				{
-					$type = ($row['group_leader']) ? 'leader' : 'member';
-
-					$group_data[$type][$$type]['user_id'] = $row['user_id'];
-					$group_data[$type][$$type]['group_id'] = $row['group_id'];
-					$group_data[$type][$$type]['username'] = $row['username'];
-					$group_data[$type][$$type]['user_regdate'] = $row['user_regdate'];
-					$group_data[$type][$$type]['user_posts'] = $row['user_posts'];
-					$group_data[$type][$$type]['user_pending'] = ($row['user_pending']) ? 1 : 0;
-
-					$$type++;
-				}
 				$db->sql_freeresult($result);
 
 				$s_action_options = '';
@@ -664,22 +632,18 @@ class acp_groups
 					'U_DEFAULT_ALL'		=> "{$this->u_action}&amp;action=default&amp;g=$group_id")
 				);
 
-				foreach ($group_data['leader'] as $row)
-				{
-					$template->assign_block_vars('leader', array(
-						'U_USER_EDIT'		=> append_sid("{$phpbb_admin_path}index.$phpEx", "i=users&amp;action=edit&amp;u={$row['user_id']}"),
-
-						'USERNAME'			=> $row['username'],
-						'S_GROUP_DEFAULT'	=> ($row['group_id'] == $group_id) ? true : false,
-						'JOINED'			=> ($row['user_regdate']) ? $user->format_date($row['user_regdate']) : ' - ',
-						'USER_POSTS'		=> $row['user_posts'],
-						'USER_ID'			=> $row['user_id'])
-					);
-				}
+				// Grab the members
+				$sql = 'SELECT u.user_id, u.username, u.username_clean, u.user_regdate, u.user_posts, u.group_id, ug.group_leader, ug.user_pending 
+					FROM ' . USERS_TABLE . ' u, ' . USER_GROUP_TABLE . " ug 
+					WHERE ug.group_id = $group_id 
+						AND u.user_id = ug.user_id
+						AND ug.group_leader = 0
+					ORDER BY ug.group_leader DESC, ug.user_pending ASC, u.username_clean";
+				$result = $db->sql_query_limit($sql, $config['topics_per_page'], $start);
 
 				$pending = false;
 
-				foreach ($group_data['member'] as $row)
+				while ($row = $db->sql_fetchrow($result))
 				{
 					if ($row['user_pending'] && !$pending)
 					{
@@ -700,6 +664,7 @@ class acp_groups
 						'USER_ID'			=> $row['user_id'])
 					);
 				}
+				$db->sql_freeresult($result);
 
 				return;
 			break;
@@ -710,33 +675,44 @@ class acp_groups
 			'S_GROUP_ADD'	=> ($auth->acl_get('a_groupadd')) ? true : false)
 		);
 
-		$sql = 'SELECT g.group_id, g.group_name, g.group_type, COUNT(ug.user_id) AS total_members 
+		// Get us all the groups
+		$sql = 'SELECT g.group_id, g.group_name, g.group_type
 			FROM ' . GROUPS_TABLE . ' g
-			LEFT JOIN ' . USER_GROUP_TABLE . ' ug ON (g.group_id = ug.group_id)
-			GROUP BY g.group_id, g.group_name, g.group_type
 			ORDER BY g.group_type ASC, g.group_name';
 		$result = $db->sql_query($sql);
 
-		$special = $normal = 0;
-		$group_ary = array();
-
+		$lookup = $cached_group_data = array();
 		while ($row = $db->sql_fetchrow($result))
 		{
 			$type = ($row['group_type'] == GROUP_SPECIAL) ? 'special' : 'normal';
 
-			$group_ary[$type][$$type]['group_id'] = $row['group_id'];
-			$group_ary[$type][$$type]['group_name'] = $row['group_name'];
-			$group_ary[$type][$$type]['group_type'] = $row['group_type'];
-			$group_ary[$type][$$type]['total_members'] = $row['total_members'];
+			// used to determine what type a group is
+			$lookup[$row['group_id']] = $type;
 
-			$$type++;
+			// used for easy access to the data within a group
+			$cached_group_data[$type][$row['group_id']] = $row;
+			$cached_group_data[$type][$row['group_id']]['total_members'] = 0;
 		}
 		$db->sql_freeresult($result);
 
-		ksort($group_ary);
+		// How many people are in which group?
+		$sql = 'SELECT COUNT(ug.user_id) AS total_members, ug.group_id
+			FROM ' . USER_GROUP_TABLE . ' ug
+			WHERE ' . $db->sql_in_set('ug.group_id', array_keys($lookup)) . '
+			GROUP BY ug.group_id';
+		$result = $db->sql_query($sql);
 
-		$special_toggle = false;
-		foreach ($group_ary as $type => $row_ary)
+		while ($row = $db->sql_fetchrow($result))
+		{
+			$type = $lookup[$row['group_id']];
+			$cached_group_data[$type][$row['group_id']]['total_members'] = $row['total_members'];
+		}
+		$db->sql_freeresult($result);
+
+		// The order is... normal, then special
+		ksort($cached_group_data);
+
+		foreach ($cached_group_data as $type => $row_ary)
 		{
 			if ($type == 'special')
 			{
@@ -745,9 +721,8 @@ class acp_groups
 				);
 			}
 
-			foreach ($row_ary as $row)
+			foreach ($row_ary as $group_id => $row)
 			{
-				$group_id = $row['group_id'];
 				$group_name = (!empty($user->lang['G_' . $row['group_name']]))? $user->lang['G_' . $row['group_name']] : $row['group_name'];
 				
 				$template->assign_block_vars('groups', array(

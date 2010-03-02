@@ -10,8 +10,8 @@
 
 /**
 */
-define('IN_PHPBB', 1);
-define('ADMIN_START', 1);
+define('IN_PHPBB', true);
+define('ADMIN_START', true);
 define('NEED_SID', true);
 
 // Include files
@@ -62,9 +62,6 @@ $template->assign_var('T_TEMPLATE_PATH', $phpbb_admin_path . 'style');
 
 // the acp template is never stored in the database
 $user->theme['template_storedb'] = false;
-
-// Force pagination seperation for admin style
-$user->theme['pagination_sep'] = '';
 
 // Instantiate new module
 $module = new p_master();
@@ -253,8 +250,7 @@ function h_radio($name, &$input_ary, $input_default = false, $id = false, $key =
 	foreach ($input_ary as $value => $title)
 	{
 		$selected = ($input_default !== false && $value == $input_default) ? ' checked="checked"' : '';
-		$html .= ($html) ? ' &nbsp; ' : '';
-		$html .= '<input type="radio" name="' . $name . '"' . (($id && !$id_assigned) ? ' id="' . $id . '"' : '') . ' value="' . $value . '"' . $selected . (($key) ? ' accesskey="' . $key . '"' : '') . ' class="radio" /> ' . $user->lang[$title];
+		$html .= '<label><input type="radio" name="' . $name . '"' . (($id && !$id_assigned) ? ' id="' . $id . '"' : '') . ' value="' . $value . '"' . $selected . (($key) ? ' accesskey="' . $key . '"' : '') . ' class="radio" /> ' . $user->lang[$title] . '</label>';
 		$id_assigned = true;
 	}
 
@@ -302,10 +298,10 @@ function build_cfg_template($tpl_type, $key, &$new, $config_key, $vars)
 			$tpl_type_cond = explode('_', $tpl_type[1]);
 			$type_no = ($tpl_type_cond[0] == 'disabled' || $tpl_type_cond[0] == 'enabled') ? false : true;
 
-			$tpl_no = '<input type="radio" name="' . $name . '" value="0"' . $key_no . ' class="radio" />&nbsp;' . (($type_no) ? $user->lang['NO'] : $user->lang['DISABLED']);
-			$tpl_yes = '<input type="radio" id="' . $key . '" name="' . $name . '" value="1"' . $key_yes . ' class="radio" />&nbsp;' . (($type_no) ? $user->lang['YES'] : $user->lang['ENABLED']);
+			$tpl_no = '<label><input type="radio" name="' . $name . '" value="0"' . $key_no . ' class="radio" /> ' . (($type_no) ? $user->lang['NO'] : $user->lang['DISABLED']) . '</label>';
+			$tpl_yes = '<label><input type="radio" id="' . $key . '" name="' . $name . '" value="1"' . $key_yes . ' class="radio" /> ' . (($type_no) ? $user->lang['YES'] : $user->lang['ENABLED']) . '</label>';
 
-			$tpl = ($tpl_type_cond[0] == 'yes' || $tpl_type_cond[0] == 'enabled') ? $tpl_yes . '&nbsp;&nbsp;' . $tpl_no : $tpl_no . '&nbsp;&nbsp;' . $tpl_yes;
+			$tpl = ($tpl_type_cond[0] == 'yes' || $tpl_type_cond[0] == 'enabled') ? $tpl_yes . $tpl_no : $tpl_no . $tpl_yes;
 		break;
 
 		case 'select':
@@ -486,12 +482,12 @@ function validate_config_vars($config_vars, &$cfg_array, &$error)
 					$error[] = sprintf($user->lang['DIRECTORY_NOT_DIR'], $cfg_array[$config_name]);
 				}
 
-				// Check if the path is writeable
+				// Check if the path is writable
 				if ($config_definition['validate'] == 'wpath' || $config_definition['validate'] == 'rwpath')
 				{
-					if (file_exists($phpbb_root_path . $cfg_array[$config_name]) && !is_writeable($phpbb_root_path . $cfg_array[$config_name]))
+					if (file_exists($phpbb_root_path . $cfg_array[$config_name]) && !@is_writable($phpbb_root_path . $cfg_array[$config_name]))
 					{
-						$error[] = sprintf($user->lang['DIRECTORY_NOT_WRITEABLE'], $cfg_array[$config_name]);
+						$error[] = sprintf($user->lang['DIRECTORY_NOT_WRITABLE'], $cfg_array[$config_name]);
 					}
 				}
 

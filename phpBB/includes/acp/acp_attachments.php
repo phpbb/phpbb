@@ -730,7 +730,7 @@ class acp_attachments
 						$sql = 'SELECT forum_id, forum_name, parent_id, forum_type, left_id, right_id
 							FROM ' . FORUMS_TABLE . '
 							ORDER BY left_id ASC';
-						$result = $db->sql_query($sql);
+						$result = $db->sql_query($sql, 600);
 
 						$right = $cat_right = $padding_inc = 0;
 						$padding = $forum_list = $holding = '';
@@ -766,6 +766,8 @@ class acp_attachments
 
 							if ($row['left_id'] > $cat_right)
 							{
+								// make sure we don't forget anything
+								$s_forum_id_options .= $holding;
 								$holding = '';
 							}
 
@@ -773,14 +775,20 @@ class acp_attachments
 							{
 								$cat_right = max($cat_right, $row['right_id']);
 
-								$holding .= '<option value="' . $row['forum_id'] . '"' . (($row['forum_type'] == FORUM_POST) ? ' class="blue"' : '') . $selected . '>' . $padding . $row['forum_name'] . '</option>';
+								$holding .= '<option value="' . $row['forum_id'] . '"' . (($row['forum_type'] == FORUM_POST) ? ' class="sep"' : '') . $selected . '>' . $padding . $row['forum_name'] . '</option>';
 							}
 							else
 							{
-								$s_forum_id_options .= $holding . '<option value="' . $row['forum_id'] . '"' . (($row['forum_type'] == FORUM_POST) ? ' class="blue"' : '') . $selected . '>' . $padding . $row['forum_name'] . '</option>';
+								$s_forum_id_options .= $holding . '<option value="' . $row['forum_id'] . '"' . (($row['forum_type'] == FORUM_POST) ? ' class="sep"' : '') . $selected . '>' . $padding . $row['forum_name'] . '</option>';
 								$holding = '';
 							}
 						}
+
+						if ($holding)
+						{
+							$s_forum_id_options .= $holding;
+						}
+
 						$db->sql_freeresult($result);
 						unset($padding_store);
 
@@ -975,7 +983,7 @@ class acp_attachments
 						'PHYSICAL_FILENAME'	=> basename($row['physical_filename']),
 						'ATTACH_ID'			=> $row['attach_id'],
 						'POST_IDS'			=> (!empty($post_ids[$row['attach_id']])) ? $post_ids[$row['attach_id']] : '',
-						'U_FILE'			=> append_sid($phpbb_root_path . 'download.' . $phpEx, 'id=' . $row['attach_id']))
+						'U_FILE'			=> append_sid($phpbb_root_path . 'download.' . $phpEx, 'mode=view&amp;id=' . $row['attach_id']))
 					);
 				}
 				$db->sql_freeresult($result);
@@ -1137,7 +1145,7 @@ class acp_attachments
 	{
 		global $user, $phpbb_root_path;
 
-		// Does the target directory exist, is it a directory and writeable.
+		// Does the target directory exist, is it a directory and writable.
 		if ($create_directory)
 		{
 			if (!file_exists($phpbb_root_path . $upload_dir))

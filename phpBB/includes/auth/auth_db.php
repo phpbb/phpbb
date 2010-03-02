@@ -38,7 +38,7 @@ function login_db(&$username, &$password)
 
 	// If there are too much login attempts, we need to check for an confirm image
 	// Every auth module is able to define what to do by itself...
-	if ($config['max_login_attempts'] && $row['user_login_attempts'] > $config['max_login_attempts'])
+	if ($config['max_login_attempts'] && $row['user_login_attempts'] >= $config['max_login_attempts'])
 	{
 		$confirm_id = request_var('confirm_id', '');
 		$confirm_code = request_var('confirm_code', '');
@@ -98,35 +98,63 @@ function login_db(&$username, &$password)
 	// If the password convert flag is set we need to convert it
 	if ($row['user_pass_convert'])
 	{
-		// in phpBB2 passwords were used exactly as they were sent
+		// in phpBB2 passwords were used exactly as they were sent, with addslashes applied
 		$password_old_format = isset($_REQUEST['password']) ? (string) $_REQUEST['password'] : '';
-		$password_old_format = (STRIP) ? stripslashes($password_old_format) : $password_old_format;
+		$password_old_format = (!STRIP) ? addslashes($password_old_format) : $password_old_format;
 		$password_new_format = '';
 
-		set_var($password_new_format, $password_old_format, 'string');
+		set_var($password_new_format, stripslashes($password_old_format), 'string');
 
-		if ($password == $password_new_format && md5($password_old_format) == $row['user_password'])
+		if ($password == $password_new_format)
 		{
-			// Update the password in the users table to the new format and remove user_pass_convert flag
-			$sql = 'UPDATE ' . USERS_TABLE . '
-				SET user_password = \'' . $db->sql_escape(md5($password_new_format)) . '\',
-					user_pass_convert = 0
-				WHERE user_id = ' . $row['user_id'];
-			$db->sql_query($sql);
+			if (!function_exists('utf8_to_cp1252'))
+			{
+				global $phpbb_root_path, $phpEx;
+				include($phpbb_root_path . 'includes/utf/data/recode_basic.' . $phpEx);
+			}
 
-			$row['user_pass_convert'] = 0;
-			$row['user_password'] = md5($password_new_format);
+			// cp1252 is phpBB2's default encoding, characters outside ASCII range might work when converted into that encoding
+			if (md5($password_old_format) == $row['user_password'] || md5(utf8_to_cp1252($password_old_format)) == $row['user_password'])
+			{
+				// Update the password in the users table to the new format and remove user_pass_convert flag
+				$sql = 'UPDATE ' . USERS_TABLE . '
+					SET user_password = \'' . $db->sql_escape(md5($password_new_format)) . '\',
+						user_pass_convert = 0
+					WHERE user_id = ' . $row['user_id'];
+				$db->sql_query($sql);
+
+				$row['user_pass_convert'] = 0;
+				$row['user_password'] = md5($password_new_format);
+			}
+			else
+			{
+				// Although we weren't able to convert this password we have to
+				// increase login attempt count to make sure this cannot be exploited
+				$sql = 'UPDATE ' . USERS_TABLE . '
+					SET user_login_attempts = user_login_attempts + 1
+					WHERE user_id = ' . $row['user_id'];
+				$db->sql_query($sql);
+
+				return array(
+					'status'		=> LOGIN_ERROR_PASSWORD_CONVERT,
+					'error_msg'		=> 'LOGIN_ERROR_PASSWORD_CONVERT',
+					'user_row'		=> $row,
+				);
+			}
 		}
 	}
 
 	// Check password ...
 	if (!$row['user_pass_convert'] && md5($password) == $row['user_password'])
 	{
-		// Successful, reset login attempts (the user passed all stages)
-		$sql = 'UPDATE ' . USERS_TABLE . '
-			SET user_login_attempts = 0
-			WHERE user_id = ' . $row['user_id'];
-		$db->sql_query($sql);
+		if ($row['user_login_attempts'] != 0)
+		{
+			// Successful, reset login attempts (the user passed all stages)
+			$sql = 'UPDATE ' . USERS_TABLE . '
+				SET user_login_attempts = 0
+				WHERE user_id = ' . $row['user_id'];
+			$db->sql_query($sql);
+		}
 
 		// User inactive...
 		if ($row['user_type'] == USER_INACTIVE || $row['user_type'] == USER_IGNORE)

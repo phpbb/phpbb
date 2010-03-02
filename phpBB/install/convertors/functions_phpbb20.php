@@ -46,16 +46,16 @@ function phpbb_forum_flags()
 */
 function phpbb_insert_forums()
 {
-	global $db, $convert, $user, $config;
+	global $db, $src_db, $same_db, $convert, $user, $config;
 
 	$db->sql_query($convert->truncate_statement . FORUMS_TABLE);
 
 	// Determine the highest id used within the old forums table (we add the categories after the forum ids)
 	$sql = 'SELECT MAX(forum_id) AS max_forum_id
 		FROM ' . $convert->src_table_prefix . 'forums';
-	$result = $db->sql_query($sql);
-	$max_forum_id = (int) $db->sql_fetchfield('max_forum_id');
-	$db->sql_freeresult($result);
+	$result = $src_db->sql_query($sql);
+	$max_forum_id = (int) $src_db->sql_fetchfield('max_forum_id');
+	$src_db->sql_freeresult($result);
 
 	$max_forum_id++;
 
@@ -64,24 +64,32 @@ function phpbb_insert_forums()
 		FROM ' . $convert->src_table_prefix . 'categories
 		ORDER BY cat_order';
 
-	if ($convert->mysql_convert)
+	if ($convert->mysql_convert && $same_db)
 	{
-		$db->sql_query("SET NAMES 'binary'");
+		$src_db->sql_query("SET NAMES 'binary'");
 	}
 
-	$result = $db->sql_query($sql);
+	$result = $src_db->sql_query($sql);
 
-	if ($convert->mysql_convert)
+	if ($convert->mysql_convert && $same_db)
 	{
-		$db->sql_query("SET NAMES 'utf8'");
+		$src_db->sql_query("SET NAMES 'utf8'");
+	}
+
+	switch ($db->sql_layer)
+	{
+		case 'mssql':
+		case 'mssql_odbc':
+			$db->sql_query('SET IDENTITY_INSERT ' . FORUMS_TABLE . ' ON');
+		break;
 	}
 
 	$cats_added = array();
-	while ($row = $db->sql_fetchrow($result))
+	while ($row = $src_db->sql_fetchrow($result))
 	{
 		$sql_ary = array(
 			'forum_id'		=> $max_forum_id,
-			'forum_name'	=> ($row['cat_title']) ? htmlspecialchars(phpbb_set_encoding($row['cat_title'], false), ENT_COMPAT, 'UTF-8') : $user->lang['CATEGORY'],
+			'forum_name'	=> ($row['cat_title']) ? htmlspecialchars(phpbb_set_default_encoding($row['cat_title']), ENT_COMPAT, 'UTF-8') : $user->lang['CATEGORY'],
 			'parent_id'		=> 0,
 			'forum_parents'	=> '',
 			'forum_desc'	=> '',
@@ -105,17 +113,17 @@ function phpbb_insert_forums()
 		$cats_added[$row['cat_id']] = $max_forum_id;
 		$max_forum_id++;
 	}
-	$db->sql_freeresult($result);
+	$src_db->sql_freeresult($result);
 
 	// There may be installations having forums with non-existant category ids.
 	// We try to catch them and add them to an "unknown" category instead of leaving them out.
 	$sql = 'SELECT cat_id
 		FROM ' . $convert->src_table_prefix . 'forums
 		GROUP BY cat_id';
-	$result = $db->sql_query($sql);
+	$result = $src_db->sql_query($sql);
 
 	$unknown_cat_id = false;
-	while ($row = $db->sql_fetchrow($result))
+	while ($row = $src_db->sql_fetchrow($result))
 	{
 		// Catch those categories not been added before
 		if (!isset($cats_added[$row['cat_id']]))
@@ -123,7 +131,7 @@ function phpbb_insert_forums()
 			$unknown_cat_id = true;
 		}
 	}
-	$db->sql_freeresult($result);
+	$src_db->sql_freeresult($result);
 
 	// Is there at least one category not known?
 	if ($unknown_cat_id === true)
@@ -158,24 +166,24 @@ function phpbb_insert_forums()
 	}
 
 	// Now insert the forums
-	$sql = 'SELECT f.*, fp.prune_days, fp.prune_freq FROM ' . $convert->src_table_prefix . 'forums f
+	$sql = 'SELECT f.forum_id, f.forum_name, f.cat_id, f.forum_desc, f.forum_status, f.prune_enable, f.prune_next, fp.prune_days, fp.prune_freq FROM ' . $convert->src_table_prefix . 'forums f
 		LEFT JOIN ' . $convert->src_table_prefix . 'forum_prune fp ON f.forum_id = fp.forum_id
-		GROUP BY f.forum_id
+		GROUP BY f.forum_id, f.forum_name, f.cat_id, f.forum_desc, f.forum_status, f.prune_enable, f.prune_next, f.forum_order, fp.prune_days, fp.prune_freq
 		ORDER BY f.cat_id, f.forum_order';
 
-	if ($convert->mysql_convert)
+	if ($convert->mysql_convert && $same_db)
 	{
-		$db->sql_query("SET NAMES 'binary'");
+		$src_db->sql_query("SET NAMES 'binary'");
 	}
 
-	$result = $db->sql_query($sql);
+	$result = $src_db->sql_query($sql);
 
-	if ($convert->mysql_convert)
+	if ($convert->mysql_convert && $same_db)
 	{
-		$db->sql_query("SET NAMES 'utf8'");
+		$src_db->sql_query("SET NAMES 'utf8'");
 	}
 
-	while ($row = $db->sql_fetchrow($result))
+	while ($row = $src_db->sql_fetchrow($result))
 	{
 		// Some might have forums here with an id not being "possible"...
 		// To be somewhat friendly we "change" the category id for those to a previously created ghost category
@@ -192,10 +200,10 @@ function phpbb_insert_forums()
 		// Define the new forums sql ary
 		$sql_ary = array(
 			'forum_id'			=> (int) $row['forum_id'],
-			'forum_name'		=> htmlspecialchars(phpbb_set_encoding($row['forum_name'], false), ENT_COMPAT, 'UTF-8'),
+			'forum_name'		=> htmlspecialchars(phpbb_set_default_encoding($row['forum_name']), ENT_COMPAT, 'UTF-8'),
 			'parent_id'			=> $cats_added[$row['cat_id']],
 			'forum_parents'		=> '',
-			'forum_desc'		=> htmlspecialchars(phpbb_set_encoding($row['forum_desc'], false), ENT_COMPAT, 'UTF-8'),
+			'forum_desc'		=> htmlspecialchars(phpbb_set_default_encoding($row['forum_desc']), ENT_COMPAT, 'UTF-8'),
 			'forum_type'		=> FORUM_POST,
 			'forum_status'		=> is_item_locked($row['forum_status']),
 			'enable_prune'		=> $row['prune_enable'],
@@ -258,7 +266,15 @@ function phpbb_insert_forums()
 		$sql = 'INSERT INTO ' . FORUMS_TABLE . ' ' . $db->sql_build_array('INSERT', $sql_ary);
 		$db->sql_query($sql);
 	}
-	$db->sql_freeresult($result);
+	$src_db->sql_freeresult($result);
+
+	switch ($db->sql_layer)
+	{
+		case 'mssql':
+		case 'mssql_odbc':
+			$db->sql_query('SET IDENTITY_INSERT ' . FORUMS_TABLE . ' OFF');
+		break;
+	}
 }
 
 /**
@@ -326,14 +342,24 @@ function phpbb_set_encoding($text, $grab_user_lang = true)
 		}
 		else if (!empty($convert_row['poster_id']))
 		{
-			global $db;
+			global $src_db, $same_db;
+
+			if ($convert->mysql_convert && $same_db)
+			{
+				$src_db->sql_query("SET NAMES 'binary'");
+			}
 
 			$sql = 'SELECT user_lang
 				FROM ' . $convert->src_table_prefix . 'users
 				WHERE user_id = ' . (int) $convert_row['poster_id'];
-			$result = $db->sql_query($sql);
-			$get_lang = (string) $db->sql_fetchfield('user_lang');
-			$db->sql_freeresult($result);
+			$result = $src_db->sql_query($sql);
+			$get_lang = (string) $src_db->sql_fetchfield('user_lang');
+			$src_db->sql_freeresult($result);
+
+			if ($convert->mysql_convert && $same_db)
+			{
+				$src_db->sql_query("SET NAMES 'utf8'");
+			}
 
 			$get_lang = (!trim($get_lang)) ? trim(get_config_value('default_lang')) : trim($get_lang);
 		}
@@ -374,26 +400,29 @@ function phpbb_set_default_encoding($text)
 */
 function phpbb_get_birthday($birthday = '')
 {
-	$birthday = (int) $birthday;
-
 	if (defined('MOD_BIRTHDAY_TERRA'))
 	{
+		$birthday = (string) $birthday;
+
 		// stored as month, day, year
 		if (!$birthday)
 		{
 			return ' 0- 0-   0';
 		}
 
-		$birthday = (string) $birthday;
+		// We use the original mod code to retrieve the birthday (not ideal)
+		preg_match('/(..)(..)(....)/', sprintf('%08d', $birthday), $birthday_parts);
 
-		$month = substr($birthday, 0, 2);
-		$day = substr($birthday, 2, 2);
-		$year = substr($birthday, -4);
+		$month = $birthday_parts[1];
+		$day = $birthday_parts[2];
+		$year =  $birthday_parts[3];
 
 		return sprintf('%2d-%2d-%4d', $day, $month, $year);
 	}
 	else
 	{
+		$birthday = (int) $birthday;
+
 		if (!$birthday || $birthday == 999999 || $birthday < 0)
 		{
 			return ' 0- 0-   0';
@@ -410,36 +439,43 @@ function phpbb_get_birthday($birthday = '')
 */
 function phpbb_user_id($user_id)
 {
-	if (!$user_id)
-	{
-		return 0;
-	}
-
-	if ($user_id == -1)
-	{
-		return ANONYMOUS;
-	}
-
 	global $config;
 
 	// Increment user id if the old forum is having a user with the id 1
 	if (!isset($config['increment_user_id']))
 	{
-		global $db, $convert;
+		global $src_db, $same_db, $convert;
+
+		if ($convert->mysql_convert && $same_db)
+		{
+			$src_db->sql_query("SET NAMES 'binary'");
+		}
 
 		// Now let us set a temporary config variable for user id incrementing
 		$sql = "SELECT user_id
 			FROM {$convert->src_table_prefix}users
 			WHERE user_id = 1";
-		$result = $db->sql_query($sql);
-		$id = (int) $db->sql_fetchfield('user_id');
-		$db->sql_freeresult($result);
+		$result = $src_db->sql_query($sql);
+		$id = (int) $src_db->sql_fetchfield('user_id');
+		$src_db->sql_freeresult($result);
+
+		// Try to get the maximum user id possible...
+		$sql = "SELECT MAX(user_id) AS max_user_id
+			FROM {$convert->src_table_prefix}users";
+		$result = $src_db->sql_query($sql);
+		$max_id = (int) $src_db->sql_fetchfield('max_user_id');
+		$src_db->sql_freeresult($result);
+
+		if ($convert->mysql_convert && $same_db)
+		{
+			$src_db->sql_query("SET NAMES 'utf8'");
+		}
 
 		// If there is a user id 1, we need to increment user ids. :/
 		if ($id === 1)
 		{
-			set_config('increment_user_id', 1, true);
-			$config['increment_user_id'] = 1;
+			set_config('increment_user_id', ($max_id + 1), true);
+			$config['increment_user_id'] = $max_id + 1;
 		}
 		else
 		{
@@ -448,12 +484,23 @@ function phpbb_user_id($user_id)
 		}
 	}
 
-	if (!empty($config['increment_user_id']))
+	// If the old user id is -1 in 2.0.x it is the anonymous user...
+	if ($user_id == -1)
 	{
-		$user_id++;
+		return ANONYMOUS;
 	}
 
-	return $user_id;
+	if (!empty($config['increment_user_id']) && $user_id == 1)
+	{
+		return $config['increment_user_id'];
+	}
+
+	// A user id of 0 can happen, for example within the ban table if no user is banned...
+	// Within the posts and topics table this can be "dangerous" but is the fault of the user
+	// having mods installed (a poster id of 0 is not possible in 2.0.x). 
+	// Therefore, we return the user id "as is".
+
+	return (int) $user_id;
 }
 
 /* Copy additional table fields from old forum to new forum if user wants this (for Mod compatibility for example)
@@ -468,77 +515,92 @@ function phpbb_copy_table_fields()
 */
 function phpbb_convert_authentication($mode)
 {
-	global $db, $convert, $user, $config, $cache;
+	global $db, $src_db, $same_db, $convert, $user, $config, $cache;
 
 	if ($mode == 'start')
 	{
 		$db->sql_query($convert->truncate_statement . ACL_USERS_TABLE);
 		$db->sql_query($convert->truncate_statement . ACL_GROUPS_TABLE);
 
-		// Grab user id of first user with user_level of ADMIN
+		// What we will do is handling all 2.0.x admins as founder to replicate what is common in 2.0.x.
+		// After conversion the main admin need to make sure he is removing permissions and the founder status if wanted.
+
+
+		// Grab user ids of users with user_level of ADMIN
 		$sql = "SELECT user_id
 			FROM {$convert->src_table_prefix}users
 			WHERE user_level = 1
 			ORDER BY user_regdate ASC";
-		$result = $db->sql_query_limit($sql, 1);
-		$row = $db->sql_fetchrow($result);
-		$db->sql_freeresult($result);
+		$result = $src_db->sql_query($sql);
 
-		$founder_id = phpbb_user_id($row['user_id']);
+		while ($row = $src_db->sql_fetchrow($result))
+		{
+			$user_id = (int) phpbb_user_id($row['user_id']);
 
-		// Set a founder admin ... we'll assume it's the first user with admin level access
-		$sql = 'UPDATE ' . USERS_TABLE . '
-			SET user_type = ' . USER_FOUNDER . "
-			WHERE user_id = $founder_id";
-		$db->sql_query($sql);
+			// Set founder admin...
+			$sql = 'UPDATE ' . USERS_TABLE . '
+				SET user_type = ' . USER_FOUNDER . "
+				WHERE user_id = $user_id";
+			$db->sql_query($sql);
+		}
+		$src_db->sql_freeresult($result);
 	}
 
 	// Grab forum auth information
 	$sql = "SELECT *
 		FROM {$convert->src_table_prefix}forums";
-	$result = $db->sql_query($sql);
+	$result = $src_db->sql_query($sql);
 
 	$forum_access = array();
-	while ($row = $db->sql_fetchrow($result))
+	while ($row = $src_db->sql_fetchrow($result))
 	{
 		$forum_access[] = $row;
 	}
-	$db->sql_freeresult($result);
+	$src_db->sql_freeresult($result);
 
+	if ($convert->mysql_convert && $same_db)
+	{
+		$src_db->sql_query("SET NAMES 'binary'");
+	}
 	// Grab user auth information from 2.0.x board
 	$sql = "SELECT ug.user_id, aa.*
 		FROM {$convert->src_table_prefix}auth_access aa, {$convert->src_table_prefix}user_group ug, {$convert->src_table_prefix}groups g
 		WHERE g.group_id = aa.group_id
 			AND g.group_single_user = 1
 			AND ug.group_id = g.group_id";
-	$result = $db->sql_query($sql);
+	$result = $src_db->sql_query($sql);
 
 	$user_access = array();
-	while ($row = $db->sql_fetchrow($result))
+	while ($row = $src_db->sql_fetchrow($result))
 	{
 		$user_access[$row['forum_id']][] = $row;
 	}
-	$db->sql_freeresult($result);
+	$src_db->sql_freeresult($result);
 
 	// Grab group auth information
 	$sql = "SELECT g.group_id, aa.*
 		FROM {$convert->src_table_prefix}auth_access aa, {$convert->src_table_prefix}groups g
 		WHERE g.group_id = aa.group_id
 			AND g.group_single_user <> 1";
-	$result = $db->sql_query($sql);
+	$result = $src_db->sql_query($sql);
 
 	$group_access = array();
-	while ($row = $db->sql_fetchrow($result))
+	while ($row = $src_db->sql_fetchrow($result))
 	{
 		$group_access[$row['forum_id']][] = $row;
 	}
-	$db->sql_freeresult($result);
+	$src_db->sql_freeresult($result);
+
+	if ($convert->mysql_convert && $same_db)
+	{
+		$src_db->sql_query("SET NAMES 'utf8'");
+	}
 
 	// Add Forum Access List
 	$auth_map = array(
 		'auth_view'			=> array('f_', 'f_list'),
-		'auth_read'			=> 'f_read',
-		'auth_post'			=> array('f_post', 'f_bbcode', 'f_smilies', 'f_img', 'f_sigs', 'f_search', 'f_postcount'),
+		'auth_read'			=> array('f_read', 'f_search'),
+		'auth_post'			=> array('f_post', 'f_bbcode', 'f_smilies', 'f_img', 'f_sigs', 'f_postcount', 'f_report', 'f_subscribe', 'f_print', 'f_email'),
 		'auth_reply'		=> 'f_reply',
 		'auth_edit'			=> 'f_edit',
 		'auth_delete'		=> 'f_delete',
@@ -546,7 +608,7 @@ function phpbb_convert_authentication($mode)
 		'auth_vote'			=> 'f_vote',
 		'auth_announce'		=> 'f_announce',
 		'auth_sticky'		=> 'f_sticky',
-		'auth_attachments'	=> 'f_attach',
+		'auth_attachments'	=> array('f_attach', 'f_download'),
 		'auth_download'		=> 'f_download',
 	);
 
@@ -647,26 +709,41 @@ function phpbb_convert_authentication($mode)
 
 	if ($mode == 'start')
 	{
-		user_group_auth('guests', 'SELECT user_id, {GUESTS} FROM ' . USERS_TABLE . ' WHERE user_id = ' . ANONYMOUS);
-		user_group_auth('registered', 'SELECT user_id, {REGISTERED} FROM ' . USERS_TABLE . ' WHERE user_id <> ' . ANONYMOUS);
+		user_group_auth('guests', 'SELECT user_id, {GUESTS} FROM ' . USERS_TABLE . ' WHERE user_id = ' . ANONYMOUS, false);
+		user_group_auth('registered', 'SELECT user_id, {REGISTERED} FROM ' . USERS_TABLE . ' WHERE user_id <> ' . ANONYMOUS, false);
 
 		// Selecting from old table
-		$auth_sql = 'SELECT ';
-		$auth_sql .= (!empty($config['increment_user_id'])) ? 'user_id + 1 as user_id' : 'user_id';
-		$auth_sql .= ', {ADMINISTRATORS} FROM ' . $convert->src_table_prefix . 'users WHERE user_level = 1';
+		if (!empty($config['increment_user_id']))
+		{
+			$auth_sql = 'SELECT user_id, {ADMINISTRATORS} FROM ' . $convert->src_table_prefix . 'users WHERE user_level = 1 AND user_id <> 1';
+			user_group_auth('administrators', $auth_sql, true);
 
-		user_group_auth('administrators', $auth_sql);
+			$auth_sql = 'SELECT ' . $config['increment_user_id'] . ' as user_id, {ADMINISTRATORS} FROM ' . $convert->src_table_prefix . 'users WHERE user_level = 1 AND user_id = 1';
+			user_group_auth('administrators', $auth_sql, true);
+		}
+		else
+		{
+			$auth_sql = 'SELECT user_id, {ADMINISTRATORS} FROM ' . $convert->src_table_prefix . 'users WHERE user_level = 1';
+			user_group_auth('administrators', $auth_sql, true);
+		}
 
-		// Put administrators into global moderators group too...
-		$auth_sql = 'SELECT ';
-		$auth_sql .= (!empty($config['increment_user_id'])) ? 'user_id + 1 as user_id' : 'user_id';
-		$auth_sql .= ', {GLOBAL_MODERATORS} FROM ' . $convert->src_table_prefix . 'users WHERE user_level = 1';
+		if (!empty($config['increment_user_id']))
+		{
+			$auth_sql = 'SELECT user_id, {GLOBAL_MODERATORS} FROM ' . $convert->src_table_prefix . 'users WHERE user_level = 1 AND user_id <> 1';
+			user_group_auth('global_moderators', $auth_sql, true);
 
-		user_group_auth('global_moderators', $auth_sql);
+			$auth_sql = 'SELECT ' . $config['increment_user_id'] . ' as user_id, {GLOBAL_MODERATORS} FROM ' . $convert->src_table_prefix . 'users WHERE user_level = 1 AND user_id = 1';
+			user_group_auth('global_moderators', $auth_sql, true);
+		}
+		else
+		{
+			$auth_sql = 'SELECT user_id, {GLOBAL_MODERATORS} FROM ' . $convert->src_table_prefix . 'users WHERE user_level = 1';
+			user_group_auth('global_moderators', $auth_sql, true);
+		}
 	}
 	else if ($mode == 'first')
 	{
-		// Go through all 2.0.x forums (we saved those ids for reference)
+		// Go through all 2.0.x forums
 		foreach ($forum_access as $forum)
 		{
 			$new_forum_id = (int) $forum['forum_id'];
@@ -708,7 +785,7 @@ function phpbb_convert_authentication($mode)
 				// no break;
 
 				case 'registered_hidden':
-					mass_auth('group_role', $new_forum_id, 'registered', 'FORUM_LIMITED_POLLS');
+					mass_auth('group_role', $new_forum_id, 'registered', 'FORUM_POLLS');
 				break;
 
 				case 'private':
@@ -738,6 +815,7 @@ function phpbb_convert_authentication($mode)
 							// AUTH_ALL
 							case AUTH_ALL:
 								mass_auth('group', $new_forum_id, 'guests', $new_acl, ACL_YES);
+								mass_auth('group', $new_forum_id, 'bots', $new_acl, ACL_YES);
 								mass_auth('group', $new_forum_id, 'registered', $new_acl, ACL_YES);
 							break;
 
@@ -817,8 +895,8 @@ function phpbb_convert_authentication($mode)
 		mass_auth('group_role', 0, 'administrators', 'USER_FULL');
 		mass_auth('group_role', 0, 'global_moderators', 'USER_FULL');
 
-		// By default all converted administrators are given standard access (the founder still have full access)
-		mass_auth('group_role', 0, 'administrators', 'ADMIN_STANDARD');
+		// By default all converted administrators are given full access
+		mass_auth('group_role', 0, 'administrators', 'ADMIN_FULL');
 
 		// All registered users are assigned the standard user role
 		mass_auth('group_role', 0, 'registered', 'USER_STANDARD');
@@ -831,25 +909,25 @@ function phpbb_convert_authentication($mode)
 		$sql = 'SELECT user_id FROM ' . $convert->src_table_prefix . 'users
 			WHERE user_allowavatar = 0
 				AND user_id > 0';
-		$result = $db->sql_query($sql);
+		$result = $src_db->sql_query($sql);
 
-		while ($row = $db->sql_fetchrow($result))
+		while ($row = $src_db->sql_fetchrow($result))
 		{
 			mass_auth('user_role', 0, (int) phpbb_user_id($row['user_id']), 'USER_NOAVATAR');
 		}
-		$db->sql_freeresult($result);
+		$src_db->sql_freeresult($result);
 
 		// And the same for those who have had their PM rights removed
 		$sql = 'SELECT user_id FROM ' . $convert->src_table_prefix . 'users
 			WHERE user_allow_pm = 0
 				AND user_id > 0';
-		$result = $db->sql_query($sql);
+		$result = $src_db->sql_query($sql);
 
-		while ($row = $db->sql_fetchrow($result))
+		while ($row = $src_db->sql_fetchrow($result))
 		{
 			mass_auth('user_role', 0, (int) phpbb_user_id($row['user_id']), 'USER_NOPM');
 		}
-		$db->sql_freeresult($result);
+		$src_db->sql_freeresult($result);
 	}
 	else if ($mode == 'third')
 	{
@@ -895,6 +973,7 @@ function phpbb_convert_authentication($mode)
 			if ($row['parent_id'] == 0)
 			{
 				mass_auth('group_role', $row['forum_id'], 'administrators', 'FORUM_FULL');
+				mass_auth('group_role', $row['forum_id'], 'global_moderators', 'FORUM_FULL');
 				$parent_forums[] = $row;
 			}
 			else
@@ -906,7 +985,7 @@ function phpbb_convert_authentication($mode)
 
 		global $auth;
 
-		// Let us see if guests/registered users have access to these forums...
+		// Let us see which groups have access to these forums...
 		foreach ($parent_forums as $row)
 		{
 			// Get the children
@@ -925,12 +1004,33 @@ function phpbb_convert_authentication($mode)
 			if (sizeof($forum_ids))
 			{
 				// Now make sure the user is able to read these forums
-				$hold_ary = $auth->acl_group_raw_data(get_group_id('guests'), 'f_list', $forum_ids);
+				$hold_ary = $auth->acl_group_raw_data(false, 'f_list', $forum_ids);
 
-				if (!empty($hold_ary))
+				if (empty($hold_ary))
 				{
-					mass_auth('group', $row['forum_id'], 'guests', 'f_list', ACL_YES);
-					mass_auth('group', $row['forum_id'], 'registered', 'f_list', ACL_YES);
+					continue;
+				}
+
+				foreach ($hold_ary as $g_id => $f_id_ary)
+				{
+					$set_group = false;
+
+					foreach ($f_id_ary as $f_id => $auth_ary)
+					{
+						foreach ($auth_ary as $auth_option => $setting)
+						{
+							if ($setting == ACL_YES)
+							{
+								$set_group = true;
+								break 2;
+							}
+						}
+					}
+
+					if ($set_group)
+					{
+						mass_auth('group', $row['forum_id'], $g_id, 'f_list', ACL_YES);
+					}
 				}
 			}
 		}
@@ -981,7 +1081,7 @@ function phpbb_convert_group_name($group_name)
 		return 'phpBB2 - ' . $group_name;
 	}
 
-	return phpbb_set_encoding($group_name, false);
+	return phpbb_set_default_encoding($group_name);
 }
 
 /**
@@ -1004,7 +1104,8 @@ function phpbb_convert_group_type($group_type)
 		break;
 	}
 
-	return GROUP_SPECIAL;
+	// Never return GROUP_SPECIAL here, because only phpBB3's default groups are allowed to have this type set.
+	return GROUP_HIDDEN;
 }
 
 /**
@@ -1034,6 +1135,11 @@ function phpbb_convert_topic_type($topic_type)
 	return POST_NORMAL;
 }
 
+function phpbb_replace_size($matches)
+{
+	return '[size=' . min(200, ceil(100.0 * (((double) $matches[1])/12.0))) . ':' . $matches[2] . ']';
+}
+
 /**
 * Reparse the message stripping out the bbcode_uid values and adding new ones and setting the bitfield
 * @todo What do we want to do about HTML in messages - currently it gets converted to the entities, but there may be some objections to this
@@ -1051,6 +1157,12 @@ function phpbb_prepare_message($message)
 	// Decode phpBB 2.0.x Message
 	if (isset($convert->row['old_bbcode_uid']) && $convert->row['old_bbcode_uid'] != '')
 	{
+		// Adjust size...
+		if (strpos($message, '[size=') !== false)
+		{
+			$message = preg_replace_callback('/\[size=(\d*):(' . $convert->row['old_bbcode_uid'] . ')\]/', 'phpbb_replace_size', $message);
+		}
+
 		$message = preg_replace('/\:(([a-z0-9]:)?)' . $convert->row['old_bbcode_uid'] . '/s', '', $message);
 	}
 
@@ -1059,6 +1171,7 @@ function phpbb_prepare_message($message)
 		$message = preg_replace('/\[quote="(.*?)"\]/s', '[quote=&quot;\1&quot;]', $message);
 	}
 
+	// Already the new user id ;)
 	$user_id = $convert->row['poster_id'];
 
 	$message = str_replace('<', '&lt;', $message);
@@ -1133,21 +1246,30 @@ function phpbb_get_files_dir()
 		return;
 	}
 
-	global $db, $convert, $user, $config, $cache;
+	global $src_db, $same_db, $convert, $user, $config, $cache;
 
+	if ($convert->mysql_convert && $same_db)
+	{
+		$src_db->sql_query("SET NAMES 'binary'");
+	}
 	$sql = 'SELECT config_value AS upload_dir
 		FROM ' . $convert->src_table_prefix . "attachments_config
 		WHERE config_name = 'upload_dir'";
-	$result = $db->sql_query($sql);
-	$upload_path = $db->sql_fetchfield('upload_dir');
-	$db->sql_freeresult($result);
+	$result = $src_db->sql_query($sql);
+	$upload_path = $src_db->sql_fetchfield('upload_dir');
+	$src_db->sql_freeresult($result);
 
 	$sql = 'SELECT config_value AS ftp_upload
 		FROM ' . $convert->src_table_prefix . "attachments_config
 		WHERE config_name = 'allow_ftp_upload'";
-	$result = $db->sql_query($sql);
-	$ftp_upload = (int) $db->sql_fetchfield('ftp_upload');
-	$db->sql_freeresult($result);
+	$result = $src_db->sql_query($sql);
+	$ftp_upload = (int) $src_db->sql_fetchfield('ftp_upload');
+	$src_db->sql_freeresult($result);
+
+	if ($convert->mysql_convert && $same_db)
+	{
+		$src_db->sql_query("SET NAMES 'utf8'");
+	}
 
 	if ($ftp_upload)
 	{
@@ -1297,7 +1419,7 @@ function phpbb_import_avatar($user_avatar)
 	else if ($convert_row['user_avatar_type'] == 1)
 	{
 		// Uploaded avatar
-		return import_avatar($user_avatar);
+		return import_avatar($user_avatar, false, $convert_row['user_id']);
 	}
 	else if ($convert_row['user_avatar_type'] == 2)
 	{
@@ -1312,6 +1434,38 @@ function phpbb_import_avatar($user_avatar)
 
 	return '';
 }
+
+
+/**
+* Find out about the avatar's dimensions
+*/
+function phpbb_get_avatar_height($user_avatar)
+{
+	global $convert_row;
+	
+	if (empty($convert_row['user_avatar_type']))
+	{
+		return 0;
+	}
+	return get_avatar_height($user_avatar, 'phpbb_avatar_type', $convert_row['user_avatar_type']);
+}
+
+
+/**
+* Find out about the avatar's dimensions
+*/
+function phpbb_get_avatar_width($user_avatar)
+{
+	global $convert_row;
+
+	if (empty($convert_row['user_avatar_type']))
+	{
+		return 0;
+	}
+	
+	return get_avatar_width($user_avatar, 'phpbb_avatar_type', $convert_row['user_avatar_type']);
+}
+
 
 /**
 * Calculate the correct to_address field for private messages
@@ -1366,18 +1520,28 @@ function phpbb_get_savebox_id($user_id)
 */
 function phpbb_import_attach_config()
 {
-	global $db, $convert, $config;
+	global $db, $src_db, $same_db, $convert, $config;
+
+	if ($convert->mysql_convert && $same_db)
+	{
+		$src_db->sql_query("SET NAMES 'binary'");
+	}
 
 	$sql = 'SELECT *
 		FROM ' . $convert->src_table_prefix . 'attachments_config';
-	$result = $db->sql_query($sql);
+	$result = $src_db->sql_query($sql);
+
+	if ($convert->mysql_convert && $same_db)
+	{
+		$src_db->sql_query("SET NAMES 'utf8'");
+	}
 
 	$attach_config = array();
-	while ($row = $db->sql_fetchrow($result))
+	while ($row = $src_db->sql_fetchrow($result))
 	{
 		$attach_config[$row['config_name']] = $row['config_value'];
 	}
-	$db->sql_freeresult($result);
+	$src_db->sql_freeresult($result);
 
 	set_config('allow_attachments', 1);
 
@@ -1444,6 +1608,206 @@ function phpbb_inactive_reason()
 	}
 
 	return INACTIVE_REGISTER;
+}
+
+/**
+* Adjust 2.0.x disallowed names to 3.0.x format
+*/
+function phpbb_disallowed_username($username)
+{
+	// Replace * with %
+	$username = phpbb_set_default_encoding(str_replace('*', '%', $username));
+	return utf8_htmlspecialchars($username);
+}
+
+/**
+* Checks whether there are any usernames on the old board that would map to the same
+* username_clean on phpBB3. Prints out a list if any exist and exits.
+*/
+function phpbb_check_username_collisions()
+{
+	global $db, $src_db, $convert, $table_prefix, $user, $lang;
+
+	$map_dbms = '';
+	switch ($db->sql_layer)
+	{
+		case 'mysql':
+			$map_dbms = 'mysql_40';
+		break;
+	
+		case 'mysql4':
+			if (version_compare($db->mysql_version, '4.1.3', '>='))
+			{
+				$map_dbms = 'mysql_41';
+			}
+			else
+			{
+				$map_dbms = 'mysql_40';
+			}
+		break;
+	
+		case 'mysqli':
+			$map_dbms = 'mysql_41';
+		break;
+	
+		case 'mssql':
+		case 'mssql_odbc':
+			$map_dbms = 'mssql';
+		break;
+	
+		default:
+			$map_dbms = $db->sql_layer;
+		break;
+	}
+
+	// create a temporary table in which we store the clean usernames
+	$drop_sql = 'DROP TABLE ' . $table_prefix . 'userconv';
+	switch ($map_dbms)
+	{
+		case 'firebird':
+			$create_sql = 'CREATE TABLE ' . $table_prefix . 'userconv (
+				user_id INTEGER NOT NULL,
+				username_clean VARCHAR(255) CHARACTER SET UTF8 DEFAULT \'\' NOT NULL COLLATE UNICODE
+			)';
+		break;
+
+		case 'mssql':
+			$create_sql = 'CREATE TABLE [' . $table_prefix . 'userconv] (
+				[user_id] [int] NOT NULL ,
+				[username_clean] [varchar] (255) DEFAULT (\'\') NOT NULL
+			)';
+		break;
+
+		case 'mysql_40':
+			$create_sql = 'CREATE TABLE ' . $table_prefix . 'userconv (
+				user_id mediumint(8) NOT NULL,
+				username_clean blob NOT NULL
+			)';
+		break;
+
+		case 'mysql_41':
+			$create_sql = 'CREATE TABLE ' . $table_prefix . 'userconv (
+				user_id mediumint(8) NOT NULL,
+				username_clean varchar(255) DEFAULT \'\' NOT NULL
+			) CHARACTER SET `utf8` COLLATE `utf8_bin`';
+		break;
+
+		case 'oracle':
+			$create_sql = 'CREATE TABLE ' . $table_prefix . 'userconv
+				user_id number(8) NOT NULL,
+				username_clean varchar2(255) DEFAULT \'\'
+			)';
+		break;
+
+		case 'postgres':
+			$create_sql = 'CREATE TABLE ' . $table_prefix . 'userconv (
+				user_id INT4 DEFAULT \'0\',
+				username_clean varchar_ci DEFAULT \'\' NOT NULL
+			)';
+		break;
+
+		case 'sqlite':
+			$create_sql = 'CREATE TABLE ' . $table_prefix . 'userconv (
+				user_id INTEGER NOT NULL DEFAULT \'0\',
+				username_clean varchar(255) NOT NULL DEFAULT \'\',
+			)';
+		break;
+	}
+
+	$db->sql_return_on_error(true);
+	$db->sql_query($drop_sql);
+	$db->sql_query($create_sql);
+	$db->sql_return_on_error(false);
+
+	// now select all user_ids and usernames and then convert the username (this can take quite a while!)
+	$sql = 'SELECT user_id, username
+		FROM ' . $convert->src_table_prefix . 'users';
+	$result = $src_db->sql_query($sql);
+
+	$insert_ary = array();
+	$i = 0;
+	while ($row = $src_db->sql_fetchrow($result))
+	{
+		$clean_name = utf8_clean_string(phpbb_set_default_encoding($row['username']));
+		$insert_ary[] = array('user_id' => $row['user_id'], 'username_clean' => $clean_name);
+
+		if ($i % 1000 == 999)
+		{
+			$db->sql_multi_insert($table_prefix . 'userconv', $insert_ary);
+			$insert_ary = array();
+		}
+		$i++;
+	}
+	$src_db->sql_freeresult($result);
+
+	if (sizeof($insert_ary))
+	{
+		$db->sql_multi_insert($table_prefix . 'userconv', $insert_ary);
+	}
+	unset($insert_ary);
+
+	// now find the clean version of the usernames that collide
+	$sql = 'SELECT username_clean
+		FROM ' . $table_prefix . 'userconv
+		GROUP BY username_clean
+		HAVING COUNT(user_id) > 1';
+	$result = $db->sql_query($sql);
+
+	$colliding_names = array();
+	while ($row = $db->sql_fetchrow($result))
+	{
+		$colliding_names[] = $row['username_clean'];
+	}
+	$db->sql_freeresult($result);
+
+	// there was at least one collision, the admin will have to solve it before conversion can continue
+	if (sizeof($colliding_names))
+	{
+		$sql = 'SELECT user_id, username_clean
+			FROM ' . $table_prefix . 'userconv
+			WHERE ' . $db->sql_in_set('username_clean', $colliding_names);
+		$result = $db->sql_query($sql);
+		unset($colliding_names);
+
+		$colliding_user_ids = array();
+		while ($row = $db->sql_fetchrow($result))
+		{
+			$colliding_user_ids[(int) $row['user_id']] = $row['username_clean'];
+		}
+		$db->sql_freeresult($result);
+
+		$sql = 'SELECT username, user_id, user_posts
+			FROM ' . $convert->src_table_prefix . 'users
+			WHERE ' . $src_db->sql_in_set('user_id', array_keys($colliding_user_ids));
+		$result = $src_db->sql_query($sql);
+
+		$colliding_users = array();
+		while ($row = $db->sql_fetchrow($result))
+		{
+			$row['user_id'] = (int) $row['user_id'];
+			if (isset($colliding_user_ids[$row['user_id']]))
+			{
+				$colliding_users[$colliding_user_ids[$row['user_id']]][] = $row;
+			}
+		}
+		$db->sql_freeresult($result);
+		unset($colliding_user_ids);
+
+		$list = '';
+		foreach ($colliding_users as $username_clean => $users)
+		{
+			$list .= sprintf($user->lang['COLLIDING_CLEAN_USERNAME'], $username_clean) . "<br />\n";
+			foreach ($users as $i => $row)
+			{
+				$list .= sprintf($user->lang['COLLIDING_USER'], $row['user_id'], phpbb_set_default_encoding($row['username']), $row['user_posts']) . "<br />\n";
+			}
+		}
+
+		$lang['INST_ERR_FATAL'] = $user->lang['CONV_ERR_FATAL'];
+		$convert->p_master->error('<span style="color:red">' . $user->lang['COLLIDING_USERNAMES_FOUND'] . '</span></b><br /><br />' . $list . '<b>', __LINE__, __FILE__);
+	}
+
+	$db->sql_query($drop_sql);
 }
 
 ?>

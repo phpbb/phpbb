@@ -75,7 +75,7 @@ class acp_bbcodes
 				$display_on_posting = request_var('display_on_posting', 0);
 
 				$bbcode_match = request_var('bbcode_match', '');
-				$bbcode_tpl = htmlspecialchars_decode(request_var('bbcode_tpl', ''));
+				$bbcode_tpl = htmlspecialchars_decode(request_var('bbcode_tpl', '', true));
 				$bbcode_helpline = request_var('bbcode_helpline', '', true);
 			break;
 		}
@@ -295,10 +295,10 @@ class acp_bbcodes
 		// @todo Make sure to change this too if something changed in message parsing
 		$tokens = array(
 			'URL'	 => array(
-				'!([a-z0-9]+://)?([^?].*?[^ \t\n\r<"]*)!ie'	=>	"(('\$1') ? '\$1\$2' : 'http://\$2')"
+				'!([a-z0-9]+://)?([^< "\r\n\t\]]*)!ie'	=>	"(('\$1') ? '\$1\$2' : 'http://\$2')"
 			),
 			'LOCAL_URL'	 => array(
-				'!([^:]+/[^ \t\n\r<"]*)!'	=>	'$1'
+				'!([^:]+/[^< "\r\n\t\]]*)!'	=>	'$1'
 			),
 			'EMAIL' => array(
 				'!([a-z0-9]+[a-z0-9\-\._]*@(?:(?:[0-9]{1,3}\.){3,5}[0-9]{1,3}|[a-z0-9]+[a-z0-9\-\._]*\.[a-z]+))!i'	=>	'$1'

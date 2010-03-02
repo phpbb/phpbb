@@ -298,7 +298,7 @@ class p_master
 				break;
 
 				default:
-					if (!preg_match('#(?:acl_([a-z_]+)(,\$id)?)|(?:\$id)|(?:aclf_([a-z_]+))|(?:cfg_([a-z_]+))#', $token))
+					if (!preg_match('#(?:acl_([a-z_]+)(,\$id)?)|(?:\$id)|(?:aclf_([a-z_]+))|(?:cfg_([a-z_]+))|(?:request_([a-z_]+))#', $token))
 					{
 						$token = '';
 					}
@@ -314,7 +314,7 @@ class p_master
 		$forum_id = ($forum_id === false) ? $this->acl_forum_id : $forum_id;
 
 		$is_auth = false;
-		eval('$is_auth = (int) (' . preg_replace(array('#acl_([a-z_]+)(,\$id)?#', '#\$id#', '#aclf_([a-z_]+)#', '#cfg_([a-z_]+)#'), array('(int) $auth->acl_get(\'\\1\'\\2)', '(int) $forum_id', '(int) $auth->acl_getf_global(\'\\1\')', '(int) $config[\'\\1\']'), $module_auth) . ');');
+		eval('$is_auth = (int) (' . preg_replace(array('#acl_([a-z_]+)(,\$id)?#', '#\$id#', '#aclf_([a-z_]+)#', '#cfg_([a-z_]+)#', '#request_([a-z_]+)#'), array('(int) $auth->acl_get(\'\\1\'\\2)', '(int) $forum_id', '(int) $auth->acl_getf_global(\'\\1\')', '(int) $config[\'\\1\']', '!empty($_REQUEST[\'\\1\'])'), $module_auth) . ');');
 
 		return $is_auth;
 	}
@@ -462,6 +462,53 @@ class p_master
 
 			return;
 		}
+	}
+
+	/**
+	* Appending url parameter to the currently active module.
+	*
+	* This function is called for adding specific url parameters while executing the current module.
+	* It is doing the same as the _module_{name}_url() function, apart from being able to be called after
+	* having dynamically parsed specific parameters. This allows more freedom in choosing additional parameters.
+	* One example can be seen in /includes/mcp/mcp_notes.php - $this->p_master->adjust_url() call.
+	*
+	* @param string $url_extra Extra url parameters, e.g.: &amp;u=$user_id
+	*
+	*/
+	function adjust_url($url_extra)
+	{
+		if (empty($this->module_ary[$this->active_module_row_id]))
+		{
+			return;
+		}
+
+		$row = &$this->module_ary[$this->active_module_row_id];
+
+		// We check for the same url_extra in $row['url_extra'] to overcome doubled additions...
+		if (strpos($row['url_extra'], $url_extra) === false)
+		{
+			$row['url_extra'] .= $url_extra;
+		}
+	}
+
+	/**
+	* Check if a module is active
+	*/
+	function is_active($id, $mode = false)
+	{
+		// If we find a name by this id and being enabled we have our active one...
+		foreach ($this->module_ary as $row_id => $item_ary)
+		{
+			if (($item_ary['name'] === $id || $item_ary['id'] === (int) $id) && $item_ary['display'])
+			{
+				if ($mode === false || $mode === $item_ary['mode'])
+				{
+					return true;
+				}
+			}
+		}
+
+		return false;
 	}
 
 	/**

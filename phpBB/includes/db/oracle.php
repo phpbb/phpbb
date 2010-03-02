@@ -29,14 +29,14 @@ class dbal_oracle extends dbal
 	/**
 	* Connect to server
 	*/
-	function sql_connect($sqlserver, $sqluser, $sqlpassword, $database, $port = false, $persistency = false)
+	function sql_connect($sqlserver, $sqluser, $sqlpassword, $database, $port = false, $persistency = false, $new_link = false)
 	{
 		$this->persistency = $persistency;
 		$this->user = $sqluser;
 		$this->server = $sqlserver . (($port) ? ':' . $port : '');
 		$this->dbname = $database;
 		
-		$this->db_connect_id = ($this->persistency) ? @ociplogon($this->user, $sqlpassword, $this->server, 'UTF8') : @ocinlogon($this->user, $sqlpassword, $this->server, 'UTF8');
+		$this->db_connect_id = ($new_link) ? @ocinlogon($this->user, $sqlpassword, $this->dbname, 'UTF8') : (($this->persistency) ? @ociplogon($this->user, $sqlpassword, $this->dbname, 'UTF8') : @ocinlogon($this->user, $sqlpassword, $this->dbname, 'UTF8'));
 
 		return ($this->db_connect_id) ? $this->db_connect_id : $this->sql_error('');
 	}
@@ -110,53 +110,60 @@ class dbal_oracle extends dbal
 					$in_transaction = true;
 				}
 
-				$array = array();
-
 				// We overcome Oracle's 4000 char limit by binding vars
-				if (preg_match('/^(INSERT INTO[^(]+)\\(([^()]+)\\) VALUES[^(]+\\(([^()]+)\\)$/', $query, $regs))
+				if (strlen($query) > 4000)
 				{
-					if (strlen($regs[3]) > 4000)
+					$array = array();
+
+					if (preg_match('/^(INSERT INTO[^(]+)\\(([^()]+)\\) VALUES[^(]+\\((.*?)\\)$/s', $query, $regs))
 					{
-						$cols = explode(', ', $regs[2]);
-						$vals = explode(', ', $regs[3]);
-						foreach ($vals as $key => $value)
+						if (strlen($regs[3]) > 4000)
 						{
-							if (strlen($value) > 4002) // check to see if this thing is greater than the max + 'x2
+							$cols = explode(', ', $regs[2]);
+							preg_match_all('/\'(?:[^\']++|\'\')*+\'|\\d+/', $regs[3], $vals, PREG_PATTERN_ORDER);
+
+							$inserts = $vals[0];
+							unset($vals);
+
+							foreach ($inserts as $key => $value)
 							{
-								$vals[$key] = ':' . strtoupper($cols[$key]);
-								$array[$vals[$key]] = substr($value, 1, -1);
+								if (!empty($value) && $value[0] === "'" && strlen($value) > 4002) // check to see if this thing is greater than the max + 'x2
+								{
+									$inserts[$key] = ':' . strtoupper($cols[$key]);
+									$array[$inserts[$key]] = str_replace("''", "'", substr($value, 1, -1));
+								}
 							}
+
+							$query = $regs[1] . '(' . $regs[2] . ') VALUES (' . implode(', ', $inserts) . ')';
+							unset($art);
 						}
-						$query = $regs[1] . '(' . implode(', ', $cols) . ') VALUES (' . implode(', ', $vals) . ')';
 					}
-				}
-				else if (preg_match('/^(UPDATE.*?)SET (.*)(\\sWHERE.*)$/s', $query, $regs))
-				{
-					if (strlen($regs[2]) > 4000)
+					else if (preg_match_all('/^(UPDATE [\\w_]++\\s+SET )(\\w+ = (?:\'(?:[^\']++|\'\')*+\'|\\d+)(?:, \\w+ = (?:\'(?:[^\']++|\'\')*+\'|\\d+))*+)\\s+(WHERE.*)$/s', $query, $data, PREG_SET_ORDER))
 					{
-						$args = explode(', ', $regs[2]);
-						$cols = array();
-						foreach ($args as $value)
+						if (strlen($data[0][2]) > 4000)
 						{
-							$temp_array = explode('=', $value);
-							$cols[$temp_array[0]] = $temp_array[1];
-						}
+							$update = $data[0][1];
+							$where = $data[0][3];
+							preg_match_all('/(\\w++) = (\'(?:[^\']++|\'\')*+\'|\\d++)/', $data[0][2], $temp, PREG_SET_ORDER);
+							unset($data);
 
-						foreach ($cols as $col => $val)
-						{
-							if (strlen($val) > 4003) // check to see if this thing is greater than the max + 'x2 + a space
+							$art = array();
+							foreach ($temp as $value)
 							{
-								$cols[$col] = ' :' . strtoupper(rtrim($col));
-								$array[ltrim($cols[$col])] = substr(trim($val), 2, -1);
+								if (!empty($value[2]) && $value[2][0] === "'" && strlen($value[2]) > 4002) // check to see if this thing is greater than the max + 'x2
+								{
+									$art[] = $value[1] . '=:' . strtoupper($value[1]);
+									$array[$value[1]] = str_replace("''", "'", substr($value[2], 1, -1));
+								}
+								else
+								{
+									$art[] = $value[1] . '=' . $value[2];
+								}
 							}
-						}
 
-						$art = array();
-						foreach ($cols as $col => $val)
-						{
-							$art[] = $col . '=' . $val; 
+							$query = $update . implode(', ', $art) . ' ' . $where;
+							unset($art);
 						}
-						$query = $regs[1] . 'SET ' . implode(', ', $art) . $regs[3];
 					}
 				}
 

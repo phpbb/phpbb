@@ -17,38 +17,6 @@ define('DEFAULT_AVATAR_Y', 80);
 
 // Global functions - all functions can be used by convertors
 
-/**
-* Determine whether we are approaching the maximum execution time
-*/
-function still_on_time()
-{
-	static $max_execution_time, $start_time;
-
-	$time = explode(' ', microtime());
-	$current_time = $time[0] + $time[1];
-
-	if (empty($max_execution_time))
-	{
-		$max_execution_time = (function_exists('ini_get')) ? (int) ini_get('max_execution_time') : (int) get_cfg_var('max_execution_time');
-
-		// If zero, then set to something higher to not let the user catch the ten seconds barrier.
-		if ($max_execution_time === 0)
-		{
-			$max_execution_time = 250;
-		}
-
-		$max_execution_time = min(max(10, ($max_execution_time - 15)), 250);
-
-		// For debugging purposes
-		// $max_execution_time = 10;
-
-		global $starttime;
-		$start_time = (empty($starttime)) ? $current_time : $starttime;
-	}
-
-	return (ceil($current_time - $start_time) < $max_execution_time) ? true : false;
-}
-
 // SIMPLE FUNCTIONS
 
 /**
@@ -304,11 +272,18 @@ function decode_ip($int_ip)
 {
 	if (!$int_ip)
 	{
-		return '';
+		return $int_ip;
 	}
 
 	$hexipbang = explode('.', chunk_split($int_ip, 2, '.'));
-	return hexdec($hexipbang[0]). '.' . hexdec($hexipbang[1]) . '.' . hexdec($hexipbang[2]) . '.' . hexdec($hexipbang[3]);
+
+	// Any mod changing the way ips are stored? Then we are not able to convert and enter the ip "as is" to not "destroy" anything...
+	if (sizeof($hexipbang) < 4)
+	{
+		return $int_ip;
+	}
+
+	return hexdec($hexipbang[0]) . '.' . hexdec($hexipbang[1]) . '.' . hexdec($hexipbang[2]) . '.' . hexdec($hexipbang[3]);
 }
 
 /**
@@ -432,7 +407,8 @@ function import_avatar_gallery($gallery_name = '', $subdirs_as_galleries = false
 
 	if (is_dir($src_path))
 	{
-		copy_dir($convert->convertor['avatar_gallery_path'], path($config['avatar_gallery_path']) . $gallery_name, !$subdirs_as_galleries, false, true, $relative_path);
+		// Do not die on failure... safe mode restrictions may be in effect.
+		copy_dir($convert->convertor['avatar_gallery_path'], path($config['avatar_gallery_path']) . $gallery_name, !$subdirs_as_galleries, false, false, $relative_path);
 
 		// only doing 1 level deep. (ibf 1.x)
 		// notes: ibf has 2 tiers: directly in the avatar directory for base gallery (handled in the above statement), plus subdirs(handled below).
@@ -476,7 +452,9 @@ function import_avatar_gallery($gallery_name = '', $subdirs_as_galleries = false
 			for ($i = 0; $i < sizeof($dirlist); ++$i)
 			{
 				$dir = $dirlist[$i];
-				copy_dir(path($convert->convertor['avatar_gallery_path'], $relative_path) . $dir, path($config['avatar_gallery_path']) . $dir, true, false, true, $relative_path);
+
+				// Do not die on failure... safe mode restrictions may be in effect.
+				copy_dir(path($convert->convertor['avatar_gallery_path'], $relative_path) . $dir, path($config['avatar_gallery_path']) . $dir, true, false, false, $relative_path);
 			}
 		}
 	}
@@ -548,7 +526,8 @@ function _import_check($config_var, $source, $use_target)
 		'relative_path'	=> (empty($convert->convertor['source_path_absolute'])) ? true : false,
 	);
 
-	$target = $config[$config_var] . '/' . basename(($use_target === false) ? $source : $use_target);
+	// copy file will prepend $phpBB_root_path
+	$target = $config[$config_var] . '/' . basename(($use_target === false) ? $source : $use_target); 
 
 	if (!empty($convert->convertor[$config_var]) && strpos($source, $convert->convertor[$config_var]) !== 0)
 	{
@@ -651,7 +630,10 @@ function import_smiley($source, $use_target = false)
 	return $result['target'];
 }
 
-function import_avatar($source, $use_target = false)
+/*
+* 
+*/
+function import_avatar($source, $use_target = false, $user_id = false)
 {
 	if (empty($source) || preg_match('#^https?:#i', $source) || preg_match('#blank\.(gif|png)$#i', $source))
 	{
@@ -664,9 +646,15 @@ function import_avatar($source, $use_target = false)
 	{
 		$convert->p_master->error(sprintf($user->lang['CONV_ERROR_NO_AVATAR_PATH'], 'import_avatar()'), __LINE__, __FILE__);
 	}
-
+	
+	if ($use_target === false && $user_id !== false)
+	{
+		$use_target = $config['avatar_salt'] . '_' . $user_id . '.' . substr(strrchr($source, '.'), 1);
+	}
+	
 	$result = _import_check('avatar_path', $source, $use_target);
-	return $result['target'];
+
+	return ((!empty($user_id)) ? $user_id : $use_target) . '.' . substr(strrchr($source, '.'), 1);
 }
 
 /**
@@ -691,7 +679,7 @@ function get_image_dim($source)
 	if (file_exists(relative_base($source, $relative_path)))
 	{
 		$image = relative_base($source, $relative_path);
-		return getimagesize($image);
+		return @getimagesize($image);
 	}
 
 	return false;
@@ -812,7 +800,10 @@ function get_avatar_dim($src, $axis, $func = false, $arg1 = false, $arg2 = false
 		break;
 
 		default:
-			return $axis ? DEFAULT_AVATAR_Y : DEFAULT_AVATAR_X;
+			$default_x = (defined('DEFAULT_AVATAR_X_CUSTOM')) ? DEFAULT_AVATAR_X_CUSTOM : DEFAULT_AVATAR_X;
+			$default_y = (defined('DEFAULT_AVATAR_Y_CUSTOM')) ? DEFAULT_AVATAR_Y_CUSTOM : DEFAULT_AVATAR_Y;
+
+			return $axis ? $default_y : $default_x;
 		break;
 	}
 }
@@ -858,7 +849,10 @@ function get_upload_avatar_dim($source, $axis)
 
 	if (empty($cachedims) || empty($cachedims[0]) || empty($cachedims[1]))
 	{
-		$cachedims = array(DEFAULT_AVATAR_X, DEFAULT_AVATAR_Y);
+		$default_x = (defined('DEFAULT_AVATAR_X_CUSTOM')) ? DEFAULT_AVATAR_X_CUSTOM : DEFAULT_AVATAR_X;
+		$default_y = (defined('DEFAULT_AVATAR_Y_CUSTOM')) ? DEFAULT_AVATAR_Y_CUSTOM : DEFAULT_AVATAR_Y;
+
+		$cachedims = array($default_x, $default_y);
 	}
 
 	return $cachedims[$axis];
@@ -899,7 +893,10 @@ function get_gallery_avatar_dim($source, $axis)
 
 	if (empty($avatar_cache[$orig_source]) || empty($avatar_cache[$orig_source][0]) || empty($avatar_cache[$orig_source][1]))
 	{
-		$avatar_cache[$orig_source] = array(DEFAULT_AVATAR_X, DEFAULT_AVATAR_Y);
+		$default_x = (defined('DEFAULT_AVATAR_X_CUSTOM')) ? DEFAULT_AVATAR_X_CUSTOM : DEFAULT_AVATAR_X;
+		$default_y = (defined('DEFAULT_AVATAR_Y_CUSTOM')) ? DEFAULT_AVATAR_Y_CUSTOM : DEFAULT_AVATAR_Y;
+
+		$avatar_cache[$orig_source] = array($default_x, $default_y);
 	}
 
 	return $avatar_cache[$orig_source][$axis];
@@ -910,28 +907,81 @@ function get_gallery_avatar_dim($source, $axis)
 * Whilst it's unlikely that remote avatars will be duplicated, it is possible so caching seems the best option
 * This should only be called from a post processing step due to the possibility of network timeouts
 */
-function get_remote_avatar_dim($src,$axis)
+function get_remote_avatar_dim($src, $axis)
 {
 	if (empty($src))
 	{
 		return 0;
 	}
 
-	static $avatar_cache = array();
+	static $remote_avatar_cache = array();
 
-	if (isset($avatar_cache[$src]))
+	// an ugly hack: we assume that the dimensions of each remote avatar are accessed exactly twice (x and y)
+	if (isset($remote_avatar_cache[$src]))
 	{
-		return $avatar_cache[$src][$axis];
+		$retval = $remote_avatar_cache[$src][$axis];
+		unset($remote_avatar_cache);
+		return $retval;
 	}
-
-	$avatar_cache[$src] = getimagesize($src);
-
-	if (empty($avatar_cache[$src]) || empty($avatar_cache[$src][0]) || empty($avatar_cache[$src][1]))
+	
+	$url_info = @parse_url($src);
+	if (empty($url_info['host']))
 	{
-		$avatar_cache[$src] = array(DEFAULT_AVATAR_X, DEFAULT_AVATAR_Y);
+		return 0;
 	}
-
-	return $avatar_cache[$src][$axis];
+	$host = $url_info['host'];
+	$port = (isset($url_info['port'])) ? $url_info['port'] : 0;
+	$protocol = (isset($url_info['scheme'])) ? $url_info['scheme'] : 'http';
+	if (empty($port))
+	{
+		switch(strtolower($protocol))
+		{
+			case 'ftp':
+				$port = 21;
+				break;
+				
+			case 'https':
+				$port = 443;
+				break;
+			
+			default:
+				$port = 80;
+		}
+	}
+	
+	$timeout = @ini_get('default_socket_timeout');
+	@ini_set('default_socket_timeout', 2);
+	
+	// We're just trying to reach the server to avoid timeouts
+	$fp = @fsockopen($host, $port, $errno, $errstr, 1);
+	if ($fp)
+	{
+		$remote_avatar_cache[$src] = @getimagesize($src);
+		fclose($fp);
+	}
+	
+	$default_x 	= (defined('DEFAULT_AVATAR_X_CUSTOM')) ? DEFAULT_AVATAR_X_CUSTOM : DEFAULT_AVATAR_X;
+	$default_y 	= (defined('DEFAULT_AVATAR_Y_CUSTOM')) ? DEFAULT_AVATAR_Y_CUSTOM : DEFAULT_AVATAR_Y;
+	$default 	= array($default_x, $default_y);
+	
+	if (empty($remote_avatar_cache[$src]) || empty($remote_avatar_cache[$src][0]) || empty($remote_avatar_cache[$src][1]))
+	{
+		$remote_avatar_cache[$src] = $default;
+	}
+	else
+	{
+		// We trust gallery and uploaded avatars to conform to the size settings; we might have to adjust here
+		if ($remote_avatar_cache[$src][0] > $default_x || $remote_avatar_cache[$src][1] > $default_y)
+		{
+			$bigger = ($remote_avatar_cache[$src][0] > $remote_avatar_cache[$src][1]) ? 0 : 1;
+			$ratio = $default[$bigger] / $remote_avatar_cache[$src][$bigger];
+			$remote_avatar_cache[$src][0] = (int)($remote_avatar_cache[$src][0] * $ratio);
+			$remote_avatar_cache[$src][1] = (int)($remote_avatar_cache[$src][1] * $ratio);
+		}
+	}
+	
+	@ini_set('default_socket_timeout', $timeout);
+	return $remote_avatar_cache[$src][$axis];
 }
 
 function set_user_options()
@@ -1056,9 +1106,9 @@ function add_user_group($group_id, $user_id, $group_leader=false)
 * @param string $group The name of the special group to add to
 * @param string $select_query An SQL query to retrieve the user(s) to add to the group
 */
-function user_group_auth($group, $select_query)
+function user_group_auth($group, $select_query, $use_src_db)
 {
-	global $convert, $phpbb_root_path, $config, $user, $db;
+	global $convert, $phpbb_root_path, $config, $user, $db, $src_db, $same_db;
 
 	if (!in_array($group, array('guests', 'registered', 'registered_coppa', 'global_moderators', 'administrators', 'bots')))
 	{
@@ -1079,9 +1129,33 @@ function user_group_auth($group, $select_query)
 		return;
 	}
 
-	$sql = 'INSERT INTO ' . USER_GROUP_TABLE . ' (user_id, group_id, user_pending)
-		' . str_replace('{' . strtoupper($group) . '}', $group_id . ', 0', $select_query);
-	$db->sql_query($sql);
+	if ($same_db || !$use_src_db)
+	{
+		$sql = 'INSERT INTO ' . USER_GROUP_TABLE . ' (user_id, group_id, user_pending)
+			' . str_replace('{' . strtoupper($group) . '}', $group_id . ', 0', $select_query);
+		$db->sql_query($sql);
+	}
+	else
+	{
+		$result = $src_db->sql_query(str_replace('{' . strtoupper($group) . '}', $group_id . ', 0', $select_query));
+		while ($row = $src_db->sql_fetchrow($result))
+		{
+			// make sure it's exactly 3 ints that were returned
+			$data = array();
+			reset($row);
+			for ($i = 0; $i < 3; $i++)
+			{
+				$data[] = (int) current($row);
+				next($row);
+			}
+
+			// this might become quite a lot of INSERTS unfortunately
+			$sql = 'INSERT INTO ' . USER_GROUP_TABLE . ' (user_id, group_id, user_pending)
+				VALUES (' . implode(', ', $data) . ')';
+			$db->sql_query($sql);
+		}
+		$src_db->sql_freeresult($result);
+	}
 }
 
 /**
@@ -1099,14 +1173,19 @@ function get_config()
 		return $convert_config;
 	}
 
-	global $db, $phpbb_root_path, $config;
+	global $src_db, $same_db, $phpbb_root_path, $config;
 	global $convert;
 
 	if ($convert->config_schema['table_format'] != 'file')
 	{
+		if ($convert->mysql_convert && $same_db)
+		{
+			$src_db->sql_query("SET NAMES 'binary'");
+		}
+
 		$sql = 'SELECT * FROM ' . $convert->src_table_prefix . $convert->config_schema['table_name'];
-		$result = $db->sql_query($sql);
-		$row = $db->sql_fetchrow($result);
+		$result = $src_db->sql_query($sql);
+		$row = $src_db->sql_fetchrow($result);
 
 		if (!$row)
 		{
@@ -1123,8 +1202,13 @@ function get_config()
 		{
 			$convert_config[$row[$key]] = $row[$val];
 		}
-		while ($row = $db->sql_fetchrow($result));
-		$db->sql_freeresult($result);
+		while ($row = $src_db->sql_fetchrow($result));
+		$src_db->sql_freeresult($result);
+
+		if ($convert->mysql_convert && $same_db)
+		{
+			$src_db->sql_query("SET NAMES 'utf8'");
+		}
 	}
 	else if ($convert->config_schema['table_format'] == 'file')
 	{
@@ -1143,6 +1227,10 @@ function get_config()
 	else
 	{
 		$convert_config = $row;
+		if ($convert->mysql_convert && $same_db)
+		{
+			$src_db->sql_query("SET NAMES 'utf8'");
+		}
 	}
 
 	if (!sizeof($convert_config))
@@ -1166,7 +1254,7 @@ function restore_config($schema)
 	{
 		if (preg_match('/(.*)\((.*)\)/', $src, $m))
 		{
-			$var = (empty($m[2])) ? '' : "'" . addslashes($convert_config[$m[2]]) . "'";
+			$var = (empty($m[2]) || empty($convert_config[$m[2]])) ? "''" : "'" . addslashes($convert_config[$m[2]]) . "'";
 			$exec = '$config_value = ' . $m[1] . '(' . $var . ');';
 			eval($exec);
 		}
@@ -1198,7 +1286,7 @@ function update_folder_pm_count()
 	$sql = 'SELECT user_id, folder_id, COUNT(msg_id) as num_messages
 		FROM ' . PRIVMSGS_TO_TABLE . '
 		WHERE folder_id NOT IN (' . PRIVMSGS_NO_BOX . ', ' . PRIVMSGS_HOLD_BOX . ', ' . PRIVMSGS_INBOX . ', ' . PRIVMSGS_OUTBOX . ', ' . PRIVMSGS_SENTBOX . ')
-		GROUP BY folder_id';
+		GROUP BY folder_id, user_id';
 	$result = $db->sql_query($sql);
 
 	while ($row = $db->sql_fetchrow($result))
@@ -1213,6 +1301,11 @@ function update_folder_pm_count()
 
 function path($path, $path_relative = true)
 {
+	if ($path === false)
+	{
+		return '';
+	}
+
 	if (substr($path, -1) != '/')
 	{
 		$path .= '/';
@@ -1274,7 +1367,7 @@ function get_path($src_path, $src_url, $test_file)
 		$url_parts = explode('/', $m[2]);
 		if (substr($src_url, -1) != '/')
 		{
-			if (preg_match('/.*\.([a-z0-9]{3,4})$/i', $url_parts[count($url_parts) - 1]))
+			if (preg_match('/.*\.([a-z0-9]{3,4})$/i', $url_parts[sizeof($url_parts) - 1]))
 			{
 				$url_parts[sizeof($url_parts) - 1] = '';
 			}
@@ -1326,7 +1419,7 @@ function get_path($src_path, $src_url, $test_file)
 
 function compare_table($tables, $tablename, &$prefixes)
 {
-	for ($i = 0; $i < sizeof($tables); ++$i)
+	for ($i = 0, $table_size = sizeof($tables); $i < $table_size; ++$i)
 	{
 		if (preg_match('/(.*)' . $tables[$i] . '$/', $tablename, $m))
 		{
@@ -1637,7 +1730,7 @@ function add_bots()
 
 	$sql = 'SELECT group_id FROM ' . GROUPS_TABLE . " WHERE group_name = 'BOTS'";
 	$result = $db->sql_query($sql);
-	$group_id = (int) $db->sql_fetchfield('group_id', 0, $result);
+	$group_id = (int) $db->sql_fetchfield('group_id', false, $result);
 	$db->sql_freeresult($result);
 
 	if (!$group_id)
@@ -1646,11 +1739,12 @@ function add_bots()
 
 		$sql = 'SELECT group_id FROM ' . GROUPS_TABLE . " WHERE group_name = 'BOTS'";
 		$result = $db->sql_query($sql);
-		$group_id = (int) $db->sql_fetchfield('group_id', 0, $result);
+		$group_id = (int) $db->sql_fetchfield('group_id', false, $result);
 		$db->sql_freeresult($result);
 
 		if (!$group_id)
 		{
+			global $install;
 			$install->error($user->lang['CONV_ERROR_INCONSISTENT_GROUPS'], __LINE__, __FILE__);
 		}
 	}
@@ -1701,7 +1795,7 @@ function add_bots()
 		'W3C [Linkcheck]'			=> array('W3C-checklink/', ''),
 		'W3C [Validator]'			=> array('W3C_*Validator', ''),
 		'WiseNut [Bot]'				=> array('http://www.WISEnutbot.com', ''),
-		'Yacy [Bot]'				=> array('yacybot', ''),
+		'YaCy [Bot]'				=> array('yacybot', ''),
 		'Yahoo MMCrawler [Bot]'		=> array('Yahoo-MMCrawler/', ''),
 		'Yahoo Slurp [Bot]'			=> array('Yahoo! DE Slurp', ''),
 		'Yahoo [Bot]'				=> array('Yahoo! Slurp', ''),
@@ -1756,8 +1850,15 @@ function update_dynamic_config()
 	// Get latest username
 	$sql = 'SELECT user_id, username, user_colour
 		FROM ' . USERS_TABLE . '
-		WHERE user_type IN (' . USER_NORMAL . ', ' . USER_FOUNDER . ')
-		ORDER BY user_id DESC';
+		WHERE user_type IN (' . USER_NORMAL . ', ' . USER_FOUNDER . ')';
+
+	if (!empty($config['increment_user_id']))
+	{
+		$sql .= ' AND user_id <> ' . $config['increment_user_id'];
+	}
+
+	$sql .= ' ORDER BY user_id DESC';
+
 	$result = $db->sql_query_limit($sql, 1);
 	$row = $db->sql_fetchrow($result);
 	$db->sql_freeresult($result);
@@ -1769,8 +1870,9 @@ function update_dynamic_config()
 		set_config('newest_user_colour', $row['user_colour'], true);
 	}
 
-	set_config('record_online_users', 1, true);
-	set_config('record_online_date', time(), true);
+//	Also do not reset record online user/date. There will be old data or the fresh data from the schema.
+//	set_config('record_online_users', 1, true);
+//	set_config('record_online_date', time(), true);
 
 	$sql = 'SELECT COUNT(post_id) AS stat 
 		FROM ' . POSTS_TABLE . '
@@ -1813,6 +1915,8 @@ function update_dynamic_config()
 	set_config('upload_dir_size', (int) $db->sql_fetchfield('stat'), true);
 	$db->sql_freeresult($result);
 
+	/**
+	* We do not resync users post counts - this can be done by the admin after conversion if wanted.
 	$sql = 'SELECT COUNT(post_id) AS num_posts, poster_id
 		FROM ' . POSTS_TABLE . '
 		WHERE post_postcount = 1
@@ -1824,6 +1928,7 @@ function update_dynamic_config()
 		$db->sql_query('UPDATE ' . USERS_TABLE . " SET user_posts = {$row['num_posts']} WHERE user_id = {$row['poster_id']}");
 	}
 	$db->sql_freeresult($result);
+	*/
 }
 
 /**
@@ -1833,7 +1938,17 @@ function update_topics_posted()
 {
 	global $db, $config;
 
-	$db->sql_query((($db->sql_layer != 'sqlite') ? 'TRUNCATE TABLE ' : 'DELETE FROM ') . TOPICS_POSTED_TABLE);
+	switch ($db->sql_layer)
+	{
+		case 'sqlite':
+		case 'firebird':
+			$db->sql_query('DELETE FROM ' . TOPICS_POSTED_TABLE);
+		break;
+
+		default:
+			$db->sql_query('TRUNCATE TABLE ' . TOPICS_POSTED_TABLE);
+		break;
+	}
 
 	// This can get really nasty... therefore we only do the last six months
 	$get_from_time = time() - (6 * 4 * 7 * 24 * 60 * 60);
@@ -1880,15 +1995,18 @@ function update_topics_posted()
 			foreach ($topic_row as $topic_id)
 			{
 				$sql_ary[] = array(
-					'user_id'		=> $user_id,
-					'topic_id'		=> $topic_id,
+					'user_id'		=> (int) $user_id,
+					'topic_id'		=> (int) $topic_id,
 					'topic_posted'	=> 1,
 				);
 			}
 		}
 		unset($posted);
 
-		$db->sql_multi_insert(TOPICS_POSTED_TABLE, $sql_ary);
+		if (sizeof($sql_ary))
+		{
+			$db->sql_multi_insert(TOPICS_POSTED_TABLE, $sql_ary);
+		}
 	}
 }
 
@@ -1909,22 +2027,6 @@ function fix_empty_primary_groups()
 	$db->sql_query($sql);
 
 	$db->sql_query('UPDATE ' . USERS_TABLE . ' SET group_id = ' . get_group_id('guests') . ' WHERE user_id = ' . ANONYMOUS);
-
-	$sql = 'SELECT ban_userid as user_id FROM ' . BANLIST_TABLE . ' WHERE ban_userid > 0';
-	$result = $db->sql_query($sql);
-
-	$user_ids = array();
-	while ($row = $db->sql_fetchrow($result))
-	{
-		$user_ids[] = $row['user_id'];
-	}
-	$db->sql_freeresult($result);
-
-	if (sizeof($user_ids))
-	{
-		$db->sql_query('UPDATE ' . USERS_TABLE . ' SET user_type = ' . USER_IGNORE . '
-			WHERE user_id IN (' . implode(',', $user_ids) . ')');
-	}
 
 	$sql = 'SELECT user_id FROM ' . USER_GROUP_TABLE . ' WHERE group_id = ' . get_group_id('administrators');
 	$result = $db->sql_query($sql);
@@ -1967,6 +2069,32 @@ function fix_empty_primary_groups()
 		$db->sql_query('UPDATE ' . USERS_TABLE . " SET user_colour = '{$row['group_colour']}' WHERE group_id = {$row['group_id']}");
 	}
 	$db->sql_freeresult($result);
+}
+
+/**
+* Cleanly remove invalid user entries after converting the users table...
+*/
+function remove_invalid_users()
+{
+	global $convert, $db;
+
+	// username_clean is UNIQUE
+	$sql = 'SELECT user_id
+		FROM ' . USERS_TABLE . "
+		WHERE username_clean = ''";
+	$result = $db->sql_query($sql);
+	$row = $db->sql_fetchrow($result);
+	$db->sql_freeresult($result);
+
+	if ($row)
+	{
+		if (!function_exists('user_delete'))
+		{
+			include($phpbb_root_path . 'includes/functions_user.' . $phpEx);
+		}
+
+		user_delete('remove', $row['user_id']);
+	}
 }
 
 function convert_bbcode($message, $convert_size = true, $extended_bbcodes = false)
@@ -2124,7 +2252,7 @@ function copy_file($src, $trg, $overwrite = false, $die_on_failure = true, $sour
 
 	if (!@copy($src_path, $phpbb_root_path . $trg_path))
 	{
-		$convert->p_master->error(sprintf($user->lang['COULD_NOT_COPY'], $src_path, $phpbb_root_path . $trg), __LINE__, __FILE__, !$die_on_failure);
+		$convert->p_master->error(sprintf($user->lang['COULD_NOT_COPY'], $src_path, $phpbb_root_path . $trg_path), __LINE__, __FILE__, !$die_on_failure);
 		return;
 	}
 
@@ -2152,7 +2280,7 @@ function copy_dir($src, $trg, $copy_subdirs = true, $overwrite = false, $die_on_
 		@chmod($trg_path, 0777);
 	}
 
-	if (!is_writeable($trg_path))
+	if (!@is_writable($trg_path))
 	{
 		$bad_dirs[] = path($config['script_path']) . $trg;
 	}
@@ -2219,7 +2347,7 @@ function copy_dir($src, $trg, $copy_subdirs = true, $overwrite = false, $die_on_
 				@chmod($trg_path . $dir, 0777);
 			}
 
-			if (!is_writeable($trg_path . $dir))
+			if (!@is_writable($trg_path . $dir))
 			{
 				$bad_dirs[] = $trg . $dir;
 				$bad_dirs[] = $trg_path . $dir;

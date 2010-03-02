@@ -50,7 +50,7 @@ class ucp_prefs
 					$data['style'] = ($config['override_user_style']) ? $config['default_style'] : $data['style'];
 
 					$error = validate_data($data, array(
-						'dateformat'	=> array('string', false, 3, 30),
+						'dateformat'	=> array('string', false, 1, 30),
 						'lang'			=> array('match', false, '#^[a-z0-9_\-]{2,}$#i'),
 						'tz'			=> array('num', false, -14, 14),
 					));
@@ -94,7 +94,7 @@ class ucp_prefs
 				foreach ($user->lang['dateformats'] as $format => $null)
 				{
 					$dateformat_options .= '<option value="' . $format . '"' . (($format == $data['dateformat']) ? ' selected="selected"' : '') . '>';
-					$dateformat_options .= $user->format_date(time(), $format, true) . ((strpos($format, '|') !== false) ? ' [' . $user->lang['RELATIVE_DAYS'] . ']' : '');
+					$dateformat_options .= $user->format_date(time(), $format, false) . ((strpos($format, '|') !== false) ? $user->lang['VARIANT_DATE_SEPARATOR'] . $user->format_date(time(), $format, true) : '');
 					$dateformat_options .= '</option>';
 				}
 

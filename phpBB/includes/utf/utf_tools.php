@@ -6,6 +6,9 @@
 * @copyright (c) 2006 phpBB Group 
 * @license http://opensource.org/licenses/gpl-license.php GNU Public License 
 *
+* @todo make sure the replacements are called correctly
+* already done: strtolower, strtoupper, ucfirst, str_split, strrpos, strlen (hopefully!), strpos, substr, htmlspecialchars
+* remaining:	strspn, chr, ord
 */
 
 /**
@@ -113,7 +116,7 @@ if (extension_loaded('mbstring'))
 	* Notes:
 	* - offset for mb_strrpos was added in 5.2.0, we emulate if it is lower
 	*/
-	if (version_compare(phpversion(), '5.2.0', '>='))
+	if (version_compare(PHP_VERSION, '5.2.0', '>='))
 	{
 		/**
 		* UTF-8 aware alternative to strrpos
@@ -160,7 +163,7 @@ if (extension_loaded('mbstring'))
 			{
 				if (!is_int($offset))
 				{
-					trigger_error('utf8_strrpos expects parameter 3 to be long', E_USER_WARNING);
+					trigger_error('utf8_strrpos expects parameter 3 to be long', E_USER_ERROR);
 					return false;
 				}
 
@@ -267,7 +270,7 @@ else
 		{
 			if (!is_int($offset))
 			{
-				trigger_error('utf8_strrpos	expects	parameter 3	to be long', E_USER_WARNING);
+				trigger_error('utf8_strrpos	expects	parameter 3	to be long', E_USER_ERROR);
 				return false;
 			}
 
@@ -307,7 +310,7 @@ else
 		{
 			if (!is_int($offset))
 			{
-				trigger_error('utf8_strpos: Offset must  be an integer', E_USER_ERROR);
+				trigger_error('utf8_strpos:  Offset must  be an integer', E_USER_ERROR);
 				return false;
 			}
 
@@ -580,7 +583,7 @@ else
 				$ly = (-$length) % 65535;
 
 				// negative length requires ... capture everything
-				// except a group of -length characters
+				// except a group of  -length characters
 				// anchored at the tail-end of the string
 				if ($lx)
 				{
@@ -638,8 +641,8 @@ function utf8_str_split($str, $split_len = 1)
 }
 
 /**
-* UTF-8 aware alternative to strcspn
-* Find length of initial segment not matching mask
+* UTF-8 aware alternative to strspn
+* Find length of initial segment matching the mask
 * 
 * @author Harry Fuecks
 */
@@ -700,15 +703,15 @@ function utf8_recode($string, $encoding)
 {
 	$encoding = strtolower($encoding);
 
-	if ($encoding == 'utf-8' || !is_string($string) || !isset($string[0]))
+	if ($encoding == 'utf-8' || !is_string($string) || empty($string))
 	{
 		return $string;
 	}
 
-	// start with something simple
+	// we force iso-8859-1 to be cp1252
 	if ($encoding == 'iso-8859-1')
 	{
-		return utf8_encode($string);
+		$encoding = 'cp1252';
 	}
 
 	// First, try iconv()
@@ -716,7 +719,7 @@ function utf8_recode($string, $encoding)
 	{
 		$ret = @iconv($encoding, 'utf-8', $string);
 
-		if (isset($ret[0]))
+		if (!empty($ret))
 		{
 			return $ret;
 		}
@@ -725,11 +728,28 @@ function utf8_recode($string, $encoding)
 	// Try the mb_string extension
 	if (function_exists('mb_convert_encoding'))
 	{
-		$ret = @mb_convert_encoding($string, 'utf-8', $encoding);
-
-		if (isset($ret[0]))
+		// mbstring is nasty on PHP4, we must make *sure* that we send a good encoding
+		switch ($encoding)
 		{
-			return $ret;
+			case 'iso-8859-1':
+			case 'iso-8859-2':
+			case 'iso-8859-4':
+			case 'iso-8859-7':
+			case 'iso-8859-9':
+			case 'iso-8859-15':
+			case 'windows-1251':
+			case 'windows-1252':
+			case 'cp1252':
+			case 'shift_jis':
+			case 'euc-kr':
+			case 'big5':
+			case 'gb2312':
+				$ret = @mb_convert_encoding($string, 'utf-8', $encoding);
+
+				if (!empty($ret))
+				{
+					return $ret;
+				}
 		}
 	}
 
@@ -738,7 +758,7 @@ function utf8_recode($string, $encoding)
 	{
 		$ret = @recode_string($encoding . '..utf-8', $string);
 
-		if (isset($ret[0]))
+		if (!empty($ret))
 		{
 			return $ret;
 		}
@@ -790,6 +810,7 @@ function utf8_recode($string, $encoding)
 			break;
 			case '1250':
 			case '1251':
+			case '1252':
 			case '1254':
 			case '1255':
 			case '1256':
@@ -912,7 +933,7 @@ function utf8_encode_ncr_callback($m)
 }
 
 /**
-* Enter description here...
+* Converts a UTF-8 char to an NCR
 *
 * @param string $chr UTF-8 char
 * @return integer UNICODE code point

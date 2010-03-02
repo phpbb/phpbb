@@ -72,17 +72,30 @@ function compose_pm($id, $mode, $action)
 	{
 		if ($config['allow_mass_pm'] && $auth->acl_get('u_masspm'))
 		{
-			$sql = 'SELECT group_id, group_name, group_type
-				FROM ' . GROUPS_TABLE . '
-				WHERE group_type NOT IN (' . GROUP_HIDDEN . ', ' . GROUP_CLOSED . ')
-					AND group_receive_pm = 1
-				ORDER BY group_type DESC';
+			$sql = 'SELECT g.group_id, g.group_name, g.group_type
+				FROM ' . GROUPS_TABLE . ' g';
+
+			if (!$auth->acl_gets('a_group', 'a_groupadd', 'a_groupdel'))
+			{
+				$sql .= ' LEFT JOIN ' . USER_GROUP_TABLE . ' ug
+					ON (
+						g.group_id = ug.group_id
+						AND ug.user_id = ' . $user->data['user_id'] . '
+						AND ug.user_pending = 0
+					)
+					WHERE (g.group_type <> ' . GROUP_HIDDEN . ' OR ug.user_id = ' . $user->data['user_id'] . ')';
+			}
+
+			$sql .= ($auth->acl_gets('a_group', 'a_groupadd', 'a_groupdel')) ? ' WHERE ' : ' AND ';
+
+			$sql .= 'g.group_receive_pm = 1
+				ORDER BY g.group_type DESC, g.group_name ASC';
 			$result = $db->sql_query($sql);
 
 			$group_options = '';
 			while ($row = $db->sql_fetchrow($result))
 			{
-				$group_options .= '<option' . (($row['group_type'] == GROUP_SPECIAL) ? ' class="blue"' : '') . ' value="' . $row['group_id'] . '">' . (($row['group_type'] == GROUP_SPECIAL) ? $user->lang['G_' . $row['group_name']] : $row['group_name']) . '</option>';
+				$group_options .= '<option' . (($row['group_type'] == GROUP_SPECIAL) ? ' class="sep"' : '') . ' value="' . $row['group_id'] . '">' . (($row['group_type'] == GROUP_SPECIAL) ? $user->lang['G_' . $row['group_name']] : $row['group_name']) . '</option>';
 			}
 			$db->sql_freeresult($result);
 		}
@@ -91,8 +104,8 @@ function compose_pm($id, $mode, $action)
 			'S_SHOW_PM_BOX'		=> true,
 			'S_ALLOW_MASS_PM'	=> ($config['allow_mass_pm'] && $auth->acl_get('u_masspm')) ? true : false,
 			'S_GROUP_OPTIONS'	=> ($config['allow_mass_pm'] && $auth->acl_get('u_masspm')) ? $group_options : '',
-			'U_FIND_USERNAME'	=> append_sid("{$phpbb_root_path}memberlist.$phpEx", "mode=searchuser&amp;form=post&amp;field=username_list&amp;select_single=$select_single"),
-			'UA_FIND_USERNAME'	=> append_sid("{$phpbb_root_path}memberlist.$phpEx", "mode=searchuser&form=post&field=username_list&select_single=$select_single", false))
+			'U_FIND_USERNAME'	=> append_sid("{$phpbb_root_path}memberlist.$phpEx", "mode=searchuser&amp;form=postform&amp;field=username_list&amp;select_single=$select_single"),
+			'UA_FIND_USERNAME'	=> append_sid("{$phpbb_root_path}memberlist.$phpEx", "mode=searchuser&form=postform&field=username_list&select_single=$select_single", false))
 		);
 	}
 
@@ -125,7 +138,7 @@ function compose_pm($id, $mode, $action)
 
 			if ($action == 'quotepost')
 			{
-				$sql = 'SELECT p.post_id as msg_id, p.post_text as message_text, p.poster_id as author_id, p.post_time as message_time, p.bbcode_bitfield, p.bbcode_uid, p.enable_sig, p.enable_smilies, p.enable_magic_url, t.topic_title as message_subject, u.username as quote_username
+				$sql = 'SELECT p.post_id as msg_id, p.forum_id, p.post_text as message_text, p.poster_id as author_id, p.post_time as message_time, p.bbcode_bitfield, p.bbcode_uid, p.enable_sig, p.enable_smilies, p.enable_magic_url, t.topic_title as message_subject, u.username as quote_username
 					FROM ' . POSTS_TABLE . ' p, ' . TOPICS_TABLE . ' t, ' . USERS_TABLE . " u
 					WHERE p.post_id = $msg_id
 						AND t.topic_id = p.topic_id
@@ -180,6 +193,7 @@ function compose_pm($id, $mode, $action)
 
 		default:
 			trigger_error('NO_ACTION_MODE', E_USER_ERROR);
+		break;
 	}
 
 	if ($action == 'forward' && (!$config['forward_pm'] || !$auth->acl_get('u_pm_forward')))
@@ -201,6 +215,14 @@ function compose_pm($id, $mode, $action)
 		if (!$post)
 		{
 			trigger_error('NO_MESSAGE');
+		}
+
+		if ($action == 'quotepost')
+		{
+			if (($post['forum_id'] && !$auth->acl_get('f_read', $post['forum_id'])) || (!$post['forum_id'] && !$auth->acl_getf_global('f_read')))
+			{
+				trigger_error('NOT_AUTHORISED');
+			}
 		}
 
 		$msg_id			= (int) $post['msg_id'];
@@ -326,7 +348,7 @@ function compose_pm($id, $mode, $action)
 	}
 
 	// Handle User/Group adding/removing
-	handle_message_list_actions($address_list, $remove_u, $remove_g, $add_to, $add_bcc);
+	handle_message_list_actions($address_list, $error, $remove_u, $remove_g, $add_to, $add_bcc);
 
 	// Check for too many recipients
 	if ((!$config['allow_mass_pm'] || !$auth->acl_get('u_masspm')) && num_recipients($address_list) > 1)
@@ -399,7 +421,7 @@ function compose_pm($id, $mode, $action)
 		$subject = utf8_normalize_nfc(request_var('subject', '', true));
 		$subject = (!$subject && $action != 'post') ? $user->lang['NEW_MESSAGE'] : $subject;
 		$message = utf8_normalize_nfc(request_var('message', '', true));
-		
+
 		if ($subject && $message)
 		{
 			if (confirm_box(true))
@@ -435,6 +457,18 @@ function compose_pm($id, $mode, $action)
 				);
 
 				confirm_box(false, 'SAVE_DRAFT', $s_hidden_fields);
+			}
+		}
+		else
+		{
+			if (!$subject)
+			{
+				$error[] = $user->lang['EMPTY_MESSAGE_SUBJECT'];
+			}
+
+			if (!$message)
+			{
+				$error[] = $user->lang['TOO_FEW_CHARS'];
 			}
 		}
 
@@ -476,7 +510,7 @@ function compose_pm($id, $mode, $action)
 	{
 		$subject = utf8_normalize_nfc(request_var('subject', '', true));
 		$message_parser->message = utf8_normalize_nfc(request_var('message', '', true));
-		
+
 		$icon_id			= request_var('icon', 0);
 
 		$enable_bbcode 		= (!$bbcode_status || isset($_POST['disable_bbcode'])) ? false : true;
@@ -497,8 +531,20 @@ function compose_pm($id, $mode, $action)
 		// Parse Attachments - before checksum is calculated
 		$message_parser->parse_attachments('fileupload', $action, 0, $submit, $preview, $refresh, true);
 
+		if (sizeof($message_parser->warn_msg) && !($remove_u || $remove_g || $add_to || $add_bcc))
+		{
+			$error[] = implode('<br />', $message_parser->warn_msg);
+			$message_parser->warn_msg = array();
+		}
+
 		// Parse message
 		$message_parser->parse($enable_bbcode, ($config['allow_post_links']) ? $enable_urls : false, $enable_smilies, $img_status, $flash_status, true, $config['allow_sig_links']);
+
+		// On a refresh we do not care about message parsing errors
+		if (sizeof($message_parser->warn_msg) && !$refresh)
+		{
+			$error[] = implode('<br />', $message_parser->warn_msg);
+		}
 
 		if ($action != 'edit' && !$preview && !$refresh && $config['flood_interval'] && !$auth->acl_get('u_ignoreflood'))
 		{
@@ -519,18 +565,13 @@ function compose_pm($id, $mode, $action)
 		{
 			if (!$subject)
 			{
-				$error[] = $user->lang['EMPTY_SUBJECT'];
+				$error[] = $user->lang['EMPTY_MESSAGE_SUBJECT'];
 			}
 
 			if (!sizeof($address_list))
 			{
 				$error[] = $user->lang['NO_RECIPIENT'];
 			}
-		}
-
-		if (sizeof($message_parser->warn_msg) && !($remove_u || $remove_g || $add_to || $add_bcc))
-		{
-			$error[] = implode('<br />', $message_parser->warn_msg);
 		}
 
 		// Store message, sync counters
@@ -541,7 +582,7 @@ function compose_pm($id, $mode, $action)
 				'from_user_id'			=> $user->data['user_id'],
 				'from_user_ip'			=> $user->data['user_ip'],
 				'from_username'			=> $user->data['username'],
-				'reply_from_root_level'	=> (isset($root_level)) ? (int) $root_level : 0,
+				'reply_from_root_level'	=> (isset($post['root_level'])) ? (int) $post['root_level'] : 0,
 				'reply_from_msg_id'		=> (int) $msg_id,
 				'icon_id'				=> (int) $icon_id,
 				'enable_sig'			=> (bool) $enable_sig,
@@ -574,6 +615,7 @@ function compose_pm($id, $mode, $action)
 	// Preview
 	if (!sizeof($error) && $preview)
 	{
+		$user->add_lang('viewtopic');
 		$preview_message = $message_parser->format_display($enable_bbcode, $enable_urls, $enable_smilies, false);
 
 		$preview_signature = $user->data['user_sig'];
@@ -635,21 +677,21 @@ function compose_pm($id, $mode, $action)
 
 	$message_parser->decode_message($bbcode_uid);
 
-	if (($action == 'quote' || $action == 'quotepost') && !$preview && !$refresh)
+	if (($action == 'quote' || $action == 'quotepost') && !$preview && !$refresh && !$submit)
 	{
 		if ($action == 'quotepost')
 		{
 			$post_id = request_var('p', 0);
 			if ($config['allow_post_links'])
 			{
-				$message_link = "[url=" . generate_board_url() . "/viewtopic.$phpEx?p={$post_id}#p{$post_id}]{$message_subject}[/url]\n\n";
+				$message_link = "[url=" . generate_board_url() . "/viewtopic.$phpEx?p={$post_id}#p{$post_id}]{$user->lang['SUBJECT']}: {$message_subject}[/url]\n\n";
 			}
 			else
 			{
 				$message_link = $user->lang['SUBJECT'] . ': ' . $message_subject . " (" . generate_board_url() . "/viewtopic.$phpEx?p={$post_id}#p{$post_id})\n\n";
 			}
 		}
-		else 
+		else
 		{
 			$message_link = '';
 		}
@@ -667,11 +709,11 @@ function compose_pm($id, $mode, $action)
 
 		if ($config['allow_post_links'])
 		{
-			$quote_username_text = '[url=' . generate_board_url() . "/memberlist.$phpEx?mode=viewprofile&u={$post['author_id']}]{$quote_username}[/url]";
+			$quote_username_text = '[url=' . generate_board_url() . "/memberlist.$phpEx?mode=viewprofile&amp;u={$post['author_id']}]{$quote_username}[/url]";
 		}
 		else
 		{
-			$quote_username_text = $quote_username . ' (' . generate_board_url() . "/memberlist.$phpEx?mode=viewprofile&u={$post['author_id']})";
+			$quote_username_text = $quote_username . ' (' . generate_board_url() . "/memberlist.$phpEx?mode=viewprofile&amp;u={$post['author_id']})";
 		}
 
 		$forward_text = array();
@@ -715,16 +757,33 @@ function compose_pm($id, $mode, $action)
 		{
 			$sql = 'SELECT user_id as id, username as name, user_colour as colour
 				FROM ' . USERS_TABLE . '
-				WHERE ' . $db->sql_in_set('user_id', array_map('intval', array_keys($address_list['u'])));
+				WHERE ' . $db->sql_in_set('user_id', array_map('intval', array_keys($address_list['u']))) . '
+				ORDER BY username_clean ASC';
 			$result['u'] = $db->sql_query($sql);
 		}
 
 		if (!empty($address_list['g']))
 		{
-			$sql = 'SELECT group_id as id, group_name as name, group_colour as colour, group_type
-				FROM ' . GROUPS_TABLE . '
-				WHERE group_receive_pm = 1
-					AND ' . $db->sql_in_set('group_id', array_map('intval', array_keys($address_list['g'])));
+			$sql = 'SELECT g.group_id AS id, g.group_name AS name, g.group_colour AS colour, g.group_type
+				FROM ' . GROUPS_TABLE . ' g';
+
+			if (!$auth->acl_gets('a_group', 'a_groupadd', 'a_groupdel'))
+			{
+				$sql .= ' LEFT JOIN ' . USER_GROUP_TABLE . ' ug
+					ON (
+						g.group_id = ug.group_id
+						AND ug.user_id = ' . $user->data['user_id'] . '
+						AND ug.user_pending = 0
+					)
+					WHERE (g.group_type <> ' . GROUP_HIDDEN . ' OR ug.user_id = ' . $user->data['user_id'] . ')';
+			}
+
+			$sql .= ($auth->acl_gets('a_group', 'a_groupadd', 'a_groupdel')) ? ' WHERE ' : ' AND ';
+
+			$sql .= 'g.group_receive_pm = 1
+				AND ' . $db->sql_in_set('g.group_id', array_map('intval', array_keys($address_list['g']))) . '
+				ORDER BY g.group_name ASC';
+
 			$result['g'] = $db->sql_query($sql);
 		}
 
@@ -740,7 +799,7 @@ function compose_pm($id, $mode, $action)
 					{
 						$row['name'] = ($row['group_type'] == GROUP_SPECIAL) ? $user->lang['G_' . $row['name']] : $row['name'];
 					}
-					
+
 					${$type}[$row['id']] = array('name' => $row['name'], 'colour' => $row['colour']);
 				}
 				$db->sql_freeresult($result[$type]);
@@ -834,6 +893,7 @@ function compose_pm($id, $mode, $action)
 
 		default:
 			trigger_error('NO_ACTION_MODE', E_USER_ERROR);
+		break;
 	}
 
 	$s_hidden_fields = '<input type="hidden" name="lastclick" value="' . $current_time . '" />';
@@ -858,6 +918,7 @@ function compose_pm($id, $mode, $action)
 		'MINI_POST_IMG'			=> $user->img('icon_post_target', $user->lang['PM']),
 		'ERROR'					=> (sizeof($error)) ? implode('<br />', $error) : '',
 
+		'S_COMPOSE_PM'			=> true,
 		'S_EDIT_POST'			=> ($action == 'edit'),
 		'S_SHOW_PM_ICONS'		=> $s_pm_icons,
 		'S_BBCODE_ALLOWED'		=> $bbcode_status,
@@ -900,22 +961,30 @@ function compose_pm($id, $mode, $action)
 /**
 * For composing messages, handle list actions
 */
-function handle_message_list_actions(&$address_list, $remove_u, $remove_g, $add_to, $add_bcc)
+function handle_message_list_actions(&$address_list, &$error, $remove_u, $remove_g, $add_to, $add_bcc)
 {
-	global $auth, $db;
+	global $auth, $db, $user;
 
 	// Delete User [TO/BCC]
-	if ($remove_u)
+	if ($remove_u && !empty($_REQUEST['remove_u']) && is_array($_REQUEST['remove_u']))
 	{
 		$remove_user_id = array_keys($_REQUEST['remove_u']);
-		unset($address_list['u'][(int) $remove_user_id[0]]);
+
+		if (isset($remove_user_id[0]))
+		{
+			unset($address_list['u'][(int) $remove_user_id[0]]);
+		}
 	}
 
 	// Delete Group [TO/BCC]
-	if ($remove_g)
+	if ($remove_g && !empty($_REQUEST['remove_g']) && is_array($_REQUEST['remove_g']))
 	{
 		$remove_group_id = array_keys($_REQUEST['remove_g']);
-		unset($address_list['g'][(int) $remove_group_id[0]]);
+
+		if (isset($remove_group_id[0]))
+		{
+			unset($address_list['g'][(int) $remove_group_id[0]]);
+		}
 	}
 
 	// Add User/Group [TO]
@@ -949,7 +1018,13 @@ function handle_message_list_actions(&$address_list, $remove_u, $remove_g, $add_
 		if (sizeof($usernames))
 		{
 			$user_id_ary = array();
-			user_get_id_name($user_id_ary, $usernames);
+			user_get_id_name($user_id_ary, $usernames, array(USER_NORMAL, USER_FOUNDER, USER_INACTIVE));
+
+			// If there are users not existing, we will at least print a notice...
+			if (!sizeof($user_id_ary))
+			{
+				$error[] = $user->lang['PM_NO_USERS'];
+			}
 		}
 
 		// Add Friends if specified
@@ -980,11 +1055,19 @@ function handle_message_list_actions(&$address_list, $remove_u, $remove_g, $add_
 					AND user_allow_pm = 0';
 			$result = $db->sql_query($sql);
 
+			$removed = false;
 			while ($row = $db->sql_fetchrow($result))
 			{
+				$removed = true;
 				unset($address_list['u'][$row['user_id']]);
 			}
 			$db->sql_freeresult($result);
+
+			// print a notice about users not being added who do not want to receive pms
+			if ($removed)
+			{
+				$error[] = $user->lang['PM_USERS_REMOVED_NO_PM'];
+			}
 		}
 	}
 }

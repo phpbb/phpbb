@@ -116,16 +116,16 @@
 		<select name="language_file">{S_LANG_OPTIONS}</select>&nbsp;<input type="submit" class="button2" name="change" value="{L_SELECT}" />
 	</fieldset>
 
-	<br /><br /><br />
+	<p>&nbsp;<br />&nbsp;</p>
 
-	<!-- DIRTY DIRTY DIRTY IE -->
+
 	<!--[if lt IE 8]>
 	<style type="text/css">
 		input.langvalue, textarea.langvalue {
 		width: 450px;
 		}
 	</style>
-	< ![endif]-->
+	<![endif]-->
 
 	<table cellspacing="1">
 	<thead>
@@ -156,9 +156,6 @@
 	<!-- ELSE -->
 		{TPL}
 	<!-- ENDIF -->
-	<tr>
-		<td class="row3" colspan="3" style="text-align: right;"><!-- IF ALLOW_UPLOAD -->&nbsp;&nbsp;{L_UPLOAD_METHOD}:&nbsp;<!-- BEGIN buttons--><input type="radio" class="radio" value="{buttons.VALUE}" name="method" />&nbsp;{buttons.VALUE}&nbsp;<!-- END buttons --><input type="submit" name="upload_file" class="button2" value="{L_SUBMIT_AND_UPLOAD}" /><!-- ENDIF --></td>
-	</tr>
 	<tr>
 		<td class="row3" colspan="3" style="text-align: right;"><input type="submit" name="download_file" class="button2" value="{L_SUBMIT_AND_DOWNLOAD}" />&nbsp;&nbsp;<input type="submit" name="submit_file" class="button2" value="{L_SUBMIT}" /></td>
 	</tr>
